@@ -1,7 +1,7 @@
 // Sinh dữ liệu giả cho màn chung. Có hạt giống theo mã màn nên mở lại vẫn ra đúng số cũ.
 import type { Row, VoucherCfg } from '../../modules/types'
-import { CHI_NHANH, HANG, HOM_NAY, KHACH, NCC, NHAN_VIEN, NVL } from '../../data/mock'
-import { between, k, pad, pick, rng } from '../format'
+import { CHI_NHANH, HANG, HOM_NAY, KHACH, KHOAN_MUC, NCC, NHAN_VIEN, NVL } from '../../data/mock'
+import { between, dmy, k, pad, pick, rng } from '../format'
 
 export function doiTuongDs(kind: VoucherCfg['doiTuong']): { ma: string; ten: string }[] {
   if (kind === 'kh') return KHACH
@@ -26,6 +26,11 @@ export interface Dong {
   tkNo?: string
   tkCo?: string
   stt?: number
+  dt?: string
+  km?: string
+  cv?: string
+  lo?: string
+  hsd?: string
 }
 
 export interface TTNghiepVu {
@@ -81,13 +86,26 @@ export function ttNghiepVu(row: Row): TTNghiepVu {
 
 export function dongCua(cfg: VoucherCfg, id: string): Dong[] {
   const r = rng(id)
+  const r2 = rng(id + '-ct')
   const kind = cfg.dong ?? 'tien'
   if (kind === 'tien' || kind === 'ts') {
     const n = 1 + Math.floor(r() * 2)
     return Array.from({ length: n }, (_, i) => {
       const tien = k(between(r, cfg.tien[0], cfg.tien[1]) / n)
       const ts = cfg.thue ?? 0
-      return { ma: '', ten: cfg.dienGiai[(i + Math.floor(r() * 9)) % cfg.dienGiai.length], dvt: '', sl: 1, gia: tien, tien, ts, thue: Math.round(tien * ts / 100) }
+      const km = kind === 'tien' ? pick(r2, KHOAN_MUC).ma : undefined
+      const cv = kind === 'tien' ? '' : undefined
+      return {
+        ma: '',
+        ten: cfg.dienGiai[(i + Math.floor(r() * 9)) % cfg.dienGiai.length],
+        dvt: '',
+        sl: 1,
+        gia: tien,
+        tien,
+        ts,
+        thue: Math.round(tien * ts / 100),
+        ...(kind === 'tien' ? { km, cv } : {}),
+      }
     })
   }
   const src = kind === 'hang' ? HANG : NVL
@@ -102,7 +120,13 @@ export function dongCua(cfg: VoucherCfg, id: string): Dong[] {
     const sl = h.gia > 100000 ? Math.round(between(r, 2, 18)) : Math.round(between(r, 10, 80))
     const tien = sl * h.gia
     const ts = cfg.thue === 0 ? 0 : h.ts
-    out.push({ ma: h.ma, ten: h.ten, dvt: h.dvt, sl, gia: h.gia, tien, ts, thue: Math.round(tien * ts / 100) })
+    const extra: Partial<Dong> = {}
+    if (kind === 'nvl') {
+      const d = new Date(2026, 9, 10 + Math.floor(r2() * 52))
+      extra.lo = `L2610-${pad(i + 1)}`
+      extra.hsd = dmy(d)
+    }
+    out.push({ ma: h.ma, ten: h.ten, dvt: h.dvt, sl, gia: h.gia, tien, ts, thue: Math.round(tien * ts / 100), ...extra })
   }
   return out
 }

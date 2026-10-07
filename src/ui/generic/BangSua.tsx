@@ -1,10 +1,17 @@
 // Bảng dòng chứng từ gõ trực tiếp và xem chi tiết theo chuẩn AMIS
 import { useEffect, useState } from 'react'
 import type { VoucherCfg } from '../../modules/types'
-import { HANG, KHO, NVL } from '../../data/mock'
+import { CONG_VIEC, HANG, KHACH, KHO, KHOAN_MUC, NCC, NHAN_VIEN, NVL } from '../../data/mock'
+import { Select } from '../Dropdown'
 import { Icon } from '../Icon'
 import { money } from '../format'
 import type { Dong } from './gen'
+
+const DS_DOI_TUONG = Array.from(new Set([
+  ...KHACH.map(x => x.ten),
+  ...NCC.map(x => x.ten),
+  ...NHAN_VIEN.map(x => x.ten),
+]))
 
 export interface BangSuaProps {
   cfg: VoucherCfg
@@ -15,6 +22,7 @@ export interface BangSuaProps {
   nhanTk?: [string, string]
   coKho?: boolean
   coCk?: boolean
+  coLo?: boolean
   khoMacDinh?: string
 }
 
@@ -70,10 +78,16 @@ export function BangSua({
   nhanTk = ['TK Nợ', 'TK Có'],
   coKho = false,
   coCk = false,
+  coLo = false,
   khoMacDinh = 'Kho tổng',
 }: BangSuaProps) {
   const hang = cfg.dong === 'hang' || cfg.dong === 'nvl'
+  const tienDong = cfg.dong === 'tien'
   const danhMucHang = cfg.dong === 'nvl' ? NVL : HANG
+
+  const colSpanDau = hang
+    ? 4 + (coKho ? 1 : 0) + (coLo ? 2 : 0) + (coTk ? 2 : 0)
+    : 2 + (coKho ? 1 : 0) + (coTk ? 2 : 0) + (tienDong ? 3 : 0)
 
   function capNhat(idx: number, patch: Partial<Dong>) {
     if (!onChange) return
@@ -135,6 +149,11 @@ export function BangSua({
       ptCk: 0,
       ck: 0,
       kho: khoMacDinh,
+      dt: '',
+      km: '',
+      cv: '',
+      lo: '',
+      hsd: '',
     } : {
       ma: '',
       ten: cfg.dienGiai?.[0] ?? 'Nội dung chứng từ',
@@ -144,6 +163,11 @@ export function BangSua({
       tien: 1_000_000,
       ts: cfg.thue ?? 0,
       thue: Math.round(1_000_000 * (cfg.thue ?? 0) / 100),
+      dt: '',
+      km: '',
+      cv: '',
+      lo: '',
+      hsd: '',
     }
     onChange([...dong, dongMoi])
   }
@@ -174,10 +198,23 @@ export function BangSua({
               <th>{hang ? 'Tên hàng hoá, dịch vụ' : 'Diễn giải'}</th>
               {coKho && <th style={{ width: 140 }}>Kho</th>}
               {hang && <th style={{ width: 60 }}>ĐVT</th>}
+              {hang && coLo && (
+                <>
+                  <th style={{ width: 100 }}>Số lô</th>
+                  <th style={{ width: 105 }}>Hạn dùng</th>
+                </>
+              )}
               {coTk && (
                 <>
                   <th className="code" style={{ width: 80 }}>{nhanTk[0]}</th>
                   <th className="code" style={{ width: 80 }}>{nhanTk[1]}</th>
+                </>
+              )}
+              {tienDong && (
+                <>
+                  <th style={{ width: 180 }}>Đối tượng</th>
+                  <th style={{ width: 160 }}>Khoản mục</th>
+                  <th style={{ width: 160 }}>Công việc</th>
                 </>
               )}
               {hang && <th className="num" style={{ width: 80 }}>Số lượng</th>}
@@ -205,10 +242,23 @@ export function BangSua({
                 <td>{d.ten}</td>
                 {coKho && <td>{d.kho || khoMacDinh}</td>}
                 {hang && <td>{d.dvt}</td>}
+                {hang && coLo && (
+                  <>
+                    <td>{d.lo || '—'}</td>
+                    <td>{d.hsd || '—'}</td>
+                  </>
+                )}
                 {coTk && (
                   <>
                     <td className="code">{d.tkNo ?? '—'}</td>
                     <td className="code">{d.tkCo ?? '—'}</td>
+                  </>
+                )}
+                {tienDong && (
+                  <>
+                    <td>{d.dt || '—'}</td>
+                    <td>{d.km ? (KHOAN_MUC.find(x => x.ma === d.km)?.ten ?? d.km) : '—'}</td>
+                    <td>{d.cv ? (CONG_VIEC.find(x => x.ma === d.cv)?.ten ?? d.cv) : '—'}</td>
                   </>
                 )}
                 {hang && <td className="num">{money(d.sl)}</td>}
@@ -229,8 +279,7 @@ export function BangSua({
               </tr>
             ))}
             <tr className="sum">
-              <td colSpan={hang ? (coKho ? 4 : 3) : 1}>Tổng cộng ({dong.length} dòng)</td>
-              {coTk && <td colSpan={2} />}
+              <td colSpan={colSpanDau}>Tổng cộng ({dong.length} dòng)</td>
               {hang && <td className="num">{money(tongSl)}</td>}
               {hang && <td />}
               <td className="num">{money(tongTien)}</td>
@@ -265,10 +314,23 @@ export function BangSua({
               <th style={{ minWidth: 180 }}>{hang ? 'Tên hàng hoá, dịch vụ' : 'Diễn giải'}</th>
               {coKho && <th style={{ width: 140 }}>Kho</th>}
               {hang && <th style={{ width: 65 }}>ĐVT</th>}
+              {hang && coLo && (
+                <>
+                  <th style={{ width: 100 }}>Số lô</th>
+                  <th style={{ width: 105 }}>Hạn dùng</th>
+                </>
+              )}
               {coTk && (
                 <>
                   <th style={{ width: 80 }}>{nhanTk[0]}</th>
                   <th style={{ width: 80 }}>{nhanTk[1]}</th>
+                </>
+              )}
+              {tienDong && (
+                <>
+                  <th style={{ width: 180 }}>Đối tượng</th>
+                  <th style={{ width: 160 }}>Khoản mục</th>
+                  <th style={{ width: 160 }}>Công việc</th>
                 </>
               )}
               {hang && <th className="num" style={{ width: 85 }}>Số lượng</th>}
@@ -340,6 +402,28 @@ export function BangSua({
                     />
                   </td>
                 )}
+                {hang && coLo && (
+                  <>
+                    <td>
+                      <input
+                        type="text"
+                        className="inp sm"
+                        value={d.lo ?? ''}
+                        placeholder="Số lô"
+                        onChange={e => capNhat(i, { lo: e.target.value })}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="text"
+                        className="inp sm"
+                        value={d.hsd ?? ''}
+                        placeholder="dd/MM/yyyy"
+                        onChange={e => capNhat(i, { hsd: e.target.value })}
+                      />
+                    </td>
+                  </>
+                )}
                 {coTk && (
                   <>
                     <td>
@@ -359,6 +443,46 @@ export function BangSua({
                         placeholder={nhanTk[1]}
                         onChange={e => capNhat(i, { tkCo: e.target.value })}
                       />
+                    </td>
+                  </>
+                )}
+                {tienDong && (
+                  <>
+                    <td>
+                      <Select
+                        className="inp sm"
+                        value={d.dt ?? ''}
+                        onChange={e => capNhat(i, { dt: e.target.value })}
+                      >
+                        <option value="">—</option>
+                        {DS_DOI_TUONG.map(t => (
+                          <option key={t} value={t}>{t}</option>
+                        ))}
+                      </Select>
+                    </td>
+                    <td>
+                      <Select
+                        className="inp sm"
+                        value={d.km ?? ''}
+                        onChange={e => capNhat(i, { km: e.target.value })}
+                      >
+                        <option value="">—</option>
+                        {KHOAN_MUC.map(km => (
+                          <option key={km.ma} value={km.ma}>{km.ma} · {km.ten}</option>
+                        ))}
+                      </Select>
+                    </td>
+                    <td>
+                      <Select
+                        className="inp sm"
+                        value={d.cv ?? ''}
+                        onChange={e => capNhat(i, { cv: e.target.value })}
+                      >
+                        <option value="">—</option>
+                        {CONG_VIEC.map(cv => (
+                          <option key={cv.ma} value={cv.ma}>{cv.ma} · {cv.ten}</option>
+                        ))}
+                      </Select>
                     </td>
                   </>
                 )}
@@ -417,8 +541,7 @@ export function BangSua({
               </tr>
             ))}
             <tr className="sum">
-              <td colSpan={hang ? (coKho ? 4 : 3) : 1}>Tổng cộng ({dong.length} dòng)</td>
-              {coTk && <td colSpan={2} />}
+              <td colSpan={colSpanDau}>Tổng cộng ({dong.length} dòng)</td>
               {hang && <td className="num">{money(tongSl)}</td>}
               {hang && <td />}
               <td className="num">{money(tongTien)}</td>

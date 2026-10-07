@@ -25,8 +25,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | T12 | Giao diện cho màn hẹp hơn 1280px | | Chờ | Khung có min-width 1180px. Ở 1280px ô tìm kiếm trên thanh trên co còn khoảng 160px |
 | T13 | Tách gói JS khi build | | Chờ | `npm run build` cảnh báo gói JS hơn 500 kB |
 | T14 | Thay biểu tượng chìa khoá ở nút "Đăng nhập bằng tài khoản iPOS" bằng logo iPOS | | Chờ | Chưa có file logo iPOS |
-| T17 | Dòng chi tiết chứng từ bám DB iPOS: phiếu thu chi có Đối tượng, Khoản mục, Công việc từng dòng; phiếu mua có Số lô, Hạn dùng | Trum | Đang làm | Clau điều phối Anti. Theo `VOUCHER_DETAIL`, `PURCHASE_DETAIL` của DB TRUNGDEMO |
-| T18 | Danh mục và số dư bám DB iPOS: TK mặc định của kho 1.8, TK công nợ và điều khoản thanh toán của đối tượng 1.5, bút toán tự động 1.15 nhiều dòng, số dư ban đầu 10.1.3 chi tiết công nợ và tồn kho | Trum | Đang làm | Clau điều phối Anti. Theo `DM_WAREHOUSE`, `DM_PR_DETAIL`, `DM_POSTING`, `BALANCE_DETAIL` |
 | T19 | Khoá sổ theo từng đơn vị, chi nhánh | | Chờ | DB iPOS lưu ngày khoá ở `DM_ORGANIZATION.DATE_LOCK`, màn Khoá sổ đang khoá chung |
 | T20 | Cột trạng thái duyệt trong danh sách chứng từ, tách khỏi ghi sổ | | Chờ | DB iPOS có `REVIEW_STATUS` CHECKED/UNCHECKED riêng với `STATUS` DRAFT/POSTED |
 
@@ -37,5 +35,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | T00 | Bộ tài liệu làm việc nhóm, robot kiểm và deploy | Trum | 07/10/2026 | `2026-10-07-trum-khung-web.md` |
 | T15 | Làm lại form chứng từ và màn danh sách chứng từ theo bố cục AMIS (QD14) | Trum | 07/10/2026 | `2026-10-07-trum-form-chung-tu-amis.md` |
 | T16 | Chuẩn hoá BAT-DAU.md cho người mới, đồng bộ skill Clau - Anti (QD13) | Trum | 07/10/2026 | `2026-10-07-trum-chuan-hoa-bat-dau-skills.md` |
+| T17 | Dòng chi tiết chứng từ bám DB iPOS: Đối tượng, Khoản mục, Công việc từng dòng phiếu thu chi; Số lô, Hạn dùng phiếu mua | Trum | 07/10/2026 | `2026-10-07-trum-giao-dien-bam-db-ipos.md` |
+| T18 | Danh mục và số dư bám DB iPOS: kho 1.8, đối tượng 1.5, bút toán tự động 1.15, số dư ban đầu 10.1.3 | Trum | 07/10/2026 | `2026-10-07-trum-giao-dien-bam-db-ipos.md` |
 
 Phần làm trước khi có bảng này (khung AMIS, 148 màn, menu thả xuống, đưa lên GitHub và Cloudflare) ghi ở `CHANGELOG.md` và `docs/nhat-ky/2026-10-07-trum-khung-web.md`.

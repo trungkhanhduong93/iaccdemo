@@ -599,6 +599,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               nhanTk={nhanTkDong}
               coKho={Boolean(bo.kho)}
               coCk={Boolean(bo.ck)}
+              coLo={nhom === 'mua'}
             />
           )}
 

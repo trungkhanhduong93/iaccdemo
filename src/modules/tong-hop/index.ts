@@ -5,9 +5,21 @@ import { quyTrinh } from './quy-trinh'
 import { BaoCaoQuanTri, CanDoiKeToan, CanDoiPhatSinh, KetQuaKinhDoanh, LuuChuyenTien } from './BaoCaoTaiChinh'
 import { KhoaSo, KiemTraCuoiKy } from './CuoiKy'
 import { TEN_TK, soCai } from './so-cai'
+import { KHACH, NCC, NVL } from '../../data/mock'
+import { k } from '../../ui/format'
 
 /** Nhãn ngắn trên thanh tab */
 const NGAN: Record<string, string> = { '10.1.1': 'Chứng từ tổng hợp', '10.1.2': 'Doanh thu trả trước', '10.1.3': 'Số dư ban đầu', '10.1.4': 'Kiểm tra cuối kỳ', '10.1.5': 'Kết chuyển', '10.1.6': 'Khoá sổ', '10.1.7': 'Kế hoạch tài chính', '10.1.8': 'Kế hoạch sản xuất', '10.1.9': 'Kết chuyển số dư' }
+
+function tach(tong: number, tyLe: number[]) {
+  let con = tong
+  return tyLe.map((tl, i) => {
+    if (i === tyLe.length - 1) return con
+    const v = k(tong * tl)
+    con -= v
+    return v
+  })
+}
 
 const tongHop: ModuleDef = {
   key: 'tong-hop', ten: 'Kế toán tổng hợp', ngan: 'Tổng hợp', icon: 'book', mod: 9,
@@ -18,8 +30,25 @@ const tongHop: ModuleDef = {
       dienGiai: ['Phân bổ tiền thuê mặt bằng tháng 9', 'Trích khấu hao TSCĐ tháng 9', 'Kết chuyển thuế GTGT được khấu trừ', 'Hạch toán lương tháng 9'], noCo: [['6421', '242', 'Phân bổ chi phí trả trước']] } },
     '10.1.2': { tool: { nut: 'Phân bổ kỳ 9/2026', mota: 'Phân bổ doanh thu nhận trước (thẻ thành viên nạp tiền, voucher bán trước, tiền đặt tiệc) vào doanh thu theo kỳ sử dụng.',
       caiDat: [['Kỳ', 'Tháng 9/2026'], ['Tài khoản doanh thu chưa thực hiện', '3387']] } },
-    '10.1.3': { kind: 'catalog', catalog: { them: 'Thêm số dư', cols: [{ k: 'tk', t: 'Số hiệu TK', cls: 'code' }, { k: 'ten', t: 'Tên tài khoản' }, { k: 'no', t: 'Dư Nợ', num: true }, { k: 'co', t: 'Dư Có', num: true }],
-      rows: () => { const m = soCai(8).mo; return Object.keys(m).map(tk => ({ tk, ten: TEN_TK[tk], no: Math.max(0, m[tk]), co: Math.max(0, -m[tk]) })) } } },
+    '10.1.3': { kind: 'catalog', catalog: { them: 'Thêm số dư', nhomLoc: 'loai',
+      cols: [{ k: 'loai', t: 'Loại' }, { k: 'tk', t: 'Số hiệu TK', cls: 'code' }, { k: 'ten', t: 'Tên tài khoản' }, { k: 'ct', t: 'Chi tiết' }, { k: 'sl', t: 'Số lượng', num: true }, { k: 'no', t: 'Dư Nợ', num: true }, { k: 'co', t: 'Dư Có', num: true }],
+      rows: () => {
+        const m = soCai(8).mo
+        const tkRows = Object.keys(m).map(tk => ({ loai: 'Tài khoản', tk, ten: TEN_TK[tk], ct: '', sl: '', no: Math.max(0, m[tk]), co: Math.max(0, -m[tk]) }))
+        const khach3 = KHACH.filter(x => x.ma !== 'KL').slice(0, 3)
+        const cn131 = tach(m['131'] ?? 0, [0.45, 0.35, 0.2]).map((v, i) => ({
+          loai: 'Công nợ', tk: '131', ten: TEN_TK['131'], ct: khach3[i].ten, sl: '', no: Math.max(0, v), co: Math.max(0, -v),
+        }))
+        const ncc3 = NCC.slice(0, 3)
+        const cn331 = tach(m['331'] ?? 0, [0.5, 0.3, 0.2]).map((v, i) => ({
+          loai: 'Công nợ', tk: '331', ten: TEN_TK['331'], ct: ncc3[i].ten, sl: '', no: Math.max(0, v), co: Math.max(0, -v),
+        }))
+        const nvl4 = NVL.slice(0, 4)
+        const kho152 = tach(m['152'] ?? 0, [0.45, 0.25, 0.15, 0.15]).map((v, i) => ({
+          loai: 'Tồn kho', tk: '152', ten: TEN_TK['152'], ct: `Kho tổng · ${nvl4[i].ten}`, sl: Math.round(v / nvl4[i].gia), no: Math.max(0, v), co: Math.max(0, -v),
+        }))
+        return [...tkRows, ...cn131, ...cn331, ...kho152]
+      } } },
     '10.1.4': { kind: 'custom', comp: KiemTraCuoiKy },
     '10.1.5': { tool: { nut: 'Kết chuyển kỳ 9/2026', mota: 'Kết chuyển doanh thu, giá vốn, chi phí sang tài khoản 911 và kết chuyển lãi lỗ sang 421. Chạy lại được trước khi khoá sổ.',
       caiDat: [['Kỳ', 'Tháng 9/2026'], ['Bộ kết chuyển', 'Mặc định theo chế độ kế toán']] } },

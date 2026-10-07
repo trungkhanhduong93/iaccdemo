@@ -85,6 +85,27 @@ export const TK_NGAN_HANG = [
   { so: '1903 4455 6677 88', nh: 'Techcombank, chi nhánh Thảo Điền' },
 ]
 
+export const KHOAN_MUC = [
+  { ma: 'CP01', ten: 'Lương nhân viên bếp' },
+  { ma: 'CP02', ten: 'Lương phục vụ, thu ngân' },
+  { ma: 'CP03', ten: 'Lương văn phòng' },
+  { ma: 'CP04', ten: 'Thuê mặt bằng' },
+  { ma: 'CP05', ten: 'Điện' },
+  { ma: 'CP06', ten: 'Nước' },
+  { ma: 'CP07', ten: 'Gas' },
+  { ma: 'CP08', ten: 'Hoa hồng app giao đồ ăn' },
+  { ma: 'CP09', ten: 'Quảng cáo, khuyến mãi' },
+  { ma: 'CP10', ten: 'Sửa chữa, bảo trì' },
+  { ma: 'CP11', ten: 'Văn phòng phẩm' },
+]
+
+export const CONG_VIEC = [
+  { ma: 'CV01', ten: 'Khai trương chi nhánh Thảo Điền' },
+  { ma: 'CV02', ten: 'Sự kiện Trung thu 2026' },
+  { ma: 'CV03', ten: 'Cải tạo bếp Lê Lợi' },
+  { ma: 'CV04', ten: 'Tiệc cuối năm khách công ty' },
+]
+
 // ── Doanh thu từng ngày, từng chi nhánh (đồng bộ từ FABi, gom theo ngày) ──
 export interface Ngay {
   date: Date; cn: string; dt: number; vat: number; don: number; gv: number

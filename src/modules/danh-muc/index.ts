@@ -38,8 +38,14 @@ const danhMuc: ModuleDef = {
       rows: () => [['Bia Sài Gòn lon', 'Lon', 'Thùng', 24, 'Nhập hàng'], ['Sữa đặc', 'Lon', 'Thùng', 48, 'Nhập hàng'], ['Thịt bò thăn', 'g', 'kg', 1000, 'Nhập hàng, kiểm kê'],
         ['Dầu ăn', 'Lít', 'Can 5 lít', 5, 'Nhập hàng'], ['Cà phê hạt Robusta', 'kg', 'Bao 25 kg', 25, 'Nhập hàng'], ['Bánh phở tươi', 'g', 'kg', 1000, 'Định lượng công thức']]
         .map(([hang, goc, qd, tl, dung]) => ({ hang, goc, qd, tl, dung })) } },
-    '1.5': { catalog: { them: 'Thêm đối tượng', nhomLoc: 'loai', cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên' }, { k: 'loai', t: 'Loại' }, { k: 'mst', t: 'Mã số thuế' }, { k: 'nhom', t: 'Nhóm', cls: 'dim' }],
-      rows: () => [...KHACH.map(x => ({ ...x, loai: 'Khách hàng' })), ...NCC.map(x => ({ ...x, loai: 'Nhà cung cấp' })), ...NHAN_VIEN.map(x => ({ ...x, mst: '', nhom: x.bp, loai: 'Nhân viên' }))] } },
+    '1.5': { catalog: { them: 'Thêm đối tượng', nhomLoc: 'loai',
+      cols: goi => [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên' }, { k: 'loai', t: 'Loại' }, { k: 'mst', t: 'Mã số thuế' }, { k: 'nhom', t: 'Nhóm', cls: 'dim' },
+        { k: 'dktt', t: 'Điều khoản thanh toán' }, ...(kieuGhiSo(goi) === 'noco' ? [tkCot('tkCn', 'TK công nợ')] : [])],
+      rows: () => [
+        ...KHACH.map(x => ({ ...x, loai: 'Khách hàng', dktt: x.ma === 'KL' ? 'Thanh toán ngay' : 'Công nợ 30 ngày', tkCn: '131' })),
+        ...NCC.map(x => ({ ...x, loai: 'Nhà cung cấp', dktt: 'Công nợ 15 ngày', tkCn: '331' })),
+        ...NHAN_VIEN.map(x => ({ ...x, mst: '', nhom: x.bp, loai: 'Nhân viên', dktt: '—', tkCn: '141' })),
+      ] } },
     '1.6': { catalog: { them: 'Thêm mục chi phí', nhomLoc: 'nhom', cols: goi => [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Mục chi phí' }, { k: 'nhom', t: 'Nhóm' }, ...(kieuGhiSo(goi) === 'noco' ? [{ k: 'tk', t: 'TK chi phí', cls: 'code' } as Col] : [])],
       rows: () => [['CP01', 'Lương nhân viên bếp', 'Nhân công', '6421'], ['CP02', 'Lương phục vụ, thu ngân', 'Nhân công', '6421'], ['CP03', 'Lương văn phòng', 'Nhân công', '6422'],
         ['CP04', 'Thuê mặt bằng', 'Mặt bằng', '6421'], ['CP05', 'Điện', 'Điện, nước, gas', '6421'], ['CP06', 'Nước', 'Điện, nước, gas', '6421'], ['CP07', 'Gas', 'Điện, nước, gas', '6421'],
@@ -49,8 +55,13 @@ const danhMuc: ModuleDef = {
       rows: () => [['CV01', 'Khai trương chi nhánh Thảo Điền', 'Mở rộng', 'Nguyễn Minh Anh', '06–08/2026'], ['CV02', 'Sự kiện Trung thu 2026', 'Marketing', 'Phạm Ngọc Lan', '09/2026'],
         ['CV03', 'Cải tạo bếp Lê Lợi', 'Sửa chữa lớn', 'Võ Thanh Tùng', '10–11/2026'], ['CV04', 'Tiệc cuối năm khách công ty', 'Bán hàng', 'Phạm Ngọc Lan', '12/2026']]
         .map(([ma, ten, nhom, pt, tg]) => ({ ma, ten, nhom, pt, tg })) } },
-    '1.8': { catalog: { them: 'Thêm kho', cols: [{ k: 'ma', t: 'Mã kho', cls: 'code' }, { k: 'ten', t: 'Tên kho' }, { k: 'cn', t: 'Chi nhánh' }, { k: 'loai', t: 'Loại' }, { k: 'tk', t: 'Thủ kho', cls: 'dim' }],
-      rows: () => KHO.map((ten, i) => ({ ma: `K${String(i + 1).padStart(2, '0')}`, ten, cn: CHI_NHANH.find(c => c.kho.includes(ten))?.ten ?? 'Văn phòng', loai: ten.includes('bar') ? 'Kho pha chế' : ten.includes('tổng') ? 'Kho tổng' : 'Kho bếp', tk: 'Võ Thanh Tùng' })),
+    '1.8': { catalog: { them: 'Thêm kho',
+      cols: goi => [{ k: 'ma', t: 'Mã kho', cls: 'code' }, { k: 'ten', t: 'Tên kho' }, { k: 'cn', t: 'Chi nhánh' }, { k: 'loai', t: 'Loại' }, { k: 'tk', t: 'Thủ kho', cls: 'dim' },
+        ...(kieuGhiSo(goi) === 'noco' ? [tkCot('tkKho', 'TK kho'), tkCot('tkGv', 'TK giá vốn'), tkCot('tkCp', 'TK chi phí')] : [])],
+      rows: () => KHO.map((ten, i) => {
+        const isTong = ten.includes('tổng')
+        return { ma: `K${String(i + 1).padStart(2, '0')}`, ten, cn: CHI_NHANH.find(c => c.kho.includes(ten))?.ten ?? 'Văn phòng', loai: ten.includes('bar') ? 'Kho pha chế' : isTong ? 'Kho tổng' : 'Kho bếp', tk: 'Võ Thanh Tùng', tkKho: '152', tkGv: '632', tkCp: isTong ? '6422' : '6421' }
+      }),
       note: goi => goi === 'F' ? createElement(Note, { kind: 'gray', icon: 'info', children: 'Gói Free dùng các kho nhận từ FABi và iPOS Inventory, không tạo thêm kho mới.' }) : null } },
     '1.9': { catalog: { them: 'Thêm tiền tệ', cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên tiền tệ' }, { k: 'kh', t: 'Ký hiệu', c: true }, { k: 'le', t: 'Số lẻ', num: true }],
       rows: () => [['VND', 'Đồng Việt Nam', 'đ', 0], ['USD', 'Đô la Mỹ', '$', 2], ['EUR', 'Euro', '€', 2], ['JPY', 'Yên Nhật', '¥', 0]].map(([ma, ten, kh, le]) => ({ ma, ten, kh, le: String(le) })) } },
@@ -71,11 +82,21 @@ const danhMuc: ModuleDef = {
         ['TS005', 'Xe tải giao hàng 1,5 tấn', 'Phương tiện vận tải', '10/01/2025', 545_000_000, 96]].map(([ma, ten, loai, ngay, ng, kh]) => ({ ma, ten, loai, ngay, ng, kh })) } },
     '1.14': { catalog: { them: 'Thêm bảng giá', nhomLoc: 'loai', cols: [{ k: 'ten', t: 'Hàng hoá' }, { k: 'dvt', t: 'ĐVT' }, { k: 'loai', t: 'Loại giá' }, { k: 'gia', t: 'Giá', num: true }, { k: 'tu', t: 'Áp dụng từ' }, { k: 'cn', t: 'Chi nhánh', cls: 'dim' }],
       rows: () => [...HANG.map(h => ({ ten: h.ten, dvt: h.dvt, loai: 'Giá bán', gia: h.gia, tu: '01/09/2026', cn: 'Tất cả' })), ...NVL.slice(0, 8).map(h => ({ ten: h.ten, dvt: h.dvt, loai: 'Giá mua', gia: h.gia, tu: '01/10/2026', cn: 'Kho tổng' }))] } },
-    '1.15': { catalog: { them: 'Thêm bút toán', cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Nghiệp vụ' }, { k: 'no', t: 'TK Nợ', cls: 'code', c: true }, { k: 'co', t: 'TK Có', cls: 'code', c: true }, { k: 'dk', t: 'Điều kiện', cls: 'dim' }],
-      rows: () => [['BT01', 'Doanh thu bán hàng thu tiền mặt', '1111', '5111', 'Thanh toán tiền mặt trên FABi'], ['BT02', 'Doanh thu thu qua QR, chuyển khoản', '1121', '5111', 'Thanh toán QR, chuyển khoản'],
-        ['BT03', 'Doanh thu qua app giao đồ ăn', '131', '5111', 'Kênh GrabFood, ShopeeFood'], ['BT04', 'Thuế GTGT đầu ra', '1111', '33311', 'Theo thuế suất món'],
-        ['BT05', 'Giá vốn xuất bán POS', '632', '152', 'Xuất kho theo định lượng'], ['BT06', 'Hoa hồng app giao đồ ăn', '6421', '131', 'Khi đối soát với sàn'], ['BT07', 'Mua nguyên vật liệu chưa trả tiền', '152', '331', 'Phiếu nhập mua từ iPOS Inventory']]
-        .map(([ma, ten, no, co, dk]) => ({ ma, ten, no, co, dk })) } },
+    '1.15': { catalog: { them: 'Thêm bút toán', nhomLoc: 'lct',
+      cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Nghiệp vụ' }, { k: 'lct', t: 'Loại chứng từ' }, { k: 'loc', t: 'Lọc theo', cls: 'dim' },
+        { k: 'no', t: 'TK Nợ', cls: 'code', c: true }, { k: 'co', t: 'TK Có', cls: 'code', c: true }, { k: 'tien', t: 'Số tiền lấy từ', cls: 'dim' }],
+      rows: () => [
+        ['BT01', 'Doanh thu bán hàng thu tiền mặt', 'Chứng từ bán hàng FABi', 'Thanh toán tiền mặt', '1111', '5111', 'Tiền hàng chưa thuế'],
+        ['BT01', 'Doanh thu bán hàng thu tiền mặt', 'Chứng từ bán hàng FABi', 'Thanh toán tiền mặt', '1111', '33311', 'Tiền thuế GTGT'],
+        ['BT02', 'Doanh thu thu qua QR, chuyển khoản', 'Chứng từ bán hàng FABi', 'Thanh toán QR, chuyển khoản', '1121', '5111', 'Tiền hàng chưa thuế'],
+        ['BT02', 'Doanh thu thu qua QR, chuyển khoản', 'Chứng từ bán hàng FABi', 'Thanh toán QR, chuyển khoản', '1121', '33311', 'Tiền thuế GTGT'],
+        ['BT03', 'Doanh thu qua app giao đồ ăn', 'Chứng từ bán hàng FABi', 'Kênh GrabFood, ShopeeFood', '131', '5111', 'Tiền hàng chưa thuế'],
+        ['BT03', 'Doanh thu qua app giao đồ ăn', 'Chứng từ bán hàng FABi', 'Kênh GrabFood, ShopeeFood', '131', '33311', 'Tiền thuế GTGT'],
+        ['BT05', 'Giá vốn xuất bán POS', 'Phiếu xuất bán POS', 'Tất cả kho bếp, kho bar', '632', '152', 'Giá vốn theo định lượng'],
+        ['BT06', 'Hoa hồng app giao đồ ăn', 'Đối soát sàn', 'Kênh GrabFood, ShopeeFood', '6421', '131', 'Tiền hoa hồng'],
+        ['BT07', 'Mua nguyên vật liệu chưa trả tiền', 'Phiếu mua hàng', 'Nhóm nhà cung cấp Thịt, cá; Tinh bột; Pha chế', '152', '331', 'Tiền hàng chưa thuế'],
+        ['BT07', 'Mua nguyên vật liệu chưa trả tiền', 'Phiếu mua hàng', 'Nhóm nhà cung cấp Thịt, cá; Tinh bột; Pha chế', '1331', '331', 'Tiền thuế GTGT'],
+      ].map(([ma, ten, lct, loc, no, co, tien]) => ({ ma, ten, lct, loc, no, co, tien })) } },
     '1.16': { catalog: { them: 'Thêm lý do', nhomLoc: 'dung', cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Lý do' }, { k: 'dung', t: 'Dùng cho' }],
       rows: () => [['LD01', 'Thu tiền bán hàng', 'Phiếu thu'], ['LD02', 'Thu nợ khách hàng', 'Phiếu thu'], ['LD03', 'Rút tiền ngân hàng nhập quỹ', 'Phiếu thu'], ['LD04', 'Chi mua nguyên vật liệu', 'Phiếu chi'],
         ['LD05', 'Chi trả lương', 'Phiếu chi'], ['LD06', 'Chi tạm ứng', 'Phiếu chi'], ['LD07', 'Xuất huỷ hàng hỏng', 'Phiếu xuất kho'], ['LD08', 'Xuất dùng nội bộ', 'Phiếu xuất kho'], ['LD09', 'Nhập hàng khách trả lại', 'Phiếu nhập kho']]
