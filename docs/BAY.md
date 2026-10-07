@@ -1,0 +1,28 @@
+# Bẫy đã gặp
+
+Lỗi đã từng làm mất thời gian, kèm cách tránh. Đọc trước khi sửa phần liên quan. Gặp lỗi mới mất hơn 15 phút mới ra nguyên nhân thì ghi thêm vào đây.
+
+## Code
+
+- TypeScript cài ra bản 7.0.2. Nếu `tsc` báo lỗi lạ về tuỳ chọn trong tsconfig, xem lại tuỳ chọn đó trước khi sửa code.
+- Dùng HashRouter. Đổi sang BrowserRouter thì phải cấu hình chuyển hướng ở máy chủ, và mở `dist/index.html` trực tiếp sẽ trắng trang.
+- `features.json` sinh từ Excel. Sửa tay sẽ mất khi chạy lại script.
+- Dòng tổng của bảng (`sum` trong `Table`) chỉ vẽ cột có khoá trong dòng tổng. Cột có hàm `r` mà dòng tổng không có khoá thì để trống, nếu không hàm `r` nhận dữ liệu thiếu và làm sập cả app.
+- Thanh tab đo bề rộng từng tab trên một hàng ẩn (`.mtabs-meas`). Sửa nội dung tab (thêm biểu tượng, nhãn) thì sửa cả hàng ẩn cho giống, nếu không tab sẽ tràn hoặc dồn sai. Script kiểm báo "tràn ngang ở .mtabs-in" khi lệch.
+- Form toàn màn hình là `position: fixed` nằm trong `.main`. Không thêm `transform` hay `filter` cho `.main` hoặc tổ tiên của nó, nếu không form sẽ bị nhốt trong vùng nội dung.
+- Khung menu (`.pop`) gắn vào body và đặt vị trí thẳng vào style trước khi vẽ. Đừng đổi sang state React kèm `visibility: hidden`: khung ẩn thì không nhận con trỏ, phím mũi tên trong ô chọn sẽ hỏng (đã gặp 07/10).
+- Esc khi đang mở menu chỉ đóng menu: menu bắt phím ở pha capture và chặn lan. Thêm phím tắt Esc mới thì nghe ở `window` như `FormToanMan`, đừng nghe ở pha capture.
+- Menu "Khác" của thanh tab mở với `keep`: đóng vẫn nằm trong DOM (ẩn) để script kiểm đọc được tab. Script kiểm đọc `.mtabs-in a, .pop-khac a`. Đừng đổi sang render có điều kiện.
+
+## Script kiểm và máy Windows
+
+- Playwright: script kiểm dùng `channel='chrome'`, tức Chrome đã cài trên máy, không cần tải trình duyệt của Playwright. Ghi phiên vào localStorage rồi phải tải lại hẳn trang (đổi query), chỉ đổi hash thì app giữ phiên cũ.
+- Cổng 5180 đang bận thì `npm run dev` báo lỗi, không tự chuyển sang 5181 (`strictPort` trong `vite.config.ts`). Bỏ `strictPort` thì bản thử thứ hai sẽ lặng lẽ chạy ở 5181 trong khi script kiểm vẫn mở 5180, tức thử nhầm bản cũ.
+- Agent chạy script Python in tiếng Việt qua ống dẫn trên Windows có thể báo `UnicodeEncodeError` vì Windows mặc định cp1252. Đặt biến môi trường `PYTHONIOENCODING=utf-8` trước khi chạy.
+- PowerShell 5.1: `Set-Content` và `Add-Content` mặc định ghi ANSI, làm hỏng tiếng Việt. Luôn thêm `-Encoding utf8`, hoặc ghi file bằng công cụ sửa file của agent.
+
+## Git và robot
+
+- Robot cài thư viện bằng `npm ci`, đọc đúng `package-lock.json`. Thêm thư viện thì chạy `npm install <tên>` và commit cả `package.json` lẫn `package-lock.json`, nếu không robot báo đỏ.
+- Chạy `npm install` không thêm thư viện vẫn có thể làm `package-lock.json` đổi vặt. Không commit thay đổi đó. Cài lại thư viện thì dùng `npm ci`.
+- Xuống dòng: `.gitattributes` để Git tự đổi CRLF và LF. Đừng xoá file này, nếu không máy Windows và máy Mac sẽ đổi xuống dòng của nhau, commit hiện mọi dòng của file là đã đổi dù nội dung giữ nguyên.

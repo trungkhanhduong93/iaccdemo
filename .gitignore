@@ -5,3 +5,7 @@ tools/shots/
 __pycache__/
 *.log
 .DS_Store
+.wrangler/
+.env
+.env.*
+.claude/settings.local.json

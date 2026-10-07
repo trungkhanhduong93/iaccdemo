@@ -1,0 +1,2 @@
+# Git tự đổi xuống dòng: trong repo luôn là LF, máy Windows lấy về thành CRLF. Đừng xoá, xem docs/BAY.md.
+* text=auto
