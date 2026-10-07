@@ -7,7 +7,7 @@ import { useSession } from '../../app/session'
 import { kieuGhiSo } from '../../app/plan'
 import { CHI_NHANH } from '../../data/mock'
 import { Icon } from '../Icon'
-import { Card, Kpi, PageHead } from '../Page'
+import { Card, PageHead } from '../Page'
 import { Dropdown, MenuHead, MenuItem, MenuSep, Select } from '../Dropdown'
 import { St, Table } from '../Table'
 import { PhanTrang } from '../PhanTrang'
@@ -114,13 +114,6 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
   })
 
   const tong = list.reduce((a, r) => a + r.tong, 0)
-
-  // Thống kê cho thẻ tổng hợp (tính từ biến list đã lọc)
-  const tongThu = useMemo(() => list.filter(r => r.loai === 'thu' || r.loai === 'bc').reduce((a, r) => a + r.tong, 0), [list])
-  const tongChi = useMemo(() => list.filter(r => r.loai === 'chi' || r.loai === 'unc').reduce((a, r) => a + r.tong, 0), [list])
-  const chuaTtTien = useMemo(() => list.filter(r => ttNghiepVu(r).ttTien !== 'da').reduce((a, r) => a + r.tong, 0), [list])
-  const nhapRows = useMemo(() => list.filter(r => r.tt === 'nhap'), [list])
-  const nhapTong = useMemo(() => nhapRows.reduce((a, r) => a + r.tong, 0), [nhapRows])
 
   // Phân trang
   const soTrang = Math.max(1, Math.ceil(list.length / coTrang))
@@ -294,29 +287,6 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
       </PageHead>
 
       {extra}
-
-      {/* Thẻ tổng hợp */}
-      <div className="grid g3 voucher-kpi-bar">
-        {cfg.loai ? (
-          <>
-            <Kpi l="Tổng thu" v={money(tongThu)} unit="đ" icon="cashin" />
-            <Kpi l="Tổng chi" v={money(tongChi)} unit="đ" icon="cashout" />
-            <Kpi l="Chênh lệch thu chi" v={money(tongThu - tongChi)} unit="đ" icon="scale" d="Không tính nộp tiền vào ngân hàng" />
-          </>
-        ) : nhom === 'mua' || nhom === 'ban' ? (
-          <>
-            <Kpi l="Tổng tiền" v={money(tong)} unit="đ" icon="receipt" d={`${list.length} chứng từ`} />
-            <Kpi l={nhom === 'mua' ? 'Chưa trả tiền' : 'Chưa thanh toán'} v={money(chuaTtTien)} unit="đ" icon="clock" />
-            <Kpi l={ghi ? 'Chưa ghi sổ' : 'Nháp'} v={nhapRows.length} icon="check" d={`${money(nhapTong)} đ`} />
-          </>
-        ) : (
-          <>
-            <Kpi l="Tổng tiền" v={money(tong)} unit="đ" icon="receipt" />
-            <Kpi l="Số chứng từ" v={list.length} icon="doc" />
-            <Kpi l={ghi ? 'Chưa ghi sổ' : 'Nháp'} v={nhapRows.length} icon="check" d={`${money(nhapTong)} đ`} />
-          </>
-        )}
-      </div>
 
       <div className="voucher-split">
         {/* Nửa trên: 50% danh sách các phiếu */}

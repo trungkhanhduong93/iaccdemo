@@ -11,6 +11,7 @@
 - `src/styles/app.css`: định nghĩa lớp `.btn-group` cho cụm nút Trước / Sau liền khối, đồng bộ chiều cao 28px, min-width 76px, bo góc ngoài, ngăn vạch mỏng ở giữa.
 - `src/styles/app.css`: thêm lớp `.page-voucher`, `.voucher-split`, `.voucher-top`, `.voucher-bottom` cố định chiều cao 100%, không cuộn toàn trang web.
 - `src/ui/generic/VoucherScreen.tsx`: tái cấu trúc `VoucherList` theo bố cục 50/50 master-detail: nửa trên 50% là danh sách chứng từ có bộ lọc, bảng cuộn độc lập và phân trang cố định; nửa dưới 50% là khung chi tiết chứng từ (Hàng tiền, Hạch toán, Khác) cuộn độc lập, bấm dòng ở trên là đổi ngay ở dưới.
+- `src/ui/generic/VoucherScreen.tsx`, `src/styles/app.css`: bỏ 3 thẻ stat tổng hợp trên đầu danh sách chứng từ để tối đa hoá diện tích chiều dọc cho bảng danh sách phiếu.
 
 ## Đã kiểm
 

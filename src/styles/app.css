@@ -532,11 +532,6 @@ textarea.inp { height: auto; padding: 8px 11px; resize: vertical; }
 .page-voucher .ph { margin-bottom: 0; flex: none; }
 .page-voucher .ph h1 { font-size: 19px; }
 .page-voucher .ph-meta { margin-top: 3px; }
-.page-voucher .voucher-kpi-bar { grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 0 !important; flex: none; }
-.page-voucher .voucher-kpi-bar .kpi { padding: 7px 14px; }
-.page-voucher .voucher-kpi-bar .kpi-l { font-size: 11.5px; }
-.page-voucher .voucher-kpi-bar .kpi-v { font-size: 17px; margin-top: 1px; }
-.page-voucher .voucher-kpi-bar .kpi-d { display: none; }
 
 .voucher-split { flex: 1; min-height: 0; display: grid; grid-template-rows: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
 .voucher-top { min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
