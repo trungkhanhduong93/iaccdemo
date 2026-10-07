@@ -21,6 +21,8 @@
 - `kiem_van` 5 file giao diện: sạch.
 - Chụp gói Free, Medium, Advance cho 2.1.1, 1.5, 10.1.3, 4.1.1 và form mới: thẻ tổng hợp 2.1.1 là 362.070.000 − 213.603.000 = 148.467.000, đúng. Thẻ số dư tài khoản Nợ bằng Có 4.132.890.000.
 - Chưa kiểm ở màn hẹp hơn 1440px.
+- Robot chưa có token Cloudflare (T01) nên bỏ qua bước đưa lên. Trum cho deploy tay theo `docs/TRIEN-KHAI.md` mục "Deploy tay khi robot hỏng", commit `b275397`. Bản online đã có thẻ tổng hợp và phân trang.
+- Danh mục 1.5 ở 1440px rộng hơn khung 87px do ô một dòng, cuộn ngang được, cột Chức năng đứng yên.
 
 ## Dở dang, việc tiếp theo
 
