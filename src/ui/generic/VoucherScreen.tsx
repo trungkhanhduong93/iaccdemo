@@ -324,7 +324,7 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
             onRow={r => setActiveId(r.id)}
             onDbl={r => nav(`${path}/${r.id}`)}
             rowCls={r => [
-              r.id === activeId ? 'sel' : '',
+              r.id === activeId ? 'dang-chon' : '',
               r.tt === 'nhap' ? 'chua-ghi' : '',
               r.tt === 'loi' && ghi ? 'bad' : '',
             ].filter(Boolean).join(' ')}

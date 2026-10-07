@@ -13,6 +13,7 @@ Lỗi đã từng làm mất thời gian, kèm cách tránh. Đọc trước khi
 - Khung menu (`.pop`) gắn vào body và đặt vị trí thẳng vào style trước khi vẽ. Đừng đổi sang state React kèm `visibility: hidden`: khung ẩn thì không nhận con trỏ, phím mũi tên trong ô chọn sẽ hỏng (đã gặp 07/10).
 - Esc khi đang mở menu chỉ đóng menu: menu bắt phím ở pha capture và chặn lan. Thêm phím tắt Esc mới thì nghe ở `window` như `FormToanMan`, đừng nghe ở pha capture.
 - Menu "Khác" của thanh tab mở với `keep`: đóng vẫn nằm trong DOM (ẩn) để script kiểm đọc được tab. Script kiểm đọc `.mtabs-in a, .pop-khac a`. Đừng đổi sang render có điều kiện.
+- Tên lớp CSS ngắn dễ đụng nhau. Ô chọn `Select` dùng `.sel { display: inline-flex }`, hàng đang chọn trong bảng cũng từng mang lớp `sel`: hàng bị bẻ thành flex, cột ô tick phình 946px, cả danh sách chứng từ vỡ. Bộ kiểm không bắt được vì không có lỗi console. Hàng đang chọn giờ là `dang-chon`. Đặt lớp mới thì `grep` cả `app.css` trước, giống vụ `.st` và `.stt`.
 
 ## Script kiểm và máy Windows
 

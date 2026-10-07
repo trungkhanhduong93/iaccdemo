@@ -40,7 +40,7 @@ export function Table({ cols, rows, sum, onRow, onDbl, sel, rowCls, maxH }: {
         </thead>
         <tbody>
           {rows.map((r, i) => (
-            <tr key={r.id ?? i} className={[onRow ? 'click' : '', sel?.(r) ? 'sel' : '', rowCls?.(r) ?? ''].join(' ')}
+            <tr key={r.id ?? i} className={[onRow ? 'click' : '', sel?.(r) ? 'dang-chon' : '', rowCls?.(r) ?? ''].join(' ')}
               onClick={onRow ? () => onRow(r) : undefined} onDoubleClick={onDbl ? () => onDbl(r) : undefined}>
               {cols.map((c, j) => <td key={c.k} className={[lop(c, j), c.cls ?? ''].join(' ')} style={vt[j].style}>{cell(c, r)}</td>)}
             </tr>

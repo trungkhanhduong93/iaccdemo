@@ -184,7 +184,7 @@ table { border-collapse: collapse; }
 .tbl td.code { color: var(--blue-d); font-weight: 600; white-space: nowrap; }
 .tbl td.dim { color: var(--muted); }
 .tbl tr.bad td { background: #fff8f7; }
-.tbl tr.sel td { background: var(--tint) !important; }
+.tbl tr.dang-chon td { background: var(--tint) !important; }
 .tbl th.num, .tbl td.num { text-align: right; }
 .tbl th.c, .tbl td.c { text-align: center; }
 .tbl .chk { width: 34px; }
@@ -194,7 +194,7 @@ table { border-collapse: collapse; }
 .tbl th.dinh-phai, .tbl td.dinh-phai { position: sticky; right: 0; background: #fff; z-index: 2; border-left: 1px solid var(--line); box-shadow: -2px 0 4px rgba(0, 0, 0, .03); }
 .tbl thead th.dinh-phai { background: #f8fafc; }
 .tbl tbody tr:hover td.dinh { background: #f9fbff; }
-.tbl tr.sel td.dinh { background: var(--tint) !important; }
+.tbl tr.dang-chon td.dinh { background: var(--tint) !important; }
 .tbl tr.chua-ghi td:first-child { box-shadow: inset 3px 0 0 var(--amber); }
 
 /* Khung chi tiết bên dưới danh sách chứng từ */
