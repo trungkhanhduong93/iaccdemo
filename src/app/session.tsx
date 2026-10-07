@@ -1,0 +1,49 @@
+// Phiên làm việc: người dùng, vai trò, đơn vị kế toán, gói. Lưu ở localStorage để F5 không mất.
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
+import type { Goi } from './plan'
+import { DON_VI, type Role } from '../data/mock'
+
+export interface Session {
+  loggedIn: boolean
+  ten: string
+  email: string
+  role: Role
+  donVi: string          // id đơn vị kế toán
+  goi: Goi               // gói của đơn vị; thanh "Xem thử" đổi được để xem khoá theo gói
+  khoiTao: boolean       // đã chạy xong khởi tạo
+  thuGon?: boolean       // sidebar thu gọn còn biểu tượng
+}
+
+const MAC_DINH: Session = { loggedIn: false, ten: 'Trần Thu Hà', email: 'thuha@phomay.vn', role: 'ktt', donVi: 'pm', goi: 'M', khoiTao: true, thuGon: false }
+const KEY = 'iacc-cloud-session'
+
+function doc(): Session {
+  try {
+    const s = localStorage.getItem(KEY)
+    return s ? { ...MAC_DINH, ...JSON.parse(s) } : MAC_DINH
+  } catch { return MAC_DINH }
+}
+
+const Ctx = createContext<{ s: Session; set: (p: Partial<Session>) => void; toast: (m: string) => void } | null>(null)
+
+export function SessionProvider({ children }: { children: ReactNode }) {
+  const [s, setS] = useState<Session>(doc)
+  const [msg, setMsg] = useState<string | null>(null)
+  useEffect(() => { try { localStorage.setItem(KEY, JSON.stringify(s)) } catch { /* trình duyệt chặn lưu thì thôi */ } }, [s])
+  useEffect(() => { if (!msg) return; const t = setTimeout(() => setMsg(null), 2600); return () => clearTimeout(t) }, [msg])
+  const set = (p: Partial<Session>) => setS(x => ({ ...x, ...p }))
+  return (
+    <Ctx.Provider value={{ s, set, toast: setMsg }}>
+      {children}
+      {msg && <div className="toast">{msg}</div>}
+    </Ctx.Provider>
+  )
+}
+
+export function useSession() {
+  const c = useContext(Ctx)
+  if (!c) throw new Error('useSession ngoài SessionProvider')
+  return c
+}
+
+export const donViHienTai = (s: Session) => DON_VI.find(d => d.id === s.donVi) ?? DON_VI[0]

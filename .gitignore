@@ -1,0 +1,7 @@
+node_modules/
+dist/
+backup/
+tools/shots/
+__pycache__/
+*.log
+.DS_Store

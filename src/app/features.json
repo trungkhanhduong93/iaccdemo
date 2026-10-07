@@ -1,0 +1,1097 @@
+{
+"mods": [
+"Danh mục",
+"Kế toán tiền",
+"Kế toán bán hàng",
+"Kế toán mua hàng",
+"Kho hàng",
+"Thuế GTGT",
+"Tài sản cố định",
+"Công cụ dụng cụ",
+"Chi phí, giá thành",
+"Kế toán tổng hợp",
+"Tiện ích bổ sung"
+],
+"feats": [
+{
+"c": "1.1",
+"m": 0,
+"n": "Danh mục tài khoản",
+"grp": "Danh mục",
+"g": "MA",
+"gd": 2,
+"ivt": 0
+},
+{
+"c": "1.2",
+"m": 0,
+"n": "Danh mục hàng hoá, nhóm hàng hoá",
+"grp": "Danh mục",
+"g": "FSMA",
+"gd": 1,
+"ivt": 1
+},
+{
+"c": "1.3",
+"m": 0,
+"n": "Danh mục đơn vị tính",
+"grp": "Danh mục",
+"g": "SMA",
+"gd": 2,
+"ivt": 1
+},
+{
+"c": "1.4",
+"m": 0,
+"n": "Quy đổi đơn vị tính",
+"grp": "Danh mục",
+"g": "SMA",
+"gd": 2,
+"ivt": 1
+},
+{
+"c": "1.5",
+"m": 0,
+"n": "Danh mục khách hàng, nhà cung cấp, nhân viên",
+"grp": "Danh mục",
+"g": "FSMA",
+"gd": 1,
+"ivt": 1
+},
+{
+"c": "1.6",
+"m": 0,
+"n": "Danh mục mục chi phí, nhóm mục chi phí",
+"grp": "Danh mục",
+"g": "SMA",
+"gd": 2,
+"ivt": 0
+},
+{
+"c": "1.7",
+"m": 0,
+"n": "Danh mục công việc, nhóm công việc",
+"grp": "Danh mục",
+"g": "SMA",
+"gd": 2,
+"ivt": 0
+},
+{
+"c": "1.8",
+"m": 0,
+"n": "Danh mục kho",
+"grp": "Danh mục",
+"g": "FSMA",
+"gd": 1,
+"ivt": 1
+},
+{
+"c": "1.9",
+"m": 0,
+"n": "Danh mục tiền tệ",
+"grp": "Danh mục",
+"g": "SMA",
+"gd": 3,
+"ivt": 0
+},
+{
+"c": "1.10",
+"m": 0,
+"n": "Danh mục tỷ giá ngoại tệ",
+"grp": "Danh mục",
+"g": "MA",
+"gd": 3,
+"ivt": 0
+},
+{
+"c": "1.11",
+"m": 0,
+"n": "Danh mục loại thuế",
+"grp": "Danh mục",
+"g": "SMA",
+"gd": 2,
+"ivt": 0
+},
+{
+"c": "1.12",
+"m": 0,
+"n": "Danh mục quỹ tiền",
+"grp": "Danh mục",
+"g": "SMA",
+"gd": 2,
+"ivt": 1
+},
+{
+"c": "1.13",
+"m": 0,
+"n": "Danh mục tài sản cố định",
+"grp": "Danh mục",
+"g": "A",
+"gd": 3,
+"ivt": 0
+},
+{
+"c": "1.14",
+"m": 0,
+"n": "Bảng giá mua, giá bán",
+"grp": "Danh mục",
+"g": "SMA",
+"gd": 2,
+"ivt": 1
+},
+{
+"c": "1.15",
+"m": 0,
+"n": "Danh mục bút toán tự động",
+"grp": "Danh mục",
+"g": "SMA",
+"gd": 3,
+"ivt": 0
+},
+{
+"c": "1.16",
+"m": 0,
+"n": "Danh mục lý do nghiệp vụ",
+"grp": "Danh mục",
+"g": "FSMA",
+"gd": 1,
+"ivt": 0
+},
+{
+"c": "2.1.1",
+"m": 1,
+"n": "Quản lý quỹ tiền mặt, tiền gửi ngân hàng",
+"grp": "Chứng từ",
+"g": "FSMA",
+"gd": 1,
+"ivt": 0
+},
+{
+"c": "2.1.2",
+"m": 1,
+"n": "Biên bản đối chiếu công nợ",
+"grp": "Chứng từ",
+"g": "MA",
+"gd": 3,
+"ivt": 0
+},
+{
+"c": "2.1.3",
+"m": 1,
+"n": "Phân bổ chi phí chuỗi",
+"grp": "Chứng từ",
+"g": "A",
+"gd": 4,
+"ivt": 0
+},
+{
+"c": "2.2.1",
+"m": 1,
+"n": "Sổ quỹ tiền mặt",
+"grp": "Sổ sách, báo cáo",
+"g": "FSMA",
+"gd": 1,
+"ivt": 0
+},
+{
+"c": "2.2.2",
+"m": 1,
+"n": "Sổ tài khoản",
+"grp": "Sổ sách, báo cáo",
+"g": "MA",
+"gd": 2,
+"ivt": 0
+},
+{
+"c": "2.2.3",
+"m": 1,
+"n": "Sổ ngân hàng",
+"grp": "Sổ sách, báo cáo",
+"g": "SMA",
+"gd": 2,
+"ivt": 0
+},
+{
+"c": "2.2.4",
+"m": 1,
+"n": "Sổ nhật ký",
+"grp": "Sổ sách, báo cáo",
+"g": "MA",
+"gd": 2,
+"ivt": 0
+},
+{
+"c": "2.2.5",
+"m": 1,
+"n": "Sổ công nợ",
+"grp": "Sổ sách, báo cáo",
+"g": "FSMA",
+"gd": 1,
+"ivt": 0
+},
+{
+"c": "3.1.1",
+"m": 2,
+"n": "Bán hàng",
+"grp": "Chứng từ",
+"g": "FSMA",
+"gd": 1,
+"ivt": 1
+},
+{
+"c": "3.1.2",
+"m": 2,
+"n": "Hoá đơn bán hàng",
+"grp": "Chứng từ",
+"g": "MA",
+"gd": 3,
+"ivt": 0
+},
+{
+"c": "3.1.3",
+"m": 2,
+"n": "Bán hàng nội bộ (tự sinh phiếu nhập mua nội bộ)",
+"grp": "Chứng từ",
+"g": "A",
+"gd": 3,
+"ivt": 1
+},
+{
+"c": "3.1.4",
+"m": 2,
+"n": "Hàng bán trả lại",
+"grp": "Chứng từ",
+"g": "SMA",
+"gd": 2,
+"ivt": 1
+},
+{
+"c": "3.1.5",
+"m": 2,
+"n": "Xuất hoá đơn điện tử",
+"grp": "Chứng từ",
+"g": "MA",
+"gd": 3,
+"ivt": 0
+},
+{
+"c": "3.1.6",
+"m": 2,
+"n": "Hoá đơn điều chỉnh, thay thế",
+"grp": "Chứng từ",
+"g": "MA",
+"gd": 3,
+"ivt": 0
+},
+{
+"c": "3.2.1",
+"m": 2,
+"n": "Báo cáo bán hàng",
+"grp": "Sổ sách, báo cáo",
+"g": "SMA",
+"gd": 2,
+"ivt": 1
+},
+{
+"c": "3.2.2",
+"m": 2,
+"n": "Đối soát bán hàng với POS",
+"grp": "Sổ sách, báo cáo",
+"g": "SMA",
+"gd": 2,
+"ivt": 0
+},
+{
+"c": "3.2.3",
+"m": 2,
+"n": "Báo cáo doanh thu",
+"grp": "Sổ sách, báo cáo",
+"g": "SMA",
+"gd": 2,
+"ivt": 0
+},
+{
+"c": "3.2.4",
+"m": 2,
+"n": "Bảng kê điều chuyển hàng hoá",
+"grp": "Sổ sách, báo cáo",
+"g": "A",
+"gd": 3,
+"ivt": 0
+},
+{
+"c": "4.1.1",
+"m": 3,
+"n": "Mua hàng",
+"grp": "Chứng từ",
+"g": "SMA",
+"gd": 2,
+"ivt": 1
+},
+{
+"c": "4.1.2",
+"m": 3,
+"n": "Hoá đơn mua hàng",
+"grp": "Chứng từ",
+"g": "MA",
+"gd": 2,
+"ivt": 0
+},
+{
+"c": "4.1.3",
+"m": 3,
+"n": "Mua hàng qua sơ chế",
+"grp": "Chứng từ",
+"g": "A",
+"gd": 3,
+"ivt": 0
+},
+{
+"c": "4.1.4",
+"m": 3,
+"n": "Trả lại hàng cho nhà cung cấp",
+"grp": "Chứng từ",
+"g": "SMA",
+"gd": 2,
+"ivt": 1
+},
+{
+"c": "4.1.5",
+"m": 3,
+"n": "Bổ sung chi phí mua hàng",
+"grp": "Chứng từ",
+"g": "A",
+"gd": 4,
+"ivt": 0
+},
+{
+"c": "4.1.6",
+"m": 3,
+"n": "Bổ sung hoá đơn cho phiếu mua chưa có hoá đơn",
+"grp": "Chứng từ",
+"g": "A",
+"gd": 4,
+"ivt": 0
+},
+{
+"c": "4.2.1",
+"m": 3,
+"n": "Báo cáo mua hàng",
+"grp": "Sổ sách, báo cáo",
+"g": "SMA",
+"gd": 2,
+"ivt": 0
+},
+{
+"c": "4.2.2",
+"m": 3,
+"n": "Báo cáo tổng hợp mua hàng theo ngày, nhà cung cấp, hàng hoá",
+"grp": "Sổ sách, báo cáo",
+"g": "SMA",
+"gd": 2,
+"ivt": 0
+},
+{
+"c": "5.1.2",
+"m": 4,
+"n": "Xuất bán POS",
+"grp": "Chứng từ",
+"g": "SMA",
+"gd": 2,
+"ivt": 1
+},
+{
+"c": "5.1.2-2",
+"m": 4,
+"n": "Xuất bán hàng",
+"grp": "Chứng từ",
+"g": "SMA",
+"gd": 2,
+"ivt": 1
+},
+{
+"c": "5.1.2-3",
+"m": 4,
+"n": "Xuất huỷ",
+"grp": "Chứng từ",
+"g": "SMA",
+"gd": 2,
+"ivt": 1
+},
+{
+"c": "5.1.2-4",
+"m": 4,
+"n": "Xuất khác",
+"grp": "Chứng từ",
+"g": "SMA",
+"gd": 2,
+"ivt": 1
+},
+{
+"c": "5.1.1",
+"m": 4,
+"n": "Nhập khác",
+"grp": "Chứng từ",
+"g": "SMA",
+"gd": 2,
+"ivt": 1
+},
+{
+"c": "5.1.4",
+"m": 4,
+"n": "Xuất, nhập điều chuyển kho",
+"grp": "Chứng từ",
+"g": "MA",
+"gd": 2,
+"ivt": 1
+},
+{
+"c": "9.1.3",
+"m": 4,
+"n": "Công thức chế biến",
+"grp": "Chứng từ",
+"g": "SMA",
+"gd": 2,
+"ivt": 1
+},
+{
+"c": "5.1.3",
+"m": 4,
+"n": "Quy trình chế biến",
+"grp": "Chứng từ",
+"g": "A",
+"gd": 3,
+"ivt": 1
+},
+{
+"c": "5.1.5",
+"m": 4,
+"n": "Công thức sơ chế",
+"grp": "Chứng từ",
+"g": "A",
+"gd": 3,
+"ivt": 1
+},
+{
+"c": "5.1.6",
+"m": 4,
+"n": "Quy trình sơ chế",
+"grp": "Chứng từ",
+"g": "A",
+"gd": 3,
+"ivt": 1
+},
+{
+"c": "5.1.7",
+"m": 4,
+"n": "Tính giá vốn cuối kỳ",
+"grp": "Chứng từ",
+"g": "SMA",
+"gd": 2,
+"ivt": 0
+},
+{
+"c": "5.1.8",
+"m": 4,
+"n": "Tính giá thành đơn giản",
+"grp": "Chứng từ",
+"g": "SMA",
+"gd": 2,
+"ivt": 0
+},
+{
+"c": "5.1.10",
+"m": 4,
+"n": "Kiểm kê số lượng, giá trị",
+"grp": "Chứng từ",
+"g": "FSMA",
+"gd": 1,
+"ivt": 0
+},
+{
+"c": "5.1.11",
+"m": 4,
+"n": "Bổ sung giá nhập",
+"grp": "Chứng từ",
+"g": "MA",
+"gd": 3,
+"ivt": 0
+},
+{
+"c": "5.1.12",
+"m": 4,
+"n": "Tồn kho ban đầu",
+"grp": "Chứng từ",
+"g": "SMA",
+"gd": 2,
+"ivt": 0
+},
+{
+"c": "5.1.13",
+"m": 4,
+"n": "Định mức tồn kho",
+"grp": "Chứng từ",
+"g": "MA",
+"gd": 3,
+"ivt": 0
+},
+{
+"c": "5.2.1",
+"m": 4,
+"n": "Thẻ kho",
+"grp": "Sổ sách, báo cáo",
+"g": "SMA",
+"gd": 2,
+"ivt": 0
+},
+{
+"c": "5.2.2",
+"m": 4,
+"n": "Báo cáo nhập kho, xuất kho",
+"grp": "Sổ sách, báo cáo",
+"g": "SMA",
+"gd": 2,
+"ivt": 0
+},
+{
+"c": "5.2.3",
+"m": 4,
+"n": "Báo cáo xuất nhập tồn",
+"grp": "Sổ sách, báo cáo",
+"g": "FSMA",
+"gd": 1,
+"ivt": 0
+},
+{
+"c": "5.2.4",
+"m": 4,
+"n": "Tồn kho tức thời",
+"grp": "Sổ sách, báo cáo",
+"g": "FSMA",
+"gd": 1,
+"ivt": 0
+},
+{
+"c": "5.2.5",
+"m": 4,
+"n": "Đối chiếu xuất kho với định lượng",
+"grp": "Sổ sách, báo cáo",
+"g": "SMA",
+"gd": 2,
+"ivt": 0
+},
+{
+"c": "5.2.6",
+"m": 4,
+"n": "Sử dụng nguyên vật liệu so với định mức",
+"grp": "Sổ sách, báo cáo",
+"g": "MA",
+"gd": 3,
+"ivt": 0
+},
+{
+"c": "5.2.7",
+"m": 4,
+"n": "Phân tích tiêu hao nguyên vật liệu chính",
+"grp": "Sổ sách, báo cáo",
+"g": "MA",
+"gd": 3,
+"ivt": 0
+},
+{
+"c": "6.1.1",
+"m": 5,
+"n": "Kê khai thuế mua vào",
+"grp": "Chứng từ",
+"g": "MA",
+"gd": 2,
+"ivt": 0
+},
+{
+"c": "6.1.2",
+"m": 5,
+"n": "Kê khai thuế bán ra",
+"grp": "Chứng từ",
+"g": "MA",
+"gd": 2,
+"ivt": 0
+},
+{
+"c": "6.2.1",
+"m": 5,
+"n": "Bảng kê hoá đơn hàng hoá, dịch vụ mua vào",
+"grp": "Báo cáo",
+"g": "MA",
+"gd": 2,
+"ivt": 0
+},
+{
+"c": "6.2.2",
+"m": 5,
+"n": "Bảng kê hoá đơn hàng hoá, dịch vụ bán ra",
+"grp": "Báo cáo",
+"g": "MA",
+"gd": 2,
+"ivt": 0
+},
+{
+"c": "6.2.3",
+"m": 5,
+"n": "Tờ khai thuế",
+"grp": "Báo cáo",
+"g": "SMA",
+"gd": 3,
+"ivt": 0
+},
+{
+"c": "7.1.1",
+"m": 6,
+"n": "Quản lý TSCĐ",
+"grp": "Chứng từ",
+"g": "A",
+"gd": 3,
+"ivt": 0
+},
+{
+"c": "7.1.2",
+"m": 6,
+"n": "Tăng, giảm, thanh lý, ngừng khấu hao TSCĐ",
+"grp": "Chứng từ",
+"g": "A",
+"gd": 3,
+"ivt": 0
+},
+{
+"c": "7.1.3",
+"m": 6,
+"n": "Tính khấu hao TSCĐ",
+"grp": "Chứng từ",
+"g": "A",
+"gd": 3,
+"ivt": 0
+},
+{
+"c": "7.2.1",
+"m": 6,
+"n": "Sổ TSCĐ",
+"grp": "Sổ sách, báo cáo",
+"g": "A",
+"gd": 3,
+"ivt": 0
+},
+{
+"c": "7.2.2",
+"m": 6,
+"n": "Báo cáo tăng, giảm TSCĐ",
+"grp": "Sổ sách, báo cáo",
+"g": "A",
+"gd": 3,
+"ivt": 0
+},
+{
+"c": "8.1.1",
+"m": 7,
+"n": "Quản lý CCDC, chi phí trả trước",
+"grp": "Chức năng",
+"g": "FSMA",
+"gd": 1,
+"ivt": 0
+},
+{
+"c": "8.1.2",
+"m": 7,
+"n": "Tăng, giảm, điều chuyển CCDC đang dùng",
+"grp": "Chức năng",
+"g": "A",
+"gd": 3,
+"ivt": 0
+},
+{
+"c": "8.1.3",
+"m": 7,
+"n": "Kiểm kê CCDC đang dùng",
+"grp": "Chức năng",
+"g": "A",
+"gd": 3,
+"ivt": 0
+},
+{
+"c": "8.2.1",
+"m": 7,
+"n": "Báo cáo chi tiết chi phí trả trước",
+"grp": "Sổ sách, báo cáo",
+"g": "MA",
+"gd": 2,
+"ivt": 0
+},
+{
+"c": "8.2.2",
+"m": 7,
+"n": "Bảng kê chi tiết công cụ dụng cụ",
+"grp": "Sổ sách, báo cáo",
+"g": "MA",
+"gd": 2,
+"ivt": 0
+},
+{
+"c": "8.2.3",
+"m": 7,
+"n": "Bảng phân bổ công cụ dụng cụ",
+"grp": "Sổ sách, báo cáo",
+"g": "MA",
+"gd": 2,
+"ivt": 0
+},
+{
+"c": "8.2.4",
+"m": 7,
+"n": "Báo cáo chi tiết tăng, giảm CCDC",
+"grp": "Sổ sách, báo cáo",
+"g": "A",
+"gd": 3,
+"ivt": 0
+},
+{
+"c": "9.1.1",
+"m": 8,
+"n": "Phân bổ chi phí tính giá thành",
+"grp": "Chức năng",
+"g": "A",
+"gd": 3,
+"ivt": 0
+},
+{
+"c": "9.1.2",
+"m": 8,
+"n": "Tính giá thành nhiều cấp",
+"grp": "Chức năng",
+"g": "A",
+"gd": 3,
+"ivt": 0
+},
+{
+"c": "9.2.1",
+"m": 8,
+"n": "Sổ tổng hợp chi phí phát sinh",
+"grp": "Sổ sách, báo cáo",
+"g": "MA",
+"gd": 2,
+"ivt": 0
+},
+{
+"c": "9.2.2",
+"m": 8,
+"n": "Báo cáo giá thành sản phẩm",
+"grp": "Sổ sách, báo cáo",
+"g": "MA",
+"gd": 2,
+"ivt": 0
+},
+{
+"c": "10.1.1",
+"m": 9,
+"n": "Danh sách chứng từ tổng hợp",
+"grp": "Chức năng",
+"g": "SMA",
+"gd": 2,
+"ivt": 0
+},
+{
+"c": "10.1.2",
+"m": 9,
+"n": "Phân bổ doanh thu trả trước",
+"grp": "Chức năng",
+"g": "A",
+"gd": 4,
+"ivt": 0
+},
+{
+"c": "10.1.3",
+"m": 9,
+"n": "Khai báo số dư tài khoản, tồn kho, công nợ",
+"grp": "Chức năng",
+"g": "MA",
+"gd": 2,
+"ivt": 0
+},
+{
+"c": "10.1.4",
+"m": 9,
+"n": "Tiện ích kiểm tra cuối kỳ",
+"grp": "Chức năng",
+"g": "MA",
+"gd": 2,
+"ivt": 0
+},
+{
+"c": "10.1.5",
+"m": 9,
+"n": "Tiện ích kết chuyển cuối kỳ",
+"grp": "Chức năng",
+"g": "MA",
+"gd": 2,
+"ivt": 0
+},
+{
+"c": "10.1.6",
+"m": 9,
+"n": "Khoá sổ cuối kỳ",
+"grp": "Chức năng",
+"g": "SMA",
+"gd": 2,
+"ivt": 0
+},
+{
+"c": "10.1.7",
+"m": 9,
+"n": "Kế hoạch tài chính",
+"grp": "Chức năng",
+"g": "A",
+"gd": 4,
+"ivt": 0
+},
+{
+"c": "10.1.8",
+"m": 9,
+"n": "Kế hoạch sản xuất",
+"grp": "Chức năng",
+"g": "A",
+"gd": 4,
+"ivt": 0
+},
+{
+"c": "10.1.9",
+"m": 9,
+"n": "Kết chuyển số dư",
+"grp": "Chức năng",
+"g": "MA",
+"gd": 3,
+"ivt": 0
+},
+{
+"c": "10.2.1",
+"m": 9,
+"n": "Bảng cân đối số phát sinh",
+"grp": "Báo cáo tài chính",
+"g": "MA",
+"gd": 2,
+"ivt": 0
+},
+{
+"c": "10.2.2",
+"m": 9,
+"n": "Bảng cân đối kế toán",
+"grp": "Báo cáo tài chính",
+"g": "SMA",
+"gd": 2,
+"ivt": 0
+},
+{
+"c": "10.2.3",
+"m": 9,
+"n": "Báo cáo kết quả kinh doanh",
+"grp": "Báo cáo tài chính",
+"g": "FSMA",
+"gd": 1,
+"ivt": 0
+},
+{
+"c": "10.2.4",
+"m": 9,
+"n": "Báo cáo lưu chuyển tiền tệ",
+"grp": "Báo cáo tài chính",
+"g": "MA",
+"gd": 2,
+"ivt": 0
+},
+{
+"c": "10.2.5",
+"m": 9,
+"n": "Thuyết minh báo cáo tài chính",
+"grp": "Báo cáo tài chính",
+"g": "MA",
+"gd": 2,
+"ivt": 0
+},
+{
+"c": "10.3.1",
+"m": 9,
+"n": "Bộ báo cáo quản trị F&B",
+"grp": "Báo cáo quản trị nhà hàng",
+"g": "MA",
+"gd": 2,
+"ivt": 0
+},
+{
+"c": "11.1",
+"m": 10,
+"n": "Tự động đồng bộ dữ liệu bán hàng (realtime)",
+"grp": "Tiện ích",
+"g": "FSMA",
+"gd": 1,
+"ivt": 0
+},
+{
+"c": "11.2",
+"m": 10,
+"n": "Tự động xuất kho theo định lượng",
+"grp": "Tiện ích",
+"g": "SMA",
+"gd": 2,
+"ivt": 0
+},
+{
+"c": "11.3",
+"m": 10,
+"n": "Tự động đồng bộ dữ liệu kho",
+"grp": "Tiện ích",
+"g": "MA",
+"gd": 2,
+"ivt": 0
+},
+{
+"c": "11.4",
+"m": 10,
+"n": "Nhận hoá đơn đầu vào",
+"grp": "Tiện ích",
+"g": "MA",
+"gd": 3,
+"ivt": 0
+},
+{
+"c": "11.5",
+"m": 10,
+"n": "Duyệt chứng từ hai cấp, duyệt hàng loạt",
+"grp": "Tiện ích",
+"g": "A",
+"gd": 3,
+"ivt": 0
+},
+{
+"c": "11.6",
+"m": 10,
+"n": "Cảnh báo số liệu cuối kỳ",
+"grp": "Tiện ích",
+"g": "MA",
+"gd": 2,
+"ivt": 0
+},
+{
+"c": "11.7",
+"m": 10,
+"n": "Đối soát tự động giữa các hệ thống",
+"grp": "Tiện ích",
+"g": "SMA",
+"gd": 2,
+"ivt": 0
+},
+{
+"c": "11.8",
+"m": 10,
+"n": "Kết nối ngân hàng",
+"grp": "Tiện ích",
+"g": "MA",
+"gd": 4,
+"ivt": 0
+},
+{
+"c": "11.9",
+"m": 10,
+"n": "Kết nối trực tiếp cơ quan thuế",
+"grp": "Tiện ích",
+"g": "SMA",
+"gd": 4,
+"ivt": 0
+},
+{
+"c": "11.10",
+"m": 10,
+"n": "AI hỗ trợ nhập liệu",
+"grp": "Tiện ích",
+"g": "MA",
+"gd": 2,
+"ivt": 0
+},
+{
+"c": "11.11",
+"m": 10,
+"n": "Tự thiết kế phiếu in, báo cáo",
+"grp": "Tiện ích",
+"g": "MA",
+"gd": 2,
+"ivt": 0
+},
+{
+"c": "11.12",
+"m": 10,
+"n": "Báo cáo tự khai báo nguồn công thức",
+"grp": "Tiện ích",
+"g": "MA",
+"gd": 2,
+"ivt": 0
+},
+{
+"c": "11.13",
+"m": 10,
+"n": "Một FABi nhiều bộ dữ liệu kế toán",
+"grp": "Tiện ích",
+"g": "SMA",
+"gd": 2,
+"ivt": 0
+},
+{
+"c": "11.14",
+"m": 10,
+"n": "Khai thác dữ liệu lớn, không giới hạn thời gian lọc",
+"grp": "Tiện ích",
+"g": "MA",
+"gd": 2,
+"ivt": 0
+},
+{
+"c": "11.15",
+"m": 10,
+"n": "Quản lý nhiều kho trong một điểm bán",
+"grp": "Tiện ích",
+"g": "MA",
+"gd": 2,
+"ivt": 0
+},
+{
+"c": "11.16",
+"m": 10,
+"n": "Dashboard, biểu đồ trên trang chủ",
+"grp": "Tiện ích",
+"g": "FSMA",
+"gd": 2,
+"ivt": 0
+},
+{
+"c": "X1",
+"m": 10,
+"n": "Truy cập web, dùng đủ tính năng của gói",
+"grp": "Tiện ích",
+"g": "FSMA",
+"gd": 1,
+"ivt": 0
+},
+{
+"c": "X2",
+"m": 10,
+"n": "Theo dõi nhật ký thao tác",
+"grp": "Tiện ích",
+"g": "SMA",
+"gd": 2,
+"ivt": 0
+},
+{
+"c": "X3",
+"m": 10,
+"n": "App: xem báo cáo, biểu đồ, duyệt chứng từ",
+"grp": "Tiện ích",
+"g": "SMA",
+"gd": 3,
+"ivt": 0
+}
+]
+}
