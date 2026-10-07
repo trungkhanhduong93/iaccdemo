@@ -116,6 +116,7 @@ Mỗi phân hệ: `index.ts` khai báo màn, nhãn tab ngắn (`NGAN`) và cấu
 - [x] Form chứng từ toàn màn hình cho mọi màn chứng từ và chứng từ bán hàng FABi; Huỷ, Lưu, Lưu và thêm; Esc về đúng màn trước
 - [x] Menu thả xuống làm lại (07/10 tối): đơn vị kế toán, Xem thử gói và vai trò, tài khoản, Thêm nhanh chia theo phân hệ, Khác của thanh tab, Tiện ích ở Quy trình, chọn loại phiếu. 22 thẻ select đổi sang ô chọn `Select`. Đã thử: chuột, phím mũi tên, Enter, Esc, Tab, lật lên khi sát đáy ở màn 1280x720, bấm gói trong Xem thử đổi được gói
 - [x] Biểu tượng Hệ thống đổi sang bánh răng (dùng chung cho Tuỳ chọn, Cấu hình kế toán)
+- [x] Đưa lên GitHub `trungkhanhduong93/iaccdemo` (riêng tư) và Cloudflare Pages https://iaccdemo.pages.dev (07/10 tối). Đã mở bản online bằng Chrome: đăng nhập, chọn đơn vị, đổi gói trong Xem thử, mở form Phiếu thu từ Quy trình, Esc về Quy trình, không lỗi console. Trang trả `x-robots-tag: noindex`
 - [x] Đăng nhập, quên mật khẩu, chọn đơn vị kế toán, khởi tạo 4 bước
 - [x] Tổng quan, Bàn làm việc
 - [x] 13 phân hệ, 148 màn: 120 tính năng Excel, 11 màn Quy trình, 9 tab Báo cáo, 2 màn trang chủ, 6 màn hệ thống
@@ -149,7 +150,7 @@ Còn thiếu, biết rõ:
 3. Kế toán trưởng duyệt mẫu sổ, báo cáo tài chính, tờ khai theo TT58, TT133, TT99. Sửa ký hiệu mẫu theo kết quả duyệt.
 4. Làm màn hoá đơn điện tử 3.1.5 riêng: danh sách theo trạng thái, ký số, gửi, huỷ, thay thế.
 5. Thống nhất API với Dev (BR-18 trong spec DEV), thay `data/mock.ts` bằng lớp gọi API, giữ nguyên màn.
-6. Cần link online thì deploy lên một project Cloudflare Pages mới, không đè `iacccloud-present`.
+6. Sửa xong bản nào thì build, commit, push, deploy lại theo mục 2. Không đụng các project Cloudflare khác (`iacccloud-present`, `iacc-present`, `iposivt-present`).
 
 ## 7. Bẫy đã biết
 
