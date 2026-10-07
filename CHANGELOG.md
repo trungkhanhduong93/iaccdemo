@@ -2,6 +2,12 @@
 
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
+## 08/10/2026
+
+- T21: Sửa danh sách chứng từ bị vỡ bố cục, cột đầu phình to và các dòng trống.
+- T22: Danh sách chứng từ có 3 thẻ tổng hợp trên đầu, phân trang 20, 50, 100 dòng, nút Cột để ẩn hiện cột. Ô chữ trong danh sách và danh mục giữ một dòng, rê chuột xem đủ.
+- T23: Danh mục đối tượng, hàng hoá, kho có cột Chức năng để lập nhanh hoá đơn, phiếu thu, phiếu mua, xem công nợ, tồn kho. Số dư ban đầu mở bằng 4 thẻ theo loại số dư.
+
 ## 07/10/2026
 
 - T17, T18: Dòng phiếu thu chi có Đối tượng, Khoản mục, Công việc; phiếu mua có Số lô, Hạn dùng. Danh mục kho và đối tượng có tài khoản mặc định, đối tượng có điều khoản thanh toán. Bút toán tự động hiện từng dòng định khoản. Số dư ban đầu có chi tiết công nợ và tồn kho.

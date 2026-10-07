@@ -1,5 +1,5 @@
 // Màn chứng từ chung: danh sách theo bố cục AMIS với cột đứng yên, bộ lọc kỳ nhanh, khung chi tiết bên dưới, thao tác hàng loạt.
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import type { Col, Row, ScreenProps, VoucherCfg } from '../../modules/types'
 import { duongDan, tenMan } from '../../app/registry'
@@ -7,14 +7,36 @@ import { useSession } from '../../app/session'
 import { kieuGhiSo } from '../../app/plan'
 import { CHI_NHANH } from '../../data/mock'
 import { Icon } from '../Icon'
-import { Card, PageHead } from '../Page'
-import { Dropdown, MenuHead, MenuItem, Select } from '../Dropdown'
+import { Card, Kpi, PageHead } from '../Page'
+import { Dropdown, MenuHead, MenuItem, MenuSep, Select } from '../Dropdown'
 import { St, Table } from '../Table'
+import { PhanTrang } from '../PhanTrang'
 import { fold, money } from '../format'
 import { NGUON, TT_CT, chungTu, dongCua, ttNghiepVu } from './gen'
 import { boO, nhomCua, theoLoai, TT_HD, TT_TIEN } from './nhom'
 import { BangSua } from './BangSua'
 import { ChungTuForm, HachToan, LichSu, VoucherDetail } from './ChungTuForm'
+
+function docCotAn(path: string): string[] {
+  try {
+    const raw = localStorage.getItem(`iacc-cot-an:${path}`)
+    if (!raw) return []
+    const parsed = JSON.parse(raw)
+    return Array.isArray(parsed) ? parsed : []
+  } catch {
+    return []
+  }
+}
+
+function ghiCotAn(path: string, ds: string[]) {
+  try {
+    localStorage.setItem(`iacc-cot-an:${path}`, JSON.stringify(ds))
+  } catch {
+    // Bỏ qua lỗi nếu không ghi được localStorage
+  }
+}
+
+const COT_CO_DINH = new Set(['chk', 'ngay', 'so', 'action'])
 
 // Re-export để các màn khác (như ban-hang/ChungTuBanHang.tsx) tiếp tục sử dụng
 export { ChungTuForm, VoucherDetail, HachToan, LichSu }
@@ -58,6 +80,28 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
   const ghi = kieuGhiSo(s.goi) !== 'khong'
   const nhom = nhomCua(mod.key, cfg)
   const bo = boO(nhom, cfg)
+  const path = duongDan(mod, sc)
+
+  const [trang, setTrang] = useState(1)
+  const [coTrang, setCoTrang] = useState(20)
+  const [cotAn, setCotAn] = useState<string[]>(() => docCotAn(path))
+
+  useEffect(() => {
+    setCotAn(docCotAn(path))
+  }, [path])
+
+  const toggleCot = (k: string) => {
+    setCotAn(prev => {
+      const moi = prev.includes(k) ? prev.filter(x => x !== k) : [...prev, k]
+      ghiCotAn(path, moi)
+      return moi
+    })
+  }
+
+  const hienTatCaCot = () => {
+    setCotAn([])
+    ghiCotAn(path, [])
+  }
 
   // Lọc theo kỳ
   const list = rows.filter(r => {
@@ -70,7 +114,21 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
   })
 
   const tong = list.reduce((a, r) => a + r.tong, 0)
-  const path = duongDan(mod, sc)
+
+  // Thống kê cho thẻ tổng hợp (tính từ biến list đã lọc)
+  const tongThu = useMemo(() => list.filter(r => r.loai === 'thu' || r.loai === 'bc').reduce((a, r) => a + r.tong, 0), [list])
+  const tongChi = useMemo(() => list.filter(r => r.loai === 'chi' || r.loai === 'unc').reduce((a, r) => a + r.tong, 0), [list])
+  const chuaTtTien = useMemo(() => list.filter(r => ttNghiepVu(r).ttTien !== 'da').reduce((a, r) => a + r.tong, 0), [list])
+  const nhapRows = useMemo(() => list.filter(r => r.tt === 'nhap'), [list])
+  const nhapTong = useMemo(() => nhapRows.reduce((a, r) => a + r.tong, 0), [nhapRows])
+
+  // Phân trang
+  const soTrang = Math.max(1, Math.ceil(list.length / coTrang))
+  const trangHienTai = Math.min(trang, soTrang)
+  const pagedRows = useMemo(() => {
+    const batDau = (trangHienTai - 1) * coTrang
+    return list.slice(batDau, batDau + coTrang)
+  }, [list, trangHienTai, coTrang])
 
   // Dòng đang chọn xem chi tiết ở khung dưới
   const activeRow = list.find(r => r.id === activeId) ?? list[0]
@@ -210,6 +268,10 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
     },
   ]
 
+  const cotAnSet = useMemo(() => new Set(cotAn), [cotAn])
+  const colsTuyChon = useMemo(() => cols.filter(c => !COT_CO_DINH.has(c.k)), [cols])
+  const colsHienThi = useMemo(() => cols.filter(c => COT_CO_DINH.has(c.k) || !cotAnSet.has(c.k)), [cols, cotAnSet])
+
   return (
     <div className="page">
       <PageHead crumb={[mod.ten, sc.nhom ?? '']} title={title ?? tenMan(sc)} code={sc.code}>
@@ -232,6 +294,29 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
       </PageHead>
 
       {extra}
+
+      {/* Thẻ tổng hợp */}
+      <div className="grid g3" style={{ marginBottom: 14 }}>
+        {cfg.loai ? (
+          <>
+            <Kpi l="Tổng thu" v={money(tongThu)} unit="đ" icon="cashin" />
+            <Kpi l="Tổng chi" v={money(tongChi)} unit="đ" icon="cashout" />
+            <Kpi l="Chênh lệch thu chi" v={money(tongThu - tongChi)} unit="đ" icon="scale" d="Không tính nộp tiền vào ngân hàng" />
+          </>
+        ) : nhom === 'mua' || nhom === 'ban' ? (
+          <>
+            <Kpi l="Tổng tiền" v={money(tong)} unit="đ" icon="receipt" d={`${list.length} chứng từ`} />
+            <Kpi l={nhom === 'mua' ? 'Chưa trả tiền' : 'Chưa thanh toán'} v={money(chuaTtTien)} unit="đ" icon="clock" />
+            <Kpi l={ghi ? 'Chưa ghi sổ' : 'Nháp'} v={nhapRows.length} icon="check" d={`${money(nhapTong)} đ`} />
+          </>
+        ) : (
+          <>
+            <Kpi l="Tổng tiền" v={money(tong)} unit="đ" icon="receipt" />
+            <Kpi l="Số chứng từ" v={list.length} icon="doc" />
+            <Kpi l={ghi ? 'Chưa ghi sổ' : 'Nháp'} v={nhapRows.length} icon="check" d={`${money(nhapTong)} đ`} />
+          </>
+        )}
+      </div>
 
       <section className="card">
         {/* Thanh thao tác hàng loạt khi tick nhiều dòng */}
@@ -278,7 +363,7 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
         <div className="filters">
           <label className="fld">
             <Icon n="calendar" className="ic sm" />Kỳ
-            <Select value={ky} onChange={e => setKy(e.target.value)}>
+            <Select value={ky} onChange={e => { setKy(e.target.value); setTrang(1) }}>
               <option value="all">Tất cả các kỳ</option>
               <option value="10">Tháng này (10/2026)</option>
               <option value="9">Tháng trước (09/2026)</option>
@@ -295,7 +380,7 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
           </label>
           <label className="fld">
             Trạng thái
-            <Select value={tt} onChange={e => setTt(e.target.value)}>
+            <Select value={tt} onChange={e => { setTt(e.target.value); setTrang(1) }}>
               <option value="all">Tất cả</option>
               <option value="nhap">{ghi ? 'Chưa ghi sổ' : 'Nháp'}</option>
               <option value="ghi">{ghi ? 'Đã ghi sổ' : 'Đã lưu'}</option>
@@ -306,11 +391,30 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
             <Icon n="search" className="ic sm" />
             <input
               value={q}
-              onChange={e => setQ(e.target.value)}
+              onChange={e => { setQ(e.target.value); setTrang(1) }}
               placeholder="Số chứng từ, đối tượng, diễn giải"
             />
           </label>
           <span className="grow" />
+          <Dropdown
+            btnClass="btn sm"
+            align="end"
+            width={200}
+            label={<><Icon n="layers" className="ic sm" />Cột</>}
+          >
+            <MenuHead>Cột hiển thị</MenuHead>
+            {colsTuyChon.map(c => (
+              <MenuItem
+                key={c.k}
+                on={!cotAnSet.has(c.k)}
+                onClick={() => toggleCot(c.k)}
+              >
+                {c.t}
+              </MenuItem>
+            ))}
+            <MenuSep />
+            <MenuItem onClick={hienTatCaCot}>Hiện tất cả cột</MenuItem>
+          </Dropdown>
           <button type="button" className="btn sm">
             <Icon n="printer" className="ic sm" />In
           </button>
@@ -318,22 +422,34 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
 
         {/* Bảng danh sách chứng từ */}
         {list.length ? (
-          <Table
-            cols={cols}
-            rows={list}
-            onRow={r => setActiveId(r.id)}
-            onDbl={r => nav(`${path}/${r.id}`)}
-            rowCls={r => [
-              r.id === activeId ? 'dang-chon' : '',
-              r.tt === 'nhap' ? 'chua-ghi' : '',
-              r.tt === 'loi' && ghi ? 'bad' : '',
-            ].filter(Boolean).join(' ')}
-            sum={{
-              ngay: `${list.length} chứng từ`,
-              tong,
-              thue: list.reduce((a, r) => a + (r.thue || 0), 0),
-            }}
-          />
+          <>
+            <Table
+              cols={colsHienThi}
+              rows={pagedRows}
+              motDong
+              onRow={r => setActiveId(r.id)}
+              onDbl={r => nav(`${path}/${r.id}`)}
+              rowCls={r => [
+                r.id === activeId ? 'dang-chon' : '',
+                r.tt === 'nhap' ? 'chua-ghi' : '',
+                r.tt === 'loi' && ghi ? 'bad' : '',
+              ].filter(Boolean).join(' ')}
+              sum={{
+                ngay: `${list.length} chứng từ`,
+                tong,
+                thue: list.reduce((a, r) => a + (r.thue || 0), 0),
+              }}
+            />
+            {list.length > 20 && (
+              <PhanTrang
+                tong={list.length}
+                trang={trangHienTai}
+                coTrang={coTrang}
+                onTrang={setTrang}
+                onCoTrang={ct => { setCoTrang(ct); setTrang(1) }}
+              />
+            )}
+          </>
         ) : (
           <div className="empty">
             <b>Không có chứng từ khớp bộ lọc</b>
@@ -341,7 +457,7 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
               type="button"
               className="btn sm"
               style={{ marginTop: 10 }}
-              onClick={() => { setKy('all'); setTt('all'); setQ('') }}
+              onClick={() => { setKy('all'); setTt('all'); setQ(''); setTrang(1) }}
             >
               Xoá bộ lọc
             </button>

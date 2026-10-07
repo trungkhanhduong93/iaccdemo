@@ -26,15 +26,15 @@ function viTri(cols: Col[]): { cls: string; style?: CSSProperties }[] {
   return out
 }
 
-export function Table({ cols, rows, sum, onRow, onDbl, sel, rowCls, maxH }: {
+export function Table({ cols, rows, sum, onRow, onDbl, sel, rowCls, maxH, motDong }: {
   cols: Col[]; rows: Row[]; sum?: Row; onRow?: (r: Row) => void; onDbl?: (r: Row) => void; sel?: (r: Row) => boolean
-  rowCls?: (r: Row) => string; maxH?: number
+  rowCls?: (r: Row) => string; maxH?: number; motDong?: boolean
 }) {
   const vt = viTri(cols)
   const lop = (c: Col, i: number) => [c.num ? 'num' : c.c ? 'c' : '', vt[i].cls].join(' ')
   return (
     <div className="tbl-wrap" style={maxH ? { maxHeight: maxH } : undefined}>
-      <table className="tbl">
+      <table className={`tbl${motDong ? ' mot-dong' : ''}`}>
         <thead>
           <tr>{cols.map((c, i) => <th key={c.k} className={lop(c, i)} style={{ ...(c.w ? { width: c.w } : {}), ...(c.dinh && c.w ? { minWidth: c.w } : {}), ...vt[i].style }}>{c.hd ?? c.t}</th>)}</tr>
         </thead>
@@ -42,10 +42,22 @@ export function Table({ cols, rows, sum, onRow, onDbl, sel, rowCls, maxH }: {
           {rows.map((r, i) => (
             <tr key={r.id ?? i} className={[onRow ? 'click' : '', sel?.(r) ? 'dang-chon' : '', rowCls?.(r) ?? ''].join(' ')}
               onClick={onRow ? () => onRow(r) : undefined} onDoubleClick={onDbl ? () => onDbl(r) : undefined}>
-              {cols.map((c, j) => <td key={c.k} className={[lop(c, j), c.cls ?? ''].join(' ')} style={vt[j].style}>{cell(c, r)}</td>)}
+              {cols.map((c, j) => {
+                const v = cell(c, r)
+                const title = motDong && (typeof v === 'string' || typeof v === 'number') ? String(v) : undefined
+                return <td key={c.k} className={[lop(c, j), c.cls ?? ''].join(' ')} style={vt[j].style} title={title}>{v}</td>
+              })}
             </tr>
           ))}
-          {sum && <tr className="sum">{cols.map((c, j) => <td key={c.k} className={lop(c, j)} style={vt[j].style}>{c.k in sum ? cell(c, sum) : null}</td>)}</tr>}
+          {sum && (
+            <tr className="sum">
+              {cols.map((c, j) => {
+                const v = c.k in sum ? cell(c, sum) : null
+                const title = motDong && (typeof v === 'string' || typeof v === 'number') ? String(v) : undefined
+                return <td key={c.k} className={lop(c, j)} style={vt[j].style} title={title}>{v}</td>
+              })}
+            </tr>
+          )}
         </tbody>
       </table>
     </div>

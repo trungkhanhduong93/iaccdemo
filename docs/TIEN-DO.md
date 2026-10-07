@@ -27,8 +27,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | T14 | Thay biểu tượng chìa khoá ở nút "Đăng nhập bằng tài khoản iPOS" bằng logo iPOS | | Chờ | Chưa có file logo iPOS |
 | T19 | Khoá sổ theo từng đơn vị, chi nhánh | | Chờ | DB iPOS lưu ngày khoá ở `DM_ORGANIZATION.DATE_LOCK`, màn Khoá sổ đang khoá chung |
 | T20 | Cột trạng thái duyệt trong danh sách chứng từ, tách khỏi ghi sổ | | Chờ | DB iPOS có `REVIEW_STATUS` CHECKED/UNCHECKED riêng với `STATUS` DRAFT/POSTED |
-| T22 | Danh sách chứng từ học AMIS: thẻ tổng hợp trên đầu, phân trang, chọn cột hiển thị, ô chữ một dòng | Trum | Đang làm | Clau điều phối Anti |
-| T23 | Danh mục học AMIS: cột Chức năng lập nhanh chứng từ từ đối tượng, kho; số dư ban đầu thành lưới thẻ theo loại | Trum | Đang làm | Clau điều phối Anti |
 
 ## Đã xong
 
@@ -39,6 +37,8 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | T16 | Chuẩn hoá BAT-DAU.md cho người mới, đồng bộ skill Clau - Anti (QD13) | Trum | 07/10/2026 | `2026-10-07-trum-chuan-hoa-bat-dau-skills.md` |
 | T17 | Dòng chi tiết chứng từ bám DB iPOS: Đối tượng, Khoản mục, Công việc từng dòng phiếu thu chi; Số lô, Hạn dùng phiếu mua | Trum | 07/10/2026 | `2026-10-07-trum-giao-dien-bam-db-ipos.md` |
 | T21 | Sửa danh sách chứng từ vỡ bố cục: lớp `sel` của hàng đang chọn đụng lớp `.sel` của ô chọn | Trum | 08/10/2026 | `2026-10-08-trum-hoc-amis-lan-2.md` |
+| T22 | Danh sách chứng từ học AMIS: thẻ tổng hợp, phân trang, chọn cột, ô một dòng | Trum | 08/10/2026 | `2026-10-08-trum-hoc-amis-lan-2.md` |
+| T23 | Danh mục học AMIS: cột Chức năng lập nhanh chứng từ; số dư ban đầu thành lưới thẻ | Trum | 08/10/2026 | `2026-10-08-trum-hoc-amis-lan-2.md` |
 | T18 | Danh mục và số dư bám DB iPOS: kho 1.8, đối tượng 1.5, bút toán tự động 1.15, số dư ban đầu 10.1.3 | Trum | 07/10/2026 | `2026-10-07-trum-giao-dien-bam-db-ipos.md` |
 
 Phần làm trước khi có bảng này (khung AMIS, 148 màn, menu thả xuống, đưa lên GitHub và Cloudflare) ghi ở `CHANGELOG.md` và `docs/nhat-ky/2026-10-07-trum-khung-web.md`.

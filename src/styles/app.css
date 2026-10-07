@@ -503,3 +503,19 @@ textarea.inp { height: auto; padding: 8px 11px; resize: vertical; }
 .rpt-card.lock { background: #fbfcfe; box-shadow: none; }
 .rpt-card.lock b { color: var(--faint); }
 .rpt-card.lock .ri { background: var(--soft); color: var(--faint); }
+
+/* ── Ô một dòng cho bảng danh sách chứng từ ── */
+.tbl.mot-dong td { white-space: nowrap; max-width: 280px; overflow: hidden; text-overflow: ellipsis; }
+
+/* ── Phân trang danh sách chứng từ ── */
+.pt-bar { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-top: 1px solid var(--line-2); font-size: 13px; color: var(--body); }
+.pt-tong { color: var(--muted); }
+.pt-tong b { color: var(--ink); }
+.pt-phai { display: flex; align-items: center; gap: 10px; }
+.pt-co-nhan { font-size: 12.5px; color: var(--muted); }
+.pt-nav { display: flex; align-items: center; gap: 4px; }
+.pt-num { min-width: 28px; padding: 0 6px; }
+.pt-num.pt-hien-tai { background: var(--blue) !important; color: #fff !important; font-weight: 700; }
+.pt-num.pt-hien-tai:hover { background: var(--blue-d) !important; color: #fff !important; }
+.icon-btn.sm { width: 28px; height: 28px; border-radius: 7px; }
+.icon-btn:disabled { opacity: .35; cursor: not-allowed; }

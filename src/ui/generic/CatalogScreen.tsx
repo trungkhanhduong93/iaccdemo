@@ -1,5 +1,6 @@
 // Màn danh mục chung: bảng có tìm kiếm, lọc nhóm, ngăn kéo thêm và sửa
 import { useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import type { Col, Row, ScreenProps } from '../../modules/types'
 import { tenMan } from '../../app/registry'
 import { useSession } from '../../app/session'
@@ -7,7 +8,7 @@ import { Icon } from '../Icon'
 import { PageHead } from '../Page'
 import { St, Table } from '../Table'
 import { fold } from '../format'
-import { Select } from '../Dropdown'
+import { Dropdown, MenuItem, Select } from '../Dropdown'
 
 export function CatalogScreen({ sc, mod }: ScreenProps) {
   const { s, toast } = useSession()
@@ -19,7 +20,37 @@ export function CatalogScreen({ sc, mod }: ScreenProps) {
   const nhoms = cfg.nhomLoc ? [...new Set(all.map(r => r[cfg.nhomLoc!]))] : []
   const rows = all.filter(r => (!nhom || r[cfg.nhomLoc!] === nhom) && (!q || fold(Object.values(r).join(' ')).includes(fold(q))))
   const cols0 = typeof cfg.cols === 'function' ? cfg.cols(s.goi) : cfg.cols
-  const cols: Col[] = [...cols0, { k: '_tt', t: 'Trạng thái', r: r => r._tt === 0 ? <St k="dim">Ngừng dùng</St> : <St k="ok">Đang dùng</St> }]
+  const cols: Col[] = [
+    ...cols0,
+    { k: '_tt', t: 'Trạng thái', r: r => r._tt === 0 ? <St k="dim">Ngừng dùng</St> : <St k="ok">Đang dùng</St> },
+    ...(cfg.chucNang ? [{
+      k: '_cn',
+      t: 'Chức năng',
+      w: 150,
+      dinh: 'phai' as const,
+      r: (r: Row) => {
+        const acts = cfg.chucNang!(r)
+        if (!acts || acts.length === 0) return null
+        const [dau, ...conLai] = acts
+        return (
+          <div className="row" style={{ gap: 4, justifyContent: 'center' }} onClick={e => e.stopPropagation()}>
+            <Link to={`/app/${dau.di}`} className="btn sm ghost">{dau.nhan}</Link>
+            {conLai.length > 0 && (
+              <Dropdown
+                btnClass="icon-btn sm"
+                align="end"
+                label={<Icon n="more" className="ic sm" />}
+              >
+                {conLai.map(m => (
+                  <MenuItem key={m.di} to={`/app/${m.di}`} icon={m.icon}>{m.nhan}</MenuItem>
+                ))}
+              </Dropdown>
+            )}
+          </div>
+        )
+      },
+    }] : []),
+  ]
   const ten = tenMan(sc)
 
   return (
@@ -34,12 +65,12 @@ export function CatalogScreen({ sc, mod }: ScreenProps) {
         <div className="filters">
           <label className="fld"><Icon n="search" className="ic sm" /><input value={q} onChange={e => setQ(e.target.value)} placeholder="Tìm theo mã, tên" /></label>
           {nhoms.length > 1 && (
-            <label className="fld">Nhóm<Select value={nhom} onChange={e => setNhom(e.target.value)}><option value="">Tất cả</option>{nhoms.map(n => <option key={n}>{n}</option>)}</Select></label>
+            <label className="fld">{cfg.nhanLoc ?? 'Nhóm'}<Select value={nhom} onChange={e => setNhom(e.target.value)}><option value="">Tất cả</option>{nhoms.map(n => <option key={n}>{n}</option>)}</Select></label>
           )}
           <span className="grow" />
           <span className="muted" style={{ fontSize: 12 }}>{rows.length}/{all.length} dòng</span>
         </div>
-        {rows.length ? <Table cols={cols} rows={rows} onRow={r => setEdit(r)} /> : (
+        {rows.length ? <Table cols={cols} rows={rows} motDong onRow={r => setEdit(r)} /> : (
           all.length ? <div className="empty"><b>Không có dòng khớp bộ lọc</b><button className="btn sm" style={{ marginTop: 10 }} onClick={() => { setQ(''); setNhom('') }}>Xoá bộ lọc</button></div>
             : <div className="empty"><b>Chưa có dữ liệu</b><button className="btn sm pri" style={{ marginTop: 10 }} onClick={() => setEdit({})}>{cfg.them ?? 'Thêm mới'}</button></div>
         )}

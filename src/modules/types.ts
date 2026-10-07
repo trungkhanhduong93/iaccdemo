@@ -16,7 +16,15 @@ export interface Col {
 }
 
 /** Danh mục: bảng có tìm kiếm, nút thêm */
-export interface CatalogCfg { cols: Col[] | ((goi: Goi) => Col[]); rows: () => Row[]; them?: string; nhomLoc?: string; note?: (goi: Goi) => ReactNode }
+export interface CatalogCfg {
+  cols: Col[] | ((goi: Goi) => Col[])
+  rows: () => Row[]
+  them?: string
+  nhomLoc?: string
+  nhanLoc?: string
+  chucNang?: (r: Row) => { nhan: string; di: string; icon?: string }[]
+  note?: (goi: Goi) => ReactNode
+}
 
 /** Chứng từ: danh sách + form chi tiết */
 export interface VoucherCfg {
