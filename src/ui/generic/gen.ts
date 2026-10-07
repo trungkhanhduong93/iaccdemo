@@ -11,7 +11,73 @@ export function doiTuongDs(kind: VoucherCfg['doiTuong']): { ma: string; ten: str
   return [{ ma: '', ten: '' }]
 }
 
-export interface Dong { ma: string; ten: string; dvt: string; sl: number; gia: number; tien: number; ts: number; thue: number }
+export interface Dong {
+  ma: string
+  ten: string
+  dvt: string
+  sl: number
+  gia: number
+  tien: number
+  ts: number
+  thue: number
+  ptCk?: number
+  ck?: number
+  kho?: string
+  tkNo?: string
+  tkCo?: string
+  stt?: number
+}
+
+export interface TTNghiepVu {
+  ttTien: 'chua' | 'mot' | 'da'
+  ttHd: 'chua' | 'da'
+  dc: string
+  nguoi: string
+  mst: string
+  soHd: string
+  ngayHd: string
+  kyHieuHd: string
+  hanTt: string
+  dieuKhoan: string
+}
+
+const DIA_CHI_MAU = [
+  '45 Lê Thánh Tôn, Bến Nghé, Quận 1, TP.HCM',
+  '128 Hai Bà Trưng, Đa Kao, Quận 1, TP.HCM',
+  '234 Phan Xích Long, Phường 2, Phú Nhuận, TP.HCM',
+  '78 Thảo Điền, P. Thảo Điền, TP. Thủ Đức, TP.HCM',
+  '56 Nguyễn Thị Minh Khai, Phường 6, Quận 3, TP.HCM',
+  '12 Võ Văn Tần, Phường 6, Quận 3, TP.HCM',
+]
+
+const NGUOI_MAU = [
+  'Nguyễn Văn An', 'Trần Thị Mai', 'Lê Hoàng Nam', 'Phạm Minh Tuấn', 'Vũ Bích Ngọc', 'Đỗ Thanh Tùng',
+]
+
+export function ttNghiepVu(row: Row): TTNghiepVu {
+  const r = rng(`${row.so}-tt`)
+  const ttTien: 'chua' | 'mot' | 'da' = row.tt === 'nhap'
+    ? (r() < 0.8 ? 'chua' : 'mot')
+    : (r() < 0.6 ? 'da' : r() < 0.85 ? 'mot' : 'chua')
+  const ttHd: 'chua' | 'da' = row.nguon === 'HĐ' ? 'da' : (r() < 0.7 ? 'da' : 'chua')
+  const dc = pick(r, DIA_CHI_MAU)
+  const nguoi = pick(r, NGUOI_MAU)
+  const mst = `03${pad(Math.floor(r() * 90000000) + 10000000, 8)}`
+  const soHd = pad(Math.floor(r() * 90000) + 10000, 7)
+  const ngayHd = String(row.ngay)
+  const kyHieuHd = String(row.so).startsWith('CTBH') || String(row.so).startsWith('HD') ? '1C26TBB' : '1C26TMM'
+  const hanTt = row.ngay ? (() => {
+    const parts = String(row.ngay).split('/')
+    if (parts.length === 3) {
+      const dt = new Date(Number(parts[2]), Number(parts[1]) - 1, Number(parts[0]))
+      dt.setDate(dt.getDate() + 30)
+      return `${pad(dt.getDate())}/${pad(dt.getMonth() + 1)}/${dt.getFullYear()}`
+    }
+    return '06/11/2026'
+  })() : '06/11/2026'
+  const dieuKhoan = pick(r, ['Nợ 30 ngày', 'Nợ 15 ngày', 'Thanh toán ngay', 'Gối đầu theo tuần'])
+  return { ttTien, ttHd, dc, nguoi, mst, soHd, ngayHd, kyHieuHd, hanTt, dieuKhoan }
+}
 
 export function dongCua(cfg: VoucherCfg, id: string): Dong[] {
   const r = rng(id)

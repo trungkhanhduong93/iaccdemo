@@ -11,6 +11,8 @@ export interface Col {
   w?: number
   cls?: string
   r?: (row: Row) => ReactNode
+  dinh?: 'trai' | 'phai' // cột đứng yên khi cuộn ngang; cột 'trai' phải khai w
+  hd?: ReactNode         // nội dung ô tiêu đề thay cho t, vd ô tick chọn tất cả
 }
 
 /** Danh mục: bảng có tìm kiếm, nút thêm */

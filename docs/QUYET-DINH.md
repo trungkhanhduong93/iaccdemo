@@ -92,3 +92,17 @@ Lý do: Trum dặn khi giao việc làm lại form chứng từ và màn danh s�
 - Phân vai tối ưu token:
   + **Clau** làm Kiến trúc sư & Quản lý (Planner & Reviewer): phân tích logic kế toán, chốt kiến trúc, chia nhỏ task, soát lỗi nghiệp vụ cuối. Không dùng Clau chạy lặp đi lặp lại việc sửa cú pháp/typecheck để tránh tốn token.
   + **Anti** làm Kỹ sư thi công (Builder & Executor): đọc code, viết code, sửa lỗi, chạy typecheck, build, chạy kiểm thử tự động (`tools/kiem_tra.py`).
+
+## QD14. Bố cục form chứng từ và danh sách theo AMIS (07/10/2026 đêm)
+
+- Form chứng từ toàn màn hình:
+  + Mở ở chế độ xem mặc định; bấm Sửa (hoặc query `?sua=1`) sang chế độ sửa; phím tắt Ctrl+S (lưu), Ctrl+Shift+S (lưu và thêm), Ctrl+E (sửa), Esc (đóng).
+  + Chân form: nút trước/sau; nút bật cột tài khoản (gói Medium/Advance); In, Tiện ích, Sửa, Ghi sổ hoặc Bỏ ghi sổ.
+  + Nhóm mua/bán: có chọn hình thức thanh toán (chưa thanh toán, tiền mặt ngay, chuyển khoản ngay); nếu thanh toán ngay thì tự đổi TK công nợ thành 1111 hoặc 1121; tab Hoá đơn, điều khoản thanh toán, đính kèm, khối tổng tiền góc dưới phải.
+  + Bảng dòng gõ trực tiếp (`BangSua`): ô số hiện số thô khi gõ, định dạng khi rời ô; chọn mã hàng tự điền tên, ĐVT, giá, thuế; tự tính chiết khấu và thuế.
+- Màn danh sách chứng từ:
+  + Chọn kỳ nhanh: Tháng này, Tháng trước, Quý này, Năm nay, Tất cả.
+  + Cột Ngày, Số chứng từ đứng yên bên trái (`dinh: 'trai'`); cột Chức năng (Xem và menu thao tác) đứng yên bên phải (`dinh: 'phai'`).
+  + Cột TT thanh toán và TT hoá đơn cho nhóm mua, bán.
+  + Dòng chưa ghi sổ có vạch vàng bên trái; tick chọn nhiều dòng hiện thanh thao tác hàng loạt.
+  + Bấm dòng hiện khung chi tiết `.ct-panel` bên dưới (thu gọn được); bấm đúp dòng hoặc nút Xem để mở form toàn màn hình.

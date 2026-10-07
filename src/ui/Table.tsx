@@ -1,5 +1,5 @@
-// Bảng dữ liệu dùng chung: cột số căn phải, dòng tổng, bấm dòng để mở chi tiết
-import type { ReactNode } from 'react'
+// Bảng dữ liệu dùng chung: cột số căn phải, dòng tổng, bấm dòng để mở chi tiết, cột đứng yên khi cuộn ngang
+import type { CSSProperties, ReactNode } from 'react'
 import type { Col, Row } from '../modules/types'
 import { money } from './format'
 
@@ -10,23 +10,42 @@ export function cell(c: Col, r: Row): ReactNode {
   return v
 }
 
-export function Table({ cols, rows, sum, onRow, sel, rowCls, maxH }: {
-  cols: Col[]; rows: Row[]; sum?: Row; onRow?: (r: Row) => void; sel?: (r: Row) => boolean
+/** Vị trí của cột đứng yên: cột 'trai' cộng dồn bề rộng các cột 'trai' trước nó, cột 'phai' tính từ mép phải */
+function viTri(cols: Col[]): { cls: string; style?: CSSProperties }[] {
+  let trai = 0
+  const out = cols.map(c => {
+    if (c.dinh !== 'trai') return { cls: '' }
+    const o = { cls: 'dinh', style: { left: trai } as CSSProperties }
+    trai += c.w ?? 0
+    return o
+  })
+  const cuoiTrai = cols.map(c => c.dinh).lastIndexOf('trai')
+  if (cuoiTrai >= 0) out[cuoiTrai].cls += ' dinh-cuoi'
+  const dauPhai = cols.findIndex(c => c.dinh === 'phai')
+  if (dauPhai >= 0) out[dauPhai] = { cls: 'dinh dinh-phai', style: { right: 0 } }
+  return out
+}
+
+export function Table({ cols, rows, sum, onRow, onDbl, sel, rowCls, maxH }: {
+  cols: Col[]; rows: Row[]; sum?: Row; onRow?: (r: Row) => void; onDbl?: (r: Row) => void; sel?: (r: Row) => boolean
   rowCls?: (r: Row) => string; maxH?: number
 }) {
+  const vt = viTri(cols)
+  const lop = (c: Col, i: number) => [c.num ? 'num' : c.c ? 'c' : '', vt[i].cls].join(' ')
   return (
     <div className="tbl-wrap" style={maxH ? { maxHeight: maxH } : undefined}>
       <table className="tbl">
         <thead>
-          <tr>{cols.map(c => <th key={c.k} className={c.num ? 'num' : c.c ? 'c' : ''} style={c.w ? { width: c.w } : undefined}>{c.t}</th>)}</tr>
+          <tr>{cols.map((c, i) => <th key={c.k} className={lop(c, i)} style={{ ...(c.w ? { width: c.w } : {}), ...(c.dinh && c.w ? { minWidth: c.w } : {}), ...vt[i].style }}>{c.hd ?? c.t}</th>)}</tr>
         </thead>
         <tbody>
           {rows.map((r, i) => (
-            <tr key={r.id ?? i} className={[onRow ? 'click' : '', sel?.(r) ? 'sel' : '', rowCls?.(r) ?? ''].join(' ')} onClick={onRow ? () => onRow(r) : undefined}>
-              {cols.map(c => <td key={c.k} className={[c.num ? 'num' : c.c ? 'c' : '', c.cls ?? ''].join(' ')}>{cell(c, r)}</td>)}
+            <tr key={r.id ?? i} className={[onRow ? 'click' : '', sel?.(r) ? 'sel' : '', rowCls?.(r) ?? ''].join(' ')}
+              onClick={onRow ? () => onRow(r) : undefined} onDoubleClick={onDbl ? () => onDbl(r) : undefined}>
+              {cols.map((c, j) => <td key={c.k} className={[lop(c, j), c.cls ?? ''].join(' ')} style={vt[j].style}>{cell(c, r)}</td>)}
             </tr>
           ))}
-          {sum && <tr className="sum">{cols.map(c => <td key={c.k} className={c.num ? 'num' : ''}>{c.k in sum ? cell(c, sum) : null}</td>)}</tr>}
+          {sum && <tr className="sum">{cols.map((c, j) => <td key={c.k} className={lop(c, j)} style={vt[j].style}>{c.k in sum ? cell(c, sum) : null}</td>)}</tr>}
         </tbody>
       </table>
     </div>

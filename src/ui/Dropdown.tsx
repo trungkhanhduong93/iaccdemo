@@ -129,9 +129,9 @@ export const MenuHead = ({ children, right }: { children: ReactNode; right?: Rea
 export const MenuSep = () => <div className="ms" />
 
 /** Thay cho thẻ select: giữ cách viết <option>, value, defaultValue, onChange(e.target.value) */
-export function Select({ value, defaultValue, onChange, children, className = '', style, 'aria-label': ariaLabel }: {
+export function Select({ value, defaultValue, onChange, children, className = '', style, disabled, 'aria-label': ariaLabel }: {
   value?: string; defaultValue?: string; onChange?: (e: { target: { value: string } }) => void
-  children: ReactNode; className?: string; style?: CSSProperties; 'aria-label'?: string
+  children: ReactNode; className?: string; style?: CSSProperties; disabled?: boolean; 'aria-label'?: string
 }) {
   const opts = docOption(children)
   const [trong, setTrong] = useState(defaultValue ?? opts[0]?.v ?? '')
@@ -148,7 +148,7 @@ export function Select({ value, defaultValue, onChange, children, className = ''
   }
   return (
     <>
-      <button ref={btn} type="button" className={`sel ${className}${open ? ' open' : ''}`} style={style} aria-label={ariaLabel}
+      <button ref={btn} type="button" className={`sel ${className}${open ? ' open' : ''}`} style={style} aria-label={ariaLabel} disabled={disabled}
         aria-haspopup="listbox" aria-expanded={open} onClick={() => setOpen(o => !o)}
         onKeyDown={e => { if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); setOpen(true) } }}>
         <span className="sel-v">{cur?.t}</span><Icon n="chevd" className="ic sm sel-c" />

@@ -20,7 +20,7 @@ src/
     Screen.tsx             mở màn theo đường dẫn, trang Nâng cấp khi màn ngoài gói
   ui/                      Icon, format, Table, Page (tiêu đề, thẻ, nhãn gói), Charts, FormToanMan (khung form toàn màn hình),
                            Dropdown (menu thả xuống, MenuItem, ô chọn Select thay thẻ select), Logo
-    generic/               6 màn chung: CatalogScreen, VoucherScreen (danh sách + form toàn màn hình + hạch toán), ReportScreen, ToolScreen,
+    generic/               6 màn chung: CatalogScreen, VoucherScreen (danh sách có cột đứng yên, khung chi tiết), ChungTuForm (form toàn màn hình AMIS), BangSua (bảng dòng gõ trực tiếp), ReportScreen, ToolScreen,
                            QuyTrinhScreen (sơ đồ, khung Báo cáo, hàng dưới), BaoCaoScreen (tab Báo cáo)
   data/mock.ts             dữ liệu giả dùng chung; DAILY là doanh thu từng ngày từng chi nhánh 01/07–07/10/2026
   modules/

@@ -11,8 +11,9 @@ export function useDong(ve: string) {
   return () => (loc.key !== 'default' ? nav(-1) : nav(ve))
 }
 
-export function FormToanMan({ icon, title, meta, loai, tong, onClose, foot, children }: {
-  icon: string; title: ReactNode; meta?: ReactNode; loai?: ReactNode; tong?: number
+/** trai: nút đứng trước tiêu đề (vd lịch sử); phai: nút đứng trước tổng tiền (vd phím tắt) */
+export function FormToanMan({ icon, title, meta, loai, tong, trai, phai, onClose, foot, children }: {
+  icon: string; title: ReactNode; meta?: ReactNode; loai?: ReactNode; tong?: number; trai?: ReactNode; phai?: ReactNode
   onClose: () => void; foot: ReactNode; children: ReactNode
 }) {
   useEffect(() => {
@@ -25,12 +26,14 @@ export function FormToanMan({ icon, title, meta, loai, tong, onClose, foot, chil
     <div className="fsf" role="dialog" aria-modal="true">
       <header className="fsf-h">
         <span className="fsf-ic"><Icon n={icon} /></span>
+        {trai}
         <div style={{ minWidth: 0 }}>
           <h1>{title}</h1>
           {meta && <div className="ph-meta">{meta}</div>}
         </div>
         {loai}
         <span className="grow" />
+        {phai}
         {tong !== undefined && <div className="fsf-tong"><small>Tổng tiền</small><b>{moneyD(tong)}</b></div>}
         <button className="icon-btn" title="Đóng (Esc)" onClick={onClose}><Icon n="x" /></button>
       </header>

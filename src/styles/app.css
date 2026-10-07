@@ -188,6 +188,25 @@ table { border-collapse: collapse; }
 .tbl th.num, .tbl td.num { text-align: right; }
 .tbl th.c, .tbl td.c { text-align: center; }
 .tbl .chk { width: 34px; }
+.tbl th.dinh, .tbl td.dinh { position: sticky; background: #fff; z-index: 2; }
+.tbl thead th.dinh { z-index: 3; background: #f8fafc; }
+.tbl th.dinh-cuoi, .tbl td.dinh-cuoi { border-right: 1px solid var(--line); box-shadow: 2px 0 4px rgba(0, 0, 0, .03); }
+.tbl th.dinh-phai, .tbl td.dinh-phai { position: sticky; right: 0; background: #fff; z-index: 2; border-left: 1px solid var(--line); box-shadow: -2px 0 4px rgba(0, 0, 0, .03); }
+.tbl thead th.dinh-phai { background: #f8fafc; }
+.tbl tbody tr:hover td.dinh { background: #f9fbff; }
+.tbl tr.sel td.dinh { background: var(--tint) !important; }
+.tbl tr.chua-ghi td:first-child { box-shadow: inset 3px 0 0 var(--amber); }
+
+/* Khung chi tiết bên dưới danh sách chứng từ */
+.ct-panel { margin-top: 14px; border: 1px solid var(--line); border-radius: 10px; background: #fff; box-shadow: var(--sh); overflow: hidden; }
+.ct-panel-h { display: flex; align-items: center; gap: 12px; padding: 10px 16px; background: var(--subtle, #f8fafc); border-bottom: 1px solid var(--line); font-size: 13px; cursor: pointer; user-select: none; }
+.ct-panel-h b { color: var(--ink); font-weight: 700; }
+.ct-panel-b { padding: 14px 16px; }
+
+/* Thanh thao tác hàng loạt */
+.batch-bar { display: flex; align-items: center; gap: 12px; padding: 8px 14px; background: var(--tint); border: 1px solid var(--blue); border-radius: 8px; margin-bottom: 12px; font-size: 13px; color: var(--navy); }
+.bang-sua select.inp { height: 30px; padding: 2px 6px; font-size: 12.5px; border-radius: 6px; }
+.bang-sua input.inp { height: 30px; padding: 2px 8px; font-size: 12.5px; border-radius: 6px; }
 .tbl-foot { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; font-size: 12px; color: var(--muted); }
 .stt { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; white-space: nowrap; }
 .stt::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }

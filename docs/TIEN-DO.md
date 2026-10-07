@@ -25,13 +25,13 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | T12 | Giao diện cho màn hẹp hơn 1280px | | Chờ | Khung có min-width 1180px. Ở 1280px ô tìm kiếm trên thanh trên co còn khoảng 160px |
 | T13 | Tách gói JS khi build | | Chờ | `npm run build` cảnh báo gói JS hơn 500 kB |
 | T14 | Thay biểu tượng chìa khoá ở nút "Đăng nhập bằng tài khoản iPOS" bằng logo iPOS | | Chờ | Chưa có file logo iPOS |
-| T15 | Làm lại form chứng từ và màn danh sách chứng từ theo bố cục AMIS, giữ ngôn ngữ thiết kế (QD12) | Trum | Đang làm | Trum duyệt phương án 07/10, làm qua Claude |
 
 ## Đã xong
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
 | T00 | Bộ tài liệu làm việc nhóm, robot kiểm và deploy | Trum | 07/10/2026 | `2026-10-07-trum-khung-web.md` |
+| T15 | Làm lại form chứng từ và màn danh sách chứng từ theo bố cục AMIS (QD14) | Trum | 07/10/2026 | `2026-10-07-trum-form-chung-tu-amis.md` |
 | T16 | Chuẩn hoá BAT-DAU.md cho người mới, đồng bộ skill Clau - Anti (QD13) | Trum | 07/10/2026 | `2026-10-07-trum-chuan-hoa-bat-dau-skills.md` |
 
 Phần làm trước khi có bảng này (khung AMIS, 148 màn, menu thả xuống, đưa lên GitHub và Cloudflare) ghi ở `CHANGELOG.md` và `docs/nhat-ky/2026-10-07-trum-khung-web.md`.

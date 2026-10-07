@@ -80,6 +80,10 @@ export const NHAN_VIEN = [
   { ma: 'NV003', ten: 'Võ Thanh Tùng', bp: 'Kho' }, { ma: 'NV004', ten: 'Phạm Ngọc Lan', bp: 'Quản lý cửa hàng' },
   { ma: 'NV005', ten: 'Đặng Văn Hiếu', bp: 'Bếp' }, { ma: 'NV006', ten: 'Hồ Thị Mai', bp: 'Thu ngân' },
 ]
+export const TK_NGAN_HANG = [
+  { so: '0071 0012 34567', nh: 'Vietcombank, chi nhánh Sài Gòn' },
+  { so: '1903 4455 6677 88', nh: 'Techcombank, chi nhánh Thảo Điền' },
+]
 
 // ── Doanh thu từng ngày, từng chi nhánh (đồng bộ từ FABi, gom theo ngày) ──
 export interface Ngay {

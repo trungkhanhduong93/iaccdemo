@@ -78,10 +78,15 @@ def main():
             for h in links:
                 pg.goto(URL + h)
                 kiem(f'[{goi}] {h}')
-                # mở dòng đầu của bảng chứng từ để kiểm form chi tiết toàn màn hình
-                if goi == 'M' and pg.locator('.main table.tbl tr.click').count() and '/app/' in h:
+                # mở dòng đầu của bảng chứng từ: kiểm khung chi tiết .ct-panel rồi bấm Xem mở form toàn màn hình
+                if goi == 'M' and pg.locator('.ct-xem').count() and '/app/' in h:
                     pg.locator('.main table.tbl tr.click').first.click()
-                    kiem(f'[{goi}] {h} → chi tiết')
+                    if not pg.locator('.ct-panel').count():
+                        loi.append(f'[{goi}] {h}: bấm dòng không hiện khung chi tiết .ct-panel')
+                    pg.locator('.ct-xem').first.click()
+                    kiem(f'[{goi}] {h} → xem form')
+                    pg.keyboard.press('Escape')
+                    pg.wait_for_timeout(60)
             for h in nut:
                 pg.goto(URL + h)
                 kiem(f'[{goi}] ô {h}')
@@ -133,7 +138,8 @@ def main():
                    ('16-quy-trinh-tien', '/app/tien/quy-trinh', 'M'), ('17-quy-trinh-kho', '/app/kho/quy-trinh', 'M'),
                    ('18-phieu-thu-toan-man', '/app/tien/2-1-1/moi?loai=thu', 'M'), ('19-bao-cao-tong-hop', '/app/tong-hop/bao-cao', 'M'),
                    ('20-quy-trinh-gia-thanh', '/app/gia-thanh/quy-trinh', 'A'), ('21-quy-trinh-tscd-medium', '/app/tscd/quy-trinh', 'M'),
-                   ('22-quy-trinh-ban-hang-free', '/app/ban-hang/quy-trinh', 'F'), ('23-sidebar-thu-gon', '/app/mua-hang/quy-trinh', 'M')]
+                   ('22-quy-trinh-ban-hang-free', '/app/ban-hang/quy-trinh', 'F'), ('23-sidebar-thu-gon', '/app/mua-hang/quy-trinh', 'M'),
+                   ('24-danh-sach-mua-hang', '/app/mua-hang/4-1-1', 'M'), ('25-form-mua-hang', '/app/mua-hang/4-1-1/moi', 'M')]
             for ten, path, goi in anh:
                 vao(path, goi, thu_gon=ten == '23-sidebar-thu-gon')
                 pg.wait_for_timeout(250)
