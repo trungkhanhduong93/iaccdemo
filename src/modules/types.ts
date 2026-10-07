@@ -43,6 +43,7 @@ export interface LoaiCT {
   noCo?: [string, string, string][]
   soTT58?: string
   thue?: number
+  icon?: string
 }
 
 /** Sổ, báo cáo dạng bảng */

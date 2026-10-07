@@ -12,6 +12,7 @@ import { FormToanMan, useDong } from '../../ui/FormToanMan'
 import { VoucherDetail } from '../../ui/generic/VoucherScreen'
 import { St, Table } from '../../ui/Table'
 import { dmy, moneyD } from '../../ui/format'
+import { Select } from '../../ui/Dropdown'
 
 /** Bán hàng ngoài POS: tiệc mang về, khách công ty đặt trước. Lập tay, không qua FABi */
 const NGOAI_POS: VoucherCfg = {
@@ -67,8 +68,8 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
       <Note icon="pos">Đơn POS trên FABi tự gom thành một chứng từ cho mỗi chi nhánh mỗi ngày. Đơn huỷ, trả hàng sau khi chốt ca được điều chỉnh vào chứng từ cùng ngày, không tạo chứng từ trùng.</Note>
       <section className="card" style={{ marginTop: 14 }}>
         <div className="filters">
-          <label className="fld"><Icon n="calendar" className="ic sm" />Kỳ<select value={ky} onChange={e => setKy(e.target.value)}><option value="9">Tháng 9/2026</option><option value="10">Tháng 10/2026</option></select></label>
-          <label className="fld">Chi nhánh<select value={cn} onChange={e => setCn(e.target.value)}><option value="all">Tất cả</option>{CHI_NHANH.map(c => <option key={c.id} value={c.id}>{c.ten}</option>)}</select></label>
+          <label className="fld"><Icon n="calendar" className="ic sm" />Kỳ<Select value={ky} onChange={e => setKy(e.target.value)}><option value="9">Tháng 9/2026</option><option value="10">Tháng 10/2026</option></Select></label>
+          <label className="fld">Chi nhánh<Select value={cn} onChange={e => setCn(e.target.value)}><option value="all">Tất cả</option>{CHI_NHANH.map(c => <option key={c.id} value={c.id}>{c.ten}</option>)}</Select></label>
           <span className="grow" />
           {ghi && <button className="btn sm" onClick={() => toast('Đã ghi sổ 3 chứng từ')}>Ghi sổ</button>}
         </div>

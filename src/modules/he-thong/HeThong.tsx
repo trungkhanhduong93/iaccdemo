@@ -9,6 +9,7 @@ import { CHI_NHANH, NGUOI_DUNG } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
 import { Card, Note, PageHead, Pk } from '../../ui/Page'
 import { St, Table } from '../../ui/Table'
+import { Select } from '../../ui/Dropdown'
 
 export function NguoiDung({ sc }: ScreenProps) {
   const { toast } = useSession()
@@ -130,7 +131,7 @@ export function CauHinh({ sc }: ScreenProps) {
           <div className="form-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
             <div className="f"><label>Chế độ</label><input className="inp" readOnly value={GOI[s.goi].cheDo} /></div>
             <div className="f"><label>Năm tài chính</label><input className="inp" defaultValue="01/01 – 31/12" /></div>
-            <div className="f"><label>Phương pháp tính giá xuất kho</label><select className="inp"><option>Bình quân gia quyền cuối kỳ</option><option>Bình quân tức thời</option><option>Nhập trước xuất trước</option></select></div>
+            <div className="f"><label>Phương pháp tính giá xuất kho</label><Select className="inp"><option>Bình quân gia quyền cuối kỳ</option><option>Bình quân tức thời</option><option>Nhập trước xuất trước</option></Select></div>
             <div className="f"><label>Phương pháp tính thuế GTGT</label><input className="inp" readOnly value={s.goi === 'S' ? 'Trực tiếp trên doanh thu' : s.goi === 'F' ? 'Không áp dụng' : 'Khấu trừ'} /></div>
           </div>
         </Card>

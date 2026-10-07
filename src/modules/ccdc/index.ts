@@ -20,9 +20,9 @@ const ccdc: ModuleDef = {
     '8.1.2': { voucher: { prefix: 'DCCC', doiTuong: 'cn', nhan: 'Chi nhánh nhận', them: 'Thêm chứng từ CCDC', dong: 'tien', tien: [2_000_000, 40_000_000],
       dienGiai: ['Điều chuyển bàn ghế sang Thảo Điền', 'Ghi giảm nồi hỏng', 'Ghi tăng máy POS cầm tay'], noCo: [['242', '153', 'Ghi tăng CCDC đang dùng']],
       loai: [
-        { k: 'tang', ten: 'Ghi tăng CCDC', prefix: 'GTCC', dienGiai: ['Ghi tăng máy POS cầm tay', 'Ghi tăng bộ nồi inox 50 lít'] },
-        { k: 'dc', ten: 'Điều chuyển CCDC', prefix: 'DCCC', dienGiai: ['Điều chuyển bàn ghế sang Thảo Điền'], noCo: [['242', '242', 'Điều chuyển giữa chi nhánh']] },
-        { k: 'giam', ten: 'Ghi giảm CCDC', prefix: 'GGCC', dienGiai: ['Ghi giảm nồi hỏng', 'Ghi giảm ly thuỷ tinh vỡ'], noCo: [['6421', '242', 'Phân bổ nốt giá trị còn lại']] },
+        { k: 'tang', ten: 'Ghi tăng CCDC', icon: 'tool', prefix: 'GTCC', dienGiai: ['Ghi tăng máy POS cầm tay', 'Ghi tăng bộ nồi inox 50 lít'] },
+        { k: 'dc', ten: 'Điều chuyển CCDC', icon: 'swap', prefix: 'DCCC', dienGiai: ['Điều chuyển bàn ghế sang Thảo Điền'], noCo: [['242', '242', 'Điều chuyển giữa chi nhánh']] },
+        { k: 'giam', ten: 'Ghi giảm CCDC', icon: 'trash', prefix: 'GGCC', dienGiai: ['Ghi giảm nồi hỏng', 'Ghi giảm ly thuỷ tinh vỡ'], noCo: [['6421', '242', 'Phân bổ nốt giá trị còn lại']] },
       ] } },
     '8.1.3': { voucher: { prefix: 'KKCC', doiTuong: 'cn', nhan: 'Chi nhánh', them: 'Thêm phiếu kiểm kê', dong: 'tien', tien: [0, 1_000_000],
       dienGiai: ['Kiểm kê CCDC cuối quý 3', 'Kiểm kê CCDC đột xuất'], noCo: [['1381', '242', 'CCDC thiếu chờ xử lý']] } },

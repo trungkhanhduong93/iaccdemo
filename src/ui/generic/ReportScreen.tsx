@@ -10,6 +10,7 @@ import { PageHead } from '../Page'
 import { Table } from '../Table'
 import { between, k, money, pick, rng } from '../format'
 import { chungTu, soChiTiet } from './gen'
+import { Select } from '../Dropdown'
 
 export const KY_CHON: [string, string][] = [['9', 'Tháng 9/2026'], ['10', 'Tháng 10/2026 (đến 07/10)'], ['8', 'Tháng 8/2026']]
 
@@ -17,9 +18,9 @@ export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: 
   return (
     <div className="filters" style={{ borderBottom: '1px solid var(--line)' }}>
       <label className="fld"><Icon n="calendar" className="ic sm" />Kỳ
-        <select value={ky} onChange={e => setKy(e.target.value)}>{KY_CHON.map(([v, l]) => <option key={v} value={v}>{l}</option>)}</select>
+        <Select value={ky} onChange={e => setKy(e.target.value)}>{KY_CHON.map(([v, l]) => <option key={v} value={v}>{l}</option>)}</Select>
       </label>
-      <label className="fld">Chi nhánh<select><option>Tất cả chi nhánh</option>{CHI_NHANH.map(c => <option key={c.id}>{c.ten}</option>)}</select></label>
+      <label className="fld">Chi nhánh<Select><option>Tất cả chi nhánh</option>{CHI_NHANH.map(c => <option key={c.id}>{c.ten}</option>)}</Select></label>
       {children}
       <span className="grow" />
       <button className="btn sm"><Icon n="printer" className="ic sm" />In</button>

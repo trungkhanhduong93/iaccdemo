@@ -61,7 +61,7 @@ def main():
             for r in hrefs('.sb-nav a[href*="/app/"]'):
                 pg.goto(URL + r)
                 pg.wait_for_timeout(80)
-                tabs = hrefs('.mtabs-in a')                    # gồm cả tab dồn trong "Khác"
+                tabs = hrefs('.mtabs-in a, .pop-khac a')       # gồm cả tab dồn trong "Khác" (menu ẩn vẫn có trong DOM)
                 links += tabs
                 if pg.locator('.qt-n').count():
                     nut += hrefs('.qt-n')                       # ô trên sơ đồ Quy trình
@@ -106,7 +106,9 @@ def main():
                 if pg.locator('.lockpage').count():
                     continue
                 for ky in ['8', '9', '10']:
-                    pg.select_option('.report .filters select >> nth=0', ky)
+                    # ô chọn kỳ là ô chọn tự vẽ (ui/Dropdown.tsx): bấm mở rồi bấm dòng của kỳ
+                    pg.locator('.report .filters .sel').first.click()
+                    pg.locator('.pop-sel [role=option]', has_text=f'Tháng {ky}/2026').first.click()
                     pg.wait_for_timeout(60)
                     if pg.locator('.report .chip.err').count():
                         loi.append(f'[{goi}] {path} kỳ {ky}: báo cáo lệch')

@@ -9,6 +9,7 @@ import { Icon } from '../../ui/Icon'
 import { Card, Kpi, Note, PageHead } from '../../ui/Page'
 import { St, Table } from '../../ui/Table'
 import { between, k, pad, pick, rng } from '../../ui/format'
+import { Select } from '../../ui/Dropdown'
 
 export function DongBo({ sc, mod }: ScreenProps) {
   const { toast } = useSession()
@@ -33,10 +34,10 @@ export function DongBo({ sc, mod }: ScreenProps) {
           <div className="stack" style={{ gap: 12 }}>
             <div className="seg"><button className={tu ? 'on' : ''} onClick={() => setTu(true)}>Tự động theo lịch</button><button className={!tu ? 'on' : ''} onClick={() => setTu(false)}>Bấm tải khi cần</button></div>
             {tu ? <>
-              <div className="f"><label>Đơn bán FABi</label><select className="inp"><option>Mỗi 15 phút</option><option>Theo ca</option><option>Cuối ngày 23:30</option></select></div>
-              <div className="f"><label>Phiếu kho iPOS Inventory</label><select className="inp"><option>Mỗi giờ</option><option>Cuối ngày</option></select></div>
+              <div className="f"><label>Đơn bán FABi</label><Select className="inp"><option>Mỗi 15 phút</option><option>Theo ca</option><option>Cuối ngày 23:30</option></Select></div>
+              <div className="f"><label>Phiếu kho iPOS Inventory</label><Select className="inp"><option>Mỗi giờ</option><option>Cuối ngày</option></Select></div>
             </> : <div className="f"><label>Khoảng ngày</label><input className="inp" defaultValue="01/10/2026 – 07/10/2026" /></div>}
-            <div className="f"><label>Gom chứng từ bán hàng</label><select className="inp"><option>Mỗi chi nhánh một chứng từ mỗi ngày</option><option>Mỗi ca một chứng từ</option></select></div>
+            <div className="f"><label>Gom chứng từ bán hàng</label><Select className="inp"><option>Mỗi chi nhánh một chứng từ mỗi ngày</option><option>Mỗi ca một chứng từ</option></Select></div>
             <button className="btn" style={{ alignSelf: 'flex-start' }} onClick={() => toast('Đã lưu cài đặt đồng bộ')}>Lưu cài đặt</button>
           </div>
         </Card>

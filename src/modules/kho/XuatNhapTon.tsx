@@ -8,6 +8,7 @@ import { PageHead } from '../../ui/Page'
 import { ReportPaper, ReportToolbar } from '../../ui/generic/ReportScreen'
 import { money } from '../../ui/format'
 import { xnt } from './data'
+import { Select } from '../../ui/Dropdown'
 
 export function XuatNhapTon({ sc, mod }: ScreenProps) {
   const { s } = useSession()
@@ -21,7 +22,7 @@ export function XuatNhapTon({ sc, mod }: ScreenProps) {
       <PageHead crumb={[mod.ten, sc.nhom ?? '']} title={tenMan(sc)} code={sc.code} meta={<span className="chip">IACC Cloud tự tính từ phiếu kho đồng bộ</span>} />
       <section className="report">
         <ReportToolbar ky={ky} setKy={setKy}>
-          <label className="fld">Kho<select value={kho} onChange={e => setKho(e.target.value)}>{KHO.map(k => <option key={k}>{k}</option>)}</select></label>
+          <label className="fld">Kho<Select value={kho} onChange={e => setKho(e.target.value)}>{KHO.map(k => <option key={k}>{k}</option>)}</Select></label>
         </ReportToolbar>
         <ReportPaper title="Báo cáo xuất nhập tồn" sub={`${kho} · Tháng ${ky}/2026`} goi={s.goi}>
           <table className="rpt">

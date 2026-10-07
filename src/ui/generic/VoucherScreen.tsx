@@ -9,6 +9,7 @@ import { CHI_NHANH, KHO } from '../../data/mock'
 import { Icon } from '../Icon'
 import { Card, Note, PageHead } from '../Page'
 import { FormToanMan, useDong } from '../FormToanMan'
+import { Dropdown, MenuHead, MenuItem, Select } from '../Dropdown'
 import { St, Table } from '../Table'
 import { fold, money, moneyD } from '../format'
 import { NGUON, TT_CT, chungTu, dongCua, tongDong, type Dong } from './gen'
@@ -40,6 +41,7 @@ function gopLoai(cfg: VoucherCfg, seed: string): Row[] {
   return cfg.loai!.flatMap(v => chungTu(theoLoai(cfg, v.k), `${seed}-${v.k}`).slice(0, 9)
     .map((r): Row => ({ ...r, id: `${v.k}-${r.id}`, loai: v.k, tenLoai: v.ten })))
     .sort((a, b) => ngay(b).localeCompare(ngay(a)) || String(b.so).localeCompare(String(a.so)))
+    .map((r, i) => ({ ...r, tt: i < 3 ? 'nhap' : i === 5 ? 'loi' : 'ghi' }))   // trạng thái theo thứ tự sau khi gộp, như màn một loại
 }
 
 export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & { cfg: VoucherCfg; rows: Row[]; extra?: React.ReactNode; title?: string }) {
@@ -80,14 +82,14 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
       <section className="card">
         <div className="filters">
           <label className="fld"><Icon n="calendar" className="ic sm" />Kỳ
-            <select value={ky} onChange={e => setKy(e.target.value)}><option value="all">Tháng 9 và 10/2026</option><option value="10">Tháng 10/2026</option><option value="9">Tháng 9/2026</option></select>
+            <Select value={ky} onChange={e => setKy(e.target.value)}><option value="all">Tháng 9 và 10/2026</option><option value="10">Tháng 10/2026</option><option value="9">Tháng 9/2026</option></Select>
           </label>
-          <label className="fld">Chi nhánh<select><option>Tất cả</option>{CHI_NHANH.map(c => <option key={c.id}>{c.ten}</option>)}</select></label>
+          <label className="fld">Chi nhánh<Select><option>Tất cả</option>{CHI_NHANH.map(c => <option key={c.id}>{c.ten}</option>)}</Select></label>
           <label className="fld">Trạng thái
-            <select value={tt} onChange={e => setTt(e.target.value)}>
+            <Select value={tt} onChange={e => setTt(e.target.value)}>
               <option value="all">Tất cả</option><option value="nhap">{ghi ? 'Chưa ghi sổ' : 'Nháp'}</option>
               <option value="ghi">{ghi ? 'Đã ghi sổ' : 'Đã lưu'}</option>{ghi && <option value="loi">Lỗi hạch toán</option>}
-            </select>
+            </Select>
           </label>
           <label className="fld"><Icon n="search" className="ic sm" /><input value={q} onChange={e => setQ(e.target.value)} placeholder="Số chứng từ, đối tượng, diễn giải" /></label>
           <span className="grow" />
@@ -131,9 +133,9 @@ export function VoucherDetail({ sc, mod, cfg: cfgMan, row, children }: ScreenPro
         : <><span className="chip info">Chưa lưu</span><span className="chip">Số {so}</span><span className="chip">{tenMan(sc)}</span></>}
       loai={moi && cfgMan.loai && (
         <label className="fsf-loai">Loại phiếu
-          <select value={loai!.k} onChange={e => setSp({ loai: e.target.value }, { replace: true })}>
+          <Select value={loai!.k} onChange={e => setSp({ loai: e.target.value }, { replace: true })}>
             {cfgMan.loai.map(x => <option key={x.k} value={x.k}>{x.ten}</option>)}
-          </select>
+          </Select>
         </label>
       )}
       foot={<>
@@ -155,8 +157,8 @@ export function VoucherDetail({ sc, mod, cfg: cfgMan, row, children }: ScreenPro
               {cfg.doiTuong !== 'none' ? (
                 <div className="f c2"><label>{cfg.nhan ?? 'Đối tượng'} <em>*</em></label><input className="inp" defaultValue={row?.doiTuong ?? ''} placeholder="Gõ mã hoặc tên để tìm" /></div>
               ) : <div className="f c2"><label>Người lập</label><input className="inp" readOnly defaultValue={s.ten} /></div>}
-              <div className="f"><label>Chi nhánh</label><select className="inp" defaultValue={row?.cn}>{CHI_NHANH.map(c => <option key={c.id}>{c.ten}</option>)}</select></div>
-              {(cfg.dong === 'hang' || cfg.dong === 'nvl') && <div className="f"><label>Kho</label><select className="inp">{KHO.map(x => <option key={x}>{x}</option>)}</select></div>}
+              <div className="f"><label>Chi nhánh</label><Select className="inp" defaultValue={row?.cn}>{CHI_NHANH.map(c => <option key={c.id}>{c.ten}</option>)}</Select></div>
+              {(cfg.dong === 'hang' || cfg.dong === 'nvl') && <div className="f"><label>Kho</label><Select className="inp">{KHO.map(x => <option key={x}>{x}</option>)}</Select></div>}
               <div className={`f ${cfg.dong === 'hang' || cfg.dong === 'nvl' ? 'c2' : 'c2'}`}><label>Diễn giải</label><input className="inp" defaultValue={row?.dienGiai ?? cfg.dienGiai[0]} /></div>
             </div>
           </Card>
@@ -179,7 +181,7 @@ export function VoucherDetail({ sc, mod, cfg: cfgMan, row, children }: ScreenPro
         <div className="stack">
           <Card title="Thanh toán">
             <div className="stack" style={{ gap: 10 }}>
-              <div className="f"><label>Hình thức</label><select className="inp"><option>Tiền mặt</option><option>Chuyển khoản</option><option>Ghi công nợ</option></select></div>
+              <div className="f"><label>Hình thức</label><Select className="inp"><option>Tiền mặt</option><option>Chuyển khoản</option><option>Ghi công nợ</option></Select></div>
               <div className="f"><label>Hạn thanh toán</label><input className="inp" defaultValue="06/11/2026" /></div>
             </div>
           </Card>
@@ -203,15 +205,14 @@ export function VoucherDetail({ sc, mod, cfg: cfgMan, row, children }: ScreenPro
 
 /** Nút thêm của màn nhiều loại phiếu: bấm thẳng ra loại đầu, mũi tên mở danh sách loại */
 function NutThemLoai({ cfg, path }: { cfg: VoucherCfg; path: string }) {
-  const [mo, setMo] = useState(false)
   const ds = cfg.loai!
   return (
-    <div className="dd split" onMouseLeave={() => setMo(false)}>
+    <div className="split">
       <Link className="btn pri" to={`${path}/moi?loai=${ds[0].k}`}><Icon n="plus" className="ic sm" />{cfg.them ?? `Thêm ${ds[0].ten.toLowerCase()}`}</Link>
-      <button className="btn pri" onClick={() => setMo(!mo)} aria-expanded={mo} title="Chọn loại phiếu"><Icon n="chevd" className="ic sm" /></button>
-      <div className="dd-pop" hidden={!mo} style={{ right: 0, top: 'calc(100% + 4px)' }}>
-        {ds.map(v => <Link key={v.k} to={`${path}/moi?loai=${v.k}`}><Icon n="plus" className="ic sm" />{v.ten}</Link>)}
-      </div>
+      <Dropdown btnClass="btn pri" align="end" width={280} title="Chọn loại phiếu" label={<Icon n="chevd" className="ic sm" />}>
+        <MenuHead>Chọn loại phiếu</MenuHead>
+        {ds.map(v => <MenuItem key={v.k} to={`${path}/moi?loai=${v.k}`} icon={v.icon ?? 'doc'} desc={`Số ${v.prefix}…`}>{v.ten}</MenuItem>)}
+      </Dropdown>
     </div>
   )
 }

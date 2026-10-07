@@ -10,6 +10,7 @@ import { Card, Kpi, PageHead, Pk } from '../../ui/Page'
 import { Bars, Donut, HBars, Spark } from '../../ui/Charts'
 import { dm, money, pct, short } from '../../ui/format'
 import { du, soCai } from '../tong-hop/so-cai'
+import { Select } from '../../ui/Dropdown'
 
 /** Cộng dồn từ ngày a tới ngày b (tính cả hai đầu) */
 function cong(a: Date, b: Date) {
@@ -47,7 +48,7 @@ export function TongQuan({ sc }: ScreenProps) {
           <button className={ky === '10' ? 'on' : ''} onClick={() => setKy('10')}>Tháng này</button>
           <button className={ky === '9' ? 'on' : ''} onClick={() => setKy('9')}>Tháng 9</button>
         </div>
-        <select className="sel-mini" style={{ height: 34 }}><option>Tất cả chi nhánh</option>{CHI_NHANH.map(c => <option key={c.id}>{c.ten}</option>)}</select>
+        <Select className="sel-mini" style={{ height: 34 }}><option>Tất cả chi nhánh</option>{CHI_NHANH.map(c => <option key={c.id}>{c.ten}</option>)}</Select>
       </PageHead>
 
       <div className="grid g4" style={{ marginBottom: 14 }}>

@@ -7,6 +7,7 @@ import { Icon } from '../Icon'
 import { PageHead } from '../Page'
 import { St, Table } from '../Table'
 import { fold } from '../format'
+import { Select } from '../Dropdown'
 
 export function CatalogScreen({ sc, mod }: ScreenProps) {
   const { s, toast } = useSession()
@@ -33,7 +34,7 @@ export function CatalogScreen({ sc, mod }: ScreenProps) {
         <div className="filters">
           <label className="fld"><Icon n="search" className="ic sm" /><input value={q} onChange={e => setQ(e.target.value)} placeholder="Tìm theo mã, tên" /></label>
           {nhoms.length > 1 && (
-            <label className="fld">Nhóm<select value={nhom} onChange={e => setNhom(e.target.value)}><option value="">Tất cả</option>{nhoms.map(n => <option key={n}>{n}</option>)}</select></label>
+            <label className="fld">Nhóm<Select value={nhom} onChange={e => setNhom(e.target.value)}><option value="">Tất cả</option>{nhoms.map(n => <option key={n}>{n}</option>)}</Select></label>
           )}
           <span className="grow" />
           <span className="muted" style={{ fontSize: 12 }}>{rows.length}/{all.length} dòng</span>

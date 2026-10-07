@@ -8,6 +8,7 @@ import { useSession } from '../../app/session'
 import { GOI, minGoi, type Goi } from '../../app/plan'
 import { Icon } from '../Icon'
 import { Note, Pk } from '../Page'
+import { Dropdown, MenuHead, MenuItem } from '../Dropdown'
 
 const RH = 128        // chiều cao một hàng ô
 const TILE = 54       // cạnh ô biểu tượng
@@ -160,7 +161,6 @@ function BenPhai({ qt, modKey, goi }: { qt: QuyTrinhDef; modKey: string; goi: Go
 
 /** Hàng dưới: danh mục liên quan, menu Tiện ích, Tuỳ chọn */
 function HangDuoi({ qt, modKey, goi }: { qt: QuyTrinhDef; modKey: string; goi: Goi }) {
-  const [mo, setMo] = useState(false)
   const muc = (di: string) => {
     const d = dich(di, modKey)
     if (!d.sc) return null
@@ -182,16 +182,17 @@ function HangDuoi({ qt, modKey, goi }: { qt: QuyTrinhDef; modKey: string; goi: G
       })}
       <span className="grow" />
       {qt.tienIch?.length ? (
-        <div className="dd" onMouseLeave={() => setMo(false)}>
-          <button onClick={() => setMo(!mo)} aria-expanded={mo}><Icon n="grid" className="ic sm" />Tiện ích<Icon n="chevd" className="ic sm" /></button>
-          <div className="dd-pop" hidden={!mo} style={{ right: 0, bottom: 'calc(100% + 4px)' }}>
-            {qt.tienIch.map(di => {
-              const m = muc(di)
-              if (!m) return null
-              return <Link key={di} to={m.d.path} className={m.ok ? '' : 'lock'}><span className="grow">{tenMan(m.d.sc!)}</span>{!m.ok && m.ma && <Pk g={minGoi(m.ma)} o />}</Link>
-            })}
-          </div>
-        </div>
+        <Dropdown btnClass="qt-dd" align="end" width={330} label={<><Icon n="grid" className="ic sm" />Tiện ích<Icon n="chevd" className="ic sm" /></>}>
+          <MenuHead>Tiện ích liên quan</MenuHead>
+          {qt.tienIch.map(di => {
+            const m = muc(di)
+            if (!m) return null
+            return (
+              <MenuItem key={di} to={m.d.path} icon="grid" lock={!m.ok} desc={`Mã ${m.d.sc!.code}`}
+                right={!m.ok && m.ma ? <Pk g={minGoi(m.ma)} o /> : undefined}>{tenMan(m.d.sc!)}</MenuItem>
+            )
+          })}
+        </Dropdown>
       ) : null}
       <Link to="/app/he-thong/cau-hinh"><Icon n="cog" className="ic sm" />Tuỳ chọn</Link>
     </div>

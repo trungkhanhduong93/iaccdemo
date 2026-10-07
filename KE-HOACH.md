@@ -3,7 +3,7 @@
 Bản mẫu giao diện phần mềm kế toán web IACC Cloud. Dữ liệu giả, chưa nối backend.
 Agent nào làm tiếp (Claude, Gemini) đọc hết file này trước khi sửa code.
 
-Cập nhật lần cuối: 07/10/2026 chiều, Claude. Bố cục đã đổi sang kiểu AMIS (mục 1.8). Mục 5 ghi phần đã xong và phần còn thiếu.
+Cập nhật lần cuối: 07/10/2026 tối, Claude. Bố cục kiểu AMIS (mục 1.8), menu thả xuống làm lại (mục 1.9), đã đưa lên GitHub và Cloudflare (mục 2). Mục 5 ghi phần đã xong và phần còn thiếu.
 
 ## 1. Đã chốt với Trum ngày 07/10/2026
 
@@ -13,7 +13,7 @@ Cập nhật lần cuối: 07/10/2026 chiều, Claude. Bố cục đã đổi sa
 4. Dữ liệu giả: Công ty TNHH Ẩm thực Phố Mây, 3 chi nhánh, kỳ đang mở 10/2026, kỳ đang khoá sổ 9/2026, mặc định gói Medium (TT133).
 5. Mục ngoài gói vẫn hiện trên menu, kèm khoá và nhãn gói thấp nhất có nó. Bấm vào ra trang Nâng cấp gói.
 6. Chỉ làm giao diện web. Không làm bản điện thoại, không làm app.
-7. Chạy local. Chưa deploy.
+7. Ban đầu chỉ chạy local. Tối 07/10/2026 Trum yêu cầu đưa lên GitHub và Cloudflare Pages tại iaccdemo.pages.dev (xem mục 2).
 8. Bố cục theo AMIS (Trum duyệt chiều 07/10/2026, tham khảo actapp.misa.vn, chỉ xem, không sửa dữ liệu AMIS):
    - Sidebar tối chỉ chứa phân hệ lớn: 11 phân hệ Excel, Trang chủ, Hệ thống. Không tách Tiền mặt, Tiền gửi như AMIS. Nút "Thêm nhanh" đầu sidebar, nút thu gọn cuối sidebar.
    - Màn trong phân hệ trải thành tab ngang. Tab không đủ chỗ dồn vào "Khác". Tab đang mở luôn hiện.
@@ -23,6 +23,8 @@ Cập nhật lần cuối: 07/10/2026 chiều, Claude. Bố cục đã đổi sa
    - Form chứng từ mở toàn màn hình, che sidebar và thanh tab. Chân form: Huỷ, Lưu, Lưu và thêm. Đóng (Huỷ, X, Esc) thì về đúng màn trước.
    - Mục ngoài gói trên sidebar, tab, sơ đồ, khung Báo cáo vẫn hiện, làm mờ, có khoá và nhãn gói. Bấm vào ra trang Nâng cấp.
    - Chưa làm: ghim tính năng ("HAY DÙNG" của AMIS), tab Biểu đồ từng phân hệ, mục Báo cáo chung trên sidebar.
+9. Menu thả xuống (Trum yêu cầu tối 07/10/2026): mọi menu và ô chọn dùng chung `ui/Dropdown.tsx`, bấm để mở, bấm ra ngoài hoặc Esc để đóng. Không còn thẻ `<select>` gốc của trình duyệt. Biểu tượng Hệ thống đổi sang bánh răng.
+   - Lỗi Trum báo: mở "Xem thử" rồi không bấm được gói. Nguyên nhân là menu cũ đóng khi chuột rời nút, mà giữa nút và menu có khe 6px. Menu mới không đóng theo chuột rời nữa.
 
 ## 2. Chạy
 
@@ -36,9 +38,22 @@ python tools/kiem_tra.py           # cần npm run dev đang chạy và Chrome �
 python tools/kiem_tra.py --nhanh   # chỉ gói Medium, không chụp ảnh
 ```
 
-Đăng nhập bản mẫu: email bất kỳ, mật khẩu từ 6 ký tự. Ô "Xem thử" trên thanh trên đổi gói và vai trò.
+Đăng nhập bản mẫu: email bất kỳ, mật khẩu từ 6 ký tự. Nút "Xem thử" trên thanh trên đổi gói và vai trò.
 
-Bố cục cũ (thanh biểu tượng + menu dọc) còn nguyên ở `backup/src-truoc-amis-0710/`, script kiểm cũ ở `backup/kiem_tra-truoc-amis.py`. Muốn quay lại thì chép đè `src/` bằng bản này. Thư mục backup không vào build, không vào typecheck.
+Bản online: https://iaccdemo.pages.dev. Project Cloudflare Pages `iaccdemo`, kiểu tải thẳng bằng wrangler, không nối Git. Mã nguồn ở GitHub `trungkhanhduong93/iaccdemo` (riêng tư), nhánh `main`. Trang gắn `X-Robots-Tag: noindex` qua `public/_headers`, ai có link vẫn xem được.
+
+Đưa bản mới lên:
+
+```bash
+cd D:\IACC-CLOUD\Web
+npm run build
+git add -A && git commit -m "..." && git push
+npx --yes wrangler@4 pages deploy dist --project-name iaccdemo --branch main --commit-dirty=true
+```
+
+Không truyền `--force` khi deploy (chỉ dùng lúc tạo project). Wrangler hết phiên thì đăng nhập lại bằng `npx wrangler@4 login --device --scopes account:read user:read pages:write`.
+
+Bố cục cũ (thanh biểu tượng + menu dọc) còn nguyên ở `backup/src-truoc-amis-0710/`, script kiểm cũ ở `backup/kiem_tra-truoc-amis.py`. Muốn quay lại thì chép đè `src/` bằng bản này. Thư mục backup chỉ có trên máy Trum: không vào build, không vào typecheck, không đẩy lên GitHub (`.gitignore`). Lịch sử Git bắt đầu từ bố cục AMIS.
 
 Logo lấy từ `D:\icon present\logo (2).png`. Đổi logo thì chạy lại `python tools/xuat_logo.py`: script tô trắng vòng giữa (ảnh gốc để trong suốt, đặt trên nền navy sẽ thành vòng tối), ra `src/assets/iacc-logo.webp` và `public/favicon.png`. Component `ui/Logo.tsx` dùng ở thanh phân hệ, đăng nhập, chọn đơn vị, khởi tạo.
 
@@ -60,7 +75,8 @@ src/
     Topbar.tsx             đơn vị kế toán, kỳ, trạng thái đồng bộ, nút Xem thử gói và vai trò
     CommandPalette.tsx     tìm nhanh không dấu
     Screen.tsx             mở màn theo đường dẫn, trang Nâng cấp khi màn ngoài gói
-  ui/                      Icon, format, Table, Page (tiêu đề, thẻ, nhãn gói), Charts, FormToanMan (khung form toàn màn hình)
+  ui/                      Icon, format, Table, Page (tiêu đề, thẻ, nhãn gói), Charts, FormToanMan (khung form toàn màn hình),
+                           Dropdown (menu thả xuống, MenuItem, ô chọn Select thay thẻ select)
     generic/               6 màn chung: CatalogScreen, VoucherScreen (danh sách + form toàn màn hình + hạch toán), ReportScreen, ToolScreen,
                            QuyTrinhScreen (sơ đồ, khung Báo cáo, hàng dưới), BaoCaoScreen (tab Báo cáo)
   data/mock.ts             dữ liệu giả dùng chung; DAILY là doanh thu từng ngày từng chi nhánh 01/07–07/10/2026
@@ -89,6 +105,8 @@ Mỗi phân hệ: `index.ts` khai báo màn, nhãn tab ngắn (`NGAN`) và cấu
 - Số liệu phải khớp giữa các màn. Doanh thu, giá vốn, thuế đầu ra đọc `DAILY`; KQKD đọc `kqkd()`; cân đối số phát sinh, cân đối kế toán, lưu chuyển tiền tệ, tiền trên Tổng quan đọc `modules/tong-hop/so-cai.ts`. Không gõ số cứng vào các màn này.
 - Chữ trên giao diện: viết hoa chữ đầu, bỏ dấu kiểu mới (hoá, khoá, xoá, huỷ), tiền `1.234.567 đ`, ngày `dd/MM/yyyy`. Soát bằng skill `viet-nhu-nguoi` (`--loai giao-dien`) trước khi giao.
 - Lớp CSS trạng thái là `.stt`, không dùng `.st` vì trùng lớp màu gói Starter.
+- Menu thả xuống: dùng `Dropdown` + `MenuHead`, `MenuItem`, `MenuSep` trong `ui/Dropdown.tsx`. `MenuItem` có `to` thì là liên kết, có `onClick` thì là nút; `icon` nhận tên biểu tượng hoặc phần tử tự vẽ; `on` hiện dấu chọn; `lock` làm mờ. Không tự viết menu bằng `onMouseLeave`.
+- Ô chọn: dùng `Select` thay `<select>`, viết `<option>` bên trong như cũ. `onChange` nhận `{ target: { value } }` nên `e => setX(e.target.value)` giữ nguyên. Thêm `className="inp"` cho ô trong form, để trống cho ô lọc trong `.fld`.
 
 ## 5. Trạng thái
 
@@ -96,6 +114,8 @@ Mỗi phân hệ: `index.ts` khai báo màn, nhãn tab ngắn (`NGAN`) và cấu
 - [x] Khung kiểu AMIS (07/10 chiều): sidebar phân hệ lớn, Thêm nhanh, thu gọn sidebar, thanh tab ngang có "Khác", Ctrl+K, đổi đơn vị kế toán, nút Xem thử gói và vai trò, trang Nâng cấp
 - [x] Màn Quy trình cho 11 phân hệ Excel, 39 ô bấm được tới form hoặc màn đích; tab Báo cáo cho 9 phân hệ có báo cáo
 - [x] Form chứng từ toàn màn hình cho mọi màn chứng từ và chứng từ bán hàng FABi; Huỷ, Lưu, Lưu và thêm; Esc về đúng màn trước
+- [x] Menu thả xuống làm lại (07/10 tối): đơn vị kế toán, Xem thử gói và vai trò, tài khoản, Thêm nhanh chia theo phân hệ, Khác của thanh tab, Tiện ích ở Quy trình, chọn loại phiếu. 22 thẻ select đổi sang ô chọn `Select`. Đã thử: chuột, phím mũi tên, Enter, Esc, Tab, lật lên khi sát đáy ở màn 1280x720, bấm gói trong Xem thử đổi được gói
+- [x] Biểu tượng Hệ thống đổi sang bánh răng (dùng chung cho Tuỳ chọn, Cấu hình kế toán)
 - [x] Đăng nhập, quên mật khẩu, chọn đơn vị kế toán, khởi tạo 4 bước
 - [x] Tổng quan, Bàn làm việc
 - [x] 13 phân hệ, 148 màn: 120 tính năng Excel, 11 màn Quy trình, 9 tab Báo cáo, 2 màn trang chủ, 6 màn hệ thống
@@ -106,7 +126,7 @@ Mỗi phân hệ: `index.ts` khai báo màn, nhãn tab ngắn (`NGAN`) và cấu
   - Tổng hợp: KQKD, cân đối kế toán, cân đối số phát sinh, lưu chuyển tiền tệ, báo cáo quản trị F&B, kiểm tra cuối kỳ, khoá sổ.
   - Tiện ích: đồng bộ, đối soát, hoá đơn đầu vào, duyệt chứng từ, cảnh báo, nhật ký thao tác.
   - Hệ thống: người dùng, phân quyền, gói thuê bao, thông tin đơn vị, cấu hình.
-- [x] `npm run typecheck` sạch, `npm run build` xanh
+- [x] `npm run typecheck` sạch, `npm run build` xanh (Vite cảnh báo gói JS hơn 500 kB, chưa tách gói)
 - [x] `tools/kiem_tra.py` (bản cho bố cục AMIS): 792 lượt mở màn ở 4 gói (148 màn mỗi gói qua sidebar, thanh tab, tab Báo cáo; 39 ô Quy trình), không lỗi console, không trắng trang, không tràn ngang kể cả thanh tab; ô trên sơ đồ mở đúng form toàn màn hình; Esc đóng form về đúng Quy trình; cân đối kế toán, cân đối số phát sinh, lưu chuyển tiền tệ cân ở kỳ 8, 9, 10 với gói Starter, Medium, Advance; 23 ảnh chụp ở `tools/shots/`
 - [x] Soát chữ giao diện: 0 ĐỎ, 0 VÀNG
 - [x] Logo thật của IACC Cloud (07/10/2026) thay dấu vẽ bằng CSS, kể cả favicon. Nút "Đăng nhập bằng tài khoản iPOS" dùng biểu tượng chìa khoá vì chưa có file logo iPOS.
@@ -141,3 +161,6 @@ Còn thiếu, biết rõ:
 - Thanh tab đo bề rộng từng tab trên một hàng ẩn (`.mtabs-meas`). Sửa nội dung tab (thêm biểu tượng, nhãn) thì sửa cả hàng ẩn cho giống, nếu không tab sẽ tràn hoặc dồn sai. Script kiểm báo "tràn ngang ở .mtabs-in" khi lệch.
 - Menu thả xuống (`.dd-pop`) luôn có trong DOM, ẩn bằng thuộc tính `hidden`, để script kiểm đọc được tab trong "Khác". Đừng đổi sang render có điều kiện.
 - Form toàn màn hình là `position: fixed` nằm trong `.main`. Không thêm `transform` hay `filter` cho `.main` hoặc tổ tiên của nó, nếu không form sẽ bị nhốt trong vùng nội dung.
+- Khung menu (`.pop`) gắn vào body và đặt vị trí thẳng vào style trước khi vẽ. Đừng đổi sang state React kèm `visibility: hidden`: khung ẩn thì không nhận con trỏ, phím mũi tên trong ô chọn sẽ hỏng (đã gặp 07/10).
+- Esc khi đang mở menu chỉ đóng menu: menu bắt phím ở pha capture và chặn lan. Thêm phím tắt Esc mới thì nghe ở `window` như `FormToanMan`, đừng nghe ở pha capture.
+- Menu "Khác" của thanh tab mở với `keep`: đóng vẫn nằm trong DOM (ẩn) để script kiểm đọc được tab. Script kiểm đọc `.mtabs-in a, .pop-khac a`.

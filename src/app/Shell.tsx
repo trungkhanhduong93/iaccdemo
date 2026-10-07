@@ -8,20 +8,21 @@ import type { ModuleDef } from '../modules/types'
 import { Icon } from '../ui/Icon'
 import { Logo } from '../ui/Logo'
 import { Pk } from '../ui/Page'
+import { Dropdown, MenuHead, MenuItem } from '../ui/Dropdown'
 import { Topbar } from './Topbar'
 import { ModuleTabs } from './ModuleTabs'
 import { CommandPalette } from './CommandPalette'
 
-/** Nút Thêm nhanh đầu sidebar: tên, biểu tượng, đích (mở thẳng form chứng từ mới) */
-const THEM_NHANH: [string, string, string][] = [
-  ['Phiếu thu', 'cashin', 'tien/2-1-1/moi?loai=thu'],
-  ['Phiếu chi', 'cashout', 'tien/2-1-1/moi?loai=chi'],
-  ['Bán hàng ngoài POS', 'cart', 'ban-hang/3-1-1/moi'],
-  ['Hoá đơn bán hàng', 'receipt', 'ban-hang/3-1-2/moi'],
-  ['Phiếu mua hàng', 'truck', 'mua-hang/4-1-1/moi'],
-  ['Phiếu xuất huỷ', 'trash', 'kho/5-1-2-3/moi'],
-  ['Phiếu kiểm kê kho', 'clipboard', 'kho/5-1-10/moi'],
-  ['Chứng từ tổng hợp', 'doc', 'tong-hop/10-1-1/moi'],
+/** Nút Thêm nhanh đầu sidebar, chia theo phân hệ: tên, biểu tượng, đích (mở thẳng form chứng từ mới) */
+const THEM_NHANH: [string, [string, string, string][]][] = [
+  ['Tiền', [['Phiếu thu', 'cashin', 'tien/2-1-1/moi?loai=thu'], ['Phiếu chi', 'cashout', 'tien/2-1-1/moi?loai=chi'],
+    ['Nộp tiền vào ngân hàng', 'upload', 'tien/2-1-1/moi?loai=nop']]],
+  ['Bán hàng', [['Bán hàng ngoài POS', 'cart', 'ban-hang/3-1-1/moi'], ['Hoá đơn bán hàng', 'receipt', 'ban-hang/3-1-2/moi'],
+    ['Hàng bán trả lại', 'back', 'ban-hang/3-1-4/moi']]],
+  ['Mua hàng', [['Phiếu mua hàng', 'truck', 'mua-hang/4-1-1/moi'], ['Trả lại hàng mua', 'back', 'mua-hang/4-1-4/moi']]],
+  ['Kho', [['Phiếu xuất huỷ', 'trash', 'kho/5-1-2-3/moi'], ['Phiếu kiểm kê kho', 'clipboard', 'kho/5-1-10/moi'],
+    ['Điều chuyển kho', 'swap', 'kho/5-1-4/moi']]],
+  ['Tổng hợp', [['Chứng từ tổng hợp', 'doc', 'tong-hop/10-1-1/moi']]],
 ]
 
 export function Shell() {
@@ -55,30 +56,28 @@ export function Shell() {
 
 function Sidebar({ mod }: { mod: ModuleDef }) {
   const { s, set } = useSession()
-  const loc = useLocation()
-  const [mo, setMo] = useState(false)
-  useEffect(() => setMo(false), [loc.pathname, loc.search])
 
   return (
     <nav className="sidebar" aria-label="Phân hệ">
       <Link to="/app" className="sb-brand" title="IACC Cloud"><Logo size={34} /><span>IACC Cloud</span></Link>
-      <div className="sb-add" onMouseLeave={() => setMo(false)}>
-        <button className="sb-add-btn" onClick={() => setMo(!mo)} aria-expanded={mo} title="Thêm nhanh chứng từ">
-          <Icon n="plus" className="ic sm" /><span>Thêm nhanh</span>
-        </button>
-        <div className="dd-pop sb-menu" hidden={!mo}>
-          <div className="dd-g">Thêm nhanh chứng từ</div>
-          {THEM_NHANH.map(([ten, icon, di]) => {
-            const d = dich(di)
-            const ok = !d.sc || moDuoc(d.sc, s.goi)
-            const ma = d.sc && maKhoa(d.sc)
-            return (
-              <Link key={di} to={d.path} className={ok ? '' : 'lock'}>
-                <Icon n={icon} className="ic sm" />{ten}{!ok && ma && <Pk g={minGoi(ma)} o />}
-              </Link>
-            )
-          })}
-        </div>
+      <div className="sb-add">
+        <Dropdown btnClass="sb-add-btn" title="Thêm nhanh chứng từ" popClass="pop-qadd" width={500}
+          label={<><Icon n="plus" className="ic sm" /><span>Thêm nhanh</span></>}>
+          <MenuHead right={<small className="mh-n">Mở thẳng form chứng từ mới</small>}>Thêm nhanh chứng từ</MenuHead>
+          <div className="qadd">
+            {THEM_NHANH.map(([nhom, ds]) => (
+              <div key={nhom} className="qadd-g">
+                <div className="qadd-h">{nhom}</div>
+                {ds.map(([ten, icon, di]) => {
+                  const d = dich(di)
+                  const ok = !d.sc || moDuoc(d.sc, s.goi)
+                  const ma = d.sc && maKhoa(d.sc)
+                  return <MenuItem key={di} to={d.path} icon={icon} lock={!ok} right={!ok && ma ? <Pk g={minGoi(ma)} o /> : undefined}>{ten}</MenuItem>
+                })}
+              </div>
+            ))}
+          </div>
+        </Dropdown>
       </div>
       <div className="sb-nav">
         {MODULES.map(m => {

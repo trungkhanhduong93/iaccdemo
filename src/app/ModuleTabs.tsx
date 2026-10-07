@@ -1,5 +1,5 @@
 // Thanh tab ngang của phân hệ: Quy trình, các màn chứng từ, danh mục, chức năng, Báo cáo. Tab không đủ chỗ dồn vào "Khác".
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useSession } from './session'
 import { duongDan, laBaoCao, maKhoa, moDuoc, nhanTab, tabCua } from './registry'
@@ -7,8 +7,9 @@ import { GOI, minGoi } from './plan'
 import type { ModuleDef, ScreenDef } from '../modules/types'
 import { Icon } from '../ui/Icon'
 import { Pk } from '../ui/Page'
+import { Dropdown, MenuItem } from '../ui/Dropdown'
 
-const KHAC = 84   // chỗ cho nút "Khác"
+const KHAC = 110  // chỗ cho nút "Khác" kèm số tab bên trong
 
 export function ModuleTabs({ mod }: { mod: ModuleDef }) {
   const { s } = useSession()
@@ -23,8 +24,6 @@ export function ModuleTabs({ mod }: { mod: ModuleDef }) {
   const wrap = useRef<HTMLDivElement>(null)
   const meas = useRef<HTMLDivElement>(null)
   const [do_, setDo] = useState<{ w: number[]; W: number } | null>(null)   // bề rộng từng tab và bề rộng thanh
-  const [mo, setMo] = useState(false)
-  useEffect(() => setMo(false), [loc.pathname])
 
   useLayoutEffect(() => {
     const el = wrap.current, m = meas.current
@@ -74,20 +73,16 @@ export function ModuleTabs({ mod }: { mod: ModuleDef }) {
       <div className="mtabs-in" ref={wrap}>
         {hien.map(tab)}
         {khac.length > 0 && (
-          <div className="dd" onMouseLeave={() => setMo(false)}>
-            <button className={`mtabs-more ${mo ? 'open' : ''}`} onClick={() => setMo(!mo)} aria-expanded={mo}>Khác<Icon n="chevd" className="ic sm" /></button>
-            <div className="dd-pop mtabs-pop" hidden={!mo}>
-              {khac.map(sc => {
-                const ok = moDuoc(sc, s.goi)
-                const ma = maKhoa(sc)
-                return (
-                  <Link key={sc.slug} to={duongDan(mod, sc)} className={ok ? '' : 'lock'}>
-                    <span className="grow">{nhanTab(sc)}</span>{!ok && ma && <Pk g={minGoi(ma)} o />}
-                  </Link>
-                )
-              })}
-            </div>
-          </div>
+          <Dropdown btnClass="mtabs-more" popClass="pop-khac" align="end" keep label={<>Khác<span className="mtabs-n">{khac.length}</span><Icon n="chevd" className="ic sm" /></>}>
+            {khac.map(sc => {
+              const ok = moDuoc(sc, s.goi)
+              const ma = maKhoa(sc)
+              return (
+                <MenuItem key={sc.slug} to={duongDan(mod, sc)} icon={sc.kind === 'voucher' ? 'doc' : sc.kind === 'catalog' ? 'folder' : sc.kind === 'tool' ? 'play' : mod.icon}
+                  lock={!ok} right={!ok && ma ? <Pk g={minGoi(ma)} o /> : undefined}>{nhanTab(sc)}</MenuItem>
+              )
+            })}
+          </Dropdown>
         )}
         {bc && tab(bc)}
       </div>

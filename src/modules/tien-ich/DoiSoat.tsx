@@ -9,6 +9,7 @@ import { Icon } from '../../ui/Icon'
 import { Kpi, Note, PageHead } from '../../ui/Page'
 import { St, Table } from '../../ui/Table'
 import { moneyD } from '../../ui/format'
+import { Select } from '../../ui/Dropdown'
 
 const CAP = ['Tất cả', 'FABi ↔ Sổ', 'Sổ ↔ Hoá đơn', 'Sổ ↔ Tiền']
 
@@ -46,7 +47,7 @@ export function DoiSoat({ sc, mod }: ScreenProps) {
         </div>
         <div className="filters">
           <label className="fld"><Icon n="calendar" className="ic sm" />Từ<b>01/09/2026</b>đến<b>07/10/2026</b></label>
-          <label className="fld">Chi nhánh<select><option>Tất cả</option>{CHI_NHANH.map(c => <option key={c.id}>{c.ten}</option>)}</select></label>
+          <label className="fld">Chi nhánh<Select><option>Tất cả</option>{CHI_NHANH.map(c => <option key={c.id}>{c.ten}</option>)}</Select></label>
           <span className="grow" />
           <label className="row" style={{ fontSize: 13 }}><input type="checkbox" checked={tatCa} onChange={e => setTatCa(e.target.checked)} /> Hiện cả dòng đã khớp</label>
         </div>

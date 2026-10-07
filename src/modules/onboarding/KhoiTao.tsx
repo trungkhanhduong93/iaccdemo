@@ -8,6 +8,7 @@ import { Icon } from '../../ui/Icon'
 import { Logo } from '../../ui/Logo'
 import { Note, Pk } from '../../ui/Page'
 import { Table } from '../../ui/Table'
+import { Select } from '../../ui/Dropdown'
 
 const BUOC = ['Chế độ kế toán', 'Thông tin đơn vị', 'Kết nối FABi, Inventory', 'Số dư đầu kỳ']
 
@@ -69,7 +70,7 @@ export function KhoiTao() {
                 <div className="f c4"><label>Tên đơn vị <em>*</em></label><input className="inp" readOnly={!traCuu} value={traCuu ? 'Công ty TNHH Ẩm thực Phố Mây' : ''} onChange={() => {}} /></div>
                 <div className="f c4"><label>Địa chỉ</label><input className="inp" value={traCuu ? '86 Lê Lợi, phường Sài Gòn, TP.HCM' : ''} onChange={() => {}} /></div>
                 <div className="f c2"><label>Người đại diện theo pháp luật</label><input className="inp" defaultValue={traCuu ? 'Nguyễn Minh Anh' : ''} /></div>
-                <div className="f"><label>Đồng tiền ghi sổ</label><select className="inp"><option>VND</option>{goi === 'A' && <option>USD</option>}</select></div>
+                <div className="f"><label>Đồng tiền ghi sổ</label><Select className="inp"><option>VND</option>{goi === 'A' && <option>USD</option>}</Select></div>
                 <div className="f"><label>Kế toán trưởng</label><input className="inp" defaultValue={traCuu ? 'Trần Thu Hà' : ''} /></div>
               </div>
             </>
@@ -89,7 +90,7 @@ export function KhoiTao() {
                 <button className={`opt ${dongBo === 'tu' ? 'on' : ''}`} onClick={() => setDongBo('tu')}><span className="radio" /><span><b>Tự động theo lịch</b><small>Mỗi 15 phút, chốt cuối ngày lúc 23:30</small></span></button>
                 <button className={`opt ${dongBo === 'tay' ? 'on' : ''}`} onClick={() => setDongBo('tay')}><span className="radio" /><span><b>Bấm tải khi cần</b><small>Chọn khoảng ngày và chi nhánh rồi tải</small></span></button>
               </div>
-              <div className="f" style={{ marginTop: 14, maxWidth: 360 }}><label>Gom đơn bán thành chứng từ</label><select className="inp"><option>Mỗi chi nhánh một chứng từ mỗi ngày</option><option>Mỗi ca một chứng từ</option></select></div>
+              <div className="f" style={{ marginTop: 14, maxWidth: 360 }}><label>Gom đơn bán thành chứng từ</label><Select className="inp"><option>Mỗi chi nhánh một chứng từ mỗi ngày</option><option>Mỗi ca một chứng từ</option></Select></div>
             </>
           )}
 
