@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 08/10/2026
 
+- T24: Bố cục danh sách chứng từ chia đôi 50/50 trên dưới cố định 1 trang không cần cuộn, chọn dòng ở trên đổi ngay chi tiết ở dưới. Sửa lỗi dính mép card thông tin chung trong chi tiết phiếu, chuẩn hoá cụm nút Trước - Sau cân đối, và bấm Esc từ duyệt phiếu đóng ngay về màn hình trước.
 - T21: Sửa danh sách chứng từ bị vỡ bố cục, cột đầu phình to và các dòng trống.
 - T22: Danh sách chứng từ có 3 thẻ tổng hợp trên đầu, phân trang 20, 50, 100 dòng, nút Cột để ẩn hiện cột. Ô chữ trong danh sách và danh mục giữ một dòng, rê chuột xem đủ.
 - T23: Danh mục đối tượng, hàng hoá, kho có cột Chức năng để lập nhanh hoá đơn, phiếu thu, phiếu mua, xem công nợ, tồn kho. Số dư ban đầu mở bằng 4 thẻ theo loại số dư.

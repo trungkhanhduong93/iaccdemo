@@ -273,7 +273,7 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
   const colsHienThi = useMemo(() => cols.filter(c => COT_CO_DINH.has(c.k) || !cotAnSet.has(c.k)), [cols, cotAnSet])
 
   return (
-    <div className="page">
+    <div className="page page-voucher">
       <PageHead crumb={[mod.ten, sc.nhom ?? '']} title={title ?? tenMan(sc)} code={sc.code}>
         {cfg.nguon && cfg.nguon !== 'tay' && (
           <button
@@ -296,7 +296,7 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
       {extra}
 
       {/* Thẻ tổng hợp */}
-      <div className="grid g3" style={{ marginBottom: 14 }}>
+      <div className="grid g3 voucher-kpi-bar">
         {cfg.loai ? (
           <>
             <Kpi l="Tổng thu" v={money(tongThu)} unit="đ" icon="cashin" />
@@ -318,129 +318,130 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
         )}
       </div>
 
-      <section className="card">
-        {/* Thanh thao tác hàng loạt khi tick nhiều dòng */}
-        {selectedIds.size > 0 && (
-          <div className="batch-bar">
-            <b>Đã chọn {selectedIds.size} chứng từ</b>
+      <div className="voucher-split">
+        {/* Nửa trên: 50% danh sách các phiếu */}
+        <section className="card voucher-top">
+          {/* Thanh thao tác hàng loạt khi tick nhiều dòng */}
+          {selectedIds.size > 0 && (
+            <div className="batch-bar">
+              <b>Đã chọn {selectedIds.size} chứng từ</b>
+              <span className="grow" />
+              {ghi && (
+                <>
+                  <button
+                    type="button"
+                    className="btn sm ghost"
+                    onClick={() => { toast(`Đã ghi sổ ${selectedIds.size} chứng từ`); setSelectedIds(new Set()) }}
+                  >
+                    <Icon n="check" className="ic sm" />Ghi sổ
+                  </button>
+                  <button
+                    type="button"
+                    className="btn sm ghost"
+                    onClick={() => { toast(`Đã bỏ ghi sổ ${selectedIds.size} chứng từ`); setSelectedIds(new Set()) }}
+                  >
+                    Bỏ ghi sổ
+                  </button>
+                </>
+              )}
+              <button
+                type="button"
+                className="btn sm ghost"
+                onClick={() => toast(`In ${selectedIds.size} chứng từ`)}
+              >
+                <Icon n="printer" className="ic sm" />In hàng loạt
+              </button>
+              <button
+                type="button"
+                className="btn sm ghost"
+                onClick={() => setSelectedIds(new Set())}
+              >
+                Bỏ chọn
+              </button>
+            </div>
+          )}
+
+          {/* Thanh bộ lọc */}
+          <div className="filters">
+            <label className="fld">
+              <Icon n="calendar" className="ic sm" />Kỳ
+              <Select value={ky} onChange={e => { setKy(e.target.value); setTrang(1) }}>
+                <option value="all">Tất cả các kỳ</option>
+                <option value="10">Tháng này (10/2026)</option>
+                <option value="9">Tháng trước (09/2026)</option>
+                <option value="q4">Quý này (Quý 4/2026)</option>
+                <option value="nam">Năm nay (2026)</option>
+              </Select>
+            </label>
+            <label className="fld">
+              Chi nhánh
+              <Select>
+                <option>Tất cả</option>
+                {CHI_NHANH.map(c => <option key={c.id}>{c.ten}</option>)}
+              </Select>
+            </label>
+            <label className="fld">
+              Trạng thái
+              <Select value={tt} onChange={e => { setTt(e.target.value); setTrang(1) }}>
+                <option value="all">Tất cả</option>
+                <option value="nhap">{ghi ? 'Chưa ghi sổ' : 'Nháp'}</option>
+                <option value="ghi">{ghi ? 'Đã ghi sổ' : 'Đã lưu'}</option>
+                {ghi && <option value="loi">Lỗi hạch toán</option>}
+              </Select>
+            </label>
+            <label className="fld">
+              <Icon n="search" className="ic sm" />
+              <input
+                value={q}
+                onChange={e => { setQ(e.target.value); setTrang(1) }}
+                placeholder="Số chứng từ, đối tượng, diễn giải"
+              />
+            </label>
             <span className="grow" />
-            {ghi && (
-              <>
-                <button
-                  type="button"
-                  className="btn sm ghost"
-                  onClick={() => { toast(`Đã ghi sổ ${selectedIds.size} chứng từ`); setSelectedIds(new Set()) }}
-                >
-                  <Icon n="check" className="ic sm" />Ghi sổ
-                </button>
-                <button
-                  type="button"
-                  className="btn sm ghost"
-                  onClick={() => { toast(`Đã bỏ ghi sổ ${selectedIds.size} chứng từ`); setSelectedIds(new Set()) }}
-                >
-                  Bỏ ghi sổ
-                </button>
-              </>
-            )}
-            <button
-              type="button"
-              className="btn sm ghost"
-              onClick={() => toast(`In ${selectedIds.size} chứng từ`)}
+            <Dropdown
+              btnClass="btn sm"
+              align="end"
+              width={200}
+              label={<><Icon n="layers" className="ic sm" />Cột</>}
             >
-              <Icon n="printer" className="ic sm" />In hàng loạt
-            </button>
-            <button
-              type="button"
-              className="btn sm ghost"
-              onClick={() => setSelectedIds(new Set())}
-            >
-              Bỏ chọn
+              <MenuHead>Cột hiển thị</MenuHead>
+              {colsTuyChon.map(c => (
+                <MenuItem
+                  key={c.k}
+                  on={!cotAnSet.has(c.k)}
+                  onClick={() => toggleCot(c.k)}
+                >
+                  {c.t}
+                </MenuItem>
+              ))}
+              <MenuSep />
+              <MenuItem onClick={hienTatCaCot}>Hiện tất cả cột</MenuItem>
+            </Dropdown>
+            <button type="button" className="btn sm">
+              <Icon n="printer" className="ic sm" />In
             </button>
           </div>
-        )}
 
-        {/* Thanh bộ lọc */}
-        <div className="filters">
-          <label className="fld">
-            <Icon n="calendar" className="ic sm" />Kỳ
-            <Select value={ky} onChange={e => { setKy(e.target.value); setTrang(1) }}>
-              <option value="all">Tất cả các kỳ</option>
-              <option value="10">Tháng này (10/2026)</option>
-              <option value="9">Tháng trước (09/2026)</option>
-              <option value="q4">Quý này (Quý 4/2026)</option>
-              <option value="nam">Năm nay (2026)</option>
-            </Select>
-          </label>
-          <label className="fld">
-            Chi nhánh
-            <Select>
-              <option>Tất cả</option>
-              {CHI_NHANH.map(c => <option key={c.id}>{c.ten}</option>)}
-            </Select>
-          </label>
-          <label className="fld">
-            Trạng thái
-            <Select value={tt} onChange={e => { setTt(e.target.value); setTrang(1) }}>
-              <option value="all">Tất cả</option>
-              <option value="nhap">{ghi ? 'Chưa ghi sổ' : 'Nháp'}</option>
-              <option value="ghi">{ghi ? 'Đã ghi sổ' : 'Đã lưu'}</option>
-              {ghi && <option value="loi">Lỗi hạch toán</option>}
-            </Select>
-          </label>
-          <label className="fld">
-            <Icon n="search" className="ic sm" />
-            <input
-              value={q}
-              onChange={e => { setQ(e.target.value); setTrang(1) }}
-              placeholder="Số chứng từ, đối tượng, diễn giải"
-            />
-          </label>
-          <span className="grow" />
-          <Dropdown
-            btnClass="btn sm"
-            align="end"
-            width={200}
-            label={<><Icon n="layers" className="ic sm" />Cột</>}
-          >
-            <MenuHead>Cột hiển thị</MenuHead>
-            {colsTuyChon.map(c => (
-              <MenuItem
-                key={c.k}
-                on={!cotAnSet.has(c.k)}
-                onClick={() => toggleCot(c.k)}
-              >
-                {c.t}
-              </MenuItem>
-            ))}
-            <MenuSep />
-            <MenuItem onClick={hienTatCaCot}>Hiện tất cả cột</MenuItem>
-          </Dropdown>
-          <button type="button" className="btn sm">
-            <Icon n="printer" className="ic sm" />In
-          </button>
-        </div>
-
-        {/* Bảng danh sách chứng từ */}
-        {list.length ? (
-          <>
-            <Table
-              cols={colsHienThi}
-              rows={pagedRows}
-              motDong
-              onRow={r => setActiveId(r.id)}
-              onDbl={r => nav(`${path}/${r.id}`)}
-              rowCls={r => [
-                r.id === activeId ? 'dang-chon' : '',
-                r.tt === 'nhap' ? 'chua-ghi' : '',
-                r.tt === 'loi' && ghi ? 'bad' : '',
-              ].filter(Boolean).join(' ')}
-              sum={{
-                ngay: `${list.length} chứng từ`,
-                tong,
-                thue: list.reduce((a, r) => a + (r.thue || 0), 0),
-              }}
-            />
-            {list.length > 20 && (
+          {/* Bảng danh sách chứng từ */}
+          {list.length ? (
+            <>
+              <Table
+                cols={colsHienThi}
+                rows={pagedRows}
+                motDong
+                onRow={r => setActiveId(r.id)}
+                onDbl={r => nav(`${path}/${r.id}`)}
+                rowCls={r => [
+                  r.id === activeId ? 'dang-chon' : '',
+                  r.tt === 'nhap' ? 'chua-ghi' : '',
+                  r.tt === 'loi' && ghi ? 'bad' : '',
+                ].filter(Boolean).join(' ')}
+                sum={{
+                  ngay: `${list.length} chứng từ`,
+                  tong,
+                  thue: list.reduce((a, r) => a + (r.thue || 0), 0),
+                }}
+              />
               <PhanTrang
                 tong={list.length}
                 trang={trangHienTai}
@@ -448,101 +449,111 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
                 onTrang={setTrang}
                 onCoTrang={ct => { setCoTrang(ct); setTrang(1) }}
               />
-            )}
-          </>
-        ) : (
-          <div className="empty">
-            <b>Không có chứng từ khớp bộ lọc</b>
-            <button
-              type="button"
-              className="btn sm"
-              style={{ marginTop: 10 }}
-              onClick={() => { setKy('all'); setTt('all'); setQ(''); setTrang(1) }}
-            >
-              Xoá bộ lọc
-            </button>
-          </div>
-        )}
-      </section>
-
-      {/* Khung chi tiết bên dưới (thu gọn được, bấm Xem để mở form) */}
-      {activeRow && (
-        <section className="ct-panel">
-          <div className="ct-panel-h" onClick={() => setPanelMo(!panelMo)}>
-            <Icon n={panelMo ? 'chevd' : 'chevr'} className="ic sm" />
-            <b>Chi tiết chứng từ {activeRow.so}</b>
-            <span className="dim">({activeRow.ngay}) — {activeRow.dienGiai}</span>
-            <span className="grow" />
-            <button
-              type="button"
-              className="btn sm"
-              onClick={e => { e.stopPropagation(); nav(`${path}/${activeRow.id}`) }}
-            >
-              Mở form toàn màn hình
-            </button>
-          </div>
-
-          {panelMo && (
-            <div className="ct-panel-b">
-              <div className="tabs" style={{ marginBottom: 12 }}>
-                <button
-                  type="button"
-                  className={tabPanel === 'ct' ? 'on' : ''}
-                  onClick={() => setTabPanel('ct')}
-                >
-                  Hàng tiền ({activeDong.length} dòng)
-                </button>
-                <button
-                  type="button"
-                  className={tabPanel === 'ht' ? 'on' : ''}
-                  onClick={() => setTabPanel('ht')}
-                >
-                  {ghi ? 'Hạch toán' : 'Ghi sổ'}
-                </button>
-                <button
-                  type="button"
-                  className={tabPanel === 'khac' ? 'on' : ''}
-                  onClick={() => setTabPanel('khac')}
-                >
-                  Thông tin khác
-                </button>
-              </div>
-
-              {tabPanel === 'ct' && (
-                <BangSua
-                  cfg={cfg}
-                  dong={activeDong}
-                  cheDo="xem"
-                  coKho={Boolean(bo.kho)}
-                  coCk={Boolean(bo.ck)}
-                />
-              )}
-
-              {tabPanel === 'ht' && (
-                <HachToan
-                  cfg={cfg}
-                  goi={s.goi}
-                  tien={activeRow.tien}
-                  thue={activeRow.thue || 0}
-                  dt={String(activeRow.doiTuong ?? '')}
-                  cn={String(activeRow.cn ?? '')}
-                />
-              )}
-
-              {tabPanel === 'khac' && (
-                <div className="grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)', gap: 14, fontSize: 13 }}>
-                  <div><b>Đối tượng:</b> {activeRow.doiTuong || '—'}</div>
-                  <div><b>Chi nhánh:</b> {activeRow.cn || '—'}</div>
-                  <div><b>Nguồn dữ liệu:</b> {activeRow.nguon}</div>
-                  <div><b>Tổng tiền:</b> {money(activeRow.tong)} đ</div>
-                  <div><b>Thuế GTGT:</b> {money(activeRow.thue || 0)} đ</div>
-                  <div><b>Trạng thái:</b> {TT_CT[activeRow.tt]?.[1] ?? activeRow.tt}</div>
-                </div>
-              )}
+            </>
+          ) : (
+            <div className="empty" style={{ margin: 'auto' }}>
+              <b>Không có chứng từ khớp bộ lọc</b>
+              <button
+                type="button"
+                className="btn sm"
+                style={{ marginTop: 10 }}
+                onClick={() => { setKy('all'); setTt('all'); setQ(''); setTrang(1) }}
+              >
+                Xoá bộ lọc
+              </button>
             </div>
           )}
         </section>
-      )}
+
+        {/* Nửa dưới: 50% chi tiết bên trong chứng từ đang chọn */}
+        <section className="card ct-panel voucher-bottom">
+          {activeRow ? (
+            <>
+              <div className="voucher-bottom-h">
+                <div className="row" style={{ gap: 8, minWidth: 0, flex: '1 1 auto' }}>
+                  <Icon n="doc" className="ic sm" />
+                  <b style={{ whiteSpace: 'nowrap' }}>Chi tiết {activeRow.so}</b>
+                  <span className="dim" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    ({activeRow.ngay}) — {activeRow.dienGiai}
+                  </span>
+                </div>
+                <div className="tabs" style={{ margin: 0, flex: 'none' }}>
+                  <button
+                    type="button"
+                    className={tabPanel === 'ct' ? 'on' : ''}
+                    onClick={() => setTabPanel('ct')}
+                  >
+                    Hàng tiền ({activeDong.length} dòng)
+                  </button>
+                  <button
+                    type="button"
+                    className={tabPanel === 'ht' ? 'on' : ''}
+                    onClick={() => setTabPanel('ht')}
+                  >
+                    {ghi ? 'Hạch toán' : 'Ghi sổ'}
+                  </button>
+                  <button
+                    type="button"
+                    className={tabPanel === 'khac' ? 'on' : ''}
+                    onClick={() => setTabPanel('khac')}
+                  >
+                    Thông tin khác
+                  </button>
+                </div>
+                <button
+                  type="button"
+                  className="btn sm"
+                  style={{ flex: 'none', marginLeft: 8 }}
+                  onClick={() => nav(`${path}/${activeRow.id}`)}
+                  title="Mở form toàn màn hình (hoặc đúp chuột vào dòng)"
+                >
+                  <Icon n="eye" className="ic sm" />Xem chi tiết
+                </button>
+              </div>
+
+              <div className="voucher-bottom-b">
+                {tabPanel === 'ct' && (
+                  <BangSua
+                    cfg={cfg}
+                    dong={activeDong}
+                    cheDo="xem"
+                    coKho={Boolean(bo.kho)}
+                    coCk={Boolean(bo.ck)}
+                  />
+                )}
+
+                {tabPanel === 'ht' && (
+                  <div style={{ padding: 14 }}>
+                    <HachToan
+                      cfg={cfg}
+                      goi={s.goi}
+                      tien={activeRow.tien}
+                      thue={activeRow.thue || 0}
+                      dt={String(activeRow.doiTuong ?? '')}
+                      cn={String(activeRow.cn ?? '')}
+                    />
+                  </div>
+                )}
+
+                {tabPanel === 'khac' && (
+                  <div className="grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)', gap: 14, fontSize: 13, padding: 14 }}>
+                    <div><b>Đối tượng:</b> {activeRow.doiTuong || '—'}</div>
+                    <div><b>Chi nhánh:</b> {activeRow.cn || '—'}</div>
+                    <div><b>Nguồn dữ liệu:</b> {activeRow.nguon}</div>
+                    <div><b>Tổng tiền:</b> {money(activeRow.tong)} đ</div>
+                    <div><b>Thuế GTGT:</b> {money(activeRow.thue || 0)} đ</div>
+                    <div><b>Trạng thái:</b> {TT_CT[activeRow.tt]?.[1] ?? activeRow.tt}</div>
+                  </div>
+                )}
+              </div>
+            </>
+          ) : (
+            <div className="empty">
+              <b>Chọn một chứng từ ở bảng trên để xem chi tiết</b>
+            </div>
+          )}
+        </section>
+      </div>
     </div>
   )
 }

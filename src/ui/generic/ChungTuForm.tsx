@@ -95,10 +95,10 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   const coSau = curIdx >= 0 && rows ? curIdx < rows.length - 1 : false
 
   function veTruoc() {
-    if (coTruoc && rows) nav(`${path}/${rows[curIdx - 1].id}`)
+    if (coTruoc && rows) nav(`${path}/${rows[curIdx - 1].id}`, { replace: true })
   }
   function veSau() {
-    if (coSau && rows) nav(`${path}/${rows[curIdx + 1].id}`)
+    if (coSau && rows) nav(`${path}/${rows[curIdx + 1].id}`, { replace: true })
   }
 
   // Lưu chứng từ
@@ -433,7 +433,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
         )}
 
         {/* Khối thông tin chung 3 cột: Đối tượng / Thông tin phụ / Chứng từ */}
-        <section className="card">
+        <section className="card" style={{ padding: '14px 16px' }}>
           <div
             className="grid"
             style={{

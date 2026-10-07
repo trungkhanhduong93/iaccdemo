@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T24 | Bố cục danh sách chứng từ 50/50 cố định 1 trang, sửa padding form và điều hướng Trước Sau Esc | Trum | Đang làm | Theo 5 yêu cầu Trum chốt |
 | T01 | Tạo API token Cloudflare cho robot deploy, lưu vào GitHub. Cách làm ở `docs/TRIEN-KHAI.md` mục "Khoá Cloudflare cho robot" | Trum | Chờ | Chưa có token thì robot chỉ kiểm, không đưa lên online |
 | T02 | Chốt nghiệp vụ trên từng sơ đồ Quy trình: ô nào, nối thế nào, câu chữ. Sửa ở `src/modules/<phân hệ>/quy-trinh.ts` | Trum | Chờ | |
 | T03 | Nối sổ quỹ, sổ tài khoản 2.2.2, sổ ngân hàng 2.2.3, sổ công nợ 2.2.5 vào `so-cai.ts` để mọi sổ khớp báo cáo tài chính | | Chờ | Sổ quỹ đang tính riêng từ tiền mặt FABi từng chi nhánh. Tổng 3 quỹ chưa bằng dư TK 1111 trên cân đối kế toán |
@@ -33,6 +32,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T24 | Bố cục danh sách chứng từ 50/50 cố định 1 trang, sửa padding form và điều hướng Trước Sau Esc | Trum | 08/10/2026 | `2026-10-08-trum-bo-cuc-voucher-50-50.md` |
 | T00 | Bộ tài liệu làm việc nhóm, robot kiểm và deploy | Trum | 07/10/2026 | `2026-10-07-trum-khung-web.md` |
 | T15 | Làm lại form chứng từ và màn danh sách chứng từ theo bố cục AMIS (QD14) | Trum | 07/10/2026 | `2026-10-07-trum-form-chung-tu-amis.md` |
 | T16 | Chuẩn hoá BAT-DAU.md cho người mới, đồng bộ skill Clau - Anti (QD13) | Trum | 07/10/2026 | `2026-10-07-trum-chuan-hoa-bat-dau-skills.md` |
