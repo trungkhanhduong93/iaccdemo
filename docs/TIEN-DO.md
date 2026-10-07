@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T24 | Bố cục danh sách chứng từ 50/50 cố định 1 trang, sửa padding form và điều hướng Trước Sau Esc | Trum | Đang làm | Theo 5 yêu cầu Trum chốt |
 | T01 | Tạo API token Cloudflare cho robot deploy, lưu vào GitHub. Cách làm ở `docs/TRIEN-KHAI.md` mục "Khoá Cloudflare cho robot" | Trum | Chờ | Chưa có token thì robot chỉ kiểm, không đưa lên online |
 | T02 | Chốt nghiệp vụ trên từng sơ đồ Quy trình: ô nào, nối thế nào, câu chữ. Sửa ở `src/modules/<phân hệ>/quy-trinh.ts` | Trum | Chờ | |
 | T03 | Nối sổ quỹ, sổ tài khoản 2.2.2, sổ ngân hàng 2.2.3, sổ công nợ 2.2.5 vào `so-cai.ts` để mọi sổ khớp báo cáo tài chính | | Chờ | Sổ quỹ đang tính riêng từ tiền mặt FABi từng chi nhánh. Tổng 3 quỹ chưa bằng dư TK 1111 trên cân đối kế toán |
