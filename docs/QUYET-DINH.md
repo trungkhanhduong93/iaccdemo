@@ -71,3 +71,16 @@ Rủi ro đã chấp nhận:
 
 - Token Cloudflare lưu trong GitHub Secrets sửa được mọi project Pages trong tài khoản của Trum, vì Cloudflare không giới hạn token theo từng project. Người có quyền ghi repo về lý thuyết dùng được token này.
 - Robot không bắt được lỗi trắng trang. Bù bằng luật chạy `tools/kiem_tra.py --nhanh` trước khi push khi sửa `src/`.
+
+## QD12. Giữ ngôn ngữ thiết kế hiện tại (07/10/2026 tối)
+
+Tham khảo AMIS hay sản phẩm khác chỉ để học bố cục, luồng thao tác, tính năng. Giao diện vẫn theo ngôn ngữ thiết kế của iaccdemo:
+
+- Phông Be Vietnam Pro, chữ thân 13,5px.
+- Màu lấy từ biến `:root` trong `src/styles/app.css`: navy, xanh, cam iPOS, màu 4 gói, màu trạng thái đỏ, vàng, xanh lá.
+- Thẻ trắng bo góc 10px, viền mảnh, bóng nhẹ. Chân form chứng từ nền navy.
+- Nút, bảng, nhãn trạng thái, nhãn nguồn, menu thả xuống, biểu tượng nét mảnh dùng thành phần có sẵn trong `src/ui/`.
+
+Không chép màu, phông, biểu tượng hay tên tính năng riêng của sản phẩm khác, vd trợ lý "AVA Kế toán" của AMIS.
+
+Lý do: Trum dặn khi giao việc làm lại form chứng từ và màn danh sách theo AMIS (T15).

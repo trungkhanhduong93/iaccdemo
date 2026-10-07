@@ -4,7 +4,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T14.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T15.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
@@ -25,6 +25,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | T12 | Giao diện cho màn hẹp hơn 1280px | | Chờ | Khung có min-width 1180px. Ở 1280px ô tìm kiếm trên thanh trên co còn khoảng 160px |
 | T13 | Tách gói JS khi build | | Chờ | `npm run build` cảnh báo gói JS hơn 500 kB |
 | T14 | Thay biểu tượng chìa khoá ở nút "Đăng nhập bằng tài khoản iPOS" bằng logo iPOS | | Chờ | Chưa có file logo iPOS |
+| T15 | Làm lại form chứng từ và màn danh sách chứng từ theo bố cục AMIS, giữ ngôn ngữ thiết kế (QD12) | Trum | Chờ | Chờ Trum duyệt phương án |
 
 ## Đã xong
 

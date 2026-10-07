@@ -31,6 +31,7 @@ Làm đủ các bước, theo thứ tự:
 - Làm theo quy ước trong `docs/KIEN-TRUC.md`.
 - Gặp lỗi mất hơn 15 phút mới ra nguyên nhân thì ghi vào `docs/BAY.md`: hiện tượng, nguyên nhân, cách tránh.
 - Trum chốt điều mới về bố cục, nghiệp vụ, thư viện hay cách làm việc thì ghi vào `docs/QUYET-DINH.md`.
+- Giữ ngôn ngữ thiết kế hiện tại: màu, phông trong biến `:root` của `src/styles/app.css` và các thành phần có sẵn trong `src/ui/`. Tham khảo AMIS hay sản phẩm khác chỉ để học bố cục, luồng thao tác, tính năng. Không chép màu, phông, biểu tượng của họ (QD12).
 
 ## Trước khi push
 
