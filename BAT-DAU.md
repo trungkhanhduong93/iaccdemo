@@ -1,157 +1,128 @@
 # Bắt đầu với iaccdemo
 
-File này dành cho người mới vào nhóm, chưa quen git và lập trình. Phần 1 làm một lần trên máy mới. Phần 2 làm mỗi lần ngồi vào làm việc.
+Tài liệu này dành cho thành viên mới, chưa quen Git và lập trình. Bạn không cần tự viết code. Claude Code sẽ làm mọi việc: kiểm tra máy, cài thư viện, sửa code, kiểm thử, ghi nhật ký và đưa lên GitHub. 
 
-Bạn không cần tự viết code. Agent (Claude Code hoặc Antigravity) sửa code, kiểm tra, ghi nhật ký và đưa lên GitHub. Việc của bạn: nói cho agent biết cần làm gì, xem kết quả trên trình duyệt, hỏi Trum khi không chắc nghiệp vụ.
+Việc của bạn: gõ lệnh vào Claude Code, xem kết quả trên trình duyệt, và hỏi Trum khi không chắc nghiệp vụ kế toán.
 
-Hướng dẫn viết cho Windows. Dùng máy Mac thì hỏi agent lệnh tương ứng.
+## Phần 1. Lần đầu tiên
 
-## Phần 1. Cài đặt, làm một lần
+Bạn đã có tài khoản GitHub được mời vào repo và đã cài sẵn Claude Code trên máy. Bây giờ chỉ cần làm đúng 3 bước:
 
-### Bước 1. Nhận lời mời vào repo
+### Bước 1. Tải mã nguồn về máy
 
-1. Đăng nhập GitHub bằng tài khoản Trum đã mời.
-2. Mở https://github.com/trungkhanhduong93/iaccdemo/invitations, bấm **Accept invitation**.
-3. Mở https://github.com/trungkhanhduong93/iaccdemo. Thấy danh sách file là xong.
+1. Bấm phím Windows trên bàn phím, gõ `PowerShell`, bấm phím Enter.
+2. Chép từng dòng lệnh sau, dán vào cửa sổ PowerShell rồi bấm Enter:
 
-Lời mời hết hạn sau 7 ngày. Hết hạn thì nhắn Trum mời lại.
-
-### Bước 2. Cài Git
-
-1. Tải Git ở https://git-scm.com/downloads/win, chạy file cài, bấm **Next** tới khi cài xong, không đổi tuỳ chọn nào.
-2. Mở PowerShell: bấm phím Windows, gõ `PowerShell`, Enter.
-3. Gõ `git --version`, Enter. Thấy dòng `git version ...` là xong.
-4. Khai tên và email cho Git. Email là email đăng ký GitHub của bạn:
-
-```bash
-git config --global user.name "Ten Cua Ban"
-```
-
-```bash
-git config --global user.email "email-github-cua-ban@example.com"
-```
-
-### Bước 3. Cài Node.js
-
-1. Tải bản **LTS** ở https://nodejs.org, chạy file cài, để mặc định. Bỏ trống ô cài thêm công cụ biên dịch (Tools for Native Modules).
-2. Đóng PowerShell cũ, mở PowerShell mới.
-3. Gõ `node -v`. Thấy `v22.12` trở lên (vd `v24.11.0`) là xong.
-
-### Bước 4. Cài Python và Chrome
-
-Script kiểm của nhóm cần hai thứ này để mở thử từng màn.
-
-1. Tải Python ở https://www.python.org/downloads/. Màn đầu của trình cài, tick ô **Add python.exe to PATH**, rồi bấm **Install Now**.
-2. Mở PowerShell mới, chạy lệnh dưới. Báo không có `pip` thì chạy `py -m pip install playwright`.
-
-```bash
-pip install playwright
-```
-
-3. Cài Google Chrome nếu máy chưa có.
-
-### Bước 5. Cài agent
-
-Chọn một trong hai:
-
-- Claude: tải ở https://claude.ai/download, đăng nhập, dùng tab **Code**.
-- Antigravity: tải ở https://antigravity.google/download, đăng nhập tài khoản Google.
-
-### Bước 6. Lấy mã nguồn về máy
-
-1. Tạo thư mục làm việc, vd `D:\code`.
-2. Trong PowerShell, vào thư mục đó:
-
-```bash
-cd D:\code
-```
-
-3. Tải repo về. Lần đầu Git mở trình duyệt hỏi đăng nhập GitHub: đăng nhập đúng tài khoản được mời, bấm cho phép.
-
-```bash
+```powershell
+cd D:\
 git clone https://github.com/trungkhanhduong93/iaccdemo.git
-```
-
-4. Vào thư mục repo, cài thư viện. Chờ chạy xong, không có dòng `ERR!` là được.
-
-```bash
 cd iaccdemo
 ```
 
-```bash
-npm ci
+Nếu máy bạn không có ổ D, thay dòng đầu tiên bằng `cd C:\`.  
+Nếu Git bật cửa sổ hỏi đăng nhập GitHub: bạn đăng nhập đúng tài khoản đã được Trum mời rồi bấm cho phép.
+
+### Bước 2. Bật Claude Code
+
+Tại đúng cửa sổ PowerShell vừa tải xong ở trên, gõ:
+
+```powershell
+claude
 ```
 
-### Bước 7. Chạy thử
+Nếu lần đầu chạy Claude Code hỏi đăng nhập tài khoản Anthropic: bấm Enter để mở trình duyệt và đăng nhập tài khoản Claude của bạn.
 
-1. Chạy bản thử trên máy:
+### Bước 3. Dán câu mở đầu cho Claude Code
 
-```bash
-npm run dev
-```
-
-2. Mở http://localhost:5180, đăng nhập bằng email bất kỳ, mật khẩu từ 6 ký tự.
-3. Thấy màn chọn đơn vị kế toán là máy đã sẵn sàng.
-4. Bấm vào cửa sổ PowerShell, bấm Ctrl+C để tắt bản thử.
-
-### Bước 8. Mở repo bằng agent
-
-1. Mở thư mục `D:\code\iaccdemo` trong agent:
-   - Claude: tab **Code**, chọn thư mục `D:\code\iaccdemo`.
-   - Antigravity: **File** > **Open Folder**, chọn `D:\code\iaccdemo`.
-2. Dán câu sau vào ô chat, thay tên GitHub của bạn:
+Khi màn hình chat của Claude Code hiện lên, bạn chỉ cần chép nguyên văn câu sau, thay tên GitHub của bạn (ví dụ `PhuongXT` hoặc `dinhlanphuongipacc`), rồi bấm Enter:
 
 ```text
-Tui là <tên GitHub>, người mới. Đọc AGENTS.md và BAT-DAU.md, kiểm máy tui đã cài đủ Git, Node, Python, Playwright chưa, thiếu gì thì hướng dẫn tui cài.
+Tui là <tên GitHub của bạn>. Tui là người mới. Đọc BAT-DAU.md và AGENTS.md, kiểm tra máy tui đã đủ công cụ chưa (Node, Python, Chrome, Playwright), cài giúp tui những thứ còn thiếu, rồi hướng dẫn tui việc Trum giao cho tui.
 ```
 
-Agent báo đủ là xong phần cài đặt.
+Đến đây là xong việc chuẩn bị của bạn. Claude Code sẽ tự động kiểm tra máy, cài đặt thư viện và báo cho bạn biết Trum đã giao việc gì và cần làm gì tiếp theo.
 
-## Phần 2. Mỗi lần làm việc
+## Hướng dẫn cho Claude Code khi gặp câu mở đầu của người mới
 
-1. Mở agent ở thư mục `iaccdemo`.
-2. Dán câu mở đầu, thay tên GitHub của bạn:
+Mục này dành riêng cho Claude Code đọc và tự động thực thi.
+
+Khi người dùng dán câu chào ở Bước 3 trên, Claude Code bắt buộc làm đủ các bước sau bằng lệnh tự động, không để người dùng phải tự gõ lệnh thủ công:
+
+1. Kiểm tra môi trường máy:
+   - Chạy `node -v` (yêu cầu Node 20 trở lên) và `npm -v`. Nếu chưa có Node, đưa link https://nodejs.org và dặn người dùng tải bản LTS. Nếu đã có Node, tự chạy `npm ci` để cài đủ thư viện frontend cho repo.
+   - Chạy `python --version` hoặc `py --version`. Nếu chưa có Python, đưa link https://www.python.org/downloads/ (nhắc tick ô Add python.exe to PATH).
+   - Kiểm tra Playwright bằng `python -c "import playwright"`. Nếu thiếu, tự chạy lệnh `pip install playwright` (hoặc `py -m pip install playwright`).
+   - Kiểm tra Google Chrome trên máy (cần Chrome để chạy script `tools/kiem_tra.py`).
+2. Chạy thử bản web:
+   - Chạy thử `npm run dev` xem cổng 5180 có khởi động bình thường không.
+   - Hướng dẫn người dùng mở trình duyệt vào http://localhost:5180 bấm thử đăng nhập xem có vào được màn hình kế toán không.
+3. Đồng bộ và nhận việc:
+   - Chạy `git pull --rebase` để đảm bảo code mới nhất.
+   - Đọc `docs/TIEN-DO.md`, tìm dòng việc có tên GitHub của người dùng trong cột "Người làm" (hoặc việc chưa có người làm theo thứ tự ưu tiên từ trên xuống).
+   - Đọc 3 file nhật ký mới nhất trong `docs/nhat-ky/` và nhật ký liên quan đến việc đó.
+4. Báo cáo lại cho người dùng bằng tiếng Việt, lời lẽ dễ hiểu:
+   - Thông báo tình trạng máy: đã đủ công cụ hay chưa, đã chạy thử được web chưa.
+   - Giới thiệu công việc: Trum đang giao cho bạn việc mã số mấy (vd T03, T08...), công việc đó làm gì trên giao diện phần mềm kế toán.
+   - Đề xuất bước tiếp theo cụ thể và hỏi người dùng có muốn bắt đầu làm ngay không.
+
+## Phần 2. Mỗi lần ngồi vào làm việc hàng ngày
+
+Mỗi ngày ngồi vào máy, bạn chỉ cần làm theo các bước sau:
+
+### 1. Mở Claude Code
+Mở PowerShell, gõ:
+
+```powershell
+cd D:\iaccdemo
+claude
+```
+
+Hoặc `cd C:\iaccdemo` nếu bạn để ở ổ C.
+
+### 2. Dán câu bắt đầu phiên
+Dán câu sau vào ô chat của Claude Code:
 
 ```text
-Tui là <tên GitHub>. Làm theo AGENTS.md: kéo bản mới về, đọc tiến độ và nhật ký, cho tui biết việc Trum giao cho tui và phiên trước dừng ở đâu.
+Tui là <tên GitHub của bạn>. Làm theo AGENTS.md: kéo bản mới về, đọc tiến độ và nhật ký, cho tui biết việc Trum giao cho tui và phiên trước dừng ở đâu.
 ```
 
-3. Agent kể việc được giao và đề xuất làm việc nào trước. Chọn việc, nói rõ bạn muốn gì. Không chắc nghiệp vụ kế toán thì hỏi Trum trước khi bảo agent sửa.
-4. Agent sửa xong thì bảo agent chạy bản thử. Mở http://localhost:5180, tự bấm thử phần vừa sửa.
-5. Ưng rồi thì nói:
+### 3. Làm việc cùng Claude Code
+- Claude Code sẽ kể việc Trum giao và hỏi bạn muốn sửa phần nào.
+- Bạn chỉ cần nói yêu cầu bằng tiếng Việt bình thường (ví dụ: "Thêm cột thuế vào bảng", "Đổi tên nút Lưu thành Ghi sổ"...).
+- Khi Claude Code sửa xong, bảo Claude: "Chạy bản thử giúp tui". Bạn mở http://localhost:5180 trên trình duyệt tự bấm xem đã ưng ý chưa.
+- Nếu không chắc nghiệp vụ kế toán hoặc ý của Trum, hãy dừng lại hỏi Trum ngay, không để Claude đoán mò.
+
+### 4. Khi làm xong việc
+Khi bạn bấm thử trên web thấy ưng ý rồi, nói với Claude Code:
 
 ```text
-Xong việc này. Kiểm, ghi nhật ký, cập nhật tiến độ rồi push.
+Xong việc này rồi. Kiểm tra code, chạy typecheck, build, test, ghi nhật ký, cập nhật tiến độ rồi push lên GitHub giúp tui.
 ```
 
-6. Agent chạy các bước kiểm, ghi nhật ký, push lên GitHub. Chừng 2 phút sau, robot đưa bản mới lên https://iaccdemo.pages.dev.
-7. Xem robot ở https://github.com/trungkhanhduong93/iaccdemo/actions. Dòng trên cùng có dấu tích xanh là đã lên online. Dấu X đỏ là lỗi: nói với agent "robot báo đỏ, xem lỗi và sửa".
-8. Hết giờ mà chưa xong việc thì nói:
+Claude Code sẽ tự chạy bộ kiểm tra, ghi nhật ký phiên làm việc, cập nhật bảng tiến độ và đẩy code lên GitHub. Sau khoảng 2 phút, robot sẽ đưa bản mới lên trang web demo https://iaccdemo.pages.dev.
+
+### 5. Khi hết giờ hoặc muốn nghỉ giữa chừng
+Nếu công việc chưa xong hẳn nhưng đến giờ nghỉ, bạn chỉ cần nói:
 
 ```text
-Dừng ở đây. Ghi nhật ký dở dang, cập nhật tiến độ rồi push.
+Hôm nay dừng ở đây. Ghi nhật ký dở dang, cập nhật tiến độ rồi push giúp tui.
 ```
 
-Lần sau agent của bạn, hoặc của người khác, đọc nhật ký đó và làm tiếp đúng chỗ.
+Lần sau bạn (hoặc người khác) mở lên, Claude Code sẽ đọc lại nhật ký và tiếp tục làm đúng chỗ đã dừng.
 
-Lần push chỉ sửa file tài liệu `.md` thì robot không chạy. Như vậy là bình thường.
+## Phần 3. Những luật cần nhớ
 
-## Phần 3. Luật chung
+- Ai cũng tự push thẳng lên `main`: không cần tạo pull request hay chờ ai duyệt, nhưng Claude Code bắt buộc phải chạy bộ kiểm tra (typecheck, build, kiem_tra.py) không có lỗi thì mới được push.
+- Cấm lệnh có cờ force: nếu Claude Code đề nghị gõ lệnh git nào có chữ `--force`, bạn từ chối ngay và báo Trum.
+- Mọi việc đều lưu trong repo: mọi tiến độ, nhật ký, quyết định đều nằm trong thư mục `docs/`. Không giữ thông tin trong trí nhớ riêng.
+- Khi robot báo đỏ: xem tại https://github.com/trungkhanhduong93/iaccdemo/actions. Nếu thấy dấu X màu đỏ, bạn chỉ cần copy lỗi hoặc đưa link cho Claude Code: "Robot báo đỏ, sửa giúp tui".
 
-- Trum giao việc trong `docs/TIEN-DO.md`. Muốn làm việc chưa có trong bảng thì bảo agent thêm dòng mới ghi tên bạn, rồi nhắn Trum.
-- Ai cũng tự commit và push lên `main`, không chờ duyệt. Mỗi lần push là bản online đổi theo, nên chỉ push khi agent đã kiểm xong.
-- Không được chạy lệnh có chữ `--force`. Agent đề nghị thì từ chối và hỏi Trum.
-- Điều gì người sau cần biết phải nằm trong repo: nhật ký, tiến độ, quyết định. Nói miệng hoặc để trong bộ nhớ riêng của agent thì người khác không thấy.
-- Bản online bị lỗi mà agent chưa sửa kịp thì báo Trum. Trum quay bản online về bản trước trên Cloudflare.
+## Phần 4. Bảng xử lý lỗi nhanh khi tải code lần đầu
 
-## Phần 4. Lỗi hay gặp
-
-| Thấy gì | Làm gì |
+| Hiện tượng | Cách xử lý |
 |---|---|
-| Clone báo `Repository not found` | Chưa nhận lời mời ở bước 1, hoặc Git đang nhớ tài khoản GitHub khác. Mở **Credential Manager** của Windows, mục **Windows Credentials**, xoá dòng `git:https://github.com`, clone lại |
-| PowerShell báo không nhận ra `git`, `node`, `npm` | Cài xong phải mở PowerShell mới. Vẫn lỗi thì cài lại, để mặc định |
-| `python` không chạy | Dùng `py` thay cho `python` |
-| `Port 5180 is already in use` | Đang có một bản thử khác chạy. Tìm cửa sổ PowerShell đó, bấm Ctrl+C, hoặc đóng hẳn cửa sổ |
-| Push báo `rejected` | Người khác vừa push trước. Nói với agent "pull --rebase rồi push lại" |
-| Push báo `GH007` | GitHub đang chặn lộ email. Vào GitHub **Settings** > **Emails**, chép địa chỉ `...@users.noreply.github.com`, khai lại email ở bước 2 bằng địa chỉ đó |
-| Robot báo X đỏ | Mở dòng bị đỏ trong tab Actions, đưa link cho agent sửa |
+| Báo `Repository not found` | Bạn chưa bấm nhận lời mời vào repo của Trum trên GitHub, hoặc máy tính đang lưu tài khoản GitHub cũ. Vào Credential Manager của Windows > Windows Credentials, tìm xoá dòng `git:https://github.com` rồi chạy lại lệnh `git clone`. |
+| Báo `cd : Cannot find path 'D:\'` | Máy bạn không có ổ D. Hãy đổi sang ổ C: gõ `cd C:\` rồi tiếp tục `git clone`. |
+| Báo `claude : The term 'claude' is not recognized` | Máy bạn chưa cài Claude Code CLI. Gõ lệnh: `npm install -g @anthropic-ai/claude-code` rồi gõ lại `claude`. |
+| `Port 5180 is already in use` | Đang có một cửa sổ khác chạy bản thử. Tìm cửa sổ đó bấm Ctrl+C để tắt, hoặc bảo Claude Code tắt tiến trình chiếm cổng. |
+| Push báo `rejected` | Người khác vừa push code mới trước bạn. Nói với Claude: "pull --rebase rồi push lại giúp tui". |

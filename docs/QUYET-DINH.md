@@ -84,3 +84,11 @@ Tham khảo AMIS hay sản phẩm khác chỉ để học bố cục, luồng th
 Không chép màu, phông, biểu tượng hay tên tính năng riêng của sản phẩm khác, vd trợ lý "AVA Kế toán" của AMIS.
 
 Lý do: Trum dặn khi giao việc làm lại form chứng từ và màn danh sách theo AMIS (T15).
+
+## QD13. Tên gọi agent và mô hình phối hợp Clau - Anti (07/10/2026 tối)
+
+- Tên gọi tắt trong nhóm: Claude Code gọi là **Clau**, Antigravity gọi là **Anti**.
+- Hai agent chạy độc lập, không thông bộ nhớ chat trực tiếp. Mọi thông tin cần agent khác biết phải ghi vào repo (`docs/TIEN-DO.md`, `docs/nhat-ky/`, `docs/QUYET-DINH.md`).
+- Phân vai tối ưu token:
+  + **Clau** làm Kiến trúc sư & Quản lý (Planner & Reviewer): phân tích logic kế toán, chốt kiến trúc, chia nhỏ task, soát lỗi nghiệp vụ cuối. Không dùng Clau chạy lặp đi lặp lại việc sửa cú pháp/typecheck để tránh tốn token.
+  + **Anti** làm Kỹ sư thi công (Builder & Executor): đọc code, viết code, sửa lỗi, chạy typecheck, build, chạy kiểm thử tự động (`tools/kiem_tra.py`).

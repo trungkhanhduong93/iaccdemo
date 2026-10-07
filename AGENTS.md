@@ -4,7 +4,7 @@ Repo này là bản mẫu giao diện phần mềm kế toán web IACC Cloud: Re
 
 Ai cũng tự commit, tự push thẳng `main`, không qua duyệt. Mỗi lần push lên `main`, robot GitHub Actions kiểm rồi đưa bản mới lên https://iaccdemo.pages.dev. Vì không ai duyệt, các bước kiểm dưới đây là chốt chặn duy nhất trước khi code lên online.
 
-Agent nào cũng phải làm theo file này: Claude Code, Antigravity, Codex, Cursor. Người dùng dặn khác trong phiên thì theo người dùng, trừ mục "Cấm": gặp yêu cầu vi phạm mục đó thì dừng lại, đề nghị người dùng hỏi Trum.
+Agent nào cũng phải làm theo file này: Claude Code (Clau), Antigravity (Anti), Codex, Cursor. Người dùng dặn khác trong phiên thì theo người dùng, trừ mục "Cấm": gặp yêu cầu vi phạm mục đó thì dừng lại, đề nghị người dùng hỏi Trum.
 
 ## Cách nói chuyện
 
