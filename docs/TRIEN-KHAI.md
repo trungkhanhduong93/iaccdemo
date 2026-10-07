@@ -23,7 +23,7 @@ Robot nằm ở `.github/workflows/deploy.yml`. Nó kiểm code rồi đưa bả
 - Các bước: `npm ci`, `npm run typecheck`, `npm run build`, rồi `wrangler pages deploy dist --project-name iaccdemo --branch main`.
 - Bước nào hỏng thì robot dừng, bản online giữ bản cũ. GitHub báo lỗi cho người push qua email hoặc chuông thông báo, tuỳ cài đặt của người đó.
 - Nhiều lần push sát nhau thì robot chạy lần lượt. Lần nào đang chờ mà có lần mới hơn thì bỏ lần đang chờ, chỉ chạy lần mới nhất.
-- Mỗi lần chạy mất khoảng 3 phút.
+- Lần chạy đầu (07/10/2026, commit e59c251) mất 12 giây cho phần cài thư viện, kiểm và build. Bước deploy chưa đo vì chưa có token, ước thêm dưới 1 phút.
 - Xem kết quả ở https://github.com/trungkhanhduong93/iaccdemo/actions.
 - GitHub gói Free cho 2.000 phút chạy mỗi tháng với repo riêng tư.
 

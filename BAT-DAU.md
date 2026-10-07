@@ -124,7 +124,7 @@ Tui là <tên GitHub>. Làm theo AGENTS.md: kéo bản mới về, đọc tiến
 Xong việc này. Kiểm, ghi nhật ký, cập nhật tiến độ rồi push.
 ```
 
-6. Agent chạy các bước kiểm, ghi nhật ký, push lên GitHub. Khoảng 3 phút sau, robot đưa bản mới lên https://iaccdemo.pages.dev.
+6. Agent chạy các bước kiểm, ghi nhật ký, push lên GitHub. Chừng 2 phút sau, robot đưa bản mới lên https://iaccdemo.pages.dev.
 7. Xem robot ở https://github.com/trungkhanhduong93/iaccdemo/actions. Dòng trên cùng có dấu tích xanh là đã lên online. Dấu X đỏ là lỗi: nói với agent "robot báo đỏ, xem lỗi và sửa".
 8. Hết giờ mà chưa xong việc thì nói:
 

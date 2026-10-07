@@ -22,6 +22,9 @@
 - `tools/kiem_tra.py` đủ 4 gói: 792 lượt mở màn, không lỗi console, không trắng trang, không tràn ngang. Ô Quy trình mở đúng form, Esc về đúng Quy trình. Cân đối kế toán, cân đối số phát sinh, lưu chuyển tiền tệ cân ở kỳ 8, 9, 10 với gói Starter, Medium, Advance.
 - Menu thả xuống ở màn 1280x720: lật lên khi sát đáy, Tab rời ô chọn đúng, bấm nhãn khi đang mở thì đóng. Mục khoá trong "Khác" mở trang Nâng cấp, lọc trạng thái đúng, đổi đơn vị sang Trà Lá ra gói Advance, không lỗi console.
 - Bản online: đăng nhập, chọn đơn vị, đổi gói trong Xem thử, mở form Phiếu thu từ Quy trình, Esc về Quy trình, không lỗi console. Trang trả `x-robots-tag: noindex`.
+- Robot chạy lần đầu với commit e59c251: xanh trong 12 giây. `npm ci`, typecheck, build qua trên máy Linux của GitHub. Bước deploy bỏ qua vì chưa có token, cảnh báo vàng hiện đúng.
+- `npm run dev` lần hai khi cổng 5180 đang bận báo `Port 5180 is already in use` và dừng, không chuyển sang 5181.
+- Chưa kiểm: phiên Claude Code mới mở repo có tự nạp `AGENTS.md` qua `CLAUDE.md` không. Bản CLI riêng trên máy Trum hết hạn đăng nhập nên chưa thử được.
 - Soát chữ giao diện bằng `kiem_van.py --loai giao-dien`: 0 ĐỎ, 0 VÀNG. Soát 12 file tài liệu: 0 ĐỎ, còn VÀNG in đậm ở `docs/TRIEN-KHAI.md` vì đó là tên nút trên Cloudflare và GitHub.
 
 ## Dở dang, việc tiếp theo

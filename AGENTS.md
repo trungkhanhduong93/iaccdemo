@@ -52,7 +52,7 @@ Làm cả khi bỏ dở giữa chừng:
 4. `git add` đúng các file đã sửa, không dùng `git add -A`. `package-lock.json` chỉ commit khi có thêm hoặc đổi thư viện.
 5. Commit message tiếng Việt, bắt đầu bằng mã việc, vd `T03: nối sổ quỹ vào sổ cái`.
 6. Chạy `git pull --rebase` rồi `git push`. Push bị từ chối thì pull --rebase lại, gỡ xung đột, chạy lại mục "Trước khi push", rồi push.
-7. Báo người dùng commit vừa push. Có sửa code thì nhắc xem robot ở https://github.com/trungkhanhduong93/iaccdemo/actions sau khoảng 3 phút.
+7. Báo người dùng commit vừa push. Có sửa code thì nhắc xem robot ở https://github.com/trungkhanhduong93/iaccdemo/actions sau khoảng 2 phút.
 
 ## Cấm
 
