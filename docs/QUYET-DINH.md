@@ -222,3 +222,5 @@ Thay một phần QD14 và QD20 cho danh sách chứng từ dùng chung (`Vouche
 - Loại phiếu 2.1.1 đổi tên: Thu tiền mặt, Chi tiền mặt, Thu ngân hàng, Chi ngân hàng, Chuyển quỹ đứng cuối.
 
 Lý do: PhuongXT chốt khi làm T25, T39. Trum chưa xem lại.
+
+## QD25. Danh sách chứng từ theo iFaster: lọc, cột, thao tác hàng loạt (đang soạn)
