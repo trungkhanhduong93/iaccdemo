@@ -75,6 +75,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
   const [trang, setTrang] = useState(1)
   const [coTrang, setCoTrang] = useState(20)
   const [tabPanel, setTabPanel] = useState('ct')
+  const [panelMo, setPanelMo] = useState(true)
   const kieu = kieuGhiSo(s.goi)
   const ghi = kieu !== 'khong'
   // Chi nhánh chọn trên thanh trên (QD17): lọc theo chi nhánh đó, bỏ cột và ô lọc chi nhánh
@@ -153,7 +154,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
   return (
     <div className="page page-voucher">
       <h1 className="sr-only">{tenMan(sc)}</h1>
-      <div className="voucher-split">
+      <div className={`voucher-split${panelMo ? '' : ' gon-ct'}`}>
         <section className="card voucher-top">
           {/* Thanh công cụ: chip trạng thái bên trái; ô lọc, phễu, Lọc, Tuỳ chỉnh cột, Excel, Hàng loạt, Thêm mới | ⌄ (T43) */}
           <div className="ds-thanh">
@@ -200,6 +201,15 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
                   onTai: () => toast('Đã tải 612 đơn mới từ FABi, gom vào 3 chứng từ ngày 07/10'),
                 }}
               />
+              <button
+                type="button"
+                className="icon-btn sm"
+                onClick={() => setPanelMo(p => !p)}
+                title={panelMo ? 'Thu gọn chi tiết chứng từ (mở rộng danh sách)' : 'Mở màn hình chi tiết chứng từ'}
+                aria-label={panelMo ? 'Thu gọn chi tiết' : 'Mở chi tiết'}
+              >
+                <Icon n={panelMo ? 'chevd' : 'chevu'} className="ic sm" />
+              </button>
             </div>
           </div>
           {list.length ? (
@@ -244,10 +254,65 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
           )}
         </section>
 
-        <section className="card ct-panel voucher-bottom">
+        <section className={`card ct-panel voucher-bottom${panelMo ? '' : ' gon'}`}>
           {activeRow ? (
-            <>
-              <div className="voucher-bottom-h">
+            panelMo ? (
+              <>
+                <div className="voucher-bottom-h">
+                  <div className="row" style={{ gap: 8, minWidth: 0, flex: '1 1 auto' }}>
+                    <Icon n="doc" className="ic sm" />
+                    <b style={{ whiteSpace: 'nowrap' }}>Chi tiết {activeRow.so}</b>
+                    <span className="dim" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      ({activeRow.ngay}) — {activeRow.dienGiai}
+                    </span>
+                  </div>
+                  <div className="tabs" style={{ margin: 0, flex: 'none' }}>
+                    {[
+                      ['ct', 'Hàng bán'],
+                      ['ht', kieu === 'noco' ? 'Hạch toán' : 'Ghi sổ'],
+                      ['tt', 'Thanh toán'],
+                      ['goc', 'Đơn POS gốc'],
+                    ].map(([k, l]) => (
+                      <button
+                        key={k}
+                        type="button"
+                        className={tabPanel === k ? 'on' : ''}
+                        onClick={() => setTabPanel(k)}
+                      >
+                        {l}
+                      </button>
+                    ))}
+                  </div>
+                  <button
+                    type="button"
+                    className="btn sm"
+                    style={{ flex: 'none', marginLeft: 8 }}
+                    onClick={() => nav(`${duongDan(mod, sc)}/${activeRow.id}`)}
+                    title="Mở form toàn màn hình (hoặc đúp chuột vào dòng)"
+                  >
+                    <Icon n="eye" className="ic sm" />Xem chi tiết
+                  </button>
+                  <button
+                    type="button"
+                    className="btn sm ghost"
+                    style={{ flex: 'none', marginLeft: 4 }}
+                    onClick={() => setPanelMo(false)}
+                    title="Thu gọn màn hình chi tiết"
+                  >
+                    <Icon n="chevd" className="ic sm" />Thu gọn
+                  </button>
+                </div>
+                <div className="voucher-bottom-b">
+                  <NoiDungTab x={activeRow.x} tab={tabPanel} kieu={kieu} />
+                </div>
+              </>
+            ) : (
+              <div
+                className="voucher-bottom-h"
+                onClick={() => setPanelMo(true)}
+                title="Bấm để mở rộng màn hình chi tiết chứng từ"
+                style={{ cursor: 'pointer' }}
+              >
                 <div className="row" style={{ gap: 8, minWidth: 0, flex: '1 1 auto' }}>
                   <Icon n="doc" className="ic sm" />
                   <b style={{ whiteSpace: 'nowrap' }}>Chi tiết {activeRow.so}</b>
@@ -255,37 +320,17 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
                     ({activeRow.ngay}) — {activeRow.dienGiai}
                   </span>
                 </div>
-                <div className="tabs" style={{ margin: 0, flex: 'none' }}>
-                  {[
-                    ['ct', 'Hàng bán'],
-                    ['ht', kieu === 'noco' ? 'Hạch toán' : 'Ghi sổ'],
-                    ['tt', 'Thanh toán'],
-                    ['goc', 'Đơn POS gốc'],
-                  ].map(([k, l]) => (
-                    <button
-                      key={k}
-                      type="button"
-                      className={tabPanel === k ? 'on' : ''}
-                      onClick={() => setTabPanel(k)}
-                    >
-                      {l}
-                    </button>
-                  ))}
-                </div>
                 <button
                   type="button"
-                  className="btn sm"
+                  className="btn sm ghost"
                   style={{ flex: 'none', marginLeft: 8 }}
-                  onClick={() => nav(`${duongDan(mod, sc)}/${activeRow.id}`)}
-                  title="Mở form toàn màn hình (hoặc đúp chuột vào dòng)"
+                  onClick={e => { e.stopPropagation(); setPanelMo(true) }}
+                  title="Mở màn hình chi tiết chứng từ"
                 >
-                  <Icon n="eye" className="ic sm" />Xem chi tiết
+                  <Icon n="chevu" className="ic sm" />Mở chi tiết
                 </button>
               </div>
-              <div className="voucher-bottom-b">
-                <NoiDungTab x={activeRow.x} tab={tabPanel} kieu={kieu} />
-              </div>
-            </>
+            )
           ) : (
             <div className="empty" style={{ margin: 'auto' }}>
               <b>Chọn một chứng từ ở bảng trên để xem chi tiết</b>

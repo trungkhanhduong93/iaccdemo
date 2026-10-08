@@ -115,9 +115,9 @@ export function Table({ cols: cols0, rows, sum, onRow, onDbl, sel, rowCls, maxH,
   const [thH1, setThH1] = useState(36)
   useLayoutEffect(() => {
     if (r1Ref.current) {
-      const h = r1Ref.current.offsetHeight
-      if (h && h !== thH1) {
-        setThH1(h)
+      const h = r1Ref.current.getBoundingClientRect().height
+      if (h && Math.abs(h - thH1) > 0.5) {
+        setThH1(Math.round(h))
       }
     }
   })
@@ -151,7 +151,7 @@ export function Table({ cols: cols0, rows, sum, onRow, onDbl, sel, rowCls, maxH,
                   ...(rd.minW ? { minWidth: rd.minW } : {}),
                   ...(rd.maxW ? { maxWidth: rd.maxW } : {}),
                   ...vt[i].style,
-                  top: thH1,
+                  top: thH1 - 1,
                 }
                 return (
                   <th key={c.k} className={lop(c, i)} style={thLocStyle}>
@@ -173,10 +173,6 @@ export function Table({ cols: cols0, rows, sum, onRow, onDbl, sel, rowCls, maxH,
               })}
             </tr>
           ))}
-          {/* Hàng đệm để hấp thụ chiều cao thừa khi danh sách ít dòng, giữ dòng tổng luôn dính đáy bảng (T42) */}
-          <tr className="tbl-spacer" aria-hidden="true">
-            <td colSpan={cols.length} />
-          </tr>
         </tbody>
         {sum && (
           <tfoot>

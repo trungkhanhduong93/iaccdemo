@@ -258,7 +258,7 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
 
       {extra}
 
-      <div className="voucher-split">
+      <div className={`voucher-split${panelMo ? '' : ' gon-ct'}`}>
         {/* Nửa trên: 50% danh sách các phiếu */}
         <section className="card voucher-top">
           {/* Thanh công cụ: chip trạng thái bên trái; ô lọc, phễu, Lọc, Tuỳ chỉnh cột, Excel, Hàng loạt, Thêm mới | ⌄ (T43) */}
@@ -287,6 +287,15 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
                   onTai: () => toast(`Đã tải 14 chứng từ mới từ ${NGUON[cfg.nguon!][1]}`),
                 } : undefined}
               />
+              <button
+                type="button"
+                className="icon-btn sm"
+                onClick={() => setPanelMo(p => !p)}
+                title={panelMo ? 'Thu gọn chi tiết chứng từ (mở rộng danh sách)' : 'Mở màn hình chi tiết chứng từ'}
+                aria-label={panelMo ? 'Thu gọn chi tiết' : 'Mở chi tiết'}
+              >
+                <Icon n={panelMo ? 'chevd' : 'chevu'} className="ic sm" />
+              </button>
             </div>
           </div>
 
@@ -337,63 +346,73 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
           )}
         </section>
 
-        {/* Nửa dưới: 50% chi tiết bên trong chứng từ đang chọn */}
-        <section className="card ct-panel voucher-bottom">
+        {/* Nửa dưới: chi tiết bên trong chứng từ đang chọn (thu gọn / mở rộng được) */}
+        <section className={`card ct-panel voucher-bottom${panelMo ? '' : ' gon'}`}>
           {activeRow ? (
-            <>
-              <div className="voucher-bottom-h">
-                <div className="row" style={{ gap: 8, minWidth: 0, flex: '1 1 auto' }}>
-                  <Icon n="doc" className="ic sm" />
-                  <b style={{ whiteSpace: 'nowrap' }}>Chi tiết {activeRow.so}</b>
-                  <span className="dim" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    ({activeRow.ngay}) — {activeRow.dienGiai}
-                  </span>
+            panelMo ? (
+              <>
+                <div className="voucher-bottom-h">
+                  <div className="row" style={{ gap: 8, minWidth: 0, flex: '1 1 auto' }}>
+                    <Icon n="doc" className="ic sm" />
+                    <b style={{ whiteSpace: 'nowrap' }}>Chi tiết {activeRow.so}</b>
+                    <span className="dim" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      ({activeRow.ngay}) — {activeRow.dienGiai}
+                    </span>
+                  </div>
+                  <div className="tabs" style={{ margin: 0, flex: 'none' }}>
+                    <button
+                      type="button"
+                      className={tabPanel === 'ct' ? 'on' : ''}
+                      onClick={() => setTabPanel('ct')}
+                    >
+                      Hàng tiền ({activeDong.length} dòng)
+                    </button>
+                    <button
+                      type="button"
+                      className={tabPanel === 'ht' ? 'on' : ''}
+                      onClick={() => setTabPanel('ht')}
+                    >
+                      {ghi ? 'Hạch toán' : 'Ghi sổ'}
+                    </button>
+                    <button
+                      type="button"
+                      className={tabPanel === 'khac' ? 'on' : ''}
+                      onClick={() => setTabPanel('khac')}
+                    >
+                      Thông tin khác
+                    </button>
+                  </div>
+                  <button
+                    type="button"
+                    className="btn sm"
+                    style={{ flex: 'none', marginLeft: 8 }}
+                    onClick={() => nav(`${path}/${activeRow.id}`)}
+                    title="Mở form toàn màn hình (hoặc đúp chuột vào dòng)"
+                  >
+                    <Icon n="eye" className="ic sm" />Xem chi tiết
+                  </button>
+                  <button
+                    type="button"
+                    className="btn sm ghost"
+                    style={{ flex: 'none', marginLeft: 4 }}
+                    onClick={() => setPanelMo(false)}
+                    title="Thu gọn màn hình chi tiết"
+                  >
+                    <Icon n="chevd" className="ic sm" />Thu gọn
+                  </button>
                 </div>
-                <div className="tabs" style={{ margin: 0, flex: 'none' }}>
-                  <button
-                    type="button"
-                    className={tabPanel === 'ct' ? 'on' : ''}
-                    onClick={() => setTabPanel('ct')}
-                  >
-                    Hàng tiền ({activeDong.length} dòng)
-                  </button>
-                  <button
-                    type="button"
-                    className={tabPanel === 'ht' ? 'on' : ''}
-                    onClick={() => setTabPanel('ht')}
-                  >
-                    {ghi ? 'Hạch toán' : 'Ghi sổ'}
-                  </button>
-                  <button
-                    type="button"
-                    className={tabPanel === 'khac' ? 'on' : ''}
-                    onClick={() => setTabPanel('khac')}
-                  >
-                    Thông tin khác
-                  </button>
-                </div>
-                <button
-                  type="button"
-                  className="btn sm"
-                  style={{ flex: 'none', marginLeft: 8 }}
-                  onClick={() => nav(`${path}/${activeRow.id}`)}
-                  title="Mở form toàn màn hình (hoặc đúp chuột vào dòng)"
-                >
-                  <Icon n="eye" className="ic sm" />Xem chi tiết
-                </button>
-              </div>
 
-              <div className="voucher-bottom-b">
-                {tabPanel === 'ct' && (
-                  <BangSua
-                    cfg={theoLoai(cfg, activeRow.loai)}
-                    dong={activeDong}
-                    cheDo="xem"
-                    coKho={Boolean(bo.kho)}
-                    coCk={Boolean(bo.ck)}
-                    coKm={ghi}
-                  />
-                )}
+                <div className="voucher-bottom-b">
+                  {tabPanel === 'ct' && (
+                    <BangSua
+                      cfg={theoLoai(cfg, activeRow.loai)}
+                      dong={activeDong}
+                      cheDo="xem"
+                      coKho={Boolean(bo.kho)}
+                      coCk={Boolean(bo.ck)}
+                      coKm={ghi}
+                    />
+                  )}
 
                 {tabPanel === 'ht' && (
                   <div style={{ padding: 14 }}>
@@ -418,8 +437,33 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
                     <div><b>Trạng thái:</b> {TT_CT[activeRow.tt]?.[1] ?? activeRow.tt}</div>
                   </div>
                 )}
+                </div>
+              </>
+            ) : (
+              <div
+                className="voucher-bottom-h"
+                onClick={() => setPanelMo(true)}
+                title="Bấm để mở rộng màn hình chi tiết chứng từ"
+                style={{ cursor: 'pointer' }}
+              >
+                <div className="row" style={{ gap: 8, minWidth: 0, flex: '1 1 auto' }}>
+                  <Icon n="doc" className="ic sm" />
+                  <b style={{ whiteSpace: 'nowrap' }}>Chi tiết {activeRow.so}</b>
+                  <span className="dim" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    ({activeRow.ngay}) — {activeRow.dienGiai}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  className="btn sm ghost"
+                  style={{ flex: 'none', marginLeft: 8 }}
+                  onClick={e => { e.stopPropagation(); setPanelMo(true) }}
+                  title="Mở màn hình chi tiết chứng từ"
+                >
+                  <Icon n="chevu" className="ic sm" />Mở chi tiết
+                </button>
               </div>
-            </>
+            )
           ) : (
             <div className="empty">
               <b>Chọn một chứng từ ở bảng trên để xem chi tiết</b>
