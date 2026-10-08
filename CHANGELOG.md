@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 08/10/2026
 
+- T29: Màn Bán hàng 3.1.1 chia đôi như Hoá đơn bán hàng: danh sách chứng từ ở trên có phân trang, chi tiết chứng từ đang chọn ở dưới, đúp chuột mở form.
 - T28: Ô chọn trong form chứng từ cùng một kiểu, cao bằng ô gõ, ô bị khoá có nền xám. Ba cột thông tin chung thẳng hàng. Màn đăng nhập bỏ sơ đồ kết nối.
 - T26: Giao diện đổi theo ngôn ngữ thiết kế iFaster: màu xanh mới, sidebar xám đen, mục đang chọn nổi khối xanh, đầu bảng nền xanh nhạt, thẻ trắng không viền. Logo đổi sang Accounting Powered by iPOS.vn.
 - T25: Bấm Trước, Sau trong form chứng từ không còn chớp màn.

@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T29 | Màn chứng từ bán hàng 3.1.1 chia đôi 50/50 như 3.1.2: danh sách trên, chi tiết chứng từ đang chọn dưới, đúp chuột mở form | Trum | Đang làm | |
 | T27 | Danh sách chứng từ 2.1.1: khung chi tiết bên dưới hiện dòng phiếu khác với form của cùng phiếu (UNC2610-0259: khung ghi "Chi mua rau, củ tại chợ", form ghi "Trả tiền nhà cung cấp thịt bò") | | Chờ | Thấy khi làm T26 |
 | T01 | Tạo API token Cloudflare cho robot deploy, lưu vào GitHub. Cách làm ở `docs/TRIEN-KHAI.md` mục "Khoá Cloudflare cho robot" | Trum | Chờ | Chưa có token thì robot chỉ kiểm, không đưa lên online |
 | T02 | Chốt nghiệp vụ trên từng sơ đồ Quy trình: ô nào, nối thế nào, câu chữ. Sửa ở `src/modules/<phân hệ>/quy-trinh.ts` | Trum | Chờ | |
@@ -35,6 +34,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T29 | Màn chứng từ bán hàng 3.1.1 chia đôi 50/50 như 3.1.2 | Trum | 08/10/2026 | `2026-10-08-trum-ban-hang-chia-doi.md` |
 | T28 | Ô chọn trong form chứng từ dùng chung một kiểu, thẳng hàng. Màn đăng nhập bỏ sơ đồ kết nối | Trum | 08/10/2026 | `2026-10-08-trum-o-chon-ngay-ngan.md` |
 | T26 | Đổi ngôn ngữ thiết kế theo iFaster (QD15), thay logo sang Accounting Powered by iPOS.vn | Trum | 08/10/2026 | `2026-10-08-trum-thiet-ke-ifaster.md` |
 | T24 | Bố cục danh sách chứng từ 50/50 cố định 1 trang, sửa padding form và điều hướng Trước Sau Esc | Trum | 08/10/2026 | `2026-10-08-trum-bo-cuc-voucher-50-50.md` |
