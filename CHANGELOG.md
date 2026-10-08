@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 08/10/2026
 
+- T37: Biểu tượng đổi theo iFaster. Sidebar dùng biểu tượng khối đặc, mục thường màu xám, mục đang chọn màu trắng. Biểu tượng đồ vật trong màn cũng thành khối đặc, các nút mũi tên, lọc, tải lại vẫn nét mảnh.
 - T36: Gói Free chỉ hiện tính năng có trong gói, ẩn hẳn phân hệ, tab, báo cáo, ô sơ đồ của gói khác. Thanh trên hiện đủ tên công ty kèm nhãn Công ty, ô chi nhánh rộng hơn có nhãn Chi nhánh, nút Trải nghiệm gói màu cam nổi bật. Bỏ chọn vai trò: đăng nhập tài khoản nào thì vào đúng vai trò của tài khoản đó. Sơ đồ Quy trình tiền bỏ khung Báo cáo bị trùng, khối cuối thành Sổ sách, báo cáo.
 - T32: Thanh trên có ô chọn chi nhánh làm việc, bỏ ô kỳ và trạng thái đồng bộ FABi. Ô tìm kiếm (Ctrl K) chuyển lên đầu sidebar. Thêm Danh mục chi nhánh. Danh sách chứng từ lọc theo chi nhánh đang chọn; chứng từ mới lập theo chi nhánh đó và không sửa được trên form.
 - T25: Phiếu thu, chi có ô Lý do thu, Lý do chi ở đầu phiếu. Gói Free bỏ cột Khoản mục, Công việc ở dòng phiếu tiền. Loại phiếu Nộp tiền vào ngân hàng đổi thành Chuyển quỹ, chọn Từ quỹ, Đến quỹ. Sơ đồ Quy trình phân hệ Tiền vẽ lại: năm làn Thu tiền, Chi tiền, Chuyển quỹ, Đối chiếu công nợ, Phân bổ chi phí chuỗi cùng đổ về Sổ sách quỹ, gọn một trang. Gói Free mở Danh mục quỹ tiền và Sổ ngân hàng.

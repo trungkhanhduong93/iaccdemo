@@ -197,4 +197,14 @@ Thay một phần QD05 và QD08 cho riêng gói Free.
 
 Lý do: PhuongXT chốt khi làm T36.
 
-## QD23. Biểu tượng theo iFaster (đang soạn)
+## QD23. Biểu tượng theo iFaster (08/10/2026)
+
+Thay phần biểu tượng của QD12. Tên gọi trong `src/ui/Icon.tsx` giữ nguyên, màn nào cũng gọi như cũ.
+
+- Biểu tượng phân hệ (9) dùng bộ khối đặc `menu_*` của iFaster. iFaster là sản phẩm iPOS nên được dùng, như QD15.
+- Biểu tượng đồ vật (45) dùng Solar bản đặc (bold) của 480 Design, giấy phép CC BY 4.0. Nguồn ghi ở đầu `src/ui/icon-dac.ts`, không được xoá.
+- Biểu tượng thao tác (18: mũi tên, dấu cộng, đóng, tích, tìm, lọc, tải lại, tải lên, tải xuống, lịch...) giữ nét mảnh, như iFaster dùng nét mảnh cho các nút này.
+- Sidebar: biểu tượng mục thường màu xám `#8197a8`, mục đang chọn và khi rê chuột màu trắng.
+- Biểu tượng khối đặc nằm trong `src/ui/icon-dac.ts`, sinh bởi `python tools/xuat_bieu_tuong.py`, không sửa tay. Thêm hoặc đổi biểu tượng thì sửa bảng `IFASTER`, `SOLAR` trong script rồi chạy lại. Tên Solar tra ở https://icon-sets.iconify.design/solar/.
+
+Lý do: Trum giao việc T37 ngày 08/10/2026.
