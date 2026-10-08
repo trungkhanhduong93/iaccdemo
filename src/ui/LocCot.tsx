@@ -181,6 +181,17 @@ export function khopLoc(kieu: KieuLoc, g: GiaTriLoc, chu: string, so?: number, n
   return true
 }
 
+function toYmd(dmyStr: string): string {
+  if (!dmyStr) return ''
+  const m = dmyStr.trim().match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/)
+  if (m) {
+    const dd = m[1].padStart(2, '0')
+    const mm = m[2].padStart(2, '0')
+    return `${m[3]}-${mm}-${dd}`
+  }
+  return ''
+}
+
 /** Ô lọc của một cột trong hàng lọc */
 export function OLoc({ c, loc }: { c: Col; loc: LocCot }) {
   const kieu = loc.kieu(c)
@@ -189,7 +200,16 @@ export function OLoc({ c, loc }: { c: Col; loc: LocCot }) {
   const dang = dangLoc(g, kieu === 'chon' ? tatCaChon.length : undefined)
   const [mo, setMo] = useState(false)
   const btnRef = useRef<HTMLButtonElement>(null)
+  const dateRef = useRef<HTMLInputElement>(null)
   const dong = () => setMo(false)
+
+  const moPicker = () => {
+    try {
+      dateRef.current?.showPicker()
+    } catch {
+      dateRef.current?.focus()
+    }
+  }
 
   // Cột ngày: ô nhập nhỏ + biểu tượng lịch + phễu
   if (kieu === 'ngay') {
@@ -201,19 +221,30 @@ export function OLoc({ c, loc }: { c: Col; loc: LocCot }) {
           value={g.v}
           aria-label={`Lọc ngày cột ${c.t}`}
           onChange={e => loc.dat(c.k, { ...g, v: e.target.value, op: g.op || '=' })}
+          onClick={moPicker}
         />
-        <label className="loc-btn-lich" title="Chọn ngày">
+        <button
+          type="button"
+          className="loc-btn-lich"
+          title="Chọn ngày"
+          aria-label="Chọn ngày"
+          onClick={moPicker}
+        >
           <Icon n="calendar" className="ic sm" />
-          <input
-            type="date"
-            className="loc-inp-date-an"
-            onChange={e => {
-              if (!e.target.value) return
-              const [yy, mm, dd] = e.target.value.split('-')
-              loc.dat(c.k, { ...g, v: `${dd}/${mm}/${yy}`, op: g.op || '=' })
-            }}
-          />
-        </label>
+        </button>
+        <input
+          ref={dateRef}
+          type="date"
+          className="loc-inp-date-an"
+          value={toYmd(g.v)}
+          tabIndex={-1}
+          aria-hidden="true"
+          onChange={e => {
+            if (!e.target.value) return
+            const [yy, mm, dd] = e.target.value.split('-')
+            loc.dat(c.k, { ...g, v: `${dd}/${mm}/${yy}`, op: g.op || '=' })
+          }}
+        />
         <button
           ref={btnRef}
           type="button"

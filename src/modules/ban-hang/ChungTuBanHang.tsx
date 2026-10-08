@@ -182,7 +182,15 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
             <div className="ds-thanh-phai">
               <BoLoc ds={oLoc} cauHinh={cauHinhLoc} datCauHinh={datCauHinhLoc} dangLoc={loc0.dangLoc} khacNhap={loc0.khacNhap}
                 onLoc={apLoc} onXoaHet={loc0.xoaNhap} />
-              <NutTuyChinhCot cols={cot.colsDu} an={cot.an} coDinh={COT_CO_DINH} macDinh={cot.macDinh} onLuu={cot.luu} />
+              <NutTuyChinhCot
+                cols={cot.colsDu}
+                an={cot.an}
+                coDinh={COT_CO_DINH}
+                macDinh={cot.macDinh}
+                dongBang={cot.dongBang}
+                onLuu={cot.luu}
+                onDoRongTuDong={cot.datDoRongTuDong}
+              />
               <NutExcel
                 onNhap={() => toast('Nhập chứng từ bán hàng từ file Excel')}
                 onXuat={() => toast(`Đã xuất ${list.length} chứng từ ra Excel`)}
