@@ -6,6 +6,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 - T45: Rê chuột vào phân hệ trên sidebar hiện bảng flyout tooltip 2 cột (Nghiệp vụ và Tiện ích). Bấm vào mục để truy cập nhanh đến chứng từ, quy trình, danh mục. Hỗ trợ cả 2 trạng thái sidebar mở rộng và thu gọn.
 - T44: Màn hình máy tính xách tay 14 inch (hoặc dưới 1920px) tự động thu nhỏ 90% hiển thị trọn vẹn thoải mái. Chuyển nút tìm kiếm Ctrl K từ sidebar lên thanh trên cạnh ô Chi nhánh, bỏ nút Thêm nhanh ở sidebar. Badge phiên bản Pro đổi sang màu vàng đồng dạng viên thuốc bo tròn theo mẫu iPOS Inventory. Hàng lọc từng cột dưới tiêu đề cho phép bấm vào ô để gõ tìm kiếm trực tiếp cho mọi cột. Xử lý triệt để khoảng hở giữa hàng tiêu đề và hàng lọc khi cuộn bảng.
+- T43: Gói đổi tên thành Free, Standard, Plus, Pro. Sidebar và nút cam đổi màu theo logo. Màn không còn trống bên phải. Danh sách chứng từ gọn một hàng, có nút Hàng loạt chỉ hiện thao tác hợp với phiếu đã chọn, bỏ cột Trạng thái và dòng tiêu đề, dòng tổng luôn thấy. Mua hàng có thêm dữ liệu mẫu.
 
 ## 08/10/2026
 

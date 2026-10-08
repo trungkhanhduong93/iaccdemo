@@ -251,7 +251,30 @@ Lý do: Trum giao việc T41 ngày 08/10/2026, theo mẫu iFaster và iPOS Inven
 
 Thay một phần QD24, QD25. Lý do: Trum giao việc T42 ngày 08/10/2026, theo mẫu iPOS Inventory.
 
-## QD27. Gói Free/Standard/Plus/Pro, mã F/S/PL/PR và đợt chỉnh danh sách (đang soạn)
+## QD27. Gói Free/Standard/Plus/Pro, mã F/S/PL/PR và đợt chỉnh danh sách (09/10/2026)
+
+Gói:
+- Bốn gói đổi tên: Free, Standard (trước là Starter), Plus (trước là Medium), Pro (trước là Advance). Thay phần tên gói trong các quyết định trước.
+- Mã nội bộ đổi: F, S, PL, PR (trước là F, S, M, A). Lớp CSS màu gói (`fr`, `st`, `md`, `ad`, biến `--md`, `--ad`) giữ tên cũ.
+- `src/app/features.json` vẫn ghi mã 1 ký tự (vd "SMA") vì sinh từ Excel trên máy Trum. `plan.ts` đổi M thành PL, A thành PR khi đọc. Phiên cũ lưu trên trình duyệt có mã M, A cũng tự đổi.
+
+Giao diện chung:
+- Khối mục đang chọn ở sidebar dùng màu nút Lọc (`--blue`). Cam (`--orange`) đổi sang #f28020 cho khớp logo Accounting.
+- Các màn không còn giới hạn rộng 1480px. Riêng báo cáo dạng mẫu in vẫn để giữa.
+- Danh sách chứng từ, Bán hàng 3.1.1 và danh mục bỏ dòng tiêu đề màn, vì tên màn đã hiện ở tab. Thẻ `h1` vẫn giữ nhưng ẩn (`sr-only`) cho trình đọc màn hình và script kiểm.
+
+Danh sách chứng từ (thay một phần QD25, QD26):
+- Chip trạng thái và mọi nút nằm một hàng. Số đếm trong chip là ô vuông nền xám, chip đang chọn nền xanh nhạt.
+- Bỏ cột Trạng thái. Dòng chưa ghi sổ có vạch vàng đầu dòng, dòng lỗi có nền đỏ nhạt.
+- Nút Excel và nút Hàng loạt dạng biểu tượng nằm ngoài. Menu Thêm mới chỉ còn Thêm theo loại và Tải từ nguồn.
+- Nút Hàng loạt chỉ hiện thao tác hợp trạng thái phiếu đã chọn: ghi sổ phiếu chưa ghi, bỏ ghi sổ phiếu đã ghi, xem lỗi, xoá chỉ phiếu chưa ghi, còn In và Xuất Excel luôn có. Gói Free không có ghi sổ. Bấm ô chọn tất cả thì menu tự mở.
+- Ghi chú FABi ở 3.1.1 thu thành biểu tượng ⓘ.
+- Ô lọc cột: xem QD28 (gõ lọc trực tiếp ở mọi ô, phễu cho điều kiện nâng cao).
+- Dòng tổng luôn thấy ở đáy vùng bảng. Bảng chi tiết có cột tiền hoặc số lượng đều có dòng tổng. Ô nhãn dòng tổng trải sang các ô trống liền sau.
+
+Dữ liệu mẫu: Mua hàng 4.1.1 có 80 phiếu trong tháng 9 và 10, qua trường `soPhieu` của cấu hình chứng từ.
+
+Lý do: Trum giao việc T43 ngày 08/10/2026, chốt các mặc định cùng ngày.
 
 ## QD28. Giao diện gọn 85% cho màn 14 inch, tìm kiếm thanh trên và lọc bảng (09/10/2026)
 

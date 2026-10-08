@@ -181,11 +181,22 @@ export function Table({ cols: cols0, rows, sum, onRow, onDbl, sel, rowCls, maxH,
         {sum && (
           <tfoot>
             <tr className="sum">
-              {cols.map((c, j) => {
-                const v = c.k in sum ? cell(c, sum) : null
-                const title = motDong && (typeof v === 'string' || typeof v === 'number') ? String(v) : undefined
-                return <td key={c.k} className={lop(c, j)} style={tdStyle(c, j)} title={title}>{v}</td>
-              })}
+              {(() => {
+                // Ô nhãn (chữ, vd "Tổng cộng (9 dòng)") trải sang các ô trống liền sau để không ép cột hẹp như cột #.
+                // Không trải khi ô nhãn hoặc ô bị trải là cột đứng yên, để giữ vị trí sticky (T43)
+                const nhan = cols.findIndex(c => c.k in sum && typeof sum[c.k] === 'string')
+                let trai = 1
+                if (nhan >= 0 && !vt[nhan].cls) {
+                  while (nhan + trai < cols.length && !(cols[nhan + trai].k in sum) && !vt[nhan + trai].cls) trai++
+                }
+                return cols.map((c, j) => {
+                  if (nhan >= 0 && j > nhan && j < nhan + trai) return null
+                  const v = c.k in sum ? cell(c, sum) : null
+                  const title = motDong && (typeof v === 'string' || typeof v === 'number') ? String(v) : undefined
+                  const span = j === nhan && trai > 1 ? trai : undefined
+                  return <td key={c.k} colSpan={span} className={lop(c, j)} style={span ? vt[j].style : tdStyle(c, j)} title={title}>{v}</td>
+                })
+              })()}
             </tr>
           </tfoot>
         )}

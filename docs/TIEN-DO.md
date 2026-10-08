@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T43 | Đợt chỉnh 13 điểm: thanh công cụ một hàng, nút Excel và Hàng loạt dạng biểu tượng, chip đếm mới, dòng tổng, bỏ cột và dòng tiêu đề, màu sidebar và cam logo, bỏ giới hạn rộng, gói Free/Standard/Plus/Pro (mã F/S/PL/PR), dữ liệu mua hàng, dòng tổng bảng chi tiết (QD27) | Trum | Đang làm | Sửa nhiều file dùng chung: `plan.ts`, `session.tsx`, `app.css`, `VoucherScreen.tsx`, `ChungTuBanHang.tsx`, `ChungTuForm.tsx`, `LocNangCao.tsx`, `Table.tsx`, `gen.ts`, `types.ts` và mọi file có mã gói |
 | T27 | Danh sách chứng từ 2.1.1: khung chi tiết bên dưới hiện dòng phiếu khác với form của cùng phiếu (UNC2610-0259: khung ghi "Chi mua rau, củ tại chợ", form ghi "Trả tiền nhà cung cấp thịt bò") | | Chờ | Thấy khi làm T26 |
 | T02 | Chốt nghiệp vụ trên từng sơ đồ Quy trình: ô nào, nối thế nào, câu chữ. Sửa ở `src/modules/<phân hệ>/quy-trinh.ts` | Trum | Chờ | |
 | T03 | Nối sổ quỹ, sổ tài khoản 2.2.2, sổ ngân hàng 2.2.3, sổ công nợ 2.2.5 vào `so-cai.ts` để mọi sổ khớp báo cáo tài chính | | Chờ | Sổ quỹ đang tính riêng từ tiền mặt FABi từng chi nhánh. Tổng 3 quỹ chưa bằng dư TK 1111 trên cân đối kế toán |
@@ -35,6 +34,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T43 | Đợt chỉnh 13 điểm: thanh công cụ một hàng, nút Excel và Hàng loạt dạng biểu tượng, chip đếm mới, dòng tổng, bỏ cột Trạng thái và dòng tiêu đề, màu sidebar và cam logo, bỏ giới hạn rộng, gói Free/Standard/Plus/Pro (mã F/S/PL/PR), 80 phiếu mua hàng, dòng tổng bảng chi tiết (QD27) | Trum | 09/10/2026 | `2026-10-09-trum-dot-chinh-13-diem.md` |
 | T45 | Bảng flyout tooltip khi rê chuột vào phân hệ ở sidebar: hiện 2 cột Nghiệp vụ và Tiện ích để truy cập nhanh (QD29) | Trum | 09/10/2026 | `2026-10-09-trum-sidebar-flyout.md` |
 | T44 | Giao diện gọn 85% cho màn 14 inch, tìm kiếm Ctrl K lên thanh trên cạnh Chi nhánh, bỏ Thêm nhanh, badge Pro giống Inventory, gõ trực tiếp hàng lọc và xoá khe hở tiêu đề (QD28) | Trum | 09/10/2026 | `2026-10-09-trum-giao-dien-14inch-loc-cot.md` |
 | T42 | Giao diện gọn cho màn nhỏ (thu nhỏ dưới 1700px), bỏ đường dẫn trên tiêu đề, nút Thêm mới kèm menu gom công cụ, chip trạng thái mới, dòng tổng dính đáy, phân trang mới, lọc cột theo kiểu cột (QD26) | Trum | 08/10/2026 | `2026-10-08-trum-giao-dien-gon.md` |
