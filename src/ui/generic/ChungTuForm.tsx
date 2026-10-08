@@ -406,7 +406,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               {hinhThucTt === 'chuyenkhoan' && (
                 <div className="row" style={{ gap: 8, alignItems: 'center' }}>
                   <span style={{ fontSize: 12.5, color: 'var(--muted)' }}>Tài khoản ngân hàng:</span>
-                  <select
+                  <Select
                     className="inp sm"
                     disabled={!dangSua}
                     value={tknhChi}
@@ -415,7 +415,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
                     {TK_NGAN_HANG.map(tk => (
                       <option key={tk.so} value={tk.so}>{tk.so} - {tk.nh}</option>
                     ))}
-                  </select>
+                  </Select>
                 </div>
               )}
 
@@ -501,11 +501,11 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               </div>
               <div className="f">
                 <label>Nhân viên thực hiện</label>
-                <select className="inp" disabled={!dangSua}>
+                <Select className="inp" disabled={!dangSua}>
                   {NHAN_VIEN.map(n => (
                     <option key={n.ma} value={n.ten}>{n.ten} ({n.bp})</option>
                   ))}
-                </select>
+                </Select>
               </div>
               <div className="row" style={{ gap: 10 }}>
                 <div className="f" style={{ flex: 1 }}>
@@ -538,7 +538,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
             </div>
 
             {/* Cột 3: Ngày hạch toán, số chứng từ, chi nhánh */}
-            <div className="stack" style={{ gap: 10, background: 'var(--subtle)', padding: 12, borderRadius: 8 }}>
+            <div className="stack" style={{ gap: 10 }}>
               <div className="f">
                 <label>Ngày chứng từ <em>*</em></label>
                 {dangSua ? (
@@ -558,7 +558,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               <div className="f">
                 <label>Chi nhánh lập</label>
                 {dangSua ? (
-                  <select
+                  <Select
                     className="inp"
                     value={chiNhanh}
                     onChange={e => setChiNhanh(e.target.value)}
@@ -566,7 +566,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
                     {CHI_NHANH.map(c => (
                       <option key={c.id} value={c.ten}>{c.ten}</option>
                     ))}
-                  </select>
+                  </Select>
                 ) : (
                   <input className="inp" readOnly value={chiNhanh} />
                 )}

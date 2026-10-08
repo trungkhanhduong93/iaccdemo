@@ -3,26 +3,15 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useSession } from '../../app/session'
 import { Icon } from '../../ui/Icon'
-import { Logo, DauLogo } from '../../ui/Logo'
+import { Logo } from '../../ui/Logo'
 
 export function AuthBrand() {
-  const nodes: [string, string, string][] = [['pos', 'FABi', 'Đơn bán, ca, thanh toán'], ['box', 'iPOS Inventory', 'Phiếu kho, định lượng'], ['receipt', 'Hoá đơn điện tử', 'Đầu ra, đầu vào']]
   return (
     <div className="auth-l">
       <div className="brand"><Logo nen="toi" cao={40} /></div>
       <h1>Doanh thu FABi tự vào sổ.<br /><em>Không nhập tay đơn POS.</em></h1>
       <p>Phần mềm kế toán trên web cho chuỗi F&B. Đồng bộ FABi, iPOS Inventory, hoá đơn điện tử. Sổ sách, báo cáo theo TT58, TT133, TT99.</p>
-      <div className="hub">
-        <div className="hub-col">
-          {nodes.map(([ic, b, s]) => <div className="hub-n" key={b}><Icon n={ic} /><span><b>{b}</b><small>{s}</small></span></div>)}
-        </div>
-        <div className="hub-c"><DauLogo size={34} style={{ display: 'block' }} />IACC Cloud</div>
-        <div className="hub-col">
-          <div className="hub-n"><Icon n="bank" /><span><b>Thuế, ngân hàng</b><small>Kết nối trực tiếp</small></span></div>
-          <div className="hub-n"><Icon n="chart" /><span><b>Sổ sách, báo cáo</b><small>Theo thông tư</small></span></div>
-        </div>
-      </div>
-      <p style={{ fontSize: 12, marginTop: 28, color: '#8fa1c4' }}>iPOS.vn · Bản mẫu giao diện, dữ liệu giả</p>
+      <p style={{ fontSize: 12, marginTop: 'auto', color: '#aab1c2' }}>iPOS.vn · Bản mẫu giao diện, dữ liệu giả</p>
     </div>
   )
 }

@@ -357,7 +357,7 @@ export function BangSua({
                 <td className="dim c">{i + 1}</td>
                 {hang && (
                   <td>
-                    <select
+                    <Select
                       className="inp sm"
                       value={d.ma}
                       onChange={e => chonMaHang(i, e.target.value)}
@@ -366,7 +366,7 @@ export function BangSua({
                       {danhMucHang.map(x => (
                         <option key={x.ma} value={x.ma}>{x.ma} - {x.ten}</option>
                       ))}
-                    </select>
+                    </Select>
                   </td>
                 )}
                 <td>
@@ -380,7 +380,7 @@ export function BangSua({
                 </td>
                 {coKho && (
                   <td>
-                    <select
+                    <Select
                       className="inp sm"
                       value={d.kho || khoMacDinh}
                       onChange={e => capNhat(i, { kho: e.target.value })}
@@ -388,7 +388,7 @@ export function BangSua({
                       {KHO.map(k => (
                         <option key={k} value={k}>{k}</option>
                       ))}
-                    </select>
+                    </Select>
                   </td>
                 )}
                 {hang && (
@@ -512,16 +512,16 @@ export function BangSua({
                 {(cfg.thue !== undefined || hang) && (
                   <>
                     <td>
-                      <select
+                      <Select
                         className="inp sm"
-                        value={d.ts ?? 0}
+                        value={String(d.ts ?? 0)}
                         onChange={e => capNhat(i, { ts: Number(e.target.value) })}
                       >
                         <option value={0}>0%</option>
                         <option value={5}>5%</option>
                         <option value={8}>8%</option>
                         <option value={10}>10%</option>
-                      </select>
+                      </Select>
                     </td>
                     <td className="num">
                       <OSo val={d.thue} onChange={thue => capNhat(i, { thue })} />
