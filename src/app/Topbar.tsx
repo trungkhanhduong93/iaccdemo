@@ -59,7 +59,7 @@ export function Topbar() {
           {GOIS.map(g => {
             const n = demTheoGoi(g)
             return (
-              <MenuItem key={g} on={s.goi === g} icon={<span className={`mi-goi ${GOI[g].cls}`}>{GOI[g].ten[0]}</span>}
+              <MenuItem key={g} on={s.goi === g} icon={<span className={`mi-goi ${GOI[g].cls}`}>{g}</span>}
                 desc={<>{GOI[g].cheDoNgan} · {n.co}/{n.tong} tính năng</>} onClick={() => { set({ goi: g }); dong() }}>{GOI[g].ten}</MenuItem>
             )
           })}

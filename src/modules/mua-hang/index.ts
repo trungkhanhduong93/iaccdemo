@@ -13,7 +13,7 @@ const muaHang: ModuleDef = {
   mota: 'Phiếu mua từ iPOS Inventory, hoá đơn đầu vào, công nợ phải trả',
   quyTrinh,
   screens: tuExcel(3, {
-    '4.1.1': { voucher: { prefix: 'MH', doiTuong: 'ncc', nhan: 'Nhà cung cấp', them: 'Thêm phiếu mua hàng', dong: 'nvl', tien: [0, 0], nguon: 'IVT', dienGiai: MUA,
+    '4.1.1': { voucher: { prefix: 'MH', doiTuong: 'ncc', nhan: 'Nhà cung cấp', them: 'Thêm phiếu mua hàng', dong: 'nvl', tien: [0, 0], nguon: 'IVT', dienGiai: MUA, soPhieu: 80,
       soTT58: 'Sổ chi tiết vật liệu, dụng cụ, hàng hoá', noCo: [['152', '331', 'Nhập kho nguyên vật liệu'], ['1331', '331', 'Thuế GTGT được khấu trừ']] } },
     '4.1.2': { voucher: { prefix: 'HDM', doiTuong: 'ncc', nhan: 'Nhà cung cấp', them: 'Thêm hoá đơn mua hàng', dong: 'nvl', tien: [0, 0], nguon: 'HĐ', dienGiai: MUA,
       noCo: [['152', '331', 'Giá trị hàng mua'], ['1331', '331', 'Thuế GTGT được khấu trừ']] } },

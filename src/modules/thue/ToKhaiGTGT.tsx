@@ -1,4 +1,4 @@
-// Tờ khai thuế GTGT quý 3/2026. Starter tính trực tiếp trên doanh thu; Medium, Advance khấu trừ.
+// Tờ khai thuế GTGT quý 3/2026. Standard tính trực tiếp trên doanh thu; Plus, Pro khấu trừ.
 // Số bán ra lấy từ DAILY tháng 7–9 nên khớp chứng từ bán hàng. Bố cục để xem, kế toán trưởng phải duyệt mẫu trước khi làm thật.
 import { useState } from 'react'
 import type { ScreenProps } from '../types'

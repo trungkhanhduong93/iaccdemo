@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState, type DragEvent, type ReactNod
 import { createPortal } from 'react-dom'
 import type { Col, Row } from '../modules/types'
 import { useSession } from '../app/session'
-import { MenuItem, MenuSep, Popover } from './Dropdown'
+import { MenuHead, MenuItem, MenuSep, Popover } from './Dropdown'
 import { Icon } from './Icon'
 import { fold } from './format'
 
@@ -258,11 +258,15 @@ export function BoLoc({ ds, cauHinh, datCauHinh, dangLoc, khacNhap, onLoc, onXoa
 // ── Cột của bảng: thứ tự, ẩn hiện, độ rộng lưu theo màn ──
 
 /** Cột tick chọn nhiều, đứng yên bên trái */
-export function cotChon(ds: Row[], chon: Set<string>, datChon: (s: Set<string>) => void): Col {
+export function cotChon(ds: Row[], chon: Set<string>, datChon: (s: Set<string>) => void, onChonTatCa?: () => void): Col {
   const tatCa = ds.length > 0 && ds.every(r => chon.has(r.id))
   return {
     k: 'chk', t: '', w: 34, dinh: 'trai',
-    hd: <input type="checkbox" checked={tatCa} onChange={() => datChon(tatCa ? new Set() : new Set(ds.map(r => r.id)))} aria-label="Chọn tất cả" />,
+    hd: <input type="checkbox" checked={tatCa} onChange={() => {
+      const moi = tatCa ? new Set<string>() : new Set(ds.map(r => r.id))
+      datChon(moi)
+      if (!tatCa && ds.length > 0 && onChonTatCa) onChonTatCa()
+    }} aria-label="Chọn tất cả" />,
     r: r => (
       <input type="checkbox" checked={chon.has(r.id)} onClick={e => e.stopPropagation()} aria-label={`Chọn chứng từ ${r.so}`}
         onChange={() => { const moi = new Set(chon); if (moi.has(r.id)) moi.delete(r.id); else moi.add(r.id); datChon(moi) }} />
@@ -400,34 +404,114 @@ function useDongEsc(onDong: () => void) {
 
 // ── Thao tác hàng loạt ──
 
-/** Nút xổ menu thao tác cho các phiếu đã tick. Chưa tick phiếu nào thì khoá */
-export function NutHangLoat({ so, ghi, boChon }: { so: number; ghi: boolean; boChon: () => void }) {
+//** Nút biểu tượng thao tác hàng loạt (34x34) theo trạng thái các phiếu đã tick (T43) */
+export function NutHangLoat({
+  selectedRows,
+  ghi,
+  onBoChon,
+  open,
+  onOpenChange,
+}: {
+  selectedRows: Row[]
+  ghi: boolean
+  onBoChon: () => void
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
+}) {
   const { toast } = useSession()
-  const [mo, setMo] = useState(false)
+  const [moLocal, setMoLocal] = useState(false)
   const [hoiXoa, setHoiXoa] = useState(false)
   const nut = useRef<HTMLButtonElement>(null)
-  const dong = useCallback(() => setMo(false), [])
-  useEffect(() => { if (!so) setMo(false) }, [so])
-  const lam = (m: string) => { toast(m); setMo(false); boChon() }
+
+  const isControlled = open !== undefined && onOpenChange !== undefined
+  const mo = isControlled ? open : moLocal
+  const setMo = useCallback((val: boolean | ((prev: boolean) => boolean)) => {
+    if (isControlled) {
+      const next = typeof val === 'function' ? (val as (prev: boolean) => boolean)(open) : val
+      onOpenChange(next)
+    } else {
+      setMoLocal(val)
+    }
+  }, [isControlled, open, onOpenChange])
+
+  const so = selectedRows.length
+  useEffect(() => {
+    if (so === 0 && mo) setMo(false)
+  }, [so, mo, setMo])
+
+  const nhapRows = selectedRows.filter(r => r.tt === 'nhap')
+  const ghiRows = selectedRows.filter(r => r.tt === 'ghi')
+  const loiRows = selectedRows.filter(r => r.tt === 'loi')
+  const nNhap = nhapRows.length
+  const nGhi = ghiRows.length
+  const nLoi = loiRows.length
+
+  const lam = (m: string) => {
+    toast(m)
+    setMo(false)
+    onBoChon()
+  }
+
   return (
     <>
-      <button ref={nut} type="button" className={`btn ds-hang-loat${mo ? ' open' : ''}`} disabled={!so} aria-haspopup="menu" aria-expanded={mo}
-        title={so ? undefined : 'Tick chọn phiếu để thao tác hàng loạt'} onClick={() => setMo(o => !o)}>
-        Thao tác hàng loạt{so > 0 && <b className="ds-chip-so">{so}</b>}<Icon n="chevd" className="ic sm" />
+      <button
+        ref={nut}
+        type="button"
+        className={`nut-vuong ds-nut-hang-loat${mo ? ' on' : ''}`}
+        disabled={so === 0}
+        title="Thao tác hàng loạt"
+        aria-label="Thao tác hàng loạt"
+        aria-haspopup="menu"
+        aria-expanded={mo}
+        onClick={() => setMo(o => !o)}
+      >
+        <Icon n="layers" className="ic sm" />
+        {so > 0 && <span className="ds-nut-badge">{so}</span>}
       </button>
-      <Popover anchor={nut} open={mo} onClose={dong} align="end" width={230}>
-        {ghi && <MenuItem icon="check" onClick={() => lam(`Đã ghi sổ ${so} phiếu`)}>Ghi sổ {so} phiếu</MenuItem>}
-        {ghi && <MenuItem icon="back" onClick={() => lam(`Đã bỏ ghi sổ ${so} phiếu`)}>Bỏ ghi sổ {so} phiếu</MenuItem>}
-        <MenuItem icon="printer" onClick={() => lam(`In ${so} phiếu`)}>In {so} phiếu</MenuItem>
-        <MenuItem icon="download" onClick={() => lam(`Đã xuất ${so} phiếu ra Excel`)}>Xuất Excel {so} phiếu</MenuItem>
-        <MenuItem icon="trash" danger onClick={() => { setMo(false); setHoiXoa(true) }}>Xoá {so} phiếu</MenuItem>
+      <Popover anchor={nut} open={mo && so > 0} onClose={() => setMo(false)} align="end" width={240}>
+        <MenuHead>Hàng loạt ({so} đã chọn)</MenuHead>
+        {ghi && nNhap > 0 && (
+          <MenuItem icon="check" onClick={() => lam(`Đã ghi sổ ${nNhap} phiếu`)}>
+            Ghi sổ {nNhap} phiếu chưa ghi
+          </MenuItem>
+        )}
+        {ghi && nGhi > 0 && (
+          <MenuItem icon="back" onClick={() => lam(`Đã bỏ ghi sổ ${nGhi} phiếu`)}>
+            Bỏ ghi sổ {nGhi} phiếu đã ghi
+          </MenuItem>
+        )}
+        {nLoi > 0 && (
+          <MenuItem icon="alert" onClick={() => lam(`Xem lỗi ${nLoi} phiếu`)}>
+            Xem lỗi {nLoi} phiếu
+          </MenuItem>
+        )}
+        <MenuItem icon="printer" onClick={() => lam(`In ${so} phiếu`)}>
+          In {so} phiếu
+        </MenuItem>
+        <MenuItem icon="download" onClick={() => lam(`Đã xuất ${so} phiếu ra Excel`)}>
+          Xuất Excel {so} phiếu
+        </MenuItem>
+        {nNhap > 0 && (
+          <MenuItem icon="trash" danger onClick={() => { setMo(false); setHoiXoa(true) }}>
+            Xoá {nNhap} phiếu chưa ghi
+          </MenuItem>
+        )}
         <MenuSep />
-        <MenuItem icon="x" onClick={() => { setMo(false); boChon() }}>Bỏ chọn</MenuItem>
+        <MenuItem icon="x" onClick={() => { setMo(false); onBoChon() }}>
+          Bỏ chọn
+        </MenuItem>
       </Popover>
       {hoiXoa && (
-        <HopXacNhan tieuDe={`Xoá ${so} phiếu?`} nut={`Xoá ${so} phiếu`} onDong={() => setHoiXoa(false)}
-          onDongY={() => { setHoiXoa(false); lam(`Đã xoá ${so} phiếu`) }}>
-          Phiếu đã xoá không lấy lại được. Phiếu đã ghi sổ cần bỏ ghi sổ trước khi xoá.
+        <HopXacNhan
+          tieuDe={`Xoá ${nNhap} phiếu chưa ghi?`}
+          nut={`Xoá ${nNhap} phiếu chưa ghi`}
+          onDong={() => setHoiXoa(false)}
+          onDongY={() => {
+            setHoiXoa(false)
+            lam(`Đã xoá ${nNhap} phiếu`)
+          }}
+        >
+          Phiếu đã xoá không lấy lại được. Phiếu đã ghi sổ không xoá được.
         </HopXacNhan>
       )}
     </>

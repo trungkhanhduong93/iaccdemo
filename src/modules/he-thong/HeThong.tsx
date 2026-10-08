@@ -69,7 +69,7 @@ export function GoiThueBao({ sc }: ScreenProps) {
   const { s, set, toast } = useSession()
   const dv = donViHienTai(s)
   const [mo, setMo] = useState<number | null>(null)
-  const gia: Record<Goi, string> = { F: '0 đ', S: 'Chờ chốt giá', M: 'Chờ chốt giá', A: 'Chờ chốt giá' }
+  const gia: Record<Goi, string> = { F: '0 đ', S: 'Chờ chốt giá', PL: 'Chờ chốt giá', PR: 'Chờ chốt giá' }
   return (
     <div className="page">
       <PageHead crumb={['Hệ thống']} title={sc.ten!} meta={<><Pk g={s.goi} /><span className="chip">{GOI[s.goi].cheDo}</span><span className="chip">Hạn dùng 06/10/2027</span></>}>

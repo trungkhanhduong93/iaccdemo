@@ -16,7 +16,7 @@ export function KhoiTao() {
   const { set } = useSession()
   const nav = useNavigate()
   const [b, setB] = useState(0)
-  const [goi, setGoi] = useState<Goi>('M')
+  const [goi, setGoi] = useState<Goi>('PL')
   const [mst, setMst] = useState('')
   const [traCuu, setTraCuu] = useState(false)
   const [dongBo, setDongBo] = useState('tu')
@@ -53,7 +53,7 @@ export function KhoiTao() {
                   )
                 })}
               </div>
-              <Note icon="sparkle">Gợi ý theo dữ liệu FABi: 3 điểm bán, doanh thu 12 tháng khoảng 29 tỷ. Hợp với gói Medium, TT133.</Note>
+              <Note icon="sparkle">Gợi ý theo dữ liệu FABi: 3 điểm bán, doanh thu 12 tháng khoảng 29 tỷ. Hợp với gói Plus, TT133.</Note>
             </>
           )}
 
@@ -70,7 +70,7 @@ export function KhoiTao() {
                 <div className="f c4"><label>Tên đơn vị <em>*</em></label><input className="inp" readOnly={!traCuu} value={traCuu ? 'Công ty TNHH Ẩm thực Phố Mây' : ''} onChange={() => {}} /></div>
                 <div className="f c4"><label>Địa chỉ</label><input className="inp" value={traCuu ? '86 Lê Lợi, phường Sài Gòn, TP.HCM' : ''} onChange={() => {}} /></div>
                 <div className="f c2"><label>Người đại diện theo pháp luật</label><input className="inp" defaultValue={traCuu ? 'Nguyễn Minh Anh' : ''} /></div>
-                <div className="f"><label>Đồng tiền ghi sổ</label><Select className="inp"><option>VND</option>{goi === 'A' && <option>USD</option>}</Select></div>
+                <div className="f"><label>Đồng tiền ghi sổ</label><Select className="inp"><option>VND</option>{goi === 'PR' && <option>USD</option>}</Select></div>
                 <div className="f"><label>Kế toán trưởng</label><input className="inp" defaultValue={traCuu ? 'Trần Thu Hà' : ''} /></div>
               </div>
             </>

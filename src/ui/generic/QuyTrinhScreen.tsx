@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 import type { LanQT, NutQT, QuyTrinhDef, ScreenProps } from '../../modules/types'
 import { dich, hienMan, maKhoa, moDuoc, nhanTab, phanHeKhoa, tenMan } from '../../app/registry'
 import { useSession } from '../../app/session'
-import { GOI, anNgoaiGoi, minGoi, type Goi } from '../../app/plan'
+import { GOI, GOIS, anNgoaiGoi, minGoi, type Goi } from '../../app/plan'
 import { Icon } from '../Icon'
 import { Note, Pk } from '../Page'
 import { Dropdown, MenuHead, MenuItem } from '../Dropdown'
@@ -35,7 +35,7 @@ export function QuyTrinhScreen({ mod }: ScreenProps) {
   // cả phân hệ ngoài gói thì mời xem thử gói thấp nhất có phân hệ này
   const khoa = phanHeKhoa(mod, s.goi)
   const thapNhat = mod.screens.filter(sc => sc.code || sc.can).map(sc => minGoi(maKhoa(sc)!))
-  const can = (['F', 'S', 'M', 'A'] as Goi[]).find(g => thapNhat.includes(g))
+  const can = GOIS.find(g => thapNhat.includes(g))
   const coForm = nut.some(n => n.di.includes('/moi'))
 
   return (

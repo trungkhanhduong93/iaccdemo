@@ -282,6 +282,8 @@ export function BangSua({
                 )}
               </tr>
             ))}
+          </tbody>
+          <tfoot>
             <tr className="sum">
               <td colSpan={colSpanDau}>Tổng cộng ({dong.length} dòng)</td>
               {hang && <td className="num">{money(tongSl)}</td>}
@@ -300,7 +302,7 @@ export function BangSua({
                 </>
               )}
             </tr>
-          </tbody>
+          </tfoot>
         </table>
       </div>
     )
@@ -544,6 +546,8 @@ export function BangSua({
                 </td>
               </tr>
             ))}
+          </tbody>
+          <tfoot>
             <tr className="sum">
               <td colSpan={colSpanDau}>Tổng cộng ({dong.length} dòng)</td>
               {hang && <td className="num">{money(tongSl)}</td>}
@@ -563,7 +567,7 @@ export function BangSua({
               )}
               <td />
             </tr>
-          </tbody>
+          </tfoot>
         </table>
       </div>
       <div className="row" style={{ padding: '8px 12px', gap: 10 }}>

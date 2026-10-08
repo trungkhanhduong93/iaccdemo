@@ -50,8 +50,8 @@ export function KhoaSo({ sc, mod }: ScreenProps) {
     ['done', 'Đối soát doanh thu với sổ', 'Khớp 100%', true],
     ['now', 'Tính giá vốn cuối kỳ', 'Chưa chạy bản chính thức', true],
     ['', 'Phân bổ CCDC, chi phí trả trước', '6 khoản phân bổ', true],
-    ['', 'Kiểm tra cuối kỳ', coKiem ? '1 lỗi, 1 cảnh báo' : 'Có từ gói Medium', coKiem],
-    ['', 'Kết chuyển lãi lỗ', coKc ? 'Kết chuyển 632, 642, 511 sang 911' : 'Có từ gói Medium', coKc],
+    ['', 'Kiểm tra cuối kỳ', coKiem ? '1 lỗi, 1 cảnh báo' : 'Có từ gói Plus', coKiem],
+    ['', 'Kết chuyển lãi lỗ', coKc ? 'Kết chuyển 632, 642, 511 sang 911' : 'Có từ gói Plus', coKc],
   ]
   return (
     <div className="page">

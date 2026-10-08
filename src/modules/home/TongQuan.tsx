@@ -77,9 +77,9 @@ export function TongQuan({ sc }: ScreenProps) {
       <div className="grid g3">
         <Card title="Cơ cấu thanh toán" sub={kyLabel}>
           <div className="row" style={{ gap: 18 }}>
-            <Donut parts={[{ l: 'Tiền mặt', v: t.tm, c: '#0b2c6b' }, { l: 'Chuyển khoản, QR', v: t.ck, c: '#1b6fe0' }, { l: 'Thẻ', v: t.the, c: '#0f8f84' }, { l: 'App giao đồ ăn', v: t.app, c: '#f5871f' }]} />
+            <Donut parts={[{ l: 'Tiền mặt', v: t.tm, c: '#0b2c6b' }, { l: 'Chuyển khoản, QR', v: t.ck, c: '#1b6fe0' }, { l: 'Thẻ', v: t.the, c: '#0f8f84' }, { l: 'App giao đồ ăn', v: t.app, c: '#f28020' }]} />
             <div className="stack" style={{ gap: 7, fontSize: 12.5 }}>
-              {[['Tiền mặt', t.tm, '#0b2c6b'], ['Chuyển khoản, QR', t.ck, '#1b6fe0'], ['Thẻ', t.the, '#0f8f84'], ['App giao đồ ăn', t.app, '#f5871f']].map(([l, v, c]) => (
+              {[['Tiền mặt', t.tm, '#0b2c6b'], ['Chuyển khoản, QR', t.ck, '#1b6fe0'], ['Thẻ', t.the, '#0f8f84'], ['App giao đồ ăn', t.app, '#f28020']].map(([l, v, c]) => (
                 <div key={l as string} className="legend" style={{ display: 'block' }}><i style={{ background: c as string }} />{l} <b style={{ color: 'var(--ink)' }}>{pct((v as number) / (t.tm + t.ck + t.the + t.app), 0)}</b></div>
               ))}
             </div>
@@ -102,7 +102,7 @@ export function TongQuan({ sc }: ScreenProps) {
           </Card>
         ) : (
           <Card title="Cảnh báo">
-            <div className="empty" style={{ padding: 18 }}><Icon n="lock" className="ic lg" /><b style={{ marginTop: 8 }}>Cảnh báo số liệu có ở gói Medium</b>
+            <div className="empty" style={{ padding: 18 }}><Icon n="lock" className="ic lg" /><b style={{ marginTop: 8 }}>Cảnh báo số liệu có ở gói Plus</b>
               Công nợ quá hạn, tồn kho âm, hoá đơn bị huỷ, doanh thu lệch hoá đơn. <Pk g={minGoi('11.6')} o /></div>
           </Card>
         )}
@@ -117,10 +117,10 @@ export function TongQuan({ sc }: ScreenProps) {
               ))}
               <div className="row" style={{ borderTop: '1px solid var(--line-2)', paddingTop: 8 }}><span className="muted">Dòng tiền thuần</span><span className="grow" /><b className="up">+{money(174_250_000)} đ</b></div>
             </div>
-          ) : <div className="muted" style={{ fontSize: 13 }}><Icon n="lock" className="ic sm" /> Báo cáo lưu chuyển tiền tệ có ở gói Medium. <Pk g={minGoi('10.2.4')} o /></div>}
+          ) : <div className="muted" style={{ fontSize: 13 }}><Icon n="lock" className="ic sm" /> Báo cáo lưu chuyển tiền tệ có ở gói Plus. <Pk g={minGoi('10.2.4')} o /></div>}
         </Card>
         <Card title="Món bán chạy" sub={kyLabel}>
-          <HBars color="#f5871f" fmt={n => money(n) + ' phần'} data={[{ l: 'Phở bò tái', v: Math.round(nay.don * 0.42) }, { l: 'Cà phê sữa đá', v: Math.round(nay.don * 0.38) },
+          <HBars color="#f28020" fmt={n => money(n) + ' phần'} data={[{ l: 'Phở bò tái', v: Math.round(nay.don * 0.42) }, { l: 'Cà phê sữa đá', v: Math.round(nay.don * 0.38) },
             { l: 'Cơm tấm sườn bì chả', v: Math.round(nay.don * 0.27) }, { l: 'Trà đào cam sả', v: Math.round(nay.don * 0.22) }, { l: 'Bún chả Hà Nội', v: Math.round(nay.don * 0.18) }]} />
         </Card>
       </div>

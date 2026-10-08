@@ -105,7 +105,7 @@ export function ReportScreen({ sc, mod }: ScreenProps) {
       <PageHead crumb={[mod.ten, sc.nhom ?? '']} title={ten} code={sc.code} />
       <section className="report">
         <ReportToolbar ky={ky} setKy={setKy} />
-        <ReportPaper title={ten} sub={kyTen(ky)} mau={s.goi === 'M' ? cfg.mau : undefined} goi={s.goi}>{body}</ReportPaper>
+        <ReportPaper title={ten} sub={kyTen(ky)} mau={s.goi === 'PL' ? cfg.mau : undefined} goi={s.goi}>{body}</ReportPaper>
       </section>
     </div>
   )

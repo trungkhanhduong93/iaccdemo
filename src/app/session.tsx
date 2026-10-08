@@ -15,13 +15,32 @@ export interface Session {
   thuGon?: boolean       // sidebar thu gọn còn biểu tượng
 }
 
-const MAC_DINH: Session = { loggedIn: false, ten: 'Trần Thu Hà', email: 'thuha@phomay.vn', role: 'ktt', donVi: 'pm', goi: 'M', chiNhanh: 'all', khoiTao: true, thuGon: false }
+/** Đổi mã gói cũ ('M', 'A') sang mã chuẩn ('PL', 'PR'), nhận cả mã cũ và mới */
+export function chuanHoaGoi(g: unknown): Goi {
+  if (g === 'M' || g === 'PL') return 'PL'
+  if (g === 'A' || g === 'PR') return 'PR'
+  if (g === 'S') return 'S'
+  if (g === 'F') return 'F'
+  return 'PL'
+}
+
+const MAC_DINH: Session = { loggedIn: false, ten: 'Trần Thu Hà', email: 'thuha@phomay.vn', role: 'ktt', donVi: 'pm', goi: 'PL', chiNhanh: 'all', khoiTao: true, thuGon: false }
 const KEY = 'iacc-cloud-session'
 
 function doc(): Session {
   try {
-    const s = localStorage.getItem(KEY)
-    return s ? { ...MAC_DINH, ...JSON.parse(s) } : MAC_DINH
+    const params = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null
+    const goiParam = params?.get('goi')
+    const raw = localStorage.getItem(KEY)
+    const parsed = raw ? JSON.parse(raw) : {}
+    const res: Session = { ...MAC_DINH, ...parsed }
+    if (parsed.goi) {
+      res.goi = chuanHoaGoi(parsed.goi)
+    }
+    if (goiParam) {
+      res.goi = chuanHoaGoi(goiParam)
+    }
+    return res
   } catch { return MAC_DINH }
 }
 

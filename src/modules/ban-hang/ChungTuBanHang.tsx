@@ -1,5 +1,5 @@
 // Chứng từ bán hàng: mỗi chi nhánh một chứng từ mỗi ngày, gom từ đơn POS trên FABi. Số khớp KQKD, Tổng quan.
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import type { Col, Row, ScreenProps, VoucherCfg } from '../types'
 import { duongDan, tenMan } from '../../app/registry'
@@ -12,13 +12,13 @@ import { FormToanMan, useDong } from '../../ui/FormToanMan'
 import { VoucherDetail } from '../../ui/generic/VoucherScreen'
 import { St, Table } from '../../ui/Table'
 import { dmy, fold, money, moneyD } from '../../ui/format'
-import { Select } from '../../ui/Dropdown'
+import { Popover, Select } from '../../ui/Dropdown'
 import { PhanTrang } from '../../ui/PhanTrang'
 import { ChonKhoangNgay, docNgay, thangNay, trongKhoang, type KhoangNgay } from '../../ui/ChonNgay'
-import { NutThemMoiSplit } from '../../ui/CongCuDs'
+import { NutExcel, NutThemMoiSplit } from '../../ui/CongCuDs'
 import { dangLoc, khopLoc, type GiaTriLoc, type KieuLoc } from '../../ui/LocCot'
 import {
-  BoLoc, ChipTrangThai, NutTuyChinhCot, cotChon, dsChipTT, khopChipTT, useCauHinhLoc, useCotDs, useLocNhap, type OLocDef,
+  BoLoc, ChipTrangThai, NutHangLoat, NutTuyChinhCot, cotChon, dsChipTT, khopChipTT, useCauHinhLoc, useCotDs, useLocNhap, type OLocDef,
 } from '../../ui/LocNangCao'
 
 /** Bán hàng ngoài POS: tiệc mang về, khách công ty đặt trước. Lập tay, không qua FABi */
@@ -54,7 +54,7 @@ export function ChungTuBanHang({ sc, mod }: ScreenProps) {
 /** Cột cố định hai đầu, không ẩn, không kéo đổi thứ tự */
 const COT_CO_DINH = new Set(['chk', 'stt', 'ngay', 'so'])
 /** Cột lọc bằng cách chọn trong danh sách giá trị */
-const COT_CHON = new Set(['cn', 'nguon', 'tt'])
+const COT_CHON = new Set(['cn', 'nguon'])
 
 /** Giá trị các ô lọc ngoài và trong Bộ lọc nâng cao. Chuỗi rỗng là tất cả */
 interface GtLoc { thoiGian: KhoangNgay; tim: string; cn: string; nguon: string }
@@ -68,6 +68,9 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
   const { nhap, dat, ap } = loc0
   const [chipTT, setChipTT] = useState('all')
   const [chon, setChon] = useState<Set<string>>(new Set())
+  const [moHangLoat, setMoHangLoat] = useState(false)
+  const [moGhiChu, setMoGhiChu] = useState(false)
+  const nutGhiChu = useRef<HTMLButtonElement>(null)
   const [locCot, setLocCot] = useState<Record<string, GiaTriLoc>>({})
   const [trang, setTrang] = useState(1)
   const [coTrang, setCoTrang] = useState(20)
@@ -121,6 +124,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
   })
   const chips = dsChipTT(truocTT, ghi, 'Lệch đối soát')
   const list = truocTT.filter(r => khopChipTT(chipTT, r.tt, ghi))
+  const selectedRows = useMemo(() => list.filter(r => chon.has(r.id)), [list, chon])
   const [activeId, setActiveId] = useState<string>(() => list[0]?.id ?? '')
   const activeRow = list.find(r => r.id === activeId) ?? list[0]
 
@@ -134,7 +138,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
 
   const sum = (k: string) => list.reduce((a, r) => a + r[k], 0)
   const cols: Col[] = [
-    cotChon(list, chon, setChon),
+    cotChon(list, chon, setChon, () => setMoHangLoat(true)),
     { k: 'stt', t: 'STT', w: 60, c: true, dinh: 'trai' },
     { k: 'ngay', t: 'Ngày', w: 100, dinh: 'trai' },
     { k: 'so', t: 'Số chứng từ', cls: 'code', w: 150, dinh: 'trai' },
@@ -142,39 +146,59 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
     ...(cnChon ? [] : [{ k: 'cn', t: 'Chi nhánh', cls: 'dim' } as Col]),
     { k: 'tien', t: 'Doanh thu chưa thuế', num: true, w: 160 }, { k: 'thue', t: 'Thuế GTGT', num: true, w: 120 }, { k: 'tong', t: 'Tổng tiền', num: true, w: 120 },
     { k: 'nguon', t: 'Nguồn', w: 90, r: () => <span className="src">FABi</span> },
-    { k: 'tt', t: 'Trạng thái', w: 110, r: r => <St k={r.tt === 'loi' && ghi ? 'err' : r.tt === 'nhap' ? 'warn' : 'ok'}>{tenTT(r)}</St> },
   ]
   // Thứ tự, ẩn hiện, độ rộng cột lưu theo màn (T41)
   const cot = useCotDs(path, cols, COT_CO_DINH)
 
   return (
     <div className="page page-voucher">
-      <PageHead crumb={[mod.ten, sc.nhom ?? '']} title={tenMan(sc)} code={sc.code} />
-      <div style={{ flex: 'none' }}>
-        <Note icon="pos">Đơn POS trên FABi tự gom thành một chứng từ cho mỗi chi nhánh mỗi ngày. Đơn huỷ, trả hàng sau khi chốt ca được điều chỉnh vào chứng từ cùng ngày, không tạo chứng từ trùng.</Note>
-      </div>
+      <h1 className="sr-only">{tenMan(sc)}</h1>
       <div className="voucher-split">
         <section className="card voucher-top">
-          {/* Thanh công cụ: chip trạng thái bên trái; ô lọc, phễu, Lọc, Tuỳ chỉnh cột, Thêm mới | ⌄ (T42) */}
+          {/* Thanh công cụ: chip trạng thái bên trái; ô lọc, phễu, Lọc, Tuỳ chỉnh cột, Excel, Hàng loạt, Thêm mới | ⌄ (T43) */}
           <div className="ds-thanh">
-            <ChipTrangThai ds={chips} chon={chipTT} onChon={k => { setChipTT(k); setTrang(1) }} />
-            <div className="ds-thanh-loc">
+            <div className="ds-chips-wrap">
+              <ChipTrangThai ds={chips} chon={chipTT} onChon={k => { setChipTT(k); setTrang(1) }} />
+              <button
+                ref={nutGhiChu}
+                type="button"
+                className="icon-btn sm ds-ghi-chu-fabi"
+                title="Đơn POS trên FABi tự gom thành một chứng từ cho mỗi chi nhánh mỗi ngày. Đơn huỷ, trả hàng sau khi chốt ca được điều chỉnh vào chứng từ cùng ngày, không tạo chứng từ trùng."
+                aria-label="Ghi chú FABi"
+                onClick={() => setMoGhiChu(v => !v)}
+              >
+                <Icon n="info" className="ic sm" />
+              </button>
+              <Popover anchor={nutGhiChu} open={moGhiChu} onClose={() => setMoGhiChu(false)} width={320}>
+                <div style={{ padding: '10px 14px', fontSize: 13, lineHeight: 1.45, color: 'var(--ink)' }}>
+                  <b>Ghi chú FABi</b>
+                  <p style={{ margin: '6px 0 0', color: 'var(--body)' }}>
+                    Đơn POS trên FABi tự gom thành một chứng từ cho mỗi chi nhánh mỗi ngày. Đơn huỷ, trả hàng sau khi chốt ca được điều chỉnh vào chứng từ cùng ngày, không tạo chứng từ trùng.
+                  </p>
+                </div>
+              </Popover>
+            </div>
+            <div className="ds-thanh-phai">
               <BoLoc ds={oLoc} cauHinh={cauHinhLoc} datCauHinh={datCauHinhLoc} dangLoc={loc0.dangLoc} khacNhap={loc0.khacNhap}
                 onLoc={apLoc} onXoaHet={loc0.xoaNhap} />
-            </div>
-            <div className="ds-thanh-nut">
               <NutTuyChinhCot cols={cot.colsDu} an={cot.an} coDinh={COT_CO_DINH} macDinh={cot.macDinh} onLuu={cot.luu} />
+              <NutExcel
+                onNhap={() => toast('Nhập chứng từ bán hàng từ file Excel')}
+                onXuat={() => toast(`Đã xuất ${list.length} chứng từ ra Excel`)}
+              />
+              <NutHangLoat
+                selectedRows={selectedRows}
+                ghi={ghi}
+                onBoChon={() => setChon(new Set())}
+                open={moHangLoat}
+                onOpenChange={setMoHangLoat}
+              />
               <NutThemMoiSplit
                 toMoi={`${path}/moi`}
                 taiNguon={{
                   ten: 'FABi',
                   onTai: () => toast('Đã tải 612 đơn mới từ FABi, gom vào 3 chứng từ ngày 07/10'),
                 }}
-                onNhapExcel={() => toast('Nhập chứng từ bán hàng từ file Excel')}
-                onXuatExcel={() => toast(`Đã xuất ${list.length} chứng từ ra Excel`)}
-                soChon={chon.size}
-                ghi={ghi}
-                onBoChon={() => setChon(new Set())}
               />
             </div>
           </div>
@@ -281,21 +305,82 @@ function NoiDungTab({ x, tab, kieu }: { x: (typeof DAILY)[number]; tab: string; 
     { dg: 'Phải thu app giao đồ ăn', no: '131', co: '5111, 33311', tien: x.app },
     { dg: 'Giá vốn xuất bán theo định lượng', no: '632', co: '152', tien: x.gv },
   ]
+  const rowsSo = [
+    { so: 'Sổ doanh thu bán hàng hoá, dịch vụ', tien: x.dt },
+    { so: 'Sổ theo dõi thuế GTGT', tien: x.vat },
+    { so: 'Sổ tiền mặt', tien: x.tm },
+    { so: 'Sổ tiền gửi ngân hàng', tien: x.ck + x.the },
+  ]
   return (
     <>
-      {tab === 'ct' && <Table cols={[{ k: 'stt', t: '#', w: 40, cls: 'dim' }, { k: 'ma', t: 'Mã món', cls: 'code' }, { k: 'ten', t: 'Tên món' }, { k: 'dvt', t: 'ĐVT' }, { k: 'sl', t: 'Số lượng', num: true },
-        { k: 'gia', t: 'Đơn giá', num: true }, { k: 'tien', t: 'Thành tiền', num: true }, { k: 'ts', t: 'Thuế suất', num: true, r: r => `${r.ts}%` }, { k: 'thue', t: 'Tiền thuế', num: true }]} rows={dong} />}
-      {tab === 'ht' && <div style={{ padding: 14 }}>
-        {kieu === 'khong' && <Note kind="gray">Gói Free không hạch toán. Doanh thu vào báo cáo kết quả kinh doanh, tiền mặt vào sổ quỹ.</Note>}
-        {kieu === 'so' && <><Note icon="book">{GOI.S.cheDo}: ghi vào sổ doanh thu và sổ tiền, không dùng tài khoản.</Note>
-          <div style={{ marginTop: 10 }}><Table cols={[{ k: 'so', t: 'Ghi vào sổ' }, { k: 'tien', t: 'Số tiền', num: true }]} rows={[{ so: 'Sổ doanh thu bán hàng hoá, dịch vụ', tien: x.dt }, { so: 'Sổ theo dõi thuế GTGT', tien: x.vat }, { so: 'Sổ tiền mặt', tien: x.tm }, { so: 'Sổ tiền gửi ngân hàng', tien: x.ck + x.the }]} /></div></>}
-        {kieu === 'noco' && <Table cols={[{ k: 'dg', t: 'Diễn giải' }, { k: 'no', t: 'TK Nợ', cls: 'code' }, { k: 'co', t: 'TK Có', cls: 'code' }, { k: 'tien', t: 'Số tiền', num: true }]} rows={ht}
-          sum={{ dg: `Doanh thu ${moneyD(x.dt)} · thuế ${moneyD(x.vat)}`, tien: x.tm + x.ck + x.the + x.app + x.gv }} />}
-      </div>}
-      {tab === 'tt' && <Table cols={[{ k: 'ht', t: 'Hình thức' }, { k: 'tien', t: 'Số tiền', num: true }]} rows={[{ ht: 'Tiền mặt', tien: x.tm }, { ht: 'Chuyển khoản, QR', tien: x.ck }, { ht: 'Thẻ', tien: x.the }, { ht: 'GrabFood, ShopeeFood', tien: x.app }]}
-        sum={{ ht: 'Tổng', tien: x.tm + x.ck + x.the + x.app }} />}
-      {tab === 'goc' && <Table cols={[{ k: 'ca', t: 'Ca' }, { k: 'gio', t: 'Giờ chốt' }, { k: 'don', t: 'Số đơn', num: true }, { k: 'tn', t: 'Thu ngân' }]}
-        rows={[{ ca: 'Ca sáng', gio: '14:00', don: Math.round(x.don * 0.45), tn: 'Hồ Thị Mai' }, { ca: 'Ca tối', gio: '22:30', don: x.don - Math.round(x.don * 0.45), tn: 'Hồ Thị Mai' }]} />}
+      {tab === 'ct' && (
+        <Table
+          cols={[
+            { k: 'stt', t: '#', w: 40, cls: 'dim' },
+            { k: 'ma', t: 'Mã món', cls: 'code' },
+            { k: 'ten', t: 'Tên món' },
+            { k: 'dvt', t: 'ĐVT' },
+            { k: 'sl', t: 'Số lượng', num: true },
+            { k: 'gia', t: 'Đơn giá', num: true },
+            { k: 'tien', t: 'Thành tiền', num: true },
+            { k: 'ts', t: 'Thuế suất', num: true, r: r => `${r.ts}%` },
+            { k: 'thue', t: 'Tiền thuế', num: true },
+          ]}
+          rows={dong}
+          sum={{
+            stt: `Tổng cộng (${dong.length} dòng)`,
+            sl: dong.reduce((a, r) => a + r.sl, 0),
+            tien: dong.reduce((a, r) => a + r.tien, 0),
+            thue: dong.reduce((a, r) => a + r.thue, 0),
+          }}
+        />
+      )}
+      {tab === 'ht' && (
+        <div style={{ padding: 14 }}>
+          {kieu === 'khong' && <Note kind="gray">Gói Free không hạch toán. Doanh thu vào báo cáo kết quả kinh doanh, tiền mặt vào sổ quỹ.</Note>}
+          {kieu === 'so' && (
+            <>
+              <Note icon="book">{GOI.S.cheDo}: ghi vào sổ doanh thu và sổ tiền, không dùng tài khoản.</Note>
+              <div style={{ marginTop: 10 }}>
+                <Table
+                  cols={[{ k: 'so', t: 'Ghi vào sổ' }, { k: 'tien', t: 'Số tiền', num: true }]}
+                  rows={rowsSo}
+                  sum={{ so: `Tổng cộng (${rowsSo.length} dòng)`, tien: rowsSo.reduce((a, r) => a + r.tien, 0) }}
+                />
+              </div>
+            </>
+          )}
+          {kieu === 'noco' && (
+            <Table
+              cols={[{ k: 'dg', t: 'Diễn giải' }, { k: 'no', t: 'TK Nợ', cls: 'code' }, { k: 'co', t: 'TK Có', cls: 'code' }, { k: 'tien', t: 'Số tiền', num: true }]}
+              rows={ht}
+              sum={{ dg: `Doanh thu ${moneyD(x.dt)} · thuế ${moneyD(x.vat)}`, tien: x.tm + x.ck + x.the + x.app + x.gv }}
+            />
+          )}
+        </div>
+      )}
+      {tab === 'tt' && (
+        <Table
+          cols={[{ k: 'ht', t: 'Hình thức' }, { k: 'tien', t: 'Số tiền', num: true }]}
+          rows={[
+            { ht: 'Tiền mặt', tien: x.tm },
+            { ht: 'Chuyển khoản, QR', tien: x.ck },
+            { ht: 'Thẻ', tien: x.the },
+            { ht: 'GrabFood, ShopeeFood', tien: x.app },
+          ]}
+          sum={{ ht: 'Tổng', tien: x.tm + x.ck + x.the + x.app }}
+        />
+      )}
+      {tab === 'goc' && (
+        <Table
+          cols={[{ k: 'ca', t: 'Ca' }, { k: 'gio', t: 'Giờ chốt' }, { k: 'don', t: 'Số đơn', num: true }, { k: 'tn', t: 'Thu ngân' }]}
+          rows={[
+            { ca: 'Ca sáng', gio: '14:00', don: Math.round(x.don * 0.45), tn: 'Hồ Thị Mai' },
+            { ca: 'Ca tối', gio: '22:30', don: x.don - Math.round(x.don * 0.45), tn: 'Hồ Thị Mai' },
+          ]}
+          sum={{ ca: 'Tổng: 2 ca', don: x.don }}
+        />
+      )}
     </>
   )
 }
@@ -313,7 +398,7 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
         <button className="btn" onClick={dong0}>Đóng</button>
         <span className="grow" />
         <button className="btn"><Icon n="printer" className="ic sm" />In</button>
-        <button className="btn" disabled={!['M', 'A'].includes(s.goi)} title={['M', 'A'].includes(s.goi) ? '' : 'Xuất hoá đơn điện tử có từ gói Medium'} onClick={() => toast('Đã gửi hoá đơn tổng hợp sang iPOS Invoice')}><Icon n="receipt" className="ic sm" />Xuất hoá đơn</button>
+        <button className="btn" disabled={!['PL', 'PR'].includes(s.goi)} title={['PL', 'PR'].includes(s.goi) ? '' : 'Xuất hoá đơn điện tử có từ gói Plus'} onClick={() => toast('Đã gửi hoá đơn tổng hợp sang iPOS Invoice')}><Icon n="receipt" className="ic sm" />Xuất hoá đơn</button>
         <button className="btn pri" onClick={() => { toast('Đã lưu'); dong0() }}>Lưu</button>
       </>}>
       <div className="grid" style={{ gridTemplateColumns: 'minmax(0,1fr) 300px', alignItems: 'start' }}>

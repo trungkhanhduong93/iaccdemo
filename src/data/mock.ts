@@ -9,8 +9,8 @@ export const KY_KHOA_SO = { thang: 9, nam: 2026 }    // kỳ đang làm khoá s�
 
 export interface DonVi { id: string; ten: string; viettat: string; mst: string; goi: Goi; diaChi: string; diem: number; nguoiDaiDien: string }
 export const DON_VI: DonVi[] = [
-  { id: 'pm', ten: 'Công ty TNHH Ẩm thực Phố Mây', viettat: 'PM', mst: '0319 990 001', goi: 'M', diaChi: '86 Lê Lợi, phường Sài Gòn, TP.HCM', diem: 3, nguoiDaiDien: 'Nguyễn Minh Anh' },
-  { id: 'tl', ten: 'Công ty CP Chuỗi Trà Lá', viettat: 'TL', mst: '0319 990 002', goi: 'A', diaChi: '12 Nguyễn Văn Linh, phường Tân Hưng, TP.HCM', diem: 14, nguoiDaiDien: 'Nguyễn Minh Anh' },
+  { id: 'pm', ten: 'Công ty TNHH Ẩm thực Phố Mây', viettat: 'PM', mst: '0319 990 001', goi: 'PL', diaChi: '86 Lê Lợi, phường Sài Gòn, TP.HCM', diem: 3, nguoiDaiDien: 'Nguyễn Minh Anh' },
+  { id: 'tl', ten: 'Công ty CP Chuỗi Trà Lá', viettat: 'TL', mst: '0319 990 002', goi: 'PR', diaChi: '12 Nguyễn Văn Linh, phường Tân Hưng, TP.HCM', diem: 14, nguoiDaiDien: 'Nguyễn Minh Anh' },
   { id: 'gn', ten: 'Hộ kinh doanh Cà phê Góc Nhỏ', viettat: 'GN', mst: '8090 112 233', goi: 'F', diaChi: '5 Hẻm 42 Trần Quang Khải, phường Tân Định, TP.HCM', diem: 1, nguoiDaiDien: 'Nguyễn Minh Anh' },
 ]
 

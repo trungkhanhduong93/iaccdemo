@@ -5,7 +5,6 @@ import type { Col, Row, ScreenProps } from '../../modules/types'
 import { tenMan } from '../../app/registry'
 import { useSession } from '../../app/session'
 import { Icon } from '../Icon'
-import { PageHead } from '../Page'
 import { St, Table } from '../Table'
 import { fold } from '../format'
 import { Dropdown, MenuItem, Select } from '../Dropdown'
@@ -56,12 +55,8 @@ export function CatalogScreen({ sc, mod }: ScreenProps) {
 
   return (
     <div className="page">
-      <PageHead crumb={[mod.ten]} title={ten} code={sc.code}>
-        <button className="btn"><Icon n="upload" className="ic sm" />Nhập Excel</button>
-        <button className="btn"><Icon n="download" className="ic sm" />Xuất Excel</button>
-        <button className="btn pri" onClick={() => setEdit({})}><Icon n="plus" className="ic sm" />Thêm mới</button>
-      </PageHead>
-      {cfg.note?.(s.goi)}
+      <h1 className="sr-only" style={{ position: 'absolute', width: 1, height: 1, padding: 0, margin: -1, overflow: 'hidden', clip: 'rect(0, 0, 0, 0)', whiteSpace: 'nowrap', border: 0 }}>{ten}</h1>
+      {cfg.note && <div style={{ marginBottom: 12 }}>{cfg.note(s.goi)}</div>}
       <section className="card">
         <ThanhLoc
           tim={{
@@ -81,7 +76,14 @@ export function CatalogScreen({ sc, mod }: ScreenProps) {
           }
           dangLoc={nhom !== ''}
           onLamMoi={() => setNhom('')}
-          phai={<span className="muted" style={{ fontSize: 12 }}>{rows.length}/{all.length} dòng</span>}
+          phai={
+            <div className="row" style={{ gap: 8 }}>
+              <span className="muted" style={{ fontSize: 12, marginRight: 4 }}>{rows.length}/{all.length} dòng</span>
+              <button type="button" className="btn" onClick={() => toast('Nhập danh mục từ Excel')}><Icon n="upload" className="ic sm" />Nhập Excel</button>
+              <button type="button" className="btn" onClick={() => toast(`Đã xuất ${rows.length} dòng ra Excel`)}><Icon n="download" className="ic sm" />Xuất Excel</button>
+              <button type="button" className="btn pri" onClick={() => setEdit({})}><Icon n="plus" className="ic sm" />{cfg.them ?? 'Thêm mới'}</button>
+            </div>
+          }
         />
         {rows.length ? <Table cols={cols} rows={rows} motDong onRow={r => setEdit(r)} /> : (
           all.length ? <div className="empty"><b>Không có dòng khớp bộ lọc</b><button className="btn sm" style={{ marginTop: 10 }} onClick={() => { setQ(''); setNhom('') }}>Xoá bộ lọc</button></div>

@@ -14,7 +14,7 @@ from playwright.sync_api import sync_playwright
 URL = 'http://localhost:5180/'
 SHOTS = Path(__file__).resolve().parent / 'shots'
 NHANH = '--nhanh' in sys.argv
-GOIS = ['M'] if NHANH else ['F', 'S', 'M', 'A']
+GOIS = ['PL'] if NHANH else ['F', 'S', 'PL', 'PR']
 
 
 def phien(goi, role='ktt', thu_gon=False):
@@ -82,7 +82,7 @@ def main():
                 pg.goto(URL + h)
                 kiem(f'[{goi}] {h}')
                 # mở dòng đầu của bảng chứng từ: kiểm khung chi tiết .ct-panel rồi bấm Xem mở form toàn màn hình
-                if goi == 'M' and pg.locator('.ct-xem').count() and '/app/' in h:
+                if goi == 'PL' and pg.locator('.ct-xem').count() and '/app/' in h:
                     pg.locator('.main table.tbl tr.click').first.click()
                     if not pg.locator('.ct-panel').count():
                         loi.append(f'[{goi}] {h}: bấm dòng không hiện khung chi tiết .ct-panel')
@@ -97,7 +97,7 @@ def main():
                     loi.append(f'[{goi}] ô {h}: không mở form chứng từ toàn màn hình')
 
         # Bấm ô Thu tiền mặt trên Quy trình: form phiếu thu mở toàn màn hình, Esc đóng về đúng Quy trình
-        vao('/app/tien/quy-trinh', 'M')
+        vao('/app/tien/quy-trinh', 'PL')
         pg.locator('.qt-n', has_text='Thu tiền mặt').first.click()
         pg.wait_for_timeout(150)
         if not pg.locator('.fsf h1', has_text='Thu tiền mặt').count():
@@ -108,7 +108,7 @@ def main():
             loi.append(f'Form phiếu thu: Esc không quay về Quy trình, đang ở {pg.url}')
 
         # Báo cáo tài chính phải cân ở mọi kỳ, mọi gói có báo cáo
-        for goi in ['M', 'A', 'S']:
+        for goi in ['PL', 'PR', 'S']:
             for path in ['/app/tong-hop/10-2-2', '/app/tong-hop/10-2-1', '/app/tong-hop/10-2-4']:
                 vao(path, goi)
                 if pg.locator('.lockpage').count():
@@ -125,7 +125,7 @@ def main():
 
         # Màn ngoài app
         for path in ['/dang-nhap', '/quen-mat-khau', '/chon-don-vi', '/khoi-tao']:
-            vao(path, 'M')
+            vao(path, 'PL')
             if not pg.locator('h2').count():
                 loi.append(f'{path}: trắng trang')
             if con:
@@ -134,17 +134,17 @@ def main():
 
         if not NHANH:
             SHOTS.mkdir(exist_ok=True)
-            anh = [('01-dang-nhap', '/dang-nhap', 'M'), ('02-chon-don-vi', '/chon-don-vi', 'M'), ('03-khoi-tao', '/khoi-tao', 'M'),
-                   ('04-tong-quan', '/app/trang-chu/tong-quan', 'M'), ('05-ban-lam-viec', '/app/trang-chu/ban-lam-viec', 'M'),
-                   ('06-chung-tu-ban-hang', '/app/ban-hang/3-1-1', 'M'), ('07-phieu-ban-hang', '/app/ban-hang/3-1-1/0', 'M'),
-                   ('08-doi-soat', '/app/tien-ich/11-7', 'M'), ('09-kqkd', '/app/tong-hop/10-2-3', 'M'), ('10-cdkt', '/app/tong-hop/10-2-2', 'M'),
-                   ('11-to-khai', '/app/thue/6-2-3', 'M'), ('12-goi-thue-bao', '/app/he-thong/goi-thue-bao', 'M'),
-                   ('13-khoa-free', '/app/tscd/7-1-1', 'F'), ('14-to-khai-starter', '/app/thue/6-2-3', 'S'), ('15-so-quy', '/app/tien/2-2-1', 'M'),
-                   ('16-quy-trinh-tien', '/app/tien/quy-trinh', 'M'), ('17-quy-trinh-kho', '/app/kho/quy-trinh', 'M'),
-                   ('18-phieu-thu-toan-man', '/app/tien/2-1-1/moi?loai=thu', 'M'), ('19-bao-cao-tong-hop', '/app/tong-hop/bao-cao', 'M'),
-                   ('20-quy-trinh-gia-thanh', '/app/gia-thanh/quy-trinh', 'A'), ('21-quy-trinh-tscd-medium', '/app/tscd/quy-trinh', 'M'),
-                   ('22-quy-trinh-ban-hang-free', '/app/ban-hang/quy-trinh', 'F'), ('23-sidebar-thu-gon', '/app/mua-hang/quy-trinh', 'M'),
-                   ('24-danh-sach-mua-hang', '/app/mua-hang/4-1-1', 'M'), ('25-form-mua-hang', '/app/mua-hang/4-1-1/moi', 'M')]
+            anh = [('01-dang-nhap', '/dang-nhap', 'PL'), ('02-chon-don-vi', '/chon-don-vi', 'PL'), ('03-khoi-tao', '/khoi-tao', 'PL'),
+                   ('04-tong-quan', '/app/trang-chu/tong-quan', 'PL'), ('05-ban-lam-viec', '/app/trang-chu/ban-lam-viec', 'PL'),
+                   ('06-chung-tu-ban-hang', '/app/ban-hang/3-1-1', 'PL'), ('07-phieu-ban-hang', '/app/ban-hang/3-1-1/0', 'PL'),
+                   ('08-doi-soat', '/app/tien-ich/11-7', 'PL'), ('09-kqkd', '/app/tong-hop/10-2-3', 'PL'), ('10-cdkt', '/app/tong-hop/10-2-2', 'PL'),
+                   ('11-to-khai', '/app/thue/6-2-3', 'PL'), ('12-goi-thue-bao', '/app/he-thong/goi-thue-bao', 'PL'),
+                   ('13-khoa-free', '/app/tscd/7-1-1', 'F'), ('14-to-khai-starter', '/app/thue/6-2-3', 'S'), ('15-so-quy', '/app/tien/2-2-1', 'PL'),
+                   ('16-quy-trinh-tien', '/app/tien/quy-trinh', 'PL'), ('17-quy-trinh-kho', '/app/kho/quy-trinh', 'PL'),
+                   ('18-phieu-thu-toan-man', '/app/tien/2-1-1/moi?loai=thu', 'PL'), ('19-bao-cao-tong-hop', '/app/tong-hop/bao-cao', 'PL'),
+                   ('20-quy-trinh-gia-thanh', '/app/gia-thanh/quy-trinh', 'PR'), ('21-quy-trinh-tscd-medium', '/app/tscd/quy-trinh', 'PL'),
+                   ('22-quy-trinh-ban-hang-free', '/app/ban-hang/quy-trinh', 'F'), ('23-sidebar-thu-gon', '/app/mua-hang/quy-trinh', 'PL'),
+                   ('24-danh-sach-mua-hang', '/app/mua-hang/4-1-1', 'PL'), ('25-form-mua-hang', '/app/mua-hang/4-1-1/moi', 'PL')]
             for ten, path, goi in anh:
                 vao(path, goi, thu_gon=ten == '23-sidebar-thu-gon')
                 pg.wait_for_timeout(250)

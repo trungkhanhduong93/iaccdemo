@@ -1,5 +1,5 @@
 // Báo cáo tài chính: KQKD, cân đối kế toán, cân đối số phát sinh, lưu chuyển tiền tệ, báo cáo quản trị F&B.
-// Mẫu đổi theo gói: Free bản đơn giản, Starter dạng tinh gọn, Medium B0x-DNN (TT133), Advance B0x-DN (TT99).
+// Mẫu đổi theo gói: Free bản đơn giản, Standard dạng tinh gọn, Plus B0x-DNN (TT133), Pro B0x-DN (TT99).
 import { useState, type ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { Col, Row, ScreenProps } from '../types'
@@ -35,22 +35,22 @@ function dongKqkd(goi: Goi, thang: number) {
     { ct: 'Thu nhập, chi phí khác', v: q.lnKhac }, { ct: 'Lợi nhuận trước thuế', v: q.lnTruocThue, _t: 1 },
     ...(goi === 'S' ? [{ ct: 'Thuế thu nhập doanh nghiệp', v: q.thue }, { ct: 'Lợi nhuận sau thuế', v: q.lnSauThue, _t: 1 }] : []),
   ]
-  const A = goi === 'A'
+  const PR = goi === 'PR'
   return [
     { ma: '01', ct: 'Doanh thu bán hàng và cung cấp dịch vụ', v: q.dt, _drill: '/app/ban-hang/3-2-3' }, { ma: '02', ct: 'Các khoản giảm trừ doanh thu', v: q.giamTru },
     { ma: '10', ct: 'Doanh thu thuần về bán hàng và cung cấp dịch vụ', v: q.dtThuan, _b: 1 }, { ma: '11', ct: 'Giá vốn hàng bán', v: q.gv, _drill: '/app/kho/5-2-3' },
     { ma: '20', ct: 'Lợi nhuận gộp về bán hàng và cung cấp dịch vụ', v: q.lnGop, _b: 1 }, { ma: '21', ct: 'Doanh thu hoạt động tài chính', v: q.dtTc },
     { ma: '22', ct: 'Chi phí tài chính', v: q.cpTc }, { ma: '23', ct: 'Trong đó: Chi phí lãi vay', v: q.laiVay, _i: 1 },
-    ...(A ? [{ ma: '25', ct: 'Chi phí bán hàng', v: q.cpBh }, { ma: '26', ct: 'Chi phí quản lý doanh nghiệp', v: q.cpQl }]
+    ...(PR ? [{ ma: '25', ct: 'Chi phí bán hàng', v: q.cpBh }, { ma: '26', ct: 'Chi phí quản lý doanh nghiệp', v: q.cpQl }]
       : [{ ma: '24', ct: 'Chi phí quản lý kinh doanh', v: q.cpQlkd }]),
     { ma: '30', ct: 'Lợi nhuận thuần từ hoạt động kinh doanh', v: q.lnThuan, _b: 1 }, { ma: '31', ct: 'Thu nhập khác', v: q.tnKhac },
     { ma: '32', ct: 'Chi phí khác', v: q.cpKhac }, { ma: '40', ct: 'Lợi nhuận khác', v: q.lnKhac, _b: 1 },
-    { ma: '50', ct: 'Tổng lợi nhuận kế toán trước thuế', v: q.lnTruocThue, _b: 1 }, { ma: '51', ct: A ? 'Chi phí thuế TNDN hiện hành' : 'Chi phí thuế thu nhập doanh nghiệp', v: q.thue },
-    ...(A ? [{ ma: '52', ct: 'Chi phí thuế TNDN hoãn lại', v: 0, _z: 1 }] : []),
+    { ma: '50', ct: 'Tổng lợi nhuận kế toán trước thuế', v: q.lnTruocThue, _b: 1 }, { ma: '51', ct: PR ? 'Chi phí thuế TNDN hiện hành' : 'Chi phí thuế thu nhập doanh nghiệp', v: q.thue },
+    ...(PR ? [{ ma: '52', ct: 'Chi phí thuế TNDN hoãn lại', v: 0, _z: 1 }] : []),
     { ma: '60', ct: 'Lợi nhuận sau thuế thu nhập doanh nghiệp', v: q.lnSauThue, _t: 1 },
   ]
 }
-const MAU: Record<Goi, [string, string] | null> = { F: null, S: ['B02', 'dạng tinh gọn'], M: ['B02-DNN', ''], A: ['B02-DN', ''] }
+const MAU: Record<Goi, [string, string] | null> = { F: null, S: ['B02', 'dạng tinh gọn'], PL: ['B02-DNN', ''], PR: ['B02-DN', ''] }
 
 export function KetQuaKinhDoanh(p: ScreenProps) {
   const { s } = useSession()
@@ -59,7 +59,7 @@ export function KetQuaKinhDoanh(p: ScreenProps) {
     <Khung {...p} note={<Note icon="info">Bấm dòng doanh thu hoặc giá vốn để xem số chi tiết. Số khớp Tổng quan, báo cáo doanh thu, bảng cân đối số phát sinh.</Note>}>
       {ky => {
         const nay = dongKqkd(s.goi, Number(ky)), cu = dongKqkd(s.goi, Number(truoc(ky)))
-        const ma = s.goi === 'M' || s.goi === 'A'
+        const ma = s.goi === 'PL' || s.goi === 'PR'
         const cols: Col[] = [{ k: 'ct', t: 'Chỉ tiêu' }, ...(ma ? [{ k: 'ma', t: 'Mã số', c: true, w: 70 } as Col] : []), { k: 'v', t: kyTen(ky).replace(' (đến 07/10)', ''), num: true }, { k: 'cu', t: kyTen(truoc(ky)), num: true }]
         return (
           <ReportPaper title="Báo cáo kết quả hoạt động kinh doanh" sub={`${kyTen(ky)}${s.goi === 'F' ? ' · Bản đơn giản, chưa theo chế độ kế toán' : s.goi === 'S' ? ' · Dạng tinh gọn theo TT58' : ''}`}
@@ -78,7 +78,7 @@ function dongCdkt(goi: Goi, c: Record<string, number>) {
   const ts = tien + pt + htk + ng + hm + vat + ttr
   const ncc = -du(c, '331'), thue = -du(c, '33311', '3334'), luong = -du(c, '334'), vay = -du(c, '341'), von = -du(c, '411'), ln = -du(c, '421')
   const npt = ncc + thue + luong + vay
-  if (goi === 'A') return [
+  if (goi === 'PR') return [
     { ct: 'TÀI SẢN', _b: 1 }, { ma: '100', ct: 'A. Tài sản ngắn hạn', v: tien + pt + htk + vat, _b: 1 }, { ma: '110', ct: 'Tiền và các khoản tương đương tiền', v: tien, _i: 1 },
     { ma: '130', ct: 'Các khoản phải thu ngắn hạn', v: pt, _i: 1 }, { ma: '140', ct: 'Hàng tồn kho', v: htk, _i: 1 }, { ma: '150', ct: 'Tài sản ngắn hạn khác', v: vat, _i: 1 },
     { ma: '200', ct: 'B. Tài sản dài hạn', v: ng + hm + ttr, _b: 1 }, { ma: '220', ct: 'Tài sản cố định', v: ng + hm, _i: 1 }, { ma: '260', ct: 'Tài sản dài hạn khác', v: ttr, _i: 1 },
@@ -109,11 +109,11 @@ export function CanDoiKeToan(p: ScreenProps) {
       {ky => {
         const sd = soCai(Number(ky))
         const cuoi = dongCdkt(s.goi, sd.cuoi), dau = dongCdkt(s.goi, sd.mo)
-        const A = s.goi === 'A'
-        const ts = cuoi.find(x => x.ma === (A ? '270' : '200'))!.v!, nv = cuoi.find(x => x.ma === (A ? '440' : '500'))!.v!
+        const PR = s.goi === 'PR'
+        const ts = cuoi.find(x => x.ma === (PR ? '270' : '200'))!.v!, nv = cuoi.find(x => x.ma === (PR ? '440' : '500'))!.v!
         const ngay = ky === '10' ? '07/10/2026' : ky === '9' ? '30/09/2026' : '31/08/2026'
         return (
-          <ReportPaper title="Báo cáo tình hình tài chính" sub={`Tại ngày ${ngay}${s.goi === 'S' ? ' · Dạng tinh gọn theo TT58' : ''}`} mau={s.goi === 'M' ? 'B01-DNN' : s.goi === 'A' ? 'B01-DN' : 'B01'} goi={s.goi}>
+          <ReportPaper title="Báo cáo tình hình tài chính" sub={`Tại ngày ${ngay}${s.goi === 'S' ? ' · Dạng tinh gọn theo TT58' : ''}`} mau={s.goi === 'PL' ? 'B01-DNN' : s.goi === 'PR' ? 'B01-DN' : 'B01'} goi={s.goi}>
             <div className="row" style={{ marginBottom: 8, fontSize: 12.5 }}>
               <span className={`chip ${ts === nv ? 'ok' : 'err'}`}>{ts === nv ? 'Tài sản bằng nguồn vốn' : 'Lệch tài sản và nguồn vốn'}</span>
             </div>
@@ -142,7 +142,7 @@ export function CanDoiPhatSinh(p: ScreenProps) {
         const tong = { ten: 'Tổng cộng', dn: sum('dn'), dc: sum('dc'), pn: sum('pn'), pc: sum('pc'), cn: sum('cn'), cc: sum('cc'), _t: 1 }
         const can = tong.dn === tong.dc && tong.pn === tong.pc && tong.cn === tong.cc
         return (
-          <ReportPaper title="Bảng cân đối số phát sinh" sub={kyTen(ky)} mau={s.goi === 'M' ? 'F01-DNN' : undefined} goi={s.goi}>
+          <ReportPaper title="Bảng cân đối số phát sinh" sub={kyTen(ky)} mau={s.goi === 'PL' ? 'F01-DNN' : undefined} goi={s.goi}>
             <div style={{ marginBottom: 8 }}><span className={`chip ${can ? 'ok' : 'err'}`}>{can ? 'Cân: Nợ bằng Có ở cả 3 cột' : 'Lệch Nợ, Có'}</span></div>
             <RptTable cols={[{ k: 'tk', t: 'Số hiệu TK', cls: 'code', w: 80 }, { k: 'ten', t: 'Tên tài khoản' }, { k: 'dn', t: 'Dư Nợ đầu kỳ', num: true }, { k: 'dc', t: 'Dư Có đầu kỳ', num: true },
               { k: 'pn', t: 'Phát sinh Nợ', num: true }, { k: 'pc', t: 'Phát sinh Có', num: true }, { k: 'cn', t: 'Dư Nợ cuối kỳ', num: true }, { k: 'cc', t: 'Dư Có cuối kỳ', num: true }]} rows={[...rows, tong]} />
@@ -169,7 +169,7 @@ export function LuuChuyenTien(p: ScreenProps) {
         const l20 = l01 + l02 + l03 + l04 + l06 + l07, l34 = theo(['travay']), l40 = l34, l50 = l20 + l40
         const l60 = du(sd.mo, '1111', '1121'), l70 = du(sd.cuoi, '1111', '1121')
         return (
-          <ReportPaper title="Báo cáo lưu chuyển tiền tệ" sub={`${kyTen(ky)} · Phương pháp trực tiếp`} mau={s.goi === 'M' ? 'B03-DNN' : 'B03-DN'} goi={s.goi}>
+          <ReportPaper title="Báo cáo lưu chuyển tiền tệ" sub={`${kyTen(ky)} · Phương pháp trực tiếp`} mau={s.goi === 'PL' ? 'B03-DNN' : 'B03-DN'} goi={s.goi}>
             <div style={{ marginBottom: 8 }}><span className={`chip ${l60 + l50 === l70 ? 'ok' : 'err'}`}>{l60 + l50 === l70 ? 'Tiền cuối kỳ khớp bảng cân đối kế toán' : 'Lệch tiền cuối kỳ'}</span></div>
             <RptTable cols={[{ k: 'ct', t: 'Chỉ tiêu' }, { k: 'ma', t: 'Mã số', c: true, w: 70 }, { k: 'v', t: 'Kỳ này', num: true, r: x => x.v === undefined ? '' : x.v.toLocaleString('vi-VN') }]} rows={[
               { ct: 'I. Lưu chuyển tiền từ hoạt động kinh doanh', _b: 1 },

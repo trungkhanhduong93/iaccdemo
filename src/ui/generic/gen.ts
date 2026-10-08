@@ -136,27 +136,152 @@ export function tongDong(ds: Dong[]) {
   return { tien, thue, tong: tien + thue }
 }
 
-/** 26 chứng từ trải từ 07/10 lùi về đầu tháng 9 */
+/** Chứng từ trải từ 07/10 lùi về đầu tháng 9 (mặc định 26 phiếu, hoặc theo cfg.soPhieu) */
 export function chungTu(cfg: VoucherCfg, seed: string): Row[] {
+  const soPhieu = cfg.soPhieu ?? 26
+
+  // Giữ nguyên hành vi cũ cho cfg không có soPhieu hoặc soPhieu <= 26
+  if (soPhieu <= 26) {
+    const r = rng(seed)
+    const dts = doiTuongDs(cfg.doiTuong)
+    const rows: Row[] = []
+    let d = new Date(HOM_NAY)
+    for (let i = 0; i < 26; i++) {
+      const so = `${cfg.prefix}${String(d.getFullYear()).slice(2)}${pad(d.getMonth() + 1)}-${pad(260 - i * 3 - Math.floor(r() * 3), 4)}`
+      const dt = pick(r, dts)
+      const id = `${seed}-${i}`
+      const t = tongDong(dongCua(cfg, id))
+      const nguon = cfg.nguon && cfg.nguon !== 'tay' && r() < 0.75 ? cfg.nguon : 'tay'
+      rows.push({
+        id: String(i), so, ngay: `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`, thang: d.getMonth() + 1,
+        doiTuong: dt.ten, maDt: dt.ma, cn: pick(r, CHI_NHANH).ten,
+        dienGiai: pick(r, cfg.dienGiai), tien: t.tien, thue: t.thue, tong: t.tong, nguon,
+        tt: i < 3 ? 'nhap' : i === 5 ? 'loi' : 'ghi',
+      })
+      d = new Date(d.getFullYear(), d.getMonth(), d.getDate() - (r() < 0.55 ? 1 : 2))
+    }
+    return rows
+  }
+
+  // Khi soPhieu > 26 (vd 80): sinh phiếu trải đều từ 01/09/2026 tới HOM_NAY (07/10/2026)
   const r = rng(seed)
   const dts = doiTuongDs(cfg.doiTuong)
-  const rows: Row[] = []
-  let d = new Date(HOM_NAY)
-  for (let i = 0; i < 26; i++) {
-    const so = `${cfg.prefix}${String(d.getFullYear()).slice(2)}${pad(d.getMonth() + 1)}-${pad(260 - i * 3 - Math.floor(r() * 3), 4)}`
-    const dt = pick(r, dts)
+
+  // Danh sách ngày tháng 9 (30 ngày) và tháng 10 (7 ngày)
+  const ngayT9: { d: Date; isWeekend: boolean }[] = []
+  for (let day = 1; day <= 30; day++) {
+    const d = new Date(2026, 8, day)
+    ngayT9.push({ d, isWeekend: d.getDay() === 0 || d.getDay() === 6 })
+  }
+  const ngayT10: { d: Date; isWeekend: boolean }[] = []
+  for (let day = 1; day <= 7; day++) {
+    const d = new Date(2026, 9, day)
+    ngayT10.push({ d, isWeekend: d.getDay() === 0 || d.getDay() === 6 })
+  }
+
+  // Phân bổ số phiếu mỗi ngày (1-4 phiếu, ngày thường nhiều hơn cuối tuần)
+  // Tháng 10 cần đủ số phiếu để 3 chi nhánh mỗi chi nhánh ≥ 5 phiếu
+  const targetT10 = Math.min(26, Math.max(18, Math.round(soPhieu * 0.275)))
+  const targetT9 = soPhieu - targetT10
+
+  const phanBo = (ds: { d: Date; isWeekend: boolean }[], target: number) => {
+    const counts = new Array(ds.length).fill(1)
+    let conLai = target - ds.length
+    const weights = ds.map(n => n.isWeekend ? 1.0 : 2.0)
+    while (conLai > 0) {
+      const valid = weights.map((w, i) => counts[i] < 4 ? i : -1).filter(i => i >= 0)
+      if (valid.length === 0) break
+      const totalW = valid.reduce((sum, i) => sum + weights[i], 0)
+      let pickVal = r() * totalW
+      let chosen = valid[0]
+      for (const idx of valid) {
+        pickVal -= weights[idx]
+        if (pickVal <= 0) {
+          chosen = idx
+          break
+        }
+      }
+      counts[chosen]++
+      conLai--
+    }
+    return counts
+  }
+
+  const countsT9 = phanBo(ngayT9, targetT9)
+  const countsT10 = phanBo(ngayT10, targetT10)
+
+  // Sinh danh sách phiếu theo thứ tự thời gian tăng dần để đánh số chứng từ
+  interface PhieuItem {
+    d: Date
+    thang: number
+    so: string
+    cn: string
+    dt: { ma: string; ten: string }
+    dienGiai: string
+    nguon: string
+  }
+
+  const items: PhieuItem[] = []
+  let cnIdx = 0
+  let seqT9 = 1
+  let seqT10 = 1
+
+  // Tháng 9
+  for (let i = 0; i < ngayT9.length; i++) {
+    const { d } = ngayT9[i]
+    for (let j = 0; j < countsT9[i]; j++) {
+      const so = `${cfg.prefix}2609-${pad(seqT9++, 4)}`
+      const cn = CHI_NHANH[cnIdx % CHI_NHANH.length].ten
+      cnIdx++
+      const dt = dts[(items.length + Math.floor(r() * dts.length)) % dts.length]
+      const dienGiai = pick(r, cfg.dienGiai)
+      const nguon = cfg.nguon && cfg.nguon !== 'tay' && r() < 0.75 ? cfg.nguon : 'tay'
+      items.push({ d, thang: 9, so, cn, dt, dienGiai, nguon })
+    }
+  }
+
+  // Tháng 10
+  for (let i = 0; i < ngayT10.length; i++) {
+    const { d } = ngayT10[i]
+    for (let j = 0; j < countsT10[i]; j++) {
+      const so = `${cfg.prefix}2610-${pad(seqT10++, 4)}`
+      const cn = CHI_NHANH[cnIdx % CHI_NHANH.length].ten
+      cnIdx++
+      const dt = dts[(items.length + Math.floor(r() * dts.length)) % dts.length]
+      const dienGiai = pick(r, cfg.dienGiai)
+      const nguon = cfg.nguon && cfg.nguon !== 'tay' && r() < 0.75 ? cfg.nguon : 'tay'
+      items.push({ d, thang: 10, so, cn, dt, dienGiai, nguon })
+    }
+  }
+
+  // Đảo ngược để phiếu mới nhất ở HOM_NAY đứng đầu bảng
+  items.reverse()
+
+  // Trạng thái: khoảng 10% 'nhap' tập trung ở các ngày gần HOM_NAY, 2-3 phiếu 'loi', còn lại 'ghi'
+  const soNhap = Math.max(1, Math.round(soPhieu * 0.1))
+  const loiIndices = new Set([soNhap + 4, Math.floor(soPhieu * 0.45), Math.floor(soPhieu * 0.7)])
+
+  return items.map((item, i): Row => {
     const id = `${seed}-${i}`
     const t = tongDong(dongCua(cfg, id))
-    const nguon = cfg.nguon && cfg.nguon !== 'tay' && r() < 0.75 ? cfg.nguon : 'tay'
-    rows.push({
-      id: String(i), so, ngay: `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`, thang: d.getMonth() + 1,
-      doiTuong: dt.ten, maDt: dt.ma, cn: pick(r, CHI_NHANH).ten,
-      dienGiai: pick(r, cfg.dienGiai), tien: t.tien, thue: t.thue, tong: t.tong, nguon,
-      tt: i < 3 ? 'nhap' : i === 5 ? 'loi' : 'ghi',
-    })
-    d = new Date(d.getFullYear(), d.getMonth(), d.getDate() - (r() < 0.55 ? 1 : 2))
-  }
-  return rows
+    const tt = i < soNhap ? 'nhap' : loiIndices.has(i) ? 'loi' : 'ghi'
+    const d = item.d
+    return {
+      id: String(i),
+      so: item.so,
+      ngay: `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`,
+      thang: item.thang,
+      doiTuong: item.dt.ten,
+      maDt: item.dt.ma,
+      cn: item.cn,
+      dienGiai: item.dienGiai,
+      tien: t.tien,
+      thue: t.thue,
+      tong: t.tong,
+      nguon: item.nguon,
+      tt,
+    }
+  })
 }
 
 export const TT_CT: Record<string, [string, string]> = {

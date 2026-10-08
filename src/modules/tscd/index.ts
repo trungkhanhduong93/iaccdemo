@@ -1,4 +1,4 @@
-// Phân hệ Tài sản cố định (chỉ gói Advance)
+// Phân hệ Tài sản cố định (chỉ gói Pro)
 import type { ModuleDef } from '../types'
 import { tuExcel } from '../types'
 import { quyTrinh } from './quy-trinh'

@@ -40,6 +40,7 @@ export interface VoucherCfg {
   them?: string                          // nhãn nút thêm
   thue?: number                          // thuế suất GTGT mặc định
   loai?: LoaiCT[]                        // một màn nhiều loại phiếu, vd 2.1.1 có phiếu thu, phiếu chi
+  soPhieu?: number                       // số phiếu mẫu, mặc định 26
 }
 
 /** Một loại phiếu trong màn chứng từ. Mở form đúng loại bằng ?loai=k */

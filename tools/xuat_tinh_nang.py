@@ -1,4 +1,5 @@
 """Xuất 120 tính năng IACC Cloud ra src/app/features.json cho web.
+Lưu ý: features.json vẫn ghi mã 1 ký tự (F, S, M, A); web app tự đổi M->PL, A->PR khi đọc (src/app/plan.ts).
 
 Đọc qua build_present.load_features() của bộ present để dùng chung GOI_FIX, EXTRA, KHO_IVT, KHONG_IVT.
 Không sửa gì bên Present. Excel đổi thì chạy lại:  python tools/xuat_tinh_nang.py

@@ -44,7 +44,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   const path = duongDan(mod, sc)
   const dongForm = useDong(path)
   const kieu = kieuGhiSo(s.goi)
-  const coTkGoi = s.goi === 'M' || s.goi === 'A'
+  const coTkGoi = s.goi === 'PL' || s.goi === 'PR'
 
   // Trạng thái thanh toán cho mua/bán
   const [hinhThucTt, setHinhThucTt] = useState<'congno' | 'tienmat' | 'chuyenkhoan'>(
@@ -773,7 +773,7 @@ function lyMacDinh(ds: string[], dg: string) {
   return LY_THEO_DG.find(([tu, ly]) => l.includes(tu) && ds.includes(ly))?.[1] ?? ds[ds.length - 1] ?? ''
 }
 
-/** Hạch toán theo gói: Free không hạch toán, Starter ghi sổ TT58, Medium/Advance Nợ/Có */
+/** Hạch toán theo gói: Free không hạch toán, Standard ghi sổ TT58, Plus/Pro Nợ/Có */
 export function HachToan({
   cfg,
   goi,
@@ -802,16 +802,18 @@ export function HachToan({
   }
 
   if (kieu === 'so') {
+    const rowsTT58 = [
+      { so: cfg.soTT58 ?? 'Sổ chi phí sản xuất, kinh doanh', cot: 'Phát sinh', tien },
+      ...(thue ? [{ so: 'Sổ theo dõi thuế', cot: 'Thuế GTGT', tien: thue }] : []),
+      { so: 'Sổ tiền', cot: 'Thu, chi', tien: tien + thue },
+    ]
     return (
       <div className="stack" style={{ gap: 10 }}>
-        <Note icon="book">Gói Starter theo {GOI.S.cheDo}: không dùng tài khoản Nợ/Có. Phiếu ghi thẳng vào sổ.</Note>
+        <Note icon="book">Gói Standard theo {GOI.S.cheDo}: không dùng tài khoản Nợ/Có. Phiếu ghi thẳng vào sổ.</Note>
         <Table
           cols={[{ k: 'so', t: 'Ghi vào sổ' }, { k: 'cot', t: 'Cột' }, { k: 'tien', t: 'Số tiền', num: true }]}
-          rows={[
-            { so: cfg.soTT58 ?? 'Sổ chi phí sản xuất, kinh doanh', cot: 'Phát sinh', tien },
-            ...(thue ? [{ so: 'Sổ theo dõi thuế', cot: 'Thuế GTGT', tien: thue }] : []),
-            { so: 'Sổ tiền', cot: 'Thu, chi', tien: tien + thue },
-          ]}
+          rows={rowsTT58}
+          sum={{ so: 'Cộng', tien: rowsTT58.reduce((a, x) => a + x.tien, 0) }}
         />
       </div>
     )
@@ -866,7 +868,7 @@ export function LichSu({ goi, moi }: { goi: Goi; moi: boolean }) {
     return (
       <div style={{ padding: 14 }}>
         <Note kind="gray" icon="lock">
-          Nhật ký thao tác có từ gói Starter. <Link to="/app/he-thong/goi-thue-bao">So sánh gói</Link>
+          Nhật ký thao tác có từ gói Standard. <Link to="/app/he-thong/goi-thue-bao">So sánh gói</Link>
         </Note>
       </div>
     )

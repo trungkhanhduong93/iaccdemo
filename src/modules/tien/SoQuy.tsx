@@ -52,7 +52,7 @@ export function SoQuy({ sc, mod }: ScreenProps) {
         <ReportToolbar ky={ky} setKy={setKy}>
           <LocO nhan="Quỹ"><Select className="inp" value={cn} onChange={e => setCn(e.target.value)}>{CHI_NHANH.map(c => <option key={c.id} value={c.id}>Quỹ tiền mặt {c.ngan}</option>)}</Select></LocO>
         </ReportToolbar>
-        <ReportPaper title="Sổ quỹ tiền mặt" sub={`Quỹ tiền mặt ${ten} · Tháng ${thang}/2026`} mau={s.goi === 'M' ? 'S07-DNN' : undefined} goi={s.goi}>
+        <ReportPaper title="Sổ quỹ tiền mặt" sub={`Quỹ tiền mặt ${ten} · Tháng ${thang}/2026`} mau={s.goi === 'PL' ? 'S07-DNN' : undefined} goi={s.goi}>
           <RptTable cols={cols} rows={[{ dg: 'Số tồn đầu kỳ', du: so.mo, _b: 1 }, ...so.rows, { dg: 'Cộng phát sinh trong kỳ', no: so.tn, co: so.tc, _t: 1 }, { dg: 'Số tồn cuối kỳ', du: so.cuoi, _t: 1 }]} />
         </ReportPaper>
       </section>

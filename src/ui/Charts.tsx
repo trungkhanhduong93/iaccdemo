@@ -2,7 +2,7 @@
 import { short } from './format'
 
 /** Cột đứng, có thể chồng 2 lớp (vd doanh thu và giá vốn) */
-export function Bars({ data, h = 220, colors = ['#1b6fe0', '#f5871f'], hi }: {
+export function Bars({ data, h = 220, colors = ['#1b6fe0', '#f28020'], hi }: {
   data: { l: string; v: number; v2?: number }[]; h?: number; colors?: string[]; hi?: number
 }) {
   const W = 760, pl = 46, pb = 24, pt = 10

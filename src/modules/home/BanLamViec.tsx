@@ -51,7 +51,7 @@ export function BanLamViec({ sc }: ScreenProps) {
         <div className="flow">
           {([['pos', 'Đơn POS về', money(don), 'FABi, tới 14:20', ''], ['db', 'Vùng đệm', money(don), 'Chưa đụng vào sổ', ''],
             ['shield', 'Kiểm tra', money(don - loi), `${loi} đơn lỗi`, 'down'], ['book', 'Đã ghi sổ', money(don - loi), '3 chứng từ bán hàng', ''],
-            ['scale', 'Đối soát', coTrongGoi('11.7', s.goi) ? `${lech} lệch` : '—', coTrongGoi('11.7', s.goi) ? 'FABi, hoá đơn, tiền' : 'Có từ gói Starter', lech ? 'down' : 'up']] as const).map(([ic, t, v, d, c], i) => (
+            ['scale', 'Đối soát', coTrongGoi('11.7', s.goi) ? `${lech} lệch` : '—', coTrongGoi('11.7', s.goi) ? 'FABi, hoá đơn, tiền' : 'Có từ gói Standard', lech ? 'down' : 'up']] as const).map(([ic, t, v, d, c], i) => (
             <div className="flow-s" key={t}>
               <div className="t"><Icon n={ic} className="ic sm" />{t}</div>
               <div className="v">{v}</div>
