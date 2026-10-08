@@ -16,13 +16,19 @@ Agent nào cũng phải làm theo file này: Claude Code (Clau), Antigravity (An
 
 ## Đầu phiên
 
+Mỗi phiên agent làm trong một bản clone riêng của repo, không dùng chung thư mục với phiên khác, kể cả trên cùng máy (QD21). Hai phiên chung một thư mục thì commit lẫn vào nhau, `git push` của phiên này đẩy luôn việc dở của phiên kia. Tạo bản riêng: `git clone https://github.com/trungkhanhduong93/iaccdemo D:\IACC-CLOUD\Web-<tên phiên>`. Cổng 5180 cố định, nên trên một máy mỗi lúc chỉ một bản chạy `npm run dev`: bản kia chờ tới lượt mới chạy `kiem_tra.py`.
+
 Làm đủ các bước, theo thứ tự:
 
 1. Chạy `git pull --rebase`. Có xung đột thì dừng, báo người dùng. `package-lock.json` vừa đổi thì chạy thêm `npm ci`.
 2. Đọc `docs/TIEN-DO.md`: việc nào giao cho người dùng này, việc nào người khác đang làm.
 3. Đọc 3 file mới nhất trong `docs/nhat-ky/` (bỏ qua `MAU.md`) và mọi nhật ký của việc sắp làm. Phiên trước dở dang thì làm tiếp từ mục "Dở dang, việc tiếp theo" của nhật ký đó.
 4. Báo người dùng: việc được giao, việc nên làm trước, phiên trước dừng ở đâu. Chờ người dùng chọn rồi mới sửa.
-5. Đổi trạng thái việc đó trong `docs/TIEN-DO.md` thành `Đang làm`, commit riêng file này, push ngay. Người dùng muốn làm việc chưa có trong bảng thì thêm dòng mới với mã kế tiếp, ghi tên người dùng, rồi mới làm.
+5. Đổi trạng thái việc đó trong `docs/TIEN-DO.md` thành `Đang làm`, commit riêng file này, push ngay (làm mục "Ngay trước lệnh git push" trước). Người dùng muốn làm việc chưa có trong bảng thì thêm dòng mới với mã kế tiếp, ghi tên người dùng, rồi mới làm (QD21):
+   - Lấy mã kế tiếp sau `git fetch origin` và đọc `docs/TIEN-DO.md` trên `origin/main`, không đọc bản trên máy.
+   - Ghi vào cột Ghi chú các file dùng chung sẽ sửa, nhất là `VoucherScreen.tsx`, `ChungTuForm.tsx`, `app.css`. Thấy việc khác đang ghi cùng file thì hỏi người đó trước.
+   - Việc có thể sinh quyết định mới thì giữ chỗ ngay trong commit này: thêm dòng `## QDxx. <tên> (đang soạn)` cuối `docs/QUYET-DINH.md`.
+   - Commit nhận việc chỉ sửa `docs/TIEN-DO.md`, `docs/QUYET-DINH.md`. Push ngay kể cả khi người dùng dặn chỉ push khi được bảo.
 6. Sắp sửa phần nào thì đọc mục tương ứng trong `docs/KIEN-TRUC.md` và `docs/BAY.md`. Định đổi bố cục, nghiệp vụ hay thư viện thì đọc thêm `docs/QUYET-DINH.md`.
 
 ## Trong phiên
@@ -31,6 +37,7 @@ Làm đủ các bước, theo thứ tự:
 - Làm theo quy ước trong `docs/KIEN-TRUC.md`.
 - Gặp lỗi mất hơn 15 phút mới ra nguyên nhân thì ghi vào `docs/BAY.md`: hiện tượng, nguyên nhân, cách tránh.
 - Trum chốt điều mới về bố cục, nghiệp vụ, thư viện hay cách làm việc thì ghi vào `docs/QUYET-DINH.md`.
+- Thêm CSS mới thì gom vào một mục riêng ở cuối `src/styles/app.css`, tiêu đề có mã việc, vd `/* ── Thanh lọc theo iFaster (T34) ── */`. Hai việc cùng thêm cuối file thì gộp bằng cách giữ cả hai mục.
 - Giữ ngôn ngữ thiết kế hiện tại: màu, phông trong biến `:root` của `src/styles/app.css` và các thành phần có sẵn trong `src/ui/`. Tham khảo AMIS hay sản phẩm khác chỉ để học bố cục, luồng thao tác, tính năng. Không chép màu, phông, biểu tượng của họ (QD12).
 
 ## Trước khi push

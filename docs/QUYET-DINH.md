@@ -170,3 +170,17 @@ Lý do: PhuongXT cần mở hai mục này cho gói Free ngay, không chờ ch�
 - Danh sách chứng từ mở mặc định ở tháng này. Báo cáo, sổ vẫn mở ở tháng 9 và lấy tháng của ngày bắt đầu làm kỳ, vì dữ liệu mẫu tính theo tháng.
 
 Lý do: Trum giao việc T34, chốt các mặc định trên ngày 08/10/2026.
+
+## QD21. Phối hợp để không trùng mã, không đè việc nhau (08/10/2026)
+
+Ngày 08/10 trùng mã ba lần: T30 dùng cho hai việc, T32 và T33 bị lấy hai lần, QD16 và QD17 cũng vậy. `VoucherScreen.tsx` bị hai việc cùng sửa khối lọc. Từ nay:
+
+- Nhận việc là push ngay commit chỉ sửa `docs/TIEN-DO.md`, `docs/QUYET-DINH.md`, kể cả khi người dùng dặn agent chỉ push khi được bảo.
+- Lấy mã việc kế tiếp sau `git fetch origin`, đọc bảng trên `origin/main`.
+- Việc có thể sinh quyết định mới thì giữ chỗ dòng `## QDxx (đang soạn)` ngay lúc nhận việc.
+- Mỗi phiên agent một bản clone riêng. Trên một máy mỗi lúc chỉ một bản chạy `npm run dev` (cổng 5180 cố định).
+- Ghi file dùng chung sẽ sửa vào cột Ghi chú của `docs/TIEN-DO.md`.
+- CSS mới gom thành một mục riêng có mã việc ở cuối `app.css`.
+
+Lý do: Trum chốt sau khi gộp T34 với T32 của PhuongXT.
+

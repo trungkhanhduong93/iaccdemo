@@ -4,7 +4,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T34.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T35.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
@@ -38,6 +38,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | T31 | Luật mới: agent kiểm bản mới trên GitHub trước mỗi lần push (QD16) | Trum | 08/10/2026 | `2026-10-08-trum-kiem-truoc-push.md` |
 | T30 | Robot báo lên group Telegram mỗi lần có người push lên `main`, báo thêm khi deploy hỏng | Trum | 08/10/2026 | `2026-10-08-trum-bao-telegram.md` |
 | T01 | Tạo API token Cloudflare cho robot deploy, lưu vào GitHub | Trum | 08/10/2026 | `2026-10-08-trum-bao-telegram.md` |
+| T35 | Luật phối hợp: push ngay khi nhận việc, lấy mã sau fetch, giữ chỗ QD, mỗi phiên một bản clone, ghi file dùng chung, CSS theo mục có mã việc (QD21) | Trum | 08/10/2026 | `2026-10-08-trum-luat-phoi-hop.md` |
 | T34 | Thanh lọc và chọn khoảng ngày theo iFaster cho mọi màn danh mục, danh sách, báo cáo | Trum | 08/10/2026 | `2026-10-08-trum-thanh-loc-ifaster.md` |
 | T29 | Màn chứng từ bán hàng 3.1.1 chia đôi 50/50 như 3.1.2 | Trum | 08/10/2026 | `2026-10-08-trum-ban-hang-chia-doi.md` |
 | T28 | Ô chọn trong form chứng từ dùng chung một kiểu, thẳng hàng. Màn đăng nhập bỏ sơ đồ kết nối | Trum | 08/10/2026 | `2026-10-08-trum-o-chon-ngay-ngan.md` |
