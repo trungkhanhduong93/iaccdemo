@@ -1,5 +1,4 @@
-// Bảng dữ liệu dùng chung: cột số căn phải, dòng tổng dính đáy, bấm dòng để mở chi tiết, cột đứng yên khi cuộn ngang
-import type { CSSProperties, PointerEvent as PE, ReactNode } from 'react'
+import { useLayoutEffect, useRef, useState, type CSSProperties, type PointerEvent as PE, type ReactNode } from 'react'
 import type { Col, Row } from '../modules/types'
 import { money } from './format'
 import { OLoc, type LocCot } from './LocCot'
@@ -112,11 +111,22 @@ export function Table({ cols: cols0, rows, sum, onRow, onDbl, sel, rowCls, maxH,
     }
   }
 
+  const r1Ref = useRef<HTMLTableRowElement>(null)
+  const [thH1, setThH1] = useState(36)
+  useLayoutEffect(() => {
+    if (r1Ref.current) {
+      const h = r1Ref.current.offsetHeight
+      if (h && h !== thH1) {
+        setThH1(h)
+      }
+    }
+  })
+
   return (
     <div className="tbl-wrap" style={maxH ? { maxHeight: maxH } : undefined}>
-      <table className={`tbl${motDong ? ' mot-dong' : ''}${keDoc ? ' ke-doc' : ''}`}>
+      <table className={`tbl${motDong ? ' mot-dong' : ''}${keDoc ? ' ke-doc' : ''}`} style={{ '--th-h1': `${thH1}px` } as CSSProperties}>
         <thead>
-          <tr>{cols.map((c, i) => {
+          <tr ref={r1Ref}>{cols.map((c, i) => {
             const rd = rongDef(c)
             const thStyle: CSSProperties = {
               ...(rd.w ? { width: rd.w } : {}),
@@ -141,6 +151,7 @@ export function Table({ cols: cols0, rows, sum, onRow, onDbl, sel, rowCls, maxH,
                   ...(rd.minW ? { minWidth: rd.minW } : {}),
                   ...(rd.maxW ? { maxWidth: rd.maxW } : {}),
                   ...vt[i].style,
+                  top: thH1,
                 }
                 return (
                   <th key={c.k} className={lop(c, i)} style={thLocStyle}>

@@ -3,21 +3,21 @@
   --zoom: 1;
 }
 
-@media (max-width: 1699px) {
-  :root {
-    --zoom: .9;
-  }
-  html {
-    zoom: .9;
-  }
-}
-
-@media (max-width: 1449px) {
+@media (max-width: 1699px), (max-height: 850px) {
   :root {
     --zoom: .85;
   }
   html {
     zoom: .85;
+  }
+}
+
+@media (max-width: 1280px) {
+  :root {
+    --zoom: .8;
+  }
+  html {
+    zoom: .8;
   }
 }
 

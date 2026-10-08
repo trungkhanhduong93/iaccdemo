@@ -252,3 +252,14 @@ Lý do: Trum giao việc T41 ngày 08/10/2026, theo mẫu iFaster và iPOS Inven
 Thay một phần QD24, QD25. Lý do: Trum giao việc T42 ngày 08/10/2026, theo mẫu iPOS Inventory.
 
 ## QD27. Gói Free/Standard/Plus/Pro, mã F/S/PL/PR và đợt chỉnh danh sách (đang soạn)
+
+## QD28. Giao diện gọn 85% cho màn 14 inch, tìm kiếm thanh trên và lọc bảng (09/10/2026)
+
+- Màn hình rộng dưới 1700px hoặc cao dưới 850px (máy tính xách tay 14 inch Full HD tỉ lệ thu phóng 125%) thu nhỏ toàn bộ 85% qua CSS zoom (`src/styles/scale.css`). Màn dưới 1280px thu 80%.
+- Bỏ nút "Thêm nhanh" trên sidebar. Nút tìm kiếm Ctrl K chuyển từ sidebar lên thanh trên, nằm cạnh ô Chi nhánh.
+- Badge phiên bản ở logo sidebar thiết kế theo mẫu iPOS Inventory: viên thuốc bo tròn góc, màu vàng đồng `#b1852b` cho gói Pro. Bỏ chữ "Phiên bản".
+- Hàng lọc từng cột dưới tiêu đề bảng: cho phép bấm vào ô để gõ tìm kiếm trực tiếp cho mọi cột (chữ, số, phân loại, ngày). Phễu chọn điều kiện nâng cao vẫn giữ ở mép phải ô.
+- Khắc phục khoảng hở giữa hàng tiêu đề và hàng lọc: đo chiều cao tiêu đề bằng JS rồi gán vào top hàng lọc. Bù thêm bóng đổ bên trong, không còn lộ chữ phía dưới.
+
+Lý do: Trum giao việc T44 ngày 09/10/2026.
+

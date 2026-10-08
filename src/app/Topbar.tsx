@@ -9,7 +9,7 @@ import { Pk } from '../ui/Page'
 import { Dropdown, MenuHead, MenuItem, MenuSep } from '../ui/Dropdown'
 
 
-export function Topbar() {
+export function Topbar({ onSearch }: { onSearch?: () => void }) {
   const { s, set } = useSession()
   const nav = useNavigate()
   const dv = donViHienTai(s)
@@ -37,6 +37,19 @@ export function Topbar() {
       </Dropdown>
 
       <span className="grow" />
+
+      {onSearch && (
+        <button
+          type="button"
+          className="topbar-tim-btn"
+          onClick={onSearch}
+          title="Tìm màn hình, chứng từ, báo cáo (Ctrl K)"
+        >
+          <Icon n="search" className="ic sm" />
+          <span>Tìm kiếm…</span>
+          <span className="kbd">Ctrl K</span>
+        </button>
+      )}
 
       <Dropdown btnClass="cn-btn" align="end" width={300} title="Chọn chi nhánh làm việc. Chứng từ thêm mới lập cho chi nhánh này"
         label={<><Icon n="store" className="ic sm" /><span className="cn-t"><small>Chi nhánh</small><b>{cn ? cn.ten : 'Tất cả chi nhánh'}</b></span><Icon n="chevd" className="ic sm" /></>}>

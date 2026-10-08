@@ -232,9 +232,73 @@ export function OLoc({ c, loc }: { c: Col; loc: LocCot }) {
     )
   }
 
-  // Cột chữ, số, phân loại: chỉ hiện biểu tượng phễu nhỏ căn phải ô
+  if (kieu === 'chu') {
+    return (
+      <div className="loc-cell" onClick={e => e.stopPropagation()}>
+        <input
+          className="loc-o-cot"
+          placeholder=""
+          value={g.v}
+          aria-label={`Lọc cột ${c.t}`}
+          onChange={e => loc.dat(c.k, { ...g, v: e.target.value, op: g.op || 'chua' })}
+        />
+        <button
+          ref={btnRef}
+          type="button"
+          className={`loc-pheu-btn${dang ? ' on' : ''}`}
+          title={`Lọc cột ${c.t}`}
+          aria-label={`Lọc cột ${c.t}`}
+          onClick={() => setMo(o => !o)}
+        >
+          <Icon n="filter" className="ic sm" />
+          {dang && <span className="loc-pheu-dot" />}
+        </button>
+        <Popover anchor={btnRef} open={mo} onClose={dong} align="end" width={240} className="loc-cot-pop">
+          <KhungLoc c={c} kieu={kieu} g={g} loc={loc} tatCaChon={tatCaChon} onDong={dong} />
+        </Popover>
+      </div>
+    )
+  }
+
+  if (kieu === 'so') {
+    return (
+      <div className="loc-cell" onClick={e => e.stopPropagation()}>
+        <input
+          className="loc-o-cot loc-o-num"
+          placeholder=""
+          value={g.v}
+          aria-label={`Lọc số cột ${c.t}`}
+          onChange={e => loc.dat(c.k, { ...g, v: e.target.value, op: g.op || '=' })}
+        />
+        <button
+          ref={btnRef}
+          type="button"
+          className={`loc-pheu-btn${dang ? ' on' : ''}`}
+          title={`Lọc cột ${c.t}`}
+          aria-label={`Lọc cột ${c.t}`}
+          onClick={() => setMo(o => !o)}
+        >
+          <Icon n="filter" className="ic sm" />
+          {dang && <span className="loc-pheu-dot" />}
+        </button>
+        <Popover anchor={btnRef} open={mo} onClose={dong} align="end" width={240} className="loc-cot-pop">
+          <KhungLoc c={c} kieu={kieu} g={g} loc={loc} tatCaChon={tatCaChon} onDong={dong} />
+        </Popover>
+      </div>
+    )
+  }
+
+  // Cột phân loại (chọn)
   return (
-    <div className="loc-cell loc-cell-phai" onClick={e => e.stopPropagation()}>
+    <div className="loc-cell" onClick={e => e.stopPropagation()}>
+      <input
+        className="loc-o-cot"
+        placeholder=""
+        value={g.vText ?? ''}
+        aria-label={`Lọc phân loại cột ${c.t}`}
+        onChange={e => loc.dat(c.k, { ...g, vText: e.target.value, opText: 'chua' })}
+        onClick={() => setMo(true)}
+      />
       <button
         ref={btnRef}
         type="button"

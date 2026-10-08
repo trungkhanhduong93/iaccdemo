@@ -2,6 +2,10 @@
 
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
+## 09/10/2026
+
+- T44: Màn hình máy tính xách tay 14 inch (hoặc dưới 1700px) tự động thu nhỏ 85% hiển thị trọn vẹn thoải mái. Chuyển nút tìm kiếm Ctrl K từ sidebar lên thanh trên cạnh ô Chi nhánh, bỏ nút Thêm nhanh ở sidebar. Badge phiên bản Pro đổi sang màu vàng đồng dạng viên thuốc bo tròn theo mẫu iPOS Inventory. Hàng lọc từng cột dưới tiêu đề cho phép bấm vào ô để gõ tìm kiếm trực tiếp cho mọi cột. Xử lý triệt để khoảng hở giữa hàng tiêu đề và hàng lọc khi cuộn bảng.
+
 ## 08/10/2026
 
 - T42: Màn nhỏ dưới 1700px thu nhỏ toàn bộ giao diện cho bớt chật. Bỏ dòng đường dẫn trên tiêu đề. Nút thêm ghi "Thêm mới", kèm nút xổ gom tải dữ liệu, Excel và thao tác hàng loạt. Dòng tổng dính đáy bảng, phân trang gọn. Hàng lọc cột mở khung lọc theo kiểu chữ, số, ngày, phân loại.

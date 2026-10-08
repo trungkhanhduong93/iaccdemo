@@ -35,6 +35,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T44 | Giao diện gọn 85% cho màn 14 inch, tìm kiếm Ctrl K lên thanh trên cạnh Chi nhánh, bỏ Thêm nhanh, badge Pro giống Inventory, gõ trực tiếp hàng lọc và xoá khe hở tiêu đề (QD28) | Trum | 09/10/2026 | `2026-10-09-trum-giao-dien-14inch-loc-cot.md` |
 | T42 | Giao diện gọn cho màn nhỏ (thu nhỏ dưới 1700px), bỏ đường dẫn trên tiêu đề, nút Thêm mới kèm menu gom công cụ, chip trạng thái mới, dòng tổng dính đáy, phân trang mới, lọc cột theo kiểu cột (QD26) | Trum | 08/10/2026 | `2026-10-08-trum-giao-dien-gon.md` |
 | T41 | Danh sách chứng từ và màn Bán hàng 3.1.1 theo iFaster: chip trạng thái, ô lọc nhãn trên viền, Bộ lọc nâng cao, nút Lọc, Tuỳ chỉnh cột, kẻ dọc và kéo giãn cột, Thao tác hàng loạt (QD25) | Trum | 08/10/2026 | `2026-10-08-trum-danh-sach-ifaster.md` |
 | T40 | Biểu tượng riêng cho 17 màn danh mục, hiện ở menu Khác, ô tìm Ctrl K, hàng Danh mục dưới sơ đồ và sơ đồ Khởi tạo danh mục (QD23) | Trum | 08/10/2026 | `2026-10-08-trum-bieu-tuong-danh-muc.md` |
