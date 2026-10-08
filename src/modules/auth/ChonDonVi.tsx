@@ -14,7 +14,7 @@ export function ChonDonVi() {
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 40 }}>
       <div style={{ width: 640 }}>
-        <div className="brand" style={{ color: 'var(--ink)', marginBottom: 28 }}><Logo />IACC Cloud</div>
+        <div className="brand" style={{ color: 'var(--ink)', marginBottom: 28 }}><Logo cao={40} /></div>
         <h2 style={{ fontSize: 24, color: 'var(--ink)', fontWeight: 800 }}>Chọn đơn vị kế toán</h2>
         <p className="muted" style={{ margin: '6px 0 20px' }}>Tài khoản {s.email} làm việc ở {DON_VI.length} đơn vị. Mỗi đơn vị có sổ sách, gói thuê bao riêng.</p>
         <div className="stack" style={{ gap: 10 }}>

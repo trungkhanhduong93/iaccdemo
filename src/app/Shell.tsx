@@ -6,7 +6,7 @@ import { MODULES, dich, duongDan, manDau, maKhoa, moDuoc, phanHeKhoa } from './r
 import { GOI, minGoi } from './plan'
 import type { ModuleDef } from '../modules/types'
 import { Icon } from '../ui/Icon'
-import { Logo } from '../ui/Logo'
+import { Logo, DauLogo } from '../ui/Logo'
 import { Pk } from '../ui/Page'
 import { Dropdown, MenuHead, MenuItem } from '../ui/Dropdown'
 import { Topbar } from './Topbar'
@@ -59,7 +59,7 @@ function Sidebar({ mod }: { mod: ModuleDef }) {
 
   return (
     <nav className="sidebar" aria-label="Phân hệ">
-      <Link to="/app" className="sb-brand" title="IACC Cloud"><Logo size={34} /><span>IACC Cloud</span></Link>
+      <Link to="/app" className="sb-brand" title="IACC Cloud"><Logo nen="toi" cao={34} /><DauLogo size={34} /></Link>
       <div className="sb-add">
         <Dropdown btnClass="sb-add-btn" title="Thêm nhanh chứng từ" popClass="pop-qadd" width={500}
           label={<><Icon n="plus" className="ic sm" /><span>Thêm nhanh</span></>}>

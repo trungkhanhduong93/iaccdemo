@@ -74,6 +74,8 @@ Rủi ro đã chấp nhận:
 
 ## QD12. Giữ ngôn ngữ thiết kế hiện tại (07/10/2026 tối)
 
+Đã thay bằng QD15 từ 08/10/2026. Phần màu, phông, thẻ dưới đây là bản cũ. Luật không chép màu, phông, biểu tượng của sản phẩm ngoài iPOS vẫn giữ.
+
 Tham khảo AMIS hay sản phẩm khác chỉ để học bố cục, luồng thao tác, tính năng. Giao diện vẫn theo ngôn ngữ thiết kế của iaccdemo:
 
 - Phông Be Vietnam Pro, chữ thân 13,5px.
@@ -106,3 +108,18 @@ Lý do: Trum dặn khi giao việc làm lại form chứng từ và màn danh s�
   + Cột TT thanh toán và TT hoá đơn cho nhóm mua, bán.
   + Dòng chưa ghi sổ có vạch vàng bên trái; tick chọn nhiều dòng hiện thanh thao tác hàng loạt.
   + Bấm dòng hiện khung chi tiết `.ct-panel` bên dưới (thu gọn được); bấm đúp dòng hoặc nút Xem để mở form toàn màn hình.
+
+## QD15. Ngôn ngữ thiết kế theo iFaster (08/10/2026)
+
+iFaster (ifaster.ipos.vn) là sản phẩm của iPOS nên được dùng màu và cách trình bày. Thay phần thiết kế của QD12. Bố cục, màn hình, luồng thao tác giữ nguyên.
+
+- Màu chính xanh `#0560a6`: nút chính, tab đang chọn, viền ô đang nhập.
+- Sidebar nền xám đen `#2a3042`, chân sidebar `#1d2231`. Mục đang chọn là khối xanh sáng `#0090ff` bo 12px, chữ trắng.
+- Nền vùng nội dung `#f5f5f5`. Thẻ trắng bo 12px, không viền, không bóng.
+- Nút cao 34px, bo 8px. Đầu bảng nền xanh nhạt `#e6eff7`, chữ 13px đậm, không viết hoa.
+- Phông vẫn là Be Vietnam Pro, chữ thân 14px. iFaster dùng SF Pro nhưng giấy phép của SF Pro không cho nhúng lên web.
+- Giữ cam iPOS, màu 4 gói, màu trạng thái đỏ, vàng, xanh lá.
+- Logo "Accounting Powered by iPOS.vn". Sidebar và nền tối dùng bản chữ trắng, sidebar thu gọn dùng chữ A. Xuất lại bằng `python tools/xuat_logo_acc.py`.
+- Không đem sang: trợ lý iOne, nút Tải ứng dụng, ô chọn mã số thuế của iFaster.
+
+Lý do: Trum giao việc T26, chốt các mặc định trên ngày 08/10/2026.

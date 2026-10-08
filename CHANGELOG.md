@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 08/10/2026
 
+- T26: Giao diện đổi theo ngôn ngữ thiết kế iFaster: màu xanh mới, sidebar xám đen, mục đang chọn nổi khối xanh, đầu bảng nền xanh nhạt, thẻ trắng không viền. Logo đổi sang Accounting Powered by iPOS.vn.
 - T25: Bấm Trước, Sau trong form chứng từ không còn chớp màn.
 - T24: Bố cục danh sách chứng từ chia đôi 50/50 trên dưới cố định 1 trang không cần cuộn, chọn dòng ở trên đổi ngay chi tiết ở dưới; bỏ cụm thẻ stat để khu vực bảng chứng từ cao hơn. Sửa lỗi dính mép card thông tin chung trong chi tiết phiếu, chuẩn hoá cụm nút Trước - Sau cân đối, và bấm Esc từ duyệt phiếu đóng ngay về màn hình trước.
 - T21: Sửa danh sách chứng từ bị vỡ bố cục, cột đầu phình to và các dòng trống.

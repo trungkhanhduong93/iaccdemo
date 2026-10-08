@@ -28,7 +28,7 @@ export function KhoiTao() {
     <div style={{ minHeight: '100vh', background: 'var(--bg)', padding: '36px 40px' }}>
       <div style={{ maxWidth: 900, margin: '0 auto' }}>
         <div className="row" style={{ marginBottom: 26 }}>
-          <div className="brand" style={{ color: 'var(--ink)' }}><Logo />IACC Cloud</div>
+          <div className="brand" style={{ color: 'var(--ink)' }}><Logo cao={40} /></div>
           <span className="grow" />
           <button className="btn ghost" onClick={() => nav(-1)}>Để sau</button>
         </div>
