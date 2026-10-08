@@ -12,7 +12,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
 | T43 | Đợt chỉnh 13 điểm: thanh công cụ một hàng, nút Excel và Hàng loạt dạng biểu tượng, chip đếm mới, dòng tổng, bỏ cột và dòng tiêu đề, màu sidebar và cam logo, bỏ giới hạn rộng, gói Free/Standard/Plus/Pro (mã F/S/PL/PR), dữ liệu mua hàng, dòng tổng bảng chi tiết (QD27) | Trum | Đang làm | Sửa nhiều file dùng chung: `plan.ts`, `session.tsx`, `app.css`, `VoucherScreen.tsx`, `ChungTuBanHang.tsx`, `ChungTuForm.tsx`, `LocNangCao.tsx`, `Table.tsx`, `gen.ts`, `types.ts` và mọi file có mã gói |
-| T42 | Giao diện gọn cho màn nhỏ (thu nhỏ toàn bộ dưới 1700px), bỏ đường dẫn trên tiêu đề, nút "Thêm mới" và nút xổ gom công cụ, chip trạng thái, dòng tổng dính đáy, phân trang mới, hàng lọc từng cột theo kiểu cột (QD26) | Trum | Đang làm | Sửa file dùng chung: `Page.tsx`, `Dropdown.tsx`, `QuyTrinhScreen.tsx`, `CatalogScreen.tsx`, `main.tsx`, `VoucherScreen.tsx`, `ChungTuBanHang.tsx`, `LocNangCao.tsx`, `LocCot.tsx`, `Table.tsx`, `PhanTrang.tsx`, `CongCuDs.tsx`, `app.css` |
 | T27 | Danh sách chứng từ 2.1.1: khung chi tiết bên dưới hiện dòng phiếu khác với form của cùng phiếu (UNC2610-0259: khung ghi "Chi mua rau, củ tại chợ", form ghi "Trả tiền nhà cung cấp thịt bò") | | Chờ | Thấy khi làm T26 |
 | T02 | Chốt nghiệp vụ trên từng sơ đồ Quy trình: ô nào, nối thế nào, câu chữ. Sửa ở `src/modules/<phân hệ>/quy-trinh.ts` | Trum | Chờ | |
 | T03 | Nối sổ quỹ, sổ tài khoản 2.2.2, sổ ngân hàng 2.2.3, sổ công nợ 2.2.5 vào `so-cai.ts` để mọi sổ khớp báo cáo tài chính | | Chờ | Sổ quỹ đang tính riêng từ tiền mặt FABi từng chi nhánh. Tổng 3 quỹ chưa bằng dư TK 1111 trên cân đối kế toán |
@@ -36,6 +35,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T42 | Giao diện gọn cho màn nhỏ (thu nhỏ dưới 1700px), bỏ đường dẫn trên tiêu đề, nút Thêm mới kèm menu gom công cụ, chip trạng thái mới, dòng tổng dính đáy, phân trang mới, lọc cột theo kiểu cột (QD26) | Trum | 08/10/2026 | `2026-10-08-trum-giao-dien-gon.md` |
 | T41 | Danh sách chứng từ và màn Bán hàng 3.1.1 theo iFaster: chip trạng thái, ô lọc nhãn trên viền, Bộ lọc nâng cao, nút Lọc, Tuỳ chỉnh cột, kẻ dọc và kéo giãn cột, Thao tác hàng loạt (QD25) | Trum | 08/10/2026 | `2026-10-08-trum-danh-sach-ifaster.md` |
 | T40 | Biểu tượng riêng cho 17 màn danh mục, hiện ở menu Khác, ô tìm Ctrl K, hàng Danh mục dưới sơ đồ và sơ đồ Khởi tạo danh mục (QD23) | Trum | 08/10/2026 | `2026-10-08-trum-bieu-tuong-danh-muc.md` |
 | T39 | Danh sách chứng từ mọi phân hệ: bỏ chia đôi 50/50, kỳ lên đầu trang, nút Excel và Tuỳ chỉnh giao diện, bỏ thanh lọc dưới; STT và lọc từng cột có phễu theo kiểu dữ liệu. Gói đang dùng dưới logo, bỏ dòng mã, giai đoạn, nhãn gói dưới tiêu đề mọi màn (QD24) | PhuongXT | 08/10/2026 | `2026-10-08-phuongxt-danh-sach-chung-tu.md` |

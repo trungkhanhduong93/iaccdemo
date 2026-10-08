@@ -8,13 +8,13 @@ export function Pk({ g, o }: { g: Goi; o?: boolean }) {
 }
 
 /** Tiêu đề màn. code giữ trong chữ ký cho các màn đang truyền, không còn hiện mã, giai đoạn, nhãn gói dưới tiêu đề (T39) */
-export function PageHead({ crumb, title, meta, children }: {
+export function PageHead({ crumb: _crumb, title, meta, children }: {
   crumb?: string[]; title: ReactNode; code?: string; meta?: ReactNode; children?: ReactNode
 }) {
   return (
     <div className="ph">
       <div style={{ minWidth: 0 }}>
-        {crumb && <div className="crumb">{crumb.map((c, i) => <span key={i} className="row" style={{ gap: 6 }}>{i > 0 && <Icon n="chevr" className="ic sm" />}{c}</span>)}</div>}
+        {/* T42: Trum bỏ đường dẫn trên tiêu đề */}
         <h1>{title}</h1>
         {meta && <div className="ph-meta">{meta}</div>}
       </div>

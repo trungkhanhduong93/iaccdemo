@@ -15,10 +15,10 @@ import { dmy, fold, money, moneyD } from '../../ui/format'
 import { Select } from '../../ui/Dropdown'
 import { PhanTrang } from '../../ui/PhanTrang'
 import { ChonKhoangNgay, docNgay, thangNay, trongKhoang, type KhoangNgay } from '../../ui/ChonNgay'
-import { NutExcel } from '../../ui/CongCuDs'
+import { NutThemMoiSplit } from '../../ui/CongCuDs'
 import { dangLoc, khopLoc, type GiaTriLoc, type KieuLoc } from '../../ui/LocCot'
 import {
-  BoLoc, ChipTrangThai, NutHangLoat, NutTuyChinhCot, cotChon, dsChipTT, khopChipTT, useCauHinhLoc, useCotDs, useLocNhap, type OLocDef,
+  BoLoc, ChipTrangThai, NutTuyChinhCot, cotChon, dsChipTT, khopChipTT, useCauHinhLoc, useCotDs, useLocNhap, type OLocDef,
 } from '../../ui/LocNangCao'
 
 /** Bán hàng ngoài POS: tiệc mang về, khách công ty đặt trước. Lập tay, không qua FABi */
@@ -135,29 +135,27 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
   const sum = (k: string) => list.reduce((a, r) => a + r[k], 0)
   const cols: Col[] = [
     cotChon(list, chon, setChon),
-    { k: 'stt', t: 'STT', w: 48, c: true, dinh: 'trai' },
-    { k: 'ngay', t: 'Ngày', w: 96, dinh: 'trai' },
+    { k: 'stt', t: 'STT', w: 60, c: true, dinh: 'trai' },
+    { k: 'ngay', t: 'Ngày', w: 100, dinh: 'trai' },
     { k: 'so', t: 'Số chứng từ', cls: 'code', w: 150, dinh: 'trai' },
     { k: 'dienGiai', t: 'Diễn giải' },
     ...(cnChon ? [] : [{ k: 'cn', t: 'Chi nhánh', cls: 'dim' } as Col]),
-    { k: 'tien', t: 'Doanh thu chưa thuế', num: true }, { k: 'thue', t: 'Thuế GTGT', num: true }, { k: 'tong', t: 'Tổng tiền', num: true },
-    { k: 'nguon', t: 'Nguồn', r: () => <span className="src">FABi</span> },
-    { k: 'tt', t: 'Trạng thái', r: r => <St k={r.tt === 'loi' && ghi ? 'err' : r.tt === 'nhap' ? 'warn' : 'ok'}>{tenTT(r)}</St> },
+    { k: 'tien', t: 'Doanh thu chưa thuế', num: true, w: 160 }, { k: 'thue', t: 'Thuế GTGT', num: true, w: 120 }, { k: 'tong', t: 'Tổng tiền', num: true, w: 120 },
+    { k: 'nguon', t: 'Nguồn', w: 90, r: () => <span className="src">FABi</span> },
+    { k: 'tt', t: 'Trạng thái', w: 110, r: r => <St k={r.tt === 'loi' && ghi ? 'err' : r.tt === 'nhap' ? 'warn' : 'ok'}>{tenTT(r)}</St> },
   ]
   // Thứ tự, ẩn hiện, độ rộng cột lưu theo màn (T41)
   const cot = useCotDs(path, cols, COT_CO_DINH)
 
   return (
     <div className="page page-voucher">
-      <PageHead crumb={[mod.ten, sc.nhom ?? '']} title={tenMan(sc)} code={sc.code}>
-        <button className="btn" onClick={() => toast('Đã tải 612 đơn mới từ FABi, gom vào 3 chứng từ ngày 07/10')}><Icon n="refresh" className="ic sm" />Tải từ FABi</button>
-      </PageHead>
+      <PageHead crumb={[mod.ten, sc.nhom ?? '']} title={tenMan(sc)} code={sc.code} />
       <div style={{ flex: 'none' }}>
         <Note icon="pos">Đơn POS trên FABi tự gom thành một chứng từ cho mỗi chi nhánh mỗi ngày. Đơn huỷ, trả hàng sau khi chốt ca được điều chỉnh vào chứng từ cùng ngày, không tạo chứng từ trùng.</Note>
       </div>
       <div className="voucher-split">
         <section className="card voucher-top">
-          {/* Thanh công cụ theo iFaster như danh sách chứng từ dùng chung (T41) */}
+          {/* Thanh công cụ: chip trạng thái bên trái; ô lọc, phễu, Lọc, Tuỳ chỉnh cột, Thêm mới | ⌄ (T42) */}
           <div className="ds-thanh">
             <ChipTrangThai ds={chips} chon={chipTT} onChon={k => { setChipTT(k); setTrang(1) }} />
             <div className="ds-thanh-loc">
@@ -166,9 +164,18 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
             </div>
             <div className="ds-thanh-nut">
               <NutTuyChinhCot cols={cot.colsDu} an={cot.an} coDinh={COT_CO_DINH} macDinh={cot.macDinh} onLuu={cot.luu} />
-              <NutExcel onNhap={() => toast('Nhập chứng từ bán hàng từ file Excel')} onXuat={() => toast(`Đã xuất ${list.length} chứng từ ra Excel`)} />
-              <NutHangLoat so={chon.size} ghi={ghi} boChon={() => setChon(new Set())} />
-              <Link className="btn pri" to={`${path}/moi`}><Icon n="plus" className="ic sm" />Bán hàng ngoài POS</Link>
+              <NutThemMoiSplit
+                toMoi={`${path}/moi`}
+                taiNguon={{
+                  ten: 'FABi',
+                  onTai: () => toast('Đã tải 612 đơn mới từ FABi, gom vào 3 chứng từ ngày 07/10'),
+                }}
+                onNhapExcel={() => toast('Nhập chứng từ bán hàng từ file Excel')}
+                onXuatExcel={() => toast(`Đã xuất ${list.length} chứng từ ra Excel`)}
+                soChon={chon.size}
+                ghi={ghi}
+                onBoChon={() => setChon(new Set())}
+              />
             </div>
           </div>
           {list.length ? (
@@ -188,7 +195,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
                   r.tt === 'nhap' ? 'chua-ghi' : '',
                   r.tt === 'loi' && ghi ? 'bad' : '',
                 ].filter(Boolean).join(' ')}
-                sum={{ ngay: `${list.length} chứng từ`, tien: sum('tien'), thue: sum('thue'), tong: sum('tong') }}
+                sum={{ stt: `Tổng: ${list.length}`, tien: sum('tien'), thue: sum('thue'), tong: sum('tong') }}
               />
               <PhanTrang
                 tong={list.length}

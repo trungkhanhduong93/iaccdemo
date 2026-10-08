@@ -11,11 +11,11 @@ import { Dropdown, MenuHead, MenuItem, Select } from '../Dropdown'
 import { St, Table } from '../Table'
 import { PhanTrang } from '../PhanTrang'
 import { ChonKhoangNgay, docNgay, thangNay, trongKhoang, type KhoangNgay } from '../ChonNgay'
-import { NutExcel } from '../CongCuDs'
+import { NutThemMoiSplit } from '../CongCuDs'
 import { fold, money } from '../format'
 import { dangLoc, khopLoc, type GiaTriLoc, type KieuLoc } from '../LocCot'
 import {
-  BoLoc, ChipTrangThai, NutHangLoat, NutTuyChinhCot, cotChon, dsChipTT, khopChipTT, useCauHinhLoc, useCotDs, useLocNhap, type OLocDef,
+  BoLoc, ChipTrangThai, NutTuyChinhCot, cotChon, dsChipTT, khopChipTT, useCauHinhLoc, useCotDs, useLocNhap, type OLocDef,
 } from '../LocNangCao'
 import { NGUON, TT_CT, chungTu, dongCua, ttNghiepVu } from './gen'
 import { boO, nhomCua, theoLoai, TT_HD, TT_TIEN } from './nhom'
@@ -166,8 +166,8 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
   // Định nghĩa các cột (Cột Ngày, Số chứng từ đứng yên bên trái; Cột Chức năng đứng yên bên phải)
   const cols: Col[] = [
     cotChon(list, selectedIds, setSelectedIds),
-    { k: 'stt', t: 'STT', w: 48, c: true, dinh: 'trai' },
-    { k: 'ngay', t: 'Ngày', w: 96, dinh: 'trai' },
+    { k: 'stt', t: 'STT', w: 60, c: true, dinh: 'trai' },
+    { k: 'ngay', t: 'Ngày', w: 100, dinh: 'trai' },
     { k: 'so', t: 'Số chứng từ', cls: 'code', w: 140, dinh: 'trai' },
     ...(cfg.loai ? [{ k: 'tenLoai', t: 'Loại', w: 130 } as Col] : []),
     { k: 'dienGiai', t: 'Diễn giải' },
@@ -197,7 +197,7 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
         },
       } as Col,
     ] : []),
-    ...(cfg.thue !== undefined || cfg.dong === 'hang' ? [{ k: 'thue', t: 'Tiền thuế', num: true, w: 110 } as Col] : []),
+    ...(cfg.thue !== undefined || cfg.dong === 'hang' ? [{ k: 'thue', t: 'Tiền thuế', num: true, w: 120 } as Col] : []),
     { k: 'tong', t: 'Tổng tiền', num: true, w: 120 },
     {
       k: 'nguon',
@@ -261,24 +261,14 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
 
   return (
     <div className="page page-voucher">
-      <PageHead crumb={[mod.ten, sc.nhom ?? '']} title={title ?? tenMan(sc)} code={sc.code}>
-        {cfg.nguon && cfg.nguon !== 'tay' && (
-          <button
-            type="button"
-            className="btn"
-            onClick={() => toast(`Đã tải 14 chứng từ mới từ ${NGUON[cfg.nguon!][1]}`)}
-          >
-            <Icon n="refresh" className="ic sm" />Tải từ {NGUON[cfg.nguon][1]}
-          </button>
-        )}
-      </PageHead>
+      <PageHead crumb={[mod.ten, sc.nhom ?? '']} title={title ?? tenMan(sc)} code={sc.code} />
 
       {extra}
 
       <div className="voucher-split">
         {/* Nửa trên: 50% danh sách các phiếu */}
         <section className="card voucher-top">
-          {/* Thanh công cụ theo iFaster: chip trạng thái bên trái; ô lọc, phễu, Lọc, cột, Excel, hàng loạt, Thêm bên phải (T41) */}
+          {/* Thanh công cụ: chip trạng thái bên trái; ô lọc, phễu, Lọc, Tuỳ chỉnh cột, Thêm mới | ⌄ (T42) */}
           <div className="ds-thanh">
             <ChipTrangThai ds={chips} chon={chipTT} onChon={k => { setChipTT(k); setTrang(1) }} />
             <div className="ds-thanh-loc">
@@ -287,13 +277,19 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
             </div>
             <div className="ds-thanh-nut">
               <NutTuyChinhCot cols={cot.colsDu} an={cot.an} coDinh={COT_CO_DINH} macDinh={cot.macDinh} onLuu={cot.luu} />
-              <NutExcel onNhap={() => toast('Nhập chứng từ từ file Excel')} onXuat={() => toast(`Đã xuất ${list.length} chứng từ ra Excel`)} />
-              <NutHangLoat so={selectedIds.size} ghi={ghi} boChon={() => setSelectedIds(new Set())} />
-              {cfg.loai ? <NutThemLoai cfg={cfg} path={path} /> : (
-                <Link className="btn pri" to={`${path}/moi`}>
-                  <Icon n="plus" className="ic sm" />{cfg.them ?? 'Thêm chứng từ'}
-                </Link>
-              )}
+              <NutThemMoiSplit
+                toMoi={cfg.loai ? `${path}/moi?loai=${cfg.loai[0].k}` : `${path}/moi`}
+                loai={cfg.loai}
+                taiNguon={cfg.nguon && cfg.nguon !== 'tay' ? {
+                  ten: NGUON[cfg.nguon][1],
+                  onTai: () => toast(`Đã tải 14 chứng từ mới từ ${NGUON[cfg.nguon!][1]}`),
+                } : undefined}
+                onNhapExcel={() => toast('Nhập chứng từ từ file Excel')}
+                onXuatExcel={() => toast(`Đã xuất ${list.length} chứng từ ra Excel`)}
+                soChon={selectedIds.size}
+                ghi={ghi}
+                onBoChon={() => setSelectedIds(new Set())}
+              />
             </div>
           </div>
 
@@ -316,7 +312,7 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
                   r.tt === 'loi' && ghi ? 'bad' : '',
                 ].filter(Boolean).join(' ')}
                 sum={{
-                  ngay: `${list.length} chứng từ`,
+                  stt: `Tổng: ${list.length}`,
                   tong,
                   thue: list.reduce((a, r) => a + (r.thue || 0), 0),
                 }}
@@ -434,22 +430,6 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
           )}
         </section>
       </div>
-    </div>
-  )
-}
-
-/** Nút thêm của màn nhiều loại phiếu */
-function NutThemLoai({ cfg, path }: { cfg: VoucherCfg; path: string }) {
-  const ds = cfg.loai!
-  return (
-    <div className="split">
-      <Link className="btn pri" to={`${path}/moi?loai=${ds[0].k}`}>
-        <Icon n="plus" className="ic sm" />{cfg.them ?? `Thêm ${ds[0].ten.toLowerCase()}`}
-      </Link>
-      <Dropdown btnClass="btn pri" align="end" width={280} title="Chọn loại phiếu" label={<Icon n="chevd" className="ic sm" />}>
-        <MenuHead>Chọn loại phiếu</MenuHead>
-        {ds.map(v => <MenuItem key={v.k} to={`${path}/moi?loai=${v.k}`} icon={v.icon ?? 'doc'} desc={`Số ${v.prefix}…`}>{v.ten}</MenuItem>)}
-      </Dropdown>
     </div>
   )
 }

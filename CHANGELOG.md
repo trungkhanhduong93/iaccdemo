@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 08/10/2026
 
+- T42: Màn nhỏ dưới 1700px thu nhỏ toàn bộ giao diện cho bớt chật. Bỏ dòng đường dẫn trên tiêu đề. Nút thêm ghi "Thêm mới", kèm nút xổ gom tải dữ liệu, Excel và thao tác hàng loạt. Dòng tổng dính đáy bảng, phân trang gọn. Hàng lọc cột mở khung lọc theo kiểu chữ, số, ngày, phân loại.
 - T41: Danh sách chứng từ và màn Bán hàng có chip trạng thái kèm số phiếu, ô lọc Thời gian, Tìm kiếm, Đối tượng với nút Lọc, khung Bộ lọc nâng cao chọn được ô đưa ra ngoài. Hộp Tuỳ chỉnh cột kéo đổi thứ tự được. Cột có kẻ dọc, kéo giãn được độ rộng. Tick nhiều phiếu thì dùng nút Thao tác hàng loạt để ghi sổ, in, xuất Excel, xoá.
 - T40: Mỗi danh mục có biểu tượng riêng, hiện ở menu Khác, ô tìm Ctrl K, hàng Danh mục dưới sơ đồ và sơ đồ Khởi tạo danh mục.
 - T39: Danh sách chứng từ ở mọi phân hệ hiện được nhiều phiếu hơn: bỏ chia đôi 50/50, khung chi tiết bên dưới gọn lại. Chọn kỳ đưa lên đầu trang, cạnh nút Excel (nhập, xuất) và nút Tuỳ chỉnh giao diện; bỏ thanh lọc phía dưới và nút In. Bảng có cột STT và hàng lọc từng cột, mỗi ô có phễu chọn điều kiện theo kiểu dữ liệu. Dưới logo hiện gói đang dùng; tiêu đề các màn bỏ dòng mã, giai đoạn, nhãn gói.

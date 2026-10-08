@@ -59,7 +59,7 @@ export function CatalogScreen({ sc, mod }: ScreenProps) {
       <PageHead crumb={[mod.ten]} title={ten} code={sc.code}>
         <button className="btn"><Icon n="upload" className="ic sm" />Nhập Excel</button>
         <button className="btn"><Icon n="download" className="ic sm" />Xuất Excel</button>
-        <button className="btn pri" onClick={() => setEdit({})}><Icon n="plus" className="ic sm" />{cfg.them ?? 'Thêm mới'}</button>
+        <button className="btn pri" onClick={() => setEdit({})}><Icon n="plus" className="ic sm" />Thêm mới</button>
       </PageHead>
       {cfg.note?.(s.goi)}
       <section className="card">

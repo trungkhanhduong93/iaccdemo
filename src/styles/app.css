@@ -822,3 +822,427 @@ textarea.inp { height: auto; padding: 8px 11px; resize: vertical; }
   /* thêm ô lọc ngoài mà không vừa thì nhóm nút xuống hàng, vẫn căn phải */
   .ds-thanh-nut { order: 0; margin-left: auto; }
 }
+
+/* ── Danh sách chứng từ gọn, lọc cột kiểu iPOS Inventory (T42) ── */
+.ds-chips { gap: 6px; }
+.ds-chip { height: 30px; gap: 6px; }
+.ds-chip-so {
+  min-width: 20px;
+  height: 18px;
+  padding: 0 6px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.ds-chip-all .ds-chip-so { background: var(--soft); color: var(--body); }
+.ds-chip-nhap .ds-chip-so { background: var(--amber-t); color: var(--amber); }
+.ds-chip-ghi .ds-chip-so, .ds-chip-luu .ds-chip-so { background: var(--green-t); color: var(--green); }
+.ds-chip-loi .ds-chip-so { background: var(--red-t); color: var(--red); }
+.ds-chip .ds-chip-so.so-khong { background: var(--soft); color: var(--faint); }
+.ds-chip.on .ds-chip-so, .ds-chip.on .ds-chip-so.so-khong { background: var(--blue); color: #fff; }
+
+.ds-split-them {
+  display: inline-flex;
+  align-items: stretch;
+  border-radius: var(--r-sm, 8px);
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(5, 96, 166, .2);
+}
+.ds-split-them .ds-them-trai {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  padding: 0 12px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  font-size: 13px;
+  background: var(--blue);
+  color: #fff;
+  border: 0;
+  border-right: 1px solid rgba(255, 255, 255, .3);
+}
+.ds-split-them .ds-them-trai:hover {
+  background: var(--blue-d);
+  color: #fff;
+}
+.ds-split-them .ds-them-phai {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  padding: 0 8px;
+  height: 32px;
+  min-width: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--blue);
+  color: #fff;
+  border: 0;
+}
+.ds-split-them .ds-them-phai:hover,
+.ds-split-them .ds-them-phai.open {
+  background: var(--blue-d);
+  color: #fff;
+}
+.ds-menu-goi-y {
+  padding: 6px 12px;
+  font-size: 12px;
+  color: var(--muted);
+  font-style: italic;
+}
+
+.tbl-wrap table.tbl {
+  min-height: 100%;
+}
+.tbl thead tr:first-child th {
+  height: 36px;
+  padding: 0 12px;
+}
+.tbl tr.loc-hang th {
+  top: 36px;
+  height: 32px;
+  padding: 0 6px;
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+  z-index: 1;
+}
+.tbl thead tr.loc-hang th.dinh, .tbl thead tr.loc-hang th.dinh-phai {
+  z-index: 3;
+  background: #fff;
+}
+.tbl tr.tbl-spacer {
+  height: 100%;
+}
+.tbl tr.tbl-spacer td {
+  height: 100%;
+  border: 0 !important;
+  padding: 0;
+  background: transparent;
+}
+.tbl tbody tr:not(.tbl-spacer) {
+  height: 36px;
+}
+.tbl tfoot {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+}
+.tbl tfoot td, .tbl tr.sum td {
+  position: sticky;
+  bottom: 0;
+  background: #fff;
+  border-top: 1px solid var(--line);
+  font-weight: 700;
+  color: var(--ink);
+  z-index: 2;
+}
+.tbl tfoot td.dinh, .tbl tfoot td.dinh-phai,
+.tbl tr.sum td.dinh, .tbl tr.sum td.dinh-phai {
+  z-index: 4;
+  background: #fff;
+}
+
+.pt-bar {
+  height: 40px;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  font-size: 13px;
+  background: var(--white);
+  border-top: 1px solid var(--line-2);
+}
+.pt-bar .pt-tong {
+  font-size: 13px;
+  color: var(--body);
+  white-space: nowrap;
+}
+.pt-bar .pt-tong b {
+  font-weight: 700;
+  color: var(--ink);
+}
+.pt-bar .pt-sel {
+  height: 28px;
+  padding: 0 8px;
+  font-size: 13px;
+  border-radius: 6px;
+}
+.pt-bar .pt-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.pt-bar .pt-nav-btn {
+  width: 26px;
+  height: 26px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 6px;
+  color: var(--body);
+}
+.pt-bar .pt-nav-btn:hover:not(:disabled) {
+  background: var(--soft);
+  color: var(--ink);
+}
+.pt-bar .pt-nav-btn:disabled {
+  opacity: .35;
+  cursor: not-allowed;
+}
+.pt-num {
+  min-width: 26px;
+  height: 26px;
+  padding: 0 6px;
+  border-radius: 6px;
+  font-size: 13px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--body);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.pt-num:hover:not(.on) {
+  background: var(--soft);
+  color: var(--ink);
+}
+.pt-num.on {
+  border-color: var(--line);
+  color: var(--blue);
+  font-weight: 700;
+  background: transparent;
+}
+.pt-cham {
+  padding: 0 2px;
+  color: var(--faint);
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.loc-cell-phai {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+  min-height: 24px;
+}
+.loc-cell-ngay {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  width: 100%;
+}
+.loc-o-ngay {
+  flex: 1;
+  min-width: 0;
+  width: 0;
+  height: 24px;
+  padding: 0 4px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  font-size: 12px;
+  color: var(--ink);
+  background: #fff;
+}
+.loc-o-ngay:focus {
+  outline: none;
+  border-color: var(--blue);
+}
+.loc-btn-lich {
+  position: relative;
+  width: 22px;
+  height: 22px;
+  display: inline-grid;
+  place-items: center;
+  color: var(--muted);
+  cursor: pointer;
+  flex: none;
+}
+.loc-btn-lich:hover {
+  color: var(--blue);
+}
+.loc-inp-date-an {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+.loc-pheu-btn {
+  position: relative;
+  width: 22px;
+  height: 22px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 4px;
+  color: var(--faint);
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  flex: none;
+}
+.loc-pheu-btn:hover {
+  color: var(--blue);
+}
+.loc-pheu-btn.on {
+  color: var(--blue);
+}
+.loc-pheu-dot {
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--blue);
+}
+.loc-cot-pop {
+  padding: 0;
+  border-radius: 8px;
+  box-shadow: var(--sh-lg);
+  border: 1px solid var(--line);
+  background: #fff;
+  overflow: hidden;
+}
+.loc-pop-body {
+  display: flex;
+  flex-direction: column;
+}
+.loc-pop-dau {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px 6px;
+  background: #fff;
+}
+.loc-pop-ic {
+  color: var(--blue);
+  margin-bottom: 6px;
+}
+.loc-pop-line {
+  width: 100%;
+  height: 2px;
+  background: var(--blue);
+}
+.loc-pop-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px 12px;
+}
+.loc-pop-sel {
+  width: 100%;
+  height: 30px;
+  font-size: 12.5px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 0 8px;
+  background: #fff;
+}
+.loc-pop-inp {
+  width: 100%;
+  height: 30px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 0 8px;
+  font-size: 12.5px;
+  color: var(--ink);
+  box-sizing: border-box;
+}
+.loc-pop-inp:focus {
+  outline: none;
+  border-color: var(--blue);
+}
+.loc-pop-chan {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+.loc-pop-reset {
+  height: 26px;
+  padding: 0 10px;
+  border: 1px solid var(--blue);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--blue);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.loc-pop-reset:hover {
+  background: var(--tint);
+}
+.loc-pop-nhom-text {
+  border-bottom: 1px solid var(--line-2);
+  padding-bottom: 6px;
+  margin-bottom: 2px;
+}
+.loc-pop-expand-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 4px 0;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--body);
+  background: none;
+  border: 0;
+  cursor: pointer;
+  text-align: left;
+}
+.loc-pop-expand-btn:hover {
+  color: var(--blue);
+}
+.loc-pop-text-box {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 6px;
+  padding-left: 12px;
+}
+.loc-pop-tim {
+  margin-bottom: 4px;
+}
+.loc-pop-ds-tick {
+  max-height: 180px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 4px 0;
+  scrollbar-width: thin;
+}
+.loc-pop-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--ink);
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+.loc-pop-item:hover {
+  background: var(--soft);
+}
+.loc-pop-item input[type="checkbox"] {
+  accent-color: var(--blue);
+  cursor: pointer;
+}
+.loc-pop-trong {
+  font-size: 12px;
+  color: var(--muted);
+  padding: 6px 4px;
+  font-style: italic;
+}
+

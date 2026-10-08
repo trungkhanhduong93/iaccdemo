@@ -239,6 +239,16 @@ Lý do: PhuongXT chốt khi làm T25, T39. Trum chưa xem lại.
 
 Lý do: Trum giao việc T41 ngày 08/10/2026, theo mẫu iFaster và iPOS Inventory.
 
-## QD26. Giao diện gọn cho màn nhỏ, công cụ danh sách gom vào nút Thêm mới (đang soạn)
+## QD26. Giao diện gọn cho màn nhỏ, công cụ danh sách gom vào nút Thêm mới (08/10/2026)
+
+- Màn rộng dưới 1700px thu nhỏ toàn bộ còn 90%, dưới 1450px còn 85%, bằng `zoom` trên `html` (`src/styles/scale.css`). Code đo vị trí bằng JS (khung bật ra, đường nối sơ đồ, kéo giãn cột) quy đổi theo `heSoZoom()` trong `src/ui/zoom.ts`. Khung app bù chiều cao để vẫn lấp đầy cửa sổ.
+- Mọi màn bỏ dòng đường dẫn trên tiêu đề.
+- Nút thêm chính ở danh sách, danh mục và các màn khác ghi "Thêm mới". Tiêu đề form vẫn giữ tên riêng (vd "Thêm phiếu thu, chi").
+- Danh sách chứng từ: nút "Thêm mới" liền một nút xổ. Menu xổ có các nhóm Thêm theo loại, Dữ liệu (Tải từ nguồn, Nhập Excel, Xuất Excel), Hàng loạt (Ghi sổ, Bỏ ghi sổ, In, Xuất Excel, Xoá, Bỏ chọn). Không còn nút Excel và nút Thao tác hàng loạt riêng. Nút Tuỳ chỉnh cột vẫn đứng riêng.
+- Số đếm trong chip trạng thái là viên tròn màu theo trạng thái. Chip đang chọn có viên nền xanh, chữ trắng.
+- Dòng tổng dính đáy vùng bảng, ngay trên thanh cuộn ngang. Chân phân trang gọn một hàng: Tổng, số dòng mỗi trang, ‹ số trang ›.
+- Hàng lọc dưới tiêu đề chỉ hiện biểu tượng phễu, cột ngày có thêm ô ngày. Bấm phễu mở khung lọc theo kiểu cột: chữ chọn điều kiện, số chọn so sánh, ngày chọn mốc, phân loại tick giá trị. Khung nào cũng có nút "Thiết lập lại".
+
+Thay một phần QD24, QD25. Lý do: Trum giao việc T42 ngày 08/10/2026, theo mẫu iPOS Inventory.
 
 ## QD27. Gói Free/Standard/Plus/Pro, mã F/S/PL/PR và đợt chỉnh danh sách (đang soạn)

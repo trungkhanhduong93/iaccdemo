@@ -77,10 +77,16 @@ export function ChipTrangThai({ ds, chon, onChon }: { ds: Chip[]; chon: string; 
   return (
     <div className="ds-chips">
       {ds.map(c => (
-        <button key={c.k} type="button" className={`ds-chip${chon === c.k ? ' on' : ''}`} aria-pressed={chon === c.k} onClick={() => onChon(c.k)}>
+        <button
+          key={c.k}
+          type="button"
+          className={`ds-chip ds-chip-${c.k}${chon === c.k ? ' on' : ''}`}
+          aria-pressed={chon === c.k}
+          onClick={() => onChon(c.k)}
+        >
           <i className="ds-chip-cham" style={{ background: c.mau }} />
           <span>{c.ten}</span>
-          <b className="ds-chip-so">{c.so}</b>
+          <b className={`ds-chip-so${c.so === 0 ? ' so-khong' : ''}`}>{c.so}</b>
         </button>
       ))}
     </div>
@@ -428,7 +434,7 @@ export function NutHangLoat({ so, ghi, boChon }: { so: number; ghi: boolean; boC
   )
 }
 
-function HopXacNhan({ tieuDe, nut, children, onDong, onDongY }: { tieuDe: string; nut: string; children: ReactNode; onDong: () => void; onDongY: () => void }) {
+export function HopXacNhan({ tieuDe, nut, children, onDong, onDongY }: { tieuDe: string; nut: string; children: ReactNode; onDong: () => void; onDongY: () => void }) {
   useDongEsc(onDong)
   return createPortal(
     <div className="overlay ds-hop-nen" onMouseDown={e => { if (e.target === e.currentTarget) onDong() }}>

@@ -9,6 +9,7 @@ import { GOI, anNgoaiGoi, minGoi, type Goi } from '../../app/plan'
 import { Icon } from '../Icon'
 import { Note, Pk } from '../Page'
 import { Dropdown, MenuHead, MenuItem } from '../Dropdown'
+import { heSoZoom } from '../zoom'
 
 const RH = 128        // chiều cao một hàng ô
 const TILE = 54       // cạnh ô biểu tượng
@@ -156,6 +157,7 @@ function SoDoHoiTu({ lan, ra, goi, modKey }: { lan: LanQT[]; ra: LanQT; goi: Goi
     const el = ref.current
     if (!el) return
     const doLai = () => {
+      const zoom = heSoZoom()
       const g = el.getBoundingClientRect()
       const lanEl = [...el.querySelectorAll<HTMLElement>(':scope > .qt-ht-lan > .qt-lan')]
       const gom = el.querySelector<HTMLElement>(':scope > .qt-ht-gom')
@@ -164,11 +166,11 @@ function SoDoHoiTu({ lan, ra, goi, modKey }: { lan: LanQT[]; ra: LanQT; goi: Goi
       const dau = lanEl.map(l => {
         const r = l.getBoundingClientRect()
         const cuoi = l.querySelector('.qt-lan-nut')?.lastElementChild?.getBoundingClientRect()
-        return { x: Math.round((cuoi ? cuoi.right : r.left) - g.left + 12), y: Math.round(r.top + r.height / 2 - g.top) }
+        return { x: Math.round(((cuoi ? cuoi.right : r.left) - g.left) / zoom + 12), y: Math.round((r.top + r.height / 2 - g.top) / zoom) }
       })
       const gr = gom.getBoundingClientRect(), rr = raEl.getBoundingClientRect()
-      const ax = Math.round(gr.left + gr.width / 2 - g.left)
-      const dinh = Math.round(rr.left - g.left - 2)        // mũi tên dừng cách mép trái khối Sổ sách 2px
+      const ax = Math.round((gr.left + gr.width / 2 - g.left) / zoom)
+      const dinh = Math.round((rr.left - g.left) / zoom - 2)        // mũi tên dừng cách mép trái khối Sổ sách 2px
       const p: string[] = []
       let y: number
       if (dau.length === 1) {
@@ -180,19 +182,20 @@ function SoDoHoiTu({ lan, ra, goi, modKey }: { lan: LanQT[]; ra: LanQT; goi: Goi
         p.push(`M${a.x} ${a.y}H${ax - BO}A${BO} ${BO} 0 0 1 ${ax} ${a.y + BO}V${z.y - BO}A${BO} ${BO} 0 0 1 ${ax - BO} ${z.y}H${z.x}`)
         // làn giữa nhập thẳng vào trục
         dau.slice(1, -1).forEach(l => p.push(`M${l.x} ${l.y}H${ax}`))
-        const tam = Math.round(rr.top + rr.height / 2 - g.top)
+        const tam = Math.round((rr.top + rr.height / 2 - g.top) / zoom)
         y = tam >= a.y + BO && tam <= z.y - BO ? tam : Math.round((a.y + z.y) / 2)
         p.push(`M${ax} ${y}`)
       }
       // đoạn vào khối Sổ sách chui vào trong mũi tên 2px để không hở khe
       p.push(`H${dinh - MUI + 2}`)
-      setVe({ w: Math.round(g.width), h: Math.round(g.height), d: p.join(''), mui: `M${dinh - MUI} ${y - 5}L${dinh} ${y}L${dinh - MUI} ${y + 5}Z` })
+      setVe({ w: Math.round(g.width / zoom), h: Math.round(g.height / zoom), d: p.join(''), mui: `M${dinh - MUI} ${y - 5}L${dinh} ${y}L${dinh - MUI} ${y + 5}Z` })
     }
     const ro = new ResizeObserver(doLai)
     ro.observe(el)
     el.querySelectorAll('.qt-lan-nut, .qt-ht-ra').forEach(x => ro.observe(x))
     doLai()
-    return () => ro.disconnect()
+    window.addEventListener('resize', doLai)
+    return () => { ro.disconnect(); window.removeEventListener('resize', doLai) }
   }, [lan, ra, goi])
 
   return (

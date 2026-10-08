@@ -1,0 +1,41 @@
+/* Thu nhỏ tổng thể giao diện trên màn nhỏ cho bớt chật (Trum: màn nhỏ chật, 08/10/2026, T42) */
+:root {
+  --zoom: 1;
+}
+
+@media (max-width: 1699px) {
+  :root {
+    --zoom: .9;
+  }
+  html {
+    zoom: .9;
+  }
+}
+
+@media (max-width: 1449px) {
+  :root {
+    --zoom: .85;
+  }
+  html {
+    zoom: .85;
+  }
+}
+
+/* Khung app luôn lấp đầy cửa sổ ở mọi mức zoom, không hở đáy (T42) */
+.shell {
+  height: calc(100vh / var(--zoom));
+  min-height: calc(100vh / var(--zoom));
+}
+
+.auth {
+  min-height: calc(100vh / var(--zoom));
+}
+
+#root > div[style*="100vh"] {
+  min-height: calc(100vh / var(--zoom)) !important;
+}
+
+.pop {
+  max-height: min(460px, calc(100vh / var(--zoom) - 24px));
+  max-width: calc(100vw / var(--zoom) - 16px);
+}

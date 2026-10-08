@@ -7,6 +7,7 @@ import {
 import { createPortal } from 'react-dom'
 import { Link, useLocation } from 'react-router-dom'
 import { Icon } from './Icon'
+import { heSoZoom } from './zoom'
 
 type Align = 'start' | 'end'
 
@@ -22,12 +23,15 @@ export function Popover({ anchor, open, onClose, align = 'start', className = ''
     const tinh = () => {
       const a = anchor.current?.getBoundingClientRect(), p = ref.current
       if (!a || !p) return
-      p.style.minWidth = `${Math.round(a.width)}px`
+      const z = heSoZoom()
+      const aLeft = a.left / z, aRight = a.right / z, aTop = a.top / z, aBottom = a.bottom / z, aWidth = a.width / z
+      p.style.minWidth = `${Math.round(aWidth)}px`
       const h = p.offsetHeight, w = p.offsetWidth
-      const duoi = window.innerHeight - a.bottom, tren = a.top
+      const winH = window.innerHeight / z, winW = window.innerWidth / z
+      const duoi = winH - aBottom, tren = aTop
       const len = duoi < h + 14 && tren > duoi
-      const left = Math.max(8, Math.min(align === 'end' ? a.right - w : a.left, window.innerWidth - w - 8))
-      p.style.top = `${len ? Math.max(8, a.top - h - 6) : a.bottom + 6}px`
+      const left = Math.max(8, Math.min(align === 'end' ? aRight - w : aLeft, winW - w - 8))
+      p.style.top = `${len ? Math.max(8, aTop - h - 6) : aBottom + 6}px`
       p.style.left = `${left}px`
       p.style.transformOrigin = len ? 'bottom center' : 'top center'
     }

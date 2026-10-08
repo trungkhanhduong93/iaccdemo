@@ -15,6 +15,7 @@ Lỗi đã từng làm mất thời gian, kèm cách tránh. Đọc trước khi
 - Menu "Khác" của thanh tab mở với `keep`: đóng vẫn nằm trong DOM (ẩn) để script kiểm đọc được tab. Script kiểm đọc `.mtabs-in a, .pop-khac a`. Đừng đổi sang render có điều kiện.
 - Tên lớp CSS ngắn dễ đụng nhau. Ô chọn `Select` dùng `.sel { display: inline-flex }`, hàng đang chọn trong bảng cũng từng mang lớp `sel`: hàng bị bẻ thành flex, cột ô tick phình 946px, cả danh sách chứng từ vỡ. Bộ kiểm không bắt được vì không có lỗi console. Hàng đang chọn giờ là `dang-chon`. Đặt lớp mới thì `grep` cả `app.css` trước, giống vụ `.st` và `.stt`.
 - Khung bật ra lồng nhau, vd ô chọn trong khung Bộ lọc: menu của ô chọn cũng gắn vào body, nằm ngoài khung cha. `Popover` cũ coi cú bấm vào menu con là bấm ra ngoài, đóng khung cha trước khi cú bấm kịp chọn, nên chọn chi nhánh không lọc gì (gặp 08/10). `Popover` giờ bỏ qua cú bấm trong `.pop` khác và Esc khi con trỏ đang ở menu con. Viết khung bật ra mới thì dùng `Popover`, đừng tự viết bắt cú bấm ra ngoài.
+- Giao diện thu nhỏ bằng `zoom` trên `html` khi màn rộng dưới 1700px (T42). Toạ độ `getBoundingClientRect`, `clientX`, `innerWidth` nằm ở hệ đã zoom, còn số px ghi vào `style` bị nhân thêm zoom, nên khung bật ra và đường vẽ lệch. Chiều cao `100vh` cũng hụt theo zoom. Code mới đo vị trí thì chia cho `heSoZoom()` trong `src/ui/zoom.ts`. Khung cao theo cửa sổ thì bù như `.shell` trong `scale.css`.
 
 ## Script kiểm và máy Windows
 

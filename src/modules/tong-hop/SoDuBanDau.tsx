@@ -113,7 +113,7 @@ export function SoDuBanDau({ sc, mod }: ScreenProps) {
       <PageHead crumb={[mod.ten]} title={tenMan(sc)} code={sc.code}>
         <button type="button" className="btn"><Icon n="upload" className="ic sm" />Nhập Excel</button>
         <button type="button" className="btn"><Icon n="download" className="ic sm" />Xuất Excel</button>
-        <button type="button" className="btn pri" onClick={() => toast('Thêm số dư')}><Icon n="plus" className="ic sm" />Thêm số dư</button>
+        <button type="button" className="btn pri" onClick={() => toast('Thêm mới')}><Icon n="plus" className="ic sm" />Thêm mới</button>
       </PageHead>
       <div className="rpt-grid" style={{ gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', marginBottom: 14 }}>
         {theData.map(t => {

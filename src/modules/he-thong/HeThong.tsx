@@ -40,7 +40,7 @@ export function PhanQuyen({ sc }: ScreenProps) {
   return (
     <div className="page">
       <PageHead crumb={['Hệ thống']} title={sc.ten!}>
-        <button className="btn">Thêm vai trò</button>
+        <button className="btn"><Icon n="plus" className="ic sm" />Thêm mới</button>
         <button className="btn pri" onClick={() => toast(`Đã lưu quyền của ${vt}`)}>Lưu</button>
       </PageHead>
       <div className="grid" style={{ gridTemplateColumns: '240px minmax(0,1fr)', alignItems: 'start' }}>
