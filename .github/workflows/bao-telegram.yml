@@ -1,0 +1,33 @@
+# Robot báo lên group Telegram mỗi lần có push lên main, và khi robot deploy hỏng.
+# Nội dung tin soạn ở tools/bao_telegram.py. Giải thích ở docs/TRIEN-KHAI.md.
+# Sửa file này phải được Trum đồng ý (AGENTS.md, mục Cấm).
+name: Báo Telegram
+
+on:
+  push:
+    branches: [main]
+  workflow_run:
+    workflows: [Kiểm và đưa lên iaccdemo]
+    types: [completed]
+
+permissions:
+  contents: read
+
+jobs:
+  bao:
+    # Robot deploy xanh thì im, chỉ báo khi hỏng
+    if: github.event_name == 'push' || github.event.workflow_run.conclusion == 'failure'
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          sparse-checkout: tools/bao_telegram.py
+          sparse-checkout-cone-mode: false
+
+      # Token chỉ đưa vào đúng bước này
+      - name: Gửi tin
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python3 tools/bao_telegram.py "$GITHUB_EVENT_PATH"

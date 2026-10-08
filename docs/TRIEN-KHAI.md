@@ -23,7 +23,7 @@ Robot nằm ở `.github/workflows/deploy.yml`. Nó kiểm code rồi đưa bả
 - Các bước: `npm ci`, `npm run typecheck`, `npm run build`, rồi `wrangler pages deploy dist --project-name iaccdemo --branch main`.
 - Bước nào hỏng thì robot dừng, bản online giữ bản cũ. GitHub báo lỗi cho người push qua email hoặc chuông thông báo, tuỳ cài đặt của người đó.
 - Nhiều lần push sát nhau thì robot chạy lần lượt. Lần nào đang chờ mà có lần mới hơn thì bỏ lần đang chờ, chỉ chạy lần mới nhất.
-- Lần chạy đầu (07/10/2026, commit e59c251) mất 12 giây cho phần cài thư viện, kiểm và build. Bước deploy chưa đo vì chưa có token, ước thêm dưới 1 phút.
+- Lần chạy đầu (07/10/2026, commit e59c251) mất 12 giây cho phần cài thư viện, kiểm và build. Lần đầu có deploy (08/10/2026) mất 24 giây cả job.
 - Xem kết quả ở https://github.com/trungkhanhduong93/iaccdemo/actions.
 - GitHub gói Free cho 2.000 phút chạy mỗi tháng với repo riêng tư.
 
@@ -44,7 +44,7 @@ Robot cần hai secret trong GitHub, đặt ở https://github.com/trungkhanhduo
 | Secret | Là gì | Trạng thái |
 |---|---|---|
 | `CLOUDFLARE_ACCOUNT_ID` | Mã tài khoản Cloudflare của Trum, không phải bí mật | Đã đặt 07/10/2026 |
-| `CLOUDFLARE_API_TOKEN` | Token có quyền Cloudflare Pages: Edit | Trum tạo, việc T01 |
+| `CLOUDFLARE_API_TOKEN` | Token có quyền Cloudflare Pages: Edit | Đã đặt 08/10/2026 |
 
 Chưa có `CLOUDFLARE_API_TOKEN` thì robot vẫn kiểm và build, bỏ qua bước deploy, để lại một cảnh báo vàng.
 
@@ -60,6 +60,27 @@ Trum tạo token:
 8. Vào tab Actions, chọn **Kiểm và đưa lên iaccdemo**, bấm **Run workflow**. Dòng mới có dấu tích xanh và bước "Đưa lên Cloudflare Pages" có chạy là xong.
 
 Token bị lộ (dán vào chat, commit nhầm) thì vào trang API Tokens, ở dòng `iaccdemo-github` bấm **...**, chọn **Roll** để đổi token, rồi làm lại bước 7.
+
+## Báo Telegram
+
+Robot thứ hai nằm ở `.github/workflows/bao-telegram.yml`. Nội dung tin soạn ở `tools/bao_telegram.py`.
+
+- Mỗi lần push lên `main`, kể cả push chỉ sửa `.md`, robot gửi vào group Telegram: tên người push, tối đa 10 dòng commit, link xem thay đổi.
+- Robot deploy hỏng thì gửi thêm một tin: commit làm hỏng, người push, link xem lỗi. Deploy xanh thì không gửi gì.
+- Gửi tin hỏng thì robot này báo đỏ ở tab Actions. Robot deploy không bị ảnh hưởng.
+
+Hai secret, đặt cùng trang với secret Cloudflare:
+
+| Secret | Là gì | Trạng thái |
+|---|---|---|
+| `TELEGRAM_BOT_TOKEN` | Token của bot Telegram, lấy từ @BotFather | Đã đặt 08/10/2026 |
+| `TELEGRAM_CHAT_ID` | Id của group nhận tin, dạng `-100...`. Bot phải có trong group | Đã đặt 08/10/2026 |
+
+Thiếu một trong hai secret thì robot bỏ qua, để lại một cảnh báo vàng.
+
+Xem thử tin mà không gửi: `python tools/bao_telegram.py <file sự kiện.json> --thu`.
+
+Token bot bị lộ thì chat với @BotFather, gõ `/revoke`, chọn bot, rồi đặt lại secret `TELEGRAM_BOT_TOKEN` bằng token mới. Đổi group nhận tin thì đặt lại `TELEGRAM_CHAT_ID`.
 
 ## Deploy tay khi robot hỏng
 
