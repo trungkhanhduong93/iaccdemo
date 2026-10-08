@@ -106,6 +106,15 @@ export const CONG_VIEC = [
   { ma: 'CV04', ten: 'Tiệc cuối năm khách công ty' },
 ]
 
+// Danh mục lý do nghiệp vụ 1.16. Form phiếu thu, chi lấy lý do theo cột "Dùng cho".
+export const LY_DO = [
+  ['LD01', 'Thu tiền bán hàng', 'Phiếu thu'], ['LD02', 'Thu nợ khách hàng', 'Phiếu thu'], ['LD03', 'Rút tiền ngân hàng nhập quỹ', 'Phiếu thu'],
+  ['LD04', 'Chi mua nguyên vật liệu', 'Phiếu chi'], ['LD05', 'Chi trả lương', 'Phiếu chi'], ['LD06', 'Chi tạm ứng', 'Phiếu chi'],
+  ['LD07', 'Xuất huỷ hàng hỏng', 'Phiếu xuất kho'], ['LD08', 'Xuất dùng nội bộ', 'Phiếu xuất kho'], ['LD09', 'Nhập hàng khách trả lại', 'Phiếu nhập kho'],
+  ['LD10', 'Thu hoàn ứng', 'Phiếu thu'], ['LD11', 'Thu khác', 'Phiếu thu'], ['LD12', 'Trả tiền nhà cung cấp', 'Phiếu chi'],
+  ['LD13', 'Chi phí khác', 'Phiếu chi'],
+].map(([ma, ten, dung]) => ({ ma, ten, dung }))
+
 // ── Doanh thu từng ngày, từng chi nhánh (đồng bộ từ FABi, gom theo ngày) ──
 export interface Ngay {
   date: Date; cn: string; dt: number; vat: number; don: number; gv: number

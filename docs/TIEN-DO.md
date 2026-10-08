@@ -4,7 +4,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T31.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T33.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
@@ -14,8 +14,9 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | T30 | Thanh lọc và chọn khoảng ngày theo iFaster cho mọi màn danh mục, danh sách, báo cáo: ô tìm, khoảng ngày lịch 2 tháng, nút phễu mở khung Bộ lọc, nút biểu tượng vuông | Trum | Đang làm | |
 | T27 | Danh sách chứng từ 2.1.1: khung chi tiết bên dưới hiện dòng phiếu khác với form của cùng phiếu (UNC2610-0259: khung ghi "Chi mua rau, củ tại chợ", form ghi "Trả tiền nhà cung cấp thịt bò") | | Chờ | Thấy khi làm T26 |
 | T02 | Chốt nghiệp vụ trên từng sơ đồ Quy trình: ô nào, nối thế nào, câu chữ. Sửa ở `src/modules/<phân hệ>/quy-trinh.ts` | Trum | Chờ | |
-| T03 | Nối sổ quỹ, sổ tài khoản 2.2.2, sổ ngân hàng 2.2.3, sổ công nợ 2.2.5 vào `so-cai.ts` để mọi sổ khớp báo cáo tài chính | PhuongXT | Đang làm | Sổ quỹ đang tính riêng từ tiền mặt FABi từng chi nhánh. Tổng 3 quỹ chưa bằng dư TK 1111 trên cân đối kế toán |
-| T25 | Rà soát, hoàn thiện phân hệ Kế toán tiền: form 5 loại phiếu thu chi, danh sách chứng từ 2.1.1, đối chiếu công nợ 2.1.2, phân bổ chi phí 2.1.3, sơ đồ Quy trình | PhuongXT | Đang làm | Làm cùng T03 |
+| T03 | Nối sổ quỹ, sổ tài khoản 2.2.2, sổ ngân hàng 2.2.3, sổ công nợ 2.2.5 vào `so-cai.ts` để mọi sổ khớp báo cáo tài chính | | Chờ | Sổ quỹ đang tính riêng từ tiền mặt FABi từng chi nhánh. Tổng 3 quỹ chưa bằng dư TK 1111 trên cân đối kế toán |
+| T25 | Thu chi gói Free theo sheet Roadmap: form phiếu thu, chi, chuyển quỹ; danh sách 2.1.1; sơ đồ Quy trình; sổ quỹ, sổ ngân hàng, sổ công nợ | PhuongXT | Đang làm | Đã xong form, Quy trình, chuyển quỹ. Còn sổ quỹ, sổ ngân hàng, sổ công nợ lọc theo chi nhánh trên thanh trên. Trùng mã với T25 của Trum ở bảng Đã xong, nhờ Trum đổi mã |
+| T33 | Cập nhật Excel tính năng theo sheet Roadmap rồi chạy lại `tools/xuat_tinh_nang.py`: 1.12 và 2.2.3 có ở gói Free; thêm 1.17, S1a-HKD, S2a-HKD. Xong thì xoá các dòng tương ứng trong `THEO_ROADMAP` ở `src/app/plan.ts` | | Chờ | Chỉ máy Trum chạy được script |
 | T04 | Kế toán trưởng duyệt mẫu sổ, báo cáo tài chính, tờ khai theo TT58, TT133, TT99. Sửa ký hiệu mẫu theo kết quả duyệt | | Chờ | Ký hiệu mẫu (S03a-DNN, B01-DNN, 01/GTGT...) ghi theo hiểu biết, chưa đối chiếu văn bản gốc. Mẫu dạng tinh gọn TT58 chưa có |
 | T05 | Làm màn hoá đơn điện tử 3.1.5 riêng: danh sách theo trạng thái, ký số, gửi, huỷ, thay thế | | Chờ | Hiện chưa có trạng thái phát hành, ký số, gửi cơ quan thuế. DB iPOS lưu trạng thái ở `SALE.EVAT_STATUS`: chưa ký, đã ký, đã gửi, đã xoá |
 | T06 | Thống nhất API với Dev (BR-18 trong spec DEV), thay `data/mock.ts` bằng lớp gọi API, giữ nguyên màn | | Chờ | |
@@ -34,6 +35,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T32 | Thanh trên chọn chi nhánh làm việc, bỏ ô kỳ và trạng thái đồng bộ FABi; ô tìm kiếm chuyển sang sidebar; danh mục chi nhánh; chứng từ mới lập theo chi nhánh chọn ngoài (QD17) | PhuongXT | 08/10/2026 | `2026-10-08-phuongxt-thu-chi-free.md` |
 | T31 | Luật mới: agent kiểm bản mới trên GitHub trước mỗi lần push (QD16) | Trum | 08/10/2026 | `2026-10-08-trum-kiem-truoc-push.md` |
 | T30 | Robot báo lên group Telegram mỗi lần có người push lên `main`, báo thêm khi deploy hỏng | Trum | 08/10/2026 | `2026-10-08-trum-bao-telegram.md` |
 | T01 | Tạo API token Cloudflare cho robot deploy, lưu vào GitHub | Trum | 08/10/2026 | `2026-10-08-trum-bao-telegram.md` |

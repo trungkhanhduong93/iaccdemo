@@ -107,9 +107,13 @@ export interface NutQT { ten: string; icon: string; di: string; tone?: 'fabi' | 
 /** Một bước trên trục ngang: ô chính nằm trên trục, ô phụ treo phía trên hoặc phía dưới */
 export interface BuocQT { ten?: string; chinh: NutQT; tren?: NutQT[]; duoi?: NutQT[] }
 
+/** Một làn của sơ đồ hội tụ: tên nhóm nghiệp vụ và các ô xếp ngang */
+export interface LanQT { ten: string; nut: NutQT[] }
+
 export interface QuyTrinhDef {
   ten: string                            // tiêu đề sơ đồ
   buoc: BuocQT[]                         // trái sang phải
+  hoiTu?: { lan: LanQT[]; ra: LanQT }    // sơ đồ hội tụ thay trục ngang: các làn nghiệp vụ song song cùng đổ về khối kết quả bên phải
   danhSo?: boolean                       // đánh số bước, kiểu màn Giá thành của AMIS
   baoCao?: string[]                      // khung Báo cáo bên phải: slug trong phân hệ hoặc 'phân hệ/slug'
   ghiChu?: { tieuDe: string; dong: [string, string, string?][] }  // thay khung Báo cáo khi phân hệ không có báo cáo

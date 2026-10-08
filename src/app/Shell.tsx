@@ -1,4 +1,4 @@
-// Khung sau đăng nhập theo bố cục AMIS: sidebar phân hệ lớn · thanh trên · thanh tab ngang các màn trong phân hệ · nội dung
+// Khung sau đăng nhập theo bố cục AMIS: sidebar (tìm nhanh, thêm nhanh, phân hệ lớn) · thanh trên · thanh tab ngang các màn trong phân hệ · nội dung
 import { Fragment, useEffect, useState } from 'react'
 import { Link, Navigate, Outlet, useLocation } from 'react-router-dom'
 import { useSession } from './session'
@@ -16,7 +16,7 @@ import { CommandPalette } from './CommandPalette'
 /** Nút Thêm nhanh đầu sidebar, chia theo phân hệ: tên, biểu tượng, đích (mở thẳng form chứng từ mới) */
 const THEM_NHANH: [string, [string, string, string][]][] = [
   ['Tiền', [['Phiếu thu', 'cashin', 'tien/2-1-1/moi?loai=thu'], ['Phiếu chi', 'cashout', 'tien/2-1-1/moi?loai=chi'],
-    ['Nộp tiền vào ngân hàng', 'upload', 'tien/2-1-1/moi?loai=nop']]],
+    ['Chuyển quỹ', 'swap', 'tien/2-1-1/moi?loai=cq']]],
   ['Bán hàng', [['Bán hàng ngoài POS', 'cart', 'ban-hang/3-1-1/moi'], ['Hoá đơn bán hàng', 'receipt', 'ban-hang/3-1-2/moi'],
     ['Hàng bán trả lại', 'back', 'ban-hang/3-1-4/moi']]],
   ['Mua hàng', [['Phiếu mua hàng', 'truck', 'mua-hang/4-1-1/moi'], ['Trả lại hàng mua', 'back', 'mua-hang/4-1-4/moi']]],
@@ -45,8 +45,8 @@ export function Shell() {
 
   return (
     <div className={`shell${s.thuGon ? ' gon' : ''}`}>
-      <Sidebar mod={mod} />
-      <Topbar onSearch={() => setPalette(true)} />
+      <Sidebar mod={mod} onSearch={() => setPalette(true)} />
+      <Topbar />
       <ModuleTabs mod={mod} />
       <main className="main"><Outlet /></main>
       {palette && <CommandPalette onClose={() => setPalette(false)} />}
@@ -54,12 +54,17 @@ export function Shell() {
   )
 }
 
-function Sidebar({ mod }: { mod: ModuleDef }) {
+function Sidebar({ mod, onSearch }: { mod: ModuleDef; onSearch: () => void }) {
   const { s, set } = useSession()
 
   return (
     <nav className="sidebar" aria-label="Phân hệ">
       <Link to="/app" className="sb-brand" title="IACC Cloud"><Logo nen="toi" cao={34} /><DauLogo size={34} /></Link>
+      <div className="sb-tim">
+        <button type="button" className="sb-tim-btn" onClick={onSearch} title="Tìm màn hình, chứng từ, báo cáo (Ctrl K)">
+          <Icon n="search" className="ic sm" /><span>Tìm kiếm…</span><span className="kbd">Ctrl K</span>
+        </button>
+      </div>
       <div className="sb-add">
         <Dropdown btnClass="sb-add-btn" title="Thêm nhanh chứng từ" popClass="pop-qadd" width={500}
           label={<><Icon n="plus" className="ic sm" /><span>Thêm nhanh</span></>}>

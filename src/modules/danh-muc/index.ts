@@ -1,15 +1,22 @@
 // Phân hệ Danh mục: 16 danh mục theo Excel mục 1
 import { createElement } from 'react'
-import type { Col, ModuleDef } from '../types'
+import type { Col, ModuleDef, ScreenDef } from '../types'
 import { tuExcel } from '../types'
 import { quyTrinh } from './quy-trinh'
 import { kieuGhiSo } from '../../app/plan'
-import { CHI_NHANH, HANG, KHACH, KHO, NCC, NHAN_VIEN, NVL } from '../../data/mock'
+import { CHI_NHANH, HANG, KHACH, KHO, LY_DO, NCC, NHAN_VIEN, NVL } from '../../data/mock'
 import { tkCot, TAI_KHOAN } from './data'
 import { Note } from '../../ui/Page'
 
 /** Nhãn ngắn trên thanh tab */
 const NGAN: Record<string, string> = { '1.1': 'Tài khoản', '1.2': 'Hàng hoá', '1.3': 'Đơn vị tính', '1.4': 'Quy đổi ĐVT', '1.5': 'Đối tượng', '1.6': 'Mục chi phí', '1.7': 'Công việc', '1.8': 'Kho', '1.9': 'Tiền tệ', '1.10': 'Tỷ giá', '1.11': 'Loại thuế', '1.12': 'Quỹ tiền', '1.13': 'Tài sản cố định', '1.14': 'Bảng giá', '1.15': 'Bút toán tự động', '1.16': 'Lý do' }
+
+/** Chi nhánh của đơn vị: một mã số thuế có nhiều chi nhánh. Không có trong Excel, gói nào cũng mở. Thanh trên chọn chi nhánh làm việc từ danh mục này. */
+const chiNhanh: ScreenDef = { slug: 'chi-nhanh', ten: 'Danh mục chi nhánh', ngan: 'Chi nhánh', nhom: 'Danh mục', kind: 'catalog', catalog: {
+  them: 'Thêm chi nhánh',
+  cols: [{ k: 'ma', t: 'Mã', cls: 'code', w: 90 }, { k: 'ten', t: 'Tên chi nhánh' }, { k: 'kho', t: 'Kho', cls: 'dim' }],
+  rows: () => CHI_NHANH.map(c => ({ ma: c.id.toUpperCase(), ten: c.ten, kho: c.kho.join(', ') })),
+} }
 
 const danhMuc: ModuleDef = {
   key: 'danh-muc', ten: 'Danh mục', ngan: 'Danh mục', icon: 'folder', mod: 0,
@@ -106,9 +113,7 @@ const danhMuc: ModuleDef = {
         ['BT07', 'Mua nguyên vật liệu chưa trả tiền', 'Phiếu mua hàng', 'Nhóm nhà cung cấp Thịt, cá; Tinh bột; Pha chế', '1331', '331', 'Tiền thuế GTGT'],
       ].map(([ma, ten, lct, loc, no, co, tien]) => ({ ma, ten, lct, loc, no, co, tien })) } },
     '1.16': { catalog: { them: 'Thêm lý do', nhomLoc: 'dung', nhanLoc: 'Dùng cho', cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Lý do' }, { k: 'dung', t: 'Dùng cho' }],
-      rows: () => [['LD01', 'Thu tiền bán hàng', 'Phiếu thu'], ['LD02', 'Thu nợ khách hàng', 'Phiếu thu'], ['LD03', 'Rút tiền ngân hàng nhập quỹ', 'Phiếu thu'], ['LD04', 'Chi mua nguyên vật liệu', 'Phiếu chi'],
-        ['LD05', 'Chi trả lương', 'Phiếu chi'], ['LD06', 'Chi tạm ứng', 'Phiếu chi'], ['LD07', 'Xuất huỷ hàng hỏng', 'Phiếu xuất kho'], ['LD08', 'Xuất dùng nội bộ', 'Phiếu xuất kho'], ['LD09', 'Nhập hàng khách trả lại', 'Phiếu nhập kho']]
-        .map(([ma, ten, dung]) => ({ ma, ten, dung })) } },
-  }, NGAN),
+      rows: () => LY_DO } },
+  }, NGAN).flatMap(sc => sc.code === '1.8' ? [sc, chiNhanh] : [sc]),
 }
 export default danhMuc

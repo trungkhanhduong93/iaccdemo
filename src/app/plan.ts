@@ -16,7 +16,13 @@ export interface Feature {
 }
 
 export const MODS: string[] = data.mods
-export const FEATURES: Feature[] = data.feats
+/** Bổ sung theo sheet Roadmap khi Excel chưa sinh lại features.json: mã tính năng -> các gói có tính năng.
+ *  Trum gộp vào Excel và chạy lại tools/xuat_tinh_nang.py rồi thì xoá dòng tương ứng (việc T26). */
+const THEO_ROADMAP: Record<string, string> = {
+  '1.12': 'FSMA',    // Danh mục quỹ tiền mở cho gói Free, theo Roadmap 08/10/2026
+  '2.2.3': 'FSMA',   // Sổ ngân hàng mở cho gói Free, PhuongXT chốt 08/10/2026
+}
+export const FEATURES: Feature[] = data.feats.map(f => THEO_ROADMAP[f.c] ? { ...f, g: THEO_ROADMAP[f.c] } : f)
 export const FEATURE: Record<string, Feature> = Object.fromEntries(FEATURES.map(f => [f.c, f]))
 
 export const GOI: Record<Goi, { ten: string; cls: string; cheDo: string; cheDoNgan: string; mota: string }> = {

@@ -93,12 +93,12 @@ def main():
                 if '/moi' in h and not pg.locator('.lockpage').count() and not pg.locator('.fsf').count():
                     loi.append(f'[{goi}] ô {h}: không mở form chứng từ toàn màn hình')
 
-        # Bấm ô Phiếu thu trên Quy trình: form mở toàn màn hình, Esc đóng về đúng Quy trình
+        # Bấm ô Thu tiền mặt trên Quy trình: form phiếu thu mở toàn màn hình, Esc đóng về đúng Quy trình
         vao('/app/tien/quy-trinh', 'M')
-        pg.locator('.qt-n', has_text='Phiếu thu').first.click()
+        pg.locator('.qt-n', has_text='Thu tiền mặt').first.click()
         pg.wait_for_timeout(150)
         if not pg.locator('.fsf h1', has_text='Phiếu thu').count():
-            loi.append('Quy trình tiền: bấm ô Phiếu thu không mở form phiếu thu')
+            loi.append('Quy trình tiền: bấm ô Thu tiền mặt không mở form phiếu thu')
         pg.keyboard.press('Escape')
         pg.wait_for_timeout(150)
         if not pg.url.endswith('#/app/tien/quy-trinh') or pg.locator('.fsf').count():

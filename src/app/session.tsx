@@ -1,7 +1,7 @@
 // Phiên làm việc: người dùng, vai trò, đơn vị kế toán, gói. Lưu ở localStorage để F5 không mất.
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import type { Goi } from './plan'
-import { DON_VI, type Role } from '../data/mock'
+import { CHI_NHANH, DON_VI, type Role } from '../data/mock'
 
 export interface Session {
   loggedIn: boolean
@@ -10,11 +10,12 @@ export interface Session {
   role: Role
   donVi: string          // id đơn vị kế toán
   goi: Goi               // gói của đơn vị; thanh "Xem thử" đổi được để xem khoá theo gói
+  chiNhanh: string       // chi nhánh đang làm việc chọn trên thanh trên; 'all' là xem gộp mọi chi nhánh
   khoiTao: boolean       // đã chạy xong khởi tạo
   thuGon?: boolean       // sidebar thu gọn còn biểu tượng
 }
 
-const MAC_DINH: Session = { loggedIn: false, ten: 'Trần Thu Hà', email: 'thuha@phomay.vn', role: 'ktt', donVi: 'pm', goi: 'M', khoiTao: true, thuGon: false }
+const MAC_DINH: Session = { loggedIn: false, ten: 'Trần Thu Hà', email: 'thuha@phomay.vn', role: 'ktt', donVi: 'pm', goi: 'M', chiNhanh: 'all', khoiTao: true, thuGon: false }
 const KEY = 'iacc-cloud-session'
 
 function doc(): Session {
@@ -47,3 +48,5 @@ export function useSession() {
 }
 
 export const donViHienTai = (s: Session) => DON_VI.find(d => d.id === s.donVi) ?? DON_VI[0]
+/** Chi nhánh đang chọn trên thanh trên; undefined khi đang xem tất cả chi nhánh */
+export const chiNhanhHienTai = (s: Session) => CHI_NHANH.find(c => c.id === s.chiNhanh)

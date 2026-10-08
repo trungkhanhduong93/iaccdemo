@@ -23,6 +23,7 @@ export interface BangSuaProps {
   coKho?: boolean
   coCk?: boolean
   coLo?: boolean
+  coKm?: boolean               // dòng tiền có cột Khoản mục, Công việc; gói Free không có
   khoMacDinh?: string
 }
 
@@ -79,15 +80,18 @@ export function BangSua({
   coKho = false,
   coCk = false,
   coLo = false,
+  coKm = true,
   khoMacDinh = 'Kho tổng',
 }: BangSuaProps) {
   const hang = cfg.dong === 'hang' || cfg.dong === 'nvl'
   const tienDong = cfg.dong === 'tien'
+  const kmDong = tienDong && coKm
+  const dtDong = tienDong && cfg.doiTuong !== 'none'   // phiếu chuyển quỹ không có đối tượng
   const danhMucHang = cfg.dong === 'nvl' ? NVL : HANG
 
   const colSpanDau = hang
     ? 4 + (coKho ? 1 : 0) + (coLo ? 2 : 0) + (coTk ? 2 : 0)
-    : 2 + (coKho ? 1 : 0) + (coTk ? 2 : 0) + (tienDong ? 3 : 0)
+    : 2 + (coKho ? 1 : 0) + (coTk ? 2 : 0) + (dtDong ? 1 : 0) + (kmDong ? 2 : 0)
 
   function capNhat(idx: number, patch: Partial<Dong>) {
     if (!onChange) return
@@ -212,9 +216,9 @@ export function BangSua({
               )}
               {tienDong && (
                 <>
-                  <th style={{ width: 180 }}>Đối tượng</th>
-                  <th style={{ width: 160 }}>Khoản mục</th>
-                  <th style={{ width: 160 }}>Công việc</th>
+                  {dtDong && <th style={{ width: 180 }}>Đối tượng</th>}
+                  {kmDong && <th style={{ width: 160 }}>Khoản mục</th>}
+                  {kmDong && <th style={{ width: 160 }}>Công việc</th>}
                 </>
               )}
               {hang && <th className="num" style={{ width: 80 }}>Số lượng</th>}
@@ -256,9 +260,9 @@ export function BangSua({
                 )}
                 {tienDong && (
                   <>
-                    <td>{d.dt || '—'}</td>
-                    <td>{d.km ? (KHOAN_MUC.find(x => x.ma === d.km)?.ten ?? d.km) : '—'}</td>
-                    <td>{d.cv ? (CONG_VIEC.find(x => x.ma === d.cv)?.ten ?? d.cv) : '—'}</td>
+                    {dtDong && <td>{d.dt || '—'}</td>}
+                    {kmDong && <td>{d.km ? (KHOAN_MUC.find(x => x.ma === d.km)?.ten ?? d.km) : '—'}</td>}
+                    {kmDong && <td>{d.cv ? (CONG_VIEC.find(x => x.ma === d.cv)?.ten ?? d.cv) : '—'}</td>}
                   </>
                 )}
                 {hang && <td className="num">{money(d.sl)}</td>}
@@ -328,9 +332,9 @@ export function BangSua({
               )}
               {tienDong && (
                 <>
-                  <th style={{ width: 180 }}>Đối tượng</th>
-                  <th style={{ width: 160 }}>Khoản mục</th>
-                  <th style={{ width: 160 }}>Công việc</th>
+                  {dtDong && <th style={{ width: 180 }}>Đối tượng</th>}
+                  {kmDong && <th style={{ width: 160 }}>Khoản mục</th>}
+                  {kmDong && <th style={{ width: 160 }}>Công việc</th>}
                 </>
               )}
               {hang && <th className="num" style={{ width: 85 }}>Số lượng</th>}
@@ -448,7 +452,7 @@ export function BangSua({
                 )}
                 {tienDong && (
                   <>
-                    <td>
+                    {dtDong && <td>
                       <Select
                         className="inp sm"
                         value={d.dt ?? ''}
@@ -459,8 +463,8 @@ export function BangSua({
                           <option key={t} value={t}>{t}</option>
                         ))}
                       </Select>
-                    </td>
-                    <td>
+                    </td>}
+                    {kmDong && <td>
                       <Select
                         className="inp sm"
                         value={d.km ?? ''}
@@ -471,8 +475,8 @@ export function BangSua({
                           <option key={km.ma} value={km.ma}>{km.ma} · {km.ten}</option>
                         ))}
                       </Select>
-                    </td>
-                    <td>
+                    </td>}
+                    {kmDong && <td>
                       <Select
                         className="inp sm"
                         value={d.cv ?? ''}
@@ -483,7 +487,7 @@ export function BangSua({
                           <option key={cv.ma} value={cv.ma}>{cv.ma} · {cv.ten}</option>
                         ))}
                       </Select>
-                    </td>
+                    </td>}
                   </>
                 )}
                 {hang && (

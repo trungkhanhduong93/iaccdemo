@@ -129,3 +129,34 @@ Lý do: Trum giao việc T26, chốt các mặc định trên ngày 08/10/2026.
 Trước mỗi lần push, kể cả push chỉ sửa tài liệu, agent fetch và so `HEAD..origin/main`. Có commit mới của người khác thì báo người dùng, pull về, chạy lại các bước kiểm nếu commit mới có sửa code, rồi mới push. Các bước cụ thể ở `AGENTS.md`, mục "Ngay trước lệnh git push".
 
 Lý do: ba người cùng push thẳng `main`, không ai duyệt. Bước kiểm chạy trên bản cũ không chứng minh được bản sau khi gộp còn chạy đúng.
+
+## QD17. Thanh trên chọn chi nhánh, tìm kiếm sang sidebar (08/10/2026)
+
+Thay một phần QD01 và QD08: ô tìm nhanh không còn ở thanh trên, thanh trên không còn ô kỳ và trạng thái đồng bộ FABi.
+
+- Ô tìm nhanh (Ctrl K) nằm trên cùng sidebar, trên nút Thêm nhanh. Sidebar thu gọn còn biểu tượng kính lúp.
+- Kỳ chọn ở bộ lọc của từng màn, không đặt trên thanh trên.
+- Thanh trên có ô chọn chi nhánh làm việc. Một mã số thuế có nhiều chi nhánh, lấy từ Danh mục chi nhánh (màn mới trong phân hệ Danh mục, gói nào cũng mở).
+- Có lựa chọn "Tất cả chi nhánh" chỉ để xem gộp. Danh sách chứng từ lọc theo chi nhánh đang chọn; cột Chi nhánh chỉ hiện khi xem tất cả.
+- Chứng từ mới lập cho chi nhánh chọn trên thanh trên, hiện thành nhãn trên đầu form, không sửa trên form. Đang xem tất cả mà lập chứng từ thì form bắt chọn một chi nhánh trước.
+- Đổi đơn vị kế toán thì chi nhánh về "Tất cả".
+
+Lý do: PhuongXT chốt khi làm T25, T32. Trum chưa xem lại.
+
+## QD18. Thu chi gói Free và sơ đồ Quy trình tiền (08/10/2026)
+
+- Phạm vi gói Free lấy theo sheet Roadmap trong file "Dự kiến tính năng IACC Cloud.xlsx" trên Google Drive.
+- Phiếu thu, chi có ô Lý do thu, Lý do chi ở đầu phiếu, lấy từ Danh mục lý do nghiệp vụ 1.16. Gói Free không hạch toán nên dòng chi tiết không có cột Khoản mục, Công việc.
+- Khối tổng của phiếu thu, chi chỉ có một dòng Tổng tiền.
+- Loại phiếu "Nộp tiền vào ngân hàng" thay bằng "Chuyển quỹ" (số `CQ…`): chọn Từ quỹ, Đến quỹ trong các quỹ tiền mặt từng chi nhánh và tài khoản ngân hàng. Phiếu chuyển quỹ không có đối tượng.
+- Sơ đồ Quy trình phân hệ Tiền vẽ kiểu hội tụ (`hoiTu` trong `quy-trinh.ts`). Năm làn Thu tiền, Chi tiền, Chuyển quỹ, Đối chiếu công nợ, Phân bổ chi phí chuỗi cùng đổ về khối Sổ sách quỹ. Thu tiền, Chi tiền đều gồm tiền mặt và ngân hàng. Bỏ ô Tiền bán hàng từ FABi và Khớp sao kê ngân hàng. Sơ đồ phải nằm gọn một trang ở màn 1366×768.
+
+Lý do: PhuongXT chốt khi làm T25.
+
+## QD19. Bổ sung gói theo Roadmap trong code khi Excel chưa cập nhật (08/10/2026)
+
+`features.json` sinh từ Excel và không sửa tay. Khi sheet Roadmap đã đổi gói mà Excel chưa sinh lại, ghi mã và gói mới vào `THEO_ROADMAP` trong `src/app/plan.ts`. Danh sách này đè lên `features.json` lúc chạy. Excel cập nhật xong (việc T33) thì xoá dòng tương ứng.
+
+Đang có: 1.12 Danh mục quỹ tiền và 2.2.3 Sổ ngân hàng mở cho gói Free.
+
+Lý do: PhuongXT cần mở hai mục này cho gói Free ngay, không chờ chạy lại script trên máy Trum.

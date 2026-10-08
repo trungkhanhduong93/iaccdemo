@@ -2,7 +2,7 @@
 // Bấm ô trên sơ đồ mở thẳng form chứng từ mới (đích có /moi) hoặc màn tương ứng. Ô ngoài gói hiện mờ, có khoá và nhãn gói.
 import { useLayoutEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import type { NutQT, QuyTrinhDef, ScreenProps } from '../../modules/types'
+import type { LanQT, NutQT, QuyTrinhDef, ScreenProps } from '../../modules/types'
 import { dich, maKhoa, moDuoc, nhanTab, phanHeKhoa, tenMan } from '../../app/registry'
 import { useSession } from '../../app/session'
 import { GOI, minGoi, type Goi } from '../../app/plan'
@@ -17,7 +17,8 @@ const TOP = 8         // khoảng từ mép hàng tới ô biểu tượng
 export function QuyTrinhScreen({ mod }: ScreenProps) {
   const { s, set } = useSession()
   const qt = mod.quyTrinh!
-  const nut = qt.buoc.flatMap(b => [b.chinh, ...(b.tren ?? []), ...(b.duoi ?? [])])
+  const nut = [...qt.buoc.flatMap(b => [b.chinh, ...(b.tren ?? []), ...(b.duoi ?? [])]),
+    ...(qt.hoiTu ? [...qt.hoiTu.lan, qt.hoiTu.ra].flatMap(l => l.nut) : [])]
   const mo = nut.filter(n => moNut(n, s.goi).ok).length
   // cả phân hệ ngoài gói thì mời xem thử gói thấp nhất có phân hệ này
   const khoa = phanHeKhoa(mod, s.goi)
@@ -41,7 +42,7 @@ export function QuyTrinhScreen({ mod }: ScreenProps) {
               <button className="btn sm" onClick={() => set({ goi: can })}>Xem thử gói {GOI[can].ten}</button>
             </Note>
           )}
-          <SoDo qt={qt} goi={s.goi} />
+          {qt.hoiTu ? <SoDoHoiTu lan={qt.hoiTu.lan} ra={qt.hoiTu.ra} goi={s.goi} /> : <SoDo qt={qt} goi={s.goi} />}
         </section>
         <BenPhai qt={qt} modKey={mod.key} goi={s.goi} />
       </div>
@@ -104,22 +105,51 @@ function SoDo({ qt, goi }: { qt: QuyTrinhDef; goi: Goi }) {
           {duong.map(d => <path key={d} d={d} className="nhanh" />)}
         </svg>
         {qt.buoc.map((b, c) => b.ten && <div key={c} className="qt-cap" style={{ left: c * CW, width: CW }}>{b.ten}</div>)}
-        {o.map(({ n, c, r, so }) => {
-          const x = moNut(n, goi)
-          return (
-            <Link key={`${c}-${r}`} to={x.path} className={`qt-n ${n.tone ?? ''} ${x.ok ? '' : 'lock'} ${r === tren ? 'chinh' : ''}`}
-              style={{ left: c * CW, top: cap + r * RH, width: CW, height: RH }}
-              title={x.ok ? `Mở ${n.ten.toLowerCase()}` : `${n.ten}: có ở gói ${GOI[minGoi(x.ma!)].ten}`}>
-              <span className="qt-tile">
-                <Icon n={n.icon} className="ic lg" />
-                {so && <i className="qt-so-buoc">{so}</i>}
-                {!x.ok && <i className="qt-khoa"><Icon n="lock" className="ic sm" /></i>}
-              </span>
-              <span className="qt-l">{n.ten}</span>
-              {!x.ok && x.ma && <Pk g={minGoi(x.ma)} o />}
-            </Link>
-          )
-        })}
+        {o.map(({ n, c, r, so }) => (
+          <ONut key={`${c}-${r}`} n={n} goi={goi} chinh={r === tren} so={so}
+            style={{ left: c * CW, top: cap + r * RH, width: CW, height: RH }} />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+/** Một ô trên sơ đồ: biểu tượng, nhãn; ngoài gói thì mờ, có khoá và nhãn gói thấp nhất */
+function ONut({ n, goi, chinh, so, style }: { n: NutQT; goi: Goi; chinh?: boolean; so?: number; style?: React.CSSProperties }) {
+  const x = moNut(n, goi)
+  return (
+    <Link to={x.path} className={`qt-n ${n.tone ?? ''} ${x.ok ? '' : 'lock'} ${chinh ? 'chinh' : ''}`} style={style}
+      title={x.ok ? `Mở ${n.ten.toLowerCase()}` : `${n.ten}: có ở gói ${GOI[minGoi(x.ma!)].ten}`}>
+      <span className="qt-tile">
+        <Icon n={n.icon} className="ic lg" />
+        {so && <i className="qt-so-buoc">{so}</i>}
+        {!x.ok && <i className="qt-khoa"><Icon n="lock" className="ic sm" /></i>}
+      </span>
+      <span className="qt-l">{n.ten}</span>
+      {!x.ok && x.ma && <Pk g={minGoi(x.ma)} o />}
+    </Link>
+  )
+}
+
+/** Sơ đồ hội tụ: mỗi làn một nhóm nghiệp vụ xếp dọc bên trái, mũi tên từ từng làn gom về khối kết quả bên phải */
+function SoDoHoiTu({ lan, ra, goi }: { lan: LanQT[]; ra: LanQT; goi: Goi }) {
+  return (
+    <div className="qt-so">
+      <div className="qt-ht">
+        <div className="qt-ht-lan">
+          {lan.map(l => (
+            <div key={l.ten} className="qt-lan">
+              <div className="qt-lan-ten">{l.ten}</div>
+              <div className="qt-lan-nut">{l.nut.map(n => <ONut key={n.di} n={n} goi={goi} chinh />)}</div>
+              <span className="qt-lan-noi" />
+            </div>
+          ))}
+        </div>
+        <div className="qt-ht-gom"><span /></div>
+        <div className="qt-ht-ra">
+          <div className="qt-lan-ten">{ra.ten}</div>
+          {ra.nut.map(n => <ONut key={n.di} n={n} goi={goi} />)}
+        </div>
       </div>
     </div>
   )

@@ -4,6 +4,8 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 08/10/2026
 
+- T32: Thanh trên có ô chọn chi nhánh làm việc, bỏ ô kỳ và trạng thái đồng bộ FABi. Ô tìm kiếm (Ctrl K) chuyển lên đầu sidebar. Thêm Danh mục chi nhánh. Danh sách chứng từ lọc theo chi nhánh đang chọn; chứng từ mới lập theo chi nhánh đó và không sửa được trên form.
+- T25: Phiếu thu, chi có ô Lý do thu, Lý do chi ở đầu phiếu. Gói Free bỏ cột Khoản mục, Công việc ở dòng phiếu tiền. Loại phiếu Nộp tiền vào ngân hàng đổi thành Chuyển quỹ, chọn Từ quỹ, Đến quỹ. Sơ đồ Quy trình phân hệ Tiền vẽ lại: năm làn Thu tiền, Chi tiền, Chuyển quỹ, Đối chiếu công nợ, Phân bổ chi phí chuỗi cùng đổ về Sổ sách quỹ, gọn một trang. Gói Free mở Danh mục quỹ tiền và Sổ ngân hàng.
 - T29: Màn Bán hàng 3.1.1 chia đôi như Hoá đơn bán hàng: danh sách chứng từ ở trên có phân trang, chi tiết chứng từ đang chọn ở dưới, đúp chuột mở form.
 - T28: Ô chọn trong form chứng từ cùng một kiểu, cao bằng ô gõ, ô bị khoá có nền xám. Ba cột thông tin chung thẳng hàng. Màn đăng nhập bỏ sơ đồ kết nối.
 - T26: Giao diện đổi theo ngôn ngữ thiết kế iFaster: màu xanh mới, sidebar xám đen, mục đang chọn nổi khối xanh, đầu bảng nền xanh nhạt, thẻ trắng không viền. Logo đổi sang Accounting Powered by iPOS.vn.

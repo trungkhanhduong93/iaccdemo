@@ -1,5 +1,6 @@
 // Bộ ô của form chứng từ theo nhóm nghiệp vụ. Học cách AMIS xếp ô: cột mã, cột tên và diễn giải, cột ngày và số.
 import type { VoucherCfg } from '../../modules/types'
+import { LY_DO } from '../../data/mock'
 
 /** Cấu hình của một loại phiếu: ghép phần riêng của loại vào cấu hình chung của màn */
 export function theoLoai(cfg: VoucherCfg, k?: string | null): VoucherCfg {
@@ -7,7 +8,7 @@ export function theoLoai(cfg: VoucherCfg, k?: string | null): VoucherCfg {
   return v ? { ...cfg, ...v } : cfg
 }
 
-export type Nhom = 'mua' | 'ban' | 'thu' | 'chi' | 'nop' | 'nhthu' | 'nhchi' | 'nhap' | 'xuat' | 'dc' | 'kk' | 'cb' | 'ts' | 'thue' | 'th' | 'khac'
+export type Nhom = 'mua' | 'ban' | 'thu' | 'chi' | 'cq' | 'nhthu' | 'nhchi' | 'nhap' | 'xuat' | 'dc' | 'kk' | 'cb' | 'ts' | 'thue' | 'th' | 'khac'
 
 /** Một ô trên form. k quyết định cách vẽ: dt mã đối tượng, ten tên đối tượng, nv chọn nhân viên, ly chọn lý do, kem số chứng từ gốc, tknh tài khoản ngân hàng, kho chọn kho; còn lại là ô chữ */
 export interface O { k: string; nhan: string; ds?: string[] }
@@ -26,13 +27,13 @@ export interface BoO {
   inMau: string[]                // mẫu in
 }
 
-export const LY_THU = ['Thu tiền khách hàng', 'Thu hoàn ứng', 'Rút tiền gửi về nộp quỹ', 'Thu khác']
-export const LY_CHI = ['Trả tiền nhà cung cấp', 'Tạm ứng cho nhân viên', 'Chi phí khác', 'Nộp tiền vào ngân hàng']
+export const LY_THU = LY_DO.filter(x => x.dung === 'Phiếu thu').map(x => x.ten)
+export const LY_CHI = LY_DO.filter(x => x.dung === 'Phiếu chi').map(x => x.ten)
 export const LY_XUAT = ['Xuất bán', 'Xuất huỷ', 'Xuất dùng nội bộ', 'Xuất khác']
 
 export function nhomCua(mod: string, cfg: VoucherCfg, loai?: string): Nhom {
   const p = cfg.prefix
-  if (mod === 'tien') return ({ thu: 'thu', chi: 'chi', nop: 'nop', bc: 'nhthu', unc: 'nhchi' } as Record<string, Nhom>)[loai ?? ''] ?? 'khac'
+  if (mod === 'tien') return ({ thu: 'thu', chi: 'chi', cq: 'cq', bc: 'nhthu', unc: 'nhchi' } as Record<string, Nhom>)[loai ?? ''] ?? 'khac'
   if (mod === 'mua-hang') return 'mua'
   if (mod === 'ban-hang') return 'ban'
   if (mod === 'kho') {
@@ -83,9 +84,9 @@ export function boO(nhom: Nhom, cfg: VoucherCfg): BoO {
       a: [{ k: 'dt', nhan: 'Mã đối tượng' }, { k: 'nguoi', nhan: 'Người nhận' }, { k: 'ly', nhan: 'Lý do chi', ds: LY_CHI }, { k: 'nv', nhan: 'Nhân viên chi' }],
       b: [{ k: 'ten', nhan: 'Tên đối tượng' }, { k: 'dc', nhan: 'Địa chỉ' }, dg, kem], so: 'Số phiếu chi', tk: tkNo, inMau: ['Phiếu chi', 'Phiếu chi 2 liên'],
     }
-    case 'nop': return {
-      a: [{ k: 'tknh', nhan: 'Nộp vào tài khoản' }, ...dt, { k: 'nguoi', nhan: 'Người nộp' }],
-      b: [{ k: 'tennh', nhan: 'Tên ngân hàng' }, ...tenDt, dg], so: 'Số chứng từ', tk: tkNo, inMau: ['Giấy nộp tiền'],
+    case 'cq': return {
+      a: [{ k: 'tu', nhan: 'Từ quỹ' }, { k: 'den', nhan: 'Đến quỹ' }, { k: 'nguoi', nhan: 'Người thực hiện' }],
+      b: [dg, kem], so: 'Số phiếu chuyển quỹ', tk: tkNo, inMau: ['Phiếu chuyển quỹ', 'Giấy nộp tiền'],
     }
     case 'nhthu': return {
       a: [{ k: 'dt', nhan: 'Mã đối tượng' }, { k: 'tknh', nhan: 'Nộp vào tài khoản' }, { k: 'ly', nhan: 'Lý do thu', ds: LY_THU }, { k: 'nv', nhan: 'Nhân viên thu' }],

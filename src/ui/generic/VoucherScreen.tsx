@@ -3,9 +3,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import type { Col, Row, ScreenProps, VoucherCfg } from '../../modules/types'
 import { duongDan, tenMan } from '../../app/registry'
-import { useSession } from '../../app/session'
+import { chiNhanhHienTai, useSession } from '../../app/session'
 import { kieuGhiSo } from '../../app/plan'
-import { CHI_NHANH } from '../../data/mock'
 import { Icon } from '../Icon'
 import { Card, PageHead } from '../Page'
 import { Dropdown, MenuHead, MenuItem, MenuSep, Select } from '../Dropdown'
@@ -78,6 +77,7 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
   const [tabPanel, setTabPanel] = useState<'ct' | 'ht' | 'khac'>('ct')
 
   const ghi = kieuGhiSo(s.goi) !== 'khong'
+  const cnChon = chiNhanhHienTai(s)
   const nhom = nhomCua(mod.key, cfg)
   const bo = boO(nhom, cfg)
   const path = duongDan(mod, sc)
@@ -108,6 +108,7 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
     if (ky === '10' && r.thang !== 10) return false
     if (ky === '9' && r.thang !== 9) return false
     if (ky === 'q4' && (r.thang < 10 || r.thang > 12)) return false
+    if (cnChon && r.cn !== cnChon.ten) return false
     if (tt !== 'all' && r.tt !== tt) return false
     if (q && !fold(`${r.so} ${r.doiTuong} ${r.dienGiai}`).includes(fold(q))) return false
     return true
@@ -178,7 +179,8 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
     ...(cfg.loai ? [{ k: 'tenLoai', t: 'Loại', w: 130 } as Col] : []),
     { k: 'dienGiai', t: 'Diễn giải' },
     ...(cfg.doiTuong !== 'none' ? [{ k: 'doiTuong', t: cfg.nhan ?? 'Đối tượng' } as Col] : []),
-    { k: 'cn', t: 'Chi nhánh', cls: 'dim', w: 130 },
+    // Đang chọn một chi nhánh trên thanh trên thì cột chi nhánh thừa
+    ...(cnChon ? [] : [{ k: 'cn', t: 'Chi nhánh', cls: 'dim', w: 130 } as Col]),
     // Trạng thái thanh toán & hoá đơn cho nhóm mua / bán
     ...(nhom === 'mua' || nhom === 'ban' ? [
       {
@@ -344,13 +346,6 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
               </Select>
             </label>
             <label className="fld">
-              Chi nhánh
-              <Select>
-                <option>Tất cả</option>
-                {CHI_NHANH.map(c => <option key={c.id}>{c.ten}</option>)}
-              </Select>
-            </label>
-            <label className="fld">
               Trạng thái
               <Select value={tt} onChange={e => { setTt(e.target.value); setTrang(1) }}>
                 <option value="all">Tất cả</option>
@@ -484,11 +479,12 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
               <div className="voucher-bottom-b">
                 {tabPanel === 'ct' && (
                   <BangSua
-                    cfg={cfg}
+                    cfg={theoLoai(cfg, activeRow.loai)}
                     dong={activeDong}
                     cheDo="xem"
                     coKho={Boolean(bo.kho)}
                     coCk={Boolean(bo.ck)}
+                    coKm={ghi}
                   />
                 )}
 
