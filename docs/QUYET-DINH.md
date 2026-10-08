@@ -184,3 +184,4 @@ Ngày 08/10 trùng mã ba lần: T30 dùng cho hai việc, T32 và T33 bị lấ
 
 Lý do: Trum chốt sau khi gộp T34 với T32 của PhuongXT.
 
+## QD22. Gói Free ẩn tính năng ngoài gói (đang soạn)
