@@ -4,7 +4,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T39.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T40.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
@@ -14,6 +14,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | T27 | Danh sách chứng từ 2.1.1: khung chi tiết bên dưới hiện dòng phiếu khác với form của cùng phiếu (UNC2610-0259: khung ghi "Chi mua rau, củ tại chợ", form ghi "Trả tiền nhà cung cấp thịt bò") | | Chờ | Thấy khi làm T26 |
 | T02 | Chốt nghiệp vụ trên từng sơ đồ Quy trình: ô nào, nối thế nào, câu chữ. Sửa ở `src/modules/<phân hệ>/quy-trinh.ts` | Trum | Chờ | |
 | T03 | Nối sổ quỹ, sổ tài khoản 2.2.2, sổ ngân hàng 2.2.3, sổ công nợ 2.2.5 vào `so-cai.ts` để mọi sổ khớp báo cáo tài chính | | Chờ | Sổ quỹ đang tính riêng từ tiền mặt FABi từng chi nhánh. Tổng 3 quỹ chưa bằng dư TK 1111 trên cân đối kế toán |
+| T40 | Biểu tượng riêng cho 17 màn danh mục (Solar bản đặc): hiện ở menu Khác, sơ đồ Khởi tạo danh mục, ô tìm Ctrl K (QD23) | Trum | Đang làm | Sửa file dùng chung: `ModuleTabs.tsx`, `CommandPalette.tsx`, `types.ts`, `danh-muc/index.ts`, `danh-muc/quy-trinh.ts`, `Icon`/`icon-dac.ts` |
 | T38 | Sơ đồ Quy trình hội tụ (phân hệ Tiền) làm lại giao diện theo hướng A: làn gọn, nút nghiệp vụ nằm ngang, cột hội tụ, khối Sổ sách nổi bật. Logic sơ đồ giữ nguyên | Trum | Đang làm | Sửa file dùng chung: `QuyTrinhScreen.tsx` (chỉ `SoDoHoiTu`), `app.css` (các rule `.qt-ht*`), `tien/quy-trinh.ts` (đổi 1 biểu tượng) |
 | T25 | Thu chi gói Free theo sheet Roadmap: form phiếu thu, chi, chuyển quỹ; danh sách 2.1.1; sơ đồ Quy trình; sổ quỹ, sổ ngân hàng, sổ công nợ | PhuongXT | Dở dang | Đã xong form, Quy trình, chuyển quỹ, tên loại phiếu (Thu tiền mặt, Chi tiền mặt, Thu ngân hàng, Chi ngân hàng, Chuyển quỹ cuối). Còn sổ quỹ, sổ ngân hàng, sổ công nợ lọc theo chi nhánh trên thanh trên. Trùng mã với T25 của Trum ở bảng Đã xong, nhờ Trum đổi mã |
 | T33 | Cập nhật Excel tính năng theo sheet Roadmap rồi chạy lại `tools/xuat_tinh_nang.py`: 1.12 và 2.2.3 có ở gói Free; thêm 1.17, S1a-HKD, S2a-HKD. Xong thì xoá các dòng tương ứng trong `THEO_ROADMAP` ở `src/app/plan.ts` | | Chờ | Chỉ máy Trum chạy được script |
