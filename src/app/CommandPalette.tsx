@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSession } from './session'
-import { MODULES, duongDan, maKhoa, moDuoc, tenMan } from './registry'
+import { MODULES, duongDan, hienMan, hienPhanHe, maKhoa, moDuoc, tenMan } from './registry'
 import { minGoi } from './plan'
 import { fold } from '../ui/format'
 import { Icon } from '../ui/Icon'
@@ -16,8 +16,8 @@ export function CommandPalette({ onClose }: { onClose: () => void }) {
   const all = useMemo(() => MODULES.flatMap(m => m.screens.map(sc => ({ m, sc, t: tenMan(sc), f: fold(tenMan(sc) + ' ' + m.ten + ' ' + (sc.code ?? '')) }))), [])
   const list = useMemo(() => {
     const words = fold(q).split(/\s+/).filter(Boolean)
-    return all.filter(x => words.every(w => x.f.includes(w))).slice(0, 40)
-  }, [q, all])
+    return all.filter(x => hienPhanHe(x.m, s.goi) && hienMan(x.sc, s.goi) && words.every(w => x.f.includes(w))).slice(0, 40)
+  }, [q, all, s.goi])
   useEffect(() => setI(0), [q])
 
   const go = (n: number) => { const x = list[n]; if (!x) return; nav(duongDan(x.m, x.sc)); onClose() }

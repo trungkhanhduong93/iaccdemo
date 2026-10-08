@@ -10,12 +10,12 @@ src/
   styles/app.css           toàn bộ CSS, biến màu ở :root (navy, cam iPOS, màu 4 gói)
   app/
     features.json          SINH TỪ EXCEL, không sửa tay
-    plan.ts                gói, chế độ kế toán, coTrongGoi(), kieuGhiSo(); THEO_ROADMAP đè gói lên features.json (QD19)
+    plan.ts                gói, chế độ kế toán, coTrongGoi(), kieuGhiSo(); THEO_ROADMAP đè gói lên features.json (QD19); anNgoaiGoi() gói Free ẩn tính năng ngoài gói (QD22)
     session.tsx            phiên: người dùng, vai trò, đơn vị, chi nhánh làm việc, gói (localStorage); chiNhanhHienTai()
-    registry.ts            thứ tự 13 phân hệ trên sidebar; tự thêm màn Quy trình, Báo cáo; moDuoc(), tenMan(), tabCua(), dich()
+    registry.ts            thứ tự 13 phân hệ trên sidebar; tự thêm màn Quy trình, Báo cáo; moDuoc(), hienMan(), hienPhanHe(), tenMan(), tabCua(), dich()
     Shell.tsx              sidebar: ô tìm nhanh (Ctrl+K), nút Thêm nhanh, phân hệ lớn, thu gọn sidebar
     ModuleTabs.tsx         thanh tab ngang, đo bề rộng để dồn tab thừa vào "Khác"
-    Topbar.tsx             đơn vị kế toán, chi nhánh làm việc, nút Xem thử gói và vai trò (QD17)
+    Topbar.tsx             đơn vị kế toán, chi nhánh làm việc, nút Trải nghiệm gói (QD17, QD22). Vai trò lấy theo tài khoản lúc đăng nhập
     CommandPalette.tsx     tìm nhanh không dấu
     Screen.tsx             mở màn theo đường dẫn, trang Nâng cấp khi màn ngoài gói
   ui/                      Icon, format, Table, Page (tiêu đề, thẻ, nhãn gói), Charts, FormToanMan (khung form toàn màn hình),
@@ -59,7 +59,7 @@ Phần lớn màn dựng từ 6 màn chung. Các màn sau viết riêng:
 - `tuExcel(mod, rieng)` sinh màn cho mọi tính năng của phân hệ. Kiểu màn lấy theo cấu hình khai trong `rieng`: có `voucher` ra màn chứng từ, `tool` ra màn chức năng, `catalog`, `report` tương tự. Không khai cấu hình thì theo nhóm Excel: Danh mục ra catalog, Chứng từ ra voucher, Chức năng và Tiện ích ra tool, còn lại ra report. Muốn màn riêng thì khai `kind: 'custom', comp` trong `rieng[mã]`.
 - Màn không có trong Excel (Bàn làm việc, Hệ thống) khai `can: [mã]` nếu phụ thuộc gói; không khai thì gói nào cũng mở.
 - Thanh tab: màn có nhóm Excel chứa chữ "báo cáo" vào tab Báo cáo, còn lại thành tab riêng. Muốn ép một báo cáo thành tab thì khai `tab: true` (đang dùng cho Tờ khai thuế 6.2.3). Nhãn tab lấy `NGAN[mã]`, không có thì lấy tên Excel.
-- Sơ đồ Quy trình (`quy-trinh.ts`): mỗi bước có một ô chính trên trục ngang, ô phụ treo `tren` hoặc `duoi`. Nghiệp vụ song song cùng đổ về một kết quả thì khai `hoiTu: { lan, ra }` và để `buoc: []`: mỗi làn một nhóm ô xếp ngang, mũi tên gom về khối `ra` bên phải (đang dùng ở phân hệ Tiền). Trường `di` là đường dẫn sau `/app/`, luôn ghi đủ phân hệ, vd `'kho/5-1-2-3/moi'`. Có `/moi` thì mở form chứng từ mới; thêm `?loai=k` để chọn loại phiếu. Khoá theo gói tự tính từ màn đích, không khai tay.
+- Sơ đồ Quy trình (`quy-trinh.ts`): mỗi bước có một ô chính trên trục ngang, ô phụ treo `tren` hoặc `duoi`. Nghiệp vụ song song cùng đổ về một kết quả thì khai `hoiTu: { lan, ra }` và để `buoc: []`: mỗi làn một nhóm ô xếp ngang, mũi tên gom về khối `ra` bên phải. Sơ đồ này không có khung Báo cáo riêng, đang dùng ở phân hệ Tiền. Trường `di` là đường dẫn sau `/app/`, luôn ghi đủ phân hệ, vd `'kho/5-1-2-3/moi'`. Có `/moi` thì mở form chứng từ mới; thêm `?loai=k` để chọn loại phiếu. Khoá theo gói tự tính từ màn đích, không khai tay.
 - Một màn nhiều loại phiếu: khai `loai: [{ k, ten, prefix, ... }]` trong `voucher`. Danh sách gộp các loại, có cột Loại; nút thêm có menu chọn loại; form mới có ô "Loại phiếu". Đang dùng ở 2.1.1, 7.1.2, 8.1.2. Loại phiếu 2.1.1: thu, chi, cq (chuyển quỹ), bc (thu qua ngân hàng), unc (chi qua ngân hàng).
 - Chi nhánh: danh sách chứng từ lọc theo `chiNhanhHienTai(s)`; form chứng từ mới lấy chi nhánh từ đó, không cho sửa. Màn mới có chi nhánh thì đọc chi nhánh trên thanh trên, không tự làm ô chọn chi nhánh riêng.
 - Kiểu ghi sổ theo gói: Free không hạch toán (dòng phiếu tiền không có Khoản mục, Công việc); Starter (TT58) ghi sổ, không dùng tài khoản; Medium (TT133) và Advance (TT99) có Nợ/Có. Form chứng từ và báo cáo đọc `kieuGhiSo(goi)`.

@@ -2,8 +2,8 @@
 import { Fragment, useEffect, useState } from 'react'
 import { Link, Navigate, Outlet, useLocation } from 'react-router-dom'
 import { useSession } from './session'
-import { MODULES, dich, duongDan, manDau, maKhoa, moDuoc, phanHeKhoa } from './registry'
-import { GOI, minGoi } from './plan'
+import { MODULES, dich, duongDan, hienPhanHe, manDau, maKhoa, moDuoc, phanHeKhoa } from './registry'
+import { GOI, anNgoaiGoi, minGoi } from './plan'
 import type { ModuleDef } from '../modules/types'
 import { Icon } from '../ui/Icon'
 import { Logo, DauLogo } from '../ui/Logo'
@@ -70,7 +70,10 @@ function Sidebar({ mod, onSearch }: { mod: ModuleDef; onSearch: () => void }) {
           label={<><Icon n="plus" className="ic sm" /><span>Thêm nhanh</span></>}>
           <MenuHead right={<small className="mh-n">Mở thẳng form chứng từ mới</small>}>Thêm nhanh chứng từ</MenuHead>
           <div className="qadd">
-            {THEM_NHANH.map(([nhom, ds]) => (
+            {THEM_NHANH.map(([nhom, tatCa]) => {
+              // Gói Free chỉ hiện chứng từ trong gói (QD22)
+              const ds = tatCa.filter(([, , di]) => { const d = dich(di); return !anNgoaiGoi(s.goi) || !d.sc || moDuoc(d.sc, s.goi) })
+              return ds.length > 0 && (
               <div key={nhom} className="qadd-g">
                 <div className="qadd-h">{nhom}</div>
                 {ds.map(([ten, icon, di]) => {
@@ -80,12 +83,13 @@ function Sidebar({ mod, onSearch }: { mod: ModuleDef; onSearch: () => void }) {
                   return <MenuItem key={di} to={d.path} icon={icon} lock={!ok} right={!ok && ma ? <Pk g={minGoi(ma)} o /> : undefined}>{ten}</MenuItem>
                 })}
               </div>
-            ))}
+              )
+            })}
           </div>
         </Dropdown>
       </div>
       <div className="sb-nav">
-        {MODULES.map(m => {
+        {MODULES.filter(m => hienPhanHe(m, s.goi)).map(m => {
           const khoa = phanHeKhoa(m, s.goi)
           return (
             <Fragment key={m.key}>

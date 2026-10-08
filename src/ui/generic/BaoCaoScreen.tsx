@@ -2,9 +2,9 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { ScreenProps } from '../../modules/types'
-import { duongDan, laBaoCao, maKhoa, moDuoc, tenMan } from '../../app/registry'
+import { duongDan, hienMan, laBaoCao, maKhoa, moDuoc, tenMan } from '../../app/registry'
 import { useSession } from '../../app/session'
-import { minGoi } from '../../app/plan'
+import { anNgoaiGoi, minGoi } from '../../app/plan'
 import { Icon } from '../Icon'
 import { PageHead, Pk } from '../Page'
 import { fold } from '../format'
@@ -13,7 +13,7 @@ import { ThanhLoc } from '../ThanhLoc'
 export function BaoCaoScreen({ mod }: ScreenProps) {
   const { s } = useSession()
   const [q, setQ] = useState('')
-  const ds = mod.screens.filter(laBaoCao).filter(sc => !q || fold(`${tenMan(sc)} ${sc.code ?? ''} ${sc.report?.mau ?? ''}`).includes(fold(q)))
+  const ds = mod.screens.filter(laBaoCao).filter(sc => hienMan(sc, s.goi)).filter(sc => !q || fold(`${tenMan(sc)} ${sc.code ?? ''} ${sc.report?.mau ?? ''}`).includes(fold(q)))
   const nhom: [string, typeof ds][] = []
   for (const sc of ds) {
     const n = sc.nhom ?? ''
@@ -24,7 +24,7 @@ export function BaoCaoScreen({ mod }: ScreenProps) {
 
   return (
     <div className="page">
-      <PageHead crumb={[mod.ten, 'Báo cáo']} title="Tất cả báo cáo" meta={<span className="chip">Gói đang dùng mở {co}/{mod.screens.filter(laBaoCao).length} báo cáo</span>}>
+      <PageHead crumb={[mod.ten, 'Báo cáo']} title="Tất cả báo cáo" meta={anNgoaiGoi(s.goi) ? undefined : <span className="chip">Gói đang dùng mở {co}/{mod.screens.filter(laBaoCao).length} báo cáo</span>}>
         <ThanhLoc tim={{ value: q, onChange: setQ, placeholder: 'Tìm báo cáo' }} />
       </PageHead>
       {nhom.length === 0 && <div className="card"><div className="empty"><b>Không có báo cáo khớp "{q}"</b></div></div>}

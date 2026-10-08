@@ -1,7 +1,7 @@
 // Thứ tự phân hệ trên sidebar. Thêm phân hệ mới: tạo thư mục trong src/modules rồi thêm vào đây.
 // Phân hệ có quyTrinh được thêm tab Quy trình đứng đầu; có màn báo cáo thì thêm tab Báo cáo đứng cuối.
 import type { ModuleDef, ScreenDef } from '../modules/types'
-import { FEATURE, coTrongGoi, coMotTrong, type Goi } from './plan'
+import { FEATURE, anNgoaiGoi, coTrongGoi, coMotTrong, type Goi } from './plan'
 import home from '../modules/home'
 import danhMuc from '../modules/danh-muc'
 import tien from '../modules/tien'
@@ -40,6 +40,8 @@ export function moDuoc(sc: ScreenDef, goi: Goi) {
 
 /** Mã quyết định khoá của màn (để tìm gói thấp nhất) */
 export const maKhoa = (sc: ScreenDef) => sc.code ?? sc.can?.[0]
+/** Màn có hiện trên menu, tab, sơ đồ không: gói Free ẩn màn ngoài gói (QD22) */
+export const hienMan = (sc: ScreenDef, goi: Goi) => !anNgoaiGoi(goi) || moDuoc(sc, goi)
 
 export const duongDan = (m: ModuleDef, sc: ScreenDef) => `/app/${m.key}/${sc.slug}`
 
@@ -57,10 +59,15 @@ export function manDau(m: ModuleDef, goi: Goi) {
 /** Cả phân hệ ngoài gói: không màn nào gắn mã tính năng mở được */
 export function phanHeKhoa(m: ModuleDef, goi: Goi) {
   const co = m.screens.filter(sc => sc.code || sc.can)
-  return co.length > 0 && !co.some(sc => moDuoc(sc, goi))
+  // màn không gắn gói (Người dùng, Gói thuê bao…) luôn mở, nên phân hệ có màn đó không bị khoá
+  const tuDo = m.screens.some(sc => !sc.code && !sc.can && sc.kind !== 'quytrinh' && sc.kind !== 'baocao')
+  return co.length > 0 && !tuDo && !co.some(sc => moDuoc(sc, goi))
 }
 
 /** Các tab ngang của phân hệ: Quy trình, màn không phải báo cáo, rồi Báo cáo */
+/** Phân hệ có hiện trên sidebar không: gói Free ẩn phân hệ không còn màn nào mở được, không tính màn Quy trình, Báo cáo (QD22) */
+export const hienPhanHe = (m: ModuleDef, goi: Goi) =>
+  !anNgoaiGoi(goi) || m.screens.some(sc => sc.kind !== 'quytrinh' && sc.kind !== 'baocao' && moDuoc(sc, goi))
 export const tabCua = (m: ModuleDef) => m.screens.filter(sc => !laBaoCao(sc))
 export const nhanTab = (sc: ScreenDef) => sc.ngan ?? tenMan(sc)
 

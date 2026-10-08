@@ -2,7 +2,7 @@
 import { useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useSession } from './session'
-import { duongDan, laBaoCao, maKhoa, moDuoc, nhanTab, tabCua } from './registry'
+import { duongDan, hienMan, laBaoCao, maKhoa, moDuoc, nhanTab, tabCua } from './registry'
 import { GOI, minGoi } from './plan'
 import type { ModuleDef, ScreenDef } from '../modules/types'
 import { Icon } from '../ui/Icon'
@@ -14,7 +14,7 @@ const KHAC = 110  // chỗ cho nút "Khác" kèm số tab bên trong
 export function ModuleTabs({ mod }: { mod: ModuleDef }) {
   const { s } = useSession()
   const loc = useLocation()
-  const tabs = useMemo(() => tabCua(mod), [mod])
+  const tabs = useMemo(() => tabCua(mod).filter(sc => hienMan(sc, s.goi)), [mod, s.goi])
   const giua = tabs.filter(t => t.kind !== 'baocao')
   const bc = tabs.find(t => t.kind === 'baocao')
   const slug = loc.pathname.split('/')[3]

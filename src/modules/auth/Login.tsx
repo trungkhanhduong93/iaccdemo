@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useSession } from '../../app/session'
+import { NGUOI_DUNG } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
 import { Logo } from '../../ui/Logo'
 
@@ -25,7 +26,9 @@ export function Login() {
   const vao = () => {
     if (!email.trim()) return setLoi('Nhập email hoặc số điện thoại.')
     if (mk.length < 6) return setLoi('Mật khẩu có ít nhất 6 ký tự.')
-    set({ loggedIn: true, email })
+    // Vai trò, tên theo tài khoản người dùng; email lạ thì vào vai trò kế toán trưởng
+    const nd = NGUOI_DUNG.find(u => u.email === email.trim().toLowerCase())
+    set({ loggedIn: true, email, role: nd?.role ?? 'ktt', ...(nd ? { ten: nd.ten } : {}) })
     nav('/chon-don-vi')
   }
   return (

@@ -184,6 +184,17 @@ Ngày 08/10 trùng mã ba lần: T30 dùng cho hai việc, T32 và T33 bị lấ
 
 Lý do: Trum chốt sau khi gộp T34 với T32 của PhuongXT.
 
-## QD22. Gói Free ẩn tính năng ngoài gói (đang soạn)
+## QD22. Gói Free ẩn tính năng ngoài gói, thanh trên, vai trò theo tài khoản (08/10/2026)
+
+Thay một phần QD05 và QD08 cho riêng gói Free.
+
+- Gói Free ẩn hẳn mọi thứ ngoài gói: phân hệ trên sidebar, tab, ô sơ đồ Quy trình, khung và tab Báo cáo, danh mục, tiện ích, mục Thêm nhanh, kết quả Ctrl K. Không hiện dòng đếm "mở x/y". Hàm dùng chung: `anNgoaiGoi()` trong `plan.ts`, `hienMan()`, `hienPhanHe()` trong `registry.ts`.
+- Gói Starter, Medium, Advance giữ cách cũ: mục ngoài gói hiện mờ, có khoá và nhãn gói để mời nâng cấp.
+- Phân hệ có màn không gắn gói (Hệ thống: Người dùng, Gói thuê bao) không bị coi là khoá.
+- Thanh trên: nút đơn vị hiện đủ tên, dòng nhỏ "Công ty · MST". Ô chi nhánh có dòng nhỏ "Chi nhánh". Nút "Trải nghiệm gói" màu cam nổi bật, chỉ đổi gói.
+- Bỏ chọn vai trò trên thanh trên. Vai trò và tên lấy theo tài khoản đăng nhập trong danh sách người dùng mẫu; email lạ vào vai trò kế toán trưởng.
+- Sơ đồ hội tụ không có khung Báo cáo bên phải. Khối cuối sơ đồ là "Sổ sách, báo cáo", có link Tất cả báo cáo.
+
+Lý do: PhuongXT chốt khi làm T36.
 
 ## QD23. Biểu tượng theo iFaster (đang soạn)

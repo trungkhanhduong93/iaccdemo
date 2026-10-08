@@ -55,6 +55,9 @@ export function demTheoGoi(goi: Goi, mod?: number) {
   return { co: fs.filter(f => f.g.includes(goi)).length, tong: fs.length }
 }
 
+/** Gói Free ẩn hẳn tính năng ngoài gói thay vì hiện mờ có khoá (QD22). Gói khác vẫn hiện khoá để mời nâng cấp. */
+export const anNgoaiGoi = (goi: Goi) => goi === 'F'
+
 /** Kiểu ghi sổ theo gói: Free không hạch toán, Starter ghi sổ không tài khoản, Medium/Advance Nợ/Có. */
 export function kieuGhiSo(goi: Goi): 'khong' | 'so' | 'noco' {
   return goi === 'F' ? 'khong' : goi === 'S' ? 'so' : 'noco'

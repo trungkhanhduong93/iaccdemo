@@ -24,10 +24,12 @@ export const quyTrinh: QuyTrinhDef = {
         { ten: 'Phân bổ chi phí chuỗi', icon: 'layers', di: 'tien/2-1-3' },
       ] },
     ],
-    ra: { ten: 'Sổ sách quỹ', nut: [
+    ra: { ten: 'Sổ sách, báo cáo', nut: [
       { ten: 'Sổ quỹ tiền mặt', icon: 'book', di: 'tien/2-2-1' },
       { ten: 'Sổ ngân hàng', icon: 'bank', di: 'tien/2-2-3' },
       { ten: 'Sổ công nợ', icon: 'users', di: 'tien/2-2-5' },
+      { ten: 'Sổ tài khoản', icon: 'book', di: 'tien/2-2-2' },
+      { ten: 'Sổ nhật ký', icon: 'doc', di: 'tien/2-2-4' },
     ] },
   },
   baoCao: ['2-2-1', '2-2-3', '2-2-5', '2-2-2', '2-2-4'],

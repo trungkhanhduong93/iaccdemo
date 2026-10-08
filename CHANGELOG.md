@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 08/10/2026
 
+- T36: Gói Free chỉ hiện tính năng có trong gói, ẩn hẳn phân hệ, tab, báo cáo, ô sơ đồ của gói khác. Thanh trên hiện đủ tên công ty kèm nhãn Công ty, ô chi nhánh rộng hơn có nhãn Chi nhánh, nút Trải nghiệm gói màu cam nổi bật. Bỏ chọn vai trò: đăng nhập tài khoản nào thì vào đúng vai trò của tài khoản đó. Sơ đồ Quy trình tiền bỏ khung Báo cáo bị trùng, khối cuối thành Sổ sách, báo cáo.
 - T32: Thanh trên có ô chọn chi nhánh làm việc, bỏ ô kỳ và trạng thái đồng bộ FABi. Ô tìm kiếm (Ctrl K) chuyển lên đầu sidebar. Thêm Danh mục chi nhánh. Danh sách chứng từ lọc theo chi nhánh đang chọn; chứng từ mới lập theo chi nhánh đó và không sửa được trên form.
 - T25: Phiếu thu, chi có ô Lý do thu, Lý do chi ở đầu phiếu. Gói Free bỏ cột Khoản mục, Công việc ở dòng phiếu tiền. Loại phiếu Nộp tiền vào ngân hàng đổi thành Chuyển quỹ, chọn Từ quỹ, Đến quỹ. Sơ đồ Quy trình phân hệ Tiền vẽ lại: năm làn Thu tiền, Chi tiền, Chuyển quỹ, Đối chiếu công nợ, Phân bổ chi phí chuỗi cùng đổ về Sổ sách quỹ, gọn một trang. Gói Free mở Danh mục quỹ tiền và Sổ ngân hàng.
 - T34: Thanh lọc mới trên mọi màn danh mục, danh sách, báo cáo: ô tìm, ô khoảng ngày, nút phễu mở khung Bộ lọc, nút tải lại. Ô khoảng ngày có lịch 2 tháng, chọn theo ngày, tháng, quý, có nút chọn nhanh Hôm nay, Tuần này, Tháng trước. Danh sách chứng từ mở mặc định ở tháng này.

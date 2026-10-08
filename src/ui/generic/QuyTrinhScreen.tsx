@@ -3,9 +3,9 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { LanQT, NutQT, QuyTrinhDef, ScreenProps } from '../../modules/types'
-import { dich, maKhoa, moDuoc, nhanTab, phanHeKhoa, tenMan } from '../../app/registry'
+import { dich, hienMan, maKhoa, moDuoc, nhanTab, phanHeKhoa, tenMan } from '../../app/registry'
 import { useSession } from '../../app/session'
-import { GOI, minGoi, type Goi } from '../../app/plan'
+import { GOI, anNgoaiGoi, minGoi, type Goi } from '../../app/plan'
 import { Icon } from '../Icon'
 import { Note, Pk } from '../Page'
 import { Dropdown, MenuHead, MenuItem } from '../Dropdown'
@@ -16,7 +16,18 @@ const TOP = 8         // khoảng từ mép hàng tới ô biểu tượng
 
 export function QuyTrinhScreen({ mod }: ScreenProps) {
   const { s, set } = useSession()
-  const qt = mod.quyTrinh!
+  const an = anNgoaiGoi(s.goi)
+  // Gói Free bỏ ô ngoài gói, làn trống, bước trống (QD22)
+  const hien = (n: NutQT) => !an || moNut(n, s.goi).ok
+  const goc = mod.quyTrinh!
+  const qt: QuyTrinhDef = {
+    ...goc,
+    buoc: goc.buoc.filter(b => hien(b.chinh)).map(b => ({ ...b, tren: b.tren?.filter(hien), duoi: b.duoi?.filter(hien) })),
+    hoiTu: goc.hoiTu && {
+      lan: goc.hoiTu.lan.map(l => ({ ...l, nut: l.nut.filter(hien) })).filter(l => l.nut.length > 0),
+      ra: { ...goc.hoiTu.ra, nut: goc.hoiTu.ra.nut.filter(hien) },
+    },
+  }
   const nut = [...qt.buoc.flatMap(b => [b.chinh, ...(b.tren ?? []), ...(b.duoi ?? [])]),
     ...(qt.hoiTu ? [...qt.hoiTu.lan, qt.hoiTu.ra].flatMap(l => l.nut) : [])]
   const mo = nut.filter(n => moNut(n, s.goi).ok).length
@@ -28,13 +39,13 @@ export function QuyTrinhScreen({ mod }: ScreenProps) {
 
   return (
     <div className="page wide qt">
-      <div className="qt-top">
+      <div className={`qt-top ${qt.hoiTu ? 'mot-cot' : ''}`}>
         <section className="card qt-card">
           <div className="qt-h">
             <h1>{qt.ten}</h1>
             <span className="sub">{coForm ? 'Bấm vào ô để mở chứng từ' : 'Bấm vào ô để mở màn hình'}</span>
             <span className="grow" />
-            <span className="qt-dem">Gói {GOI[s.goi].ten} mở {mo}/{nut.length} nghiệp vụ</span>
+            {!an && <span className="qt-dem">Gói {GOI[s.goi].ten} mở {mo}/{nut.length} nghiệp vụ</span>}
           </div>
           {khoa && can && (
             <Note kind="warn" icon="lock">
@@ -42,9 +53,10 @@ export function QuyTrinhScreen({ mod }: ScreenProps) {
               <button className="btn sm" onClick={() => set({ goi: can })}>Xem thử gói {GOI[can].ten}</button>
             </Note>
           )}
-          {qt.hoiTu ? <SoDoHoiTu lan={qt.hoiTu.lan} ra={qt.hoiTu.ra} goi={s.goi} /> : <SoDo qt={qt} goi={s.goi} />}
+          {qt.hoiTu ? <SoDoHoiTu lan={qt.hoiTu.lan} ra={qt.hoiTu.ra} goi={s.goi} modKey={mod.key} /> : <SoDo qt={qt} goi={s.goi} />}
         </section>
-        <BenPhai qt={qt} modKey={mod.key} goi={s.goi} />
+        {/* Sơ đồ hội tụ đã có khối sổ sách, báo cáo ở cuối nên bỏ khung Báo cáo bên phải để khỏi trùng */}
+        {!qt.hoiTu && <BenPhai qt={qt} modKey={mod.key} goi={s.goi} />}
       </div>
       <HangDuoi qt={qt} modKey={mod.key} goi={s.goi} />
     </div>
@@ -132,7 +144,7 @@ function ONut({ n, goi, chinh, so, style }: { n: NutQT; goi: Goi; chinh?: boolea
 }
 
 /** Sơ đồ hội tụ: mỗi làn một nhóm nghiệp vụ xếp dọc bên trái, mũi tên từ từng làn gom về khối kết quả bên phải */
-function SoDoHoiTu({ lan, ra, goi }: { lan: LanQT[]; ra: LanQT; goi: Goi }) {
+function SoDoHoiTu({ lan, ra, goi, modKey }: { lan: LanQT[]; ra: LanQT; goi: Goi; modKey: string }) {
   return (
     <div className="qt-so">
       <div className="qt-ht">
@@ -149,6 +161,7 @@ function SoDoHoiTu({ lan, ra, goi }: { lan: LanQT[]; ra: LanQT; goi: Goi }) {
         <div className="qt-ht-ra">
           <div className="qt-lan-ten">{ra.ten}</div>
           {ra.nut.map(n => <ONut key={n.di} n={n} goi={goi} />)}
+          <Link to={`/app/${modKey}/bao-cao`} className="qt-ht-all">Tất cả báo cáo<Icon n="arrow" className="ic sm" /></Link>
         </div>
       </div>
     </div>
@@ -173,7 +186,7 @@ function BenPhai({ qt, modKey, goi }: { qt: QuyTrinhDef; modKey: string; goi: Go
       <h2>Báo cáo</h2>
       {qt.baoCao.map(di => {
         const d = dich(di, modKey)
-        if (!d.sc) return null
+        if (!d.sc || !hienMan(d.sc, goi)) return null
         const ok = moDuoc(d.sc, goi)
         const ma = maKhoa(d.sc)
         return (
@@ -193,7 +206,7 @@ function BenPhai({ qt, modKey, goi }: { qt: QuyTrinhDef; modKey: string; goi: Go
 function HangDuoi({ qt, modKey, goi }: { qt: QuyTrinhDef; modKey: string; goi: Goi }) {
   const muc = (di: string) => {
     const d = dich(di, modKey)
-    if (!d.sc) return null
+    if (!d.sc || !hienMan(d.sc, goi)) return null
     const ok = moDuoc(d.sc, goi)
     const ma = maKhoa(d.sc)
     return { d, ok, ma, ten: nhanTab(d.sc), icon: d.mod?.icon ?? 'doc' }

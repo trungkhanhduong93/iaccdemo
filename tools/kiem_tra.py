@@ -65,6 +65,9 @@ def main():
                 links += tabs
                 if pg.locator('.qt-n').count():
                     nut += hrefs('.qt-n')                       # ô trên sơ đồ Quy trình
+                # Gói Free ẩn hẳn tính năng ngoài gói (QD22): không còn mục mờ có khoá trên sidebar, tab, sơ đồ
+                if goi == 'F' and pg.locator('.sb-nav a.lock, .mtabs-in a.lock, .pop-khac a.lock, .qt-n.lock, .qt-bc a.lock, .qt-foot a.lock').count():
+                    loi.append(f'[F] {r}: còn hiện mục ngoài gói có khoá')
                 for t in tabs:
                     if t.endswith('/bao-cao'):
                         pg.goto(URL + t)
@@ -73,7 +76,7 @@ def main():
             links = list(dict.fromkeys(links))
             nut = [h for h in dict.fromkeys(nut) if h not in links]
             print(f'gói {goi}: {len(links)} màn, {len(nut)} ô quy trình mở form hoặc màn phân hệ khác')
-            if len(links) < 140:
+            if len(links) < (30 if goi == 'F' else 140):
                 loi.append(f'[{goi}] thanh tab và tab Báo cáo chỉ có {len(links)} màn, thiếu so với 120 tính năng cộng Quy trình, Báo cáo')
             for h in links:
                 pg.goto(URL + h)
