@@ -4,7 +4,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T30.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T31.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
@@ -34,6 +34,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T31 | Luật mới: agent kiểm bản mới trên GitHub trước mỗi lần push (QD16) | Trum | 08/10/2026 | `2026-10-08-trum-kiem-truoc-push.md` |
 | T30 | Robot báo lên group Telegram mỗi lần có người push lên `main`, báo thêm khi deploy hỏng | Trum | 08/10/2026 | `2026-10-08-trum-bao-telegram.md` |
 | T01 | Tạo API token Cloudflare cho robot deploy, lưu vào GitHub | Trum | 08/10/2026 | `2026-10-08-trum-bao-telegram.md` |
 | T29 | Màn chứng từ bán hàng 3.1.1 chia đôi 50/50 như 3.1.2 | Trum | 08/10/2026 | `2026-10-08-trum-ban-hang-chia-doi.md` |

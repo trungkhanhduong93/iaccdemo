@@ -123,3 +123,9 @@ iFaster (ifaster.ipos.vn) là sản phẩm của iPOS nên được dùng màu v
 - Không đem sang: trợ lý iOne, nút Tải ứng dụng, ô chọn mã số thuế của iFaster.
 
 Lý do: Trum giao việc T26, chốt các mặc định trên ngày 08/10/2026.
+
+## QD16. Kiểm bản mới trên GitHub trước mỗi lần push (08/10/2026)
+
+Trước mỗi lần push, kể cả push chỉ sửa tài liệu, agent fetch và so `HEAD..origin/main`. Có commit mới của người khác thì báo người dùng, pull về, chạy lại các bước kiểm nếu commit mới có sửa code, rồi mới push. Các bước cụ thể ở `AGENTS.md`, mục "Ngay trước lệnh git push".
+
+Lý do: ba người cùng push thẳng `main`, không ai duyệt. Bước kiểm chạy trên bản cũ không chứng minh được bản sau khi gộp còn chạy đúng.

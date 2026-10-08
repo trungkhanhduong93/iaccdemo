@@ -43,6 +43,19 @@ Bắt buộc với mọi lần push có sửa code. Bước nào hỏng thì s�
 4. Có sửa chữ trên giao diện hoặc tài liệu: chạy `python tools/kiem_van.py <file>` cho từng file đã sửa. Hết mục ĐỎ mới push.
 5. Không còn `console.log`, dữ liệu thử, đoạn code tạm trong phần đã sửa.
 
+## Ngay trước lệnh git push
+
+Bắt buộc với mọi lần push, kể cả push chỉ sửa tài liệu (QD16). Ba người cùng push thẳng `main`, nên bản trên GitHub có thể đã mới hơn bản trên máy.
+
+1. Chạy `git fetch origin`.
+2. Chạy `git log --format="%h %an %s" HEAD..origin/main`. Không in dòng nào thì push được.
+3. Có dòng nào thì chưa push. Báo người dùng: có mấy commit mới, của ai, việc gì (mã việc ở đầu commit). Nói rõ phải lấy bản mới về trước.
+4. Chạy `git diff --name-only HEAD...origin/main` để xem người khác sửa file nào. Ghi lại danh sách này.
+5. Chạy `git pull --rebase`. Máy còn file sửa chưa commit thì lệnh báo lỗi: hỏi người dùng commit luôn hay cất tạm bằng `git stash`. Xung đột thì dừng, báo người dùng, không tự chọn bên nào.
+6. Danh sách ở bước 4 có file ngoài `.md` thì chạy lại mục "Trước khi push" trên bản vừa lấy về. Có `package-lock.json` thì chạy `npm ci` trước.
+7. Quay lại bước 1. Hết commit mới mới chạy `git push`.
+8. Push bị từ chối vì có người vừa push chen thì quay lại bước 1.
+
 ## Cuối phiên
 
 Làm cả khi bỏ dở giữa chừng:
@@ -52,7 +65,7 @@ Làm cả khi bỏ dở giữa chừng:
 3. Thay đổi người dùng nhìn thấy trên bản online thì thêm dòng vào `CHANGELOG.md`.
 4. `git add` đúng các file đã sửa, không dùng `git add -A`. `package-lock.json` chỉ commit khi có thêm hoặc đổi thư viện.
 5. Commit message tiếng Việt, bắt đầu bằng mã việc, vd `T03: nối sổ quỹ vào sổ cái`.
-6. Chạy `git pull --rebase` rồi `git push`. Push bị từ chối thì pull --rebase lại, gỡ xung đột, chạy lại mục "Trước khi push", rồi push.
+6. Làm mục "Ngay trước lệnh git push", rồi `git push`.
 7. Báo người dùng commit vừa push. Có sửa code thì nhắc xem robot ở https://github.com/trungkhanhduong93/iaccdemo/actions sau khoảng 2 phút.
 
 ## Cấm
