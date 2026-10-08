@@ -34,6 +34,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T46 | Cải tiến khu vực bổ trợ quy trình (lưới 3 khối Danh mục, Tiện ích, Thiết lập), redesign nút cột tài khoản sáng rõ kèm badge trạng thái, cố định chiều cao dòng bảng 36px và xoá nút thu gọn cạnh Thêm mới | Trum | 09/10/2026 | `2026-10-09-trum-redesign-quy-trinh-tk-dong-bang.md` |
 | T43 | Đợt chỉnh 13 điểm: thanh công cụ một hàng, nút Excel và Hàng loạt dạng biểu tượng, chip đếm mới, dòng tổng, bỏ cột Trạng thái và dòng tiêu đề, màu sidebar và cam logo, bỏ giới hạn rộng, gói Free/Standard/Plus/Pro (mã F/S/PL/PR), 80 phiếu mua hàng, dòng tổng bảng chi tiết (QD27) | Trum | 09/10/2026 | `2026-10-09-trum-dot-chinh-13-diem.md` |
 | T45 | Bảng flyout tooltip khi rê chuột vào phân hệ ở sidebar: hiện 2 cột Nghiệp vụ và Tiện ích để truy cập nhanh (QD29) | Trum | 09/10/2026 | `2026-10-09-trum-sidebar-flyout.md` |
 | T44 | Giao diện gọn 85% cho màn 14 inch, tìm kiếm Ctrl K lên thanh trên cạnh Chi nhánh, bỏ Thêm nhanh, badge Pro giống Inventory, gõ trực tiếp hàng lọc và xoá khe hở tiêu đề (QD28) | Trum | 09/10/2026 | `2026-10-09-trum-giao-dien-14inch-loc-cot.md` |

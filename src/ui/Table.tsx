@@ -173,6 +173,7 @@ export function Table({ cols: cols0, rows, sum, onRow, onDbl, sel, rowCls, maxH,
               })}
             </tr>
           ))}
+          <tr className="tbl-spacer" aria-hidden><td colSpan={cols.length} /></tr>
         </tbody>
         {sum && (
           <tfoot>

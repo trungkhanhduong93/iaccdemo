@@ -916,17 +916,18 @@ textarea.inp { height: auto; padding: 8px 11px; resize: vertical; }
   background: #fff;
 }
 .tbl tr.tbl-spacer {
-  display: none;
-  height: 0;
+  height: auto !important;
 }
 .tbl tr.tbl-spacer td {
-  display: none;
-  height: 0;
+  height: auto !important;
   border: 0 !important;
-  padding: 0;
-  background: transparent;
+  padding: 0 !important;
+  background: transparent !important;
 }
 .tbl tbody tr:not(.tbl-spacer) {
+  height: 36px;
+}
+.tbl tbody tr:not(.tbl-spacer) td {
   height: 36px;
 }
 .tbl tfoot {
@@ -1636,5 +1637,266 @@ textarea.inp { height: auto; padding: 8px 11px; resize: vertical; }
 @keyframes sbFlyoutFadeIn {
   from { opacity: 0; transform: translateX(-4px); }
   to { opacity: 1; transform: translateX(0); }
+}
+
+/* ── Nút bật/tắt cột tài khoản trong chứng từ (T45) ── */
+.btn-tk-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #f0f7ff;
+  color: var(--blue-d);
+  border: 1px solid #9fc0ef;
+  font-weight: 600;
+  transition: all .14s ease;
+  padding: 0 10px;
+  border-radius: 7px;
+}
+.btn-tk-toggle:hover {
+  background: #e1effe;
+  border-color: var(--blue);
+  color: var(--blue-d);
+  box-shadow: 0 2px 6px rgba(5, 96, 166, .15);
+}
+.btn-tk-toggle.on {
+  background: var(--blue);
+  color: #fff;
+  border-color: var(--blue-d);
+  box-shadow: 0 2px 8px rgba(5, 96, 166, .25);
+}
+.btn-tk-toggle.on:hover {
+  background: var(--blue-d);
+  color: #fff;
+}
+.btn-tk-toggle .tk-badge {
+  font-size: 11px;
+  padding: 1.5px 7px;
+  border-radius: 99px;
+  font-weight: 600;
+  background: rgba(5, 96, 166, .12);
+  color: var(--blue-d);
+}
+.btn-tk-toggle.on .tk-badge {
+  background: rgba(255, 255, 255, .25);
+  color: #fff;
+}
+
+/* ── Khu vực bổ trợ dưới sơ đồ quy trình (T45) ── */
+.qt-hub-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+@media (max-width: 1024px) {
+  .qt-hub-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.qt-hub-col {
+  display: flex;
+  flex-direction: column;
+  padding: 16px 18px 14px;
+  min-width: 0;
+}
+.qt-hub-h {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+}
+.qt-hub-ic {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+.qt-hub-ic.blue { background: var(--tint); color: var(--blue); }
+.qt-hub-ic.orange { background: var(--orange-t); color: var(--orange-d); }
+.qt-hub-ic.purple { background: var(--ad-t); color: var(--ad); }
+
+.qt-hub-t-wrap {
+  min-width: 0;
+  flex: 1;
+}
+.qt-hub-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.25;
+}
+.qt-hub-sub {
+  display: block;
+  font-size: 11.5px;
+  color: var(--muted);
+  margin-top: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.qt-hub-items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+.qt-hub-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  background: #f8fafc;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--ink);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all .12s ease;
+}
+.qt-hub-link:hover {
+  background: #fff;
+  border-color: var(--blue);
+  box-shadow: 0 2px 8px rgba(5, 96, 166, .1);
+  transform: translateY(-1px);
+  color: var(--blue-d);
+}
+.qt-hub-link.lock {
+  opacity: .6;
+  border-style: dashed;
+}
+.qt-hub-item-ic {
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+.qt-hub-item-ic.blue { background: #fff; color: var(--blue); border: 1px solid #d5e4f7; }
+.qt-hub-item-ic.orange { background: #fff; color: var(--orange-d); border: 1px solid #fbdcbd; }
+.qt-hub-item-ic.purple { background: #fff; color: var(--ad); border: 1px solid #e1d8f7; }
+.qt-hub-item-name {
+  flex: 1;
+  min-width: 0;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.qt-hub-item-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.qt-hub-item-code {
+  font-size: 10.5px;
+  color: var(--muted);
+  font-family: var(--font-mono, monospace);
+}
+.qt-hub-arr {
+  color: var(--faint);
+  flex: none;
+  transition: transform .12s ease, color .12s ease;
+}
+.qt-hub-link:hover .qt-hub-arr {
+  color: var(--blue);
+  transform: translateX(2px);
+}
+.qt-hub-more {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--line);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--blue);
+  text-decoration: none;
+}
+.qt-hub-more:hover {
+  color: var(--blue-d);
+  text-decoration: underline;
+}
+.qt-hub-empty {
+  font-size: 12.5px;
+  color: var(--muted);
+  font-style: italic;
+  padding: 12px 0;
+}
+.qt-hub-setting-card {
+  margin-bottom: 12px;
+}
+.qt-hub-setting-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: #fbfcfe;
+  border: 1px solid #d8e5f5;
+  border-radius: 9px;
+  color: var(--ink);
+  text-decoration: none;
+  transition: all .12s ease;
+}
+.qt-hub-setting-link:hover {
+  background: #fff;
+  border-color: var(--blue);
+  box-shadow: 0 2px 8px rgba(5, 96, 166, .1);
+  transform: translateY(-1px);
+}
+.qt-hub-setting-title {
+  display: block;
+  font-size: 13px;
+  color: var(--ink);
+  font-weight: 700;
+}
+.qt-hub-setting-desc {
+  margin: 2px 0 0;
+  font-size: 11.5px;
+  color: var(--muted);
+  line-height: 1.35;
+}
+.qt-hub-tips {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: #f8fafc;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 10px 12px;
+  font-size: 12px;
+  color: var(--body);
+}
+.qt-tip-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.qt-kbd {
+  display: inline-block;
+  padding: 2px 6px;
+  font-size: 10.5px;
+  font-family: inherit;
+  font-weight: 700;
+  color: var(--ink);
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, .08);
+}
+.qt-tip-badge {
+  display: inline-block;
+  padding: 1px 6px;
+  font-size: 10.5px;
+  font-weight: 700;
+  background: var(--tint);
+  color: var(--blue);
+  border-radius: 4px;
 }
 

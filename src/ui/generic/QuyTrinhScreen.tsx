@@ -278,42 +278,117 @@ function BenPhai({ qt, modKey, goi }: { qt: QuyTrinhDef; modKey: string; goi: Go
   )
 }
 
-/** Hàng dưới: danh mục liên quan, menu Tiện ích, Tuỳ chọn */
+/** Khu vực bổ trợ dưới sơ đồ: Danh mục liên quan, Tiện ích phân hệ, Thiết lập & Hướng dẫn (T45) */
 function HangDuoi({ qt, modKey, goi }: { qt: QuyTrinhDef; modKey: string; goi: Goi }) {
   const muc = (di: string) => {
     const d = dich(di, modKey)
     if (!d.sc || !hienMan(d.sc, goi)) return null
     const ok = moDuoc(d.sc, goi)
     const ma = maKhoa(d.sc)
-    return { d, ok, ma, ten: nhanTab(d.sc), icon: d.sc?.icon ?? d.mod?.icon ?? 'doc' }
+    return {
+      d,
+      ok,
+      ma,
+      ten: nhanTab(d.sc) || tenMan(d.sc),
+      tenDayDu: tenMan(d.sc),
+      code: d.sc.code,
+      icon: d.sc?.icon ?? d.mod?.icon ?? 'doc',
+    }
   }
+
+  const dsDanhMuc = (qt.danhMuc ?? []).map(muc).filter(Boolean)
+  const tienIchNguon = (qt.tienIch && qt.tienIch.length > 0) ? qt.tienIch : ['tien-ich/11-1', 'tien-ich/X2', 'tien-ich/11-6']
+  const dsTienIch = tienIchNguon.map(muc).filter(Boolean)
+
   return (
-    <div className="card qt-foot">
-      {qt.danhMuc?.length ? <span className="lbl">Danh mục</span> : null}
-      {(qt.danhMuc ?? []).map(di => {
-        const m = muc(di)
-        if (!m) return null
-        return (
-          <Link key={di} to={m.d.path} className={m.ok ? '' : 'lock'}>
-            <Icon n={m.icon} className="ic sm" />{m.ten}{!m.ok && m.ma && <Pk g={minGoi(m.ma)} o />}
+    <section className="qt-hub-grid" aria-label="Tiện ích và danh mục liên quan">
+      {/* Cột 1: Danh mục liên quan */}
+      <div className="card qt-hub-col">
+        <div className="qt-hub-h">
+          <span className="qt-hub-ic blue"><Icon n="folder" className="ic sm" /></span>
+          <div className="qt-hub-t-wrap">
+            <h2 className="qt-hub-title">Danh mục liên quan</h2>
+            <span className="qt-hub-sub">Khai báo dữ liệu ban đầu</span>
+          </div>
+        </div>
+        <div className="qt-hub-items">
+          {dsDanhMuc.length ? (
+            dsDanhMuc.map((m, idx) => m && (
+              <Link key={m.d.path || idx} to={m.d.path} className={`qt-hub-link${m.ok ? '' : ' lock'}`}>
+                <span className="qt-hub-item-ic blue"><Icon n={m.icon} className="ic sm" /></span>
+                <span className="qt-hub-item-name">{m.ten}</span>
+                {!m.ok && m.ma && <Pk g={minGoi(m.ma)} o />}
+                <Icon n="chevr" className="ic sm qt-hub-arr" />
+              </Link>
+            ))
+          ) : (
+            <div className="qt-hub-empty">Không có danh mục riêng</div>
+          )}
+        </div>
+        <Link to="/app/danh-muc" className="qt-hub-more">
+          <span>Xem tất cả danh mục</span>
+          <Icon n="arrow" className="ic sm" />
+        </Link>
+      </div>
+
+      {/* Cột 2: Tiện ích & Tự động hoá */}
+      <div className="card qt-hub-col">
+        <div className="qt-hub-h">
+          <span className="qt-hub-ic orange"><Icon n="grid" className="ic sm" /></span>
+          <div className="qt-hub-t-wrap">
+            <h2 className="qt-hub-title">Tiện ích liên quan</h2>
+            <span className="qt-hub-sub">Đồng bộ, đối soát & công cụ</span>
+          </div>
+        </div>
+        <div className="qt-hub-items">
+          {dsTienIch.map((m, idx) => m && (
+            <Link key={m.d.path || idx} to={m.d.path} className={`qt-hub-link${m.ok ? '' : ' lock'}`}>
+              <span className="qt-hub-item-ic orange"><Icon n={m.icon} className="ic sm" /></span>
+              <div className="qt-hub-item-info">
+                <span className="qt-hub-item-name">{m.tenDayDu}</span>
+                {m.code && <span className="qt-hub-item-code">Mã {m.code}</span>}
+              </div>
+              {!m.ok && m.ma && <Pk g={minGoi(m.ma)} o />}
+              <Icon n="chevr" className="ic sm qt-hub-arr" />
+            </Link>
+          ))}
+        </div>
+        <Link to="/app/tien-ich" className="qt-hub-more">
+          <span>Trung tâm tiện ích</span>
+          <Icon n="arrow" className="ic sm" />
+        </Link>
+      </div>
+
+      {/* Cột 3: Thiết lập & Thao tác nhanh */}
+      <div className="card qt-hub-col">
+        <div className="qt-hub-h">
+          <span className="qt-hub-ic purple"><Icon n="cog" className="ic sm" /></span>
+          <div className="qt-hub-t-wrap">
+            <h2 className="qt-hub-title">Thiết lập & Thao tác</h2>
+            <span className="qt-hub-sub">Cấu hình tham số & phím tắt</span>
+          </div>
+        </div>
+        <div className="qt-hub-setting-card">
+          <Link to="/app/he-thong/cau-hinh" className="qt-hub-setting-link">
+            <span className="qt-hub-item-ic purple"><Icon n="chinh" className="ic sm" /></span>
+            <div style={{ minWidth: 0, flex: '1 1 auto' }}>
+              <b className="qt-hub-setting-title">Tuỳ chọn hệ thống</b>
+              <p className="qt-hub-setting-desc">Thiết lập tài khoản ngầm định, phương pháp ghi sổ, ngày khoá số liệu</p>
+            </div>
+            <Icon n="chevr" className="ic sm qt-hub-arr" />
           </Link>
-        )
-      })}
-      <span className="grow" />
-      {qt.tienIch?.length ? (
-        <Dropdown btnClass="qt-dd" align="end" width={330} label={<><Icon n="grid" className="ic sm" />Tiện ích<Icon n="chevd" className="ic sm" /></>}>
-          <MenuHead>Tiện ích liên quan</MenuHead>
-          {qt.tienIch.map(di => {
-            const m = muc(di)
-            if (!m) return null
-            return (
-              <MenuItem key={di} to={m.d.path} icon="grid" lock={!m.ok} desc={`Mã ${m.d.sc!.code}`}
-                right={!m.ok && m.ma ? <Pk g={minGoi(m.ma)} o /> : undefined}>{tenMan(m.d.sc!)}</MenuItem>
-            )
-          })}
-        </Dropdown>
-      ) : null}
-      <Link to="/app/he-thong/cau-hinh"><Icon n="cog" className="ic sm" />Tuỳ chọn</Link>
-    </div>
+        </div>
+        <div className="qt-hub-tips">
+          <div className="qt-tip-row">
+            <kbd className="qt-kbd">Ctrl+K</kbd>
+            <span>Tìm kiếm nhanh chứng từ & báo cáo</span>
+          </div>
+          <div className="qt-tip-row">
+            <span className="qt-tip-badge">Sơ đồ</span>
+            <span>Bấm vào ô để mở form lập chứng từ mới</span>
+          </div>
+        </div>
+      </div>
+    </section>
   )
 }

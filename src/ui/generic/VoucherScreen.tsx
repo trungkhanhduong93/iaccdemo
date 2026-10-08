@@ -287,15 +287,6 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
                   onTai: () => toast(`Đã tải 14 chứng từ mới từ ${NGUON[cfg.nguon!][1]}`),
                 } : undefined}
               />
-              <button
-                type="button"
-                className="icon-btn sm"
-                onClick={() => setPanelMo(p => !p)}
-                title={panelMo ? 'Thu gọn chi tiết chứng từ (mở rộng danh sách)' : 'Mở màn hình chi tiết chứng từ'}
-                aria-label={panelMo ? 'Thu gọn chi tiết' : 'Mở chi tiết'}
-              >
-                <Icon n={panelMo ? 'chevd' : 'chevu'} className="ic sm" />
-              </button>
             </div>
           </div>
 

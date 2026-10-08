@@ -261,11 +261,13 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
             {coTkGoi && (
               <button
                 type="button"
-                className={`btn sm ${hienTk ? 'pri' : 'ghost'}`}
+                className={`btn sm btn-tk-toggle ${hienTk ? 'on' : ''}`}
                 onClick={() => setHienTk(!hienTk)}
+                title={hienTk ? 'Bấm để ẩn cột tài khoản Nợ/Có trên dòng' : 'Bấm để hiển thị cột tài khoản Nợ/Có trên dòng'}
               >
                 <Icon n="book" className="ic sm" />
-                {hienTk ? 'Ẩn cột tài khoản' : 'Hiện cột tài khoản'}
+                <span>{hienTk ? 'Ẩn cột tài khoản' : 'Hiện cột tài khoản'}</span>
+                <span className={`tk-badge ${hienTk ? 'on' : ''}`}>{hienTk ? 'Đang hiện' : 'Đang ẩn'}</span>
               </button>
             )}
             <button type="button" className="btn" onClick={() => luu(false)}>
@@ -300,11 +302,13 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
             {coTkGoi && (
               <button
                 type="button"
-                className={`btn sm ${hienTk ? 'pri' : 'ghost'}`}
+                className={`btn sm btn-tk-toggle ${hienTk ? 'on' : ''}`}
                 onClick={() => setHienTk(!hienTk)}
+                title={hienTk ? 'Bấm để ẩn cột tài khoản Nợ/Có trên dòng' : 'Bấm để hiển thị cột tài khoản Nợ/Có trên dòng'}
               >
                 <Icon n="book" className="ic sm" />
-                {hienTk ? 'Ẩn cột TK' : 'Cột tài khoản'}
+                <span>Cột tài khoản</span>
+                <span className={`tk-badge ${hienTk ? 'on' : ''}`}>{hienTk ? 'Đang hiện' : 'Đang ẩn'}</span>
               </button>
             )}
             <span className="grow" />
