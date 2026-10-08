@@ -42,7 +42,7 @@ export function CommandPalette({ onClose }: { onClose: () => void }) {
             const ma = maKhoa(x.sc)
             return (
               <button key={x.m.key + x.sc.slug} className={n === i ? 'on' : ''} onMouseEnter={() => setI(n)} onClick={() => go(n)}>
-                <Icon n={x.m.icon} className="ic sm" />
+                <Icon n={x.sc.icon ?? x.m.icon} className="ic sm" />
                 <span style={{ color: ok ? 'var(--ink)' : 'var(--faint)' }}>{x.t}</span>
                 {!ok && ma && <Pk g={minGoi(ma)} o />}
                 <small>{x.m.ten}{x.sc.code ? ` · ${x.sc.code}` : ''}</small>

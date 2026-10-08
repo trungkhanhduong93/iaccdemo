@@ -85,6 +85,21 @@ SOLAR = {
     'tag': 'tag-bold',
     'flow': 'routing-2-bold',
     'printer': 'printer-bold',
+    # Danh mục (T40)
+    'sotk': 'notebook-bold',
+    'hanghoa': 'cup-hot-bold',
+    'dvt': 'ruler-bold',
+    'quydoi': 'transfer-horizontal-bold',
+    'congviec': 'checklist-minimalistic-bold',
+    'khohang': 'box-bold',
+    'tiente': 'dollar-bold',
+    'tygia': 'graph-up-bold',
+    'loaithue': 'sale-bold',
+    'quytien': 'safe-square-bold',
+    'banggia': 'tag-price-bold',
+    'buttoan': 'refresh-circle-bold',
+    'lydo': 'notes-bold',
+    'chinhanh': 'shop-2-bold',
 }
 
 

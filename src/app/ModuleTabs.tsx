@@ -78,7 +78,7 @@ export function ModuleTabs({ mod }: { mod: ModuleDef }) {
               const ok = moDuoc(sc, s.goi)
               const ma = maKhoa(sc)
               return (
-                <MenuItem key={sc.slug} to={duongDan(mod, sc)} icon={sc.kind === 'voucher' ? 'doc' : sc.kind === 'catalog' ? 'folder' : sc.kind === 'tool' ? 'play' : mod.icon}
+                <MenuItem key={sc.slug} to={duongDan(mod, sc)} icon={sc.icon ?? (sc.kind === 'voucher' ? 'doc' : sc.kind === 'catalog' ? 'folder' : sc.kind === 'tool' ? 'play' : mod.icon)}
                   lock={!ok} right={!ok && ma ? <Pk g={minGoi(ma)} o /> : undefined}>{nhanTab(sc)}</MenuItem>
               )
             })}

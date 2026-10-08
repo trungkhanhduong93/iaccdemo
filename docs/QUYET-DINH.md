@@ -205,6 +205,7 @@ Thay phần biểu tượng của QD12. Tên gọi trong `src/ui/Icon.tsx` giữ
 - Biểu tượng đồ vật (45) dùng Solar bản đặc (bold) của 480 Design, giấy phép CC BY 4.0. Nguồn ghi ở đầu `src/ui/icon-dac.ts`, không được xoá.
 - Biểu tượng thao tác (18: mũi tên, dấu cộng, đóng, tích, tìm, lọc, tải lại, tải lên, tải xuống, lịch...) giữ nét mảnh, như iFaster dùng nét mảnh cho các nút này.
 - Sidebar: biểu tượng mục thường màu xám `#8197a8`, mục đang chọn và khi rê chuột màu trắng.
+- Màn có thể có biểu tượng riêng qua trường `icon` của `ScreenDef` (T40). 17 màn danh mục đã có, khai báo trong bảng `BIEU_TUONG` của `src/modules/danh-muc/index.ts`. Biểu tượng riêng hiện ở menu Khác, ô tìm Ctrl K, hàng Danh mục dưới sơ đồ. Thanh tab ngang vẫn chỉ có chữ.
 - Biểu tượng khối đặc nằm trong `src/ui/icon-dac.ts`, sinh bởi `python tools/xuat_bieu_tuong.py`, không sửa tay. Thêm hoặc đổi biểu tượng thì sửa bảng `IFASTER`, `SOLAR` trong script rồi chạy lại. Tên Solar tra ở https://icon-sets.iconify.design/solar/.
 
 Lý do: Trum giao việc T37 ngày 08/10/2026.

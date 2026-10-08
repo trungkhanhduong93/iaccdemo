@@ -282,7 +282,7 @@ function HangDuoi({ qt, modKey, goi }: { qt: QuyTrinhDef; modKey: string; goi: G
     if (!d.sc || !hienMan(d.sc, goi)) return null
     const ok = moDuoc(d.sc, goi)
     const ma = maKhoa(d.sc)
-    return { d, ok, ma, ten: nhanTab(d.sc), icon: d.mod?.icon ?? 'doc' }
+    return { d, ok, ma, ten: nhanTab(d.sc), icon: d.sc?.icon ?? d.mod?.icon ?? 'doc' }
   }
   return (
     <div className="card qt-foot">
@@ -292,7 +292,7 @@ function HangDuoi({ qt, modKey, goi }: { qt: QuyTrinhDef; modKey: string; goi: G
         if (!m) return null
         return (
           <Link key={di} to={m.d.path} className={m.ok ? '' : 'lock'}>
-            <Icon n="folder" className="ic sm" />{m.ten}{!m.ok && m.ma && <Pk g={minGoi(m.ma)} o />}
+            <Icon n={m.icon} className="ic sm" />{m.ten}{!m.ok && m.ma && <Pk g={minGoi(m.ma)} o />}
           </Link>
         )
       })}
