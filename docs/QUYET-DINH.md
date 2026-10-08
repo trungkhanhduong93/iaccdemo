@@ -255,7 +255,7 @@ Thay một phần QD24, QD25. Lý do: Trum giao việc T42 ngày 08/10/2026, the
 
 ## QD28. Giao diện gọn 85% cho màn 14 inch, tìm kiếm thanh trên và lọc bảng (09/10/2026)
 
-- Màn hình rộng dưới 1700px hoặc cao dưới 850px (máy tính xách tay 14 inch Full HD tỉ lệ thu phóng 125%) thu nhỏ toàn bộ 85% qua CSS zoom (`src/styles/scale.css`). Màn dưới 1280px thu 80%.
+- Màn hình Full HD và máy tính xách tay 14 inch thu nhỏ mặc định 90% qua CSS zoom (`src/styles/scale.css`), dưới 1280px thu 85%. Màn hình lớn hơn 1920px giữ 100%.
 - Bỏ nút "Thêm nhanh" trên sidebar. Nút tìm kiếm Ctrl K chuyển từ sidebar lên thanh trên, nằm cạnh ô Chi nhánh.
 - Badge phiên bản ở logo sidebar thiết kế theo mẫu iPOS Inventory: viên thuốc bo tròn góc, màu vàng đồng `#b1852b` cho gói Pro. Bỏ chữ "Phiên bản".
 - Hàng lọc từng cột dưới tiêu đề bảng: cho phép bấm vào ô để gõ tìm kiếm trực tiếp cho mọi cột (chữ, số, phân loại, ngày). Phễu chọn điều kiện nâng cao vẫn giữ ở mép phải ô.

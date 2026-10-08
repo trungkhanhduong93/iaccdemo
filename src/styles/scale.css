@@ -1,9 +1,9 @@
 /* Thu nhỏ tổng thể giao diện trên màn 14 inch / Full HD cho bớt chật (T44) */
 :root {
-  --zoom: .85;
+  --zoom: .9;
 }
 html {
-  zoom: .85;
+  zoom: .9;
 }
 
 @media (min-width: 1921px) and (min-height: 1000px) {
@@ -17,10 +17,10 @@ html {
 
 @media (max-width: 1280px) {
   :root {
-    --zoom: .8;
+    --zoom: .85;
   }
   html {
-    zoom: .8;
+    zoom: .85;
   }
 }
 

@@ -6,7 +6,7 @@
 
 ## Đã làm
 
-- `src/styles/scale.css`: cập nhật tỉ lệ thu phóng `--zoom: .85` cho màn hình rộng ≤ 1699px hoặc cao ≤ 850px (tối ưu máy tính xách tay 14 inch Full HD hiển thị trọn vẹn thoải mái không tràn dọc), dưới 1280px thu 80%.
+- `src/styles/scale.css`: đặt tỉ lệ thu phóng mặc định `--zoom: .9` cho màn hình Full HD / 14 inch trở xuống, dưới 1280px thu 85%.
 - `src/app/Shell.tsx`: bỏ nút "Thêm nhanh" trên sidebar, bỏ nút "Tìm kiếm" ở sidebar, chuyển hàm mở tìm kiếm `onSearch` sang `Topbar`.
 - `src/app/Topbar.tsx`: thêm nút tìm kiếm kèm phím tắt Ctrl K lên thanh trên nằm cạnh ô chọn Chi nhánh.
 - `src/app/Shell.tsx`, `src/styles/app.css`: đổi badge phiên bản ở logo sidebar thành dạng viên thuốc bo tròn theo mẫu iPOS Inventory, bỏ chữ "Phiên bản"; cập nhật màu gói Pro thành vàng đồng `#b1852b`.

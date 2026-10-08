@@ -4,7 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 09/10/2026
 
-- T44: Màn hình máy tính xách tay 14 inch (hoặc dưới 1700px) tự động thu nhỏ 85% hiển thị trọn vẹn thoải mái. Chuyển nút tìm kiếm Ctrl K từ sidebar lên thanh trên cạnh ô Chi nhánh, bỏ nút Thêm nhanh ở sidebar. Badge phiên bản Pro đổi sang màu vàng đồng dạng viên thuốc bo tròn theo mẫu iPOS Inventory. Hàng lọc từng cột dưới tiêu đề cho phép bấm vào ô để gõ tìm kiếm trực tiếp cho mọi cột. Xử lý triệt để khoảng hở giữa hàng tiêu đề và hàng lọc khi cuộn bảng.
+- T44: Màn hình máy tính xách tay 14 inch (hoặc dưới 1920px) tự động thu nhỏ 90% hiển thị trọn vẹn thoải mái. Chuyển nút tìm kiếm Ctrl K từ sidebar lên thanh trên cạnh ô Chi nhánh, bỏ nút Thêm nhanh ở sidebar. Badge phiên bản Pro đổi sang màu vàng đồng dạng viên thuốc bo tròn theo mẫu iPOS Inventory. Hàng lọc từng cột dưới tiêu đề cho phép bấm vào ô để gõ tìm kiếm trực tiếp cho mọi cột. Xử lý triệt để khoảng hở giữa hàng tiêu đề và hàng lọc khi cuộn bảng.
 
 ## 08/10/2026
 
