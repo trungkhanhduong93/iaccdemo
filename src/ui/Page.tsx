@@ -1,27 +1,14 @@
 // Tiêu đề màn hình, nhãn gói, thẻ — dùng chung mọi phân hệ
 import type { ReactNode } from 'react'
-import { FEATURE, GOI, GOIS, type Goi } from '../app/plan'
+import { GOI, type Goi } from '../app/plan'
 import { Icon } from './Icon'
 
 export function Pk({ g, o }: { g: Goi; o?: boolean }) {
   return <span className={`pk ${GOI[g].cls}${o ? ' o' : ''}`}>{GOI[g].ten}</span>
 }
 
-/** Mã Excel, giai đoạn, các gói có tính năng, kế thừa IVT — để đối chiếu với file Dự kiến tính năng */
-export function FeatureMeta({ code }: { code?: string }) {
-  const f = code ? FEATURE[code] : undefined
-  if (!f) return null
-  return (
-    <>
-      <span className="chip" title="Mã STT trong file Dự kiến tính năng IACC Cloud">Mã {f.c}</span>
-      <span className="chip">GĐ {f.gd}</span>
-      {GOIS.filter(g => f.g.includes(g)).map(g => <Pk key={g} g={g} o />)}
-      {f.ivt ? <span className="chip ivt">Kế thừa iPOS Inventory</span> : null}
-    </>
-  )
-}
-
-export function PageHead({ crumb, title, code, meta, children }: {
+/** Tiêu đề màn. code giữ trong chữ ký cho các màn đang truyền, không còn hiện mã, giai đoạn, nhãn gói dưới tiêu đề (T39) */
+export function PageHead({ crumb, title, meta, children }: {
   crumb?: string[]; title: ReactNode; code?: string; meta?: ReactNode; children?: ReactNode
 }) {
   return (
@@ -29,7 +16,7 @@ export function PageHead({ crumb, title, code, meta, children }: {
       <div style={{ minWidth: 0 }}>
         {crumb && <div className="crumb">{crumb.map((c, i) => <span key={i} className="row" style={{ gap: 6 }}>{i > 0 && <Icon n="chevr" className="ic sm" />}{c}</span>)}</div>}
         <h1>{title}</h1>
-        {(code || meta) && <div className="ph-meta"><FeatureMeta code={code} />{meta}</div>}
+        {meta && <div className="ph-meta">{meta}</div>}
       </div>
       {children && <div className="ph-act">{children}</div>}
     </div>

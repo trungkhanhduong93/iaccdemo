@@ -8,11 +8,11 @@ export const quyTrinh: QuyTrinhDef = {
     lan: [
       { ten: 'Thu tiền', nut: [
         { ten: 'Thu tiền mặt', icon: 'cashin', di: 'tien/2-1-1/moi?loai=thu' },
-        { ten: 'Thu qua ngân hàng', icon: 'bank', di: 'tien/2-1-1/moi?loai=bc' },
+        { ten: 'Thu ngân hàng', icon: 'bank', di: 'tien/2-1-1/moi?loai=bc' },
       ] },
       { ten: 'Chi tiền', nut: [
         { ten: 'Chi tiền mặt', icon: 'cashout', di: 'tien/2-1-1/moi?loai=chi' },
-        { ten: 'Chi qua ngân hàng', icon: 'bank', di: 'tien/2-1-1/moi?loai=unc' },
+        { ten: 'Chi ngân hàng', icon: 'bank', di: 'tien/2-1-1/moi?loai=unc' },
       ] },
       { ten: 'Chuyển quỹ', nut: [
         { ten: 'Chuyển quỹ', icon: 'swap', di: 'tien/2-1-1/moi?loai=cq' },

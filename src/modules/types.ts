@@ -45,7 +45,7 @@ export interface VoucherCfg {
 /** Một loại phiếu trong màn chứng từ. Mở form đúng loại bằng ?loai=k */
 export interface LoaiCT {
   k: string
-  ten: string                            // tên loại, cũng là tiêu đề form: Phiếu thu, Phiếu chi
+  ten: string                            // tên loại, cũng là tiêu đề form: Thu tiền mặt, Chi tiền mặt
   prefix: string
   doiTuong?: VoucherCfg['doiTuong']
   nhan?: string

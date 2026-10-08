@@ -208,3 +208,16 @@ Thay phần biểu tượng của QD12. Tên gọi trong `src/ui/Icon.tsx` giữ
 - Biểu tượng khối đặc nằm trong `src/ui/icon-dac.ts`, sinh bởi `python tools/xuat_bieu_tuong.py`, không sửa tay. Thêm hoặc đổi biểu tượng thì sửa bảng `IFASTER`, `SOLAR` trong script rồi chạy lại. Tên Solar tra ở https://icon-sets.iconify.design/solar/.
 
 Lý do: Trum giao việc T37 ngày 08/10/2026.
+
+## QD24. Danh sách chứng từ lọc từng cột, công cụ dạng biểu tượng (08/10/2026)
+
+Thay một phần QD14 và QD20 cho danh sách chứng từ dùng chung (`VoucherScreen`). Màn Bán hàng 3.1.1 làm riêng chưa đổi.
+
+- Bỏ chia đôi 50/50 của T24. Danh sách chiếm phần còn lại, khung chi tiết bên dưới cao vừa nội dung, tối đa 38% chiều cao.
+- Đầu trang: ô chọn kỳ, nút biểu tượng Excel (Nhập Excel, Xuất Excel), nút Tuỳ chỉnh giao diện (ẩn hiện cột), nút Thêm. Không có nút In. Theo mẫu iPOS Inventory.
+- Bỏ thanh lọc dưới (ô tìm, phễu Bộ lọc, tải lại). Thay bằng cột STT và hàng lọc từng cột dưới tiêu đề bảng.
+- Mỗi ô lọc có phễu chọn điều kiện theo kiểu cột: chữ (chứa, không chứa, bằng, bắt đầu, kết thúc), số (=, ≠, >, <, ≥, ≤), ngày (đúng ngày, trước, sau, từ, đến), phân loại (tick giá trị có sẵn). Code ở `src/ui/LocCot.tsx`, bảng bật bằng prop `loc` của `Table`.
+- Tiêu đề mọi màn không còn dòng mã tính năng, giai đoạn, nhãn gói. Gói đang dùng hiện dưới logo sidebar ("Phiên bản").
+- Loại phiếu 2.1.1 đổi tên: Thu tiền mặt, Chi tiền mặt, Thu ngân hàng, Chi ngân hàng, Chuyển quỹ đứng cuối.
+
+Lý do: PhuongXT chốt khi làm T25, T39. Trum chưa xem lại.

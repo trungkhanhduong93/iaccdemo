@@ -677,3 +677,26 @@ textarea.inp { height: auto; padding: 8px 11px; resize: vertical; }
 .qt-top.mot-cot { grid-template-columns: minmax(0, 1fr); }
 .qt-ht-all { display: inline-flex; align-items: center; gap: 6px; margin-top: 4px; padding: 4px 8px; border-radius: 8px; color: var(--blue); font-size: 12.5px; font-weight: 600; }
 .qt-ht-all:hover { background: var(--tint); }
+
+/* ── Gói đang dùng dưới logo, hàng lọc từng cột, danh sách chứng từ cao hơn khung chi tiết (T39) ── */
+.sb-goi { display: flex; align-items: center; gap: 8px; margin: -6px 16px 10px; padding: 4px 8px; border-radius: 8px; color: #c2cde4; font-size: 12px; flex: none; }
+.sb-goi:hover { background: rgba(255, 255, 255, .07); color: #fff; }
+.shell.gon .sb-goi { justify-content: center; margin: -4px 8px 10px; padding: 4px 0; }
+.shell.gon .sb-goi > span:first-child { display: none; }
+.tbl tr.loc-hang th { top: var(--tbl-h1, 37px); padding: 4px 6px; background: #fff; border-bottom: 1px solid var(--line); }
+.tbl thead tr.loc-hang th.dinh, .tbl thead tr.loc-hang th.dinh-phai { background: #fff; }
+.loc-o { width: 100%; min-width: 0; height: 26px; padding: 0 7px; border: 1px solid var(--line); border-radius: 6px; background: #fff; font: inherit; font-size: 12px; font-weight: 400; color: var(--ink); }
+.loc-o:focus { outline: none; border-color: var(--blue); }
+.voucher-split { grid-template-rows: minmax(0, 1fr) auto; }
+.voucher-bottom { max-height: 38vh; }
+.voucher-bottom-b > .tbl-wrap { min-height: 0; }
+.loc-cell { display: flex; align-items: center; gap: 3px; min-width: 0; }
+.loc-pheu { flex: none; width: 26px; height: 26px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 6px; background: #fff; color: var(--muted); }
+.loc-pheu:hover, .loc-pheu.open { border-color: var(--blue); color: var(--blue); }
+.loc-pheu.on { background: var(--tint); border-color: var(--blue); color: var(--blue); }
+.loc-ky { font-size: 12px; font-weight: 700; line-height: 1; }
+.loc-chon { width: 100%; height: 26px; display: flex; align-items: center; justify-content: space-between; gap: 4px; padding: 0 6px 0 8px; border: 1px solid var(--line); border-radius: 6px; background: #fff; color: var(--muted); font-size: 12px; font-weight: 400; }
+.loc-chon > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.loc-chon:hover, .loc-chon.open { border-color: var(--blue); }
+.loc-chon.on { border-color: var(--blue); background: var(--tint); color: var(--blue); }
+.logo-excel { width: 20px; height: 20px; }

@@ -100,7 +100,7 @@ def main():
         vao('/app/tien/quy-trinh', 'M')
         pg.locator('.qt-n', has_text='Thu tiền mặt').first.click()
         pg.wait_for_timeout(150)
-        if not pg.locator('.fsf h1', has_text='Phiếu thu').count():
+        if not pg.locator('.fsf h1', has_text='Thu tiền mặt').count():
             loi.append('Quy trình tiền: bấm ô Thu tiền mặt không mở form phiếu thu')
         pg.keyboard.press('Escape')
         pg.wait_for_timeout(150)

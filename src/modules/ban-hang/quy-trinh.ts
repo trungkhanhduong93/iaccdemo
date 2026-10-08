@@ -12,7 +12,7 @@ export const quyTrinh: QuyTrinhDef = {
       tren: [{ ten: 'Hoá đơn bán hàng', icon: 'doc', di: 'ban-hang/3-1-2/moi' }],
       duoi: [{ ten: 'Điều chỉnh, thay thế hoá đơn', icon: 'edit', di: 'ban-hang/3-1-6/moi' }] },
     { chinh: { ten: 'Thu tiền', icon: 'cashin', di: 'tien/2-1-1/moi?loai=thu' },
-      duoi: [{ ten: 'Thu qua ngân hàng', icon: 'bank', di: 'tien/2-1-1/moi?loai=bc' }] },
+      duoi: [{ ten: 'Thu ngân hàng', icon: 'bank', di: 'tien/2-1-1/moi?loai=bc' }] },
     { chinh: { ten: 'Đối soát với POS', icon: 'scale', di: 'ban-hang/3-2-2' } },
   ],
   baoCao: ['3-2-1', '3-2-3', '3-2-2', '3-2-4', 'thue/6-2-2'],

@@ -2,6 +2,7 @@
 import type { CSSProperties, ReactNode } from 'react'
 import type { Col, Row } from '../modules/types'
 import { money } from './format'
+import { OLoc, type LocCot } from './LocCot'
 
 export function cell(c: Col, r: Row): ReactNode {
   if (c.r) return c.r(r)
@@ -26,9 +27,10 @@ function viTri(cols: Col[]): { cls: string; style?: CSSProperties }[] {
   return out
 }
 
-export function Table({ cols, rows, sum, onRow, onDbl, sel, rowCls, maxH, motDong }: {
+
+export function Table({ cols, rows, sum, onRow, onDbl, sel, rowCls, maxH, motDong, loc }: {
   cols: Col[]; rows: Row[]; sum?: Row; onRow?: (r: Row) => void; onDbl?: (r: Row) => void; sel?: (r: Row) => boolean
-  rowCls?: (r: Row) => string; maxH?: number; motDong?: boolean
+  rowCls?: (r: Row) => string; maxH?: number; motDong?: boolean; loc?: LocCot
 }) {
   const vt = viTri(cols)
   const lop = (c: Col, i: number) => [c.num ? 'num' : c.c ? 'c' : '', vt[i].cls].join(' ')
@@ -37,6 +39,15 @@ export function Table({ cols, rows, sum, onRow, onDbl, sel, rowCls, maxH, motDon
       <table className={`tbl${motDong ? ' mot-dong' : ''}`}>
         <thead>
           <tr>{cols.map((c, i) => <th key={c.k} className={lop(c, i)} style={{ ...(c.w ? { width: c.w } : {}), ...(c.dinh && c.w ? { minWidth: c.w } : {}), ...vt[i].style }}>{c.hd ?? c.t}</th>)}</tr>
+          {loc && (
+            <tr className="loc-hang">
+              {cols.map((c, i) => (
+                <th key={c.k} className={lop(c, i)} style={vt[i].style}>
+                  {!loc.bo?.has(c.k) && !c.hd && <OLoc c={c} loc={loc} />}
+                </th>
+              ))}
+            </tr>
+          )}
         </thead>
         <tbody>
           {rows.map((r, i) => (

@@ -18,7 +18,8 @@ src/
     Topbar.tsx             đơn vị kế toán, chi nhánh làm việc, nút Trải nghiệm gói (QD17, QD22). Vai trò lấy theo tài khoản lúc đăng nhập
     CommandPalette.tsx     tìm nhanh không dấu
     Screen.tsx             mở màn theo đường dẫn, trang Nâng cấp khi màn ngoài gói
-  ui/                      Icon, format, Table, Page (tiêu đề, thẻ, nhãn gói), Charts, FormToanMan (khung form toàn màn hình),
+  ui/                      Icon, format, Table (có hàng lọc từng cột qua prop loc), LocCot (ô lọc có phễu theo kiểu cột), CongCuDs (nút Excel, Tuỳ chỉnh giao diện),
+                           Page (tiêu đề, thẻ, nhãn gói), Charts, FormToanMan (khung form toàn màn hình),
                            Dropdown (menu thả xuống, MenuItem, ô chọn Select thay thẻ select), Logo
     generic/               6 màn chung: CatalogScreen, VoucherScreen (danh sách có cột đứng yên, khung chi tiết), ChungTuForm (form toàn màn hình AMIS), BangSua (bảng dòng gõ trực tiếp), ReportScreen, ToolScreen,
                            QuyTrinhScreen (sơ đồ, khung Báo cáo, hàng dưới), BaoCaoScreen (tab Báo cáo)

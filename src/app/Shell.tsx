@@ -15,8 +15,8 @@ import { CommandPalette } from './CommandPalette'
 
 /** Nút Thêm nhanh đầu sidebar, chia theo phân hệ: tên, biểu tượng, đích (mở thẳng form chứng từ mới) */
 const THEM_NHANH: [string, [string, string, string][]][] = [
-  ['Tiền', [['Phiếu thu', 'cashin', 'tien/2-1-1/moi?loai=thu'], ['Phiếu chi', 'cashout', 'tien/2-1-1/moi?loai=chi'],
-    ['Chuyển quỹ', 'swap', 'tien/2-1-1/moi?loai=cq']]],
+  ['Tiền', [['Thu tiền mặt', 'cashin', 'tien/2-1-1/moi?loai=thu'], ['Chi tiền mặt', 'cashout', 'tien/2-1-1/moi?loai=chi'],
+    ['Thu ngân hàng', 'bank', 'tien/2-1-1/moi?loai=bc'], ['Chi ngân hàng', 'bank', 'tien/2-1-1/moi?loai=unc'], ['Chuyển quỹ', 'swap', 'tien/2-1-1/moi?loai=cq']]],
   ['Bán hàng', [['Bán hàng ngoài POS', 'cart', 'ban-hang/3-1-1/moi'], ['Hoá đơn bán hàng', 'receipt', 'ban-hang/3-1-2/moi'],
     ['Hàng bán trả lại', 'back', 'ban-hang/3-1-4/moi']]],
   ['Mua hàng', [['Phiếu mua hàng', 'truck', 'mua-hang/4-1-1/moi'], ['Trả lại hàng mua', 'back', 'mua-hang/4-1-4/moi']]],
@@ -60,6 +60,9 @@ function Sidebar({ mod, onSearch }: { mod: ModuleDef; onSearch: () => void }) {
   return (
     <nav className="sidebar" aria-label="Phân hệ">
       <Link to="/app" className="sb-brand" title="IACC Cloud"><Logo nen="toi" cao={34} /><DauLogo size={34} /></Link>
+      <Link to="/app/he-thong/goi-thue-bao" className="sb-goi" title={`Đang dùng gói ${GOI[s.goi].ten}. Bấm để xem gói thuê bao`}>
+        <span>Phiên bản</span><Pk g={s.goi} />
+      </Link>
       <div className="sb-tim">
         <button type="button" className="sb-tim-btn" onClick={onSearch} title="Tìm màn hình, chứng từ, báo cáo (Ctrl K)">
           <Icon n="search" className="ic sm" /><span>Tìm kiếm…</span><span className="kbd">Ctrl K</span>
