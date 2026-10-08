@@ -11,8 +11,9 @@ export type KhoangNgay = { tu: Date; den: Date }
 
 /** Đọc chuỗi 'dd/mm/yyyy' hoặc 'dd-mm-yyyy' thành Date */
 export function docNgay(s: string): Date {
-  const parts = s.split(/[\/\-]/).map(Number)
-  if (parts.length === 3 && !parts.some(isNaN)) {
+  if (!s || !s.trim()) return new Date(NaN)
+  const parts = s.trim().split(/[\/\-]/).map(Number)
+  if (parts.length === 3 && !parts.some(isNaN) && parts[2] > 1900 && parts[1] >= 1 && parts[1] <= 12 && parts[0] >= 1 && parts[0] <= 31) {
     return new Date(parts[2], parts[1] - 1, parts[0], 0, 0, 0, 0)
   }
   return new Date(s)
@@ -538,3 +539,159 @@ export function ChonKhoangNgay({ value, onChange, align = 'start' }: { value: Kh
     </>
   )
 }
+
+export interface LichDonProps {
+  value?: string
+  onChange: (dmyStr: string) => void
+  onDong?: () => void
+}
+
+/** Bảng Date Picker chọn 1 ngày theo chuẩn theme hệ thống iFaster (T46) */
+export function LichDon({ value, onChange, onDong }: LichDonProps) {
+  const ngayGoc = useMemo(() => {
+    if (value) {
+      const d = docNgay(value)
+      if (!isNaN(d.getTime())) return d
+    }
+    return HOM_NAY
+  }, [value])
+
+  const [thang, setThang] = useState(ngayGoc.getMonth() + 1)
+  const [nam, setNam] = useState(ngayGoc.getFullYear())
+
+  useEffect(() => {
+    if (value) {
+      const d = docNgay(value)
+      if (!isNaN(d.getTime())) {
+        setThang(d.getMonth() + 1)
+        setNam(d.getFullYear())
+      }
+    }
+  }, [value])
+
+  const doiThang = (delta: number) => {
+    let m = thang + delta
+    let y = nam
+    while (m > 12) { m -= 12; y += 1 }
+    while (m < 1) { m -= 12; y += 1 }
+    setThang(m)
+    setNam(y)
+  }
+
+  const doiNam = (delta: number) => {
+    setNam(y => y + delta)
+  }
+
+  // Lưới 42 ngày (tuần bắt đầu từ thứ Hai)
+  const dsNgay = useMemo(() => {
+    const firstDay = new Date(nam, thang - 1, 1)
+    const dayOfWeek = (firstDay.getDay() + 6) % 7
+    const startDate = new Date(nam, thang - 1, 1 - dayOfWeek)
+    const ds: { d: Date; ngoai: boolean; khoa: string }[] = []
+    for (let i = 0; i < 42; i++) {
+      const d = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate() + i)
+      ds.push({
+        d,
+        ngoai: d.getMonth() !== thang - 1,
+        khoa: `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`,
+      })
+    }
+    return ds
+  }, [thang, nam])
+
+  const dVal = useMemo(() => {
+    if (!value) return null
+    const d = docNgay(value)
+    return isNaN(d.getTime()) ? null : d
+  }, [value])
+
+  const chonNgay = (d: Date) => {
+    onChange(dmy(d))
+    onDong?.()
+  }
+
+  const chonNhanh = (kieu: 'hom-nay' | 'hom-qua' | 'dau-thang' | 'xoa') => {
+    if (kieu === 'xoa') {
+      onChange('')
+      onDong?.()
+      return
+    }
+    let d = new Date(HOM_NAY)
+    if (kieu === 'hom-qua') {
+      d = new Date(HOM_NAY.getFullYear(), HOM_NAY.getMonth(), HOM_NAY.getDate() - 1)
+    } else if (kieu === 'dau-thang') {
+      d = new Date(nam, thang - 1, 1)
+    }
+    onChange(dmy(d))
+    onDong?.()
+  }
+
+  return (
+    <div className="dp-khung" onClick={e => e.stopPropagation()}>
+      <div className="dp-dau">
+        <div className="dp-dau-nhom">
+          <button type="button" className="dp-nav-btn" onClick={() => doiNam(-1)} title="Lùi 1 năm">«</button>
+          <button type="button" className="dp-nav-btn" onClick={() => doiThang(-1)} title="Lùi 1 tháng">
+            <Icon n="chevl" className="ic sm" />
+          </button>
+        </div>
+        <span className="dp-tieu-de">Tháng {thang}/{nam}</span>
+        <div className="dp-dau-nhom">
+          <button type="button" className="dp-nav-btn" onClick={() => doiThang(1)} title="Tiến 1 tháng">
+            <Icon n="chevr" className="ic sm" />
+          </button>
+          <button type="button" className="dp-nav-btn" onClick={() => doiNam(1)} title="Tiến 1 năm">»</button>
+        </div>
+      </div>
+
+      <div className="dp-hang-thu">
+        {THU.map(t => (
+          <span key={t} className="dp-thu">{t}</span>
+        ))}
+      </div>
+
+      <div className="dp-luoi">
+        {dsNgay.map(({ d, ngoai, khoa }) => {
+          const laChon = dVal !== null && cungNgay(d, dVal)
+          const laHn = cungNgay(d, HOM_NAY)
+          const cls = [
+            'dp-o',
+            ngoai ? 'ngoai' : '',
+            laHn ? 'hom-nay' : '',
+            laChon ? 'chon' : '',
+          ].filter(Boolean).join(' ')
+
+          return (
+            <button
+              key={khoa}
+              type="button"
+              className={cls}
+              onClick={() => chonNgay(d)}
+              title={`${dmy(d)}${laHn ? ' (Hôm nay)' : ''}`}
+            >
+              <span>{d.getDate()}</span>
+            </button>
+          )
+        })}
+      </div>
+
+      <div className="dp-chan">
+        <div className="dp-nhanh-ds">
+          <button type="button" className="dp-nhanh-btn" onClick={() => chonNhanh('hom-nay')}>
+            Hôm nay
+          </button>
+          <button type="button" className="dp-nhanh-btn" onClick={() => chonNhanh('hom-qua')}>
+            Hôm qua
+          </button>
+          <button type="button" className="dp-nhanh-btn" onClick={() => chonNhanh('dau-thang')}>
+            Đầu tháng
+          </button>
+        </div>
+        <button type="button" className="dp-xoa-btn" onClick={() => chonNhanh('xoa')} title="Xoá giá trị lọc">
+          Xoá
+        </button>
+      </div>
+    </div>
+  )
+}
+

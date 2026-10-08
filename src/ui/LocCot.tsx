@@ -5,6 +5,7 @@ import type { Col } from '../modules/types'
 import { Popover, Select } from './Dropdown'
 import { Icon } from './Icon'
 import { fold } from './format'
+import { LichDon } from './ChonNgay'
 
 /** chu: chữ; so: số tiền, số lượng; ngay: dd/mm/yyyy; chon: phân loại giá trị */
 export type KieuLoc = 'chu' | 'so' | 'ngay' | 'chon'
@@ -181,17 +182,6 @@ export function khopLoc(kieu: KieuLoc, g: GiaTriLoc, chu: string, so?: number, n
   return true
 }
 
-function toYmd(dmyStr: string): string {
-  if (!dmyStr) return ''
-  const m = dmyStr.trim().match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/)
-  if (m) {
-    const dd = m[1].padStart(2, '0')
-    const mm = m[2].padStart(2, '0')
-    return `${m[3]}-${mm}-${dd}`
-  }
-  return ''
-}
-
 /** Ô lọc của một cột trong hàng lọc */
 export function OLoc({ c, loc }: { c: Col; loc: LocCot }) {
   const kieu = loc.kieu(c)
@@ -199,52 +189,33 @@ export function OLoc({ c, loc }: { c: Col; loc: LocCot }) {
   const tatCaChon = loc.luaChon?.[c.k] ?? []
   const dang = dangLoc(g, kieu === 'chon' ? tatCaChon.length : undefined)
   const [mo, setMo] = useState(false)
+  const [moLich, setMoLich] = useState(false)
   const btnRef = useRef<HTMLButtonElement>(null)
-  const dateRef = useRef<HTMLInputElement>(null)
+  const cellRef = useRef<HTMLDivElement>(null)
   const dong = () => setMo(false)
-
-  const moPicker = () => {
-    try {
-      dateRef.current?.showPicker()
-    } catch {
-      dateRef.current?.focus()
-    }
-  }
 
   // Cột ngày: ô nhập nhỏ + biểu tượng lịch + phễu
   if (kieu === 'ngay') {
     return (
-      <div className="loc-cell loc-cell-ngay" onClick={e => e.stopPropagation()}>
+      <div ref={cellRef} className="loc-cell loc-cell-ngay" onClick={e => e.stopPropagation()}>
         <input
           className="loc-o-ngay"
-          placeholder="dd/mm/yyyy"
+          placeholder="dd/mm/yy"
           value={g.v}
           aria-label={`Lọc ngày cột ${c.t}`}
+          title="Bấm để chọn ngày hoặc nhập dd/mm/yyyy"
           onChange={e => loc.dat(c.k, { ...g, v: e.target.value, op: g.op || '=' })}
-          onClick={moPicker}
+          onClick={() => setMoLich(true)}
         />
         <button
           type="button"
-          className="loc-btn-lich"
+          className={`loc-btn-lich${moLich ? ' on' : ''}`}
           title="Chọn ngày"
           aria-label="Chọn ngày"
-          onClick={moPicker}
+          onClick={() => setMoLich(o => !o)}
         >
           <Icon n="calendar" className="ic sm" />
         </button>
-        <input
-          ref={dateRef}
-          type="date"
-          className="loc-inp-date-an"
-          value={toYmd(g.v)}
-          tabIndex={-1}
-          aria-hidden="true"
-          onChange={e => {
-            if (!e.target.value) return
-            const [yy, mm, dd] = e.target.value.split('-')
-            loc.dat(c.k, { ...g, v: `${dd}/${mm}/${yy}`, op: g.op || '=' })
-          }}
-        />
         <button
           ref={btnRef}
           type="button"
@@ -256,6 +227,20 @@ export function OLoc({ c, loc }: { c: Col; loc: LocCot }) {
           <Icon n="filter" className="ic sm" />
           {dang && <span className="loc-pheu-dot" />}
         </button>
+        <Popover
+          anchor={cellRef}
+          open={moLich}
+          onClose={() => setMoLich(false)}
+          align="start"
+          width={272}
+          className="dp-pop"
+        >
+          <LichDon
+            value={g.v}
+            onChange={val => loc.dat(c.k, { ...g, v: val, op: g.op || '=' })}
+            onDong={() => setMoLich(false)}
+          />
+        </Popover>
         <Popover anchor={btnRef} open={mo} onClose={dong} align="end" width={240} className="loc-cot-pop">
           <KhungLoc c={c} kieu={kieu} g={g} loc={loc} tatCaChon={tatCaChon} onDong={dong} />
         </Popover>
@@ -449,46 +434,7 @@ function KhungLoc({ c, kieu, g, loc, tatCaChon, onDong }: {
       )}
 
       {kieu === 'ngay' && (
-        <div className="loc-pop-form">
-          <Select
-            className="loc-pop-sel"
-            value={g.op || '='}
-            onChange={e => loc.dat(c.k, { ...g, op: e.target.value })}
-            aria-label="Điều kiện lọc"
-          >
-            {PHEP_NGAY.map(([op, nhan]) => (
-              <option key={op} value={op}>{nhan}</option>
-            ))}
-          </Select>
-          <input
-            className="loc-pop-inp"
-            value={g.v}
-            placeholder={g.op === 'khoang' ? 'Từ ngày dd/mm/yyyy' : 'dd/mm/yyyy'}
-            aria-label="Giá trị ngày"
-            onChange={e => loc.dat(c.k, { ...g, v: e.target.value })}
-          />
-          {g.op === 'khoang' && (
-            <input
-              className="loc-pop-inp"
-              value={g.v2 || ''}
-              placeholder="Đến ngày dd/mm/yyyy"
-              aria-label="Đến ngày"
-              onChange={e => loc.dat(c.k, { ...g, v2: e.target.value })}
-            />
-          )}
-          <div className="loc-pop-chan">
-            <button
-              type="button"
-              className="loc-pop-reset"
-              onClick={() => {
-                loc.dat(c.k, { op: '=', v: '', v2: '' })
-                onDong()
-              }}
-            >
-              Thiết lập lại
-            </button>
-          </div>
-        </div>
+        <KhungLocNgay c={c} g={g} loc={loc} onDong={onDong} />
       )}
 
       {kieu === 'chon' && (
@@ -605,3 +551,106 @@ function KhungLoc({ c, kieu, g, loc, tatCaChon, onDong }: {
     </div>
   )
 }
+
+function KhungLocNgay({ c, g, loc, onDong }: { c: Col; g: GiaTriLoc; loc: LocCot; onDong: () => void }) {
+  const [moLich1, setMoLich1] = useState(false)
+  const [moLich2, setMoLich2] = useState(false)
+  const inp1Ref = useRef<HTMLDivElement>(null)
+  const inp2Ref = useRef<HTMLDivElement>(null)
+
+  return (
+    <div className="loc-pop-form">
+      <Select
+        className="loc-pop-sel"
+        value={g.op || '='}
+        onChange={e => loc.dat(c.k, { ...g, op: e.target.value })}
+        aria-label="Điều kiện lọc"
+      >
+        {PHEP_NGAY.map(([op, nhan]) => (
+          <option key={op} value={op}>{nhan}</option>
+        ))}
+      </Select>
+      <div ref={inp1Ref} className="loc-pop-ngay-box">
+        <input
+          className="loc-pop-inp"
+          value={g.v}
+          placeholder={g.op === 'khoang' ? 'Từ ngày dd/mm/yyyy' : 'dd/mm/yyyy'}
+          aria-label="Giá trị ngày"
+          onChange={e => loc.dat(c.k, { ...g, v: e.target.value })}
+          onClick={() => setMoLich1(true)}
+        />
+        <button
+          type="button"
+          className={`loc-pop-btn-lich${moLich1 ? ' on' : ''}`}
+          title="Chọn ngày"
+          aria-label="Chọn ngày"
+          onClick={() => setMoLich1(o => !o)}
+        >
+          <Icon n="calendar" className="ic sm" />
+        </button>
+        <Popover
+          anchor={inp1Ref}
+          open={moLich1}
+          onClose={() => setMoLich1(false)}
+          align="start"
+          width={260}
+          className="dp-pop"
+        >
+          <LichDon
+            value={g.v}
+            onChange={val => loc.dat(c.k, { ...g, v: val })}
+            onDong={() => setMoLich1(false)}
+          />
+        </Popover>
+      </div>
+      {g.op === 'khoang' && (
+        <div ref={inp2Ref} className="loc-pop-ngay-box">
+          <input
+            className="loc-pop-inp"
+            value={g.v2 || ''}
+            placeholder="Đến ngày dd/mm/yyyy"
+            aria-label="Đến ngày"
+            onChange={e => loc.dat(c.k, { ...g, v2: e.target.value })}
+            onClick={() => setMoLich2(true)}
+          />
+          <button
+            type="button"
+            className={`loc-pop-btn-lich${moLich2 ? ' on' : ''}`}
+            title="Chọn ngày"
+            aria-label="Chọn ngày"
+            onClick={() => setMoLich2(o => !o)}
+          >
+            <Icon n="calendar" className="ic sm" />
+          </button>
+          <Popover
+            anchor={inp2Ref}
+            open={moLich2}
+            onClose={() => setMoLich2(false)}
+            align="start"
+            width={260}
+            className="dp-pop"
+          >
+            <LichDon
+              value={g.v2 || ''}
+              onChange={val => loc.dat(c.k, { ...g, v2: val })}
+              onDong={() => setMoLich2(false)}
+            />
+          </Popover>
+        </div>
+      )}
+      <div className="loc-pop-chan">
+        <button
+          type="button"
+          className="loc-pop-reset"
+          onClick={() => {
+            loc.dat(c.k, { op: '=', v: '', v2: '' })
+            onDong()
+          }}
+        >
+          Thiết lập lại
+        </button>
+      </div>
+    </div>
+  )
+}
+
