@@ -4,13 +4,14 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T42.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T43.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T43 | Đợt chỉnh 13 điểm: thanh công cụ một hàng, nút Excel và Hàng loạt dạng biểu tượng, chip đếm mới, dòng tổng, bỏ cột và dòng tiêu đề, màu sidebar và cam logo, bỏ giới hạn rộng, gói Free/Standard/Plus/Pro (mã F/S/PL/PR), dữ liệu mua hàng, dòng tổng bảng chi tiết (QD27) | Trum | Đang làm | Sửa nhiều file dùng chung: `plan.ts`, `session.tsx`, `app.css`, `VoucherScreen.tsx`, `ChungTuBanHang.tsx`, `ChungTuForm.tsx`, `LocNangCao.tsx`, `Table.tsx`, `gen.ts`, `types.ts` và mọi file có mã gói |
 | T42 | Giao diện gọn cho màn nhỏ (thu nhỏ toàn bộ dưới 1700px), bỏ đường dẫn trên tiêu đề, nút "Thêm mới" và nút xổ gom công cụ, chip trạng thái, dòng tổng dính đáy, phân trang mới, hàng lọc từng cột theo kiểu cột (QD26) | Trum | Đang làm | Sửa file dùng chung: `Page.tsx`, `Dropdown.tsx`, `QuyTrinhScreen.tsx`, `CatalogScreen.tsx`, `main.tsx`, `VoucherScreen.tsx`, `ChungTuBanHang.tsx`, `LocNangCao.tsx`, `LocCot.tsx`, `Table.tsx`, `PhanTrang.tsx`, `CongCuDs.tsx`, `app.css` |
 | T41 | Danh sách chứng từ theo iFaster: chip trạng thái, ô lọc ngoài có nhãn trên viền, Bộ lọc nâng cao có cấu hình ô ra ngoài, nút Lọc, khung Tuỳ chỉnh cột (kéo đổi thứ tự), kẻ dọc và kéo giãn cột, nút Thao tác hàng loạt, lịch căn phải (QD25) | Trum | Đang làm | Sửa file dùng chung: `VoucherScreen.tsx`, `CongCuDs.tsx`, `Table.tsx`, `ChonNgay.tsx`, `app.css` (mục T41) |
 | T27 | Danh sách chứng từ 2.1.1: khung chi tiết bên dưới hiện dòng phiếu khác với form của cùng phiếu (UNC2610-0259: khung ghi "Chi mua rau, củ tại chợ", form ghi "Trả tiền nhà cung cấp thịt bò") | | Chờ | Thấy khi làm T26 |
