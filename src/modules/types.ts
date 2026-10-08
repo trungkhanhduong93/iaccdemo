@@ -108,7 +108,11 @@ export interface NutQT { ten: string; icon: string; di: string; tone?: 'fabi' | 
 export interface BuocQT { ten?: string; chinh: NutQT; tren?: NutQT[]; duoi?: NutQT[] }
 
 /** Một làn của sơ đồ hội tụ: tên nhóm nghiệp vụ và các ô xếp ngang */
-export interface LanQT { ten: string; nut: NutQT[] }
+export interface LanQT {
+  ten: string
+  nut: NutQT[]
+  tone?: 'ok' | 'err' | 'info' | 'ad' | 'st'  // tông màu ô biểu tượng ở nhãn làn: xanh lá, đỏ, xanh, tím, xanh ngọc; thiếu thì 'info'
+}
 
 export interface QuyTrinhDef {
   ten: string                            // tiêu đề sơ đồ

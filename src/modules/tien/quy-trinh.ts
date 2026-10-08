@@ -6,26 +6,26 @@ export const quyTrinh: QuyTrinhDef = {
   buoc: [],
   hoiTu: {
     lan: [
-      { ten: 'Thu tiền', nut: [
+      { ten: 'Thu tiền', tone: 'ok', nut: [
         { ten: 'Thu tiền mặt', icon: 'cashin', di: 'tien/2-1-1/moi?loai=thu' },
         { ten: 'Thu ngân hàng', icon: 'bank', di: 'tien/2-1-1/moi?loai=bc' },
       ] },
-      { ten: 'Chi tiền', nut: [
+      { ten: 'Chi tiền', tone: 'err', nut: [
         { ten: 'Chi tiền mặt', icon: 'cashout', di: 'tien/2-1-1/moi?loai=chi' },
         { ten: 'Chi ngân hàng', icon: 'bank', di: 'tien/2-1-1/moi?loai=unc' },
       ] },
-      { ten: 'Chuyển quỹ', nut: [
+      { ten: 'Chuyển quỹ', tone: 'info', nut: [
         { ten: 'Chuyển quỹ', icon: 'swap', di: 'tien/2-1-1/moi?loai=cq' },
       ] },
-      { ten: 'Đối chiếu công nợ', nut: [
+      { ten: 'Đối chiếu công nợ', tone: 'ad', nut: [
         { ten: 'Biên bản đối chiếu công nợ', icon: 'scale', di: 'tien/2-1-2/moi' },
       ] },
-      { ten: 'Phân bổ chi phí chuỗi', nut: [
+      { ten: 'Phân bổ chi phí chuỗi', tone: 'st', nut: [
         { ten: 'Phân bổ chi phí chuỗi', icon: 'layers', di: 'tien/2-1-3' },
       ] },
     ],
     ra: { ten: 'Sổ sách, báo cáo', nut: [
-      { ten: 'Sổ quỹ tiền mặt', icon: 'book', di: 'tien/2-2-1' },
+      { ten: 'Sổ quỹ tiền mặt', icon: 'wallet', di: 'tien/2-2-1' },
       { ten: 'Sổ ngân hàng', icon: 'bank', di: 'tien/2-2-3' },
       { ten: 'Sổ công nợ', icon: 'users', di: 'tien/2-2-5' },
       { ten: 'Sổ tài khoản', icon: 'book', di: 'tien/2-2-2' },

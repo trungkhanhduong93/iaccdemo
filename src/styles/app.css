@@ -191,7 +191,7 @@ table { border-collapse: collapse; }
 .tbl td.code { color: var(--blue-d); font-weight: 600; white-space: nowrap; }
 .tbl td.dim { color: var(--muted); }
 .tbl tr.bad td { background: #fff8f7; }
-.tbl tr.dang-chon td { background: var(--tint) !important; }
+.tbl tr.dang-chon td { background: var(--tint); }
 .tbl th.num, .tbl td.num { text-align: right; }
 .tbl th.c, .tbl td.c { text-align: center; }
 .tbl .chk { width: 34px; }
@@ -201,7 +201,7 @@ table { border-collapse: collapse; }
 .tbl th.dinh-phai, .tbl td.dinh-phai { position: sticky; right: 0; background: #fff; z-index: 2; border-left: 1px solid var(--line); box-shadow: -2px 0 4px rgba(0, 0, 0, .03); }
 .tbl thead th.dinh-phai { background: var(--th); }
 .tbl tbody tr:hover td.dinh { background: #f2f7fb; }
-.tbl tr.dang-chon td.dinh { background: var(--tint) !important; }
+.tbl tr.dang-chon td.dinh { background: var(--tint); }
 .tbl tr.chua-ghi td:first-child { box-shadow: inset 3px 0 0 var(--amber); }
 
 /* Khung chi tiết bên dưới danh sách chứng từ */
@@ -460,23 +460,40 @@ textarea.inp { height: auto; padding: 8px 11px; resize: vertical; }
 .qt-n .pk { margin-top: 4px; }
 .qt-khoa { position: absolute; top: -8px; right: -8px; width: 22px; height: 22px; border-radius: 50%; background: #fff; border: 1px solid var(--line); color: var(--muted); display: grid; place-items: center; }
 .qt-so-buoc { position: absolute; top: -9px; left: -9px; width: 22px; height: 22px; border-radius: 50%; background: var(--blue); color: #fff; font-size: 11.5px; font-weight: 800; font-style: normal; display: grid; place-items: center; }
-.qt-ht { display: grid; grid-template-columns: minmax(0, 1fr) 44px 170px; align-items: center; min-width: 760px; padding: 2px 0 4px; }
-.qt-ht-lan { display: flex; flex-direction: column; gap: 6px; }
-.qt-lan { display: flex; align-items: center; height: 88px; padding-left: 14px; border-radius: 10px; background: var(--soft); }
-.qt-lan-ten { width: 110px; flex: none; font-size: 11px; font-weight: 800; letter-spacing: .5px; text-transform: uppercase; color: var(--ink); }
-.qt-lan-nut { display: flex; gap: 2px; }
-.qt-ht .qt-n { position: relative; width: 136px; padding-top: 4px; }
-.qt-ht .qt-tile { width: 42px; height: 42px; border-radius: 12px; }
-.qt-ht .qt-l { margin-top: 5px; font-size: 12px; }
-.qt-ht .qt-n .pk { position: absolute; top: 0; left: 4px; margin: 0; }
-.qt-lan-noi { flex: 1; min-width: 24px; margin-left: 6px; border-top: 1.6px solid #b4c3d9; }
-.qt-ht-gom { position: relative; align-self: stretch; }
-.qt-ht-gom::before { content: ''; position: absolute; left: 0; top: 44px; bottom: 44px; border-left: 1.6px solid #b4c3d9; }
-.qt-ht-gom span { position: absolute; left: 0; right: 8px; top: 50%; border-top: 1.6px solid #b4c3d9; }
-.qt-ht-gom span::after { content: ''; position: absolute; right: -8px; top: -6px; border-left: 9px solid #b4c3d9; border-top: 5px solid transparent; border-bottom: 5px solid transparent; }
-.qt-ht-ra { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 6px 8px; border: 1.5px solid #9fc0ef; border-radius: 12px; background: #fff; box-shadow: 0 2px 8px rgba(5, 96, 166, .08); }
-.qt-ht-ra .qt-lan-ten { width: auto; margin-bottom: 2px; }
-.qt-ht-ra .qt-n { width: 156px; }
+.qt-ht { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 48px 260px; align-items: center; min-width: 920px; padding: 2px 0 4px; }
+/* toàn bộ đường nối vẽ trong một SVG phủ lên lưới, đặt trước nút trong DOM để nút đè lên đường */
+.qt-ht-svg { position: absolute; left: 0; top: 0; z-index: 0; overflow: visible; pointer-events: none; }
+.qt-ht-svg path { fill: none; stroke: #b8c7da; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.qt-ht-svg path.mui { fill: #b8c7da; }
+.qt-ht-lan { display: flex; flex-direction: column; gap: 8px; }
+.qt-lan { display: flex; align-items: center; height: 56px; padding: 8px 0 8px 12px; border: 1px solid var(--line-2); border-radius: 12px; background: #f7f9fc; }
+.qt-lan-ten { display: flex; align-items: center; gap: 10px; width: 200px; flex: none; min-width: 0; padding-right: 12px; font-size: 14px; font-weight: 600; color: var(--ink); }
+.qt-lan-nut { display: flex; gap: 8px; flex: none; }
+.qt-ht-ic { width: 28px; height: 28px; flex: none; border-radius: 8px; display: grid; place-items: center; background: var(--tint); color: var(--blue); }
+.qt-ht-ic .ic { width: 17px; height: 17px; }
+.qt-ht-t { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.qt-lan.qt-ht-ok .qt-lan-ten .qt-ht-ic { background: var(--green-t); color: var(--green); }
+.qt-lan.qt-ht-err .qt-lan-ten .qt-ht-ic { background: var(--red-t); color: var(--red); }
+.qt-lan.qt-ht-ad .qt-lan-ten .qt-ht-ic { background: var(--ad-t); color: var(--ad); }
+.qt-lan.qt-ht-st .qt-lan-ten .qt-ht-ic { background: var(--st-t); color: var(--st); }
+.qt-ht .qt-n { position: relative; flex-direction: row; align-items: center; text-align: left; padding: 0; color: var(--ink); }
+.qt-ht .qt-n .pk { margin: 0 0 0 2px; }
+.qt-ht .qt-ht-nut { gap: 10px; height: 40px; padding: 0 14px 0 6px; background: #fff; border: 1px solid var(--line); border-radius: 10px; font-size: 13.5px; font-weight: 500; transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease; }
+.qt-ht-nut:hover { border-color: var(--blue); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(5, 96, 166, .12); }
+.qt-ht-nut.fabi .qt-ht-ic { background: var(--orange-t); color: var(--orange-d); }
+.qt-ht-nut.ivt .qt-ht-ic { background: var(--st-t); color: var(--st); }
+.qt-ht-nut.hd .qt-ht-ic { background: var(--ad-t); color: var(--ad); }
+.qt-ht-nut.lock { border-style: dashed; border-color: #cdd5e1; }
+.qt-ht .qt-n.lock, .qt-ht .qt-n.lock .qt-ht-ic { color: var(--faint); }
+.qt-ht-nut.lock .qt-ht-ic { background: var(--soft); }
+.qt-ht-khoa { width: 13px; height: 13px; color: var(--faint); }
+.qt-ht-ra { display: flex; flex-direction: column; gap: 2px; padding: 14px; border: 1px solid #cfe0f2; border-radius: 14px; background: linear-gradient(180deg, #eef5fb 0%, #fff 60%); }
+.qt-ht-dau { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 14px; font-weight: 700; color: var(--ink); }
+.qt-ht-dau .qt-ht-ic { width: 32px; height: 32px; border-radius: 9px; background: var(--blue); color: #fff; }
+.qt-ht .qt-ht-dong { gap: 10px; height: 36px; padding: 0 8px; border-radius: 8px; font-size: 13.5px; }
+.qt-ht-dong .qt-ht-ic { width: 18px; height: 18px; background: none; }
+.qt-ht-dong .qt-ht-ic .ic { width: 18px; height: 18px; }
+.qt-ht-dong:hover { background: var(--tint); }
 .qt-bc { display: flex; flex-direction: column; overflow: hidden; }
 .qt-bc h2 { font-size: 13px; font-weight: 800; letter-spacing: .6px; text-transform: uppercase; color: var(--ink); padding: 16px 16px 10px; }
 .qt-bc a { display: flex; align-items: center; gap: 9px; padding: 10px 16px; color: var(--body); font-size: 13px; line-height: 1.3; border-top: 1px solid var(--line-2); }
@@ -535,15 +552,15 @@ textarea.inp { height: auto; padding: 8px 11px; resize: vertical; }
 .pt-co-nhan { font-size: 12.5px; color: var(--muted); }
 .pt-nav { display: flex; align-items: center; gap: 4px; }
 .pt-num { min-width: 28px; padding: 0 6px; }
-.pt-num.pt-hien-tai { background: var(--blue) !important; color: #fff !important; font-weight: 700; }
-.pt-num.pt-hien-tai:hover { background: var(--blue-d) !important; color: #fff !important; }
+.pt-num.pt-hien-tai { background: var(--blue); color: #fff !important; font-weight: 700; }
+.pt-num.pt-hien-tai:hover { background: var(--blue-d); color: #fff !important; }
 .icon-btn.sm { width: 28px; height: 28px; border-radius: 7px; }
 .icon-btn:disabled { opacity: .35; cursor: not-allowed; }
 
 /* ── Nhóm nút liền khối (Trước / Sau trên chân form) ── */
 .btn-group { display: inline-flex; align-items: stretch; border: 1px solid var(--line); border-radius: 7px; overflow: hidden; background: #fff; }
-.btn-group > .btn { border: 0 !important; border-radius: 0 !important; height: 28px; padding: 0 10px; font-size: 12px; min-width: 76px; justify-content: center; }
-.btn-group > .btn + .btn { border-left: 1px solid var(--line) !important; }
+.btn-group > .btn { border: 0; border-radius: 0 !important; height: 28px; padding: 0 10px; font-size: 12px; min-width: 76px; justify-content: center; }
+.btn-group > .btn + .btn { border-left: 1px solid var(--line); }
 .btn-group > .btn:hover:not(:disabled) { background: #fafbfd; }
 .btn-group > .btn:disabled { opacity: .45; background: #f8fafc; cursor: not-allowed; }
 
@@ -621,8 +638,8 @@ textarea.inp { height: auto; padding: 8px 11px; resize: vertical; }
 .kn-o:hover { background: var(--soft); border-radius: 4px; }
 .kn-o.ngoai { color: var(--faint); }
 .kn-o.giua { background: var(--tint); color: var(--ink); border-radius: 0; }
-.kn-o.dau { background: var(--blue) !important; color: #fff !important; font-weight: 600; border-radius: 4px 0 0 4px; z-index: 1; }
-.kn-o.cuoi { background: var(--blue) !important; color: #fff !important; font-weight: 600; border-radius: 0 4px 4px 0; z-index: 1; }
+.kn-o.dau { background: var(--blue); color: #fff !important; font-weight: 600; border-radius: 4px 0 0 4px; z-index: 1; }
+.kn-o.cuoi { background: var(--blue); color: #fff !important; font-weight: 600; border-radius: 0 4px 4px 0; z-index: 1; }
 .kn-o.dau.cuoi { border-radius: 4px; }
 .kn-o.hom-nay::after { content: ''; position: absolute; bottom: 3px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; border-radius: 50%; background: var(--blue); }
 .kn-o.dau.hom-nay::after, .kn-o.cuoi.hom-nay::after { background: #fff; }
@@ -675,7 +692,7 @@ textarea.inp { height: auto; padding: 8px 11px; resize: vertical; }
 
 /* ── Gói Free ẩn tính năng ngoài gói, sơ đồ tiền gộp khung Báo cáo vào khối sổ sách (T36) ── */
 .qt-top.mot-cot { grid-template-columns: minmax(0, 1fr); }
-.qt-ht-all { display: inline-flex; align-items: center; gap: 6px; margin-top: 4px; padding: 4px 8px; border-radius: 8px; color: var(--blue); font-size: 12.5px; font-weight: 600; }
+.qt-ht-all { display: inline-flex; align-self: flex-start; align-items: center; gap: 6px; margin-top: 6px; padding: 4px 8px; border-radius: 8px; color: var(--blue); font-size: 12.5px; font-weight: 600; }
 .qt-ht-all:hover { background: var(--tint); }
 
 /* ── Gói đang dùng dưới logo, hàng lọc từng cột, danh sách chứng từ cao hơn khung chi tiết (T39) ── */

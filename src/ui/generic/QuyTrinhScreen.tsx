@@ -143,28 +143,101 @@ function ONut({ n, goi, chinh, so, style }: { n: NutQT; goi: Goi; chinh?: boolea
   )
 }
 
-/** Sơ đồ hội tụ: mỗi làn một nhóm nghiệp vụ xếp dọc bên trái, mũi tên từ từng làn gom về khối kết quả bên phải */
+const BO = 10         // bán kính góc bo ở hai đầu trục gom
+const MUI = 8         // chiều dài mũi tên vào khối Sổ sách, cao 10
+
+/** Sơ đồ hội tụ: mỗi làn một hàng thấp xếp dọc bên trái, đường nối từ từng làn gom về khối kết quả bên phải */
 function SoDoHoiTu({ lan, ra, goi, modKey }: { lan: LanQT[]; ra: LanQT; goi: Goi; modKey: string }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const [ve, setVe] = useState<{ w: number; h: number; d: string; mui: string } | null>(null)
+  // Đo vị trí thật của làn, nút cuối mỗi làn, cột gom, khối Sổ sách rồi vẽ toàn bộ đường nối bằng một SVG.
+  // Đo lại khi lưới đổi cỡ, khi dãy nút đổi bề rộng (đổi gói, phông tải xong).
+  useLayoutEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const doLai = () => {
+      const g = el.getBoundingClientRect()
+      const lanEl = [...el.querySelectorAll<HTMLElement>(':scope > .qt-ht-lan > .qt-lan')]
+      const gom = el.querySelector<HTMLElement>(':scope > .qt-ht-gom')
+      const raEl = el.querySelector<HTMLElement>(':scope > .qt-ht-ra')
+      if (!lanEl.length || !gom || !raEl) { setVe(null); return }
+      const dau = lanEl.map(l => {
+        const r = l.getBoundingClientRect()
+        const cuoi = l.querySelector('.qt-lan-nut')?.lastElementChild?.getBoundingClientRect()
+        return { x: Math.round((cuoi ? cuoi.right : r.left) - g.left + 12), y: Math.round(r.top + r.height / 2 - g.top) }
+      })
+      const gr = gom.getBoundingClientRect(), rr = raEl.getBoundingClientRect()
+      const ax = Math.round(gr.left + gr.width / 2 - g.left)
+      const dinh = Math.round(rr.left - g.left - 2)        // mũi tên dừng cách mép trái khối Sổ sách 2px
+      const p: string[] = []
+      let y: number
+      if (dau.length === 1) {
+        y = dau[0].y
+        p.push(`M${dau[0].x} ${y}`)
+      } else {
+        const a = dau[0], z = dau[dau.length - 1]
+        // làn đầu rẽ xuống trục, trục chạy xuống, rẽ ra làn cuối: một nét liền, bo hai góc
+        p.push(`M${a.x} ${a.y}H${ax - BO}A${BO} ${BO} 0 0 1 ${ax} ${a.y + BO}V${z.y - BO}A${BO} ${BO} 0 0 1 ${ax - BO} ${z.y}H${z.x}`)
+        // làn giữa nhập thẳng vào trục
+        dau.slice(1, -1).forEach(l => p.push(`M${l.x} ${l.y}H${ax}`))
+        const tam = Math.round(rr.top + rr.height / 2 - g.top)
+        y = tam >= a.y + BO && tam <= z.y - BO ? tam : Math.round((a.y + z.y) / 2)
+        p.push(`M${ax} ${y}`)
+      }
+      // đoạn vào khối Sổ sách chui vào trong mũi tên 2px để không hở khe
+      p.push(`H${dinh - MUI + 2}`)
+      setVe({ w: Math.round(g.width), h: Math.round(g.height), d: p.join(''), mui: `M${dinh - MUI} ${y - 5}L${dinh} ${y}L${dinh - MUI} ${y + 5}Z` })
+    }
+    const ro = new ResizeObserver(doLai)
+    ro.observe(el)
+    el.querySelectorAll('.qt-lan-nut, .qt-ht-ra').forEach(x => ro.observe(x))
+    doLai()
+    return () => ro.disconnect()
+  }, [lan, ra, goi])
+
   return (
     <div className="qt-so">
-      <div className="qt-ht">
+      <div className="qt-ht" ref={ref}>
+        {ve && (
+          <svg className="qt-ht-svg" width={ve.w} height={ve.h} aria-hidden>
+            <path d={ve.d} />
+            <path d={ve.mui} className="mui" />
+          </svg>
+        )}
         <div className="qt-ht-lan">
           {lan.map(l => (
-            <div key={l.ten} className="qt-lan">
-              <div className="qt-lan-ten">{l.ten}</div>
-              <div className="qt-lan-nut">{l.nut.map(n => <ONut key={n.di} n={n} goi={goi} chinh />)}</div>
-              <span className="qt-lan-noi" />
+            <div key={l.ten} className={`qt-lan qt-ht-${l.tone ?? 'info'}`}>
+              <div className="qt-lan-ten" title={l.ten}>
+                <span className="qt-ht-ic"><Icon n={l.nut[0].icon} className="ic" /></span>
+                <span className="qt-ht-t">{l.ten}</span>
+              </div>
+              <div className="qt-lan-nut">{l.nut.map(n => <NutNgang key={n.di} n={n} goi={goi} />)}</div>
             </div>
           ))}
         </div>
-        <div className="qt-ht-gom"><span /></div>
+        <div className="qt-ht-gom" />
         <div className="qt-ht-ra">
-          <div className="qt-lan-ten">{ra.ten}</div>
-          {ra.nut.map(n => <ONut key={n.di} n={n} goi={goi} />)}
+          <div className="qt-ht-dau"><span className="qt-ht-ic"><Icon n="book" className="ic" /></span>{ra.ten}</div>
+          {ra.nut.map(n => <NutNgang key={n.di} n={n} goi={goi} dong />)}
           <Link to={`/app/${modKey}/bao-cao`} className="qt-ht-all">Tất cả báo cáo<Icon n="arrow" className="ic sm" /></Link>
         </div>
       </div>
     </div>
+  )
+}
+
+/** Nút nằm ngang của sơ đồ hội tụ: ô biểu tượng bên trái, tên bên phải; `dong` là hàng sổ trong khối Sổ sách.
+ *  Khoá theo gói giống hệt ONut, chỉ khác cách hiện. Giữ lớp qt-n để bộ kiểm tìm được ô trên sơ đồ. */
+function NutNgang({ n, goi, dong }: { n: NutQT; goi: Goi; dong?: boolean }) {
+  const x = moNut(n, goi)
+  return (
+    <Link to={x.path} className={`qt-n ${dong ? 'qt-ht-dong' : 'qt-ht-nut'} ${n.tone ?? ''} ${x.ok ? '' : 'lock'}`}
+      title={x.ok ? `Mở ${n.ten.toLowerCase()}` : `${n.ten}: có ở gói ${GOI[minGoi(x.ma!)].ten}`}>
+      <span className="qt-ht-ic"><Icon n={n.icon} className="ic" /></span>
+      <span className="qt-ht-t">{n.ten}</span>
+      {!x.ok && <Icon n="lock" className="ic sm qt-ht-khoa" />}
+      {!x.ok && x.ma && <Pk g={minGoi(x.ma)} o />}
+    </Link>
   )
 }
 
