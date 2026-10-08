@@ -9,6 +9,7 @@ import { PageHead } from '../../ui/Page'
 import { ReportPaper, ReportToolbar, RptTable } from '../../ui/generic/ReportScreen'
 import { between, dmy, k, pad, pick, rng } from '../../ui/format'
 import { Select } from '../../ui/Dropdown'
+import { LocO } from '../../ui/ThanhLoc'
 
 export function SoQuy({ sc, mod }: ScreenProps) {
   const { s } = useSession()
@@ -49,7 +50,7 @@ export function SoQuy({ sc, mod }: ScreenProps) {
       <PageHead crumb={[mod.ten, sc.nhom ?? '']} title={tenMan(sc)} code={sc.code} />
       <section className="report">
         <ReportToolbar ky={ky} setKy={setKy}>
-          <label className="fld">Quỹ<Select value={cn} onChange={e => setCn(e.target.value)}>{CHI_NHANH.map(c => <option key={c.id} value={c.id}>Quỹ tiền mặt {c.ngan}</option>)}</Select></label>
+          <LocO nhan="Quỹ"><Select className="inp" value={cn} onChange={e => setCn(e.target.value)}>{CHI_NHANH.map(c => <option key={c.id} value={c.id}>Quỹ tiền mặt {c.ngan}</option>)}</Select></LocO>
         </ReportToolbar>
         <ReportPaper title="Sổ quỹ tiền mặt" sub={`Quỹ tiền mặt ${ten} · Tháng ${thang}/2026`} mau={s.goi === 'M' ? 'S07-DNN' : undefined} goi={s.goi}>
           <RptTable cols={cols} rows={[{ dg: 'Số tồn đầu kỳ', du: so.mo, _b: 1 }, ...so.rows, { dg: 'Cộng phát sinh trong kỳ', no: so.tn, co: so.tc, _t: 1 }, { dg: 'Số tồn cuối kỳ', du: so.cuoi, _t: 1 }]} />

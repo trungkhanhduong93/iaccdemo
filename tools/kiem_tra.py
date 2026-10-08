@@ -111,9 +111,11 @@ def main():
                 if pg.locator('.lockpage').count():
                     continue
                 for ky in ['8', '9', '10']:
-                    # ô chọn kỳ là ô chọn tự vẽ (ui/Dropdown.tsx): bấm mở rồi bấm dòng của kỳ
-                    pg.locator('.report .filters .sel').first.click()
-                    pg.locator('.pop-sel [role=option]', has_text=f'Tháng {ky}/2026').first.click()
+                    # kỳ chọn bằng ô khoảng ngày (ui/ChonNgay.tsx): mở lịch, sang Chọn tháng, bấm tháng của năm 2026 rồi Xác nhận
+                    pg.locator('.report .kn-nut').first.click()
+                    pg.locator('.kn-pop').get_by_role('button', name='Chọn tháng', exact=True).click()
+                    pg.locator('.kn-luoi-thang').first.get_by_role('button', name=f'Thg {ky}', exact=True).click()
+                    pg.locator('.kn-pop').get_by_role('button', name='Xác nhận', exact=True).click()
                     pg.wait_for_timeout(60)
                     if pg.locator('.report .chip.err').count():
                         loi.append(f'[{goi}] {path} kỳ {ky}: báo cáo lệch')

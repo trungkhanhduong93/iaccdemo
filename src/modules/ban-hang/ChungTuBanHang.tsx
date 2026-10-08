@@ -11,9 +11,11 @@ import { Card, Note, PageHead } from '../../ui/Page'
 import { FormToanMan, useDong } from '../../ui/FormToanMan'
 import { VoucherDetail } from '../../ui/generic/VoucherScreen'
 import { St, Table } from '../../ui/Table'
-import { dmy, moneyD } from '../../ui/format'
+import { dmy, fold, moneyD } from '../../ui/format'
 import { Select } from '../../ui/Dropdown'
 import { PhanTrang } from '../../ui/PhanTrang'
+import { LocO, ThanhLoc } from '../../ui/ThanhLoc'
+import { docNgay, thangNay, trongKhoang, type KhoangNgay } from '../../ui/ChonNgay'
 
 /** Bán hàng ngoài POS: tiệc mang về, khách công ty đặt trước. Lập tay, không qua FABi */
 const NGOAI_POS: VoucherCfg = {
@@ -48,15 +50,22 @@ export function ChungTuBanHang({ sc, mod }: ScreenProps) {
 function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
   const { s, toast } = useSession()
   const nav = useNavigate()
-  const [ky, setKy] = useState('9')
+  const [khoang, setKhoang] = useState<KhoangNgay>(thangNay)
   const [cn, setCn] = useState('all')
+  const [q, setQ] = useState('')
   const [trang, setTrang] = useState(1)
   const [coTrang, setCoTrang] = useState(20)
   const [tabPanel, setTabPanel] = useState('ct')
   const kieu = kieuGhiSo(s.goi)
   const ghi = kieu !== 'khong'
 
-  const list = rows.filter(r => String(r.thang) === ky && (cn === 'all' || r.x.cn === cn))
+  const list = rows.filter(r => {
+    const d = r.x?.date instanceof Date ? r.x.date : docNgay(r.ngay)
+    if (!trongKhoang(d, khoang)) return false
+    if (cn !== 'all' && r.x?.cn !== cn) return false
+    if (q && !fold(`${r.so} ${r.dienGiai}`).includes(fold(q))) return false
+    return true
+  })
   const [activeId, setActiveId] = useState<string>(() => list[0]?.id ?? '')
   const activeRow = list.find(r => r.id === activeId) ?? list[0]
 
@@ -88,12 +97,29 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
       </div>
       <div className="voucher-split">
         <section className="card voucher-top">
-          <div className="filters">
-            <label className="fld"><Icon n="calendar" className="ic sm" />Kỳ<Select value={ky} onChange={e => { setKy(e.target.value); setTrang(1) }}><option value="9">Tháng 9/2026</option><option value="10">Tháng 10/2026</option></Select></label>
-            <label className="fld">Chi nhánh<Select value={cn} onChange={e => { setCn(e.target.value); setTrang(1) }}><option value="all">Tất cả</option>{CHI_NHANH.map(c => <option key={c.id} value={c.id}>{c.ten}</option>)}</Select></label>
-            <span className="grow" />
-            {ghi && <button className="btn sm" onClick={() => toast('Đã ghi sổ 3 chứng từ')}>Ghi sổ</button>}
-          </div>
+          <ThanhLoc
+            tim={{
+              value: q,
+              onChange: v => { setQ(v); setTrang(1) },
+              placeholder: 'Số chứng từ, diễn giải',
+            }}
+            ngay={{
+              value: khoang,
+              onChange: k => { setKhoang(k); setTrang(1) },
+            }}
+            boLoc={
+              <LocO nhan="Chi nhánh">
+                <Select className="inp" value={cn} onChange={e => { setCn(e.target.value); setTrang(1) }}>
+                  <option value="all">Tất cả</option>
+                  {CHI_NHANH.map(c => <option key={c.id} value={c.id}>{c.ten}</option>)}
+                </Select>
+              </LocO>
+            }
+            dangLoc={cn !== 'all'}
+            onLamMoi={() => { setCn('all'); setTrang(1) }}
+            onTaiLai={() => toast('Đã tải lại danh sách')}
+            phai={ghi && <button className="btn sm" onClick={() => toast('Đã ghi sổ 3 chứng từ')}>Ghi sổ</button>}
+          />
           {list.length ? (
             <>
               <Table
@@ -124,7 +150,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
                 type="button"
                 className="btn sm"
                 style={{ marginTop: 10 }}
-                onClick={() => { setKy('9'); setCn('all'); setTrang(1) }}
+                onClick={() => { setKhoang(thangNay()); setCn('all'); setQ(''); setTrang(1) }}
               >
                 Xoá bộ lọc
               </button>

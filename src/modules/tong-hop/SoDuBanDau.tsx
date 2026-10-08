@@ -7,6 +7,7 @@ import { Icon } from '../../ui/Icon'
 import { PageHead } from '../../ui/Page'
 import { Table } from '../../ui/Table'
 import { fold, k, money } from '../../ui/format'
+import { ThanhLoc } from '../../ui/ThanhLoc'
 import { KHACH, NCC, NVL } from '../../data/mock'
 import { TEN_TK, soCai } from './so-cai'
 
@@ -139,11 +140,14 @@ export function SoDuBanDau({ sc, mod }: ScreenProps) {
         })}
       </div>
       <section className="card">
-        <div className="filters">
-          <label className="fld"><Icon n="search" className="ic sm" /><input value={q} onChange={e => setQ(e.target.value)} placeholder="Tìm theo mã, tên" /></label>
-          <span className="grow" />
-          <span className="muted" style={{ fontSize: 12 }}>{rows.length}/{cardRows.length} dòng</span>
-        </div>
+        <ThanhLoc
+          tim={{
+            value: q,
+            onChange: setQ,
+            placeholder: 'Tìm theo mã, tên',
+          }}
+          phai={<span className="muted" style={{ fontSize: 12 }}>{rows.length}/{cardRows.length} dòng</span>}
+        />
         {rows.length ? <Table cols={cols} rows={rows} sum={sum} /> : (
           cardRows.length ? <div className="empty"><b>Không có dòng khớp bộ lọc</b><button type="button" className="btn sm" style={{ marginTop: 10 }} onClick={() => setQ('')}>Xoá bộ lọc</button></div>
             : <div className="empty"><b>Chưa có dữ liệu</b></div>

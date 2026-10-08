@@ -1,5 +1,5 @@
 // Sổ, báo cáo chung: thanh lọc kỳ và chi nhánh, trang báo cáo kiểu mẫu in, ô ký
-import { useMemo, useState, type ReactNode } from 'react'
+import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import type { Col, ReportCfg, Row, ScreenProps } from '../../modules/types'
 import { tenMan } from '../../app/registry'
 import { donViHienTai, useSession } from '../../app/session'
@@ -11,22 +11,50 @@ import { Table } from '../Table'
 import { between, k, money, pick, rng } from '../format'
 import { chungTu, soChiTiet } from './gen'
 import { Select } from '../Dropdown'
+import { LocO, NutVuong, ThanhLoc } from '../ThanhLoc'
+import { khoangThang } from '../ChonNgay'
 
 export const KY_CHON: [string, string][] = [['9', 'Tháng 9/2026'], ['10', 'Tháng 10/2026 (đến 07/10)'], ['8', 'Tháng 8/2026']]
 
 export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: string) => void; children?: ReactNode }) {
+  // Số liệu báo cáo mẫu tính theo tháng, nên lấy tháng của ngày bắt đầu làm kỳ.
+  const [khoang, setKhoang] = useState(() => khoangThang(Number(ky), 2026))
+
+  useEffect(() => {
+    const thang = Number(ky)
+    if (thang && khoang.tu.getMonth() + 1 !== thang) {
+      setKhoang(khoangThang(thang, 2026))
+    }
+  }, [ky])
+
   return (
-    <div className="filters" style={{ borderBottom: '1px solid var(--line)' }}>
-      <label className="fld"><Icon n="calendar" className="ic sm" />Kỳ
-        <Select value={ky} onChange={e => setKy(e.target.value)}>{KY_CHON.map(([v, l]) => <option key={v} value={v}>{l}</option>)}</Select>
-      </label>
-      <label className="fld">Chi nhánh<Select><option>Tất cả chi nhánh</option>{CHI_NHANH.map(c => <option key={c.id}>{c.ten}</option>)}</Select></label>
-      {children}
-      <span className="grow" />
-      <button className="btn sm"><Icon n="printer" className="ic sm" />In</button>
-      <button className="btn sm"><Icon n="download" className="ic sm" />Xuất Excel</button>
-      <button className="btn sm"><Icon n="doc" className="ic sm" />Xuất PDF</button>
-    </div>
+    <ThanhLoc
+      ngay={{
+        value: khoang,
+        onChange: k => {
+          setKhoang(k)
+          setKy(String(k.tu.getMonth() + 1))
+        },
+      }}
+      boLoc={
+        <>
+          <LocO nhan="Chi nhánh">
+            <Select className="inp">
+              <option>Tất cả chi nhánh</option>
+              {CHI_NHANH.map(c => <option key={c.id}>{c.ten}</option>)}
+            </Select>
+          </LocO>
+          {children}
+        </>
+      }
+      phai={
+        <>
+          <NutVuong icon="printer" title="In" />
+          <NutVuong icon="download" title="Xuất Excel" />
+          <NutVuong icon="doc" title="Xuất PDF" />
+        </>
+      }
+    />
   )
 }
 
@@ -55,7 +83,7 @@ export function ReportPaper({ title, sub, mau, goi, children, ky = true }: { tit
   )
 }
 
-const kyTen = (ky: string) => KY_CHON.find(x => x[0] === ky)?.[1].replace(' (đến 07/10)', '') ?? ''
+const kyTen = (ky: string) => KY_CHON.find(x => x[0] === ky)?.[1].replace(' (đến 07/10)', '') || `Tháng ${ky}/2026`
 const dsTongHop: Record<string, { ma: string; ten: string }[]> = {
   kh: KHACH, ncc: NCC, hang: HANG, nvl: NVL, cn: CHI_NHANH.map(c => ({ ma: c.id.toUpperCase(), ten: c.ten })),
   tk: [['1111', 'Tiền mặt'], ['1121', 'Tiền gửi ngân hàng'], ['131', 'Phải thu của khách hàng'], ['1331', 'Thuế GTGT được khấu trừ'], ['152', 'Nguyên liệu, vật liệu'],

@@ -8,6 +8,7 @@ import { minGoi } from '../../app/plan'
 import { Icon } from '../Icon'
 import { PageHead, Pk } from '../Page'
 import { fold } from '../format'
+import { ThanhLoc } from '../ThanhLoc'
 
 export function BaoCaoScreen({ mod }: ScreenProps) {
   const { s } = useSession()
@@ -24,7 +25,7 @@ export function BaoCaoScreen({ mod }: ScreenProps) {
   return (
     <div className="page">
       <PageHead crumb={[mod.ten, 'Báo cáo']} title="Tất cả báo cáo" meta={<span className="chip">Gói đang dùng mở {co}/{mod.screens.filter(laBaoCao).length} báo cáo</span>}>
-        <label className="fld"><Icon n="search" className="ic sm" /><input value={q} onChange={e => setQ(e.target.value)} placeholder="Tìm báo cáo" /></label>
+        <ThanhLoc tim={{ value: q, onChange: setQ, placeholder: 'Tìm báo cáo' }} />
       </PageHead>
       {nhom.length === 0 && <div className="card"><div className="empty"><b>Không có báo cáo khớp "{q}"</b></div></div>}
       {nhom.map(([n, scs]) => (

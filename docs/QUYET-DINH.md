@@ -160,3 +160,13 @@ Lý do: PhuongXT chốt khi làm T25.
 Đang có: 1.12 Danh mục quỹ tiền và 2.2.3 Sổ ngân hàng mở cho gói Free.
 
 Lý do: PhuongXT cần mở hai mục này cho gói Free ngay, không chờ chạy lại script trên máy Trum.
+
+## QD20. Thanh lọc và chọn khoảng ngày theo iFaster (08/10/2026)
+
+- Mọi màn danh mục, danh sách, báo cáo dùng `ThanhLoc` (`src/ui/ThanhLoc.tsx`). Trên thanh có ô tìm, khoảng ngày, nút phễu mở khung Bộ lọc, nút tải lại. Bên phải là các nút biểu tượng vuông.
+- Ô lọc phụ (trạng thái, nhóm, kho, quỹ) nằm trong khung Bộ lọc, mỗi ô là một `LocO`. Đang lọc khác mặc định thì nút phễu có chấm xanh. Danh sách chứng từ không có ô Chi nhánh trong khung Bộ lọc, vì chi nhánh chọn trên thanh trên (QD17).
+- Khoảng ngày (`src/ui/ChonNgay.tsx`) hiện lịch 2 tháng, có 3 chế độ ngày, tháng, quý, và các nút chọn nhanh. Bấm Xác nhận mới áp dụng. Hôm nay của app là `HOM_NAY` (07/10/2026).
+- Ngày viết `dd/mm/yyyy`, không theo kiểu `dd-mm-yyyy` của iFaster.
+- Danh sách chứng từ mở mặc định ở tháng này. Báo cáo, sổ vẫn mở ở tháng 9 và lấy tháng của ngày bắt đầu làm kỳ, vì dữ liệu mẫu tính theo tháng.
+
+Lý do: Trum giao việc T34, chốt các mặc định trên ngày 08/10/2026.

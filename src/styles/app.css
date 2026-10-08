@@ -569,3 +569,96 @@ textarea.inp { height: auto; padding: 8px 11px; resize: vertical; }
 .chon-cn p { margin: 0; }
 .chon-cn-ds { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
 .chon-cn-ds .btn { justify-content: flex-start; height: 40px; }
+
+/* ── Thanh lọc và chọn khoảng ngày theo iFaster (T34) ── */
+.thanh-loc { display: flex; align-items: center; gap: 12px; padding: 12px; border-bottom: 1px solid var(--line-2); background: #fff; flex-wrap: wrap; }
+.voucher-top .thanh-loc { flex: none; border-bottom: 1px solid var(--line-2); margin-bottom: 0; border-radius: 0; }
+.card > .thanh-loc:first-child, section.report > .thanh-loc:first-child { border-top-left-radius: var(--r); border-top-right-radius: var(--r); }
+.ph-act .thanh-loc { padding: 0; border-bottom: 0; background: transparent; }
+
+.thanh-loc-tim { display: flex; align-items: center; gap: 8px; width: 250px; height: 34px; padding: 0 10px; border: 1px solid var(--line); border-radius: 8px; background: #fff; flex: none; box-sizing: border-box; }
+.thanh-loc-tim:focus-within { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(5, 96, 166, .12); }
+.thanh-loc-tim-ic { color: var(--faint); flex: none; }
+.thanh-loc-tim-inp { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; font-size: 13.5px; color: var(--ink); }
+.thanh-loc-tim-inp::placeholder { color: var(--muted); font-weight: 400; }
+
+.thanh-loc-phai { display: flex; align-items: center; gap: 8px; }
+
+.nut-vuong, .btn-vuong { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; padding: 0; border: 1px solid var(--line); border-radius: 8px; background: #fff; color: var(--body); position: relative; flex: none; cursor: pointer; transition: all .15s ease; box-sizing: border-box; }
+.nut-vuong:hover, .btn-vuong:hover { border-color: #c9d3e1; background: #fafbfd; color: var(--ink); }
+.nut-vuong.on, .btn-vuong.open { border-color: var(--blue); color: var(--blue); }
+.nut-vuong-dot { position: absolute; top: 6px; right: 6px; width: 6px; height: 6px; border-radius: 50%; background: var(--blue); }
+
+/* Khung chọn khoảng ngày (.kn-*) */
+.kn-nut { display: inline-flex; align-items: center; justify-content: space-between; width: 250px; height: 34px; padding: 0 11px; background: #fff; border: 1px solid var(--line); border-radius: 8px; font-size: 14px; color: var(--ink); cursor: pointer; flex: none; box-sizing: border-box; transition: all .15s ease; }
+.kn-nut:hover { border-color: #c9d3e1; }
+.kn-nut.open { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(5, 96, 166, .12); }
+.kn-nut-txt { font-variant-numeric: tabular-nums; display: inline-block; white-space: nowrap; }
+.kn-nut-arr { color: var(--faint); margin: 0 4px; }
+.kn-nut-ic { color: var(--faint); flex: none; }
+
+.kn-pop { padding: 0; background: #fff; border-radius: 10px; box-shadow: var(--sh-lg); border: 1px solid var(--line); overflow: hidden; }
+.kn-pop-in { padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; }
+
+.kn-lich { display: flex; align-items: stretch; gap: 14px; }
+.kn-cot { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.kn-ngan-doc { width: 1px; background: var(--line); flex: none; margin: 0 2px; }
+
+.kn-dau { display: flex; align-items: center; justify-content: space-between; height: 32px; margin-bottom: 6px; }
+.kn-dau-nhom { display: flex; align-items: center; gap: 2px; }
+.kn-dau-ten { font-size: 13.5px; font-weight: 700; color: var(--ink); text-align: center; }
+.kn-nav-btn { width: 26px; height: 26px; display: grid; place-items: center; border-radius: 6px; color: var(--muted); cursor: pointer; font-size: 13px; line-height: 1; }
+.kn-nav-btn:hover { background: var(--soft); color: var(--ink); }
+
+.kn-hang-thu { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; margin-bottom: 4px; }
+.kn-thu { font-size: 12px; font-weight: 600; color: var(--muted); height: 26px; display: flex; align-items: center; justify-content: center; }
+
+.kn-luoi-ngay { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px 0; }
+.kn-o { width: 38px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 14px; color: var(--ink); position: relative; cursor: pointer; margin: 0 auto; border: 0; background: transparent; font-variant-numeric: tabular-nums; }
+.kn-o:hover { background: var(--soft); border-radius: 4px; }
+.kn-o.ngoai { color: var(--faint); }
+.kn-o.giua { background: var(--tint); color: var(--ink); border-radius: 0; }
+.kn-o.dau { background: var(--blue) !important; color: #fff !important; font-weight: 600; border-radius: 4px 0 0 4px; z-index: 1; }
+.kn-o.cuoi { background: var(--blue) !important; color: #fff !important; font-weight: 600; border-radius: 0 4px 4px 0; z-index: 1; }
+.kn-o.dau.cuoi { border-radius: 4px; }
+.kn-o.hom-nay::after { content: ''; position: absolute; bottom: 3px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; border-radius: 50%; background: var(--blue); }
+.kn-o.dau.hom-nay::after, .kn-o.cuoi.hom-nay::after { background: #fff; }
+
+.kn-luoi-thang { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 6px 0; }
+.kn-thang-btn { height: 36px; border-radius: 6px; border: 1px solid var(--line); background: #fff; font-size: 13px; font-weight: 500; color: var(--ink); cursor: pointer; }
+.kn-thang-btn:hover { background: var(--soft); }
+.kn-thang-btn.on { background: var(--blue); border-color: var(--blue); color: #fff; font-weight: 600; }
+
+.kn-luoi-quy { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 10px 0; }
+.kn-quy-btn { height: 42px; border-radius: 6px; border: 1px solid var(--line); background: #fff; font-size: 13.5px; font-weight: 600; color: var(--ink); cursor: pointer; }
+.kn-quy-btn:hover { background: var(--soft); }
+.kn-quy-btn.on { background: var(--blue); border-color: var(--blue); color: #fff; }
+
+.kn-che-do { display: flex; gap: 8px; justify-content: center; padding: 6px 0; border-top: 1px solid var(--line-2); }
+.kn-che-do-btn { height: 26px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line); background: #fff; font-size: 12px; font-weight: 500; color: var(--muted); cursor: pointer; }
+.kn-che-do-btn:hover { border-color: #c9d3e1; color: var(--ink); }
+.kn-che-do-btn.on { border-color: var(--blue); color: var(--blue); font-weight: 600; }
+
+.kn-nhanh { display: flex; align-items: center; justify-content: space-between; gap: 6px; padding-top: 8px; border-top: 1px solid var(--line); }
+.kn-nhanh-ds { display: flex; align-items: center; gap: 4px; flex-wrap: nowrap; }
+.kn-nhanh-btn { height: 26px; padding: 0 6px; border-radius: 6px; border: 1px solid var(--line); background: #fff; font-size: 12px; color: var(--body); cursor: pointer; white-space: nowrap; }
+.kn-nhanh-btn:hover { border-color: #c9d3e1; background: var(--soft); color: var(--ink); }
+.kn-xac-nhan { flex: none; }
+
+/* Khung bộ lọc (.pheu-*, .loc-o) */
+.pheu-pop { padding: 0; background: #fff; border-radius: 10px; box-shadow: var(--sh-lg); border: 1px solid var(--line); overflow: hidden; }
+.pheu-khung { display: flex; flex-direction: column; }
+.pheu-dau { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+.pheu-tieu-de { font-size: 15px; font-weight: 700; color: var(--ink); }
+.pheu-dong { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; border: 1px solid var(--line); color: var(--muted); cursor: pointer; }
+.pheu-dong:hover { background: var(--soft); color: var(--ink); }
+.pheu-than { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 16px; padding: 16px; }
+.pheu-chan { display: flex; align-items: center; justify-content: flex-end; gap: 8px; padding: 4px 16px 14px; }
+
+.loc-o { display: flex; flex-direction: column; gap: 6px; }
+.loc-o-nhan { font-size: 14px; font-weight: 500; color: var(--body); }
+.loc-o-ctl { width: 100%; }
+.loc-o .sel.inp { width: 100%; height: 34px; border: 1px solid var(--line); border-radius: 8px; padding: 0 11px; background: #fff; font-size: 13.5px; }
+.loc-o input.inp, .loc-o .inp { width: 100%; height: 34px; }
+
+

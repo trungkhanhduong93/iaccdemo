@@ -9,6 +9,7 @@ import { PageHead } from '../Page'
 import { St, Table } from '../Table'
 import { fold } from '../format'
 import { Dropdown, MenuItem, Select } from '../Dropdown'
+import { LocO, ThanhLoc } from '../ThanhLoc'
 
 export function CatalogScreen({ sc, mod }: ScreenProps) {
   const { s, toast } = useSession()
@@ -62,14 +63,26 @@ export function CatalogScreen({ sc, mod }: ScreenProps) {
       </PageHead>
       {cfg.note?.(s.goi)}
       <section className="card">
-        <div className="filters">
-          <label className="fld"><Icon n="search" className="ic sm" /><input value={q} onChange={e => setQ(e.target.value)} placeholder="Tìm theo mã, tên" /></label>
-          {nhoms.length > 1 && (
-            <label className="fld">{cfg.nhanLoc ?? 'Nhóm'}<Select value={nhom} onChange={e => setNhom(e.target.value)}><option value="">Tất cả</option>{nhoms.map(n => <option key={n}>{n}</option>)}</Select></label>
-          )}
-          <span className="grow" />
-          <span className="muted" style={{ fontSize: 12 }}>{rows.length}/{all.length} dòng</span>
-        </div>
+        <ThanhLoc
+          tim={{
+            value: q,
+            onChange: setQ,
+            placeholder: 'Tìm theo mã, tên',
+          }}
+          boLoc={
+            nhoms.length > 1 ? (
+              <LocO nhan={cfg.nhanLoc ?? 'Nhóm'}>
+                <Select className="inp" value={nhom} onChange={e => setNhom(e.target.value)}>
+                  <option value="">Tất cả</option>
+                  {nhoms.map(n => <option key={n}>{n}</option>)}
+                </Select>
+              </LocO>
+            ) : undefined
+          }
+          dangLoc={nhom !== ''}
+          onLamMoi={() => setNhom('')}
+          phai={<span className="muted" style={{ fontSize: 12 }}>{rows.length}/{all.length} dòng</span>}
+        />
         {rows.length ? <Table cols={cols} rows={rows} motDong onRow={r => setEdit(r)} /> : (
           all.length ? <div className="empty"><b>Không có dòng khớp bộ lọc</b><button className="btn sm" style={{ marginTop: 10 }} onClick={() => { setQ(''); setNhom('') }}>Xoá bộ lọc</button></div>
             : <div className="empty"><b>Chưa có dữ liệu</b><button className="btn sm pri" style={{ marginTop: 10 }} onClick={() => setEdit({})}>{cfg.them ?? 'Thêm mới'}</button></div>

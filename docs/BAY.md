@@ -14,6 +14,7 @@ Lỗi đã từng làm mất thời gian, kèm cách tránh. Đọc trước khi
 - Esc khi đang mở menu chỉ đóng menu: menu bắt phím ở pha capture và chặn lan. Thêm phím tắt Esc mới thì nghe ở `window` như `FormToanMan`, đừng nghe ở pha capture.
 - Menu "Khác" của thanh tab mở với `keep`: đóng vẫn nằm trong DOM (ẩn) để script kiểm đọc được tab. Script kiểm đọc `.mtabs-in a, .pop-khac a`. Đừng đổi sang render có điều kiện.
 - Tên lớp CSS ngắn dễ đụng nhau. Ô chọn `Select` dùng `.sel { display: inline-flex }`, hàng đang chọn trong bảng cũng từng mang lớp `sel`: hàng bị bẻ thành flex, cột ô tick phình 946px, cả danh sách chứng từ vỡ. Bộ kiểm không bắt được vì không có lỗi console. Hàng đang chọn giờ là `dang-chon`. Đặt lớp mới thì `grep` cả `app.css` trước, giống vụ `.st` và `.stt`.
+- Khung bật ra lồng nhau, vd ô chọn trong khung Bộ lọc: menu của ô chọn cũng gắn vào body, nằm ngoài khung cha. `Popover` cũ coi cú bấm vào menu con là bấm ra ngoài, đóng khung cha trước khi cú bấm kịp chọn, nên chọn chi nhánh không lọc gì (gặp 08/10). `Popover` giờ bỏ qua cú bấm trong `.pop` khác và Esc khi con trỏ đang ở menu con. Viết khung bật ra mới thì dùng `Popover`, đừng tự viết bắt cú bấm ra ngoài.
 
 ## Script kiểm và máy Windows
 

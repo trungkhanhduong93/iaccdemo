@@ -10,7 +10,7 @@ import { Icon } from './Icon'
 
 type Align = 'start' | 'end'
 
-function Popover({ anchor, open, onClose, align = 'start', className = '', width, keep, role = 'menu', children }: {
+export function Popover({ anchor, open, onClose, align = 'start', className = '', width, keep, role = 'menu', children }: {
   anchor: RefObject<HTMLElement | null>; open: boolean; onClose: () => void; align?: Align; className?: string
   width?: number; keep?: boolean; role?: string; children: ReactNode
 }) {
@@ -47,10 +47,15 @@ function Popover({ anchor, open, onClose, align = 'start', className = '', width
       if (ref.current?.contains(t) || anchor.current?.contains(t)) return
       // bấm vào chữ của label bọc nút: để label tự chuyển cú bấm sang nút, nút sẽ đóng menu
       if (anchor.current && t.closest?.('label')?.contains(anchor.current)) return
+      // bấm trong menu con (vd ô chọn trong khung Bộ lọc) cũng gắn vào body: không tính là bấm ra ngoài
+      if (t.closest?.('.pop')) return
       onClose()
     }
     const key = (e: KeyboardEvent) => {
       if (e.key !== 'Escape') return
+      // menu con đang giữ con trỏ thì để menu con tự đóng, khung ngoài giữ nguyên
+      const dangO = document.activeElement
+      if (dangO && !ref.current?.contains(dangO) && dangO.closest('.pop')) return
       e.stopPropagation()          // Esc chỉ đóng menu, không đóng luôn form toàn màn hình phía sau
       onClose()
       anchor.current?.focus()

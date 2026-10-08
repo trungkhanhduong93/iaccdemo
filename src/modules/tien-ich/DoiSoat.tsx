@@ -4,17 +4,24 @@ import { Link } from 'react-router-dom'
 import type { Col, Row, ScreenProps } from '../types'
 import { tenMan } from '../../app/registry'
 import { useSession } from '../../app/session'
-import { CHI_NHANH, LECH, cnTen } from '../../data/mock'
+import { CHI_NHANH, HOM_NAY, LECH, cnTen } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
 import { Kpi, Note, PageHead } from '../../ui/Page'
 import { St, Table } from '../../ui/Table'
 import { moneyD } from '../../ui/format'
 import { Select } from '../../ui/Dropdown'
+import { LocO, ThanhLoc } from '../../ui/ThanhLoc'
+import type { KhoangNgay } from '../../ui/ChonNgay'
 
 const CAP = ['Tất cả', 'FABi ↔ Sổ', 'Sổ ↔ Hoá đơn', 'Sổ ↔ Tiền']
 
 export function DoiSoat({ sc, mod }: ScreenProps) {
   const { toast } = useSession()
+  // Chỉ hiển thị, dữ liệu mẫu chưa lọc theo ngày
+  const [khoang, setKhoang] = useState<KhoangNgay>(() => ({
+    tu: new Date(2026, 8, 1),
+    den: HOM_NAY,
+  }))
   const [cap, setCap] = useState('Tất cả')
   const [tatCa, setTatCa] = useState(false)
   const [mo, setMo] = useState<Row | null>(null)
@@ -45,12 +52,22 @@ export function DoiSoat({ sc, mod }: ScreenProps) {
         <div className="tabs">
           {CAP.map(c => <button key={c} className={cap === c ? 'on' : ''} onClick={() => setCap(c)}>{c}<span className={`n ${c === 'Tất cả' && conLai ? 'err' : ''}`}>{c === 'Tất cả' ? conLai : ds.filter(l => l.cap === c && l.tt !== 'xong').length}</span></button>)}
         </div>
-        <div className="filters">
-          <label className="fld"><Icon n="calendar" className="ic sm" />Từ<b>01/09/2026</b>đến<b>07/10/2026</b></label>
-          <label className="fld">Chi nhánh<Select><option>Tất cả</option>{CHI_NHANH.map(c => <option key={c.id}>{c.ten}</option>)}</Select></label>
-          <span className="grow" />
-          <label className="row" style={{ fontSize: 13 }}><input type="checkbox" checked={tatCa} onChange={e => setTatCa(e.target.checked)} /> Hiện cả dòng đã khớp</label>
-        </div>
+        <ThanhLoc
+          ngay={{ value: khoang, onChange: setKhoang }}
+          boLoc={
+            <LocO nhan="Chi nhánh">
+              <Select className="inp">
+                <option>Tất cả</option>
+                {CHI_NHANH.map(c => <option key={c.id}>{c.ten}</option>)}
+              </Select>
+            </LocO>
+          }
+          phai={
+            <label className="row" style={{ fontSize: 13 }}>
+              <input type="checkbox" checked={tatCa} onChange={e => setTatCa(e.target.checked)} /> Hiện cả dòng đã khớp
+            </label>
+          }
+        />
         {list.length ? <Table cols={cols} rows={list} onRow={setMo} rowCls={r => r.tt === 'moi' ? 'bad' : ''} />
           : <div className="empty"><b>Không còn dòng lệch</b>Mọi cặp đối soát đã khớp trong khoảng ngày đang chọn.</div>}
       </section>

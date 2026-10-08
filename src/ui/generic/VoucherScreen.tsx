@@ -10,6 +10,8 @@ import { Card, PageHead } from '../Page'
 import { Dropdown, MenuHead, MenuItem, MenuSep, Select } from '../Dropdown'
 import { St, Table } from '../Table'
 import { PhanTrang } from '../PhanTrang'
+import { docNgay, thangNay, trongKhoang, type KhoangNgay } from '../ChonNgay'
+import { LocO, NutVuong, ThanhLoc } from '../ThanhLoc'
 import { fold, money } from '../format'
 import { NGUON, TT_CT, chungTu, dongCua, ttNghiepVu } from './gen'
 import { boO, nhomCua, theoLoai, TT_HD, TT_TIEN } from './nhom'
@@ -68,7 +70,7 @@ function gopLoai(cfg: VoucherCfg, seed: string): Row[] {
 export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & { cfg: VoucherCfg; rows: Row[]; extra?: React.ReactNode; title?: string }) {
   const { s, toast } = useSession()
   const nav = useNavigate()
-  const [ky, setKy] = useState('all')
+  const [khoang, setKhoang] = useState<KhoangNgay>(thangNay)
   const [tt, setTt] = useState('all')
   const [q, setQ] = useState('')
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
@@ -105,9 +107,7 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
 
   // Lọc theo kỳ
   const list = rows.filter(r => {
-    if (ky === '10' && r.thang !== 10) return false
-    if (ky === '9' && r.thang !== 9) return false
-    if (ky === 'q4' && (r.thang < 10 || r.thang > 12)) return false
+    if (!trongKhoang(docNgay(r.ngay), khoang)) return false
     if (cnChon && r.cn !== cnChon.ten) return false
     if (tt !== 'all' && r.tt !== tt) return false
     if (q && !fold(`${r.so} ${r.doiTuong} ${r.dienGiai}`).includes(fold(q))) return false
@@ -334,58 +334,57 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
           )}
 
           {/* Thanh bộ lọc */}
-          <div className="filters">
-            <label className="fld">
-              <Icon n="calendar" className="ic sm" />Kỳ
-              <Select value={ky} onChange={e => { setKy(e.target.value); setTrang(1) }}>
-                <option value="all">Tất cả các kỳ</option>
-                <option value="10">Tháng này (10/2026)</option>
-                <option value="9">Tháng trước (09/2026)</option>
-                <option value="q4">Quý này (Quý 4/2026)</option>
-                <option value="nam">Năm nay (2026)</option>
-              </Select>
-            </label>
-            <label className="fld">
-              Trạng thái
-              <Select value={tt} onChange={e => { setTt(e.target.value); setTrang(1) }}>
-                <option value="all">Tất cả</option>
-                <option value="nhap">{ghi ? 'Chưa ghi sổ' : 'Nháp'}</option>
-                <option value="ghi">{ghi ? 'Đã ghi sổ' : 'Đã lưu'}</option>
-                {ghi && <option value="loi">Lỗi hạch toán</option>}
-              </Select>
-            </label>
-            <label className="fld">
-              <Icon n="search" className="ic sm" />
-              <input
-                value={q}
-                onChange={e => { setQ(e.target.value); setTrang(1) }}
-                placeholder="Số chứng từ, đối tượng, diễn giải"
-              />
-            </label>
-            <span className="grow" />
-            <Dropdown
-              btnClass="btn sm"
-              align="end"
-              width={200}
-              label={<><Icon n="layers" className="ic sm" />Cột</>}
-            >
-              <MenuHead>Cột hiển thị</MenuHead>
-              {colsTuyChon.map(c => (
-                <MenuItem
-                  key={c.k}
-                  on={!cotAnSet.has(c.k)}
-                  onClick={() => toggleCot(c.k)}
+          <ThanhLoc
+            tim={{
+              value: q,
+              onChange: v => { setQ(v); setTrang(1) },
+              placeholder: 'Số chứng từ, đối tượng, diễn giải',
+            }}
+            ngay={{
+              value: khoang,
+              onChange: k => { setKhoang(k); setTrang(1) },
+            }}
+            boLoc={
+              <>
+                <LocO nhan="Trạng thái">
+                  <Select className="inp" value={tt} onChange={e => { setTt(e.target.value); setTrang(1) }}>
+                    <option value="all">Tất cả</option>
+                    <option value="nhap">{ghi ? 'Chưa ghi sổ' : 'Nháp'}</option>
+                    <option value="ghi">{ghi ? 'Đã ghi sổ' : 'Đã lưu'}</option>
+                    {ghi && <option value="loi">Lỗi hạch toán</option>}
+                  </Select>
+                </LocO>
+              </>
+            }
+            dangLoc={tt !== 'all'}
+            onLamMoi={() => { setTt('all'); setTrang(1) }}
+            onTaiLai={() => toast('Đã tải lại danh sách')}
+            phai={
+              <>
+                <Dropdown
+                  btnClass="btn-vuong"
+                  align="end"
+                  width={200}
+                  title="Cột"
+                  label={<Icon n="layers" className="ic sm" />}
                 >
-                  {c.t}
-                </MenuItem>
-              ))}
-              <MenuSep />
-              <MenuItem onClick={hienTatCaCot}>Hiện tất cả cột</MenuItem>
-            </Dropdown>
-            <button type="button" className="btn sm">
-              <Icon n="printer" className="ic sm" />In
-            </button>
-          </div>
+                  <MenuHead>Cột hiển thị</MenuHead>
+                  {colsTuyChon.map(c => (
+                    <MenuItem
+                      key={c.k}
+                      on={!cotAnSet.has(c.k)}
+                      onClick={() => toggleCot(c.k)}
+                    >
+                      {c.t}
+                    </MenuItem>
+                  ))}
+                  <MenuSep />
+                  <MenuItem onClick={hienTatCaCot}>Hiện tất cả cột</MenuItem>
+                </Dropdown>
+                <NutVuong icon="printer" title="In" onClick={() => toast('In danh sách chứng từ')} />
+              </>
+            }
+          />
 
           {/* Bảng danh sách chứng từ */}
           {list.length ? (
@@ -422,7 +421,7 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
                 type="button"
                 className="btn sm"
                 style={{ marginTop: 10 }}
-                onClick={() => { setKy('all'); setTt('all'); setQ(''); setTrang(1) }}
+                onClick={() => { setKhoang(thangNay()); setTt('all'); setQ(''); setTrang(1) }}
               >
                 Xoá bộ lọc
               </button>
