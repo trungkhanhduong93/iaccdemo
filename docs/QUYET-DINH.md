@@ -263,5 +263,13 @@ Thay một phần QD24, QD25. Lý do: Trum giao việc T42 ngày 08/10/2026, the
 
 Lý do: Trum giao việc T44 ngày 09/10/2026.
 
-## QD29. Bảng flyout truy cập nhanh khi rê chuột vào sidebar (đang soạn)
+## QD29. Bảng flyout truy cập nhanh khi rê chuột vào sidebar (09/10/2026)
+
+- Rê chuột vào phân hệ trên sidebar hiện bảng flyout menu 2 cột (Nghiệp vụ và Tiện ích). Bấm vào mục để truy cập nhanh đến chứng từ, quy trình, danh mục.
+- Áp dụng cho cả hai trạng thái sidebar (mở rộng 216px và thu gọn 64px).
+- Vị trí top bám theo mục đang hover, chia tỷ lệ `heSoZoom()` và giới hạn không tràn đáy màn hình.
+- Có cầu nối hit-test trong suốt và độ trễ đóng 180ms giúp rê chuột mượt mà không nhấp nháy. Tự đóng khi click chọn mục hoặc chuyển route.
+- Kiểm tra quyền theo gói: ẩn mục ngoài gói ở gói Free (QD22), hiện biểu tượng khoá ở các gói khác.
+
+Lý do: Trum giao việc T45 ngày 09/10/2026, theo mẫu MISA AMIS.
 
