@@ -224,3 +224,5 @@ Thay một phần QD14 và QD20 cho danh sách chứng từ dùng chung (`Vouche
 Lý do: PhuongXT chốt khi làm T25, T39. Trum chưa xem lại.
 
 ## QD25. Danh sách chứng từ theo iFaster: lọc, cột, thao tác hàng loạt (đang soạn)
+
+## QD26. Giao diện gọn cho màn nhỏ, công cụ danh sách gom vào nút Thêm mới (đang soạn)
