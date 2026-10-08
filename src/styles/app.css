@@ -717,3 +717,108 @@ textarea.inp { height: auto; padding: 8px 11px; resize: vertical; }
 .loc-chon:hover, .loc-chon.open { border-color: var(--blue); }
 .loc-chon.on { border-color: var(--blue); background: var(--tint); color: var(--blue); }
 .logo-excel { width: 20px; height: 20px; }
+
+/* ── Danh sách chứng từ theo iFaster (T41) ── */
+.ds-thanh { flex: none; display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 16px 12px 10px; border-bottom: 1px solid var(--line-2); background: var(--white); }
+/* Dưới 1900px chia 2 hàng: chip + nút công cụ ở trên, ô lọc căn phải ở dưới để lịch căn được mép phải ô ngày. Từ 1900px gộp 1 hàng */
+.ds-thanh-loc, .ds-thanh-nut { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 14px 6px; }
+.ds-thanh-nut { order: 1; margin-left: auto; }
+.ds-thanh-loc { order: 2; flex-basis: 100%; }
+.ds-chips { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.ds-chip { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--white); color: var(--body); font-size: 13px; white-space: nowrap; }
+.ds-chip:hover { border-color: var(--blue); }
+.ds-chip.on { background: var(--tint); border-color: var(--blue); color: var(--blue); font-weight: 700; }
+.ds-chip-cham { width: 7px; height: 7px; border-radius: 50%; flex: none; }
+.ds-chip-so { display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px; background: var(--soft); color: var(--muted); font-size: 12px; font-weight: 600; font-style: normal; }
+.ds-chip.on .ds-chip-so { background: var(--white); color: var(--blue); }
+
+/* Ô lọc nhãn nằm trên viền */
+.ds-o { position: relative; width: 160px; flex: none; }
+.ds-o-nhan { position: absolute; top: -8px; left: 8px; z-index: 1; padding: 0 4px; background: var(--white); color: var(--body); font-size: 12px; line-height: 14px; white-space: nowrap; pointer-events: none; }
+.ds-o .kn-nut, .ds-o .ds-o-sel, .ds-o .ds-o-inp { width: 100%; height: 34px; border: 1px solid var(--line); border-radius: 8px; background: var(--white); font-size: 13px; box-sizing: border-box; }
+.ds-o .kn-nut { padding: 0 10px; }
+.ds-o .kn-nut-arr { margin: 0 2px; }
+.ds-o .ds-o-sel { justify-content: space-between; padding: 0 10px; }
+.ds-o .ds-o-sel .sel-v { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ds-o-inp { padding: 0 11px; outline: 0; color: var(--ink); }
+.ds-o-inp::placeholder { color: var(--faint); }
+.ds-o .ds-o-inp:focus, .ds-o .ds-o-sel.open { border-color: var(--blue); }
+.ds-thanh .ds-o-thoiGian { width: 222px; }
+.ds-thanh .ds-o-tim { width: 176px; }
+.ds-nut-loc { position: relative; }
+.ds-cham-nhap { position: absolute; top: 5px; right: 5px; width: 6px; height: 6px; border-radius: 50%; background: var(--white); }
+.ds-link { padding: 4px 6px; border-radius: 6px; background: none; color: var(--blue); font-size: 13px; font-weight: 600; }
+.ds-link:hover { background: var(--tint); }
+
+/* Bộ lọc nâng cao */
+.ds-nc-pop { padding: 0; overflow: hidden; }
+.ds-nc-dau { display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--line-2); color: var(--ink); }
+.ds-nc-dau b { font-size: 15px; }
+.ds-nc-luoi { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px 14px; padding: 20px 16px 16px; }
+.ds-nc-luoi .ds-o { width: auto; }
+.ds-nc-ch { padding: 10px 16px 6px; border-top: 1px solid var(--line-2); }
+.ds-nc-ch-dau { display: flex; align-items: center; gap: 8px; width: 100%; padding: 4px 0; background: none; text-align: left; }
+.ds-nc-ch-dau b { color: var(--blue); font-size: 13.5px; }
+.ds-nc-ch-dau .ds-chip-so { background: var(--tint); color: var(--blue); }
+.ds-nc-ch-dau small { color: var(--muted); font-size: 12px; }
+.ds-mui { color: var(--muted); transition: transform .15s ease; }
+.ds-mui.len { transform: rotate(180deg); }
+.ds-goi-y { margin: 4px 0 6px; color: var(--muted); font-size: 12px; }
+.ds-ds-keo { max-height: 220px; overflow: auto; }
+.ds-dong-keo { display: flex; align-items: center; gap: 10px; min-height: 34px; padding: 0 6px; border-radius: 6px; color: var(--ink); font-size: 13.5px; }
+.ds-dong-keo[draggable="true"] { cursor: grab; }
+.ds-dong-keo:hover { background: var(--soft); }
+.ds-dong-keo.dang-keo { opacity: .5; }
+.ds-dong-keo.dich { box-shadow: inset 0 2px 0 var(--blue); }
+.ds-dong-keo.co-dinh .ds-tay-keo { color: var(--faint); }
+.ds-tay-keo { color: var(--blue); flex: none; }
+.ds-co-dinh { color: var(--muted); font-size: 11.5px; }
+.ds-ct { position: relative; width: 40px; height: 22px; flex: none; padding: 0; border: 0; border-radius: 999px; background: var(--line); transition: background .15s ease; }
+.ds-ct i { position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; border-radius: 50%; background: var(--white); box-shadow: 0 1px 2px rgba(14, 26, 43, .2); transition: left .15s ease; }
+.ds-ct.on { background: var(--blue); }
+.ds-ct.on i { left: 20px; }
+.ds-ct.khoa { opacity: .55; cursor: default; }
+.ds-chan { display: flex; align-items: center; justify-content: flex-end; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--line-2); }
+.ds-chan .ds-goi-y { margin: 0; }
+
+/* Hộp Tuỳ chỉnh cột hiển thị, hộp xác nhận xoá */
+.ds-hop-nen { align-items: center; padding-top: 0; }
+.ds-hop { display: flex; flex-direction: column; width: 460px; max-height: 86vh; overflow: hidden; border-radius: 14px; background: var(--white); box-shadow: var(--sh-lg); }
+.ds-hop-nho { width: 400px; }
+.ds-hop-dau { display: flex; align-items: center; gap: 8px; padding: 14px 16px; color: var(--ink); }
+.ds-hop-dau b { font-size: 15px; }
+.ds-hop-tim { display: flex; align-items: center; gap: 10px; padding: 0 16px 10px; }
+.ds-tim-cot { flex: 1; display: flex; align-items: center; gap: 8px; height: 34px; padding: 0 10px; border: 1px solid var(--line); border-radius: 8px; color: var(--faint); }
+.ds-tim-cot:focus-within { border-color: var(--blue); }
+.ds-tim-cot input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; color: var(--ink); font-size: 13.5px; }
+.ds-dem-cot { color: var(--muted); font-size: 12.5px; white-space: nowrap; }
+.ds-hop-ds { flex: 1; min-height: 0; max-height: none; padding: 0 10px 6px; }
+.ds-hop-than { margin: 0; padding: 0 16px 14px; color: var(--body); font-size: 13.5px; }
+.btn.pri.ds-nut-xoa { background: var(--red); border-color: var(--red); }
+
+/* Nút thao tác hàng loạt */
+.ds-hang-loat { gap: 6px; padding: 0 10px; }
+.ds-hang-loat .ds-chip-so { background: var(--tint); color: var(--blue); }
+.ds-hang-loat.open { border-color: var(--blue); }
+
+/* Bảng kẻ dọc giữa các cột, tay nắm kéo giãn độ rộng cột */
+.tbl.ke-doc th, .tbl.ke-doc td { border-right: 1px solid var(--line-2); }
+.tbl.ke-doc tr > :last-child { border-right: 0; }
+.tbl th.da-keo { overflow: hidden; text-overflow: ellipsis; }
+.ds-keo-rong { position: absolute; top: 0; right: 0; width: 6px; height: 100%; z-index: 2; cursor: col-resize; touch-action: none; }
+.ds-keo-rong:hover { background: var(--blue); opacity: .35; }
+
+/* Từ 1900px gộp 1 hàng đúng thứ tự (đặt cuối để đè các rule trên) */
+@media (min-width: 1900px) {
+  .ds-thanh { gap: 8px; }
+  .ds-chips { gap: 4px; }
+  .ds-chip { padding: 0 8px; }
+  .ds-thanh-loc, .ds-thanh-nut { gap: 14px 5px; }
+  .ds-hang-loat { padding: 0 8px; }
+  .ds-thanh .ds-o { width: 140px; }
+  .ds-thanh .ds-o-tim { width: 150px; }
+  .ds-thanh .ds-o-thoiGian { width: 222px; }
+  .ds-thanh-loc { order: 0; flex-basis: auto; margin-left: auto; }
+  /* thêm ô lọc ngoài mà không vừa thì nhóm nút xuống hàng, vẫn căn phải */
+  .ds-thanh-nut { order: 0; margin-left: auto; }
+}

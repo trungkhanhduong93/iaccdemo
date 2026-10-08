@@ -223,7 +223,21 @@ Thay một phần QD14 và QD20 cho danh sách chứng từ dùng chung (`Vouche
 
 Lý do: PhuongXT chốt khi làm T25, T39. Trum chưa xem lại.
 
-## QD25. Danh sách chứng từ theo iFaster: lọc, cột, thao tác hàng loạt (đang soạn)
+## QD25. Danh sách chứng từ theo iFaster: lọc, cột, thao tác hàng loạt (08/10/2026)
+
+Áp cho danh sách chứng từ dùng chung (`VoucherScreen`) và màn Bán hàng 3.1.1. Giữ lọc từng cột của QD24. Thành phần dùng chung ở `src/ui/LocNangCao.tsx`.
+
+- Chip trạng thái bên trái: Tất cả, Chưa ghi sổ, Đã ghi sổ, Lỗi hạch toán, kèm số phiếu. Gói Free: Nháp, Đã lưu. Mặc định Tất cả. Bấm chip áp dụng ngay.
+- Ô lọc ngoài có nhãn nằm trên viền. Mặc định 3 ô Thời gian, Tìm kiếm, Đối tượng (3.1.1 là Chi nhánh), tối đa 4 ô. Các ô khác nằm trong khung "Bộ lọc nâng cao" mở từ nút phễu. Trong khung có phần cấu hình bật ô ra ngoài và kéo đổi thứ tự.
+- Ô lọc ngoài và Bộ lọc nâng cao chỉ áp dụng khi bấm Lọc hoặc Enter trong ô tìm. Chip trạng thái và lọc từng cột áp dụng ngay.
+- Lịch chọn ngày ở thanh lọc căn mép phải với ô ngày.
+- Hộp "Tuỳ chỉnh cột hiển thị": tìm cột, bật tắt, kéo đổi thứ tự, nút Mặc định. Cột cố định không tắt được: ô tick, STT, Ngày, Số chứng từ, Chức năng. Chỉ áp dụng khi bấm Lưu lại.
+- Bảng có kẻ dọc giữa cột, kéo mép phải tiêu đề để giãn cột, rộng tối thiểu 60px.
+- Nút "Thao tác hàng loạt" chỉ bấm được khi đã tick phiếu: Ghi sổ, Bỏ ghi sổ (gói có ghi sổ), In, Xuất Excel, Xoá (có hỏi lại), Bỏ chọn. Thay cho thanh thao tác hàng loạt cũ.
+- Thứ tự, ẩn hiện, độ rộng cột và cấu hình ô lọc ngoài lưu trên trình duyệt theo từng màn.
+- Màn rộng dưới 1900px: thanh công cụ chia 2 hàng. Hàng trên là chip và các nút, hàng dưới là ô lọc căn phải. Từ 1900px gộp một hàng.
+
+Lý do: Trum giao việc T41 ngày 08/10/2026, theo mẫu iFaster và iPOS Inventory.
 
 ## QD26. Giao diện gọn cho màn nhỏ, công cụ danh sách gom vào nút Thêm mới (đang soạn)
 

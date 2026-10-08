@@ -50,7 +50,8 @@ const THU = ['Th2', 'Th3', 'Th4', 'Th5', 'Th6', 'Th7', 'CN']
 
 type CheDo = 'ngay' | 'thang' | 'quy'
 
-export function ChonKhoangNgay({ value, onChange }: { value: KhoangNgay; onChange: (k: KhoangNgay) => void }) {
+/** align 'end': mép phải khung lịch thẳng mép phải ô ngày, dùng khi ô nằm sát bên phải màn (T41) */
+export function ChonKhoangNgay({ value, onChange, align = 'start' }: { value: KhoangNgay; onChange: (k: KhoangNgay) => void; align?: 'start' | 'end' }) {
   const [open, setOpen] = useState(false)
   const btnRef = useRef<HTMLButtonElement>(null)
 
@@ -295,7 +296,7 @@ export function ChonKhoangNgay({ value, onChange }: { value: KhoangNgay; onChang
         anchor={btnRef}
         open={open}
         onClose={handleDong}
-        align="start"
+        align={align}
         width={600}
         role="dialog"
         className="kn-pop"
