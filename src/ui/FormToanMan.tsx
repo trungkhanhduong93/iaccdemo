@@ -11,9 +11,9 @@ export function useDong(ve: string) {
   return () => (loc.key !== 'default' ? nav(-1) : nav(ve))
 }
 
-/** trai: nút đứng trước tiêu đề (vd lịch sử); phai: nút đứng trước tổng tiền (vd phím tắt) */
-export function FormToanMan({ icon, title, meta, loai, tong, trai, phai, onClose, foot, children }: {
-  icon: string; title: ReactNode; meta?: ReactNode; loai?: ReactNode; tong?: number; trai?: ReactNode; phai?: ReactNode
+/** trai: nút đứng trước tiêu đề (vd lịch sử); phai: nút đứng trước tổng tiền (vd phím tắt); tinh: bỏ hiệu ứng mở khi chuyển Trước/Sau */
+export function FormToanMan({ icon, title, meta, loai, tong, trai, phai, tinh, onClose, foot, children }: {
+  icon: string; title: ReactNode; meta?: ReactNode; loai?: ReactNode; tong?: number; trai?: ReactNode; phai?: ReactNode; tinh?: boolean
   onClose: () => void; foot: ReactNode; children: ReactNode
 }) {
   useEffect(() => {
@@ -23,7 +23,7 @@ export function FormToanMan({ icon, title, meta, loai, tong, trai, phai, onClose
   }, [onClose])
 
   return (
-    <div className="fsf" role="dialog" aria-modal="true">
+    <div className={`fsf${tinh ? ' fsf-tinh' : ''}`} role="dialog" aria-modal="true">
       <header className="fsf-h">
         <span className="fsf-ic"><Icon n={icon} /></span>
         {trai}

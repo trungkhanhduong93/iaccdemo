@@ -1,6 +1,6 @@
 // Form chứng từ toàn màn hình theo bố cục AMIS
 import { useEffect, useMemo, useState } from 'react'
-import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import type { Row, ScreenProps, VoucherCfg } from '../../modules/types'
 import { duongDan, tenMan } from '../../app/registry'
 import { useSession } from '../../app/session'
@@ -26,6 +26,7 @@ export interface ChungTuFormProps extends ScreenProps {
 export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: ChungTuFormProps) {
   const { s, toast } = useSession()
   const nav = useNavigate()
+  const loc = useLocation()
   const [sp, setSp] = useSearchParams()
 
   const moi = !row
@@ -95,10 +96,10 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   const coSau = curIdx >= 0 && rows ? curIdx < rows.length - 1 : false
 
   function veTruoc() {
-    if (coTruoc && rows) nav(`${path}/${rows[curIdx - 1].id}`, { replace: true })
+    if (coTruoc && rows) nav(`${path}/${rows[curIdx - 1].id}`, { replace: true, state: { chuyenPhieu: true } })
   }
   function veSau() {
-    if (coSau && rows) nav(`${path}/${rows[curIdx + 1].id}`, { replace: true })
+    if (coSau && rows) nav(`${path}/${rows[curIdx + 1].id}`, { replace: true, state: { chuyenPhieu: true } })
   }
 
   // Lưu chứng từ
@@ -146,6 +147,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   return (
     <FormToanMan
       icon={mod.icon}
+      tinh={Boolean((loc.state as { chuyenPhieu?: boolean } | null)?.chuyenPhieu)}
       onClose={dongForm}
       tong={tongThanhToan}
       title={tieuDe}

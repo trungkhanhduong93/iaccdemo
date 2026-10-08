@@ -478,6 +478,7 @@ textarea.inp { height: auto; padding: 8px 11px; resize: vertical; }
 /* ── Form chứng từ toàn màn hình ── */
 .fsf { position: fixed; inset: 0; z-index: 45; background: var(--bg); display: flex; flex-direction: column; min-width: 1180px; animation: fsf .16s ease; }
 @keyframes fsf { from { opacity: 0; transform: translateY(6px); } }
+.fsf.fsf-tinh { animation: none; }
 .fsf-h { display: flex; align-items: center; gap: 14px; padding: 12px 22px; background: #fff; border-bottom: 1px solid var(--line); flex: none; }
 .fsf-ic { width: 40px; height: 40px; border-radius: 11px; background: var(--tint); color: var(--blue); display: grid; place-items: center; flex: none; }
 .fsf-h h1 { font-size: 19px; font-weight: 800; color: var(--ink); letter-spacing: -.3px; line-height: 1.25; }
