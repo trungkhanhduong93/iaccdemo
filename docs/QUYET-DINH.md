@@ -263,3 +263,5 @@ Thay một phần QD24, QD25. Lý do: Trum giao việc T42 ngày 08/10/2026, the
 
 Lý do: Trum giao việc T44 ngày 09/10/2026.
 
+## QD29. Bảng flyout truy cập nhanh khi rê chuột vào sidebar (đang soạn)
+

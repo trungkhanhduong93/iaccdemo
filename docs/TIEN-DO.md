@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T45 | Bảng flyout tooltip khi rê chuột vào phân hệ ở sidebar: hiện 2 cột Nghiệp vụ và Tiện ích để truy cập nhanh (QD29) | Trum | Đang làm | Sửa `src/app/Shell.tsx`, tạo `src/app/SidebarFlyout.tsx`, thêm style `src/styles/app.css` |
 | T43 | Đợt chỉnh 13 điểm: thanh công cụ một hàng, nút Excel và Hàng loạt dạng biểu tượng, chip đếm mới, dòng tổng, bỏ cột và dòng tiêu đề, màu sidebar và cam logo, bỏ giới hạn rộng, gói Free/Standard/Plus/Pro (mã F/S/PL/PR), dữ liệu mua hàng, dòng tổng bảng chi tiết (QD27) | Trum | Đang làm | Sửa nhiều file dùng chung: `plan.ts`, `session.tsx`, `app.css`, `VoucherScreen.tsx`, `ChungTuBanHang.tsx`, `ChungTuForm.tsx`, `LocNangCao.tsx`, `Table.tsx`, `gen.ts`, `types.ts` và mọi file có mã gói |
 | T27 | Danh sách chứng từ 2.1.1: khung chi tiết bên dưới hiện dòng phiếu khác với form của cùng phiếu (UNC2610-0259: khung ghi "Chi mua rau, củ tại chợ", form ghi "Trả tiền nhà cung cấp thịt bò") | | Chờ | Thấy khi làm T26 |
 | T02 | Chốt nghiệp vụ trên từng sơ đồ Quy trình: ô nào, nối thế nào, câu chữ. Sửa ở `src/modules/<phân hệ>/quy-trinh.ts` | Trum | Chờ | |
