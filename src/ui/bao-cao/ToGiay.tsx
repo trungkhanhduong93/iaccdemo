@@ -3,7 +3,7 @@ import {
   Children, Fragment, createContext, isValidElement, useEffect, useId, useLayoutEffect, useMemo, useRef, useState,
   type CSSProperties, type JSX, type ReactNode,
 } from 'react'
-import { createPortal } from 'react-dom'
+import { createPortal, flushSync } from 'react-dom'
 import { useLocation } from 'react-router-dom'
 import type { Col, Row } from '../../modules/types'
 import { RptTable, type KyHieuCot } from '../generic/ReportScreen'
@@ -180,7 +180,7 @@ const khopDo = (d: Do | null, khoi: Khoi[]): d is Do => !!d && d.khoi.length ===
 
 const Net = ({ d }: { d: string }) => <svg className="ic sm" viewBox="0 0 24 24" aria-hidden><path d={d} /></svg>
 
-export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, giay, anSoTrang, onKho, layHtmlRef }: {
+export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, giay, anSoTrang, onKho, layHtmlRef, coChu }: {
   dau: ReactNode; than: ReactNode; cuoi?: ReactNode; khoMacDinh: Kho
   kyHieuCot?: KyHieuCot     // hàng ký hiệu cột A, B, 1, 2 dưới tiêu đề mọi bảng
   congChuyen?: string[]     // sổ: cột cộng chuyển trang
@@ -188,6 +188,7 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
   anSoTrang?: boolean       // ẩn dòng "Trang x/y"
   onKho?: (k: Kho) => void  // báo khổ giấy đang chọn cho khung ngoài xuất file
   layHtmlRef?: { current: (() => string) | null } // ref lấy HTML các trang thật
+  coChu?: number            // cỡ chữ bảng theo tuỳ chỉnh (px)
 }): JSX.Element {
   const path = useLocation().pathname
   const [kho, setKho] = useState<Kho>(() => docKho(path) ?? khoMacDinh)
@@ -197,6 +198,7 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
   const [oTrang, setOTrang] = useState('1')
   const [rongBan, setRongBan] = useState(0)
   const [dangIn, setDangIn] = useState(false)
+  const [canHtml, setCanHtml] = useState(false)
   const ban = useRef<HTMLDivElement>(null)
   const khungDo = useRef<HTMLDivElement>(null)
   const xuatHtmlRef = useRef<HTMLDivElement>(null)
@@ -207,12 +209,17 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
   useEffect(() => {
     if (layHtmlRef) {
       layHtmlRef.current = () => {
+        flushSync(() => setCanHtml(true))
         const trangs = xuatHtmlRef.current?.querySelectorAll('.bc-trang')
+        let res = ''
         if (trangs && trangs.length > 0) {
-          return Array.from(trangs).map(el => el.outerHTML).join('\n')
+          res = Array.from(trangs).map(el => el.outerHTML).join('\n')
+        } else {
+          const banTrang = ban.current?.querySelectorAll('.bc-trang:not(.bc-cho)')
+          res = Array.from(banTrang ?? []).map(el => el.outerHTML).join('\n')
         }
-        const banTrang = ban.current?.querySelectorAll('.bc-trang:not(.bc-cho)')
-        return Array.from(banTrang ?? []).map(el => el.outerHTML).join('\n')
+        setCanHtml(false)
+        return res
       }
     }
   })
@@ -359,7 +366,7 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
 
   return (
     <SoTrangCtx.Provider value={N}>
-      <div className="bc-giay">
+      <div className="bc-giay" style={coChu ? { '--bc-co-chu': `${coChu}px` } as CSSProperties : undefined}>
         {css && <style>{css}</style>}
         <div className="bc-ban" ref={ban} onScroll={cuon}>
           <div className="bc-sizer" style={{ width: wPx * z, height: caoSizer }}>
@@ -419,7 +426,7 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
 
         {/* Khung đo ẩn: ngoài khối transform, cùng bề rộng và lớp CSS với trang thật */}
         <div className="bc-do" aria-hidden inert>
-          <div ref={khungDo} className="paper bc-trang-do" style={{ width: `${kt.w}mm`, padding: kieuTrang.padding }}>
+          <div ref={khungDo} className="paper bc-trang-do" style={{ width: `${kt.w}mm`, padding: kieuTrang.padding, ...(coChu ? { '--bc-co-chu': `${coChu}px` } as CSSProperties : {}) }}>
             <div className="bc-khoi" data-do="dau">{dau}</div>
             {khoi.map((kh, i) => (
               <div key={i} className="bc-khoi" data-do={i}>
@@ -434,10 +441,12 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
 
         {dangIn && createPortal(<div className={`bc-in-goc ${pv}`}>{trangDs.map((_, i) => veTrang(i, false))}</div>, document.body)}
 
-        {/* Khung HTML xuất: chứa đủ các trang thật, không transform, không khung đo, không ô giữ chỗ */}
-        <div ref={xuatHtmlRef} style={{ display: 'none' }} aria-hidden inert>
-          {trangDs.map((_, i) => veTrang(i, false))}
-        </div>
+        {/* Khung HTML xuất: chỉ vẽ khi cần lấy HTML để tránh vẽ gấp đôi mọi báo cáo */}
+        {canHtml && (
+          <div ref={xuatHtmlRef} style={{ display: 'none' }} aria-hidden inert>
+            {trangDs.map((_, i) => veTrang(i, false))}
+          </div>
+        )}
       </div>
     </SoTrangCtx.Provider>
   )
