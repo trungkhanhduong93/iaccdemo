@@ -100,8 +100,6 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   const [hanTt, setHanTt] = useState(luuCu('hanTt') ?? nv?.hanTt ?? '06/11/2026')
   // Lý do thu, chi ở đầu phiếu (danh mục 1.16), chỉ có ở phân hệ tiền
   const oLy = mod.key === 'tien' ? bo.a.find(o => o.k === 'ly') : undefined
-  // Phiếu thu chi (có ô lý do) và chuyển quỹ không có ô Diễn giải ở đầu phiếu, Ghi chú chép sang diễn giải (T77)
-  const boDg = Boolean(oLy) || nhom === 'cq'
   const [lyDo, setLyDo] = useState(() => row?._lyDo ? String(row._lyDo) : lyMacDinh(oLy?.ds ?? [], dienGiai))
   // Phiếu chuyển quỹ: quỹ đi và quỹ đến. Rút tiền ngân hàng thì đi từ tài khoản về quỹ tiền mặt
   const quyTm = `Quỹ tiền mặt ${CHI_NHANH.find(c => c.ten === chiNhanh)?.ngan ?? CHI_NHANH[0].ngan}`
@@ -131,7 +129,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
     try { localStorage.setItem(khoaCot, JSON.stringify(an)) } catch { /* trình duyệt chặn lưu thì chỉ giữ trong phiên */ }
   }
   // Chọn lý do: diễn giải và lý do mọi dòng theo lý do, vẫn sửa lại được
-  const ghiChuGoc = () => row?._ghiChu ? String(row._ghiChu) : nhom === 'cq' ? (row?.dienGiai ? String(row.dienGiai) : cfg.dienGiai[0]) : row?._lyDo ? String(row._lyDo) : lyMacDinh(oLy?.ds ?? [], row?.dienGiai ? String(row.dienGiai) : cfg.dienGiai[0])
+  // Mọi phiếu không có ô Diễn giải ở đầu phiếu, Ghi chú chép sang diễn giải (T77, T78). Phiếu có ô lý do: Ghi chú mặc định theo lý do; phiếu khác: mặc định là diễn giải
+  const ghiChuGoc = () => row?._ghiChu ? String(row._ghiChu) : !oLy ? (row?.dienGiai ? String(row.dienGiai) : cfg.dienGiai[0]) : row?._lyDo ? String(row._lyDo) : lyMacDinh(oLy?.ds ?? [], row?.dienGiai ? String(row.dienGiai) : cfg.dienGiai[0])
   const [ghiChu, setGhiChu] = useState(ghiChuGoc)
   useEffect(() => { setGhiChu(ghiChuGoc()) }, [loai?.k, row?.id])
   function chonLyDo(v: string) {
@@ -302,15 +301,14 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
       <input className="inp" readOnly={!dangSua} value={nguoiGiao} onChange={e => setNguoiGiao(e.target.value)} />
     </div>
   )
-  // Ghi chú ở mọi phiếu (T69). Phiếu thu chi: mặc định theo lý do, gõ ghi chú thì diễn giải chép theo (T49); chuyển quỹ: mặc định là diễn giải (T77).
-  // Phiếu khác: ghi chú để trống, độc lập với diễn giải
+  // Ghi chú ở mọi phiếu (T69), gõ ghi chú thì diễn giải chép theo (T49, T78)
   // Ghi chú kéo dài qua hai cột trái: phiếu thu chi (T77), Mua hàng (T78)
-  const keoGc = (boDg && nhom !== 'cq') || nhom === 'mua'
+  const keoGc = Boolean(oLy) || nhom === 'mua'
   const oGhiChu = (
     <div className="f" style={keoGc ? { gridColumn: '1 / 3' } : undefined}>
       <label>Ghi chú</label>
       <input className="inp" readOnly={!dangSua} value={ghiChu} placeholder={dangSua ? 'Ghi chú thêm cho phiếu' : ''}
-        onChange={e => { setGhiChu(e.target.value); if (boDg) setDienGiai(e.target.value) }} />
+        onChange={e => { setGhiChu(e.target.value); setDienGiai(e.target.value) }} />
     </div>
   )
 
@@ -666,7 +664,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               </>)}
             </div>
 
-            {/* Cột 2: Diễn giải & điều khoản */}
+            {/* Cột 2: lý do, nhân viên, mã số thuế, hạn thanh toán */}
             <div className="stack" style={{ gap: 10 }}>
               {oLy && (
                 <div className="f">
@@ -680,20 +678,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               )}
               {/* Chuyển quỹ: hàng 1 Từ quỹ, Đến quỹ; hàng 2 Người thực hiện, Ghi chú (T77) */}
               {nhom === 'cq' && oQuyCq('Đến quỹ', denQuy, setDenQuy)}
-              {boDg ? nhom !== 'cq' && oDiaChi : (
-                <div className="f">
-                  <label>Diễn giải</label>
-                  {dangSua ? (
-                    <input
-                      className="inp"
-                      value={dienGiai}
-                      onChange={e => setDienGiai(e.target.value)}
-                    />
-                  ) : (
-                    <input className="inp" readOnly value={dienGiai} />
-                  )}
-                </div>
-              )}
+              {oLy && oDiaChi}
               {!laTien && (
                 <div className="f">
                   <label>Nhân viên thực hiện</label>
