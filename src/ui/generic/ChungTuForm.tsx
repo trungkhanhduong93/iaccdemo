@@ -17,6 +17,7 @@ import { fold, money, moneyD } from '../format'
 import { NGUON, TT_CT, dongCua, ttNghiepVu, type Dong } from './gen'
 import { boO, nhomCua, theoLoai } from './nhom'
 import { BangSua } from './BangSua'
+import { HopInChungTu, type PhieuIn } from '../bao-cao/InChungTu'
 
 export interface ChungTuFormProps extends ScreenProps {
   cfg: VoucherCfg
@@ -36,6 +37,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   const [tab, setTab] = useState('ct')
   const [hienTk, setHienTk] = useState(false)
   const [modalPhim, setModalPhim] = useState(false)
+  const [phieuIn, setPhieuIn] = useState<PhieuIn[] | null>(null)
 
   const loai = cfgMan.loai?.find(x => x.k === (row?.loai ?? sp.get('loai'))) ?? cfgMan.loai?.[0]
   const cfg = theoLoai(cfgMan, loai?.k)
@@ -129,6 +131,14 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
       setDangSua(false)
       if (moi) dongForm()
     }
+  }
+
+  // In: lấy dữ liệu đang có trên form, phiếu mới chưa lưu cũng in được
+  function moIn() {
+    setPhieuIn([{
+      sc, cfg, loai,
+      row: { ...row, id: row?.id ?? 'moi', so: soCt, ngay: ngayCt, cn: chiNhanh, doiTuong, dienGiai, loai: loai?.k, tien: tongTien, thue: tongThue, tong: tongThanhToan },
+    }])
   }
 
   // Phím tắt
@@ -314,7 +324,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               </button>
             )}
             <span className="grow" />
-            <button type="button" className="btn sm">
+            <button type="button" className="btn sm" onClick={moIn}>
               <Icon n="printer" className="ic sm" />In
             </button>
             <Dropdown
@@ -356,6 +366,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
         )
       }
     >
+      {phieuIn && <HopInChungTu ds={phieuIn} onDong={() => setPhieuIn(null)} />}
       {/* Modal hướng dẫn phím tắt */}
       {modalPhim && (
         <div

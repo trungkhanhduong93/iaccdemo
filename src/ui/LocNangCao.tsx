@@ -560,12 +560,14 @@ export function NutHangLoat({
   onBoChon,
   open,
   onOpenChange,
+  onIn,
 }: {
   selectedRows: Row[]
   ghi: boolean
   onBoChon: () => void
   open?: boolean
   onOpenChange?: (open: boolean) => void
+  onIn?: () => void       // mở khung xem trước bản in các phiếu đang chọn; không truyền thì chỉ báo
 }) {
   const { toast } = useSession()
   const [moLocal, setMoLocal] = useState(false)
@@ -634,7 +636,7 @@ export function NutHangLoat({
             Xem lỗi {nLoi} phiếu
           </MenuItem>
         )}
-        <MenuItem icon="printer" onClick={() => lam(`In ${so} phiếu`)}>
+        <MenuItem icon="printer" onClick={() => { if (onIn) { setMo(false); onIn() } else lam(`In ${so} phiếu`) }}>
           In {so} phiếu
         </MenuItem>
         <MenuItem icon="download" onClick={() => lam(`Đã xuất ${so} phiếu ra Excel`)}>

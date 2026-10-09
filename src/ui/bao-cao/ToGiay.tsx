@@ -15,7 +15,9 @@ export type Kho = 'doc' | 'ngang'
 type CheDoXem = 'lien' | 'tung'
 type Xem = { zoom: number | 'vua'; che: CheDoXem }
 type BangProps = { cols: Col[]; rows: Row[]; onRow?: (r: Row) => void }
-export type Khoi = { loai: 'nguyen'; el: ReactNode } | ({ loai: 'bang' } & BangProps)
+export type Khoi = { loai: 'nguyen'; el: ReactNode } | ({ loai: 'bang' } & BangProps) | { loai: 'ngat' }
+/** Khổ giấy tự đặt (mm), le: trên, phải, dưới, trái. Dùng cho mẫu in chứng từ thay A4 dọc/ngang */
+export type Giay = { rong: number; cao: number; le: [number, number, number, number] }
 
 // Kết quả đo trên khung ẩn, đơn vị px CSS. Bảng: vo = viền bảng, dau = dòng tiêu đề cột, dong = từng dòng, rong = bề rộng từng cột,
 // cong = dòng cộng chuyển trang (0 khi bảng không cộng chuyển)
@@ -55,11 +57,15 @@ function dongCong(kh: Extract<Khoi, { loai: 'bang' }>, cot: string[], den: numbe
   return dong
 }
 
+/** Đặt giữa hai khối trong thân: khối sau bắt đầu trang mới (In hàng loạt, mỗi phiếu một trang) */
+export function NgatTrang() { return null }
+
 /** Tách thân báo cáo thành khối: RptTable là bảng (cắt được theo dòng), phần tử khác là khối nguyên */
 export function tachKhoi(than: ReactNode): Khoi[] {
   const out: Khoi[] = []
   Children.toArray(than).forEach(x => {
     if (isValidElement<{ children?: ReactNode }>(x) && x.type === Fragment) { out.push(...tachKhoi(x.props.children)); return }
+    if (isValidElement(x) && x.type === NgatTrang) { out.push({ loai: 'ngat' }); return }
     if (isValidElement<BangProps>(x) && x.type === RptTable) { out.push({ loai: 'bang', cols: x.props.cols, rows: x.props.rows, onRow: x.props.onRow }); return }
     out.push({ loai: 'nguyen', el: x })
   })
@@ -127,6 +133,10 @@ function chiaTrang(d: Do, khoi: Khoi[], hTrang: number, coCuoi: boolean): Muc[][
   const moi = () => { ds.push([]); con = hTrang }
   khoi.forEach((kh, i) => {
     const m = d.khoi[i]
+    if (kh.loai === 'ngat') {
+      if (hien().some(x => x.k !== 'dau')) moi()
+      return
+    }
     if (typeof m === 'number' || kh.loai !== 'bang') {
       const h = typeof m === 'number' ? m : 0
       if (h > con && hien().length) moi()
@@ -170,10 +180,12 @@ const khopDo = (d: Do | null, khoi: Khoi[]): d is Do => !!d && d.khoi.length ===
 
 const Net = ({ d }: { d: string }) => <svg className="ic sm" viewBox="0 0 24 24" aria-hidden><path d={d} /></svg>
 
-export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen }: {
+export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, giay, anSoTrang }: {
   dau: ReactNode; than: ReactNode; cuoi?: ReactNode; khoMacDinh: Kho
   kyHieuCot?: KyHieuCot     // hàng ký hiệu cột A, B, 1, 2 dưới tiêu đề mọi bảng
   congChuyen?: string[]     // sổ: cột cộng chuyển trang
+  giay?: Giay               // khổ riêng của mẫu in: bỏ chọn Dọc/Ngang, không lưu khổ
+  anSoTrang?: boolean       // ẩn dòng "Trang x/y"
 }): JSX.Element {
   const path = useLocation().pathname
   const [kho, setKho] = useState<Kho>(() => docKho(path) ?? khoMacDinh)
@@ -189,7 +201,8 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen }: {
 
   const khoi = useMemo(() => tachKhoi(than), [than])
   const tongDong = khoi.reduce((a, k) => a + (k.loai === 'bang' ? k.rows.length : 0), 0)
-  const kt = KHO[kho]
+  const kt = giay ? { w: giay.rong, h: giay.cao } : KHO[kho]
+  const le = giay ? { tren: giay.le[0], phai: giay.le[1], duoi: giay.le[2], trai: giay.le[3] } : LE
   const wPx = kt.w * PX, hPx = kt.h * PX
   const buoc = hPx + CACH
 
@@ -206,7 +219,7 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen }: {
   }
   const doRef = useRef(doLai)
   doRef.current = doLai
-  useLayoutEffect(() => { doLai() }, [than, kho, dau, cuoi, kyHieuCot, congChuyen?.join()])
+  useLayoutEffect(() => { doLai() }, [than, kho, dau, cuoi, kyHieuCot, congChuyen?.join(), kt.w, le.trai, le.phai])
   useEffect(() => {
     let song = true
     document.fonts?.ready.then(() => { if (song) doRef.current() })
@@ -227,7 +240,7 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen }: {
     return () => ro.disconnect()
   }, [])
 
-  const hNoiDung = (kt.h - LE.tren - LE.duoi) * PX - 1      // chừa 1px cho sai số làm tròn
+  const hNoiDung = (kt.h - le.tren - le.duoi) * PX - 1      // chừa 1px cho sai số làm tròn
   const trangDs = useMemo(() => khopDo(d, khoi) ? chiaTrang(d, khoi, hNoiDung, !!cuoi) : [], [d, khoi, hNoiDung, cuoi])
   const N = Math.max(1, trangDs.length)
   const tr = Math.min(trang, N - 1)
@@ -270,7 +283,9 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen }: {
     document.getElementById('bc-in-kho')?.remove()
     const st = document.createElement('style')
     st.id = 'bc-in-kho'
-    st.textContent = `@page { size: A4 ${kho === 'ngang' ? 'landscape' : 'portrait'}; margin: 0 }`
+    st.textContent = giay
+      ? `@page { size: ${giay.rong}mm ${giay.cao}mm; margin: 0 }`
+      : `@page { size: A4 ${kho === 'ngang' ? 'landscape' : 'portrait'}; margin: 0 }`
     document.head.appendChild(st)
     const xong = () => setDangIn(false)
     window.addEventListener('afterprint', xong)
@@ -279,14 +294,14 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen }: {
     return () => { cancelAnimationFrame(r1); cancelAnimationFrame(r2); window.removeEventListener('afterprint', xong); st.remove() }
   }, [dangIn])
 
-  const kieuTrang: CSSProperties = { width: `${kt.w}mm`, height: `${kt.h}mm`, padding: `${LE.tren}mm ${LE.phai}mm ${LE.duoi}mm ${LE.trai}mm` }
+  const kieuTrang: CSSProperties = { width: `${kt.w}mm`, height: `${kt.h}mm`, padding: `${le.tren}mm ${le.phai}mm ${le.duoi}mm ${le.trai}mm` }
 
   const veMuc = (m: Muc) => {
     if (m.k === 'dau') return <div key="dau" className="bc-khoi">{dau}</div>
     if (m.k === 'cuoi') return <div key="cuoi" className="bc-khoi">{cuoi}</div>
     const kh = khoi[m.i]
     if (kh.loai === 'nguyen') return <div key={`k${m.i}`} className="bc-khoi">{kh.el}</div>
-    if (m.k !== 'bang') return null
+    if (m.k !== 'bang' || kh.loai !== 'bang') return null
     const cot = cotCong(kh, congChuyen)
     const n = kh.rows.length
     const rows = cot.length ? [
@@ -305,7 +320,7 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen }: {
     : (
       <div key={i} className="bc-trang paper" style={kieuTrang}>
         {trangDs[i]?.map(veMuc)}
-        <div className="bc-so-trang">Trang {i + 1}/{N}</div>
+        {!anSoTrang && <div className="bc-so-trang">Trang {i + 1}/{N}</div>}
       </div>
     )
 
@@ -347,15 +362,19 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen }: {
             <span className="bc-thanh-nhan">/ {N}</span>
             <button type="button" className="icon-btn sm" title="Trang sau" aria-label="Trang sau" disabled={tr >= N - 1} onClick={() => toi(tr + 1)}><Icon n="chevr" className="ic sm" /></button>
             <button type="button" className="icon-btn sm" title="Trang cuối" aria-label="Trang cuối" disabled={tr >= N - 1} onClick={() => toi(N - 1)}><Net d="M6 7l5 5-5 5M12 7l5 5-5 5" /></button>
-            <span className="bc-thanh-dem">{tongDong.toLocaleString('vi-VN')} dòng</span>
+            {!giay && <span className="bc-thanh-dem">{tongDong.toLocaleString('vi-VN')} dòng</span>}
           </div>
 
           <div className="bc-thanh-nhom">
-            <span className="bc-thanh-nhan">Khổ</span>
-            <div className="seg">
-              <button type="button" className={kho === 'doc' ? 'on' : ''} onClick={() => doiKho('doc')}>Dọc</button>
-              <button type="button" className={kho === 'ngang' ? 'on' : ''} onClick={() => doiKho('ngang')}>Ngang</button>
-            </div>
+            {!giay && (
+              <>
+                <span className="bc-thanh-nhan">Khổ</span>
+                <div className="seg">
+                  <button type="button" className={kho === 'doc' ? 'on' : ''} onClick={() => doiKho('doc')}>Dọc</button>
+                  <button type="button" className={kho === 'ngang' ? 'on' : ''} onClick={() => doiKho('ngang')}>Ngang</button>
+                </div>
+              </>
+            )}
             <span className="bc-thanh-nhan">Xem</span>
             <div className="seg">
               <button type="button" className={lien ? 'on' : ''} onClick={() => doiXem({ che: 'lien' })}>Liên tục</button>
@@ -388,7 +407,7 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen }: {
               <div key={i} className="bc-khoi" data-do={i}>
                 {kh.loai === 'bang'
                   ? <RptTable cols={kh.cols} rows={cotCong(kh, congChuyen).length ? [...kh.rows, dongCong(kh, cotCong(kh, congChuyen), kh.rows.length, CONG_SAU)] : kh.rows} kyHieuCot={kyHieuCot} />
-                  : kh.el}
+                  : kh.loai === 'nguyen' ? kh.el : null}
               </div>
             ))}
             {cuoi && <div className="bc-khoi" data-do="cuoi">{cuoi}</div>}

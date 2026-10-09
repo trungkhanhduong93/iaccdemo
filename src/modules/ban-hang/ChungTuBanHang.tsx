@@ -21,6 +21,7 @@ import { dangLoc, khopLoc, type GiaTriLoc, type KieuLoc } from '../../ui/LocCot'
 import {
   BoLoc, ChipTrangThai, NutHangLoat, NutTuyChinhCot, cotChon, dsChipTT, khopChipTT, useCauHinhLoc, useCotDs, useLocNhap, type OLocDef,
 } from '../../ui/LocNangCao'
+import { HopInChungTu, type PhieuIn } from '../../ui/bao-cao/InChungTu'
 
 /** Bán hàng ngoài POS: tiệc mang về, khách công ty đặt trước. Lập tay, không qua FABi */
 const NGOAI_POS: VoucherCfg = {
@@ -434,15 +435,21 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
   const { s, toast } = useSession()
   const dong0 = useDong(duongDan(mod, sc))
   const [tab, setTab] = useState('ct')
+  const [phieuIn, setPhieuIn] = useState<PhieuIn[] | null>(null)
   const x = row.x
   const kieu = kieuGhiSo(s.cheDo)
+  // In: bảng kê lấy đúng các món của chứng từ, không sinh dòng giả
+  const moIn = () => setPhieuIn([{
+    sc, row, cfg: NGOAI_POS,
+    dong: dongMon(x.dt).map(d => ({ stt: d.stt, ma: d.ma, ten: d.ten, dvt: d.dvt, sl: d.sl, gia: d.gia, tien: d.tien, thue: d.thue, ts: d.ts })),
+  }])
   return (
     <FormToanMan icon={mod.icon} onClose={dong0} tong={x.dt + x.vat} title={`Chứng từ bán hàng ${row.so}`}
       meta={<><span className="src">FABi</span><span className="chip">{row.cn}</span><span className="chip">{x.don} đơn POS</span>{kieu !== 'khong' && <span className="chip ok">Đã ghi sổ</span>}</>}
       foot={<>
         <button className="btn" onClick={dong0}>Đóng</button>
         <span className="grow" />
-        <button className="btn"><Icon n="printer" className="ic sm" />In</button>
+        <button className="btn" onClick={moIn}><Icon n="printer" className="ic sm" />In</button>
         <button className="btn" disabled={!['PL', 'PR'].includes(s.goi)} title={['PL', 'PR'].includes(s.goi) ? '' : 'Xuất hoá đơn điện tử có từ gói Plus'} onClick={() => toast('Đã gửi hoá đơn tổng hợp sang iPOS Invoice')}><Icon n="receipt" className="ic sm" />Xuất hoá đơn</button>
         <button className="btn pri" onClick={() => { toast('Đã lưu'); dong0() }}>Lưu</button>
       </>}>
@@ -468,6 +475,7 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
           {row.tt === 'loi' && <Note kind="err" icon="alert">Doanh thu trên FABi lớn hơn sổ 1.250.000 đ. <Link to="/app/tien-ich/11-7">Mở đối soát</Link></Note>}
         </div>
       </div>
+      {phieuIn && <HopInChungTu ds={phieuIn} onDong={() => setPhieuIn(null)} />}
     </FormToanMan>
   )
 }

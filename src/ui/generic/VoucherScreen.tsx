@@ -21,6 +21,7 @@ import { NGUON, TT_CT, chungTu, dongCua, ttNghiepVu } from './gen'
 import { boO, nhomCua, theoLoai, TT_HD, TT_TIEN } from './nhom'
 import { BangSua } from './BangSua'
 import { ChungTuForm, HachToan, LichSu, VoucherDetail } from './ChungTuForm'
+import { HopInChungTu, type PhieuIn } from '../bao-cao/InChungTu'
 
 const COT_CO_DINH = new Set(['chk', 'stt', 'ngay', 'so', 'action'])
 /** Cột lọc bằng cách chọn trong danh sách giá trị */
@@ -65,6 +66,7 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
   const [chipTT, setChipTT] = useState('all')
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [moHangLoat, setMoHangLoat] = useState(false)
+  const [phieuIn, setPhieuIn] = useState<PhieuIn[] | null>(null)
   const [activeId, setActiveId] = useState<string>(rows[0]?.id ?? '')
   const [panelMo, setPanelMo] = useState(true)
   const [tabPanel, setTabPanel] = useState<'ct' | 'ht' | 'khac'>('ct')
@@ -148,6 +150,8 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
   const selectedRows = useMemo(() => list.filter(r => selectedIds.has(r.id)), [list, selectedIds])
 
   const tong = list.reduce((a, r) => a + r.tong, 0)
+  // Phiếu đem in: màn nhiều loại phiếu thì lấy loại và cấu hình theo loại của dòng
+  const phieuCua = (r: Row): PhieuIn => ({ sc, row: r, cfg: theoLoai(cfg, r.loai), loai: cfg.loai?.find(x => x.k === r.loai) })
 
   // Phân trang
   const soTrang = Math.max(1, Math.ceil(list.length / coTrang))
@@ -231,18 +235,22 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
             width={160}
             label={<Icon n="more" className="ic sm" />}
           >
-            <MenuItem icon="edit" onClick={() => nav(`${path}/${r.id}?sua=1`)}>Sửa</MenuItem>
-            <MenuItem icon="copy" onClick={() => toast(`Đã nhân bản ${r.so}`)}>Nhân bản</MenuItem>
-            <MenuItem icon="printer" onClick={() => toast(`In ${r.so}`)}>In</MenuItem>
-            {ghi && (
-              <MenuItem
-                icon="check"
-                onClick={() => toast(r.tt === 'ghi' ? `Đã bỏ ghi sổ ${r.so}` : `Đã ghi sổ ${r.so}`)}
-              >
-                {r.tt === 'ghi' ? 'Bỏ ghi sổ' : 'Ghi sổ'}
-              </MenuItem>
+            {dong => (
+              <>
+                <MenuItem icon="edit" onClick={() => nav(`${path}/${r.id}?sua=1`)}>Sửa</MenuItem>
+                <MenuItem icon="copy" onClick={() => toast(`Đã nhân bản ${r.so}`)}>Nhân bản</MenuItem>
+                <MenuItem icon="printer" onClick={() => { dong(); setPhieuIn([phieuCua(r)]) }}>In</MenuItem>
+                {ghi && (
+                  <MenuItem
+                    icon="check"
+                    onClick={() => toast(r.tt === 'ghi' ? `Đã bỏ ghi sổ ${r.so}` : `Đã ghi sổ ${r.so}`)}
+                  >
+                    {r.tt === 'ghi' ? 'Bỏ ghi sổ' : 'Ghi sổ'}
+                  </MenuItem>
+                )}
+                <MenuItem icon="trash" danger onClick={() => toast(`Xoá ${r.so}`)}>Xoá</MenuItem>
+              </>
             )}
-            <MenuItem icon="trash" danger onClick={() => toast(`Xoá ${r.so}`)}>Xoá</MenuItem>
           </Dropdown>
         </div>
       ),
@@ -286,6 +294,7 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
                 onBoChon={() => setSelectedIds(new Set())}
                 open={moHangLoat}
                 onOpenChange={setMoHangLoat}
+                onIn={() => setPhieuIn(selectedRows.map(phieuCua))}
               />
               <NutThemMoiSplit
                 toMoi={cfg.loai ? `${path}/moi?loai=${cfg.loai[0].k}` : `${path}/moi`}
@@ -469,6 +478,7 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
           )}
         </section>
       </div>
+      {phieuIn && <HopInChungTu ds={phieuIn} onDong={() => setPhieuIn(null)} />}
     </div>
   )
 }
