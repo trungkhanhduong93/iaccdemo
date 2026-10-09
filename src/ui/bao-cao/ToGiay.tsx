@@ -431,7 +431,7 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
         {choXem && !giay && createPortal(
           <>
             {coBang && (
-              <div className="seg">
+              <div className="seg bc-seg-xem">
                 <button type="button" className={cheXem === 'to-in' ? 'on' : ''} onClick={() => doiCheXem('to-in')}>Tờ in</button>
                 <button type="button" className={cheXem === 'bang-du-lieu' ? 'on' : ''} onClick={() => doiCheXem('bang-du-lieu')}>
                   <span className="bc-btn-bang-dai">Bảng dữ liệu</span>
@@ -439,15 +439,14 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
                 </button>
               </div>
             )}
-            {cheXem === 'to-in' && (
-              <>
-                <span className="bc-thanh-nhan">Khổ</span>
-                <div className="seg">
-                  <button type="button" className={kho === 'doc' ? 'on' : ''} onClick={() => doiKho('doc')}>Dọc</button>
-                  <button type="button" className={kho === 'ngang' ? 'on' : ''} onClick={() => doiKho('ngang')}>Ngang</button>
-                </div>
-              </>
-            )}
+            {/* Khổ luôn hiện để các nút không nhảy chỗ; ở Bảng dữ liệu thì mờ và khoá vì khổ chỉ áp cho tờ in */}
+            <div className={`bc-kho-nhom${cheXem === 'to-in' ? '' : ' tat'}`} title={cheXem === 'to-in' ? undefined : 'Khổ giấy chỉ áp cho Tờ in'}>
+              <span className="bc-thanh-nhan">Khổ</span>
+              <div className="seg bc-seg-kho">
+                <button type="button" className={kho === 'doc' ? 'on' : ''} disabled={cheXem !== 'to-in'} onClick={() => doiKho('doc')}>Dọc</button>
+                <button type="button" className={kho === 'ngang' ? 'on' : ''} disabled={cheXem !== 'to-in'} onClick={() => doiKho('ngang')}>Ngang</button>
+              </div>
+            </div>
           </>,
           choXem
         )}

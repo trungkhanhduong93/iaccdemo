@@ -158,6 +158,7 @@ export function Select({ value, defaultValue, onChange, children, className = ''
   return (
     <>
       <button ref={btn} type="button" className={`sel ${className}${open ? ' open' : ''}`} style={style} aria-label={ariaLabel} disabled={disabled}
+        title={opts.find(o => o.v === v)?.t}
         aria-haspopup="listbox" aria-expanded={open} onClick={() => setOpen(o => !o)}
         onKeyDown={e => { if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); setOpen(true) } }}>
         <span className="sel-v">{cur?.t}</span><Icon n="chevd" className="ic sm sel-c" />

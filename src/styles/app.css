@@ -4902,3 +4902,15 @@ table.tbl {
   flex: none;
 }
 
+/* ── Thanh công cụ báo cáo đứng yên: ô chọn báo cáo rộng cố định, nhóm Xem và Khổ không nhảy (T75) ── */
+.bc-chon .sel { flex: none; width: 400px; max-width: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@media (max-width: 1440px) { .bc-chon .sel { width: 340px; } }
+.bc-seg-xem button, .bc-seg-kho button { min-width: 0; }
+.bc-seg-xem button:first-child { width: 58px; }
+.bc-seg-xem button:last-child { width: 96px; }
+.bc-seg-kho button { width: 56px; }
+.bc-kho-nhom { display: inline-flex; align-items: center; gap: 6px; }
+.bc-kho-nhom.tat { opacity: .45; }
+.bc-kho-nhom.tat button { cursor: not-allowed; }
+@media (max-width: 1440px) { .bc-seg-xem button:last-child { width: 56px; } }
+.bc-chon-nhan { flex: none; width: 118px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
