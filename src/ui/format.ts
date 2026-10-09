@@ -33,3 +33,71 @@ export const k = (n: number) => Math.round(n / 1000) * 1000
 export function fold(s: string) {
   return s.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase()
 }
+
+const CS = ['không', 'một', 'hai', 'ba', 'bốn', 'năm', 'sáu', 'bảy', 'tám', 'chín']
+
+function docBlock(val: number, batBuocHangTram: boolean): string[] {
+  const c = Math.floor(val / 100)
+  const b = Math.floor((val % 100) / 10)
+  const a = val % 10
+  const words: string[] = []
+  if (c > 0) words.push(CS[c], 'trăm')
+  else if (batBuocHangTram) words.push('không', 'trăm')
+
+  if (b === 0) {
+    if (a > 0 && words.length > 0) words.push('linh')
+  } else if (b === 1) {
+    words.push('mười')
+  } else {
+    words.push(CS[b], 'mươi')
+  }
+
+  if (a === 1) {
+    words.push(b >= 2 ? 'mốt' : 'một')
+  } else if (a === 4) {
+    words.push(b >= 2 ? 'tư' : 'bốn')
+  } else if (a === 5) {
+    words.push(b >= 1 ? 'lăm' : 'năm')
+  } else if (a > 1) {
+    words.push(CS[a])
+  }
+  return words
+}
+
+function docDuong(n: number, batBuocHangTram = false): string[] {
+  if (n === 0) return []
+  if (n >= 1e9) {
+    const ty = Math.floor(n / 1e9)
+    const du = n % 1e9
+    const res = [...docDuong(ty, batBuocHangTram), 'tỷ']
+    if (du > 0) res.push(...docDuong(du, true))
+    return res
+  }
+  const b2 = Math.floor(n / 1e6) % 1000
+  const b1 = Math.floor(n / 1e3) % 1000
+  const b0 = n % 1000
+  const res: string[] = []
+  let coTruoc = batBuocHangTram
+  if (b2 > 0) {
+    res.push(...docBlock(b2, coTruoc), 'triệu')
+    coTruoc = true
+  }
+  if (b1 > 0) {
+    res.push(...docBlock(b1, coTruoc), 'nghìn')
+    coTruoc = true
+  }
+  if (b0 > 0) {
+    res.push(...docBlock(b0, coTruoc))
+  }
+  return res
+}
+
+/** Đọc số nguyên đồng thành chữ tiếng Việt theo chuẩn kế toán */
+export function docSoTien(n: number): string {
+  const num = Math.round(n)
+  if (num === 0) return 'Không đồng'
+  const abs = Math.abs(num)
+  const chuoi = docDuong(abs).join(' ')
+  if (num < 0) return 'Âm ' + chuoi + ' đồng'
+  return chuoi.charAt(0).toUpperCase() + chuoi.slice(1) + ' đồng'
+}
