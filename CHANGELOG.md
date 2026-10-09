@@ -4,6 +4,11 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 09/10/2026
 
+- T65: Form chứng từ: ô lấy từ danh mục (nhà cung cấp, khách hàng, nhân viên, lý do, quỹ, hàng hoá, kho, khoản mục, công việc) có ô tìm; chưa có thì bấm Thêm mới ngay tại form.
+- T64: Phiếu Mua hàng có nguồn Thủ công hoặc Excel; bỏ Tải từ iPOS Inventory.
+- T63: Mua hàng có báo cáo Tổng hợp mua hàng, Chi tiết mua hàng, Tổng hợp nhập, Chi tiết nhập ở mọi gói; sơ đồ Mua hàng có mũi tên về Sổ sách, báo cáo. Sổ ngân hàng gói Free ghi Thu, Chi, Tồn.
+- T62: Phiếu mua hàng tích Nhận kèm hoá đơn thì thông tin hoá đơn ở đầu phiếu. Gói Free không còn tab Ghi sổ.
+- T61: Đầu form mọi phiếu như Thu chi: tiêu đề là tên phiếu, giữa ghi Thêm mới, Đang chỉnh sửa hoặc Chi tiết phiếu.
 - T56: Hộp in chứng từ chia 2 cột: bên trái chọn mẫu, xem đơn vị và người ký; bên phải xem trước tờ in. Bảng danh sách chứng từ giữ nguyên tiêu đề và hàng lọc khi cuộn, chữ không còn trồi lên ô lọc. Nút In trên Tờ khai GTGT mở hộp in.
 - T55: Màn xem báo cáo gọn: tên báo cáo, ngày, lọc, in, xuất cùng một hàng trên cùng; báo cáo kéo tới đáy màn hình. Báo cáo hiện thành một tờ liền, không chia trang khi xem; in vẫn chia trang A4.
 - T54: Sổ quỹ tiền mặt, Sổ ngân hàng lọc theo quỹ tiền, số tồn tính lại theo quỹ; Sổ công nợ lọc theo đối tượng. Sổ ngân hàng có cột Quỹ tiền, xem tất cả quỹ mặc định khổ ngang. Gói Free không còn Sổ chi tiết tiền và Sổ công nợ ở Thu chi.

@@ -111,6 +111,8 @@ def main():
         for goi in ['PL', 'PR', 'S']:
             for path in ['/app/tong-hop/10-2-2', '/app/tong-hop/10-2-1', '/app/tong-hop/10-2-4']:
                 vao(path, goi)
+                # chờ trang hiện hẳn (trang khoá theo gói hoặc nút chọn kỳ) rồi mới xét; chờ cố định 0,2 giây thì máy chậm sẽ bấm hụt (T65)
+                pg.wait_for_selector('.lockpage, .bc-chon .kn-nut, .report .kn-nut')
                 if pg.locator('.lockpage').count():
                     continue
                 for ky in ['8', '9', '10']:
