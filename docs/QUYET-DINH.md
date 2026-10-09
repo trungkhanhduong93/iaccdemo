@@ -382,7 +382,14 @@ Lý do: PhuongXT chốt ngày 09/10/2026 (T52).
 
 Lý do: PhuongXT chốt ngày 09/10/2026 (T54, T55).
 
-## QD37. Màn xem báo cáo gộp T55 và bản Anti (đang soạn)
+## QD37. Màn xem báo cáo gộp T55 và bản Anti (09/10/2026)
+
+- Trong phân hệ Báo cáo, tên báo cáo chỉ hiện ở ô chọn trên hàng trên cùng. PageHead của màn ẩn đi, trừ màn có nút hành động riêng (vd Tờ khai GTGT có Xuất XML, Nộp tờ khai).
+- Thanh công cụ báo cáo dùng nút có chữ: Tuỳ chỉnh, Xuất, In (nút chính). Màn rộng dưới 1360px thì Tuỳ chỉnh, Xuất chỉ còn biểu tượng; In luôn có chữ.
+- Thanh dưới tờ giấy có nút Tờ in / Bảng dữ liệu. Tờ in là một tờ liền theo QD36. Bảng dữ liệu hiện bảng đầu tiên của báo cáo dạng lưới, cuộn ảo cho dữ liệu lớn, ẩn Khổ và phóng to thu nhỏ. Lựa chọn nhớ trên máy (`bc-che-xem`). In và xuất file ở chế độ nào cũng ra tờ in chia trang.
+- Thanh dưới chỉ hiện số dòng khi đếm được dòng.
+
+Lý do: Trum giao T57 ngày 09/10/2026, gộp nền T55 của PhuongXT với ý tưởng nút có chữ và chế độ lưới trong bản nháp của Anti.
 
 ## QD38. Báo cáo mua hàng, nhập hàng cho mọi gói (09/10/2026)
 

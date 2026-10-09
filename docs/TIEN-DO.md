@@ -11,8 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T57 | Màn xem báo cáo: gộp T55 với phần tốt của bản Anti. Bỏ tiêu đề lặp, khung kéo tới đáy, nút In, Xuất, Tuỳ chỉnh có chữ, chế độ xem Tờ in hoặc Bảng dữ liệu, bỏ "0 dòng" sai (QD37) | Trum | Đang làm | Sửa `ReportScreen.tsx`, `ToGiay.tsx`, `ThanhChon.tsx`, `app.css`. Antigravity làm |
-| T58 | Màn Tất cả báo cáo: biểu tượng theo loại sổ, báo cáo; thẻ cao đều; mục Mở gần đây; ẩn thanh tab chỉ có một tab | Trum | Chờ | Sửa `BaoCaoScreen.tsx`, `app.css`, có thể `Shell.tsx`. Làm sau T57 |
+| T58 | Màn Tất cả báo cáo: biểu tượng theo loại sổ, báo cáo; thẻ cao đều; mục Mở gần đây; ẩn thanh tab chỉ có một tab | Trum | Đang làm | Sửa `BaoCaoScreen.tsx`, `app.css`, có thể `Shell.tsx`. Làm sau T57 |
 | T59 | Màn Thiết kế mẫu in 11.11: thanh tab bên phải một hàng, ô tìm mẫu bên trái, xem trước vừa khung | Trum | Chờ | Sửa `ThietKeMauIn.tsx`, `app.css`. Làm sau T58 |
 | T60 | Mô tả gói Free, Standard trong `GOI` (`src/app/plan.ts`) đang ghi "1 điểm bán"; theo Roadmap gói Free là mỗi chi nhánh một kho, không giới hạn một chi nhánh. Chốt câu chữ rồi sửa | PhuongXT | Chờ | Tách từ T25 |
 | T27 | Danh sách chứng từ 2.1.1: khung chi tiết bên dưới hiện dòng phiếu khác với form của cùng phiếu (UNC2610-0259: khung ghi "Chi mua rau, củ tại chợ", form ghi "Trả tiền nhà cung cấp thịt bò") | | Chờ | Thấy khi làm T26 |
@@ -42,6 +41,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | T63 | Mua hàng: báo cáo Tổng hợp mua hàng, Chi tiết mua hàng (dùng lại 4.2.2, 4.2.1), thêm Tổng hợp nhập 4.2.4, Chi tiết nhập 4.2.5, mở cho mọi gói, theo chi nhánh; sơ đồ Mua hàng kiểu hội tụ; Sổ ngân hàng gói Free ghi Thu, Chi, Tồn (QD38) | PhuongXT | 09/10/2026 | `2026-10-09-phuongxt-mua-hang-form-danh-muc.md` |
 | T62 | Form Mua hàng: tích Nhận kèm hoá đơn thì thông tin hoá đơn ở đầu phiếu, bỏ tab Hoá đơn; gói Free bỏ tab Ghi sổ ở mọi phiếu; lịch sử thêm mới, sửa, xoá cho mọi phiếu (QD33) | PhuongXT | 09/10/2026 | `2026-10-09-phuongxt-mua-hang-form-danh-muc.md` |
 | T61 | Đầu form mọi phiếu như Thu chi: tiêu đề chỉ tên phiếu, trạng thái Thêm mới / Đang chỉnh sửa / Chi tiết phiếu ở giữa, bỏ chip Chưa lưu, Số, tên màn, ô Loại phiếu, Tổng tiền góc phải (QD33) | PhuongXT | 09/10/2026 | `2026-10-09-phuongxt-mua-hang-form-danh-muc.md` |
+| T57 | Màn xem báo cáo: bỏ tiêu đề lặp, khung kéo tới đáy, nút Tuỳ chỉnh, Xuất, In có chữ, chế độ Tờ in hoặc Bảng dữ liệu, bỏ "0 dòng" sai (QD37) | Trum | 09/10/2026 | `2026-10-09-trum-man-bao-cao-gon.md` |
 | T56 | Hộp in chứng từ 2 cột (chọn mẫu trái, xem trước phải); dính tiêu đề, hàng lọc bảng danh sách chứng từ khi cuộn; nút In Tờ khai GTGT chạy được. Bỏ phần thanh trên báo cáo của bản Anti vì trùng T55 | Trum | 09/10/2026 | `2026-10-09-trum-hop-in-hai-cot.md` |
 | T25 | Thu chi gói Free theo sheet Roadmap: form phiếu thu, chi, chuyển quỹ; danh sách 2.1.1; sơ đồ Quy trình; sổ quỹ, sổ ngân hàng, sổ công nợ theo chi nhánh; sổ gói Free không dùng tài khoản. Điểm mô tả gói tách thành T60 | PhuongXT | 09/10/2026 | `2026-10-09-phuongxt-so-chi-nhanh-danh-sach.md` |
 | T55 | Màn xem báo cáo gọn: ô chọn báo cáo kiêm tiêu đề, thanh công cụ cùng hàng, ẩn thanh tab khi xem một báo cáo, bỏ khoảng trống đáy; xem một tờ liền, bỏ ngắt trang, Liên tục/Từng trang, nút In dưới; in vẫn chia trang (QD36) | PhuongXT | 09/10/2026 | `2026-10-09-phuongxt-so-thu-chi-bao-cao-gon.md` |

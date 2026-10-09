@@ -3660,3 +3660,109 @@ body.tkmi-dang-keo, body.tkmi-dang-keo * {
 .dm-them:hover { background: var(--tint); }
 .dm-hop-than { display: flex; flex-direction: column; gap: 10px; padding: 14px 16px; }
 .dm-hop-than .muted { margin: 0; font-size: 12.5px; }
+/* ── Màn xem báo cáo gọn (T57) ── */
+/* 1. Ẩn tiêu đề lặp khi đã có thanh chọn báo cáo, giữ lại khi có nút hành động */
+.bc-chon ~ .page > .ph:not(:has(.ph-act)) {
+  display: none;
+}
+
+/* 2. Khung báo cáo kéo tới đáy màn hình trong phân hệ Báo cáo */
+.main:has(.bc-chon) {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden !important; /* Thắng overflow: auto mặc định của .main (T50) */
+}
+.main:has(.bc-chon) > .bc-chon {
+  flex: none;
+  padding: 8px 14px 0;
+  gap: 8px;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+}
+.main:has(.bc-chon) > .page {
+  flex: 1;
+  min-height: 0;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  padding: 6px 14px 10px;
+  box-sizing: border-box;
+  overflow: hidden;
+  max-width: none;
+  gap: 8px;
+}
+.main:has(.bc-chon) .report {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin-bottom: 0;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--white);
+  box-shadow: 0 1px 3px rgba(14, 26, 43, 0.05);
+}
+.main:has(.bc-chon) .bc-giay {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.main:has(.bc-chon) .bc-ban {
+  flex: 1;
+  height: auto;
+  min-height: 0;
+  overflow: auto;
+}
+.main:has(.bc-chon) .bc-thanh {
+  flex: none;
+  border-top: 1px solid var(--line);
+  background: var(--white);
+}
+
+/* 3. Thanh công cụ cùng hàng không xuống dòng, co chữ khi chật */
+.bc-chon .sel {
+  max-width: 360px;
+  min-width: 0;
+  flex-shrink: 1;
+}
+.bc-chon-phai {
+  flex: 1;
+  min-width: 0;
+}
+.bc-chon-phai .thanh-loc {
+  flex-wrap: nowrap;
+}
+.bc-chon-phai .thanh-loc-phai {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+@media (max-width: 1360px) {
+  .bc-chon .sel {
+    max-width: 300px;
+  }
+  .bc-chon-phai .rpt-btn-txt {
+    display: none;
+  }
+}
+
+/* 4. Chế độ Bảng dữ liệu trong ToGiay */
+.bc-ban-du-lieu {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--white);
+}
+.bc-ban-du-lieu .tbl-wrap {
+  flex: 1;
+  height: 100%;
+}
+
+

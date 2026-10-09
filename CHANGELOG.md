@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 09/10/2026
 
+- T57: Màn xem báo cáo gọn hơn: tên báo cáo không còn lặp hai lần, khung báo cáo kéo tới đáy màn hình. Nút Tuỳ chỉnh, Xuất, In có chữ. Thanh dưới có nút Tờ in / Bảng dữ liệu để xem số liệu dạng lưới, cuộn nhanh khi nhiều dòng.
 - T65: Form chứng từ: ô lấy từ danh mục (nhà cung cấp, khách hàng, nhân viên, lý do, quỹ, hàng hoá, kho, khoản mục, công việc) có ô tìm; chưa có thì bấm Thêm mới ngay tại form.
 - T64: Phiếu Mua hàng có nguồn Thủ công hoặc Excel; bỏ Tải từ iPOS Inventory.
 - T63: Mua hàng có báo cáo Tổng hợp mua hàng, Chi tiết mua hàng, Tổng hợp nhập, Chi tiết nhập ở mọi gói; sơ đồ Mua hàng có mũi tên về Sổ sách, báo cáo. Sổ ngân hàng gói Free ghi Thu, Chi, Tồn.

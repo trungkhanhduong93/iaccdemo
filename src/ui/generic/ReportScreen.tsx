@@ -16,7 +16,7 @@ import { Table } from '../Table'
 import { between, k, money, pad, pick, rng } from '../format'
 import { chungTu, soChiTiet } from './gen'
 import { Dropdown, MenuHead, MenuItem, MenuSep, Select } from '../Dropdown'
-import { LocO, NutVuong, ThanhLoc } from '../ThanhLoc'
+import { LocO, ThanhLoc } from '../ThanhLoc'
 import { khoangThang } from '../ChonNgay'
 import { SoTrangCtx, ToGiay, NgatTrang, tachKhoi, type Kho } from '../bao-cao/ToGiay'
 import { datNguonXuat, layNguonXuat, taoTenFile, xuatFile, type NguonXuat } from '../bao-cao/xuat'
@@ -169,11 +169,24 @@ export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: 
         }
         phai={
           <>
-            <NutVuong icon="printer" title="In" onClick={inBaoCao} />
-            <NutVuong icon="layers" title="Tuỳ chỉnh" onClick={() => setMoTuyChinh(true)} />
+            <button
+              type="button"
+              className="btn sm"
+              title="Tuỳ chỉnh"
+              onClick={() => setMoTuyChinh(true)}
+            >
+              <Icon n="layers" className="ic sm" />
+              <span className="rpt-btn-txt">Tuỳ chỉnh</span>
+            </button>
             <Dropdown
-              label={<Icon n="download" className="ic sm" />}
-              btnClass="nut-vuong"
+              label={
+                <>
+                  <Icon n="download" className="ic sm" />
+                  <span className="rpt-btn-txt">Xuất</span>
+                  <Icon n="chevd" className="ic sm" />
+                </>
+              }
+              btnClass="btn sm"
               title="Xuất báo cáo"
               align="end"
               width={180}
@@ -194,6 +207,15 @@ export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: 
                 </>
               )}
             </Dropdown>
+            <button
+              type="button"
+              className="btn sm pri"
+              title="In"
+              onClick={inBaoCao}
+            >
+              <Icon n="printer" className="ic sm" />
+              In
+            </button>
           </>
         }
       />

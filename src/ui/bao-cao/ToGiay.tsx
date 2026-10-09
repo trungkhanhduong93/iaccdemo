@@ -7,6 +7,7 @@ import { createPortal, flushSync } from 'react-dom'
 import { useLocation } from 'react-router-dom'
 import type { Col, Row } from '../../modules/types'
 import { RptTable, type KyHieuCot } from '../generic/ReportScreen'
+import { Table } from '../Table'
 import { Dropdown, MenuItem, MenuSep } from '../Dropdown'
 import { Icon } from '../Icon'
 import { heSoZoom } from '../zoom'
@@ -87,6 +88,17 @@ function docKho(path: string): Kho | null {
     return v === 'doc' || v === 'ngang' ? v : null
   } catch {
     return null
+  }
+}
+
+type CheXem = 'to-in' | 'bang-du-lieu'
+
+function docCheXem(): CheXem {
+  try {
+    const v = localStorage.getItem('bc-che-xem')
+    return v === 'bang-du-lieu' ? 'bang-du-lieu' : 'to-in'
+  } catch {
+    return 'to-in'
   }
 }
 
@@ -195,6 +207,8 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
   const khoaKho = `${path}:${khoMacDinh}`
   const [kho, setKho] = useState<Kho>(() => docKho(khoaKho) ?? khoMacDinh)
   const [xem, setXem] = useState<Xem>(docXem)
+  const [cheXem, setCheXem] = useState<CheXem>(docCheXem)
+  const doiCheXem = (c: CheXem) => { setCheXem(c); ghi('bc-che-xem', c) }
   const [d, setD] = useState<Do | null>(null)
   const [trang, setTrang] = useState(0)
   const [oTrang, setOTrang] = useState('1')
@@ -227,6 +241,8 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
   })
 
   const khoi = useMemo(() => tachKhoi(than), [than])
+  const bangDau = useMemo(() => khoi.find((k): k is Extract<Khoi, { loai: 'bang' }> => k.loai === 'bang'), [khoi])
+  const coBang = !!bangDau
   const tongDong = khoi.reduce((a, k) => a + (k.loai === 'bang' ? k.rows.length : 0), 0)
   const kt = giay ? { w: giay.rong, h: giay.cao } : KHO[kho]
   const le = giay ? { tren: giay.le[0], phai: giay.le[1], duoi: giay.le[2], trai: giay.le[3] } : LE
@@ -265,7 +281,7 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
     ro.observe(e)
     setRongBan(e.clientWidth)
     return () => ro.disconnect()
-  }, [])
+  }, [cheXem])
 
   const hNoiDung = (kt.h - le.tren - le.duoi) * PX - 1      // chừa 1px cho sai số làm tròn
   const trangDs = useMemo(() => khopDo(d, khoi) ? chiaTrang(d, khoi, hNoiDung, !!cuoi) : [], [d, khoi, hNoiDung, cuoi])
@@ -290,7 +306,7 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
     ro.observe(e)
     setCaoLien(e.offsetHeight)
     return () => ro.disconnect()
-  }, [])
+  }, [cheXem])
 
   // In: vẽ mọi trang ra khung riêng gắn vào body, đặt khổ giấy theo khổ đang xem rồi gọi hộp in
   useEffect(() => {
@@ -370,21 +386,33 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
     <SoTrangCtx.Provider value={N}>
       <div className="bc-giay" style={coChu ? { '--bc-co-chu': `${coChu}px` } as CSSProperties : undefined}>
         {css && <style>{css}</style>}
-        <div className="bc-ban" ref={ban}>
-          <div className="bc-sizer" style={{ width: wPx * z, height: caoSizer }}>
-            <div className={`bc-ds-trang ${pv}`} style={{ width: wPx, transform: `scale(${z})` }}>
-              {toMotTrang}
+        {cheXem === 'bang-du-lieu' && bangDau ? (
+          <div className="bc-ban-du-lieu">
+            <Table cols={bangDau.cols} rows={bangDau.rows} onRow={bangDau.onRow} motDong keDoc virtual />
+          </div>
+        ) : (
+          <div className="bc-ban" ref={ban}>
+            <div className="bc-sizer" style={{ width: wPx * z, height: caoSizer }}>
+              <div className={`bc-ds-trang ${pv}`} style={{ width: wPx, transform: `scale(${z})` }}>
+                {toMotTrang}
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         <div className="bc-thanh">
           <div className="bc-thanh-nhom">
-            {!giay && <span className="bc-thanh-dem">{tongDong.toLocaleString('vi-VN')} dòng</span>}
+            {!giay && tongDong > 0 && <span className="bc-thanh-dem">{tongDong.toLocaleString('vi-VN')} dòng</span>}
           </div>
 
           <div className="bc-thanh-nhom">
-            {!giay && (
+            {!giay && coBang && (
+              <div className="seg">
+                <button type="button" className={cheXem === 'to-in' ? 'on' : ''} onClick={() => doiCheXem('to-in')}>Tờ in</button>
+                <button type="button" className={cheXem === 'bang-du-lieu' ? 'on' : ''} onClick={() => doiCheXem('bang-du-lieu')}>Bảng dữ liệu</button>
+              </div>
+            )}
+            {!giay && cheXem === 'to-in' && (
               <>
                 <span className="bc-thanh-nhan">Khổ</span>
                 <div className="seg">
@@ -395,20 +423,24 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
             )}
           </div>
 
-          <div className="bc-thanh-nhom">
-            <button type="button" className="icon-btn sm" title="Thu nhỏ" aria-label="Thu nhỏ" disabled={pct <= MUC_ZOOM[0]} onClick={nho}><Net d="M6 12h12" /></button>
-            <Dropdown label={`${pct}%`} btnClass="bc-zoom" title="Chọn mức zoom" align="end" width={150}>
-              {dong => (
-                <>
-                  {MUC_ZOOM.map(m => <MenuItem key={m} on={xem.zoom === m} onClick={() => { doiXem({ zoom: m }); dong() }}>{m}%</MenuItem>)}
-                  <MenuSep />
-                  <MenuItem on={xem.zoom === 'vua'} onClick={() => { doiXem({ zoom: 'vua' }); dong() }}>Vừa khung</MenuItem>
-                </>
-              )}
-            </Dropdown>
-            <button type="button" className="icon-btn sm" title="Phóng to" aria-label="Phóng to" disabled={pct >= MUC_ZOOM[MUC_ZOOM.length - 1]} onClick={to}><Icon n="plus" className="ic sm" /></button>
-            <button type="button" className={`btn sm${xem.zoom === 'vua' ? ' on' : ''}`} onClick={() => doiXem({ zoom: 'vua' })}>Vừa khung</button>
-          </div>
+          {cheXem === 'to-in' ? (
+            <div className="bc-thanh-nhom">
+              <button type="button" className="icon-btn sm" title="Thu nhỏ" aria-label="Thu nhỏ" disabled={pct <= MUC_ZOOM[0]} onClick={nho}><Net d="M6 12h12" /></button>
+              <Dropdown label={`${pct}%`} btnClass="bc-zoom" title="Chọn mức zoom" align="end" width={150}>
+                {dong => (
+                  <>
+                    {MUC_ZOOM.map(m => <MenuItem key={m} on={xem.zoom === m} onClick={() => { doiXem({ zoom: m }); dong() }}>{m}%</MenuItem>)}
+                    <MenuSep />
+                    <MenuItem on={xem.zoom === 'vua'} onClick={() => { doiXem({ zoom: 'vua' }); dong() }}>Vừa khung</MenuItem>
+                  </>
+                )}
+              </Dropdown>
+              <button type="button" className="icon-btn sm" title="Phóng to" aria-label="Phóng to" disabled={pct >= MUC_ZOOM[MUC_ZOOM.length - 1]} onClick={to}><Icon n="plus" className="ic sm" /></button>
+              <button type="button" className={`btn sm${xem.zoom === 'vua' ? ' on' : ''}`} onClick={() => doiXem({ zoom: 'vua' })}>Vừa khung</button>
+            </div>
+          ) : (
+            <div className="bc-thanh-nhom" />
+          )}
         </div>
 
         {/* Khung đo ẩn: ngoài khối transform, cùng bề rộng và lớp CSS với trang thật */}
