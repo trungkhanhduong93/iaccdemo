@@ -4904,7 +4904,7 @@ table.tbl {
 
 /* ── Thanh công cụ báo cáo đứng yên: ô chọn báo cáo rộng cố định, nhóm Xem và Khổ không nhảy (T75) ── */
 .bc-chon .sel { flex: none; width: 400px; max-width: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-@media (max-width: 1440px) { .bc-chon .sel { width: 340px; } }
+@media (max-width: 1440px) { .bc-chon .sel { width: 300px; } }
 .bc-seg-xem button, .bc-seg-kho button { min-width: 0; }
 .bc-seg-xem button:first-child { width: 58px; }
 .bc-seg-xem button:last-child { width: 96px; }
