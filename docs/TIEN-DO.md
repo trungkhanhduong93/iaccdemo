@@ -37,7 +37,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
-| T78 | Đầu mọi phiếu bỏ ô Diễn giải (Ghi chú chép sang). Form Mua hàng: Ghi chú kéo dài qua hai cột; Tiền mặt ngay thì chọn quỹ tiền mặt, Chuyển khoản ngay thì chọn quỹ ngân hàng. Thu, chi ngân hàng ghi nhãn Quỹ ngân hàng | PhuongXT | 09/10/2026 | `2026-10-09-phuongxt-mua-hang-chon-quy.md` |
+| T78 | Đầu mọi phiếu bỏ ô Diễn giải (Ghi chú chép sang), hai cột trái đều hàng. Form Mua hàng: Tiền mặt ngay thì chọn quỹ tiền mặt, Chuyển khoản ngay thì chọn quỹ ngân hàng. Thu, chi ngân hàng ghi nhãn Quỹ ngân hàng | PhuongXT | 09/10/2026 | `2026-10-09-phuongxt-mua-hang-chon-quy.md` |
 | T77 | Đầu phiếu thu chi, chuyển quỹ: bỏ ô Diễn giải (đã có Ghi chú), Địa chỉ lên chỗ Diễn giải, Ghi chú kéo dài qua hai cột; thu, chi ngân hàng ghi Quỹ tiền; chuyển quỹ Từ quỹ, Đến quỹ một hàng | PhuongXT | 09/10/2026 | `2026-10-09-phuongxt-dau-phieu-thu-chi-ghi-chu.md` |
 | T69 | Ô Ghi chú ở mọi phiếu (phiếu khác thu chi: để trống, độc lập với diễn giải); lưu phiếu giữ đủ các ô đầu phiếu (người giao, địa chỉ, MST, hoá đơn, thanh toán) (QD33) | PhuongXT | 09/10/2026 | `2026-10-09-phuongxt-hoa-don-cot-phai-ghi-chu.md` |
 | T68 | Form Mua hàng: thông tin hoá đơn ở cột phải đầu phiếu (2 cột, dưới số phiếu); Số lô, Hạn dùng chỉ có ở gói Pro (QD33) | PhuongXT | 09/10/2026 | `2026-10-09-phuongxt-hoa-don-cot-phai-ghi-chu.md` |

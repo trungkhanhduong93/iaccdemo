@@ -302,8 +302,9 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
     </div>
   )
   // Ghi chú ở mọi phiếu (T69), gõ ghi chú thì diễn giải chép theo (T49, T78)
-  // Ghi chú kéo dài qua hai cột trái: phiếu thu chi (T77), Mua hàng (T78)
-  const keoGc = Boolean(oLy) || nhom === 'mua'
+  // Phân hệ Thu chi (trừ chuyển quỹ): Địa chỉ ở cột giữa, Ghi chú kéo dài qua hai cột trái (T77).
+  // Phiếu khác: Địa chỉ ở cột trái, Ghi chú ở cột giữa cùng hàng Địa chỉ (T78). Hai cột trái luôn đều hàng
+  const keoGc = laTien && nhom !== 'cq'
   const oGhiChu = (
     <div className="f" style={keoGc ? { gridColumn: '1 / 3' } : undefined}>
       <label>Ghi chú</label>
@@ -660,7 +661,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
                   <input className="inp" readOnly value={nguoiGiao} />
                 )}
               </div>
-              {!oLy && oDiaChi}
+              {!keoGc && oDiaChi}
               </>)}
             </div>
 
@@ -678,7 +679,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               )}
               {/* Chuyển quỹ: hàng 1 Từ quỹ, Đến quỹ; hàng 2 Người thực hiện, Ghi chú (T77) */}
               {nhom === 'cq' && oQuyCq('Đến quỹ', denQuy, setDenQuy)}
-              {oLy && oDiaChi}
+              {keoGc && oDiaChi}
               {!laTien && (
                 <div className="f">
                   <label>Nhân viên thực hiện</label>

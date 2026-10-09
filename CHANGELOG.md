@@ -4,7 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 09/10/2026
 
-- T78: Đầu mọi phiếu không còn ô Diễn giải, Ghi chú thay chỗ và tự ghi vào diễn giải. Phiếu mua hàng có Ghi chú kéo dài qua hai cột. Phiếu mua, bán chọn Tiền mặt ngay thì chọn quỹ tiền mặt, Chuyển khoản ngay thì chọn quỹ ngân hàng. Phiếu thu, chi ngân hàng ghi Quỹ ngân hàng.
+- T78: Đầu mọi phiếu không còn ô Diễn giải, Ghi chú thay chỗ và tự ghi vào diễn giải, nằm cùng hàng Địa chỉ. Phiếu mua, bán chọn Tiền mặt ngay thì chọn quỹ tiền mặt, Chuyển khoản ngay thì chọn quỹ ngân hàng. Phiếu thu, chi ngân hàng ghi Quỹ ngân hàng.
 - T77: Đầu phiếu thu chi, chuyển quỹ không còn ô Diễn giải. Phiếu thu chi: Địa chỉ ở cột giữa dưới Lý do, Ghi chú kéo dài qua hai cột; thu, chi ngân hàng ghi Quỹ tiền thay Tài khoản ngân hàng. Chuyển quỹ: Từ quỹ, Đến quỹ một hàng; Người thực hiện, Ghi chú một hàng.
 - T74: Bảng danh sách chứng từ theo kiểu iPOS Inventory: cột cố định trái, phải đứng yên khi kéo ngang, đường kẻ liền nét; dòng cao 42px, kẻ dọc mảnh. Bấm số chứng từ (chữ xanh) để mở phiếu, không còn mở bằng đúp chuột. Cột ngày hiện cả giờ.
 - T72: Màn xem báo cáo có nút Xem báo cáo: đổi kỳ, bộ lọc xong bấm Xem mới cập nhật số. Độ rộng cột và cỡ chữ chia theo khổ A4 dọc, ngang, giống nhau trên màn hình, bản in và file Excel.
