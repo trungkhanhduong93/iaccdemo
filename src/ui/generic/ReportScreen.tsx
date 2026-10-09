@@ -12,12 +12,16 @@ import { chungTu, soChiTiet } from './gen'
 import { Select } from '../Dropdown'
 import { LocO, NutVuong, ThanhLoc } from '../ThanhLoc'
 import { khoangThang } from '../ChonNgay'
+import { ToGiay, tachKhoi, type Kho } from '../bao-cao/ToGiay'
 
 export const KY_CHON: [string, string][] = [['9', 'Tháng 9/2026'], ['10', 'Tháng 10/2026 (đến 07/10)'], ['8', 'Tháng 8/2026']]
 
 export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: string) => void; children?: ReactNode }) {
   // Số liệu báo cáo mẫu tính theo tháng, nên lấy tháng của ngày bắt đầu làm kỳ.
   const [khoang, setKhoang] = useState(() => khoangThang(Number(ky), 2026))
+  const { toast } = useSession()
+  // Tờ giấy (ToGiay) nghe sự kiện này để in đúng các trang đang xem
+  const inBaoCao = () => window.dispatchEvent(new CustomEvent('bc-in'))
 
   useEffect(() => {
     const thang = Number(ky)
@@ -48,22 +52,22 @@ export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: 
       }
       phai={
         <>
-          <NutVuong icon="printer" title="In" />
+          <NutVuong icon="printer" title="In" onClick={inBaoCao} />
           <NutVuong icon="download" title="Xuất Excel" />
-          <NutVuong icon="doc" title="Xuất PDF" />
+          <NutVuong icon="doc" title="Xuất PDF" onClick={() => { inBaoCao(); toast('Chọn máy in "Lưu dưới dạng PDF" để lưu file') }} />
         </>
       }
     />
   )
 }
 
-/** Trang báo cáo theo mẫu: đầu trang đơn vị, mẫu số, tiêu đề, kỳ, ô ký */
-export function ReportPaper({ title, sub, mau, children, ky = true }: { title: string; sub: string; mau?: string; children: ReactNode; ky?: boolean }) {
+/** Trang báo cáo theo mẫu: đầu trang đơn vị, mẫu số, tiêu đề, kỳ, ô ký. Vẽ trên tờ A4 tự chia trang (ToGiay) */
+export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { title: string; sub: string; mau?: string; children: ReactNode; ky?: boolean; kho?: Kho }) {
   const { s } = useSession()
   const dv = donViHienTai(s)
   const cd = cheDoHienTai(s)
-  return (
-    <div className="paper">
+  const dau = (
+    <>
       <div className="paper-h">
         <div><b>Đơn vị: {dv.ten}</b><br />Địa chỉ: {dv.diaChi}<br />MST: {dv.mst}</div>
         {mau && cd.ma !== 'TT152' && <div style={{ textAlign: 'center' }}><b>Mẫu số {mau}</b><br /><i>(Theo {cd.soHieu})</i></div>}
@@ -71,17 +75,20 @@ export function ReportPaper({ title, sub, mau, children, ky = true }: { title: s
       <h2>{title}</h2>
       <div className="sub">{sub}</div>
       <div className="unit">Đơn vị tính: đồng</div>
-      {children}
-      {ky && (
-        <div className="sign">
-          <div><b>Người lập biểu</b><i>(Ký, họ tên)</i>Lê Quốc Bảo</div>
-          <div><b>Kế toán trưởng</b><i>(Ký, họ tên)</i>Trần Thu Hà</div>
-          <div><b>Người đại diện theo pháp luật</b><i>(Ký, họ tên, đóng dấu)</i>{dv.nguoiDaiDien}</div>
-        </div>
-      )}
-    </div>
+    </>
   )
+  const cuoi = ky ? (
+    <div className="sign">
+      <div><b>Người lập biểu</b><i>(Ký, họ tên)</i>Lê Quốc Bảo</div>
+      <div><b>Kế toán trưởng</b><i>(Ký, họ tên)</i>Trần Thu Hà</div>
+      <div><b>Người đại diện theo pháp luật</b><i>(Ký, họ tên, đóng dấu)</i>{dv.nguoiDaiDien}</div>
+    </div>
+  ) : undefined
+  return <ToGiay dau={dau} than={children} cuoi={cuoi} khoMacDinh={kho ?? tuDoanKho(children)} />
 }
+
+// Bảng từ 7 cột trở lên in khổ ngang cho đỡ chật
+const tuDoanKho = (than: ReactNode): Kho => tachKhoi(than).some(x => x.loai === 'bang' && x.cols.length >= 7) ? 'ngang' : 'doc'
 
 const kyTen = (ky: string) => KY_CHON.find(x => x[0] === ky)?.[1].replace(' (đến 07/10)', '') || `Tháng ${ky}/2026`
 const dsTongHop: Record<string, { ma: string; ten: string }[]> = {
