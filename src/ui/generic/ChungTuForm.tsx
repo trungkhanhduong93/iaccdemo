@@ -58,10 +58,12 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
 
   // Trạng thái thanh toán cho mua/bán
   const [hinhThucTt, setHinhThucTt] = useState<'congno' | 'tienmat' | 'chuyenkhoan'>(
-    nv?.ttTien === 'da' ? 'tienmat' : 'congno'
+    (row?._httt as 'congno' | 'tienmat' | 'chuyenkhoan' | undefined) ?? (nv?.ttTien === 'da' ? 'tienmat' : 'congno')
   )
-  const [nhanKemHd, setNhanKemHd] = useState(nv?.ttHd === 'da' || row?.nguon === 'HĐ')
-  const [tknhChi, setTknhChi] = useState(TK_NGAN_HANG[0].so)
+  // Phiếu đã lưu trong phiên giữ đủ các ô đầu phiếu ở row._xxx (T69), không lấy lại dữ liệu mẫu
+  const luuCu = (k: string) => (row?.[`_${k}`] as string | undefined)
+  const [nhanKemHd, setNhanKemHd] = useState(row?._nhanKemHd !== undefined ? Boolean(row._nhanKemHd) : nv?.ttHd === 'da' || row?.nguon === 'HĐ')
+  const [tknhChi, setTknhChi] = useState(luuCu('tknhChi') ?? TK_NGAN_HANG[0].so)
 
   // Dữ liệu dòng
   const idSeed = row ? `${sc.code ?? sc.slug}-${row.id}` : 'moi'
@@ -89,14 +91,14 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   const canChonCn = moi && !cnChon
   const [doiTuong, setDoiTuong] = useState(row?.doiTuong ? String(row.doiTuong) : (cfg.doiTuong === 'ncc' ? NCC[0].ten : cfg.doiTuong === 'kh' ? KHACH[0].ten : ''))
   const [dienGiai, setDienGiai] = useState(row?.dienGiai ? String(row.dienGiai) : cfg.dienGiai[0])
-  const [nguoiGiao, setNguoiGiao] = useState(nv?.nguoi ?? NHAN_VIEN[0].ten)
-  const [nhanVien, setNhanVien] = useState(NHAN_VIEN[0].ten)
-  const [diaChi, setDiaChi] = useState(nv?.dc ?? '45 Lê Thánh Tôn, Bến Nghé, Quận 1, TP.HCM')
-  const [mst, setMst] = useState(nv?.mst ?? '0319880101')
-  const [soHd, setSoHd] = useState(nv?.soHd ?? '0012345')
-  const [ngayHd, setNgayHd] = useState(nv?.ngayHd ?? '07/10/2026')
-  const [kyHieuHd, setKyHieuHd] = useState(nv?.kyHieuHd ?? '1C26TMM')
-  const [hanTt, setHanTt] = useState(nv?.hanTt ?? '06/11/2026')
+  const [nguoiGiao, setNguoiGiao] = useState(luuCu('nguoiGiao') ?? nv?.nguoi ?? NHAN_VIEN[0].ten)
+  const [nhanVien, setNhanVien] = useState(luuCu('nhanVien') ?? NHAN_VIEN[0].ten)
+  const [diaChi, setDiaChi] = useState(luuCu('diaChi') ?? nv?.dc ?? '45 Lê Thánh Tôn, Bến Nghé, Quận 1, TP.HCM')
+  const [mst, setMst] = useState(luuCu('mst') ?? nv?.mst ?? '0319880101')
+  const [soHd, setSoHd] = useState(luuCu('soHd') ?? nv?.soHd ?? '0012345')
+  const [ngayHd, setNgayHd] = useState(luuCu('ngayHd') ?? nv?.ngayHd ?? '07/10/2026')
+  const [kyHieuHd, setKyHieuHd] = useState(luuCu('kyHieuHd') ?? nv?.kyHieuHd ?? '1C26TMM')
+  const [hanTt, setHanTt] = useState(luuCu('hanTt') ?? nv?.hanTt ?? '06/11/2026')
   // Lý do thu, chi ở đầu phiếu (danh mục 1.16), chỉ có ở phân hệ tiền
   const oLy = mod.key === 'tien' ? bo.a.find(o => o.k === 'ly') : undefined
   const [lyDo, setLyDo] = useState(() => row?._lyDo ? String(row._lyDo) : lyMacDinh(oLy?.ds ?? [], dienGiai))
@@ -188,6 +190,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
     const noiDung = {
       ngay: ngayCt, thang: Number(ngayCt.split('/')[1]) || 10, doiTuong, dienGiai,
       tien: tongTien - tongCk, thue: tongThue, tong: tongThanhToan, _dong: dsDong, _lyDo: lyDo, _ghiChu: ghiChu, _quy: quy,
+      _nguoiGiao: nguoiGiao, _nhanVien: nhanVien, _diaChi: diaChi, _mst: mst, _hanTt: hanTt, _tknhChi: tknhChi,
+      _nhanKemHd: nhanKemHd, _soHd: soHd, _ngayHd: ngayHd, _kyHieuHd: kyHieuHd, _httt: hinhThucTt,
     }
     const idMoi = `moi-${Date.now()}`
     const man = `${mod.key}/${sc.slug}`
@@ -424,7 +428,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               )}
             </Dropdown>
             {hopCot && (
-              <HopCotPhieu ds={cotTuyChon(cfg, { coKho: Boolean(bo.kho), coLo: nhom === 'mua', coCk: Boolean(bo.ck), coKm: kieu !== 'khong', coLy: Boolean(oLy) })}
+              <HopCotPhieu ds={cotTuyChon(cfg, { coKho: Boolean(bo.kho), coLo: nhom === 'mua' && s.goi === 'PR', coCk: Boolean(bo.ck), coKm: kieu !== 'khong', coLy: Boolean(oLy) })}
                 an={anCot} onDoi={doiAnCot} onDong={() => setHopCot(false)} />
             )}
             {hoiXoa && row && (
@@ -711,13 +715,13 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
                   </div>
                 )}
               </div>
-              {/* Ghi chú cùng hàng Địa chỉ, mặc định theo lý do thu, chi; gõ ghi chú thì diễn giải chép theo, sửa diễn giải không đổi ghi chú (T49) */}
-              {oLy && (
-                <div className="f">
-                  <label>Ghi chú</label>
-                  <input className="inp" readOnly={!dangSua} value={ghiChu} onChange={e => { setGhiChu(e.target.value); setDienGiai(e.target.value) }} />
-                </div>
-              )}
+              {/* Ghi chú ở mọi phiếu (T69). Phiếu thu chi: mặc định theo lý do, gõ ghi chú thì diễn giải chép theo, sửa diễn giải không đổi ghi chú (T49).
+                  Phiếu khác: ghi chú để trống, độc lập với diễn giải */}
+              <div className="f">
+                <label>Ghi chú</label>
+                <input className="inp" readOnly={!dangSua} value={ghiChu} placeholder={dangSua ? 'Ghi chú thêm cho phiếu' : ''}
+                  onChange={e => { setGhiChu(e.target.value); if (oLy) setDienGiai(e.target.value) }} />
+              </div>
             </div>
 
             {/* Cột 3: Ngày chứng từ, số chứng từ. Chi nhánh hiện trên đầu form */}
@@ -740,6 +744,27 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
                 <label>{bo.so ?? 'Số chứng từ'}</label>
                 <input className="inp code" readOnly value={soCt} />
               </div>
+              {/* Mua hàng tích Nhận kèm hoá đơn: thông tin hoá đơn ở cột phải, dưới số phiếu, xếp 2 cột (T62, T68) */}
+              {nhom === 'mua' && bo.hd && nhanKemHd && (
+                <div className="ct-hd-dau">
+                  <div className="f">
+                    <label>Mẫu số HĐ</label>
+                    <input className="inp" defaultValue="1" readOnly={!dangSua} />
+                  </div>
+                  <div className="f">
+                    <label>Ký hiệu HĐ</label>
+                    <input className="inp code" value={kyHieuHd} onChange={e => setKyHieuHd(e.target.value)} readOnly={!dangSua} />
+                  </div>
+                  <div className="f">
+                    <label>Số hoá đơn</label>
+                    <input className="inp code" value={soHd} onChange={e => setSoHd(e.target.value)} readOnly={!dangSua} />
+                  </div>
+                  <div className="f">
+                    <label>Ngày hoá đơn</label>
+                    {dangSua ? <ONgay value={ngayHd} onChange={setNgayHd} /> : <input className="inp" readOnly value={ngayHd} />}
+                  </div>
+                </div>
+              )}
               {coThangLl && (
                 <div className="f">
                   <label>Tháng hạch toán lãi lỗ</label>
@@ -754,27 +779,6 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               )}
             </div>
           </div>
-          {/* Mua hàng tích Nhận kèm hoá đơn: thông tin hoá đơn ngay ở đầu phiếu (T62) */}
-          {nhom === 'mua' && bo.hd && nhanKemHd && (
-            <div className="ct-hd-dau">
-              <div className="f">
-                <label>Mẫu số hoá đơn</label>
-                <input className="inp" defaultValue="1" readOnly={!dangSua} />
-              </div>
-              <div className="f">
-                <label>Ký hiệu hoá đơn</label>
-                <input className="inp code" value={kyHieuHd} onChange={e => setKyHieuHd(e.target.value)} readOnly={!dangSua} />
-              </div>
-              <div className="f">
-                <label>Số hoá đơn</label>
-                <input className="inp code" value={soHd} onChange={e => setSoHd(e.target.value)} readOnly={!dangSua} />
-              </div>
-              <div className="f">
-                <label>Ngày hoá đơn</label>
-                {dangSua ? <ONgay value={ngayHd} onChange={setNgayHd} /> : <input className="inp" readOnly value={ngayHd} />}
-              </div>
-            </div>
-          )}
         </section>
 
         {/* Khối Tabs chi tiết */}
@@ -803,7 +807,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               nhanTk={nhanTkDong}
               coKho={Boolean(bo.kho)}
               coCk={Boolean(bo.ck)}
-              coLo={nhom === 'mua'}
+              coLo={nhom === 'mua' && s.goi === 'PR'}   // số lô, hạn dùng chỉ có ở gói Pro (T68)
               coKm={kieu !== 'khong'}
               lyDo={oLy ? { nhan: oLy.nhan, ds: oLy.ds!, macDinh: lyDo } : undefined}
               dtMacDinh={laTien ? doiTuong : ''}

@@ -11,8 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T68 | Form Mua hàng: thông tin hoá đơn ở cột phải đầu phiếu (2 cột, dưới số phiếu); Số lô, Hạn dùng chỉ có ở gói Pro (QD33) | PhuongXT | Đang làm | Sửa `ChungTuForm.tsx`, `app.css` |
-| T69 | Ô Ghi chú ở mọi phiếu (phiếu khác thu chi: để trống, độc lập với diễn giải); lưu phiếu giữ đủ các ô đầu phiếu (người giao, địa chỉ, MST, hoá đơn, thanh toán) (QD33) | PhuongXT | Đang làm | Sửa `ChungTuForm.tsx` |
 | T58 | Màn Tất cả báo cáo dạng danh sách gọn theo nhóm: một dòng mỗi báo cáo, hai cột, biểu tượng theo loại, Ghim và Mở gần đây; ẩn thanh tab chỉ có một tab | Trum | Đang làm | Sửa `BaoCaoScreen.tsx`, `app.css`, có thể `Shell.tsx`. Làm sau T57 |
 | T67 | Bảng danh sách: hàng tiêu đề và hàng lọc dính cứng một khối khi cuộn (thead dính), hết nhảy 1px và lộ chữ ở trang thu zoom | Trum | Chờ | Sửa `Table.tsx`, `app.css`. Làm sau T58, trước T66 |
 | T66 | Màn xem báo cáo: cột lọc bên trái luôn hiện, thu gọn được; mọi báo cáo tự có bộ lọc theo cột (chữ chọn nhiều, số từ đến), giữ Tờ in và Bảng dữ liệu | Trum | Chờ | Sửa `ReportScreen.tsx`, `tuyChinhBC.ts`, `app.css`. Làm sau T58 |
@@ -40,6 +38,8 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T69 | Ô Ghi chú ở mọi phiếu (phiếu khác thu chi: để trống, độc lập với diễn giải); lưu phiếu giữ đủ các ô đầu phiếu (người giao, địa chỉ, MST, hoá đơn, thanh toán) (QD33) | PhuongXT | 09/10/2026 | `2026-10-09-phuongxt-hoa-don-cot-phai-ghi-chu.md` |
+| T68 | Form Mua hàng: thông tin hoá đơn ở cột phải đầu phiếu (2 cột, dưới số phiếu); Số lô, Hạn dùng chỉ có ở gói Pro (QD33) | PhuongXT | 09/10/2026 | `2026-10-09-phuongxt-hoa-don-cot-phai-ghi-chu.md` |
 | T65 | Form chứng từ mọi phân hệ: ô lấy từ danh mục (đối tượng, nhân viên, lý do, quỹ, tài khoản ngân hàng, hàng hoá, kho, khoản mục, công việc) xổ danh sách có ô tìm, chưa có thì thêm mới ngay tại form (QD39) | PhuongXT | 09/10/2026 | `2026-10-09-phuongxt-mua-hang-form-danh-muc.md` |
 | T64 | Mua hàng: nguồn chứng từ chỉ Thủ công hoặc Excel, bỏ Tải từ iPOS Inventory ở nút Thêm mới và ô trên sơ đồ (QD39) | PhuongXT | 09/10/2026 | `2026-10-09-phuongxt-mua-hang-form-danh-muc.md` |
 | T63 | Mua hàng: báo cáo Tổng hợp mua hàng, Chi tiết mua hàng (dùng lại 4.2.2, 4.2.1), thêm Tổng hợp nhập 4.2.4, Chi tiết nhập 4.2.5, mở cho mọi gói, theo chi nhánh; sơ đồ Mua hàng kiểu hội tụ; Sổ ngân hàng gói Free ghi Thu, Chi, Tồn (QD38) | PhuongXT | 09/10/2026 | `2026-10-09-phuongxt-mua-hang-form-danh-muc.md` |
