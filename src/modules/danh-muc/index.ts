@@ -6,6 +6,7 @@ import { quyTrinh } from './quy-trinh'
 import { kieuGhiSo } from '../../app/plan'
 import { CHI_NHANH, HANG, KHACH, KHO, LY_DO, NCC, NHAN_VIEN, NVL } from '../../data/mock'
 import { tkCot, taiKhoan } from './data'
+import { HeThongTaiKhoan } from './HeThongTaiKhoan'
 import { tkTheoCheDo } from '../tong-hop/so-cai'
 import { Note } from '../../ui/Page'
 
@@ -31,8 +32,7 @@ const danhMuc: ModuleDef = {
   mota: 'Hàng hoá, đối tượng, kho, tài khoản lấy từ FABi và iPOS Inventory',
   quyTrinh,
   screens: tuExcel(0, {
-    '1.1': { catalog: { them: 'Thêm tài khoản', nhomLoc: 'loai', nhanLoc: 'Loại', cols: [{ k: 'so', t: 'Số tài khoản', cls: 'code', w: 120 }, { k: 'ten', t: 'Tên tài khoản' },
-      { k: 'loai', t: 'Loại' }, { k: 'tc', t: 'Tính chất' }, { k: 'ct', t: 'Theo dõi chi tiết', cls: 'dim' }], rows: cd => taiKhoan(cd) } },
+    '1.1': { kind: 'custom', comp: HeThongTaiKhoan },
     '1.2': { catalog: {
       them: 'Thêm hàng hoá', nhomLoc: 'nhom',
       chucNang: r => r.tkKho === '152' ? [{ nhan: 'Xem thẻ kho', di: 'kho/5-2-1' }] : [{ nhan: 'Xem doanh thu', di: 'ban-hang/3-2-3' }],

@@ -13,7 +13,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 |---|---|---|---|---|
 | T73 | Tối ưu phản hồi thao tác: bấm, rê chuột, mở menu, panel, cuộn bảng phản hồi tức thì; hiệu ứng nhẹ, ngắn; đo trước và sau | Trum | Chờ | Sửa nhiều file trong `src/`. Làm cuối cùng |
 | T76 | Danh mục Hệ thống tài khoản 1.1 dạng cây theo chế độ TT133, TT99; panel Thêm/Sửa tài khoản đủ trường DM_ACCOUNT (QD41) | Trum | Chờ | Dữ liệu `danh-muc/he-thong-tk.ts` (TT99 dựng theo khung TT200, chờ đối chiếu T04). Sửa `HeThongTaiKhoan.tsx` mới, `danh-muc/index.ts`, `app.css`. Làm tiếp theo |
-| T70 | Panel Thêm/Sửa mọi danh mục và panel Tuỳ chỉnh báo cáo cùng kiểu panel T76 | Trum | Chờ | Sửa `CatalogScreen.tsx`, `TuyChinhBC.tsx`, `app.css`. Làm sau T76 |
+| T70 | Mọi panel bên phải rộng hơn (min(880px, 72vw)), lưới 3 cột, chia khối: panel Thêm/Sửa từng danh mục đủ trường theo bảng DM_ (truong-dm.ts), Tuỳ chỉnh báo cáo, Đối soát | Trum | Chờ | Sửa `truong-dm.ts` mới, `CatalogScreen.tsx`, `TuyChinhBC.tsx`, `DoiSoat.tsx`, `app.css`. Làm sau T76 |
 | T60 | Mô tả gói Free, Standard trong `GOI` (`src/app/plan.ts`) đang ghi "1 điểm bán"; theo Roadmap gói Free là mỗi chi nhánh một kho, không giới hạn một chi nhánh. Chốt câu chữ rồi sửa | PhuongXT | Chờ | Tách từ T25 |
 | T27 | Danh sách chứng từ 2.1.1: khung chi tiết bên dưới hiện dòng phiếu khác với form của cùng phiếu (UNC2610-0259: khung ghi "Chi mua rau, củ tại chợ", form ghi "Trả tiền nhà cung cấp thịt bò") | | Chờ | Thấy khi làm T26 |
 | T02 | Chốt nghiệp vụ trên từng sơ đồ Quy trình: ô nào, nối thế nào, câu chữ. Sửa ở `src/modules/<phân hệ>/quy-trinh.ts` | Trum | Chờ | |
