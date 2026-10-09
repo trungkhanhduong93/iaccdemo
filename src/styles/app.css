@@ -180,8 +180,8 @@ table { border-collapse: collapse; }
 
 /* ── Bảng ── */
 .tbl-wrap { overflow: auto; }
-.tbl { width: 100%; font-size: 13px; }
-.tbl thead { position: sticky; top: 0; z-index: 10; background: #fff; box-shadow: 0 1px 0 var(--line); }  /* nền phủ mọi khe giữa hai hàng tiêu đề khi zoom lẻ (T67) */
+.tbl { width: 100%; font-size: 13px; border-collapse: separate; border-spacing: 0; }  /* viền gộp (collapse) thuộc về bảng, không dính theo thead, để lộ khe giữa hai hàng tiêu đề khi zoom lẻ (T67) */
+.tbl thead { position: sticky; top: 0; z-index: 10; background: #fff; box-shadow: 0 -2px 0 var(--th), 0 1px 0 var(--line); }  /* nền phủ mọi khe giữa hai hàng tiêu đề khi zoom lẻ (T67) */
 .tbl th { position: relative; top: auto; background: var(--th); color: var(--body); font-size: 13px; font-weight: 700; text-transform: none; letter-spacing: 0; text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; }
 .tbl td { padding: 9px 12px; border-bottom: 1px solid var(--line-2); vertical-align: middle; }
 .tbl tbody tr:hover td { background: #f2f7fb; }
