@@ -4,6 +4,7 @@ import { createPortal } from 'react-dom'
 import type { VoucherCfg } from '../../modules/types'
 import { CONG_VIEC, HANG, KHACH, KHO, KHOAN_MUC, NCC, NHAN_VIEN, NVL } from '../../data/mock'
 import { Select } from '../Dropdown'
+import { ChonDanhMuc, useMucDaThem } from '../ChonDanhMuc'
 import { Icon } from '../Icon'
 import { money } from '../format'
 import type { Dong } from './gen'
@@ -119,6 +120,9 @@ export function BangSua({
   const dtDong = tienDong && cfg.doiTuong !== 'none' && hien('dt')   // phiếu chuyển quỹ không có đối tượng
   const lyDong = tienDong && Boolean(lyDo) && hien('ly')
   const danhMucHang = cfg.dong === 'nvl' ? NVL : HANG
+  // Hàng hoá thêm mới ngay tại form (T65): đơn vị tính tạm "cái", giá 0, sửa trên dòng
+  const dmHang = cfg.dong === 'nvl' ? 'nvl' : 'hang'
+  const hangThem = useMucDaThem(dmHang)
 
   const colSpanDau = hang
     ? 3 + (dvtCot ? 1 : 0) + (coKho ? 1 : 0) + (coLo ? 2 : 0) + (coTk ? 2 : 0)
@@ -141,10 +145,11 @@ export function BangSua({
     onChange(moi)
   }
 
-  function chonMaHang(idx: number, ma: string) {
+  function chonMaHang(idx: number, ma: string, muc?: { v: string; t: string }) {
     const item = danhMucHang.find(x => x.ma === ma)
     if (!item) {
-      capNhat(idx, { ma })
+      const moi = muc ?? hangThem.find(x => x.v === ma)
+      capNhat(idx, moi ? { ma, ten: moi.t.split(' - ').slice(1).join(' - '), dvt: dong[idx]?.dvt || 'cái' } : { ma })
       return
     }
     const sl = dong[idx]?.sl || 1
@@ -398,16 +403,8 @@ export function BangSua({
                 <td className="dim c">{i + 1}</td>
                 {hang && (
                   <td>
-                    <Select
-                      className="inp sm"
-                      value={d.ma}
-                      onChange={e => chonMaHang(i, e.target.value)}
-                    >
-                      <option value="">-- Chọn --</option>
-                      {danhMucHang.map(x => (
-                        <option key={x.ma} value={x.ma}>{x.ma} - {x.ten}</option>
-                      ))}
-                    </Select>
+                    <ChonDanhMuc dm={dmHang} nhan={cfg.dong === 'nvl' ? 'nguyên vật liệu' : 'hàng hoá'} coMa className="inp sm" trong="Chọn" value={d.ma}
+                      onChange={(v, muc) => chonMaHang(i, v, muc)} ds={danhMucHang.map(x => ({ v: x.ma, t: `${x.ma} - ${x.ten}` }))} />
                   </td>
                 )}
                 <td>
@@ -421,15 +418,7 @@ export function BangSua({
                 </td>
                 {coKho && (
                   <td>
-                    <Select
-                      className="inp sm"
-                      value={d.kho || khoMacDinh}
-                      onChange={e => capNhat(i, { kho: e.target.value })}
-                    >
-                      {KHO.map(k => (
-                        <option key={k} value={k}>{k}</option>
-                      ))}
-                    </Select>
+                    <ChonDanhMuc dm="kho" nhan="kho" className="inp sm" value={d.kho || khoMacDinh} onChange={v => capNhat(i, { kho: v })} ds={KHO} />
                   </td>
                 )}
                 {dvtCot && (
@@ -490,49 +479,18 @@ export function BangSua({
                 {tienDong && (
                   <>
                     {lyDong && <td>
-                      <Select
-                        className="inp sm"
-                        value={d.ly ?? ''}
-                        onChange={e => capNhat(i, { ly: e.target.value })}
-                      >
-                        {lyDo!.ds.map(x => <option key={x} value={x}>{x}</option>)}
-                      </Select>
+                      <ChonDanhMuc dm={`ly:${lyDo!.nhan}`} nhan={lyDo!.nhan.toLowerCase()} className="inp sm" value={d.ly ?? ''} onChange={v => capNhat(i, { ly: v })} ds={lyDo!.ds} />
                     </td>}
                     {dtDong && <td>
-                      <Select
-                        className="inp sm"
-                        value={d.dt ?? ''}
-                        onChange={e => capNhat(i, { dt: e.target.value })}
-                      >
-                        <option value="">—</option>
-                        {DS_DOI_TUONG.map(t => (
-                          <option key={t} value={t}>{t}</option>
-                        ))}
-                      </Select>
+                      <ChonDanhMuc dm="doiTuong" nhan="đối tượng" className="inp sm" trong="—" value={d.dt ?? ''} onChange={v => capNhat(i, { dt: v })} ds={DS_DOI_TUONG} />
                     </td>}
                     {kmDong && <td>
-                      <Select
-                        className="inp sm"
-                        value={d.km ?? ''}
-                        onChange={e => capNhat(i, { km: e.target.value })}
-                      >
-                        <option value="">—</option>
-                        {KHOAN_MUC.map(km => (
-                          <option key={km.ma} value={km.ma}>{km.ma} · {km.ten}</option>
-                        ))}
-                      </Select>
+                      <ChonDanhMuc dm="khoanMuc" nhan="khoản mục" coMa className="inp sm" trong="—" value={d.km ?? ''} onChange={v => capNhat(i, { km: v })}
+                        ds={KHOAN_MUC.map(km => ({ v: km.ma, t: `${km.ma} · ${km.ten}` }))} />
                     </td>}
                     {cvDong && <td>
-                      <Select
-                        className="inp sm"
-                        value={d.cv ?? ''}
-                        onChange={e => capNhat(i, { cv: e.target.value })}
-                      >
-                        <option value="">—</option>
-                        {CONG_VIEC.map(cv => (
-                          <option key={cv.ma} value={cv.ma}>{cv.ma} · {cv.ten}</option>
-                        ))}
-                      </Select>
+                      <ChonDanhMuc dm="congViec" nhan="công việc" coMa className="inp sm" trong="—" value={d.cv ?? ''} onChange={v => capNhat(i, { cv: v })}
+                        ds={CONG_VIEC.map(cv => ({ v: cv.ma, t: `${cv.ma} · ${cv.ten}` }))} />
                     </td>}
                   </>
                 )}

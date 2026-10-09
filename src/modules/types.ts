@@ -37,7 +37,7 @@ export interface VoucherCfg {
   dong?: 'hang' | 'nvl' | 'tien' | 'ts'  // dòng chi tiết
   noCo?: [string, string, string][]      // bút toán mẫu: Nợ, Có, diễn giải
   soTT58?: string                        // sổ ghi theo TT58 khi không dùng tài khoản
-  nguon?: 'FABi' | 'IVT' | 'HĐ' | 'tay'  // nguồn chính của chứng từ
+  nguon?: 'FABi' | 'IVT' | 'HĐ' | 'tay' | 'excel'  // nguồn chính của chứng từ; excel: nhập từ file Excel (T64)
   them?: string                          // nhãn nút thêm
   thue?: number                          // thuế suất GTGT mặc định
   loai?: LoaiCT[]                        // một màn nhiều loại phiếu, vd 2.1.1 có phiếu thu, phiếu chi
@@ -63,7 +63,7 @@ export interface ReportCfg {
   kieu: 'so' | 'tonghop' | 'bangke' | 'dinhmuc'
   doiTuong?: 'kh' | 'ncc' | 'hang' | 'nvl' | 'tk' | 'ts' | 'ccdc' | 'cn'
   cols?: Col[]                           // bảng kê tự khai cột
-  rows?: (thang: number) => Row[]
+  rows?: (thang: number, cn?: string) => Row[]   // cn: tên chi nhánh chọn trên thanh trên (T63)
   taiKhoan?: string                      // sổ theo tài khoản
   theoCn?: boolean                       // số liệu theo chi nhánh chọn trên thanh trên
   theoTk?: boolean                       // sổ tách theo tài khoản ngân hàng, lọc được theo quỹ tiền (T54)

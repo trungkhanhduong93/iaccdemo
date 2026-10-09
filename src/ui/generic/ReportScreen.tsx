@@ -4,6 +4,7 @@ import { createPortal } from 'react-dom'
 import { useLocation, useParams } from 'react-router-dom'
 import type { Col, ReportCfg, Row, ScreenProps } from '../../modules/types'
 import { tenMan } from '../../app/registry'
+import { kieuGhiSo } from '../../app/plan'
 import { chiNhanhHienTai, donViHienTai, useSession, cheDoHienTai } from '../../app/session'
 import { canCu, type CheDo } from '../../app/che-do'
 import { cauHinhBC, tenTkNh, type LoaiBC } from '../../modules/bao-cao/danh-sach'
@@ -26,6 +27,7 @@ import {
 import { layNguoiKy } from '../bao-cao/khoMauIn'
 // @ts-ignore
 import { TuyChinhBC } from '../bao-cao/TuyChinhBC.tsx'
+import { useChoThanhCongCu } from '../bao-cao/choThanh'
 
 export const KY_CHON: [string, string][] = [['9', 'Tháng 9/2026'], ['10', 'Tháng 10/2026 (đến 07/10)'], ['8', 'Tháng 8/2026']]
 
@@ -86,8 +88,7 @@ export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: 
   // Đang xem trong phân hệ Báo cáo: thanh công cụ nằm cùng hàng tên báo cáo ở thanh chọn (T55)
   // Trong phân hệ Báo cáo thì chờ có chỗ ở thanh chọn rồi mới vẽ, không vẽ tạm trong khung để khỏi nhảy chỗ
   const trongBaoCao = path.startsWith('/app/bao-cao/')
-  const [oPhai, setOPhai] = useState<HTMLElement | null>(() => document.getElementById('bc-chon-phai'))
-  useLayoutEffect(() => { setOPhai(document.getElementById('bc-chon-phai')) }, [])
+  const oPhai = useChoThanhCongCu()
 
   const thanh = (
       <ThanhLoc
@@ -455,6 +456,8 @@ function renderReport(cfg: ReportCfg, seed: string, thang: number, cd: CheDo, cn
       'Chi tạm ứng nhân viên', 'Nộp tiền vào tài khoản ngân hàng', 'Chi phí vận chuyển', 'Thu hoàn ứng'], ['5111', '331', '6422', '131', '141', '1121', '6421'], [1.5e6, 38e6], thang)
     const gop = dsCn.length > 1
     const gopTk = dsTk.length > 1
+    // Sổ ngân hàng ở chế độ không dùng tài khoản (gói Free): bỏ cột TK đối ứng, ghi Thu, Chi, Tồn như Sổ quỹ (T25)
+    const khongTk = Boolean(cfg.theoTk) && kieuGhiSo(cd) !== 'noco'
     const phan = cfg.theoTk
       ? dsCn.flatMap(c => dsTk.map((tk, i) => { const x = soMot(seed + c.id + (i || '')); return { cn: c.ngan, ...x, rows: x.rows.map(y => ({ ...y, quy: tenTkNh(tk) })) } }))
       : dsCn.map(c => ({ cn: c.ngan, ...soMot(seed + c.id) }))
@@ -462,7 +465,8 @@ function renderReport(cfg: ReportCfg, seed: string, thang: number, cd: CheDo, cn
     const so = { ...so0, rows: so0.rows.map(gan) }
     const cols: Col[] = [{ k: 'ngay', t: 'Ngày', w: 92 }, { k: 'so', t: 'Số chứng từ', cls: 'code', w: 130 }, ...(gop ? [{ k: 'cn', t: 'Chi nhánh', w: 110 } as Col] : []),
       ...(gopTk ? [{ k: 'quy', t: 'Quỹ tiền', w: 190 } as Col] : []), { k: 'dienGiai', t: 'Diễn giải' },
-      { k: 'tk', t: 'TK đối ứng', c: true, w: 90 }, { k: 'no', t: 'Phát sinh Nợ', num: true }, { k: 'co', t: 'Phát sinh Có', num: true }, { k: 'du', t: 'Số dư', num: true }]
+      ...(khongTk ? [] : [{ k: 'tk', t: 'TK đối ứng', c: true, w: 90 } as Col]),
+      { k: 'no', t: khongTk ? 'Thu' : 'Phát sinh Nợ', num: true }, { k: 'co', t: khongTk ? 'Chi' : 'Phát sinh Có', num: true }, { k: 'du', t: khongTk ? 'Tồn' : 'Số dư', num: true }]
     return <RptTable cols={cols} rows={[{ dienGiai: 'Số dư đầu kỳ', du: so.mo, _b: 1 }, ...so.rows.map(x => ({ ...x, tk: dsTkTheoCheDo(x.tk, cd) })), { dienGiai: 'Cộng phát sinh', no: so.tn, co: so.tc, _t: 1 }, { dienGiai: 'Số dư cuối kỳ', du: so.cuoi, _t: 1 }]} />
   }
   if (cfg.kieu === 'dinhmuc') {
@@ -475,7 +479,7 @@ function renderReport(cfg: ReportCfg, seed: string, thang: number, cd: CheDo, cn
       { k: 'pct', t: 'Tỷ lệ', num: true }, { k: 'gt', t: 'Giá trị chênh lệch', num: true }]} rows={rows} />
   }
   if (cfg.kieu === 'bangke') {
-    if (cfg.cols && cfg.rows) return <RptTable cols={cfg.cols} rows={cfg.rows(thang)} />
+    if (cfg.cols && cfg.rows) return <RptTable cols={cfg.cols} rows={cfg.rows(thang, CHI_NHANH.find(c => c.id === cn)?.ten)} />
     const rows = chungTu({ prefix: 'HD', doiTuong: 'ncc', dienGiai: ['Mua hàng'], tien: [2e6, 40e6], dong: 'nvl' }, seed).filter(x => x.thang === thang || thang === 8)
     return <RptTable cols={[{ k: 'stt', t: 'STT', c: true, w: 50 }, { k: 'so', t: 'Số hoá đơn', cls: 'code' }, { k: 'ngay', t: 'Ngày' }, { k: 'doiTuong', t: 'Tên người bán' },
       { k: 'tien', t: 'Giá trị chưa thuế', num: true }, { k: 'thue', t: 'Thuế GTGT', num: true }]}

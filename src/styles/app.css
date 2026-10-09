@@ -3643,3 +3643,20 @@ body.tkmi-dang-keo, body.tkmi-dang-keo * {
   }
 }
 
+
+/* ── Form mua hàng: thông tin hoá đơn ở đầu phiếu khi nhận kèm hoá đơn (T62) ── */
+.ct-hd-dau { display: grid; grid-template-columns: repeat(4, minmax(0, 220px)); gap: 16px; margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--line); }
+
+/* ── Nhãn nguồn chứng từ nhập từ Excel (T64) ── */
+.src.excel { background: var(--green-t); color: var(--green); }
+
+/* ── Ô chọn danh mục có tìm kiếm, thêm mới tại form chứng từ (T65) ── */
+.pop-dm { padding: 0; display: flex; flex-direction: column; max-height: 360px; }
+.dm-tim { display: flex; align-items: center; gap: 6px; padding: 8px 10px; border-bottom: 1px solid var(--line-2); color: var(--muted); flex: none; }
+.dm-tim input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; font-size: 13.5px; color: var(--ink); }
+.dm-ds { flex: 1; min-height: 0; overflow: auto; padding: 5px; }
+.dm-trong { padding: 10px; font-size: 13px; color: var(--muted); }
+.dm-them { flex: none; display: flex; align-items: center; gap: 6px; padding: 9px 12px; border: 0; border-top: 1px solid var(--line-2); background: var(--white); color: var(--blue-d); font-size: 13px; font-weight: 600; cursor: pointer; text-align: left; }
+.dm-them:hover { background: var(--tint); }
+.dm-hop-than { display: flex; flex-direction: column; gap: 10px; padding: 14px 16px; }
+.dm-hop-than .muted { margin: 0; font-size: 12.5px; }

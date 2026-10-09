@@ -330,7 +330,7 @@ Lý do: PhuongXT chốt ngày 09/10/2026 theo ảnh góp ý trên màn Thu, chi 
 ## QD33. Form phiếu thu chi: đối tượng từ danh mục, lý do lên trên, tháng hạch toán lãi lỗ gói Free (09/10/2026)
 
 - Áp cho 5 loại phiếu ở Thu, chi tiền. Đầu form không còn chip Số phiếu, chip tên màn, ô Loại phiếu, Tổng tiền (tổng ở cuối form). Loại phiếu chọn từ nút Thêm mới.
-- Chính giữa đầu form hiện trạng thái: Thêm mới; Đang chỉnh sửa <số phiếu>; Chi tiết phiếu <số phiếu>. Gói Free không hiện chip trạng thái ghi sổ khi xem phiếu.
+- Chính giữa đầu form hiện trạng thái: Thêm mới; Đang chỉnh sửa <số phiếu>; Chi tiết phiếu <số phiếu>. Từ T61 đầu form mọi phiếu ở mọi phân hệ làm như vậy: tiêu đề chỉ tên phiếu, không chip Chưa lưu, Số, tên màn, không ô Loại phiếu, không Tổng tiền góc phải. Gói Free không hiện chip trạng thái ghi sổ khi xem phiếu.
 - Ô Đối tượng chọn từ danh mục đối tượng (khách hàng, nhà cung cấp, nhân viên), chọn xong điền Mã số thuế. Người giao, nhận và Nhân viên thực hiện gộp thành Người giao dịch.
 - Lý do thu, chi đứng trên Diễn giải. Chọn lý do thì Diễn giải và lý do mọi dòng chi tiết đổi theo; sửa lại được từng ô, từng dòng.
 - Ngày chứng từ gõ được hoặc chọn bằng lịch.
@@ -340,7 +340,8 @@ Lý do: PhuongXT chốt ngày 09/10/2026 theo ảnh góp ý trên màn Thu, chi 
 - Nhật ký ghi Thêm mới, Sửa (kèm ô đã đổi, tổng tiền cũ → mới), Xoá chứng từ, người làm, thời điểm. Tab Lịch sử của phiếu hiện các dòng này; thao tác xoá xem ở màn Nhật ký thao tác chung vì phiếu đã xoá không mở lại được (T51).
 - Tiêu đề form phiếu thu chi chỉ là tên loại phiếu (Thu tiền mặt, Chi tiền mặt...), không có chữ "mới", không có số phiếu.
 - Đối tượng đầu phiếu đổi thì đối tượng mọi dòng chi tiết đổi theo, sửa lại được từng dòng. Có ô Ghi chú ở cột giữa, cùng hàng Địa chỉ, mặc định theo lý do; gõ Ghi chú thì Diễn giải chép theo, sửa Diễn giải không đổi Ghi chú.
-- Phiếu thu chi bỏ tab Hạch toán (Ghi sổ ở gói Free) trong form.
+- Phiếu thu chi bỏ tab Hạch toán (Ghi sổ ở gói Free) trong form. Gói Free không có tab Ghi sổ ở mọi phiếu (T62).
+- Form Mua hàng: tích Nhận kèm hoá đơn thì Mẫu số, Ký hiệu, Số, Ngày hoá đơn hiện ở đầu phiếu; không có tab Hoá đơn (T62). Nhật ký thêm mới, sửa, xoá áp cho mọi phiếu dùng form chung.
 - Phiếu thu chi không có dòng Tổng cộng trong bảng chi tiết vì trùng Tổng tiền. Tổng tiền (kèm số dòng) nằm ở dải cố định đáy form, số thẳng cột Thành tiền.
 - Mọi phiếu: menu Tiện ích ghi Sao chép (thay Nhân bản), thêm Tuỳ chỉnh giao diện phiếu để ẩn hiện cột bảng chi tiết; lựa chọn nhớ theo màn trên máy người dùng.
 - Bản mẫu chưa có backend: phiếu mới lưu hiện lên đầu danh sách, số phiếu tăng dần; phiếu đã có sửa rồi lưu thì danh sách hiện nội dung mới; giữ tới khi tải lại trang (`generic/daXoa.ts`).
@@ -360,7 +361,6 @@ Lý do: Trum giao việc T50 ngày 09/10/2026, đúc kết từ kiến trúc c�
 ## QD35. Gói Free gọn theo hộ kinh doanh, đổi tên phân hệ, Danh mục xuống dưới (09/10/2026)
 
 - Gói Free không có phân hệ Tổng hợp. Bỏ khỏi gói Free: 3.2.5, 10.4.1. Giữ Báo cáo kết quả kinh doanh 10.2.3, xem ở phân hệ Báo cáo.
-
 - Phân hệ Bán hàng, mọi gói: tab chứng từ 3.1.1 tên Xuất bán POS. Chứng từ chỉ đổ về từ phần mềm bán hàng (nút Tải từ FABi), không lập tay, giống Xuất bán POS của Inventory. Gói Free chỉ có tab này. Từ gói Plus có thêm tab Bán hàng 3.1.7 (lập tay bán ngoài POS: tiệc, khách công ty; màn mới khai ở `BO_SUNG`) và Hoá đơn bán hàng 3.1.2.
 - Gói Free có phân hệ Kho chỉ với Kiểm kê 5.1.10 và Báo cáo xuất nhập tồn 5.2.3; bỏ Tồn kho tức thời 5.2.4, Sổ chi tiết vật liệu, dụng cụ, hàng hoá 5.2.8.
 - Gói Free có Mua hàng 4.1.1 và Sổ công nợ nhà cung cấp 4.2.3 (màn mới, chưa có trong Excel, khai ở `BO_SUNG` của `plan.ts`).
@@ -383,3 +383,22 @@ Lý do: PhuongXT chốt ngày 09/10/2026 (T52).
 Lý do: PhuongXT chốt ngày 09/10/2026 (T54, T55).
 
 ## QD37. Màn xem báo cáo gộp T55 và bản Anti (đang soạn)
+
+## QD38. Báo cáo mua hàng, nhập hàng cho mọi gói (09/10/2026)
+
+- Phân hệ Mua hàng có 5 báo cáo ở mọi gói, kể cả Free. Tổng hợp mua hàng 4.2.2 gom theo nhà cung cấp, Chi tiết mua hàng 4.2.1 mỗi phiếu một dòng. Tổng hợp nhập 4.2.4 gom theo mặt hàng, Chi tiết nhập 4.2.5 mỗi dòng hàng. Thêm Sổ công nợ nhà cung cấp 4.2.3.
+- Số liệu tính từ đúng các phiếu mua hàng 4.1.1 trong danh sách (`mua-hang/bao-cao.ts`), theo chi nhánh trên thanh trên, nên các báo cáo khớp nhau.
+- Tên 4.2.1, 4.2.2 trong app đổi theo; 4.2.4, 4.2.5 là màn mới khai ở `BO_SUNG`. Trum cập nhật Excel tính năng.
+- Sơ đồ Quy trình Mua hàng kiểu hội tụ như Thu chi: các làn Nhập hàng, Hoá đơn và trả lại, Thanh toán, Đối chiếu công nợ có mũi tên đổ về khối Sổ sách, báo cáo.
+- Sổ ngân hàng ở chế độ không dùng tài khoản (gói Free) bỏ cột TK đối ứng, ghi Thu, Chi, Tồn như Sổ quỹ (đóng T25).
+
+Lý do: PhuongXT chốt ngày 09/10/2026 (T63).
+
+## QD39. Ô chọn danh mục trong form chứng từ, nguồn chứng từ Mua hàng (09/10/2026)
+
+- Ô nào trong form chứng từ lấy từ danh mục thì là ô chọn có ô tìm (gõ không dấu cũng tìm được). Cuối danh sách có nút Thêm mới; gõ tên chưa có rồi Enter thì mở hộp thêm nhanh.
+- Mục thêm mới được chọn luôn cho ô đó và có trong mọi ô cùng danh mục (`ui/ChonDanhMuc.tsx`). Bản mẫu giữ trong phiên tới khi tải lại trang.
+- Hàng hoá thêm tại dòng cần Mã và Tên, đơn vị tính tạm "cái", giá 0, sửa trên dòng.
+- Phiếu Mua hàng (mua hàng, mua qua sơ chế, trả lại) có nguồn Thủ công hoặc Excel. Không có Tải từ iPOS Inventory ở nút Thêm mới và sơ đồ Mua hàng.
+
+Lý do: PhuongXT chốt ngày 09/10/2026 (T64, T65).

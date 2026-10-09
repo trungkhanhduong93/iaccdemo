@@ -4,7 +4,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T59.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T65.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
@@ -14,10 +14,15 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | T57 | Màn xem báo cáo: gộp T55 với phần tốt của bản Anti. Bỏ tiêu đề lặp, khung kéo tới đáy, nút In, Xuất, Tuỳ chỉnh có chữ, chế độ xem Tờ in hoặc Bảng dữ liệu, bỏ "0 dòng" sai (QD37) | Trum | Đang làm | Sửa `ReportScreen.tsx`, `ToGiay.tsx`, `ThanhChon.tsx`, `app.css`. Antigravity làm |
 | T58 | Màn Tất cả báo cáo: biểu tượng theo loại sổ, báo cáo; thẻ cao đều; mục Mở gần đây; ẩn thanh tab chỉ có một tab | Trum | Chờ | Sửa `BaoCaoScreen.tsx`, `app.css`, có thể `Shell.tsx`. Làm sau T57 |
 | T59 | Màn Thiết kế mẫu in 11.11: thanh tab bên phải một hàng, ô tìm mẫu bên trái, xem trước vừa khung | Trum | Chờ | Sửa `ThietKeMauIn.tsx`, `app.css`. Làm sau T58 |
+| T63 | Mua hàng: báo cáo Tổng hợp mua hàng, Chi tiết mua hàng (dùng lại 4.2.2, 4.2.1), thêm Tổng hợp nhập 4.2.4, Chi tiết nhập 4.2.5, mở cho mọi gói, theo chi nhánh; sơ đồ Mua hàng kiểu hội tụ; Sổ ngân hàng gói Free ghi Thu, Chi, Tồn (QD38) | PhuongXT | Đang làm | Sửa `mua-hang/bao-cao.ts` (mới), `mua-hang/index.ts`, `quy-trinh.ts`, `plan.ts`, `danh-sach.ts`, `ReportScreen.tsx`, `types.ts` |
+| T61 | Đầu form mọi phiếu như Thu chi: tiêu đề chỉ tên phiếu, trạng thái Thêm mới / Đang chỉnh sửa / Chi tiết phiếu ở giữa, bỏ chip Chưa lưu, Số, tên màn, ô Loại phiếu, Tổng tiền góc phải (QD33) | PhuongXT | Đang làm | Sửa `ChungTuForm.tsx` |
+| T62 | Form Mua hàng: tích Nhận kèm hoá đơn thì thông tin hoá đơn ở đầu phiếu, bỏ tab Hoá đơn; gói Free bỏ tab Ghi sổ ở mọi phiếu; lịch sử thêm mới, sửa, xoá cho mọi phiếu (QD33) | PhuongXT | Đang làm | Sửa `ChungTuForm.tsx`, `app.css` |
+| T64 | Mua hàng: nguồn chứng từ chỉ Thủ công hoặc Excel, bỏ Tải từ iPOS Inventory ở nút Thêm mới và ô trên sơ đồ (QD39) | PhuongXT | Đang làm | Sửa `mua-hang`, `gen.ts` (nhãn Excel), `types.ts`, `VoucherScreen.tsx` (một dòng), `app.css` |
+| T65 | Form chứng từ mọi phân hệ: ô lấy từ danh mục (đối tượng, nhân viên, lý do, quỹ, tài khoản ngân hàng, hàng hoá, kho, khoản mục, công việc) xổ danh sách có ô tìm, chưa có thì thêm mới ngay tại form (QD39) | PhuongXT | Đang làm | Sửa `ui/ChonDanhMuc.tsx` (mới), `ChungTuForm.tsx`, `BangSua.tsx`, `app.css` |
+| T60 | Mô tả gói Free, Standard trong `GOI` (`src/app/plan.ts`) đang ghi "1 điểm bán"; theo Roadmap gói Free là mỗi chi nhánh một kho, không giới hạn một chi nhánh. Chốt câu chữ rồi sửa | PhuongXT | Chờ | Tách từ T25 |
 | T27 | Danh sách chứng từ 2.1.1: khung chi tiết bên dưới hiện dòng phiếu khác với form của cùng phiếu (UNC2610-0259: khung ghi "Chi mua rau, củ tại chợ", form ghi "Trả tiền nhà cung cấp thịt bò") | | Chờ | Thấy khi làm T26 |
 | T02 | Chốt nghiệp vụ trên từng sơ đồ Quy trình: ô nào, nối thế nào, câu chữ. Sửa ở `src/modules/<phân hệ>/quy-trinh.ts` | Trum | Chờ | |
 | T03 | Nối sổ quỹ, sổ tài khoản 2.2.2, sổ ngân hàng 2.2.3, sổ công nợ 2.2.5 vào `so-cai.ts` để mọi sổ khớp báo cáo tài chính | | Chờ | Sổ quỹ đang tính riêng từ tiền mặt FABi từng chi nhánh. Tổng 3 quỹ chưa bằng dư TK 1111 trên cân đối kế toán |
-| T25 | Thu chi gói Free theo sheet Roadmap: form phiếu thu, chi, chuyển quỹ; danh sách 2.1.1; sơ đồ Quy trình; sổ quỹ, sổ ngân hàng, sổ công nợ | PhuongXT | Dở dang | Đã xong form, Quy trình, chuyển quỹ, tên loại phiếu, 3 sổ theo chi nhánh trên thanh trên. Còn chờ chốt: Sổ ngân hàng gói Free bỏ cột TK đối ứng; chữ ký Kế toán trưởng ở gói Free; mô tả gói "1 điểm bán" trong `plan.ts`. Trùng mã với T25 của Trum ở bảng Đã xong, nhờ Trum đổi mã |
 | T33 | Cập nhật Excel tính năng theo sheet Roadmap rồi chạy lại `tools/xuat_tinh_nang.py`: 1.12 và 2.2.3 có ở gói Free; thêm 1.17, S1a-HKD, S2a-HKD. Xong thì xoá các dòng tương ứng trong `THEO_ROADMAP` ở `src/app/plan.ts` | | Chờ | Chỉ máy Trum chạy được script |
 | T04 | Kế toán trưởng duyệt mẫu sổ, báo cáo tài chính, tờ khai theo TT58, TT133, TT99. Sửa ký hiệu mẫu theo kết quả duyệt | | Chờ | Ký hiệu mẫu (S03a-DNN, B01-DNN, 01/GTGT...) ghi theo hiểu biết, chưa đối chiếu văn bản gốc. Mẫu dạng tinh gọn TT58 chưa có |
 | T05 | Làm màn hoá đơn điện tử 3.1.5 riêng: danh sách theo trạng thái, ký số, gửi, huỷ, thay thế | | Chờ | Hiện chưa có trạng thái phát hành, ký số, gửi cơ quan thuế. DB iPOS lưu trạng thái ở `SALE.EVAT_STATUS`: chưa ký, đã ký, đã gửi, đã xoá |
@@ -38,6 +43,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
 | T56 | Hộp in chứng từ 2 cột (chọn mẫu trái, xem trước phải); dính tiêu đề, hàng lọc bảng danh sách chứng từ khi cuộn; nút In Tờ khai GTGT chạy được. Bỏ phần thanh trên báo cáo của bản Anti vì trùng T55 | Trum | 09/10/2026 | `2026-10-09-trum-hop-in-hai-cot.md` |
+| T25 | Thu chi gói Free theo sheet Roadmap: form phiếu thu, chi, chuyển quỹ; danh sách 2.1.1; sơ đồ Quy trình; sổ quỹ, sổ ngân hàng, sổ công nợ theo chi nhánh; sổ gói Free không dùng tài khoản. Điểm mô tả gói tách thành T60 | PhuongXT | 09/10/2026 | `2026-10-09-phuongxt-so-chi-nhanh-danh-sach.md` |
 | T55 | Màn xem báo cáo gọn: ô chọn báo cáo kiêm tiêu đề, thanh công cụ cùng hàng, ẩn thanh tab khi xem một báo cáo, bỏ khoảng trống đáy; xem một tờ liền, bỏ ngắt trang, Liên tục/Từng trang, nút In dưới; in vẫn chia trang (QD36) | PhuongXT | 09/10/2026 | `2026-10-09-phuongxt-so-thu-chi-bao-cao-gon.md` |
 | T54 | Thu chi: gói Free ẩn Sổ chi tiết tiền, Sổ công nợ; Sổ quỹ, Sổ ngân hàng lọc Quỹ tiền (số tồn tính lại); Sổ công nợ lọc Đối tượng; Sổ ngân hàng cột Quỹ tiền, xem tất cả quỹ mặc định khổ ngang (QD36) | PhuongXT | 09/10/2026 | `2026-10-09-phuongxt-so-thu-chi-bao-cao-gon.md` |
 | T53 | Thanh bên trái: đường kẻ giữa Danh mục và Hệ thống (QD35) | PhuongXT | 09/10/2026 | `2026-10-09-phuongxt-so-thu-chi-bao-cao-gon.md` |

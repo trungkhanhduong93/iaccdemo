@@ -289,7 +289,7 @@ export const TT_CT: Record<string, [string, string]> = {
   nhap: ['warn', 'Chưa ghi sổ'], ghi: ['ok', 'Đã ghi sổ'], loi: ['err', 'Lỗi hạch toán'], khoa: ['dim', 'Đã khoá'],
 }
 export const NGUON: Record<string, [string, string]> = {
-  FABi: ['', 'FABi'], IVT: ['ivt', 'iPOS Inventory'], 'HĐ': ['hd', 'iPOS Invoice'], tay: ['tay', 'Thủ công'],
+  FABi: ['', 'FABi'], IVT: ['ivt', 'iPOS Inventory'], 'HĐ': ['hd', 'iPOS Invoice'], tay: ['tay', 'Thủ công'], excel: ['excel', 'Excel'],   // excel: phiếu nhập từ file Excel (T64)
 }
 
 /** Sổ chi tiết: phát sinh trong kỳ có số dư luỹ kế */

@@ -288,7 +288,7 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
               <NutThemMoiSplit
                 toMoi={cfg.loai ? `${path}/moi?loai=${cfg.loai[0].k}` : `${path}/moi`}
                 loai={cfg.loai}
-                taiNguon={cfg.nguon && cfg.nguon !== 'tay' ? {
+                taiNguon={cfg.nguon && cfg.nguon !== 'tay' && cfg.nguon !== 'excel' ? {   // nhập Excel đã có ở nút Excel (T64)
                   ten: NGUON[cfg.nguon][1],
                   onTai: () => toast(`Đã tải 14 chứng từ mới từ ${NGUON[cfg.nguon!][1]}`),
                 } : undefined}

@@ -47,6 +47,8 @@ export const CAU_HINH_BC: Record<string, CauHinhBC> = {
   '3.2.5': { loai: 'so', kho: 'ngang', kyHieu: { TT152: 'S1a-HKD', TT58: 'S1-DNSN', TT133: 'S16-DNN', TT99: 'S35-DN' }, ten: { TT152: 'Sổ doanh thu bán hàng hoá, dịch vụ', TT58: 'Sổ doanh thu bán hàng hoá, dịch vụ', TT133: 'Sổ chi tiết bán hàng', TT99: 'Sổ chi tiết bán hàng' }, congCot: ['dt', 'vat', 'tong'] },
   '4.2.1': baoCao('ngang', { loc: [{ k: 'doiTuong', nhan: 'Nhà cung cấp', kieu: 'chon' }, { k: 'nguon', nhan: 'Nguồn', kieu: 'chon' }], nhomDuoc: ['doiTuong', 'ngay'], anKhongPS: true }),
   '4.2.2': baoCao('doc', { anKhongPS: true }),
+  '4.2.4': baoCao('doc', { anKhongPS: true }),
+  '4.2.5': baoCao('ngang', { loc: [{ k: 'doiTuong', nhan: 'Nhà cung cấp', kieu: 'chon' }, { k: 'ten', nhan: 'Mặt hàng', kieu: 'chonNhieu' }], nhomDuoc: ['doiTuong', 'ten', 'ngay'], anKhongPS: true }),
   '5.2.1': { loai: 'so', kho: 'doc', kyHieu: { TT133: 'S08-DNN', TT99: 'S12-DN' }, congCot: ['nhap', 'xuat'] },
   '5.2.2': baoCao('ngang', { loc: [{ k: 'kho', nhan: 'Kho', kieu: 'chon' }, { k: 'loai', nhan: 'Loại phiếu', kieu: 'chon' }], nhomDuoc: ['kho', 'loai', 'ngay'], anKhongPS: true }),
   '5.2.3': { loai: 'so', kho: 'ngang', kyHieu: { TT133: 'S07-DNN', TT99: 'S11-DN' }, anKhongPS: true },

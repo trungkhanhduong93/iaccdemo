@@ -44,7 +44,9 @@ const THEO_ROADMAP: Record<string, Goi[]> = {
   // Kho chỉ còn Kiểm kê 5.1.10 và Báo cáo xuất nhập tồn 5.2.3; mở Mua hàng. PhuongXT chốt 09/10/2026 (T52)
   '5.2.4': ['S', 'PL', 'PR'],
   '4.1.1': ['F', 'S', 'PL', 'PR'],
-  '2.2.5': ['S', 'PL', 'PR'],         // gói Free bỏ Sổ công nợ ở Thu chi, dùng Sổ công nợ nhà cung cấp ở Mua hàng, PhuongXT chốt (T54)
+  '2.2.5': ['S', 'PL', 'PR'],
+  '4.2.1': ['F', 'S', 'PL', 'PR'],    // Chi tiết mua hàng mở cho gói Free, PhuongXT chốt (T63)
+  '4.2.2': ['F', 'S', 'PL', 'PR'],    // Tổng hợp mua hàng mở cho gói Free, PhuongXT chốt (T63)         // gói Free bỏ Sổ công nợ ở Thu chi, dùng Sổ công nợ nhà cung cấp ở Mua hàng, PhuongXT chốt (T54)
 }
 
 /** Màn bổ sung theo thông tư chưa có trong Excel (T47, kế hoạch mục 7.3). Trum cập nhật Excel và chạy lại tools/xuat_tinh_nang.py có đủ mã thì xoá dòng tương ứng ở đây */
@@ -54,6 +56,8 @@ const BO_SUNG: (Omit<Feature, 'g'> & { g: Goi[] })[] = [
   { c: '3.2.5', m: 2, n: 'Sổ doanh thu bán hàng', grp: 'Sổ sách, báo cáo', g: ['S', 'PL', 'PR'], gd: 2, ivt: 0 },   // gói Free bỏ (T52)
   { c: '3.1.7', m: 2, n: 'Bán hàng', grp: 'Chứng từ', g: ['PL', 'PR'], gd: 2, ivt: 0 },   // bán hàng lập tay ngoài POS, từ gói Plus, PhuongXT thêm (T52)
   { c: '4.2.3', m: 3, n: 'Sổ công nợ nhà cung cấp', grp: 'Sổ sách, báo cáo', g: ['F', 'S', 'PL', 'PR'], gd: 2, ivt: 0 },   // PhuongXT thêm cho gói Free (T52)
+  { c: '4.2.4', m: 3, n: 'Tổng hợp nhập', grp: 'Sổ sách, báo cáo', g: ['F', 'S', 'PL', 'PR'], gd: 2, ivt: 0 },   // PhuongXT thêm (T63)
+  { c: '4.2.5', m: 3, n: 'Chi tiết nhập', grp: 'Sổ sách, báo cáo', g: ['F', 'S', 'PL', 'PR'], gd: 2, ivt: 0 },   // PhuongXT thêm (T63)
   { c: '5.2.8', m: 4, n: 'Sổ chi tiết vật liệu, dụng cụ, hàng hoá', grp: 'Sổ sách, báo cáo', g: ['S', 'PL', 'PR'], gd: 2, ivt: 0 },   // gói Free bỏ (T52)
   { c: '6.2.4', m: 5, n: 'Sổ theo dõi nghĩa vụ thuế GTGT', grp: 'Báo cáo', g: ['S', 'PL', 'PR'], gd: 2, ivt: 0 },
   { c: '6.2.5', m: 5, n: 'Sổ theo dõi nghĩa vụ thuế khác', grp: 'Báo cáo', g: ['F', 'S'], gd: 2, ivt: 0 },
@@ -67,7 +71,7 @@ const CHEN_SAU: Record<string, string[]> = {
   '2.2.5': ['2.2.6', '2.2.7'],
   '3.1.1': ['3.1.7'],
   '3.2.4': ['3.2.5'],
-  '4.2.2': ['4.2.3'],
+  '4.2.2': ['4.2.3', '4.2.4', '4.2.5'],
   '5.2.7': ['5.2.8'],
   '6.2.3': ['6.2.4', '6.2.5'],
   '7.2.2': ['7.2.3', '7.2.4'],

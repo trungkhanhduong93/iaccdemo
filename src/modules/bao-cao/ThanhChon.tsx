@@ -6,6 +6,7 @@ import { useSession } from '../../app/session'
 import { GOI, minGoi } from '../../app/plan'
 import { Icon } from '../../ui/Icon'
 import { Select } from '../../ui/Dropdown'
+import { datChoThanhCongCu } from '../../ui/bao-cao/choThanh'
 
 export function ThanhChonBaoCao({ sc }: { sc: ScreenDef }) {
   const { s } = useSession()
@@ -31,7 +32,7 @@ export function ThanhChonBaoCao({ sc }: { sc: ScreenDef }) {
         })}
       </Select>
       {/* Thanh công cụ của báo cáo (ngày, lọc, in, xuất) gắn vào đây, cùng hàng tên báo cáo (T55) */}
-      <div className="bc-chon-phai" id="bc-chon-phai" />
+      <div className="bc-chon-phai" ref={datChoThanhCongCu} />
     </div>
   )
 }
