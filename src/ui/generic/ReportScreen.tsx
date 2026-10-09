@@ -1,8 +1,8 @@
-// Sổ, báo cáo chung: thanh lọc kỳ và chi nhánh, trang báo cáo kiểu mẫu in, ô ký
+// Sổ, báo cáo chung: thanh lọc kỳ, trang báo cáo kiểu mẫu in, ô ký. Chi nhánh lấy trên thanh trên
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import type { Col, ReportCfg, Row, ScreenProps } from '../../modules/types'
 import { tenMan } from '../../app/registry'
-import { donViHienTai, useSession } from '../../app/session'
+import { chiNhanhHienTai, donViHienTai, useSession } from '../../app/session'
 import { GOI, type Goi } from '../../app/plan'
 import { CHI_NHANH, HANG, KHACH, NCC, NVL } from '../../data/mock'
 import { Icon } from '../Icon'
@@ -10,8 +10,7 @@ import { PageHead } from '../Page'
 import { Table } from '../Table'
 import { between, k, money, pick, rng } from '../format'
 import { chungTu, soChiTiet } from './gen'
-import { Select } from '../Dropdown'
-import { LocO, NutVuong, ThanhLoc } from '../ThanhLoc'
+import { NutVuong, ThanhLoc } from '../ThanhLoc'
 import { khoangThang } from '../ChonNgay'
 
 export const KY_CHON: [string, string][] = [['9', 'Tháng 9/2026'], ['10', 'Tháng 10/2026 (đến 07/10)'], ['8', 'Tháng 8/2026']]
@@ -36,17 +35,7 @@ export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: 
           setKy(String(k.tu.getMonth() + 1))
         },
       }}
-      boLoc={
-        <>
-          <LocO nhan="Chi nhánh">
-            <Select className="inp">
-              <option>Tất cả chi nhánh</option>
-              {CHI_NHANH.map(c => <option key={c.id}>{c.ten}</option>)}
-            </Select>
-          </LocO>
-          {children}
-        </>
-      }
+      boLoc={children}
       phai={
         <>
           <NutVuong icon="printer" title="In" />
@@ -99,24 +88,40 @@ export function ReportScreen({ sc, mod }: ScreenProps) {
   const cfg: ReportCfg = sc.report ?? { kieu: 'tonghop', doiTuong: 'tk' }
   const ten = tenMan(sc)
   const thang = Number(ky)
-  const body = useMemo(() => renderReport(cfg, sc.code ?? sc.slug, thang), [cfg, ky, sc])
+  const cn = cfg.theoCn ? chiNhanhHienTai(s) : undefined
+  const body = useMemo(() => renderReport(cfg, sc.code ?? sc.slug, thang, cn?.id), [cfg, ky, sc, cn])
+  const sub = cfg.theoCn ? `${kyTen(ky)} · ${cn ? 'Chi nhánh ' + cn.ngan : 'Tất cả chi nhánh'}` : kyTen(ky)
   return (
     <div className="page">
       <PageHead crumb={[mod.ten, sc.nhom ?? '']} title={ten} code={sc.code} />
       <section className="report">
         <ReportToolbar ky={ky} setKy={setKy} />
-        <ReportPaper title={ten} sub={kyTen(ky)} mau={s.goi === 'PL' ? cfg.mau : undefined} goi={s.goi}>{body}</ReportPaper>
+        <ReportPaper title={ten} sub={sub} mau={s.goi === 'PL' ? cfg.mau : undefined} goi={s.goi}>{body}</ReportPaper>
       </section>
     </div>
   )
 }
 
-function renderReport(cfg: ReportCfg, seed: string, thang: number): ReactNode {
+/** Gộp sổ của nhiều chi nhánh: xếp theo ngày, thêm cột chi nhánh, tính lại số dư luỹ kế */
+export function gopSo(phan: { cn: string; mo: number; rows: Row[]; tn: number; tc: number }[]) {
+  const mo = phan.reduce((a, p) => a + p.mo, 0)
+  const ngay = (x: Row) => Number(String(x.ngay).slice(0, 2))
+  const rows = phan.flatMap(p => p.rows.map((x): Row => ({ ...x, cn: p.cn }))).sort((a, b) => ngay(a) - ngay(b))
+  let du = mo
+  for (const x of rows) { du += (x.no ?? 0) - (x.co ?? 0); x.du = du }
+  return { mo, rows, tn: phan.reduce((a, p) => a + p.tn, 0), tc: phan.reduce((a, p) => a + p.tc, 0), cuoi: du }
+}
+
+function renderReport(cfg: ReportCfg, seed: string, thang: number, cn?: string): ReactNode {
   const r = rng(seed + thang)
+  // Sổ, báo cáo theo chi nhánh: mỗi chi nhánh một hạt giống riêng, xem tất cả thì cộng các chi nhánh
+  const dsCn = cfg.theoCn ? CHI_NHANH.filter(c => !cn || c.id === cn) : []
   if (cfg.kieu === 'so') {
-    const so = soChiTiet(seed, k(between(r, 80e6, 260e6)), ['Thu tiền bán hàng ngày', 'Chi mua nguyên vật liệu', 'Chi tiền điện tháng', 'Thu tiền khách công ty',
+    const soMot = (hat: string) => soChiTiet(hat, k(between(rng(hat + thang), 80e6, 260e6) / (cfg.theoCn ? 3 : 1)), ['Thu tiền bán hàng ngày', 'Chi mua nguyên vật liệu', 'Chi tiền điện tháng', 'Thu tiền khách công ty',
       'Chi tạm ứng nhân viên', 'Nộp tiền vào tài khoản ngân hàng', 'Chi phí vận chuyển', 'Thu hoàn ứng'], ['5111', '331', '6422', '131', '141', '1121', '6421'], [1.5e6, 38e6], thang)
-    const cols: Col[] = [{ k: 'ngay', t: 'Ngày', w: 92 }, { k: 'so', t: 'Số chứng từ', cls: 'code', w: 130 }, { k: 'dienGiai', t: 'Diễn giải' },
+    const gop = dsCn.length > 1
+    const so = cfg.theoCn ? gopSo(dsCn.map(c => ({ cn: c.ngan, ...soMot(seed + c.id) }))) : soMot(seed)
+    const cols: Col[] = [{ k: 'ngay', t: 'Ngày', w: 92 }, { k: 'so', t: 'Số chứng từ', cls: 'code', w: 130 }, ...(gop ? [{ k: 'cn', t: 'Chi nhánh', w: 110 } as Col] : []), { k: 'dienGiai', t: 'Diễn giải' },
       { k: 'tk', t: 'TK đối ứng', c: true, w: 90 }, { k: 'no', t: 'Phát sinh Nợ', num: true }, { k: 'co', t: 'Phát sinh Có', num: true }, { k: 'du', t: 'Số dư', num: true }]
     return <RptTable cols={cols} rows={[{ dienGiai: 'Số dư đầu kỳ', du: so.mo, _b: 1 }, ...so.rows, { dienGiai: 'Cộng phát sinh', no: so.tn, co: so.tc, _t: 1 }, { dienGiai: 'Số dư cuối kỳ', du: so.cuoi, _t: 1 }]} />
   }
@@ -137,8 +142,13 @@ function renderReport(cfg: ReportCfg, seed: string, thang: number): ReactNode {
       rows={[...rows.map((x, i) => ({ ...x, stt: i + 1 })), { doiTuong: 'Tổng cộng', tien: rows.reduce((a, x) => a + x.tien, 0), thue: rows.reduce((a, x) => a + x.thue, 0), _t: 1 }]} />
   }
   const ds = dsTongHop[cfg.doiTuong ?? 'tk']
-  const rows = ds.map(d => {
-    const dau = k(between(r, 5e6, 220e6)), tang = k(between(r, 2e6, 180e6)), giam = k(Math.min(dau + tang, between(r, 2e6, 190e6)))
+  const motBo = (r: () => number, chia: number) => ds.map(() => {
+    const dau = k(between(r, 5e6, 220e6) / chia), tang = k(between(r, 2e6, 180e6) / chia), giam = k(Math.min(dau + tang, between(r, 2e6, 190e6) / chia))
+    return { dau, tang, giam }
+  })
+  const bo = cfg.theoCn ? dsCn.map(c => motBo(rng(seed + c.id + thang), 3)) : [motBo(r, 1)]
+  const rows = ds.map((d, i) => {
+    const [dau, tang, giam] = (['dau', 'tang', 'giam'] as const).map(f => bo.reduce((a, b) => a + b[i][f], 0))
     return { ma: d.ma, ten: d.ten, dau, tang, giam, cuoi: dau + tang - giam }
   })
   const s = (f: string) => rows.reduce((a, x) => a + (x as Row)[f], 0)

@@ -65,6 +65,7 @@ export interface ReportCfg {
   rows?: (thang: number) => Row[]
   mau?: string                           // ký hiệu mẫu sổ, vd S07-DNN
   taiKhoan?: string                      // sổ theo tài khoản
+  theoCn?: boolean                       // số liệu theo chi nhánh chọn trên thanh trên
 }
 
 /** Tiện ích, chức năng chạy theo lệnh */
