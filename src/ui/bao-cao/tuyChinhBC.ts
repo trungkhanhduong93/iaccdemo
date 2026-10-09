@@ -19,6 +19,7 @@ export interface TuyChinhLuu {
 
 export interface TrangThaiLoc {
   loc: Record<string, string[]>
+  khoang: Record<string, [number | null, number | null]>
   tuyChon: Record<string, string[]>
   anKhongPS: boolean
   cotNhuDangXem: boolean
@@ -41,7 +42,7 @@ const khoPath = new Map<string, TrangThaiLoc>()
 function layTrangThai(path: string): TrangThaiLoc {
   let s = khoPath.get(path)
   if (!s) {
-    s = { loc: {}, tuyChon: {}, anKhongPS: false, cotNhuDangXem: true }
+    s = { loc: {}, khoang: {}, tuyChon: {}, anKhongPS: false, cotNhuDangXem: true }
     khoPath.set(path, s)
   }
   return s
@@ -70,6 +71,15 @@ export function datLoc(path: string, k: string, vals: string[]) {
   phatSong()
 }
 
+export function datKhoang(path: string, k: string, [tu, den]: [number | null, number | null]) {
+  const s = layTrangThai(path)
+  const khoangMoi = { ...s.khoang }
+  if (tu != null || den != null) khoangMoi[k] = [tu, den]
+  else delete khoangMoi[k]
+  khoPath.set(path, { ...s, khoang: khoangMoi })
+  phatSong()
+}
+
 export function datAnKhongPS(path: string, v: boolean) {
   const s = layTrangThai(path)
   khoPath.set(path, { ...s, anKhongPS: v })
@@ -92,7 +102,7 @@ export function datTuyChon(path: string, k: string, ds: string[]) {
 
 export function xoaLoc(path: string) {
   const s = layTrangThai(path)
-  khoPath.set(path, { ...s, loc: {}, anKhongPS: false })
+  khoPath.set(path, { ...s, loc: {}, khoang: {}, anKhongPS: false })
   phatSong()
 }
 
@@ -158,6 +168,7 @@ export function useTuyChinhBC(donVi: string, ma?: string): TuyChinhLuu | null {
 
 export interface BienDoiOpts {
   loc?: Record<string, string[]>
+  khoang?: Record<string, [number | null, number | null]>
   anKhongPS?: boolean
   nhom?: string[]
   cot?: TuyChinhCot[]
@@ -182,6 +193,7 @@ export function bienDoiBang(
   const tinhLaiTong = tc.tinhLaiTong ?? opts?.tinhLaiTong ?? false
   const khoa = tc.khoa ?? opts?.khoa ?? false
   const loc = tc.loc ?? {}
+  const khoang = tc.khoang ?? {}
   const anKhongPS = tc.anKhongPS ?? false
   const nhom = !khoa && tc.nhom && tc.nhom.length > 0 ? tc.nhom.filter(Boolean) : []
   const cot = !khoa ? tc.cot : undefined
@@ -205,6 +217,10 @@ export function bienDoiBang(
 
   // 2. Lọc dòng chi tiết
   const keysLoc = Object.keys(loc).filter(k => loc[k] && loc[k].length > 0)
+  const keysKhoang = Object.keys(khoang).filter(k => {
+    const kh = khoang[k]
+    return kh && (kh[0] != null || kh[1] != null)
+  })
   const cotNum = cols.filter(c => c.num)
 
   const conLai = dongChiTiet.filter(r => {
@@ -216,6 +232,14 @@ export function bienDoiBang(
       const vals = loc[k]
       const rVal = String(r[k] ?? '')
       if (!vals.includes(rVal)) return false
+    }
+
+    // Lọc theo từng khoá khoảng (bỏ trống đầu nào thì không chặn đầu đó; ô trống trong dòng coi như 0)
+    for (const k of keysKhoang) {
+      const [tu, den] = khoang[k]
+      const v = soO(r[k])
+      if (tu != null && v < tu) return false
+      if (den != null && v > den) return false
     }
 
     // Ẩn dòng không phát sinh (bỏ qua cột đơn giá)
@@ -329,7 +353,7 @@ export function bienDoiBang(
 
   // 5. Tính lại dòng tổng cuối bảng nếu có lọc/ẩn và tinhLaiTong
   let dongTongSau = dongTongCuoi
-  const daLoc = keysLoc.length > 0 || anKhongPS
+  const daLoc = keysLoc.length > 0 || keysKhoang.length > 0 || anKhongPS
   if (tinhLaiTong && daLoc && dongTongCuoi.length > 0) {
     dongTongSau = dongTongCuoi.map(tRow => {
       // Chỉ tính lại dòng tổng nếu là dòng tổng cộng

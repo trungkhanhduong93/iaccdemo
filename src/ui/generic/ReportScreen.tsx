@@ -16,12 +16,12 @@ import { Table } from '../Table'
 import { between, k, money, pad, pick, rng } from '../format'
 import { chungTu, soChiTiet } from './gen'
 import { Dropdown, MenuHead, MenuItem, MenuSep, Select } from '../Dropdown'
-import { LocO, ThanhLoc } from '../ThanhLoc'
+import { ThanhLoc } from '../ThanhLoc'
 import { khoangThang } from '../ChonNgay'
 import { SoTrangCtx, ToGiay, NgatTrang, tachKhoi, type Kho } from '../bao-cao/ToGiay'
 import { datNguonXuat, layNguonXuat, taoTenFile, xuatFile, type NguonXuat } from '../bao-cao/xuat'
 import {
-  useTrangThaiLoc, datLoc, datAnKhongPS, datCotNhuDangXem, datTuyChon, xoaLoc,
+  useTrangThaiLoc, datLoc, datKhoang, datAnKhongPS, datCotNhuDangXem, datTuyChon, xoaLoc,
   datColsGoc, datDsKyMacDinh, useTuyChinhBC, bienDoiBang
 } from '../bao-cao/tuyChinhBC'
 import { layNguoiKy } from '../bao-cao/khoMauIn'
@@ -31,14 +31,13 @@ import { useChoThanhCongCu } from '../bao-cao/choThanh'
 
 export const KY_CHON: [string, string][] = [['9', 'Tháng 9/2026'], ['10', 'Tháng 10/2026 (đến 07/10)'], ['8', 'Tháng 8/2026']]
 
-export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: string) => void; children?: ReactNode }) {
+export function ReportToolbar({ ky, setKy }: { ky: string; setKy: (v: string) => void; children?: ReactNode }) {
   // Số liệu báo cáo mẫu tính theo tháng, nên lấy tháng của ngày bắt đầu làm kỳ.
   const [khoang, setKhoang] = useState(() => khoangThang(Number(ky), 2026))
   const [moTuyChinh, setMoTuyChinh] = useState(false)
   const { s, toast } = useSession()
   const path = useLocation().pathname
   const slug = useParams().slug?.replace(/-/g, '.')
-  const cfg = cauHinhBC(slug)
   const tt = useTrangThaiLoc(path)
 
   // Tờ giấy (ToGiay) nghe sự kiện này để in đúng các trang đang xem
@@ -82,8 +81,9 @@ export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: 
     toast('Chọn máy in "Lưu dưới dạng PDF" để lưu file')
   }
 
-  const dangLoc = Object.keys(tt.loc).some(k => (tt.loc[k] ?? []).length > 0) || tt.anKhongPS
-  const dsLoc = cfg?.loc ?? []
+  const dangLoc = Object.keys(tt.loc).some(k => (tt.loc[k] ?? []).length > 0)
+    || Object.keys(tt.khoang).some(k => tt.khoang[k] && (tt.khoang[k][0] != null || tt.khoang[k][1] != null))
+    || tt.anKhongPS
 
   // Đang xem trong phân hệ Báo cáo: thanh công cụ nằm cùng hàng tên báo cáo ở thanh chọn (T55)
   // Trong phân hệ Báo cáo thì chờ có chỗ ở thanh chọn rồi mới vẽ, không vẽ tạm trong khung để khỏi nhảy chỗ
@@ -101,72 +101,6 @@ export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: 
         }}
         dangLoc={dangLoc}
         onLamMoi={() => xoaLoc(path)}
-        boLoc={
-          <>
-            {dsLoc.map(l => {
-              const opts = tt.tuyChon[l.k] ?? []
-              if (l.kieu === 'chon') {
-                const val = tt.loc[l.k]?.[0] ?? ''
-                return (
-                  <LocO key={l.k} nhan={l.nhan}>
-                    <Select
-                      className="inp"
-                      value={val}
-                      onChange={e => datLoc(path, l.k, e.target.value ? [e.target.value] : [])}
-                    >
-                      <option value="">Tất cả</option>
-                      {opts.map(v => <option key={v} value={v}>{v}</option>)}
-                    </Select>
-                  </LocO>
-                )
-              }
-              const daChon = tt.loc[l.k] ?? []
-              const nhanNut = daChon.length === 0 ? 'Tất cả' : `${daChon.length} đã chọn`
-              return (
-                <LocO key={l.k} nhan={l.nhan}>
-                  <Dropdown label={nhanNut} btnClass="inp" width={220}>
-                    {() => (
-                      <>
-                        <MenuItem on={daChon.length === 0} onClick={() => datLoc(path, l.k, [])}>
-                          Tất cả
-                        </MenuItem>
-                        <MenuSep />
-                        {opts.map(v => {
-                          const on = daChon.includes(v)
-                          return (
-                            <MenuItem
-                              key={v}
-                              on={on}
-                              onClick={() => {
-                                const moi = on ? daChon.filter(x => x !== v) : [...daChon, v]
-                                datLoc(path, l.k, moi)
-                              }}
-                            >
-                              {v}
-                            </MenuItem>
-                          )
-                        })}
-                      </>
-                    )}
-                  </Dropdown>
-                </LocO>
-              )
-            })}
-            {cfg?.anKhongPS && (
-              <LocO nhan="Dòng số liệu">
-                <label className="bc-loc-gat" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, height: 34 }}>
-                  <input
-                    type="checkbox"
-                    checked={tt.anKhongPS}
-                    onChange={e => datAnKhongPS(path, e.target.checked)}
-                  />
-                  Ẩn dòng không phát sinh
-                </label>
-              </LocO>
-            )}
-            {children}
-          </>
-        }
         phai={
           <>
             <button
@@ -250,6 +184,314 @@ export function dsOKy(loai: LoaiBC, cheDo: CheDo, nguoiDaiDien: string): OKy[] {
   return [lap, ktt, ddpl]
 }
 
+// Không tự sinh bộ lọc cho báo cáo tài chính (10.2.2, 10.2.3, 10.2.4, 10.3.1) và tờ khai thuế (6.2.x): lọc dòng làm sai ý nghĩa số tổng
+const LOAI_TRU_TU_SINH = new Set(['10.2.2', '10.2.3', '10.2.4', '10.3.1'])
+
+interface BoLocMuc {
+  k: string
+  nhan: string
+  kieu: 'chon' | 'chonNhieu' | 'khoang'
+  ds?: string[]
+}
+
+function LocChonNhieu({
+  nhan,
+  opts,
+  daChon,
+  onDoi,
+}: {
+  nhan: string
+  opts: string[]
+  daChon: string[]
+  onDoi: (vals: string[]) => void
+}) {
+  const [tim, setTim] = useState('')
+  const nhanNut = daChon.length === 0 ? 'Tất cả' : `${daChon.length} đã chọn`
+  const canTim = opts.length > 8
+  const optsLoc = useMemo(() => {
+    if (!canTim || !tim.trim()) return opts
+    const q = tim.toLowerCase().trim()
+    return opts.filter(x => x.toLowerCase().includes(q))
+  }, [opts, tim, canTim])
+
+  return (
+    <div className="bc-loc-muc">
+      <div className="bc-loc-nhan">{nhan}</div>
+      <Dropdown
+        label={
+          <>
+            <span className="bc-loc-btn-txt" title={daChon.length === 1 ? daChon[0] : nhanNut}>
+              {daChon.length === 1 ? daChon[0] : nhanNut}
+            </span>
+            <Icon n="chevd" className="ic sm" />
+          </>
+        }
+        btnClass="inp sm bc-loc-btn"
+        width={224}
+      >
+        {() => (
+          <>
+            {canTim && (
+              <div className="bc-loc-tim-o">
+                <Icon n="search" className="ic sm" />
+                <input
+                  type="text"
+                  className="inp sm"
+                  placeholder="Tìm..."
+                  value={tim}
+                  onChange={e => setTim(e.target.value)}
+                  onClick={e => e.stopPropagation()}
+                  onKeyDown={e => e.stopPropagation()}
+                />
+              </div>
+            )}
+            <MenuItem on={daChon.length === 0} onClick={() => onDoi([])}>
+              Tất cả
+            </MenuItem>
+            <MenuSep />
+            <div className="bc-loc-menu-ds">
+              {optsLoc.map(v => {
+                const on = daChon.includes(v)
+                return (
+                  <MenuItem
+                    key={v}
+                    on={on}
+                    onClick={() => {
+                      const moi = on ? daChon.filter(x => x !== v) : [...daChon, v]
+                      onDoi(moi)
+                    }}
+                  >
+                    {v}
+                  </MenuItem>
+                )
+              })}
+              {optsLoc.length === 0 && <div className="bc-loc-trong">Không tìm thấy</div>}
+            </div>
+          </>
+        )}
+      </Dropdown>
+    </div>
+  )
+}
+
+function LocKhoang({
+  nhan,
+  khoang,
+  onDoi,
+}: {
+  nhan: string
+  khoang?: [number | null, number | null]
+  onDoi: (kh: [number | null, number | null]) => void
+}) {
+  const [tuStr, setTuStr] = useState(() => (khoang?.[0] != null ? String(khoang[0]) : ''))
+  const [denStr, setDenStr] = useState(() => (khoang?.[1] != null ? String(khoang[1]) : ''))
+
+  useEffect(() => {
+    setTuStr(khoang?.[0] != null ? String(khoang[0]) : '')
+    setDenStr(khoang?.[1] != null ? String(khoang[1]) : '')
+  }, [khoang?.[0], khoang?.[1]])
+
+  const parseNum = (s: string): number | null => {
+    const t = s.trim().replace(/\./g, '').replace(',', '.')
+    if (!t) return null
+    const n = Number(t)
+    return isNaN(n) ? null : n
+  }
+
+  const apDung = () => {
+    const tuVal = parseNum(tuStr)
+    const denVal = parseNum(denStr)
+    if (tuVal !== (khoang?.[0] ?? null) || denVal !== (khoang?.[1] ?? null)) {
+      onDoi([tuVal, denVal])
+    }
+  }
+
+  return (
+    <div className="bc-loc-muc">
+      <div className="bc-loc-nhan">{nhan}</div>
+      <div className="bc-loc-khoang">
+        <input
+          type="text"
+          className="inp sm"
+          placeholder="Từ"
+          value={tuStr}
+          onChange={e => setTuStr(e.target.value)}
+          onBlur={apDung}
+          onKeyDown={e => {
+            if (e.key === 'Enter') {
+              (e.target as HTMLInputElement).blur()
+              apDung()
+            }
+          }}
+        />
+        <span className="bc-loc-den">–</span>
+        <input
+          type="text"
+          className="inp sm"
+          placeholder="Đến"
+          value={denStr}
+          onChange={e => setDenStr(e.target.value)}
+          onBlur={apDung}
+          onKeyDown={e => {
+            if (e.key === 'Enter') {
+              (e.target as HTMLInputElement).blur()
+              apDung()
+            }
+          }}
+        />
+      </div>
+    </div>
+  )
+}
+
+function CotLocBaoCao({
+  dsLoc,
+  anKhongPS,
+  path,
+  tt,
+}: {
+  dsLoc: BoLocMuc[]
+  anKhongPS: boolean
+  path: string
+  tt: ReturnType<typeof useTrangThaiLoc>
+}) {
+  const [thuGon, setThuGon] = useState(() => {
+    try {
+      return localStorage.getItem('bc-loc-thu') === '1'
+    } catch {
+      return false
+    }
+  })
+
+  const doiThuGon = (v: boolean) => {
+    setThuGon(v)
+    try {
+      if (v) localStorage.setItem('bc-loc-thu', '1')
+      else localStorage.removeItem('bc-loc-thu')
+    } catch {}
+  }
+
+  const soLocDangAp = useMemo(() => {
+    let n = 0
+    for (const l of dsLoc) {
+      if (l.kieu === 'khoang') {
+        const kh = tt.khoang[l.k]
+        if (kh && (kh[0] != null || kh[1] != null)) n++
+      } else {
+        if ((tt.loc[l.k] ?? []).length > 0) n++
+      }
+    }
+    if (anKhongPS && tt.anKhongPS) n++
+    return n
+  }, [dsLoc, tt.loc, tt.khoang, tt.anKhongPS, anKhongPS])
+
+  if (thuGon) {
+    return (
+      <aside className="bc-loc-cot thu">
+        <button
+          type="button"
+          className="icon-btn sm"
+          title="Mở rộng bộ lọc"
+          aria-label="Mở rộng"
+          onClick={() => doiThuGon(false)}
+        >
+          <Icon n="chevr" className="ic sm" />
+        </button>
+        {soLocDangAp > 0 && (
+          <span className="chip pri sm bc-loc-chip-thu" title={`${soLocDangAp} bộ lọc đang áp`}>
+            {soLocDangAp}
+          </span>
+        )}
+      </aside>
+    )
+  }
+
+  return (
+    <aside className="bc-loc-cot">
+      <div className="bc-loc-dau">
+        <div className="bc-loc-tieu-de">
+          <span>Bộ lọc</span>
+          {soLocDangAp > 0 && <span className="chip pri sm">{soLocDangAp}</span>}
+        </div>
+        <button
+          type="button"
+          className="icon-btn sm"
+          title="Thu gọn bộ lọc"
+          aria-label="Thu gọn"
+          onClick={() => doiThuGon(true)}
+        >
+          <Icon n="chevl" className="ic sm" />
+        </button>
+      </div>
+
+      <div className="bc-loc-ds">
+        {dsLoc.map(l => {
+          if (l.kieu === 'khoang') {
+            return (
+              <LocKhoang
+                key={l.k}
+                nhan={l.nhan}
+                khoang={tt.khoang[l.k]}
+                onDoi={kh => datKhoang(path, l.k, kh)}
+              />
+            )
+          }
+          const opts = (tt.tuyChon[l.k] && tt.tuyChon[l.k].length > 0) ? tt.tuyChon[l.k] : (l.ds ?? [])
+          if (l.kieu === 'chon') {
+            const val = tt.loc[l.k]?.[0] ?? ''
+            return (
+              <div key={l.k} className="bc-loc-muc">
+                <div className="bc-loc-nhan">{l.nhan}</div>
+                <Select
+                  className="inp sm"
+                  value={val}
+                  onChange={e => datLoc(path, l.k, e.target.value ? [e.target.value] : [])}
+                >
+                  <option value="">Tất cả</option>
+                  {opts.map(v => <option key={v} value={v}>{v}</option>)}
+                </Select>
+              </div>
+            )
+          }
+          return (
+            <LocChonNhieu
+              key={l.k}
+              nhan={l.nhan}
+              opts={opts}
+              daChon={tt.loc[l.k] ?? []}
+              onDoi={vals => datLoc(path, l.k, vals)}
+            />
+          )
+        })}
+
+        {anKhongPS && (
+          <div className="bc-loc-muc">
+            <label className="bc-loc-gat">
+              <input
+                type="checkbox"
+                checked={tt.anKhongPS}
+                onChange={e => datAnKhongPS(path, e.target.checked)}
+              />
+              <span>Ẩn dòng không phát sinh</span>
+            </label>
+          </div>
+        )}
+      </div>
+
+      <div className="bc-loc-chan">
+        <button
+          type="button"
+          className="btn sm"
+          disabled={soLocDangAp === 0}
+          onClick={() => xoaLoc(path)}
+        >
+          Xoá lọc
+        </button>
+      </div>
+    </aside>
+  )
+}
+
 /** Trang báo cáo theo mẫu: đầu trang đơn vị, mẫu số, tiêu đề, kỳ, ô ký. Vẽ trên tờ A4 tự chia trang (ToGiay).
  *  Mẫu số, tên in, khổ, ô ký lấy theo mã báo cáo trên đường dẫn và chế độ kế toán (modules/bao-cao/danh-sach.ts); mau chỉ dùng cho màn chưa có cấu hình */
 export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { title: string; sub: string; mau?: string; children: ReactNode; ky?: boolean; kho?: Kho }) {
@@ -267,6 +509,53 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
 
   const tc = useTuyChinhBC(s.donVi, slug)
   const tt = useTrangThaiLoc(path)
+
+  const khongTuSinh = (slug && LOAI_TRU_TU_SINH.has(slug)) || loai === 'tokhai' || (slug && slug.startsWith('6.2.'))
+
+  // Danh sách bộ lọc cho cột lọc bên trái: bộ lọc khai tay trong cfg.loc đứng trước, sau đó tự sinh theo cột
+  const dsLocCot = useMemo(() => {
+    const res: BoLocMuc[] = []
+    const daCo = new Set<string>()
+
+    // 1. Khai tay trong cfg.loc
+    for (const l of cfg?.loc ?? []) {
+      res.push({
+        k: l.k,
+        nhan: l.nhan,
+        kieu: l.kieu,
+        ds: l.ds ? l.ds(chiNhanhHienTai(s)?.id) : undefined,
+      })
+      daCo.add(l.k)
+    }
+
+    // 2. Tự sinh theo các cột của khối bảng
+    if (!khongTuSinh) {
+      const khoi = tachKhoi(children)
+      for (const kh of khoi) {
+        if (kh.loai === 'bang') {
+          const dongCT = kh.rows.filter(r => !r._b && !r._t)
+          for (const c of kh.cols) {
+            if (daCo.has(c.k)) continue
+            if (c.k === 'stt' || c.t.toLowerCase() === 'stt') continue
+
+            if (c.num) {
+              res.push({ k: c.k, nhan: c.t, kieu: 'khoang' })
+              daCo.add(c.k)
+            } else {
+              const laNgay = c.k === 'ngay' || dongCT.some(r => typeof r[c.k] === 'string' && /^\d{2}\/\d{2}\/\d{4}$/.test(r[c.k]))
+              if (laNgay) continue
+              const vals = [...new Set(dongCT.map(r => String(r[c.k] ?? '').trim()).filter(Boolean))].sort()
+              if (vals.length >= 2) {
+                res.push({ k: c.k, nhan: c.t, kieu: 'chonNhieu', ds: vals })
+                daCo.add(c.k)
+              }
+            }
+          }
+        }
+      }
+    }
+    return res
+  }, [cfg?.loc, khongTuSinh, children, s])
 
   const dsKy = useMemo(() => {
     if (!ky) return []
@@ -304,14 +593,25 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
           const vals = [...new Set(dongCT.map(r => String(r.cn ?? '')).filter(Boolean))].sort()
           datTuyChon(path, 'cn', vals)
         }
+        if (!khongTuSinh) {
+          for (const c of kh.cols) {
+            if (c.num || (cfg?.loc && cfg.loc.some(l => l.k === c.k)) || c.k === 'stt' || c.t.toLowerCase() === 'stt') continue
+            const laNgay = c.k === 'ngay' || dongCT.some(r => typeof r[c.k] === 'string' && /^\d{2}\/\d{2}\/\d{4}$/.test(r[c.k]))
+            if (laNgay) continue
+            const vals = [...new Set(dongCT.map(r => String(r[c.k] ?? '').trim()).filter(Boolean))].sort()
+            if (vals.length >= 2) {
+              datTuyChon(path, c.k, vals)
+            }
+          }
+        }
       }
     }
-  }, [children, path, cfg, ky, loai, s.cheDo, dv.nguoiDaiDien])
+  }, [children, path, cfg, ky, loai, s.cheDo, dv.nguoiDaiDien, khongTuSinh])
 
   // Biến đổi các khối bảng cho thân tờ giấy và nguồn xuất
   const { thanBienDoi, bangXuat } = useMemo(() => {
     const khoi = tachKhoi(children)
-    const tinhLaiTong = loai === 'baocao' || (loai === 'so' && !cfg?.congCot)
+    const tinhLaiTong = loai === 'baocao' || (loai === 'so' && !cfg?.congCot) || slug === '10.2.1'
     const khoa = !!cfg?.khoa
     const bx: { cols: Col[]; rows: Row[]; kyHieuCot?: KyHieuCot }[] = []
 
@@ -321,6 +621,7 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
       // Bảng đang xem: áp lọc, nhóm, cột
       const res = bienDoiBang(kh.cols, kh.rows, {
         loc: tt.loc,
+        khoang: tt.khoang,
         anKhongPS: tt.anKhongPS,
         nhom: tc?.nhom,
         cot: tc?.cot,
@@ -334,6 +635,7 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
         // Tắt "Cột như đang xem": xuất đủ cột (vẫn áp lọc và nhóm)
         const resDuCot = bienDoiBang(kh.cols, kh.rows, {
           loc: tt.loc,
+          khoang: tt.khoang,
           anKhongPS: tt.anKhongPS,
           nhom: tc?.nhom,
           cot: undefined,
@@ -346,7 +648,7 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
     })
 
     return { thanBienDoi: thanMoi, bangXuat: bx }
-  }, [children, tt.loc, tt.anKhongPS, tt.cotNhuDangXem, tc?.nhom, tc?.cot, loai, cfg?.congCot, cfg?.khoa, kyHieuCot])
+  }, [children, tt.loc, tt.khoang, tt.anKhongPS, tt.cotNhuDangXem, tc?.nhom, tc?.cot, loai, cfg?.congCot, cfg?.khoa, kyHieuCot, slug])
 
   // Dựng NguonXuat cho chức năng xuất file
   useEffect(() => {
@@ -385,10 +687,22 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
     </>
   )
   const cuoi = ky ? <KhoiCuoi loai={loai} cheDo={s.cheDo} nguoiDaiDien={dv.nguoiDaiDien} dsKy={dsKy} /> : undefined
+  const coBoLoc = dsLocCot.length > 0 || !!cfg?.anKhongPS
+
   return (
-    <ToGiay dau={dau} than={thanBienDoi} cuoi={cuoi} khoMacDinh={khoMacDinh}
-      kyHieuCot={kyHieuCot} congChuyen={loai === 'so' ? cfg?.congCot : undefined}
-      onKho={setKhoHienTai} layHtmlRef={layHtmlRef} coChu={tc?.coChu} />
+    <div className="bc-xem">
+      {coBoLoc && (
+        <CotLocBaoCao
+          dsLoc={dsLocCot}
+          anKhongPS={!!cfg?.anKhongPS}
+          path={path}
+          tt={tt}
+        />
+      )}
+      <ToGiay dau={dau} than={thanBienDoi} cuoi={cuoi} khoMacDinh={khoMacDinh}
+        kyHieuCot={kyHieuCot} congChuyen={loai === 'so' ? cfg?.congCot : undefined}
+        onKho={setKhoHienTai} layHtmlRef={layHtmlRef} coChu={tc?.coChu} />
+    </div>
   )
 }
 

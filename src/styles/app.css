@@ -3950,4 +3950,163 @@ body.tkmi-dang-keo, body.tkmi-dang-keo * {
   color: var(--amber);
 }
 
+/* ── Cột lọc bên trái màn xem báo cáo (T66) ── */
+.bc-xem {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+  width: 100%;
+}
+.bc-xem > .bc-giay {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.bc-loc-cot {
+  width: 248px;
+  flex: none;
+  background: var(--white);
+  border-right: 1px solid var(--line);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-sizing: border-box;
+}
+.bc-loc-cot.thu {
+  width: 36px;
+  padding: 8px 4px;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+}
+.bc-loc-dau {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  min-height: 24px;
+}
+.bc-loc-tieu-de {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.bc-loc-chip-thu {
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  font-size: 11px;
+}
+.bc-loc-ds {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+}
+.bc-loc-muc {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.bc-loc-nhan {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+}
+.bc-loc-cot .sel,
+.bc-loc-cot .bc-loc-btn {
+  width: 100%;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+  font-size: 13px;
+  box-sizing: border-box;
+}
+.bc-loc-btn-txt {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.bc-loc-khoang {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.bc-loc-khoang .inp {
+  flex: 1;
+  min-width: 0;
+  height: 32px;
+  padding: 0 8px;
+  font-size: 13px;
+}
+.bc-loc-den {
+  color: var(--muted);
+  flex: none;
+  font-size: 13px;
+}
+.bc-loc-gat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--ink);
+  cursor: pointer;
+  user-select: none;
+}
+.bc-loc-gat input {
+  cursor: pointer;
+}
+.bc-loc-tim-o {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--line);
+}
+.bc-loc-tim-o .inp {
+  flex: 1;
+  border: 0;
+  padding: 2px 4px;
+  background: transparent;
+  outline: none;
+  height: 26px;
+  font-size: 12px;
+}
+.bc-loc-menu-ds {
+  max-height: 240px;
+  overflow-y: auto;
+}
+.bc-loc-trong {
+  padding: 8px 12px;
+  font-size: 12px;
+  color: var(--muted);
+  text-align: center;
+}
+.bc-loc-chan {
+  margin-top: auto;
+  padding-top: 8px;
+  flex-shrink: 0;
+}
+.bc-loc-chan .btn {
+  width: 100%;
+}
+
+
 
