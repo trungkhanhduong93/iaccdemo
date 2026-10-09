@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, type CSSProperties, type PointerEvent as PE, type ReactNode } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, type CSSProperties, type PointerEvent as PE, type ReactNode } from 'react'
 import type { Col, Row } from '../modules/types'
 import { money } from './format'
 import { OLoc, type LocCot } from './LocCot'
@@ -12,20 +12,32 @@ export function cell(c: Col, r: Row): ReactNode {
   return v
 }
 
-/** Vị trí của cột đứng yên: cột 'trai' cộng dồn bề rộng các cột 'trai' trước nó, cột 'phai' tính từ mép phải */
+/** Vị trí của cột đứng yên: dùng biến CSS --tr-i và --ph-i trên <table>, đo bằng ResizeObserver (T74) */
 function viTri(cols: Col[]): { cls: string; style?: CSSProperties }[] {
-  let trai = 0
-  const out = cols.map(c => {
-    if (c.dinh !== 'trai') return { cls: '' }
-    const o = { cls: 'dinh', style: { left: trai } as CSSProperties }
-    trai += c.w ?? 0
-    return o
+  const traiIndices: number[] = []
+  const phaiIndices: number[] = []
+  cols.forEach((c, i) => {
+    if (c.dinh === 'trai') traiIndices.push(i)
+    else if (c.dinh === 'phai') phaiIndices.push(i)
   })
   const cuoiTrai = cols.map(c => c.dinh).lastIndexOf('trai')
-  if (cuoiTrai >= 0) out[cuoiTrai].cls += ' dinh-cuoi'
   const dauPhai = cols.findIndex(c => c.dinh === 'phai')
-  if (dauPhai >= 0) out[dauPhai] = { cls: 'dinh dinh-phai', style: { right: 0 } }
-  return out
+  const phaiReversed = [...phaiIndices].reverse()
+
+  return cols.map((c, i) => {
+    if (c.dinh === 'trai') {
+      const idx = traiIndices.indexOf(i)
+      let cls = 'dinh'
+      if (i === cuoiTrai) cls += ' dinh-cuoi'
+      return { cls, style: { left: `var(--tr-${idx}, 0px)` } }
+    }
+    if (c.dinh === 'phai') {
+      const idx = phaiReversed.indexOf(i)
+      let cls = 'dinh dinh-phai'
+      return { cls, style: { right: `var(--ph-${idx}, 0px)` } }
+    }
+    return { cls: '' }
+  })
 }
 
 /** Độ rộng cột người dùng đã kéo, theo khoá cột (T41) */
@@ -133,15 +145,115 @@ export function Table({
     const rd = rongDef(c)
     return {
       ...vt[i].style,
+      ...(rd.w ? { width: rd.w } : {}),
       ...(rd.minW ? { minWidth: rd.minW } : {}),
       ...(rd.maxW ? { maxWidth: rd.maxW } : {}),
     }
   }
 
   const wrapRef = useRef<HTMLDivElement>(null)
+  const tblRef = useRef<HTMLTableElement>(null)
 
-  // Hook cuộn ảo theo chuẩn LedgerStudio (T50)
-  const vs = useVirtualScroll(rows, 36, wrapRef, virtual ?? rows.length > 25)
+  // Giá trị khởi tạo biến CSS trên <table> trước khi ResizeObserver đo thật
+  const initVars: Record<string, string> = {}
+  let accL0 = 0
+  let trIdx0 = 0
+  const phaiList0: Col[] = []
+  cols.forEach(c => {
+    if (c.dinh === 'trai') {
+      initVars[`--tr-${trIdx0}`] = `${accL0}px`
+      accL0 += c.w ?? 60
+      trIdx0++
+    } else if (c.dinh === 'phai') {
+      phaiList0.push(c)
+    }
+  })
+  let accR0 = 0
+  let phIdx0 = 0
+  phaiList0.reverse().forEach(c => {
+    initVars[`--ph-${phIdx0}`] = `${accR0}px`
+    accR0 += c.w ?? 60
+    phIdx0++
+  })
+
+  // Đo bề rộng thật của các ô tiêu đề cột cố định bằng offsetWidth (không dùng getBoundingClientRect vì html có zoom) (T74)
+  const doCot = useCallback(() => {
+    const tbl = tblRef.current
+    if (!tbl) return
+    const ths = tbl.querySelectorAll<HTMLTableCellElement>('thead tr:first-child > th')
+    if (!ths.length) return
+
+    let accL = 0
+    let trIdx = 0
+    const phaiColsList: { colIdx: number; el: HTMLTableCellElement }[] = []
+
+    cols.forEach((c, i) => {
+      const th = ths[i]
+      if (!th) return
+      if (c.dinh === 'trai') {
+        tbl.style.setProperty(`--tr-${trIdx}`, `${accL}px`)
+        accL += th.offsetWidth
+        trIdx++
+      } else if (c.dinh === 'phai') {
+        phaiColsList.push({ colIdx: i, el: th })
+      }
+    })
+
+    let accR = 0
+    let phIdx = 0
+    phaiColsList.reverse().forEach(item => {
+      tbl.style.setProperty(`--ph-${phIdx}`, `${accR}px`)
+      accR += item.el.offsetWidth
+      phIdx++
+    })
+  }, [cols])
+
+  useLayoutEffect(() => {
+    doCot()
+    const tbl = tblRef.current
+    if (!tbl) return
+    const ths = tbl.querySelectorAll<HTMLTableCellElement>('thead tr:first-child > th')
+    if (!ths.length) return
+
+    const ro = new ResizeObserver(() => {
+      doCot()
+    })
+    cols.forEach((c, i) => {
+      if ((c.dinh === 'trai' || c.dinh === 'phai') && ths[i]) {
+        ro.observe(ths[i])
+      }
+    })
+    return () => ro.disconnect()
+  }, [cols, rows, doCot, doRong])
+
+  // Gắn lớp cuon-trai, cuon-phai trên .tbl-wrap để bật bóng nhẹ cho cột cố định biên khi cuộn ngang (T74)
+  useEffect(() => {
+    const el = wrapRef.current
+    if (!el) return
+    let rafId = 0
+    const capNhatBong = () => {
+      const coTrai = el.scrollLeft > 0
+      const coPhai = Math.ceil(el.scrollLeft + el.clientWidth) < el.scrollWidth - 1
+      el.classList.toggle('cuon-trai', coTrai)
+      el.classList.toggle('cuon-phai', coPhai)
+    }
+    const onScroll = () => {
+      cancelAnimationFrame(rafId)
+      rafId = requestAnimationFrame(capNhatBong)
+    }
+    el.addEventListener('scroll', onScroll, { passive: true })
+    capNhatBong()
+    const ro = new ResizeObserver(() => capNhatBong())
+    ro.observe(el)
+    return () => {
+      cancelAnimationFrame(rafId)
+      el.removeEventListener('scroll', onScroll)
+      ro.disconnect()
+    }
+  }, [rows, cols0])
+
+  // Hook cuộn ảo theo chuẩn LedgerStudio (T50) - chiều cao dòng thân chuẩn 42px (T74)
+  const vs = useVirtualScroll(rows, 42, wrapRef, virtual ?? rows.length > 25)
 
   // Chống xô giật bề rộng cột khi cuộn: giữ bề rộng lớn nhất đã thấy làm minWidth
   useLayoutEffect(() => {
@@ -151,7 +263,10 @@ export function Table({
     ths.forEach(th => {
       const w = th.getBoundingClientRect().width / z
       const cur = parseFloat(th.style.minWidth) || 0
-      if (w > cur) th.style.minWidth = `${w}px`
+      if (w > cur) {
+        th.style.minWidth = `${w}px`
+        doCot()
+      }
     })
   })
 
@@ -168,7 +283,7 @@ export function Table({
 
   return (
     <div ref={wrapRef} className="tbl-wrap" style={maxH ? { maxHeight: maxH } : undefined}>
-      <table className={`tbl${motDong ? ' mot-dong' : ''}${keDoc ? ' ke-doc' : ''}`}>
+      <table ref={tblRef} className={`tbl${motDong ? ' mot-dong' : ''}${keDoc ? ' ke-doc' : ''}`} style={initVars as CSSProperties}>
         <thead>
           <tr>{cols.map((c, i) => {
             const rd = rongDef(c)

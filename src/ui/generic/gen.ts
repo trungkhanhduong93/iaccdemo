@@ -137,6 +137,20 @@ export function tongDong(ds: Dong[]) {
   return { tien, thue, tong: tien + thue }
 }
 
+/** Sinh giờ cố định theo số phiếu (07:00 đến 21:59, cùng phiếu luôn cùng giờ) (T74) */
+export function gioPhieu(so: string): string {
+  let h = 0
+  for (let i = 0; i < so.length; i++) {
+    h = ((h << 5) - h + so.charCodeAt(i)) | 0
+  }
+  const span = 15 * 60 // 07:00 đến 21:59 = 900 phút
+  const offset = Math.abs(h) % span
+  const tongPhut = 7 * 60 + offset
+  const hh = Math.floor(tongPhut / 60)
+  const mm = tongPhut % 60
+  return `${pad(hh)}:${pad(mm)}`
+}
+
 /** Chứng từ trải từ 07/10 lùi về đầu tháng 9 (mặc định 26 phiếu, hoặc theo cfg.soPhieu) */
 export function chungTu(cfg: VoucherCfg, seed: string): Row[] {
   const soPhieu = cfg.soPhieu ?? 26
@@ -153,8 +167,9 @@ export function chungTu(cfg: VoucherCfg, seed: string): Row[] {
       const id = `${seed}-${i}`
       const t = tongDong(dongCua(cfg, id))
       const nguon = cfg.nguon && cfg.nguon !== 'tay' && r() < 0.75 ? cfg.nguon : 'tay'
+      const g = gioPhieu(so)
       rows.push({
-        id: String(i), so, ngay: `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`, thang: d.getMonth() + 1,
+        id: String(i), so, ngay: `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`, gio: g, thang: d.getMonth() + 1,
         doiTuong: dt.ten, maDt: dt.ma, cn: pick(r, CHI_NHANH).ten,
         dienGiai: pick(r, cfg.dienGiai), tien: t.tien, thue: t.thue, tong: t.tong, nguon,
         tt: i < 3 ? 'nhap' : i === 5 ? 'loi' : 'ghi',
@@ -267,10 +282,12 @@ export function chungTu(cfg: VoucherCfg, seed: string): Row[] {
     const t = tongDong(dongCua(cfg, id))
     const tt = i < soNhap ? 'nhap' : loiIndices.has(i) ? 'loi' : 'ghi'
     const d = item.d
+    const g = gioPhieu(item.so)
     return {
       id: String(i),
       so: item.so,
       ngay: `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`,
+      gio: g,
       thang: item.thang,
       doiTuong: item.dt.ten,
       maDt: item.dt.ma,

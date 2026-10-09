@@ -14,6 +14,7 @@
   --sh-giay: 0 1px 2px rgba(14, 26, 43, .06), 0 6px 16px rgba(14, 26, 43, .08), 0 18px 40px rgba(14, 26, 43, .10);
   --giay-den: #0f172a; --giay-phu: #475569; --giay-xam: #64748b; --giay-mo: #94a3b8;
   --giay-nhat: #cbd5e1; --giay-chan: #e2e8f0; --giay-ke: #f1f5f9; --giay-th: #f1f5f9; --giay-tong: #f8fafc;
+  --luoi-vien: rgb(226, 233, 243); --luoi-dong: rgb(221, 226, 235); --luoi-tieu-de: rgba(5, 100, 173, .10);
   color-scheme: light;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -181,19 +182,8 @@ table { border-collapse: collapse; }
 .tabs button .n { font-size: 11px; padding: 0 6px; border-radius: 999px; background: var(--soft); color: var(--muted); }
 .tabs button .n.err { background: var(--red-t); color: var(--red); }
 
-/* ── Bảng ── */
-.tbl-wrap { overflow: auto; }
-.tbl { width: 100%; font-size: 13px; }
-.tbl thead { position: sticky; top: 0; z-index: 10; background: #fff; box-shadow: 0 -2px 0 var(--th), 0 1px 0 var(--line); }  /* nền phủ mọi khe giữa hai hàng tiêu đề khi zoom lẻ (T67) */
-/* Hàng tiêu đề trên không có viền dưới: viền gộp (collapse) thuộc về bảng, không dính theo thead, ở tỉ lệ màn hình lẻ thành khe lộ chữ. Đường kẻ vẽ bằng bóng trong ô (T67) */
-.tbl thead tr:first-child th { border-bottom: 0; box-shadow: inset 0 -1px 0 var(--line); }
-.tbl thead tr:first-child th.dinh-cuoi { box-shadow: inset 0 -1px 0 var(--line), 2px 0 4px rgba(0, 0, 0, .03); }
-.tbl thead tr:first-child th.dinh-phai { box-shadow: inset 0 -1px 0 var(--line), -2px 0 4px rgba(0, 0, 0, .03); }
-.tbl th { position: relative; top: auto; background: var(--th); color: var(--body); font-size: 13px; font-weight: 700; text-transform: none; letter-spacing: 0; text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; }
-.tbl td { padding: 9px 12px; border-bottom: 1px solid var(--line-2); vertical-align: middle; }
-.tbl tbody tr:hover td { background: #f2f7fb; }
+/* ── Bảng (các tiện ích dòng và ô) ── */
 .tbl tr.click { cursor: pointer; }
-.tbl tr.sum td { background: #f8fafc; font-weight: 700; color: var(--ink); border-top: 1px solid var(--line); }
 .tbl tr.grp td { background: #fbfcfe; font-weight: 700; color: var(--ink); }
 .tbl tr.sub td:first-child { padding-left: 28px; }
 .tbl td.code { color: var(--blue-d); font-weight: 600; white-space: nowrap; }
@@ -203,13 +193,6 @@ table { border-collapse: collapse; }
 .tbl th.num, .tbl td.num { text-align: right; }
 .tbl th.c, .tbl td.c { text-align: center; }
 .tbl .chk { width: 34px; }
-.tbl th.dinh, .tbl td.dinh { position: sticky; background: #fff; z-index: 2; }
-.tbl thead th.dinh { position: sticky; top: auto; z-index: 20; background: var(--th); }
-.tbl th.dinh-cuoi, .tbl td.dinh-cuoi { border-right: 1px solid var(--line); box-shadow: 2px 0 4px rgba(0, 0, 0, .03); }
-.tbl th.dinh-phai, .tbl td.dinh-phai { position: sticky; right: 0; background: #fff; z-index: 2; border-left: 1px solid var(--line); box-shadow: -2px 0 4px rgba(0, 0, 0, .03); }
-.tbl thead th.dinh-phai { position: sticky; top: auto; z-index: 20; background: var(--th); }
-.tbl tbody tr:hover td.dinh { background: #f2f7fb; }
-.tbl tr.dang-chon td.dinh { background: var(--tint); }
 .tbl tr.chua-ghi td:first-child { box-shadow: inset 3px 0 0 var(--amber); }
 
 /* Khung chi tiết bên dưới danh sách chứng từ */
@@ -890,30 +873,6 @@ textarea.inp { height: auto; padding: 8px 11px; resize: vertical; }
   font-style: italic;
 }
 
-.tbl-wrap table.tbl {
-  min-height: 100%;
-}
-.tbl thead tr:first-child th {
-  height: 36px;
-  padding: 0 12px;
-}
-.tbl thead tr.loc-hang th {
-  position: relative;
-  top: auto;
-  height: 36px;
-  min-height: 36px;
-  box-sizing: border-box;
-  padding: 0 6px;
-  background: #fff;
-  border-bottom: 1px solid var(--line);
-  box-shadow: inset 0 -1px 0 var(--line), inset 0 1px 0 var(--line);
-}
-.tbl thead tr.loc-hang th.dinh, .tbl thead tr.loc-hang th.dinh-phai {
-  position: sticky;
-  top: auto;
-  z-index: 20;
-  background: #fff;
-}
 .tbl tr.tbl-spacer {
   height: auto !important;
 }
@@ -922,44 +881,6 @@ textarea.inp { height: auto; padding: 8px 11px; resize: vertical; }
   border: 0 !important;
   padding: 0 !important;
   background: transparent !important;
-}
-.tbl tbody tr:not(.tbl-spacer) {
-  height: 36px;
-}
-.tbl tbody tr:not(.tbl-spacer) td {
-  height: 36px;
-}
-.tbl tfoot {
-  position: static;
-}
-.tbl tfoot td, .tbl tr.sum td {
-  position: sticky;
-  bottom: 0 !important;
-  background: #fff !important;
-  border-top: 1px solid var(--line) !important;
-  border-bottom: 0 !important;
-  box-shadow: inset 0 1px 0 var(--line);
-  font-weight: 700;
-  color: var(--ink);
-  z-index: 3;
-  height: 36px;
-  box-sizing: border-box;
-}
-.tbl tfoot td::after, .tbl tr.sum td::after {
-  content: '';
-  position: absolute;
-  bottom: -4px;
-  left: 0;
-  right: 0;
-  height: 5px;
-  background: #fff;
-  z-index: 1;
-  pointer-events: none;
-}
-.tbl tfoot td.dinh, .tbl tfoot td.dinh-phai,
-.tbl tr.sum td.dinh, .tbl tr.sum td.dinh-phai {
-  z-index: 5;
-  background: #fff !important;
 }
 
 .pt-bar {
@@ -1421,25 +1342,7 @@ textarea.inp { height: auto; padding: 8px 11px; resize: vertical; }
   line-height: 1;
 }
 
-/* Dòng tổng dính đáy có viền trên 1px rõ ràng, nền trắng */
-.tbl tfoot td,
-.tbl tr.sum td {
-  border-top: 1px solid var(--line) !important;
-  box-shadow: inset 0 1px 0 var(--line);
-  background: #fff !important;
-  font-weight: 700;
-  color: var(--ink);
-}
 
-/* Hàng lọc bám sát tiêu đề không khe hở (đáy th1 = đỉnh th2) */
-.tbl thead tr:first-child th {
-  height: 36px;
-  box-sizing: border-box;
-}
-.tbl thead tr.loc-hang th {
-  height: 36px;
-  box-sizing: border-box;
-}
 
 
 
@@ -4539,6 +4442,252 @@ body.tkmi-dang-keo, body.tkmi-dang-keo * {
     display: none;
   }
 }
+
+/* ── Bảng danh sách theo iPOS Inventory (T74) ── */
+.tbl-wrap {
+  position: relative;
+  overflow: auto;
+  background: #fff;
+  border: 1px solid var(--luoi-vien);
+}
+
+.tbl-wrap table.tbl,
+table.tbl {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 13px;
+  color: var(--body);
+  background: #fff;
+}
+
+/* thead dính cả khối khi cuộn dọc */
+.tbl thead {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #fff;
+  box-shadow: 0 -2px 0 var(--th);  /* phủ vệt 1-2px chữ dòng thân lộ trên đỉnh tiêu đề ở tỉ lệ màn hình 150% (T67) */
+}
+
+/* Tiêu đề hàng 1: cao 36px, nền rgba(5,100,173,.10) / var(--th), chữ 13px đậm 700 rgb(54,54,54), đệm 0 12px; đáy khối tiêu đề viền 1px rgb(226,233,243) */
+.tbl thead tr:first-child th {
+  height: 36px;
+  box-sizing: border-box;
+  padding: 0 12px;
+  background: var(--th);
+  color: rgb(54, 54, 54);
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  text-align: left;
+  border-top: 0;
+  border-left: 0;
+  border-bottom: 1px solid var(--luoi-vien);
+  border-right: 1px solid var(--line-2);
+}
+
+/* Hàng lọc: cao 36px, nền trắng, viền trên là đáy hàng 1, đáy có viền 1px rgb(226,233,243) */
+.tbl thead tr.loc-hang th {
+  height: 36px;
+  box-sizing: border-box;
+  padding: 0 6px;
+  background: #fff;
+  border-top: 0;
+  border-left: 0;
+  border-bottom: 1px solid var(--luoi-vien);
+  border-right: 1px solid var(--line-2);
+}
+
+/* Ô nhập trong hàng lọc: cao 30px KHÔNG viền, nền trắng, đệm trái 6px, cỡ 13px; biểu tượng phễu bên phải */
+.tbl thead tr.loc-hang .loc-cell input,
+.tbl thead tr.loc-hang input.loc-o,
+.tbl thead tr.loc-hang .loc-o-ngay,
+.tbl thead tr.loc-hang .loc-o,
+.tbl thead tr.loc-hang .loc-chon {
+  height: 30px;
+  border: 0;
+  outline: 0;
+  background: #fff;
+  padding: 0 2px 0 6px;
+  font-size: 13px;
+  color: rgb(54, 54, 54);
+  box-shadow: none;
+}
+
+.tbl thead tr.loc-hang .loc-cell-ngay {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 30px;
+  background: #fff;
+}
+
+.tbl thead tr.loc-hang .loc-btn-lich,
+.tbl thead tr.loc-hang .loc-pheu-btn {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  display: inline-grid;
+  place-items: center;
+}
+
+/* Dòng thân: cao 42px; viền dưới dòng 1px rgb(221,226,235); mỗi ô viền phải 1px rgb(238,238,238) (= --line-2), các cạnh khác trong suốt; đệm 0 11px; cỡ 13px */
+.tbl tbody tr:not(.tbl-spacer):not(.ds-grp-row) {
+  height: 42px;
+}
+
+.tbl tbody tr:not(.tbl-spacer):not(.ds-grp-row) td {
+  height: 42px;
+  box-sizing: border-box;
+  padding: 0 11px;
+  font-size: 13px;
+  color: rgb(54, 54, 54);
+  border-top: 0;
+  border-left: 0;
+  border-bottom: 1px solid var(--luoi-dong);
+  border-right: 1px solid var(--line-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+  background: #fff;
+}
+
+.tbl tbody tr:hover td {
+  background: #f2f7fb;
+}
+
+.tbl tr.dang-chon td {
+  background: var(--tint);
+}
+
+.tbl tbody tr:hover td.dinh {
+  background: #f2f7fb;
+}
+
+.tbl tr.dang-chon td.dinh {
+  background: var(--tint);
+}
+
+/* Dòng tổng ghim đáy: cao 42px, viền trên 1px rgb(226,233,243), chữ đậm 700 */
+.tbl tfoot {
+  position: static;
+}
+
+.tbl tfoot tr.sum td,
+.tbl tr.sum td {
+  position: sticky;
+  bottom: 0;
+  height: 42px;
+  box-sizing: border-box;
+  padding: 0 11px;
+  font-size: 13px;
+  font-weight: 700;
+  color: rgb(54, 54, 54);
+  background: #fff;
+  border-top: 1px solid var(--luoi-vien);
+  border-bottom: 0;
+  border-left: 0;
+  border-right: 1px solid var(--line-2);
+  white-space: nowrap;
+}
+
+/* Thứ tự lớp (z-index) */
+.tbl thead th {
+  position: relative;
+  z-index: 3;
+}
+
+.tbl thead th.dinh {
+  position: sticky;
+  z-index: 4;
+}
+
+.tbl thead tr:first-child th.dinh {
+  background: var(--th);
+}
+
+.tbl thead tr.loc-hang th.dinh {
+  background: #fff;
+}
+
+.tbl tbody td.dinh {
+  position: sticky;
+  z-index: 2;
+  background: #fff;
+}
+
+.tbl tfoot tr.sum td.dinh,
+.tbl tr.sum td.dinh {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  background: #fff;
+}
+
+/* Đường ngăn cột cố định: ô trái cuối viền phải 1px rgb(226,233,243), ô phải đầu viền trái 1px rgb(226,233,243) */
+.tbl th.dinh-cuoi,
+.tbl td.dinh-cuoi {
+  border-right: 1px solid var(--luoi-vien) !important;
+}
+
+.tbl th.dinh-phai,
+.tbl td.dinh-phai {
+  border-left: 1px solid var(--luoi-vien) !important;
+}
+
+/* Ô cuối dòng không có border-right thừa */
+.tbl tr > :last-child:not(.dinh-cuoi) {
+  border-right: 0;
+}
+
+/* Bóng cột cố định khi cuộn ngang */
+.tbl-wrap.cuon-trai .tbl th.dinh-cuoi,
+.tbl-wrap.cuon-trai .tbl td.dinh-cuoi {
+  box-shadow: 4px 0 6px -4px rgba(14, 26, 43, .12);
+}
+
+.tbl-wrap.cuon-phai .tbl th.dinh-phai,
+.tbl-wrap.cuon-phai .tbl td.dinh-phai {
+  box-shadow: -4px 0 6px -4px rgba(14, 26, 43, .12);
+}
+
+/* Mã phiếu: liên kết chữ var(--blue), cỡ 13px, không gạch chân, con trỏ tay; rê chuột gạch chân; focus-visible có viền */
+.ds-link-so {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--blue);
+  cursor: pointer;
+  text-decoration: none;
+  text-align: left;
+  display: inline;
+}
+
+.ds-link-so:hover {
+  text-decoration: underline;
+}
+
+.ds-link-so:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Cột thời gian: nowrap, ellipsis khi hẹp */
+.ds-time {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 13px;
+  color: rgb(54, 54, 54);
+}
+
 
 
 

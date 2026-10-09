@@ -1,5 +1,5 @@
 // Màn chứng từ chung: danh sách theo bố cục AMIS với cột đứng yên, bộ lọc kỳ nhanh, khung chi tiết bên dưới, thao tác hàng loạt.
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import type { Col, Row, ScreenProps, VoucherCfg } from '../../modules/types'
 import { duongDan, tenMan } from '../../app/registry'
@@ -19,7 +19,7 @@ import {
   BoLoc, ChipTrangThai, NutHangLoat, NutTuyChinhCot, cotChon, dsChipTT, khopChipTT, useCauHinhLoc, useCotDs, useLocNhap, type OLocDef,
 } from '../LocNangCao'
 import { useDaXoa, xoaPhieu } from './daXoa'
-import { NGUON, TT_CT, chungTu, dongCua, ttNghiepVu } from './gen'
+import { NGUON, TT_CT, chungTu, dongCua, gioPhieu, ttNghiepVu } from './gen'
 import { boO, nhomCua, theoLoai, TT_HD, TT_TIEN } from './nhom'
 import { BangSua } from './BangSua'
 import { ChungTuForm, HachToan, LichSu, VoucherDetail } from './ChungTuForm'
@@ -56,7 +56,7 @@ export function VoucherScreen({ sc, mod }: ScreenProps) {
 
 /** Màn nhiều loại phiếu: mỗi loại lấy 9 phiếu gần nhất rồi xếp chung theo ngày */
 function gopLoai(cfg: VoucherCfg, seed: string): Row[] {
-  const ngay = (r: Row) => String(r.ngay).split('/').reverse().join('')
+  const ngay = (r: Row) => String(r.ngay).split(' ')[0].split('/').reverse().join('')
   return cfg.loai!.flatMap(v => chungTu(theoLoai(cfg, v.k), `${seed}-${v.k}`).slice(0, 9)
     .map((r): Row => ({ ...r, id: `${v.k}-${r.id}`, loai: v.k, tenLoai: v.ten })))
     .sort((a, b) => ngay(b).localeCompare(ngay(a)) || String(b.so).localeCompare(String(a.so)))
@@ -133,7 +133,7 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
   // Lọc theo các ô đã áp dụng, chi nhánh trên thanh trên, hàng lọc từng cột; chip trạng thái lọc sau cùng để đếm số trên chip
   const ap = loc0.ap
   const truocTT = rows.filter(r => {
-    if (!trongKhoang(docNgay(r.ngay), ap.thoiGian)) return false
+    if (!trongKhoang(docNgay(String(r.ngay).split(' ')[0]), ap.thoiGian)) return false
     if (cnChon && r.cn !== cnChon.ten) return false
     if (ap.tim.trim() && !fold(`${r.so} ${r.doiTuong ?? ''} ${r.dienGiai ?? ''}`).includes(fold(ap.tim.trim()))) return false
     if (ap.doiTuong && r.doiTuong !== ap.doiTuong) return false
@@ -145,7 +145,7 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
       if (ap.ttHd && nv.ttHd !== ap.ttHd) return false
     }
     for (const [k, g] of Object.entries(locCot)) {
-      if (dangLoc(g) && !khopLoc(kieuCot(k), g, chuCot(k, r), typeof r[k] === 'number' ? r[k] : undefined, k === 'ngay' ? docNgay(r.ngay) : undefined)) return false
+      if (dangLoc(g) && !khopLoc(kieuCot(k), g, chuCot(k, r), typeof r[k] === 'number' ? r[k] : undefined, k === 'ngay' ? docNgay(String(r.ngay).split(' ')[0]) : undefined)) return false
     }
     return true
   })
@@ -177,8 +177,39 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
   const cols: Col[] = [
     cotChon(list, selectedIds, setSelectedIds, () => setMoHangLoat(true)),
     { k: 'stt', t: 'STT', w: 60, c: true, dinh: 'trai' },
-    { k: 'ngay', t: 'Ngày', w: 100, dinh: 'trai' },
-    { k: 'so', t: 'Số chứng từ', cls: 'code', w: 140, dinh: 'trai' },
+    {
+      k: 'ngay',
+      t: 'Ngày',
+      w: 136,
+      dinh: 'trai',
+      r: (r: Row) => {
+        const dStr = String(r.ngay ?? '')
+        const ngayPart = dStr.split(' ')[0]
+        const gioPart = r.gio ?? (r.so ? gioPhieu(String(r.so)) : '08:00')
+        const full = dStr.includes(':') ? dStr : `${ngayPart} ${gioPart}`
+        return <span className="ds-time" title={full}>{full}</span>
+      },
+    },
+    {
+      k: 'so',
+      t: 'Số chứng từ',
+      cls: 'code',
+      w: 140,
+      dinh: 'trai',
+      r: (r: Row) => (
+        <button
+          type="button"
+          className="ds-link-so"
+          title={String(r.so ?? '')}
+          onClick={e => {
+            e.stopPropagation()
+            nav(`${path}/${r.id}`)
+          }}
+        >
+          {r.so}
+        </button>
+      ),
+    },
     ...(cfg.loai ? [{ k: 'tenLoai', t: 'Loại', w: 130 } as Col] : []),
     { k: 'dienGiai', t: 'Diễn giải' },
     ...(cfg.doiTuong !== 'none' ? [{ k: 'doiTuong', t: cfg.nhan ?? 'Đối tượng' } as Col] : []),
@@ -247,6 +278,22 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
     expandMap.set(id, !cur)
     setExpandMap(new Map(expandMap))
   }
+
+  // Phím Enter trên dòng đang chọn mở form chứng từ (T74)
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        const tag = (e.target as HTMLElement)?.tagName
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return
+        if (activeRow) {
+          e.preventDefault()
+          nav(`${path}/${activeRow.id}`)
+        }
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [activeRow, path, nav])
 
   return (
     <div className="page page-voucher">
@@ -362,14 +409,13 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
                 loc={{ gt: locCot, dat: (k, g) => { setLocCot(x => ({ ...x, [k]: g })); setTrang(1) }, bo: new Set(['chk', 'stt', 'action']),
                   kieu: c => kieuCot(c.k), luaChon }}
                 onRow={r => setActiveId(r.id)}
-                onDbl={r => nav(`${path}/${r.id}`)}
                 rowCls={r => [
                   r.id === activeId ? 'dang-chon' : '',
                   r.tt === 'nhap' && ghi ? 'chua-ghi' : '',
                   r.tt === 'loi' && ghi ? 'bad' : '',
                 ].filter(Boolean).join(' ')}
                 sum={{
-                  stt: nhomCols.length > 0 ? 'Tổng cộng' : 'Tổng trang',
+                  stt: nhomCols.length > 0 ? `Tổng: ${list.length}` : `Tổng: ${pagedRows.length}`,
                   tong: nhomCols.length > 0 ? tong : pagedRows.reduce((a, r) => a + (r.tong || 0), 0),
                   thue: nhomCols.length > 0 ? list.reduce((a, r) => a + (r.thue || 0), 0) : pagedRows.reduce((a, r) => a + (r.thue || 0), 0),
                 }}
