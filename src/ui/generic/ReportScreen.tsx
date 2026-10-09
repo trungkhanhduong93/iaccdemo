@@ -1,8 +1,9 @@
+// Sổ, báo cáo chung: thanh lọc kỳ, trang báo cáo kiểu mẫu in, ô ký. Chi nhánh lấy trên thanh trên
 import { useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 import type { Col, ReportCfg, Row, ScreenProps } from '../../modules/types'
 import { tenMan } from '../../app/registry'
-import { donViHienTai, useSession, cheDoHienTai } from '../../app/session'
+import { chiNhanhHienTai, donViHienTai, useSession, cheDoHienTai } from '../../app/session'
 import { canCu, type CheDo } from '../../app/che-do'
 import { cauHinhBC, type LoaiBC } from '../../modules/bao-cao/danh-sach'
 import { dsTkTheoCheDo } from '../../modules/tong-hop/so-cai'
@@ -80,8 +81,6 @@ export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: 
 
   const dangLoc = Object.keys(tt.loc).some(k => (tt.loc[k] ?? []).length > 0) || tt.anKhongPS
   const dsLoc = cfg?.loc ?? []
-  const coLocCn = Boolean(tt.tuyChon.cn && tt.tuyChon.cn.length > 0)
-  const cnChon = tt.loc.cn ?? []
 
   return (
     <>
@@ -97,44 +96,6 @@ export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: 
         onLamMoi={() => xoaLoc(path)}
         boLoc={
           <>
-            <LocO nhan="Chi nhánh">
-              {coLocCn ? (
-                <Dropdown
-                  label={cnChon.length === 0 ? 'Tất cả chi nhánh' : `${cnChon.length} đã chọn`}
-                  btnClass="inp"
-                  width={220}
-                >
-                  {() => (
-                    <>
-                      <MenuItem on={cnChon.length === 0} onClick={() => datLoc(path, 'cn', [])}>
-                        Tất cả chi nhánh
-                      </MenuItem>
-                      <MenuSep />
-                      {CHI_NHANH.map(c => {
-                        const on = cnChon.includes(c.ten)
-                        return (
-                          <MenuItem
-                            key={c.id}
-                            on={on}
-                            onClick={() => {
-                              const moi = on ? cnChon.filter(x => x !== c.ten) : [...cnChon, c.ten]
-                              datLoc(path, 'cn', moi)
-                            }}
-                          >
-                            {c.ten}
-                          </MenuItem>
-                        )
-                      })}
-                    </>
-                  )}
-                </Dropdown>
-              ) : (
-                <Select className="inp">
-                  <option>Tất cả chi nhánh</option>
-                  {CHI_NHANH.map(c => <option key={c.id}>{c.ten}</option>)}
-                </Select>
-              )}
-            </LocO>
             {dsLoc.map(l => {
               const opts = tt.tuyChon[l.k] ?? []
               if (l.kieu === 'chon') {
@@ -441,24 +402,40 @@ export function ReportScreen({ sc, mod }: ScreenProps) {
   const cfg: ReportCfg = sc.report ?? { kieu: 'tonghop', doiTuong: 'tk' }
   const ten = tenMan(sc)
   const thang = Number(ky)
-  const body = useMemo(() => renderReport(cfg, sc.code ?? sc.slug, thang, s.cheDo), [cfg, ky, sc, s.cheDo])
+  const cn = cfg.theoCn ? chiNhanhHienTai(s) : undefined
+  const body = useMemo(() => renderReport(cfg, sc.code ?? sc.slug, thang, s.cheDo, cn?.id), [cfg, ky, sc, s.cheDo, cn])
+  const sub = cfg.theoCn ? `${kyTen(ky)} · ${cn ? 'Chi nhánh ' + cn.ngan : 'Tất cả chi nhánh'}` : kyTen(ky)
   return (
     <div className="page">
       <PageHead crumb={[mod.ten, sc.nhom ?? '']} title={ten} code={sc.code} />
       <section className="report">
         <ReportToolbar ky={ky} setKy={setKy} />
-        <ReportPaper title={ten} sub={kyTen(ky)}>{body}</ReportPaper>
+        <ReportPaper title={ten} sub={sub}>{body}</ReportPaper>
       </section>
     </div>
   )
 }
 
-function renderReport(cfg: ReportCfg, seed: string, thang: number, cd: CheDo): ReactNode {
+/** Gộp sổ của nhiều chi nhánh: xếp theo ngày, thêm cột chi nhánh, tính lại số dư luỹ kế */
+export function gopSo(phan: { cn: string; mo: number; rows: Row[]; tn: number; tc: number }[]) {
+  const mo = phan.reduce((a, p) => a + p.mo, 0)
+  const ngay = (x: Row) => Number(String(x.ngay).slice(0, 2))
+  const rows = phan.flatMap(p => p.rows.map((x): Row => ({ ...x, cn: p.cn }))).sort((a, b) => ngay(a) - ngay(b))
+  let du = mo
+  for (const x of rows) { du += (x.no ?? 0) - (x.co ?? 0); x.du = du }
+  return { mo, rows, tn: phan.reduce((a, p) => a + p.tn, 0), tc: phan.reduce((a, p) => a + p.tc, 0), cuoi: du }
+}
+
+function renderReport(cfg: ReportCfg, seed: string, thang: number, cd: CheDo, cn?: string): ReactNode {
   const r = rng(seed + thang)
+  // Sổ, báo cáo theo chi nhánh: mỗi chi nhánh một hạt giống riêng, xem tất cả thì cộng các chi nhánh
+  const dsCn = cfg.theoCn ? CHI_NHANH.filter(c => !cn || c.id === cn) : []
   if (cfg.kieu === 'so') {
-    const so = soChiTiet(seed, k(between(r, 80e6, 260e6)), ['Thu tiền bán hàng ngày', 'Chi mua nguyên vật liệu', 'Chi tiền điện tháng', 'Thu tiền khách công ty',
+    const soMot = (hat: string) => soChiTiet(hat, k(between(rng(hat + thang), 80e6, 260e6) / (cfg.theoCn ? 3 : 1)), ['Thu tiền bán hàng ngày', 'Chi mua nguyên vật liệu', 'Chi tiền điện tháng', 'Thu tiền khách công ty',
       'Chi tạm ứng nhân viên', 'Nộp tiền vào tài khoản ngân hàng', 'Chi phí vận chuyển', 'Thu hoàn ứng'], ['5111', '331', '6422', '131', '141', '1121', '6421'], [1.5e6, 38e6], thang)
-    const cols: Col[] = [{ k: 'ngay', t: 'Ngày', w: 92 }, { k: 'so', t: 'Số chứng từ', cls: 'code', w: 130 }, { k: 'dienGiai', t: 'Diễn giải' },
+    const gop = dsCn.length > 1
+    const so = cfg.theoCn ? gopSo(dsCn.map(c => ({ cn: c.ngan, ...soMot(seed + c.id) }))) : soMot(seed)
+    const cols: Col[] = [{ k: 'ngay', t: 'Ngày', w: 92 }, { k: 'so', t: 'Số chứng từ', cls: 'code', w: 130 }, ...(gop ? [{ k: 'cn', t: 'Chi nhánh', w: 110 } as Col] : []), { k: 'dienGiai', t: 'Diễn giải' },
       { k: 'tk', t: 'TK đối ứng', c: true, w: 90 }, { k: 'no', t: 'Phát sinh Nợ', num: true }, { k: 'co', t: 'Phát sinh Có', num: true }, { k: 'du', t: 'Số dư', num: true }]
     return <RptTable cols={cols} rows={[{ dienGiai: 'Số dư đầu kỳ', du: so.mo, _b: 1 }, ...so.rows.map(x => ({ ...x, tk: dsTkTheoCheDo(x.tk, cd) })), { dienGiai: 'Cộng phát sinh', no: so.tn, co: so.tc, _t: 1 }, { dienGiai: 'Số dư cuối kỳ', du: so.cuoi, _t: 1 }]} />
   }
@@ -479,8 +456,13 @@ function renderReport(cfg: ReportCfg, seed: string, thang: number, cd: CheDo): R
       rows={[...rows.map((x, i) => ({ ...x, stt: i + 1 })), { doiTuong: 'Tổng cộng', tien: rows.reduce((a, x) => a + x.tien, 0), thue: rows.reduce((a, x) => a + x.thue, 0), _t: 1 }]} />
   }
   const ds = dsTongHop[cfg.doiTuong ?? 'tk']
-  const rows = ds.map(d => {
-    const dau = k(between(r, 5e6, 220e6)), tang = k(between(r, 2e6, 180e6)), giam = k(Math.min(dau + tang, between(r, 2e6, 190e6)))
+  const motBo = (r: () => number, chia: number) => ds.map(() => {
+    const dau = k(between(r, 5e6, 220e6) / chia), tang = k(between(r, 2e6, 180e6) / chia), giam = k(Math.min(dau + tang, between(r, 2e6, 190e6) / chia))
+    return { dau, tang, giam }
+  })
+  const bo = cfg.theoCn ? dsCn.map(c => motBo(rng(seed + c.id + thang), 3)) : [motBo(r, 1)]
+  const rows = ds.map((d, i) => {
+    const [dau, tang, giam] = (['dau', 'tang', 'giam'] as const).map(f => bo.reduce((a, b) => a + b[i][f], 0))
     return { ma: d.ma, ten: d.ten, dau, tang, giam, cuoi: dau + tang - giam }
   })
   const s = (f: string) => rows.reduce((a, x) => a + (x as Row)[f], 0)

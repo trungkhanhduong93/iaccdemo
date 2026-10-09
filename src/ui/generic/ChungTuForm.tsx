@@ -1,5 +1,5 @@
 // Form chứng từ toàn màn hình theo bố cục AMIS
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import type { Row, ScreenProps, VoucherCfg } from '../../modules/types'
 import { duongDan, tenMan } from '../../app/registry'
@@ -7,16 +7,20 @@ import { chiNhanhHienTai, useSession, cheDoHienTai } from '../../app/session'
 import { kieuGhiSo, coTrongGoi, type Goi } from '../../app/plan'
 import { CHE_DO } from '../../app/che-do'
 import { tkTheoCheDo } from '../../modules/tong-hop/so-cai'
-import { CHI_NHANH, KHACH, KHO, NCC, NHAN_VIEN, TK_NGAN_HANG } from '../../data/mock'
+import { CHI_NHANH, KHACH, KHO, KHOA_SO_DEN, NCC, NHAN_VIEN, TK_NGAN_HANG, daKhoaSo } from '../../data/mock'
+import { HopXacNhan } from '../LocNangCao'
+import { soKeTiep, suaPhieu, themPhieu, xoaPhieu } from './daXoa'
 import { Icon } from '../Icon'
 import { Card, Note } from '../Page'
 import { FormToanMan, useDong } from '../FormToanMan'
-import { Dropdown, MenuHead, MenuItem, Select } from '../Dropdown'
+import { Dropdown, MenuHead, MenuItem, Popover, Select } from '../Dropdown'
+import { LichDon } from '../ChonNgay'
+import { heSoZoom } from '../zoom'
 import { St, Table } from '../Table'
 import { fold, money, moneyD } from '../format'
 import { NGUON, TT_CT, dongCua, ttNghiepVu, type Dong } from './gen'
 import { boO, nhomCua, theoLoai } from './nhom'
-import { BangSua } from './BangSua'
+import { BangSua, DS_DOI_TUONG, HopCotPhieu, cotTuyChon } from './BangSua'
 import { HopInChungTu, type PhieuIn } from '../bao-cao/InChungTu'
 
 export interface ChungTuFormProps extends ScreenProps {
@@ -38,6 +42,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   const [hienTk, setHienTk] = useState(false)
   const [modalPhim, setModalPhim] = useState(false)
   const [phieuIn, setPhieuIn] = useState<PhieuIn[] | null>(null)
+  const [hoiXoa, setHoiXoa] = useState(false)
 
   const loai = cfgMan.loai?.find(x => x.k === (row?.loai ?? sp.get('loai'))) ?? cfgMan.loai?.[0]
   const cfg = theoLoai(cfgMan, loai?.k)
@@ -60,7 +65,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   // Dữ liệu dòng
   const idSeed = row ? `${sc.code ?? sc.slug}-${row.id}` : 'moi'
   const dongGoc = useMemo(() => (
-    moi ? dongCua(cfg, `mau-${loai?.k ?? ''}`).slice(0, 1) : dongCua(cfg, idSeed)
+    moi ? dongCua(cfg, `mau-${loai?.k ?? ''}`).slice(0, 1) : (row?._dong as Dong[] | undefined) ?? dongCua(cfg, idSeed)
   ), [idSeed, loai?.k, moi])
 
   const [dsDong, setDsDong] = useState<Dong[]>(dongGoc)
@@ -76,7 +81,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
 
   // Thông tin chung
   const [ngayCt, setNgayCt] = useState(row?.ngay ? String(row.ngay) : '07/10/2026')
-  const [soCt, setSoCt] = useState(row?.so ? String(row.so) : `${cfg.prefix}2610-0261`)
+  const [soCt, setSoCt] = useState(row?.so ? String(row.so) : soKeTiep(`${mod.key}/${sc.slug}`, `${cfg.prefix}2610-`))
   // Chi nhánh không sửa trên form: phiếu cũ giữ chi nhánh đã lập, phiếu mới theo chi nhánh chọn trên thanh trên
   const cnChon = chiNhanhHienTai(s)
   const chiNhanh = row?.cn ? String(row.cn) : cnChon?.ten ?? ''
@@ -92,15 +97,54 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   const [hanTt, setHanTt] = useState(nv?.hanTt ?? '06/11/2026')
   // Lý do thu, chi ở đầu phiếu (danh mục 1.16), chỉ có ở phân hệ tiền
   const oLy = mod.key === 'tien' ? bo.a.find(o => o.k === 'ly') : undefined
-  const [lyDo, setLyDo] = useState(() => lyMacDinh(oLy?.ds ?? [], dienGiai))
+  const [lyDo, setLyDo] = useState(() => row?._lyDo ? String(row._lyDo) : lyMacDinh(oLy?.ds ?? [], dienGiai))
   // Phiếu chuyển quỹ: quỹ đi và quỹ đến. Rút tiền ngân hàng thì đi từ tài khoản về quỹ tiền mặt
   const quyTm = `Quỹ tiền mặt ${CHI_NHANH.find(c => c.ten === chiNhanh)?.ngan ?? CHI_NHANH[0].ngan}`
   const rut = fold(dienGiai).includes('rut tien')
   const [tuQuy, setTuQuy] = useState(rut ? QUY_TIEN[CHI_NHANH.length] : quyTm)
   const [denQuy, setDenQuy] = useState(rut ? quyTm : QUY_TIEN[CHI_NHANH.length])
   useEffect(() => {
-    setLyDo(lyMacDinh(oLy?.ds ?? [], row?.dienGiai ? String(row.dienGiai) : cfg.dienGiai[0]))
+    setLyDo(row?._lyDo ? String(row._lyDo) : lyMacDinh(oLy?.ds ?? [], row?.dienGiai ? String(row.dienGiai) : cfg.dienGiai[0]))
   }, [loai?.k, row?.id])
+  // Phiếu thu, chi (T49): dòng chi tiết có cột lý do theo lý do đầu phiếu
+  const laTien = mod.key === 'tien'
+  useEffect(() => {
+    if (oLy) setDsDong(ds => ds.map(d => ({ ...d, ly: lyDo })))
+  }, [dongGoc, lyDo])
+  // Đối tượng đầu phiếu đổi thì đối tượng mọi dòng đổi theo, vẫn sửa lại được từng dòng
+  useEffect(() => {
+    if (laTien && cfg.doiTuong !== 'none') setDsDong(ds => ds.map(d => ({ ...d, dt: doiTuong })))
+  }, [dongGoc, doiTuong])
+  // Cột ẩn ở bảng chi tiết, nhớ theo màn trên máy người dùng
+  const khoaCot = `iacc-cot-phieu:${mod.key}/${sc.slug}`
+  const [anCot, setAnCot] = useState<string[]>(() => {
+    try { const v = JSON.parse(localStorage.getItem(khoaCot) ?? '[]'); return Array.isArray(v) ? v : [] } catch { return [] }
+  })
+  const [hopCot, setHopCot] = useState(false)
+  function doiAnCot(an: string[]) {
+    setAnCot(an)
+    try { localStorage.setItem(khoaCot, JSON.stringify(an)) } catch { /* trình duyệt chặn lưu thì chỉ giữ trong phiên */ }
+  }
+  // Chọn lý do: diễn giải và lý do mọi dòng theo lý do, vẫn sửa lại được
+  const ghiChuGoc = () => row?._ghiChu ? String(row._ghiChu) : row?._lyDo ? String(row._lyDo) : lyMacDinh(oLy?.ds ?? [], row?.dienGiai ? String(row.dienGiai) : cfg.dienGiai[0])
+  const [ghiChu, setGhiChu] = useState(ghiChuGoc)
+  useEffect(() => { setGhiChu(ghiChuGoc()) }, [loai?.k, row?.id])
+  function chonLyDo(v: string) {
+    setLyDo(v)
+    setDienGiai(v)
+    setGhiChu(v)
+  }
+  // Chọn đối tượng từ danh mục thì điền mã số thuế
+  function chonDoiTuong(v: string) {
+    setDoiTuong(v)
+    const dt = [...KHACH, ...NCC].find(x => x.ten === v)
+    if (dt) setMst(dt.mst)
+  }
+  // Gói Free: tháng hạch toán lãi lỗ, mặc định tháng của ngày chứng từ, chọn được các tháng trước chưa khoá sổ (T49)
+  const coThangLl = laTien && s.goi === 'F' && nhom !== 'cq'   // chuyển quỹ không ảnh hưởng lãi lỗ
+  const dsThangLl = useMemo(() => thangLaiLo(ngayCt), [ngayCt])
+  const [thangLl, setThangLl] = useState(dsThangLl[0])
+  useEffect(() => { setThangLl(dsThangLl[0]) }, [dsThangLl])
 
   // Tính tổng
   const tongTien = dsDong.reduce((a, d) => a + (d.tien || 0), 0)
@@ -124,6 +168,19 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
 
   // Lưu chứng từ
   function luu(moMoi = false) {
+    // Bản mẫu chưa có backend: phiếu mới lên đầu danh sách, phiếu sửa hiện nội dung mới, tới khi tải lại trang (T49)
+    const noiDung = {
+      ngay: ngayCt, thang: Number(ngayCt.split('/')[1]) || 10, doiTuong, dienGiai,
+      tien: tongTien - tongCk, thue: tongThue, tong: tongThanhToan, _dong: dsDong, _lyDo: lyDo, _ghiChu: ghiChu,
+    }
+    if (moi) {
+      themPhieu(`${mod.key}/${sc.slug}`, {
+        id: `moi-${Date.now()}`, so: soCt, cn: chiNhanh, nguon: 'tay', tt: kieu === 'khong' ? 'ghi' : 'nhap',
+        loai: loai?.k, tenLoai: loai?.ten, ...noiDung,
+      })
+    } else if (row) {
+      suaPhieu(`${mod.key}/${sc.slug}`, String(row.id), noiDung)
+    }
     toast(moi ? `Đã lưu ${soCt}` : `Đã lưu thay đổi ${soCt}`)
     if (moMoi) {
       nav(`${path}/moi${loai ? `?loai=${loai.k}` : ''}`, { replace: true })
@@ -162,7 +219,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   // Đang xem tất cả chi nhánh thì phải chọn một chi nhánh trước khi lập chứng từ mới
   if (canChonCn) {
     return (
-      <FormToanMan icon={mod.icon} onClose={dongForm} title={loai ? `${loai.ten} mới` : cfg.them ?? 'Thêm chứng từ'}
+      <FormToanMan icon={mod.icon} onClose={dongForm} title={loai ? (laTien ? loai.ten : `${loai.ten} mới`) : cfg.them ?? 'Thêm chứng từ'}
         foot={<button type="button" className="btn" onClick={dongForm}>Huỷ</button>}>
         <section className="card chon-cn">
           <b>Chọn chi nhánh lập chứng từ</b>
@@ -182,13 +239,14 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   const tabs: [string, string][] = [
     ['ct', bo.tabDau ?? 'Chi tiết'],
     ...(bo.hd ? [['hd', 'Hoá đơn'] as [string, string]] : []),
-    ['ht', kieu === 'noco' ? 'Hạch toán' : 'Ghi sổ'],
+    ...(laTien ? [] : [['ht', kieu === 'noco' ? 'Hạch toán' : 'Ghi sổ'] as [string, string]]),   // phiếu thu chi bỏ tab hạch toán (T49)
     ['dk', 'Đính kèm'],
     ['ls', 'Lịch sử'],
   ]
 
   const ten = loai?.ten ?? tenMan(sc)
-  const tieuDe = moi
+  // Phiếu thu chi: tiêu đề chỉ là tên loại phiếu, trạng thái và số phiếu ở giữa đầu form (T49)
+  const tieuDe = laTien && loai ? loai.ten : moi
     ? (loai ? `${loai.ten} mới` : cfg.them ?? 'Thêm chứng từ')
     : `${ten} ${soCt}`
 
@@ -197,7 +255,13 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
       icon={mod.icon}
       tinh={Boolean((loc.state as { chuyenPhieu?: boolean } | null)?.chuyenPhieu)}
       onClose={dongForm}
-      tong={tongThanhToan}
+      tong={laTien ? undefined : tongThanhToan}
+      day={laTien && chiTien ? <TongDay tong={tongThanhToan} soDong={dsDong.length} /> : undefined}
+      giua={laTien && (
+        moi ? <span className="fsf-tt moi">Thêm mới</span>
+          : dangSua ? <span className="fsf-tt sua">Đang chỉnh sửa <b>{soCt}</b></span>
+            : <span className="fsf-tt xem">Chi tiết phiếu <b>{soCt}</b></span>
+      )}
       title={tieuDe}
       trai={
         !moi && (
@@ -224,28 +288,29 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
       meta={
         row ? (
           <>
-            {(() => {
+            {/* Gói Free lưu là duyệt luôn, không có trạng thái ghi sổ (QD32) */}
+            {kieu !== 'khong' && (() => {
               const [c, tx] = TT_CT[row.tt] ?? ['warn', 'Chưa ghi sổ']
               return <St k={c}>{tx}</St>
             })()}
             <span className={`src ${NGUON[row.nguon]?.[0] ?? 'tay'}`}>
               {NGUON[row.nguon]?.[1] ?? 'Thủ công'}
             </span>
-            <span className="chip">{tenMan(sc)}</span>
+            {!laTien && <span className="chip">{tenMan(sc)}</span>}
             {chiNhanh && <span className="chip info" title="Chi nhánh lập chứng từ, không sửa được"><Icon n="store" className="ic sm" />{chiNhanh}</span>}
-            {dangSua && <span className="chip warn">Đang chỉnh sửa</span>}
+            {dangSua && !laTien && <span className="chip warn">Đang chỉnh sửa</span>}
           </>
         ) : (
           <>
-            <span className="chip info">Chưa lưu</span>
-            <span className="chip">Số {soCt}</span>
-            <span className="chip">{tenMan(sc)}</span>
+            {!laTien && <span className="chip info">Chưa lưu</span>}
+            {!laTien && <span className="chip">Số {soCt}</span>}
+            {!laTien && <span className="chip">{tenMan(sc)}</span>}
             <span className="chip info" title="Theo chi nhánh chọn trên thanh trên, không sửa được"><Icon n="store" className="ic sm" />{chiNhanh}</span>
           </>
         )
       }
       loai={
-        moi && cfgMan.loai && (
+        moi && cfgMan.loai && !laTien && (
           <label className="fsf-loai">
             Loại phiếu
             <Select
@@ -333,16 +398,36 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               width={180}
               label={<><Icon n="more" className="ic sm" />Tiện ích</>}
             >
-              <MenuItem icon="copy" onClick={() => toast('Đã nhân bản chứng từ')}>
-                Nhân bản
+              <MenuItem icon="copy" onClick={() => toast('Đã sao chép chứng từ')}>
+                Sao chép
+              </MenuItem>
+              <MenuItem icon="chinh" onClick={() => setHopCot(true)}>
+                Tuỳ chỉnh giao diện phiếu
               </MenuItem>
               <MenuItem icon="doc" onClick={() => toast('Đã xuất mẫu Excel')}>
                 Xuất Excel
               </MenuItem>
-              <MenuItem icon="trash" onClick={() => toast('Chứng từ chưa thể xoá')}>
-                Huỷ chứng từ
-              </MenuItem>
+              {row && (
+                <MenuItem icon="trash" danger onClick={() => {
+                  // Cùng luật xoá với danh sách (QD32): kỳ đã khoá sổ không xoá, gói có ghi sổ chỉ xoá phiếu chưa ghi
+                  if (daKhoaSo(row.ngay)) toast(`${row.so} thuộc kỳ đã khoá sổ, không xoá được`)
+                  else if (kieu !== 'khong' && row.tt !== 'nhap') toast(`${row.so} đã ghi sổ, bỏ ghi sổ rồi mới xoá`)
+                  else setHoiXoa(true)
+                }}>
+                  Xoá chứng từ
+                </MenuItem>
+              )}
             </Dropdown>
+            {hopCot && (
+              <HopCotPhieu ds={cotTuyChon(cfg, { coKho: Boolean(bo.kho), coLo: nhom === 'mua', coCk: Boolean(bo.ck), coKm: kieu !== 'khong', coLy: Boolean(oLy) })}
+                an={anCot} onDoi={doiAnCot} onDong={() => setHopCot(false)} />
+            )}
+            {hoiXoa && row && (
+              <HopXacNhan tieuDe={`Xoá ${row.so}?`} nut="Xoá phiếu" onDong={() => setHoiXoa(false)}
+                onDongY={() => { setHoiXoa(false); xoaPhieu(`${mod.key}/${sc.slug}`, [String(row.id)]); toast(`Đã xoá ${row.so}`); dongForm() }}>
+                Phiếu đã xoá không lấy lại được.
+              </HopXacNhan>
+            )}
             {kieu !== 'khong' && row && (
               <button
                 type="button"
@@ -522,8 +607,13 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
                 </>
               ) : (<>
               <div className="f">
-                <label>{cfg.nhan ?? 'Đối tượng'} <em>*</em></label>
-                {dangSua ? (
+                <label>{laTien ? 'Đối tượng' : cfg.nhan ?? 'Đối tượng'} <em>*</em></label>
+                {dangSua && laTien ? (
+                  <Select className="inp" value={doiTuong} onChange={e => chonDoiTuong(e.target.value)}>
+                    {!DS_DOI_TUONG.includes(doiTuong) && <option value={doiTuong}>{doiTuong || 'Chọn đối tượng'}</option>}
+                    {DS_DOI_TUONG.map(x => <option key={x} value={x}>{x}</option>)}
+                  </Select>
+                ) : dangSua ? (
                   <input
                     className="inp"
                     value={doiTuong}
@@ -535,7 +625,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
                 )}
               </div>
               <div className="f">
-                <label>{nhom === 'mua' ? 'Người giao hàng' : nhom === 'ban' ? 'Người mua hàng' : 'Người giao / nhận'}</label>
+                <label>{laTien ? 'Người giao dịch' : nhom === 'mua' ? 'Người giao hàng' : nhom === 'ban' ? 'Người mua hàng' : 'Người giao / nhận'}</label>
                 {dangSua ? (
                   <input
                     className="inp"
@@ -563,6 +653,18 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
 
             {/* Cột 2: Diễn giải & điều khoản */}
             <div className="stack" style={{ gap: 10 }}>
+              {oLy && (
+                <div className="f">
+                  <label>{oLy.nhan}</label>
+                  {dangSua ? (
+                    <Select className="inp" value={lyDo} onChange={e => chonLyDo(e.target.value)}>
+                      {oLy.ds!.map(x => <option key={x} value={x}>{x}</option>)}
+                    </Select>
+                  ) : (
+                    <input className="inp" readOnly value={lyDo} />
+                  )}
+                </div>
+              )}
               <div className="f">
                 <label>Diễn giải</label>
                 {dangSua ? (
@@ -575,26 +677,16 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
                   <input className="inp" readOnly value={dienGiai} />
                 )}
               </div>
-              {oLy && (
+              {!laTien && (
                 <div className="f">
-                  <label>{oLy.nhan}</label>
-                  {dangSua ? (
-                    <Select className="inp" value={lyDo} onChange={e => setLyDo(e.target.value)}>
-                      {oLy.ds!.map(x => <option key={x} value={x}>{x}</option>)}
-                    </Select>
-                  ) : (
-                    <input className="inp" readOnly value={lyDo} />
-                  )}
+                  <label>Nhân viên thực hiện</label>
+                  <Select className="inp" disabled={!dangSua}>
+                    {NHAN_VIEN.map(n => (
+                      <option key={n.ma} value={n.ten}>{n.ten} ({n.bp})</option>
+                    ))}
+                  </Select>
                 </div>
               )}
-              <div className="f">
-                <label>Nhân viên thực hiện</label>
-                <Select className="inp" disabled={!dangSua}>
-                  {NHAN_VIEN.map(n => (
-                    <option key={n.ma} value={n.ten}>{n.ten} ({n.bp})</option>
-                  ))}
-                </Select>
-              </div>
               <div className="row" style={{ gap: 10 }}>
                 {nhom !== 'cq' && <div className="f" style={{ flex: 1 }}>
                   <label>Mã số thuế</label>
@@ -629,7 +721,9 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
             <div className="stack" style={{ gap: 10 }}>
               <div className="f">
                 <label>Ngày chứng từ <em>*</em></label>
-                {dangSua ? (
+                {dangSua && laTien ? (
+                  <ONgay value={ngayCt} onChange={setNgayCt} />
+                ) : dangSua ? (
                   <input
                     className="inp"
                     value={ngayCt}
@@ -643,8 +737,27 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
                 <label>{bo.so ?? 'Số chứng từ'}</label>
                 <input className="inp code" readOnly value={soCt} />
               </div>
+              {coThangLl && (
+                <div className="f">
+                  <label>Tháng hạch toán lãi lỗ</label>
+                  {dangSua ? (
+                    <Select className="inp" value={thangLl} onChange={e => setThangLl(e.target.value)}>
+                      {dsThangLl.map(x => <option key={x} value={x}>Tháng {x}</option>)}
+                    </Select>
+                  ) : (
+                    <input className="inp" readOnly value={`Tháng ${thangLl}`} />
+                  )}
+                </div>
+              )}
             </div>
           </div>
+          {/* Ghi chú phiếu một dòng, mặc định theo lý do thu, chi; gõ ghi chú thì diễn giải chép theo, sửa diễn giải không đổi ghi chú (T49) */}
+          {oLy && (
+            <div className="f" style={{ marginTop: 10 }}>
+              <label>Ghi chú</label>
+              <input className="inp" readOnly={!dangSua} value={ghiChu} onChange={e => { setGhiChu(e.target.value); setDienGiai(e.target.value) }} />
+            </div>
+          )}
         </section>
 
         {/* Khối Tabs chi tiết */}
@@ -675,6 +788,10 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               coCk={Boolean(bo.ck)}
               coLo={nhom === 'mua'}
               coKm={kieu !== 'khong'}
+              lyDo={oLy ? { nhan: oLy.nhan, ds: oLy.ds!, macDinh: lyDo } : undefined}
+              dtMacDinh={laTien ? doiTuong : ''}
+              an={anCot}
+              khongTong={laTien && chiTien}
             />
           )}
 
@@ -732,8 +849,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
           {/* Tab 5: Lịch sử thao tác */}
           {tab === 'ls' && <LichSu goi={s.goi} moi={moi} />}
 
-          {/* Khối tổng cộng góc dưới phải */}
-          {chiTien ? (
+          {/* Khối tổng cộng góc dưới phải; phiếu thu chi để Tổng tiền ở dải đáy form */}
+          {chiTien && laTien ? null : chiTien ? (
             <div className="tot" style={{ borderTop: '1px solid var(--line)', marginTop: 12 }}>
               <span>Tổng tiền</span>
               <b className="big" style={{ color: 'var(--blue)' }}>{moneyD(tongThanhToan)}</b>
@@ -784,6 +901,67 @@ const LY_THEO_DG: [string, string][] = [
   ['dat tiec', 'Thu tiền bán hàng'], ['tien don', 'Thu tiền bán hàng'], ['tam ung', 'Chi tạm ứng'], ['tra tien', 'Trả tiền nhà cung cấp'],
   ['mua', 'Chi mua nguyên vật liệu'], ['luong', 'Chi trả lương'],
 ]
+/** Ô ngày chứng từ: gõ dd/mm/yyyy hoặc bấm biểu tượng lịch để chọn (T49) */
+function ONgay({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const o = useRef<HTMLDivElement>(null)
+  const [mo, setMo] = useState(false)
+  return (
+    <div className="ct-ngay" ref={o}>
+      <input className="inp" value={value} placeholder="dd/mm/yyyy" onChange={e => onChange(e.target.value)} onClick={() => setMo(true)} />
+      <button type="button" className="ct-ngay-nut" title="Chọn ngày" aria-label="Chọn ngày" onClick={() => setMo(m => !m)}>
+        <Icon n="calendar" className="ic sm" />
+      </button>
+      <Popover anchor={o} open={mo} onClose={() => setMo(false)} align="start" width={272} className="dp-pop">
+        <LichDon value={value} onChange={v => { onChange(v); setMo(false) }} onDong={() => setMo(false)} />
+      </Popover>
+    </div>
+  )
+}
+
+/** Tổng tiền ở dải đáy form, số thẳng mép cột Thành tiền của bảng chi tiết; không thấy bảng thì nằm sát phải (T49) */
+function TongDay({ tong, soDong }: { tong: number; soDong: number }) {
+  const o = useRef<HTMLSpanElement>(null)
+  const [phai, setPhai] = useState<number>()
+  useEffect(() => {
+    const day = o.current?.parentElement
+    const than = day?.parentElement?.querySelector<HTMLElement>('.fsf-b')
+    if (!day || !than) return
+    const tinh = () => {
+      const th = [...than.querySelectorAll<HTMLElement>('table thead th')].find(x => x.textContent?.trim() === 'Thành tiền')
+      if (!th) { setPhai(undefined); return }
+      const r = th.getBoundingClientRect(), d = day.getBoundingClientRect()
+      setPhai((d.right - r.right) / heSoZoom() + (parseFloat(getComputedStyle(th).paddingRight) || 0))
+    }
+    tinh()
+    const ro = new ResizeObserver(tinh)
+    ro.observe(than)
+    const bang = than.querySelector('table')
+    if (bang) ro.observe(bang)
+    const mo = new MutationObserver(tinh)
+    mo.observe(than, { childList: true, subtree: true })
+    than.addEventListener('scroll', tinh, { capture: true, passive: true })
+    return () => { ro.disconnect(); mo.disconnect(); than.removeEventListener('scroll', tinh, { capture: true }) }
+  }, [])
+  return (
+    <span ref={o} className="fsf-day-tong" style={phai !== undefined ? { right: phai } : undefined}>
+      Tổng tiền ({soDong} dòng) <b>{money(tong)}</b>
+    </span>
+  )
+}
+
+/** Tháng hạch toán lãi lỗ chọn được: tháng của ngày chứng từ rồi lùi về các tháng trước, dừng ở tháng đã khoá sổ */
+function thangLaiLo(ngay: string): string[] {
+  const [, m0, y0] = ngay.split('/').map(Number)
+  if (!m0 || !y0) return []
+  const ds: string[] = []
+  for (let m = m0, y = y0; ds.length < 24; m--) {
+    if (m === 0) { m = 12; y-- }
+    if (ds.length && (y < KHOA_SO_DEN.nam || (y === KHOA_SO_DEN.nam && m <= KHOA_SO_DEN.thang))) break
+    ds.push(`${String(m).padStart(2, '0')}/${y}`)
+  }
+  return ds
+}
+
 function lyMacDinh(ds: string[], dg: string) {
   const l = fold(dg)
   return LY_THEO_DG.find(([tu, ly]) => l.includes(tu) && ds.includes(ly))?.[1] ?? ds[ds.length - 1] ?? ''

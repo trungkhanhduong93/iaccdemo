@@ -4,7 +4,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T47.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T49.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
@@ -14,7 +14,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | T27 | Danh sách chứng từ 2.1.1: khung chi tiết bên dưới hiện dòng phiếu khác với form của cùng phiếu (UNC2610-0259: khung ghi "Chi mua rau, củ tại chợ", form ghi "Trả tiền nhà cung cấp thịt bò") | | Chờ | Thấy khi làm T26 |
 | T02 | Chốt nghiệp vụ trên từng sơ đồ Quy trình: ô nào, nối thế nào, câu chữ. Sửa ở `src/modules/<phân hệ>/quy-trinh.ts` | Trum | Chờ | |
 | T03 | Nối sổ quỹ, sổ tài khoản 2.2.2, sổ ngân hàng 2.2.3, sổ công nợ 2.2.5 vào `so-cai.ts` để mọi sổ khớp báo cáo tài chính | | Chờ | Sổ quỹ đang tính riêng từ tiền mặt FABi từng chi nhánh. Tổng 3 quỹ chưa bằng dư TK 1111 trên cân đối kế toán |
-| T25 | Thu chi gói Free theo sheet Roadmap: form phiếu thu, chi, chuyển quỹ; danh sách 2.1.1; sơ đồ Quy trình; sổ quỹ, sổ ngân hàng, sổ công nợ | PhuongXT | Đang làm | Sẽ sửa các màn sổ 2.2.1, 2.2.3, 2.2.5 (`tien/SoQuy.tsx`, `ui/generic/ReportScreen.tsx`, có thể `app.css`). Đã xong form, Quy trình, chuyển quỹ, tên loại phiếu (Thu tiền mặt, Chi tiền mặt, Thu ngân hàng, Chi ngân hàng, Chuyển quỹ cuối). Còn sổ quỹ, sổ ngân hàng, sổ công nợ lọc theo chi nhánh trên thanh trên. Trùng mã với T25 của Trum ở bảng Đã xong, nhờ Trum đổi mã |
+| T25 | Thu chi gói Free theo sheet Roadmap: form phiếu thu, chi, chuyển quỹ; danh sách 2.1.1; sơ đồ Quy trình; sổ quỹ, sổ ngân hàng, sổ công nợ | PhuongXT | Dở dang | Đã xong form, Quy trình, chuyển quỹ, tên loại phiếu, 3 sổ theo chi nhánh trên thanh trên. Còn chờ chốt: Sổ ngân hàng gói Free bỏ cột TK đối ứng; chữ ký Kế toán trưởng ở gói Free; mô tả gói "1 điểm bán" trong `plan.ts`. Trùng mã với T25 của Trum ở bảng Đã xong, nhờ Trum đổi mã |
 | T33 | Cập nhật Excel tính năng theo sheet Roadmap rồi chạy lại `tools/xuat_tinh_nang.py`: 1.12 và 2.2.3 có ở gói Free; thêm 1.17, S1a-HKD, S2a-HKD. Xong thì xoá các dòng tương ứng trong `THEO_ROADMAP` ở `src/app/plan.ts` | | Chờ | Chỉ máy Trum chạy được script |
 | T04 | Kế toán trưởng duyệt mẫu sổ, báo cáo tài chính, tờ khai theo TT58, TT133, TT99. Sửa ký hiệu mẫu theo kết quả duyệt | | Chờ | Ký hiệu mẫu (S03a-DNN, B01-DNN, 01/GTGT...) ghi theo hiểu biết, chưa đối chiếu văn bản gốc. Mẫu dạng tinh gọn TT58 chưa có |
 | T05 | Làm màn hoá đơn điện tử 3.1.5 riêng: danh sách theo trạng thái, ký số, gửi, huỷ, thay thế | | Chờ | Hiện chưa có trạng thái phát hành, ký số, gửi cơ quan thuế. DB iPOS lưu trạng thái ở `SALE.EVAT_STATUS`: chưa ký, đã ký, đã gửi, đã xoá |
@@ -35,6 +35,8 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
 | T47 | Phân hệ Báo cáo, màn xem như bản in A4, mẫu theo thông tư, chế độ kế toán tách khỏi gói, mẫu in chứng từ, tiện ích Thiết kế mẫu in, xuất 5 định dạng, bộ lọc và tuỳ chỉnh báo cáo, 10 sổ bổ sung (QD31) | Trum | 09/10/2026 | `2026-10-09-trum-phan-he-bao-cao.md` |
+| T49 | Form phiếu thu chi (5 loại): đầu form gọn, trạng thái ở giữa; Đối tượng từ danh mục; Lý do trên Diễn giải, Ghi chú; Người giao dịch; Ngày chứng từ có lịch; gói Free có Tháng hạch toán lãi lỗ; cột Lý do ở dòng; Tổng tiền ở dải đáy; bỏ tab Hạch toán. Mọi phiếu: Sao chép, Tuỳ chỉnh giao diện phiếu, phiếu lưu và sửa hiện ở danh sách (QD33) | PhuongXT | 09/10/2026 | `2026-10-09-phuongxt-form-phieu-thu-chi.md` |
+| T48 | Danh sách chứng từ mọi phân hệ: gói Free bỏ chip trạng thái; Tổng trang, Tổng cộng mọi trang trên hàng phân trang thẳng cột; Tổng tiền là cột cuối, bỏ cột Chức năng; khung chi tiết mặc định đóng; xoá hỏi lại, kỳ đã khoá sổ không xoá (QD32) | PhuongXT | 09/10/2026 | `2026-10-09-phuongxt-so-chi-nhanh-danh-sach.md` |
 | T46 | Cải tiến chân quy trình (lưới 3 khối), nút cột tài khoản sáng rõ, chiều cao dòng bảng 36px, mở date picker trực tiếp ô lọc ngày, tuỳ chọn hiển thị & đóng băng cột theo mẫu mới (QD30) | Trum | 09/10/2026 | `2026-10-09-trum-redesign-quy-trinh-tk-dong-bang.md` |
 | T43 | Đợt chỉnh 13 điểm: thanh công cụ một hàng, nút Excel và Hàng loạt dạng biểu tượng, chip đếm mới, dòng tổng, bỏ cột Trạng thái và dòng tiêu đề, màu sidebar và cam logo, bỏ giới hạn rộng, gói Free/Standard/Plus/Pro (mã F/S/PL/PR), 80 phiếu mua hàng, dòng tổng bảng chi tiết (QD27) | Trum | 09/10/2026 | `2026-10-09-trum-dot-chinh-13-diem.md` |
 | T45 | Bảng flyout tooltip khi rê chuột vào phân hệ ở sidebar: hiện 2 cột Nghiệp vụ và Tiện ích để truy cập nhanh (QD29) | Trum | 09/10/2026 | `2026-10-09-trum-sidebar-flyout.md` |

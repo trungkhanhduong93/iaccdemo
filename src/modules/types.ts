@@ -65,6 +65,7 @@ export interface ReportCfg {
   cols?: Col[]                           // bảng kê tự khai cột
   rows?: (thang: number) => Row[]
   taiKhoan?: string                      // sổ theo tài khoản
+  theoCn?: boolean                       // số liệu theo chi nhánh chọn trên thanh trên
 }
 
 /** Tiện ích, chức năng chạy theo lệnh */

@@ -7,7 +7,7 @@ import { chiNhanhHienTai, useSession } from '../../app/session'
 import { kieuGhiSo } from '../../app/plan'
 import { Icon } from '../Icon'
 import { PageHead } from '../Page'
-import { Dropdown, MenuHead, MenuItem, Select } from '../Dropdown'
+import { Select } from '../Dropdown'
 import { St, Table } from '../Table'
 import { PhanTrang } from '../PhanTrang'
 import { ChonKhoangNgay, docNgay, thangNay, trongKhoang, type KhoangNgay } from '../ChonNgay'
@@ -17,13 +17,14 @@ import { dangLoc, khopLoc, type GiaTriLoc, type KieuLoc } from '../LocCot'
 import {
   BoLoc, ChipTrangThai, NutHangLoat, NutTuyChinhCot, cotChon, dsChipTT, khopChipTT, useCauHinhLoc, useCotDs, useLocNhap, type OLocDef,
 } from '../LocNangCao'
+import { useDaXoa, xoaPhieu } from './daXoa'
 import { NGUON, TT_CT, chungTu, dongCua, ttNghiepVu } from './gen'
 import { boO, nhomCua, theoLoai, TT_HD, TT_TIEN } from './nhom'
 import { BangSua } from './BangSua'
 import { ChungTuForm, HachToan, LichSu, VoucherDetail } from './ChungTuForm'
 import { HopInChungTu, type PhieuIn } from '../bao-cao/InChungTu'
 
-const COT_CO_DINH = new Set(['chk', 'stt', 'ngay', 'so', 'action'])
+const COT_CO_DINH = new Set(['chk', 'stt', 'ngay', 'so'])
 /** Cột lọc bằng cách chọn trong danh sách giá trị */
 const COT_CHON = new Set(['tenLoai', 'nguon', 'ttTien', 'ttHd'])
 
@@ -40,7 +41,9 @@ export function VoucherScreen({ sc, mod }: ScreenProps) {
   const { id } = useParams()
   const loc = useLocation()
   const cfg = sc.voucher ?? { ...MAC_DINH, dienGiai: [tenMan(sc)] }
-  const rows = useMemo(() => (cfg.loai ? gopLoai(cfg, sc.code ?? sc.slug) : chungTu(cfg, sc.code ?? sc.slug)), [sc])
+  const tatCa = useMemo(() => (cfg.loai ? gopLoai(cfg, sc.code ?? sc.slug) : chungTu(cfg, sc.code ?? sc.slug)), [sc])
+  const { ban, laDaXoa, phieuMoi, apSua } = useDaXoa(`${mod.key}/${sc.slug}`)
+  const rows = useMemo(() => [...phieuMoi, ...tatCa].filter(r => !laDaXoa(r.id)).map(apSua), [tatCa, ban])
 
   if (id !== undefined) {
     const row = id === 'moi' ? undefined : rows.find(r => r.id === id)
@@ -68,7 +71,7 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
   const [moHangLoat, setMoHangLoat] = useState(false)
   const [phieuIn, setPhieuIn] = useState<PhieuIn[] | null>(null)
   const [activeId, setActiveId] = useState<string>(rows[0]?.id ?? '')
-  const [panelMo, setPanelMo] = useState(true)
+  const [panelMo, setPanelMo] = useState(false)
   const [tabPanel, setTabPanel] = useState<'ct' | 'ht' | 'khac'>('ct')
 
   const ghi = kieuGhiSo(s.goi) !== 'khong'
@@ -86,7 +89,7 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
     k === 'ngay' ? 'ngay' : COT_CHON.has(k) ? 'chon' : k === 'tong' || k === 'thue' ? 'so' : 'chu'
   const chuCot = (k: string, r: Row): string => {
     if (k === 'nguon') return (NGUON[r.nguon] ?? NGUON.tay)[1]
-    if (k === 'tt') return ghi ? (TT_CT[r.tt]?.[1] ?? 'Chưa ghi') : r.tt === 'nhap' ? 'Nháp' : 'Đã lưu'
+    if (k === 'tt') return ghi ? (TT_CT[r.tt]?.[1] ?? 'Chưa ghi') : 'Đã ghi sổ'
     if ((k === 'ttTien' || k === 'ttHd') && (nhom === 'mua' || nhom === 'ban')) {
       const nv = ttNghiepVu(r)
       return (k === 'ttTien' ? TT_TIEN : TT_HD)[nhom][k === 'ttTien' ? nv.ttTien : nv.ttHd]?.[1] ?? ''
@@ -158,7 +161,7 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
   const trangHienTai = Math.min(trang, soTrang)
   const pagedRows = useMemo(() => {
     const batDau = (trangHienTai - 1) * coTrang
-    return list.slice(batDau, batDau + coTrang).map((r, i) => ({ ...r, stt: batDau + i + 1 }))
+    return list.slice(batDau, batDau + coTrang).map((r, i): Row => ({ ...r, stt: batDau + i + 1 }))
   }, [list, trangHienTai, coTrang])
 
   // Dòng đang chọn xem chi tiết ở khung dưới
@@ -204,7 +207,6 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
       } as Col,
     ] : []),
     ...(cfg.thue !== undefined || cfg.dong === 'hang' ? [{ k: 'thue', t: 'Tiền thuế', num: true, w: 120 } as Col] : []),
-    { k: 'tong', t: 'Tổng tiền', num: true, w: 120 },
     {
       k: 'nguon',
       t: 'Nguồn',
@@ -214,47 +216,8 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
         return <span className={`src ${c}`}>{t}</span>
       },
     },
-    // Cột chức năng đứng yên bên phải
-    {
-      k: 'action',
-      t: 'Chức năng',
-      w: 105,
-      dinh: 'phai',
-      r: r => (
-        <div className="row" style={{ gap: 4, justifyContent: 'center' }} onClick={e => e.stopPropagation()}>
-          <button
-            type="button"
-            className="btn sm ghost ct-xem"
-            onClick={() => nav(`${path}/${r.id}`)}
-          >
-            Xem
-          </button>
-          <Dropdown
-            btnClass="icon-btn sm"
-            align="end"
-            width={160}
-            label={<Icon n="more" className="ic sm" />}
-          >
-            {dong => (
-              <>
-                <MenuItem icon="edit" onClick={() => nav(`${path}/${r.id}?sua=1`)}>Sửa</MenuItem>
-                <MenuItem icon="copy" onClick={() => toast(`Đã nhân bản ${r.so}`)}>Nhân bản</MenuItem>
-                <MenuItem icon="printer" onClick={() => { dong(); setPhieuIn([phieuCua(r)]) }}>In</MenuItem>
-                {ghi && (
-                  <MenuItem
-                    icon="check"
-                    onClick={() => toast(r.tt === 'ghi' ? `Đã bỏ ghi sổ ${r.so}` : `Đã ghi sổ ${r.so}`)}
-                  >
-                    {r.tt === 'ghi' ? 'Bỏ ghi sổ' : 'Ghi sổ'}
-                  </MenuItem>
-                )}
-                <MenuItem icon="trash" danger onClick={() => toast(`Xoá ${r.so}`)}>Xoá</MenuItem>
-              </>
-            )}
-          </Dropdown>
-        </div>
-      ),
-    },
+    // Tổng tiền là cột cuối; không còn cột Chức năng, xem phiếu bằng đúp chuột hoặc khung chi tiết (T48)
+    { k: 'tong', t: 'Tổng tiền', num: true, w: 120 },
   ]
 
   // Thứ tự, ẩn hiện, độ rộng cột lưu theo màn (T41)
@@ -271,7 +234,7 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
         <section className="card voucher-top">
           {/* Thanh công cụ: chip trạng thái bên trái; ô lọc, phễu, Lọc, Tuỳ chỉnh cột, Excel, Hàng loạt, Thêm mới | ⌄ (T43) */}
           <div className="ds-thanh">
-            <ChipTrangThai ds={chips} chon={chipTT} onChon={k => { setChipTT(k); setTrang(1) }} />
+            {ghi && <ChipTrangThai ds={chips} chon={chipTT} onChon={k => { setChipTT(k); setTrang(1) }} />}
             <div className="ds-thanh-phai">
               <BoLoc ds={oLoc} cauHinh={cauHinhLoc} datCauHinh={datCauHinhLoc} dangLoc={loc0.dangLoc} khacNhap={loc0.khacNhap}
                 onLoc={apLoc} onXoaHet={loc0.xoaNhap} />
@@ -292,6 +255,7 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
                 selectedRows={selectedRows}
                 ghi={ghi}
                 onBoChon={() => setSelectedIds(new Set())}
+                onXoa={ids => xoaPhieu(`${mod.key}/${sc.slug}`, ids)}
                 open={moHangLoat}
                 onOpenChange={setMoHangLoat}
                 onIn={() => setPhieuIn(selectedRows.map(phieuCua))}
@@ -322,17 +286,18 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
                 onDbl={r => nav(`${path}/${r.id}`)}
                 rowCls={r => [
                   r.id === activeId ? 'dang-chon' : '',
-                  r.tt === 'nhap' ? 'chua-ghi' : '',
+                  r.tt === 'nhap' && ghi ? 'chua-ghi' : '',
                   r.tt === 'loi' && ghi ? 'bad' : '',
                 ].filter(Boolean).join(' ')}
                 sum={{
-                  stt: `Tổng: ${list.length}`,
-                  tong,
-                  thue: list.reduce((a, r) => a + (r.thue || 0), 0),
+                  stt: 'Tổng trang',
+                  tong: pagedRows.reduce((a, r) => a + (r.tong || 0), 0),
+                  thue: pagedRows.reduce((a, r) => a + (r.thue || 0), 0),
                 }}
               />
               <PhanTrang
                 tong={list.length}
+                tongCong={{ tong, thue: list.reduce((a, r) => a + (r.thue || 0), 0) }}
                 trang={trangHienTai}
                 coTrang={coTrang}
                 onTrang={setTrang}

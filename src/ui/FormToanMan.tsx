@@ -12,8 +12,10 @@ export function useDong(ve: string) {
 }
 
 /** trai: nút đứng trước tiêu đề (vd lịch sử); phai: nút đứng trước tổng tiền (vd phím tắt); tinh: bỏ hiệu ứng mở khi chuyển Trước/Sau */
-export function FormToanMan({ icon, title, meta, loai, tong, trai, phai, tinh, onClose, foot, children }: {
+export function FormToanMan({ icon, title, meta, loai, giua, day, tong, trai, phai, tinh, onClose, foot, children }: {
   icon: string; title: ReactNode; meta?: ReactNode; loai?: ReactNode; tong?: number; trai?: ReactNode; phai?: ReactNode; tinh?: boolean
+  giua?: ReactNode   // trạng thái phiếu ở chính giữa đầu form (T49)
+  day?: ReactNode    // dải cố định ngay trên thanh nút, vd Tổng tiền (T49)
   onClose: () => void; foot: ReactNode; children: ReactNode
 }) {
   useEffect(() => {
@@ -32,12 +34,14 @@ export function FormToanMan({ icon, title, meta, loai, tong, trai, phai, tinh, o
           {meta && <div className="ph-meta">{meta}</div>}
         </div>
         {loai}
+        {giua && <div className="fsf-giua">{giua}</div>}
         <span className="grow" />
         {phai}
         {tong !== undefined && <div className="fsf-tong"><small>Tổng tiền</small><b>{moneyD(tong)}</b></div>}
         <button className="icon-btn" title="Đóng (Esc)" onClick={onClose}><Icon n="x" /></button>
       </header>
       <div className="fsf-b">{children}</div>
+      {day && <div className="fsf-day">{day}</div>}
       <footer className="fsf-f">{foot}</footer>
     </div>
   )

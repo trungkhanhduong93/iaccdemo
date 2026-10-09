@@ -7,6 +7,7 @@ import { useSession } from '../app/session'
 import { MenuHead, MenuItem, MenuSep, Popover } from './Dropdown'
 import { Icon } from './Icon'
 import { fold } from './format'
+import { daKhoaSo } from '../data/mock'
 
 /** Tối đa số ô lọc đưa ra thanh ngoài */
 const TOI_DA_NGOAI = 4
@@ -53,11 +54,11 @@ export function ONhanVien({ nhan, children, className = '' }: { nhan: string; ch
 
 export interface Chip { k: string; ten: string; mau: string; so: number }
 
-/** Chip theo trạng thái phiếu nhap, ghi, loi. Gói Free không ghi sổ: chỉ Nháp và Đã lưu */
+/** Chip theo trạng thái phiếu nhap, ghi, loi. Gói Free lưu là duyệt luôn nên không có chip, danh sách hiện tất cả (T48) */
 export function dsChipTT(ds: Row[], ghi: boolean, tenLoi = 'Lỗi hạch toán'): Chip[] {
   const dem = (k: string) => ds.filter(r => khopChipTT(k, r.tt, ghi)).length
   const tatCa: Chip = { k: 'all', ten: 'Tất cả', mau: 'var(--blue)', so: ds.length }
-  if (!ghi) return [tatCa, { k: 'nhap', ten: 'Nháp', mau: 'var(--amber)', so: dem('nhap') }, { k: 'luu', ten: 'Đã lưu', mau: 'var(--green)', so: dem('luu') }]
+  if (!ghi) return []
   return [
     tatCa,
     { k: 'nhap', ten: 'Chưa ghi sổ', mau: 'var(--amber)', so: dem('nhap') },
@@ -558,6 +559,7 @@ export function NutHangLoat({
   selectedRows,
   ghi,
   onBoChon,
+  onXoa,
   open,
   onOpenChange,
   onIn,
@@ -565,6 +567,7 @@ export function NutHangLoat({
   selectedRows: Row[]
   ghi: boolean
   onBoChon: () => void
+  onXoa?: (ids: string[]) => void
   open?: boolean
   onOpenChange?: (open: boolean) => void
   onIn?: () => void       // mở khung xem trước bản in các phiếu đang chọn; không truyền thì chỉ báo
@@ -596,6 +599,11 @@ export function NutHangLoat({
   const nNhap = nhapRows.length
   const nGhi = ghiRows.length
   const nLoi = loiRows.length
+  // Xoá: gói có ghi sổ chỉ xoá phiếu chưa ghi, gói Free xoá mọi phiếu; phiếu thuộc kỳ đã khoá sổ không xoá (T48)
+  const nKhoa = selectedRows.filter(r => daKhoaSo(r.ngay)).length
+  const dsXoa = selectedRows.filter(r => !daKhoaSo(r.ngay) && (!ghi || r.tt === 'nhap'))
+  const nXoa = dsXoa.length
+  const tenXoa = `Xoá ${nXoa} phiếu${ghi ? ' chưa ghi' : ''}`
 
   const lam = (m: string) => {
     toast(m)
@@ -642,9 +650,14 @@ export function NutHangLoat({
         <MenuItem icon="download" onClick={() => lam(`Đã xuất ${so} phiếu ra Excel`)}>
           Xuất Excel {so} phiếu
         </MenuItem>
-        {nNhap > 0 && (
+        {nXoa > 0 && (
           <MenuItem icon="trash" danger onClick={() => { setMo(false); setHoiXoa(true) }}>
-            Xoá {nNhap} phiếu chưa ghi
+            {tenXoa}
+          </MenuItem>
+        )}
+        {nXoa === 0 && nKhoa > 0 && (
+          <MenuItem icon="trash" lock onClick={() => lam(`Phiếu thuộc kỳ đã khoá sổ, không xoá được`)}>
+            Không xoá: kỳ đã khoá sổ
           </MenuItem>
         )}
         <MenuSep />
@@ -654,15 +667,16 @@ export function NutHangLoat({
       </Popover>
       {hoiXoa && (
         <HopXacNhan
-          tieuDe={`Xoá ${nNhap} phiếu chưa ghi?`}
-          nut={`Xoá ${nNhap} phiếu chưa ghi`}
+          tieuDe={`${tenXoa}?`}
+          nut={tenXoa}
           onDong={() => setHoiXoa(false)}
           onDongY={() => {
             setHoiXoa(false)
-            lam(`Đã xoá ${nNhap} phiếu`)
+            onXoa?.(dsXoa.map(r => String(r.id)))
+            lam(`Đã xoá ${nXoa} phiếu`)
           }}
         >
-          Phiếu đã xoá không lấy lại được. Phiếu đã ghi sổ không xoá được.
+          Phiếu đã xoá không lấy lại được.{ghi && ' Phiếu đã ghi sổ không xoá được.'}{nKhoa > 0 && ` ${nKhoa} phiếu thuộc kỳ đã khoá sổ, giữ nguyên.`}
         </HopXacNhan>
       )}
     </>

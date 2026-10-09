@@ -135,7 +135,7 @@ export function Table({ cols: cols0, rows, sum, onRow, onDbl, sel, rowCls, maxH,
               ...vt[i].style,
             }
             return (
-              <th key={c.k} className={[lop(c, i), keo(c) ? 'da-keo' : ''].join(' ')}
+              <th key={c.k} data-k={c.k} className={[lop(c, i), keo(c) ? 'da-keo' : ''].join(' ')}
                 style={thStyle}>
                 {c.hd ?? c.t}
                 {doRong && c.k !== 'chk' && <span className="ds-keo-rong" aria-hidden onPointerDown={e => keoRong(e, c.k, doRong.dat)} />}
