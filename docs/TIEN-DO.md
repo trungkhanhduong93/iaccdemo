@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T50 | Tối ưu bộ khung 1 trang nhìn và bigdata cho Danh sách chứng từ và Báo cáo theo LedgerStudio (QD34) | Trum | Đang làm | Sửa VoucherScreen.tsx, ReportScreen.tsx, Table.tsx, ToGiay.tsx, app.css |
 | T27 | Danh sách chứng từ 2.1.1: khung chi tiết bên dưới hiện dòng phiếu khác với form của cùng phiếu (UNC2610-0259: khung ghi "Chi mua rau, củ tại chợ", form ghi "Trả tiền nhà cung cấp thịt bò") | | Chờ | Thấy khi làm T26 |
 | T02 | Chốt nghiệp vụ trên từng sơ đồ Quy trình: ô nào, nối thế nào, câu chữ. Sửa ở `src/modules/<phân hệ>/quy-trinh.ts` | Trum | Chờ | |
 | T03 | Nối sổ quỹ, sổ tài khoản 2.2.2, sổ ngân hàng 2.2.3, sổ công nợ 2.2.5 vào `so-cai.ts` để mọi sổ khớp báo cáo tài chính | | Chờ | Sổ quỹ đang tính riêng từ tiền mặt FABi từng chi nhánh. Tổng 3 quỹ chưa bằng dư TK 1111 trên cân đối kế toán |
@@ -35,6 +34,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T50 | Tối ưu bộ khung 1 trang nhìn và bigdata cho Danh sách chứng từ và Báo cáo theo LedgerStudio (QD34) | Trum | 09/10/2026 | `2026-10-09-trum-toi-uu-khung-bang-ledgerstudio.md` |
 | T47 | Phân hệ Báo cáo, màn xem như bản in A4, mẫu theo thông tư, chế độ kế toán tách khỏi gói, mẫu in chứng từ, tiện ích Thiết kế mẫu in, xuất 5 định dạng, bộ lọc và tuỳ chỉnh báo cáo, 10 sổ bổ sung (QD31) | Trum | 09/10/2026 | `2026-10-09-trum-phan-he-bao-cao.md` |
 | T49 | Form phiếu thu chi (5 loại): đầu form gọn, trạng thái ở giữa; Đối tượng từ danh mục; Lý do trên Diễn giải, Ghi chú; Người giao dịch; Ngày chứng từ có lịch; gói Free có Tháng hạch toán lãi lỗ; cột Lý do ở dòng; Tổng tiền ở dải đáy; bỏ tab Hạch toán. Mọi phiếu: Sao chép, Tuỳ chỉnh giao diện phiếu, phiếu lưu và sửa hiện ở danh sách (QD33) | PhuongXT | 09/10/2026 | `2026-10-09-phuongxt-form-phieu-thu-chi.md` |
 | T48 | Danh sách chứng từ mọi phân hệ: gói Free bỏ chip trạng thái; Tổng trang, Tổng cộng mọi trang trên hàng phân trang thẳng cột; Tổng tiền là cột cuối, bỏ cột Chức năng; khung chi tiết mặc định đóng; xoá hỏi lại, kỳ đã khoá sổ không xoá (QD32) | PhuongXT | 09/10/2026 | `2026-10-09-phuongxt-so-chi-nhanh-danh-sach.md` |

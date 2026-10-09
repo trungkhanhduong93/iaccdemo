@@ -10,6 +10,7 @@ import { PageHead } from '../Page'
 import { Select } from '../Dropdown'
 import { St, Table } from '../Table'
 import { PhanTrang } from '../PhanTrang'
+import { buildGroupedData } from '../virtual'
 import { ChonKhoangNgay, docNgay, thangNay, trongKhoang, type KhoangNgay } from '../ChonNgay'
 import { NutExcel, NutThemMoiSplit } from '../CongCuDs'
 import { fold, money } from '../format'
@@ -223,6 +224,30 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
   // Thứ tự, ẩn hiện, độ rộng cột lưu theo màn (T41)
   const cot = useCotDs(path, cols, COT_CO_DINH)
 
+  // Gom nhóm danh sách chứng từ theo cột (T50 học từ LedgerStudio)
+  const [nhomCols, setNhomCols] = useState<string[]>([])
+  const [expandMap, setExpandMap] = useState<Map<string, boolean>>(() => new Map())
+
+  const dsCotGomNhom = useMemo(() => {
+    const bo = new Set(['chk', 'stt', 'so', 'dienGiai', 'thue', 'tong', 'action'])
+    return cot.colsHien.filter(c => !bo.has(c.k))
+  }, [cot.colsHien])
+
+  const tenCotMap = useMemo(() => {
+    return Object.fromEntries(cot.colsDu.map(c => [c.k, c.t || c.k]))
+  }, [cot.colsDu])
+
+  const displayRows = useMemo(() => {
+    if (nhomCols.length === 0) return pagedRows
+    return buildGroupedData(list, nhomCols, ['tong', 'thue'], tenCotMap, expandMap)
+  }, [list, pagedRows, nhomCols, tenCotMap, expandMap])
+
+  const handleToggleGroup = (id: string) => {
+    const cur = expandMap.has(id) ? expandMap.get(id) : true
+    expandMap.set(id, !cur)
+    setExpandMap(new Map(expandMap))
+  }
+
   return (
     <div className="page page-voucher">
       <h1 className="sr-only">{title ?? tenMan(sc)}</h1>
@@ -271,15 +296,69 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
             </div>
           </div>
 
+          {/* Thanh gom nhóm kéo thả theo LedgerStudio (T50) */}
+          <div className="ds-groupzone">
+            <div className="ds-groupzone-nhan">
+              <Icon n="filter" className="ic sm" />
+              <span>Gom nhóm:</span>
+            </div>
+            {nhomCols.length === 0 ? (
+              <span style={{ color: 'var(--muted)' }}>— chọn cột để gom nhóm xem tổng hợp</span>
+            ) : (
+              nhomCols.map(k => (
+                <span key={k} className="ds-gchip">
+                  {tenCotMap[k] || k}
+                  <button
+                    type="button"
+                    onClick={() => setNhomCols(nhomCols.filter(x => x !== k))}
+                    title="Bỏ gom nhóm cột này"
+                  >
+                    ×
+                  </button>
+                </span>
+              ))
+            )}
+            {dsCotGomNhom.filter(c => !nhomCols.includes(c.k)).length > 0 && (
+              <select
+                className="ds-group-sel"
+                value=""
+                aria-label="Thêm cột gom nhóm"
+                onChange={e => {
+                  if (e.target.value) setNhomCols([...nhomCols, e.target.value])
+                }}
+              >
+                <option value="">+ Thêm cột gom</option>
+                {dsCotGomNhom
+                  .filter(c => !nhomCols.includes(c.k))
+                  .map(c => (
+                    <option key={c.k} value={c.k}>
+                      {c.t || c.k}
+                    </option>
+                  ))}
+              </select>
+            )}
+            {nhomCols.length > 0 && (
+              <button
+                type="button"
+                className="btn sm ghost"
+                style={{ padding: '0 6px', height: 22, fontSize: 11.5, marginLeft: 'auto' }}
+                onClick={() => setNhomCols([])}
+              >
+                Xoá gom nhóm
+              </button>
+            )}
+          </div>
+
           {/* Bảng danh sách chứng từ */}
           {list.length ? (
             <>
               <Table
                 cols={cot.colsHien}
-                rows={pagedRows}
+                rows={displayRows}
                 motDong
                 keDoc
                 doRong={cot.doRong}
+                onToggleGroup={handleToggleGroup}
                 loc={{ gt: locCot, dat: (k, g) => { setLocCot(x => ({ ...x, [k]: g })); setTrang(1) }, bo: new Set(['chk', 'stt', 'action']),
                   kieu: c => kieuCot(c.k), luaChon }}
                 onRow={r => setActiveId(r.id)}
@@ -290,9 +369,9 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
                   r.tt === 'loi' && ghi ? 'bad' : '',
                 ].filter(Boolean).join(' ')}
                 sum={{
-                  stt: 'Tổng trang',
-                  tong: pagedRows.reduce((a, r) => a + (r.tong || 0), 0),
-                  thue: pagedRows.reduce((a, r) => a + (r.thue || 0), 0),
+                  stt: nhomCols.length > 0 ? 'Tổng cộng' : 'Tổng trang',
+                  tong: nhomCols.length > 0 ? tong : pagedRows.reduce((a, r) => a + (r.tong || 0), 0),
+                  thue: nhomCols.length > 0 ? list.reduce((a, r) => a + (r.thue || 0), 0) : pagedRows.reduce((a, r) => a + (r.thue || 0), 0),
                 }}
               />
               <PhanTrang

@@ -406,7 +406,7 @@ export function ReportScreen({ sc, mod }: ScreenProps) {
   const body = useMemo(() => renderReport(cfg, sc.code ?? sc.slug, thang, s.cheDo, cn?.id), [cfg, ky, sc, s.cheDo, cn])
   const sub = cfg.theoCn ? `${kyTen(ky)} · ${cn ? 'Chi nhánh ' + cn.ngan : 'Tất cả chi nhánh'}` : kyTen(ky)
   return (
-    <div className="page">
+    <div className="page page-report">
       <PageHead crumb={[mod.ten, sc.nhom ?? '']} title={ten} code={sc.code} />
       <section className="report">
         <ReportToolbar ky={ky} setKy={setKy} />

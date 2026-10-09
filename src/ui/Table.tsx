@@ -2,6 +2,8 @@ import { useLayoutEffect, useRef, useState, type CSSProperties, type PointerEven
 import type { Col, Row } from '../modules/types'
 import { money } from './format'
 import { OLoc, type LocCot } from './LocCot'
+import { useVirtualScroll, type GroupNode } from './virtual'
+import { heSoZoom } from './zoom'
 
 export function cell(c: Col, r: Row): ReactNode {
   if (c.r) return c.r(r)
@@ -75,11 +77,36 @@ function tinhRongNum(c: Col, rows: Row[], sum?: Row): number {
   return Math.max(120, Math.ceil(tieuDeW), Math.ceil(noiDungW), c.w ?? 0)
 }
 
-export function Table({ cols: cols0, rows, sum, onRow, onDbl, sel, rowCls, maxH, motDong, loc, doRong, keDoc }: {
-  cols: Col[]; rows: Row[]; sum?: Row; onRow?: (r: Row) => void; onDbl?: (r: Row) => void; sel?: (r: Row) => boolean
-  rowCls?: (r: Row) => string; maxH?: number; motDong?: boolean; loc?: LocCot
+export function Table({
+  cols: cols0,
+  rows,
+  sum,
+  onRow,
+  onDbl,
+  sel,
+  rowCls,
+  maxH,
+  motDong,
+  loc,
+  doRong,
+  keDoc,
+  virtual,
+  onToggleGroup,
+}: {
+  cols: Col[]
+  rows: (Row | GroupNode)[]
+  sum?: Row
+  onRow?: (r: Row) => void
+  onDbl?: (r: Row) => void
+  sel?: (r: Row) => boolean
+  rowCls?: (r: Row) => string
+  maxH?: number
+  motDong?: boolean
+  loc?: LocCot
   doRong?: DoRong                       // cho kéo giãn độ rộng cột
   keDoc?: boolean                       // kẻ dọc giữa các cột
+  virtual?: boolean                     // bật cuộn ảo cho danh sách lớn
+  onToggleGroup?: (id: string) => void  // đóng mở nhóm
 }) {
   // Cột đã kéo giãn thì lấy độ rộng mới (tối thiểu 60px), kể cả để tính vị trí cột đứng yên (T41, T42)
   const cols = doRong ? cols0.map(c => doRong.gt[c.k] ? { ...c, w: Math.max(60, doRong.gt[c.k]) } : c) : cols0
@@ -93,7 +120,7 @@ export function Table({ cols: cols0, rows, sum, onRow, onDbl, sel, rowCls, maxH,
       return { w, minW: w, maxW: w }
     }
     if (c.num) {
-      const w = tinhRongNum(c, rows, sum)
+      const w = tinhRongNum(c, rows as Row[], sum)
       return { w, minW: w }
     }
     if (c.w) {
@@ -111,6 +138,7 @@ export function Table({ cols: cols0, rows, sum, onRow, onDbl, sel, rowCls, maxH,
     }
   }
 
+  const wrapRef = useRef<HTMLDivElement>(null)
   const r1Ref = useRef<HTMLTableRowElement>(null)
   const [thH1, setThH1] = useState(36)
   useLayoutEffect(() => {
@@ -122,8 +150,34 @@ export function Table({ cols: cols0, rows, sum, onRow, onDbl, sel, rowCls, maxH,
     }
   })
 
+  // Hook cuộn ảo theo chuẩn LedgerStudio (T50)
+  const vs = useVirtualScroll(rows, 36, wrapRef, virtual ?? rows.length > 25)
+
+  // Chống xô giật bề rộng cột khi cuộn: giữ bề rộng lớn nhất đã thấy làm minWidth
+  useLayoutEffect(() => {
+    if (!wrapRef.current) return
+    const ths = wrapRef.current.querySelectorAll<HTMLTableCellElement>('thead tr:first-child > th')
+    const z = heSoZoom()
+    ths.forEach(th => {
+      const w = th.getBoundingClientRect().width / z
+      const cur = parseFloat(th.style.minWidth) || 0
+      if (w > cur) th.style.minWidth = `${w}px`
+    })
+  })
+
+  useLayoutEffect(() => {
+    if (!wrapRef.current) return
+    const ths = wrapRef.current.querySelectorAll<HTMLTableCellElement>('thead tr:first-child > th')
+    ths.forEach(th => {
+      const k = th.getAttribute('data-k')
+      if (!k || !doRong?.gt[k]) th.style.minWidth = ''
+    })
+  }, [rows, cols0])
+
+  const visibleRows = vs.isVirtual ? rows.slice(vs.startIndex, vs.endIndex + 1) : rows
+
   return (
-    <div className="tbl-wrap" style={maxH ? { maxHeight: maxH } : undefined}>
+    <div ref={wrapRef} className="tbl-wrap" style={maxH ? { maxHeight: maxH } : undefined}>
       <table className={`tbl${motDong ? ' mot-dong' : ''}${keDoc ? ' ke-doc' : ''}`} style={{ '--th-h1': `${thH1}px` } as CSSProperties}>
         <thead>
           <tr ref={r1Ref}>{cols.map((c, i) => {
@@ -163,17 +217,43 @@ export function Table({ cols: cols0, rows, sum, onRow, onDbl, sel, rowCls, maxH,
           )}
         </thead>
         <tbody>
-          {rows.map((r, i) => (
-            <tr key={r.id ?? i} className={[onRow ? 'click' : '', sel?.(r) ? 'dang-chon' : '', rowCls?.(r) ?? ''].join(' ')}
-              onClick={onRow ? () => onRow(r) : undefined} onDoubleClick={onDbl ? () => onDbl(r) : undefined}>
-              {cols.map((c, j) => {
-                const v = cell(c, r)
-                const title = motDong && (typeof v === 'string' || typeof v === 'number') ? String(v) : undefined
-                return <td key={c.k} className={[lop(c, j), c.cls ?? ''].join(' ')} style={tdStyle(c, j)} title={title}>{v}</td>
-              })}
-            </tr>
-          ))}
-          <tr className="tbl-spacer" aria-hidden><td colSpan={cols.length} /></tr>
+          {vs.topPadding > 0 && (
+            <tr key="vs-top" aria-hidden><td colSpan={cols.length} style={{ height: vs.topPadding, padding: 0, border: 0 }} /></tr>
+          )}
+          {visibleRows.map((item, idx) => {
+            const i = vs.isVirtual ? vs.startIndex + idx : idx
+            if ((item as any).isGroup) {
+              const grp = item as GroupNode
+              return (
+                <tr key={grp.id} className="ds-grp-row" onClick={() => onToggleGroup?.(grp.id)}>
+                  <td colSpan={cols.length} style={{ paddingLeft: `${14 + (grp.level || 0) * 22}px` }}>
+                    <span className="ds-grp-icon">{grp.expanded ? '▼' : '▶'}</span>
+                    <span className="ds-grp-title">{grp.colTen}: <b>{grp.name}</b></span>
+                    <span className="ds-grp-count">({grp.count} chứng từ)</span>
+                    {grp.sums?.tong !== undefined && (
+                      <span className="ds-grp-sum">Tổng: <b>{money(grp.sums.tong)} đ</b></span>
+                    )}
+                  </td>
+                </tr>
+              )
+            }
+            const r = item as Row
+            const rowKey = vs.fast ? `f${idx}` : (r.id ?? i)
+            return (
+              <tr key={rowKey} className={[onRow ? 'click' : '', sel?.(r) ? 'dang-chon' : '', rowCls?.(r) ?? ''].join(' ')}
+                onClick={onRow ? () => onRow(r) : undefined} onDoubleClick={onDbl ? () => onDbl(r) : undefined}>
+                {cols.map((c, j) => {
+                  const v = cell(c, r)
+                  const title = motDong && (typeof v === 'string' || typeof v === 'number') ? String(v) : undefined
+                  return <td key={c.k} className={[lop(c, j), c.cls ?? ''].join(' ')} style={tdStyle(c, j)} title={title}>{v}</td>
+                })}
+              </tr>
+            )
+          })}
+          {vs.bottomPadding > 0 && (
+            <tr key="vs-bot" aria-hidden><td colSpan={cols.length} style={{ height: vs.bottomPadding, padding: 0, border: 0 }} /></tr>
+          )}
+          {!vs.isVirtual && <tr className="tbl-spacer" aria-hidden><td colSpan={cols.length} /></tr>}
         </tbody>
         {sum && (
           <tfoot>

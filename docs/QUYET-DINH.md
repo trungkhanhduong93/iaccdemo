@@ -344,4 +344,11 @@ Lý do: PhuongXT chốt ngày 09/10/2026 theo ảnh góp ý trên màn Thu, chi 
 
 Lý do: PhuongXT chốt ngày 09/10/2026 theo ảnh góp ý trên form Thu tiền mặt mới (T49).
 
-## QD34. Tối ưu bộ khung 1 trang nhìn và dữ liệu lớn theo LedgerStudio (đang soạn)
+## QD34. Tối ưu bộ khung 1 trang nhìn và dữ liệu lớn theo LedgerStudio (09/10/2026)
+
+- Màn danh sách chứng từ (`.page-voucher`) và màn xem báo cáo (`.page-report`): khoá cứng 100vh theo mô hình Flexbox 3 tầng độc lập, chặn triệt để thanh cuộn ngoài cấp trang trên `.main`.
+- Bảng danh sách chứng từ tích hợp Virtual Scrolling (`useVirtualScroll`): tự đo chiều cao dòng thật từ DOM bằng trung vị (median) 16 dòng đầu để tránh hở đáy; chế độ vuốt nhanh flushSync với key vị trí để không huỷ/tạo lại DOM node; thuật toán giữ min-width của tiêu đề cột chống giật rung ngang khi cuộn.
+- Bổ sung thanh gom nhóm `GroupZone` trên đầu bảng danh sách chứng từ: cho phép chọn cột để gom nhóm đa cấp, tự động tính tổng con (subtotal) theo từng nhóm, hỗ trợ thu gọn và mở rộng từng nút nhóm (`buildGroupedData`).
+- Tối ưu hiệu năng cuộn bảng báo cáo lớn: áp dụng CSS `content-visibility: auto` kèm `contain-intrinsic-size: 0 28px` cho các dòng `<tr>` trên bàn xem tờ giấy (`.bc-ban .rpt`), giữ nguyên khung đo ẩn và in ấn.
+
+Lý do: Trum giao việc T50 ngày 09/10/2026, đúc kết từ kiến trúc của LedgerStudio.
