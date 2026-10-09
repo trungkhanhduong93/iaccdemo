@@ -571,6 +571,38 @@ function timDanhMuc(col: Col, cols: Col[]): AnhXaDanhMuc | null {
   return null
 }
 
+/** Tách chuỗi sub thành các dòng phụ và dòng kỳ hiển thị theo kiểu Ledger Studio (T71) */
+export function tachSub(sub: string): { subLines: string[]; periodText?: string } {
+  if (!sub) return { subLines: [] }
+  const parts = sub.split(/\s*·\s*|\n+/).map(p => p.trim()).filter(Boolean)
+  const isPeriod = (s: string) => /^(tháng|quý|năm|tại ngày|từ ngày|đến ngày)\b/i.test(s) || /\b(tháng|quý)\s+\d+/i.test(s)
+
+  const subLines: string[] = []
+  let periodText: string | undefined
+
+  for (const p of parts) {
+    if (!periodText && isPeriod(p)) {
+      const mThang = p.match(/^Tháng\s+(\d+)\/(\d{4})$/i)
+      const mQuy = p.match(/^Quý\s+(\d+)\/(\d{4})$/i)
+      if (mThang) {
+        periodText = `Tháng ${mThang[1]} Năm ${mThang[2]}`
+      } else if (mQuy) {
+        periodText = `Quý ${mQuy[1]} Năm ${mQuy[2]}`
+      } else {
+        periodText = p
+      }
+    } else {
+      subLines.push(p)
+    }
+  }
+
+  if (!periodText && subLines.length === 1 && isPeriod(subLines[0])) {
+    periodText = subLines.pop()
+  }
+
+  return { subLines, periodText }
+}
+
 /** Trang báo cáo theo mẫu: đầu trang đơn vị, mẫu số, tiêu đề, kỳ, ô ký. Vẽ trên tờ A4 tự chia trang (ToGiay).
  *  Mẫu số, tên in, khổ, ô ký lấy theo mã báo cáo trên đường dẫn và chế độ kế toán (modules/bao-cao/danh-sach.ts); mau chỉ dùng cho màn chưa có cấu hình */
 export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { title: string; sub: string; mau?: string; children: ReactNode; ky?: boolean; kho?: Kho }) {
@@ -752,20 +784,33 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
     return () => datNguonXuat(null)
   }, [slug, title, sub, kyHieu, cd, s.cheDo, dv.ten, dv.diaChi, dv.mst, khoHienTai, bangXuat, kyHieuCot, dsKy, ngayLap, cfg])
 
+  const cn = chiNhanhHienTai(s)
+  const { subLines, periodText } = tachSub(sub)
+
   const dau = (
     <>
       <div className="paper-h">
-        <div><b>Đơn vị: {dv.ten}</b><br />Địa chỉ: {dv.diaChi}<br />MST: {dv.mst}</div>
+        <div className="paper-dv-trai">
+          <div className="paper-ten-dv">{dv.ten}</div>
+          <div className="paper-dc-mst">{dv.diaChi}{dv.mst ? ` — MST: ${dv.mst}` : ''}</div>
+          <div className="paper-dv-cs">Đơn vị: {cn ? cn.ten : dv.ten}</div>
+        </div>
         {kyHieu && (
           <div className="bc-mau">
-            <b>Mẫu số {kyHieu}</b><br /><i>({canCu(cd)})</i>
-            {cd.choDuyet && <><br /><span className="bc-cho-duyet">Ký hiệu chờ kế toán trưởng duyệt</span></>}
+            <div className="bc-mau-so">Mẫu số {kyHieu}</div>
+            <div className="bc-mau-cc">({canCu(cd)})</div>
+            {cd.choDuyet && <div className="bc-cho-duyet">Ký hiệu chờ kế toán trưởng duyệt</div>}
           </div>
         )}
       </div>
-      <h2>{cfg?.ten?.[s.cheDo] ?? title}</h2>
-      <div className="sub">{sub}</div>
-      <div className="unit">Đơn vị tính: đồng</div>
+      <div className="paper-tieu-de-khoi">
+        <h2 className="paper-tieu-de">{cfg?.ten?.[s.cheDo] ?? title}</h2>
+        {subLines.map((line, i) => (
+          <div key={i} className="paper-dong-phu">{line}</div>
+        ))}
+        {periodText && <div className="paper-dong-ky">{periodText}</div>}
+        <div className="paper-dvt">Đơn vị tính: đồng</div>
+      </div>
     </>
   )
   const cuoi = ky ? <KhoiCuoi loai={loai} cheDo={s.cheDo} nguoiDaiDien={dv.nguoiDaiDien} dsKy={dsKy} /> : undefined
@@ -790,13 +835,26 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
 
 /** Khối cuối tờ: dòng sổ có mấy trang, ngày lập, ô ký theo loại báo cáo và chế độ (kế hoạch mục 5) */
 function KhoiCuoi({ loai, cheDo, nguoiDaiDien, dsKy }: { loai: LoaiBC; cheDo: CheDo; nguoiDaiDien: string; dsKy: OKy[] }) {
-  const ngay = `${pad(HOM_NAY.getDate())} tháng ${pad(HOM_NAY.getMonth() + 1)} năm ${HOM_NAY.getFullYear()}`
+  const ngayStr = `Ngày ${pad(HOM_NAY.getDate())} Tháng ${pad(HOM_NAY.getMonth() + 1)} Năm ${HOM_NAY.getFullYear()}`
+  const ngay = loai === 'bctc' ? `Lập, ngày ${pad(HOM_NAY.getDate())} tháng ${pad(HOM_NAY.getMonth() + 1)} năm ${HOM_NAY.getFullYear()}` : `TP. HCM, ${ngayStr}`
   return (
     <div className="bc-cuoi">
       {loai === 'so' && <SoTrangSo />}
-      <div className="bc-ngay-lap">{loai === 'bctc' ? `Lập, ngày ${ngay}` : `Ngày ${ngay}`}</div>
+      <div className="paper-ky-hang-ngay" style={{ gridTemplateColumns: `repeat(${dsKy.length}, 1fr)` }}>
+        {dsKy.map((_, i) => (
+          <div key={i} className={i === dsKy.length - 1 ? 'paper-ky-ngay' : ''}>
+            {i === dsKy.length - 1 ? ngay : ''}
+          </div>
+        ))}
+      </div>
       <div className="sign" style={{ gridTemplateColumns: `repeat(${dsKy.length}, 1fr)` }}>
-        {dsKy.map(o => <div key={o.chucDanh}><b>{o.chucDanh}</b><i>{o.goiY}</i>{o.hoTen}</div>)}
+        {dsKy.map(o => (
+          <div key={o.chucDanh} className="sign-col">
+            <div className="sign-chuc-danh">{o.chucDanh}</div>
+            <div className="sign-goi-y">{o.goiY}</div>
+            {o.hoTen && <div className="sign-ten">{o.hoTen}</div>}
+          </div>
+        ))}
       </div>
     </div>
   )
@@ -937,7 +995,7 @@ export function RptTable({ cols, rows, onRow, kyHieuCot }: { cols: Col[]; rows: 
       </thead>
       <tbody>
         {rows.map((x, i) => (
-          <tr key={i} className={`${x._t ? 't' : x._b ? 'b' : ''} ${onRow && x._drill ? 'drill' : ''}`} onClick={onRow && x._drill ? () => onRow(x) : undefined}>
+          <tr key={i} className={`${x._t ? 't' : x._b ? 'b' : ''} ${x._nhom ? 'nhom' : ''} ${onRow && x._drill ? 'drill' : ''}`} onClick={onRow && x._drill ? () => onRow(x) : undefined}>
             {cols.map(c => {
               const v = c.r ? c.r(x) : x[c.k]
               return <td key={c.k} className={[c.num ? 'num' : c.c ? 'c' : '', c.cls ?? '', c.k === cols[1]?.k && x._i ? `i${x._i}` : ''].join(' ')}>

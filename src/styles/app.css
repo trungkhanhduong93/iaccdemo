@@ -12,6 +12,8 @@
   --sh: none;
   --sh-lg: 0 18px 50px rgba(14, 26, 43, .18), 0 2px 6px rgba(14, 26, 43, .08);
   --sh-giay: 0 1px 2px rgba(14, 26, 43, .06), 0 6px 16px rgba(14, 26, 43, .08), 0 18px 40px rgba(14, 26, 43, .10);
+  --giay-den: #0f172a; --giay-phu: #475569; --giay-xam: #64748b; --giay-mo: #94a3b8;
+  --giay-nhat: #cbd5e1; --giay-chan: #e2e8f0; --giay-ke: #f1f5f9; --giay-th: #f1f5f9; --giay-tong: #f8fafc;
   color-scheme: light;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -303,22 +305,9 @@ textarea.inp { height: auto; padding: 8px 11px; resize: vertical; }
 /* ── Báo cáo theo mẫu ── */
 .report { background: #fff; border: 1px solid transparent; border-radius: var(--r); box-shadow: var(--sh); }
 .paper { max-width: 1040px; margin: 0 auto; padding: 28px 36px 34px; }
-.paper-h { display: flex; justify-content: space-between; gap: 20px; font-size: 12px; color: var(--body); }
-.paper-h b { color: var(--ink); }
-.paper h2 { text-align: center; font-size: 19px; font-weight: 800; color: var(--ink); margin: 22px 0 4px; text-transform: uppercase; letter-spacing: .2px; }
-.paper .sub { text-align: center; color: var(--muted); font-size: 12.5px; }
-.paper .unit { text-align: right; font-size: 12px; color: var(--muted); font-style: italic; margin: 10px 0 6px; }
-.rpt { width: 100%; font-size: 13px; border: 1px solid #cfd8e4; }
-.rpt th { background: var(--th); font-weight: 700; color: var(--ink); padding: 8px 10px; border: 1px solid #cfd8e4; font-size: 12px; text-align: center; }
-.rpt td { padding: 7px 10px; border-left: 1px solid #cfd8e4; border-right: 1px solid #cfd8e4; border-bottom: 1px solid #edf1f6; }
-.rpt tr.b td { font-weight: 700; color: var(--ink); }
-.rpt tr.t td { font-weight: 800; color: var(--ink); background: #f8fafc; border-top: 1px solid #cfd8e4; }
 .rpt td.c { text-align: center; }
 .rpt td.i1 { padding-left: 24px; } .rpt td.i2 { padding-left: 40px; }
 .rpt tr.drill { cursor: pointer; } .rpt tr.drill:hover td { background: #f2f7fb; }
-.sign { display: grid; grid-template-columns: repeat(3, 1fr); text-align: center; margin-top: 26px; font-size: 12.5px; }
-.sign b { display: block; color: var(--ink); }
-.sign i { display: block; color: var(--muted); font-size: 11.5px; margin-bottom: 52px; }
 
 /* ── Khoá theo gói ── */
 .lockpage { max-width: 760px; margin: 40px auto; text-align: center; }
@@ -2277,20 +2266,9 @@ textarea.inp { height: auto; padding: 8px 11px; resize: vertical; }
 .bc-trang-do {
   box-sizing: border-box;
 }
-/* Bảng trên tờ in cỡ chữ nhỏ hơn bảng màn hình, số và mã không xuống dòng (khổ dọc 8 cột vẫn đọc được) */
-.bc-trang .rpt, .bc-trang-do .rpt { font-size: 11.5px; }
-.bc-trang .rpt th, .bc-trang-do .rpt th { padding: 5px 6px; font-size: 11px; }
-.bc-trang .rpt td, .bc-trang-do .rpt td { padding: 4px 6px; }
 .bc-trang .rpt td.num, .bc-trang-do .rpt td.num, .bc-trang .rpt td.code, .bc-trang-do .rpt td.code { white-space: nowrap; }
 .bc-khoi {
   display: flow-root;
-}
-.bc-so-trang {
-  position: absolute;
-  right: 10mm;
-  bottom: 5mm;
-  font-size: 11px;
-  color: var(--muted);
 }
 .bc-do {
   position: absolute;
@@ -2387,11 +2365,6 @@ textarea.inp { height: auto; padding: 8px 11px; resize: vertical; }
     print-color-adjust: exact;
   }
 }
-/* Mẫu chuẩn theo chế độ kế toán: ký hiệu mẫu, hàng ký hiệu cột, khối cuối sổ và báo cáo (T47 đợt 4) */
-.bc-mau {
-  max-width: 48%;
-  text-align: center;
-}
 .bc-cho-duyet {
   display: inline-block;
   margin-top: 4px;
@@ -2411,16 +2384,6 @@ textarea.inp { height: auto; padding: 8px 11px; resize: vertical; }
   margin-top: 14px;
   font-size: 12.5px;
   line-height: 1.6;
-}
-.bc-ngay-lap {
-  margin-top: 14px;
-  padding-right: 4%;
-  text-align: right;
-  font-size: 12.5px;
-  font-style: italic;
-}
-.bc-cuoi .sign {
-  margin-top: 8px;
 }
 @media print {
   .bc-cho-duyet {
@@ -3089,12 +3052,6 @@ body.tkmi-dang-keo, body.tkmi-dang-keo * {
 }
 
 /* ── Tuỳ chỉnh báo cáo (T47 đợt 10) ── */
-.bc-trang .rpt, .bc-trang-do .rpt {
-  font-size: var(--bc-co-chu, 11.5px);
-}
-.bc-trang .rpt th, .bc-trang-do .rpt th {
-  font-size: calc(var(--bc-co-chu, 11.5px) - 0.5px);
-}
 .bc-tc-nen {
   background: rgba(0, 0, 0, 0.45);
 }
@@ -4261,3 +4218,240 @@ body.tkmi-dang-keo, body.tkmi-dang-keo * {
     box-shadow: none;
   }
 }
+
+/* ── Tờ báo cáo theo kiểu Ledger Studio (T71) ── */
+.paper-h {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+}
+.paper-dv-trai {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.paper-ten-dv {
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  color: var(--giay-den);
+  line-height: 1.35;
+}
+.paper-dc-mst {
+  font-size: 9px;
+  font-style: italic;
+  color: var(--giay-xam);
+  line-height: 1.35;
+}
+.paper-dv-cs {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--giay-xam);
+  line-height: 1.35;
+}
+
+.bc-mau {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+.bc-mau-so {
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  font-style: italic;
+  text-decoration: underline;
+  color: var(--giay-mo);
+  letter-spacing: 0.1em;
+  line-height: 1.35;
+}
+.bc-mau-cc {
+  font-size: 9px;
+  font-style: italic;
+  color: var(--giay-xam);
+  line-height: 1.35;
+  max-width: 280px;
+  text-align: right;
+}
+
+/* Khối tiêu đề căn giữa, cách đầu 24px, cách bảng 32px */
+.paper-tieu-de-khoi {
+  text-align: center;
+  margin-top: 24px;
+  margin-bottom: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.paper-tieu-de-khoi .paper-tieu-de,
+.paper-tieu-de-khoi h2 {
+  font-size: 20px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.025em;
+  color: var(--giay-den);
+  margin: 0;
+  line-height: 1.25;
+}
+.paper-tieu-de-khoi .paper-dong-phu {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--giay-phu);
+  line-height: 1.35;
+}
+.paper-tieu-de-khoi .paper-dong-ky {
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  color: var(--blue);
+  line-height: 1.35;
+}
+.paper-tieu-de-khoi .paper-dvt,
+.paper .unit {
+  font-size: 9px;
+  font-style: italic;
+  color: var(--giay-xam);
+  line-height: 1.35;
+  margin: 0;
+}
+
+/* Bảng báo cáo theo kiểu Ledger Studio */
+.bc-trang .rpt,
+.bc-trang-do .rpt,
+.rpt {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid var(--giay-nhat);
+  font-size: var(--bc-co-chu, 10.5px);
+  line-height: 1.4;
+  color: var(--ink);
+}
+.bc-trang .rpt th,
+.bc-trang-do .rpt th,
+.rpt th {
+  background: var(--giay-th);
+  border: 1px solid var(--giay-nhat);
+  padding: 6px 10px;
+  font-size: var(--bc-co-chu, 10.5px);
+  font-weight: 800;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+}
+.bc-trang .rpt td,
+.bc-trang-do .rpt td,
+.rpt td {
+  border: 1px solid var(--giay-nhat);
+  padding: 6px 10px;
+  font-size: var(--bc-co-chu, 10.5px);
+  line-height: 1.4;
+  color: var(--ink);
+}
+.bc-trang .rpt tr.b td,
+.bc-trang-do .rpt tr.b td,
+.rpt tr.b td,
+.bc-trang .rpt tr.t td,
+.bc-trang-do .rpt tr.t td,
+.rpt tr.t td,
+.rpt tr.nhom td {
+  background: var(--giay-tong);
+  font-weight: 800;
+}
+.bc-trang .rpt tr.t td:not(.num),
+.bc-trang-do .rpt tr.t td:not(.num),
+.rpt tr.t td:not(.num) {
+  text-align: right;
+}
+.rpt .rpt-ky-hieu th {
+  padding: 3px 6px;
+  font-size: 10px;
+  font-weight: 600;
+  font-style: italic;
+  color: var(--giay-phu);
+}
+
+/* Khối ô ký */
+.bc-cuoi {
+  margin-top: 48px;
+}
+.paper-ky-hang-ngay {
+  display: grid;
+  text-align: center;
+  margin-bottom: 8px;
+}
+.paper-ky-ngay {
+  font-size: 10px;
+  font-style: italic;
+  color: var(--giay-mo);
+  text-align: center;
+}
+.bc-cuoi .sign {
+  display: grid;
+  text-align: center;
+  margin-top: 0;
+  align-items: start;
+}
+.sign-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.sign-chuc-danh,
+.sign b {
+  font-size: 10.5px;
+  font-weight: 900;
+  text-transform: uppercase;
+  color: var(--giay-den);
+  line-height: 1.35;
+  display: block;
+}
+.sign-goi-y,
+.sign i {
+  font-size: 9px;
+  font-style: italic;
+  color: var(--giay-nhat);
+  margin-top: 80px;
+  margin-bottom: 0;
+  line-height: 1.35;
+  display: block;
+}
+.sign-ten {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--giay-den);
+  margin-top: 6px;
+  line-height: 1.35;
+}
+
+/* Chân tờ: số trang chữ hoa nghiêng 8px slate-200, giãn chữ rộng, căn phải, kẻ trên mảnh */
+.bc-so-trang {
+  position: absolute;
+  left: 15mm;
+  right: 10mm;
+  bottom: 5mm;
+  font-size: 8px;
+  font-style: italic;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  text-align: right;
+  color: var(--giay-chan);
+  border-top: 1px solid var(--giay-ke);
+  padding-top: 4px;
+  box-sizing: border-box;
+}
+
+@media print {
+  .bc-in-goc .rpt,
+  .bc-in-goc .rpt th,
+  .bc-in-goc .rpt td {
+    border-color: #000;
+  }
+}
+
