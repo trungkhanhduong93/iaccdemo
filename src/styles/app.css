@@ -2197,3 +2197,26 @@ textarea.inp { height: auto; padding: 8px 11px; resize: vertical; }
 .pt-bar .pt-tc { position: absolute; top: 50%; transform: translateY(-50%); white-space: nowrap; font-variant-numeric: tabular-nums; }
 .pt-bar .pt-tc b { font-weight: 700; color: var(--ink); }
 .pt-bar .pt-tc-nhan { margin-right: 16px; font-weight: 700; color: var(--ink); }
+
+/* ── Form phiếu thu chi: ô ngày chứng từ có nút lịch (T49) ── */
+.ct-ngay { position: relative; }
+.ct-ngay .inp { width: 100%; padding-right: 34px; }
+.ct-ngay-nut { position: absolute; top: 50%; right: 6px; transform: translateY(-50%); width: 26px; height: 26px; display: inline-grid; place-items: center; border: 0; border-radius: 6px; background: transparent; color: var(--muted); cursor: pointer; }
+.ct-ngay-nut:hover { background: var(--soft); color: var(--ink); }
+/* Trạng thái phiếu ở chính giữa đầu form: Thêm mới, Đang chỉnh sửa, Chi tiết phiếu */
+.fsf-h { position: relative; }
+.fsf-giua { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); pointer-events: none; }
+.fsf-tt { display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 20px; border-radius: 999px; font-size: 17px; font-weight: 700; white-space: nowrap; }
+.fsf-tt b { font-weight: 800; font-variant-numeric: tabular-nums; }
+.fsf-tt.moi { background: var(--tint); color: var(--blue-d); }
+.fsf-tt.sua { background: var(--amber-t); color: var(--amber); }
+.fsf-tt.xem { background: var(--soft); color: var(--ink); }
+/* Dải Tổng tiền cố định ở đáy form, số thẳng cột Thành tiền */
+.fsf-day { position: relative; flex: none; height: 48px; background: var(--white); border-top: 1px solid var(--line); }
+.fsf-day-tong { position: absolute; top: 50%; right: 22px; transform: translateY(-50%); display: inline-flex; align-items: baseline; gap: 16px; white-space: nowrap; color: var(--muted); font-size: 13px; }
+.fsf-day-tong b { font-size: 20px; font-weight: 800; color: var(--blue); font-variant-numeric: tabular-nums; }
+/* Hộp Tuỳ chỉnh giao diện phiếu */
+.cot-phieu { display: flex; flex-direction: column; gap: 4px; padding: 12px 16px; overflow: auto; }
+.cot-phieu .muted { margin: 0 0 6px; font-size: 12.5px; }
+.cot-phieu-o { display: flex; align-items: center; gap: 10px; padding: 7px 4px; border-radius: 6px; font-size: 13.5px; cursor: pointer; }
+.cot-phieu-o:hover { background: var(--soft); }

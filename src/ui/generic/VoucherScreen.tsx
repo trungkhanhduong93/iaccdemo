@@ -41,8 +41,8 @@ export function VoucherScreen({ sc, mod }: ScreenProps) {
   const loc = useLocation()
   const cfg = sc.voucher ?? { ...MAC_DINH, dienGiai: [tenMan(sc)] }
   const tatCa = useMemo(() => (cfg.loai ? gopLoai(cfg, sc.code ?? sc.slug) : chungTu(cfg, sc.code ?? sc.slug)), [sc])
-  const { ban, laDaXoa } = useDaXoa(`${mod.key}/${sc.slug}`)
-  const rows = useMemo(() => tatCa.filter(r => !laDaXoa(r.id)), [tatCa, ban])
+  const { ban, laDaXoa, phieuMoi, apSua } = useDaXoa(`${mod.key}/${sc.slug}`)
+  const rows = useMemo(() => [...phieuMoi, ...tatCa].filter(r => !laDaXoa(r.id)).map(apSua), [tatCa, ban])
 
   if (id !== undefined) {
     const row = id === 'moi' ? undefined : rows.find(r => r.id === id)

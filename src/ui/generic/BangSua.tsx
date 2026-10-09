@@ -1,5 +1,6 @@
 // Bảng dòng chứng từ gõ trực tiếp và xem chi tiết theo chuẩn AMIS
 import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import type { VoucherCfg } from '../../modules/types'
 import { CONG_VIEC, HANG, KHACH, KHO, KHOAN_MUC, NCC, NHAN_VIEN, NVL } from '../../data/mock'
 import { Select } from '../Dropdown'
@@ -7,7 +8,7 @@ import { Icon } from '../Icon'
 import { money } from '../format'
 import type { Dong } from './gen'
 
-const DS_DOI_TUONG = Array.from(new Set([
+export const DS_DOI_TUONG = Array.from(new Set([
   ...KHACH.map(x => x.ten),
   ...NCC.map(x => x.ten),
   ...NHAN_VIEN.map(x => x.ten),
@@ -25,6 +26,23 @@ export interface BangSuaProps {
   coLo?: boolean
   coKm?: boolean               // dòng tiền có cột Khoản mục, Công việc; gói Free không có
   khoMacDinh?: string
+  lyDo?: { nhan: string; ds: string[]; macDinh: string }   // cột Lý do thu, chi trên dòng phiếu tiền (T49)
+  dtMacDinh?: string           // đối tượng của dòng mới, theo đối tượng đầu phiếu (T49)
+  an?: string[]                // mã cột người dùng ẩn qua Tuỳ chỉnh giao diện phiếu (T49)
+  khongTong?: boolean          // bỏ dòng Tổng cộng khi tổng đã hiện ở đáy form (phiếu thu chi)
+}
+
+/** Các cột ẩn hiện được của bảng chi tiết, theo loại phiếu (T49) */
+export function cotTuyChon(cfg: VoucherCfg, o: { coKho?: boolean; coLo?: boolean; coCk?: boolean; coKm?: boolean; coLy?: boolean }): [string, string][] {
+  const hang = cfg.dong === 'hang' || cfg.dong === 'nvl'
+  const tien = cfg.dong === 'tien'
+  const ds: [string, string, boolean | undefined][] = [
+    ['kho', 'Kho', o.coKho], ['dvt', 'ĐVT', hang], ['lo', 'Số lô, hạn dùng', hang && o.coLo],
+    ['ly', 'Lý do', tien && o.coLy], ['dt', 'Đối tượng', tien && cfg.doiTuong !== 'none'],
+    ['km', 'Khoản mục', tien && o.coKm], ['cv', 'Công việc', tien && o.coKm],
+    ['ck', 'Chiết khấu', o.coCk], ['thue', 'Thuế suất, tiền thuế', cfg.thue !== undefined || hang],
+  ]
+  return ds.filter(x => x[2]).map(([k, ten]) => [k, ten])
 }
 
 /** Ô nhập số: hiện số thô khi đang gõ, hiển thị định dạng có dấu chấm khi rời ô */
@@ -82,16 +100,29 @@ export function BangSua({
   coLo = false,
   coKm = true,
   khoMacDinh = 'Kho tổng',
+  lyDo,
+  dtMacDinh = '',
+  an = [],
+  khongTong = false,
 }: BangSuaProps) {
   const hang = cfg.dong === 'hang' || cfg.dong === 'nvl'
   const tienDong = cfg.dong === 'tien'
-  const kmDong = tienDong && coKm
-  const dtDong = tienDong && cfg.doiTuong !== 'none'   // phiếu chuyển quỹ không có đối tượng
+  // Cột người dùng đã ẩn qua Tuỳ chỉnh giao diện phiếu
+  const hien = (k: string) => !an.includes(k)
+  coKho = coKho && hien('kho')
+  coLo = coLo && hien('lo')
+  coCk = coCk && hien('ck')
+  const dvtCot = hang && hien('dvt')
+  const thueCot = (cfg.thue !== undefined || hang) && hien('thue')
+  const kmDong = tienDong && coKm && hien('km')
+  const cvDong = tienDong && coKm && hien('cv')
+  const dtDong = tienDong && cfg.doiTuong !== 'none' && hien('dt')   // phiếu chuyển quỹ không có đối tượng
+  const lyDong = tienDong && Boolean(lyDo) && hien('ly')
   const danhMucHang = cfg.dong === 'nvl' ? NVL : HANG
 
   const colSpanDau = hang
-    ? 4 + (coKho ? 1 : 0) + (coLo ? 2 : 0) + (coTk ? 2 : 0)
-    : 2 + (coKho ? 1 : 0) + (coTk ? 2 : 0) + (dtDong ? 1 : 0) + (kmDong ? 2 : 0)
+    ? 3 + (dvtCot ? 1 : 0) + (coKho ? 1 : 0) + (coLo ? 2 : 0) + (coTk ? 2 : 0)
+    : 2 + (coKho ? 1 : 0) + (coTk ? 2 : 0) + (lyDong ? 1 : 0) + (dtDong ? 1 : 0) + (kmDong ? 1 : 0) + (cvDong ? 1 : 0)
 
   function capNhat(idx: number, patch: Partial<Dong>) {
     if (!onChange) return
@@ -167,7 +198,8 @@ export function BangSua({
       tien: 1_000_000,
       ts: cfg.thue ?? 0,
       thue: Math.round(1_000_000 * (cfg.thue ?? 0) / 100),
-      dt: '',
+      dt: dtMacDinh,
+      ly: lyDo?.macDinh,
       km: '',
       cv: '',
       lo: '',
@@ -201,7 +233,7 @@ export function BangSua({
               {hang && <th className="code" style={{ width: 90 }}>Mã hàng</th>}
               <th>{hang ? 'Tên hàng hoá, dịch vụ' : 'Diễn giải'}</th>
               {coKho && <th style={{ width: 140 }}>Kho</th>}
-              {hang && <th style={{ width: 60 }}>ĐVT</th>}
+              {dvtCot && <th style={{ width: 60 }}>ĐVT</th>}
               {hang && coLo && (
                 <>
                   <th style={{ width: 100 }}>Số lô</th>
@@ -216,9 +248,10 @@ export function BangSua({
               )}
               {tienDong && (
                 <>
+                  {lyDong && <th style={{ width: 200 }}>{lyDo!.nhan}</th>}
                   {dtDong && <th style={{ width: 180 }}>Đối tượng</th>}
                   {kmDong && <th style={{ width: 160 }}>Khoản mục</th>}
-                  {kmDong && <th style={{ width: 160 }}>Công việc</th>}
+                  {cvDong && <th style={{ width: 160 }}>Công việc</th>}
                 </>
               )}
               {hang && <th className="num" style={{ width: 80 }}>Số lượng</th>}
@@ -230,7 +263,7 @@ export function BangSua({
                   <th className="num" style={{ width: 100 }}>Tiền CK</th>
                 </>
               )}
-              {(cfg.thue !== undefined || hang) && (
+              {thueCot && (
                 <>
                   <th className="num" style={{ width: 75 }}>Thuế suất</th>
                   <th className="num" style={{ width: 110 }}>Tiền thuế</th>
@@ -245,7 +278,7 @@ export function BangSua({
                 {hang && <td className="code">{d.ma}</td>}
                 <td>{d.ten}</td>
                 {coKho && <td>{d.kho || khoMacDinh}</td>}
-                {hang && <td>{d.dvt}</td>}
+                {dvtCot && <td>{d.dvt}</td>}
                 {hang && coLo && (
                   <>
                     <td>{d.lo || '—'}</td>
@@ -260,9 +293,10 @@ export function BangSua({
                 )}
                 {tienDong && (
                   <>
+                    {lyDong && <td>{d.ly || '—'}</td>}
                     {dtDong && <td>{d.dt || '—'}</td>}
                     {kmDong && <td>{d.km ? (KHOAN_MUC.find(x => x.ma === d.km)?.ten ?? d.km) : '—'}</td>}
-                    {kmDong && <td>{d.cv ? (CONG_VIEC.find(x => x.ma === d.cv)?.ten ?? d.cv) : '—'}</td>}
+                    {cvDong && <td>{d.cv ? (CONG_VIEC.find(x => x.ma === d.cv)?.ten ?? d.cv) : '—'}</td>}
                   </>
                 )}
                 {hang && <td className="num">{money(d.sl)}</td>}
@@ -274,7 +308,7 @@ export function BangSua({
                     <td className="num">{money(d.ck || 0)}</td>
                   </>
                 )}
-                {(cfg.thue !== undefined || hang) && (
+                {thueCot && (
                   <>
                     <td className="num">{d.ts ? `${d.ts}%` : 'KCT'}</td>
                     <td className="num">{money(d.thue)}</td>
@@ -283,7 +317,7 @@ export function BangSua({
               </tr>
             ))}
           </tbody>
-          <tfoot>
+          {!khongTong && <tfoot>
             <tr className="sum">
               <td colSpan={colSpanDau}>Tổng cộng ({dong.length} dòng)</td>
               {hang && <td className="num">{money(tongSl)}</td>}
@@ -295,14 +329,14 @@ export function BangSua({
                   <td className="num">{money(tongCk)}</td>
                 </>
               )}
-              {(cfg.thue !== undefined || hang) && (
+              {thueCot && (
                 <>
                   <td />
                   <td className="num">{money(tongThue)}</td>
                 </>
               )}
             </tr>
-          </tfoot>
+          </tfoot>}
         </table>
       </div>
     )
@@ -319,7 +353,7 @@ export function BangSua({
               {hang && <th style={{ width: 120 }}>Mã hàng</th>}
               <th style={{ minWidth: 180 }}>{hang ? 'Tên hàng hoá, dịch vụ' : 'Diễn giải'}</th>
               {coKho && <th style={{ width: 140 }}>Kho</th>}
-              {hang && <th style={{ width: 65 }}>ĐVT</th>}
+              {dvtCot && <th style={{ width: 65 }}>ĐVT</th>}
               {hang && coLo && (
                 <>
                   <th style={{ width: 100 }}>Số lô</th>
@@ -334,9 +368,10 @@ export function BangSua({
               )}
               {tienDong && (
                 <>
+                  {lyDong && <th style={{ width: 200 }}>{lyDo!.nhan}</th>}
                   {dtDong && <th style={{ width: 180 }}>Đối tượng</th>}
                   {kmDong && <th style={{ width: 160 }}>Khoản mục</th>}
-                  {kmDong && <th style={{ width: 160 }}>Công việc</th>}
+                  {cvDong && <th style={{ width: 160 }}>Công việc</th>}
                 </>
               )}
               {hang && <th className="num" style={{ width: 85 }}>Số lượng</th>}
@@ -348,7 +383,7 @@ export function BangSua({
                   <th className="num" style={{ width: 100 }}>Tiền CK</th>
                 </>
               )}
-              {(cfg.thue !== undefined || hang) && (
+              {thueCot && (
                 <>
                   <th className="num" style={{ width: 80 }}>Thuế suất</th>
                   <th className="num" style={{ width: 110 }}>Tiền thuế</th>
@@ -397,7 +432,7 @@ export function BangSua({
                     </Select>
                   </td>
                 )}
-                {hang && (
+                {dvtCot && (
                   <td>
                     <input
                       type="text"
@@ -454,6 +489,15 @@ export function BangSua({
                 )}
                 {tienDong && (
                   <>
+                    {lyDong && <td>
+                      <Select
+                        className="inp sm"
+                        value={d.ly ?? ''}
+                        onChange={e => capNhat(i, { ly: e.target.value })}
+                      >
+                        {lyDo!.ds.map(x => <option key={x} value={x}>{x}</option>)}
+                      </Select>
+                    </td>}
                     {dtDong && <td>
                       <Select
                         className="inp sm"
@@ -478,7 +522,7 @@ export function BangSua({
                         ))}
                       </Select>
                     </td>}
-                    {kmDong && <td>
+                    {cvDong && <td>
                       <Select
                         className="inp sm"
                         value={d.cv ?? ''}
@@ -515,7 +559,7 @@ export function BangSua({
                     </td>
                   </>
                 )}
-                {(cfg.thue !== undefined || hang) && (
+                {thueCot && (
                   <>
                     <td>
                       <Select
@@ -547,7 +591,7 @@ export function BangSua({
               </tr>
             ))}
           </tbody>
-          <tfoot>
+          {!khongTong && <tfoot>
             <tr className="sum">
               <td colSpan={colSpanDau}>Tổng cộng ({dong.length} dòng)</td>
               {hang && <td className="num">{money(tongSl)}</td>}
@@ -559,7 +603,7 @@ export function BangSua({
                   <td className="num">{money(tongCk)}</td>
                 </>
               )}
-              {(cfg.thue !== undefined || hang) && (
+              {thueCot && (
                 <>
                   <td />
                   <td className="num">{money(tongThue)}</td>
@@ -567,7 +611,7 @@ export function BangSua({
               )}
               <td />
             </tr>
-          </tfoot>
+          </tfoot>}
         </table>
       </div>
       <div className="row" style={{ padding: '8px 12px', gap: 10 }}>
@@ -581,5 +625,31 @@ export function BangSua({
         )}
       </div>
     </div>
+  )
+}
+
+/** Hộp Tuỳ chỉnh giao diện phiếu: bật tắt các cột của bảng chi tiết (T49) */
+export function HopCotPhieu({ ds, an, onDoi, onDong }: { ds: [string, string][]; an: string[]; onDoi: (an: string[]) => void; onDong: () => void }) {
+  return createPortal(
+    <div className="overlay ds-hop-nen" onMouseDown={e => { if (e.target === e.currentTarget) onDong() }}>
+      <div className="ds-hop ds-hop-nho" role="dialog" aria-modal="true" aria-label="Tuỳ chỉnh giao diện phiếu">
+        <div className="ds-hop-dau"><b>Tuỳ chỉnh giao diện phiếu</b></div>
+        <div className="cot-phieu">
+          <p className="muted">Chọn cột hiện ở bảng chi tiết. Diễn giải và Thành tiền luôn hiện.</p>
+          {ds.length ? ds.map(([k, ten]) => (
+            <label key={k} className="cot-phieu-o">
+              <input type="checkbox" checked={!an.includes(k)} onChange={e => onDoi(e.target.checked ? an.filter(x => x !== k) : [...an, k])} />
+              {ten}
+            </label>
+          )) : <p className="muted">Phiếu này không có cột nào để ẩn.</p>}
+        </div>
+        <div className="ds-chan">
+          <button type="button" className="btn" onClick={() => onDoi([])}>Khôi phục mặc định</button>
+          <span className="grow" />
+          <button type="button" className="btn pri" autoFocus onClick={onDong}>Xong</button>
+        </div>
+      </div>
+    </div>,
+    document.body,
   )
 }

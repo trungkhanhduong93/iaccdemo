@@ -311,3 +311,20 @@ Lý do: Trum giao việc T45 ngày 09/10/2026, theo mẫu MISA AMIS và phản h
 - Xoá chứng từ (nút Hàng loạt, mục Xoá chứng từ trong menu Tiện ích của form) luôn hỏi lại trước khi xoá. Gói Free xoá được mọi phiếu; gói có ghi sổ chỉ xoá phiếu chưa ghi. Phiếu thuộc kỳ đã khoá sổ không xoá được ở mọi gói. Bản mẫu coi kỳ đã khoá là đến hết tháng 8/2026 (`KHOA_SO_DEN` trong `data/mock.ts`). Bản mẫu chưa có backend: phiếu xoá được ẩn đến khi tải lại trang (`generic/daXoa.ts`).
 
 Lý do: PhuongXT chốt ngày 09/10/2026 theo ảnh góp ý trên màn Thu, chi tiền, áp cho mọi phân hệ (T48).
+
+## QD33. Form phiếu thu chi: đối tượng từ danh mục, lý do lên trên, tháng hạch toán lãi lỗ gói Free (09/10/2026)
+
+- Áp cho 5 loại phiếu ở Thu, chi tiền. Đầu form không còn chip Số phiếu, chip tên màn, ô Loại phiếu, Tổng tiền (tổng ở cuối form). Loại phiếu chọn từ nút Thêm mới.
+- Chính giữa đầu form hiện trạng thái: Thêm mới; Đang chỉnh sửa <số phiếu>; Chi tiết phiếu <số phiếu>. Gói Free không hiện chip trạng thái ghi sổ khi xem phiếu.
+- Ô Đối tượng chọn từ danh mục đối tượng (khách hàng, nhà cung cấp, nhân viên), chọn xong điền Mã số thuế. Người giao, nhận và Nhân viên thực hiện gộp thành Người giao dịch.
+- Lý do thu, chi đứng trên Diễn giải. Chọn lý do thì Diễn giải và lý do mọi dòng chi tiết đổi theo; sửa lại được từng ô, từng dòng.
+- Ngày chứng từ gõ được hoặc chọn bằng lịch.
+- Tiêu đề form phiếu thu chi chỉ là tên loại phiếu (Thu tiền mặt, Chi tiền mặt...), không có chữ "mới", không có số phiếu.
+- Đối tượng đầu phiếu đổi thì đối tượng mọi dòng chi tiết đổi theo, sửa lại được từng dòng. Có dòng Ghi chú ở đầu phiếu, mặc định theo lý do; gõ Ghi chú thì Diễn giải chép theo, sửa Diễn giải không đổi Ghi chú.
+- Phiếu thu chi bỏ tab Hạch toán (Ghi sổ ở gói Free) trong form.
+- Phiếu thu chi không có dòng Tổng cộng trong bảng chi tiết vì trùng Tổng tiền. Tổng tiền (kèm số dòng) nằm ở dải cố định đáy form, số thẳng cột Thành tiền.
+- Mọi phiếu: menu Tiện ích ghi Sao chép (thay Nhân bản), thêm Tuỳ chỉnh giao diện phiếu để ẩn hiện cột bảng chi tiết; lựa chọn nhớ theo màn trên máy người dùng.
+- Bản mẫu chưa có backend: phiếu mới lưu hiện lên đầu danh sách, số phiếu tăng dần; phiếu đã có sửa rồi lưu thì danh sách hiện nội dung mới; giữ tới khi tải lại trang (`generic/daXoa.ts`).
+- Gói Free có ô Tháng hạch toán lãi lỗ: mặc định tháng của ngày chứng từ, chọn được các tháng trước chưa khoá sổ. Phiếu chuyển quỹ không có ô này vì không ảnh hưởng lãi lỗ.
+
+Lý do: PhuongXT chốt ngày 09/10/2026 theo ảnh góp ý trên form Thu tiền mặt mới (T49).

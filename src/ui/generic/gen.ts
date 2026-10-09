@@ -27,6 +27,7 @@ export interface Dong {
   tkCo?: string
   stt?: number
   dt?: string
+  ly?: string                  // lý do thu, chi của dòng phiếu tiền (T49)
   km?: string
   cv?: string
   lo?: string

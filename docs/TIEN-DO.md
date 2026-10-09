@@ -4,7 +4,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T48.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T49.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
@@ -35,6 +35,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T49 | Form phiếu thu chi (5 loại): đầu form gọn, trạng thái ở giữa; Đối tượng từ danh mục; Lý do trên Diễn giải, Ghi chú; Người giao dịch; Ngày chứng từ có lịch; gói Free có Tháng hạch toán lãi lỗ; cột Lý do ở dòng; Tổng tiền ở dải đáy; bỏ tab Hạch toán. Mọi phiếu: Sao chép, Tuỳ chỉnh giao diện phiếu, phiếu lưu và sửa hiện ở danh sách (QD33) | PhuongXT | 09/10/2026 | `2026-10-09-phuongxt-form-phieu-thu-chi.md` |
 | T48 | Danh sách chứng từ mọi phân hệ: gói Free bỏ chip trạng thái; Tổng trang, Tổng cộng mọi trang trên hàng phân trang thẳng cột; Tổng tiền là cột cuối, bỏ cột Chức năng; khung chi tiết mặc định đóng; xoá hỏi lại, kỳ đã khoá sổ không xoá (QD32) | PhuongXT | 09/10/2026 | `2026-10-09-phuongxt-so-chi-nhanh-danh-sach.md` |
 | T46 | Cải tiến chân quy trình (lưới 3 khối), nút cột tài khoản sáng rõ, chiều cao dòng bảng 36px, mở date picker trực tiếp ô lọc ngày, tuỳ chọn hiển thị & đóng băng cột theo mẫu mới (QD30) | Trum | 09/10/2026 | `2026-10-09-trum-redesign-quy-trinh-tk-dong-bang.md` |
 | T43 | Đợt chỉnh 13 điểm: thanh công cụ một hàng, nút Excel và Hàng loạt dạng biểu tượng, chip đếm mới, dòng tổng, bỏ cột Trạng thái và dòng tiêu đề, màu sidebar và cam logo, bỏ giới hạn rộng, gói Free/Standard/Plus/Pro (mã F/S/PL/PR), 80 phiếu mua hàng, dòng tổng bảng chi tiết (QD27) | Trum | 09/10/2026 | `2026-10-09-trum-dot-chinh-13-diem.md` |
