@@ -4436,7 +4436,11 @@ body.tkmi-dang-keo, body.tkmi-dang-keo * {
 
 @media (max-width: 1440px) {
   .bc-chon .sel {
-    max-width: 240px;
+    max-width: 340px;
+    font-size: 15px;
+  }
+  .bc-chon-nhan {
+    display: none;  /* tên báo cáo đã đủ rõ, nhường chỗ để tên không bị cắt (T72) */
   }
   .bc-chon-phai .thanh-loc-phai .rpt-btn-txt {
     display: none;
