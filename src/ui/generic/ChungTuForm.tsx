@@ -63,7 +63,6 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   // Phiếu đã lưu trong phiên giữ đủ các ô đầu phiếu ở row._xxx (T69), không lấy lại dữ liệu mẫu
   const luuCu = (k: string) => (row?.[`_${k}`] as string | undefined)
   const [nhanKemHd, setNhanKemHd] = useState(row?._nhanKemHd !== undefined ? Boolean(row._nhanKemHd) : nv?.ttHd === 'da' || row?.nguon === 'HĐ')
-  const [tknhChi, setTknhChi] = useState(luuCu('tknhChi') ?? TK_NGAN_HANG[0].so)
 
   // Dữ liệu dòng
   const idSeed = row ? `${sc.code ?? sc.slug}-${row.id}` : 'moi'
@@ -152,10 +151,12 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   }
   // Gói Free: tháng hạch toán lãi lỗ, mặc định tháng của ngày chứng từ, chọn được các tháng trước chưa khoá sổ (T49)
   // Quỹ của phiếu (T51): phiếu tiền mặt chỉ chọn quỹ tiền mặt của chi nhánh lập phiếu, phiếu ngân hàng chọn tài khoản ngân hàng
-  const dsQuy = nhom === 'thu' || nhom === 'chi' ? [quyTm]
-    : nhom === 'nhthu' || nhom === 'nhchi' ? QUY_TIEN.slice(CHI_NHANH.length) : []
+  // Mua, bán trả tiền ngay (T78): tiền mặt chọn quỹ tiền mặt, chuyển khoản chọn quỹ ngân hàng
+  const dsQuy = nhom === 'thu' || nhom === 'chi' || (bo.tt && hinhThucTt === 'tienmat') ? [quyTm]
+    : nhom === 'nhthu' || nhom === 'nhchi' || (bo.tt && hinhThucTt === 'chuyenkhoan') ? QUY_TIEN.slice(CHI_NHANH.length) : []
   const [quy, setQuy] = useState(() => row?._quy ? String(row._quy) : dsQuy.includes(quyTm) ? quyTm : dsQuy[0] ?? '')
   useEffect(() => { setQuy(row?._quy ? String(row._quy) : dsQuy.includes(quyTm) ? quyTm : dsQuy[0] ?? '') }, [loai?.k, row?.id])
+  useEffect(() => { if (!dsQuy.includes(quy)) setQuy(dsQuy[0] ?? '') }, [hinhThucTt])
   const coThangLl = laTien && s.goi === 'F' && nhom !== 'cq'   // chuyển quỹ không ảnh hưởng lãi lỗ
   const dsThangLl = useMemo(() => thangLaiLo(ngayCt), [ngayCt])
   const [thangLl, setThangLl] = useState(dsThangLl[0])
@@ -192,7 +193,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
     const noiDung = {
       ngay: ngayCt, thang: Number(ngayCt.split('/')[1]) || 10, doiTuong, dienGiai,
       tien: tongTien - tongCk, thue: tongThue, tong: tongThanhToan, _dong: dsDong, _lyDo: lyDo, _ghiChu: ghiChu, _quy: quy,
-      _nguoiGiao: nguoiGiao, _nhanVien: nhanVien, _diaChi: diaChi, _mst: mst, _hanTt: hanTt, _tknhChi: tknhChi,
+      _nguoiGiao: nguoiGiao, _nhanVien: nhanVien, _diaChi: diaChi, _mst: mst, _hanTt: hanTt,
       _nhanKemHd: nhanKemHd, _soHd: soHd, _ngayHd: ngayHd, _kyHieuHd: kyHieuHd, _httt: hinhThucTt,
     }
     const idMoi = `moi-${Date.now()}`
@@ -303,8 +304,10 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   )
   // Ghi chú ở mọi phiếu (T69). Phiếu thu chi: mặc định theo lý do, gõ ghi chú thì diễn giải chép theo (T49); chuyển quỹ: mặc định là diễn giải (T77).
   // Phiếu khác: ghi chú để trống, độc lập với diễn giải
+  // Ghi chú kéo dài qua hai cột trái: phiếu thu chi (T77), Mua hàng (T78)
+  const keoGc = (boDg && nhom !== 'cq') || nhom === 'mua'
   const oGhiChu = (
-    <div className="f" style={boDg && nhom !== 'cq' ? { gridColumn: '1 / 3' } : undefined}>
+    <div className="f" style={keoGc ? { gridColumn: '1 / 3' } : undefined}>
       <label>Ghi chú</label>
       <input className="inp" readOnly={!dangSua} value={ghiChu} placeholder={dangSua ? 'Ghi chú thêm cho phiếu' : ''}
         onChange={e => { setGhiChu(e.target.value); if (boDg) setDienGiai(e.target.value) }} />
@@ -583,13 +586,14 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
                 </label>
               </div>
 
-              {hinhThucTt === 'chuyenkhoan' && (
+              {/* Trả tiền ngay: chọn quỹ tiền mặt hoặc quỹ ngân hàng (T78) */}
+              {hinhThucTt !== 'congno' && (
                 <div className="row" style={{ gap: 8, alignItems: 'center' }}>
-                  <span style={{ fontSize: 12.5, color: 'var(--muted)' }}>Tài khoản ngân hàng:</span>
+                  <span style={{ fontSize: 12.5, color: 'var(--muted)', whiteSpace: 'nowrap' }}>{hinhThucTt === 'tienmat' ? 'Quỹ tiền mặt' : 'Quỹ ngân hàng'}:</span>
                   {dangSua ? (
-                    <ChonDanhMuc dm="tkNhSo" nhan="tài khoản ngân hàng" className="inp sm" value={tknhChi} onChange={setTknhChi}
-                      ds={TK_NGAN_HANG.map(tk => ({ v: tk.so, t: `${tk.so} - ${tk.nh}` }))} />
-                  ) : <input className="inp sm" readOnly value={tknhChi} />}
+                    <ChonDanhMuc dm={hinhThucTt === 'tienmat' ? 'quyTm' : 'tkNh'} nhan={hinhThucTt === 'tienmat' ? 'quỹ tiền mặt' : 'quỹ ngân hàng'}
+                      className="inp sm" value={quy} onChange={setQuy} ds={dsQuy} />
+                  ) : <input className="inp sm" readOnly value={quy} />}
                 </div>
               )}
 
@@ -628,9 +632,9 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               ) : (<>
               {laTien && dsQuy.length > 0 && (
                 <div className="f">
-                  <label>{nhom === 'thu' || nhom === 'chi' ? 'Quỹ tiền mặt' : 'Quỹ tiền'} <em>*</em></label>   {/* thu, chi ngân hàng ghi Quỹ tiền (T77) */}
+                  <label>{nhom === 'thu' || nhom === 'chi' ? 'Quỹ tiền mặt' : 'Quỹ ngân hàng'} <em>*</em></label>   {/* thu, chi ngân hàng ghi Quỹ ngân hàng (T77, T78) */}
                   {dangSua ? (
-                    <ChonDanhMuc dm={nhom === 'thu' || nhom === 'chi' ? 'quyTm' : 'tkNh'} nhan={nhom === 'thu' || nhom === 'chi' ? 'quỹ tiền mặt' : 'tài khoản ngân hàng'}
+                    <ChonDanhMuc dm={nhom === 'thu' || nhom === 'chi' ? 'quyTm' : 'tkNh'} nhan={nhom === 'thu' || nhom === 'chi' ? 'quỹ tiền mặt' : 'quỹ ngân hàng'}
                       value={quy} onChange={setQuy} ds={dsQuy} />
                   ) : (
                     <input className="inp" readOnly value={quy} />
@@ -727,11 +731,11 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
                   </div>
                 )}
               </div>}
-              {(!boDg || nhom === 'cq') && oGhiChu}
+              {!keoGc && oGhiChu}
             </div>
 
-            {/* Cột 3: Ngày chứng từ, số chứng từ. Chi nhánh hiện trên đầu form */}
-            <div className="stack" style={{ gap: 10 }}>
+            {/* Cột 3: Ngày chứng từ, số chứng từ. Chi nhánh hiện trên đầu form. Ghi chú kéo dài thì cột này chiếm cả hàng Ghi chú (T78) */}
+            <div className="stack" style={{ gap: 10, gridRow: keoGc ? 'span 2' : undefined }}>
               <div className="f">
                 <label>Ngày chứng từ <em>*</em></label>
                 {dangSua && laTien ? (
@@ -784,7 +788,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
                 </div>
               )}
             </div>
-            {boDg && nhom !== 'cq' && oGhiChu}
+            {keoGc && oGhiChu}
           </div>
         </section>
 

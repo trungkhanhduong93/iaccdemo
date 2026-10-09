@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T78 | Form Mua hàng: Ghi chú kéo dài qua hai cột; Tiền mặt ngay thì chọn quỹ tiền mặt, Chuyển khoản ngay thì chọn quỹ ngân hàng. Thu, chi ngân hàng ghi nhãn Quỹ ngân hàng | PhuongXT | Đang làm | Sửa `ChungTuForm.tsx` |
 | T73 | Tối ưu phản hồi thao tác: bấm, rê chuột, mở menu, panel, cuộn bảng phản hồi tức thì; hiệu ứng nhẹ, ngắn; đo trước và sau | Trum | Chờ | Sửa nhiều file trong `src/`. Làm cuối cùng |
 | T76 | Danh mục Hệ thống tài khoản 1.1 dạng cây theo chế độ TT133, TT99; panel Thêm/Sửa tài khoản đủ trường DM_ACCOUNT (QD41) | Trum | Chờ | Dữ liệu `danh-muc/he-thong-tk.ts` (TT99 dựng theo khung TT200, chờ đối chiếu T04). Sửa `HeThongTaiKhoan.tsx` mới, `danh-muc/index.ts`, `app.css`. Làm tiếp theo |
 | T70 | Mọi panel bên phải rộng hơn (min(880px, 72vw)), lưới 3 cột, chia khối: panel Thêm/Sửa từng danh mục đủ trường theo bảng DM_ (truong-dm.ts), Tuỳ chỉnh báo cáo, Đối soát | Trum | Chờ | Sửa `truong-dm.ts` mới, `CatalogScreen.tsx`, `TuyChinhBC.tsx`, `DoiSoat.tsx`, `app.css`. Làm sau T76 |
@@ -38,6 +37,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T78 | Form Mua hàng: Ghi chú kéo dài qua hai cột; Tiền mặt ngay thì chọn quỹ tiền mặt, Chuyển khoản ngay thì chọn quỹ ngân hàng. Thu, chi ngân hàng ghi nhãn Quỹ ngân hàng | PhuongXT | 09/10/2026 | `2026-10-09-phuongxt-mua-hang-chon-quy.md` |
 | T77 | Đầu phiếu thu chi, chuyển quỹ: bỏ ô Diễn giải (đã có Ghi chú), Địa chỉ lên chỗ Diễn giải, Ghi chú kéo dài qua hai cột; thu, chi ngân hàng ghi Quỹ tiền; chuyển quỹ Từ quỹ, Đến quỹ một hàng | PhuongXT | 09/10/2026 | `2026-10-09-phuongxt-dau-phieu-thu-chi-ghi-chu.md` |
 | T69 | Ô Ghi chú ở mọi phiếu (phiếu khác thu chi: để trống, độc lập với diễn giải); lưu phiếu giữ đủ các ô đầu phiếu (người giao, địa chỉ, MST, hoá đơn, thanh toán) (QD33) | PhuongXT | 09/10/2026 | `2026-10-09-phuongxt-hoa-don-cot-phai-ghi-chu.md` |
 | T68 | Form Mua hàng: thông tin hoá đơn ở cột phải đầu phiếu (2 cột, dưới số phiếu); Số lô, Hạn dùng chỉ có ở gói Pro (QD33) | PhuongXT | 09/10/2026 | `2026-10-09-phuongxt-hoa-don-cot-phai-ghi-chu.md` |
