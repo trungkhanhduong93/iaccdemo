@@ -4,13 +4,14 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T77.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T78.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T78 | Form Mua hàng: Ghi chú kéo dài qua hai cột; Tiền mặt ngay thì chọn quỹ tiền mặt, Chuyển khoản ngay thì chọn quỹ ngân hàng. Thu, chi ngân hàng ghi nhãn Quỹ ngân hàng | PhuongXT | Đang làm | Sửa `ChungTuForm.tsx` |
 | T73 | Tối ưu phản hồi thao tác: bấm, rê chuột, mở menu, panel, cuộn bảng phản hồi tức thì; hiệu ứng nhẹ, ngắn; đo trước và sau | Trum | Chờ | Sửa nhiều file trong `src/`. Làm cuối cùng |
 | T76 | Danh mục Hệ thống tài khoản 1.1 dạng cây theo chế độ TT133, TT99; panel Thêm/Sửa tài khoản đủ trường DM_ACCOUNT (QD41) | Trum | Chờ | Dữ liệu `danh-muc/he-thong-tk.ts` (TT99 dựng theo khung TT200, chờ đối chiếu T04). Sửa `HeThongTaiKhoan.tsx` mới, `danh-muc/index.ts`, `app.css`. Làm tiếp theo |
 | T70 | Mọi panel bên phải rộng hơn (min(880px, 72vw)), lưới 3 cột, chia khối: panel Thêm/Sửa từng danh mục đủ trường theo bảng DM_ (truong-dm.ts), Tuỳ chỉnh báo cáo, Đối soát | Trum | Chờ | Sửa `truong-dm.ts` mới, `CatalogScreen.tsx`, `TuyChinhBC.tsx`, `DoiSoat.tsx`, `app.css`. Làm sau T76 |
