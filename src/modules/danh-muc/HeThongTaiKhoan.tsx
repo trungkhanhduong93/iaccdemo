@@ -5,6 +5,7 @@ import { tenMan } from '../../app/registry'
 import { useSession } from '../../app/session'
 import { CHE_DO } from '../../app/che-do'
 import { Icon } from '../../ui/Icon'
+import { Select } from '../../ui/Dropdown'
 import { PageHead } from '../../ui/Page'
 import { Table } from '../../ui/Table'
 import { fold } from '../../ui/format'
@@ -224,13 +225,17 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
     setPanelOpen(true)
   }
 
-  const moSua = (tk: TaiKhoanDef) => {
+  const moSua = useCallback((tk: TaiKhoanDef) => {
     setDangSua(tk)
     setForm(taoMacDinh(tk))
     setErrors({})
     setMoKhoi({ thongTin: true, theoDoi: true, ngoaiTe: false, nganHang: false, ngonNgu: false })
     setPanelOpen(true)
-  }
+  }, [])
+  // Thân panel nhiều trường vẽ sau khi panel trượt xong: lúc trượt không bị khựng (đo hở 160ms giữa hai khung, T81)
+  const [thanMo, setThanMo] = useState(false)
+  useEffect(() => { if (!panelOpen) setThanMo(false) }, [panelOpen])
+  const dsCha = useMemo(() => [{ v: '', t: '(Không có - Cấp 1)' }, ...all.map(t => ({ v: t.so, t: `${t.so} - ${t.ten}` }))], [all])
 
   const dongPanel = useCallback(() => {
     setPanelOpen(false)
@@ -297,7 +302,7 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
     }
   }
 
-  const cols: Col[] = [
+  const cols: Col[] = useMemo(() => [
     {
       k: 'so',
       t: 'Số tài khoản',
@@ -363,7 +368,12 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
       c: true,
       r: () => <span className="chip ok">Đang dùng</span>,
     },
-  ]
+  ], [q, moRong])
+  // Bảng ghi nhớ: mở panel hay gõ trong panel không vẽ lại cây tài khoản (T81)
+  const bang = useMemo(() => (
+    <Table cols={cols} rows={rows as unknown as Row[]} motDong onRow={r => moSua(r as unknown as TaiKhoanDef)}
+      rowCls={r => r.laCha ? 'tk-row-cha click' : 'click'} />
+  ), [cols, rows, moSua])
 
   const ten = tenMan(sc)
 
@@ -400,15 +410,7 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
           }
         />
 
-        {rows.length > 0 ? (
-          <Table
-            cols={cols}
-            rows={rows}
-            motDong
-            onRow={r => moSua(r as unknown as TaiKhoanDef)}
-            rowCls={r => r.laCha ? 'tk-row-cha click' : 'click'}
-          />
-        ) : (
+        {rows.length > 0 ? bang : (
           <div className="empty">
             <b>Không tìm thấy tài khoản phù hợp</b>
             <button type="button" className="btn sm" style={{ marginTop: 10 }} onClick={() => setQ('')}>Xoá tìm kiếm</button>
@@ -423,7 +425,7 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
       {panelOpen && (
         <>
           <div className="overlay" style={{ padding: 0 }} onClick={dongPanel} />
-          <aside className="pn-hop">
+          <aside className="pn-hop" onAnimationEnd={e => { if (e.target === e.currentTarget) setThanMo(true) }}>
             <div className="pn-dau">
               <div>
                 <h3>{dangSua ? `Sửa tài khoản: ${dangSua.so}` : 'Thêm tài khoản'}</h3>
@@ -433,6 +435,7 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
             </div>
 
             <div className="pn-than">
+              {thanMo && <>
               {/* Khối 1: Thông tin chung */}
               <div className={`pn-khoi${moKhoi.thongTin ? ' mo' : ''}`}>
                 <div
@@ -471,16 +474,8 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
                       </div>
                       <div className="f">
                         <label>Tài khoản tổng hợp</label>
-                        <select
-                          className="inp"
-                          value={form.cha}
-                          onChange={e => handleChaChange(e.target.value)}
-                        >
-                          <option value="">(Không có - Cấp 1)</option>
-                          {all.map(t => (
-                            <option key={t.so} value={t.so}>{t.so} - {t.ten}</option>
-                          ))}
-                        </select>
+                        <Select className="inp" value={form.cha} ds={dsCha} aria-label="Tài khoản tổng hợp"
+                          onChange={e => handleChaChange(e.target.value)} />
                       </div>
                       <div className="f">
                         <label>Cấp</label>
@@ -488,7 +483,7 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
                       </div>
                       <div className="f">
                         <label>Tính chất <em>*</em></label>
-                        <select
+                        <Select
                           className="inp"
                           value={form.tinhChat}
                           onChange={e => setForm(f => ({ ...f, tinhChat: e.target.value as TinhChatTk }))}
@@ -497,7 +492,7 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
                           <option value="Dư Có">Dư Có</option>
                           <option value="Lưỡng tính">Lưỡng tính</option>
                           <option value="Không số dư">Không số dư</option>
-                        </select>
+                        </Select>
                       </div>
                       <div className="f">
                         <label>Loại tài khoản</label>
@@ -555,7 +550,7 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
                       </div>
                       <div className="f">
                         <label>Loại tiền</label>
-                        <select
+                        <Select
                           className="inp"
                           disabled={!form.coNgoaiTe}
                           value={form.loaiTien}
@@ -564,11 +559,11 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
                           <option value="USD">USD</option>
                           <option value="EUR">EUR</option>
                           <option value="VND">VND</option>
-                        </select>
+                        </Select>
                       </div>
                       <div className="f">
                         <label>Cách tính tỷ giá xuất</label>
-                        <select
+                        <Select
                           className="inp"
                           disabled={!form.coNgoaiTe}
                           value={form.tyGiaXuat}
@@ -577,7 +572,7 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
                           <option value="Bình quân gia quyền">Bình quân gia quyền</option>
                           <option value="Đích danh">Đích danh</option>
                           <option value="Nhập trước xuất trước">Nhập trước xuất trước</option>
-                        </select>
+                        </Select>
                       </div>
                     </div>
                   </div>
@@ -768,6 +763,7 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
                   </div>
                 )}
               </div>
+              </>}
             </div>
 
             <div className="pn-chan">

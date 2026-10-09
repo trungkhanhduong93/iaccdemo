@@ -1,5 +1,5 @@
 // Màn danh mục chung: bảng có tìm kiếm, lọc nhóm, ngăn kéo thêm và sửa (T70)
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useDeferredValue, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { Col, Row, ScreenProps } from '../../modules/types'
 import { tenMan } from '../../app/registry'
@@ -23,10 +23,11 @@ export function CatalogScreen({ sc }: ScreenProps) {
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [moKhoi, setMoKhoi] = useState<Record<string, boolean>>({})
 
-  const nhoms = cfg.nhomLoc ? [...new Set(all.map(r => r[cfg.nhomLoc!]))] : []
-  const rows = all.filter(r => (!nhom || r[cfg.nhomLoc!] === nhom) && (!q || fold(Object.values(r).join(' ')).includes(fold(q))))
-  const cols0 = typeof cfg.cols === 'function' ? cfg.cols(s.goi) : cfg.cols
-  const cols: Col[] = [
+  // Danh sách, cột và bảng ghi nhớ lại: mở panel hay gõ trong panel không vẽ lại cả bảng danh sách phía sau (T81)
+  const nhoms = useMemo(() => cfg.nhomLoc ? [...new Set(all.map(r => r[cfg.nhomLoc!]))] : [], [all])
+  const rows = useMemo(() => all.filter(r => (!nhom || r[cfg.nhomLoc!] === nhom) && (!q || fold(Object.values(r).join(' ')).includes(fold(q)))), [all, nhom, q])
+  const cols0 = useMemo(() => typeof cfg.cols === 'function' ? cfg.cols(s.goi) : cfg.cols, [sc, s.goi])
+  const cols: Col[] = useMemo(() => [
     ...cols0,
     { k: '_tt', t: 'Trạng thái', r: r => r._tt === 0 ? <St k="dim">Ngừng dùng</St> : <St k="ok">Đang dùng</St> },
     ...(cfg.chucNang ? [{
@@ -56,7 +57,14 @@ export function CatalogScreen({ sc }: ScreenProps) {
         )
       },
     }] : []),
-  ]
+  ], [cols0, sc])
+  // Bấm dòng: gán luôn giá trị form cùng lượt vẽ, không đợi useEffect vẽ lần hai
+  const moSua = useCallback((r: Row | null) => {
+    setEdit(r)
+    setFormVal(r ? { ...r, _tt: r._tt === undefined ? 1 : r._tt } : {})
+    setErrors({})
+  }, [])
+  const bang = useMemo(() => <Table cols={cols} rows={rows} motDong onRow={moSua} />, [cols, rows, moSua])
   const ten = tenMan(sc)
   const tenNgan = sc.ngan ?? ten
   const dangSua = Boolean(edit && (edit.ma || edit.ten || Object.keys(edit).length > 1))
@@ -76,18 +84,8 @@ export function CatalogScreen({ sc }: ScreenProps) {
 
   const dsTk = useMemo(() => heThongTk(s.cheDo), [s.cheDo])
 
-  // Đồng bộ giá trị khi mở panel
-  useEffect(() => {
-    if (!edit) {
-      setFormVal({})
-      setErrors({})
-      return
-    }
-    const val: Record<string, any> = { ...edit }
-    if (val._tt === undefined) val._tt = 1
-    setFormVal(val)
-    setErrors({})
-  }, [edit])
+  // Khung panel hiện ngay, thân nhiều trường vẽ ở khung hình sau để bấm mở không bị khựng (T81)
+  const editThan = useDeferredValue(edit)
 
   // Đóng panel bằng phím Escape
   useEffect(() => {
@@ -129,20 +127,21 @@ export function CatalogScreen({ sc }: ScreenProps) {
     }
   }
 
-  const getOptions = (tr: TruongDM): { val: string; nhan: string }[] => {
-    if (tr.ds && tr.ds.length > 0) {
-      return tr.ds.map(d => ({ val: d, nhan: d }))
-    }
-    if (tr.k.toLowerCase().startsWith('tk')) {
-      return dsTk.map(t => ({ val: t.so, nhan: `${t.so} - ${t.ten}` }))
-    }
-    if (tr.k === 'dvt') {
-      return ['Tô', 'Phần', 'Dĩa', 'Ly', 'Lon', 'Chai', 'kg', 'g', 'Lít', 'ml', 'Thùng', 'Hộp', 'Cái'].map(d => ({ val: d, nhan: d }))
-    }
-    if (tr.k === 'nhom' && nhoms.length > 0) {
-      return nhoms.map(d => ({ val: d, nhan: d }))
-    }
-    return []
+  // Lựa chọn của ô chọn tính một lần theo khoá trường, dùng lại giữa các lần vẽ
+  const dsTkChon = useMemo(() => dsTk.map(t => ({ v: t.so, t: `${t.so} - ${t.ten}` })), [dsTk])
+  const boNho = useMemo(() => new Map<string, { v: string; t: string }[]>(), [dsTkChon, nhoms])
+  const getOptions = (tr: TruongDM): { v: string; t: string }[] => {
+    const daCo = boNho.get(tr.k)
+    if (daCo) return daCo
+    const dau = { v: '', t: `(Chọn ${tr.nhan.toLowerCase()})` }
+    let ds: { v: string; t: string }[] = []
+    if (tr.ds && tr.ds.length > 0) ds = tr.ds.map(d => ({ v: d, t: d }))
+    else if (tr.k.toLowerCase().startsWith('tk')) ds = dsTkChon
+    else if (tr.k === 'dvt') ds = ['Tô', 'Phần', 'Dĩa', 'Ly', 'Lon', 'Chai', 'kg', 'g', 'Lít', 'ml', 'Thùng', 'Hộp', 'Cái'].map(d => ({ v: d, t: d }))
+    else if (tr.k === 'nhom' && nhoms.length > 0) ds = nhoms.map(d => ({ v: d, t: d }))
+    const kq = [dau, ...ds]
+    boNho.set(tr.k, kq)
+    return kq
   }
 
   const formatGiaTri = (tr: TruongDM, v: any) => {
@@ -180,11 +179,11 @@ export function CatalogScreen({ sc }: ScreenProps) {
               <span className="muted" style={{ fontSize: 12, marginRight: 4 }}>{rows.length}/{all.length} dòng</span>
               <button type="button" className="btn" onClick={() => toast('Nhập danh mục từ Excel')}><Icon n="upload" className="ic sm" />Nhập Excel</button>
               <button type="button" className="btn" onClick={() => toast(`Đã xuất ${rows.length} dòng ra Excel`)}><Icon n="download" className="ic sm" />Xuất Excel</button>
-              <button type="button" className="btn pri" onClick={() => setEdit({})}><Icon n="plus" className="ic sm" />{cfg.them ?? 'Thêm mới'}</button>
+              <button type="button" className="btn pri" onClick={() => moSua({})}><Icon n="plus" className="ic sm" />{cfg.them ?? 'Thêm mới'}</button>
             </div>
           }
         />
-        {rows.length ? <Table cols={cols} rows={rows} motDong onRow={r => setEdit(r)} /> : (
+        {rows.length ? bang : (
           all.length ? (
             <div className="empty">
               <b>Không có dòng khớp bộ lọc</b>
@@ -193,7 +192,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
           ) : (
             <div className="empty">
               <b>Chưa có dữ liệu</b>
-              <button type="button" className="btn sm pri empty-btn" onClick={() => setEdit({})}>{cfg.them ?? 'Thêm mới'}</button>
+              <button type="button" className="btn sm pri empty-btn" onClick={() => moSua({})}>{cfg.them ?? 'Thêm mới'}</button>
             </div>
           )
         )}
@@ -216,7 +215,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
             </div>
 
             <div className="pn-than">
-              {dsKhoi.map(kh => {
+              {editThan && dsKhoi.map(kh => {
                 const mo = isMo(kh.ten)
                 return (
                   <div key={kh.ten} className={`pn-khoi${mo ? ' mo' : ''}`}>
@@ -264,19 +263,16 @@ export function CatalogScreen({ sc }: ScreenProps) {
                                     }}
                                   />
                                 ) : tr.kieu === 'chon' ? (
-                                  <select
+                                  <Select
                                     className="inp"
-                                    value={formVal[tr.k] ?? ''}
+                                    value={String(formVal[tr.k] ?? '')}
+                                    ds={opts}
+                                    aria-label={tr.nhan}
                                     onChange={e => {
                                       setFormVal(v => ({ ...v, [tr.k]: e.target.value }))
                                       setErrors(err => ({ ...err, [tr.k]: '' }))
                                     }}
-                                  >
-                                    <option value="">(Chọn {tr.nhan.toLowerCase()})</option>
-                                    {opts.map(o => (
-                                      <option key={o.val} value={o.val}>{o.nhan}</option>
-                                    ))}
-                                  </select>
+                                  />
                                 ) : (
                                   <input
                                     className={`inp${tr.kieu === 'tien' ? ' pn-tien' : tr.kieu === 'so' ? ' pn-so' : ''}`}

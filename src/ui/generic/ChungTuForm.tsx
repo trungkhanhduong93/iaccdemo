@@ -440,10 +440,11 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               width={180}
               label={<><Icon n="more" className="ic sm" />Tiện ích</>}
             >
+              {dong => <>
               <MenuItem icon="copy" onClick={() => toast('Đã sao chép chứng từ')}>
                 Sao chép
               </MenuItem>
-              <MenuItem icon="chinh" onClick={() => setHopCot(true)}>
+              <MenuItem icon="chinh" onClick={() => { dong(); setHopCot(true) }}>
                 Tuỳ chỉnh giao diện phiếu
               </MenuItem>
               <MenuItem icon="doc" onClick={() => toast('Đã xuất mẫu Excel')}>
@@ -459,6 +460,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
                   Xoá chứng từ
                 </MenuItem>
               )}
+              </>}
             </Dropdown>
             {hopCot && (
               <HopCotPhieu ds={cotTuyChon(cfg, { coKho: Boolean(bo.kho), coLo: nhom === 'mua' && s.goi === 'PR', coCk: Boolean(bo.ck), coKm: kieu !== 'khong', coLy: Boolean(oLy) })}

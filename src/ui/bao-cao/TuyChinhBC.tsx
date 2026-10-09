@@ -227,19 +227,20 @@ export function TuyChinhBC({
           </button>
         </div>
 
-        {/* 4 Thẻ đầu thân */}
-        <div className="pn-tabs">
-          <button type="button" className={`pn-tab${tab === 'cot' ? ' on' : ''}`} onClick={() => setTab('cot')}>Cột hiển thị</button>
-          <button type="button" className={`pn-tab${tab === 'nhom' ? ' on' : ''}`} onClick={() => setTab('nhom')}>Gom nhóm</button>
-          <button type="button" className={`pn-tab${tab === 'ky' ? ' on' : ''}`} onClick={() => setTab('ky')}>Người ký</button>
-          <button type="button" className={`pn-tab${tab === 'trang' ? ' on' : ''}`} onClick={() => setTab('trang')}>Trang & cỡ chữ</button>
-        </div>
+        {/* Hai cột: mục dọc bên trái, nội dung mục bên phải (T81) */}
+        <div className="pn-hai-cot">
+        <nav className="pn-muc-doc" aria-label="Mục tuỳ chỉnh">
+          <button type="button" className={`pn-muc${tab === 'cot' ? ' on' : ''}`} onClick={() => setTab('cot')}><Icon n="layers" className="ic sm" />Cột hiển thị</button>
+          <button type="button" className={`pn-muc${tab === 'nhom' ? ' on' : ''}`} onClick={() => setTab('nhom')}><Icon n="grid" className="ic sm" />Gom nhóm</button>
+          <button type="button" className={`pn-muc${tab === 'ky' ? ' on' : ''}`} onClick={() => setTab('ky')}><Icon n="edit" className="ic sm" />Người ký</button>
+          <button type="button" className={`pn-muc${tab === 'trang' ? ' on' : ''}`} onClick={() => setTab('trang')}><Icon n="doc" className="ic sm" />Trang và cỡ chữ</button>
+        </nav>
 
-        {/* Thân thẻ */}
+        {/* Thân mục */}
         <div className="pn-than">
           {tab === 'cot' && (
             khoa ? (
-              <p className="bc-tc-thong-bao">Mẫu pháp định giữ nguyên bố cục, chỉ sửa được người ký và cỡ chữ</p>
+              <div className="pn-khoa"><Icon n="lock" className="ic" /><div><b>Mẫu theo thông tư</b><span>Mẫu pháp định giữ nguyên bố cục, chỉ sửa được người ký và cỡ chữ.</span></div></div>
             ) : (
               <DsCot
                 items={dsCotItem}
@@ -323,6 +324,8 @@ export function TuyChinhBC({
               <p className="muted pn-chu-nho">Đổi khổ giấy Dọc / Ngang tại thanh công cụ dưới trang.</p>
             </div>
           )}
+        </div>
+
         </div>
 
         {/* Chân khung */}
