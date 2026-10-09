@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState, type CSSProperties, type PointerEvent as PE, type ReactNode } from 'react'
+import { useLayoutEffect, useRef, type CSSProperties, type PointerEvent as PE, type ReactNode } from 'react'
 import type { Col, Row } from '../modules/types'
 import { money } from './format'
 import { OLoc, type LocCot } from './LocCot'
@@ -139,17 +139,6 @@ export function Table({
   }
 
   const wrapRef = useRef<HTMLDivElement>(null)
-  const r1Ref = useRef<HTMLTableRowElement>(null)
-  const [thH1, setThH1] = useState(36)
-  useLayoutEffect(() => {
-    if (r1Ref.current) {
-      // offsetHeight là px CSS, không bị zoom của html nhân vào như getBoundingClientRect (T44 thu 85-90%), nên top hàng lọc khớp đáy hàng tiêu đề
-      const h = r1Ref.current.offsetHeight
-      if (h && Math.abs(h - thH1) > 0.5) {
-        setThH1(Math.round(h))
-      }
-    }
-  })
 
   // Hook cuộn ảo theo chuẩn LedgerStudio (T50)
   const vs = useVirtualScroll(rows, 36, wrapRef, virtual ?? rows.length > 25)
@@ -179,9 +168,9 @@ export function Table({
 
   return (
     <div ref={wrapRef} className="tbl-wrap" style={maxH ? { maxHeight: maxH } : undefined}>
-      <table className={`tbl${motDong ? ' mot-dong' : ''}${keDoc ? ' ke-doc' : ''}`} style={{ '--th-h1': `${thH1}px` } as CSSProperties}>
+      <table className={`tbl${motDong ? ' mot-dong' : ''}${keDoc ? ' ke-doc' : ''}`}>
         <thead>
-          <tr ref={r1Ref}>{cols.map((c, i) => {
+          <tr>{cols.map((c, i) => {
             const rd = rongDef(c)
             const thStyle: CSSProperties = {
               ...(rd.w ? { width: rd.w } : {}),
@@ -206,7 +195,6 @@ export function Table({
                   ...(rd.minW ? { minWidth: rd.minW } : {}),
                   ...(rd.maxW ? { maxWidth: rd.maxW } : {}),
                   ...vt[i].style,
-                  top: thH1 - 1,
                 }
                 return (
                   <th key={c.k} className={lop(c, i)} style={thLocStyle}>
