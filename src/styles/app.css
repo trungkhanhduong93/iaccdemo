@@ -4914,3 +4914,17 @@ table.tbl {
 .bc-kho-nhom.tat button { cursor: not-allowed; }
 @media (max-width: 1440px) { .bc-seg-xem button:last-child { width: 56px; } }
 .bc-chon-nhan { flex: none; width: 118px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ── Nút Tờ in / Bảng và Khổ: khung rõ, pill trượt khi chọn (T75) ── */
+.bc-pill { position: relative; display: inline-flex; padding: 2px; gap: 0; border: 1px solid var(--line); border-radius: 9px; background: var(--soft); isolation: isolate; }
+.bc-pill::before { content: ""; position: absolute; top: 2px; bottom: 2px; left: 2px; border-radius: 7px; background: #fff; box-shadow: 0 1px 2px rgba(14, 26, 43, .12), 0 0 0 1px rgba(14, 26, 43, .04); z-index: -1; transition: transform .18s cubic-bezier(.2, .8, .2, 1), width .18s cubic-bezier(.2, .8, .2, 1); }
+.bc-pill button { position: relative; height: 26px; padding: 0; border: 0; border-radius: 7px; background: transparent; color: var(--muted); font-weight: 600; transition: color .15s; }
+.bc-pill button.on { background: transparent; color: var(--blue); box-shadow: none; }
+.bc-pill button:hover:not(:disabled):not(.on) { color: var(--ink); }
+.bc-seg-xem.bc-pill::before { width: 58px; }
+.bc-seg-xem.bc-pill[data-chon="1"]::before { width: 96px; transform: translateX(58px); }
+.bc-seg-kho.bc-pill::before { width: 56px; }
+.bc-seg-kho.bc-pill[data-chon="1"]::before { transform: translateX(56px); }
+@media (max-width: 1440px) { .bc-seg-xem.bc-pill[data-chon="1"]::before { width: 56px; } }
+.bc-kho-nhom.tat .bc-pill::before { box-shadow: none; }
+@media (prefers-reduced-motion: reduce) { .bc-pill::before { transition: none; } }
