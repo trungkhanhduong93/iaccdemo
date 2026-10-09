@@ -343,3 +343,5 @@ Lý do: PhuongXT chốt ngày 09/10/2026 theo ảnh góp ý trên màn Thu, chi 
 - Gói Free có ô Tháng hạch toán lãi lỗ: mặc định tháng của ngày chứng từ, chọn được các tháng trước chưa khoá sổ. Phiếu chuyển quỹ không có ô này vì không ảnh hưởng lãi lỗ.
 
 Lý do: PhuongXT chốt ngày 09/10/2026 theo ảnh góp ý trên form Thu tiền mặt mới (T49).
+
+## QD34. Tối ưu bộ khung 1 trang nhìn và dữ liệu lớn theo LedgerStudio (đang soạn)
