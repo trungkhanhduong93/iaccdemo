@@ -1,5 +1,5 @@
 // Sổ, báo cáo chung: thanh lọc kỳ và chi nhánh, trang báo cáo kiểu mẫu in, ô ký
-import { useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useParams } from 'react-router-dom'
 import type { Col, ReportCfg, Row, ScreenProps } from '../../modules/types'
 import { tenMan } from '../../app/registry'
@@ -13,10 +13,11 @@ import { PageHead } from '../Page'
 import { Table } from '../Table'
 import { between, k, money, pad, pick, rng } from '../format'
 import { chungTu, soChiTiet } from './gen'
-import { Select } from '../Dropdown'
+import { Dropdown, MenuHead, MenuItem, Select } from '../Dropdown'
 import { LocO, NutVuong, ThanhLoc } from '../ThanhLoc'
 import { khoangThang } from '../ChonNgay'
 import { SoTrangCtx, ToGiay, tachKhoi, type Kho } from '../bao-cao/ToGiay'
+import { datNguonXuat, layNguonXuat, taoTenFile, xuatFile, type NguonXuat } from '../bao-cao/xuat'
 
 export const KY_CHON: [string, string][] = [['9', 'Tháng 9/2026'], ['10', 'Tháng 10/2026 (đến 07/10)'], ['8', 'Tháng 8/2026']]
 
@@ -33,6 +34,37 @@ export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: 
       setKhoang(khoangThang(thang, 2026))
     }
   }, [ky])
+
+  const xuat = async (dinhDang: 'xlsx' | 'csv' | 'html' | 'xml') => {
+    const n = layNguonXuat()
+    if (!n) {
+      toast('Màn này chưa hỗ trợ xuất')
+      return
+    }
+    if (dinhDang === 'xlsx') {
+      toast('Đang tạo file Excel…')
+      try {
+        await xuatFile('xlsx', n)
+        const ten = taoTenFile(n, 'xlsx')
+        toast(`Đã xuất ${ten}`)
+      } catch {
+        toast('Lỗi xuất file Excel')
+      }
+      return
+    }
+    try {
+      await xuatFile(dinhDang, n)
+      const ten = taoTenFile(n, dinhDang)
+      toast(`Đã xuất ${ten}`)
+    } catch {
+      toast('Lỗi xuất file')
+    }
+  }
+
+  const inPdf = () => {
+    inBaoCao()
+    toast('Chọn máy in "Lưu dưới dạng PDF" để lưu file')
+  }
 
   return (
     <ThanhLoc
@@ -57,12 +89,42 @@ export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: 
       phai={
         <>
           <NutVuong icon="printer" title="In" onClick={inBaoCao} />
-          <NutVuong icon="download" title="Xuất Excel" />
-          <NutVuong icon="doc" title="Xuất PDF" onClick={() => { inBaoCao(); toast('Chọn máy in "Lưu dưới dạng PDF" để lưu file') }} />
+          <Dropdown
+            label={<Icon n="download" className="ic sm" />}
+            btnClass="nut-vuong"
+            title="Xuất báo cáo"
+            align="end"
+            width={180}
+          >
+            {dong => (
+              <>
+                <MenuHead>Xuất báo cáo</MenuHead>
+                <MenuItem icon="doc" onClick={() => { dong(); xuat('xlsx') }}>Excel (.xlsx)</MenuItem>
+                <MenuItem icon="doc" onClick={() => { dong(); xuat('csv') }}>CSV (.csv)</MenuItem>
+                <MenuItem icon="printer" onClick={() => { dong(); inPdf() }}>PDF (hộp in)</MenuItem>
+                <MenuItem icon="doc" onClick={() => { dong(); xuat('html') }}>HTML (.html)</MenuItem>
+                <MenuItem icon="doc" onClick={() => { dong(); xuat('xml') }}>XML (.xml)</MenuItem>
+              </>
+            )}
+          </Dropdown>
         </>
       }
     />
   )
+}
+
+export type OKy = { chucDanh: string; goiY: string; hoTen: string }
+
+/** Tách phần dựng danh sách ô ký thành hàm dùng chung cho cả vẽ lẫn xuất (kế hoạch mục 5) */
+export function dsOKy(loai: LoaiBC, cheDo: CheDo, nguoiDaiDien: string): OKy[] {
+  const lap: OKy = { chucDanh: 'Người lập biểu', goiY: '(Ký, họ tên)', hoTen: 'Lê Quốc Bảo' }
+  const ktt: OKy = { chucDanh: 'Kế toán trưởng', goiY: '(Ký, họ tên)', hoTen: 'Trần Thu Hà' }
+  const ddpl: OKy = { chucDanh: 'Người đại diện theo pháp luật', goiY: '(Ký, họ tên, đóng dấu)', hoTen: nguoiDaiDien }
+  if (cheDo === 'TT152') return [lap, { chucDanh: 'Người đại diện hộ kinh doanh', goiY: '(Ký, họ tên, đóng dấu)', hoTen: nguoiDaiDien }]
+  if (loai === 'so') return [{ chucDanh: 'Người ghi sổ', goiY: '(Ký, họ tên)', hoTen: 'Lê Quốc Bảo' }, ktt, ddpl]
+  if (loai === 'bctc') return cheDo === 'TT58' ? [lap, ddpl] : [lap, ktt, ddpl]
+  if (loai === 'baocao') return [{ chucDanh: 'Người lập', goiY: '(Ký, họ tên)', hoTen: 'Lê Quốc Bảo' }, ktt]
+  return [lap, ktt, ddpl]
 }
 
 /** Trang báo cáo theo mẫu: đầu trang đơn vị, mẫu số, tiêu đề, kỳ, ô ký. Vẽ trên tờ A4 tự chia trang (ToGiay).
@@ -71,9 +133,45 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
   const { s } = useSession()
   const dv = donViHienTai(s)
   const cd = cheDoHienTai(s)
-  const cfg = cauHinhBC(useParams().slug?.replace(/-/g, '.'))
+  const slug = useParams().slug?.replace(/-/g, '.')
+  const cfg = cauHinhBC(slug)
   const kyHieu = cfg ? cfg.kyHieu?.[s.cheDo] : cd.ma !== 'TT152' ? mau : undefined
   const loai: LoaiBC = cfg?.loai ?? 'baocao'
+  const khoMacDinh = kho ?? cfg?.kho ?? tuDoanKho(children)
+  const [khoHienTai, setKhoHienTai] = useState<Kho>(khoMacDinh)
+  const layHtmlRef = useRef<(() => string) | null>(null)
+
+  const dsKy = useMemo(() => ky ? dsOKy(loai, s.cheDo, dv.nguoiDaiDien) : [], [ky, loai, s.cheDo, dv.nguoiDaiDien])
+  const ngayStr = `${pad(HOM_NAY.getDate())} tháng ${pad(HOM_NAY.getMonth() + 1)} năm ${HOM_NAY.getFullYear()}`
+  const ngayLap = loai === 'bctc' ? `Lập, ngày ${ngayStr}` : `Ngày ${ngayStr}`
+  const kyHieuCot: 'chuSo' | 'so' | undefined = cd.ma !== 'TT152' && (loai === 'so' || loai === 'bctc') ? (loai === 'so' ? 'chuSo' : 'so') : undefined
+
+  // Dựng NguonXuat cho chức năng xuất file
+  useEffect(() => {
+    const khoi = tachKhoi(children)
+    const bang = khoi.filter((x): x is Extract<typeof x, { loai: 'bang' }> => x.loai === 'bang').map(b => ({
+      cols: b.cols,
+      rows: b.rows,
+      kyHieuCot,
+    }))
+    const nx: NguonXuat = {
+      ma: slug,
+      tieuDe: cfg?.ten?.[s.cheDo] ?? title,
+      phu: sub,
+      kyHieu,
+      canCu: kyHieu ? canCu(cd) : undefined,
+      cheDo: s.cheDo,
+      dv: { ten: dv.ten, diaChi: dv.diaChi, mst: dv.mst },
+      kho: khoHienTai,
+      bang,
+      ky: dsKy,
+      ngayLap,
+      layHtml: () => layHtmlRef.current?.() ?? '',
+    }
+    datNguonXuat(nx)
+    return () => datNguonXuat(null)
+  }, [slug, title, sub, kyHieu, cd, s.cheDo, dv.ten, dv.diaChi, dv.mst, khoHienTai, children, kyHieuCot, dsKy, ngayLap, cfg])
+
   const dau = (
     <>
       <div className="paper-h">
@@ -90,33 +188,23 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
       <div className="unit">Đơn vị tính: đồng</div>
     </>
   )
-  const cuoi = ky ? <KhoiCuoi loai={loai} cheDo={s.cheDo} nguoiDaiDien={dv.nguoiDaiDien} /> : undefined
-  const kyHieuCot = cd.ma !== 'TT152' && (loai === 'so' || loai === 'bctc') ? (loai === 'so' ? 'chuSo' : 'so') : undefined
+  const cuoi = ky ? <KhoiCuoi loai={loai} cheDo={s.cheDo} nguoiDaiDien={dv.nguoiDaiDien} dsKy={dsKy} /> : undefined
   return (
-    <ToGiay dau={dau} than={children} cuoi={cuoi} khoMacDinh={kho ?? cfg?.kho ?? tuDoanKho(children)}
-      kyHieuCot={kyHieuCot} congChuyen={loai === 'so' ? cfg?.congCot : undefined} />
+    <ToGiay dau={dau} than={children} cuoi={cuoi} khoMacDinh={khoMacDinh}
+      kyHieuCot={kyHieuCot} congChuyen={loai === 'so' ? cfg?.congCot : undefined}
+      onKho={setKhoHienTai} layHtmlRef={layHtmlRef} />
   )
 }
 
-type OKy = [chucDanh: string, cach: string, hoTen: string]
-
 /** Khối cuối tờ: dòng sổ có mấy trang, ngày lập, ô ký theo loại báo cáo và chế độ (kế hoạch mục 5) */
-function KhoiCuoi({ loai, cheDo, nguoiDaiDien }: { loai: LoaiBC; cheDo: CheDo; nguoiDaiDien: string }) {
-  const lap: OKy = ['Người lập biểu', '(Ký, họ tên)', 'Lê Quốc Bảo']
-  const ktt: OKy = ['Kế toán trưởng', '(Ký, họ tên)', 'Trần Thu Hà']
-  const ddpl: OKy = ['Người đại diện theo pháp luật', '(Ký, họ tên, đóng dấu)', nguoiDaiDien]
-  const o: OKy[] = cheDo === 'TT152' ? [lap, ['Người đại diện hộ kinh doanh', '(Ký, họ tên, đóng dấu)', nguoiDaiDien]]
-    : loai === 'so' ? [['Người ghi sổ', '(Ký, họ tên)', 'Lê Quốc Bảo'], ktt, ddpl]
-    : loai === 'bctc' ? (cheDo === 'TT58' ? [lap, ddpl] : [lap, ktt, ddpl])
-    : loai === 'baocao' ? [['Người lập', '(Ký, họ tên)', 'Lê Quốc Bảo'], ktt]
-    : [lap, ktt, ddpl]
+function KhoiCuoi({ loai, cheDo, nguoiDaiDien, dsKy }: { loai: LoaiBC; cheDo: CheDo; nguoiDaiDien: string; dsKy: OKy[] }) {
   const ngay = `${pad(HOM_NAY.getDate())} tháng ${pad(HOM_NAY.getMonth() + 1)} năm ${HOM_NAY.getFullYear()}`
   return (
     <div className="bc-cuoi">
       {loai === 'so' && <SoTrangSo />}
       <div className="bc-ngay-lap">{loai === 'bctc' ? `Lập, ngày ${ngay}` : `Ngày ${ngay}`}</div>
-      <div className="sign" style={{ gridTemplateColumns: `repeat(${o.length}, 1fr)` }}>
-        {o.map(([chucDanh, cach, hoTen]) => <div key={chucDanh}><b>{chucDanh}</b><i>{cach}</i>{hoTen}</div>)}
+      <div className="sign" style={{ gridTemplateColumns: `repeat(${dsKy.length}, 1fr)` }}>
+        {dsKy.map(o => <div key={o.chucDanh}><b>{o.chucDanh}</b><i>{o.goiY}</i>{o.hoTen}</div>)}
       </div>
     </div>
   )

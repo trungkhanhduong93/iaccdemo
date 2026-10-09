@@ -180,12 +180,14 @@ const khopDo = (d: Do | null, khoi: Khoi[]): d is Do => !!d && d.khoi.length ===
 
 const Net = ({ d }: { d: string }) => <svg className="ic sm" viewBox="0 0 24 24" aria-hidden><path d={d} /></svg>
 
-export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, giay, anSoTrang }: {
+export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, giay, anSoTrang, onKho, layHtmlRef }: {
   dau: ReactNode; than: ReactNode; cuoi?: ReactNode; khoMacDinh: Kho
   kyHieuCot?: KyHieuCot     // hàng ký hiệu cột A, B, 1, 2 dưới tiêu đề mọi bảng
   congChuyen?: string[]     // sổ: cột cộng chuyển trang
   giay?: Giay               // khổ riêng của mẫu in: bỏ chọn Dọc/Ngang, không lưu khổ
   anSoTrang?: boolean       // ẩn dòng "Trang x/y"
+  onKho?: (k: Kho) => void  // báo khổ giấy đang chọn cho khung ngoài xuất file
+  layHtmlRef?: { current: (() => string) | null } // ref lấy HTML các trang thật
 }): JSX.Element {
   const path = useLocation().pathname
   const [kho, setKho] = useState<Kho>(() => docKho(path) ?? khoMacDinh)
@@ -197,7 +199,23 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
   const [dangIn, setDangIn] = useState(false)
   const ban = useRef<HTMLDivElement>(null)
   const khungDo = useRef<HTMLDivElement>(null)
+  const xuatHtmlRef = useRef<HTMLDivElement>(null)
   const pv = 'bcg' + useId().replace(/[^a-zA-Z0-9]/g, '')
+
+  useEffect(() => { onKho?.(kho) }, [kho, onKho])
+
+  useEffect(() => {
+    if (layHtmlRef) {
+      layHtmlRef.current = () => {
+        const trangs = xuatHtmlRef.current?.querySelectorAll('.bc-trang')
+        if (trangs && trangs.length > 0) {
+          return Array.from(trangs).map(el => el.outerHTML).join('\n')
+        }
+        const banTrang = ban.current?.querySelectorAll('.bc-trang:not(.bc-cho)')
+        return Array.from(banTrang ?? []).map(el => el.outerHTML).join('\n')
+      }
+    }
+  })
 
   const khoi = useMemo(() => tachKhoi(than), [than])
   const tongDong = khoi.reduce((a, k) => a + (k.loai === 'bang' ? k.rows.length : 0), 0)
@@ -415,6 +433,11 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
         </div>
 
         {dangIn && createPortal(<div className={`bc-in-goc ${pv}`}>{trangDs.map((_, i) => veTrang(i, false))}</div>, document.body)}
+
+        {/* Khung HTML xuất: chứa đủ các trang thật, không transform, không khung đo, không ô giữ chỗ */}
+        <div ref={xuatHtmlRef} style={{ display: 'none' }} aria-hidden inert>
+          {trangDs.map((_, i) => veTrang(i, false))}
+        </div>
       </div>
     </SoTrangCtx.Provider>
   )
