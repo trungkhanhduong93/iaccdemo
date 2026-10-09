@@ -11,6 +11,7 @@
   --r: 12px; --r-sm: 8px;
   --sh: none;
   --sh-lg: 0 18px 50px rgba(14, 26, 43, .18), 0 2px 6px rgba(14, 26, 43, .08);
+  --sh-giay: 0 1px 2px rgba(14, 26, 43, .06), 0 6px 16px rgba(14, 26, 43, .08), 0 18px 40px rgba(14, 26, 43, .10);
   color-scheme: light;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -4048,23 +4049,6 @@ body.tkmi-dang-keo, body.tkmi-dang-keo * {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.bc-loc-khoang {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.bc-loc-khoang .inp {
-  flex: 1;
-  min-width: 0;
-  height: 32px;
-  padding: 0 8px;
-  font-size: 13px;
-}
-.bc-loc-den {
-  color: var(--muted);
-  flex: none;
-  font-size: 13px;
-}
 .bc-loc-gat {
   display: flex;
   align-items: center;
@@ -4220,4 +4204,60 @@ body.tkmi-dang-keo, body.tkmi-dang-keo * {
   background: #fff;
   color: var(--ink);
   box-shadow: var(--sh);
+}
+
+/* ── Nút xem, khổ trên thanh công cụ; bộ lọc theo danh mục (T68) ── */
+.bc-xem-cho {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.bc-xem-cho .bc-thanh-nhan {
+  font-size: 12.5px;
+  color: var(--muted);
+  margin-left: 2px;
+  user-select: none;
+}
+.bc-btn-bang-gon {
+  display: none;
+}
+.bc-chon .sel {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+@media (max-width: 1440px) {
+  .bc-chon .sel {
+    max-width: 300px;
+  }
+  .bc-btn-bang-dai {
+    display: none;
+  }
+  .bc-btn-bang-gon {
+    display: inline;
+  }
+}
+
+/* Tờ giấy có bóng nhiều lớp, không bị cắt mép */
+.bc-sizer {
+  overflow: visible;
+}
+.bc-trang {
+  box-shadow: var(--sh-giay), 0 0 0 1px rgba(14, 26, 43, .06);
+}
+.tkmi-to .bc-sizer {
+  overflow: visible;
+}
+.tkmi-to .bc-trang {
+  box-shadow: var(--sh-giay), 0 0 0 1px rgba(14, 26, 43, .06);
+}
+.in-ct-preview .bc-ban {
+  background: #e9edf2;
+}
+@media print {
+  .bc-in-goc .bc-trang,
+  .bc-trang {
+    box-shadow: none;
+  }
 }

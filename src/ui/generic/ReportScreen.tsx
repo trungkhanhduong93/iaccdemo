@@ -21,7 +21,7 @@ import { khoangThang } from '../ChonNgay'
 import { SoTrangCtx, ToGiay, NgatTrang, tachKhoi, type Kho } from '../bao-cao/ToGiay'
 import { datNguonXuat, layNguonXuat, taoTenFile, xuatFile, type NguonXuat } from '../bao-cao/xuat'
 import {
-  useTrangThaiLoc, datLoc, datKhoang, datAnKhongPS, datCotNhuDangXem, datTuyChon, xoaLoc,
+  useTrangThaiLoc, datLoc, datAnKhongPS, datCotNhuDangXem, datTuyChon, xoaLoc,
   datColsGoc, datDsKyMacDinh, useTuyChinhBC, bienDoiBang
 } from '../bao-cao/tuyChinhBC'
 import { layNguoiKy } from '../bao-cao/khoMauIn'
@@ -82,7 +82,6 @@ export function ReportToolbar({ ky, setKy }: { ky: string; setKy: (v: string) =>
   }
 
   const dangLoc = Object.keys(tt.loc).some(k => (tt.loc[k] ?? []).length > 0)
-    || Object.keys(tt.khoang).some(k => tt.khoang[k] && (tt.khoang[k][0] != null || tt.khoang[k][1] != null))
     || tt.anKhongPS
 
   // Đang xem trong phân hệ Báo cáo: thanh công cụ nằm cùng hàng tên báo cáo ở thanh chọn (T55)
@@ -103,6 +102,7 @@ export function ReportToolbar({ ky, setKy }: { ky: string; setKy: (v: string) =>
         onLamMoi={() => xoaLoc(path)}
         phai={
           <>
+            <span className="bc-xem-cho" id="bc-xem-cho" />
             <button
               type="button"
               className="btn sm"
@@ -190,7 +190,7 @@ const LOAI_TRU_TU_SINH = new Set(['10.2.2', '10.2.3', '10.2.4', '10.3.1'])
 interface BoLocMuc {
   k: string
   nhan: string
-  kieu: 'chon' | 'chonNhieu' | 'khoang'
+  kieu: 'chon' | 'chonNhieu'
   ds?: string[]
 }
 
@@ -274,76 +274,6 @@ function LocChonNhieu({
   )
 }
 
-function LocKhoang({
-  nhan,
-  khoang,
-  onDoi,
-}: {
-  nhan: string
-  khoang?: [number | null, number | null]
-  onDoi: (kh: [number | null, number | null]) => void
-}) {
-  const [tuStr, setTuStr] = useState(() => (khoang?.[0] != null ? String(khoang[0]) : ''))
-  const [denStr, setDenStr] = useState(() => (khoang?.[1] != null ? String(khoang[1]) : ''))
-
-  useEffect(() => {
-    setTuStr(khoang?.[0] != null ? String(khoang[0]) : '')
-    setDenStr(khoang?.[1] != null ? String(khoang[1]) : '')
-  }, [khoang?.[0], khoang?.[1]])
-
-  const parseNum = (s: string): number | null => {
-    const t = s.trim().replace(/\./g, '').replace(',', '.')
-    if (!t) return null
-    const n = Number(t)
-    return isNaN(n) ? null : n
-  }
-
-  const apDung = () => {
-    const tuVal = parseNum(tuStr)
-    const denVal = parseNum(denStr)
-    if (tuVal !== (khoang?.[0] ?? null) || denVal !== (khoang?.[1] ?? null)) {
-      onDoi([tuVal, denVal])
-    }
-  }
-
-  return (
-    <div className="bc-loc-muc">
-      <div className="bc-loc-nhan">{nhan}</div>
-      <div className="bc-loc-khoang">
-        <input
-          type="text"
-          className="inp sm"
-          placeholder="Từ"
-          value={tuStr}
-          onChange={e => setTuStr(e.target.value)}
-          onBlur={apDung}
-          onKeyDown={e => {
-            if (e.key === 'Enter') {
-              (e.target as HTMLInputElement).blur()
-              apDung()
-            }
-          }}
-        />
-        <span className="bc-loc-den">–</span>
-        <input
-          type="text"
-          className="inp sm"
-          placeholder="Đến"
-          value={denStr}
-          onChange={e => setDenStr(e.target.value)}
-          onBlur={apDung}
-          onKeyDown={e => {
-            if (e.key === 'Enter') {
-              (e.target as HTMLInputElement).blur()
-              apDung()
-            }
-          }}
-        />
-      </div>
-    </div>
-  )
-}
-
 function CotLocBaoCao({
   dsLoc,
   anKhongPS,
@@ -374,16 +304,11 @@ function CotLocBaoCao({
   const soLocDangAp = useMemo(() => {
     let n = 0
     for (const l of dsLoc) {
-      if (l.kieu === 'khoang') {
-        const kh = tt.khoang[l.k]
-        if (kh && (kh[0] != null || kh[1] != null)) n++
-      } else {
-        if ((tt.loc[l.k] ?? []).length > 0) n++
-      }
+      if ((tt.loc[l.k] ?? []).length > 0) n++
     }
     if (anKhongPS && tt.anKhongPS) n++
     return n
-  }, [dsLoc, tt.loc, tt.khoang, tt.anKhongPS, anKhongPS])
+  }, [dsLoc, tt.loc, tt.anKhongPS, anKhongPS])
 
   if (thuGon) {
     return (
@@ -426,16 +351,6 @@ function CotLocBaoCao({
 
       <div className="bc-loc-ds">
         {dsLoc.map(l => {
-          if (l.kieu === 'khoang') {
-            return (
-              <LocKhoang
-                key={l.k}
-                nhan={l.nhan}
-                khoang={tt.khoang[l.k]}
-                onDoi={kh => datKhoang(path, l.k, kh)}
-              />
-            )
-          }
           const opts = (tt.tuyChon[l.k] && tt.tuyChon[l.k].length > 0) ? tt.tuyChon[l.k] : (l.ds ?? [])
           if (l.kieu === 'chon') {
             const val = tt.loc[l.k]?.[0] ?? ''
@@ -492,6 +407,170 @@ function CotLocBaoCao({
   )
 }
 
+/** Bảng ánh xạ tiêu đề cột hoặc khoá cột → tên danh mục trong src/modules/danh-muc/index.ts (T68).
+ *  Các mục có màn danh mục tương ứng được giữ lại:
+ *  - 1.1: Tài khoản
+ *  - 1.2: Hàng hoá (Hàng hoá / Nguyên vật liệu / Món)
+ *  - 1.3: Đơn vị tính
+ *  - 1.5: Đối tượng (Khách hàng / Nhà cung cấp / Đối tượng)
+ *  - 1.8: Kho
+ *  - chi-nhanh: Chi nhánh
+ *  - 1.12: Quỹ tiền (Quỹ tiền / Tài khoản ngân hàng)
+ *  - 1.13: Tài sản cố định
+ *
+ *  Các mục KHÔNG có màn danh mục tương ứng trong danh-muc/index.ts (bỏ, không đưa vào):
+ *  - Nhân viên (thuộc danh mục Đối tượng, không có màn danh mục riêng)
+ *  - Nhóm hàng / Nhóm món (không có màn danh mục riêng)
+ *  - Công cụ dụng cụ (không có màn danh mục riêng)
+ *  - Loại chứng từ (không có màn danh mục riêng)
+ */
+interface AnhXaDanhMuc {
+  nhom: string
+  ten: string
+  laMa?: boolean
+  khopKhoa?: string[]
+  khopTieuDe: string[]
+}
+
+const BANG_ANH_XA_DANH_MUC: AnhXaDanhMuc[] = [
+  // 1.1: Tài khoản
+  {
+    nhom: 'tk',
+    ten: 'Tài khoản',
+    laMa: true,
+    khopKhoa: ['tk', 'sotk', 'tkno', 'tkco', 'tkdu', 'tkdoiung', 'tkcn', 'tkdt', 'tkgv', 'tkkho', 'tkcp'],
+    khopTieuDe: ['Số hiệu TK', 'Số tài khoản', 'TK', 'TK đối ứng', 'TK Nợ', 'TK Có', 'Tài khoản'],
+  },
+  {
+    nhom: 'tk',
+    ten: 'Tài khoản',
+    laMa: false,
+    khopKhoa: ['tentk'],
+    khopTieuDe: ['Tên tài khoản'],
+  },
+
+  // Chi nhánh (slug chi-nhanh)
+  {
+    nhom: 'chinhanh',
+    ten: 'Chi nhánh',
+    laMa: false,
+    khopKhoa: ['cn', 'chinhanh'],
+    khopTieuDe: ['Chi nhánh', 'Tên chi nhánh'],
+  },
+
+  // 1.8: Kho
+  {
+    nhom: 'kho',
+    ten: 'Kho',
+    laMa: false,
+    khopKhoa: ['kho', 'makho', 'tenkho'],
+    khopTieuDe: ['Kho', 'Tên kho', 'Mã kho'],
+  },
+
+  // 1.12: Quỹ tiền (Quỹ tiền / Tài khoản ngân hàng)
+  {
+    nhom: 'quy',
+    ten: 'Quỹ tiền',
+    laMa: false,
+    khopKhoa: ['quy', 'locquy', 'tknh', 'taikhoannh'],
+    khopTieuDe: ['Quỹ tiền', 'Quỹ', 'Tài khoản ngân hàng', 'Sổ tài khoản'],
+  },
+
+  // 1.5: Đối tượng (Khách hàng / Nhà cung cấp / Đối tượng)
+  {
+    nhom: 'doituong',
+    ten: 'Đối tượng',
+    laMa: true,
+    khopKhoa: ['makh', 'mancc', 'madoituong'],
+    khopTieuDe: ['Mã khách', 'Mã NCC', 'Mã đối tượng', 'Mã khách hàng', 'Mã nhà cung cấp'],
+  },
+  {
+    nhom: 'doituong',
+    ten: 'Đối tượng',
+    laMa: false,
+    khopKhoa: ['doituong', 'khach', 'ncc', 'nguoiban', 'nguoimua', 'khachhang', 'nhacungcap', 'tendoituong'],
+    khopTieuDe: ['Đối tượng', 'Khách hàng', 'Nhà cung cấp', 'Người mua', 'Người bán', 'Tên khách hàng', 'Tên nhà cung cấp', 'Tên người bán', 'Tên người mua', 'Tên đối tượng'],
+  },
+
+  // 1.2: Hàng hoá (Hàng hoá / Nguyên vật liệu / Món)
+  {
+    nhom: 'hang',
+    ten: 'Hàng hoá',
+    laMa: true,
+    khopKhoa: ['mahang', 'manvl', 'mamon'],
+    khopTieuDe: ['Mã hàng', 'Mã NVL', 'Mã món', 'Mã hàng hoá', 'Mã nguyên vật liệu'],
+  },
+  {
+    nhom: 'hang',
+    ten: 'Hàng hoá',
+    laMa: false,
+    khopKhoa: ['hang', 'hanghoa', 'nvl', 'mon', 'mathang', 'tenhang', 'tennvl', 'tenmon'],
+    khopTieuDe: ['Hàng hoá', 'Nguyên vật liệu', 'Món', 'Mặt hàng', 'Tên hàng', 'Tên nguyên vật liệu', 'Tên món', 'Tên mặt hàng', 'Tên hàng hoá'],
+  },
+
+  // 1.3: Đơn vị tính
+  {
+    nhom: 'dvt',
+    ten: 'Đơn vị tính',
+    laMa: false,
+    khopKhoa: ['dvt', 'donvitinh'],
+    khopTieuDe: ['ĐVT', 'Đơn vị tính'],
+  },
+
+  // 1.13: Tài sản cố định
+  {
+    nhom: 'tscd',
+    ten: 'Tài sản cố định',
+    laMa: true,
+    khopKhoa: ['mats', 'matscd'],
+    khopTieuDe: ['Mã TS', 'Mã TSCĐ', 'Mã tài sản'],
+  },
+  {
+    nhom: 'tscd',
+    ten: 'Tài sản cố định',
+    laMa: false,
+    khopKhoa: ['tscd', 'taisan'],
+    khopTieuDe: ['Tài sản cố định', 'Tài sản', 'Tên tài sản'],
+  },
+]
+
+function timDanhMuc(col: Col, cols: Col[]): AnhXaDanhMuc | null {
+  if (col.num) return null
+  const k = col.k.toLowerCase().replace(/[^a-z0-9]/g, '')
+  const t = col.t.trim()
+  const tLower = t.toLowerCase()
+
+  // Bỏ cột ngày, STT, chứng từ, phiếu, hoá đơn, diễn giải, lý do, ghi chú, nội dung
+  if (k === 'stt' || tLower === 'stt') return null
+  if (k === 'ngay' || /ngày/i.test(t)) return null
+  if (['so', 'thu', 'chi', 'soct', 'shd', 'sophieu', 'sohoadon'].includes(k) || /^(số\s+(chứng từ|phiếu|hoá đơn)|mã\s+số\s+mẫu)/i.test(t)) return null
+  if (['diengiai', 'dg', 'lydo', 'ghichu', 'gc', 'noidung', 'nd'].includes(k) || /^(diễn giải|lý do|ghi chú|nội dung)/i.test(t)) return null
+
+  // Cột mã / tên chung chung trong bảng hàng hoá/kho hoặc tài khoản
+  if ((k === 'ma' && tLower === 'mã') || (k === 'ten' && tLower === 'tên')) {
+    const laMa = k === 'ma'
+    if (cols.some(c => c.k === 'tk' || /tài khoản/i.test(c.t))) {
+      return { nhom: 'tk', ten: 'Tài khoản', laMa, khopTieuDe: [] }
+    }
+    if (cols.some(c => /tài sản/i.test(c.t))) {
+      return { nhom: 'tscd', ten: 'Tài sản cố định', laMa, khopTieuDe: [] }
+    }
+    return { nhom: 'hang', ten: 'Hàng hoá', laMa, khopTieuDe: [] }
+  }
+
+  // Khớp chính xác theo tiêu đề
+  for (const m of BANG_ANH_XA_DANH_MUC) {
+    if (m.khopTieuDe.some(ti => ti.toLowerCase() === tLower)) return m
+  }
+
+  // Khớp theo khoá cột
+  for (const m of BANG_ANH_XA_DANH_MUC) {
+    if (m.khopKhoa?.includes(k)) return m
+  }
+
+  return null
+}
+
 /** Trang báo cáo theo mẫu: đầu trang đơn vị, mẫu số, tiêu đề, kỳ, ô ký. Vẽ trên tờ A4 tự chia trang (ToGiay).
  *  Mẫu số, tên in, khổ, ô ký lấy theo mã báo cáo trên đường dẫn và chế độ kế toán (modules/bao-cao/danh-sach.ts); mau chỉ dùng cho màn chưa có cấu hình */
 export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { title: string; sub: string; mau?: string; children: ReactNode; ky?: boolean; kho?: Kho }) {
@@ -512,7 +591,7 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
 
   const khongTuSinh = (slug && LOAI_TRU_TU_SINH.has(slug)) || loai === 'tokhai' || (slug && slug.startsWith('6.2.'))
 
-  // Danh sách bộ lọc cho cột lọc bên trái: bộ lọc khai tay trong cfg.loc đứng trước, sau đó tự sinh theo cột
+  // Danh sách bộ lọc cho cột lọc bên trái: bộ lọc khai tay trong cfg.loc đứng trước, sau đó tự sinh theo danh mục
   const dsLocCot = useMemo(() => {
     const res: BoLocMuc[] = []
     const daCo = new Set<string>()
@@ -528,27 +607,38 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
       daCo.add(l.k)
     }
 
-    // 2. Tự sinh theo các cột của khối bảng
+    // 2. Tự sinh theo các cột của khối bảng: chỉ tự sinh cho các cột thuộc danh mục
     if (!khongTuSinh) {
       const khoi = tachKhoi(children)
       for (const kh of khoi) {
         if (kh.loai === 'bang') {
           const dongCT = kh.rows.filter(r => !r._b && !r._t)
+          const nhomCols = new Map<string, { quyTac: AnhXaDanhMuc; col: Col; vals: string[] }[]>()
+
           for (const c of kh.cols) {
             if (daCo.has(c.k)) continue
-            if (c.k === 'stt' || c.t.toLowerCase() === 'stt') continue
+            const q = timDanhMuc(c, kh.cols)
+            if (!q) continue
 
-            if (c.num) {
-              res.push({ k: c.k, nhan: c.t, kieu: 'khoang' })
-              daCo.add(c.k)
-            } else {
-              const laNgay = c.k === 'ngay' || dongCT.some(r => typeof r[c.k] === 'string' && /^\d{2}\/\d{2}\/\d{4}$/.test(r[c.k]))
-              if (laNgay) continue
-              const vals = [...new Set(dongCT.map(r => String(r[c.k] ?? '').trim()).filter(Boolean))].sort()
-              if (vals.length >= 2) {
-                res.push({ k: c.k, nhan: c.t, kieu: 'chonNhieu', ds: vals })
-                daCo.add(c.k)
-              }
+            const laNgay = dongCT.some(r => typeof r[c.k] === 'string' && /^\d{2}\/\d{2}\/\d{4}$/.test(r[c.k]))
+            if (laNgay) continue
+
+            const vals = [...new Set(dongCT.map(r => String(r[c.k] ?? '').trim()).filter(Boolean))].sort()
+            if (vals.length < 2) continue
+
+            const list = nhomCols.get(q.nhom) ?? []
+            list.push({ quyTac: q, col: c, vals })
+            nhomCols.set(q.nhom, list)
+          }
+
+          // Mỗi nhóm danh mục chỉ tạo MỘT bộ lọc
+          for (const [, list] of nhomCols) {
+            if (res.some(r => r.nhan === list[0].quyTac.ten)) continue
+
+            const chon = list.find(x => x.quyTac.laMa) ?? list[0]
+            if (!daCo.has(chon.col.k)) {
+              res.push({ k: chon.col.k, nhan: chon.quyTac.ten, kieu: 'chonNhieu', ds: chon.vals })
+              daCo.add(chon.col.k)
             }
           }
         }
@@ -593,20 +683,14 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
           const vals = [...new Set(dongCT.map(r => String(r.cn ?? '')).filter(Boolean))].sort()
           datTuyChon(path, 'cn', vals)
         }
-        if (!khongTuSinh) {
-          for (const c of kh.cols) {
-            if (c.num || (cfg?.loc && cfg.loc.some(l => l.k === c.k)) || c.k === 'stt' || c.t.toLowerCase() === 'stt') continue
-            const laNgay = c.k === 'ngay' || dongCT.some(r => typeof r[c.k] === 'string' && /^\d{2}\/\d{2}\/\d{4}$/.test(r[c.k]))
-            if (laNgay) continue
-            const vals = [...new Set(dongCT.map(r => String(r[c.k] ?? '').trim()).filter(Boolean))].sort()
-            if (vals.length >= 2) {
-              datTuyChon(path, c.k, vals)
-            }
+        for (const l of dsLocCot) {
+          if (l.ds && l.ds.length > 0) {
+            datTuyChon(path, l.k, l.ds)
           }
         }
       }
     }
-  }, [children, path, cfg, ky, loai, s.cheDo, dv.nguoiDaiDien, khongTuSinh])
+  }, [children, path, cfg, ky, loai, s.cheDo, dv.nguoiDaiDien, dsLocCot])
 
   // Biến đổi các khối bảng cho thân tờ giấy và nguồn xuất
   const { thanBienDoi, bangXuat } = useMemo(() => {
@@ -621,7 +705,6 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
       // Bảng đang xem: áp lọc, nhóm, cột
       const res = bienDoiBang(kh.cols, kh.rows, {
         loc: tt.loc,
-        khoang: tt.khoang,
         anKhongPS: tt.anKhongPS,
         nhom: tc?.nhom,
         cot: tc?.cot,
@@ -635,7 +718,6 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
         // Tắt "Cột như đang xem": xuất đủ cột (vẫn áp lọc và nhóm)
         const resDuCot = bienDoiBang(kh.cols, kh.rows, {
           loc: tt.loc,
-          khoang: tt.khoang,
           anKhongPS: tt.anKhongPS,
           nhom: tc?.nhom,
           cot: undefined,
@@ -648,7 +730,7 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
     })
 
     return { thanBienDoi: thanMoi, bangXuat: bx }
-  }, [children, tt.loc, tt.khoang, tt.anKhongPS, tt.cotNhuDangXem, tc?.nhom, tc?.cot, loai, cfg?.congCot, cfg?.khoa, kyHieuCot, slug])
+  }, [children, tt.loc, tt.anKhongPS, tt.cotNhuDangXem, tc?.nhom, tc?.cot, loai, cfg?.congCot, cfg?.khoa, kyHieuCot, slug])
 
   // Dựng NguonXuat cho chức năng xuất file
   useEffect(() => {

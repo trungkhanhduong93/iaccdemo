@@ -295,6 +295,24 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
   const doiXem = (p: Partial<Xem>) => setXem(x => { const n = { ...x, ...p }; ghi('bc-xem', JSON.stringify(n)); return n })
   const doiKho = (k: Kho) => { setKho(k); ghi(`bc-kho:${khoaKho}`, k) }
 
+  // Chỗ đặt nút Tờ in / Bảng dữ liệu và Khổ trên thanh công cụ (T68)
+  const [choXem, setChoXem] = useState<HTMLElement | null>(() => typeof document !== 'undefined' ? document.getElementById('bc-xem-cho') : null)
+
+  useEffect(() => {
+    const tim = () => {
+      const el = document.getElementById('bc-xem-cho')
+      setChoXem(el)
+      return !!el
+    }
+    if (tim()) return
+
+    const mo = new MutationObserver(() => {
+      if (tim()) mo.disconnect()
+    })
+    mo.observe(document.body, { childList: true, subtree: true })
+    return () => mo.disconnect()
+  }, [path])
+
   // Xem trên màn hình là một tờ liền, không chia trang (T55): đo chiều cao tờ để khung cuộn đúng theo zoom.
   // Chia trang, dòng cộng chuyển trang, số trang chỉ còn khi in và xuất file
   const toLien = useRef<HTMLDivElement>(null)
@@ -400,19 +418,18 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
           </div>
         )}
 
-        <div className="bc-thanh">
-          <div className="bc-thanh-nhom">
-            {!giay && tongDong > 0 && <span className="bc-thanh-dem">{tongDong.toLocaleString('vi-VN')} dòng</span>}
-          </div>
-
-          <div className="bc-thanh-nhom">
-            {!giay && coBang && (
+        {choXem && !giay && createPortal(
+          <>
+            {coBang && (
               <div className="seg">
                 <button type="button" className={cheXem === 'to-in' ? 'on' : ''} onClick={() => doiCheXem('to-in')}>Tờ in</button>
-                <button type="button" className={cheXem === 'bang-du-lieu' ? 'on' : ''} onClick={() => doiCheXem('bang-du-lieu')}>Bảng dữ liệu</button>
+                <button type="button" className={cheXem === 'bang-du-lieu' ? 'on' : ''} onClick={() => doiCheXem('bang-du-lieu')}>
+                  <span className="bc-btn-bang-dai">Bảng dữ liệu</span>
+                  <span className="bc-btn-bang-gon">Bảng</span>
+                </button>
               </div>
             )}
-            {!giay && cheXem === 'to-in' && (
+            {cheXem === 'to-in' && (
               <>
                 <span className="bc-thanh-nhan">Khổ</span>
                 <div className="seg">
@@ -421,6 +438,13 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
                 </div>
               </>
             )}
+          </>,
+          choXem
+        )}
+
+        <div className="bc-thanh">
+          <div className="bc-thanh-nhom">
+            {!giay && tongDong > 0 && <span className="bc-thanh-dem">{tongDong.toLocaleString('vi-VN')} dòng</span>}
           </div>
 
           {cheXem === 'to-in' ? (
