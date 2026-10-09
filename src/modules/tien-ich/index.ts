@@ -5,6 +5,7 @@ import { quyTrinh } from './quy-trinh'
 import { DoiSoat } from './DoiSoat'
 import { CanhBao, DongBo, DuyetChungTu, HoaDonDauVao, NhatKyThaoTac } from './TienIch'
 import { TongQuan } from '../home/TongQuan'
+import { ThietKeMauIn } from './ThietKeMauIn'
 
 /** Nhãn ngắn trên thanh tab */
 const NGAN: Record<string, string> = { '11.1': 'Đồng bộ bán hàng', '11.2': 'Xuất kho định lượng', '11.3': 'Đồng bộ kho', '11.4': 'Hoá đơn đầu vào', '11.5': 'Duyệt chứng từ', '11.6': 'Cảnh báo', '11.7': 'Đối soát', '11.8': 'Ngân hàng', '11.9': 'Cơ quan thuế', '11.10': 'AI nhập liệu', '11.11': 'Thiết kế mẫu in', '11.12': 'Báo cáo tự khai báo', '11.13': 'Nhiều bộ dữ liệu', '11.14': 'Dữ liệu lớn', '11.15': 'Nhiều kho một điểm bán', '11.16': 'Dashboard', 'X1': 'Truy cập web', 'X2': 'Nhật ký thao tác', 'X3': 'App điện thoại' }
@@ -31,7 +32,7 @@ const tienIch: ModuleDef = {
       caiDat: [['Mã số thuế', '0319 990 001'], ['Chữ ký số', 'Đã gắn, hạn 12/2027']] } },
     '11.10': { tool: { nut: 'Thử quét hoá đơn', mota: 'Chụp hoá đơn giấy hoặc nói "chi 450 nghìn mua rau chợ Bến Thành" để AI lập phiếu nháp kèm định khoản gợi ý. Kế toán xem lại rồi mới lưu.',
       caiDat: [['Ngôn ngữ', 'Tiếng Việt'], ['Tự lưu khi tin cậy trên', 'Không tự lưu']] } },
-    '11.11': { tool: { nut: 'Mở trình thiết kế', mota: 'Kéo thả trường dữ liệu để sửa phiếu thu, phiếu chi, hoá đơn, báo cáo theo mẫu riêng của đơn vị. Mẫu theo thông tư vẫn giữ để in khi cần.', caiDat: [['Mẫu đang sửa', 'Phiếu chi'], ['Khổ giấy', 'A5 ngang']] } },
+    '11.11': { kind: 'custom', comp: ThietKeMauIn },
     '11.12': { tool: { nut: 'Thêm báo cáo', mota: 'Tự khai báo dòng báo cáo bằng công thức lấy số từ sổ cái, theo tài khoản, đối tượng, chi nhánh. Mỗi mã số thuế có bộ báo cáo riêng.', caiDat: [['Báo cáo', 'Lãi lỗ theo chi nhánh'], ['Nguồn', 'Sổ cái']] } },
     '11.13': { tool: { nut: 'Thêm bộ dữ liệu', mota: 'Một tài khoản FABi gắn nhiều bộ dữ liệu kế toán. Tách theo mã số thuế, theo thương hiệu, hoặc giữ bộ cũ khi đổi thông tư. Đổi bộ ở góc trên bên trái.', caiDat: [['Bộ dữ liệu đang dùng', '3 đơn vị']] } },
     '11.14': { tool: { nut: 'Xuất thử 500.000 dòng', mota: 'Lọc và xuất dữ liệu hàng trăm nghìn dòng, không giới hạn khoảng thời gian. Việc lâu chạy nền, xong thì báo và gửi tệp.', caiDat: [['Định dạng xuất', 'Excel (.xlsx), CSV']] } },

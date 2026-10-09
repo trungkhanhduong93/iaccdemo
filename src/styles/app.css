@@ -2646,3 +2646,501 @@ textarea.inp { height: auto; padding: 8px 11px; resize: vertical; }
   font-size: 8pt;
   color: #555;
 }
+/* Thiết kế mẫu in (tiện ích 11.11, T47 đợt 6): ba cột cây mẫu, tờ xem trước, thuộc tính; tiền tố tkmi- vì tk- đã dùng cho badge cột tài khoản */
+.tkmi-trang-man {
+  padding-bottom: 16px;
+}
+.tkmi-trang-man .ph {
+  margin-bottom: 12px;
+}
+.tkmi {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr) 320px;
+  gap: 12px;
+  height: calc(100vh / var(--zoom) - 190px);
+  min-height: 520px;
+}
+.tkmi-cot {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: var(--r);
+  box-shadow: var(--sh);
+  overflow: hidden;
+}
+.tkmi-cuon {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 10px;
+  scrollbar-width: thin;
+}
+.tkmi-cot-tieu {
+  padding: 2px 6px 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+}
+.tkmi-mau-phieu {
+  flex: none;
+  max-height: 40%;
+  overflow-y: auto;
+  padding: 10px;
+  border-top: 1px solid var(--line-2);
+  scrollbar-width: thin;
+}
+.tkmi-nhom + .tkmi-nhom {
+  margin-top: 6px;
+}
+.tkmi-nhom-ten {
+  padding: 4px 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.tkmi-cay-muc {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  min-height: 30px;
+  padding: 4px 8px 4px 16px;
+  border-radius: var(--r-sm);
+  font-size: 13px;
+  text-align: left;
+  color: var(--body);
+}
+.tkmi-cay-muc:hover {
+  background: var(--soft);
+}
+.tkmi-cay-muc.on {
+  background: var(--tint);
+  color: var(--blue);
+  font-weight: 600;
+}
+.tkmi-dem {
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: var(--orange-t);
+  color: var(--orange-d);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 18px;
+  text-align: center;
+}
+.tkmi-ds-mau {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.tkmi-mau {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 34px;
+  padding: 0 4px 0 8px;
+  border-radius: var(--r-sm);
+}
+.tkmi-mau.on {
+  background: var(--tint);
+}
+.tkmi-mau input[type="radio"] {
+  flex: none;
+  accent-color: var(--blue);
+}
+.tkmi-mau-ten {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  text-align: left;
+  color: var(--ink);
+}
+.tkmi-mau-ten i {
+  color: var(--muted);
+}
+.tkmi-o-doi-ten.inp {
+  flex: 1;
+  height: 28px;
+  min-width: 0;
+  padding: 0 8px;
+  font-size: 13px;
+}
+.tkmi-chan {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px;
+  border-top: 1px solid var(--line-2);
+}
+.tkmi-chan .btn {
+  justify-content: flex-start;
+}
+.tkmi-thanh {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 6px 14px;
+  border-bottom: 1px solid var(--line-2);
+  flex: none;
+  min-width: 0;
+}
+.tkmi-ten-mau {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--ink);
+}
+.tkmi-thanh .tkmi-goi-y {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tkmi-goi-y {
+  font-size: 12px;
+  color: var(--muted);
+}
+.tkmi-to {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.tkmi-to .bc-giay {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.tkmi-to .bc-ban {
+  flex: 1;
+  height: auto;
+  min-height: 0;
+}
+.tkmi-to .bc-thanh {
+  border-radius: 0;
+}
+/* Phần tử bấm chọn được trên tờ: viền nhạt khi rê chuột, viền xanh khi đang chọn (thẻ style chèn theo mục đang chọn) */
+.tkmi-to .bc-trang [data-khoi], .tkmi-to .bc-trang [data-truong], .tkmi-to .bc-trang [data-cot] {
+  cursor: pointer;
+}
+.tkmi-to .bc-trang [data-khoi]:hover, .tkmi-to .bc-trang [data-truong]:hover, .tkmi-to .bc-trang [data-cot]:hover {
+  outline: 1px dashed rgba(5, 96, 166, .55);
+  outline-offset: 1px;
+}
+.tkmi-to .in-ct-bang th {
+  position: relative;
+}
+.tkmi-mep {
+  position: absolute;
+  top: 0;
+  right: -4px;
+  z-index: 1;
+  width: 8px;
+  height: 100%;
+  cursor: col-resize;
+  touch-action: none;
+}
+.tkmi-mep:hover {
+  background: rgba(5, 96, 166, .3);
+}
+body.tkmi-dang-keo, body.tkmi-dang-keo * {
+  cursor: col-resize !important;
+  user-select: none;
+}
+.bc-in-goc .tkmi-mep {
+  display: none;
+}
+@media print {
+  .tkmi-mep {
+    display: none;
+  }
+}
+.tkmi-the {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 10px 10px 8px;
+  border-bottom: 1px solid var(--line-2);
+  flex: none;
+}
+.tkmi-the button {
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 7px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--muted);
+  background: var(--soft);
+}
+.tkmi-the button:hover {
+  color: var(--ink);
+}
+.tkmi-the button.on {
+  background: var(--blue);
+  color: #fff;
+}
+.tkmi-than-the {
+  padding: 12px;
+}
+.tkmi-nhom-o, .tkmi-trang {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.tkmi-hang {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.tkmi-nhan-hang {
+  flex: 1;
+  min-width: 0;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--muted);
+}
+.tkmi-hang-le {
+  align-items: flex-start;
+}
+.tkmi-le {
+  display: grid;
+  grid-template-columns: repeat(4, 46px);
+  gap: 4px;
+}
+.tkmi-le label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.tkmi-o-so.inp {
+  width: 56px;
+  height: 30px;
+  padding: 0 6px;
+  text-align: right;
+  font-size: 13px;
+}
+.tkmi-le .tkmi-o-so.inp {
+  width: 46px;
+}
+.tkmi-o-chon.inp {
+  width: 150px;
+  height: 32px;
+  font-size: 13px;
+}
+.tkmi-nhan {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+.tkmi-nhan .inp {
+  height: 32px;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--ink);
+}
+.tkmi-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--ink);
+}
+.tkmi-check input {
+  accent-color: var(--blue);
+}
+.tkmi-ds {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.tkmi-ds-dau {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.tkmi-dong {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 6px;
+  padding: 6px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-sm);
+  background: #fff;
+}
+.tkmi-dong.on {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 2px rgba(5, 96, 166, .12);
+}
+.tkmi-dong.tat .tkmi-o-ten, .tkmi-dong.tat .tkmi-ten {
+  color: var(--faint);
+  text-decoration: line-through;
+}
+.tkmi-dong.dang-keo, .tkmi-ky.dang-keo {
+  opacity: .5;
+}
+.tkmi-dong.dich, .tkmi-ky.dich {
+  border-color: var(--blue);
+  border-style: dashed;
+}
+.tkmi-tay {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 28px;
+  color: var(--faint);
+  cursor: grab;
+}
+.tkmi-tay .ic {
+  stroke-width: 3.2;
+}
+.tkmi-tick {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.tkmi-tick input {
+  accent-color: var(--blue);
+}
+.tkmi-tick input:disabled {
+  cursor: not-allowed;
+}
+.tkmi-khoa {
+  display: grid;
+  place-items: center;
+  color: var(--faint);
+}
+.tkmi-khoa .ic {
+  width: 13px;
+  height: 13px;
+}
+.tkmi-o-ten.inp {
+  flex: 1;
+  min-width: 0;
+  height: 30px;
+  padding: 0 8px;
+  font-size: 13px;
+}
+.tkmi-ten {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  color: var(--ink);
+}
+.tkmi-len-xuong {
+  display: flex;
+}
+.tkmi-len-xuong .icon-btn, .tkmi-ky-dau .icon-btn {
+  width: 24px;
+  height: 26px;
+  border-radius: 6px;
+}
+.tkmi-dong-phu {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  padding-left: 42px;
+}
+.tkmi-rong {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.tkmi-can button {
+  display: grid;
+  place-items: center;
+  padding: 3px 6px;
+}
+.tkmi-tong-rong {
+  font-size: 12.5px;
+  color: var(--muted);
+}
+.tkmi-tong-rong.loi {
+  color: var(--red);
+}
+.tkmi-loi {
+  padding: 8px 10px;
+  border-radius: var(--r-sm);
+  background: var(--red-t);
+  color: var(--red);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+.tkmi-ky {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-sm);
+  background: #fff;
+}
+.tkmi-ky-dau {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--ink);
+}
+.tkmi-luu {
+  position: relative;
+}
+.tkmi-cham {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--orange);
+  border: 2px solid #fff;
+}
+/* Khung sửa gọn trong hộp in cho gói Free, Standard */
+.pop.tkmi-pop {
+  max-height: min(640px, calc(100vh / var(--zoom) - 24px));
+  padding: 12px;
+}
+.tkmi-gon {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.tkmi-gon-dau {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--ink);
+}
+.tkmi-gon-nhom {
+  padding-top: 8px;
+  border-top: 1px solid var(--line-2);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+}
+.tkmi-gon-chan {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--line-2);
+}

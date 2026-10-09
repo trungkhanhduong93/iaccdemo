@@ -13,6 +13,8 @@ export interface MauIn {
   ten: string                                   // tên mẫu, vd 'Phiếu thu'
   kyHieu: Partial<Record<CheDo, string>>        // '01-TT'…; không có khoá = mẫu tự thiết kế, đầu trang không ghi "Mẫu số"
   tieuDe: string                                // chữ tiêu đề in hoa trên phiếu
+  tieuDeCo?: number                             // pt, không có = 1,6 lần cỡ chữ chung
+  tieuDeDam?: boolean                           // mặc định true
   trang: { kho: KhoIn; huong: HuongIn; le: [number, number, number, number]; lien: 1 | 2; coChu: number; phong: 'app' | 'times' }  // le: trên, phải, dưới, trái (mm)
   khoi: KhoiIn[]                                // thứ tự khối từ trên xuống
   thongTin: TruongIn[]
