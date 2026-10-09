@@ -299,3 +299,4 @@ Lý do: Trum giao việc T44 ngày 09/10/2026.
 
 Lý do: Trum giao việc T45 ngày 09/10/2026, theo mẫu MISA AMIS và phản hồi thực tế.
 
+## QD31. Phân hệ Báo cáo, chế độ kế toán tách khỏi gói, mẫu in theo thông tư (đang soạn)
