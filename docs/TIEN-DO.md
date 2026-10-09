@@ -4,7 +4,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T76.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T77.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
@@ -37,6 +37,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T77 | Đầu phiếu thu chi, chuyển quỹ: bỏ ô Diễn giải (đã có Ghi chú), Địa chỉ lên chỗ Diễn giải, Ghi chú kéo dài qua hai cột; thu, chi ngân hàng ghi Quỹ tiền; chuyển quỹ Từ quỹ, Đến quỹ một hàng | PhuongXT | 09/10/2026 | `2026-10-09-phuongxt-dau-phieu-thu-chi-ghi-chu.md` |
 | T69 | Ô Ghi chú ở mọi phiếu (phiếu khác thu chi: để trống, độc lập với diễn giải); lưu phiếu giữ đủ các ô đầu phiếu (người giao, địa chỉ, MST, hoá đơn, thanh toán) (QD33) | PhuongXT | 09/10/2026 | `2026-10-09-phuongxt-hoa-don-cot-phai-ghi-chu.md` |
 | T68 | Form Mua hàng: thông tin hoá đơn ở cột phải đầu phiếu (2 cột, dưới số phiếu); Số lô, Hạn dùng chỉ có ở gói Pro (QD33) | PhuongXT | 09/10/2026 | `2026-10-09-phuongxt-hoa-don-cot-phai-ghi-chu.md` |
 | T74 | Bảng danh sách theo iPOS Inventory: cột cố định đo bề rộng thật, đứng yên khi cuộn ngang, mỗi ô tự vẽ đường kẻ; kiểu tiêu đề, hàng lọc, dòng, dòng tổng như ivtstag; bấm mã phiếu mở chứng từ (bỏ đúp chuột); cột thời gian dd/MM/yyyy HH:mm | Trum | 09/10/2026 | `2026-10-09-trum-bao-cao-dot-2.md` |
