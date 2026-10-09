@@ -3,22 +3,34 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { Col, ScreenProps } from '../types'
 import { tenMan } from '../../app/registry'
-import { useSession } from '../../app/session'
-import { DONG_BO, NCC } from '../../data/mock'
+import { donViHienTai, useSession } from '../../app/session'
+import { CHI_NHANH, DONG_BO, HANG, KHO, NCC } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
 import { Card, Kpi, Note, PageHead } from '../../ui/Page'
 import { St, Table } from '../../ui/Table'
-import { between, k, pad, pick, rng } from '../../ui/format'
+import { between, dmy, k, pad, pick, rng } from '../../ui/format'
 import { Select } from '../../ui/Dropdown'
 import { useNhatKy } from '../../ui/generic/daXoa'
+import { HopDongBo } from '../../ui/HopDongBo'
+
+const dsKho = CHI_NHANH.flatMap(c =>
+  c.kho.map(ten => {
+    const idx = KHO.indexOf(ten)
+    const ma = idx >= 0 ? `K${String(idx + 1).padStart(2, '0')}` : `K_${c.id}`
+    return { ma, ten, phu: c.ten }
+  }),
+)
+
+const dsMon = HANG.map(h => `${h.ma} - ${h.ten}`)
 
 export function DongBo({ sc, mod }: ScreenProps) {
   const { toast } = useSession()
   const [tu, setTu] = useState(true)
+  const [moHop, setMoHop] = useState(false)
   return (
     <div className="page">
       <PageHead crumb={[mod.ten, sc.nhom ?? '']} title={tenMan(sc)} code={sc.code} meta={<span className="chip ok"><span className="pulse" />Đang chạy theo lịch</span>}>
-        <button className="btn pri" onClick={() => toast('Đã tải 188 đơn mới từ FABi')}><Icon n="refresh" className="ic sm" />Tải ngay</button>
+        <button className="btn pri" onClick={() => setMoHop(true)}><Icon n="refresh" className="ic sm" />Tải ngay</button>
       </PageHead>
       <div className="grid g4" style={{ marginBottom: 14 }}>
         <Kpi icon="pos" l="Đơn POS hôm nay" v="1.894" d="3 chi nhánh, tới 14:20" />
@@ -43,6 +55,24 @@ export function DongBo({ sc, mod }: ScreenProps) {
           </div>
         </Card>
       </div>
+      {moHop && (
+        <HopDongBo
+          tieuDe="Đồng bộ dữ liệu bán hàng từ máy POS"
+          phu="Chọn khoảng thời gian và kho cần lấy lại dữ liệu về hệ thống kế toán."
+          nhanDs="Kho đồng bộ"
+          ds={dsKho}
+          coMon
+          dsMon={dsMon}
+          nhanLamLai="Đồng bộ lại hoá đơn đã có"
+          nutChinh="Đồng bộ ngay"
+          onDong={() => setMoHop(false)}
+          onDongBo={({ tu: dTu, den: dDen, chon }) => {
+            setMoHop(false)
+            const soDon = chon.length === 3 ? 188 : chon.length * 62 + 2
+            toast(`Đã đồng bộ ${soDon} đơn từ ${chon.length} kho, ${dmy(dTu)} đến ${dmy(dDen)}`)
+          }}
+        />
+      )}
     </div>
   )
 }
@@ -50,7 +80,14 @@ export function DongBo({ sc, mod }: ScreenProps) {
 const TT_HD: Record<string, [string, string]> = { ok: ['ok', 'Hợp lệ, chờ hạch toán'], ht: ['dim', 'Đã hạch toán'], huy: ['err', 'Người bán đã huỷ'], mst: ['err', 'Sai mã số thuế người mua'], trung: ['warn', 'Trùng hoá đơn đã nhận'] }
 
 export function HoaDonDauVao({ sc, mod }: ScreenProps) {
-  const { toast } = useSession()
+  const { toast, s } = useSession()
+  const dv = donViHienTai(s)
+  const [moHop, setMoHop] = useState(false)
+  const dsChiNhanh = CHI_NHANH.map(c => ({
+    ma: c.id.toUpperCase(),
+    ten: c.ten,
+    phu: dv.mst ? `MST: ${dv.mst}` : undefined,
+  }))
   const r = rng('hddv')
   const rows = Array.from({ length: 23 }, (_, i) => {
     const n = pick(r, NCC), tien = k(between(r, 0.8e6, 36e6)), d = 7 - Math.floor(i / 4)
@@ -62,11 +99,27 @@ export function HoaDonDauVao({ sc, mod }: ScreenProps) {
   return (
     <div className="page">
       <PageHead crumb={[mod.ten, sc.nhom ?? '']} title={tenMan(sc)} code={sc.code} meta={<span className="chip">Lưu trữ 10 năm</span>}>
-        <button className="btn" onClick={() => toast('Đã tải 23 hoá đơn từ iPOS Invoice')}><Icon n="refresh" className="ic sm" />Tải từ iPOS Invoice</button>
+        <button className="btn" onClick={() => setMoHop(true)}><Icon n="refresh" className="ic sm" />Tải từ iPOS Invoice</button>
         <button className="btn pri" onClick={() => toast('Đã hạch toán 13 hoá đơn hợp lệ')}><Icon n="check" className="ic sm" />Hạch toán hoá đơn hợp lệ</button>
       </PageHead>
       <Note icon="filein">Hoá đơn tải về được kiểm tra trạng thái trên hệ thống thuế, mã số thuế người mua, trùng lặp. Sau đó khớp với phiếu mua hàng nếu có.</Note>
       <section className="card" style={{ marginTop: 14 }}><Table cols={cols} rows={rows} rowCls={x => ['huy', 'mst'].includes(x.tt) ? 'bad' : ''} /></section>
+      {moHop && (
+        <HopDongBo
+          tieuDe="Tải hoá đơn đầu vào từ iPOS Invoice"
+          phu="Chọn khoảng thời gian và đơn vị nhận hoá đơn cần tải về."
+          nhanDs="Đơn vị nhận hoá đơn"
+          ds={dsChiNhanh}
+          nhanLamLai="Tải lại hoá đơn đã có"
+          nutChinh="Tải hoá đơn"
+          onDong={() => setMoHop(false)}
+          onDongBo={({ tu: dTu, den: dDen, chon }) => {
+            setMoHop(false)
+            const soHd = chon.length === 3 ? 23 : chon.length * 8 + 3
+            toast(`Đã tải ${soHd} hoá đơn từ ${chon.length} đơn vị nhận, ${dmy(dTu)} đến ${dmy(dDen)}`)
+          }}
+        />
+      )}
     </div>
   )
 }
