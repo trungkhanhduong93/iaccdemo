@@ -4,7 +4,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T80.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T81.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
@@ -12,6 +12,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
 | T79 | Hộp đồng bộ dữ liệu kiểu iPOS Inventory cho Tiện ích Đồng bộ bán hàng từ POS (11.1) và Tải hoá đơn đầu vào từ iPOS Invoice (11.4): khoảng ngày, chọn kho hoặc chi nhánh có tìm, món bán, đồng bộ lại | Trum | Chờ | Sửa `HopDongBo.tsx` mới, `TienIch.tsx`, `app.css`. Làm sau T70 |
+| T81 | Panel bên phải kiểu mới (mục lục trái, khối thẻ, công tắc, chân trạng thái), Tuỳ chỉnh báo cáo hai cột, Tuỳ chỉnh giao diện phiếu; mở đóng mượt (đo 331ms, mục tiêu ≤ 100ms); ô chọn đẹp, có tìm, dựng option khi mở | Trum | Chờ | Sửa `Dropdown.tsx`, `ChonDanhMuc.tsx`, `CatalogScreen.tsx`, `HeThongTaiKhoan.tsx`, `TuyChinhBC.tsx`, `DoiSoat.tsx`, `BangSua.tsx`, `app.css`. Làm sau T79 |
 | T80 | Hộp tìm màn hình Ctrl K kiểu iPOS Inventory: mục Vừa mở, Gợi ý, ô biểu tượng, đường dẫn phân hệ, thanh phím tắt | Trum | Chờ | Sửa `CommandPalette.tsx`, `Shell.tsx`, `app.css`. Làm sau T79 |
 | T73 | Tối ưu phản hồi thao tác: bấm, rê chuột, mở menu, panel, cuộn bảng phản hồi tức thì; hiệu ứng nhẹ, ngắn; đo trước và sau | Trum | Chờ | Sửa nhiều file trong `src/`. Làm cuối cùng |
 | T76 | Danh mục Hệ thống tài khoản 1.1 dạng cây theo chế độ TT133, TT99; panel Thêm/Sửa tài khoản đủ trường DM_ACCOUNT (QD41) | Trum | Chờ | Dữ liệu `danh-muc/he-thong-tk.ts` (TT99 dựng theo khung TT200, chờ đối chiếu T04). Sửa `HeThongTaiKhoan.tsx` mới, `danh-muc/index.ts`, `app.css`. Làm tiếp theo |
