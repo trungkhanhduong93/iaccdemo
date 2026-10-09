@@ -1,7 +1,8 @@
 // Thanh trên: đơn vị kế toán, chi nhánh làm việc, nút "Trải nghiệm gói" đổi gói, tài khoản. Vai trò lấy theo tài khoản đăng nhập.
 // Tìm nhanh nằm ở sidebar; kỳ chọn ở bộ lọc từng màn.
 import { useNavigate } from 'react-router-dom'
-import { chiNhanhHienTai, donViHienTai, useSession } from './session'
+import { chiNhanhHienTai, donViHienTai, useSession, cheDoHienTai } from './session'
+import { cheDoCuaGoi } from './che-do'
 import { GOI, GOIS, demTheoGoi } from './plan'
 import { CHI_NHANH, DON_VI, ROLE } from '../data/mock'
 import { Icon } from '../ui/Icon'
@@ -20,14 +21,14 @@ export function Topbar({ onSearch }: { onSearch?: () => void }) {
     <header className="topbar">
       <Dropdown btnClass="dv-btn" title="Đổi đơn vị kế toán" width={410} label={<>
         <span className="dv-av">{dv.viettat}</span>
-        <span style={{ minWidth: 0 }}><small>Công ty · MST {dv.mst} · {GOI[s.goi].cheDoNgan}</small><b>{dv.ten}</b></span>
+        <span style={{ minWidth: 0 }}><small>Công ty · MST {dv.mst} · {cheDoHienTai(s).ngan}</small><b>{dv.ten}</b></span>
         <Icon n="chevd" className="ic sm" />
       </>}>
         {dong => <>
           <MenuHead right={<small className="mh-n">{DON_VI.length} đơn vị</small>}>Đơn vị kế toán</MenuHead>
           {DON_VI.map(d => (
             <MenuItem key={d.id} on={d.id === s.donVi} icon={<span className="dv-av">{d.viettat}</span>}
-              desc={<>MST {d.mst} · {GOI[d.goi].cheDoNgan} · {d.diem} điểm bán</>} right={<Pk g={d.goi} />}
+              desc={<>MST {d.mst} · {cheDoCuaGoi(d.goi).ngan} · {d.diem} điểm bán</>} right={<Pk g={d.goi} />}
               onClick={() => { set({ donVi: d.id, goi: d.goi, chiNhanh: 'all' }); dong(); nav('/app') }}>{d.ten}</MenuItem>
           ))}
           <MenuSep />
@@ -73,7 +74,7 @@ export function Topbar({ onSearch }: { onSearch?: () => void }) {
             const n = demTheoGoi(g)
             return (
               <MenuItem key={g} on={s.goi === g} icon={<span className={`mi-goi ${GOI[g].cls}`}>{g}</span>}
-                desc={<>{GOI[g].cheDoNgan} · {n.co}/{n.tong} tính năng</>} onClick={() => { set({ goi: g }); dong() }}>{GOI[g].ten}</MenuItem>
+                desc={<>{cheDoCuaGoi(g).ngan} · {n.co}/{n.tong} tính năng</>} onClick={() => { set({ goi: g }); dong() }}>{GOI[g].ten}</MenuItem>
             )
           })}
         </>}
@@ -86,7 +87,7 @@ export function Topbar({ onSearch }: { onSearch?: () => void }) {
             <span className="avatar">{ten}</span>
             <span className="mi-t"><b>{s.ten}</b><small>{s.email}</small></span>
           </div>
-          <div className="mi-user-goi"><span className="chip">{ROLE[s.role]}</span><Pk g={s.goi} /><span className="muted">{dv.viettat} · {GOI[s.goi].cheDoNgan}</span></div>
+          <div className="mi-user-goi"><span className="chip">{ROLE[s.role]}</span><Pk g={s.goi} /><span className="muted">{dv.viettat} · {cheDoHienTai(s).ngan}</span></div>
           <MenuSep />
           <MenuItem icon="layers" to="/app/he-thong/goi-thue-bao">Gói thuê bao</MenuItem>
           <MenuItem icon="swap" to="/chon-don-vi">Đổi đơn vị kế toán</MenuItem>

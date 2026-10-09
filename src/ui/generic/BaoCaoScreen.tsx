@@ -40,7 +40,7 @@ export function BaoCaoScreen({ mod }: ScreenProps) {
                   <span className="ri"><Icon n={sc.report?.kieu === 'so' ? 'book' : 'chart'} /></span>
                   <span className="grow" style={{ minWidth: 0 }}>
                     <b>{tenMan(sc)}</b>
-                    <small>Mã {sc.code}{sc.report?.mau && s.goi === 'PL' ? ` · Mẫu ${sc.report.mau}` : ''}</small>
+                    <small>Mã {sc.code}{sc.report?.mau && s.cheDo === 'TT133' ? ` · Mẫu ${sc.report.mau}` : ''}</small>
                   </span>
                   {!ok && ma ? <Pk g={minGoi(ma)} o /> : <Icon n="chevr" className="ic sm" />}
                 </Link>

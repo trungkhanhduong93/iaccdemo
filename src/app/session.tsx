@@ -1,6 +1,7 @@
 // Phiên làm việc: người dùng, vai trò, đơn vị kế toán, gói. Lưu ở localStorage để F5 không mất.
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import type { Goi } from './plan'
+import { CHE_DO, CHE_DO_MAC_DINH, chuanHoaCheDo, type CheDo } from './che-do'
 import { CHI_NHANH, DON_VI, type Role } from '../data/mock'
 
 export interface Session {
@@ -10,6 +11,7 @@ export interface Session {
   role: Role
   donVi: string          // id đơn vị kế toán
   goi: Goi               // gói của đơn vị; thanh "Xem thử" đổi được để xem khoá theo gói
+  cheDo: CheDo           // chế độ kế toán của đơn vị, chọn ở Cấu hình hệ thống; đổi gói thì về chế độ mặc định của gói
   chiNhanh: string       // chi nhánh đang làm việc chọn trên thanh trên; 'all' là xem gộp mọi chi nhánh
   khoiTao: boolean       // đã chạy xong khởi tạo
   thuGon?: boolean       // sidebar thu gọn còn biểu tượng
@@ -24,7 +26,7 @@ export function chuanHoaGoi(g: unknown): Goi {
   return 'PL'
 }
 
-const MAC_DINH: Session = { loggedIn: false, ten: 'Trần Thu Hà', email: 'thuha@phomay.vn', role: 'ktt', donVi: 'pm', goi: 'PL', chiNhanh: 'all', khoiTao: true, thuGon: false }
+const MAC_DINH: Session = { loggedIn: false, ten: 'Trần Thu Hà', email: 'thuha@phomay.vn', role: 'ktt', donVi: 'pm', goi: 'PL', cheDo: 'TT133', chiNhanh: 'all', khoiTao: true, thuGon: false }
 const KEY = 'iacc-cloud-session'
 
 function doc(): Session {
@@ -40,6 +42,7 @@ function doc(): Session {
     if (goiParam) {
       res.goi = chuanHoaGoi(goiParam)
     }
+    res.cheDo = chuanHoaCheDo(res.goi, params?.get('cheDo') ?? parsed.cheDo)
     return res
   } catch { return MAC_DINH }
 }
@@ -51,7 +54,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const [msg, setMsg] = useState<string | null>(null)
   useEffect(() => { try { localStorage.setItem(KEY, JSON.stringify(s)) } catch { /* trình duyệt chặn lưu thì thôi */ } }, [s])
   useEffect(() => { if (!msg) return; const t = setTimeout(() => setMsg(null), 2600); return () => clearTimeout(t) }, [msg])
-  const set = (p: Partial<Session>) => setS(x => ({ ...x, ...p }))
+  const set = (p: Partial<Session>) => setS(x => { const n = { ...x, ...p }; if (p.goi && !p.cheDo) n.cheDo = CHE_DO_MAC_DINH[p.goi]; n.cheDo = chuanHoaCheDo(n.goi, n.cheDo); return n })
   return (
     <Ctx.Provider value={{ s, set, toast: setMsg }}>
       {children}
@@ -67,5 +70,7 @@ export function useSession() {
 }
 
 export const donViHienTai = (s: Session) => DON_VI.find(d => d.id === s.donVi) ?? DON_VI[0]
+export const cheDoHienTai = (s: Session) => CHE_DO[s.cheDo]
 /** Chi nhánh đang chọn trên thanh trên; undefined khi đang xem tất cả chi nhánh */
 export const chiNhanhHienTai = (s: Session) => CHI_NHANH.find(c => c.id === s.chiNhanh)
+

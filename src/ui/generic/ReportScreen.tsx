@@ -2,8 +2,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import type { Col, ReportCfg, Row, ScreenProps } from '../../modules/types'
 import { tenMan } from '../../app/registry'
-import { donViHienTai, useSession } from '../../app/session'
-import { GOI, type Goi } from '../../app/plan'
+import { donViHienTai, useSession, cheDoHienTai } from '../../app/session'
 import { CHI_NHANH, HANG, KHACH, NCC, NVL } from '../../data/mock'
 import { Icon } from '../Icon'
 import { PageHead } from '../Page'
@@ -59,14 +58,15 @@ export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: 
 }
 
 /** Trang báo cáo theo mẫu: đầu trang đơn vị, mẫu số, tiêu đề, kỳ, ô ký */
-export function ReportPaper({ title, sub, mau, goi, children, ky = true }: { title: string; sub: string; mau?: string; goi: Goi; children: ReactNode; ky?: boolean }) {
+export function ReportPaper({ title, sub, mau, children, ky = true }: { title: string; sub: string; mau?: string; children: ReactNode; ky?: boolean }) {
   const { s } = useSession()
   const dv = donViHienTai(s)
+  const cd = cheDoHienTai(s)
   return (
     <div className="paper">
       <div className="paper-h">
         <div><b>Đơn vị: {dv.ten}</b><br />Địa chỉ: {dv.diaChi}<br />MST: {dv.mst}</div>
-        {mau && goi !== 'F' && <div style={{ textAlign: 'center' }}><b>Mẫu số {mau}</b><br /><i>(Theo {GOI[goi].cheDo})</i></div>}
+        {mau && cd.ma !== 'TT152' && <div style={{ textAlign: 'center' }}><b>Mẫu số {mau}</b><br /><i>(Theo {cd.soHieu})</i></div>}
       </div>
       <h2>{title}</h2>
       <div className="sub">{sub}</div>
@@ -105,7 +105,7 @@ export function ReportScreen({ sc, mod }: ScreenProps) {
       <PageHead crumb={[mod.ten, sc.nhom ?? '']} title={ten} code={sc.code} />
       <section className="report">
         <ReportToolbar ky={ky} setKy={setKy} />
-        <ReportPaper title={ten} sub={kyTen(ky)} mau={s.goi === 'PL' ? cfg.mau : undefined} goi={s.goi}>{body}</ReportPaper>
+        <ReportPaper title={ten} sub={kyTen(ky)} mau={s.cheDo === 'TT133' ? cfg.mau : undefined}>{body}</ReportPaper>
       </section>
     </div>
   )

@@ -3,13 +3,15 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { ScreenProps } from '../types'
 import { MODULES, duongDan } from '../../app/registry'
-import { donViHienTai, useSession } from '../../app/session'
+import { donViHienTai, useSession, cheDoHienTai } from '../../app/session'
 import { FEATURES, GOI, GOIS, MODS, demTheoGoi, kieuGhiSo, type Goi } from '../../app/plan'
+import { CHE_DO, CHE_DO_HOP_LE, cheDoCuaGoi, type CheDo } from '../../app/che-do'
 import { CHI_NHANH, NGUOI_DUNG } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
 import { Card, Note, PageHead, Pk } from '../../ui/Page'
 import { St, Table } from '../../ui/Table'
 import { Select } from '../../ui/Dropdown'
+import { HopXacNhan } from '../../ui/LocNangCao'
 
 export function NguoiDung({ sc }: ScreenProps) {
   const { toast } = useSession()
@@ -72,7 +74,7 @@ export function GoiThueBao({ sc }: ScreenProps) {
   const gia: Record<Goi, string> = { F: '0 đ', S: 'Chờ chốt giá', PL: 'Chờ chốt giá', PR: 'Chờ chốt giá' }
   return (
     <div className="page">
-      <PageHead crumb={['Hệ thống']} title={sc.ten!} meta={<><Pk g={s.goi} /><span className="chip">{GOI[s.goi].cheDo}</span><span className="chip">Hạn dùng 06/10/2027</span></>}>
+      <PageHead crumb={['Hệ thống']} title={sc.ten!} meta={<><Pk g={s.goi} /><span className="chip">{cheDoHienTai(s).soHieu}</span><span className="chip">Hạn dùng 06/10/2027</span></>}>
         <button className="btn" onClick={() => toast('Đã gia hạn thêm 12 tháng')}>Gia hạn online</button>
       </PageHead>
       <div className="grid g4" style={{ marginBottom: 14 }}>
@@ -84,7 +86,7 @@ export function GoiThueBao({ sc }: ScreenProps) {
               <div className="row"><Pk g={g} /><span className="grow" />{dang && <span className="chip ok">Đang dùng</span>}</div>
               <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--ink)', margin: '12px 0 2px' }}>{n.co}<small style={{ fontSize: 13, color: 'var(--muted)', fontWeight: 600 }}> /{n.tong} tính năng</small></div>
               <div className="muted" style={{ fontSize: 12.5, minHeight: 36 }}>{GOI[g].mota}</div>
-              <div style={{ fontSize: 12.5, margin: '8px 0 12px' }}><b style={{ color: 'var(--ink)' }}>{g === 'F' ? 'Không chế độ kế toán' : GOI[g].cheDo}</b><br /><span className="muted">Giá: {gia[g]}</span></div>
+              <div style={{ fontSize: 12.5, margin: '8px 0 12px' }}><b style={{ color: 'var(--ink)' }}>{cheDoCuaGoi(g).soHieu}</b><br /><span className="muted">Giá: {gia[g]}</span></div>
               {dang ? <button className="btn" style={{ width: '100%' }} disabled>Gói hiện tại</button>
                 : <button className={`btn ${GOIS.indexOf(g) > GOIS.indexOf(s.goi) ? 'acc' : ''}`} style={{ width: '100%' }} onClick={() => { set({ goi: g }); toast(`Đã chuyển ${dv.viettat} sang gói ${GOI[g].ten}`) }}>
                   {GOIS.indexOf(g) > GOIS.indexOf(s.goi) ? 'Nâng cấp' : 'Chuyển về gói này'}</button>}
@@ -121,23 +123,32 @@ export function GoiThueBao({ sc }: ScreenProps) {
 }
 
 export function CauHinh({ sc }: ScreenProps) {
-  const { s, toast } = useSession()
-  const noco = kieuGhiSo(s.goi) === 'noco'
+  const { s, set, toast } = useSession()
+  const [choDoi, setChoDoi] = useState<CheDo | null>(null)
+  const noco = kieuGhiSo(s.cheDo) === 'noco'
   return (
     <div className="page">
       <PageHead crumb={['Hệ thống']} title={sc.ten!}><button className="btn pri" onClick={() => toast('Đã lưu cấu hình')}>Lưu</button></PageHead>
       <div className="grid g2" style={{ alignItems: 'start' }}>
         <Card title="Chế độ kế toán">
           <div className="form-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
-            <div className="f"><label>Chế độ</label><input className="inp" readOnly value={GOI[s.goi].cheDo} /></div>
+            <div className="f">
+              <label>Chế độ</label>
+              <Select className="inp" value={s.cheDo} disabled={CHE_DO_HOP_LE[s.goi].length <= 1} onChange={e => { const moi = e.target.value as CheDo; if (moi !== s.cheDo) setChoDoi(moi) }}>
+                {CHE_DO_HOP_LE[s.goi].map(cd => (
+                  <option key={cd} value={cd}>{CHE_DO[cd].soHieu} · {CHE_DO[cd].ten}</option>
+                ))}
+              </Select>
+              {CHE_DO_HOP_LE[s.goi].length <= 1 && <small className="muted" style={{ display: 'block', marginTop: 4 }}>Gói {GOI[s.goi].ten} chỉ dùng {cheDoHienTai(s).ngan}</small>}
+            </div>
             <div className="f"><label>Năm tài chính</label><input className="inp" defaultValue="01/01 – 31/12" /></div>
             <div className="f"><label>Phương pháp tính giá xuất kho</label><Select className="inp"><option>Bình quân gia quyền cuối kỳ</option><option>Bình quân tức thời</option><option>Nhập trước xuất trước</option></Select></div>
-            <div className="f"><label>Phương pháp tính thuế GTGT</label><input className="inp" readOnly value={s.goi === 'S' ? 'Trực tiếp trên doanh thu' : s.goi === 'F' ? 'Không áp dụng' : 'Khấu trừ'} /></div>
+            <div className="f"><label>Phương pháp tính thuế GTGT</label><input className="inp" readOnly value={s.cheDo === 'TT58' ? 'Trực tiếp trên doanh thu' : s.cheDo === 'TT152' ? 'Không áp dụng' : 'Khấu trừ'} /></div>
           </div>
         </Card>
         <Card title="Bộ định khoản tự động" act={noco ? <Link className="btn sm ghost" to="/app/danh-muc/1-15">Sửa bộ định khoản</Link> : undefined}>
           {noco ? <Note icon="book">Thứ tự ưu tiên tài khoản: hàng hoá, rồi nhóm hàng, rồi mặc định của chế độ. Bộ mặc định ngành F&B đã nạp sẵn 7 bút toán.</Note>
-            : <Note kind="gray">Gói {GOI[s.goi].ten} không dùng tài khoản Nợ/Có nên không có bộ định khoản.</Note>}
+            : <Note kind="gray">Chế độ {cheDoHienTai(s).ngan} không dùng tài khoản Nợ/Có nên không có bộ định khoản.</Note>}
         </Card>
         <Card title="Đánh số chứng từ">
           <Table cols={[{ k: 'loai', t: 'Loại chứng từ' }, { k: 'mau', t: 'Mẫu số', cls: 'code' }, { k: 'vd', t: 'Ví dụ', cls: 'dim' }]} rows={[
@@ -148,6 +159,16 @@ export function CauHinh({ sc }: ScreenProps) {
           <Table cols={[{ k: 'ten', t: 'Chi nhánh' }, { k: 'fabi', t: 'Mã trên FABi', cls: 'code' }, { k: 'kho', t: 'Kho' }]} rows={CHI_NHANH.map(c => ({ ten: c.ten, fabi: `FB-${c.id.toUpperCase()}-01`, kho: c.kho.length }))} />
         </Card>
       </div>
+      {choDoi && (
+        <HopXacNhan tieuDe="Đổi chế độ kế toán" nut="Đồng ý" onDong={() => setChoDoi(null)} onDongY={() => {
+          const cdDef = CHE_DO[choDoi]
+          set({ cheDo: choDoi })
+          setChoDoi(null)
+          toast('Đã đổi chế độ kế toán sang ' + cdDef.ngan)
+        }}>
+          Đổi sang {CHE_DO[choDoi].soHieu}? Danh mục tài khoản, mẫu chứng từ, mẫu in, sổ và báo cáo sẽ đổi theo chế độ mới. Bản thật chỉ cho đổi từ đầu năm tài chính và phải kết chuyển số dư (10.1.9).
+        </HopXacNhan>
+      )}
     </div>
   )
 }

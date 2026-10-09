@@ -1,7 +1,8 @@
 // Mở màn theo đường dẫn /app/:mod/:slug. Màn ngoài gói ra trang Nâng cấp.
 import type { ComponentType } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
-import { useSession } from './session'
+import { useSession, cheDoHienTai } from './session'
+import { cheDoCuaGoi } from './che-do'
 import { MODULES, duongDan, maKhoa, manDau, moDuoc, tenMan, timMan } from './registry'
 import { FEATURE, FEATURES, GOI, GOIS, minGoi, type Goi } from './plan'
 import type { ScreenProps } from '../modules/types'
@@ -48,7 +49,7 @@ export function Locked({ code, ten, crumb }: { code: string; ten: string; crumb:
       <div className="card lockpage" style={{ padding: '34px 40px' }}>
         <div className="lock-ic"><Icon n="lock" className="ic lg" /></div>
         <h1>{ten} có ở gói {goiCo.map(g => GOI[g].ten).join(', ')}</h1>
-        <p>Đơn vị đang dùng gói {GOI[s.goi].ten} ({GOI[s.goi].cheDo}). Lên gói {GOI[can].ten} mở thêm {moi.length} tính năng, dùng {GOI[can].cheDo}.</p>
+        <p>Đơn vị đang dùng gói {GOI[s.goi].ten} ({cheDoHienTai(s).soHieu}). Lên gói {GOI[can].ten} mở thêm {moi.length} tính năng, dùng {cheDoCuaGoi(can).soHieu}.</p>
         <div className="row" style={{ justifyContent: 'center', marginTop: 20, gap: 10 }}>
           <Link className="btn acc lg" to="/app/he-thong/goi-thue-bao"><Icon n="layers" /> Nâng cấp lên {GOI[can].ten}</Link>
           <button className="btn lg" onClick={() => set({ goi: can })}>Xem thử gói {GOI[can].ten}</button>

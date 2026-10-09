@@ -1,11 +1,12 @@
 // Báo cáo tài chính: KQKD, cân đối kế toán, cân đối số phát sinh, lưu chuyển tiền tệ, báo cáo quản trị F&B.
-// Mẫu đổi theo gói: Free bản đơn giản, Standard dạng tinh gọn, Plus B0x-DNN (TT133), Pro B0x-DN (TT99).
+// Mẫu đổi theo chế độ kế toán: TT152 bản đơn giản, TT58 dạng tinh gọn, TT133 B0x-DNN, TT99 B0x-DN.
 import { useState, type ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { Col, Row, ScreenProps } from '../types'
 import { tenMan } from '../../app/registry'
 import { useSession } from '../../app/session'
-import { GOI, type Goi } from '../../app/plan'
+import { kieuGhiSo } from '../../app/plan'
+import type { CheDo } from '../../app/che-do'
 import { CHI_NHANH, chiPhiThang, kqkd, tongKy } from '../../data/mock'
 import { Note, PageHead } from '../../ui/Page'
 import { KY_CHON, ReportPaper, ReportToolbar, RptTable } from '../../ui/generic/ReportScreen'
@@ -27,15 +28,15 @@ function Khung({ sc, mod, children, note }: ScreenProps & { children: (ky: strin
 }
 
 // ── Báo cáo kết quả kinh doanh ──
-function dongKqkd(goi: Goi, thang: number) {
+function dongKqkd(cd: CheDo, thang: number) {
   const q = kqkd(thang, 2026)
-  if (goi === 'F' || goi === 'S') return [
+  if (cd === 'TT152' || cd === 'TT58') return [
     { ct: 'Doanh thu bán hàng', v: q.dtThuan, _b: 1, _drill: '/app/ban-hang/3-2-3' }, { ct: 'Giá vốn', v: q.gv, _drill: '/app/kho/5-2-3' },
     { ct: 'Lãi gộp', v: q.lnGop, _b: 1 }, { ct: 'Chi phí hoạt động', v: q.cpQlkd + q.cpTc - q.dtTc },
     { ct: 'Thu nhập, chi phí khác', v: q.lnKhac }, { ct: 'Lợi nhuận trước thuế', v: q.lnTruocThue, _t: 1 },
-    ...(goi === 'S' ? [{ ct: 'Thuế thu nhập doanh nghiệp', v: q.thue }, { ct: 'Lợi nhuận sau thuế', v: q.lnSauThue, _t: 1 }] : []),
+    ...(cd === 'TT58' ? [{ ct: 'Thuế thu nhập doanh nghiệp', v: q.thue }, { ct: 'Lợi nhuận sau thuế', v: q.lnSauThue, _t: 1 }] : []),
   ]
-  const PR = goi === 'PR'
+  const PR = cd === 'TT99'
   return [
     { ma: '01', ct: 'Doanh thu bán hàng và cung cấp dịch vụ', v: q.dt, _drill: '/app/ban-hang/3-2-3' }, { ma: '02', ct: 'Các khoản giảm trừ doanh thu', v: q.giamTru },
     { ma: '10', ct: 'Doanh thu thuần về bán hàng và cung cấp dịch vụ', v: q.dtThuan, _b: 1 }, { ma: '11', ct: 'Giá vốn hàng bán', v: q.gv, _drill: '/app/kho/5-2-3' },
@@ -50,7 +51,7 @@ function dongKqkd(goi: Goi, thang: number) {
     { ma: '60', ct: 'Lợi nhuận sau thuế thu nhập doanh nghiệp', v: q.lnSauThue, _t: 1 },
   ]
 }
-const MAU: Record<Goi, [string, string] | null> = { F: null, S: ['B02', 'dạng tinh gọn'], PL: ['B02-DNN', ''], PR: ['B02-DN', ''] }
+const MAU: Record<CheDo, [string, string] | null> = { TT152: null, TT58: ['B02', 'dạng tinh gọn'], TT133: ['B02-DNN', ''], TT99: ['B02-DN', ''] }
 
 export function KetQuaKinhDoanh(p: ScreenProps) {
   const { s } = useSession()
@@ -58,12 +59,12 @@ export function KetQuaKinhDoanh(p: ScreenProps) {
   return (
     <Khung {...p} note={<Note icon="info">Bấm dòng doanh thu hoặc giá vốn để xem số chi tiết. Số khớp Tổng quan, báo cáo doanh thu, bảng cân đối số phát sinh.</Note>}>
       {ky => {
-        const nay = dongKqkd(s.goi, Number(ky)), cu = dongKqkd(s.goi, Number(truoc(ky)))
-        const ma = s.goi === 'PL' || s.goi === 'PR'
+        const nay = dongKqkd(s.cheDo, Number(ky)), cu = dongKqkd(s.cheDo, Number(truoc(ky)))
+        const ma = kieuGhiSo(s.cheDo) === 'noco'
         const cols: Col[] = [{ k: 'ct', t: 'Chỉ tiêu' }, ...(ma ? [{ k: 'ma', t: 'Mã số', c: true, w: 70 } as Col] : []), { k: 'v', t: kyTen(ky).replace(' (đến 07/10)', ''), num: true }, { k: 'cu', t: kyTen(truoc(ky)), num: true }]
         return (
-          <ReportPaper title="Báo cáo kết quả hoạt động kinh doanh" sub={`${kyTen(ky)}${s.goi === 'F' ? ' · Bản đơn giản, chưa theo chế độ kế toán' : s.goi === 'S' ? ' · Dạng tinh gọn theo TT58' : ''}`}
-            mau={MAU[s.goi]?.[0]} goi={s.goi}>
+          <ReportPaper title="Báo cáo kết quả hoạt động kinh doanh" sub={`${kyTen(ky)}${s.cheDo === 'TT152' ? ' · Bản đơn giản, chưa theo chế độ kế toán' : s.cheDo === 'TT58' ? ' · Dạng tinh gọn theo TT58' : ''}`}
+            mau={MAU[s.cheDo]?.[0]}>
             <RptTable cols={cols} rows={nay.map((x, i) => ({ ...x, cu: cu[i]?.v }))} onRow={x => nav(x._drill)} />
           </ReportPaper>
         )
@@ -73,12 +74,12 @@ export function KetQuaKinhDoanh(p: ScreenProps) {
 }
 
 // ── Bảng cân đối kế toán ──
-function dongCdkt(goi: Goi, c: Record<string, number>) {
+function dongCdkt(cd: CheDo, c: Record<string, number>) {
   const tien = du(c, '1111', '1121'), pt = du(c, '131'), htk = du(c, '152'), ng = du(c, '211'), hm = du(c, '214'), vat = du(c, '1331'), ttr = du(c, '242')
   const ts = tien + pt + htk + ng + hm + vat + ttr
   const ncc = -du(c, '331'), thue = -du(c, '33311', '3334'), luong = -du(c, '334'), vay = -du(c, '341'), von = -du(c, '411'), ln = -du(c, '421')
   const npt = ncc + thue + luong + vay
-  if (goi === 'PR') return [
+  if (cd === 'TT99') return [
     { ct: 'TÀI SẢN', _b: 1 }, { ma: '100', ct: 'A. Tài sản ngắn hạn', v: tien + pt + htk + vat, _b: 1 }, { ma: '110', ct: 'Tiền và các khoản tương đương tiền', v: tien, _i: 1 },
     { ma: '130', ct: 'Các khoản phải thu ngắn hạn', v: pt, _i: 1 }, { ma: '140', ct: 'Hàng tồn kho', v: htk, _i: 1 }, { ma: '150', ct: 'Tài sản ngắn hạn khác', v: vat, _i: 1 },
     { ma: '200', ct: 'B. Tài sản dài hạn', v: ng + hm + ttr, _b: 1 }, { ma: '220', ct: 'Tài sản cố định', v: ng + hm, _i: 1 }, { ma: '260', ct: 'Tài sản dài hạn khác', v: ttr, _i: 1 },
@@ -108,12 +109,12 @@ export function CanDoiKeToan(p: ScreenProps) {
     <Khung {...p}>
       {ky => {
         const sd = soCai(Number(ky))
-        const cuoi = dongCdkt(s.goi, sd.cuoi), dau = dongCdkt(s.goi, sd.mo)
-        const PR = s.goi === 'PR'
+        const cuoi = dongCdkt(s.cheDo, sd.cuoi), dau = dongCdkt(s.cheDo, sd.mo)
+        const PR = s.cheDo === 'TT99'
         const ts = cuoi.find(x => x.ma === (PR ? '270' : '200'))!.v!, nv = cuoi.find(x => x.ma === (PR ? '440' : '500'))!.v!
         const ngay = ky === '10' ? '07/10/2026' : ky === '9' ? '30/09/2026' : '31/08/2026'
         return (
-          <ReportPaper title="Báo cáo tình hình tài chính" sub={`Tại ngày ${ngay}${s.goi === 'S' ? ' · Dạng tinh gọn theo TT58' : ''}`} mau={s.goi === 'PL' ? 'B01-DNN' : s.goi === 'PR' ? 'B01-DN' : 'B01'} goi={s.goi}>
+          <ReportPaper title="Báo cáo tình hình tài chính" sub={`Tại ngày ${ngay}${s.cheDo === 'TT58' ? ' · Dạng tinh gọn theo TT58' : ''}`} mau={s.cheDo === 'TT133' ? 'B01-DNN' : s.cheDo === 'TT99' ? 'B01-DN' : 'B01'}>
             <div className="row" style={{ marginBottom: 8, fontSize: 12.5 }}>
               <span className={`chip ${ts === nv ? 'ok' : 'err'}`}>{ts === nv ? 'Tài sản bằng nguồn vốn' : 'Lệch tài sản và nguồn vốn'}</span>
             </div>
@@ -142,7 +143,7 @@ export function CanDoiPhatSinh(p: ScreenProps) {
         const tong = { ten: 'Tổng cộng', dn: sum('dn'), dc: sum('dc'), pn: sum('pn'), pc: sum('pc'), cn: sum('cn'), cc: sum('cc'), _t: 1 }
         const can = tong.dn === tong.dc && tong.pn === tong.pc && tong.cn === tong.cc
         return (
-          <ReportPaper title="Bảng cân đối số phát sinh" sub={kyTen(ky)} mau={s.goi === 'PL' ? 'F01-DNN' : undefined} goi={s.goi}>
+          <ReportPaper title="Bảng cân đối số phát sinh" sub={kyTen(ky)} mau={s.cheDo === 'TT133' ? 'F01-DNN' : undefined}>
             <div style={{ marginBottom: 8 }}><span className={`chip ${can ? 'ok' : 'err'}`}>{can ? 'Cân: Nợ bằng Có ở cả 3 cột' : 'Lệch Nợ, Có'}</span></div>
             <RptTable cols={[{ k: 'tk', t: 'Số hiệu TK', cls: 'code', w: 80 }, { k: 'ten', t: 'Tên tài khoản' }, { k: 'dn', t: 'Dư Nợ đầu kỳ', num: true }, { k: 'dc', t: 'Dư Có đầu kỳ', num: true },
               { k: 'pn', t: 'Phát sinh Nợ', num: true }, { k: 'pc', t: 'Phát sinh Có', num: true }, { k: 'cn', t: 'Dư Nợ cuối kỳ', num: true }, { k: 'cc', t: 'Dư Có cuối kỳ', num: true }]} rows={[...rows, tong]} />
@@ -169,7 +170,7 @@ export function LuuChuyenTien(p: ScreenProps) {
         const l20 = l01 + l02 + l03 + l04 + l06 + l07, l34 = theo(['travay']), l40 = l34, l50 = l20 + l40
         const l60 = du(sd.mo, '1111', '1121'), l70 = du(sd.cuoi, '1111', '1121')
         return (
-          <ReportPaper title="Báo cáo lưu chuyển tiền tệ" sub={`${kyTen(ky)} · Phương pháp trực tiếp`} mau={s.goi === 'PL' ? 'B03-DNN' : 'B03-DN'} goi={s.goi}>
+          <ReportPaper title="Báo cáo lưu chuyển tiền tệ" sub={`${kyTen(ky)} · Phương pháp trực tiếp`} mau={s.cheDo === 'TT133' ? 'B03-DNN' : 'B03-DN'}>
             <div style={{ marginBottom: 8 }}><span className={`chip ${l60 + l50 === l70 ? 'ok' : 'err'}`}>{l60 + l50 === l70 ? 'Tiền cuối kỳ khớp bảng cân đối kế toán' : 'Lệch tiền cuối kỳ'}</span></div>
             <RptTable cols={[{ k: 'ct', t: 'Chỉ tiêu' }, { k: 'ma', t: 'Mã số', c: true, w: 70 }, { k: 'v', t: 'Kỳ này', num: true, r: x => x.v === undefined ? '' : x.v.toLocaleString('vi-VN') }]} rows={[
               { ct: 'I. Lưu chuyển tiền từ hoạt động kinh doanh', _b: 1 },
@@ -202,7 +203,7 @@ export function BaoCaoQuanTri(p: ScreenProps) {
           return { cn: c.ten, dt: t.dt, don: t.don, tb: Math.round(t.dt / t.don), fc: pct(t.gv / t.dt), lc: pct(luong / t.dt), rc: pct(mb / t.dt), lg: t.dt - t.gv, lgp: pct((t.dt - t.gv) / t.dt) }
         })
         return (
-          <ReportPaper title="Báo cáo quản trị chuỗi F&B" sub={`${kyTen(ky)} · Theo chi nhánh`} goi={s.goi} ky={false}>
+          <ReportPaper title="Báo cáo quản trị chuỗi F&B" sub={`${kyTen(ky)} · Theo chi nhánh`} ky={false}>
             <RptTable cols={[{ k: 'cn', t: 'Chi nhánh' }, { k: 'dt', t: 'Doanh thu', num: true }, { k: 'don', t: 'Số đơn', num: true }, { k: 'tb', t: 'TB một đơn', num: true },
               { k: 'fc', t: 'Giá vốn / DT', num: true }, { k: 'lc', t: 'Lương / DT', num: true }, { k: 'rc', t: 'Mặt bằng / DT', num: true }, { k: 'lg', t: 'Lãi gộp', num: true }, { k: 'lgp', t: 'Biên lãi gộp', num: true }]}
               rows={[...rows, { cn: 'Toàn chuỗi', dt: all.dt, don: all.don, tb: Math.round(all.dt / all.don), fc: pct(all.gv / all.dt), lc: pct(cp.luong / all.dt), rc: pct(cp.matBang / all.dt), lg: all.dt - all.gv, lgp: pct((all.dt - all.gv) / all.dt), _t: 1 }]} />
@@ -212,5 +213,3 @@ export function BaoCaoQuanTri(p: ScreenProps) {
     </Khung>
   )
 }
-
-export const cheDo = (g: Goi) => GOI[g].cheDo

@@ -1,7 +1,7 @@
 // Chọn đơn vị kế toán: một tài khoản làm cho nhiều mã số thuế (tính năng 11.13)
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { useSession } from '../../app/session'
-import { GOI } from '../../app/plan'
+import { cheDoCuaGoi } from '../../app/che-do'
 import { DON_VI, KY_MO } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
 import { Logo } from '../../ui/Logo'
@@ -23,7 +23,7 @@ export function ChonDonVi() {
               <span className="dv-av">{d.viettat}</span>
               <span className="grow">
                 <b style={{ color: 'var(--ink)', fontSize: 15 }}>{d.ten}</b><br />
-                <small className="muted">MST {d.mst} · {GOI[d.goi].cheDo} · {d.diem} điểm bán · Kỳ {KY_MO.thang}/{KY_MO.nam} đang mở</small>
+                <small className="muted">MST {d.mst} · {cheDoCuaGoi(d.goi).soHieu} · {d.diem} điểm bán · Kỳ {KY_MO.thang}/{KY_MO.nam} đang mở</small>
               </span>
               <Pk g={d.goi} />
               <Icon n="chevr" />

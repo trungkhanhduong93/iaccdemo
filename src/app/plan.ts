@@ -45,11 +45,13 @@ export const FEATURES: Feature[] = data.feats.map(f => {
 })
 export const FEATURE: Record<string, Feature> = Object.fromEntries(FEATURES.map(f => [f.c, f]))
 
-export const GOI: Record<Goi, { ten: string; cls: string; cheDo: string; cheDoNgan: string; mota: string }> = {
-  F: { ten: 'Free', cls: 'fr', cheDo: 'Chưa áp chế độ kế toán', cheDoNgan: 'Không chế độ', mota: 'Hộ kinh doanh, cửa hàng nhỏ, 1 điểm bán' },
-  S: { ten: 'Standard', cls: 'st', cheDo: 'TT58/2026/TT-BTC', cheDoNgan: 'TT58', mota: 'DN siêu nhỏ, 1 điểm bán, không dùng tài khoản' },
-  PL: { ten: 'Plus', cls: 'md', cheDo: 'TT133/2016/TT-BTC', cheDoNgan: 'TT133', mota: 'DN nhỏ và vừa, 1–10 điểm bán, Nợ/Có' },
-  PR: { ten: 'Pro', cls: 'ad', cheDo: 'TT99/2025/TT-BTC', cheDoNgan: 'TT99', mota: 'DN vừa và lớn, trên 10 điểm bán' },
+import { CHE_DO, CHE_DO_MAC_DINH, type CheDo } from './che-do'
+
+export const GOI: Record<Goi, { ten: string; cls: string; mota: string }> = {
+  F: { ten: 'Free', cls: 'fr', mota: 'Hộ kinh doanh, cửa hàng nhỏ, 1 điểm bán' },
+  S: { ten: 'Standard', cls: 'st', mota: 'DN siêu nhỏ, 1 điểm bán, không dùng tài khoản' },
+  PL: { ten: 'Plus', cls: 'md', mota: 'DN nhỏ và vừa, 1–10 điểm bán, Nợ/Có' },
+  PR: { ten: 'Pro', cls: 'ad', mota: 'DN vừa và lớn, trên 10 điểm bán' },
 }
 
 /** Gói thấp nhất có tính năng. */
@@ -78,7 +80,9 @@ export function demTheoGoi(goi: Goi, mod?: number) {
 /** Gói Free ẩn hẳn tính năng ngoài gói thay vì hiện mờ có khoá (QD22). Gói khác vẫn hiện khoá để mời nâng cấp. */
 export const anNgoaiGoi = (goi: Goi) => goi === 'F'
 
-/** Kiểu ghi sổ theo gói: Free không hạch toán, Standard ghi sổ không tài khoản, Plus/Pro Nợ/Có. */
-export function kieuGhiSo(goi: Goi): 'khong' | 'so' | 'noco' {
-  return goi === 'F' ? 'khong' : goi === 'S' ? 'so' : 'noco'
+/** Kiểu ghi sổ theo gói hoặc chế độ kế toán. */
+export function kieuGhiSo(x: Goi | CheDo): 'khong' | 'so' | 'noco' {
+  if (x in CHE_DO) return CHE_DO[x as CheDo].kieuGhiSo
+  return CHE_DO[CHE_DO_MAC_DINH[x as Goi]].kieuGhiSo
 }
+

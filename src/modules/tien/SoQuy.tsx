@@ -16,7 +16,7 @@ export function SoQuy({ sc, mod }: ScreenProps) {
   const [ky, setKy] = useState('9')
   const [cn, setCn] = useState(CHI_NHANH[0].id)
   const thang = Number(ky)
-  const noco = kieuGhiSo(s.goi) === 'noco'
+  const noco = kieuGhiSo(s.cheDo) === 'noco'
   const so = useMemo(() => {
     const r = rng('soquy' + cn + thang)
     const mo = k(between(r, 38e6, 52e6))
@@ -52,7 +52,7 @@ export function SoQuy({ sc, mod }: ScreenProps) {
         <ReportToolbar ky={ky} setKy={setKy}>
           <LocO nhan="Quỹ"><Select className="inp" value={cn} onChange={e => setCn(e.target.value)}>{CHI_NHANH.map(c => <option key={c.id} value={c.id}>Quỹ tiền mặt {c.ngan}</option>)}</Select></LocO>
         </ReportToolbar>
-        <ReportPaper title="Sổ quỹ tiền mặt" sub={`Quỹ tiền mặt ${ten} · Tháng ${thang}/2026`} mau={s.goi === 'PL' ? 'S07-DNN' : undefined} goi={s.goi}>
+        <ReportPaper title="Sổ quỹ tiền mặt" sub={`Quỹ tiền mặt ${ten} · Tháng ${thang}/2026`} mau={s.cheDo === 'TT133' ? 'S07-DNN' : undefined}>
           <RptTable cols={cols} rows={[{ dg: 'Số tồn đầu kỳ', du: so.mo, _b: 1 }, ...so.rows, { dg: 'Cộng phát sinh trong kỳ', no: so.tn, co: so.tc, _t: 1 }, { dg: 'Số tồn cuối kỳ', du: so.cuoi, _t: 1 }]} />
         </ReportPaper>
       </section>

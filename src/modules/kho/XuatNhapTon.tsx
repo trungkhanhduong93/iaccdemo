@@ -2,7 +2,6 @@
 import { useMemo, useState } from 'react'
 import type { ScreenProps } from '../types'
 import { tenMan } from '../../app/registry'
-import { useSession } from '../../app/session'
 import { KHO } from '../../data/mock'
 import { PageHead } from '../../ui/Page'
 import { ReportPaper, ReportToolbar } from '../../ui/generic/ReportScreen'
@@ -12,7 +11,6 @@ import { Select } from '../../ui/Dropdown'
 import { LocO } from '../../ui/ThanhLoc'
 
 export function XuatNhapTon({ sc, mod }: ScreenProps) {
-  const { s } = useSession()
   const [ky, setKy] = useState('9')
   const [kho, setKho] = useState(KHO[1])
   const rows = useMemo(() => xnt(Number(ky), kho), [ky, kho])
@@ -25,7 +23,7 @@ export function XuatNhapTon({ sc, mod }: ScreenProps) {
         <ReportToolbar ky={ky} setKy={setKy}>
           <LocO nhan="Kho"><Select className="inp" value={kho} onChange={e => setKho(e.target.value)}>{KHO.map(k => <option key={k}>{k}</option>)}</Select></LocO>
         </ReportToolbar>
-        <ReportPaper title="Báo cáo xuất nhập tồn" sub={`${kho} · Tháng ${ky}/2026`} goi={s.goi}>
+        <ReportPaper title="Báo cáo xuất nhập tồn" sub={`${kho} · Tháng ${ky}/2026`}>
           <table className="rpt">
             <thead>
               <tr><th rowSpan={2}>Mã</th><th rowSpan={2}>Tên nguyên vật liệu, hàng hoá</th><th rowSpan={2}>ĐVT</th><th colSpan={2}>Đầu kỳ</th><th colSpan={2}>Nhập trong kỳ</th><th colSpan={2}>Xuất trong kỳ</th><th colSpan={2}>Cuối kỳ</th></tr>

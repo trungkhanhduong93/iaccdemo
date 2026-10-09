@@ -417,7 +417,6 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
                   <div style={{ padding: 14 }}>
                     <HachToan
                       cfg={cfg}
-                      goi={s.goi}
                       tien={activeRow.tien}
                       thue={activeRow.thue || 0}
                       dt={String(activeRow.doiTuong ?? '')}

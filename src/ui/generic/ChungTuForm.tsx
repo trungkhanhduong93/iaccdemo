@@ -3,8 +3,9 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import type { Row, ScreenProps, VoucherCfg } from '../../modules/types'
 import { duongDan, tenMan } from '../../app/registry'
-import { chiNhanhHienTai, useSession } from '../../app/session'
-import { GOI, kieuGhiSo, coTrongGoi, type Goi } from '../../app/plan'
+import { chiNhanhHienTai, useSession, cheDoHienTai } from '../../app/session'
+import { kieuGhiSo, coTrongGoi, type Goi } from '../../app/plan'
+import { CHE_DO } from '../../app/che-do'
 import { CHI_NHANH, KHACH, KHO, NCC, NHAN_VIEN, TK_NGAN_HANG } from '../../data/mock'
 import { Icon } from '../Icon'
 import { Card, Note } from '../Page'
@@ -43,8 +44,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
 
   const path = duongDan(mod, sc)
   const dongForm = useDong(path)
-  const kieu = kieuGhiSo(s.goi)
-  const coTkGoi = s.goi === 'PL' || s.goi === 'PR'
+  const kieu = kieuGhiSo(s.cheDo)
+  const coTkGoi = kieuGhiSo(s.cheDo) === 'noco'
 
   // Trạng thái thanh toán cho mua/bán
   const [hinhThucTt, setHinhThucTt] = useState<'congno' | 'tienmat' | 'chuyenkhoan'>(
@@ -698,7 +699,6 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
             <div style={{ padding: 14 }}>
               <HachToan
                 cfg={cfg}
-                goi={s.goi}
                 tien={tongTien - tongCk}
                 thue={tongThue}
                 dt={doiTuong}
@@ -777,10 +777,9 @@ function lyMacDinh(ds: string[], dg: string) {
   return LY_THEO_DG.find(([tu, ly]) => l.includes(tu) && ds.includes(ly))?.[1] ?? ds[ds.length - 1] ?? ''
 }
 
-/** Hạch toán theo gói: Free không hạch toán, Standard ghi sổ TT58, Plus/Pro Nợ/Có */
+/** Hạch toán theo chế độ: TT152 không hạch toán, TT58 ghi sổ, TT133/TT99 Nợ/Có */
 export function HachToan({
   cfg,
-  goi,
   tien,
   thue,
   dt,
@@ -788,14 +787,15 @@ export function HachToan({
   tkDoiUng,
 }: {
   cfg: VoucherCfg
-  goi: Goi
   tien: number
   thue: number
   dt: string
   cn: string
   tkDoiUng?: string
 }) {
-  const kieu = kieuGhiSo(goi)
+  const { s } = useSession()
+  const cd = cheDoHienTai(s)
+  const kieu = kieuGhiSo(cd.ma)
   if (kieu === 'khong') {
     return (
       <Note kind="gray" icon="info">
@@ -813,7 +813,7 @@ export function HachToan({
     ]
     return (
       <div className="stack" style={{ gap: 10 }}>
-        <Note icon="book">Gói Standard theo {GOI.S.cheDo}: không dùng tài khoản Nợ/Có. Phiếu ghi thẳng vào sổ.</Note>
+        <Note icon="book">Gói Standard theo {CHE_DO.TT58.soHieu}: không dùng tài khoản Nợ/Có. Phiếu ghi thẳng vào sổ.</Note>
         <Table
           cols={[{ k: 'so', t: 'Ghi vào sổ' }, { k: 'cot', t: 'Cột' }, { k: 'tien', t: 'Số tiền', num: true }]}
           rows={rowsTT58}
@@ -848,7 +848,7 @@ export function HachToan({
   return (
     <div className="stack" style={{ gap: 10 }}>
       <div className="row" style={{ fontSize: 12.5 }}>
-        <Icon n="book" className="ic sm" />Định khoản theo bộ mặc định ngành F&B, chế độ {GOI[goi].cheDo}. Sửa được trước khi ghi sổ.
+        <Icon n="book" className="ic sm" />Định khoản theo bộ mặc định ngành F&B, chế độ {cd.soHieu}. Sửa được trước khi ghi sổ.
       </div>
       <Table
         cols={[

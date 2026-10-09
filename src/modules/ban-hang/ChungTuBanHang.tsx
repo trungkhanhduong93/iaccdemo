@@ -4,7 +4,8 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import type { Col, Row, ScreenProps, VoucherCfg } from '../types'
 import { duongDan, tenMan } from '../../app/registry'
 import { chiNhanhHienTai, useSession } from '../../app/session'
-import { GOI, kieuGhiSo } from '../../app/plan'
+import { kieuGhiSo } from '../../app/plan'
+import { CHE_DO } from '../../app/che-do'
 import { CHI_NHANH, DAILY, HANG, cnTen, soBH } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
 import { Card, Note, PageHead } from '../../ui/Page'
@@ -76,7 +77,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
   const [coTrang, setCoTrang] = useState(20)
   const [tabPanel, setTabPanel] = useState('ct')
   const [panelMo, setPanelMo] = useState(true)
-  const kieu = kieuGhiSo(s.goi)
+  const kieu = kieuGhiSo(s.cheDo)
   const ghi = kieu !== 'khong'
   // Chi nhánh chọn trên thanh trên (QD17): lọc theo chi nhánh đó, bỏ cột và ô lọc chi nhánh
   const cnChon = chiNhanhHienTai(s)
@@ -384,7 +385,7 @@ function NoiDungTab({ x, tab, kieu }: { x: (typeof DAILY)[number]; tab: string; 
           {kieu === 'khong' && <Note kind="gray">Gói Free không hạch toán. Doanh thu vào báo cáo kết quả kinh doanh, tiền mặt vào sổ quỹ.</Note>}
           {kieu === 'so' && (
             <>
-              <Note icon="book">{GOI.S.cheDo}: ghi vào sổ doanh thu và sổ tiền, không dùng tài khoản.</Note>
+              <Note icon="book">{CHE_DO.TT58.soHieu}: ghi vào sổ doanh thu và sổ tiền, không dùng tài khoản.</Note>
               <div style={{ marginTop: 10 }}>
                 <Table
                   cols={[{ k: 'so', t: 'Ghi vào sổ' }, { k: 'tien', t: 'Số tiền', num: true }]}
@@ -434,7 +435,7 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
   const dong0 = useDong(duongDan(mod, sc))
   const [tab, setTab] = useState('ct')
   const x = row.x
-  const kieu = kieuGhiSo(s.goi)
+  const kieu = kieuGhiSo(s.cheDo)
   return (
     <FormToanMan icon={mod.icon} onClose={dong0} tong={x.dt + x.vat} title={`Chứng từ bán hàng ${row.so}`}
       meta={<><span className="src">FABi</span><span className="chip">{row.cn}</span><span className="chip">{x.don} đơn POS</span>{kieu !== 'khong' && <span className="chip ok">Đã ghi sổ</span>}</>}

@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSession } from '../../app/session'
 import { GOI, GOIS, demTheoGoi, type Goi } from '../../app/plan'
+import { CHE_DO, CHE_DO_HOP_LE, CHE_DO_MAC_DINH, cheDoCuaGoi, type CheDo } from '../../app/che-do'
 import { CHI_NHANH } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
 import { Logo } from '../../ui/Logo'
@@ -17,12 +18,18 @@ export function KhoiTao() {
   const nav = useNavigate()
   const [b, setB] = useState(0)
   const [goi, setGoi] = useState<Goi>('PL')
+  const [cheDo, setCheDo] = useState<CheDo>(CHE_DO_MAC_DINH['PL'])
   const [mst, setMst] = useState('')
   const [traCuu, setTraCuu] = useState(false)
   const [dongBo, setDongBo] = useState('tu')
   const [soDu, setSoDu] = useState('excel')
 
-  const xong = () => { set({ loggedIn: true, goi, donVi: 'pm', khoiTao: true }); nav('/app') }
+  const chonGoi = (g: Goi) => {
+    setGoi(g)
+    setCheDo(CHE_DO_MAC_DINH[g])
+  }
+
+  const xong = () => { set({ loggedIn: true, goi, cheDo, donVi: 'pm', khoiTao: true }); nav('/app') }
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg)', padding: '36px 40px' }}>
@@ -38,21 +45,31 @@ export function KhoiTao() {
           {b === 0 && (
             <>
               <h2 style={{ color: 'var(--ink)', fontSize: 20 }}>Chọn chế độ kế toán</h2>
-              <p className="muted" style={{ margin: '4px 0 18px' }}>Chế độ quyết định hệ thống tài khoản, mẫu sổ và báo cáo tài chính. Đổi được khi chuyển gói.</p>
+              <p className="muted" style={{ margin: '4px 0 18px' }}>Gói quyết định tính năng. Chế độ kế toán quyết định hệ thống tài khoản, mẫu chứng từ, sổ và báo cáo.</p>
               <div className="grid g2">
                 {GOIS.map(g => {
                   const n = demTheoGoi(g)
                   return (
-                    <button key={g} className={`opt ${goi === g ? 'on' : ''}`} onClick={() => setGoi(g)}>
+                    <button key={g} className={`opt ${goi === g ? 'on' : ''}`} onClick={() => chonGoi(g)}>
                       <span className="radio" />
                       <span className="grow">
-                        <span className="row"><b>{g === 'F' ? 'Chưa áp chế độ kế toán' : GOI[g].cheDo}</b><span className="grow" /><Pk g={g} /></span>
+                        <span className="row"><b>{cheDoCuaGoi(g).soHieu}</b><span className="grow" /><Pk g={g} /></span>
                         <small>{GOI[g].mota}. {n.co}/{n.tong} tính năng.</small>
                       </span>
                     </button>
                   )
                 })}
               </div>
+              {CHE_DO_HOP_LE[goi].length > 1 && (
+                <div className="f" style={{ marginTop: 14 }}>
+                  <label>Chế độ kế toán</label>
+                  <Select className="inp" value={cheDo} onChange={e => setCheDo(e.target.value as CheDo)}>
+                    {CHE_DO_HOP_LE[goi].map(cd => (
+                      <option key={cd} value={cd}>{CHE_DO[cd].soHieu} · {CHE_DO[cd].ten}</option>
+                    ))}
+                  </Select>
+                </div>
+              )}
               <Note icon="sparkle">Gợi ý theo dữ liệu FABi: 3 điểm bán, doanh thu 12 tháng khoảng 29 tỷ. Hợp với gói Plus, TT133.</Note>
             </>
           )}

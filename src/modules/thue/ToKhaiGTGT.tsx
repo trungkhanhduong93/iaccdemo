@@ -15,7 +15,7 @@ export function ToKhaiGTGT({ sc, mod }: ScreenProps) {
   const [gui, setGui] = useState(false)
   const q = [7, 8, 9].map(t => tongKy(t, 2026))
   const dt = q.reduce((a, x) => a + x.dt, 0), vat = q.reduce((a, x) => a + x.vat, 0), gv = q.reduce((a, x) => a + x.gv, 0)
-  const truocThang = s.goi === 'S'
+  const truocThang = s.cheDo === 'TT58'
   const muaVao = k(gv * 0.62 + 486_000_000), thueVao = k(muaVao * 0.074)
   const c22 = 18_640_000, c36 = vat - thueVao, c40 = Math.max(0, c36 - c22)
 
@@ -30,7 +30,7 @@ export function ToKhaiGTGT({ sc, mod }: ScreenProps) {
       <Note kind="warn" icon="alert">Số liệu giả để xem bố cục. Mẫu tờ khai và cách kê hàng giảm thuế cần kế toán trưởng duyệt trước khi dùng thật.</Note>
       <section className="report">
         {truocThang ? (
-          <ReportPaper title="Tờ khai thuế giá trị gia tăng" sub="Dành cho người nộp thuế tính thuế theo phương pháp trực tiếp trên doanh thu · Mẫu 04/GTGT · Quý 3/2026" goi={s.goi} ky={false}>
+          <ReportPaper title="Tờ khai thuế giá trị gia tăng" sub="Dành cho người nộp thuế tính thuế theo phương pháp trực tiếp trên doanh thu · Mẫu 04/GTGT · Quý 3/2026" ky={false}>
             <RptTable cols={[{ k: 'stt', t: 'STT', c: true, w: 50 }, { k: 'nhom', t: 'Nhóm ngành' }, { k: 'dt', t: 'Doanh thu chịu thuế', num: true }, { k: 'tl', t: 'Tỷ lệ', c: true, w: 70 }, { k: 'thue', t: 'Thuế GTGT phải nộp', num: true }]}
               rows={[
                 { stt: 1, nhom: 'Phân phối, cung cấp hàng hoá', tl: '1%' },
@@ -41,7 +41,7 @@ export function ToKhaiGTGT({ sc, mod }: ScreenProps) {
               ]} />
           </ReportPaper>
         ) : (
-          <ReportPaper title="Tờ khai thuế giá trị gia tăng" sub="Dành cho người nộp thuế khai thuế theo phương pháp khấu trừ · Mẫu 01/GTGT · Quý 3/2026" goi={s.goi} ky={false}>
+          <ReportPaper title="Tờ khai thuế giá trị gia tăng" sub="Dành cho người nộp thuế khai thuế theo phương pháp khấu trừ · Mẫu 01/GTGT · Quý 3/2026" ky={false}>
             <RptTable cols={[{ k: 'stt', t: 'STT', c: true, w: 50 }, { k: 'ct', t: 'Chỉ tiêu' }, { k: 'ma1', t: 'Mã', c: true, w: 56 }, { k: 'gt', t: 'Giá trị HHDV', num: true }, { k: 'ma2', t: 'Mã', c: true, w: 56 }, { k: 'thue', t: 'Thuế GTGT', num: true }]}
               rows={[
                 { stt: 'A', ct: 'Không phát sinh hoạt động mua, bán trong kỳ', ma1: '[21]', _b: 1 },
