@@ -4,13 +4,14 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T50.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T51.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T51 | Form phiếu thu chi: ô Quỹ ở đầu phiếu; phiếu tiền mặt chỉ chọn quỹ tiền mặt của chi nhánh lập phiếu, phiếu ngân hàng chỉ chọn tài khoản ngân hàng; Ghi chú cùng hàng Địa chỉ; tab Lịch sử phiếu có từ gói Free; lưu xong ở lại xem phiếu; nhật ký thêm mới, sửa, xoá | PhuongXT | Đang làm | Sửa `ChungTuForm.tsx`, `daXoa.ts`, `VoucherScreen.tsx` (trùng T50 của Trum, chỉ dòng onXoa), `ChungTuBanHang.tsx`, `TienIch.tsx` |
 | T27 | Danh sách chứng từ 2.1.1: khung chi tiết bên dưới hiện dòng phiếu khác với form của cùng phiếu (UNC2610-0259: khung ghi "Chi mua rau, củ tại chợ", form ghi "Trả tiền nhà cung cấp thịt bò") | | Chờ | Thấy khi làm T26 |
 | T02 | Chốt nghiệp vụ trên từng sơ đồ Quy trình: ô nào, nối thế nào, câu chữ. Sửa ở `src/modules/<phân hệ>/quy-trinh.ts` | Trum | Chờ | |
 | T03 | Nối sổ quỹ, sổ tài khoản 2.2.2, sổ ngân hàng 2.2.3, sổ công nợ 2.2.5 vào `so-cai.ts` để mọi sổ khớp báo cáo tài chính | | Chờ | Sổ quỹ đang tính riêng từ tiền mặt FABi từng chi nhánh. Tổng 3 quỹ chưa bằng dư TK 1111 trên cân đối kế toán |

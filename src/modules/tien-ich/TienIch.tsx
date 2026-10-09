@@ -10,6 +10,7 @@ import { Card, Kpi, Note, PageHead } from '../../ui/Page'
 import { St, Table } from '../../ui/Table'
 import { between, k, pad, pick, rng } from '../../ui/format'
 import { Select } from '../../ui/Dropdown'
+import { useNhatKy } from '../../ui/generic/daXoa'
 
 export function DongBo({ sc, mod }: ScreenProps) {
   const { toast } = useSession()
@@ -124,7 +125,9 @@ export function CanhBao({ sc, mod }: ScreenProps) {
 export function NhatKyThaoTac({ sc, mod }: ScreenProps) {
   const r = rng('nhatky')
   const viec = ['Sửa phiếu chi PC2610-0241', 'Ghi sổ 3 chứng từ bán hàng', 'Xoá phiếu nháp MH2610-0118', 'Khoá sổ kỳ 8/2026', 'Đổi tài khoản doanh thu nhóm Đồ uống', 'Đăng nhập', 'Xuất Excel sổ quỹ tiền mặt', 'Duyệt cấp 1 phiếu chi PC2610-0236']
-  const rows = Array.from({ length: 22 }, (_, i) => ({ luc: `${pad(7 - Math.floor(i / 5))}/10/2026 ${pad(16 - (i % 9))}:${pad(Math.floor(r() * 59))}`, ai: pick(r, ['Trần Thu Hà', 'Lê Quốc Bảo', 'Phạm Ngọc Lan']), viec: pick(r, viec), ip: `113.161.${Math.floor(r() * 200)}.${Math.floor(r() * 250)}` }))
+  // Thao tác trên phiếu trong phiên (thêm mới, sửa, xoá) lên đầu, rồi tới nhật ký mẫu (T51)
+  const phien = useNhatKy().map(x => ({ luc: x.luc, ai: x.ai, viec: x.viec.replace('chứng từ', `chứng từ ${x.so}`), ip: '' }))
+  const rows = [...phien, ...Array.from({ length: 22 }, (_, i) => ({ luc: `${pad(7 - Math.floor(i / 5))}/10/2026 ${pad(16 - (i % 9))}:${pad(Math.floor(r() * 59))}`, ai: pick(r, ['Trần Thu Hà', 'Lê Quốc Bảo', 'Phạm Ngọc Lan']), viec: pick(r, viec), ip: `113.161.${Math.floor(r() * 200)}.${Math.floor(r() * 250)}` }))]
   return (
     <div className="page">
       <PageHead crumb={[mod.ten, sc.nhom ?? '']} title={tenMan(sc)} code={sc.code} meta={<span className="chip">Nhật ký không sửa, không xoá được</span>} />

@@ -280,7 +280,7 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
                 selectedRows={selectedRows}
                 ghi={ghi}
                 onBoChon={() => setSelectedIds(new Set())}
-                onXoa={ids => xoaPhieu(`${mod.key}/${sc.slug}`, ids)}
+                onXoa={ids => xoaPhieu(`${mod.key}/${sc.slug}`, ids.map(id => ({ id, so: String(rows.find(r => String(r.id) === id)?.so ?? '') })), s.ten)}
                 open={moHangLoat}
                 onOpenChange={setMoHangLoat}
                 onIn={() => setPhieuIn(selectedRows.map(phieuCua))}

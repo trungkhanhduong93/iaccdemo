@@ -4,12 +4,12 @@ import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-do
 import type { Row, ScreenProps, VoucherCfg } from '../../modules/types'
 import { duongDan, tenMan } from '../../app/registry'
 import { chiNhanhHienTai, useSession, cheDoHienTai } from '../../app/session'
-import { kieuGhiSo, coTrongGoi, type Goi } from '../../app/plan'
+import { kieuGhiSo, type Goi } from '../../app/plan'
 import { CHE_DO } from '../../app/che-do'
 import { tkTheoCheDo } from '../../modules/tong-hop/so-cai'
 import { CHI_NHANH, KHACH, KHO, KHOA_SO_DEN, NCC, NHAN_VIEN, TK_NGAN_HANG, daKhoaSo } from '../../data/mock'
 import { HopXacNhan } from '../LocNangCao'
-import { soKeTiep, suaPhieu, themPhieu, xoaPhieu } from './daXoa'
+import { ghiNhatKy, soKeTiep, suaPhieu, themPhieu, useNhatKy, xoaPhieu } from './daXoa'
 import { Icon } from '../Icon'
 import { Card, Note } from '../Page'
 import { FormToanMan, useDong } from '../FormToanMan'
@@ -141,6 +141,11 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
     if (dt) setMst(dt.mst)
   }
   // Gói Free: tháng hạch toán lãi lỗ, mặc định tháng của ngày chứng từ, chọn được các tháng trước chưa khoá sổ (T49)
+  // Quỹ của phiếu (T51): phiếu tiền mặt chỉ chọn quỹ tiền mặt của chi nhánh lập phiếu, phiếu ngân hàng chọn tài khoản ngân hàng
+  const dsQuy = nhom === 'thu' || nhom === 'chi' ? [quyTm]
+    : nhom === 'nhthu' || nhom === 'nhchi' ? QUY_TIEN.slice(CHI_NHANH.length) : []
+  const [quy, setQuy] = useState(() => row?._quy ? String(row._quy) : dsQuy.includes(quyTm) ? quyTm : dsQuy[0] ?? '')
+  useEffect(() => { setQuy(row?._quy ? String(row._quy) : dsQuy.includes(quyTm) ? quyTm : dsQuy[0] ?? '') }, [loai?.k, row?.id])
   const coThangLl = laTien && s.goi === 'F' && nhom !== 'cq'   // chuyển quỹ không ảnh hưởng lãi lỗ
   const dsThangLl = useMemo(() => thangLaiLo(ngayCt), [ngayCt])
   const [thangLl, setThangLl] = useState(dsThangLl[0])
@@ -167,26 +172,41 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   }
 
   // Lưu chứng từ
+  // Nội dung lúc bắt đầu sửa, để nhật ký ghi ô nào đổi (T51)
+  const chupNd = () => ({ ngay: ngayCt, doiTuong, dienGiai, tong: tongThanhToan, lyDo, ghiChu, quy, dong: JSON.stringify(dsDong) })
+  const goc = useRef(chupNd())
+  useEffect(() => { if (dangSua) goc.current = chupNd() }, [dangSua])
+
   function luu(moMoi = false) {
     // Bản mẫu chưa có backend: phiếu mới lên đầu danh sách, phiếu sửa hiện nội dung mới, tới khi tải lại trang (T49)
     const noiDung = {
       ngay: ngayCt, thang: Number(ngayCt.split('/')[1]) || 10, doiTuong, dienGiai,
-      tien: tongTien - tongCk, thue: tongThue, tong: tongThanhToan, _dong: dsDong, _lyDo: lyDo, _ghiChu: ghiChu,
+      tien: tongTien - tongCk, thue: tongThue, tong: tongThanhToan, _dong: dsDong, _lyDo: lyDo, _ghiChu: ghiChu, _quy: quy,
     }
+    const idMoi = `moi-${Date.now()}`
+    const man = `${mod.key}/${sc.slug}`
     if (moi) {
-      themPhieu(`${mod.key}/${sc.slug}`, {
-        id: `moi-${Date.now()}`, so: soCt, cn: chiNhanh, nguon: 'tay', tt: kieu === 'khong' ? 'ghi' : 'nhap',
+      themPhieu(man, {
+        id: idMoi, so: soCt, cn: chiNhanh, nguon: 'tay', tt: kieu === 'khong' ? 'ghi' : 'nhap',
         loai: loai?.k, tenLoai: loai?.ten, ...noiDung,
       })
+      ghiNhatKy(man, idMoi, soCt, s.ten, 'Thêm mới chứng từ')
     } else if (row) {
-      suaPhieu(`${mod.key}/${sc.slug}`, String(row.id), noiDung)
+      suaPhieu(man, String(row.id), noiDung)
+      const g = goc.current, m = chupNd()
+      const doi = ([['ngay', 'Ngày chứng từ'], ['doiTuong', 'Đối tượng'], ['quy', 'Quỹ'], ['lyDo', 'Lý do'], ['dienGiai', 'Diễn giải'], ['ghiChu', 'Ghi chú'], ['dong', 'Dòng chi tiết']] as const)
+        .filter(([k]) => g[k] !== m[k]).map(([, ten]): string => ten)
+      if (g.tong !== m.tong) doi.push(`Tổng tiền ${money(g.tong)} → ${money(m.tong)}`)
+      if (doi.length) ghiNhatKy(man, String(row.id), soCt, s.ten, `Sửa chứng từ: ${doi.join(', ')}`)
     }
     toast(moi ? `Đã lưu ${soCt}` : `Đã lưu thay đổi ${soCt}`)
     if (moMoi) {
       nav(`${path}/moi${loai ? `?loai=${loai.k}` : ''}`, { replace: true })
+    } else if (moi) {
+      // Lưu phiếu mới: ở lại form, xem chi tiết phiếu vừa lưu; bấm đóng mới về danh sách (T51)
+      nav(`${path}/${idMoi}`, { replace: true })
     } else {
       setDangSua(false)
-      if (moi) dongForm()
     }
   }
 
@@ -424,7 +444,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
             )}
             {hoiXoa && row && (
               <HopXacNhan tieuDe={`Xoá ${row.so}?`} nut="Xoá phiếu" onDong={() => setHoiXoa(false)}
-                onDongY={() => { setHoiXoa(false); xoaPhieu(`${mod.key}/${sc.slug}`, [String(row.id)]); toast(`Đã xoá ${row.so}`); dongForm() }}>
+                onDongY={() => { setHoiXoa(false); xoaPhieu(`${mod.key}/${sc.slug}`, [{ id: String(row.id), so: soCt }], s.ten); toast(`Đã xoá ${row.so}`); dongForm() }}>
                 Phiếu đã xoá không lấy lại được.
               </HopXacNhan>
             )}
@@ -606,6 +626,18 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
                   </div>
                 </>
               ) : (<>
+              {laTien && dsQuy.length > 0 && (
+                <div className="f">
+                  <label>{nhom === 'thu' || nhom === 'chi' ? 'Quỹ tiền mặt' : 'Tài khoản ngân hàng'} <em>*</em></label>
+                  {dangSua ? (
+                    <Select className="inp" value={quy} onChange={e => setQuy(e.target.value)}>
+                      {dsQuy.map(q => <option key={q} value={q}>{q}</option>)}
+                    </Select>
+                  ) : (
+                    <input className="inp" readOnly value={quy} />
+                  )}
+                </div>
+              )}
               <div className="f">
                 <label>{laTien ? 'Đối tượng' : cfg.nhan ?? 'Đối tượng'} <em>*</em></label>
                 {dangSua && laTien ? (
@@ -715,6 +747,13 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
                   </div>
                 )}
               </div>
+              {/* Ghi chú cùng hàng Địa chỉ, mặc định theo lý do thu, chi; gõ ghi chú thì diễn giải chép theo, sửa diễn giải không đổi ghi chú (T49) */}
+              {oLy && (
+                <div className="f">
+                  <label>Ghi chú</label>
+                  <input className="inp" readOnly={!dangSua} value={ghiChu} onChange={e => { setGhiChu(e.target.value); setDienGiai(e.target.value) }} />
+                </div>
+              )}
             </div>
 
             {/* Cột 3: Ngày chứng từ, số chứng từ. Chi nhánh hiện trên đầu form */}
@@ -751,13 +790,6 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               )}
             </div>
           </div>
-          {/* Ghi chú phiếu một dòng, mặc định theo lý do thu, chi; gõ ghi chú thì diễn giải chép theo, sửa diễn giải không đổi ghi chú (T49) */}
-          {oLy && (
-            <div className="f" style={{ marginTop: 10 }}>
-              <label>Ghi chú</label>
-              <input className="inp" readOnly={!dangSua} value={ghiChu} onChange={e => { setGhiChu(e.target.value); setDienGiai(e.target.value) }} />
-            </div>
-          )}
         </section>
 
         {/* Khối Tabs chi tiết */}
@@ -847,7 +879,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
           )}
 
           {/* Tab 5: Lịch sử thao tác */}
-          {tab === 'ls' && <LichSu goi={s.goi} moi={moi} />}
+          {tab === 'ls' && <LichSu goi={s.goi} moi={moi} man={`${mod.key}/${sc.slug}`} id={String(row?.id ?? '')} />}
 
           {/* Khối tổng cộng góc dưới phải; phiếu thu chi để Tổng tiền ở dải đáy form */}
           {chiTien && laTien ? null : chiTien ? (
@@ -1057,24 +1089,22 @@ export function HachToan({
   )
 }
 
-export function LichSu({ goi, moi }: { goi: Goi; moi: boolean }) {
+/** Nhật ký từng phiếu ghi nhận ở mọi gói, kể cả Free: thêm mới, sửa, xoá trong phiên ở trên, lịch sử mẫu ở dưới (T51).
+ *  Màn Nhật ký thao tác chung (X2) vẫn theo gói */
+export function LichSu({ goi, moi, man, id }: { goi: Goi; moi: boolean; man: string; id: string }) {
+  const phien = useNhatKy(man, id)
   if (moi) return <div className="empty"><b>Chứng từ chưa lưu</b></div>
-  if (!coTrongGoi('X2', goi)) {
-    return (
-      <div style={{ padding: 14 }}>
-        <Note kind="gray" icon="lock">
-          Nhật ký thao tác có từ gói Standard. <Link to="/app/he-thong/goi-thue-bao">So sánh gói</Link>
-        </Note>
-      </div>
-    )
-  }
   return (
     <Table
       cols={[{ k: 'luc', t: 'Thời điểm', w: 140 }, { k: 'ai', t: 'Người làm' }, { k: 'viec', t: 'Thao tác' }]}
       rows={[
-        { luc: '07/10/2026 10:05', ai: 'Lê Quốc Bảo', viec: 'Ghi sổ' },
+        ...phien,
+        // Phiếu thêm trong phiên chỉ có nhật ký thật; phiếu có sẵn kèm lịch sử mẫu
+        ...(id.startsWith('moi-') ? [] : [
+        { luc: '07/10/2026 10:05', ai: 'Lê Quốc Bảo', viec: kieuGhiSo(goi) === 'khong' ? 'Lưu chứng từ' : 'Ghi sổ' },
         { luc: '07/10/2026 09:58', ai: 'Lê Quốc Bảo', viec: 'Sửa diễn giải' },
         { luc: '06/10/2026 23:30', ai: 'Đồng bộ tự động', viec: 'Tạo chứng từ từ dữ liệu đồng bộ' },
+        ]),
       ]}
     />
   )

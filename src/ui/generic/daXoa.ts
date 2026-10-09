@@ -1,15 +1,33 @@
-// Phiếu đã xoá, phiếu mới lưu, phiếu đã sửa trong phiên (bản mẫu chưa có backend): giữ tới khi tải lại trang (T48, T49)
+// Phiếu đã xoá, phiếu mới lưu, phiếu đã sửa và nhật ký thao tác trong phiên (bản mẫu chưa có backend): giữ tới khi tải lại trang (T48, T49, T51)
 import { useSyncExternalStore } from 'react'
 import type { Row } from '../../modules/types'
 
 const daXoa = new Set<string>()
 const phieuMoi = new Map<string, Row[]>()
 const daSua = new Map<string, Partial<Row>>()
+export interface DongNhatKy { luc: string; ai: string; viec: string; so: string; man: string; id: string }
+const nhatKy: DongNhatKy[] = []   // mới nhất ở đầu
+
+/** Thời điểm theo ngày làm việc của bản mẫu (07/10/2026), giờ phút theo đồng hồ máy */
+function bayGio() {
+  const d = new Date(), p = (n: number) => String(n).padStart(2, '0')
+  return `07/10/2026 ${p(d.getHours())}:${p(d.getMinutes())}`
+}
+
+/** Ghi một dòng nhật ký thao tác trên phiếu */
+export function ghiNhatKy(man: string, id: string, so: string, ai: string, viec: string) {
+  nhatKy.unshift({ luc: bayGio(), ai, viec, so, man, id })
+  banSo++
+  nghe.forEach(f => f())
+}
 const nghe = new Set<() => void>()
 let banSo = 0
 
-export function xoaPhieu(man: string, ids: string[]) {
-  for (const id of ids) daXoa.add(`${man}|${id}`)
+export function xoaPhieu(man: string, ds: { id: string; so: string }[], ai: string) {
+  for (const x of ds) {
+    daXoa.add(`${man}|${x.id}`)
+    nhatKy.unshift({ luc: bayGio(), ai, viec: 'Xoá chứng từ', so: x.so, man, id: x.id })
+  }
   banSo++
   nghe.forEach(f => f())
 }
@@ -44,4 +62,10 @@ export function useDaXoa(man: string) {
     phieuMoi: phieuMoi.get(man) ?? [],
     apSua: (r: Row): Row => { const s = daSua.get(`${man}|${r.id}`); return s ? { ...r, ...s } : r },
   }
+}
+
+/** Nhật ký trong phiên: của một phiếu (man, id), hoặc tất cả khi không truyền */
+export function useNhatKy(man?: string, id?: string) {
+  useSyncExternalStore(f => { nghe.add(f); return () => { nghe.delete(f) } }, () => banSo)
+  return man ? nhatKy.filter(x => x.man === man && x.id === id) : nhatKy
 }

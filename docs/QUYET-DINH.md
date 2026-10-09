@@ -334,8 +334,12 @@ Lý do: PhuongXT chốt ngày 09/10/2026 theo ảnh góp ý trên màn Thu, chi 
 - Ô Đối tượng chọn từ danh mục đối tượng (khách hàng, nhà cung cấp, nhân viên), chọn xong điền Mã số thuế. Người giao, nhận và Nhân viên thực hiện gộp thành Người giao dịch.
 - Lý do thu, chi đứng trên Diễn giải. Chọn lý do thì Diễn giải và lý do mọi dòng chi tiết đổi theo; sửa lại được từng ô, từng dòng.
 - Ngày chứng từ gõ được hoặc chọn bằng lịch.
+- Ô quỹ đứng đầu phiếu (T51): phiếu thu, chi tiền mặt có ô Quỹ tiền mặt, chỉ chọn quỹ tiền mặt của chi nhánh lập phiếu; phiếu thu, chi ngân hàng có ô Tài khoản ngân hàng, chỉ chọn tài khoản ngân hàng. Phiếu chuyển quỹ giữ Từ quỹ, Đến quỹ.
+- Lưu phiếu mới (nút Lưu, Ctrl+S) thì ở lại form, chuyển sang Chi tiết phiếu vừa lưu; bấm đóng (X, Esc) mới về danh sách. Lưu và thêm vẫn mở phiếu mới tiếp theo (T51).
+- Tab Lịch sử (nhật ký từng phiếu) có ở mọi gói, kể cả Free (T51). Màn Nhật ký thao tác chung (X2) vẫn theo gói trong Excel tính năng.
+- Nhật ký ghi Thêm mới, Sửa (kèm ô đã đổi, tổng tiền cũ → mới), Xoá chứng từ, người làm, thời điểm. Tab Lịch sử của phiếu hiện các dòng này; thao tác xoá xem ở màn Nhật ký thao tác chung vì phiếu đã xoá không mở lại được (T51).
 - Tiêu đề form phiếu thu chi chỉ là tên loại phiếu (Thu tiền mặt, Chi tiền mặt...), không có chữ "mới", không có số phiếu.
-- Đối tượng đầu phiếu đổi thì đối tượng mọi dòng chi tiết đổi theo, sửa lại được từng dòng. Có dòng Ghi chú ở đầu phiếu, mặc định theo lý do; gõ Ghi chú thì Diễn giải chép theo, sửa Diễn giải không đổi Ghi chú.
+- Đối tượng đầu phiếu đổi thì đối tượng mọi dòng chi tiết đổi theo, sửa lại được từng dòng. Có ô Ghi chú ở cột giữa, cùng hàng Địa chỉ, mặc định theo lý do; gõ Ghi chú thì Diễn giải chép theo, sửa Diễn giải không đổi Ghi chú.
 - Phiếu thu chi bỏ tab Hạch toán (Ghi sổ ở gói Free) trong form.
 - Phiếu thu chi không có dòng Tổng cộng trong bảng chi tiết vì trùng Tổng tiền. Tổng tiền (kèm số dòng) nằm ở dải cố định đáy form, số thẳng cột Thành tiền.
 - Mọi phiếu: menu Tiện ích ghi Sao chép (thay Nhân bản), thêm Tuỳ chỉnh giao diện phiếu để ẩn hiện cột bảng chi tiết; lựa chọn nhớ theo màn trên máy người dùng.
