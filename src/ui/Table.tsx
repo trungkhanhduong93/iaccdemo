@@ -143,7 +143,8 @@ export function Table({
   const [thH1, setThH1] = useState(36)
   useLayoutEffect(() => {
     if (r1Ref.current) {
-      const h = r1Ref.current.getBoundingClientRect().height
+      // offsetHeight là px CSS, không bị zoom của html nhân vào như getBoundingClientRect (T44 thu 85-90%), nên top hàng lọc khớp đáy hàng tiêu đề
+      const h = r1Ref.current.offsetHeight
       if (h && Math.abs(h - thH1) > 0.5) {
         setThH1(Math.round(h))
       }
