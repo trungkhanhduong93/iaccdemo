@@ -16,13 +16,12 @@ import { Table } from '../Table'
 import { between, k, money, pad, pick, rng } from '../format'
 import { chungTu, soChiTiet } from './gen'
 import { Dropdown, MenuHead, MenuItem, MenuSep, Select } from '../Dropdown'
-import { ThanhLoc } from '../ThanhLoc'
-import { khoangThang } from '../ChonNgay'
+import { ChonKhoangNgay, khoangThang, type KhoangNgay } from '../ChonNgay'
 import { SoTrangCtx, ToGiay, NgatTrang, tachKhoi, type Kho } from '../bao-cao/ToGiay'
 import { datNguonXuat, layNguonXuat, taoTenFile, xuatFile, type NguonXuat } from '../bao-cao/xuat'
 import {
   useTrangThaiLoc, datLoc, datAnKhongPS, datCotNhuDangXem, datTuyChon, xoaLoc,
-  datColsGoc, datDsKyMacDinh, useTuyChinhBC, bienDoiBang
+  datColsGoc, datDsKyMacDinh, datKyNhap, datKyMacDinh, xemBaoCao, useTuyChinhBC, bienDoiBang
 } from '../bao-cao/tuyChinhBC'
 import { layNguoiKy } from '../bao-cao/khoMauIn'
 // @ts-ignore
@@ -31,7 +30,7 @@ import { useChoThanhCongCu } from '../bao-cao/choThanh'
 
 export const KY_CHON: [string, string][] = [['9', 'Tháng 9/2026'], ['10', 'Tháng 10/2026 (đến 07/10)'], ['8', 'Tháng 8/2026']]
 
-export function ReportToolbar({ ky, setKy }: { ky: string; setKy: (v: string) => void; children?: ReactNode }) {
+export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: string) => void; children?: ReactNode }) {
   // Số liệu báo cáo mẫu tính theo tháng, nên lấy tháng của ngày bắt đầu làm kỳ.
   const [khoang, setKhoang] = useState(() => khoangThang(Number(ky), 2026))
   const [moTuyChinh, setMoTuyChinh] = useState(false)
@@ -40,15 +39,39 @@ export function ReportToolbar({ ky, setKy }: { ky: string; setKy: (v: string) =>
   const slug = useParams().slug?.replace(/-/g, '.')
   const tt = useTrangThaiLoc(path)
 
+  // Khởi tạo kỳ mặc định vào kho
+  useEffect(() => {
+    if (ky) {
+      datKyMacDinh(path, ky)
+    }
+  }, [ky, path])
+
   // Tờ giấy (ToGiay) nghe sự kiện này để in đúng các trang đang xem
   const inBaoCao = () => window.dispatchEvent(new CustomEvent('bc-in'))
 
+  // Đồng bộ kỳ khi đã xem thay đổi (từ nút Xem báo cáo hoặc Enter cột lọc)
   useEffect(() => {
-    const thang = Number(ky)
+    if (tt.daXem.ky && tt.daXem.ky !== ky) {
+      setKy(tt.daXem.ky)
+    }
+  }, [tt.daXem.ky, ky, setKy])
+
+  useEffect(() => {
+    const thang = Number(tt.daXem.ky || ky)
     if (thang && khoang.tu.getMonth() + 1 !== thang) {
       setKhoang(khoangThang(thang, 2026))
     }
-  }, [ky])
+  }, [tt.daXem.ky, ky])
+
+  const doiKhoang = (k: KhoangNgay) => {
+    setKhoang(k)
+    datKyNhap(path, String(k.tu.getMonth() + 1))
+  }
+
+  const apDungXem = () => {
+    xemBaoCao(path)
+    setKy(tt.nhap.ky)
+  }
 
   const xuat = async (dinhDang: 'xlsx' | 'csv' | 'html' | 'xml') => {
     const n = layNguonXuat()
@@ -81,78 +104,76 @@ export function ReportToolbar({ ky, setKy }: { ky: string; setKy: (v: string) =>
     toast('Chọn máy in "Lưu dưới dạng PDF" để lưu file')
   }
 
-  const dangLoc = Object.keys(tt.loc).some(k => (tt.loc[k] ?? []).length > 0)
-    || tt.anKhongPS
-
   // Đang xem trong phân hệ Báo cáo: thanh công cụ nằm cùng hàng tên báo cáo ở thanh chọn (T55)
-  // Trong phân hệ Báo cáo thì chờ có chỗ ở thanh chọn rồi mới vẽ, không vẽ tạm trong khung để khỏi nhảy chỗ
   const trongBaoCao = path.startsWith('/app/bao-cao/')
   const oPhai = useChoThanhCongCu()
 
   const thanh = (
-      <ThanhLoc
-        ngay={{
-          value: khoang,
-          onChange: k => {
-            setKhoang(k)
-            setKy(String(k.tu.getMonth() + 1))
-          },
-        }}
-        dangLoc={dangLoc}
-        onLamMoi={() => xoaLoc(path)}
-        phai={
-          <>
-            <span className="bc-xem-cho" id="bc-xem-cho" />
-            <button
-              type="button"
-              className="btn sm"
-              title="Tuỳ chỉnh"
-              onClick={() => setMoTuyChinh(true)}
-            >
-              <Icon n="layers" className="ic sm" />
-              <span className="rpt-btn-txt">Tuỳ chỉnh</span>
-            </button>
-            <Dropdown
-              label={
-                <>
-                  <Icon n="download" className="ic sm" />
-                  <span className="rpt-btn-txt">Xuất</span>
-                  <Icon n="chevd" className="ic sm" />
-                </>
-              }
-              btnClass="btn sm"
-              title="Xuất báo cáo"
-              align="end"
-              width={180}
-            >
-              {dong => (
-                <>
-                  <MenuHead>Tuỳ chọn cột</MenuHead>
-                  <MenuItem on={tt.cotNhuDangXem} onClick={() => datCotNhuDangXem(path, !tt.cotNhuDangXem)}>
-                    Cột như đang xem
-                  </MenuItem>
-                  <MenuSep />
-                  <MenuHead>Xuất báo cáo</MenuHead>
-                  <MenuItem icon="doc" onClick={() => { dong(); xuat('xlsx') }}>Excel (.xlsx)</MenuItem>
-                  <MenuItem icon="doc" onClick={() => { dong(); xuat('csv') }}>CSV (.csv)</MenuItem>
-                  <MenuItem icon="printer" onClick={() => { dong(); inPdf() }}>PDF (hộp in)</MenuItem>
-                  <MenuItem icon="doc" onClick={() => { dong(); xuat('html') }}>HTML (.html)</MenuItem>
-                  <MenuItem icon="doc" onClick={() => { dong(); xuat('xml') }}>XML (.xml)</MenuItem>
-                </>
-              )}
-            </Dropdown>
-            <button
-              type="button"
-              className="btn sm pri"
-              title="In"
-              onClick={inBaoCao}
-            >
-              <Icon n="printer" className="ic sm" />
-              In
-            </button>
-          </>
-        }
-      />
+    <div className="thanh-loc">
+      <ChonKhoangNgay value={khoang} onChange={doiKhoang} />
+      <button
+        type="button"
+        className="btn sm pri bc-btn-xem"
+        title="Xem báo cáo"
+        onClick={apDungXem}
+      >
+        <Icon n="refresh" className="ic sm" />
+        <span className="bc-btn-xem-txt">Xem báo cáo</span>
+        {tt.coThayDoi && <span className="bc-btn-xem-dot" />}
+      </button>
+      {children}
+      <span className="grow" />
+      <div className="thanh-loc-phai">
+        <span className="bc-xem-cho" id="bc-xem-cho" />
+        <button
+          type="button"
+          className="btn sm"
+          title="Tuỳ chỉnh"
+          onClick={() => setMoTuyChinh(true)}
+        >
+          <Icon n="layers" className="ic sm" />
+          <span className="rpt-btn-txt">Tuỳ chỉnh</span>
+        </button>
+        <Dropdown
+          label={
+            <>
+              <Icon n="download" className="ic sm" />
+              <span className="rpt-btn-txt">Xuất</span>
+              <Icon n="chevd" className="ic sm" />
+            </>
+          }
+          btnClass="btn sm"
+          title="Xuất báo cáo"
+          align="end"
+          width={180}
+        >
+          {dong => (
+            <>
+              <MenuHead>Tuỳ chọn cột</MenuHead>
+              <MenuItem on={tt.cotNhuDangXem} onClick={() => datCotNhuDangXem(path, !tt.cotNhuDangXem)}>
+                Cột như đang xem
+              </MenuItem>
+              <MenuSep />
+              <MenuHead>Xuất báo cáo</MenuHead>
+              <MenuItem icon="doc" onClick={() => { dong(); xuat('xlsx') }}>Excel (.xlsx)</MenuItem>
+              <MenuItem icon="doc" onClick={() => { dong(); xuat('csv') }}>CSV (.csv)</MenuItem>
+              <MenuItem icon="printer" onClick={() => { dong(); inPdf() }}>PDF (hộp in)</MenuItem>
+              <MenuItem icon="doc" onClick={() => { dong(); xuat('html') }}>HTML (.html)</MenuItem>
+              <MenuItem icon="doc" onClick={() => { dong(); xuat('xml') }}>XML (.xml)</MenuItem>
+            </>
+          )}
+        </Dropdown>
+        <button
+          type="button"
+          className="btn sm"
+          title="In"
+          onClick={inBaoCao}
+        >
+          <Icon n="printer" className="ic sm" />
+          In
+        </button>
+      </div>
+    </div>
   )
 
   return (
@@ -304,11 +325,11 @@ function CotLocBaoCao({
   const soLocDangAp = useMemo(() => {
     let n = 0
     for (const l of dsLoc) {
-      if ((tt.loc[l.k] ?? []).length > 0) n++
+      if ((tt.nhap.loc[l.k] ?? []).length > 0) n++
     }
-    if (anKhongPS && tt.anKhongPS) n++
+    if (anKhongPS && tt.nhap.anKhongPS) n++
     return n
-  }, [dsLoc, tt.loc, tt.anKhongPS, anKhongPS])
+  }, [dsLoc, tt.nhap.loc, tt.nhap.anKhongPS, anKhongPS])
 
   if (thuGon) {
     return (
@@ -332,7 +353,7 @@ function CotLocBaoCao({
   }
 
   return (
-    <aside className="bc-loc-cot">
+    <aside className="bc-loc-cot" onKeyDown={e => { if (e.key === 'Enter') xemBaoCao(path) }}>
       <div className="bc-loc-dau">
         <div className="bc-loc-tieu-de">
           <span>Bộ lọc</span>
@@ -353,7 +374,7 @@ function CotLocBaoCao({
         {dsLoc.map(l => {
           const opts = (tt.tuyChon[l.k] && tt.tuyChon[l.k].length > 0) ? tt.tuyChon[l.k] : (l.ds ?? [])
           if (l.kieu === 'chon') {
-            const val = tt.loc[l.k]?.[0] ?? ''
+            const val = tt.nhap.loc[l.k]?.[0] ?? ''
             return (
               <div key={l.k} className="bc-loc-muc">
                 <div className="bc-loc-nhan">{l.nhan}</div>
@@ -373,7 +394,7 @@ function CotLocBaoCao({
               key={l.k}
               nhan={l.nhan}
               opts={opts}
-              daChon={tt.loc[l.k] ?? []}
+              daChon={tt.nhap.loc[l.k] ?? []}
               onDoi={vals => datLoc(path, l.k, vals)}
             />
           )
@@ -384,7 +405,7 @@ function CotLocBaoCao({
             <label className="bc-loc-gat">
               <input
                 type="checkbox"
-                checked={tt.anKhongPS}
+                checked={tt.nhap.anKhongPS}
                 onChange={e => datAnKhongPS(path, e.target.checked)}
               />
               <span>Ẩn dòng không phát sinh</span>
@@ -889,12 +910,14 @@ export function ReportScreen({ sc, mod }: ScreenProps) {
   const [ky, setKy] = useState('9')
   const cfg: ReportCfg = sc.report ?? { kieu: 'tonghop', doiTuong: 'tk' }
   const ten = tenMan(sc)
-  const thang = Number(ky)
+  const path = useLocation().pathname
+  const { loc, daXem } = useTrangThaiLoc(path)
+  const kyDaXem = daXem?.ky ?? ky
+  const thang = Number(kyDaXem)
   const cn = cfg.theoCn ? chiNhanhHienTai(s) : undefined
-  const { loc } = useTrangThaiLoc(useLocation().pathname)
-  const body = useMemo(() => renderReport(cfg, sc.code ?? sc.slug, thang, s.cheDo, cn?.id, loc), [cfg, ky, sc, s.cheDo, cn, loc])
+  const body = useMemo(() => renderReport(cfg, sc.code ?? sc.slug, thang, s.cheDo, cn?.id, loc), [cfg, kyDaXem, sc, s.cheDo, cn, loc])
   // Dòng dưới tiêu đề ghi chi nhánh (theo thanh trên) và quỹ đang lọc (T54)
-  const sub = cfg.theoCn ? `${kyTen(ky)} · ${cn ? 'Chi nhánh ' + cn.ngan : 'Tất cả chi nhánh'}${loc.locQuy?.[0] ? ' · ' + loc.locQuy[0] : ''}` : kyTen(ky)
+  const sub = cfg.theoCn ? `${kyTen(kyDaXem)} · ${cn ? 'Chi nhánh ' + cn.ngan : 'Tất cả chi nhánh'}${loc.locQuy?.[0] ? ' · ' + loc.locQuy[0] : ''}` : kyTen(kyDaXem)
   return (
     <div className="page page-report">
       <PageHead crumb={[mod.ten, sc.nhom ?? '']} title={ten} code={sc.code} />
@@ -986,11 +1009,18 @@ function kyHieuCac(cols: Col[], kieu: KyHieuCot): string[] {
 }
 
 /** Bảng in kiểu báo cáo: dòng _b in đậm, _t dòng tổng */
-export function RptTable({ cols, rows, onRow, kyHieuCot }: { cols: Col[]; rows: Row[]; onRow?: (r: Row) => void; kyHieuCot?: KyHieuCot }) {
+export function RptTable({ cols, rows, onRow, kyHieuCot, colWidths }: { cols: Col[]; rows: Row[]; onRow?: (r: Row) => void; kyHieuCot?: KyHieuCot; colWidths?: number[] }) {
   return (
     <table className="rpt">
+      {colWidths && (
+        <colgroup>
+          {colWidths.map((w, i) => (
+            <col key={cols[i]?.k ?? i} style={{ width: `${w}%` }} />
+          ))}
+        </colgroup>
+      )}
       <thead>
-        <tr>{cols.map(c => <th key={c.k} style={c.w ? { width: c.w } : undefined}>{c.t}</th>)}</tr>
+        <tr>{cols.map((c, i) => <th key={c.k} style={colWidths ? { width: `${colWidths[i]}%` } : c.w ? { width: c.w } : undefined}>{c.t}</th>)}</tr>
         {kyHieuCot && <tr className="rpt-ky-hieu">{kyHieuCac(cols, kyHieuCot).map((x, i) => <th key={cols[i].k}>{x}</th>)}</tr>}
       </thead>
       <tbody>

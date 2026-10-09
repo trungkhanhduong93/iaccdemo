@@ -17,13 +17,43 @@ export interface TuyChinhLuu {
   ky?: OKy[]
 }
 
+export interface BanLoc {
+  loc: Record<string, string[]>
+  anKhongPS: boolean
+  ky: string
+}
+
 export interface TrangThaiLoc {
   loc: Record<string, string[]>
-  tuyChon: Record<string, string[]>
   anKhongPS: boolean
+  ky: string
+  daXem: BanLoc
+  nhap: BanLoc
+  coThayDoi: boolean
+  tuyChon: Record<string, string[]>
   cotNhuDangXem: boolean
   colsGoc?: Col[]
   dsKyMacDinh?: OKy[]
+}
+
+function soSanhLoc(a: Record<string, string[]>, b: Record<string, string[]>): boolean {
+  const ka = Object.keys(a).filter(k => a[k] && a[k].length > 0)
+  const kb = Object.keys(b).filter(k => b[k] && b[k].length > 0)
+  if (ka.length !== kb.length) return false
+  for (const k of ka) {
+    const va = a[k] ?? []
+    const vb = b[k] ?? []
+    if (va.length !== vb.length) return false
+    if (!va.every(x => vb.includes(x))) return false
+  }
+  return true
+}
+
+export function coThayDoiLoc(nhap: BanLoc, daXem: BanLoc): boolean {
+  if (nhap.ky !== daXem.ky) return true
+  if (nhap.anKhongPS !== daXem.anKhongPS) return true
+  if (!soSanhLoc(nhap.loc, daXem.loc)) return true
+  return false
 }
 
 // ── Kho trạng thái runtime theo đường dẫn (location.pathname) ──
@@ -41,7 +71,17 @@ const khoPath = new Map<string, TrangThaiLoc>()
 function layTrangThai(path: string): TrangThaiLoc {
   let s = khoPath.get(path)
   if (!s) {
-    s = { loc: {}, tuyChon: {}, anKhongPS: false, cotNhuDangXem: true }
+    const defaultBan: BanLoc = { loc: {}, anKhongPS: false, ky: '9' }
+    s = {
+      loc: {},
+      anKhongPS: false,
+      ky: '9',
+      daXem: { ...defaultBan },
+      nhap: { ...defaultBan },
+      coThayDoi: false,
+      tuyChon: {},
+      cotNhuDangXem: true,
+    }
     khoPath.set(path, s)
   }
   return s
@@ -61,18 +101,46 @@ export function datDsKyMacDinh(path: string, ds: OKy[]) {
   phatSong()
 }
 
+export function datKyMacDinh(path: string, ky: string) {
+  const s = layTrangThai(path)
+  if (s.daXem.ky === ky && s.nhap.ky === ky) return
+  if (!s.coThayDoi) {
+    const ban: BanLoc = { ...s.daXem, ky }
+    khoPath.set(path, {
+      ...s,
+      daXem: { ...ban },
+      nhap: { ...ban },
+      ky,
+    })
+    phatSong()
+  }
+}
+
+export function datKyNhap(path: string, ky: string) {
+  const s = layTrangThai(path)
+  if (s.nhap.ky === ky) return
+  const nhapMoi: BanLoc = { ...s.nhap, ky }
+  const thayDoi = coThayDoiLoc(nhapMoi, s.daXem)
+  khoPath.set(path, { ...s, nhap: nhapMoi, coThayDoi: thayDoi })
+  phatSong()
+}
+
 export function datLoc(path: string, k: string, vals: string[]) {
   const s = layTrangThai(path)
-  const locMoi = { ...s.loc }
+  const locMoi = { ...s.nhap.loc }
   if (vals.length > 0) locMoi[k] = vals
   else delete locMoi[k]
-  khoPath.set(path, { ...s, loc: locMoi })
+  const nhapMoi: BanLoc = { ...s.nhap, loc: locMoi }
+  const thayDoi = coThayDoiLoc(nhapMoi, s.daXem)
+  khoPath.set(path, { ...s, nhap: nhapMoi, coThayDoi: thayDoi })
   phatSong()
 }
 
 export function datAnKhongPS(path: string, v: boolean) {
   const s = layTrangThai(path)
-  khoPath.set(path, { ...s, anKhongPS: v })
+  const nhapMoi: BanLoc = { ...s.nhap, anKhongPS: v }
+  const thayDoi = coThayDoiLoc(nhapMoi, s.daXem)
+  khoPath.set(path, { ...s, nhap: nhapMoi, coThayDoi: thayDoi })
   phatSong()
 }
 
@@ -92,8 +160,29 @@ export function datTuyChon(path: string, k: string, ds: string[]) {
 
 export function xoaLoc(path: string) {
   const s = layTrangThai(path)
-  khoPath.set(path, { ...s, loc: {}, anKhongPS: false })
+  const nhapMoi: BanLoc = { ...s.nhap, loc: {}, anKhongPS: false }
+  const thayDoi = coThayDoiLoc(nhapMoi, s.daXem)
+  khoPath.set(path, { ...s, nhap: nhapMoi, coThayDoi: thayDoi })
   phatSong()
+}
+
+export function xemBaoCao(path: string) {
+  const s = layTrangThai(path)
+  const daXemMoi: BanLoc = {
+    loc: { ...s.nhap.loc },
+    anKhongPS: s.nhap.anKhongPS,
+    ky: s.nhap.ky,
+  }
+  khoPath.set(path, {
+    ...s,
+    daXem: daXemMoi,
+    loc: daXemMoi.loc,
+    anKhongPS: daXemMoi.anKhongPS,
+    ky: daXemMoi.ky,
+    coThayDoi: false,
+  })
+  phatSong()
+  window.dispatchEvent(new CustomEvent('bc-da-xem', { detail: { path, ky: daXemMoi.ky } }))
 }
 
 export function useTrangThaiLoc(path: string): TrangThaiLoc {

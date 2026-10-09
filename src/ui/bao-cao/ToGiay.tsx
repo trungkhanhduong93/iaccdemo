@@ -11,6 +11,8 @@ import { Table } from '../Table'
 import { Dropdown, MenuItem, MenuSep } from '../Dropdown'
 import { Icon } from '../Icon'
 import { heSoZoom } from '../zoom'
+import { chiaCot, coChuTheoKho, paddingTheoMatDo } from './chiaCot'
+import { useTrangThaiLoc } from './tuyChinhBC'
 
 export type Kho = 'doc' | 'ngang'
 type CheDoXem = 'lien' | 'tung'
@@ -192,7 +194,7 @@ const khopDo = (d: Do | null, khoi: Khoi[]): d is Do => !!d && d.khoi.length ===
 
 const Net = ({ d }: { d: string }) => <svg className="ic sm" viewBox="0 0 24 24" aria-hidden><path d={d} /></svg>
 
-export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, giay, anSoTrang, onKho, layHtmlRef, coChu }: {
+export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, giay, anSoTrang, onKho, layHtmlRef, coChu, coThayDoi: coThayDoiProp }: {
   dau: ReactNode; than: ReactNode; cuoi?: ReactNode; khoMacDinh: Kho
   kyHieuCot?: KyHieuCot     // hàng ký hiệu cột A, B, 1, 2 dưới tiêu đề mọi bảng
   congChuyen?: string[]     // sổ: cột cộng chuyển trang
@@ -201,8 +203,11 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
   onKho?: (k: Kho) => void  // báo khổ giấy đang chọn cho khung ngoài xuất file
   layHtmlRef?: { current: (() => string) | null } // ref lấy HTML các trang thật
   coChu?: number            // cỡ chữ bảng theo tuỳ chỉnh (px)
+  coThayDoi?: boolean       // bản nháp khác đã xem (T72)
 }): JSX.Element {
   const path = useLocation().pathname
+  const tt = useTrangThaiLoc(path)
+  const coThayDoi = coThayDoiProp ?? tt.coThayDoi
   // Khổ đã chọn nhớ theo báo cáo và theo khổ mặc định của trường hợp đang xem, vd Sổ ngân hàng tất cả quỹ (ngang) và một quỹ (dọc) nhớ riêng (T54)
   const khoaKho = `${path}:${khoMacDinh}`
   const [kho, setKho] = useState<Kho>(() => docKho(khoaKho) ?? khoMacDinh)
@@ -244,6 +249,9 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
   const bangDau = useMemo(() => khoi.find((k): k is Extract<Khoi, { loai: 'bang' }> => k.loai === 'bang'), [khoi])
   const coBang = !!bangDau
   const tongDong = khoi.reduce((a, k) => a + (k.loai === 'bang' ? k.rows.length : 0), 0)
+  const maxCols = Math.max(1, ...khoi.map(k => k.loai === 'bang' ? k.cols.length : 0))
+  const coChuTinh = coChu ?? coChuTheoKho(maxCols, kho)
+  const padO = paddingTheoMatDo(maxCols, kho)
   const kt = giay ? { w: giay.rong, h: giay.cao } : KHO[kho]
   const le = giay ? { tren: giay.le[0], phai: giay.le[1], duoi: giay.le[2], trai: giay.le[3] } : LE
   const wPx = kt.w * PX, hPx = kt.h * PX
@@ -262,7 +270,7 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
   }
   const doRef = useRef(doLai)
   doRef.current = doLai
-  useLayoutEffect(() => { doLai() }, [than, kho, dau, cuoi, kyHieuCot, congChuyen?.join(), kt.w, le.trai, le.phai])
+  useLayoutEffect(() => { doLai() }, [than, kho, dau, cuoi, kyHieuCot, congChuyen?.join(), kt.w, le.trai, le.phai, coChuTinh, padO])
   useEffect(() => {
     let song = true
     document.fonts?.ready.then(() => { if (song) doRef.current() })
@@ -365,7 +373,7 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
     ] : kh.rows.slice(m.tu, m.den)
     return (
       <div key={`b${m.i}-${m.tu}`} className={`bc-khoi bc-bang-${m.i}`}>
-        <RptTable cols={kh.cols} rows={rows} onRow={kh.onRow} kyHieuCot={kyHieuCot} />
+        <RptTable cols={kh.cols} rows={rows} onRow={kh.onRow} kyHieuCot={kyHieuCot} colWidths={chiaCot(kh.cols, kho, kh.rows)} />
       </div>
     )
   }
@@ -378,19 +386,20 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
       </div>
     )
 
-  // Cột bảng trên trang thật giữ đúng bề rộng đo trên bảng đủ dòng, để dòng xuống hàng y như lúc đo
-  const css = khopDo(d, khoi) ? khoi.map((kh, i) => {
-    const m = d.khoi[i]
-    if (kh.loai !== 'bang' || typeof m === 'number' || !m.rong.length) return ''
-    return `.${pv} .bc-bang-${i} .rpt{table-layout:fixed}`
-      + m.rong.map((w, c) => `.${pv} .bc-bang-${i} .rpt th:nth-child(${c + 1}){width:${w.toFixed(2)}px!important;box-sizing:border-box}`).join('')
-  }).join('') : ''
+  // Cột bảng trên trang thật giữ đúng bề rộng theo chiaCot để dòng xuống hàng y như lúc đo
+  const css = khoi.map((kh, i) => {
+    if (kh.loai !== 'bang') return ''
+    const pt = chiaCot(kh.cols, kho, kh.rows)
+    return `.${pv} .bc-bang-${i} .rpt{table-layout:fixed;width:100%}`
+      + pt.map((w, c) => `.${pv} .bc-bang-${i} .rpt th:nth-child(${c + 1}),.${pv} .bc-bang-${i} .rpt td:nth-child(${c + 1}){width:${w}%!important;box-sizing:border-box}`).join('')
+  }).join('')
 
   const toMotTrang = (
-    <div ref={toLien} className="bc-trang paper bc-to-lien" style={{ width: `${kt.w}mm`, minHeight: `${kt.h}mm`, padding: kieuTrang.padding }}>
+    <div ref={toLien} className={`bc-trang paper bc-to-lien${coThayDoi ? ' cho-cap-nhat' : ''}`} style={{ width: `${kt.w}mm`, minHeight: `${kt.h}mm`, padding: kieuTrang.padding }}>
+      {coThayDoi && <div className="bc-nhac-cap-nhat">Bấm Xem báo cáo để cập nhật</div>}
       <div className="bc-khoi">{dau}</div>
       {khoi.map((kh, i) => kh.loai === 'bang'
-        ? <div key={i} className={`bc-khoi bc-bang-${i}`}><RptTable cols={kh.cols} rows={kh.rows} onRow={kh.onRow} kyHieuCot={kyHieuCot} /></div>
+        ? <div key={i} className={`bc-khoi bc-bang-${i}`}><RptTable cols={kh.cols} rows={kh.rows} onRow={kh.onRow} kyHieuCot={kyHieuCot} colWidths={chiaCot(kh.cols, kho, kh.rows)} /></div>
         : kh.loai === 'nguyen' ? <div key={i} className="bc-khoi">{kh.el}</div> : null)}
       {cuoi && <div className="bc-khoi">{cuoi}</div>}
     </div>
@@ -402,10 +411,11 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
 
   return (
     <SoTrangCtx.Provider value={N}>
-      <div className="bc-giay" style={coChu ? { '--bc-co-chu': `${coChu}px` } as CSSProperties : undefined}>
+      <div className="bc-giay" style={{ '--bc-co-chu': `${coChuTinh}px`, '--bc-pad-o': padO } as CSSProperties}>
         {css && <style>{css}</style>}
         {cheXem === 'bang-du-lieu' && bangDau ? (
-          <div className="bc-ban-du-lieu">
+          <div className={`bc-ban-du-lieu${coThayDoi ? ' cho-cap-nhat' : ''}`}>
+            {coThayDoi && <div className="bc-nhac-cap-nhat">Bấm Xem báo cáo để cập nhật</div>}
             <Table cols={bangDau.cols} rows={bangDau.rows} onRow={bangDau.onRow} motDong keDoc virtual />
           </div>
         ) : (
@@ -469,12 +479,12 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
 
         {/* Khung đo ẩn: ngoài khối transform, cùng bề rộng và lớp CSS với trang thật */}
         <div className="bc-do" aria-hidden inert>
-          <div ref={khungDo} className="paper bc-trang-do" style={{ width: `${kt.w}mm`, padding: kieuTrang.padding, ...(coChu ? { '--bc-co-chu': `${coChu}px` } as CSSProperties : {}) }}>
+          <div ref={khungDo} className={`paper bc-trang-do ${pv}`} style={{ width: `${kt.w}mm`, padding: kieuTrang.padding, '--bc-co-chu': `${coChuTinh}px`, '--bc-pad-o': padO } as CSSProperties}>
             <div className="bc-khoi" data-do="dau">{dau}</div>
             {khoi.map((kh, i) => (
-              <div key={i} className="bc-khoi" data-do={i}>
+              <div key={i} className={`bc-khoi bc-bang-${i}`} data-do={i}>
                 {kh.loai === 'bang'
-                  ? <RptTable cols={kh.cols} rows={cotCong(kh, congChuyen).length ? [...kh.rows, dongCong(kh, cotCong(kh, congChuyen), kh.rows.length, CONG_SAU)] : kh.rows} kyHieuCot={kyHieuCot} />
+                  ? <RptTable cols={kh.cols} rows={cotCong(kh, congChuyen).length ? [...kh.rows, dongCong(kh, cotCong(kh, congChuyen), kh.rows.length, CONG_SAU)] : kh.rows} kyHieuCot={kyHieuCot} colWidths={chiaCot(kh.cols, kho, kh.rows)} />
                   : kh.loai === 'nguyen' ? kh.el : null}
               </div>
             ))}

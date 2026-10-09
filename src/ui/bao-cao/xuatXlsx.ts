@@ -1,6 +1,7 @@
 // Xuất báo cáo ra định dạng Excel (.xlsx) bằng exceljs, nạp động (T47)
 import type { NguonXuat } from './xuat'
 import type { Col } from '../../modules/types'
+import { chiaCot } from './chiaCot'
 
 function kyHieuCac(cols: Col[], kieu: 'chuSo' | 'so'): string[] {
   let chu = 0, so = 0
@@ -168,29 +169,15 @@ export async function xuatXlsx(n: NguonXuat): Promise<Blob> {
       curRow++
     }
 
-    // Tính độ rộng cột
-    b.cols.forEach((c, idx) => {
-      let w = 12
-      if (c.w) {
-        w = c.w / 7
-      } else {
-        let maxLen = c.t.length
-        for (const r of b.rows) {
-          const v = r[c.k]
-          if (typeof v === 'number') {
-            const s = v.toLocaleString('vi-VN')
-            if (s.length > maxLen) maxLen = s.length
-          } else if (v) {
-            const s = String(v)
-            if (s.length > maxLen) maxLen = s.length
-          }
-        }
-        w = maxLen + 3
-      }
-      const clamped = Math.max(8, Math.min(60, Math.round(w * 10) / 10))
+    // Tính độ rộng cột theo % chiaCot (T72)
+    const pt = chiaCot(b.cols, n.kho, b.rows)
+    const tongKyTu = n.kho === 'ngang' ? 135 : 95
+    b.cols.forEach((_, idx) => {
+      const p = pt[idx] ?? (100 / b.cols.length)
+      const w = Math.max(5, Math.round((p / 100) * tongKyTu * 10) / 10)
       const colObj = ws.getColumn(idx + 1)
-      if (!colObj.width || clamped > colObj.width) {
-        colObj.width = clamped
+      if (!colObj.width || w > colObj.width) {
+        colObj.width = w
       }
     })
   }
