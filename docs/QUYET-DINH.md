@@ -300,3 +300,14 @@ Lý do: Trum giao việc T44 ngày 09/10/2026.
 Lý do: Trum giao việc T45 ngày 09/10/2026, theo mẫu MISA AMIS và phản hồi thực tế.
 
 ## QD31. Phân hệ Báo cáo, chế độ kế toán tách khỏi gói, mẫu in theo thông tư (đang soạn)
+
+## QD32. Danh sách chứng từ: gói Free bỏ chip trạng thái, tổng trang và tổng cộng, chi tiết mặc định đóng (09/10/2026)
+
+- Gói Free: chứng từ lưu là được duyệt luôn, nên danh sách không có chip trạng thái, không có vạch vàng dòng chưa ghi, luôn hiện tất cả (bỏ chip Nháp, Đã lưu của QD25). Các gói khác giữ chip Tất cả, Chưa ghi sổ, Đã ghi sổ, Lỗi hạch toán.
+- Dòng tổng dưới bảng là Tổng trang: chỉ cộng các phiếu trên trang đang xem.
+- Tổng cộng mọi trang (theo bộ lọc đang áp dụng) nằm trên hàng phân trang, số đặt thẳng cột tiền của bảng ngay trên. Cột khuất bên phải thì số bám mép phải.
+- Cột Tổng tiền là cột cuối. Bỏ cột Chức năng (nút Xem và menu ⋯ từng dòng): xem phiếu bằng đúp chuột hoặc khung chi tiết; ghi sổ, in, xoá dùng nút Hàng loạt hoặc trong form.
+- Khung chi tiết phiếu dưới danh sách mặc định đóng, bấm Mở chi tiết mới hiện.
+- Xoá chứng từ (nút Hàng loạt, mục Xoá chứng từ trong menu Tiện ích của form) luôn hỏi lại trước khi xoá. Gói Free xoá được mọi phiếu; gói có ghi sổ chỉ xoá phiếu chưa ghi. Phiếu thuộc kỳ đã khoá sổ không xoá được ở mọi gói. Bản mẫu coi kỳ đã khoá là đến hết tháng 8/2026 (`KHOA_SO_DEN` trong `data/mock.ts`). Bản mẫu chưa có backend: phiếu xoá được ẩn đến khi tải lại trang (`generic/daXoa.ts`).
+
+Lý do: PhuongXT chốt ngày 09/10/2026 theo ảnh góp ý trên màn Thu, chi tiền, áp cho mọi phân hệ (T48).

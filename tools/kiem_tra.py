@@ -81,12 +81,12 @@ def main():
             for h in links:
                 pg.goto(URL + h)
                 kiem(f'[{goi}] {h}')
-                # mở dòng đầu của bảng chứng từ: kiểm khung chi tiết .ct-panel rồi bấm Xem mở form toàn màn hình
-                if goi == 'PL' and pg.locator('.ct-xem').count() and '/app/' in h:
+                # mở dòng đầu của bảng chứng từ: kiểm khung chi tiết .ct-panel rồi đúp chuột mở form toàn màn hình
+                if goi == 'PL' and pg.locator('.voucher-top table.tbl tr.click').count() and '/app/' in h:
                     pg.locator('.main table.tbl tr.click').first.click()
                     if not pg.locator('.ct-panel').count():
                         loi.append(f'[{goi}] {h}: bấm dòng không hiện khung chi tiết .ct-panel')
-                    pg.locator('.ct-xem').first.click()
+                    pg.locator('.main table.tbl tr.click').first.dblclick()
                     kiem(f'[{goi}] {h} → xem form')
                     pg.keyboard.press('Escape')
                     pg.wait_for_timeout(60)

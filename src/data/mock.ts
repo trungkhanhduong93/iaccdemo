@@ -6,6 +6,12 @@ import { k, rng, between, pad } from '../ui/format'
 export const HOM_NAY = new Date(2026, 9, 7)          // 07/10/2026
 export const KY_MO = { thang: 10, nam: 2026 }        // kỳ đang mở
 export const KY_KHOA_SO = { thang: 9, nam: 2026 }    // kỳ đang làm khoá sổ
+export const KHOA_SO_DEN = { thang: 8, nam: 2026 }   // đã khoá sổ đến hết tháng này
+/** Ngày dd/mm/yyyy thuộc kỳ đã khoá sổ: chứng từ không được xoá (T48) */
+export const daKhoaSo = (ngay: unknown) => {
+  const [, m, y] = String(ngay).split('/').map(Number)
+  return y < KHOA_SO_DEN.nam || (y === KHOA_SO_DEN.nam && m <= KHOA_SO_DEN.thang)
+}
 
 export interface DonVi { id: string; ten: string; viettat: string; mst: string; goi: Goi; diaChi: string; diem: number; nguoiDaiDien: string }
 export const DON_VI: DonVi[] = [

@@ -5,7 +5,9 @@ import type { Row, ScreenProps, VoucherCfg } from '../../modules/types'
 import { duongDan, tenMan } from '../../app/registry'
 import { chiNhanhHienTai, useSession } from '../../app/session'
 import { GOI, kieuGhiSo, coTrongGoi, type Goi } from '../../app/plan'
-import { CHI_NHANH, KHACH, KHO, NCC, NHAN_VIEN, TK_NGAN_HANG } from '../../data/mock'
+import { CHI_NHANH, KHACH, KHO, NCC, NHAN_VIEN, TK_NGAN_HANG, daKhoaSo } from '../../data/mock'
+import { HopXacNhan } from '../LocNangCao'
+import { xoaPhieu } from './daXoa'
 import { Icon } from '../Icon'
 import { Card, Note } from '../Page'
 import { FormToanMan, useDong } from '../FormToanMan'
@@ -34,6 +36,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   const [tab, setTab] = useState('ct')
   const [hienTk, setHienTk] = useState(false)
   const [modalPhim, setModalPhim] = useState(false)
+  const [hoiXoa, setHoiXoa] = useState(false)
 
   const loai = cfgMan.loai?.find(x => x.k === (row?.loai ?? sp.get('loai'))) ?? cfgMan.loai?.[0]
   const cfg = theoLoai(cfgMan, loai?.k)
@@ -327,10 +330,23 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               <MenuItem icon="doc" onClick={() => toast('Đã xuất mẫu Excel')}>
                 Xuất Excel
               </MenuItem>
-              <MenuItem icon="trash" onClick={() => toast('Chứng từ chưa thể xoá')}>
-                Huỷ chứng từ
-              </MenuItem>
+              {row && (
+                <MenuItem icon="trash" danger onClick={() => {
+                  // Cùng luật xoá với danh sách (QD32): kỳ đã khoá sổ không xoá, gói có ghi sổ chỉ xoá phiếu chưa ghi
+                  if (daKhoaSo(row.ngay)) toast(`${row.so} thuộc kỳ đã khoá sổ, không xoá được`)
+                  else if (kieu !== 'khong' && row.tt !== 'nhap') toast(`${row.so} đã ghi sổ, bỏ ghi sổ rồi mới xoá`)
+                  else setHoiXoa(true)
+                }}>
+                  Xoá chứng từ
+                </MenuItem>
+              )}
             </Dropdown>
+            {hoiXoa && row && (
+              <HopXacNhan tieuDe={`Xoá ${row.so}?`} nut="Xoá phiếu" onDong={() => setHoiXoa(false)}
+                onDongY={() => { setHoiXoa(false); xoaPhieu(`${mod.key}/${sc.slug}`, [String(row.id)]); toast(`Đã xoá ${row.so}`); dongForm() }}>
+                Phiếu đã xoá không lấy lại được.
+              </HopXacNhan>
+            )}
             {kieu !== 'khong' && row && (
               <button
                 type="button"

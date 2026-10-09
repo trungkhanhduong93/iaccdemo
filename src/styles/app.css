@@ -2192,6 +2192,8 @@ textarea.inp { height: auto; padding: 8px 11px; resize: vertical; }
   background: var(--soft);
 }
 
-
-
-
+/* ── Tổng cộng mọi trang trên hàng phân trang, số thẳng cột của bảng (T48) ── */
+.pt-bar { position: relative; }
+.pt-bar .pt-tc { position: absolute; top: 50%; transform: translateY(-50%); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.pt-bar .pt-tc b { font-weight: 700; color: var(--ink); }
+.pt-bar .pt-tc-nhan { margin-right: 16px; font-weight: 700; color: var(--ink); }

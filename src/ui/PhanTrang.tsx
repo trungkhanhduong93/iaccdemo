@@ -1,9 +1,13 @@
 // Phân trang danh sách dữ liệu: chuyển trang gọn một hàng căn trái theo mẫu iPOS Inventory (T42)
+import { useLayoutEffect, useRef, useState } from 'react'
 import { Icon } from './Icon'
 import { Select } from './Dropdown'
+import { money } from './format'
+import { heSoZoom } from './zoom'
 
-export function PhanTrang({ tong, trang, coTrang, onTrang, onCoTrang }: {
+export function PhanTrang({ tong, tongCong, trang, coTrang, onTrang, onCoTrang }: {
   tong: number
+  tongCong?: Record<string, number>   // tổng mọi trang theo mã cột, số canh thẳng cột của bảng ngay trên (T48)
   trang: number
   coTrang: number
   onTrang: (trang: number) => void
@@ -31,8 +35,45 @@ export function PhanTrang({ tong, trang, coTrang, onTrang, onCoTrang }: {
 
   const danhSach = taoDanhSachTrang()
 
+  // Đo mép phải từng cột trong bảng ngay trên để đặt số Tổng cộng thẳng cột; đo lại khi cuộn ngang, đổi cỡ, kéo giãn cột
+  const bar = useRef<HTMLDivElement>(null)
+  const [phai, setPhai] = useState<Record<string, number>>({})
+  const khoa = tongCong ? Object.keys(tongCong).join() : ''
+  useLayoutEffect(() => {
+    const el = bar.current
+    const wrap = el?.previousElementSibling as HTMLElement | null
+    if (!el || !wrap || !khoa) return
+    const tinh = () => {
+      const z = heSoZoom()
+      const br = el.getBoundingClientRect()
+      const moi: Record<string, number> = {}
+      // Cột khuất bên phải (phải cuộn ngang) thì số bám mép phải; bỏ số nào chồng lên số đã đặt ở bên phải nó
+      const dat: number[] = []
+      for (const k of khoa.split(',').reverse()) {
+        const th = wrap.querySelector<HTMLElement>(`thead th[data-k="${k}"]`)
+        if (!th) continue
+        const r = th.getBoundingClientRect()
+        if (r.right <= br.left) continue
+        const x = Math.max(12, (br.right - r.right) / z + (parseFloat(getComputedStyle(th).paddingRight) || 0))
+        if (dat.some(d => Math.abs(d - x) < 110)) continue
+        dat.push(x)
+        moi[k] = x
+      }
+      setPhai(x => JSON.stringify(x) === JSON.stringify(moi) ? x : moi)
+    }
+    tinh()
+    wrap.addEventListener('scroll', tinh, { passive: true })
+    const ro = new ResizeObserver(tinh)
+    ro.observe(wrap)
+    const bang = wrap.querySelector('table')
+    if (bang) ro.observe(bang)
+    return () => { wrap.removeEventListener('scroll', tinh); ro.disconnect() }
+  }, [khoa])
+  // Nhãn "Tổng cộng" đứng trước số của cột nằm xa trái nhất
+  const dsSo = Object.entries(tongCong ?? {}).filter(([k]) => phai[k] !== undefined).sort((a, b) => phai[b[0]] - phai[a[0]])
+
   return (
-    <div className="pt-bar">
+    <div className="pt-bar" ref={bar}>
       <div className="pt-tong">Tổng <b>{tong}</b></div>
       <Select
         className="pt-sel"
@@ -81,6 +122,11 @@ export function PhanTrang({ tong, trang, coTrang, onTrang, onCoTrang }: {
           <Icon n="chevr" className="ic sm" />
         </button>
       </div>
+      {dsSo.map(([k, v], i) => (
+        <span key={k} className="pt-tc" style={{ right: phai[k] }}>
+          {i === 0 && <span className="pt-tc-nhan">Tổng cộng</span>}<b>{money(v)}</b>
+        </span>
+      ))}
     </div>
   )
 }

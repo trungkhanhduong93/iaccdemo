@@ -14,6 +14,7 @@ import { St, Table } from '../../ui/Table'
 import { dmy, fold, money, moneyD } from '../../ui/format'
 import { Popover, Select } from '../../ui/Dropdown'
 import { PhanTrang } from '../../ui/PhanTrang'
+import { useDaXoa, xoaPhieu } from '../../ui/generic/daXoa'
 import { ChonKhoangNgay, docNgay, thangNay, trongKhoang, type KhoangNgay } from '../../ui/ChonNgay'
 import { NutExcel, NutThemMoiSplit } from '../../ui/CongCuDs'
 import { dangLoc, khopLoc, type GiaTriLoc, type KieuLoc } from '../../ui/LocCot'
@@ -41,11 +42,13 @@ function dongMon(dt: number) {
 
 export function ChungTuBanHang({ sc, mod }: ScreenProps) {
   const { id } = useParams()
-  const rows = useMemo(() => DAILY.filter(x => x.date.getMonth() >= 8).slice().reverse().map((x, i) => ({
+  const { ban, laDaXoa } = useDaXoa(`${mod.key}/${sc.slug}`)
+  const tatCa = useMemo(() => DAILY.filter(x => x.date.getMonth() >= 8).slice().reverse().map((x, i) => ({
     id: String(i), so: soBH(x), ngay: dmy(x.date), thang: x.date.getMonth() + 1, cn: cnTen(x.cn), x,
     dienGiai: `Doanh thu ${x.don} đơn POS ngày ${dmy(x.date).slice(0, 5)}`, doiTuong: 'Khách lẻ POS',
     tien: x.dt, thue: x.vat, tong: x.dt + x.vat, nguon: 'FABi', tt: i < 3 ? 'nhap' : x.cn === 'q5' && x.date.getDate() === 5 && x.date.getMonth() === 9 ? 'loi' : 'ghi',
   })), [])
+  const rows = useMemo(() => tatCa.filter(r => !laDaXoa(r.id)), [tatCa, ban])
   if (id === 'moi') return <VoucherDetail sc={sc} mod={mod} cfg={NGOAI_POS} />
   if (id) return <ChiTiet sc={sc} mod={mod} row={rows.find(r => r.id === id) ?? rows[0]} />
   return <DanhSach sc={sc} mod={mod} rows={rows} />
@@ -75,13 +78,13 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
   const [trang, setTrang] = useState(1)
   const [coTrang, setCoTrang] = useState(20)
   const [tabPanel, setTabPanel] = useState('ct')
-  const [panelMo, setPanelMo] = useState(true)
+  const [panelMo, setPanelMo] = useState(false)
   const kieu = kieuGhiSo(s.goi)
   const ghi = kieu !== 'khong'
   // Chi nhánh chọn trên thanh trên (QD17): lọc theo chi nhánh đó, bỏ cột và ô lọc chi nhánh
   const cnChon = chiNhanhHienTai(s)
 
-  const tenTT = (r: Row) => r.tt === 'loi' && ghi ? 'Lệch đối soát' : r.tt === 'nhap' ? (ghi ? 'Chưa ghi sổ' : 'Nháp') : (ghi ? 'Đã ghi sổ' : 'Đã lưu')
+  const tenTT = (r: Row) => r.tt === 'loi' && ghi ? 'Lệch đối soát' : r.tt === 'nhap' && ghi ? 'Chưa ghi sổ' : 'Đã ghi sổ'
   const kieuCot = (k: string): KieuLoc =>
     k === 'ngay' ? 'ngay' : COT_CHON.has(k) ? 'chon' : k === 'tien' || k === 'thue' || k === 'tong' ? 'so' : 'chu'
   const chuCot = (k: string, r: Row): string => {
@@ -134,10 +137,11 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
   const trangHienTai = Math.min(trang, soTrang)
   const pagedRows = useMemo(() => {
     const batDau = (trangHienTai - 1) * coTrang
-    return list.slice(batDau, batDau + coTrang).map((r, i) => ({ ...r, stt: batDau + i + 1 }))
+    return list.slice(batDau, batDau + coTrang).map((r, i): Row => ({ ...r, stt: batDau + i + 1 }))
   }, [list, trangHienTai, coTrang])
 
-  const sum = (k: string) => list.reduce((a, r) => a + r[k], 0)
+  const sum = (k: string) => pagedRows.reduce((a, r) => a + r[k], 0)
+  const tongDs = (k: string) => list.reduce((a, r) => a + (r as Row)[k], 0)
   const cols: Col[] = [
     cotChon(list, chon, setChon, () => setMoHangLoat(true)),
     { k: 'stt', t: 'STT', w: 60, c: true, dinh: 'trai' },
@@ -145,8 +149,9 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
     { k: 'so', t: 'Số chứng từ', cls: 'code', w: 150, dinh: 'trai' },
     { k: 'dienGiai', t: 'Diễn giải' },
     ...(cnChon ? [] : [{ k: 'cn', t: 'Chi nhánh', cls: 'dim' } as Col]),
-    { k: 'tien', t: 'Doanh thu chưa thuế', num: true, w: 160 }, { k: 'thue', t: 'Thuế GTGT', num: true, w: 120 }, { k: 'tong', t: 'Tổng tiền', num: true, w: 120 },
+    { k: 'tien', t: 'Doanh thu chưa thuế', num: true, w: 160 }, { k: 'thue', t: 'Thuế GTGT', num: true, w: 120 },
     { k: 'nguon', t: 'Nguồn', w: 90, r: () => <span className="src">FABi</span> },
+    { k: 'tong', t: 'Tổng tiền', num: true, w: 120 },   // Tổng tiền là cột cuối (T48)
   ]
   // Thứ tự, ẩn hiện, độ rộng cột lưu theo màn (T41)
   const cot = useCotDs(path, cols, COT_CO_DINH)
@@ -159,7 +164,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
           {/* Thanh công cụ: chip trạng thái bên trái; ô lọc, phễu, Lọc, Tuỳ chỉnh cột, Excel, Hàng loạt, Thêm mới | ⌄ (T43) */}
           <div className="ds-thanh">
             <div className="ds-chips-wrap">
-              <ChipTrangThai ds={chips} chon={chipTT} onChon={k => { setChipTT(k); setTrang(1) }} />
+              {ghi && <ChipTrangThai ds={chips} chon={chipTT} onChon={k => { setChipTT(k); setTrang(1) }} />}
               <button
                 ref={nutGhiChu}
                 type="button"
@@ -199,6 +204,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
                 selectedRows={selectedRows}
                 ghi={ghi}
                 onBoChon={() => setChon(new Set())}
+                onXoa={ids => xoaPhieu(`${mod.key}/${sc.slug}`, ids)}
                 open={moHangLoat}
                 onOpenChange={setMoHangLoat}
               />
@@ -225,13 +231,14 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
                 onDbl={r => nav(`${path}/${r.id}`)}
                 rowCls={r => [
                   r.id === activeId ? 'dang-chon' : '',
-                  r.tt === 'nhap' ? 'chua-ghi' : '',
+                  r.tt === 'nhap' && ghi ? 'chua-ghi' : '',
                   r.tt === 'loi' && ghi ? 'bad' : '',
                 ].filter(Boolean).join(' ')}
-                sum={{ stt: `Tổng: ${list.length}`, tien: sum('tien'), thue: sum('thue'), tong: sum('tong') }}
+                sum={{ stt: 'Tổng trang', tien: sum('tien'), thue: sum('thue'), tong: sum('tong') }}
               />
               <PhanTrang
                 tong={list.length}
+                tongCong={{ tien: tongDs('tien'), thue: tongDs('thue'), tong: tongDs('tong') }}
                 trang={trangHienTai}
                 coTrang={coTrang}
                 onTrang={setTrang}
