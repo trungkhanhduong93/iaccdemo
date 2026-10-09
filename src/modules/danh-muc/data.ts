@@ -1,6 +1,7 @@
-// Hệ thống tài khoản mẫu (trích theo TT133) và cột tài khoản có cảnh báo "Chưa gắn"
+// Hệ thống tài khoản mẫu theo TT133; TT99 đổi một số tài khoản chi phí (chờ kế toán trưởng duyệt). Cột tài khoản có cảnh báo "Chưa gắn"
 import { createElement } from 'react'
 import type { Col, Row } from '../types'
+import type { CheDo } from '../../app/che-do'
 
 export const tkCot = (k: string, t: string): Col => ({
   k, t, cls: 'code',
@@ -28,3 +29,18 @@ const TK: [string, string, string, string, string][] = [
   ['911', 'Xác định kết quả kinh doanh', 'Kết quả', 'Không số dư', ''],
 ]
 export const TAI_KHOAN = TK.map(([so, ten, loai, tc, ct]) => ({ so, ten, loai, tc, ct }))
+
+/** Hệ thống tài khoản theo chế độ: TT99 thay 642, 6421, 6422 bằng 641, 642; đổi tên 211; thêm 8211 */
+export function taiKhoan(cd: CheDo) {
+  if (cd !== 'TT99') return TAI_KHOAN
+  return TAI_KHOAN.flatMap(t => {
+    if (t.so === '642') return [
+      { so: '641', ten: 'Chi phí bán hàng', loai: 'Chi phí', tc: 'Không số dư', ct: 'Mục chi phí, chi nhánh' },
+      { so: '642', ten: 'Chi phí quản lý doanh nghiệp', loai: 'Chi phí', tc: 'Không số dư', ct: 'Mục chi phí' },
+    ]
+    if (t.so === '6421' || t.so === '6422') return []
+    if (t.so === '211') return [{ ...t, ten: 'Tài sản cố định hữu hình' }]
+    if (t.so === '821') return [t, { so: '8211', ten: 'Chi phí thuế thu nhập doanh nghiệp hiện hành', loai: 'Chi phí', tc: 'Không số dư', ct: '' }]
+    return [t]
+  })
+}

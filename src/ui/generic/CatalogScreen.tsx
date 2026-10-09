@@ -13,7 +13,7 @@ import { LocO, ThanhLoc } from '../ThanhLoc'
 export function CatalogScreen({ sc, mod }: ScreenProps) {
   const { s, toast } = useSession()
   const cfg = sc.catalog ?? { cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên' }], rows: () => [] }
-  const all = useMemo(() => cfg.rows(), [sc])
+  const all = useMemo(() => cfg.rows(s.cheDo), [sc, s.cheDo])
   const [q, setQ] = useState('')
   const [nhom, setNhom] = useState('')
   const [edit, setEdit] = useState<Row | null>(null)

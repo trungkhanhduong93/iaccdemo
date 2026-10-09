@@ -6,6 +6,7 @@ import { duongDan, tenMan } from '../../app/registry'
 import { chiNhanhHienTai, useSession, cheDoHienTai } from '../../app/session'
 import { kieuGhiSo, coTrongGoi, type Goi } from '../../app/plan'
 import { CHE_DO } from '../../app/che-do'
+import { tkTheoCheDo } from '../../modules/tong-hop/so-cai'
 import { CHI_NHANH, KHACH, KHO, NCC, NHAN_VIEN, TK_NGAN_HANG } from '../../data/mock'
 import { Icon } from '../Icon'
 import { Card, Note } from '../Page'
@@ -842,7 +843,8 @@ export function HachToan({
       if (no === '131' || no === '111' || no === '112') noFinal = tkDoiUng
     }
 
-    return { no: noFinal, co: coFinal, dg, tien: v, dt, cn }
+    // Số hiệu hiển thị theo chế độ: bộ định khoản lưu theo TT133
+    return { no: tkTheoCheDo(noFinal, cd.ma).so, co: tkTheoCheDo(coFinal, cd.ma).so, dg, tien: v, dt, cn }
   }).filter(r => r.tien > 0)
 
   return (

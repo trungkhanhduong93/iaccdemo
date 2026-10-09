@@ -27,7 +27,7 @@ const tongHop: ModuleDef = {
     '10.1.8': { tool: { nut: 'Lập kế hoạch sản xuất', mota: 'Dự trù số lượng bán thành phẩm cần chế biến theo dự báo bán hàng: nước dùng, sốt, bánh. Từ đó ra nhu cầu nguyên vật liệu.', caiDat: [['Tuần', '12–18/10/2026'], ['Dự báo theo', 'Bình quân 4 tuần gần nhất']] } },
     '10.1.9': { tool: { nut: 'Kết chuyển số dư sang năm 2027', mota: 'Chuyển số dư cuối năm tài chính sang đầu năm mới, kể cả khi đổi chế độ kế toán hoặc tách dữ liệu đơn vị.', caiDat: [['Từ năm', '2026'], ['Sang năm', '2027']] } },
     '10.2.1': { kind: 'custom', comp: CanDoiPhatSinh },
-    '10.2.2': { kind: 'custom', comp: CanDoiKeToan },
+    '10.2.2': { kind: 'custom', comp: CanDoiKeToan, ten: 'Báo cáo tình hình tài chính' },
     '10.2.3': { kind: 'custom', comp: KetQuaKinhDoanh },
     '10.2.4': { kind: 'custom', comp: LuuChuyenTien },
     '10.2.5': { report: { kieu: 'bangke', cols: [{ k: 'muc', t: 'Mục', w: 60 }, { k: 'nd', t: 'Nội dung' }, { k: 'tt', t: 'Trạng thái', w: 140 }],

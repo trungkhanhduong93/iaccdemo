@@ -1,18 +1,22 @@
 // Sổ, báo cáo chung: thanh lọc kỳ và chi nhánh, trang báo cáo kiểu mẫu in, ô ký
-import { useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useParams } from 'react-router-dom'
 import type { Col, ReportCfg, Row, ScreenProps } from '../../modules/types'
 import { tenMan } from '../../app/registry'
 import { donViHienTai, useSession, cheDoHienTai } from '../../app/session'
-import { CHI_NHANH, HANG, KHACH, NCC, NVL } from '../../data/mock'
+import { canCu, type CheDo } from '../../app/che-do'
+import { cauHinhBC, type LoaiBC } from '../../modules/bao-cao/danh-sach'
+import { dsTkTheoCheDo } from '../../modules/tong-hop/so-cai'
+import { CHI_NHANH, HANG, HOM_NAY, KHACH, NCC, NVL } from '../../data/mock'
 import { Icon } from '../Icon'
 import { PageHead } from '../Page'
 import { Table } from '../Table'
-import { between, k, money, pick, rng } from '../format'
+import { between, k, money, pad, pick, rng } from '../format'
 import { chungTu, soChiTiet } from './gen'
 import { Select } from '../Dropdown'
 import { LocO, NutVuong, ThanhLoc } from '../ThanhLoc'
 import { khoangThang } from '../ChonNgay'
-import { ToGiay, tachKhoi, type Kho } from '../bao-cao/ToGiay'
+import { SoTrangCtx, ToGiay, tachKhoi, type Kho } from '../bao-cao/ToGiay'
 
 export const KY_CHON: [string, string][] = [['9', 'Tháng 9/2026'], ['10', 'Tháng 10/2026 (đến 07/10)'], ['8', 'Tháng 8/2026']]
 
@@ -61,30 +65,72 @@ export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: 
   )
 }
 
-/** Trang báo cáo theo mẫu: đầu trang đơn vị, mẫu số, tiêu đề, kỳ, ô ký. Vẽ trên tờ A4 tự chia trang (ToGiay) */
+/** Trang báo cáo theo mẫu: đầu trang đơn vị, mẫu số, tiêu đề, kỳ, ô ký. Vẽ trên tờ A4 tự chia trang (ToGiay).
+ *  Mẫu số, tên in, khổ, ô ký lấy theo mã báo cáo trên đường dẫn và chế độ kế toán (modules/bao-cao/danh-sach.ts); mau chỉ dùng cho màn chưa có cấu hình */
 export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { title: string; sub: string; mau?: string; children: ReactNode; ky?: boolean; kho?: Kho }) {
   const { s } = useSession()
   const dv = donViHienTai(s)
   const cd = cheDoHienTai(s)
+  const cfg = cauHinhBC(useParams().slug?.replace(/-/g, '.'))
+  const kyHieu = cfg ? cfg.kyHieu?.[s.cheDo] : cd.ma !== 'TT152' ? mau : undefined
+  const loai: LoaiBC = cfg?.loai ?? 'baocao'
   const dau = (
     <>
       <div className="paper-h">
         <div><b>Đơn vị: {dv.ten}</b><br />Địa chỉ: {dv.diaChi}<br />MST: {dv.mst}</div>
-        {mau && cd.ma !== 'TT152' && <div style={{ textAlign: 'center' }}><b>Mẫu số {mau}</b><br /><i>(Theo {cd.soHieu})</i></div>}
+        {kyHieu && (
+          <div className="bc-mau">
+            <b>Mẫu số {kyHieu}</b><br /><i>({canCu(cd)})</i>
+            {cd.choDuyet && <><br /><span className="bc-cho-duyet">Ký hiệu chờ kế toán trưởng duyệt</span></>}
+          </div>
+        )}
       </div>
-      <h2>{title}</h2>
+      <h2>{cfg?.ten?.[s.cheDo] ?? title}</h2>
       <div className="sub">{sub}</div>
       <div className="unit">Đơn vị tính: đồng</div>
     </>
   )
-  const cuoi = ky ? (
-    <div className="sign">
-      <div><b>Người lập biểu</b><i>(Ký, họ tên)</i>Lê Quốc Bảo</div>
-      <div><b>Kế toán trưởng</b><i>(Ký, họ tên)</i>Trần Thu Hà</div>
-      <div><b>Người đại diện theo pháp luật</b><i>(Ký, họ tên, đóng dấu)</i>{dv.nguoiDaiDien}</div>
+  const cuoi = ky ? <KhoiCuoi loai={loai} cheDo={s.cheDo} nguoiDaiDien={dv.nguoiDaiDien} /> : undefined
+  const kyHieuCot = cd.ma !== 'TT152' && (loai === 'so' || loai === 'bctc') ? (loai === 'so' ? 'chuSo' : 'so') : undefined
+  return (
+    <ToGiay dau={dau} than={children} cuoi={cuoi} khoMacDinh={kho ?? cfg?.kho ?? tuDoanKho(children)}
+      kyHieuCot={kyHieuCot} congChuyen={loai === 'so' ? cfg?.congCot : undefined} />
+  )
+}
+
+type OKy = [chucDanh: string, cach: string, hoTen: string]
+
+/** Khối cuối tờ: dòng sổ có mấy trang, ngày lập, ô ký theo loại báo cáo và chế độ (kế hoạch mục 5) */
+function KhoiCuoi({ loai, cheDo, nguoiDaiDien }: { loai: LoaiBC; cheDo: CheDo; nguoiDaiDien: string }) {
+  const lap: OKy = ['Người lập biểu', '(Ký, họ tên)', 'Lê Quốc Bảo']
+  const ktt: OKy = ['Kế toán trưởng', '(Ký, họ tên)', 'Trần Thu Hà']
+  const ddpl: OKy = ['Người đại diện theo pháp luật', '(Ký, họ tên, đóng dấu)', nguoiDaiDien]
+  const o: OKy[] = cheDo === 'TT152' ? [lap, ['Người đại diện hộ kinh doanh', '(Ký, họ tên, đóng dấu)', nguoiDaiDien]]
+    : loai === 'so' ? [['Người ghi sổ', '(Ký, họ tên)', 'Lê Quốc Bảo'], ktt, ddpl]
+    : loai === 'bctc' ? (cheDo === 'TT58' ? [lap, ddpl] : [lap, ktt, ddpl])
+    : loai === 'baocao' ? [['Người lập', '(Ký, họ tên)', 'Lê Quốc Bảo'], ktt]
+    : [lap, ktt, ddpl]
+  const ngay = `${pad(HOM_NAY.getDate())} tháng ${pad(HOM_NAY.getMonth() + 1)} năm ${HOM_NAY.getFullYear()}`
+  return (
+    <div className="bc-cuoi">
+      {loai === 'so' && <SoTrangSo />}
+      <div className="bc-ngay-lap">{loai === 'bctc' ? `Lập, ngày ${ngay}` : `Ngày ${ngay}`}</div>
+      <div className="sign" style={{ gridTemplateColumns: `repeat(${o.length}, 1fr)` }}>
+        {o.map(([chucDanh, cach, hoTen]) => <div key={chucDanh}><b>{chucDanh}</b><i>{cach}</i>{hoTen}</div>)}
+      </div>
     </div>
-  ) : undefined
-  return <ToGiay dau={dau} than={children} cuoi={cuoi} khoMacDinh={kho ?? tuDoanKho(children)} />
+  )
+}
+
+/** Hai dòng cuối sổ: số trang thật đọc từ tờ đang chia trang */
+function SoTrangSo() {
+  const n = useContext(SoTrangCtx)
+  return (
+    <div className="bc-so-ghi">
+      <div>- Sổ này có {n} trang, đánh số từ trang 01 đến trang {pad(n)}</div>
+      <div>- Ngày mở sổ: 01/01/2026</div>
+    </div>
+  )
 }
 
 // Bảng từ 7 cột trở lên in khổ ngang cho đỡ chật
@@ -106,26 +152,26 @@ export function ReportScreen({ sc, mod }: ScreenProps) {
   const cfg: ReportCfg = sc.report ?? { kieu: 'tonghop', doiTuong: 'tk' }
   const ten = tenMan(sc)
   const thang = Number(ky)
-  const body = useMemo(() => renderReport(cfg, sc.code ?? sc.slug, thang), [cfg, ky, sc])
+  const body = useMemo(() => renderReport(cfg, sc.code ?? sc.slug, thang, s.cheDo), [cfg, ky, sc, s.cheDo])
   return (
     <div className="page">
       <PageHead crumb={[mod.ten, sc.nhom ?? '']} title={ten} code={sc.code} />
       <section className="report">
         <ReportToolbar ky={ky} setKy={setKy} />
-        <ReportPaper title={ten} sub={kyTen(ky)} mau={s.cheDo === 'TT133' ? cfg.mau : undefined}>{body}</ReportPaper>
+        <ReportPaper title={ten} sub={kyTen(ky)}>{body}</ReportPaper>
       </section>
     </div>
   )
 }
 
-function renderReport(cfg: ReportCfg, seed: string, thang: number): ReactNode {
+function renderReport(cfg: ReportCfg, seed: string, thang: number, cd: CheDo): ReactNode {
   const r = rng(seed + thang)
   if (cfg.kieu === 'so') {
     const so = soChiTiet(seed, k(between(r, 80e6, 260e6)), ['Thu tiền bán hàng ngày', 'Chi mua nguyên vật liệu', 'Chi tiền điện tháng', 'Thu tiền khách công ty',
       'Chi tạm ứng nhân viên', 'Nộp tiền vào tài khoản ngân hàng', 'Chi phí vận chuyển', 'Thu hoàn ứng'], ['5111', '331', '6422', '131', '141', '1121', '6421'], [1.5e6, 38e6], thang)
     const cols: Col[] = [{ k: 'ngay', t: 'Ngày', w: 92 }, { k: 'so', t: 'Số chứng từ', cls: 'code', w: 130 }, { k: 'dienGiai', t: 'Diễn giải' },
       { k: 'tk', t: 'TK đối ứng', c: true, w: 90 }, { k: 'no', t: 'Phát sinh Nợ', num: true }, { k: 'co', t: 'Phát sinh Có', num: true }, { k: 'du', t: 'Số dư', num: true }]
-    return <RptTable cols={cols} rows={[{ dienGiai: 'Số dư đầu kỳ', du: so.mo, _b: 1 }, ...so.rows, { dienGiai: 'Cộng phát sinh', no: so.tn, co: so.tc, _t: 1 }, { dienGiai: 'Số dư cuối kỳ', du: so.cuoi, _t: 1 }]} />
+    return <RptTable cols={cols} rows={[{ dienGiai: 'Số dư đầu kỳ', du: so.mo, _b: 1 }, ...so.rows.map(x => ({ ...x, tk: dsTkTheoCheDo(x.tk, cd) })), { dienGiai: 'Cộng phát sinh', no: so.tn, co: so.tc, _t: 1 }, { dienGiai: 'Số dư cuối kỳ', du: so.cuoi, _t: 1 }]} />
   }
   if (cfg.kieu === 'dinhmuc') {
     const rows = NVL.slice(0, 10).map(n => {
@@ -154,11 +200,22 @@ function renderReport(cfg: ReportCfg, seed: string, thang: number): ReactNode {
     rows={[...rows, { ten: 'Tổng cộng', dau: s('dau'), tang: s('tang'), giam: s('giam'), cuoi: s('cuoi'), _t: 1 }]} />
 }
 
+/** Hàng ký hiệu cột dưới tiêu đề: 'chuSo' cột chữ A, B, C…, cột số 1, 2, 3… (sổ); 'so' mọi cột 1, 2, 3… (báo cáo tài chính) */
+export type KyHieuCot = 'chuSo' | 'so'
+
+function kyHieuCac(cols: Col[], kieu: KyHieuCot): string[] {
+  let chu = 0, so = 0
+  return cols.map(c => kieu === 'chuSo' && !c.num ? String.fromCharCode(65 + chu++) : String(++so))
+}
+
 /** Bảng in kiểu báo cáo: dòng _b in đậm, _t dòng tổng */
-export function RptTable({ cols, rows, onRow }: { cols: Col[]; rows: Row[]; onRow?: (r: Row) => void }) {
+export function RptTable({ cols, rows, onRow, kyHieuCot }: { cols: Col[]; rows: Row[]; onRow?: (r: Row) => void; kyHieuCot?: KyHieuCot }) {
   return (
     <table className="rpt">
-      <thead><tr>{cols.map(c => <th key={c.k} style={c.w ? { width: c.w } : undefined}>{c.t}</th>)}</tr></thead>
+      <thead>
+        <tr>{cols.map(c => <th key={c.k} style={c.w ? { width: c.w } : undefined}>{c.t}</th>)}</tr>
+        {kyHieuCot && <tr className="rpt-ky-hieu">{kyHieuCac(cols, kyHieuCot).map((x, i) => <th key={cols[i].k}>{x}</th>)}</tr>}
+      </thead>
       <tbody>
         {rows.map((x, i) => (
           <tr key={i} className={`${x._t ? 't' : x._b ? 'b' : ''} ${onRow && x._drill ? 'drill' : ''}`} onClick={onRow && x._drill ? () => onRow(x) : undefined}>

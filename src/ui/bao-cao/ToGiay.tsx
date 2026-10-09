@@ -1,12 +1,12 @@
 // Tờ giấy A4 xem như bản in: tự chia trang, lặp tiêu đề cột, zoom, in đúng các trang đang xem (T47)
 import {
-  Children, Fragment, isValidElement, useEffect, useId, useLayoutEffect, useMemo, useRef, useState,
+  Children, Fragment, createContext, isValidElement, useEffect, useId, useLayoutEffect, useMemo, useRef, useState,
   type CSSProperties, type JSX, type ReactNode,
 } from 'react'
 import { createPortal } from 'react-dom'
 import { useLocation } from 'react-router-dom'
 import type { Col, Row } from '../../modules/types'
-import { RptTable } from '../generic/ReportScreen'
+import { RptTable, type KyHieuCot } from '../generic/ReportScreen'
 import { Dropdown, MenuItem, MenuSep } from '../Dropdown'
 import { Icon } from '../Icon'
 import { heSoZoom } from '../zoom'
@@ -17,8 +17,9 @@ type Xem = { zoom: number | 'vua'; che: CheDoXem }
 type BangProps = { cols: Col[]; rows: Row[]; onRow?: (r: Row) => void }
 export type Khoi = { loai: 'nguyen'; el: ReactNode } | ({ loai: 'bang' } & BangProps)
 
-// Kết quả đo trên khung ẩn, đơn vị px CSS. Bảng: vo = viền bảng, dau = dòng tiêu đề cột, dong = từng dòng, rong = bề rộng từng cột
-type DoBang = { vo: number; dau: number; dong: number[]; rong: number[] }
+// Kết quả đo trên khung ẩn, đơn vị px CSS. Bảng: vo = viền bảng, dau = dòng tiêu đề cột, dong = từng dòng, rong = bề rộng từng cột,
+// cong = dòng cộng chuyển trang (0 khi bảng không cộng chuyển)
+type DoBang = { vo: number; dau: number; dong: number[]; rong: number[]; cong: number }
 type Do = { dau: number; cuoi: number; khoi: (number | DoBang)[] }
 type Muc = { k: 'dau' } | { k: 'cuoi' } | { k: 'khoi'; i: number } | { k: 'bang'; i: number; tu: number; den: number }
 
@@ -28,6 +29,31 @@ const LE = { trai: 15, phai: 10, tren: 10, duoi: 14 }   // lề dưới chừa c
 const CACH = 16                                           // khoảng cách hai trang khi xem liên tục
 const DEM = 24                                            // lề trong của bàn
 const MUC_ZOOM = [50, 67, 75, 90, 100, 110, 125, 150, 175, 200]
+
+/** Tổng số trang của tờ đang vẽ, cho dòng "Sổ này có … trang" ở khối cuối */
+export const SoTrangCtx = createContext(1)
+
+const CONG_SAU = 'Cộng chuyển sang trang sau'
+const CONG_TRUOC = 'Số trang trước chuyển sang'
+
+/** Cột cộng chuyển trang có trong bảng này */
+const cotCong = (kh: Khoi, congChuyen?: string[]) => kh.loai === 'bang' && congChuyen ? congChuyen.filter(k => kh.cols.some(c => c.k === k)) : []
+
+// Số trong ô: số giữ nguyên, chữ kiểu vi-VN ('1.250.000', '7,3') đổi ra số
+const soO = (v: unknown) => typeof v === 'number' ? v : typeof v === 'string' && v.trim() ? Number(v.replace(/\./g, '').replace(',', '.')) || 0 : 0
+
+/** Dòng cộng luỹ kế các cột cộng chuyển từ đầu bảng tới trước dòng den; bỏ dòng đầu kỳ, dòng tổng */
+function dongCong(kh: Extract<Khoi, { loai: 'bang' }>, cot: string[], den: number, nhan: string): Row {
+  const oChu = kh.cols.find(c => c.k === 'dienGiai' || c.k === 'dg')?.k ?? kh.cols[1]?.k ?? kh.cols[0]?.k ?? ''
+  const dong: Row = { [oChu]: nhan, _b: 1 }
+  const ds = kh.rows.slice(0, den).filter(r => !r._t && !r._b)
+  for (const k of cot) {
+    const chu = ds.some(r => typeof r[k] === 'string')
+    const t = Math.round(ds.reduce((a, r) => a + soO(r[k]), 0) * 1000) / 1000
+    dong[k] = chu ? (t ? t.toLocaleString('vi-VN') : '') : t
+  }
+  return dong
+}
 
 /** Tách thân báo cáo thành khối: RptTable là bảng (cắt được theo dòng), phần tử khác là khối nguyên */
 export function tachKhoi(than: ReactNode): Khoi[] {
@@ -65,7 +91,7 @@ function ghi(khoa: string, v: string) {
 // Chiều cao thật theo px CSS, giữ phần lẻ để cộng dồn nhiều dòng không lệch. html bị zoom nên chia heSoZoom() (docs/BAY.md)
 const cao = (e: Element, z: number) => e.getBoundingClientRect().height / z
 
-function doKhung(goc: HTMLElement, khoi: Khoi[]): Do | null {
+function doKhung(goc: HTMLElement, khoi: Khoi[], congChuyen?: string[]): Do | null {
   const z = heSoZoom()
   const o = (k: string) => goc.querySelector<HTMLElement>(`:scope > [data-do="${k}"]`)
   const dau = o('dau')
@@ -79,9 +105,11 @@ function doKhung(goc: HTMLElement, khoi: Khoi[]): Do | null {
     if (khoi[i].loai !== 'bang' || !tb) { ds.push(cao(e, z)); continue }
     const thead = tb.tHead
     const dong = [...tb.tBodies[0]?.rows ?? []].map(r => cao(r, z))
+    // khung đo vẽ thêm một dòng cộng chuyển cuối bảng (số lớn nhất) để đo chiều cao và bề rộng cột
+    const cong = cotCong(khoi[i], congChuyen).length ? dong.pop() ?? 0 : 0
     const hDau = thead ? cao(thead, z) : 0
     const rong = [...thead?.rows[0]?.cells ?? []].map(c => c.getBoundingClientRect().width / z)
-    ds.push({ vo: Math.max(0, cao(e, z) - hDau - dong.reduce((a, x) => a + x, 0)), dau: hDau, dong, rong })
+    ds.push({ vo: Math.max(0, cao(e, z) - hDau - cong - dong.reduce((a, x) => a + x, 0)), dau: hDau, dong, rong, cong })
   }
   return { dau: cao(dau, z), cuoi: cuoi ? cao(cuoi, z) : 0, khoi: ds }
 }
@@ -90,6 +118,7 @@ function doKhung(goc: HTMLElement, khoi: Khoi[]): Do | null {
  * Xếp tham lam từ trên xuống. Khối nguyên không cắt: hết chỗ thì sang trang mới, cao hơn cả trang thì nằm riêng một trang.
  * Bảng cắt theo dòng, mỗi trang lặp dòng tiêu đề cột, cần chỗ cho tiêu đề + 1 dòng mới bắt đầu.
  * Dòng tổng cuối bảng không đứng một mình đầu trang: kéo theo một dòng trước nó. Ô ký nằm trọn trang cuối.
+ * Sổ cộng chuyển trang: đoạn bảng nối từ trang trước chừa một dòng "Số trang trước chuyển sang", đoạn chưa hết bảng chừa một dòng "Cộng chuyển sang trang sau".
  */
 function chiaTrang(d: Do, khoi: Khoi[], hTrang: number, coCuoi: boolean): Muc[][] {
   const ds: Muc[][] = [[{ k: 'dau' }]]
@@ -107,6 +136,7 @@ function chiaTrang(d: Do, khoi: Khoi[], hTrang: number, coCuoi: boolean): Muc[][
     }
     const n = m.dong.length
     const tong = (tu: number, den: number) => m.vo + m.dau + m.dong.slice(tu, den).reduce((a, x) => a + x, 0)
+      + (tu > 0 ? m.cong : 0) + (den < n ? m.cong : 0)
     let dauTong = n                        // từ đây tới cuối bảng toàn dòng tổng
     while (dauTong > 0 && kh.rows[dauTong - 1]?._t) dauTong--
     if (!n) {
@@ -140,7 +170,11 @@ const khopDo = (d: Do | null, khoi: Khoi[]): d is Do => !!d && d.khoi.length ===
 
 const Net = ({ d }: { d: string }) => <svg className="ic sm" viewBox="0 0 24 24" aria-hidden><path d={d} /></svg>
 
-export function ToGiay({ dau, than, cuoi, khoMacDinh }: { dau: ReactNode; than: ReactNode; cuoi?: ReactNode; khoMacDinh: Kho }): JSX.Element {
+export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen }: {
+  dau: ReactNode; than: ReactNode; cuoi?: ReactNode; khoMacDinh: Kho
+  kyHieuCot?: KyHieuCot     // hàng ký hiệu cột A, B, 1, 2 dưới tiêu đề mọi bảng
+  congChuyen?: string[]     // sổ: cột cộng chuyển trang
+}): JSX.Element {
   const path = useLocation().pathname
   const [kho, setKho] = useState<Kho>(() => docKho(path) ?? khoMacDinh)
   const [xem, setXem] = useState<Xem>(docXem)
@@ -167,12 +201,12 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh }: { dau: ReactNode; than: 
     const goc = khungDo.current
     // lúc in, khung app bị ẩn nên khung đo không có bố cục: giữ kết quả đo cũ
     if (!goc || !goc.offsetWidth) return
-    const moi = doKhung(goc, khoi)
+    const moi = doKhung(goc, khoi, congChuyen)
     setD(cu => JSON.stringify(cu) === JSON.stringify(moi) ? cu : moi)
   }
   const doRef = useRef(doLai)
   doRef.current = doLai
-  useLayoutEffect(() => { doLai() }, [than, kho, dau, cuoi])
+  useLayoutEffect(() => { doLai() }, [than, kho, dau, cuoi, kyHieuCot, congChuyen?.join()])
   useEffect(() => {
     let song = true
     document.fonts?.ready.then(() => { if (song) doRef.current() })
@@ -253,9 +287,16 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh }: { dau: ReactNode; than: 
     const kh = khoi[m.i]
     if (kh.loai === 'nguyen') return <div key={`k${m.i}`} className="bc-khoi">{kh.el}</div>
     if (m.k !== 'bang') return null
+    const cot = cotCong(kh, congChuyen)
+    const n = kh.rows.length
+    const rows = cot.length ? [
+      ...(m.tu > 0 ? [dongCong(kh, cot, m.tu, CONG_TRUOC)] : []),
+      ...kh.rows.slice(m.tu, m.den),
+      ...(m.den < n ? [dongCong(kh, cot, m.den, CONG_SAU)] : []),
+    ] : kh.rows.slice(m.tu, m.den)
     return (
       <div key={`b${m.i}-${m.tu}`} className={`bc-khoi bc-bang-${m.i}`}>
-        <RptTable cols={kh.cols} rows={kh.rows.slice(m.tu, m.den)} onRow={kh.onRow} />
+        <RptTable cols={kh.cols} rows={rows} onRow={kh.onRow} kyHieuCot={kyHieuCot} />
       </div>
     )
   }
@@ -284,74 +325,78 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh }: { dau: ReactNode; than: 
   const to = () => doiXem({ zoom: MUC_ZOOM.find(m => m > pct) ?? MUC_ZOOM[MUC_ZOOM.length - 1] })
 
   return (
-    <div className="bc-giay">
-      {css && <style>{css}</style>}
-      <div className="bc-ban" ref={ban} onScroll={cuon}>
-        <div className="bc-sizer" style={{ width: wPx * z, height: caoSizer }}>
-          <div className={`bc-ds-trang ${pv}`} style={{ width: wPx, transform: `scale(${z})` }}>
-            {hienTat}
-          </div>
-        </div>
-      </div>
-
-      <div className="bc-thanh">
-        <div className="bc-thanh-nhom">
-          <button type="button" className="icon-btn sm" title="Trang đầu" aria-label="Trang đầu" disabled={tr <= 0} onClick={() => toi(0)}><Net d="M12 7l-5 5 5 5M18 7l-5 5 5 5" /></button>
-          <button type="button" className="icon-btn sm" title="Trang trước" aria-label="Trang trước" disabled={tr <= 0} onClick={() => toi(tr - 1)}><Icon n="chevl" className="ic sm" /></button>
-          <input className="bc-o-trang" value={oTrang} aria-label="Số trang" inputMode="numeric"
-            onChange={e => setOTrang(e.target.value.replace(/\D/g, ''))}
-            onKeyDown={e => { if (e.key === 'Enter') { const v = Number(oTrang); if (v) toi(v - 1); else setOTrang(String(tr + 1)) } }}
-            onBlur={() => setOTrang(String(tr + 1))} />
-          <span className="bc-thanh-nhan">/ {N}</span>
-          <button type="button" className="icon-btn sm" title="Trang sau" aria-label="Trang sau" disabled={tr >= N - 1} onClick={() => toi(tr + 1)}><Icon n="chevr" className="ic sm" /></button>
-          <button type="button" className="icon-btn sm" title="Trang cuối" aria-label="Trang cuối" disabled={tr >= N - 1} onClick={() => toi(N - 1)}><Net d="M6 7l5 5-5 5M12 7l5 5-5 5" /></button>
-          <span className="bc-thanh-dem">{tongDong.toLocaleString('vi-VN')} dòng</span>
-        </div>
-
-        <div className="bc-thanh-nhom">
-          <span className="bc-thanh-nhan">Khổ</span>
-          <div className="seg">
-            <button type="button" className={kho === 'doc' ? 'on' : ''} onClick={() => doiKho('doc')}>Dọc</button>
-            <button type="button" className={kho === 'ngang' ? 'on' : ''} onClick={() => doiKho('ngang')}>Ngang</button>
-          </div>
-          <span className="bc-thanh-nhan">Xem</span>
-          <div className="seg">
-            <button type="button" className={lien ? 'on' : ''} onClick={() => doiXem({ che: 'lien' })}>Liên tục</button>
-            <button type="button" className={!lien ? 'on' : ''} onClick={() => doiXem({ che: 'tung' })}>Từng trang</button>
-          </div>
-        </div>
-
-        <div className="bc-thanh-nhom">
-          <button type="button" className="icon-btn sm" title="Thu nhỏ" aria-label="Thu nhỏ" disabled={pct <= MUC_ZOOM[0]} onClick={nho}><Net d="M6 12h12" /></button>
-          <Dropdown label={`${pct}%`} btnClass="bc-zoom" title="Chọn mức zoom" align="end" width={150}>
-            {dong => (
-              <>
-                {MUC_ZOOM.map(m => <MenuItem key={m} on={xem.zoom === m} onClick={() => { doiXem({ zoom: m }); dong() }}>{m}%</MenuItem>)}
-                <MenuSep />
-                <MenuItem on={xem.zoom === 'vua'} onClick={() => { doiXem({ zoom: 'vua' }); dong() }}>Vừa khung</MenuItem>
-              </>
-            )}
-          </Dropdown>
-          <button type="button" className="icon-btn sm" title="Phóng to" aria-label="Phóng to" disabled={pct >= MUC_ZOOM[MUC_ZOOM.length - 1]} onClick={to}><Icon n="plus" className="ic sm" /></button>
-          <button type="button" className={`btn sm${xem.zoom === 'vua' ? ' on' : ''}`} onClick={() => doiXem({ zoom: 'vua' })}>Vừa khung</button>
-          <button type="button" className="icon-btn sm" title="In" aria-label="In" onClick={() => setDangIn(true)}><Icon n="printer" className="ic sm" /></button>
-        </div>
-      </div>
-
-      {/* Khung đo ẩn: ngoài khối transform, cùng bề rộng và lớp CSS với trang thật */}
-      <div className="bc-do" aria-hidden inert>
-        <div ref={khungDo} className="paper bc-trang-do" style={{ width: `${kt.w}mm`, padding: kieuTrang.padding }}>
-          <div className="bc-khoi" data-do="dau">{dau}</div>
-          {khoi.map((kh, i) => (
-            <div key={i} className="bc-khoi" data-do={i}>
-              {kh.loai === 'bang' ? <RptTable cols={kh.cols} rows={kh.rows} /> : kh.el}
+    <SoTrangCtx.Provider value={N}>
+      <div className="bc-giay">
+        {css && <style>{css}</style>}
+        <div className="bc-ban" ref={ban} onScroll={cuon}>
+          <div className="bc-sizer" style={{ width: wPx * z, height: caoSizer }}>
+            <div className={`bc-ds-trang ${pv}`} style={{ width: wPx, transform: `scale(${z})` }}>
+              {hienTat}
             </div>
-          ))}
-          {cuoi && <div className="bc-khoi" data-do="cuoi">{cuoi}</div>}
+          </div>
         </div>
-      </div>
 
-      {dangIn && createPortal(<div className={`bc-in-goc ${pv}`}>{trangDs.map((_, i) => veTrang(i, false))}</div>, document.body)}
-    </div>
+        <div className="bc-thanh">
+          <div className="bc-thanh-nhom">
+            <button type="button" className="icon-btn sm" title="Trang đầu" aria-label="Trang đầu" disabled={tr <= 0} onClick={() => toi(0)}><Net d="M12 7l-5 5 5 5M18 7l-5 5 5 5" /></button>
+            <button type="button" className="icon-btn sm" title="Trang trước" aria-label="Trang trước" disabled={tr <= 0} onClick={() => toi(tr - 1)}><Icon n="chevl" className="ic sm" /></button>
+            <input className="bc-o-trang" value={oTrang} aria-label="Số trang" inputMode="numeric"
+              onChange={e => setOTrang(e.target.value.replace(/\D/g, ''))}
+              onKeyDown={e => { if (e.key === 'Enter') { const v = Number(oTrang); if (v) toi(v - 1); else setOTrang(String(tr + 1)) } }}
+              onBlur={() => setOTrang(String(tr + 1))} />
+            <span className="bc-thanh-nhan">/ {N}</span>
+            <button type="button" className="icon-btn sm" title="Trang sau" aria-label="Trang sau" disabled={tr >= N - 1} onClick={() => toi(tr + 1)}><Icon n="chevr" className="ic sm" /></button>
+            <button type="button" className="icon-btn sm" title="Trang cuối" aria-label="Trang cuối" disabled={tr >= N - 1} onClick={() => toi(N - 1)}><Net d="M6 7l5 5-5 5M12 7l5 5-5 5" /></button>
+            <span className="bc-thanh-dem">{tongDong.toLocaleString('vi-VN')} dòng</span>
+          </div>
+
+          <div className="bc-thanh-nhom">
+            <span className="bc-thanh-nhan">Khổ</span>
+            <div className="seg">
+              <button type="button" className={kho === 'doc' ? 'on' : ''} onClick={() => doiKho('doc')}>Dọc</button>
+              <button type="button" className={kho === 'ngang' ? 'on' : ''} onClick={() => doiKho('ngang')}>Ngang</button>
+            </div>
+            <span className="bc-thanh-nhan">Xem</span>
+            <div className="seg">
+              <button type="button" className={lien ? 'on' : ''} onClick={() => doiXem({ che: 'lien' })}>Liên tục</button>
+              <button type="button" className={!lien ? 'on' : ''} onClick={() => doiXem({ che: 'tung' })}>Từng trang</button>
+            </div>
+          </div>
+
+          <div className="bc-thanh-nhom">
+            <button type="button" className="icon-btn sm" title="Thu nhỏ" aria-label="Thu nhỏ" disabled={pct <= MUC_ZOOM[0]} onClick={nho}><Net d="M6 12h12" /></button>
+            <Dropdown label={`${pct}%`} btnClass="bc-zoom" title="Chọn mức zoom" align="end" width={150}>
+              {dong => (
+                <>
+                  {MUC_ZOOM.map(m => <MenuItem key={m} on={xem.zoom === m} onClick={() => { doiXem({ zoom: m }); dong() }}>{m}%</MenuItem>)}
+                  <MenuSep />
+                  <MenuItem on={xem.zoom === 'vua'} onClick={() => { doiXem({ zoom: 'vua' }); dong() }}>Vừa khung</MenuItem>
+                </>
+              )}
+            </Dropdown>
+            <button type="button" className="icon-btn sm" title="Phóng to" aria-label="Phóng to" disabled={pct >= MUC_ZOOM[MUC_ZOOM.length - 1]} onClick={to}><Icon n="plus" className="ic sm" /></button>
+            <button type="button" className={`btn sm${xem.zoom === 'vua' ? ' on' : ''}`} onClick={() => doiXem({ zoom: 'vua' })}>Vừa khung</button>
+            <button type="button" className="icon-btn sm" title="In" aria-label="In" onClick={() => setDangIn(true)}><Icon n="printer" className="ic sm" /></button>
+          </div>
+        </div>
+
+        {/* Khung đo ẩn: ngoài khối transform, cùng bề rộng và lớp CSS với trang thật */}
+        <div className="bc-do" aria-hidden inert>
+          <div ref={khungDo} className="paper bc-trang-do" style={{ width: `${kt.w}mm`, padding: kieuTrang.padding }}>
+            <div className="bc-khoi" data-do="dau">{dau}</div>
+            {khoi.map((kh, i) => (
+              <div key={i} className="bc-khoi" data-do={i}>
+                {kh.loai === 'bang'
+                  ? <RptTable cols={kh.cols} rows={cotCong(kh, congChuyen).length ? [...kh.rows, dongCong(kh, cotCong(kh, congChuyen), kh.rows.length, CONG_SAU)] : kh.rows} kyHieuCot={kyHieuCot} />
+                  : kh.el}
+              </div>
+            ))}
+            {cuoi && <div className="bc-khoi" data-do="cuoi">{cuoi}</div>}
+          </div>
+        </div>
+
+        {dangIn && createPortal(<div className={`bc-in-goc ${pv}`}>{trangDs.map((_, i) => veTrang(i, false))}</div>, document.body)}
+      </div>
+    </SoTrangCtx.Provider>
   )
 }

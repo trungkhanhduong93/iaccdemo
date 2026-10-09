@@ -22,6 +22,11 @@ export const CHE_DO: Record<CheDo, CheDoDef> = {
   TT99: { ma: 'TT99', soHieu: 'TT99/2025/TT-BTC', ngan: 'TT99', ten: 'Chế độ kế toán doanh nghiệp', hauTo: '-DN', kieuGhiSo: 'noco', choDuyet: true },
 }
 
+/** Căn cứ in dưới ký hiệu mẫu: "Ban hành theo Thông tư số 133/2016/TT-BTC ngày 26/08/2016 của Bộ Tài chính" */
+export function canCu(cd: CheDoDef): string {
+  return `Ban hành theo Thông tư số ${cd.soHieu.replace(/^TT/, '')}${cd.ngayBanHanh ? ` ngày ${cd.ngayBanHanh}` : ''} của Bộ Tài chính`
+}
+
 /** Chế độ mặc định khi chọn gói */
 export const CHE_DO_MAC_DINH: Record<Goi, CheDo> = { F: 'TT152', S: 'TT58', PL: 'TT133', PR: 'TT99' }
 /** Cặp gói và chế độ cho phép chọn (Trum chốt 09/10/2026) */

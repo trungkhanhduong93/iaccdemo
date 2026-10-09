@@ -9,6 +9,7 @@ import { Icon } from '../../ui/Icon'
 import { PageHead, Pk } from '../../ui/Page'
 import { fold } from '../../ui/format'
 import { ThanhLoc } from '../../ui/ThanhLoc'
+import { cauHinhBC } from './danh-sach'
 
 export function TrungTamBaoCao({ sc }: ScreenProps) {
   const { s } = useSession()
@@ -54,7 +55,7 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
 
   // Tìm kiếm không dấu theo tên, mã, mẫu
   const match = (x: ScreenDef) =>
-    !q || fold(`${tenMan(x)} ${x.code ?? ''} ${x.report?.mau ?? ''}`).includes(fold(q))
+    !q || fold(`${tenMan(x)} ${x.code ?? ''} ${cauHinhBC(x.code)?.kyHieu?.[s.cheDo] ?? ''}`).includes(fold(q))
 
   const nhomKetQua = nhomHienThi
     .map(g => ({
@@ -101,6 +102,7 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
                     const ok = moDuoc(x, s.goi)
                     const ma = maKhoa(x)
                     const isBook = x.report?.kieu === 'so' || /^(Sổ|Thẻ)/i.test(tenMan(x))
+                    const kyHieu = cauHinhBC(x.code)?.kyHieu?.[s.cheDo]
                     return (
                       <Link
                         key={x.slug}
@@ -110,7 +112,7 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
                         <span className="ri"><Icon n={isBook ? 'book' : 'chart'} /></span>
                         <span className="grow" style={{ minWidth: 0 }}>
                           <b>{tenMan(x)}</b>
-                          <small>Mã {x.code}{x.report?.mau && s.cheDo === 'TT133' ? ` · Mẫu ${x.report.mau}` : ''}</small>
+                          <small>Mã {x.code}{kyHieu ? ` · Mẫu ${kyHieu}` : ''}</small>
                         </span>
                         {!ok && ma ? <Pk g={minGoi(ma)} o /> : <Icon n="chevr" className="ic sm" />}
                       </Link>

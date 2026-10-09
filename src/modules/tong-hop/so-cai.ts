@@ -2,6 +2,7 @@
 // KQKD, bảng cân đối số phát sinh, bảng cân đối kế toán, lưu chuyển tiền tệ, Tổng quan đều đọc từ đây nên khớp tới từng đồng.
 import { kqkd } from '../../data/mock'
 import { k } from '../../ui/format'
+import type { CheDo } from '../../app/che-do'
 
 export type BT = [no: string, co: string, tien: number, nhom: string]
 
@@ -21,6 +22,19 @@ export const TEN_TK: Record<string, string> = {
   '635': 'Chi phí tài chính', '6421': 'Chi phí bán hàng', '6422': 'Chi phí quản lý doanh nghiệp', '711': 'Thu nhập khác', '811': 'Chi phí khác',
   '821': 'Chi phí thuế thu nhập doanh nghiệp', '911': 'Xác định kết quả kinh doanh',
 }
+
+const TK_TT99: Record<string, { so: string; ten: string }> = {
+  '6421': { so: '641', ten: 'Chi phí bán hàng' }, '6422': { so: '642', ten: 'Chi phí quản lý doanh nghiệp' },
+  '211': { so: '211', ten: 'Tài sản cố định hữu hình' }, '821': { so: '8211', ten: 'Chi phí thuế TNDN hiện hành' },
+}
+
+/** Số hiệu, tên tài khoản hiển thị theo chế độ: sổ cái lưu theo TT133, TT99 đổi 6421 → 641 Chi phí bán hàng, 6422 → 642 Chi phí quản lý doanh nghiệp, 211 → Tài sản cố định hữu hình, 821 → 8211 Chi phí thuế TNDN hiện hành */
+export function tkTheoCheDo(so: string, cd: CheDo): { so: string; ten: string } {
+  return (cd === 'TT99' ? TK_TT99[so] : undefined) ?? { so, ten: TEN_TK[so] ?? '' }
+}
+
+/** Chuỗi số hiệu cách dấu phẩy, vd '5111, 33311', đổi theo chế độ */
+export const dsTkTheoCheDo = (ds: string, cd: CheDo) => ds.split(',').map(t => tkTheoCheDo(t.trim(), cd).so).join(', ')
 
 export function butToan(thang: number): BT[] {
   const q = kqkd(thang, 2026), t = q.t, cp = q.cp

@@ -9,11 +9,12 @@ import { Icon } from '../Icon'
 import { PageHead, Pk } from '../Page'
 import { fold } from '../format'
 import { ThanhLoc } from '../ThanhLoc'
+import { cauHinhBC } from '../../modules/bao-cao/danh-sach'
 
 export function BaoCaoScreen({ mod }: ScreenProps) {
   const { s } = useSession()
   const [q, setQ] = useState('')
-  const ds = mod.screens.filter(laBaoCao).filter(sc => hienMan(sc, s.goi)).filter(sc => !q || fold(`${tenMan(sc)} ${sc.code ?? ''} ${sc.report?.mau ?? ''}`).includes(fold(q)))
+  const ds = mod.screens.filter(laBaoCao).filter(sc => hienMan(sc, s.goi)).filter(sc => !q || fold(`${tenMan(sc)} ${sc.code ?? ''} ${cauHinhBC(sc.code)?.kyHieu?.[s.cheDo] ?? ''}`).includes(fold(q)))
   const nhom: [string, typeof ds][] = []
   for (const sc of ds) {
     const n = sc.nhom ?? ''
@@ -40,7 +41,7 @@ export function BaoCaoScreen({ mod }: ScreenProps) {
                   <span className="ri"><Icon n={sc.report?.kieu === 'so' ? 'book' : 'chart'} /></span>
                   <span className="grow" style={{ minWidth: 0 }}>
                     <b>{tenMan(sc)}</b>
-                    <small>Mã {sc.code}{sc.report?.mau && s.cheDo === 'TT133' ? ` · Mẫu ${sc.report.mau}` : ''}</small>
+                    <small>Mã {sc.code}{cauHinhBC(sc.code)?.kyHieu?.[s.cheDo] ? ` · Mẫu ${cauHinhBC(sc.code)?.kyHieu?.[s.cheDo]}` : ''}</small>
                   </span>
                   {!ok && ma ? <Pk g={minGoi(ma)} o /> : <Icon n="chevr" className="ic sm" />}
                 </Link>

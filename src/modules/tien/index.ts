@@ -35,9 +35,9 @@ const tien: ModuleDef = {
       caiDat: [['Kỳ phân bổ', 'Tháng 9/2026'], ['Tiêu thức', 'Doanh thu chưa thuế'], ['Khoản mục', '6422, Quảng cáo, Thuê kho tổng']],
       nhatKy: [['30/09/2026 18:10', 'Phân bổ 186.400.000 đ cho 3 chi nhánh', 'Xong'], ['31/08/2026 17:55', 'Phân bổ 172.900.000 đ cho 3 chi nhánh', 'Xong']] } },
     '2.2.1': { kind: 'custom', comp: SoQuy },
-    '2.2.2': { report: { kieu: 'so', mau: 'S03b-DNN' } },
-    '2.2.3': { report: { kieu: 'so', mau: 'S08-DNN' } },
-    '2.2.4': { report: { kieu: 'bangke', mau: 'S03a-DNN', ...nhatKyChung } },
+    '2.2.2': { report: { kieu: 'so' } },
+    '2.2.3': { report: { kieu: 'so' } },
+    '2.2.4': { report: { kieu: 'bangke', ...nhatKyChung } },
     '2.2.5': { report: { kieu: 'tonghop', doiTuong: 'kh' } },
   }, NGAN),
 }

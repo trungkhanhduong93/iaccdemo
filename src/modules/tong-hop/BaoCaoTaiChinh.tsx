@@ -11,7 +11,7 @@ import { CHI_NHANH, chiPhiThang, kqkd, tongKy } from '../../data/mock'
 import { Note, PageHead } from '../../ui/Page'
 import { KY_CHON, ReportPaper, ReportToolbar, RptTable } from '../../ui/generic/ReportScreen'
 import { pct } from '../../ui/format'
-import { TEN_TK, du, soCai } from './so-cai'
+import { TEN_TK, du, soCai, tkTheoCheDo } from './so-cai'
 
 const kyTen = (ky: string) => KY_CHON.find(x => x[0] === ky)![1]
 const truoc = (ky: string) => String(Math.max(8, Number(ky) - 1))
@@ -51,7 +51,6 @@ function dongKqkd(cd: CheDo, thang: number) {
     { ma: '60', ct: 'Lợi nhuận sau thuế thu nhập doanh nghiệp', v: q.lnSauThue, _t: 1 },
   ]
 }
-const MAU: Record<CheDo, [string, string] | null> = { TT152: null, TT58: ['B02', 'dạng tinh gọn'], TT133: ['B02-DNN', ''], TT99: ['B02-DN', ''] }
 
 export function KetQuaKinhDoanh(p: ScreenProps) {
   const { s } = useSession()
@@ -63,8 +62,7 @@ export function KetQuaKinhDoanh(p: ScreenProps) {
         const ma = kieuGhiSo(s.cheDo) === 'noco'
         const cols: Col[] = [{ k: 'ct', t: 'Chỉ tiêu' }, ...(ma ? [{ k: 'ma', t: 'Mã số', c: true, w: 70 } as Col] : []), { k: 'v', t: kyTen(ky).replace(' (đến 07/10)', ''), num: true }, { k: 'cu', t: kyTen(truoc(ky)), num: true }]
         return (
-          <ReportPaper title="Báo cáo kết quả hoạt động kinh doanh" sub={`${kyTen(ky)}${s.cheDo === 'TT152' ? ' · Bản đơn giản, chưa theo chế độ kế toán' : s.cheDo === 'TT58' ? ' · Dạng tinh gọn theo TT58' : ''}`}
-            mau={MAU[s.cheDo]?.[0]}>
+          <ReportPaper title="Báo cáo kết quả hoạt động kinh doanh" sub={`${kyTen(ky)}${s.cheDo === 'TT152' ? ' · Bản đơn giản, chưa theo chế độ kế toán' : s.cheDo === 'TT58' ? ' · Dạng tinh gọn theo TT58' : ''}`}>
             <RptTable cols={cols} rows={nay.map((x, i) => ({ ...x, cu: cu[i]?.v }))} onRow={x => nav(x._drill)} />
           </ReportPaper>
         )
@@ -114,7 +112,7 @@ export function CanDoiKeToan(p: ScreenProps) {
         const ts = cuoi.find(x => x.ma === (PR ? '270' : '200'))!.v!, nv = cuoi.find(x => x.ma === (PR ? '440' : '500'))!.v!
         const ngay = ky === '10' ? '07/10/2026' : ky === '9' ? '30/09/2026' : '31/08/2026'
         return (
-          <ReportPaper title="Báo cáo tình hình tài chính" sub={`Tại ngày ${ngay}${s.cheDo === 'TT58' ? ' · Dạng tinh gọn theo TT58' : ''}`} mau={s.cheDo === 'TT133' ? 'B01-DNN' : s.cheDo === 'TT99' ? 'B01-DN' : 'B01'}>
+          <ReportPaper title="Báo cáo tình hình tài chính" sub={`Tại ngày ${ngay}${s.cheDo === 'TT58' ? ' · Dạng tinh gọn theo TT58' : ''}`}>
             <div className="row" style={{ marginBottom: 8, fontSize: 12.5 }}>
               <span className={`chip ${ts === nv ? 'ok' : 'err'}`}>{ts === nv ? 'Tài sản bằng nguồn vốn' : 'Lệch tài sản và nguồn vốn'}</span>
             </div>
@@ -137,13 +135,14 @@ export function CanDoiPhatSinh(p: ScreenProps) {
         const tks = Object.keys(TEN_TK).filter(t => sd.mo[t] || sd.no[t] || sd.co[t] || sd.cuoi[t])
         const rows: Row[] = tks.map(t => {
           const m = sd.mo[t] ?? 0, c = sd.cuoi[t] ?? 0
-          return { tk: t, ten: TEN_TK[t], dn: Math.max(0, m), dc: Math.max(0, -m), pn: sd.no[t] ?? 0, pc: sd.co[t] ?? 0, cn: Math.max(0, c), cc: Math.max(0, -c) }
+          const h = tkTheoCheDo(t, s.cheDo)
+          return { tk: h.so, ten: h.ten, dn: Math.max(0, m), dc: Math.max(0, -m), pn: sd.no[t] ?? 0, pc: sd.co[t] ?? 0, cn: Math.max(0, c), cc: Math.max(0, -c) }
         })
         const sum = (k: string) => rows.reduce((a, r) => a + r[k], 0)
         const tong = { ten: 'Tổng cộng', dn: sum('dn'), dc: sum('dc'), pn: sum('pn'), pc: sum('pc'), cn: sum('cn'), cc: sum('cc'), _t: 1 }
         const can = tong.dn === tong.dc && tong.pn === tong.pc && tong.cn === tong.cc
         return (
-          <ReportPaper title="Bảng cân đối số phát sinh" sub={kyTen(ky)} mau={s.cheDo === 'TT133' ? 'F01-DNN' : undefined}>
+          <ReportPaper title="Bảng cân đối số phát sinh" sub={kyTen(ky)}>
             <div style={{ marginBottom: 8 }}><span className={`chip ${can ? 'ok' : 'err'}`}>{can ? 'Cân: Nợ bằng Có ở cả 3 cột' : 'Lệch Nợ, Có'}</span></div>
             <RptTable cols={[{ k: 'tk', t: 'Số hiệu TK', cls: 'code', w: 80 }, { k: 'ten', t: 'Tên tài khoản' }, { k: 'dn', t: 'Dư Nợ đầu kỳ', num: true }, { k: 'dc', t: 'Dư Có đầu kỳ', num: true },
               { k: 'pn', t: 'Phát sinh Nợ', num: true }, { k: 'pc', t: 'Phát sinh Có', num: true }, { k: 'cn', t: 'Dư Nợ cuối kỳ', num: true }, { k: 'cc', t: 'Dư Có cuối kỳ', num: true }]} rows={[...rows, tong]} />
@@ -156,7 +155,6 @@ export function CanDoiPhatSinh(p: ScreenProps) {
 
 // ── Lưu chuyển tiền tệ (trực tiếp) ──
 export function LuuChuyenTien(p: ScreenProps) {
-  const { s } = useSession()
   return (
     <Khung {...p}>
       {ky => {
@@ -170,7 +168,7 @@ export function LuuChuyenTien(p: ScreenProps) {
         const l20 = l01 + l02 + l03 + l04 + l06 + l07, l34 = theo(['travay']), l40 = l34, l50 = l20 + l40
         const l60 = du(sd.mo, '1111', '1121'), l70 = du(sd.cuoi, '1111', '1121')
         return (
-          <ReportPaper title="Báo cáo lưu chuyển tiền tệ" sub={`${kyTen(ky)} · Phương pháp trực tiếp`} mau={s.cheDo === 'TT133' ? 'B03-DNN' : 'B03-DN'}>
+          <ReportPaper title="Báo cáo lưu chuyển tiền tệ" sub={`${kyTen(ky)} · Phương pháp trực tiếp`}>
             <div style={{ marginBottom: 8 }}><span className={`chip ${l60 + l50 === l70 ? 'ok' : 'err'}`}>{l60 + l50 === l70 ? 'Tiền cuối kỳ khớp bảng cân đối kế toán' : 'Lệch tiền cuối kỳ'}</span></div>
             <RptTable cols={[{ k: 'ct', t: 'Chỉ tiêu' }, { k: 'ma', t: 'Mã số', c: true, w: 70 }, { k: 'v', t: 'Kỳ này', num: true, r: x => x.v === undefined ? '' : x.v.toLocaleString('vi-VN') }]} rows={[
               { ct: 'I. Lưu chuyển tiền từ hoạt động kinh doanh', _b: 1 },

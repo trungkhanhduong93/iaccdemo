@@ -5,7 +5,8 @@ import { tuExcel } from '../types'
 import { quyTrinh } from './quy-trinh'
 import { kieuGhiSo } from '../../app/plan'
 import { CHI_NHANH, HANG, KHACH, KHO, LY_DO, NCC, NHAN_VIEN, NVL } from '../../data/mock'
-import { tkCot, TAI_KHOAN } from './data'
+import { tkCot, taiKhoan } from './data'
+import { tkTheoCheDo } from '../tong-hop/so-cai'
 import { Note } from '../../ui/Page'
 
 /** Nhãn ngắn trên thanh tab */
@@ -31,7 +32,7 @@ const danhMuc: ModuleDef = {
   quyTrinh,
   screens: tuExcel(0, {
     '1.1': { catalog: { them: 'Thêm tài khoản', nhomLoc: 'loai', nhanLoc: 'Loại', cols: [{ k: 'so', t: 'Số tài khoản', cls: 'code', w: 120 }, { k: 'ten', t: 'Tên tài khoản' },
-      { k: 'loai', t: 'Loại' }, { k: 'tc', t: 'Tính chất' }, { k: 'ct', t: 'Theo dõi chi tiết', cls: 'dim' }], rows: () => TAI_KHOAN } },
+      { k: 'loai', t: 'Loại' }, { k: 'tc', t: 'Tính chất' }, { k: 'ct', t: 'Theo dõi chi tiết', cls: 'dim' }], rows: cd => taiKhoan(cd) } },
     '1.2': { catalog: {
       them: 'Thêm hàng hoá', nhomLoc: 'nhom',
       chucNang: r => r.tkKho === '152' ? [{ nhan: 'Xem thẻ kho', di: 'kho/5-2-1' }] : [{ nhan: 'Xem doanh thu', di: 'ban-hang/3-2-3' }],
@@ -107,7 +108,7 @@ const danhMuc: ModuleDef = {
     '1.15': { catalog: { them: 'Thêm bút toán', nhomLoc: 'lct', nhanLoc: 'Loại chứng từ',
       cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Nghiệp vụ' }, { k: 'lct', t: 'Loại chứng từ' }, { k: 'loc', t: 'Lọc theo', cls: 'dim' },
         { k: 'no', t: 'TK Nợ', cls: 'code', c: true }, { k: 'co', t: 'TK Có', cls: 'code', c: true }, { k: 'tien', t: 'Số tiền lấy từ', cls: 'dim' }],
-      rows: () => [
+      rows: cd => [
         ['BT01', 'Doanh thu bán hàng thu tiền mặt', 'Chứng từ bán hàng FABi', 'Thanh toán tiền mặt', '1111', '5111', 'Tiền hàng chưa thuế'],
         ['BT01', 'Doanh thu bán hàng thu tiền mặt', 'Chứng từ bán hàng FABi', 'Thanh toán tiền mặt', '1111', '33311', 'Tiền thuế GTGT'],
         ['BT02', 'Doanh thu thu qua QR, chuyển khoản', 'Chứng từ bán hàng FABi', 'Thanh toán QR, chuyển khoản', '1121', '5111', 'Tiền hàng chưa thuế'],
@@ -118,7 +119,7 @@ const danhMuc: ModuleDef = {
         ['BT06', 'Hoa hồng app giao đồ ăn', 'Đối soát sàn', 'Kênh GrabFood, ShopeeFood', '6421', '131', 'Tiền hoa hồng'],
         ['BT07', 'Mua nguyên vật liệu chưa trả tiền', 'Phiếu mua hàng', 'Nhóm nhà cung cấp Thịt, cá; Tinh bột; Pha chế', '152', '331', 'Tiền hàng chưa thuế'],
         ['BT07', 'Mua nguyên vật liệu chưa trả tiền', 'Phiếu mua hàng', 'Nhóm nhà cung cấp Thịt, cá; Tinh bột; Pha chế', '1331', '331', 'Tiền thuế GTGT'],
-      ].map(([ma, ten, lct, loc, no, co, tien]) => ({ ma, ten, lct, loc, no, co, tien })) } },
+      ].map(([ma, ten, lct, loc, no, co, tien]) => ({ ma, ten, lct, loc, no: tkTheoCheDo(no, cd).so, co: tkTheoCheDo(co, cd).so, tien })) } },
     '1.16': { catalog: { them: 'Thêm lý do', nhomLoc: 'dung', nhanLoc: 'Dùng cho', cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Lý do' }, { k: 'dung', t: 'Dùng cho' }],
       rows: () => LY_DO } },
   }, NGAN).map(sc => ({ ...sc, icon: BIEU_TUONG[sc.code ?? ''] ?? sc.icon })).flatMap(sc => sc.code === '1.8' ? [sc, chiNhanh] : [sc]),

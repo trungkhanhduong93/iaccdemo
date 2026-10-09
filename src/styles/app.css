@@ -2297,6 +2297,11 @@ textarea.inp { height: auto; padding: 8px 11px; resize: vertical; }
 .bc-trang-do {
   box-sizing: border-box;
 }
+/* Bảng trên tờ in cỡ chữ nhỏ hơn bảng màn hình, số và mã không xuống dòng (khổ dọc 8 cột vẫn đọc được) */
+.bc-trang .rpt, .bc-trang-do .rpt { font-size: 11.5px; }
+.bc-trang .rpt th, .bc-trang-do .rpt th { padding: 5px 6px; font-size: 11px; }
+.bc-trang .rpt td, .bc-trang-do .rpt td { padding: 4px 6px; }
+.bc-trang .rpt td.num, .bc-trang-do .rpt td.num, .bc-trang .rpt td.code, .bc-trang-do .rpt td.code { white-space: nowrap; }
 .bc-khoi {
   display: flow-root;
 }
@@ -2400,5 +2405,45 @@ textarea.inp { height: auto; padding: 8px 11px; resize: vertical; }
   .bc-in-goc * {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
+  }
+}
+/* Mẫu chuẩn theo chế độ kế toán: ký hiệu mẫu, hàng ký hiệu cột, khối cuối sổ và báo cáo (T47 đợt 4) */
+.bc-mau {
+  max-width: 48%;
+  text-align: center;
+}
+.bc-cho-duyet {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--soft);
+  color: var(--muted);
+  font-size: 10.5px;
+}
+.rpt .rpt-ky-hieu th {
+  padding: 2px 6px;
+  font-size: 11px;
+  font-weight: 600;
+  font-style: italic;
+}
+.bc-so-ghi {
+  margin-top: 14px;
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+.bc-ngay-lap {
+  margin-top: 14px;
+  padding-right: 4%;
+  text-align: right;
+  font-size: 12.5px;
+  font-style: italic;
+}
+.bc-cuoi .sign {
+  margin-top: 8px;
+}
+@media print {
+  .bc-cho-duyet {
+    visibility: hidden;
   }
 }

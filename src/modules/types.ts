@@ -1,6 +1,7 @@
 // Khai báo phân hệ và màn hình. Mỗi phân hệ là một thư mục trong src/modules, có index.ts trả về ModuleDef.
 import type { ComponentType, ReactNode } from 'react'
 import { FEATURES, type Goi } from '../app/plan'
+import type { CheDo } from '../app/che-do'
 
 export type Row = Record<string, any>
 export interface Col {
@@ -18,7 +19,7 @@ export interface Col {
 /** Danh mục: bảng có tìm kiếm, nút thêm */
 export interface CatalogCfg {
   cols: Col[] | ((goi: Goi) => Col[])
-  rows: () => Row[]
+  rows: (cd: CheDo) => Row[]             // danh mục đổi theo chế độ kế toán, vd hệ thống tài khoản
   them?: string
   nhomLoc?: string
   nhanLoc?: string
@@ -63,7 +64,6 @@ export interface ReportCfg {
   doiTuong?: 'kh' | 'ncc' | 'hang' | 'nvl' | 'tk' | 'ts' | 'ccdc' | 'cn'
   cols?: Col[]                           // bảng kê tự khai cột
   rows?: (thang: number) => Row[]
-  mau?: string                           // ký hiệu mẫu sổ, vd S07-DNN
   taiKhoan?: string                      // sổ theo tài khoản
 }
 

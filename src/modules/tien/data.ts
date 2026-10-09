@@ -16,6 +16,6 @@ function rows(thang: number): Row[] {
       { ngay, so: so.replace('BH', 'XB'), dg: 'Giá vốn xuất bán theo định lượng', tk: '632', no: x.gv }, { ngay, so: so.replace('BH', 'XB'), dg: 'Giá vốn xuất bán theo định lượng', tk: '152', co: x.gv })
   }
   const s = (k: string) => out.reduce((a, r) => a + (r[k] ?? 0), 0)
-  return [...out, { dg: 'Cộng chuyển trang sau', no: s('no'), co: s('co'), _t: 1 }]
+  return [...out, { dg: 'Cộng số phát sinh', no: s('no'), co: s('co'), _t: 1 }]
 }
 export const nhatKyChung = { cols, rows }
