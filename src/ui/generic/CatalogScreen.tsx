@@ -1,5 +1,5 @@
-// Màn danh mục chung: bảng có tìm kiếm, lọc nhóm, ngăn kéo thêm và sửa
-import { useMemo, useState } from 'react'
+// Màn danh mục chung: bảng có tìm kiếm, lọc nhóm, ngăn kéo thêm và sửa (T70)
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { Col, Row, ScreenProps } from '../../modules/types'
 import { tenMan } from '../../app/registry'
@@ -9,14 +9,20 @@ import { St, Table } from '../Table'
 import { fold } from '../format'
 import { Dropdown, MenuItem, Select } from '../Dropdown'
 import { LocO, ThanhLoc } from '../ThanhLoc'
+import { TRUONG_DM, type KhoiDM, type TruongDM, type KieuTruong } from '../../modules/danh-muc/truong-dm'
+import { heThongTk } from '../../modules/danh-muc/he-thong-tk'
 
-export function CatalogScreen({ sc, mod }: ScreenProps) {
+export function CatalogScreen({ sc }: ScreenProps) {
   const { s, toast } = useSession()
   const cfg = sc.catalog ?? { cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên' }], rows: () => [] }
   const all = useMemo(() => cfg.rows(s.cheDo), [sc, s.cheDo])
   const [q, setQ] = useState('')
   const [nhom, setNhom] = useState('')
   const [edit, setEdit] = useState<Row | null>(null)
+  const [formVal, setFormVal] = useState<Record<string, any>>({})
+  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [moKhoi, setMoKhoi] = useState<Record<string, boolean>>({})
+
   const nhoms = cfg.nhomLoc ? [...new Set(all.map(r => r[cfg.nhomLoc!]))] : []
   const rows = all.filter(r => (!nhom || r[cfg.nhomLoc!] === nhom) && (!q || fold(Object.values(r).join(' ')).includes(fold(q))))
   const cols0 = typeof cfg.cols === 'function' ? cfg.cols(s.goi) : cfg.cols
@@ -52,6 +58,99 @@ export function CatalogScreen({ sc, mod }: ScreenProps) {
     }] : []),
   ]
   const ten = tenMan(sc)
+  const tenNgan = sc.ngan ?? ten
+  const dangSua = Boolean(edit && (edit.ma || edit.ten || Object.keys(edit).length > 1))
+
+  // Khối trường của danh mục theo cấu hình hoặc dự phòng từ cột
+  const cauHinh = TRUONG_DM[sc.code ?? ''] ?? TRUONG_DM[sc.slug ?? '']
+  const dsKhoi: KhoiDM[] = useMemo(() => {
+    if (cauHinh?.khoi) return cauHinh.khoi
+    const dsTuCot: TruongDM[] = cols0.map(c => ({
+      k: c.k,
+      nhan: c.t,
+      kieu: (c.num ? 'so' : 'chu') as KieuTruong,
+    }))
+    dsTuCot.push({ k: '_tt', nhan: 'Đang sử dụng', kieu: 'tich', caHang: true })
+    return [{ ten: 'Thông tin chung', truong: dsTuCot }]
+  }, [cauHinh, cols0])
+
+  const dsTk = useMemo(() => heThongTk(s.cheDo), [s.cheDo])
+
+  // Đồng bộ giá trị khi mở panel
+  useEffect(() => {
+    if (!edit) {
+      setFormVal({})
+      setErrors({})
+      return
+    }
+    const val: Record<string, any> = { ...edit }
+    if (val._tt === undefined) val._tt = 1
+    setFormVal(val)
+    setErrors({})
+  }, [edit])
+
+  // Đóng panel bằng phím Escape
+  useEffect(() => {
+    if (!edit) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setEdit(null)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [edit])
+
+  const dongPanel = () => setEdit(null)
+
+  const isMo = (tenK: string) => moKhoi[tenK] !== false
+  const toggleKhoi = (tenK: string) => setMoKhoi(m => ({ ...m, [tenK]: !isMo(tenK) }))
+
+  const handleLuu = (themTiep: boolean) => {
+    const errs: Record<string, string> = {}
+    for (const kh of dsKhoi) {
+      for (const tr of kh.truong) {
+        if (tr.batBuoc) {
+          const val = formVal[tr.k]
+          if (val === undefined || val === null || String(val).trim() === '') {
+            errs[tr.k] = `Vui lòng nhập ${tr.nhan.toLowerCase()}`
+          }
+        }
+      }
+    }
+    if (Object.keys(errs).length > 0) {
+      setErrors(errs)
+      return
+    }
+    toast('Đã lưu')
+    if (themTiep) {
+      setFormVal({ _tt: 1 })
+      setErrors({})
+    } else {
+      setEdit(null)
+    }
+  }
+
+  const getOptions = (tr: TruongDM): { val: string; nhan: string }[] => {
+    if (tr.ds && tr.ds.length > 0) {
+      return tr.ds.map(d => ({ val: d, nhan: d }))
+    }
+    if (tr.k.toLowerCase().startsWith('tk')) {
+      return dsTk.map(t => ({ val: t.so, nhan: `${t.so} - ${t.ten}` }))
+    }
+    if (tr.k === 'dvt') {
+      return ['Tô', 'Phần', 'Dĩa', 'Ly', 'Lon', 'Chai', 'kg', 'g', 'Lít', 'ml', 'Thùng', 'Hộp', 'Cái'].map(d => ({ val: d, nhan: d }))
+    }
+    if (tr.k === 'nhom' && nhoms.length > 0) {
+      return nhoms.map(d => ({ val: d, nhan: d }))
+    }
+    return []
+  }
+
+  const formatGiaTri = (tr: TruongDM, v: any) => {
+    if (typeof v === 'number') {
+      return tr.kieu === 'tien' ? v.toLocaleString('vi-VN') : String(v)
+    }
+    return v ?? ''
+  }
 
   return (
     <div className="page">
@@ -86,28 +185,125 @@ export function CatalogScreen({ sc, mod }: ScreenProps) {
           }
         />
         {rows.length ? <Table cols={cols} rows={rows} motDong onRow={r => setEdit(r)} /> : (
-          all.length ? <div className="empty"><b>Không có dòng khớp bộ lọc</b><button className="btn sm" style={{ marginTop: 10 }} onClick={() => { setQ(''); setNhom('') }}>Xoá bộ lọc</button></div>
-            : <div className="empty"><b>Chưa có dữ liệu</b><button className="btn sm pri" style={{ marginTop: 10 }} onClick={() => setEdit({})}>{cfg.them ?? 'Thêm mới'}</button></div>
+          all.length ? (
+            <div className="empty">
+              <b>Không có dòng khớp bộ lọc</b>
+              <button type="button" className="btn sm empty-btn" onClick={() => { setQ(''); setNhom('') }}>Xoá bộ lọc</button>
+            </div>
+          ) : (
+            <div className="empty">
+              <b>Chưa có dữ liệu</b>
+              <button type="button" className="btn sm pri empty-btn" onClick={() => setEdit({})}>{cfg.them ?? 'Thêm mới'}</button>
+            </div>
+          )
         )}
       </section>
 
       {edit && (
         <>
-          <div className="overlay" style={{ padding: 0 }} onClick={() => setEdit(null)} />
-          <aside className="drawer">
-            <div className="drawer-h">
-              <div className="grow"><h3 style={{ color: 'var(--ink)', fontSize: 16 }}>{edit.ma || edit.ten ? `Sửa: ${edit.ten ?? edit.ma}` : cfg.them ?? 'Thêm mới'}</h3><small className="muted">{ten}</small></div>
-              <button className="icon-btn" onClick={() => setEdit(null)}><Icon n="x" /></button>
+          <div className="overlay" onClick={dongPanel} />
+          <aside className="pn-hop">
+            <div className="pn-dau">
+              <div>
+                <h3>{dangSua ? `Sửa ${tenNgan}` : `Thêm ${tenNgan}`}</h3>
+                <small className="muted">
+                  {dangSua ? ([edit.ma, edit.ten].filter(Boolean).join(' - ') || ten) : ten}
+                </small>
+              </div>
+              <button type="button" className="icon-btn" onClick={dongPanel} aria-label="Đóng">
+                <Icon n="x" />
+              </button>
             </div>
-            <div className="drawer-b">
-              {cols0.map(c => (
-                <div className="f" key={c.k}><label>{c.t}</label><input className="inp" defaultValue={typeof edit[c.k] === 'number' ? edit[c.k].toLocaleString('vi-VN') : edit[c.k] ?? ''} /></div>
-              ))}
-              <label className="row" style={{ fontSize: 13 }}><input type="checkbox" defaultChecked /> Đang dùng</label>
+
+            <div className="pn-than">
+              {dsKhoi.map(kh => {
+                const mo = isMo(kh.ten)
+                return (
+                  <div key={kh.ten} className={`pn-khoi${mo ? ' mo' : ''}`}>
+                    <div className="pn-khoi-dau" onClick={() => toggleKhoi(kh.ten)}>
+                      <span>{kh.ten}</span>
+                      <Icon n={mo ? 'chevd' : 'chevr'} className="ic sm" />
+                    </div>
+                    {mo && (
+                      <div className="pn-khoi-than">
+                        <div className="pn-luoi">
+                          {kh.truong.map(tr => {
+                            if (tr.kieu === 'tich') {
+                              return (
+                                <div className="f pn-hang-dai" key={tr.k}>
+                                  <label className="row pn-tich">
+                                    <input
+                                      type="checkbox"
+                                      checked={formVal[tr.k] !== 0 && formVal[tr.k] !== false}
+                                      onChange={e => {
+                                        setFormVal(v => ({ ...v, [tr.k]: e.target.checked ? 1 : 0 }))
+                                      }}
+                                    />
+                                    {tr.nhan}
+                                  </label>
+                                </div>
+                              )
+                            }
+
+                            const opts = tr.kieu === 'chon' ? getOptions(tr) : []
+                            const hangDai = tr.caHang || tr.kieu === 'nhieuDong'
+
+                            return (
+                              <div className={`f${hangDai ? ' pn-hang-dai' : ''}`} key={tr.k}>
+                                <label>
+                                  {tr.nhan} {tr.batBuoc && <em>*</em>}
+                                </label>
+                                {tr.kieu === 'nhieuDong' ? (
+                                  <textarea
+                                    className="inp"
+                                    rows={2}
+                                    value={formVal[tr.k] ?? ''}
+                                    onChange={e => {
+                                      setFormVal(v => ({ ...v, [tr.k]: e.target.value }))
+                                      setErrors(err => ({ ...err, [tr.k]: '' }))
+                                    }}
+                                  />
+                                ) : tr.kieu === 'chon' ? (
+                                  <select
+                                    className="inp"
+                                    value={formVal[tr.k] ?? ''}
+                                    onChange={e => {
+                                      setFormVal(v => ({ ...v, [tr.k]: e.target.value }))
+                                      setErrors(err => ({ ...err, [tr.k]: '' }))
+                                    }}
+                                  >
+                                    <option value="">(Chọn {tr.nhan.toLowerCase()})</option>
+                                    {opts.map(o => (
+                                      <option key={o.val} value={o.val}>{o.nhan}</option>
+                                    ))}
+                                  </select>
+                                ) : (
+                                  <input
+                                    className={`inp${tr.kieu === 'tien' ? ' pn-tien' : tr.kieu === 'so' ? ' pn-so' : ''}`}
+                                    placeholder={tr.kieu === 'ngay' ? 'dd/mm/yyyy' : undefined}
+                                    value={formatGiaTri(tr, formVal[tr.k])}
+                                    onChange={e => {
+                                      setFormVal(v => ({ ...v, [tr.k]: e.target.value }))
+                                      setErrors(err => ({ ...err, [tr.k]: '' }))
+                                    }}
+                                  />
+                                )}
+                                {errors[tr.k] && <span className="muted pn-loi">{errors[tr.k]}</span>}
+                              </div>
+                            )
+                          })}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
             </div>
-            <div className="drawer-f">
-              <button className="btn" onClick={() => setEdit(null)}>Huỷ</button>
-              <button className="btn pri" onClick={() => { setEdit(null); toast('Đã lưu') }}>Lưu</button>
+
+            <div className="pn-chan">
+              <button type="button" className="btn" onClick={dongPanel}>Huỷ</button>
+              <button type="button" className="btn" onClick={() => handleLuu(true)}>Lưu và thêm</button>
+              <button type="button" className="btn pri" onClick={() => handleLuu(false)}>Lưu</button>
             </div>
           </aside>
         </>

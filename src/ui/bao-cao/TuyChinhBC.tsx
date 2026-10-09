@@ -1,5 +1,5 @@
-// Khung tuỳ chỉnh báo cáo (kế hoạch mục 10, T47): ẩn hiện cột, đổi thứ tự cột, đổi tên cột, độ rộng cột, gom nhóm 2 cấp, người ký, cỡ chữ bảng.
-import { useEffect, useState } from 'react'
+// Khung tuỳ chỉnh báo cáo (kế hoạch mục 10, T47, T70): ẩn hiện cột, đổi thứ tự cột, đổi tên cột, độ rộng cột, gom nhóm 2 cấp, người ký, cỡ chữ bảng.
+import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { Col } from '../../modules/types'
 import { cauHinhBC } from '../../modules/bao-cao/danh-sach'
@@ -38,43 +38,64 @@ export function TuyChinhBC({
   const [tc, setTc] = useState<TuyChinhLuu>(() => (slug ? docTuyChinh(donVi, slug) ?? {} : {}))
   const [chiRieng, setChiRieng] = useState(() => Boolean(tc.ky && tc.ky.length > 0))
 
+  const tcGocRef = useRef<TuyChinhLuu>({})
+  const nguoiKyGocRef = useRef<Record<string, string>>({})
+
   useEffect(() => {
     if (open && slug) {
       const v = docTuyChinh(donVi, slug) ?? {}
+      tcGocRef.current = v
+      nguoiKyGocRef.current = layNguoiKy(donVi)
       setTc(v)
       setChiRieng(Boolean(v.ky && v.ky.length > 0))
     }
   }, [open, slug, donVi])
 
+  const onHuy = () => {
+    if (slug) {
+      luuTuyChinh(donVi, slug, tcGocRef.current)
+      luuNguoiKy(donVi, nguoiKyGocRef.current)
+    }
+    onClose()
+  }
+
+  const onApDung = () => {
+    if (slug) {
+      luuTuyChinh(donVi, slug, tc)
+    }
+    onClose()
+  }
+
   // Lắng nghe phím Escape trên window (tránh bẫy BAY.md)
   useEffect(() => {
     if (!open) return
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose()
+      if (e.key === 'Escape') onHuy()
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [open, onClose])
+  }, [open])
 
   if (!open) return null
 
   // Màn không có slug hoặc không có cấu hình
   if (!slug) {
     return createPortal(
-      <div className="overlay bc-tc-nen" onMouseDown={e => { if (e.target === e.currentTarget) onClose() }}>
-        <div className="bc-tc-hop" role="dialog" aria-modal="true" aria-label="Tuỳ chỉnh báo cáo">
-          <div className="bc-tc-dau">
-            <b>Tuỳ chỉnh báo cáo</b>
-            <span className="grow" />
-            <button type="button" className="icon-btn sm" onClick={onClose} aria-label="Đóng"><Icon n="x" className="ic sm" /></button>
+      <div className="overlay" onMouseDown={e => { if (e.target === e.currentTarget) onClose() }}>
+        <aside className="pn-hop" role="dialog" aria-modal="true" aria-label="Tuỳ chỉnh báo cáo">
+          <div className="pn-dau">
+            <div>
+              <h3>Tuỳ chỉnh báo cáo</h3>
+            </div>
+            <button type="button" className="icon-btn" onClick={onClose} aria-label="Đóng"><Icon n="x" /></button>
           </div>
-          <div className="bc-tc-than">
+          <div className="pn-than">
             <p className="bc-tc-thong-bao">Màn này chưa hỗ trợ tuỳ chỉnh</p>
           </div>
-          <div className="bc-tc-chan">
-            <button type="button" className="btn sm" onClick={onClose}>Đóng</button>
+          <div className="pn-chan">
+            <button type="button" className="btn" onClick={onClose}>Đóng</button>
           </div>
-        </div>
+        </aside>
       </div>,
       document.body,
     )
@@ -188,32 +209,34 @@ export function TuyChinhBC({
   const veMauChuan = () => {
     xoaTuyChinh(donVi, slug)
     setTc({})
+    tcGocRef.current = {}
     setChiRieng(false)
     setHoiChuan(false)
   }
 
   return createPortal(
-    <div className="overlay bc-tc-nen" onMouseDown={e => { if (e.target === e.currentTarget) onClose() }}>
-      <div className="bc-tc-hop" role="dialog" aria-modal="true" aria-label="Tuỳ chỉnh báo cáo">
+    <div className="overlay" onMouseDown={e => { if (e.target === e.currentTarget) onHuy() }}>
+      <aside className="pn-hop" role="dialog" aria-modal="true" aria-label="Tuỳ chỉnh báo cáo">
         {/* Đầu khung */}
-        <div className="bc-tc-dau">
-          <b>Tuỳ chỉnh báo cáo</b>
-          <span className="grow" />
-          <button type="button" className="icon-btn sm" onClick={onClose} aria-label="Đóng">
-            <Icon n="x" className="ic sm" />
+        <div className="pn-dau">
+          <div>
+            <h3>Tuỳ chỉnh báo cáo</h3>
+          </div>
+          <button type="button" className="icon-btn" onClick={onHuy} aria-label="Đóng">
+            <Icon n="x" />
           </button>
         </div>
 
-        {/* 4 Thẻ */}
-        <div className="bc-tc-tabs">
-          <button type="button" className={`bc-tc-tab${tab === 'cot' ? ' on' : ''}`} onClick={() => setTab('cot')}>Cột</button>
-          <button type="button" className={`bc-tc-tab${tab === 'nhom' ? ' on' : ''}`} onClick={() => setTab('nhom')}>Gom nhóm</button>
-          <button type="button" className={`bc-tc-tab${tab === 'ky' ? ' on' : ''}`} onClick={() => setTab('ky')}>Người ký</button>
-          <button type="button" className={`bc-tc-tab${tab === 'trang' ? ' on' : ''}`} onClick={() => setTab('trang')}>Trang</button>
+        {/* 4 Thẻ đầu thân */}
+        <div className="pn-tabs">
+          <button type="button" className={`pn-tab${tab === 'cot' ? ' on' : ''}`} onClick={() => setTab('cot')}>Cột hiển thị</button>
+          <button type="button" className={`pn-tab${tab === 'nhom' ? ' on' : ''}`} onClick={() => setTab('nhom')}>Gom nhóm</button>
+          <button type="button" className={`pn-tab${tab === 'ky' ? ' on' : ''}`} onClick={() => setTab('ky')}>Người ký</button>
+          <button type="button" className={`pn-tab${tab === 'trang' ? ' on' : ''}`} onClick={() => setTab('trang')}>Trang & cỡ chữ</button>
         </div>
 
         {/* Thân thẻ */}
-        <div className="bc-tc-than">
+        <div className="pn-than">
           {tab === 'cot' && (
             khoa ? (
               <p className="bc-tc-thong-bao">Mẫu pháp định giữ nguyên bố cục, chỉ sửa được người ký và cỡ chữ</p>
@@ -234,26 +257,32 @@ export function TuyChinhBC({
               <p className="bc-tc-thong-bao">Báo cáo này không hỗ trợ gom nhóm</p>
             ) : (
               <div className="bc-tc-nhom-khung">
-                <label className="bc-tc-nhan">Gom nhóm cấp 1
-                  <Select className="inp" value={k1} onChange={e => doiNhom(e.target.value, k2)}>
-                    <option value="">(Không gom nhóm)</option>
-                    {nhomDuoc.map(k => <option key={k} value={k}>{tenCotNhom(k)}</option>)}
-                  </Select>
-                </label>
-
-                {k1 && (
-                  <label className="bc-tc-nhan">Gom nhóm cấp 2
-                    <Select className="inp" value={k2} onChange={e => doiNhom(k1, e.target.value)}>
-                      <option value="">(Không chọn cấp 2)</option>
-                      {nhomDuoc.filter(k => k !== k1).map(k => <option key={k} value={k}>{tenCotNhom(k)}</option>)}
+                <div className="pn-luoi">
+                  <div className="f">
+                    <label>Gom nhóm cấp 1</label>
+                    <Select className="inp" value={k1} onChange={e => doiNhom(e.target.value, k2)}>
+                      <option value="">(Không gom nhóm)</option>
+                      {nhomDuoc.map(k => <option key={k} value={k}>{tenCotNhom(k)}</option>)}
                     </Select>
-                  </label>
-                )}
+                  </div>
+
+                  {k1 && (
+                    <div className="f">
+                      <label>Gom nhóm cấp 2</label>
+                      <Select className="inp" value={k2} onChange={e => doiNhom(k1, e.target.value)}>
+                        <option value="">(Không chọn cấp 2)</option>
+                        {nhomDuoc.filter(k => k !== k1).map(k => <option key={k} value={k}>{tenCotNhom(k)}</option>)}
+                      </Select>
+                    </div>
+                  )}
+                </div>
 
                 {(k1 || k2) && (
-                  <button type="button" className="btn sm" onClick={() => doiNhom('', '')}>
-                    Bỏ gom nhóm
-                  </button>
+                  <div>
+                    <button type="button" className="btn sm" onClick={() => doiNhom('', '')}>
+                      Bỏ gom nhóm
+                    </button>
+                  </div>
                 )}
               </div>
             )
@@ -261,7 +290,7 @@ export function TuyChinhBC({
 
           {tab === 'ky' && (
             <div className="bc-tc-ky-khung">
-              <label className="bc-tc-tick">
+              <label className="row pn-tich">
                 <input
                   type="checkbox"
                   checked={chiRieng}
@@ -279,36 +308,41 @@ export function TuyChinhBC({
 
           {tab === 'trang' && (
             <div className="bc-tc-trang-khung">
-              <div className="bc-tc-hang">
-                <span>Cỡ chữ bảng</span>
-                <Select
-                  className="inp bc-tc-o-chon"
-                  value={String(coChu)}
-                  onChange={e => capNhat({ coChu: Number(e.target.value) })}
-                >
-                  {CO_CHU.map(c => <option key={c} value={String(c)}>{c} px</option>)}
-                </Select>
+              <div className="pn-luoi">
+                <div className="f">
+                  <label>Cỡ chữ bảng</label>
+                  <Select
+                    className="inp"
+                    value={String(coChu)}
+                    onChange={e => capNhat({ coChu: Number(e.target.value) })}
+                  >
+                    {CO_CHU.map(c => <option key={c} value={String(c)}>{c} px</option>)}
+                  </Select>
+                </div>
               </div>
-              <p className="bc-tc-goi-y">Đổi khổ giấy Dọc / Ngang tại thanh công cụ dưới trang.</p>
+              <p className="muted pn-chu-nho">Đổi khổ giấy Dọc / Ngang tại thanh công cụ dưới trang.</p>
             </div>
           )}
         </div>
 
         {/* Chân khung */}
-        <div className="bc-tc-chan">
-          <button type="button" className="btn sm" onClick={() => setHoiChuan(true)}>
-            Về mẫu chuẩn
+        <div className="pn-chan">
+          <button type="button" className="btn" onClick={() => setHoiChuan(true)}>
+            Về mặc định
           </button>
           <span className="grow" />
-          <button type="button" className="btn pri sm" onClick={onClose}>
-            Đóng
+          <button type="button" className="btn" onClick={onHuy}>
+            Huỷ
+          </button>
+          <button type="button" className="btn pri" onClick={onApDung}>
+            Áp dụng
           </button>
         </div>
-      </div>
+      </aside>
 
       {hoiChuan && (
         <HopXacNhan
-          tieuDe="Về mẫu chuẩn?"
+          tieuDe="Về mặc định?"
           nut="Khôi phục"
           onDong={() => setHoiChuan(false)}
           onDongY={veMauChuan}

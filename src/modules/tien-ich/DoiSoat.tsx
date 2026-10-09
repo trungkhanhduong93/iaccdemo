@@ -1,5 +1,5 @@
 // Đối soát tự động: mặc định chỉ hiện dòng lệch; bấm dòng mở chi tiết, nguyên nhân nghi ngờ, chứng từ gốc, cách xử lý
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { Col, Row, ScreenProps } from '../types'
 import { tenMan } from '../../app/registry'
@@ -26,6 +26,16 @@ export function DoiSoat({ sc, mod }: ScreenProps) {
   const [tatCa, setTatCa] = useState(false)
   const [mo, setMo] = useState<Row | null>(null)
   const [xong, setXong] = useState<string[]>([])
+
+  useEffect(() => {
+    if (!mo) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMo(null)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [mo])
+
   const ds = LECH.map(l => ({ ...l, tt: xong.includes(l.id) ? 'xong' : l.tt, lech: l.nguonV - l.soV, cnT: cnTen(l.cn) }))
   const list = ds.filter(l => (cap === 'Tất cả' || l.cap === cap) && (tatCa || l.tt !== 'xong'))
   const cols: Col[] = [
@@ -74,13 +84,16 @@ export function DoiSoat({ sc, mod }: ScreenProps) {
 
       {mo && (
         <>
-          <div className="overlay" style={{ padding: 0 }} onClick={() => setMo(null)} />
-          <aside className="drawer">
-            <div className="drawer-h">
-              <div className="grow"><h3 style={{ color: 'var(--ink)', fontSize: 16 }}>{mo.cap} · {mo.ngay}</h3><small className="muted">{mo.cnT}</small></div>
-              <button className="icon-btn" onClick={() => setMo(null)}><Icon n="x" /></button>
+          <div className="overlay" onClick={() => setMo(null)} />
+          <aside className="pn-hop">
+            <div className="pn-dau">
+              <div>
+                <h3>{mo.cap} · {mo.ngay}</h3>
+                <small className="muted">{mo.cnT}</small>
+              </div>
+              <button type="button" className="icon-btn" onClick={() => setMo(null)} aria-label="Đóng"><Icon n="x" /></button>
             </div>
-            <div className="drawer-b">
+            <div className="pn-than">
               <div className="grid g3">
                 <div><small className="muted">{mo.nguon}</small><div style={{ fontWeight: 700, color: 'var(--ink)' }}>{moneyD(mo.nguonV)}</div></div>
                 <div><small className="muted">Trên sổ</small><div style={{ fontWeight: 700, color: 'var(--ink)' }}>{moneyD(mo.soV)}</div></div>
@@ -93,9 +106,9 @@ export function DoiSoat({ sc, mod }: ScreenProps) {
               </div>
               <div className="f"><label>Ghi chú xử lý</label><textarea className="inp" rows={3} placeholder="vd: Đã tải lại ca 2 từ FABi, khớp" /></div>
             </div>
-            <div className="drawer-f">
-              <button className="btn" onClick={() => toast('Đã tạo bút toán điều chỉnh nháp')}>Tạo bút toán điều chỉnh</button>
-              <button className="btn pri" onClick={() => { setXong(x => [...x, mo.id]); setMo(null); toast('Đã đánh dấu đã xử lý') }}>Đánh dấu đã xử lý</button>
+            <div className="pn-chan">
+              <button type="button" className="btn" onClick={() => toast('Đã tạo bút toán điều chỉnh nháp')}>Tạo bút toán điều chỉnh</button>
+              <button type="button" className="btn pri" onClick={() => { setXong(x => [...x, mo.id]); setMo(null); toast('Đã đánh dấu đã xử lý') }}>Đánh dấu đã xử lý</button>
             </div>
           </aside>
         </>
