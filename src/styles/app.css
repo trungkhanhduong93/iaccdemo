@@ -4112,5 +4112,112 @@ body.tkmi-dang-keo, body.tkmi-dang-keo * {
   width: 100%;
 }
 
-
-
+/* ── Thiết kế mẫu in gọn (T59) ── */
+.tkmi-trai-dau {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 10px 6px;
+  flex: none;
+}
+.tkmi-trai-dau .tkmi-cot-tieu {
+  padding: 0 2px;
+}
+.tkmi-trai-dau .inp {
+  width: 100%;
+  height: 32px;
+  padding: 0 10px;
+  font-size: 13px;
+}
+.tkmi-trai .tkmi-cuon {
+  padding-top: 0;
+}
+.tkmi-trai .tkmi-nhom-ten {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #fff;
+  padding-top: 6px;
+  padding-bottom: 4px;
+}
+.tkmi-trong {
+  padding: 24px 10px;
+  font-size: 13px;
+  color: var(--muted);
+  text-align: center;
+}
+.tkmi-thanh .tkmi-goi-y {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+.tkmi-thanh .tkmi-goi-y .ic {
+  flex: none;
+  color: var(--muted);
+}
+.tkmi-thanh .tkmi-goi-y span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tkmi-to .bc-sizer {
+  margin-left: auto;
+  margin-right: auto;
+}
+.tkmi-to .bc-trang {
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: 0 2px 12px rgba(14, 26, 43, .08), 0 1px 3px rgba(14, 26, 43, .04);
+}
+.tkmi-phai {
+  position: relative;
+}
+.tkmi-the-khung {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: #fff;
+  padding: 8px 6px;
+  border-bottom: 1px solid var(--line-2);
+  flex: none;
+}
+.tkmi-the-khung .tkmi-the.seg {
+  display: flex;
+  width: 100%;
+  flex-wrap: nowrap;
+  padding: 2px;
+  gap: 2px;
+  border-bottom: none;
+  background: var(--soft);
+  border-radius: 8px;
+}
+.tkmi-the-khung .tkmi-the.seg button {
+  flex: 1 1 0;
+  min-width: 0;
+  height: 28px;
+  padding: 0 2px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+  color: var(--muted);
+  background: transparent;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tkmi-the-khung .tkmi-the.seg button:hover {
+  color: var(--ink);
+}
+.tkmi-the-khung .tkmi-the.seg button.on {
+  background: #fff;
+  color: var(--ink);
+  box-shadow: var(--sh);
+}

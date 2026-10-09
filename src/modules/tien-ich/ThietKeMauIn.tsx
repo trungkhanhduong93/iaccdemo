@@ -25,6 +25,7 @@ import { HopXacNhan } from '../../ui/LocNangCao'
 import { Icon } from '../../ui/Icon'
 import { PageHead } from '../../ui/Page'
 import { heSoZoom } from '../../ui/zoom'
+import { fold } from '../../ui/format'
 
 /** Cây mẫu theo phân hệ, giống bảng ghép chứng từ với mẫu in (mục 8.6) */
 const CAY: [string, string[]][] = [
@@ -108,7 +109,32 @@ export function ThietKeMauIn({ sc }: ScreenProps) {
   const [doiTen, setDoiTen] = useState<string | null>(null)
   const [hoiXoa, setHoiXoa] = useState<MauRieng | null>(null)
   const [hoiVeChuan, setHoiVeChuan] = useState(false)
+  const [timMau, setTimMau] = useState('')
   const tep = useRef<HTMLInputElement>(null)
+
+  // Mở màn lần đầu: mặc định "Vừa khung" nếu người dùng chưa chọn zoom trước đó (T59)
+  useState(() => {
+    const daChon = localStorage.getItem('tkmi-zoom')
+    try {
+      const x = JSON.parse(localStorage.getItem('bc-xem') ?? '{}')
+      if (!daChon && x.zoom !== 'vua') {
+        localStorage.setItem('bc-xem', JSON.stringify({ ...x, zoom: 'vua' }))
+      }
+    } catch {
+      if (!daChon) localStorage.setItem('bc-xem', JSON.stringify({ zoom: 'vua', che: 'lien' }))
+    }
+  })
+
+  useEffect(() => {
+    const ghiZoom = (e: Event) => {
+      const el = e.target as Element | null
+      if (el?.closest('.bc-thanh, .bc-zoom, .bc-thanh-nhom, .pop')) {
+        localStorage.setItem('tkmi-zoom', '1')
+      }
+    }
+    window.addEventListener('click', ghiZoom, true)
+    return () => window.removeEventListener('click', ghiZoom, true)
+  }, [])
 
   useEffect(() => { setSua(moSua(donVi.id, cd.ma, thamSo, chuan)) }, [donVi.id, cd.ma, thamSo, chuan])
 
@@ -252,13 +278,24 @@ export function ThietKeMauIn({ sc }: ScreenProps) {
     return boLien(m, veMauIn(m, du, cd, dv, true))
   }, [mau, nguoiKy, du, cd, dv])
 
-  const dsThe: [The, string][] = [
-    ['trang', 'Trang'], ['tieuDe', 'Tiêu đề'],
-    ...(mau.thongTin.length ? [['thongTin', 'Thông tin chung'] as [The, string]] : []),
-    ...(mau.bang ? [['bang', 'Bảng chi tiết'] as [The, string]] : []),
-    ['ky', 'Người ký'], ['khoi', 'Khối'],
+  const cayLoc = useMemo(() => {
+    const q = fold(timMau.trim())
+    if (!q) return CAY
+    return CAY.map(([nhom, ids]) => [
+      nhom,
+      ids.filter(id => fold(mauIn(id)?.ten ?? '').includes(q)),
+    ] as [string, string[]]).filter(([, ids]) => ids.length > 0)
+  }, [timMau])
+
+  const dsThe: { k: The; ten: string; nhan: string }[] = [
+    { k: 'trang', ten: 'Trang', nhan: 'Trang' },
+    { k: 'tieuDe', ten: 'Tiêu đề', nhan: 'Tiêu đề' },
+    ...(mau.thongTin.length ? [{ k: 'thongTin' as The, ten: 'Thông tin chung', nhan: 'Thông tin' }] : []),
+    ...(mau.bang ? [{ k: 'bang' as The, ten: 'Bảng chi tiết', nhan: 'Bảng chi tiết' }] : []),
+    { k: 'ky', ten: 'Người ký', nhan: 'Người ký' },
+    { k: 'khoi', ten: 'Khối', nhan: 'Khối' },
   ]
-  const theHien = dsThe.some(([k]) => k === the) ? the : 'trang'
+  const theHien = dsThe.some(({ k }) => k === the) ? the : 'trang'
   const kyHieu = goc.kyHieu[cd.ma]
   const chonK = (loai: Chon['loai']) => chon?.loai === loai ? chon.k : undefined
   const toSang = chon ? `.tkmi-to .bc-trang [data-${chon.loai}="${CSS.escape(chon.k)}"]{outline:2px solid var(--blue);outline-offset:1px}` : ''
@@ -274,22 +311,35 @@ export function ThietKeMauIn({ sc }: ScreenProps) {
 
       <div className="tkmi">
         <aside className="tkmi-cot tkmi-trai">
-          <div className="tkmi-cuon">
+          <div className="tkmi-trai-dau">
             <div className="tkmi-cot-tieu">Mẫu in</div>
-            {CAY.map(([nhom, ids]) => (
-              <div key={nhom} className="tkmi-nhom">
-                <div className="tkmi-nhom-ten">{nhom}</div>
-                {ids.map(id => {
-                  const n = dsKho.filter(r => r.goc === id).length
-                  return (
-                    <button key={id} type="button" className={`tkmi-cay-muc${sua.goc === id ? ' on' : ''}`} onClick={() => mo(id)}>
-                      <span className="grow">{mauIn(id)?.ten}</span>
-                      {n > 0 && <span className="tkmi-dem" title={`${n} mẫu riêng`}>{n}</span>}
-                    </button>
-                  )
-                })}
-              </div>
-            ))}
+            <input
+              type="text"
+              className="inp"
+              placeholder="Tìm mẫu in"
+              value={timMau}
+              onChange={e => setTimMau(e.target.value)}
+            />
+          </div>
+          <div className="tkmi-cuon">
+            {cayLoc.length === 0 ? (
+              <div className="tkmi-trong">Không có mẫu khớp</div>
+            ) : (
+              cayLoc.map(([nhom, ids]) => (
+                <div key={nhom} className="tkmi-nhom">
+                  <div className="tkmi-nhom-ten">{nhom}</div>
+                  {ids.map(id => {
+                    const n = dsKho.filter(r => r.goc === id).length
+                    return (
+                      <button key={id} type="button" className={`tkmi-cay-muc${sua.goc === id ? ' on' : ''}`} onClick={() => mo(id)}>
+                        <span className="grow">{mauIn(id)?.ten}</span>
+                        {n > 0 && <span className="tkmi-dem" title={`${n} mẫu riêng`}>{n}</span>}
+                      </button>
+                    )
+                  })}
+                </div>
+              ))
+            )}
           </div>
           <div className="tkmi-mau-phieu">
             <div className="tkmi-cot-tieu">Mẫu của phiếu</div>
@@ -342,7 +392,10 @@ export function ThietKeMauIn({ sc }: ScreenProps) {
             <span className={`chip${sua.rieng ? ' info' : ''}`}>{sua.rieng ? 'Mẫu riêng' : 'Mẫu chuẩn'}</span>
             <span className="chip">{kyHieu ? `Mẫu số ${kyHieu}` : 'Tự thiết kế'}</span>
             <span className="grow" />
-            <span className="tkmi-goi-y">Bấm vào phần tử trên tờ để sửa. Kéo mép phải tiêu đề cột để đổi độ rộng.</span>
+            <span className="tkmi-goi-y" title="Bấm vào phần tử trên tờ để sửa. Kéo mép phải tiêu đề cột để đổi độ rộng.">
+              <Icon n="info" className="ic sm" />
+              <span>Bấm vào phần tử trên tờ để sửa. Kéo mép phải tiêu đề cột để đổi độ rộng.</span>
+            </span>
           </div>
           <div className="tkmi-to" onClick={bamTo} onPointerDown={keoMep}>
             {toSang && <style>{toSang}</style>}
@@ -351,10 +404,22 @@ export function ThietKeMauIn({ sc }: ScreenProps) {
         </section>
 
         <aside className="tkmi-cot tkmi-phai">
-          <div className="tkmi-the" role="tablist">
-            {dsThe.map(([k, ten]) => (
-              <button key={k} type="button" role="tab" aria-selected={theHien === k} className={theHien === k ? 'on' : ''} onClick={() => setThe(k)}>{ten}</button>
-            ))}
+          <div className="tkmi-the-khung">
+            <div className="seg tkmi-the" role="tablist">
+              {dsThe.map(({ k, ten, nhan }) => (
+                <button
+                  key={k}
+                  type="button"
+                  role="tab"
+                  aria-selected={theHien === k}
+                  className={theHien === k ? 'on' : ''}
+                  title={ten}
+                  onClick={() => setThe(k)}
+                >
+                  {nhan}
+                </button>
+              ))}
+            </div>
           </div>
           <div className="tkmi-cuon tkmi-than-the">
             {theHien === 'trang' && <CaiTrang trang={mau.trang} onChange={trang => doiMau(m => ({ ...m, trang }))} />}
