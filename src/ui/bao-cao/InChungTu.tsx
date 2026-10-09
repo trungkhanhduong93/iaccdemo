@@ -283,36 +283,99 @@ export function HopInChungTu({ ds, onDong }: { ds: PhieuIn[]; onDong: () => void
         <header className="in-ct-dau-hop">
           <span className="fsf-ic"><Icon n="printer" /></span>
           <h1>{tieuDe}</h1>
-          <label className="in-ct-chon-mau">
-            Mẫu
-            <Select value={chon} aria-label="Chọn mẫu in" onChange={e => setChon(e.target.value)}>
-              {luaChon.map(x => <option key={x.id} value={x.id}>{x.ten}</option>)}
-            </Select>
-          </label>
           <span className="chip">{kyHieu ? `Mẫu số ${kyHieu}` : 'Mẫu tự thiết kế'}</span>
           {kyHieu && cd.choDuyet && <span className="chip warn">Ký hiệu chờ kế toán trưởng duyệt</span>}
           <span className="grow" />
-          {suaDu
-            ? <Link className="btn sm" to={`/app/tien-ich/11-11?mau=${chon}${dsMau.some(m => m.id === chon) ? '&chuan=1' : ''}`} onClick={onDong}><Icon n="edit" className="ic sm" />Sửa mẫu</Link>
-            : (
-              <button ref={nutSua} type="button" className={`btn sm${moSua ? ' on' : ''}`} aria-expanded={moSua} onClick={() => setMoSua(x => !x)}>
-                <Icon n="edit" className="ic sm" />Sửa mẫu
-              </button>
-            )}
           <button type="button" className="btn sm" onClick={() => { inNgay(); toast('Chọn máy in "Lưu dưới dạng PDF" để lưu file') }}>
             <Icon n="download" className="ic sm" />Xuất PDF
           </button>
-          <button type="button" className="btn sm pri" onClick={inNgay}><Icon n="printer" className="ic sm" />In</button>
+          <button type="button" className="btn sm pri" onClick={inNgay}>
+            <Icon n="printer" className="ic sm" />In
+          </button>
           <button type="button" className="btn sm" title="Đóng (Esc)" onClick={onDong}>Đóng</button>
         </header>
+
+        <div className="in-ct-studio">
+          {/* Cột trái: chọn mẫu, đơn vị, người ký */}
+          <aside className="in-ct-sidebar">
+            <div className="in-ct-side-sec">
+              <span className="in-ct-side-title">Chọn mẫu in</span>
+              <div className="in-ct-mau-ds">
+                {luaChon.map(x => (
+                  <button
+                    key={x.id}
+                    type="button"
+                    className={`in-ct-mau-card${x.id === chon ? ' on' : ''}`}
+                    aria-pressed={x.id === chon}
+                    onClick={() => setChon(x.id)}
+                  >
+                    <div>
+                      <div className="in-ct-mau-card-name">{x.ten}</div>
+                      <div className="in-ct-mau-card-sub">
+                        {x.mau.kyHieu[cd.ma] ? `Mẫu số ${x.mau.kyHieu[cd.ma]}` : 'Khổ tự đặt'}
+                        {haiLien(x.mau) ? ' · 2 liên A4' : ''}
+                      </div>
+                    </div>
+                    {x.id === chon && <span className="in-ct-mau-card-check"><Icon n="check" className="ic sm" /></span>}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="in-ct-side-sec">
+              <span className="in-ct-side-title">Đơn vị và người ký</span>
+              <div className="in-ct-side-tt">
+                <div className="in-ct-side-tt-dong">
+                  <span className="in-ct-side-tt-nhan">Đơn vị:</span>
+                  <b className="in-ct-side-tt-val">{donVi.ten}</b>
+                </div>
+                <div className="in-ct-side-tt-dong">
+                  <span className="in-ct-side-tt-nhan">Chế độ:</span>
+                  <b className="in-ct-side-tt-val">{cd.ten}</b>
+                </div>
+                {mau.ky.slice(0, 3).map(k => (
+                  <div key={k.chucDanh} className="in-ct-side-tt-dong">
+                    <span className="in-ct-side-tt-nhan">{k.chucDanh}:</span>
+                    <b className="in-ct-side-tt-val">{nguoiKy[k.chucDanh] || k.hoTen || '(chưa đặt)'}</b>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="in-ct-side-sec in-ct-side-cuoi">
+              {suaDu ? (
+                <Link
+                  className="btn sm in-ct-side-cuoi-btn"
+                  to={`/app/tien-ich/11-11?mau=${chon}${dsMau.some(m => m.id === chon) ? '&chuan=1' : ''}`}
+                  onClick={onDong}
+                >
+                  <Icon n="edit" className="ic sm" />Thiết kế mẫu in
+                </Link>
+              ) : (
+                <button
+                  ref={nutSua}
+                  type="button"
+                  className={`btn sm in-ct-side-cuoi-btn${moSua ? ' on' : ''}`}
+                  aria-expanded={moSua}
+                  onClick={() => setMoSua(x => !x)}
+                >
+                  <Icon n="edit" className="ic sm" />Sửa nhanh khổ và người ký
+                </button>
+              )}
+            </div>
+          </aside>
+
+          {/* Cột phải: xem trước tờ in */}
+          <div className="in-ct-preview">
+            <ToGiay giay={giay} anSoTrang={ds.length === 1} dau={null} than={than} khoMacDinh="doc" />
+          </div>
+        </div>
+
         {!suaDu && (
-          <Popover anchor={nutSua} open={moSua} onClose={() => setMoSua(false)} align="end" role="dialog" className="tkmi-pop" width={380}>
+          <Popover anchor={nutSua} open={moSua} onClose={() => setMoSua(false)} align="start" role="dialog" className="tkmi-pop" width={380}>
             <SuaGon key={`${chon}-${rev}`} mau={mau} hoTenDonVi={nguoiKy} onLuu={luuGon} onHuy={() => setMoSua(false)} />
           </Popover>
         )}
-        <div className="in-ct-than">
-          <ToGiay giay={giay} anSoTrang={ds.length === 1} dau={null} than={than} khoMacDinh="doc" />
-        </div>
       </div>
     </div>,
     document.body,

@@ -24,7 +24,7 @@ export function ToKhaiGTGT({ sc, mod }: ScreenProps) {
       <PageHead crumb={[mod.ten, sc.nhom ?? '']} title={tenMan(sc)} code={sc.code}
         meta={<><span className="chip">Quý 3/2026</span><span className="chip warn">Hạn nộp 30/10/2026</span>{gui && <span className="chip ok">Đã nộp, chờ cơ quan thuế phản hồi</span>}</>}>
         <button className="btn"><Icon n="download" className="ic sm" />Xuất XML</button>
-        <button className="btn"><Icon n="printer" className="ic sm" />In</button>
+        <button className="btn" onClick={() => window.dispatchEvent(new CustomEvent('bc-in'))}><Icon n="printer" className="ic sm" />In</button>
         <button className="btn pri" onClick={() => { setGui(true); toast('Đã nộp tờ khai qua kết nối cơ quan thuế') }}><Icon n="upload" className="ic sm" />Nộp tờ khai</button>
       </PageHead>
       <Note kind="warn" icon="alert">Số liệu giả để xem bố cục. Mẫu tờ khai và cách kê hàng giảm thuế cần kế toán trưởng duyệt trước khi dùng thật.</Note>

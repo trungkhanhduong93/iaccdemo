@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T56 | Hộp in chứng từ 2 cột (chọn mẫu trái, xem trước phải); sửa dính tiêu đề, hàng lọc bảng danh sách chứng từ khi cuộn; nút In Tờ khai GTGT chạy được. Làm lại bản Anti chưa commit, bỏ phần thanh trên báo cáo trùng T55 | Trum | Đang làm | Sửa `InChungTu.tsx`, `app.css`, `ToKhaiGTGT.tsx` |
 | T27 | Danh sách chứng từ 2.1.1: khung chi tiết bên dưới hiện dòng phiếu khác với form của cùng phiếu (UNC2610-0259: khung ghi "Chi mua rau, củ tại chợ", form ghi "Trả tiền nhà cung cấp thịt bò") | | Chờ | Thấy khi làm T26 |
 | T02 | Chốt nghiệp vụ trên từng sơ đồ Quy trình: ô nào, nối thế nào, câu chữ. Sửa ở `src/modules/<phân hệ>/quy-trinh.ts` | Trum | Chờ | |
 | T03 | Nối sổ quỹ, sổ tài khoản 2.2.2, sổ ngân hàng 2.2.3, sổ công nợ 2.2.5 vào `so-cai.ts` để mọi sổ khớp báo cáo tài chính | | Chờ | Sổ quỹ đang tính riêng từ tiền mặt FABi từng chi nhánh. Tổng 3 quỹ chưa bằng dư TK 1111 trên cân đối kế toán |
@@ -35,6 +34,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T56 | Hộp in chứng từ 2 cột (chọn mẫu trái, xem trước phải); dính tiêu đề, hàng lọc bảng danh sách chứng từ khi cuộn; nút In Tờ khai GTGT chạy được. Bỏ phần thanh trên báo cáo của bản Anti vì trùng T55 | Trum | 09/10/2026 | `2026-10-09-trum-hop-in-hai-cot.md` |
 | T55 | Màn xem báo cáo gọn: ô chọn báo cáo kiêm tiêu đề, thanh công cụ cùng hàng, ẩn thanh tab khi xem một báo cáo, bỏ khoảng trống đáy; xem một tờ liền, bỏ ngắt trang, Liên tục/Từng trang, nút In dưới; in vẫn chia trang (QD36) | PhuongXT | 09/10/2026 | `2026-10-09-phuongxt-so-thu-chi-bao-cao-gon.md` |
 | T54 | Thu chi: gói Free ẩn Sổ chi tiết tiền, Sổ công nợ; Sổ quỹ, Sổ ngân hàng lọc Quỹ tiền (số tồn tính lại); Sổ công nợ lọc Đối tượng; Sổ ngân hàng cột Quỹ tiền, xem tất cả quỹ mặc định khổ ngang (QD36) | PhuongXT | 09/10/2026 | `2026-10-09-phuongxt-so-thu-chi-bao-cao-gon.md` |
 | T53 | Thanh bên trái: đường kẻ giữa Danh mục và Hệ thống (QD35) | PhuongXT | 09/10/2026 | `2026-10-09-phuongxt-so-thu-chi-bao-cao-gon.md` |
