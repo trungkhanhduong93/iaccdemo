@@ -5,6 +5,7 @@ import { quyTrinh } from './quy-trinh'
 import { ToKhaiGTGT } from './ToKhaiGTGT'
 import { DAILY, cnTen } from '../../data/mock'
 import { dmy, pad } from '../../ui/format'
+import { SO_BO_SUNG } from '../bao-cao/so-bo-sung'
 
 const bangKeBanRa = {
   cols: [{ k: 'stt', t: 'STT', c: true, w: 50 }, { k: 'so', t: 'Số hoá đơn', cls: 'code' }, { k: 'ngay', t: 'Ngày' }, { k: 'mua', t: 'Người mua' },
@@ -31,6 +32,8 @@ const thue: ModuleDef = {
     '6.2.1': { report: { kieu: 'bangke' } },
     '6.2.2': { report: { kieu: 'bangke', ...bangKeBanRa } },
     '6.2.3': { kind: 'custom', comp: ToKhaiGTGT, tab: true },
+    '6.2.4': { report: SO_BO_SUNG['6.2.4'] },
+    '6.2.5': { report: SO_BO_SUNG['6.2.5'] },
   }, NGAN),
 }
 export default thue

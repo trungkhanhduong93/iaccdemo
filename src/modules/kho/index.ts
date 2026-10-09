@@ -4,6 +4,7 @@ import { tuExcel } from '../types'
 import { quyTrinh } from './quy-trinh'
 import { XuatNhapTon } from './XuatNhapTon'
 import { congThuc, dinhMucTon, nhapXuat, theKho, tonBanDau, tonTucThoi, soChe } from './data'
+import { SO_BO_SUNG } from '../bao-cao/so-bo-sung'
 
 const phieu = (prefix: string, them: string, dienGiai: string[], noCo: VoucherCfg['noCo'], doiTuong: VoucherCfg['doiTuong'] = 'none', nhan?: string): Partial<ScreenDef> =>
   ({ voucher: { prefix, them, dienGiai, noCo, doiTuong, nhan, dong: 'nvl', tien: [0, 0], thue: 0, nguon: 'IVT', soTT58: 'Sổ chi tiết vật liệu, dụng cụ, hàng hoá' } })
@@ -41,6 +42,7 @@ const kho: ModuleDef = {
     '5.2.5': { report: { kieu: 'dinhmuc' } },
     '5.2.6': { report: { kieu: 'dinhmuc' } },
     '5.2.7': { report: { kieu: 'dinhmuc' } },
+    '5.2.8': { report: SO_BO_SUNG['5.2.8'] },
   }, NGAN),
 }
 export default kho

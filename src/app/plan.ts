@@ -38,11 +38,60 @@ export function doiGoiTuExcel(gStr: string): Goi[] {
 const THEO_ROADMAP: Record<string, Goi[]> = {
   '1.12': ['F', 'S', 'PL', 'PR'],    // Danh mục quỹ tiền mở cho gói Free, theo Roadmap 08/10/2026
   '2.2.3': ['F', 'S', 'PL', 'PR'],   // Sổ ngân hàng mở cho gói Free, PhuongXT chốt 08/10/2026
+  '7.2.1': ['PL', 'PR'],             // Mở báo cáo TSCĐ cho Plus, Trum chốt 09/10/2026 (T47 câu 11)
+  '7.2.2': ['PL', 'PR'],             // Mở báo cáo TSCĐ cho Plus, Trum chốt 09/10/2026 (T47 câu 11)
 }
-export const FEATURES: Feature[] = data.feats.map(f => {
-  const g = THEO_ROADMAP[f.c] ?? doiGoiTuExcel(f.g)
-  return { ...f, g }
-})
+
+/** Màn bổ sung theo thông tư chưa có trong Excel (T47, kế hoạch mục 7.3). Trum cập nhật Excel và chạy lại tools/xuat_tinh_nang.py có đủ mã thì xoá dòng tương ứng ở đây */
+const BO_SUNG: (Omit<Feature, 'g'> & { g: Goi[] })[] = [
+  { c: '2.2.6', m: 1, n: 'Sổ chi tiết tiền vay', grp: 'Sổ sách, báo cáo', g: ['PL', 'PR'], gd: 2, ivt: 0 },
+  { c: '2.2.7', m: 1, n: 'Sổ chi tiết tiền', grp: 'Sổ sách, báo cáo', g: ['F', 'S'], gd: 2, ivt: 0 },
+  { c: '3.2.5', m: 2, n: 'Sổ doanh thu bán hàng', grp: 'Sổ sách, báo cáo', g: ['F', 'S', 'PL', 'PR'], gd: 2, ivt: 0 },
+  { c: '5.2.8', m: 4, n: 'Sổ chi tiết vật liệu, dụng cụ, hàng hoá', grp: 'Sổ sách, báo cáo', g: ['F', 'S', 'PL', 'PR'], gd: 2, ivt: 0 },
+  { c: '6.2.4', m: 5, n: 'Sổ theo dõi nghĩa vụ thuế GTGT', grp: 'Báo cáo', g: ['S', 'PL', 'PR'], gd: 2, ivt: 0 },
+  { c: '6.2.5', m: 5, n: 'Sổ theo dõi nghĩa vụ thuế khác', grp: 'Báo cáo', g: ['F', 'S'], gd: 2, ivt: 0 },
+  { c: '7.2.3', m: 6, n: 'Thẻ tài sản cố định', grp: 'Sổ sách, báo cáo', g: ['PL', 'PR'], gd: 2, ivt: 0 },
+  { c: '7.2.4', m: 6, n: 'Sổ theo dõi TSCĐ, CCDC tại nơi sử dụng', grp: 'Sổ sách, báo cáo', g: ['PL', 'PR'], gd: 2, ivt: 0 },
+  { c: '10.4.1', m: 9, n: 'Sổ chi tiết doanh thu, chi phí', grp: 'Sổ sách, báo cáo', g: ['F', 'S'], gd: 2, ivt: 0 },
+  { c: '10.4.2', m: 9, n: 'Sổ theo dõi vốn chủ sở hữu', grp: 'Sổ sách, báo cáo', g: ['S', 'PL', 'PR'], gd: 2, ivt: 0 },
+]
+
+const CHEN_SAU: Record<string, string[]> = {
+  '2.2.5': ['2.2.6', '2.2.7'],
+  '3.2.4': ['3.2.5'],
+  '5.2.7': ['5.2.8'],
+  '6.2.3': ['6.2.4', '6.2.5'],
+  '7.2.2': ['7.2.3', '7.2.4'],
+  '10.3.1': ['10.4.1', '10.4.2'],
+}
+
+function gopFeatures(): Feature[] {
+  const boSungChuaCo = BO_SUNG.filter(b => !data.feats.some(f => f.c === b.c))
+  const chenMap = new Map<string, Feature[]>()
+  for (const [sauMa, dsMa] of Object.entries(CHEN_SAU)) {
+    const items = boSungChuaCo.filter(b => dsMa.includes(b.c))
+    if (items.length > 0) chenMap.set(sauMa, items)
+  }
+  const ds: Feature[] = []
+  const daChen = new Set<string>()
+  for (const f of data.feats) {
+    const g = THEO_ROADMAP[f.c] ?? doiGoiTuExcel(f.g)
+    ds.push({ ...f, g })
+    const them = chenMap.get(f.c)
+    if (them) {
+      for (const b of them) {
+        ds.push(b)
+        daChen.add(b.c)
+      }
+    }
+  }
+  for (const b of boSungChuaCo) {
+    if (!daChen.has(b.c)) ds.push(b)
+  }
+  return ds
+}
+
+export const FEATURES: Feature[] = gopFeatures()
 export const FEATURE: Record<string, Feature> = Object.fromEntries(FEATURES.map(f => [f.c, f]))
 
 import { CHE_DO, CHE_DO_MAC_DINH, type CheDo } from './che-do'

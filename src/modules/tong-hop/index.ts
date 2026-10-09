@@ -5,6 +5,7 @@ import { quyTrinh } from './quy-trinh'
 import { BaoCaoQuanTri, CanDoiKeToan, CanDoiPhatSinh, KetQuaKinhDoanh, LuuChuyenTien } from './BaoCaoTaiChinh'
 import { KhoaSo, KiemTraCuoiKy } from './CuoiKy'
 import { SoDuBanDau } from './SoDuBanDau'
+import { SO_BO_SUNG } from '../bao-cao/so-bo-sung'
 
 /** Nhãn ngắn trên thanh tab */
 const NGAN: Record<string, string> = { '10.1.1': 'Chứng từ tổng hợp', '10.1.2': 'Doanh thu trả trước', '10.1.3': 'Số dư ban đầu', '10.1.4': 'Kiểm tra cuối kỳ', '10.1.5': 'Kết chuyển', '10.1.6': 'Khoá sổ', '10.1.7': 'Kế hoạch tài chính', '10.1.8': 'Kế hoạch sản xuất', '10.1.9': 'Kết chuyển số dư' }
@@ -35,6 +36,8 @@ const tongHop: ModuleDef = {
         ['IV', 'Các chính sách kế toán áp dụng', 'Đã soạn'], ['V', 'Thông tin bổ sung cho bảng cân đối kế toán', 'Lấy số từ sổ'], ['VI', 'Thông tin bổ sung cho báo cáo kết quả kinh doanh', 'Lấy số từ sổ'],
         ['VII', 'Thông tin bổ sung cho báo cáo lưu chuyển tiền tệ', 'Lấy số từ sổ'], ['VIII', 'Những thông tin khác', 'Chưa soạn']].map(([muc, nd, tt]) => ({ muc, nd, tt })) } },
     '10.3.1': { kind: 'custom', comp: BaoCaoQuanTri },
+    '10.4.1': { report: SO_BO_SUNG['10.4.1'] },
+    '10.4.2': { report: SO_BO_SUNG['10.4.2'] },
   }, NGAN),
 }
 export default tongHop

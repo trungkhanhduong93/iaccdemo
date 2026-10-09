@@ -5,6 +5,7 @@ import { quyTrinh } from './quy-trinh'
 import { ChungTuBanHang } from './ChungTuBanHang'
 import { DoiSoat } from '../tien-ich/DoiSoat'
 import { baoCaoBanHang, baoCaoDoanhThu } from './data'
+import { SO_BO_SUNG } from '../bao-cao/so-bo-sung'
 
 /** Nhãn ngắn trên thanh tab */
 const NGAN: Record<string, string> = { '3.1.2': 'Hoá đơn bán hàng', '3.1.3': 'Bán nội bộ', '3.1.4': 'Hàng bán trả lại', '3.1.5': 'Hoá đơn điện tử', '3.1.6': 'Điều chỉnh, thay thế' }
@@ -29,6 +30,7 @@ const banHang: ModuleDef = {
     '3.2.2': { kind: 'custom', comp: DoiSoat },
     '3.2.3': { report: { kieu: 'bangke', ...baoCaoDoanhThu } },
     '3.2.4': { report: { kieu: 'bangke' } },
+    '3.2.5': { report: SO_BO_SUNG['3.2.5'] },
   }, NGAN),
 }
 export default banHang

@@ -4,6 +4,7 @@ import { tuExcel } from '../types'
 import { quyTrinh } from './quy-trinh'
 import { SoQuy } from './SoQuy'
 import { nhatKyChung } from './data'
+import { SO_BO_SUNG } from '../bao-cao/so-bo-sung'
 
 /** Nhãn ngắn trên thanh tab */
 const NGAN: Record<string, string> = { '2.1.1': 'Thu, chi tiền', '2.1.2': 'Đối chiếu công nợ', '2.1.3': 'Phân bổ chi phí chuỗi' }
@@ -39,6 +40,8 @@ const tien: ModuleDef = {
     '2.2.3': { report: { kieu: 'so' } },
     '2.2.4': { report: { kieu: 'bangke', ...nhatKyChung } },
     '2.2.5': { report: { kieu: 'tonghop', doiTuong: 'kh' } },
+    '2.2.6': { report: SO_BO_SUNG['2.2.6'] },
+    '2.2.7': { report: SO_BO_SUNG['2.2.7'] },
   }, NGAN),
 }
 export default tien

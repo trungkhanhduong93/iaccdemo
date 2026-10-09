@@ -1,7 +1,7 @@
 // Thứ tự phân hệ trên sidebar. Thêm phân hệ mới: tạo thư mục trong src/modules rồi thêm vào đây.
 // Phân hệ có quyTrinh được thêm tab Quy trình đứng đầu; có màn báo cáo thì thêm tab Báo cáo đứng cuối.
 import type { ModuleDef, ScreenDef } from '../modules/types'
-import { FEATURE, anNgoaiGoi, coTrongGoi, coMotTrong, type Goi } from './plan'
+import { FEATURE, GOIS, anNgoaiGoi, coTrongGoi, coMotTrong, minGoi, type Goi } from './plan'
 import home from '../modules/home'
 import danhMuc from '../modules/danh-muc'
 import tien from '../modules/tien'
@@ -91,7 +91,12 @@ export function moDuoc(sc: ScreenDef, goi: Goi) {
 /** Mã quyết định khoá của màn (để tìm gói thấp nhất) */
 export const maKhoa = (sc: ScreenDef) => sc.code ?? sc.can?.[0]
 /** Màn có hiện trên menu, tab, sơ đồ không: gói Free ẩn màn ngoài gói (QD22) */
-export const hienMan = (sc: ScreenDef, goi: Goi) => !anNgoaiGoi(goi) || moDuoc(sc, goi)
+/** Màn chỉ gói thấp hơn mới có (sổ riêng của TT152, TT58): gói đang dùng không áp dụng, ẩn thay vì mời nâng cấp (T47) */
+const khongApDung = (sc: ScreenDef, goi: Goi) => {
+  const ma = maKhoa(sc)
+  return !!ma && GOIS.indexOf(minGoi(ma)) < GOIS.indexOf(goi)
+}
+export const hienMan = (sc: ScreenDef, goi: Goi) => moDuoc(sc, goi) || (!anNgoaiGoi(goi) && !khongApDung(sc, goi))
 
 export const duongDan = (m: ModuleDef, sc: ScreenDef) => `/app/${m.key}/${sc.slug}`
 
