@@ -32,8 +32,8 @@ export function Shell() {
 
   return (
     <div className={`shell${s.thuGon ? ' gon' : ''}`}>
-      <Sidebar mod={mod} />
-      <Topbar onSearch={() => setPalette(true)} />
+      <Sidebar mod={mod} onSearch={() => setPalette(true)} />
+      <Topbar />
       <ModuleTabs mod={mod} />
       <main className="main"><Outlet /></main>
       {palette && <CommandPalette onClose={() => setPalette(false)} />}
@@ -41,7 +41,7 @@ export function Shell() {
   )
 }
 
-function Sidebar({ mod }: { mod: ModuleDef }) {
+function Sidebar({ mod, onSearch }: { mod: ModuleDef; onSearch: () => void }) {
   const { s, set } = useSession()
   const loc = useLocation()
   const sbRef = useRef<HTMLElement>(null)
@@ -93,6 +93,14 @@ function Sidebar({ mod }: { mod: ModuleDef }) {
         </span>
         <DauLogo size={32} />
       </Link>
+      {/* Tìm màn hình, chứng từ, báo cáo nằm đầu thanh bên, trên Trang chủ */}
+      <div className="sb-tim">
+        <button type="button" className="sb-tim-btn" onClick={onSearch} title="Tìm màn hình, chứng từ, báo cáo (Ctrl K)" aria-label="Tìm kiếm">
+          <Icon n="search" className="ic sm" />
+          <span>Tìm kiếm…</span>
+          <span className="kbd">Ctrl K</span>
+        </button>
+      </div>
       <div className="sb-nav">
         {MODULES.filter(m => hienPhanHe(m, s.goi)).map(m => {
           const khoa = phanHeKhoa(m, s.goi)
