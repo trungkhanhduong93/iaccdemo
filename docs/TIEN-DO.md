@@ -4,17 +4,16 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T69.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T76.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T58 | Màn Tất cả báo cáo dạng danh sách gọn theo nhóm: một dòng mỗi báo cáo, hai cột, biểu tượng theo loại, Ghim và Mở gần đây; ẩn thanh tab chỉ có một tab | Trum | Đang làm | Sửa `BaoCaoScreen.tsx`, `app.css`, có thể `Shell.tsx`. Làm sau T57 |
-| T67 | Bảng danh sách: hàng tiêu đề và hàng lọc dính cứng một khối khi cuộn (thead dính), hết nhảy 1px và lộ chữ ở trang thu zoom | Trum | Chờ | Sửa `Table.tsx`, `app.css`. Làm sau T58, trước T66 |
-| T66 | Màn xem báo cáo: cột lọc bên trái luôn hiện, thu gọn được; mọi báo cáo tự có bộ lọc theo cột (chữ chọn nhiều, số từ đến), giữ Tờ in và Bảng dữ liệu | Trum | Chờ | Sửa `ReportScreen.tsx`, `tuyChinhBC.ts`, `app.css`. Làm sau T58 |
-| T59 | Màn Thiết kế mẫu in 11.11: thanh tab bên phải một hàng, ô tìm mẫu bên trái, xem trước vừa khung | Trum | Chờ | Sửa `ThietKeMauIn.tsx`, `app.css`. Làm sau T58 |
+| T73 | Tối ưu phản hồi thao tác: bấm, rê chuột, mở menu, panel, cuộn bảng phản hồi tức thì; hiệu ứng nhẹ, ngắn; đo trước và sau | Trum | Chờ | Sửa nhiều file trong `src/`. Làm cuối cùng |
+| T76 | Danh mục Hệ thống tài khoản 1.1 dạng cây theo chế độ TT133, TT99; panel Thêm/Sửa tài khoản đủ trường DM_ACCOUNT (QD41) | Trum | Chờ | Dữ liệu `danh-muc/he-thong-tk.ts` (TT99 dựng theo khung TT200, chờ đối chiếu T04). Sửa `HeThongTaiKhoan.tsx` mới, `danh-muc/index.ts`, `app.css`. Làm tiếp theo |
+| T70 | Panel Thêm/Sửa mọi danh mục và panel Tuỳ chỉnh báo cáo cùng kiểu panel T76 | Trum | Chờ | Sửa `CatalogScreen.tsx`, `TuyChinhBC.tsx`, `app.css`. Làm sau T76 |
 | T60 | Mô tả gói Free, Standard trong `GOI` (`src/app/plan.ts`) đang ghi "1 điểm bán"; theo Roadmap gói Free là mỗi chi nhánh một kho, không giới hạn một chi nhánh. Chốt câu chữ rồi sửa | PhuongXT | Chờ | Tách từ T25 |
 | T27 | Danh sách chứng từ 2.1.1: khung chi tiết bên dưới hiện dòng phiếu khác với form của cùng phiếu (UNC2610-0259: khung ghi "Chi mua rau, củ tại chợ", form ghi "Trả tiền nhà cung cấp thịt bò") | | Chờ | Thấy khi làm T26 |
 | T02 | Chốt nghiệp vụ trên từng sơ đồ Quy trình: ô nào, nối thế nào, câu chữ. Sửa ở `src/modules/<phân hệ>/quy-trinh.ts` | Trum | Chờ | |
@@ -40,6 +39,14 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 |---|---|---|---|---|
 | T69 | Ô Ghi chú ở mọi phiếu (phiếu khác thu chi: để trống, độc lập với diễn giải); lưu phiếu giữ đủ các ô đầu phiếu (người giao, địa chỉ, MST, hoá đơn, thanh toán) (QD33) | PhuongXT | 09/10/2026 | `2026-10-09-phuongxt-hoa-don-cot-phai-ghi-chu.md` |
 | T68 | Form Mua hàng: thông tin hoá đơn ở cột phải đầu phiếu (2 cột, dưới số phiếu); Số lô, Hạn dùng chỉ có ở gói Pro (QD33) | PhuongXT | 09/10/2026 | `2026-10-09-phuongxt-hoa-don-cot-phai-ghi-chu.md` |
+| T74 | Bảng danh sách theo iPOS Inventory: cột cố định đo bề rộng thật, đứng yên khi cuộn ngang, mỗi ô tự vẽ đường kẻ; kiểu tiêu đề, hàng lọc, dòng, dòng tổng như ivtstag; bấm mã phiếu mở chứng từ (bỏ đúp chuột); cột thời gian dd/MM/yyyy HH:mm | Trum | 09/10/2026 | `2026-10-09-trum-bao-cao-dot-2.md` |
+| T72 | Màn xem báo cáo: nút Xem báo cáo (đổi kỳ, bộ lọc chỉ áp khi bấm); chia độ rộng cột, cỡ chữ theo A4 dọc, ngang cho tờ, bản in, file Excel | Trum | 09/10/2026 | `2026-10-09-trum-bao-cao-dot-2.md` |
+| T71 | Tờ báo cáo theo kiểu Ledger Studio: đầu tờ, tiêu đề chữ hoa đậm, dòng kỳ màu nhấn, bảng tiêu đề nền nhạt, dòng cộng nền, ô ký và số trang | Trum | 09/10/2026 | `2026-10-09-trum-bao-cao-dot-2.md` |
+| T75 | Màn xem báo cáo: nút Tờ in / Bảng dữ liệu và Khổ lên thanh công cụ cạnh Tuỳ chỉnh; bộ lọc tự sinh chỉ cho cột lấy từ danh mục; tờ giấy có bóng đẹp ở Tờ in, hộp in, Thiết kế mẫu in (QD40) | Trum | 09/10/2026 | `2026-10-09-trum-bao-cao-dot-2.md` |
+| T59 | Màn Thiết kế mẫu in 11.11: thanh tab bên phải một hàng, ô tìm mẫu bên trái, xem trước vừa khung | Trum | 09/10/2026 | `2026-10-09-trum-bao-cao-dot-2.md` |
+| T66 | Màn xem báo cáo: cột lọc bên trái luôn hiện, thu gọn được; mọi báo cáo tự có bộ lọc theo cột (chữ chọn nhiều, số từ đến), giữ Tờ in và Bảng dữ liệu | Trum | 09/10/2026 | `2026-10-09-trum-bao-cao-dot-2.md` |
+| T67 | Bảng danh sách: hàng tiêu đề và hàng lọc dính cứng một khối khi cuộn (thead dính), hết nhảy 1px và lộ chữ ở trang thu zoom | Trum | 09/10/2026 | `2026-10-09-trum-bao-cao-dot-2.md` |
+| T58 | Màn Tất cả báo cáo dạng danh sách gọn theo nhóm: một dòng mỗi báo cáo, hai cột, biểu tượng theo loại, Ghim và Mở gần đây; ẩn thanh tab chỉ có một tab | Trum | 09/10/2026 | `2026-10-09-trum-bao-cao-dot-2.md` |
 | T65 | Form chứng từ mọi phân hệ: ô lấy từ danh mục (đối tượng, nhân viên, lý do, quỹ, tài khoản ngân hàng, hàng hoá, kho, khoản mục, công việc) xổ danh sách có ô tìm, chưa có thì thêm mới ngay tại form (QD39) | PhuongXT | 09/10/2026 | `2026-10-09-phuongxt-mua-hang-form-danh-muc.md` |
 | T64 | Mua hàng: nguồn chứng từ chỉ Thủ công hoặc Excel, bỏ Tải từ iPOS Inventory ở nút Thêm mới và ô trên sơ đồ (QD39) | PhuongXT | 09/10/2026 | `2026-10-09-phuongxt-mua-hang-form-danh-muc.md` |
 | T63 | Mua hàng: báo cáo Tổng hợp mua hàng, Chi tiết mua hàng (dùng lại 4.2.2, 4.2.1), thêm Tổng hợp nhập 4.2.4, Chi tiết nhập 4.2.5, mở cho mọi gói, theo chi nhánh; sơ đồ Mua hàng kiểu hội tụ; Sổ ngân hàng gói Free ghi Thu, Chi, Tồn (QD38) | PhuongXT | 09/10/2026 | `2026-10-09-phuongxt-mua-hang-form-danh-muc.md` |

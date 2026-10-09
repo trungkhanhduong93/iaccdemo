@@ -410,4 +410,15 @@ Lý do: PhuongXT chốt ngày 09/10/2026 (T63).
 
 Lý do: PhuongXT chốt ngày 09/10/2026 (T64, T65).
 
-## QD40. Bộ lọc tự sinh và cột lọc bên trái màn xem báo cáo (đang soạn)
+## QD40. Bộ lọc tự sinh và cột lọc bên trái màn xem báo cáo (09/10/2026)
+
+- Màn xem báo cáo có cột Bộ lọc bên trái, luôn hiện, thu gọn được (nhớ trên máy, khoá `bc-loc-thu`). Báo cáo không có bộ lọc nào ngoài kỳ thì không có cột này. Nút phễu trên thanh công cụ bỏ, không có hai nơi lọc.
+- Mọi báo cáo tự có bộ lọc theo cột đang hiện: cột chữ thành ô chọn nhiều giá trị (có ô tìm khi trên 8 giá trị), cột số thành ô Từ – Đến. Không tạo cho cột ngày (kỳ chọn ở thanh trên), cột STT, cột chỉ có một giá trị. Bộ lọc khai tay ở `cfg.loc` (`bao-cao/danh-sach.ts`) đứng trước.
+- Không tự sinh bộ lọc cho báo cáo tài chính 10.2.2, 10.2.3, 10.2.4, 10.3.1 và tờ khai thuế, vì lọc dòng làm sai ý nghĩa số tổng. Bảng cân đối số phát sinh 10.2.1 có bộ lọc.
+- Lọc xong thì dòng tổng tính lại. Bộ lọc áp cho cả Tờ in và Bảng dữ liệu (QD37).
+- Màn Tất cả báo cáo là danh sách gọn theo nhóm, một dòng mỗi báo cáo, hai cột. Trên cùng có Ghim và Mở gần đây (khoá `bc-ghim`, `bc-gan-day`). Biểu tượng theo loại: sổ, bảng kê, tờ khai, báo cáo.
+- Bảng danh sách (`ui/Table.tsx`) dính cả khối tiêu đề (`thead` sticky), hàng tiêu đề trên kẻ đường dưới bằng bóng thay viền, không đo chiều cao hàng tiêu đề nữa (T67).
+
+Lý do: Trum chốt ngày 09/10/2026 (T58, T66, T67, T75), chọn hướng cột lọc bên trái và danh sách gọn trong bản phác.
+
+## QD41. Hệ thống tài khoản theo chế độ, panel danh mục (đang soạn)

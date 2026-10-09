@@ -4,6 +4,14 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 09/10/2026
 
+- T74: Bảng danh sách chứng từ theo kiểu iPOS Inventory: cột cố định trái, phải đứng yên khi kéo ngang, đường kẻ liền nét; dòng cao 42px, kẻ dọc mảnh. Bấm số chứng từ (chữ xanh) để mở phiếu, không còn mở bằng đúp chuột. Cột ngày hiện cả giờ.
+- T72: Màn xem báo cáo có nút Xem báo cáo: đổi kỳ, bộ lọc xong bấm Xem mới cập nhật số. Độ rộng cột và cỡ chữ chia theo khổ A4 dọc, ngang, giống nhau trên màn hình, bản in và file Excel.
+- T71: Tờ báo cáo theo kiểu Ledger Studio: tên đơn vị, mẫu số, tiêu đề chữ hoa đậm, kỳ báo cáo màu nhấn, tiêu đề cột chữ hoa nền nhạt, dòng cộng có nền, ô ký và số trang.
+- T75: Nút Tờ in / Bảng và Khổ Dọc / Ngang lên thanh công cụ báo cáo, cạnh Tuỳ chỉnh. Bộ lọc báo cáo chỉ còn các cột lấy từ danh mục (tài khoản, chi nhánh, quỹ, đối tượng, hàng hoá…). Tờ giấy có bóng rõ.
+- T59: Thiết kế mẫu in: thanh tab bên phải một hàng, ô tìm mẫu in bên trái, xem trước vừa khung.
+- T66: Màn xem báo cáo có cột Bộ lọc bên trái, thu gọn được. Mọi báo cáo lọc được theo các cột đang hiện: cột chữ chọn nhiều giá trị, cột số lọc từ – đến; dòng tổng tính lại theo bộ lọc. Báo cáo tài chính và tờ khai giữ nguyên.
+- T67: Bảng danh sách chứng từ giữ hàng tiêu đề và hàng lọc liền một khối khi cuộn, không còn nhảy hay hở khe ở máy đặt tỉ lệ màn hình 125%, 150%.
+- T58: Màn Tất cả báo cáo thành danh sách gọn hai cột theo nhóm, mỗi báo cáo một dòng có mã và mẫu số. Biểu tượng theo loại sổ, bảng kê, báo cáo. Có mục Ghim và Mở gần đây. Bỏ thanh tab chỉ có một tab.
 - T69: Mọi phiếu có ô Ghi chú. Phiếu đã lưu mở lại giữ đủ người giao, địa chỉ, mã số thuế, hạn và hình thức thanh toán, thông tin hoá đơn.
 - T68: Phiếu mua hàng tích Nhận kèm hoá đơn thì thông tin hoá đơn ở cột phải, dưới số phiếu. Cột Số lô, Hạn dùng chỉ có ở gói Pro.
 - T57: Màn xem báo cáo gọn hơn: tên báo cáo không còn lặp hai lần, khung báo cáo kéo tới đáy màn hình. Nút Tuỳ chỉnh, Xuất, In có chữ. Thanh dưới có nút Tờ in / Bảng dữ liệu để xem số liệu dạng lưới, cuộn nhanh khi nhiều dòng.
