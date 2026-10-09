@@ -2,6 +2,14 @@
 
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
+## 10/10/2026
+
+- T81: Panel bên phải mở mượt hơn (panel danh mục từ 331ms còn khoảng 60ms). Khối thẻ trắng trên nền nhạt, ô nhập cao 36px, công tắc thay ô tích. Tuỳ chỉnh báo cáo hai cột, mục dọc bên trái. Tuỳ chỉnh giao diện phiếu thành panel bên phải. Ô chọn có ô tìm khi trên 8 lựa chọn.
+- T79: Đồng bộ bán hàng từ POS và Tải hoá đơn đầu vào từ iPOS Invoice mở hộp chọn khoảng ngày, kho hoặc đơn vị (có tìm), món bán, đồng bộ lại.
+- T76: Danh mục Hệ thống tài khoản dạng cây theo TT133, TT99; panel tài khoản đủ trường.
+- T70: Mọi panel bên phải rộng hơn, lưới 3 cột, đủ trường theo từng danh mục.
+- Sidebar rộng hơn cho vừa logo gói Standard, nút Tìm kiếm (Ctrl K) nằm đầu sidebar. Bảng danh sách hiện màu khi rê chuột ở mọi cột, dòng tổng có viền dưới. Thanh công cụ báo cáo đứng yên khi đổi báo cáo, nút Tờ in / Khổ có pill trượt.
+
 ## 09/10/2026
 
 - T78: Đầu mọi phiếu không còn ô Diễn giải, Ghi chú thay chỗ và tự ghi vào diễn giải, nằm cùng hàng Địa chỉ. Phiếu mua, bán chọn Tiền mặt ngay thì chọn quỹ tiền mặt, Chuyển khoản ngay thì chọn quỹ ngân hàng. Phiếu thu, chi ngân hàng ghi Quỹ ngân hàng.
