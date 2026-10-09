@@ -1,5 +1,5 @@
 // Trung tâm báo cáo: gom toàn bộ sổ sách, báo cáo của mọi phân hệ chia theo nhóm
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { ModuleDef, ScreenDef, ScreenProps } from '../types'
 import { MODULES, hienMan, maKhoa, moDuoc, tenMan } from '../../app/registry'
@@ -11,9 +11,52 @@ import { fold } from '../../ui/format'
 import { ThanhLoc } from '../../ui/ThanhLoc'
 import { cauHinhBC } from './danh-sach'
 
+function docGhim(): string[] {
+  try {
+    const raw = localStorage.getItem('bc-ghim')
+    if (!raw) return []
+    const arr = JSON.parse(raw)
+    return Array.isArray(arr) ? arr.filter((x): x is string => typeof x === 'string') : []
+  } catch {
+    return []
+  }
+}
+
+function luuGhim(slugs: string[]) {
+  try {
+    localStorage.setItem('bc-ghim', JSON.stringify(slugs))
+  } catch {}
+}
+
+function docGanDay(): string[] {
+  try {
+    const raw = localStorage.getItem('bc-gan-day')
+    if (!raw) return []
+    const arr = JSON.parse(raw)
+    return Array.isArray(arr) ? arr.filter((x): x is string => typeof x === 'string') : []
+  } catch {
+    return []
+  }
+}
+
+function loaiVaIconBC(sc: ScreenDef, ten: string): { loai: 'so' | 'bangke' | 'tokhai' | 'chart'; icon: string } {
+  const kieu = sc.report?.kieu
+  if (kieu === 'so' || /^(Sổ|Thẻ)/i.test(ten)) {
+    return { loai: 'so', icon: 'receipt' }
+  }
+  if (kieu === 'bangke' || /^Bảng kê/i.test(ten)) {
+    return { loai: 'bangke', icon: 'doc' }
+  }
+  if (/^Tờ khai/i.test(ten) || cauHinhBC(sc.code)?.loai === 'tokhai') {
+    return { loai: 'tokhai', icon: 'percent' }
+  }
+  return { loai: 'chart', icon: 'chart' }
+}
+
 export function TrungTamBaoCao({ sc }: ScreenProps) {
   const { s } = useSession()
   const [q, setQ] = useState('')
+  const [ghim, setGhim] = useState<string[]>(() => docGhim())
 
   const phanHeBC = MODULES.find(m => m.key === 'bao-cao')
   const tatCaBC = phanHeBC?.screens.filter(x => x.goc) ?? []
@@ -64,6 +107,44 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
     }))
     .filter(g => g.screens.length > 0)
 
+  // Danh sách ghim và mở gần đây (chỉ hiện khi ở tab Tất cả, không tìm kiếm, có báo cáo mở được)
+  const tatCaBCMap = useMemo(() => new Map(tatCaBC.map(x => [x.slug, x])), [tatCaBC])
+
+  const topItems = useMemo(() => {
+    const pinned: { sc: ScreenDef; isGhim: boolean }[] = []
+    for (const slug of ghim) {
+      const item = tatCaBCMap.get(slug)
+      if (item && hienMan(item, s.goi) && moDuoc(item, s.goi)) {
+        pinned.push({ sc: item, isGhim: true })
+      }
+    }
+
+    const recent: { sc: ScreenDef; isGhim: boolean }[] = []
+    const ganDay = docGanDay()
+    for (const slug of ganDay) {
+      if (ghim.includes(slug)) continue
+      const item = tatCaBCMap.get(slug)
+      if (item && hienMan(item, s.goi) && moDuoc(item, s.goi)) {
+        recent.push({ sc: item, isGhim: false })
+        if (recent.length >= 4) break
+      }
+    }
+
+    return [...pinned, ...recent]
+  }, [ghim, tatCaBCMap, s.goi])
+
+  const hienGhimGanDay = sc.slug === 'tat-ca' && !q.trim() && topItems.length > 0
+
+  const toggleGhim = (slug: string, e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setGhim(prev => {
+      const next = prev.includes(slug) ? prev.filter(x => x !== slug) : [...prev, slug]
+      luuGhim(next)
+      return next
+    })
+  }
+
   return (
     <div className="page">
       <PageHead title={title} meta={meta}>
@@ -89,6 +170,24 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
           ))}
         </nav>
         <div className="bc-ds">
+          {hienGhimGanDay && (
+            <div className="bc-quick">
+              <div className="bc-quick-head">Ghim và mở gần đây</div>
+              <div className="bc-quick-row">
+                {topItems.map(item => (
+                  <Link
+                    key={item.sc.slug}
+                    to={`/app/bao-cao/${item.sc.slug}`}
+                    className="bc-quick-chip"
+                    title={tenMan(item.sc)}
+                  >
+                    {item.isGhim && <span className="bc-quick-star">★</span>}
+                    <span className="bc-quick-text">{tenMan(item.sc)}</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
           {nhomKetQua.length === 0 ? (
             <div className="card">
               <div className="empty"><b>Không có báo cáo khớp "{q}"</b></div>
@@ -96,25 +195,43 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
           ) : (
             nhomKetQua.map(g => (
               <div key={g.mod.key}>
-                <div className="rpt-g">{g.mod.ten}</div>
-                <div className="rpt-grid">
+                <div className="rpt-head">
+                  <span className="rpt-head-title">{g.mod.ten}</span>
+                  <span className="rpt-head-count">{g.screens.length}</span>
+                  <span className="rpt-head-line" />
+                </div>
+                <div className="rpt-list">
                   {g.screens.map(x => {
                     const ok = moDuoc(x, s.goi)
                     const ma = maKhoa(x)
-                    const isBook = x.report?.kieu === 'so' || /^(Sổ|Thẻ)/i.test(tenMan(x))
+                    const ten = tenMan(x)
+                    const { loai, icon } = loaiVaIconBC(x, ten)
                     const kyHieu = cauHinhBC(x.code)?.kyHieu?.[s.cheDo]
+                    const code = x.code ?? ''
+                    const metaText = code && kyHieu ? `${code} · ${kyHieu}` : (code || kyHieu || '')
+                    const isGhim = ghim.includes(x.slug)
                     return (
                       <Link
                         key={x.slug}
                         to={`/app/bao-cao/${x.slug}`}
-                        className={`rpt-card${ok ? '' : ' lock'}`}
+                        className={`rpt-row rpt-card${ok ? '' : ' lock'}`}
+                        title={ten}
                       >
-                        <span className="ri"><Icon n={isBook ? 'book' : 'chart'} /></span>
-                        <span className="grow" style={{ minWidth: 0 }}>
-                          <b>{tenMan(x)}</b>
-                          <small>Mã {x.code}{kyHieu ? ` · Mẫu ${kyHieu}` : ''}</small>
+                        <span className={`rpt-ic rpt-ic-${loai}`}>
+                          <Icon n={icon} />
                         </span>
-                        {!ok && ma ? <Pk g={minGoi(ma)} o /> : <Icon n="chevr" className="ic sm" />}
+                        <span className="rpt-name">{ten}</span>
+                        {metaText && <span className="rpt-meta">{metaText}</span>}
+                        {!ok && ma && <Pk g={minGoi(ma)} o />}
+                        <button
+                          type="button"
+                          className={`rpt-ghim${isGhim ? ' on' : ''}`}
+                          onClick={e => toggleGhim(x.slug, e)}
+                          title={isGhim ? 'Bỏ ghim' : 'Ghim báo cáo'}
+                          aria-label={isGhim ? 'Bỏ ghim' : 'Ghim báo cáo'}
+                        >
+                          {isGhim ? '★' : '☆'}
+                        </button>
                       </Link>
                     )
                   })}

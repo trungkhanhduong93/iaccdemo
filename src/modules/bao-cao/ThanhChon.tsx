@@ -1,4 +1,5 @@
 // Thanh chọn đổi nhanh báo cáo cùng phân hệ khi đang xem báo cáo trong phân hệ Báo cáo
+import { useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import type { ScreenDef } from '../types'
 import { MODULES, hienMan, maKhoa, moDuoc, tenMan } from '../../app/registry'
@@ -15,6 +16,18 @@ export function ThanhChonBaoCao({ sc }: { sc: ScreenDef }) {
   const tenPhanHeGoc = modGoc?.ten ?? ''
   const bcMod = MODULES.find(m => m.key === 'bao-cao')
   const cungGoc = bcMod?.screens.filter(x => x.goc === sc.goc && hienMan(x, s.goi)) ?? []
+
+  // Ghi nhận báo cáo vừa mở vào danh sách mở gần đây (tối đa 8, mới nhất trước, T58)
+  useEffect(() => {
+    if (!sc.slug) return
+    try {
+      const raw = localStorage.getItem('bc-gan-day')
+      const ds: string[] = raw ? JSON.parse(raw) : []
+      const loc = Array.isArray(ds) ? ds.filter(x => typeof x === 'string' && x !== sc.slug) : []
+      const moi = [sc.slug, ...loc].slice(0, 8)
+      localStorage.setItem('bc-gan-day', JSON.stringify(moi))
+    } catch {}
+  }, [sc.slug])
 
   return (
     <div className="bc-chon">

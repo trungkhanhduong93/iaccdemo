@@ -2237,12 +2237,6 @@ textarea.inp { height: auto; padding: 8px 11px; resize: vertical; }
   font-size: 11.5px;
   color: var(--faint);
 }
-.bc-ds .rpt-grid {
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-}
-.bc-ds > div + div .rpt-g {
-  margin-top: 20px;
-}
 .bc-chon {
   display: flex;
   align-items: center;
@@ -3763,6 +3757,221 @@ body.tkmi-dang-keo, body.tkmi-dang-keo * {
 .bc-ban-du-lieu .tbl-wrap {
   flex: 1;
   height: 100%;
+}
+
+/* ── Màn Tất cả báo cáo dạng danh sách (T58) ── */
+.shell:not(:has(.mtabs)) .main,
+.shell:has(.bc-tt) .main {
+  grid-row: 2 / 4;
+}
+.shell:has(.bc-tt) .mtabs {
+  display: none;
+}
+
+/* Ghim và mở gần đây */
+.bc-quick {
+  margin-bottom: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
+.bc-quick-head {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.bc-quick-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  padding-bottom: 2px;
+}
+.bc-quick-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 12px;
+  border-radius: 15px;
+  background: var(--white);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  font-size: 12.5px;
+  font-weight: 500;
+  white-space: nowrap;
+  flex: none;
+  text-decoration: none;
+  transition: background-color .15s ease, border-color .15s ease, color .15s ease;
+}
+.bc-quick-chip:hover {
+  background: var(--tint);
+  border-color: var(--blue);
+  color: var(--blue);
+}
+.bc-quick-star {
+  color: var(--amber);
+  font-size: 13px;
+  line-height: 1;
+}
+.bc-quick-text {
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Tiêu đề nhóm báo cáo */
+.rpt-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 18px 0 8px;
+}
+.bc-ds > div:first-child .rpt-head {
+  margin-top: 4px;
+}
+.rpt-head-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  flex: none;
+}
+.rpt-head-count {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--faint);
+  flex: none;
+}
+.rpt-head-line {
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+
+/* Danh sách báo cáo dạng dòng */
+.rpt-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4px;
+}
+@media (min-width: 1280px) {
+  .rpt-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px 12px;
+  }
+}
+
+.rpt-row.rpt-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 40px;
+  padding: 0 10px;
+  border-radius: 6px;
+  background: var(--white);
+  border: 1px solid transparent;
+  color: var(--body);
+  text-decoration: none;
+  box-shadow: none;
+  min-width: 0;
+  box-sizing: border-box;
+  transition: background-color .15s ease;
+}
+.rpt-row.rpt-card:hover {
+  background: var(--tint);
+  border-color: transparent;
+  box-shadow: none;
+}
+.rpt-row.rpt-card.lock {
+  background: var(--white);
+  opacity: .75;
+}
+.rpt-row.rpt-card.lock:hover {
+  background: var(--tint);
+}
+.rpt-row.rpt-card.lock .rpt-name {
+  color: var(--muted);
+}
+
+/* Biểu tượng theo loại */
+.rpt-ic {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+.rpt-ic .ic {
+  width: 15px;
+  height: 15px;
+}
+.rpt-ic-so {
+  background: var(--tint);
+  color: var(--blue);
+}
+.rpt-ic-bangke {
+  background: var(--green-t);
+  color: var(--green);
+}
+.rpt-ic-tokhai {
+  background: var(--amber-t);
+  color: var(--amber);
+}
+.rpt-ic-chart {
+  background: var(--orange-t);
+  color: var(--orange);
+}
+
+.rpt-name {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--ink);
+}
+.rpt-meta {
+  flex: none;
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.rpt-ghim {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font-size: 15px;
+  line-height: 1;
+  color: var(--faint);
+  padding: 0;
+  border-radius: 4px;
+  opacity: 0;
+  transition: opacity .15s ease, color .15s ease;
+}
+.rpt-row:hover .rpt-ghim {
+  opacity: 1;
+}
+.rpt-ghim.on {
+  opacity: 1;
+  color: var(--amber);
+}
+.rpt-ghim:hover {
+  color: var(--amber);
 }
 
 

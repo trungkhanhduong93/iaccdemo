@@ -36,6 +36,9 @@ export function ModuleTabs({ mod }: { mod: ModuleDef }) {
     return () => ro.disconnect()
   }, [tabs, s.goi])
 
+  // Phân hệ Báo cáo chỉ có 1 tab "Tất cả báo cáo": ẩn thanh tab (T58)
+  if (mod.key === 'bao-cao' && tabs.length <= 1) return null
+
   // Không đủ chỗ: giữ tab đang mở, lấy thêm các tab đầu tới khi hết chỗ, còn lại dồn vào "Khác"
   let hien = giua
   if (do_ && do_.w.length === giua.length + (bc ? 1 : 0)) {
