@@ -43,7 +43,7 @@ Tham khảo actapp.misa.vn, chỉ xem, không sửa dữ liệu AMIS.
 - Báo cáo không thành tab riêng từng cái. Tab "Báo cáo" cuối thanh liệt kê đủ báo cáo của phân hệ.
 - Form chứng từ mở toàn màn hình, che sidebar và thanh tab. Chân form: Huỷ, Lưu, Lưu và thêm. Đóng (Huỷ, X, Esc) thì về đúng màn trước.
 - Mục ngoài gói trên sidebar, tab, sơ đồ, khung Báo cáo vẫn hiện, làm mờ, có khoá và nhãn gói. Bấm vào ra trang Nâng cấp.
-- Cố ý chưa làm: ghim tính năng ("HAY DÙNG" của AMIS), tab Biểu đồ từng phân hệ, mục Báo cáo chung trên sidebar.
+- Cố ý chưa làm: ghim tính năng ("HAY DÙNG" của AMIS), tab Biểu đồ từng phân hệ. Mục Báo cáo chung trên sidebar đã làm theo QD31.
 
 ## QD09. Menu thả xuống dùng chung (07/10/2026 tối)
 
@@ -299,4 +299,20 @@ Lý do: Trum giao việc T44 ngày 09/10/2026.
 
 Lý do: Trum giao việc T45 ngày 09/10/2026, theo mẫu MISA AMIS và phản hồi thực tế.
 
-## QD31. Phân hệ Báo cáo, chế độ kế toán tách khỏi gói, mẫu in theo thông tư (đang soạn)
+## QD31. Phân hệ Báo cáo, chế độ kế toán tách khỏi gói, mẫu in theo thông tư (09/10/2026)
+
+Kế hoạch đầy đủ ở `docs/ke-hoach-bao-cao.md`. Trum duyệt làm theo mặc định cả 17 điểm ở mục 14.
+
+- Có phân hệ Báo cáo trên sidebar, ngay dưới Tổng hợp. QD08 từng ghi "cố ý chưa làm mục Báo cáo chung", nay bỏ ý đó.
+- Mọi sổ, báo cáo mở ở `/app/bao-cao/<mã>`. Đường dẫn cũ `/app/<phân hệ>/<mã>` và tab Báo cáo của từng phân hệ tự chuyển sang. Tờ khai 6.2.3 vẫn là tab trong phân hệ Thuế.
+- Gói quyết định mở tính năng nào. Chế độ kế toán (TT152, TT58, TT133, TT99) quyết định mẫu sổ, báo cáo, chứng từ, mẫu in, số hiệu tài khoản. Nguồn duy nhất: `src/app/che-do.ts`. Cặp hợp lệ: Free chỉ TT152, Standard chỉ TT58, Plus mặc định TT133 chọn được TT99, Pro mặc định TT99 chọn được TT133. Đổi gói thì chế độ về mặc định của gói.
+- Đổi chế độ ở Cấu hình kế toán có hộp cảnh báo. Bản mẫu áp ngay. Bản thật chỉ cho đổi từ đầu năm tài chính.
+- Ký hiệu mẫu từng báo cáo khai ở `src/modules/bao-cao/danh-sach.ts`, mẫu in chứng từ ở `src/app/mau-in.ts`. Ký hiệu chưa đối chiếu văn bản gốc, gắn nhãn "chờ kế toán trưởng duyệt" tới khi xong T04. TT58, TT152 mới tra qua bài tổng hợp.
+- Báo cáo tài chính và tờ khai giữ bố cục pháp định: không cho ẩn, đổi thứ tự cột, chỉ sửa người ký và cỡ chữ.
+- Thêm 10 sổ theo thông tư khai tạm trong `BO_SUNG` của `plan.ts` (cùng cách QD19) chờ Trum cập nhật Excel (T33). Báo cáo TSCĐ 7.2.x mở cho gói Plus.
+- Màn chỉ gói thấp hơn mới có (sổ riêng của hộ kinh doanh, DN siêu nhỏ) ẩn ở gói cao hơn, không hiện khoá mời nâng cấp.
+- Thêm thư viện `exceljs` để xuất Excel giữ khung mẫu, nạp muộn thành gói JS riêng. PDF dùng hộp in của trình duyệt, không thêm thư viện.
+- Tuỳ chỉnh báo cáo và mẫu in riêng lưu localStorage theo đơn vị (chưa có backend). Người ký dùng chung cả đơn vị.
+- Bộ lọc, gom nhóm, ẩn hiện cột làm một lớp chung ở `ReportPaper` trên các bảng `RptTable`, không viết lại dữ liệu từng báo cáo như kế hoạch ban đầu. Sổ có số dư chạy và báo cáo tài chính không lọc, không gom nhóm dòng.
+
+Lý do: Trum giao việc T47 ngày 09/10/2026.

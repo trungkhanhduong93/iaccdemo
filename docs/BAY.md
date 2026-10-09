@@ -17,7 +17,12 @@ Lỗi đã từng làm mất thời gian, kèm cách tránh. Đọc trước khi
 - Khung bật ra lồng nhau, vd ô chọn trong khung Bộ lọc: menu của ô chọn cũng gắn vào body, nằm ngoài khung cha. `Popover` cũ coi cú bấm vào menu con là bấm ra ngoài, đóng khung cha trước khi cú bấm kịp chọn, nên chọn chi nhánh không lọc gì (gặp 08/10). `Popover` giờ bỏ qua cú bấm trong `.pop` khác và Esc khi con trỏ đang ở menu con. Viết khung bật ra mới thì dùng `Popover`, đừng tự viết bắt cú bấm ra ngoài.
 - Giao diện thu nhỏ bằng `zoom` trên `html` khi màn rộng dưới 1700px (T42). Toạ độ `getBoundingClientRect`, `clientX`, `innerWidth` nằm ở hệ đã zoom, còn số px ghi vào `style` bị nhân thêm zoom, nên khung bật ra và đường vẽ lệch. Chiều cao `100vh` cũng hụt theo zoom. Code mới đo vị trí thì chia cho `heSoZoom()` trong `src/ui/zoom.ts`. Khung cao theo cửa sổ thì bù như `.shell` trong `scale.css`.
 
+- Vòng import làm sập cả app: file dữ liệu dùng chung (vd `bao-cao/so-bo-sung.ts`) import `index.ts` của một phân hệ, trong khi `index.ts` đó lại import file dữ liệu và dùng ngay lúc khởi tạo. Trình duyệt báo "Cannot access X before initialization", trắng toàn app (gặp 09/10). Dữ liệu dùng chung đặt ở `data.ts` của phân hệ, file dữ liệu không import `index.ts` nào.
+- Tờ báo cáo (`ToGiay`) có khung đo ẩn chứa bản sao nội dung. Tìm phần tử trên tờ bằng script thì giới hạn trong `.bc-ds-trang`, đừng dùng `.bc-trang` trần, không thì đếm trùng.
+
 ## Script kiểm và máy Windows
+
+- Hai agent cùng chạy `kiem_tra.py` hoặc Playwright trên một dev server, agent kia đang sửa file: Vite tải lại trang giữa chừng, script báo "Execution context was destroyed". Đó không phải lỗi màn. Chạy lại khi không còn ai sửa file.
 
 - Playwright: script kiểm dùng `channel='chrome'`, tức Chrome đã cài trên máy, không cần tải trình duyệt của Playwright. Ghi phiên vào localStorage rồi phải tải lại hẳn trang (đổi query), chỉ đổi hash thì app giữ phiên cũ.
 - Cổng 5180 đang bận thì `npm run dev` báo lỗi, không tự chuyển sang 5181 (`strictPort` trong `vite.config.ts`). Bỏ `strictPort` thì bản thử thứ hai sẽ lặng lẽ chạy ở 5181 trong khi script kiểm vẫn mở 5180, tức thử nhầm bản cũ.
