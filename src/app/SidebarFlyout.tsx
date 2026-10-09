@@ -288,13 +288,13 @@ const FLYOUT_CONFIG: Record<string, FlyoutData> = {
     phai: {
       tieuDe: 'Theo phân hệ',
       items: [
-        { ten: 'Tiền', di: '/app/bao-cao/nhom-tien' },
+        { ten: 'Thu chi', di: '/app/bao-cao/nhom-tien' },
         { ten: 'Bán hàng', di: '/app/bao-cao/nhom-ban-hang' },
         { ten: 'Mua hàng', di: '/app/bao-cao/nhom-mua-hang' },
         { ten: 'Kho', di: '/app/bao-cao/nhom-kho' },
-        { ten: 'Thuế', di: '/app/bao-cao/nhom-thue' },
+        { ten: 'Kê khai thuế', di: '/app/bao-cao/nhom-thue' },
         { ten: 'Tài sản cố định', di: '/app/bao-cao/nhom-tscd' },
-        { ten: 'Công cụ dụng cụ', di: '/app/bao-cao/nhom-ccdc' },
+        { ten: 'Chi phí phân bổ', di: '/app/bao-cao/nhom-ccdc' },
         { ten: 'Giá thành', di: '/app/bao-cao/nhom-gia-thanh' },
         { ten: 'Tổng hợp', di: '/app/bao-cao/nhom-tong-hop' },
       ],

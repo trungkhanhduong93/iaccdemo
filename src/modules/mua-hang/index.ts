@@ -27,6 +27,7 @@ const muaHang: ModuleDef = {
       dienGiai: ['Gắn hoá đơn cho phiếu mua tuần trước', 'Nhà cung cấp xuất hoá đơn gộp cuối tháng'], noCo: [['1331', '331', 'Thuế GTGT được khấu trừ bổ sung']] } },
     '4.2.1': { report: { kieu: 'bangke' } },
     '4.2.2': { report: { kieu: 'tonghop', doiTuong: 'ncc' } },
+    '4.2.3': { report: { kieu: 'tonghop', doiTuong: 'ncc', theoCn: true } },   // Sổ công nợ nhà cung cấp (T52)
   }, NGAN),
 }
 export default muaHang

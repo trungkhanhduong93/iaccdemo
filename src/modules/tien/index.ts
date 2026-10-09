@@ -1,4 +1,4 @@
-// Phân hệ Kế toán tiền: phiếu thu chi, sổ quỹ, sổ ngân hàng, sổ công nợ
+// Phân hệ Thu chi (trước là Kế toán tiền): phiếu thu chi, sổ quỹ, sổ ngân hàng, sổ công nợ
 import type { ModuleDef } from '../types'
 import { tuExcel } from '../types'
 import { quyTrinh } from './quy-trinh'
@@ -10,7 +10,7 @@ import { SO_BO_SUNG } from '../bao-cao/so-bo-sung'
 const NGAN: Record<string, string> = { '2.1.1': 'Thu, chi tiền', '2.1.2': 'Đối chiếu công nợ', '2.1.3': 'Phân bổ chi phí chuỗi' }
 
 const tien: ModuleDef = {
-  key: 'tien', ten: 'Kế toán tiền', ngan: 'Tiền', icon: 'wallet', mod: 1,
+  key: 'tien', ten: 'Thu chi', ngan: 'Thu chi', icon: 'wallet', mod: 1,
   mota: 'Quỹ tiền mặt, tiền gửi ngân hàng, công nợ',
   quyTrinh,
   screens: tuExcel(1, {

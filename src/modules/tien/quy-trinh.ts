@@ -2,7 +2,7 @@
 import type { QuyTrinhDef } from '../types'
 
 export const quyTrinh: QuyTrinhDef = {
-  ten: 'Nghiệp vụ tiền',
+  ten: 'Nghiệp vụ thu chi',
   buoc: [],
   hoiTu: {
     lan: [

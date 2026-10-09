@@ -98,7 +98,7 @@ function Sidebar({ mod }: { mod: ModuleDef }) {
           const khoa = phanHeKhoa(m, s.goi)
           return (
             <Fragment key={m.key}>
-              {m.key === 'he-thong' && <div className="sb-sep" />}
+              {m.key === 'danh-muc' && <div className="sb-sep" />}
               <Link to={duongDan(m, manDau(m, s.goi))}
                 className={`${m.key === mod.key ? 'on' : ''} ${khoa ? 'lock' : ''}`}
                 title={khoa ? `${m.ten}: chưa có trong gói ${GOI[s.goi].ten}` : m.ten}

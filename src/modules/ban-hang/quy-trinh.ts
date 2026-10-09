@@ -5,7 +5,7 @@ export const quyTrinh: QuyTrinhDef = {
   ten: 'Nghiệp vụ bán hàng',
   buoc: [
     { chinh: { ten: 'Đơn POS từ FABi', icon: 'pos', di: 'tien-ich/11-1', tone: 'fabi' } },
-    { chinh: { ten: 'Chứng từ bán hàng', icon: 'cart', di: 'ban-hang/3-1-1/moi' },
+    { chinh: { ten: 'Xuất bán POS', icon: 'cart', di: 'ban-hang/3-1-1' },
       tren: [{ ten: 'Bán hàng nội bộ', icon: 'store', di: 'ban-hang/3-1-3/moi' }],
       duoi: [{ ten: 'Hàng bán trả lại', icon: 'back', di: 'ban-hang/3-1-4/moi' }] },
     { chinh: { ten: 'Xuất hoá đơn điện tử', icon: 'receipt', di: 'ban-hang/3-1-5/moi', tone: 'hd' },

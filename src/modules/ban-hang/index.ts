@@ -2,20 +2,23 @@
 import type { ModuleDef } from '../types'
 import { tuExcel } from '../types'
 import { quyTrinh } from './quy-trinh'
-import { ChungTuBanHang } from './ChungTuBanHang'
+import { ChungTuBanHang, NGOAI_POS } from './ChungTuBanHang'
 import { DoiSoat } from '../tien-ich/DoiSoat'
 import { baoCaoBanHang, baoCaoDoanhThu } from './data'
 import { SO_BO_SUNG } from '../bao-cao/so-bo-sung'
 
 /** Nhãn ngắn trên thanh tab */
-const NGAN: Record<string, string> = { '3.1.2': 'Hoá đơn bán hàng', '3.1.3': 'Bán nội bộ', '3.1.4': 'Hàng bán trả lại', '3.1.5': 'Hoá đơn điện tử', '3.1.6': 'Điều chỉnh, thay thế' }
+const NGAN: Record<string, string> = { '3.1.1': 'Xuất bán POS', '3.1.7': 'Bán hàng', '3.1.2': 'Hoá đơn bán hàng', '3.1.3': 'Bán nội bộ', '3.1.4': 'Hàng bán trả lại', '3.1.5': 'Hoá đơn điện tử', '3.1.6': 'Điều chỉnh, thay thế' }
 
 const banHang: ModuleDef = {
   key: 'ban-hang', ten: 'Kế toán bán hàng', ngan: 'Bán hàng', icon: 'cart', mod: 2,
   mota: 'Doanh thu tự về từ FABi, hoá đơn điện tử, hàng bán trả lại',
   quyTrinh,
   screens: tuExcel(2, {
-    '3.1.1': { kind: 'custom', comp: ChungTuBanHang },
+    // Xuất bán POS: chứng từ chỉ đổ về từ phần mềm bán hàng, không lập tay (T52)
+    '3.1.1': { kind: 'custom', comp: ChungTuBanHang, ten: 'Xuất bán POS' },
+    // Bán hàng lập tay ngoài POS: tiệc, khách công ty; từ gói Plus (T52)
+    '3.1.7': { voucher: NGOAI_POS },
     '3.1.2': { voucher: { prefix: 'HDB', doiTuong: 'kh', nhan: 'Khách hàng', them: 'Thêm hoá đơn bán hàng', dong: 'hang', tien: [0, 0], nguon: 'HĐ', soTT58: 'Sổ doanh thu bán hàng hoá, dịch vụ',
       dienGiai: ['Bán tiệc cho khách công ty', 'Bán suất ăn hội nghị', 'Bán set quà Trung thu'], noCo: [['131', '5111', 'Doanh thu'], ['131', '33311', 'Thuế GTGT đầu ra'], ['632', '152', 'Giá vốn']] } },
     '3.1.3': { voucher: { prefix: 'BNB', doiTuong: 'cn', nhan: 'Chi nhánh nhận', them: 'Thêm phiếu bán nội bộ', dong: 'nvl', tien: [0, 0], thue: 0,

@@ -71,7 +71,8 @@ function phanHeBaoCao(nguon: ModuleDef[]): ModuleDef {
   }
 }
 
-const danhSachCu = [home, danhMuc, tien, banHang, muaHang, kho, thue, tscd, ccdc, giaThanh, tongHop, tienIch, heThong].map(dung)
+// Kê khai thuế ngay dưới Công cụ dụng cụ; Danh mục nằm dưới, ngay trên Hệ thống (T52)
+const danhSachCu = [home, tien, banHang, muaHang, kho, tscd, ccdc, thue, giaThanh, tongHop, tienIch, danhMuc, heThong].map(dung)
 const iTongHop = danhSachCu.findIndex(m => m.key === 'tong-hop')
 const baoCao = phanHeBaoCao(danhSachCu)
 export const MODULES: ModuleDef[] = [
@@ -111,8 +112,14 @@ export function manDau(m: ModuleDef, goi: Goi) {
   return m.screens.find(sc => moDuoc(sc, goi)) ?? m.screens[0]
 }
 
+/** Phân hệ ẩn khỏi thanh bên trái theo gói dù còn màn trong gói: gói Free không có phân hệ Tổng hợp,
+ *  chỉ xem Báo cáo kết quả kinh doanh ở phân hệ Báo cáo (T52) */
+const AN_PHAN_HE: Partial<Record<Goi, string[]>> = { F: ['tong-hop'] }
+export const anPhanHeGoi = (m: ModuleDef, goi: Goi) => Boolean(AN_PHAN_HE[goi]?.includes(m.key))
+
 /** Cả phân hệ ngoài gói: không màn nào gắn mã tính năng mở được */
 export function phanHeKhoa(m: ModuleDef, goi: Goi) {
+  if (anPhanHeGoi(m, goi)) return true
   const co = m.screens.filter(sc => sc.code || sc.can)
   // màn không gắn gói (Người dùng, Gói thuê bao…) luôn mở, nên phân hệ có màn đó không bị khoá
   const tuDo = m.screens.some(sc => !sc.code && !sc.can && sc.kind !== 'quytrinh' && sc.kind !== 'baocao')
@@ -122,7 +129,7 @@ export function phanHeKhoa(m: ModuleDef, goi: Goi) {
 /** Các tab ngang của phân hệ: Quy trình, màn không phải báo cáo, rồi Báo cáo */
 /** Phân hệ có hiện trên sidebar không: gói Free ẩn phân hệ không còn màn nào mở được, không tính màn Quy trình, Báo cáo (QD22) */
 export const hienPhanHe = (m: ModuleDef, goi: Goi) =>
-  !anNgoaiGoi(goi) || m.screens.some(sc => sc.kind !== 'quytrinh' && sc.kind !== 'baocao' && moDuoc(sc, goi))
+  !anPhanHeGoi(m, goi) && (!anNgoaiGoi(goi) || m.screens.some(sc => sc.kind !== 'quytrinh' && sc.kind !== 'baocao' && moDuoc(sc, goi)))
 export const tabCua = (m: ModuleDef) => m.screens.filter(sc => !laBaoCao(sc))
 export const nhanTab = (sc: ScreenDef) => sc.ngan ?? tenMan(sc)
 

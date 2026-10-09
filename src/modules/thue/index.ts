@@ -21,7 +21,7 @@ const bangKeBanRa = {
 const NGAN: Record<string, string> = { '6.1.1': 'Kê khai mua vào', '6.1.2': 'Kê khai bán ra', '6.2.3': 'Tờ khai thuế' }
 
 const thue: ModuleDef = {
-  key: 'thue', ten: 'Thuế GTGT', ngan: 'Thuế', icon: 'percent', mod: 5,
+  key: 'thue', ten: 'Kê khai thuế', ngan: 'Kê khai thuế', icon: 'percent', mod: 5,
   mota: 'Kê khai, bảng kê hoá đơn, tờ khai, nộp qua kết nối cơ quan thuế',
   quyTrinh,
   screens: tuExcel(5, {

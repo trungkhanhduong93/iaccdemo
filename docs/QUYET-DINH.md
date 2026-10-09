@@ -356,3 +356,16 @@ Lý do: PhuongXT chốt ngày 09/10/2026 theo ảnh góp ý trên form Thu tiề
 - Tối ưu hiệu năng cuộn bảng báo cáo lớn: áp dụng CSS `content-visibility: auto` kèm `contain-intrinsic-size: 0 28px` cho các dòng `<tr>` trên bàn xem tờ giấy (`.bc-ban .rpt`), giữ nguyên khung đo ẩn và in ấn.
 
 Lý do: Trum giao việc T50 ngày 09/10/2026, đúc kết từ kiến trúc của LedgerStudio.
+
+## QD35. Gói Free gọn theo hộ kinh doanh, đổi tên phân hệ, Danh mục xuống dưới (09/10/2026)
+
+- Gói Free không có phân hệ Tổng hợp. Bỏ khỏi gói Free: 3.2.5, 10.4.1. Giữ Báo cáo kết quả kinh doanh 10.2.3, xem ở phân hệ Báo cáo.
+- Phân hệ Bán hàng, mọi gói: tab chứng từ 3.1.1 tên Xuất bán POS. Chứng từ chỉ đổ về từ phần mềm bán hàng (nút Tải từ FABi), không lập tay, giống Xuất bán POS của Inventory. Gói Free chỉ có tab này. Từ gói Plus có thêm tab Bán hàng 3.1.7 (lập tay bán ngoài POS: tiệc, khách công ty; màn mới khai ở `BO_SUNG`) và Hoá đơn bán hàng 3.1.2.
+- Gói Free có phân hệ Kho chỉ với Kiểm kê 5.1.10 và Báo cáo xuất nhập tồn 5.2.3; bỏ Tồn kho tức thời 5.2.4, Sổ chi tiết vật liệu, dụng cụ, hàng hoá 5.2.8.
+- Gói Free có Mua hàng 4.1.1 và Sổ công nợ nhà cung cấp 4.2.3 (màn mới, chưa có trong Excel, khai ở `BO_SUNG` của `plan.ts`).
+- Gói Free không có tab Đính kèm trong form chứng từ.
+- Đổi tên phân hệ: Kế toán tiền thành Thu chi, Thuế GTGT thành Kê khai thuế, Công cụ dụng cụ thành Chi phí phân bổ. Gói Free giữ Chi phí phân bổ và ô Tháng hạch toán lãi lỗ.
+- Danh mục nằm dưới đường kẻ, ngay trên Hệ thống. Kê khai thuế nằm ngay dưới Công cụ dụng cụ. Áp ở mọi gói.
+- Các thay đổi gói ghi tạm ở `THEO_ROADMAP`, `BO_SUNG` của `src/app/plan.ts`; Trum cập nhật Excel tính năng rồi chạy lại `tools/xuat_tinh_nang.py` thì xoá các dòng đó.
+
+Lý do: PhuongXT chốt ngày 09/10/2026 (T52).

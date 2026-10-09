@@ -4,14 +4,13 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T51.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T52.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T51 | Form phiếu thu chi: ô Quỹ ở đầu phiếu; phiếu tiền mặt chỉ chọn quỹ tiền mặt của chi nhánh lập phiếu, phiếu ngân hàng chỉ chọn tài khoản ngân hàng; Ghi chú cùng hàng Địa chỉ; tab Lịch sử phiếu có từ gói Free; lưu xong ở lại xem phiếu; nhật ký thêm mới, sửa, xoá | PhuongXT | Đang làm | Sửa `ChungTuForm.tsx`, `daXoa.ts`, `VoucherScreen.tsx` (trùng T50 của Trum, chỉ dòng onXoa), `ChungTuBanHang.tsx`, `TienIch.tsx` |
 | T27 | Danh sách chứng từ 2.1.1: khung chi tiết bên dưới hiện dòng phiếu khác với form của cùng phiếu (UNC2610-0259: khung ghi "Chi mua rau, củ tại chợ", form ghi "Trả tiền nhà cung cấp thịt bò") | | Chờ | Thấy khi làm T26 |
 | T02 | Chốt nghiệp vụ trên từng sơ đồ Quy trình: ô nào, nối thế nào, câu chữ. Sửa ở `src/modules/<phân hệ>/quy-trinh.ts` | Trum | Chờ | |
 | T03 | Nối sổ quỹ, sổ tài khoản 2.2.2, sổ ngân hàng 2.2.3, sổ công nợ 2.2.5 vào `so-cai.ts` để mọi sổ khớp báo cáo tài chính | | Chờ | Sổ quỹ đang tính riêng từ tiền mặt FABi từng chi nhánh. Tổng 3 quỹ chưa bằng dư TK 1111 trên cân đối kế toán |
@@ -35,6 +34,8 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T52 | Gói Free gọn theo hộ kinh doanh: Bán hàng chỉ Xuất bán POS, Kho chỉ Kiểm kê và Xuất nhập tồn, mở Mua hàng và Sổ công nợ NCC, ẩn Tổng hợp, bỏ Đính kèm. Đổi tên Thu chi, Kê khai thuế, Chi phí phân bổ; sắp lại thanh bên trái; tab Bán hàng lập tay từ Plus (QD35) | PhuongXT | 09/10/2026 | `2026-10-09-phuongxt-goi-free-phan-he.md` |
+| T51 | Form phiếu thu chi: ô Quỹ (tiền mặt theo chi nhánh, ngân hàng), Ghi chú cạnh Địa chỉ, lưu xong ở lại xem phiếu; nhật ký thêm mới, sửa, xoá; tab Lịch sử có từ gói Free (QD33) | PhuongXT | 09/10/2026 | `2026-10-09-phuongxt-quy-nhat-ky-phieu.md` |
 | T50 | Tối ưu bộ khung 1 trang nhìn và bigdata cho Danh sách chứng từ và Báo cáo theo LedgerStudio (QD34) | Trum | 09/10/2026 | `2026-10-09-trum-toi-uu-khung-bang-ledgerstudio.md` |
 | T47 | Phân hệ Báo cáo, màn xem như bản in A4, mẫu theo thông tư, chế độ kế toán tách khỏi gói, mẫu in chứng từ, tiện ích Thiết kế mẫu in, xuất 5 định dạng, bộ lọc và tuỳ chỉnh báo cáo, 10 sổ bổ sung (QD31) | Trum | 09/10/2026 | `2026-10-09-trum-phan-he-bao-cao.md` |
 | T49 | Form phiếu thu chi (5 loại): đầu form gọn, trạng thái ở giữa; Đối tượng từ danh mục; Lý do trên Diễn giải, Ghi chú; Người giao dịch; Ngày chứng từ có lịch; gói Free có Tháng hạch toán lãi lỗ; cột Lý do ở dòng; Tổng tiền ở dải đáy; bỏ tab Hạch toán. Mọi phiếu: Sao chép, Tuỳ chỉnh giao diện phiếu, phiếu lưu và sửa hiện ở danh sách (QD33) | PhuongXT | 09/10/2026 | `2026-10-09-phuongxt-form-phieu-thu-chi.md` |

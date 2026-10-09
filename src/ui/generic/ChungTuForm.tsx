@@ -260,7 +260,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
     ['ct', bo.tabDau ?? 'Chi tiết'],
     ...(bo.hd ? [['hd', 'Hoá đơn'] as [string, string]] : []),
     ...(laTien ? [] : [['ht', kieu === 'noco' ? 'Hạch toán' : 'Ghi sổ'] as [string, string]]),   // phiếu thu chi bỏ tab hạch toán (T49)
-    ['dk', 'Đính kèm'],
+    ...(s.goi === 'F' ? [] : [['dk', 'Đính kèm'] as [string, string]]),   // gói Free không có đính kèm (T52)
     ['ls', 'Lịch sử'],
   ]
 

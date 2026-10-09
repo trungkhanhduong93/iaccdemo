@@ -40,25 +40,33 @@ const THEO_ROADMAP: Record<string, Goi[]> = {
   '2.2.3': ['F', 'S', 'PL', 'PR'],   // Sổ ngân hàng mở cho gói Free, PhuongXT chốt 08/10/2026
   '7.2.1': ['PL', 'PR'],             // Mở báo cáo TSCĐ cho Plus, Trum chốt 09/10/2026 (T47 câu 11)
   '7.2.2': ['PL', 'PR'],             // Mở báo cáo TSCĐ cho Plus, Trum chốt 09/10/2026 (T47 câu 11)
+  // Gói Free: Bán hàng chỉ có Xuất bán POS 3.1.1; ẩn Tổng hợp (giữ Báo cáo kết quả kinh doanh 10.2.3, xem ở phân hệ Báo cáo);
+  // Kho chỉ còn Kiểm kê 5.1.10 và Báo cáo xuất nhập tồn 5.2.3; mở Mua hàng. PhuongXT chốt 09/10/2026 (T52)
+  '5.2.4': ['S', 'PL', 'PR'],
+  '4.1.1': ['F', 'S', 'PL', 'PR'],
 }
 
 /** Màn bổ sung theo thông tư chưa có trong Excel (T47, kế hoạch mục 7.3). Trum cập nhật Excel và chạy lại tools/xuat_tinh_nang.py có đủ mã thì xoá dòng tương ứng ở đây */
 const BO_SUNG: (Omit<Feature, 'g'> & { g: Goi[] })[] = [
   { c: '2.2.6', m: 1, n: 'Sổ chi tiết tiền vay', grp: 'Sổ sách, báo cáo', g: ['PL', 'PR'], gd: 2, ivt: 0 },
   { c: '2.2.7', m: 1, n: 'Sổ chi tiết tiền', grp: 'Sổ sách, báo cáo', g: ['F', 'S'], gd: 2, ivt: 0 },
-  { c: '3.2.5', m: 2, n: 'Sổ doanh thu bán hàng', grp: 'Sổ sách, báo cáo', g: ['F', 'S', 'PL', 'PR'], gd: 2, ivt: 0 },
-  { c: '5.2.8', m: 4, n: 'Sổ chi tiết vật liệu, dụng cụ, hàng hoá', grp: 'Sổ sách, báo cáo', g: ['F', 'S', 'PL', 'PR'], gd: 2, ivt: 0 },
+  { c: '3.2.5', m: 2, n: 'Sổ doanh thu bán hàng', grp: 'Sổ sách, báo cáo', g: ['S', 'PL', 'PR'], gd: 2, ivt: 0 },   // gói Free bỏ (T52)
+  { c: '3.1.7', m: 2, n: 'Bán hàng', grp: 'Chứng từ', g: ['PL', 'PR'], gd: 2, ivt: 0 },   // bán hàng lập tay ngoài POS, từ gói Plus, PhuongXT thêm (T52)
+  { c: '4.2.3', m: 3, n: 'Sổ công nợ nhà cung cấp', grp: 'Sổ sách, báo cáo', g: ['F', 'S', 'PL', 'PR'], gd: 2, ivt: 0 },   // PhuongXT thêm cho gói Free (T52)
+  { c: '5.2.8', m: 4, n: 'Sổ chi tiết vật liệu, dụng cụ, hàng hoá', grp: 'Sổ sách, báo cáo', g: ['S', 'PL', 'PR'], gd: 2, ivt: 0 },   // gói Free bỏ (T52)
   { c: '6.2.4', m: 5, n: 'Sổ theo dõi nghĩa vụ thuế GTGT', grp: 'Báo cáo', g: ['S', 'PL', 'PR'], gd: 2, ivt: 0 },
   { c: '6.2.5', m: 5, n: 'Sổ theo dõi nghĩa vụ thuế khác', grp: 'Báo cáo', g: ['F', 'S'], gd: 2, ivt: 0 },
   { c: '7.2.3', m: 6, n: 'Thẻ tài sản cố định', grp: 'Sổ sách, báo cáo', g: ['PL', 'PR'], gd: 2, ivt: 0 },
   { c: '7.2.4', m: 6, n: 'Sổ theo dõi TSCĐ, CCDC tại nơi sử dụng', grp: 'Sổ sách, báo cáo', g: ['PL', 'PR'], gd: 2, ivt: 0 },
-  { c: '10.4.1', m: 9, n: 'Sổ chi tiết doanh thu, chi phí', grp: 'Sổ sách, báo cáo', g: ['F', 'S'], gd: 2, ivt: 0 },
+  { c: '10.4.1', m: 9, n: 'Sổ chi tiết doanh thu, chi phí', grp: 'Sổ sách, báo cáo', g: ['S'], gd: 2, ivt: 0 },   // gói Free bỏ (T52)
   { c: '10.4.2', m: 9, n: 'Sổ theo dõi vốn chủ sở hữu', grp: 'Sổ sách, báo cáo', g: ['S', 'PL', 'PR'], gd: 2, ivt: 0 },
 ]
 
 const CHEN_SAU: Record<string, string[]> = {
   '2.2.5': ['2.2.6', '2.2.7'],
+  '3.1.1': ['3.1.7'],
   '3.2.4': ['3.2.5'],
+  '4.2.2': ['4.2.3'],
   '5.2.7': ['5.2.8'],
   '6.2.3': ['6.2.4', '6.2.5'],
   '7.2.2': ['7.2.3', '7.2.4'],

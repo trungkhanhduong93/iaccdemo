@@ -7,7 +7,7 @@ import { quyTrinh } from './quy-trinh'
 const NGAN: Record<string, string> = { '8.1.1': 'CCDC, chi phí trả trước', '8.1.2': 'Tăng, giảm CCDC', '8.1.3': 'Kiểm kê CCDC' }
 
 const ccdc: ModuleDef = {
-  key: 'ccdc', ten: 'Công cụ dụng cụ', ngan: 'Công cụ dụng cụ', icon: 'tool', mod: 7,
+  key: 'ccdc', ten: 'Chi phí phân bổ', ngan: 'Chi phí phân bổ', icon: 'tool', mod: 7,
   mota: 'Công cụ dụng cụ, chi phí trả trước, phân bổ theo kỳ',
   quyTrinh,
   screens: tuExcel(7, {

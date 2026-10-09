@@ -1,6 +1,6 @@
 // Chứng từ bán hàng: mỗi chi nhánh một chứng từ mỗi ngày, gom từ đơn POS trên FABi. Số khớp KQKD, Tổng quan.
 import { useMemo, useRef, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import type { Col, Row, ScreenProps, VoucherCfg } from '../types'
 import { duongDan, tenMan } from '../../app/registry'
 import { chiNhanhHienTai, useSession } from '../../app/session'
@@ -10,23 +10,22 @@ import { CHI_NHANH, DAILY, HANG, cnTen, soBH } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
 import { Card, Note, PageHead } from '../../ui/Page'
 import { FormToanMan, useDong } from '../../ui/FormToanMan'
-import { VoucherDetail } from '../../ui/generic/VoucherScreen'
 import { St, Table } from '../../ui/Table'
 import { dmy, fold, money, moneyD } from '../../ui/format'
 import { Popover, Select } from '../../ui/Dropdown'
 import { PhanTrang } from '../../ui/PhanTrang'
 import { useDaXoa, xoaPhieu } from '../../ui/generic/daXoa'
 import { ChonKhoangNgay, docNgay, thangNay, trongKhoang, type KhoangNgay } from '../../ui/ChonNgay'
-import { NutExcel, NutThemMoiSplit } from '../../ui/CongCuDs'
+import { NutExcel } from '../../ui/CongCuDs'
 import { dangLoc, khopLoc, type GiaTriLoc, type KieuLoc } from '../../ui/LocCot'
 import {
   BoLoc, ChipTrangThai, NutHangLoat, NutTuyChinhCot, cotChon, dsChipTT, khopChipTT, useCauHinhLoc, useCotDs, useLocNhap, type OLocDef,
 } from '../../ui/LocNangCao'
 import { HopInChungTu, type PhieuIn } from '../../ui/bao-cao/InChungTu'
 
-/** Bán hàng ngoài POS: tiệc mang về, khách công ty đặt trước. Lập tay, không qua FABi */
-const NGOAI_POS: VoucherCfg = {
-  prefix: 'BH', doiTuong: 'kh', nhan: 'Khách hàng', them: 'Bán hàng ngoài POS', dong: 'hang', tien: [0, 0], nguon: 'tay', soTT58: 'Sổ doanh thu bán hàng hoá, dịch vụ',
+/** Bán hàng ngoài POS: tiệc mang về, khách công ty đặt trước. Lập tay, không qua FABi; là tab Bán hàng 3.1.7 từ gói Plus (T52) */
+export const NGOAI_POS: VoucherCfg = {
+  prefix: 'BH', doiTuong: 'kh', nhan: 'Khách hàng', them: 'Thêm phiếu bán hàng', dong: 'hang', tien: [0, 0], nguon: 'tay', soPhieu: 80, soTT58: 'Sổ doanh thu bán hàng hoá, dịch vụ',
   dienGiai: ['Bán tiệc mang về cho khách công ty', 'Bán set quà Trung thu'], noCo: [['1111', '5111', 'Doanh thu'], ['1111', '33311', 'Thuế GTGT đầu ra'], ['632', '152', 'Giá vốn']],
 }
 
@@ -51,7 +50,7 @@ export function ChungTuBanHang({ sc, mod }: ScreenProps) {
     tien: x.dt, thue: x.vat, tong: x.dt + x.vat, nguon: 'FABi', tt: i < 3 ? 'nhap' : x.cn === 'q5' && x.date.getDate() === 5 && x.date.getMonth() === 9 ? 'loi' : 'ghi',
   })), [])
   const rows = useMemo(() => tatCa.filter(r => !laDaXoa(r.id)), [tatCa, ban])
-  if (id === 'moi') return <VoucherDetail sc={sc} mod={mod} cfg={NGOAI_POS} />
+  if (id === 'moi') return <Navigate to={duongDan(mod, sc)} replace />   // không lập tay Xuất bán POS (T52)
   if (id) return <ChiTiet sc={sc} mod={mod} row={rows.find(r => r.id === id) ?? rows[0]} />
   return <DanhSach sc={sc} mod={mod} rows={rows} />
 }
@@ -210,13 +209,10 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
                 open={moHangLoat}
                 onOpenChange={setMoHangLoat}
               />
-              <NutThemMoiSplit
-                toMoi={`${path}/moi`}
-                taiNguon={{
-                  ten: 'FABi',
-                  onTai: () => toast('Đã tải 612 đơn mới từ FABi, gom vào 3 chứng từ ngày 07/10'),
-                }}
-              />
+              {/* Xuất bán POS chỉ đổ về từ phần mềm bán hàng, không thêm mới bằng tay (T52) */}
+              <button type="button" className="btn pri" onClick={() => toast('Đã tải 612 đơn mới từ FABi, gom vào 3 chứng từ ngày 07/10')}>
+                <Icon n="download" className="ic sm" />Tải từ FABi
+              </button>
             </div>
           </div>
           {list.length ? (
