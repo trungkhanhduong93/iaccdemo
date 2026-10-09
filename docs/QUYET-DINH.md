@@ -409,3 +409,5 @@ Lý do: PhuongXT chốt ngày 09/10/2026 (T63).
 - Phiếu Mua hàng (mua hàng, mua qua sơ chế, trả lại) có nguồn Thủ công hoặc Excel. Không có Tải từ iPOS Inventory ở nút Thêm mới và sơ đồ Mua hàng.
 
 Lý do: PhuongXT chốt ngày 09/10/2026 (T64, T65).
+
+## QD40. Bộ lọc tự sinh và cột lọc bên trái màn xem báo cáo (đang soạn)

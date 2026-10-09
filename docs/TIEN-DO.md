@@ -4,14 +4,15 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T65.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T66.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T58 | Màn Tất cả báo cáo: biểu tượng theo loại sổ, báo cáo; thẻ cao đều; mục Mở gần đây; ẩn thanh tab chỉ có một tab | Trum | Đang làm | Sửa `BaoCaoScreen.tsx`, `app.css`, có thể `Shell.tsx`. Làm sau T57 |
+| T58 | Màn Tất cả báo cáo dạng danh sách gọn theo nhóm: một dòng mỗi báo cáo, hai cột, biểu tượng theo loại, Ghim và Mở gần đây; ẩn thanh tab chỉ có một tab | Trum | Đang làm | Sửa `BaoCaoScreen.tsx`, `app.css`, có thể `Shell.tsx`. Làm sau T57 |
+| T66 | Màn xem báo cáo: cột lọc bên trái luôn hiện, thu gọn được; mọi báo cáo tự có bộ lọc theo cột (chữ chọn nhiều, số từ đến), giữ Tờ in và Bảng dữ liệu | Trum | Chờ | Sửa `ReportScreen.tsx`, `tuyChinhBC.ts`, `app.css`. Làm sau T58 |
 | T59 | Màn Thiết kế mẫu in 11.11: thanh tab bên phải một hàng, ô tìm mẫu bên trái, xem trước vừa khung | Trum | Chờ | Sửa `ThietKeMauIn.tsx`, `app.css`. Làm sau T58 |
 | T60 | Mô tả gói Free, Standard trong `GOI` (`src/app/plan.ts`) đang ghi "1 điểm bán"; theo Roadmap gói Free là mỗi chi nhánh một kho, không giới hạn một chi nhánh. Chốt câu chữ rồi sửa | PhuongXT | Chờ | Tách từ T25 |
 | T27 | Danh sách chứng từ 2.1.1: khung chi tiết bên dưới hiện dòng phiếu khác với form của cùng phiếu (UNC2610-0259: khung ghi "Chi mua rau, củ tại chợ", form ghi "Trả tiền nhà cung cấp thịt bò") | | Chờ | Thấy khi làm T26 |
