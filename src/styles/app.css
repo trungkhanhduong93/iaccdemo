@@ -34,7 +34,7 @@ table { border-collapse: collapse; }
 .stack { display: flex; flex-direction: column; gap: 14px; }
 
 /* ── Khung ứng dụng kiểu AMIS: sidebar phân hệ · thanh trên · thanh tab ngang · nội dung ── */
-.shell { display: grid; grid-template-columns: 216px minmax(0, 1fr); grid-template-rows: 56px 46px minmax(0, 1fr); height: 100vh; min-width: 1180px; }
+.shell { display: grid; grid-template-columns: 232px minmax(0, 1fr); grid-template-rows: 56px 46px minmax(0, 1fr); height: 100vh; min-width: 1180px; }
 .shell.gon { grid-template-columns: 64px minmax(0, 1fr); }
 .logo { display: block; flex: none; }
 .logo-dau { display: none; }
@@ -4556,7 +4556,6 @@ table.tbl {
   overflow: hidden;
   text-overflow: ellipsis;
   vertical-align: middle;
-  background: #fff;
 }
 
 .tbl tbody tr:hover td {
@@ -4592,7 +4591,7 @@ table.tbl {
   color: rgb(54, 54, 54);
   background: #fff;
   border-top: 1px solid var(--luoi-vien);
-  border-bottom: 0;
+  border-bottom: 1px solid var(--luoi-vien);
   border-left: 0;
   border-right: 1px solid var(--line-2);
   white-space: nowrap;
