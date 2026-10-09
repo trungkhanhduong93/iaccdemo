@@ -3,7 +3,7 @@ import type { ComponentType } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { useSession, cheDoHienTai } from './session'
 import { cheDoCuaGoi } from './che-do'
-import { MODULES, duongDan, maKhoa, manDau, moDuoc, tenMan, timMan } from './registry'
+import { MODULES, duongDan, laBaoCao, maKhoa, manDau, moDuoc, tenMan, timMan } from './registry'
 import { FEATURE, FEATURES, GOI, GOIS, minGoi, type Goi } from './plan'
 import type { ScreenProps } from '../modules/types'
 import { Icon } from '../ui/Icon'
@@ -14,6 +14,7 @@ import { ReportScreen } from '../ui/generic/ReportScreen'
 import { ToolScreen } from '../ui/generic/ToolScreen'
 import { QuyTrinhScreen } from '../ui/generic/QuyTrinhScreen'
 import { BaoCaoScreen } from '../ui/generic/BaoCaoScreen'
+import { ThanhChonBaoCao } from '../modules/bao-cao/ThanhChon'
 
 const GENERIC: Record<string, ComponentType<ScreenProps>> = {
   catalog: CatalogScreen, voucher: VoucherScreen, report: ReportScreen, tool: ToolScreen, quytrinh: QuyTrinhScreen, baocao: BaoCaoScreen,
@@ -25,8 +26,21 @@ export function ScreenRoute() {
   const { mod, sc } = timMan(mk, slug)
   if (!mod) return <Navigate to="/app" replace />
   if (!sc) return <Navigate to={duongDan(mod, manDau(mod, s.goi))} replace />
+  if (mod.key !== 'bao-cao') {
+    if (sc.kind === 'baocao') return <Navigate to={`/app/bao-cao/nhom-${mod.key}`} replace />
+    if (laBaoCao(sc)) return <Navigate to={`/app/bao-cao/${sc.slug}`} replace />
+  }
   if (!moDuoc(sc, s.goi)) return <Locked code={maKhoa(sc)!} ten={tenMan(sc)} crumb={[mod.ten, sc.nhom ?? '']} />
   const C = sc.comp ?? GENERIC[sc.kind]
+  if (sc.goc) {
+    const modGoc = MODULES.find(m => m.key === sc.goc) ?? mod
+    return (
+      <>
+        <ThanhChonBaoCao sc={sc} />
+        <C key={mk + '/' + slug} sc={sc} mod={modGoc} />
+      </>
+    )
+  }
   return <C key={mk + '/' + slug} sc={sc} mod={mod} />
 }
 

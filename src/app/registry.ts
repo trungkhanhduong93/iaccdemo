@@ -15,6 +15,7 @@ import giaThanh from '../modules/gia-thanh'
 import tongHop from '../modules/tong-hop'
 import tienIch from '../modules/tien-ich'
 import heThong from '../modules/he-thong'
+import { TrungTamBaoCao } from '../modules/bao-cao/TrungTam'
 
 /** Màn thuộc tab Báo cáo: nhóm Excel có chữ "báo cáo", trừ màn khai tab: true */
 export function laBaoCao(sc: ScreenDef) {
@@ -22,13 +23,62 @@ export function laBaoCao(sc: ScreenDef) {
   return sc.tab === undefined ? /báo cáo/i.test(sc.nhom ?? '') : !sc.tab
 }
 
+/** Màn vào phân hệ Báo cáo: nhóm Excel có chữ "báo cáo", kể cả màn ép thành tab (Tờ khai 6.2.3) */
+export const vaoBaoCao = (sc: ScreenDef) => sc.kind !== 'quytrinh' && sc.kind !== 'baocao' && /báo cáo/i.test(sc.nhom ?? '')
+
 function dung(m: ModuleDef): ModuleDef {
   const qt: ScreenDef[] = m.quyTrinh ? [{ slug: 'quy-trinh', ten: 'Quy trình', nhom: 'Quy trình', kind: 'quytrinh' }] : []
   const bc: ScreenDef[] = m.screens.some(laBaoCao) ? [{ slug: 'bao-cao', ten: 'Báo cáo', nhom: 'Báo cáo', kind: 'baocao' }] : []
   return { ...m, screens: [...qt, ...m.screens, ...bc] }
 }
 
-export const MODULES: ModuleDef[] = [home, danhMuc, tien, banHang, muaHang, kho, thue, tscd, ccdc, giaThanh, tongHop, tienIch, heThong].map(dung)
+function phanHeBaoCao(nguon: ModuleDef[]): ModuleDef {
+  const tatCa: ScreenDef = {
+    slug: 'tat-ca',
+    ten: 'Tất cả báo cáo',
+    ngan: 'Tất cả báo cáo',
+    nhom: 'Báo cáo',
+    kind: 'custom',
+    comp: TrungTamBaoCao,
+    tab: true,
+  }
+  const nhoms: ScreenDef[] = []
+  const banSao: ScreenDef[] = []
+  for (const m of nguon) {
+    const scs = m.screens.filter(vaoBaoCao)
+    if (scs.length === 0) continue
+    const codes = scs.map(x => x.code).filter((c): c is string => Boolean(c))
+    nhoms.push({
+      slug: `nhom-${m.key}`,
+      ten: `Nhóm báo cáo ${m.ngan}`,
+      nhom: 'Báo cáo',
+      kind: 'custom',
+      comp: TrungTamBaoCao,
+      tab: false,
+      can: codes,
+    })
+    for (const sc of scs) {
+      banSao.push({ ...sc, goc: m.key, tab: false })
+    }
+  }
+  return {
+    key: 'bao-cao',
+    ten: 'Báo cáo',
+    ngan: 'Báo cáo',
+    icon: 'chart',
+    mota: 'Toàn bộ sổ sách, báo cáo chia theo phân hệ',
+    screens: [tatCa, ...nhoms, ...banSao],
+  }
+}
+
+const danhSachCu = [home, danhMuc, tien, banHang, muaHang, kho, thue, tscd, ccdc, giaThanh, tongHop, tienIch, heThong].map(dung)
+const iTongHop = danhSachCu.findIndex(m => m.key === 'tong-hop')
+const baoCao = phanHeBaoCao(danhSachCu)
+export const MODULES: ModuleDef[] = [
+  ...danhSachCu.slice(0, iTongHop + 1),
+  baoCao,
+  ...danhSachCu.slice(iTongHop + 1),
+]
 
 export const tenMan = (sc: ScreenDef) => sc.ten ?? (sc.code ? FEATURE[sc.code]?.n : undefined) ?? sc.slug
 

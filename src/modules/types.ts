@@ -84,6 +84,7 @@ export interface ScreenDef {
   icon?: string   // biểu tượng riêng của màn (tên trong Icon.tsx); không có thì dùng biểu tượng theo loại màn hoặc của phân hệ
   nhom?: string            // nhóm Excel; nhóm có chữ "báo cáo" vào tab Báo cáo
   tab?: boolean            // ép màn báo cáo thành tab riêng (true) hoặc màn khác vào tab Báo cáo (false)
+  goc?: string             // màn báo cáo trong phân hệ Báo cáo: key phân hệ gốc (vd 'mua-hang')
   kind: 'custom' | 'catalog' | 'voucher' | 'report' | 'tool' | 'quytrinh' | 'baocao'
   comp?: ComponentType<ScreenProps>
   catalog?: CatalogCfg

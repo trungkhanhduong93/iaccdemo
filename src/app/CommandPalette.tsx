@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSession } from './session'
-import { MODULES, duongDan, hienMan, hienPhanHe, maKhoa, moDuoc, tenMan } from './registry'
+import { MODULES, duongDan, hienMan, hienPhanHe, laBaoCao, maKhoa, moDuoc, tenMan } from './registry'
 import { minGoi } from './plan'
 import { fold } from '../ui/format'
 import { Icon } from '../ui/Icon'
@@ -13,7 +13,11 @@ export function CommandPalette({ onClose }: { onClose: () => void }) {
   const nav = useNavigate()
   const [q, setQ] = useState('')
   const [i, setI] = useState(0)
-  const all = useMemo(() => MODULES.flatMap(m => m.screens.map(sc => ({ m, sc, t: tenMan(sc), f: fold(tenMan(sc) + ' ' + m.ten + ' ' + (sc.code ?? '')) }))), [])
+  const all = useMemo(() => MODULES.flatMap(m =>
+    m.screens
+      .filter(sc => !(m.key !== 'bao-cao' && laBaoCao(sc)) && !sc.slug.startsWith('nhom-'))
+      .map(sc => ({ m, sc, t: tenMan(sc), f: fold(tenMan(sc) + ' ' + m.ten + ' ' + (sc.code ?? '')) }))
+  ), [])
   const list = useMemo(() => {
     const words = fold(q).split(/\s+/).filter(Boolean)
     return all.filter(x => hienPhanHe(x.m, s.goi) && hienMan(x.sc, s.goi) && words.every(w => x.f.includes(w))).slice(0, 40)

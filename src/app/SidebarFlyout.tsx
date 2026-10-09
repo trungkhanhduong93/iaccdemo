@@ -273,6 +273,33 @@ const FLYOUT_CONFIG: Record<string, FlyoutData> = {
       ],
     },
   },
+  'bao-cao': {
+    trai: {
+      tieuDe: 'Báo cáo hay dùng',
+      items: [
+        { ten: 'Báo cáo tình hình tài chính', di: '/app/bao-cao/10-2-2' },
+        { ten: 'Kết quả kinh doanh', di: '/app/bao-cao/10-2-3' },
+        { ten: 'Báo cáo doanh thu', di: '/app/bao-cao/3-2-3' },
+        { ten: 'Xuất nhập tồn', di: '/app/bao-cao/5-2-3' },
+        { ten: 'Sổ quỹ tiền mặt', di: '/app/bao-cao/2-2-1' },
+        { ten: 'Sổ công nợ', di: '/app/bao-cao/2-2-5' },
+      ],
+    },
+    phai: {
+      tieuDe: 'Theo phân hệ',
+      items: [
+        { ten: 'Tiền', di: '/app/bao-cao/nhom-tien' },
+        { ten: 'Bán hàng', di: '/app/bao-cao/nhom-ban-hang' },
+        { ten: 'Mua hàng', di: '/app/bao-cao/nhom-mua-hang' },
+        { ten: 'Kho', di: '/app/bao-cao/nhom-kho' },
+        { ten: 'Thuế', di: '/app/bao-cao/nhom-thue' },
+        { ten: 'Tài sản cố định', di: '/app/bao-cao/nhom-tscd' },
+        { ten: 'Công cụ dụng cụ', di: '/app/bao-cao/nhom-ccdc' },
+        { ten: 'Giá thành', di: '/app/bao-cao/nhom-gia-thanh' },
+        { ten: 'Tổng hợp', di: '/app/bao-cao/nhom-tong-hop' },
+      ],
+    },
+  },
   'danh-muc': {
     trai: {
       tieuDe: 'Đối tượng & Hàng hoá',

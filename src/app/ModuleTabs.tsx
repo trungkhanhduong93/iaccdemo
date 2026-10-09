@@ -19,7 +19,7 @@ export function ModuleTabs({ mod }: { mod: ModuleDef }) {
   const bc = tabs.find(t => t.kind === 'baocao')
   const slug = loc.pathname.split('/')[3]
   const cur = mod.screens.find(sc => sc.slug === slug)
-  const active = cur && laBaoCao(cur) ? 'bao-cao' : slug
+  const active = mod.key === 'bao-cao' ? 'tat-ca' : (cur && laBaoCao(cur) ? 'bao-cao' : slug)
 
   const wrap = useRef<HTMLDivElement>(null)
   const meas = useRef<HTMLDivElement>(null)
