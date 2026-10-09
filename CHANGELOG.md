@@ -4,6 +4,9 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 09/10/2026
 
+- T55: Màn xem báo cáo gọn: tên báo cáo, ngày, lọc, in, xuất cùng một hàng trên cùng; báo cáo kéo tới đáy màn hình. Báo cáo hiện thành một tờ liền, không chia trang khi xem; in vẫn chia trang A4.
+- T54: Sổ quỹ tiền mặt, Sổ ngân hàng lọc theo quỹ tiền, số tồn tính lại theo quỹ; Sổ công nợ lọc theo đối tượng. Sổ ngân hàng có cột Quỹ tiền, xem tất cả quỹ mặc định khổ ngang. Gói Free không còn Sổ chi tiết tiền và Sổ công nợ ở Thu chi.
+- T53: Thanh bên trái có đường kẻ giữa Danh mục và Hệ thống.
 - T52: Thanh bên trái sắp lại: Thu chi (trước là Tiền), Kê khai thuế (trước là Thuế) dưới Chi phí phân bổ (trước là Công cụ dụng cụ), Danh mục xuống ngay trên Hệ thống. Bán hàng có tab Xuất bán POS chỉ tải từ FABi, không lập tay; từ gói Plus có tab Bán hàng lập tay. Gói Free: Bán hàng chỉ Xuất bán POS, Kho chỉ Kiểm kê và Xuất nhập tồn, có Mua hàng và Sổ công nợ nhà cung cấp. Gói Free không còn Tổng hợp (Kết quả kinh doanh xem ở Báo cáo), form không có Đính kèm.
 - T51: Form phiếu thu chi có ô Quỹ tiền mặt hoặc Tài khoản ngân hàng ở đầu phiếu; Ghi chú cạnh Địa chỉ. Lưu phiếu mới thì ở lại xem phiếu. Tab Lịch sử có ở gói Free, ghi thêm mới, sửa (ô nào đổi), xoá; Nhật ký thao tác hiện cả phiếu đã xoá.
 - T50: Tối ưu bộ khung 1 trang nhìn theo LedgerStudio: danh sách chứng từ và báo cáo chuẩn 100vh không bị thanh cuộn ngoài. Danh sách chứng từ tích hợp Virtual Scrolling cuộn mượt cho dữ liệu lớn, chống giật rung cột khi cuộn, thêm thanh gom nhóm đa cấp (GroupZone) xem tổng hợp nhanh theo loại phiếu, ngày, đối tượng. Màn báo cáo tối ưu hiệu năng cuộn bảng lớn với content-visibility.

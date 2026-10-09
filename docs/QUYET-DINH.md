@@ -365,7 +365,18 @@ Lý do: Trum giao việc T50 ngày 09/10/2026, đúc kết từ kiến trúc c�
 - Gói Free có Mua hàng 4.1.1 và Sổ công nợ nhà cung cấp 4.2.3 (màn mới, chưa có trong Excel, khai ở `BO_SUNG` của `plan.ts`).
 - Gói Free không có tab Đính kèm trong form chứng từ.
 - Đổi tên phân hệ: Kế toán tiền thành Thu chi, Thuế GTGT thành Kê khai thuế, Công cụ dụng cụ thành Chi phí phân bổ. Gói Free giữ Chi phí phân bổ và ô Tháng hạch toán lãi lỗ.
-- Danh mục nằm dưới đường kẻ, ngay trên Hệ thống. Kê khai thuế nằm ngay dưới Công cụ dụng cụ. Áp ở mọi gói.
+- Danh mục nằm dưới đường kẻ, ngay trên Hệ thống; giữa Danh mục và Hệ thống cũng có đường kẻ (T53). Kê khai thuế nằm ngay dưới Công cụ dụng cụ. Áp ở mọi gói.
 - Các thay đổi gói ghi tạm ở `THEO_ROADMAP`, `BO_SUNG` của `src/app/plan.ts`; Trum cập nhật Excel tính năng rồi chạy lại `tools/xuat_tinh_nang.py` thì xoá các dòng đó.
 
 Lý do: PhuongXT chốt ngày 09/10/2026 (T52).
+
+## QD36. Sổ thu chi lọc theo quỹ tiền, màn xem báo cáo một tờ liền (09/10/2026)
+
+- Sổ quỹ tiền mặt, Sổ ngân hàng có bộ lọc Quỹ tiền; Sổ công nợ có bộ lọc Đối tượng. Không có bộ lọc Chi nhánh vì sổ theo chi nhánh chọn trên thanh trên.
+- Lọc quỹ thì số liệu sổ tính lại theo quỹ đó, không chỉ ẩn dòng, nên tồn đầu, tồn cuối đúng. Danh sách chọn khai cố định ở `ds` của `LocBC` (`bao-cao/danh-sach.ts`).
+- Sổ ngân hàng tách theo tài khoản: xem tất cả quỹ thì có cột Quỹ tiền và mặc định khổ ngang. Khổ người dùng chọn nhớ theo báo cáo và khổ mặc định của trường hợp đang xem (`ToGiay.tsx`).
+- Gói Free không có Sổ chi tiết tiền 2.2.7 và Sổ công nợ 2.2.5 ở Thu chi; công nợ xem ở Sổ công nợ nhà cung cấp 4.2.3 của Mua hàng.
+- Màn xem báo cáo: hàng trên cùng gồm nút về Tất cả báo cáo, ô chọn báo cáo kiêm tiêu đề, ngày, lọc, in, xuất. Ẩn thanh tab của phân hệ Báo cáo khi đang xem một báo cáo. Khung báo cáo kéo tới đáy màn hình.
+- Xem trên màn hình là một tờ liền: không ngắt trang, không dòng cộng chuyển trang, không số trang, không nút Liên tục/Từng trang, không nút In ở thanh dưới. In và xuất file vẫn chia trang theo khổ giấy.
+
+Lý do: PhuongXT chốt ngày 09/10/2026 (T54, T55).

@@ -44,12 +44,13 @@ const THEO_ROADMAP: Record<string, Goi[]> = {
   // Kho chỉ còn Kiểm kê 5.1.10 và Báo cáo xuất nhập tồn 5.2.3; mở Mua hàng. PhuongXT chốt 09/10/2026 (T52)
   '5.2.4': ['S', 'PL', 'PR'],
   '4.1.1': ['F', 'S', 'PL', 'PR'],
+  '2.2.5': ['S', 'PL', 'PR'],         // gói Free bỏ Sổ công nợ ở Thu chi, dùng Sổ công nợ nhà cung cấp ở Mua hàng, PhuongXT chốt (T54)
 }
 
 /** Màn bổ sung theo thông tư chưa có trong Excel (T47, kế hoạch mục 7.3). Trum cập nhật Excel và chạy lại tools/xuat_tinh_nang.py có đủ mã thì xoá dòng tương ứng ở đây */
 const BO_SUNG: (Omit<Feature, 'g'> & { g: Goi[] })[] = [
   { c: '2.2.6', m: 1, n: 'Sổ chi tiết tiền vay', grp: 'Sổ sách, báo cáo', g: ['PL', 'PR'], gd: 2, ivt: 0 },
-  { c: '2.2.7', m: 1, n: 'Sổ chi tiết tiền', grp: 'Sổ sách, báo cáo', g: ['F', 'S'], gd: 2, ivt: 0 },
+  { c: '2.2.7', m: 1, n: 'Sổ chi tiết tiền', grp: 'Sổ sách, báo cáo', g: ['S'], gd: 2, ivt: 0 },   // gói Free bỏ, PhuongXT chốt (T54)
   { c: '3.2.5', m: 2, n: 'Sổ doanh thu bán hàng', grp: 'Sổ sách, báo cáo', g: ['S', 'PL', 'PR'], gd: 2, ivt: 0 },   // gói Free bỏ (T52)
   { c: '3.1.7', m: 2, n: 'Bán hàng', grp: 'Chứng từ', g: ['PL', 'PR'], gd: 2, ivt: 0 },   // bán hàng lập tay ngoài POS, từ gói Plus, PhuongXT thêm (T52)
   { c: '4.2.3', m: 3, n: 'Sổ công nợ nhà cung cấp', grp: 'Sổ sách, báo cáo', g: ['F', 'S', 'PL', 'PR'], gd: 2, ivt: 0 },   // PhuongXT thêm cho gói Free (T52)

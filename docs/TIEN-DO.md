@@ -4,7 +4,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T52.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T55.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
@@ -34,6 +34,9 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T55 | Màn xem báo cáo gọn: ô chọn báo cáo kiêm tiêu đề, thanh công cụ cùng hàng, ẩn thanh tab khi xem một báo cáo, bỏ khoảng trống đáy; xem một tờ liền, bỏ ngắt trang, Liên tục/Từng trang, nút In dưới; in vẫn chia trang (QD36) | PhuongXT | 09/10/2026 | `2026-10-09-phuongxt-so-thu-chi-bao-cao-gon.md` |
+| T54 | Thu chi: gói Free ẩn Sổ chi tiết tiền, Sổ công nợ; Sổ quỹ, Sổ ngân hàng lọc Quỹ tiền (số tồn tính lại); Sổ công nợ lọc Đối tượng; Sổ ngân hàng cột Quỹ tiền, xem tất cả quỹ mặc định khổ ngang (QD36) | PhuongXT | 09/10/2026 | `2026-10-09-phuongxt-so-thu-chi-bao-cao-gon.md` |
+| T53 | Thanh bên trái: đường kẻ giữa Danh mục và Hệ thống (QD35) | PhuongXT | 09/10/2026 | `2026-10-09-phuongxt-so-thu-chi-bao-cao-gon.md` |
 | T52 | Gói Free gọn theo hộ kinh doanh: Bán hàng chỉ Xuất bán POS, Kho chỉ Kiểm kê và Xuất nhập tồn, mở Mua hàng và Sổ công nợ NCC, ẩn Tổng hợp, bỏ Đính kèm. Đổi tên Thu chi, Kê khai thuế, Chi phí phân bổ; sắp lại thanh bên trái; tab Bán hàng lập tay từ Plus (QD35) | PhuongXT | 09/10/2026 | `2026-10-09-phuongxt-goi-free-phan-he.md` |
 | T51 | Form phiếu thu chi: ô Quỹ (tiền mặt theo chi nhánh, ngân hàng), Ghi chú cạnh Địa chỉ, lưu xong ở lại xem phiếu; nhật ký thêm mới, sửa, xoá; tab Lịch sử có từ gói Free (QD33) | PhuongXT | 09/10/2026 | `2026-10-09-phuongxt-quy-nhat-ky-phieu.md` |
 | T50 | Tối ưu bộ khung 1 trang nhìn và bigdata cho Danh sách chứng từ và Báo cáo theo LedgerStudio (QD34) | Trum | 09/10/2026 | `2026-10-09-trum-toi-uu-khung-bang-ledgerstudio.md` |

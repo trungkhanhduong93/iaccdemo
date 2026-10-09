@@ -191,7 +191,9 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
   coChu?: number            // cỡ chữ bảng theo tuỳ chỉnh (px)
 }): JSX.Element {
   const path = useLocation().pathname
-  const [kho, setKho] = useState<Kho>(() => docKho(path) ?? khoMacDinh)
+  // Khổ đã chọn nhớ theo báo cáo và theo khổ mặc định của trường hợp đang xem, vd Sổ ngân hàng tất cả quỹ (ngang) và một quỹ (dọc) nhớ riêng (T54)
+  const khoaKho = `${path}:${khoMacDinh}`
+  const [kho, setKho] = useState<Kho>(() => docKho(khoaKho) ?? khoMacDinh)
   const [xem, setXem] = useState<Xem>(docXem)
   const [d, setD] = useState<Do | null>(null)
   const [trang, setTrang] = useState(0)
@@ -232,7 +234,7 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
   const buoc = hPx + CACH
 
   // Đổi báo cáo: lấy khổ đã chọn của báo cáo đó
-  useEffect(() => { setKho(docKho(path) ?? khoMacDinh) }, [path, khoMacDinh])
+  useEffect(() => { setKho(docKho(khoaKho) ?? khoMacDinh) }, [khoaKho])
 
   // Đo khung ẩn: khi thân, khổ đổi, khi phông tải xong, khi khung đo đổi cỡ
   const doLai = () => {
@@ -275,27 +277,20 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
   const z = xem.zoom === 'vua' ? zVua : xem.zoom / 100
 
   const doiXem = (p: Partial<Xem>) => setXem(x => { const n = { ...x, ...p }; ghi('bc-xem', JSON.stringify(n)); return n })
-  const doiKho = (k: Kho) => { setKho(k); ghi(`bc-kho:${path}`, k) }
+  const doiKho = (k: Kho) => { setKho(k); ghi(`bc-kho:${khoaKho}`, k) }
 
-  const trRef = useRef(tr)
-  trRef.current = tr
-  useEffect(() => { setOTrang(String(tr + 1)) }, [tr])
-  // Đổi zoom, đổi chế độ xem: giữ trang đang xem
-  useLayoutEffect(() => {
-    if (xem.che === 'lien' && ban.current) ban.current.scrollTop = DEM + trRef.current * buoc * z
-  }, [z, xem.che, buoc])
-
-  const toi = (i: number) => {
-    const j = Math.max(0, Math.min(N - 1, i))
-    setTrang(j)
-    if (xem.che === 'lien' && ban.current) ban.current.scrollTop = DEM + j * buoc * z
-  }
-  const cuon = () => {
-    const e = ban.current
-    if (!e || xem.che !== 'lien') return
-    const cuoiBan = e.scrollTop + e.clientHeight >= e.scrollHeight - 2
-    setTrang(cuoiBan ? N - 1 : Math.max(0, Math.min(N - 1, Math.floor((e.scrollTop - DEM + e.clientHeight / 3) / (buoc * z)))))
-  }
+  // Xem trên màn hình là một tờ liền, không chia trang (T55): đo chiều cao tờ để khung cuộn đúng theo zoom.
+  // Chia trang, dòng cộng chuyển trang, số trang chỉ còn khi in và xuất file
+  const toLien = useRef<HTMLDivElement>(null)
+  const [caoLien, setCaoLien] = useState(hPx)
+  useEffect(() => {
+    const e = toLien.current
+    if (!e) return
+    const ro = new ResizeObserver(() => setCaoLien(e.offsetHeight))
+    ro.observe(e)
+    setCaoLien(e.offsetHeight)
+    return () => ro.disconnect()
+  }, [])
 
   // In: vẽ mọi trang ra khung riêng gắn vào body, đặt khổ giấy theo khổ đang xem rồi gọi hộp in
   useEffect(() => {
@@ -357,9 +352,16 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
       + m.rong.map((w, c) => `.${pv} .bc-bang-${i} .rpt th:nth-child(${c + 1}){width:${w.toFixed(2)}px!important;box-sizing:border-box}`).join('')
   }).join('') : ''
 
-  const lien = xem.che === 'lien'
-  const hienTat = lien ? trangDs.map((_, i) => veTrang(i, N > 30 && Math.abs(i - tr) > 2)) : [veTrang(tr, false)]
-  const caoSizer = lien ? (N * buoc - CACH) * z : hPx * z
+  const toMotTrang = (
+    <div ref={toLien} className="bc-trang paper bc-to-lien" style={{ width: `${kt.w}mm`, minHeight: `${kt.h}mm`, padding: kieuTrang.padding }}>
+      <div className="bc-khoi">{dau}</div>
+      {khoi.map((kh, i) => kh.loai === 'bang'
+        ? <div key={i} className={`bc-khoi bc-bang-${i}`}><RptTable cols={kh.cols} rows={kh.rows} onRow={kh.onRow} kyHieuCot={kyHieuCot} /></div>
+        : kh.loai === 'nguyen' ? <div key={i} className="bc-khoi">{kh.el}</div> : null)}
+      {cuoi && <div className="bc-khoi">{cuoi}</div>}
+    </div>
+  )
+  const caoSizer = caoLien * z
   const pct = Math.round(z * 100)
   const nho = () => doiXem({ zoom: [...MUC_ZOOM].reverse().find(m => m < pct) ?? MUC_ZOOM[0] })
   const to = () => doiXem({ zoom: MUC_ZOOM.find(m => m > pct) ?? MUC_ZOOM[MUC_ZOOM.length - 1] })
@@ -368,25 +370,16 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
     <SoTrangCtx.Provider value={N}>
       <div className="bc-giay" style={coChu ? { '--bc-co-chu': `${coChu}px` } as CSSProperties : undefined}>
         {css && <style>{css}</style>}
-        <div className="bc-ban" ref={ban} onScroll={cuon}>
+        <div className="bc-ban" ref={ban}>
           <div className="bc-sizer" style={{ width: wPx * z, height: caoSizer }}>
             <div className={`bc-ds-trang ${pv}`} style={{ width: wPx, transform: `scale(${z})` }}>
-              {hienTat}
+              {toMotTrang}
             </div>
           </div>
         </div>
 
         <div className="bc-thanh">
           <div className="bc-thanh-nhom">
-            <button type="button" className="icon-btn sm" title="Trang đầu" aria-label="Trang đầu" disabled={tr <= 0} onClick={() => toi(0)}><Net d="M12 7l-5 5 5 5M18 7l-5 5 5 5" /></button>
-            <button type="button" className="icon-btn sm" title="Trang trước" aria-label="Trang trước" disabled={tr <= 0} onClick={() => toi(tr - 1)}><Icon n="chevl" className="ic sm" /></button>
-            <input className="bc-o-trang" value={oTrang} aria-label="Số trang" inputMode="numeric"
-              onChange={e => setOTrang(e.target.value.replace(/\D/g, ''))}
-              onKeyDown={e => { if (e.key === 'Enter') { const v = Number(oTrang); if (v) toi(v - 1); else setOTrang(String(tr + 1)) } }}
-              onBlur={() => setOTrang(String(tr + 1))} />
-            <span className="bc-thanh-nhan">/ {N}</span>
-            <button type="button" className="icon-btn sm" title="Trang sau" aria-label="Trang sau" disabled={tr >= N - 1} onClick={() => toi(tr + 1)}><Icon n="chevr" className="ic sm" /></button>
-            <button type="button" className="icon-btn sm" title="Trang cuối" aria-label="Trang cuối" disabled={tr >= N - 1} onClick={() => toi(N - 1)}><Net d="M6 7l5 5-5 5M12 7l5 5-5 5" /></button>
             {!giay && <span className="bc-thanh-dem">{tongDong.toLocaleString('vi-VN')} dòng</span>}
           </div>
 
@@ -400,11 +393,6 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
                 </div>
               </>
             )}
-            <span className="bc-thanh-nhan">Xem</span>
-            <div className="seg">
-              <button type="button" className={lien ? 'on' : ''} onClick={() => doiXem({ che: 'lien' })}>Liên tục</button>
-              <button type="button" className={!lien ? 'on' : ''} onClick={() => doiXem({ che: 'tung' })}>Từng trang</button>
-            </div>
           </div>
 
           <div className="bc-thanh-nhom">
@@ -420,7 +408,6 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
             </Dropdown>
             <button type="button" className="icon-btn sm" title="Phóng to" aria-label="Phóng to" disabled={pct >= MUC_ZOOM[MUC_ZOOM.length - 1]} onClick={to}><Icon n="plus" className="ic sm" /></button>
             <button type="button" className={`btn sm${xem.zoom === 'vua' ? ' on' : ''}`} onClick={() => doiXem({ zoom: 'vua' })}>Vừa khung</button>
-            <button type="button" className="icon-btn sm" title="In" aria-label="In" onClick={() => setDangIn(true)}><Icon n="printer" className="ic sm" /></button>
           </div>
         </div>
 

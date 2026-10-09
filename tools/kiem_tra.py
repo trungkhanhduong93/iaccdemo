@@ -115,7 +115,7 @@ def main():
                     continue
                 for ky in ['8', '9', '10']:
                     # kỳ chọn bằng ô khoảng ngày (ui/ChonNgay.tsx): mở lịch, sang Chọn tháng, bấm tháng của năm 2026 rồi Xác nhận
-                    pg.locator('.report .kn-nut').first.click()
+                    pg.locator('.bc-chon .kn-nut, .report .kn-nut').first.click()   # thanh công cụ báo cáo nằm ở hàng tiêu đề (T55)
                     pg.locator('.kn-pop').get_by_role('button', name='Chọn tháng', exact=True).click()
                     pg.locator('.kn-luoi-thang').first.get_by_role('button', name=f'Thg {ky}', exact=True).click()
                     pg.locator('.kn-pop').get_by_role('button', name='Xác nhận', exact=True).click()

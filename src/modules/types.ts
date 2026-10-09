@@ -66,6 +66,7 @@ export interface ReportCfg {
   rows?: (thang: number) => Row[]
   taiKhoan?: string                      // sổ theo tài khoản
   theoCn?: boolean                       // số liệu theo chi nhánh chọn trên thanh trên
+  theoTk?: boolean                       // sổ tách theo tài khoản ngân hàng, lọc được theo quỹ tiền (T54)
 }
 
 /** Tiện ích, chức năng chạy theo lệnh */

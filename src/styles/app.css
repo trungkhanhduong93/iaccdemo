@@ -3519,3 +3519,18 @@ body.tkmi-dang-keo, body.tkmi-dang-keo * {
     content-visibility: visible !important;
   }
 }
+
+/* ── Màn xem báo cáo gọn: thanh chọn báo cáo cùng khung 1 trang nhìn, bỏ dòng tiêu đề trùng (T55) ── */
+.main:has(.page-report) { display: flex; flex-direction: column; }
+.main:has(.page-report) > .bc-chon { flex: none; padding: 8px 14px 0; gap: 8px; }
+.main:has(.page-report) > .page-report { flex: 1; min-height: 0; height: auto; }
+/* Tiêu đề đã nằm ở ô chọn báo cáo nên ẩn dòng tiêu đề của trang */
+.bc-chon + .page-report > .ph { display: none; }
+.bc-chon .sel { min-width: 0; width: auto; height: 34px; padding: 0 10px; border-color: transparent; background: transparent; font-size: 18px; font-weight: 800; color: var(--ink); }
+.bc-chon .sel:hover, .bc-chon .sel.open { border-color: var(--line); background: var(--white); }
+/* Đang xem một báo cáo: ẩn thanh tab chỉ có Tất cả báo cáo (đã có nút quay lại ở thanh chọn), báo cáo lấy chỗ của thanh tab */
+.shell:has(.bc-chon) .mtabs { display: none; }
+.shell:has(.bc-chon) .main { grid-row: 2 / 4; }
+/* Thanh công cụ báo cáo nằm cùng hàng tên báo cáo */
+.bc-chon-phai { flex: 1; min-width: 0; }
+.bc-chon-phai .thanh-loc { padding: 0; border: 0; background: transparent; }

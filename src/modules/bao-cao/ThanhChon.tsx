@@ -30,6 +30,8 @@ export function ThanhChonBaoCao({ sc }: { sc: ScreenDef }) {
           )
         })}
       </Select>
+      {/* Thanh công cụ của báo cáo (ngày, lọc, in, xuất) gắn vào đây, cùng hàng tên báo cáo (T55) */}
+      <div className="bc-chon-phai" id="bc-chon-phai" />
     </div>
   )
 }

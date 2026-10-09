@@ -1,5 +1,6 @@
 // Sổ quỹ tiền mặt theo chi nhánh chọn trên thanh trên, xem tất cả thì gộp quỹ các chi nhánh. Thu bán hàng lấy đúng tiền mặt từng ngày trên FABi.
 import { useMemo, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import type { Col, Row, ScreenProps } from '../types'
 import { tenMan } from '../../app/registry'
 import { chiNhanhHienTai, useSession } from '../../app/session'
@@ -8,6 +9,8 @@ import { CHI_NHANH, DAILY } from '../../data/mock'
 import { dsTkTheoCheDo } from '../tong-hop/so-cai'
 import { PageHead } from '../../ui/Page'
 import { gopSo, ReportPaper, ReportToolbar, RptTable } from '../../ui/generic/ReportScreen'
+import { useTrangThaiLoc } from '../../ui/bao-cao/tuyChinhBC'
+import { tenQuyTm } from '../bao-cao/danh-sach'
 import { between, dmy, k, pad, pick, rng } from '../../ui/format'
 
 /** Sổ quỹ tiền mặt một chi nhánh trong tháng */
@@ -38,25 +41,30 @@ export function SoQuy({ sc, mod }: ScreenProps) {
   const [ky, setKy] = useState('9')
   const cn = chiNhanhHienTai(s)
   const thang = Number(ky)
+  // Bộ lọc Quỹ tiền (T54); chi nhánh theo thanh trên. Sổ tính lại theo quỹ được chọn nên tồn đầu, tồn cuối đúng
+  const { loc } = useTrangThaiLoc(useLocation().pathname)
+  const chonQuy = loc.locQuy?.[0]
+  const dsCn = CHI_NHANH.filter(c => (!cn || c.id === cn.id) && (!chonQuy || tenQuyTm(c.ngan) === chonQuy))
   const noco = kieuGhiSo(s.cheDo) === 'noco'
   // Số hiệu TK đối ứng đổi theo chế độ kế toán (TT99 hiện 641, 642)
   const so = useMemo(() => {
-    const g = cn ? soQuyCn(cn.id, thang) : gopSo(CHI_NHANH.map(c => ({ cn: c.ngan, ...soQuyCn(c.id, thang) })))
-    return { ...g, rows: g.rows.map(x => x.tk ? { ...x, tk: dsTkTheoCheDo(String(x.tk), s.cheDo) } : x) }
-  }, [cn, thang, s.cheDo])
+    const g = dsCn.length === 1 ? soQuyCn(dsCn[0].id, thang) : gopSo(dsCn.map(c => ({ cn: c.ngan, ...soQuyCn(c.id, thang) })))
+    // Dòng mang giá trị đang lọc để khung lọc chung giữ lại
+    return { ...g, rows: g.rows.map(x => ({ ...x, locQuy: chonQuy, ...(x.tk ? { tk: dsTkTheoCheDo(String(x.tk), s.cheDo) } : {}) })) }
+  }, [dsCn.map(c => c.id).join(), chonQuy, thang, s.cheDo])
 
   const cols: Col[] = [
     { k: 'ngay', t: 'Ngày chứng từ', w: 100 }, { k: 'thu', t: 'Số phiếu thu', cls: 'code' }, { k: 'chi', t: 'Số phiếu chi', cls: 'code' },
-    ...(cn ? [] : [{ k: 'cn', t: 'Chi nhánh' } as Col]), { k: 'dg', t: 'Diễn giải' },
+    ...(dsCn.length > 1 ? [{ k: 'cn', t: 'Chi nhánh' } as Col] : []), { k: 'dg', t: 'Diễn giải' },
     ...(noco ? [{ k: 'tk', t: 'TK đối ứng', c: true } as Col] : []),
     { k: 'no', t: 'Thu', num: true }, { k: 'co', t: 'Chi', num: true }, { k: 'du', t: 'Tồn', num: true },
   ]
   return (
-    <div className="page">
+    <div className="page page-report">
       <PageHead crumb={[mod.ten, sc.nhom ?? '']} title={tenMan(sc)} code={sc.code} />
       <section className="report">
         <ReportToolbar ky={ky} setKy={setKy} />
-        <ReportPaper title="Sổ quỹ tiền mặt" sub={`${cn ? 'Quỹ tiền mặt ' + cn.ngan : 'Quỹ tiền mặt tất cả chi nhánh'} · Tháng ${thang}/2026`}>
+        <ReportPaper title="Sổ quỹ tiền mặt" sub={`${dsCn.length === 1 ? tenQuyTm(dsCn[0].ngan) : 'Quỹ tiền mặt tất cả chi nhánh'} · Tháng ${thang}/2026`}>
           <RptTable cols={cols} rows={[{ dg: 'Số tồn đầu kỳ', du: so.mo, _b: 1 }, ...so.rows, { dg: 'Cộng phát sinh trong kỳ', no: so.tn, co: so.tc, _t: 1 }, { dg: 'Số tồn cuối kỳ', du: so.cuoi, _t: 1 }]} />
         </ReportPaper>
       </section>

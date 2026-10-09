@@ -1,9 +1,19 @@
 // Cấu hình mẫu từng sổ, báo cáo theo chế độ kế toán (kế hoạch mục 5, 7.2). Ký hiệu chưa đối chiếu văn bản gốc, chờ kế toán trưởng duyệt (T04).
 import type { CheDo } from '../../app/che-do'
 import type { Kho } from '../../ui/bao-cao/ToGiay'
+import { CHI_NHANH, TK_NGAN_HANG } from '../../data/mock'
 
 export type LoaiBC = 'so' | 'bctc' | 'baocao' | 'tokhai'
-export interface LocBC { k: string; nhan: string; kieu: 'chon' | 'chonNhieu' }
+export interface LocBC {
+  k: string; nhan: string; kieu: 'chon' | 'chonNhieu'
+  ds?: (cnId?: string) => string[]   // danh sách chọn cố định theo chi nhánh trên thanh trên, không lấy từ dòng bảng (T54)
+}
+
+/** Bộ lọc Quỹ tiền của sổ thu chi; chi nhánh theo thanh trên. Số liệu sổ tính lại theo lựa chọn để tồn đầu, tồn cuối đúng (T54) */
+const cnCua = (id?: string) => CHI_NHANH.filter(c => !id || c.id === id)
+export const tenQuyTm = (ngan: string) => `Quỹ tiền mặt ${ngan}`
+export const tenTkNh = (t: { so: string; nh: string }) => `${t.nh.split(',')[0]} ${t.so}`
+
 
 export interface CauHinhBC {
   loai: LoaiBC
@@ -20,11 +30,14 @@ export interface CauHinhBC {
 const baoCao = (kho: Kho, opt?: { loc?: LocBC[]; nhomDuoc?: string[]; anKhongPS?: boolean }): CauHinhBC => ({ loai: 'baocao', kho, ...opt })
 
 export const CAU_HINH_BC: Record<string, CauHinhBC> = {
-  '2.2.1': { loai: 'so', kho: 'doc', kyHieu: { TT133: 'S04a-DNN', TT99: 'S07-DN' }, congCot: ['no', 'co'] },
+  '2.2.1': { loai: 'so', kho: 'doc', kyHieu: { TT133: 'S04a-DNN', TT99: 'S07-DN' }, congCot: ['no', 'co'],
+    loc: [{ k: 'locQuy', nhan: 'Quỹ tiền', kieu: 'chon', ds: id => cnCua(id).map(c => tenQuyTm(c.ngan)) }] },
   '2.2.2': { loai: 'so', kho: 'ngang', kyHieu: { TT133: 'S19-DNN', TT99: 'S38-DN' }, ten: { TT133: 'Sổ chi tiết các tài khoản', TT99: 'Sổ chi tiết các tài khoản' }, congCot: ['no', 'co'] },
-  '2.2.3': { loai: 'so', kho: 'doc', kyHieu: { TT133: 'S05-DNN', TT99: 'S08-DN' }, ten: { TT133: 'Sổ tiền gửi ngân hàng', TT99: 'Sổ tiền gửi ngân hàng' }, congCot: ['no', 'co'] },
+  '2.2.3': { loai: 'so', kho: 'doc', kyHieu: { TT133: 'S05-DNN', TT99: 'S08-DN' }, ten: { TT133: 'Sổ tiền gửi ngân hàng', TT99: 'Sổ tiền gửi ngân hàng' }, congCot: ['no', 'co'],
+    loc: [{ k: 'locQuy', nhan: 'Quỹ tiền', kieu: 'chon', ds: () => TK_NGAN_HANG.map(tenTkNh) }] },
   '2.2.4': { loai: 'so', kho: 'ngang', kyHieu: { TT133: 'S03a-DNN', TT99: 'S03a-DN' }, ten: { TT133: 'Sổ nhật ký chung', TT99: 'Sổ nhật ký chung' }, congCot: ['no', 'co'] },
-  '2.2.5': { loai: 'so', kho: 'ngang', kyHieu: { TT58: 'S4a-DNSN', TT133: 'S12-DNN', TT99: 'S31-DN' }, anKhongPS: true },
+  '2.2.5': { loai: 'so', kho: 'ngang', kyHieu: { TT58: 'S4a-DNSN', TT133: 'S12-DNN', TT99: 'S31-DN' }, anKhongPS: true,
+    loc: [{ k: 'ten', nhan: 'Đối tượng', kieu: 'chonNhieu' }] },
   '2.2.6': { loai: 'so', kho: 'ngang', kyHieu: { TT133: 'S15-DNN', TT99: 'S34-DN' }, congCot: ['no', 'co'] },
   '2.2.7': { loai: 'so', kho: 'doc', kyHieu: { TT152: 'S2e-HKD', TT58: 'S2d-DNSN' }, congCot: ['thu', 'chi'] },
   '3.2.1': baoCao('ngang', { loc: [{ k: 'nhom', nhan: 'Nhóm món', kieu: 'chon' }], nhomDuoc: ['nhom'], anKhongPS: true }),
