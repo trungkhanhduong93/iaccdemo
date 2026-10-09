@@ -359,7 +359,8 @@ Lý do: Trum giao việc T50 ngày 09/10/2026, đúc kết từ kiến trúc c�
 
 ## QD35. Gói Free gọn theo hộ kinh doanh, đổi tên phân hệ, Danh mục xuống dưới (09/10/2026)
 
-- Gói Free không có phân hệ Tổng hợp. Bỏ khỏi gói Free: 3.2.5, 10.4.1. Giữ Báo cáo kết quả kinh doanh 10.2.3, xem ở phân hệ Báo cáo.
+- Gói Free không có phân hệ Tổng hợp. Bỏ khỏi gói Free: 3.2.5, 10.4.1. Giữ Báo cáo kết quả kinh doanh 10.2.3, xem ở phân hệ Báo cáo.
+
 - Phân hệ Bán hàng, mọi gói: tab chứng từ 3.1.1 tên Xuất bán POS. Chứng từ chỉ đổ về từ phần mềm bán hàng (nút Tải từ FABi), không lập tay, giống Xuất bán POS của Inventory. Gói Free chỉ có tab này. Từ gói Plus có thêm tab Bán hàng 3.1.7 (lập tay bán ngoài POS: tiệc, khách công ty; màn mới khai ở `BO_SUNG`) và Hoá đơn bán hàng 3.1.2.
 - Gói Free có phân hệ Kho chỉ với Kiểm kê 5.1.10 và Báo cáo xuất nhập tồn 5.2.3; bỏ Tồn kho tức thời 5.2.4, Sổ chi tiết vật liệu, dụng cụ, hàng hoá 5.2.8.
 - Gói Free có Mua hàng 4.1.1 và Sổ công nợ nhà cung cấp 4.2.3 (màn mới, chưa có trong Excel, khai ở `BO_SUNG` của `plan.ts`).
@@ -380,3 +381,5 @@ Lý do: PhuongXT chốt ngày 09/10/2026 (T52).
 - Xem trên màn hình là một tờ liền: không ngắt trang, không dòng cộng chuyển trang, không số trang, không nút Liên tục/Từng trang, không nút In ở thanh dưới. In và xuất file vẫn chia trang theo khổ giấy.
 
 Lý do: PhuongXT chốt ngày 09/10/2026 (T54, T55).
+
+## QD37. Màn xem báo cáo gộp T55 và bản Anti (đang soạn)

@@ -4,13 +4,16 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T56.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T59.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T57 | Màn xem báo cáo: gộp T55 với phần tốt của bản Anti. Bỏ tiêu đề lặp, khung kéo tới đáy, nút In, Xuất, Tuỳ chỉnh có chữ, chế độ xem Tờ in hoặc Bảng dữ liệu, bỏ "0 dòng" sai (QD37) | Trum | Đang làm | Sửa `ReportScreen.tsx`, `ToGiay.tsx`, `ThanhChon.tsx`, `app.css`. Antigravity làm |
+| T58 | Màn Tất cả báo cáo: biểu tượng theo loại sổ, báo cáo; thẻ cao đều; mục Mở gần đây; ẩn thanh tab chỉ có một tab | Trum | Chờ | Sửa `BaoCaoScreen.tsx`, `app.css`, có thể `Shell.tsx`. Làm sau T57 |
+| T59 | Màn Thiết kế mẫu in 11.11: thanh tab bên phải một hàng, ô tìm mẫu bên trái, xem trước vừa khung | Trum | Chờ | Sửa `ThietKeMauIn.tsx`, `app.css`. Làm sau T58 |
 | T27 | Danh sách chứng từ 2.1.1: khung chi tiết bên dưới hiện dòng phiếu khác với form của cùng phiếu (UNC2610-0259: khung ghi "Chi mua rau, củ tại chợ", form ghi "Trả tiền nhà cung cấp thịt bò") | | Chờ | Thấy khi làm T26 |
 | T02 | Chốt nghiệp vụ trên từng sơ đồ Quy trình: ô nào, nối thế nào, câu chữ. Sửa ở `src/modules/<phân hệ>/quy-trinh.ts` | Trum | Chờ | |
 | T03 | Nối sổ quỹ, sổ tài khoản 2.2.2, sổ ngân hàng 2.2.3, sổ công nợ 2.2.5 vào `so-cai.ts` để mọi sổ khớp báo cáo tài chính | | Chờ | Sổ quỹ đang tính riêng từ tiền mặt FABi từng chi nhánh. Tổng 3 quỹ chưa bằng dư TK 1111 trên cân đối kế toán |
