@@ -471,3 +471,5 @@ Lý do: Trum chốt ngày 10/10/2026 (T108).
   + Khối Hỏi đáp thường gặp (FAQ) và modal xác nhận chuyển đổi gói đồng bộ chế độ kế toán.
 
 Lý do: Trum giao việc thiết kế lại màn hình Gói thuê bao và logo 4 gói ngày 10/10/2026 (T119).
+
+## QD45. Ẩn tạm mẫu báo cáo do agent tự dựng (đang soạn)
