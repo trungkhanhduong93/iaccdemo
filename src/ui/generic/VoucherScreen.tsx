@@ -438,10 +438,15 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
                 selectedRows={selectedRows}
                 ghi={ghi}
                 onBoChon={() => setSelectedIds(new Set())}
-                onXoa={ids => xoaPhieu(`${mod.key}/${sc.slug}`, ids.map(id => ({ id, so: String(rows.find(r => String(r.id) === id)?.so ?? '') })), s.ten)}
+                onXoa={ids => {
+                  xoaPhieu(`${mod.key}/${sc.slug}`, ids.map(id => ({ id, so: String(rows.find(r => String(r.id) === id)?.so ?? '') })), s.ten)
+                  // Xoá phiếu kiểm kê thì xoá luôn phiếu xuất, nhập điều chỉnh sinh từ nó (T129)
+                  if (cfg.kiemKe) xoaPhieu(MAN_DC, ids.flatMap(id => dsDcCon(rows.find(r => String(r.id) === id)).map(c => ({ id: c.id, so: c.so }))), s.ten)
+                }}
                 open={moHangLoat}
                 onOpenChange={setMoHangLoat}
                 onIn={() => setPhieuIn(selectedRows.map(phieuCua))}
+                khongXoa={cfg.dieuChinh}   // phiếu điều chỉnh chỉ xem (T129)
               />
               {!cfg.khongThem && <NutThemMoiSplit
                 toMoi={cfg.loai ? `${path}/moi?loai=${cfg.loai[0].k}` : `${path}/moi`}

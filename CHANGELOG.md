@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 10/10/2026
 
+- T129: Phiếu xuất điều chỉnh, nhập điều chỉnh chỉ xem, không sửa, xoá, sao chép. Xoá phiếu kiểm kê (cả xoá hàng loạt) thì tự xoá phiếu điều chỉnh liên quan; hộp xác nhận ghi rõ phiếu nào bị xoá theo.
 - T128: Sơ đồ quy trình Kho gói Free: bấm Kiểm kê kho mở danh sách phiếu kiểm kê; bấm Xuất điều chỉnh, Nhập điều chỉnh mở màn Điều chỉnh kho đúng tab.
 - T127: Mọi danh sách phiếu có cột Tham chiếu ghi các phiếu liên quan (phiếu thu, chi sinh từ mua, bán; phiếu điều chỉnh sinh từ kiểm kê; phiếu gốc), bấm số phiếu để mở.
 - T126: Phân hệ Kho có màn Điều chỉnh kho (mọi gói) với hai tab Xuất điều chỉnh, Nhập điều chỉnh. Lưu phiếu kiểm kê có chênh lệch thì tự sinh phiếu xuất điều chỉnh (hàng thiếu), nhập điều chỉnh (hàng thừa) theo phần chênh; hai phiếu ghi tham chiếu qua lại, xoá phiếu kiểm kê thì xoá luôn phiếu điều chỉnh.

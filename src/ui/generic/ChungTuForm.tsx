@@ -363,7 +363,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
         else luu(false)
       } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'e') {
         e.preventDefault()
-        setDangSua(true)
+        if (!laDc) setDangSua(true)   // phiếu điều chỉnh chỉ xem (T129)
       } else if (e.key === 'Escape' && !modalPhim) {
         // FormToanMan tự xử lý Esc đóng form
       }
@@ -603,9 +603,12 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               label={<><Icon n="more" className="ic sm" />Tiện ích</>}
             >
               {dong => <>
-              <MenuItem icon="copy" onClick={() => toast('Đã sao chép chứng từ')}>
-                Sao chép
-              </MenuItem>
+              {/* Phiếu điều chỉnh sinh từ kiểm kê chỉ xem: không sao chép, sửa, xoá (T129) */}
+              {!laDc && (
+                <MenuItem icon="copy" onClick={() => toast('Đã sao chép chứng từ')}>
+                  Sao chép
+                </MenuItem>
+              )}
               {coThanhToanSau && (
                 <MenuItem icon="wallet" onClick={() => { dong(); setHopTt(true) }}>
                   {tenThanhToan}
@@ -614,7 +617,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               <MenuItem icon="doc" onClick={() => toast('Đã xuất mẫu Excel')}>
                 Xuất Excel
               </MenuItem>
-              {row && (
+              {row && !laDc && (
                 <MenuItem icon="trash" danger onClick={() => {
                   // Cùng luật xoá với danh sách (QD32): kỳ đã khoá sổ không xoá, gói có ghi sổ chỉ xoá phiếu chưa ghi
                   if (daKhoaSo(row.ngay)) toast(`${row.so} thuộc kỳ đã khoá sổ, không xoá được`)
@@ -638,7 +641,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
             {hoiXoa && row && (
               <HopXacNhan tieuDe={`Xoá ${row.so}?`} nut="Xoá phiếu" onDong={() => setHoiXoa(false)}
                 onDongY={() => { setHoiXoa(false); xoaPhieu(`${mod.key}/${sc.slug}`, [{ id: String(row.id), so: soCt }], s.ten); if (laKk) xoaPhieu(MAN_DC, dsDcCon(row).map(c => ({ id: c.id, so: c.so })), s.ten); toast(`Đã xoá ${row.so}`); dongForm() }}>
-                Phiếu đã xoá không lấy lại được.
+                Phiếu đã xoá không lấy lại được.{laKk && dsDcCon(row).length > 0 && <> Phiếu điều chỉnh {dsDcCon(row).map(c => c.so).join(', ')} cũng bị xoá theo.</>}
               </HopXacNhan>
             )}
             {kieu !== 'khong' && row && (
@@ -650,13 +653,15 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
                 {row.tt === 'ghi' ? 'Bỏ ghi sổ' : 'Ghi sổ'}
               </button>
             )}
-            <button
-              type="button"
-              className="btn sm pri"
-              onClick={() => setDangSua(true)}
-            >
-              <Icon n="edit" className="ic sm" />Sửa (Ctrl+E)
-            </button>
+            {!laDc && (
+              <button
+                type="button"
+                className="btn sm pri"
+                onClick={() => setDangSua(true)}
+              >
+                <Icon n="edit" className="ic sm" />Sửa (Ctrl+E)
+              </button>
+            )}
             <button type="button" className="btn sm" onClick={dongForm}>
               Đóng (Esc)
             </button>

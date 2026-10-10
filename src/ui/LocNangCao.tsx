@@ -579,11 +579,13 @@ export function NutHangLoat({
   open,
   onOpenChange,
   onIn,
+  khongXoa = false,
 }: {
   selectedRows: Row[]
   ghi: boolean
   onBoChon: () => void
   onXoa?: (ids: string[]) => void
+  khongXoa?: boolean   // phiếu chỉ xem, không có mục xoá (T129)
   open?: boolean
   onOpenChange?: (open: boolean) => void
   onIn?: () => void       // mở khung xem trước bản in các phiếu đang chọn; không truyền thì chỉ báo
@@ -668,17 +670,17 @@ export function NutHangLoat({
         <MenuItem icon="download" onClick={() => lam(`Đã xuất ${so} phiếu ra Excel`)}>
           Xuất Excel {so} phiếu
         </MenuItem>
-        {nXoa > 0 && (
+        {!khongXoa && nXoa > 0 && (
           <MenuItem icon="trash" danger onClick={() => { setMo(false); setHoiXoa(true) }}>
             {tenXoa}
           </MenuItem>
         )}
-        {nXoa === 0 && nKhoa === 0 && nThamChieu > 0 && (
+        {!khongXoa && nXoa === 0 && nKhoa === 0 && nThamChieu > 0 && (
           <MenuItem icon="trash" lock onClick={() => lam('Phiếu có phiếu thu, chi tham chiếu: xoá phiếu thu, chi trước')}>
             Không xoá: còn phiếu thu, chi tham chiếu
           </MenuItem>
         )}
-        {nXoa === 0 && nKhoa > 0 && (
+        {!khongXoa && nXoa === 0 && nKhoa > 0 && (
           <MenuItem icon="trash" lock onClick={() => lam(`Phiếu thuộc kỳ đã khoá sổ, không xoá được`)}>
             Không xoá: kỳ đã khoá sổ
           </MenuItem>
