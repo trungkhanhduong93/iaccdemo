@@ -9,6 +9,9 @@ import { SO_BO_SUNG } from '../bao-cao/so-bo-sung'
 const phieu = (prefix: string, them: string, dienGiai: string[], noCo: VoucherCfg['noCo'], doiTuong: VoucherCfg['doiTuong'] = 'none', nhan?: string): Partial<ScreenDef> =>
   ({ voucher: { prefix, them, dienGiai, noCo, doiTuong, nhan, dong: 'nvl', tien: [0, 0], thue: 0, nguon: 'IVT', soTT58: 'Sổ chi tiết vật liệu, dụng cụ, hàng hoá' } })
 
+/** Phiếu kiểm kê (T124): đầu phiếu chọn kho, bảng tồn hệ thống, tồn thực tế, chênh lệch thay số lượng, tiền */
+const kiemKe = (p: Partial<ScreenDef>): Partial<ScreenDef> => ({ voucher: { ...p.voucher!, kiemKe: true } })
+
 /** Nhãn ngắn trên thanh tab */
 const NGAN: Record<string, string> = { '5.1.2': 'Xuất bán POS', '5.1.2-2': 'Xuất bán hàng', '5.1.2-3': 'Xuất huỷ', '5.1.2-4': 'Xuất khác', '5.1.1': 'Nhập khác', '5.1.4': 'Điều chuyển', '9.1.3': 'Công thức chế biến', '5.1.3': 'Chế biến', '5.1.5': 'Công thức sơ chế', '5.1.6': 'Sơ chế', '5.1.7': 'Tính giá vốn', '5.1.8': 'Giá thành đơn giản', '5.1.10': 'Kiểm kê', '5.1.11': 'Bổ sung giá nhập', '5.1.12': 'Tồn kho ban đầu', '5.1.13': 'Định mức tồn' }
 
@@ -31,7 +34,7 @@ const kho: ModuleDef = {
       caiDat: [['Kỳ tính', 'Tháng 9/2026'], ['Phương pháp', 'Bình quân gia quyền cuối kỳ'], ['Phạm vi', 'Tất cả kho']],
       nhatKy: [['07/10/2026 09:20', 'Tính thử tháng 9/2026: 142 mặt hàng, 5 kho', 'Có 2 mặt hàng tồn âm'], ['01/09/2026 08:45', 'Tháng 8/2026: 138 mặt hàng, 5 kho', 'Xong']] } },
     '5.1.8': { tool: { nut: 'Tính giá thành tháng 9/2026', mota: 'Giá thành món theo công thức chế biến và giá xuất kho bình quân. Dùng cho chuỗi có một cấp chế biến.', caiDat: [['Kỳ tính', 'Tháng 9/2026'], ['Đối tượng', 'Món bán trên FABi']] } },
-    '5.1.10': phieu('KK', 'Thêm phiếu kiểm kê', ['Kiểm kê cuối tháng Kho bếp Lê Lợi', 'Kiểm kê đột xuất Kho bar Thảo Điền'], [['1381', '152', 'Thiếu chờ xử lý'], ['152', '3381', 'Thừa chờ xử lý']]),
+    '5.1.10': kiemKe(phieu('KK', 'Thêm phiếu kiểm kê', ['Kiểm kê cuối tháng Kho bếp Lê Lợi', 'Kiểm kê đột xuất Kho bar Thảo Điền'], [['1381', '152', 'Thiếu chờ xử lý'], ['152', '3381', 'Thừa chờ xử lý']])),
     '5.1.11': { voucher: { prefix: 'BSG', doiTuong: 'ncc', nhan: 'Nhà cung cấp', them: 'Thêm phiếu bổ sung giá', dong: 'nvl', tien: [0, 0], thue: 0, dienGiai: ['Bổ sung giá cho phiếu nhập chưa có giá'], noCo: [['152', '331', 'Bổ sung giá nhập']] } },
     '5.1.12': { kind: 'catalog', catalog: tonBanDau },
     '5.1.13': { kind: 'catalog', catalog: dinhMucTon },

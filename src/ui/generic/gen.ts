@@ -32,6 +32,9 @@ export interface Dong {
   cv?: string
   lo?: string
   hsd?: string
+  tonHt?: number               // phiếu kiểm kê: tồn hệ thống, tồn thực tế, ghi chú dòng (T124)
+  tonTt?: number
+  ghiChu?: string
 }
 
 export interface TTNghiepVu {
@@ -126,6 +129,13 @@ export function dongCua(cfg: VoucherCfg, id: string): Dong[] {
       const d = new Date(2026, 9, 10 + Math.floor(r2() * 52))
       extra.lo = `L2610-${pad(i + 1)}`
       extra.hsd = dmy(d)
+    }
+    if (cfg.kiemKe) {
+      // Kiểm kê (T124): tồn thực tế đếm được; tồn hệ thống lệch vài đơn vị ở khoảng nửa số dòng
+      const lech = [0, 0, 0, -2, -1, 1, 2][Math.floor(r2() * 7)]
+      extra.tonTt = sl
+      extra.tonHt = Math.max(0, sl - lech)
+      extra.ghiChu = lech < 0 ? 'Hao hụt khi sơ chế' : lech > 0 ? 'Nhập chưa ghi phiếu' : ''
     }
     out.push({ ma: h.ma, ten: h.ten, dvt: h.dvt, sl, gia: h.gia, tien, ts, thue: Math.round(tien * ts / 100), ...extra })
   }

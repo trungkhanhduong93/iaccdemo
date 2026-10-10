@@ -21,6 +21,7 @@ import { St, Table } from '../Table'
 import { fold, money, moneyD } from '../format'
 import { NGUON, TT_CT, dongCua, ttNghiepVu, type Dong } from './gen'
 import { boO, nhomCua, theoLoai } from './nhom'
+import { BangKiemKe, COT_KK } from './BangKiemKe'
 import { BangSua, DS_DOI_TUONG, HopCotPhieu, cotTuyChon } from './BangSua'
 import { HopInChungTu, type PhieuIn } from '../bao-cao/InChungTu'
 import { createPortal } from 'react-dom'
@@ -50,6 +51,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   const cfg = theoLoai(cfgMan, loai?.k)
   const nhom = nhomCua(mod.key, cfg, loai?.k)
   const bo = boO(nhom, cfg)
+  const laKk = Boolean(cfg.kiemKe)   // phiếu kiểm kê: bỏ đối tượng, kho ở đầu phiếu, bảng tồn hệ thống, tồn thực tế (T124)
   const nv = useMemo(() => (row ? ttNghiepVu(row) : null), [row])
 
   const path = duongDan(mod, sc)
@@ -367,7 +369,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
     // Mua hàng: thông tin hoá đơn nằm ở đầu phiếu khi tích Nhận kèm hoá đơn, không có tab Hoá đơn (T62)
     ...(bo.hd && nhom !== 'mua' && nhom !== 'ban' ? [['hd', 'Hoá đơn'] as [string, string]] : []),   // mua, bán: hoá đơn ở đầu phiếu khi tích kèm hoá đơn (T83)
     // Phiếu thu chi bỏ tab hạch toán (T49); gói Free không ghi sổ nên không có tab Ghi sổ (T62)
-    ...(laTien || kieu === 'khong' ? [] : [['ht', kieu === 'noco' ? 'Hạch toán' : 'Ghi sổ'] as [string, string]]),
+    ...(laTien || laKk || kieu === 'khong' ? [] :   // phiếu kiểm kê không có tab Hạch toán (T124)
+      [['ht', kieu === 'noco' ? 'Hạch toán' : 'Ghi sổ'] as [string, string]]),
     ...(s.goi === 'F' ? [] : [['dk', 'Đính kèm'] as [string, string]]),   // gói Free không có đính kèm (T52)
     ['ls', 'Lịch sử'],
   ]
@@ -377,7 +380,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   const hienChan = (k: string) => !anCot.includes(`chan:${k}`)
   const muaBan = nhom === 'mua' || nhom === 'ban'
   const nhanNguoi = nhom === 'cq' ? 'Người thực hiện' : laTien || muaBan ? 'Người giao dịch' : 'Người giao / nhận'   // mua, bán ghi Người giao dịch (T90)
-  const dsDau: [string, string][] = [
+  const dsDau: [string, string][] = laKk ? [['nhanVien', 'Nhân viên thực hiện'], ['ghiChu', 'Ghi chú']] : [
     ['nguoi', nhanNguoi],
     ...(nhom !== 'cq' ? [['diaChi', 'Địa chỉ'] as [string, string]] : []),
     ...(!laTien && !muaBan ? [['nhanVien', 'Nhân viên thực hiện'] as [string, string]] : []),
@@ -385,7 +388,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
     ...(bo.tt ? [['hanTt', 'Hạn thanh toán'] as [string, string]] : []),
     ['ghiChu', 'Ghi chú'],
   ]
-  const dsChan: [string, string][] = [
+  const dsChan: [string, string][] = laKk ? [['dongTong', 'Dòng Tổng cộng cuối bảng']] : [
     ...(laTien && chiTien ? [] : [['dongTong', 'Dòng Tổng cộng cuối bảng'] as [string, string]]),
     ['tongTien', laTien && chiTien ? 'Tổng tiền ở dải đáy' : 'Khối tổng tiền dưới bảng'],
   ]
@@ -434,7 +437,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
       icon={mod.icon}
       tinh={Boolean((loc.state as { chuyenPhieu?: boolean } | null)?.chuyenPhieu)}
       onClose={dongForm}
-      day={!hienChan('tongTien') ? undefined
+      day={laKk || !hienChan('tongTien') ? undefined
         : laTien && chiTien ? <TongDay tong={tongThanhToan} soDong={dsDong.length} />
           // Phần tổng thành dải cố định ở đáy form, cuộn bảng vẫn thấy (T105); phiếu mua chỉ Tổng tiền vì số khác đã có trên dòng (T84)
           : <DaiTong tong={tongThanhToan} muc={chiTien || truocThue ? [] : [
@@ -542,7 +545,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
                 Sau<Icon n="chevr" className="ic sm" />
               </button>
             </div>
-            {coTkGoi && (
+            {coTkGoi && !laKk && (   // phiếu kiểm kê không hạch toán nên không có nút Cột tài khoản (T124)
               <button
                 type="button"
                 className={`btn sm btn-tk-toggle ${hienTk ? 'on' : ''}`}
@@ -594,7 +597,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               </>}
             </Dropdown>
             {hopCot && (
-              <HopCotPhieu dsDau={dsDau} dsChan={dsChan} ds={cotTuyChon(cfg, { coKho: Boolean(bo.kho) && !khoDau, coLo: nhom === 'mua' && s.goi === 'PR', coCk: Boolean(bo.ck), coKm: kieu !== 'khong', coLy: Boolean(oLy), coNhapKho: truocThue })}
+              <HopCotPhieu dsDau={dsDau} dsChan={dsChan} ds={laKk ? COT_KK : cotTuyChon(cfg, { coKho: Boolean(bo.kho) && !khoDau, coLo: nhom === 'mua' && s.goi === 'PR', coCk: Boolean(bo.ck), coKm: kieu !== 'khong', coLy: Boolean(oLy), coNhapKho: truocThue })}
                 an={anCot} onDoi={doiAnCot} onDong={() => setHopCot(false)} />
             )}
             {hopTt && row && (
@@ -774,13 +777,13 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
           <div
             className="grid"
             style={{
-              gridTemplateColumns: coHdDau ? 'minmax(0, 1.4fr) minmax(0, 1.2fr) 260px 280px' : 'minmax(0, 1.4fr) minmax(0, 1.2fr) 280px',
+              gridTemplateColumns: laKk ? 'minmax(0, 1fr) 280px' : coHdDau ? 'minmax(0, 1.4fr) minmax(0, 1.2fr) 260px 280px' : 'minmax(0, 1.4fr) minmax(0, 1.2fr) 280px',
               gap: 16,
               alignItems: 'start',
             }}
           >
-            {/* Cột 1: Đối tượng; phiếu chuyển quỹ thì là quỹ đi, quỹ đến */}
-            <div className="stack" style={{ gap: 10 }}>
+            {/* Cột 1: Đối tượng; phiếu chuyển quỹ thì là quỹ đi, quỹ đến. Phiếu kiểm kê không có đối tượng (T124) */}
+            {!laKk && <div className="stack" style={{ gap: 10 }}>
               {nhom === 'cq' ? (
                 <>
                   {oQuyCq('Từ quỹ', tuQuy, setTuQuy)}
@@ -810,7 +813,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               {!muaBan && oNguoi}
               {(!keoGc || muaBan) && oDiaChi}
               </>)}
-            </div>
+            </div>}
 
             {/* Cột 2: lý do, nhân viên, mã số thuế, hạn thanh toán */}
             <div className="stack" style={{ gap: 10 }}>
@@ -827,7 +830,27 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               {/* Chuyển quỹ: hàng 1 Từ quỹ, Đến quỹ; hàng 2 Người thực hiện, Ghi chú (T77) */}
               {nhom === 'cq' && oQuyCq('Đến quỹ', denQuy, setDenQuy)}
               {keoGc && !muaBan && oDiaChi}
-              {!laTien && !muaBan && hienDau('nhanVien') && (
+              {/* Phiếu kiểm kê: hàng 1 Kho kiểm kê, Nhân viên thực hiện; hàng 2 Ghi chú (T124) */}
+              {laKk && (
+                <div className="row" style={{ gap: 10 }}>
+                  <div className="f" style={{ flex: 1 }}>
+                    <label>Kho kiểm kê <em>*</em></label>
+                    {dangSua ? (
+                      <ChonDanhMuc dm="kho" nhan="kho" value={kho} onChange={setKho} ds={!kho || dsKhoCn.includes(kho) ? dsKhoCn : [kho, ...dsKhoCn]} />
+                    ) : <input className="inp" readOnly value={kho} />}
+                  </div>
+                  {hienDau('nhanVien') && (
+                    <div className="f" style={{ flex: 1 }}>
+                      <label>Nhân viên thực hiện</label>
+                      {dangSua ? (
+                        <ChonDanhMuc dm="nv" nhan="nhân viên" value={nhanVien} onChange={setNhanVien}
+                          ds={NHAN_VIEN.map(n => ({ v: n.ten, t: `${n.ten} (${n.bp})` }))} />
+                      ) : <input className="inp" readOnly value={nhanVien} />}
+                    </div>
+                  )}
+                </div>
+              )}
+              {!laKk && !laTien && !muaBan && hienDau('nhanVien') && (
                 <div className="f">
                   <label>Nhân viên thực hiện</label>
                   {dangSua ? (
@@ -836,7 +859,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
                   ) : <input className="inp" readOnly value={nhanVien} />}
                 </div>
               )}
-              {nhom !== 'cq' && (hienDau('mst') || (bo.tt && hinhThucTt === 'congno' && hienDau('hanTt'))) && <div className="row" style={{ gap: 10 }}>
+              {!laKk && nhom !== 'cq' && (hienDau('mst') || (bo.tt && hinhThucTt === 'congno' && hienDau('hanTt'))) && <div className="row" style={{ gap: 10 }}>
                 {hienDau('mst') && <div className="f" style={{ flex: 1 }}>
                   <label>Mã số thuế</label>
                   {dangSua ? (
@@ -955,7 +978,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
 
           <div className="ct-than">
           {/* Tab 1: Chi tiết / Hàng tiền */}
-          {tab === 'ct' && (
+          {tab === 'ct' && laKk && <BangKiemKe dong={dsDong} onChange={setDsDong} cheDo={dangSua ? 'sua' : 'xem'} an={anCot} khongTong={!hienChan('dongTong')} />}
+          {tab === 'ct' && !laKk && (
             <BangSua
               cfg={cfg}
               dong={dsDong}

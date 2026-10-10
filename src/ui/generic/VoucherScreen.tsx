@@ -22,6 +22,7 @@ import { soDaTra, ttTienTheoTra, useDaXoa, xoaPhieu } from './daXoa'
 import { CHI_NHANH, HANG, NVL } from '../../data/mock'
 import { NGUON, TT_CT, chungTu, dongCua, gioPhieu, ttNghiepVu, type Dong } from './gen'
 import { boO, nhomCua, theoLoai, TT_HD, TT_TIEN } from './nhom'
+import { BangKiemKe } from './BangKiemKe'
 import { BangSua } from './BangSua'
 import { ChungTuForm, HachToan, LichSu, VoucherDetail, lyMacDinh } from './ChungTuForm'
 import { HopInChungTu, type PhieuIn } from '../bao-cao/InChungTu'
@@ -78,7 +79,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
 
   const ghi = kieuGhiSo(s.goi) !== 'khong'
   // Chế độ không ghi sổ (gói Free) thì khung chi tiết bỏ tab Ghi sổ, như form (T62, T82)
-  const coTabHt = kieuGhiSo(s.cheDo) !== 'khong'
+  const coTabHt = kieuGhiSo(s.cheDo) !== 'khong' && !cfg.kiemKe   // phiếu kiểm kê không có tab Hạch toán (T124)
   const tabPanel = tabChon === 'ht' && !coTabHt ? 'ct' : tabChon
   const cnChon = chiNhanhHienTai(s)
   const nhom = nhomCua(mod.key, cfg)
@@ -565,7 +566,8 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
                 </div>
 
                 <div className="voucher-bottom-b">
-                  {tabPanel === 'ct' && (
+                  {tabPanel === 'ct' && cfg.kiemKe && <BangKiemKe dong={activeDong} cheDo="xem" />}
+                  {tabPanel === 'ct' && !cfg.kiemKe && (
                     <BangSua
                       cfg={cfgDong}
                       dong={activeDong}

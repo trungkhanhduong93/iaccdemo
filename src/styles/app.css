@@ -6491,3 +6491,10 @@ table.tbl {
 /* Ô kết quả hệ thống tự tổng hợp: nền nhạt, viền nét đứt, không bấm được */
 .qt-ht .qt-ht-nut.kq { background: var(--soft); border-style: dashed; border-color: #b8c7da; font-weight: 600; }
 .qt-ht .qt-ht-nut.kq .qt-ht-ic { background: var(--green-t); color: var(--green); }
+
+/* ── Phiếu kiểm kê: chênh lệch, loại xử lý (T124) ── */
+.bang-kk .kk-chenh.thieu { color: var(--red); font-weight: 600; }
+.bang-kk .kk-chenh.thua { color: var(--green); font-weight: 600; }
+.kk-loai { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+.kk-loai.thieu { background: var(--red-t); color: var(--red); }
+.kk-loai.thua { background: var(--green-t); color: var(--green); }
