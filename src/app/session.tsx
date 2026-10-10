@@ -19,6 +19,7 @@ export interface Session {
   khoiTao: boolean       // đã chạy xong khởi tạo
   thuGon?: boolean       // sidebar thu gọn còn biểu tượng
   ngayDauNam?: Record<string, string>   // ngày đầu năm từng đơn vị (dd/mm/yyyy), khai ở Thông tin đơn vị
+  namTaiChinh?: Record<string, number>  // năm tài chính từng đơn vị, khai ở Thông tin đơn vị
   ppGtgt: PpGtgt         // phương pháp tính thuế GTGT (TT58): 'tyLe' hoặc 'khauTru', mặc định 'tyLe'
   ppTndn: PpTndn         // phương pháp tính thuế TNDN (TT58): 'tyLe' hoặc 'thuNhap', mặc định 'thuNhap'
   dongBoFabi?: 'chiTiet' | 'kenh'   // cách đồng bộ bán hàng FABi (T113): mỗi hoá đơn một chứng từ, hoặc tổng hợp theo kênh mỗi ngày; thiếu là theo kênh
@@ -107,8 +108,23 @@ export const cheDoHienTai = (s: Session) => CHE_DO[s.cheDo]
 export const chiNhanhHienTai = (s: Session) => CHI_NHANH.find(c => c.id === s.chiNhanh)
 
 
-/** Ngày đầu năm của đơn vị đang làm việc; chưa khai thì 01/01 năm hiện tại như lúc khởi tạo đơn vị */
-export const ngayDauNam = (s: Session) => s.ngayDauNam?.[s.donVi] ?? `01/01/${new Date().getFullYear()}`
+/** Năm tài chính của đơn vị đang làm việc; chưa khai thì năm hiện tại */
+export const namTaiChinh = (s: Session) => s.namTaiChinh?.[s.donVi] ?? new Date().getFullYear()
+/** Ngày đầu năm của đơn vị đang làm việc; chưa khai thì 01/01 của năm tài chính như lúc khởi tạo đơn vị */
+export const ngayDauNam = (s: Session) => s.ngayDauNam?.[s.donVi] ?? `01/01/${namTaiChinh(s)}`
+/** Các kỳ (tháng) của năm tài chính, từ tháng của ngày đầu năm, 12 tháng. so = yyyymm để so sánh */
+export function dsKyNam(s: Session): { nhan: string; so: number }[] {
+  const [, mm, yy] = ngayDauNam(s).split('/').map(Number)
+  return Array.from({ length: 12 }, (_, i) => {
+    const d = new Date(yy, mm - 1 + i, 1)
+    return { nhan: `Tháng ${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`, so: d.getFullYear() * 100 + d.getMonth() + 1 }
+  })
+}
+/** Kỳ mặc định: tháng hiện tại nếu nằm trong năm tài chính, không thì kỳ cuối năm */
+export function kyMacDinh(s: Session): number {
+  const d = new Date(), ds = dsKyNam(s), nay = d.getFullYear() * 100 + d.getMonth() + 1
+  return ds.some(k => k.so === nay) ? nay : ds[ds.length - 1].so
+}
 const soNgay = (d: string) => { const m = d.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/); return m ? +m[3] * 10000 + +m[2] * 100 + +m[1] : NaN }
 /** Chứng từ thêm mới phải có ngày từ ngày đầu năm trở đi (trừ màn khai số dư) */
 export const truocDauNam = (s: Session, ngay: string) => soNgay(ngay) < soNgay(ngayDauNam(s))

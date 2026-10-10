@@ -47,13 +47,14 @@ export function PhanTrang({ tong, tongCong, trang, coTrang, onTrang, onCoTrang }
       const z = heSoZoom()
       const br = el.getBoundingClientRect()
       const moi: Record<string, number> = {}
-      // Cột khuất bên phải (phải cuộn ngang) thì số bám mép phải; bỏ số nào chồng lên số đã đặt ở bên phải nó
+      // Số đi theo cột khi cuộn ngang: cột khuất hẳn (trái hoặc phải) thì không hiện số; cột khuất một phần bên phải thì số bám mép phải.
+      // Bỏ số nào chồng lên số đã đặt ở bên phải nó
       const dat: number[] = []
       for (const k of khoa.split(',').reverse()) {
         const th = wrap.querySelector<HTMLElement>(`thead th[data-k="${k}"]`)
         if (!th) continue
         const r = th.getBoundingClientRect()
-        if (r.right <= br.left) continue
+        if (r.right <= br.left || r.left >= br.right - 24) continue
         const x = Math.max(12, (br.right - r.right) / z + (parseFloat(getComputedStyle(th).paddingRight) || 0))
         if (dat.some(d => Math.abs(d - x) < 110)) continue
         dat.push(x)

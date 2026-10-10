@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { ScreenProps } from '../types'
 import { MODULES, duongDan } from '../../app/registry'
-import { donViHienTai, useSession, cheDoHienTai, ngayDauNam, type PpGtgt, type PpTndn } from '../../app/session'
+import { donViHienTai, useSession, cheDoHienTai, namTaiChinh, ngayDauNam, type PpGtgt, type PpTndn } from '../../app/session'
 import { FEATURES, GOI, GOIS, MODS, demTheoGoi, kieuGhiSo, type Goi } from '../../app/plan'
 import { CHE_DO, CHE_DO_HOP_LE, cheDoCuaGoi, type CheDo } from '../../app/che-do'
 import { CHI_NHANH, NGUOI_DUNG } from '../../data/mock'
@@ -166,9 +166,12 @@ export function ThongTinDonVi({ sc }: ScreenProps) {
   const dv = donViHienTai(s)
   // Ngày đầu năm: chứng từ thêm mới phải có ngày từ ngày này trở đi, trừ màn khai số dư
   const [dauNam, setDauNam] = useState(ngayDauNam(s))
+  // Năm làm việc hiện tại: các kỳ số liệu là 12 tháng tính từ ngày đầu năm; đổi năm thì ngày đầu năm đổi năm theo
+  const [nam, setNam] = useState(namTaiChinh(s))
+  const doiNam = (n: number) => { setNam(n); setDauNam(d => d.replace(/\d{4}$/, String(n))) }
   const luuDv = () => {
     if (!/^\d{2}\/\d{2}\/\d{4}$/.test(dauNam)) { toast('Ngày đầu năm cần nhập dạng dd/mm/yyyy'); return }
-    set({ ngayDauNam: { ...s.ngayDauNam, [s.donVi]: dauNam } })
+    set({ ngayDauNam: { ...s.ngayDauNam, [s.donVi]: dauNam }, namTaiChinh: { ...s.namTaiChinh, [s.donVi]: nam } })
     toast('Đã lưu thông tin đơn vị')
   }
   return (
@@ -186,6 +189,11 @@ export function ThongTinDonVi({ sc }: ScreenProps) {
             <label>Ngày đầu năm</label>
             <input className="inp" value={dauNam} placeholder="dd/mm/yyyy" onChange={e => setDauNam(e.target.value)}
               title="Chứng từ thêm mới phải có ngày từ ngày này trở đi, trừ các màn khai số dư đầu kỳ" />
+          </div>
+          <div className="f">
+            <label>Năm làm việc hiện tại</label>
+            <Select className="inp" value={String(nam)} aria-label="Năm làm việc hiện tại" onChange={e => doiNam(Number(e.target.value))}
+              ds={[-2, -1, 0, 1].map(d => String(new Date().getFullYear() + d)).map(n => ({ v: n, t: n }))} />
           </div>
         </div>
       </Card>

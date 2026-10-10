@@ -64,6 +64,17 @@ export const NVL = [
   { ma: 'NVL011', ten: 'Bia Sài Gòn lon (thùng 24)', nhom: 'Bia, rượu', dvt: 'Thùng', gia: 355000, ts: 10 },
   { ma: 'NVL012', ten: 'Dầu ăn', nhom: 'Gia vị', dvt: 'Lít', gia: 48000, ts: 8 },
 ]
+// Công cụ dụng cụ trong danh mục hàng hoá (loại Công cụ dụng cụ), thẻ chi phí phân bổ loại CCDC chọn mã từ đây
+export const CCDC_HANG = [
+  { ma: 'CC001', ten: 'Bộ nồi inox 50 lít', nhom: 'Dụng cụ bếp', dvt: 'Bộ' },
+  { ma: 'CC002', ten: 'Bàn ghế gỗ khu ngoài trời', nhom: 'Nội thất', dvt: 'Bộ' },
+  { ma: 'CC003', ten: 'Máy POS cầm tay', nhom: 'Thiết bị', dvt: 'Cái' },
+  { ma: 'CC004', ten: 'Máy xay sinh tố công nghiệp', nhom: 'Thiết bị', dvt: 'Cái' },
+  { ma: 'CC005', ten: 'Dao thớt bếp trọn bộ', nhom: 'Dụng cụ bếp', dvt: 'Bộ' },
+  { ma: 'CC006', ten: 'Ly thuỷ tinh 300ml', nhom: 'Dụng cụ quầy', dvt: 'Cái' },
+  { ma: 'CC007', ten: 'Tủ mát 2 cánh', nhom: 'Thiết bị', dvt: 'Cái' },
+  { ma: 'CC008', ten: 'Khay inox chữ nhật', nhom: 'Dụng cụ bếp', dvt: 'Cái' },
+]
 export const KHACH = [
   { ma: 'KL', ten: 'Khách lẻ POS', mst: '', nhom: 'Khách lẻ' },
   { ma: 'KH001', ten: 'Công ty TNHH Giải pháp Sao Việt', mst: '0319 880 101', nhom: 'Khách công ty' },

@@ -327,10 +327,12 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
     }
     toast(moi ? `Đã lưu ${soCt}` : `Đã lưu thay đổi ${soCt}`)
     // Phiếu chi mới lý do Chi phí chờ phân bổ: hỏi tạo luôn thẻ chi phí phân bổ, điền sẵn từ phiếu
-    if (moi && oLy && lyDo === LY_CHO_PHAN_BO) {
+    // Mỗi dòng phiếu có lý do Chi phí chờ phân bổ thành một dòng chi tiết của thẻ (tên = diễn giải, số tiền = thành tiền)
+    const dongCho = oLy ? dsDong.filter(d => (d.ly ?? lyDo) === LY_CHO_PHAN_BO) : []
+    if (moi && dongCho.length) {
       setHoiThe({ moMoi, idMoi, tu: {
-        ten: dsDong.map(d => d.ten).filter(Boolean).join('; '), gt: tongThanhToan,
-        soCt, ngayCt, ngay: ngayCt, ngayPb: ngayCt, _goc: `${path}/${idMoi}`,
+        dong: dongCho.map(d => ({ ten: d.ten, gt: String(d.tien), sl: 1 })),
+        soCt, ngayCt, ghiChuCt: ghiChu, ngay: ngayCt, ngayPb: ngayCt, _goc: `${path}/${idMoi}`,
       } })
       return
     }

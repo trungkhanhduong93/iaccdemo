@@ -23,11 +23,17 @@ export interface Col {
 /** Danh mục: bảng có tìm kiếm, nút thêm */
 export interface CatalogCfg {
   cols: Col[] | ((goi: Goi) => Col[])
-  rows: (cd: CheDo) => Row[]             // danh mục đổi theo chế độ kế toán, vd hệ thống tài khoản
+  rows: (cd: CheDo, ky: number) => Row[] // danh mục đổi theo chế độ kế toán, vd hệ thống tài khoản; ky (yyyymm) khi có kySoLieu
   them?: string
   nhomLoc?: string
   nhanLoc?: string
   chucNang?: (r: Row) => { nhan: string; di: string; icon?: string }[]
+  stt?: boolean                          // cột STT đầu bảng, đánh số theo dòng đang hiện
+  kySoLieu?: boolean                     // ô chọn Kỳ số liệu (các tháng của năm tài chính), số liệu tính tới hết kỳ
+  tich?: { nhan: string; macDinh: boolean; loc: (r: Row) => boolean }
+  // Danh sách kiểu danh sách chứng từ: phân trang, dòng Tổng, cộng các cột cotCong; bấm dòng chọn và xem nhanh chi tiết ở khung dưới, đúp chuột mở form
+  hangLoat?: { nhan: string; Form: ComponentType<{ soDong: number; onDong: () => void }> }   // nút thêm hàng loạt mở form riêng, soDong: số dòng đang có
+  dsChungTu?: { cotCong: string[]; so: (r: Row) => string; moTa: (r: Row) => string; chiTiet: (r: Row) => ReactNode }   // ô tích lọc nhanh trên thanh công cụ, tích thì chỉ hiện dòng loc đúng
   note?: (goi: Goi) => ReactNode
   truong?: CauHinhDM                     // trường panel Thêm / Sửa riêng của màn, không khai thì lấy TRUONG_DM theo mã màn
 }
@@ -116,7 +122,7 @@ export interface ModuleDef {
 }
 
 /** Ô trên sơ đồ quy trình. di là đường dẫn sau /app/, vd 'tien/2-1-1/moi?loai=thu' mở form phiếu thu mới; di rỗng là ô chỉ để xem, không bấm được (T100) */
-export interface NutQT { ten: string; icon: string; di: string; tone?: 'fabi' | 'ivt' | 'hd' | 'kq'; noi?: string }   // noi: chữ trên mũi tên từ ô trước tới ô này (T98); tone 'kq': ô kết quả hệ thống tự tổng hợp, không phải màn hình (T123)
+export interface NutQT { ten: string; icon: string; di: string; tone?: 'fabi' | 'ivt' | 'hd' | 'kq'; noi?: string; rieng?: boolean }   // rieng: ô sơ đồ luồng đứng riêng, không nhận mũi tên từ cột trước   // noi: chữ trên mũi tên từ ô trước tới ô này (T98); tone 'kq': ô kết quả hệ thống tự tổng hợp, không phải màn hình (T123)
 
 /** Một bước trên trục ngang: ô chính nằm trên trục, ô phụ treo phía trên hoặc phía dưới */
 export interface BuocQT { ten?: string; chinh: NutQT; tren?: NutQT[]; duoi?: NutQT[] }

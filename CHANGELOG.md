@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 11/10/2026
 
+- T135: Thẻ chi phí phân bổ có nhiều dòng: tab Chi tiết phân bổ (mã, tên, số tiền, số tháng từng dòng; thẻ CCDC chọn mã từ danh mục hàng hoá như chọn hàng ở phiếu mua, có ĐVT, số lượng, đơn giá; thẻ TSCĐ có số hiệu, mô tả), tab Đã phân bổ (các kỳ của từng dòng, cộng từng khoản, tổng cộng luôn hiện), khối Thông tin mua sát đáy. Danh sách thẻ chi phí làm như danh sách thu chi: Kỳ số liệu, Ẩn thẻ hết phân bổ, Loại thẻ, Tuỳ chỉnh cột, Excel, nút Ghi tăng có danh sách Thêm theo loại, phân trang có Tổng cộng, khung Chi tiết ở đáy. Ghi tăng hàng loạt thẻ từ các dòng phiếu chi lý do Chi phí chờ phân bổ (gói Plus, Pro là nút chính). Báo cáo mới Bảng chi tiết phân bổ chi phí. Sơ đồ Chi phí phân bổ gói Free: Chi tiền mặt, Chi ngân hàng cùng nối tới Thẻ chi phí phân bổ. Danh mục hàng hoá có loại Công cụ dụng cụ. Thông tin đơn vị có Năm làm việc hiện tại. Tổng cộng ở chân mọi danh sách đi theo cột khi cuộn ngang.
 - T134: Mẫu in phiếu đổi khổ dọc, ngang, A4, A5 tự cân đối: bảng không còn tràn mép giấy, cột co giãn theo khổ, chữ bảng nhỏ lại khi khổ hẹp. Đổi khổ ở Thiết kế mẫu in không còn báo "Tổng độ rộng cột vượt vùng in".
 
 ## 10/10/2026

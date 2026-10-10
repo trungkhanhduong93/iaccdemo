@@ -15,6 +15,17 @@ export const quyTrinh: QuyTrinhDef = {
       duoi: [{ ten: 'Ghi giảm CCDC', icon: 'trash', di: 'ccdc/8-1-2/moi?loai=giam' }] },
     { chinh: { ten: 'Kiểm kê CCDC', icon: 'clipboard', di: 'ccdc/8-1-3/moi' } },
   ],
-  baoCao: ['8-2-1', '8-2-2', '8-2-3', '8-2-4'],
-  danhMuc: ['danh-muc/1-6', 'danh-muc/1-8'],
+  // Gói Free: sơ đồ luồng, Chi tiền mặt, Chi ngân hàng đều có mũi tên tới Thẻ chi phí phân bổ; thẻ dư đầu kỳ đứng riêng phía trên
+  luongFree: [
+    { nut: [
+      { ten: 'Chi tiền mặt', icon: 'cashout', di: 'tien/2-1-1/moi?loai=chi&ly=LD17' },
+      { ten: 'Chi ngân hàng', icon: 'bank', di: 'tien/2-1-1/moi?loai=unc&ly=LD17' },
+    ] },
+    { nut: [
+      { ten: 'Thẻ CPPB dư đầu kỳ', icon: 'clock', di: 'ccdc/8-1-1', rieng: true },
+      { ten: 'Thẻ chi phí phân bổ', icon: 'grid', di: 'ccdc/8-1-1' },
+    ] },
+  ],
+  baoCao: ['bang-phan-bo', '8-2-1', '8-2-2', '8-2-3', '8-2-4'],
+  danhMuc: ['danh-muc/1-2', 'danh-muc/1-6', 'danh-muc/1-8'],
 }

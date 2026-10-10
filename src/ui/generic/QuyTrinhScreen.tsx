@@ -183,10 +183,12 @@ function SoDoLuong({ cot, goi }: { cot: CotQT[]; goi: Goi }) {
         if (!truoc.length || !sau.length) continue
         const ra = Math.round(Math.max(...truoc.map(o => o.r)))
         const ax = ra + 24                                        // trục đứng gần cột trước, để đoạn vào ô sau đủ chỗ ghi chữ
-        const ys = [...truoc, ...sau].map(o => o.y)
+        // Ô đứng riêng (rieng) không nhận mũi tên, không kéo trục đứng tới nó
+        const ys = [...truoc, ...sau.filter((_, j) => !cot[i].nut[j]?.rieng)].map(o => o.y)
         truoc.forEach(o => p.push(`M${Math.round(o.r)} ${o.y}H${ax}`))
         if (Math.min(...ys) !== Math.max(...ys)) p.push(`M${ax} ${Math.min(...ys)}V${Math.max(...ys)}`)
         sau.forEach((o, j) => {
+          if (cot[i].nut[j]?.rieng) return
           const x = Math.round(o.l) - 2
           p.push(`M${ax} ${o.y}H${x - MUI + 2}`)
           mui.push(`M${x - MUI} ${o.y - 5}L${x} ${o.y}L${x - MUI} ${o.y + 5}Z`)
@@ -215,7 +217,7 @@ function SoDoLuong({ cot, goi }: { cot: CotQT[]; goi: Goi }) {
         )}
         {cot.map((c, i) => (
           <div key={i} className="qt-lg-cot">
-            {c.nut.map(n => <NutNgang key={n.di || n.ten} n={n} goi={goi} />)}
+            {c.nut.map(n => <NutNgang key={`${n.di}|${n.ten}`} n={n} goi={goi} />)}
           </div>
         ))}
       </div>

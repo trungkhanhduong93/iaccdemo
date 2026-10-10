@@ -36,7 +36,9 @@ export function NutThemMoiSplit({
   toMoi,
   loai,
   taiNguon,
+  nhan = 'Thêm mới',
 }: {
+  nhan?: string                    // chữ trên nút, vd Ghi tăng ở danh sách thẻ chi phí
   toMoi: string
   loai?: { k: string; ten: string; prefix?: string; icon?: string }[]
   taiNguon?: { ten: string; onTai: () => void }
@@ -47,7 +49,7 @@ export function NutThemMoiSplit({
     return (
       <Link className="btn pri ds-nut-them" to={toMoi}>
         <Icon n="plus" className="ic sm" />
-        <span>Thêm mới</span>
+        <span>{nhan}</span>
       </Link>
     )
   }
@@ -56,7 +58,7 @@ export function NutThemMoiSplit({
     <div className="ds-split-them">
       <Link className="btn pri ds-them-trai" to={toMoi}>
         <Icon n="plus" className="ic sm" />
-        <span>Thêm mới</span>
+        <span>{nhan}</span>
       </Link>
       <Dropdown
         btnClass="btn pri ds-them-phai"
