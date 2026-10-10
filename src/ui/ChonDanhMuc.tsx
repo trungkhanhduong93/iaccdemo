@@ -25,7 +25,7 @@ export function useMucDaThem(dm: string): MucDm[] {
   return daThem.get(dm) ?? []
 }
 
-export function ChonDanhMuc({ dm, nhan, value, onChange, ds, className = 'inp', style, coMa, trong }: {
+export function ChonDanhMuc({ dm, nhan, value, onChange, ds, className = 'inp', style, coMa, chiMa, trong }: {
   dm: string                         // khoá danh mục, vd ncc, kh, nhanVien, kho, hang
   nhan: string                       // tên danh mục hiện trên nút thêm mới, vd "nhà cung cấp"
   value: string
@@ -35,6 +35,7 @@ export function ChonDanhMuc({ dm, nhan, value, onChange, ds, className = 'inp', 
   style?: CSSProperties
   coMa?: boolean                     // hộp thêm mới có ô Mã (mục dạng mã - tên, vd hàng hoá)
   trong?: string                     // nhãn khi chưa chọn, vd "—"
+  chiMa?: boolean                    // ô đã chọn chỉ hiện mã, danh sách vẫn hiện mã - tên; dùng ở cột Mã hàng vì tên đã có cột riêng (T124)
 }) {
   const them = useMucDaThem(dm)
   const tatCa: MucDm[] = [...ds.map(x => typeof x === 'string' ? { v: x, t: x } : x), ...them]
@@ -55,7 +56,7 @@ export function ChonDanhMuc({ dm, nhan, value, onChange, ds, className = 'inp', 
     <>
       <button ref={btn} type="button" className={`sel ${className}${mo ? ' open' : ''}`} style={style} aria-haspopup="listbox" aria-expanded={mo}
         onClick={() => setMo(o => !o)} onKeyDown={e => { if (e.key === 'ArrowDown') { e.preventDefault(); setMo(true) } }}>
-        <span className="sel-v">{cur?.t ?? (value || trong || `Chọn ${nhan}`)}</span><Icon n="chevd" className="ic sm sel-c" />
+        <span className="sel-v">{(chiMa && value) || (cur?.t ?? (value || trong || `Chọn ${nhan}`))}</span><Icon n="chevd" className="ic sm sel-c" />
       </button>
       <Popover anchor={btn} open={mo} onClose={() => setMo(false)} role="listbox" className="pop-sel pop-dm" width={Math.max(260, btn.current?.offsetWidth ?? 0)}>
         <div className="dm-tim">

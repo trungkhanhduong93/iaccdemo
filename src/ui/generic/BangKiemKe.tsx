@@ -74,7 +74,7 @@ export function BangKiemKe({ dong, onChange, cheDo, an = [], khongTong = false }
                   {hien('ma') && (
                     <td className={sua ? undefined : 'code'}>
                       {sua ? (
-                        <ChonDanhMuc dm="nvl" nhan="nguyên vật liệu" coMa className="inp sm" trong="Chọn" value={d.ma}
+                        <ChonDanhMuc dm="nvl" nhan="nguyên vật liệu" coMa chiMa className="inp sm" trong="Chọn" value={d.ma}
                           onChange={v => chonMa(i, v)} ds={NVL.map(x => ({ v: x.ma, t: `${x.ma} - ${x.ten}` }))} />
                       ) : d.ma}
                     </td>

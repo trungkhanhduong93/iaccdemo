@@ -11,6 +11,7 @@
 - `BangKiemKe.tsx` (mới): bảng #, Mã hàng, Tên hàng hoá, ĐVT, Tồn hệ thống (không sửa tay), Tồn thực tế (gõ được), Chênh lệch (thực tế trừ hệ thống, thiếu đỏ, thừa xanh), Loại (thiếu thì Xuất điều chỉnh, thừa thì Nhập điều chỉnh, bằng nhau ghi Khớp), Ghi chú. Dòng tổng đếm số dòng thiếu, thừa. `COT_KK` cho Tuỳ chỉnh giao diện.
 - `ChungTuForm.tsx` (`laKk`): bỏ cột Đối tượng, Người giao nhận, Địa chỉ; đầu phiếu gọn hai dòng: dòng 1 Kho kiểm kê (kho của chi nhánh lập phiếu), Nhân viên thực hiện; dòng 2 Ghi chú; cột phải Ngày, Số biên bản. Bỏ dải tổng tiền, tab Hạch toán, nút Cột tài khoản; tab Đính kèm theo luật chung (gói Free không có). Tab Chi tiết dùng `BangKiemKe`.
 - `VoucherScreen.tsx`: khung chi tiết dưới danh sách dùng `BangKiemKe` cho phiếu kiểm kê, không có tab Hạch toán.
+- `ChonDanhMuc.tsx`: thêm `chiMa`, ô đã chọn chỉ hiện mã, danh sách thả xuống vẫn hiện mã - tên. Dùng ở cột Mã hàng của phiếu kiểm kê và mọi phiếu (`BangSua`), vì tên đã có cột riêng.
 - `app.css`: mục cuối "Phiếu kiểm kê: chênh lệch, loại xử lý (T124)".
 
 ## Đã kiểm

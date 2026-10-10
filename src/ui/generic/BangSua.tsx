@@ -390,7 +390,7 @@ export function BangSua({
                 <td className="dim c">{i + 1}</td>
                 {maCot && (
                   <td>
-                    <ChonDanhMuc dm={dmHang} nhan={cfg.dong === 'nvl' ? 'nguyên vật liệu' : 'hàng hoá'} coMa className="inp sm" trong="Chọn" value={d.ma}
+                    <ChonDanhMuc dm={dmHang} nhan={cfg.dong === 'nvl' ? 'nguyên vật liệu' : 'hàng hoá'} coMa chiMa className="inp sm" trong="Chọn" value={d.ma}
                       onChange={(v, muc) => chonMaHang(i, v, muc)} ds={danhMucHang.map(x => ({ v: x.ma, t: `${x.ma} - ${x.ten}` }))} />
                   </td>
                 )}
