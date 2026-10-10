@@ -487,4 +487,14 @@ Lý do: Trum giao việc thiết kế lại màn hình Gói thuê bao và logo 4
 
 Lý do: Trum chốt ngày 10/10/2026 (T122). Ký hiệu, bố cục các mẫu này do agent dựng theo hiểu biết, chưa đối chiếu văn bản gốc. Trum sẽ đưa mẫu sau.
 
-## QD46. Màn Tổng quan: chỉ số và bộ lọc (đang soạn)
+## QD46. Màn Tổng quan: chỉ số và bộ lọc (10/10/2026)
+
+- Tổng quan trả lời theo thứ tự: lời hay lỗ, còn bao nhiêu tiền, vận hành có khoẻ không, tiền đi đâu.
+- Bộ lọc: Kỳ (Tháng này, Tháng trước, Quý này, Từ đầu năm), So với (Kỳ trước; Kế hoạch để mờ tới khi có dữ liệu kế hoạch), Chi nhánh chọn nhiều. Nút Tuỳ chỉnh ẩn, hiện, sắp xếp khối, lưu theo đơn vị và người dùng.
+- Lọc chi nhánh: doanh thu, giá vốn theo chi nhánh; chi phí phân bổ theo tỷ trọng doanh thu; số đọc từ sổ cái (tiền, công nợ, tồn kho, thuế) luôn là toàn doanh nghiệp, có ghi chú.
+- 8 chỉ số sức khoẻ, có đèn xanh, vàng, đỏ: chi phí cốt lõi (giá vốn + lương) ≤ 60%, tỷ lệ giá vốn ≤ 35%, chi phí mặt bằng ≤ 10%, doanh thu hoà vốn, số ngày tồn kho, số ngày thu tiền và trả tiền, hệ số thanh toán hiện hành ≥ 1,2, thuế GTGT còn phải nộp. Ngưỡng là ngưỡng ngành F&B thông dụng, chờ Trum chỉnh.
+- Mọi số đọc từ `kqkd`, `tongKy`, `chiPhiThang`, `soCai`, `DAILY`, không sinh số mới. Tính ở `src/modules/home/chiSo.ts`.
+- Link sang báo cáo gốc chỉ hiện khi báo cáo đó đang hiện ở gói và thông tư (QD45).
+- Gói Free: 4 thẻ đầu, Thác nước lợi nhuận, Xu hướng; khối còn lại hiện khoá mời nâng cấp.
+
+Lý do: Trum giao việc T133 ngày 10/10/2026, duyệt các mặc định do agent đề xuất.

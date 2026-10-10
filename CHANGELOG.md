@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 10/10/2026
 
+- T133: Màn Tổng quan làm lại: thẻ doanh thu, lợi nhuận, tiền kèm số ngày đủ chi; 8 chỉ số sức khoẻ tài chính có đèn cảnh báo; thác nước lợi nhuận, xu hướng 4 tháng, dòng tiền, hiệu quả chi nhánh, cơ cấu chi phí. Lọc theo kỳ, chi nhánh; nút Tuỳ chỉnh ẩn, hiện, sắp xếp khối.
 - T132: Mọi danh sách phiếu có cột Ngày tạo, Người tạo. Phiếu đồng bộ từ FABi, iPOS Inventory ghi người tạo là Hệ thống.
 - T131: Phiếu xuất, nhập điều chỉnh không còn cột Thuế suất, Tiền thuế. Gói Free không hiện giá trị: bỏ Đơn giá, Thành tiền, tổng tiền ở phiếu và cột Tổng tiền ở danh sách.
 - T130: Danh sách Kiểm kê, Điều chỉnh kho có ô lọc Kho.

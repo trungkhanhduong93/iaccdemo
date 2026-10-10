@@ -6507,3 +6507,79 @@ table.tbl {
 
 /* ── Cột Tham chiếu ở danh sách phiếu (T127) ── */
 .ds-tc { display: inline-flex; flex-wrap: wrap; gap: 4px 8px; }
+
+/* ── Tổng quan thiết kế lại (T133) ── */
+.tq-filters { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.tq-so-sanh { display: inline-flex; align-items: center; background: #fff; border: 1px solid var(--line); border-radius: 8px; height: 34px; padding: 0 10px; font-size: 13px; gap: 6px; }
+.tq-ss-label { color: var(--muted); font-size: 12px; }
+.tq-ss-pill { font-weight: 600; color: var(--ink); }
+.tq-ss-pill.dis { color: var(--faint); opacity: .65; cursor: not-allowed; text-decoration: line-through; }
+.tq-cn-wrap { position: relative; }
+.tq-cn-btn { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px; background: #fff; border: 1px solid var(--line); border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; color: var(--ink); }
+.tq-cn-btn:hover { border-color: var(--blue); }
+.tq-cn-pop { position: absolute; top: calc(100% + 4px); right: 0; background: #fff; border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,.12); padding: 8px 0; z-index: 100; min-width: 200px; }
+.tq-cn-opt { display: flex; align-items: center; gap: 8px; padding: 7px 14px; font-size: 13px; cursor: pointer; user-select: none; }
+.tq-cn-opt:hover { background: var(--soft); }
+.tq-cn-opt input { cursor: pointer; }
+
+/* Thẻ KPI nâng cao */
+.kpi-adv { display: flex; flex-direction: column; justify-content: space-between; min-height: 110px; }
+.kpi-spark-row { display: flex; align-items: flex-end; justify-content: space-between; margin-top: 10px; }
+.kpi-tang { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; }
+.kpi-tang.tot { color: var(--green); }
+.kpi-tang.xau { color: var(--red); }
+.kpi-tang.neutral { color: var(--muted); }
+
+/* Khối chỉ số sức khoẻ */
+.tq-sk-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+@media (max-width: 1400px) { .tq-sk-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 900px) { .tq-sk-grid { grid-template-columns: 1fr; } }
+.sk-item { background: #fff; border: 1px solid var(--line-2); border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; justify-content: space-between; transition: all .15s ease; position: relative; text-decoration: none; color: inherit; }
+.sk-item.co-link { cursor: pointer; }
+.sk-item.co-link:hover { border-color: var(--blue); box-shadow: 0 4px 12px rgba(5,96,166,.08); transform: translateY(-1px); }
+.sk-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 12.5px; color: var(--muted); }
+.sk-den { width: 9px; height: 9px; border-radius: 50%; flex: none; display: inline-block; }
+.sk-den.xanh { background: var(--green); box-shadow: 0 0 0 3px var(--green-t); }
+.sk-den.vang { background: var(--amber); box-shadow: 0 0 0 3px var(--amber-t); }
+.sk-den.do { background: var(--red); box-shadow: 0 0 0 3px var(--red-t); }
+.sk-den.info { background: var(--blue); box-shadow: 0 0 0 3px var(--tint); }
+.sk-val-row { display: flex; align-items: baseline; justify-content: space-between; margin-top: 8px; gap: 8px; }
+.sk-val { font-size: 19px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+.sk-sub { font-size: 11.5px; color: var(--muted); font-weight: 500; }
+.sk-desc { font-size: 11.5px; color: var(--muted); margin-top: 6px; line-height: 1.35; }
+.sk-link-ic { color: var(--blue); opacity: 0; transition: opacity .15s; }
+.sk-item.co-link:hover .sk-link-ic { opacity: 1; }
+
+/* Grid 12 cột cho các khối Tổng quan */
+.tq-grid-12 { display: grid; grid-template-columns: repeat(12, 1fr); gap: 14px; margin-bottom: 14px; }
+.tq-col-12 { grid-column: span 12; }
+.tq-col-6 { grid-column: span 6; }
+.tq-col-4 { grid-column: span 4; }
+@media (max-width: 1400px) { .tq-col-4 { grid-column: span 6; } }
+@media (max-width: 1000px) { .tq-col-6, .tq-col-4 { grid-column: span 12; } }
+
+/* Modal Tuỳ chỉnh khối */
+.tq-modal-bg { position: fixed; inset: 0; background: rgba(15,23,42,.45); z-index: 1000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
+.tq-modal-box { background: #fff; border-radius: 14px; width: 490px; max-width: 92vw; box-shadow: 0 20px 40px rgba(0,0,0,.22); overflow: hidden; display: flex; flex-direction: column; max-height: 85vh; animation: fadeIn .15s ease; }
+.tq-modal-hd { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--line); }
+.tq-modal-hd b { font-size: 16px; color: var(--ink); }
+.tq-modal-bd { padding: 14px 20px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.tq-modal-it { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--line-2); background: #fafbfc; font-size: 13.5px; }
+.tq-modal-it.an { opacity: .55; background: #f1f5f9; }
+.tq-modal-it span.ten { flex: 1; font-weight: 500; }
+.tq-modal-btn-order { width: 26px; height: 26px; border-radius: 6px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--line); background: #fff; cursor: pointer; color: var(--body); }
+.tq-modal-btn-order:disabled { opacity: .3; cursor: not-allowed; }
+.tq-modal-btn-order:hover:not(:disabled) { background: var(--soft); border-color: var(--blue); color: var(--blue); }
+.tq-modal-ft { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-top: 1px solid var(--line); background: #f8fafc; }
+
+/* Legend biểu đồ */
+.chart-legend-row { display: flex; align-items: center; gap: 16px; margin-bottom: 10px; font-size: 12px; flex-wrap: wrap; }
+.chart-legend-item { display: inline-flex; align-items: center; gap: 5px; color: var(--muted); }
+.chart-legend-dot { width: 10px; height: 10px; border-radius: 2px; }
+
+/* Tránh ngắt dòng tiêu đề card ở cột 4 (T133) */
+.tq-grid-12 .card-h h3 { white-space: nowrap; flex: none; }
+.tq-col-4 .card-h { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; }
+.tq-col-4 .card-h .sub { flex-basis: 100%; order: 10; margin-top: 2px; }
+
+
