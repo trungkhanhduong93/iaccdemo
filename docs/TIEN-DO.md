@@ -4,13 +4,14 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T106.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T107.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T107 | Thẻ chi phí phân bổ 8.1.1 (Danh sách thẻ chi phí): thẻ dùng chung chi phí trả trước, CCDC, TSCĐ; thẻ dư đầu kỳ; lịch phân bổ sửa được từng dòng, ngừng phân bổ; tạo thẻ từ phiếu chi lý do Chi phí chờ phân bổ; sơ đồ Chi phí phân bổ; 4 lý do chi mới; ngày đầu năm ở Thông tin đơn vị chặn chứng từ thêm mới trước ngày này | dinhlanphuongipacc | Đang làm | Sửa file dùng chung: `CatalogScreen.tsx`, `truong-dm.ts` (cùng T88 của Trum), `ChungTuForm.tsx`, `session.tsx`, `LocNangCao.tsx`, `format.ts`, `types.ts`, `app.css` (mục riêng T107) |
 | T101 | Chuyển tiện ích về phân hệ của nó (tiện ích của phân hệ nào nằm trong phân hệ đó); tiện ích chung như Thiết kế mẫu in tính sau. Rồi xem lại có mở phân hệ Tiện ích cho gói Free không | PhuongXT | Chờ | Ý của PhuongXT 10/10/2026, khi làm T100. Gói Free đang ẩn tạm phân hệ Tiện ích |
 | T88 | Danh mục đơn vị tính 1.3: bộ khoảng 35 đơn vị cơ bản F&B, mã viết hoa không dấu (CAI là Cái), giữ cột Mô tả; mọi ô chọn ĐVT trong panel danh mục lấy từ danh mục này | Trum | Đang làm | Sửa `danh-muc/data.ts`, `danh-muc/index.ts`, `truong-dm.ts`, `CatalogScreen.tsx` |
 | T60 | Mô tả gói Free, Standard trong `GOI` (`src/app/plan.ts`) đang ghi "1 điểm bán"; theo Roadmap gói Free là mỗi chi nhánh một kho, không giới hạn một chi nhánh. Chốt câu chữ rồi sửa | PhuongXT | Chờ | Tách từ T25 |
