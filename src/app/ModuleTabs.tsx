@@ -14,7 +14,7 @@ const KHAC = 110  // chỗ cho nút "Khác" kèm số tab bên trong
 export function ModuleTabs({ mod }: { mod: ModuleDef }) {
   const { s } = useSession()
   const loc = useLocation()
-  const tabs = useMemo(() => tabCua(mod).filter(sc => hienMan(sc, s.goi)), [mod, s.goi])
+  const tabs = useMemo(() => tabCua(mod).filter(sc => hienMan(sc, s.goi, s.cheDo)), [mod, s.goi, s.cheDo])
   const giua = tabs.filter(t => t.kind !== 'baocao')
   const bc = tabs.find(t => t.kind === 'baocao')
   const slug = loc.pathname.split('/')[3]

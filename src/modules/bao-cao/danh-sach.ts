@@ -1,7 +1,7 @@
 // Cấu hình mẫu từng sổ, báo cáo theo chế độ kế toán (kế hoạch mục 5, 7.2). Ký hiệu chưa đối chiếu văn bản gốc, chờ kế toán trưởng duyệt (T04).
 import type { CheDo } from '../../app/che-do'
 import type { Kho } from '../../ui/bao-cao/ToGiay'
-import { CHI_NHANH, TK_NGAN_HANG } from '../../data/mock'
+import { CHI_NHANH, NCC, TK_NGAN_HANG } from '../../data/mock'
 
 export type LoaiBC = 'so' | 'bctc' | 'baocao' | 'tokhai'
 export interface LocBC {
@@ -18,6 +18,7 @@ export const tenTkNh = (t: { so: string; nh: string }) => `${t.nh.split(',')[0]}
 export interface CauHinhBC {
   loai: LoaiBC
   kho: Kho
+  cheDo?: CheDo[]                          // thông tư áp dụng; thiếu là mọi thông tư (T97)
   kyHieu?: Partial<Record<CheDo, string>>   // thiếu chế độ nào thì đầu trang chế độ đó không ghi "Mẫu số"
   ten?: Partial<Record<CheDo, string>>      // tên in trên tờ theo chế độ, thiếu thì giữ tên đang có
   congCot?: string[]                        // sổ: cột cộng chuyển trang
@@ -39,16 +40,28 @@ export const CAU_HINH_BC: Record<string, CauHinhBC> = {
   '2.2.5': { loai: 'so', kho: 'ngang', kyHieu: { TT58: 'S4a-DNSN', TT133: 'S12-DNN', TT99: 'S31-DN' }, anKhongPS: true,
     loc: [{ k: 'ten', nhan: 'Đối tượng', kieu: 'chonNhieu' }] },
   '2.2.6': { loai: 'so', kho: 'ngang', kyHieu: { TT133: 'S15-DNN', TT99: 'S34-DN' }, congCot: ['no', 'co'] },
-  '2.2.7': { loai: 'so', kho: 'doc', kyHieu: { TT152: 'S2e-HKD', TT58: 'S2d-DNSN' }, congCot: ['thu', 'chi'] },
+  '2.2.7': { loai: 'so', kho: 'doc', cheDo: ['TT58'], kyHieu: { TT152: 'S2e-HKD', TT58: 'S2d-DNSN' }, congCot: ['thu', 'chi'] },
+  '2.2.8': baoCao('doc', {
+    loc: [{ k: 'locQuy', nhan: 'Quỹ tiền', kieu: 'chon', ds: () => [...CHI_NHANH.map(c => tenQuyTm(c.ngan)), ...TK_NGAN_HANG.map(tenTkNh)] }],
+  }),
+  '2.2.9': baoCao('doc'),
   '3.2.1': baoCao('ngang', { loc: [{ k: 'nhom', nhan: 'Nhóm món', kieu: 'chon' }], nhomDuoc: ['nhom'], anKhongPS: true }),
   '3.2.2': baoCao('ngang'),
   '3.2.3': baoCao('ngang', { anKhongPS: true }),
   '3.2.4': baoCao('ngang', { loc: [{ k: 'doiTuong', nhan: 'Đối tượng', kieu: 'chon' }], nhomDuoc: ['doiTuong', 'ngay'], anKhongPS: true }),
-  '3.2.5': { loai: 'so', kho: 'ngang', kyHieu: { TT152: 'S1a-HKD', TT58: 'S1-DNSN', TT133: 'S16-DNN', TT99: 'S35-DN' }, ten: { TT152: 'Sổ doanh thu bán hàng hoá, dịch vụ', TT58: 'Sổ doanh thu bán hàng hoá, dịch vụ', TT133: 'Sổ chi tiết bán hàng', TT99: 'Sổ chi tiết bán hàng' }, congCot: ['dt', 'vat', 'tong'] },
+  '3.2.5': { loai: 'so', kho: 'ngang', kyHieu: { TT152: 'S2a-HKD', TT58: 'S1-DNSN', TT133: 'S16-DNN', TT99: 'S35-DN' }, ten: { TT152: 'Sổ doanh thu bán hàng hoá, dịch vụ', TT58: 'Sổ doanh thu bán hàng hoá, dịch vụ', TT133: 'Sổ chi tiết bán hàng', TT99: 'Sổ chi tiết bán hàng' }, congCot: ['dt', 'vat', 'tong'] },
   '4.2.1': baoCao('ngang', { loc: [{ k: 'doiTuong', nhan: 'Nhà cung cấp', kieu: 'chon' }, { k: 'nguon', nhan: 'Nguồn', kieu: 'chon' }], nhomDuoc: ['doiTuong', 'ngay'], anKhongPS: true }),
   '4.2.2': baoCao('doc', { anKhongPS: true }),
   '4.2.4': baoCao('doc', { anKhongPS: true }),
   '4.2.5': baoCao('ngang', { loc: [{ k: 'doiTuong', nhan: 'Nhà cung cấp', kieu: 'chon' }, { k: 'ten', nhan: 'Mặt hàng', kieu: 'chonNhieu' }], nhomDuoc: ['doiTuong', 'ten', 'ngay'], anKhongPS: true }),
+  '4.2.6': baoCao('ngang', {
+    loc: [
+      { k: 'ncc', nhan: 'Nhà cung cấp', kieu: 'chon', ds: () => NCC.map(n => n.ten) },
+      { k: 'pttt', nhan: 'Phương thức TT', kieu: 'chon', ds: () => ['Chuyển khoản', 'Tiền mặt', 'Chưa thanh toán'] },
+    ],
+    nhomDuoc: ['ncc', 'pttt', 'ngay'],
+    anKhongPS: true,
+  }),
   '5.2.1': { loai: 'so', kho: 'doc', kyHieu: { TT133: 'S08-DNN', TT99: 'S12-DN' }, congCot: ['nhap', 'xuat'] },
   '5.2.2': baoCao('ngang', { loc: [{ k: 'kho', nhan: 'Kho', kieu: 'chon' }, { k: 'loai', nhan: 'Loại phiếu', kieu: 'chon' }], nhomDuoc: ['kho', 'loai', 'ngay'], anKhongPS: true }),
   '5.2.3': { loai: 'so', kho: 'ngang', kyHieu: { TT133: 'S07-DNN', TT99: 'S11-DN' }, anKhongPS: true },
@@ -61,7 +74,7 @@ export const CAU_HINH_BC: Record<string, CauHinhBC> = {
   '6.2.2': baoCao('ngang', { nhomDuoc: ['ngay'], anKhongPS: true }),
   '6.2.3': { loai: 'tokhai', kho: 'doc', khoa: true },
   '6.2.4': { loai: 'so', kho: 'doc', kyHieu: { TT58: 'S3b-DNSN', TT133: 'S25-DNN', TT99: 'S61-DN' } },
-  '6.2.5': { loai: 'so', kho: 'doc', kyHieu: { TT152: 'S3a-HKD', TT58: 'S4c-DNSN' } },
+  '6.2.5': { loai: 'so', kho: 'doc', cheDo: ['TT152', 'TT58'], kyHieu: { TT152: 'S3a-HKD', TT58: 'S4c-DNSN' } },
   '7.2.1': { loai: 'so', kho: 'ngang', kyHieu: { TT58: 'S4b-DNSN', TT133: 'S09-DNN', TT99: 'S21-DN' }, anKhongPS: true },
   '7.2.2': baoCao('ngang', { anKhongPS: true }),
   '7.2.3': { loai: 'so', kho: 'doc', kyHieu: { TT133: 'S11-DNN', TT99: 'S23-DN' } },
@@ -78,8 +91,16 @@ export const CAU_HINH_BC: Record<string, CauHinhBC> = {
   '10.2.4': { loai: 'bctc', kho: 'doc', khoa: true, kyHieu: { TT133: 'B03-DNN', TT99: 'B03-DN' } },
   '10.2.5': { loai: 'bctc', kho: 'doc', khoa: true, kyHieu: { TT133: 'B09-DNN', TT99: 'B09-DN' } },
   '10.3.1': baoCao('ngang', { anKhongPS: true }),
-  '10.4.1': { loai: 'so', kho: 'ngang', kyHieu: { TT152: 'S2c-HKD', TT58: 'S2b-DNSN' } },
+  '10.4.1': { loai: 'so', kho: 'ngang', cheDo: ['TT58'], kyHieu: { TT152: 'S2c-HKD', TT58: 'S2b-DNSN' } },
   '10.4.2': { loai: 'so', kho: 'doc', kyHieu: { TT58: 'S4d-DNSN', TT133: 'S23-DNN', TT99: 'S51-DN' } },
+  '10.4.3': baoCao('doc', {
+    loc: [
+      { k: 'kmcp', nhan: 'Khoản mục chi phí', kieu: 'chon', ds: () => ['Tiền điện', 'Tiền nước', 'Tiền gas công nghiệp', 'Thuê mặt bằng Lê Lợi', 'Thuê mặt bằng Nguyễn Trãi', 'Thuê mặt bằng Thảo Điền', 'Lương nhân viên bếp', 'Lương nhân viên phục vụ', 'Lương quản lý chi nhánh', 'Quảng cáo Facebook & TikTok', 'Phí giao hàng Grab & ShopeeFood', 'Dụng cụ vệ sinh & hoá chất', 'Văn phòng phẩm & in ấn'] },
+      { k: 'nhomCp', nhan: 'Nhóm khoản mục chi phí', kieu: 'chon', ds: () => ['Chi phí tiện ích', 'Chi phí mặt bằng', 'Chi phí nhân công', 'Chi phí bán hàng', 'Chi phí quản lý'] },
+    ],
+    nhomDuoc: ['nhomCp', 'kmcp'],
+    anKhongPS: true,
+  }),
 }
 
 export const cauHinhBC = (code?: string) => code ? CAU_HINH_BC[code] : undefined

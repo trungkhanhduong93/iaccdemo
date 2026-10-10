@@ -2,7 +2,7 @@
 import type { ModuleDef } from '../types'
 import { tuExcel } from '../types'
 import { quyTrinh } from './quy-trinh'
-import { PHIEU_MUA, chiTietMua, chiTietNhap, tongHopMua, tongHopNhap } from './bao-cao'
+import { PHIEU_MUA, chiTietMua, chiTietNhap, muaHangTheoNgay, tongHopMua, tongHopNhap } from './bao-cao'
 
 const MUA = PHIEU_MUA.dienGiai
 
@@ -31,6 +31,7 @@ const muaHang: ModuleDef = {
     '4.2.4': { report: { kieu: 'bangke', theoCn: true, ...tongHopNhap } },
     '4.2.5': { report: { kieu: 'bangke', theoCn: true, ...chiTietNhap } },
     '4.2.3': { report: { kieu: 'tonghop', doiTuong: 'ncc', theoCn: true } },   // Sổ công nợ nhà cung cấp (T52)
+    '4.2.6': { ten: 'Mua hàng theo ngày', report: { kieu: 'bangke', theoCn: true, ...muaHangTheoNgay } },
   }, NGAN),
 }
 export default muaHang

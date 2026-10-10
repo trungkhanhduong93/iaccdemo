@@ -14,7 +14,7 @@ import { cauHinhBC } from '../../modules/bao-cao/danh-sach'
 export function BaoCaoScreen({ mod }: ScreenProps) {
   const { s } = useSession()
   const [q, setQ] = useState('')
-  const ds = mod.screens.filter(laBaoCao).filter(sc => hienMan(sc, s.goi)).filter(sc => !q || fold(`${tenMan(sc)} ${sc.code ?? ''} ${cauHinhBC(sc.code)?.kyHieu?.[s.cheDo] ?? ''}`).includes(fold(q)))
+  const ds = mod.screens.filter(laBaoCao).filter(sc => hienMan(sc, s.goi, s.cheDo)).filter(sc => !q || fold(`${tenMan(sc)} ${sc.code ?? ''} ${cauHinhBC(sc.code)?.kyHieu?.[s.cheDo] ?? ''}`).includes(fold(q)))
   const nhom: [string, typeof ds][] = []
   for (const sc of ds) {
     const n = sc.nhom ?? ''

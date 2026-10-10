@@ -82,7 +82,7 @@ export function CommandPalette({ onClose }: { onClose: () => void }) {
 
   const words = useMemo(() => fold(q).split(/\s+/).filter(Boolean), [q])
   const muc = useMemo(() => {
-    const thay = TAT_CA.filter(x => hienPhanHe(x.m, s.goi) && hienMan(x.sc, s.goi))
+    const thay = TAT_CA.filter(x => hienPhanHe(x.m, s.goi) && hienMan(x.sc, s.goi, s.cheDo))
     if (words.length) {
       // xếp: mã hoặc tên bắt đầu bằng chữ gõ, rồi cụm chữ nằm trong tên, rồi đủ từ trong tên, cuối cùng chỉ khớp tên phân hệ
       const cum = words.join(' ')
@@ -96,7 +96,7 @@ export function CommandPalette({ onClose }: { onClose: () => void }) {
     const daCo = new Set(vuaMo.map(x => x.p))
     const goiY = GOI_Y.map(o => o.map(p => theoDuong.get(p)).find(x => x && moDuoc(x.sc, s.goi))).filter((x): x is Muc => !!x && !daCo.has(x.p))
     return [{ ten: 'Vừa mở', ds: vuaMo }, { ten: 'Gợi ý', ds: goiY }].filter(g => g.ds.length)
-  }, [words, s.goi])
+  }, [words, s.goi, s.cheDo])
   const list = useMemo(() => muc.flatMap(g => g.ds), [muc])
   useEffect(() => setI(0), [q])
   useEffect(() => { thanRef.current?.querySelector('.cmdk-dong.on')?.scrollIntoView({ block: 'nearest' }) }, [i])

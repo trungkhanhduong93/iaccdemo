@@ -67,3 +67,58 @@ export const tongHopNhap = {
     return [...ds, { ten: 'Tổng cộng', tien: cong(ds, 'tien'), _t: 1 }]
   },
 }
+
+/** Mua hàng theo ngày: gom theo từng ngày phát sinh (T97) */
+export const muaHangTheoNgay = {
+  cols: [
+    { k: 'ngay', t: 'Ngày', w: 92 },
+    { k: 'thanhTien', t: 'Thành tiền', num: true },
+    { k: 'giamGia', t: 'Giảm giá', num: true },
+    { k: 'sauGiam', t: 'Tiền hàng sau giảm giá', num: true },
+    { k: 'thue', t: 'Tiền thuế', num: true },
+    { k: 'tong', t: 'Tổng tiền', num: true },
+    { k: 'daThanhToan', t: 'Đã thanh toán', num: true },
+    { k: 'daTraHang', t: 'Đã trả hàng', num: true },
+    { k: 'conNo', t: 'Còn nợ', num: true },
+  ] as Col[],
+  rows: (thang: number, cn?: string): Row[] => {
+    const nhom = new Map<string, { ngay: string; thanhTien: number; giamGia: number; sauGiam: number; thue: number; tong: number; daThanhToan: number; daTraHang: number; conNo: number }>()
+    for (const r of phieuThang(thang, cn)) {
+      const g = nhom.get(r.ngay) ?? { ngay: r.ngay, thanhTien: 0, giamGia: 0, sauGiam: 0, thue: 0, tong: 0, daThanhToan: 0, daTraHang: 0, conNo: 0 }
+      const tt = r.tien || 0
+      const gg = Math.round(tt * 0.02)
+      const sg = tt - gg
+      const th = r.thue || 0
+      const t = sg + th
+      const dtt = Math.round(t * 0.75)
+      const dth = Math.round(t * 0.05)
+      const cnVal = t - dtt - dth
+      g.thanhTien += tt
+      g.giamGia += gg
+      g.sauGiam += sg
+      g.thue += th
+      g.tong += t
+      g.daThanhToan += dtt
+      g.daTraHang += dth
+      g.conNo += cnVal
+      nhom.set(r.ngay, g)
+    }
+    const ds = [...nhom.values()].sort((a, b) => a.ngay.localeCompare(b.ngay))
+    return [
+      ...ds,
+      {
+        ngay: 'Tổng cộng',
+        thanhTien: cong(ds, 'thanhTien'),
+        giamGia: cong(ds, 'giamGia'),
+        sauGiam: cong(ds, 'sauGiam'),
+        thue: cong(ds, 'thue'),
+        tong: cong(ds, 'tong'),
+        daThanhToan: cong(ds, 'daThanhToan'),
+        daTraHang: cong(ds, 'daTraHang'),
+        conNo: cong(ds, 'conNo'),
+        _t: 1,
+      },
+    ]
+  },
+}
+

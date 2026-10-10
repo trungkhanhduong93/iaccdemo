@@ -42,6 +42,8 @@ const tien: ModuleDef = {
     '2.2.5': { report: { kieu: 'tonghop', doiTuong: 'kh', theoCn: true } },
     '2.2.6': { report: SO_BO_SUNG['2.2.6'] },
     '2.2.7': { report: SO_BO_SUNG['2.2.7'] },
+    '2.2.8': { report: SO_BO_SUNG['2.2.8'] },
+    '2.2.9': { report: SO_BO_SUNG['2.2.9'] },
   }, NGAN),
 }
 export default tien

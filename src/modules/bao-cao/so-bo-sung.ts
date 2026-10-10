@@ -556,9 +556,216 @@ function rows1042(thang: number): Row[] {
   return rows
 }
 
+// ── 2.2.8 Tổng hợp quỹ tiền ──
+const cols228: Col[] = [
+  { k: 'ma', t: 'Mã', cls: 'code', w: 100 },
+  { k: 'tenQuy', t: 'Tên quỹ' },
+  { k: 'dau', t: 'Dư đầu kỳ', num: true },
+  { k: 'thu', t: 'Thu', num: true },
+  { k: 'chi', t: 'Chi', num: true },
+  { k: 'cuoi', t: 'Dư cuối kỳ', num: true },
+]
+
+function rows228(thang: number): Row[] {
+  const sc = soCai(thang)
+  const moTm = sc.mo['1111'] ?? 0
+  const noTm = sc.no['1111'] ?? 0
+  const coTm = sc.co['1111'] ?? 0
+
+  const moNh = sc.mo['1121'] ?? 0
+  const noNh = sc.no['1121'] ?? 0
+  const coNh = sc.co['1121'] ?? 0
+
+  const tmQ1_dau = Math.round(moTm * 0.45)
+  const tmQ1_thu = Math.round(noTm * 0.45)
+  const tmQ1_chi = Math.round(coTm * 0.45)
+  const tmQ1_cuoi = tmQ1_dau + tmQ1_thu - tmQ1_chi
+
+  const tmQ5_dau = Math.round(moTm * 0.3)
+  const tmQ5_thu = Math.round(noTm * 0.3)
+  const tmQ5_chi = Math.round(coTm * 0.3)
+  const tmQ5_cuoi = tmQ5_dau + tmQ5_thu - tmQ5_chi
+
+  const tmTd_dau = moTm - tmQ1_dau - tmQ5_dau
+  const tmTd_thu = noTm - tmQ1_thu - tmQ5_thu
+  const tmTd_chi = coTm - tmQ1_chi - tmQ5_chi
+  const tmTd_cuoi = tmTd_dau + tmTd_thu - tmTd_chi
+
+  const vcb_dau = Math.round(moNh * 0.65)
+  const vcb_thu = Math.round(noNh * 0.65)
+  const vcb_chi = Math.round(coNh * 0.65)
+  const vcb_cuoi = vcb_dau + vcb_thu - vcb_chi
+
+  const tcb_dau = moNh - vcb_dau
+  const tcb_thu = noNh - vcb_thu
+  const tcb_chi = coNh - vcb_chi
+  const tcb_cuoi = tcb_dau + tcb_thu - tcb_chi
+
+  const ds: Row[] = [
+    { ma: 'TM-Q1', tenQuy: 'Quỹ tiền mặt Lê Lợi', locQuy: 'Quỹ tiền mặt Lê Lợi', dau: tmQ1_dau, thu: tmQ1_thu, chi: tmQ1_chi, cuoi: tmQ1_cuoi },
+    { ma: 'TM-Q5', tenQuy: 'Quỹ tiền mặt Nguyễn Trãi', locQuy: 'Quỹ tiền mặt Nguyễn Trãi', dau: tmQ5_dau, thu: tmQ5_thu, chi: tmQ5_chi, cuoi: tmQ5_cuoi },
+    { ma: 'TM-TD', tenQuy: 'Quỹ tiền mặt Thảo Điền', locQuy: 'Quỹ tiền mặt Thảo Điền', dau: tmTd_dau, thu: tmTd_thu, chi: tmTd_chi, cuoi: tmTd_cuoi },
+    { ma: 'VCB-001', tenQuy: 'Vietcombank 0071000987654', locQuy: 'Vietcombank 0071000987654', dau: vcb_dau, thu: vcb_thu, chi: vcb_chi, cuoi: vcb_cuoi },
+    { ma: 'TCB-002', tenQuy: 'Techcombank 19036789012345', locQuy: 'Techcombank 19036789012345', dau: tcb_dau, thu: tcb_thu, chi: tcb_chi, cuoi: tcb_cuoi },
+  ]
+
+  const tongDau = ds.reduce((a, x) => a + x.dau, 0)
+  const tongThu = ds.reduce((a, x) => a + x.thu, 0)
+  const tongChi = ds.reduce((a, x) => a + x.chi, 0)
+  const tongCuoi = ds.reduce((a, x) => a + x.cuoi, 0)
+
+  ds.push({
+    tenQuy: 'Tổng cộng',
+    dau: tongDau,
+    thu: tongThu,
+    chi: tongChi,
+    cuoi: tongCuoi,
+    _t: 1,
+  })
+
+  return ds
+}
+
+// ── 2.2.9 Báo cáo dòng tiền ──
+const cols229: Col[] = [
+  { k: 'chiTieu', t: 'Chỉ tiêu' },
+  { k: 'tongNay', t: 'Tổng kỳ này', num: true },
+  { k: 'tienMat', t: 'Tiền mặt', num: true },
+  { k: 'nganHang', t: 'Ngân hàng', num: true },
+  { k: 'kyTruoc', t: 'Kỳ trước', num: true },
+]
+
+function rows229(thang: number): Row[] {
+  const sc = soCai(thang)
+  const thangTruoc = thang === 8 ? 7 : thang - 1
+  const scTr = soCai(thangTruoc)
+
+  const tinhDongTien = (s: typeof sc) => {
+    let thuBhTm = 0, thuBhNh = 0, thuKhacTm = 0, thuKhacNh = 0
+    let chiMhTm = 0, chiMhNh = 0, chiHdTm = 0, chiHdNh = 0, chiKhacTm = 0, chiKhacNh = 0
+    for (const b of s.bt) {
+      const [tkNo, tkCo, tien, nhom] = b
+      if (tkNo === '1111') {
+        if (nhom === 'thu') thuBhTm += tien
+        else if (nhom === 'tc' || nhom === 'thukhac') thuKhacTm += tien
+      } else if (tkNo === '1121') {
+        if (nhom === 'thu') thuBhNh += tien
+        else if (nhom === 'tc' || nhom === 'thukhac') thuKhacNh += tien
+      }
+      if (tkCo === '1111') {
+        if (nhom === 'trancc') chiMhTm += tien
+        else if (nhom === 'luong' || nhom === 'chikhac') chiHdTm += tien
+        else if (nhom === 'laivay' || nhom === 'travay' || nhom === 'thuetruoc') chiKhacTm += tien
+      } else if (tkCo === '1121') {
+        if (nhom === 'trancc') chiMhNh += tien
+        else if (nhom === 'luong' || nhom === 'chikhac') chiHdNh += tien
+        else if (nhom === 'laivay' || nhom === 'travay' || nhom === 'thuetruoc') chiKhacNh += tien
+      }
+    }
+    const tongVaoTm = thuBhTm + thuKhacTm
+    const tongVaoNh = thuBhNh + thuKhacNh
+    const tongVao = tongVaoTm + tongVaoNh
+
+    const tongRaTm = chiMhTm + chiHdTm + chiKhacTm
+    const tongRaNh = chiMhNh + chiHdNh + chiKhacNh
+    const tongRa = tongRaTm + tongRaNh
+
+    const thuanTm = tongVaoTm - tongRaTm
+    const thuanNh = tongVaoNh - tongRaNh
+    const thuan = tongVao - tongRa
+
+    const dauTm = s.mo['1111'] ?? 0
+    const dauNh = s.mo['1121'] ?? 0
+    const dau = dauTm + dauNh
+
+    const cuoiTm = dauTm + thuanTm
+    const cuoiNh = dauNh + thuanNh
+    const cuoi = dau + thuan
+
+    return {
+      thuBhTm, thuBhNh, thuBh: thuBhTm + thuBhNh,
+      thuKhacTm, thuKhacNh, thuKhac: thuKhacTm + thuKhacNh,
+      tongVaoTm, tongVaoNh, tongVao,
+      chiMhTm, chiMhNh, chiMh: chiMhTm + chiMhNh,
+      chiHdTm, chiHdNh, chiHd: chiHdTm + chiHdNh,
+      chiKhacTm, chiKhacNh, chiKhac: chiKhacTm + chiKhacNh,
+      tongRaTm, tongRaNh, tongRa,
+      thuanTm, thuanNh, thuan,
+      dauTm, dauNh, dau,
+      cuoiTm, cuoiNh, cuoi,
+    }
+  }
+
+  const dtNay = tinhDongTien(sc)
+  const dtTr = tinhDongTien(scTr)
+
+  return [
+    { chiTieu: 'I. Dòng tiền vào', _b: 1 },
+    { chiTieu: '1. Thu từ bán hàng, cung cấp dịch vụ', tienMat: dtNay.thuBhTm, nganHang: dtNay.thuBhNh, tongNay: dtNay.thuBh, kyTruoc: dtTr.thuBh, _i: 1 },
+    { chiTieu: '2. Thu nhập khác và thu tài chính', tienMat: dtNay.thuKhacTm, nganHang: dtNay.thuKhacNh, tongNay: dtNay.thuKhac, kyTruoc: dtTr.thuKhac, _i: 1 },
+    { chiTieu: 'Cộng dòng tiền vào', tienMat: dtNay.tongVaoTm, nganHang: dtNay.tongVaoNh, tongNay: dtNay.tongVao, kyTruoc: dtTr.tongVao, _b: 1 },
+    { chiTieu: 'II. Dòng tiền ra', _b: 1 },
+    { chiTieu: '1. Chi trả cho nhà cung cấp hàng hoá, dịch vụ', tienMat: dtNay.chiMhTm, nganHang: dtNay.chiMhNh, tongNay: dtNay.chiMh, kyTruoc: dtTr.chiMh, _i: 1 },
+    { chiTieu: '2. Chi trả cho người lao động, chi phí hoạt động', tienMat: dtNay.chiHdTm, nganHang: dtNay.chiHdNh, tongNay: dtNay.chiHd, kyTruoc: dtTr.chiHd, _i: 1 },
+    { chiTieu: '3. Chi phí lãi vay, nợ gốc và chi khác', tienMat: dtNay.chiKhacTm, nganHang: dtNay.chiKhacNh, tongNay: dtNay.chiKhac, kyTruoc: dtTr.chiKhac, _i: 1 },
+    { chiTieu: 'Cộng dòng tiền ra', tienMat: dtNay.tongRaTm, nganHang: dtNay.tongRaNh, tongNay: dtNay.tongRa, kyTruoc: dtTr.tongRa, _b: 1 },
+    { chiTieu: 'III. Dòng tiền thuần trong kỳ (I - II)', tienMat: dtNay.thuanTm, nganHang: dtNay.thuanNh, tongNay: dtNay.thuan, kyTruoc: dtTr.thuan, _b: 1, _t: 1 },
+    { chiTieu: 'IV. Tiền tồn đầu kỳ', tienMat: dtNay.dauTm, nganHang: dtNay.dauNh, tongNay: dtNay.dau, kyTruoc: dtTr.dau, _b: 1 },
+    { chiTieu: 'V. Tiền tồn cuối kỳ (III + IV)', tienMat: dtNay.cuoiTm, nganHang: dtNay.cuoiNh, tongNay: dtNay.cuoi, kyTruoc: dtTr.cuoi, _b: 1, _t: 1 },
+  ]
+}
+
+// ── 10.4.3 Sổ chi phí ──
+const cols1043: Col[] = [
+  { k: 'so', t: 'Số chứng từ', cls: 'code', w: 130 },
+  { k: 'ngay', t: 'Ngày chứng từ', w: 95 },
+  { k: 'nd', t: 'Nội dung' },
+  { k: 'cp', t: 'Chi phí phát sinh', num: true },
+]
+
+const DS_CHI_PHI = [
+  { kmcp: 'Thuê mặt bằng Lê Lợi', nhomCp: 'Chi phí mặt bằng', nd: 'Chi tiền thuê mặt bằng chi nhánh Lê Lợi', cp: 65_000_000, ngay: 5 },
+  { kmcp: 'Thuê mặt bằng Nguyễn Trãi', nhomCp: 'Chi phí mặt bằng', nd: 'Chi tiền thuê mặt bằng chi nhánh Nguyễn Trãi', cp: 42_000_000, ngay: 5 },
+  { kmcp: 'Thuê mặt bằng Thảo Điền', nhomCp: 'Chi phí mặt bằng', nd: 'Chi tiền thuê mặt bằng chi nhánh Thảo Điền', cp: 55_000_000, ngay: 6 },
+  { kmcp: 'Tiền điện', nhomCp: 'Chi phí tiện ích', nd: 'Thanh toán tiền điện 3 chi nhánh kỳ này', cp: 18_500_000, ngay: 10 },
+  { kmcp: 'Tiền nước', nhomCp: 'Chi phí tiện ích', nd: 'Thanh toán hoá đơn tiền nước sinh hoạt', cp: 4_200_000, ngay: 11 },
+  { kmcp: 'Tiền gas công nghiệp', nhomCp: 'Chi phí tiện ích', nd: 'Chi tiền đổi gas bếp công nghiệp', cp: 8_900_000, ngay: 12 },
+  { kmcp: 'Lương nhân viên bếp', nhomCp: 'Chi phí nhân công', nd: 'Chi trả lương nhân viên bộ phận bếp', cp: 78_000_000, ngay: 15 },
+  { kmcp: 'Lương nhân viên phục vụ', nhomCp: 'Chi phí nhân công', nd: 'Chi trả lương nhân viên phục vụ bàn', cp: 52_000_000, ngay: 15 },
+  { kmcp: 'Lương quản lý chi nhánh', nhomCp: 'Chi phí nhân công', nd: 'Chi trả lương quản lý và giám sát ca', cp: 36_000_000, ngay: 15 },
+  { kmcp: 'Quảng cáo Facebook & TikTok', nhomCp: 'Chi phí bán hàng', nd: 'Chi phí chạy chiến dịch quảng cáo món mới', cp: 25_000_000, ngay: 18 },
+  { kmcp: 'Phí giao hàng Grab & ShopeeFood', nhomCp: 'Chi phí bán hàng', nd: 'Chi phí chiết khấu ứng dụng giao thức ăn', cp: 14_600_000, ngay: 20 },
+  { kmcp: 'Dụng cụ vệ sinh & hoá chất', nhomCp: 'Chi phí quản lý', nd: 'Mua sắm hoá chất tẩy rửa và vệ sinh', cp: 5_400_000, ngay: 22 },
+  { kmcp: 'Văn phòng phẩm & in ấn', nhomCp: 'Chi phí quản lý', nd: 'Chi tiền in thực đơn và giấy tờ quản lý', cp: 3_200_000, ngay: 25 },
+]
+
+function rows1043(thang: number): Row[] {
+  const filtered = DS_CHI_PHI.filter(x => thang !== 10 || x.ngay <= 7)
+  let tongCp = 0
+  const rows: Row[] = filtered.map((x, idx) => {
+    tongCp += x.cp
+    return {
+      so: `PC26${pad(thang)}-${pad(idx + 1, 4)}`,
+      ngay: `${pad(x.ngay)}/${pad(thang)}/2026`,
+      nd: x.nd,
+      kmcp: x.kmcp,
+      nhomCp: x.nhomCp,
+      cp: x.cp,
+    }
+  })
+  rows.push({
+    nd: 'Tổng cộng',
+    cp: tongCp,
+    _t: 1,
+  })
+  return rows
+}
+
 export const SO_BO_SUNG: Record<string, ReportCfg> = {
   '2.2.6': { kieu: 'bangke', cols: cols226, rows: rows226 },
   '2.2.7': { kieu: 'bangke', cols: cols227, rows: rows227 },
+  '2.2.8': { kieu: 'bangke', cols: cols228, rows: rows228 },
+  '2.2.9': { kieu: 'bangke', cols: cols229, rows: rows229 },
   '3.2.5': { kieu: 'bangke', cols: cols325, rows: rows325 },
   '5.2.8': { kieu: 'bangke', cols: cols528, rows: rows528 },
   '6.2.4': { kieu: 'bangke', cols: cols624, rows: rows624 },
@@ -567,4 +774,5 @@ export const SO_BO_SUNG: Record<string, ReportCfg> = {
   '7.2.4': { kieu: 'bangke', cols: cols724, rows: () => rows724() },
   '10.4.1': { kieu: 'bangke', cols: cols1041, rows: rows1041 },
   '10.4.2': { kieu: 'bangke', cols: cols1042, rows: rows1042 },
+  '10.4.3': { kieu: 'bangke', cols: cols1043, rows: rows1043 },
 }
