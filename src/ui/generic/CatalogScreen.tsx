@@ -15,6 +15,7 @@ import { heThongTk } from '../../modules/danh-muc/he-thong-tk'
 import { FormToanMan } from '../FormToanMan'
 import { LichSu } from './ChungTuForm'
 import { HopXacNhan } from '../LocNangCao'
+import { TEN_DVT } from '../../modules/danh-muc/data'
 
 export function CatalogScreen({ sc }: ScreenProps) {
   const { s, set, toast } = useSession()
@@ -190,7 +191,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
     if (tr.k === 'nhom' && cfg.nhomLoc === 'nhom' && nhoms.length > 0) ds = nhoms.map(d => ({ v: d, t: d }))
     else if (tr.ds && tr.ds.length > 0) ds = tr.ds.map(d => ({ v: d, t: d }))
     else if (tr.k.toLowerCase().startsWith('tk')) ds = dsTkChon
-    else if (tr.k === 'dvt') ds = ['Tô', 'Phần', 'Dĩa', 'Ly', 'Lon', 'Chai', 'kg', 'g', 'Lít', 'ml', 'Thùng', 'Hộp', 'Cái'].map(d => ({ v: d, t: d }))
+    else if (tr.k === 'dvt') ds = TEN_DVT.map(d => ({ v: d, t: d }))
     const kq = [dau, ...ds]
     boNho.set(tr.k, kq)
     return kq

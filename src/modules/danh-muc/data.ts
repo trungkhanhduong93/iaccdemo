@@ -44,3 +44,19 @@ export function taiKhoan(cd: CheDo) {
     return [t]
   })
 }
+
+/** Đơn vị tính cơ bản ngành F&B: mã viết hoa không dấu, tên, mô tả (T88). Mọi ô chọn ĐVT trong panel danh mục lấy từ đây */
+export const DON_VI_TINH: [string, string, string][] = [
+  ['TO', 'Tô', 'Món nước'], ['PHAN', 'Phần', 'Món ăn'], ['DIA', 'Dĩa', 'Món cơm'], ['SUAT', 'Suất', 'Cơm phần, set ăn'],
+  ['BAT', 'Bát', 'Món nước, chè'], ['CHEN', 'Chén', 'Nước chấm, chè'], ['NOI', 'Nồi', 'Lẩu'], ['LY', 'Ly', 'Đồ uống pha chế'],
+  ['COC', 'Cốc', 'Đồ uống'], ['LON', 'Lon', 'Bia, nước ngọt'], ['CHAI', 'Chai', 'Nước suối, rượu'],
+  ['KET', 'Két', 'Bia, nước ngọt nhập hàng'], ['THUNG', 'Thùng', 'Đóng gói nhập hàng'], ['HOP', 'Hộp', 'Đồ hộp'],
+  ['GOI', 'Gói', 'Gia vị, đồ khô'], ['BICH', 'Bịch', 'Đá, đồ khô'], ['BAO', 'Bao', 'Gạo, bột'],
+  ['TUI', 'Túi', 'Đóng gói mang về'], ['CAN', 'Can', 'Dầu ăn, nước mắm'], ['KG', 'kg', 'Nguyên liệu tươi'],
+  ['G', 'g', 'Định lượng công thức'], ['LIT', 'Lít', 'Dầu ăn, sữa tươi'], ['ML', 'ml', 'Định lượng pha chế'],
+  ['CON', 'Con', 'Hải sản, gia cầm'], ['QUA', 'Quả', 'Trái cây, trứng'], ['VI', 'Vỉ', 'Trứng'],
+  ['KHAY', 'Khay', 'Thịt đóng khay'], ['MIENG', 'Miếng', 'Bánh, thịt cắt'], ['XIEN', 'Xiên', 'Món nướng'],
+  ['CAI', 'Cái', 'Công cụ dụng cụ'], ['CHIEC', 'Chiếc', 'Công cụ dụng cụ'], ['BO', 'Bộ', 'Bộ dụng cụ, set'],
+  ['DOI', 'Đôi', 'Đũa'], ['LAN', 'Lần', 'Dịch vụ'], ['GIO', 'Giờ', 'Dịch vụ theo giờ'], ['THANG', 'Tháng', 'Thuê theo tháng'],
+]
+export const TEN_DVT = DON_VI_TINH.map(d => d[1])

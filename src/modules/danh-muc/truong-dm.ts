@@ -1,5 +1,6 @@
 // Khai báo trường thông tin panel Thêm / Sửa cho các danh mục (T70)
 // Lấy theo bảng DM_ tương ứng trong CSDL kế toán iPOS (schema-dm.md)
+import { TEN_DVT } from './data'
 
 import type { Col, Row } from '../types'
 
@@ -53,8 +54,8 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
           { k: 'ten', nhan: 'Tên hàng hoá', kieu: 'chu', batBuoc: true, caHang: true, cot: 'ITEM_NAME' },
           { k: 'nhom', nhan: 'Nhóm hàng hoá', kieu: 'chon', ds: ['Món khai vị', 'Món chính', 'Món lẩu', 'Đồ uống', 'Tráng miệng', 'Món mới tháng 10', 'Thịt, cá', 'Rau củ', 'Gia vị', 'Bia, nước ngọt'], cot: 'ITEM_CLASS_ID' },
           { k: 'loai', nhan: 'Tính chất / Loại', kieu: 'chon', ds: ['Hàng hoá', 'Thành phẩm', 'Nguyên vật liệu', 'Dịch vụ'], cot: 'ITEM_TYPE_ID' },
-          { k: 'dvt', nhan: 'Đơn vị tính', kieu: 'chon', ds: ['Tô', 'Phần', 'Dĩa', 'Ly', 'Lon', 'Chai', 'kg', 'g', 'Lít', 'ml', 'Thùng', 'Hộp', 'Cái'], cot: 'UNIT_ID' },
-          { k: 'dvtPhu', nhan: 'ĐVT phụ', kieu: 'chon', ds: ['Thùng', 'Hộp', 'Két', 'Gói', 'Lon', 'Chai'], cot: 'UNIT_ID_EXTRA' },
+          { k: 'dvt', nhan: 'Đơn vị tính', kieu: 'chon', ds: TEN_DVT, cot: 'UNIT_ID' },
+          { k: 'dvtPhu', nhan: 'ĐVT phụ', kieu: 'chon', ds: TEN_DVT, cot: 'UNIT_ID_EXTRA' },
           { k: 'barcode', nhan: 'Mã vạch', kieu: 'chu', cot: 'BARCODE' },
         ],
       },
@@ -120,8 +121,8 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
         ten: 'Thông tin chung',
         truong: [
           { k: 'hang', nhan: 'Hàng hoá', kieu: 'chu', batBuoc: true, caHang: true },
-          { k: 'goc', nhan: 'ĐVT gốc', kieu: 'chon', ds: ['Lon', 'Chai', 'g', 'kg', 'Lít', 'Tô', 'Dĩa', 'Cái'] },
-          { k: 'qd', nhan: 'ĐVT quy đổi', kieu: 'chon', ds: ['Thùng', 'Can 5 lít', 'Bao 25 kg', 'kg', 'Hộp'] },
+          { k: 'goc', nhan: 'ĐVT gốc', kieu: 'chon', ds: TEN_DVT },
+          { k: 'qd', nhan: 'ĐVT quy đổi', kieu: 'chon', ds: TEN_DVT },
           { k: 'tl', nhan: 'Tỷ lệ quy đổi', kieu: 'so', batBuoc: true },
           { k: 'dung', nhan: 'Áp dụng khi', kieu: 'chu', caHang: true },
         ],
@@ -392,7 +393,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
           { k: 'soTheTs', nhan: 'Số thẻ tài sản', kieu: 'chu', cot: 'ASSET_NO' },
           { k: 'ten', nhan: 'Tên tài sản', kieu: 'chu', batBuoc: true, caHang: true, cot: 'DESCRIPTION' },
           { k: 'loai', nhan: 'Loại tài sản', kieu: 'chon', ds: ['Máy móc thiết bị', 'Phương tiện vận tải', 'Nhà cửa vật kiến trúc', 'Thiết bị truyền dẫn', 'Tài sản vô hình'], cot: 'FA_CLASS_ID' },
-          { k: 'dvt', nhan: 'Đơn vị tính', kieu: 'chu', cot: 'UNIT' },
+          { k: 'dvt', nhan: 'Đơn vị tính', kieu: 'chon', ds: TEN_DVT, cot: 'UNIT' },
           { k: 'soLuong', nhan: 'Số lượng', kieu: 'so', cot: 'QUANTITY' },
           { k: 'nuocSx', nhan: 'Nước sản xuất', kieu: 'chu', cot: 'MANU_COUNTRY' },
           { k: 'namSx', nhan: 'Năm sản xuất', kieu: 'chu', cot: 'MANU_YEAR' },
@@ -440,7 +441,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
         ten: 'Thông tin chung',
         truong: [
           { k: 'ten', nhan: 'Hàng hoá', kieu: 'chu', batBuoc: true, caHang: true },
-          { k: 'dvt', nhan: 'Đơn vị tính', kieu: 'chu' },
+          { k: 'dvt', nhan: 'Đơn vị tính', kieu: 'chon', ds: TEN_DVT },
           { k: 'loai', nhan: 'Loại giá', kieu: 'chon', ds: ['Giá bán', 'Giá mua', 'Giá sỉ'], batBuoc: true },
           { k: 'gia', nhan: 'Đơn giá', kieu: 'tien', batBuoc: true },
           { k: 'tu', nhan: 'Áp dụng từ ngày', kieu: 'ngay' },

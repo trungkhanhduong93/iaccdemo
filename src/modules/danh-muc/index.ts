@@ -5,7 +5,7 @@ import { tuExcel } from '../types'
 import { quyTrinh } from './quy-trinh'
 import { kieuGhiSo } from '../../app/plan'
 import { CHI_NHANH, HANG, KHACH, KHO, LY_DO, NCC, NHAN_VIEN, NVL } from '../../data/mock'
-import { tkCot, taiKhoan } from './data'
+import { DON_VI_TINH, tkCot, taiKhoan } from './data'
 import { HeThongTaiKhoan } from './HeThongTaiKhoan'
 import { tkTheoCheDo } from '../tong-hop/so-cai'
 import { Note } from '../../ui/Page'
@@ -47,9 +47,7 @@ const danhMuc: ModuleDef = {
       ],
     } },
     '1.3': { catalog: { them: 'Thêm đơn vị tính', cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên đơn vị tính' }, { k: 'mota', t: 'Mô tả', cls: 'dim' }],
-      rows: () => [['TO', 'Tô', 'Món nước'], ['PHAN', 'Phần', 'Món ăn'], ['DIA', 'Dĩa', 'Món cơm'], ['LY', 'Ly', 'Đồ uống pha chế'], ['LON', 'Lon', 'Bia, nước ngọt'],
-        ['CHAI', 'Chai', 'Nước suối, rượu'], ['KG', 'kg', 'Nguyên liệu tươi'], ['G', 'g', 'Định lượng công thức'], ['L', 'Lít', 'Dầu ăn, sữa tươi'], ['ML', 'ml', 'Định lượng pha chế'],
-        ['THUNG', 'Thùng', 'Đóng gói nhập hàng'], ['HOP', 'Hộp', 'Đồ hộp'], ['CAI', 'Cái', 'Công cụ dụng cụ']].map(([ma, ten, mota]) => ({ ma, ten, mota })) } },
+      rows: () => DON_VI_TINH.map(([ma, ten, mota]) => ({ ma, ten, mota })) } },
     '1.4': { catalog: { them: 'Thêm quy đổi', cols: [{ k: 'hang', t: 'Hàng hoá' }, { k: 'goc', t: 'ĐVT gốc', c: true }, { k: 'qd', t: 'ĐVT quy đổi', c: true }, { k: 'tl', t: 'Tỷ lệ', num: true }, { k: 'dung', t: 'Dùng khi', cls: 'dim' }],
       rows: () => [['Bia Sài Gòn lon', 'Lon', 'Thùng', 24, 'Nhập hàng'], ['Sữa đặc', 'Lon', 'Thùng', 48, 'Nhập hàng'], ['Thịt bò thăn', 'g', 'kg', 1000, 'Nhập hàng, kiểm kê'],
         ['Dầu ăn', 'Lít', 'Can 5 lít', 5, 'Nhập hàng'], ['Cà phê hạt Robusta', 'kg', 'Bao 25 kg', 25, 'Nhập hàng'], ['Bánh phở tươi', 'g', 'kg', 1000, 'Định lượng công thức']]
