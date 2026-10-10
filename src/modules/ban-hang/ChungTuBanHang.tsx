@@ -11,7 +11,7 @@ import { Icon } from '../../ui/Icon'
 import { Card, Note, PageHead } from '../../ui/Page'
 import { FormToanMan, useDong } from '../../ui/FormToanMan'
 import { St, Table } from '../../ui/Table'
-import { dmy, fold, money, moneyD } from '../../ui/format'
+import { dmy, fold, money, moneyD, rng } from '../../ui/format'
 import { Popover, Select } from '../../ui/Dropdown'
 import { PhanTrang } from '../../ui/PhanTrang'
 import { useDaXoa, xoaPhieu } from '../../ui/generic/daXoa'
@@ -67,6 +67,31 @@ function dongMonGiam(dt: number, vat: number) {
   })
 }
 
+/** Dòng món của một hoá đơn FABi (T107): 1 tới 3 món, món cuối nhận phần dư; không giảm giá; thuế chia theo tiền món */
+function dongMonDon(x: XPos) {
+  const r = rng(`mon-${x.seed}`)
+  const k = 1 + Math.floor(r() * 3)
+  const chon: typeof HANG = []
+  while (chon.length < k) { const h = HANG[Math.floor(r() * HANG.length)]; if (!chon.includes(h)) chon.push(h) }
+  let con = x.dt
+  const ds = chon.map((h, i) => {
+    let sl = 1 + Math.floor(r() * 2), tien = sl * h.gia
+    if (i === chon.length - 1 || tien >= con) { tien = con; sl = Math.max(1, Math.round(con / h.gia)) }
+    con -= tien
+    return { h, sl, tien }
+  }).filter(d => d.tien > 0)
+  const thue = chiaTheo(x.vat, ds.map(d => d.tien), 1)
+  return ds.map((d, i) => ({
+    ...d.h, stt: i + 1, sl: d.sl, tien: d.tien, thanh: d.tien, giam: 0, pt: 0, ghiChu: '', thue: thue[i],
+    ptCk: 0, ck: 0, ptPhiDv: 0, phiDv: 0, giamThue: 0, phiVc: 0, dtTruocThue: d.tien,
+  }))
+}
+
+/** Dòng món của chứng từ: hoá đơn FABi lấy món của đơn, chứng từ gộp chia doanh thu theo cơ cấu món */
+function dongCuaPhieu(x: NgayPOS) {
+  return (x as XPos).loai === 'don' ? dongMonDon(x as XPos) : dongMonGiam(x.dt, x.vat)
+}
+
 function dongMon(dt: number) {
   let con = dt
   return HANG.map((h, i) => {
@@ -77,14 +102,73 @@ function dongMon(dt: number) {
   })
 }
 
+// ── Cách đồng bộ bán hàng FABi (T107): mỗi hoá đơn một chứng từ, hoặc tổng hợp theo kênh mỗi ngày, chi nhánh ──
+type NgayPOS = (typeof DAILY)[number]
+/** Một chứng từ Xuất bán POS: số liệu của phần doanh thu ngày mà chứng từ gánh; loai 'don' là một hoá đơn FABi */
+export type XPos = NgayPOS & { kenh: string; gio: string; loai: 'don' | 'kenh'; seed: string }
+const KENH: [string, string][] = [['tq', 'Tại quán'], ['mv', 'Mang về'], ['app', 'App giao đồ ăn']]
+const KT_FABI = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+/** Số hoá đơn FABi 12 ký tự, cố định theo hạt giống */
+function soFabi(seed: string) {
+  const r = rng(seed)
+  return Array.from({ length: 12 }, () => KT_FABI[Math.floor(r() * KT_FABI.length)]).join('')
+}
+/** Chia doanh thu ngày cho các phần theo tỷ lệ; phần cuối nhận số dư để cộng lại đúng số ngày */
+function chiaTheo(tong: number, ty: number[], tron = 1000) {
+  const s = ty.reduce((a, b) => a + b, 0) || 1
+  let con = tong
+  return ty.map((t, i) => {
+    if (i === ty.length - 1) return con
+    const v = Math.round(tong * t / s / tron) * tron
+    con -= v
+    return v
+  })
+}
+/** Tổng hợp theo kênh: tại quán, mang về chia phần thu tại quầy 70/30; app giao đồ ăn theo tiền app */
+function theoKenh(x: NgayPOS): XPos[] {
+  const tt = x.tm + x.ck + x.the + x.app || 1
+  const ty = [(1 - x.app / tt) * 0.7, (1 - x.app / tt) * 0.3, x.app / tt]
+  const dt = chiaTheo(x.dt, ty), vat = chiaTheo(x.vat, ty, 1), don = chiaTheo(x.don, ty, 1), gv = chiaTheo(x.gv, ty)
+  const quay = x.tm + x.ck + x.the || 1
+  return KENH.map(([ma, ten], i) => {
+    const tien = dt[i] + vat[i]
+    const app = ma === 'app' ? tien : 0
+    const [tm, ck, the] = ma === 'app' ? [0, 0, 0] : chiaTheo(tien, [x.tm / quay, x.ck / quay, x.the / quay])
+    return { ...x, dt: dt[i], vat: vat[i], don: don[i], gv: gv[i], tm, ck, the, app, kenh: ten, gio: '23:30', loai: 'kenh' as const, seed: `${x.cn}-${dmy(x.date)}-${ma}` }
+  }).filter(p => p.dt > 0)
+}
+/** Chi tiết: mỗi đơn POS một hoá đơn; giờ trải từ 09:00 tới 22:00, kênh và phương thức theo tỷ lệ của ngày */
+function theoDon(x: NgayPOS): XPos[] {
+  const r = rng(`don-${x.cn}-${dmy(x.date)}`)
+  const n = Math.max(1, x.don)
+  const w = Array.from({ length: n }, () => 0.4 + r())
+  const dt = chiaTheo(x.dt, w), vat = chiaTheo(x.vat, w, 1), gv = chiaTheo(x.gv, w)
+  const tt = x.tm + x.ck + x.the + x.app || 1
+  return dt.map((d, i) => {
+    const p = r() * tt
+    const pt = p < x.app ? 'app' : p < x.app + x.tm ? 'tm' : p < x.app + x.tm + x.ck ? 'ck' : 'the'
+    const kenh = pt === 'app' ? 'App giao đồ ăn' : r() < 0.7 ? 'Tại quán' : 'Mang về'
+    const phut = 9 * 60 + Math.floor((i + r()) * 13 * 60 / n)
+    const tien = d + vat[i]
+    return {
+      ...x, dt: d, vat: vat[i], gv: gv[i], don: 1, tm: pt === 'tm' ? tien : 0, ck: pt === 'ck' ? tien : 0, the: pt === 'the' ? tien : 0, app: pt === 'app' ? tien : 0,
+      kenh, gio: `${String(Math.floor(phut / 60)).padStart(2, '0')}:${String(phut % 60).padStart(2, '0')}`, loai: 'don' as const, seed: `${x.cn}-${dmy(x.date)}-${i}`,
+    }
+  })
+}
+
 export function ChungTuBanHang({ sc, mod }: ScreenProps) {
   const { id } = useParams()
+  const { s } = useSession()
   const { ban, laDaXoa } = useDaXoa(`${mod.key}/${sc.slug}`)
-  const tatCa = useMemo(() => DAILY.filter(x => x.date.getMonth() >= 8).slice().reverse().map((x, i) => ({
-    id: String(i), so: soBH(x), ngay: dmy(x.date), thang: x.date.getMonth() + 1, cn: cnTen(x.cn), x,
-    dienGiai: `Doanh thu ${x.don} đơn POS ngày ${dmy(x.date).slice(0, 5)}`, doiTuong: 'Khách lẻ POS',
-    tien: x.dt, thue: x.vat, tong: x.dt + x.vat, nguon: 'FABi', tt: i < 3 ? 'nhap' : x.cn === 'q5' && x.date.getDate() === 5 && x.date.getMonth() === 9 ? 'loi' : 'ghi',
-  })), [])
+  const cach = s.dongBoFabi ?? 'kenh'
+  const tatCa = useMemo(() => DAILY.filter(x => x.date.getMonth() >= 8).slice().reverse().flatMap(x => (cach === 'chiTiet' ? theoDon(x).reverse() : theoKenh(x)))
+    .map((x, i) => ({
+      id: String(i), so: soFabi(`fabi-${x.seed}`), ngay: `${dmy(x.date)} ${x.gio}`, thang: x.date.getMonth() + 1, cn: cnTen(x.cn), x, kenh: x.kenh,
+      dienGiai: x.loai === 'don' ? `Hoá đơn FABi ${x.kenh.toLowerCase()} ${x.gio} ngày ${dmy(x.date).slice(0, 5)}` : `Doanh thu ${x.kenh.toLowerCase()} ${x.don} đơn POS ngày ${dmy(x.date).slice(0, 5)}`,
+      doiTuong: 'Khách lẻ POS',
+      tien: x.dt, thue: x.vat, tong: x.dt + x.vat, nguon: 'FABi', tt: i < 3 ? 'nhap' : x.cn === 'q5' && x.date.getDate() === 5 && x.date.getMonth() === 9 && i % 7 === 0 ? 'loi' : 'ghi',
+    })), [cach])
   const rows = useMemo(() => tatCa.filter(r => !laDaXoa(r.id)), [tatCa, ban])
   if (id === 'moi') return <Navigate to={duongDan(mod, sc)} replace />   // không lập tay Xuất bán POS (T52)
   if (id) return <ChiTiet sc={sc} mod={mod} row={rows.find(r => r.id === id) ?? rows[0]} />
@@ -94,7 +178,7 @@ export function ChungTuBanHang({ sc, mod }: ScreenProps) {
 /** Cột cố định hai đầu, không ẩn, không kéo đổi thứ tự */
 const COT_CO_DINH = new Set(['chk', 'stt', 'ngay', 'so'])
 /** Cột lọc bằng cách chọn trong danh sách giá trị */
-const COT_CHON = new Set(['cn', 'nguon'])
+const COT_CHON = new Set(['cn', 'nguon', 'kenh'])
 
 /** Giá trị các ô lọc ngoài và trong Bộ lọc nâng cao. Chuỗi rỗng là tất cả */
 interface GtLoc { thoiGian: KhoangNgay; tim: string; cn: string; nguon: string }
@@ -185,6 +269,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
     { k: 'ngay', t: 'Ngày', w: 100, dinh: 'trai' },
     { k: 'so', t: 'Số chứng từ', cls: 'code', w: 150, dinh: 'trai' },
     { k: 'dienGiai', t: 'Diễn giải' },
+    { k: 'kenh', t: 'Kênh bán', w: 140 },   // T107
     ...(cnChon ? [] : [{ k: 'cn', t: 'Chi nhánh', cls: 'dim' } as Col]),
     { k: 'tien', t: 'Doanh thu chưa thuế', num: true, w: 160 }, { k: 'thue', t: 'Thuế GTGT', num: true, w: 120 },
     { k: 'nguon', t: 'Nguồn', w: 90, r: () => <span className="src">FABi</span> },
@@ -222,6 +307,10 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
               </Popover>
             </div>
             <div className="ds-thanh-phai">
+              {/* Cách đồng bộ FABi đang dùng, bấm để đổi ở Cấu hình (T107) */}
+              <Link className="chip info" to="/app/he-thong/cau-hinh" title="Đổi cách đồng bộ ở Hệ thống, Cấu hình kế toán">
+                <Icon n="refresh" className="ic sm" />{(s.dongBoFabi ?? 'kenh') === 'chiTiet' ? 'Đồng bộ chi tiết theo hoá đơn' : 'Đồng bộ tổng hợp theo kênh'}
+              </Link>
               <BoLoc ds={oLoc} cauHinh={cauHinhLoc} datCauHinh={datCauHinhLoc} dangLoc={loc0.dangLoc} khacNhap={loc0.khacNhap}
                 onLoc={apLoc} onXoaHet={loc0.xoaNhap} />
               <NutTuyChinhCot
@@ -391,7 +480,7 @@ const COT_POS: [string, string][] = [
 const AN_POS_MAC_DINH = ['giamThue', 'phiVc']
 
 function NoiDungTab({ x, tab, kieu, an = AN_POS_MAC_DINH }: { x: (typeof DAILY)[number]; tab: string; kieu: ReturnType<typeof kieuGhiSo>; an?: string[] }) {
-  const dong = dongMonGiam(x.dt, x.vat)
+  const dong = dongCuaPhieu(x)
   const ht = [
     { dg: 'Thu tiền mặt', no: '1111', co: '5111, 33311', tien: x.tm },
     { dg: 'Thu chuyển khoản, QR, thẻ', no: '1121', co: '5111, 33311', tien: x.ck + x.the },
@@ -511,11 +600,11 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
   const phieuGiam = 0
   const tong = x.dt + x.vat - phieuGiam
   const pttt = [['Tiền mặt', x.tm], ['Chuyển khoản, QR', x.ck], ['Thẻ', x.the], ['App giao đồ ăn', x.app]].filter(([, v]) => Number(v) > 0).map(([t]) => t).join(', ')
-  const kenh = x.app > 0 ? 'Tại quán, Mang về, App giao đồ ăn' : 'Tại quán, Mang về'
+  const kenh = (x as XPos).kenh ?? (x.app > 0 ? 'Tại quán, Mang về, App giao đồ ăn' : 'Tại quán, Mang về')
   // In: bảng kê lấy đúng các món của chứng từ, không sinh dòng giả
   const moIn = () => setPhieuIn([{
     sc, row, cfg: NGOAI_POS,
-    dong: dongMon(x.dt).map(d => ({ stt: d.stt, ma: d.ma, ten: d.ten, dvt: d.dvt, sl: d.sl, gia: d.gia, tien: d.tien, thue: d.thue, ts: d.ts })),
+    dong: dongCuaPhieu(x).map(d => ({ stt: d.stt, ma: d.ma, ten: d.ten, dvt: d.dvt, sl: d.sl, gia: d.gia, tien: d.tien, thue: d.thue, ts: d.ts })),
   }])
   const [cTt, tTt] = kieu === 'khong' ? ['ok', 'Đã đồng bộ'] : TT_CT[row.tt] ?? ['warn', 'Chưa ghi sổ']
   return (
@@ -537,10 +626,10 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
         <section className="card pos-dau">
           <div><small>Khách hàng</small><b>Khách lẻ POS</b></div>
           <div><small>Phương thức thanh toán</small><b title={pttt}>{pttt}</b></div>
-          <div><small>Ngày chứng từ</small><b>{row.ngay}</b></div>
+          <div><small>Ngày chứng từ</small><b>{dmy(x.date)}</b></div>
           <div><small>Số chứng từ (số hoá đơn FABi)</small><b className="code">{row.so}</b></div>
           <div><small>Kênh bán hàng</small><b title={kenh}>{kenh}</b></div>
-          <div><small>Thời gian xuất</small><b>{row.ngay} 23:30</b></div>
+          <div><small>Thời gian xuất</small><b>{dmy(x.date)} {(x as XPos).gio ?? '23:30'}</b></div>
           <div className="c2"><small>Ghi chú</small><b title={String(row.dienGiai)}>{row.dienGiai}</b></div>
         </section>
         <section className="card ct-than-card">
