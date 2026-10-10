@@ -236,7 +236,8 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
     // Khách hàng, kênh bán, phương thức thanh toán; lựa chọn lấy từ chính các chứng từ (T110)
     { k: 'kh', ten: 'Khách hàng', o: chonO('kh', 'Khách hàng', [...new Set(rows.map(r => String(r.doiTuong ?? '')).filter(Boolean))].map(v => [v, v])) },
     { k: 'kenh', ten: 'Kênh bán', o: chonO('kenh', 'Kênh bán', [...new Set(rows.map(r => String(r.kenh ?? '')).filter(Boolean))].map(v => [v, v])) },
-    { k: 'pttt', ten: 'Phương thức thanh toán', o: chonO('pttt', 'Phương thức thanh toán', PTTT.map(([, t]) => [t, t])) },
+    // Tổng hợp theo kênh gộp nhiều cách thanh toán nên không lọc theo phương thức (T110)
+    ...((s.dongBoFabi ?? 'kenh') === 'chiTiet' ? [{ k: 'pttt', ten: 'Phương thức thanh toán', o: chonO('pttt', 'Phương thức thanh toán', PTTT.map(([, t]) => [t, t])) }] : []),
   ]
   const [cauHinhLoc, datCauHinhLoc] = useCauHinhLoc(path, oLoc.map(o => o.k), ['thoiGian', 'tim', 'cn'])
 
@@ -636,9 +637,10 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
         {/* Đầu phiếu chỉ xem nên dạng thông tin gọn: nhãn nhỏ, giá trị, 4 cột × 2 hàng, để bảng chi tiết rộng hơn (T106) */}
         <section className="card pos-dau">
           <div><small>Khách hàng</small><b>Khách lẻ POS</b></div>
-          <div><small>Phương thức thanh toán</small><b title={pttt}>{pttt}</b></div>
+          {/* Hoá đơn có một cách thanh toán; chứng từ tổng hợp theo kênh gộp nhiều cách nên bỏ (T110) */}
+          {(x as XPos).loai === 'don' && <div><small>Phương thức thanh toán</small><b title={pttt}>{pttt}</b></div>}
           <div><small>Ngày chứng từ</small><b>{dmy(x.date)}</b></div>
-          <div><small>Số chứng từ (số hoá đơn FABi)</small><b className="code">{row.so}</b></div>
+          <div><small>{(x as XPos).loai === 'don' ? 'Số chứng từ (số hoá đơn FABi)' : 'Số chứng từ'}</small><b className="code">{row.so}</b></div>
           <div><small>Kênh bán hàng</small><b title={kenh}>{kenh}</b></div>
           <div><small>Thời gian xuất</small><b>{dmy(x.date)} {(x as XPos).gio ?? '23:30'}</b></div>
           <div className="c2"><small>Ghi chú</small><b title={String(row.dienGiai)}>{row.dienGiai}</b></div>

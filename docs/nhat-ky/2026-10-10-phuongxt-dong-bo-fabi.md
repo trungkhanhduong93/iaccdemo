@@ -12,7 +12,7 @@
 - Số chứng từ là số hoá đơn FABi 12 ký tự theo hạt giống của từng chứng từ. Cột Ngày có giờ; thêm cột Kênh bán (lọc kiểu chọn); nhãn cách đồng bộ trên thanh công cụ, bấm mở Cấu hình.
 - T108 `data/mock.ts`: HANG có `tonKho` (món chế biến false, bia lon, nước suối true); danh mục 1.2 thêm trường Theo dõi tồn kho (`truong-dm.ts`, cột IS_INVENTORY) và cột Theo dõi tồn (ô tích chỉ xem `.o-tich-xem`); nguyên vật liệu luôn có. Xuất bán POS thêm cột Theo dõi tồn kho, cột cuối `dinh: 'phai'`, bật tắt được ở Tuỳ chỉnh giao diện.
 - T109: danh sách bỏ cột Nguồn và ô lọc Nguồn; nhãn cách đồng bộ ghi Chi tiết hoặc Tổng hợp, rê chuột xem đủ.
-- T110: Bộ lọc nâng cao thêm Khách hàng, Kênh bán, Phương thức thanh toán (`PTTT`, `ptttCua`: phương thức có số tiền thu lớn hơn 0); đưa ra ngoài được ở Cấu hình tham số lọc.
+- T110: Bộ lọc nâng cao thêm Khách hàng, Kênh bán, Phương thức thanh toán (`PTTT`, `ptttCua`: phương thức có số tiền thu lớn hơn 0); đưa ra ngoài được ở Cấu hình tham số lọc. Đồng bộ tổng hợp theo kênh thì bỏ ô lọc và mục Phương thức thanh toán ở đầu phiếu, vì chứng từ gộp nhiều cách thanh toán.
 - Form: kênh, thời gian xuất theo chứng từ. Hoá đơn lấy 1 tới 3 món (`dongMonDon`), chứng từ theo kênh chia theo cơ cấu món như trước (`dongCuaPhieu`).
 
 ## Đã kiểm
