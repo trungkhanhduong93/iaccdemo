@@ -4,13 +4,14 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T117.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T118.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T118 | Danh sách Xuất bán POS: đối soát đơn POS kiểu iPOS Inventory: Đã đồng bộ, Chưa đồng bộ; số liệu tổng số hoá đơn POS, IACC, số món, mã hoá đơn cuối, lần đồng bộ cuối; bảng lỗi chưa đồng bộ (mã hoá đơn, thời gian, món, ĐVT, số lượng, lý do lỗi) | PhuongXT | Đang làm | Sửa `ban-hang/ChungTuBanHang.tsx`, cuối `app.css` |
 | T111 | Báo cáo: đưa ô chọn khoảng ngày và nút Xem báo cáo sang cột Bộ lọc bên trái; sửa cột hẹp làm vỡ tiêu đề (cột Tỷ lệ (%) khấu hao ở Sổ TSCĐ S4b-DNSN), rà mọi báo cáo | Trum | Đang làm | Sửa `src/ui/generic/ReportScreen.tsx`, `src/ui/bao-cao/chiaCot.ts`, `ToGiay.tsx`, `app.css` |
 | T112 | Thiết kế lại màn Thiết kế mẫu in và toàn bộ mẫu in phiếu chứng từ: đủ thông tin theo thông tư, bố cục gọn, đẹp | Trum | Đang làm | Sửa `src/modules/tien-ich/ThietKeMauIn.tsx`, `src/ui/bao-cao/InChungTu.tsx`, `mau-in.ts`, `duLieuIn.ts`, `app.css` |
 | T109 | Sổ S2c-DNSN (5.2.8, TT58): bộ lọc Mặt hàng, Kho để mở sổ theo từng cặp mặt hàng – kho | | Chờ | T108 đang in cố định Thịt bò thăn, kho Phố Mây Lê Lợi. `CauHinhBC.loc` chưa đổi theo chế độ, lọc thêm sẽ hiện cả ở TT133, TT99 |
