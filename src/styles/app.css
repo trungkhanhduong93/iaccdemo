@@ -5372,3 +5372,7 @@ table.tbl {
 .cmdk-trong { padding: 28px 10px; text-align: center; color: var(--muted); font-size: 13px; }
 .cmdk-day { flex: none; display: flex; gap: 18px; padding: 10px 18px; border-top: 1px solid var(--line); background: var(--hdb-chan); font-size: 12px; color: var(--muted); }
 .cmdk-day > span { display: inline-flex; align-items: center; gap: 4px; }
+
+/* ── Phản hồi nhanh (T73) ── */
+/* Ô kéo giãn góc textarea làm lần mở panel đầu tiên hở một khung 133ms (GPU vẽ lại cả panel). Bỏ ô kéo: còn 0–33ms */
+.pn-hop textarea.inp { resize: none; }
