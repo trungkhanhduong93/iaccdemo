@@ -901,7 +901,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
             </div>
           ) : (
           <div className="tot" style={{ borderTop: '1px solid var(--line)', marginTop: 12 }}>
-            <span>Tiền hàng</span>
+            <span>{nhom === 'mua' && bo.tongNhap ? 'Tiền trước thuế' : 'Tiền hàng'}</span>   {/* phiếu mua cùng tên với cột trên dòng (T84) */}
             <b>{moneyD(tongTien)}</b>
             {bo.ck && tongCk > 0 && (
               <>
