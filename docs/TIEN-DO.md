@@ -4,13 +4,14 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T126.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T127.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T127 | Mọi danh sách phiếu thêm cột Tham chiếu: phiếu thu, chi sinh từ mua, bán; phiếu điều chỉnh sinh từ kiểm kê; phiếu gốc của phiếu được sinh ra; bấm số phiếu để mở | PhuongXT | Đang làm | Sửa `VoucherScreen.tsx`, `ChungTuForm.tsx`, cuối `app.css` |
 | T126 | Kiểm kê có chênh lệch tự sinh phiếu Xuất điều chỉnh (thiếu), Nhập điều chỉnh (thừa) vào màn mới Điều chỉnh kho (mọi gói), lưu tham chiếu hai chiều | PhuongXT | Đang làm | Sửa `ChungTuForm.tsx`, `VoucherScreen.tsx`, `daXoa.ts`, `modules/types.ts`, `kho/index.ts`; thêm `kho/dieu-chinh.ts` |
 | T120 | In phiếu từ form chứng từ: hàm `moIn` ở `ChungTuForm.tsx` (khoảng dòng 317–321) chưa truyền dòng chi tiết đang có trên form vào phiếu in, nên phiếu mới hoặc đang sửa in theo dòng đã lưu hoặc dòng sinh lại | | Chờ | Phát hiện khi làm T112 |
 | T109 | Sổ S2c-DNSN (5.2.8, TT58): bộ lọc Mặt hàng, Kho để mở sổ theo từng cặp mặt hàng – kho | | Chờ | T108 đang in cố định Thịt bò thăn, kho Phố Mây Lê Lợi. `CauHinhBC.loc` chưa đổi theo chế độ, lọc thêm sẽ hiện cả ở TT133, TT99 |
