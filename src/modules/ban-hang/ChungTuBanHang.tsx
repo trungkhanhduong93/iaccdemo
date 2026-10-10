@@ -475,7 +475,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
 const COT_POS: [string, string][] = [
   ['ma', 'Mã hàng'], ['dvt', 'ĐVT'], ['sl', 'Số lượng'], ['gia', 'Đơn giá'], ['thanh', 'Thành tiền'], ['pt', 'Giảm giá (%)'], ['giam', 'Tiền giảm giá'],
   ['ptCk', '% CK'], ['ck', 'Tiền CK'], ['ptPhiDv', '% Phí dịch vụ'], ['phiDv', 'Phí dịch vụ'], ['giamThue', 'Giảm thuế GTGT'], ['phiVc', 'Phí vận chuyển'],
-  ['dtTruocThue', 'Doanh thu trước thuế'], ['ts', 'Thuế suất'], ['thue', 'Tiền thuế'],
+  ['dtTruocThue', 'Doanh thu trước thuế'], ['ts', 'Thuế suất'], ['thue', 'Tiền thuế'], ['tonKho', 'Theo dõi tồn kho'],
 ]
 const AN_POS_MAC_DINH = ['giamThue', 'phiVc']
 
@@ -518,6 +518,8 @@ function NoiDungTab({ x, tab, kieu, an = AN_POS_MAC_DINH }: { x: (typeof DAILY)[
             { k: 'dtTruocThue', t: 'Doanh thu trước thuế', num: true, w: 150 },
             { k: 'ts', t: 'Thuế suất', num: true, w: 80, r: r => `${r.ts}%` },
             { k: 'thue', t: 'Tiền thuế', num: true, w: 110 },
+            // Theo danh mục hàng hoá: tích là mặt hàng theo dõi tồn kho, chỉ xem; cột cuối, cố định phải (T108)
+            { k: 'tonKho', t: 'Theo dõi tồn kho', c: true, w: 120, dinh: 'phai', r: r => <input type="checkbox" className="o-tich-xem" checked={Boolean(r.tonKho)} readOnly tabIndex={-1} aria-label="Theo dõi tồn kho" /> },
           ] as Col[]).filter(c => !an.includes(c.k))}
           rows={dong}
           sum={{

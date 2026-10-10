@@ -38,16 +38,17 @@ export const NGUOI_DUNG = [
   { ten: 'Võ Thanh Tùng', email: 'thanhtung@phomay.vn', role: 'ktv' as Role, vaiTro: 'Thủ kho', pham: 'Kho tổng, Kho bếp Lê Lợi', lan: 'Chưa đăng nhập', tt: 'warn' },
 ]
 
+/** tonKho: hàng có theo dõi tồn kho (T108). Món chế biến không theo dõi tồn, kho trừ nguyên vật liệu theo định lượng; hàng mua về bán lại có theo dõi tồn */
 export const HANG = [
-  { ma: 'PHO01', ten: 'Phở bò tái', nhom: 'Món nước', dvt: 'Tô', gia: 65000, ts: 8 },
-  { ma: 'PHO02', ten: 'Phở bò đặc biệt', nhom: 'Món nước', dvt: 'Tô', gia: 85000, ts: 8 },
-  { ma: 'BUN01', ten: 'Bún chả Hà Nội', nhom: 'Món nước', dvt: 'Phần', gia: 60000, ts: 8 },
-  { ma: 'COM01', ten: 'Cơm tấm sườn bì chả', nhom: 'Món cơm', dvt: 'Dĩa', gia: 55000, ts: 8 },
-  { ma: 'GOI01', ten: 'Gỏi cuốn tôm thịt', nhom: 'Khai vị', dvt: 'Phần', gia: 45000, ts: 8 },
-  { ma: 'CF01', ten: 'Cà phê sữa đá', nhom: 'Đồ uống', dvt: 'Ly', gia: 29000, ts: 8 },
-  { ma: 'TRA01', ten: 'Trà đào cam sả', nhom: 'Đồ uống', dvt: 'Ly', gia: 39000, ts: 8 },
-  { ma: 'BIA01', ten: 'Bia Sài Gòn lon', nhom: 'Bia, rượu', dvt: 'Lon', gia: 22000, ts: 10 },
-  { ma: 'NS01', ten: 'Nước suối', nhom: 'Đồ uống', dvt: 'Chai', gia: 12000, ts: 8 },
+  { ma: 'PHO01', ten: 'Phở bò tái', nhom: 'Món nước', dvt: 'Tô', gia: 65000, ts: 8, tonKho: false },
+  { ma: 'PHO02', ten: 'Phở bò đặc biệt', nhom: 'Món nước', dvt: 'Tô', gia: 85000, ts: 8, tonKho: false },
+  { ma: 'BUN01', ten: 'Bún chả Hà Nội', nhom: 'Món nước', dvt: 'Phần', gia: 60000, ts: 8, tonKho: false },
+  { ma: 'COM01', ten: 'Cơm tấm sườn bì chả', nhom: 'Món cơm', dvt: 'Dĩa', gia: 55000, ts: 8, tonKho: false },
+  { ma: 'GOI01', ten: 'Gỏi cuốn tôm thịt', nhom: 'Khai vị', dvt: 'Phần', gia: 45000, ts: 8, tonKho: false },
+  { ma: 'CF01', ten: 'Cà phê sữa đá', nhom: 'Đồ uống', dvt: 'Ly', gia: 29000, ts: 8, tonKho: false },
+  { ma: 'TRA01', ten: 'Trà đào cam sả', nhom: 'Đồ uống', dvt: 'Ly', gia: 39000, ts: 8, tonKho: false },
+  { ma: 'BIA01', ten: 'Bia Sài Gòn lon', nhom: 'Bia, rượu', dvt: 'Lon', gia: 22000, ts: 10, tonKho: true },
+  { ma: 'NS01', ten: 'Nước suối', nhom: 'Đồ uống', dvt: 'Chai', gia: 12000, ts: 8, tonKho: true },
 ]
 export const NVL = [
   { ma: 'NVL001', ten: 'Thịt bò thăn', nhom: 'Thịt, cá', dvt: 'kg', gia: 320000, ts: 0 },

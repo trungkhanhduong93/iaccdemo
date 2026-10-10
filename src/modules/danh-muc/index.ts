@@ -38,12 +38,13 @@ const danhMuc: ModuleDef = {
       chucNang: r => r.tkKho === '152' ? [{ nhan: 'Xem thẻ kho', di: 'kho/5-2-1' }] : [{ nhan: 'Xem doanh thu', di: 'ban-hang/3-2-5' }],
       cols: goi => [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên hàng hoá' }, { k: 'nhom', t: 'Nhóm' }, { k: 'dvt', t: 'ĐVT' },
         { k: 'gia', t: 'Giá bán', num: true }, { k: 'ts', t: 'Thuế suất', num: true, r: r => r.ts ? `${r.ts}%` : 'KCT' },
+        { k: 'tonKho', t: 'Theo dõi tồn', c: true, w: 110, r: r => createElement('input', { type: 'checkbox', className: 'o-tich-xem', checked: Boolean(r.tonKho), readOnly: true, tabIndex: -1, 'aria-label': 'Theo dõi tồn kho' }) },   // T108
         ...(kieuGhiSo(goi) === 'noco' ? [tkCot('tkDt', 'TK doanh thu'), tkCot('tkGv', 'TK giá vốn'), tkCot('tkKho', 'TK kho')] : [])],
       rows: () => [
         ...HANG.map(h => ({ ...h, tkDt: '5111', tkGv: '632', tkKho: '156' })),
-        { ma: 'BUN02', ten: 'Bún bò Huế', nhom: 'Món mới tháng 10', dvt: 'Tô', gia: 69000, ts: 8, tkDt: '', tkGv: '', tkKho: '' },
-        { ma: 'MI01', ten: 'Mì Quảng tôm thịt', nhom: 'Món mới tháng 10', dvt: 'Tô', gia: 65000, ts: 8, tkDt: '', tkGv: '', tkKho: '' },
-        ...NVL.map(h => ({ ...h, gia: 0, tkDt: '', tkGv: '632', tkKho: '152' })),
+        { ma: 'BUN02', ten: 'Bún bò Huế', nhom: 'Món mới tháng 10', dvt: 'Tô', gia: 69000, ts: 8, tkDt: '', tkGv: '', tkKho: '', tonKho: false },
+        { ma: 'MI01', ten: 'Mì Quảng tôm thịt', nhom: 'Món mới tháng 10', dvt: 'Tô', gia: 65000, ts: 8, tkDt: '', tkGv: '', tkKho: '', tonKho: false },
+        ...NVL.map(h => ({ ...h, gia: 0, tkDt: '', tkGv: '632', tkKho: '152', tonKho: true })),   // nguyên vật liệu luôn theo dõi tồn (T108)
       ],
     } },
     '1.3': { catalog: { them: 'Thêm đơn vị tính', cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên đơn vị tính' }, { k: 'mota', t: 'Mô tả', cls: 'dim' }],

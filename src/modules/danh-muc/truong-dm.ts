@@ -80,6 +80,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
       {
         ten: 'Tồn kho',
         truong: [
+          { k: 'tonKho', nhan: 'Theo dõi tồn kho', kieu: 'tich', cot: 'IS_INVENTORY' },   // tích thì nhập, xuất, tồn theo mặt hàng; món chế biến bỏ tích (T108)
           { k: 'khoMacDinh', nhan: 'Kho mặc định', kieu: 'chon', ds: ['Kho tổng', 'Kho bếp Lê Lợi', 'Kho bar Lê Lợi', 'Kho bếp Thảo Điền', 'Kho bar Thảo Điền'], cot: 'DEFAULT_WAREHOUSE_ID' },
           { k: 'tonToiThieu', nhan: 'Tồn tối thiểu', kieu: 'so', cot: 'MIN_QUANTITY' },
           { k: 'tonToiDa', nhan: 'Tồn tối đa', kieu: 'so', cot: 'MAX_QUANTITY' },

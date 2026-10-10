@@ -5462,3 +5462,6 @@ table.tbl {
   color: var(--giay-phu);
   padding: 2px 6px;
 }
+
+/* ── Ô tích chỉ xem, vd Theo dõi tồn kho theo danh mục (T108) ── */
+.o-tich-xem { pointer-events: none; accent-color: var(--blue); width: 15px; height: 15px; vertical-align: middle; }
