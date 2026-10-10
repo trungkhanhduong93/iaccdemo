@@ -12,6 +12,7 @@
 - Bỏ chip trạng thái Tất cả, Chưa ghi sổ, Đã ghi sổ, Lệch đối soát ở danh sách Xuất bán POS (mọi gói). Bỏ luôn trạng thái lệch trong dữ liệu mẫu, dòng tô đỏ và cảnh báo lệch trong phiếu.
 - Bỏ nút Ghi chú FABi (biểu tượng i), cột ô chọn dòng và nút Hàng loạt (xoá hàng loạt) ở danh sách Xuất bán POS.
 - Cột STT gọn còn 46px; chữ Tổng trang chuyển sang cột Ngày.
+- Bộ lọc thêm Hàng hoá (chứng từ có món đó) và Theo dõi tồn kho (có hoặc không có món theo dõi tồn kho), tính theo món của chứng từ (`monCua`).
 - `app.css`: mục cuối "Đối soát đơn POS ở danh sách Xuất bán POS (T118)".
 
 ## Đã kiểm

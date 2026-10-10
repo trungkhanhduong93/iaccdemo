@@ -210,8 +210,15 @@ const COT_CO_DINH = new Set(['stt', 'ngay', 'so'])
 const COT_CHON = new Set(['cn', 'nguon', 'kenh'])
 
 /** Giá trị các ô lọc ngoài và trong Bộ lọc nâng cao. Chuỗi rỗng là tất cả */
-interface GtLoc { thoiGian: KhoangNgay; tim: string; cn: string; nguon: string; kh: string; kenh: string; pttt: string }
-const locMacDinh = (): GtLoc => ({ thoiGian: thangNay(), tim: '', cn: '', nguon: '', kh: '', kenh: '', pttt: '' })
+interface GtLoc { thoiGian: KhoangNgay; tim: string; cn: string; nguon: string; kh: string; kenh: string; pttt: string; hang: string; tonKho: string }
+const locMacDinh = (): GtLoc => ({ thoiGian: thangNay(), tim: '', cn: '', nguon: '', kh: '', kenh: '', pttt: '', hang: '', tonKho: '' })
+/** Món của chứng từ để lọc theo hàng hoá, theo dõi tồn kho; nhớ lại để không tính lại mỗi lần lọc */
+const MON_CUA = new WeakMap<object, { ma: string; tonKho: boolean }[]>()
+function monCua(x: NgayPOS) {
+  let ds = MON_CUA.get(x)
+  if (!ds) { ds = dongCuaPhieu(x).map(d => ({ ma: d.ma, tonKho: Boolean(d.tonKho) })); MON_CUA.set(x, ds) }
+  return ds
+}
 /** Phương thức thanh toán của chứng từ theo số tiền thu được (T116) */
 const PTTT: [keyof NgayPOS, string][] = [['tm', 'Tiền mặt'], ['ck', 'Chuyển khoản, QR'], ['the', 'Thẻ'], ['app', 'App giao đồ ăn']]
 const ptttCua = (x: NgayPOS) => PTTT.filter(([k]) => Number(x[k]) > 0).map(([, t]) => t)
@@ -246,7 +253,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
 
   // Ô lọc: giá trị nháp, bấm Lọc mới áp dụng (T41)
   const apLoc = () => { loc0.loc(); setTrang(1) }
-  const chonO = (k: 'cn' | 'nguon' | 'kh' | 'kenh' | 'pttt', ten: string, ds: [string, string][]) => (
+  const chonO = (k: 'cn' | 'nguon' | 'kh' | 'kenh' | 'pttt' | 'hang' | 'tonKho', ten: string, ds: [string, string][]) => (
     <Select className="ds-o-sel" value={nhap[k]} aria-label={ten} onChange={e => dat(k, e.target.value)}>
       <option value="">Tất cả</option>
       {ds.map(([v, t]) => <option key={v} value={v}>{t}</option>)}
@@ -264,6 +271,9 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
     { k: 'kenh', ten: 'Kênh bán', o: chonO('kenh', 'Kênh bán', [...new Set(rows.map(r => String(r.kenh ?? '')).filter(Boolean))].map(v => [v, v])) },
     // Tổng hợp theo kênh gộp nhiều cách thanh toán nên không lọc theo phương thức (T116)
     ...((s.dongBoFabi ?? 'kenh') === 'chiTiet' ? [{ k: 'pttt', ten: 'Phương thức thanh toán', o: chonO('pttt', 'Phương thức thanh toán', PTTT.map(([, t]) => [t, t])) }] : []),
+    // Hàng hoá có trong chứng từ; Theo dõi tồn kho: chứng từ có hoặc không có món theo dõi tồn kho (T118)
+    { k: 'hang', ten: 'Hàng hoá', o: chonO('hang', 'Hàng hoá', HANG.map(h => [h.ma, `${h.ma} - ${h.ten}`])) },
+    { k: 'tonKho', ten: 'Theo dõi tồn kho', o: chonO('tonKho', 'Theo dõi tồn kho', [['co', 'Có hàng theo dõi tồn kho'], ['khong', 'Không có hàng theo dõi tồn kho']]) },
   ]
   const [cauHinhLoc, datCauHinhLoc] = useCauHinhLoc(path, oLoc.map(o => o.k), ['thoiGian', 'tim', 'cn'])
 
@@ -276,6 +286,8 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
     if (ap.nguon && r.nguon !== ap.nguon) return false
     if (ap.kh && r.doiTuong !== ap.kh) return false
     if (ap.kenh && r.kenh !== ap.kenh) return false
+    if (ap.hang && !monCua(r.x).some(m => m.ma === ap.hang)) return false
+    if (ap.tonKho && monCua(r.x).some(m => m.tonKho) !== (ap.tonKho === 'co')) return false
     if (ap.pttt && !ptttCua(r.x).includes(ap.pttt)) return false
     if (ap.tim.trim() && !fold(`${r.so} ${r.dienGiai}`).includes(fold(ap.tim.trim()))) return false
     for (const [k, g] of Object.entries(locCot)) {
