@@ -69,11 +69,12 @@ Làm cả khi bỏ dở giữa chừng:
 
 1. Tạo nhật ký mới trong `docs/nhat-ky/`, chép khung từ `docs/nhat-ky/MAU.md`. Tên file `YYYY-MM-DD-<tên GitHub viết thường>-<việc ngắn>.md`, vd `2026-10-08-phuongxt-noi-so-quy.md`. Không sửa nhật ký của người khác.
 2. Cập nhật dòng của việc trong `docs/TIEN-DO.md`: `Xong`, `Dở dang` hoặc `Kẹt`, kèm một câu ghi chú. Việc xong thì chuyển dòng xuống bảng "Đã xong".
-3. Thay đổi người dùng nhìn thấy trên bản online thì thêm dòng vào `CHANGELOG.md`.
-4. `git add` đúng các file đã sửa, không dùng `git add -A`. `package-lock.json` chỉ commit khi có thêm hoặc đổi thư viện.
-5. Commit message tiếng Việt, bắt đầu bằng mã việc, vd `T03: nối sổ quỹ vào sổ cái`.
-6. Làm mục "Ngay trước lệnh git push", rồi `git push`.
-7. Báo người dùng commit vừa push. Có sửa code thì nhắc xem robot ở https://github.com/trungkhanhduong93/iaccdemo/actions sau khoảng 2 phút.
+3. Chạy `python tools/xuat_bao_cao_he_thong.py` để tự động làm mới `docs/IACC-Cloud-Chi-Tiet-He-Thong.xlsx` trên repo. File này ghi nhận đầy đủ tính năng, đặc tả màn hình, mẫu in và tiến độ việc. Khi repo hoàn thiện hoặc khi ai trong 3 người cần lấy report tải về, agent xuất bản mới nhất cho người đó.
+4. Thay đổi người dùng nhìn thấy trên bản online thì thêm dòng vào `CHANGELOG.md`.
+5. `git add` đúng các file đã sửa, bao gồm `docs/IACC-Cloud-Chi-Tiet-He-Thong.xlsx`, không dùng `git add -A`. `package-lock.json` chỉ commit khi có thêm hoặc đổi thư viện.
+6. Commit message tiếng Việt, bắt đầu bằng mã việc, vd `T03: nối sổ quỹ vào sổ cái`.
+7. Làm mục "Ngay trước lệnh git push", rồi `git push`.
+8. Báo người dùng commit vừa push. Có sửa code thì nhắc xem robot ở https://github.com/trungkhanhduong93/iaccdemo/actions sau khoảng 2 phút.
 
 ## Cấm
 
@@ -96,4 +97,5 @@ Làm cả khi bỏ dở giữa chừng:
 | `docs/BAY.md` | Trước khi sửa code |
 | `docs/QUYET-DINH.md` | Trước khi đổi bố cục, nghiệp vụ, thư viện |
 | `docs/TRIEN-KHAI.md` | Khi đụng build, robot, deploy, dữ liệu sinh từ Excel |
+| `docs/IACC-Cloud-Chi-Tiet-He-Thong.xlsx` | Báo cáo chi tiết toàn bộ tính năng, màn hình, mẫu in, tiến độ task |
 | `CHANGELOG.md` | Khi cần biết bản online có gì mới |
