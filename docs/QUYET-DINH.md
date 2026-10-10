@@ -486,3 +486,5 @@ Lý do: Trum giao việc thiết kế lại màn hình Gói thuê bao và logo 4
 - Gói Plus, Pro (TT133, TT99) tạm không còn sổ, báo cáo tài chính. `tools/kiem_tra.py` hạ ngưỡng số màn từ 140 xuống 125.
 
 Lý do: Trum chốt ngày 10/10/2026 (T122). Ký hiệu, bố cục các mẫu này do agent dựng theo hiểu biết, chưa đối chiếu văn bản gốc. Trum sẽ đưa mẫu sau.
+
+## QD46. Màn Tổng quan: chỉ số và bộ lọc (đang soạn)
