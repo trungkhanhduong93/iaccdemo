@@ -76,7 +76,7 @@ def main():
             links = list(dict.fromkeys(links))
             nut = [h for h in dict.fromkeys(nut) if h not in links]
             print(f'gói {goi}: {len(links)} màn, {len(nut)} ô quy trình mở form hoặc màn phân hệ khác')
-            if len(links) < (30 if goi == 'F' else 140):
+            if len(links) < (30 if goi == 'F' else 125):
                 loi.append(f'[{goi}] thanh tab và tab Báo cáo chỉ có {len(links)} màn, thiếu so với 120 tính năng cộng Quy trình, Báo cáo')
             for h in links:
                 pg.goto(URL + h)

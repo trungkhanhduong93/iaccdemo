@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T122 | Ẩn tạm sổ, BCTC, tờ khai do agent tự dựng (không có mẫu Trum cung cấp): giữ TT58 theo file `D:\IACC-CLOUD\TT58`, TT152 theo iFaster; ẩn toàn bộ sổ, BCTC TT133, TT99 và tờ khai GTGT. Không xoá code | Trum | Đang làm | Sửa `src/modules/bao-cao/danh-sach.ts`, `src/app/registry.ts`, `src/ui/generic/ReportScreen.tsx`, `tools/kiem_tra.py` |
 | T120 | In phiếu từ form chứng từ: hàm `moIn` ở `ChungTuForm.tsx` (khoảng dòng 317–321) chưa truyền dòng chi tiết đang có trên form vào phiếu in, nên phiếu mới hoặc đang sửa in theo dòng đã lưu hoặc dòng sinh lại | | Chờ | Phát hiện khi làm T112 |
 | T109 | Sổ S2c-DNSN (5.2.8, TT58): bộ lọc Mặt hàng, Kho để mở sổ theo từng cặp mặt hàng – kho | | Chờ | T108 đang in cố định Thịt bò thăn, kho Phố Mây Lê Lợi. `CauHinhBC.loc` chưa đổi theo chế độ, lọc thêm sẽ hiện cả ở TT133, TT99 |
 | T110 | TT58: tên sổ ghi trong phần Hạch toán của phiếu (`soTT58` ở `tien/index.ts`, `ban-hang`, `kho`, `mua-hang`) theo bộ sổ TT58 (Sổ chi tiết tiền S2d thay Sổ quỹ tiền mặt, Sổ tiền gửi ngân hàng); tờ khai GTGT, Thông tin đơn vị đọc phương pháp thuế GTGT từ `s.ppGtgt` thay vì suy từ chế độ | | Chờ | Tách từ T108. `ToKhaiGTGT.tsx:18` còn `s.cheDo === 'TT58'` |
@@ -38,6 +37,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T122 | Ẩn tạm 23 mã sổ, BCTC, tờ khai do agent tự dựng theo từng thông tư (QD45); giữ TT58 theo file, TT152 theo iFaster; link cũ hiện "Báo cáo chưa có mẫu" | Trum | 10/10/2026 | `2026-10-10-trum-an-tam-bao-cao.md` |
 | T121 | Sơ đồ quy trình Bán hàng gói Free: bỏ ô Đơn POS từ FABi trùng với nhãn làn Bán hàng từ FABi, mũi tên đồng bộ đi thẳng sang Xuất bán POS; Quy trình gói Free bỏ khung Thiết lập & Thao tác | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-bo-o-trung-so-do-ban-hang.md` |
 | T111 | Báo cáo: ô Khoảng ngày và nút Xem báo cáo nằm trong cột Bộ lọc bên trái (18 màn không có cột lọc giữ trên thanh trên); cột tỷ lệ và mọi cột không còn hẹp tới mức vỡ chữ tiêu đề | Trum | 10/10/2026 | `2026-10-10-trum-bo-loc-ben-mau-in.md` |
 | T112 | Màn Thiết kế mẫu in làm lại ba vùng (danh sách mẫu, tờ in, thuộc tính); khung phiếu in vẽ lại, bổ sung trường theo thông tư; số bằng chữ khớp dòng Cộng, Nợ/Có đúng phiếu | Trum | 10/10/2026 | `2026-10-10-trum-bo-loc-ben-mau-in.md` |

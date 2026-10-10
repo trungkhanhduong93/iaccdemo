@@ -97,6 +97,7 @@ export function moDuoc(sc: ScreenDef, goi: Goi) {
 export function apDung(sc: ScreenDef, cheDo?: CheDo, session?: Pick<Session, 'ppGtgt' | 'ppTndn'> | Session): boolean {
   if (!cheDo || !sc.code) return true
   const cfg = CAU_HINH_BC[sc.code]
+  if (cfg?.anTam?.includes(cheDo)) return false
   if (cfg?.cheDo && !cfg.cheDo.includes(cheDo)) return false
   if (cheDo === 'TT58' && cfg?.th) {
     const curTh = thTT58(session?.ppGtgt, session?.ppTndn)

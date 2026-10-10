@@ -7,7 +7,7 @@ import { MODULES, duongDan, laBaoCao, maKhoa, manDau, moDuoc, tenMan, timMan } f
 import { FEATURE, FEATURES, GOI, GOIS, minGoi, type Goi } from './plan'
 import type { ScreenProps } from '../modules/types'
 import { Icon } from '../ui/Icon'
-import { PageHead, Pk } from '../ui/Page'
+import { Empty, PageHead, Pk } from '../ui/Page'
 import { CatalogScreen } from '../ui/generic/CatalogScreen'
 import { VoucherScreen } from '../ui/generic/VoucherScreen'
 import { ReportScreen } from '../ui/generic/ReportScreen'
@@ -15,6 +15,7 @@ import { ToolScreen } from '../ui/generic/ToolScreen'
 import { QuyTrinhScreen } from '../ui/generic/QuyTrinhScreen'
 import { BaoCaoScreen } from '../ui/generic/BaoCaoScreen'
 import { ThanhChonBaoCao } from '../modules/bao-cao/ThanhChon'
+import { CAU_HINH_BC } from '../modules/bao-cao/danh-sach'
 
 const GENERIC: Record<string, ComponentType<ScreenProps>> = {
   catalog: CatalogScreen, voucher: VoucherScreen, report: ReportScreen, tool: ToolScreen, quytrinh: QuyTrinhScreen, baocao: BaoCaoScreen,
@@ -29,6 +30,20 @@ export function ScreenRoute() {
   if (mod.key !== 'bao-cao') {
     if (sc.kind === 'baocao') return <Navigate to={`/app/bao-cao/nhom-${mod.key}`} replace />
     if (laBaoCao(sc)) return <Navigate to={`/app/bao-cao/${sc.slug}`} replace />
+  }
+  const code = sc.code ?? (sc.slug.includes('-') ? sc.slug.replace(/-/g, '.') : undefined)
+  const cfg = code ? CAU_HINH_BC[code] : undefined
+  if (cfg?.anTam?.includes(s.cheDo)) {
+    return (
+      <div className="page">
+        <PageHead crumb={[mod.ten, sc.nhom ?? '']} title={tenMan(sc)} code={sc.code} />
+        <div className="card lockpage">
+          <Empty title="Báo cáo chưa có mẫu" sub="Mẫu theo thông tư đang chờ cập nhật.">
+            <Link className="btn" to="/app/bao-cao/tat-ca">Về Tất cả báo cáo</Link>
+          </Empty>
+        </div>
+      </div>
+    )
   }
   if (!moDuoc(sc, s.goi)) return <Locked code={maKhoa(sc)!} ten={tenMan(sc)} crumb={[mod.ten, sc.nhom ?? '']} />
   const C = sc.comp ?? GENERIC[sc.kind]

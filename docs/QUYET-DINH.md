@@ -472,4 +472,17 @@ Lý do: Trum chốt ngày 10/10/2026 (T108).
 
 Lý do: Trum giao việc thiết kế lại màn hình Gói thuê bao và logo 4 gói ngày 10/10/2026 (T119).
 
-## QD45. Ẩn tạm mẫu báo cáo do agent tự dựng (đang soạn)
+## QD45. Ẩn tạm mẫu báo cáo do agent tự dựng (10/10/2026)
+
+- Sổ, báo cáo tài chính, tờ khai chưa có mẫu Trum cung cấp thì ẩn tạm, không xoá. Báo cáo quản trị (loại `baocao`) và mẫu in phiếu giữ nguyên.
+- Nguồn được giữ: TT58 theo file ở `D:\IACC-CLOUD\TT58` (T108), TT152 theo bộ báo cáo hộ kinh doanh iFaster (QD42).
+- Khai ở trường `anTam` trong `CAU_HINH_BC` (`src/modules/bao-cao/danh-sach.ts`). `apDung` trong `registry.ts` đọc trường này, nên menu, tab, Tất cả báo cáo, sơ đồ Quy trình tự ẩn. Mở thẳng link thì `ScreenRoute` hiện "Báo cáo chưa có mẫu".
+- Hiện lại một báo cáo: bỏ chế độ đó khỏi `anTam`. Xoá hẳn chỉ khi Trum bảo.
+- Đang ẩn (23 mã):
+  - Mọi chế độ: 2.2.2, 2.2.4, 2.2.6, 5.2.1, 6.2.3 (tờ khai GTGT), 7.2.3, 7.2.4, 9.2.1, 9.2.2, 10.2.1, 10.2.4, 10.2.5.
+  - TT58, TT133, TT99: 2.2.1, 2.2.3, 5.2.3.
+  - TT133, TT99: 2.2.5, 3.2.5, 10.2.3.
+  - TT152, TT133, TT99: 5.2.8, 6.2.4, 7.2.1, 10.2.2, 10.4.2.
+- Gói Plus, Pro (TT133, TT99) tạm không còn sổ, báo cáo tài chính. `tools/kiem_tra.py` hạ ngưỡng số màn từ 140 xuống 125.
+
+Lý do: Trum chốt ngày 10/10/2026 (T122). Ký hiệu, bố cục các mẫu này do agent dựng theo hiểu biết, chưa đối chiếu văn bản gốc. Trum sẽ đưa mẫu sau.

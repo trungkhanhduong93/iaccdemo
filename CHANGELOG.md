@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 10/10/2026
 
+- T122: Ẩn tạm các sổ, báo cáo tài chính, tờ khai chưa có mẫu chuẩn: gói Plus, Pro tạm không còn sổ và báo cáo tài chính; gói Standard còn bộ sổ TT58; gói Free còn bộ báo cáo hộ kinh doanh. Mở link cũ thấy "Báo cáo chưa có mẫu".
 - T121: Sơ đồ quy trình Bán hàng gói Free bỏ ô Đơn POS từ FABi trùng với nhãn Bán hàng từ FABi; mũi tên đồng bộ đi thẳng sang Xuất bán POS. Màn Quy trình mọi phân hệ ở gói Free bỏ khung Thiết lập & Thao tác, chỉ còn Danh mục liên quan.
 - T111: Màn báo cáo: ô chọn khoảng ngày và nút Xem báo cáo chuyển sang cột Bộ lọc bên trái. Cột tỷ lệ (vd Tỷ lệ (%) khấu hao ở Sổ TSCĐ) và các cột hẹp khác không còn vỡ chữ tiêu đề.
 - T112: Màn Thiết kế mẫu in làm lại: danh sách mẫu theo nhóm có ô tìm, tờ in ở giữa, bảng thuộc tính chia nhóm. Phiếu in vẽ lại bố cục, thêm các dòng thông tư yêu cầu (đã nhận đủ số tiền, tỷ giá, số lượng theo chứng từ và thực nhập...). Số tiền bằng chữ khớp dòng Cộng.
