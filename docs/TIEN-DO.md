@@ -4,13 +4,14 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T94.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T95.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T95 | Form mọi phiếu: nút Tuỳ chỉnh giao diện phiếu ra ngoài, cạnh nút In, bỏ khỏi menu Tiện ích | PhuongXT | Đang làm | Sửa `ChungTuForm.tsx` |
 | T88 | Danh mục đơn vị tính 1.3: bộ khoảng 35 đơn vị cơ bản F&B, mã viết hoa không dấu (CAI là Cái), giữ cột Mô tả; mọi ô chọn ĐVT trong panel danh mục lấy từ danh mục này | Trum | Đang làm | Sửa `danh-muc/data.ts`, `danh-muc/index.ts`, `truong-dm.ts`, `CatalogScreen.tsx` |
 | T60 | Mô tả gói Free, Standard trong `GOI` (`src/app/plan.ts`) đang ghi "1 điểm bán"; theo Roadmap gói Free là mỗi chi nhánh một kho, không giới hạn một chi nhánh. Chốt câu chữ rồi sửa | PhuongXT | Chờ | Tách từ T25 |
 | T02 | Chốt nghiệp vụ trên từng sơ đồ Quy trình: ô nào, nối thế nào, câu chữ. Sửa ở `src/modules/<phân hệ>/quy-trinh.ts` | Trum | Chờ | |
