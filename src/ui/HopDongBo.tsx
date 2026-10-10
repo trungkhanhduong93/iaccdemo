@@ -29,9 +29,9 @@ export interface HopDongBoProps {
   nhanLamLai: string
   nutChinh: string
   nutDangChay?: string
-  chonSan?: string[]        // mã chọn sẵn khi mở hộp, vd chi nhánh đang làm việc (T112)
-  lamLaiMacDinh?: boolean   // ô tích ở chân hộp tích sẵn hay không (T112)
-  ghiChuLamLai?: string     // dòng giải thích dưới ô tích (T112)
+  chonSan?: string[]        // mã chọn sẵn khi mở hộp, vd chi nhánh đang làm việc (T117)
+  lamLaiMacDinh?: boolean   // ô tích ở chân hộp tích sẵn hay không (T117)
+  ghiChuLamLai?: string     // dòng giải thích dưới ô tích (T117)
   onDong: () => void
   onDongBo: (ketQua: KetQuaDongBo) => void
 }

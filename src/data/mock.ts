@@ -38,7 +38,7 @@ export const NGUOI_DUNG = [
   { ten: 'Võ Thanh Tùng', email: 'thanhtung@phomay.vn', role: 'ktv' as Role, vaiTro: 'Thủ kho', pham: 'Kho tổng, Kho bếp Lê Lợi', lan: 'Chưa đăng nhập', tt: 'warn' },
 ]
 
-/** tonKho: hàng có theo dõi tồn kho (T109). Món chế biến không theo dõi tồn, kho trừ nguyên vật liệu theo định lượng; hàng mua về bán lại có theo dõi tồn */
+/** tonKho: hàng có theo dõi tồn kho (T114). Món chế biến không theo dõi tồn, kho trừ nguyên vật liệu theo định lượng; hàng mua về bán lại có theo dõi tồn */
 export const HANG = [
   { ma: 'PHO01', ten: 'Phở bò tái', nhom: 'Món nước', dvt: 'Tô', gia: 65000, ts: 8, tonKho: false },
   { ma: 'PHO02', ten: 'Phở bò đặc biệt', nhom: 'Món nước', dvt: 'Tô', gia: 85000, ts: 8, tonKho: false },
