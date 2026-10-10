@@ -4,6 +4,8 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 10/10/2026
 
+- T111: Màn báo cáo: ô chọn khoảng ngày và nút Xem báo cáo chuyển sang cột Bộ lọc bên trái. Cột tỷ lệ (vd Tỷ lệ (%) khấu hao ở Sổ TSCĐ) và các cột hẹp khác không còn vỡ chữ tiêu đề.
+- T112: Màn Thiết kế mẫu in làm lại: danh sách mẫu theo nhóm có ô tìm, tờ in ở giữa, bảng thuộc tính chia nhóm. Phiếu in vẽ lại bố cục, thêm các dòng thông tư yêu cầu (đã nhận đủ số tiền, tỷ giá, số lượng theo chứng từ và thực nhập...). Số tiền bằng chữ khớp dòng Cộng.
 - T118: Danh sách Xuất bán POS có dải đối soát đơn POS: nút Đã đồng bộ, Chưa đồng bộ kèm số lượng; tổng số hoá đơn trên POS và trong IACC, tổng số món, mã hoá đơn cuối, lần đồng bộ cuối. Dải này thay cho chip Tất cả, Chưa ghi sổ, Đã ghi sổ, Lệch đối soát (đã bỏ). Bỏ luôn nút Ghi chú FABi, ô chọn dòng và nút Hàng loạt (xoá hàng loạt); cột STT gọn hơn. Bộ lọc thêm Hàng hoá và Theo dõi tồn kho (chứng từ có món theo dõi, hoặc có món không theo dõi tồn kho). Cột Doanh thu chưa thuế, Thuế GTGT đổi tên thành Doanh thu trước thuế, Tiền thuế. Bấm Chưa đồng bộ hiện bảng hoá đơn chưa đồng bộ được: mã hoá đơn, thời gian, tên món (bấm mở danh mục hàng hoá), ĐVT, số lượng, lý do lỗi.
 - T117: Xuất bán POS: nút Tải từ FABi đổi thành Đồng bộ POS, mở hộp chọn khoảng thời gian, chi nhánh và ô Bỏ qua hoá đơn đã đồng bộ (chỉ lấy hoá đơn thiếu, thừa, bị xoá, sửa trên FABi).
 - T116: Danh sách Xuất bán POS lọc được theo Khách hàng, Kênh bán; đồng bộ chi tiết lọc được thêm theo Phương thức thanh toán.

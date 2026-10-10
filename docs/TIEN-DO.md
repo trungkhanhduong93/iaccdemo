@@ -4,15 +4,14 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T119.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T120.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T111 | Báo cáo: đưa ô chọn khoảng ngày và nút Xem báo cáo sang cột Bộ lọc bên trái; sửa cột hẹp làm vỡ tiêu đề (cột Tỷ lệ (%) khấu hao ở Sổ TSCĐ S4b-DNSN), rà mọi báo cáo | Trum | Đang làm | Sửa `src/ui/generic/ReportScreen.tsx`, `src/ui/bao-cao/chiaCot.ts`, `ToGiay.tsx`, `app.css` |
-| T112 | Thiết kế lại màn Thiết kế mẫu in và toàn bộ mẫu in phiếu chứng từ: đủ thông tin theo thông tư, bố cục gọn, đẹp | Trum | Đang làm | Sửa `src/modules/tien-ich/ThietKeMauIn.tsx`, `src/ui/bao-cao/InChungTu.tsx`, `mau-in.ts`, `duLieuIn.ts`, `app.css` |
+| T120 | In phiếu từ form chứng từ: hàm `moIn` ở `ChungTuForm.tsx` (khoảng dòng 317–321) chưa truyền dòng chi tiết đang có trên form vào phiếu in, nên phiếu mới hoặc đang sửa in theo dòng đã lưu hoặc dòng sinh lại | | Chờ | Phát hiện khi làm T112 |
 | T109 | Sổ S2c-DNSN (5.2.8, TT58): bộ lọc Mặt hàng, Kho để mở sổ theo từng cặp mặt hàng – kho | | Chờ | T108 đang in cố định Thịt bò thăn, kho Phố Mây Lê Lợi. `CauHinhBC.loc` chưa đổi theo chế độ, lọc thêm sẽ hiện cả ở TT133, TT99 |
 | T110 | TT58: tên sổ ghi trong phần Hạch toán của phiếu (`soTT58` ở `tien/index.ts`, `ban-hang`, `kho`, `mua-hang`) theo bộ sổ TT58 (Sổ chi tiết tiền S2d thay Sổ quỹ tiền mặt, Sổ tiền gửi ngân hàng); tờ khai GTGT, Thông tin đơn vị đọc phương pháp thuế GTGT từ `s.ppGtgt` thay vì suy từ chế độ | | Chờ | Tách từ T108. `ToKhaiGTGT.tsx:18` còn `s.cheDo === 'TT58'` |
 | T101 | Chuyển tiện ích về phân hệ của nó (tiện ích của phân hệ nào nằm trong phân hệ đó); tiện ích chung như Thiết kế mẫu in tính sau. Rồi xem lại có mở phân hệ Tiện ích cho gói Free không | PhuongXT | Chờ | Ý của PhuongXT 10/10/2026, khi làm T100. Gói Free đang ẩn tạm phân hệ Tiện ích |
@@ -38,6 +37,8 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T111 | Báo cáo: ô Khoảng ngày và nút Xem báo cáo nằm trong cột Bộ lọc bên trái (18 màn không có cột lọc giữ trên thanh trên); cột tỷ lệ và mọi cột không còn hẹp tới mức vỡ chữ tiêu đề | Trum | 10/10/2026 | `2026-10-10-trum-bo-loc-ben-mau-in.md` |
+| T112 | Màn Thiết kế mẫu in làm lại ba vùng (danh sách mẫu, tờ in, thuộc tính); khung phiếu in vẽ lại, bổ sung trường theo thông tư; số bằng chữ khớp dòng Cộng, Nợ/Có đúng phiếu | Trum | 10/10/2026 | `2026-10-10-trum-bo-loc-ben-mau-in.md` |
 | T118 | Danh sách Xuất bán POS: dải đối soát đơn POS kiểu iPOS Inventory: nút Đã đồng bộ, Chưa đồng bộ; số liệu tổng số hoá đơn POS, IACC, số món, mã hoá đơn cuối, lần đồng bộ cuối; bảng hoá đơn chưa đồng bộ (mã hoá đơn, thời gian, tên món, ĐVT, số lượng, lý do lỗi); bỏ chip Tất cả, Chưa ghi sổ, Đã ghi sổ, Lệch đối soát, nút Ghi chú FABi, xoá hàng loạt; thêm lọc Hàng hoá, Theo dõi tồn kho | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-doi-soat-pos.md` |
 | T117 | Xuất bán POS: nút Đồng bộ POS (trước là Tải từ FABi; tên ngắn để thanh công cụ không đè chip trạng thái) mở hộp chọn khoảng thời gian, chi nhánh (mặc định chi nhánh đang chọn, tất cả chi nhánh thì phải chọn), ô tích Bỏ qua hoá đơn đã đồng bộ (tích sẵn) | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-dong-bo-fabi.md` |
 | T116 | Danh sách Xuất bán POS: bộ lọc thêm Khách hàng, Kênh bán, Phương thức thanh toán (chỉ khi đồng bộ chi tiết; tổng hợp theo kênh bỏ ở bộ lọc và đầu phiếu) | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-dong-bo-fabi.md` |

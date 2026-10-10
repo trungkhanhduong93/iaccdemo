@@ -25,7 +25,9 @@ const soIn = (v: string | number | undefined) => typeof v === 'number' ? (v ? mo
 
 /**
  * Vẽ một phiếu thành các khối theo mau.khoi, mỗi khối một phần tử con để tờ giấy đo và xếp trang. Hàm thuần, không hook.
- * Phần tử mang data-khoi, data-truong, data-cot để màn Thiết kế mẫu in (11.11) biết người dùng bấm vào đâu; thietKe thêm tay nắm kéo mép cột
+ * Phần tử mang data-khoi, data-truong, data-cot để màn Thiết kế mẫu in (11.11) biết người dùng bấm vào đâu; thietKe thêm tay nắm kéo mép cột.
+ * Bố cục T112: đầu trang đơn vị trái, mẫu số phải; tiêu đề giữa, quyển số bên trái, Nợ Có bên phải; thông tin dạng lưới nhãn thẳng hàng;
+ * bảng kẻ mảnh có tiêu đề nhóm, hàng ký hiệu cột, dòng cộng; ô ký chia đều cột, ngày ký nằm trên các ô cuối. In đen trắng vẫn rõ
  */
 export function veMauIn(mauGoc: MauIn, du: DuLieuIn, cd: CheDoDef, dv: DonViIn, thietKe?: boolean): ReactNode {
   const mau = mauChoCheDo(mauGoc, cd.ma)
@@ -37,55 +39,77 @@ export function veMauIn(mauGoc: MauIn, du: DuLieuIn, cd: CheDoDef, dv: DonViIn, 
   const tk = (ds: string[]) => ds.map(t => tkTheoCheDo(t, cd.ma).so).join(', ')
   const kyHieu = mau.kyHieu[cd.ma]
   const khoi = mau.khoi.filter(x => !x.an).map(x => x.k)
+  const hienMauSo = khoi.includes('mauSo')
 
   const dauTrang = (
     <div className="in-ct-dv" data-khoi="dauTrang">
-      <div>Đơn vị: <b>{dv.ten}</b></div>
+      <div className="in-ct-dv-ten">{dv.ten}</div>
       <div>Địa chỉ: {dv.diaChi}</div>
+      <div>Mã số thuế: {dv.mst}</div>
+      {mau.boPhan && <div>Bộ phận: {du.tt.boPhan || CHAM}</div>}
     </div>
   )
-  const coMauSo = kyHieu || mau.quyenSo || (mau.coNoCo && noCo)
-  const mauSo = coMauSo ? (
+  const mauSo = kyHieu ? (
     <div className="in-ct-mau-so" data-khoi="mauSo">
-      {kyHieu && (
-        <>
-          <b>Mẫu số {kyHieu}</b>
-          <i>({canCu(cd)})</i>
-        </>
-      )}
-      {mau.quyenSo && <div className="in-ct-quyen">Quyển số: {CHAM}</div>}
-      {mau.coNoCo && noCo && (
-        <>
-          <div>Nợ: {tk(du.no) || CHAM}</div>
-          <div>Có: {tk(du.co) || CHAM}</div>
-        </>
-      )}
+      <b>Mẫu số {kyHieu}</b>
+      <i>({canCu(cd)})</i>
     </div>
-  ) : null
+  ) : <span />
+
+  // Hai bên tiêu đề thuộc khối Mẫu số: quyển số bên trái, Nợ Có bên phải; ẩn khối Mẫu số thì ẩn theo
+  const benTrai = hienMauSo && mau.quyenSo
+    ? <div className="in-ct-ben trai" data-khoi="mauSo">Quyển số: {CHAM}</div>
+    : <span />
+  const benPhai = hienMauSo && mau.coNoCo && noCo
+    ? (
+      <div className="in-ct-ben phai in-ct-noco" data-khoi="mauSo">
+        <div><span>Nợ:</span><b>{tk(du.no) || CHAM}</b></div>
+        <div><span>Có:</span><b>{tk(du.co) || CHAM}</b></div>
+      </div>
+    )
+    : <span />
 
   const kieuTieuDe: CSSProperties | undefined = mau.tieuDeCo || mau.tieuDeDam === false
     ? { fontSize: mau.tieuDeCo ? `${mau.tieuDeCo}pt` : undefined, fontWeight: mau.tieuDeDam === false ? 400 : undefined }
     : undefined
 
+  // Dòng chữ cố định: "......" là chỗ điền tay, vẽ thành đường chấm kéo dài
+  const dongGhi = (g: string, i: number) => {
+    const j = g.indexOf(CHAM)
+    if (j < 0) return <div key={i} className="in-ct-ghi">{g}</div>
+    return (
+      <div key={i} className="in-ct-ghi">
+        <span>{g.slice(0, j).trim()}</span>
+        <span className="in-ct-dien" />
+        {g.slice(j + CHAM.length).trim() && <span>{g.slice(j + CHAM.length).trim()}</span>}
+      </div>
+    )
+  }
+
   const veKhoi = (k: KhoiInK): ReactNode => {
     switch (k) {
       case 'tieuDe':
         return (
-          <>
-            <div className="in-ct-tieu-de" style={kieuTieuDe}>{mau.tieuDe}</div>
-            <div className="in-ct-ngay">{du.ngayChu}</div>
-            <div className="in-ct-so">Số: {du.so}</div>
-          </>
+          <div className="in-ct-dau-de">
+            {benTrai}
+            <div className="in-ct-giua">
+              <div className="in-ct-tieu-de" style={kieuTieuDe}>{mau.tieuDe}</div>
+              <div className="in-ct-ngay">{du.ngayChu}</div>
+              <div className="in-ct-so">Số: <b>{du.so || CHAM}</b></div>
+            </div>
+            {benPhai}
+          </div>
         )
       case 'thongTin': {
         const ds = mau.thongTin.filter(t => !t.an)
         if (!ds.length) return null
+        const n = mau.soCotThongTin
         return (
-          <div className="in-ct-tt" style={{ gridTemplateColumns: `repeat(${mau.soCotThongTin}, minmax(0, 1fr))` }}>
+          <div className={`in-ct-tt${n > 1 ? ' hai-cot' : ''}`} style={{ gridTemplateColumns: `repeat(${n}, max-content minmax(0, 1fr))` }}>
             {ds.map(t => (
-              <div key={t.k} className="in-ct-truong" data-truong={t.k}>
+              <div key={t.k} className={`in-ct-truong${t.caHang && n > 1 ? ' ca-hang' : ''}`} data-truong={t.k}>
                 <span className="in-ct-nhan" style={t.rongNhan ? { width: `${t.rongNhan}mm` } : undefined}>{t.nhan}:</span>
-                <span className="in-ct-gt">{du.tt[t.k]}</span>
+                <span className={`in-ct-gt${t.k === 'soTien' ? ' dam' : t.k === 'bangChu' ? ' nghieng' : ''}`}>{du.tt[t.k]}</span>
               </div>
             ))}
           </div>
@@ -100,19 +124,37 @@ export function veMauIn(mauGoc: MauIn, du: DuLieuIn, cd: CheDoDef, dv: DonViIn, 
         const trong = Math.max(0, b.dongTrongToiThieu - du.dong.length)
         const oCong = cot.find(c => !c.so && c.k !== 'stt') ?? cot[0]
         const cao = { height: `${b.caoDong}mm` }
+        const coNhom = cot.some(c => c.nhom)
+        const coKyHieu = cot.some(c => c.kyHieu)
+        const mep = (c: (typeof cot)[number]) => thietKe && <span className="tkmi-mep" data-mep={c.k} title="Kéo để đổi độ rộng cột" />
+        // Tầng trên: cột liền nhau cùng nhóm gộp một ô; cột không nhóm chiếm cả hai tầng
+        const tren: ReactNode[] = []
+        for (let i = 0; i < cot.length; i++) {
+          const c = cot[i]
+          if (!c.nhom) {
+            tren.push(<th key={c.k} rowSpan={coNhom ? 2 : 1} data-cot={c.k}>{c.t}{mep(c)}</th>)
+            continue
+          }
+          let j = i
+          while (j + 1 < cot.length && cot[j + 1].nhom === c.nhom) j++
+          tren.push(<th key={`n${c.k}`} colSpan={j - i + 1} className="in-ct-nhom">{c.nhom}</th>)
+          i = j
+        }
         return (
           <table className="in-ct-bang" style={b.coChu ? { fontSize: `${b.coChu}pt` } : undefined}>
             <colgroup>{cot.map(c => <col key={c.k} style={{ width: `${c.rong}mm` }} />)}</colgroup>
             <thead>
-              <tr>{cot.map(c => <th key={c.k} data-cot={c.k}>{c.t}{thietKe && <span className="tkmi-mep" data-mep={c.k} title="Kéo để đổi độ rộng cột" />}</th>)}</tr>
+              <tr>{tren}</tr>
+              {coNhom && <tr>{cot.filter(c => c.nhom).map(c => <th key={c.k} data-cot={c.k}>{c.t}{mep(c)}</th>)}</tr>}
+              {coKyHieu && <tr className="in-ct-ky-hieu">{cot.map(c => <th key={c.k}>{c.kyHieu ?? ''}</th>)}</tr>}
             </thead>
             <tbody>
-              {du.dong.map((d, i) => <tr key={i} style={cao}>{cot.map(c => <td key={c.k} style={kieuO(c)}>{o(c, d[c.k])}</td>)}</tr>)}
+              {du.dong.map((d, i) => <tr key={i} style={cao}>{cot.map(c => <td key={c.k} className={c.so ? 'so' : undefined} style={kieuO(c)}>{o(c, d[c.k])}</td>)}</tr>)}
               {Array.from({ length: trong }, (_, i) => <tr key={`t${i}`} style={cao}>{cot.map(c => <td key={c.k} />)}</tr>)}
               {b.dongTong && (
                 <tr className="in-ct-cong" style={cao}>
                   {cot.map(c => (
-                    <td key={c.k} style={kieuO(c)}>
+                    <td key={c.k} className={c.so ? 'so' : undefined} data-tong={c.k} style={c === oCong ? { textAlign: 'center' } : kieuO(c)}>
                       {c === oCong ? 'Cộng' : c.so && c.k !== 'gia' ? soIn(du.dong.reduce((a, d) => a + (Number(d[c.k]) || 0), 0)) : ''}
                     </td>
                   ))}
@@ -127,7 +169,7 @@ export function veMauIn(mauGoc: MauIn, du: DuLieuIn, cd: CheDoDef, dv: DonViIn, 
         return (
           <div className="in-ct-tong">
             {mau.tongCong.map(t => (
-              <div key={t.k} className="in-ct-tong-dong">
+              <div key={t.k} className={`in-ct-tong-dong${t.k === 'tong' ? ' cuoi' : ''}`}>
                 <span>{t.nhan}</span>
                 <span className="in-ct-cham" />
                 <b>{t.k === 'thueSuat' ? `${du.tong[t.k] ?? 0}%` : money(du.tong[t.k] ?? 0)}</b>
@@ -136,25 +178,29 @@ export function veMauIn(mauGoc: MauIn, du: DuLieuIn, cd: CheDoDef, dv: DonViIn, 
           </div>
         )
       case 'bangChu':
-        return mau.bangChu ? <div className="in-ct-bang-chu"><i>{mau.bangChu}: {du.bangChu}</i></div> : null
-      case 'ghiChu':
-        return mau.ghiChu?.length ? <div className="in-ct-ghi-chu">{mau.ghiChu.map((g, i) => <div key={i}>{g}</div>)}</div> : null
-      case 'ky':
+        return mau.bangChu ? <div className="in-ct-bang-chu"><span>{mau.bangChu}:</span> <b><i>{du.bangChu}</i></b></div> : null
+      case 'ghiChu': {
+        const ds = mau.ghiChu?.filter(g => g.trim()) ?? []
+        return ds.length ? <div className="in-ct-ghi-chu">{ds.map(dongGhi)}</div> : null
+      }
+      case 'ky': {
+        const n = mau.ky.length
+        // Ngày ký nằm trên ô ký cuối; phiếu nhiều ô ký thì trải trên hai ô cuối cho đủ chỗ
+        const trai = Math.max(1, n >= 4 ? n - 1 : n)
         return (
-          <>
-            <div className="in-ct-ngay-ky">{du.ngayChu}</div>
-            <div className="in-ct-ky" style={{ gridTemplateColumns: `repeat(${mau.ky.length}, minmax(0, 1fr))` }}>
-              {mau.ky.map((x, i) => (
-                <div key={i}>
-                  <b>{x.chucDanh}</b>
-                  <i>{x.goiY}</i>
-                  <div className="in-ct-cho-ky" />
-                  <div>{x.hoTen ?? ''}</div>
-                </div>
-              ))}
-            </div>
-          </>
+          <div className="in-ct-ky" style={{ gridTemplateColumns: `repeat(${Math.max(1, n)}, minmax(0, 1fr))` }}>
+            <div className="in-ct-ngay-ky" style={{ gridColumn: `${trai} / -1` }}>{du.ngayChu}</div>
+            {mau.ky.map((x, i) => (
+              <div key={i} className="in-ct-o-ky">
+                <b>{x.chucDanh}</b>
+                <i>{x.goiY}</i>
+                <div className="in-ct-cho-ky" />
+                <div className="in-ct-ho-ten">{x.hoTen ?? ''}</div>
+              </div>
+            ))}
+          </div>
         )
+      }
       default:
         return null
     }
@@ -252,8 +298,7 @@ export function HopInChungTu({ ds, onDong }: { ds: PhieuIn[]; onDong: () => void
   const than = useMemo(() => ds.map((p, i) => {
     const cua = dsMauCua(p, cd.ma)
     const m = kyTheoDonVi(cua.some(x => x.id === mau.id) ? mau : mauDungIn(donVi.id, cd.ma, cua[0].id), nguoiKy)
-    const du = duLieuIn(m, p.cfg, p.row, p.loai, dv, p.sc.code ?? p.sc.slug)
-    if (p.dong) du.dong = p.dong
+    const du = duLieuIn(m, p.cfg, p.row, p.loai, dv, p.sc.code ?? p.sc.slug, p.dong)
     return <Fragment key={i}>{i > 0 && <NgatTrang />}{boLien(m, veMauIn(m, du, cd, dv))}</Fragment>
   }), [ds, mau, nguoiKy, cd, donVi.id, dv.ten, dv.diaChi, dv.mst])
 

@@ -1,5 +1,5 @@
 // Sổ, báo cáo chung: thanh lọc kỳ, trang báo cáo kiểu mẫu in, ô ký. Chi nhánh lấy trên thanh trên
-import { useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { useLocation, useParams } from 'react-router-dom'
 import type { Col, ReportCfg, Row, ScreenProps } from '../../modules/types'
@@ -16,7 +16,7 @@ import { Table } from '../Table'
 import { between, k, money, pad, pick, rng } from '../format'
 import { chungTu, soChiTiet } from './gen'
 import { Dropdown, MenuHead, MenuItem, MenuSep, Select } from '../Dropdown'
-import { ChonKhoangNgay, khoangThang, type KhoangNgay } from '../ChonNgay'
+import { ChonKhoangNgay, dmy, khoangThang, type KhoangNgay } from '../ChonNgay'
 import { SoTrangCtx, ToGiay, NgatTrang, tachKhoi, type Kho } from '../bao-cao/ToGiay'
 import { datNguonXuat, layNguonXuat, taoTenFile, xuatFile, type NguonXuat } from '../bao-cao/xuat'
 import {
@@ -45,6 +45,38 @@ import {
 
 export const KY_CHON: [string, string][] = [['9', 'Tháng 9/2026'], ['10', 'Tháng 10/2026 (đến 07/10)'], ['8', 'Tháng 8/2026']]
 
+// Không tự sinh bộ lọc cho báo cáo tài chính (10.2.2, 10.2.3, 10.2.4, 10.2.5, 10.3.1) và tờ khai thuế (6.2.x): lọc dòng làm sai ý nghĩa số tổng
+export const LOAI_TRU_TU_SINH = new Set(['10.2.2', '10.2.3', '10.2.4', '10.2.5', '10.3.1'])
+
+const khoCoBoLoc = new Map<string, boolean>()
+const ngheBoLoc = new Set<() => void>()
+
+export function datCoBoLoc(path: string, co: boolean) {
+  if (khoCoBoLoc.get(path) === co) return
+  khoCoBoLoc.set(path, co)
+  ngheBoLoc.forEach(f => f())
+}
+
+function doanCoBoLoc(slug?: string): boolean {
+  if (!slug) return false
+  if (LOAI_TRU_TU_SINH.has(slug) || slug.startsWith('6.2.3')) return false
+  const cfg = cauHinhBC(slug)
+  if (cfg?.loai === 'bctc' && slug !== '10.2.1') return false
+  if (cfg?.loc && cfg.loc.length > 0) return true
+  if (cfg?.anKhongPS) return true
+  const loai = cfg?.loai ?? 'baocao'
+  if (loai === 'tokhai') return false
+  return true
+}
+
+export function useCoBoLoc(path: string, slug?: string) {
+  const doan = useMemo(() => doanCoBoLoc(slug), [slug])
+  return useSyncExternalStore(
+    f => { ngheBoLoc.add(f); return () => { ngheBoLoc.delete(f) } },
+    () => khoCoBoLoc.has(path) ? khoCoBoLoc.get(path)! : doan
+  )
+}
+
 export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: string) => void; children?: ReactNode }) {
   // Số liệu báo cáo mẫu tính theo tháng, nên lấy tháng của ngày bắt đầu làm kỳ.
   const [khoang, setKhoang] = useState(() => khoangThang(Number(ky), 2026))
@@ -53,6 +85,7 @@ export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: 
   const path = useLocation().pathname
   const slug = useParams().slug?.replace(/-/g, '.')
   const tt = useTrangThaiLoc(path)
+  const coBoLoc = useCoBoLoc(path, slug)
 
   // Khởi tạo kỳ mặc định vào kho
   useEffect(() => {
@@ -125,17 +158,21 @@ export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: 
 
   const thanh = (
     <div className="thanh-loc">
-      <ChonKhoangNgay value={khoang} onChange={doiKhoang} />
-      <button
-        type="button"
-        className="btn sm pri bc-btn-xem"
-        title="Xem báo cáo"
-        onClick={apDungXem}
-      >
-        <Icon n="refresh" className="ic sm" />
-        <span className="bc-btn-xem-txt">Xem báo cáo</span>
-        {tt.coThayDoi && <span className="bc-btn-xem-dot" />}
-      </button>
+      {!coBoLoc && (
+        <>
+          <ChonKhoangNgay value={khoang} onChange={doiKhoang} />
+          <button
+            type="button"
+            className="btn sm pri bc-btn-xem"
+            title="Xem báo cáo"
+            onClick={apDungXem}
+          >
+            <Icon n="refresh" className="ic sm" />
+            <span className="bc-btn-xem-txt">Xem báo cáo</span>
+            {tt.coThayDoi && <span className="bc-btn-xem-dot" />}
+          </button>
+        </>
+      )}
       {children}
       <span className="grow" />
       <div className="thanh-loc-phai">
@@ -219,9 +256,6 @@ export function dsOKy(loai: LoaiBC, cheDo: CheDo, nguoiDaiDien: string): OKy[] {
   if (loai === 'baocao') return [{ chucDanh: 'Người lập', goiY: '(Ký, họ tên)', hoTen: 'Lê Quốc Bảo' }, ktt]
   return [lap, ktt, ddpl]
 }
-
-// Không tự sinh bộ lọc cho báo cáo tài chính (10.2.2, 10.2.3, 10.2.4, 10.3.1) và tờ khai thuế (6.2.x): lọc dòng làm sai ý nghĩa số tổng
-const LOAI_TRU_TU_SINH = new Set(['10.2.2', '10.2.3', '10.2.4', '10.3.1'])
 
 interface BoLocMuc {
   k: string
@@ -337,6 +371,25 @@ function CotLocBaoCao({
     } catch {}
   }
 
+  const thangDaXem = Number(tt.daXem.ky || '9')
+  const [khoang, setKhoang] = useState<KhoangNgay>(() => khoangThang(thangDaXem, 2026))
+
+  useEffect(() => {
+    const thang = Number(tt.daXem.ky)
+    if (thang && khoang.tu.getMonth() + 1 !== thang) {
+      setKhoang(khoangThang(thang, 2026))
+    }
+  }, [tt.daXem.ky])
+
+  const doiKhoang = (k: KhoangNgay) => {
+    setKhoang(k)
+    datKyNhap(path, String(k.tu.getMonth() + 1))
+  }
+
+  const apDungXem = () => {
+    xemBaoCao(path)
+  }
+
   const soLocDangAp = useMemo(() => {
     let n = 0
     for (const l of dsLoc) {
@@ -347,6 +400,7 @@ function CotLocBaoCao({
   }, [dsLoc, tt.nhap.loc, tt.nhap.anKhongPS, anKhongPS])
 
   if (thuGon) {
+    const nhanKhoang = `Tháng ${thangDaXem}/2026`
     return (
       <aside className="bc-loc-cot thu">
         <button
@@ -358,6 +412,25 @@ function CotLocBaoCao({
         >
           <Icon n="chevr" className="ic sm" />
         </button>
+        <button
+          type="button"
+          className="icon-btn sm bc-btn-xem bc-btn-xem-thu"
+          title="Xem báo cáo"
+          aria-label="Xem báo cáo"
+          onClick={apDungXem}
+        >
+          <Icon n="refresh" className="ic sm" />
+          {tt.coThayDoi && <span className="bc-btn-xem-dot" />}
+        </button>
+        <button
+          type="button"
+          className="chip sm bc-loc-chip-ngay-thu"
+          title={`Khoảng ngày đang xem: ${nhanKhoang} (${dmy(khoang.tu)} → ${dmy(khoang.den)})`}
+          aria-label="Mở lại bộ lọc ngày"
+          onClick={() => doiThuGon(false)}
+        >
+          T{thangDaXem}
+        </button>
         {soLocDangAp > 0 && (
           <span className="chip pri sm bc-loc-chip-thu" title={`${soLocDangAp} bộ lọc đang áp`}>
             {soLocDangAp}
@@ -368,7 +441,7 @@ function CotLocBaoCao({
   }
 
   return (
-    <aside className="bc-loc-cot" onKeyDown={e => { if (e.key === 'Enter') xemBaoCao(path) }}>
+    <aside className="bc-loc-cot" onKeyDown={e => { if (e.key === 'Enter') apDungXem() }}>
       <div className="bc-loc-dau">
         <div className="bc-loc-tieu-de">
           <span>Bộ lọc</span>
@@ -383,6 +456,11 @@ function CotLocBaoCao({
         >
           <Icon n="chevl" className="ic sm" />
         </button>
+      </div>
+
+      <div className="bc-loc-muc bc-loc-khoang-ngay">
+        <div className="bc-loc-nhan">Khoảng ngày</div>
+        <ChonKhoangNgay value={khoang} onChange={doiKhoang} />
       </div>
 
       <div className="bc-loc-ds">
@@ -430,6 +508,16 @@ function CotLocBaoCao({
       </div>
 
       <div className="bc-loc-chan">
+        <button
+          type="button"
+          className="btn sm pri bc-btn-xem bc-loc-btn-xem"
+          title="Xem báo cáo"
+          onClick={apDungXem}
+        >
+          <Icon n="refresh" className="ic sm" />
+          <span className="bc-btn-xem-txt">Xem báo cáo</span>
+          {tt.coThayDoi && <span className="bc-btn-xem-dot" />}
+        </button>
         <button
           type="button"
           className="btn sm"
@@ -855,6 +943,10 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
   )
   const cuoi = ky ? <KhoiCuoi loai={loai} cheDo={s.cheDo} nguoiDaiDien={dv.nguoiDaiDien} dsKy={dsKy} /> : undefined
   const coBoLoc = dsLocCot.length > 0 || !!cfg?.anKhongPS
+
+  useLayoutEffect(() => {
+    datCoBoLoc(path, coBoLoc)
+  }, [path, coBoLoc])
 
   return (
     <div className="bc-xem">

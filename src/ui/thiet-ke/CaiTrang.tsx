@@ -1,4 +1,5 @@
-// Cài trang in của khung thiết kế: khổ, hướng, lề, số liên, cỡ chữ, phông. Bản gọn chỉ khổ và cỡ chữ (gói Free, Standard)
+// Cài trang in của khung thiết kế: khổ, hướng, lề, số liên, cỡ chữ, phông. Bản gọn chỉ khổ và cỡ chữ (gói Free, Standard).
+// phan tách đôi cho bảng thuộc tính chia nhóm (T112): 'giay' khổ, hướng, lề, liên; 'chu' cỡ chữ, phông
 import type { MauIn } from '../../app/mau-in'
 import { Select } from '../Dropdown'
 import { OSo } from './OSo'
@@ -10,17 +11,19 @@ const CO_CHU = Array.from({ length: 13 }, (_, i) => 8 + i / 2)
 const LE: [number, string][] = [[0, 'Trên'], [1, 'Phải'], [2, 'Dưới'], [3, 'Trái']]
 export const coChuVi = (v: number) => `${String(v).replace('.', ',')} pt`
 
-export function CaiTrang({ trang, onChange, gon }: { trang: Trang; onChange: (t: Trang) => void; gon?: boolean }) {
+export function CaiTrang({ trang, onChange, gon, phan }: { trang: Trang; onChange: (t: Trang) => void; gon?: boolean; phan?: 'giay' | 'chu' }) {
   const doi = (p: Partial<Trang>) => onChange({ ...trang, ...p })
+  const giay = phan !== 'chu'
+  const chu = phan !== 'giay'
   return (
     <div className="tkmi-trang">
-      <div className="tkmi-hang">
+      {giay && <div className="tkmi-hang">
         <span className="tkmi-nhan-hang">Khổ giấy</span>
         <span className="seg">
           {(['A4', 'A5'] as const).map(k => <button key={k} type="button" className={trang.kho === k ? 'on' : ''} onClick={() => doi({ kho: k })}>{k}</button>)}
         </span>
-      </div>
-      {!gon && (
+      </div>}
+      {!gon && giay && (
         <div className="tkmi-hang">
           <span className="tkmi-nhan-hang">Hướng</span>
           <span className="seg">
@@ -29,7 +32,7 @@ export function CaiTrang({ trang, onChange, gon }: { trang: Trang; onChange: (t:
           </span>
         </div>
       )}
-      {!gon && (
+      {!gon && giay && (
         <div className="tkmi-hang tkmi-hang-le">
           <span className="tkmi-nhan-hang">Lề (mm)</span>
           <span className="tkmi-le">
@@ -42,7 +45,7 @@ export function CaiTrang({ trang, onChange, gon }: { trang: Trang; onChange: (t:
           </span>
         </div>
       )}
-      {!gon && (
+      {!gon && giay && (
         <div className="tkmi-hang">
           <span className="tkmi-nhan-hang">Số liên</span>
           <span className="seg">
@@ -50,16 +53,16 @@ export function CaiTrang({ trang, onChange, gon }: { trang: Trang; onChange: (t:
           </span>
         </div>
       )}
-      {!gon && trang.lien === 2 && !(trang.kho === 'A5' && trang.huong === 'ngang') && (
+      {!gon && giay && trang.lien === 2 && !(trang.kho === 'A5' && trang.huong === 'ngang') && (
         <span className="tkmi-goi-y">2 liên chỉ in trên một tờ A4 khi khổ là A5 ngang</span>
       )}
-      <div className="tkmi-hang">
+      {chu && <div className="tkmi-hang">
         <span className="tkmi-nhan-hang">Cỡ chữ</span>
         <Select className="inp tkmi-o-chon" value={String(trang.coChu)} aria-label="Cỡ chữ" onChange={e => doi({ coChu: Number(e.target.value) })}>
           {CO_CHU.map(c => <option key={c} value={String(c)}>{coChuVi(c)}</option>)}
         </Select>
-      </div>
-      {!gon && (
+      </div>}
+      {!gon && chu && (
         <div className="tkmi-hang">
           <span className="tkmi-nhan-hang">Phông chữ</span>
           <Select className="inp tkmi-o-chon" value={trang.phong} aria-label="Phông chữ" onChange={e => doi({ phong: e.target.value === 'times' ? 'times' : 'app' })}>

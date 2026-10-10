@@ -1,7 +1,7 @@
 // Dựng dữ liệu in từ một phiếu trong danh sách chứng từ (dữ liệu giả của gen.ts)
 import type { Row, VoucherCfg, LoaiCT } from '../../modules/types'
 import type { MauIn } from '../../app/mau-in'
-import { dongCua, tongDong, ttNghiepVu } from '../generic/gen'
+import { dongCua, tongDong, ttNghiepVu, type Dong } from '../generic/gen'
 import { docSoTien, money, pad, rng, k } from '../format'
 
 export interface DuLieuIn {
@@ -34,6 +34,34 @@ function dinhDangNgayChu(ngayStr: string | undefined): string {
   return 'Ngày 07 tháng 10 năm 2026'
 }
 
+type NoCo = NonNullable<VoucherCfg['noCo']>
+const dau = (tk: string, ...tien: string[]) => tien.some(t => tk.startsWith(t))
+const duyNhat = (ds: string[]) => Array.from(new Set(ds.filter(Boolean)))
+
+/**
+ * Nợ, Có in trên phiếu: chỉ lấy bút toán của chính phiếu đó trong bút toán mẫu của chứng từ (T112).
+ * Phiếu thu Nợ 111, phiếu chi Có 111, thu qua ngân hàng Nợ 112, nhập kho Nợ 15x, xuất kho Có 15x.
+ * Chứng từ không có bút toán khớp (vd hàng bán trả lại chỉ có bút toán doanh thu) thì dùng cặp thông dụng của loại phiếu
+ */
+function noCoCuaMau(mauId: string, ds: NoCo): { no: string[]; co: string[] } {
+  const loc = (f: (x: NoCo[number]) => boolean, thay: [string, string]) => {
+    const kq = ds.filter(f)
+    return kq.length ? { no: duyNhat(kq.map(x => x[0])), co: duyNhat(kq.map(x => x[1])) } : { no: [thay[0]], co: [thay[1]] }
+  }
+  const noKhac = (...tien: string[]) => ds.map(x => x[0]).find(t => !dau(t, ...tien))
+  const coKhac = (...tien: string[]) => ds.map(x => x[1]).find(t => !dau(t, ...tien))
+  switch (mauId) {
+    case 'phieu-thu': return loc(x => dau(x[0], '111'), ['1111', noKhac('111') ?? '131'])
+    case 'phieu-chi': return loc(x => dau(x[1], '111'), [coKhac('111') ?? '331', '1111'])
+    case 'phieu-thu-nh': return loc(x => dau(x[0], '112'), ['1121', noKhac('112') ?? '131'])
+    case 'uy-nhiem-chi': return loc(x => dau(x[1], '112'), [coKhac('112') ?? '331', '1121'])
+    case 'phieu-nhap-kho': return loc(x => dau(x[0], '152', '153', '155', '156'), ['152', ds.some(x => dau(x[0], '511')) ? '632' : '331'])
+    case 'phieu-xuat-kho': return loc(x => dau(x[1], '152', '153', '155', '156'), ['632', '152'])
+    default: return { no: duyNhat(ds.map(x => x[0])), co: duyNhat(ds.map(x => x[1])) }
+  }
+}
+
+/** dongThay: dòng thật của phiếu (vd chứng từ bán hàng 3.1.1) thay cho dòng sinh từ cfg; tổng và số bằng chữ tính từ chính các dòng này */
 export function duLieuIn(
   mau: MauIn,
   cfg: VoucherCfg,
@@ -41,6 +69,7 @@ export function duLieuIn(
   loai?: LoaiCT,
   dv?: DonViIn,
   seedPrefix?: string,
+  dongThay?: Record<string, string | number>[],
 ): DuLieuIn {
   const nv = ttNghiepVu(row)
   const donVi = dv ?? {
@@ -54,16 +83,22 @@ export function duLieuIn(
   const ngayChu = dinhDangNgayChu(ngay)
 
   const idSeed = `${seedPrefix ?? cfg.prefix ?? 'ct'}-${row.id ?? '0'}`
-  const dsGoc = dongCua(cfg, idSeed)
-  const td = tongDong(dsGoc)
-  const thueSuat = dsGoc[0]?.ts ?? cfg.thue ?? 0
-  const tongSoTien = row.tong != null ? Number(row.tong) : td.tong
+  // Dòng chi tiết: dòng đã lưu của phiếu nếu có, không thì sinh theo cùng hạt giống với form chứng từ
+  const dsGoc = Array.isArray(row._dong) ? row._dong as Dong[] : dongCua(cfg, idSeed)
+  const cong = (k: string) => (dongThay ?? []).reduce((a, d) => a + (Number(d[k]) || 0), 0)
+  const td = dongThay ? { tien: cong('tien'), thue: cong('thue'), tong: cong('tien') + cong('thue') } : tongDong(dsGoc)
+  const thueSuat = Number(dongThay?.[0]?.ts ?? dsGoc[0]?.ts ?? cfg.thue ?? 0)
+  // Một nguồn cho số tiền in trên phiếu: mẫu có bảng lấy đúng tổng các dòng in ra (cột Thành tiền, hoặc Tổng thanh toán khi mẫu có dòng tổng),
+  // mẫu không bảng (phiếu thu, chi) lấy tổng của phiếu. Số tiền, số bằng chữ, dòng tổng cùng đọc từ đây
+  const coBang = !!mau.bang && mau.id !== 'bien-ban-doi-chieu'
+  const tongSoTien = coBang
+    ? (mau.tongCong?.some(t => t.k === 'tong') ? td.tong : td.tien)
+    : row.tong != null ? Number(row.tong) : td.tong
 
   // Bút toán Nợ / Có
   const noCoList = loai?.noCo ?? cfg.noCo ?? []
   const capTien = noCoList[0] ?? ['1111', '131']
-  const no = Array.from(new Set(noCoList.map(item => item[0]).filter(Boolean)))
-  const co = Array.from(new Set(noCoList.map(item => item[1]).filter(Boolean)))
+  const { no, co } = noCoCuaMau(mau.id, noCoList)
 
   // Bảng chi tiết
   let dong: Record<string, string | number>[] = []
@@ -84,6 +119,8 @@ export function duLieuIn(
         giam: giamVal,
       }
     })
+  } else if (dongThay) {
+    dong = dongThay
   } else if (mau.bang) {
     dong = dsGoc.map((d, i) => ({
       stt: i + 1,
@@ -103,10 +140,24 @@ export function duLieuIn(
       tienSo: d.tien ?? 0,
       slThua: 0,
       slThieu: 0,
+      tienThua: 0,
+      tienThieu: 0,
+      pcTot: d.sl ?? 0,
+      pcKem: 0,
+      pcMat: 0,
       tkNo: capTien[0],
       tkCo: capTien[1],
       nuocSx: 'Việt Nam',
+      namSx: '2025',
       namSd: '2026',
+      congSuat: '',
+      giaMua: d.tien ?? 0,
+      cpVc: 0,
+      cpChayThu: 0,
+      tyLeHm: '20',
+      taiLieu: '',
+      ngayMua: ngay,
+      tenBan: String(row.doiTuong ?? nv.nguoi),
       diaChiBan: nv.dc,
     }))
   }
@@ -152,6 +203,14 @@ export function duLieuIn(
     lenhDieuDong: 'LĐĐ-2026/09/28',
     banThanhLy: 'Hội đồng thanh lý theo QĐ 26/QĐ-TGĐ',
     ten: String(row.dienGiai ?? 'Tài sản cố định'),
+    soHieuTs: 'TS0012',
+    soThe: '12',
+    nuocSx: 'Việt Nam',
+    namSx: '2023',
+    namSd: '2024',
+    chiPhiTl: money(1_500_000) + ' đ',
+    thuHoi: money(Math.round((tongSoTien || 50_000_000) * 0.1)) + ' đ',
+    ngayGhiGiam: ngay,
     nguyenGia: money(tongSoTien || 50_000_000) + ' đ',
     haoMon: money(Math.round((tongSoTien || 50_000_000) * 0.8)) + ' đ',
     conLai: money(Math.round((tongSoTien || 50_000_000) * 0.2)) + ' đ',
@@ -168,12 +227,14 @@ export function duLieuIn(
     }
   }
 
-  const tong: Record<string, number> = {
-    tien: row.tien != null ? Number(row.tien) : td.tien,
-    thue: row.thue != null ? Number(row.thue) : td.thue,
-    tong: tongSoTien,
-    thueSuat,
-  }
+  const tong: Record<string, number> = coBang
+    ? { tien: td.tien, thue: td.thue, tong: td.tong, thueSuat }
+    : {
+        tien: row.tien != null ? Number(row.tien) : td.tien,
+        thue: row.thue != null ? Number(row.thue) : td.thue,
+        tong: tongSoTien,
+        thueSuat,
+      }
 
   return {
     so,

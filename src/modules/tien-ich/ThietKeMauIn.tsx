@@ -1,6 +1,8 @@
 // Tiện ích 11.11 Thiết kế mẫu in (kế hoạch mục 8.7): cây mẫu, tờ xem trước bấm chọn phần tử và kéo mép cột, khung thuộc tính.
-// Mẫu chuẩn không sửa trực tiếp: thay đổi đầu tiên tự tạo bản sao "Mẫu riêng n", bấm Lưu mới ghi vào kho của đơn vị
-import { useCallback, useEffect, useMemo, useRef, useState, type MouseEvent, type PointerEvent } from 'react'
+// Mẫu chuẩn không sửa trực tiếp: thay đổi đầu tiên tự tạo bản sao "Mẫu riêng n", bấm Lưu mới ghi vào kho của đơn vị.
+// Bố cục T112: thanh trên (tên mẫu, chế độ, khổ, In thử, Khôi phục mặc định, Lưu); trái danh sách mẫu theo nhóm; giữa tờ in trên bàn xám;
+// phải bảng thuộc tính chia nhóm thu gọn được, bấm một khối trên tờ thì mở đúng nhóm
+import { useCallback, useEffect, useMemo, useRef, useState, type MouseEvent, type PointerEvent, type ReactNode } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import type { ScreenProps, VoucherCfg } from '../types'
 import { MODULES, tenMan } from '../../app/registry'
@@ -17,7 +19,7 @@ import {
   datMacDinh, dsMauRieng, khoaMoi, layNguoiKy, luuMauRieng, luuNguoiKy, nhapJson, xoaMauRieng, xuatJson, type MauRieng,
 } from '../../ui/bao-cao/khoMauIn'
 import { CaiTrang, coChuVi } from '../../ui/thiet-ke/CaiTrang'
-import { DsCot } from '../../ui/thiet-ke/DsCot'
+import { DsCot, Net } from '../../ui/thiet-ke/DsCot'
 import { DsKy } from '../../ui/thiet-ke/DsKy'
 import { OSo } from '../../ui/thiet-ke/OSo'
 import { Dropdown, MenuItem, Select } from '../../ui/Dropdown'
@@ -27,13 +29,12 @@ import { PageHead } from '../../ui/Page'
 import { heSoZoom } from '../../ui/zoom'
 import { fold } from '../../ui/format'
 
-/** Cây mẫu theo phân hệ, giống bảng ghép chứng từ với mẫu in (mục 8.6) */
+/** Danh sách mẫu theo nhóm nghiệp vụ */
 const CAY: [string, string[]][] = [
   ['Tiền', ['phieu-thu', 'phieu-chi', 'phieu-thu-nh', 'uy-nhiem-chi', 'bien-ban-doi-chieu']],
-  ['Bán hàng', ['bang-ke-ban-hang', 'hoa-don']],
   ['Kho', ['phieu-nhap-kho', 'phieu-xuat-kho', 'phieu-xk-vcnb', 'bien-ban-kiem-ke', 'bien-ban-huy', 'bang-ke-mua-hang']],
   ['Tài sản', ['bb-giao-nhan-tscd', 'bb-thanh-ly-tscd', 'bien-ban-ccdc']],
-  ['Tổng hợp', ['phieu-ke-toan']],
+  ['Khác', ['phieu-ke-toan', 'hoa-don', 'bang-ke-ban-hang']],
 ]
 
 const TEN_KHOI: Record<KhoiInK, string> = {
@@ -41,13 +42,19 @@ const TEN_KHOI: Record<KhoiInK, string> = {
   bang: 'Bảng chi tiết', tongCong: 'Dòng tổng cộng', bangChu: 'Số tiền bằng chữ', ghiChu: 'Dòng ghi chú', ky: 'Ngày ký, ô ký', chanTrang: 'Chân trang',
 }
 
-type The = 'trang' | 'tieuDe' | 'thongTin' | 'bang' | 'ky' | 'khoi'
-const THE_CUA_KHOI: Partial<Record<string, The>> = { tieuDe: 'tieuDe', thongTin: 'thongTin', bang: 'bang', ky: 'ky' }
+/** Nhóm của bảng thuộc tính; mỗi khối trên tờ thuộc một nhóm */
+type Nhom = 'giay' | 'dau' | 'thongTin' | 'bang' | 'tong' | 'ky' | 'chu' | 'khoi'
+const NHOM_CUA_KHOI: Record<KhoiInK, Nhom> = {
+  dauTrang: 'dau', mauSo: 'dau', tieuDe: 'dau', thongTin: 'thongTin', bang: 'bang',
+  tongCong: 'tong', bangChu: 'tong', ghiChu: 'tong', ky: 'ky', chanTrang: 'khoi',
+}
+const KHOI_TONG: KhoiInK[] = ['tongCong', 'bangChu', 'ghiChu']
 type Chon = { loai: 'cot' | 'truong' | 'khoi'; k: string }
 
 const PX = 96 / 25.4
 const CO_CHU = Array.from({ length: 13 }, (_, i) => 8 + i / 2)
 const CO_TIEU_DE = [12, 13, 14, 15, 16, 18, 20, 22, 24]
+const KHO_GIAY: [string, string][] = [['A4-doc', 'A4 dọc'], ['A4-ngang', 'A4 ngang'], ['A5-ngang', 'A5 ngang'], ['A5-doc', 'A5 dọc']]
 const so = (v: number) => v.toLocaleString('vi-VN', { maximumFractionDigits: 1 })
 
 // Khối chứa nội dung bắt buộc của chứng từ kế toán: tên đơn vị, tên và số chứng từ, ngày, nội dung, số tiền, chữ ký
@@ -77,7 +84,8 @@ function duLieuMau(goc: MauIn, dv: DonViIn): DuLieuIn {
       if (cfg.loai ? !loai : !mauCuaChungTu(code).some(x => x.id === goc.id)) continue
       const c = loai ? theoLoai(cfg, loai.k) : cfg
       const row = chungTu(c, loai ? `${code}-${loai.k}` : code)[0]
-      if (row) return duLieuIn(goc, c, row, loai, dv, code)
+      // hạt giống dòng chi tiết giống màn chứng từ: màn nhiều loại phiếu đánh id dòng theo loại
+      if (row) return duLieuIn(goc, c, row, loai, dv, loai ? `${code}-${loai.k}` : code)
     }
   }
   return duLieuIn(goc, CFG_MAU, chungTu(CFG_MAU, goc.id)[0], undefined, dv, goc.id)
@@ -95,6 +103,20 @@ function moSua(donVi: string, cd: CheDo, id: string | null, chuan: boolean): Sua
   return md ? { goc, rieng: md, mau: md.mau, doi: false } : { goc, rieng: null, mau: base, doi: false }
 }
 
+/** Một nhóm thu gọn được của bảng thuộc tính: tiêu đề, tóm tắt giá trị đang đặt, thân */
+function NhomTt({ k, ten, tom, mo, onMo, children }: { k: Nhom; ten: string; tom?: string; mo: boolean; onMo: () => void; children: ReactNode }) {
+  return (
+    <section className={`tkmi-nhom-tt${mo ? ' mo' : ''}`} data-nhom={k}>
+      <button type="button" className="tkmi-nhom-dau" aria-expanded={mo} onClick={onMo}>
+        <span className="tkmi-nhom-mui"><Net d="M10 7l5 5-5 5" /></span>
+        <span className="tkmi-nhom-tieu">{ten}</span>
+        {tom && <span className="tkmi-nhom-tom">{tom}</span>}
+      </button>
+      {mo && <div className="tkmi-nhom-than">{children}</div>}
+    </section>
+  )
+}
+
 export function ThietKeMauIn({ sc }: ScreenProps) {
   const { s, toast } = useSession()
   const cd = cheDoHienTai(s)
@@ -105,13 +127,15 @@ export function ThietKeMauIn({ sc }: ScreenProps) {
   const chuan = sp.get('chuan') === '1'
   const [sua, setSua] = useState<Sua>(() => moSua(donVi.id, cd.ma, thamSo, chuan))
   const [rev, setRev] = useState(0)          // tăng sau mỗi lần ghi kho để đọc lại danh sách
-  const [the, setThe] = useState<The>('trang')
+  const [moNhom, setMoNhom] = useState<Set<Nhom>>(() => new Set<Nhom>(['giay', 'dau']))
+  const [toi, setToi] = useState<{ n: Nhom; lan: number } | null>(null)   // nhóm cần cuộn tới sau khi bấm trên tờ
   const [chon, setChon] = useState<Chon | null>(null)
   const [doiTen, setDoiTen] = useState<string | null>(null)
   const [hoiXoa, setHoiXoa] = useState<MauRieng | null>(null)
   const [hoiVeChuan, setHoiVeChuan] = useState(false)
   const [timMau, setTimMau] = useState('')
   const tep = useRef<HTMLInputElement>(null)
+  const phai = useRef<HTMLDivElement>(null)
 
   // Mở màn lần đầu: mặc định "Vừa khung" nếu người dùng chưa chọn zoom trước đó (T59)
   useState(() => {
@@ -139,6 +163,12 @@ export function ThietKeMauIn({ sc }: ScreenProps) {
 
   useEffect(() => { setSua(moSua(donVi.id, cd.ma, thamSo, chuan)) }, [donVi.id, cd.ma, thamSo, chuan])
 
+  // Bấm một khối trên tờ: nhóm tương ứng mở ra thì cuộn tới đầu nhóm
+  useEffect(() => {
+    if (!toi) return
+    phai.current?.querySelector(`[data-nhom="${toi.n}"]`)?.scrollIntoView({ block: 'start', behavior: 'smooth' })
+  }, [toi])
+
   const dsKho = useMemo(() => dsMauRieng(donVi.id, cd.ma), [donVi.id, cd.ma, rev])
   const nguoiKy = useMemo(() => layNguoiKy(donVi.id), [donVi.id, rev])
   const goc = useMemo(() => mauChoCheDo(mauIn(sua.goc)!, cd.ma), [sua.goc, cd.ma])
@@ -155,6 +185,7 @@ export function ThietKeMauIn({ sc }: ScreenProps) {
     rieng: d.rieng ?? { id: khoaMoi(), goc: d.goc, cheDo: cd.ma, ten: tenMauMoi(dsMauRieng(donVi.id, cd.ma, d.goc)), macDinh: false, mau: d.mau, capNhat: '' },
   })), [cd.ma, donVi.id])
   const doiBang = (f: (b: NonNullable<MauIn['bang']>) => NonNullable<MauIn['bang']>) => doiMau(m => m.bang ? { ...m, bang: f(m.bang) } : m)
+  const anKhoi = (k: KhoiInK, an: boolean) => doiMau(m => ({ ...m, khoi: m.khoi.map(x => x.k === k ? { ...x, an: an || undefined } : x) }))
 
   const mo = (id: string, laChuan = false) => {
     setSua(moSua(donVi.id, cd.ma, id, laChuan))
@@ -232,14 +263,28 @@ export function ThietKeMauIn({ sc }: ScreenProps) {
     toast('Đã lưu họ tên người ký cho mọi mẫu của đơn vị')
   }
 
-  // Bấm vào phần tử trên tờ: chuyển tới thẻ và mục tương ứng
+  // In thử đúng tờ đang thiết kế: tờ giấy nghe sự kiện bc-in, tay nắm kéo cột tự ẩn khi in
+  const inThu = () => window.dispatchEvent(new CustomEvent('bc-in'))
+
+  const batNhom = (n: Nhom) => setMoNhom(ds => {
+    const moi = new Set(ds)
+    if (moi.has(n)) moi.delete(n)
+    else moi.add(n)
+    return moi
+  })
+  const nhayToi = (n: Nhom) => {
+    setMoNhom(new Set([n]))
+    setToi(t => ({ n, lan: (t?.lan ?? 0) + 1 }))
+  }
+
+  // Bấm vào phần tử trên tờ: mở nhóm thuộc tính tương ứng, tô sáng mục đang chọn
   const bamTo = (e: MouseEvent<HTMLDivElement>) => {
     const el = (e.target as Element).closest<HTMLElement>('[data-cot],[data-truong],[data-khoi]')
     if (!el) return
     const { cot, truong, khoi } = el.dataset
-    if (cot) { setThe('bang'); setChon({ loai: 'cot', k: cot }) }
-    else if (truong) { setThe('thongTin'); setChon({ loai: 'truong', k: truong }) }
-    else if (khoi) { setThe(THE_CUA_KHOI[khoi] ?? 'khoi'); setChon({ loai: 'khoi', k: khoi }) }
+    if (cot) { nhayToi('bang'); setChon({ loai: 'cot', k: cot }) }
+    else if (truong) { nhayToi('thongTin'); setChon({ loai: 'truong', k: truong }) }
+    else if (khoi) { nhayToi(NHOM_CUA_KHOI[khoi as KhoiInK] ?? 'khoi'); setChon({ loai: 'khoi', k: khoi }) }
   }
 
   // Kéo mép phải tiêu đề cột: px con trỏ đổi ra mm, chia hệ số zoom của html (T42) và tỉ lệ transform của tờ (docs/BAY.md)
@@ -254,7 +299,7 @@ export function ThietKeMauIn({ sc }: ScreenProps) {
     const pxMm = heSoZoom() * tiLe * PX
     const x0 = e.clientX
     let cu = cot.rong
-    setThe('bang')
+    nhayToi('bang')
     setChon({ loai: 'cot', k })
     document.body.classList.add('tkmi-dang-keo')
     const di = (ev: globalThis.PointerEvent) => {
@@ -288,39 +333,55 @@ export function ThietKeMauIn({ sc }: ScreenProps) {
     ] as [string, string[]]).filter(([, ids]) => ids.length > 0)
   }, [timMau])
 
-  const dsThe: { k: The; ten: string; nhan: string }[] = [
-    { k: 'trang', ten: 'Trang', nhan: 'Trang' },
-    { k: 'tieuDe', ten: 'Tiêu đề', nhan: 'Tiêu đề' },
-    ...(mau.thongTin.length ? [{ k: 'thongTin' as The, ten: 'Thông tin chung', nhan: 'Thông tin' }] : []),
-    ...(mau.bang ? [{ k: 'bang' as The, ten: 'Bảng chi tiết', nhan: 'Bảng chi tiết' }] : []),
-    { k: 'ky', ten: 'Người ký', nhan: 'Người ký' },
-    { k: 'khoi', ten: 'Khối', nhan: 'Khối' },
-  ]
-  const theHien = dsThe.some(({ k }) => k === the) ? the : 'trang'
   const kyHieu = goc.kyHieu[cd.ma]
   const chonK = (loai: Chon['loai']) => chon?.loai === loai ? chon.k : undefined
   const toSang = chon ? `.tkmi-to .bc-trang [data-${chon.loai}="${CSS.escape(chon.k)}"]{outline:2px solid var(--blue);outline-offset:1px}` : ''
+  const coKhoi = (k: KhoiInK) => mau.khoi.some(x => x.k === k)
+  const hienKhoi = (k: KhoiInK) => mau.khoi.some(x => x.k === k && !x.an)
+  const coTong = KHOI_TONG.some(coKhoi)
+  const tt = mau.thongTin
+  const cotHien = mau.bang?.cot.filter(c => !c.an && (!c.chiNoCo || noCo)).length ?? 0
+  const kho = `${mau.trang.kho}-${mau.trang.huong}`
+  const nhomMo = (n: Nhom) => moNhom.has(n)
 
   return (
     <div className="page tkmi-trang-man">
-      <PageHead title={tenMan(sc)}>
-        <button type="button" className="btn" disabled={!sua.rieng && !sua.doi} onClick={veChuan}><Icon n="refresh" className="ic sm" />Về mẫu chuẩn</button>
-        <button type="button" className="btn pri tkmi-luu" disabled={!sua.doi || !!loi} title={loi ?? (sua.doi ? 'Có thay đổi chưa lưu' : undefined)} onClick={luu}>
-          {sua.doi && <span className="tkmi-cham" aria-label="Có thay đổi chưa lưu" />}Lưu
-        </button>
-      </PageHead>
+      <PageHead title={tenMan(sc)} />
 
       <div className="tkmi">
+        <div className="tkmi-dau">
+          <div className="tkmi-dau-ten">
+            <b title={goc.ten}>{goc.ten}</b>
+            <span>
+              {sua.rieng ? sua.rieng.ten : 'Mẫu chuẩn'}
+              {sua.doi && <em className="tkmi-dau-doi"> · chưa lưu</em>}
+            </span>
+          </div>
+          <span className="chip info" title={cd.ten}>{cd.ngan}</span>
+          <span className="chip">{kyHieu ? `Mẫu số ${kyHieu}` : 'Tự thiết kế'}</span>
+          <span className="grow" />
+          {loi && <span className="tkmi-dau-loi" role="alert">{loi}</span>}
+          <label className="tkmi-dau-kho">
+            <span>Khổ</span>
+            <Select className="inp tkmi-o-chon" value={kho} aria-label="Khổ giấy"
+              onChange={e => { const [k, h] = e.target.value.split('-'); doiMau(m => ({ ...m, trang: { ...m.trang, kho: k === 'A5' ? 'A5' : 'A4', huong: h === 'ngang' ? 'ngang' : 'doc' } })) }}>
+              {KHO_GIAY.map(([v, t]) => <option key={v} value={v}>{t}</option>)}
+            </Select>
+          </label>
+          <span className="tkmi-dau-tach" />
+          <button type="button" className="btn sm" onClick={inThu}><Icon n="printer" className="ic sm" />In thử</button>
+          <button type="button" className="btn sm" disabled={!sua.rieng && !sua.doi} onClick={veChuan}><Icon n="refresh" className="ic sm" />Khôi phục mặc định</button>
+          <button type="button" className="btn sm pri tkmi-luu" disabled={!sua.doi || !!loi} title={loi ?? (sua.doi ? 'Có thay đổi chưa lưu' : undefined)} onClick={luu}>
+            {sua.doi && <span className="tkmi-cham" aria-label="Có thay đổi chưa lưu" />}Lưu
+          </button>
+        </div>
+
         <aside className="tkmi-cot tkmi-trai">
           <div className="tkmi-trai-dau">
-            <div className="tkmi-cot-tieu">Mẫu in</div>
-            <input
-              type="text"
-              className="inp"
-              placeholder="Tìm mẫu in"
-              value={timMau}
-              onChange={e => setTimMau(e.target.value)}
-            />
+            <div className="tkmi-tim">
+              <Icon n="search" className="ic sm" />
+              <input type="text" className="inp" placeholder="Tìm mẫu in" aria-label="Tìm mẫu in" value={timMau} onChange={e => setTimMau(e.target.value)} />
+            </div>
           </div>
           <div className="tkmi-cuon">
             {cayLoc.length === 0 ? (
@@ -328,12 +389,16 @@ export function ThietKeMauIn({ sc }: ScreenProps) {
             ) : (
               cayLoc.map(([nhom, ids]) => (
                 <div key={nhom} className="tkmi-nhom">
-                  <div className="tkmi-nhom-ten">{nhom}</div>
+                  <div className="tkmi-nhom-ten"><span>{nhom}</span><span className="tkmi-nhom-dem">{ids.length}</span></div>
                   {ids.map(id => {
                     const n = dsKho.filter(r => r.goc === id).length
+                    const kh = mauIn(id)?.kyHieu[cd.ma]
                     return (
                       <button key={id} type="button" className={`tkmi-cay-muc${sua.goc === id ? ' on' : ''}`} onClick={() => mo(id)}>
-                        <span className="grow">{mauIn(id)?.ten}</span>
+                        <span className="tkmi-cay-chu">
+                          <span className="tkmi-cay-ten">{mauIn(id)?.ten}</span>
+                          <span className="tkmi-cay-phu">{kh ? `Mẫu số ${kh}` : 'Tự thiết kế'}</span>
+                        </span>
                         {n > 0 && <span className="tkmi-dem" title={`${n} mẫu riêng`}>{n}</span>}
                       </button>
                     )
@@ -381,58 +446,42 @@ export function ThietKeMauIn({ sc }: ScreenProps) {
             </div>
           </div>
           <div className="tkmi-chan">
-            <button type="button" className="btn sm" onClick={xuat}><Icon n="download" className="ic sm" />Xuất mẫu (.json)</button>
-            <button type="button" className="btn sm" onClick={() => tep.current?.click()}><Icon n="upload" className="ic sm" />Nhập mẫu (.json)</button>
+            <button type="button" className="btn sm" onClick={xuat}><Icon n="download" className="ic sm" />Xuất mẫu</button>
+            <button type="button" className="btn sm" onClick={() => tep.current?.click()}><Icon n="upload" className="ic sm" />Nhập mẫu</button>
             <input ref={tep} type="file" accept=".json,application/json" hidden aria-label="Chọn file mẫu in" onChange={e => nhap(e.target.files?.[0])} />
           </div>
         </aside>
 
         <section className="tkmi-cot tkmi-giua">
-          <div className="tkmi-thanh">
-            <b className="tkmi-ten-mau">{goc.ten}{sua.rieng ? ` · ${sua.rieng.ten}` : ''}</b>
-            <span className={`chip${sua.rieng ? ' info' : ''}`}>{sua.rieng ? 'Mẫu riêng' : 'Mẫu chuẩn'}</span>
-            <span className="chip">{kyHieu ? `Mẫu số ${kyHieu}` : 'Tự thiết kế'}</span>
-            <span className="grow" />
-            <span className="tkmi-goi-y" title="Bấm vào phần tử trên tờ để sửa. Kéo mép phải tiêu đề cột để đổi độ rộng.">
-              <Icon n="info" className="ic sm" />
-              <span>Bấm vào phần tử trên tờ để sửa. Kéo mép phải tiêu đề cột để đổi độ rộng.</span>
-            </span>
-          </div>
           <div className="tkmi-to" onClick={bamTo} onPointerDown={keoMep}>
             {toSang && <style>{toSang}</style>}
             <ToGiay giay={giayIn(mau)} anSoTrang dau={null} than={than} khoMacDinh="doc" />
           </div>
+          <span className="tkmi-goi-y tkmi-goi-y-to">
+            <Icon n="info" className="ic sm" />Bấm vào phần tử trên tờ để sửa, kéo mép phải tiêu đề cột để đổi độ rộng
+          </span>
         </section>
 
         <aside className="tkmi-cot tkmi-phai">
-          <div className="tkmi-the-khung">
-            <div className="seg tkmi-the" role="tablist">
-              {dsThe.map(({ k, ten, nhan }) => (
-                <button
-                  key={k}
-                  type="button"
-                  role="tab"
-                  aria-selected={theHien === k}
-                  className={theHien === k ? 'on' : ''}
-                  title={ten}
-                  onClick={() => setThe(k)}
-                >
-                  {nhan}
-                </button>
-              ))}
-            </div>
+          <div className="tkmi-phai-dau">
+            <span>Thuộc tính</span>
+            <span className="grow" />
+            <button type="button" className="btn ghost sm" onClick={() => setMoNhom(new Set())}>Thu gọn hết</button>
           </div>
-          <div className="tkmi-cuon tkmi-than-the">
-            {theHien === 'trang' && <CaiTrang trang={mau.trang} onChange={trang => doiMau(m => ({ ...m, trang }))} />}
+          <div className="tkmi-cuon tkmi-ds-nhom" ref={phai}>
+            <NhomTt k="giay" ten="Khổ giấy và lề" mo={nhomMo('giay')} onMo={() => batNhom('giay')}
+              tom={`${mau.trang.kho} ${mau.trang.huong === 'doc' ? 'dọc' : 'ngang'}${mau.trang.lien === 2 ? ', 2 liên' : ''}`}>
+              <CaiTrang phan="giay" trang={mau.trang} onChange={trang => doiMau(m => ({ ...m, trang }))} />
+            </NhomTt>
 
-            {theHien === 'tieuDe' && (
+            <NhomTt k="dau" ten="Đầu trang và tiêu đề" mo={nhomMo('dau')} onMo={() => batNhom('dau')} tom={kyHieu ? `Mẫu số ${kyHieu}` : undefined}>
               <div className="tkmi-nhom-o">
                 <label className="tkmi-nhan">Chữ tiêu đề
                   <input className="inp" value={mau.tieuDe} onChange={e => { const t = e.target.value; doiMau(m => ({ ...m, tieuDe: t })) }} />
                 </label>
                 {loiTieuDe && <div className="tkmi-loi" role="alert">Tiêu đề là tên chứng từ, không được để trống.</div>}
                 <div className="tkmi-hang">
-                  <span className="tkmi-nhan-hang">Cỡ chữ</span>
+                  <span className="tkmi-nhan-hang">Cỡ chữ tiêu đề</span>
                   <Select className="inp tkmi-o-chon" value={String(mau.tieuDeCo ?? 0)} aria-label="Cỡ chữ tiêu đề"
                     onChange={e => { const v = Number(e.target.value); doiMau(m => ({ ...m, tieuDeCo: v || undefined })) }}>
                     <option value="0">Tự động</option>
@@ -440,82 +489,133 @@ export function ThietKeMauIn({ sc }: ScreenProps) {
                   </Select>
                 </div>
                 <label className="tkmi-check">
-                  <input type="checkbox" checked={mau.tieuDeDam !== false} onChange={e => { const v = e.target.checked; doiMau(m => ({ ...m, tieuDeDam: v })) }} />In đậm
+                  <input type="checkbox" checked={mau.tieuDeDam !== false} onChange={e => { const v = e.target.checked; doiMau(m => ({ ...m, tieuDeDam: v })) }} />Tiêu đề in đậm
                 </label>
-              </div>
-            )}
-
-            {theHien === 'thongTin' && (
-              <div className="tkmi-nhom-o">
-                <div className="tkmi-hang">
-                  <span className="tkmi-nhan-hang">Chia cột</span>
-                  <span className="seg">
-                    {([1, 2] as const).map(n => (
-                      <button key={n} type="button" className={mau.soCotThongTin === n ? 'on' : ''} onClick={() => doiMau(m => ({ ...m, soCotThongTin: n }))}>{n} cột</button>
-                    ))}
-                  </span>
-                </div>
-                <DsCot items={mau.thongTin.map(t => ({ k: t.k, ten: t.nhan, an: t.an, batBuoc: t.batBuoc, rong: t.rongNhan }))}
-                  coRong rongTrong nhanRong="Rộng nhãn (mm)" chon={chonK('truong')} onChon={k => setChon({ loai: 'truong', k })}
-                  onChange={ds => doiMau(m => ({
-                    ...m,
-                    thongTin: ds.flatMap(x => {
-                      const t = m.thongTin.find(y => y.k === x.k)
-                      return t ? [{ ...t, nhan: x.ten, an: t.batBuoc ? undefined : x.an, rongNhan: x.rong }] : []
-                    }),
-                  }))} />
-              </div>
-            )}
-
-            {theHien === 'bang' && mau.bang && (
-              <div className="tkmi-nhom-o">
-                <DsCot items={mau.bang.cot.map(c => ({ k: c.k, ten: c.t, an: c.an, batBuoc: c.batBuoc, rong: c.rong, can: c.can }))}
-                  coRong coCan chon={chonK('cot')} onChon={k => setChon({ loai: 'cot', k })}
-                  onChange={ds => doiBang(b => ({
-                    ...b,
-                    cot: ds.flatMap(x => {
-                      const c = b.cot.find(y => y.k === x.k)
-                      return c ? [{ ...c, t: x.ten, an: c.batBuoc ? undefined : x.an, rong: x.rong ?? c.rong, can: x.can }] : []
-                    }),
-                  }))} />
-                <div className={`tkmi-tong-rong${loiRong ? ' loi' : ''}`}>Tổng độ rộng cột đang hiện: <b>{so(tongRong)}</b> / {so(vung)} mm vùng in</div>
-                {loiRong && (
-                  <div className="tkmi-loi" role="alert">
-                    Các cột rộng hơn vùng in {so(tongRong - vung)} mm. Thu hẹp hoặc ẩn bớt cột, hoặc đổi khổ, lề thì mới lưu được.
-                  </div>
+                {coKhoi('mauSo') && (
+                  <label className="tkmi-check">
+                    <input type="checkbox" checked={hienKhoi('mauSo')} onChange={e => anKhoi('mauSo', !e.target.checked)} />In mẫu số, quyển số, Nợ Có
+                  </label>
                 )}
-                <div className="tkmi-hang">
-                  <span className="tkmi-nhan-hang">Chiều cao dòng (mm)</span>
-                  <OSo className="inp tkmi-o-so" value={mau.bang.caoDong} min={4} max={30} aria-label="Chiều cao dòng (mm)"
-                    onChange={v => { if (v !== undefined) doiBang(b => ({ ...b, caoDong: v })) }} />
-                </div>
-                <div className="tkmi-hang">
-                  <span className="tkmi-nhan-hang">Số dòng trống tối thiểu</span>
-                  <OSo className="inp tkmi-o-so" value={mau.bang.dongTrongToiThieu} min={0} max={30} aria-label="Số dòng trống tối thiểu"
-                    onChange={v => { if (v !== undefined) doiBang(b => ({ ...b, dongTrongToiThieu: Math.round(v) })) }} />
-                </div>
-                <div className="tkmi-hang">
-                  <span className="tkmi-nhan-hang">Cỡ chữ bảng</span>
-                  <Select className="inp tkmi-o-chon" value={String(mau.bang.coChu ?? 0)} aria-label="Cỡ chữ bảng"
-                    onChange={e => { const v = Number(e.target.value); doiBang(b => ({ ...b, coChu: v || undefined })) }}>
-                    <option value="0">Theo cỡ chữ chung</option>
-                    {CO_CHU.map(c => <option key={c} value={String(c)}>{coChuVi(c)}</option>)}
-                  </Select>
-                </div>
                 <label className="tkmi-check">
-                  <input type="checkbox" checked={mau.bang.dongTong} onChange={e => { const v = e.target.checked; doiBang(b => ({ ...b, dongTong: v })) }} />Hiện dòng cộng
+                  <input type="checkbox" checked={!!mau.quyenSo} onChange={e => { const v = e.target.checked; doiMau(m => ({ ...m, quyenSo: v })) }} />In dòng quyển số
+                </label>
+                <label className="tkmi-check">
+                  <input type="checkbox" checked={!!mau.boPhan} onChange={e => { const v = e.target.checked; doiMau(m => ({ ...m, boPhan: v || undefined })) }} />In dòng bộ phận dưới tên đơn vị
                 </label>
               </div>
+            </NhomTt>
+
+            {tt.length > 0 && (
+              <NhomTt k="thongTin" ten="Thông tin chung" mo={nhomMo('thongTin')} onMo={() => batNhom('thongTin')}
+                tom={`${tt.filter(t => !t.an || t.batBuoc).length}/${tt.length} trường`}>
+                <div className="tkmi-nhom-o">
+                  <div className="tkmi-hang">
+                    <span className="tkmi-nhan-hang">Chia cột</span>
+                    <span className="seg">
+                      {([1, 2] as const).map(n => (
+                        <button key={n} type="button" className={mau.soCotThongTin === n ? 'on' : ''} onClick={() => doiMau(m => ({ ...m, soCotThongTin: n }))}>{n} cột</button>
+                      ))}
+                    </span>
+                  </div>
+                  <DsCot items={tt.map(t => ({ k: t.k, ten: t.nhan, an: t.an, batBuoc: t.batBuoc, rong: t.rongNhan }))}
+                    coRong rongTrong nhanRong="Rộng nhãn (mm)" chon={chonK('truong')} onChon={k => setChon({ loai: 'truong', k })}
+                    onChange={ds => doiMau(m => ({
+                      ...m,
+                      thongTin: ds.flatMap(x => {
+                        const t = m.thongTin.find(y => y.k === x.k)
+                        return t ? [{ ...t, nhan: x.ten, an: t.batBuoc ? undefined : x.an, rongNhan: x.rong }] : []
+                      }),
+                    }))} />
+                </div>
+              </NhomTt>
             )}
 
-            {theHien === 'ky' && (
+            {mau.bang && (
+              <NhomTt k="bang" ten="Bảng chi tiết" mo={nhomMo('bang')} onMo={() => batNhom('bang')} tom={`${cotHien} cột`}>
+                <div className="tkmi-nhom-o">
+                  <div className={`tkmi-tong-rong${loiRong ? ' loi' : ''}`}>
+                    <span>Độ rộng cột đang hiện</span>
+                    <b>{so(tongRong)} / {so(vung)} mm</b>
+                    <span className="tkmi-thuoc"><span style={{ width: `${Math.min(100, tongRong / vung * 100)}%` }} /></span>
+                  </div>
+                  {loiRong && (
+                    <div className="tkmi-loi" role="alert">
+                      Các cột rộng hơn vùng in {so(tongRong - vung)} mm. Thu hẹp hoặc ẩn bớt cột, hoặc đổi khổ, lề thì mới lưu được.
+                    </div>
+                  )}
+                  <DsCot items={mau.bang.cot.map(c => ({ k: c.k, ten: c.t, an: c.an, batBuoc: c.batBuoc, rong: c.rong, can: c.can }))}
+                    coRong coCan chon={chonK('cot')} onChon={k => setChon({ loai: 'cot', k })}
+                    onChange={ds => doiBang(b => ({
+                      ...b,
+                      cot: ds.flatMap(x => {
+                        const c = b.cot.find(y => y.k === x.k)
+                        return c ? [{ ...c, t: x.ten, an: c.batBuoc ? undefined : x.an, rong: x.rong ?? c.rong, can: x.can }] : []
+                      }),
+                    }))} />
+                  <div className="tkmi-hang">
+                    <span className="tkmi-nhan-hang">Chiều cao dòng (mm)</span>
+                    <OSo className="inp tkmi-o-so" value={mau.bang.caoDong} min={4} max={30} aria-label="Chiều cao dòng (mm)"
+                      onChange={v => { if (v !== undefined) doiBang(b => ({ ...b, caoDong: v })) }} />
+                  </div>
+                  <div className="tkmi-hang">
+                    <span className="tkmi-nhan-hang">Số dòng trống tối thiểu</span>
+                    <OSo className="inp tkmi-o-so" value={mau.bang.dongTrongToiThieu} min={0} max={30} aria-label="Số dòng trống tối thiểu"
+                      onChange={v => { if (v !== undefined) doiBang(b => ({ ...b, dongTrongToiThieu: Math.round(v) })) }} />
+                  </div>
+                  <div className="tkmi-hang">
+                    <span className="tkmi-nhan-hang">Cỡ chữ bảng</span>
+                    <Select className="inp tkmi-o-chon" value={String(mau.bang.coChu ?? 0)} aria-label="Cỡ chữ bảng"
+                      onChange={e => { const v = Number(e.target.value); doiBang(b => ({ ...b, coChu: v || undefined })) }}>
+                      <option value="0">Theo cỡ chữ chung</option>
+                      {CO_CHU.map(c => <option key={c} value={String(c)}>{coChuVi(c)}</option>)}
+                    </Select>
+                  </div>
+                  <label className="tkmi-check">
+                    <input type="checkbox" checked={mau.bang.dongTong} onChange={e => { const v = e.target.checked; doiBang(b => ({ ...b, dongTong: v })) }} />Hiện dòng cộng
+                  </label>
+                </div>
+              </NhomTt>
+            )}
+
+            {coTong && (
+              <NhomTt k="tong" ten="Tổng, bằng chữ, ghi chú" mo={nhomMo('tong')} onMo={() => batNhom('tong')}
+                tom={`${KHOI_TONG.filter(hienKhoi).length}/${KHOI_TONG.filter(coKhoi).length} khối`}>
+                <div className="tkmi-nhom-o">
+                  {KHOI_TONG.filter(coKhoi).map(k => (
+                    <label key={k} className="tkmi-check">
+                      <input type="checkbox" checked={hienKhoi(k)} onChange={e => anKhoi(k, !e.target.checked)} />In {TEN_KHOI[k].toLowerCase()}
+                    </label>
+                  ))}
+                  {mau.bangChu !== undefined && (
+                    <label className="tkmi-nhan">Nhãn dòng bằng chữ
+                      <input className="inp" value={mau.bangChu} onChange={e => { const t = e.target.value; doiMau(m => ({ ...m, bangChu: t })) }} />
+                    </label>
+                  )}
+                  {coKhoi('ghiChu') && (
+                    <label className="tkmi-nhan">Dòng ghi chú
+                      <textarea className="inp tkmi-o-ghi" rows={4} value={(mau.ghiChu ?? []).join('\n')}
+                        onChange={e => { const t = e.target.value; doiMau(m => ({ ...m, ghiChu: t.split('\n') })) }} />
+                      <span className="tkmi-goi-y">Mỗi dòng một ý. Gõ sáu dấu chấm (......) ở chỗ cần điền tay.</span>
+                    </label>
+                  )}
+                </div>
+              </NhomTt>
+            )}
+
+            <NhomTt k="ky" ten="Chữ ký" mo={nhomMo('ky')} onMo={() => batNhom('ky')} tom={`${mau.ky.length} ô ký`}>
               <div className="tkmi-nhom-o">
                 <DsKy ds={mau.ky} hoTenDonVi={nguoiKy} onChange={ky => doiMau(m => ({ ...m, ky }))} />
                 <button type="button" className="btn sm" disabled={!mau.ky.some(x => x.hoTen)} onClick={luuKyDonVi}>Dùng họ tên này cho mọi mẫu của đơn vị</button>
               </div>
-            )}
+            </NhomTt>
 
-            {theHien === 'khoi' && (
+            <NhomTt k="chu" ten="Kiểu chữ" mo={nhomMo('chu')} onMo={() => batNhom('chu')}
+              tom={`${coChuVi(mau.trang.coChu)}, ${mau.trang.phong === 'times' ? 'Times' : 'phông app'}`}>
+              <CaiTrang phan="chu" trang={mau.trang} onChange={trang => doiMau(m => ({ ...m, trang }))} />
+            </NhomTt>
+
+            <NhomTt k="khoi" ten="Thứ tự khối" mo={nhomMo('khoi')} onMo={() => batNhom('khoi')}
+              tom={`${mau.khoi.filter(x => !x.an || khoiBatBuoc(mau, x.k)).length}/${mau.khoi.length} khối`}>
               <DsCot items={mau.khoi.map(x => ({ k: x.k, ten: TEN_KHOI[x.k], an: x.an, batBuoc: khoiBatBuoc(mau, x.k) }))}
                 suaTen={false} chon={chonK('khoi')} onChon={k => setChon({ loai: 'khoi', k })}
                 onChange={ds => doiMau(m => ({
@@ -525,7 +625,7 @@ export function ThietKeMauIn({ sc }: ScreenProps) {
                     return kh ? [{ ...kh, an: khoiBatBuoc(m, kh.k) ? undefined : x.an }] : []
                   }),
                 }))} />
-            )}
+            </NhomTt>
           </div>
         </aside>
       </div>
@@ -543,7 +643,7 @@ export function ThietKeMauIn({ sc }: ScreenProps) {
         </HopXacNhan>
       )}
       {hoiVeChuan && (
-        <HopXacNhan tieuDe="Về mẫu chuẩn" nut="Đặt lại" onDong={() => setHoiVeChuan(false)}
+        <HopXacNhan tieuDe="Khôi phục mặc định" nut="Đặt lại" onDong={() => setHoiVeChuan(false)}
           onDongY={() => { setSua(d => ({ ...d, mau: goc, doi: true })); setHoiVeChuan(false) }}>
           Đặt lại {sua.rieng?.ten} giống mẫu chuẩn {goc.ten}? Bấm Lưu thì mới ghi đè mẫu riêng.
         </HopXacNhan>

@@ -5,8 +5,8 @@ export type KhoIn = 'A4' | 'A5'
 export type HuongIn = 'doc' | 'ngang'
 export type KhoiInK = 'dauTrang' | 'mauSo' | 'tieuDe' | 'thongTin' | 'bang' | 'tongCong' | 'bangChu' | 'ghiChu' | 'ky' | 'chanTrang'
 export interface KhoiIn { k: KhoiInK; an?: boolean }
-export interface TruongIn { k: string; nhan: string; batBuoc?: boolean; an?: boolean; rongNhan?: number }   // k là khoá trong DuLieuIn.tt
-export interface CotIn { k: string; t: string; rong: number; can?: 'trai' | 'giua' | 'phai'; so?: boolean; batBuoc?: boolean; an?: boolean; chiNoCo?: boolean } // rong: mm; k là khoá trong mỗi dòng DuLieuIn.dong
+export interface TruongIn { k: string; nhan: string; batBuoc?: boolean; an?: boolean; rongNhan?: number; caHang?: boolean }   // k là khoá trong DuLieuIn.tt; caHang: chiếm cả hàng khi chia 2 cột
+export interface CotIn { k: string; t: string; rong: number; can?: 'trai' | 'giua' | 'phai'; so?: boolean; batBuoc?: boolean; an?: boolean; chiNoCo?: boolean; nhom?: string; kyHieu?: string } // rong: mm; k là khoá trong mỗi dòng DuLieuIn.dong; nhom: tiêu đề tầng trên chung cho các cột liền nhau; kyHieu: hàng A, B, 1, 2 dưới tiêu đề
 export interface OKyIn { chucDanh: string; goiY: string; hoTen?: string }
 export interface MauIn {
   id: string
@@ -31,6 +31,7 @@ export interface MauIn {
   coNoCo?: boolean                               // in Nợ/Có ở góc phải khi chế độ dùng tài khoản
   quyenSo?: boolean
   quyenSoTheoCheDo?: Partial<Record<CheDo, boolean>>     // hiện quyển số theo chế độ
+  boPhan?: boolean                               // đầu trang thêm dòng Bộ phận (phiếu kho)
 }
 
 /** Áp cấu hình theo chế độ kế toán vào mẫu in: khối chữ ký, trường thông tin, cột bảng, ghi chú, quyển số.
@@ -58,15 +59,24 @@ export function mauChoCheDo(mau: MauIn, cd: CheDo): MauIn {
   }
 }
 
-function taoKhoi(coBang = false, coTongCong = false, coBangChu = false, coGhiChu = false): KhoiIn[] {
+function taoKhoi(coBang = false, coTongCong = false, coBangChu = false, coGhiChu = false, ghiChuSauKy = false): KhoiIn[] {
   const ds: KhoiInK[] = ['dauTrang', 'mauSo', 'tieuDe', 'thongTin']
   if (coBang) ds.push('bang')
   if (coTongCong) ds.push('tongCong')
   if (coBangChu) ds.push('bangChu')
-  if (coGhiChu) ds.push('ghiChu')
-  ds.push('ky', 'chanTrang')
+  if (coGhiChu && !ghiChuSauKy) ds.push('ghiChu')
+  ds.push('ky')
+  if (coGhiChu && ghiChuSauKy) ds.push('ghiChu')
+  ds.push('chanTrang')
   return ds.map(k => ({ k }))
 }
+
+// Dòng ghi tay dưới chữ ký của phiếu thu, phiếu chi (01-TT, 02-TT theo TT133, TT99)
+const GHI_CHU_TIEN = [
+  'Đã nhận đủ số tiền (viết bằng chữ): ......',
+  '+ Tỷ giá ngoại tệ (vàng, bạc, đá quý): ......',
+  '+ Số tiền quy đổi: ......',
+]
 
 export const MAU_IN: MauIn[] = [
   // 1. Phiếu thu
@@ -75,8 +85,8 @@ export const MAU_IN: MauIn[] = [
     ten: 'Phiếu thu',
     kyHieu: { TT58: '01-TT', TT133: '01-TT', TT99: '01-TT' },
     tieuDe: 'PHIẾU THU',
-    trang: { kho: 'A5', huong: 'ngang', le: [10, 10, 10, 15], lien: 1, coChu: 10, phong: 'app' },
-    khoi: taoKhoi(false, false, false, true),
+    trang: { kho: 'A5', huong: 'ngang', le: [8, 10, 8, 15], lien: 1, coChu: 9.5, phong: 'app' },
+    khoi: taoKhoi(false, false, false, true, true),
     soCotThongTin: 1,
     thongTin: [
       { k: 'nguoi', nhan: 'Họ và tên người nộp tiền', batBuoc: true },
@@ -96,7 +106,7 @@ export const MAU_IN: MauIn[] = [
         { k: 'kemTheo', nhan: 'Kèm theo' },
       ],
     },
-    ghiChu: ['Đã nhận đủ số tiền (viết bằng chữ): ......'],
+    ghiChu: GHI_CHU_TIEN,
     ghiChuTheoCheDo: { TT58: [] },
     ky: [
       { chucDanh: 'Giám đốc', goiY: '(Ký, họ tên, đóng dấu)' },
@@ -125,8 +135,8 @@ export const MAU_IN: MauIn[] = [
     ten: 'Phiếu chi',
     kyHieu: { TT58: '02-TT', TT133: '02-TT', TT99: '02-TT' },
     tieuDe: 'PHIẾU CHI',
-    trang: { kho: 'A5', huong: 'ngang', le: [10, 10, 10, 15], lien: 1, coChu: 10, phong: 'app' },
-    khoi: taoKhoi(false, false, false, true),
+    trang: { kho: 'A5', huong: 'ngang', le: [8, 10, 8, 15], lien: 1, coChu: 9.5, phong: 'app' },
+    khoi: taoKhoi(false, false, false, true, true),
     soCotThongTin: 1,
     thongTin: [
       { k: 'nguoi', nhan: 'Họ và tên người nhận tiền', batBuoc: true },
@@ -146,7 +156,7 @@ export const MAU_IN: MauIn[] = [
         { k: 'kemTheo', nhan: 'Kèm theo' },
       ],
     },
-    ghiChu: ['Đã nhận đủ số tiền (viết bằng chữ): ......'],
+    ghiChu: GHI_CHU_TIEN,
     ghiChuTheoCheDo: { TT58: [] },
     ky: [
       { chucDanh: 'Giám đốc', goiY: '(Ký, họ tên, đóng dấu)' },
@@ -203,14 +213,14 @@ export const MAU_IN: MauIn[] = [
     soCotThongTin: 2,
     thongTin: [
       { k: 'donViTra', nhan: 'Đơn vị trả tiền', batBuoc: true },
-      { k: 'tkTra', nhan: 'Số tài khoản', batBuoc: true },
-      { k: 'nhTra', nhan: 'Tại ngân hàng', batBuoc: true },
       { k: 'donViNhan', nhan: 'Đơn vị nhận tiền', batBuoc: true },
+      { k: 'tkTra', nhan: 'Số tài khoản', batBuoc: true },
       { k: 'tkNhan', nhan: 'Số tài khoản', batBuoc: true },
+      { k: 'nhTra', nhan: 'Tại ngân hàng', batBuoc: true },
       { k: 'nhNhan', nhan: 'Tại ngân hàng', batBuoc: true },
-      { k: 'soTien', nhan: 'Số tiền bằng số', batBuoc: true },
-      { k: 'bangChu', nhan: 'Số tiền bằng chữ', batBuoc: true },
-      { k: 'lyDo', nhan: 'Nội dung thanh toán', batBuoc: true },
+      { k: 'soTien', nhan: 'Số tiền bằng số', batBuoc: true, caHang: true },
+      { k: 'bangChu', nhan: 'Số tiền bằng chữ', batBuoc: true, caHang: true },
+      { k: 'lyDo', nhan: 'Nội dung thanh toán', batBuoc: true, caHang: true },
     ],
     ky: [
       { chucDanh: 'Kế toán trưởng', goiY: '(Ký, họ tên)' },
@@ -243,14 +253,14 @@ export const MAU_IN: MauIn[] = [
     },
     bang: {
       cot: [
-        { k: 'stt', t: 'STT', rong: 10, can: 'giua', batBuoc: true },
-        { k: 'ten', t: 'Tên, nhãn hiệu, quy cách vật tư, hàng hoá', rong: 55, can: 'trai', batBuoc: true },
-        { k: 'ma', t: 'Mã số', rong: 18, can: 'trai' },
-        { k: 'dvt', t: 'Đơn vị tính', rong: 14, can: 'giua' },
-        { k: 'slCt', t: 'Số lượng theo chứng từ', rong: 18, can: 'phai', so: true },
-        { k: 'sl', t: 'Số lượng thực nhập', rong: 18, can: 'phai', so: true, batBuoc: true },
-        { k: 'gia', t: 'Đơn giá', rong: 22, can: 'phai', so: true },
-        { k: 'tien', t: 'Thành tiền', rong: 30, can: 'phai', so: true, batBuoc: true },
+        { k: 'stt', t: 'STT', rong: 10, can: 'giua', batBuoc: true, kyHieu: 'A' },
+        { k: 'ten', t: 'Tên, nhãn hiệu, quy cách, phẩm chất vật tư, dụng cụ, sản phẩm, hàng hoá', rong: 55, can: 'trai', batBuoc: true, kyHieu: 'B' },
+        { k: 'ma', t: 'Mã số', rong: 18, can: 'trai', kyHieu: 'C' },
+        { k: 'dvt', t: 'Đơn vị tính', rong: 14, can: 'giua', kyHieu: 'D' },
+        { k: 'slCt', t: 'Theo chứng từ', rong: 18, can: 'phai', so: true, nhom: 'Số lượng', kyHieu: '1' },
+        { k: 'sl', t: 'Thực nhập', rong: 18, can: 'phai', so: true, batBuoc: true, nhom: 'Số lượng', kyHieu: '2' },
+        { k: 'gia', t: 'Đơn giá', rong: 22, can: 'phai', so: true, kyHieu: '3' },
+        { k: 'tien', t: 'Thành tiền', rong: 30, can: 'phai', so: true, batBuoc: true, kyHieu: '4' },
       ],
       caoDong: 7,
       dongTrongToiThieu: 5,
@@ -258,14 +268,14 @@ export const MAU_IN: MauIn[] = [
     },
     cotTheoCheDo: {
       TT58: [
-        { k: 'stt', t: 'Số thứ tự', rong: 10, can: 'giua', batBuoc: true },
-        { k: 'ten', t: 'Tên, nhãn hiệu, quy cách, phẩm chất vật tư, dụng cụ, sản phẩm, hàng hoá', rong: 55, can: 'trai', batBuoc: true },
-        { k: 'ma', t: 'Mã số', rong: 18, can: 'trai' },
-        { k: 'dvt', t: 'Đơn vị tính', rong: 14, can: 'giua' },
-        { k: 'slCt', t: 'Số lượng theo chứng từ', rong: 18, can: 'phai', so: true },
-        { k: 'sl', t: 'Số lượng thực nhập', rong: 18, can: 'phai', so: true, batBuoc: true },
-        { k: 'gia', t: 'Đơn giá', rong: 22, can: 'phai', so: true },
-        { k: 'tien', t: 'Thành tiền', rong: 30, can: 'phai', so: true, batBuoc: true },
+        { k: 'stt', t: 'Số thứ tự', rong: 10, can: 'giua', batBuoc: true, kyHieu: 'A' },
+        { k: 'ten', t: 'Tên, nhãn hiệu, quy cách, phẩm chất vật tư, dụng cụ, sản phẩm, hàng hoá', rong: 55, can: 'trai', batBuoc: true, kyHieu: 'B' },
+        { k: 'ma', t: 'Mã số', rong: 18, can: 'trai', kyHieu: 'C' },
+        { k: 'dvt', t: 'Đơn vị tính', rong: 14, can: 'giua', kyHieu: 'D' },
+        { k: 'slCt', t: 'Theo chứng từ', rong: 18, can: 'phai', so: true, nhom: 'Số lượng', kyHieu: '1' },
+        { k: 'sl', t: 'Thực nhập', rong: 18, can: 'phai', so: true, batBuoc: true, nhom: 'Số lượng', kyHieu: '2' },
+        { k: 'gia', t: 'Đơn giá', rong: 22, can: 'phai', so: true, kyHieu: '3' },
+        { k: 'tien', t: 'Thành tiền', rong: 30, can: 'phai', so: true, batBuoc: true, kyHieu: '4' },
       ],
     },
     bangChu: 'Tổng số tiền (viết bằng chữ)',
@@ -286,6 +296,7 @@ export const MAU_IN: MauIn[] = [
     },
     quyenSo: true,
     coNoCo: true,
+    boPhan: true,
   },
 
   // 6. Phiếu xuất kho
@@ -315,14 +326,14 @@ export const MAU_IN: MauIn[] = [
     },
     bang: {
       cot: [
-        { k: 'stt', t: 'STT', rong: 10, can: 'giua', batBuoc: true },
-        { k: 'ten', t: 'Tên, nhãn hiệu, quy cách vật tư, hàng hoá', rong: 55, can: 'trai', batBuoc: true },
-        { k: 'ma', t: 'Mã số', rong: 18, can: 'trai' },
-        { k: 'dvt', t: 'Đơn vị tính', rong: 14, can: 'giua' },
-        { k: 'slCt', t: 'Số lượng yêu cầu', rong: 18, can: 'phai', so: true },
-        { k: 'sl', t: 'Số lượng thực xuất', rong: 18, can: 'phai', so: true, batBuoc: true },
-        { k: 'gia', t: 'Đơn giá', rong: 22, can: 'phai', so: true },
-        { k: 'tien', t: 'Thành tiền', rong: 30, can: 'phai', so: true, batBuoc: true },
+        { k: 'stt', t: 'STT', rong: 10, can: 'giua', batBuoc: true, kyHieu: 'A' },
+        { k: 'ten', t: 'Tên, nhãn hiệu, quy cách, phẩm chất vật tư, dụng cụ, sản phẩm, hàng hoá', rong: 55, can: 'trai', batBuoc: true, kyHieu: 'B' },
+        { k: 'ma', t: 'Mã số', rong: 18, can: 'trai', kyHieu: 'C' },
+        { k: 'dvt', t: 'Đơn vị tính', rong: 14, can: 'giua', kyHieu: 'D' },
+        { k: 'slCt', t: 'Yêu cầu', rong: 18, can: 'phai', so: true, nhom: 'Số lượng', kyHieu: '1' },
+        { k: 'sl', t: 'Thực xuất', rong: 18, can: 'phai', so: true, batBuoc: true, nhom: 'Số lượng', kyHieu: '2' },
+        { k: 'gia', t: 'Đơn giá', rong: 22, can: 'phai', so: true, kyHieu: '3' },
+        { k: 'tien', t: 'Thành tiền', rong: 30, can: 'phai', so: true, batBuoc: true, kyHieu: '4' },
       ],
       caoDong: 7,
       dongTrongToiThieu: 5,
@@ -330,14 +341,14 @@ export const MAU_IN: MauIn[] = [
     },
     cotTheoCheDo: {
       TT58: [
-        { k: 'stt', t: 'Số thứ tự', rong: 10, can: 'giua', batBuoc: true },
-        { k: 'ten', t: 'Tên, nhãn hiệu, quy cách, phẩm chất vật tư, dụng cụ, sản phẩm, hàng hoá', rong: 55, can: 'trai', batBuoc: true },
-        { k: 'ma', t: 'Mã số', rong: 18, can: 'trai' },
-        { k: 'dvt', t: 'Đơn vị tính', rong: 14, can: 'giua' },
-        { k: 'slCt', t: 'Số lượng yêu cầu', rong: 18, can: 'phai', so: true },
-        { k: 'sl', t: 'Số lượng thực xuất', rong: 18, can: 'phai', so: true, batBuoc: true },
-        { k: 'gia', t: 'Đơn giá', rong: 22, can: 'phai', so: true },
-        { k: 'tien', t: 'Thành tiền', rong: 30, can: 'phai', so: true, batBuoc: true },
+        { k: 'stt', t: 'Số thứ tự', rong: 10, can: 'giua', batBuoc: true, kyHieu: 'A' },
+        { k: 'ten', t: 'Tên, nhãn hiệu, quy cách, phẩm chất vật tư, dụng cụ, sản phẩm, hàng hoá', rong: 55, can: 'trai', batBuoc: true, kyHieu: 'B' },
+        { k: 'ma', t: 'Mã số', rong: 18, can: 'trai', kyHieu: 'C' },
+        { k: 'dvt', t: 'Đơn vị tính', rong: 14, can: 'giua', kyHieu: 'D' },
+        { k: 'slCt', t: 'Yêu cầu', rong: 18, can: 'phai', so: true, nhom: 'Số lượng', kyHieu: '1' },
+        { k: 'sl', t: 'Thực xuất', rong: 18, can: 'phai', so: true, batBuoc: true, nhom: 'Số lượng', kyHieu: '2' },
+        { k: 'gia', t: 'Đơn giá', rong: 22, can: 'phai', so: true, kyHieu: '3' },
+        { k: 'tien', t: 'Thành tiền', rong: 30, can: 'phai', so: true, batBuoc: true, kyHieu: '4' },
       ],
     },
     bangChu: 'Tổng số tiền (viết bằng chữ)',
@@ -360,6 +371,7 @@ export const MAU_IN: MauIn[] = [
     },
     quyenSo: true,
     coNoCo: true,
+    boPhan: true,
   },
 
   // 7. Bảng kê mua hàng
@@ -368,8 +380,8 @@ export const MAU_IN: MauIn[] = [
     ten: 'Bảng kê mua hàng',
     kyHieu: { TT133: '06-VT', TT99: '06-VT' },
     tieuDe: 'BẢNG KÊ MUA HÀNG',
-    trang: { kho: 'A4', huong: 'ngang', le: [10, 10, 10, 15], lien: 1, coChu: 10.5, phong: 'app' },
-    khoi: taoKhoi(true, false, true, false),
+    trang: { kho: 'A4', huong: 'ngang', le: [10, 10, 10, 15], lien: 1, coChu: 10, phong: 'app' },
+    khoi: taoKhoi(true, false, true, true),
     soCotThongTin: 1,
     thongTin: [
       { k: 'nguoi', nhan: 'Họ và tên người mua', batBuoc: true },
@@ -378,18 +390,21 @@ export const MAU_IN: MauIn[] = [
     bang: {
       cot: [
         { k: 'stt', t: 'STT', rong: 10, can: 'giua', batBuoc: true },
-        { k: 'ten', t: 'Tên, quy cách, phẩm chất hàng hoá', rong: 70, can: 'trai', batBuoc: true },
-        { k: 'diaChiBan', t: 'Địa chỉ người bán', rong: 65, can: 'trai' },
+        { k: 'ngayMua', t: 'Ngày, tháng, năm mua hàng', rong: 24, can: 'giua' },
+        { k: 'tenBan', t: 'Tên người bán', rong: 40, can: 'trai', nhom: 'Người bán' },
+        { k: 'diaChiBan', t: 'Địa chỉ', rong: 48, can: 'trai', nhom: 'Người bán' },
+        { k: 'ten', t: 'Tên, quy cách, phẩm chất hàng hoá', rong: 54, can: 'trai', batBuoc: true },
         { k: 'dvt', t: 'Đơn vị tính', rong: 15, can: 'giua' },
-        { k: 'sl', t: 'Số lượng', rong: 25, can: 'phai', so: true, batBuoc: true },
-        { k: 'gia', t: 'Đơn giá', rong: 35, can: 'phai', so: true },
-        { k: 'tien', t: 'Thành tiền', rong: 45, can: 'phai', so: true, batBuoc: true },
+        { k: 'sl', t: 'Số lượng', rong: 20, can: 'phai', so: true, batBuoc: true },
+        { k: 'gia', t: 'Đơn giá', rong: 25, can: 'phai', so: true },
+        { k: 'tien', t: 'Tổng giá thanh toán', rong: 30, can: 'phai', so: true, batBuoc: true },
       ],
-      caoDong: 7,
+      caoDong: 6,
       dongTrongToiThieu: 5,
       dongTong: true,
     },
-    bangChu: 'Tổng số tiền (viết bằng chữ)',
+    bangChu: 'Tổng giá trị hàng hoá mua vào (viết bằng chữ)',
+    ghiChu: ['Kèm theo: ...... chứng từ gốc'],
     ky: [
       { chucDanh: 'Người mua', goiY: '(Ký, họ tên)' },
       { chucDanh: 'Kế toán trưởng', goiY: '(Ký, họ tên)' },
@@ -487,24 +502,30 @@ export const MAU_IN: MauIn[] = [
     ],
     bang: {
       cot: [
-        { k: 'stt', t: 'STT', rong: 10, can: 'giua', batBuoc: true },
-        { k: 'ten', t: 'Tên, quy cách vật tư, hàng hoá', rong: 52, can: 'trai', batBuoc: true },
-        { k: 'ma', t: 'Mã số', rong: 18, can: 'trai' },
-        { k: 'dvt', t: 'Đơn vị tính', rong: 14, can: 'giua' },
-        { k: 'gia', t: 'Đơn giá', rong: 23, can: 'phai', so: true },
-        { k: 'slSo', t: 'Theo sổ SL', rong: 21, can: 'phai', so: true },
-        { k: 'tienSo', t: 'Theo sổ thành tiền', rong: 27, can: 'phai', so: true },
-        { k: 'sl', t: 'Theo kiểm kê SL', rong: 21, can: 'phai', so: true, batBuoc: true },
-        { k: 'tien', t: 'Theo kiểm kê thành tiền', rong: 27, can: 'phai', so: true, batBuoc: true },
-        { k: 'slThua', t: 'Thừa SL', rong: 19, can: 'phai', so: true },
-        { k: 'slThieu', t: 'Thiếu SL', rong: 19, can: 'phai', so: true },
+        { k: 'stt', t: 'STT', rong: 8, can: 'giua', batBuoc: true },
+        { k: 'ten', t: 'Tên, nhãn hiệu, quy cách vật tư, dụng cụ, sản phẩm, hàng hoá', rong: 42, can: 'trai', batBuoc: true },
+        { k: 'ma', t: 'Mã số', rong: 14, can: 'trai' },
+        { k: 'dvt', t: 'Đơn vị tính', rong: 11, can: 'giua' },
+        { k: 'gia', t: 'Đơn giá', rong: 18, can: 'phai', so: true },
+        { k: 'slSo', t: 'Số lượng', rong: 13, can: 'phai', so: true, nhom: 'Theo sổ kế toán' },
+        { k: 'tienSo', t: 'Thành tiền', rong: 20, can: 'phai', so: true, nhom: 'Theo sổ kế toán' },
+        { k: 'sl', t: 'Số lượng', rong: 13, can: 'phai', so: true, batBuoc: true, nhom: 'Theo kiểm kê' },
+        { k: 'tien', t: 'Thành tiền', rong: 20, can: 'phai', so: true, batBuoc: true, nhom: 'Theo kiểm kê' },
+        { k: 'slThua', t: 'Số lượng', rong: 12, can: 'phai', so: true, nhom: 'Chênh lệch thừa' },
+        { k: 'tienThua', t: 'Thành tiền', rong: 18, can: 'phai', so: true, nhom: 'Chênh lệch thừa' },
+        { k: 'slThieu', t: 'Số lượng', rong: 12, can: 'phai', so: true, nhom: 'Chênh lệch thiếu' },
+        { k: 'tienThieu', t: 'Thành tiền', rong: 18, can: 'phai', so: true, nhom: 'Chênh lệch thiếu' },
+        { k: 'pcTot', t: 'Còn tốt 100%', rong: 13, can: 'phai', so: true, nhom: 'Phẩm chất' },
+        { k: 'pcKem', t: 'Kém phẩm chất', rong: 13, can: 'phai', so: true, nhom: 'Phẩm chất' },
+        { k: 'pcMat', t: 'Mất phẩm chất', rong: 13, can: 'phai', so: true, nhom: 'Phẩm chất' },
       ],
       caoDong: 7,
       dongTrongToiThieu: 5,
       dongTong: true,
+      coChu: 9,
     },
     ky: [
-      { chucDanh: 'Giám đốc', goiY: '(Ký, họ tên, đóng dấu)' },
+      { chucDanh: 'Giám đốc', goiY: '(Ý kiến giải quyết số chênh lệch) (Ký, họ tên, đóng dấu)' },
       { chucDanh: 'Kế toán trưởng', goiY: '(Ký, họ tên)' },
       { chucDanh: 'Thủ kho', goiY: '(Ký, họ tên)' },
       { chucDanh: 'Trưởng ban kiểm kê', goiY: '(Ký, họ tên)' },
@@ -518,27 +539,36 @@ export const MAU_IN: MauIn[] = [
     kyHieu: { TT133: '01-TSCĐ', TT99: '01-TSCĐ' },
     tieuDe: 'BIÊN BẢN GIAO NHẬN TSCĐ',
     trang: { kho: 'A4', huong: 'ngang', le: [10, 10, 10, 15], lien: 1, coChu: 10.5, phong: 'app' },
-    khoi: taoKhoi(true, false, false, false),
+    khoi: taoKhoi(true, false, false, true),
     soCotThongTin: 1,
     thongTin: [
       { k: 'canCu', nhan: 'Căn cứ quyết định số', batBuoc: true },
-      { k: 'benGiao', nhan: 'Bên giao', batBuoc: true },
-      { k: 'benNhan', nhan: 'Bên nhận', batBuoc: true },
-      { k: 'diaDiem', nhan: 'Địa điểm giao nhận' },
+      { k: 'benGiao', nhan: 'Đại diện bên giao', batBuoc: true },
+      { k: 'benNhan', nhan: 'Đại diện bên nhận', batBuoc: true },
+      { k: 'diaDiem', nhan: 'Địa điểm giao nhận TSCĐ' },
     ],
     bang: {
       cot: [
-        { k: 'stt', t: 'STT', rong: 10, can: 'giua', batBuoc: true },
-        { k: 'ten', t: 'Tên, ký hiệu, quy cách TSCĐ', rong: 85, can: 'trai', batBuoc: true },
-        { k: 'ma', t: 'Số hiệu TSCĐ', rong: 30, can: 'trai' },
-        { k: 'nuocSx', t: 'Nước sản xuất', rong: 40, can: 'trai' },
-        { k: 'namSd', t: 'Năm đưa vào sử dụng', rong: 35, can: 'giua' },
-        { k: 'tien', t: 'Nguyên giá', rong: 50, can: 'phai', so: true, batBuoc: true },
+        { k: 'stt', t: 'STT', rong: 9, can: 'giua', batBuoc: true },
+        { k: 'ten', t: 'Tên, ký mã hiệu, quy cách (cấp hạng TSCĐ)', rong: 44, can: 'trai', batBuoc: true },
+        { k: 'ma', t: 'Số hiệu TSCĐ', rong: 18, can: 'trai' },
+        { k: 'nuocSx', t: 'Nước sản xuất (xây dựng)', rong: 18, can: 'trai' },
+        { k: 'namSx', t: 'Năm sản xuất', rong: 14, can: 'giua' },
+        { k: 'namSd', t: 'Năm đưa vào sử dụng', rong: 15, can: 'giua' },
+        { k: 'congSuat', t: 'Công suất (diện tích thiết kế)', rong: 20, can: 'trai' },
+        { k: 'giaMua', t: 'Giá mua (giá thành sản xuất)', rong: 26, can: 'phai', so: true, nhom: 'Tính nguyên giá TSCĐ' },
+        { k: 'cpVc', t: 'Chi phí vận chuyển', rong: 20, can: 'phai', so: true, nhom: 'Tính nguyên giá TSCĐ' },
+        { k: 'cpChayThu', t: 'Chi phí chạy thử', rong: 20, can: 'phai', so: true, nhom: 'Tính nguyên giá TSCĐ' },
+        { k: 'tien', t: 'Nguyên giá TSCĐ', rong: 26, can: 'phai', so: true, batBuoc: true, nhom: 'Tính nguyên giá TSCĐ' },
+        { k: 'tyLeHm', t: 'Tỷ lệ hao mòn (%)', rong: 14, can: 'giua' },
+        { k: 'taiLieu', t: 'Tài liệu kỹ thuật kèm theo', rong: 24, can: 'trai' },
       ],
       caoDong: 7,
       dongTrongToiThieu: 5,
       dongTong: true,
+      coChu: 9,
     },
+    ghiChu: ['Dụng cụ, phụ tùng kèm theo: ......'],
     ky: [
       { chucDanh: 'Giám đốc bên nhận', goiY: '(Ký, họ tên, đóng dấu)' },
       { chucDanh: 'Kế toán trưởng bên nhận', goiY: '(Ký, họ tên)' },
@@ -555,20 +585,28 @@ export const MAU_IN: MauIn[] = [
     tieuDe: 'BIÊN BẢN THANH LÝ TSCĐ',
     trang: { kho: 'A4', huong: 'doc', le: [10, 10, 10, 15], lien: 1, coChu: 10.5, phong: 'app' },
     khoi: taoKhoi(false, false, false, false),
-    soCotThongTin: 1,
+    soCotThongTin: 2,
     thongTin: [
-      { k: 'canCu', nhan: 'Căn cứ quyết định số', batBuoc: true },
-      { k: 'banThanhLy', nhan: 'Ban thanh lý gồm', batBuoc: true },
-      { k: 'ten', nhan: 'Tên, ký hiệu, quy cách TSCĐ', batBuoc: true },
+      { k: 'canCu', nhan: 'Căn cứ quyết định số', batBuoc: true, caHang: true },
+      { k: 'banThanhLy', nhan: 'Ban thanh lý gồm', batBuoc: true, caHang: true },
+      { k: 'ten', nhan: 'Tên, ký mã hiệu, quy cách (cấp hạng) TSCĐ', batBuoc: true, caHang: true },
+      { k: 'soHieuTs', nhan: 'Số hiệu TSCĐ' },
+      { k: 'soThe', nhan: 'Số thẻ TSCĐ' },
+      { k: 'nuocSx', nhan: 'Nước sản xuất (xây dựng)' },
+      { k: 'namSx', nhan: 'Năm sản xuất' },
+      { k: 'namSd', nhan: 'Năm đưa vào sử dụng' },
       { k: 'nguyenGia', nhan: 'Nguyên giá', batBuoc: true },
-      { k: 'haoMon', nhan: 'Giá trị hao mòn đã trích', batBuoc: true },
-      { k: 'conLai', nhan: 'Giá trị còn lại', batBuoc: true },
-      { k: 'ketLuan', nhan: 'Kết luận của Ban thanh lý', batBuoc: true },
+      { k: 'haoMon', nhan: 'Giá trị hao mòn đã trích đến thời điểm thanh lý', batBuoc: true, caHang: true },
+      { k: 'conLai', nhan: 'Giá trị còn lại', batBuoc: true, caHang: true },
+      { k: 'ketLuan', nhan: 'Kết luận của Ban thanh lý', batBuoc: true, caHang: true },
+      { k: 'chiPhiTl', nhan: 'Chi phí thanh lý' },
+      { k: 'thuHoi', nhan: 'Giá trị thu hồi' },
+      { k: 'ngayGhiGiam', nhan: 'Đã ghi giảm sổ TSCĐ ngày', caHang: true },
     ],
     ky: [
-      { chucDanh: 'Giám đốc', goiY: '(Ký, họ tên, đóng dấu)' },
-      { chucDanh: 'Kế toán trưởng', goiY: '(Ký, họ tên)' },
       { chucDanh: 'Trưởng ban thanh lý', goiY: '(Ký, họ tên)' },
+      { chucDanh: 'Kế toán trưởng', goiY: '(Ký, họ tên)' },
+      { chucDanh: 'Giám đốc', goiY: '(Ký, họ tên, đóng dấu)' },
     ],
   },
 
@@ -689,11 +727,11 @@ export const MAU_IN: MauIn[] = [
     thongTin: [
       { k: 'kyHieuHd', nhan: 'Ký hiệu', batBuoc: true },
       { k: 'soHd', nhan: 'Số', batBuoc: true },
-      { k: 'nguoi', nhan: 'Họ tên người mua hàng' },
-      { k: 'doiTuong', nhan: 'Tên đơn vị', batBuoc: true },
+      { k: 'nguoi', nhan: 'Họ tên người mua hàng', caHang: true },
+      { k: 'doiTuong', nhan: 'Tên đơn vị', batBuoc: true, caHang: true },
       { k: 'mst', nhan: 'Mã số thuế' },
-      { k: 'diaChi', nhan: 'Địa chỉ' },
       { k: 'hinhThucTt', nhan: 'Hình thức thanh toán' },
+      { k: 'diaChi', nhan: 'Địa chỉ', caHang: true },
     ],
     bang: {
       cot: [
