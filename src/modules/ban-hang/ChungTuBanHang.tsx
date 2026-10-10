@@ -181,8 +181,11 @@ const COT_CO_DINH = new Set(['chk', 'stt', 'ngay', 'so'])
 const COT_CHON = new Set(['cn', 'nguon', 'kenh'])
 
 /** Giá trị các ô lọc ngoài và trong Bộ lọc nâng cao. Chuỗi rỗng là tất cả */
-interface GtLoc { thoiGian: KhoangNgay; tim: string; cn: string; nguon: string }
-const locMacDinh = (): GtLoc => ({ thoiGian: thangNay(), tim: '', cn: '', nguon: '' })
+interface GtLoc { thoiGian: KhoangNgay; tim: string; cn: string; nguon: string; kh: string; kenh: string; pttt: string }
+const locMacDinh = (): GtLoc => ({ thoiGian: thangNay(), tim: '', cn: '', nguon: '', kh: '', kenh: '', pttt: '' })
+/** Phương thức thanh toán của chứng từ theo số tiền thu được (T110) */
+const PTTT: [keyof NgayPOS, string][] = [['tm', 'Tiền mặt'], ['ck', 'Chuyển khoản, QR'], ['the', 'Thẻ'], ['app', 'App giao đồ ăn']]
+const ptttCua = (x: NgayPOS) => PTTT.filter(([k]) => Number(x[k]) > 0).map(([, t]) => t)
 
 function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
   const { s, toast } = useSession()
@@ -217,7 +220,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
 
   // Ô lọc: giá trị nháp, bấm Lọc mới áp dụng (T41)
   const apLoc = () => { loc0.loc(); setTrang(1) }
-  const chonO = (k: 'cn' | 'nguon', ten: string, ds: [string, string][]) => (
+  const chonO = (k: 'cn' | 'nguon' | 'kh' | 'kenh' | 'pttt', ten: string, ds: [string, string][]) => (
     <Select className="ds-o-sel" value={nhap[k]} aria-label={ten} onChange={e => dat(k, e.target.value)}>
       <option value="">Tất cả</option>
       {ds.map(([v, t]) => <option key={v} value={v}>{t}</option>)}
@@ -230,6 +233,10 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
         onChange={e => dat('tim', e.target.value)} onKeyDown={e => { if (e.key === 'Enter') apLoc() }} />,
     },
     ...(cnChon ? [] : [{ k: 'cn', ten: 'Chi nhánh', o: chonO('cn', 'Chi nhánh', CHI_NHANH.map(c => [c.id, c.ten])) }]),
+    // Khách hàng, kênh bán, phương thức thanh toán; lựa chọn lấy từ chính các chứng từ (T110)
+    { k: 'kh', ten: 'Khách hàng', o: chonO('kh', 'Khách hàng', [...new Set(rows.map(r => String(r.doiTuong ?? '')).filter(Boolean))].map(v => [v, v])) },
+    { k: 'kenh', ten: 'Kênh bán', o: chonO('kenh', 'Kênh bán', [...new Set(rows.map(r => String(r.kenh ?? '')).filter(Boolean))].map(v => [v, v])) },
+    { k: 'pttt', ten: 'Phương thức thanh toán', o: chonO('pttt', 'Phương thức thanh toán', PTTT.map(([, t]) => [t, t])) },
   ]
   const [cauHinhLoc, datCauHinhLoc] = useCauHinhLoc(path, oLoc.map(o => o.k), ['thoiGian', 'tim', 'cn'])
 
@@ -240,6 +247,9 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
     if (cnChon && r.x?.cn !== cnChon.id) return false
     if (ap.cn && r.x?.cn !== ap.cn) return false
     if (ap.nguon && r.nguon !== ap.nguon) return false
+    if (ap.kh && r.doiTuong !== ap.kh) return false
+    if (ap.kenh && r.kenh !== ap.kenh) return false
+    if (ap.pttt && !ptttCua(r.x).includes(ap.pttt)) return false
     if (ap.tim.trim() && !fold(`${r.so} ${r.dienGiai}`).includes(fold(ap.tim.trim()))) return false
     for (const [k, g] of Object.entries(locCot)) {
       if (dangLoc(g) && !khopLoc(kieuCot(k), g, chuCot(k, r), typeof r[k] === 'number' ? r[k] : undefined, k === 'ngay' ? d : undefined)) return false
