@@ -423,3 +423,5 @@ Lý do: PhuongXT chốt ngày 09/10/2026 (T64, T65).
 Lý do: Trum chốt ngày 09/10/2026 (T58, T66, T67, T75), chọn hướng cột lọc bên trái và danh sách gọn trong bản phác.
 
 ## QD41. Hệ thống tài khoản theo chế độ, panel danh mục (đang soạn)
+
+## QD42. Chia bộ báo cáo theo gói và thông tư (đang soạn)
