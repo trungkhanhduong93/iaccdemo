@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T108 | Mẫu in phiếu và mẫu sổ, báo cáo tài chính riêng TT58 (doanh nghiệp siêu nhỏ) theo bộ biểu mẫu `D:\IACC-CLOUD\TT58`: chọn phương pháp thuế GTGT, TNDN quyết định bộ sổ (TH1–TH4); cột, dòng in sẵn đúng từng mẫu S1–S4d; thêm S2a, S3a; B01-DNSN 14 chỉ tiêu, B02-DNSN 5 chỉ tiêu; phiếu 01-TT, 02-TT, 01-VT, 02-VT ký hiệu TT58 | Trum | Đang làm | Sửa file chung `ReportScreen.tsx` (tiêu đề cột 2 tầng), `app.css`; thêm `mau-in.ts`, `so-bo-sung.ts`, `danh-sach.ts`, `BaoCaoTaiChinh.tsx`, `session.tsx`, `HeThong.tsx`, `registry.ts`, `plan.ts` |
 | T101 | Chuyển tiện ích về phân hệ của nó (tiện ích của phân hệ nào nằm trong phân hệ đó); tiện ích chung như Thiết kế mẫu in tính sau. Rồi xem lại có mở phân hệ Tiện ích cho gói Free không | PhuongXT | Chờ | Ý của PhuongXT 10/10/2026, khi làm T100. Gói Free đang ẩn tạm phân hệ Tiện ích |
 | T60 | Mô tả gói Free, Standard trong `GOI` (`src/app/plan.ts`) đang ghi "1 điểm bán"; theo Roadmap gói Free là mỗi chi nhánh một kho, không giới hạn một chi nhánh. Chốt câu chữ rồi sửa | PhuongXT | Chờ | Tách từ T25 |
 | T02 | Chốt nghiệp vụ trên từng sơ đồ Quy trình: ô nào, nối thế nào, câu chữ. Sửa ở `src/modules/<phân hệ>/quy-trinh.ts` | Trum | Chờ | |

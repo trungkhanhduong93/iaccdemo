@@ -439,3 +439,5 @@ Lý do: Trum chốt ngày 09/10/2026 (T58, T66, T67, T75), chọn hướng cột
 - Chỉ áp dụng TT58: 2.2.7, 10.4.1. Chỉ TT152, TT58: 6.2.5.
 
 Lý do: Trum chốt ngày 10/10/2026 (T97), theo bộ báo cáo hộ kinh doanh của iFaster đọc cùng ngày.
+
+## QD43. Bộ sổ TT58 theo phương pháp thuế (đang soạn)
