@@ -3,12 +3,12 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 10/10/2026
+
 - T117: Xuất bán POS: nút Tải từ FABi đổi thành Đồng bộ POS, mở hộp chọn khoảng thời gian, chi nhánh và ô Bỏ qua hoá đơn đã đồng bộ (chỉ lấy hoá đơn thiếu, thừa, bị xoá, sửa trên FABi).
 - T116: Danh sách Xuất bán POS lọc được theo Khách hàng, Kênh bán; đồng bộ chi tiết lọc được thêm theo Phương thức thanh toán.
 - T115: Danh sách Xuất bán POS bỏ cột Nguồn; nhãn cách đồng bộ ghi gọn Chi tiết hoặc Tổng hợp.
 - T114: Danh mục hàng hoá có trường Theo dõi tồn kho. Chứng từ Xuất bán POS có cột Theo dõi tồn kho (ô tích theo danh mục) ở cuối bảng, luôn dính mép phải.
 - T113: Hệ thống, Cấu hình kế toán có mục Đồng bộ bán hàng từ FABi: chọn Chi tiết theo hoá đơn (mỗi hoá đơn FABi một chứng từ Xuất bán POS) hoặc Tổng hợp theo kênh (mỗi ngày, mỗi kênh bán một chứng từ). Danh sách Xuất bán POS có cột Kênh bán và nhãn cách đồng bộ đang dùng.
-
 - T108: Chế độ TT58 (gói Standard): Thông tin đơn vị chọn phương pháp tính thuế GTGT, TNDN; danh sách sổ đổi theo lựa chọn. Các sổ S1 đến S4d-DNSN in đúng cột, dòng in sẵn của biểu mẫu TT58, có tiêu đề cột hai tầng (Nhập, Xuất, Tồn…) và dòng ký hiệu cột. Sổ doanh thu 3.2.5 đổi giữa S1, S2a, S3a. Báo cáo tình hình tài chính B01-DNSN 14 chỉ tiêu, kết quả kinh doanh B02-DNSN 5 chỉ tiêu. Phiếu thu, chi, nhập kho, xuất kho in ký hiệu và ô ký theo TT58. Gói Standard có Sổ tài sản cố định.
 - T107: Chi phí phân bổ: tab Danh sách thẻ chi phí với nút Ghi tăng và Ghi tăng dư đầu kỳ; thẻ mở toàn màn hình như phiếu, chọn loại Chi phí trả trước, CCDC, TSCĐ, tab Chi tiết phân bổ tự chia theo cuối tháng (sửa được từng dòng), tab Lịch sử, ngừng phân bổ khi sửa thẻ. Sơ đồ Quy trình có Chi tiền mặt, Chi ngân hàng (lý do Chi phí chờ phân bổ) dẫn tới thẻ; lưu phiếu chi lý do này thì hỏi tạo thẻ ngay. Danh mục lý do thêm Chi phí CCDC, Chi phí thuê nhà, Chi phí TSCĐ, Chi phí chờ phân bổ. Thông tin đơn vị có Ngày đầu năm: chứng từ thêm mới không được trước ngày này.
 - T106: Xuất bán POS: bảng chi tiết có thêm % CK, Tiền CK, % Phí dịch vụ, Phí dịch vụ, Doanh thu trước thuế (Giảm thuế GTGT, Phí vận chuyển ẩn sẵn, bật ở nút Tuỳ chỉnh giao diện), cộng thẳng cột; cột Mã hàng, Hàng hoá, ĐVT đứng yên khi cuộn ngang; dải đáy còn Phiếu giảm giá, Tổng tiền; ô Diễn giải đổi thành Ghi chú; bỏ nút Phát hành HĐĐT; đầu phiếu gọn còn hai hàng chữ để bảng chi tiết rộng hơn. Tiền thuế các món cộng lại khớp thuế của ngày (T103).
