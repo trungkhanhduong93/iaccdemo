@@ -521,7 +521,7 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
                       cfg={cfgDong}
                       dong={activeDong}
                       cheDo="xem"
-                      coKho={Boolean(bo.kho)}
+                      coKho={Boolean(bo.kho) && (s.goi === 'PR' || (nhom !== 'mua' && nhom !== 'ban'))}   // gói dưới Pro: kho ở đầu phiếu mua, bán (T83)
                       coCk={Boolean(bo.ck)}
                       coKm={ghi}
                       lyDo={oLy ? { nhan: oLy.nhan, ds: oLy.ds ?? [], macDinh: '' } : undefined}

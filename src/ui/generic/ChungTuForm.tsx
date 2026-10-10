@@ -156,6 +156,15 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   const [quy, setQuy] = useState(() => row?._quy ? String(row._quy) : dsQuy.includes(quyTm) ? quyTm : dsQuy[0] ?? '')
   useEffect(() => { setQuy(row?._quy ? String(row._quy) : dsQuy.includes(quyTm) ? quyTm : dsQuy[0] ?? '') }, [loai?.k, row?.id])
   useEffect(() => { if (!dsQuy.includes(quy)) setQuy(dsQuy[0] ?? '') }, [hinhThucTt])
+  // Kho của phiếu mua, bán (T83): gói dưới Pro chọn một kho ở đầu phiếu, gói Pro chọn kho trên từng dòng.
+  // Chi nhánh chỉ có một kho thì phiếu mới lấy luôn kho đó
+  const dsKhoCn = CHI_NHANH.find(c => c.ten === chiNhanh)?.kho ?? KHO
+  const khoMotCn = dsKhoCn.length === 1 ? dsKhoCn[0] : ''
+  const khoDau = bo.kho === 'dong' && (nhom === 'mua' || nhom === 'ban') && s.goi !== 'PR'
+  const [kho, setKho] = useState(() => luuCu('kho') ?? (moi ? khoMotCn : dongGoc.find(d => d.kho)?.kho ?? dsKhoCn[0] ?? ''))
+  useEffect(() => {
+    if (khoDau) setDsDong(ds => ds.map(d => ({ ...d, kho })))
+  }, [dongGoc, kho, khoDau])
   const coThangLl = laTien && s.goi === 'F' && nhom !== 'cq'   // chuyển quỹ không ảnh hưởng lãi lỗ
   const dsThangLl = useMemo(() => thangLaiLo(ngayCt), [ngayCt])
   const [thangLl, setThangLl] = useState(dsThangLl[0])
@@ -183,7 +192,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
 
   // Lưu chứng từ
   // Nội dung lúc bắt đầu sửa, để nhật ký ghi ô nào đổi (T51)
-  const chupNd = () => ({ ngay: ngayCt, doiTuong, dienGiai, tong: tongThanhToan, lyDo, ghiChu, quy, dong: JSON.stringify(dsDong) })
+  const chupNd = () => ({ ngay: ngayCt, doiTuong, dienGiai, tong: tongThanhToan, lyDo, ghiChu, quy, kho, dong: JSON.stringify(dsDong) })
   const goc = useRef(chupNd())
   useEffect(() => { if (dangSua) goc.current = chupNd() }, [dangSua])
 
@@ -191,7 +200,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
     // Bản mẫu chưa có backend: phiếu mới lên đầu danh sách, phiếu sửa hiện nội dung mới, tới khi tải lại trang (T49)
     const noiDung = {
       ngay: ngayCt, thang: Number(ngayCt.split('/')[1]) || 10, doiTuong, dienGiai,
-      tien: tongTien - tongCk, thue: tongThue, tong: tongThanhToan, _dong: dsDong, _lyDo: lyDo, _ghiChu: ghiChu, _quy: quy,
+      tien: tongTien - tongCk, thue: tongThue, tong: tongThanhToan, _dong: dsDong, _lyDo: lyDo, _ghiChu: ghiChu, _quy: quy, _kho: kho,
       _nguoiGiao: nguoiGiao, _nhanVien: nhanVien, _diaChi: diaChi, _mst: mst, _hanTt: hanTt,
       _nhanKemHd: nhanKemHd, _soHd: soHd, _ngayHd: ngayHd, _kyHieuHd: kyHieuHd, _httt: hinhThucTt,
     }
@@ -206,7 +215,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
     } else if (row) {
       suaPhieu(man, String(row.id), noiDung)
       const g = goc.current, m = chupNd()
-      const doi = ([['ngay', 'Ngày chứng từ'], ['doiTuong', 'Đối tượng'], ['quy', 'Quỹ'], ['lyDo', 'Lý do'], ['dienGiai', 'Diễn giải'], ['ghiChu', 'Ghi chú'], ['dong', 'Dòng chi tiết']] as const)
+      const doi = ([['ngay', 'Ngày chứng từ'], ['doiTuong', 'Đối tượng'], ['quy', 'Quỹ'], ['kho', 'Kho'], ['lyDo', 'Lý do'], ['dienGiai', 'Diễn giải'], ['ghiChu', 'Ghi chú'], ['dong', 'Dòng chi tiết']] as const)
         .filter(([k]) => g[k] !== m[k]).map(([, ten]): string => ten)
       if (g.tong !== m.tong) doi.push(`Tổng tiền ${money(g.tong)} → ${money(m.tong)}`)
       if (doi.length) ghiNhatKy(man, String(row.id), soCt, s.ten, `Sửa chứng từ: ${doi.join(', ')}`)
@@ -463,7 +472,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               </>}
             </Dropdown>
             {hopCot && (
-              <HopCotPhieu ds={cotTuyChon(cfg, { coKho: Boolean(bo.kho), coLo: nhom === 'mua' && s.goi === 'PR', coCk: Boolean(bo.ck), coKm: kieu !== 'khong', coLy: Boolean(oLy) })}
+              <HopCotPhieu ds={cotTuyChon(cfg, { coKho: Boolean(bo.kho) && !khoDau, coLo: nhom === 'mua' && s.goi === 'PR', coCk: Boolean(bo.ck), coKm: kieu !== 'khong', coLy: Boolean(oLy) })}
                 an={anCot} onDoi={doiAnCot} onDong={() => setHopCot(false)} />
             )}
             {hoiXoa && row && (
@@ -742,6 +751,15 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
                 <label>{bo.so ?? 'Số chứng từ'}</label>
                 <input className="inp code" readOnly value={soCt} />
               </div>
+              {/* Gói dưới Pro: một kho cho cả phiếu, chọn trong kho của chi nhánh lập phiếu (T83) */}
+              {khoDau && (
+                <div className="f">
+                  <label>{nhom === 'ban' || cfg.prefix === 'TLN' ? 'Kho xuất' : 'Kho nhập'} <em>*</em></label>
+                  {dangSua ? (
+                    <ChonDanhMuc dm="kho" nhan="kho" value={kho} onChange={setKho} ds={!kho || dsKhoCn.includes(kho) ? dsKhoCn : [kho, ...dsKhoCn]} />
+                  ) : <input className="inp" readOnly value={kho} />}
+                </div>
+              )}
               {/* Mua hàng tích Nhận kèm hoá đơn: thông tin hoá đơn ở cột phải, dưới số phiếu, xếp 2 cột (T62, T68) */}
               {nhom === 'mua' && bo.hd && nhanKemHd && (
                 <div className="ct-hd-dau">
@@ -804,7 +822,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               cheDo={dangSua ? 'sua' : 'xem'}
               coTk={hienTk}
               nhanTk={nhanTkDong}
-              coKho={Boolean(bo.kho)}
+              coKho={Boolean(bo.kho) && !khoDau}
+              khoMacDinh={khoMotCn || 'Kho tổng'}
               coCk={Boolean(bo.ck)}
               coLo={nhom === 'mua' && s.goi === 'PR'}   // số lô, hạn dùng chỉ có ở gói Pro (T68)
               coKm={kieu !== 'khong'}
