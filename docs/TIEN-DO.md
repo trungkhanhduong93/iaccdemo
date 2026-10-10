@@ -38,7 +38,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
-| T118 | Danh sách Xuất bán POS: dải đối soát đơn POS kiểu iPOS Inventory: nút Đã đồng bộ, Chưa đồng bộ; số liệu tổng số hoá đơn POS, IACC, số món, mã hoá đơn cuối, lần đồng bộ cuối; bảng hoá đơn chưa đồng bộ (mã hoá đơn, thời gian, tên món, ĐVT, số lượng, lý do lỗi) | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-doi-soat-pos.md` |
+| T118 | Danh sách Xuất bán POS: dải đối soát đơn POS kiểu iPOS Inventory: nút Đã đồng bộ, Chưa đồng bộ; số liệu tổng số hoá đơn POS, IACC, số món, mã hoá đơn cuối, lần đồng bộ cuối; bảng hoá đơn chưa đồng bộ (mã hoá đơn, thời gian, tên món, ĐVT, số lượng, lý do lỗi); bỏ chip Tất cả, Chưa ghi sổ, Đã ghi sổ, Lệch đối soát, nút Ghi chú FABi, xoá hàng loạt | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-doi-soat-pos.md` |
 | T117 | Xuất bán POS: nút Đồng bộ POS (trước là Tải từ FABi; tên ngắn để thanh công cụ không đè chip trạng thái) mở hộp chọn khoảng thời gian, chi nhánh (mặc định chi nhánh đang chọn, tất cả chi nhánh thì phải chọn), ô tích Bỏ qua hoá đơn đã đồng bộ (tích sẵn) | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-dong-bo-fabi.md` |
 | T116 | Danh sách Xuất bán POS: bộ lọc thêm Khách hàng, Kênh bán, Phương thức thanh toán (chỉ khi đồng bộ chi tiết; tổng hợp theo kênh bỏ ở bộ lọc và đầu phiếu) | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-dong-bo-fabi.md` |
 | T115 | Danh sách Xuất bán POS: bỏ cột và ô lọc Nguồn (chỉ có FABi); nhãn cách đồng bộ ghi gọn Chi tiết hoặc Tổng hợp | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-dong-bo-fabi.md` |

@@ -1,5 +1,5 @@
 // Chứng từ bán hàng: mỗi chi nhánh một chứng từ mỗi ngày, gom từ đơn POS trên FABi. Số khớp KQKD, Tổng quan.
-import { useMemo, useRef, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import type { Col, Row, ScreenProps, VoucherCfg } from '../types'
 import { duongDan, tenMan } from '../../app/registry'
@@ -12,14 +12,14 @@ import { Card, Note, PageHead } from '../../ui/Page'
 import { FormToanMan, useDong } from '../../ui/FormToanMan'
 import { St, Table } from '../../ui/Table'
 import { dmy, fold, money, moneyD, rng } from '../../ui/format'
-import { Popover, Select } from '../../ui/Dropdown'
+import { Select } from '../../ui/Dropdown'
 import { PhanTrang } from '../../ui/PhanTrang'
-import { useDaXoa, xoaPhieu } from '../../ui/generic/daXoa'
+import { useDaXoa } from '../../ui/generic/daXoa'
 import { ChonKhoangNgay, docNgay, thangNay, trongKhoang, type KhoangNgay } from '../../ui/ChonNgay'
 import { NutExcel } from '../../ui/CongCuDs'
 import { dangLoc, khopLoc, type GiaTriLoc, type KieuLoc } from '../../ui/LocCot'
 import {
-  BoLoc, ChipTrangThai, NutHangLoat, NutTuyChinhCot, cotChon, dsChipTT, khopChipTT, useCauHinhLoc, useCotDs, useLocNhap, type OLocDef,
+  BoLoc, NutTuyChinhCot, useCauHinhLoc, useCotDs, useLocNhap, type OLocDef,
 } from '../../ui/LocNangCao'
 import { HopInChungTu, type PhieuIn } from '../../ui/bao-cao/InChungTu'
 import { TT_CT } from '../../ui/generic/gen'
@@ -196,7 +196,7 @@ export function ChungTuBanHang({ sc, mod }: ScreenProps) {
       id: String(i), so: soFabi(`fabi-${x.seed}`), ngay: `${dmy(x.date)} ${x.gio}`, thang: x.date.getMonth() + 1, cn: cnTen(x.cn), x, kenh: x.kenh,
       dienGiai: x.loai === 'don' ? `Hoá đơn FABi ${x.kenh.toLowerCase()} ${x.gio} ngày ${dmy(x.date).slice(0, 5)}` : `Doanh thu ${x.kenh.toLowerCase()} ${x.don} đơn POS ngày ${dmy(x.date).slice(0, 5)}`,
       doiTuong: 'Khách lẻ POS',
-      tien: x.dt, thue: x.vat, tong: x.dt + x.vat, nguon: 'FABi', tt: i < 3 ? 'nhap' : x.cn === 'q5' && x.date.getDate() === 5 && x.date.getMonth() === 9 && i % 7 === 0 ? 'loi' : 'ghi',
+      tien: x.dt, thue: x.vat, tong: x.dt + x.vat, nguon: 'FABi', tt: i < 3 ? 'nhap' : 'ghi',
     })), [cach])
   const rows = useMemo(() => tatCa.filter(r => !laDaXoa(r.id)), [tatCa, ban])
   if (id === 'moi') return <Navigate to={duongDan(mod, sc)} replace />   // không lập tay Xuất bán POS (T52)
@@ -205,7 +205,7 @@ export function ChungTuBanHang({ sc, mod }: ScreenProps) {
 }
 
 /** Cột cố định hai đầu, không ẩn, không kéo đổi thứ tự */
-const COT_CO_DINH = new Set(['chk', 'stt', 'ngay', 'so'])
+const COT_CO_DINH = new Set(['stt', 'ngay', 'so'])
 /** Cột lọc bằng cách chọn trong danh sách giá trị */
 const COT_CHON = new Set(['cn', 'nguon', 'kenh'])
 
@@ -222,13 +222,8 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
   const path = duongDan(mod, sc)
   const loc0 = useLocNhap(locMacDinh)
   const { nhap, dat, ap } = loc0
-  const [chipTT, setChipTT] = useState('all')
   const [moDongBo, setMoDongBo] = useState(false)   // hộp Đồng bộ hoá đơn từ POS (T117)
   const [xemDs, setXemDs] = useState<'da' | 'chua'>('da')   // đối soát đơn POS: đã đồng bộ hoặc chưa đồng bộ (T118)
-  const [chon, setChon] = useState<Set<string>>(new Set())
-  const [moHangLoat, setMoHangLoat] = useState(false)
-  const [moGhiChu, setMoGhiChu] = useState(false)
-  const nutGhiChu = useRef<HTMLButtonElement>(null)
   const [locCot, setLocCot] = useState<Record<string, GiaTriLoc>>({})
   const [trang, setTrang] = useState(1)
   const [coTrang, setCoTrang] = useState(20)
@@ -239,7 +234,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
   // Chi nhánh chọn trên thanh trên (QD17): lọc theo chi nhánh đó, bỏ cột và ô lọc chi nhánh
   const cnChon = chiNhanhHienTai(s)
 
-  const tenTT = (r: Row) => r.tt === 'loi' && ghi ? 'Lệch đối soát' : r.tt === 'nhap' && ghi ? 'Chưa ghi sổ' : 'Đã ghi sổ'
+  const tenTT = (r: Row) => r.tt === 'nhap' && ghi ? 'Chưa ghi sổ' : 'Đã ghi sổ'
   const kieuCot = (k: string): KieuLoc =>
     k === 'ngay' ? 'ngay' : COT_CHON.has(k) ? 'chon' : k === 'tien' || k === 'thue' || k === 'tong' ? 'so' : 'chu'
   const chuCot = (k: string, r: Row): string => {
@@ -288,9 +283,8 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
     }
     return true
   })
-  const chips = dsChipTT(truocTT, ghi, 'Lệch đối soát')
-  const list = truocTT.filter(r => khopChipTT(chipTT, r.tt, ghi))
-  const selectedRows = useMemo(() => list.filter(r => chon.has(r.id)), [list, chon])
+  // Bỏ chip trạng thái ghi sổ: dải đối soát đơn POS thay cho phần lọc này (T118)
+  const list = truocTT
   const [activeId, setActiveId] = useState<string>(() => list[0]?.id ?? '')
   const activeRow = list.find(r => r.id === activeId) ?? list[0]
 
@@ -313,8 +307,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
   const sum = (k: string) => pagedRows.reduce((a, r) => a + r[k], 0)
   const tongDs = (k: string) => list.reduce((a, r) => a + (r as Row)[k], 0)
   const cols: Col[] = [
-    cotChon(list, chon, setChon, () => setMoHangLoat(true)),
-    { k: 'stt', t: 'STT', w: 60, c: true, dinh: 'trai' },
+    { k: 'stt', t: 'STT', w: 46, c: true, dinh: 'trai' },
     { k: 'ngay', t: 'Ngày', w: 100, dinh: 'trai' },
     { k: 'so', t: 'Số chứng từ', cls: 'code', w: 150, dinh: 'trai' },
     { k: 'dienGiai', t: 'Diễn giải' },
@@ -332,29 +325,9 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
       <h1 className="sr-only">{tenMan(sc)}</h1>
       <div className={`voucher-split${panelMo ? '' : ' gon-ct'}`}>
         <section className="card voucher-top">
-          {/* Thanh công cụ: chip trạng thái bên trái; ô lọc, phễu, Lọc, Tuỳ chỉnh cột, Excel, Hàng loạt, Thêm mới | ⌄ (T43) */}
+          {/* Thanh công cụ: ô lọc, phễu, Lọc, Tuỳ chỉnh cột, Excel, Đồng bộ POS (T43). Không chip trạng thái, ghi chú FABi, hàng loạt (T118) */}
           <div className="ds-thanh">
-            <div className="ds-chips-wrap">
-              {ghi && <ChipTrangThai ds={chips} chon={chipTT} onChon={k => { setChipTT(k); setTrang(1) }} />}
-              <button
-                ref={nutGhiChu}
-                type="button"
-                className="icon-btn sm ds-ghi-chu-fabi"
-                title="Đơn POS trên FABi tự gom thành một chứng từ cho mỗi chi nhánh mỗi ngày. Đơn huỷ, trả hàng sau khi chốt ca được điều chỉnh vào chứng từ cùng ngày, không tạo chứng từ trùng."
-                aria-label="Ghi chú FABi"
-                onClick={() => setMoGhiChu(v => !v)}
-              >
-                <Icon n="info" className="ic sm" />
-              </button>
-              <Popover anchor={nutGhiChu} open={moGhiChu} onClose={() => setMoGhiChu(false)} width={320}>
-                <div style={{ padding: '10px 14px', fontSize: 13, lineHeight: 1.45, color: 'var(--ink)' }}>
-                  <b>Ghi chú FABi</b>
-                  <p style={{ margin: '6px 0 0', color: 'var(--body)' }}>
-                    Đơn POS trên FABi tự gom thành một chứng từ cho mỗi chi nhánh mỗi ngày. Đơn huỷ, trả hàng sau khi chốt ca được điều chỉnh vào chứng từ cùng ngày, không tạo chứng từ trùng.
-                  </p>
-                </div>
-              </Popover>
-            </div>
+            <div className="ds-chips-wrap" />
             <div className="ds-thanh-phai">
               {/* Cách đồng bộ FABi đang dùng, bấm để đổi ở Cấu hình (T113) */}
               <Link className="chip info" to="/app/he-thong/cau-hinh" title={`Đồng bộ FABi ${(s.dongBoFabi ?? 'kenh') === 'chiTiet' ? 'chi tiết theo hoá đơn' : 'tổng hợp theo kênh'}; đổi ở Hệ thống, Cấu hình kế toán`}>
@@ -374,14 +347,6 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
               <NutExcel
                 onNhap={() => toast('Nhập chứng từ bán hàng từ file Excel')}
                 onXuat={() => toast(`Đã xuất ${list.length} chứng từ ra Excel`)}
-              />
-              <NutHangLoat
-                selectedRows={selectedRows}
-                ghi={ghi}
-                onBoChon={() => setChon(new Set())}
-                onXoa={ids => xoaPhieu(`${mod.key}/${sc.slug}`, ids.map(id => ({ id, so: String(rows.find(r => String(r.id) === id)?.so ?? '') })), s.ten)}
-                open={moHangLoat}
-                onOpenChange={setMoHangLoat}
               />
               {/* Xuất bán POS chỉ đổ về từ phần mềm bán hàng, không thêm mới bằng tay (T52) */}
               <button type="button" className="btn pri" onClick={() => setMoDongBo(true)} title="Đồng bộ hoá đơn từ POS">
@@ -437,16 +402,15 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
                 motDong
                 keDoc
                 doRong={cot.doRong}
-                loc={{ gt: locCot, dat: (k, g) => { setLocCot(x => ({ ...x, [k]: g })); setTrang(1) }, bo: new Set(['chk', 'stt']),
+                loc={{ gt: locCot, dat: (k, g) => { setLocCot(x => ({ ...x, [k]: g })); setTrang(1) }, bo: new Set(['stt']),
                   kieu: c => kieuCot(c.k), luaChon }}
                 onRow={r => setActiveId(r.id)}
                 onDbl={r => nav(`${path}/${r.id}`)}
                 rowCls={r => [
                   r.id === activeId ? 'dang-chon' : '',
                   r.tt === 'nhap' && ghi ? 'chua-ghi' : '',
-                  r.tt === 'loi' && ghi ? 'bad' : '',
                 ].filter(Boolean).join(' ')}
-                sum={{ stt: 'Tổng trang', tien: sum('tien'), thue: sum('thue'), tong: sum('tong') }}
+                sum={{ ngay: 'Tổng trang', tien: sum('tien'), thue: sum('thue'), tong: sum('tong') }}
               />
               <PhanTrang
                 tong={list.length}
@@ -464,7 +428,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
                 type="button"
                 className="btn sm"
                 style={{ marginTop: 10 }}
-                onClick={() => { loc0.xoaHet(); setChipTT('all'); setLocCot({}); setTrang(1) }}
+                onClick={() => { loc0.xoaHet(); setLocCot({}); setTrang(1) }}
               >
                 Xoá bộ lọc
               </button>
@@ -752,7 +716,6 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
           </div>
           <div className="ct-than"><NoiDungTab x={x} tab={tab} kieu={kieu} an={anCot} /></div>
         </section>
-        {row.tt === 'loi' && <Note kind="err" icon="alert">Doanh thu trên FABi lớn hơn sổ 1.250.000 đ. <Link to="/app/tien-ich/11-7">Mở đối soát</Link></Note>}
       </div>
       {phieuIn && <HopInChungTu ds={phieuIn} onDong={() => setPhieuIn(null)} />}
       {hopCot && <HopCotPhieu ds={COT_POS} an={anCot} macDinh={AN_POS_MAC_DINH} onDoi={doiAnCot} onDong={() => setHopCot(false)} />}
