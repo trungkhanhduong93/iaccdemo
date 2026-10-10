@@ -19,8 +19,8 @@ export const quyTrinh: QuyTrinhDef = {
   // Sổ doanh thu hiện khi gói Free có (T97 của Trum mở 3.2.5); 3.2.1, 3.2.3 đã bỏ ở mọi gói (T99)
   hoiTuFree: {
     lan: [
-      { ten: 'Bán hàng từ FABi', tone: 'ok', nut: [
-        { ten: 'Đơn POS từ FABi', icon: 'pos', di: '', tone: 'fabi' },
+      // Nhãn làn đã là nguồn FABi nên bỏ ô Đơn POS từ FABi trùng ý; mũi tên đồng bộ đi từ nhãn làn (T121)
+      { ten: 'Bán hàng từ FABi', icon: 'pos', tone: 'ok', nut: [
         { ten: 'Xuất bán POS', icon: 'cart', di: 'ban-hang/3-1-1', noi: 'đồng bộ' },
       ] },
     ],

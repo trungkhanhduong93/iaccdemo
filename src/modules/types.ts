@@ -120,6 +120,7 @@ export interface BuocQT { ten?: string; chinh: NutQT; tren?: NutQT[]; duoi?: Nut
 /** Một làn của sơ đồ hội tụ: tên nhóm nghiệp vụ và các ô xếp ngang */
 export interface LanQT {
   ten: string
+  icon?: string   // biểu tượng ở nhãn làn; thiếu thì lấy của ô đầu làn (T121)
   nut: NutQT[]
   tone?: 'ok' | 'err' | 'info' | 'ad' | 'st'  // tông màu ô biểu tượng ở nhãn làn: xanh lá, đỏ, xanh, tím, xanh ngọc; thiếu thì 'info'
 }

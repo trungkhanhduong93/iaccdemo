@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T121 | Sơ đồ quy trình Bán hàng gói Free: bỏ ô Đơn POS từ FABi trùng với nhãn làn Bán hàng từ FABi, mũi tên đồng bộ đi thẳng sang Xuất bán POS | PhuongXT | Đang làm | Sửa `ban-hang/quy-trinh.ts`, `modules/types.ts`, `QuyTrinhScreen.tsx` |
 | T120 | In phiếu từ form chứng từ: hàm `moIn` ở `ChungTuForm.tsx` (khoảng dòng 317–321) chưa truyền dòng chi tiết đang có trên form vào phiếu in, nên phiếu mới hoặc đang sửa in theo dòng đã lưu hoặc dòng sinh lại | | Chờ | Phát hiện khi làm T112 |
 | T109 | Sổ S2c-DNSN (5.2.8, TT58): bộ lọc Mặt hàng, Kho để mở sổ theo từng cặp mặt hàng – kho | | Chờ | T108 đang in cố định Thịt bò thăn, kho Phố Mây Lê Lợi. `CauHinhBC.loc` chưa đổi theo chế độ, lọc thêm sẽ hiện cả ở TT133, TT99 |
 | T110 | TT58: tên sổ ghi trong phần Hạch toán của phiếu (`soTT58` ở `tien/index.ts`, `ban-hang`, `kho`, `mua-hang`) theo bộ sổ TT58 (Sổ chi tiết tiền S2d thay Sổ quỹ tiền mặt, Sổ tiền gửi ngân hàng); tờ khai GTGT, Thông tin đơn vị đọc phương pháp thuế GTGT từ `s.ppGtgt` thay vì suy từ chế độ | | Chờ | Tách từ T108. `ToKhaiGTGT.tsx:18` còn `s.cheDo === 'TT58'` |
@@ -38,6 +37,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T121 | Sơ đồ quy trình Bán hàng gói Free: bỏ ô Đơn POS từ FABi trùng với nhãn làn Bán hàng từ FABi, mũi tên đồng bộ đi thẳng sang Xuất bán POS | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-bo-o-trung-so-do-ban-hang.md` |
 | T111 | Báo cáo: ô Khoảng ngày và nút Xem báo cáo nằm trong cột Bộ lọc bên trái (18 màn không có cột lọc giữ trên thanh trên); cột tỷ lệ và mọi cột không còn hẹp tới mức vỡ chữ tiêu đề | Trum | 10/10/2026 | `2026-10-10-trum-bo-loc-ben-mau-in.md` |
 | T112 | Màn Thiết kế mẫu in làm lại ba vùng (danh sách mẫu, tờ in, thuộc tính); khung phiếu in vẽ lại, bổ sung trường theo thông tư; số bằng chữ khớp dòng Cộng, Nợ/Có đúng phiếu | Trum | 10/10/2026 | `2026-10-10-trum-bo-loc-ben-mau-in.md` |
 | T118 | Danh sách Xuất bán POS: dải đối soát đơn POS kiểu iPOS Inventory: nút Đã đồng bộ, Chưa đồng bộ; số liệu tổng số hoá đơn POS, IACC, số món, mã hoá đơn cuối, lần đồng bộ cuối; bảng hoá đơn chưa đồng bộ (mã hoá đơn, thời gian, tên món, ĐVT, số lượng, lý do lỗi); bỏ chip Tất cả, Chưa ghi sổ, Đã ghi sổ, Lệch đối soát, nút Ghi chú FABi, xoá hàng loạt; thêm lọc Hàng hoá, Theo dõi tồn kho | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-doi-soat-pos.md` |

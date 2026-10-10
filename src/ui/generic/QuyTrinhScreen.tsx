@@ -221,7 +221,7 @@ function SoDoHoiTu({ lan, ra, goi, modKey }: { lan: LanQT[]; ra: LanQT; goi: Goi
           {lan.map(l => (
             <div key={l.ten} className={`qt-lan qt-ht-${l.tone ?? 'info'}`}>
               <div className="qt-lan-ten" title={l.ten}>
-                <span className="qt-ht-ic"><Icon n={l.nut[0].icon} className="ic" /></span>
+                <span className="qt-ht-ic"><Icon n={l.icon ?? l.nut[0].icon} className="ic" /></span>
                 <span className="qt-ht-t">{l.ten}</span>
               </div>
               <div className="qt-lan-nut">{l.nut.map(n => (
