@@ -2,7 +2,7 @@
 // Bấm ô trên sơ đồ mở thẳng form chứng từ mới (đích có /moi) hoặc màn tương ứng. Ô ngoài gói hiện mờ, có khoá và nhãn gói.
 import { Fragment, useLayoutEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import type { LanQT, NutQT, QuyTrinhDef, ScreenProps } from '../../modules/types'
+import type { CotQT, LanQT, NutQT, QuyTrinhDef, ScreenProps } from '../../modules/types'
 import { MODULES, anPhanHeGoi, dich, hienMan, maKhoa, moDuoc, nhanTab, phanHeKhoa, tenMan } from '../../app/registry'
 import { useSession, type Session } from '../../app/session'
 import { GOI, GOIS, anNgoaiGoi, minGoi, type Goi } from '../../app/plan'
@@ -24,6 +24,8 @@ export function QuyTrinhScreen({ mod }: ScreenProps) {
   const goc0 = mod.quyTrinh!
   // Gói Free có sơ đồ hội tụ riêng thì thay sơ đồ chung (T98)
   const goc: QuyTrinhDef = s.goi === 'F' && goc0.hoiTuFree ? { ...goc0, buoc: [], hoiTu: goc0.hoiTuFree } : goc0
+  // Gói Free có sơ đồ luồng theo cột thì thay sơ đồ chung (T123)
+  const luong = s.goi === 'F' && goc0.luongFree ? goc0.luongFree.map(c => ({ ...c, nut: c.nut.filter(hien) })).filter(c => c.nut.length) : null
   const qt: QuyTrinhDef = {
     ...goc,
     buoc: goc.buoc.filter(b => hien(b.chinh)).map(b => ({ ...b, tren: b.tren?.filter(hien), duoi: b.duoi?.filter(hien) })),
@@ -32,7 +34,7 @@ export function QuyTrinhScreen({ mod }: ScreenProps) {
       ra: { ...goc.hoiTu.ra, nut: goc.hoiTu.ra.nut.filter(hien) },
     },
   }
-  const nut = [...qt.buoc.flatMap(b => [b.chinh, ...(b.tren ?? []), ...(b.duoi ?? [])]),
+  const nut = [...(luong ? luong.flatMap(c => c.nut) : qt.buoc.flatMap(b => [b.chinh, ...(b.tren ?? []), ...(b.duoi ?? [])])),
     ...(qt.hoiTu ? [...qt.hoiTu.lan, qt.hoiTu.ra].flatMap(l => l.nut) : [])]
   const mo = nut.filter(n => moNut(n, s.goi).ok).length
   // cả phân hệ ngoài gói thì mời xem thử gói thấp nhất có phân hệ này
@@ -51,13 +53,15 @@ export function QuyTrinhScreen({ mod }: ScreenProps) {
             <span className="grow" />
             {!an && <span className="qt-dem">Gói {GOI[s.goi].ten} mở {mo}/{nut.length} nghiệp vụ</span>}
           </div>
+          {s.goi === 'F' && goc0.moTaFree && <p className="qt-mo-ta">{goc0.moTaFree}</p>}
           {khoa && can && (
             <Note kind="warn" icon="lock">
               {mod.ten} có từ gói {GOI[can].ten}. Sơ đồ vẫn hiện để xem trước.{' '}
               <button className="btn sm" onClick={() => set({ goi: can })}>Xem thử gói {GOI[can].ten}</button>
             </Note>
           )}
-          {qt.hoiTu ? <SoDoHoiTu lan={qt.hoiTu.lan} ra={qt.hoiTu.ra} goi={s.goi} modKey={mod.key} /> : <SoDo qt={qt} goi={s.goi} />}
+          {qt.hoiTu ? <SoDoHoiTu lan={qt.hoiTu.lan} ra={qt.hoiTu.ra} goi={s.goi} modKey={mod.key} />
+            : luong ? <SoDoLuong cot={luong} goi={s.goi} /> : <SoDo qt={qt} goi={s.goi} />}
         </section>
         {/* Sơ đồ hội tụ đã có khối sổ sách, báo cáo ở cuối nên bỏ khung Báo cáo bên phải để khỏi trùng */}
         {!qt.hoiTu && <BenPhai qt={qt} modKey={mod.key} goi={s.goi} cheDo={s.cheDo} session={s} />}
@@ -156,6 +160,68 @@ function ONut({ n, goi, chinh, so, style }: { n: NutQT; goi: Goi; chinh?: boolea
 
 const BO = 10         // bán kính góc bo ở hai đầu trục gom
 const MUI = 8         // chiều dài mũi tên vào khối Sổ sách, cao 10
+
+/** Sơ đồ luồng theo cột (T123): ô cột trước nối tới mọi ô cột sau. Nhiều ô gộp vào một ô (mua hàng, bán hàng thành tồn hệ thống),
+ *  một ô tách ra nhiều ô (kiểm kê ra thiếu, thừa). Đường nối gấp khúc: ra khỏi cột trước tới trục đứng, đi dọc, rẽ vào ô cột sau */
+function SoDoLuong({ cot, goi }: { cot: CotQT[]; goi: Goi }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const [ve, setVe] = useState<{ w: number; h: number; d: string; mui: string[]; chu: { x: number; y: number; t: string }[] } | null>(null)
+  useLayoutEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const doLai = () => {
+      const zoom = heSoZoom()
+      const g = el.getBoundingClientRect()
+      const hop = [...el.querySelectorAll<HTMLElement>(':scope > .qt-lg-cot')].map(c =>
+        [...c.querySelectorAll<HTMLElement>(':scope > .qt-n')].map(n => {
+          const r = n.getBoundingClientRect()
+          return { l: (r.left - g.left) / zoom, r: (r.right - g.left) / zoom, y: Math.round((r.top + r.height / 2 - g.top) / zoom) }
+        }))
+      const p: string[] = [], mui: string[] = [], chu: { x: number; y: number; t: string }[] = []
+      for (let i = 1; i < hop.length; i++) {
+        const truoc = hop[i - 1], sau = hop[i]
+        if (!truoc.length || !sau.length) continue
+        const ra = Math.round(Math.max(...truoc.map(o => o.r)))
+        const ax = ra + 24                                        // trục đứng gần cột trước, để đoạn vào ô sau đủ chỗ ghi chữ
+        const ys = [...truoc, ...sau].map(o => o.y)
+        truoc.forEach(o => p.push(`M${Math.round(o.r)} ${o.y}H${ax}`))
+        if (Math.min(...ys) !== Math.max(...ys)) p.push(`M${ax} ${Math.min(...ys)}V${Math.max(...ys)}`)
+        sau.forEach((o, j) => {
+          const x = Math.round(o.l) - 2
+          p.push(`M${ax} ${o.y}H${x - MUI + 2}`)
+          mui.push(`M${x - MUI} ${o.y - 5}L${x} ${o.y}L${x - MUI} ${o.y + 5}Z`)
+          const t = cot[i].nut[j]?.noi ?? cot[i].noi
+          if (t) chu.push({ x: Math.round((ax + x - MUI) / 2), y: o.y - 7, t })
+        })
+      }
+      setVe({ w: Math.round(g.width / zoom), h: Math.round(g.height / zoom), d: p.join(''), mui, chu })
+    }
+    const ro = new ResizeObserver(doLai)
+    ro.observe(el)
+    doLai()
+    window.addEventListener('resize', doLai)
+    return () => { ro.disconnect(); window.removeEventListener('resize', doLai) }
+  }, [cot, goi])
+
+  return (
+    <div className="qt-so">
+      <div className="qt-ht qt-lg" ref={ref}>
+        {ve && (
+          <svg className="qt-ht-svg" width={ve.w} height={ve.h} aria-hidden>
+            <path d={ve.d} />
+            {ve.mui.map((m, i) => <path key={i} d={m} className="mui" />)}
+            {ve.chu.map((c, i) => <text key={i} x={c.x} y={c.y} className="qt-lg-chu">{c.t}</text>)}
+          </svg>
+        )}
+        {cot.map((c, i) => (
+          <div key={i} className="qt-lg-cot">
+            {c.nut.map(n => <NutNgang key={n.di || n.ten} n={n} goi={goi} />)}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
 
 /** Sơ đồ hội tụ: mỗi làn một hàng thấp xếp dọc bên trái, đường nối từ từng làn gom về khối kết quả bên phải */
 function SoDoHoiTu({ lan, ra, goi, modKey }: { lan: LanQT[]; ra: LanQT; goi: Goi; modKey: string }) {

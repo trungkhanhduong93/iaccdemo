@@ -19,29 +19,21 @@ export const quyTrinh: QuyTrinhDef = {
       tren: [{ ten: 'Bổ sung giá nhập', icon: 'edit', di: 'kho/5-1-11/moi' }],
       duoi: [{ ten: 'Giá thành đơn giản', icon: 'flask', di: 'kho/5-1-8' }] },
   ],
-  // Gói Free (T123): hàng mua vào, bán ra làm nên tồn hệ thống; kiểm kê đối chiếu tồn thực tế, thiếu thì xuất điều chỉnh, thừa thì nhập điều chỉnh
-  hoiTuFree: {
-    lan: [
-      { ten: 'Nhập kho', tone: 'ok', nut: [
-        { ten: 'Phiếu mua hàng', icon: 'truck', di: 'mua-hang/4-1-1/moi' },
-      ] },
-      { ten: 'Xuất kho', tone: 'err', nut: [
-        { ten: 'Xuất bán POS', icon: 'pos', di: 'ban-hang/3-1-1' },
-      ] },
-      { ten: 'Kiểm kê', icon: 'clipboard', tone: 'info', nut: [
-        { ten: 'Tồn hệ thống', icon: 'box', di: '' },   // tồn theo sổ sau mua vào, bán ra; chỉ để xem
-        { ten: 'Kiểm kê kho', icon: 'clipboard', di: 'kho/5-1-10/moi', noi: 'đối chiếu' },
-      ] },
-      // Chênh lệch sau kiểm kê: phiếu kiểm kê tự hạch toán phần thiếu, thừa nên hai ô chỉ để xem, không mở màn
-      { ten: 'Điều chỉnh', icon: 'scale', tone: 'ad', nut: [
-        { ten: 'Xuất điều chỉnh (hàng thiếu)', icon: 'cashout', di: '' },
-        { ten: 'Nhập điều chỉnh (hàng thừa)', icon: 'filein', di: '' },
-      ] },
-    ],
-    ra: { ten: 'Báo cáo', nut: [
-      { ten: 'Báo cáo xuất nhập tồn', icon: 'chart', di: 'kho/5-2-3' },
+  // Gói Free (T123): mua hàng, bán hàng làm nên tồn hệ thống (kết quả, không phải màn hình); kiểm kê kho so sánh với tồn hệ thống
+  // ra chênh lệch: thiếu thì xuất điều chỉnh, thừa thì nhập điều chỉnh. Hai ô điều chỉnh do phiếu kiểm kê tự hạch toán nên chỉ để xem
+  moTaFree: 'Gói Free theo dõi tồn kho với hàng bán thẳng: mua về bán ra nguyên đơn vị, không qua chế biến.',
+  luongFree: [
+    { nut: [
+      { ten: 'Mua hàng', icon: 'truck', di: 'mua-hang/4-1-1' },
+      { ten: 'Bán hàng', icon: 'pos', di: 'ban-hang/3-1-1' },
     ] },
-  },
+    { noi: 'tổng hợp', nut: [{ ten: 'Tồn hệ thống', icon: 'box', di: '', tone: 'kq' }] },
+    { noi: 'so sánh', nut: [{ ten: 'Kiểm kê kho', icon: 'clipboard', di: 'kho/5-1-10/moi' }] },
+    { nut: [
+      { ten: 'Xuất điều chỉnh', icon: 'cashout', di: '', noi: 'thiếu' },
+      { ten: 'Nhập điều chỉnh', icon: 'filein', di: '', noi: 'thừa' },
+    ] },
+  ],
   baoCao: ['5-2-3', '5-2-4', '5-2-1', '5-2-2', '5-2-5'],
   danhMuc: ['danh-muc/1-8', 'danh-muc/1-2', 'danh-muc/1-3', 'danh-muc/1-4'],
   tienIch: ['tien-ich/11-3', 'tien-ich/11-15'],   // bỏ 11.2 (T100)
