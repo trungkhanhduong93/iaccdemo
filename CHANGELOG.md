@@ -20,6 +20,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 - T91: Phiếu mua, bán chưa thanh toán hoặc thanh toán một phần có nút Thanh toán ngay (bán: Thu tiền ngay) trên hàng Thanh toán và trong menu Tiện ích. Chọn tiền mặt hoặc chuyển khoản, quỹ, ngày, số tiền thì lập phiếu thu, chi bên Thu chi. Phiếu hiện số đã trả và mã các phiếu; trạng thái thanh toán ở danh sách đổi theo.
 - T90: Đầu phiếu mua, bán gọn lại: bỏ ô Nhân viên thực hiện, Người giao hàng và Người mua hàng đổi thành Người giao dịch; Mã số thuế đứng cạnh nhà cung cấp hoặc khách hàng, Ghi chú kéo dài như phiếu thu chi.
 - T89: Tuỳ chỉnh giao diện phiếu (mọi phiếu) có thêm khối Đầu phiếu để ẩn các ô không bắt buộc như Địa chỉ, Mã số thuế, Ghi chú, và khối Chân phiếu để ẩn dòng Tổng cộng, khối tổng tiền.
+- T88: Danh mục đơn vị tính có 36 đơn vị hay dùng trong nhà hàng, mã viết hoa không dấu (CAI là Cái, KG là kg). Ô chọn đơn vị tính ở panel hàng hoá, quy đổi đơn vị tính, tài sản cố định, bảng giá lấy từ danh mục này.
 - T80: Hộp tìm Ctrl K mới: chưa gõ thì hiện 5 màn vừa mở và màn gợi ý, mỗi dòng có biểu tượng, tên màn, phân hệ; thanh phím tắt dưới đáy. Gõ không dấu, gõ tên quen như "nhập mua hàng", "phiếu thu" vẫn ra màn đúng, phần khớp tô xanh.
 - T87: Panel sửa hàng hoá điền sẵn ô Nhóm hàng hoá của dòng đang sửa.
 - T73: Panel tài khoản mở lần đầu không còn khựng.

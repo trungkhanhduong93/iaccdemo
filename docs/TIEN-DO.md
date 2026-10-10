@@ -12,7 +12,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
 | T101 | Chuyển tiện ích về phân hệ của nó (tiện ích của phân hệ nào nằm trong phân hệ đó); tiện ích chung như Thiết kế mẫu in tính sau. Rồi xem lại có mở phân hệ Tiện ích cho gói Free không | PhuongXT | Chờ | Ý của PhuongXT 10/10/2026, khi làm T100. Gói Free đang ẩn tạm phân hệ Tiện ích |
-| T88 | Danh mục đơn vị tính 1.3: bộ khoảng 35 đơn vị cơ bản F&B, mã viết hoa không dấu (CAI là Cái), giữ cột Mô tả; mọi ô chọn ĐVT trong panel danh mục lấy từ danh mục này | Trum | Đang làm | Sửa `danh-muc/data.ts`, `danh-muc/index.ts`, `truong-dm.ts`, `CatalogScreen.tsx` |
 | T60 | Mô tả gói Free, Standard trong `GOI` (`src/app/plan.ts`) đang ghi "1 điểm bán"; theo Roadmap gói Free là mỗi chi nhánh một kho, không giới hạn một chi nhánh. Chốt câu chữ rồi sửa | PhuongXT | Chờ | Tách từ T25 |
 | T02 | Chốt nghiệp vụ trên từng sơ đồ Quy trình: ô nào, nối thế nào, câu chữ. Sửa ở `src/modules/<phân hệ>/quy-trinh.ts` | Trum | Chờ | |
 | T97 | Bộ báo cáo gói Free theo bộ hộ kinh doanh của iFaster (20 báo cáo: mở thêm 3.2.5, 2.2.5, 5.2.2, 3.2.1, 3.2.3, làm mới Tổng hợp quỹ tiền, Báo cáo dòng tiền, Sổ chi phí, Mua hàng theo ngày); báo cáo khai thông tư áp dụng, chỉ hiện khi gói có tính năng và thông tư đang chọn áp dụng | Trum | Đang làm | Sửa `bao-cao/danh-sach.ts`, `registry.ts`, `plan.ts`, màn báo cáo mới. Giao Antigravity |
@@ -53,6 +52,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | T91 | Phiếu mua, bán chưa thanh toán hoặc thanh toán một phần: tiện ích Thanh toán ngay / Thu tiền ngay, chọn hình thức, quỹ, ngày, số tiền thì sinh phiếu thu, chi; phiếu gốc hiện số đã trả và mã phiếu; trạng thái danh sách tính theo số đã trả | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-thanh-toan-sau.md` |
 | T90 | Đầu phiếu mua, bán: bỏ ô Nhân viên thực hiện, Người giao hàng / Người mua hàng đổi thành Người giao dịch; hàng 1 Đối tượng, Mã số thuế; hàng 2 Địa chỉ, Người giao dịch; Ghi chú kéo dài (QD33) | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-tuy-chinh-dau-chan-phieu.md` |
 | T89 | Tuỳ chỉnh giao diện phiếu mọi phiếu: thêm khối Đầu phiếu (bật tắt ô không bắt buộc, ô sau dồn lên) và Chân phiếu (dòng Tổng cộng, khối tổng tiền) (QD33) | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-tuy-chinh-dau-chan-phieu.md` |
+| T88 | Danh mục đơn vị tính 1.3: 36 đơn vị cơ bản F&B, mã viết hoa không dấu (CAI là Cái), giữ cột Mô tả; mọi ô chọn ĐVT trong panel danh mục lấy từ danh mục này | Trum | 10/10/2026 | `2026-10-10-trum-don-vi-tinh.md` |
 | T80 | Hộp tìm màn hình Ctrl K kiểu iPOS Inventory: mục Vừa mở, Gợi ý, ô biểu tượng, đường dẫn phân hệ, thanh phím tắt; gõ tên quen vẫn ra | Trum | 10/10/2026 | `2026-10-10-trum-ctrl-k-toi-uu.md` |
 | T87 | Panel danh mục: ô Nhóm điền sẵn nhóm của dòng đang sửa | Trum | 10/10/2026 | `2026-10-10-trum-ctrl-k-toi-uu.md` |
 | T73 | Tối ưu phản hồi thao tác: panel tài khoản lần mở đầu hết khung hở 133ms (còn 33ms) | Trum | 10/10/2026 | `2026-10-10-trum-ctrl-k-toi-uu.md` |
