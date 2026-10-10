@@ -107,7 +107,7 @@ export interface ModuleDef {
   screens: ScreenDef[]
 }
 
-/** Ô trên sơ đồ quy trình. di là đường dẫn sau /app/, vd 'tien/2-1-1/moi?loai=thu' mở form phiếu thu mới */
+/** Ô trên sơ đồ quy trình. di là đường dẫn sau /app/, vd 'tien/2-1-1/moi?loai=thu' mở form phiếu thu mới; di rỗng là ô chỉ để xem, không bấm được (T100) */
 export interface NutQT { ten: string; icon: string; di: string; tone?: 'fabi' | 'ivt' | 'hd'; noi?: string }   // noi: chữ trên mũi tên từ ô trước tới ô này trong làn hội tụ (T98)
 
 /** Một bước trên trục ngang: ô chính nằm trên trục, ô phụ treo phía trên hoặc phía dưới */

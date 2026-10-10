@@ -4,7 +4,7 @@ import type { QuyTrinhDef } from '../types'
 export const quyTrinh: QuyTrinhDef = {
   ten: 'Nghiệp vụ bán hàng',
   buoc: [
-    { chinh: { ten: 'Đơn POS từ FABi', icon: 'pos', di: 'tien-ich/11-1', tone: 'fabi' } },
+    { chinh: { ten: 'Đơn POS từ FABi', icon: 'pos', di: '', tone: 'fabi' } },   // ô nguồn, không bấm được (T100)
     { chinh: { ten: 'Xuất bán POS', icon: 'cart', di: 'ban-hang/3-1-1' },
       tren: [{ ten: 'Bán hàng nội bộ', icon: 'store', di: 'ban-hang/3-1-3/moi' }],
       duoi: [{ ten: 'Hàng bán trả lại', icon: 'back', di: 'ban-hang/3-1-4/moi' }] },
@@ -20,7 +20,7 @@ export const quyTrinh: QuyTrinhDef = {
   hoiTuFree: {
     lan: [
       { ten: 'Bán hàng từ FABi', tone: 'ok', nut: [
-        { ten: 'Đơn POS từ FABi', icon: 'pos', di: 'tien-ich/11-1', tone: 'fabi' },
+        { ten: 'Đơn POS từ FABi', icon: 'pos', di: '', tone: 'fabi' },
         { ten: 'Xuất bán POS', icon: 'cart', di: 'ban-hang/3-1-1', noi: 'đồng bộ' },
       ] },
     ],
@@ -30,5 +30,5 @@ export const quyTrinh: QuyTrinhDef = {
   },
   baoCao: ['3-2-5', '3-2-2', '3-2-4', 'thue/6-2-2'],
   danhMuc: ['danh-muc/1-2', 'danh-muc/1-5', 'danh-muc/1-14'],
-  tienIch: ['tien-ich/11-1', 'tien-ich/11-2', 'tien-ich/11-7'],
+  tienIch: ['tien-ich/11-7'],   // bỏ 11.1, 11.2 (T100)
 }

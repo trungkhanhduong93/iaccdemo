@@ -4,14 +4,14 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T100.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T101.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T100 | Bỏ tiện ích 11.1 Đồng bộ bán hàng và 11.2 Xuất kho theo định lượng ở mọi gói; ô Đơn POS từ FABi trên sơ đồ Bán hàng không bấm được; liên kết cũ bỏ hoặc trỏ sang Xuất bán POS | PhuongXT | Đang làm | Sửa `plan.ts`, `SidebarFlyout.tsx`, `QuyTrinhScreen.tsx`, `types.ts`, `quy-trinh.ts` của ban-hang, tien-ich, danh-muc, `BanLamViec.tsx` |
+| T101 | Chuyển tiện ích về phân hệ của nó (tiện ích của phân hệ nào nằm trong phân hệ đó); tiện ích chung như Thiết kế mẫu in tính sau. Rồi xem lại có mở phân hệ Tiện ích cho gói Free không | PhuongXT | Chờ | Ý của PhuongXT 10/10/2026, khi làm T100. Gói Free đang ẩn tạm phân hệ Tiện ích |
 | T88 | Danh mục đơn vị tính 1.3: bộ khoảng 35 đơn vị cơ bản F&B, mã viết hoa không dấu (CAI là Cái), giữ cột Mô tả; mọi ô chọn ĐVT trong panel danh mục lấy từ danh mục này | Trum | Đang làm | Sửa `danh-muc/data.ts`, `danh-muc/index.ts`, `truong-dm.ts`, `CatalogScreen.tsx` |
 | T60 | Mô tả gói Free, Standard trong `GOI` (`src/app/plan.ts`) đang ghi "1 điểm bán"; theo Roadmap gói Free là mỗi chi nhánh một kho, không giới hạn một chi nhánh. Chốt câu chữ rồi sửa | PhuongXT | Chờ | Tách từ T25 |
 | T02 | Chốt nghiệp vụ trên từng sơ đồ Quy trình: ô nào, nối thế nào, câu chữ. Sửa ở `src/modules/<phân hệ>/quy-trinh.ts` | Trum | Chờ | |
@@ -36,6 +36,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T100 | Bỏ tiện ích 11.1 Đồng bộ bán hàng, 11.2 Xuất kho theo định lượng ở mọi gói; ô Đơn POS từ FABi trên sơ đồ Bán hàng chỉ để xem; gói Free ẩn tạm phân hệ Tiện ích và khung Tiện ích liên quan dưới sơ đồ | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-so-do-ban-hang-free.md` |
 | T99 | Bỏ Báo cáo bán hàng 3.2.1 và Báo cáo doanh thu 3.2.3 ở mọi gói (`DA_BO` trong `plan.ts`); liên kết cũ trỏ sang Sổ doanh thu bán hàng 3.2.5 | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-so-do-ban-hang-free.md` |
 | T98 | Sơ đồ Quy trình Bán hàng gói Free kiểu hội tụ: làn Bán hàng từ FABi (Đơn POS từ FABi, mũi tên chữ đồng bộ, Xuất bán POS) về khối Báo cáo; 3.2.5, 3.2.1, 3.2.3 tự hiện khi T97 mở cho Free | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-so-do-ban-hang-free.md` |
 | T96 | Danh sách thu chi 2.1.1: thêm cột Lý do thu, chi sau Diễn giải, lấy như form; chuyển quỹ để trống | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-loc-kho-hang.md` |

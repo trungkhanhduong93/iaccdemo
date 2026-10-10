@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 10/10/2026
 
+- T100: Bỏ tiện ích Đồng bộ bán hàng và Xuất kho theo định lượng ở mọi gói. Gói Free tạm ẩn phân hệ Tiện ích. Ô Đơn POS từ FABi trên sơ đồ Bán hàng chỉ để xem, không bấm.
 - T99: Bỏ Báo cáo bán hàng và Báo cáo doanh thu ở mọi gói. Các nút, liên kết trước mở hai báo cáo này nay mở Sổ doanh thu bán hàng.
 - T98: Gói Free, sơ đồ Quy trình Bán hàng gọn theo kiểu Mua hàng, Thu chi: Đơn POS từ FABi, mũi tên ghi đồng bộ, Xuất bán POS, rồi về khối Báo cáo.
 - T96: Danh sách thu chi có thêm cột Lý do thu, chi.

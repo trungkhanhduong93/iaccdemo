@@ -4,10 +4,9 @@ import type { QuyTrinhDef } from '../types'
 export const quyTrinh: QuyTrinhDef = {
   ten: 'Luồng dữ liệu tự động',
   buoc: [
-    { chinh: { ten: 'Đồng bộ bán hàng FABi', icon: 'pos', di: 'tien-ich/11-1', tone: 'fabi' },
-      duoi: [{ ten: 'Đồng bộ kho iPOS Inventory', icon: 'box', di: 'tien-ich/11-3', tone: 'ivt' }] },
-    { chinh: { ten: 'Xuất kho theo định lượng', icon: 'box', di: 'tien-ich/11-2' },
-      duoi: [{ ten: 'Nhận hoá đơn đầu vào', icon: 'mail', di: 'tien-ich/11-4', tone: 'hd' }] },
+    // Bỏ Đồng bộ bán hàng FABi 11.1, Xuất kho theo định lượng 11.2 (T100)
+    { chinh: { ten: 'Đồng bộ kho iPOS Inventory', icon: 'box', di: 'tien-ich/11-3', tone: 'ivt' } },
+    { chinh: { ten: 'Nhận hoá đơn đầu vào', icon: 'mail', di: 'tien-ich/11-4', tone: 'hd' } },
     { chinh: { ten: 'Đối soát tự động', icon: 'scale', di: 'tien-ich/11-7' },
       duoi: [{ ten: 'Khớp sao kê ngân hàng', icon: 'bank', di: 'tien-ich/11-8' }] },
     { chinh: { ten: 'Duyệt chứng từ', icon: 'check', di: 'tien-ich/11-5' },

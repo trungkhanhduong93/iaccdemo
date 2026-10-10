@@ -73,7 +73,6 @@ const FLYOUT_CONFIG: Record<string, FlyoutData> = {
     trai: {
       tieuDe: 'Nghiệp vụ',
       items: [
-        { ten: 'Đơn POS từ FABi', di: '/app/tien-ich/11-1' },
         { ten: 'Chứng từ bán hàng', di: '/app/ban-hang/3-1-1' },
         { ten: 'Hoá đơn bán hàng', di: '/app/ban-hang/3-1-2' },
         { ten: 'Bán hàng nội bộ', di: '/app/ban-hang/3-1-3' },
@@ -87,7 +86,6 @@ const FLYOUT_CONFIG: Record<string, FlyoutData> = {
     phai: {
       tieuDe: 'Tiện ích',
       items: [
-        { ten: 'Đồng bộ đơn từ FABi', di: '/app/tien-ich/11-1' },
         { ten: 'Khách hàng', di: '/app/danh-muc/1-5' },
         { ten: 'Hàng hoá, món ăn', di: '/app/danh-muc/1-2' },
         { ten: 'Bảng giá bán', di: '/app/danh-muc/1-14' },
@@ -144,7 +142,6 @@ const FLYOUT_CONFIG: Record<string, FlyoutData> = {
       tieuDe: 'Tiện ích',
       items: [
         { ten: 'Đồng bộ kho iPOS Inventory', di: '/app/tien-ich/11-3' },
-        { ten: 'Xuất kho định lượng bán hàng', di: '/app/tien-ich/11-2' },
         { ten: 'Thẻ kho chi tiết', di: '/app/kho/5-2-1' },
         { ten: 'Tổng hợp nhập xuất tồn', di: '/app/kho/5-2-2' },
         { ten: 'Định mức tồn kho', di: '/app/kho/5-1-13' },
@@ -331,8 +328,6 @@ const FLYOUT_CONFIG: Record<string, FlyoutData> = {
     trai: {
       tieuDe: 'Tích hợp & Đồng bộ',
       items: [
-        { ten: 'Đồng bộ đơn từ FABi POS', di: '/app/tien-ich/11-1' },
-        { ten: 'Xuất kho định lượng bán hàng', di: '/app/tien-ich/11-2' },
         { ten: 'Đồng bộ kho iPOS Inventory', di: '/app/tien-ich/11-3' },
         { ten: 'Nhận hoá đơn đầu vào', di: '/app/tien-ich/11-4' },
         { ten: 'Duyệt chứng từ nhiều cấp', di: '/app/tien-ich/11-5' },

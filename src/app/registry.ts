@@ -114,7 +114,7 @@ export function manDau(m: ModuleDef, goi: Goi) {
 
 /** Phân hệ ẩn khỏi thanh bên trái theo gói dù còn màn trong gói: gói Free không có phân hệ Tổng hợp,
  *  chỉ xem Báo cáo kết quả kinh doanh ở phân hệ Báo cáo (T52) */
-const AN_PHAN_HE: Partial<Record<Goi, string[]>> = { F: ['tong-hop'] }
+const AN_PHAN_HE: Partial<Record<Goi, string[]>> = { F: ['tong-hop', 'tien-ich'] }   // gói Free ẩn tạm Tiện ích, tiện ích sẽ chuyển về phân hệ của nó, PhuongXT 10/10/2026 (T100)
 export const anPhanHeGoi = (m: ModuleDef, goi: Goi) => Boolean(AN_PHAN_HE[goi]?.includes(m.key))
 
 /** Cả phân hệ ngoài gói: không màn nào gắn mã tính năng mở được */

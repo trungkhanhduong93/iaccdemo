@@ -3,7 +3,7 @@
 import { Fragment, useLayoutEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { LanQT, NutQT, QuyTrinhDef, ScreenProps } from '../../modules/types'
-import { dich, hienMan, maKhoa, moDuoc, nhanTab, phanHeKhoa, tenMan } from '../../app/registry'
+import { MODULES, anPhanHeGoi, dich, hienMan, maKhoa, moDuoc, nhanTab, phanHeKhoa, tenMan } from '../../app/registry'
 import { useSession } from '../../app/session'
 import { GOI, GOIS, anNgoaiGoi, minGoi, type Goi } from '../../app/plan'
 import { Icon } from '../Icon'
@@ -67,6 +67,7 @@ export function QuyTrinhScreen({ mod }: ScreenProps) {
 }
 
 function moNut(n: NutQT, goi: Goi) {
+  if (!n.di) return { path: '', sc: undefined, ok: true, ma: undefined }   // ô chỉ để xem, vd nguồn FABi (T100)
   const d = dich(n.di)
   const ok = !d.sc || moDuoc(d.sc, goi)
   return { ...d, ok, ma: d.sc ? maKhoa(d.sc) : undefined }
@@ -132,6 +133,12 @@ function SoDo({ qt, goi }: { qt: QuyTrinhDef; goi: Goi }) {
 /** Một ô trên sơ đồ: biểu tượng, nhãn; ngoài gói thì mờ, có khoá và nhãn gói thấp nhất */
 function ONut({ n, goi, chinh, so, style }: { n: NutQT; goi: Goi; chinh?: boolean; so?: number; style?: React.CSSProperties }) {
   const x = moNut(n, goi)
+  if (!n.di) return (
+    <span className={`qt-n tinh ${n.tone ?? ''} ${chinh ? 'chinh' : ''}`} style={style}>
+      <span className="qt-tile"><Icon n={n.icon} className="ic lg" />{so && <i className="qt-so-buoc">{so}</i>}</span>
+      <span className="qt-l">{n.ten}</span>
+    </span>
+  )
   return (
     <Link to={x.path} className={`qt-n ${n.tone ?? ''} ${x.ok ? '' : 'lock'} ${chinh ? 'chinh' : ''}`} style={style}
       title={x.ok ? `Mở ${n.ten.toLowerCase()}` : `${n.ten}: có ở gói ${GOI[minGoi(x.ma!)].ten}`}>
@@ -217,7 +224,7 @@ function SoDoHoiTu({ lan, ra, goi, modKey }: { lan: LanQT[]; ra: LanQT; goi: Goi
                 <span className="qt-ht-t">{l.ten}</span>
               </div>
               <div className="qt-lan-nut">{l.nut.map(n => (
-                <Fragment key={n.di}>
+                <Fragment key={n.di || n.ten}>
                   {/* Ô nối tiếp ô trước trong làn: mũi tên có chữ nhỏ, mờ (T98) */}
                   {n.noi && <span className="qt-ht-noi" aria-hidden><small>{n.noi}</small><i /></span>}
                   <NutNgang n={n} goi={goi} />
@@ -241,6 +248,12 @@ function SoDoHoiTu({ lan, ra, goi, modKey }: { lan: LanQT[]; ra: LanQT; goi: Goi
  *  Khoá theo gói giống hệt ONut, chỉ khác cách hiện. Giữ lớp qt-n để bộ kiểm tìm được ô trên sơ đồ. */
 function NutNgang({ n, goi, dong }: { n: NutQT; goi: Goi; dong?: boolean }) {
   const x = moNut(n, goi)
+  if (!n.di) return (
+    <span className={`qt-n tinh ${dong ? 'qt-ht-dong' : 'qt-ht-nut'} ${n.tone ?? ''}`}>
+      <span className="qt-ht-ic"><Icon n={n.icon} className="ic" /></span>
+      <span className="qt-ht-t">{n.ten}</span>
+    </span>
+  )
   return (
     <Link to={x.path} className={`qt-n ${dong ? 'qt-ht-dong' : 'qt-ht-nut'} ${n.tone ?? ''} ${x.ok ? '' : 'lock'}`}
       title={x.ok ? `Mở ${n.ten.toLowerCase()}` : `${n.ten}: có ở gói ${GOI[minGoi(x.ma!)].ten}`}>
@@ -305,11 +318,14 @@ function HangDuoi({ qt, modKey, goi }: { qt: QuyTrinhDef; modKey: string; goi: G
   }
 
   const dsDanhMuc = (qt.danhMuc ?? []).map(muc).filter(Boolean)
-  const tienIchNguon = (qt.tienIch && qt.tienIch.length > 0) ? qt.tienIch : ['tien-ich/11-1', 'tien-ich/X2', 'tien-ich/11-6']
+  const tienIchNguon = (qt.tienIch && qt.tienIch.length > 0) ? qt.tienIch : ['tien-ich/11-7', 'tien-ich/X2', 'tien-ich/11-6']
   const dsTienIch = tienIchNguon.map(muc).filter(Boolean)
+  // Gói ẩn phân hệ Tiện ích (gói Free, T100) thì bỏ cột Tiện ích liên quan
+  const modTi = MODULES.find(m => m.key === 'tien-ich')
+  const coTienIch = !modTi || !anPhanHeGoi(modTi, goi)
 
   return (
-    <section className="qt-hub-grid" aria-label="Tiện ích và danh mục liên quan">
+    <section className={`qt-hub-grid${coTienIch ? '' : ' hai-cot'}`} aria-label="Tiện ích và danh mục liên quan">
       {/* Cột 1: Danh mục liên quan */}
       <div className="card qt-hub-col">
         <div className="qt-hub-h">
@@ -340,7 +356,7 @@ function HangDuoi({ qt, modKey, goi }: { qt: QuyTrinhDef; modKey: string; goi: G
       </div>
 
       {/* Cột 2: Tiện ích & Tự động hoá */}
-      <div className="card qt-hub-col">
+      {coTienIch && <div className="card qt-hub-col">
         <div className="qt-hub-h">
           <span className="qt-hub-ic orange"><Icon n="grid" className="ic sm" /></span>
           <div className="qt-hub-t-wrap">
@@ -365,7 +381,7 @@ function HangDuoi({ qt, modKey, goi }: { qt: QuyTrinhDef; modKey: string; goi: G
           <span>Trung tâm tiện ích</span>
           <Icon n="arrow" className="ic sm" />
         </Link>
-      </div>
+      </div>}
 
       {/* Cột 3: Thiết lập & Thao tác nhanh */}
       <div className="card qt-hub-col">

@@ -64,7 +64,7 @@ def main():
                 tabs = hrefs('.mtabs-in a, .pop-khac a')       # gồm cả tab dồn trong "Khác" (menu ẩn vẫn có trong DOM)
                 links += tabs
                 if pg.locator('.qt-n').count():
-                    nut += hrefs('.qt-n')                       # ô trên sơ đồ Quy trình
+                    nut += hrefs('a.qt-n')                       # ô trên sơ đồ Quy trình
                 # Gói Free ẩn hẳn tính năng ngoài gói (QD22): không còn mục mờ có khoá trên sidebar, tab, sơ đồ
                 if goi == 'F' and pg.locator('.sb-nav a.lock, .mtabs-in a.lock, .pop-khac a.lock, .qt-n.lock, .qt-bc a.lock, .qt-foot a.lock').count():
                     loi.append(f'[F] {r}: còn hiện mục ngoài gói có khoá')

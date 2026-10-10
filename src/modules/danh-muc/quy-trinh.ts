@@ -21,5 +21,5 @@ export const quyTrinh: QuyTrinhDef = {
   ],
   ghiChu: { tieuDe: 'Nguồn danh mục', dong: [['Hàng hoá, nhóm hàng', 'FABi'], ['Chi nhánh, khách hàng', 'FABi'], ['Kho, nguyên vật liệu', 'iPOS Inventory'],
     ['Nhà cung cấp, công thức', 'iPOS Inventory'], ['Tài khoản, bút toán', 'IACC Cloud']] },
-  tienIch: ['tien-ich/11-1', 'tien-ich/11-3'],
+  tienIch: ['tien-ich/11-3'],   // bỏ 11.1 (T100)
 }

@@ -30,7 +30,7 @@ export function BanLamViec({ sc }: ScreenProps) {
   const co = viec.filter(v => !v.ma || coTrongGoi(v.ma, s.goi))
 
   const buoc: [string, string, number, string][] = [
-    ['done', 'Đồng bộ đủ 30 ngày doanh thu FABi', 1, '/app/tien-ich/11-1'],
+    ['done', 'Đồng bộ đủ 30 ngày doanh thu FABi', 1, '/app/ban-hang/3-1-1'],
     ['done', 'Đối soát doanh thu với sổ', 1, '/app/tien-ich/11-7'],
     ['now', 'Tính giá vốn cuối kỳ', 0, '/app/kho/5-1-7'],
     ['', 'Phân bổ CCDC, chi phí trả trước', 0, '/app/ccdc/8-1-1'],
@@ -43,7 +43,7 @@ export function BanLamViec({ sc }: ScreenProps) {
       <PageHead title={`Bàn làm việc của ${ten}`} meta={<><span className="chip ok">Kỳ 10/2026 đang mở</span><span className="chip warn">Khoá sổ tháng {KY_KHOA_SO.thang}: còn 4 bước</span></>}>
         <Link className="btn" to="/app/tien/2-1-1/moi"><Icon n="plus" className="ic sm" />Phiếu thu, chi</Link>
         <Link className="btn" to="/app/mua-hang/4-1-1/moi"><Icon n="plus" className="ic sm" />Phiếu mua hàng</Link>
-        <Link className="btn pri" to="/app/tien-ich/11-1"><Icon n="refresh" className="ic sm" />Tải dữ liệu FABi</Link>
+        <Link className="btn pri" to="/app/ban-hang/3-1-1"><Icon n="pos" className="ic sm" />Đơn POS từ FABi</Link>
       </PageHead>
 
       <section className="card" style={{ marginBottom: 14 }}>
@@ -76,7 +76,7 @@ export function BanLamViec({ sc }: ScreenProps) {
               )
             })}
           </Card>
-          <Card title="Đồng bộ gần đây" act={<Link className="btn sm ghost" to="/app/tien-ich/11-1">Nhật ký đồng bộ</Link>} pad={false}>
+          <Card title="Đồng bộ gần đây" act={<Link className="btn sm ghost" to="/app/ban-hang/3-1-1">Xuất bán POS</Link>} pad={false}>
             <Table cols={[{ k: 'luc', t: 'Lúc', w: 100 }, { k: 'nguon', t: 'Nguồn' }, { k: 'loai', t: 'Dữ liệu' }, { k: 'lay', t: 'Lấy về', num: true }, { k: 'vao', t: 'Vào sổ', num: true },
               { k: 'loi', t: 'Lỗi', num: true, r: r => r.loi ? <b style={{ color: 'var(--red)' }}>{r.loi}</b> : <span className="muted">0</span> }]} rows={DONG_BO.slice(0, 4)} />
           </Card>
