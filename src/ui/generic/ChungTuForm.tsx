@@ -526,6 +526,10 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               </button>
             )}
             <span className="grow" />
+            {/* Tuỳ chỉnh giao diện phiếu ra ngoài, cạnh nút In (T95) */}
+            <button type="button" className="btn sm" onClick={() => setHopCot(true)} title="Bật tắt ô đầu phiếu, cột bảng chi tiết, tổng chân phiếu">
+              <Icon n="chinh" className="ic sm" />Tuỳ chỉnh giao diện
+            </button>
             <button type="button" className="btn sm" onClick={moIn}>
               <Icon n="printer" className="ic sm" />In
             </button>
@@ -544,9 +548,6 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
                   {tenThanhToan}
                 </MenuItem>
               )}
-              <MenuItem icon="chinh" onClick={() => { dong(); setHopCot(true) }}>
-                Tuỳ chỉnh giao diện phiếu
-              </MenuItem>
               <MenuItem icon="doc" onClick={() => toast('Đã xuất mẫu Excel')}>
                 Xuất Excel
               </MenuItem>

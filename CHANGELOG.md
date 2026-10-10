@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 10/10/2026
 
+- T95: Xem phiếu (mọi phiếu): nút Tuỳ chỉnh giao diện nằm ngay ở thanh đáy, cạnh nút In, không còn trong menu Tiện ích.
 - T94: Danh sách mua hàng, bán hàng: Bộ lọc nâng cao có thêm Kho và Hàng hoá. Danh sách mua hàng gói Free, Standard, Plus có thêm cột Kho.
 - T93: Danh sách mua hàng, bán hàng: bật cột Đã trả, Còn phải trả thì dòng Tổng và Tổng cộng có số tổng của hai cột này.
 - T92: Danh sách mua hàng, bán hàng có thêm các cột Ký hiệu HĐ, Số hoá đơn, Ngày hoá đơn, Hạn thanh toán, Đã trả (Đã thu), Còn phải trả (Còn phải thu). Các cột này ẩn sẵn, bật ở nút Tuỳ chỉnh cột.
