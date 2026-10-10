@@ -8,6 +8,7 @@ import { MenuHead, MenuItem, MenuSep, Popover } from './Dropdown'
 import { Icon } from './Icon'
 import { fold } from './format'
 import { daKhoaSo } from '../data/mock'
+import { ctTtCon } from './generic/daXoa'
 
 /** Tối đa số ô lọc đưa ra thanh ngoài */
 const TOI_DA_NGOAI = 4
@@ -601,7 +602,9 @@ export function NutHangLoat({
   const nLoi = loiRows.length
   // Xoá: gói có ghi sổ chỉ xoá phiếu chưa ghi, gói Free xoá mọi phiếu; phiếu thuộc kỳ đã khoá sổ không xoá (T48)
   const nKhoa = selectedRows.filter(r => daKhoaSo(r.ngay)).length
-  const dsXoa = selectedRows.filter(r => !daKhoaSo(r.ngay) && (!ghi || r.tt === 'nhap'))
+  // Phiếu mua, bán còn phiếu thu, chi sinh kèm thì xoá phiếu thu, chi trước (T85)
+  const nThamChieu = selectedRows.filter(r => ctTtCon(r)).length
+  const dsXoa = selectedRows.filter(r => !daKhoaSo(r.ngay) && (!ghi || r.tt === 'nhap') && !ctTtCon(r))
   const nXoa = dsXoa.length
   const tenXoa = `Xoá ${nXoa} phiếu${ghi ? ' chưa ghi' : ''}`
 
@@ -655,6 +658,11 @@ export function NutHangLoat({
             {tenXoa}
           </MenuItem>
         )}
+        {nXoa === 0 && nKhoa === 0 && nThamChieu > 0 && (
+          <MenuItem icon="trash" lock onClick={() => lam('Phiếu có phiếu thu, chi tham chiếu: xoá phiếu thu, chi trước')}>
+            Không xoá: còn phiếu thu, chi tham chiếu
+          </MenuItem>
+        )}
         {nXoa === 0 && nKhoa > 0 && (
           <MenuItem icon="trash" lock onClick={() => lam(`Phiếu thuộc kỳ đã khoá sổ, không xoá được`)}>
             Không xoá: kỳ đã khoá sổ
@@ -676,7 +684,7 @@ export function NutHangLoat({
             lam(`Đã xoá ${nXoa} phiếu`)
           }}
         >
-          Phiếu đã xoá không lấy lại được.{ghi && ' Phiếu đã ghi sổ không xoá được.'}{nKhoa > 0 && ` ${nKhoa} phiếu thuộc kỳ đã khoá sổ, giữ nguyên.`}
+          Phiếu đã xoá không lấy lại được.{ghi && ' Phiếu đã ghi sổ không xoá được.'}{nKhoa > 0 && ` ${nKhoa} phiếu thuộc kỳ đã khoá sổ, giữ nguyên.`}{nThamChieu > 0 && ` ${nThamChieu} phiếu còn phiếu thu, chi tham chiếu, giữ nguyên; xoá phiếu thu, chi trước.`}
         </HopXacNhan>
       )}
     </>

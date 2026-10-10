@@ -9,7 +9,7 @@ import { CHE_DO } from '../../app/che-do'
 import { tkTheoCheDo } from '../../modules/tong-hop/so-cai'
 import { CHI_NHANH, KHACH, KHO, KHOA_SO_DEN, NCC, NHAN_VIEN, TK_NGAN_HANG, daKhoaSo } from '../../data/mock'
 import { HopXacNhan } from '../LocNangCao'
-import { ghiNhatKy, soKeTiep, suaPhieu, themPhieu, useNhatKy, xoaPhieu } from './daXoa'
+import { ctTtCon, ghiNhatKy, soKeTiep, suaPhieu, themPhieu, useNhatKy, xoaPhieu, type CtTt } from './daXoa'
 import { Icon } from '../Icon'
 import { Card, Note } from '../Page'
 import { FormToanMan, useDong } from '../FormToanMan'
@@ -198,16 +198,19 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   const goc = useRef(chupNd())
   useEffect(() => { if (dangSua) goc.current = chupNd() }, [dangSua])
 
-  // Mua trả tiền ngay (T85): lưu phiếu thì sinh phiếu chi tiền mặt hoặc chi ngân hàng bên Thu chi 2.1.1,
-  // phiếu mua giữ tham chiếu ở _ctTt. Đổi hình thức thanh toán thì bỏ chứng từ cũ, về Chưa thanh toán thì xoá
-  const ctTtCu = row?._ctTt as CtTt | undefined
-  const loaiTt = nhom !== 'mua' ? '' : hinhThucTt === 'tienmat' ? 'chi' : hinhThucTt === 'chuyenkhoan' ? 'unc' : ''
+  // Mua, bán trả tiền ngay (T85): lưu phiếu thì sinh phiếu thu, chi bên Thu chi 2.1.1, phiếu gốc giữ tham chiếu ở _ctTt.
+  // Mua, trả lại hàng bán thì chi; bán, trả lại hàng mua thì thu. Đổi hình thức thanh toán thì bỏ chứng từ cũ, về Chưa thanh toán thì xoá
+  const ctTtCu = ctTtCon(row)
+  const traLai = cfg.prefix === 'TLN' || cfg.prefix === 'TL'
+  const chiTt = (nhom === 'mua') !== traLai
+  const loaiTt = !bo.tt ? '' : hinhThucTt === 'tienmat' ? (chiTt ? 'chi' : 'thu') : hinhThucTt === 'chuyenkhoan' ? (chiTt ? 'unc' : 'bc') : ''
   function dongBoCtTt(): CtTt | undefined {
-    if (nhom !== 'mua') return ctTtCu
+    if (!bo.tt) return ctTtCu
     if (ctTtCu && ctTtCu.loai !== loaiTt) xoaPhieu(MAN_THU_CHI, [{ id: ctTtCu.id, so: ctTtCu.so }], s.ten)
     if (!loaiTt) return undefined
-    const dg = `Chi tiền mua hàng theo ${soCt}`
-    const ly = 'Trả tiền nhà cung cấp'
+    const viec = nhom === 'mua' ? (traLai ? 'trả lại hàng mua' : 'mua hàng') : (traLai ? 'trả lại hàng bán' : 'bán hàng')
+    const dg = `${chiTt ? 'Chi' : 'Thu'} tiền ${viec} theo ${soCt}`
+    const ly = nhom === 'mua' ? (traLai ? 'Thu khác' : 'Trả tiền nhà cung cấp') : (traLai ? 'Chi phí khác' : 'Thu tiền bán hàng')
     const nd = {
       ngay: ngayCt, thang: Number(ngayCt.split('/')[1]) || 10, doiTuong, dienGiai: dg, tien: tongThanhToan, thue: 0, tong: tongThanhToan,
       _quy: quy, _lyDo: ly, _ghiChu: dg, _thamChieu: soCt,
@@ -217,10 +220,10 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
       suaPhieu(MAN_THU_CHI, ctTtCu.id, nd)
       return ctTtCu
     }
-    const so = soKeTiep(MAN_THU_CHI, loaiTt === 'chi' ? 'PC2610-' : 'UNC2610-')
+    const so = soKeTiep(MAN_THU_CHI, `${TIEN_TO_CT_TT[loaiTt]}2610-`)
     const id = `moi-${Date.now()}-tt`
     themPhieu(MAN_THU_CHI, { id, so, cn: chiNhanh, nguon: 'tay', tt: kieu === 'khong' ? 'ghi' : 'nhap', loai: loaiTt, tenLoai: TEN_CT_TT[loaiTt], ...nd })
-    ghiNhatKy(MAN_THU_CHI, id, so, s.ten, `Thêm mới chứng từ, sinh từ phiếu mua ${soCt}`)
+    ghiNhatKy(MAN_THU_CHI, id, so, s.ten, `Thêm mới chứng từ, sinh từ ${soCt}`)
     return { id, so, loai: loaiTt }
   }
 
@@ -493,6 +496,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
                   // Cùng luật xoá với danh sách (QD32): kỳ đã khoá sổ không xoá, gói có ghi sổ chỉ xoá phiếu chưa ghi
                   if (daKhoaSo(row.ngay)) toast(`${row.so} thuộc kỳ đã khoá sổ, không xoá được`)
                   else if (kieu !== 'khong' && row.tt !== 'nhap') toast(`${row.so} đã ghi sổ, bỏ ghi sổ rồi mới xoá`)
+                  else if (ctTtCon(row)) toast(`${row.so} có phiếu ${ctTtCon(row)!.so} tham chiếu, xoá ${ctTtCon(row)!.so} trước`)   // T85
                   else setHoiXoa(true)
                 }}>
                   Xoá chứng từ
@@ -631,21 +635,17 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
                   <span style={{ fontSize: 12.5, color: 'var(--muted)', whiteSpace: 'nowrap' }}>{hinhThucTt === 'tienmat' ? 'Quỹ tiền mặt' : 'Quỹ ngân hàng'}:</span>
                   {dangSua ? (
                     <ChonDanhMuc dm={hinhThucTt === 'tienmat' ? 'quyTm' : 'tkNh'} nhan={hinhThucTt === 'tienmat' ? 'quỹ tiền mặt' : 'quỹ ngân hàng'}
-                      className="inp sm" value={quy} onChange={setQuy} ds={dsQuy} />
-                  ) : <input className="inp sm" readOnly value={quy} />}
+                      className="inp sm" style={O_TT} value={quy} onChange={setQuy} ds={dsQuy} />
+                  ) : <input className="inp sm" style={O_TT} readOnly value={quy} />}
                 </div>
               )}
 
-              {/* Chứng từ thanh toán sinh từ phiếu mua (T85) */}
-              {loaiTt && (
-                ctTtCu && ctTtCu.loai === loaiTt ? (
-                  <span className="row" style={{ gap: 6, fontSize: 12.5, alignItems: 'center' }}>
-                    <span style={{ color: 'var(--muted)' }}>{TEN_CT_TT[loaiTt]}:</span>
-                    <Link className="ds-link-so" to={`/app/tien/2-1-1/${ctTtCu.id}`}>{ctTtCu.so}</Link>
-                  </span>
-                ) : (
-                  <span style={{ fontSize: 12.5, color: 'var(--muted)' }}>Lưu phiếu sẽ sinh phiếu {TEN_CT_TT[loaiTt].toLowerCase()}</span>
-                )
+              {/* Chứng từ thu, chi sinh từ phiếu mua, bán đã lưu (T85) */}
+              {loaiTt && ctTtCu && ctTtCu.loai === loaiTt && (
+                <span className="row" style={{ gap: 6, fontSize: 12.5, alignItems: 'center' }}>
+                  <span style={{ color: 'var(--muted)' }}>{TEN_CT_TT[loaiTt]}:</span>
+                  <Link className="ds-link-so" to={`/app/tien/2-1-1/${ctTtCu.id}`}>{ctTtCu.so}</Link>
+                </span>
               )}
 
               <span className="grow" />
@@ -1046,10 +1046,12 @@ function thangLaiLo(ngay: string): string[] {
   return ds
 }
 
-/** Chứng từ thanh toán sinh từ phiếu mua trả tiền ngay (T85) */
-interface CtTt { id: string; so: string; loai: string }
+/** Chứng từ thu, chi sinh từ phiếu mua, bán trả tiền ngay (T85), theo loại phiếu của màn Thu chi 2.1.1 */
 const MAN_THU_CHI = 'tien/2-1-1'
-const TEN_CT_TT: Record<string, string> = { chi: 'Chi tiền mặt', unc: 'Chi ngân hàng' }
+/** Ô chọn quỹ trên hàng Thanh toán: chữ và chiều cao như phần còn lại của hàng */
+const O_TT = { fontSize: 13, height: 30, minWidth: 220 }
+const TEN_CT_TT: Record<string, string> = { chi: 'Chi tiền mặt', unc: 'Chi ngân hàng', thu: 'Thu tiền mặt', bc: 'Thu ngân hàng' }
+const TIEN_TO_CT_TT: Record<string, string> = { chi: 'PC', unc: 'UNC', thu: 'PT', bc: 'BC' }
 
 export function lyMacDinh(ds: string[], dg: string) {
   const l = fold(dg)

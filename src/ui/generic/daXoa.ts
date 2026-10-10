@@ -32,6 +32,13 @@ export function xoaPhieu(man: string, ds: { id: string; so: string }[], ai: stri
   nghe.forEach(f => f())
 }
 
+/** Chứng từ thu, chi sinh từ phiếu mua, bán trả tiền ngay (T85), còn chưa bị xoá. Còn thì chưa xoá được phiếu gốc */
+export interface CtTt { id: string; so: string; loai: string }
+export function ctTtCon(r: Row | undefined): CtTt | undefined {
+  const c = r?._ctTt as CtTt | undefined
+  return c && !daXoa.has(`tien/2-1-1|${c.id}`) ? c : undefined
+}
+
 /** Phiếu mới lưu từ form: hiện lên đầu danh sách của màn */
 export function themPhieu(man: string, row: Row) {
   phieuMoi.set(man, [row, ...(phieuMoi.get(man) ?? [])])
