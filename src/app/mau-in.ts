@@ -795,6 +795,29 @@ export const MAU_IN: MauIn[] = [
 
 export const mauIn = (id: string) => MAU_IN.find(m => m.id === id)
 
+/** Bề rộng vùng in (mm): bề rộng khổ trừ lề trái, lề phải. In 2 liên A5 ngang trên tờ A4 dọc thì mỗi liên vẫn rộng như A5 ngang */
+export function rongVungIn(t: MauIn['trang']) {
+  const [r, c] = t.kho === 'A5' ? [148, 210] : [210, 297]
+  return (t.huong === 'ngang' ? c : r) - t.le[1] - t.le[3]
+}
+
+/** Đổi khổ, hướng, lề của mẫu và co giãn độ rộng cột bảng theo vùng in mới, giữ tỷ lệ giữa các cột (T134) */
+export function doiTrangMau(m: MauIn, trang: MauIn['trang']): MauIn {
+  const f = rongVungIn(trang) / rongVungIn(m.trang)
+  if (!m.bang || !(f > 0) || Math.abs(f - 1) < 0.001) return { ...m, trang }
+  // Làm tròn xuống bước 0,5 mm rồi trả phần dư cho cột có phần lẻ lớn nhất, để đổi khổ qua lại nhiều lần tổng độ rộng không hao dần
+  const cot = m.bang.cot
+  const dich = Math.round(cot.reduce((a, c) => a + c.rong, 0) * f * 2)
+  const nua = cot.map(c => Math.max(10, Math.floor(c.rong * f * 2)))
+  let du = dich - nua.reduce((a, x) => a + x, 0)
+  for (const i of cot.map((c, i) => i).sort((a, b) => (cot[b].rong * f * 2 - nua[b]) - (cot[a].rong * f * 2 - nua[a]))) {
+    if (du <= 0) break
+    nua[i]++
+    du--
+  }
+  return { ...m, trang, bang: { ...m.bang, cot: cot.map((c, i) => ({ ...c, rong: nua[i] / 2 })) } }
+}
+
 /** Các mẫu in của một màn chứng từ (mã Excel, vd '2.1.1') và loại phiếu (vd 'thu'); mẫu đầu là mặc định. Không có thì [] */
 export function mauCuaChungTu(code: string, loai?: string, cd?: CheDo): MauIn[] {
   const ids: string[] = (() => {

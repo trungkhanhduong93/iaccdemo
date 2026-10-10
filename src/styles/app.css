@@ -6607,4 +6607,14 @@ table.tbl {
 .tq-col-4 .card-h { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; }
 .tq-col-4 .card-h .sub { flex-basis: 100%; order: 10; margin-top: 2px; }
 
-
+/* ── Mẫu in tự cân đối khi đổi khổ (T134) ── */
+/* Ô số giữ một dòng khi đủ chỗ; khổ hẹp thì xuống dòng ở chỗ <wbr> sau dấu chấm phân nhóm */
+.in-ct-bang td.so {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+/* Khổ hẹp hơn mẫu chuẩn: chữ bảng đã co, lề ô hẹp lại để số đủ một dòng */
+.in-ct-bang.chat th, .in-ct-bang.chat td {
+  padding-left: .7mm;
+  padding-right: .7mm;
+}

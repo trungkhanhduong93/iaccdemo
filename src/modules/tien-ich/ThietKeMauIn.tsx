@@ -9,7 +9,7 @@ import { MODULES, tenMan } from '../../app/registry'
 import { cheDoHienTai, donViHienTai, useSession } from '../../app/session'
 import { kieuGhiSo } from '../../app/plan'
 import type { CheDo } from '../../app/che-do'
-import { mauChoCheDo, mauCuaChungTu, mauIn, type KhoiInK, type MauIn } from '../../app/mau-in'
+import { doiTrangMau, mauChoCheDo, mauCuaChungTu, mauIn, rongVungIn, type KhoiInK, type MauIn } from '../../app/mau-in'
 import { chungTu } from '../../ui/generic/gen'
 import { theoLoai } from '../../ui/generic/nhom'
 import { duLieuIn, type DonViIn, type DuLieuIn } from '../../ui/bao-cao/duLieuIn'
@@ -63,12 +63,6 @@ function khoiBatBuoc(m: MauIn, k: KhoiInK) {
   if (k === 'thongTin') return m.thongTin.some(t => t.batBuoc)
   if (k === 'bang') return !!m.bang?.cot.some(c => c.batBuoc)
   return false
-}
-
-/** Bề rộng vùng in của khổ: bề rộng khổ trừ lề trái, lề phải (mm) */
-function vungIn(m: MauIn) {
-  const [r, c] = m.trang.kho === 'A5' ? [148, 210] : [210, 297]
-  return (m.trang.huong === 'ngang' ? c : r) - m.trang.le[1] - m.trang.le[3]
 }
 
 const CFG_MAU: VoucherCfg = { prefix: 'CT', doiTuong: 'kh', dienGiai: ['Chứng từ mẫu'], tien: [2_000_000, 20_000_000], dong: 'hang' }
@@ -197,7 +191,7 @@ export function ThietKeMauIn({ sc }: ScreenProps) {
   // Kiểm hợp lệ: cột đang hiện không rộng hơn vùng in, tiêu đề không trống
   const noCo = kieuGhiSo(cd.ma) === 'noco'
   const tongRong = mau.bang?.cot.filter(c => !c.an && (!c.chiNoCo || noCo)).reduce((a, c) => a + c.rong, 0) ?? 0
-  const vung = vungIn(mau)
+  const vung = rongVungIn(mau.trang)
   const loiRong = tongRong > vung
   const loiTieuDe = !mau.tieuDe.trim()
   const loi = loiRong ? 'Tổng độ rộng cột vượt vùng in' : loiTieuDe ? 'Tiêu đề không được để trống' : null
@@ -364,7 +358,7 @@ export function ThietKeMauIn({ sc }: ScreenProps) {
           <label className="tkmi-dau-kho">
             <span>Khổ</span>
             <Select className="inp tkmi-o-chon" value={kho} aria-label="Khổ giấy"
-              onChange={e => { const [k, h] = e.target.value.split('-'); doiMau(m => ({ ...m, trang: { ...m.trang, kho: k === 'A5' ? 'A5' : 'A4', huong: h === 'ngang' ? 'ngang' : 'doc' } })) }}>
+              onChange={e => { const [k, h] = e.target.value.split('-'); doiMau(m => doiTrangMau(m, { ...m.trang, kho: k === 'A5' ? 'A5' : 'A4', huong: h === 'ngang' ? 'ngang' : 'doc' })) }}>
               {KHO_GIAY.map(([v, t]) => <option key={v} value={v}>{t}</option>)}
             </Select>
           </label>
@@ -471,7 +465,7 @@ export function ThietKeMauIn({ sc }: ScreenProps) {
           <div className="tkmi-cuon tkmi-ds-nhom" ref={phai}>
             <NhomTt k="giay" ten="Khổ giấy và lề" mo={nhomMo('giay')} onMo={() => batNhom('giay')}
               tom={`${mau.trang.kho} ${mau.trang.huong === 'doc' ? 'dọc' : 'ngang'}${mau.trang.lien === 2 ? ', 2 liên' : ''}`}>
-              <CaiTrang phan="giay" trang={mau.trang} onChange={trang => doiMau(m => ({ ...m, trang }))} />
+              <CaiTrang phan="giay" trang={mau.trang} onChange={trang => doiMau(m => doiTrangMau(m, trang))} />
             </NhomTt>
 
             <NhomTt k="dau" ten="Đầu trang và tiêu đề" mo={nhomMo('dau')} onMo={() => batNhom('dau')} tom={kyHieu ? `Mẫu số ${kyHieu}` : undefined}>

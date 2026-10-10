@@ -2,6 +2,10 @@
 
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
+## 11/10/2026
+
+- T134: Mẫu in phiếu đổi khổ dọc, ngang, A4, A5 tự cân đối: bảng không còn tràn mép giấy, cột co giãn theo khổ, chữ bảng nhỏ lại khi khổ hẹp. Đổi khổ ở Thiết kế mẫu in không còn báo "Tổng độ rộng cột vượt vùng in".
+
 ## 10/10/2026
 
 - T133: Màn Tổng quan làm lại: thẻ doanh thu, lợi nhuận, tiền kèm số ngày đủ chi; 8 chỉ số sức khoẻ tài chính có đèn cảnh báo; thác nước lợi nhuận, xu hướng 4 tháng, dòng tiền, hiệu quả chi nhánh, cơ cấu chi phí. Lọc theo kỳ, chi nhánh; nút Tuỳ chỉnh ẩn, hiện, sắp xếp khối.

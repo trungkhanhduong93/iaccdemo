@@ -3,7 +3,7 @@ import { Fragment, useEffect, useMemo, useRef, useState, type CSSProperties, typ
 import { createPortal } from 'react-dom'
 import { Link } from 'react-router-dom'
 import type { LoaiCT, Row, ScreenDef, VoucherCfg } from '../../modules/types'
-import { mauChoCheDo, mauCuaChungTu, mauIn, type KhoiInK, type MauIn } from '../../app/mau-in'
+import { doiTrangMau, mauChoCheDo, mauCuaChungTu, mauIn, rongVungIn, type KhoiInK, type MauIn } from '../../app/mau-in'
 import { canCu, type CheDo, type CheDoDef } from '../../app/che-do'
 import { coTrongGoi, kieuGhiSo } from '../../app/plan'
 import { cheDoHienTai, donViHienTai, useSession } from '../../app/session'
@@ -22,6 +22,8 @@ export interface PhieuIn { sc: ScreenDef; cfg: VoucherCfg; row: Row; loai?: Loai
 
 const CHAM = '......'
 const soIn = (v: string | number | undefined) => typeof v === 'number' ? (v ? money(v) : '') : v ?? ''
+// Ô số khổ hẹp không đủ chỗ thì xuống dòng sau dấu chấm phân nhóm, không đè sang ô bên (T134)
+const ngatSo = (v: string | number) => String(v).split('.').map((x, i, a) => <Fragment key={i}>{x}{i < a.length - 1 && <>.<wbr /></>}</Fragment>)
 
 /**
  * Vẽ một phiếu thành các khối theo mau.khoi, mỗi khối một phần tử con để tờ giấy đo và xếp trang. Hàm thuần, không hook.
@@ -40,6 +42,9 @@ export function veMauIn(mauGoc: MauIn, du: DuLieuIn, cd: CheDoDef, dv: DonViIn, 
   const kyHieu = mau.kyHieu[cd.ma]
   const khoi = mau.khoi.filter(x => !x.an).map(x => x.k)
   const hienMauSo = khoi.includes('mauSo')
+  // Tự cân đối theo khổ (T134): khổ hẹp hơn khổ của mẫu chuẩn thì chữ bảng co theo, tối đa còn 75%; dưới 150 mm thông tin một cột
+  const vung = rongVungIn(mau.trang)
+  const co = Math.min(1, Math.max(0.75, vung / rongVungIn((mauIn(mau.id) ?? mau).trang)))
 
   const dauTrang = (
     <div className="in-ct-dv" data-khoi="dauTrang">
@@ -103,7 +108,7 @@ export function veMauIn(mauGoc: MauIn, du: DuLieuIn, cd: CheDoDef, dv: DonViIn, 
       case 'thongTin': {
         const ds = mau.thongTin.filter(t => !t.an)
         if (!ds.length) return null
-        const n = mau.soCotThongTin
+        const n = vung < 150 ? 1 : mau.soCotThongTin
         return (
           <div className={`in-ct-tt${n > 1 ? ' hai-cot' : ''}`} style={{ gridTemplateColumns: `repeat(${n}, max-content minmax(0, 1fr))` }}>
             {ds.map(t => (
@@ -126,6 +131,8 @@ export function veMauIn(mauGoc: MauIn, du: DuLieuIn, cd: CheDoDef, dv: DonViIn, 
         const cao = { height: `${b.caoDong}mm` }
         const coNhom = cot.some(c => c.nhom)
         const coKyHieu = cot.some(c => c.kyHieu)
+        const tongRong = cot.reduce((a, c) => a + c.rong, 0) || 1
+        const coChuBang = (b.coChu ?? mau.trang.coChu) * co
         const mep = (c: (typeof cot)[number]) => thietKe && <span className="tkmi-mep" data-mep={c.k} title="Kéo để đổi độ rộng cột" />
         // Tầng trên: cột liền nhau cùng nhóm gộp một ô; cột không nhóm chiếm cả hai tầng
         const tren: ReactNode[] = []
@@ -141,21 +148,22 @@ export function veMauIn(mauGoc: MauIn, du: DuLieuIn, cd: CheDoDef, dv: DonViIn, 
           i = j
         }
         return (
-          <table className="in-ct-bang" style={b.coChu ? { fontSize: `${b.coChu}pt` } : undefined}>
-            <colgroup>{cot.map(c => <col key={c.k} style={{ width: `${c.rong}mm` }} />)}</colgroup>
+          <table className={`in-ct-bang${co < 1 ? ' chat' : ''}`} style={b.coChu || co < 1 ? { fontSize: `${+coChuBang.toFixed(2)}pt` } : undefined}>
+            {/* Cột chia theo tỷ lệ độ rộng đã đặt, nên bảng luôn vừa vùng in dù đổi khổ hay mẫu riêng cũ có tổng rộng hơn vùng in */}
+            <colgroup>{cot.map(c => <col key={c.k} style={{ width: `${+(c.rong / tongRong * 100).toFixed(3)}%` }} />)}</colgroup>
             <thead>
               <tr>{tren}</tr>
               {coNhom && <tr>{cot.filter(c => c.nhom).map(c => <th key={c.k} data-cot={c.k}>{c.t}{mep(c)}</th>)}</tr>}
               {coKyHieu && <tr className="in-ct-ky-hieu">{cot.map(c => <th key={c.k}>{c.kyHieu ?? ''}</th>)}</tr>}
             </thead>
             <tbody>
-              {du.dong.map((d, i) => <tr key={i} style={cao}>{cot.map(c => <td key={c.k} className={c.so ? 'so' : undefined} style={kieuO(c)}>{o(c, d[c.k])}</td>)}</tr>)}
+              {du.dong.map((d, i) => <tr key={i} style={cao}>{cot.map(c => <td key={c.k} className={c.so ? 'so' : undefined} style={kieuO(c)}>{c.so && !c.chiNoCo ? ngatSo(o(c, d[c.k])) : o(c, d[c.k])}</td>)}</tr>)}
               {Array.from({ length: trong }, (_, i) => <tr key={`t${i}`} style={cao}>{cot.map(c => <td key={c.k} />)}</tr>)}
               {b.dongTong && (
                 <tr className="in-ct-cong" style={cao}>
                   {cot.map(c => (
                     <td key={c.k} className={c.so ? 'so' : undefined} data-tong={c.k} style={c === oCong ? { textAlign: 'center' } : kieuO(c)}>
-                      {c === oCong ? 'Cộng' : c.so && c.k !== 'gia' ? soIn(du.dong.reduce((a, d) => a + (Number(d[c.k]) || 0), 0)) : ''}
+                      {c === oCong ? 'Cộng' : c.so && c.k !== 'gia' ? ngatSo(soIn(du.dong.reduce((a, d) => a + (Number(d[c.k]) || 0), 0))) : ''}
                     </td>
                   ))}
                 </tr>
@@ -437,7 +445,7 @@ function SuaGon({ mau, hoTenDonVi, onLuu, onHuy }: { mau: MauIn; hoTenDonVi: Rec
         <b>Sửa mẫu {mau.ten}</b>
         <span className="tkmi-goi-y">Gói đang dùng sửa được khổ giấy, cỡ chữ và người ký. Sửa đủ ở tiện ích Thiết kế mẫu in của gói Plus, Pro.</span>
       </div>
-      <CaiTrang gon trang={nhap.trang} onChange={trang => setNhap(m => ({ ...m, trang }))} />
+      <CaiTrang gon trang={nhap.trang} onChange={trang => setNhap(m => doiTrangMau(m, trang))} />
       <div className="tkmi-gon-nhom">Người ký</div>
       <DsKy ds={nhap.ky} hoTenDonVi={hoTenDonVi} onChange={ky => setNhap(m => ({ ...m, ky }))} />
       <div className="tkmi-gon-chan">
