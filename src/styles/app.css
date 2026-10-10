@@ -6478,3 +6478,7 @@ table.tbl {
   border-color: var(--blue);
   color: var(--blue);
 }
+
+/* ── Quy trình gói Free chỉ còn Danh mục liên quan (T121) ── */
+.qt-hub-grid.mot-cot { grid-template-columns: 1fr; }
+@media (min-width: 1025px) { .qt-hub-grid.mot-cot .qt-hub-items { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; } }

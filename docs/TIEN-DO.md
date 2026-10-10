@@ -37,7 +37,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
-| T121 | Sơ đồ quy trình Bán hàng gói Free: bỏ ô Đơn POS từ FABi trùng với nhãn làn Bán hàng từ FABi, mũi tên đồng bộ đi thẳng sang Xuất bán POS | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-bo-o-trung-so-do-ban-hang.md` |
+| T121 | Sơ đồ quy trình Bán hàng gói Free: bỏ ô Đơn POS từ FABi trùng với nhãn làn Bán hàng từ FABi, mũi tên đồng bộ đi thẳng sang Xuất bán POS; Quy trình gói Free bỏ khung Thiết lập & Thao tác | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-bo-o-trung-so-do-ban-hang.md` |
 | T111 | Báo cáo: ô Khoảng ngày và nút Xem báo cáo nằm trong cột Bộ lọc bên trái (18 màn không có cột lọc giữ trên thanh trên); cột tỷ lệ và mọi cột không còn hẹp tới mức vỡ chữ tiêu đề | Trum | 10/10/2026 | `2026-10-10-trum-bo-loc-ben-mau-in.md` |
 | T112 | Màn Thiết kế mẫu in làm lại ba vùng (danh sách mẫu, tờ in, thuộc tính); khung phiếu in vẽ lại, bổ sung trường theo thông tư; số bằng chữ khớp dòng Cộng, Nợ/Có đúng phiếu | Trum | 10/10/2026 | `2026-10-10-trum-bo-loc-ben-mau-in.md` |
 | T118 | Danh sách Xuất bán POS: dải đối soát đơn POS kiểu iPOS Inventory: nút Đã đồng bộ, Chưa đồng bộ; số liệu tổng số hoá đơn POS, IACC, số món, mã hoá đơn cuối, lần đồng bộ cuối; bảng hoá đơn chưa đồng bộ (mã hoá đơn, thời gian, tên món, ĐVT, số lượng, lý do lỗi); bỏ chip Tất cả, Chưa ghi sổ, Đã ghi sổ, Lệch đối soát, nút Ghi chú FABi, xoá hàng loạt; thêm lọc Hàng hoá, Theo dõi tồn kho | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-doi-soat-pos.md` |

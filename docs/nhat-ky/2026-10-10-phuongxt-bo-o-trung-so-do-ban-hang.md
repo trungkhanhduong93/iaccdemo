@@ -8,12 +8,13 @@
 
 - `ban-hang/quy-trinh.ts`: bỏ ô tĩnh Đơn POS từ FABi trong làn Bán hàng từ FABi của `hoiTuFree`; mũi tên chữ "đồng bộ" giờ đi từ nhãn làn sang Xuất bán POS.
 - `modules/types.ts`: `LanQT` thêm `icon?` cho biểu tượng nhãn làn; `QuyTrinhScreen.tsx` dùng `l.icon ?? l.nut[0].icon`, nên nhãn làn vẫn giữ biểu tượng máy POS.
+- `QuyTrinhScreen.tsx` (`HangDuoi`): gói Free bỏ khung Thiết lập & Thao tác ở màn Quy trình mọi phân hệ; còn mỗi Danh mục liên quan thì khung trải hết bề ngang (lớp `mot-cot`, CSS cuối `app.css`), các mục xếp lưới.
 
 ## Đã kiểm
 
 - `npm run typecheck`, `npm run build`: không lỗi.
 - `python tools/kiem_tra.py --nhanh`: Không có lỗi.
-- Xem trên trình duyệt gói Free: Bán hàng từ FABi, đồng bộ, Xuất bán POS, Báo cáo.
+- Xem trên trình duyệt gói Free: Bán hàng từ FABi, đồng bộ, Xuất bán POS, Báo cáo; Quy trình Mua hàng chỉ còn Danh mục liên quan.
 - `python tools/xuat_bao_cao_he_thong.py` không chạy được trên máy này (thiếu `../Present/tools/build_present`), chưa làm mới file Excel.
 
 ## Dở dang, việc tiếp theo

@@ -324,9 +324,12 @@ function HangDuoi({ qt, modKey, goi, cheDo, session }: { qt: QuyTrinhDef; modKey
   // Gói ẩn phân hệ Tiện ích (gói Free, T100) thì bỏ cột Tiện ích liên quan
   const modTi = MODULES.find(m => m.key === 'tien-ich')
   const coTienIch = !modTi || !anPhanHeGoi(modTi, goi)
+  // Gói Free bỏ cột Thiết lập & Thao tác, chỉ còn Danh mục liên quan (T121)
+  const coThietLap = goi !== 'F'
+  const soCot = 1 + Number(coTienIch) + Number(coThietLap)
 
   return (
-    <section className={`qt-hub-grid${coTienIch ? '' : ' hai-cot'}`} aria-label="Tiện ích và danh mục liên quan">
+    <section className={`qt-hub-grid${soCot === 2 ? ' hai-cot' : soCot === 1 ? ' mot-cot' : ''}`} aria-label="Tiện ích và danh mục liên quan">
       {/* Cột 1: Danh mục liên quan */}
       <div className="card qt-hub-col">
         <div className="qt-hub-h">
@@ -385,7 +388,7 @@ function HangDuoi({ qt, modKey, goi, cheDo, session }: { qt: QuyTrinhDef; modKey
       </div>}
 
       {/* Cột 3: Thiết lập & Thao tác nhanh */}
-      <div className="card qt-hub-col">
+      {coThietLap && <div className="card qt-hub-col">
         <div className="qt-hub-h">
           <span className="qt-hub-ic purple"><Icon n="cog" className="ic sm" /></span>
           <div className="qt-hub-t-wrap">
@@ -413,7 +416,7 @@ function HangDuoi({ qt, modKey, goi, cheDo, session }: { qt: QuyTrinhDef; modKey
             <span>Bấm vào ô để mở form lập chứng từ mới</span>
           </div>
         </div>
-      </div>
+      </div>}
     </section>
   )
 }
