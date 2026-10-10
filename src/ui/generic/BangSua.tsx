@@ -575,8 +575,10 @@ export function BangSua({
 
 /** Tuỳ chỉnh giao diện phiếu: bật tắt các cột của bảng chi tiết (T49), ô đầu phiếu và tổng chân phiếu (T89).
  *  Panel bên phải cùng kiểu panel danh mục (T81). Ô đầu phiếu, chân phiếu lưu chung danh sách ẩn với tiền tố dau:, chan: */
-export function HopCotPhieu({ ds, dsDau = [], dsChan = [], an, onDoi, onDong }: {
-  ds: [string, string][]; dsDau?: [string, string][]; dsChan?: [string, string][]; an: string[]; onDoi: (an: string[]) => void; onDong: () => void
+export function HopCotPhieu({ ds, dsDau = [], dsChan = [], an, macDinh = [], onDoi, onDong }: {
+  ds: [string, string][]; dsDau?: [string, string][]; dsChan?: [string, string][]; an: string[]
+  macDinh?: string[]   // các mục ẩn sẵn, nút Khôi phục mặc định trả về đây (T106)
+  onDoi: (an: string[]) => void; onDong: () => void
 }) {
   const khoi = (ten: string, tienTo: string, muc: [string, string][], ghiChu: string) => {
     const dsK = muc.map(([k, t]): [string, string] => [tienTo + k, t])
@@ -620,7 +622,7 @@ export function HopCotPhieu({ ds, dsDau = [], dsChan = [], an, onDoi, onDong }: 
           {dsChan.length > 0 && khoi('Chân phiếu', 'chan:', dsChan, '')}
         </div>
         <div className="pn-chan">
-          <button type="button" className="btn" onClick={() => onDoi([])}>Khôi phục mặc định</button>
+          <button type="button" className="btn" onClick={() => onDoi(macDinh)}>Khôi phục mặc định</button>
           <span className="grow" />
           <button type="button" className="btn pri" autoFocus onClick={onDong}>Xong</button>
         </div>

@@ -24,6 +24,7 @@ import {
 import { HopInChungTu, type PhieuIn } from '../../ui/bao-cao/InChungTu'
 import { TT_CT } from '../../ui/generic/gen'
 import { DaiTong } from '../../ui/generic/ChungTuForm'
+import { HopCotPhieu } from '../../ui/generic/BangSua'
 
 /** Bán hàng ngoài POS: tiệc mang về, khách công ty đặt trước. Lập tay, không qua FABi; là tab Bán hàng 3.1.7 từ gói Plus (T52) */
 export const NGOAI_POS: VoucherCfg = {
@@ -59,7 +60,11 @@ function dongMonGiam(dt: number, vat: number) {
   const lon = ds.reduce((a, d) => (d.thue > a.thue ? d : a), ds[0])
   lon.thue += vat - ds.reduce((a, d) => a + d.thue, 0)
   // Các khoản của đơn POS theo từng món (T106); dữ liệu mẫu bằng 0. Bảng không có cột Tổng tiền, tổng ở dải đáy
-  return ds.map(d => ({ ...d, phiDv: 0, giamThue: 0, phiVc: 0 }))
+  // Doanh thu trước thuế = thành tiền − giảm giá − chiết khấu + phí dịch vụ + phí vận chuyển; cộng lại bằng doanh thu ngày
+  return ds.map(d => {
+    const o = { ptCk: 0, ck: 0, ptPhiDv: 0, phiDv: 0, giamThue: 0, phiVc: 0 }
+    return { ...d, ...o, dtTruocThue: d.thanh - d.giam - o.ck + o.phiDv + o.phiVc }
+  })
 }
 
 function dongMon(dt: number) {
@@ -377,7 +382,15 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
   )
 }
 
-function NoiDungTab({ x, tab, kieu }: { x: (typeof DAILY)[number]; tab: string; kieu: ReturnType<typeof kieuGhiSo> }) {
+/** Cột bật tắt được của bảng Hàng bán Xuất bán POS (T106); Giảm thuế GTGT, Phí vận chuyển ẩn sẵn, cần thì bật ở Tuỳ chỉnh giao diện */
+const COT_POS: [string, string][] = [
+  ['ma', 'Mã hàng'], ['dvt', 'ĐVT'], ['sl', 'Số lượng'], ['gia', 'Đơn giá'], ['thanh', 'Thành tiền'], ['pt', 'Giảm giá (%)'], ['giam', 'Tiền giảm giá'],
+  ['ptCk', '% CK'], ['ck', 'Tiền CK'], ['ptPhiDv', '% Phí dịch vụ'], ['phiDv', 'Phí dịch vụ'], ['giamThue', 'Giảm thuế GTGT'], ['phiVc', 'Phí vận chuyển'],
+  ['dtTruocThue', 'Doanh thu trước thuế'], ['ts', 'Thuế suất'], ['thue', 'Tiền thuế'],
+]
+const AN_POS_MAC_DINH = ['giamThue', 'phiVc']
+
+function NoiDungTab({ x, tab, kieu, an = AN_POS_MAC_DINH }: { x: (typeof DAILY)[number]; tab: string; kieu: ReturnType<typeof kieuGhiSo>; an?: string[] }) {
   const dong = dongMonGiam(x.dt, x.vat)
   const ht = [
     { dg: 'Thu tiền mặt', no: '1111', co: '5111, 33311', tien: x.tm },
@@ -395,7 +408,7 @@ function NoiDungTab({ x, tab, kieu }: { x: (typeof DAILY)[number]; tab: string; 
     <>
       {tab === 'ct' && (
         <Table
-          cols={[
+          cols={([
             { k: 'stt', t: '#', w: 40, cls: 'dim' },
             { k: 'ma', t: 'Mã hàng', cls: 'code', w: 90 },
             { k: 'ten', t: 'Hàng hoá' },
@@ -406,16 +419,20 @@ function NoiDungTab({ x, tab, kieu }: { x: (typeof DAILY)[number]; tab: string; 
             { k: 'pt', t: 'Giảm giá (%)', num: true, w: 100, r: r => r.pt ? `${r.pt}%` : '' },
             { k: 'giam', t: 'Tiền giảm giá', num: true, w: 120 },
             // Các khoản của đơn POS đưa lên bảng chi tiết (T106)
+            { k: 'ptCk', t: '% CK', num: true, w: 70, r: r => r.ptCk ? `${r.ptCk}%` : '' },
+            { k: 'ck', t: 'Tiền CK', num: true, w: 110 },
+            { k: 'ptPhiDv', t: '% Phí dịch vụ', num: true, w: 110, r: r => r.ptPhiDv ? `${r.ptPhiDv}%` : '' },
             { k: 'phiDv', t: 'Phí dịch vụ', num: true, w: 110 },
             { k: 'giamThue', t: 'Giảm thuế GTGT', num: true, w: 125 },
             { k: 'phiVc', t: 'Phí vận chuyển', num: true, w: 120 },
+            { k: 'dtTruocThue', t: 'Doanh thu trước thuế', num: true, w: 150 },
             { k: 'ts', t: 'Thuế suất', num: true, w: 80, r: r => `${r.ts}%` },
             { k: 'thue', t: 'Tiền thuế', num: true, w: 110 },
-          ]}
+          ] as Col[]).filter(c => !an.includes(c.k))}
           rows={dong}
           sum={{
             stt: `Tổng cộng (${dong.length} dòng)`,
-            ...Object.fromEntries((['sl', 'thanh', 'giam', 'phiDv', 'giamThue', 'phiVc', 'thue'] as const)
+            ...Object.fromEntries((['sl', 'thanh', 'giam', 'ck', 'phiDv', 'giamThue', 'phiVc', 'dtTruocThue', 'thue'] as const)
               .map(k => [k, dong.reduce((a, r) => a + r[k], 0)])),
           }}
         />
@@ -482,11 +499,21 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
   const dong0 = useDong(duongDan(mod, sc))
   const [tab, setTab] = useState('ct')
   const [phieuIn, setPhieuIn] = useState<PhieuIn[] | null>(null)
+  // Cột ẩn của bảng Hàng bán, nhớ trên máy người dùng; chưa chỉnh thì ẩn Giảm thuế GTGT, Phí vận chuyển (T106)
+  const khoaCot = 'iacc-cot-phieu:ban-hang/3-1-1'
+  const [anCot, setAnCot] = useState<string[]>(() => {
+    try { const v = JSON.parse(localStorage.getItem(khoaCot) ?? 'null'); return Array.isArray(v) ? v : AN_POS_MAC_DINH } catch { return AN_POS_MAC_DINH }
+  })
+  const [hopCot, setHopCot] = useState(false)
+  const doiAnCot = (an: string[]) => {
+    setAnCot(an)
+    try { localStorage.setItem(khoaCot, JSON.stringify(an)) } catch { /* trình duyệt chặn lưu thì chỉ giữ trong phiên */ }
+  }
   const x = row.x
   const kieu = kieuGhiSo(s.cheDo)
-  // chiết khấu hoá đơn, phiếu giảm giá áp cho cả đơn nên ở dải đáy; dữ liệu mẫu bằng 0 (T106)
-  const ckHd = 0, phieuGiam = 0
-  const tong = x.dt + x.vat - ckHd - phieuGiam
+  // phiếu giảm giá áp cho cả đơn nên ở dải đáy; chiết khấu đã thành cột trên dòng; dữ liệu mẫu bằng 0 (T106)
+  const phieuGiam = 0
+  const tong = x.dt + x.vat - phieuGiam
   const pttt = [['Tiền mặt', x.tm], ['Chuyển khoản, QR', x.ck], ['Thẻ', x.the], ['App giao đồ ăn', x.app]].filter(([, v]) => Number(v) > 0).map(([t]) => t).join(', ')
   const kenh = x.app > 0 ? 'Tại quán, Mang về, App giao đồ ăn' : 'Tại quán, Mang về'
   const coHddt = ['PL', 'PR'].includes(s.goi)
@@ -500,11 +527,12 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
     <FormToanMan icon={mod.icon} onClose={dong0} title="Xuất bán POS"
       // Phần tổng thành dải cố định ở đáy form, cuộn bảng vẫn thấy (T104); khoản bằng 0 hiện mờ cho gọn
       // các khoản theo món đã lên bảng chi tiết; dải đáy còn khoản của cả đơn và Tổng tiền (T106)
-      day={<DaiTong tong={tong} muc={[['Chiết khấu hoá đơn', ckHd ? -ckHd : 0], ['Phiếu giảm giá', phieuGiam ? -phieuGiam : 0]]} />}
+      day={<DaiTong tong={tong} muc={[['Phiếu giảm giá', phieuGiam ? -phieuGiam : 0]]} />}
       giua={<span className="fsf-tt xem">Chi tiết phiếu <b>{row.so}</b></span>}
       meta={<><St k={cTt}>{tTt}</St><span className="src">FABi</span><span className="chip info"><Icon n="store" className="ic sm" />{row.cn}</span></>}
       foot={<>
         <span className="grow" />
+        <button type="button" className="btn sm" onClick={() => setHopCot(true)} title="Bật tắt cột bảng Hàng bán"><Icon n="chinh" className="ic sm" />Tuỳ chỉnh giao diện</button>
         <button type="button" className="btn sm" onClick={moIn}><Icon n="printer" className="ic sm" />In</button>
         <button type="button" className="btn sm pri" disabled={!coHddt} title={coHddt ? 'Gửi hoá đơn tổng hợp sang iPOS Invoice' : 'Phát hành hoá đơn điện tử có từ gói Plus'}
           onClick={() => toast('Đã gửi hoá đơn tổng hợp sang iPOS Invoice')}><Icon n="receipt" className="ic sm" />Phát hành HĐĐT</button>
@@ -534,11 +562,12 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
           <div className="tabs">
             {[['ct', 'Hàng bán'], ['ht', kieu === 'noco' ? 'Hạch toán' : 'Ghi sổ']].filter(([k]) => k !== 'ht' || kieu !== 'khong').map(([k, l]) => <button key={k} type="button" className={tab === k ? 'on' : ''} onClick={() => setTab(k)}>{l}</button>)}
           </div>
-          <div className="ct-than"><NoiDungTab x={x} tab={tab} kieu={kieu} /></div>
+          <div className="ct-than"><NoiDungTab x={x} tab={tab} kieu={kieu} an={anCot} /></div>
         </section>
         {row.tt === 'loi' && <Note kind="err" icon="alert">Doanh thu trên FABi lớn hơn sổ 1.250.000 đ. <Link to="/app/tien-ich/11-7">Mở đối soát</Link></Note>}
       </div>
       {phieuIn && <HopInChungTu ds={phieuIn} onDong={() => setPhieuIn(null)} />}
+      {hopCot && <HopCotPhieu ds={COT_POS} an={anCot} macDinh={AN_POS_MAC_DINH} onDoi={doiAnCot} onDong={() => setHopCot(false)} />}
     </FormToanMan>
   )
 }
