@@ -28,7 +28,8 @@ export interface BoO {
 }
 
 export const LY_THU = LY_DO.filter(x => x.dung === 'Phiếu thu').map(x => x.ten)
-export const LY_CHI = LY_DO.filter(x => x.dung === 'Phiếu chi').map(x => x.ten)
+// "Chi phí khác" luôn đứng cuối: form lấy lý do cuối danh sách khi không đoán được từ diễn giải
+export const LY_CHI = LY_DO.filter(x => x.dung === 'Phiếu chi' && x.ten !== 'Chi phí khác').map(x => x.ten).concat('Chi phí khác')
 export const LY_XUAT = ['Xuất bán', 'Xuất huỷ', 'Xuất dùng nội bộ', 'Xuất khác']
 
 export function nhomCua(mod: string, cfg: VoucherCfg, loai?: string): Nhom {

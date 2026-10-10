@@ -2,6 +2,7 @@
 import type { ComponentType, ReactNode } from 'react'
 import { FEATURES, type Goi } from '../app/plan'
 import type { CheDo } from '../app/che-do'
+import type { CauHinhDM } from './danh-muc/truong-dm'
 
 export type Row = Record<string, any>
 export interface Col {
@@ -26,6 +27,7 @@ export interface CatalogCfg {
   nhanLoc?: string
   chucNang?: (r: Row) => { nhan: string; di: string; icon?: string }[]
   note?: (goi: Goi) => ReactNode
+  truong?: CauHinhDM                     // trường panel Thêm / Sửa riêng của màn, không khai thì lấy TRUONG_DM theo mã màn
 }
 
 /** Chứng từ: danh sách + form chi tiết */

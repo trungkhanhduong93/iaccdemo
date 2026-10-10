@@ -118,7 +118,8 @@ export const LY_DO = [
   ['LD04', 'Chi mua nguyên vật liệu', 'Phiếu chi'], ['LD05', 'Chi trả lương', 'Phiếu chi'], ['LD06', 'Chi tạm ứng', 'Phiếu chi'],
   ['LD07', 'Xuất huỷ hàng hỏng', 'Phiếu xuất kho'], ['LD08', 'Xuất dùng nội bộ', 'Phiếu xuất kho'], ['LD09', 'Nhập hàng khách trả lại', 'Phiếu nhập kho'],
   ['LD10', 'Thu hoàn ứng', 'Phiếu thu'], ['LD11', 'Thu khác', 'Phiếu thu'], ['LD12', 'Trả tiền nhà cung cấp', 'Phiếu chi'],
-  ['LD13', 'Chi phí khác', 'Phiếu chi'],
+  ['LD13', 'Chi phí khác', 'Phiếu chi'], ['LD14', 'Chi phí CCDC', 'Phiếu chi'], ['LD15', 'Chi phí thuê nhà', 'Phiếu chi'],
+  ['LD16', 'Chi phí TSCĐ', 'Phiếu chi'], ['LD17', 'Chi phí chờ phân bổ', 'Phiếu chi'],
 ].map(([ma, ten, dung]) => ({ ma, ten, dung }))
 
 // ── Doanh thu từng ngày, từng chi nhánh (đồng bộ từ FABi, gom theo ngày) ──

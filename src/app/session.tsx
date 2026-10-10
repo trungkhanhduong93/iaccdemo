@@ -15,6 +15,7 @@ export interface Session {
   chiNhanh: string       // chi nhánh đang làm việc chọn trên thanh trên; 'all' là xem gộp mọi chi nhánh
   khoiTao: boolean       // đã chạy xong khởi tạo
   thuGon?: boolean       // sidebar thu gọn còn biểu tượng
+  ngayDauNam?: Record<string, string>   // ngày đầu năm từng đơn vị (dd/mm/yyyy), khai ở Thông tin đơn vị
 }
 
 /** Đổi mã gói cũ ('M', 'A') sang mã chuẩn ('PL', 'PR'), nhận cả mã cũ và mới */
@@ -74,3 +75,9 @@ export const cheDoHienTai = (s: Session) => CHE_DO[s.cheDo]
 /** Chi nhánh đang chọn trên thanh trên; undefined khi đang xem tất cả chi nhánh */
 export const chiNhanhHienTai = (s: Session) => CHI_NHANH.find(c => c.id === s.chiNhanh)
 
+
+/** Ngày đầu năm của đơn vị đang làm việc; chưa khai thì 01/01 năm hiện tại như lúc khởi tạo đơn vị */
+export const ngayDauNam = (s: Session) => s.ngayDauNam?.[s.donVi] ?? `01/01/${new Date().getFullYear()}`
+const soNgay = (d: string) => { const m = d.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/); return m ? +m[3] * 10000 + +m[2] * 100 + +m[1] : NaN }
+/** Chứng từ thêm mới phải có ngày từ ngày đầu năm trở đi (trừ màn khai số dư) */
+export const truocDauNam = (s: Session, ngay: string) => soNgay(ngay) < soNgay(ngayDauNam(s))

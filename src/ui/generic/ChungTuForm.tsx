@@ -3,11 +3,11 @@ import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import type { Row, ScreenProps, VoucherCfg } from '../../modules/types'
 import { duongDan, tenMan } from '../../app/registry'
-import { chiNhanhHienTai, useSession, cheDoHienTai } from '../../app/session'
+import { chiNhanhHienTai, useSession, cheDoHienTai, ngayDauNam, truocDauNam } from '../../app/session'
 import { kieuGhiSo, type Goi } from '../../app/plan'
 import { CHE_DO } from '../../app/che-do'
 import { tkTheoCheDo } from '../../modules/tong-hop/so-cai'
-import { CHI_NHANH, KHACH, KHO, KHOA_SO_DEN, NCC, NHAN_VIEN, TK_NGAN_HANG, daKhoaSo } from '../../data/mock'
+import { CHI_NHANH, KHACH, KHO, KHOA_SO_DEN, LY_DO, NCC, NHAN_VIEN, TK_NGAN_HANG, daKhoaSo } from '../../data/mock'
 import { HopXacNhan } from '../LocNangCao'
 import { ctTtCon, dsTtCon, ghiNhatKy, soDaTra, soKeTiep, suaPhieu, themPhieu, ttThamChieu, useNhatKy, xoaPhieu, type CtTt, type PhieuTt } from './daXoa'
 import { Icon } from '../Icon'
@@ -101,14 +101,18 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   const [hanTt, setHanTt] = useState(luuCu('hanTt') ?? nv?.hanTt ?? '06/11/2026')
   // Lý do thu, chi ở đầu phiếu (danh mục 1.16), chỉ có ở phân hệ tiền
   const oLy = mod.key === 'tien' ? bo.a.find(o => o.k === 'ly') : undefined
-  const [lyDo, setLyDo] = useState(() => row?._lyDo ? String(row._lyDo) : lyMacDinh(oLy?.ds ?? [], dienGiai))
+  // Lý do mặc định khi thêm mới: theo mã lý do trên đường dẫn (?ly=LD17, vd mở từ sơ đồ Chi phí phân bổ), không có thì đoán từ diễn giải
+  const lyUrl = moi ? LY_DO.find(x => x.ma === sp.get('ly'))?.ten : undefined
+  const lyGoc = (dg: string) => lyUrl && oLy?.ds?.includes(lyUrl) ? lyUrl : lyMacDinh(oLy?.ds ?? [], dg)
+  const [hoiThe, setHoiThe] = useState<{ moMoi: boolean; idMoi: string; tu: Record<string, unknown> } | null>(null)
+  const [lyDo, setLyDo] = useState(() => row?._lyDo ? String(row._lyDo) : lyGoc(dienGiai))
   // Phiếu chuyển quỹ: quỹ đi và quỹ đến. Rút tiền ngân hàng thì đi từ tài khoản về quỹ tiền mặt
   const quyTm = `Quỹ tiền mặt ${CHI_NHANH.find(c => c.ten === chiNhanh)?.ngan ?? CHI_NHANH[0].ngan}`
   const rut = fold(dienGiai).includes('rut tien')
   const [tuQuy, setTuQuy] = useState(rut ? QUY_TIEN[CHI_NHANH.length] : quyTm)
   const [denQuy, setDenQuy] = useState(rut ? quyTm : QUY_TIEN[CHI_NHANH.length])
   useEffect(() => {
-    setLyDo(row?._lyDo ? String(row._lyDo) : lyMacDinh(oLy?.ds ?? [], row?.dienGiai ? String(row.dienGiai) : cfg.dienGiai[0]))
+    setLyDo(row?._lyDo ? String(row._lyDo) : lyGoc(row?.dienGiai ? String(row.dienGiai) : cfg.dienGiai[0]))
   }, [loai?.k, row?.id])
   // Phiếu thu, chi (T49): dòng chi tiết có cột lý do theo lý do đầu phiếu
   const laTien = mod.key === 'tien'
@@ -131,7 +135,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   }
   // Chọn lý do: diễn giải và lý do mọi dòng theo lý do, vẫn sửa lại được
   // Mọi phiếu không có ô Diễn giải ở đầu phiếu, Ghi chú chép sang diễn giải (T77, T78). Phiếu có ô lý do: Ghi chú mặc định theo lý do; phiếu khác: mặc định là diễn giải
-  const ghiChuGoc = () => row?._ghiChu ? String(row._ghiChu) : !oLy ? (row?.dienGiai ? String(row.dienGiai) : cfg.dienGiai[0]) : row?._lyDo ? String(row._lyDo) : lyMacDinh(oLy?.ds ?? [], row?.dienGiai ? String(row.dienGiai) : cfg.dienGiai[0])
+  const ghiChuGoc = () => row?._ghiChu ? String(row._ghiChu) : !oLy ? (row?.dienGiai ? String(row.dienGiai) : cfg.dienGiai[0]) : row?._lyDo ? String(row._lyDo) : lyGoc(row?.dienGiai ? String(row.dienGiai) : cfg.dienGiai[0])
   const [ghiChu, setGhiChu] = useState(ghiChuGoc)
   useEffect(() => { setGhiChu(ghiChuGoc()) }, [loai?.k, row?.id])
   function chonLyDo(v: string) {
@@ -257,6 +261,11 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   }
 
   function luu(moMoi = false) {
+    // Chứng từ thêm mới không được có ngày trước ngày đầu năm của đơn vị (Thông tin đơn vị)
+    if (moi && truocDauNam(s, ngayCt)) {
+      toast(`Ngày chứng từ phải từ ngày đầu năm ${ngayDauNam(s)} trở đi`)
+      return
+    }
     const ctTt = dongBoCtTt()
     // Bản mẫu chưa có backend: phiếu mới lên đầu danh sách, phiếu sửa hiện nội dung mới, tới khi tải lại trang (T49)
     const noiDung = {
@@ -282,6 +291,18 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
       if (doi.length) ghiNhatKy(man, String(row.id), soCt, s.ten, `Sửa chứng từ: ${doi.join(', ')}`)
     }
     toast(moi ? `Đã lưu ${soCt}` : `Đã lưu thay đổi ${soCt}`)
+    // Phiếu chi mới lý do Chi phí chờ phân bổ: hỏi tạo luôn thẻ chi phí phân bổ, điền sẵn từ phiếu
+    if (moi && oLy && lyDo === LY_CHO_PHAN_BO) {
+      setHoiThe({ moMoi, idMoi, tu: {
+        ten: dsDong.map(d => d.ten).filter(Boolean).join('; '), gt: tongThanhToan,
+        soCt, ngayCt, ngay: ngayCt, ngayPb: ngayCt, _goc: `${path}/${idMoi}`,
+      } })
+      return
+    }
+    sauLuu(moMoi, idMoi)
+  }
+
+  function sauLuu(moMoi: boolean, idMoi: string) {
     if (moMoi) {
       nav(`${path}/moi${loai ? `?loai=${loai.k}` : ''}`, { replace: true })
     } else if (moi) {
@@ -1014,6 +1035,13 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
 
         {children}
       </div>
+      {hoiThe && (
+        <HopXacNhan tieuDe="Tạo thẻ chi phí phân bổ" nut="Đồng ý" nutHuy="Không"
+          onDong={() => { const h = hoiThe; setHoiThe(null); sauLuu(h.moMoi, h.idMoi) }}
+          onDongY={() => { const h = hoiThe; setHoiThe(null); nav('/app/ccdc/8-1-1?moi=the', { state: { tuPhieu: h.tu } }) }}>
+          Bạn có muốn tạo Thẻ chi phí phân bổ ngay không? Tên mục chi phí, số tiền, ngày và chứng từ gốc lấy sẵn từ {soCt}, bạn vẫn sửa lại được.
+        </HopXacNhan>
+      )}
     </FormToanMan>
   )
 }
@@ -1025,6 +1053,9 @@ const QUY_TIEN = [
 ]
 
 /** Đoán lý do thu, chi từ diễn giải; không khớp thì lấy lý do cuối danh sách (Thu khác, Chi phí khác) */
+/** Lý do chi đưa vào chi phí chờ phân bổ (LD17): lưu phiếu xong hỏi tạo thẻ chi phí phân bổ */
+const LY_CHO_PHAN_BO = 'Chi phí chờ phân bổ'
+
 const LY_THEO_DG: [string, string][] = [
   ['thue', 'Chi phí khác'], ['no khach', 'Thu nợ khách hàng'], ['tra no', 'Thu nợ khách hàng'], ['ban hang', 'Thu tiền bán hàng'],
   ['dat tiec', 'Thu tiền bán hàng'], ['tien don', 'Thu tiền bán hàng'], ['tam ung', 'Chi tạm ứng'], ['tra tien', 'Trả tiền nhà cung cấp'],

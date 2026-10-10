@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 10/10/2026
 
+- T107: Chi phí phân bổ: tab Danh sách thẻ chi phí với nút Ghi tăng và Ghi tăng dư đầu kỳ; thẻ mở toàn màn hình như phiếu, chọn loại Chi phí trả trước, CCDC, TSCĐ, tab Chi tiết phân bổ tự chia theo cuối tháng (sửa được từng dòng), tab Lịch sử, ngừng phân bổ khi sửa thẻ. Sơ đồ Quy trình có Chi tiền mặt, Chi ngân hàng (lý do Chi phí chờ phân bổ) dẫn tới thẻ; lưu phiếu chi lý do này thì hỏi tạo thẻ ngay. Danh mục lý do thêm Chi phí CCDC, Chi phí thuê nhà, Chi phí TSCĐ, Chi phí chờ phân bổ. Thông tin đơn vị có Ngày đầu năm: chứng từ thêm mới không được trước ngày này.
 - T106: Xuất bán POS: bảng chi tiết có thêm % CK, Tiền CK, % Phí dịch vụ, Phí dịch vụ, Doanh thu trước thuế (Giảm thuế GTGT, Phí vận chuyển ẩn sẵn, bật ở nút Tuỳ chỉnh giao diện), cộng thẳng cột; cột Mã hàng, Hàng hoá, ĐVT đứng yên khi cuộn ngang; dải đáy còn Phiếu giảm giá, Tổng tiền; ô Diễn giải đổi thành Ghi chú; bỏ nút Phát hành HĐĐT; đầu phiếu gọn còn hai hàng chữ để bảng chi tiết rộng hơn. Tiền thuế các món cộng lại khớp thuế của ngày (T103).
 - T105: Mọi phiếu: khi cuộn bảng chi tiết dài, đầu phiếu và tiêu đề cột đứng yên; tổng tiền nằm ở dải cố định ngay trên thanh nút.
 - T104: Xuất bán POS: số chứng từ là số hoá đơn FABi; đầu phiếu gọn hơn (bỏ Cửa hàng, Số đơn POS), bỏ tab Thanh toán, Đơn POS gốc và cột Ghi chú; phần tổng tiền thành dải cố định ở đáy form, cuộn bảng vẫn thấy.

@@ -706,7 +706,7 @@ export function NutHangLoat({
   )
 }
 
-export function HopXacNhan({ tieuDe, nut, children, onDong, onDongY }: { tieuDe: string; nut: string; children: ReactNode; onDong: () => void; onDongY: () => void }) {
+export function HopXacNhan({ tieuDe, nut, nutHuy = 'Huỷ', children, onDong, onDongY }: { tieuDe: string; nut: string; nutHuy?: string; children: ReactNode; onDong: () => void; onDongY: () => void }) {
   useDongEsc(onDong)
   return createPortal(
     <div className="overlay ds-hop-nen" onMouseDown={e => { if (e.target === e.currentTarget) onDong() }}>
@@ -715,7 +715,7 @@ export function HopXacNhan({ tieuDe, nut, children, onDong, onDongY }: { tieuDe:
         <p className="ds-hop-than">{children}</p>
         <div className="ds-chan">
           <span className="grow" />
-          <button type="button" className="btn" onClick={onDong}>Huỷ</button>
+          <button type="button" className="btn" onClick={onDong}>{nutHuy}</button>
           <button type="button" className="btn pri ds-nut-xoa" autoFocus onClick={onDongY}>{nut}</button>
         </div>
       </div>

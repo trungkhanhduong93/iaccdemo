@@ -101,3 +101,20 @@ export function docSoTien(n: number): string {
   if (num < 0) return 'Âm ' + chuoi + ' đồng'
   return chuoi.charAt(0).toUpperCase() + chuoi.slice(1) + ' đồng'
 }
+
+// ── Số kiểu quốc tế: phẩy ngăn hàng nghìn, chấm thập phân (thẻ chi phí phân bổ) ──
+/** Đọc số kiểu quốc tế: bỏ dấu phẩy ngăn nghìn */
+export const docSoQT = (v: unknown) => typeof v === 'number' ? v : Number(String(v ?? '').replace(/,/g, '')) || 0
+/** Chuỗi đang gõ chỉ giữ chữ số và một dấu chấm thập phân, chưa có dấu phẩy */
+export const nhapSoQT = (s: string) => {
+  const [nguyen, ...sau] = s.replace(/[^\d.]/g, '').split('.')
+  return sau.length ? `${nguyen}.${sau.join('')}` : nguyen
+}
+/** Hiện số kiểu quốc tế, chèn phẩy ngăn nghìn cả khi đang gõ dở (giữ nguyên phần thập phân đã gõ) */
+export const soQT = (v: unknown) => {
+  if (typeof v === 'number') return v.toLocaleString('en-US', { maximumFractionDigits: 4 })
+  const s = nhapSoQT(String(v ?? ''))
+  if (!s) return ''
+  const [nguyen, thap] = s.split('.')
+  return (nguyen ? Number(nguyen).toLocaleString('en-US') : '0') + (thap !== undefined ? `.${thap}` : '')
+}

@@ -5423,3 +5423,28 @@ table.tbl {
 .pos-day-cot b { font-size: 13.5px; text-align: right; font-variant-numeric: tabular-nums; color: var(--ink); }
 .pos-day-cot b.am { color: var(--red); }
 .pos-day-cot b.lon { font-size: 18px; color: var(--blue); }
+
+/* ── Thẻ chi phí phân bổ mở toàn màn hình: khối panel danh mục nằm trong form chứng từ (thẻ phân bổ) ── */
+/* 2/3 trên là ô nhập (cuộn riêng nếu thiếu chỗ), 1/3 dưới là tab Chi tiết phân bổ, Lịch sử như phiếu chi */
+.fsf .pn-hop.pn-trong { position: static; width: auto; min-width: 0; max-width: none; height: 100%; box-shadow: none; background: transparent; z-index: auto; display: flex; flex-direction: column; }
+.fsf .pn-hop.pn-trong .pn-than { flex: 1; min-height: 0; padding: 0; overflow: hidden; background: transparent; gap: 12px; }
+.fsf .pn-trong .pn-tren { flex: 2 1 0; min-height: 0; overflow: auto; display: flex; flex-direction: column; gap: 12px; }
+.fsf .pn-trong .pn-duoi { flex: 1 1 0; min-height: 180px; display: flex; flex-direction: column; overflow: hidden; }
+.fsf .pn-trong .pn-duoi > .tabs { padding: 0 16px; flex: none; }
+.fsf .pn-trong .pn-duoi > .pn-khoi-than { flex: 1; min-height: 0; overflow: auto; padding: 10px 16px; }
+.fsf .pn-trong .pn-duoi .tbl-wrap { max-height: 100%; }
+/* Gọn: lưới 4 cột, ô thấp, khoảng cách hẹp */
+.fsf .pn-trong .pn-tren .pn-luoi { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px 16px; }
+.fsf .pn-trong .pn-tren .pn-khoi-dau { padding: 8px 16px; }
+.fsf .pn-trong .pn-tren .pn-khoi-than { padding: 10px 16px 12px; }
+.fsf .pn-trong .f label { margin-bottom: 3px; }
+.fsf .pn-trong .inp, .fsf .pn-trong .sel.inp { height: 32px; }
+.fsf .pn-trong textarea.inp { height: 32px; min-height: 32px; }
+.fsf .pn-trong textarea.inp { overflow: hidden; resize: none; padding-top: 6px; }
+/* Lưới chi tiết phân bổ: ô gõ lại số tiền trong dòng, dòng từ ngày ngừng phân bổ mờ đi */
+.pn-hop .pb-o, .fsf .pn-trong .pb-o { height: 28px; width: 100%; text-align: right; }
+.tbl tr.pb-ngung td { color: var(--faint); background: var(--soft); }
+/* Ô tích nằm cùng hàng ô nhập: canh giữa theo chiều cao ô nhập */
+.pn-luoi .pn-tich-o { align-self: end; min-height: 32px; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; }
+/* Nút mở phiếu gốc cạnh nhãn ô Số chứng từ của thẻ phân bổ */
+.f label .pn-lien { margin-left: 8px; font-weight: 600; color: var(--blue); }

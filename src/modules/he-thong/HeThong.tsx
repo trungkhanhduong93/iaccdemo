@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { ScreenProps } from '../types'
 import { MODULES, duongDan } from '../../app/registry'
-import { donViHienTai, useSession, cheDoHienTai } from '../../app/session'
+import { donViHienTai, useSession, cheDoHienTai, ngayDauNam } from '../../app/session'
 import { FEATURES, GOI, GOIS, MODS, demTheoGoi, kieuGhiSo, type Goi } from '../../app/plan'
 import { CHE_DO, CHE_DO_HOP_LE, cheDoCuaGoi, type CheDo } from '../../app/che-do'
 import { CHI_NHANH, NGUOI_DUNG } from '../../data/mock'
@@ -174,11 +174,18 @@ export function CauHinh({ sc }: ScreenProps) {
 }
 
 export function ThongTinDonVi({ sc }: ScreenProps) {
-  const { s, toast } = useSession()
+  const { s, set, toast } = useSession()
   const dv = donViHienTai(s)
+  // Ngày đầu năm: chứng từ thêm mới phải có ngày từ ngày này trở đi, trừ màn khai số dư
+  const [dauNam, setDauNam] = useState(ngayDauNam(s))
+  const luuDv = () => {
+    if (!/^\d{2}\/\d{2}\/\d{4}$/.test(dauNam)) { toast('Ngày đầu năm cần nhập dạng dd/mm/yyyy'); return }
+    set({ ngayDauNam: { ...s.ngayDauNam, [s.donVi]: dauNam } })
+    toast('Đã lưu thông tin đơn vị')
+  }
   return (
     <div className="page">
-      <PageHead crumb={['Hệ thống']} title={sc.ten!}><button className="btn pri" onClick={() => toast('Đã lưu thông tin đơn vị')}>Lưu</button></PageHead>
+      <PageHead crumb={['Hệ thống']} title={sc.ten!}><button className="btn pri" onClick={luuDv}>Lưu</button></PageHead>
       <Card title="Thông tin trên chứng từ, báo cáo">
         <div className="form-grid">
           <div className="f c2"><label>Tên đơn vị</label><input className="inp" defaultValue={dv.ten} /></div>
@@ -187,6 +194,11 @@ export function ThongTinDonVi({ sc }: ScreenProps) {
           <div className="f c4"><label>Địa chỉ</label><input className="inp" defaultValue={dv.diaChi} /></div>
           <div className="f c2"><label>Người đại diện theo pháp luật</label><input className="inp" defaultValue={dv.nguoiDaiDien} /></div>
           <div className="f c2"><label>Kế toán trưởng</label><input className="inp" defaultValue="Trần Thu Hà" /></div>
+          <div className="f">
+            <label>Ngày đầu năm</label>
+            <input className="inp" value={dauNam} placeholder="dd/mm/yyyy" onChange={e => setDauNam(e.target.value)}
+              title="Chứng từ thêm mới phải có ngày từ ngày này trở đi, trừ các màn khai số dư đầu kỳ" />
+          </div>
         </div>
       </Card>
     </div>

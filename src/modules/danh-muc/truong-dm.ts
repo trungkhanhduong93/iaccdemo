@@ -1,6 +1,8 @@
 // Khai báo trường thông tin panel Thêm / Sửa cho các danh mục (T70)
 // Lấy theo bảng DM_ tương ứng trong CSDL kế toán iPOS (schema-dm.md)
 
+import type { Col, Row } from '../types'
+
 export type KieuTruong = 'chu' | 'so' | 'tien' | 'chon' | 'tich' | 'ngay' | 'nhieuDong'
 
 export interface TruongDM {
@@ -11,15 +13,33 @@ export interface TruongDM {
   caHang?: boolean
   ds?: string[]
   cot?: string
+  hien?: (v: Record<string, any>) => boolean   // chỉ hiện ô khi điều kiện đúng theo giá trị form
+  goc?: number                                 // đặt ở cột phải cùng, hàng thứ goc (như Ngày chứng từ, Số phiếu của form chứng từ)
+  chiDoc?: boolean                             // ô tự sinh, không sửa được
+  lien?: (v: Record<string, any>) => string | undefined   // đường dẫn mở chứng từ liên quan, hiện nút Xem cạnh nhãn
+  // Ô ngày khi thêm mới so với ngày đầu năm của đơn vị: 'tu' phải từ ngày đầu năm trở đi, 'truoc' phải trước ngày đầu năm (khai số dư)
+  dauNam?: (v: Record<string, any>) => 'tu' | 'truoc' | undefined
 }
 
 export interface KhoiDM {
   ten: string
   truong: TruongDM[]
+  // khối dạng lưới tự tính từ giá trị form; doi ghi giá trị khi gõ trong lưới
+  bang?: (v: Record<string, any>, doi: (k: string, val: unknown) => void) => { cols: Col[]; rows: Row[]; sum?: Row; rowCls?: (r: Row) => string; trong: string }
 }
 
 export interface CauHinhDM {
   khoi: KhoiDM[]
+  ten?: string                                       // tên trên đầu panel: "Thêm <ten>", "Sửa <ten>"
+  moTa?: string                                      // dòng phụ dưới tên khi thêm mới
+  soQuocTe?: boolean                                 // ô số, ô tiền theo kiểu quốc tế: 1,234,567.89
+  toanMan?: { icon: string }                         // mở toàn màn hình như form chứng từ, khối lưới thành tab cạnh tab Lịch sử
+  // Nhiều kiểu thêm mới trên cùng màn, mỗi kiểu một nút; kiểu lưu ở form._kieu, mở thẳng bằng ?moi=<k>
+  bien?: { k: string; ten: string; nut: string }[]
+  nhan?: (tr: TruongDM, v: Record<string, any>) => string | undefined   // nhãn ô đổi theo giá trị form
+  moi?: (rows: Row[], ctx: { kieu?: string; ngayDauNam: string }) => Record<string, any>   // giá trị sẵn khi thêm mới theo kiểu thêm mới, ngày đầu năm của đơn vị
+  doi?: (k: string, v: Record<string, any>, rows: Row[]) => Record<string, any>   // ô tự tính khi ô k đổi
+  kiemLuu?: (v: Record<string, any>) => { tieuDe: string; hoi: string; sua: Record<string, any> } | null   // lỗi cần hỏi trước khi lưu; đồng ý thì áp sua rồi lưu
 }
 
 export const TRUONG_DM: Record<string, CauHinhDM> = {
