@@ -18,7 +18,7 @@ import { dangLoc, khopLoc, type GiaTriLoc, type KieuLoc } from '../LocCot'
 import {
   BoLoc, ChipTrangThai, NutHangLoat, NutTuyChinhCot, cotChon, dsChipTT, khopChipTT, useCauHinhLoc, useCotDs, useLocNhap, type OLocDef,
 } from '../LocNangCao'
-import { useDaXoa, xoaPhieu } from './daXoa'
+import { ttTienTheoTra, useDaXoa, xoaPhieu } from './daXoa'
 import { NGUON, TT_CT, chungTu, dongCua, gioPhieu, ttNghiepVu, type Dong } from './gen'
 import { boO, nhomCua, theoLoai, TT_HD, TT_TIEN } from './nhom'
 import { BangSua } from './BangSua'
@@ -96,7 +96,7 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
     if (k === 'tt') return ghi ? (TT_CT[r.tt]?.[1] ?? 'Chưa ghi') : 'Đã ghi sổ'
     if ((k === 'ttTien' || k === 'ttHd') && (nhom === 'mua' || nhom === 'ban')) {
       const nv = ttNghiepVu(r)
-      return (k === 'ttTien' ? TT_TIEN : TT_HD)[nhom][k === 'ttTien' ? nv.ttTien : nv.ttHd]?.[1] ?? ''
+      return (k === 'ttTien' ? TT_TIEN : TT_HD)[nhom][k === 'ttTien' ? ttTienTheoTra(r) : nv.ttHd]?.[1] ?? ''
     }
     const v = r[k]
     return typeof v === 'number' ? `${money(v)} ${v}` : String(v ?? '')
@@ -144,7 +144,7 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
     if (ap.loai && r.loai !== ap.loai) return false
     if (muaBan && (ap.ttTien || ap.ttHd)) {
       const nv = ttNghiepVu(r)
-      if (ap.ttTien && nv.ttTien !== ap.ttTien) return false
+      if (ap.ttTien && ttTienTheoTra(r) !== ap.ttTien) return false
       if (ap.ttHd && nv.ttHd !== ap.ttHd) return false
     }
     for (const [k, g] of Object.entries(locCot)) {
@@ -235,8 +235,8 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
         t: nhom === 'mua' ? 'TT thanh toán' : 'TT thu tiền',
         w: 135,
         r: (r: Row) => {
-          const nv = ttNghiepVu(r)
-          const [cls, nhan] = TT_TIEN[nhom as 'mua' | 'ban'][nv.ttTien] ?? ['dim', '—']
+          // Trạng thái theo số đã trả, đã thu, kể cả phiếu thu, chi lập sau (T89)
+          const [cls, nhan] = TT_TIEN[nhom as 'mua' | 'ban'][ttTienTheoTra(r)] ?? ['dim', '—']
           return <St k={cls}>{nhan}</St>
         },
       } as Col,

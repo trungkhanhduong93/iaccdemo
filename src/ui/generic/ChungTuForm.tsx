@@ -9,7 +9,7 @@ import { CHE_DO } from '../../app/che-do'
 import { tkTheoCheDo } from '../../modules/tong-hop/so-cai'
 import { CHI_NHANH, KHACH, KHO, KHOA_SO_DEN, NCC, NHAN_VIEN, TK_NGAN_HANG, daKhoaSo } from '../../data/mock'
 import { HopXacNhan } from '../LocNangCao'
-import { ctTtCon, ghiNhatKy, soKeTiep, suaPhieu, themPhieu, useNhatKy, xoaPhieu, type CtTt } from './daXoa'
+import { ctTtCon, dsTtCon, ghiNhatKy, soDaTra, soKeTiep, suaPhieu, themPhieu, ttThamChieu, useNhatKy, xoaPhieu, type CtTt, type PhieuTt } from './daXoa'
 import { Icon } from '../Icon'
 import { Card, Note } from '../Page'
 import { FormToanMan, useDong } from '../FormToanMan'
@@ -23,6 +23,7 @@ import { NGUON, TT_CT, dongCua, ttNghiepVu, type Dong } from './gen'
 import { boO, nhomCua, theoLoai } from './nhom'
 import { BangSua, DS_DOI_TUONG, HopCotPhieu, cotTuyChon } from './BangSua'
 import { HopInChungTu, type PhieuIn } from '../bao-cao/InChungTu'
+import { createPortal } from 'react-dom'
 
 export interface ChungTuFormProps extends ScreenProps {
   cfg: VoucherCfg
@@ -204,13 +205,14 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   const traLai = cfg.prefix === 'TLN' || cfg.prefix === 'TL'
   const chiTt = (nhom === 'mua') !== traLai
   const loaiTt = !bo.tt ? '' : hinhThucTt === 'tienmat' ? (chiTt ? 'chi' : 'thu') : hinhThucTt === 'chuyenkhoan' ? (chiTt ? 'unc' : 'bc') : ''
+  const viecTt = nhom === 'mua' ? (traLai ? 'trả lại hàng mua' : 'mua hàng') : (traLai ? 'trả lại hàng bán' : 'bán hàng')
+  const dgTt = `${chiTt ? 'Chi' : 'Thu'} tiền ${viecTt} theo ${soCt}`
+  const lyTt = nhom === 'mua' ? (traLai ? 'Thu khác' : 'Trả tiền nhà cung cấp') : (traLai ? 'Chi phí khác' : 'Thu tiền bán hàng')
   function dongBoCtTt(): CtTt | undefined {
     if (!bo.tt) return ctTtCu
     if (ctTtCu && ctTtCu.loai !== loaiTt) xoaPhieu(MAN_THU_CHI, [{ id: ctTtCu.id, so: ctTtCu.so }], s.ten)
     if (!loaiTt) return undefined
-    const viec = nhom === 'mua' ? (traLai ? 'trả lại hàng mua' : 'mua hàng') : (traLai ? 'trả lại hàng bán' : 'bán hàng')
-    const dg = `${chiTt ? 'Chi' : 'Thu'} tiền ${viec} theo ${soCt}`
-    const ly = nhom === 'mua' ? (traLai ? 'Thu khác' : 'Trả tiền nhà cung cấp') : (traLai ? 'Chi phí khác' : 'Thu tiền bán hàng')
+    const dg = dgTt, ly = lyTt
     const nd = {
       ngay: ngayCt, thang: Number(ngayCt.split('/')[1]) || 10, doiTuong, dienGiai: dg, tien: tongThanhToan, thue: 0, tong: tongThanhToan,
       _quy: quy, _lyDo: ly, _ghiChu: dg, _thamChieu: soCt,
@@ -225,6 +227,33 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
     themPhieu(MAN_THU_CHI, { id, so, cn: chiNhanh, nguon: 'tay', tt: kieu === 'khong' ? 'ghi' : 'nhap', loai: loaiTt, tenLoai: TEN_CT_TT[loaiTt], ...nd })
     ghiNhatKy(MAN_THU_CHI, id, so, s.ten, `Thêm mới chứng từ, sinh từ ${soCt}`)
     return { id, so, loai: loaiTt }
+  }
+
+  // Thanh toán sau (T89): phiếu chưa thanh toán hoặc thanh toán một phần lập thêm phiếu thu, chi theo quỹ chọn, lưu ở _dsTt
+  const [hopTt, setHopTt] = useState(false)
+  const dsTt = dsTtCon(row)
+  const tongGoc = Number(row?.tong) || 0
+  const daTra = row ? soDaTra(row) : 0
+  const conLai = Math.max(0, tongGoc - daTra)
+  const coThanhToanSau = Boolean(bo.tt) && Boolean(row) && hinhThucTt === 'congno' && !dangSua && conLai > 0
+  const tenThanhToan = chiTt ? 'Thanh toán ngay' : 'Thu tiền ngay'
+  function lapThanhToan(ht: 'tienmat' | 'chuyenkhoan', quyTt: string, ngay: string, tien: number, dg: string) {
+    if (!row) return
+    const loai = ht === 'tienmat' ? (chiTt ? 'chi' : 'thu') : (chiTt ? 'unc' : 'bc')
+    const so = soKeTiep(MAN_THU_CHI, `${TIEN_TO_CT_TT[loai]}2610-`)
+    const id = `moi-${Date.now()}-tt`
+    themPhieu(MAN_THU_CHI, {
+      id, so, cn: chiNhanh, nguon: 'tay', tt: kieu === 'khong' ? 'ghi' : 'nhap', loai, tenLoai: TEN_CT_TT[loai],
+      ngay, thang: Number(ngay.split('/')[1]) || 10, doiTuong, dienGiai: dg, tien, thue: 0, tong: tien,
+      _quy: quyTt, _lyDo: lyTt, _ghiChu: dg, _thamChieu: soCt,
+      _dong: [{ ma: '', ten: dg, dvt: '', sl: 1, gia: tien, tien, ts: 0, thue: 0, ly: lyTt, dt: doiTuong, km: '', cv: '' }],
+    })
+    ghiNhatKy(MAN_THU_CHI, id, so, s.ten, `Thêm mới chứng từ, thanh toán cho ${soCt}`)
+    const man = `${mod.key}/${sc.slug}`
+    suaPhieu(man, String(row.id), { _dsTt: [...((row._dsTt as PhieuTt[] | undefined) ?? []), { id, so, loai, tien }] })
+    ghiNhatKy(man, String(row.id), soCt, s.ten, `${tenThanhToan} ${money(tien)} bằng ${so}`)
+    toast(`Đã lập ${so}, ${chiTt ? 'trả' : 'thu'} ${money(tien)} đ`)
+    setHopTt(false)
   }
 
   function luu(moMoi = false) {
@@ -510,6 +539,11 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               <MenuItem icon="copy" onClick={() => toast('Đã sao chép chứng từ')}>
                 Sao chép
               </MenuItem>
+              {coThanhToanSau && (
+                <MenuItem icon="wallet" onClick={() => { dong(); setHopTt(true) }}>
+                  {tenThanhToan}
+                </MenuItem>
+              )}
               <MenuItem icon="chinh" onClick={() => { dong(); setHopCot(true) }}>
                 Tuỳ chỉnh giao diện phiếu
               </MenuItem>
@@ -521,7 +555,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
                   // Cùng luật xoá với danh sách (QD32): kỳ đã khoá sổ không xoá, gói có ghi sổ chỉ xoá phiếu chưa ghi
                   if (daKhoaSo(row.ngay)) toast(`${row.so} thuộc kỳ đã khoá sổ, không xoá được`)
                   else if (kieu !== 'khong' && row.tt !== 'nhap') toast(`${row.so} đã ghi sổ, bỏ ghi sổ rồi mới xoá`)
-                  else if (ctTtCon(row)) toast(`${row.so} có phiếu ${ctTtCon(row)!.so} tham chiếu, xoá ${ctTtCon(row)!.so} trước`)   // T85
+                  else if (ttThamChieu(row)) toast(`${row.so} có phiếu ${ttThamChieu(row)!.so} tham chiếu, xoá ${ttThamChieu(row)!.so} trước`)   // T85, T89
                   else setHoiXoa(true)
                 }}>
                   Xoá chứng từ
@@ -532,6 +566,10 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
             {hopCot && (
               <HopCotPhieu dsDau={dsDau} dsChan={dsChan} ds={cotTuyChon(cfg, { coKho: Boolean(bo.kho) && !khoDau, coLo: nhom === 'mua' && s.goi === 'PR', coCk: Boolean(bo.ck), coKm: kieu !== 'khong', coLy: Boolean(oLy), coNhapKho: truocThue })}
                 an={anCot} onDoi={doiAnCot} onDong={() => setHopCot(false)} />
+            )}
+            {hopTt && row && (
+              <HopThanhToan tieuDe={`${tenThanhToan} cho ${soCt}`} chiTt={chiTt} conLai={conLai} quyTm={quyTm} ngay0={ngayCt} dg0={dgTt}
+                onDong={() => setHopTt(false)} onLuu={lapThanhToan} />
             )}
             {hoiXoa && row && (
               <HopXacNhan tieuDe={`Xoá ${row.so}?`} nut="Xoá phiếu" onDong={() => setHoiXoa(false)}
@@ -663,6 +701,19 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
                       className="inp sm" style={O_TT} value={quy} onChange={setQuy} ds={dsQuy} />
                   ) : <input className="inp sm" style={O_TT} readOnly value={quy} />}
                 </div>
+              )}
+
+              {/* Phiếu còn nợ (T89): số đã trả, đã thu, các phiếu thu, chi lập sau, nút thanh toán ngay */}
+              {bo.tt && row && hinhThucTt === 'congno' && (
+                <span className="row" style={{ gap: 8, fontSize: 12.5, alignItems: 'center', flexWrap: 'wrap' }}>
+                  <span style={{ color: 'var(--muted)' }}>{chiTt ? 'Đã trả' : 'Đã thu'}: <b style={{ color: 'var(--ink)' }}>{money(daTra)}</b> / {money(tongGoc)}</span>
+                  {dsTt.map(c => <Link key={c.id} className="ds-link-so" to={`/app/tien/2-1-1/${c.id}`} title={`${TEN_CT_TT[c.loai]} ${money(c.tien)}`}>{c.so}</Link>)}
+                  {coThanhToanSau && (
+                    <button type="button" className="btn sm" onClick={() => setHopTt(true)}>
+                      <Icon n="wallet" className="ic sm" />{tenThanhToan}
+                    </button>
+                  )}
+                </span>
               )}
 
               {/* Chứng từ thu, chi sinh từ phiếu mua, bán đã lưu (T85) */}
@@ -1059,6 +1110,66 @@ function thangLaiLo(ngay: string): string[] {
     ds.push(`${String(m).padStart(2, '0')}/${y}`)
   }
   return ds
+}
+
+/** Hộp thanh toán ngay cho phiếu mua, bán còn nợ (T89): chọn hình thức, quỹ, ngày, số tiền; lưu thì sinh phiếu thu, chi */
+function HopThanhToan({ tieuDe, chiTt, conLai, quyTm, ngay0, dg0, onDong, onLuu }: {
+  tieuDe: string; chiTt: boolean; conLai: number; quyTm: string; ngay0: string; dg0: string
+  onDong: () => void; onLuu: (ht: 'tienmat' | 'chuyenkhoan', quy: string, ngay: string, tien: number, dg: string) => void
+}) {
+  const [ht, setHt] = useState<'tienmat' | 'chuyenkhoan'>('tienmat')
+  const dsQ = ht === 'tienmat' ? [quyTm] : QUY_TIEN.slice(CHI_NHANH.length)
+  const [quy, setQuy] = useState(quyTm)
+  const [ngay, setNgay] = useState(ngay0)
+  const [tien, setTien] = useState(conLai)
+  const [dg, setDg] = useState(dg0)
+  useEffect(() => { setQuy(dsQ[0] ?? '') }, [ht])
+  useEffect(() => {
+    const key = (e: KeyboardEvent) => { if (e.key === 'Escape') { e.stopPropagation(); onDong() } }
+    document.addEventListener('keydown', key, true)
+    return () => document.removeEventListener('keydown', key, true)
+  }, [onDong])
+  const loai = ht === 'tienmat' ? (chiTt ? 'chi' : 'thu') : (chiTt ? 'unc' : 'bc')
+  const loi = tien <= 0 ? 'Số tiền phải lớn hơn 0' : tien > conLai ? `Không vượt số còn phải ${chiTt ? 'trả' : 'thu'} ${money(conLai)} đ` : !quy ? 'Chọn quỹ' : ''
+  return createPortal(
+    <div className="overlay ds-hop-nen" onMouseDown={e => { if (e.target === e.currentTarget) onDong() }}>
+      <div className="ds-hop" role="dialog" aria-modal="true" aria-label={tieuDe} style={{ width: 480 }}>
+        <div className="ds-hop-dau"><b>{tieuDe}</b></div>
+        <div className="stack" style={{ gap: 12, padding: '4px 18px 14px' }}>
+          <div className="row" style={{ gap: 16, fontSize: 13 }}>
+            <label className="row" style={{ gap: 6, cursor: 'pointer' }}><input type="radio" checked={ht === 'tienmat'} onChange={() => setHt('tienmat')} />Tiền mặt</label>
+            <label className="row" style={{ gap: 6, cursor: 'pointer' }}><input type="radio" checked={ht === 'chuyenkhoan'} onChange={() => setHt('chuyenkhoan')} />Chuyển khoản</label>
+          </div>
+          <div className="f">
+            <label>{ht === 'tienmat' ? 'Quỹ tiền mặt' : 'Quỹ ngân hàng'} <em>*</em></label>
+            <ChonDanhMuc dm={ht === 'tienmat' ? 'quyTm' : 'tkNh'} nhan={ht === 'tienmat' ? 'quỹ tiền mặt' : 'quỹ ngân hàng'} value={quy} onChange={setQuy} ds={dsQ} />
+          </div>
+          <div className="row" style={{ gap: 10 }}>
+            <div className="f" style={{ flex: 1 }}>
+              <label>Ngày chứng từ <em>*</em></label>
+              <ONgay value={ngay} onChange={setNgay} />
+            </div>
+            <div className="f" style={{ flex: 1 }}>
+              <label>Số tiền <em>*</em></label>
+              <input className="inp num" value={money(tien)} onChange={e => setTien(Number(e.target.value.replace(/\D/g, '')) || 0)} />
+            </div>
+          </div>
+          <div className="f">
+            <label>Diễn giải</label>
+            <input className="inp" value={dg} onChange={e => setDg(e.target.value)} />
+          </div>
+          <small className="muted">Còn phải {chiTt ? 'trả' : 'thu'} {money(conLai)} đ. Lưu sẽ lập phiếu {TEN_CT_TT[loai].toLowerCase()} bên Thu chi.</small>
+          {loi && <small style={{ color: 'var(--red)' }}>{loi}</small>}
+        </div>
+        <div className="ds-chan">
+          <span className="grow" />
+          <button type="button" className="btn" onClick={onDong}>Huỷ</button>
+          <button type="button" className="btn pri" disabled={Boolean(loi)} onClick={() => onLuu(ht, quy, ngay, tien, dg)}>Lập phiếu {TEN_CT_TT[loai].toLowerCase()}</button>
+        </div>
+      </div>
+    </div>,
+    document.body,
+  )
 }
 
 /** Chứng từ thu, chi sinh từ phiếu mua, bán trả tiền ngay (T85), theo loại phiếu của màn Thu chi 2.1.1 */

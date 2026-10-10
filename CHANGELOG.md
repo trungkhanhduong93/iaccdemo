@@ -1,5 +1,6 @@
 # Thay đổi trên bản online
 
+- T89: Phiếu mua, bán chưa thanh toán hoặc thanh toán một phần có nút Thanh toán ngay (bán: Thu tiền ngay) trên hàng Thanh toán và trong menu Tiện ích. Chọn tiền mặt hoặc chuyển khoản, quỹ, ngày, số tiền thì lập phiếu thu, chi bên Thu chi. Phiếu hiện số đã trả và mã các phiếu; trạng thái thanh toán ở danh sách đổi theo.
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 10/10/2026

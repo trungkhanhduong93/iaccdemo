@@ -8,7 +8,7 @@ import { MenuHead, MenuItem, MenuSep, Popover } from './Dropdown'
 import { Icon } from './Icon'
 import { fold } from './format'
 import { daKhoaSo } from '../data/mock'
-import { ctTtCon } from './generic/daXoa'
+import { ttThamChieu } from './generic/daXoa'
 
 /** Tối đa số ô lọc đưa ra thanh ngoài */
 const TOI_DA_NGOAI = 4
@@ -603,8 +603,8 @@ export function NutHangLoat({
   // Xoá: gói có ghi sổ chỉ xoá phiếu chưa ghi, gói Free xoá mọi phiếu; phiếu thuộc kỳ đã khoá sổ không xoá (T48)
   const nKhoa = selectedRows.filter(r => daKhoaSo(r.ngay)).length
   // Phiếu mua, bán còn phiếu thu, chi sinh kèm thì xoá phiếu thu, chi trước (T85)
-  const nThamChieu = selectedRows.filter(r => ctTtCon(r)).length
-  const dsXoa = selectedRows.filter(r => !daKhoaSo(r.ngay) && (!ghi || r.tt === 'nhap') && !ctTtCon(r))
+  const nThamChieu = selectedRows.filter(r => ttThamChieu(r)).length
+  const dsXoa = selectedRows.filter(r => !daKhoaSo(r.ngay) && (!ghi || r.tt === 'nhap') && !ttThamChieu(r))
   const nXoa = dsXoa.length
   const tenXoa = `Xoá ${nXoa} phiếu${ghi ? ' chưa ghi' : ''}`
 
