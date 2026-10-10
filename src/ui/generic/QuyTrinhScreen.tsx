@@ -162,8 +162,8 @@ function ONut({ n, goi, chinh, so, style }: { n: NutQT; goi: Goi; chinh?: boolea
 const BO = 10         // bán kính góc bo ở hai đầu trục gom
 const MUI = 8         // chiều dài mũi tên vào khối Sổ sách, cao 10
 
-/** Sơ đồ luồng theo cột (T123): ô cột trước nối tới mọi ô cột sau. Nhiều ô gộp vào một ô (mua hàng, bán hàng thành tồn hệ thống),
- *  một ô tách ra nhiều ô (kiểm kê ra thiếu, thừa). Đường nối gấp khúc: ra khỏi cột trước tới trục đứng, đi dọc, rẽ vào ô cột sau */
+/** Sơ đồ luồng chạy từ trên xuống (T123): mỗi tầng (CotQT) một hàng ô; ô tầng trên nối tới mọi ô tầng dưới qua một trục ngang,
+ *  nên gộp (mua hàng, bán hàng thành tồn hệ thống) và tách nhánh (kiểm kê ra thiếu, thừa) đều vẽ được. Tầng cuối gộp lại, rẽ phải vào khối kết quả */
 function SoDoLuong({ cot, ra, goi, modKey }: { cot: CotQT[]; ra: LanQT | null; goi: Goi; modKey: string }) {
   const ref = useRef<HTMLDivElement>(null)
   const [ve, setVe] = useState<{ w: number; h: number; d: string; mui: string[]; chu: { x: number; y: number; t: string }[] } | null>(null)
@@ -173,27 +173,38 @@ function SoDoLuong({ cot, ra, goi, modKey }: { cot: CotQT[]; ra: LanQT | null; g
     const doLai = () => {
       const zoom = heSoZoom()
       const g = el.getBoundingClientRect()
-      const hop = [...el.querySelectorAll<HTMLElement>(':scope > .qt-lg-cot')].map(c =>
-        [...c.querySelectorAll<HTMLElement>(':scope > .qt-n, :scope > .qt-ht-ra')].map(n => {
-          const r = n.getBoundingClientRect()
-          return { l: (r.left - g.left) / zoom, r: (r.right - g.left) / zoom, y: Math.round((r.top + r.height / 2 - g.top) / zoom) }
-        }))
+      const hop = (n: Element) => {
+        const r = n.getBoundingClientRect()
+        return { l: (r.left - g.left) / zoom, r: (r.right - g.left) / zoom, t: (r.top - g.top) / zoom, b: (r.bottom - g.top) / zoom, x: Math.round((r.left + r.width / 2 - g.left) / zoom), y: Math.round((r.top + r.height / 2 - g.top) / zoom) }
+      }
+      const tang = [...el.querySelectorAll(':scope > .qt-lg-than > .qt-lg-hang')].map(h => [...h.querySelectorAll(':scope > .qt-n')].map(hop))
       const p: string[] = [], mui: string[] = [], chu: { x: number; y: number; t: string }[] = []
-      for (let i = 1; i < hop.length; i++) {
-        const truoc = hop[i - 1], sau = hop[i]
-        if (!truoc.length || !sau.length) continue
-        const ra = Math.round(Math.max(...truoc.map(o => o.r)))
-        const ax = ra + 24                                        // trục đứng gần cột trước, để đoạn vào ô sau đủ chỗ ghi chữ
-        const ys = [...truoc, ...sau].map(o => o.y)
-        truoc.forEach(o => p.push(`M${Math.round(o.r)} ${o.y}H${ax}`))
-        if (Math.min(...ys) !== Math.max(...ys)) p.push(`M${ax} ${Math.min(...ys)}V${Math.max(...ys)}`)
-        sau.forEach((o, j) => {
-          const x = Math.round(o.l) - 2
-          p.push(`M${ax} ${o.y}H${x - MUI + 2}`)
-          mui.push(`M${x - MUI} ${o.y - 5}L${x} ${o.y}L${x - MUI} ${o.y + 5}Z`)
-          const t = cot[i]?.nut[j]?.noi ?? cot[i]?.noi
-          if (t) chu.push({ x: Math.round((ax + x - MUI) / 2), y: o.y - 7, t })
+      for (let i = 1; i < tang.length; i++) {
+        const tren = tang[i - 1], duoi = tang[i]
+        if (!tren.length || !duoi.length) continue
+        const ay = Math.round(Math.max(...tren.map(o => o.b)) + 16)            // trục ngang gần tầng trên, để đoạn vào ô dưới đủ chỗ ghi chữ
+        const xs = [...tren, ...duoi].map(o => o.x)
+        tren.forEach(o => p.push(`M${o.x} ${Math.round(o.b)}V${ay}`))
+        if (Math.min(...xs) !== Math.max(...xs)) p.push(`M${Math.min(...xs)} ${ay}H${Math.max(...xs)}`)
+        duoi.forEach((o, j) => {
+          const y = Math.round(o.t) - 2
+          p.push(`M${o.x} ${ay}V${y - MUI + 2}`)
+          mui.push(`M${o.x - 5} ${y - MUI}L${o.x} ${y}L${o.x + 5} ${y - MUI}Z`)
+          const t = cot[i].nut[j]?.noi ?? cot[i].noi
+          if (t) chu.push({ x: o.x + 8, y: Math.round((ay + y - MUI) / 2) + 4, t })
         })
+      }
+      // Tầng cuối gộp xuống trục, chạy sang phải rồi lên ngang tâm khối kết quả, rẽ vào
+      const raEl = el.querySelector(':scope > .qt-ht-ra')
+      const cuoi = tang[tang.length - 1]
+      if (raEl && cuoi?.length) {
+        const rr = hop(raEl)
+        const ay = Math.round(Math.max(...cuoi.map(o => o.b)) + 16)
+        const dinh = Math.round(rr.l) - 2
+        const ax = Math.round((Math.max(...cuoi.map(o => o.r)) + dinh) / 2)
+        cuoi.forEach(o => p.push(`M${o.x} ${Math.round(o.b)}V${ay}`))
+        p.push(`M${Math.min(...cuoi.map(o => o.x))} ${ay}H${ax}V${rr.y}H${dinh - MUI + 2}`)
+        mui.push(`M${dinh - MUI} ${rr.y - 5}L${dinh} ${rr.y}L${dinh - MUI} ${rr.y + 5}Z`)
       }
       setVe({ w: Math.round(g.width / zoom), h: Math.round(g.height / zoom), d: p.join(''), mui, chu })
     }
@@ -214,19 +225,19 @@ function SoDoLuong({ cot, ra, goi, modKey }: { cot: CotQT[]; ra: LanQT | null; g
             {ve.chu.map((c, i) => <text key={i} x={c.x} y={c.y} className="qt-lg-chu">{c.t}</text>)}
           </svg>
         )}
-        {cot.map((c, i) => (
-          <div key={i} className="qt-lg-cot">
-            {c.nut.map(n => <NutNgang key={n.di || n.ten} n={n} goi={goi} />)}
-          </div>
-        ))}
-        {/* Khối kết quả cuối sơ đồ, cột cuối nối vào; cùng kiểu khối Sổ sách của sơ đồ hội tụ */}
-        {ra && (
-          <div className="qt-lg-cot">
-            <div className="qt-ht-ra">
-              <div className="qt-ht-dau"><span className="qt-ht-ic"><Icon n="book" className="ic" /></span>{ra.ten}</div>
-              {ra.nut.map(n => <NutNgang key={n.di} n={n} goi={goi} dong />)}
-              <Link to={`/app/${modKey}/bao-cao`} className="qt-ht-all">Tất cả báo cáo<Icon n="arrow" className="ic sm" /></Link>
+        <div className="qt-lg-than">
+          {cot.map((c, i) => (
+            <div key={i} className="qt-lg-hang">
+              {c.nut.map(n => <NutNgang key={n.di || n.ten} n={n} goi={goi} />)}
             </div>
+          ))}
+        </div>
+        {/* Khối kết quả bên phải sơ đồ, cùng kiểu khối Sổ sách của sơ đồ hội tụ */}
+        {ra && (
+          <div className="qt-ht-ra">
+            <div className="qt-ht-dau"><span className="qt-ht-ic"><Icon n="book" className="ic" /></span>{ra.ten}</div>
+            {ra.nut.map(n => <NutNgang key={n.di} n={n} goi={goi} dong />)}
+            <Link to={`/app/${modKey}/bao-cao`} className="qt-ht-all">Tất cả báo cáo<Icon n="arrow" className="ic sm" /></Link>
           </div>
         )}
       </div>

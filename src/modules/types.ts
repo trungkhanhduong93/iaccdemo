@@ -112,7 +112,7 @@ export interface ModuleDef {
 }
 
 /** Ô trên sơ đồ quy trình. di là đường dẫn sau /app/, vd 'tien/2-1-1/moi?loai=thu' mở form phiếu thu mới; di rỗng là ô chỉ để xem, không bấm được (T100) */
-export interface NutQT { ten: string; icon: string; di: string; tone?: 'fabi' | 'ivt' | 'hd' | 'kq'; noi?: string }   // tone 'kq': ô kết quả hệ thống tự tổng hợp, không phải màn hình (T123)   // noi: chữ trên mũi tên từ ô trước tới ô này trong làn hội tụ (T98)
+export interface NutQT { ten: string; icon: string; di: string; tone?: 'fabi' | 'ivt' | 'hd' | 'kq'; noi?: string }   // noi: chữ trên mũi tên từ ô trước tới ô này (T98); tone 'kq': ô kết quả hệ thống tự tổng hợp, không phải màn hình (T123)
 
 /** Một bước trên trục ngang: ô chính nằm trên trục, ô phụ treo phía trên hoặc phía dưới */
 export interface BuocQT { ten?: string; chinh: NutQT; tren?: NutQT[]; duoi?: NutQT[] }
@@ -125,7 +125,7 @@ export interface LanQT {
   tone?: 'ok' | 'err' | 'info' | 'ad' | 'st'  // tông màu ô biểu tượng ở nhãn làn: xanh lá, đỏ, xanh, tím, xanh ngọc; thiếu thì 'info'
 }
 
-/** Một cột của sơ đồ luồng: các ô xếp dọc; noi là chữ trên mũi tên đi vào cột, ô có noi riêng thì dùng chữ của ô (T123) */
+/** Một tầng của sơ đồ luồng từ trên xuống: các ô xếp ngang; noi là chữ trên mũi tên đi vào tầng, ô có noi riêng thì dùng chữ của ô (T123) */
 export interface CotQT { nut: NutQT[]; noi?: string }
 
 export interface QuyTrinhDef {
@@ -134,8 +134,8 @@ export interface QuyTrinhDef {
   hoiTu?: { lan: LanQT[]; ra: LanQT }    // sơ đồ hội tụ thay trục ngang: các làn nghiệp vụ song song cùng đổ về khối kết quả bên phải
   hoiTuFree?: { lan: LanQT[]; ra: LanQT } // gói Free dùng sơ đồ hội tụ riêng thay sơ đồ chung (T98)
   moTaFree?: string                      // dòng mô tả dưới tiêu đề sơ đồ ở gói Free (T123)
-  luongFree?: CotQT[]                     // gói Free dùng sơ đồ luồng theo cột thay sơ đồ chung: ô cột trước nối tới mọi ô cột sau, gộp và tách nhánh (T123)
-  luongFreeRa?: LanQT                     // khối kết quả cuối sơ đồ luồng, cột cuối nối vào; có thì bỏ khung Báo cáo bên phải (T123)
+  luongFree?: CotQT[]                     // gói Free dùng sơ đồ luồng từ trên xuống thay sơ đồ chung: ô tầng trên nối tới mọi ô tầng dưới, gộp và tách nhánh (T123)
+  luongFreeRa?: LanQT                     // khối kết quả bên phải sơ đồ luồng, tầng cuối nối vào; có thì bỏ khung Báo cáo bên phải (T123)
   danhSo?: boolean                       // đánh số bước, kiểu màn Giá thành của AMIS
   baoCao?: string[]                      // khung Báo cáo bên phải: slug trong phân hệ hoặc 'phân hệ/slug'
   ghiChu?: { tieuDe: string; dong: [string, string, string?][] }  // thay khung Báo cáo khi phân hệ không có báo cáo

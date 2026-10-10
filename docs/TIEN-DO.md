@@ -37,7 +37,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
-| T123 | Sơ đồ quy trình Kho gói Free vẽ lại dạng luồng: Mua hàng, Bán hàng tổng hợp thành Tồn hệ thống (ô kết quả, không phải màn hình), so sánh với Kiểm kê kho, tách ra Xuất điều chỉnh (thiếu), Nhập điều chỉnh (thừa) | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-so-do-kho-free.md` |
+| T123 | Sơ đồ quy trình Kho gói Free vẽ lại dạng luồng từ trên xuống, khối Báo cáo bên phải: Mua hàng, Bán hàng tổng hợp thành Tồn hệ thống (ô kết quả, không phải màn hình), so sánh với Kiểm kê kho, tách ra Xuất điều chỉnh (thiếu), Nhập điều chỉnh (thừa) | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-so-do-kho-free.md` |
 | T122 | Ẩn tạm 23 mã sổ, BCTC, tờ khai do agent tự dựng theo từng thông tư (QD45); giữ TT58 theo file, TT152 theo iFaster; link cũ hiện "Báo cáo chưa có mẫu" | Trum | 10/10/2026 | `2026-10-10-trum-an-tam-bao-cao.md` |
 | T121 | Sơ đồ quy trình Bán hàng gói Free: bỏ ô Đơn POS từ FABi trùng với nhãn làn Bán hàng từ FABi, mũi tên đồng bộ đi thẳng sang Xuất bán POS; Quy trình gói Free bỏ khung Thiết lập & Thao tác | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-bo-o-trung-so-do-ban-hang.md` |
 | T111 | Báo cáo: ô Khoảng ngày và nút Xem báo cáo nằm trong cột Bộ lọc bên trái (18 màn không có cột lọc giữ trên thanh trên); cột tỷ lệ và mọi cột không còn hẹp tới mức vỡ chữ tiêu đề | Trum | 10/10/2026 | `2026-10-10-trum-bo-loc-ben-mau-in.md` |

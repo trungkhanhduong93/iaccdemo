@@ -4,7 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 10/10/2026
 
-- T123: Sơ đồ quy trình Kho gói Free vẽ lại dạng luồng: Mua hàng, Bán hàng tổng hợp thành Tồn hệ thống; Kiểm kê kho so sánh với tồn hệ thống ra chênh lệch: thiếu thì Xuất điều chỉnh, thừa thì Nhập điều chỉnh. Cuối sơ đồ là khối Báo cáo, hai ô điều chỉnh có mũi tên dẫn vào. Dưới tiêu đề có dòng mô tả: gói Free theo dõi tồn kho với hàng bán thẳng.
+- T123: Sơ đồ quy trình Kho gói Free vẽ lại dạng luồng chạy từ trên xuống: Mua hàng, Bán hàng tổng hợp thành Tồn hệ thống; Kiểm kê kho so sánh với tồn hệ thống ra chênh lệch: thiếu thì Xuất điều chỉnh, thừa thì Nhập điều chỉnh. Khối Báo cáo bên phải sơ đồ, hai ô điều chỉnh có mũi tên dẫn vào. Dưới tiêu đề có dòng mô tả: gói Free theo dõi tồn kho với hàng bán thẳng.
 - T122: Ẩn tạm các sổ, báo cáo tài chính, tờ khai chưa có mẫu chuẩn: gói Plus, Pro tạm không còn sổ và báo cáo tài chính; gói Standard còn bộ sổ TT58; gói Free còn bộ báo cáo hộ kinh doanh. Mở link cũ thấy "Báo cáo chưa có mẫu".
 - T121: Sơ đồ quy trình Bán hàng gói Free bỏ ô Đơn POS từ FABi trùng với nhãn Bán hàng từ FABi; mũi tên đồng bộ đi thẳng sang Xuất bán POS. Màn Quy trình mọi phân hệ ở gói Free bỏ khung Thiết lập & Thao tác, chỉ còn Danh mục liên quan.
 - T111: Màn báo cáo: ô chọn khoảng ngày và nút Xem báo cáo chuyển sang cột Bộ lọc bên trái. Cột tỷ lệ (vd Tỷ lệ (%) khấu hao ở Sổ TSCĐ) và các cột hẹp khác không còn vỡ chữ tiêu đề.
