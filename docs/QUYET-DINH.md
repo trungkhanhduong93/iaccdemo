@@ -498,3 +498,5 @@ Lý do: Trum chốt ngày 10/10/2026 (T122). Ký hiệu, bố cục các mẫu n
 - Gói Free: 4 thẻ đầu, Thác nước lợi nhuận, Xu hướng; khối còn lại hiện khoá mời nâng cấp.
 
 Lý do: Trum giao việc T133 ngày 10/10/2026, duyệt các mặc định do agent đề xuất.
+
+## QD47. Nhóm danh mục, đồng ý chia sẻ thông tin cá nhân, phương thức thanh toán (đang soạn)
