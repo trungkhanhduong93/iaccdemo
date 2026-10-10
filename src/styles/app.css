@@ -5465,3 +5465,6 @@ table.tbl {
 
 /* ── Ô tích chỉ xem, vd Theo dõi tồn kho theo danh mục (T108) ── */
 .o-tich-xem { pointer-events: none; accent-color: var(--blue); width: 15px; height: 15px; vertical-align: middle; }
+
+/* ── Hộp đồng bộ: dòng giải thích dưới ô tích ở chân hộp (T111) ── */
+.hdb-chu-nho { display: block; font-size: 11.5px; color: var(--muted); font-weight: 400; margin-top: 1px; }

@@ -25,6 +25,7 @@ import { HopInChungTu, type PhieuIn } from '../../ui/bao-cao/InChungTu'
 import { TT_CT } from '../../ui/generic/gen'
 import { DaiTong } from '../../ui/generic/ChungTuForm'
 import { HopCotPhieu } from '../../ui/generic/BangSua'
+import { HopDongBo } from '../../ui/HopDongBo'
 
 /** Bán hàng ngoài POS: tiệc mang về, khách công ty đặt trước. Lập tay, không qua FABi; là tab Bán hàng 3.1.7 từ gói Plus (T52) */
 export const NGOAI_POS: VoucherCfg = {
@@ -194,6 +195,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
   const loc0 = useLocNhap(locMacDinh)
   const { nhap, dat, ap } = loc0
   const [chipTT, setChipTT] = useState('all')
+  const [moDongBo, setMoDongBo] = useState(false)   // hộp Đồng bộ hoá đơn từ POS (T111)
   const [chon, setChon] = useState<Set<string>>(new Set())
   const [moHangLoat, setMoHangLoat] = useState(false)
   const [moGhiChu, setMoGhiChu] = useState(false)
@@ -345,8 +347,8 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
                 onOpenChange={setMoHangLoat}
               />
               {/* Xuất bán POS chỉ đổ về từ phần mềm bán hàng, không thêm mới bằng tay (T52) */}
-              <button type="button" className="btn pri" onClick={() => toast('Đã tải 612 đơn mới từ FABi, gom vào 3 chứng từ ngày 07/10')}>
-                <Icon n="download" className="ic sm" />Tải từ FABi
+              <button type="button" className="btn pri" onClick={() => setMoDongBo(true)}>
+                <Icon n="refresh" className="ic sm" />Đồng bộ hoá đơn từ POS
               </button>
             </div>
           </div>
@@ -477,6 +479,28 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
           )}
         </section>
       </div>
+      {/* Đồng bộ hoá đơn từ POS (T111): khoảng thời gian, chi nhánh (mặc định chi nhánh đang chọn), bỏ qua hoá đơn đã đồng bộ */}
+      {moDongBo && (
+        <HopDongBo
+          tieuDe="Đồng bộ hoá đơn từ POS"
+          phu="Chọn khoảng thời gian và chi nhánh cần lấy hoá đơn từ FABi về Xuất bán POS."
+          nhanDs="Chi nhánh đồng bộ"
+          ds={CHI_NHANH.map(c => ({ ma: c.id, ten: c.ten, phu: `FB-${c.id.toUpperCase()}-01` }))}
+          chonSan={cnChon ? [cnChon.id] : []}
+          nhanLamLai="Bỏ qua hoá đơn đã đồng bộ"
+          ghiChuLamLai="Chỉ lấy hoá đơn còn thiếu, thừa, bị xoá hoặc sửa trên FABi"
+          lamLaiMacDinh
+          nutChinh="Đồng bộ ngay"
+          onDong={() => setMoDongBo(false)}
+          onDongBo={({ tu, den, chon, lamLai }) => {
+            setMoDongBo(false)
+            const ngay = Math.max(1, Math.round((den.getTime() - tu.getTime()) / 864e5) + 1)
+            toast(lamLai
+              ? `Đã đồng bộ ${chon.length * 3 + 2} hoá đơn thiếu, thừa, xoá, sửa của ${chon.length} chi nhánh, ${dmy(tu)} đến ${dmy(den)}`
+              : `Đã đồng bộ lại ${chon.length * ngay * 104} hoá đơn của ${chon.length} chi nhánh, ${dmy(tu)} đến ${dmy(den)}`)
+          }}
+        />
+      )}
     </div>
   )
 }

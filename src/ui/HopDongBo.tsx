@@ -29,6 +29,9 @@ export interface HopDongBoProps {
   nhanLamLai: string
   nutChinh: string
   nutDangChay?: string
+  chonSan?: string[]        // mã chọn sẵn khi mở hộp, vd chi nhánh đang làm việc (T111)
+  lamLaiMacDinh?: boolean   // ô tích ở chân hộp tích sẵn hay không (T111)
+  ghiChuLamLai?: string     // dòng giải thích dưới ô tích (T111)
   onDong: () => void
   onDongBo: (ketQua: KetQuaDongBo) => void
 }
@@ -43,6 +46,9 @@ export function HopDongBo({
   nhanLamLai,
   nutChinh,
   nutDangChay,
+  chonSan = [],
+  lamLaiMacDinh = false,
+  ghiChuLamLai,
   onDong,
   onDongBo,
 }: HopDongBoProps) {
@@ -51,11 +57,11 @@ export function HopDongBo({
     den: HOM_NAY,
   }))
   const [tim, setTim] = useState('')
-  const [chon, setChon] = useState<string[]>([])
+  const [chon, setChon] = useState<string[]>(chonSan)
   const [mon, setMon] = useState<string[]>([])
   const [moMon, setMoMon] = useState(false)
   const [timMon, setTimMon] = useState('')
-  const [lamLai, setLamLai] = useState(false)
+  const [lamLai, setLamLai] = useState(lamLaiMacDinh)
   const [dangChay, setDangChay] = useState(false)
 
   const timRef = useRef<HTMLInputElement>(null)
@@ -384,7 +390,7 @@ export function HopDongBo({
               disabled={dangChay}
               onChange={e => setLamLai(e.target.checked)}
             />
-            <span>{nhanLamLai}</span>
+            <span>{nhanLamLai}{ghiChuLamLai && <small className="hdb-chu-nho">{ghiChuLamLai}</small>}</span>
           </label>
           <div className="hdb-chan-phai">
             <button
