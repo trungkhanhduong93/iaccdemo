@@ -13,7 +13,7 @@
 - T108 `data/mock.ts`: HANG có `tonKho` (món chế biến false, bia lon, nước suối true); danh mục 1.2 thêm trường Theo dõi tồn kho (`truong-dm.ts`, cột IS_INVENTORY) và cột Theo dõi tồn (ô tích chỉ xem `.o-tich-xem`); nguyên vật liệu luôn có. Xuất bán POS thêm cột Theo dõi tồn kho, cột cuối `dinh: 'phai'`, bật tắt được ở Tuỳ chỉnh giao diện.
 - T109: danh sách bỏ cột Nguồn và ô lọc Nguồn; nhãn cách đồng bộ ghi Chi tiết hoặc Tổng hợp, rê chuột xem đủ.
 - T110: Bộ lọc nâng cao thêm Khách hàng, Kênh bán, Phương thức thanh toán (`PTTT`, `ptttCua`: phương thức có số tiền thu lớn hơn 0); đưa ra ngoài được ở Cấu hình tham số lọc. Đồng bộ tổng hợp theo kênh thì bỏ ô lọc và mục Phương thức thanh toán ở đầu phiếu, vì chứng từ gộp nhiều cách thanh toán.
-- T111: nút Đồng bộ hoá đơn từ POS mở `HopDongBo` (hộp của T79): khoảng thời gian, Chi nhánh đồng bộ (có tìm), ô tích Bỏ qua hoá đơn đã đồng bộ. `HopDongBo` thêm tham số `chonSan`, `lamLaiMacDinh`, `ghiChuLamLai`, mặc định giữ như cũ nên Tiện ích 11.4 không đổi.
+- T111: nút Đồng bộ POS (tên ngắn: tên dài làm chip trạng thái bị đè ở gói có ghi sổ) mở `HopDongBo` (hộp của T79): khoảng thời gian, Chi nhánh đồng bộ (có tìm), ô tích Bỏ qua hoá đơn đã đồng bộ. `HopDongBo` thêm tham số `chonSan`, `lamLaiMacDinh`, `ghiChuLamLai`, mặc định giữ như cũ nên Tiện ích 11.4 không đổi.
 - Form: kênh, thời gian xuất theo chứng từ. Hoá đơn lấy 1 tới 3 món (`dongMonDon`), chứng từ theo kênh chia theo cơ cấu món như trước (`dongCuaPhieu`).
 
 ## Đã kiểm
@@ -22,6 +22,7 @@
 - Gói Plus, chi nhánh Nguyễn Trãi, tháng 10: theo kênh 21 chứng từ; ngày 07/10 ba kênh 10.404.056, 4.459.453, 1.666.904, cộng 16.530.413 bằng chứng từ cả ngày trước đây. Chi tiết 1.113 hoá đơn; Tổng cộng cả hai cách đều 188.834.421.
 - Hoá đơn N8BW3VNAAQD3: thẻ, tại quán, 21:54, 3 món, Tổng tiền 216.547. Đã trả máy thử về mặc định theo kênh.
 - T110: gói Free, Nguyễn Trãi, tháng 10, theo kênh: lọc Kênh bán App giao đồ ăn còn 7 chứng từ, đều kênh đó.
+- T111: gói Plus, khung 1920px: dải chip trạng thái cần 563px, đủ chỗ, không bị đè. Khung 1024px vẫn bị bóp (bố cục thanh công cụ chung, có từ trước).
 - T111: chi nhánh Nguyễn Trãi: hộp chọn sẵn Nguyễn Trãi, ô bỏ qua tích sẵn, đồng bộ báo 5 hoá đơn thiếu, thừa, xoá, sửa. Tất cả chi nhánh: chưa chọn, nút Đồng bộ ngay khoá.
 - T108: Xuất bán POS: cột Theo dõi tồn kho cuối bảng, cuộn ngang đầu hay cuối mép phải vẫn ở 1004px; PHO01 tới TRA01 bỏ tích, BIA01, NS01 có tích. Danh mục 1.2 cùng giá trị, NVL001 tới NVL003 có tích.
 

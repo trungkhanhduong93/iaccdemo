@@ -347,8 +347,8 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
                 onOpenChange={setMoHangLoat}
               />
               {/* Xuất bán POS chỉ đổ về từ phần mềm bán hàng, không thêm mới bằng tay (T52) */}
-              <button type="button" className="btn pri" onClick={() => setMoDongBo(true)}>
-                <Icon n="refresh" className="ic sm" />Đồng bộ hoá đơn từ POS
+              <button type="button" className="btn pri" onClick={() => setMoDongBo(true)} title="Đồng bộ hoá đơn từ POS">
+                <Icon n="refresh" className="ic sm" />Đồng bộ POS
               </button>
             </div>
           </div>
