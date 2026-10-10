@@ -14,7 +14,7 @@ export interface Col {
   r?: (row: Row) => ReactNode
   dinh?: 'trai' | 'phai' // cột đứng yên khi cuộn ngang; cột 'trai' phải khai w
   hd?: ReactNode         // nội dung ô tiêu đề thay cho t, vd ô tick chọn tất cả
-  an?: boolean           // cột mặc định ẩn, người dùng bật ở Tuỳ chỉnh cột (T90)
+  an?: boolean           // cột mặc định ẩn, người dùng bật ở Tuỳ chỉnh cột (T91)
 }
 
 /** Danh mục: bảng có tìm kiếm, nút thêm */

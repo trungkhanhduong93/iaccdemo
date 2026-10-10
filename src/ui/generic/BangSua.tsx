@@ -573,7 +573,7 @@ export function BangSua({
   )
 }
 
-/** Tuỳ chỉnh giao diện phiếu: bật tắt các cột của bảng chi tiết (T49), ô đầu phiếu và tổng chân phiếu (T87).
+/** Tuỳ chỉnh giao diện phiếu: bật tắt các cột của bảng chi tiết (T49), ô đầu phiếu và tổng chân phiếu (T88).
  *  Panel bên phải cùng kiểu panel danh mục (T81). Ô đầu phiếu, chân phiếu lưu chung danh sách ẩn với tiền tố dau:, chan: */
 export function HopCotPhieu({ ds, dsDau = [], dsChan = [], an, onDoi, onDong }: {
   ds: [string, string][]; dsDau?: [string, string][]; dsChan?: [string, string][]; an: string[]; onDoi: (an: string[]) => void; onDong: () => void

@@ -40,16 +40,16 @@ export function ctTtCon(r: Row | undefined): CtTt | undefined {
   return c && !daXoa.has(`tien/2-1-1|${c.id}`) ? c : undefined
 }
 
-/** Phiếu thu, chi thanh toán sau cho phiếu mua, bán (T89), còn chưa xoá */
+/** Phiếu thu, chi thanh toán sau cho phiếu mua, bán (T90), còn chưa xoá */
 export interface PhieuTt extends CtTt { tien: number }
 export function dsTtCon(r: Row | undefined): PhieuTt[] {
   return ((r?._dsTt as PhieuTt[] | undefined) ?? []).filter(c => !daXoa.has(`tien/2-1-1|${c.id}`))
 }
-/** Phiếu thu, chi tham chiếu còn (trả ngay hoặc thanh toán sau): còn thì chưa xoá được phiếu gốc (T85, T89) */
+/** Phiếu thu, chi tham chiếu còn (trả ngay hoặc thanh toán sau): còn thì chưa xoá được phiếu gốc (T85, T90) */
 export function ttThamChieu(r: Row | undefined): CtTt | undefined {
   return ctTtCon(r) ?? dsTtCon(r)[0]
 }
-/** Số đã trả, đã thu của phiếu mua, bán (T89). Phiếu mẫu Thanh toán một phần chưa có số liệu: tạm coi đã trả 40% */
+/** Số đã trả, đã thu của phiếu mua, bán (T90). Phiếu mẫu Thanh toán một phần chưa có số liệu: tạm coi đã trả 40% */
 export function soDaTra(r: Row): number {
   const tong = Number(r.tong) || 0
   const httt = r._httt as string | undefined
