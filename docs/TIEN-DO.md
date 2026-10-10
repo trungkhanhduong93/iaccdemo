@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T118 | Danh sách Xuất bán POS: đối soát đơn POS kiểu iPOS Inventory: Đã đồng bộ, Chưa đồng bộ; số liệu tổng số hoá đơn POS, IACC, số món, mã hoá đơn cuối, lần đồng bộ cuối; bảng lỗi chưa đồng bộ (mã hoá đơn, thời gian, món, ĐVT, số lượng, lý do lỗi) | PhuongXT | Đang làm | Sửa `ban-hang/ChungTuBanHang.tsx`, cuối `app.css` |
 | T111 | Báo cáo: đưa ô chọn khoảng ngày và nút Xem báo cáo sang cột Bộ lọc bên trái; sửa cột hẹp làm vỡ tiêu đề (cột Tỷ lệ (%) khấu hao ở Sổ TSCĐ S4b-DNSN), rà mọi báo cáo | Trum | Đang làm | Sửa `src/ui/generic/ReportScreen.tsx`, `src/ui/bao-cao/chiaCot.ts`, `ToGiay.tsx`, `app.css` |
 | T112 | Thiết kế lại màn Thiết kế mẫu in và toàn bộ mẫu in phiếu chứng từ: đủ thông tin theo thông tư, bố cục gọn, đẹp | Trum | Đang làm | Sửa `src/modules/tien-ich/ThietKeMauIn.tsx`, `src/ui/bao-cao/InChungTu.tsx`, `mau-in.ts`, `duLieuIn.ts`, `app.css` |
 | T109 | Sổ S2c-DNSN (5.2.8, TT58): bộ lọc Mặt hàng, Kho để mở sổ theo từng cặp mặt hàng – kho | | Chờ | T108 đang in cố định Thịt bò thăn, kho Phố Mây Lê Lợi. `CauHinhBC.loc` chưa đổi theo chế độ, lọc thêm sẽ hiện cả ở TT133, TT99 |
@@ -39,6 +38,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T118 | Danh sách Xuất bán POS: dải đối soát đơn POS kiểu iPOS Inventory: nút Đã đồng bộ, Chưa đồng bộ; số liệu tổng số hoá đơn POS, IACC, số món, mã hoá đơn cuối, lần đồng bộ cuối; bảng hoá đơn chưa đồng bộ (mã hoá đơn, thời gian, tên món, ĐVT, số lượng, lý do lỗi) | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-doi-soat-pos.md` |
 | T117 | Xuất bán POS: nút Đồng bộ POS (trước là Tải từ FABi; tên ngắn để thanh công cụ không đè chip trạng thái) mở hộp chọn khoảng thời gian, chi nhánh (mặc định chi nhánh đang chọn, tất cả chi nhánh thì phải chọn), ô tích Bỏ qua hoá đơn đã đồng bộ (tích sẵn) | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-dong-bo-fabi.md` |
 | T116 | Danh sách Xuất bán POS: bộ lọc thêm Khách hàng, Kênh bán, Phương thức thanh toán (chỉ khi đồng bộ chi tiết; tổng hợp theo kênh bỏ ở bộ lọc và đầu phiếu) | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-dong-bo-fabi.md` |
 | T115 | Danh sách Xuất bán POS: bỏ cột và ô lọc Nguồn (chỉ có FABi); nhãn cách đồng bộ ghi gọn Chi tiết hoặc Tổng hợp | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-dong-bo-fabi.md` |

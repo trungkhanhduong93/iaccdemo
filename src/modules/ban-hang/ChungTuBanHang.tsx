@@ -158,6 +158,34 @@ function theoDon(x: NgayPOS): XPos[] {
   })
 }
 
+// ── Đối soát đơn POS (T118): hoá đơn FABi chưa đồng bộ được và lý do, theo kiểu iPOS Inventory ──
+/** Món trên POS chưa khai báo hoặc khai báo thiếu trong IACC (dữ liệu mẫu) */
+const MON_LOI: [string, string, string][] = [
+  ['Lẩu gà', 'ITEM-B304', 'Nồi'], ['Mỳ tương đen', 'ITEM-NAV8', 'Tô'], ['Gỏi gà', 'ITEM-V4G3', 'Dĩa'], ['Cá chép om dưa', 'ITEM-TDSP', 'Nồi'],
+  ['Bún ngan', 'ITEM-DA5A', 'Tô'], ['Sữa hạt', 'ITEM-RIKY', 'Ly'], ['Trân châu trắng', 'BTP001', 'Kg'],
+]
+const LY_DO_LOI = [
+  'Không tìm thấy thông tin hàng hoá trong danh mục',
+  'Không tìm thấy định lượng (công thức chế biến) của món',
+  'Đơn vị tính trên POS chưa khai báo trong danh mục',
+  'Món chưa gắn kho xuất ở chi nhánh',
+]
+export interface LoiDongBo { id: string; ma: string; tg: string; ten: string; maHang: string; dvt: string; sl: number; lyDo: string; cn: string }
+/** Dòng lỗi của một ngày, chi nhánh: khoảng 4 trên 10 ngày có 1 tới 2 món không đồng bộ được */
+function loiDongBo(x: NgayPOS): LoiDongBo[] {
+  const r = rng(`loi-${x.cn}-${dmy(x.date)}`)
+  const n = r() < 0.6 ? 0 : 1 + Math.floor(r() * 2)
+  return Array.from({ length: n }, (_, i) => {
+    const [ten, maHang, dvt] = MON_LOI[Math.floor(r() * MON_LOI.length)]
+    const phut = 10 * 60 + Math.floor(r() * 11 * 60)
+    return {
+      id: `${x.cn}-${dmy(x.date)}-${i}`, ma: soFabi(`loi-${x.cn}-${dmy(x.date)}-${i}`),
+      tg: `${dmy(x.date)} ${String(Math.floor(phut / 60)).padStart(2, '0')}:${String(phut % 60).padStart(2, '0')}`,
+      ten, maHang, dvt, sl: 1 + Math.floor(r() * 3), lyDo: LY_DO_LOI[Math.floor(r() * LY_DO_LOI.length)], cn: cnTen(x.cn),
+    }
+  })
+}
+
 export function ChungTuBanHang({ sc, mod }: ScreenProps) {
   const { id } = useParams()
   const { s } = useSession()
@@ -196,6 +224,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
   const { nhap, dat, ap } = loc0
   const [chipTT, setChipTT] = useState('all')
   const [moDongBo, setMoDongBo] = useState(false)   // hộp Đồng bộ hoá đơn từ POS (T117)
+  const [xemDs, setXemDs] = useState<'da' | 'chua'>('da')   // đối soát đơn POS: đã đồng bộ hoặc chưa đồng bộ (T118)
   const [chon, setChon] = useState<Set<string>>(new Set())
   const [moHangLoat, setMoHangLoat] = useState(false)
   const [moGhiChu, setMoGhiChu] = useState(false)
@@ -273,6 +302,14 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
     return list.slice(batDau, batDau + coTrang).map((r, i): Row => ({ ...r, stt: batDau + i + 1 }))
   }, [list, trangHienTai, coTrang])
 
+  // Đối soát đơn POS (T118): theo khoảng thời gian và chi nhánh đang lọc
+  const ngayDs = useMemo(() => DAILY.filter(x => x.date.getMonth() >= 8 && trongKhoang(x.date, ap.thoiGian) && (!cnChon || x.cn === cnChon.id) && (!ap.cn || x.cn === ap.cn)),
+    [ap.thoiGian, ap.cn, cnChon])
+  const dsLoi = useMemo(() => ngayDs.flatMap(loiDongBo).reverse().map((l, i) => ({ ...l, stt: i + 1 })), [ngayDs])
+  const soDonPos = ngayDs.reduce((a, x) => a + x.don, 0)
+  const donLoi = new Set(dsLoi.map(l => l.ma)).size
+  const ngayCuoi = ngayDs.reduce<NgayPOS | null>((m, x) => (!m || x.date > m.date ? x : m), null)
+  const maCuoi = ngayCuoi ? soFabi(`fabi-${ngayCuoi.cn}-${dmy(ngayCuoi.date)}-${Math.max(0, ngayCuoi.don - 1)}`) : ''
   const sum = (k: string) => pagedRows.reduce((a, r) => a + r[k], 0)
   const tongDs = (k: string) => list.reduce((a, r) => a + (r as Row)[k], 0)
   const cols: Col[] = [
@@ -352,7 +389,47 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
               </button>
             </div>
           </div>
-          {list.length ? (
+          {/* Dải đối soát đơn POS (T118): chọn Đã đồng bộ / Chưa đồng bộ; số liệu đồng bộ của khoảng đang lọc */}
+          <div className="pos-ds">
+            <div className="pos-dsw" role="tablist" aria-label="Đối soát đơn POS">
+              <button type="button" role="tab" aria-selected={xemDs === 'da'} className={xemDs === 'da' ? 'on' : ''} onClick={() => setXemDs('da')}>
+                <i className="ok" />Đã đồng bộ<b>{truocTT.length}</b>
+              </button>
+              <button type="button" role="tab" aria-selected={xemDs === 'chua'} className={xemDs === 'chua' ? 'on' : ''} onClick={() => setXemDs('chua')}>
+                <i className="err" />Chưa đồng bộ<b>{dsLoi.length}</b>
+              </button>
+            </div>
+            <div className="pos-tk">
+              <div><small>Tổng số hoá đơn (POS)</small><b>{money(soDonPos)}</b></div>
+              <div><small>Tổng số hoá đơn (IACC)</small><b>{money(soDonPos - donLoi)}</b></div>
+              <div><small>Tổng số món</small><b>{HANG.length}</b></div>
+              <div><small>Mã hoá đơn cuối</small><b className="code">{maCuoi ? `#${maCuoi}` : '---'}</b></div>
+              <div><small>Lần đồng bộ cuối</small><b>{ngayCuoi ? `${dmy(ngayCuoi.date)} 23:30` : '---'}</b></div>
+            </div>
+          </div>
+          {xemDs === 'chua' ? (
+            dsLoi.length ? (
+              <Table
+                cols={[
+                  { k: 'stt', t: '#', w: 50, c: true },
+                  { k: 'ma', t: 'Mã hoá đơn', cls: 'code', w: 150, r: r => `#${r.ma}` },
+                  { k: 'tg', t: 'Thời gian', w: 140 },
+                  // Bấm tên món mở danh mục hàng hoá để khai báo bổ sung
+                  { k: 'ten', t: 'Tên món', r: r => <Link className="pos-mon-loi" to="/app/danh-muc/1-2" title="Mở danh mục hàng hoá để khai báo">{r.ten} <span className="dim">- {r.maHang}</span></Link> },
+                  { k: 'dvt', t: 'Đơn vị tính', w: 100 },
+                  { k: 'sl', t: 'Số lượng', num: true, w: 90 },
+                  ...(cnChon ? [] : [{ k: 'cn', t: 'Chi nhánh', cls: 'dim', w: 160 } as Col]),
+                  { k: 'lyDo', t: 'Lý do lỗi' },
+                ]}
+                rows={dsLoi}
+                motDong
+                keDoc
+                sum={{ stt: `Tổng: ${dsLoi.length}`, sl: dsLoi.reduce((a, l) => a + l.sl, 0) }}
+              />
+            ) : (
+              <div className="empty" style={{ margin: 'auto' }}><b>Không có hoá đơn chưa đồng bộ trong khoảng đang lọc</b></div>
+            )
+          ) : list.length ? (
             <>
               <Table
                 cols={cot.colsHien}
@@ -395,7 +472,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
           )}
         </section>
 
-        <section className={`card ct-panel voucher-bottom${panelMo ? '' : ' gon'}`}>
+        <section className={`card ct-panel voucher-bottom${panelMo ? '' : ' gon'}`} style={xemDs === 'chua' ? { display: 'none' } : undefined}>
           {activeRow ? (
             panelMo ? (
               <>
