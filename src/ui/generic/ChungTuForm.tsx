@@ -229,7 +229,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
     return { id, so, loai: loaiTt }
   }
 
-  // Thanh toán sau (T90): phiếu chưa thanh toán hoặc thanh toán một phần lập thêm phiếu thu, chi theo quỹ chọn, lưu ở _dsTt
+  // Thanh toán sau (T91): phiếu chưa thanh toán hoặc thanh toán một phần lập thêm phiếu thu, chi theo quỹ chọn, lưu ở _dsTt
   const [hopTt, setHopTt] = useState(false)
   const dsTt = dsTtCon(row)
   const tongGoc = Number(row?.tong) || 0
@@ -351,11 +351,11 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
     ['ls', 'Lịch sử'],
   ]
 
-  // Tuỳ chỉnh giao diện phiếu (T88): ô đầu phiếu không bắt buộc và tổng chân phiếu bật tắt được, nhớ chung khoá với cột bảng (tiền tố dau:, chan:)
+  // Tuỳ chỉnh giao diện phiếu (T89): ô đầu phiếu không bắt buộc và tổng chân phiếu bật tắt được, nhớ chung khoá với cột bảng (tiền tố dau:, chan:)
   const hienDau = (k: string) => !anCot.includes(`dau:${k}`)
   const hienChan = (k: string) => !anCot.includes(`chan:${k}`)
   const muaBan = nhom === 'mua' || nhom === 'ban'
-  const nhanNguoi = nhom === 'cq' ? 'Người thực hiện' : laTien || muaBan ? 'Người giao dịch' : 'Người giao / nhận'   // mua, bán ghi Người giao dịch (T89)
+  const nhanNguoi = nhom === 'cq' ? 'Người thực hiện' : laTien || muaBan ? 'Người giao dịch' : 'Người giao / nhận'   // mua, bán ghi Người giao dịch (T90)
   const dsDau: [string, string][] = [
     ['nguoi', nhanNguoi],
     ...(nhom !== 'cq' ? [['diaChi', 'Địa chỉ'] as [string, string]] : []),
@@ -392,7 +392,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   // Ghi chú ở mọi phiếu (T69), gõ ghi chú thì diễn giải chép theo (T49, T78)
   // Phân hệ Thu chi (trừ chuyển quỹ): Địa chỉ ở cột giữa, Ghi chú kéo dài qua hai cột trái (T77).
   // Phiếu khác: Địa chỉ ở cột trái, Ghi chú ở cột giữa cùng hàng Địa chỉ (T78). Hai cột trái luôn đều hàng
-  // Mua, bán (T89): hàng 1 Đối tượng, Mã số thuế; hàng 2 Địa chỉ, Người giao dịch; Ghi chú kéo dài như thu chi; bỏ Nhân viên thực hiện
+  // Mua, bán (T90): hàng 1 Đối tượng, Mã số thuế; hàng 2 Địa chỉ, Người giao dịch; Ghi chú kéo dài như thu chi; bỏ Nhân viên thực hiện
   const keoGc = (laTien && nhom !== 'cq') || muaBan
   const oNguoi = hienDau('nguoi') && (
     <div className="f">
@@ -555,7 +555,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
                   // Cùng luật xoá với danh sách (QD32): kỳ đã khoá sổ không xoá, gói có ghi sổ chỉ xoá phiếu chưa ghi
                   if (daKhoaSo(row.ngay)) toast(`${row.so} thuộc kỳ đã khoá sổ, không xoá được`)
                   else if (kieu !== 'khong' && row.tt !== 'nhap') toast(`${row.so} đã ghi sổ, bỏ ghi sổ rồi mới xoá`)
-                  else if (ttThamChieu(row)) toast(`${row.so} có phiếu ${ttThamChieu(row)!.so} tham chiếu, xoá ${ttThamChieu(row)!.so} trước`)   // T85, T90
+                  else if (ttThamChieu(row)) toast(`${row.so} có phiếu ${ttThamChieu(row)!.so} tham chiếu, xoá ${ttThamChieu(row)!.so} trước`)   // T85, T91
                   else setHoiXoa(true)
                 }}>
                   Xoá chứng từ
@@ -703,7 +703,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
                 </div>
               )}
 
-              {/* Phiếu còn nợ (T90): số đã trả, đã thu, các phiếu thu, chi lập sau, nút thanh toán ngay */}
+              {/* Phiếu còn nợ (T91): số đã trả, đã thu, các phiếu thu, chi lập sau, nút thanh toán ngay */}
               {bo.tt && row && hinhThucTt === 'congno' && (
                 <span className="row" style={{ gap: 8, fontSize: 12.5, alignItems: 'center', flexWrap: 'wrap' }}>
                   <span style={{ color: 'var(--muted)' }}>{chiTt ? 'Đã trả' : 'Đã thu'}: <b style={{ color: 'var(--ink)' }}>{money(daTra)}</b> / {money(tongGoc)}</span>
@@ -1000,7 +1000,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
           {tab === 'ls' && <LichSu goi={s.goi} moi={moi} man={`${mod.key}/${sc.slug}`} id={String(row?.id ?? '')} />}
 
           {/* Khối tổng cộng góc dưới phải; phiếu thu chi để Tổng tiền ở dải đáy form; phiếu mua chỉ Tổng tiền, các số khác đã có trên dòng (T84) */}
-          {(chiTien && laTien) || !hienChan('tongTien') ? null : chiTien || truocThue ? (   // tắt Khối tổng tiền ở Tuỳ chỉnh giao diện phiếu thì ẩn (T88)
+          {(chiTien && laTien) || !hienChan('tongTien') ? null : chiTien || truocThue ? (   // tắt Khối tổng tiền ở Tuỳ chỉnh giao diện phiếu thì ẩn (T89)
             <div className="tot" style={{ borderTop: '1px solid var(--line)', marginTop: 12 }}>
               <span>Tổng tiền</span>
               <b className="big" style={{ color: 'var(--blue)' }}>{moneyD(tongThanhToan)}</b>
@@ -1112,7 +1112,7 @@ function thangLaiLo(ngay: string): string[] {
   return ds
 }
 
-/** Hộp thanh toán ngay cho phiếu mua, bán còn nợ (T90): chọn hình thức, quỹ, ngày, số tiền; lưu thì sinh phiếu thu, chi */
+/** Hộp thanh toán ngay cho phiếu mua, bán còn nợ (T91): chọn hình thức, quỹ, ngày, số tiền; lưu thì sinh phiếu thu, chi */
 function HopThanhToan({ tieuDe, chiTt, conLai, quyTm, ngay0, dg0, onDong, onLuu }: {
   tieuDe: string; chiTt: boolean; conLai: number; quyTm: string; ngay0: string; dg0: string
   onDong: () => void; onLuu: (ht: 'tienmat' | 'chuyenkhoan', quy: string, ngay: string, tien: number, dg: string) => void

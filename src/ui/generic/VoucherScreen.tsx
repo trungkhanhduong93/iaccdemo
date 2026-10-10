@@ -83,7 +83,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
   const nhom = nhomCua(mod.key, cfg)
   const bo = boO(nhom, cfg)
   const path = duongDan(mod, sc)
-  // Mua, bán (T91): thêm thông tin hoá đơn, hạn thanh toán, đã trả, còn nợ cho các cột mặc định ẩn
+  // Mua, bán (T92): thêm thông tin hoá đơn, hạn thanh toán, đã trả, còn nợ cho các cột mặc định ẩn
   const rows = useMemo(() => nhom !== 'mua' && nhom !== 'ban' ? rowsGoc : rowsGoc.map((r): Row => {
     const nv = ttNghiepVu(r)
     const coHd = r._nhanKemHd !== undefined ? Boolean(r._nhanKemHd) : nv.ttHd === 'da'
@@ -246,7 +246,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
         t: nhom === 'mua' ? 'TT thanh toán' : 'TT thu tiền',
         w: 135,
         r: (r: Row) => {
-          // Trạng thái theo số đã trả, đã thu, kể cả phiếu thu, chi lập sau (T90)
+          // Trạng thái theo số đã trả, đã thu, kể cả phiếu thu, chi lập sau (T91)
           const [cls, nhan] = TT_TIEN[nhom as 'mua' | 'ban'][ttTienTheoTra(r)] ?? ['dim', '—']
           return <St k={cls}>{nhan}</St>
         },
@@ -261,7 +261,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
           return <St k={cls}>{nhan}</St>
         },
       } as Col,
-      // Cột mặc định ẩn, bật ở Tuỳ chỉnh cột (T91)
+      // Cột mặc định ẩn, bật ở Tuỳ chỉnh cột (T92)
       { k: 'kyHieuHd', t: 'Ký hiệu HĐ', cls: 'code', w: 110, an: true } as Col,
       { k: 'soHd', t: 'Số hoá đơn', cls: 'code', w: 110, an: true } as Col,
       { k: 'ngayHd', t: 'Ngày hoá đơn', w: 115, an: true } as Col,

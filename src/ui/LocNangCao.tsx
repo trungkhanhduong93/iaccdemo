@@ -332,7 +332,7 @@ function sapXepCot(cols: Col[], thuTu: string[], coDinh: Set<string>, dongBang: 
 export function useCotDs(path: string, cols: Col[], coDinh: Set<string>) {
   const kAn = `iacc-cot-an:${path}`, kThuTu = `iacc-cot-thu-tu:${path}`, kRong = `iacc-cot-rong:${path}`
   const kDongBang = `iacc-cot-dongbang:${path}`
-  const kHien = `iacc-cot-hien:${path}`   // cột mặc định ẩn mà người dùng đã bật (T91)
+  const kHien = `iacc-cot-hien:${path}`   // cột mặc định ẩn mà người dùng đã bật (T92)
   const [an, setAn] = useState<string[]>(() => docKho(kAn, laMangChu, []))
   const [hien, setHien] = useState<string[]>(() => docKho(kHien, laMangChu, []))
   const [thuTu, setThuTu] = useState<string[]>(() => docKho(kThuTu, laMangChu, []))
@@ -348,7 +348,7 @@ export function useCotDs(path: string, cols: Col[], coDinh: Set<string>) {
   }, [path])
 
   const du = sapXepCot(cols, thuTu, coDinh, dongBang)
-  // Cột mặc định ẩn: ẩn tới khi người dùng bật; bật rồi thì nhớ ở kHien, không lẫn với danh sách ẩn (T91)
+  // Cột mặc định ẩn: ẩn tới khi người dùng bật; bật rồi thì nhớ ở kHien, không lẫn với danh sách ẩn (T92)
   const coAnMd = new Set(cols.filter(c => c.an).map(c => c.k))
   const anDu = new Set([...an, ...[...coAnMd].filter(k => !hien.includes(k))])
   return {
@@ -449,7 +449,7 @@ function HopCot({ cols, an, coDinh, macDinh, dongBang = {}, onLuu, onDoRongTuDon
 
   const khoiPhucMacDinh = () => {
     setThuTu(macDinh.filter(k => theoK.has(k)))
-    setAnNhap(new Set(cols.filter(c => c.an).map(c => c.k)))   // cột mặc định ẩn về ẩn (T91)
+    setAnNhap(new Set(cols.filter(c => c.an).map(c => c.k)))   // cột mặc định ẩn về ẩn (T92)
     setDongBangNhap({})
     setVeMacDinh(true)
     toast('Đã khôi phục cài đặt cột mặc định')
