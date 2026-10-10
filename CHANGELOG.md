@@ -4,6 +4,9 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 10/10/2026
 
+- T80: Hộp tìm Ctrl K mới: chưa gõ thì hiện 5 màn vừa mở và màn gợi ý, mỗi dòng có biểu tượng, tên màn, phân hệ; thanh phím tắt dưới đáy. Gõ không dấu, gõ tên quen như "nhập mua hàng", "phiếu thu" vẫn ra màn đúng, phần khớp tô xanh.
+- T87: Panel sửa hàng hoá điền sẵn ô Nhóm hàng hoá của dòng đang sửa.
+- T73: Panel tài khoản mở lần đầu không còn khựng.
 - T85: Phiếu mua, phiếu bán chọn Tiền mặt ngay hoặc Chuyển khoản ngay thì khi lưu tự sinh phiếu chi (mua) hoặc phiếu thu (bán) bên Thu chi; phiếu trả lại sinh theo chiều ngược lại. Phiếu gốc hiện mã phiếu thu, chi, bấm vào mở được. Muốn xoá phiếu gốc thì xoá phiếu thu, chi trước. Ô chọn quỹ trên hàng Thanh toán chữ nhỏ bằng phần còn lại.
 - T86: Tuỳ chỉnh giao diện phiếu bật tắt được từng cột của bảng chi tiết. Phiếu mua: Tổng tiền là cột cuối, thẳng với Tổng tiền dưới bảng.
 - T84: Phiếu mua hàng: mỗi dòng hàng có cột Tiền trước thuế (Thành tiền trừ chiết khấu, đứng trước Thuế suất) cùng Tổng tiền và Giá trị nhập kho (cuối dòng). Khối tổng cuối phiếu chỉ còn Tổng tiền cho gọn.

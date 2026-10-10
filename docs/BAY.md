@@ -20,6 +20,7 @@ Lỗi đã từng làm mất thời gian, kèm cách tránh. Đọc trước khi
 
 - Vòng import làm sập cả app: file dữ liệu dùng chung (vd `bao-cao/so-bo-sung.ts`) import `index.ts` của một phân hệ, trong khi `index.ts` đó lại import file dữ liệu và dùng ngay lúc khởi tạo. Trình duyệt báo "Cannot access X before initialization", trắng toàn app (gặp 09/10). Dữ liệu dùng chung đặt ở `data.ts` của phân hệ, file dữ liệu không import `index.ts` nào.
 - Tờ báo cáo (`ToGiay`) có khung đo ẩn chứa bản sao nội dung. Tìm phần tử trên tờ bằng script thì giới hạn trong `.bc-ds-trang`, đừng dùng `.bc-trang` trần, không thì đếm trùng.
+- Textarea có ô kéo giãn góc (`resize: vertical`) làm lần mở panel đầu tiên hở một khung 133ms: GPU vẽ lại cả panel, JS và layout chỉ vài ms nên Performance không thấy ở luồng chính (T73). Trong panel đặt `resize: none`. Đo khung hở bằng `requestAnimationFrame` liên tiếp và `long-animation-frame` trên Chrome có giao diện, rồi trace Chrome xem luồng `CrGpuMain`.
 
 ## Script kiểm và máy Windows
 

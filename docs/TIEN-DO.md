@@ -11,9 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T80 | Hộp tìm màn hình Ctrl K kiểu iPOS Inventory: mục Vừa mở, Gợi ý, ô biểu tượng, đường dẫn phân hệ, thanh phím tắt | Trum | Đang làm | Sửa `CommandPalette.tsx`, `Shell.tsx`, `app.css` |
-| T87 | Panel hàng hoá: ô Nhóm hàng hoá chưa điền sẵn giá trị của dòng đang sửa | Trum | Chờ | Sửa `CatalogScreen.tsx`, `truong-dm.ts` |
-| T73 | Tối ưu phản hồi thao tác: bấm, rê chuột, mở menu, panel, cuộn bảng phản hồi tức thì; hiệu ứng nhẹ, ngắn; đo trước và sau | Trum | Chờ | Còn: panel tài khoản khựng 120-160ms lúc nội dung hiện sau khi trượt (trình duyệt vẽ, JS chỉ 25ms). Sửa nhiều file `src/` |
 | T60 | Mô tả gói Free, Standard trong `GOI` (`src/app/plan.ts`) đang ghi "1 điểm bán"; theo Roadmap gói Free là mỗi chi nhánh một kho, không giới hạn một chi nhánh. Chốt câu chữ rồi sửa | PhuongXT | Chờ | Tách từ T25 |
 | T02 | Chốt nghiệp vụ trên từng sơ đồ Quy trình: ô nào, nối thế nào, câu chữ. Sửa ở `src/modules/<phân hệ>/quy-trinh.ts` | Trum | Chờ | |
 | T03 | Nối sổ quỹ, sổ tài khoản 2.2.2, sổ ngân hàng 2.2.3, sổ công nợ 2.2.5 vào `so-cai.ts` để mọi sổ khớp báo cáo tài chính | | Chờ | Sổ quỹ đang tính riêng từ tiền mặt FABi từng chi nhánh. Tổng 3 quỹ chưa bằng dư TK 1111 trên cân đối kế toán |
@@ -36,6 +33,9 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T80 | Hộp tìm màn hình Ctrl K kiểu iPOS Inventory: mục Vừa mở, Gợi ý, ô biểu tượng, đường dẫn phân hệ, thanh phím tắt; gõ tên quen vẫn ra | Trum | 10/10/2026 | `2026-10-10-trum-ctrl-k-toi-uu.md` |
+| T87 | Panel danh mục: ô Nhóm điền sẵn nhóm của dòng đang sửa | Trum | 10/10/2026 | `2026-10-10-trum-ctrl-k-toi-uu.md` |
+| T73 | Tối ưu phản hồi thao tác: panel tài khoản lần mở đầu hết khung hở 133ms (còn 33ms) | Trum | 10/10/2026 | `2026-10-10-trum-ctrl-k-toi-uu.md` |
 | T86 | Tuỳ chỉnh giao diện phiếu: bật tắt được từng cột của bảng chi tiết (mỗi cột một mục, theo thứ tự trên bảng); Tổng tiền là cột cuối dòng phiếu mua | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-phieu-chi-tu-mua-hang.md` |
 | T85 | Phiếu mua, bán trả tiền ngay: lưu phiếu thì sinh phiếu thu, chi bên Thu chi 2.1.1 (mua, trả lại hàng bán thì chi; bán, trả lại hàng mua thì thu), phiếu gốc hiện mã chứng từ; còn phiếu thu, chi thì phải xoá phiếu đó trước mới xoá được phiếu gốc | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-phieu-chi-tu-mua-hang.md` |
 | T84 | Phiếu mua hàng: bảng chi tiết (form và khung dưới danh sách) thêm cột Tiền trước thuế (Thành tiền trừ chiết khấu, trước cột thuế), Tổng tiền, Giá trị nhập kho (cuối dòng); khối tổng chỉ còn Tổng tiền | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-gia-tri-nhap-kho-dong.md` |
