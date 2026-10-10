@@ -4,13 +4,15 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T84.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T86.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T85 | Phiếu mua trả tiền ngay (tiền mặt, chuyển khoản): lưu phiếu thì sinh phiếu chi tiền mặt hoặc uỷ nhiệm chi bên Thu chi, phiếu mua hiện chứng từ tham chiếu | PhuongXT | Đang làm | Sửa `ChungTuForm.tsx` |
+| T86 | Tuỳ chỉnh giao diện phiếu: bật tắt được từng cột của bảng chi tiết; Tổng tiền là cột cuối dòng phiếu mua | PhuongXT | Đang làm | Sửa `BangSua.tsx`, `ChungTuForm.tsx` |
 | T80 | Hộp tìm màn hình Ctrl K kiểu iPOS Inventory: mục Vừa mở, Gợi ý, ô biểu tượng, đường dẫn phân hệ, thanh phím tắt | Trum | Chờ | Spec sẵn, chưa làm. Sửa `CommandPalette.tsx`, `Shell.tsx`, `app.css` |
 | T73 | Tối ưu phản hồi thao tác: bấm, rê chuột, mở menu, panel, cuộn bảng phản hồi tức thì; hiệu ứng nhẹ, ngắn; đo trước và sau | Trum | Chờ | Còn: panel tài khoản khựng 120-160ms lúc nội dung hiện sau khi trượt (trình duyệt vẽ, JS chỉ 25ms). Sửa nhiều file `src/` |
 | T60 | Mô tả gói Free, Standard trong `GOI` (`src/app/plan.ts`) đang ghi "1 điểm bán"; theo Roadmap gói Free là mỗi chi nhánh một kho, không giới hạn một chi nhánh. Chốt câu chữ rồi sửa | PhuongXT | Chờ | Tách từ T25 |
