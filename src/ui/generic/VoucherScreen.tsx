@@ -268,7 +268,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
       ),
     },
     ...(cfg.loai ? [{ k: 'tenLoai', t: 'Loại', w: 130 } as Col] : []),
-    { k: 'dienGiai', t: 'Diễn giải' },
+    { k: 'dienGiai', t: cfg.kiemKe ? 'Ghi chú' : 'Diễn giải' },   // phiếu kiểm kê ghi Ghi chú như đầu phiếu (T124)
     ...(mod.key === 'tien' ? [{ k: 'lyDo', t: 'Lý do thu, chi', w: 170 } as Col] : []),   // T96
     ...(cfg.doiTuong !== 'none' ? [{ k: 'doiTuong', t: cfg.nhan ?? 'Đối tượng' } as Col] : []),
     // Đang chọn một chi nhánh trên thanh trên thì cột chi nhánh thừa
