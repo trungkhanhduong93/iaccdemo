@@ -25,6 +25,7 @@ export function QuyTrinhScreen({ mod }: ScreenProps) {
   // Gói Free có sơ đồ hội tụ riêng thì thay sơ đồ chung (T98)
   const goc: QuyTrinhDef = s.goi === 'F' && goc0.hoiTuFree ? { ...goc0, buoc: [], hoiTu: goc0.hoiTuFree } : goc0
   // Gói Free có sơ đồ luồng theo cột thì thay sơ đồ chung (T123)
+  const luongRa = s.goi === 'F' && goc0.luongFree && goc0.luongFreeRa ? { ...goc0.luongFreeRa, nut: goc0.luongFreeRa.nut.filter(hien) } : null
   const luong = s.goi === 'F' && goc0.luongFree ? goc0.luongFree.map(c => ({ ...c, nut: c.nut.filter(hien) })).filter(c => c.nut.length) : null
   const qt: QuyTrinhDef = {
     ...goc,
@@ -35,7 +36,7 @@ export function QuyTrinhScreen({ mod }: ScreenProps) {
     },
   }
   const nut = [...(luong ? luong.flatMap(c => c.nut) : qt.buoc.flatMap(b => [b.chinh, ...(b.tren ?? []), ...(b.duoi ?? [])])),
-    ...(qt.hoiTu ? [...qt.hoiTu.lan, qt.hoiTu.ra].flatMap(l => l.nut) : [])]
+    ...(qt.hoiTu ? [...qt.hoiTu.lan, qt.hoiTu.ra].flatMap(l => l.nut) : []), ...(luongRa?.nut ?? [])]
   const mo = nut.filter(n => moNut(n, s.goi).ok).length
   // cả phân hệ ngoài gói thì mời xem thử gói thấp nhất có phân hệ này
   const khoa = phanHeKhoa(mod, s.goi)
@@ -45,7 +46,7 @@ export function QuyTrinhScreen({ mod }: ScreenProps) {
 
   return (
     <div className="page wide qt">
-      <div className={`qt-top ${qt.hoiTu ? 'mot-cot' : ''}`}>
+      <div className={`qt-top ${qt.hoiTu || luongRa ? 'mot-cot' : ''}`}>
         <section className="card qt-card">
           <div className="qt-h">
             <h1>{qt.ten}</h1>
@@ -61,10 +62,10 @@ export function QuyTrinhScreen({ mod }: ScreenProps) {
             </Note>
           )}
           {qt.hoiTu ? <SoDoHoiTu lan={qt.hoiTu.lan} ra={qt.hoiTu.ra} goi={s.goi} modKey={mod.key} />
-            : luong ? <SoDoLuong cot={luong} goi={s.goi} /> : <SoDo qt={qt} goi={s.goi} />}
+            : luong ? <SoDoLuong cot={luong} ra={luongRa} goi={s.goi} modKey={mod.key} /> : <SoDo qt={qt} goi={s.goi} />}
         </section>
         {/* Sơ đồ hội tụ đã có khối sổ sách, báo cáo ở cuối nên bỏ khung Báo cáo bên phải để khỏi trùng */}
-        {!qt.hoiTu && <BenPhai qt={qt} modKey={mod.key} goi={s.goi} cheDo={s.cheDo} session={s} />}
+        {!qt.hoiTu && !luongRa && <BenPhai qt={qt} modKey={mod.key} goi={s.goi} cheDo={s.cheDo} session={s} />}
       </div>
       <HangDuoi qt={qt} modKey={mod.key} goi={s.goi} cheDo={s.cheDo} session={s} />
     </div>
@@ -163,7 +164,7 @@ const MUI = 8         // chiều dài mũi tên vào khối Sổ sách, cao 10
 
 /** Sơ đồ luồng theo cột (T123): ô cột trước nối tới mọi ô cột sau. Nhiều ô gộp vào một ô (mua hàng, bán hàng thành tồn hệ thống),
  *  một ô tách ra nhiều ô (kiểm kê ra thiếu, thừa). Đường nối gấp khúc: ra khỏi cột trước tới trục đứng, đi dọc, rẽ vào ô cột sau */
-function SoDoLuong({ cot, goi }: { cot: CotQT[]; goi: Goi }) {
+function SoDoLuong({ cot, ra, goi, modKey }: { cot: CotQT[]; ra: LanQT | null; goi: Goi; modKey: string }) {
   const ref = useRef<HTMLDivElement>(null)
   const [ve, setVe] = useState<{ w: number; h: number; d: string; mui: string[]; chu: { x: number; y: number; t: string }[] } | null>(null)
   useLayoutEffect(() => {
@@ -173,7 +174,7 @@ function SoDoLuong({ cot, goi }: { cot: CotQT[]; goi: Goi }) {
       const zoom = heSoZoom()
       const g = el.getBoundingClientRect()
       const hop = [...el.querySelectorAll<HTMLElement>(':scope > .qt-lg-cot')].map(c =>
-        [...c.querySelectorAll<HTMLElement>(':scope > .qt-n')].map(n => {
+        [...c.querySelectorAll<HTMLElement>(':scope > .qt-n, :scope > .qt-ht-ra')].map(n => {
           const r = n.getBoundingClientRect()
           return { l: (r.left - g.left) / zoom, r: (r.right - g.left) / zoom, y: Math.round((r.top + r.height / 2 - g.top) / zoom) }
         }))
@@ -190,7 +191,7 @@ function SoDoLuong({ cot, goi }: { cot: CotQT[]; goi: Goi }) {
           const x = Math.round(o.l) - 2
           p.push(`M${ax} ${o.y}H${x - MUI + 2}`)
           mui.push(`M${x - MUI} ${o.y - 5}L${x} ${o.y}L${x - MUI} ${o.y + 5}Z`)
-          const t = cot[i].nut[j]?.noi ?? cot[i].noi
+          const t = cot[i]?.nut[j]?.noi ?? cot[i]?.noi
           if (t) chu.push({ x: Math.round((ax + x - MUI) / 2), y: o.y - 7, t })
         })
       }
@@ -201,7 +202,7 @@ function SoDoLuong({ cot, goi }: { cot: CotQT[]; goi: Goi }) {
     doLai()
     window.addEventListener('resize', doLai)
     return () => { ro.disconnect(); window.removeEventListener('resize', doLai) }
-  }, [cot, goi])
+  }, [cot, ra, goi])
 
   return (
     <div className="qt-so">
@@ -218,6 +219,16 @@ function SoDoLuong({ cot, goi }: { cot: CotQT[]; goi: Goi }) {
             {c.nut.map(n => <NutNgang key={n.di || n.ten} n={n} goi={goi} />)}
           </div>
         ))}
+        {/* Khối kết quả cuối sơ đồ, cột cuối nối vào; cùng kiểu khối Sổ sách của sơ đồ hội tụ */}
+        {ra && (
+          <div className="qt-lg-cot">
+            <div className="qt-ht-ra">
+              <div className="qt-ht-dau"><span className="qt-ht-ic"><Icon n="book" className="ic" /></span>{ra.ten}</div>
+              {ra.nut.map(n => <NutNgang key={n.di} n={n} goi={goi} dong />)}
+              <Link to={`/app/${modKey}/bao-cao`} className="qt-ht-all">Tất cả báo cáo<Icon n="arrow" className="ic sm" /></Link>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

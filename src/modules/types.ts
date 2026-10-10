@@ -135,6 +135,7 @@ export interface QuyTrinhDef {
   hoiTuFree?: { lan: LanQT[]; ra: LanQT } // gói Free dùng sơ đồ hội tụ riêng thay sơ đồ chung (T98)
   moTaFree?: string                      // dòng mô tả dưới tiêu đề sơ đồ ở gói Free (T123)
   luongFree?: CotQT[]                     // gói Free dùng sơ đồ luồng theo cột thay sơ đồ chung: ô cột trước nối tới mọi ô cột sau, gộp và tách nhánh (T123)
+  luongFreeRa?: LanQT                     // khối kết quả cuối sơ đồ luồng, cột cuối nối vào; có thì bỏ khung Báo cáo bên phải (T123)
   danhSo?: boolean                       // đánh số bước, kiểu màn Giá thành của AMIS
   baoCao?: string[]                      // khung Báo cáo bên phải: slug trong phân hệ hoặc 'phân hệ/slug'
   ghiChu?: { tieuDe: string; dong: [string, string, string?][] }  // thay khung Báo cáo khi phân hệ không có báo cáo
