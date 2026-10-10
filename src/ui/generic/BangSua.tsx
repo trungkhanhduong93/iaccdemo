@@ -317,7 +317,7 @@ export function BangSua({
                     <td className="num">{money(d.ck || 0)}</td>
                   </>
                 )}
-                {coNhapKho && <td className="num">{money(d.tien || 0)}</td>}
+                {coNhapKho && <td className="num">{money((d.tien || 0) - (d.ck || 0))}</td>}
                 {thueCot && (
                   <>
                     <td className="num">{d.ts ? `${d.ts}%` : 'KCT'}</td>
@@ -340,7 +340,7 @@ export function BangSua({
                   <td className="num">{money(tongCk)}</td>
                 </>
               )}
-              {coNhapKho && <td className="num">{money(tongTien)}</td>}
+              {coNhapKho && <td className="num">{money(tongTien - tongCk)}</td>}
               {thueCot && (
                 <>
                   <td />
@@ -527,7 +527,7 @@ export function BangSua({
                     </td>
                   </>
                 )}
-                {coNhapKho && <td className="num">{money(d.tien || 0)}</td>}
+                {coNhapKho && <td className="num">{money((d.tien || 0) - (d.ck || 0))}</td>}
                 {thueCot && (
                   <>
                     <td>
@@ -573,7 +573,7 @@ export function BangSua({
                   <td className="num">{money(tongCk)}</td>
                 </>
               )}
-              {coNhapKho && <td className="num">{money(tongTien)}</td>}
+              {coNhapKho && <td className="num">{money(tongTien - tongCk)}</td>}
               {thueCot && (
                 <>
                   <td />

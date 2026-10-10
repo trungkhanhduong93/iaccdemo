@@ -165,6 +165,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   useEffect(() => {
     if (khoDau) setDsDong(ds => ds.map(d => ({ ...d, kho })))
   }, [dongGoc, kho, khoDau])
+  const truocThue = nhom === 'mua' && Boolean(bo.tongNhap)   // phiếu mua có Tiền trước thuế ở dòng và khối tổng (T84)
   const coHdDau = (nhom === 'mua' || nhom === 'ban') && Boolean(bo.hd) && nhanKemHd
   const coThangLl = laTien && s.goi === 'F' && nhom !== 'cq'   // chuyển quỹ không ảnh hưởng lãi lỗ
   const dsThangLl = useMemo(() => thangLaiLo(ngayCt), [ngayCt])
@@ -901,15 +902,26 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
             </div>
           ) : (
           <div className="tot" style={{ borderTop: '1px solid var(--line)', marginTop: 12 }}>
-            <span>{nhom === 'mua' && bo.tongNhap ? 'Tiền trước thuế' : 'Tiền hàng'}</span>   {/* phiếu mua cùng tên với cột trên dòng (T84) */}
-            <b>{moneyD(tongTien)}</b>
+            {/* Phiếu mua (T84): Tiền trước thuế = Tiền hàng − Chiết khấu, cùng cách tính với cột trên dòng; không chiết khấu thì chỉ hiện Tiền trước thuế */}
+            {(!truocThue || (bo.ck && tongCk > 0)) && (
+              <>
+                <span>Tiền hàng</span>
+                <b>{moneyD(tongTien)}</b>
+              </>
+            )}
             {bo.ck && tongCk > 0 && (
               <>
                 <span>Chiết khấu</span>
                 <b style={{ color: 'var(--red)' }}>-{moneyD(tongCk)}</b>
               </>
             )}
-            {tongThue > 0 && (
+            {truocThue && (
+              <>
+                <span>Tiền trước thuế</span>
+                <b>{moneyD(tongTien - tongCk)}</b>
+              </>
+            )}
+            {(tongThue > 0 || truocThue) && (   // phiếu mua luôn hiện tiền thuế, kể cả bằng 0 (T84)
               <>
                 <span>Tiền thuế GTGT</span>
                 <b>{moneyD(tongThue)}</b>
