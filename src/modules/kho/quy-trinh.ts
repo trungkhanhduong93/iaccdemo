@@ -34,10 +34,6 @@ export const quyTrinh: QuyTrinhDef = {
       { ten: 'Nhập điều chỉnh', icon: 'filein', di: '', noi: 'thừa' },
     ] },
   ],
-  luongFreeRa: { ten: 'Báo cáo', nut: [
-    { ten: 'Báo cáo xuất nhập tồn', icon: 'chart', di: 'kho/5-2-3' },
-    { ten: 'Báo cáo nhập kho, xuất kho', icon: 'chart', di: 'kho/5-2-2' },
-  ] },
   baoCao: ['5-2-3', '5-2-4', '5-2-1', '5-2-2', '5-2-5'],
   danhMuc: ['danh-muc/1-8', 'danh-muc/1-2', 'danh-muc/1-3', 'danh-muc/1-4'],
   tienIch: ['tien-ich/11-3', 'tien-ich/11-15'],   // bỏ 11.2 (T100)
