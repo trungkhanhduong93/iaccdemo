@@ -522,7 +522,7 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
     <FormToanMan icon={mod.icon} onClose={dong0} title="Xuất bán POS"
       // Phần tổng thành dải cố định ở đáy form, cuộn bảng vẫn thấy (T104); khoản bằng 0 hiện mờ cho gọn
       // các khoản theo món đã lên bảng chi tiết; dải đáy còn khoản của cả đơn và Tổng tiền (T106)
-      day={<DaiTong tong={tong} muc={[['Phiếu giảm giá', phieuGiam ? -phieuGiam : 0]]} />}
+      day={<DaiTong tong={tong} muc={[]} tren={[['Phiếu giảm giá', phieuGiam ? -phieuGiam : 0]]} />}   // Phiếu giảm giá thành hàng ngay trên Tổng tiền
       giua={<span className="fsf-tt xem">Chi tiết phiếu <b>{row.so}</b></span>}
       meta={<><St k={cTt}>{tTt}</St><span className="src">FABi</span><span className="chip info"><Icon n="store" className="ic sm" />{row.cn}</span></>}
       foot={<>
@@ -532,7 +532,7 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
         <button type="button" className="btn sm" onClick={dong0}>Đóng (Esc)</button>
       </>}>
       <div className="stack ct-co-dinh" style={{ gap: 14 }}>
-        <p className="pos-nhac"><Icon n="info" className="ic sm" />Chứng từ đồng bộ từ FABi: không sửa, trả hàng, huỷ trên phiếu này. Sửa đơn trên FABi rồi đồng bộ lại.</p>
+        <p className="pos-nhac"><Icon n="info" className="ic sm" />Chứng từ đồng bộ từ FABi: không sửa, trả hàng, xoá trên phiếu này. Sửa đơn trên FABi rồi đồng bộ lại.</p>
         {/* Đầu phiếu chỉ xem nên dạng thông tin gọn: nhãn nhỏ, giá trị, 4 cột × 2 hàng, để bảng chi tiết rộng hơn (T106) */}
         <section className="card pos-dau">
           <div><small>Khách hàng</small><b>Khách lẻ POS</b></div>

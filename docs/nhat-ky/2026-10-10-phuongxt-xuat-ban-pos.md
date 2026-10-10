@@ -17,7 +17,8 @@
 - T106: bảng Hàng bán thêm % CK, Tiền CK, % Phí dịch vụ, Phí dịch vụ, Giảm thuế GTGT, Phí vận chuyển (mẫu bằng 0), Doanh thu trước thuế (thành tiền − giảm − CK + phí dịch vụ + phí vận chuyển); bỏ cột Tổng tiền; dòng Tổng cộng cộng mọi cột tiền. Dải đáy chỉ Phiếu giảm giá, Tổng tiền.
 - T106: form có nút Tuỳ chỉnh giao diện (`HopCotPhieu`, `COT_POS`); Giảm thuế GTGT, Phí vận chuyển ẩn sẵn (`AN_POS_MAC_DINH`), khoá `iacc-cot-phieu:ban-hang/3-1-1`. `HopCotPhieu` thêm tham số `macDinh` cho nút Khôi phục mặc định.
 - T106: cột #, Mã hàng, Hàng hoá, ĐVT cố định trái (`dinh: 'trai'`), nhãn Tổng cộng chuyển sang cột Hàng hoá để cột # không giãn. Bỏ nút Phát hành HĐĐT ở thanh đáy.
-- T106: đầu phiếu chỉ xem nên đổi từ ô nhập sang dạng thông tin gọn (`.pos-dau`: nhãn nhỏ, giá trị, 4 cột × 2 hàng); bỏ `OXem`. Bảng chi tiết khung 1024px hiện đủ 9 dòng. Header: Khách hàng, Kênh bán hàng, Ghi chú (trước là Diễn giải).
+- T106: đầu phiếu chỉ xem nên đổi từ ô nhập sang dạng thông tin gọn (`.pos-dau`: nhãn nhỏ, giá trị, 4 cột × 2 hàng); bỏ `OXem`. Bảng chi tiết khung 1024px hiện đủ 9 dòng.
+- T106: dòng nhắc đổi huỷ thành xoá. `DaiTong` thêm tham số `tren`: các khoản xếp thành hàng ngay trên Tổng tiền ở góc phải (`.pos-day-cot`); Xuất bán POS đặt Phiếu giảm giá ở đó. Header: Khách hàng, Kênh bán hàng, Ghi chú (trước là Diễn giải).
 - T103 `dongMonGiam(dt, vat)`: thuế từng món chỉnh cho tổng bằng thuế GTGT của ngày, phần lệch dồn vào món thuế lớn nhất.
 
 ## Đã kiểm

@@ -1,5 +1,5 @@
 // Form chứng từ toàn màn hình theo bố cục AMIS
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import type { Row, ScreenProps, VoucherCfg } from '../../modules/types'
 import { duongDan, tenMan } from '../../app/registry'
@@ -1048,14 +1048,23 @@ function ONgay({ value, onChange }: { value: string; onChange: (v: string) => vo
 }
 
 /** Tổng tiền ở dải đáy form, số thẳng mép cột Thành tiền của bảng chi tiết; không thấy bảng thì nằm sát phải (T49) */
-/** Dải tổng cố định ở đáy form (T105): các khoản bên trái, khoản bằng 0 hiện mờ; Tổng tiền bên phải */
-export function DaiTong({ muc, tong, nhan = 'Tổng tiền' }: { muc: [string, number][]; tong: number; nhan?: string }) {
+/** Dải tổng cố định ở đáy form (T105): các khoản bên trái, khoản bằng 0 hiện mờ; Tổng tiền bên phải.
+ *  tren: các khoản xếp thành hàng ngay trên Tổng tiền ở góc phải (T106) */
+export function DaiTong({ muc, tong, nhan = 'Tổng tiền', tren = [] }: { muc: [string, number][]; tong: number; nhan?: string; tren?: [string, number][] }) {
+  const so = (v: number) => (v < 0 ? `-${money(-v)}` : money(v))
   return (
     <div className="pos-day">
       {muc.map(([t, v]) => (
-        <span key={t} className={`pos-day-o${v ? '' : ' khong'}${v < 0 ? ' am' : ''}`}><small>{t}</small><b>{v < 0 ? `-${money(-v)}` : money(v)}</b></span>
+        <span key={t} className={`pos-day-o${v ? '' : ' khong'}${v < 0 ? ' am' : ''}`}><small>{t}</small><b>{so(v)}</b></span>
       ))}
-      <span className="pos-day-tong"><small>{nhan}</small><b>{moneyD(tong)}</b></span>
+      {tren.length > 0 ? (
+        <span className="pos-day-cot">
+          {tren.map(([t, v]) => <Fragment key={t}><small>{t}</small><b className={v < 0 ? 'am' : ''}>{so(v)}</b></Fragment>)}
+          <small>{nhan}</small><b className="lon">{moneyD(tong)}</b>
+        </span>
+      ) : (
+        <span className="pos-day-tong"><small>{nhan}</small><b>{moneyD(tong)}</b></span>
+      )}
     </div>
   )
 }

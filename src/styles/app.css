@@ -5416,3 +5416,10 @@ table.tbl {
 .pos-dau > div.c2 { grid-column: span 2; }
 .pos-dau small { font-size: 11.5px; color: var(--muted); }
 .pos-dau b { font-size: 13px; font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* Dải đáy có khoản xếp trên Tổng tiền: dải cao theo nội dung, cột phải 2 cột nhãn, số (T106) */
+.fsf-day:has(.pos-day-cot) { height: auto; }
+.pos-day-cot { display: grid; grid-template-columns: auto auto; align-items: baseline; gap: 2px 18px; margin-left: auto; white-space: nowrap; }
+.pos-day-cot small { font-size: 12px; color: var(--muted); text-align: right; }
+.pos-day-cot b { font-size: 13.5px; text-align: right; font-variant-numeric: tabular-nums; color: var(--ink); }
+.pos-day-cot b.am { color: var(--red); }
+.pos-day-cot b.lon { font-size: 18px; color: var(--blue); }
