@@ -78,6 +78,11 @@ const CHEN_SAU: Record<string, string[]> = {
   '10.3.1': ['10.4.1', '10.4.2'],
 }
 
+/** Màn bỏ hẳn ở mọi gói dù có trong Excel. Trum cập nhật Excel bỏ mã rồi thì xoá dòng ở đây */
+const DA_BO = new Set([
+  '3.2.1', '3.2.3',   // Báo cáo bán hàng, Báo cáo doanh thu: bỏ ở mọi gói, dùng Sổ doanh thu bán hàng 3.2.5, PhuongXT chốt 10/10/2026 (T99)
+])
+
 function gopFeatures(): Feature[] {
   const boSungChuaCo = BO_SUNG.filter(b => !data.feats.some(f => f.c === b.c))
   const chenMap = new Map<string, Feature[]>()
@@ -88,6 +93,7 @@ function gopFeatures(): Feature[] {
   const ds: Feature[] = []
   const daChen = new Set<string>()
   for (const f of data.feats) {
+    if (DA_BO.has(f.c)) continue
     const g = THEO_ROADMAP[f.c] ?? doiGoiTuExcel(f.g)
     ds.push({ ...f, g })
     const them = chenMap.get(f.c)

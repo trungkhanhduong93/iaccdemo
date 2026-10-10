@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T99 | Bỏ Báo cáo bán hàng 3.2.1 và Báo cáo doanh thu 3.2.3 ở mọi gói; liên kết cũ trỏ sang Sổ doanh thu bán hàng 3.2.5 | PhuongXT | Đang làm | Sửa `plan.ts`, `SidebarFlyout.tsx`, `ban-hang/quy-trinh.ts`, `TongQuan.tsx`, `BaoCaoTaiChinh.tsx`, `danh-muc/index.ts`. Đụng T97 của Trum (T97 định mở 3.2.1, 3.2.3 cho Free) |
 | T88 | Danh mục đơn vị tính 1.3: bộ khoảng 35 đơn vị cơ bản F&B, mã viết hoa không dấu (CAI là Cái), giữ cột Mô tả; mọi ô chọn ĐVT trong panel danh mục lấy từ danh mục này | Trum | Đang làm | Sửa `danh-muc/data.ts`, `danh-muc/index.ts`, `truong-dm.ts`, `CatalogScreen.tsx` |
 | T60 | Mô tả gói Free, Standard trong `GOI` (`src/app/plan.ts`) đang ghi "1 điểm bán"; theo Roadmap gói Free là mỗi chi nhánh một kho, không giới hạn một chi nhánh. Chốt câu chữ rồi sửa | PhuongXT | Chờ | Tách từ T25 |
 | T02 | Chốt nghiệp vụ trên từng sơ đồ Quy trình: ô nào, nối thế nào, câu chữ. Sửa ở `src/modules/<phân hệ>/quy-trinh.ts` | Trum | Chờ | |
@@ -36,6 +35,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T99 | Bỏ Báo cáo bán hàng 3.2.1 và Báo cáo doanh thu 3.2.3 ở mọi gói (`DA_BO` trong `plan.ts`); liên kết cũ trỏ sang Sổ doanh thu bán hàng 3.2.5 | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-so-do-ban-hang-free.md` |
 | T98 | Sơ đồ Quy trình Bán hàng gói Free kiểu hội tụ: làn Bán hàng từ FABi (Đơn POS từ FABi, mũi tên chữ đồng bộ, Xuất bán POS) về khối Báo cáo; 3.2.5, 3.2.1, 3.2.3 tự hiện khi T97 mở cho Free | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-so-do-ban-hang-free.md` |
 | T96 | Danh sách thu chi 2.1.1: thêm cột Lý do thu, chi sau Diễn giải, lấy như form; chuyển quỹ để trống | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-loc-kho-hang.md` |
 | T95 | Form mọi phiếu: nút Tuỳ chỉnh giao diện ra ngoài thanh đáy, cạnh nút In, bỏ khỏi menu Tiện ích | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-loc-kho-hang.md` |

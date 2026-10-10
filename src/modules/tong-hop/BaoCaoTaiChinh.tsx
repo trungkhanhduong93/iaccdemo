@@ -31,14 +31,14 @@ function Khung({ sc, mod, children, note }: ScreenProps & { children: (ky: strin
 function dongKqkd(cd: CheDo, thang: number) {
   const q = kqkd(thang, 2026)
   if (cd === 'TT152' || cd === 'TT58') return [
-    { ct: 'Doanh thu bán hàng', v: q.dtThuan, _b: 1, _drill: '/app/ban-hang/3-2-3' }, { ct: 'Giá vốn', v: q.gv, _drill: '/app/kho/5-2-3' },
+    { ct: 'Doanh thu bán hàng', v: q.dtThuan, _b: 1, _drill: '/app/ban-hang/3-2-5' }, { ct: 'Giá vốn', v: q.gv, _drill: '/app/kho/5-2-3' },
     { ct: 'Lãi gộp', v: q.lnGop, _b: 1 }, { ct: 'Chi phí hoạt động', v: q.cpQlkd + q.cpTc - q.dtTc },
     { ct: 'Thu nhập, chi phí khác', v: q.lnKhac }, { ct: 'Lợi nhuận trước thuế', v: q.lnTruocThue, _t: 1 },
     ...(cd === 'TT58' ? [{ ct: 'Thuế thu nhập doanh nghiệp', v: q.thue }, { ct: 'Lợi nhuận sau thuế', v: q.lnSauThue, _t: 1 }] : []),
   ]
   const PR = cd === 'TT99'
   return [
-    { ma: '01', ct: 'Doanh thu bán hàng và cung cấp dịch vụ', v: q.dt, _drill: '/app/ban-hang/3-2-3' }, { ma: '02', ct: 'Các khoản giảm trừ doanh thu', v: q.giamTru },
+    { ma: '01', ct: 'Doanh thu bán hàng và cung cấp dịch vụ', v: q.dt, _drill: '/app/ban-hang/3-2-5' }, { ma: '02', ct: 'Các khoản giảm trừ doanh thu', v: q.giamTru },
     { ma: '10', ct: 'Doanh thu thuần về bán hàng và cung cấp dịch vụ', v: q.dtThuan, _b: 1 }, { ma: '11', ct: 'Giá vốn hàng bán', v: q.gv, _drill: '/app/kho/5-2-3' },
     { ma: '20', ct: 'Lợi nhuận gộp về bán hàng và cung cấp dịch vụ', v: q.lnGop, _b: 1 }, { ma: '21', ct: 'Doanh thu hoạt động tài chính', v: q.dtTc },
     { ma: '22', ct: 'Chi phí tài chính', v: q.cpTc }, { ma: '23', ct: 'Trong đó: Chi phí lãi vay', v: q.laiVay, _i: 1 },

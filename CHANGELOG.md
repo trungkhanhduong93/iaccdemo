@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 10/10/2026
 
+- T99: Bỏ Báo cáo bán hàng và Báo cáo doanh thu ở mọi gói. Các nút, liên kết trước mở hai báo cáo này nay mở Sổ doanh thu bán hàng.
 - T98: Gói Free, sơ đồ Quy trình Bán hàng gọn theo kiểu Mua hàng, Thu chi: Đơn POS từ FABi, mũi tên ghi đồng bộ, Xuất bán POS, rồi về khối Báo cáo.
 - T96: Danh sách thu chi có thêm cột Lý do thu, chi.
 - T95: Xem phiếu (mọi phiếu): nút Tuỳ chỉnh giao diện nằm ngay ở thanh đáy, cạnh nút In, không còn trong menu Tiện ích.

@@ -33,7 +33,7 @@ const FLYOUT_CONFIG: Record<string, FlyoutData> = {
       tieuDe: 'Báo cáo & Sổ sách',
       items: [
         { ten: 'Sổ quỹ tiền mặt', di: '/app/tien/2-2-1' },
-        { ten: 'Doanh thu theo món', di: '/app/ban-hang/3-2-3' },
+        { ten: 'Sổ doanh thu bán hàng', di: '/app/ban-hang/3-2-5' },
         { ten: 'Tổng hợp nhập xuất tồn', di: '/app/kho/5-2-2' },
         { ten: 'Báo cáo tài chính', di: '/app/tong-hop/10-2-2' },
         { ten: 'Cảnh báo số liệu', di: '/app/tien-ich/11-6' },
@@ -91,8 +91,7 @@ const FLYOUT_CONFIG: Record<string, FlyoutData> = {
         { ten: 'Khách hàng', di: '/app/danh-muc/1-5' },
         { ten: 'Hàng hoá, món ăn', di: '/app/danh-muc/1-2' },
         { ten: 'Bảng giá bán', di: '/app/danh-muc/1-14' },
-        { ten: 'Bảng kê bán hàng', di: '/app/ban-hang/3-2-1' },
-        { ten: 'Doanh thu theo món', di: '/app/ban-hang/3-2-3' },
+        { ten: 'Sổ doanh thu bán hàng', di: '/app/ban-hang/3-2-5' },
         { ten: 'Báo cáo bán hàng', di: '/app/ban-hang/bao-cao' },
       ],
     },
@@ -279,7 +278,7 @@ const FLYOUT_CONFIG: Record<string, FlyoutData> = {
       items: [
         { ten: 'Báo cáo tình hình tài chính', di: '/app/bao-cao/10-2-2' },
         { ten: 'Kết quả kinh doanh', di: '/app/bao-cao/10-2-3' },
-        { ten: 'Báo cáo doanh thu', di: '/app/bao-cao/3-2-3' },
+        { ten: 'Sổ doanh thu bán hàng', di: '/app/bao-cao/3-2-5' },
         { ten: 'Xuất nhập tồn', di: '/app/bao-cao/5-2-3' },
         { ten: 'Sổ quỹ tiền mặt', di: '/app/bao-cao/2-2-1' },
         { ten: 'Sổ công nợ', di: '/app/bao-cao/2-2-5' },

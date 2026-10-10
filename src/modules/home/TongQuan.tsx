@@ -60,7 +60,7 @@ export function TongQuan({ sc }: ScreenProps) {
 
       <div className="grid g-21" style={{ marginBottom: 14 }}>
         <Card title="Doanh thu 30 ngày" sub="Cột xanh: doanh thu chưa thuế · cột cam: giá vốn"
-          act={<Link className="btn sm ghost" to="/app/ban-hang/3-2-3">Báo cáo doanh thu</Link>}>
+          act={<Link className="btn sm ghost" to="/app/ban-hang/3-2-5">Sổ doanh thu</Link>}>
           <Bars data={theoNgay} h={230} />
         </Card>
         <Card title="Doanh thu theo chi nhánh" sub={kyLabel}>
