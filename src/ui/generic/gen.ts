@@ -178,11 +178,16 @@ export function chungTu(cfg: VoucherCfg, seed: string): Row[] {
       const t = tongDong(dongCua(cfg, id))
       const nguon = cfg.nguon && cfg.nguon !== 'tay' && r() < 0.75 ? cfg.nguon : 'tay'
       const g = gioPhieu(so)
+      // Phiếu kiểm kê mẫu (T124): các chi nhánh lần lượt có phiếu để chi nhánh nào cũng thấy phiếu trong tháng; kho, ghi chú theo chi nhánh của phiếu
+      const cnKk = cfg.kiemKe ? CHI_NHANH[i % CHI_NHANH.length] : undefined
+      const khoKk = cnKk ? cnKk.kho[Math.floor(i / CHI_NHANH.length) % cnKk.kho.length] : ''
+      const dgKk = cnKk ? `${i % 4 === 0 ? 'Kiểm kê cuối tháng' : 'Kiểm kê đột xuất'} ${khoKk}` : ''
       rows.push({
         id: String(i), so, ngay: `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`, gio: g, thang: d.getMonth() + 1,
-        doiTuong: dt.ten, maDt: dt.ma, cn: pick(r, CHI_NHANH).ten,
-        dienGiai: pick(r, cfg.dienGiai), tien: t.tien, thue: t.thue, tong: t.tong, nguon,
+        doiTuong: dt.ten, maDt: dt.ma, cn: cnKk ? cnKk.ten : pick(r, CHI_NHANH).ten,
+        dienGiai: cnKk ? dgKk : pick(r, cfg.dienGiai), tien: t.tien, thue: t.thue, tong: t.tong, nguon,
         tt: i < 3 ? 'nhap' : i === 5 ? 'loi' : 'ghi',
+        ...(cnKk ? { _kho: khoKk, _ghiChu: dgKk } : {}),
       })
       d = new Date(d.getFullYear(), d.getMonth(), d.getDate() - (r() < 0.55 ? 1 : 2))
     }
