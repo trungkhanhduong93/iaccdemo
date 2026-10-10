@@ -135,10 +135,11 @@ export function CatalogScreen({ sc }: ScreenProps) {
     if (daCo) return daCo
     const dau = { v: '', t: `(Chọn ${tr.nhan.toLowerCase()})` }
     let ds: { v: string; t: string }[] = []
-    if (tr.ds && tr.ds.length > 0) ds = tr.ds.map(d => ({ v: d, t: d }))
+    // ô Nhóm lấy nhóm có trong dữ liệu trước, để dòng đang sửa luôn có nhóm của nó trong danh sách (T87)
+    if (tr.k === 'nhom' && cfg.nhomLoc === 'nhom' && nhoms.length > 0) ds = nhoms.map(d => ({ v: d, t: d }))
+    else if (tr.ds && tr.ds.length > 0) ds = tr.ds.map(d => ({ v: d, t: d }))
     else if (tr.k.toLowerCase().startsWith('tk')) ds = dsTkChon
     else if (tr.k === 'dvt') ds = ['Tô', 'Phần', 'Dĩa', 'Ly', 'Lon', 'Chai', 'kg', 'g', 'Lít', 'ml', 'Thùng', 'Hộp', 'Cái'].map(d => ({ v: d, t: d }))
-    else if (tr.k === 'nhom' && nhoms.length > 0) ds = nhoms.map(d => ({ v: d, t: d }))
     const kq = [dau, ...ds]
     boNho.set(tr.k, kq)
     return kq
@@ -244,7 +245,10 @@ export function CatalogScreen({ sc }: ScreenProps) {
                               )
                             }
 
-                            const opts = tr.kieu === 'chon' ? getOptions(tr) : []
+                            const chon = tr.kieu === 'chon' ? getOptions(tr) : []
+                            // giá trị của dòng không có trong danh sách chọn thì thêm vào cuối, ô chọn khỏi bị trống
+                            const gt = String(formVal[tr.k] ?? '')
+                            const opts = gt && !chon.some(o => o.v === gt) ? [...chon, { v: gt, t: gt }] : chon
                             const hangDai = tr.caHang || tr.kieu === 'nhieuDong'
 
                             return (
