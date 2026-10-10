@@ -4,13 +4,14 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T127.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T128.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T128 | Sơ đồ Kho gói Free: bấm Kiểm kê kho mở danh sách kiểm kê; Xuất điều chỉnh, Nhập điều chỉnh mở màn Điều chỉnh kho đúng tab con | PhuongXT | Đang làm | Sửa `kho/quy-trinh.ts`, `VoucherScreen.tsx` |
 | T120 | In phiếu từ form chứng từ: hàm `moIn` ở `ChungTuForm.tsx` (khoảng dòng 317–321) chưa truyền dòng chi tiết đang có trên form vào phiếu in, nên phiếu mới hoặc đang sửa in theo dòng đã lưu hoặc dòng sinh lại | | Chờ | Phát hiện khi làm T112 |
 | T109 | Sổ S2c-DNSN (5.2.8, TT58): bộ lọc Mặt hàng, Kho để mở sổ theo từng cặp mặt hàng – kho | | Chờ | T108 đang in cố định Thịt bò thăn, kho Phố Mây Lê Lợi. `CauHinhBC.loc` chưa đổi theo chế độ, lọc thêm sẽ hiện cả ở TT133, TT99 |
 | T110 | TT58: tên sổ ghi trong phần Hạch toán của phiếu (`soTT58` ở `tien/index.ts`, `ban-hang`, `kho`, `mua-hang`) theo bộ sổ TT58 (Sổ chi tiết tiền S2d thay Sổ quỹ tiền mặt, Sổ tiền gửi ngân hàng); tờ khai GTGT, Thông tin đơn vị đọc phương pháp thuế GTGT từ `s.ppGtgt` thay vì suy từ chế độ | | Chờ | Tách từ T108. `ToKhaiGTGT.tsx:18` còn `s.cheDo === 'TT58'` |
