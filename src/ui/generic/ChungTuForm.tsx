@@ -46,6 +46,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   const [modalPhim, setModalPhim] = useState(false)
   const [phieuIn, setPhieuIn] = useState<PhieuIn[] | null>(null)
   const [hoiXoa, setHoiXoa] = useState(false)
+  const [hoiDong, setHoiDong] = useState(false)   // phiếu đang thêm mới: hỏi lại trước khi Huỷ, đóng (T125)
 
   const loai = cfgMan.loai?.find(x => x.k === (row?.loai ?? sp.get('loai'))) ?? cfgMan.loai?.[0]
   const cfg = theoLoai(cfgMan, loai?.k)
@@ -56,6 +57,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
 
   const path = duongDan(mod, sc)
   const dongForm = useDong(path)
+  // Phiếu đang thêm mới chưa lưu: Huỷ, nút X, Esc đều hỏi lại trước khi bỏ (T125)
+  const dongMoi = () => (moi ? setHoiDong(true) : dongForm())
   const kieu = kieuGhiSo(s.cheDo)
   const coTkGoi = kieuGhiSo(s.cheDo) === 'noco'
 
@@ -436,7 +439,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
     <FormToanMan
       icon={mod.icon}
       tinh={Boolean((loc.state as { chuyenPhieu?: boolean } | null)?.chuyenPhieu)}
-      onClose={dongForm}
+      onClose={dongMoi}
       day={laKk || !hienChan('tongTien') ? undefined
         : laTien && chiTien ? <TongDay tong={tongThanhToan} soDong={dsDong.length} />
           // Phần tổng thành dải cố định ở đáy form, cuộn bảng vẫn thấy (T105); phiếu mua chỉ Tổng tiền vì số khác đã có trên dòng (T84)
@@ -499,7 +502,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
             <button
               type="button"
               className="btn"
-              onClick={() => (moi ? dongForm() : setDangSua(false))}
+              onClick={() => (moi ? setHoiDong(true) : setDangSua(false))}
             >
               Huỷ
             </button>
@@ -1059,6 +1062,12 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
 
         {children}
       </div>
+      {hoiDong && (
+        <HopXacNhan tieuDe={`Bỏ ${tenPhieu.toLowerCase()} đang thêm mới?`} nut="Bỏ phiếu" nutHuy="Tiếp tục nhập"
+          onDong={() => setHoiDong(false)} onDongY={() => { setHoiDong(false); dongForm() }}>
+          Phiếu chưa được lưu. Nội dung đã nhập sẽ mất.
+        </HopXacNhan>
+      )}
       {hoiThe && (
         <HopXacNhan tieuDe="Tạo thẻ chi phí phân bổ" nut="Đồng ý" nutHuy="Không"
           onDong={() => { const h = hoiThe; setHoiThe(null); sauLuu(h.moMoi, h.idMoi) }}
