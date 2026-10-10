@@ -573,9 +573,29 @@ export function BangSua({
   )
 }
 
-/** Tuỳ chỉnh giao diện phiếu: bật tắt các cột của bảng chi tiết (T49). Panel bên phải cùng kiểu panel danh mục (T81) */
-export function HopCotPhieu({ ds, an, onDoi, onDong }: { ds: [string, string][]; an: string[]; onDoi: (an: string[]) => void; onDong: () => void }) {
-  const hien = ds.filter(([k]) => !an.includes(k)).length
+/** Tuỳ chỉnh giao diện phiếu: bật tắt các cột của bảng chi tiết (T49), ô đầu phiếu và tổng chân phiếu (T87).
+ *  Panel bên phải cùng kiểu panel danh mục (T81). Ô đầu phiếu, chân phiếu lưu chung danh sách ẩn với tiền tố dau:, chan: */
+export function HopCotPhieu({ ds, dsDau = [], dsChan = [], an, onDoi, onDong }: {
+  ds: [string, string][]; dsDau?: [string, string][]; dsChan?: [string, string][]; an: string[]; onDoi: (an: string[]) => void; onDong: () => void
+}) {
+  const khoi = (ten: string, tienTo: string, muc: [string, string][], ghiChu: string) => {
+    const dsK = muc.map(([k, t]): [string, string] => [tienTo + k, t])
+    const hien = dsK.filter(([k]) => !an.includes(k)).length
+    return (
+      <div className="pn-khoi mo" key={ten}>
+        <div className="pn-khoi-dau"><span>{ten}</span><small className="muted">{hien}/{dsK.length} đang hiện</small></div>
+        <div className="pn-khoi-than pn-ds-cot">
+          {dsK.map(([k, t]) => (
+            <label key={k} className="pn-tich pn-dong-cot">
+              <span className="grow">{t}</span>
+              <input type="checkbox" checked={!an.includes(k)} onChange={e => onDoi(e.target.checked ? an.filter(x => x !== k) : [...an, k])} />
+            </label>
+          ))}
+          {ghiChu && <p className="muted pn-chu-nho pn-ghi-chu">{ghiChu}</p>}
+        </div>
+      </div>
+    )
+  }
   // Esc chỉ đóng panel, chặn lan để không đóng luôn form phiếu toàn màn hình phía sau
   useEffect(() => {
     const key = (e: KeyboardEvent) => { if (e.key === 'Escape') { e.stopPropagation(); onDong() } }
@@ -590,23 +610,14 @@ export function HopCotPhieu({ ds, an, onDoi, onDong }: { ds: [string, string][];
           <div className="pn-dau-ic"><Icon n="layers" className="ic" /></div>
           <div className="grow">
             <h3>Tuỳ chỉnh giao diện phiếu</h3>
-            <small className="muted">Bật tắt cột của bảng chi tiết</small>
+            <small className="muted">Bật tắt ô đầu phiếu, cột bảng chi tiết, tổng chân phiếu</small>
           </div>
           <button type="button" className="icon-btn" onClick={onDong} aria-label="Đóng"><Icon n="x" /></button>
         </div>
         <div className="pn-than">
-          <div className="pn-khoi mo">
-            <div className="pn-khoi-dau"><span>Cột bảng chi tiết</span><small className="muted">{hien}/{ds.length} đang hiện</small></div>
-            <div className="pn-khoi-than pn-ds-cot">
-              {ds.length ? ds.map(([k, ten]) => (
-                <label key={k} className="pn-tich pn-dong-cot">
-                  <span className="grow">{ten}</span>
-                  <input type="checkbox" checked={!an.includes(k)} onChange={e => onDoi(e.target.checked ? an.filter(x => x !== k) : [...an, k])} />
-                </label>
-              )) : <p className="muted">Phiếu này không có cột nào để ẩn.</p>}
-              <p className="muted pn-chu-nho pn-ghi-chu">Tên hàng hoặc Diễn giải luôn hiện.</p>
-            </div>
-          </div>
+          {dsDau.length > 0 && khoi('Đầu phiếu', 'dau:', dsDau, 'Ô bắt buộc (có dấu *), ngày, số phiếu luôn hiện. Tắt ô nào thì các ô sau dồn lên.')}
+          {khoi('Cột bảng chi tiết', '', ds, 'Tên hàng hoặc Diễn giải luôn hiện.')}
+          {dsChan.length > 0 && khoi('Chân phiếu', 'chan:', dsChan, '')}
         </div>
         <div className="pn-chan">
           <button type="button" className="btn" onClick={() => onDoi([])}>Khôi phục mặc định</button>
