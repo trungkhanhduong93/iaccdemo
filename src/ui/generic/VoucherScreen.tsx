@@ -19,6 +19,7 @@ import {
   BoLoc, ChipTrangThai, NutHangLoat, NutTuyChinhCot, cotChon, dsChipTT, khopChipTT, useCauHinhLoc, useCotDs, useLocNhap, type OLocDef,
 } from '../LocNangCao'
 import { soDaTra, ttTienTheoTra, useDaXoa, xoaPhieu } from './daXoa'
+import { CHI_NHANH, HANG, NVL } from '../../data/mock'
 import { NGUON, TT_CT, chungTu, dongCua, gioPhieu, ttNghiepVu, type Dong } from './gen'
 import { boO, nhomCua, theoLoai, TT_HD, TT_TIEN } from './nhom'
 import { BangSua } from './BangSua'
@@ -27,14 +28,14 @@ import { HopInChungTu, type PhieuIn } from '../bao-cao/InChungTu'
 
 const COT_CO_DINH = new Set(['chk', 'stt', 'ngay', 'so'])
 /** Cột lọc bằng cách chọn trong danh sách giá trị */
-const COT_CHON = new Set(['tenLoai', 'nguon', 'ttTien', 'ttHd'])
+const COT_CHON = new Set(['tenLoai', 'nguon', 'ttTien', 'ttHd', 'kho'])
 
 // Re-export để các màn khác (như ban-hang/ChungTuBanHang.tsx) tiếp tục sử dụng
 export { ChungTuForm, VoucherDetail, HachToan, LichSu }
 
 /** Giá trị các ô lọc ngoài và trong Bộ lọc nâng cao. Chuỗi rỗng là tất cả */
-interface GtLoc { thoiGian: KhoangNgay; tim: string; doiTuong: string; nguon: string; loai: string; ttTien: string; ttHd: string }
-const locMacDinh = (): GtLoc => ({ thoiGian: thangNay(), tim: '', doiTuong: '', nguon: '', loai: '', ttTien: '', ttHd: '' })
+interface GtLoc { thoiGian: KhoangNgay; tim: string; doiTuong: string; nguon: string; loai: string; ttTien: string; ttHd: string; kho: string; hang: string }
+const locMacDinh = (): GtLoc => ({ thoiGian: thangNay(), tim: '', doiTuong: '', nguon: '', loai: '', ttTien: '', ttHd: '', kho: '', hang: '' })
 
 const MAC_DINH: VoucherCfg ={ prefix: 'CT', doiTuong: 'none', dienGiai: ['Chứng từ'], tien: [1_000_000, 20_000_000] }
 
@@ -83,8 +84,16 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
   const nhom = nhomCua(mod.key, cfg)
   const bo = boO(nhom, cfg)
   const path = duongDan(mod, sc)
-  // Mua, bán (T92): thêm thông tin hoá đơn, hạn thanh toán, đã trả, còn nợ cho các cột mặc định ẩn
+  // Mua, bán (T92): thêm thông tin hoá đơn, hạn thanh toán, đã trả, còn nợ cho các cột mặc định ẩn.
+  // T94: kho, mã hàng trên dòng để lọc; gói dưới Pro một kho ở đầu phiếu (cột Kho), gói Pro kho trên từng dòng
+  const coKhoDs = bo.kho === 'dong'
+  const khoDong = s.goi === 'PR'
   const rows = useMemo(() => nhom !== 'mua' && nhom !== 'ban' ? rowsGoc : rowsGoc.map((r): Row => {
+    const dsDong = (r._dong as Dong[] | undefined) ?? dongCua(theoLoai(cfg, r.loai), `${sc.code ?? sc.slug}-${r.id}`)
+    const dsKhoCn = CHI_NHANH.find(c => c.ten === r.cn)?.kho ?? []
+    const khoDau = String(r._kho ?? dsKhoCn[0] ?? '')
+    const khoMd = dsKhoCn.length === 1 ? dsKhoCn[0] : 'Kho tổng'
+    const _khoDs = !coKhoDs ? [] : khoDong ? [...new Set(dsDong.map(d => d.kho || khoMd))] : [khoDau]
     const nv = ttNghiepVu(r)
     const coHd = r._nhanKemHd !== undefined ? Boolean(r._nhanKemHd) : nv.ttHd === 'da'
     const daTra = soDaTra(r)
@@ -92,8 +101,9 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
       ...r,
       kyHieuHd: coHd ? String(r._kyHieuHd ?? nv.kyHieuHd) : '', soHd: coHd ? String(r._soHd ?? nv.soHd) : '', ngayHd: coHd ? String(r._ngayHd ?? nv.ngayHd) : '',
       hanTt: String(r._hanTt ?? nv.hanTt), daTra, conNo: Math.max(0, (Number(r.tong) || 0) - daTra),
+      kho: coKhoDs && !khoDong ? khoDau : '', _khoDs, _maHang: dsDong.map(d => d.ma).filter(Boolean),
     }
-  }), [rowsGoc, nhom])
+  }), [rowsGoc, nhom, cfg, sc, coKhoDs, khoDong])
 
   const [trang, setTrang] = useState(1)
   const [coTrang, setCoTrang] = useState(20)
@@ -121,6 +131,12 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
   const muaBan = nhom === 'mua' || nhom === 'ban'
   const dsDoiTuong = useMemo(() => [...new Set(rows.map(r => String(r.doiTuong ?? '')).filter(Boolean))].sort(), [rows])
   const dsNguon = useMemo(() => [...new Set(rows.map(r => String(r.nguon ?? 'tay')))], [rows])
+  // Lọc kho, hàng hoá cho mua, bán (T94): lựa chọn lấy từ chính các phiếu của màn
+  const dsKhoLoc = useMemo(() => [...new Set(rows.flatMap(r => (r._khoDs as string[] | undefined) ?? []))].sort(), [rows])
+  const dsHangLoc = useMemo(() => {
+    const ten = new Map([...HANG, ...NVL].map(h => [h.ma, h.ten]))
+    return [...new Set(rows.flatMap(r => (r._maHang as string[] | undefined) ?? []))].sort().map((m): [string, string] => [m, `${m} - ${ten.get(m) ?? m}`])
+  }, [rows])
   const apLoc = () => { loc0.loc(); setTrang(1) }
   const chonO = (k: keyof GtLoc, ten: string, ds: [string, string][]) => (
     <Select className="ds-o-sel" value={nhap[k] as string} aria-label={ten} onChange={e => dat(k, e.target.value)}>
@@ -140,6 +156,8 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
     ...(muaBan ? [
       { k: 'ttTien', ten: nhom === 'mua' ? 'TT thanh toán' : 'TT thu tiền', o: chonO('ttTien', 'Trạng thái thanh toán', Object.entries(TT_TIEN[nhom as 'mua' | 'ban']).map(([v, x]) => [v, x[1]])) },
       { k: 'ttHd', ten: nhom === 'mua' ? 'Nhận hoá đơn' : 'Xuất hoá đơn', o: chonO('ttHd', 'Trạng thái hoá đơn', Object.entries(TT_HD[nhom as 'mua' | 'ban']).map(([v, x]) => [v, x[1]])) },
+      ...(dsKhoLoc.length ? [{ k: 'kho', ten: 'Kho', o: chonO('kho', 'Kho', dsKhoLoc.map(v => [v, v])) }] : []),
+      ...(dsHangLoc.length ? [{ k: 'hang', ten: 'Hàng hoá', o: chonO('hang', 'Hàng hoá', dsHangLoc) }] : []),
     ] : []),
   ]
   const [cauHinhLoc, datCauHinhLoc] = useCauHinhLoc(path, oLoc.map(o => o.k), ['thoiGian', 'tim', 'doiTuong'])
@@ -158,6 +176,8 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
       if (ap.ttTien && ttTienTheoTra(r) !== ap.ttTien) return false
       if (ap.ttHd && nv.ttHd !== ap.ttHd) return false
     }
+    if (ap.kho && !((r._khoDs as string[] | undefined) ?? []).includes(ap.kho)) return false
+    if (ap.hang && !((r._maHang as string[] | undefined) ?? []).includes(ap.hang)) return false
     for (const [k, g] of Object.entries(locCot)) {
       if (dangLoc(g) && !khopLoc(kieuCot(k), g, chuCot(k, r), typeof r[k] === 'number' ? r[k] : undefined, k === 'ngay' ? docNgay(String(r.ngay).split(' ')[0]) : undefined)) return false
     }
@@ -242,6 +262,8 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
     ...(cfg.doiTuong !== 'none' ? [{ k: 'doiTuong', t: cfg.nhan ?? 'Đối tượng' } as Col] : []),
     // Đang chọn một chi nhánh trên thanh trên thì cột chi nhánh thừa
     ...(cnChon ? [] : [{ k: 'cn', t: 'Chi nhánh', cls: 'dim', w: 130 } as Col]),
+    // Mua hàng gói dưới Pro: kho nhập ở đầu phiếu (T94); gói Pro kho trên từng dòng nên không có cột
+    ...(nhom === 'mua' && coKhoDs && !khoDong ? [{ k: 'kho', t: 'Kho', w: 150 } as Col] : []),
     // Trạng thái thanh toán & hoá đơn cho nhóm mua / bán
     ...(nhom === 'mua' || nhom === 'ban' ? [
       {

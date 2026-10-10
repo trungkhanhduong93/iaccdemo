@@ -321,7 +321,14 @@ function sapXepCot(cols: Col[], thuTu: string[], coDinh: Set<string>, dongBang: 
   const cuoiDinh = colsDinh.filter(c => c.dinh === 'phai')
   const giua = colsDinh.filter(c => !coDinh.has(c.k) && c.dinh !== 'trai' && c.dinh !== 'phai')
 
-  const vi = (c: Col) => { const i = thuTu.indexOf(c.k); return i < 0 ? thuTu.length + cols.indexOf(c) : i }
+  // Cột mới chưa có trong thứ tự đã lưu: đứng ngay sau cột đứng trước nó theo mặc định, không dồn xuống cuối (T94)
+  const vi = (c: Col): number => {
+    const i = thuTu.indexOf(c.k)
+    if (i >= 0) return i
+    const j = cols.findIndex(x => x.k === c.k)
+    for (let t = j - 1; t >= 0; t--) { const p = thuTu.indexOf(cols[t].k); if (p >= 0) return p + (j - t) / 100 }
+    return thuTu.length + j
+  }
   const dauDinhSap = [...dauDinh].sort((a, b) => vi(a) - vi(b))
   const giuaSap = [...giua].sort((a, b) => vi(a) - vi(b))
   const cuoiDinhSap = [...cuoiDinh].sort((a, b) => vi(a) - vi(b))
