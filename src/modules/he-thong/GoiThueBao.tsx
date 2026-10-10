@@ -377,9 +377,11 @@ export function GoiThueBao({ sc }: ScreenProps) {
                 {GOIS.map(g => (
                   <th key={g} className={`c gtb-col-head ${g === s.goi ? 'gtb-curr-col' : ''}`}>
                     <div className="gtb-col-head-inner">
-                      <GoiLogo g={g} size={22} />
-                      <span>{GOI[g].ten}</span>
-                      {g === s.goi && <span className="gtb-curr-tag">Đang dùng</span>}
+                      <GoiLogo g={g} size={24} />
+                      <span className="gtb-col-ten">{GOI[g].ten}</span>
+                      <div className="gtb-col-tag-wrap">
+                        {g === s.goi && <span className="gtb-curr-tag">Đang dùng</span>}
+                      </div>
                     </div>
                   </th>
                 ))}
@@ -512,8 +514,8 @@ export function GoiThueBao({ sc }: ScreenProps) {
 
       {/* ── Modal Xác Nhận Chuyển Gói ── */}
       {dangChuyen && (
-        <div className="pop-overlay" onClick={() => setDangChuyen(null)}>
-          <div className="card pop-dialog gtb-dialog" onClick={e => e.stopPropagation()}>
+        <div className="gtb-overlay" onClick={() => setDangChuyen(null)}>
+          <div className="card gtb-dialog" onClick={e => e.stopPropagation()}>
             <div className="gtb-dialog-header">
               <GoiLogo g={dangChuyen} size={40} glow />
               <div>
