@@ -10,7 +10,7 @@
 - Phiếu thu, chi, báo có, uỷ nhiệm chi: khung chi tiết có cột Lý do thu / Lý do chi và cột Đối tượng theo đầu phiếu. Lý do lấy từ `_lyDo`, chưa có thì đoán theo diễn giải như form. Chuyển quỹ không có cột Lý do, giống form.
 - T82 `VoucherScreen.tsx`, `ChungTuBanHang.tsx`: chế độ không ghi sổ (gói Free) thì khung chi tiết dưới danh sách bỏ tab Ghi sổ, giống form (T62). Form Bán hàng POS cũng bỏ tab này. Đang ở tab Ghi sổ mà đổi sang gói Free thì về tab đầu.
 - T83 `ChungTuForm.tsx`: phiếu mua, bán có kho trên dòng (`bo.kho === 'dong'`), gói dưới Pro có ô Kho nhập / Kho xuất ở cột phải dưới số phiếu, chọn trong kho của chi nhánh lập phiếu, lưu ở `_kho`, chép vào mọi dòng; cột Kho trên dòng ẩn. Gói Pro giữ cột Kho trên dòng. Chi nhánh chỉ một kho thì phiếu mới điền sẵn (cả ô đầu phiếu và dòng gói Pro). Khung chi tiết danh sách gói dưới Pro cũng ẩn cột Kho.
-- T83: thông tin hoá đơn mua (tích Nhận kèm hoá đơn) chuyển từ cột phải thành một cột riêng trước cột ngày, số phiếu (lưới 4 cột khi tích, `coHdDau`). Cột có ba hàng đều với hai cột trái, kẻ mảnh hai bên (`.ct-hd-dau` trong `app.css`). Đã thử hàng riêng dưới đầu phiếu trước, PhuongXT chọn cột riêng vì đầu phiếu không cao thêm. Cập nhật QD33.
+- T83: thông tin hoá đơn mua (tích Nhận kèm hoá đơn) chuyển từ cột phải thành một cột riêng trước cột ngày, số phiếu (lưới 4 cột khi tích, `coHdDau`). Cột có ba hàng đều với hai cột trái, kẻ mảnh hai bên (`.ct-hd-dau` trong `app.css`). Đã thử hàng riêng dưới đầu phiếu trước, PhuongXT chọn cột riêng vì đầu phiếu không cao thêm. Bốn ô hoá đơn có dấu * bắt buộc. Phiếu bán (tích Lập kèm hoá đơn) xếp giống hệt, bỏ tab Hoá đơn. Cập nhật QD33.
 - `ChungTuForm.tsx`: xuất hàm `lyMacDinh` để khung chi tiết dùng chung.
 
 ## Đã kiểm

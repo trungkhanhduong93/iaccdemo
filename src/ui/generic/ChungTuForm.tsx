@@ -165,7 +165,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   useEffect(() => {
     if (khoDau) setDsDong(ds => ds.map(d => ({ ...d, kho })))
   }, [dongGoc, kho, khoDau])
-  const coHdDau = nhom === 'mua' && Boolean(bo.hd) && nhanKemHd
+  const coHdDau = (nhom === 'mua' || nhom === 'ban') && Boolean(bo.hd) && nhanKemHd
   const coThangLl = laTien && s.goi === 'F' && nhom !== 'cq'   // chuyển quỹ không ảnh hưởng lãi lỗ
   const dsThangLl = useMemo(() => thangLaiLo(ngayCt), [ngayCt])
   const [thangLl, setThangLl] = useState(dsThangLl[0])
@@ -284,7 +284,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   const tabs: [string, string][] = [
     ['ct', bo.tabDau ?? 'Chi tiết'],
     // Mua hàng: thông tin hoá đơn nằm ở đầu phiếu khi tích Nhận kèm hoá đơn, không có tab Hoá đơn (T62)
-    ...(bo.hd && nhom !== 'mua' ? [['hd', 'Hoá đơn'] as [string, string]] : []),
+    ...(bo.hd && nhom !== 'mua' && nhom !== 'ban' ? [['hd', 'Hoá đơn'] as [string, string]] : []),   // mua, bán: hoá đơn ở đầu phiếu khi tích kèm hoá đơn (T83)
     // Phiếu thu chi bỏ tab hạch toán (T49); gói Free không ghi sổ nên không có tab Ghi sổ (T62)
     ...(laTien || kieu === 'khong' ? [] : [['ht', kieu === 'noco' ? 'Hạch toán' : 'Ghi sổ'] as [string, string]]),
     ...(s.goi === 'F' ? [] : [['dk', 'Đính kèm'] as [string, string]]),   // gói Free không có đính kèm (T52)
@@ -732,25 +732,25 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               {!keoGc && oGhiChu}
             </div>
 
-            {/* Mua hàng tích Nhận kèm hoá đơn: thông tin hoá đơn thành một cột trước cột ngày, số phiếu, ba hàng đều với hai cột trái (T62, T68, T83) */}
+            {/* Mua tích Nhận kèm hoá đơn, bán tích Lập kèm hoá đơn: thông tin hoá đơn thành một cột trước cột ngày, số phiếu, ba hàng đều với hai cột trái (T62, T68, T83) */}
             {coHdDau && (
               <div className="stack ct-hd-dau" style={{ gap: 10 }}>
                 <div className="row" style={{ gap: 10 }}>
                   <div className="f" style={{ flex: 1 }}>
-                    <label>Mẫu số HĐ</label>
+                    <label>Mẫu số HĐ <em>*</em></label>
                     <input className="inp" defaultValue="1" readOnly={!dangSua} />
                   </div>
                   <div className="f" style={{ flex: 1 }}>
-                    <label>Ký hiệu HĐ</label>
+                    <label>Ký hiệu HĐ <em>*</em></label>
                     <input className="inp code" value={kyHieuHd} onChange={e => setKyHieuHd(e.target.value)} readOnly={!dangSua} />
                   </div>
                 </div>
                 <div className="f">
-                  <label>Số hoá đơn</label>
+                  <label>Số hoá đơn <em>*</em></label>
                   <input className="inp code" value={soHd} onChange={e => setSoHd(e.target.value)} readOnly={!dangSua} />
                 </div>
                 <div className="f">
-                  <label>Ngày hoá đơn</label>
+                  <label>Ngày hoá đơn <em>*</em></label>
                   {dangSua ? <ONgay value={ngayHd} onChange={setNgayHd} /> : <input className="inp" readOnly value={ngayHd} />}
                 </div>
               </div>
