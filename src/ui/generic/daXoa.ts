@@ -45,6 +45,10 @@ export interface PhieuTt extends CtTt { tien: number }
 export function dsTtCon(r: Row | undefined): PhieuTt[] {
   return ((r?._dsTt as PhieuTt[] | undefined) ?? []).filter(c => !daXoa.has(`tien/2-1-1|${c.id}`))
 }
+/** Phiếu xuất, nhập điều chỉnh sinh từ phiếu kiểm kê (T126), còn chưa xoá */
+export function dsDcCon(r: Row | undefined): CtTt[] {
+  return ((r?._dsDc as CtTt[] | undefined) ?? []).filter(c => !daXoa.has(`kho/dieu-chinh|${c.id}`))
+}
 /** Phiếu thu, chi tham chiếu còn (trả ngay hoặc thanh toán sau): còn thì chưa xoá được phiếu gốc (T85, T91) */
 export function ttThamChieu(r: Row | undefined): CtTt | undefined {
   return ctTtCon(r) ?? dsTtCon(r)[0]

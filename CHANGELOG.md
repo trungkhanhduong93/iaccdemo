@@ -4,6 +4,8 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 10/10/2026
 
+- T127: Mọi danh sách phiếu có cột Tham chiếu ghi các phiếu liên quan (phiếu thu, chi sinh từ mua, bán; phiếu điều chỉnh sinh từ kiểm kê; phiếu gốc), bấm số phiếu để mở.
+- T126: Phân hệ Kho có màn Điều chỉnh kho (mọi gói) với hai tab Xuất điều chỉnh, Nhập điều chỉnh. Lưu phiếu kiểm kê có chênh lệch thì tự sinh phiếu xuất điều chỉnh (hàng thiếu), nhập điều chỉnh (hàng thừa) theo phần chênh; hai phiếu ghi tham chiếu qua lại, xoá phiếu kiểm kê thì xoá luôn phiếu điều chỉnh.
 - T125: Mọi phiếu đang thêm mới: bấm Huỷ, nút đóng hoặc Esc thì hỏi "Xác nhận đóng phiếu!" trước khi bỏ phiếu chưa lưu (Bỏ qua hoặc Xác nhận).
 - T124: Phiếu kiểm kê bỏ Đối tượng, Người giao nhận, Địa chỉ, Mã số thuế; đầu phiếu hai dòng: Kho kiểm kê, Nhân viên thực hiện; Ghi chú. Bỏ tab Hạch toán. Bảng chi tiết gồm Mã hàng, Tên hàng hoá, ĐVT, Tồn hệ thống, Tồn thực tế, Chênh lệch, Loại (thiếu thì Xuất điều chỉnh, thừa thì Nhập điều chỉnh), Ghi chú; không còn số tiền, thuế. Danh sách phiếu kiểm kê bỏ Tiền thuế, Tổng tiền, thêm cột Kho, Số mặt hàng; cột Diễn giải đổi tên Ghi chú. Thêm phiếu kiểm kê mẫu cho mọi chi nhánh, kho và ghi chú khớp chi nhánh. Cột Mã hàng ở mọi phiếu chỉ hiện mã (danh sách chọn vẫn có tên).
 - T123: Sơ đồ quy trình Kho gói Free vẽ lại dạng luồng: Mua hàng, Bán hàng tổng hợp thành Tồn hệ thống; Kiểm kê kho so sánh với tồn hệ thống ra chênh lệch: thiếu thì Xuất điều chỉnh, thừa thì Nhập điều chỉnh. Khung Báo cáo bên phải. Dưới tiêu đề có dòng mô tả: gói Free theo dõi tồn kho với hàng bán thẳng.

@@ -48,6 +48,9 @@ export interface VoucherCfg {
   loai?: LoaiCT[]                        // một màn nhiều loại phiếu, vd 2.1.1 có phiếu thu, phiếu chi
   soPhieu?: number                       // số phiếu mẫu, mặc định 26
   kiemKe?: boolean                       // phiếu kiểm kê: đầu phiếu chọn kho, bảng tồn hệ thống, tồn thực tế, chênh lệch (T124)
+  dieuChinh?: boolean                    // phiếu xuất, nhập điều chỉnh sinh từ kiểm kê: đầu phiếu như kiểm kê, có tham chiếu về phiếu kiểm kê (T126)
+  khongThem?: boolean                    // danh sách không có nút Thêm mới, phiếu chỉ do phiếu khác sinh ra (T126)
+  rowsMau?: () => Row[]                  // phiếu mẫu riêng thay phiếu sinh ngẫu nhiên (T126)
 }
 
 /** Một loại phiếu trong màn chứng từ. Mở form đúng loại bằng ?loai=k */

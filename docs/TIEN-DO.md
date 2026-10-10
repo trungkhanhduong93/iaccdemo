@@ -11,8 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T127 | Mọi danh sách phiếu thêm cột Tham chiếu: phiếu thu, chi sinh từ mua, bán; phiếu điều chỉnh sinh từ kiểm kê; phiếu gốc của phiếu được sinh ra; bấm số phiếu để mở | PhuongXT | Đang làm | Sửa `VoucherScreen.tsx`, `ChungTuForm.tsx`, cuối `app.css` |
-| T126 | Kiểm kê có chênh lệch tự sinh phiếu Xuất điều chỉnh (thiếu), Nhập điều chỉnh (thừa) vào màn mới Điều chỉnh kho (mọi gói), lưu tham chiếu hai chiều | PhuongXT | Đang làm | Sửa `ChungTuForm.tsx`, `VoucherScreen.tsx`, `daXoa.ts`, `modules/types.ts`, `kho/index.ts`; thêm `kho/dieu-chinh.ts` |
 | T120 | In phiếu từ form chứng từ: hàm `moIn` ở `ChungTuForm.tsx` (khoảng dòng 317–321) chưa truyền dòng chi tiết đang có trên form vào phiếu in, nên phiếu mới hoặc đang sửa in theo dòng đã lưu hoặc dòng sinh lại | | Chờ | Phát hiện khi làm T112 |
 | T109 | Sổ S2c-DNSN (5.2.8, TT58): bộ lọc Mặt hàng, Kho để mở sổ theo từng cặp mặt hàng – kho | | Chờ | T108 đang in cố định Thịt bò thăn, kho Phố Mây Lê Lợi. `CauHinhBC.loc` chưa đổi theo chế độ, lọc thêm sẽ hiện cả ở TT133, TT99 |
 | T110 | TT58: tên sổ ghi trong phần Hạch toán của phiếu (`soTT58` ở `tien/index.ts`, `ban-hang`, `kho`, `mua-hang`) theo bộ sổ TT58 (Sổ chi tiết tiền S2d thay Sổ quỹ tiền mặt, Sổ tiền gửi ngân hàng); tờ khai GTGT, Thông tin đơn vị đọc phương pháp thuế GTGT từ `s.ppGtgt` thay vì suy từ chế độ | | Chờ | Tách từ T108. `ToKhaiGTGT.tsx:18` còn `s.cheDo === 'TT58'` |
@@ -39,6 +37,8 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T127 | Mọi danh sách phiếu có cột Tham chiếu: phiếu thu, chi sinh từ mua, bán; phiếu điều chỉnh sinh từ kiểm kê; phiếu gốc của phiếu được sinh ra; bấm số phiếu để mở | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-cot-tham-chieu.md` |
+| T126 | Kiểm kê có chênh lệch tự sinh phiếu Xuất điều chỉnh (thiếu), Nhập điều chỉnh (thừa) vào màn mới Điều chỉnh kho (mọi gói, hai tab con Xuất điều chỉnh, Nhập điều chỉnh, không chip trạng thái, không Thêm mới); tham chiếu hai chiều | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-dieu-chinh-kiem-ke.md` |
 | T125 | Mọi phiếu đang thêm mới: bấm Huỷ, nút đóng (X) hoặc Esc thì hỏi "Xác nhận đóng phiếu!" (Bỏ qua, Xác nhận) trước khi bỏ phiếu chưa lưu | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-canh-bao-dong-phieu-moi.md` |
 | T124 | Phiếu kiểm kê: bỏ Đối tượng, Người giao nhận, Địa chỉ, Mã số thuế; đầu phiếu hai dòng (Kho kiểm kê, Nhân viên thực hiện; Ghi chú); bỏ tab Hạch toán; bảng chi tiết bỏ Kho, Số lượng, Đơn giá, Thành tiền, Thuế, thay bằng Tồn hệ thống, Tồn thực tế, Chênh lệch, Loại (Xuất điều chỉnh, Nhập điều chỉnh), Ghi chú; bỏ dải tổng tiền | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-phieu-kiem-ke.md` |
 | T123 | Sơ đồ quy trình Kho gói Free vẽ lại dạng luồng: Mua hàng, Bán hàng tổng hợp thành Tồn hệ thống (ô kết quả, không phải màn hình), so sánh với Kiểm kê kho, tách ra Xuất điều chỉnh (thiếu), Nhập điều chỉnh (thừa) | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-so-do-kho-free.md` |

@@ -18,7 +18,20 @@ import { dangLoc, khopLoc, type GiaTriLoc, type KieuLoc } from '../LocCot'
 import {
   BoLoc, ChipTrangThai, NutHangLoat, NutTuyChinhCot, cotChon, dsChipTT, khopChipTT, useCauHinhLoc, useCotDs, useLocNhap, type OLocDef,
 } from '../LocNangCao'
-import { soDaTra, ttTienTheoTra, useDaXoa, xoaPhieu } from './daXoa'
+import { ctTtCon, dsDcCon, dsTtCon, soDaTra, ttTienTheoTra, useDaXoa, xoaPhieu } from './daXoa'
+import { MAN_DC } from '../../modules/kho/dieu-chinh'
+
+/** Phiếu tham chiếu của chứng từ (T127): phiếu thu, chi sinh từ phiếu mua, bán (trả ngay, thanh toán sau); phiếu điều chỉnh sinh từ kiểm kê;
+ *  phiếu gốc của phiếu được sinh ra. Có đường dẫn thì bấm mở được */
+function thamChieuCua(r: Row): { so: string; to?: string }[] {
+  const ct = ctTtCon(r)
+  return [
+    ...(ct ? [{ so: ct.so, to: `/app/tien/2-1-1/${ct.id}` }] : []),
+    ...dsTtCon(r).map(c => ({ so: c.so, to: `/app/tien/2-1-1/${c.id}` })),
+    ...dsDcCon(r).map(c => ({ so: c.so, to: `/app/${MAN_DC}/${c.id}` })),
+    ...(r._thamChieu ? [{ so: String(r._thamChieu), to: r._thamChieuDi ? String(r._thamChieuDi) : undefined }] : []),
+  ]
+}
 import { CHI_NHANH, HANG, NVL } from '../../data/mock'
 import { NGUON, TT_CT, chungTu, dongCua, gioPhieu, ttNghiepVu, type Dong } from './gen'
 import { boO, nhomCua, theoLoai, TT_HD, TT_TIEN } from './nhom'
@@ -44,7 +57,7 @@ export function VoucherScreen({ sc, mod }: ScreenProps) {
   const { id } = useParams()
   const loc = useLocation()
   const cfg = sc.voucher ?? { ...MAC_DINH, dienGiai: [tenMan(sc)] }
-  const tatCa = useMemo(() => (cfg.loai ? gopLoai(cfg, sc.code ?? sc.slug) : chungTu(cfg, sc.code ?? sc.slug)), [sc])
+  const tatCa = useMemo(() => (cfg.rowsMau ? cfg.rowsMau() : cfg.loai ? gopLoai(cfg, sc.code ?? sc.slug) : chungTu(cfg, sc.code ?? sc.slug)), [sc])   // rowsMau: phiếu mẫu riêng (T126)
   const { ban, laDaXoa, phieuMoi, apSua } = useDaXoa(`${mod.key}/${sc.slug}`)
   const rows = useMemo(() => [...phieuMoi, ...tatCa].filter(r => !laDaXoa(r.id)).map(apSua), [tatCa, ban])
 
@@ -70,6 +83,8 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
   const nav = useNavigate()
   const loc0 = useLocNhap(locMacDinh)
   const [chipTT, setChipTT] = useState('all')
+  // Điều chỉnh kho (T126): hai tab nhỏ Xuất điều chỉnh, Nhập điều chỉnh, mỗi tab một loại phiếu
+  const [tabLoai, setTabLoai] = useState(cfg.loai?.[0]?.k ?? '')
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [moHangLoat, setMoHangLoat] = useState(false)
   const [phieuIn, setPhieuIn] = useState<PhieuIn[] | null>(null)
@@ -91,7 +106,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
   const khoDong = s.goi === 'PR'
   // Thu chi (T96): lý do thu, chi của phiếu; phiếu chưa lưu lý do thì đoán theo diễn giải như form, chuyển quỹ không có
   // Phiếu kiểm kê (T124): kho kiểm kê và số mặt hàng của phiếu
-  const rows = useMemo(() => cfg.kiemKe ? rowsGoc.map((r): Row => ({
+  const rows0 = useMemo(() => cfg.dieuChinh ? rowsGoc.map((r): Row => ({ ...r, kho: String(r._kho ?? '') })) : cfg.kiemKe ? rowsGoc.map((r): Row => ({
     ...r, kho: String(r._kho ?? ''), soMat: ((r._dong as Dong[] | undefined) ?? dongCua(cfg, `${sc.code ?? sc.slug}-${r.id}`)).length,
   })) : mod.key === 'tien' ? rowsGoc.map((r): Row => {
     const loaiK = cfg.loai?.find(x => x.k === r.loai)?.k ?? cfg.loai?.[0]?.k
@@ -114,6 +129,8 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
       kho: coKhoDs && !khoDong ? khoDau : '', _khoDs, _maHang: dsDong.map(d => d.ma).filter(Boolean),
     }
   }), [rowsGoc, nhom, cfg, sc, coKhoDs, khoDong, mod.key])
+  // Cột Tham chiếu (T127): chữ để lọc, tìm theo cột
+  const rows = useMemo(() => rows0.map((r): Row => ({ ...r, thamChieu: thamChieuCua(r).map(x => x.so).join(', ') })), [rows0])
 
   const [trang, setTrang] = useState(1)
   const [coTrang, setCoTrang] = useState(20)
@@ -162,7 +179,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
     },
     ...(cfg.doiTuong !== 'none' && dsDoiTuong.length ? [{ k: 'doiTuong', ten: cfg.nhan ?? 'Đối tượng', o: chonO('doiTuong', cfg.nhan ?? 'Đối tượng', dsDoiTuong.map(v => [v, v])) }] : []),
     { k: 'nguon', ten: 'Nguồn', o: chonO('nguon', 'Nguồn', dsNguon.map(v => [v, (NGUON[v] ?? NGUON.tay)[1]])) },
-    ...(cfg.loai ? [{ k: 'loai', ten: 'Loại phiếu', o: chonO('loai', 'Loại phiếu', cfg.loai.map(v => [v.k, v.ten])) }] : []),
+    ...(cfg.loai && !cfg.dieuChinh ? [{ k: 'loai', ten: 'Loại phiếu', o: chonO('loai', 'Loại phiếu', cfg.loai.map(v => [v.k, v.ten])) }] : []),
     ...(muaBan ? [
       { k: 'ttTien', ten: nhom === 'mua' ? 'TT thanh toán' : 'TT thu tiền', o: chonO('ttTien', 'Trạng thái thanh toán', Object.entries(TT_TIEN[nhom as 'mua' | 'ban']).map(([v, x]) => [v, x[1]])) },
       { k: 'ttHd', ten: nhom === 'mua' ? 'Nhận hoá đơn' : 'Xuất hoá đơn', o: chonO('ttHd', 'Trạng thái hoá đơn', Object.entries(TT_HD[nhom as 'mua' | 'ban']).map(([v, x]) => [v, x[1]])) },
@@ -174,7 +191,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
 
   // Lọc theo các ô đã áp dụng, chi nhánh trên thanh trên, hàng lọc từng cột; chip trạng thái lọc sau cùng để đếm số trên chip
   const ap = loc0.ap
-  const truocTT = rows.filter(r => {
+  const truocLoai = rows.filter(r => {
     if (!trongKhoang(docNgay(String(r.ngay).split(' ')[0]), ap.thoiGian)) return false
     if (cnChon && r.cn !== cnChon.ten) return false
     if (ap.tim.trim() && !fold(`${r.so} ${r.doiTuong ?? ''} ${r.dienGiai ?? ''}`).includes(fold(ap.tim.trim()))) return false
@@ -193,6 +210,8 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
     }
     return true
   })
+  // Điều chỉnh kho: tab con lọc theo loại sau các bộ lọc khác, số trên tab đếm theo danh sách đang lọc (T126)
+  const truocTT = cfg.dieuChinh ? truocLoai.filter(r => r.loai === tabLoai) : truocLoai
   const chips = dsChipTT(truocTT, ghi)
   const list = truocTT.filter(r => khopChipTT(chipTT, r.tt, ghi))
   const selectedRows = useMemo(() => list.filter(r => selectedIds.has(r.id)), [list, selectedIds])
@@ -267,8 +286,8 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
         </button>
       ),
     },
-    ...(cfg.loai ? [{ k: 'tenLoai', t: 'Loại', w: 130 } as Col] : []),
-    { k: 'dienGiai', t: cfg.kiemKe ? 'Ghi chú' : 'Diễn giải' },   // phiếu kiểm kê ghi Ghi chú như đầu phiếu (T124)
+    ...(cfg.loai && !cfg.dieuChinh ? [{ k: 'tenLoai', t: 'Loại', w: 130 } as Col] : []),   // điều chỉnh kho: loại đã là tab (T126)
+    { k: 'dienGiai', t: cfg.kiemKe || cfg.dieuChinh ? 'Ghi chú' : 'Diễn giải' },   // phiếu kiểm kê ghi Ghi chú như đầu phiếu (T124)
     ...(mod.key === 'tien' ? [{ k: 'lyDo', t: 'Lý do thu, chi', w: 170 } as Col] : []),   // T96
     ...(cfg.doiTuong !== 'none' ? [{ k: 'doiTuong', t: cfg.nhan ?? 'Đối tượng' } as Col] : []),
     // Đang chọn một chi nhánh trên thanh trên thì cột chi nhánh thừa
@@ -307,7 +326,18 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
     ] : []),
     // Phiếu kiểm kê không có tiền: thay Tiền thuế, Tổng tiền bằng Kho, Số mặt hàng (T124)
     ...(cfg.kiemKe ? [{ k: 'kho', t: 'Kho', w: 180 } as Col, { k: 'soMat', t: 'Số mặt hàng', num: true, w: 120 } as Col] : []),
-    ...(!cfg.kiemKe && (cfg.thue !== undefined || cfg.dong === 'hang') ? [{ k: 'thue', t: 'Tiền thuế', num: true, w: 120 } as Col] : []),
+    ...(cfg.dieuChinh ? [{ k: 'kho', t: 'Kho', w: 180 } as Col] : []),   // T126
+    ...(!cfg.kiemKe && !cfg.dieuChinh && (cfg.thue !== undefined || cfg.dong === 'hang') ? [{ k: 'thue', t: 'Tiền thuế', num: true, w: 120 } as Col] : []),
+    // Tham chiếu (T127): các phiếu liên quan, bấm số phiếu để mở
+    {
+      k: 'thamChieu', t: 'Tham chiếu', w: 150,
+      r: r => {
+        const ds = thamChieuCua(r)
+        return ds.length ? <span className="ds-tc">{ds.map((x, i) => x.to
+          ? <Link key={i} className="ds-link-so" to={x.to} onClick={e => e.stopPropagation()}>{x.so}</Link>
+          : <span key={i} className="code">{x.so}</span>)}</span> : ''
+      },
+    },
     {
       k: 'nguon',
       t: 'Nguồn',
@@ -375,7 +405,18 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
         <section className="card voucher-top">
           {/* Thanh công cụ: chip trạng thái bên trái; ô lọc, phễu, Lọc, Tuỳ chỉnh cột, Excel, Hàng loạt, Thêm mới | ⌄ (T43) */}
           <div className="ds-thanh">
-            {ghi && <ChipTrangThai ds={chips} chon={chipTT} onChon={k => { setChipTT(k); setTrang(1) }} />}
+            {/* Điều chỉnh kho: tab con Xuất, Nhập điều chỉnh cùng hàng bộ lọc (T126) */}
+            {cfg.dieuChinh && cfg.loai && (
+              <div className="seg dc-tabs" role="tablist" aria-label="Loại phiếu điều chỉnh">
+                {cfg.loai.map(l => (
+                  <button key={l.k} type="button" role="tab" aria-selected={tabLoai === l.k} className={tabLoai === l.k ? 'on' : ''}
+                    onClick={() => { setTabLoai(l.k); setTrang(1); setActiveId(String(rows.find(r => r.loai === l.k)?.id ?? '')) }}>
+                    {l.ten}<span className="dc-dem">{truocLoai.filter(r => r.loai === l.k).length}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+            {ghi && !cfg.dieuChinh && <ChipTrangThai ds={chips} chon={chipTT} onChon={k => { setChipTT(k); setTrang(1) }} />}   {/* điều chỉnh kho không có chip trạng thái ghi sổ (T126) */}
             <div className="ds-thanh-phai">
               <BoLoc ds={oLoc} cauHinh={cauHinhLoc} datCauHinh={datCauHinhLoc} dangLoc={loc0.dangLoc} khacNhap={loc0.khacNhap}
                 onLoc={apLoc} onXoaHet={loc0.xoaNhap} />
@@ -401,14 +442,14 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
                 onOpenChange={setMoHangLoat}
                 onIn={() => setPhieuIn(selectedRows.map(phieuCua))}
               />
-              <NutThemMoiSplit
+              {!cfg.khongThem && <NutThemMoiSplit
                 toMoi={cfg.loai ? `${path}/moi?loai=${cfg.loai[0].k}` : `${path}/moi`}
                 loai={cfg.loai}
                 taiNguon={cfg.nguon && cfg.nguon !== 'tay' && cfg.nguon !== 'excel' ? {   // nhập Excel đã có ở nút Excel (T64)
                   ten: NGUON[cfg.nguon][1],
                   onTai: () => toast(`Đã tải 14 chứng từ mới từ ${NGUON[cfg.nguon!][1]}`),
                 } : undefined}
-              />
+              />}
             </div>
           </div>
 

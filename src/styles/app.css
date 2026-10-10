@@ -6498,3 +6498,12 @@ table.tbl {
 .kk-loai { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 600; white-space: nowrap; }
 .kk-loai.thieu { background: var(--red-t); color: var(--red); }
 .kk-loai.thua { background: var(--green-t); color: var(--green); }
+
+/* ── Tham chiếu phiếu kiểm kê, phiếu điều chỉnh (T126) ── */
+.ct-tham-chieu { gap: 8px; margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--line-2); font-size: 13px; }
+.seg.dc-tabs { flex: none; align-self: center; }
+.seg.dc-tabs button { display: inline-flex; align-items: center; padding: 6px 12px; font-size: 13px; }
+.seg.dc-tabs .dc-dem { margin-left: 6px; padding: 0 6px; border-radius: 999px; background: var(--line-2); font-size: 11.5px; font-weight: 600; color: var(--muted); }
+
+/* ── Cột Tham chiếu ở danh sách phiếu (T127) ── */
+.ds-tc { display: inline-flex; flex-wrap: wrap; gap: 4px 8px; }
