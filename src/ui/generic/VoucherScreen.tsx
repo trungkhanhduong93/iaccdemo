@@ -168,6 +168,9 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
   const selectedRows = useMemo(() => list.filter(r => selectedIds.has(r.id)), [list, selectedIds])
 
   const tong = list.reduce((a, r) => a + r.tong, 0)
+  // Cột số được cộng ở dòng tổng; mua, bán thêm Đã trả, Còn phải trả (T93)
+  const cotCong = nhom === 'mua' || nhom === 'ban' ? ['tong', 'thue', 'daTra', 'conNo'] : ['tong', 'thue']
+  const congCot = (ds: Row[]) => Object.fromEntries(cotCong.map(k => [k, ds.reduce((a, r) => a + (Number(r[k]) || 0), 0)]))
   // Phiếu đem in: màn nhiều loại phiếu thì lấy loại và cấu hình theo loại của dòng
   const phieuCua = (r: Row): PhieuIn => ({ sc, row: r, cfg: theoLoai(cfg, r.loai), loai: cfg.loai?.find(x => x.k === r.loai) })
 
@@ -301,7 +304,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
 
   const displayRows = useMemo(() => {
     if (nhomCols.length === 0) return pagedRows
-    return buildGroupedData(list, nhomCols, ['tong', 'thue'], tenCotMap, expandMap)
+    return buildGroupedData(list, nhomCols, cotCong, tenCotMap, expandMap)
   }, [list, pagedRows, nhomCols, tenCotMap, expandMap])
 
   const handleToggleGroup = (id: string) => {
@@ -447,13 +450,12 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
                 ].filter(Boolean).join(' ')}
                 sum={{
                   stt: nhomCols.length > 0 ? `Tổng: ${list.length}` : `Tổng: ${pagedRows.length}`,
-                  tong: nhomCols.length > 0 ? tong : pagedRows.reduce((a, r) => a + (r.tong || 0), 0),
-                  thue: nhomCols.length > 0 ? list.reduce((a, r) => a + (r.thue || 0), 0) : pagedRows.reduce((a, r) => a + (r.thue || 0), 0),
+                  ...congCot(nhomCols.length > 0 ? list : pagedRows),
                 }}
               />
               <PhanTrang
                 tong={list.length}
-                tongCong={{ tong, thue: list.reduce((a, r) => a + (r.thue || 0), 0) }}
+                tongCong={congCot(list)}
                 trang={trangHienTai}
                 coTrang={coTrang}
                 onTrang={setTrang}

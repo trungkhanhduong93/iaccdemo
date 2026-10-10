@@ -1,4 +1,4 @@
-# Thanh toán ngay cho phiếu mua, bán còn nợ; cột hoá đơn, công nợ ở danh sách (T91, T92)
+# Thanh toán ngay cho phiếu mua, bán còn nợ; cột hoá đơn, công nợ ở danh sách (T91, T92, T93)
 
 - Ngày: 10/10/2026
 - Người: PhuongXT, agent: Claude Code
@@ -13,6 +13,7 @@
 - `LocNangCao.tsx`, form: còn phiếu thu, chi lập sau thì chưa xoá được phiếu gốc.
 - T92 `types.ts`: cột có cờ `an` là cột mặc định ẩn. `useCotDs` nhớ cột mặc định ẩn mà người dùng đã bật ở khoá `iacc-cot-hien:<màn>`, tách khỏi danh sách ẩn; nút Mặc định trong hộp Cột hiển thị ẩn lại.
 - T92 `VoucherScreen.tsx`: danh sách mua, bán thêm cột Ký hiệu HĐ, Số hoá đơn, Ngày hoá đơn (trống khi chưa có hoá đơn), Hạn thanh toán, Đã trả hoặc Đã thu, Còn phải trả hoặc Còn phải thu (tính bằng `soDaTra`); lọc được theo số ở hai cột tiền.
+- T93 `VoucherScreen.tsx`: `cotCong`, `congCot` cộng Tổng tiền, Tiền thuế và với mua, bán thêm Đã trả, Còn phải trả, cho dòng Tổng trang, Tổng cộng mọi trang và tổng khi gom nhóm.
 
 ## Đã kiểm
 
@@ -21,6 +22,7 @@
 - Xoá hàng loạt MH2610-0022 bị chặn. Xoá UNC2610-0261 thì MH2610-0022 về Thanh toán một phần.
 - Hoá đơn bán hàng chưa thu: hiện Đã thu 0 / 8.412.520 và nút Thu tiền ngay.
 - T92: danh sách Mua hàng mở ra chưa có sáu cột mới (hộp Cột hiển thị ghi 10/16). Hiện tất cả: MH2610-0022 có ký hiệu 1C26TMM, số 0027159, hạn 06/11/2026, còn phải trả 4.778.550. Bấm Mặc định thì sáu cột ẩn lại.
+- T93: bật Đã trả, Còn phải trả ở danh sách Mua hàng gói Plus, chi nhánh Nguyễn Trãi: dòng Tổng và Tổng cộng ghi 31.896.900 và 23.784.470, khớp cộng tay từng dòng, cộng lại bằng Tổng tiền 55.681.370, thẳng cột.
 
 ## Dở dang, việc tiếp theo
 

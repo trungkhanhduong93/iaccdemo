@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 10/10/2026
 
+- T93: Danh sách mua hàng, bán hàng: bật cột Đã trả, Còn phải trả thì dòng Tổng và Tổng cộng có số tổng của hai cột này.
 - T92: Danh sách mua hàng, bán hàng có thêm các cột Ký hiệu HĐ, Số hoá đơn, Ngày hoá đơn, Hạn thanh toán, Đã trả (Đã thu), Còn phải trả (Còn phải thu). Các cột này ẩn sẵn, bật ở nút Tuỳ chỉnh cột.
 - T91: Phiếu mua, bán chưa thanh toán hoặc thanh toán một phần có nút Thanh toán ngay (bán: Thu tiền ngay) trên hàng Thanh toán và trong menu Tiện ích. Chọn tiền mặt hoặc chuyển khoản, quỹ, ngày, số tiền thì lập phiếu thu, chi bên Thu chi. Phiếu hiện số đã trả và mã các phiếu; trạng thái thanh toán ở danh sách đổi theo.
 - T90: Đầu phiếu mua, bán gọn lại: bỏ ô Nhân viên thực hiện, Người giao hàng và Người mua hàng đổi thành Người giao dịch; Mã số thuế đứng cạnh nhà cung cấp hoặc khách hàng, Ghi chú kéo dài như phiếu thu chi.
