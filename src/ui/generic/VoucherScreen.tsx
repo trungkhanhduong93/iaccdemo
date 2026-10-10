@@ -73,9 +73,12 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
   const [phieuIn, setPhieuIn] = useState<PhieuIn[] | null>(null)
   const [activeId, setActiveId] = useState<string>(rows[0]?.id ?? '')
   const [panelMo, setPanelMo] = useState(false)
-  const [tabPanel, setTabPanel] = useState<'ct' | 'ht' | 'khac'>('ct')
+  const [tabChon, setTabPanel] = useState<'ct' | 'ht' | 'khac'>('ct')
 
   const ghi = kieuGhiSo(s.goi) !== 'khong'
+  // Chế độ không ghi sổ (gói Free) thì khung chi tiết bỏ tab Ghi sổ, như form (T62, T82)
+  const coTabHt = kieuGhiSo(s.cheDo) !== 'khong'
+  const tabPanel = tabChon === 'ht' && !coTabHt ? 'ct' : tabChon
   const cnChon = chiNhanhHienTai(s)
   const nhom = nhomCua(mod.key, cfg)
   const bo = boO(nhom, cfg)
@@ -475,13 +478,15 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
                     >
                       Hàng tiền ({activeDong.length} dòng)
                     </button>
-                    <button
-                      type="button"
-                      className={tabPanel === 'ht' ? 'on' : ''}
-                      onClick={() => setTabPanel('ht')}
-                    >
-                      {ghi ? 'Hạch toán' : 'Ghi sổ'}
-                    </button>
+                    {coTabHt && (
+                      <button
+                        type="button"
+                        className={tabPanel === 'ht' ? 'on' : ''}
+                        onClick={() => setTabPanel('ht')}
+                      >
+                        {ghi ? 'Hạch toán' : 'Ghi sổ'}
+                      </button>
+                    )}
                     <button
                       type="button"
                       className={tabPanel === 'khac' ? 'on' : ''}

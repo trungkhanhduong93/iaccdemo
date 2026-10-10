@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T82 | Gói Free: khung chi tiết dưới mọi danh sách chứng từ bỏ tab Ghi sổ | PhuongXT | Đang làm | Sửa `VoucherScreen.tsx`, `ChungTuBanHang.tsx` |
 | T80 | Hộp tìm màn hình Ctrl K kiểu iPOS Inventory: mục Vừa mở, Gợi ý, ô biểu tượng, đường dẫn phân hệ, thanh phím tắt | Trum | Chờ | Spec sẵn, chưa làm. Sửa `CommandPalette.tsx`, `Shell.tsx`, `app.css` |
 | T73 | Tối ưu phản hồi thao tác: bấm, rê chuột, mở menu, panel, cuộn bảng phản hồi tức thì; hiệu ứng nhẹ, ngắn; đo trước và sau | Trum | Chờ | Còn: panel tài khoản khựng 120-160ms lúc nội dung hiện sau khi trượt (trình duyệt vẽ, JS chỉ 25ms). Sửa nhiều file `src/` |
 | T60 | Mô tả gói Free, Standard trong `GOI` (`src/app/plan.ts`) đang ghi "1 điểm bán"; theo Roadmap gói Free là mỗi chi nhánh một kho, không giới hạn một chi nhánh. Chốt câu chữ rồi sửa | PhuongXT | Chờ | Tách từ T25 |
@@ -36,6 +35,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T82 | Gói Free: khung chi tiết dưới mọi danh sách chứng từ (cả Bán hàng POS) bỏ tab Ghi sổ, như form | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-chi-tiet-thu-chi-ly-do.md` |
 | T27 | Danh sách chứng từ 2.1.1: khung chi tiết bên dưới lấy dòng phiếu giống form của cùng phiếu; phiếu thu, chi có cột Lý do thu, chi và Đối tượng | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-chi-tiet-thu-chi-ly-do.md` |
 | T81 | Panel bên phải kiểu mới (mục lục trái, khối thẻ, công tắc, chân trạng thái), Tuỳ chỉnh báo cáo hai cột, Tuỳ chỉnh giao diện phiếu; mở đóng mượt (đo 331ms, mục tiêu ≤ 100ms); ô chọn đẹp, có tìm, dựng option khi mở | Trum | 10/10/2026 | `2026-10-10-trum-panel-dong-bo.md` |
 | T79 | Hộp đồng bộ dữ liệu kiểu iPOS Inventory cho Tiện ích Đồng bộ bán hàng từ POS (11.1) và Tải hoá đơn đầu vào từ iPOS Invoice (11.4): khoảng ngày, chọn kho hoặc chi nhánh có tìm, món bán, đồng bộ lại | Trum | 10/10/2026 | `2026-10-10-trum-panel-dong-bo.md` |

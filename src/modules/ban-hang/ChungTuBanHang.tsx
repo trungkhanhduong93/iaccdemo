@@ -276,7 +276,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
                       ['ht', kieu === 'noco' ? 'Hạch toán' : 'Ghi sổ'],
                       ['tt', 'Thanh toán'],
                       ['goc', 'Đơn POS gốc'],
-                    ].map(([k, l]) => (
+                    ].filter(([k]) => k !== 'ht' || kieu !== 'khong').map(([k, l]) => (   // gói Free không có tab Ghi sổ (T82)
                       <button
                         key={k}
                         type="button"
@@ -307,7 +307,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
                   </button>
                 </div>
                 <div className="voucher-bottom-b">
-                  <NoiDungTab x={activeRow.x} tab={tabPanel} kieu={kieu} />
+                  <NoiDungTab x={activeRow.x} tab={tabPanel === 'ht' && kieu === 'khong' ? 'ct' : tabPanel} kieu={kieu} />
                 </div>
               </>
             ) : (
@@ -459,7 +459,7 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
       <div className="grid" style={{ gridTemplateColumns: 'minmax(0,1fr) 300px', alignItems: 'start' }}>
         <section className="card">
           <div className="tabs">
-            {[['ct', 'Hàng bán'], ['ht', kieu === 'noco' ? 'Hạch toán' : 'Ghi sổ'], ['tt', 'Thanh toán'], ['goc', 'Đơn POS gốc']].map(([k, l]) => <button key={k} className={tab === k ? 'on' : ''} onClick={() => setTab(k)}>{l}</button>)}
+            {[['ct', 'Hàng bán'], ['ht', kieu === 'noco' ? 'Hạch toán' : 'Ghi sổ'], ['tt', 'Thanh toán'], ['goc', 'Đơn POS gốc']].filter(([k]) => k !== 'ht' || kieu !== 'khong').map(([k, l]) => <button key={k} className={tab === k ? 'on' : ''} onClick={() => setTab(k)}>{l}</button>)}
           </div>
           <NoiDungTab x={x} tab={tab} kieu={kieu} />
           <div className="tot">
