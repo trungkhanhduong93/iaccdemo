@@ -273,7 +273,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
     ...((s.dongBoFabi ?? 'kenh') === 'chiTiet' ? [{ k: 'pttt', ten: 'Phương thức thanh toán', o: chonO('pttt', 'Phương thức thanh toán', PTTT.map(([, t]) => [t, t])) }] : []),
     // Hàng hoá có trong chứng từ; Theo dõi tồn kho: chứng từ có hoặc không có món theo dõi tồn kho (T118)
     { k: 'hang', ten: 'Hàng hoá', o: chonO('hang', 'Hàng hoá', HANG.map(h => [h.ma, `${h.ma} - ${h.ten}`])) },
-    { k: 'tonKho', ten: 'Theo dõi tồn kho', o: chonO('tonKho', 'Theo dõi tồn kho', [['co', 'Có hàng theo dõi tồn kho'], ['khong', 'Không có hàng theo dõi tồn kho']]) },
+    { k: 'tonKho', ten: 'Theo dõi tồn kho', o: chonO('tonKho', 'Theo dõi tồn kho', [['co', 'Có theo dõi tồn kho'], ['khong', 'Không theo dõi tồn kho']]) },
   ]
   const [cauHinhLoc, datCauHinhLoc] = useCauHinhLoc(path, oLoc.map(o => o.k), ['thoiGian', 'tim', 'cn'])
 
@@ -325,7 +325,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
     { k: 'dienGiai', t: 'Diễn giải' },
     { k: 'kenh', t: 'Kênh bán', w: 140 },   // T113
     ...(cnChon ? [] : [{ k: 'cn', t: 'Chi nhánh', cls: 'dim' } as Col]),
-    { k: 'tien', t: 'Doanh thu chưa thuế', num: true, w: 160 }, { k: 'thue', t: 'Thuế GTGT', num: true, w: 120 },
+    { k: 'tien', t: 'Doanh thu trước thuế', num: true, w: 160 }, { k: 'thue', t: 'Tiền thuế', num: true, w: 120 },
     // bỏ cột Nguồn: Xuất bán POS chỉ có nguồn FABi (T115)
     { k: 'tong', t: 'Tổng tiền', num: true, w: 120 },   // Tổng tiền là cột cuối (T48)
   ]

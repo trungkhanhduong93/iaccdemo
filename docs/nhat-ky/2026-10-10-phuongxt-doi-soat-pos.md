@@ -13,6 +13,7 @@
 - Bỏ nút Ghi chú FABi (biểu tượng i), cột ô chọn dòng và nút Hàng loạt (xoá hàng loạt) ở danh sách Xuất bán POS.
 - Cột STT gọn còn 46px; chữ Tổng trang chuyển sang cột Ngày.
 - Bộ lọc thêm Hàng hoá (chứng từ có món đó) và Theo dõi tồn kho (có hoặc không có món theo dõi tồn kho), tính theo món của chứng từ (`monCua`).
+- Danh sách: cột Doanh thu chưa thuế đổi thành Doanh thu trước thuế, Thuế GTGT đổi thành Tiền thuế.
 - `app.css`: mục cuối "Đối soát đơn POS ở danh sách Xuất bán POS (T118)".
 
 ## Đã kiểm
