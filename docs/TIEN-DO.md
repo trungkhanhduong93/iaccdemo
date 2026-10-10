@@ -11,8 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T106 | Xuất bán POS: chiết khấu hoá đơn, phí dịch vụ, giảm thuế GTGT, phí vận chuyển thành cột trên bảng chi tiết, dòng Tổng cộng thẳng cột; dải đáy chỉ Phiếu giảm giá, Tổng tiền; Diễn giải đổi thành Ghi chú dưới Kênh bán | PhuongXT | Đang làm | Sửa `ban-hang/ChungTuBanHang.tsx`; làm cùng T103 |
-| T103 | Xuất bán POS: tổng tiền thuế cộng trên các dòng món lệch thuế GTGT của ngày trong dữ liệu mẫu (vd BH2610-TD-07: 1.604.204 so với 1.616.029); chia thuế theo món cho khớp | PhuongXT | Đang làm | Thấy khi làm T102. Dữ liệu ở `data/mock.ts` (DAILY.vat), dòng món ở `ChungTuBanHang.tsx` |
 | T101 | Chuyển tiện ích về phân hệ của nó (tiện ích của phân hệ nào nằm trong phân hệ đó); tiện ích chung như Thiết kế mẫu in tính sau. Rồi xem lại có mở phân hệ Tiện ích cho gói Free không | PhuongXT | Chờ | Ý của PhuongXT 10/10/2026, khi làm T100. Gói Free đang ẩn tạm phân hệ Tiện ích |
 | T88 | Danh mục đơn vị tính 1.3: bộ khoảng 35 đơn vị cơ bản F&B, mã viết hoa không dấu (CAI là Cái), giữ cột Mô tả; mọi ô chọn ĐVT trong panel danh mục lấy từ danh mục này | Trum | Đang làm | Sửa `danh-muc/data.ts`, `danh-muc/index.ts`, `truong-dm.ts`, `CatalogScreen.tsx` |
 | T60 | Mô tả gói Free, Standard trong `GOI` (`src/app/plan.ts`) đang ghi "1 điểm bán"; theo Roadmap gói Free là mỗi chi nhánh một kho, không giới hạn một chi nhánh. Chốt câu chữ rồi sửa | PhuongXT | Chờ | Tách từ T25 |
@@ -38,6 +36,8 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T106 | Xuất bán POS: phí dịch vụ, giảm thuế GTGT, phí vận chuyển thành cột trên bảng chi tiết, dòng Tổng cộng thẳng cột, Tổng tiền dòng gồm thuế; dải đáy còn Chiết khấu hoá đơn, Phiếu giảm giá, Tổng tiền; Diễn giải đổi thành Ghi chú dưới Kênh bán | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-xuat-ban-pos.md` |
+| T103 | Xuất bán POS: thuế từng món cộng lại bằng thuế GTGT của ngày (phần lệch làm tròn dồn vào món thuế lớn nhất) | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-xuat-ban-pos.md` |
 | T105 | Form mọi phiếu (form chung và Xuất bán POS): đầu phiếu đứng yên, chỉ vùng bảng chi tiết cuộn, tiêu đề cột dính; phần tổng thành dải cố định ở đáy form (QD33) | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-xuat-ban-pos.md` |
 | T104 | Xuất bán POS: số chứng từ là số hoá đơn FABi (`soBH` 12 ký tự, Thu chi tham chiếu theo); ghi chú gọn một dòng; bỏ ô Cửa hàng, Số đơn POS, tab Thanh toán, Đơn POS gốc, cột Ghi chú; Diễn giải cột trái; phần tổng thành dải cố định ở đáy form | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-xuat-ban-pos.md` |
 | T102 | Chứng từ Xuất bán POS 3.1.1 vẽ lại theo form chung IACC: đầu phiếu 3 cột chỉ xem (khách hàng, cửa hàng, kênh bán, phương thức TT, thời gian xuất, số đơn POS), bảng món có giảm giá, ghi chú, khối thanh toán như iFaster; nút Phát hành HĐĐT | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-xuat-ban-pos.md` |

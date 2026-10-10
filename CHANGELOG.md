@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 10/10/2026
 
+- T106: Xuất bán POS: phí dịch vụ, giảm thuế GTGT, phí vận chuyển thành cột trên bảng chi tiết, cộng thẳng cột; dải đáy còn Chiết khấu hoá đơn, Phiếu giảm giá, Tổng tiền; ô Diễn giải đổi thành Ghi chú. Tiền thuế các món cộng lại khớp thuế của ngày (T103).
 - T105: Mọi phiếu: khi cuộn bảng chi tiết dài, đầu phiếu và tiêu đề cột đứng yên; tổng tiền nằm ở dải cố định ngay trên thanh nút.
 - T104: Xuất bán POS: số chứng từ là số hoá đơn FABi; đầu phiếu gọn hơn (bỏ Cửa hàng, Số đơn POS), bỏ tab Thanh toán, Đơn POS gốc và cột Ghi chú; phần tổng tiền thành dải cố định ở đáy form, cuộn bảng vẫn thấy.
 - T102: Chứng từ Xuất bán POS làm lại theo form chung: đầu phiếu có khách hàng, cửa hàng, kênh bán, phương thức thanh toán, thời gian xuất; bảng món có giảm giá, ghi chú; khối thanh toán đủ thành tiền, giảm giá, chiết khấu, phí, thuế, tổng tiền; nút Phát hành HĐĐT.

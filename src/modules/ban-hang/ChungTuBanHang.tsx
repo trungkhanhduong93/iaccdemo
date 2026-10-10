@@ -39,7 +39,7 @@ const GIAM = [0, 0, 0.1, 0, 0.05, 0, 0, 0.1, 0]
 /** Dòng món của chứng từ có giảm giá (T102): đơn giá là giá món trong danh mục, thành tiền = số lượng × đơn giá,
  *  tiền giảm đúng tỷ lệ khuyến mãi. Tổng tiền các dòng cộng lại vẫn bằng doanh thu ngày: phần chênh dồn vào món cuối
  *  (món vốn nhận phần dư khi chia doanh thu theo món) */
-function dongMonGiam(dt: number) {
+function dongMonGiam(dt: number, vat: number) {
   const ds = dongMon(dt).map((d, i) => {
     const r = GIAM[i] ?? 0
     if (!r) return { ...d, thanh: d.tien, giam: 0, pt: 0, ghiChu: '' }
@@ -55,7 +55,11 @@ function dongMonGiam(dt: number) {
   cuoi.tien += lech
   cuoi.thanh += lech
   cuoi.thue = Math.round(cuoi.tien * cuoi.ts / 100)
-  return ds
+  // Thuế từng món cộng lại bằng thuế GTGT của ngày (T103): phần lệch làm tròn dồn vào món có thuế lớn nhất
+  const lon = ds.reduce((a, d) => (d.thue > a.thue ? d : a), ds[0])
+  lon.thue += vat - ds.reduce((a, d) => a + d.thue, 0)
+  // Các khoản của đơn POS theo từng món (T106); dữ liệu mẫu bằng 0. Tổng tiền dòng gồm cả thuế
+  return ds.map(d => ({ ...d, phiDv: 0, giamThue: 0, phiVc: 0, tong: d.tien + d.thue }))
 }
 
 function dongMon(dt: number) {
@@ -374,7 +378,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
 }
 
 function NoiDungTab({ x, tab, kieu }: { x: (typeof DAILY)[number]; tab: string; kieu: ReturnType<typeof kieuGhiSo> }) {
-  const dong = dongMonGiam(x.dt)
+  const dong = dongMonGiam(x.dt, x.vat)
   const ht = [
     { dg: 'Thu tiền mặt', no: '1111', co: '5111, 33311', tien: x.tm },
     { dg: 'Thu chuyển khoản, QR, thẻ', no: '1121', co: '5111, 33311', tien: x.ck + x.the },
@@ -401,18 +405,19 @@ function NoiDungTab({ x, tab, kieu }: { x: (typeof DAILY)[number]; tab: string; 
             { k: 'thanh', t: 'Thành tiền', num: true, w: 120 },
             { k: 'pt', t: 'Giảm giá (%)', num: true, w: 100, r: r => r.pt ? `${r.pt}%` : '' },
             { k: 'giam', t: 'Tiền giảm giá', num: true, w: 120 },
+            // Các khoản của đơn POS đưa lên bảng chi tiết (T106)
+            { k: 'phiDv', t: 'Phí dịch vụ', num: true, w: 110 },
+            { k: 'giamThue', t: 'Giảm thuế GTGT', num: true, w: 125 },
+            { k: 'phiVc', t: 'Phí vận chuyển', num: true, w: 120 },
             { k: 'ts', t: 'Thuế suất', num: true, w: 80, r: r => `${r.ts}%` },
             { k: 'thue', t: 'Tiền thuế', num: true, w: 110 },
-            { k: 'tien', t: 'Tổng tiền', num: true, w: 130 },
+            { k: 'tong', t: 'Tổng tiền', num: true, w: 130 },
           ]}
           rows={dong}
           sum={{
             stt: `Tổng cộng (${dong.length} dòng)`,
-            sl: dong.reduce((a, r) => a + r.sl, 0),
-            thanh: dong.reduce((a, r) => a + r.thanh, 0),
-            giam: dong.reduce((a, r) => a + r.giam, 0),
-            thue: dong.reduce((a, r) => a + r.thue, 0),
-            tien: dong.reduce((a, r) => a + r.tien, 0),
+            ...Object.fromEntries((['sl', 'thanh', 'giam', 'phiDv', 'giamThue', 'phiVc', 'thue', 'tong'] as const)
+              .map(k => [k, dong.reduce((a, r) => a + r[k], 0)])),
           }}
         />
       )}
@@ -480,9 +485,9 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
   const [phieuIn, setPhieuIn] = useState<PhieuIn[] | null>(null)
   const x = row.x
   const kieu = kieuGhiSo(s.cheDo)
-  const dong = dongMonGiam(x.dt)
-  const thanh = dong.reduce((a, d) => a + d.thanh, 0), giam = dong.reduce((a, d) => a + d.giam, 0)
-  const tong = x.dt + x.vat
+  // chiết khấu hoá đơn, phiếu giảm giá áp cho cả đơn nên ở dải đáy; dữ liệu mẫu bằng 0 (T106)
+  const ckHd = 0, phieuGiam = 0
+  const tong = x.dt + x.vat - ckHd - phieuGiam
   const pttt = [['Tiền mặt', x.tm], ['Chuyển khoản, QR', x.ck], ['Thẻ', x.the], ['App giao đồ ăn', x.app]].filter(([, v]) => Number(v) > 0).map(([t]) => t).join(', ')
   const kenh = x.app > 0 ? 'Tại quán, Mang về, App giao đồ ăn' : 'Tại quán, Mang về'
   const coHddt = ['PL', 'PR'].includes(s.goi)
@@ -495,8 +500,8 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
   return (
     <FormToanMan icon={mod.icon} onClose={dong0} title="Xuất bán POS"
       // Phần tổng thành dải cố định ở đáy form, cuộn bảng vẫn thấy (T104); khoản bằng 0 hiện mờ cho gọn
-      day={<DaiTong tong={tong} muc={[['Thành tiền', thanh], ['Tiền giảm giá', -giam], ['Chiết khấu hoá đơn', 0], ['Phí dịch vụ', 0], ['Giảm thuế GTGT', 0],
-        ['Phiếu giảm giá', 0], ['Phí vận chuyển', 0], ['Thuế GTGT', x.vat]]} />}
+      // các khoản theo món đã lên bảng chi tiết; dải đáy còn khoản của cả đơn và Tổng tiền (T106)
+      day={<DaiTong tong={tong} muc={[['Chiết khấu hoá đơn', ckHd ? -ckHd : 0], ['Phiếu giảm giá', phieuGiam ? -phieuGiam : 0]]} />}
       giua={<span className="fsf-tt xem">Chi tiết phiếu <b>{row.so}</b></span>}
       meta={<><St k={cTt}>{tTt}</St><span className="src">FABi</span><span className="chip info"><Icon n="store" className="ic sm" />{row.cn}</span></>}
       foot={<>
@@ -513,8 +518,8 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
           <div className="grid" style={{ gridTemplateColumns: 'minmax(0, 1.4fr) minmax(0, 1.2fr) 280px', gap: 16, alignItems: 'start' }}>
             <div className="stack" style={{ gap: 10 }}>
               <OXem nhan="Khách hàng" v="Khách lẻ POS" />
-              <OXem nhan="Diễn giải" v={String(row.dienGiai)} />
               <OXem nhan="Kênh bán hàng" v={kenh} />
+              <OXem nhan="Ghi chú" v={String(row.dienGiai)} />
             </div>
             <div className="stack" style={{ gap: 10 }}>
               <OXem nhan="Phương thức thanh toán" v={pttt} />
