@@ -429,9 +429,10 @@ Lý do: Trum chốt ngày 09/10/2026 (T58, T66, T67, T75), chọn hướng cột
 
 - Báo cáo hiện khi gói có tính năng và thông tư đang chọn áp dụng báo cáo đó. Thông tư không áp dụng thì ẩn hẳn, không hiện khoá, không mời nâng cấp.
 - Thông tư áp dụng khai ở `cheDo` trong `CAU_HINH_BC` (`src/modules/bao-cao/danh-sach.ts`). Thiếu `cheDo` là mọi thông tư. Hàm `apDung` trong `registry.ts` đọc khai báo này. Báo cáo không còn suy "không áp dụng" qua gói thấp nhất; màn khác báo cáo giữ cách cũ.
-- Gói Free (TT152) có bộ báo cáo hộ kinh doanh theo iFaster, gồm 19 báo cáo.
+- Gói Free (TT152) có bộ báo cáo hộ kinh doanh theo iFaster, gồm 17 báo cáo.
   - Thu chi: 2.2.1, 2.2.3, 2.2.5, 2.2.8, 2.2.9. Gói Free có lại 2.2.5 Sổ công nợ, thay ý T54.
-  - Bán hàng, mua hàng, kho: 3.2.1, 3.2.3, 3.2.5, 4.2.1 tới 4.2.6, 5.2.2, 5.2.3.
+  - Bán hàng, mua hàng, kho: 3.2.5, 4.2.1 tới 4.2.6, 5.2.2, 5.2.3.
+  - Báo cáo bán hàng, chi tiết bán hàng, bán hàng theo ngày của iFaster không làm riêng: 3.2.1, 3.2.3 đã bỏ ở mọi gói (T99), dùng Sổ doanh thu 3.2.5.
   - Thuế, tổng hợp: 6.2.5, 10.2.3, 10.4.3.
 - Thêm 4 báo cáo cho mọi gói, mọi thông tư: 2.2.8 Tổng hợp quỹ tiền, 2.2.9 Báo cáo dòng tiền, 4.2.6 Mua hàng theo ngày, 10.4.3 Sổ chi phí. Mã chưa có trong Excel, khai ở `BO_SUNG`; gói mở thêm khai ở `THEO_ROADMAP`. Khi cập nhật Excel (T33) thì đưa vào Excel rồi xoá các dòng này.
 - Sổ doanh thu 3.2.5 theo TT152 ghi ký hiệu S2a-HKD như iFaster, chờ kế toán trưởng duyệt (T04).

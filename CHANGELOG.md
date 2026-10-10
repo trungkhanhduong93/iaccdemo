@@ -12,7 +12,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 - T100: Bỏ tiện ích Đồng bộ bán hàng và Xuất kho theo định lượng ở mọi gói. Gói Free tạm ẩn phân hệ Tiện ích. Ô Đơn POS từ FABi trên sơ đồ Bán hàng chỉ để xem, không bấm.
 - T99: Bỏ Báo cáo bán hàng và Báo cáo doanh thu ở mọi gói. Các nút, liên kết trước mở hai báo cáo này nay mở Sổ doanh thu bán hàng.
 - T98: Gói Free, sơ đồ Quy trình Bán hàng gọn theo kiểu Mua hàng, Thu chi: Đơn POS từ FABi, mũi tên ghi đồng bộ, Xuất bán POS, rồi về khối Báo cáo.
-- T97: Gói Free có bộ báo cáo hộ kinh doanh như iFaster: thêm Sổ doanh thu (S2a-HKD), Sổ công nợ, Báo cáo nhập kho, xuất kho, Báo cáo bán hàng, Báo cáo doanh thu. Mọi gói có thêm Tổng hợp quỹ tiền, Báo cáo dòng tiền, Mua hàng theo ngày, Sổ chi phí. Báo cáo không dùng cho thông tư đang chọn thì không hiện.
+- T97: Gói Free có bộ báo cáo hộ kinh doanh như iFaster: thêm Sổ doanh thu (S2a-HKD), Sổ công nợ, Báo cáo nhập kho, xuất kho. Mọi gói có thêm Tổng hợp quỹ tiền, Báo cáo dòng tiền, Mua hàng theo ngày, Sổ chi phí. Báo cáo không dùng cho thông tư đang chọn thì không hiện.
 - T96: Danh sách thu chi có thêm cột Lý do thu, chi.
 - T95: Xem phiếu (mọi phiếu): nút Tuỳ chỉnh giao diện nằm ngay ở thanh đáy, cạnh nút In, không còn trong menu Tiện ích.
 - T94: Danh sách mua hàng, bán hàng: Bộ lọc nâng cao có thêm Kho và Hàng hoá. Danh sách mua hàng gói Free, Standard, Plus có thêm cột Kho.

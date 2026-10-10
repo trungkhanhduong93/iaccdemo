@@ -50,8 +50,6 @@ const THEO_ROADMAP: Record<string, Goi[]> = {
   '3.2.5': ['F', 'S', 'PL', 'PR'],
   '2.2.5': ['F', 'S', 'PL', 'PR'],
   '5.2.2': ['F', 'S', 'PL', 'PR'],
-  '3.2.1': ['F', 'S', 'PL', 'PR'],
-  '3.2.3': ['F', 'S', 'PL', 'PR'],
 }
 
 /** Màn bổ sung theo thông tư chưa có trong Excel (T47, kế hoạch mục 7.3). Trum cập nhật Excel và chạy lại tools/xuat_tinh_nang.py có đủ mã thì xoá dòng tương ứng ở đây */
