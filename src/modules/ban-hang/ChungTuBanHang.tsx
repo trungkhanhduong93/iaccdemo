@@ -400,7 +400,6 @@ function NoiDungTab({ x, tab, kieu }: { x: (typeof DAILY)[number]; tab: string; 
             { k: 'thanh', t: 'Thành tiền', num: true, w: 120 },
             { k: 'pt', t: 'Giảm giá (%)', num: true, w: 100, r: r => r.pt ? `${r.pt}%` : '' },
             { k: 'giam', t: 'Tiền giảm giá', num: true, w: 120 },
-            { k: 'ghiChu', t: 'Ghi chú', w: 160, cls: 'dim' },
             { k: 'ts', t: 'Thuế suất', num: true, w: 80, r: r => `${r.ts}%` },
             { k: 'thue', t: 'Tiền thuế', num: true, w: 110 },
             { k: 'tien', t: 'Tổng tiền', num: true, w: 130 },
@@ -480,7 +479,6 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
   const [phieuIn, setPhieuIn] = useState<PhieuIn[] | null>(null)
   const x = row.x
   const kieu = kieuGhiSo(s.cheDo)
-  const cn = CHI_NHANH.find(c => c.id === x.cn)
   const dong = dongMonGiam(x.dt)
   const thanh = dong.reduce((a, d) => a + d.thanh, 0), giam = dong.reduce((a, d) => a + d.giam, 0)
   const tong = x.dt + x.vat
@@ -495,6 +493,16 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
   const [cTt, tTt] = kieu === 'khong' ? ['ok', 'Đã đồng bộ'] : TT_CT[row.tt] ?? ['warn', 'Chưa ghi sổ']
   return (
     <FormToanMan icon={mod.icon} onClose={dong0} title="Xuất bán POS"
+      day={(
+        // Phần tổng thành dải cố định ở đáy form, cuộn bảng vẫn thấy (T104); khoản bằng 0 hiện mờ cho gọn
+        <div className="pos-day">
+          {([['Thành tiền', thanh], ['Tiền giảm giá', -giam], ['Chiết khấu hoá đơn', 0], ['Phí dịch vụ', 0], ['Giảm thuế GTGT', 0],
+            ['Phiếu giảm giá', 0], ['Phí vận chuyển', 0], ['Thuế GTGT', x.vat]] as [string, number][]).map(([t, v]) => (
+            <span key={t} className={`pos-day-o${v ? '' : ' khong'}${v < 0 ? ' am' : ''}`}><small>{t}</small><b>{v < 0 ? `-${money(-v)}` : money(v)}</b></span>
+          ))}
+          <span className="pos-day-tong"><small>Tổng tiền</small><b>{moneyD(tong)}</b></span>
+        </div>
+      )}
       giua={<span className="fsf-tt xem">Chi tiết phiếu <b>{row.so}</b></span>}
       meta={<><St k={cTt}>{tTt}</St><span className="src">FABi</span><span className="chip info"><Icon n="store" className="ic sm" />{row.cn}</span></>}
       foot={<>
@@ -505,44 +513,30 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
         <button type="button" className="btn sm" onClick={dong0}>Đóng (Esc)</button>
       </>}>
       <div className="stack" style={{ gap: 14 }}>
-        <Note kind="gray" icon="info">Chứng từ đồng bộ từ FABi: không sửa, trả hàng, huỷ trên phiếu này. Sửa đơn trên FABi rồi đồng bộ lại.</Note>
+        <p className="pos-nhac"><Icon n="info" className="ic sm" />Chứng từ đồng bộ từ FABi: không sửa, trả hàng, huỷ trên phiếu này. Sửa đơn trên FABi rồi đồng bộ lại.</p>
         {/* Đầu phiếu 3 cột như form chung: thông tin chung, kênh và thanh toán, số và ngày */}
         <section className="card" style={{ padding: '14px 16px' }}>
           <div className="grid" style={{ gridTemplateColumns: 'minmax(0, 1.4fr) minmax(0, 1.2fr) 280px', gap: 16, alignItems: 'start' }}>
             <div className="stack" style={{ gap: 10 }}>
               <OXem nhan="Khách hàng" v="Khách lẻ POS" />
-              <OXem nhan="Cửa hàng" v={`${row.cn} (${(cn?.id ?? x.cn).toUpperCase()})`} />
+              <OXem nhan="Diễn giải" v={String(row.dienGiai)} />
               <OXem nhan="Kênh bán hàng" v={kenh} />
             </div>
             <div className="stack" style={{ gap: 10 }}>
               <OXem nhan="Phương thức thanh toán" v={pttt} />
               <OXem nhan="Thời gian xuất" v={`${row.ngay} 23:30`} />
-              <OXem nhan="Số đơn POS" v={`${x.don} đơn`} />
             </div>
             <div className="stack" style={{ gap: 10 }}>
               <OXem nhan="Ngày chứng từ" v={String(row.ngay)} />
-              <OXem nhan="Số chứng từ" v={String(row.so)} code />
-              <OXem nhan="Diễn giải" v={String(row.dienGiai)} />
+              <OXem nhan="Số chứng từ (số hoá đơn FABi)" v={String(row.so)} code />
             </div>
           </div>
         </section>
         <section className="card">
           <div className="tabs">
-            {[['ct', 'Hàng bán'], ['ht', kieu === 'noco' ? 'Hạch toán' : 'Ghi sổ'], ['tt', 'Thanh toán'], ['goc', 'Đơn POS gốc']].filter(([k]) => k !== 'ht' || kieu !== 'khong').map(([k, l]) => <button key={k} type="button" className={tab === k ? 'on' : ''} onClick={() => setTab(k)}>{l}</button>)}
+            {[['ct', 'Hàng bán'], ['ht', kieu === 'noco' ? 'Hạch toán' : 'Ghi sổ']].filter(([k]) => k !== 'ht' || kieu !== 'khong').map(([k, l]) => <button key={k} type="button" className={tab === k ? 'on' : ''} onClick={() => setTab(k)}>{l}</button>)}
           </div>
           <NoiDungTab x={x} tab={tab} kieu={kieu} />
-          {/* Khối thanh toán như iFaster, tổng tiền giữ đúng số của danh sách, báo cáo */}
-          <div className="tot" style={{ borderTop: '1px solid var(--line)', marginTop: 12 }}>
-            <span>Thành tiền</span><b>{moneyD(thanh)}</b>
-            <span>Tiền giảm giá</span><b style={{ color: giam ? 'var(--red)' : undefined }}>{giam ? `-${moneyD(giam)}` : moneyD(0)}</b>
-            <span>Chiết khấu hoá đơn</span><b>{moneyD(0)}</b>
-            <span>Phí dịch vụ</span><b>{moneyD(0)}</b>
-            <span>Giảm thuế GTGT</span><b>{moneyD(0)}</b>
-            <span>Phiếu giảm giá</span><b>{moneyD(0)}</b>
-            <span>Phí vận chuyển</span><b>{moneyD(0)}</b>
-            <span>Thuế GTGT</span><b>{moneyD(x.vat)}</b>
-            <span>Tổng tiền</span><b className="big" style={{ color: 'var(--blue)' }}>{moneyD(tong)}</b>
-          </div>
         </section>
         {row.tt === 'loi' && <Note kind="err" icon="alert">Doanh thu trên FABi lớn hơn sổ 1.250.000 đ. <Link to="/app/tien-ich/11-7">Mở đối soát</Link></Note>}
       </div>

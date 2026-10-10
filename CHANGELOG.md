@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 10/10/2026
 
+- T104: Xuất bán POS: số chứng từ là số hoá đơn FABi; đầu phiếu gọn hơn (bỏ Cửa hàng, Số đơn POS), bỏ tab Thanh toán, Đơn POS gốc và cột Ghi chú; phần tổng tiền thành dải cố định ở đáy form, cuộn bảng vẫn thấy.
 - T102: Chứng từ Xuất bán POS làm lại theo form chung: đầu phiếu có khách hàng, cửa hàng, kênh bán, phương thức thanh toán, thời gian xuất; bảng món có giảm giá, ghi chú; khối thanh toán đủ thành tiền, giảm giá, chiết khấu, phí, thuế, tổng tiền; nút Phát hành HĐĐT.
 - T100: Bỏ tiện ích Đồng bộ bán hàng và Xuất kho theo định lượng ở mọi gói. Gói Free tạm ẩn phân hệ Tiện ích. Ô Đơn POS từ FABi trên sơ đồ Bán hàng chỉ để xem, không bấm.
 - T99: Bỏ Báo cáo bán hàng và Báo cáo doanh thu ở mọi gói. Các nút, liên kết trước mở hai báo cáo này nay mở Sổ doanh thu bán hàng.

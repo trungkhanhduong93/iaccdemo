@@ -186,8 +186,12 @@ export function kqkd(thang: number, nam: number) {
     lnThuan, tnKhac, cpKhac, lnKhac: tnKhac - cpKhac, lnTruocThue, thue, lnSauThue: lnTruocThue - thue, cp, t }
 }
 
-/** Số chứng từ bán hàng gom theo ngày: BH2609-Q1-30 */
-export const soBH = (x: Ngay) => `BH${String(x.date.getFullYear()).slice(2)}${pad(x.date.getMonth() + 1)}-${x.cn.toUpperCase()}-${pad(x.date.getDate())}`
+/** Số chứng từ Xuất bán POS lấy số hoá đơn FABi (T104): 12 ký tự chữ, số viết hoa, cố định theo chi nhánh và ngày, vd K7QX2PM9WZ4D */
+export const soBH = (x: Ngay) => {
+  const r = rng(`fabi-${x.cn}-${x.date.getFullYear()}-${x.date.getMonth()}-${x.date.getDate()}`)
+  const kt = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+  return Array.from({ length: 12 }, () => kt[Math.floor(r() * kt.length)]).join('')
+}
 export const cnTen = (id: string) => CHI_NHANH.find(c => c.id === id)?.ten ?? id
 
 // ── Dòng lệch đối soát (Bàn làm việc, màn Đối soát) ──
