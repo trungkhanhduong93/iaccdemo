@@ -5400,3 +5400,13 @@ table.tbl {
 .pos-day-tong { display: flex; flex-direction: column; justify-content: center; align-items: flex-end; gap: 2px; margin-left: auto; padding-left: 18px; white-space: nowrap; }
 .pos-day-tong small { font-size: 11.5px; color: var(--muted); }
 .pos-day-tong b { font-size: 18px; color: var(--blue); font-variant-numeric: tabular-nums; }
+
+/* ── Form phiếu: đầu phiếu đứng yên, chỉ vùng bảng chi tiết cuộn, tổng ở dải đáy (T105) ── */
+.fsf-b:has(> .ct-co-dinh) { display: flex; flex-direction: column; overflow: hidden; padding-bottom: 14px; }
+.ct-co-dinh { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.ct-co-dinh > * { flex: none; }
+.ct-co-dinh > .ct-than-card { flex: 1 1 auto; min-height: 180px; display: flex; flex-direction: column; overflow: hidden; }
+.ct-than-card > .tabs { flex: none; }
+.ct-than { flex: 1; min-height: 0; overflow: auto; }
+/* bảng không tự cuộn nữa, vùng .ct-than cuộn cả hai chiều để tiêu đề cột dính trên cùng */
+.ct-than .tbl-wrap { overflow: visible !important; border: 0; }

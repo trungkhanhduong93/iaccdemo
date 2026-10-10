@@ -23,6 +23,7 @@ import {
 } from '../../ui/LocNangCao'
 import { HopInChungTu, type PhieuIn } from '../../ui/bao-cao/InChungTu'
 import { TT_CT } from '../../ui/generic/gen'
+import { DaiTong } from '../../ui/generic/ChungTuForm'
 
 /** Bán hàng ngoài POS: tiệc mang về, khách công ty đặt trước. Lập tay, không qua FABi; là tab Bán hàng 3.1.7 từ gói Plus (T52) */
 export const NGOAI_POS: VoucherCfg = {
@@ -493,16 +494,9 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
   const [cTt, tTt] = kieu === 'khong' ? ['ok', 'Đã đồng bộ'] : TT_CT[row.tt] ?? ['warn', 'Chưa ghi sổ']
   return (
     <FormToanMan icon={mod.icon} onClose={dong0} title="Xuất bán POS"
-      day={(
-        // Phần tổng thành dải cố định ở đáy form, cuộn bảng vẫn thấy (T104); khoản bằng 0 hiện mờ cho gọn
-        <div className="pos-day">
-          {([['Thành tiền', thanh], ['Tiền giảm giá', -giam], ['Chiết khấu hoá đơn', 0], ['Phí dịch vụ', 0], ['Giảm thuế GTGT', 0],
-            ['Phiếu giảm giá', 0], ['Phí vận chuyển', 0], ['Thuế GTGT', x.vat]] as [string, number][]).map(([t, v]) => (
-            <span key={t} className={`pos-day-o${v ? '' : ' khong'}${v < 0 ? ' am' : ''}`}><small>{t}</small><b>{v < 0 ? `-${money(-v)}` : money(v)}</b></span>
-          ))}
-          <span className="pos-day-tong"><small>Tổng tiền</small><b>{moneyD(tong)}</b></span>
-        </div>
-      )}
+      // Phần tổng thành dải cố định ở đáy form, cuộn bảng vẫn thấy (T104); khoản bằng 0 hiện mờ cho gọn
+      day={<DaiTong tong={tong} muc={[['Thành tiền', thanh], ['Tiền giảm giá', -giam], ['Chiết khấu hoá đơn', 0], ['Phí dịch vụ', 0], ['Giảm thuế GTGT', 0],
+        ['Phiếu giảm giá', 0], ['Phí vận chuyển', 0], ['Thuế GTGT', x.vat]]} />}
       giua={<span className="fsf-tt xem">Chi tiết phiếu <b>{row.so}</b></span>}
       meta={<><St k={cTt}>{tTt}</St><span className="src">FABi</span><span className="chip info"><Icon n="store" className="ic sm" />{row.cn}</span></>}
       foot={<>
@@ -512,7 +506,7 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
           onClick={() => toast('Đã gửi hoá đơn tổng hợp sang iPOS Invoice')}><Icon n="receipt" className="ic sm" />Phát hành HĐĐT</button>
         <button type="button" className="btn sm" onClick={dong0}>Đóng (Esc)</button>
       </>}>
-      <div className="stack" style={{ gap: 14 }}>
+      <div className="stack ct-co-dinh" style={{ gap: 14 }}>
         <p className="pos-nhac"><Icon n="info" className="ic sm" />Chứng từ đồng bộ từ FABi: không sửa, trả hàng, huỷ trên phiếu này. Sửa đơn trên FABi rồi đồng bộ lại.</p>
         {/* Đầu phiếu 3 cột như form chung: thông tin chung, kênh và thanh toán, số và ngày */}
         <section className="card" style={{ padding: '14px 16px' }}>
@@ -532,11 +526,11 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
             </div>
           </div>
         </section>
-        <section className="card">
+        <section className="card ct-than-card">
           <div className="tabs">
             {[['ct', 'Hàng bán'], ['ht', kieu === 'noco' ? 'Hạch toán' : 'Ghi sổ']].filter(([k]) => k !== 'ht' || kieu !== 'khong').map(([k, l]) => <button key={k} type="button" className={tab === k ? 'on' : ''} onClick={() => setTab(k)}>{l}</button>)}
           </div>
-          <NoiDungTab x={x} tab={tab} kieu={kieu} />
+          <div className="ct-than"><NoiDungTab x={x} tab={tab} kieu={kieu} /></div>
         </section>
         {row.tt === 'loi' && <Note kind="err" icon="alert">Doanh thu trên FABi lớn hơn sổ 1.250.000 đ. <Link to="/app/tien-ich/11-7">Mở đối soát</Link></Note>}
       </div>

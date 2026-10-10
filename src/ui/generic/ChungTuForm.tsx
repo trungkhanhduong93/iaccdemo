@@ -413,7 +413,15 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
       icon={mod.icon}
       tinh={Boolean((loc.state as { chuyenPhieu?: boolean } | null)?.chuyenPhieu)}
       onClose={dongForm}
-      day={laTien && chiTien && hienChan('tongTien') ? <TongDay tong={tongThanhToan} soDong={dsDong.length} /> : undefined}
+      day={!hienChan('tongTien') ? undefined
+        : laTien && chiTien ? <TongDay tong={tongThanhToan} soDong={dsDong.length} />
+          // Phần tổng thành dải cố định ở đáy form, cuộn bảng vẫn thấy (T105); phiếu mua chỉ Tổng tiền vì số khác đã có trên dòng (T84)
+          : <DaiTong tong={tongThanhToan} muc={chiTien || truocThue ? [] : [
+            ['Tiền hàng', tongTien],
+            ...(bo.ck ? [['Chiết khấu', tongCk ? -tongCk : 0] as [string, number]] : []),
+            ['Tiền thuế GTGT', tongThue],
+            ...(bo.tongNhap ? [['Giá trị nhập kho', tongTien - tongCk] as [string, number]] : []),
+          ]} />}
       giua={(
         moi ? <span className="fsf-tt moi">Thêm mới</span>
           : dangSua ? <span className="fsf-tt sua">Đang chỉnh sửa <b>{soCt}</b></span>
@@ -653,8 +661,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
         </div>
       )}
 
-      {/* Phần trên: Thông tin chung kiểu AMIS */}
-      <div className="stack" style={{ gap: 14 }}>
+      {/* Phần trên: Thông tin chung kiểu AMIS. Đầu phiếu đứng yên, chỉ vùng bảng chi tiết cuộn (T105) */}
+      <div className="stack ct-co-dinh" style={{ gap: 14 }}>
         {/* Hàng chọn hình thức thanh toán & hoá đơn cho nhóm mua/bán */}
         {bo.tt && (
           <section className="card" style={{ padding: '10px 16px' }}>
@@ -909,8 +917,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
           </div>
         </section>
 
-        {/* Khối Tabs chi tiết */}
-        <section className="card">
+        {/* Khối Tabs chi tiết: vùng duy nhất cuộn trong form (T105) */}
+        <section className="card ct-than-card">
           <div className="tabs">
             {tabs.map(([k, l]) => (
               <button
@@ -924,6 +932,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
             ))}
           </div>
 
+          <div className="ct-than">
           {/* Tab 1: Chi tiết / Hàng tiền */}
           {tab === 'ct' && (
             <BangSua
@@ -999,39 +1008,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
 
           {/* Tab 5: Lịch sử thao tác */}
           {tab === 'ls' && <LichSu goi={s.goi} moi={moi} man={`${mod.key}/${sc.slug}`} id={String(row?.id ?? '')} />}
-
-          {/* Khối tổng cộng góc dưới phải; phiếu thu chi để Tổng tiền ở dải đáy form; phiếu mua chỉ Tổng tiền, các số khác đã có trên dòng (T84) */}
-          {(chiTien && laTien) || !hienChan('tongTien') ? null : chiTien || truocThue ? (   // tắt Khối tổng tiền ở Tuỳ chỉnh giao diện phiếu thì ẩn (T89)
-            <div className="tot" style={{ borderTop: '1px solid var(--line)', marginTop: 12 }}>
-              <span>Tổng tiền</span>
-              <b className="big" style={{ color: 'var(--blue)' }}>{moneyD(tongThanhToan)}</b>
-            </div>
-          ) : (
-          <div className="tot" style={{ borderTop: '1px solid var(--line)', marginTop: 12 }}>
-            <span>Tiền hàng</span>
-            <b>{moneyD(tongTien)}</b>
-            {bo.ck && tongCk > 0 && (
-              <>
-                <span>Chiết khấu</span>
-                <b style={{ color: 'var(--red)' }}>-{moneyD(tongCk)}</b>
-              </>
-            )}
-            {tongThue > 0 && (
-              <>
-                <span>Tiền thuế GTGT</span>
-                <b>{moneyD(tongThue)}</b>
-              </>
-            )}
-            {bo.tongNhap && (
-              <>
-                <span>Giá trị nhập kho</span>
-                <b>{moneyD(tongTien - tongCk)}</b>
-              </>
-            )}
-            <span>Tổng thanh toán</span>
-            <b className="big" style={{ color: 'var(--blue)' }}>{moneyD(tongThanhToan)}</b>
           </div>
-          )}
+
         </section>
 
         {children}
@@ -1070,6 +1048,18 @@ function ONgay({ value, onChange }: { value: string; onChange: (v: string) => vo
 }
 
 /** Tổng tiền ở dải đáy form, số thẳng mép cột Thành tiền của bảng chi tiết; không thấy bảng thì nằm sát phải (T49) */
+/** Dải tổng cố định ở đáy form (T105): các khoản bên trái, khoản bằng 0 hiện mờ; Tổng tiền bên phải */
+export function DaiTong({ muc, tong, nhan = 'Tổng tiền' }: { muc: [string, number][]; tong: number; nhan?: string }) {
+  return (
+    <div className="pos-day">
+      {muc.map(([t, v]) => (
+        <span key={t} className={`pos-day-o${v ? '' : ' khong'}${v < 0 ? ' am' : ''}`}><small>{t}</small><b>{v < 0 ? `-${money(-v)}` : money(v)}</b></span>
+      ))}
+      <span className="pos-day-tong"><small>{nhan}</small><b>{moneyD(tong)}</b></span>
+    </div>
+  )
+}
+
 function TongDay({ tong, soDong }: { tong: number; soDong: number }) {
   const o = useRef<HTMLSpanElement>(null)
   const [phai, setPhai] = useState<number>()

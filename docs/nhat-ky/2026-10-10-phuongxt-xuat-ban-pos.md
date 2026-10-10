@@ -1,4 +1,4 @@
-# Chứng từ Xuất bán POS theo form IACC (T102, T104)
+# Chứng từ Xuất bán POS theo form IACC; cố định đầu phiếu, dải tổng (T102, T104, T105)
 
 - Ngày: 10/10/2026
 - Người: PhuongXT, agent: Claude Code
@@ -13,12 +13,14 @@
 - Thanh đáy: In, Phát hành HĐĐT (từ gói Plus), Đóng; bỏ nút Lưu.
 - T104 `data/mock.ts` `soBH`: số chứng từ là số hoá đơn FABi, 12 ký tự chữ số viết hoa, cố định theo chi nhánh và ngày; Thu chi (`tien/data.ts`) dùng chung hàm nên khớp.
 - T104 form: ghi chú một dòng chữ nhỏ (`.pos-nhac`); đầu phiếu bỏ Cửa hàng, Số đơn POS, Diễn giải sang cột trái; bỏ tab Thanh toán, Đơn POS gốc, cột Ghi chú; khối tổng chuyển thành dải `day` cố định ở đáy form (`.pos-day`), khoản bằng 0 hiện mờ.
+- T105 `ChungTuForm.tsx`: thân form lớp `ct-co-dinh`, thẻ tab `ct-than-card`, nội dung tab trong `ct-than` (vùng duy nhất cuộn; `.tbl-wrap` bên trong không tự cuộn nên tiêu đề cột dính theo `.ct-than`). Khối tổng trong thẻ bỏ, thay bằng `DaiTong` ở dải `day` (công tắc Khối tổng tiền vẫn bật tắt). Xuất bán POS dùng chung `DaiTong` và cùng bố cục.
 
 ## Đã kiểm
 
 - `npm run typecheck`, `npm run build`: không lỗi. `python tools/kiem_tra.py --nhanh`: `Không có lỗi.`
 - Gói Plus, BH2610-TD-07: Thành tiền 20.140.100, giảm 528.100, sau giảm 19.612.000 bằng doanh thu ngày; Tổng tiền 21.228.029 bằng danh sách. Đơn giá đúng giá món, tỷ lệ 10%, 5%.
 - T104: gói Free, phiếu số YHLTJTAKD76Z: đầu phiếu 3, 2, 2 ô; tab Hàng bán; dải tổng ở đáy giữ nguyên khi cuộn, Tổng tiền 21.228.029.
+- T105: phiếu mua mới 26 dòng, cuộn vùng bảng 400px: đầu phiếu, tiêu đề cột không dịch; dải Tổng tiền ở đáy. Phiếu uỷ nhiệm chi, phiếu kho, Xuất bán POS cùng bố cục.
 
 ## Dở dang, việc tiếp theo
 
