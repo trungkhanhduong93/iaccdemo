@@ -1,4 +1,4 @@
-# Cấu hình cách đồng bộ bán hàng FABi; theo dõi tồn kho (T107, T108)
+# Cấu hình cách đồng bộ bán hàng FABi; theo dõi tồn kho (T107, T108, T109)
 
 - Ngày: 10/10/2026
 - Người: PhuongXT, agent: Claude Code
@@ -11,6 +11,7 @@
 - `ban-hang/ChungTuBanHang.tsx`: `theoKenh` chia doanh thu ngày thành Tại quán, Mang về (phần thu tại quầy 70/30), App giao đồ ăn (theo tiền app); `theoDon` chia thành từng hoá đơn (số đơn của ngày), giờ trải 09:00 tới 22:00, kênh, cách thanh toán theo tỷ lệ của ngày. Hàm `chiaTheo` cho phần cuối nhận số dư nên tổng doanh thu, thuế mỗi ngày giữ nguyên.
 - Số chứng từ là số hoá đơn FABi 12 ký tự theo hạt giống của từng chứng từ. Cột Ngày có giờ; thêm cột Kênh bán (lọc kiểu chọn); nhãn cách đồng bộ trên thanh công cụ, bấm mở Cấu hình.
 - T108 `data/mock.ts`: HANG có `tonKho` (món chế biến false, bia lon, nước suối true); danh mục 1.2 thêm trường Theo dõi tồn kho (`truong-dm.ts`, cột IS_INVENTORY) và cột Theo dõi tồn (ô tích chỉ xem `.o-tich-xem`); nguyên vật liệu luôn có. Xuất bán POS thêm cột Theo dõi tồn kho, cột cuối `dinh: 'phai'`, bật tắt được ở Tuỳ chỉnh giao diện.
+- T109: danh sách bỏ cột Nguồn và ô lọc Nguồn; nhãn cách đồng bộ ghi Chi tiết hoặc Tổng hợp, rê chuột xem đủ.
 - Form: kênh, thời gian xuất theo chứng từ. Hoá đơn lấy 1 tới 3 món (`dongMonDon`), chứng từ theo kênh chia theo cơ cấu món như trước (`dongCuaPhieu`).
 
 ## Đã kiểm

@@ -230,7 +230,6 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
         onChange={e => dat('tim', e.target.value)} onKeyDown={e => { if (e.key === 'Enter') apLoc() }} />,
     },
     ...(cnChon ? [] : [{ k: 'cn', ten: 'Chi nhánh', o: chonO('cn', 'Chi nhánh', CHI_NHANH.map(c => [c.id, c.ten])) }]),
-    { k: 'nguon', ten: 'Nguồn', o: chonO('nguon', 'Nguồn', [...new Set(rows.map(r => String(r.nguon)))].map(v => [v, v])) },
   ]
   const [cauHinhLoc, datCauHinhLoc] = useCauHinhLoc(path, oLoc.map(o => o.k), ['thoiGian', 'tim', 'cn'])
 
@@ -272,7 +271,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
     { k: 'kenh', t: 'Kênh bán', w: 140 },   // T107
     ...(cnChon ? [] : [{ k: 'cn', t: 'Chi nhánh', cls: 'dim' } as Col]),
     { k: 'tien', t: 'Doanh thu chưa thuế', num: true, w: 160 }, { k: 'thue', t: 'Thuế GTGT', num: true, w: 120 },
-    { k: 'nguon', t: 'Nguồn', w: 90, r: () => <span className="src">FABi</span> },
+    // bỏ cột Nguồn: Xuất bán POS chỉ có nguồn FABi (T109)
     { k: 'tong', t: 'Tổng tiền', num: true, w: 120 },   // Tổng tiền là cột cuối (T48)
   ]
   // Thứ tự, ẩn hiện, độ rộng cột lưu theo màn (T41)
@@ -308,8 +307,8 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
             </div>
             <div className="ds-thanh-phai">
               {/* Cách đồng bộ FABi đang dùng, bấm để đổi ở Cấu hình (T107) */}
-              <Link className="chip info" to="/app/he-thong/cau-hinh" title="Đổi cách đồng bộ ở Hệ thống, Cấu hình kế toán">
-                <Icon n="refresh" className="ic sm" />{(s.dongBoFabi ?? 'kenh') === 'chiTiet' ? 'Đồng bộ chi tiết theo hoá đơn' : 'Đồng bộ tổng hợp theo kênh'}
+              <Link className="chip info" to="/app/he-thong/cau-hinh" title={`Đồng bộ FABi ${(s.dongBoFabi ?? 'kenh') === 'chiTiet' ? 'chi tiết theo hoá đơn' : 'tổng hợp theo kênh'}; đổi ở Hệ thống, Cấu hình kế toán`}>
+                <Icon n="refresh" className="ic sm" />{(s.dongBoFabi ?? 'kenh') === 'chiTiet' ? 'Chi tiết' : 'Tổng hợp'}
               </Link>
               <BoLoc ds={oLoc} cauHinh={cauHinhLoc} datCauHinh={datCauHinhLoc} dangLoc={loc0.dangLoc} khacNhap={loc0.khacNhap}
                 onLoc={apLoc} onXoaHet={loc0.xoaNhap} />
