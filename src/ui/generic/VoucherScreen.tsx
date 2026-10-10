@@ -84,7 +84,8 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
   const loc0 = useLocNhap(locMacDinh)
   const [chipTT, setChipTT] = useState('all')
   // Điều chỉnh kho (T126): hai tab nhỏ Xuất điều chỉnh, Nhập điều chỉnh, mỗi tab một loại phiếu
-  const [tabLoai, setTabLoai] = useState(cfg.loai?.[0]?.k ?? '')
+  const [thamSo] = useSearchParams()
+  const [tabLoai, setTabLoai] = useState(() => cfg.loai?.find(l => l.k === thamSo.get('loai'))?.k ?? cfg.loai?.[0]?.k ?? '')   // ?loai= mở đúng tab con, vd từ sơ đồ (T128)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [moHangLoat, setMoHangLoat] = useState(false)
   const [phieuIn, setPhieuIn] = useState<PhieuIn[] | null>(null)
