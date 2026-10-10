@@ -4,7 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 10/10/2026
 
-- T84: Phiếu mua hàng: mỗi dòng hàng có cột Tiền trước thuế (Thành tiền trừ chiết khấu, đứng trước Thuế suất) và Giá trị nhập kho (cuối dòng). Khối tổng cuối phiếu có Tiền trước thuế, luôn hiện Tiền thuế GTGT kể cả bằng 0.
+- T84: Phiếu mua hàng: mỗi dòng hàng có cột Tiền trước thuế (Thành tiền trừ chiết khấu, đứng trước Thuế suất) cùng Tổng tiền và Giá trị nhập kho (cuối dòng). Khối tổng cuối phiếu chỉ còn Tổng tiền cho gọn.
 - T83: Phiếu mua hàng, hoá đơn bán hàng, phiếu trả lại gói Free, Standard, Plus chọn kho ở đầu phiếu thay cho cột Kho trên từng dòng; gói Pro vẫn chọn kho trên dòng. Chi nhánh chỉ có một kho thì phiếu mới điền sẵn kho đó. Phiếu mua tích Nhận kèm hoá đơn, phiếu bán tích Lập kèm hoá đơn thì Mẫu số, Ký hiệu, Số, Ngày hoá đơn thành một cột riêng cạnh Ngày chứng từ, Số phiếu, có dấu bắt buộc; phiếu bán bỏ tab Hoá đơn.
 - T82: Gói Free: khung chi tiết dưới mọi danh sách chứng từ không còn tab Ghi sổ.
 - T27: Danh sách thu chi 2.1.1: khung chi tiết dưới bảng hiện đúng dòng của phiếu như khi mở form; phiếu thu, chi có thêm cột Lý do thu, Lý do chi.

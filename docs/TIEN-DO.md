@@ -35,7 +35,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
-| T84 | Phiếu mua hàng: bảng chi tiết (form và khung dưới danh sách) thêm cột Tiền trước thuế (Thành tiền trừ chiết khấu, trước cột thuế), Giá trị nhập kho (cuối dòng); khối tổng có Tiền trước thuế, luôn có Tiền thuế GTGT | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-gia-tri-nhap-kho-dong.md` |
+| T84 | Phiếu mua hàng: bảng chi tiết (form và khung dưới danh sách) thêm cột Tiền trước thuế (Thành tiền trừ chiết khấu, trước cột thuế), Tổng tiền, Giá trị nhập kho (cuối dòng); khối tổng chỉ còn Tổng tiền | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-gia-tri-nhap-kho-dong.md` |
 | T83 | Phiếu mua, hoá đơn bán hàng, phiếu trả lại có kho: gói dưới Pro chọn một kho ở đầu phiếu, bỏ cột Kho trên dòng; gói Pro giữ kho trên dòng; chi nhánh một kho thì phiếu mới điền sẵn. Thông tin hoá đơn mua, bán thành cột riêng cạnh ngày, số phiếu, bắt buộc nhập (QD33) | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-chi-tiet-thu-chi-ly-do.md` |
 | T82 | Gói Free: khung chi tiết dưới mọi danh sách chứng từ (cả Bán hàng POS) bỏ tab Ghi sổ, như form | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-chi-tiet-thu-chi-ly-do.md` |
 | T27 | Danh sách chứng từ 2.1.1: khung chi tiết bên dưới lấy dòng phiếu giống form của cùng phiếu; phiếu thu, chi có cột Lý do thu, chi và Đối tượng | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-chi-tiet-thu-chi-ly-do.md` |
