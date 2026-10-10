@@ -1063,9 +1063,9 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
         {children}
       </div>
       {hoiDong && (
-        <HopXacNhan tieuDe={`Bỏ ${tenPhieu.toLowerCase()} đang thêm mới?`} nut="Bỏ phiếu" nutHuy="Tiếp tục nhập"
+        <HopXacNhan tieuDe="Xác nhận đóng phiếu!" nut="Xác nhận" nutHuy="Bỏ qua"
           onDong={() => setHoiDong(false)} onDongY={() => { setHoiDong(false); dongForm() }}>
-          Phiếu chưa được lưu. Nội dung đã nhập sẽ mất.
+          Bạn chưa lưu phiếu. Bạn có chắc chắn muốn đóng phiếu này không?
         </HopXacNhan>
       )}
       {hoiThe && (

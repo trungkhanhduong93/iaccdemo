@@ -37,7 +37,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
-| T125 | Mọi phiếu đang thêm mới: bấm Huỷ, nút đóng (X) hoặc Esc thì hỏi lại "Bỏ phiếu" hay "Tiếp tục nhập" trước khi bỏ phiếu chưa lưu | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-canh-bao-dong-phieu-moi.md` |
+| T125 | Mọi phiếu đang thêm mới: bấm Huỷ, nút đóng (X) hoặc Esc thì hỏi "Xác nhận đóng phiếu!" (Bỏ qua, Xác nhận) trước khi bỏ phiếu chưa lưu | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-canh-bao-dong-phieu-moi.md` |
 | T124 | Phiếu kiểm kê: bỏ Đối tượng, Người giao nhận, Địa chỉ, Mã số thuế; đầu phiếu hai dòng (Kho kiểm kê, Nhân viên thực hiện; Ghi chú); bỏ tab Hạch toán; bảng chi tiết bỏ Kho, Số lượng, Đơn giá, Thành tiền, Thuế, thay bằng Tồn hệ thống, Tồn thực tế, Chênh lệch, Loại (Xuất điều chỉnh, Nhập điều chỉnh), Ghi chú; bỏ dải tổng tiền | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-phieu-kiem-ke.md` |
 | T123 | Sơ đồ quy trình Kho gói Free vẽ lại dạng luồng: Mua hàng, Bán hàng tổng hợp thành Tồn hệ thống (ô kết quả, không phải màn hình), so sánh với Kiểm kê kho, tách ra Xuất điều chỉnh (thiếu), Nhập điều chỉnh (thừa) | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-so-do-kho-free.md` |
 | T122 | Ẩn tạm 23 mã sổ, BCTC, tờ khai do agent tự dựng theo từng thông tư (QD45); giữ TT58 theo file, TT152 theo iFaster; link cũ hiện "Báo cáo chưa có mẫu" | Trum | 10/10/2026 | `2026-10-10-trum-an-tam-bao-cao.md` |

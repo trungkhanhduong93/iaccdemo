@@ -4,7 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 10/10/2026
 
-- T125: Mọi phiếu đang thêm mới: bấm Huỷ, nút đóng hoặc Esc thì hỏi lại trước khi bỏ phiếu chưa lưu (Bỏ phiếu hoặc Tiếp tục nhập).
+- T125: Mọi phiếu đang thêm mới: bấm Huỷ, nút đóng hoặc Esc thì hỏi "Xác nhận đóng phiếu!" trước khi bỏ phiếu chưa lưu (Bỏ qua hoặc Xác nhận).
 - T124: Phiếu kiểm kê bỏ Đối tượng, Người giao nhận, Địa chỉ, Mã số thuế; đầu phiếu hai dòng: Kho kiểm kê, Nhân viên thực hiện; Ghi chú. Bỏ tab Hạch toán. Bảng chi tiết gồm Mã hàng, Tên hàng hoá, ĐVT, Tồn hệ thống, Tồn thực tế, Chênh lệch, Loại (thiếu thì Xuất điều chỉnh, thừa thì Nhập điều chỉnh), Ghi chú; không còn số tiền, thuế. Cột Mã hàng ở mọi phiếu chỉ hiện mã (danh sách chọn vẫn có tên).
 - T123: Sơ đồ quy trình Kho gói Free vẽ lại dạng luồng: Mua hàng, Bán hàng tổng hợp thành Tồn hệ thống; Kiểm kê kho so sánh với tồn hệ thống ra chênh lệch: thiếu thì Xuất điều chỉnh, thừa thì Nhập điều chỉnh. Khung Báo cáo bên phải. Dưới tiêu đề có dòng mô tả: gói Free theo dõi tồn kho với hàng bán thẳng.
 - T122: Ẩn tạm các sổ, báo cáo tài chính, tờ khai chưa có mẫu chuẩn: gói Plus, Pro tạm không còn sổ và báo cáo tài chính; gói Standard còn bộ sổ TT58; gói Free còn bộ báo cáo hộ kinh doanh. Mở link cũ thấy "Báo cáo chưa có mẫu".
