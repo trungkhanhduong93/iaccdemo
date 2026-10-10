@@ -68,7 +68,7 @@ function dongMonGiam(dt: number, vat: number) {
   })
 }
 
-/** Dòng món của một hoá đơn FABi (T107): 1 tới 3 món, món cuối nhận phần dư; không giảm giá; thuế chia theo tiền món */
+/** Dòng món của một hoá đơn FABi (T108): 1 tới 3 món, món cuối nhận phần dư; không giảm giá; thuế chia theo tiền món */
 function dongMonDon(x: XPos) {
   const r = rng(`mon-${x.seed}`)
   const k = 1 + Math.floor(r() * 3)
@@ -103,7 +103,7 @@ function dongMon(dt: number) {
   })
 }
 
-// ── Cách đồng bộ bán hàng FABi (T107): mỗi hoá đơn một chứng từ, hoặc tổng hợp theo kênh mỗi ngày, chi nhánh ──
+// ── Cách đồng bộ bán hàng FABi (T108): mỗi hoá đơn một chứng từ, hoặc tổng hợp theo kênh mỗi ngày, chi nhánh ──
 type NgayPOS = (typeof DAILY)[number]
 /** Một chứng từ Xuất bán POS: số liệu của phần doanh thu ngày mà chứng từ gánh; loai 'don' là một hoá đơn FABi */
 export type XPos = NgayPOS & { kenh: string; gio: string; loai: 'don' | 'kenh'; seed: string }
@@ -184,7 +184,7 @@ const COT_CHON = new Set(['cn', 'nguon', 'kenh'])
 /** Giá trị các ô lọc ngoài và trong Bộ lọc nâng cao. Chuỗi rỗng là tất cả */
 interface GtLoc { thoiGian: KhoangNgay; tim: string; cn: string; nguon: string; kh: string; kenh: string; pttt: string }
 const locMacDinh = (): GtLoc => ({ thoiGian: thangNay(), tim: '', cn: '', nguon: '', kh: '', kenh: '', pttt: '' })
-/** Phương thức thanh toán của chứng từ theo số tiền thu được (T110) */
+/** Phương thức thanh toán của chứng từ theo số tiền thu được (T111) */
 const PTTT: [keyof NgayPOS, string][] = [['tm', 'Tiền mặt'], ['ck', 'Chuyển khoản, QR'], ['the', 'Thẻ'], ['app', 'App giao đồ ăn']]
 const ptttCua = (x: NgayPOS) => PTTT.filter(([k]) => Number(x[k]) > 0).map(([, t]) => t)
 
@@ -195,7 +195,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
   const loc0 = useLocNhap(locMacDinh)
   const { nhap, dat, ap } = loc0
   const [chipTT, setChipTT] = useState('all')
-  const [moDongBo, setMoDongBo] = useState(false)   // hộp Đồng bộ hoá đơn từ POS (T111)
+  const [moDongBo, setMoDongBo] = useState(false)   // hộp Đồng bộ hoá đơn từ POS (T112)
   const [chon, setChon] = useState<Set<string>>(new Set())
   const [moHangLoat, setMoHangLoat] = useState(false)
   const [moGhiChu, setMoGhiChu] = useState(false)
@@ -235,10 +235,10 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
         onChange={e => dat('tim', e.target.value)} onKeyDown={e => { if (e.key === 'Enter') apLoc() }} />,
     },
     ...(cnChon ? [] : [{ k: 'cn', ten: 'Chi nhánh', o: chonO('cn', 'Chi nhánh', CHI_NHANH.map(c => [c.id, c.ten])) }]),
-    // Khách hàng, kênh bán, phương thức thanh toán; lựa chọn lấy từ chính các chứng từ (T110)
+    // Khách hàng, kênh bán, phương thức thanh toán; lựa chọn lấy từ chính các chứng từ (T111)
     { k: 'kh', ten: 'Khách hàng', o: chonO('kh', 'Khách hàng', [...new Set(rows.map(r => String(r.doiTuong ?? '')).filter(Boolean))].map(v => [v, v])) },
     { k: 'kenh', ten: 'Kênh bán', o: chonO('kenh', 'Kênh bán', [...new Set(rows.map(r => String(r.kenh ?? '')).filter(Boolean))].map(v => [v, v])) },
-    // Tổng hợp theo kênh gộp nhiều cách thanh toán nên không lọc theo phương thức (T110)
+    // Tổng hợp theo kênh gộp nhiều cách thanh toán nên không lọc theo phương thức (T111)
     ...((s.dongBoFabi ?? 'kenh') === 'chiTiet' ? [{ k: 'pttt', ten: 'Phương thức thanh toán', o: chonO('pttt', 'Phương thức thanh toán', PTTT.map(([, t]) => [t, t])) }] : []),
   ]
   const [cauHinhLoc, datCauHinhLoc] = useCauHinhLoc(path, oLoc.map(o => o.k), ['thoiGian', 'tim', 'cn'])
@@ -281,10 +281,10 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
     { k: 'ngay', t: 'Ngày', w: 100, dinh: 'trai' },
     { k: 'so', t: 'Số chứng từ', cls: 'code', w: 150, dinh: 'trai' },
     { k: 'dienGiai', t: 'Diễn giải' },
-    { k: 'kenh', t: 'Kênh bán', w: 140 },   // T107
+    { k: 'kenh', t: 'Kênh bán', w: 140 },   // T108
     ...(cnChon ? [] : [{ k: 'cn', t: 'Chi nhánh', cls: 'dim' } as Col]),
     { k: 'tien', t: 'Doanh thu chưa thuế', num: true, w: 160 }, { k: 'thue', t: 'Thuế GTGT', num: true, w: 120 },
-    // bỏ cột Nguồn: Xuất bán POS chỉ có nguồn FABi (T109)
+    // bỏ cột Nguồn: Xuất bán POS chỉ có nguồn FABi (T110)
     { k: 'tong', t: 'Tổng tiền', num: true, w: 120 },   // Tổng tiền là cột cuối (T48)
   ]
   // Thứ tự, ẩn hiện, độ rộng cột lưu theo màn (T41)
@@ -319,7 +319,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
               </Popover>
             </div>
             <div className="ds-thanh-phai">
-              {/* Cách đồng bộ FABi đang dùng, bấm để đổi ở Cấu hình (T107) */}
+              {/* Cách đồng bộ FABi đang dùng, bấm để đổi ở Cấu hình (T108) */}
               <Link className="chip info" to="/app/he-thong/cau-hinh" title={`Đồng bộ FABi ${(s.dongBoFabi ?? 'kenh') === 'chiTiet' ? 'chi tiết theo hoá đơn' : 'tổng hợp theo kênh'}; đổi ở Hệ thống, Cấu hình kế toán`}>
                 <Icon n="refresh" className="ic sm" />{(s.dongBoFabi ?? 'kenh') === 'chiTiet' ? 'Chi tiết' : 'Tổng hợp'}
               </Link>
@@ -479,7 +479,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
           )}
         </section>
       </div>
-      {/* Đồng bộ hoá đơn từ POS (T111): khoảng thời gian, chi nhánh (mặc định chi nhánh đang chọn), bỏ qua hoá đơn đã đồng bộ */}
+      {/* Đồng bộ hoá đơn từ POS (T112): khoảng thời gian, chi nhánh (mặc định chi nhánh đang chọn), bỏ qua hoá đơn đã đồng bộ */}
       {moDongBo && (
         <HopDongBo
           tieuDe="Đồng bộ hoá đơn từ POS"
@@ -552,7 +552,7 @@ function NoiDungTab({ x, tab, kieu, an = AN_POS_MAC_DINH }: { x: (typeof DAILY)[
             { k: 'dtTruocThue', t: 'Doanh thu trước thuế', num: true, w: 150 },
             { k: 'ts', t: 'Thuế suất', num: true, w: 80, r: r => `${r.ts}%` },
             { k: 'thue', t: 'Tiền thuế', num: true, w: 110 },
-            // Theo danh mục hàng hoá: tích là mặt hàng theo dõi tồn kho, chỉ xem; cột cuối, cố định phải (T108)
+            // Theo danh mục hàng hoá: tích là mặt hàng theo dõi tồn kho, chỉ xem; cột cuối, cố định phải (T109)
             { k: 'tonKho', t: 'Theo dõi tồn kho', c: true, w: 120, dinh: 'phai', r: r => <input type="checkbox" className="o-tich-xem" checked={Boolean(r.tonKho)} readOnly tabIndex={-1} aria-label="Theo dõi tồn kho" /> },
           ] as Col[]).filter(c => !an.includes(c.k))}
           rows={dong}
@@ -661,7 +661,7 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
         {/* Đầu phiếu chỉ xem nên dạng thông tin gọn: nhãn nhỏ, giá trị, 4 cột × 2 hàng, để bảng chi tiết rộng hơn (T106) */}
         <section className="card pos-dau">
           <div><small>Khách hàng</small><b>Khách lẻ POS</b></div>
-          {/* Hoá đơn có một cách thanh toán; chứng từ tổng hợp theo kênh gộp nhiều cách nên bỏ (T110) */}
+          {/* Hoá đơn có một cách thanh toán; chứng từ tổng hợp theo kênh gộp nhiều cách nên bỏ (T111) */}
           {(x as XPos).loai === 'don' && <div><small>Phương thức thanh toán</small><b title={pttt}>{pttt}</b></div>}
           <div><small>Ngày chứng từ</small><b>{dmy(x.date)}</b></div>
           <div><small>{(x as XPos).loai === 'don' ? 'Số chứng từ (số hoá đơn FABi)' : 'Số chứng từ'}</small><b className="code">{row.so}</b></div>

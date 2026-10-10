@@ -180,7 +180,7 @@ export function CauHinh({ sc }: ScreenProps) {
             { loai: 'Phiếu thu', mau: 'PT{YY}{MM}-{0000}', vd: 'PT2610-0001' }, { loai: 'Phiếu chi', mau: 'PC{YY}{MM}-{0000}', vd: 'PC2610-0241' },
             { loai: 'Xuất bán POS', mau: 'Số hoá đơn FABi', vd: 'YHLTJTAKD76Z' }, { loai: 'Mua hàng', mau: 'MH{YY}{MM}-{0000}', vd: 'MH2610-0118' }]} />
         </Card>
-        {/* Cách đồng bộ bán hàng FABi thành chứng từ Xuất bán POS (T107) */}
+        {/* Cách đồng bộ bán hàng FABi thành chứng từ Xuất bán POS (T108) */}
         <Card title="Đồng bộ bán hàng từ FABi">
           <div className="stack" style={{ gap: 10 }}>
             {([
