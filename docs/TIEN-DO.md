@@ -14,7 +14,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | T80 | Hộp tìm màn hình Ctrl K kiểu iPOS Inventory: mục Vừa mở, Gợi ý, ô biểu tượng, đường dẫn phân hệ, thanh phím tắt | Trum | Chờ | Spec sẵn, chưa làm. Sửa `CommandPalette.tsx`, `Shell.tsx`, `app.css` |
 | T73 | Tối ưu phản hồi thao tác: bấm, rê chuột, mở menu, panel, cuộn bảng phản hồi tức thì; hiệu ứng nhẹ, ngắn; đo trước và sau | Trum | Chờ | Còn: panel tài khoản khựng 120-160ms lúc nội dung hiện sau khi trượt (trình duyệt vẽ, JS chỉ 25ms). Sửa nhiều file `src/` |
 | T60 | Mô tả gói Free, Standard trong `GOI` (`src/app/plan.ts`) đang ghi "1 điểm bán"; theo Roadmap gói Free là mỗi chi nhánh một kho, không giới hạn một chi nhánh. Chốt câu chữ rồi sửa | PhuongXT | Chờ | Tách từ T25 |
-| T27 | Danh sách chứng từ 2.1.1: khung chi tiết bên dưới hiện dòng phiếu khác với form của cùng phiếu (UNC2610-0259: khung ghi "Chi mua rau, củ tại chợ", form ghi "Trả tiền nhà cung cấp thịt bò"). Thêm cột Lý do thu, chi ở khung chi tiết | PhuongXT | Đang làm | Thấy khi làm T26. Sửa `VoucherScreen.tsx`, `ChungTuForm.tsx` |
 | T02 | Chốt nghiệp vụ trên từng sơ đồ Quy trình: ô nào, nối thế nào, câu chữ. Sửa ở `src/modules/<phân hệ>/quy-trinh.ts` | Trum | Chờ | |
 | T03 | Nối sổ quỹ, sổ tài khoản 2.2.2, sổ ngân hàng 2.2.3, sổ công nợ 2.2.5 vào `so-cai.ts` để mọi sổ khớp báo cáo tài chính | | Chờ | Sổ quỹ đang tính riêng từ tiền mặt FABi từng chi nhánh. Tổng 3 quỹ chưa bằng dư TK 1111 trên cân đối kế toán |
 | T33 | Cập nhật Excel tính năng theo sheet Roadmap rồi chạy lại `tools/xuat_tinh_nang.py`: 1.12 và 2.2.3 có ở gói Free; thêm 1.17, S1a-HKD, S2a-HKD. Xong thì xoá các dòng tương ứng trong `THEO_ROADMAP` ở `src/app/plan.ts` | | Chờ | Chỉ máy Trum chạy được script |
@@ -36,6 +35,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T27 | Danh sách chứng từ 2.1.1: khung chi tiết bên dưới lấy dòng phiếu giống form của cùng phiếu; phiếu thu, chi có cột Lý do thu, chi và Đối tượng | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-chi-tiet-thu-chi-ly-do.md` |
 | T81 | Panel bên phải kiểu mới (mục lục trái, khối thẻ, công tắc, chân trạng thái), Tuỳ chỉnh báo cáo hai cột, Tuỳ chỉnh giao diện phiếu; mở đóng mượt (đo 331ms, mục tiêu ≤ 100ms); ô chọn đẹp, có tìm, dựng option khi mở | Trum | 10/10/2026 | `2026-10-10-trum-panel-dong-bo.md` |
 | T79 | Hộp đồng bộ dữ liệu kiểu iPOS Inventory cho Tiện ích Đồng bộ bán hàng từ POS (11.1) và Tải hoá đơn đầu vào từ iPOS Invoice (11.4): khoảng ngày, chọn kho hoặc chi nhánh có tìm, món bán, đồng bộ lại | Trum | 10/10/2026 | `2026-10-10-trum-panel-dong-bo.md` |
 | T70 | Mọi panel bên phải rộng hơn (min(880px, 72vw)), lưới 3 cột, chia khối: panel Thêm/Sửa từng danh mục đủ trường theo bảng DM_ (truong-dm.ts), Tuỳ chỉnh báo cáo, Đối soát | Trum | 10/10/2026 | `2026-10-10-trum-panel-dong-bo.md` |

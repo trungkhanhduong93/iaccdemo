@@ -19,10 +19,10 @@ import {
   BoLoc, ChipTrangThai, NutHangLoat, NutTuyChinhCot, cotChon, dsChipTT, khopChipTT, useCauHinhLoc, useCotDs, useLocNhap, type OLocDef,
 } from '../LocNangCao'
 import { useDaXoa, xoaPhieu } from './daXoa'
-import { NGUON, TT_CT, chungTu, dongCua, gioPhieu, ttNghiepVu } from './gen'
+import { NGUON, TT_CT, chungTu, dongCua, gioPhieu, ttNghiepVu, type Dong } from './gen'
 import { boO, nhomCua, theoLoai, TT_HD, TT_TIEN } from './nhom'
 import { BangSua } from './BangSua'
-import { ChungTuForm, HachToan, LichSu, VoucherDetail } from './ChungTuForm'
+import { ChungTuForm, HachToan, LichSu, VoucherDetail, lyMacDinh } from './ChungTuForm'
 import { HopInChungTu, type PhieuIn } from '../bao-cao/InChungTu'
 
 const COT_CO_DINH = new Set(['chk', 'stt', 'ngay', 'so'])
@@ -167,11 +167,21 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
 
   // Dòng đang chọn xem chi tiết ở khung dưới
   const activeRow = list.find(r => r.id === activeId) ?? list[0]
-  const activeDong = useMemo(() => {
-    if (!activeRow) return []
-    const seed = `${sc.code ?? sc.slug}-${activeRow.id}`
-    return dongCua(cfg, seed)
-  }, [activeRow, cfg, sc])
+  // Lấy dòng như form của cùng phiếu (T27): cấu hình theo loại phiếu, phiếu đã lưu dùng dòng đã lưu
+  // Phiếu thu, chi: cột Lý do, Đối tượng trên dòng theo đầu phiếu, như form
+  const { cfgDong, oLy, activeDong } = useMemo(() => {
+    const loaiK = cfg.loai?.find(x => x.k === activeRow?.loai)?.k ?? cfg.loai?.[0]?.k
+    const cfgDong = theoLoai(cfg, loaiK)
+    const oLy = mod.key === 'tien' ? boO(nhomCua(mod.key, cfgDong, loaiK), cfgDong).a.find(o => o.k === 'ly') : undefined
+    if (!activeRow) return { cfgDong, oLy, activeDong: [] as Dong[] }
+    const daLuu = activeRow._dong as Dong[] | undefined
+    if (daLuu) return { cfgDong, oLy, activeDong: daLuu }
+    const ly = oLy ? (activeRow._lyDo ? String(activeRow._lyDo) : lyMacDinh(oLy.ds ?? [], String(activeRow.dienGiai ?? ''))) : ''
+    const dt = mod.key === 'tien' && cfgDong.doiTuong !== 'none' ? String(activeRow.doiTuong ?? '') : ''
+    const activeDong = dongCua(cfgDong, `${sc.code ?? sc.slug}-${activeRow.id}`)
+      .map(d => ({ ...d, ...(oLy ? { ly } : {}), ...(dt ? { dt } : {}) }))
+    return { cfgDong, oLy, activeDong }
+  }, [activeRow, cfg, sc, mod.key])
 
   // Định nghĩa các cột (Cột Ngày, Số chứng từ đứng yên bên trái; Cột Chức năng đứng yên bên phải)
   const cols: Col[] = [
@@ -503,12 +513,13 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
                 <div className="voucher-bottom-b">
                   {tabPanel === 'ct' && (
                     <BangSua
-                      cfg={theoLoai(cfg, activeRow.loai)}
+                      cfg={cfgDong}
                       dong={activeDong}
                       cheDo="xem"
                       coKho={Boolean(bo.kho)}
                       coCk={Boolean(bo.ck)}
                       coKm={ghi}
+                      lyDo={oLy ? { nhan: oLy.nhan, ds: oLy.ds ?? [], macDinh: '' } : undefined}
                     />
                   )}
 

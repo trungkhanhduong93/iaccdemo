@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 10/10/2026
 
+- T27: Danh sách thu chi 2.1.1: khung chi tiết dưới bảng hiện đúng dòng của phiếu như khi mở form; phiếu thu, chi có thêm cột Lý do thu, Lý do chi.
 - T81: Panel bên phải mở mượt hơn (panel danh mục từ 331ms còn khoảng 60ms). Khối thẻ trắng trên nền nhạt, ô nhập cao 36px, công tắc thay ô tích. Tuỳ chỉnh báo cáo hai cột, mục dọc bên trái. Tuỳ chỉnh giao diện phiếu thành panel bên phải. Ô chọn có ô tìm khi trên 8 lựa chọn.
 - T79: Đồng bộ bán hàng từ POS và Tải hoá đơn đầu vào từ iPOS Invoice mở hộp chọn khoảng ngày, kho hoặc đơn vị (có tìm), món bán, đồng bộ lại.
 - T76: Danh mục Hệ thống tài khoản dạng cây theo TT133, TT99; panel tài khoản đủ trường.

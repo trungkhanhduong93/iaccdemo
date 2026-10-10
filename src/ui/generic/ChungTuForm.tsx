@@ -982,7 +982,7 @@ function thangLaiLo(ngay: string): string[] {
   return ds
 }
 
-function lyMacDinh(ds: string[], dg: string) {
+export function lyMacDinh(ds: string[], dg: string) {
   const l = fold(dg)
   return LY_THEO_DG.find(([tu, ly]) => l.includes(tu) && ds.includes(ly))?.[1] ?? ds[ds.length - 1] ?? ''
 }
