@@ -4,6 +4,8 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 10/10/2026
 
+- T85: Phiếu mua chọn Tiền mặt ngay hoặc Chuyển khoản ngay thì khi lưu tự sinh phiếu Chi tiền mặt hoặc Chi ngân hàng bên Thu chi. Phiếu mua hiện mã phiếu chi, bấm vào mở phiếu chi.
+- T86: Tuỳ chỉnh giao diện phiếu bật tắt được từng cột của bảng chi tiết. Phiếu mua: Tổng tiền là cột cuối, thẳng với Tổng tiền dưới bảng.
 - T84: Phiếu mua hàng: mỗi dòng hàng có cột Tiền trước thuế (Thành tiền trừ chiết khấu, đứng trước Thuế suất) cùng Tổng tiền và Giá trị nhập kho (cuối dòng). Khối tổng cuối phiếu chỉ còn Tổng tiền cho gọn.
 - T83: Phiếu mua hàng, hoá đơn bán hàng, phiếu trả lại gói Free, Standard, Plus chọn kho ở đầu phiếu thay cho cột Kho trên từng dòng; gói Pro vẫn chọn kho trên dòng. Chi nhánh chỉ có một kho thì phiếu mới điền sẵn kho đó. Phiếu mua tích Nhận kèm hoá đơn, phiếu bán tích Lập kèm hoá đơn thì Mẫu số, Ký hiệu, Số, Ngày hoá đơn thành một cột riêng cạnh Ngày chứng từ, Số phiếu, có dấu bắt buộc; phiếu bán bỏ tab Hoá đơn.
 - T82: Gói Free: khung chi tiết dưới mọi danh sách chứng từ không còn tab Ghi sổ.

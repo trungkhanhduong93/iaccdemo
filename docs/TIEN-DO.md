@@ -11,8 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T85 | Phiếu mua trả tiền ngay (tiền mặt, chuyển khoản): lưu phiếu thì sinh phiếu chi tiền mặt hoặc uỷ nhiệm chi bên Thu chi, phiếu mua hiện chứng từ tham chiếu | PhuongXT | Đang làm | Sửa `ChungTuForm.tsx` |
-| T86 | Tuỳ chỉnh giao diện phiếu: bật tắt được từng cột của bảng chi tiết; Tổng tiền là cột cuối dòng phiếu mua | PhuongXT | Đang làm | Sửa `BangSua.tsx`, `ChungTuForm.tsx` |
 | T80 | Hộp tìm màn hình Ctrl K kiểu iPOS Inventory: mục Vừa mở, Gợi ý, ô biểu tượng, đường dẫn phân hệ, thanh phím tắt | Trum | Chờ | Spec sẵn, chưa làm. Sửa `CommandPalette.tsx`, `Shell.tsx`, `app.css` |
 | T73 | Tối ưu phản hồi thao tác: bấm, rê chuột, mở menu, panel, cuộn bảng phản hồi tức thì; hiệu ứng nhẹ, ngắn; đo trước và sau | Trum | Chờ | Còn: panel tài khoản khựng 120-160ms lúc nội dung hiện sau khi trượt (trình duyệt vẽ, JS chỉ 25ms). Sửa nhiều file `src/` |
 | T60 | Mô tả gói Free, Standard trong `GOI` (`src/app/plan.ts`) đang ghi "1 điểm bán"; theo Roadmap gói Free là mỗi chi nhánh một kho, không giới hạn một chi nhánh. Chốt câu chữ rồi sửa | PhuongXT | Chờ | Tách từ T25 |
@@ -37,6 +35,8 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T86 | Tuỳ chỉnh giao diện phiếu: bật tắt được từng cột của bảng chi tiết (mỗi cột một mục, theo thứ tự trên bảng); Tổng tiền là cột cuối dòng phiếu mua | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-phieu-chi-tu-mua-hang.md` |
+| T85 | Phiếu mua trả tiền ngay: lưu phiếu thì sinh phiếu Chi tiền mặt hoặc Chi ngân hàng bên Thu chi 2.1.1, phiếu mua hiện mã chứng từ, bấm mở được; đổi hình thức hoặc về Chưa thanh toán thì bỏ chứng từ cũ | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-phieu-chi-tu-mua-hang.md` |
 | T84 | Phiếu mua hàng: bảng chi tiết (form và khung dưới danh sách) thêm cột Tiền trước thuế (Thành tiền trừ chiết khấu, trước cột thuế), Tổng tiền, Giá trị nhập kho (cuối dòng); khối tổng chỉ còn Tổng tiền | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-gia-tri-nhap-kho-dong.md` |
 | T83 | Phiếu mua, hoá đơn bán hàng, phiếu trả lại có kho: gói dưới Pro chọn một kho ở đầu phiếu, bỏ cột Kho trên dòng; gói Pro giữ kho trên dòng; chi nhánh một kho thì phiếu mới điền sẵn. Thông tin hoá đơn mua, bán thành cột riêng cạnh ngày, số phiếu, bắt buộc nhập (QD33) | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-chi-tiet-thu-chi-ly-do.md` |
 | T82 | Gói Free: khung chi tiết dưới mọi danh sách chứng từ (cả Bán hàng POS) bỏ tab Ghi sổ, như form | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-chi-tiet-thu-chi-ly-do.md` |
