@@ -13,13 +13,34 @@ import { PhanTrang } from '../PhanTrang'
 import { buildGroupedData } from '../virtual'
 import { ChonKhoangNgay, docNgay, thangNay, trongKhoang, type KhoangNgay } from '../ChonNgay'
 import { NutExcel, NutThemMoiSplit } from '../CongCuDs'
-import { fold, money } from '../format'
+import { fold, money, pad, rng } from '../format'
 import { dangLoc, khopLoc, type GiaTriLoc, type KieuLoc } from '../LocCot'
 import {
   BoLoc, ChipTrangThai, NutHangLoat, NutTuyChinhCot, cotChon, dsChipTT, khopChipTT, useCauHinhLoc, useCotDs, useLocNhap, type OLocDef,
 } from '../LocNangCao'
 import { ctTtCon, dsDcCon, dsTtCon, soDaTra, ttTienTheoTra, useDaXoa, xoaPhieu } from './daXoa'
 import { MAN_DC } from '../../modules/kho/dieu-chinh'
+
+import { CHI_NHANH, HANG, NHAN_VIEN, NVL } from '../../data/mock'
+import { NGUON, TT_CT, chungTu, dongCua, gioPhieu, ttNghiepVu, type Dong } from './gen'
+import { boO, nhomCua, theoLoai, TT_HD, TT_TIEN } from './nhom'
+import { BangKiemKe } from './BangKiemKe'
+import { BangSua } from './BangSua'
+import { ChungTuForm, HachToan, LichSu, VoucherDetail, lyMacDinh } from './ChungTuForm'
+import { HopInChungTu, type PhieuIn } from '../bao-cao/InChungTu'
+
+/** Ngày tạo, người tạo (T132): phiếu lưu trong phiên có sẵn; phiếu mẫu đồng bộ từ phần mềm khác do Hệ thống tạo lúc đồng bộ,
+ *  phiếu mẫu nhập tay do một nhân viên tạo, vài phút sau giờ chứng từ */
+const NGUOI_TAO_MAU = NHAN_VIEN.slice(0, 4).map(n => n.ten)
+function taoCua(r: Row): { ngayTao: string; nguoiTao: string } {
+  if (r._ngayTao || r._nguoiTao) return { ngayTao: String(r._ngayTao ?? ''), nguoiTao: String(r._nguoiTao ?? '') }
+  const [ngay, gio = String(r.gio ?? '08:00')] = String(r.ngay ?? '').split(' ')
+  const x = rng(`tao-${r.so}`)
+  if (r.nguon && r.nguon !== 'tay' && r.nguon !== 'excel') return { ngayTao: `${ngay} ${gio}`, nguoiTao: 'Hệ thống' }
+  const [h, m] = gio.split(':').map(Number)
+  const phut = Math.min(23 * 60 + 59, (h || 8) * 60 + (m || 0) + 3 + Math.floor(x() * 40))
+  return { ngayTao: `${ngay} ${pad(Math.floor(phut / 60))}:${pad(phut % 60)}`, nguoiTao: NGUOI_TAO_MAU[Math.floor(x() * NGUOI_TAO_MAU.length)] }
+}
 
 /** Phiếu tham chiếu của chứng từ (T127): phiếu thu, chi sinh từ phiếu mua, bán (trả ngay, thanh toán sau); phiếu điều chỉnh sinh từ kiểm kê;
  *  phiếu gốc của phiếu được sinh ra. Có đường dẫn thì bấm mở được */
@@ -32,13 +53,6 @@ function thamChieuCua(r: Row): { so: string; to?: string }[] {
     ...(r._thamChieu ? [{ so: String(r._thamChieu), to: r._thamChieuDi ? String(r._thamChieuDi) : undefined }] : []),
   ]
 }
-import { CHI_NHANH, HANG, NVL } from '../../data/mock'
-import { NGUON, TT_CT, chungTu, dongCua, gioPhieu, ttNghiepVu, type Dong } from './gen'
-import { boO, nhomCua, theoLoai, TT_HD, TT_TIEN } from './nhom'
-import { BangKiemKe } from './BangKiemKe'
-import { BangSua } from './BangSua'
-import { ChungTuForm, HachToan, LichSu, VoucherDetail, lyMacDinh } from './ChungTuForm'
-import { HopInChungTu, type PhieuIn } from '../bao-cao/InChungTu'
 
 const COT_CO_DINH = new Set(['chk', 'stt', 'ngay', 'so'])
 /** Cột lọc bằng cách chọn trong danh sách giá trị */
@@ -131,7 +145,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
     }
   }), [rowsGoc, nhom, cfg, sc, coKhoDs, khoDong, mod.key])
   // Cột Tham chiếu (T127): chữ để lọc, tìm theo cột
-  const rows = useMemo(() => rows0.map((r): Row => ({ ...r, thamChieu: thamChieuCua(r).map(x => x.so).join(', ') })), [rows0])
+  const rows = useMemo(() => rows0.map((r): Row => ({ ...r, thamChieu: thamChieuCua(r).map(x => x.so).join(', '), ...taoCua(r) })), [rows0])
 
   const [trang, setTrang] = useState(1)
   const [coTrang, setCoTrang] = useState(20)
@@ -341,6 +355,9 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
           : <span key={i} className="code">{x.so}</span>)}</span> : ''
       },
     },
+    // Ngày tạo, người tạo (T132)
+    { k: 'ngayTao', t: 'Ngày tạo', w: 140 },
+    { k: 'nguoiTao', t: 'Người tạo', w: 150 },
     {
       k: 'nguon',
       t: 'Nguồn',

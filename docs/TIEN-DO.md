@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T132 | Mọi danh sách phiếu thêm cột Ngày tạo, Người tạo (phiếu lưu trong phiên ghi giờ lưu, người đăng nhập; phiếu đồng bộ ghi Hệ thống) | PhuongXT | Đang làm | Sửa `VoucherScreen.tsx`, `ChungTuForm.tsx`, `daXoa.ts`, `ban-hang/ChungTuBanHang.tsx` |
 | T120 | In phiếu từ form chứng từ: hàm `moIn` ở `ChungTuForm.tsx` (khoảng dòng 317–321) chưa truyền dòng chi tiết đang có trên form vào phiếu in, nên phiếu mới hoặc đang sửa in theo dòng đã lưu hoặc dòng sinh lại | | Chờ | Phát hiện khi làm T112 |
 | T109 | Sổ S2c-DNSN (5.2.8, TT58): bộ lọc Mặt hàng, Kho để mở sổ theo từng cặp mặt hàng – kho | | Chờ | T108 đang in cố định Thịt bò thăn, kho Phố Mây Lê Lợi. `CauHinhBC.loc` chưa đổi theo chế độ, lọc thêm sẽ hiện cả ở TT133, TT99 |
 | T110 | TT58: tên sổ ghi trong phần Hạch toán của phiếu (`soTT58` ở `tien/index.ts`, `ban-hang`, `kho`, `mua-hang`) theo bộ sổ TT58 (Sổ chi tiết tiền S2d thay Sổ quỹ tiền mặt, Sổ tiền gửi ngân hàng); tờ khai GTGT, Thông tin đơn vị đọc phương pháp thuế GTGT từ `s.ppGtgt` thay vì suy từ chế độ | | Chờ | Tách từ T108. `ToKhaiGTGT.tsx:18` còn `s.cheDo === 'TT58'` |
@@ -38,6 +37,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T132 | Mọi danh sách phiếu (cả Xuất bán POS) thêm cột Ngày tạo, Người tạo: phiếu lưu trong phiên ghi giờ lưu, người đăng nhập; phiếu mẫu đồng bộ ghi Hệ thống; phiếu mẫu nhập tay ghi một nhân viên | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-ngay-nguoi-tao.md` |
 | T131 | Chi tiết phiếu xuất, nhập điều chỉnh bỏ cột Thuế suất, Tiền thuế (dải đáy chỉ Tổng tiền); gói Free ẩn thêm Đơn giá, Thành tiền, dải tổng tiền và cột Tổng tiền ở danh sách | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-an-cot-dieu-chinh.md` |
 | T130 | Bộ lọc danh sách Kiểm kê, Điều chỉnh kho thêm ô Kho (theo kho của phiếu), hiện sẵn ngoài thanh lọc | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-loc-kho-kiem-ke.md` |
 | T129 | Phiếu xuất điều chỉnh, nhập điều chỉnh chỉ xem: bỏ Sửa, Ctrl+E, Sao chép, Xoá chứng từ, xoá hàng loạt. Xoá phiếu kiểm kê (ở form hoặc hàng loạt) tự xoá phiếu điều chỉnh liên quan, hộp xác nhận báo trước | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-khoa-phieu-dieu-chinh.md` |

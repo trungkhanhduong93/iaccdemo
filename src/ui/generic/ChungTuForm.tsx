@@ -238,7 +238,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
     }
     const so = soKeTiep(MAN_THU_CHI, `${TIEN_TO_CT_TT[loaiTt]}2610-`)
     const id = `moi-${Date.now()}-tt`
-    themPhieu(MAN_THU_CHI, { id, so, cn: chiNhanh, nguon: 'tay', tt: kieu === 'khong' ? 'ghi' : 'nhap', loai: loaiTt, tenLoai: TEN_CT_TT[loaiTt], ...nd })
+    themPhieu(MAN_THU_CHI, { id, so, cn: chiNhanh, nguon: 'tay', tt: kieu === 'khong' ? 'ghi' : 'nhap', loai: loaiTt, tenLoai: TEN_CT_TT[loaiTt], ...nd }, s.ten)
     ghiNhatKy(MAN_THU_CHI, id, so, s.ten, `Thêm mới chứng từ, sinh từ ${soCt}`)
     return { id, so, loai: loaiTt }
   }
@@ -258,7 +258,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
       }
       if (c) suaPhieu(MAN_DC, c.id, p)
       else {
-        themPhieu(MAN_DC, p)
+        themPhieu(MAN_DC, p, s.ten)
         ghiNhatKy(MAN_DC, String(p.id), String(p.so), s.ten, `Thêm mới chứng từ, sinh từ ${soCt}`)
       }
       ra.push({ id: String(p.id), so: String(p.so), loai: l })
@@ -284,7 +284,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
       ngay, thang: Number(ngay.split('/')[1]) || 10, doiTuong, dienGiai: dg, tien, thue: 0, tong: tien,
       _quy: quyTt, _lyDo: lyTt, _ghiChu: dg, _thamChieu: soCt, _thamChieuDi: `${path}/${row.id}`,
       _dong: [{ ma: '', ten: dg, dvt: '', sl: 1, gia: tien, tien, ts: 0, thue: 0, ly: lyTt, dt: doiTuong, km: '', cv: '' }],
-    })
+    }, s.ten)
     ghiNhatKy(MAN_THU_CHI, id, so, s.ten, `Thêm mới chứng từ, thanh toán cho ${soCt}`)
     const man = `${mod.key}/${sc.slug}`
     suaPhieu(man, String(row.id), { _dsTt: [...((row._dsTt as PhieuTt[] | undefined) ?? []), { id, so, loai, tien }] })
@@ -315,7 +315,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
       themPhieu(man, {
         id: idMoi, so: soCt, cn: chiNhanh, nguon: 'tay', tt: kieu === 'khong' ? 'ghi' : 'nhap',
         loai: loai?.k, tenLoai: loai?.ten, ...noiDung,
-      })
+      }, s.ten)
       ghiNhatKy(man, idMoi, soCt, s.ten, 'Thêm mới chứng từ')
     } else if (row) {
       suaPhieu(man, String(row.id), noiDung)

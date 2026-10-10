@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 10/10/2026
 
+- T132: Mọi danh sách phiếu có cột Ngày tạo, Người tạo. Phiếu đồng bộ từ FABi, iPOS Inventory ghi người tạo là Hệ thống.
 - T131: Phiếu xuất, nhập điều chỉnh không còn cột Thuế suất, Tiền thuế. Gói Free không hiện giá trị: bỏ Đơn giá, Thành tiền, tổng tiền ở phiếu và cột Tổng tiền ở danh sách.
 - T130: Danh sách Kiểm kê, Điều chỉnh kho có ô lọc Kho.
 - T129: Phiếu xuất điều chỉnh, nhập điều chỉnh chỉ xem, không sửa, xoá, sao chép. Xoá phiếu kiểm kê (cả xoá hàng loạt) thì tự xoá phiếu điều chỉnh liên quan; hộp xác nhận ghi rõ phiếu nào bị xoá theo.

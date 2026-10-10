@@ -10,7 +10,7 @@ export interface DongNhatKy { luc: string; ai: string; viec: string; so: string;
 const nhatKy: DongNhatKy[] = []   // mới nhất ở đầu
 
 /** Thời điểm theo ngày làm việc của bản mẫu (07/10/2026), giờ phút theo đồng hồ máy */
-function bayGio() {
+export function bayGio() {
   const d = new Date(), p = (n: number) => String(n).padStart(2, '0')
   return `07/10/2026 ${p(d.getHours())}:${p(d.getMinutes())}`
 }
@@ -67,8 +67,10 @@ export function ttTienTheoTra(r: Row): 'chua' | 'mot' | 'da' {
 }
 
 /** Phiếu mới lưu từ form: hiện lên đầu danh sách của màn */
-export function themPhieu(man: string, row: Row) {
-  phieuMoi.set(man, [row, ...(phieuMoi.get(man) ?? [])])
+export function themPhieu(man: string, row: Row, ai?: string) {
+  // Ngày tạo, người tạo của phiếu (T132)
+  const moi = { ...row, _ngayTao: row._ngayTao ?? bayGio(), _nguoiTao: row._nguoiTao ?? ai ?? '' }
+  phieuMoi.set(man, [moi, ...(phieuMoi.get(man) ?? [])])
   banSo++
   nghe.forEach(f => f())
 }

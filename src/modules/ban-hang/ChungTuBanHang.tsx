@@ -197,6 +197,7 @@ export function ChungTuBanHang({ sc, mod }: ScreenProps) {
       dienGiai: x.loai === 'don' ? `Hoá đơn FABi ${x.kenh.toLowerCase()} ${x.gio} ngày ${dmy(x.date).slice(0, 5)}` : `Doanh thu ${x.kenh.toLowerCase()} ${x.don} đơn POS ngày ${dmy(x.date).slice(0, 5)}`,
       doiTuong: 'Khách lẻ POS',
       tien: x.dt, thue: x.vat, tong: x.dt + x.vat, nguon: 'FABi', tt: i < 3 ? 'nhap' : 'ghi',
+      ngayTao: `${dmy(x.date)} 23:30`, nguoiTao: 'Hệ thống',   // tạo khi đồng bộ FABi cuối ngày (T132)
     })), [cach])
   const rows = useMemo(() => tatCa.filter(r => !laDaXoa(r.id)), [tatCa, ban])
   if (id === 'moi') return <Navigate to={duongDan(mod, sc)} replace />   // không lập tay Xuất bán POS (T52)
@@ -327,6 +328,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
     ...(cnChon ? [] : [{ k: 'cn', t: 'Chi nhánh', cls: 'dim' } as Col]),
     { k: 'tien', t: 'Doanh thu trước thuế', num: true, w: 160 }, { k: 'thue', t: 'Tiền thuế', num: true, w: 120 },
     // bỏ cột Nguồn: Xuất bán POS chỉ có nguồn FABi (T115)
+    { k: 'ngayTao', t: 'Ngày tạo', w: 140 }, { k: 'nguoiTao', t: 'Người tạo', w: 130 },   // T132
     { k: 'tong', t: 'Tổng tiền', num: true, w: 120 },   // Tổng tiền là cột cuối (T48)
   ]
   // Thứ tự, ẩn hiện, độ rộng cột lưu theo màn (T41)
