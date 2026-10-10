@@ -73,7 +73,7 @@ export function boO(nhom: Nhom, cfg: VoucherCfg): BoO {
     case 'ban': return {
       a: [...dt, { k: 'mst', nhan: 'Mã số thuế' }, { k: 'nv', nhan: 'Nhân viên bán hàng' }, kem],
       b: [...tenDt, { k: 'dc', nhan: 'Địa chỉ' }, dg, tc],
-      so: 'Số chứng từ', tt: 'ban', hd: true, tabDau: 'Chứng từ', ck: hang, kho: cfg.dong === 'nvl' ? 'dong' : undefined,
+      so: 'Số chứng từ', tt: 'ban', hd: true, tabDau: 'Chứng từ', ck: hang, kho: hang && cfg.prefix !== 'C26T' && cfg.prefix !== 'DCHD' ? 'dong' : undefined,   // hoá đơn bán, trả lại có kho; lập, điều chỉnh hoá đơn không (T83)
       tk: ['TK nợ', 'TK doanh thu'], inMau: ['Chứng từ bán hàng', 'Phiếu xuất kho'],
     }
     case 'thu': return {

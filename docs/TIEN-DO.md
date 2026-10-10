@@ -35,7 +35,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
-| T83 | Phiếu mua, bán có kho: gói dưới Pro chọn một kho ở đầu phiếu, bỏ cột Kho trên dòng; gói Pro giữ kho trên dòng; chi nhánh một kho thì phiếu mới điền sẵn. Thông tin hoá đơn mua, bán thành cột riêng cạnh ngày, số phiếu, bắt buộc nhập (QD33) | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-chi-tiet-thu-chi-ly-do.md` |
+| T83 | Phiếu mua, hoá đơn bán hàng, phiếu trả lại có kho: gói dưới Pro chọn một kho ở đầu phiếu, bỏ cột Kho trên dòng; gói Pro giữ kho trên dòng; chi nhánh một kho thì phiếu mới điền sẵn. Thông tin hoá đơn mua, bán thành cột riêng cạnh ngày, số phiếu, bắt buộc nhập (QD33) | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-chi-tiet-thu-chi-ly-do.md` |
 | T82 | Gói Free: khung chi tiết dưới mọi danh sách chứng từ (cả Bán hàng POS) bỏ tab Ghi sổ, như form | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-chi-tiet-thu-chi-ly-do.md` |
 | T27 | Danh sách chứng từ 2.1.1: khung chi tiết bên dưới lấy dòng phiếu giống form của cùng phiếu; phiếu thu, chi có cột Lý do thu, chi và Đối tượng | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-chi-tiet-thu-chi-ly-do.md` |
 | T81 | Panel bên phải kiểu mới (mục lục trái, khối thẻ, công tắc, chân trạng thái), Tuỳ chỉnh báo cáo hai cột, Tuỳ chỉnh giao diện phiếu; mở đóng mượt (đo 331ms, mục tiêu ≤ 100ms); ô chọn đẹp, có tìm, dựng option khi mở | Trum | 10/10/2026 | `2026-10-10-trum-panel-dong-bo.md` |

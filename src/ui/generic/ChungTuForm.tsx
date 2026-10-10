@@ -779,7 +779,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               {/* Gói dưới Pro: một kho cho cả phiếu, chọn trong kho của chi nhánh lập phiếu (T83) */}
               {khoDau && (
                 <div className="f">
-                  <label>{nhom === 'ban' || cfg.prefix === 'TLN' ? 'Kho xuất' : 'Kho nhập'} <em>*</em></label>
+                  <label>{(nhom === 'ban') !== (cfg.prefix === 'TLN' || cfg.prefix === 'TL') ? 'Kho xuất' : 'Kho nhập'} <em>*</em></label>   {/* trả lại hàng mua thì xuất, trả lại hàng bán thì nhập */}
                   {dangSua ? (
                     <ChonDanhMuc dm="kho" nhan="kho" value={kho} onChange={setKho} ds={!kho || dsKhoCn.includes(kho) ? dsKhoCn : [kho, ...dsKhoCn]} />
                   ) : <input className="inp" readOnly value={kho} />}
