@@ -8,7 +8,7 @@ import { Icon } from '../ui/Icon'
 import { Logo, DauLogo } from '../ui/Logo'
 import { Topbar } from './Topbar'
 import { ModuleTabs } from './ModuleTabs'
-import { CommandPalette } from './CommandPalette'
+import { CommandPalette, ghiGanDay } from './CommandPalette'
 import { SidebarFlyout } from './SidebarFlyout'
 import { heSoZoom } from '../ui/zoom'
 
@@ -25,6 +25,9 @@ export function Shell() {
     window.addEventListener('keydown', on)
     return () => window.removeEventListener('keydown', on)
   }, [])
+
+  // Lịch sử màn vừa mở cho hộp tìm Ctrl K (T80)
+  useEffect(() => { if (s.loggedIn) ghiGanDay(loc.pathname) }, [loc.pathname, s.loggedIn])
 
   if (!s.loggedIn) return <Navigate to="/dang-nhap" replace />
   const modKey = loc.pathname.split('/')[2]
