@@ -107,8 +107,8 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
   const khoDong = s.goi === 'PR'
   // Thu chi (T96): lý do thu, chi của phiếu; phiếu chưa lưu lý do thì đoán theo diễn giải như form, chuyển quỹ không có
   // Phiếu kiểm kê (T124): kho kiểm kê và số mặt hàng của phiếu
-  const rows0 = useMemo(() => cfg.dieuChinh ? rowsGoc.map((r): Row => ({ ...r, kho: String(r._kho ?? '') })) : cfg.kiemKe ? rowsGoc.map((r): Row => ({
-    ...r, kho: String(r._kho ?? ''), soMat: ((r._dong as Dong[] | undefined) ?? dongCua(cfg, `${sc.code ?? sc.slug}-${r.id}`)).length,
+  const rows0 = useMemo(() => cfg.dieuChinh ? rowsGoc.map((r): Row => ({ ...r, kho: String(r._kho ?? ''), _khoDs: r._kho ? [String(r._kho)] : [] })) : cfg.kiemKe ? rowsGoc.map((r): Row => ({
+    ...r, kho: String(r._kho ?? ''), _khoDs: r._kho ? [String(r._kho)] : [], soMat: ((r._dong as Dong[] | undefined) ?? dongCua(cfg, `${sc.code ?? sc.slug}-${r.id}`)).length,
   })) : mod.key === 'tien' ? rowsGoc.map((r): Row => {
     const loaiK = cfg.loai?.find(x => x.k === r.loai)?.k ?? cfg.loai?.[0]?.k
     const cfgDong = theoLoai(cfg, loaiK)
@@ -180,6 +180,8 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
     },
     ...(cfg.doiTuong !== 'none' && dsDoiTuong.length ? [{ k: 'doiTuong', ten: cfg.nhan ?? 'Đối tượng', o: chonO('doiTuong', cfg.nhan ?? 'Đối tượng', dsDoiTuong.map(v => [v, v])) }] : []),
     { k: 'nguon', ten: 'Nguồn', o: chonO('nguon', 'Nguồn', dsNguon.map(v => [v, (NGUON[v] ?? NGUON.tay)[1]])) },
+    // Kiểm kê, điều chỉnh kho lọc theo kho của phiếu (T130)
+    ...((cfg.kiemKe || cfg.dieuChinh) && dsKhoLoc.length ? [{ k: 'kho', ten: 'Kho', o: chonO('kho', 'Kho', dsKhoLoc.map(v => [v, v])) }] : []),
     ...(cfg.loai && !cfg.dieuChinh ? [{ k: 'loai', ten: 'Loại phiếu', o: chonO('loai', 'Loại phiếu', cfg.loai.map(v => [v.k, v.ten])) }] : []),
     ...(muaBan ? [
       { k: 'ttTien', ten: nhom === 'mua' ? 'TT thanh toán' : 'TT thu tiền', o: chonO('ttTien', 'Trạng thái thanh toán', Object.entries(TT_TIEN[nhom as 'mua' | 'ban']).map(([v, x]) => [v, x[1]])) },
@@ -188,7 +190,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
       ...(dsHangLoc.length ? [{ k: 'hang', ten: 'Hàng hoá', o: chonO('hang', 'Hàng hoá', dsHangLoc) }] : []),
     ] : []),
   ]
-  const [cauHinhLoc, datCauHinhLoc] = useCauHinhLoc(path, oLoc.map(o => o.k), ['thoiGian', 'tim', 'doiTuong'])
+  const [cauHinhLoc, datCauHinhLoc] = useCauHinhLoc(path, oLoc.map(o => o.k), ['thoiGian', 'tim', 'doiTuong', ...(cfg.kiemKe || cfg.dieuChinh ? ['kho'] : [])])
 
   // Lọc theo các ô đã áp dụng, chi nhánh trên thanh trên, hàng lọc từng cột; chip trạng thái lọc sau cùng để đếm số trên chip
   const ap = loc0.ap
