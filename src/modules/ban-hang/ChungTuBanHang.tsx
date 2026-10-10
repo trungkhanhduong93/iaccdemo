@@ -488,11 +488,6 @@ function NoiDungTab({ x, tab, kieu, an = AN_POS_MAC_DINH }: { x: (typeof DAILY)[
   )
 }
 
-/** Ô chỉ xem ở đầu phiếu, cùng kiểu ô của form chứng từ chung */
-function OXem({ nhan, v, code }: { nhan: string; v: string; code?: boolean }) {
-  return <div className="f"><label>{nhan}</label><input className={`inp${code ? ' code' : ''}`} readOnly value={v} title={v} /></div>
-}
-
 /** Chứng từ Xuất bán POS (T102): vẽ theo form chung IACC, đủ thông tin như chi tiết đơn POS của iFaster.
  *  Phiếu đồng bộ từ FABi, chỉ xem: không sửa, trả hàng, huỷ ở đây */
 function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
@@ -538,23 +533,15 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
       </>}>
       <div className="stack ct-co-dinh" style={{ gap: 14 }}>
         <p className="pos-nhac"><Icon n="info" className="ic sm" />Chứng từ đồng bộ từ FABi: không sửa, trả hàng, huỷ trên phiếu này. Sửa đơn trên FABi rồi đồng bộ lại.</p>
-        {/* Đầu phiếu 3 cột như form chung: thông tin chung, kênh và thanh toán, số và ngày */}
-        <section className="card" style={{ padding: '14px 16px' }}>
-          <div className="grid" style={{ gridTemplateColumns: 'minmax(0, 1.4fr) minmax(0, 1.2fr) 280px', gap: 16, alignItems: 'start' }}>
-            <div className="stack" style={{ gap: 10 }}>
-              <OXem nhan="Khách hàng" v="Khách lẻ POS" />
-              <OXem nhan="Kênh bán hàng" v={kenh} />
-              <OXem nhan="Ghi chú" v={String(row.dienGiai)} />
-            </div>
-            <div className="stack" style={{ gap: 10 }}>
-              <OXem nhan="Phương thức thanh toán" v={pttt} />
-              <OXem nhan="Thời gian xuất" v={`${row.ngay} 23:30`} />
-            </div>
-            <div className="stack" style={{ gap: 10 }}>
-              <OXem nhan="Ngày chứng từ" v={String(row.ngay)} />
-              <OXem nhan="Số chứng từ (số hoá đơn FABi)" v={String(row.so)} code />
-            </div>
-          </div>
+        {/* Đầu phiếu chỉ xem nên dạng thông tin gọn: nhãn nhỏ, giá trị, 4 cột × 2 hàng, để bảng chi tiết rộng hơn (T106) */}
+        <section className="card pos-dau">
+          <div><small>Khách hàng</small><b>Khách lẻ POS</b></div>
+          <div><small>Phương thức thanh toán</small><b title={pttt}>{pttt}</b></div>
+          <div><small>Ngày chứng từ</small><b>{row.ngay}</b></div>
+          <div><small>Số chứng từ (số hoá đơn FABi)</small><b className="code">{row.so}</b></div>
+          <div><small>Kênh bán hàng</small><b title={kenh}>{kenh}</b></div>
+          <div><small>Thời gian xuất</small><b>{row.ngay} 23:30</b></div>
+          <div className="c2"><small>Ghi chú</small><b title={String(row.dienGiai)}>{row.dienGiai}</b></div>
         </section>
         <section className="card ct-than-card">
           <div className="tabs">
