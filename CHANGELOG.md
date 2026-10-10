@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 10/10/2026
 
+- T83: Phiếu mua hàng gói Free, Standard, Plus chọn Kho nhập ở đầu phiếu thay cho cột Kho trên từng dòng; gói Pro vẫn chọn kho trên dòng. Chi nhánh chỉ có một kho thì phiếu mới điền sẵn kho đó. Tích Nhận kèm hoá đơn thì Mẫu số, Ký hiệu, Số, Ngày hoá đơn thành một cột riêng cạnh Ngày chứng từ, Số phiếu, đầu phiếu không cao thêm.
 - T82: Gói Free: khung chi tiết dưới mọi danh sách chứng từ không còn tab Ghi sổ.
 - T27: Danh sách thu chi 2.1.1: khung chi tiết dưới bảng hiện đúng dòng của phiếu như khi mở form; phiếu thu, chi có thêm cột Lý do thu, Lý do chi.
 - T81: Panel bên phải mở mượt hơn (panel danh mục từ 331ms còn khoảng 60ms). Khối thẻ trắng trên nền nhạt, ô nhập cao 36px, công tắc thay ô tích. Tuỳ chỉnh báo cáo hai cột, mục dọc bên trái. Tuỳ chỉnh giao diện phiếu thành panel bên phải. Ô chọn có ô tìm khi trên 8 lựa chọn.

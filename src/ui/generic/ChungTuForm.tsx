@@ -165,6 +165,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   useEffect(() => {
     if (khoDau) setDsDong(ds => ds.map(d => ({ ...d, kho })))
   }, [dongGoc, kho, khoDau])
+  const coHdDau = nhom === 'mua' && Boolean(bo.hd) && nhanKemHd
   const coThangLl = laTien && s.goi === 'F' && nhom !== 'cq'   // chuyển quỹ không ảnh hưởng lãi lỗ
   const dsThangLl = useMemo(() => thangLaiLo(ngayCt), [ngayCt])
   const [thangLl, setThangLl] = useState(dsThangLl[0])
@@ -627,7 +628,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
           <div
             className="grid"
             style={{
-              gridTemplateColumns: 'minmax(0, 1.4fr) minmax(0, 1.2fr) 280px',
+              gridTemplateColumns: coHdDau ? 'minmax(0, 1.4fr) minmax(0, 1.2fr) 260px 280px' : 'minmax(0, 1.4fr) minmax(0, 1.2fr) 280px',
               gap: 16,
               alignItems: 'start',
             }}
@@ -731,6 +732,30 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               {!keoGc && oGhiChu}
             </div>
 
+            {/* Mua hàng tích Nhận kèm hoá đơn: thông tin hoá đơn thành một cột trước cột ngày, số phiếu, ba hàng đều với hai cột trái (T62, T68, T83) */}
+            {coHdDau && (
+              <div className="stack ct-hd-dau" style={{ gap: 10 }}>
+                <div className="row" style={{ gap: 10 }}>
+                  <div className="f" style={{ flex: 1 }}>
+                    <label>Mẫu số HĐ</label>
+                    <input className="inp" defaultValue="1" readOnly={!dangSua} />
+                  </div>
+                  <div className="f" style={{ flex: 1 }}>
+                    <label>Ký hiệu HĐ</label>
+                    <input className="inp code" value={kyHieuHd} onChange={e => setKyHieuHd(e.target.value)} readOnly={!dangSua} />
+                  </div>
+                </div>
+                <div className="f">
+                  <label>Số hoá đơn</label>
+                  <input className="inp code" value={soHd} onChange={e => setSoHd(e.target.value)} readOnly={!dangSua} />
+                </div>
+                <div className="f">
+                  <label>Ngày hoá đơn</label>
+                  {dangSua ? <ONgay value={ngayHd} onChange={setNgayHd} /> : <input className="inp" readOnly value={ngayHd} />}
+                </div>
+              </div>
+            )}
+
             {/* Cột 3: Ngày chứng từ, số chứng từ. Chi nhánh hiện trên đầu form. Ghi chú kéo dài thì cột này chiếm cả hàng Ghi chú (T78) */}
             <div className="stack" style={{ gap: 10, gridRow: keoGc ? 'span 2' : undefined }}>
               <div className="f">
@@ -758,27 +783,6 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
                   {dangSua ? (
                     <ChonDanhMuc dm="kho" nhan="kho" value={kho} onChange={setKho} ds={!kho || dsKhoCn.includes(kho) ? dsKhoCn : [kho, ...dsKhoCn]} />
                   ) : <input className="inp" readOnly value={kho} />}
-                </div>
-              )}
-              {/* Mua hàng tích Nhận kèm hoá đơn: thông tin hoá đơn ở cột phải, dưới số phiếu, xếp 2 cột (T62, T68) */}
-              {nhom === 'mua' && bo.hd && nhanKemHd && (
-                <div className="ct-hd-dau">
-                  <div className="f">
-                    <label>Mẫu số HĐ</label>
-                    <input className="inp" defaultValue="1" readOnly={!dangSua} />
-                  </div>
-                  <div className="f">
-                    <label>Ký hiệu HĐ</label>
-                    <input className="inp code" value={kyHieuHd} onChange={e => setKyHieuHd(e.target.value)} readOnly={!dangSua} />
-                  </div>
-                  <div className="f">
-                    <label>Số hoá đơn</label>
-                    <input className="inp code" value={soHd} onChange={e => setSoHd(e.target.value)} readOnly={!dangSua} />
-                  </div>
-                  <div className="f">
-                    <label>Ngày hoá đơn</label>
-                    {dangSua ? <ONgay value={ngayHd} onChange={setNgayHd} /> : <input className="inp" readOnly value={ngayHd} />}
-                  </div>
                 </div>
               )}
               {coThangLl && (

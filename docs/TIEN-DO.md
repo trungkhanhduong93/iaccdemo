@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T83 | Phiếu mua, bán có kho: gói dưới Pro chọn một kho ở đầu phiếu, bỏ cột Kho trên dòng; gói Pro giữ kho trên dòng. Chi nhánh chỉ một kho thì phiếu mới điền sẵn kho đó | PhuongXT | Đang làm | Sửa `ChungTuForm.tsx`, `VoucherScreen.tsx` |
 | T80 | Hộp tìm màn hình Ctrl K kiểu iPOS Inventory: mục Vừa mở, Gợi ý, ô biểu tượng, đường dẫn phân hệ, thanh phím tắt | Trum | Chờ | Spec sẵn, chưa làm. Sửa `CommandPalette.tsx`, `Shell.tsx`, `app.css` |
 | T73 | Tối ưu phản hồi thao tác: bấm, rê chuột, mở menu, panel, cuộn bảng phản hồi tức thì; hiệu ứng nhẹ, ngắn; đo trước và sau | Trum | Chờ | Còn: panel tài khoản khựng 120-160ms lúc nội dung hiện sau khi trượt (trình duyệt vẽ, JS chỉ 25ms). Sửa nhiều file `src/` |
 | T60 | Mô tả gói Free, Standard trong `GOI` (`src/app/plan.ts`) đang ghi "1 điểm bán"; theo Roadmap gói Free là mỗi chi nhánh một kho, không giới hạn một chi nhánh. Chốt câu chữ rồi sửa | PhuongXT | Chờ | Tách từ T25 |
@@ -36,6 +35,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T83 | Phiếu mua, bán có kho: gói dưới Pro chọn một kho ở đầu phiếu, bỏ cột Kho trên dòng; gói Pro giữ kho trên dòng; chi nhánh một kho thì phiếu mới điền sẵn. Thông tin hoá đơn mua thành cột riêng cạnh ngày, số phiếu (QD33) | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-chi-tiet-thu-chi-ly-do.md` |
 | T82 | Gói Free: khung chi tiết dưới mọi danh sách chứng từ (cả Bán hàng POS) bỏ tab Ghi sổ, như form | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-chi-tiet-thu-chi-ly-do.md` |
 | T27 | Danh sách chứng từ 2.1.1: khung chi tiết bên dưới lấy dòng phiếu giống form của cùng phiếu; phiếu thu, chi có cột Lý do thu, chi và Đối tượng | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-chi-tiet-thu-chi-ly-do.md` |
 | T81 | Panel bên phải kiểu mới (mục lục trái, khối thẻ, công tắc, chân trạng thái), Tuỳ chỉnh báo cáo hai cột, Tuỳ chỉnh giao diện phiếu; mở đóng mượt (đo 331ms, mục tiêu ≤ 100ms); ô chọn đẹp, có tìm, dựng option khi mở | Trum | 10/10/2026 | `2026-10-10-trum-panel-dong-bo.md` |

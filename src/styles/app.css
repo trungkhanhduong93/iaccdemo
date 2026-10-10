@@ -3476,7 +3476,8 @@ body.tkmi-dang-keo, body.tkmi-dang-keo * {
 
 
 /* ── Form mua hàng: thông tin hoá đơn ở đầu phiếu khi nhận kèm hoá đơn (T62) ── */
-.ct-hd-dau { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }   /* trong cột phải đầu phiếu, 2 cột (T68) */
+/* Thông tin hoá đơn mua: một cột riêng trước cột ngày, số phiếu, kẻ mảnh hai bên (T83 thay cách xếp ở cột phải của T68) */
+.ct-hd-dau { padding: 0 16px; margin: 0 -8px; border-left: 1px solid var(--line-2); border-right: 1px solid var(--line-2); }
 
 /* ── Nhãn nguồn chứng từ nhập từ Excel (T64) ── */
 .src.excel { background: var(--green-t); color: var(--green); }
