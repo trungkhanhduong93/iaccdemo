@@ -15,7 +15,8 @@
 - T104 form: ghi chú một dòng chữ nhỏ (`.pos-nhac`); đầu phiếu bỏ Cửa hàng, Số đơn POS, Diễn giải sang cột trái; bỏ tab Thanh toán, Đơn POS gốc, cột Ghi chú; khối tổng chuyển thành dải `day` cố định ở đáy form (`.pos-day`), khoản bằng 0 hiện mờ.
 - T105 `ChungTuForm.tsx`: thân form lớp `ct-co-dinh`, thẻ tab `ct-than-card`, nội dung tab trong `ct-than` (vùng duy nhất cuộn; `.tbl-wrap` bên trong không tự cuộn nên tiêu đề cột dính theo `.ct-than`). Khối tổng trong thẻ bỏ, thay bằng `DaiTong` ở dải `day` (công tắc Khối tổng tiền vẫn bật tắt). Xuất bán POS dùng chung `DaiTong` và cùng bố cục.
 - T106: bảng Hàng bán thêm % CK, Tiền CK, % Phí dịch vụ, Phí dịch vụ, Giảm thuế GTGT, Phí vận chuyển (mẫu bằng 0), Doanh thu trước thuế (thành tiền − giảm − CK + phí dịch vụ + phí vận chuyển); bỏ cột Tổng tiền; dòng Tổng cộng cộng mọi cột tiền. Dải đáy chỉ Phiếu giảm giá, Tổng tiền.
-- T106: form có nút Tuỳ chỉnh giao diện (`HopCotPhieu`, `COT_POS`); Giảm thuế GTGT, Phí vận chuyển ẩn sẵn (`AN_POS_MAC_DINH`), khoá `iacc-cot-phieu:ban-hang/3-1-1`. `HopCotPhieu` thêm tham số `macDinh` cho nút Khôi phục mặc định. Header: Khách hàng, Kênh bán hàng, Ghi chú (trước là Diễn giải).
+- T106: form có nút Tuỳ chỉnh giao diện (`HopCotPhieu`, `COT_POS`); Giảm thuế GTGT, Phí vận chuyển ẩn sẵn (`AN_POS_MAC_DINH`), khoá `iacc-cot-phieu:ban-hang/3-1-1`. `HopCotPhieu` thêm tham số `macDinh` cho nút Khôi phục mặc định.
+- T106: cột #, Mã hàng, Hàng hoá, ĐVT cố định trái (`dinh: 'trai'`), nhãn Tổng cộng chuyển sang cột Hàng hoá để cột # không giãn. Bỏ nút Phát hành HĐĐT ở thanh đáy. Header: Khách hàng, Kênh bán hàng, Ghi chú (trước là Diễn giải).
 - T103 `dongMonGiam(dt, vat)`: thuế từng món chỉnh cho tổng bằng thuế GTGT của ngày, phần lệch dồn vào món thuế lớn nhất.
 
 ## Đã kiểm

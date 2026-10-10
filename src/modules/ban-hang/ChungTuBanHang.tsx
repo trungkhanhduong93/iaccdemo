@@ -409,10 +409,11 @@ function NoiDungTab({ x, tab, kieu, an = AN_POS_MAC_DINH }: { x: (typeof DAILY)[
       {tab === 'ct' && (
         <Table
           cols={([
-            { k: 'stt', t: '#', w: 40, cls: 'dim' },
-            { k: 'ma', t: 'Mã hàng', cls: 'code', w: 90 },
-            { k: 'ten', t: 'Hàng hoá' },
-            { k: 'dvt', t: 'ĐVT', w: 70 },
+            // Thông tin hàng hoá đứng yên bên trái khi cuộn ngang (T106)
+            { k: 'stt', t: '#', w: 40, cls: 'dim', dinh: 'trai' },
+            { k: 'ma', t: 'Mã hàng', cls: 'code', w: 90, dinh: 'trai' },
+            { k: 'ten', t: 'Hàng hoá', w: 200, dinh: 'trai' },
+            { k: 'dvt', t: 'ĐVT', w: 70, dinh: 'trai' },
             { k: 'sl', t: 'Số lượng', num: true, w: 90 },
             { k: 'gia', t: 'Đơn giá', num: true, w: 110 },
             { k: 'thanh', t: 'Thành tiền', num: true, w: 120 },
@@ -431,7 +432,7 @@ function NoiDungTab({ x, tab, kieu, an = AN_POS_MAC_DINH }: { x: (typeof DAILY)[
           ] as Col[]).filter(c => !an.includes(c.k))}
           rows={dong}
           sum={{
-            stt: `Tổng cộng (${dong.length} dòng)`,
+            ten: `Tổng cộng (${dong.length} dòng)`,   // nhãn ở cột Hàng hoá để cột # cố định không giãn (T106)
             ...Object.fromEntries((['sl', 'thanh', 'giam', 'ck', 'phiDv', 'giamThue', 'phiVc', 'dtTruocThue', 'thue'] as const)
               .map(k => [k, dong.reduce((a, r) => a + r[k], 0)])),
           }}
@@ -516,7 +517,6 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
   const tong = x.dt + x.vat - phieuGiam
   const pttt = [['Tiền mặt', x.tm], ['Chuyển khoản, QR', x.ck], ['Thẻ', x.the], ['App giao đồ ăn', x.app]].filter(([, v]) => Number(v) > 0).map(([t]) => t).join(', ')
   const kenh = x.app > 0 ? 'Tại quán, Mang về, App giao đồ ăn' : 'Tại quán, Mang về'
-  const coHddt = ['PL', 'PR'].includes(s.goi)
   // In: bảng kê lấy đúng các món của chứng từ, không sinh dòng giả
   const moIn = () => setPhieuIn([{
     sc, row, cfg: NGOAI_POS,
@@ -534,8 +534,6 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
         <span className="grow" />
         <button type="button" className="btn sm" onClick={() => setHopCot(true)} title="Bật tắt cột bảng Hàng bán"><Icon n="chinh" className="ic sm" />Tuỳ chỉnh giao diện</button>
         <button type="button" className="btn sm" onClick={moIn}><Icon n="printer" className="ic sm" />In</button>
-        <button type="button" className="btn sm pri" disabled={!coHddt} title={coHddt ? 'Gửi hoá đơn tổng hợp sang iPOS Invoice' : 'Phát hành hoá đơn điện tử có từ gói Plus'}
-          onClick={() => toast('Đã gửi hoá đơn tổng hợp sang iPOS Invoice')}><Icon n="receipt" className="ic sm" />Phát hành HĐĐT</button>
         <button type="button" className="btn sm" onClick={dong0}>Đóng (Esc)</button>
       </>}>
       <div className="stack ct-co-dinh" style={{ gap: 14 }}>
