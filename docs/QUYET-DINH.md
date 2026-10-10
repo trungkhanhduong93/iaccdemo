@@ -450,3 +450,24 @@ Lý do: Trum chốt ngày 10/10/2026 (T97), theo bộ báo cáo hộ kinh doanh 
 - Gói Standard mở 7.2.1 (Sổ TSCĐ, S4b-DNSN) để đủ bộ sổ TT58.
 
 Lý do: Trum chốt ngày 10/10/2026 (T108).
+
+## QD44. Thiết kế lại màn hình Gói thuê bao và bộ logo nhận diện 4 gói (10/10/2026)
+
+- Bộ nhận diện logo 4 gói (`src/ui/GoiLogo.tsx`):
+  + Giữ nguyên hệ màu gốc: Free xám thép (`--fr`), Standard xanh ngọc (`--st`), Plus xanh dương hoàng gia (`--md`), Pro vàng hổ phách (`--ad`).
+  + Phối gradient đa tầng sắc nét, viền specular phản quang ánh gương và bóng đổ màu phát quang (`glow`).
+  + Biểu tượng vector SVG riêng biệt mang tính biểu trưng cho từng gói:
+    * Free (F): Cánh lá mầm vươn lên, tượng trưng khởi đầu tinh gọn, 0 đ trọn đời, TT152.
+    * Standard (S): Chiếc khiên chuẩn hoá 2 nửa vát cạnh kèm checkmark, biểu tượng chuẩn mực DN siêu nhỏ, TT58.
+    * Plus (PL): Ngôi sao tăng trưởng 4 cánh kim cương kết hợp dấu cộng, bứt phá chuỗi 1–10 điểm, Nợ/Có, TT133.
+    * Pro (PR): Vương miện hoàng gia 5 đỉnh vát cạnh kim cương, đại diện chuỗi lớn không giới hạn, TT99.
+  + Nhãn gói `.pk`: nâng cấp gradient rực rỡ và viền kính cho toàn bộ app, có prop `logo` tùy chọn nhúng icon SVG.
+
+- Màn hình Gói thuê bao (`src/modules/he-thong/GoiThueBao.tsx`):
+  + Thẻ hiện trạng bản quyền (Hero Status Card): logo gói 52px glow, tên đơn vị, MST, chế độ kế toán, hạn dùng và thanh đếm ngày.
+  + Bộ chuyển đổi kỳ thanh toán Năm / Tháng với huy hiệu "Tiết kiệm 20%".
+  + 4 Thẻ gói dịch vụ: định vị phân khúc F&B rõ ràng, giá to bản, badge "Đang sử dụng", "Khuyên dùng cho chuỗi". Mỗi thẻ có nút CTA, thanh tiến độ tính năng mini, danh sách 5 tính năng cốt lõi.
+  + Bảng so sánh 120 tính năng theo phân hệ: ô tìm kiếm tính năng real-time, checkbox lọc chỉ tính năng khác biệt, nút mở rộng/thu gọn tất cả, highlight cột gói đang dùng.
+  + Khối Hỏi đáp thường gặp (FAQ) và modal xác nhận chuyển đổi gói đồng bộ chế độ kế toán.
+
+Lý do: Trum giao việc thiết kế lại màn hình Gói thuê bao và logo 4 gói ngày 10/10/2026 (T119).

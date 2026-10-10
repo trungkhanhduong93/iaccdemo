@@ -2,9 +2,15 @@
 import type { ReactNode } from 'react'
 import { GOI, type Goi } from '../app/plan'
 import { Icon } from './Icon'
+import { GoiIconSvg } from './GoiLogo'
 
-export function Pk({ g, o }: { g: Goi; o?: boolean }) {
-  return <span className={`pk ${GOI[g].cls}${o ? ' o' : ''}`}>{GOI[g].ten}</span>
+export function Pk({ g, o, logo }: { g: Goi; o?: boolean; logo?: boolean }) {
+  return (
+    <span className={`pk ${GOI[g].cls}${o ? ' o' : ''}${logo ? ' has-logo' : ''}`}>
+      {logo && <GoiIconSvg g={g} size={13} />}
+      {GOI[g].ten}
+    </span>
+  )
 }
 
 /** Tiêu đề màn. code giữ trong chữ ký cho các màn đang truyền, không còn hiện mã, giai đoạn, nhãn gói dưới tiêu đề (T39) */

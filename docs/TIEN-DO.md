@@ -4,7 +4,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T118.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T119.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
@@ -44,6 +44,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | T115 | Danh sách Xuất bán POS: bỏ cột và ô lọc Nguồn (chỉ có FABi); nhãn cách đồng bộ ghi gọn Chi tiết hoặc Tổng hợp | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-dong-bo-fabi.md` |
 | T114 | Danh mục hàng hoá có trường Theo dõi tồn kho (panel, cột danh sách; món chế biến không theo dõi, hàng bán lại và nguyên vật liệu có); Xuất bán POS có cột Theo dõi tồn kho ô tích chỉ xem, cột cuối cố định phải | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-dong-bo-fabi.md` |
 | T113 | Cấu hình cách đồng bộ bán hàng FABi (Hệ thống, Cấu hình kế toán): Chi tiết theo hoá đơn (mỗi hoá đơn FABi một chứng từ Xuất bán POS, có giờ, kênh, cách thanh toán, món của đơn) hoặc Tổng hợp theo kênh (mỗi ngày, chi nhánh, kênh một chứng từ, mặc định); tổng doanh thu, thuế không đổi | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-dong-bo-fabi.md` |
+| T119 | Thiết kế lại màn hình Gói thuê bao và bộ logo nhận diện 4 gói Free, Standard, Plus, Pro (gradient, biểu tượng vector) | Trum | 10/10/2026 | `2026-10-10-trum-goi-thue-bao-logo.md` |
 | T108 | Mẫu in phiếu và mẫu sổ, BCTC riêng TT58: Thông tin đơn vị chọn phương pháp thuế GTGT, TNDN quyết định bộ sổ (TH1–TH4); 11 sổ S1–S4d đúng cột, dòng in sẵn, công thức, có tiêu đề cột 2 tầng; 3.2.5 đổi S1/S2a/S3a theo trường hợp; B01-DNSN 14 chỉ tiêu, B02-DNSN 5 chỉ tiêu; phiếu 01-TT, 02-TT, 01-VT, 02-VT ký hiệu và khối ký TT58 | Trum | 10/10/2026 | `2026-10-10-trum-mau-tt58.md` |
 | T107 | Thẻ chi phí phân bổ 8.1.1 (Danh sách thẻ chi phí): thẻ dùng chung chi phí trả trước, CCDC, TSCĐ; thẻ dư đầu kỳ; lịch phân bổ sửa được từng dòng, ngừng phân bổ; tạo thẻ từ phiếu chi lý do Chi phí chờ phân bổ; sơ đồ Chi phí phân bổ; 4 lý do chi mới; ngày đầu năm ở Thông tin đơn vị chặn chứng từ thêm mới trước ngày này | dinhlanphuongipacc | 10/10/2026 | `2026-10-10-dinhlanphuongipacc-the-chi-phi-phan-bo.md` |
 | T106 | Xuất bán POS: bảng chi tiết thêm % CK, Tiền CK, % Phí dịch vụ, Phí dịch vụ, Giảm thuế GTGT, Phí vận chuyển (hai cột sau ẩn sẵn, bật ở Tuỳ chỉnh giao diện), Doanh thu trước thuế; dòng Tổng cộng thẳng cột, bỏ cột Tổng tiền; cột #, Mã hàng, Hàng hoá, ĐVT cố định trái; dải đáy còn Phiếu giảm giá (hàng ngay trên Tổng tiền), Tổng tiền; bỏ nút Phát hành HĐĐT; đầu phiếu dạng thông tin gọn 4 cột × 2 hàng; Diễn giải đổi thành Ghi chú dưới Kênh bán | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-xuat-ban-pos.md` |
