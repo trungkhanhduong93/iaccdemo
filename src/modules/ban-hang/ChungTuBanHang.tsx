@@ -271,7 +271,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
     { k: 'kenh', ten: 'Kênh bán', o: chonO('kenh', 'Kênh bán', [...new Set(rows.map(r => String(r.kenh ?? '')).filter(Boolean))].map(v => [v, v])) },
     // Tổng hợp theo kênh gộp nhiều cách thanh toán nên không lọc theo phương thức (T116)
     ...((s.dongBoFabi ?? 'kenh') === 'chiTiet' ? [{ k: 'pttt', ten: 'Phương thức thanh toán', o: chonO('pttt', 'Phương thức thanh toán', PTTT.map(([, t]) => [t, t])) }] : []),
-    // Hàng hoá có trong chứng từ; Theo dõi tồn kho: chứng từ có hoặc không có món theo dõi tồn kho (T118)
+    // Hàng hoá có trong chứng từ; Theo dõi tồn kho: chứng từ có món theo dõi hoặc có món không theo dõi tồn kho (T118)
     { k: 'hang', ten: 'Hàng hoá', o: chonO('hang', 'Hàng hoá', HANG.map(h => [h.ma, `${h.ma} - ${h.ten}`])) },
     { k: 'tonKho', ten: 'Theo dõi tồn kho', o: chonO('tonKho', 'Theo dõi tồn kho', [['co', 'Có theo dõi tồn kho'], ['khong', 'Không theo dõi tồn kho']]) },
   ]
@@ -287,7 +287,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
     if (ap.kh && r.doiTuong !== ap.kh) return false
     if (ap.kenh && r.kenh !== ap.kenh) return false
     if (ap.hang && !monCua(r.x).some(m => m.ma === ap.hang)) return false
-    if (ap.tonKho && monCua(r.x).some(m => m.tonKho) !== (ap.tonKho === 'co')) return false
+    if (ap.tonKho && !monCua(r.x).some(m => m.tonKho === (ap.tonKho === 'co'))) return false
     if (ap.pttt && !ptttCua(r.x).includes(ap.pttt)) return false
     if (ap.tim.trim() && !fold(`${r.so} ${r.dienGiai}`).includes(fold(ap.tim.trim()))) return false
     for (const [k, g] of Object.entries(locCot)) {
