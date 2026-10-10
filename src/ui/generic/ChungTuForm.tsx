@@ -325,11 +325,12 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   // Tuỳ chỉnh giao diện phiếu (T87): ô đầu phiếu không bắt buộc và tổng chân phiếu bật tắt được, nhớ chung khoá với cột bảng (tiền tố dau:, chan:)
   const hienDau = (k: string) => !anCot.includes(`dau:${k}`)
   const hienChan = (k: string) => !anCot.includes(`chan:${k}`)
-  const nhanNguoi = nhom === 'cq' ? 'Người thực hiện' : laTien ? 'Người giao dịch' : nhom === 'mua' ? 'Người giao hàng' : nhom === 'ban' ? 'Người mua hàng' : 'Người giao / nhận'
+  const muaBan = nhom === 'mua' || nhom === 'ban'
+  const nhanNguoi = nhom === 'cq' ? 'Người thực hiện' : laTien || muaBan ? 'Người giao dịch' : 'Người giao / nhận'   // mua, bán ghi Người giao dịch (T88)
   const dsDau: [string, string][] = [
     ['nguoi', nhanNguoi],
     ...(nhom !== 'cq' ? [['diaChi', 'Địa chỉ'] as [string, string]] : []),
-    ...(!laTien ? [['nhanVien', 'Nhân viên thực hiện'] as [string, string]] : []),
+    ...(!laTien && !muaBan ? [['nhanVien', 'Nhân viên thực hiện'] as [string, string]] : []),
     ...(nhom !== 'cq' ? [['mst', 'Mã số thuế'] as [string, string]] : []),
     ...(bo.tt ? [['hanTt', 'Hạn thanh toán'] as [string, string]] : []),
     ['ghiChu', 'Ghi chú'],
@@ -362,7 +363,14 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   // Ghi chú ở mọi phiếu (T69), gõ ghi chú thì diễn giải chép theo (T49, T78)
   // Phân hệ Thu chi (trừ chuyển quỹ): Địa chỉ ở cột giữa, Ghi chú kéo dài qua hai cột trái (T77).
   // Phiếu khác: Địa chỉ ở cột trái, Ghi chú ở cột giữa cùng hàng Địa chỉ (T78). Hai cột trái luôn đều hàng
-  const keoGc = laTien && nhom !== 'cq'
+  // Mua, bán (T88): hàng 1 Đối tượng, Mã số thuế; hàng 2 Địa chỉ, Người giao dịch; Ghi chú kéo dài như thu chi; bỏ Nhân viên thực hiện
+  const keoGc = (laTien && nhom !== 'cq') || muaBan
+  const oNguoi = hienDau('nguoi') && (
+    <div className="f">
+      <label>{nhanNguoi}</label>
+      <input className="inp" readOnly={!dangSua} value={nguoiGiao} onChange={e => setNguoiGiao(e.target.value)} />
+    </div>
+  )
   const oGhiChu = hienDau('ghiChu') && (
     <div className="f" style={keoGc ? { gridColumn: '1 / 3' } : undefined}>
       <label>Ghi chú</label>
@@ -718,19 +726,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
                   <input className="inp" readOnly value={doiTuong} />
                 )}
               </div>
-              {hienDau('nguoi') && <div className="f">
-                <label>{nhanNguoi}</label>
-                {dangSua ? (
-                  <input
-                    className="inp"
-                    value={nguoiGiao}
-                    onChange={e => setNguoiGiao(e.target.value)}
-                  />
-                ) : (
-                  <input className="inp" readOnly value={nguoiGiao} />
-                )}
-              </div>}
-              {!keoGc && oDiaChi}
+              {!muaBan && oNguoi}
+              {(!keoGc || muaBan) && oDiaChi}
               </>)}
             </div>
 
@@ -748,8 +745,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               )}
               {/* Chuyển quỹ: hàng 1 Từ quỹ, Đến quỹ; hàng 2 Người thực hiện, Ghi chú (T77) */}
               {nhom === 'cq' && oQuyCq('Đến quỹ', denQuy, setDenQuy)}
-              {keoGc && oDiaChi}
-              {!laTien && hienDau('nhanVien') && (
+              {keoGc && !muaBan && oDiaChi}
+              {!laTien && !muaBan && hienDau('nhanVien') && (
                 <div className="f">
                   <label>Nhân viên thực hiện</label>
                   {dangSua ? (
@@ -786,12 +783,13 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
                   </div>
                 )}
               </div>}
+              {muaBan && oNguoi}
               {!keoGc && oGhiChu}
             </div>
 
             {/* Mua tích Nhận kèm hoá đơn, bán tích Lập kèm hoá đơn: thông tin hoá đơn thành một cột trước cột ngày, số phiếu, ba hàng đều với hai cột trái (T62, T68, T83) */}
             {coHdDau && (
-              <div className="stack ct-hd-dau" style={{ gap: 10 }}>
+              <div className="stack ct-hd-dau" style={{ gap: 10, gridRow: keoGc ? 'span 2' : undefined }}>
                 <div className="row" style={{ gap: 10 }}>
                   <div className="f" style={{ flex: 1 }}>
                     <label>Mẫu số HĐ <em>*</em></label>
