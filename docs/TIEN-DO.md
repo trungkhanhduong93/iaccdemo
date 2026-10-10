@@ -36,7 +36,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
-| T106 | Xuất bán POS: phí dịch vụ, giảm thuế GTGT, phí vận chuyển thành cột trên bảng chi tiết, dòng Tổng cộng thẳng cột, Tổng tiền dòng gồm thuế; dải đáy còn Chiết khấu hoá đơn, Phiếu giảm giá, Tổng tiền; Diễn giải đổi thành Ghi chú dưới Kênh bán | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-xuat-ban-pos.md` |
+| T106 | Xuất bán POS: phí dịch vụ, giảm thuế GTGT, phí vận chuyển thành cột trên bảng chi tiết, dòng Tổng cộng thẳng cột, bỏ cột Tổng tiền; dải đáy còn Chiết khấu hoá đơn, Phiếu giảm giá, Tổng tiền; Diễn giải đổi thành Ghi chú dưới Kênh bán | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-xuat-ban-pos.md` |
 | T103 | Xuất bán POS: thuế từng món cộng lại bằng thuế GTGT của ngày (phần lệch làm tròn dồn vào món thuế lớn nhất) | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-xuat-ban-pos.md` |
 | T105 | Form mọi phiếu (form chung và Xuất bán POS): đầu phiếu đứng yên, chỉ vùng bảng chi tiết cuộn, tiêu đề cột dính; phần tổng thành dải cố định ở đáy form (QD33) | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-xuat-ban-pos.md` |
 | T104 | Xuất bán POS: số chứng từ là số hoá đơn FABi (`soBH` 12 ký tự, Thu chi tham chiếu theo); ghi chú gọn một dòng; bỏ ô Cửa hàng, Số đơn POS, tab Thanh toán, Đơn POS gốc, cột Ghi chú; Diễn giải cột trái; phần tổng thành dải cố định ở đáy form | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-xuat-ban-pos.md` |

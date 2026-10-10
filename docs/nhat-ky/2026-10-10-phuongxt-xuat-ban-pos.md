@@ -14,7 +14,7 @@
 - T104 `data/mock.ts` `soBH`: số chứng từ là số hoá đơn FABi, 12 ký tự chữ số viết hoa, cố định theo chi nhánh và ngày; Thu chi (`tien/data.ts`) dùng chung hàm nên khớp.
 - T104 form: ghi chú một dòng chữ nhỏ (`.pos-nhac`); đầu phiếu bỏ Cửa hàng, Số đơn POS, Diễn giải sang cột trái; bỏ tab Thanh toán, Đơn POS gốc, cột Ghi chú; khối tổng chuyển thành dải `day` cố định ở đáy form (`.pos-day`), khoản bằng 0 hiện mờ.
 - T105 `ChungTuForm.tsx`: thân form lớp `ct-co-dinh`, thẻ tab `ct-than-card`, nội dung tab trong `ct-than` (vùng duy nhất cuộn; `.tbl-wrap` bên trong không tự cuộn nên tiêu đề cột dính theo `.ct-than`). Khối tổng trong thẻ bỏ, thay bằng `DaiTong` ở dải `day` (công tắc Khối tổng tiền vẫn bật tắt). Xuất bán POS dùng chung `DaiTong` và cùng bố cục.
-- T106: bảng Hàng bán thêm cột Phí dịch vụ, Giảm thuế GTGT, Phí vận chuyển (mẫu bằng 0); Tổng tiền dòng = sau giảm + thuế; dòng Tổng cộng cộng mọi cột tiền. Dải đáy chỉ Chiết khấu hoá đơn, Phiếu giảm giá (khoản của cả đơn), Tổng tiền. Header: Khách hàng, Kênh bán hàng, Ghi chú (trước là Diễn giải).
+- T106: bảng Hàng bán thêm cột Phí dịch vụ, Giảm thuế GTGT, Phí vận chuyển (mẫu bằng 0); bỏ cột Tổng tiền, tổng chỉ ở dải đáy; dòng Tổng cộng cộng mọi cột tiền. Dải đáy chỉ Chiết khấu hoá đơn, Phiếu giảm giá (khoản của cả đơn), Tổng tiền. Header: Khách hàng, Kênh bán hàng, Ghi chú (trước là Diễn giải).
 - T103 `dongMonGiam(dt, vat)`: thuế từng món chỉnh cho tổng bằng thuế GTGT của ngày, phần lệch dồn vào món thuế lớn nhất.
 
 ## Đã kiểm
@@ -23,7 +23,7 @@
 - Gói Plus, BH2610-TD-07: Thành tiền 20.140.100, giảm 528.100, sau giảm 19.612.000 bằng doanh thu ngày; Tổng tiền 21.228.029 bằng danh sách. Đơn giá đúng giá món, tỷ lệ 10%, 5%.
 - T104: gói Free, phiếu số YHLTJTAKD76Z: đầu phiếu 3, 2, 2 ô; tab Hàng bán; dải tổng ở đáy giữ nguyên khi cuộn, Tổng tiền 21.228.029.
 - T105: phiếu mua mới 26 dòng, cuộn vùng bảng 400px: đầu phiếu, tiêu đề cột không dịch; dải Tổng tiền ở đáy. Phiếu uỷ nhiệm chi, phiếu kho, Xuất bán POS cùng bố cục.
-- T106, T103: YHLTJTAKD76Z: 15 cột tiêu đề, 15 ô dòng Tổng cộng; Tiền thuế cộng 1.616.029, cột Tổng tiền cộng 21.228.029 bằng Tổng tiền ở dải đáy.
+- T106, T103: YHLTJTAKD76Z: 14 cột tiêu đề, 14 ô dòng Tổng cộng; Thành tiền 20.140.100 − giảm 528.100 + thuế 1.616.029 = 21.228.029 bằng Tổng tiền ở dải đáy.
 
 ## Dở dang, việc tiếp theo
 

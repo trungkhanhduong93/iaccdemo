@@ -58,8 +58,8 @@ function dongMonGiam(dt: number, vat: number) {
   // Thuế từng món cộng lại bằng thuế GTGT của ngày (T103): phần lệch làm tròn dồn vào món có thuế lớn nhất
   const lon = ds.reduce((a, d) => (d.thue > a.thue ? d : a), ds[0])
   lon.thue += vat - ds.reduce((a, d) => a + d.thue, 0)
-  // Các khoản của đơn POS theo từng món (T106); dữ liệu mẫu bằng 0. Tổng tiền dòng gồm cả thuế
-  return ds.map(d => ({ ...d, phiDv: 0, giamThue: 0, phiVc: 0, tong: d.tien + d.thue }))
+  // Các khoản của đơn POS theo từng món (T106); dữ liệu mẫu bằng 0. Bảng không có cột Tổng tiền, tổng ở dải đáy
+  return ds.map(d => ({ ...d, phiDv: 0, giamThue: 0, phiVc: 0 }))
 }
 
 function dongMon(dt: number) {
@@ -411,12 +411,11 @@ function NoiDungTab({ x, tab, kieu }: { x: (typeof DAILY)[number]; tab: string; 
             { k: 'phiVc', t: 'Phí vận chuyển', num: true, w: 120 },
             { k: 'ts', t: 'Thuế suất', num: true, w: 80, r: r => `${r.ts}%` },
             { k: 'thue', t: 'Tiền thuế', num: true, w: 110 },
-            { k: 'tong', t: 'Tổng tiền', num: true, w: 130 },
           ]}
           rows={dong}
           sum={{
             stt: `Tổng cộng (${dong.length} dòng)`,
-            ...Object.fromEntries((['sl', 'thanh', 'giam', 'phiDv', 'giamThue', 'phiVc', 'thue', 'tong'] as const)
+            ...Object.fromEntries((['sl', 'thanh', 'giam', 'phiDv', 'giamThue', 'phiVc', 'thue'] as const)
               .map(k => [k, dong.reduce((a, r) => a + r[k], 0)])),
           }}
         />
