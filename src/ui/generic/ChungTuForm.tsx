@@ -56,6 +56,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   const laKk = Boolean(cfg.kiemKe)   // phiếu kiểm kê: bỏ đối tượng, kho ở đầu phiếu, bảng tồn hệ thống, tồn thực tế (T124)
   const laDc = Boolean(cfg.dieuChinh)   // phiếu xuất, nhập điều chỉnh sinh từ kiểm kê (T126)
   const gonDau = laKk || laDc            // đầu phiếu gọn: Kho, Nhân viên thực hiện; Ghi chú
+  // Phiếu điều chỉnh (T131): không có thuế; gói Free không hiện giá trị (đơn giá, thành tiền, tổng tiền)
+  const anDc = laDc ? ['ts', 'thue', ...(s.goi === 'F' ? ['gia', 'tien'] : [])] : []
   const nv = useMemo(() => (row ? ttNghiepVu(row) : null), [row])
 
   const path = duongDan(mod, sc)
@@ -468,10 +470,10 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
       icon={mod.icon}
       tinh={Boolean((loc.state as { chuyenPhieu?: boolean } | null)?.chuyenPhieu)}
       onClose={dongMoi}
-      day={laKk || !hienChan('tongTien') ? undefined
+      day={laKk || (laDc && s.goi === 'F') || !hienChan('tongTien') ? undefined
         : laTien && chiTien ? <TongDay tong={tongThanhToan} soDong={dsDong.length} />
           // Phần tổng thành dải cố định ở đáy form, cuộn bảng vẫn thấy (T105); phiếu mua chỉ Tổng tiền vì số khác đã có trên dòng (T84)
-          : <DaiTong tong={tongThanhToan} muc={chiTien || truocThue ? [] : [
+          : <DaiTong tong={tongThanhToan} muc={chiTien || truocThue || laDc ? [] : [
             ['Tiền hàng', tongTien],
             ...(bo.ck ? [['Chiết khấu', tongCk ? -tongCk : 0] as [string, number]] : []),
             ['Tiền thuế GTGT', tongThue],
@@ -631,7 +633,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               </>}
             </Dropdown>
             {hopCot && (
-              <HopCotPhieu dsDau={dsDau} dsChan={dsChan} ds={laKk ? COT_KK : cotTuyChon(cfg, { coKho: Boolean(bo.kho) && !khoDau && !laDc, coLo: nhom === 'mua' && s.goi === 'PR', coCk: Boolean(bo.ck), coKm: kieu !== 'khong', coLy: Boolean(oLy), coNhapKho: truocThue })}
+              <HopCotPhieu dsDau={dsDau} dsChan={dsChan} ds={laKk ? COT_KK : cotTuyChon(cfg, { coKho: Boolean(bo.kho) && !khoDau && !laDc, coLo: nhom === 'mua' && s.goi === 'PR', coCk: Boolean(bo.ck), coKm: kieu !== 'khong', coLy: Boolean(oLy), coNhapKho: truocThue }).filter(([k]) => !anDc.includes(k))}
                 an={anCot} onDoi={doiAnCot} onDong={() => setHopCot(false)} />
             )}
             {hopTt && row && (
@@ -1044,7 +1046,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               coKm={kieu !== 'khong'}
               lyDo={oLy ? { nhan: oLy.nhan, ds: oLy.ds!, macDinh: lyDo } : undefined}
               dtMacDinh={laTien ? doiTuong : ''}
-              an={anCot}
+              an={[...anCot, ...anDc]}
               khongTong={(laTien && chiTien) || !hienChan('dongTong')}
             />
           )}
