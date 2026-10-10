@@ -28,7 +28,7 @@ import { HopInChungTu, type PhieuIn } from '../bao-cao/InChungTu'
 
 const COT_CO_DINH = new Set(['chk', 'stt', 'ngay', 'so'])
 /** Cột lọc bằng cách chọn trong danh sách giá trị */
-const COT_CHON = new Set(['tenLoai', 'nguon', 'ttTien', 'ttHd', 'kho'])
+const COT_CHON = new Set(['tenLoai', 'nguon', 'ttTien', 'ttHd', 'kho', 'lyDo'])
 
 // Re-export để các màn khác (như ban-hang/ChungTuBanHang.tsx) tiếp tục sử dụng
 export { ChungTuForm, VoucherDetail, HachToan, LichSu }
@@ -88,7 +88,13 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
   // T94: kho, mã hàng trên dòng để lọc; gói dưới Pro một kho ở đầu phiếu (cột Kho), gói Pro kho trên từng dòng
   const coKhoDs = bo.kho === 'dong'
   const khoDong = s.goi === 'PR'
-  const rows = useMemo(() => nhom !== 'mua' && nhom !== 'ban' ? rowsGoc : rowsGoc.map((r): Row => {
+  // Thu chi (T96): lý do thu, chi của phiếu; phiếu chưa lưu lý do thì đoán theo diễn giải như form, chuyển quỹ không có
+  const rows = useMemo(() => mod.key === 'tien' ? rowsGoc.map((r): Row => {
+    const loaiK = cfg.loai?.find(x => x.k === r.loai)?.k ?? cfg.loai?.[0]?.k
+    const cfgDong = theoLoai(cfg, loaiK)
+    const oLy = boO(nhomCua(mod.key, cfgDong, loaiK), cfgDong).a.find(o => o.k === 'ly')
+    return { ...r, lyDo: !oLy ? '' : r._lyDo ? String(r._lyDo) : lyMacDinh(oLy.ds ?? [], String(r.dienGiai ?? '')) }
+  }) : nhom !== 'mua' && nhom !== 'ban' ? rowsGoc : rowsGoc.map((r): Row => {
     const dsDong = (r._dong as Dong[] | undefined) ?? dongCua(theoLoai(cfg, r.loai), `${sc.code ?? sc.slug}-${r.id}`)
     const dsKhoCn = CHI_NHANH.find(c => c.ten === r.cn)?.kho ?? []
     const khoDau = String(r._kho ?? dsKhoCn[0] ?? '')
@@ -103,7 +109,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
       hanTt: String(r._hanTt ?? nv.hanTt), daTra, conNo: Math.max(0, (Number(r.tong) || 0) - daTra),
       kho: coKhoDs && !khoDong ? khoDau : '', _khoDs, _maHang: dsDong.map(d => d.ma).filter(Boolean),
     }
-  }), [rowsGoc, nhom, cfg, sc, coKhoDs, khoDong])
+  }), [rowsGoc, nhom, cfg, sc, coKhoDs, khoDong, mod.key])
 
   const [trang, setTrang] = useState(1)
   const [coTrang, setCoTrang] = useState(20)
@@ -259,6 +265,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
     },
     ...(cfg.loai ? [{ k: 'tenLoai', t: 'Loại', w: 130 } as Col] : []),
     { k: 'dienGiai', t: 'Diễn giải' },
+    ...(mod.key === 'tien' ? [{ k: 'lyDo', t: 'Lý do thu, chi', w: 170 } as Col] : []),   // T96
     ...(cfg.doiTuong !== 'none' ? [{ k: 'doiTuong', t: cfg.nhan ?? 'Đối tượng' } as Col] : []),
     // Đang chọn một chi nhánh trên thanh trên thì cột chi nhánh thừa
     ...(cnChon ? [] : [{ k: 'cn', t: 'Chi nhánh', cls: 'dim', w: 130 } as Col]),
