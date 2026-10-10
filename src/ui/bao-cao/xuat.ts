@@ -77,7 +77,7 @@ function xuatCsv(n: NguonXuat): Blob {
   const lines: string[] = []
   n.bang.forEach((b, bIdx) => {
     if (bIdx > 0) lines.push('')
-    lines.push(b.cols.map(c => escapeCsv(c.t)).join(','))
+    lines.push(b.cols.map(c => escapeCsv(c.nhom ? `${c.nhom} - ${c.t}` : c.t)).join(','))
     for (const r of b.rows) {
       lines.push(b.cols.map(c => escapeCsv(layGiaTriTho(r, c))).join(','))
     }
@@ -166,7 +166,7 @@ function xuatXml(n: NguonXuat): Blob {
   n.bang.forEach((b, idx) => {
     lines.push(`  <Bang stt="${idx + 1}">`)
     b.cols.forEach(c => {
-      lines.push(`    <Cot k="${escapeXml(c.k)}" ten="${escapeXml(c.t)}" kieu="${c.num ? 'so' : 'chu'}"/>`)
+      lines.push(`    <Cot k="${escapeXml(c.k)}" ten="${escapeXml(c.nhom ? `${c.nhom} - ${c.t}` : c.t)}" kieu="${c.num ? 'so' : 'chu'}"/>`)
     })
     b.rows.forEach(r => {
       const loai = r._t ? 'tong' : r._b ? 'dam' : 'chiTiet'

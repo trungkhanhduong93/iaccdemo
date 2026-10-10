@@ -1,7 +1,7 @@
 // Kho mẫu in riêng của đơn vị (tiện ích 11.11, kế hoạch mục 8.7). Chưa có backend nên lưu localStorage theo đơn vị;
 // đọc ghi bọc try/catch, dữ liệu hỏng thì coi như rỗng và in mẫu chuẩn. Không dùng hook React để file báo cáo dùng lại được.
 import { CHE_DOS, type CheDo } from '../../app/che-do'
-import { mauIn, type MauIn } from '../../app/mau-in'
+import { mauChoCheDo, mauIn, type MauIn } from '../../app/mau-in'
 
 /** Mẫu riêng: bản sao đã sửa của mẫu chuẩn goc, chỉ áp cho đúng chế độ đã tạo */
 export interface MauRieng { id: string; goc: string; cheDo: CheDo; ten: string; macDinh: boolean; mau: MauIn; capNhat: string }
@@ -56,10 +56,11 @@ export function datMacDinh(donVi: string, cd: CheDo, goc: string, id: string | n
   ghiTat(donVi, docTat(donVi).map(m => m.cheDo === cd && m.goc === goc ? { ...m, macDinh: m.id === id } : m))
 }
 
-/** Mẫu đem in: mẫu riêng mặc định của goc, không có thì mẫu chuẩn */
+/** Mẫu đem in: mẫu riêng mặc định của goc, không có thì mẫu chuẩn theo chế độ */
 export function mauDungIn(donVi: string, cd: CheDo, goc: string): MauIn {
   const rieng = dsMauRieng(donVi, cd, goc).find(m => m.macDinh)
-  return rieng?.mau ?? mauIn(goc) ?? mauIn('phieu-ke-toan')!
+  const mau = rieng?.mau ?? mauIn(goc) ?? mauIn('phieu-ke-toan')!
+  return mauChoCheDo(mau, cd)
 }
 
 /** Toàn bộ mẫu riêng của chế độ ra chuỗi JSON để chép sang đơn vị khác */

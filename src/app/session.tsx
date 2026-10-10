@@ -4,6 +4,9 @@ import type { Goi } from './plan'
 import { CHE_DO, CHE_DO_MAC_DINH, chuanHoaCheDo, type CheDo } from './che-do'
 import { CHI_NHANH, DON_VI, type Role } from '../data/mock'
 
+export type PpGtgt = 'tyLe' | 'khauTru'
+export type PpTndn = 'tyLe' | 'thuNhap'
+
 export interface Session {
   loggedIn: boolean
   ten: string
@@ -16,6 +19,8 @@ export interface Session {
   khoiTao: boolean       // đã chạy xong khởi tạo
   thuGon?: boolean       // sidebar thu gọn còn biểu tượng
   ngayDauNam?: Record<string, string>   // ngày đầu năm từng đơn vị (dd/mm/yyyy), khai ở Thông tin đơn vị
+  ppGtgt: PpGtgt         // phương pháp tính thuế GTGT (TT58): 'tyLe' hoặc 'khauTru', mặc định 'tyLe'
+  ppTndn: PpTndn         // phương pháp tính thuế TNDN (TT58): 'tyLe' hoặc 'thuNhap', mặc định 'thuNhap'
 }
 
 /** Đổi mã gói cũ ('M', 'A') sang mã chuẩn ('PL', 'PR'), nhận cả mã cũ và mới */
@@ -27,7 +32,20 @@ export function chuanHoaGoi(g: unknown): Goi {
   return 'PL'
 }
 
-const MAC_DINH: Session = { loggedIn: false, ten: 'Trần Thu Hà', email: 'thuha@phomay.vn', role: 'ktt', donVi: 'pm', goi: 'PL', cheDo: 'TT133', chiNhanh: 'all', khoiTao: true, thuGon: false }
+const MAC_DINH: Session = {
+  loggedIn: false,
+  ten: 'Trần Thu Hà',
+  email: 'thuha@phomay.vn',
+  role: 'ktt',
+  donVi: 'pm',
+  goi: 'PL',
+  cheDo: 'TT133',
+  chiNhanh: 'all',
+  khoiTao: true,
+  thuGon: false,
+  ppGtgt: 'tyLe',
+  ppTndn: 'thuNhap',
+}
 const KEY = 'iacc-cloud-session'
 
 function doc(): Session {
@@ -44,6 +62,18 @@ function doc(): Session {
       res.goi = chuanHoaGoi(goiParam)
     }
     res.cheDo = chuanHoaCheDo(res.goi, params?.get('cheDo') ?? parsed.cheDo)
+    const ppGtgtParam = params?.get('ppGtgt')
+    if (ppGtgtParam === 'tyLe' || ppGtgtParam === 'khauTru') {
+      res.ppGtgt = ppGtgtParam
+    } else if (res.ppGtgt !== 'tyLe' && res.ppGtgt !== 'khauTru') {
+      res.ppGtgt = 'tyLe'
+    }
+    const ppTndnParam = params?.get('ppTndn')
+    if (ppTndnParam === 'tyLe' || ppTndnParam === 'thuNhap') {
+      res.ppTndn = ppTndnParam
+    } else if (res.ppTndn !== 'tyLe' && res.ppTndn !== 'thuNhap') {
+      res.ppTndn = 'thuNhap'
+    }
     return res
   } catch { return MAC_DINH }
 }

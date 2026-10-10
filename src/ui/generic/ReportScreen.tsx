@@ -27,6 +27,21 @@ import { layNguoiKy } from '../bao-cao/khoMauIn'
 // @ts-ignore
 import { TuyChinhBC } from '../bao-cao/TuyChinhBC.tsx'
 import { useChoThanhCongCu } from '../bao-cao/choThanh'
+import type { Session } from '../../app/session'
+import {
+  thTT58,
+  colsS1, rowsS1,
+  colsS2a, rowsS2a,
+  colsS3a, rowsS3a,
+  colsS2b, rowsS2b,
+  colsS2c, rowsS2c,
+  colsS2d, rowsS2d,
+  colsS3b, rowsS3b,
+  colsS4a, rowsS4a,
+  colsS4b, rowsS4b,
+  colsS4c, rowsS4c,
+  colsS4d, rowsS4d,
+} from '../../modules/bao-cao/tt58'
 
 export const KY_CHON: [string, string][] = [['9', 'Tháng 9/2026'], ['10', 'Tháng 10/2026 (đến 07/10)'], ['8', 'Tháng 8/2026']]
 
@@ -200,7 +215,7 @@ export function dsOKy(loai: LoaiBC, cheDo: CheDo, nguoiDaiDien: string): OKy[] {
   const ddpl: OKy = { chucDanh: 'Người đại diện theo pháp luật', goiY: '(Ký, họ tên, đóng dấu)', hoTen: nguoiDaiDien }
   if (cheDo === 'TT152') return [lap, { chucDanh: 'Người đại diện hộ kinh doanh', goiY: '(Ký, họ tên, đóng dấu)', hoTen: nguoiDaiDien }]
   if (loai === 'so') return [{ chucDanh: 'Người ghi sổ', goiY: '(Ký, họ tên)', hoTen: 'Lê Quốc Bảo' }, ktt, ddpl]
-  if (loai === 'bctc') return cheDo === 'TT58' ? [lap, ddpl] : [lap, ktt, ddpl]
+  if (loai === 'bctc') return [lap, ktt, ddpl]
   if (loai === 'baocao') return [{ chucDanh: 'Người lập', goiY: '(Ký, họ tên)', hoTen: 'Lê Quốc Bảo' }, ktt]
   return [lap, ktt, ddpl]
 }
@@ -633,7 +648,11 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
   const path = useLocation().pathname
   const slug = useParams().slug?.replace(/-/g, '.')
   const cfg = cauHinhBC(slug)
-  const kyHieu = cfg ? cfg.kyHieu?.[s.cheDo] : cd.ma !== 'TT152' ? mau : undefined
+  const th = s.cheDo === 'TT58' ? thTT58(s.ppGtgt, s.ppTndn) : undefined
+  const kyHieuGoc = cfg ? cfg.kyHieu?.[s.cheDo] : cd.ma !== 'TT152' ? mau : undefined
+  const kyHieu = (slug === '3.2.5' && s.cheDo === 'TT58')
+    ? (th === 1 ? 'S1-DNSN' : th === 2 ? 'S2a-DNSN' : 'S3a-DNSN')
+    : kyHieuGoc
   const loai: LoaiBC = cfg?.loai ?? 'baocao'
   const khoMacDinh = kho ?? cfg?.kho ?? tuDoanKho(children)
   const [khoHienTai, setKhoHienTai] = useState<Kho>(khoMacDinh)
@@ -915,9 +934,11 @@ export function ReportScreen({ sc, mod }: ScreenProps) {
   const kyDaXem = daXem?.ky ?? ky
   const thang = Number(kyDaXem)
   const cn = cfg.theoCn ? chiNhanhHienTai(s) : undefined
-  const body = useMemo(() => renderReport(cfg, sc.code ?? sc.slug, thang, s.cheDo, cn?.id, loc), [cfg, kyDaXem, sc, s.cheDo, cn, loc])
+  const body = useMemo(() => renderReport(cfg, sc.code ?? sc.slug, thang, s.cheDo, cn?.id, loc, s), [cfg, kyDaXem, sc, s.cheDo, cn, loc, s])
   // Dòng dưới tiêu đề ghi chi nhánh (theo thanh trên) và quỹ đang lọc (T54)
-  const sub = cfg.theoCn ? `${kyTen(kyDaXem)} · ${cn ? 'Chi nhánh ' + cn.ngan : 'Tất cả chi nhánh'}${loc.locQuy?.[0] ? ' · ' + loc.locQuy[0] : ''}` : kyTen(kyDaXem)
+  const sub = ((sc.code ?? sc.slug) === '5.2.8' && s.cheDo === 'TT58')
+    ? `${kyTen(kyDaXem)} · Tên vật liệu, dụng cụ, sản phẩm, hàng hoá: ${NVL[0].ten} · Kho: ${cn ? cn.ten : CHI_NHANH[0].ten}`
+    : (cfg.theoCn ? `${kyTen(kyDaXem)} · ${cn ? 'Chi nhánh ' + cn.ngan : 'Tất cả chi nhánh'}${loc.locQuy?.[0] ? ' · ' + loc.locQuy[0] : ''}` : kyTen(kyDaXem))
   return (
     <div className="page page-report">
       <PageHead crumb={[mod.ten, sc.nhom ?? '']} title={ten} code={sc.code} />
@@ -940,7 +961,24 @@ export function gopSo(phan: { cn: string; mo: number; rows: Row[]; tn: number; t
   return { mo, rows, tn: phan.reduce((a, p) => a + p.tn, 0), tc: phan.reduce((a, p) => a + p.tc, 0), cuoi: du }
 }
 
-function renderReport(cfg: ReportCfg, seed: string, thang: number, cd: CheDo, cn?: string, loc: Record<string, string[]> = {}): ReactNode {
+function renderReport(cfg: ReportCfg, seed: string, thang: number, cd: CheDo, cn?: string, loc: Record<string, string[]> = {}, session?: Session): ReactNode {
+  if (cd === 'TT58') {
+    const th = thTT58(session?.ppGtgt, session?.ppTndn)
+    if (seed === '3.2.5') {
+      if (th === 1) return <RptTable cols={colsS1} rows={rowsS1(thang)} kyHieuCot="chuSo" />
+      if (th === 2) return <RptTable cols={colsS2a} rows={rowsS2a(thang)} kyHieuCot="chuSo" />
+      if (th === 3) return <RptTable cols={colsS3a} rows={rowsS3a(thang)} kyHieuCot="chuSo" />
+      return <div className="note muted">Phương pháp nộp thuế hiện tại không mở sổ 3.2.5.</div>
+    }
+    if (seed === '10.4.1') return <RptTable cols={colsS2b} rows={rowsS2b(thang)} kyHieuCot="chuSo" />
+    if (seed === '5.2.8') return <RptTable cols={colsS2c} rows={rowsS2c(thang)} kyHieuCot="chuSo" />
+    if (seed === '2.2.7') return <RptTable cols={colsS2d} rows={rowsS2d(thang)} kyHieuCot="chuSo" />
+    if (seed === '6.2.4') return <RptTable cols={colsS3b} rows={rowsS3b(thang)} kyHieuCot="chuSo" />
+    if (seed === '2.2.5') return <RptTable cols={colsS4a} rows={rowsS4a(thang)} kyHieuCot="chuSo" />
+    if (seed === '7.2.1') return <RptTable cols={colsS4b} rows={rowsS4b(thang)} kyHieuCot="chuSo" />
+    if (seed === '6.2.5') return <RptTable cols={colsS4c} rows={rowsS4c(thang)} kyHieuCot="chuSo" />
+    if (seed === '10.4.2') return <RptTable cols={colsS4d} rows={rowsS4d(thang)} kyHieuCot="chuSo" />
+  }
   const r = rng(seed + thang)
   // Sổ, báo cáo theo chi nhánh: mỗi chi nhánh một hạt giống riêng, xem tất cả thì cộng các chi nhánh.
   // Bộ lọc Quỹ tiền (T54) chọn lại phần được cộng, nên tồn đầu, tồn cuối đúng với lựa chọn
@@ -1005,11 +1043,49 @@ export type KyHieuCot = 'chuSo' | 'so'
 
 function kyHieuCac(cols: Col[], kieu: KyHieuCot): string[] {
   let chu = 0, so = 0
-  return cols.map(c => kieu === 'chuSo' && !c.num ? String.fromCharCode(65 + chu++) : String(++so))
+  return cols.map(c => c.kyHieu ? c.kyHieu : (kieu === 'chuSo' && !c.num ? String.fromCharCode(65 + chu++) : String(++so)))
 }
 
 /** Bảng in kiểu báo cáo: dòng _b in đậm, _t dòng tổng */
 export function RptTable({ cols, rows, onRow, kyHieuCot, colWidths }: { cols: Col[]; rows: Row[]; onRow?: (r: Row) => void; kyHieuCot?: KyHieuCot; colWidths?: number[] }) {
+  const coNhom = cols.some(c => c.nhom)
+
+  const hangNhom1 = useMemo(() => {
+    if (!coNhom) return null
+    const res: { key: string; t: string; colSpan?: number; rowSpan?: number; w?: number | string }[] = []
+    let i = 0
+    while (i < cols.length) {
+      const c = cols[i]
+      if (!c.nhom) {
+        res.push({
+          key: c.k,
+          t: c.t,
+          rowSpan: 2,
+          w: colWidths ? `${colWidths[i]}%` : c.w,
+        })
+        i++
+      } else {
+        const nhom = c.nhom
+        let j = i + 1
+        while (j < cols.length && cols[j].nhom === nhom) {
+          j++
+        }
+        res.push({
+          key: `nhom-${i}`,
+          t: nhom,
+          colSpan: j - i,
+        })
+        i = j
+      }
+    }
+    return res
+  }, [cols, coNhom, colWidths])
+
+  const hangNhom2 = useMemo(() => {
+    if (!coNhom) return null
+    return cols.map((c, i) => ({ c, i })).filter(x => x.c.nhom)
+  }, [cols, coNhom])
+
   return (
     <table className="rpt">
       {colWidths && (
@@ -1020,8 +1096,50 @@ export function RptTable({ cols, rows, onRow, kyHieuCot, colWidths }: { cols: Co
         </colgroup>
       )}
       <thead>
-        <tr>{cols.map((c, i) => <th key={c.k} style={colWidths ? { width: `${colWidths[i]}%` } : c.w ? { width: c.w } : undefined}>{c.t}</th>)}</tr>
-        {kyHieuCot && <tr className="rpt-ky-hieu">{kyHieuCac(cols, kyHieuCot).map((x, i) => <th key={cols[i].k}>{x}</th>)}</tr>}
+        {coNhom && hangNhom1 ? (
+          <>
+            <tr>
+              {hangNhom1.map(o => (
+                <th
+                  key={o.key}
+                  colSpan={o.colSpan}
+                  rowSpan={o.rowSpan}
+                  style={o.w ? { width: o.w } : undefined}
+                >
+                  {o.t}
+                </th>
+              ))}
+            </tr>
+            <tr>
+              {hangNhom2?.map(({ c, i }) => (
+                <th
+                  key={c.k}
+                  style={colWidths ? { width: `${colWidths[i]}%` } : c.w ? { width: c.w } : undefined}
+                >
+                  {c.t}
+                </th>
+              ))}
+            </tr>
+          </>
+        ) : (
+          <tr>
+            {cols.map((c, i) => (
+              <th
+                key={c.k}
+                style={colWidths ? { width: `${colWidths[i]}%` } : c.w ? { width: c.w } : undefined}
+              >
+                {c.t}
+              </th>
+            ))}
+          </tr>
+        )}
+        {kyHieuCot && (
+          <tr className="rpt-ky-hieu">
+            {kyHieuCac(cols, kyHieuCot).map((x, i) => (
+              <th key={cols[i].k}>{x}</th>
+            ))}
+          </tr>
+        )}
       </thead>
       <tbody>
         {rows.map((x, i) => (

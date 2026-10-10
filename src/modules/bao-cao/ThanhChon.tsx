@@ -15,7 +15,7 @@ export function ThanhChonBaoCao({ sc }: { sc: ScreenDef }) {
   const modGoc = MODULES.find(m => m.key === sc.goc)
   const tenPhanHeGoc = modGoc?.ten ?? ''
   const bcMod = MODULES.find(m => m.key === 'bao-cao')
-  const cungGoc = bcMod?.screens.filter(x => x.goc === sc.goc && hienMan(x, s.goi, s.cheDo)) ?? []
+  const cungGoc = bcMod?.screens.filter(x => x.goc === sc.goc && hienMan(x, s.goi, s.cheDo, s)) ?? []
 
   // Ghi nhận báo cáo vừa mở vào danh sách mở gần đây (tối đa 8, mới nhất trước, T58)
   useEffect(() => {

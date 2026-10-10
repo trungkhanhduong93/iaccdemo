@@ -7,7 +7,7 @@ import { MODULES, tenMan } from '../../app/registry'
 import { cheDoHienTai, donViHienTai, useSession } from '../../app/session'
 import { kieuGhiSo } from '../../app/plan'
 import type { CheDo } from '../../app/che-do'
-import { mauCuaChungTu, mauIn, type KhoiInK, type MauIn } from '../../app/mau-in'
+import { mauChoCheDo, mauCuaChungTu, mauIn, type KhoiInK, type MauIn } from '../../app/mau-in'
 import { chungTu } from '../../ui/generic/gen'
 import { theoLoai } from '../../ui/generic/nhom'
 import { duLieuIn, type DonViIn, type DuLieuIn } from '../../ui/bao-cao/duLieuIn'
@@ -91,7 +91,8 @@ function moSua(donVi: string, cd: CheDo, id: string | null, chuan: boolean): Sua
   if (r) return { goc: r.goc, rieng: r, mau: r.mau, doi: false }
   const goc = id && mauIn(id) ? id : CAY[0][1][0]
   const md = chuan ? undefined : dsMauRieng(donVi, cd, goc).find(m => m.macDinh)
-  return md ? { goc, rieng: md, mau: md.mau, doi: false } : { goc, rieng: null, mau: mauIn(goc)!, doi: false }
+  const base = mauChoCheDo(mauIn(goc)!, cd)
+  return md ? { goc, rieng: md, mau: md.mau, doi: false } : { goc, rieng: null, mau: base, doi: false }
 }
 
 export function ThietKeMauIn({ sc }: ScreenProps) {
@@ -140,7 +141,7 @@ export function ThietKeMauIn({ sc }: ScreenProps) {
 
   const dsKho = useMemo(() => dsMauRieng(donVi.id, cd.ma), [donVi.id, cd.ma, rev])
   const nguoiKy = useMemo(() => layNguoiKy(donVi.id), [donVi.id, rev])
-  const goc = mauIn(sua.goc)!
+  const goc = useMemo(() => mauChoCheDo(mauIn(sua.goc)!, cd.ma), [sua.goc, cd.ma])
   const cuaGoc = dsKho.filter(r => r.goc === sua.goc)
   const daLuu = !!sua.rieng && cuaGoc.some(r => r.id === sua.rieng?.id)
   const mau = sua.mau

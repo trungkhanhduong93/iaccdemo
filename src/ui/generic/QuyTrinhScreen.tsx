@@ -4,7 +4,7 @@ import { Fragment, useLayoutEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { LanQT, NutQT, QuyTrinhDef, ScreenProps } from '../../modules/types'
 import { MODULES, anPhanHeGoi, dich, hienMan, maKhoa, moDuoc, nhanTab, phanHeKhoa, tenMan } from '../../app/registry'
-import { useSession } from '../../app/session'
+import { useSession, type Session } from '../../app/session'
 import { GOI, GOIS, anNgoaiGoi, minGoi, type Goi } from '../../app/plan'
 import type { CheDo } from '../../app/che-do'
 import { Icon } from '../Icon'
@@ -60,9 +60,9 @@ export function QuyTrinhScreen({ mod }: ScreenProps) {
           {qt.hoiTu ? <SoDoHoiTu lan={qt.hoiTu.lan} ra={qt.hoiTu.ra} goi={s.goi} modKey={mod.key} /> : <SoDo qt={qt} goi={s.goi} />}
         </section>
         {/* Sơ đồ hội tụ đã có khối sổ sách, báo cáo ở cuối nên bỏ khung Báo cáo bên phải để khỏi trùng */}
-        {!qt.hoiTu && <BenPhai qt={qt} modKey={mod.key} goi={s.goi} cheDo={s.cheDo} />}
+        {!qt.hoiTu && <BenPhai qt={qt} modKey={mod.key} goi={s.goi} cheDo={s.cheDo} session={s} />}
       </div>
-      <HangDuoi qt={qt} modKey={mod.key} goi={s.goi} cheDo={s.cheDo} />
+      <HangDuoi qt={qt} modKey={mod.key} goi={s.goi} cheDo={s.cheDo} session={s} />
     </div>
   )
 }
@@ -267,7 +267,7 @@ function NutNgang({ n, goi, dong }: { n: NutQT; goi: Goi; dong?: boolean }) {
 }
 
 /** Khung bên phải: 5 báo cáo hay dùng và "Tất cả báo cáo"; phân hệ không có báo cáo thì hiện ghi chú */
-function BenPhai({ qt, modKey, goi, cheDo }: { qt: QuyTrinhDef; modKey: string; goi: Goi; cheDo?: CheDo }) {
+function BenPhai({ qt, modKey, goi, cheDo, session }: { qt: QuyTrinhDef; modKey: string; goi: Goi; cheDo?: CheDo; session?: Pick<Session, 'ppGtgt' | 'ppTndn'> }) {
   if (!qt.baoCao?.length) {
     if (!qt.ghiChu) return null
     return (
@@ -284,7 +284,7 @@ function BenPhai({ qt, modKey, goi, cheDo }: { qt: QuyTrinhDef; modKey: string; 
       <h2>Báo cáo</h2>
       {qt.baoCao.map(di => {
         const d = dich(di, modKey)
-        if (!d.sc || !hienMan(d.sc, goi, cheDo)) return null
+        if (!d.sc || !hienMan(d.sc, goi, cheDo, session)) return null
         const ok = moDuoc(d.sc, goi)
         const ma = maKhoa(d.sc)
         return (
@@ -301,10 +301,10 @@ function BenPhai({ qt, modKey, goi, cheDo }: { qt: QuyTrinhDef; modKey: string; 
 }
 
 /** Khu vực bổ trợ dưới sơ đồ: Danh mục liên quan, Tiện ích phân hệ, Thiết lập & Hướng dẫn (T45) */
-function HangDuoi({ qt, modKey, goi, cheDo }: { qt: QuyTrinhDef; modKey: string; goi: Goi; cheDo?: CheDo }) {
+function HangDuoi({ qt, modKey, goi, cheDo, session }: { qt: QuyTrinhDef; modKey: string; goi: Goi; cheDo?: CheDo; session?: Pick<Session, 'ppGtgt' | 'ppTndn'> }) {
   const muc = (di: string) => {
     const d = dich(di, modKey)
-    if (!d.sc || !hienMan(d.sc, goi, cheDo)) return null
+    if (!d.sc || !hienMan(d.sc, goi, cheDo, session)) return null
     const ok = moDuoc(d.sc, goi)
     const ma = maKhoa(d.sc)
     return {

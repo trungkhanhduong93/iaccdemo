@@ -19,6 +19,7 @@ export interface CauHinhBC {
   loai: LoaiBC
   kho: Kho
   cheDo?: CheDo[]                          // thông tư áp dụng; thiếu là mọi thông tư (T97)
+  th?: (1 | 2 | 3 | 4)[]                   // trường hợp TT58 áp dụng; thiếu là mọi TH (T108)
   kyHieu?: Partial<Record<CheDo, string>>   // thiếu chế độ nào thì đầu trang chế độ đó không ghi "Mẫu số"
   ten?: Partial<Record<CheDo, string>>      // tên in trên tờ theo chế độ, thiếu thì giữ tên đang có
   congCot?: string[]                        // sổ: cột cộng chuyển trang
@@ -40,7 +41,7 @@ export const CAU_HINH_BC: Record<string, CauHinhBC> = {
   '2.2.5': { loai: 'so', kho: 'ngang', kyHieu: { TT58: 'S4a-DNSN', TT133: 'S12-DNN', TT99: 'S31-DN' }, anKhongPS: true,
     loc: [{ k: 'ten', nhan: 'Đối tượng', kieu: 'chonNhieu' }] },
   '2.2.6': { loai: 'so', kho: 'ngang', kyHieu: { TT133: 'S15-DNN', TT99: 'S34-DN' }, congCot: ['no', 'co'] },
-  '2.2.7': { loai: 'so', kho: 'doc', cheDo: ['TT58'], kyHieu: { TT152: 'S2e-HKD', TT58: 'S2d-DNSN' }, congCot: ['thu', 'chi'] },
+  '2.2.7': { loai: 'so', kho: 'doc', cheDo: ['TT58'], th: [2, 4], kyHieu: { TT152: 'S2e-HKD', TT58: 'S2d-DNSN' }, congCot: ['thu', 'chi'] },
   '2.2.8': baoCao('doc', {
     loc: [{ k: 'locQuy', nhan: 'Quỹ tiền', kieu: 'chon', ds: () => [...CHI_NHANH.map(c => tenQuyTm(c.ngan)), ...TK_NGAN_HANG.map(tenTkNh)] }],
   }),
@@ -49,7 +50,7 @@ export const CAU_HINH_BC: Record<string, CauHinhBC> = {
   '3.2.2': baoCao('ngang'),
   '3.2.3': baoCao('ngang', { anKhongPS: true }),
   '3.2.4': baoCao('ngang', { loc: [{ k: 'doiTuong', nhan: 'Đối tượng', kieu: 'chon' }], nhomDuoc: ['doiTuong', 'ngay'], anKhongPS: true }),
-  '3.2.5': { loai: 'so', kho: 'ngang', kyHieu: { TT152: 'S2a-HKD', TT58: 'S1-DNSN', TT133: 'S16-DNN', TT99: 'S35-DN' }, ten: { TT152: 'Sổ doanh thu bán hàng hoá, dịch vụ', TT58: 'Sổ doanh thu bán hàng hoá, dịch vụ', TT133: 'Sổ chi tiết bán hàng', TT99: 'Sổ chi tiết bán hàng' }, congCot: ['dt', 'vat', 'tong'] },
+  '3.2.5': { loai: 'so', kho: 'ngang', th: [1, 2, 3], kyHieu: { TT152: 'S2a-HKD', TT58: 'S1-DNSN', TT133: 'S16-DNN', TT99: 'S35-DN' }, ten: { TT152: 'Sổ doanh thu bán hàng hoá, dịch vụ', TT58: 'Sổ doanh thu bán hàng hoá, dịch vụ', TT133: 'Sổ chi tiết bán hàng', TT99: 'Sổ chi tiết bán hàng' }, congCot: ['dt', 'vat', 'tong'] },
   '4.2.1': baoCao('ngang', { loc: [{ k: 'doiTuong', nhan: 'Nhà cung cấp', kieu: 'chon' }, { k: 'nguon', nhan: 'Nguồn', kieu: 'chon' }], nhomDuoc: ['doiTuong', 'ngay'], anKhongPS: true }),
   '4.2.2': baoCao('doc', { anKhongPS: true }),
   '4.2.4': baoCao('doc', { anKhongPS: true }),
@@ -69,11 +70,11 @@ export const CAU_HINH_BC: Record<string, CauHinhBC> = {
   '5.2.5': baoCao('ngang', { anKhongPS: true }),
   '5.2.6': baoCao('ngang', { anKhongPS: true }),
   '5.2.7': baoCao('ngang', { anKhongPS: true }),
-  '5.2.8': { loai: 'so', kho: 'ngang', kyHieu: { TT152: 'S2d-HKD', TT58: 'S2c-DNSN', TT133: 'S06-DNN', TT99: 'S10-DN' } },
+  '5.2.8': { loai: 'so', kho: 'ngang', th: [2, 4], kyHieu: { TT152: 'S2d-HKD', TT58: 'S2c-DNSN', TT133: 'S06-DNN', TT99: 'S10-DN' } },
   '6.2.1': baoCao('ngang', { loc: [{ k: 'doiTuong', nhan: 'Người bán', kieu: 'chon' }], nhomDuoc: ['doiTuong', 'ngay'], anKhongPS: true }),
   '6.2.2': baoCao('ngang', { nhomDuoc: ['ngay'], anKhongPS: true }),
   '6.2.3': { loai: 'tokhai', kho: 'doc', khoa: true },
-  '6.2.4': { loai: 'so', kho: 'doc', kyHieu: { TT58: 'S3b-DNSN', TT133: 'S25-DNN', TT99: 'S61-DN' } },
+  '6.2.4': { loai: 'so', kho: 'doc', th: [3, 4], kyHieu: { TT58: 'S3b-DNSN', TT133: 'S25-DNN', TT99: 'S61-DN' } },
   '6.2.5': { loai: 'so', kho: 'doc', cheDo: ['TT152', 'TT58'], kyHieu: { TT152: 'S3a-HKD', TT58: 'S4c-DNSN' } },
   '7.2.1': { loai: 'so', kho: 'ngang', kyHieu: { TT58: 'S4b-DNSN', TT133: 'S09-DNN', TT99: 'S21-DN' }, anKhongPS: true },
   '7.2.2': baoCao('ngang', { anKhongPS: true }),
@@ -86,12 +87,12 @@ export const CAU_HINH_BC: Record<string, CauHinhBC> = {
   '9.2.1': { loai: 'so', kho: 'ngang', kyHieu: { TT133: 'S17-DNN', TT99: 'S36-DN' } },
   '9.2.2': { loai: 'so', kho: 'ngang', kyHieu: { TT133: 'S18-DNN', TT99: 'S37-DN' } },
   '10.2.1': { loai: 'bctc', kho: 'ngang', khoa: true, kyHieu: { TT133: 'F01-DNN', TT99: 'S06-DN' }, ten: { TT133: 'Bảng cân đối tài khoản', TT99: 'Bảng cân đối số phát sinh' } },
-  '10.2.2': { loai: 'bctc', kho: 'doc', khoa: true, kyHieu: { TT58: 'B01-DNSN', TT133: 'B01a-DNN', TT99: 'B01-DN' } },
-  '10.2.3': { loai: 'bctc', kho: 'doc', khoa: true, kyHieu: { TT58: 'B02-DNSN', TT133: 'B02-DNN', TT99: 'B02-DN' } },
+  '10.2.2': { loai: 'bctc', kho: 'doc', khoa: true, th: [2, 4], kyHieu: { TT58: 'B01-DNSN', TT133: 'B01a-DNN', TT99: 'B01-DN' } },
+  '10.2.3': { loai: 'bctc', kho: 'doc', khoa: true, th: [2, 4], kyHieu: { TT58: 'B02-DNSN', TT133: 'B02-DNN', TT99: 'B02-DN' } },
   '10.2.4': { loai: 'bctc', kho: 'doc', khoa: true, kyHieu: { TT133: 'B03-DNN', TT99: 'B03-DN' } },
   '10.2.5': { loai: 'bctc', kho: 'doc', khoa: true, kyHieu: { TT133: 'B09-DNN', TT99: 'B09-DN' } },
   '10.3.1': baoCao('ngang', { anKhongPS: true }),
-  '10.4.1': { loai: 'so', kho: 'ngang', cheDo: ['TT58'], kyHieu: { TT152: 'S2c-HKD', TT58: 'S2b-DNSN' } },
+  '10.4.1': { loai: 'so', kho: 'ngang', cheDo: ['TT58'], th: [2, 4], kyHieu: { TT152: 'S2c-HKD', TT58: 'S2b-DNSN' } },
   '10.4.2': { loai: 'so', kho: 'doc', kyHieu: { TT58: 'S4d-DNSN', TT133: 'S23-DNN', TT99: 'S51-DN' } },
   '10.4.3': baoCao('doc', {
     loc: [

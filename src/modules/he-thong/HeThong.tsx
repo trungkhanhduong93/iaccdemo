@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { ScreenProps } from '../types'
 import { MODULES, duongDan } from '../../app/registry'
-import { donViHienTai, useSession, cheDoHienTai, ngayDauNam } from '../../app/session'
+import { donViHienTai, useSession, cheDoHienTai, ngayDauNam, type PpGtgt, type PpTndn } from '../../app/session'
 import { FEATURES, GOI, GOIS, MODS, demTheoGoi, kieuGhiSo, type Goi } from '../../app/plan'
 import { CHE_DO, CHE_DO_HOP_LE, cheDoCuaGoi, type CheDo } from '../../app/che-do'
 import { CHI_NHANH, NGUOI_DUNG } from '../../data/mock'
@@ -12,6 +12,7 @@ import { Card, Note, PageHead, Pk } from '../../ui/Page'
 import { St, Table } from '../../ui/Table'
 import { Select } from '../../ui/Dropdown'
 import { HopXacNhan } from '../../ui/LocNangCao'
+import { thTT58, moTaBoSoTT58 } from '../bao-cao/tt58'
 
 export function NguoiDung({ sc }: ScreenProps) {
   const { toast } = useSession()
@@ -143,7 +144,31 @@ export function CauHinh({ sc }: ScreenProps) {
             </div>
             <div className="f"><label>Năm tài chính</label><input className="inp" defaultValue="01/01 – 31/12" /></div>
             <div className="f"><label>Phương pháp tính giá xuất kho</label><Select className="inp"><option>Bình quân gia quyền cuối kỳ</option><option>Bình quân tức thời</option><option>Nhập trước xuất trước</option></Select></div>
-            <div className="f"><label>Phương pháp tính thuế GTGT</label><input className="inp" readOnly value={s.cheDo === 'TT58' ? 'Trực tiếp trên doanh thu' : s.cheDo === 'TT152' ? 'Không áp dụng' : 'Khấu trừ'} /></div>
+            {s.cheDo === 'TT58' ? (
+              <>
+                <div className="f">
+                  <label>Phương pháp tính thuế GTGT</label>
+                  <Select className="inp" value={s.ppGtgt} onChange={e => set({ ppGtgt: e.target.value as PpGtgt })}>
+                    <option value="tyLe">Tỷ lệ % trên doanh thu</option>
+                    <option value="khauTru">Khấu trừ</option>
+                  </Select>
+                </div>
+                <div className="f">
+                  <label>Phương pháp tính thuế TNDN</label>
+                  <Select className="inp" value={s.ppTndn} onChange={e => set({ ppTndn: e.target.value as PpTndn })}>
+                    <option value="tyLe">Tỷ lệ % trên doanh thu</option>
+                    <option value="thuNhap">Trên thu nhập tính thuế</option>
+                  </Select>
+                </div>
+                <div className="f" style={{ gridColumn: '1 / -1' }}>
+                  <small className="muted" style={{ display: 'block', marginTop: 4 }}>
+                    {moTaBoSoTT58(thTT58(s.ppGtgt, s.ppTndn))}
+                  </small>
+                </div>
+              </>
+            ) : (
+              <div className="f"><label>Phương pháp tính thuế GTGT</label><input className="inp" readOnly value={s.cheDo === 'TT152' ? 'Không áp dụng' : 'Khấu trừ'} /></div>
+            )}
           </div>
         </Card>
         <Card title="Bộ định khoản tự động" act={noco ? <Link className="btn sm ghost" to="/app/danh-muc/1-15">Sửa bộ định khoản</Link> : undefined}>

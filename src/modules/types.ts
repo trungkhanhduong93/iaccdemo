@@ -16,6 +16,8 @@ export interface Col {
   dinh?: 'trai' | 'phai' // cột đứng yên khi cuộn ngang; cột 'trai' phải khai w
   hd?: ReactNode         // nội dung ô tiêu đề thay cho t, vd ô tick chọn tất cả
   an?: boolean           // cột mặc định ẩn, người dùng bật ở Tuỳ chỉnh cột (T92)
+  nhom?: string          // tên nhóm cột cho tiêu đề 2 tầng (TT58, T108)
+  kyHieu?: string        // ký hiệu cột in sẵn (A, B, C, 1, 2... theo biểu mẫu TT58)
 }
 
 /** Danh mục: bảng có tìm kiếm, nút thêm */

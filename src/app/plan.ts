@@ -38,7 +38,7 @@ export function doiGoiTuExcel(gStr: string): Goi[] {
 const THEO_ROADMAP: Record<string, Goi[]> = {
   '1.12': ['F', 'S', 'PL', 'PR'],    // Danh mục quỹ tiền mở cho gói Free, theo Roadmap 08/10/2026
   '2.2.3': ['F', 'S', 'PL', 'PR'],   // Sổ ngân hàng mở cho gói Free, PhuongXT chốt 08/10/2026
-  '7.2.1': ['PL', 'PR'],             // Mở báo cáo TSCĐ cho Plus, Trum chốt 09/10/2026 (T47 câu 11)
+  '7.2.1': ['S', 'PL', 'PR'],             // Mở báo cáo TSCĐ cho Standard (S4b-DNSN, TT58) và Plus
   '7.2.2': ['PL', 'PR'],             // Mở báo cáo TSCĐ cho Plus, Trum chốt 09/10/2026 (T47 câu 11)
   // Gói Free: Bán hàng chỉ có Xuất bán POS 3.1.1; ẩn Tổng hợp (giữ Báo cáo kết quả kinh doanh 10.2.3, xem ở phân hệ Báo cáo);
   // Kho chỉ còn Kiểm kê 5.1.10 và Báo cáo xuất nhập tồn 5.2.3; mở Mua hàng. PhuongXT chốt 09/10/2026 (T52)

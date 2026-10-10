@@ -18,6 +18,8 @@ import tienIch from '../modules/tien-ich'
 import heThong from '../modules/he-thong'
 import { TrungTamBaoCao } from '../modules/bao-cao/TrungTam'
 import { CAU_HINH_BC } from '../modules/bao-cao/danh-sach'
+import { thTT58 } from '../modules/bao-cao/tt58'
+import type { Session } from './session'
 
 /** Màn thuộc tab Báo cáo: nhóm Excel có chữ "báo cáo", trừ màn khai tab: true */
 export function laBaoCao(sc: ScreenDef) {
@@ -91,12 +93,16 @@ export function moDuoc(sc: ScreenDef, goi: Goi) {
   return true
 }
 
-/** Báo cáo có áp dụng cho chế độ (thông tư) không. Thiếu khai báo cheDo là áp dụng mọi thông tư (T97). */
-export function apDung(sc: ScreenDef, cheDo?: CheDo): boolean {
+/** Báo cáo có áp dụng cho chế độ (thông tư) không. Thiếu khai báo cheDo là áp dụng mọi thông tư (T97). Với TT58, lọc tiếp theo trường hợp thuế (T108). */
+export function apDung(sc: ScreenDef, cheDo?: CheDo, session?: Pick<Session, 'ppGtgt' | 'ppTndn'> | Session): boolean {
   if (!cheDo || !sc.code) return true
   const cfg = CAU_HINH_BC[sc.code]
-  if (!cfg?.cheDo) return true
-  return cfg.cheDo.includes(cheDo)
+  if (cfg?.cheDo && !cfg.cheDo.includes(cheDo)) return false
+  if (cheDo === 'TT58' && cfg?.th) {
+    const curTh = thTT58(session?.ppGtgt, session?.ppTndn)
+    if (!cfg.th.includes(curTh)) return false
+  }
+  return true
 }
 
 /** Mã quyết định khoá của màn (để tìm gói thấp nhất) */
@@ -107,10 +113,10 @@ const khongApDung = (sc: ScreenDef, goi: Goi) => {
   const ma = maKhoa(sc)
   return !!ma && GOIS.indexOf(minGoi(ma)) < GOIS.indexOf(goi)
 }
-export const hienMan = (sc: ScreenDef, goi: Goi, cheDo?: CheDo) => {
+export const hienMan = (sc: ScreenDef, goi: Goi, cheDo?: CheDo, session?: Pick<Session, 'ppGtgt' | 'ppTndn'> | Session) => {
   const isBC = Boolean((sc.code && CAU_HINH_BC[sc.code]) || sc.goc || vaoBaoCao(sc))
   if (isBC) {
-    if (cheDo && !apDung(sc, cheDo)) return false
+    if (cheDo && !apDung(sc, cheDo, session)) return false
     return moDuoc(sc, goi) || !anNgoaiGoi(goi)
   }
   return moDuoc(sc, goi) || (!anNgoaiGoi(goi) && !khongApDung(sc, goi))

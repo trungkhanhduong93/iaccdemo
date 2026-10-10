@@ -3,8 +3,8 @@ import { Fragment, useEffect, useMemo, useRef, useState, type CSSProperties, typ
 import { createPortal } from 'react-dom'
 import { Link } from 'react-router-dom'
 import type { LoaiCT, Row, ScreenDef, VoucherCfg } from '../../modules/types'
-import { mauCuaChungTu, mauIn, type KhoiInK, type MauIn } from '../../app/mau-in'
-import { canCu, type CheDoDef } from '../../app/che-do'
+import { mauChoCheDo, mauCuaChungTu, mauIn, type KhoiInK, type MauIn } from '../../app/mau-in'
+import { canCu, type CheDo, type CheDoDef } from '../../app/che-do'
 import { coTrongGoi, kieuGhiSo } from '../../app/plan'
 import { cheDoHienTai, donViHienTai, useSession } from '../../app/session'
 import { tkTheoCheDo } from '../../modules/tong-hop/so-cai'
@@ -27,7 +27,8 @@ const soIn = (v: string | number | undefined) => typeof v === 'number' ? (v ? mo
  * Vẽ một phiếu thành các khối theo mau.khoi, mỗi khối một phần tử con để tờ giấy đo và xếp trang. Hàm thuần, không hook.
  * Phần tử mang data-khoi, data-truong, data-cot để màn Thiết kế mẫu in (11.11) biết người dùng bấm vào đâu; thietKe thêm tay nắm kéo mép cột
  */
-export function veMauIn(mau: MauIn, du: DuLieuIn, cd: CheDoDef, dv: DonViIn, thietKe?: boolean): ReactNode {
+export function veMauIn(mauGoc: MauIn, du: DuLieuIn, cd: CheDoDef, dv: DonViIn, thietKe?: boolean): ReactNode {
+  const mau = mauChoCheDo(mauGoc, cd.ma)
   const goc: CSSProperties = {
     fontSize: `${mau.trang.coChu}pt`,
     fontFamily: mau.trang.phong === 'times' ? "'Times New Roman', Times, serif" : undefined,
@@ -217,9 +218,9 @@ export function tenMauMoi(cungGoc: MauRieng[]): string {
   return `Mẫu riêng ${Math.max(n, cungGoc.length) + 1}`
 }
 
-const dsMauCua = (p: PhieuIn) => {
-  const ds = mauCuaChungTu(p.sc.code ?? '', p.loai?.k)
-  return ds.length ? ds : [mauIn('phieu-ke-toan')!]
+const dsMauCua = (p: PhieuIn, cdMa?: CheDo) => {
+  const ds = mauCuaChungTu(p.sc.code ?? '', p.loai?.k, cdMa)
+  return ds.length ? ds : [mauChoCheDo(mauIn('phieu-ke-toan')!, cdMa ?? 'TT133')]
 }
 
 /** Khung xem trước bản in toàn màn hình: chọn mẫu, zoom, In, Xuất PDF. In nhiều phiếu thì mỗi phiếu một trang */
@@ -228,7 +229,7 @@ export function HopInChungTu({ ds, onDong }: { ds: PhieuIn[]; onDong: () => void
   const cd = cheDoHienTai(s)
   const donVi = donViHienTai(s)
   const dv: DonViIn = { ten: donVi.ten, diaChi: donVi.diaChi, mst: donVi.mst }
-  const dsMau = useMemo(() => (ds[0] ? dsMauCua(ds[0]) : [mauIn('phieu-ke-toan')!]), [ds])
+  const dsMau = useMemo(() => (ds[0] ? dsMauCua(ds[0], cd.ma) : [mauChoCheDo(mauIn('phieu-ke-toan')!, cd.ma)]), [ds, cd.ma])
   const [rev, setRev] = useState(0)          // tăng khi lưu mẫu riêng ngay trong hộp in, để đọc lại kho
   // Mẫu chuẩn của chứng từ và mẫu riêng của từng mẫu đó; giá trị ô chọn là id mẫu chuẩn hoặc id mẫu riêng
   const luaChon = useMemo(() => dsMau.flatMap(m => [
@@ -249,7 +250,7 @@ export function HopInChungTu({ ds, onDong }: { ds: PhieuIn[]; onDong: () => void
 
   // Phiếu khác loại trong In hàng loạt (phiếu thu lẫn phiếu chi): mẫu đang chọn không thuộc phiếu đó thì dùng mẫu mặc định của phiếu
   const than = useMemo(() => ds.map((p, i) => {
-    const cua = dsMauCua(p)
+    const cua = dsMauCua(p, cd.ma)
     const m = kyTheoDonVi(cua.some(x => x.id === mau.id) ? mau : mauDungIn(donVi.id, cd.ma, cua[0].id), nguoiKy)
     const du = duLieuIn(m, p.cfg, p.row, p.loai, dv, p.sc.code ?? p.sc.slug)
     if (p.dong) du.dong = p.dong

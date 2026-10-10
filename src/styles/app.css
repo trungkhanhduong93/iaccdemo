@@ -5448,3 +5448,17 @@ table.tbl {
 .pn-luoi .pn-tich-o { align-self: end; min-height: 32px; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; }
 /* Nút mở phiếu gốc cạnh nhãn ô Số chứng từ của thẻ phân bổ */
 .f label .pn-lien { margin-left: 8px; font-weight: 600; color: var(--blue); }
+
+/* ── Mẫu sổ và báo cáo TT58 (T108) ── */
+.rpt thead th[colspan] {
+  text-align: center;
+  font-weight: 700;
+  background: var(--giay-th);
+}
+.rpt tr.rpt-ky-hieu th {
+  font-weight: 600;
+  font-style: italic;
+  font-size: 11px;
+  color: var(--giay-phu);
+  padding: 2px 6px;
+}

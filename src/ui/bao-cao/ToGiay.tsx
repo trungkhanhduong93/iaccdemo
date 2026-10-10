@@ -390,8 +390,12 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
   const css = khoi.map((kh, i) => {
     if (kh.loai !== 'bang') return ''
     const pt = chiaCot(kh.cols, kho, kh.rows)
+    const coNhom = kh.cols.some(c => c.nhom)
     return `.${pv} .bc-bang-${i} .rpt{table-layout:fixed;width:100%}`
-      + pt.map((w, c) => `.${pv} .bc-bang-${i} .rpt th:nth-child(${c + 1}),.${pv} .bc-bang-${i} .rpt td:nth-child(${c + 1}){width:${w}%!important;box-sizing:border-box}`).join('')
+      + pt.map((w, c) => coNhom
+        ? `.${pv} .bc-bang-${i} .rpt td:nth-child(${c + 1}){width:${w}%!important;box-sizing:border-box}`
+        : `.${pv} .bc-bang-${i} .rpt th:nth-child(${c + 1}),.${pv} .bc-bang-${i} .rpt td:nth-child(${c + 1}){width:${w}%!important;box-sizing:border-box}`
+      ).join('')
   }).join('')
 
   const toMotTrang = (

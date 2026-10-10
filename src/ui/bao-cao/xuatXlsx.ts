@@ -5,7 +5,7 @@ import { chiaCot } from './chiaCot'
 
 function kyHieuCac(cols: Col[], kieu: 'chuSo' | 'so'): string[] {
   let chu = 0, so = 0
-  return cols.map(c => kieu === 'chuSo' && !c.num ? String.fromCharCode(65 + chu++) : String(++so))
+  return cols.map(c => c.kyHieu ? c.kyHieu : (kieu === 'chuSo' && !c.num ? String.fromCharCode(65 + chu++) : String(++so)))
 }
 
 export async function xuatXlsx(n: NguonXuat): Promise<Blob> {
@@ -102,7 +102,7 @@ export async function xuatXlsx(n: NguonXuat): Promise<Blob> {
     const rHead = ws.getRow(curRow)
     b.cols.forEach((c, idx) => {
       const cell = rHead.getCell(idx + 1)
-      cell.value = c.t
+      cell.value = c.nhom ? `${c.nhom} - ${c.t}` : c.t
       cell.font = { bold: true, size: 10 }
       cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE8EDF3' } }
       cell.border = borderThin

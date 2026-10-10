@@ -12,6 +12,7 @@ import { Note, PageHead } from '../../ui/Page'
 import { KY_CHON, ReportPaper, ReportToolbar, RptTable } from '../../ui/generic/ReportScreen'
 import { pct } from '../../ui/format'
 import { TEN_TK, du, soCai, tkTheoCheDo } from './so-cai'
+import { dongB01, dongB02 } from '../bao-cao/tt58'
 
 const kyTen = (ky: string) => KY_CHON.find(x => x[0] === ky)![1]
 const truoc = (ky: string) => String(Math.max(8, Number(ky) - 1))
@@ -58,11 +59,25 @@ export function KetQuaKinhDoanh(p: ScreenProps) {
   return (
     <Khung {...p} note={<Note icon="info">Bấm dòng doanh thu hoặc giá vốn để xem số chi tiết. Số khớp Tổng quan, báo cáo doanh thu, bảng cân đối số phát sinh.</Note>}>
       {ky => {
+        if (s.cheDo === 'TT58') {
+          const rows = dongB02(Number(ky))
+          const cols: Col[] = [
+            { k: 'ct', t: 'Chỉ tiêu', kyHieu: 'A' },
+            { k: 'ma', t: 'Mã số', c: true, w: 70, kyHieu: 'B' },
+            { k: 'nay', t: 'Năm nay', num: true, kyHieu: '1' },
+            { k: 'truoc', t: 'Năm trước', num: true, kyHieu: '2' },
+          ]
+          return (
+            <ReportPaper title="Báo cáo kết quả hoạt động kinh doanh" sub={kyTen(ky)}>
+              <RptTable cols={cols} rows={rows} kyHieuCot="so" />
+            </ReportPaper>
+          )
+        }
         const nay = dongKqkd(s.cheDo, Number(ky)), cu = dongKqkd(s.cheDo, Number(truoc(ky)))
         const ma = kieuGhiSo(s.cheDo) === 'noco'
         const cols: Col[] = [{ k: 'ct', t: 'Chỉ tiêu' }, ...(ma ? [{ k: 'ma', t: 'Mã số', c: true, w: 70 } as Col] : []), { k: 'v', t: kyTen(ky).replace(' (đến 07/10)', ''), num: true }, { k: 'cu', t: kyTen(truoc(ky)), num: true }]
         return (
-          <ReportPaper title="Báo cáo kết quả hoạt động kinh doanh" sub={`${kyTen(ky)}${s.cheDo === 'TT152' ? ' · Bản đơn giản, chưa theo chế độ kế toán' : s.cheDo === 'TT58' ? ' · Dạng tinh gọn theo TT58' : ''}`}>
+          <ReportPaper title="Báo cáo kết quả hoạt động kinh doanh" sub={`${kyTen(ky)}${s.cheDo === 'TT152' ? ' · Bản đơn giản, chưa theo chế độ kế toán' : ''}`}>
             <RptTable cols={cols} rows={nay.map((x, i) => ({ ...x, cu: cu[i]?.v }))} onRow={x => nav(x._drill)} />
           </ReportPaper>
         )
@@ -106,13 +121,32 @@ export function CanDoiKeToan(p: ScreenProps) {
   return (
     <Khung {...p}>
       {ky => {
+        const ngay = ky === '10' ? '07/10/2026' : ky === '9' ? '30/09/2026' : '31/08/2026'
+        if (s.cheDo === 'TT58') {
+          const b01 = dongB01(Number(ky))
+          const cols: Col[] = [
+            { k: 'ct', t: 'Chỉ tiêu', kyHieu: 'A' },
+            { k: 'ma', t: 'Mã số', c: true, w: 70, kyHieu: 'B' },
+            { k: 'cuoi', t: 'Số cuối năm', num: true, kyHieu: '1' },
+            { k: 'dau', t: 'Số đầu năm', num: true, kyHieu: '2' },
+          ]
+          return (
+            <ReportPaper title="Báo cáo tình hình tài chính" sub={`Tại ngày ${ngay}`}>
+              <div className="row" style={{ marginBottom: 8, fontSize: 12.5 }}>
+                <span className={`chip ${b01.can ? 'ok' : 'err'}`}>
+                  {b01.can ? 'Tài sản bằng nguồn vốn' : 'Lệch tài sản và nguồn vốn'}
+                </span>
+              </div>
+              <RptTable cols={cols} rows={b01.rows} kyHieuCot="so" />
+            </ReportPaper>
+          )
+        }
         const sd = soCai(Number(ky))
         const cuoi = dongCdkt(s.cheDo, sd.cuoi), dau = dongCdkt(s.cheDo, sd.mo)
         const PR = s.cheDo === 'TT99'
         const ts = cuoi.find(x => x.ma === (PR ? '270' : '200'))!.v!, nv = cuoi.find(x => x.ma === (PR ? '440' : '500'))!.v!
-        const ngay = ky === '10' ? '07/10/2026' : ky === '9' ? '30/09/2026' : '31/08/2026'
         return (
-          <ReportPaper title="Báo cáo tình hình tài chính" sub={`Tại ngày ${ngay}${s.cheDo === 'TT58' ? ' · Dạng tinh gọn theo TT58' : ''}`}>
+          <ReportPaper title="Báo cáo tình hình tài chính" sub={`Tại ngày ${ngay}`}>
             <div className="row" style={{ marginBottom: 8, fontSize: 12.5 }}>
               <span className={`chip ${ts === nv ? 'ok' : 'err'}`}>{ts === nv ? 'Tài sản bằng nguồn vốn' : 'Lệch tài sản và nguồn vốn'}</span>
             </div>

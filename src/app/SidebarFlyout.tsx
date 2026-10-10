@@ -405,7 +405,7 @@ export function SidebarFlyout({
         const slug = parts[1]
         const { sc } = timMan(modK, slug)
         if (sc) {
-          if (!hienMan(sc, s.goi, s.cheDo)) return null
+          if (!hienMan(sc, s.goi, s.cheDo, s)) return null
           const khoa = !moDuoc(sc, s.goi)
           return { ...it, khoa }
         }

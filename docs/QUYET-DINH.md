@@ -440,4 +440,13 @@ Lý do: Trum chốt ngày 09/10/2026 (T58, T66, T67, T75), chọn hướng cột
 
 Lý do: Trum chốt ngày 10/10/2026 (T97), theo bộ báo cáo hộ kinh doanh của iFaster đọc cùng ngày.
 
-## QD43. Bộ sổ TT58 theo phương pháp thuế (đang soạn)
+## QD43. Bộ sổ TT58 theo phương pháp thuế
+
+- Chế độ TT58 có thêm hai lựa chọn ở Thông tin đơn vị: phương pháp tính thuế GTGT (tỷ lệ % trên doanh thu, khấu trừ) và TNDN (tỷ lệ % trên doanh thu, trên thu nhập tính thuế). Mặc định trường hợp 2.
+- Trường hợp quyết định sổ nào hiện (khai `th` trong `CAU_HINH_BC`): TH1 S1; TH2 S2a, S2b, S2c, S2d; TH3 S3a, S3b; TH4 S2b, S2c, S2d, S3b. S4a, S4b, S4c, S4d hiện mọi trường hợp. B01-DNSN, B02-DNSN chỉ hiện ở TH2, TH4 (nộp TNDN trên thu nhập tính thuế mới phải lập).
+- S1, S2a, S3a dùng chung màn 3.2.5, ký hiệu và bố cục đổi theo trường hợp; TH4 ẩn màn này.
+- Biểu mẫu dựng theo bộ file `D:\IACC-CLOUD\TT58` (bản dựng lại từ nguồn thứ cấp), kể cả 3 điểm chưa chắc; chờ kế toán trưởng đối chiếu Công báo (T04). Tỷ lệ % nhóm ngành là tỷ lệ mẫu.
+- Phiếu thu, chi, nhập, xuất TT58 in đủ ô ký theo biểu mẫu, gồm Kế toán trưởng. Đơn vị không có kế toán trưởng tự xoá ô ở Thiết kế mẫu in.
+- Gói Standard mở 7.2.1 (Sổ TSCĐ, S4b-DNSN) để đủ bộ sổ TT58.
+
+Lý do: Trum chốt ngày 10/10/2026 (T108).

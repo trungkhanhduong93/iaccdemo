@@ -75,7 +75,7 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
   const nhomRail = nhomGoc
     .map(g => ({
       mod: g.mod,
-      hienCount: g.screens.filter(x => hienMan(x, s.goi, s.cheDo)).length,
+      hienCount: g.screens.filter(x => hienMan(x, s.goi, s.cheDo, s)).length,
     }))
     .filter(g => g.hienCount > 0)
 
@@ -103,7 +103,7 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
   const nhomKetQua = nhomHienThi
     .map(g => ({
       mod: g.mod,
-      screens: g.screens.filter(x => hienMan(x, s.goi, s.cheDo)).filter(match),
+      screens: g.screens.filter(x => hienMan(x, s.goi, s.cheDo, s)).filter(match),
     }))
     .filter(g => g.screens.length > 0)
 
@@ -114,7 +114,7 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
     const pinned: { sc: ScreenDef; isGhim: boolean }[] = []
     for (const slug of ghim) {
       const item = tatCaBCMap.get(slug)
-      if (item && hienMan(item, s.goi, s.cheDo) && moDuoc(item, s.goi)) {
+      if (item && hienMan(item, s.goi, s.cheDo, s) && moDuoc(item, s.goi)) {
         pinned.push({ sc: item, isGhim: true })
       }
     }
@@ -124,14 +124,14 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
     for (const slug of ganDay) {
       if (ghim.includes(slug)) continue
       const item = tatCaBCMap.get(slug)
-      if (item && hienMan(item, s.goi, s.cheDo) && moDuoc(item, s.goi)) {
+      if (item && hienMan(item, s.goi, s.cheDo, s) && moDuoc(item, s.goi)) {
         recent.push({ sc: item, isGhim: false })
         if (recent.length >= 4) break
       }
     }
 
     return [...pinned, ...recent]
-  }, [ghim, tatCaBCMap, s.goi, s.cheDo])
+  }, [ghim, tatCaBCMap, s.goi, s.cheDo, s.ppGtgt, s.ppTndn])
 
   const hienGhimGanDay = sc.slug === 'tat-ca' && !q.trim() && topItems.length > 0
 
