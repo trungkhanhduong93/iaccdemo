@@ -22,6 +22,7 @@ import {
   BoLoc, ChipTrangThai, NutHangLoat, NutTuyChinhCot, cotChon, dsChipTT, khopChipTT, useCauHinhLoc, useCotDs, useLocNhap, type OLocDef,
 } from '../../ui/LocNangCao'
 import { HopInChungTu, type PhieuIn } from '../../ui/bao-cao/InChungTu'
+import { TT_CT } from '../../ui/generic/gen'
 
 /** Bán hàng ngoài POS: tiệc mang về, khách công ty đặt trước. Lập tay, không qua FABi; là tab Bán hàng 3.1.7 từ gói Plus (T52) */
 export const NGOAI_POS: VoucherCfg = {
@@ -30,6 +31,31 @@ export const NGOAI_POS: VoucherCfg = {
 }
 
 const TY_LE = [0.21, 0.09, 0.12, 0.14, 0.07, 0.15, 0.1, 0.09, 0.03]   // cơ cấu doanh thu theo món trong HANG
+
+/** Giảm giá theo món trên đơn POS (mẫu): tỷ lệ theo vị trí món trong HANG */
+const GIAM = [0, 0, 0.1, 0, 0.05, 0, 0, 0.1, 0]
+
+/** Dòng món của chứng từ có giảm giá (T102): đơn giá là giá món trong danh mục, thành tiền = số lượng × đơn giá,
+ *  tiền giảm đúng tỷ lệ khuyến mãi. Tổng tiền các dòng cộng lại vẫn bằng doanh thu ngày: phần chênh dồn vào món cuối
+ *  (món vốn nhận phần dư khi chia doanh thu theo món) */
+function dongMonGiam(dt: number) {
+  const ds = dongMon(dt).map((d, i) => {
+    const r = GIAM[i] ?? 0
+    if (!r) return { ...d, thanh: d.tien, giam: 0, pt: 0, ghiChu: '' }
+    // món khuyến mãi: số lượng tính lại để doanh thu sau giảm sát doanh thu của món
+    const sl = Math.max(1, Math.round(d.tien / (d.gia * (1 - r))))
+    const thanh = sl * d.gia
+    const giam = Math.round(thanh * r / 100) * 100
+    const tien = thanh - giam
+    return { ...d, sl, thanh, giam, tien, thue: Math.round(tien * d.ts / 100), pt: r * 100, ghiChu: 'Khuyến mãi giờ vàng' }
+  })
+  const cuoi = ds[ds.length - 1]
+  const lech = dt - ds.reduce((a, d) => a + d.tien, 0)
+  cuoi.tien += lech
+  cuoi.thanh += lech
+  cuoi.thue = Math.round(cuoi.tien * cuoi.ts / 100)
+  return ds
+}
 
 function dongMon(dt: number) {
   let con = dt
@@ -347,7 +373,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
 }
 
 function NoiDungTab({ x, tab, kieu }: { x: (typeof DAILY)[number]; tab: string; kieu: ReturnType<typeof kieuGhiSo> }) {
-  const dong = dongMon(x.dt)
+  const dong = dongMonGiam(x.dt)
   const ht = [
     { dg: 'Thu tiền mặt', no: '1111', co: '5111, 33311', tien: x.tm },
     { dg: 'Thu chuyển khoản, QR, thẻ', no: '1121', co: '5111, 33311', tien: x.ck + x.the },
@@ -366,21 +392,27 @@ function NoiDungTab({ x, tab, kieu }: { x: (typeof DAILY)[number]; tab: string; 
         <Table
           cols={[
             { k: 'stt', t: '#', w: 40, cls: 'dim' },
-            { k: 'ma', t: 'Mã món', cls: 'code' },
-            { k: 'ten', t: 'Tên món' },
-            { k: 'dvt', t: 'ĐVT' },
-            { k: 'sl', t: 'Số lượng', num: true },
-            { k: 'gia', t: 'Đơn giá', num: true },
-            { k: 'tien', t: 'Thành tiền', num: true },
-            { k: 'ts', t: 'Thuế suất', num: true, r: r => `${r.ts}%` },
-            { k: 'thue', t: 'Tiền thuế', num: true },
+            { k: 'ma', t: 'Mã hàng', cls: 'code', w: 90 },
+            { k: 'ten', t: 'Hàng hoá' },
+            { k: 'dvt', t: 'ĐVT', w: 70 },
+            { k: 'sl', t: 'Số lượng', num: true, w: 90 },
+            { k: 'gia', t: 'Đơn giá', num: true, w: 110 },
+            { k: 'thanh', t: 'Thành tiền', num: true, w: 120 },
+            { k: 'pt', t: 'Giảm giá (%)', num: true, w: 100, r: r => r.pt ? `${r.pt}%` : '' },
+            { k: 'giam', t: 'Tiền giảm giá', num: true, w: 120 },
+            { k: 'ghiChu', t: 'Ghi chú', w: 160, cls: 'dim' },
+            { k: 'ts', t: 'Thuế suất', num: true, w: 80, r: r => `${r.ts}%` },
+            { k: 'thue', t: 'Tiền thuế', num: true, w: 110 },
+            { k: 'tien', t: 'Tổng tiền', num: true, w: 130 },
           ]}
           rows={dong}
           sum={{
             stt: `Tổng cộng (${dong.length} dòng)`,
             sl: dong.reduce((a, r) => a + r.sl, 0),
-            tien: dong.reduce((a, r) => a + r.tien, 0),
+            thanh: dong.reduce((a, r) => a + r.thanh, 0),
+            giam: dong.reduce((a, r) => a + r.giam, 0),
             thue: dong.reduce((a, r) => a + r.thue, 0),
+            tien: dong.reduce((a, r) => a + r.tien, 0),
           }}
         />
       )}
@@ -434,6 +466,13 @@ function NoiDungTab({ x, tab, kieu }: { x: (typeof DAILY)[number]; tab: string; 
   )
 }
 
+/** Ô chỉ xem ở đầu phiếu, cùng kiểu ô của form chứng từ chung */
+function OXem({ nhan, v, code }: { nhan: string; v: string; code?: boolean }) {
+  return <div className="f"><label>{nhan}</label><input className={`inp${code ? ' code' : ''}`} readOnly value={v} title={v} /></div>
+}
+
+/** Chứng từ Xuất bán POS (T102): vẽ theo form chung IACC, đủ thông tin như chi tiết đơn POS của iFaster.
+ *  Phiếu đồng bộ từ FABi, chỉ xem: không sửa, trả hàng, huỷ ở đây */
 function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
   const { s, toast } = useSession()
   const dong0 = useDong(duongDan(mod, sc))
@@ -441,42 +480,71 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
   const [phieuIn, setPhieuIn] = useState<PhieuIn[] | null>(null)
   const x = row.x
   const kieu = kieuGhiSo(s.cheDo)
+  const cn = CHI_NHANH.find(c => c.id === x.cn)
+  const dong = dongMonGiam(x.dt)
+  const thanh = dong.reduce((a, d) => a + d.thanh, 0), giam = dong.reduce((a, d) => a + d.giam, 0)
+  const tong = x.dt + x.vat
+  const pttt = [['Tiền mặt', x.tm], ['Chuyển khoản, QR', x.ck], ['Thẻ', x.the], ['App giao đồ ăn', x.app]].filter(([, v]) => Number(v) > 0).map(([t]) => t).join(', ')
+  const kenh = x.app > 0 ? 'Tại quán, Mang về, App giao đồ ăn' : 'Tại quán, Mang về'
+  const coHddt = ['PL', 'PR'].includes(s.goi)
   // In: bảng kê lấy đúng các món của chứng từ, không sinh dòng giả
   const moIn = () => setPhieuIn([{
     sc, row, cfg: NGOAI_POS,
     dong: dongMon(x.dt).map(d => ({ stt: d.stt, ma: d.ma, ten: d.ten, dvt: d.dvt, sl: d.sl, gia: d.gia, tien: d.tien, thue: d.thue, ts: d.ts })),
   }])
+  const [cTt, tTt] = kieu === 'khong' ? ['ok', 'Đã đồng bộ'] : TT_CT[row.tt] ?? ['warn', 'Chưa ghi sổ']
   return (
-    <FormToanMan icon={mod.icon} onClose={dong0} tong={x.dt + x.vat} title={`Chứng từ bán hàng ${row.so}`}
-      meta={<><span className="src">FABi</span><span className="chip">{row.cn}</span><span className="chip">{x.don} đơn POS</span>{kieu !== 'khong' && <span className="chip ok">Đã ghi sổ</span>}</>}
+    <FormToanMan icon={mod.icon} onClose={dong0} title="Xuất bán POS"
+      giua={<span className="fsf-tt xem">Chi tiết phiếu <b>{row.so}</b></span>}
+      meta={<><St k={cTt}>{tTt}</St><span className="src">FABi</span><span className="chip info"><Icon n="store" className="ic sm" />{row.cn}</span></>}
       foot={<>
-        <button className="btn" onClick={dong0}>Đóng</button>
         <span className="grow" />
-        <button className="btn" onClick={moIn}><Icon n="printer" className="ic sm" />In</button>
-        <button className="btn" disabled={!['PL', 'PR'].includes(s.goi)} title={['PL', 'PR'].includes(s.goi) ? '' : 'Xuất hoá đơn điện tử có từ gói Plus'} onClick={() => toast('Đã gửi hoá đơn tổng hợp sang iPOS Invoice')}><Icon n="receipt" className="ic sm" />Xuất hoá đơn</button>
-        <button className="btn pri" onClick={() => { toast('Đã lưu'); dong0() }}>Lưu</button>
+        <button type="button" className="btn sm" onClick={moIn}><Icon n="printer" className="ic sm" />In</button>
+        <button type="button" className="btn sm pri" disabled={!coHddt} title={coHddt ? 'Gửi hoá đơn tổng hợp sang iPOS Invoice' : 'Phát hành hoá đơn điện tử có từ gói Plus'}
+          onClick={() => toast('Đã gửi hoá đơn tổng hợp sang iPOS Invoice')}><Icon n="receipt" className="ic sm" />Phát hành HĐĐT</button>
+        <button type="button" className="btn sm" onClick={dong0}>Đóng (Esc)</button>
       </>}>
-      <div className="grid" style={{ gridTemplateColumns: 'minmax(0,1fr) 300px', alignItems: 'start' }}>
-        <section className="card">
-          <div className="tabs">
-            {[['ct', 'Hàng bán'], ['ht', kieu === 'noco' ? 'Hạch toán' : 'Ghi sổ'], ['tt', 'Thanh toán'], ['goc', 'Đơn POS gốc']].filter(([k]) => k !== 'ht' || kieu !== 'khong').map(([k, l]) => <button key={k} className={tab === k ? 'on' : ''} onClick={() => setTab(k)}>{l}</button>)}
-          </div>
-          <NoiDungTab x={x} tab={tab} kieu={kieu} />
-          <div className="tot">
-            <span>Doanh thu chưa thuế</span><b>{moneyD(x.dt)}</b><span>Thuế GTGT</span><b>{moneyD(x.vat)}</b><span>Tổng thanh toán</span><b className="big">{moneyD(x.dt + x.vat)}</b>
+      <div className="stack" style={{ gap: 14 }}>
+        <Note kind="gray" icon="info">Chứng từ đồng bộ từ FABi: không sửa, trả hàng, huỷ trên phiếu này. Sửa đơn trên FABi rồi đồng bộ lại.</Note>
+        {/* Đầu phiếu 3 cột như form chung: thông tin chung, kênh và thanh toán, số và ngày */}
+        <section className="card" style={{ padding: '14px 16px' }}>
+          <div className="grid" style={{ gridTemplateColumns: 'minmax(0, 1.4fr) minmax(0, 1.2fr) 280px', gap: 16, alignItems: 'start' }}>
+            <div className="stack" style={{ gap: 10 }}>
+              <OXem nhan="Khách hàng" v="Khách lẻ POS" />
+              <OXem nhan="Cửa hàng" v={`${row.cn} (${(cn?.id ?? x.cn).toUpperCase()})`} />
+              <OXem nhan="Kênh bán hàng" v={kenh} />
+            </div>
+            <div className="stack" style={{ gap: 10 }}>
+              <OXem nhan="Phương thức thanh toán" v={pttt} />
+              <OXem nhan="Thời gian xuất" v={`${row.ngay} 23:30`} />
+              <OXem nhan="Số đơn POS" v={`${x.don} đơn`} />
+            </div>
+            <div className="stack" style={{ gap: 10 }}>
+              <OXem nhan="Ngày chứng từ" v={String(row.ngay)} />
+              <OXem nhan="Số chứng từ" v={String(row.so)} code />
+              <OXem nhan="Diễn giải" v={String(row.dienGiai)} />
+            </div>
           </div>
         </section>
-        <div className="stack">
-          <Card title="Thông tin">
-            <div className="stack" style={{ gap: 8, fontSize: 13 }}>
-              <div className="row"><span className="muted">Ngày</span><span className="grow" />{row.ngay}</div>
-              <div className="row"><span className="muted">Chi nhánh</span><span className="grow" />{row.cn}</div>
-              <div className="row"><span className="muted">Khách hàng</span><span className="grow" />Khách lẻ POS</div>
-              <div className="row"><span className="muted">Đồng bộ lúc</span><span className="grow" />23:30 cùng ngày</div>
-            </div>
-          </Card>
-          {row.tt === 'loi' && <Note kind="err" icon="alert">Doanh thu trên FABi lớn hơn sổ 1.250.000 đ. <Link to="/app/tien-ich/11-7">Mở đối soát</Link></Note>}
-        </div>
+        <section className="card">
+          <div className="tabs">
+            {[['ct', 'Hàng bán'], ['ht', kieu === 'noco' ? 'Hạch toán' : 'Ghi sổ'], ['tt', 'Thanh toán'], ['goc', 'Đơn POS gốc']].filter(([k]) => k !== 'ht' || kieu !== 'khong').map(([k, l]) => <button key={k} type="button" className={tab === k ? 'on' : ''} onClick={() => setTab(k)}>{l}</button>)}
+          </div>
+          <NoiDungTab x={x} tab={tab} kieu={kieu} />
+          {/* Khối thanh toán như iFaster, tổng tiền giữ đúng số của danh sách, báo cáo */}
+          <div className="tot" style={{ borderTop: '1px solid var(--line)', marginTop: 12 }}>
+            <span>Thành tiền</span><b>{moneyD(thanh)}</b>
+            <span>Tiền giảm giá</span><b style={{ color: giam ? 'var(--red)' : undefined }}>{giam ? `-${moneyD(giam)}` : moneyD(0)}</b>
+            <span>Chiết khấu hoá đơn</span><b>{moneyD(0)}</b>
+            <span>Phí dịch vụ</span><b>{moneyD(0)}</b>
+            <span>Giảm thuế GTGT</span><b>{moneyD(0)}</b>
+            <span>Phiếu giảm giá</span><b>{moneyD(0)}</b>
+            <span>Phí vận chuyển</span><b>{moneyD(0)}</b>
+            <span>Thuế GTGT</span><b>{moneyD(x.vat)}</b>
+            <span>Tổng tiền</span><b className="big" style={{ color: 'var(--blue)' }}>{moneyD(tong)}</b>
+          </div>
+        </section>
+        {row.tt === 'loi' && <Note kind="err" icon="alert">Doanh thu trên FABi lớn hơn sổ 1.250.000 đ. <Link to="/app/tien-ich/11-7">Mở đối soát</Link></Note>}
       </div>
       {phieuIn && <HopInChungTu ds={phieuIn} onDong={() => setPhieuIn(null)} />}
     </FormToanMan>

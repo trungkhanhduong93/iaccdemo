@@ -4,14 +4,14 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T102.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T103.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T102 | Chứng từ Xuất bán POS 3.1.1: vẽ lại theo form chung IACC, đủ thông tin như chi tiết đơn iFaster (khách hàng, cửa hàng, kênh bán, thời gian xuất, phương thức TT; dòng có giảm giá, ghi chú; khối thanh toán) | PhuongXT | Đang làm | Sửa `ban-hang/ChungTuBanHang.tsx` |
+| T103 | Xuất bán POS: tổng tiền thuế cộng trên các dòng món lệch thuế GTGT của ngày trong dữ liệu mẫu (vd BH2610-TD-07: 1.604.204 so với 1.616.029); chia thuế theo món cho khớp | | Chờ | Thấy khi làm T102. Dữ liệu ở `data/mock.ts` (DAILY.vat), dòng món ở `ChungTuBanHang.tsx` |
 | T101 | Chuyển tiện ích về phân hệ của nó (tiện ích của phân hệ nào nằm trong phân hệ đó); tiện ích chung như Thiết kế mẫu in tính sau. Rồi xem lại có mở phân hệ Tiện ích cho gói Free không | PhuongXT | Chờ | Ý của PhuongXT 10/10/2026, khi làm T100. Gói Free đang ẩn tạm phân hệ Tiện ích |
 | T88 | Danh mục đơn vị tính 1.3: bộ khoảng 35 đơn vị cơ bản F&B, mã viết hoa không dấu (CAI là Cái), giữ cột Mô tả; mọi ô chọn ĐVT trong panel danh mục lấy từ danh mục này | Trum | Đang làm | Sửa `danh-muc/data.ts`, `danh-muc/index.ts`, `truong-dm.ts`, `CatalogScreen.tsx` |
 | T60 | Mô tả gói Free, Standard trong `GOI` (`src/app/plan.ts`) đang ghi "1 điểm bán"; theo Roadmap gói Free là mỗi chi nhánh một kho, không giới hạn một chi nhánh. Chốt câu chữ rồi sửa | PhuongXT | Chờ | Tách từ T25 |
@@ -37,6 +37,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T102 | Chứng từ Xuất bán POS 3.1.1 vẽ lại theo form chung IACC: đầu phiếu 3 cột chỉ xem (khách hàng, cửa hàng, kênh bán, phương thức TT, thời gian xuất, số đơn POS), bảng món có giảm giá, ghi chú, khối thanh toán như iFaster; nút Phát hành HĐĐT | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-xuat-ban-pos.md` |
 | T100 | Bỏ tiện ích 11.1 Đồng bộ bán hàng, 11.2 Xuất kho theo định lượng ở mọi gói; ô Đơn POS từ FABi trên sơ đồ Bán hàng chỉ để xem; gói Free ẩn tạm phân hệ Tiện ích và khung Tiện ích liên quan dưới sơ đồ | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-so-do-ban-hang-free.md` |
 | T99 | Bỏ Báo cáo bán hàng 3.2.1 và Báo cáo doanh thu 3.2.3 ở mọi gói (`DA_BO` trong `plan.ts`); liên kết cũ trỏ sang Sổ doanh thu bán hàng 3.2.5 | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-so-do-ban-hang-free.md` |
 | T98 | Sơ đồ Quy trình Bán hàng gói Free kiểu hội tụ: làn Bán hàng từ FABi (Đơn POS từ FABi, mũi tên chữ đồng bộ, Xuất bán POS) về khối Báo cáo; 3.2.5, 3.2.1, 3.2.3 tự hiện khi T97 mở cho Free | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-so-do-ban-hang-free.md` |
