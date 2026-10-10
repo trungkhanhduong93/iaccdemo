@@ -31,6 +31,7 @@ export interface BangSuaProps {
   dtMacDinh?: string           // đối tượng của dòng mới, theo đối tượng đầu phiếu (T49)
   an?: string[]                // mã cột người dùng ẩn qua Tuỳ chỉnh giao diện phiếu (T49)
   khongTong?: boolean          // bỏ dòng Tổng cộng khi tổng đã hiện ở đáy form (phiếu thu chi)
+  coNhapKho?: boolean          // phiếu mua: cuối dòng có Tiền hàng, Giá trị nhập kho, tính như khối tổng (T84)
 }
 
 /** Các cột ẩn hiện được của bảng chi tiết, theo loại phiếu (T49) */
@@ -105,6 +106,7 @@ export function BangSua({
   dtMacDinh = '',
   an = [],
   khongTong = false,
+  coNhapKho = false,
 }: BangSuaProps) {
   const hang = cfg.dong === 'hang' || cfg.dong === 'nvl'
   const tienDong = cfg.dong === 'tien'
@@ -274,6 +276,12 @@ export function BangSua({
                   <th className="num" style={{ width: 110 }}>Tiền thuế</th>
                 </>
               )}
+              {coNhapKho && (
+                <>
+                  <th className="num" style={{ width: 120 }}>Tiền hàng</th>
+                  <th className="num" style={{ width: 130 }}>Giá trị nhập kho</th>
+                </>
+              )}
             </tr>
           </thead>
           <tbody>
@@ -319,6 +327,12 @@ export function BangSua({
                     <td className="num">{money(d.thue)}</td>
                   </>
                 )}
+                {coNhapKho && (
+                  <>
+                    <td className="num">{money(d.tien || 0)}</td>
+                    <td className="num">{money((d.tien || 0) - (d.ck || 0))}</td>
+                  </>
+                )}
               </tr>
             ))}
           </tbody>
@@ -338,6 +352,12 @@ export function BangSua({
                 <>
                   <td />
                   <td className="num">{money(tongThue)}</td>
+                </>
+              )}
+              {coNhapKho && (
+                <>
+                  <td className="num">{money(tongTien)}</td>
+                  <td className="num">{money(tongTien - tongCk)}</td>
                 </>
               )}
             </tr>
@@ -392,6 +412,12 @@ export function BangSua({
                 <>
                   <th className="num" style={{ width: 80 }}>Thuế suất</th>
                   <th className="num" style={{ width: 110 }}>Tiền thuế</th>
+                </>
+              )}
+              {coNhapKho && (
+                <>
+                  <th className="num" style={{ width: 120 }}>Tiền hàng</th>
+                  <th className="num" style={{ width: 130 }}>Giá trị nhập kho</th>
                 </>
               )}
               <th style={{ width: 44 }} />
@@ -536,6 +562,12 @@ export function BangSua({
                     </td>
                   </>
                 )}
+                {coNhapKho && (
+                  <>
+                    <td className="num">{money(d.tien || 0)}</td>
+                    <td className="num">{money((d.tien || 0) - (d.ck || 0))}</td>
+                  </>
+                )}
                 <td className="c">
                   <button
                     type="button"
@@ -565,6 +597,12 @@ export function BangSua({
                 <>
                   <td />
                   <td className="num">{money(tongThue)}</td>
+                </>
+              )}
+              {coNhapKho && (
+                <>
+                  <td className="num">{money(tongTien)}</td>
+                  <td className="num">{money(tongTien - tongCk)}</td>
                 </>
               )}
               <td />

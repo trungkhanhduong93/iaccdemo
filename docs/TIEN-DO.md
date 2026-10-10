@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T84 | Phiếu mua hàng: bảng chi tiết thêm cột Tiền hàng, Giá trị nhập kho cuối từng dòng, tính như khối tổng | PhuongXT | Đang làm | Sửa `BangSua.tsx`, `ChungTuForm.tsx`, `VoucherScreen.tsx` |
 | T80 | Hộp tìm màn hình Ctrl K kiểu iPOS Inventory: mục Vừa mở, Gợi ý, ô biểu tượng, đường dẫn phân hệ, thanh phím tắt | Trum | Chờ | Spec sẵn, chưa làm. Sửa `CommandPalette.tsx`, `Shell.tsx`, `app.css` |
 | T73 | Tối ưu phản hồi thao tác: bấm, rê chuột, mở menu, panel, cuộn bảng phản hồi tức thì; hiệu ứng nhẹ, ngắn; đo trước và sau | Trum | Chờ | Còn: panel tài khoản khựng 120-160ms lúc nội dung hiện sau khi trượt (trình duyệt vẽ, JS chỉ 25ms). Sửa nhiều file `src/` |
 | T60 | Mô tả gói Free, Standard trong `GOI` (`src/app/plan.ts`) đang ghi "1 điểm bán"; theo Roadmap gói Free là mỗi chi nhánh một kho, không giới hạn một chi nhánh. Chốt câu chữ rồi sửa | PhuongXT | Chờ | Tách từ T25 |
@@ -36,6 +35,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T84 | Phiếu mua hàng: bảng chi tiết (form và khung dưới danh sách) thêm cột Tiền hàng, Giá trị nhập kho cuối từng dòng, tính như khối tổng | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-gia-tri-nhap-kho-dong.md` |
 | T83 | Phiếu mua, hoá đơn bán hàng, phiếu trả lại có kho: gói dưới Pro chọn một kho ở đầu phiếu, bỏ cột Kho trên dòng; gói Pro giữ kho trên dòng; chi nhánh một kho thì phiếu mới điền sẵn. Thông tin hoá đơn mua, bán thành cột riêng cạnh ngày, số phiếu, bắt buộc nhập (QD33) | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-chi-tiet-thu-chi-ly-do.md` |
 | T82 | Gói Free: khung chi tiết dưới mọi danh sách chứng từ (cả Bán hàng POS) bỏ tab Ghi sổ, như form | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-chi-tiet-thu-chi-ly-do.md` |
 | T27 | Danh sách chứng từ 2.1.1: khung chi tiết bên dưới lấy dòng phiếu giống form của cùng phiếu; phiếu thu, chi có cột Lý do thu, chi và Đối tượng | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-chi-tiet-thu-chi-ly-do.md` |

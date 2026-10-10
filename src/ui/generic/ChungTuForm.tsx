@@ -828,6 +828,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               nhanTk={nhanTkDong}
               coKho={Boolean(bo.kho) && !khoDau}
               khoMacDinh={khoMotCn || 'Kho tổng'}
+              coNhapKho={nhom === 'mua' && Boolean(bo.tongNhap)}
               coCk={Boolean(bo.ck)}
               coLo={nhom === 'mua' && s.goi === 'PR'}   // số lô, hạn dùng chỉ có ở gói Pro (T68)
               coKm={kieu !== 'khong'}
