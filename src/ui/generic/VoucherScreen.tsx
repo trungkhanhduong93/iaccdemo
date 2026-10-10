@@ -90,7 +90,10 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
   const coKhoDs = bo.kho === 'dong'
   const khoDong = s.goi === 'PR'
   // Thu chi (T96): lý do thu, chi của phiếu; phiếu chưa lưu lý do thì đoán theo diễn giải như form, chuyển quỹ không có
-  const rows = useMemo(() => mod.key === 'tien' ? rowsGoc.map((r): Row => {
+  // Phiếu kiểm kê (T124): kho kiểm kê và số mặt hàng của phiếu
+  const rows = useMemo(() => cfg.kiemKe ? rowsGoc.map((r): Row => ({
+    ...r, kho: String(r._kho ?? ''), soMat: ((r._dong as Dong[] | undefined) ?? dongCua(cfg, `${sc.code ?? sc.slug}-${r.id}`)).length,
+  })) : mod.key === 'tien' ? rowsGoc.map((r): Row => {
     const loaiK = cfg.loai?.find(x => x.k === r.loai)?.k ?? cfg.loai?.[0]?.k
     const cfgDong = theoLoai(cfg, loaiK)
     const oLy = boO(nhomCua(mod.key, cfgDong, loaiK), cfgDong).a.find(o => o.k === 'ly')
@@ -196,7 +199,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
 
   const tong = list.reduce((a, r) => a + r.tong, 0)
   // Cột số được cộng ở dòng tổng; mua, bán thêm Đã trả, Còn phải trả (T93)
-  const cotCong = nhom === 'mua' || nhom === 'ban' ? ['tong', 'thue', 'daTra', 'conNo'] : ['tong', 'thue']
+  const cotCong = cfg.kiemKe ? ['soMat'] : nhom === 'mua' || nhom === 'ban' ? ['tong', 'thue', 'daTra', 'conNo'] : ['tong', 'thue']
   const congCot = (ds: Row[]) => Object.fromEntries(cotCong.map(k => [k, ds.reduce((a, r) => a + (Number(r[k]) || 0), 0)]))
   // Phiếu đem in: màn nhiều loại phiếu thì lấy loại và cấu hình theo loại của dòng
   const phieuCua = (r: Row): PhieuIn => ({ sc, row: r, cfg: theoLoai(cfg, r.loai), loai: cfg.loai?.find(x => x.k === r.loai) })
@@ -302,7 +305,9 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
       { k: 'daTra', t: nhom === 'mua' ? 'Đã trả' : 'Đã thu', num: true, w: 120, an: true } as Col,
       { k: 'conNo', t: nhom === 'mua' ? 'Còn phải trả' : 'Còn phải thu', num: true, w: 125, an: true } as Col,
     ] : []),
-    ...(cfg.thue !== undefined || cfg.dong === 'hang' ? [{ k: 'thue', t: 'Tiền thuế', num: true, w: 120 } as Col] : []),
+    // Phiếu kiểm kê không có tiền: thay Tiền thuế, Tổng tiền bằng Kho, Số mặt hàng (T124)
+    ...(cfg.kiemKe ? [{ k: 'kho', t: 'Kho', w: 180 } as Col, { k: 'soMat', t: 'Số mặt hàng', num: true, w: 120 } as Col] : []),
+    ...(!cfg.kiemKe && (cfg.thue !== undefined || cfg.dong === 'hang') ? [{ k: 'thue', t: 'Tiền thuế', num: true, w: 120 } as Col] : []),
     {
       k: 'nguon',
       t: 'Nguồn',
@@ -313,7 +318,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
       },
     },
     // Tổng tiền là cột cuối; không còn cột Chức năng, xem phiếu bằng đúp chuột hoặc khung chi tiết (T48)
-    { k: 'tong', t: 'Tổng tiền', num: true, w: 120 },
+    ...(cfg.kiemKe ? [] : [{ k: 'tong', t: 'Tổng tiền', num: true, w: 120 } as Col]),
   ]
 
   // Thứ tự, ẩn hiện, độ rộng cột lưu theo màn (T41)
