@@ -4,13 +4,14 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T104.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T105.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T105 | Form mọi phiếu: đầu phiếu đứng yên, chỉ vùng bảng chi tiết cuộn (tiêu đề cột dính), phần tổng thành dải cố định ở đáy form | PhuongXT | Đang làm | Sửa `ChungTuForm.tsx`, `ban-hang/ChungTuBanHang.tsx`, cuối `app.css` |
 | T103 | Xuất bán POS: tổng tiền thuế cộng trên các dòng món lệch thuế GTGT của ngày trong dữ liệu mẫu (vd BH2610-TD-07: 1.604.204 so với 1.616.029); chia thuế theo món cho khớp | | Chờ | Thấy khi làm T102. Dữ liệu ở `data/mock.ts` (DAILY.vat), dòng món ở `ChungTuBanHang.tsx` |
 | T101 | Chuyển tiện ích về phân hệ của nó (tiện ích của phân hệ nào nằm trong phân hệ đó); tiện ích chung như Thiết kế mẫu in tính sau. Rồi xem lại có mở phân hệ Tiện ích cho gói Free không | PhuongXT | Chờ | Ý của PhuongXT 10/10/2026, khi làm T100. Gói Free đang ẩn tạm phân hệ Tiện ích |
 | T88 | Danh mục đơn vị tính 1.3: bộ khoảng 35 đơn vị cơ bản F&B, mã viết hoa không dấu (CAI là Cái), giữ cột Mô tả; mọi ô chọn ĐVT trong panel danh mục lấy từ danh mục này | Trum | Đang làm | Sửa `danh-muc/data.ts`, `danh-muc/index.ts`, `truong-dm.ts`, `CatalogScreen.tsx` |
