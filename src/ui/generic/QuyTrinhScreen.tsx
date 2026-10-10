@@ -1,6 +1,6 @@
 // Màn Quy trình của phân hệ, kiểu AMIS: sơ đồ nghiệp vụ, khung Báo cáo bên phải, hàng dưới gồm danh mục liên quan, Tiện ích, Tuỳ chọn.
 // Bấm ô trên sơ đồ mở thẳng form chứng từ mới (đích có /moi) hoặc màn tương ứng. Ô ngoài gói hiện mờ, có khoá và nhãn gói.
-import { useLayoutEffect, useRef, useState } from 'react'
+import { Fragment, useLayoutEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { LanQT, NutQT, QuyTrinhDef, ScreenProps } from '../../modules/types'
 import { dich, hienMan, maKhoa, moDuoc, nhanTab, phanHeKhoa, tenMan } from '../../app/registry'
@@ -20,7 +20,9 @@ export function QuyTrinhScreen({ mod }: ScreenProps) {
   const an = anNgoaiGoi(s.goi)
   // Gói Free bỏ ô ngoài gói, làn trống, bước trống (QD22)
   const hien = (n: NutQT) => !an || moNut(n, s.goi).ok
-  const goc = mod.quyTrinh!
+  const goc0 = mod.quyTrinh!
+  // Gói Free có sơ đồ hội tụ riêng thì thay sơ đồ chung (T98)
+  const goc: QuyTrinhDef = s.goi === 'F' && goc0.hoiTuFree ? { ...goc0, buoc: [], hoiTu: goc0.hoiTuFree } : goc0
   const qt: QuyTrinhDef = {
     ...goc,
     buoc: goc.buoc.filter(b => hien(b.chinh)).map(b => ({ ...b, tren: b.tren?.filter(hien), duoi: b.duoi?.filter(hien) })),
@@ -214,7 +216,13 @@ function SoDoHoiTu({ lan, ra, goi, modKey }: { lan: LanQT[]; ra: LanQT; goi: Goi
                 <span className="qt-ht-ic"><Icon n={l.nut[0].icon} className="ic" /></span>
                 <span className="qt-ht-t">{l.ten}</span>
               </div>
-              <div className="qt-lan-nut">{l.nut.map(n => <NutNgang key={n.di} n={n} goi={goi} />)}</div>
+              <div className="qt-lan-nut">{l.nut.map(n => (
+                <Fragment key={n.di}>
+                  {/* Ô nối tiếp ô trước trong làn: mũi tên có chữ nhỏ, mờ (T98) */}
+                  {n.noi && <span className="qt-ht-noi" aria-hidden><small>{n.noi}</small><i /></span>}
+                  <NutNgang n={n} goi={goi} />
+                </Fragment>
+              ))}</div>
             </div>
           ))}
         </div>

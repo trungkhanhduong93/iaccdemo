@@ -108,7 +108,7 @@ export interface ModuleDef {
 }
 
 /** Ô trên sơ đồ quy trình. di là đường dẫn sau /app/, vd 'tien/2-1-1/moi?loai=thu' mở form phiếu thu mới */
-export interface NutQT { ten: string; icon: string; di: string; tone?: 'fabi' | 'ivt' | 'hd' }
+export interface NutQT { ten: string; icon: string; di: string; tone?: 'fabi' | 'ivt' | 'hd'; noi?: string }   // noi: chữ trên mũi tên từ ô trước tới ô này trong làn hội tụ (T98)
 
 /** Một bước trên trục ngang: ô chính nằm trên trục, ô phụ treo phía trên hoặc phía dưới */
 export interface BuocQT { ten?: string; chinh: NutQT; tren?: NutQT[]; duoi?: NutQT[] }
@@ -124,6 +124,7 @@ export interface QuyTrinhDef {
   ten: string                            // tiêu đề sơ đồ
   buoc: BuocQT[]                         // trái sang phải
   hoiTu?: { lan: LanQT[]; ra: LanQT }    // sơ đồ hội tụ thay trục ngang: các làn nghiệp vụ song song cùng đổ về khối kết quả bên phải
+  hoiTuFree?: { lan: LanQT[]; ra: LanQT } // gói Free dùng sơ đồ hội tụ riêng thay sơ đồ chung (T98)
   danhSo?: boolean                       // đánh số bước, kiểu màn Giá thành của AMIS
   baoCao?: string[]                      // khung Báo cáo bên phải: slug trong phân hệ hoặc 'phân hệ/slug'
   ghiChu?: { tieuDe: string; dong: [string, string, string?][] }  // thay khung Báo cáo khi phân hệ không có báo cáo

@@ -5376,3 +5376,9 @@ table.tbl {
 /* ── Phản hồi nhanh (T73) ── */
 /* Ô kéo giãn góc textarea làm lần mở panel đầu tiên hở một khung 133ms (GPU vẽ lại cả panel). Bỏ ô kéo: còn 0–33ms */
 .pn-hop textarea.inp { resize: none; }
+
+/* ── Mũi tên có chữ giữa hai ô trong làn sơ đồ hội tụ (T98) ── */
+.qt-ht-noi { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; flex: none; min-width: 64px; align-self: center; }
+.qt-ht-noi small { font-size: 11px; line-height: 1; color: var(--muted); opacity: .8; }
+.qt-ht-noi i { position: relative; display: block; width: 100%; height: 2px; border-radius: 1px; background: #b8c7da; }   /* cùng màu đường nối sơ đồ */
+.qt-ht-noi i::after { content: ''; position: absolute; right: -2px; top: 50%; transform: translateY(-50%); border: 5px solid transparent; border-left: 8px solid #b8c7da; border-right: 0; }
