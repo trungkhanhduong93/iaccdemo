@@ -18,7 +18,7 @@ import { dangLoc, khopLoc, type GiaTriLoc, type KieuLoc } from '../LocCot'
 import {
   BoLoc, ChipTrangThai, NutHangLoat, NutTuyChinhCot, cotChon, dsChipTT, khopChipTT, useCauHinhLoc, useCotDs, useLocNhap, type OLocDef,
 } from '../LocNangCao'
-import { ttTienTheoTra, useDaXoa, xoaPhieu } from './daXoa'
+import { soDaTra, ttTienTheoTra, useDaXoa, xoaPhieu } from './daXoa'
 import { NGUON, TT_CT, chungTu, dongCua, gioPhieu, ttNghiepVu, type Dong } from './gen'
 import { boO, nhomCua, theoLoai, TT_HD, TT_TIEN } from './nhom'
 import { BangSua } from './BangSua'
@@ -63,7 +63,7 @@ function gopLoai(cfg: VoucherCfg, seed: string): Row[] {
     .map((r, i) => ({ ...r, tt: i < 3 ? 'nhap' : i === 5 ? 'loi' : 'ghi' }))
 }
 
-export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & { cfg: VoucherCfg; rows: Row[]; extra?: React.ReactNode; title?: string }) {
+export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: ScreenProps & { cfg: VoucherCfg; rows: Row[]; extra?: React.ReactNode; title?: string }) {
   const { s, toast } = useSession()
   const nav = useNavigate()
   const loc0 = useLocNhap(locMacDinh)
@@ -71,7 +71,7 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [moHangLoat, setMoHangLoat] = useState(false)
   const [phieuIn, setPhieuIn] = useState<PhieuIn[] | null>(null)
-  const [activeId, setActiveId] = useState<string>(rows[0]?.id ?? '')
+  const [activeId, setActiveId] = useState<string>(rowsGoc[0]?.id ?? '')
   const [panelMo, setPanelMo] = useState(false)
   const [tabChon, setTabPanel] = useState<'ct' | 'ht' | 'khac'>('ct')
 
@@ -83,6 +83,17 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
   const nhom = nhomCua(mod.key, cfg)
   const bo = boO(nhom, cfg)
   const path = duongDan(mod, sc)
+  // Mua, bán (T90): thêm thông tin hoá đơn, hạn thanh toán, đã trả, còn nợ cho các cột mặc định ẩn
+  const rows = useMemo(() => nhom !== 'mua' && nhom !== 'ban' ? rowsGoc : rowsGoc.map((r): Row => {
+    const nv = ttNghiepVu(r)
+    const coHd = r._nhanKemHd !== undefined ? Boolean(r._nhanKemHd) : nv.ttHd === 'da'
+    const daTra = soDaTra(r)
+    return {
+      ...r,
+      kyHieuHd: coHd ? String(r._kyHieuHd ?? nv.kyHieuHd) : '', soHd: coHd ? String(r._soHd ?? nv.soHd) : '', ngayHd: coHd ? String(r._ngayHd ?? nv.ngayHd) : '',
+      hanTt: String(r._hanTt ?? nv.hanTt), daTra, conNo: Math.max(0, (Number(r.tong) || 0) - daTra),
+    }
+  }), [rowsGoc, nhom])
 
   const [trang, setTrang] = useState(1)
   const [coTrang, setCoTrang] = useState(20)
@@ -90,7 +101,7 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
   // Lọc từng cột trên hàng lọc dưới tiêu đề bảng: phễu điều kiện theo kiểu cột, so theo chữ hiện trong ô
   const [locCot, setLocCot] = useState<Record<string, GiaTriLoc>>({})
   const kieuCot = (k: string): KieuLoc =>
-    k === 'ngay' ? 'ngay' : COT_CHON.has(k) ? 'chon' : k === 'tong' || k === 'thue' ? 'so' : 'chu'
+    k === 'ngay' ? 'ngay' : COT_CHON.has(k) ? 'chon' : k === 'tong' || k === 'thue' || k === 'daTra' || k === 'conNo' ? 'so' : 'chu'
   const chuCot = (k: string, r: Row): string => {
     if (k === 'nguon') return (NGUON[r.nguon] ?? NGUON.tay)[1]
     if (k === 'tt') return ghi ? (TT_CT[r.tt]?.[1] ?? 'Chưa ghi') : 'Đã ghi sổ'
@@ -250,6 +261,13 @@ export function VoucherList({ sc, mod, cfg, rows, extra, title }: ScreenProps & 
           return <St k={cls}>{nhan}</St>
         },
       } as Col,
+      // Cột mặc định ẩn, bật ở Tuỳ chỉnh cột (T90)
+      { k: 'kyHieuHd', t: 'Ký hiệu HĐ', cls: 'code', w: 110, an: true } as Col,
+      { k: 'soHd', t: 'Số hoá đơn', cls: 'code', w: 110, an: true } as Col,
+      { k: 'ngayHd', t: 'Ngày hoá đơn', w: 115, an: true } as Col,
+      { k: 'hanTt', t: 'Hạn thanh toán', w: 125, an: true } as Col,
+      { k: 'daTra', t: nhom === 'mua' ? 'Đã trả' : 'Đã thu', num: true, w: 120, an: true } as Col,
+      { k: 'conNo', t: nhom === 'mua' ? 'Còn phải trả' : 'Còn phải thu', num: true, w: 125, an: true } as Col,
     ] : []),
     ...(cfg.thue !== undefined || cfg.dong === 'hang' ? [{ k: 'thue', t: 'Tiền thuế', num: true, w: 120 } as Col] : []),
     {

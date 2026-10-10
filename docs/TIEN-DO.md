@@ -11,8 +11,8 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T90 | Danh sách mua hàng, bán hàng: thêm cột Ký hiệu HĐ, Số hoá đơn, Ngày hoá đơn, Hạn thanh toán, Đã trả (Đã thu), Còn phải trả (Còn phải thu); mặc định ẩn, bật ở Tuỳ chỉnh cột, nút Mặc định ẩn lại | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-thanh-toan-sau.md` |
 | T89 | Phiếu mua, bán chưa thanh toán hoặc thanh toán một phần: tiện ích Thanh toán ngay / Thu tiền ngay, chọn hình thức, quỹ, ngày, số tiền thì sinh phiếu thu, chi; phiếu gốc hiện số đã trả và mã phiếu; trạng thái danh sách tính theo số đã trả | PhuongXT | 10/10/2026 | `2026-10-10-phuongxt-thanh-toan-sau.md` |
-| T90 | Danh sách mua hàng, bán hàng: thêm cột thông tin hoá đơn (ký hiệu, số, ngày), hạn thanh toán, đã trả, còn nợ; mặc định ẩn, bật ở Tuỳ chỉnh cột | PhuongXT | Đang làm | Sửa `VoucherScreen.tsx`, `LocNangCao.tsx`, `types.ts` |
 | T88 | Danh mục đơn vị tính 1.3: bộ khoảng 35 đơn vị cơ bản F&B, mã viết hoa không dấu (CAI là Cái), giữ cột Mô tả; mọi ô chọn ĐVT trong panel danh mục lấy từ danh mục này | Trum | Đang làm | Sửa `danh-muc/data.ts`, `danh-muc/index.ts`, `truong-dm.ts`, `CatalogScreen.tsx` |
 | T60 | Mô tả gói Free, Standard trong `GOI` (`src/app/plan.ts`) đang ghi "1 điểm bán"; theo Roadmap gói Free là mỗi chi nhánh một kho, không giới hạn một chi nhánh. Chốt câu chữ rồi sửa | PhuongXT | Chờ | Tách từ T25 |
 | T02 | Chốt nghiệp vụ trên từng sơ đồ Quy trình: ô nào, nối thế nào, câu chữ. Sửa ở `src/modules/<phân hệ>/quy-trinh.ts` | Trum | Chờ | |

@@ -332,29 +332,37 @@ function sapXepCot(cols: Col[], thuTu: string[], coDinh: Set<string>, dongBang: 
 export function useCotDs(path: string, cols: Col[], coDinh: Set<string>) {
   const kAn = `iacc-cot-an:${path}`, kThuTu = `iacc-cot-thu-tu:${path}`, kRong = `iacc-cot-rong:${path}`
   const kDongBang = `iacc-cot-dongbang:${path}`
+  const kHien = `iacc-cot-hien:${path}`   // cột mặc định ẩn mà người dùng đã bật (T90)
   const [an, setAn] = useState<string[]>(() => docKho(kAn, laMangChu, []))
+  const [hien, setHien] = useState<string[]>(() => docKho(kHien, laMangChu, []))
   const [thuTu, setThuTu] = useState<string[]>(() => docKho(kThuTu, laMangChu, []))
   const [rong, setRong] = useState<Record<string, number>>(() => docKho(kRong, laBangSo, {}))
   const [dongBang, setDongBang] = useState<Record<string, 'trai' | 'phai'>>(() => docKho(kDongBang, laBangDinh, {}))
 
   useEffect(() => {
     setAn(docKho(kAn, laMangChu, []))
+    setHien(docKho(kHien, laMangChu, []))
     setThuTu(docKho(kThuTu, laMangChu, []))
     setRong(docKho(kRong, laBangSo, {}))
     setDongBang(docKho(kDongBang, laBangDinh, {}))
   }, [path])
 
   const du = sapXepCot(cols, thuTu, coDinh, dongBang)
+  // Cột mặc định ẩn: ẩn tới khi người dùng bật; bật rồi thì nhớ ở kHien, không lẫn với danh sách ẩn (T90)
+  const coAnMd = new Set(cols.filter(c => c.an).map(c => c.k))
+  const anDu = new Set([...an, ...[...coAnMd].filter(k => !hien.includes(k))])
   return {
     colsDu: du,
-    colsHien: du.filter(c => coDinh.has(c.k) || !an.includes(c.k)),
-    an: new Set(an),
+    colsHien: du.filter(c => coDinh.has(c.k) || !anDu.has(c.k)),
+    an: anDu,
     macDinh: cols.map(c => c.k),
     dongBang,
     /** Lưu từ hộp Tuỳ chỉnh cột. veMacDinh: đã bấm Mặc định, xoá luôn độ rộng đã kéo */
     luu: (thuTuMoi: string[], anMoi: string[], dongBangMoi: Record<string, 'trai' | 'phai'> = {}, veMacDinh = false) => {
       setThuTu(thuTuMoi); ghiKho(kThuTu, thuTuMoi)
-      setAn(anMoi); ghiKho(kAn, anMoi)
+      const anLuu = anMoi.filter(k => !coAnMd.has(k)), hienMoi = [...coAnMd].filter(k => !anMoi.includes(k))
+      setAn(anLuu); ghiKho(kAn, anLuu)
+      setHien(hienMoi); ghiKho(kHien, hienMoi)
       setDongBang(dongBangMoi); ghiKho(kDongBang, dongBangMoi)
       if (veMacDinh) { setRong({}); ghiKho(kRong, {}) }
     },
@@ -441,7 +449,7 @@ function HopCot({ cols, an, coDinh, macDinh, dongBang = {}, onLuu, onDoRongTuDon
 
   const khoiPhucMacDinh = () => {
     setThuTu(macDinh.filter(k => theoK.has(k)))
-    setAnNhap(new Set())
+    setAnNhap(new Set(cols.filter(c => c.an).map(c => c.k)))   // cột mặc định ẩn về ẩn (T90)
     setDongBangNhap({})
     setVeMacDinh(true)
     toast('Đã khôi phục cài đặt cột mặc định')
