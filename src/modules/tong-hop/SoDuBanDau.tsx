@@ -205,9 +205,9 @@ export function SoDuBanDau({ sc, mod }: ScreenProps) {
         )}
       </section>
       {hoiXoa && (
-        <HopXacNhan tieuDe="Xoá dòng số dư?" nut="Xoá" onDong={() => setHoiXoa(null)}
+        <HopXacNhan tieuDe="Xoá dòng số dư?" nut="Xoá dòng" onDong={() => setHoiXoa(null)}
           onDongY={() => { setAll(ds => ds.filter(r => r.id !== hoiXoa.id)); toast('Đã xoá dòng số dư'); setHoiXoa(null) }}>
-          {khoa(hoiXoa) ? <>Xoá số dư của <b>{hoiXoa.ct || `${hoiXoa.tk} · ${hoiXoa.ten}`}</b>. Bạn có chắc chắn muốn xoá không?</> : 'Xoá dòng mới chưa chọn đối tượng. Bạn có chắc chắn muốn xoá không?'}
+          {khoa(hoiXoa) ? <>Số dư ban đầu của <b>{hoiXoa.ct || `${hoiXoa.tk} · ${hoiXoa.ten}`}</b> sẽ bị xoá khỏi bảng.</> : 'Dòng mới chưa chọn đối tượng sẽ bị xoá khỏi bảng.'}
         </HopXacNhan>
       )}
     </div>
