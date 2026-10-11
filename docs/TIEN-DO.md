@@ -4,7 +4,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T152.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T153.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
@@ -43,7 +43,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | T150 | Danh sách thẻ chi phí: số thẻ link xanh mở thẻ; thẻ mở ở chế độ xem, bấm Sửa (Ctrl+E) mới sửa, Huỷ về xem như phiếu chi. Thông tin đơn vị: phương pháp thuế GTGT, TNCN, TNDN lên khối Thông tin kê khai, khoá theo loại hình, nhóm doanh thu, gói | dinhlanphuongipacc | 11/10/2026 | `2026-10-11-dinhlanphuongipacc-xem-the-thue.md` |
 | T152 | Sản xuất ở Kho theo iPOS Inventory: 4 tab phiếu Xuất sơ chế, Nhập sơ chế, Xuất chế biến, Nhập chế biến (nhập chọn phiếu xuất tham chiếu, chip Chờ nhập, Đã nhập, Đã huỷ, Kế hoạch, Thực tế, hạch toán qua 154, chưa làm số lô); công thức sơ chế, chế biến như IVT | Trum | 11/10/2026 | [2026-10-11-trum-san-xuat-ivt](nhat-ky/2026-10-11-trum-san-xuat-ivt.md) |
 | T151 | Hàng hoá theo iFaster: khối Thông tin thuế theo ngành nghề con (37 ngành nghề lấy từ iFaster, tự điền nhóm ngành, GTGT, TNCN; TT58 thay TNCN bằng TNDN; TT133, TT99 giữ thuế suất GTGT), nhóm hàng có ngành nghề ngầm định; danh mục Thương hiệu, thương hiệu trên hàng hoá và kho; kho theo dõi, nhà cung cấp; bảng và hộp thêm quy đổi đơn vị tính trong form hàng hoá | Trum | 11/10/2026 | [2026-10-11-trum-hang-hoa-ifaster](nhat-ky/2026-10-11-trum-hang-hoa-ifaster.md) |
-| T150 | Mọi danh mục vừa một trang như danh sách chứng từ: chỉ bảng cuộn, chân bảng cố định có phân trang (mặc định 50, chọn 50, 100, 200, 500, 1000 dòng), Tổng N dòng, số trang; Hệ thống tài khoản không phân trang, chỉ cố định khung và đếm | Trum | 11/10/2026 | [2026-10-11-trum-danh-muc-mot-trang](nhat-ky/2026-10-11-trum-danh-muc-mot-trang.md) |
+| T153 | Mọi danh mục vừa một trang như danh sách chứng từ: chỉ bảng cuộn, chân bảng cố định có phân trang (mặc định 50, chọn 50, 100, 200, 500, 1000 dòng), Tổng N dòng, số trang; Hệ thống tài khoản không phân trang, chỉ cố định khung và đếm | Trum | 11/10/2026 | [2026-10-11-trum-danh-muc-mot-trang](nhat-ky/2026-10-11-trum-danh-muc-mot-trang.md) |
 | T149 | Mọi ô ngày còn gõ tay dd/mm/yyyy dùng lịch `LichDon`: form danh mục, thẻ phân bổ, Ngày đầu năm ở Hệ thống và các màn khác | Trum | 11/10/2026 | [2026-10-11-trum-so-do-danh-muc](nhat-ky/2026-10-11-trum-so-do-danh-muc.md) |
 | T148 | Danh mục: bỏ trường Thuộc nhóm ở 5 danh mục nhóm; tài khoản thêm ô tích Tổng hợp (ô chọn cha đổi tên Thuộc tài khoản); cố định độ rộng cột khi chuyển danh mục; nút Tuỳ chọn cột cho mọi danh mục, đủ trường của form | Trum | 11/10/2026 | [2026-10-11-trum-so-do-danh-muc](nhat-ky/2026-10-11-trum-so-do-danh-muc.md) |
 | T147 | Danh mục lọc theo thông tư chọn ở Hệ thống (gói và thông tư chọn riêng): thông tư không ghi Nợ/Có (TT152, TT58) ẩn Hệ thống tài khoản, Bút toán tự động, cột tài khoản | Trum | 11/10/2026 | [2026-10-11-trum-so-do-danh-muc](nhat-ky/2026-10-11-trum-so-do-danh-muc.md) |

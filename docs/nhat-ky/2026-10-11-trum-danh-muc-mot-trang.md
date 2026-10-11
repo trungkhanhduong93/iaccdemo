@@ -1,4 +1,4 @@
-# Danh mục vừa một trang, phân trang (T150)
+# Danh mục vừa một trang, phân trang (T153)
 
 - Ngày: 11/10/2026
 - Người: Trum, agent: Claude Code (giao Antigravity nhưng Antigravity hết quota giữa chừng, chưa sửa file nào, Claude làm tiếp)
@@ -10,7 +10,7 @@
 - `PhanTrang.tsx`: prop `dsCoTrang` (mặc định 20, 50, 100 như cũ), hằng `CO_TRANG_DM` = 50, 100, 200, 500, 1000.
 - `DanhMucChiNhanh.tsx`: cùng khung và phân trang.
 - `HeThongTaiKhoan.tsx`: cùng khung, không phân trang, chân giữ "Tổng: N tài khoản".
-- `app.css`: mục T150 cuối file.
+- `app.css`: mục T153 cuối file.
 
 ## Đã kiểm
 
@@ -25,3 +25,4 @@
 ## Bẫy, quyết định mới
 
 - Không dùng class `voucher-top` cho khung không phải danh sách chứng từ: `tools/kiem_tra.py` gặp `.voucher-top` có dòng `tr.click` thì bấm dòng rồi bấm đúp, ở danh mục panel Sửa che dòng nên bước bấm đúp hết giờ chờ. Đã ghi `docs/BAY.md`.
+- Việc này nhận mã T150 nhưng commit nhận việc không push ngay. dinhlanphuongipacc push T150 cho việc khác trước, nên việc này đổi sang T153. Hai commit `ea28606`, `8b8f4e3` vẫn ghi T150.

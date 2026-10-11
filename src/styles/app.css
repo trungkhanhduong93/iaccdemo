@@ -6823,7 +6823,7 @@ table.tbl {
   min-width: 40px;
 }
 
-/* ── Danh mục vừa một trang, phân trang (T150) ── */
+/* ── Danh mục vừa một trang, phân trang (T153) ── */
 /* Danh mục dùng khung một trang nhìn như danh sách chứng từ (.page-voucher): chỉ bảng cuộn, chân phân trang đứng yên.
    Khung bảng dùng class riêng dm-bang, không dùng voucher-top để bộ kiểm và CSS của danh sách chứng từ không áp nhầm. */
 .page-dm > .dm-khung { flex: 1; min-height: 0; display: flex; flex-direction: column; }

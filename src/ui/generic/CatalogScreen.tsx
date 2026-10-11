@@ -105,12 +105,12 @@ export function CatalogScreen({ sc }: ScreenProps) {
   const tung = bienHien.map(b => ({ k: b.k, ten: b.ten.charAt(0).toUpperCase() + b.ten.slice(1), nut: b.nut, icon: b.icon }))
   const nutThem = bienHien[0] === cauHinh?.bien?.[0] ? [tung[0], ...hl, ...tung.slice(1)] : [...hl, ...tung]
   const [trang, setTrang] = useState(1)
-  const [coTrang, setCoTrang] = useState(dsct ? 20 : 50)   // danh mục thường mặc định 50 dòng/trang (T150)
+  const [coTrang, setCoTrang] = useState(dsct ? 20 : 50)   // danh mục thường mặc định 50 dòng/trang (T153)
   const [chon, setChon] = useState<Row | null>(null)
   const [moCt, setMoCt] = useState(false)
   const trangHt = Math.min(trang, Math.max(1, Math.ceil(rowsHien.length / coTrang)))
   const rowsTrang = useMemo(() => rowsHien.slice((trangHt - 1) * coTrang, trangHt * coTrang), [rowsHien, trangHt, coTrang])
-  // Đổi danh mục, tìm, lọc thì về trang 1 (T150)
+  // Đổi danh mục, tìm, lọc thì về trang 1 (T153)
   useEffect(() => { setTrang(1) }, [sc, q, nhom, tichLoc])
   const cong = (ds: Row[]) => Object.fromEntries((dsct?.cotCong ?? []).map(k => [k, ds.reduce((a, r) => a + (Number(r[k]) || 0), 0)]))
   // Dòng đang xem ở khung dưới: dòng đã chọn nếu còn trong danh sách, không thì dòng đầu
@@ -228,7 +228,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
         {rows.length > 0 && (dsct
           ? <PhanTrang tong={rowsHien.length} tongCong={cong(rowsHien)} trang={trangHt} coTrang={coTrang}
               onTrang={setTrang} onCoTrang={ct => { setCoTrang(ct); setTrang(1) }} />
-          // Danh mục thường: chỉ đếm dòng, không cộng tiền (T150)
+          // Danh mục thường: chỉ đếm dòng, không cộng tiền (T153)
           : <PhanTrang tong={rowsHien.length} trang={trangHt} coTrang={coTrang} dsCoTrang={CO_TRANG_DM}
               onTrang={setTrang} onCoTrang={ct => { setCoTrang(ct); setTrang(1) }} />
         )}

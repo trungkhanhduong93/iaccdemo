@@ -5,7 +5,7 @@ import { Select } from './Dropdown'
 import { money } from './format'
 import { heSoZoom } from './zoom'
 
-/** Số dòng mỗi trang của danh mục (T150) */
+/** Số dòng mỗi trang của danh mục (T153) */
 export const CO_TRANG_DM = [50, 100, 200, 500, 1000]
 
 export function PhanTrang({ tong, tongCong, trang, coTrang, dsCoTrang = [20, 50, 100], onTrang, onCoTrang }: {
@@ -13,7 +13,7 @@ export function PhanTrang({ tong, tongCong, trang, coTrang, dsCoTrang = [20, 50,
   tongCong?: Record<string, number>   // tổng mọi trang theo mã cột, số canh thẳng cột của bảng ngay trên (T48)
   trang: number
   coTrang: number
-  dsCoTrang?: number[]   // lựa chọn số dòng mỗi trang; danh mục dùng CO_TRANG_DM (T150)
+  dsCoTrang?: number[]   // lựa chọn số dòng mỗi trang; danh mục dùng CO_TRANG_DM (T153)
   onTrang: (trang: number) => void
   onCoTrang: (coTrang: number) => void
 }) {

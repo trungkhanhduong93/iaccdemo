@@ -44,7 +44,7 @@ export function DanhMucChiNhanh({ sc, mod }: ScreenProps) {
   ], [free])
 
   const cot = useCotDs('/danh-muc/chi-nhanh', colsGoc, COT_CO_DINH)
-  // Phân trang như danh mục khác: mặc định 50 dòng/trang (T150)
+  // Phân trang như danh mục khác: mặc định 50 dòng/trang (T153)
   const [trang, setTrang] = useState(1)
   const [coTrang, setCoTrang] = useState(50)
   const trangHt = Math.min(trang, Math.max(1, Math.ceil(rows.length / coTrang)))
