@@ -4,16 +4,16 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T138.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T140.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T136 | Danh mục nhóm: nhóm đối tượng, nhóm kho, nhóm mục chi phí, nhóm công việc, nhóm hàng hoá. Hàng hoá chọn nhóm thì tự điền TK, mục chi phí, phương pháp tính giá, thuế suất theo nhóm. Kho thêm mục chi phí, công việc ngầm định, địa chỉ, SĐT, người liên hệ, ghi chú. Đối tượng và người dùng có ô bắt buộc tích "đã đồng ý chia sẻ thông tin cá nhân". Màn Người dùng có panel Thêm, Sửa như Danh mục | Trum | Đang làm | Anti làm, Clau điều phối. Sửa `danh-muc/index.ts`, `truong-dm.ts`, `danh-muc/data.ts`, `he-thong/HeThong.tsx`, `data/mock.ts`, `app.css` (mục cuối) |
-| T137 | Danh mục phương thức thanh toán (loại chứng từ tiền, TK Nợ, đối tượng, công việc, mục chi phí ngầm định). Ô phương thức thanh toán trên các phiếu bán hàng. Hộp đồng bộ hoá đơn POS có tích "Tự động hạch toán chứng từ theo phương thức thanh toán": Nợ TK của phương thức / Có 131, kéo chi tiết thì mỗi hoá đơn một phiếu, kéo tổng hợp thì mỗi ngày mỗi phương thức một phiếu | Trum | Đang làm | Làm sau T136. Sửa `danh-muc/*`, `ban-hang/*`, `ui/HopDongBo.tsx`, có thể `ChungTuForm.tsx`, `app.css` (mục cuối) |
 | T138 | Màn onboard khi bấm từ FABi sang IACC: khởi tạo đơn vị kế toán, điền sẵn từ FABi (chi nhánh, kho, cách đồng bộ, số dư đầu kỳ) | PhuongXT | Chờ | Đã đề xuất luồng, chờ PhuongXT chốt 3 điểm, xem `2026-10-10-phuongxt-y-tuong-onboard-fabi.md` |
+| T139 | Phiếu nhập, xuất, điều chuyển kho tự lấy mục chi phí, công việc ngầm định theo kho đã chọn | | Chờ | Tách từ T136. Kho đã có ô `mucCp`, `congViec` ở `truong-dm.ts` 1.8. Sửa `ChungTuForm.tsx` |
+| T140 | Đồng bộ POS có tích tự hạch toán theo phương thức thanh toán thì sinh phiếu thu thật vào danh sách Thu tiền mặt, Thu ngân hàng (hiện chỉ báo số phiếu bằng toast) | | Chờ | Tách từ T137. Phiếu thu Nợ TK của phương thức / Có 131, lấy từ `DS_PTTT` ở `danh-muc/data.ts` |
 | T120 | In phiếu từ form chứng từ: hàm `moIn` ở `ChungTuForm.tsx` (khoảng dòng 317–321) chưa truyền dòng chi tiết đang có trên form vào phiếu in, nên phiếu mới hoặc đang sửa in theo dòng đã lưu hoặc dòng sinh lại | | Chờ | Phát hiện khi làm T112 |
 | T109 | Sổ S2c-DNSN (5.2.8, TT58): bộ lọc Mặt hàng, Kho để mở sổ theo từng cặp mặt hàng – kho | | Chờ | T108 đang in cố định Thịt bò thăn, kho Phố Mây Lê Lợi. `CauHinhBC.loc` chưa đổi theo chế độ, lọc thêm sẽ hiện cả ở TT133, TT99 |
 | T110 | TT58: tên sổ ghi trong phần Hạch toán của phiếu (`soTT58` ở `tien/index.ts`, `ban-hang`, `kho`, `mua-hang`) theo bộ sổ TT58 (Sổ chi tiết tiền S2d thay Sổ quỹ tiền mặt, Sổ tiền gửi ngân hàng); tờ khai GTGT, Thông tin đơn vị đọc phương pháp thuế GTGT từ `s.ppGtgt` thay vì suy từ chế độ | | Chờ | Tách từ T108. `ToKhaiGTGT.tsx:18` còn `s.cheDo === 'TT58'` |
@@ -40,6 +40,8 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T136 | Danh mục nhóm: nhóm đối tượng, nhóm kho, nhóm mục chi phí, nhóm công việc, nhóm hàng hoá. Hàng hoá chọn nhóm thì tự điền TK, mục chi phí, phương pháp tính giá, thuế suất theo nhóm. Kho thêm mục chi phí, công việc ngầm định, địa chỉ, SĐT, người liên hệ, ghi chú. Đối tượng và người dùng có ô bắt buộc tích "đã đồng ý chia sẻ thông tin cá nhân". Màn Người dùng có panel Thêm, Sửa như Danh mục | Trum | 11/10/2026 | [2026-10-11-trum-nhom-danh-muc-pttt](nhat-ky/2026-10-11-trum-nhom-danh-muc-pttt.md) |
+| T137 | Danh mục phương thức thanh toán (loại chứng từ tiền, TK Nợ, đối tượng, công việc, mục chi phí ngầm định). Ô phương thức thanh toán trên các phiếu bán hàng. Hộp đồng bộ hoá đơn POS có tích "Tự động hạch toán chứng từ theo phương thức thanh toán": Nợ TK của phương thức / Có 131, kéo chi tiết thì mỗi hoá đơn một phiếu, kéo tổng hợp thì mỗi ngày mỗi phương thức một phiếu | Trum | 11/10/2026 | [2026-10-11-trum-nhom-danh-muc-pttt](nhat-ky/2026-10-11-trum-nhom-danh-muc-pttt.md) |
 | T135 | Thẻ chi phí phân bổ bản 2: một thẻ nhiều dòng (tab Chi tiết phân bổ, Đã phân bổ có cộng từng khoản), Thông tin mua, ngừng phân bổ theo dòng; danh sách thẻ kiểu danh sách chứng từ (Kỳ số liệu, Ẩn thẻ hết phân bổ, phân trang, khung chi tiết); Ghi tăng hàng loạt từ phiếu chi; mã CCDC chọn từ danh mục hàng hoá; báo cáo Bảng chi tiết phân bổ chi phí; Năm làm việc hiện tại ở Thông tin đơn vị | dinhlanphuongipacc | 11/10/2026 | `2026-10-11-dinhlanphuongipacc-the-phan-bo-ban-2.md` |
 | T134 | Mẫu in phiếu tự cân đối khi đổi khổ dọc, ngang, A4, A5: cột bảng chia theo tỷ lệ, chữ bảng co khi khổ hẹp, thông tin một cột ở A5 dọc, số xuống dòng thay vì đè ô | Trum | 11/10/2026 | `2026-10-11-trum-mau-in-doi-kho.md` |
 | T133 | Tổng quan làm lại: 4 thẻ lời lỗ và tiền, 8 chỉ số sức khoẻ có đèn, thác nước lợi nhuận, xu hướng 4 tháng, dòng tiền, hiệu quả chi nhánh, cơ cấu chi phí; lọc kỳ, so sánh, chi nhánh; tuỳ chỉnh khối (QD46) | Trum | 10/10/2026 | `2026-10-10-trum-tong-quan.md` |

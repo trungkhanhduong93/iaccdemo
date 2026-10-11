@@ -499,4 +499,15 @@ Lý do: Trum chốt ngày 10/10/2026 (T122). Ký hiệu, bố cục các mẫu n
 
 Lý do: Trum giao việc T133 ngày 10/10/2026, duyệt các mặc định do agent đề xuất.
 
-## QD47. Nhóm danh mục, đồng ý chia sẻ thông tin cá nhân, phương thức thanh toán (đang soạn)
+## QD47. Nhóm danh mục, đồng ý chia sẻ thông tin cá nhân, phương thức thanh toán (11/10/2026)
+
+- Danh mục có 5 màn nhóm riêng: nhóm hàng hoá, nhóm đối tượng, nhóm mục chi phí, nhóm công việc, nhóm kho. Mỗi màn đứng ngay sau danh mục cha, gói nào cũng mở. Ô Nhóm của danh mục cha chọn từ màn nhóm.
+- Nhóm hàng hoá giữ thông tin ngầm định cho hàng hoá: 5 tài khoản, mục chi phí, phương pháp tính giá, thuế suất, tính chất, theo dõi tồn kho, kho mặc định. Hàng hoá chọn nhóm thì ô trống tự điền. Ô đã có giá trị khác thì hỏi trước khi áp.
+- Sửa nhóm hàng không tự đổi hàng hoá đã gắn. Muốn cập nhật thì bấm "Áp cho N hàng hoá trong nhóm".
+- Kho có mục chi phí, công việc ngầm định, địa chỉ, số điện thoại, người liên hệ, ghi chú. Phiếu kho tự lấy mục chi phí, công việc theo kho là việc sau, chưa làm.
+- Đối tượng và người dùng có ô "Đã đồng ý chia sẻ thông tin cá nhân". Ô bắt buộc với mọi loại, kể cả tổ chức có MST. Thêm mới để trống, chưa tích thì không lưu được.
+- Màn Người dùng dùng panel Thêm, Sửa như danh mục.
+- Danh mục phương thức thanh toán đứng sau Quỹ tiền: loại chứng từ thu tiền (Thu tiền mặt hoặc Thu ngân hàng), TK Nợ, đối tượng, công việc, mục chi phí ngầm định. Trước mắt chỉ phiếu bán hàng có ô Phương thức thanh toán, hiện khi thu tiền ngay.
+- Đồng bộ hoá đơn POS có tích "Tự động hạch toán chứng từ theo phương thức thanh toán". Phiếu thu đi qua 131: Nợ TK của phương thức, Có 131. Bán hàng kéo chi tiết thì mỗi hoá đơn một phiếu thu. Kéo tổng hợp thì mỗi ngày, mỗi phương thức một phiếu.
+
+Lý do: Trum giao T136, T137 ngày 10/10/2026, chốt các mặc định agent đề xuất ngày 11/10/2026.
