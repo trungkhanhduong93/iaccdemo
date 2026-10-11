@@ -8,12 +8,14 @@ import { CHI_NHANH, ROLE } from '../data/mock'
 import { Icon } from '../ui/Icon'
 import { Pk } from '../ui/Page'
 import { Dropdown, MenuHead, MenuItem, MenuSep } from '../ui/Dropdown'
+import { useThemDonVi } from '../modules/onboarding/OnboardFabi'
 
 
 export function Topbar({ onSearch }: { onSearch?: () => void }) {
   const { s, set } = useSession()
   const nav = useNavigate()
   const dv = donViHienTai(s)
+  const themDv = useThemDonVi()
   const cn = chiNhanhHienTai(s)
   const ten = s.ten.split(' ').slice(-2).map(x => x[0]).join('')
 
@@ -32,7 +34,7 @@ export function Topbar({ onSearch }: { onSearch?: () => void }) {
               onClick={() => { set({ donVi: d.id, goi: d.goi, chiNhanh: 'all' }); dong(); nav('/app') }}>{d.ten}</MenuItem>
           ))}
           <MenuSep />
-          <MenuItem icon="plus" to="/khoi-tao" desc="Khởi tạo theo mã số thuế, nối FABi">Thêm đơn vị kế toán</MenuItem>
+          <MenuItem icon="plus" onClick={() => { dong(); themDv() }} desc="Khởi tạo 4 bước từ cửa hàng FABi chưa dùng kế toán">Thêm đơn vị kế toán</MenuItem>
           <MenuItem icon="swap" to="/chon-don-vi">Xem tất cả đơn vị</MenuItem>
         </>}
       </Dropdown>

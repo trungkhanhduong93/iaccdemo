@@ -31,7 +31,7 @@ src/
   modules/
     types.ts               ModuleDef, ScreenDef, tuExcel()
     auth/                  Đăng nhập, quên mật khẩu, chọn đơn vị kế toán
-    onboarding/            Khởi tạo 4 bước (/khoi-tao, tự đăng ký); mở từ FABi (/khoi-tao-fabi chào, giới thiệu; OnboardFabi là popup 4 bước đặt trong Shell)
+    onboarding/            Khởi tạo dữ liệu: /khoi-tao-fabi (chào, giới thiệu, dùng thử) và Thêm đơn vị kế toán cùng mở OnboardFabi, popup 4 bước đặt trong Shell; /khoi-tao cũ không còn lối vào
     home/                  Tổng quan (chủ doanh nghiệp), Bàn làm việc (kế toán)
     danh-muc/ tien/ ban-hang/ mua-hang/ kho/ thue/ tscd/ ccdc/ gia-thanh/ tong-hop/ tien-ich/
     he-thong/              Người dùng, phân quyền, gói thuê bao, thông tin đơn vị, cấu hình, nhật ký

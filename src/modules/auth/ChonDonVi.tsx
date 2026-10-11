@@ -1,15 +1,17 @@
 // Chọn đơn vị kế toán: một tài khoản làm cho nhiều mã số thuế (tính năng 11.13)
-import { Link, Navigate, useNavigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
 import { dsDonVi, useSession } from '../../app/session'
 import { cheDoCuaGoi } from '../../app/che-do'
 import { KY_MO } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
 import { Logo } from '../../ui/Logo'
 import { Pk } from '../../ui/Page'
+import { useThemDonVi } from '../onboarding/OnboardFabi'
 
 export function ChonDonVi() {
   const { s, set } = useSession()
   const nav = useNavigate()
+  const themDv = useThemDonVi()
   if (!s.loggedIn) return <Navigate to="/dang-nhap" replace />
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 40 }}>
@@ -29,10 +31,10 @@ export function ChonDonVi() {
               <Icon n="chevr" />
             </button>
           ))}
-          <Link to="/khoi-tao" className="dv-card" style={{ borderStyle: 'dashed', color: 'var(--blue)' }}>
+          <button className="dv-card" style={{ borderStyle: 'dashed', color: 'var(--blue)' }} onClick={themDv}>
             <span className="dv-av" style={{ background: 'var(--soft)' }}><Icon n="plus" /></span>
             <b>Thêm đơn vị kế toán</b>
-          </Link>
+          </button>
         </div>
         <p style={{ marginTop: 22, fontSize: 13 }}><button className="btn ghost" onClick={() => { set({ loggedIn: false }); nav('/dang-nhap') }}><Icon n="logout" className="ic sm" />Đăng xuất</button></p>
       </div>

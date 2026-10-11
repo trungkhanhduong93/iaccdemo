@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 11/10/2026
 
+- T138: Thêm đơn vị kế toán (menu đơn vị, màn Chọn đơn vị) mở popup Khởi tạo dữ liệu 4 bước như khi dùng thử từ FABi; bước Chi nhánh chỉ có cửa hàng FABi chưa dùng kế toán.
 - T138: Dùng thử từ FABi tạo một đơn vị mới, không đổi 3 đơn vị mẫu: tên theo FABi, thanh trên ghi Chưa khai mã số thuế; bước Đơn vị nhập mã số thuế rồi tra cứu tên, địa chỉ; khởi tạo xong đơn vị mới có đủ mã số thuế, tên.
 - T141: Số dư ban đầu theo gói. Gói Free có tab Số dư ban đầu ở Thu chi, chỉ khai số dư tiền theo quỹ tiền mặt, tài khoản ngân hàng. Gói Standard mở màn Số dư ban đầu ở Tổng hợp: tiền, công nợ khách hàng, nhà cung cấp, tồn kho. Plus, Pro thêm số dư tài khoản, cột Dư Nợ, Dư Có. Màn ghi ngày số dư là ngày bắt đầu năm tài chính. Thêm mới chèn dòng ngay trên bảng để chọn quỹ, đối tượng, hàng, tài khoản và gõ số dư; xoá dòng có hỏi xác nhận. Sơ đồ Thu chi có làn Số dư đầu kỳ mở màn này.
 - T138: Màn đăng nhập tạm bỏ nút Đăng nhập bằng tài khoản iPOS và dòng Dùng thử gói Free; còn liên kết Thử mở từ FABi.
