@@ -1,13 +1,13 @@
 // Khai báo trường thông tin panel Thêm / Sửa cho các danh mục (T70)
 // Lấy theo bảng DM_ tương ứng trong CSDL kế toán iPOS (schema-dm.md)
 import { DON_VI_TINH, TEN_DVT, TEN_NHOM_HANG, TEN_NHOM_DOI_TUONG, TEN_NHOM_MUC_CP, TEN_NHOM_CONG_VIEC, TEN_NHOM_KHO, TEN_MUC_CHI_PHI, TEN_CONG_VIEC_17, NHOM_HANG } from './data'
-import { KHACH, NCC } from '../../data/mock'
+import { CHI_NHANH, KHACH, NCC } from '../../data/mock'
 
 import type { ReactNode } from 'react'
 import type { Col, Row } from '../types'
 import type { Goi } from '../../app/plan'
 
-export type KieuTruong = 'chu' | 'so' | 'tien' | 'chon' | 'tich' | 'ngay' | 'nhieuDong'
+export type KieuTruong = 'chu' | 'so' | 'tien' | 'chon' | 'chonNhieu' | 'tich' | 'ngay' | 'nhieuDong'   // chonNhieu: chọn nhiều, lưu dạng "A, B", chọn đủ lưu "Tất cả" (T144)
 
 /** Đơn vị tính hiện mã và tên trong ô chọn, vd "KG - kg"; giá trị lưu vẫn là tên (T144) */
 const nhanDvt = (ten: string) => { const d = DON_VI_TINH.find(x => x[1] === ten); return d ? `${d[0]} - ${d[1]}` : ten }
@@ -462,8 +462,8 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
           { k: 'ma', nhan: 'Mã quỹ', kieu: 'chu', batBuoc: true },
           { k: 'ten', nhan: 'Tên quỹ', kieu: 'chu', batBuoc: true, caHang: true },
           { k: 'loai', nhan: 'Loại quỹ', kieu: 'chon', ds: ['Tiền mặt', 'Ngân hàng'], batBuoc: true },
-          { k: 'stk', nhan: 'Số tài khoản / Ngân hàng', kieu: 'chu' },
-          { k: 'cn', nhan: 'Chi nhánh áp dụng', kieu: 'chon', ds: ['Tất cả', 'Lê Lợi', 'Thảo Điền', 'Phan Xích Long'] },
+          { k: 'stk', nhan: 'Số tài khoản / Ngân hàng', kieu: 'chu', hien: v => v.loai !== 'Tiền mặt' },   // quỹ tiền mặt không có số tài khoản (T144)
+          { k: 'cn', nhan: 'Chi nhánh áp dụng', kieu: 'chonNhieu', ds: CHI_NHANH.map(c => c.ten) },   // một quỹ dùng cho nhiều chi nhánh (T144)
         ],
       },
       {
@@ -732,12 +732,14 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
         truong: [
           { k: 'ma', nhan: 'Mã phương thức', kieu: 'chu', batBuoc: true },
           { k: 'ten', nhan: 'Tên phương thức', kieu: 'chu', batBuoc: true, caHang: true },
-          { k: 'loaiCt', nhan: 'Loại chứng từ thu tiền', kieu: 'chon', ds: ['Thu tiền mặt', 'Thu ngân hàng'], batBuoc: true },
-          { k: 'dienGiai', nhan: 'Diễn giải', kieu: 'chu', caHang: true },
+          // gói Free, Standard bỏ: loại chứng từ, hạch toán chỉ dùng cho tự hạch toán theo phương thức ở gói Plus, Pro (T137, T144)
+          { k: 'loaiCt', nhan: 'Loại chứng từ thu tiền', kieu: 'chon', ds: ['Thu tiền mặt', 'Thu ngân hàng'], batBuoc: true, goi: ['PL', 'PR'] },
+          { k: 'dienGiai', nhan: 'Diễn giải', kieu: 'chu', caHang: true, goi: ['PL', 'PR'] },
         ],
       },
       {
         ten: 'Hạch toán ngầm định',
+        goi: ['PL', 'PR'],
         truong: [
           { k: 'tkNo', nhan: 'TK Nợ', kieu: 'chon', batBuoc: true },
           { k: 'doiTuong', nhan: 'Đối tượng', kieu: 'chon', ds: [...KHACH.map(k => k.ten), ...NCC.map(n => n.ten)] },

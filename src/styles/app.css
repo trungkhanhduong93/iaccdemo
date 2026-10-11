@@ -6799,3 +6799,7 @@ table.tbl {
 .dmcn-than { padding: 0 16px 14px; display: flex; flex-direction: column; gap: 12px; overflow: auto; }
 .dmcn-than > p { margin: 0; font-size: 13px; }
 .dmcn-tich { gap: 8px; font-size: 13px; cursor: pointer; }
+
+/* ── Form danh mục theo gói, ô chọn nhiều (T144) ── */
+.pn-nhieu { display: flex; align-items: center; gap: 6px; width: 100%; text-align: left; cursor: pointer; }
+.pn-nhieu-chon { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

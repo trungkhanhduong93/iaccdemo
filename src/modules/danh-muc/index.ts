@@ -112,13 +112,18 @@ const phuongThucThanhToan: ScreenDef = {
   icon: 'quytien',
   catalog: {
     them: 'Thêm phương thức',
+    khongThem: ['F', 'S'],   // gói Free, Standard lấy phương thức từ FABi, không thêm mới (T144)
+    nutPhu: { nhan: 'Đồng bộ từ FABi', icon: 'refresh', bao: `Đã đồng bộ ${DS_PTTT.length} phương thức thanh toán từ FABi` },
     cols: goi => [
       { k: 'ma', t: 'Mã', cls: 'code' },
       { k: 'ten', t: 'Tên phương thức' },
-      { k: 'loaiCt', t: 'Loại chứng từ' },
-      ...(kieuGhiSo(goi) === 'noco' ? [tkCot('tkNo', 'TK Nợ')] : []),
-      { k: 'doiTuong', t: 'Đối tượng' },
-      { k: 'dienGiai', t: 'Diễn giải', cls: 'dim' },
+      // gói Free, Standard chỉ có mã, tên: loại chứng từ, hạch toán dùng cho tự hạch toán ở gói Plus, Pro (T144)
+      ...(goi === 'F' || goi === 'S' ? [] : [
+        { k: 'loaiCt', t: 'Loại chứng từ' },
+        ...(kieuGhiSo(goi) === 'noco' ? [tkCot('tkNo', 'TK Nợ')] : []),
+        { k: 'doiTuong', t: 'Đối tượng' },
+        { k: 'dienGiai', t: 'Diễn giải', cls: 'dim' },
+      ]),
     ],
     rows: () => DS_PTTT,
   },

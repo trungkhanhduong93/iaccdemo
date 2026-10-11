@@ -191,6 +191,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
                 <span className="muted" style={{ fontSize: 12, marginRight: 4 }}>{rows.length}/{all.length} dòng</span>
                 <button type="button" className="btn" onClick={() => toast('Nhập danh mục từ Excel')}><Icon n="upload" className="ic sm" />Nhập Excel</button>
                 <button type="button" className="btn" onClick={() => toast(`Đã xuất ${rows.length} dòng ra Excel`)}><Icon n="download" className="ic sm" />Xuất Excel</button>
+                {cfg.nutPhu && <button type="button" className={`btn${choThem ? '' : ' pri'}`} onClick={() => toast(cfg.nutPhu!.bao)}><Icon n={cfg.nutPhu.icon} className="ic sm" />{cfg.nutPhu.nhan}</button>}
                 {choThem && <button type="button" className="btn pri" onClick={() => moSua({})}><Icon n="plus" className="ic sm" />{cfg.them ?? 'Thêm mới'}</button>}
               </div>
             }
@@ -561,6 +562,9 @@ export function CatalogPanel({
                           setErrors(err => ({ ...err, [tr.k]: '' }))
                         }}
                       />
+                    ) : tr.kieu === 'chonNhieu' ? (
+                      <ChonNhieu ds={tr.ds ?? []} giaTri={String(formVal[tr.k] ?? '')} nhan={tr.nhan}
+                        onDoi={v => { doiO(tr.k, v); setErrors(err => ({ ...err, [tr.k]: '' })) }} />
                     ) : tr.kieu === 'chon' ? (
                       <Select
                         className="inp"
@@ -712,5 +716,22 @@ export function CatalogPanel({
         </HopXacNhan>
       )}
     </>
+  )
+}
+
+/** Ô chọn nhiều của form danh mục: lưu dạng "A, B"; chọn đủ lưu "Tất cả", bỏ hết cũng hiểu là tất cả (T144) */
+function ChonNhieu({ ds, giaTri, nhan, onDoi }: { ds: string[]; giaTri: string; nhan: string; onDoi: (v: string) => void }) {
+  const chon = !giaTri || giaTri === 'Tất cả' ? ds : giaTri.split(', ').filter(x => ds.includes(x))
+  const bat = (x: string) => {
+    const moi = chon.includes(x) ? chon.filter(y => y !== x) : ds.filter(y => y === x || chon.includes(y))
+    onDoi(moi.length === ds.length || moi.length === 0 ? 'Tất cả' : moi.join(', '))
+  }
+  return (
+    <Dropdown btnClass="inp pn-nhieu" title={nhan} label={<>
+      <span className="pn-nhieu-chon">{chon.length === ds.length ? 'Tất cả' : chon.join(', ')}</span>
+      <Icon n="chevd" className="ic sm" />
+    </>}>
+      {ds.map(x => <MenuItem key={x} on={chon.includes(x)} onClick={() => bat(x)}>{x}</MenuItem>)}
+    </Dropdown>
   )
 }

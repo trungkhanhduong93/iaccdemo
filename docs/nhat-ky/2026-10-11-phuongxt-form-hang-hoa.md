@@ -11,6 +11,8 @@
   - Form nhóm hàng hoá: gói Free, Standard bỏ ô Thuộc nhóm, Loại hàng hoá, khối Ngầm định cho hàng hoá; không hỏi áp ngầm định của nhóm khi chọn nhóm ở form hàng hoá (`goiHoiDoi`).
   - `TruongDM` thêm `goi` (chỉ hiện ô ở các gói này), `nhanDs` (nhãn trong ô chọn); `KhoiDM` thêm `goi`; `CauHinhDM` thêm `goiHoiDoi`.
 - Gói Free, Standard: form đối tượng (1.5) ẩn ô TK công nợ; form nhóm đối tượng bỏ Thuộc nhóm, khối Hạch toán; form kho (1.8) ẩn khối Hạch toán, Ngầm định. Gói Free: form kho ẩn ô Nhóm kho (T143).
+- Quỹ tiền (1.12): ô Chi nhánh áp dụng chọn nhiều chi nhánh (kiểu ô mới `chonNhieu`, lưu "A, B", chọn đủ là "Tất cả", danh sách theo chi nhánh mẫu thay danh sách cũ có Phan Xích Long); quỹ tiền mặt ẩn ô số tài khoản.
+- Phương thức thanh toán: gói Free, Standard bỏ Loại chứng từ thu tiền, Diễn giải, khối Hạch toán ngầm định và các cột tương ứng ở danh sách, không có nút thêm (`khongThem`); mọi gói có nút Đồng bộ từ FABi (`nutPhu` trong `CatalogCfg`, bấm báo số phương thức đã đồng bộ). Gói Plus, Pro giữ nguyên vì tự hạch toán theo phương thức (T137) cần các ô này.
 - `src/ui/generic/CatalogScreen.tsx`: đọc các trường trên; nút Áp cho N hàng hoá trong nhóm chỉ ở gói Plus, Pro. Giữ nút Huỷ, Lưu và thêm, Lưu.
 
 ## Đã kiểm
