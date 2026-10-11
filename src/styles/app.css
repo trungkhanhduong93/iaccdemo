@@ -6667,8 +6667,6 @@ table.tbl {
 .ktf-nhan b { display: block; font-size: 22px; color: var(--ink); }
 .ktf-xem { display: flex; gap: 10px; align-items: center; margin-top: 16px; padding: 12px 14px; border-radius: 10px; background: var(--soft); font-size: 13px; }
 .ktf-xem b { color: var(--ink); }
-.ktf-tha { margin-top: 16px; padding: 22px; border-style: dashed; text-align: center; box-shadow: none; }
-.ktf-tha p { margin: 8px 0 12px; }
 .ktf-ben { padding: 20px; position: sticky; top: 20px; display: flex; flex-direction: column; gap: 12px; }
 .ktf-ben h3 { color: var(--ink); font-size: 14px; margin: 0; }
 .ktf-ben ul, .ktf-viec { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 9px; }

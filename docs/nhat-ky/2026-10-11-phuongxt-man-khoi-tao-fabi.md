@@ -33,6 +33,7 @@
 - Bước Đơn vị: chữ đổi theo loại hình (công ty, hộ kinh doanh); thêm ngày bắt đầu năm tài chính, ghi vào `ngayDauNam`, `namTaiChinh` của phiên; bỏ ngày bắt đầu dùng sổ, số dư đầu kỳ và số chứng từ POS tính từ ngày đầu năm.
 - Bước Chi nhánh (bỏ kho), làm cho chuỗi vài chục chi nhánh (`DsChiNhanh`): danh sách dòng mảnh, gom theo khu vực khi có từ 2 khu vực (tích cả nhóm, thu gọn), tìm khi có từ 6 chi nhánh, lọc Tất cả, Đã chọn, Chưa chọn, chọn tất cả theo kết quả lọc; khung cao cố định, tự cuộn. Đã thử với 40 chi nhánh mẫu rồi gỡ.
 - Hộ kinh doanh: thêm nút Chính trên dòng để chọn chi nhánh chính (bắt buộc, không tự lấy chi nhánh đầu), Kênh bán online và Kênh bán qua sàn đã khấu trừ thuế chọn bằng ô thả xuống (danh sách kênh mẫu ở `KENH_ONLINE`, `KENH_SAN`). Doanh nghiệp chỉ chọn chi nhánh. Chi nhánh chính, kênh bán chưa lưu vào phiên.
+- Bước Đồng bộ bán hàng bỏ giờ chốt cuối ngày. Bỏ bước Số dư đầu kỳ vì lúc khởi tạo chưa có danh mục; màn hoàn tất có thêm việc "Nhập số dư đầu kỳ khi đã có danh mục". Popup còn 4 bước: Loại hình và gói, Đơn vị, Chi nhánh, Đồng bộ bán hàng.
 - Lối vào bản mẫu: liên kết "Thử mở từ FABi" dưới form đăng nhập (`src/modules/auth/Login.tsx`).
 - CSS mục cuối `app.css`: "Khởi tạo khi mở từ FABi (T138)", lớp `.ktf-*`.
 

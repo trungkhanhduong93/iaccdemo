@@ -1,5 +1,5 @@
 // Khởi tạo sổ sách khi mở từ FABi (T138), phần popup: bấm Dùng thử ở /khoi-tao-fabi thì vào phần mềm gói Free,
-// popup 5 bước (loại hình và gói, đơn vị, chi nhánh, đồng bộ, số dư) mở đè lên. Đóng popup thì còn thẻ nhắc nổi ở góc dưới phải.
+// popup 4 bước (loại hình và gói, đơn vị, chi nhánh, đồng bộ bán hàng) mở đè lên. Đóng popup thì còn thẻ nhắc nổi ở góc dưới phải.
 // Tiến độ lưu ở localStorage để quay lại đúng bước.
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -11,7 +11,7 @@ import { Icon } from '../../ui/Icon'
 import { Note, Pk } from '../../ui/Page'
 import { Dropdown, MenuItem, Select } from '../../ui/Dropdown'
 
-export const BUOC = ['Loại hình và gói', 'Đơn vị', 'Chi nhánh', 'Đồng bộ bán hàng', 'Số dư đầu kỳ']
+export const BUOC = ['Loại hình và gói', 'Đơn vị', 'Chi nhánh', 'Đồng bộ bán hàng']
 const XONG = BUOC.length   // bước hoàn tất
 export const KEY = 'iacc-khoi-tao-fabi'
 export const SO_KENH = 3   // Tại quán, Mang về, App giao đồ ăn (T113)
@@ -149,7 +149,7 @@ function TinhNangGoi({ g, truoc }: { g: Goi; truoc?: Goi }) {
 }
 
 export interface Nhap {
-  b: number            // bước đang làm; -2 là màn chào, -1 là giới thiệu giao diện, 0 tới 4 là bước trong popup, XONG là hoàn tất
+  b: number            // bước đang làm; -2 là màn chào, -1 là giới thiệu giao diện, 0 tới 3 là bước trong popup, XONG là hoàn tất
   mo: boolean          // popup đang mở; đóng thì hiện thẻ nhắc
   loai: LoaiHinh
   nhom: number         // nhóm hộ kinh doanh 1 tới 4
@@ -157,21 +157,17 @@ export interface Nhap {
   goi: Goi
   cheDo: CheDo
   traCuu: boolean
-  ngayDauNam: string   // ngày bắt đầu năm tài chính, ghi vào Thông tin đơn vị; số dư đầu kỳ, chứng từ POS tính từ ngày này
+  ngayDauNam: string   // ngày bắt đầu năm tài chính, ghi vào Thông tin đơn vị; chứng từ POS tính từ ngày này
   chon: string[]       // id chi nhánh lên sổ
   cnChinh: string      // địa điểm kinh doanh chính, một trong các chi nhánh đã chọn
   kenhOnline: string[] // kênh bán online lấy từ FABi
   kenhSan: string[]    // kênh bán qua sàn đã khấu trừ thuế thay
   dongBo: 'chiTiet' | 'kenh'
-  soDu: 'nhanh' | 'excel' | 'sau'
-  tienMat: string
-  tienGui: string
 }
 export const MAC_DINH: Nhap = {
   b: -2, mo: false, loai: 'dn', nhom: nhomTheoDt(DT_FABI), ppHkd: 'loiNhuan', goi: goiGoiY('dn', 'loiNhuan'), cheDo: cheDoMoi('dn', goiGoiY('dn', 'loiNhuan')), traCuu: true, ngayDauNam: '01/01/2026', chon: CHI_NHANH.map(c => c.id),
   cnChinh: '', kenhOnline: KENH_ONLINE, kenhSan: KENH_SAN,
   dongBo: 'kenh',
-  soDu: 'nhanh', tienMat: '', tienGui: '',
 }
 
 export function docNhap(): Nhap {
@@ -220,7 +216,6 @@ export function OnboardFabi() {
   const goiChon = n.loai === 'hkd' ? (['F', 'S'] as Goi[]) : GOIS
   const goiY = goiGoiY(n.loai, n.ppHkd)
   const nhomGoiY = nhomTheoDt(DT_FABI)
-  const free = n.goi === 'F'
   const cnChon = CHI_NHANH.filter(c => n.chon.includes(c.id))
   const soCt = demCt(n.chon, n.dongBo, +HOM_NAY - 29 * 86400000)   // ước một tháng, hiện ở bước đồng bộ
   const soCtDaTao = demCt(n.chon, n.dongBo, ngay(n.ngayDauNam))
@@ -400,37 +395,8 @@ export function OnboardFabi() {
                       </>
                     )}
 
-                    {n.b === 4 && (
-                      <>
-                        <h2 className="ktf-h">Số dư đầu kỳ</h2>
-                        <p className="muted ktf-p">Số dư ngày {n.ngayDauNam}. Chưa có số thì để sau, phần mềm vẫn dùng được.</p>
-                        {!free && (
-                          <div className="grid g3" style={{ marginBottom: 16 }}>
-                            {([['nhanh', 'edit', 'Nhập nhanh', 'Tiền mặt, tiền gửi'], ['excel', 'upload', 'Nhập từ Excel', 'Số dư tài khoản, công nợ, tồn kho'], ['sau', 'clock', 'Để sau', 'Nhập ở Kế toán tổng hợp']] as const).map(([k, ic, t, m]) => (
-                              <button key={k} className={`opt ${n.soDu === k ? 'on' : ''}`} onClick={() => sua({ soDu: k })}><Icon n={ic} /><span><b>{t}</b><small>{m}</small></span></button>
-                            ))}
-                          </div>
-                        )}
-                        {(free || n.soDu === 'nhanh') && (
-                          <div className="form-grid">
-                            <div className="f c2"><label>Tiền mặt tại quỹ</label><input className="inp num" value={n.tienMat} onChange={e => sua({ tienMat: e.target.value })} placeholder="0 đ" /></div>
-                            <div className="f c2"><label>Tiền gửi ngân hàng</label><input className="inp num" value={n.tienGui} onChange={e => sua({ tienGui: e.target.value })} placeholder="0 đ" /></div>
-                          </div>
-                        )}
-                        {!free && n.soDu === 'excel' && (
-                          <div className="card ktf-tha">
-                            <Icon n="filein" className="ic lg" />
-                            <p>Kéo thả tệp Excel vào đây</p>
-                            <button className="btn sm"><Icon n="download" className="ic sm" />Tải mẫu Excel số dư</button>
-                          </div>
-                        )}
-                        {free && <p className="muted" style={{ fontSize: 12.5, marginTop: 10 }}>Tồn kho đầu kỳ lấy theo kiểm kê đầu tiên ở phân hệ Kho.</p>}
-                      </>
-                    )}
-
                     <div className="row" style={{ marginTop: 22, justifyContent: 'flex-end', gap: 8 }}>
                       {n.b > 0 && <button className="btn lg" onClick={() => sua({ b: n.b - 1 })}>Quay lại</button>}
-                      {n.b === 4 && <button className="btn ghost lg" onClick={() => { sua({ soDu: 'sau', tienMat: '', tienGui: '' }); tiep() }}>Bỏ qua</button>}
                       <button className="btn pri lg" disabled={n.b === 2 && (cnChon.length === 0 || (n.loai === 'hkd' && !n.cnChinh))} onClick={tiep}>
                         {n.b === XONG - 1 ? 'Hoàn tất' : 'Tiếp tục'}<Icon n="arrow" className="ic sm" />
                       </button>
@@ -469,6 +435,7 @@ export function OnboardFabi() {
                       <p>Đã tạo {so(soCtDaTao)} chứng từ Xuất bán POS từ {n.ngayDauNam}. Việc nên làm tiếp:</p>
                       <ul className="ktf-viec">
                         <li><Icon n="bank" className="ic sm" />Khai báo tài khoản ngân hàng</li>
+                        <li><Icon n="calc" className="ic sm" />Nhập số dư đầu kỳ khi đã có danh mục</li>
                         <li><Icon n="alert" className="ic sm" />Xem đơn POS đồng bộ lỗi</li>
                         <li><Icon n="users" className="ic sm" />Mời kế toán cùng làm</li>
                       </ul>
