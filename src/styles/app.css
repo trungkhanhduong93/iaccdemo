@@ -6687,3 +6687,22 @@ table.tbl {
 .ktf-tai { width: 100%; height: 8px; border-radius: 4px; background: var(--line); overflow: hidden; margin: 8px 0 2px; }
 .ktf-tai i { display: block; height: 100%; background: var(--blue); transition: width .12s linear; }
 @media (max-width: 900px) { .ktf { padding: 20px 16px; } .ktf-luoi { grid-template-columns: 1fr; } .ktf-ben { position: static; } .ktf-nhan { grid-template-columns: repeat(2, 1fr); } }
+.ktf-nhom { display: flex; flex-direction: column; gap: 8px; }
+.ktf-nhom .opt { padding: 11px 14px; }
+.ktf-nhom-dt { margin-left: 10px; font-size: 12.5px; }
+.ktf-goi .opt { align-items: flex-start; }
+.ktf-goi-dem { display: block; margin-top: 6px; }
+.ktf-goi-dem b { display: inline; }
+.ktf-tn { margin-top: 18px; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.ktf-tn-dau { gap: 10px; padding: 10px 14px; background: var(--soft); font-size: 13px; }
+.ktf-tn-dau b { color: var(--ink); }
+.ktf-tn-luoi { max-height: 340px; overflow-y: auto; padding: 12px 14px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 22px; align-items: start; }
+.ktf-tn-mod { margin-bottom: 8px; }
+.ktf-tn-mod > b { display: block; color: var(--ink); font-size: 12.5px; margin-bottom: 4px; }
+.ktf-tn-mod ul { list-style: none; margin: 0; padding: 0; }
+.ktf-tn-mod li { font-size: 12px; color: var(--muted); padding: 1px 0 1px 14px; position: relative; }
+.ktf-tn-mod li::before { content: ''; position: absolute; left: 3px; top: 8px; width: 5px; height: 5px; border-radius: 50%; background: var(--line); }
+.ktf-tn-mod li.moi { color: var(--ink); }
+.ktf-tn-mod li.moi::before { background: var(--green); }
+.ktf-tn-mod li.moi::after { content: 'Thêm'; margin-left: 6px; font-size: 10.5px; font-weight: 600; color: var(--green); }
+@media (max-width: 1100px) { .ktf-tn-luoi { grid-template-columns: 1fr; } }

@@ -2,7 +2,7 @@
 
 - Ngày: 11/10/2026
 - Người: PhuongXT, agent: Claude Code
-- Trạng thái cuối phiên: Dở dang (bản thử đã chạy được, chờ Trum duyệt câu hỏi loại hình)
+- Trạng thái cuối phiên: Dở dang (chạy được, chờ Trum duyệt cách ghép loại hình, gói, chế độ)
 
 ## Đã làm
 
@@ -17,6 +17,11 @@
   - Hoàn tất: thanh tiến trình lấy dữ liệu, số chứng từ đã tạo từ ngày bắt đầu, 3 việc nên làm tiếp, nút Vào phần mềm ghi `goi`, `cheDo`, `dongBoFabi` vào phiên.
   - Khung bên phải "Bạn sẽ có gì" đổi theo lựa chọn: gói, chế độ, số chi nhánh, kho, cách đồng bộ, số tính năng.
   - Lưu dở ở localStorage khoá `iacc-khoi-tao-fabi`, mở lại đúng bước; vào phần mềm thì xoá.
+- Làm lại đầu luồng theo PhuongXT (lượt 2), màn còn 6 bước:
+  - Bước Loại hình: Hộ kinh doanh hay Doanh nghiệp. Hộ kinh doanh chọn nhóm: nhóm 1 dưới 1 tỷ, nhóm 2 từ 1 đến dưới 3 tỷ, nhóm 3 từ 3 đến dưới 50 tỷ, nhóm 4 từ 50 tỷ, kèm cách tính thuế TNCN. Nhóm 2 chọn thêm theo tỷ lệ % trên doanh thu hay theo lợi nhuận. Nhóm theo doanh thu FABi có nhãn.
+  - Bước Chọn gói: hộ kinh doanh có Free (tính thuế theo doanh thu) và Standard (theo lợi nhuận), cả hai theo TT152. Doanh nghiệp chọn cả 4 gói: Free chỉ quản lý lãi lỗ, không theo thông tư (bên trong ghi sổ như TT152); Standard theo TT58; Plus, Pro chọn TT133 hoặc TT99.
+  - Dưới thẻ gói liệt kê tính năng của gói đang chọn, gom theo phân hệ, đánh dấu Thêm ở tính năng gói liền trước chưa có (`TinhNangGoi`).
+  - `src/app/che-do.ts`: `CHE_DO_HOP_LE` cho gói Standard thêm TT152, để hộ kinh doanh dùng Standard vẫn giữ TT152 khi tải lại. Ở Cấu hình hệ thống, gói Standard giờ chọn được TT58 hoặc TT152.
 - Lối vào bản mẫu: liên kết "Thử mở từ FABi" dưới form đăng nhập (`src/modules/auth/Login.tsx`).
 - CSS mục cuối `app.css`: "Khởi tạo khi mở từ FABi (T138)", lớp `.ktf-*`.
 
@@ -30,8 +35,9 @@
 
 ## Dở dang, việc tiếp theo
 
-- Hỏi Trum: câu hỏi loại hình có đúng nghiệp vụ không, và có ép gói theo loại hình như đang làm không (điểm 2, 3 của nhật ký 10/10). Trum chốt thì ghi `docs/QUYET-DINH.md`.
-- Gợi ý gói đang theo số chi nhánh (`GOI_GOI_Y`), doanh thu 29 tỷ là chữ cứng.
+- Hỏi Trum duyệt: gói Standard thêm TT152 (đổi QD31), doanh nghiệp gói Free không theo thông tư mà vẫn lưu `cheDo` TT152, thuế suất 15%, 17%, 20% và ngưỡng nhóm chưa đối chiếu văn bản gốc. Trum chốt thì ghi `docs/QUYET-DINH.md`.
+- Doanh nghiệp gợi ý gói theo số chi nhánh (`goiGoiY`). Doanh thu FABi 29 tỷ là số cứng (`DT_FABI`).
+- Nhóm hộ kinh doanh, cách tính thuế TNCN chưa lưu vào phiên, chỉ nằm trong màn khởi tạo.
 - Ba việc nên làm tiếp ở màn Hoàn tất chưa nối tới màn nào; có thể đưa thành thẻ Việc cần làm trên Bàn làm việc.
 - Mô tả gói Free trong `GOI` còn ghi "1 điểm bán", hiện ở khung bên phải (việc T60).
 
