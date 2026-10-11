@@ -146,43 +146,6 @@ export function CauHinh({ sc }: ScreenProps) {
     <div className="page">
       <PageHead crumb={['Hệ thống']} title={sc.ten!}><button className="btn pri" onClick={() => toast('Đã lưu cấu hình')}>Lưu</button></PageHead>
       <div className="grid g2" style={{ alignItems: 'start' }}>
-        <Card title="Chế độ kế toán">
-          <div className="form-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
-            <div className="f">
-              <label>Chế độ</label>
-              {/* chế độ kế toán (thông tư áp dụng) sửa ở Thông tin đơn vị (T145) */}
-              <input className="inp" readOnly value={`${cheDoHienTai(s).soHieu} · ${cheDoHienTai(s).ten}`} />
-              <small className="muted" style={{ display: 'block', marginTop: 4 }}>Sửa ở <Link to="/app/he-thong/thong-tin">Thông tin đơn vị</Link></small>
-            </div>
-            <div className="f"><label>Năm tài chính</label><input className="inp" defaultValue="01/01 – 31/12" /></div>
-            <div className="f"><label>Phương pháp tính giá xuất kho</label><Select className="inp"><option>Bình quân gia quyền cuối kỳ</option><option>Bình quân tức thời</option><option>Nhập trước xuất trước</option></Select></div>
-            {s.cheDo === 'TT58' ? (
-              <>
-                <div className="f">
-                  <label>Phương pháp tính thuế GTGT</label>
-                  <Select className="inp" value={s.ppGtgt} onChange={e => set({ ppGtgt: e.target.value as PpGtgt })}>
-                    <option value="tyLe">Tỷ lệ % trên doanh thu</option>
-                    <option value="khauTru">Khấu trừ</option>
-                  </Select>
-                </div>
-                <div className="f">
-                  <label>Phương pháp tính thuế TNDN</label>
-                  <Select className="inp" value={s.ppTndn} onChange={e => set({ ppTndn: e.target.value as PpTndn })}>
-                    <option value="tyLe">Tỷ lệ % trên doanh thu</option>
-                    <option value="thuNhap">Trên thu nhập tính thuế</option>
-                  </Select>
-                </div>
-                <div className="f" style={{ gridColumn: '1 / -1' }}>
-                  <small className="muted" style={{ display: 'block', marginTop: 4 }}>
-                    {moTaBoSoTT58(thTT58(s.ppGtgt, s.ppTndn))}
-                  </small>
-                </div>
-              </>
-            ) : (
-              <div className="f"><label>Phương pháp tính thuế GTGT</label><input className="inp" readOnly value={s.cheDo === 'TT152' ? 'Không áp dụng' : 'Khấu trừ'} /></div>
-            )}
-          </div>
-        </Card>
         <Card title="Bộ định khoản tự động" act={noco ? <Link className="btn sm ghost" to="/app/danh-muc/1-15">Sửa bộ định khoản</Link> : undefined}>
           {noco ? <Note icon="book">Thứ tự ưu tiên tài khoản: hàng hoá, rồi nhóm hàng, rồi mặc định của chế độ. Bộ mặc định ngành F&B đã nạp sẵn 7 bút toán.</Note>
             : <Note kind="gray">Chế độ {cheDoHienTai(s).ngan} không dùng tài khoản Nợ/Có nên không có bộ định khoản.</Note>}
@@ -268,16 +231,6 @@ export function ThongTinDonVi({ sc }: ScreenProps) {
             <div className="f c4"><label>Địa chỉ</label><input className="inp" value={f.diaChi} onChange={e => sua({ diaChi: e.target.value })} /></div>
             <div className="f c2"><label>Người đại diện theo pháp luật</label><input className="inp" defaultValue={dv.nguoiDaiDien} /></div>
             <div className="f c2"><label>Kế toán trưởng</label><input className="inp" defaultValue="Trần Thu Hà" /></div>
-            <div className="f">
-              <label>Ngày đầu năm</label>
-              <input className="inp" value={dauNam} placeholder="dd/mm/yyyy" onChange={e => setDauNam(e.target.value)}
-                title="Chứng từ thêm mới phải có ngày từ ngày này trở đi, trừ các màn khai số dư đầu kỳ" />
-            </div>
-            <div className="f">
-              <label>Năm làm việc hiện tại</label>
-              <Select className="inp" value={String(nam)} aria-label="Năm làm việc hiện tại" onChange={e => doiNam(Number(e.target.value))}
-                ds={[-2, -1, 0, 1].map(d => String(new Date().getFullYear() + d)).map(n => ({ v: n, t: n }))} />
-            </div>
           </div>
         </Card>
         <Card title="Thông tin kê khai">
@@ -285,16 +238,6 @@ export function ThongTinDonVi({ sc }: ScreenProps) {
             <div className="f c2"><label>Loại hình</label>
               <Select className="inp" value={loai} aria-label="Loại hình" onChange={e => sua({ loai: e.target.value as LoaiHinh })}
                 ds={[{ v: 'hkd', t: 'Hộ kinh doanh' }, { v: 'dn', t: 'Doanh nghiệp' }]} /></div>
-            {loai === 'dn' && (
-              <div className="f c2"><label>Thông tư áp dụng</label>
-                {s.goi === 'F'
-                  ? <input className="inp" readOnly value="Quản lý lãi lỗ, không theo thông tư" />
-                  : <Select className="inp" value={s.cheDo} disabled={CHE_DO_HOP_LE[s.goi].length <= 1} aria-label="Thông tư áp dụng"
-                      onChange={e => { const moi = e.target.value as CheDo; if (moi !== s.cheDo) setChoDoi(moi) }}
-                      ds={CHE_DO_HOP_LE[s.goi].map(cd => ({ v: cd, t: `${CHE_DO[cd].soHieu} · ${CHE_DO[cd].ten}` }))} />}
-                {s.goi !== 'F' && CHE_DO_HOP_LE[s.goi].length <= 1 && <small className="muted" style={{ display: 'block', marginTop: 4 }}>Gói {GOI[s.goi].ten} chỉ dùng {cheDoHienTai(s).ngan}</small>}
-              </div>
-            )}
             {loai === 'hkd' && <>
               <div className="f c2"><label>Nhóm doanh thu</label>
                 <Select className="inp" value={String(f.nhom)} aria-label="Nhóm doanh thu" onChange={e => sua({ nhom: Number(e.target.value) })}
@@ -312,6 +255,54 @@ export function ThongTinDonVi({ sc }: ScreenProps) {
             </>}
           </div>
           {doiLoai && <Note kind="warn" icon="alert">Đổi loại hình không tự đổi gói, chế độ kế toán. Xem lại ở <Link to="/app/he-thong/goi-thue-bao">Gói thuê bao</Link> và Cấu hình kế toán.</Note>}
+        </Card>
+        <Card title="Chế độ kế toán">
+          <div className="form-grid">
+            <div className="f c2"><label>Thông tư áp dụng</label>
+              {loai === 'hkd'
+                ? <input className="inp" readOnly value={`${CHE_DO.TT152.soHieu} · ${CHE_DO.TT152.ten}`} />
+                : s.goi === 'F'
+                ? <input className="inp" readOnly value="Quản lý lãi lỗ, không theo thông tư" />
+                : <Select className="inp" value={s.cheDo} disabled={CHE_DO_HOP_LE[s.goi].length <= 1} aria-label="Thông tư áp dụng"
+                    onChange={e => { const moi = e.target.value as CheDo; if (moi !== s.cheDo) setChoDoi(moi) }}
+                    ds={CHE_DO_HOP_LE[s.goi].map(cd => ({ v: cd, t: `${CHE_DO[cd].soHieu} · ${CHE_DO[cd].ten}` }))} />}
+              {loai === 'dn' && s.goi !== 'F' && CHE_DO_HOP_LE[s.goi].length <= 1 && <small className="muted" style={{ display: 'block', marginTop: 4 }}>Gói {GOI[s.goi].ten} chỉ dùng {cheDoHienTai(s).ngan}</small>}
+            </div>
+            <div className="f">
+              <label>Ngày đầu năm</label>
+              <input className="inp" value={dauNam} placeholder="dd/mm/yyyy" onChange={e => setDauNam(e.target.value)}
+                title="Chứng từ thêm mới phải có ngày từ ngày này trở đi, trừ các màn khai số dư đầu kỳ" />
+            </div>
+            <div className="f">
+              <label>Năm làm việc hiện tại</label>
+              <Select className="inp" value={String(nam)} aria-label="Năm làm việc hiện tại" onChange={e => doiNam(Number(e.target.value))}
+                ds={[-2, -1, 0, 1].map(d => String(new Date().getFullYear() + d)).map(n => ({ v: n, t: n }))} />
+            </div>
+            <div className="f c2"><label>Phương pháp tính giá xuất kho</label><Select className="inp"><option>Bình quân gia quyền cuối kỳ</option><option>Bình quân tức thời</option><option>Nhập trước xuất trước</option></Select></div>
+            {s.cheDo === 'TT58' ? (
+              <>
+                <div className="f c2">
+                  <label>Phương pháp tính thuế GTGT</label>
+                  <Select className="inp" value={s.ppGtgt} onChange={e => set({ ppGtgt: e.target.value as PpGtgt })}>
+                    <option value="tyLe">Tỷ lệ % trên doanh thu</option>
+                    <option value="khauTru">Khấu trừ</option>
+                  </Select>
+                </div>
+                <div className="f c2">
+                  <label>Phương pháp tính thuế TNDN</label>
+                  <Select className="inp" value={s.ppTndn} onChange={e => set({ ppTndn: e.target.value as PpTndn })}>
+                    <option value="tyLe">Tỷ lệ % trên doanh thu</option>
+                    <option value="thuNhap">Trên thu nhập tính thuế</option>
+                  </Select>
+                </div>
+                <div className="f c4">
+                  <small className="muted">{moTaBoSoTT58(thTT58(s.ppGtgt, s.ppTndn))}</small>
+                </div>
+              </>
+            ) : (
+              <div className="f c2"><label>Phương pháp tính thuế GTGT</label><input className="inp" readOnly value={s.cheDo === 'TT152' ? 'Không áp dụng' : 'Khấu trừ'} /></div>
+            )}
+          </div>
         </Card>
       </div>
       {choDoi && (

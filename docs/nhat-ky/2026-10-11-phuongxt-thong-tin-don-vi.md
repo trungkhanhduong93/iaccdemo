@@ -12,7 +12,7 @@
 - `src/modules/he-thong/HeThong.tsx`, Thông tin đơn vị:
   - Thông tin trên chứng từ, báo cáo: tên, địa chỉ sửa và lưu thật; MST sửa được khi đơn vị chưa khai (đơn vị dùng thử từ FABi bỏ qua tra cứu); số điểm bán theo chi nhánh của đơn vị.
   - Thông tin kê khai: Loại hình; doanh nghiệp có Thông tư áp dụng (chế độ kế toán chuyển từ Cấu hình kế toán sang, hỏi lại khi đổi; gói Free ghi "Quản lý lãi lỗ, không theo thông tư"); hộ kinh doanh có Nhóm doanh thu, Phương pháp tính thuế TNCN (nhóm 1, 3, 4 khoá theo nhóm), Địa điểm kinh doanh chính, Kênh bán online, Kênh bán qua sàn đã khấu trừ thuế. Đổi loại hình thì nhắc xem lại gói, chế độ, không tự đổi.
-- Cấu hình kế toán: ô Chế độ chỉ hiện, kèm liên kết Sửa ở Thông tin đơn vị. Bảng Chi nhánh và ánh xạ POS lấy chi nhánh theo đơn vị; gói Free, Standard ghi tên một kho mỗi chi nhánh (dữ liệu mẫu một kho), gói khác ghi số kho.
+- PhuongXT: đưa hết phần chế độ kế toán sang Thông tin đơn vị. Khối Chế độ kế toán chuyển hẳn từ Cấu hình kế toán sang Thông tin đơn vị: Thông tư áp dụng (hộ kinh doanh ghi cố định TT152), Ngày đầu năm, Năm làm việc hiện tại, Phương pháp tính giá xuất kho, Phương pháp tính thuế GTGT, TNDN (TT58). Bỏ ô Năm tài chính "01/01 – 31/12" vì trùng Ngày đầu năm. Cấu hình kế toán còn Bộ định khoản tự động, Đánh số chứng từ, Đồng bộ bán hàng từ FABi, Chi nhánh và ánh xạ POS. Bảng Chi nhánh và ánh xạ POS lấy chi nhánh theo đơn vị; gói Free, Standard ghi tên một kho mỗi chi nhánh (dữ liệu mẫu một kho), gói khác ghi số kho.
 - Gói Free, Standard: Danh mục chi nhánh, danh mục Kho chỉ có một kho mẫu mỗi chi nhánh (gói Standard vẫn thêm kho được).
 - Thanh trên ghi "Hộ kinh doanh · MST" hoặc "Công ty · MST" theo loại hình.
 
