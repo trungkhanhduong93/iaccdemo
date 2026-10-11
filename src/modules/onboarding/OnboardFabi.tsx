@@ -45,6 +45,75 @@ const MO_TA_GOI: Record<LoaiHinh, Partial<Record<Goi, string>>> = {
   dn: { F: 'Chỉ quản lý lãi lỗ, không theo thông tư nào', S: 'Doanh nghiệp siêu nhỏ theo TT58, ghi sổ không dùng tài khoản', PL: 'Hạch toán Nợ/Có theo TT133 hoặc TT99', PR: 'Như Plus, đủ tính năng cho chuỗi lớn' },
 }
 
+/** Danh sách chi nhánh FABi lên sổ, dùng được cho chuỗi vài chục chi nhánh: gom theo khu vực khi có từ 2 khu vực (tích cả nhóm, thu gọn nhóm),
+ *  tìm (từ 6 chi nhánh), lọc đã chọn, chưa chọn, chọn tất cả theo kết quả đang lọc. Hộ kinh doanh (coChinh) chọn chi nhánh chính ngay trên dòng, bắt buộc */
+type CnFabi = { id: string; ten: string; khuVuc?: string }
+function DsChiNhanh({ ds, chon, chinh, doi, coChinh }: { ds: CnFabi[]; chon: string[]; chinh: string; doi: (chon: string[], chinh: string) => void; coChinh: boolean }) {
+  const [tim, setTim] = useState('')
+  const [loc, setLoc] = useState<'tat' | 'co' | 'chua'>('tat')
+  const [dong, setDong] = useState<string[]>([])   // khu vực đang thu gọn
+  const datChon = (moi: string[]) => doi(moi, moi.includes(chinh) ? chinh : '')
+  const tu = tim.trim().toLowerCase()
+  const hien = ds.filter(c => (!tu || c.ten.toLowerCase().includes(tu)) && (loc === 'tat' || (loc === 'co') === chon.includes(c.id)))
+  const khuVuc = [...new Set(ds.map(c => c.khuVuc ?? 'Khác'))]
+  const coNhom = khuVuc.length > 1
+  const hetChon = hien.length > 0 && hien.every(c => chon.includes(c.id))
+  const batNhieu = (ids: string[], on: boolean) => datChon(on ? [...new Set([...chon, ...ids])] : chon.filter(x => !ids.includes(x)))
+  const dongCn = (c: CnFabi) => (
+    <div key={c.id} className={`ktf-ds-dong ${chon.includes(c.id) ? 'on' : ''}`}>
+      <label><input type="checkbox" checked={chon.includes(c.id)} onChange={() => batNhieu([c.id], !chon.includes(c.id))} /><span>{c.ten}</span></label>
+      {coChinh && chon.includes(c.id) && (
+        <button className={`ktf-ds-chinh ${c.id === chinh ? 'on' : ''}`} title="Đặt làm chi nhánh chính" onClick={() => doi(chon, c.id)}>
+          <span className="radio" />{c.id === chinh ? 'Chi nhánh chính' : 'Chính'}
+        </button>
+      )}
+    </div>
+  )
+  return (
+    <div className="ktf-ds-khung">
+      <div className="row ktf-ds-dau">
+        {ds.length >= 6 && <div className="ktf-cn-tim"><Icon n="search" className="ic sm" /><input value={tim} onChange={e => setTim(e.target.value)} placeholder="Tìm chi nhánh" /></div>}
+        <div className="ktf-ds-loc">
+          {([['tat', 'Tất cả', ds.length], ['co', 'Đã chọn', chon.length], ['chua', 'Chưa chọn', ds.length - chon.length]] as const).map(([k, t, d]) => (
+            <button key={k} className={loc === k ? 'on' : ''} onClick={() => setLoc(k)}>{t} <b>{d}</b></button>
+          ))}
+        </div>
+        <span className="grow" />
+        <button className="btn ghost sm" disabled={!hien.length} onClick={() => batNhieu(hien.map(c => c.id), !hetChon)}>{hetChon ? 'Bỏ chọn' : 'Chọn'} {tu || loc !== 'tat' ? `${hien.length} chi nhánh đang lọc` : 'tất cả'}</button>
+      </div>
+      <div className="ktf-ds">
+        {!hien.length && <div className="ktf-ds-trong muted">Không có chi nhánh khớp</div>}
+        {coNhom
+          ? khuVuc.map(kv => {
+              const nhom = hien.filter(c => (c.khuVuc ?? 'Khác') === kv)
+              if (!nhom.length) return null
+              const tatCa = ds.filter(c => (c.khuVuc ?? 'Khác') === kv)
+              const so = tatCa.filter(c => chon.includes(c.id)).length
+              const thuGon = dong.includes(kv) && !tu
+              return (
+                <div key={kv}>
+                  <div className="ktf-ds-nhom">
+                    <input type="checkbox" checked={so === tatCa.length} ref={el => { if (el) el.indeterminate = so > 0 && so < tatCa.length }}
+                      onChange={() => batNhieu(tatCa.map(c => c.id), so < tatCa.length)} aria-label={`Chọn cả ${kv}`} />
+                    <button onClick={() => setDong(x => x.includes(kv) ? x.filter(y => y !== kv) : [...x, kv])}>
+                      <Icon n={thuGon ? 'chevr' : 'chevd'} className="ic sm" /><b>{kv}</b><span className="muted">{so}/{tatCa.length}</span>
+                    </button>
+                  </div>
+                  {!thuGon && nhom.map(dongCn)}
+                </div>
+              )
+            })
+          : hien.map(dongCn)}
+      </div>
+      {coChinh && <div className={`ktf-ds-chan ${chinh ? '' : 'thieu'}`}>
+        {chinh
+          ? <>Chi nhánh chính: <b>{ds.find(c => c.id === chinh)?.ten}</b></>
+          : <><Icon n="alert" className="ic sm" />Chưa chọn chi nhánh chính. Bấm nút <b>Chính</b> ở dòng chi nhánh là địa điểm kinh doanh chính.</>}
+      </div>}
+    </div>
+  )
+}
+
 /** Ô thả xuống chọn nhiều kênh bán; kênh đã chọn hiện gọn trong ô */
 function ChonKenh({ ds, chon, doi, trong }: { ds: string[]; chon: string[]; doi: (k: string) => void; trong: string }) {
   return (
@@ -101,7 +170,7 @@ export interface Nhap {
 }
 export const MAC_DINH: Nhap = {
   b: -2, mo: false, loai: 'dn', nhom: nhomTheoDt(DT_FABI), ppHkd: 'loiNhuan', goi: goiGoiY('dn', 'loiNhuan'), cheDo: cheDoMoi('dn', goiGoiY('dn', 'loiNhuan')), traCuu: true, ngayDauNam: '01/01/2026', chon: CHI_NHANH.map(c => c.id),
-  cnChinh: CHI_NHANH[0].id, kenhOnline: KENH_ONLINE, kenhSan: KENH_SAN,
+  cnChinh: '', kenhOnline: KENH_ONLINE, kenhSan: KENH_SAN,
   dongBo: 'kenh', gioChot: '23:30',
   soDu: 'nhanh', tienMat: '', tienGui: '',
 }
@@ -132,7 +201,6 @@ export function OnboardFabi() {
   const [n, setN] = useState<Nhap>(docNhap)
   const sua = (p: Partial<Nhap>) => setN(x => ({ ...x, ...p }))
   const [tai, setTai] = useState(0)   // phần trăm lấy dữ liệu ở bước hoàn tất
-  const [timCn, setTimCn] = useState('')   // tìm chi nhánh, hiện khi có từ 6 chi nhánh
 
   useEffect(() => { if (n.b >= 0) luuNhap(n) }, [n])
 
@@ -162,10 +230,6 @@ export function OnboardFabi() {
   const ngan = nganCheDo(n.loai, n.cheDo)
   const diemGoi = DIEM_NOI_BAT[n.goi].ds.filter(t => !/TT\d+/.test(t) || t.includes(ngan))
 
-  const doiChon = (id: string) => {
-    const chon = n.chon.includes(id) ? n.chon.filter(x => x !== id) : [...n.chon, id]
-    sua({ chon, cnChinh: chon.includes(n.cnChinh) ? n.cnChinh : chon[0] ?? '' })
-  }
   const bat = (ds: string[], k: string) => ds.includes(k) ? ds.filter(x => x !== k) : [...ds, k]
   const doiKenh = (k: string) => { const on = bat(n.kenhOnline, k); sua({ kenhOnline: on, kenhSan: n.kenhSan.filter(x => on.includes(x)) }) }
   const xong = () => {
@@ -301,32 +365,10 @@ export function OnboardFabi() {
                       <>
                         <h2 className="ktf-h">Chi nhánh</h2>
                         <p className="muted ktf-p">Tích chi nhánh lên sổ kế toán.</p>
-                        <div className="row ktf-cn-dau">
-                          {CHI_NHANH.length >= 6 && (
-                            <div className="ktf-cn-tim"><Icon n="search" className="ic sm" /><input value={timCn} onChange={e => setTimCn(e.target.value)} placeholder="Tìm chi nhánh" /></div>
-                          )}
-                          <span className="muted">Đã chọn {cnChon.length}/{CHI_NHANH.length}</span>
-                          <span className="grow" />
-                          <button className="btn ghost sm" onClick={() => sua({ chon: cnChon.length === CHI_NHANH.length ? [] : CHI_NHANH.map(c => c.id), cnChinh: cnChon.length === CHI_NHANH.length ? '' : n.cnChinh || CHI_NHANH[0].id })}>
-                            {cnChon.length === CHI_NHANH.length ? 'Bỏ chọn tất cả' : 'Chọn tất cả'}
-                          </button>
-                        </div>
-                        <div className="ktf-cn">
-                          {CHI_NHANH.filter(c => !timCn.trim() || c.ten.toLowerCase().includes(timCn.trim().toLowerCase())).map(c => (
-                            <label key={c.id} className={`ktf-cn-o ${n.chon.includes(c.id) ? 'on' : ''}`}>
-                              <input type="checkbox" checked={n.chon.includes(c.id)} onChange={() => doiChon(c.id)} />
-                              <span>{c.ten}</span>
-                            </label>
-                          ))}
-                        </div>
+                        <DsChiNhanh ds={CHI_NHANH} chon={n.chon} chinh={n.cnChinh} doi={(chon, cnChinh) => sua({ chon, cnChinh })} coChinh={n.loai === 'hkd'} />
                         {cnChon.length === 0 && <Note kind="warn" icon="alert">Chọn ít nhất một chi nhánh để tiếp tục.</Note>}
-                        {cnChon.length > 0 && (
+                        {n.loai === 'hkd' && cnChon.length > 0 && (
                           <>
-                            <div className="f" style={{ marginTop: 16, maxWidth: 420 }}><label>Địa điểm kinh doanh chính <em>*</em></label>
-                              <Select className="inp" value={n.cnChinh} onChange={e => sua({ cnChinh: e.target.value })}>
-                                {cnChon.map(c => <option key={c.id} value={c.id}>{c.ten}</option>)}
-                              </Select>
-                            </div>
                             <h3 className="ktf-h3">Kênh bán</h3>
                             <div className="ktf-kenh">
                               <label>Kênh bán online</label>
@@ -395,7 +437,7 @@ export function OnboardFabi() {
                     <div className="row" style={{ marginTop: 22, justifyContent: 'flex-end', gap: 8 }}>
                       {n.b > 0 && <button className="btn lg" onClick={() => sua({ b: n.b - 1 })}>Quay lại</button>}
                       {n.b === 4 && <button className="btn ghost lg" onClick={() => { sua({ soDu: 'sau', tienMat: '', tienGui: '' }); tiep() }}>Bỏ qua</button>}
-                      <button className="btn pri lg" disabled={n.b === 2 && cnChon.length === 0} onClick={tiep}>
+                      <button className="btn pri lg" disabled={n.b === 2 && (cnChon.length === 0 || (n.loai === 'hkd' && !n.cnChinh))} onClick={tiep}>
                         {n.b === XONG - 1 ? 'Hoàn tất' : 'Tiếp tục'}<Icon n="arrow" className="ic sm" />
                       </button>
                     </div>
