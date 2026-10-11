@@ -73,8 +73,7 @@ export interface Nhap {
   goi: Goi
   cheDo: CheDo
   traCuu: boolean
-  ngayDauNam: string   // ngày bắt đầu năm tài chính, ghi vào Thông tin đơn vị
-  ngayBatDau: string
+  ngayDauNam: string   // ngày bắt đầu năm tài chính, ghi vào Thông tin đơn vị; số dư đầu kỳ, chứng từ POS tính từ ngày này
   chon: string[]       // id chi nhánh lên sổ
   khoFree: Record<string, string>   // gói Free: mỗi chi nhánh một kho
   dongBo: 'chiTiet' | 'kenh'
@@ -84,7 +83,7 @@ export interface Nhap {
   tienGui: string
 }
 export const MAC_DINH: Nhap = {
-  b: -2, mo: false, loai: 'dn', nhom: nhomTheoDt(DT_FABI), ppHkd: 'loiNhuan', goi: goiGoiY('dn', 'loiNhuan'), cheDo: cheDoMoi('dn', goiGoiY('dn', 'loiNhuan')), traCuu: true, ngayDauNam: '01/01/2026', ngayBatDau: '01/10/2026', chon: CHI_NHANH.map(c => c.id),
+  b: -2, mo: false, loai: 'dn', nhom: nhomTheoDt(DT_FABI), ppHkd: 'loiNhuan', goi: goiGoiY('dn', 'loiNhuan'), cheDo: cheDoMoi('dn', goiGoiY('dn', 'loiNhuan')), traCuu: true, ngayDauNam: '01/01/2026', chon: CHI_NHANH.map(c => c.id),
   khoFree: Object.fromEntries(CHI_NHANH.map(c => [c.id, c.kho[0]])), dongBo: 'kenh', gioChot: '23:30',
   soDu: 'nhanh', tienMat: '', tienGui: '',
 }
@@ -139,7 +138,7 @@ export function OnboardFabi() {
   const cnChon = CHI_NHANH.filter(c => n.chon.includes(c.id))
   const soKho = free ? cnChon.length : cnChon.reduce((t, c) => t + c.kho.length, 0)
   const soCt = demCt(n.chon, n.dongBo, +HOM_NAY - 29 * 86400000)   // ước một tháng, hiện ở bước đồng bộ
-  const soCtDaTao = demCt(n.chon, n.dongBo, ngay(n.ngayBatDau))
+  const soCtDaTao = demCt(n.chon, n.dongBo, ngay(n.ngayDauNam))
   const dem = demTheoGoi(n.goi)
   // Điểm nổi bật của gói, bỏ dòng nói về thông tư khác chế độ đang chọn (vd hộ kinh doanh dùng Standard vẫn TT152)
   const ngan = nganCheDo(n.loai, n.cheDo)
@@ -258,23 +257,18 @@ export function OnboardFabi() {
                     {n.b === 1 && (
                       <>
                         <h2 className="ktf-h">Thông tin đơn vị</h2>
-                        <p className="muted ktf-p">Mã số thuế lấy từ FABi. Tên, địa chỉ tra từ cơ sở dữ liệu thuế.</p>
+                        <p className="muted ktf-p">Điền thông tin {n.loai === 'hkd' ? 'hộ kinh doanh' : 'công ty'} của bạn. Tên, địa chỉ tra cứu từ dữ liệu thuế.</p>
                         <div className="form-grid">
                           <div className="f c2"><label>Mã số thuế <em>*</em></label>
                             <div className="row"><input className="inp" defaultValue="0319990001" />
                               <button className="btn" onClick={() => sua({ traCuu: true })}>Tra cứu</button></div>
                           </div>
-                          <div className="f"><label>Ngày bắt đầu năm tài chính</label>
+                          <div className="f c2"><label>Ngày bắt đầu năm tài chính</label>
                             <Select className="inp" value={n.ngayDauNam} onChange={e => sua({ ngayDauNam: e.target.value })}>
                               {['01/01/2026', '01/04/2026', '01/07/2026', '01/10/2026'].map(d => <option key={d}>{d}</option>)}
                             </Select>
                           </div>
-                          <div className="f"><label>Ngày bắt đầu dùng sổ</label>
-                            <Select className="inp" value={n.ngayBatDau} onChange={e => sua({ ngayBatDau: e.target.value })}>
-                              <option>01/10/2026</option><option>01/09/2026</option><option>01/01/2026</option>
-                            </Select>
-                          </div>
-                          <div className="f c4"><label>Tên đơn vị <em>*</em></label><input className="inp" value={n.traCuu ? 'Công ty TNHH Ẩm thực Phố Mây' : ''} onChange={() => {}} /></div>
+                          <div className="f c4"><label>{n.loai === 'hkd' ? 'Tên hộ kinh doanh' : 'Tên công ty'} <em>*</em></label><input className="inp" value={n.traCuu ? (n.loai === 'hkd' ? 'Hộ kinh doanh Ẩm thực Phố Mây' : 'Công ty TNHH Ẩm thực Phố Mây') : ''} onChange={() => {}} /></div>
                           <div className="f c4"><label>Địa chỉ</label><input className="inp" value={n.traCuu ? '86 Lê Lợi, phường Sài Gòn, TP.HCM' : ''} onChange={() => {}} /></div>
                         </div>
                       </>
@@ -330,7 +324,7 @@ export function OnboardFabi() {
                     {n.b === 4 && (
                       <>
                         <h2 className="ktf-h">Số dư đầu kỳ</h2>
-                        <p className="muted ktf-p">Số dư ngày {n.ngayBatDau}. Chưa có số thì để sau, phần mềm vẫn dùng được.</p>
+                        <p className="muted ktf-p">Số dư ngày {n.ngayDauNam}. Chưa có số thì để sau, phần mềm vẫn dùng được.</p>
                         {!free && (
                           <div className="grid g3" style={{ marginBottom: 16 }}>
                             {([['nhanh', 'edit', 'Nhập nhanh', 'Tiền mặt, tiền gửi'], ['excel', 'upload', 'Nhập từ Excel', 'Số dư tài khoản, công nợ, tồn kho'], ['sau', 'clock', 'Để sau', 'Nhập ở Kế toán tổng hợp']] as const).map(([k, ic, t, m]) => (
@@ -386,14 +380,14 @@ export function OnboardFabi() {
                 {tai < 100
                   ? <>
                       <h1>Đang lấy dữ liệu từ FABi</h1>
-                      <p>Doanh thu từ {n.ngayBatDau} của {cnChon.length} chi nhánh.</p>
+                      <p>Doanh thu từ {n.ngayDauNam} của {cnChon.length} chi nhánh.</p>
                       <div className="ktf-tai"><i style={{ width: `${tai}%` }} /></div>
                       <p className="muted" style={{ fontSize: 12.5 }}>{tai < 40 ? 'Lấy danh mục món, kênh bán' : tai < 80 ? `Tạo ${so(soCtDaTao)} chứng từ Xuất bán POS` : 'Ghi sổ doanh thu, thuế đầu ra'}</p>
                     </>
                   : <>
                       <div className="ktf-chao-ic ok"><Icon n="check" className="ic lg" /></div>
                       <h1>Xong. Sổ sách đã sẵn sàng</h1>
-                      <p>Đã tạo {so(soCtDaTao)} chứng từ Xuất bán POS từ {n.ngayBatDau}. Việc nên làm tiếp:</p>
+                      <p>Đã tạo {so(soCtDaTao)} chứng từ Xuất bán POS từ {n.ngayDauNam}. Việc nên làm tiếp:</p>
                       <ul className="ktf-viec">
                         <li><Icon n="bank" className="ic sm" />Khai báo tài khoản ngân hàng</li>
                         <li><Icon n="alert" className="ic sm" />Xem đơn POS đồng bộ lỗi</li>
