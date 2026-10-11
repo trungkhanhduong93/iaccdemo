@@ -6665,15 +6665,6 @@ table.tbl {
 .ktf-nhan > span { grid-column: 1 / -1; font-size: 12px; text-align: left; }
 .ktf-nhan div { font-size: 12.5px; color: var(--muted); }
 .ktf-nhan b { display: block; font-size: 22px; color: var(--ink); }
-.ktf-cn { display: flex; flex-direction: column; gap: 8px; }
-.ktf-cn-dong { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1.5px solid var(--line); border-radius: 12px; opacity: .6; }
-.ktf-cn-dong.on { border-color: var(--blue); background: #f2f7fb; opacity: 1; }
-.ktf-cn-dong label { gap: 10px; cursor: pointer; }
-.ktf-cn-dong label span { display: flex; flex-direction: column; }
-.ktf-cn-dong b { color: var(--ink); }
-.ktf-cn-dong small { font-size: 12px; }
-.ktf-kho { width: 220px; }
-.ktf-kho-ds { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
 .ktf-xem { display: flex; gap: 10px; align-items: center; margin-top: 16px; padding: 12px 14px; border-radius: 10px; background: var(--soft); font-size: 13px; }
 .ktf-xem b { color: var(--ink); }
 .ktf-tha { margin-top: 16px; padding: 22px; border-style: dashed; text-align: center; box-shadow: none; }
@@ -6758,3 +6749,18 @@ table.tbl {
 .ktf-tn-mo .ktf-tn { margin-top: 10px; }
 .ktf-goi-xem .radio { margin-top: 0; }
 .ktf-goi-xem > button.on .radio { border: 5px solid var(--blue); }
+.ktf-kenh { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 12px 16px; align-items: start; }
+.ktf-kenh > label { font-size: 12.5px; font-weight: 600; color: var(--ink); padding-top: 5px; }
+.ktf-kenh > div { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.ktf-kenh small { flex-basis: 100%; font-size: 12px; }
+.ktf-chip { display: inline-flex; align-items: center; gap: 5px; height: 28px; padding: 0 8px 0 10px; border-radius: 7px; border: 1px dashed var(--line); background: #fff; color: var(--muted); font-size: 12.5px; font-weight: 600; }
+.ktf-chip.on { border: 1px solid var(--blue); background: var(--tint); color: var(--blue-d); }
+@media (max-width: 900px) { .ktf-kenh { grid-template-columns: 1fr; } }
+.ktf-cn-dau { gap: 10px; margin-bottom: 10px; font-size: 12.5px; }
+.ktf-cn-tim { display: flex; align-items: center; gap: 6px; width: 260px; height: 32px; padding: 0 10px; border: 1px solid var(--line); border-radius: 8px; background: #fff; color: var(--muted); }
+.ktf-cn-tim input { flex: 1; min-width: 0; border: 0; outline: 0; background: none; font: inherit; color: var(--ink); }
+.ktf-cn { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; max-height: 260px; overflow-y: auto; }
+.ktf-cn-o { display: flex; align-items: center; gap: 8px; padding: 9px 12px; border: 1px solid var(--line); border-radius: 9px; background: #fff; font-size: 13px; color: var(--muted); cursor: pointer; }
+.ktf-cn-o.on { border-color: var(--blue); background: #f2f7fb; color: var(--ink); font-weight: 600; }
+.ktf-cn-o span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@media (max-width: 900px) { .ktf-cn { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

@@ -30,6 +30,8 @@
   - Đang làm dở mà mở lại `/khoi-tao-fabi` thì vào thẳng phần mềm, mở popup đúng bước.
 - Gộp bước Loại hình và Chọn gói thành "Loại hình và gói" (popup còn 5 bước): chọn loại hình, nhóm hộ kinh doanh, rồi bấm chọn gói ngay bên dưới; tính năng gói thu vào dòng "Xem N tính năng". Khung "Bạn sẽ có gì" ghi gói, chế độ, giá (theo năm, theo tháng) và điểm nổi bật của gói, bỏ dòng nói về thông tư khác chế độ đang chọn.
 - Bảng giá và điểm nổi bật gói chuyển từ `GoiThueBao.tsx` sang `src/app/plan.ts` (`GIA_GOI_NAM`, `GIA_GOI_THANG`, `DIEM_NOI_BAT`) để hai màn dùng chung.
+- Bước Đơn vị: chữ đổi theo loại hình (công ty, hộ kinh doanh); thêm ngày bắt đầu năm tài chính, ghi vào `ngayDauNam`, `namTaiChinh` của phiên; bỏ ngày bắt đầu dùng sổ, số dư đầu kỳ và số chứng từ POS tính từ ngày đầu năm.
+- Bước Chi nhánh (bỏ kho): chi nhánh xếp lưới gọn, đếm đã chọn, chọn hoặc bỏ tất cả, ô tìm khi có từ 6 chi nhánh; thêm Địa điểm kinh doanh chính, Kênh bán online, Kênh bán qua sàn đã khấu trừ thuế (danh sách kênh mẫu ở `KENH_ONLINE`, `KENH_SAN`). Chưa lưu vào phiên.
 - Lối vào bản mẫu: liên kết "Thử mở từ FABi" dưới form đăng nhập (`src/modules/auth/Login.tsx`).
 - CSS mục cuối `app.css`: "Khởi tạo khi mở từ FABi (T138)", lớp `.ktf-*`.
 

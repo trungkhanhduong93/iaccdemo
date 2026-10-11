@@ -1,5 +1,5 @@
 // Khởi tạo sổ sách khi mở từ FABi (T138), phần popup: bấm Dùng thử ở /khoi-tao-fabi thì vào phần mềm gói Free,
-// popup 5 bước (loại hình và gói, đơn vị, chi nhánh và kho, đồng bộ, số dư) mở đè lên. Đóng popup thì còn thẻ nhắc nổi ở góc dưới phải.
+// popup 5 bước (loại hình và gói, đơn vị, chi nhánh, đồng bộ, số dư) mở đè lên. Đóng popup thì còn thẻ nhắc nổi ở góc dưới phải.
 // Tiến độ lưu ở localStorage để quay lại đúng bước.
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -11,12 +11,15 @@ import { Icon } from '../../ui/Icon'
 import { Note, Pk } from '../../ui/Page'
 import { Select } from '../../ui/Dropdown'
 
-export const BUOC = ['Loại hình và gói', 'Đơn vị', 'Chi nhánh và kho', 'Đồng bộ bán hàng', 'Số dư đầu kỳ']
+export const BUOC = ['Loại hình và gói', 'Đơn vị', 'Chi nhánh', 'Đồng bộ bán hàng', 'Số dư đầu kỳ']
 const XONG = BUOC.length   // bước hoàn tất
 export const KEY = 'iacc-khoi-tao-fabi'
 export const SO_KENH = 3   // Tại quán, Mang về, App giao đồ ăn (T113)
 
 const DT_FABI = 29_000_000_000   // doanh thu 12 tháng lấy từ FABi
+/** Kênh bán online trên FABi; KENH_SAN là sàn giao đồ ăn khấu trừ, nộp thuế thay cho hộ, doanh nghiệp bán qua sàn (T138) */
+const KENH_ONLINE = ['GrabFood', 'ShopeeFood', 'Be', 'Zalo', 'Facebook', 'CRM', 'Call center', 'Giao hàng']
+const KENH_SAN = ['GrabFood', 'ShopeeFood', 'Be']
 
 /** 4 nhóm hộ kinh doanh theo doanh thu năm, áp dụng từ 01/01/2026. PhuongXT đưa ngưỡng 11/10/2026 (T138); thuế suất chưa đối chiếu văn bản gốc */
 type PpHkd = 'doanhThu' | 'loiNhuan'
@@ -75,7 +78,9 @@ export interface Nhap {
   traCuu: boolean
   ngayDauNam: string   // ngày bắt đầu năm tài chính, ghi vào Thông tin đơn vị; số dư đầu kỳ, chứng từ POS tính từ ngày này
   chon: string[]       // id chi nhánh lên sổ
-  khoFree: Record<string, string>   // gói Free: mỗi chi nhánh một kho
+  cnChinh: string      // địa điểm kinh doanh chính, một trong các chi nhánh đã chọn
+  kenhOnline: string[] // kênh bán online lấy từ FABi
+  kenhSan: string[]    // kênh bán qua sàn đã khấu trừ thuế thay
   dongBo: 'chiTiet' | 'kenh'
   gioChot: string
   soDu: 'nhanh' | 'excel' | 'sau'
@@ -84,7 +89,8 @@ export interface Nhap {
 }
 export const MAC_DINH: Nhap = {
   b: -2, mo: false, loai: 'dn', nhom: nhomTheoDt(DT_FABI), ppHkd: 'loiNhuan', goi: goiGoiY('dn', 'loiNhuan'), cheDo: cheDoMoi('dn', goiGoiY('dn', 'loiNhuan')), traCuu: true, ngayDauNam: '01/01/2026', chon: CHI_NHANH.map(c => c.id),
-  khoFree: Object.fromEntries(CHI_NHANH.map(c => [c.id, c.kho[0]])), dongBo: 'kenh', gioChot: '23:30',
+  cnChinh: CHI_NHANH[0].id, kenhOnline: KENH_ONLINE, kenhSan: KENH_SAN,
+  dongBo: 'kenh', gioChot: '23:30',
   soDu: 'nhanh', tienMat: '', tienGui: '',
 }
 
@@ -114,6 +120,7 @@ export function OnboardFabi() {
   const [n, setN] = useState<Nhap>(docNhap)
   const sua = (p: Partial<Nhap>) => setN(x => ({ ...x, ...p }))
   const [tai, setTai] = useState(0)   // phần trăm lấy dữ liệu ở bước hoàn tất
+  const [timCn, setTimCn] = useState('')   // tìm chi nhánh, hiện khi có từ 6 chi nhánh
 
   useEffect(() => { if (n.b >= 0) luuNhap(n) }, [n])
 
@@ -136,7 +143,6 @@ export function OnboardFabi() {
   const nhomGoiY = nhomTheoDt(DT_FABI)
   const free = n.goi === 'F'
   const cnChon = CHI_NHANH.filter(c => n.chon.includes(c.id))
-  const soKho = free ? cnChon.length : cnChon.reduce((t, c) => t + c.kho.length, 0)
   const soCt = demCt(n.chon, n.dongBo, +HOM_NAY - 29 * 86400000)   // ước một tháng, hiện ở bước đồng bộ
   const soCtDaTao = demCt(n.chon, n.dongBo, ngay(n.ngayDauNam))
   const dem = demTheoGoi(n.goi)
@@ -144,7 +150,12 @@ export function OnboardFabi() {
   const ngan = nganCheDo(n.loai, n.cheDo)
   const diemGoi = DIEM_NOI_BAT[n.goi].ds.filter(t => !/TT\d+/.test(t) || t.includes(ngan))
 
-  const doiChon = (id: string) => sua({ chon: n.chon.includes(id) ? n.chon.filter(x => x !== id) : [...n.chon, id] })
+  const doiChon = (id: string) => {
+    const chon = n.chon.includes(id) ? n.chon.filter(x => x !== id) : [...n.chon, id]
+    sua({ chon, cnChinh: chon.includes(n.cnChinh) ? n.cnChinh : chon[0] ?? '' })
+  }
+  const bat = (ds: string[], k: string) => ds.includes(k) ? ds.filter(x => x !== k) : [...ds, k]
+  const doiKenh = (k: string) => { const on = bat(n.kenhOnline, k); sua({ kenhOnline: on, kenhSan: n.kenhSan.filter(x => on.includes(x)) }) }
   const xong = () => {
     set({ goi: n.goi, cheDo: n.cheDo, khoiTao: true, dongBoFabi: n.dongBo,
       ngayDauNam: { ...s.ngayDauNam, [s.donVi]: n.ngayDauNam }, namTaiChinh: { ...s.namTaiChinh, [s.donVi]: Number(n.ngayDauNam.slice(-4)) } })
@@ -276,26 +287,46 @@ export function OnboardFabi() {
 
                     {n.b === 2 && (
                       <>
-                        <h2 className="ktf-h">Chi nhánh và kho</h2>
+                        <h2 className="ktf-h">Chi nhánh</h2>
                         <p className="muted ktf-p">Tích chi nhánh lên sổ kế toán. Chi nhánh bỏ tích vẫn bán trên FABi, chỉ không ghi sổ.</p>
-                        <div className="ktf-cn">
-                          {CHI_NHANH.map(c => {
-                            const on = n.chon.includes(c.id)
-                            return (
-                              <div key={c.id} className={`ktf-cn-dong ${on ? 'on' : ''}`}>
-                                <label className="row grow"><input type="checkbox" checked={on} onChange={() => doiChon(c.id)} />
-                                  <span><b>{c.ten}</b><small className="muted">Cửa hàng trên FABi</small></span></label>
-                                {free
-                                  ? <Select className="inp ktf-kho" value={n.khoFree[c.id]} onChange={e => sua({ khoFree: { ...n.khoFree, [c.id]: e.target.value } })}>
-                                      {c.kho.map(k => <option key={k}>{k}</option>)}
-                                    </Select>
-                                  : <span className="ktf-kho-ds">{c.kho.map(k => <span key={k} className="chip">{k}</span>)}</span>}
-                              </div>
-                            )
-                          })}
+                        <div className="row ktf-cn-dau">
+                          {CHI_NHANH.length >= 6 && (
+                            <div className="ktf-cn-tim"><Icon n="search" className="ic sm" /><input value={timCn} onChange={e => setTimCn(e.target.value)} placeholder="Tìm chi nhánh" /></div>
+                          )}
+                          <span className="muted">Đã chọn {cnChon.length}/{CHI_NHANH.length}</span>
+                          <span className="grow" />
+                          <button className="btn ghost sm" onClick={() => sua({ chon: cnChon.length === CHI_NHANH.length ? [] : CHI_NHANH.map(c => c.id), cnChinh: cnChon.length === CHI_NHANH.length ? '' : n.cnChinh || CHI_NHANH[0].id })}>
+                            {cnChon.length === CHI_NHANH.length ? 'Bỏ chọn tất cả' : 'Chọn tất cả'}
+                          </button>
                         </div>
-                        {free && <Note icon="info">Gói Free dùng một kho cho mỗi chi nhánh. Chọn kho chính, kho còn lại gộp vào kho này.</Note>}
+                        <div className="ktf-cn">
+                          {CHI_NHANH.filter(c => !timCn.trim() || c.ten.toLowerCase().includes(timCn.trim().toLowerCase())).map(c => (
+                            <label key={c.id} className={`ktf-cn-o ${n.chon.includes(c.id) ? 'on' : ''}`}>
+                              <input type="checkbox" checked={n.chon.includes(c.id)} onChange={() => doiChon(c.id)} />
+                              <span>{c.ten}</span>
+                            </label>
+                          ))}
+                        </div>
                         {cnChon.length === 0 && <Note kind="warn" icon="alert">Chọn ít nhất một chi nhánh để tiếp tục.</Note>}
+                        {cnChon.length > 0 && (
+                          <>
+                            <div className="f" style={{ marginTop: 16, maxWidth: 420 }}><label>Địa điểm kinh doanh chính <em>*</em></label>
+                              <Select className="inp" value={n.cnChinh} onChange={e => sua({ cnChinh: e.target.value })}>
+                                {cnChon.map(c => <option key={c.id} value={c.id}>{c.ten}</option>)}
+                              </Select>
+                            </div>
+                            <h3 className="ktf-h3">Kênh bán</h3>
+                            <div className="ktf-kenh">
+                              <label>Kênh bán online</label>
+                              <div>{KENH_ONLINE.map(k => <button key={k} className={`ktf-chip ${n.kenhOnline.includes(k) ? 'on' : ''}`} onClick={() => doiKenh(k)}>{k}<Icon n={n.kenhOnline.includes(k) ? 'x' : 'plus'} className="ic sm" /></button>)}</div>
+                              <label>Kênh bán qua sàn đã khấu trừ thuế</label>
+                              <div>
+                                {KENH_SAN.filter(k => n.kenhOnline.includes(k)).map(k => <button key={k} className={`ktf-chip ${n.kenhSan.includes(k) ? 'on' : ''}`} onClick={() => sua({ kenhSan: bat(n.kenhSan, k) })}>{k}<Icon n={n.kenhSan.includes(k) ? 'x' : 'plus'} className="ic sm" /></button>)}
+                                <small className="muted">Doanh thu qua các sàn này đã được sàn khấu trừ, nộp thuế thay.</small>
+                              </div>
+                            </div>
+                          </>
+                        )}
                       </>
                     )}
 
