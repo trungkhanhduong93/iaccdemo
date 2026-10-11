@@ -6823,3 +6823,15 @@ table.tbl {
   min-width: 40px;
 }
 
+/* ── Danh mục vừa một trang, phân trang (T150) ── */
+/* Danh mục dùng khung một trang nhìn như danh sách chứng từ (.page-voucher): chỉ bảng cuộn, chân phân trang đứng yên.
+   Khung bảng dùng class riêng dm-bang, không dùng voucher-top để bộ kiểm và CSS của danh sách chứng từ không áp nhầm. */
+.page-dm > .dm-khung { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.dm-bang { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; border-radius: 8px; border: 1px solid var(--line); }
+.dm-bang > .thanh-loc,
+.dm-bang > .filters { flex: none; border-bottom: 1px solid var(--line-2); margin-bottom: 0; border-radius: 0; }
+.dm-bang .tbl-wrap { flex: 1; min-height: 0; overflow: auto; }
+.dm-bang > .pt-bar { flex: none; }
+.dm-bang > .empty { flex: 1; }
+.dm-bang > .tbl-foot { flex: none; border-top: 1px solid var(--line-2); }
+.page-dm .tk-tbl-wrap .tbl-wrap { max-height: none; min-height: 0; }

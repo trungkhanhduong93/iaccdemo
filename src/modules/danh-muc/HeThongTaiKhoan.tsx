@@ -391,7 +391,7 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
   const ten = tenMan(sc)
 
   return (
-    <div className="page">
+    <div className="page page-voucher page-dm">
       <PageHead
         title={ten}
         meta={
@@ -402,7 +402,7 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
         }
       />
 
-      <section className="card tk-tbl-wrap">
+      <section className="card dm-bang tk-tbl-wrap">
         <ThanhLoc
           tim={{
             value: q,

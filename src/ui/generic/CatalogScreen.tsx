@@ -7,7 +7,7 @@ import { chiNhanhHienTai, dsKyNam, kyMacDinh, ngayDauNam, truocDauNam, useSessio
 import { CHI_NHANH } from '../../data/mock'
 import { Icon } from '../Icon'
 import { St, Table } from '../Table'
-import { PhanTrang } from '../PhanTrang'
+import { CO_TRANG_DM, PhanTrang } from '../PhanTrang'
 import { fold, nhapSoQT, soQT } from '../format'
 import { Dropdown, MenuItem, Select } from '../Dropdown'
 import { LocO, ThanhLoc } from '../ThanhLoc'
@@ -104,11 +104,13 @@ export function CatalogScreen({ sc }: ScreenProps) {
   const tung = bienHien.map(b => ({ k: b.k, ten: b.ten.charAt(0).toUpperCase() + b.ten.slice(1), nut: b.nut, icon: b.icon }))
   const nutThem = bienHien[0] === cauHinh?.bien?.[0] ? [tung[0], ...hl, ...tung.slice(1)] : [...hl, ...tung]
   const [trang, setTrang] = useState(1)
-  const [coTrang, setCoTrang] = useState(20)
+  const [coTrang, setCoTrang] = useState(dsct ? 20 : 50)   // danh mục thường mặc định 50 dòng/trang (T150)
   const [chon, setChon] = useState<Row | null>(null)
   const [moCt, setMoCt] = useState(false)
   const trangHt = Math.min(trang, Math.max(1, Math.ceil(rowsHien.length / coTrang)))
-  const rowsTrang = useMemo(() => dsct ? rowsHien.slice((trangHt - 1) * coTrang, trangHt * coTrang) : rowsHien, [rowsHien, trangHt, coTrang, dsct])
+  const rowsTrang = useMemo(() => rowsHien.slice((trangHt - 1) * coTrang, trangHt * coTrang), [rowsHien, trangHt, coTrang])
+  // Đổi danh mục, tìm, lọc thì về trang 1 (T150)
+  useEffect(() => { setTrang(1) }, [sc, q, nhom, tichLoc])
   const cong = (ds: Row[]) => Object.fromEntries((dsct?.cotCong ?? []).map(k => [k, ds.reduce((a, r) => a + (Number(r[k]) || 0), 0)]))
   // Dòng đang xem ở khung dưới: dòng đã chọn nếu còn trong danh sách, không thì dòng đầu
   const dangChon = (chon && rowsHien.find(r => r[cols0[0].k] === chon[cols0[0].k])) ?? rowsHien[0]
@@ -118,7 +120,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
         ) } : c)} doRong={cot.doRong} rows={rowsTrang} motDong keDoc onRow={setChon} onDbl={moSua}
         rowCls={r => dangChon && r[cols0[0].k] === dangChon[cols0[0].k] ? 'dang-chon' : ''}
         sum={{ [cols[0].k]: `Tổng: ${rowsTrang.length}`, ...cong(rowsTrang) }} />
-    : <Table cols={cot.colsHien} doRong={cot.doRong} rows={rowsHien} motDong onRow={moSua} />, [dsct, cot.colsHien, cot.doRong, rowsTrang, dangChon, cols0, cols, rowsHien, moSua])
+    : <Table cols={cot.colsHien} doRong={cot.doRong} rows={rowsTrang} motDong onRow={moSua} />, [dsct, cot.colsHien, cot.doRong, rowsTrang, dangChon, cols0, cols, moSua])
   const ten = tenMan(sc)
 
 
@@ -137,11 +139,11 @@ export function CatalogScreen({ sc }: ScreenProps) {
 
 
   return (
-    <div className={dsct ? 'page page-voucher' : 'page'}>
+    <div className={dsct ? 'page page-voucher' : 'page page-voucher page-dm'}>
       <h1 className="sr-only" style={{ position: 'absolute', width: 1, height: 1, padding: 0, margin: -1, overflow: 'hidden', clip: 'rect(0, 0, 0, 0)', whiteSpace: 'nowrap', border: 0 }}>{ten}</h1>
       {cfg.note && <div style={{ marginBottom: 12 }}>{cfg.note(s.goi)}</div>}
-      <div className={dsct ? `voucher-split${moCt ? '' : ' gon-ct'}` : undefined}>
-      <section className={dsct ? 'card voucher-top' : 'card'}>
+      <div className={dsct ? `voucher-split${moCt ? '' : ' gon-ct'}` : 'dm-khung'}>
+      <section className={dsct ? 'card voucher-top' : 'card dm-bang'}>
         {/* Danh sách kiểu chứng từ: thanh công cụ như danh sách thu chi (ô lọc nhãn trên viền, Tuỳ chỉnh cột, Excel, nút thêm có danh sách loại) */}
         {dsct ? (
           <div className="ds-thanh">
@@ -222,9 +224,12 @@ export function CatalogScreen({ sc }: ScreenProps) {
             </div>
           )
         )}
-        {dsct && rows.length > 0 && (
-          <PhanTrang tong={rowsHien.length} tongCong={cong(rowsHien)} trang={trangHt} coTrang={coTrang}
-            onTrang={setTrang} onCoTrang={ct => { setCoTrang(ct); setTrang(1) }} />
+        {rows.length > 0 && (dsct
+          ? <PhanTrang tong={rowsHien.length} tongCong={cong(rowsHien)} trang={trangHt} coTrang={coTrang}
+              onTrang={setTrang} onCoTrang={ct => { setCoTrang(ct); setTrang(1) }} />
+          // Danh mục thường: chỉ đếm dòng, không cộng tiền (T150)
+          : <PhanTrang tong={rowsHien.length} trang={trangHt} coTrang={coTrang} dsCoTrang={CO_TRANG_DM}
+              onTrang={setTrang} onCoTrang={ct => { setCoTrang(ct); setTrang(1) }} />
         )}
       </section>
 

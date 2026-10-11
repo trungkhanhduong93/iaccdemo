@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T150 | Mọi danh mục vừa một trang như danh sách chứng từ: chỉ bảng cuộn, chân bảng cố định có phân trang (mặc định 50, chọn 50, 100, 200, 500, 1000 dòng), Tổng N dòng, số trang; Hệ thống tài khoản không phân trang, chỉ cố định khung và đếm | Trum | Đang làm | Điều phối anti. Sửa `CatalogScreen.tsx`, `PhanTrang.tsx`, `HeThongTaiKhoan.tsx`, `DanhMucChiNhanh.tsx`, `app.css` |
 | T138 | Màn onboard khi bấm từ FABi sang IACC: khởi tạo đơn vị kế toán, điền sẵn từ FABi (chi nhánh, kho, cách đồng bộ, số dư đầu kỳ) | PhuongXT | Dở dang | Popup khởi tạo dữ liệu 4 bước trong phần mềm (`OnboardFabi.tsx`, `Shell.tsx`) đã push, PhuongXT xem lại một lượt. Xem `2026-10-11-phuongxt-man-khoi-tao-fabi.md` |
 | T139 | Phiếu nhập, xuất, điều chuyển kho tự lấy mục chi phí, công việc ngầm định theo kho đã chọn | | Chờ | Tách từ T136. Kho đã có ô `mucCp`, `congViec` ở `truong-dm.ts` 1.8. Sửa `ChungTuForm.tsx` |
 | T140 | Đồng bộ POS có tích tự hạch toán theo phương thức thanh toán thì sinh phiếu thu thật vào danh sách Thu tiền mặt, Thu ngân hàng (hiện chỉ báo số phiếu bằng toast) | | Chờ | Tách từ T137. Phiếu thu Nợ TK của phương thức / Có 131, lấy từ `DS_PTTT` ở `danh-muc/data.ts` |
@@ -42,6 +41,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
 | T150 | Danh sách thẻ chi phí: số thẻ link xanh mở thẻ; thẻ mở ở chế độ xem, bấm Sửa (Ctrl+E) mới sửa, Huỷ về xem như phiếu chi. Thông tin đơn vị: phương pháp thuế GTGT, TNCN, TNDN lên khối Thông tin kê khai, khoá theo loại hình, nhóm doanh thu, gói | dinhlanphuongipacc | 11/10/2026 | `2026-10-11-dinhlanphuongipacc-xem-the-thue.md` |
+| T150 | Mọi danh mục vừa một trang như danh sách chứng từ: chỉ bảng cuộn, chân bảng cố định có phân trang (mặc định 50, chọn 50, 100, 200, 500, 1000 dòng), Tổng N dòng, số trang; Hệ thống tài khoản không phân trang, chỉ cố định khung và đếm | Trum | 11/10/2026 | [2026-10-11-trum-danh-muc-mot-trang](nhat-ky/2026-10-11-trum-danh-muc-mot-trang.md) |
 | T149 | Mọi ô ngày còn gõ tay dd/mm/yyyy dùng lịch `LichDon`: form danh mục, thẻ phân bổ, Ngày đầu năm ở Hệ thống và các màn khác | Trum | 11/10/2026 | [2026-10-11-trum-so-do-danh-muc](nhat-ky/2026-10-11-trum-so-do-danh-muc.md) |
 | T148 | Danh mục: bỏ trường Thuộc nhóm ở 5 danh mục nhóm; tài khoản thêm ô tích Tổng hợp (ô chọn cha đổi tên Thuộc tài khoản); cố định độ rộng cột khi chuyển danh mục; nút Tuỳ chọn cột cho mọi danh mục, đủ trường của form | Trum | 11/10/2026 | [2026-10-11-trum-so-do-danh-muc](nhat-ky/2026-10-11-trum-so-do-danh-muc.md) |
 | T147 | Danh mục lọc theo thông tư chọn ở Hệ thống (gói và thông tư chọn riêng): thông tư không ghi Nợ/Có (TT152, TT58) ẩn Hệ thống tài khoản, Bút toán tự động, cột tài khoản | Trum | 11/10/2026 | [2026-10-11-trum-so-do-danh-muc](nhat-ky/2026-10-11-trum-so-do-danh-muc.md) |

@@ -36,3 +36,9 @@ Lỗi đã từng làm mất thời gian, kèm cách tránh. Đọc trước khi
 - Robot cài thư viện bằng `npm ci`, đọc đúng `package-lock.json`. Thêm thư viện thì chạy `npm install <tên>` và commit cả `package.json` lẫn `package-lock.json`, nếu không robot báo đỏ.
 - Chạy `npm install` không thêm thư viện vẫn có thể làm `package-lock.json` đổi vặt. Không commit thay đổi đó. Cài lại thư viện thì dùng `npm ci`.
 - Xuống dòng: `.gitattributes` để Git tự đổi CRLF và LF. Đừng xoá file này, nếu không máy Windows và máy Mac sẽ đổi xuống dòng của nhau, commit hiện mọi dòng của file là đã đổi dù nội dung giữ nguyên.
+
+## Khung bảng mới mượn class `voucher-top` làm `kiem_tra.py` hết giờ chờ (T150)
+
+- Hiện tượng: `python tools/kiem_tra.py --nhanh` dừng ở `Locator.dblclick: Timeout 30000ms exceeded`, log ghi `<aside class="pn-hop">… intercepts pointer events`.
+- Nguyên nhân: bộ kiểm coi mọi `.voucher-top` có dòng `tr.click` là danh sách chứng từ, bấm dòng rồi bấm đúp. Ở danh mục, bấm dòng mở panel Sửa che mất bảng.
+- Cách tránh: màn không phải danh sách chứng từ dùng class riêng (danh mục dùng `dm-bang`), chỉ mượn khung trang `.page-voucher`.

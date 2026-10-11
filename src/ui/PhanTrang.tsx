@@ -5,11 +5,15 @@ import { Select } from './Dropdown'
 import { money } from './format'
 import { heSoZoom } from './zoom'
 
-export function PhanTrang({ tong, tongCong, trang, coTrang, onTrang, onCoTrang }: {
+/** Số dòng mỗi trang của danh mục (T150) */
+export const CO_TRANG_DM = [50, 100, 200, 500, 1000]
+
+export function PhanTrang({ tong, tongCong, trang, coTrang, dsCoTrang = [20, 50, 100], onTrang, onCoTrang }: {
   tong: number
   tongCong?: Record<string, number>   // tổng mọi trang theo mã cột, số canh thẳng cột của bảng ngay trên (T48)
   trang: number
   coTrang: number
+  dsCoTrang?: number[]   // lựa chọn số dòng mỗi trang; danh mục dùng CO_TRANG_DM (T150)
   onTrang: (trang: number) => void
   onCoTrang: (coTrang: number) => void
 }) {
@@ -82,9 +86,7 @@ export function PhanTrang({ tong, tongCong, trang, coTrang, onTrang, onCoTrang }
         onChange={e => onCoTrang(Number(e.target.value))}
         aria-label="Số dòng mỗi trang"
       >
-        <option value="20">20/trang</option>
-        <option value="50">50/trang</option>
-        <option value="100">100/trang</option>
+        {dsCoTrang.map(n => <option key={n} value={n}>{n}/trang</option>)}
       </Select>
       <div className="pt-nav">
         <button

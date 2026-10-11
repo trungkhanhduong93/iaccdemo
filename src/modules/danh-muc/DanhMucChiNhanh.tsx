@@ -10,6 +10,7 @@ import { CHI_NHANH, DON_VI } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
 import { Note, PageHead } from '../../ui/Page'
 import { Table } from '../../ui/Table'
+import { CO_TRANG_DM, PhanTrang } from '../../ui/PhanTrang'
 import { NutTuyChinhCot, useCotDs } from '../../ui/LocNangCao'
 import { cuaHangChuaDung } from '../onboarding/cua-hang-fabi'
 import { DsChiNhanh } from '../onboarding/OnboardFabi'
@@ -43,6 +44,11 @@ export function DanhMucChiNhanh({ sc, mod }: ScreenProps) {
   ], [free])
 
   const cot = useCotDs('/danh-muc/chi-nhanh', colsGoc, COT_CO_DINH)
+  // Phân trang như danh mục khác: mặc định 50 dòng/trang (T150)
+  const [trang, setTrang] = useState(1)
+  const [coTrang, setCoTrang] = useState(50)
+  const trangHt = Math.min(trang, Math.max(1, Math.ceil(rows.length / coTrang)))
+  const rowsTrang = rows.slice((trangHt - 1) * coTrang, trangHt * coTrang)
 
   const lenSo = (ds: CnThem[], khaiSoDu: boolean) => {
     set({ cnThem: { ...s.cnThem, [s.donVi]: [...them, ...ds] } })
@@ -52,15 +58,17 @@ export function DanhMucChiNhanh({ sc, mod }: ScreenProps) {
   }
 
   return (
-    <div className="page">
+    <div className="page page-voucher page-dm">
       <PageHead crumb={[mod.ten]} title={tenMan(sc)}>
         <NutTuyChinhCot cols={cot.colsDu} an={cot.an} coDinh={COT_CO_DINH} macDinh={cot.macDinh} dongBang={cot.dongBang}
           onLuu={cot.luu} onDoRongTuDong={cot.datDoRongTuDong} />
         <button type="button" className="btn pri" onClick={() => setMo(true)}><Icon n="plus" className="ic sm" />Thêm chi nhánh từ FABi</button>
       </PageHead>
       {s.goi === 'F' && <Note icon="info">Gói Free: mỗi chi nhánh tự có một kho mặc định theo iPOS Inventory, không cần khai báo kho.</Note>}
-      <section className="card">
-        <Table cols={cot.colsHien} doRong={cot.doRong} rows={rows} />
+      <section className="card dm-bang">
+        <Table cols={cot.colsHien} doRong={cot.doRong} rows={rowsTrang} />
+        <PhanTrang tong={rows.length} trang={trangHt} coTrang={coTrang} dsCoTrang={CO_TRANG_DM}
+          onTrang={setTrang} onCoTrang={ct => { setCoTrang(ct); setTrang(1) }} />
       </section>
       {mo && <HopThemChiNhanh onDong={() => setMo(false)} onLenSo={lenSo} />}
     </div>
