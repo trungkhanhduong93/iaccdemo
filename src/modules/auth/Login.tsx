@@ -56,7 +56,7 @@ export function Login() {
           <p style={{ marginTop: 22, fontSize: 13, color: 'var(--muted)', textAlign: 'center' }}>
             Chưa có tài khoản? <Link to="/khoi-tao" style={{ fontWeight: 600 }}>Dùng thử gói Free</Link>
           </p>
-          <p style={{ marginTop: 6, fontSize: 12, color: 'var(--faint)', textAlign: 'center' }}>Bản mẫu: gõ mật khẩu bất kỳ từ 6 ký tự.</p>
+          <p style={{ marginTop: 6, fontSize: 12, color: 'var(--faint)', textAlign: 'center' }}>Bản mẫu: gõ mật khẩu bất kỳ từ 6 ký tự. <Link to="/khoi-tao-fabi">Thử mở từ FABi</Link></p>
         </form>
       </div>
     </div>

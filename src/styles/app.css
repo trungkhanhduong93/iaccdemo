@@ -6647,3 +6647,43 @@ table.tbl {
   gap: 8px;
 }
 
+/* ── Khởi tạo khi mở từ FABi (T138) ── */
+.ktf { min-height: 100vh; background: var(--bg); padding: 32px 40px; }
+.ktf-in { max-width: 1060px; margin: 0 auto; }
+.ktf-dau { margin-bottom: 24px; gap: 12px; }
+.ktf-luu { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; }
+.ktf-luoi { display: grid; grid-template-columns: minmax(0, 1fr) 290px; gap: 18px; align-items: start; }
+.ktf-h { color: var(--ink); font-size: 20px; }
+.ktf-h3 { color: var(--ink); font-size: 14px; margin: 20px 0 10px; }
+.ktf-p { margin: 4px 0 18px; }
+.ktf-chao { max-width: 560px; margin: 40px auto 0; padding: 36px 40px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.ktf-chao h1 { color: var(--ink); font-size: 24px; margin: 0; }
+.ktf-chao p { margin: 0; }
+.ktf-chao-ic { width: 56px; height: 56px; border-radius: 16px; display: grid; place-items: center; background: var(--tint); color: var(--blue); }
+.ktf-chao-ic.ok { background: var(--green-t); color: var(--green); }
+.ktf-nhan { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; width: 100%; padding: 14px; border-radius: 12px; background: var(--soft); margin: 6px 0; }
+.ktf-nhan > span { grid-column: 1 / -1; font-size: 12px; text-align: left; }
+.ktf-nhan div { font-size: 12.5px; color: var(--muted); }
+.ktf-nhan b { display: block; font-size: 22px; color: var(--ink); }
+.ktf-cn { display: flex; flex-direction: column; gap: 8px; }
+.ktf-cn-dong { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1.5px solid var(--line); border-radius: 12px; opacity: .6; }
+.ktf-cn-dong.on { border-color: var(--blue); background: #f2f7fb; opacity: 1; }
+.ktf-cn-dong label { gap: 10px; cursor: pointer; }
+.ktf-cn-dong label span { display: flex; flex-direction: column; }
+.ktf-cn-dong b { color: var(--ink); }
+.ktf-cn-dong small { font-size: 12px; }
+.ktf-kho { width: 220px; }
+.ktf-kho-ds { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+.ktf-xem { display: flex; gap: 10px; align-items: center; margin-top: 16px; padding: 12px 14px; border-radius: 10px; background: var(--soft); font-size: 13px; }
+.ktf-xem b { color: var(--ink); }
+.ktf-tha { margin-top: 16px; padding: 22px; border-style: dashed; text-align: center; box-shadow: none; }
+.ktf-tha p { margin: 8px 0 12px; }
+.ktf-ben { padding: 20px; position: sticky; top: 20px; display: flex; flex-direction: column; gap: 12px; }
+.ktf-ben h3 { color: var(--ink); font-size: 14px; margin: 0; }
+.ktf-ben ul, .ktf-viec { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 9px; }
+.ktf-ben li, .ktf-viec li { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; }
+.ktf-ben li .ic { margin-top: 2px; color: var(--blue); flex: none; }
+.ktf-viec { text-align: left; margin: 4px 0 8px; }
+.ktf-tai { width: 100%; height: 8px; border-radius: 4px; background: var(--line); overflow: hidden; margin: 8px 0 2px; }
+.ktf-tai i { display: block; height: 100%; background: var(--blue); transition: width .12s linear; }
+@media (max-width: 900px) { .ktf { padding: 20px 16px; } .ktf-luoi { grid-template-columns: 1fr; } .ktf-ben { position: static; } .ktf-nhan { grid-template-columns: repeat(2, 1fr); } }

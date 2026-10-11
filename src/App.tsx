@@ -5,6 +5,7 @@ import { HomeRedirect, NotFound, ScreenRoute } from './app/Screen'
 import { Login, QuenMatKhau } from './modules/auth/Login'
 import { ChonDonVi } from './modules/auth/ChonDonVi'
 import { KhoiTao } from './modules/onboarding/KhoiTao'
+import { KhoiTaoFabi } from './modules/onboarding/KhoiTaoFabi'
 
 export default function App() {
   return (
@@ -16,6 +17,7 @@ export default function App() {
           <Route path="/quen-mat-khau" element={<QuenMatKhau />} />
           <Route path="/chon-don-vi" element={<ChonDonVi />} />
           <Route path="/khoi-tao" element={<KhoiTao />} />
+          <Route path="/khoi-tao-fabi" element={<KhoiTaoFabi />} />
           <Route path="/app" element={<Shell />}>
             <Route index element={<HomeRedirect />} />
             <Route path=":mod" element={<ScreenRoute />} />
