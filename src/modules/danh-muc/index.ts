@@ -240,7 +240,8 @@ const danhMuc: ModuleDef = {
         ['BT07', 'Mua nguyên vật liệu chưa trả tiền', 'Phiếu mua hàng', 'Nhóm nhà cung cấp Thịt, cá; Tinh bột; Pha chế', '152', '331', 'Tiền hàng chưa thuế'],
         ['BT07', 'Mua nguyên vật liệu chưa trả tiền', 'Phiếu mua hàng', 'Nhóm nhà cung cấp Thịt, cá; Tinh bột; Pha chế', '1331', '331', 'Tiền thuế GTGT'],
       ].map(([ma, ten, lct, loc, no, co, tien]) => ({ ma, ten, lct, loc, no: tkTheoCheDo(no, cd).so, co: tkTheoCheDo(co, cd).so, tien })) } },
-    '1.16': { catalog: { them: 'Thêm lý do', nhomLoc: 'dung', nhanLoc: 'Dùng cho', cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Lý do' }, { k: 'dung', t: 'Dùng cho' }],
+    '1.16': { catalog: { them: 'Thêm lý do', locGoi: (goi, r) => goi !== 'F' || r.dung === 'Phiếu thu' || r.dung === 'Phiếu chi',   // gói Free chỉ lý do thu, chi (T144)
+      nhomLoc: 'dung', nhanLoc: 'Dùng cho', cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Lý do' }, { k: 'dung', t: 'Dùng cho' }],
       rows: () => LY_DO } },
   }, NGAN).map(sc => ({ ...sc, icon: BIEU_TUONG[sc.code ?? ''] ?? sc.icon })).flatMap(sc => {
     if (sc.code === '1.2') return [sc, nhomHangHoa]

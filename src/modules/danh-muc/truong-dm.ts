@@ -12,6 +12,9 @@ export type KieuTruong = 'chu' | 'so' | 'tien' | 'chon' | 'chonNhieu' | 'tich' |
 /** Đơn vị tính hiện mã và tên trong ô chọn, vd "KG - kg"; giá trị lưu vẫn là tên (T144) */
 const nhanDvt = (ten: string) => { const d = DON_VI_TINH.find(x => x[1] === ten); return d ? `${d[0]} - ${d[1]}` : ten }
 
+/** Loại lý do hiện trong ô chọn (T144) */
+const nhanLyDo = (v: string) => ({ 'Phiếu thu': 'Thu tiền', 'Phiếu chi': 'Chi tiền', 'Phiếu nhập kho': 'Nhập kho', 'Phiếu xuất kho': 'Xuất kho' } as Record<string, string>)[v] ?? v
+
 export interface TruongDM {
   k: string
   nhan: string
@@ -581,7 +584,9 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
         truong: [
           { k: 'ma', nhan: 'Mã lý do', kieu: 'chu', batBuoc: true },
           { k: 'ten', nhan: 'Lý do nghiệp vụ', kieu: 'chu', batBuoc: true, caHang: true },
-          { k: 'dung', nhan: 'Dùng cho nghiệp vụ', kieu: 'chon', ds: ['Thu tiền', 'Chi tiền', 'Nhập kho', 'Xuất kho'], batBuoc: true },
+          // giá trị lưu theo dữ liệu (Phiếu thu, Phiếu chi...), ô chọn hiện Thu tiền, Chi tiền...; gói Free chỉ lý do thu, chi (T144)
+          { k: 'dung', nhan: 'Dùng cho nghiệp vụ', kieu: 'chon', ds: ['Phiếu thu', 'Phiếu chi'], nhanDs: nhanLyDo, batBuoc: true, goi: ['F'] },
+          { k: 'dung', nhan: 'Dùng cho nghiệp vụ', kieu: 'chon', ds: ['Phiếu thu', 'Phiếu chi', 'Phiếu nhập kho', 'Phiếu xuất kho'], nhanDs: nhanLyDo, batBuoc: true, goi: ['S', 'PL', 'PR'] },
         ],
       },
       {
