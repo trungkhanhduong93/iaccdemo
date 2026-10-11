@@ -1,4 +1,4 @@
-// Sơ đồ nghiệp vụ tiền kiểu hội tụ: thu tiền, chi tiền (tiền mặt và ngân hàng), chuyển quỹ, đối chiếu công nợ, phân bổ chi phí chuỗi cùng đổ về sổ sách quỹ
+// Sơ đồ nghiệp vụ tiền kiểu hội tụ: số dư đầu kỳ, thu tiền, chi tiền (tiền mặt và ngân hàng), chuyển quỹ, đối chiếu công nợ, phân bổ chi phí chuỗi cùng đổ về sổ sách quỹ
 import type { QuyTrinhDef } from '../types'
 
 export const quyTrinh: QuyTrinhDef = {
@@ -6,6 +6,11 @@ export const quyTrinh: QuyTrinhDef = {
   buoc: [],
   hoiTu: {
     lan: [
+      // Gói Free khai số dư tiền ở Thu chi, gói khác ở Tổng hợp 10.1.3; mỗi gói chỉ thấy một ô (T141)
+      { ten: 'Số dư đầu kỳ', tone: 'info', nut: [
+        { ten: 'Số dư ban đầu', icon: 'db', di: 'tien/so-du-ban-dau' },
+        { ten: 'Số dư ban đầu', icon: 'db', di: 'tong-hop/10-1-3' },
+      ] },
       { ten: 'Thu tiền', tone: 'ok', nut: [
         { ten: 'Thu tiền mặt', icon: 'cashin', di: 'tien/2-1-1/moi?loai=thu' },
         { ten: 'Thu ngân hàng', icon: 'bank', di: 'tien/2-1-1/moi?loai=bc' },

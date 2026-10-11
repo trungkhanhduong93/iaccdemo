@@ -18,6 +18,7 @@
 - `THEO_ROADMAP` (`src/app/plan.ts`) mở 10.1.3 cho gói Standard.
 - Khai số dư trực tiếp trên bảng (PhuongXT yêu cầu): Thêm mới chèn một dòng trống, ô tên là ô chọn quỹ, khách hàng, nhà cung cấp, hàng hoặc tài khoản chưa có số dư; ô số tiền (Số dư, hoặc Dư Nợ, Dư Có) và ô số lượng tồn gõ thẳng, dòng tổng cộng lại ngay. Mỗi dòng có nút xoá, bấm thì hỏi lại bằng `HopXacNhan` rồi mới xoá. Danh sách tài khoản chọn được bỏ loại 5 đến 9 vì không có số dư cuối kỳ. Dữ liệu giữ trong màn, tải lại trang về mẫu.
 - `docs/KIEN-TRUC.md`: ghi cách dùng trường `goi`.
+- Sơ đồ Thu chi (`src/modules/tien/quy-trinh.ts`) thêm làn Số dư đầu kỳ đứng đầu: ô tới `tien/so-du-ban-dau` (gói Free) và ô tới `tong-hop/10-1-3` (gói khác). `QuyTrinhScreen.tsx` bỏ ô tới màn khai `goi` không gồm gói đang dùng, để mỗi gói chỉ thấy một ô.
 
 ## Đã kiểm
 

@@ -19,8 +19,12 @@ const TOP = 8         // khoảng từ mép hàng tới ô biểu tượng
 export function QuyTrinhScreen({ mod }: ScreenProps) {
   const { s, set } = useSession()
   const an = anNgoaiGoi(s.goi)
-  // Gói Free bỏ ô ngoài gói, làn trống, bước trống (QD22)
-  const hien = (n: NutQT) => !an || moNut(n, s.goi).ok
+  // Gói Free bỏ ô ngoài gói, làn trống, bước trống (QD22); ô tới màn chỉ có ở gói khác (khai goi, T141) thì gói nào cũng bỏ
+  const hien = (n: NutQT) => {
+    const m = moNut(n, s.goi)
+    if (m.sc?.goi && !m.sc.goi.includes(s.goi)) return false
+    return !an || m.ok
+  }
   const goc0 = mod.quyTrinh!
   // Gói Free có sơ đồ hội tụ riêng thì thay sơ đồ chung (T98)
   const goc: QuyTrinhDef = s.goi === 'F' && goc0.hoiTuFree ? { ...goc0, buoc: [], hoiTu: goc0.hoiTuFree } : goc0
