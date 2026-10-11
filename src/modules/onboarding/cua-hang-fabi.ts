@@ -14,6 +14,10 @@ export const CUA_HANG_FABI: CuaHangFabi[] = [
   { id: 'cg', ten: 'Phố Mây Cầu Giấy', khuVuc: 'Hà Nội' },
 ]
 
-/** Cửa hàng FABi chưa dùng kế toán ở đơn vị nào, kể cả cửa hàng đã lên sổ thêm trong phiên */
-export const cuaHangChuaDung = (s: Pick<Session, 'cnThem'>) =>
-  CUA_HANG_FABI.filter(c => !c.donVi && !Object.values(s.cnThem ?? {}).some(ds => ds.some(x => x.id === c.id)))
+/** Cửa hàng FABi chưa dùng kế toán ở đơn vị nào, kể cả cửa hàng đã lên sổ thêm trong phiên.
+ *  Đơn vị dùng thử từ FABi (fabi) là tài khoản FABi khác: chỉ có các chi nhánh Phố Mây, chưa dùng là cửa hàng bỏ tích lúc dùng thử */
+export const cuaHangChuaDung = (s: Pick<Session, 'cnThem' | 'donVi'>): CuaHangFabi[] => {
+  const daDung = (id: string) => Object.values(s.cnThem ?? {}).some(ds => ds.some(x => x.id === id))
+  if (s.donVi === 'fabi') return CHI_NHANH.filter(c => !(s.cnThem?.fabi ?? []).some(x => x.id === c.id)).map(c => ({ id: c.id, ten: c.ten, khuVuc: 'TP.HCM' }))
+  return CUA_HANG_FABI.filter(c => !c.donVi && !daDung(c.id))
+}

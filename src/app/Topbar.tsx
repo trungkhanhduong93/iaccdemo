@@ -1,10 +1,10 @@
 // Thanh trên: đơn vị kế toán, chi nhánh làm việc, nút "Trải nghiệm gói" đổi gói, tài khoản. Vai trò lấy theo tài khoản đăng nhập.
 // Tìm nhanh nằm ở sidebar; kỳ chọn ở bộ lọc từng màn.
 import { useNavigate } from 'react-router-dom'
-import { chiNhanhHienTai, donViHienTai, dsDonVi, useSession, cheDoHienTai } from './session'
+import { donViHienTai, dsChiNhanh, dsDonVi, useSession, cheDoHienTai } from './session'
 import { cheDoCuaGoi } from './che-do'
 import { GOI, GOIS, demTheoGoi } from './plan'
-import { CHI_NHANH, ROLE } from '../data/mock'
+import { ROLE } from '../data/mock'
 import { Icon } from '../ui/Icon'
 import { Pk } from '../ui/Page'
 import { Dropdown, MenuHead, MenuItem, MenuSep } from '../ui/Dropdown'
@@ -16,7 +16,8 @@ export function Topbar({ onSearch }: { onSearch?: () => void }) {
   const nav = useNavigate()
   const dv = donViHienTai(s)
   const themDv = useThemDonVi()
-  const cn = chiNhanhHienTai(s)
+  const dsCn = dsChiNhanh(s)
+  const cn = dsCn.find(c => c.id === s.chiNhanh)
   const ten = s.ten.split(' ').slice(-2).map(x => x[0]).join('')
 
   return (
@@ -57,10 +58,10 @@ export function Topbar({ onSearch }: { onSearch?: () => void }) {
       <Dropdown btnClass="cn-btn" align="end" width={300} title="Chọn chi nhánh làm việc. Chứng từ thêm mới lập cho chi nhánh này"
         label={<><Icon n="store" className="ic sm" /><span className="cn-t"><small>Chi nhánh</small><b>{cn ? cn.ten : 'Tất cả chi nhánh'}</b></span><Icon n="chevd" className="ic sm" /></>}>
         {dong => <>
-          <MenuHead right={<small className="mh-n">{CHI_NHANH.length} chi nhánh</small>}>Chi nhánh làm việc</MenuHead>
+          <MenuHead right={<small className="mh-n">{dsCn.length} chi nhánh</small>}>Chi nhánh làm việc</MenuHead>
           <MenuItem on={!cn} icon="layers" desc="Chỉ xem gộp, chưa lập chứng từ" onClick={() => { set({ chiNhanh: 'all' }); dong() }}>Tất cả chi nhánh</MenuItem>
           <MenuSep />
-          {CHI_NHANH.map(c => (
+          {dsCn.map(c => (
             <MenuItem key={c.id} on={c.id === s.chiNhanh} icon="store" onClick={() => { set({ chiNhanh: c.id }); dong() }}>{c.ten}</MenuItem>
           ))}
           <MenuSep />

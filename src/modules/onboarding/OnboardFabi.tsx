@@ -22,7 +22,7 @@ export const SO_KENH = 3   // Tại quán, Mang về, App giao đồ ăn (T113)
 const DT_FABI = 29_000_000_000   // doanh thu 12 tháng lấy từ FABi
 
 /** Cửa hàng hiện ở bước Chi nhánh: dùng thử từ FABi là đơn vị mới nên có mọi chi nhánh; thêm đơn vị chỉ có cửa hàng chưa dùng kế toán */
-const dsCuaHang = (kieu: Nhap['kieu'], s: Pick<Session, 'cnThem'>): CuaHangFabi[] => kieu === 'them' ? cuaHangChuaDung(s) : CHI_NHANH.map(c => ({ id: c.id, ten: c.ten, khuVuc: 'TP.HCM' }))
+const dsCuaHang = (kieu: Nhap['kieu'], s: Pick<Session, 'cnThem' | 'donVi'>): CuaHangFabi[] => kieu === 'them' ? cuaHangChuaDung(s) : CHI_NHANH.map(c => ({ id: c.id, ten: c.ten, khuVuc: 'TP.HCM' }))
 /** Kênh bán online trên FABi; KENH_SAN là sàn giao đồ ăn khấu trừ, nộp thuế thay cho hộ, doanh nghiệp bán qua sàn (T138) */
 const KENH_ONLINE = ['GrabFood', 'ShopeeFood', 'Be', 'Zalo', 'Facebook', 'CRM', 'Call center', 'Giao hàng']
 const KENH_SAN = ['GrabFood', 'ShopeeFood', 'Be']

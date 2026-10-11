@@ -23,7 +23,9 @@ export function KhoiTaoFabi() {
   const vaoApp = () => {
     // đơn vị mới từ FABi, không đụng 3 đơn vị mẫu: tên theo FABi, chưa có mã số thuế, địa chỉ (FABi không có)
     const dvMoi: DonVi = { id: 'fabi', ten: TEN_FABI, viettat: 'PM', mst: '', goi: 'F', diaChi: '', diem: chon.length, nguoiDaiDien: '' }
-    set({ loggedIn: true, goi: 'F', cheDo: 'TT152', donVi: dvMoi.id, dvMoi, khoiTao: true, chiNhanh: 'all' })
+    // chi nhánh của đơn vị mới là các cửa hàng chọn dùng thử; khởi tạo xong popup ghi lại theo bước Chi nhánh
+    const cnThem = CHI_NHANH.filter(c => chon.includes(c.id)).map(c => ({ id: c.id, ten: c.ten, khuVuc: 'TP.HCM', tuNgay: '', banDau: true }))
+    set({ loggedIn: true, goi: 'F', cheDo: 'TT152', donVi: dvMoi.id, dvMoi, khoiTao: true, chiNhanh: 'all', cnThem: { ...s.cnThem, [dvMoi.id]: cnThem } })
     nav('/app')
   }
   // cửa hàng chọn dùng thử điền sẵn vào bước Chi nhánh của popup

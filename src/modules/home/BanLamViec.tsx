@@ -1,7 +1,7 @@
 // Bàn làm việc của kế toán: luồng POS → vùng đệm → sổ → đối soát, việc cần xử lý, tiến độ khoá sổ
 import { Link } from 'react-router-dom'
 import type { ScreenProps } from '../types'
-import { useSession } from '../../app/session'
+import { dsChiNhanh, useSession } from '../../app/session'
 import { coTrongGoi, kieuGhiSo, minGoi } from '../../app/plan'
 import { DONG_BO, KY_KHOA_SO, LECH, daysOf } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
@@ -50,7 +50,7 @@ export function BanLamViec({ sc }: ScreenProps) {
       </PageHead>
 
       <section className="card" style={{ marginBottom: 14 }}>
-        <div className="card-h"><h3>Từ đơn POS tới sổ hôm nay</h3><span className="sub">07/10/2026 · 3 chi nhánh · đồng bộ mỗi 15 phút</span></div>
+        <div className="card-h"><h3>Từ đơn POS tới sổ hôm nay</h3><span className="sub">07/10/2026 · {dsChiNhanh(s).length} chi nhánh · đồng bộ mỗi 15 phút</span></div>
         <div className="flow">
           {([['pos', 'Đơn POS về', money(don), 'FABi, tới 14:20', ''], ['db', 'Vùng đệm', money(don), 'Chưa đụng vào sổ', ''],
             ['shield', 'Kiểm tra', money(don - loi), `${loi} đơn lỗi`, 'down'], ['book', 'Đã ghi sổ', money(don - loi), '3 chứng từ bán hàng', ''],

@@ -113,6 +113,11 @@ export const donViHienTai = (s: Session) => dsDonVi(s).find(d => d.id === s.donV
 export const cheDoHienTai = (s: Session) => CHE_DO[s.cheDo]
 /** Chi nhánh đang chọn trên thanh trên; undefined khi đang xem tất cả chi nhánh */
 export const chiNhanhHienTai = (s: Session) => CHI_NHANH.find(c => c.id === s.chiNhanh)
+/** Chi nhánh của đơn vị đang làm việc: đơn vị mẫu có 3 chi nhánh mẫu; đơn vị mới từ FABi chỉ có cửa hàng đã chọn; cộng chi nhánh lên sổ thêm (T142) */
+export const dsChiNhanh = (s: Pick<Session, 'donVi' | 'cnThem'>): { id: string; ten: string }[] => [
+  ...(DON_VI.some(d => d.id === s.donVi) ? CHI_NHANH.map(c => ({ id: c.id, ten: c.ten })) : []),
+  ...(s.cnThem?.[s.donVi] ?? []).map(c => ({ id: c.id, ten: c.ten })),
+]
 
 
 /** Năm tài chính của đơn vị đang làm việc; chưa khai thì năm hiện tại */

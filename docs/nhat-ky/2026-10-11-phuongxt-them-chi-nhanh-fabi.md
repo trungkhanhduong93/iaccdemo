@@ -14,6 +14,8 @@
 - `src/modules/home/BanLamViec.tsx`: việc cần xử lý "FABi có N cửa hàng mới chưa lên sổ kế toán", nút Lên sổ mở thẳng hộp chọn (`/app/danh-muc/chi-nhanh?them=1`).
 - Màn giới thiệu khi mở từ FABi (`KhoiTaoFabi.tsx`, thuộc T138) có Chọn cửa hàng dùng thử, mặc định tất cả; cửa hàng chọn điền sẵn bước Chi nhánh của popup, khởi tạo xong thành chi nhánh của đơn vị mới. Thêm đơn vị kế toán cũng ghi chi nhánh đã chọn vào `cnThem`, để cửa hàng đó không còn hiện là chưa dùng.
 
+- Chi nhánh theo đơn vị (`dsChiNhanh` ở `session.tsx`): thanh chọn chi nhánh, số chi nhánh ở Bàn làm việc đọc theo đơn vị; đơn vị dùng thử ghi chi nhánh đã chọn ngay khi bấm Dùng thử. Đơn vị dùng thử coi là tài khoản FABi riêng: cửa hàng chưa lên sổ là cửa hàng bỏ tích lúc dùng thử.
+
 ## Đã kiểm
 
 - `npm run typecheck`, `npm run build`: không lỗi.
@@ -25,7 +27,7 @@
 
 ## Dở dang, việc tiếp theo
 
-- Thanh chọn chi nhánh trên cùng, số liệu doanh thu vẫn dùng 3 chi nhánh mẫu cho mọi đơn vị; chi nhánh lên sổ thêm chưa có số bán mẫu.
+- Số liệu doanh thu, chứng từ vẫn dùng 3 chi nhánh mẫu; chi nhánh lên sổ thêm chưa có số bán mẫu, chọn chi nhánh đó trên thanh trên thì số liệu hiện như xem tất cả.
 - Chi nhánh lên sổ thêm, số dư sửa trên màn chỉ giữ trong phiên trình duyệt.
 
 ## Bẫy, quyết định mới
