@@ -1,5 +1,5 @@
 // Màn danh mục chung: bảng có tìm kiếm, lọc nhóm, ngăn kéo thêm và sửa (T70)
-import { useCallback, useDeferredValue, useEffect, useMemo, useState } from 'react'
+import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useLocation, useSearchParams } from 'react-router-dom'
 import type { Col, Row, ScreenProps } from '../../modules/types'
 import { tenMan } from '../../app/registry'
@@ -105,7 +105,9 @@ export function CatalogScreen({ sc }: ScreenProps) {
   // Thứ tự, ẩn hiện, độ rộng cột lưu theo màn như danh sách chứng từ
   const cot = useCotDs(`/danh-muc/${sc.slug}`, cols, COT_CO_DINH)
   const bang = useMemo(() => dsct
-    ? <Table cols={cot.colsHien} doRong={cot.doRong} rows={rowsTrang} motDong keDoc onRow={setChon} onDbl={moSua}
+    ? <Table cols={cot.colsHien.map(c => c.k === dsct.cotSo ? { ...c, r: (r: Row) => (
+          <button type="button" className="ds-link-so" title={String(r[c.k] ?? '')} onClick={e => { e.stopPropagation(); moSua(r) }}>{r[c.k]}</button>
+        ) } : c)} doRong={cot.doRong} rows={rowsTrang} motDong keDoc onRow={setChon} onDbl={moSua}
         rowCls={r => dangChon && r[cols0[0].k] === dangChon[cols0[0].k] ? 'dang-chon' : ''}
         sum={{ [cols[0].k]: `Tổng: ${rowsTrang.length}`, ...cong(rowsTrang) }} />
     : <Table cols={cols} rows={rowsHien} motDong onRow={moSua} />, [cols, cot.colsHien, cot.doRong, rowsHien, rowsTrang, moSua, dangChon])
@@ -355,6 +357,16 @@ export function CatalogPanel({
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [moKhoi, setMoKhoi] = useState<Record<string, boolean>>({})
   const [tab, setTab] = useState('')
+  // Form toàn màn hình mở dòng có sẵn: chỉ xem như phiếu chi, bấm Sửa (Ctrl+E) mới sửa; Huỷ khi đang sửa thì về xem, bỏ thay đổi
+  const [xem, setXem] = useState(Boolean(cauHinh?.toanMan && dangSua))
+  const goc = useRef(formVal)
+  useEffect(() => {
+    if (!xem) return
+    const onKey = (e: KeyboardEvent) => { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'e') { e.preventDefault(); setXem(false) } }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [xem])
+  const huySua = () => { setFormVal(goc.current); setErrors({}); setXem(true) }
   const [hoi, setHoi] = useState<{ tieuDe: string; hoi: string; sua: Record<string, any>; themTiep: boolean; luu?: boolean } | null>(null)
 
   // Khung panel hiện ngay, thân nhiều trường vẽ ở khung hình sau để bấm mở không bị khựng (T81)
@@ -627,7 +639,7 @@ export function CatalogPanel({
         <FormToanMan
           icon={cauHinh.toanMan.icon}
           onClose={onDong}
-          title={dangSua ? `Sửa ${tenNganHien}` : `Thêm ${tenNganHien}`}
+          title={tenNganHien.charAt(0).toUpperCase() + tenNganHien.slice(1)}
           meta={(
             <>
               {(edit.cn ?? cnChon?.ten) && (
@@ -637,11 +649,20 @@ export function CatalogPanel({
               )}
             </>
           )}
-          giua={dangSua ? <span className="fsf-tt sua">Đang chỉnh sửa <b>{edit.soThe ?? edit.ma}</b></span> : <span className="fsf-tt moi">Thêm mới</span>}
-          foot={(
+          giua={!dangSua ? <span className="fsf-tt moi">Thêm mới</span>
+            : xem ? <span className="fsf-tt xem">Chi tiết {tenNganHien} <b>{edit.soThe ?? edit.ma}</b></span>
+              : <span className="fsf-tt sua">Đang chỉnh sửa <b>{edit.soThe ?? edit.ma}</b></span>}
+          foot={xem ? (
             <>
               {nutPhu}
-              <button type="button" className="btn" onClick={onDong}>Huỷ</button>
+              <span className="grow" />
+              <button type="button" className="btn sm pri" onClick={() => setXem(false)}><Icon n="edit" className="ic sm" />Sửa (Ctrl+E)</button>
+              <button type="button" className="btn sm" onClick={onDong}>Đóng (Esc)</button>
+            </>
+          ) : (
+            <>
+              {nutPhu}
+              <button type="button" className="btn" onClick={dangSua ? huySua : onDong}>Huỷ</button>
               <span className="grow" />
               <button type="button" className="btn" onClick={() => handleLuu(false)}>Lưu</button>
               {!anNutThemTiep && <button type="button" className="btn pri" onClick={() => handleLuu(true)}>Lưu và thêm</button>}
@@ -651,7 +672,8 @@ export function CatalogPanel({
           <div className="pn-hop pn-trong">
             <div className="pn-than">
               {/* Các khối theo thứ tự khai báo; các khối lưới liền nhau gộp thành một khung tab, thêm tab Lịch sử, như phiếu chi */}
-              {editThan && dsKhoi.map((kh, i) => !kh.bang ? veKhoi(kh) : dsKhoi.findIndex(k => k.bang) === i && (
+              {/* Chế độ xem: fieldset disabled khoá mọi ô nhập, nút trong khối; tab, thu gọn khối vẫn bấm được */}
+              {editThan && dsKhoi.map((kh, i) => !kh.bang ? <fieldset key={kh.ten} className="pn-fs" disabled={xem}>{veKhoi(kh)}</fieldset> : dsKhoi.findIndex(k => k.bang) === i && (
                 <div key="tab" className="pn-khoi mo pn-duoi">
                   <div className="tabs">
                     {[...dsKhoi.filter(kh => kh.bang).map(kh => kh.ten), 'Lịch sử'].map(t => (
@@ -661,7 +683,7 @@ export function CatalogPanel({
                   <div className="pn-khoi-than">
                     {tabTm === 'Lịch sử'
                       ? <LichSu goi={s.goi} moi={!dangSua} man={`${scSlug}`} id={String(edit.ma ?? '')} />
-                      : (() => { const kh = dsKhoi.find(k => k.ten === tabTm); return kh && veBang(kh, 0) })()}
+                      : (() => { const kh = dsKhoi.find(k => k.ten === tabTm); return kh && <fieldset className="pn-fs" disabled={xem}>{veBang(kh, 0)}</fieldset> })()}
                   </div>
                 </div>
               ))}

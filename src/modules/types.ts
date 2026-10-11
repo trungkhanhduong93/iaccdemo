@@ -33,10 +33,11 @@ export interface CatalogCfg {
   chucNang?: (r: Row) => { nhan: string; di: string; icon?: string }[]
   stt?: boolean                          // cột STT đầu bảng, đánh số theo dòng đang hiện
   kySoLieu?: boolean                     // ô chọn Kỳ số liệu (các tháng của năm tài chính), số liệu tính tới hết kỳ
-  tich?: { nhan: string; macDinh: boolean; loc: (r: Row) => boolean }
-  // Danh sách kiểu danh sách chứng từ: phân trang, dòng Tổng, cộng các cột cotCong; bấm dòng chọn và xem nhanh chi tiết ở khung dưới, đúp chuột mở form
+  tich?: { nhan: string; macDinh: boolean; loc: (r: Row) => boolean }   // ô tích lọc nhanh trên thanh công cụ, tích thì chỉ hiện dòng loc đúng
   hangLoat?: { nhan: string; Form: ComponentType<{ soDong: number; onDong: () => void }> }   // nút thêm hàng loạt mở form riêng, soDong: số dòng đang có
-  dsChungTu?: { cotCong: string[]; so: (r: Row) => string; moTa: (r: Row) => string; chiTiet: (r: Row) => ReactNode }   // ô tích lọc nhanh trên thanh công cụ, tích thì chỉ hiện dòng loc đúng
+  // Danh sách kiểu danh sách chứng từ: phân trang, dòng Tổng, cộng các cột cotCong; bấm dòng chọn và xem nhanh chi tiết ở khung dưới, đúp chuột mở form;
+  // cotSo: cột số chứng từ hiện link xanh, bấm mở form như danh sách thu chi
+  dsChungTu?: { cotCong: string[]; cotSo?: string; so: (r: Row) => string; moTa: (r: Row) => string; chiTiet: (r: Row) => ReactNode }
   note?: (goi: Goi) => ReactNode
   truong?: CauHinhDM                     // trường panel Thêm / Sửa riêng của màn, không khai thì lấy TRUONG_DM theo mã màn
 }

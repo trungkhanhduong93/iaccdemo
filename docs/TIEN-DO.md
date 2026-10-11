@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T150 | Danh sách thẻ chi phí: số thẻ link xanh mở thẻ; thẻ mở ở chế độ xem, bấm Sửa (Ctrl+E) mới sửa, Huỷ về xem như phiếu chi. Thông tin đơn vị: phương pháp thuế GTGT, TNCN, TNDN lên khối Thông tin kê khai, khoá theo loại hình, nhóm doanh thu, gói | dinhlanphuongipacc | Đang làm | Sửa file dùng chung: `CatalogScreen.tsx`, `types.ts`, `app.css` (mục T135), `HeThong.tsx` (Thông tin đơn vị của PhuongXT, T145) |
 | T146 | Vẽ lại sơ đồ Khởi tạo danh mục kiểu làn như Thu chi, 7 làn đánh số theo thứ tự phụ thuộc (nền tảng, chi phí, kho, hàng hoá, đối tượng, tiền, hạch toán); chuyển danh mục Tài sản cố định 1.13 sang phân hệ TSCĐ | Trum | Đang làm | Điều phối anti. Sửa `danh-muc/quy-trinh.ts`, `danh-muc/index.ts`, `tscd/index.ts`, `QuyTrinhScreen.tsx`, `SidebarFlyout.tsx` |
 | T147 | Danh mục lọc theo thông tư chọn ở Hệ thống (gói và thông tư chọn riêng): thông tư không ghi Nợ/Có (TT152, TT58) ẩn Hệ thống tài khoản, Bút toán tự động, cột tài khoản | Trum | Đang làm | Điều phối anti. Sửa `registry.ts`, `danh-muc/index.ts`, `CatalogScreen.tsx` |
 | T148 | Danh mục: bỏ trường Thuộc nhóm ở 5 danh mục nhóm; tài khoản thêm ô tích Tổng hợp (ô chọn cha đổi tên Thuộc tài khoản); cố định độ rộng cột khi chuyển danh mục; nút Tuỳ chọn cột cho mọi danh mục, đủ trường của form | Trum | Đang làm | Điều phối anti. Sửa `CatalogScreen.tsx`, `HeThongTaiKhoan.tsx`, `truong-dm.ts`, `danh-muc/data.ts`, `app.css` |
@@ -45,6 +44,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T150 | Danh sách thẻ chi phí: số thẻ link xanh mở thẻ; thẻ mở ở chế độ xem, bấm Sửa (Ctrl+E) mới sửa, Huỷ về xem như phiếu chi. Thông tin đơn vị: phương pháp thuế GTGT, TNCN, TNDN lên khối Thông tin kê khai, khoá theo loại hình, nhóm doanh thu, gói | dinhlanphuongipacc | 11/10/2026 | `2026-10-11-dinhlanphuongipacc-xem-the-thue.md` |
 | T145 | Hệ thống, Thông tin đơn vị gom thông tin khai lúc khởi tạo để sửa lại: tên, MST, địa chỉ, loại hình, thông tư áp dụng (doanh nghiệp), nhóm hộ kinh doanh, cách tính thuế TNCN, địa điểm kinh doanh chính, kênh bán | PhuongXT | 11/10/2026 | `2026-10-11-phuongxt-thong-tin-don-vi.md` |
 | T144 | Form danh mục theo gói: hàng hoá (loại hàng hoá theo iPOS Inventory, đơn vị tính hiện mã và tên), nhóm hàng hoá, đối tượng, nhóm đối tượng, kho, phương thức thanh toán (đồng bộ từ FABi), quỹ tiền (chọn nhiều chi nhánh), lý do; gói Free, Standard ẩn phần tài khoản, ngầm định | PhuongXT | 11/10/2026 | `2026-10-11-phuongxt-form-hang-hoa.md` |
 | T143 | Gói Free ẩn danh mục Nhóm mục chi phí, Nhóm công việc, Nhóm kho; danh mục Kho chỉ có kho mặc định mỗi chi nhánh theo iPOS Inventory, không thêm mới | PhuongXT | 11/10/2026 | `2026-10-11-phuongxt-an-danh-muc-free.md` |
