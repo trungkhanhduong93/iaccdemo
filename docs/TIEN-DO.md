@@ -4,13 +4,17 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T153.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T157.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T154 | Danh mục sửa theo iFaster: form tài khoản (cấp, loại tài khoản chọn, ô Tổng hợp), hộp quy đổi ĐVT trong hàng hoá, ô chọn nhiều kiểu iFaster toàn hệ thống, thuế ngành nghề chỉ đọc, form Quy đổi ĐVT (hàng áp dụng chọn nhiều, diễn giải tự sinh), lịch chọn ngày hết khoảng trống, nhóm hàng bỏ loại hàng và tồn kho, công việc chỉ mã tên mô tả trạng thái, form bảng giá như iFaster | Trum | Đang làm | Worker Claude. Sửa `danh-muc/*`, `CatalogScreen.tsx`, `ChonNgay.tsx`, `types.ts`, `app.css` |
+| T155 | Kho tách Xuất điều chuyển, Nhập điều chuyển giữa chi nhánh (tham chiếu nhau, Nợ 1368/Có 152, Nợ 152/Có 3368) và Chuyển kho trong chi nhánh (không hạch toán) | Trum | Đang làm | Làm sau T157. Sửa `kho/index.ts`, `ChungTuForm.tsx`, `app.css` |
+| T156 | Công thức sơ chế, chế biến: form chi tiết bố cục như iPOS Inventory, bỏ mức tăng, giảm tối đa | Trum | Đang làm | Worker Claude cùng T154. Sửa `kho/CongThuc.tsx`, `app.css` |
+| T157 | Báo cáo: bán hàng theo ngày, tổng hợp, chi tiết bán hàng; kho: xuất nhập tồn (mã hàng mở thẻ kho), tổng hợp, chi tiết nhập, xuất, hàng trả | Trum | Đang làm | Worker Claude. Sửa `ban-hang/*`, `kho/index.ts`, `kho/XuatNhapTon.tsx`, `bao-cao/*`, `data/mock.ts` |
 | T138 | Màn onboard khi bấm từ FABi sang IACC: khởi tạo đơn vị kế toán, điền sẵn từ FABi (chi nhánh, kho, cách đồng bộ, số dư đầu kỳ) | PhuongXT | Dở dang | Popup khởi tạo dữ liệu 4 bước trong phần mềm (`OnboardFabi.tsx`, `Shell.tsx`) đã push, PhuongXT xem lại một lượt. Xem `2026-10-11-phuongxt-man-khoi-tao-fabi.md` |
 | T139 | Phiếu nhập, xuất, điều chuyển kho tự lấy mục chi phí, công việc ngầm định theo kho đã chọn | | Chờ | Tách từ T136. Kho đã có ô `mucCp`, `congViec` ở `truong-dm.ts` 1.8. Sửa `ChungTuForm.tsx` |
 | T140 | Đồng bộ POS có tích tự hạch toán theo phương thức thanh toán thì sinh phiếu thu thật vào danh sách Thu tiền mặt, Thu ngân hàng (hiện chỉ báo số phiếu bằng toast) | | Chờ | Tách từ T137. Phiếu thu Nợ TK của phương thức / Có 131, lấy từ `DS_PTTT` ở `danh-muc/data.ts` |
