@@ -29,7 +29,7 @@ export function canCu(cd: CheDoDef): string {
 
 /** Chế độ mặc định khi chọn gói */
 export const CHE_DO_MAC_DINH: Record<Goi, CheDo> = { F: 'TT152', S: 'TT58', PL: 'TT133', PR: 'TT99' }
-/** Cặp gói và chế độ cho phép chọn (Trum chốt 09/10/2026). Standard thêm TT152 cho hộ kinh doanh tính thuế theo lợi nhuận (PhuongXT 11/10/2026, T138, chờ Trum duyệt) */
+/** Cặp gói và chế độ cho phép chọn (Trum chốt 09/10/2026). Standard thêm TT152 cho hộ kinh doanh tính thuế theo lợi nhuận (PhuongXT chốt 11/10/2026, T138) */
 export const CHE_DO_HOP_LE: Record<Goi, CheDo[]> = { F: ['TT152'], S: ['TT58', 'TT152'], PL: ['TT133', 'TT99'], PR: ['TT99', 'TT133'] }
 
 /** Chế độ hợp lệ với gói thì giữ, không thì về mặc định của gói */

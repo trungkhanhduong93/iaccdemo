@@ -2,7 +2,7 @@
 
 - Ngày: 11/10/2026
 - Người: PhuongXT, agent: Claude Code
-- Trạng thái cuối phiên: Dở dang (chạy được, chờ Trum duyệt cách ghép loại hình, gói, chế độ)
+- Trạng thái cuối phiên: Dở dang (bản nháp đã push để PhuongXT xem trên bản online)
 
 ## Đã làm
 
@@ -35,7 +35,7 @@
 
 ## Dở dang, việc tiếp theo
 
-- Hỏi Trum duyệt: gói Standard thêm TT152 (đổi QD31), doanh nghiệp gói Free không theo thông tư mà vẫn lưu `cheDo` TT152, thuế suất 15%, 17%, 20% và ngưỡng nhóm chưa đối chiếu văn bản gốc. Trum chốt thì ghi `docs/QUYET-DINH.md`.
+- PhuongXT xem bản nháp trên https://iaccdemo.pages.dev (đăng nhập, bấm "Thử mở từ FABi") rồi góp ý. PhuongXT chốt không cần Trum duyệt các điểm: gói Standard thêm TT152 (đổi QD31), doanh nghiệp gói Free quản lý lãi lỗ, không theo thông tư (vẫn lưu `cheDo` TT152). Thuế suất 15%, 17%, 20% chưa đối chiếu văn bản gốc.
 - Doanh nghiệp gợi ý gói theo số chi nhánh (`goiGoiY`). Doanh thu FABi 29 tỷ là số cứng (`DT_FABI`).
 - Nhóm hộ kinh doanh, cách tính thuế TNCN chưa lưu vào phiên, chỉ nằm trong màn khởi tạo.
 - Ba việc nên làm tiếp ở màn Hoàn tất chưa nối tới màn nào; có thể đưa thành thẻ Việc cần làm trên Bàn làm việc.
