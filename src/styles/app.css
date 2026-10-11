@@ -6784,3 +6784,9 @@ table.tbl {
 .ktf-gt-hoi > span { display: flex; flex-direction: column; gap: 2px; }
 .ktf-gt-hoi > span > b { color: var(--ink); font-size: 15px; }
 .ktf-gt-chu { font-size: 12.5px; }
+
+/* ── Số dư ban đầu khai trên bảng (T141) ── */
+.sdb-so { height: 28px; padding: 0 8px; text-align: right; font-variant-numeric: tabular-nums; }
+.sdb-chon { height: 28px; min-width: 260px; }
+.sdb-xoa { color: var(--muted); padding: 0 6px; }
+.sdb-xoa:hover { color: var(--red); }

@@ -16,6 +16,7 @@
 - Gói Free ẩn phân hệ Tổng hợp, nên thêm tab Số dư ban đầu ở Thu chi (`src/modules/tien/index.ts`), chỉ gói Free.
 - `ScreenDef` thêm trường `goi` (`src/modules/types.ts`): màn ngoài Excel chỉ có ở các gói này, gói khác ẩn hẳn; `moDuoc`, `hienMan` ở `src/app/registry.ts` đọc trường này. Dùng cách này để không thêm mã tính năng, số tính năng các gói giữ nguyên (Pro vẫn 134/134).
 - `THEO_ROADMAP` (`src/app/plan.ts`) mở 10.1.3 cho gói Standard.
+- Khai số dư trực tiếp trên bảng (PhuongXT yêu cầu): Thêm mới chèn một dòng trống, ô tên là ô chọn quỹ, khách hàng, nhà cung cấp, hàng hoặc tài khoản chưa có số dư; ô số tiền (Số dư, hoặc Dư Nợ, Dư Có) và ô số lượng tồn gõ thẳng, dòng tổng cộng lại ngay. Mỗi dòng có nút xoá, bấm thì hỏi lại bằng `HopXacNhan` rồi mới xoá. Danh sách tài khoản chọn được bỏ loại 5 đến 9 vì không có số dư cuối kỳ. Dữ liệu giữ trong màn, tải lại trang về mẫu.
 - `docs/KIEN-TRUC.md`: ghi cách dùng trường `goi`.
 
 ## Đã kiểm
@@ -27,7 +28,7 @@
 
 ## Dở dang, việc tiếp theo
 
-- Không. Nút Thêm mới, Nhập Excel vẫn là nút mẫu như trước.
+- Không. Nút Nhập Excel, Xuất Excel vẫn là nút mẫu. Số dư sửa trên màn chưa lưu lại khi tải trang.
 
 ## Bẫy, quyết định mới
 
