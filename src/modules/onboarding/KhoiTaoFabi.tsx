@@ -165,12 +165,12 @@ export function KhoiTaoFabi() {
             <p>Bắt đầu sổ sách cho <b>Phố Mây</b> trong {BUOC.length} bước, khoảng 3 phút.</p>
             <div className="ktf-nhan">
               <span className="muted">Đã nhận từ FABi</span>
-              <div><b>{CHI_NHANH.length}</b> chi nhánh</div>
+              <div><b>1</b> thương hiệu</div>
+              <div><b>{CHI_NHANH.length}</b> cửa hàng</div>
               <div><b>86</b> món</div>
               <div><b>{SO_KENH}</b> kênh bán</div>
-              <div><b>{CHI_NHANH.reduce((t, c) => t + c.kho.length, 0)}</b> kho</div>
             </div>
-            <p className="muted" style={{ fontSize: 12.5 }}>Thông tin trên được điền sẵn, bạn chỉ cần xác nhận. Không phải nhập lại món, chi nhánh.</p>
+            <p className="muted" style={{ fontSize: 12.5 }}>Thông tin trên được điền sẵn, bạn chỉ cần xác nhận. Không phải nhập lại món, cửa hàng.</p>
             <button className="btn pri lg" onClick={() => sua({ b: 0 })}>Bắt đầu<Icon n="arrow" className="ic sm" /></button>
           </div>
         )}
@@ -283,7 +283,7 @@ export function KhoiTaoFabi() {
                         return (
                           <div key={c.id} className={`ktf-cn-dong ${on ? 'on' : ''}`}>
                             <label className="row grow"><input type="checkbox" checked={on} onChange={() => doiChon(c.id)} />
-                              <span><b>{c.ten}</b><small className="muted">Chi nhánh FABi</small></span></label>
+                              <span><b>{c.ten}</b><small className="muted">Cửa hàng trên FABi</small></span></label>
                             {free
                               ? <Select className="inp ktf-kho" value={n.khoFree[c.id]} onChange={e => sua({ khoFree: { ...n.khoFree, [c.id]: e.target.value } })}>
                                   {c.kho.map(k => <option key={k}>{k}</option>)}
