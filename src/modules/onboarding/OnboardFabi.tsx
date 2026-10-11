@@ -9,7 +9,7 @@ import { CHE_DO, CHE_DO_HOP_LE, CHE_DO_MAC_DINH, type CheDo } from '../../app/ch
 import { CHI_NHANH, DAILY, HOM_NAY } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
 import { Note, Pk } from '../../ui/Page'
-import { Select } from '../../ui/Dropdown'
+import { Dropdown, MenuItem, Select } from '../../ui/Dropdown'
 
 export const BUOC = ['Loại hình và gói', 'Đơn vị', 'Chi nhánh', 'Đồng bộ bán hàng', 'Số dư đầu kỳ']
 const XONG = BUOC.length   // bước hoàn tất
@@ -43,6 +43,18 @@ const nganCheDo = (loai: LoaiHinh, cd: CheDo) => loai === 'dn' && cd === 'TT152'
 const MO_TA_GOI: Record<LoaiHinh, Partial<Record<Goi, string>>> = {
   hkd: { F: 'Quản lý đơn giản: thu chi, bán hàng, kho. Hợp với tính thuế theo doanh thu', S: 'Theo dõi đủ chi phí để tính thuế theo lợi nhuận' },
   dn: { F: 'Chỉ quản lý lãi lỗ, không theo thông tư nào', S: 'Doanh nghiệp siêu nhỏ theo TT58, ghi sổ không dùng tài khoản', PL: 'Hạch toán Nợ/Có theo TT133 hoặc TT99', PR: 'Như Plus, đủ tính năng cho chuỗi lớn' },
+}
+
+/** Ô thả xuống chọn nhiều kênh bán; kênh đã chọn hiện gọn trong ô */
+function ChonKenh({ ds, chon, doi, trong }: { ds: string[]; chon: string[]; doi: (k: string) => void; trong: string }) {
+  return (
+    <Dropdown btnClass="inp ktf-kenh-o" width={260} label={<>
+      <span className="ktf-kenh-chon">{chon.length ? chon.join(', ') : <span className="muted">{trong}</span>}</span>
+      <Icon n="chevd" className="ic sm" />
+    </>}>
+      {ds.map(k => <MenuItem key={k} on={chon.includes(k)} onClick={() => doi(k)}>{k}</MenuItem>)}
+    </Dropdown>
+  )
 }
 
 /** Tính năng của gói, gom theo phân hệ. Tính năng gói liền trước chưa có thì đánh dấu Thêm */
@@ -318,10 +330,10 @@ export function OnboardFabi() {
                             <h3 className="ktf-h3">Kênh bán</h3>
                             <div className="ktf-kenh">
                               <label>Kênh bán online</label>
-                              <div>{KENH_ONLINE.map(k => <button key={k} className={`ktf-chip ${n.kenhOnline.includes(k) ? 'on' : ''}`} onClick={() => doiKenh(k)}>{k}<Icon n={n.kenhOnline.includes(k) ? 'x' : 'plus'} className="ic sm" /></button>)}</div>
+                              <div><ChonKenh ds={KENH_ONLINE} chon={n.kenhOnline} doi={doiKenh} trong="Chọn kênh bán" /></div>
                               <label>Kênh bán qua sàn đã khấu trừ thuế</label>
                               <div>
-                                {KENH_SAN.filter(k => n.kenhOnline.includes(k)).map(k => <button key={k} className={`ktf-chip ${n.kenhSan.includes(k) ? 'on' : ''}`} onClick={() => sua({ kenhSan: bat(n.kenhSan, k) })}>{k}<Icon n={n.kenhSan.includes(k) ? 'x' : 'plus'} className="ic sm" /></button>)}
+                                <ChonKenh ds={KENH_SAN.filter(k => n.kenhOnline.includes(k))} chon={n.kenhSan} doi={k => sua({ kenhSan: bat(n.kenhSan, k) })} trong="Chọn sàn" />
                                 <small className="muted">Doanh thu qua các sàn này đã được sàn khấu trừ, nộp thuế thay.</small>
                               </div>
                             </div>
