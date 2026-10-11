@@ -30,7 +30,8 @@ export function CatalogScreen({ sc }: ScreenProps) {
   const cfg = sc.catalog ?? { cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên' }], rows: () => [] }
   // Kỳ số liệu (yyyymm): màn có kySoLieu tính số liệu tới hết kỳ đang chọn
   const [ky, setKy] = useState(() => kyMacDinh(s))
-  const all = useMemo(() => cfg.rows(s.cheDo, ky), [sc, s.cheDo, ky])
+  const all = useMemo(() => cfg.rows(s.cheDo, ky).filter(r => !cfg.locGoi || cfg.locGoi(s.goi, r)), [sc, s.cheDo, ky, s.goi])
+  const choThem = !cfg.khongThem?.includes(s.goi)
   const [q, setQ] = useState('')
   const [nhom, setNhom] = useState('')
   const [edit, setEdit] = useState<Row | null>(null)
@@ -190,7 +191,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
                 <span className="muted" style={{ fontSize: 12, marginRight: 4 }}>{rows.length}/{all.length} dòng</span>
                 <button type="button" className="btn" onClick={() => toast('Nhập danh mục từ Excel')}><Icon n="upload" className="ic sm" />Nhập Excel</button>
                 <button type="button" className="btn" onClick={() => toast(`Đã xuất ${rows.length} dòng ra Excel`)}><Icon n="download" className="ic sm" />Xuất Excel</button>
-                <button type="button" className="btn pri" onClick={() => moSua({})}><Icon n="plus" className="ic sm" />{cfg.them ?? 'Thêm mới'}</button>
+                {choThem && <button type="button" className="btn pri" onClick={() => moSua({})}><Icon n="plus" className="ic sm" />{cfg.them ?? 'Thêm mới'}</button>}
               </div>
             }
           />
@@ -204,7 +205,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
           ) : (
             <div className="empty">
               <b>Chưa có dữ liệu</b>
-              <button type="button" className="btn sm pri empty-btn" onClick={() => moSua({})}>{cfg.them ?? 'Thêm mới'}</button>
+              {choThem && <button type="button" className="btn sm pri empty-btn" onClick={() => moSua({})}>{cfg.them ?? 'Thêm mới'}</button>}
             </div>
           )
         )}

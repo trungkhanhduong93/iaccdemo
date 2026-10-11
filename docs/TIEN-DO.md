@@ -4,7 +4,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T142.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T143.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
@@ -40,6 +40,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T143 | Gói Free ẩn danh mục Nhóm mục chi phí, Nhóm công việc, Nhóm kho; danh mục Kho chỉ có kho mặc định mỗi chi nhánh theo iPOS Inventory, không thêm mới | PhuongXT | 11/10/2026 | `2026-10-11-phuongxt-an-danh-muc-free.md` |
 | T142 | Bổ sung chi nhánh khi đang dùng: Danh mục chi nhánh có Thêm chi nhánh từ FABi (chỉ cửa hàng chưa dùng kế toán, lên sổ từ ngày đầu năm, mở khai số dư quỹ tiền chi nhánh mới); Bàn làm việc nhắc cửa hàng FABi mới chưa lên sổ | PhuongXT | 11/10/2026 | `2026-10-11-phuongxt-them-chi-nhanh-fabi.md` |
 | T141 | Màn Số dư ban đầu theo gói, chế độ: gói Free chỉ số dư tiền (tab ở Thu chi); Standard tiền, công nợ, tồn kho; Plus, Pro thêm số dư tài khoản | PhuongXT | 11/10/2026 | `2026-10-11-phuongxt-so-du-ban-dau.md` |
 | T136 | Danh mục nhóm: nhóm đối tượng, nhóm kho, nhóm mục chi phí, nhóm công việc, nhóm hàng hoá. Hàng hoá chọn nhóm thì tự điền TK, mục chi phí, phương pháp tính giá, thuế suất theo nhóm. Kho thêm mục chi phí, công việc ngầm định, địa chỉ, SĐT, người liên hệ, ghi chú. Đối tượng và người dùng có ô bắt buộc tích "đã đồng ý chia sẻ thông tin cá nhân". Màn Người dùng có panel Thêm, Sửa như Danh mục | Trum | 11/10/2026 | [2026-10-11-trum-nhom-danh-muc-pttt](nhat-ky/2026-10-11-trum-nhom-danh-muc-pttt.md) |

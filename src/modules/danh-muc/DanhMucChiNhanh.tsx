@@ -21,10 +21,14 @@ export function DanhMucChiNhanh({ sc, mod }: ScreenProps) {
   const them = s.cnThem?.[s.donVi] ?? []
   // đơn vị mẫu có sẵn chi nhánh mẫu; đơn vị mới tạo từ FABi chỉ có chi nhánh đã lên sổ
   const coSan = DON_VI.some(d => d.id === s.donVi)
+  // Gói Free: mỗi chi nhánh tự có một kho mặc định, lấy kho đầu tiên của chi nhánh trên iPOS Inventory (T143)
+  const free = s.goi === 'F'
+  const khoCua = (id: string, ten: string) => CHI_NHANH.find(c => c.id === id)?.kho ?? [`Kho ${ten.replace(/^Phố Mây /, '')}`]
+  const kho = (id: string, ten: string) => free ? khoCua(id, ten)[0] : khoCua(id, ten).join(', ')
   const rows: Row[] = useMemo(() => [
-    ...(coSan ? CHI_NHANH.map(c => ({ ma: c.id.toUpperCase(), ten: c.ten, kv: 'TP.HCM', kho: c.kho.join(', '), nguon: 'FABi' })) : []),
-    ...them.map(c => ({ ma: c.id.toUpperCase(), ten: c.ten, kv: c.khuVuc, kho: `Kho ${c.ten.replace(/^Phố Mây /, '')}`, nguon: 'FABi', moi: !c.banDau })),
-  ], [coSan, them])
+    ...(coSan ? CHI_NHANH.map(c => ({ ma: c.id.toUpperCase(), ten: c.ten, kv: 'TP.HCM', kho: kho(c.id, c.ten), nguon: 'FABi' })) : []),
+    ...them.map(c => ({ ma: c.id.toUpperCase(), ten: c.ten, kv: c.khuVuc, kho: kho(c.id, c.ten), nguon: 'FABi', moi: !c.banDau })),
+  ], [coSan, them, free])   // eslint-disable-line react-hooks/exhaustive-deps
 
   const lenSo = (ds: CnThem[], khaiSoDu: boolean) => {
     set({ cnThem: { ...s.cnThem, [s.donVi]: [...them, ...ds] } })
@@ -38,12 +42,13 @@ export function DanhMucChiNhanh({ sc, mod }: ScreenProps) {
       <PageHead crumb={[mod.ten]} title={tenMan(sc)}>
         <button type="button" className="btn pri" onClick={() => setMo(true)}><Icon n="plus" className="ic sm" />Thêm chi nhánh từ FABi</button>
       </PageHead>
+      {free && <Note icon="info">Gói Free: mỗi chi nhánh tự có một kho mặc định theo iPOS Inventory, không cần khai báo kho.</Note>}
       <section className="card">
         <Table cols={[
           { k: 'ma', t: 'Mã', cls: 'code', w: 90 },
           { k: 'ten', t: 'Tên chi nhánh', r: r => <>{r.ten}{r.moi && <span className="chip info" style={{ marginLeft: 8 }}>Mới lên sổ</span>}</> },
           { k: 'kv', t: 'Khu vực', cls: 'dim' },
-          { k: 'kho', t: 'Kho', cls: 'dim' },
+          { k: 'kho', t: 'Kho', cls: 'dim', r: r => <>{r.kho}{free && <span className="chip" style={{ marginLeft: 8 }}>Mặc định</span>}</> },
           { k: 'nguon', t: 'Nguồn', cls: 'dim' },
         ]} rows={rows} />
       </section>

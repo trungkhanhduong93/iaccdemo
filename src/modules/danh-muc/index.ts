@@ -55,6 +55,7 @@ const nhomDoiTuong: ScreenDef = {
 
 const nhomMucChiPhi: ScreenDef = {
   slug: 'nhom-muc-chi-phi', ten: 'Danh mục nhóm mục chi phí', ngan: 'Nhóm mục chi phí', nhom: 'Danh mục', kind: 'catalog', icon: 'receipt',
+  goi: ['S', 'PL', 'PR'],   // gói Free ẩn, PhuongXT 11/10/2026 (T143)
   catalog: {
     them: 'Thêm nhóm mục chi phí',
     cols: [
@@ -69,6 +70,7 @@ const nhomMucChiPhi: ScreenDef = {
 
 const nhomCongViec: ScreenDef = {
   slug: 'nhom-cong-viec', ten: 'Danh mục nhóm công việc', ngan: 'Nhóm công việc', nhom: 'Danh mục', kind: 'catalog', icon: 'congviec',
+  goi: ['S', 'PL', 'PR'],   // gói Free ẩn (T143)
   catalog: {
     them: 'Thêm nhóm công việc',
     cols: [
@@ -83,6 +85,7 @@ const nhomCongViec: ScreenDef = {
 
 const nhomKho: ScreenDef = {
   slug: 'nhom-kho', ten: 'Danh mục nhóm kho', ngan: 'Nhóm kho', nhom: 'Danh mục', kind: 'catalog', icon: 'khohang',
+  goi: ['S', 'PL', 'PR'],   // gói Free ẩn (T143)
   catalog: {
     them: 'Thêm nhóm kho',
     cols: [
@@ -172,9 +175,11 @@ const danhMuc: ModuleDef = {
       rows: () => [['CV01', 'Khai trương chi nhánh Thảo Điền', 'Mở rộng', 'Nguyễn Minh Anh', '06–08/2026'], ['CV02', 'Sự kiện Trung thu 2026', 'Marketing', 'Phạm Ngọc Lan', '09/2026'],
         ['CV03', 'Cải tạo bếp Lê Lợi', 'Sửa chữa lớn', 'Võ Thanh Tùng', '10–11/2026'], ['CV04', 'Tiệc cuối năm khách công ty', 'Bán hàng', 'Phạm Ngọc Lan', '12/2026']]
         .map(([ma, ten, nhom, pt, tg]) => ({ ma, ten, nhom, pt, tg })) } },
-    '1.8': { catalog: { them: 'Thêm kho',
+    '1.8': { catalog: { them: 'Thêm kho', khongThem: ['F'],
+      // gói Free: mỗi chi nhánh một kho mặc định theo iPOS Inventory (kho đầu của chi nhánh), không thêm kho mới (T143)
+      locGoi: (goi, r) => goi !== 'F' || CHI_NHANH.some(c => c.kho[0] === r.ten),
       chucNang: () => [{ nhan: 'Xem tồn kho', di: 'kho/5-2-4' }, { nhan: 'Điều chuyển', di: 'kho/5-1-4/moi' }],
-      cols: goi => [{ k: 'ma', t: 'Mã kho', cls: 'code' }, { k: 'ten', t: 'Tên kho' }, { k: 'cn', t: 'Chi nhánh' }, { k: 'loai', t: 'Nhóm kho' }, { k: 'tk', t: 'Thủ kho', cls: 'dim' },
+      cols: goi => [{ k: 'ma', t: 'Mã kho', cls: 'code' }, { k: 'ten', t: 'Tên kho' }, { k: 'cn', t: 'Chi nhánh' }, ...(goi === 'F' ? [] : [{ k: 'loai', t: 'Nhóm kho' }]), { k: 'tk', t: 'Thủ kho', cls: 'dim' },
         ...(kieuGhiSo(goi) === 'noco' ? [tkCot('tkKho', 'TK kho'), tkCot('tkGv', 'TK giá vốn'), tkCot('tkCp', 'TK chi phí')] : [])],
       rows: () => KHO.map((ten, i) => {
         const isTong = ten.includes('tổng')
@@ -195,7 +200,7 @@ const danhMuc: ModuleDef = {
           ghiChu: isTong ? 'Kho tổng phân phối toàn chuỗi' : 'Kho phục vụ chi nhánh',
         }
       }),
-      note: goi => goi === 'F' ? createElement(Note, { kind: 'gray', icon: 'info', children: 'Gói Free dùng các kho nhận từ FABi và iPOS Inventory, không tạo thêm kho mới.' }) : null } },
+      note: goi => goi === 'F' ? createElement(Note, { kind: 'gray', icon: 'info', children: 'Gói Free: mỗi chi nhánh tự có một kho mặc định theo iPOS Inventory, không thêm kho mới.' }) : null } },
     '1.9': { catalog: { them: 'Thêm tiền tệ', cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên tiền tệ' }, { k: 'kh', t: 'Ký hiệu', c: true }, { k: 'le', t: 'Số lẻ', num: true }],
       rows: () => [['VND', 'Đồng Việt Nam', 'đ', 0], ['USD', 'Đô la Mỹ', '$', 2], ['EUR', 'Euro', '€', 2], ['JPY', 'Yên Nhật', '¥', 0]].map(([ma, ten, kh, le]) => ({ ma, ten, kh, le: String(le) })) } },
     '1.10': { catalog: { them: 'Thêm tỷ giá', cols: [{ k: 'ngay', t: 'Ngày' }, { k: 'tt', t: 'Tiền tệ', cls: 'code' }, { k: 'mua', t: 'Tỷ giá mua', num: true }, { k: 'ban', t: 'Tỷ giá bán', num: true }, { k: 'nguon', t: 'Nguồn', cls: 'dim' }],

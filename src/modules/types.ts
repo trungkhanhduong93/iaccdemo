@@ -25,6 +25,8 @@ export interface CatalogCfg {
   cols: Col[] | ((goi: Goi) => Col[])
   rows: (cd: CheDo, ky: number) => Row[] // danh mục đổi theo chế độ kế toán, vd hệ thống tài khoản; ky (yyyymm) khi có kySoLieu
   them?: string
+  khongThem?: Goi[]        // gói không có nút thêm mới (vd danh mục Kho gói Free, T143)
+  locGoi?: (goi: Goi, r: Row) => boolean   // lọc dòng theo gói (vd gói Free chỉ thấy kho mặc định của chi nhánh, T143)
   nhomLoc?: string
   nhanLoc?: string
   chucNang?: (r: Row) => { nhan: string; di: string; icon?: string }[]
