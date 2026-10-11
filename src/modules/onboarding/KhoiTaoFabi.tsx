@@ -349,7 +349,7 @@ export function KhoiTaoFabi() {
                 )}
 
                 <div className="row" style={{ marginTop: 22, justifyContent: 'flex-end', gap: 8 }}>
-                  {n.b > 0 && <button className="btn lg" onClick={() => sua({ b: n.b - 1 })}>Quay lại</button>}
+                  {n.b >= 0 && <button className="btn lg" onClick={() => sua({ b: n.b - 1 })}>Quay lại</button>}
                   {n.b === 5 && <button className="btn ghost lg" onClick={() => { sua({ soDu: 'sau', tienMat: '', tienGui: '' }); tiep() }}>Bỏ qua</button>}
                   <button className="btn pri lg" disabled={n.b === 3 && cnChon.length === 0} onClick={tiep}>
                     {n.b === XONG - 1 ? 'Hoàn tất' : 'Tiếp tục'}<Icon n="arrow" className="ic sm" />
