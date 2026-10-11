@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T144 | Form hàng hoá: ô Loại hàng hoá theo iPOS Inventory, Đơn vị tính hiện mã và tên; gói Free bỏ ĐVT phụ, khối Hạch toán; nhóm hàng hoá gói Free, Standard bỏ Thuộc nhóm, Loại, Ngầm định; đối tượng, nhóm đối tượng, kho ẩn phần tài khoản, ngầm định ở gói Free, Standard | PhuongXT | Dở dang | Đã đổi loại hàng hoá theo iPOS Inventory; chờ PhuongXT nói rõ ý "Ghi chú". Xem `2026-10-11-phuongxt-form-hang-hoa.md` |
 | T138 | Màn onboard khi bấm từ FABi sang IACC: khởi tạo đơn vị kế toán, điền sẵn từ FABi (chi nhánh, kho, cách đồng bộ, số dư đầu kỳ) | PhuongXT | Dở dang | Popup khởi tạo dữ liệu 4 bước trong phần mềm (`OnboardFabi.tsx`, `Shell.tsx`) đã push, PhuongXT xem lại một lượt. Xem `2026-10-11-phuongxt-man-khoi-tao-fabi.md` |
 | T139 | Phiếu nhập, xuất, điều chuyển kho tự lấy mục chi phí, công việc ngầm định theo kho đã chọn | | Chờ | Tách từ T136. Kho đã có ô `mucCp`, `congViec` ở `truong-dm.ts` 1.8. Sửa `ChungTuForm.tsx` |
 | T140 | Đồng bộ POS có tích tự hạch toán theo phương thức thanh toán thì sinh phiếu thu thật vào danh sách Thu tiền mặt, Thu ngân hàng (hiện chỉ báo số phiếu bằng toast) | | Chờ | Tách từ T137. Phiếu thu Nợ TK của phương thức / Có 131, lấy từ `DS_PTTT` ở `danh-muc/data.ts` |
@@ -41,6 +40,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T144 | Form danh mục theo gói: hàng hoá (loại hàng hoá theo iPOS Inventory, đơn vị tính hiện mã và tên), nhóm hàng hoá, đối tượng, nhóm đối tượng, kho, phương thức thanh toán (đồng bộ từ FABi), quỹ tiền (chọn nhiều chi nhánh), lý do; gói Free, Standard ẩn phần tài khoản, ngầm định | PhuongXT | 11/10/2026 | `2026-10-11-phuongxt-form-hang-hoa.md` |
 | T143 | Gói Free ẩn danh mục Nhóm mục chi phí, Nhóm công việc, Nhóm kho; danh mục Kho chỉ có kho mặc định mỗi chi nhánh theo iPOS Inventory, không thêm mới | PhuongXT | 11/10/2026 | `2026-10-11-phuongxt-an-danh-muc-free.md` |
 | T142 | Bổ sung chi nhánh khi đang dùng: Danh mục chi nhánh có Thêm chi nhánh từ FABi (chỉ cửa hàng chưa dùng kế toán, lên sổ từ ngày đầu năm, mở khai số dư quỹ tiền chi nhánh mới); Bàn làm việc nhắc cửa hàng FABi mới chưa lên sổ | PhuongXT | 11/10/2026 | `2026-10-11-phuongxt-them-chi-nhanh-fabi.md` |
 | T141 | Màn Số dư ban đầu theo gói, chế độ: gói Free chỉ số dư tiền (tab ở Thu chi); Standard tiền, công nợ, tồn kho; Plus, Pro thêm số dư tài khoản | PhuongXT | 11/10/2026 | `2026-10-11-phuongxt-so-du-ban-dau.md` |

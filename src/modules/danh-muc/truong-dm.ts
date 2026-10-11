@@ -12,9 +12,9 @@ export type KieuTruong = 'chu' | 'so' | 'tien' | 'chon' | 'chonNhieu' | 'tich' |
 /** Đơn vị tính hiện mã và tên trong ô chọn, vd "KG - kg"; giá trị lưu vẫn là tên (T144) */
 const nhanDvt = (ten: string) => { const d = DON_VI_TINH.find(x => x[1] === ten); return d ? `${d[0]} - ${d[1]}` : ten }
 
-/** Loại hàng hoá theo iPOS Inventory; gói Pro có thêm Bán thành phẩm (T144) */
-const LOAI_HANG = ['Nguyên vật liệu', 'Thành phẩm', 'Hàng bán thẳng', 'Khác (Công cụ dụng cụ)']
-const LOAI_HANG_PRO = ['Nguyên vật liệu', 'Thành phẩm', 'Hàng bán thẳng', 'Bán thành phẩm', 'Khác (Công cụ dụng cụ)']
+/** 5 loại hàng hoá theo iPOS Inventory; gói Pro có thêm Bán thành phẩm (T144) */
+const LOAI_HANG = ['Nguyên vật liệu', 'Thành phẩm', 'Hàng bán thẳng', 'Khác (Công cụ dụng cụ)', 'Ghi chú']
+const LOAI_HANG_PRO = ['Nguyên vật liệu', 'Thành phẩm', 'Hàng bán thẳng', 'Bán thành phẩm', 'Khác (Công cụ dụng cụ)', 'Ghi chú']
 
 export interface TruongDM {
   k: string
