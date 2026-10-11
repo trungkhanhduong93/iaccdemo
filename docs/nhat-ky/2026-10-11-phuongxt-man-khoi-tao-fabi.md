@@ -36,6 +36,7 @@
 - Bước Đồng bộ bán hàng bỏ giờ chốt cuối ngày. Bỏ bước Số dư đầu kỳ vì lúc khởi tạo chưa có danh mục; màn hoàn tất có thêm việc "Nhập số dư đầu kỳ khi đã có danh mục". Popup còn 4 bước: Loại hình và gói, Đơn vị, Chi nhánh, Đồng bộ bán hàng.
 - Popup đổi tên thành Khởi tạo dữ liệu. Màn hoàn tất: "Dữ liệu đã sẵn sàng", bỏ câu số chứng từ đã tạo, gợi ý khởi tạo các danh mục có trong gói đã chọn (6 danh mục đầu, còn lại ghi "và N danh mục khác"). Bấm Bắt đầu làm việc thì vào phân hệ Danh mục, sơ đồ Khởi tạo danh mục.
 - Dùng thử gói Free với tất cả cửa hàng trên FABi (PhuongXT chọn cách A: gói Free không giới hạn chi nhánh). Màn giới thiệu ghi rõ. Sửa luôn việc T60 cho gói Free: mô tả gói, điểm nổi bật, thẻ gói và hỏi đáp màn Gói thuê bao.
+- FABi không có mã số thuế: dùng thử thì đơn vị lấy tên FABi (`TEN_FABI`), MST, địa chỉ trống; thanh trên ghi "Chưa khai mã số thuế". Bước Đơn vị để trống MST, tên điền sẵn tên FABi, Tra cứu mới điền tên, địa chỉ theo dữ liệu thuế; khởi tạo xong ghi vào đơn vị. Phiên có `dvSua` sửa đè tên, MST, địa chỉ; `donViHienTai`, `dvTheoPhien` đọc phần này; đăng nhập thường xoá.
 - Lối vào bản mẫu: liên kết "Thử mở từ FABi" dưới form đăng nhập (`src/modules/auth/Login.tsx`).
 - CSS mục cuối `app.css`: "Khởi tạo khi mở từ FABi (T138)", lớp `.ktf-*`.
 

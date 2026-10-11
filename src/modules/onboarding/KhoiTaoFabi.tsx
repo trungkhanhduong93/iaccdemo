@@ -6,7 +6,7 @@ import { useSession } from '../../app/session'
 import { CHI_NHANH } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
 import { Logo } from '../../ui/Logo'
-import { KEY, MAC_DINH, SO_KENH, luuNhap, type Nhap } from './OnboardFabi'
+import { KEY, MAC_DINH, SO_KENH, TEN_FABI, luuNhap, type Nhap } from './OnboardFabi'
 
 export function KhoiTaoFabi() {
   const { s, set } = useSession()
@@ -20,7 +20,8 @@ export function KhoiTaoFabi() {
   const sua = (p: Partial<Nhap>) => setN(x => ({ ...x, ...p }))
   const tenNguoi = s.ten.split(' ').slice(-2).join(' ')
   const vaoApp = () => {
-    set({ loggedIn: true, goi: 'F', cheDo: 'TT152', donVi: 'pm', khoiTao: true, chiNhanh: 'all' })
+    // đơn vị mới từ FABi: tên theo FABi, chưa có mã số thuế, địa chỉ (FABi không có)
+    set({ loggedIn: true, goi: 'F', cheDo: 'TT152', donVi: 'pm', khoiTao: true, chiNhanh: 'all', dvSua: { ...s.dvSua, pm: { ten: TEN_FABI, mst: '', diaChi: '' } } })
     nav('/app')
   }
   const dungThu = () => { luuNhap({ ...n, b: 0, mo: true }); vaoApp() }

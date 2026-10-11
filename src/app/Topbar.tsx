@@ -1,7 +1,7 @@
 // Thanh trên: đơn vị kế toán, chi nhánh làm việc, nút "Trải nghiệm gói" đổi gói, tài khoản. Vai trò lấy theo tài khoản đăng nhập.
 // Tìm nhanh nằm ở sidebar; kỳ chọn ở bộ lọc từng màn.
 import { useNavigate } from 'react-router-dom'
-import { chiNhanhHienTai, donViHienTai, useSession, cheDoHienTai } from './session'
+import { chiNhanhHienTai, donViHienTai, dvTheoPhien, useSession, cheDoHienTai } from './session'
 import { cheDoCuaGoi } from './che-do'
 import { GOI, GOIS, demTheoGoi } from './plan'
 import { CHI_NHANH, DON_VI, ROLE } from '../data/mock'
@@ -21,14 +21,14 @@ export function Topbar({ onSearch }: { onSearch?: () => void }) {
     <header className="topbar">
       <Dropdown btnClass="dv-btn" title="Đổi đơn vị kế toán" width={410} label={<>
         <span className="dv-av">{dv.viettat}</span>
-        <span style={{ minWidth: 0 }}><small>Công ty · MST {dv.mst} · {cheDoHienTai(s).ngan}</small><b>{dv.ten}</b></span>
+        <span style={{ minWidth: 0 }}><small>{dv.mst ? `Công ty · MST ${dv.mst}` : 'Chưa khai mã số thuế'} · {cheDoHienTai(s).ngan}</small><b>{dv.ten}</b></span>
         <Icon n="chevd" className="ic sm" />
       </>}>
         {dong => <>
           <MenuHead right={<small className="mh-n">{DON_VI.length} đơn vị</small>}>Đơn vị kế toán</MenuHead>
-          {DON_VI.map(d => (
+          {DON_VI.map(d0 => dvTheoPhien(s, d0)).map(d => (
             <MenuItem key={d.id} on={d.id === s.donVi} icon={<span className="dv-av">{d.viettat}</span>}
-              desc={<>MST {d.mst} · {cheDoCuaGoi(d.goi).ngan} · {d.diem} điểm bán</>} right={<Pk g={d.goi} />}
+              desc={<>{d.mst ? `MST ${d.mst}` : 'Chưa khai MST'} · {cheDoCuaGoi(d.goi).ngan} · {d.diem} điểm bán</>} right={<Pk g={d.goi} />}
               onClick={() => { set({ donVi: d.id, goi: d.goi, chiNhanh: 'all' }); dong(); nav('/app') }}>{d.ten}</MenuItem>
           ))}
           <MenuSep />

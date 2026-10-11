@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 11/10/2026
 
+- T138: Dùng thử từ FABi: đơn vị lấy tên theo FABi, thanh trên ghi Chưa khai mã số thuế; bước Đơn vị nhập mã số thuế rồi tra cứu tên, địa chỉ; khởi tạo xong thanh trên hiện đủ mã số thuế, tên.
 - T141: Số dư ban đầu theo gói. Gói Free có tab Số dư ban đầu ở Thu chi, chỉ khai số dư tiền theo quỹ tiền mặt, tài khoản ngân hàng. Gói Standard mở màn Số dư ban đầu ở Tổng hợp: tiền, công nợ khách hàng, nhà cung cấp, tồn kho. Plus, Pro thêm số dư tài khoản, cột Dư Nợ, Dư Có. Màn ghi ngày số dư là ngày bắt đầu năm tài chính. Thêm mới chèn dòng ngay trên bảng để chọn quỹ, đối tượng, hàng, tài khoản và gõ số dư; xoá dòng có hỏi xác nhận. Sơ đồ Thu chi có làn Số dư đầu kỳ mở màn này.
 - T138: Màn đăng nhập tạm bỏ nút Đăng nhập bằng tài khoản iPOS và dòng Dùng thử gói Free; còn liên kết Thử mở từ FABi.
 - T60: Gói Free ghi không giới hạn chi nhánh, mỗi chi nhánh một kho (mô tả gói, điểm nổi bật, thẻ gói và hỏi đáp ở màn Gói thuê bao).

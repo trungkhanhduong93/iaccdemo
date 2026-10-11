@@ -14,6 +14,8 @@ import { Dropdown, MenuItem, Select } from '../../ui/Dropdown'
 export const BUOC = ['Loại hình và gói', 'Đơn vị', 'Chi nhánh', 'Đồng bộ bán hàng']
 const XONG = BUOC.length   // bước hoàn tất
 export const KEY = 'iacc-khoi-tao-fabi'
+/** Tên đơn vị trên FABi; FABi không có mã số thuế (T138) */
+export const TEN_FABI = 'Phố Mây'
 export const SO_KENH = 3   // Tại quán, Mang về, App giao đồ ăn (T113)
 
 const DT_FABI = 29_000_000_000   // doanh thu 12 tháng lấy từ FABi
@@ -157,6 +159,9 @@ export interface Nhap {
   goi: Goi
   cheDo: CheDo
   traCuu: boolean
+  mst: string          // FABi không có, người dùng nhập
+  tenDv: string        // mặc định tên FABi, tra cứu thì theo dữ liệu thuế
+  diaChi: string
   ngayDauNam: string   // ngày bắt đầu năm tài chính, ghi vào Thông tin đơn vị; chứng từ POS tính từ ngày này
   chon: string[]       // id chi nhánh lên sổ
   cnChinh: string      // địa điểm kinh doanh chính, một trong các chi nhánh đã chọn
@@ -165,7 +170,7 @@ export interface Nhap {
   dongBo: 'chiTiet' | 'kenh'
 }
 export const MAC_DINH: Nhap = {
-  b: -2, mo: false, loai: 'dn', nhom: nhomTheoDt(DT_FABI), ppHkd: 'loiNhuan', goi: goiGoiY('dn', 'loiNhuan'), cheDo: cheDoMoi('dn', goiGoiY('dn', 'loiNhuan')), traCuu: true, ngayDauNam: '01/01/2026', chon: CHI_NHANH.map(c => c.id),
+  b: -2, mo: false, loai: 'dn', nhom: nhomTheoDt(DT_FABI), ppHkd: 'loiNhuan', goi: goiGoiY('dn', 'loiNhuan'), cheDo: cheDoMoi('dn', goiGoiY('dn', 'loiNhuan')), traCuu: false, mst: '', tenDv: TEN_FABI, diaChi: '', ngayDauNam: '01/01/2026', chon: CHI_NHANH.map(c => c.id),
   cnChinh: '', kenhOnline: KENH_ONLINE, kenhSan: KENH_SAN,
   dongBo: 'kenh',
 }
@@ -228,7 +233,7 @@ export function OnboardFabi() {
   const bat = (ds: string[], k: string) => ds.includes(k) ? ds.filter(x => x !== k) : [...ds, k]
   const doiKenh = (k: string) => { const on = bat(n.kenhOnline, k); sua({ kenhOnline: on, kenhSan: n.kenhSan.filter(x => on.includes(x)) }) }
   const xong = () => {
-    set({ goi: n.goi, cheDo: n.cheDo, khoiTao: true, dongBoFabi: n.dongBo,
+    set({ goi: n.goi, cheDo: n.cheDo, khoiTao: true, dongBoFabi: n.dongBo, dvSua: { ...s.dvSua, [s.donVi]: { ten: n.tenDv, mst: n.mst, diaChi: n.diaChi } },
       ngayDauNam: { ...s.ngayDauNam, [s.donVi]: n.ngayDauNam }, namTaiChinh: { ...s.namTaiChinh, [s.donVi]: Number(n.ngayDauNam.slice(-4)) } })
     try { localStorage.removeItem(KEY) } catch { /* bỏ qua */ }
     setN(MAC_DINH)
@@ -342,16 +347,17 @@ export function OnboardFabi() {
                         <p className="muted ktf-p">Điền thông tin {n.loai === 'hkd' ? 'hộ kinh doanh' : 'công ty'} của bạn. Tên, địa chỉ tra cứu từ dữ liệu thuế.</p>
                         <div className="form-grid">
                           <div className="f c2"><label>Mã số thuế <em>*</em></label>
-                            <div className="row"><input className="inp" defaultValue="0319990001" />
-                              <button className="btn" onClick={() => sua({ traCuu: true })}>Tra cứu</button></div>
+                            <div className="row"><input className="inp" value={n.mst} placeholder="Nhập mã số thuế" onChange={e => sua({ mst: e.target.value })} />
+                              <button className="btn" onClick={() => sua({ traCuu: true, mst: n.mst || '0319 990 001',
+                                tenDv: n.loai === 'hkd' ? 'Hộ kinh doanh Ẩm thực Phố Mây' : 'Công ty TNHH Ẩm thực Phố Mây', diaChi: '86 Lê Lợi, phường Sài Gòn, TP.HCM' })}>Tra cứu</button></div>
                           </div>
                           <div className="f c2"><label>Ngày bắt đầu năm tài chính</label>
                             <Select className="inp" value={n.ngayDauNam} onChange={e => sua({ ngayDauNam: e.target.value })}>
                               {['01/01/2026', '01/04/2026', '01/07/2026', '01/10/2026'].map(d => <option key={d}>{d}</option>)}
                             </Select>
                           </div>
-                          <div className="f c4"><label>{n.loai === 'hkd' ? 'Tên hộ kinh doanh' : 'Tên công ty'} <em>*</em></label><input className="inp" value={n.traCuu ? (n.loai === 'hkd' ? 'Hộ kinh doanh Ẩm thực Phố Mây' : 'Công ty TNHH Ẩm thực Phố Mây') : ''} onChange={() => {}} /></div>
-                          <div className="f c4"><label>Địa chỉ</label><input className="inp" value={n.traCuu ? '86 Lê Lợi, phường Sài Gòn, TP.HCM' : ''} onChange={() => {}} /></div>
+                          <div className="f c4"><label>{n.loai === 'hkd' ? 'Tên hộ kinh doanh' : 'Tên công ty'} <em>*</em></label><input className="inp" value={n.tenDv} onChange={e => sua({ tenDv: e.target.value })} /></div>
+                          <div className="f c4"><label>Địa chỉ</label><input className="inp" value={n.diaChi} placeholder="Tra cứu theo mã số thuế hoặc nhập" onChange={e => sua({ diaChi: e.target.value })} /></div>
                         </div>
                       </>
                     )}

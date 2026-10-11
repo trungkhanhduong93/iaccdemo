@@ -2,7 +2,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import type { Goi } from './plan'
 import { CHE_DO, CHE_DO_MAC_DINH, chuanHoaCheDo, type CheDo } from './che-do'
-import { CHI_NHANH, DON_VI, type Role } from '../data/mock'
+import { CHI_NHANH, DON_VI, type DonVi, type Role } from '../data/mock'
 
 export type PpGtgt = 'tyLe' | 'khauTru'
 export type PpTndn = 'tyLe' | 'thuNhap'
@@ -22,6 +22,7 @@ export interface Session {
   namTaiChinh?: Record<string, number>  // năm tài chính từng đơn vị, khai ở Thông tin đơn vị
   ppGtgt: PpGtgt         // phương pháp tính thuế GTGT (TT58): 'tyLe' hoặc 'khauTru', mặc định 'tyLe'
   ppTndn: PpTndn         // phương pháp tính thuế TNDN (TT58): 'tyLe' hoặc 'thuNhap', mặc định 'thuNhap'
+  dvSua?: Record<string, Partial<Pick<DonVi, 'ten' | 'mst' | 'diaChi'>>>   // sửa đè tên, MST, địa chỉ từng đơn vị: đơn vị dùng thử từ FABi lấy tên FABi, chưa có MST (T138)
   dongBoFabi?: 'chiTiet' | 'kenh'   // cách đồng bộ bán hàng FABi (T113): mỗi hoá đơn một chứng từ, hoặc tổng hợp theo kênh mỗi ngày; thiếu là theo kênh
 }
 
@@ -102,7 +103,9 @@ export function useSession() {
   return c
 }
 
-export const donViHienTai = (s: Session) => DON_VI.find(d => d.id === s.donVi) ?? DON_VI[0]
+/** Đơn vị có áp phần sửa đè trong phiên (dvSua) */
+export const dvTheoPhien = (s: Pick<Session, 'dvSua'>, d: DonVi): DonVi => ({ ...d, ...s.dvSua?.[d.id] })
+export const donViHienTai = (s: Session) => dvTheoPhien(s, DON_VI.find(d => d.id === s.donVi) ?? DON_VI[0])
 export const cheDoHienTai = (s: Session) => CHE_DO[s.cheDo]
 /** Chi nhánh đang chọn trên thanh trên; undefined khi đang xem tất cả chi nhánh */
 export const chiNhanhHienTai = (s: Session) => CHI_NHANH.find(c => c.id === s.chiNhanh)

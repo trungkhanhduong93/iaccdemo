@@ -27,7 +27,7 @@ export function Login() {
     if (mk.length < 6) return setLoi('Mật khẩu có ít nhất 6 ký tự.')
     // Vai trò, tên theo tài khoản người dùng; email lạ thì vào vai trò kế toán trưởng
     const nd = NGUOI_DUNG.find(u => u.email === email.trim().toLowerCase())
-    set({ loggedIn: true, email, role: nd?.role ?? 'ktt', ...(nd ? { ten: nd.ten } : {}) })
+    set({ loggedIn: true, email, role: nd?.role ?? 'ktt', dvSua: undefined, ...(nd ? { ten: nd.ten } : {}) })   // đăng nhập thường bỏ phần sửa đè của đơn vị dùng thử từ FABi
     nav('/chon-don-vi')
   }
   return (

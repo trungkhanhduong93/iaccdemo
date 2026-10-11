@@ -1,6 +1,6 @@
 // Chọn đơn vị kế toán: một tài khoản làm cho nhiều mã số thuế (tính năng 11.13)
 import { Link, Navigate, useNavigate } from 'react-router-dom'
-import { useSession } from '../../app/session'
+import { dvTheoPhien, useSession } from '../../app/session'
 import { cheDoCuaGoi } from '../../app/che-do'
 import { DON_VI, KY_MO } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
@@ -18,12 +18,12 @@ export function ChonDonVi() {
         <h2 style={{ fontSize: 24, color: 'var(--ink)', fontWeight: 800 }}>Chọn đơn vị kế toán</h2>
         <p className="muted" style={{ margin: '6px 0 20px' }}>Tài khoản {s.email} làm việc ở {DON_VI.length} đơn vị. Mỗi đơn vị có sổ sách, gói thuê bao riêng.</p>
         <div className="stack" style={{ gap: 10 }}>
-          {DON_VI.map(d => (
+          {DON_VI.map(d0 => dvTheoPhien(s, d0)).map(d => (
             <button key={d.id} className="dv-card" onClick={() => { set({ donVi: d.id, goi: d.goi }); nav('/app') }}>
               <span className="dv-av">{d.viettat}</span>
               <span className="grow">
                 <b style={{ color: 'var(--ink)', fontSize: 15 }}>{d.ten}</b><br />
-                <small className="muted">MST {d.mst} · {cheDoCuaGoi(d.goi).soHieu} · {d.diem} điểm bán · Kỳ {KY_MO.thang}/{KY_MO.nam} đang mở</small>
+                <small className="muted">{d.mst ? `MST ${d.mst}` : 'Chưa khai MST'} · {cheDoCuaGoi(d.goi).soHieu} · {d.diem} điểm bán · Kỳ {KY_MO.thang}/{KY_MO.nam} đang mở</small>
               </span>
               <Pk g={d.goi} />
               <Icon n="chevr" />
