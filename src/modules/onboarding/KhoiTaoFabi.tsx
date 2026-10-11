@@ -108,6 +108,7 @@ export function KhoiTaoFabi() {
   const nav = useNavigate()
   const [n, setN] = useState<Nhap>(docNhap)
   const [tai, setTai] = useState(0)   // phần trăm lấy dữ liệu ở bước hoàn tất
+  const [veFabi, setVeFabi] = useState(false)   // bấm Để sau: quay lại FABi, tiến độ vẫn lưu
   const sua = (p: Partial<Nhap>) => setN(x => ({ ...x, ...p }))
 
   useEffect(() => {
@@ -154,11 +155,21 @@ export function KhoiTaoFabi() {
           <div className="brand" style={{ color: 'var(--ink)' }}><Logo cao={36} /></div>
           <span className="chip info"><Icon n="link" className="ic sm" />Mở từ FABi</span>
           <span className="grow" />
-          {n.b >= 0 && n.b < XONG && <span className="muted ktf-luu"><Icon n="check" className="ic sm" />Đã lưu, quay lại sau vẫn tiếp được</span>}
-          <button className="btn ghost" onClick={() => nav('/chon-don-vi')}>Để sau</button>
+          {!veFabi && n.b >= 0 && n.b < XONG && <span className="muted ktf-luu"><Icon n="check" className="ic sm" />Đã lưu, quay lại sau vẫn tiếp được</span>}
+          {!veFabi && <button className="btn ghost" title="Quay lại FABi, tiến độ đã lưu" onClick={() => setVeFabi(true)}>Để sau</button>}
         </div>
 
-        {n.b === -1 && (
+        {veFabi && (
+          <div className="card ktf-chao">
+            <div className="ktf-chao-ic"><Icon n="pos" className="ic lg" /></div>
+            <h1>Đang quay lại FABi</h1>
+            <p>Tiến độ khởi tạo đã lưu. Lần sau bấm sang IACC từ FABi sẽ tiếp tục đúng bước đang dừng.</p>
+            <p className="muted" style={{ fontSize: 12.5 }}>Bản mẫu chưa nối FABi thật.</p>
+            <button className="btn lg" onClick={() => setVeFabi(false)}>Mở lại khởi tạo</button>
+          </div>
+        )}
+
+        {!veFabi && n.b === -1 && (
           <div className="card ktf-chao">
             <div className="ktf-chao-ic"><Icon n="pos" className="ic lg" /></div>
             <h1>Chào {tenNguoi}</h1>
@@ -167,15 +178,15 @@ export function KhoiTaoFabi() {
               <span className="muted">Đã nhận từ FABi</span>
               <div><b>1</b> thương hiệu</div>
               <div><b>{CHI_NHANH.length}</b> cửa hàng</div>
-              <div><b>86</b> món</div>
               <div><b>{SO_KENH}</b> kênh bán</div>
+              <div><b>86</b> món</div>
             </div>
             <p className="muted" style={{ fontSize: 12.5 }}>Thông tin trên được điền sẵn, bạn chỉ cần xác nhận. Không phải nhập lại món, cửa hàng.</p>
             <button className="btn pri lg" onClick={() => sua({ b: 0 })}>Bắt đầu<Icon n="arrow" className="ic sm" /></button>
           </div>
         )}
 
-        {n.b >= 0 && n.b < XONG && (
+        {!veFabi && n.b >= 0 && n.b < XONG && (
           <>
             <div className="steps">{BUOC.map((t, i) => <div key={t} className={i <= n.b ? 'on' : ''}><i /><span>{i + 1}. {t}</span></div>)}</div>
             <div className="ktf-luoi">
@@ -372,7 +383,7 @@ export function KhoiTaoFabi() {
           </>
         )}
 
-        {n.b === XONG && (
+        {!veFabi && n.b === XONG && (
           <div className="card ktf-chao">
             {tai < 100
               ? <>
