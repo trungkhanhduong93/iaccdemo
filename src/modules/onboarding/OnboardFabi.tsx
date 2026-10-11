@@ -163,7 +163,6 @@ export interface Nhap {
   kenhOnline: string[] // kênh bán online lấy từ FABi
   kenhSan: string[]    // kênh bán qua sàn đã khấu trừ thuế thay
   dongBo: 'chiTiet' | 'kenh'
-  gioChot: string
   soDu: 'nhanh' | 'excel' | 'sau'
   tienMat: string
   tienGui: string
@@ -171,7 +170,7 @@ export interface Nhap {
 export const MAC_DINH: Nhap = {
   b: -2, mo: false, loai: 'dn', nhom: nhomTheoDt(DT_FABI), ppHkd: 'loiNhuan', goi: goiGoiY('dn', 'loiNhuan'), cheDo: cheDoMoi('dn', goiGoiY('dn', 'loiNhuan')), traCuu: true, ngayDauNam: '01/01/2026', chon: CHI_NHANH.map(c => c.id),
   cnChinh: '', kenhOnline: KENH_ONLINE, kenhSan: KENH_SAN,
-  dongBo: 'kenh', gioChot: '23:30',
+  dongBo: 'kenh',
   soDu: 'nhanh', tienMat: '', tienGui: '',
 }
 
@@ -393,11 +392,6 @@ export function OnboardFabi() {
                             <span><b>Tổng hợp theo kênh</b><small>Mỗi ngày, mỗi chi nhánh, mỗi kênh bán một chứng từ. Sổ gọn</small></span></button>
                           <button className={`opt ${n.dongBo === 'chiTiet' ? 'on' : ''}`} onClick={() => sua({ dongBo: 'chiTiet' })}><span className="radio" />
                             <span><b>Chi tiết theo hoá đơn</b><small>Mỗi hoá đơn FABi một chứng từ. Tra được từng đơn</small></span></button>
-                        </div>
-                        <div className="f" style={{ marginTop: 14, maxWidth: 260 }}><label>Giờ chốt cuối ngày</label>
-                          <Select className="inp" value={n.gioChot} onChange={e => sua({ gioChot: e.target.value })}>
-                            {['22:00', '23:00', '23:30', '02:00 hôm sau'].map(g => <option key={g}>{g}</option>)}
-                          </Select>
                         </div>
                         <div className="ktf-xem">
                           <Icon n="receipt" />
