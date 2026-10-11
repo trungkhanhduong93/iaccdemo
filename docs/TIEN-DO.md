@@ -4,13 +4,14 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T149.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T150.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T150 | Danh sách thẻ chi phí: số thẻ link xanh mở thẻ; thẻ mở ở chế độ xem, bấm Sửa (Ctrl+E) mới sửa, Huỷ về xem như phiếu chi. Thông tin đơn vị: phương pháp thuế GTGT, TNCN, TNDN lên khối Thông tin kê khai, khoá theo loại hình, nhóm doanh thu, gói | dinhlanphuongipacc | Đang làm | Sửa file dùng chung: `CatalogScreen.tsx`, `types.ts`, `app.css` (mục T135), `HeThong.tsx` (Thông tin đơn vị của PhuongXT, T145) |
 | T146 | Vẽ lại sơ đồ Khởi tạo danh mục kiểu làn như Thu chi, 7 làn đánh số theo thứ tự phụ thuộc (nền tảng, chi phí, kho, hàng hoá, đối tượng, tiền, hạch toán); chuyển danh mục Tài sản cố định 1.13 sang phân hệ TSCĐ | Trum | Đang làm | Điều phối anti. Sửa `danh-muc/quy-trinh.ts`, `danh-muc/index.ts`, `tscd/index.ts`, `QuyTrinhScreen.tsx`, `SidebarFlyout.tsx` |
 | T147 | Danh mục lọc theo thông tư chọn ở Hệ thống (gói và thông tư chọn riêng): thông tư không ghi Nợ/Có (TT152, TT58) ẩn Hệ thống tài khoản, Bút toán tự động, cột tài khoản | Trum | Đang làm | Điều phối anti. Sửa `registry.ts`, `danh-muc/index.ts`, `CatalogScreen.tsx` |
 | T148 | Danh mục: bỏ trường Thuộc nhóm ở 5 danh mục nhóm; tài khoản thêm ô tích Tổng hợp (ô chọn cha đổi tên Thuộc tài khoản); cố định độ rộng cột khi chuyển danh mục; nút Tuỳ chọn cột cho mọi danh mục, đủ trường của form | Trum | Đang làm | Điều phối anti. Sửa `CatalogScreen.tsx`, `HeThongTaiKhoan.tsx`, `truong-dm.ts`, `danh-muc/data.ts`, `app.css` |
