@@ -27,7 +27,7 @@
   - Nút "Để sau" là quay lại FABi: hiện màn "Đang quay lại FABi", bản mẫu có nút mở lại.
   - Màn giới thiệu giao diện kế toán: khung giao diện thu nhỏ đánh số 4 vùng, hỏi "Bạn có muốn dùng thử không?".
   - Bấm Dùng thử thì vào phần mềm gói Free (TT152). 6 bước khởi tạo thành popup đè lên phần mềm (`src/modules/onboarding/OnboardFabi.tsx`, đặt trong `src/app/Shell.tsx`). Đóng popup (nút X, Esc) thì còn thẻ nhắc nổi góc dưới phải, bấm Tiếp tục mở lại đúng bước. Xong popup thì đổi sang gói, chế độ đã chọn.
-  - Đang làm dở mà mở lại `/khoi-tao-fabi` thì vào thẳng phần mềm, mở popup đúng bước.
+  - Bản mẫu: mỗi lần mở `/khoi-tao-fabi` (nút "Thử mở từ FABi") coi như đơn vị mới chưa dùng kế toán, xoá tiến độ khởi tạo cũ, bắt đầu từ màn chào (PhuongXT chốt). Tiến độ dở chỉ giữ trong phần mềm, qua thẻ Tiếp tục.
 - Gộp bước Loại hình và Chọn gói thành "Loại hình và gói" (popup còn 5 bước): chọn loại hình, nhóm hộ kinh doanh, rồi bấm chọn gói ngay bên dưới; tính năng gói thu vào dòng "Xem N tính năng". Khung "Bạn sẽ có gì" ghi gói, chế độ, giá (theo năm, theo tháng) và điểm nổi bật của gói, bỏ dòng nói về thông tư khác chế độ đang chọn.
 - Bảng giá và điểm nổi bật gói chuyển từ `GoiThueBao.tsx` sang `src/app/plan.ts` (`GIA_GOI_NAM`, `GIA_GOI_THANG`, `DIEM_NOI_BAT`) để hai màn dùng chung.
 - Bước Đơn vị: chữ đổi theo loại hình (công ty, hộ kinh doanh); thêm ngày bắt đầu năm tài chính, ghi vào `ngayDauNam`, `namTaiChinh` của phiên; bỏ ngày bắt đầu dùng sổ, số dư đầu kỳ và số chứng từ POS tính từ ngày đầu năm.

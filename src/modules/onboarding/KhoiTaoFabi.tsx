@@ -1,17 +1,21 @@
 // Màn mở từ FABi (T138): chào kèm thông tin lấy từ FABi, giới thiệu giao diện kế toán, hỏi dùng thử.
 // Dùng thử thì vào phần mềm gói Free; các bước khởi tạo mở thành popup trong phần mềm (OnboardFabi). Màn /khoi-tao giữ cho người tự đăng ký.
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSession } from '../../app/session'
 import { CHI_NHANH } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
 import { Logo } from '../../ui/Logo'
-import { SO_KENH, docNhap, luuNhap, type Nhap } from './OnboardFabi'
+import { KEY, MAC_DINH, SO_KENH, luuNhap, type Nhap } from './OnboardFabi'
 
 export function KhoiTaoFabi() {
   const { s, set } = useSession()
   const nav = useNavigate()
-  const [n, setN] = useState<Nhap>(docNhap)
+  // Bản mẫu: mỗi lần mở từ FABi coi như đơn vị mới chưa dùng kế toán, xoá tiến độ khởi tạo cũ, bắt đầu từ màn chào
+  const [n, setN] = useState<Nhap>(() => {
+    try { localStorage.removeItem(KEY) } catch { /* bỏ qua */ }
+    return MAC_DINH
+  })
   const [veFabi, setVeFabi] = useState(false)   // bấm Để sau: quay lại FABi, tiến độ vẫn lưu
   const sua = (p: Partial<Nhap>) => setN(x => ({ ...x, ...p }))
   const tenNguoi = s.ten.split(' ').slice(-2).join(' ')
@@ -20,11 +24,6 @@ export function KhoiTaoFabi() {
     nav('/app')
   }
   const dungThu = () => { luuNhap({ ...n, b: 0, mo: true }); vaoApp() }
-
-  // Đã dùng thử, bấm sang lại từ FABi thì vào phần mềm, mở popup đúng bước đang dừng
-  useEffect(() => {
-    if (n.b >= 0) { luuNhap({ ...n, mo: true }); vaoApp() }
-  }, [])   // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="ktf">
@@ -40,7 +39,7 @@ export function KhoiTaoFabi() {
           <div className="card ktf-chao">
             <div className="ktf-chao-ic"><Icon n="pos" className="ic lg" /></div>
             <h1>Đang quay lại FABi</h1>
-            <p>Tiến độ khởi tạo đã lưu. Lần sau bấm sang IACC từ FABi sẽ tiếp tục đúng bước đang dừng.</p>
+            <p>Bạn có thể sang IACC từ FABi bất cứ lúc nào để bắt đầu sổ sách.</p>
             <p className="muted" style={{ fontSize: 12.5 }}>Bản mẫu chưa nối FABi thật.</p>
             <button className="btn lg" onClick={() => setVeFabi(false)}>Mở lại khởi tạo</button>
           </div>
