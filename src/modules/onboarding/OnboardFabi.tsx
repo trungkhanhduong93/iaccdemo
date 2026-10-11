@@ -233,7 +233,7 @@ export function OnboardFabi() {
   const bat = (ds: string[], k: string) => ds.includes(k) ? ds.filter(x => x !== k) : [...ds, k]
   const doiKenh = (k: string) => { const on = bat(n.kenhOnline, k); sua({ kenhOnline: on, kenhSan: n.kenhSan.filter(x => on.includes(x)) }) }
   const xong = () => {
-    set({ goi: n.goi, cheDo: n.cheDo, khoiTao: true, dongBoFabi: n.dongBo, dvSua: { ...s.dvSua, [s.donVi]: { ten: n.tenDv, mst: n.mst, diaChi: n.diaChi } },
+    set({ goi: n.goi, cheDo: n.cheDo, khoiTao: true, dongBoFabi: n.dongBo, ...(s.dvMoi && s.donVi === s.dvMoi.id ? { dvMoi: { ...s.dvMoi, ten: n.tenDv, mst: n.mst, diaChi: n.diaChi, goi: n.goi, diem: n.chon.length } } : {}),
       ngayDauNam: { ...s.ngayDauNam, [s.donVi]: n.ngayDauNam }, namTaiChinh: { ...s.namTaiChinh, [s.donVi]: Number(n.ngayDauNam.slice(-4)) } })
     try { localStorage.removeItem(KEY) } catch { /* bỏ qua */ }
     setN(MAC_DINH)
@@ -348,8 +348,8 @@ export function OnboardFabi() {
                         <div className="form-grid">
                           <div className="f c2"><label>Mã số thuế <em>*</em></label>
                             <div className="row"><input className="inp" value={n.mst} placeholder="Nhập mã số thuế" onChange={e => sua({ mst: e.target.value })} />
-                              <button className="btn" onClick={() => sua({ traCuu: true, mst: n.mst || '0319 990 001',
-                                tenDv: n.loai === 'hkd' ? 'Hộ kinh doanh Ẩm thực Phố Mây' : 'Công ty TNHH Ẩm thực Phố Mây', diaChi: '86 Lê Lợi, phường Sài Gòn, TP.HCM' })}>Tra cứu</button></div>
+                              <button className="btn" onClick={() => sua({ traCuu: true, mst: n.mst || '0319 990 088',   // kết quả tra cứu mẫu, khác 3 đơn vị mẫu
+                                tenDv: n.loai === 'hkd' ? 'Hộ kinh doanh Nhà hàng Phố Mây' : 'Công ty TNHH Nhà hàng Phố Mây', diaChi: '24 Nguyễn Huệ, phường Sài Gòn, TP.HCM' })}>Tra cứu</button></div>
                           </div>
                           <div className="f c2"><label>Ngày bắt đầu năm tài chính</label>
                             <Select className="inp" value={n.ngayDauNam} onChange={e => sua({ ngayDauNam: e.target.value })}>

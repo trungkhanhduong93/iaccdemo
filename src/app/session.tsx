@@ -22,7 +22,7 @@ export interface Session {
   namTaiChinh?: Record<string, number>  // năm tài chính từng đơn vị, khai ở Thông tin đơn vị
   ppGtgt: PpGtgt         // phương pháp tính thuế GTGT (TT58): 'tyLe' hoặc 'khauTru', mặc định 'tyLe'
   ppTndn: PpTndn         // phương pháp tính thuế TNDN (TT58): 'tyLe' hoặc 'thuNhap', mặc định 'thuNhap'
-  dvSua?: Record<string, Partial<Pick<DonVi, 'ten' | 'mst' | 'diaChi'>>>   // sửa đè tên, MST, địa chỉ từng đơn vị: đơn vị dùng thử từ FABi lấy tên FABi, chưa có MST (T138)
+  dvMoi?: DonVi        // đơn vị mới tạo khi dùng thử từ FABi (T138): tên FABi, chưa có MST; 3 đơn vị mẫu giữ nguyên
   dongBoFabi?: 'chiTiet' | 'kenh'   // cách đồng bộ bán hàng FABi (T113): mỗi hoá đơn một chứng từ, hoặc tổng hợp theo kênh mỗi ngày; thiếu là theo kênh
 }
 
@@ -103,9 +103,9 @@ export function useSession() {
   return c
 }
 
-/** Đơn vị có áp phần sửa đè trong phiên (dvSua) */
-export const dvTheoPhien = (s: Pick<Session, 'dvSua'>, d: DonVi): DonVi => ({ ...d, ...s.dvSua?.[d.id] })
-export const donViHienTai = (s: Session) => dvTheoPhien(s, DON_VI.find(d => d.id === s.donVi) ?? DON_VI[0])
+/** Các đơn vị của tài khoản: 3 đơn vị mẫu, thêm đơn vị mới tạo từ FABi nếu có */
+export const dsDonVi = (s: Pick<Session, 'dvMoi'>): DonVi[] => s.dvMoi ? [...DON_VI, s.dvMoi] : DON_VI
+export const donViHienTai = (s: Session) => dsDonVi(s).find(d => d.id === s.donVi) ?? DON_VI[0]
 export const cheDoHienTai = (s: Session) => CHE_DO[s.cheDo]
 /** Chi nhánh đang chọn trên thanh trên; undefined khi đang xem tất cả chi nhánh */
 export const chiNhanhHienTai = (s: Session) => CHI_NHANH.find(c => c.id === s.chiNhanh)
