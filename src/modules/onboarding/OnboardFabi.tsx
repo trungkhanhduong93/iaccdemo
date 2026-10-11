@@ -232,7 +232,7 @@ export function OnboardFabi() {
       ngayDauNam: { ...s.ngayDauNam, [s.donVi]: n.ngayDauNam }, namTaiChinh: { ...s.namTaiChinh, [s.donVi]: Number(n.ngayDauNam.slice(-4)) } })
     try { localStorage.removeItem(KEY) } catch { /* bỏ qua */ }
     setN(MAC_DINH)
-    nav('/app')
+    nav('/app/danh-muc')   // vào phân hệ Danh mục để khởi tạo danh mục
   }
   const tiep = () => { sua({ b: n.b + 1 }); if (n.b === XONG - 1) setTai(0) }
   /** Đổi loại hình, nhóm hay cách tính thuế thì gói, chế độ về gợi ý mới */
