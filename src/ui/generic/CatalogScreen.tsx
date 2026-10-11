@@ -259,7 +259,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
           tenNgan={sc.ngan ?? ten}
           scSlug={sc.slug}
           nutChanPhu={val => (
-            Boolean(edit.ma || edit.ten) && sc.slug === 'nhom-hang-hoa' ? (
+            Boolean(edit.ma || edit.ten) && sc.slug === 'nhom-hang-hoa' && (s.goi === 'PL' || s.goi === 'PR') ? (   // gói Free, Standard không có ngầm định nhóm (T144)
               <button
                 type="button"
                 className="btn"
@@ -370,7 +370,7 @@ export function CatalogPanel({
   }, [edit, onDong])
 
   const dsKhoi: KhoiDM[] = useMemo(() => {
-    if (cauHinh?.khoi) return cauHinh.khoi
+    if (cauHinh?.khoi) return cauHinh.khoi.filter(kh => !kh.goi || kh.goi.includes(s.goi))
     if (cols0.length > 0) {
       const dsTuCot: TruongDM[] = cols0.map(c => ({
         k: c.k,
@@ -381,7 +381,7 @@ export function CatalogPanel({
       return [{ ten: 'Thông tin chung', truong: dsTuCot }]
     }
     return []
-  }, [cauHinh, cols0])
+  }, [cauHinh, cols0, s.goi])
 
   const dsTk = useMemo(() => heThongTk(s.cheDo), [s.cheDo])
   // Lựa chọn của ô chọn tính một lần theo khoá trường, dùng lại giữa các lần vẽ
@@ -395,7 +395,7 @@ export function CatalogPanel({
     let ds: { v: string; t: string }[] = []
     // ô Nhóm lấy nhóm có trong dữ liệu trước, để dòng đang sửa luôn có nhóm của nó trong danh sách (T87)
     if (tr.k === 'nhom' && nhomLoc === 'nhom' && nhoms.length > 0) ds = nhoms.map(d => ({ v: d, t: d }))
-    else if (tr.ds && tr.ds.length > 0) ds = tr.ds.map(d => ({ v: d, t: d }))
+    else if (tr.ds && tr.ds.length > 0) ds = tr.ds.map(d => ({ v: d, t: tr.nhanDs ? tr.nhanDs(d) : d }))
     else if (tr.k.toLowerCase().startsWith('tk')) ds = dsTkChon
     else if (tr.k === 'dvt') ds = TEN_DVT.map(d => ({ v: d, t: d }))
     const kq = [dau, ...ds]
@@ -413,7 +413,7 @@ export function CatalogPanel({
     return v ?? ''
   }
 
-  const hienO = (tr: TruongDM) => !tr.hien || tr.hien(formVal)
+  const hienO = (tr: TruongDM) => (!tr.goi || tr.goi.includes(s.goi)) && (!tr.hien || tr.hien(formVal))
   // Nút phụ ở chân panel theo màn (vd Áp cho hàng hoá trong nhóm, T136)
   const nutPhu = typeof nutChanPhu === 'function' ? nutChanPhu(formVal) : nutChanPhu
   const isMo = (tenK: string) => moKhoi[tenK] !== false
@@ -423,7 +423,7 @@ export function CatalogPanel({
   const doiO = (k: string, val: unknown) => {
     let m = { ...formVal, [k]: val }
     if (cauHinh?.doi) m = { ...m, ...cauHinh.doi(k, m, all) }
-    if (cauHinh?.hoiDoi) {
+    if (cauHinh?.hoiDoi && (!cauHinh.goiHoiDoi || cauHinh.goiHoiDoi.includes(s.goi))) {
       const hd = cauHinh.hoiDoi(k, m, all)
       if (hd) {
         if (hd.dien) m = { ...m, ...hd.dien }
