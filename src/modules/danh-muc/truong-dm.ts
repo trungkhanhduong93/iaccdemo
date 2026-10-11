@@ -1,7 +1,9 @@
 // Khai báo trường thông tin panel Thêm / Sửa cho các danh mục (T70)
 // Lấy theo bảng DM_ tương ứng trong CSDL kế toán iPOS (schema-dm.md)
-import { DON_VI_TINH, TEN_DVT, TEN_NHOM_HANG, TEN_NHOM_DOI_TUONG, TEN_NHOM_MUC_CP, TEN_NHOM_CONG_VIEC, TEN_NHOM_KHO, TEN_MUC_CHI_PHI, TEN_CONG_VIEC_17, NHOM_HANG, TEN_THUONG_HIEU } from './data'
-import { CHI_NHANH, KHACH, KHO, NCC } from '../../data/mock'
+import { DON_VI_TINH, TEN_DVT, TEN_NHOM_HANG, TEN_NHOM_DOI_TUONG, TEN_NHOM_MUC_CP, TEN_NHOM_KHO, TEN_MUC_CHI_PHI, TEN_CONG_VIEC_17, NHOM_HANG, TEN_THUONG_HIEU, DS_THUONG_HIEU,
+  DS_HANG_HOA_12, dienGiaiQd, maDvt, maHang, maKho } from './data'
+import { CHI_NHANH, HOM_NAY, KHACH, KHO, NCC } from '../../data/mock'
+import { dmy } from '../../ui/format'
 import { NGANH_NGHE_CON, timNganhNghe } from './nganh-nghe'
 import { KhoiQuyDoi } from './QuyDoiDvt'
 
@@ -10,10 +12,16 @@ import type { Col, Row } from '../types'
 import type { Goi } from '../../app/plan'
 import type { CheDo } from '../../app/che-do'
 
-export type KieuTruong = 'chu' | 'so' | 'tien' | 'chon' | 'chonNhieu' | 'chonTim' | 'tich' | 'ngay' | 'nhieuDong'   // chonNhieu: chọn nhiều, lưu dạng "A, B", chọn đủ lưu "Tất cả" (T144); chonTim: chọn một có ô tìm, dòng hiện tên và mã (T151)
+export type KieuTruong = 'chu' | 'so' | 'tien' | 'chon' | 'chonNhieu' | 'chonTim' | 'tich' | 'ngay' | 'khoangNgay' | 'nhieuDong'   // chonNhieu: chọn nhiều, lưu dạng "A, B", chọn đủ lưu "Tất cả" (T144); chonTim: chọn một có ô tìm, dòng hiện tên và mã (T151); khoangNgay: lưu "dd/mm/yyyy - dd/mm/yyyy" (T154)
 
 /** Đơn vị tính hiện mã và tên trong ô chọn, vd "KG - kg"; giá trị lưu vẫn là tên (T144) */
 const nhanDvt = (ten: string) => { const d = DON_VI_TINH.find(x => x[1] === ten); return d ? `${d[0]} - ${d[1]}` : ten }
+
+/** Mã nhà cung cấp, thương hiệu, chi nhánh theo tên cho dòng "Mã: X" của ô chọn (T154) */
+const maNcc = (ten: string) => NCC.find(n => n.ten === ten)?.ma ?? ''
+const maThuongHieu = (ten: string) => DS_THUONG_HIEU.find(t => t.ten === ten)?.ma ?? ''
+const maChiNhanh = (ten: string) => CHI_NHANH.find(c => c.ten === ten)?.id.toUpperCase() ?? ''
+const TEN_HANG = DS_HANG_HOA_12.map(h => h.ten)
 
 /** Ngành nghề con trong ô chọn: lưu mã, hiện tên (T151) */
 const MA_NGANH_NGHE = NGANH_NGHE_CON.map(n => n.ma)
@@ -48,6 +56,7 @@ export interface TruongDM {
   nhanDs?: (v: string) => string               // nhãn hiện trong ô chọn khác giá trị lưu, vd đơn vị tính hiện mã và tên (T144)
   chiDoc?: boolean                             // ô tự sinh, không sửa được
   goiY?: string                                // chữ mờ khi ô chọn nhiều để trống (T151)
+  maDs?: (v: string) => string                 // mã của mục trong ô chọn nhiều, ô chọn có tìm: dòng hiện "Mã: X", ô hiện "Tên (MÃ)" (T154)
   // Ô ngày khi thêm mới so với ngày đầu năm của đơn vị: 'tu' phải từ ngày đầu năm trở đi, 'truoc' phải trước ngày đầu năm (khai số dư)
   dauNam?: (v: Record<string, any>) => 'tu' | 'truoc' | undefined
 }
@@ -60,6 +69,7 @@ export interface KhoiDM {
   // khối dạng lưới tự tính từ giá trị form; doi ghi giá trị khi gõ trong lưới
   bang?: (v: Record<string, any>, doi: (k: string, val: unknown) => void) => { cols: Col[]; rows: Row[]; sum?: Row; rowCls?: (r: Row) => string; chan?: ReactNode; trong: string }
   ve?: (v: Record<string, any>, doi: (k: string, val: unknown) => void) => ReactNode   // khối vẽ riêng (vd Thông tin mua: ô nhập, hoặc chỉ xem khi lấy từ phiếu gốc)
+  congTac?: string   // khoá ô tích hiện thành công tắc ở đầu khối, vd '_tt' trạng thái (T154)
 }
 
 export interface CauHinhDM {
@@ -68,6 +78,7 @@ export interface CauHinhDM {
   moTa?: string                                      // dòng phụ dưới tên khi thêm mới
   soQuocTe?: boolean                                 // ô số, ô tiền theo kiểu quốc tế: 1,234,567.89
   toanMan?: { icon: string }                         // mở toàn màn hình như form chứng từ, khối lưới thành tab cạnh tab Lịch sử
+  haiCot?: boolean                                   // lưới ô nhập luôn 2 cột như form iFaster (T154)
   // Nhiều kiểu thêm mới trên cùng màn, mỗi kiểu một nút; kiểu lưu ở form._kieu, mở thẳng bằng ?moi=<k>
   bien?: { k: string; ten: string; nut: string; icon?: string; goi?: Goi[] }[]   // goi: chỉ hiện ở các gói này
   moi?: (rows: Row[], ctx: { kieu?: string; ngayDauNam: string }) => Record<string, any>   // giá trị sẵn khi thêm mới theo kiểu thêm mới, ngày đầu năm của đơn vị
@@ -112,9 +123,10 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
         truong: [
           { k: 'nganhNghe', nhan: 'Nhóm ngành nghề con', kieu: 'chonTim', batBuoc: true, caHang: true, ds: MA_NGANH_NGHE, nhanDs: tenNganhNghe },
           { k: 'nhomNganh', nhan: 'Nhóm ngành nghề', kieu: 'chu', chiDoc: true, caHang: true },
-          { k: 'thueGtgt', nhan: 'Thuế GTGT (%)', kieu: 'so' },
-          { k: 'thueTn', nhan: 'Thuế TNCN (%)', kieu: 'so', cheDo: ['TT152'] },
-          { k: 'thueTn', nhan: 'Thuế TNDN (%)', kieu: 'so', cheDo: ['TT58'] },
+          // T154: 2 tỷ lệ chỉ đọc, tự điền theo ngành nghề con; chưa chọn ngành nghề thì trống
+          { k: 'thueGtgt', nhan: 'Thuế GTGT (%)', kieu: 'so', chiDoc: true },
+          { k: 'thueTn', nhan: 'Thuế TNCN (%)', kieu: 'so', chiDoc: true, cheDo: ['TT152'] },
+          { k: 'thueTn', nhan: 'Thuế TNDN (%)', kieu: 'so', chiDoc: true, cheDo: ['TT58'] },
         ],
       },
       {
@@ -137,13 +149,13 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
           { k: 'khoMacDinh', nhan: 'Kho mặc định', kieu: 'chon', ds: ['Kho tổng', 'Kho bếp Lê Lợi', 'Kho bar Lê Lợi', 'Kho bếp Thảo Điền', 'Kho bar Thảo Điền'], cot: 'DEFAULT_WAREHOUSE_ID' },
           { k: 'tonToiThieu', nhan: 'Tồn tối thiểu', kieu: 'so', cot: 'MIN_QUANTITY' },
           { k: 'tonToiDa', nhan: 'Tồn tối đa', kieu: 'so', cot: 'MAX_QUANTITY' },
-          { k: 'khoTheoDoi', nhan: 'Kho theo dõi', kieu: 'chonNhieu', ds: KHO, caHang: true, hien: coTonKho, goiY: 'Để trống nếu hàng hoá theo dõi tồn tại mọi kho' },   // T151
+          { k: 'khoTheoDoi', nhan: 'Kho theo dõi', kieu: 'chonNhieu', ds: KHO, maDs: maKho, caHang: true, hien: coTonKho, goiY: 'Để trống nếu hàng hoá theo dõi tồn tại mọi kho' },   // T151
         ],
       },
       {
         ten: 'Nhà cung cấp',
         truong: [
-          { k: 'ncc', nhan: 'Nhà cung cấp', kieu: 'chonNhieu', ds: NCC.map(n => n.ten), caHang: true, goiY: 'Để trống nếu mọi nhà cung cấp đều cung cấp được' },   // T151
+          { k: 'ncc', nhan: 'Nhà cung cấp', kieu: 'chonNhieu', ds: NCC.map(n => n.ten), maDs: maNcc, caHang: true, goiY: 'Để trống nếu hàng hoá này được tất cả nhà cung cấp đáp ứng' },   // T151
         ],
       },
       {
@@ -174,7 +186,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
       if (!nhomMoi) return null
 
       const O_NGAM_DINH: (keyof typeof nhomMoi)[] = [
-        'tkKho', 'tkDt', 'tkGv', 'tkCp', 'tkTraLai', 'mucCp', 'ppGia', 'ts', 'loai', 'tonKho', 'khoMacDinh',
+        'tkKho', 'tkDt', 'tkGv', 'tkCp', 'tkTraLai', 'mucCp', 'ppGia', 'ts',   // T154: nhóm không còn loại hàng, tồn kho, kho mặc định
       ]
       const TEN_O: Record<string, string> = {
         tkKho: 'TK kho',
@@ -185,9 +197,6 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
         mucCp: 'Mục chi phí',
         ppGia: 'Phương pháp tính giá',
         ts: 'Thuế suất GTGT',
-        loai: 'Loại hàng hoá',
-        tonKho: 'Theo dõi tồn kho',
-        khoMacDinh: 'Kho mặc định',
       }
 
       const dien: Record<string, any> = {}
@@ -195,18 +204,15 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
       const tenDoi: string[] = []
 
       for (const f of O_NGAM_DINH) {
-        let valNhom: any = nhomMoi[f]
+        const valNhom = nhomMoi[f]
         if (valNhom === undefined) continue
-        if (f === 'tonKho') valNhom = valNhom ? 1 : 0
         const valForm = v[f]
         const laRong = valForm === undefined || valForm === null || valForm === ''
 
         if (laRong) {
           dien[f] = valNhom
         } else {
-          const khac = f === 'tonKho'
-            ? (valForm === 0 || valForm === '0' || valForm === false || valForm === 'false' ? 0 : 1) !== valNhom
-            : String(valForm) !== String(valNhom)
+          const khac = String(valForm) !== String(valNhom)
           if (khac) {
             sua[f] = valNhom
             tenDoi.push(TEN_O[f] ?? f)
@@ -247,26 +253,25 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
     ],
   },
 
-  // 1.4 Quy đổi ĐVT (chưa có bảng DM_ trong schema, chờ đối chiếu)
+  // 1.4 Quy đổi ĐVT (chưa có bảng DM_ trong schema, chờ đối chiếu). Form theo iFaster: 1 Từ ĐVT = tỷ lệ Đến ĐVT, trạng thái là công tắc (T154)
   '1.4': {
+    haiCot: true,
     khoi: [
       {
         ten: 'Thông tin chung',
+        congTac: '_tt',
         truong: [
-          { k: 'hang', nhan: 'Hàng hoá', kieu: 'chu', batBuoc: true, caHang: true },
-          { k: 'goc', nhan: 'ĐVT gốc', kieu: 'chon', ds: TEN_DVT },
-          { k: 'qd', nhan: 'ĐVT quy đổi', kieu: 'chon', ds: TEN_DVT },
+          { k: 'tu', nhan: 'Từ đơn vị tính', kieu: 'chonTim', batBuoc: true, ds: TEN_DVT, maDs: maDvt },
+          { k: 'den', nhan: 'Đến đơn vị tính', kieu: 'chonTim', batBuoc: true, ds: TEN_DVT, maDs: maDvt },
           { k: 'tl', nhan: 'Tỷ lệ quy đổi', kieu: 'so', batBuoc: true },
-          { k: 'dung', nhan: 'Áp dụng khi', kieu: 'chu', caHang: true },
-        ],
-      },
-      {
-        ten: 'Trạng thái',
-        truong: [
-          { k: '_tt', nhan: 'Đang sử dụng', kieu: 'tich', caHang: true },
+          { k: 'dienGiai', nhan: 'Diễn giải', kieu: 'chu', chiDoc: true },
+          { k: 'hangAd', nhan: 'Hàng hoá áp dụng', kieu: 'chonNhieu', ds: TEN_HANG, maDs: maHang, caHang: true, goiY: 'Để trống nếu áp dụng cho mọi hàng hoá' },
+          { k: 'moTa', nhan: 'Mô tả', kieu: 'nhieuDong' },
         ],
       },
     ],
+    doi: (k, v) => k === 'tu' || k === 'den' || k === 'tl' ? { dienGiai: dienGiaiQd(v.tu, v.den, v.tl) } : {},
+    loi: v => v.tu && v.tu === v.den ? 'Đến đơn vị tính phải khác từ đơn vị tính' : null,
   },
 
   // 1.5 Đối tượng (DM_PR_DETAIL)
@@ -349,7 +354,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
     ],
   },
 
-  // 1.7 Công việc (DM_JOB)
+  // 1.7 Công việc (DM_JOB): chỉ mã, tên, mô tả, trạng thái (T154)
   '1.7': {
     khoi: [
       {
@@ -357,17 +362,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
         truong: [
           { k: 'ma', nhan: 'Mã công việc', kieu: 'chu', batBuoc: true, cot: 'JOB_ID' },
           { k: 'ten', nhan: 'Tên công việc', kieu: 'chu', batBuoc: true, caHang: true, cot: 'JOB_NAME' },
-          { k: 'nhom', nhan: 'Nhóm công việc', kieu: 'chon', ds: TEN_NHOM_CONG_VIEC, cot: 'JOB_CLASS_ID' },
-          { k: 'pt', nhan: 'Người phụ trách', kieu: 'chu', cot: 'PERSON_IN_CHARGE' },
-          { k: 'tg', nhan: 'Thời gian', kieu: 'chu', cot: 'PERIOD' },
-          { k: 'doiTuong', nhan: 'Đối tượng liên quan', kieu: 'chu', cot: 'PR_DETAIL_ID' },
-        ],
-      },
-      {
-        ten: 'Hạch toán',
-        cheDo: ['TT133', 'TT99'],
-        truong: [
-          { k: 'tkCp', nhan: 'TK chi phí dở dang', kieu: 'chon', cot: 'EXPENSE_ACCOUNT_ID' },
+          { k: 'moTa', nhan: 'Mô tả', kieu: 'nhieuDong' },
         ],
       },
       {
@@ -390,7 +385,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
           { k: 'cn', nhan: 'Chi nhánh trực thuộc', kieu: 'chon', ds: ['Lê Lợi', 'Thảo Điền', 'Phan Xích Long', 'Văn phòng'], cot: 'ORGANIZATION_ID' },
           { k: 'loai', nhan: 'Nhóm kho', kieu: 'chon', ds: TEN_NHOM_KHO, cot: 'WAREHOUSE_CLASS_ID', goi: ['S', 'PL', 'PR'] },   // gói Free không có nhóm kho (T143)
           { k: 'tk', nhan: 'Thủ kho', kieu: 'chu', cot: 'KEEPER' },
-          { k: 'thuongHieu', nhan: 'Thương hiệu', kieu: 'chonNhieu', ds: TEN_THUONG_HIEU, caHang: true, goiY: 'Để trống nếu kho dùng cho mọi thương hiệu' },   // T151
+          { k: 'thuongHieu', nhan: 'Thương hiệu', kieu: 'chonNhieu', ds: TEN_THUONG_HIEU, maDs: maThuongHieu, caHang: true, goiY: 'Để trống nếu kho dùng cho mọi thương hiệu' },   // T151
         ],
       },
       {
@@ -527,7 +522,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
           { k: 'ten', nhan: 'Tên quỹ', kieu: 'chu', batBuoc: true, caHang: true },
           { k: 'loai', nhan: 'Loại quỹ', kieu: 'chon', ds: ['Tiền mặt', 'Ngân hàng'], batBuoc: true },
           { k: 'stk', nhan: 'Số tài khoản / Ngân hàng', kieu: 'chu', hien: v => v.loai !== 'Tiền mặt' },   // quỹ tiền mặt không có số tài khoản (T144)
-          { k: 'cn', nhan: 'Chi nhánh áp dụng', kieu: 'chonNhieu', ds: CHI_NHANH.map(c => c.ten) },   // một quỹ dùng cho nhiều chi nhánh (T144)
+          { k: 'cn', nhan: 'Chi nhánh áp dụng', kieu: 'chonNhieu', ds: CHI_NHANH.map(c => c.ten), maDs: maChiNhanh },   // một quỹ dùng cho nhiều chi nhánh (T144)
         ],
       },
       {
@@ -591,18 +586,21 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
     ],
   },
 
-  // 1.14 Bảng giá (chưa có bảng DM_ trong schema, chờ đối chiếu)
+  // 1.14 Bảng giá (chưa có bảng DM_ trong schema, chờ đối chiếu). Form theo iFaster; nhà cung cấp chỉ có ở giá nhập (T154)
   '1.14': {
+    haiCot: true,
     khoi: [
       {
         ten: 'Thông tin chung',
         truong: [
-          { k: 'ten', nhan: 'Hàng hoá', kieu: 'chu', batBuoc: true, caHang: true },
-          { k: 'dvt', nhan: 'Đơn vị tính', kieu: 'chon', ds: TEN_DVT },
-          { k: 'loai', nhan: 'Loại giá', kieu: 'chon', ds: ['Giá bán', 'Giá mua', 'Giá sỉ'], batBuoc: true },
+          { k: 'loai', nhan: 'Loại giá', kieu: 'chon', ds: ['Giá nhập', 'Giá bán'], batBuoc: true, caHang: true },
+          { k: 'ten', nhan: 'Hàng hoá', kieu: 'chonTim', batBuoc: true, caHang: true, ds: TEN_HANG, maDs: maHang },
+          { k: 'dvt', nhan: 'Đơn vị tính', kieu: 'chon', ds: TEN_DVT, nhanDs: nhanDvt, batBuoc: true },
+          { k: 'thoiGian', nhan: 'Thời gian áp dụng', kieu: 'khoangNgay', batBuoc: true },
           { k: 'gia', nhan: 'Đơn giá', kieu: 'tien', batBuoc: true },
-          { k: 'tu', nhan: 'Áp dụng từ ngày', kieu: 'ngay' },
-          { k: 'cn', nhan: 'Chi nhánh áp dụng', kieu: 'chon', ds: ['Tất cả', 'Kho tổng', 'Lê Lợi', 'Thảo Điền'] },
+          { k: 'vat', nhan: 'VAT (%)', kieu: 'so' },
+          { k: 'ncc', nhan: 'Nhà cung cấp', kieu: 'chonTim', batBuoc: true, caHang: true, ds: NCC.map(n => n.ten), maDs: maNcc, hien: v => v.loai === 'Giá nhập' },
+          { k: 'kho', nhan: 'Kho áp dụng', kieu: 'chonNhieu', ds: KHO, maDs: maKho, caHang: true, goiY: 'Để trống nếu đơn giá áp dụng cho mọi kho' },
         ],
       },
       {
@@ -612,6 +610,10 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
         ],
       },
     ],
+    // Mặc định giá nhập, áp dụng một năm từ hôm nay như iFaster
+    moi: () => ({ loai: 'Giá nhập', thoiGian: `${dmy(HOM_NAY)} - ${dmy(new Date(HOM_NAY.getFullYear() + 1, HOM_NAY.getMonth(), HOM_NAY.getDate()))}` }),
+    // Chọn hàng thì lấy đơn vị tính của hàng
+    doi: (k, v) => k === 'ten' ? { dvt: DS_HANG_HOA_12.find(h => h.ten === v.ten)?.dvt ?? v.dvt } : {},
   },
 
   // 1.15 Bút toán tự động (chưa có bảng DM_ trong schema, chờ đối chiếu)
@@ -668,9 +670,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
         truong: [
           { k: 'ma', nhan: 'Mã nhóm', kieu: 'chu', batBuoc: true },
           { k: 'ten', nhan: 'Tên nhóm', kieu: 'chu', batBuoc: true, caHang: true },
-          { k: 'loai', nhan: 'Loại hàng hoá', kieu: 'chon', ds: LOAI_HANG, goi: ['PL'] },
-          { k: 'loai', nhan: 'Loại hàng hoá', kieu: 'chon', ds: LOAI_HANG_PRO, goi: ['PR'] },
-          { k: 'dienGiai', nhan: 'Diễn giải', kieu: 'chu', caHang: true },
+          { k: 'dienGiai', nhan: 'Diễn giải', kieu: 'chu', caHang: true },   // T154: bỏ loại hàng hoá
           // T151: ngầm định ngành nghề nằm ở Thông tin chung vì TT152, TT58 chỉ có ở gói Free, Standard, không có khối Ngầm định
           { k: 'nganhNghe', nhan: 'Nhóm ngành nghề con', kieu: 'chonTim', caHang: true, ds: MA_NGANH_NGHE, nhanDs: tenNganhNghe, cheDo: THEO_NGANH_NGHE },
         ],
@@ -687,8 +687,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
           { k: 'mucCp', nhan: 'Mục chi phí', kieu: 'chon', ds: TEN_MUC_CHI_PHI },
           { k: 'ppGia', nhan: 'Phương pháp tính giá', kieu: 'chon', ds: ['Bình quân cuối kỳ', 'Bình quân tức thời', 'Nhập trước xuất trước', 'Đích danh'] },
           { k: 'ts', nhan: 'Thuế suất GTGT (%)', kieu: 'chon', ds: ['KCT', '0', '5', '8', '10'], cheDo: ['TT133', 'TT99'] },
-          { k: 'tonKho', nhan: 'Theo dõi tồn kho', kieu: 'tich' },
-          { k: 'khoMacDinh', nhan: 'Kho mặc định', kieu: 'chon', ds: ['Kho tổng', 'Kho bếp Lê Lợi', 'Kho bar Lê Lợi', 'Kho bếp Thảo Điền', 'Kho bar Thảo Điền'] },
+          // T154: bỏ theo dõi tồn kho, kho mặc định
         ],
       },
       {

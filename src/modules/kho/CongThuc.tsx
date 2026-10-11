@@ -1,6 +1,7 @@
 // Công thức chế biến (9.1.3) và công thức sơ chế (5.1.5) theo iPOS Inventory (T152).
 // Danh sách gộp ô: mỗi nguyên vật liệu một dòng con trong cột Công thức, các cột khác gộp theo công thức; cột Trạng thái là công tắc.
-// Form chi tiết: Thông tin chung và bảng nguyên vật liệu thành phần (chế biến) hoặc nguyên vật liệu đích (sơ chế)
+// Form chi tiết: Thông tin chung và bảng nguyên vật liệu thành phần (chế biến) hoặc nguyên vật liệu đích (sơ chế).
+// T156: form chi tiết là trang toàn màn như IVT, thanh trên có nút đóng, tiêu đề, nhãn phiên bản, Sao chép, Lưu lại
 import { Fragment, useEffect, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import type { Col, Row, ScreenProps } from '../types'
@@ -13,11 +14,13 @@ import { CO_TRANG_DM, PhanTrang } from '../../ui/PhanTrang'
 import { ChonDanhMuc } from '../../ui/ChonDanhMuc'
 import { ChonKhoangNgay, ONgay, docNgay, trongKhoang, type KhoangNgay } from '../../ui/ChonNgay'
 import { NutExcel, NutThemMoiSplit } from '../../ui/CongCuDs'
-import { FormToanMan, useDong } from '../../ui/FormToanMan'
+import { useDong } from '../../ui/FormToanMan'
 import { BoLoc, ChipTrangThai, NutTuyChinhCot, useCauHinhLoc, useCotDs, useLocNhap, type Chip, type OLocDef } from '../../ui/LocNangCao'
 import { money } from '../../ui/format'
 import { suaPhieu, themPhieu, useDaXoa } from '../../ui/generic/daXoa'
 import { DaiGiaiThich } from './PhieuSanXuat'
+import { ChonNhieu } from '../danh-muc/QuyDoiDvt'
+import { maKho } from '../danh-muc/data'
 import {
   CONG_THUC_CB, CONG_THUC_SC, TT_CONG_THUC, hangCua, soLuong, tenKhoAd, tron3, apDungKho,
   type CongThucCb, type CongThucSc, type NvlCongThuc, type TtCongThuc,
@@ -120,7 +123,7 @@ function DsCongThuc({ sc, mod, loai, ds }: ScreenProps & { loai: LoaiCt; ds: Row
     if (k === 'sp') return <TenMa ma={ma} />
     if (k === 'dvt') return hangCua(ma)?.dvt
     if (k === 'ngay') return c.ngay
-    if (k === 'kenh') return (c.kenh as string[]).join(', ')
+    if (k === 'kenh') return (c.kenh as string[]).join(', ') || 'Tất cả kênh'   // để trống là mọi kênh (T156)
     if (k === 'kho') return tenKhoAd(c.kho as string[])
     if (k === 'tt') return (
       <button type="button" role="switch" aria-checked={c.tt === 'on'} aria-label={c.tt === 'on' ? 'Tắt công thức' : 'Bật công thức'}
@@ -210,22 +213,6 @@ function OSo({ val, onChange, w }: { val: number; onChange: (v: number) => void;
   )
 }
 
-/** Chọn nhiều kho áp dụng: chip có nút bỏ, ô chọn thêm; không chọn kho nào là mọi kho */
-function ChonNhieuKho({ value, onChange }: { value: string[]; onChange: (v: string[]) => void }) {
-  const con = KHO_BEP.filter(k => !value.includes(k))
-  return (
-    <div className="sx-nhieu">
-      {value.length ? value.map(k => (
-        <span key={k} className="chip info">{k}
-          <button type="button" className="sx-bo" aria-label={`Bỏ ${k}`} onClick={() => onChange(value.filter(x => x !== k))}><Icon n="x" className="ic sm" /></button>
-        </span>
-      )) : <span className="dim">Tất cả các kho</span>}
-      {con.length > 0 && <Select className="inp sm" value="" aria-label="Thêm kho áp dụng" onChange={e => e.target.value && onChange([...value, e.target.value])}
-        ds={[{ v: '', t: 'Thêm kho' }, ...con.map(k => ({ v: k, t: k }))]} />}
-    </div>
-  )
-}
-
 function FormCongThuc({ sc, mod, loai, ct, soCt }: ScreenProps & { loai: LoaiCt; ct?: Row; soCt: number }) {
   const { s, toast } = useSession()
   const nav = useNavigate()
@@ -245,12 +232,22 @@ function FormCongThuc({ sc, mod, loai, ct, soCt }: ScreenProps & { loai: LoaiCt;
   const [kho, setKho] = useState<string[]>((goc?.kho as string[] | undefined) ?? [])
   const [moTa, setMoTa] = useState(String(goc?.moTa ?? ''))
   const [nvl, setNvl] = useState<NvlCongThuc[]>(() => (goc ? nvlCua(goc).map(n => ({ ...n })) : []))
+  const [tich, setTich] = useState<Set<number>>(() => new Set())   // dòng đang tích ở bảng nguyên vật liệu thành phần (T156)
   const hSp = hangCua(sp)
   const doiNvl = (i: number, p: Partial<NvlCongThuc>) => setNvl(ds => ds.map((n, j) => (j === i ? { ...n, ...p } : n)))
   const chiPhi = (n: NvlCongThuc) => Math.round(n.sl * (hangCua(n.ma)?.gia ?? 0))
   const tongCp = nvl.reduce((a, n) => a + chiPhi(n), 0)
   // Tỉ lệ thu hồi của công thức sơ chế: cộng số lượng đích cùng đơn vị tính với NVL gốc
   const thuHoi = nvl.filter(n => hangCua(n.ma)?.dvt === hSp?.dvt).reduce((a, n) => a + n.sl, 0)
+  const xoaDong = (ds: number[]) => { setNvl(x => x.filter((_, j) => !ds.includes(j))); setTich(new Set()) }
+  const tieuDe = cb ? 'Chi tiết công thức chế biến' : 'Chi tiết công thức sơ chế'
+
+  // Esc đóng trang như form toàn màn; đang mở hộp hay menu thì để hộp, menu tự đóng
+  useEffect(() => {
+    const on = (e: KeyboardEvent) => { if (e.key === 'Escape' && !document.querySelector('.overlay')) dong() }
+    window.addEventListener('keydown', on)
+    return () => window.removeEventListener('keydown', on)
+  }, [dong])
 
   function luu() {
     const thieu = !sp ? (cb ? 'Chọn sản phẩm' : 'Chọn nguyên vật liệu gốc') : !ngay ? 'Nhập ngày áp dụng' : !nvl.length ? (cb ? 'Thêm nguyên vật liệu thành phần' : 'Thêm nguyên vật liệu đích') : ''
@@ -272,104 +269,125 @@ function FormCongThuc({ sc, mod, loai, ct, soCt }: ScreenProps & { loai: LoaiCt;
     </div>
   )
   const dsSp = mucHang(cb ? DS_SP : DS_NVL)
+  const giaBan = hSp?.gia ?? 0
+  const nhanThem = cb ? 'Thêm NVL' : 'Thêm NVL đích'
 
   return (
-    <FormToanMan icon="book" onClose={dong} title={cb ? 'Chi tiết công thức chế biến' : 'Chi tiết công thức sơ chế'}
-      giua={<span className={`fsf-tt ${moi ? 'moi' : 'xem'}`}>{moi ? 'Thêm mới' : tt === 'nhap' ? 'Nháp' : 'Mới nhất'}</span>}
-      foot={<>
-        <button type="button" className="btn" onClick={dong}>Huỷ</button>
-        <span className="grow" />
-        {!moi && <button type="button" className="btn" onClick={() => nav(`${path}/moi`, { state: { saoChep: { ...ct, kho, kenh, moTa, ngay, nvl, dich: nvl } } })}>
-          <Icon n="copy" className="ic sm" />Sao chép
-        </button>}
-        <button type="button" className="btn pri" onClick={luu}>Lưu lại</button>
-      </>}>
-      <div className="sx-ct-form">
-        <section className="card sx-khoi">
-          <div className="sx-khoi-dau">
-            <b>Thông tin chung</b>
-            <label className="row sx-bat">
-              <span className="dim">{tt === 'on' ? 'Đang hoạt động' : tt === 'nhap' ? 'Nháp' : 'Không hoạt động'}</span>
-              <button type="button" role="switch" aria-checked={tt === 'on'} aria-label="Bật tắt công thức" className={`ds-ct${tt === 'on' ? ' on' : ''}`}
+    <div className="fsf sx-ct-trang" role="dialog" aria-modal="true" aria-label={tieuDe}>
+      <header className="sx-ct-dau">
+        <button type="button" className="icon-btn" title="Đóng (Esc)" aria-label="Đóng" onClick={dong}><Icon n="x" /></button>
+        <div className="sx-ct-tieu-de">
+          <h1>{tieuDe}</h1>
+          <span className={`chip ${moi ? 'ok' : 'info'}`}>{moi ? 'Thêm mới' : tt === 'nhap' ? 'Nháp' : 'Mới nhất'}</span>
+        </div>
+        <div className="sx-ct-nut">
+          {!moi && <button type="button" className="btn" onClick={() => nav(`${path}/moi`, { state: { saoChep: { ...ct, kho, kenh, moTa, ngay, nvl, dich: nvl } } })}>
+            <Icon n="copy" className="ic sm" />Sao chép
+          </button>}
+          <button type="button" className="btn pri" onClick={luu}>Lưu lại</button>
+        </div>
+      </header>
+      <div className="fsf-b">
+        <div className="sx-ct-form">
+          <section className="sx-khoi">
+            <div className="sx-khoi-dau">
+              <b>Thông tin chung</b>
+              <button type="button" role="switch" aria-checked={tt === 'on'} title={tt === 'on' ? 'Đang hoạt động' : tt === 'nhap' ? 'Nháp' : 'Không hoạt động'}
+                aria-label="Bật tắt công thức" className={`ds-ct sx-bat${tt === 'on' ? ' on' : ''}`}
                 onClick={() => setTt(x => (x === 'on' ? 'off' : 'on'))}><i /></button>
-            </label>
-          </div>
-          <div className="sx-tt">
-            {cb && dauRow('Mã công thức', false, <input className="inp code" readOnly value={ma} />)}
-            {dauRow(cb ? 'Sản phẩm' : 'Nguyên vật liệu gốc', true,
-              <ChonDanhMuc dm={cb ? 'hang' : 'nvl'} nhan={cb ? 'sản phẩm' : 'nguyên vật liệu'} coMa trong="Chọn" value={sp} onChange={setSp} ds={dsSp} />)}
-            {dauRow('Đơn vị tính', true, <input className="inp" readOnly value={hSp?.dvt ?? ''} placeholder="Theo hàng đã chọn" />,
-              ['Ngày áp dụng', true, <ONgay value={ngay} onChange={setNgay} title="Công thức dùng cho phiếu từ ngày này" />])}
-            {cb && dauRow('Kênh áp dụng', false, (
-              <div className="sx-nhieu">
-                {KENH.map(k => (
-                  <button key={k} type="button" className={`chip${kenh.includes(k) ? ' info' : ''} sx-kenh`} aria-pressed={kenh.includes(k)}
-                    onClick={() => setKenh(x => (x.includes(k) ? x.filter(y => y !== k) : [...x, k]))}>{k}</button>
-                ))}
-              </div>
-            ))}
-            {dauRow('Kho áp dụng', false, <ChonNhieuKho value={kho} onChange={setKho} />)}
-            {dauRow('Mô tả', false, <textarea className="inp sx-mota" rows={2} value={moTa} onChange={e => setMoTa(e.target.value)} placeholder="Ghi chú cách làm, hao hụt" />)}
-          </div>
-        </section>
+            </div>
+            <div className="sx-tt">
+              {cb && dauRow('Mã công thức', false, <span className="code sx-tt-chu">{ma}</span>,
+                ['Tổng chi phí', false, (
+                  <span className="sx-tt-chu sx-tong-cp" title="Tỷ lệ chi phí nguyên vật liệu trên giá bán">
+                    <b>{money(tongCp)}</b> <span className="dim">({giaBan ? `${(tongCp / giaBan * 100).toLocaleString('vi-VN', { maximumFractionDigits: 1 })} %` : '—'})</span>
+                  </span>
+                )])}
+              {dauRow(cb ? 'Sản phẩm' : 'Nguyên vật liệu gốc', true,
+                <ChonDanhMuc dm={cb ? 'hang' : 'nvl'} nhan={cb ? 'sản phẩm' : 'nguyên vật liệu'} coMa trong="Chọn" value={sp} onChange={setSp} ds={dsSp} />)}
+              {dauRow('Đơn vị tính', true, <input className="inp" readOnly value={hSp?.dvt ?? ''} placeholder="Theo hàng đã chọn" />,
+                ['Ngày áp dụng', true, <ONgay value={ngay} onChange={setNgay} title="Công thức dùng cho phiếu từ ngày này" />])}
+              {dauRow('Kho áp dụng', false, (
+                <ChonNhieu nhan="Kho áp dụng" tenDm="kho" goiY="Để trống nếu công thức áp dụng cho mọi kho" value={kho} onChange={setKho}
+                  ds={KHO_BEP.map(k => ({ v: k, t: k, phu: `Mã: ${maKho(k)}` }))} />
+              ))}
+              {cb && dauRow('Kênh áp dụng', false, (
+                <ChonNhieu nhan="Kênh áp dụng" tenDm="kênh bán" goiY="Để trống nếu áp dụng cho mọi kênh" value={kenh} onChange={setKenh}
+                  ds={KENH.map(k => ({ v: k, t: k }))} />
+              ))}
+              {dauRow('Mô tả', false, <textarea className="inp sx-mota" rows={3} value={moTa} onChange={e => setMoTa(e.target.value)} placeholder="Nhập mô tả" />)}
+            </div>
+          </section>
 
-        <section className="card sx-khoi">
-          <div className="sx-khoi-dau">
-            <b>{cb ? 'Nguyên vật liệu thành phần' : 'Danh sách nguyên vật liệu đích'}</b>
-            {!cb && hSp && nvl.length > 0 && <span className="dim">Thu hồi {soLuong(thuHoi)} {hSp.dvt} trên 1 {hSp.dvt} gốc, hao hụt {soLuong(Math.max(0, tron3(1 - thuHoi)) * 100)}%</span>}
-            <button type="button" className="btn sm ghost" onClick={() => setNvl(ds => [...ds, { ma: '', sl: 0, ...(cb ? { tang: 0, giam: 0 } : {}) }])}>
-              <Icon n="plus" className="ic sm" />{cb ? 'Thêm NVL' : 'Thêm NVL đích'}
-            </button>
-          </div>
-          <div className="tbl-wrap">
-            <table className="tbl bang-sua">
-              <thead>
-                <tr>
-                  <th className="dim c" style={{ width: 40 }}>#</th>
-                  <th style={{ width: 230 }}>{cb ? 'Mã NVL' : 'Mã NVL đích'}</th>
-                  <th style={{ minWidth: 180 }}>{cb ? 'Tên NVL' : 'Tên NVL đích'}</th>
-                  <th style={{ width: 90 }}>Đơn vị tính</th>
-                  <th className="num" style={{ width: 110 }}>Số lượng</th>
-                  {cb && <><th className="num" style={{ width: 110 }}>Đơn giá</th><th className="num" style={{ width: 110 }}>Chi phí</th>
-                    <th className="num" style={{ width: 120 }}>Mức tăng tối đa (%)</th><th className="num" style={{ width: 120 }}>Mức giảm tối đa (%)</th></>}
-                  <th style={{ width: 44 }} />
-                </tr>
-              </thead>
-              <tbody>
-                {nvl.map((n, i) => {
-                  const h = hangCua(n.ma)
-                  return (
-                    <tr key={i}>
-                      <td className="dim c">{i + 1}</td>
-                      <td><ChonDanhMuc dm="nvl" nhan="nguyên vật liệu" coMa chiMa className="inp sm" trong="Chọn" value={n.ma}
-                        ds={mucHang(DS_NVL.filter(x => x.ma !== sp))} onChange={v => doiNvl(i, { ma: v })} /></td>
-                      <td>{h?.ten}</td>
-                      <td>{h?.dvt}</td>
-                      <td className="num"><OSo val={n.sl} onChange={v => doiNvl(i, { sl: v })} /></td>
-                      {cb && <>
-                        <td className="num">{money(h?.gia ?? 0)}</td>
-                        <td className="num">{money(chiPhi(n))}</td>
-                        <td className="num"><OSo val={n.tang ?? 0} onChange={v => doiNvl(i, { tang: v })} /></td>
-                        <td className="num"><OSo val={n.giam ?? 0} onChange={v => doiNvl(i, { giam: v })} /></td>
-                      </>}
-                      <td className="c">
-                        <button type="button" className="icon-btn sm" title="Xoá dòng" onClick={() => setNvl(ds => ds.filter((_, j) => j !== i))}><Icon n="trash" className="ic sm" /></button>
-                      </td>
-                    </tr>
-                  )
-                })}
-                {!nvl.length && <tr><td colSpan={cb ? 10 : 6} className="sx-trong">Chưa có nguyên vật liệu. Bấm {cb ? 'Thêm NVL' : 'Thêm NVL đích'} để thêm.</td></tr>}
-              </tbody>
-              <tfoot>
-                <tr className="sum">
-                  <td colSpan={6}>{cb ? 'Tổng chi phí' : `Tổng: ${nvl.length}`}</td>
-                  {cb && <><td className="num">{money(tongCp)}</td><td colSpan={3} /></>}
-                </tr>
-              </tfoot>
-            </table>
-          </div>
-        </section>
+          <section className="sx-khoi">
+            <div className="sx-khoi-dau">
+              <b>{cb ? 'Nguyên vật liệu thành phần' : 'Danh sách nguyên vật liệu đích'}</b>
+              {!cb && hSp && nvl.length > 0 && <span className="dim">Thu hồi {soLuong(thuHoi)} {hSp.dvt} trên 1 {hSp.dvt} gốc, hao hụt {soLuong(Math.max(0, tron3(1 - thuHoi)) * 100)}%</span>}
+              {cb && tich.size > 0 && <button type="button" className="btn sm sx-xoa-chon" onClick={() => xoaDong([...tich])}>
+                <Icon n="trash" className="ic sm" />Xoá {tich.size} dòng
+              </button>}
+              <button type="button" className="btn sm ghost sx-them-nvl" onClick={() => setNvl(ds => [...ds, { ma: '', sl: 0 }])}>
+                {nhanThem}<Icon n="plus" className="ic sm" />
+              </button>
+            </div>
+            <div className="tbl-wrap">
+              <table className="tbl bang-sua sx-nvl-bang">
+                <thead>
+                  <tr>
+                    {cb && <th className="c" style={{ width: 40 }}>
+                      <input type="checkbox" aria-label="Chọn tất cả nguyên vật liệu" checked={nvl.length > 0 && tich.size === nvl.length}
+                        onChange={e => setTich(e.target.checked ? new Set(nvl.map((_, i) => i)) : new Set())} />
+                    </th>}
+                    <th className="c" style={{ width: 44 }}>#</th>
+                    <th style={{ width: 230 }}>{cb ? 'Mã nguyên vật liệu' : 'Mã nguyên vật liệu đích'}</th>
+                    <th style={{ minWidth: 180 }}>{cb ? 'Tên nguyên vật liệu' : 'Tên nguyên vật liệu đích'}</th>
+                    <th style={{ width: 110 }}>Đơn vị tính</th>
+                    <th className="num" style={{ width: 120 }}>Số lượng</th>
+                    {cb && <><th className="num" style={{ width: 120 }}>Đơn giá</th><th className="num" style={{ width: 120 }}>Chi phí</th>
+                      <th className="c" style={{ width: 140 }}>Trạng thái</th></>}
+                    <th style={{ width: 48 }} />
+                  </tr>
+                </thead>
+                <tbody>
+                  {nvl.map((n, i) => {
+                    const h = hangCua(n.ma)
+                    return (
+                      <tr key={i}>
+                        {cb && <td className="c">
+                          <input type="checkbox" aria-label={`Chọn dòng ${i + 1}`} checked={tich.has(i)}
+                            onChange={() => setTich(t => { const m = new Set(t); if (m.has(i)) m.delete(i); else m.add(i); return m })} />
+                        </td>}
+                        <td className="c">{i + 1}</td>
+                        <td><ChonDanhMuc dm="nvl" nhan="nguyên vật liệu" coMa chiMa className="inp sm" trong="Chọn" value={n.ma}
+                          ds={mucHang(DS_NVL.filter(x => x.ma !== sp))} onChange={v => doiNvl(i, { ma: v })} /></td>
+                        <td>{h?.ten}</td>
+                        <td>{h?.dvt}</td>
+                        <td className="num"><OSo val={n.sl} onChange={v => doiNvl(i, { sl: v })} /></td>
+                        {cb && <>
+                          <td className="num">{money(h?.gia ?? 0)}</td>
+                          <td className="num">{money(chiPhi(n))}</td>
+                          <td className="c">{h && <span className="chip ok">Đang hoạt động</span>}</td>
+                        </>}
+                        <td className="c">
+                          <button type="button" className="icon-btn sm sx-xoa" title="Xoá dòng" aria-label={`Xoá dòng ${i + 1}`} onClick={() => xoaDong([i])}><Icon n="x" className="ic sm" /></button>
+                        </td>
+                      </tr>
+                    )
+                  })}
+                  {!nvl.length && <tr><td colSpan={cb ? 10 : 6} className="sx-trong">Chưa có nguyên vật liệu. Bấm {nhanThem} để thêm.</td></tr>}
+                </tbody>
+                <tfoot>
+                  <tr className="sum">
+                    <td colSpan={cb ? 3 : 2}>Tổng: {nvl.length}</td>
+                    <td colSpan={4} />
+                    {cb && <><td className="num">{money(tongCp)}</td><td colSpan={2} /></>}
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </section>
+        </div>
       </div>
-    </FormToanMan>
+    </div>
   )
 }

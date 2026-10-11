@@ -21,17 +21,18 @@ const docSo = (s: string) => Number(s.trim().replace(/\s/g, '').replace(',', '.'
 const dienGiai = (q: Pick<QuyDoi, 'dv' | 'tl' | 'nguoc'>, chinh: string) =>
   q.nguoc ? `1 ${q.dv} = ${soVn(q.tl)} ${chinh}` : `1 ${chinh} = ${soVn(q.tl)} ${q.dv}`
 
-/** Dòng quy đổi lấy từ danh mục Quy đổi ĐVT (1.4): dòng của hàng này trước, rồi dòng áp cho tất cả hàng hoá có ĐVT khớp */
+/** Dòng quy đổi lấy từ danh mục Quy đổi ĐVT (1.4): dòng có hàng áp dụng chứa hàng này trước, rồi dòng để trống (mọi hàng hoá) có ĐVT khớp (T154) */
 export function quyDoiTuDanhMuc(tenHang: string, chinh: string): QuyDoi[] {
   if (!chinh) return []
   const kq: QuyDoi[] = []
-  const ds = [...QUY_DOI_DVT.filter(q => q.hang === tenHang), ...QUY_DOI_DVT.filter(q => q.hang === TAT_CA)]
+  const coHang = (q: typeof QUY_DOI_DVT[number]) => Boolean(q.hangAd) && q.hangAd.split(', ').includes(tenHang)
+  const ds = [...QUY_DOI_DVT.filter(coHang), ...QUY_DOI_DVT.filter(q => !q.hangAd)]
   for (const q of ds) {
-    if (q.goc !== chinh && q.qd !== chinh) continue
-    // danh mục ghi 1 qd = tl goc: ĐVT chính là qd thì giữ chiều xuôi, là goc thì ghi chiều ngược
-    const dong: QuyDoi = q.qd === chinh
-      ? { dv: q.goc, tl: q.tl, nguoc: false, apTatCa: q.hang === TAT_CA, bat: true }
-      : { dv: q.qd, tl: q.tl, nguoc: true, apTatCa: q.hang === TAT_CA, bat: true }
+    if (q.tu !== chinh && q.den !== chinh) continue
+    // danh mục ghi 1 tu = tl den: ĐVT chính là tu thì giữ chiều xuôi, là den thì ghi chiều ngược
+    const dong: QuyDoi = q.tu === chinh
+      ? { dv: q.den, tl: q.tl, nguoc: false, apTatCa: !q.hangAd, bat: true }
+      : { dv: q.tu, tl: q.tl, nguoc: true, apTatCa: !q.hangAd, bat: true }
     if (!kq.some(x => x.dv === dong.dv)) kq.push(dong)
   }
   return kq
@@ -90,22 +91,22 @@ export function KhoiQuyDoi({ v, doi }: { v: Record<string, any>; doi: (k: string
         </table>
       )}
       {hop && (
-        <HopQuyDoi chinh={chinh} tenHang={tenHang} sua={hop.i >= 0 ? ds[hop.i] : undefined}
+        <HopQuyDoi chinh={chinh} sua={hop.i >= 0 ? ds[hop.i] : undefined}
           daCo={ds.filter((_, j) => j !== hop.i).map(x => x.dv)} onDong={() => setHop(null)} onLuu={luu} />
       )}
     </div>
   )
 }
 
-/** Hộp Thêm mới / Sửa quy đổi đơn vị tính */
-function HopQuyDoi({ chinh, tenHang, sua, daCo, onDong, onLuu }: {
-  chinh: string; tenHang: string; sua?: QuyDoi; daCo: string[]; onDong: () => void; onLuu: (q: QuyDoi) => void
+/** Hộp Thêm mới / Sửa quy đổi đơn vị tính theo iFaster: khối xám trên, nút Đảo vị trí trên đường ngăn, hàng dưới là ô chọn và tỷ lệ (T154).
+ *  Dòng thêm ở đây chỉ áp cho hàng đang sửa; dòng sửa giữ phạm vi áp dụng cũ */
+function HopQuyDoi({ chinh, sua, daCo, onDong, onLuu }: {
+  chinh: string; sua?: QuyDoi; daCo: string[]; onDong: () => void; onLuu: (q: QuyDoi) => void
 }) {
   const { toast } = useSession()
   const [dv, setDv] = useState(sua?.dv ?? '')
   const [tl, setTl] = useState(sua ? soNhap(sua.tl) : '')
   const [dao, setDao] = useState(sua?.nguoc ?? false)   // true: hàng trên là đơn vị quy đổi, hàng dưới là ĐVT chính
-  const [apTatCa, setApTatCa] = useState(sua?.apTatCa ?? false)
   const [loi, setLoi] = useState('')
 
   // Esc đóng hộp; menu ô chọn đang mở thì menu tự bắt Esc trước
@@ -131,78 +132,60 @@ function HopQuyDoi({ chinh, tenHang, sua, daCo, onDong, onLuu }: {
     if (dv === chinh) return setLoi('Đơn vị quy đổi phải khác ĐVT chính')
     if (daCo.includes(dv)) return setLoi(`${dv} đã có trong bảng quy đổi`)
     if (!soHopLe) return setLoi('Tỷ lệ quy đổi phải lớn hơn 0')
-    onLuu({ dv, tl: so, nguoc: dao, apTatCa, bat: sua?.bat ?? true })
+    onLuu({ dv, tl: so, nguoc: dao, apTatCa: sua?.apTatCa ?? false, bat: sua?.bat ?? true })
   }
 
   const oChinh = (
-    <div className="f">
-      <label>ĐVT chính</label>
-      <input className="inp" value={chinh} readOnly tabIndex={-1} />
+    <div className="f qd-chinh">
+      <label>Đơn vị tính chính</label>
+      <span><b>{chinh}</b>{maDvt(chinh) && <small> ({maDvt(chinh)})</small>}</span>
     </div>
   )
   const oQuyDoi = (
     <div className="f">
-      <label>Đơn vị quy đổi <em>*</em></label>
-      <ChonCoTim nhan="Đơn vị quy đổi" value={dv} onChange={x => { setDv(x); setLoi('') }}
+      <label>Đơn vị tính quy đổi <em>*</em></label>
+      <ChonCoTim nhan="Đơn vị tính" value={dv} onChange={x => { setDv(x); setLoi('') }}
         ds={TEN_DVT.map(t => ({ v: t, t, phu: `Mã: ${maDvt(t)}` }))}
-        dau={(
-          <>
-            <button type="button" className="btn sm ghost" onClick={() => toast('Thêm đơn vị tính mới ở danh mục Đơn vị tính')}>
-              <Icon n="plus" className="ic sm" />Thêm ĐVT mới
-            </button>
-            <button type="button" className="btn sm ghost" onClick={() => toast('Đã làm mới danh sách đơn vị tính')}>
-              <Icon n="refresh" className="ic sm" />Làm mới
-            </button>
-          </>
+        chan={(
+          <button type="button" className="icon-btn sm" title="Làm mới danh sách đơn vị tính" aria-label="Làm mới danh sách đơn vị tính"
+            onClick={() => toast('Đã làm mới danh sách đơn vị tính')}>
+            <Icon n="refresh" className="ic sm" />
+          </button>
         )} />
     </div>
   )
   const tieuDe = sua ? 'Sửa quy đổi đơn vị tính' : 'Thêm mới quy đổi đơn vị tính'
+  const nut = sua ? 'Lưu' : 'Thêm'
 
   return createPortal(
     <div className="overlay ds-hop-nen qd-hop-nen" onMouseDown={e => { if (e.target === e.currentTarget) onDong() }}>
       <div className="ds-hop qd-hop" role="dialog" aria-modal="true" aria-label={tieuDe}>
-        <div className="ds-hop-dau">
-          <Icon n="quydoi" className="ic" />
+        <div className="qd-hop-dau">
           <b>{tieuDe}</b>
-          <span className="grow" />
           <button type="button" className="icon-btn sm" onClick={onDong} aria-label="Đóng"><Icon n="x" className="ic sm" /></button>
         </div>
         <div className="qd-hop-than">
-          <p className="muted qd-goi-y">Nhập tỷ lệ quy đổi rồi bấm {sua ? 'Lưu' : 'Thêm'}.</p>
-          <div className="qd-cap">
-            {dao ? oQuyDoi : oChinh}
-            <button type="button" className="qd-dao" onClick={daoViTri} title="Đảo vị trí" aria-label="Đảo vị trí">
-              <Icon n="swap" className="ic sm" />
+          <p className="qd-goi-y">Chọn đơn vị tính và nhập tỷ lệ quy đổi vào ô dưới đây, sau đó bấm <b>{nut}</b>:</p>
+          <div className="qd-khung">
+            <div className="qd-tren">{dao ? oQuyDoi : oChinh}</div>
+            <button type="button" className="qd-dao" onClick={daoViTri} title={`Đổi thành 1 ${duoi} = ? ${tren}`}>
+              Đảo vị trí<Icon n="swap" className="ic sm" />
             </button>
-            {dao ? oChinh : oQuyDoi}
-          </div>
-          <div className="f">
-            <label>Tỷ lệ quy đổi <em>*</em></label>
-            <input className="inp pn-so" inputMode="decimal" value={tl} placeholder="Ví dụ 0,1"
-              onChange={e => { setTl(e.target.value); setLoi('') }} onKeyDown={e => { if (e.key === 'Enter') luu() }} />
-          </div>
-          <div className={`qd-xem${soHopLe && dv ? '' : ' trong'}`}>
-            <Icon n="quydoi" className="ic sm" />
-            <span>1 <b>{tren}</b> = <b>{soHopLe ? soVn(so) : '…'}</b> <b>{duoi}</b></span>
-          </div>
-          <div className="f">
-            <label>Áp dụng cho</label>
-            <div className="qd-ap" role="radiogroup" aria-label="Áp dụng cho">
-              <button type="button" role="radio" aria-checked={!apTatCa} className={apTatCa ? '' : 'on'} onClick={() => setApTatCa(false)}>
-                Hàng hoá này{tenHang && <small>{tenHang}</small>}
-              </button>
-              <button type="button" role="radio" aria-checked={apTatCa} className={apTatCa ? 'on' : ''} onClick={() => setApTatCa(true)}>
-                {TAT_CA}<small>Mọi hàng có ĐVT {chinh}</small>
-              </button>
+            <div className="qd-duoi">
+              {dao ? oChinh : oQuyDoi}
+              <div className="f qd-tl">
+                <label>Tỷ lệ quy đổi <em>*</em></label>
+                <input className="inp pn-so" inputMode="decimal" value={tl} placeholder="0" aria-label="Tỷ lệ quy đổi"
+                  title={`1 ${tren} = ? ${duoi}`}
+                  onChange={e => { setTl(e.target.value); setLoi('') }} onKeyDown={e => { if (e.key === 'Enter') luu() }} />
+              </div>
             </div>
           </div>
           {loi && <div className="qd-loi" role="alert"><Icon n="alert" className="ic sm" />{loi}</div>}
         </div>
-        <div className="ds-chan">
-          <span className="grow" />
+        <div className="qd-hop-chan">
           <button type="button" className="btn" onClick={onDong}>Huỷ</button>
-          <button type="button" className="btn pri" onClick={luu}>{sua ? 'Lưu' : 'Thêm'}</button>
+          <button type="button" className="btn pri" onClick={luu}>{nut}</button>
         </div>
       </div>
     </div>,
@@ -213,13 +196,14 @@ function HopQuyDoi({ chinh, tenHang, sua, daCo, onDong, onLuu }: {
 export interface MucTim { v: string; t: string; phu?: string }
 
 /** Ô chọn một có ô tìm: mỗi dòng tên đậm, dòng phụ mờ; dau là hàng nút ở đầu danh sách */
-export function ChonCoTim({ ds, value, onChange, nhan, hienChon, dau, className = 'inp' }: {
+export function ChonCoTim({ ds, value, onChange, nhan, hienChon, dau, chan, className = 'inp' }: {
   ds: MucTim[]
   value: string
   onChange: (v: string) => void
   nhan: string                               // tên ô, dùng cho chữ gợi ý và ô tìm
   hienChon?: (m: MucTim) => string           // chữ hiện trên ô khi đã chọn, mặc định là tên
   dau?: ReactNode
+  chan?: ReactNode                           // hàng nút ở chân danh sách, vd làm mới (T154)
   className?: string
 }) {
   const [mo, setMo] = useState(false)
@@ -257,6 +241,85 @@ export function ChonCoTim({ ds, value, onChange, nhan, hienChon, dau, className 
             </button>
           ))}
           {!loc.length && <div className="dm-trong">Không có {nhan.toLowerCase()} khớp «{tim.trim()}»</div>}
+        </div>
+        {chan && <div className="cn-chan">{chan}</div>}
+      </Popover>
+    </>
+  )
+}
+
+/** Ô chọn nhiều kiểu iFaster dùng chung (T154): mục đã chọn hiện thành thẻ có dấu ×, danh sách có ô tìm, mỗi dòng tên và "Mã: X" mờ;
+ *  chân danh sách có ô tích Tất cả, nút thêm mới, làm mới. Mảng rỗng là tất cả, ô hiện chữ gợi ý mờ */
+export function ChonNhieu({ ds, value, onChange, nhan, goiY, tenDm = nhan.toLowerCase() }: {
+  ds: MucTim[]
+  value: string[]
+  onChange: (v: string[]) => void
+  nhan: string                               // tên ô, dùng cho ô tìm và thông báo
+  goiY: string                               // chữ mờ khi để trống
+  tenDm?: string                             // tên mục trong nút thêm mới, vd "kho", mặc định theo tên ô
+}) {
+  const { toast } = useSession()
+  const [mo, setMo] = useState(false)
+  const [tim, setTim] = useState('')
+  const o = useRef<HTMLDivElement>(null)
+  const q = fold(tim.trim())
+  const loc = q ? ds.filter(x => fold(`${x.v} ${x.t} ${x.phu ?? ''}`).includes(q)) : ds
+  const chon = value.filter(v => ds.some(x => x.v === v))
+  const tatCa = chon.length === 0
+
+  useEffect(() => { if (mo) setTim('') }, [mo])
+  // Bật tắt một mục, giữ thứ tự danh sách; chọn đủ thì về rỗng, tức tất cả
+  const bat = (v: string) => {
+    const moi = chon.includes(v) ? chon.filter(x => x !== v) : ds.map(x => x.v).filter(x => x === v || chon.includes(x))
+    onChange(moi.length === ds.length ? [] : moi)
+  }
+
+  return (
+    <>
+      <div ref={o} role="combobox" tabIndex={0} className={`inp cn-o${mo ? ' open' : ''}`} aria-label={nhan} aria-expanded={mo} aria-haspopup="listbox"
+        onClick={() => setMo(m => !m)}
+        onKeyDown={e => { if (e.target === e.currentTarget && (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); setMo(true) } }}>
+        <span className="cn-the-ds">
+          {tatCa ? <span className="cn-goi-y">{goiY}</span> : chon.map(v => (
+            <span key={v} className="cn-the">
+              {ds.find(x => x.v === v)?.t ?? v}
+              <button type="button" aria-label={`Bỏ ${ds.find(x => x.v === v)?.t ?? v}`} onClick={e => { e.stopPropagation(); bat(v) }}>
+                <Icon n="x" className="ic sm" />
+              </button>
+            </span>
+          ))}
+        </span>
+        <Icon n="chevd" className="ic sm sel-c" />
+      </div>
+      <Popover anchor={o} open={mo} onClose={() => setMo(false)} role="listbox" className="pop-sel pop-dm pop-tim pop-cn">
+        <div className="dm-tim">
+          <Icon n="search" className="ic sm" />
+          <input value={tim} placeholder={`Tìm ${nhan.toLowerCase()}`} onChange={e => setTim(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); if (loc[0]) bat(loc[0].v) } }} />
+        </div>
+        <div className="dm-ds">
+          {loc.map(x => (
+            <button key={x.v} data-mi type="button" role="option" aria-selected={chon.includes(x.v)} className={`mi${chon.includes(x.v) ? ' on' : ''}`} onClick={() => bat(x.v)}>
+              <span className="mi-t"><b>{x.t}</b>{x.phu && <small>{x.phu}</small>}</span>
+              {chon.includes(x.v) && <Icon n="check" className="ic sm mi-ok" />}
+            </button>
+          ))}
+          {!loc.length && <div className="dm-trong">Không có {nhan.toLowerCase()} khớp «{tim.trim()}»</div>}
+        </div>
+        <div className="cn-chan">
+          <label className="row cn-tat-ca">
+            <input type="checkbox" checked={tatCa} onChange={() => onChange([])} />
+            <span>Tất cả</span>
+          </label>
+          <span className="grow" />
+          <button type="button" className="icon-btn sm" title={`Thêm ${tenDm} mới`} aria-label={`Thêm ${tenDm} mới`}
+            onClick={() => toast(`Thêm ${tenDm} mới ở danh mục ${tenDm}`)}>
+            <Icon n="plus" className="ic sm" />
+          </button>
+          <button type="button" className="icon-btn sm" title="Làm mới danh sách" aria-label="Làm mới danh sách"
+            onClick={() => toast(`Đã làm mới danh sách ${nhan.toLowerCase()}`)}>
+            <Icon n="refresh" className="ic sm" />
+          </button>
         </div>
       </Popover>
     </>

@@ -573,7 +573,7 @@ export function LichDon({ value, onChange, onDong }: LichDonProps) {
     let m = thang + delta
     let y = nam
     while (m > 12) { m -= 12; y += 1 }
-    while (m < 1) { m -= 12; y += 1 }
+    while (m < 1) { m += 12; y -= 1 }   // T154: trước đây trừ tiếp 12, lùi từ tháng 1 bị lặp mãi
     setThang(m)
     setNam(y)
   }

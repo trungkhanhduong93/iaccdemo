@@ -6937,3 +6937,73 @@ table.tbl {
 button.chip.sx-kenh { height: 26px; padding: 0 10px; border: 1px solid var(--line); cursor: pointer; }
 button.chip.sx-kenh.info { border-color: var(--blue); }
 .sx-tt textarea.sx-mota { width: 100%; resize: none; }
+
+/* ── Danh mục theo iFaster, công thức theo IVT (T154, T156) ── */
+/* Ô chọn nhiều dùng chung: thẻ nhỏ có dấu ×, để trống hiện chữ gợi ý mờ; chân danh sách có ô Tất cả, thêm mới, làm mới */
+.cn-o { display: flex; align-items: center; gap: 6px; height: auto; min-height: 36px; padding: 3px 8px 3px 6px; cursor: pointer; text-align: left; }
+.cn-o:hover { border-color: #c9d3e1; }
+.cn-o.open { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(5, 96, 166, .12); }
+.cn-o.open .sel-c { transform: rotate(180deg); color: var(--blue); }
+.cn-the-ds { flex: 1; min-width: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+.cn-goi-y { padding-left: 5px; color: var(--faint); font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cn-the { display: inline-flex; align-items: center; gap: 2px; max-width: 100%; height: 24px; padding: 0 2px 0 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--soft); color: var(--ink); font-size: 12.5px; white-space: nowrap; }
+.cn-the button { display: grid; place-items: center; width: 18px; height: 18px; padding: 0; border: 0; border-radius: 4px; background: none; color: var(--muted); cursor: pointer; }
+.cn-the button:hover { background: var(--red-t); color: var(--red); }
+.pop-cn { display: flex; flex-direction: column; padding: 0; overflow: hidden; }
+.pop-cn .dm-ds { max-height: 260px; }
+.pop-cn .mi { align-items: center; }
+.cn-chan { flex: none; display: flex; align-items: center; gap: 2px; padding: 4px 6px 4px 10px; border-top: 1px solid var(--line-2); }
+.pop-tim > .cn-chan { justify-content: flex-start; }
+.cn-tat-ca { gap: 8px; font-size: 13px; color: var(--body); cursor: pointer; }
+.cn-chan .icon-btn { width: 28px; height: 28px; color: var(--blue); }
+/* Lưới form luôn 2 cột như iFaster: tài khoản, quy đổi ĐVT, bảng giá */
+.pn-luoi.pn-luoi-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+/* Công tắc trạng thái ở đầu khối form danh mục (quy đổi ĐVT) */
+.pn-khoi-dau .pn-cong-tac { margin: 0 12px 0 auto; }
+
+/* Hộp quy đổi ĐVT trong form hàng hoá: tiêu đề giữa, khối xám trên, nút Đảo vị trí trên đường ngăn */
+.qd-hop { width: 540px; }
+.qd-hop-dau { position: relative; display: flex; align-items: center; justify-content: center; padding: 14px 48px; border-bottom: 1px solid var(--line-2); }
+.qd-hop-dau b { font-size: 16px; font-weight: 600; color: var(--ink); }
+.qd-hop-dau .icon-btn { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); }
+.qd-hop-than { padding: 14px 24px 18px; }
+.qd-goi-y { text-align: center; color: var(--body); }
+.qd-khung { position: relative; display: flex; flex-direction: column; border-radius: 10px; overflow: visible; }
+.qd-tren { padding: 14px 14px 22px; border-radius: 10px 10px 0 0; background: var(--soft); }
+.qd-duoi { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; padding: 22px 14px 12px; border-top: 1px solid var(--line); border-radius: 0 0 10px 10px; background: var(--soft); }
+.qd-hop-than .qd-chinh span { min-height: 34px; display: flex; align-items: center; font-size: 15px; color: var(--ink); }
+.qd-chinh b { font-weight: 600; }
+.qd-chinh small { margin-left: 4px; font-size: 12px; color: var(--muted); }
+.qd-tl label { text-align: right; }
+.qd-tl .inp { text-align: right; }
+.qd-hop .qd-dao { position: relative; align-self: center; margin: -13px 0; transform: none; display: inline-flex; align-items: center; gap: 4px; width: auto; height: 26px; padding: 0 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--white); color: var(--blue); font-size: 12.5px; font-weight: 600; z-index: 1; }
+.qd-hop .qd-dao:hover { border-color: var(--blue); background: var(--tint); }
+.qd-hop-chan { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px 24px 18px; }
+.qd-hop-chan .btn { justify-content: center; height: 40px; font-size: 14px; }
+
+/* Lịch chọn một ngày: khung vừa khít lịch, 4 nút chân dàn đều */
+.pop.dp-pop { min-width: 0 !important; width: max-content !important; }
+.dp-chan { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; }
+.dp-nhanh-ds { display: contents; }
+.dp-chan .dp-nhanh-btn, .dp-chan .dp-xoa-btn { width: 100%; padding: 0 4px; }
+
+/* Ô khoảng ngày trong form danh mục (bảng giá) */
+.pn-luoi .kn-nut { width: 100%; height: 36px; font-size: 13.5px; }
+
+/* Trang chi tiết công thức sơ chế, chế biến như IVT: thanh trên có đóng, tiêu đề, phiên bản, Sao chép, Lưu lại */
+.sx-ct-dau { flex: none; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px; padding: 8px 16px; background: var(--white); border-bottom: 1px solid var(--line); }
+.sx-ct-tieu-de { display: flex; align-items: center; gap: 10px; }
+.sx-ct-tieu-de h1 { font-size: 17px; font-weight: 700; color: var(--ink); }
+.sx-ct-nut { display: flex; justify-content: flex-end; gap: 8px; }
+.sx-ct-trang .fsf-b { background: var(--white); }
+.sx-ct-trang .sx-ct-form { max-width: 1280px; }
+.sx-ct-trang .sx-khoi { padding: 0; }
+.sx-ct-trang .sx-khoi-dau > .sx-bat { margin-left: auto; }
+.sx-ct-trang .sx-khoi-dau > .sx-them-nvl { margin-left: auto; color: var(--blue); font-weight: 600; flex-direction: row; }
+.sx-ct-trang .sx-khoi-dau > .sx-xoa-chon { margin-left: auto; }
+.sx-ct-trang .sx-khoi-dau > .sx-xoa-chon + .sx-them-nvl { margin-left: 0; }
+.sx-tt-chu { display: flex; align-items: center; min-height: 34px; }
+.sx-tong-cp { justify-content: flex-end; gap: 4px; }
+.sx-nvl-bang .sx-xoa { color: var(--red); }
+.sx-nvl-bang .sx-xoa:hover { background: var(--red-t); color: var(--red); }
+.sx-nvl-bang tfoot td { font-weight: 700; }

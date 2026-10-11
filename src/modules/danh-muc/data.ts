@@ -2,7 +2,7 @@
 import { createElement } from 'react'
 import type { Col, Row } from '../types'
 import type { CheDo } from '../../app/che-do'
-import { CCDC_HANG, HANG, NVL } from '../../data/mock'
+import { CCDC_HANG, HANG, KHO, NVL } from '../../data/mock'
 
 export const tkCot = (k: string, t: string): Col => ({
   k, t, cls: 'code',
@@ -65,7 +65,6 @@ export const TEN_DVT = DON_VI_TINH.map(d => d[1])
 export interface NhomHang {
   ma: string
   ten: string
-  loai?: string
   dienGiai?: string
   tkKho?: string
   tkDt?: string
@@ -75,22 +74,21 @@ export interface NhomHang {
   mucCp?: string
   ppGia?: string
   ts?: string
-  tonKho?: boolean
-  khoMacDinh?: string
+  // T154: nhóm không còn loại hàng, theo dõi tồn kho, kho mặc định
   nganhNghe?: string   // nhóm ngành nghề con ngầm định, chỉ dùng ở TT152, TT58 (T151)
 }
 
 export const NHOM_HANG: NhomHang[] = [
-  { ma: 'NHH01', ten: 'Món khai vị', loai: 'Thành phẩm', dienGiai: 'Món ăn nhẹ đầu bữa', tkKho: '', tkDt: '5111', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: 'Quảng cáo, khuyến mãi', ppGia: 'Bình quân cuối kỳ', ts: '8', tonKho: false, khoMacDinh: 'Kho bếp Lê Lợi', nganhNghe: '301-5' },
-  { ma: 'NHH02', ten: 'Món chính', loai: 'Thành phẩm', dienGiai: 'Món ăn no chính của quán', tkKho: '', tkDt: '5111', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: 'Quảng cáo, khuyến mãi', ppGia: 'Bình quân cuối kỳ', ts: '8', tonKho: false, khoMacDinh: 'Kho bếp Lê Lợi', nganhNghe: '301-5' },
-  { ma: 'NHH03', ten: 'Món lẩu', loai: 'Thành phẩm', dienGiai: 'Các món lẩu và đồ nhúng', tkKho: '', tkDt: '5111', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: 'Quảng cáo, khuyến mãi', ppGia: 'Bình quân cuối kỳ', ts: '8', tonKho: false, khoMacDinh: 'Kho bếp Lê Lợi', nganhNghe: '301-5' },
-  { ma: 'NHH04', ten: 'Đồ uống', loai: 'Hàng bán thẳng', dienGiai: 'Cà phê, trà, nước ngọt', tkKho: '1561', tkDt: '5111', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: 'Quảng cáo, khuyến mãi', ppGia: 'Bình quân cuối kỳ', ts: '8', tonKho: true, khoMacDinh: 'Kho bar Lê Lợi', nganhNghe: '301-5' },
-  { ma: 'NHH05', ten: 'Tráng miệng', loai: 'Thành phẩm', dienGiai: 'Chè, bánh ngọt, trái cây', tkKho: '', tkDt: '5111', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: 'Quảng cáo, khuyến mãi', ppGia: 'Bình quân cuối kỳ', ts: '8', tonKho: false, khoMacDinh: 'Kho bếp Lê Lợi', nganhNghe: '301-5' },
-  { ma: 'NHH06', ten: 'Món mới tháng 10', loai: 'Thành phẩm', dienGiai: 'Các món ăn ra mắt trong tháng 10', tkKho: '', tkDt: '5111', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: 'Quảng cáo, khuyến mãi', ppGia: 'Bình quân cuối kỳ', ts: '8', tonKho: false, khoMacDinh: 'Kho bếp Lê Lợi', nganhNghe: '301-5' },
-  { ma: 'NHH07', ten: 'Thịt, cá', loai: 'Nguyên vật liệu', dienGiai: 'Nguyên liệu thịt tươi sống, thuỷ hải sản', tkKho: '152', tkDt: '', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: '', ppGia: 'Bình quân cuối kỳ', ts: 'KCT', tonKho: true, khoMacDinh: 'Kho tổng', nganhNghe: '' },
-  { ma: 'NHH08', ten: 'Rau củ', loai: 'Nguyên vật liệu', dienGiai: 'Rau sạch, nấm, củ quả tươi', tkKho: '152', tkDt: '', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: '', ppGia: 'Bình quân cuối kỳ', ts: '0', tonKho: true, khoMacDinh: 'Kho tổng', nganhNghe: '' },
-  { ma: 'NHH09', ten: 'Gia vị', loai: 'Nguyên vật liệu', dienGiai: 'Dầu ăn, nước mắm, sốt, đồ khô', tkKho: '152', tkDt: '', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: '', ppGia: 'Bình quân cuối kỳ', ts: '8', tonKho: true, khoMacDinh: 'Kho tổng', nganhNghe: '' },
-  { ma: 'NHH10', ten: 'Bia, nước ngọt', loai: 'Hàng bán thẳng', dienGiai: 'Bia lon, nước đóng chai', tkKho: '1561', tkDt: '5111', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: 'Quảng cáo, khuyến mãi', ppGia: 'Bình quân cuối kỳ', ts: '10', tonKho: true, khoMacDinh: 'Kho bar Lê Lợi', nganhNghe: '101-1' },
+  { ma: 'NHH01', ten: 'Món khai vị', dienGiai: 'Món ăn nhẹ đầu bữa', tkKho: '', tkDt: '5111', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: 'Quảng cáo, khuyến mãi', ppGia: 'Bình quân cuối kỳ', ts: '8', nganhNghe: '301-5' },
+  { ma: 'NHH02', ten: 'Món chính', dienGiai: 'Món ăn no chính của quán', tkKho: '', tkDt: '5111', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: 'Quảng cáo, khuyến mãi', ppGia: 'Bình quân cuối kỳ', ts: '8', nganhNghe: '301-5' },
+  { ma: 'NHH03', ten: 'Món lẩu', dienGiai: 'Các món lẩu và đồ nhúng', tkKho: '', tkDt: '5111', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: 'Quảng cáo, khuyến mãi', ppGia: 'Bình quân cuối kỳ', ts: '8', nganhNghe: '301-5' },
+  { ma: 'NHH04', ten: 'Đồ uống', dienGiai: 'Cà phê, trà, nước ngọt', tkKho: '1561', tkDt: '5111', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: 'Quảng cáo, khuyến mãi', ppGia: 'Bình quân cuối kỳ', ts: '8', nganhNghe: '301-5' },
+  { ma: 'NHH05', ten: 'Tráng miệng', dienGiai: 'Chè, bánh ngọt, trái cây', tkKho: '', tkDt: '5111', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: 'Quảng cáo, khuyến mãi', ppGia: 'Bình quân cuối kỳ', ts: '8', nganhNghe: '301-5' },
+  { ma: 'NHH06', ten: 'Món mới tháng 10', dienGiai: 'Các món ăn ra mắt trong tháng 10', tkKho: '', tkDt: '5111', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: 'Quảng cáo, khuyến mãi', ppGia: 'Bình quân cuối kỳ', ts: '8', nganhNghe: '301-5' },
+  { ma: 'NHH07', ten: 'Thịt, cá', dienGiai: 'Nguyên liệu thịt tươi sống, thuỷ hải sản', tkKho: '152', tkDt: '', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: '', ppGia: 'Bình quân cuối kỳ', ts: 'KCT', nganhNghe: '' },
+  { ma: 'NHH08', ten: 'Rau củ', dienGiai: 'Rau sạch, nấm, củ quả tươi', tkKho: '152', tkDt: '', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: '', ppGia: 'Bình quân cuối kỳ', ts: '0', nganhNghe: '' },
+  { ma: 'NHH09', ten: 'Gia vị', dienGiai: 'Dầu ăn, nước mắm, sốt, đồ khô', tkKho: '152', tkDt: '', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: '', ppGia: 'Bình quân cuối kỳ', ts: '8', nganhNghe: '' },
+  { ma: 'NHH10', ten: 'Bia, nước ngọt', dienGiai: 'Bia lon, nước đóng chai', tkKho: '1561', tkDt: '5111', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: 'Quảng cáo, khuyến mãi', ppGia: 'Bình quân cuối kỳ', ts: '10', nganhNghe: '101-1' },
 ]
 export const TEN_NHOM_HANG = NHOM_HANG.map(n => n.ten)
 
@@ -174,12 +172,16 @@ export const TEN_CONG_VIEC_17 = [
 ]
 
 export const DS_HANG_HOA_12 = [
-  ...HANG.map(h => ({ ma: h.ma, ten: h.ten, nhom: h.nhom })),
-  { ma: 'BUN02', ten: 'Bún bò Huế', nhom: 'Món mới tháng 10' },
-  { ma: 'MI01', ten: 'Mì Quảng tôm thịt', nhom: 'Món mới tháng 10' },
-  ...NVL.map(h => ({ ma: h.ma, ten: h.ten, nhom: h.nhom })),
-  ...CCDC_HANG.map(h => ({ ma: h.ma, ten: h.ten, nhom: h.nhom })),
+  ...HANG.map(h => ({ ma: h.ma, ten: h.ten, nhom: h.nhom, dvt: h.dvt })),
+  { ma: 'BUN02', ten: 'Bún bò Huế', nhom: 'Món mới tháng 10', dvt: 'Tô' },
+  { ma: 'MI01', ten: 'Mì Quảng tôm thịt', nhom: 'Món mới tháng 10', dvt: 'Tô' },
+  ...NVL.map(h => ({ ma: h.ma, ten: h.ten, nhom: h.nhom, dvt: h.dvt })),
+  ...CCDC_HANG.map(h => ({ ma: h.ma, ten: h.ten, nhom: h.nhom, dvt: h.dvt })),
 ]
+/** Mã để hiện "Mã: X" trong ô chọn nhiều, ô chọn có tìm (T154): hàng hoá, đơn vị tính theo tên; kho theo thứ tự như danh mục kho 1.8 */
+export const maHang = (ten: string) => DS_HANG_HOA_12.find(h => h.ten === ten)?.ma ?? ''
+export const maDvt = (ten: string) => DON_VI_TINH.find(d => d[1] === ten)?.[0] ?? ''
+export const maKho = (ten: string) => KHO.includes(ten) ? `K${String(KHO.indexOf(ten) + 1).padStart(2, '0')}` : ''
 
 export function demHangTheoNhom(tenNhom: string): number {
   if (!tenNhom) return 0
@@ -259,9 +261,15 @@ export const DS_THUONG_HIEU = [
 ]
 export const TEN_THUONG_HIEU = DS_THUONG_HIEU.map(t => t.ten)
 
-/** Quy đổi đơn vị tính (1.4): 1 qd = tl goc. Dòng "Tất cả hàng hoá" áp cho mọi hàng có ĐVT khớp (T151) */
-export const QUY_DOI_DVT = [
-  ['Bia Sài Gòn lon', 'Lon', 'Thùng', 24, 'Nhập hàng'], ['Sữa đặc', 'Lon', 'Thùng', 48, 'Nhập hàng'], ['Thịt bò thăn', 'g', 'kg', 1000, 'Nhập hàng, kiểm kê'],
-  ['Dầu ăn', 'Lít', 'Can 5 lít', 5, 'Nhập hàng'], ['Cà phê hạt Robusta', 'kg', 'Bao 25 kg', 25, 'Nhập hàng'], ['Bánh phở tươi', 'g', 'kg', 1000, 'Định lượng công thức'],
-  ['Tất cả hàng hoá', 'ml', 'Lít', 1000, 'Định lượng pha chế'],
-].map(([hang, goc, qd, tl, dung]) => ({ hang: String(hang), goc: String(goc), qd: String(qd), tl: Number(tl), dung: String(dung) }))
+/** Diễn giải quy đổi theo cú pháp "1 Thùng = 24 Lon"; tỷ lệ gõ tay giữ nguyên chữ (T154) */
+export function dienGiaiQd(tu: unknown, den: unknown, tl: unknown): string {
+  if (!tu || !den || tl === undefined || tl === null || tl === '') return ''
+  return `1 ${tu} = ${typeof tl === 'number' ? tl.toLocaleString('vi-VN', { maximumFractionDigits: 4 }) : String(tl)} ${den}`
+}
+
+/** Quy đổi đơn vị tính (1.4): 1 tu = tl den, vd 1 Thùng = 24 Lon. hangAd là hàng hoá áp dụng dạng "A, B", để trống là mọi hàng hoá (T151, T154) */
+export const QUY_DOI_DVT = ([
+  ['QD01', 'Thùng', 'Lon', 24, 'Bia Sài Gòn lon', 'Bia nhập theo thùng 24 lon'], ['QD02', 'Thùng', 'Lon', 48, 'Sữa đặc', 'Sữa đặc nhập theo thùng 48 lon'],
+  ['QD03', 'kg', 'g', 1000, 'Thịt bò thăn, Bánh phở tươi', 'Định lượng công thức theo gram'], ['QD04', 'Can', 'Lít', 5, 'Dầu ăn', 'Can 5 lít'],
+  ['QD05', 'Bao', 'kg', 25, 'Cà phê hạt Robusta', 'Bao 25 kg'], ['QD06', 'Lít', 'ml', 1000, '', 'Định lượng pha chế'],
+] as const).map(([ma, tu, den, tl, hangAd, moTa]) => ({ ma, tu: String(tu), den: String(den), tl: Number(tl), hangAd: String(hangAd), moTa: String(moTa), dienGiai: dienGiaiQd(tu, den, tl) }))

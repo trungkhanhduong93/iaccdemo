@@ -31,6 +31,14 @@ export function dsTheoDoiChiTiet(so: string): string[] {
   return ds
 }
 
+/** Loại tài khoản theo chữ số đầu của số tài khoản (T154); form lưu chữ số */
+const LOAI_TK: { v: string; t: string }[] = [
+  ['1', 'Tài sản ngắn hạn'], ['2', 'Tài sản dài hạn'], ['3', 'Nợ phải trả'], ['4', 'Vốn chủ sở hữu'], ['5', 'Doanh thu'],
+  ['6', 'Chi phí sản xuất kinh doanh'], ['7', 'Thu nhập khác'], ['8', 'Chi phí khác'], ['9', 'Xác định kết quả kinh doanh'], ['0', 'Tài khoản ngoài bảng'],
+].map(([v, t]) => ({ v, t: `Loại ${v} - ${t}` }))
+const loaiTheoSo = (so: string) => (/^\d/.test(so) ? so[0] : '')
+const DS_CAP = [1, 2, 3, 4, 5].map(c => ({ v: String(c), t: `Cấp ${c}` }))
+
 interface FormState {
   so: string
   ten: string
@@ -71,7 +79,7 @@ function taoMacDinh(tk?: TaiKhoanDef | null): FormState {
       laCha: false,
       cap: 1,
       tinhChat: 'Dư Nợ',
-      loai: 'Tài sản ngắn hạn',
+      loai: '',
       dienGiai: '',
       dangDung: true,
       coNgoaiTe: false,
@@ -115,7 +123,7 @@ function taoMacDinh(tk?: TaiKhoanDef | null): FormState {
     laCha: Boolean(tk.laCha),
     cap: tk.cap,
     tinhChat: tk.tinhChat,
-    loai: tk.loai,
+    loai: loaiTheoSo(tk.so),
     dienGiai: '',
     dangDung: true,
     coNgoaiTe: isNgoaiTe,
@@ -242,7 +250,11 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
   // Thân panel nhiều trường vẽ sau khi panel trượt xong: lúc trượt không bị khựng (đo hở 160ms giữa hai khung, T81)
   const [thanMo, setThanMo] = useState(false)
   useEffect(() => { if (!panelOpen) setThanMo(false) }, [panelOpen])
-  const dsCha = useMemo(() => [{ v: '', t: '(Không có - Cấp 1)' }, ...all.map(t => ({ v: t.so, t: `${t.so} - ${t.ten}` }))], [all])
+  // Thuộc tài khoản: chỉ tài khoản cấp ngay trên cấp đang chọn; cấp 1 không có cha (T154)
+  const dsCha = useMemo(() => [
+    { v: '', t: form.cap === 1 ? '(Không có, tài khoản cấp 1)' : `(Chọn tài khoản cấp ${form.cap - 1})` },
+    ...all.filter(t => t.cap === form.cap - 1 && t.so !== dangSua?.so).map(t => ({ v: t.so, t: `${t.so} - ${t.ten}` })),
+  ], [all, form.cap, dangSua])
 
   const dongPanel = useCallback(() => {
     setPanelOpen(false)
@@ -260,8 +272,8 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
 
   const handleChaChange = (chaSo: string) => {
     const chaTk = bySo.get(chaSo)
-    const capMoi = chaTk ? chaTk.cap + 1 : 1
     setForm(f => {
+      const capMoi = chaTk ? chaTk.cap + 1 : f.cap   // bỏ chọn cha thì giữ cấp đang chọn (T154)
       const soHienTai = f.so
       let soMoi = soHienTai
       if (chaSo && !soHienTai.startsWith(chaSo)) {
@@ -273,10 +285,16 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
         cap: capMoi,
         so: soMoi,
         tinhChat: chaTk ? chaTk.tinhChat : f.tinhChat,
-        loai: chaTk ? chaTk.loai : f.loai,
+        loai: chaTk ? loaiTheoSo(chaTk.so) : f.loai,
       }
     })
-    setErrors(e => ({ ...e, so: '' }))
+    setErrors(e => ({ ...e, so: '', cha: '' }))
+  }
+
+  // Đổi cấp: cấp 1 bỏ tài khoản cha; cha đang chọn không đúng cấp ngay trên thì bỏ để chọn lại (T154)
+  const doiCap = (cap: number) => {
+    setForm(f => ({ ...f, cap, cha: cap > 1 && bySo.get(f.cha)?.cap === cap - 1 ? f.cha : '' }))
+    setErrors(e => ({ ...e, cha: '' }))
   }
 
   const validate = () => {
@@ -285,6 +303,9 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
       errs.so = 'Vui lòng nhập số tài khoản'
     } else if (form.cha && !form.so.startsWith(form.cha)) {
       errs.so = `Số tài khoản phải bắt đầu bằng ${form.cha}`
+    }
+    if (form.cap > 1 && !form.cha) {
+      errs.cha = `Chọn tài khoản cấp ${form.cap - 1}`
     }
     if (!form.ten.trim()) {
       errs.ten = 'Vui lòng nhập tên tài khoản'
@@ -462,50 +483,20 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
                 </div>
                 {moKhoi.thongTin && (
                   <div className="pn-khoi-than">
-                    <div className="pn-luoi">
+                    {/* T154: lưới 2 cột: số và tính chất, tên cả hàng, cấp cùng hàng với ô Tổng hợp, tài khoản cha cạnh loại tài khoản */}
+                    <div className="pn-luoi pn-luoi-2">
                       <div className="f">
                         <label>Số tài khoản <em>*</em></label>
                         <input
                           className="inp"
                           value={form.so}
                           onChange={e => {
-                            setForm(f => ({ ...f, so: e.target.value }))
+                            const so = e.target.value
+                            setForm(f => ({ ...f, so, loai: loaiTheoSo(so) || f.loai }))
                             setErrors(err => ({ ...err, so: '' }))
                           }}
                         />
                         {errors.so && <span className="muted pn-loi">{errors.so}</span>}
-                      </div>
-                      <div className="f pn-hang-dai">
-                        <label>Tên tài khoản <em>*</em></label>
-                        <input
-                          className="inp"
-                          value={form.ten}
-                          onChange={e => {
-                            setForm(f => ({ ...f, ten: e.target.value }))
-                            setErrors(err => ({ ...err, ten: '' }))
-                          }}
-                        />
-                        {errors.ten && <span className="muted pn-loi">{errors.ten}</span>}
-                      </div>
-                      <div className="f">
-                        <label>Thuộc tài khoản</label>
-                        <Select className="inp" value={form.cha} ds={dsCha} aria-label="Thuộc tài khoản"
-                          onChange={e => handleChaChange(e.target.value)} />
-                      </div>
-                      <div className="f" style={{ display: 'flex', alignItems: 'center', marginTop: 24 }}>
-                        <label className="row pn-tich" title={dangCoCon ? 'Tài khoản đang có tài khoản con, không thể bỏ tổng hợp' : undefined} style={{ cursor: dangCoCon ? 'not-allowed' : 'pointer' }}>
-                          <input
-                            type="checkbox"
-                            checked={form.laCha}
-                            disabled={dangCoCon}
-                            onChange={e => setForm(f => ({ ...f, laCha: e.target.checked }))}
-                          />
-                          <span>Tổng hợp</span>
-                        </label>
-                      </div>
-                      <div className="f">
-                        <label>Cấp</label>
-                        <input className="inp" value={form.cap} readOnly />
                       </div>
                       <div className="f">
                         <label>Tính chất <em>*</em></label>
@@ -520,13 +511,44 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
                           <option value="Không số dư">Không số dư</option>
                         </Select>
                       </div>
-                      <div className="f">
-                        <label>Loại tài khoản</label>
+                      <div className="f pn-hang-dai">
+                        <label>Tên tài khoản <em>*</em></label>
                         <input
                           className="inp"
-                          value={form.loai}
-                          onChange={e => setForm(f => ({ ...f, loai: e.target.value }))}
+                          value={form.ten}
+                          onChange={e => {
+                            setForm(f => ({ ...f, ten: e.target.value }))
+                            setErrors(err => ({ ...err, ten: '' }))
+                          }}
                         />
+                        {errors.ten && <span className="muted pn-loi">{errors.ten}</span>}
+                      </div>
+                      <div className="f">
+                        <label>Cấp</label>
+                        <Select className="inp" value={String(form.cap)} ds={DS_CAP} aria-label="Cấp" onChange={e => doiCap(Number(e.target.value))} />
+                      </div>
+                      <div className="f pn-tich-o">
+                        <label className="row pn-tich" title={dangCoCon ? 'Tài khoản đang có tài khoản con, không thể bỏ tổng hợp' : undefined} style={{ cursor: dangCoCon ? 'not-allowed' : 'pointer' }}>
+                          <input
+                            type="checkbox"
+                            checked={form.laCha}
+                            disabled={dangCoCon}
+                            onChange={e => setForm(f => ({ ...f, laCha: e.target.checked }))}
+                          />
+                          <span>Tổng hợp</span>
+                        </label>
+                      </div>
+                      <div className="f">
+                        <label>Thuộc tài khoản{form.cap > 1 && <em> *</em>}</label>
+                        <Select className="inp" value={form.cap === 1 ? '' : form.cha} ds={dsCha} aria-label="Thuộc tài khoản" disabled={form.cap === 1}
+                          onChange={e => handleChaChange(e.target.value)} />
+                        {errors.cha && <span className="muted pn-loi">{errors.cha}</span>}
+                      </div>
+                      <div className="f">
+                        <label>Loại tài khoản</label>
+                        <Select className="inp" value={form.loai} aria-label="Loại tài khoản"
+                          ds={[{ v: '', t: '(Chọn loại tài khoản)' }, ...LOAI_TK]}
+                          onChange={e => setForm(f => ({ ...f, loai: e.target.value }))} />
                       </div>
                       <div className="f pn-hang-dai">
                         <label>Diễn giải</label>

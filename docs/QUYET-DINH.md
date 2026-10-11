@@ -503,7 +503,7 @@ Lý do: Trum giao việc T133 ngày 10/10/2026, duyệt các mặc định do ag
 
 - Danh mục có 5 màn nhóm riêng: nhóm hàng hoá, nhóm đối tượng, nhóm mục chi phí, nhóm công việc, nhóm kho. Mỗi màn đứng ngay sau danh mục cha, gói nào cũng mở. Ô Nhóm của danh mục cha chọn từ màn nhóm.
 - Nhóm hàng hoá giữ thông tin ngầm định cho hàng hoá: 5 tài khoản, mục chi phí, phương pháp tính giá, thuế suất, tính chất, theo dõi tồn kho, kho mặc định. Hàng hoá chọn nhóm thì ô trống tự điền. Ô đã có giá trị khác thì hỏi trước khi áp.
-- Sửa nhóm hàng không tự đổi hàng hoá đã gắn. Muốn cập nhật thì bấm "Áp cho N hàng hoá trong nhóm".
+- Sửa nhóm hàng không tự đổi hàng hoá đã gắn. Nút "Áp cho N hàng hoá trong nhóm" đã bỏ từ 11/10/2026 (T154, QD51).
 - Kho có mục chi phí, công việc ngầm định, địa chỉ, số điện thoại, người liên hệ, ghi chú. Phiếu kho tự lấy mục chi phí, công việc theo kho là việc sau, chưa làm.
 - Đối tượng và người dùng có ô "Đã đồng ý chia sẻ thông tin cá nhân". Ô bắt buộc với mọi loại, kể cả tổ chức có MST. Thêm mới để trống, chưa tích thì không lưu được.
 - Màn Người dùng dùng panel Thêm, Sửa như danh mục.
@@ -533,7 +533,7 @@ Lý do: Trum giao T146 đến T149 ngày 11/10/2026, chốt các mặc định a
 
 ## QD49. Hàng hoá theo iFaster: thuế ngành nghề, thương hiệu (11/10/2026)
 
-- Hàng hoá ở TT152, TT58 khai thuế theo nhóm ngành nghề con, danh sách 37 ngành nghề lấy từ iFaster. Chọn ngành nghề con thì tự điền nhóm ngành nghề và % GTGT, % TNCN (TT58 ghi là TNDN). Tỷ lệ vẫn sửa được.
+- Hàng hoá ở TT152, TT58 khai thuế theo nhóm ngành nghề con, danh sách 37 ngành nghề lấy từ iFaster. Chọn ngành nghề con thì tự điền nhóm ngành nghề và % GTGT, % TNCN (TT58 ghi là TNDN). Hai ô tỷ lệ chỉ đọc (sửa ở T154, QD51).
 - TT133, TT99 giữ thuế suất GTGT 0, 5, 8, 10%, không có khối ngành nghề.
 - Nhóm hàng hoá có ngành nghề con ngầm định ở khối Thông tin chung. Hàng chọn nhóm thì tự điền khi ô ngành nghề đang trống.
 - Danh mục Thương hiệu đứng sau Chi nhánh, đồng bộ từ FABi. Hàng hoá thuộc một thương hiệu. Kho phục vụ nhiều thương hiệu, để trống là mọi thương hiệu.
@@ -549,3 +549,16 @@ Lý do: Trum giao T151 ngày 11/10/2026, chốt các đề xuất của agent c�
 - Công thức sơ chế, chế biến làm theo iPOS Inventory: chip trạng thái, danh sách gộp ô theo nguyên vật liệu, form chi tiết.
 
 Lý do: Trum giao T152 ngày 11/10/2026, chốt các đề xuất của agent cùng ngày.
+
+## QD51. Danh mục theo iFaster, công thức theo iPOS Inventory (11/10/2026)
+
+- Tài khoản: Cấp chọn 1–5, sửa được. Đổi cấp thì Thuộc tài khoản chỉ liệt kê tài khoản cấp ngay trên. Loại tài khoản chọn trong danh sách Loại 0–9 của hệ thống tài khoản.
+- Thuế theo ngành nghề (TT152, TT58): chọn ngành nghề con thì hai ô tỷ lệ tự điền và chỉ đọc.
+- Hộp quy đổi trong form hàng hoá làm theo iFaster, chỉ áp cho hàng đang sửa. Áp cho nhiều hàng thì khai ở danh mục Quy đổi ĐVT, ô Hàng hoá áp dụng chọn nhiều, để trống là mọi hàng hoá. Diễn giải tự sinh dạng "1 Thùng = 24 Lon".
+- Mọi ô chọn nhiều trong form danh mục, công thức dùng kiểu iFaster: dòng tên và mã, ô tìm, chân có Tất cả, thêm mới, làm mới; mục đã chọn hiện thẻ có dấu ×. Ô lọc ở báo cáo, Tổng quan, màn khởi tạo FABi chưa đổi.
+- Nhóm hàng không còn Loại hàng, Theo dõi tồn kho, Kho theo dõi, Kho mặc định và nút Áp cho N hàng hoá.
+- Công việc chỉ còn Mã, Tên, Mô tả, Trạng thái.
+- Bảng giá: Loại giá (Giá nhập, Giá bán), Hàng hoá, ĐVT, Thời gian áp dụng từ–đến, Đơn giá, VAT, Nhà cung cấp (chỉ với giá nhập), Kho áp dụng.
+- Form công thức sơ chế, chế biến theo bố cục iPOS Inventory, không có Mức tăng, giảm tối đa. Tổng chi phí công thức chế biến kèm tỷ lệ chi phí nguyên vật liệu trên giá bán (food cost).
+
+Lý do: Trum giao T154, T156 ngày 11/10/2026, chốt các đề xuất của agent cùng ngày. Tỷ lệ food cost do agent chọn thay con số 100% của iPOS Inventory.

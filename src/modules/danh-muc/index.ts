@@ -30,8 +30,7 @@ const nhomHangHoa: ScreenDef = {
     cols: (goi, cheDo) => [
       { k: 'ma', t: 'Mã', cls: 'code' },
       { k: 'ten', t: 'Tên nhóm' },
-      { k: 'loai', t: 'Tính chất / Loại' },
-      { k: 'dienGiai', t: 'Diễn giải', cls: 'dim' },
+      { k: 'dienGiai', t: 'Diễn giải', cls: 'dim' },   // T154: bỏ cột loại hàng
       ...(kieuGhiSo(cheDo) === 'noco' ? [tkCot('tkKho', 'TK kho'), tkCot('tkDt', 'TK doanh thu'), tkCot('tkGv', 'TK giá vốn')] : []),
     ],
     rows: () => NHOM_HANG,
@@ -179,7 +178,9 @@ const danhMuc: ModuleDef = {
     } },
     '1.3': { catalog: { them: 'Thêm đơn vị tính', cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên đơn vị tính' }, { k: 'mota', t: 'Mô tả', cls: 'dim' }],
       rows: () => DON_VI_TINH.map(([ma, ten, mota]) => ({ ma, ten, mota })) } },
-    '1.4': { catalog: { them: 'Thêm quy đổi', cols: [{ k: 'hang', t: 'Hàng hoá' }, { k: 'goc', t: 'ĐVT gốc', c: true }, { k: 'qd', t: 'ĐVT quy đổi', c: true }, { k: 'tl', t: 'Tỷ lệ', num: true }, { k: 'dung', t: 'Dùng khi', cls: 'dim' }],
+    // T154: 1 Từ ĐVT = tỷ lệ Đến ĐVT; hàng hoá áp dụng để trống là mọi hàng hoá
+    '1.4': { catalog: { them: 'Thêm quy đổi', cols: [{ k: 'tu', t: 'Từ ĐVT', c: true }, { k: 'den', t: 'Đến ĐVT', c: true }, { k: 'tl', t: 'Tỷ lệ', num: true },
+      { k: 'dienGiai', t: 'Diễn giải' }, { k: 'hangAd', t: 'Hàng hoá áp dụng', r: (r: Row) => r.hangAd || 'Tất cả hàng hoá' }],
       rows: () => QUY_DOI_DVT } },
     '1.5': { catalog: { them: 'Thêm đối tượng', nhomLoc: 'loai', nhanLoc: 'Loại',
       chucNang: r => {
@@ -201,10 +202,11 @@ const danhMuc: ModuleDef = {
         ['CP04', 'Thuê mặt bằng', 'Mặt bằng', '6421'], ['CP05', 'Điện', 'Điện, nước, gas', '6421'], ['CP06', 'Nước', 'Điện, nước, gas', '6421'], ['CP07', 'Gas', 'Điện, nước, gas', '6421'],
         ['CP08', 'Hoa hồng app giao đồ ăn', 'Bán hàng', '6421'], ['CP09', 'Quảng cáo, khuyến mãi', 'Bán hàng', '6421'], ['CP10', 'Sửa chữa, bảo trì', 'Khác', '6422'], ['CP11', 'Văn phòng phẩm', 'Khác', '6422']]
         .map(([ma, ten, nhom, tk]) => ({ ma, ten, nhom, tk })) } },
-    '1.7': { catalog: { them: 'Thêm công việc', cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Công việc' }, { k: 'nhom', t: 'Nhóm' }, { k: 'pt', t: 'Phụ trách' }, { k: 'tg', t: 'Thời gian', cls: 'dim' }],
-      rows: () => [['CV01', 'Khai trương chi nhánh Thảo Điền', 'Mở rộng', 'Nguyễn Minh Anh', '06–08/2026'], ['CV02', 'Sự kiện Trung thu 2026', 'Marketing', 'Phạm Ngọc Lan', '09/2026'],
-        ['CV03', 'Cải tạo bếp Lê Lợi', 'Sửa chữa lớn', 'Võ Thanh Tùng', '10–11/2026'], ['CV04', 'Tiệc cuối năm khách công ty', 'Bán hàng', 'Phạm Ngọc Lan', '12/2026']]
-        .map(([ma, ten, nhom, pt, tg]) => ({ ma, ten, nhom, pt, tg })) } },
+    // T154: công việc chỉ còn mã, tên, mô tả, trạng thái
+    '1.7': { catalog: { them: 'Thêm công việc', cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên công việc' }, { k: 'moTa', t: 'Mô tả', cls: 'dim' }],
+      rows: () => [['CV01', 'Khai trương chi nhánh Thảo Điền', 'Chi phí mở điểm bán mới tháng 6 đến tháng 8/2026'], ['CV02', 'Sự kiện Trung thu 2026', 'Trang trí, quà tặng, quảng cáo tháng 9/2026'],
+        ['CV03', 'Cải tạo bếp Lê Lợi', 'Sửa bếp, thay hút mùi tháng 10, 11/2026'], ['CV04', 'Tiệc cuối năm khách công ty', 'Tiệc theo hợp đồng tháng 12/2026']]
+        .map(([ma, ten, moTa]) => ({ ma, ten, moTa })) } },
     '1.8': { catalog: { them: 'Thêm kho', khongThem: ['F'],
       // gói Free: mỗi chi nhánh một kho mặc định theo iPOS Inventory (kho đầu của chi nhánh), không thêm kho mới (T143)
       locGoi: (goi, r) => (goi !== 'F' && goi !== 'S') || CHI_NHANH.some(c => c.kho[0] === r.ten),   // gói Free, Standard: dữ liệu mẫu một kho mỗi chi nhánh
@@ -246,8 +248,15 @@ const danhMuc: ModuleDef = {
       rows: () => [...CHI_NHANH.map((c, i) => ({ ma: `TM0${i + 1}`, ten: `Quỹ tiền mặt ${c.ngan}`, loai: 'Tiền mặt', stk: '', cn: c.ten })),
         { ma: 'NH01', ten: 'Vietcombank, chi nhánh Sài Gòn', loai: 'Ngân hàng', stk: '0071 0012 3456', cn: 'Tất cả' },
         { ma: 'NH02', ten: 'Techcombank, nhận tiền QR', loai: 'Ngân hàng', stk: '1903 6655 8899', cn: 'Tất cả' }] } },
-    '1.14': { catalog: { them: 'Thêm bảng giá', nhomLoc: 'loai', cols: [{ k: 'ten', t: 'Hàng hoá' }, { k: 'dvt', t: 'ĐVT' }, { k: 'loai', t: 'Loại giá' }, { k: 'gia', t: 'Giá', num: true }, { k: 'tu', t: 'Áp dụng từ' }, { k: 'cn', t: 'Chi nhánh', cls: 'dim' }],
-      rows: () => [...HANG.map(h => ({ ten: h.ten, dvt: h.dvt, loai: 'Giá bán', gia: h.gia, tu: '01/09/2026', cn: 'Tất cả' })), ...NVL.slice(0, 8).map(h => ({ ten: h.ten, dvt: h.dvt, loai: 'Giá mua', gia: h.gia, tu: '01/10/2026', cn: 'Kho tổng' }))] } },
+    // T154: bảng giá theo iFaster; giá nhập có nhà cung cấp, kho áp dụng để trống là mọi kho
+    '1.14': { catalog: { them: 'Thêm bảng giá', nhomLoc: 'loai', nhanLoc: 'Loại giá',
+      cols: [{ k: 'loai', t: 'Loại giá' }, { k: 'ten', t: 'Hàng hoá' }, { k: 'dvt', t: 'ĐVT' }, { k: 'thoiGian', t: 'Thời gian áp dụng', w: 200 }, { k: 'gia', t: 'Đơn giá', num: true },
+        { k: 'vat', t: 'VAT (%)', num: true }, { k: 'ncc', t: 'Nhà cung cấp', r: (r: Row) => r.ncc || '—' }, { k: 'kho', t: 'Kho áp dụng', r: (r: Row) => r.kho || 'Tất cả kho' }],
+      rows: () => [
+        ...HANG.map(h => ({ loai: 'Giá bán', ten: h.ten, dvt: h.dvt, thoiGian: '01/09/2026 - 31/12/2026', gia: h.gia, vat: h.ts, ncc: '', kho: '' })),
+        ...NVL.slice(0, 8).map(h => ({ loai: 'Giá nhập', ten: h.ten, dvt: h.dvt, thoiGian: '01/10/2026 - 31/03/2027', gia: h.gia, vat: h.ts,
+          ncc: (NCC.find(n => n.nhom === h.nhom) ?? NCC[0]).ten, kho: 'Kho tổng' })),
+      ] } },
     '1.15': { cheDo: ['TT133', 'TT99'], catalog: { them: 'Thêm bút toán', nhomLoc: 'lct', nhanLoc: 'Loại chứng từ',
       cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Nghiệp vụ' }, { k: 'lct', t: 'Loại chứng từ' }, { k: 'loc', t: 'Lọc theo', cls: 'dim' },
         { k: 'no', t: 'TK Nợ', cls: 'code', c: true }, { k: 'co', t: 'TK Có', cls: 'code', c: true }, { k: 'tien', t: 'Số tiền lấy từ', cls: 'dim' }],
