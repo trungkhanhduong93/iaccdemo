@@ -12,6 +12,7 @@ import { between, dmy, k, pad, pick, rng } from '../../ui/format'
 import { Select } from '../../ui/Dropdown'
 import { useNhatKy } from '../../ui/generic/daXoa'
 import { HopDongBo } from '../../ui/HopDongBo'
+import { DS_PTTT } from '../danh-muc/data'
 
 const dsKho = CHI_NHANH.flatMap(c =>
   c.kho.map(ten => {
@@ -24,7 +25,7 @@ const dsKho = CHI_NHANH.flatMap(c =>
 const dsMon = HANG.map(h => `${h.ma} - ${h.ten}`)
 
 export function DongBo({ sc, mod }: ScreenProps) {
-  const { toast } = useSession()
+  const { toast, s } = useSession()
   const [tu, setTu] = useState(true)
   const [moHop, setMoHop] = useState(false)
   return (
@@ -65,11 +66,22 @@ export function DongBo({ sc, mod }: ScreenProps) {
           dsMon={dsMon}
           nhanLamLai="Đồng bộ lại hoá đơn đã có"
           nutChinh="Đồng bộ ngay"
+          tichPhu={{
+            nhan: 'Tự động hạch toán chứng từ theo phương thức thanh toán',
+            ghiChu: (s.dongBoFabi ?? 'kenh') === 'chiTiet'
+              ? 'Mỗi hoá đơn sinh một phiếu thu: Nợ TK của phương thức, Có 131'
+              : 'Mỗi ngày, mỗi phương thức sinh một phiếu thu tổng: Nợ TK của phương thức, Có 131',
+            macDinh: true,
+          }}
           onDong={() => setMoHop(false)}
-          onDongBo={({ tu: dTu, den: dDen, chon }) => {
+          onDongBo={({ tu: dTu, den: dDen, chon, tichPhu }) => {
             setMoHop(false)
             const soDon = chon.length === 3 ? 188 : chon.length * 62 + 2
-            toast(`Đã đồng bộ ${soDon} đơn từ ${chon.length} kho, ${dmy(dTu)} đến ${dmy(dDen)}`)
+            const ngay = Math.max(1, Math.round((dDen.getTime() - dTu.getTime()) / 864e5) + 1)
+            const soPttt = DS_PTTT.filter(p => p._tt !== 0).length
+            const nThu = (s.dongBoFabi ?? 'kenh') === 'chiTiet' ? soDon : (ngay * chon.length * soPttt)
+            const vThu = tichPhu ? `, sinh ${nThu} phiếu thu theo phương thức thanh toán` : ''
+            toast(`Đã đồng bộ ${soDon} đơn từ ${chon.length} kho, ${dmy(dTu)} đến ${dmy(dDen)}${vThu}`)
           }}
         />
       )}

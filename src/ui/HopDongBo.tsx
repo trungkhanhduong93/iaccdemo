@@ -17,6 +17,7 @@ export interface KetQuaDongBo {
   chon: string[]
   mon: string[]
   lamLai: boolean
+  tichPhu?: boolean
 }
 
 export interface HopDongBoProps {
@@ -32,6 +33,7 @@ export interface HopDongBoProps {
   chonSan?: string[]        // mã chọn sẵn khi mở hộp, vd chi nhánh đang làm việc (T117)
   lamLaiMacDinh?: boolean   // ô tích ở chân hộp tích sẵn hay không (T117)
   ghiChuLamLai?: string     // dòng giải thích dưới ô tích (T117)
+  tichPhu?: { nhan: string; ghiChu?: string; macDinh?: boolean }   // ô tích thứ hai ở chân hộp (T137)
   onDong: () => void
   onDongBo: (ketQua: KetQuaDongBo) => void
 }
@@ -49,6 +51,7 @@ export function HopDongBo({
   chonSan = [],
   lamLaiMacDinh = false,
   ghiChuLamLai,
+  tichPhu,
   onDong,
   onDongBo,
 }: HopDongBoProps) {
@@ -62,6 +65,7 @@ export function HopDongBo({
   const [moMon, setMoMon] = useState(false)
   const [timMon, setTimMon] = useState('')
   const [lamLai, setLamLai] = useState(lamLaiMacDinh)
+  const [tichPhuVal, setTichPhuVal] = useState(tichPhu?.macDinh ?? false)
   const [dangChay, setDangChay] = useState(false)
 
   const timRef = useRef<HTMLInputElement>(null)
@@ -139,6 +143,7 @@ export function HopDongBo({
         chon,
         mon,
         lamLai,
+        tichPhu: Boolean(tichPhuVal),
       })
     }, 900)
   }
@@ -383,15 +388,38 @@ export function HopDongBo({
         </div>
 
         <footer className="hdb-chan">
-          <label className="hdb-chan-trai">
-            <input
-              type="checkbox"
-              checked={lamLai}
-              disabled={dangChay}
-              onChange={e => setLamLai(e.target.checked)}
-            />
-            <span>{nhanLamLai}{ghiChuLamLai && <small className="hdb-chu-nho">{ghiChuLamLai}</small>}</span>
-          </label>
+          {tichPhu ? (
+            <div className="hdb-chan-trai-ds">
+              <label className="hdb-chan-trai">
+                <input
+                  type="checkbox"
+                  checked={lamLai}
+                  disabled={dangChay}
+                  onChange={e => setLamLai(e.target.checked)}
+                />
+                <span>{nhanLamLai}{ghiChuLamLai && <small className="hdb-chu-nho">{ghiChuLamLai}</small>}</span>
+              </label>
+              <label className="hdb-chan-trai">
+                <input
+                  type="checkbox"
+                  checked={tichPhuVal}
+                  disabled={dangChay}
+                  onChange={e => setTichPhuVal(e.target.checked)}
+                />
+                <span>{tichPhu.nhan}{tichPhu.ghiChu && <small className="hdb-chu-nho">{tichPhu.ghiChu}</small>}</span>
+              </label>
+            </div>
+          ) : (
+            <label className="hdb-chan-trai">
+              <input
+                type="checkbox"
+                checked={lamLai}
+                disabled={dangChay}
+                onChange={e => setLamLai(e.target.checked)}
+              />
+              <span>{nhanLamLai}{ghiChuLamLai && <small className="hdb-chu-nho">{ghiChuLamLai}</small>}</span>
+            </label>
+          )}
           <div className="hdb-chan-phai">
             <button
               type="button"

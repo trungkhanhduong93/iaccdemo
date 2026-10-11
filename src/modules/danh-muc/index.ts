@@ -5,7 +5,7 @@ import { tuExcel } from '../types'
 import { quyTrinh } from './quy-trinh'
 import { kieuGhiSo } from '../../app/plan'
 import { CCDC_HANG, CHI_NHANH, HANG, KHACH, KHO, LY_DO, NCC, NHAN_VIEN, NVL } from '../../data/mock'
-import { DON_VI_TINH, tkCot, taiKhoan, NHOM_HANG, NHOM_DOI_TUONG, NHOM_MUC_CP, NHOM_CONG_VIEC, NHOM_KHO } from './data'
+import { DON_VI_TINH, tkCot, taiKhoan, NHOM_HANG, NHOM_DOI_TUONG, NHOM_MUC_CP, NHOM_CONG_VIEC, NHOM_KHO, DS_PTTT } from './data'
 import { HeThongTaiKhoan } from './HeThongTaiKhoan'
 import { tkTheoCheDo } from '../tong-hop/so-cai'
 import { Note } from '../../ui/Page'
@@ -100,6 +100,28 @@ const chiNhanh: ScreenDef = { slug: 'chi-nhanh', ten: 'Danh mục chi nhánh', n
   cols: [{ k: 'ma', t: 'Mã', cls: 'code', w: 90 }, { k: 'ten', t: 'Tên chi nhánh' }, { k: 'kho', t: 'Kho', cls: 'dim' }],
   rows: () => CHI_NHANH.map(c => ({ ma: c.id.toUpperCase(), ten: c.ten, kho: c.kho.join(', ') })),
 } }
+
+/** Danh mục phương thức thanh toán ngoài Excel (T137, chưa đối chiếu bảng DM_) */
+const phuongThucThanhToan: ScreenDef = {
+  slug: 'phuong-thuc-thanh-toan',
+  ten: 'Danh mục phương thức thanh toán',
+  ngan: 'Phương thức thanh toán',
+  nhom: 'Danh mục',
+  kind: 'catalog',
+  icon: 'quytien',
+  catalog: {
+    them: 'Thêm phương thức',
+    cols: goi => [
+      { k: 'ma', t: 'Mã', cls: 'code' },
+      { k: 'ten', t: 'Tên phương thức' },
+      { k: 'loaiCt', t: 'Loại chứng từ' },
+      ...(kieuGhiSo(goi) === 'noco' ? [tkCot('tkNo', 'TK Nợ')] : []),
+      { k: 'doiTuong', t: 'Đối tượng' },
+      { k: 'dienGiai', t: 'Diễn giải', cls: 'dim' },
+    ],
+    rows: () => DS_PTTT,
+  },
+}
 
 const danhMuc: ModuleDef = {
   key: 'danh-muc', ten: 'Danh mục', ngan: 'Danh mục', icon: 'folder', mod: 0,
@@ -218,6 +240,7 @@ const danhMuc: ModuleDef = {
     if (sc.code === '1.6') return [sc, nhomMucChiPhi]
     if (sc.code === '1.7') return [sc, nhomCongViec]
     if (sc.code === '1.8') return [sc, nhomKho, chiNhanh]
+    if (sc.code === '1.12') return [sc, phuongThucThanhToan]
     return [sc]
   }),
 }

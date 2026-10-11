@@ -26,6 +26,7 @@ import { TT_CT } from '../../ui/generic/gen'
 import { DaiTong } from '../../ui/generic/ChungTuForm'
 import { HopCotPhieu } from '../../ui/generic/BangSua'
 import { HopDongBo } from '../../ui/HopDongBo'
+import { DS_PTTT } from '../danh-muc/data'
 
 /** Bán hàng ngoài POS: tiệc mang về, khách công ty đặt trước. Lập tay, không qua FABi; là tab Bán hàng 3.1.7 từ gói Plus (T52) */
 export const NGOAI_POS: VoucherCfg = {
@@ -220,8 +221,13 @@ function monCua(x: NgayPOS) {
   if (!ds) { ds = dongCuaPhieu(x).map(d => ({ ma: d.ma, tonKho: Boolean(d.tonKho) })); MON_CUA.set(x, ds) }
   return ds
 }
-/** Phương thức thanh toán của chứng từ theo số tiền thu được (T116) */
-const PTTT: [keyof NgayPOS, string][] = [['tm', 'Tiền mặt'], ['ck', 'Chuyển khoản, QR'], ['the', 'Thẻ'], ['app', 'App giao đồ ăn']]
+/** Phương thức thanh toán của chứng từ theo số tiền thu được (T116, T137) */
+const PTTT: [keyof NgayPOS, string][] = [
+  ['tm', DS_PTTT.find(p => p.ma === 'TM')?.ten ?? 'Tiền mặt'],
+  ['ck', DS_PTTT.find(p => p.ma === 'CK')?.ten ?? 'Chuyển khoản, QR'],
+  ['the', DS_PTTT.find(p => p.ma === 'THE')?.ten ?? 'Thẻ'],
+  ['app', DS_PTTT.find(p => p.ma === 'APP')?.ten ?? 'App giao đồ ăn'],
+]
 const ptttCua = (x: NgayPOS) => PTTT.filter(([k]) => Number(x[k]) > 0).map(([, t]) => t)
 
 function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
@@ -545,14 +551,27 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
           nhanLamLai="Bỏ qua hoá đơn đã đồng bộ"
           ghiChuLamLai="Chỉ lấy hoá đơn còn thiếu, thừa, bị xoá hoặc sửa trên FABi"
           lamLaiMacDinh
+          tichPhu={{
+            nhan: 'Tự động hạch toán chứng từ theo phương thức thanh toán',
+            ghiChu: (s.dongBoFabi ?? 'kenh') === 'chiTiet'
+              ? 'Mỗi hoá đơn sinh một phiếu thu: Nợ TK của phương thức, Có 131'
+              : 'Mỗi ngày, mỗi phương thức sinh một phiếu thu tổng: Nợ TK của phương thức, Có 131',
+            macDinh: true,
+          }}
           nutChinh="Đồng bộ ngay"
           onDong={() => setMoDongBo(false)}
-          onDongBo={({ tu, den, chon, lamLai }) => {
+          onDongBo={({ tu, den, chon, lamLai, tichPhu }) => {
             setMoDongBo(false)
             const ngay = Math.max(1, Math.round((den.getTime() - tu.getTime()) / 864e5) + 1)
-            toast(lamLai
-              ? `Đã đồng bộ ${chon.length * 3 + 2} hoá đơn thiếu, thừa, xoá, sửa của ${chon.length} chi nhánh, ${dmy(tu)} đến ${dmy(den)}`
-              : `Đã đồng bộ lại ${chon.length * ngay * 104} hoá đơn của ${chon.length} chi nhánh, ${dmy(tu)} đến ${dmy(den)}`)
+            const soHd = lamLai
+              ? (chon.length * 3 + 2)
+              : (chon.length * ngay * 104)
+            const soPttt = DS_PTTT.filter(p => p._tt !== 0).length
+            const nThu = (s.dongBoFabi ?? 'kenh') === 'chiTiet' ? soHd : (ngay * chon.length * soPttt)
+            const vThu = tichPhu ? `, sinh ${nThu} phiếu thu theo phương thức thanh toán` : ''
+            toast((lamLai
+              ? `Đã đồng bộ ${soHd} hoá đơn thiếu, thừa, xoá, sửa của ${chon.length} chi nhánh, ${dmy(tu)} đến ${dmy(den)}`
+              : `Đã đồng bộ lại ${soHd} hoá đơn của ${chon.length} chi nhánh, ${dmy(tu)} đến ${dmy(den)}`) + vThu)
           }}
         />
       )}
@@ -690,7 +709,7 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
   // phiếu giảm giá áp cho cả đơn nên ở dải đáy; chiết khấu đã thành cột trên dòng; dữ liệu mẫu bằng 0 (T106)
   const phieuGiam = 0
   const tong = x.dt + x.vat - phieuGiam
-  const pttt = [['Tiền mặt', x.tm], ['Chuyển khoản, QR', x.ck], ['Thẻ', x.the], ['App giao đồ ăn', x.app]].filter(([, v]) => Number(v) > 0).map(([t]) => t).join(', ')
+  const pttt = PTTT.filter(([k]) => Number(x[k]) > 0).map(([, t]) => t).join(', ')
   const kenh = (x as XPos).kenh ?? (x.app > 0 ? 'Tại quán, Mang về, App giao đồ ăn' : 'Tại quán, Mang về')
   // In: bảng kê lấy đúng các món của chứng từ, không sinh dòng giả
   const moIn = () => setPhieuIn([{

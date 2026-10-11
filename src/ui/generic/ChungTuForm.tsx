@@ -8,6 +8,7 @@ import { kieuGhiSo, type Goi } from '../../app/plan'
 import { CHE_DO } from '../../app/che-do'
 import { tkTheoCheDo } from '../../modules/tong-hop/so-cai'
 import { CHI_NHANH, KHACH, KHO, KHOA_SO_DEN, LY_DO, NCC, NHAN_VIEN, TK_NGAN_HANG, daKhoaSo } from '../../data/mock'
+import { DS_PTTT } from '../../modules/danh-muc/data'
 import { HopXacNhan } from '../LocNangCao'
 import { ctTtCon, dsDcCon, dsTtCon, ghiNhatKy, soDaTra, soKeTiep, suaPhieu, themPhieu, ttThamChieu, useNhatKy, xoaPhieu, type CtTt, type PhieuTt } from './daXoa'
 import { Icon } from '../Icon'
@@ -71,6 +72,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   const [hinhThucTt, setHinhThucTt] = useState<'congno' | 'tienmat' | 'chuyenkhoan'>(
     (row?._httt as 'congno' | 'tienmat' | 'chuyenkhoan' | undefined) ?? (nv?.ttTien === 'da' ? 'tienmat' : 'congno')
   )
+  const [pttt, setPttt] = useState<string>((row?._pttt as string | undefined) ?? 'Tiền mặt')
   // Phiếu đã lưu trong phiên giữ đủ các ô đầu phiếu ở row._xxx (T69), không lấy lại dữ liệu mẫu
   const luuCu = (k: string) => (row?.[`_${k}`] as string | undefined)
   const [nhanKemHd, setNhanKemHd] = useState(row?._nhanKemHd !== undefined ? Boolean(row._nhanKemHd) : nv?.ttHd === 'da' || row?.nguon === 'HĐ')
@@ -308,6 +310,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
       tien: tongTien - tongCk, thue: tongThue, tong: tongThanhToan, _dong: dsDong, _lyDo: lyDo, _ghiChu: ghiChu, _quy: quy, _kho: kho,
       _nguoiGiao: nguoiGiao, _nhanVien: nhanVien, _diaChi: diaChi, _mst: mst, _hanTt: hanTt,
       _nhanKemHd: nhanKemHd, _soHd: soHd, _ngayHd: ngayHd, _kyHieuHd: kyHieuHd, _httt: hinhThucTt, _ctTt: ctTt,
+      ...(nhom === 'ban' && hinhThucTt !== 'congno' ? { _pttt: pttt } : {}),
       ...(dsDc ? { _dsDc: dsDc } : {}),
     }
     const man = `${mod.key}/${sc.slug}`
@@ -773,6 +776,22 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
                     <ChonDanhMuc dm={hinhThucTt === 'tienmat' ? 'quyTm' : 'tkNh'} nhan={hinhThucTt === 'tienmat' ? 'quỹ tiền mặt' : 'quỹ ngân hàng'}
                       className="inp sm" style={O_TT} value={quy} onChange={setQuy} ds={dsQuy} />
                   ) : <input className="inp sm" style={O_TT} readOnly value={quy} />}
+                </div>
+              )}
+
+              {/* Phương thức thanh toán cho nhóm bán khi thu tiền ngay (T137) */}
+              {nhom === 'ban' && hinhThucTt !== 'congno' && (
+                <div className="row" style={{ gap: 8, alignItems: 'center' }}>
+                  <span style={{ fontSize: 12.5, color: 'var(--muted)', whiteSpace: 'nowrap' }}>Phương thức:</span>
+                  <Select
+                    className="inp sm"
+                    style={{ minWidth: 150 }}
+                    disabled={!dangSua}
+                    aria-label="Phương thức thanh toán"
+                    value={pttt}
+                    onChange={e => setPttt(e.target.value)}
+                    ds={DS_PTTT.filter(p => p._tt !== 0).map(p => ({ v: p.ten, t: p.ten }))}
+                  />
                 </div>
               )}
 

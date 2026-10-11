@@ -1,6 +1,7 @@
 // Khai báo trường thông tin panel Thêm / Sửa cho các danh mục (T70)
 // Lấy theo bảng DM_ tương ứng trong CSDL kế toán iPOS (schema-dm.md)
 import { TEN_DVT, TEN_NHOM_HANG, TEN_NHOM_DOI_TUONG, TEN_NHOM_MUC_CP, TEN_NHOM_CONG_VIEC, TEN_NHOM_KHO, TEN_MUC_CHI_PHI, TEN_CONG_VIEC_17, NHOM_HANG } from './data'
+import { KHACH, NCC } from '../../data/mock'
 
 import type { ReactNode } from 'react'
 import type { Col, Row } from '../types'
@@ -699,6 +700,36 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
           { k: 'ten', nhan: 'Tên nhóm', kieu: 'chu', batBuoc: true, caHang: true },
           { k: 'thuocNhom', nhan: 'Thuộc nhóm', kieu: 'chon', ds: TEN_NHOM_KHO },
           { k: 'dienGiai', nhan: 'Diễn giải', kieu: 'chu', caHang: true },
+        ],
+      },
+      {
+        ten: 'Trạng thái',
+        truong: [
+          { k: '_tt', nhan: 'Đang sử dụng', kieu: 'tich', caHang: true },
+        ],
+      },
+    ],
+  },
+
+  // Phương thức thanh toán (chưa đối chiếu bảng DM_)
+  'phuong-thuc-thanh-toan': {
+    khoi: [
+      {
+        ten: 'Thông tin chung',
+        truong: [
+          { k: 'ma', nhan: 'Mã phương thức', kieu: 'chu', batBuoc: true },
+          { k: 'ten', nhan: 'Tên phương thức', kieu: 'chu', batBuoc: true, caHang: true },
+          { k: 'loaiCt', nhan: 'Loại chứng từ thu tiền', kieu: 'chon', ds: ['Thu tiền mặt', 'Thu ngân hàng'], batBuoc: true },
+          { k: 'dienGiai', nhan: 'Diễn giải', kieu: 'chu', caHang: true },
+        ],
+      },
+      {
+        ten: 'Hạch toán ngầm định',
+        truong: [
+          { k: 'tkNo', nhan: 'TK Nợ', kieu: 'chon', batBuoc: true },
+          { k: 'doiTuong', nhan: 'Đối tượng', kieu: 'chon', ds: [...KHACH.map(k => k.ten), ...NCC.map(n => n.ten)] },
+          { k: 'congViec', nhan: 'Công việc', kieu: 'chon', ds: TEN_CONG_VIEC_17 },
+          { k: 'mucCp', nhan: 'Mục chi phí', kieu: 'chon', ds: TEN_MUC_CHI_PHI },
         ],
       },
       {

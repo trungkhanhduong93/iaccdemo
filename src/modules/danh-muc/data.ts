@@ -195,4 +195,64 @@ export function demHangTheoNhom(tenNhom: string): number {
   }).length
 }
 
+export interface PhuongThucTT {
+  ma: string
+  ten: string
+  loaiCt: string
+  tkNo: string
+  doiTuong: string
+  congViec: string
+  mucCp: string
+  dienGiai: string
+  _tt: number
+}
+
+/** Danh mục phương thức thanh toán (T137) */
+export const DS_PTTT: PhuongThucTT[] = [
+  {
+    ma: 'TM',
+    ten: 'Tiền mặt',
+    loaiCt: 'Thu tiền mặt',
+    tkNo: '1111',
+    doiTuong: '',
+    congViec: '',
+    mucCp: '',
+    dienGiai: 'Thanh toán trực tiếp bằng tiền mặt',
+    _tt: 1,
+  },
+  {
+    ma: 'CK',
+    ten: 'Chuyển khoản, QR',
+    loaiCt: 'Thu ngân hàng',
+    tkNo: '1121',
+    doiTuong: '',
+    congViec: '',
+    mucCp: '',
+    dienGiai: 'Chuyển khoản ngân hàng hoặc quét mã QR',
+    _tt: 1,
+  },
+  {
+    ma: 'THE',
+    ten: 'Thẻ',
+    loaiCt: 'Thu ngân hàng',
+    tkNo: '1121',
+    doiTuong: '',
+    congViec: '',
+    mucCp: '',
+    dienGiai: 'Thanh toán quẹt thẻ qua máy POS',
+    _tt: 1,
+  },
+  {
+    ma: 'APP',
+    ten: 'App giao đồ ăn',
+    loaiCt: 'Thu tiền mặt',
+    tkNo: '131',
+    doiTuong: 'GrabFood',
+    congViec: '',
+    mucCp: 'Hoa hồng app giao đồ ăn',
+    dienGiai: 'Đơn hàng qua ứng dụng giao đồ ăn',
+    _tt: 1,
+  },
+]
+
 
