@@ -175,13 +175,12 @@ export function KhoiTaoFabi() {
             <h1>Chào {tenNguoi}</h1>
             <p>Bắt đầu sổ sách cho <b>Phố Mây</b> trong {BUOC.length} bước, khoảng 3 phút.</p>
             <div className="ktf-nhan">
-              <span className="muted">Đã nhận từ FABi</span>
+              <span className="muted">Thông tin từ FABi</span>
               <div><b>1</b> thương hiệu</div>
               <div><b>{CHI_NHANH.length}</b> cửa hàng</div>
               <div><b>{SO_KENH}</b> kênh bán</div>
               <div><b>86</b> món</div>
             </div>
-            <p className="muted" style={{ fontSize: 12.5 }}>Thông tin trên được điền sẵn, bạn chỉ cần xác nhận. Không phải nhập lại món, cửa hàng.</p>
             <button className="btn pri lg" onClick={() => sua({ b: 0 })}>Bắt đầu<Icon n="arrow" className="ic sm" /></button>
           </div>
         )}
