@@ -6743,5 +6743,18 @@ table.tbl {
 .ktf-pop .ktf-ben { top: 0; }
 .ktf-pop .ktf-chao { margin: 20px auto; }
 .ktf-goi-xem { display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: 12px; }
-.ktf-goi-xem > div { display: grid; grid-template-columns: 96px minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 10px 14px; font-size: 13px; color: var(--muted); }
-.ktf-goi-xem > div + div { border-top: 1px solid var(--line); }
+.ktf-gia { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px; padding: 10px 12px; border-radius: 10px; background: var(--soft); }
+.ktf-gia b { font-size: 20px; color: var(--ink); }
+.ktf-gia span { font-size: 12.5px; color: var(--muted); }
+.ktf-gia small { flex-basis: 100%; font-size: 11.5px; color: var(--muted); }
+.ktf-goi-xem > button { display: grid; grid-template-columns: 18px 96px minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 11px 14px; font-size: 13px; color: var(--muted); text-align: left; background: #fff; border: 0; width: 100%; }
+.ktf-goi-xem > button:first-child { border-radius: 12px 12px 0 0; }
+.ktf-goi-xem > button:last-child { border-radius: 0 0 12px 12px; }
+.ktf-goi-xem > button + button { border-top: 1px solid var(--line); }
+.ktf-goi-xem > button.on { background: #f2f7fb; color: var(--ink); box-shadow: inset 3px 0 0 var(--blue); }
+.ktf-goi-xem .ktf-goi-dem { display: inline-flex; align-items: center; gap: 8px; margin: 0; font-size: 12px; white-space: nowrap; }
+.ktf-tn-mo { margin-top: 14px; }
+.ktf-tn-mo summary { cursor: pointer; color: var(--blue); font-size: 13px; font-weight: 600; }
+.ktf-tn-mo .ktf-tn { margin-top: 10px; }
+.ktf-goi-xem .radio { margin-top: 0; }
+.ktf-goi-xem > button.on .radio { border: 5px solid var(--blue); }

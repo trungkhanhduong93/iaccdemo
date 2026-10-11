@@ -28,6 +28,8 @@
   - Màn giới thiệu giao diện kế toán: khung giao diện thu nhỏ đánh số 4 vùng, hỏi "Bạn có muốn dùng thử không?".
   - Bấm Dùng thử thì vào phần mềm gói Free (TT152). 6 bước khởi tạo thành popup đè lên phần mềm (`src/modules/onboarding/OnboardFabi.tsx`, đặt trong `src/app/Shell.tsx`). Đóng popup (nút X, Esc) thì còn thẻ nhắc nổi góc dưới phải, bấm Tiếp tục mở lại đúng bước. Xong popup thì đổi sang gói, chế độ đã chọn.
   - Đang làm dở mà mở lại `/khoi-tao-fabi` thì vào thẳng phần mềm, mở popup đúng bước.
+- Gộp bước Loại hình và Chọn gói thành "Loại hình và gói" (popup còn 5 bước): chọn loại hình, nhóm hộ kinh doanh, rồi bấm chọn gói ngay bên dưới; tính năng gói thu vào dòng "Xem N tính năng". Khung "Bạn sẽ có gì" ghi gói, chế độ, giá (theo năm, theo tháng) và điểm nổi bật của gói, bỏ dòng nói về thông tư khác chế độ đang chọn.
+- Bảng giá và điểm nổi bật gói chuyển từ `GoiThueBao.tsx` sang `src/app/plan.ts` (`GIA_GOI_NAM`, `GIA_GOI_THANG`, `DIEM_NOI_BAT`) để hai màn dùng chung.
 - Lối vào bản mẫu: liên kết "Thử mở từ FABi" dưới form đăng nhập (`src/modules/auth/Login.tsx`).
 - CSS mục cuối `app.css`: "Khởi tạo khi mở từ FABi (T138)", lớp `.ktf-*`.
 
@@ -45,6 +47,7 @@
 - PhuongXT xem bản nháp trên https://iaccdemo.pages.dev (đăng nhập, bấm "Thử mở từ FABi") rồi góp ý. PhuongXT chốt không cần Trum duyệt các điểm: gói Standard thêm TT152 (đổi QD31), doanh nghiệp gói Free quản lý lãi lỗ, không theo thông tư (vẫn lưu `cheDo` TT152). Thuế suất 15%, 17%, 20% chưa đối chiếu văn bản gốc.
 - Doanh nghiệp gợi ý gói theo số chi nhánh (`goiGoiY`). Doanh thu FABi 29 tỷ là số cứng (`DT_FABI`).
 - Nhóm hộ kinh doanh, cách tính thuế TNCN chưa lưu vào phiên, chỉ nằm trong màn khởi tạo.
+- Điểm nổi bật gói Standard ghi "tính thuế GTGT và TNDN", hộ kinh doanh dùng Standard thì nộp TNCN; gói Free ghi "1 điểm bán" (T60). Câu chữ ở `DIEM_NOI_BAT`, chờ PhuongXT sửa.
 - Ba việc nên làm tiếp ở màn Hoàn tất chưa nối tới màn nào; có thể đưa thành thẻ Việc cần làm trên Bàn làm việc.
 - Mô tả gói Free trong `GOI` còn ghi "1 điểm bán", hiện ở khung bên phải (việc T60).
 

@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import type { ScreenProps } from '../types'
 import { useSession, donViHienTai, cheDoHienTai } from '../../app/session'
-import { GOIS, GOI, FEATURES, type Goi, demTheoGoi, MODS } from '../../app/plan'
+import { GOIS, GOI, FEATURES, type Goi, demTheoGoi, MODS, GIA_GOI_NAM, GIA_GOI_THANG, DIEM_NOI_BAT } from '../../app/plan'
 import { MODULES, duongDan } from '../../app/registry'
 import { cheDoCuaGoi } from '../../app/che-do'
 import { PageHead, Pk } from '../../ui/Page'
@@ -26,66 +26,7 @@ export function GoiThueBao({ sc }: ScreenProps) {
   // Modal / xác nhận chuyển gói
   const [dangChuyen, setDangChuyen] = useState<Goi | null>(null)
 
-  // Bảng giá hiển thị theo chu kỳ
-  const giaNam: Record<Goi, { gia: string; chuKy: string; ghiChu: string }> = {
-    F: { gia: '0 đ', chuKy: '/ trọn đời', ghiChu: 'Miễn phí vĩnh viễn' },
-    S: { gia: '199.000 đ', chuKy: '/ tháng', ghiChu: 'Thanh toán theo năm (2.388.000 đ/năm)' },
-    PL: { gia: '399.000 đ', chuKy: '/ tháng', ghiChu: 'Thanh toán theo năm (4.788.000 đ/năm)' },
-    PR: { gia: '699.000 đ', chuKy: '/ tháng', ghiChu: 'Thanh toán theo năm (8.388.000 đ/năm)' },
-  }
-
-  const giaThang: Record<Goi, { gia: string; chuKy: string; ghiChu: string }> = {
-    F: { gia: '0 đ', chuKy: '/ trọn đời', ghiChu: 'Miễn phí vĩnh viễn' },
-    S: { gia: '249.000 đ', chuKy: '/ tháng', ghiChu: 'Thanh toán linh hoạt từng tháng' },
-    PL: { gia: '499.000 đ', chuKy: '/ tháng', ghiChu: 'Thanh toán linh hoạt từng tháng' },
-    PR: { gia: '850.000 đ', chuKy: '/ tháng', ghiChu: 'Thanh toán linh hoạt từng tháng' },
-  }
-
-  const bangGia = ky === 'nam' ? giaNam : giaThang
-
-  // Điểm nổi bật theo từng gói cho F&B
-  const diemNoiBat: Record<Goi, { tieuDe: string; ds: string[] }> = {
-    F: {
-      tieuDe: 'Hộ kinh doanh & Quán ăn nhỏ',
-      ds: [
-        '17 sổ sách & báo cáo hộ kinh doanh theo TT152/2025',
-        'Tự động nhận đơn bán hàng trực tiếp từ POS FABi',
-        'Quản lý xuất bán POS và kiểm kê kho định kỳ',
-        'Theo dõi quỹ tiền mặt, doanh thu và chi phí hoạt động',
-        'Miễn phí 100% trọn đời cho 1 điểm bán',
-      ],
-    },
-    S: {
-      tieuDe: 'Doanh nghiệp siêu nhỏ 1 điểm bán',
-      ds: [
-        'Bao gồm toàn bộ tính năng của gói Free',
-        'Bộ 11 sổ sách & BCTC tinh gọn theo TT58/2026',
-        'Tự động tính thuế GTGT và TNDN theo 4 phương pháp',
-        'Quản lý mua hàng, công nợ nhà cung cấp và nhập kho',
-        'Theo dõi nghĩa vụ thuế GTGT và thuế khác đầy đủ',
-      ],
-    },
-    PL: {
-      tieuDe: 'Doanh nghiệp & Chuỗi 1–10 điểm bán',
-      ds: [
-        'Bao gồm toàn bộ tính năng của gói Standard',
-        'Hạch toán kép Nợ/Có đầy đủ theo TT133/2016',
-        'Quản lý chuỗi đa chi nhánh từ 1 đến 10 điểm bán',
-        'Khấu hao TSCĐ, phân bổ CCDC và thẻ chi phí chuyên sâu',
-        'Đầy đủ bộ Báo cáo tài chính, Lưu chuyển tiền tệ, CĐPS',
-      ],
-    },
-    PR: {
-      tieuDe: 'Chuỗi F&B lớn trên 10 điểm bán',
-      ds: [
-        'Bao gồm toàn bộ tính năng của gói Plus',
-        'Không giới hạn số lượng điểm bán, kho hàng và người dùng',
-        'Chế độ kế toán pháp định TT99/2025 cho DN vừa và lớn',
-        'Quản lý số lô, hạn sử dụng, hạch toán đa chi nhánh',
-        'Báo cáo quản trị tổng hợp chuỗi đa chiều theo thời gian thực',
-      ],
-    },
-  }
+  const bangGia = ky === 'nam' ? GIA_GOI_NAM : GIA_GOI_THANG
 
   // Danh sách tính năng lọc theo từ khóa và điều kiện khác nhau
   const danhSachLoc = useMemo(() => {
@@ -224,7 +165,7 @@ export function GoiThueBao({ sc }: ScreenProps) {
           const dang = g === s.goi
           const laKhuyenDung = g === 'PL'
           const thongTinGia = bangGia[g]
-          const highlights = diemNoiBat[g]
+          const highlights = DIEM_NOI_BAT[g]
           const cd = cheDoCuaGoi(g)
 
           return (

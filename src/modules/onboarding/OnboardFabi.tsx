@@ -1,17 +1,17 @@
 // Khởi tạo sổ sách khi mở từ FABi (T138), phần popup: bấm Dùng thử ở /khoi-tao-fabi thì vào phần mềm gói Free,
-// popup 6 bước (loại hình, gói, đơn vị, chi nhánh và kho, đồng bộ, số dư) mở đè lên. Đóng popup thì còn thẻ nhắc nổi ở góc dưới phải.
+// popup 5 bước (loại hình và gói, đơn vị, chi nhánh và kho, đồng bộ, số dư) mở đè lên. Đóng popup thì còn thẻ nhắc nổi ở góc dưới phải.
 // Tiến độ lưu ở localStorage để quay lại đúng bước.
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSession } from '../../app/session'
-import { FEATURES, GOI, GOIS, MODS, demTheoGoi, type Goi } from '../../app/plan'
+import { DIEM_NOI_BAT, FEATURES, GIA_GOI_NAM, GIA_GOI_THANG, GOI, GOIS, MODS, demTheoGoi, type Goi } from '../../app/plan'
 import { CHE_DO, CHE_DO_HOP_LE, CHE_DO_MAC_DINH, type CheDo } from '../../app/che-do'
 import { CHI_NHANH, DAILY, HOM_NAY } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
 import { Note, Pk } from '../../ui/Page'
 import { Select } from '../../ui/Dropdown'
 
-export const BUOC = ['Loại hình', 'Chọn gói', 'Đơn vị', 'Chi nhánh và kho', 'Đồng bộ bán hàng', 'Số dư đầu kỳ']
+export const BUOC = ['Loại hình và gói', 'Đơn vị', 'Chi nhánh và kho', 'Đồng bộ bán hàng', 'Số dư đầu kỳ']
 const XONG = BUOC.length   // bước hoàn tất
 export const KEY = 'iacc-khoi-tao-fabi'
 export const SO_KENH = 3   // Tại quán, Mang về, App giao đồ ăn (T113)
@@ -65,7 +65,7 @@ function TinhNangGoi({ g, truoc }: { g: Goi; truoc?: Goi }) {
 }
 
 export interface Nhap {
-  b: number            // bước đang làm; -2 là màn chào, -1 là giới thiệu giao diện, 0 tới 5 là bước trong popup, XONG là hoàn tất
+  b: number            // bước đang làm; -2 là màn chào, -1 là giới thiệu giao diện, 0 tới 4 là bước trong popup, XONG là hoàn tất
   mo: boolean          // popup đang mở; đóng thì hiện thẻ nhắc
   loai: LoaiHinh
   nhom: number         // nhóm hộ kinh doanh 1 tới 4
@@ -140,6 +140,9 @@ export function OnboardFabi() {
   const soCt = demCt(n.chon, n.dongBo, +HOM_NAY - 29 * 86400000)   // ước một tháng, hiện ở bước đồng bộ
   const soCtDaTao = demCt(n.chon, n.dongBo, ngay(n.ngayBatDau))
   const dem = demTheoGoi(n.goi)
+  // Điểm nổi bật của gói, bỏ dòng nói về thông tư khác chế độ đang chọn (vd hộ kinh doanh dùng Standard vẫn TT152)
+  const ngan = nganCheDo(n.loai, n.cheDo)
+  const diemGoi = DIEM_NOI_BAT[n.goi].ds.filter(t => !/TT\d+/.test(t) || t.includes(ngan))
 
   const doiChon = (id: string) => sua({ chon: n.chon.includes(id) ? n.chon.filter(x => x !== id) : [...n.chon, id] })
   const xong = () => {
@@ -187,7 +190,7 @@ export function OnboardFabi() {
                     {n.b === 0 && (
                       <>
                         <h2 className="ktf-h">Đơn vị thuộc loại hình nào?</h2>
-                        <p className="muted ktf-p">Loại hình quyết định chế độ kế toán và gói gợi ý.</p>
+                        <p className="muted ktf-p">Loại hình quyết định chế độ kế toán và gói gợi ý. Chọn xong là có gói ngay bên dưới.</p>
                         <div className="grid g2">
                           {([['hkd', 'store', 'Hộ kinh doanh', 'Hộ, cá nhân kinh doanh. Chế độ kế toán TT152'], ['dn', 'building', 'Doanh nghiệp', 'Công ty TNHH, cổ phần, doanh nghiệp tư nhân']] as const).map(([k, ic, t, m]) => (
                             <button key={k} className={`opt ${n.loai === k ? 'on' : ''}`} onClick={() => doiLoai({ loai: k })}>
@@ -195,21 +198,6 @@ export function OnboardFabi() {
                             </button>
                           ))}
                         </div>
-                        {n.loai === 'dn' && (
-                          <>
-                            <h3 className="ktf-h3">Doanh nghiệp chọn được cả 4 gói</h3>
-                            <div className="ktf-goi-xem">
-                              {GOIS.map(g => (
-                                <div key={g}>
-                                  <Pk g={g} logo />
-                                  <span>{MO_TA_GOI.dn[g]}</span>
-                                  {g === goiY ? <span className="chip info">Gợi ý</span> : <span />}
-                                </div>
-                              ))}
-                            </div>
-                            <p className="muted" style={{ fontSize: 12.5, margin: '10px 0 0' }}>Bước sau chọn gói và xem đủ tính năng từng gói.</p>
-                          </>
-                        )}
                         {n.loai === 'hkd' && (
                           <>
                             <h3 className="ktf-h3">Hộ kinh doanh thuộc nhóm nào?</h3>
@@ -239,24 +227,14 @@ export function OnboardFabi() {
                             <Note icon="sparkle">Doanh thu 12 tháng trên FABi khoảng {so(DT_FABI / 1e9)} tỷ đồng, thuộc nhóm {nhomGoiY}.</Note>
                           </>
                         )}
-                      </>
-                    )}
-
-                    {n.b === 1 && (
-                      <>
-                        <h2 className="ktf-h">Chọn gói</h2>
-                        <p className="muted ktf-p">{n.loai === 'hkd'
-                          ? `Hộ kinh doanh nhóm ${n.nhom}, thuế TNCN ${PP_HKD[n.ppHkd].toLowerCase()}. Gói gợi ý: ${GOI[goiY].ten}.`
-                          : `Doanh nghiệp chọn được cả 4 gói. Gói gợi ý theo ${CHI_NHANH.length} chi nhánh trên FABi: ${GOI[goiY].ten}.`}</p>
-                        <div className="grid g2 ktf-goi">
+                        <h3 className="ktf-h3">{n.loai === 'hkd' ? 'Gói cho hộ kinh doanh' : 'Doanh nghiệp chọn được cả 4 gói'}</h3>
+                        <div className="ktf-goi-xem">
                           {goiChon.map(g => (
-                            <button key={g} className={`opt ${n.goi === g ? 'on' : ''}`} onClick={() => chonGoi(g)}>
+                            <button key={g} className={n.goi === g ? 'on' : ''} onClick={() => chonGoi(g)}>
                               <span className="radio" />
-                              <span className="grow">
-                                <span className="row"><Pk g={g} logo /><span className="grow" />{g === goiY && <span className="chip info">Gợi ý</span>}</span>
-                                <small>{MO_TA_GOI[n.loai][g]}</small>
-                                <small className="ktf-goi-dem"><b>{demTheoGoi(g).co}</b> tính năng · {nganCheDo(n.loai, cheDoMoi(n.loai, g))}</small>
-                              </span>
+                              <Pk g={g} logo />
+                              <span>{MO_TA_GOI[n.loai][g]}</span>
+                              <span className="ktf-goi-dem">{g === goiY && <span className="chip info">Gợi ý</span>}<b>{demTheoGoi(g).co}</b> tính năng</span>
                             </button>
                           ))}
                         </div>
@@ -268,11 +246,14 @@ export function OnboardFabi() {
                             </Select>
                           </div>
                         )}
-                        <TinhNangGoi g={n.goi} truoc={goiChon[goiChon.indexOf(n.goi) - 1]} />
+                        <details className="ktf-tn-mo">
+                          <summary>Xem {demTheoGoi(n.goi).co} tính năng gói {GOI[n.goi].ten}</summary>
+                          <TinhNangGoi g={n.goi} truoc={goiChon[goiChon.indexOf(n.goi) - 1]} />
+                        </details>
                       </>
                     )}
 
-                    {n.b === 2 && (
+                    {n.b === 1 && (
                       <>
                         <h2 className="ktf-h">Thông tin đơn vị</h2>
                         <p className="muted ktf-p">Mã số thuế lấy từ FABi. Tên, địa chỉ tra từ cơ sở dữ liệu thuế.</p>
@@ -292,7 +273,7 @@ export function OnboardFabi() {
                       </>
                     )}
 
-                    {n.b === 3 && (
+                    {n.b === 2 && (
                       <>
                         <h2 className="ktf-h">Chi nhánh và kho</h2>
                         <p className="muted ktf-p">Tích chi nhánh lên sổ kế toán. Chi nhánh bỏ tích vẫn bán trên FABi, chỉ không ghi sổ.</p>
@@ -317,7 +298,7 @@ export function OnboardFabi() {
                       </>
                     )}
 
-                    {n.b === 4 && (
+                    {n.b === 3 && (
                       <>
                         <h2 className="ktf-h">Đồng bộ bán hàng từ FABi</h2>
                         <p className="muted ktf-p">Đơn bán trên FABi tự về thành chứng từ Xuất bán POS. Chọn cách gom.</p>
@@ -339,7 +320,7 @@ export function OnboardFabi() {
                       </>
                     )}
 
-                    {n.b === 5 && (
+                    {n.b === 4 && (
                       <>
                         <h2 className="ktf-h">Số dư đầu kỳ</h2>
                         <p className="muted ktf-p">Số dư ngày {n.ngayBatDau}. Chưa có số thì để sau, phần mềm vẫn dùng được.</p>
@@ -369,8 +350,8 @@ export function OnboardFabi() {
 
                     <div className="row" style={{ marginTop: 22, justifyContent: 'flex-end', gap: 8 }}>
                       {n.b > 0 && <button className="btn lg" onClick={() => sua({ b: n.b - 1 })}>Quay lại</button>}
-                      {n.b === 5 && <button className="btn ghost lg" onClick={() => { sua({ soDu: 'sau', tienMat: '', tienGui: '' }); tiep() }}>Bỏ qua</button>}
-                      <button className="btn pri lg" disabled={n.b === 3 && cnChon.length === 0} onClick={tiep}>
+                      {n.b === 4 && <button className="btn ghost lg" onClick={() => { sua({ soDu: 'sau', tienMat: '', tienGui: '' }); tiep() }}>Bỏ qua</button>}
+                      <button className="btn pri lg" disabled={n.b === 2 && cnChon.length === 0} onClick={tiep}>
                         {n.b === XONG - 1 ? 'Hoàn tất' : 'Tiếp tục'}<Icon n="arrow" className="ic sm" />
                       </button>
                     </div>
@@ -379,14 +360,15 @@ export function OnboardFabi() {
                   <aside className="card ktf-ben">
                     <h3>Bạn sẽ có gì</h3>
                     <div className="row" style={{ gap: 8 }}><Pk g={n.goi} logo /><span className="chip">{nganCheDo(n.loai, n.cheDo)}</span></div>
+                    <div className="ktf-gia">
+                      <b>{GIA_GOI_NAM[n.goi].gia}</b><span>{GIA_GOI_NAM[n.goi].chuKy}</span>
+                      <small>{n.goi === 'F' ? GIA_GOI_NAM.F.ghiChu : `${GIA_GOI_NAM[n.goi].ghiChu}. Trả từng tháng ${GIA_GOI_THANG[n.goi].gia}`}</small>
+                    </div>
                     <ul>
-                      <li><Icon n={n.loai === 'hkd' ? 'store' : 'building'} className="ic sm" /><span>{n.loai === 'hkd' ? `Hộ kinh doanh nhóm ${n.nhom}, thuế TNCN ${PP_HKD[n.ppHkd].toLowerCase()}` : 'Doanh nghiệp'}</span></li>
                       <li><Icon n="book" className="ic sm" /><span>{tenCheDo(n.loai, n.cheDo)}</span></li>
-                      <li><Icon n="chinhanh" className="ic sm" /><span>{cnChon.length} chi nhánh, {soKho} kho</span></li>
-                      <li><Icon n="pos" className="ic sm" /><span>Bán hàng {n.dongBo === 'kenh' ? 'tổng hợp theo kênh' : 'chi tiết theo hoá đơn'}, chốt {n.gioChot}</span></li>
-                      <li><Icon n="grid" className="ic sm" /><span>{dem.co}/{dem.tong} tính năng</span></li>
+                      {diemGoi.map(t => <li key={t}><Icon n="check" className="ic sm" /><span>{t}</span></li>)}
                     </ul>
-                    <small className="muted">{MO_TA_GOI[n.loai][n.goi]}.</small>
+                    <small className="muted">{n.loai === 'hkd' ? `Hộ kinh doanh nhóm ${n.nhom}` : 'Doanh nghiệp'} · {cnChon.length} chi nhánh · {dem.co}/{dem.tong} tính năng</small>
                   </aside>
                 </div>
               </>
