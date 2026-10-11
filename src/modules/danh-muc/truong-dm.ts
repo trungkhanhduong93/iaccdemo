@@ -12,8 +12,9 @@ export type KieuTruong = 'chu' | 'so' | 'tien' | 'chon' | 'chonNhieu' | 'tich' |
 /** Đơn vị tính hiện mã và tên trong ô chọn, vd "KG - kg"; giá trị lưu vẫn là tên (T144) */
 const nhanDvt = (ten: string) => { const d = DON_VI_TINH.find(x => x[1] === ten); return d ? `${d[0]} - ${d[1]}` : ten }
 
-/** Loại lý do hiện trong ô chọn (T144) */
-const nhanLyDo = (v: string) => ({ 'Phiếu thu': 'Thu tiền', 'Phiếu chi': 'Chi tiền', 'Phiếu nhập kho': 'Nhập kho', 'Phiếu xuất kho': 'Xuất kho' } as Record<string, string>)[v] ?? v
+/** Loại hàng hoá theo iPOS Inventory; gói Pro có thêm Bán thành phẩm (T144) */
+const LOAI_HANG = ['Nguyên vật liệu', 'Thành phẩm', 'Hàng bán thẳng', 'Khác (Công cụ dụng cụ)']
+const LOAI_HANG_PRO = ['Nguyên vật liệu', 'Thành phẩm', 'Hàng bán thẳng', 'Bán thành phẩm', 'Khác (Công cụ dụng cụ)']
 
 export interface TruongDM {
   k: string
@@ -66,7 +67,9 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
           { k: 'ma', nhan: 'Mã hàng hoá', kieu: 'chu', batBuoc: true, cot: 'ITEM_ID' },
           { k: 'ten', nhan: 'Tên hàng hoá', kieu: 'chu', batBuoc: true, caHang: true, cot: 'ITEM_NAME' },
           { k: 'nhom', nhan: 'Nhóm hàng hoá', kieu: 'chon', ds: TEN_NHOM_HANG, cot: 'ITEM_CLASS_ID' },
-          { k: 'loai', nhan: 'Loại hàng hoá', kieu: 'chon', ds: ['Hàng hoá', 'Thành phẩm', 'Nguyên vật liệu', 'Công cụ dụng cụ', 'Dịch vụ'], cot: 'ITEM_TYPE_ID' },
+          // loại hàng hoá theo iPOS Inventory; Bán thành phẩm chỉ gói Pro (PhuongXT 11/10/2026, T144)
+          { k: 'loai', nhan: 'Loại hàng hoá', kieu: 'chon', ds: LOAI_HANG, goi: ['F', 'S', 'PL'], cot: 'ITEM_TYPE_ID' },
+          { k: 'loai', nhan: 'Loại hàng hoá', kieu: 'chon', ds: LOAI_HANG_PRO, goi: ['PR'], cot: 'ITEM_TYPE_ID' },
           { k: 'dvt', nhan: 'Đơn vị tính', kieu: 'chon', ds: TEN_DVT, nhanDs: nhanDvt, cot: 'UNIT_ID' },
           { k: 'dvtPhu', nhan: 'ĐVT phụ', kieu: 'chon', ds: TEN_DVT, nhanDs: nhanDvt, goi: ['S', 'PL', 'PR'], cot: 'UNIT_ID_EXTRA' },   // gói Free không có quy đổi ĐVT nên bỏ (T144)
           { k: 'barcode', nhan: 'Mã vạch', kieu: 'chu', cot: 'BARCODE' },
@@ -584,9 +587,9 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
         truong: [
           { k: 'ma', nhan: 'Mã lý do', kieu: 'chu', batBuoc: true },
           { k: 'ten', nhan: 'Lý do nghiệp vụ', kieu: 'chu', batBuoc: true, caHang: true },
-          // giá trị lưu theo dữ liệu (Phiếu thu, Phiếu chi...), ô chọn hiện Thu tiền, Chi tiền...; gói Free chỉ lý do thu, chi (T144)
-          { k: 'dung', nhan: 'Dùng cho nghiệp vụ', kieu: 'chon', ds: ['Phiếu thu', 'Phiếu chi'], nhanDs: nhanLyDo, batBuoc: true, goi: ['F'] },
-          { k: 'dung', nhan: 'Dùng cho nghiệp vụ', kieu: 'chon', ds: ['Phiếu thu', 'Phiếu chi', 'Phiếu nhập kho', 'Phiếu xuất kho'], nhanDs: nhanLyDo, batBuoc: true, goi: ['S', 'PL', 'PR'] },
+          // cùng chữ với danh sách lý do (LY_DO); gói Free chỉ lý do thu, chi (T144)
+          { k: 'dung', nhan: 'Dùng cho nghiệp vụ', kieu: 'chon', ds: ['Thu tiền', 'Chi tiền'], batBuoc: true, goi: ['F'] },
+          { k: 'dung', nhan: 'Dùng cho nghiệp vụ', kieu: 'chon', ds: ['Thu tiền', 'Chi tiền', 'Nhập kho', 'Xuất kho'], batBuoc: true, goi: ['S', 'PL', 'PR'] },
         ],
       },
       {
@@ -607,7 +610,8 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
           { k: 'ma', nhan: 'Mã nhóm', kieu: 'chu', batBuoc: true },
           { k: 'ten', nhan: 'Tên nhóm', kieu: 'chu', batBuoc: true, caHang: true },
           { k: 'thuocNhom', nhan: 'Thuộc nhóm', kieu: 'chon', ds: TEN_NHOM_HANG, goi: ['PL', 'PR'] },   // gói Free, Standard bỏ (T144)
-          { k: 'loai', nhan: 'Loại hàng hoá', kieu: 'chon', ds: ['Hàng hoá', 'Thành phẩm', 'Nguyên vật liệu', 'Dịch vụ'], goi: ['PL', 'PR'] },
+          { k: 'loai', nhan: 'Loại hàng hoá', kieu: 'chon', ds: LOAI_HANG, goi: ['PL'] },
+          { k: 'loai', nhan: 'Loại hàng hoá', kieu: 'chon', ds: LOAI_HANG_PRO, goi: ['PR'] },
           { k: 'dienGiai', nhan: 'Diễn giải', kieu: 'chu', caHang: true },
         ],
       },

@@ -2,7 +2,7 @@
 
 - Ngày: 11/10/2026
 - Người: PhuongXT, agent: Claude Code
-- Trạng thái cuối phiên: Dở dang (chờ danh sách loại hàng hoá của iPOS Inventory)
+- Trạng thái cuối phiên: Dở dang (chờ PhuongXT nói rõ ý "Ghi chú" trong danh sách loại hàng hoá)
 
 ## Đã làm
 
@@ -13,7 +13,8 @@
 - Gói Free, Standard: form đối tượng (1.5) ẩn ô TK công nợ; form nhóm đối tượng bỏ Thuộc nhóm, khối Hạch toán; form kho (1.8) ẩn khối Hạch toán, Ngầm định. Gói Free: form kho ẩn ô Nhóm kho (T143).
 - Quỹ tiền (1.12): ô Chi nhánh áp dụng chọn nhiều chi nhánh (kiểu ô mới `chonNhieu`, lưu "A, B", chọn đủ là "Tất cả", danh sách theo chi nhánh mẫu thay danh sách cũ có Phan Xích Long); quỹ tiền mặt ẩn ô số tài khoản.
 - Phương thức thanh toán: gói Free, Standard bỏ Loại chứng từ thu tiền, Diễn giải, khối Hạch toán ngầm định và các cột tương ứng ở danh sách, không có nút thêm (`khongThem`); mọi gói có nút Đồng bộ từ FABi (`nutPhu` trong `CatalogCfg`, bấm báo số phương thức đã đồng bộ). Gói Plus, Pro giữ nguyên vì tự hạch toán theo phương thức (T137) cần các ô này.
-- Lý do (1.16): ô Dùng cho nghiệp vụ lưu theo dữ liệu (Phiếu thu, Phiếu chi, Phiếu nhập kho, Phiếu xuất kho) nhưng hiện Thu tiền, Chi tiền, Nhập kho, Xuất kho (`nhanDs`), hết mục Phiếu chi thừa do ô chọn và dữ liệu lệch chữ. Gói Free chỉ Thu tiền, Chi tiền và danh sách chỉ lý do thu, chi; gói khác đủ 4 loại. Không đổi dữ liệu mẫu vì `ui/generic/nhom.ts` lọc lý do theo chữ Phiếu thu, Phiếu chi.
+- Lý do (1.16): ô Dùng cho nghiệp vụ và cột Dùng cho ở danh sách cùng chữ Thu tiền, Chi tiền, Nhập kho, Xuất kho: đổi dữ liệu mẫu `LY_DO` (`data/mock.ts`, trước ghi Phiếu thu, Phiếu chi...) và bộ lọc lý do phiếu thu, chi ở `ui/generic/nhom.ts`. Gói Free chỉ Thu tiền, Chi tiền và danh sách chỉ lý do thu, chi; gói khác đủ 4 loại.
+- Loại hàng hoá theo iPOS Inventory (PhuongXT gửi): Nguyên vật liệu, Thành phẩm, Hàng bán thẳng, Bán thành phẩm (chỉ gói Pro), Khác (Công cụ dụng cụ); áp cho form hàng hoá và nhóm hàng hoá (`LOAI_HANG`, `LOAI_HANG_PRO` ở `truong-dm.ts`). Dữ liệu mẫu: nhóm Đồ uống, Bia, nước ngọt thành Hàng bán thẳng; mã CCDC thành Khác (Công cụ dụng cụ).
 - `src/ui/generic/CatalogScreen.tsx`: đọc các trường trên; nút Áp cho N hàng hoá trong nhóm chỉ ở gói Plus, Pro. Giữ nút Huỷ, Lưu và thêm, Lưu.
 
 ## Đã kiểm
@@ -25,7 +26,7 @@
 
 ## Dở dang, việc tiếp theo
 
-- Danh sách Loại hàng hoá đang là Hàng hoá, Thành phẩm, Nguyên vật liệu, Công cụ dụng cụ, Dịch vụ; PhuongXT muốn lấy đúng 5 loại của iPOS Inventory, chờ PhuongXT gửi danh sách rồi sửa ô `loai` ở '1.2' và 'nhom-hang-hoa' (`truong-dm.ts`), đối chiếu dữ liệu mẫu `loai` của hàng hoá.
+- PhuongXT gửi danh sách loại hàng hoá kèm chữ "Ghi chú" ở cuối, chưa rõ là thêm ô Ghi chú vào form hàng hoá hay một loại thứ 6; hỏi lại rồi làm.
 - Ô Kho mặc định ở form hàng hoá gói Free vẫn liệt kê mọi kho mẫu.
 
 ## Bẫy, quyết định mới

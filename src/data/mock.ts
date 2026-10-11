@@ -126,12 +126,12 @@ export const CONG_VIEC = [
 
 // Danh mục lý do nghiệp vụ 1.16. Form phiếu thu, chi lấy lý do theo cột "Dùng cho".
 export const LY_DO = [
-  ['LD01', 'Thu tiền bán hàng', 'Phiếu thu'], ['LD02', 'Thu nợ khách hàng', 'Phiếu thu'], ['LD03', 'Rút tiền ngân hàng nhập quỹ', 'Phiếu thu'],
-  ['LD04', 'Chi mua nguyên vật liệu', 'Phiếu chi'], ['LD05', 'Chi trả lương', 'Phiếu chi'], ['LD06', 'Chi tạm ứng', 'Phiếu chi'],
-  ['LD07', 'Xuất huỷ hàng hỏng', 'Phiếu xuất kho'], ['LD08', 'Xuất dùng nội bộ', 'Phiếu xuất kho'], ['LD09', 'Nhập hàng khách trả lại', 'Phiếu nhập kho'],
-  ['LD10', 'Thu hoàn ứng', 'Phiếu thu'], ['LD11', 'Thu khác', 'Phiếu thu'], ['LD12', 'Trả tiền nhà cung cấp', 'Phiếu chi'],
-  ['LD13', 'Chi phí khác', 'Phiếu chi'], ['LD14', 'Chi phí CCDC', 'Phiếu chi'], ['LD15', 'Chi phí thuê nhà', 'Phiếu chi'],
-  ['LD16', 'Chi phí TSCĐ', 'Phiếu chi'], ['LD17', 'Chi phí chờ phân bổ', 'Phiếu chi'],
+  ['LD01', 'Thu tiền bán hàng', 'Thu tiền'], ['LD02', 'Thu nợ khách hàng', 'Thu tiền'], ['LD03', 'Rút tiền ngân hàng nhập quỹ', 'Thu tiền'],
+  ['LD04', 'Chi mua nguyên vật liệu', 'Chi tiền'], ['LD05', 'Chi trả lương', 'Chi tiền'], ['LD06', 'Chi tạm ứng', 'Chi tiền'],
+  ['LD07', 'Xuất huỷ hàng hỏng', 'Xuất kho'], ['LD08', 'Xuất dùng nội bộ', 'Xuất kho'], ['LD09', 'Nhập hàng khách trả lại', 'Nhập kho'],
+  ['LD10', 'Thu hoàn ứng', 'Thu tiền'], ['LD11', 'Thu khác', 'Thu tiền'], ['LD12', 'Trả tiền nhà cung cấp', 'Chi tiền'],
+  ['LD13', 'Chi phí khác', 'Chi tiền'], ['LD14', 'Chi phí CCDC', 'Chi tiền'], ['LD15', 'Chi phí thuê nhà', 'Chi tiền'],
+  ['LD16', 'Chi phí TSCĐ', 'Chi tiền'], ['LD17', 'Chi phí chờ phân bổ', 'Chi tiền'],
 ].map(([ma, ten, dung]) => ({ ma, ten, dung }))
 
 // ── Doanh thu từng ngày, từng chi nhánh (đồng bộ từ FABi, gom theo ngày) ──
