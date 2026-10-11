@@ -4,7 +4,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T144.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T145.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
@@ -40,6 +40,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T145 | Hệ thống, Thông tin đơn vị gom thông tin khai lúc khởi tạo để sửa lại: tên, MST, địa chỉ, loại hình, thông tư áp dụng (doanh nghiệp), nhóm hộ kinh doanh, cách tính thuế TNCN, địa điểm kinh doanh chính, kênh bán | PhuongXT | 11/10/2026 | `2026-10-11-phuongxt-thong-tin-don-vi.md` |
 | T144 | Form danh mục theo gói: hàng hoá (loại hàng hoá theo iPOS Inventory, đơn vị tính hiện mã và tên), nhóm hàng hoá, đối tượng, nhóm đối tượng, kho, phương thức thanh toán (đồng bộ từ FABi), quỹ tiền (chọn nhiều chi nhánh), lý do; gói Free, Standard ẩn phần tài khoản, ngầm định | PhuongXT | 11/10/2026 | `2026-10-11-phuongxt-form-hang-hoa.md` |
 | T143 | Gói Free ẩn danh mục Nhóm mục chi phí, Nhóm công việc, Nhóm kho; danh mục Kho chỉ có kho mặc định mỗi chi nhánh theo iPOS Inventory, không thêm mới | PhuongXT | 11/10/2026 | `2026-10-11-phuongxt-an-danh-muc-free.md` |
 | T142 | Bổ sung chi nhánh khi đang dùng: Danh mục chi nhánh có Thêm chi nhánh từ FABi (chỉ cửa hàng chưa dùng kế toán, lên sổ từ ngày đầu năm, mở khai số dư quỹ tiền chi nhánh mới); Bàn làm việc nhắc cửa hàng FABi mới chưa lên sổ | PhuongXT | 11/10/2026 | `2026-10-11-phuongxt-them-chi-nhanh-fabi.md` |

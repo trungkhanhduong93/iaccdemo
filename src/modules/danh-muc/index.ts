@@ -182,7 +182,7 @@ const danhMuc: ModuleDef = {
         .map(([ma, ten, nhom, pt, tg]) => ({ ma, ten, nhom, pt, tg })) } },
     '1.8': { catalog: { them: 'Thêm kho', khongThem: ['F'],
       // gói Free: mỗi chi nhánh một kho mặc định theo iPOS Inventory (kho đầu của chi nhánh), không thêm kho mới (T143)
-      locGoi: (goi, r) => goi !== 'F' || CHI_NHANH.some(c => c.kho[0] === r.ten),
+      locGoi: (goi, r) => (goi !== 'F' && goi !== 'S') || CHI_NHANH.some(c => c.kho[0] === r.ten),   // gói Free, Standard: dữ liệu mẫu một kho mỗi chi nhánh
       chucNang: () => [{ nhan: 'Xem tồn kho', di: 'kho/5-2-4' }, { nhan: 'Điều chuyển', di: 'kho/5-1-4/moi' }],
       cols: goi => [{ k: 'ma', t: 'Mã kho', cls: 'code' }, { k: 'ten', t: 'Tên kho' }, { k: 'cn', t: 'Chi nhánh' }, ...(goi === 'F' ? [] : [{ k: 'loai', t: 'Nhóm kho' }]), { k: 'tk', t: 'Thủ kho', cls: 'dim' },
         ...(kieuGhiSo(goi) === 'noco' ? [tkCot('tkKho', 'TK kho'), tkCot('tkGv', 'TK giá vốn'), tkCot('tkCp', 'TK chi phí')] : [])],

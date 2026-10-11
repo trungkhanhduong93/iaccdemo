@@ -22,7 +22,7 @@ export function DanhMucChiNhanh({ sc, mod }: ScreenProps) {
   // đơn vị mẫu có sẵn chi nhánh mẫu; đơn vị mới tạo từ FABi chỉ có chi nhánh đã lên sổ
   const coSan = DON_VI.some(d => d.id === s.donVi)
   // Gói Free: mỗi chi nhánh tự có một kho mặc định, lấy kho đầu tiên của chi nhánh trên iPOS Inventory (T143)
-  const free = s.goi === 'F'
+  const free = s.goi === 'F' || s.goi === 'S'   // gói Free, Standard: dữ liệu mẫu một kho mỗi chi nhánh
   const khoCua = (id: string, ten: string) => CHI_NHANH.find(c => c.id === id)?.kho ?? [`Kho ${ten.replace(/^Phố Mây /, '')}`]
   const kho = (id: string, ten: string) => free ? khoCua(id, ten)[0] : khoCua(id, ten).join(', ')
   const rows: Row[] = useMemo(() => [
@@ -42,7 +42,7 @@ export function DanhMucChiNhanh({ sc, mod }: ScreenProps) {
       <PageHead crumb={[mod.ten]} title={tenMan(sc)}>
         <button type="button" className="btn pri" onClick={() => setMo(true)}><Icon n="plus" className="ic sm" />Thêm chi nhánh từ FABi</button>
       </PageHead>
-      {free && <Note icon="info">Gói Free: mỗi chi nhánh tự có một kho mặc định theo iPOS Inventory, không cần khai báo kho.</Note>}
+      {s.goi === 'F' && <Note icon="info">Gói Free: mỗi chi nhánh tự có một kho mặc định theo iPOS Inventory, không cần khai báo kho.</Note>}
       <section className="card">
         <Table cols={[
           { k: 'ma', t: 'Mã', cls: 'code', w: 90 },

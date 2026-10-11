@@ -1,7 +1,7 @@
 // Thanh trên: đơn vị kế toán, chi nhánh làm việc, nút "Trải nghiệm gói" đổi gói, tài khoản. Vai trò lấy theo tài khoản đăng nhập.
 // Tìm nhanh nằm ở sidebar; kỳ chọn ở bộ lọc từng màn.
 import { useNavigate } from 'react-router-dom'
-import { donViHienTai, dsChiNhanh, dsDonVi, useSession, cheDoHienTai } from './session'
+import { donViHienTai, dsChiNhanh, dsDonVi, loaiHinhDv, useSession, cheDoHienTai } from './session'
 import { cheDoCuaGoi } from './che-do'
 import { GOI, GOIS, demTheoGoi } from './plan'
 import { ROLE } from '../data/mock'
@@ -24,7 +24,7 @@ export function Topbar({ onSearch }: { onSearch?: () => void }) {
     <header className="topbar">
       <Dropdown btnClass="dv-btn" title="Đổi đơn vị kế toán" width={410} label={<>
         <span className="dv-av">{dv.viettat}</span>
-        <span style={{ minWidth: 0 }}><small>{dv.mst ? `Công ty · MST ${dv.mst}` : 'Chưa khai mã số thuế'} · {cheDoHienTai(s).ngan}</small><b>{dv.ten}</b></span>
+        <span style={{ minWidth: 0 }}><small>{dv.mst ? `${loaiHinhDv(s, dv) === 'hkd' ? 'Hộ kinh doanh' : 'Công ty'} · MST ${dv.mst}` : 'Chưa khai mã số thuế'} · {cheDoHienTai(s).ngan}</small><b>{dv.ten}</b></span>
         <Icon n="chevd" className="ic sm" />
       </>}>
         {dong => <>

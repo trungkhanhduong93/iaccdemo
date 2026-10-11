@@ -3,7 +3,8 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { Row, ScreenProps } from '../types'
 import { MODULES, duongDan } from '../../app/registry'
-import { donViHienTai, useSession, cheDoHienTai, namTaiChinh, ngayDauNam, type PpGtgt, type PpTndn } from '../../app/session'
+import { donViHienTai, dsChiNhanh, dsDonVi, loaiHinhDv, useSession, cheDoHienTai, namTaiChinh, ngayDauNam, type PpGtgt, type PpTndn } from '../../app/session'
+import { ChonKenh, KENH_ONLINE, KENH_SAN, NHOM_HKD, PP_HKD, type LoaiHinh, type PpHkd } from '../onboarding/OnboardFabi'
 import { FEATURES, GOI, GOIS, MODS, demTheoGoi, kieuGhiSo, type Goi } from '../../app/plan'
 import { CHE_DO, CHE_DO_HOP_LE, cheDoCuaGoi, type CheDo } from '../../app/che-do'
 import { CHI_NHANH, KHO, NGUOI_DUNG } from '../../data/mock'
@@ -140,7 +141,6 @@ export { GoiThueBao } from './GoiThueBao'
 
 export function CauHinh({ sc }: ScreenProps) {
   const { s, set, toast } = useSession()
-  const [choDoi, setChoDoi] = useState<CheDo | null>(null)
   const noco = kieuGhiSo(s.cheDo) === 'noco'
   return (
     <div className="page">
@@ -150,12 +150,9 @@ export function CauHinh({ sc }: ScreenProps) {
           <div className="form-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
             <div className="f">
               <label>Chế độ</label>
-              <Select className="inp" value={s.cheDo} disabled={CHE_DO_HOP_LE[s.goi].length <= 1} onChange={e => { const moi = e.target.value as CheDo; if (moi !== s.cheDo) setChoDoi(moi) }}>
-                {CHE_DO_HOP_LE[s.goi].map(cd => (
-                  <option key={cd} value={cd}>{CHE_DO[cd].soHieu} · {CHE_DO[cd].ten}</option>
-                ))}
-              </Select>
-              {CHE_DO_HOP_LE[s.goi].length <= 1 && <small className="muted" style={{ display: 'block', marginTop: 4 }}>Gói {GOI[s.goi].ten} chỉ dùng {cheDoHienTai(s).ngan}</small>}
+              {/* chế độ kế toán (thông tư áp dụng) sửa ở Thông tin đơn vị (T145) */}
+              <input className="inp" readOnly value={`${cheDoHienTai(s).soHieu} · ${cheDoHienTai(s).ten}`} />
+              <small className="muted" style={{ display: 'block', marginTop: 4 }}>Sửa ở <Link to="/app/he-thong/thong-tin">Thông tin đơn vị</Link></small>
             </div>
             <div className="f"><label>Năm tài chính</label><input className="inp" defaultValue="01/01 – 31/12" /></div>
             <div className="f"><label>Phương pháp tính giá xuất kho</label><Select className="inp"><option>Bình quân gia quyền cuối kỳ</option><option>Bình quân tức thời</option><option>Nhập trước xuất trước</option></Select></div>
@@ -212,7 +209,109 @@ export function CauHinh({ sc }: ScreenProps) {
           </div>
         </Card>
         <Card title="Chi nhánh và ánh xạ POS">
-          <Table cols={[{ k: 'ten', t: 'Chi nhánh' }, { k: 'fabi', t: 'Mã trên FABi', cls: 'code' }, { k: 'kho', t: 'Kho' }]} rows={CHI_NHANH.map(c => ({ ten: c.ten, fabi: `FB-${c.id.toUpperCase()}-01`, kho: c.kho.length }))} />
+          <Table cols={[{ k: 'ten', t: 'Chi nhánh' }, { k: 'fabi', t: 'Mã trên FABi', cls: 'code' }, { k: 'kho', t: 'Kho' }]} rows={dsChiNhanh(s).map(c => {
+            // gói Free, Standard: dữ liệu mẫu một kho mỗi chi nhánh, ghi tên kho; gói khác ghi số kho (T145)
+            const kho = CHI_NHANH.find(x => x.id === c.id)?.kho ?? [`Kho ${c.ten.replace(/^Phố Mây /, '')}`]
+            return { ten: c.ten, fabi: `FB-${c.id.toUpperCase()}-01`, kho: s.goi === 'F' || s.goi === 'S' ? kho[0] : kho.length }
+          })} />
+        </Card>
+      </div>
+    </div>
+  )
+}
+
+export function ThongTinDonVi({ sc }: ScreenProps) {
+  const { s, set, toast } = useSession()
+  const dv = donViHienTai(s)
+  const tt = s.ttDv?.[s.donVi] ?? {}
+  // Ngày đầu năm: chứng từ thêm mới phải có ngày từ ngày này trở đi, trừ màn khai số dư
+  const [dauNam, setDauNam] = useState(ngayDauNam(s))
+  // Năm làm việc hiện tại: các kỳ số liệu là 12 tháng tính từ ngày đầu năm; đổi năm thì ngày đầu năm đổi năm theo
+  const [nam, setNam] = useState(namTaiChinh(s))
+  const doiNam = (n: number) => { setNam(n); setDauNam(d => d.replace(/\d{4}$/, String(n))) }
+  // Thông tin kê khai khai lúc khởi tạo, sửa lại ở đây (T145); chưa khai thì đơn vị tên "Hộ kinh doanh..." coi là hộ kinh doanh
+  const dsCn = dsChiNhanh(s)
+  const [f, setF] = useState(() => ({
+    ten: dv.ten, mst: dv.mst, diaChi: dv.diaChi,
+    loai: loaiHinhDv(s, dv) as LoaiHinh,
+    nhom: tt.nhom ?? 1, ppHkd: tt.ppHkd ?? 'doanhThu' as PpHkd,
+    cnChinh: tt.cnChinh || dsCn[0]?.id || '', kenhOnline: tt.kenhOnline ?? KENH_ONLINE, kenhSan: tt.kenhSan ?? KENH_SAN,
+  }))
+  const sua = (p: Partial<typeof f>) => setF(x => ({ ...x, ...p }))
+  const ppCoDinh = NHOM_HKD[f.nhom - 1]?.pp ?? null   // nhóm 1, 3, 4 cách tính thuế cố định; nhóm 2 được chọn
+  const bat = (ds: string[], k: string) => ds.includes(k) ? ds.filter(x => x !== k) : [...ds, k]
+  const mstGoc = Boolean(dsDonVi({ dvMoi: s.dvMoi }).find(d => d.id === s.donVi)?.mst)   // MST đã khai lúc khởi tạo thì không sửa; chưa khai thì nhập ở đây
+  const luuDv = () => {
+    if (!/^\d{2}\/\d{2}\/\d{4}$/.test(dauNam)) { toast('Ngày đầu năm cần nhập dạng dd/mm/yyyy'); return }
+    if (!f.ten.trim()) { toast('Tên đơn vị không được để trống'); return }
+    const { ten, mst, diaChi, loai, nhom, ppHkd, cnChinh, kenhOnline, kenhSan } = f
+    set({
+      ngayDauNam: { ...s.ngayDauNam, [s.donVi]: dauNam }, namTaiChinh: { ...s.namTaiChinh, [s.donVi]: nam },
+      ttDv: { ...s.ttDv, [s.donVi]: { ten, mst, diaChi, loai, nhom, ppHkd: ppCoDinh ?? ppHkd, cnChinh, kenhOnline, kenhSan: kenhSan.filter(k => kenhOnline.includes(k)) } },
+    })
+    toast('Đã lưu thông tin đơn vị')
+  }
+  const { loai } = f
+  const [choDoi, setChoDoi] = useState<CheDo | null>(null)   // đổi chế độ kế toán, hỏi lại trước khi đổi
+  const doiLoai = loai !== loaiHinhDv(s, dv)
+  return (
+    <div className="page">
+      <PageHead crumb={['Hệ thống']} title={sc.ten!}><button className="btn pri" onClick={luuDv}>Lưu</button></PageHead>
+      <div className="stack">
+        <Card title="Thông tin trên chứng từ, báo cáo">
+          <div className="form-grid">
+            <div className="f c2"><label>Tên đơn vị</label><input className="inp" value={f.ten} onChange={e => sua({ ten: e.target.value })} /></div>
+            <div className="f"><label>Mã số thuế</label>
+              <input className="inp" readOnly={mstGoc} value={f.mst} placeholder="Chưa khai mã số thuế" onChange={e => sua({ mst: e.target.value })}
+                title={mstGoc ? 'Mã số thuế đã khai, không sửa' : 'Đơn vị chưa khai mã số thuế'} /></div>
+            <div className="f"><label>Số điểm bán</label><input className="inp" readOnly value={dsCn.length} /></div>
+            <div className="f c4"><label>Địa chỉ</label><input className="inp" value={f.diaChi} onChange={e => sua({ diaChi: e.target.value })} /></div>
+            <div className="f c2"><label>Người đại diện theo pháp luật</label><input className="inp" defaultValue={dv.nguoiDaiDien} /></div>
+            <div className="f c2"><label>Kế toán trưởng</label><input className="inp" defaultValue="Trần Thu Hà" /></div>
+            <div className="f">
+              <label>Ngày đầu năm</label>
+              <input className="inp" value={dauNam} placeholder="dd/mm/yyyy" onChange={e => setDauNam(e.target.value)}
+                title="Chứng từ thêm mới phải có ngày từ ngày này trở đi, trừ các màn khai số dư đầu kỳ" />
+            </div>
+            <div className="f">
+              <label>Năm làm việc hiện tại</label>
+              <Select className="inp" value={String(nam)} aria-label="Năm làm việc hiện tại" onChange={e => doiNam(Number(e.target.value))}
+                ds={[-2, -1, 0, 1].map(d => String(new Date().getFullYear() + d)).map(n => ({ v: n, t: n }))} />
+            </div>
+          </div>
+        </Card>
+        <Card title="Thông tin kê khai">
+          <div className="form-grid">
+            <div className="f c2"><label>Loại hình</label>
+              <Select className="inp" value={loai} aria-label="Loại hình" onChange={e => sua({ loai: e.target.value as LoaiHinh })}
+                ds={[{ v: 'hkd', t: 'Hộ kinh doanh' }, { v: 'dn', t: 'Doanh nghiệp' }]} /></div>
+            {loai === 'dn' && (
+              <div className="f c2"><label>Thông tư áp dụng</label>
+                {s.goi === 'F'
+                  ? <input className="inp" readOnly value="Quản lý lãi lỗ, không theo thông tư" />
+                  : <Select className="inp" value={s.cheDo} disabled={CHE_DO_HOP_LE[s.goi].length <= 1} aria-label="Thông tư áp dụng"
+                      onChange={e => { const moi = e.target.value as CheDo; if (moi !== s.cheDo) setChoDoi(moi) }}
+                      ds={CHE_DO_HOP_LE[s.goi].map(cd => ({ v: cd, t: `${CHE_DO[cd].soHieu} · ${CHE_DO[cd].ten}` }))} />}
+                {s.goi !== 'F' && CHE_DO_HOP_LE[s.goi].length <= 1 && <small className="muted" style={{ display: 'block', marginTop: 4 }}>Gói {GOI[s.goi].ten} chỉ dùng {cheDoHienTai(s).ngan}</small>}
+              </div>
+            )}
+            {loai === 'hkd' && <>
+              <div className="f c2"><label>Nhóm doanh thu</label>
+                <Select className="inp" value={String(f.nhom)} aria-label="Nhóm doanh thu" onChange={e => sua({ nhom: Number(e.target.value) })}
+                  ds={NHOM_HKD.map(x => ({ v: String(x.nhom), t: `Nhóm ${x.nhom} (${x.ten})` }))} /></div>
+              <div className="f c2"><label>Phương pháp tính thuế TNCN</label>
+                <Select className="inp" value={ppCoDinh ?? f.ppHkd} disabled={ppCoDinh !== null} aria-label="Phương pháp tính thuế TNCN"
+                  onChange={e => sua({ ppHkd: e.target.value as PpHkd })} ds={(['doanhThu', 'loiNhuan'] as const).map(v => ({ v, t: PP_HKD[v] }))} /></div>
+              <div className="f c2"><label>Địa điểm kinh doanh chính</label>
+                <Select className="inp" value={f.cnChinh} aria-label="Địa điểm kinh doanh chính" onChange={e => sua({ cnChinh: e.target.value })}
+                  ds={dsCn.map(c => ({ v: c.id, t: c.ten }))} /></div>
+              <div className="f c2"><label>Kênh bán online</label>
+                <ChonKenh ds={KENH_ONLINE} chon={f.kenhOnline} doi={k => sua({ kenhOnline: bat(f.kenhOnline, k) })} trong="Chọn kênh bán" /></div>
+              <div className="f c2"><label>Kênh bán qua sàn đã khấu trừ thuế</label>
+                <ChonKenh ds={KENH_SAN.filter(k => f.kenhOnline.includes(k))} chon={f.kenhSan.filter(k => f.kenhOnline.includes(k))} doi={k => sua({ kenhSan: bat(f.kenhSan, k) })} trong="Chọn sàn" /></div>
+            </>}
+          </div>
+          {doiLoai && <Note kind="warn" icon="alert">Đổi loại hình không tự đổi gói, chế độ kế toán. Xem lại ở <Link to="/app/he-thong/goi-thue-bao">Gói thuê bao</Link> và Cấu hình kế toán.</Note>}
         </Card>
       </div>
       {choDoi && (
@@ -225,46 +324,6 @@ export function CauHinh({ sc }: ScreenProps) {
           Đổi sang {CHE_DO[choDoi].soHieu}? Danh mục tài khoản, mẫu chứng từ, mẫu in, sổ và báo cáo sẽ đổi theo chế độ mới. Bản thật chỉ cho đổi từ đầu năm tài chính và phải kết chuyển số dư (10.1.9).
         </HopXacNhan>
       )}
-    </div>
-  )
-}
-
-export function ThongTinDonVi({ sc }: ScreenProps) {
-  const { s, set, toast } = useSession()
-  const dv = donViHienTai(s)
-  // Ngày đầu năm: chứng từ thêm mới phải có ngày từ ngày này trở đi, trừ màn khai số dư
-  const [dauNam, setDauNam] = useState(ngayDauNam(s))
-  // Năm làm việc hiện tại: các kỳ số liệu là 12 tháng tính từ ngày đầu năm; đổi năm thì ngày đầu năm đổi năm theo
-  const [nam, setNam] = useState(namTaiChinh(s))
-  const doiNam = (n: number) => { setNam(n); setDauNam(d => d.replace(/\d{4}$/, String(n))) }
-  const luuDv = () => {
-    if (!/^\d{2}\/\d{2}\/\d{4}$/.test(dauNam)) { toast('Ngày đầu năm cần nhập dạng dd/mm/yyyy'); return }
-    set({ ngayDauNam: { ...s.ngayDauNam, [s.donVi]: dauNam }, namTaiChinh: { ...s.namTaiChinh, [s.donVi]: nam } })
-    toast('Đã lưu thông tin đơn vị')
-  }
-  return (
-    <div className="page">
-      <PageHead crumb={['Hệ thống']} title={sc.ten!}><button className="btn pri" onClick={luuDv}>Lưu</button></PageHead>
-      <Card title="Thông tin trên chứng từ, báo cáo">
-        <div className="form-grid">
-          <div className="f c2"><label>Tên đơn vị</label><input className="inp" defaultValue={dv.ten} /></div>
-          <div className="f"><label>Mã số thuế</label><input className="inp" readOnly defaultValue={dv.mst} /></div>
-          <div className="f"><label>Số điểm bán</label><input className="inp" readOnly defaultValue={dv.diem} /></div>
-          <div className="f c4"><label>Địa chỉ</label><input className="inp" defaultValue={dv.diaChi} /></div>
-          <div className="f c2"><label>Người đại diện theo pháp luật</label><input className="inp" defaultValue={dv.nguoiDaiDien} /></div>
-          <div className="f c2"><label>Kế toán trưởng</label><input className="inp" defaultValue="Trần Thu Hà" /></div>
-          <div className="f">
-            <label>Ngày đầu năm</label>
-            <input className="inp" value={dauNam} placeholder="dd/mm/yyyy" onChange={e => setDauNam(e.target.value)}
-              title="Chứng từ thêm mới phải có ngày từ ngày này trở đi, trừ các màn khai số dư đầu kỳ" />
-          </div>
-          <div className="f">
-            <label>Năm làm việc hiện tại</label>
-            <Select className="inp" value={String(nam)} aria-label="Năm làm việc hiện tại" onChange={e => doiNam(Number(e.target.value))}
-              ds={[-2, -1, 0, 1].map(d => String(new Date().getFullYear() + d)).map(n => ({ v: n, t: n }))} />
-          </div>
-        </div>
-      </Card>
     </div>
   )
 }

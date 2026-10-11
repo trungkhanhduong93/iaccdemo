@@ -10,6 +10,12 @@ export type PpTndn = 'tyLe' | 'thuNhap'
 /** Chi nhánh lên sổ thêm từ một cửa hàng FABi: tuNgay là ngày bắt đầu lên sổ, doanh thu FABi đồng bộ từ ngày này (T142) */
 export interface CnThem { id: string; ten: string; khuVuc: string; tuNgay: string; banDau?: boolean }   // banDau: chọn lúc khởi tạo đơn vị, không phải bổ sung sau
 
+/** Thông tin kê khai của đơn vị, khai lúc khởi tạo, sửa ở Hệ thống, Thông tin đơn vị (T145); ten, mst, diaChi sửa đè lên đơn vị */
+export interface TtDonVi {
+  loai?: 'hkd' | 'dn'; nhom?: number; ppHkd?: 'doanhThu' | 'loiNhuan'; cnChinh?: string; kenhOnline?: string[]; kenhSan?: string[]
+  ten?: string; mst?: string; diaChi?: string
+}
+
 export interface Session {
   loggedIn: boolean
   ten: string
@@ -26,6 +32,7 @@ export interface Session {
   ppGtgt: PpGtgt         // phương pháp tính thuế GTGT (TT58): 'tyLe' hoặc 'khauTru', mặc định 'tyLe'
   ppTndn: PpTndn         // phương pháp tính thuế TNDN (TT58): 'tyLe' hoặc 'thuNhap', mặc định 'thuNhap'
   dvMoi?: DonVi        // đơn vị mới tạo khi dùng thử từ FABi (T138): tên FABi, chưa có MST; 3 đơn vị mẫu giữ nguyên
+  ttDv?: Record<string, TtDonVi>   // thông tin kê khai từng đơn vị (T145)
   cnThem?: Record<string, CnThem[]>   // chi nhánh lên sổ thêm từ cửa hàng FABi theo từng đơn vị (T142)
   dongBoFabi?: 'chiTiet' | 'kenh'   // cách đồng bộ bán hàng FABi (T113): mỗi hoá đơn một chứng từ, hoặc tổng hợp theo kênh mỗi ngày; thiếu là theo kênh
 }
@@ -108,7 +115,12 @@ export function useSession() {
 }
 
 /** Các đơn vị của tài khoản: 3 đơn vị mẫu, thêm đơn vị mới tạo từ FABi nếu có */
-export const dsDonVi = (s: Pick<Session, 'dvMoi'>): DonVi[] => s.dvMoi ? [...DON_VI, s.dvMoi] : DON_VI
+export const dsDonVi = (s: Pick<Session, 'dvMoi' | 'ttDv'>): DonVi[] => (s.dvMoi ? [...DON_VI, s.dvMoi] : DON_VI).map(d => {
+  const t = s.ttDv?.[d.id]   // tên, MST, địa chỉ sửa ở Thông tin đơn vị (T145)
+  return t ? { ...d, ...(t.ten !== undefined && { ten: t.ten }), ...(t.mst !== undefined && { mst: t.mst }), ...(t.diaChi !== undefined && { diaChi: t.diaChi }) } : d
+})
+/** Loại hình đơn vị: theo Thông tin đơn vị; chưa khai thì tên "Hộ kinh doanh..." là hộ kinh doanh (T145) */
+export const loaiHinhDv = (s: Pick<Session, 'ttDv'>, d: DonVi): 'hkd' | 'dn' => s.ttDv?.[d.id]?.loai ?? (d.ten.startsWith('Hộ kinh doanh') ? 'hkd' : 'dn')
 export const donViHienTai = (s: Session) => dsDonVi(s).find(d => d.id === s.donVi) ?? DON_VI[0]
 export const cheDoHienTai = (s: Session) => CHE_DO[s.cheDo]
 /** Chi nhánh đang chọn trên thanh trên; undefined khi đang xem tất cả chi nhánh */

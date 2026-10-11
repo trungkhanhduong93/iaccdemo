@@ -24,20 +24,20 @@ const DT_FABI = 29_000_000_000   // doanh thu 12 tháng lấy từ FABi
 /** Cửa hàng hiện ở bước Chi nhánh: dùng thử từ FABi là đơn vị mới nên có mọi chi nhánh; thêm đơn vị chỉ có cửa hàng chưa dùng kế toán */
 const dsCuaHang = (kieu: Nhap['kieu'], s: Pick<Session, 'cnThem' | 'donVi'>): CuaHangFabi[] => kieu === 'them' ? cuaHangChuaDung(s) : CHI_NHANH.map(c => ({ id: c.id, ten: c.ten, khuVuc: 'TP.HCM' }))
 /** Kênh bán online trên FABi; KENH_SAN là sàn giao đồ ăn khấu trừ, nộp thuế thay cho hộ, doanh nghiệp bán qua sàn (T138) */
-const KENH_ONLINE = ['GrabFood', 'ShopeeFood', 'Be', 'Zalo', 'Facebook', 'CRM', 'Call center', 'Giao hàng']
-const KENH_SAN = ['GrabFood', 'ShopeeFood', 'Be']
+export const KENH_ONLINE = ['GrabFood', 'ShopeeFood', 'Be', 'Zalo', 'Facebook', 'CRM', 'Call center', 'Giao hàng']
+export const KENH_SAN = ['GrabFood', 'ShopeeFood', 'Be']
 
 /** 4 nhóm hộ kinh doanh theo doanh thu năm, áp dụng từ 01/01/2026. PhuongXT đưa ngưỡng 11/10/2026 (T138); thuế suất chưa đối chiếu văn bản gốc */
-type PpHkd = 'doanhThu' | 'loiNhuan'
-type LoaiHinh = 'hkd' | 'dn'
-const NHOM_HKD: { nhom: number; tu: number; ten: string; thue: string; pp: PpHkd | null }[] = [
+export type PpHkd = 'doanhThu' | 'loiNhuan'
+export type LoaiHinh = 'hkd' | 'dn'
+export const NHOM_HKD: { nhom: number; tu: number; ten: string; thue: string; pp: PpHkd | null }[] = [
   { nhom: 1, tu: 0, ten: 'Dưới 1 tỷ đồng/năm', thue: 'Không phải nộp thuế GTGT, TNCN. Khai doanh thu', pp: 'doanhThu' },
   { nhom: 2, tu: 1e9, ten: 'Từ 1 tỷ đến dưới 3 tỷ đồng/năm', thue: 'Chọn thuế TNCN theo tỷ lệ % trên doanh thu, hoặc theo lợi nhuận 15%', pp: null },
   { nhom: 3, tu: 3e9, ten: 'Từ 3 tỷ đến dưới 50 tỷ đồng/năm', thue: 'Thuế TNCN theo lợi nhuận, thuế suất 17%', pp: 'loiNhuan' },
   { nhom: 4, tu: 50e9, ten: 'Từ 50 tỷ đồng trở lên/năm', thue: 'Thuế TNCN theo lợi nhuận, thuế suất 20%', pp: 'loiNhuan' },
 ]
 const nhomTheoDt = (dt: number) => [...NHOM_HKD].reverse().find(x => dt >= x.tu)!.nhom
-const PP_HKD: Record<PpHkd, string> = { doanhThu: 'Theo tỷ lệ % trên doanh thu', loiNhuan: 'Theo lợi nhuận (doanh thu trừ chi phí)' }
+export const PP_HKD: Record<PpHkd, string> = { doanhThu: 'Theo tỷ lệ % trên doanh thu', loiNhuan: 'Theo lợi nhuận (doanh thu trừ chi phí)' }
 
 /** Hộ kinh doanh luôn theo TT152: tính thuế theo doanh thu gợi ý Free, theo lợi nhuận gợi ý Standard.
  *  Doanh nghiệp chọn đủ 4 gói: Free chỉ quản lý lãi lỗ, không theo thông tư (bên trong ghi sổ như TT152, không hạch toán);
@@ -121,7 +121,7 @@ export function DsChiNhanh({ ds, chon, chinh, doi, coChinh }: { ds: CnFabi[]; ch
 }
 
 /** Ô thả xuống chọn nhiều kênh bán; kênh đã chọn hiện gọn trong ô */
-function ChonKenh({ ds, chon, doi, trong }: { ds: string[]; chon: string[]; doi: (k: string) => void; trong: string }) {
+export function ChonKenh({ ds, chon, doi, trong }: { ds: string[]; chon: string[]; doi: (k: string) => void; trong: string }) {
   return (
     <Dropdown btnClass="inp ktf-kenh-o" width={260} label={<>
       <span className="ktf-kenh-chon">{chon.length ? chon.join(', ') : <span className="muted">{trong}</span>}</span>
@@ -271,7 +271,9 @@ export function OnboardFabi() {
   const bat = (ds: string[], k: string) => ds.includes(k) ? ds.filter(x => x !== k) : [...ds, k]
   const doiKenh = (k: string) => { const on = bat(n.kenhOnline, k); sua({ kenhOnline: on, kenhSan: n.kenhSan.filter(x => on.includes(x)) }) }
   const xong = () => {
-    set({ goi: n.goi, cheDo: n.cheDo, khoiTao: true, dongBoFabi: n.dongBo, ...(s.dvMoi && s.donVi === s.dvMoi.id ? { cnThem: { ...s.cnThem, [s.donVi]: cnChon.map(c => ({ id: c.id, ten: c.ten, khuVuc: c.khuVuc, tuNgay: n.ngayDauNam, banDau: true })) }, dvMoi: { ...s.dvMoi, ten: n.tenDv || s.dvMoi.ten, viettat: vietTat(n.tenDv) || s.dvMoi.viettat, mst: n.mst, diaChi: n.diaChi, goi: n.goi, diem: n.chon.length } } : {}),
+    // thông tin kê khai lưu theo đơn vị, sửa lại ở Hệ thống, Thông tin đơn vị (T145)
+    const ttDv = { ...s.ttDv, [s.donVi]: { ...s.ttDv?.[s.donVi], loai: n.loai, nhom: n.nhom, ppHkd: n.ppHkd, cnChinh: n.cnChinh, kenhOnline: n.kenhOnline, kenhSan: n.kenhSan } }
+    set({ goi: n.goi, cheDo: n.cheDo, khoiTao: true, dongBoFabi: n.dongBo, ttDv, ...(s.dvMoi && s.donVi === s.dvMoi.id ? { cnThem: { ...s.cnThem, [s.donVi]: cnChon.map(c => ({ id: c.id, ten: c.ten, khuVuc: c.khuVuc, tuNgay: n.ngayDauNam, banDau: true })) }, dvMoi: { ...s.dvMoi, ten: n.tenDv || s.dvMoi.ten, viettat: vietTat(n.tenDv) || s.dvMoi.viettat, mst: n.mst, diaChi: n.diaChi, goi: n.goi, diem: n.chon.length } } : {}),
       ngayDauNam: { ...s.ngayDauNam, [s.donVi]: n.ngayDauNam }, namTaiChinh: { ...s.namTaiChinh, [s.donVi]: Number(n.ngayDauNam.slice(-4)) } })
     try { localStorage.removeItem(KEY) } catch { /* bỏ qua */ }
     setN(MAC_DINH)
