@@ -38,6 +38,7 @@
 - Dùng thử gói Free với tất cả cửa hàng trên FABi (PhuongXT chọn cách A: gói Free không giới hạn chi nhánh). Màn giới thiệu ghi rõ. Sửa luôn việc T60 cho gói Free: mô tả gói, điểm nổi bật, thẻ gói và hỏi đáp màn Gói thuê bao.
 - Dùng thử từ FABi tạo đơn vị thứ 4 mới (`dvMoi` trong phiên, id `fabi`), không đụng 3 đơn vị mẫu (PhuongXT dặn: 3 đơn vị kia là ví dụ đã khai xong). Đơn vị mới lấy tên FABi (`TEN_FABI`), chưa có MST, địa chỉ (FABi không có), gói Free; thanh trên ghi "Chưa khai mã số thuế". Bước Đơn vị để trống MST, tên điền sẵn tên FABi, Tra cứu điền tên, địa chỉ mẫu khác đơn vị mẫu (MST 0319 990 088); khởi tạo xong ghi tên, MST, địa chỉ, gói vào đơn vị mới. `dsDonVi` trong `session.tsx` gộp 3 đơn vị mẫu với đơn vị mới; đăng nhập thường bỏ đơn vị mới.
 - Thêm đơn vị kế toán (menu đơn vị trên thanh trên, màn Chọn đơn vị) dùng popup 4 bước thay màn `/khoi-tao` cũ: `useThemDonVi` tạo đơn vị mới gói Free (id `moi`), mở popup ngay trong phần mềm (sự kiện `iacc-mo-khoi-tao` để popup đọc lại tiến độ). Bước Chi nhánh chỉ hiện cửa hàng FABi chưa dùng kế toán (`CUA_HANG_FABI`, dữ liệu mẫu 4 cửa hàng mới ở TP.HCM, Hà Nội), ghi số cửa hàng đã ẩn. Cửa hàng chưa có số bán mẫu thì ước số chứng từ bằng bình quân một chi nhánh mẫu. Màn `/khoi-tao` không còn lối vào nào.
+- Màn giới thiệu có Chọn cửa hàng dùng thử (làm cùng T142, xem `2026-10-11-phuongxt-them-chi-nhanh-fabi.md`).
 - Lối vào bản mẫu: liên kết "Thử mở từ FABi" dưới form đăng nhập (`src/modules/auth/Login.tsx`).
 - CSS mục cuối `app.css`: "Khởi tạo khi mở từ FABi (T138)", lớp `.ktf-*`.
 

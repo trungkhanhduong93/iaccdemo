@@ -9,6 +9,7 @@ import { DON_VI_TINH, tkCot, taiKhoan, NHOM_HANG, NHOM_DOI_TUONG, NHOM_MUC_CP, N
 import { HeThongTaiKhoan } from './HeThongTaiKhoan'
 import { tkTheoCheDo } from '../tong-hop/so-cai'
 import { Note } from '../../ui/Page'
+import { DanhMucChiNhanh } from './DanhMucChiNhanh'
 
 /** Nhãn ngắn trên thanh tab */
 const NGAN: Record<string, string> = { '1.1': 'Tài khoản', '1.2': 'Hàng hoá', '1.3': 'Đơn vị tính', '1.4': 'Quy đổi ĐVT', '1.5': 'Đối tượng', '1.6': 'Mục chi phí', '1.7': 'Công việc', '1.8': 'Kho', '1.9': 'Tiền tệ', '1.10': 'Tỷ giá', '1.11': 'Loại thuế', '1.12': 'Quỹ tiền', '1.13': 'Tài sản cố định', '1.14': 'Bảng giá', '1.15': 'Bút toán tự động', '1.16': 'Lý do' }
@@ -94,12 +95,9 @@ const nhomKho: ScreenDef = {
   },
 }
 
-/** Chi nhánh của đơn vị: một mã số thuế có nhiều chi nhánh. Không có trong Excel, gói nào cũng mở. Thanh trên chọn chi nhánh làm việc từ danh mục này. */
-const chiNhanh: ScreenDef = { slug: 'chi-nhanh', ten: 'Danh mục chi nhánh', ngan: 'Chi nhánh', nhom: 'Danh mục', kind: 'catalog', icon: 'chinhanh', catalog: {
-  them: 'Thêm chi nhánh',
-  cols: [{ k: 'ma', t: 'Mã', cls: 'code', w: 90 }, { k: 'ten', t: 'Tên chi nhánh' }, { k: 'kho', t: 'Kho', cls: 'dim' }],
-  rows: () => CHI_NHANH.map(c => ({ ma: c.id.toUpperCase(), ten: c.ten, kho: c.kho.join(', ') })),
-} }
+/** Chi nhánh của đơn vị: một mã số thuế có nhiều chi nhánh. Không có trong Excel, gói nào cũng mở. Thanh trên chọn chi nhánh làm việc từ danh mục này.
+ *  Thêm chi nhánh từ cửa hàng FABi chưa dùng kế toán (T142) */
+const chiNhanh: ScreenDef = { slug: 'chi-nhanh', ten: 'Danh mục chi nhánh', ngan: 'Chi nhánh', nhom: 'Danh mục', kind: 'custom', icon: 'chinhanh', comp: DanhMucChiNhanh }
 
 /** Danh mục phương thức thanh toán ngoài Excel (T137, chưa đối chiếu bảng DM_) */
 const phuongThucThanhToan: ScreenDef = {

@@ -7,6 +7,9 @@ import { CHI_NHANH, DON_VI, type DonVi, type Role } from '../data/mock'
 export type PpGtgt = 'tyLe' | 'khauTru'
 export type PpTndn = 'tyLe' | 'thuNhap'
 
+/** Chi nhánh lên sổ thêm từ một cửa hàng FABi: tuNgay là ngày bắt đầu lên sổ, doanh thu FABi đồng bộ từ ngày này (T142) */
+export interface CnThem { id: string; ten: string; khuVuc: string; tuNgay: string; banDau?: boolean }   // banDau: chọn lúc khởi tạo đơn vị, không phải bổ sung sau
+
 export interface Session {
   loggedIn: boolean
   ten: string
@@ -23,6 +26,7 @@ export interface Session {
   ppGtgt: PpGtgt         // phương pháp tính thuế GTGT (TT58): 'tyLe' hoặc 'khauTru', mặc định 'tyLe'
   ppTndn: PpTndn         // phương pháp tính thuế TNDN (TT58): 'tyLe' hoặc 'thuNhap', mặc định 'thuNhap'
   dvMoi?: DonVi        // đơn vị mới tạo khi dùng thử từ FABi (T138): tên FABi, chưa có MST; 3 đơn vị mẫu giữ nguyên
+  cnThem?: Record<string, CnThem[]>   // chi nhánh lên sổ thêm từ cửa hàng FABi theo từng đơn vị (T142)
   dongBoFabi?: 'chiTiet' | 'kenh'   // cách đồng bộ bán hàng FABi (T113): mỗi hoá đơn một chứng từ, hoặc tổng hợp theo kênh mỗi ngày; thiếu là theo kênh
 }
 

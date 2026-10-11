@@ -3,7 +3,8 @@
 // Tiến độ lưu ở localStorage để quay lại đúng bước.
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useSession } from '../../app/session'
+import { useSession, type Session } from '../../app/session'
+import { CUA_HANG_FABI, cuaHangChuaDung, type CuaHangFabi } from './cua-hang-fabi'
 import { DIEM_NOI_BAT, FEATURES, GIA_GOI_NAM, GIA_GOI_THANG, GOI, GOIS, MODS, demTheoGoi, type Goi } from '../../app/plan'
 import { CHE_DO, CHE_DO_HOP_LE, CHE_DO_MAC_DINH, type CheDo } from '../../app/che-do'
 import { CHI_NHANH, DAILY, HOM_NAY, type DonVi } from '../../data/mock'
@@ -20,18 +21,8 @@ export const SO_KENH = 3   // Tại quán, Mang về, App giao đồ ăn (T113)
 
 const DT_FABI = 29_000_000_000   // doanh thu 12 tháng lấy từ FABi
 
-/** Cửa hàng trên tài khoản FABi khi thêm đơn vị kế toán: donVi là đơn vị kế toán đang dùng cửa hàng đó; chưa có là chưa dùng kế toán (T138, dữ liệu mẫu) */
-type CuaHangFabi = { id: string; ten: string; khuVuc: string; donVi?: string }
-const CUA_HANG_FABI: CuaHangFabi[] = [
-  ...CHI_NHANH.map(c => ({ id: c.id, ten: c.ten, khuVuc: 'TP.HCM', donVi: 'pm' })),
-  { id: 'gn1', ten: 'Cà phê Góc Nhỏ Tân Định', khuVuc: 'TP.HCM', donVi: 'gn' },
-  { id: 'q7', ten: 'Phố Mây Quận 7', khuVuc: 'TP.HCM' },
-  { id: 'gv', ten: 'Phố Mây Gò Vấp', khuVuc: 'TP.HCM' },
-  { id: 'hk', ten: 'Phố Mây Hoàn Kiếm', khuVuc: 'Hà Nội' },
-  { id: 'cg', ten: 'Phố Mây Cầu Giấy', khuVuc: 'Hà Nội' },
-]
 /** Cửa hàng hiện ở bước Chi nhánh: dùng thử từ FABi là đơn vị mới nên có mọi chi nhánh; thêm đơn vị chỉ có cửa hàng chưa dùng kế toán */
-const dsCuaHang = (kieu: Nhap['kieu']): CuaHangFabi[] => kieu === 'them' ? CUA_HANG_FABI.filter(c => !c.donVi) : CHI_NHANH.map(c => ({ id: c.id, ten: c.ten, khuVuc: 'TP.HCM' }))
+const dsCuaHang = (kieu: Nhap['kieu'], s: Pick<Session, 'cnThem'>): CuaHangFabi[] => kieu === 'them' ? cuaHangChuaDung(s) : CHI_NHANH.map(c => ({ id: c.id, ten: c.ten, khuVuc: 'TP.HCM' }))
 /** Kênh bán online trên FABi; KENH_SAN là sàn giao đồ ăn khấu trừ, nộp thuế thay cho hộ, doanh nghiệp bán qua sàn (T138) */
 const KENH_ONLINE = ['GrabFood', 'ShopeeFood', 'Be', 'Zalo', 'Facebook', 'CRM', 'Call center', 'Giao hàng']
 const KENH_SAN = ['GrabFood', 'ShopeeFood', 'Be']
@@ -63,7 +54,7 @@ const MO_TA_GOI: Record<LoaiHinh, Partial<Record<Goi, string>>> = {
 /** Danh sách chi nhánh FABi lên sổ, dùng được cho chuỗi vài chục chi nhánh: gom theo khu vực khi có từ 2 khu vực (tích cả nhóm, thu gọn nhóm),
  *  tìm (từ 6 chi nhánh), lọc đã chọn, chưa chọn, chọn tất cả theo kết quả đang lọc. Hộ kinh doanh (coChinh) chọn chi nhánh chính ngay trên dòng, bắt buộc */
 type CnFabi = { id: string; ten: string; khuVuc?: string }
-function DsChiNhanh({ ds, chon, chinh, doi, coChinh }: { ds: CnFabi[]; chon: string[]; chinh: string; doi: (chon: string[], chinh: string) => void; coChinh: boolean }) {
+export function DsChiNhanh({ ds, chon, chinh, doi, coChinh }: { ds: CnFabi[]; chon: string[]; chinh: string; doi: (chon: string[], chinh: string) => void; coChinh: boolean }) {
   const [tim, setTim] = useState('')
   const [loc, setLoc] = useState<'tat' | 'co' | 'chua'>('tat')
   const [dong, setDong] = useState<string[]>([])   // khu vực đang thu gọn
@@ -207,12 +198,12 @@ function moKhoiTao(n: Nhap) {
 
 /** Thêm đơn vị kế toán: tạo đơn vị mới gói Free, chưa có MST, rồi mở popup khởi tạo 4 bước; bước Chi nhánh chỉ có cửa hàng FABi chưa dùng kế toán */
 export function useThemDonVi() {
-  const { set } = useSession()
+  const { s, set } = useSession()
   const nav = useNavigate()
   return () => {
     const dvMoi: DonVi = { id: 'moi', ten: 'Đơn vị mới', viettat: 'DV', mst: '', goi: 'F', diaChi: '', diem: 0, nguoiDaiDien: '' }
     set({ goi: 'F', cheDo: 'TT152', donVi: dvMoi.id, dvMoi, khoiTao: true, chiNhanh: 'all' })
-    const moi = dsCuaHang('them').map(c => c.id)
+    const moi = dsCuaHang('them', s).map(c => c.id)
     moKhoiTao({ ...MAC_DINH, kieu: 'them', b: 0, mo: true, tenDv: '', chon: moi })
     nav('/app')
   }
@@ -266,7 +257,7 @@ export function OnboardFabi() {
   const goiChon = n.loai === 'hkd' ? (['F', 'S'] as Goi[]) : GOIS
   const goiY = goiGoiY(n.loai, n.ppHkd)
   const nhomGoiY = nhomTheoDt(DT_FABI)
-  const cuaHang = dsCuaHang(n.kieu)
+  const cuaHang = dsCuaHang(n.kieu, s)
   const anCh = n.kieu === 'them' ? CUA_HANG_FABI.length - cuaHang.length : 0   // cửa hàng FABi đã dùng kế toán ở đơn vị khác
   const cnChon = cuaHang.filter(c => n.chon.includes(c.id))
   const soCt = demCt(n.chon, n.dongBo, +HOM_NAY - 29 * 86400000)   // ước một tháng, hiện ở bước đồng bộ
@@ -280,7 +271,7 @@ export function OnboardFabi() {
   const bat = (ds: string[], k: string) => ds.includes(k) ? ds.filter(x => x !== k) : [...ds, k]
   const doiKenh = (k: string) => { const on = bat(n.kenhOnline, k); sua({ kenhOnline: on, kenhSan: n.kenhSan.filter(x => on.includes(x)) }) }
   const xong = () => {
-    set({ goi: n.goi, cheDo: n.cheDo, khoiTao: true, dongBoFabi: n.dongBo, ...(s.dvMoi && s.donVi === s.dvMoi.id ? { dvMoi: { ...s.dvMoi, ten: n.tenDv || s.dvMoi.ten, viettat: vietTat(n.tenDv) || s.dvMoi.viettat, mst: n.mst, diaChi: n.diaChi, goi: n.goi, diem: n.chon.length } } : {}),
+    set({ goi: n.goi, cheDo: n.cheDo, khoiTao: true, dongBoFabi: n.dongBo, ...(s.dvMoi && s.donVi === s.dvMoi.id ? { cnThem: { ...s.cnThem, [s.donVi]: cnChon.map(c => ({ id: c.id, ten: c.ten, khuVuc: c.khuVuc, tuNgay: n.ngayDauNam, banDau: true })) }, dvMoi: { ...s.dvMoi, ten: n.tenDv || s.dvMoi.ten, viettat: vietTat(n.tenDv) || s.dvMoi.viettat, mst: n.mst, diaChi: n.diaChi, goi: n.goi, diem: n.chon.length } } : {}),
       ngayDauNam: { ...s.ngayDauNam, [s.donVi]: n.ngayDauNam }, namTaiChinh: { ...s.namTaiChinh, [s.donVi]: Number(n.ngayDauNam.slice(-4)) } })
     try { localStorage.removeItem(KEY) } catch { /* bỏ qua */ }
     setN(MAC_DINH)

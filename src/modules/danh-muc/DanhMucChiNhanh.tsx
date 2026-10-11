@@ -1,0 +1,94 @@
+// Danh mục chi nhánh (T142): chi nhánh của đơn vị và chi nhánh lên sổ thêm từ cửa hàng FABi.
+// Thêm chi nhánh từ FABi: chỉ chọn cửa hàng chưa dùng kế toán, hỏi ngày bắt đầu lên sổ, có thể mở ngay màn Số dư ban đầu để khai quỹ tiền của chi nhánh mới.
+import { useMemo, useState } from 'react'
+import { createPortal } from 'react-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import type { Row, ScreenProps } from '../types'
+import { tenMan } from '../../app/registry'
+import { useSession, type CnThem } from '../../app/session'
+import { CHI_NHANH, DON_VI, HOM_NAY } from '../../data/mock'
+import { Icon } from '../../ui/Icon'
+import { Note, PageHead } from '../../ui/Page'
+import { Table } from '../../ui/Table'
+import { dmy } from '../../ui/format'
+import { cuaHangChuaDung } from '../onboarding/cua-hang-fabi'
+import { DsChiNhanh } from '../onboarding/OnboardFabi'
+
+export function DanhMucChiNhanh({ sc, mod }: ScreenProps) {
+  const { s, set, toast } = useSession()
+  const nav = useNavigate()
+  const [q] = useSearchParams()
+  const [mo, setMo] = useState(q.get('them') === '1')   // Bàn làm việc mở thẳng hộp thêm (?them=1)
+  const them = s.cnThem?.[s.donVi] ?? []
+  // đơn vị mẫu có sẵn chi nhánh mẫu; đơn vị mới tạo từ FABi chỉ có chi nhánh đã lên sổ
+  const coSan = DON_VI.some(d => d.id === s.donVi)
+  const rows: Row[] = useMemo(() => [
+    ...(coSan ? CHI_NHANH.map(c => ({ ma: c.id.toUpperCase(), ten: c.ten, kv: 'TP.HCM', kho: c.kho.join(', '), tu: '', nguon: 'FABi' })) : []),
+    ...them.map(c => ({ ma: c.id.toUpperCase(), ten: c.ten, kv: c.khuVuc, kho: `Kho ${c.ten.replace(/^Phố Mây /, '')}`, tu: c.banDau ? '' : c.tuNgay, nguon: 'FABi', moi: !c.banDau })),
+  ], [coSan, them])
+
+  const lenSo = (ds: CnThem[], khaiSoDu: boolean) => {
+    set({ cnThem: { ...s.cnThem, [s.donVi]: [...them, ...ds] } })
+    setMo(false)
+    toast(`Đã lên sổ ${ds.length} chi nhánh từ FABi`)
+    if (khaiSoDu) nav(`${s.goi === 'F' ? '/app/tien/so-du-ban-dau' : '/app/tong-hop/10-1-3'}?cnMoi=${ds.map(c => c.id).join(',')}`)
+  }
+
+  return (
+    <div className="page">
+      <PageHead crumb={[mod.ten]} title={tenMan(sc)}>
+        <button type="button" className="btn pri" onClick={() => setMo(true)}><Icon n="plus" className="ic sm" />Thêm chi nhánh từ FABi</button>
+      </PageHead>
+      <section className="card">
+        <Table cols={[
+          { k: 'ma', t: 'Mã', cls: 'code', w: 90 },
+          { k: 'ten', t: 'Tên chi nhánh', r: r => <>{r.ten}{r.moi && <span className="chip info" style={{ marginLeft: 8 }}>Mới lên sổ</span>}</> },
+          { k: 'kv', t: 'Khu vực', cls: 'dim' },
+          { k: 'kho', t: 'Kho', cls: 'dim' },
+          { k: 'tu', t: 'Lên sổ từ', r: r => r.tu || <span className="muted">Từ đầu</span> },
+          { k: 'nguon', t: 'Nguồn', cls: 'dim' },
+        ]} rows={rows} />
+      </section>
+      {mo && <HopThemChiNhanh onDong={() => setMo(false)} onLenSo={lenSo} />}
+    </div>
+  )
+}
+
+/** Hộp chọn cửa hàng FABi chưa dùng kế toán để lên sổ thành chi nhánh */
+function HopThemChiNhanh({ onDong, onLenSo }: { onDong: () => void; onLenSo: (ds: CnThem[], khaiSoDu: boolean) => void }) {
+  const { s } = useSession()
+  const ds = cuaHangChuaDung(s)
+  const [chon, setChon] = useState<string[]>(() => ds.map(c => c.id))
+  const [tuNgay, setTuNgay] = useState(dmy(HOM_NAY))
+  const [khaiSoDu, setKhaiSoDu] = useState(true)
+  const ok = chon.length > 0 && /^\d{2}\/\d{2}\/\d{4}$/.test(tuNgay)
+  return createPortal(
+    <div className="overlay ds-hop-nen" onMouseDown={e => { if (e.target === e.currentTarget) onDong() }}>
+      <div className="ds-hop dmcn-hop" role="dialog" aria-modal="true" aria-label="Thêm chi nhánh từ FABi">
+        <div className="ds-hop-dau"><b>Thêm chi nhánh từ FABi</b><span className="grow" />
+          <button type="button" className="btn ghost sm" title="Đóng" onClick={onDong}><Icon n="x" className="ic sm" /></button></div>
+        <div className="dmcn-than">
+          {ds.length ? <>
+            <p className="muted">Chỉ hiện cửa hàng FABi chưa dùng kế toán ở đơn vị nào. Tích cửa hàng muốn lên sổ.</p>
+            <DsChiNhanh ds={ds} chon={chon} chinh="" doi={moi => setChon(moi)} coChinh={false} />
+            <div className="dmcn-hang">
+              <div className="f"><label>Ngày bắt đầu lên sổ <em>*</em></label>
+                <input className="inp" value={tuNgay} placeholder="dd/mm/yyyy" onChange={e => setTuNgay(e.target.value)} />
+                <small className="muted">Doanh thu FABi của chi nhánh đồng bộ từ ngày này.</small>
+              </div>
+              <label className="row dmcn-tich"><input type="checkbox" checked={khaiSoDu} onChange={e => setKhaiSoDu(e.target.checked)} />
+                <span>Khai số dư ban đầu cho chi nhánh mới ngay sau khi lên sổ</span></label>
+            </div>
+          </> : <Note kind="ok" icon="check">Mọi cửa hàng trên FABi đã lên sổ kế toán.</Note>}
+        </div>
+        <div className="ds-chan">
+          <button type="button" className="btn" onClick={onDong}>Huỷ</button>
+          {ds.length > 0 && <button type="button" className="btn pri" disabled={!ok}
+            onClick={() => onLenSo(ds.filter(c => chon.includes(c.id)).map(c => ({ id: c.id, ten: c.ten, khuVuc: c.khuVuc, tuNgay })), khaiSoDu)}>
+            Lên sổ {chon.length} chi nhánh</button>}
+        </div>
+      </div>
+    </div>,
+    document.body,
+  )
+}

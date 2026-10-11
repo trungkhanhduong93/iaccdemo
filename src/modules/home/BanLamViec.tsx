@@ -8,6 +8,7 @@ import { Icon } from '../../ui/Icon'
 import { Card, PageHead, Pk } from '../../ui/Page'
 import { Table } from '../../ui/Table'
 import { money } from '../../ui/format'
+import { cuaHangChuaDung } from '../onboarding/cua-hang-fabi'
 
 export function BanLamViec({ sc }: ScreenProps) {
   const { s } = useSession()
@@ -17,8 +18,10 @@ export function BanLamViec({ sc }: ScreenProps) {
   const lech = LECH.filter(x => x.tt !== 'xong').length
   const noco = kieuGhiSo(s.goi) === 'noco'
   const ten = s.ten.split(' ').slice(-1)[0]
+  const chMoi = cuaHangChuaDung(s)   // cửa hàng FABi mới chưa lên sổ ở đơn vị nào (T142)
 
   const viec: { k: string; ic: string; b: string; sub: string; nut: string; to: string; ma?: string }[] = [
+    ...(chMoi.length ? [{ k: 'info', ic: 'chinhanh', b: `FABi có ${chMoi.length} cửa hàng mới chưa lên sổ kế toán`, sub: chMoi.map(c => c.ten).join(', '), nut: 'Lên sổ', to: '/app/danh-muc/chi-nhanh?them=1' }] : []),
     { k: 'err', ic: 'alert', b: `${loi} đơn POS chưa vào sổ`, sub: noco ? 'Nhóm món "Món mới tháng 10" chưa gắn tài khoản doanh thu' : 'Đơn huỷ sau khi chốt ca, chờ xác nhận', nut: noco ? 'Gắn tài khoản' : 'Xem đơn', to: noco ? '/app/danh-muc/1-2' : '/app/ban-hang/3-1-1' },
     { k: 'err', ic: 'scale', b: `${lech} dòng lệch đối soát`, sub: 'FABi với sổ, sổ với hoá đơn, sổ với tiền', nut: 'Xử lý', to: '/app/tien-ich/11-7', ma: '11.7' },
     { k: 'warn', ic: 'filein', b: '18 hoá đơn đầu vào chờ hạch toán, 5 hoá đơn lỗi', sub: 'Tải từ iPOS Invoice lúc 09:12 hôm nay', nut: 'Hạch toán', to: '/app/tien-ich/11-4', ma: '11.4' },

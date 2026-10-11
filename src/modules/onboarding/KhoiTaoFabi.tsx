@@ -6,7 +6,7 @@ import { useSession } from '../../app/session'
 import { CHI_NHANH, type DonVi } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
 import { Logo } from '../../ui/Logo'
-import { KEY, MAC_DINH, SO_KENH, TEN_FABI, luuNhap, type Nhap } from './OnboardFabi'
+import { DsChiNhanh, KEY, MAC_DINH, SO_KENH, TEN_FABI, luuNhap, type Nhap } from './OnboardFabi'
 
 export function KhoiTaoFabi() {
   const { s, set } = useSession()
@@ -17,15 +17,17 @@ export function KhoiTaoFabi() {
     return MAC_DINH
   })
   const [veFabi, setVeFabi] = useState(false)   // bấm Để sau: quay lại FABi, tiến độ vẫn lưu
+  const [chon, setChon] = useState<string[]>(() => CHI_NHANH.map(c => c.id))   // cửa hàng dùng thử, mặc định tất cả
   const sua = (p: Partial<Nhap>) => setN(x => ({ ...x, ...p }))
   const tenNguoi = s.ten.split(' ').slice(-2).join(' ')
   const vaoApp = () => {
     // đơn vị mới từ FABi, không đụng 3 đơn vị mẫu: tên theo FABi, chưa có mã số thuế, địa chỉ (FABi không có)
-    const dvMoi: DonVi = { id: 'fabi', ten: TEN_FABI, viettat: 'PM', mst: '', goi: 'F', diaChi: '', diem: CHI_NHANH.length, nguoiDaiDien: '' }
+    const dvMoi: DonVi = { id: 'fabi', ten: TEN_FABI, viettat: 'PM', mst: '', goi: 'F', diaChi: '', diem: chon.length, nguoiDaiDien: '' }
     set({ loggedIn: true, goi: 'F', cheDo: 'TT152', donVi: dvMoi.id, dvMoi, khoiTao: true, chiNhanh: 'all' })
     nav('/app')
   }
-  const dungThu = () => { luuNhap({ ...n, b: 0, mo: true }); vaoApp() }
+  // cửa hàng chọn dùng thử điền sẵn vào bước Chi nhánh của popup
+  const dungThu = () => { luuNhap({ ...n, b: 0, mo: true, chon }); vaoApp() }
 
   return (
     <div className="ktf">
@@ -86,12 +88,16 @@ export function KhoiTaoFabi() {
                 <li><b>Chứng từ tự sinh</b><span>Đơn bán trên FABi thành chứng từ Xuất bán POS, không phải nhập tay. Bạn chỉ thêm thu chi, mua hàng.</span></li>
               </ol>
             </div>
+            <div className="ktf-gt-ch">
+              <b>Chọn cửa hàng dùng thử</b>
+              <DsChiNhanh ds={CHI_NHANH.map(c => ({ id: c.id, ten: c.ten, khuVuc: 'TP.HCM' }))} chon={chon} chinh="" doi={moi => setChon(moi)} coChinh={false} />
+            </div>
             <div className="ktf-gt-hoi">
-              <span><b>Bạn có muốn dùng thử không?</b><small className="muted ktf-gt-chu">Dùng thử gói Free với cả {CHI_NHANH.length} cửa hàng trên FABi, miễn phí.</small></span>
+              <span><b>Bạn có muốn dùng thử không?</b><small className="muted ktf-gt-chu">Dùng thử gói Free với {chon.length} cửa hàng đã chọn, miễn phí. Thêm cửa hàng sau ở Danh mục chi nhánh.</small></span>
               <span className="grow" />
               <button className="btn lg" onClick={() => sua({ b: -2 })}>Quay lại</button>
               <button className="btn ghost lg" onClick={() => setVeFabi(true)}>Để sau</button>
-              <button className="btn pri lg" onClick={dungThu}>Dùng thử<Icon n="arrow" className="ic sm" /></button>
+              <button className="btn pri lg" disabled={!chon.length} onClick={dungThu}>Dùng thử<Icon n="arrow" className="ic sm" /></button>
             </div>
           </div>
         )}

@@ -2,10 +2,11 @@
 // Loại số dư theo gói và chế độ: gói Free chỉ số dư tiền (mở ở Thu chi); TT58, TT152 khai tiền, công nợ, tồn kho, không có tài khoản;
 // TT133, TT99 thêm số dư tài khoản và cột Số hiệu TK, Dư Nợ, Dư Có.
 import { useMemo, useState, type ChangeEvent } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import type { Col, Row, ScreenProps } from '../types'
 import { tenMan } from '../../app/registry'
 import { kieuGhiSo } from '../../app/plan'
-import { ngayDauNam, useSession } from '../../app/session'
+import { ngayDauNam, useSession, type CnThem } from '../../app/session'
 import { Icon } from '../../ui/Icon'
 import { PageHead } from '../../ui/Page'
 import { Table } from '../../ui/Table'
@@ -36,8 +37,11 @@ const QUY: Row[] = [
 ]
 
 /** Đối tượng chọn được ở dòng thêm mới theo loại số dư; khoá trùng là ma (tài khoản là tk) */
-function luaChon(tab: TabKey): Row[] {
-  if (tab === 'tien') return QUY
+/** Quỹ tiền mặt của chi nhánh lên sổ thêm từ FABi (T142) */
+const quyCua = (c: CnThem): Row => ({ ma: `TM-${c.id.toUpperCase()}`, ct: `Quỹ tiền mặt ${c.ten.replace(/^Phố Mây /, '')}`, kieu: 'Tiền mặt', cn: c.ten, tk: '1111' })
+
+function luaChon(tab: TabKey, quyThem: Row[] = []): Row[] {
+  if (tab === 'tien') return [...QUY, ...quyThem]
   if (tab === 'kh') return KHACH.filter(x => x.ma !== 'KL').map(x => ({ ma: x.ma, ct: x.ten, tk: '131', ten: TEN_TK['131'] }))
   if (tab === 'ncc') return NCC.map(x => ({ ma: x.ma, ct: x.ten, tk: '331', ten: TEN_TK['331'] }))
   if (tab === 'kho') return NVL.map(x => ({ ma: x.ma, ct: x.ten, dvt: x.dvt, kho: 'Kho tổng', tk: '152', ten: TEN_TK['152'], sl: 0 }))
@@ -84,7 +88,16 @@ export function SoDuBanDau({ sc, mod }: ScreenProps) {
   const { s, toast } = useSession()   // toast báo đã xoá dòng
   const noCo = kieuGhiSo(s.cheDo) === 'noco'
   // Số dư khai trực tiếp trên bảng: Thêm mới chèn dòng trống chọn đối tượng, ô số tiền gõ thẳng, xoá dòng có hỏi lại (T141)
-  const [all, setAll] = useState<Row[]>(() => soDuRows().map((r, i) => ({ ...r, id: i + 1 })))
+  const [q0] = useSearchParams()
+  const cnThem = s.cnThem?.[s.donVi] ?? []
+  const quyThem = cnThem.map(quyCua)
+  // Mở từ Thêm chi nhánh từ FABi (?cnMoi=id,id): chèn sẵn dòng quỹ tiền mặt của chi nhánh mới để gõ số dư (T142)
+  const cnMoi = (q0.get('cnMoi') ?? '').split(',').filter(Boolean)
+  const [all, setAll] = useState<Row[]>(() => {
+    const ds = soDuRows()
+    const them = cnThem.filter(c => cnMoi.includes(c.id)).map(c => ({ loai: 'tien', ...quyCua(c), no: 0, co: 0, du: 0, moi: true }))
+    return [...ds, ...them].map((r, i) => ({ ...r, id: i + 1 }))
+  })
   const [hoiXoa, setHoiXoa] = useState<Row | null>(null)
   const suaDong = (id: number, p: Row) => setAll(ds => ds.map(r => r.id === id ? { ...r, ...p } : r))
   const soTien = (v: string) => Number(v.replace(/[^\d-]/g, '')) || 0
@@ -94,7 +107,7 @@ export function SoDuBanDau({ sc, mod }: ScreenProps) {
     suaDong(r.id, { no, co, du: no - co })
   }
   const loai = loaiTheo(s.goi, noCo)
-  const [chon, setTab] = useState<TabKey>(loai[0])
+  const [chon, setTab] = useState<TabKey>(cnMoi.length ? 'tien' : loai[0])
   const tab = loai.includes(chon) ? chon : loai[0]
   const [q, setQ] = useState('')
   const themDong = () => {
@@ -130,7 +143,7 @@ export function SoDuBanDau({ sc, mod }: ScreenProps) {
     const oTen = (k: string): Col['r'] => r => {
       if (!r.moi || khoa(r)) return r[k]
       const daCo = new Set(all.filter(x => x.loai === tab && khoa(x)).map(khoa))
-      const con = luaChon(tab).filter(x => !daCo.has(x.ma))
+      const con = luaChon(tab, quyThem).filter(x => !daCo.has(x.ma))
       return con.length
         ? <Select className="inp sdb-chon" value="" onChange={e => { const x = con.find(o => o.ma === e.target.value); if (x) suaDong(r.id, x) }}>
             <option value="">Chọn {tab === 'tien' ? 'quỹ' : tab === 'tk' ? 'tài khoản' : tab === 'kho' ? 'hàng' : 'đối tượng'}</option>

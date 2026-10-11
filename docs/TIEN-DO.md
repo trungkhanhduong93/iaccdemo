@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T142 | Bổ sung chi nhánh khi đang dùng: Danh mục chi nhánh có Thêm chi nhánh từ FABi (chỉ cửa hàng chưa dùng kế toán), hỏi ngày bắt đầu lên sổ, mở khai số dư ban đầu cho chi nhánh mới; Bàn làm việc nhắc cửa hàng FABi mới chưa lên sổ | PhuongXT | Đang làm | Sửa `danh-muc/index.ts`, `home/` (Bàn làm việc), `app/session.tsx`, `onboarding/`, `tong-hop/SoDuBanDau.tsx` |
 | T138 | Màn onboard khi bấm từ FABi sang IACC: khởi tạo đơn vị kế toán, điền sẵn từ FABi (chi nhánh, kho, cách đồng bộ, số dư đầu kỳ) | PhuongXT | Dở dang | Popup khởi tạo dữ liệu 4 bước trong phần mềm (`OnboardFabi.tsx`, `Shell.tsx`) đã push, PhuongXT xem lại một lượt. Xem `2026-10-11-phuongxt-man-khoi-tao-fabi.md` |
 | T139 | Phiếu nhập, xuất, điều chuyển kho tự lấy mục chi phí, công việc ngầm định theo kho đã chọn | | Chờ | Tách từ T136. Kho đã có ô `mucCp`, `congViec` ở `truong-dm.ts` 1.8. Sửa `ChungTuForm.tsx` |
 | T140 | Đồng bộ POS có tích tự hạch toán theo phương thức thanh toán thì sinh phiếu thu thật vào danh sách Thu tiền mặt, Thu ngân hàng (hiện chỉ báo số phiếu bằng toast) | | Chờ | Tách từ T137. Phiếu thu Nợ TK của phương thức / Có 131, lấy từ `DS_PTTT` ở `danh-muc/data.ts` |
@@ -41,6 +40,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T142 | Bổ sung chi nhánh khi đang dùng: Danh mục chi nhánh có Thêm chi nhánh từ FABi (chỉ cửa hàng chưa dùng kế toán, ngày bắt đầu lên sổ, mở khai số dư quỹ tiền chi nhánh mới); Bàn làm việc nhắc cửa hàng FABi mới chưa lên sổ | PhuongXT | 11/10/2026 | `2026-10-11-phuongxt-them-chi-nhanh-fabi.md` |
 | T141 | Màn Số dư ban đầu theo gói, chế độ: gói Free chỉ số dư tiền (tab ở Thu chi); Standard tiền, công nợ, tồn kho; Plus, Pro thêm số dư tài khoản | PhuongXT | 11/10/2026 | `2026-10-11-phuongxt-so-du-ban-dau.md` |
 | T136 | Danh mục nhóm: nhóm đối tượng, nhóm kho, nhóm mục chi phí, nhóm công việc, nhóm hàng hoá. Hàng hoá chọn nhóm thì tự điền TK, mục chi phí, phương pháp tính giá, thuế suất theo nhóm. Kho thêm mục chi phí, công việc ngầm định, địa chỉ, SĐT, người liên hệ, ghi chú. Đối tượng và người dùng có ô bắt buộc tích "đã đồng ý chia sẻ thông tin cá nhân". Màn Người dùng có panel Thêm, Sửa như Danh mục | Trum | 11/10/2026 | [2026-10-11-trum-nhom-danh-muc-pttt](nhat-ky/2026-10-11-trum-nhom-danh-muc-pttt.md) |
 | T137 | Danh mục phương thức thanh toán (loại chứng từ tiền, TK Nợ, đối tượng, công việc, mục chi phí ngầm định). Ô phương thức thanh toán trên các phiếu bán hàng. Hộp đồng bộ hoá đơn POS có tích "Tự động hạch toán chứng từ theo phương thức thanh toán": Nợ TK của phương thức / Có 131, kéo chi tiết thì mỗi hoá đơn một phiếu, kéo tổng hợp thì mỗi ngày mỗi phương thức một phiếu | Trum | 11/10/2026 | [2026-10-11-trum-nhom-danh-muc-pttt](nhat-ky/2026-10-11-trum-nhom-danh-muc-pttt.md) |

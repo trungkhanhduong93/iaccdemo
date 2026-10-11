@@ -6790,3 +6790,14 @@ table.tbl {
 .sdb-chon { height: 28px; min-width: 260px; }
 .sdb-xoa { color: var(--muted); padding: 0 6px; }
 .sdb-xoa:hover { color: var(--red); }
+.ktf-gt-ch { margin-top: 20px; display: flex; flex-direction: column; gap: 8px; }
+.ktf-gt-ch > b { color: var(--ink); font-size: 14px; }
+.ktf-gt-ch .ktf-ds { max-height: 180px; }
+
+/* ── Thêm chi nhánh từ FABi (T142) ── */
+.dmcn-hop { width: 620px; }
+.dmcn-than { padding: 0 16px 14px; display: flex; flex-direction: column; gap: 12px; overflow: auto; }
+.dmcn-than > p { margin: 0; font-size: 13px; }
+.dmcn-hang { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 16px; align-items: start; }
+.dmcn-hang small { display: block; margin-top: 4px; font-size: 11.5px; }
+.dmcn-tich { gap: 8px; margin-top: 24px; font-size: 13px; cursor: pointer; }
