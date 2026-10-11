@@ -6731,3 +6731,14 @@ table.tbl {
 .ktf-gt-hoi { display: flex; align-items: center; gap: 8px; margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); }
 .ktf-gt-hoi > b { color: var(--ink); font-size: 15px; }
 @media (max-width: 900px) { .ktf-gt-luoi { grid-template-columns: 1fr; } .ktf-gt-hoi { flex-wrap: wrap; } }
+.ktf-dai { position: fixed; right: 20px; bottom: 20px; z-index: 40; max-width: calc(100% - 40px); display: flex; align-items: center; gap: 10px; padding: 10px 12px 10px 14px; border-radius: 12px; background: #fff; border: 1px solid var(--line); box-shadow: 0 10px 30px rgba(14, 26, 43, .16); color: var(--blue-d); font-size: 13px; }
+.ktf-dai b { color: var(--ink); }
+.ktf-dai .muted { font-size: 12px; }
+.ktf-dai-tien { width: 90px; height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
+.ktf-dai-tien i { display: block; height: 100%; background: var(--blue); }
+.ktf-pop-nen { position: fixed; inset: 0; z-index: 60; background: rgba(14, 26, 43, .38); display: flex; align-items: center; justify-content: center; padding: 20px; animation: fade .15s ease; }
+.ktf-pop { width: min(1120px, 100%); max-height: 100%; overflow: auto; background: var(--bg); border-radius: 14px; padding: 18px 22px 22px; box-shadow: 0 20px 60px rgba(14, 26, 43, .25); }
+.ktf-pop-dau { gap: 12px; margin-bottom: 14px; }
+.ktf-pop-dau .ktf-h { margin: 0; }
+.ktf-pop .ktf-ben { top: 0; }
+.ktf-pop .ktf-chao { margin: 20px auto; }

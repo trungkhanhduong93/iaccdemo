@@ -11,6 +11,7 @@ import { ModuleTabs } from './ModuleTabs'
 import { CommandPalette, ghiGanDay } from './CommandPalette'
 import { SidebarFlyout } from './SidebarFlyout'
 import { heSoZoom } from '../ui/zoom'
+import { OnboardFabi } from '../modules/onboarding/OnboardFabi'
 
 export function Shell() {
   const { s } = useSession()
@@ -40,6 +41,7 @@ export function Shell() {
       <ModuleTabs mod={mod} />
       <main className="main"><Outlet /></main>
       {palette && <CommandPalette onClose={() => setPalette(false)} />}
+      <OnboardFabi />
     </div>
   )
 }

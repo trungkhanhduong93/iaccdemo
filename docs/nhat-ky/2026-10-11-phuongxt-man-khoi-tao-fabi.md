@@ -22,6 +22,12 @@
   - Bước Chọn gói: hộ kinh doanh có Free (tính thuế theo doanh thu) và Standard (theo lợi nhuận), cả hai theo TT152. Doanh nghiệp chọn cả 4 gói: Free chỉ quản lý lãi lỗ, không theo thông tư (bên trong ghi sổ như TT152); Standard theo TT58; Plus, Pro chọn TT133 hoặc TT99.
   - Dưới thẻ gói liệt kê tính năng của gói đang chọn, gom theo phân hệ, đánh dấu Thêm ở tính năng gói liền trước chưa có (`TinhNangGoi`).
   - `src/app/che-do.ts`: `CHE_DO_HOP_LE` cho gói Standard thêm TT152, để hộ kinh doanh dùng Standard vẫn giữ TT152 khi tải lại. Ở Cấu hình hệ thống, gói Standard giờ chọn được TT58 hoặc TT152.
+- Sửa theo góp ý PhuongXT khi xem bản nháp (lượt 3):
+  - Màn chào: khối "Thông tin từ FABi" gồm thương hiệu, cửa hàng, kênh bán, món; bỏ kho (FABi không có kho), bỏ câu diễn giải.
+  - Nút "Để sau" là quay lại FABi: hiện màn "Đang quay lại FABi", bản mẫu có nút mở lại.
+  - Màn giới thiệu giao diện kế toán: khung giao diện thu nhỏ đánh số 4 vùng, hỏi "Bạn có muốn dùng thử không?".
+  - Bấm Dùng thử thì vào phần mềm gói Free (TT152). 6 bước khởi tạo thành popup đè lên phần mềm (`src/modules/onboarding/OnboardFabi.tsx`, đặt trong `src/app/Shell.tsx`). Đóng popup (nút X, Esc) thì còn thẻ nhắc nổi góc dưới phải, bấm Tiếp tục mở lại đúng bước. Xong popup thì đổi sang gói, chế độ đã chọn.
+  - Đang làm dở mà mở lại `/khoi-tao-fabi` thì vào thẳng phần mềm, mở popup đúng bước.
 - Lối vào bản mẫu: liên kết "Thử mở từ FABi" dưới form đăng nhập (`src/modules/auth/Login.tsx`).
 - CSS mục cuối `app.css`: "Khởi tạo khi mở từ FABi (T138)", lớp `.ktf-*`.
 
@@ -31,6 +37,7 @@
 - `python tools/kiem_tra.py --nhanh`: Không có lỗi. Máy Windows phải đặt `PYTHONIOENCODING=utf-8`, không thì lỗi in chữ.
 - `kiem_van.py` cho `KhoiTaoFabi.tsx`, `Login.tsx`: sạch.
 - Bấm thử trên trình duyệt hết luồng gói Free, đồng bộ chi tiết: phiên lưu `F`, `TT152`, `chiTiet`, bản lưu dở bị xoá, vào Bàn làm việc.
+- Lượt 3: Dùng thử vào Bàn làm việc gói Free có popup; đóng bằng Esc, tải lại trang vẫn còn thẻ nhắc bước 2/6; đi hết popup với doanh nghiệp thì phiên đổi sang `PL`, `TT133`, popup và thẻ nhắc tắt; đang dở mở lại `/khoi-tao-fabi` thì vào phần mềm, popup mở bước 3.
 - Chưa bấm thử luồng gói Plus, Pro, màn hẹp dưới 900px.
 
 ## Dở dang, việc tiếp theo
