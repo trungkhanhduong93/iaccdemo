@@ -4,13 +4,17 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T145.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T149.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T146 | Vẽ lại sơ đồ Khởi tạo danh mục kiểu làn như Thu chi, 7 làn đánh số theo thứ tự phụ thuộc (nền tảng, chi phí, kho, hàng hoá, đối tượng, tiền, hạch toán); chuyển danh mục Tài sản cố định 1.13 sang phân hệ TSCĐ | Trum | Đang làm | Điều phối anti. Sửa `danh-muc/quy-trinh.ts`, `danh-muc/index.ts`, `tscd/index.ts`, `QuyTrinhScreen.tsx`, `SidebarFlyout.tsx` |
+| T147 | Danh mục lọc theo thông tư chọn ở Hệ thống (gói và thông tư chọn riêng): thông tư không ghi Nợ/Có (TT152, TT58) ẩn Hệ thống tài khoản, Bút toán tự động, cột tài khoản | Trum | Đang làm | Điều phối anti. Sửa `registry.ts`, `danh-muc/index.ts`, `CatalogScreen.tsx` |
+| T148 | Danh mục: bỏ trường Thuộc nhóm ở 5 danh mục nhóm; tài khoản thêm ô tích Tổng hợp (ô chọn cha đổi tên Thuộc tài khoản); cố định độ rộng cột khi chuyển danh mục; nút Tuỳ chọn cột cho mọi danh mục, đủ trường của form | Trum | Đang làm | Điều phối anti. Sửa `CatalogScreen.tsx`, `HeThongTaiKhoan.tsx`, `truong-dm.ts`, `danh-muc/data.ts`, `app.css` |
+| T149 | Mọi ô ngày còn gõ tay dd/mm/yyyy dùng lịch `LichDon`: form danh mục, thẻ phân bổ, Ngày đầu năm ở Hệ thống và các màn khác | Trum | Đang làm | Điều phối anti. Sửa `CatalogScreen.tsx`, `the-phan-bo.tsx`, `HeThong.tsx`, `ChonNgay.tsx`. Không đụng `OnboardFabi.tsx`, `KhoiTaoFabi.tsx` của T138 |
 | T138 | Màn onboard khi bấm từ FABi sang IACC: khởi tạo đơn vị kế toán, điền sẵn từ FABi (chi nhánh, kho, cách đồng bộ, số dư đầu kỳ) | PhuongXT | Dở dang | Popup khởi tạo dữ liệu 4 bước trong phần mềm (`OnboardFabi.tsx`, `Shell.tsx`) đã push, PhuongXT xem lại một lượt. Xem `2026-10-11-phuongxt-man-khoi-tao-fabi.md` |
 | T139 | Phiếu nhập, xuất, điều chuyển kho tự lấy mục chi phí, công việc ngầm định theo kho đã chọn | | Chờ | Tách từ T136. Kho đã có ô `mucCp`, `congViec` ở `truong-dm.ts` 1.8. Sửa `ChungTuForm.tsx` |
 | T140 | Đồng bộ POS có tích tự hạch toán theo phương thức thanh toán thì sinh phiếu thu thật vào danh sách Thu tiền mặt, Thu ngân hàng (hiện chỉ báo số phiếu bằng toast) | | Chờ | Tách từ T137. Phiếu thu Nợ TK của phương thức / Có 131, lấy từ `DS_PTTT` ở `danh-muc/data.ts` |
