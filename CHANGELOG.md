@@ -4,7 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 11/10/2026
 
-- T142: Danh mục chi nhánh có nút Thêm chi nhánh từ FABi: chọn cửa hàng FABi chưa dùng kế toán, ngày bắt đầu lên sổ, mở khai số dư quỹ tiền của chi nhánh mới. Bàn làm việc nhắc cửa hàng FABi mới chưa lên sổ.
+- T142: Danh mục chi nhánh có nút Thêm chi nhánh từ FABi: chọn cửa hàng FABi chưa dùng kế toán (lên sổ từ ngày đầu năm tài chính), mở khai số dư quỹ tiền của chi nhánh mới. Bàn làm việc nhắc cửa hàng FABi mới chưa lên sổ.
 - T138: Dùng thử từ FABi chọn được cửa hàng dùng thử ngay ở màn giới thiệu.
 - T138: Thêm đơn vị kế toán (menu đơn vị, màn Chọn đơn vị) mở popup Khởi tạo dữ liệu 4 bước như khi dùng thử từ FABi; bước Chi nhánh chỉ có cửa hàng FABi chưa dùng kế toán.
 - T138: Dùng thử từ FABi tạo một đơn vị mới, không đổi 3 đơn vị mẫu: tên theo FABi, thanh trên ghi Chưa khai mã số thuế; bước Đơn vị nhập mã số thuế rồi tra cứu tên, địa chỉ; khởi tạo xong đơn vị mới có đủ mã số thuế, tên.
