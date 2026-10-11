@@ -73,6 +73,7 @@ export interface Nhap {
   goi: Goi
   cheDo: CheDo
   traCuu: boolean
+  ngayDauNam: string   // ngày bắt đầu năm tài chính, ghi vào Thông tin đơn vị
   ngayBatDau: string
   chon: string[]       // id chi nhánh lên sổ
   khoFree: Record<string, string>   // gói Free: mỗi chi nhánh một kho
@@ -83,7 +84,7 @@ export interface Nhap {
   tienGui: string
 }
 export const MAC_DINH: Nhap = {
-  b: -2, mo: false, loai: 'dn', nhom: nhomTheoDt(DT_FABI), ppHkd: 'loiNhuan', goi: goiGoiY('dn', 'loiNhuan'), cheDo: cheDoMoi('dn', goiGoiY('dn', 'loiNhuan')), traCuu: true, ngayBatDau: '01/10/2026', chon: CHI_NHANH.map(c => c.id),
+  b: -2, mo: false, loai: 'dn', nhom: nhomTheoDt(DT_FABI), ppHkd: 'loiNhuan', goi: goiGoiY('dn', 'loiNhuan'), cheDo: cheDoMoi('dn', goiGoiY('dn', 'loiNhuan')), traCuu: true, ngayDauNam: '01/01/2026', ngayBatDau: '01/10/2026', chon: CHI_NHANH.map(c => c.id),
   khoFree: Object.fromEntries(CHI_NHANH.map(c => [c.id, c.kho[0]])), dongBo: 'kenh', gioChot: '23:30',
   soDu: 'nhanh', tienMat: '', tienGui: '',
 }
@@ -109,7 +110,7 @@ const so = (n: number) => n.toLocaleString('vi-VN')
 
 /** Popup khởi tạo và thẻ nhắc, đặt trong Shell. Không có tiến độ khởi tạo từ FABi thì không hiện gì */
 export function OnboardFabi() {
-  const { set } = useSession()
+  const { s, set } = useSession()
   const nav = useNavigate()
   const [n, setN] = useState<Nhap>(docNhap)
   const sua = (p: Partial<Nhap>) => setN(x => ({ ...x, ...p }))
@@ -146,7 +147,8 @@ export function OnboardFabi() {
 
   const doiChon = (id: string) => sua({ chon: n.chon.includes(id) ? n.chon.filter(x => x !== id) : [...n.chon, id] })
   const xong = () => {
-    set({ goi: n.goi, cheDo: n.cheDo, khoiTao: true, dongBoFabi: n.dongBo })
+    set({ goi: n.goi, cheDo: n.cheDo, khoiTao: true, dongBoFabi: n.dongBo,
+      ngayDauNam: { ...s.ngayDauNam, [s.donVi]: n.ngayDauNam }, namTaiChinh: { ...s.namTaiChinh, [s.donVi]: Number(n.ngayDauNam.slice(-4)) } })
     try { localStorage.removeItem(KEY) } catch { /* bỏ qua */ }
     setN(MAC_DINH)
     nav('/app')
@@ -262,7 +264,12 @@ export function OnboardFabi() {
                             <div className="row"><input className="inp" defaultValue="0319990001" />
                               <button className="btn" onClick={() => sua({ traCuu: true })}>Tra cứu</button></div>
                           </div>
-                          <div className="f c2"><label>Ngày bắt đầu dùng sổ</label>
+                          <div className="f"><label>Ngày bắt đầu năm tài chính</label>
+                            <Select className="inp" value={n.ngayDauNam} onChange={e => sua({ ngayDauNam: e.target.value })}>
+                              {['01/01/2026', '01/04/2026', '01/07/2026', '01/10/2026'].map(d => <option key={d}>{d}</option>)}
+                            </Select>
+                          </div>
+                          <div className="f"><label>Ngày bắt đầu dùng sổ</label>
                             <Select className="inp" value={n.ngayBatDau} onChange={e => sua({ ngayBatDau: e.target.value })}>
                               <option>01/10/2026</option><option>01/09/2026</option><option>01/01/2026</option>
                             </Select>
