@@ -1,14 +1,18 @@
 // Phân hệ Kho hàng: 10 phiếu kế thừa iPOS Inventory đứng đầu, sau đó tính giá vốn, kiểm kê, báo cáo kho
-import type { ModuleDef, ScreenDef, VoucherCfg } from '../types'
+import type { ModuleDef, ReportCfg, ScreenDef, VoucherCfg } from '../types'
 import { tuExcel } from '../types'
 import { quyTrinh } from './quy-trinh'
 import { XuatNhapTon } from './XuatNhapTon'
-import { dinhMucTon, nhapXuat, theKho, tonBanDau, tonTucThoi } from './data'
+import { dinhMucTon, nhapXuat, tonBanDau, tonTucThoi } from './data'
+import { TheKho } from './TheKho'
 import { SO_BO_SUNG } from '../bao-cao/so-bo-sung'
 import { mauDieuChinh, mauKiemKe } from './dieu-chinh'
 import { PhieuSanXuat } from './PhieuSanXuat'
 import { CongThucScreen } from './CongThuc'
 import { cauHinhSx, type LoaiSx } from './san-xuat'
+import { chiTietKho, tongHopKho, tongHopTra, type NguonPhieu } from './bao-cao'
+import banHang from '../ban-hang'
+import muaHang from '../mua-hang'
 
 const phieu = (prefix: string, them: string, dienGiai: string[], noCo: VoucherCfg['noCo'], doiTuong: VoucherCfg['doiTuong'] = 'none', nhan?: string): Partial<ScreenDef> =>
   ({ voucher: { prefix, them, dienGiai, noCo, doiTuong, nhan, dong: 'nvl', tien: [0, 0], thue: 0, nguon: 'IVT', soTT58: 'Sổ chi tiết vật liệu, dụng cụ, hàng hoá' } })
@@ -48,6 +52,24 @@ const xepSanXuat = (ds: ScreenDef[]) => {
   return [...con.slice(0, i), ...sx, ...con.slice(i)]
 }
 
+/** Báo cáo nhập, xuất, hàng trả ngoài Excel (T157): đọc phiếu của các màn chứng từ lúc vẽ báo cáo; gói Standard, Plus, Pro, mọi thông tư.
+ *  Điều chuyển chưa đưa vào vì đang tách thành xuất, nhập điều chuyển (T155). Mã trên đường dẫn 5-2-9 tới 5-2-14 là khoá cấu hình mẫu trong bao-cao/danh-sach.ts */
+const phieuCua = (m: ModuleDef, ma: string, loai: string): NguonPhieu => {
+  const sc = m.screens.find(x => x.code === ma)!
+  return { loai, cfg: sc.voucher!, seed: ma, di: `${m.key}/${sc.slug}` }
+}
+const NHAP = () => [phieuCua(muaHang, '4.1.1', 'Nhập mua'), phieuCua(kho, '5.1.1', 'Nhập khác'), phieuCua(banHang, '3.1.4', 'Khách trả lại')]
+const XUAT = () => [phieuCua(kho, '5.1.2', 'Xuất bán POS'), phieuCua(kho, '5.1.2-2', 'Xuất bán hàng'), phieuCua(kho, '5.1.2-3', 'Xuất huỷ'),
+  phieuCua(kho, '5.1.2-4', 'Xuất khác'), phieuCua(muaHang, '4.1.4', 'Trả nhà cung cấp')]
+const TRA = () => [phieuCua(banHang, '3.1.4', 'Khách trả lại'), phieuCua(muaHang, '4.1.4', 'Trả nhà cung cấp')]
+const baoCaoMoi = (slug: string, ten: string, report: Omit<ReportCfg, 'kieu'>): ScreenDef =>
+  ({ slug, ten, nhom: 'Sổ sách, báo cáo', kind: 'report', goi: ['S', 'PL', 'PR'], report: { kieu: 'bangke', theoCn: true, ...report } })
+const BAO_CAO_MOI = [
+  baoCaoMoi('5-2-9', 'Tổng hợp nhập kho', tongHopKho(NHAP, ['Nhập mua', 'Nhập khác', 'Khách trả lại'])), baoCaoMoi('5-2-10', 'Chi tiết nhập kho', chiTietKho(NHAP)),
+  baoCaoMoi('5-2-11', 'Tổng hợp xuất kho', tongHopKho(XUAT, ['Xuất bán POS', 'Xuất bán hàng', 'Xuất huỷ', 'Xuất khác', 'Trả nhà cung cấp'])), baoCaoMoi('5-2-12', 'Chi tiết xuất kho', chiTietKho(XUAT)),
+  baoCaoMoi('5-2-13', 'Tổng hợp hàng trả lại', tongHopTra(TRA)), baoCaoMoi('5-2-14', 'Chi tiết hàng trả lại', chiTietKho(TRA)),
+]
+
 /** Nhãn ngắn trên thanh tab */
 const NGAN: Record<string, string> = { '5.1.2': 'Xuất bán POS', '5.1.2-2': 'Xuất bán hàng', '5.1.2-3': 'Xuất huỷ', '5.1.2-4': 'Xuất khác', '5.1.1': 'Nhập khác', '5.1.4': 'Điều chuyển', '9.1.3': 'Công thức chế biến', '5.1.3': 'Xuất chế biến', '5.1.5': 'Công thức sơ chế', '5.1.6': 'Xuất sơ chế', '5.1.7': 'Tính giá vốn', '5.1.8': 'Giá thành đơn giản', '5.1.10': 'Kiểm kê', '5.1.11': 'Bổ sung giá nhập', '5.1.12': 'Tồn kho ban đầu', '5.1.13': 'Định mức tồn' }
 
@@ -58,7 +80,7 @@ const kho: ModuleDef = {
   mota: 'Phiếu kho lấy từ iPOS Inventory; giá vốn, thẻ kho, tồn kho IACC Cloud tự tính',
   quyTrinh,
   // Màn Điều chỉnh kho đứng ngay sau Kiểm kê (T126); nhóm sản xuất xếp theo IVT (T152)
-  screens: sauKiemKe(xepSanXuat(tuExcel(4, {
+  screens: [...sauKiemKe(xepSanXuat(tuExcel(4, {
     '5.1.2': phieu('XB', 'Thêm phiếu xuất bán POS', ['Xuất kho theo định lượng món bán trong ngày'], [['632', '152', 'Giá vốn xuất bán theo định lượng']], 'cn', 'Chi nhánh'),
     '5.1.2-2': phieu('XBH', 'Thêm phiếu xuất bán hàng', ['Xuất bán nguyên liệu cho đối tác', 'Xuất bán set quà Trung thu'], [['632', '156', 'Giá vốn hàng bán']], 'kh', 'Khách hàng'),
     '5.1.2-3': phieu('XH', 'Thêm phiếu xuất huỷ', ['Huỷ rau héo cuối ngày', 'Huỷ thịt quá hạn bảo quản', 'Huỷ bánh phở hỏng'], [['632', '152', 'Hao hụt, huỷ hàng hỏng']]),
@@ -77,7 +99,7 @@ const kho: ModuleDef = {
     '5.1.11': { voucher: { prefix: 'BSG', doiTuong: 'ncc', nhan: 'Nhà cung cấp', them: 'Thêm phiếu bổ sung giá', dong: 'nvl', tien: [0, 0], thue: 0, dienGiai: ['Bổ sung giá cho phiếu nhập chưa có giá'], noCo: [['152', '331', 'Bổ sung giá nhập']] } },
     '5.1.12': { kind: 'catalog', catalog: tonBanDau },
     '5.1.13': { kind: 'catalog', catalog: dinhMucTon },
-    '5.2.1': { report: { kieu: 'bangke', ...theKho } },
+    '5.2.1': { kind: 'custom', comp: TheKho },   // đọc mặt hàng, kho, kỳ trên đường dẫn khi mở từ xuất nhập tồn (T157)
     '5.2.2': { report: { kieu: 'bangke', ...nhapXuat } },
     '5.2.3': { kind: 'custom', comp: XuatNhapTon },
     '5.2.4': { report: { kieu: 'bangke', ...tonTucThoi } },
@@ -85,6 +107,6 @@ const kho: ModuleDef = {
     '5.2.6': { report: { kieu: 'dinhmuc' } },
     '5.2.7': { report: { kieu: 'dinhmuc' } },
     '5.2.8': { report: SO_BO_SUNG['5.2.8'] },
-  }, NGAN))),
+  }, NGAN))), ...BAO_CAO_MOI],
 }
 export default kho

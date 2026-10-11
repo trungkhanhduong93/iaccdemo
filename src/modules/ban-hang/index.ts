@@ -1,11 +1,18 @@
 // Phân hệ Kế toán bán hàng
-import type { ModuleDef } from '../types'
+import type { ModuleDef, ReportCfg, ScreenDef } from '../types'
 import { tuExcel } from '../types'
 import { quyTrinh } from './quy-trinh'
 import { ChungTuBanHang, NGOAI_POS } from './ChungTuBanHang'
 import { DoiSoat } from '../tien-ich/DoiSoat'
 import { baoCaoBanHang, baoCaoDoanhThu } from './data'
 import { SO_BO_SUNG } from '../bao-cao/so-bo-sung'
+import { banHangTheoNgay, chiTietBanHang, tongHopBanHang } from './bao-cao'
+
+/** Báo cáo bán hàng ngoài Excel (T157): lấy dòng món của chứng từ Xuất bán POS, chi nhánh theo thanh trên; gói Standard, Plus, Pro, mọi thông tư.
+ *  Mã trên đường dẫn 3-2-6, 3-2-7, 3-2-8 là khoá cấu hình mẫu trong bao-cao/danh-sach.ts */
+const baoCaoMoi = (slug: string, ten: string, report: Omit<ReportCfg, 'kieu'>): ScreenDef =>
+  ({ slug, ten, nhom: 'Sổ sách, báo cáo', kind: 'report', goi: ['S', 'PL', 'PR'], report: { kieu: 'bangke', theoCn: true, ...report } })
+const BAO_CAO_MOI = [baoCaoMoi('3-2-6', 'Bán hàng theo ngày', banHangTheoNgay), baoCaoMoi('3-2-7', 'Tổng hợp bán hàng', tongHopBanHang), baoCaoMoi('3-2-8', 'Chi tiết bán hàng', chiTietBanHang)]
 
 /** Nhãn ngắn trên thanh tab */
 const NGAN: Record<string, string> = { '3.1.1': 'Xuất bán POS', '3.1.7': 'Bán hàng', '3.1.2': 'Hoá đơn bán hàng', '3.1.3': 'Bán nội bộ', '3.1.4': 'Hàng bán trả lại', '3.1.5': 'Hoá đơn điện tử', '3.1.6': 'Điều chỉnh, thay thế' }
@@ -14,7 +21,7 @@ const banHang: ModuleDef = {
   key: 'ban-hang', ten: 'Kế toán bán hàng', ngan: 'Bán hàng', icon: 'cart', mod: 2,
   mota: 'Doanh thu tự về từ FABi, hoá đơn điện tử, hàng bán trả lại',
   quyTrinh,
-  screens: tuExcel(2, {
+  screens: [...tuExcel(2, {
     // Xuất bán POS: chứng từ chỉ đổ về từ phần mềm bán hàng, không lập tay (T52)
     '3.1.1': { kind: 'custom', comp: ChungTuBanHang, ten: 'Xuất bán POS' },
     // Bán hàng lập tay ngoài POS: tiệc, khách công ty; từ gói Plus (T52)
@@ -34,6 +41,6 @@ const banHang: ModuleDef = {
     '3.2.3': { report: { kieu: 'bangke', ...baoCaoDoanhThu } },
     '3.2.4': { report: { kieu: 'bangke' } },
     '3.2.5': { report: SO_BO_SUNG['3.2.5'] },
-  }, NGAN),
+  }, NGAN), ...BAO_CAO_MOI],
 }
 export default banHang

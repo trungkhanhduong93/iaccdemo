@@ -28,9 +28,10 @@ export interface CauHinhBC {
   loc?: LocBC[]                             // bộ lọc riêng (ngoài kỳ, chi nhánh)
   nhomDuoc?: string[]                       // khoá cột được gom nhóm
   anKhongPS?: boolean                       // có tuỳ chọn "Ẩn dòng không phát sinh"
+  phanTrang?: number                        // báo cáo nhiều dòng: tờ trên màn hình chỉ vẽ ngần ấy dòng mỗi trang, in và xuất vẫn đủ dòng (T157)
 }
 
-const baoCao = (kho: Kho, opt?: { loc?: LocBC[]; nhomDuoc?: string[]; anKhongPS?: boolean }): CauHinhBC => ({ loai: 'baocao', kho, ...opt })
+const baoCao = (kho: Kho, opt?: { loc?: LocBC[]; nhomDuoc?: string[]; anKhongPS?: boolean; phanTrang?: number }): CauHinhBC => ({ loai: 'baocao', kho, ...opt })
 
 const ALL: CheDo[] = ['TT152', 'TT58', 'TT133', 'TT99']
 
@@ -54,6 +55,10 @@ export const CAU_HINH_BC: Record<string, CauHinhBC> = {
   '3.2.3': baoCao('ngang', { anKhongPS: true }),
   '3.2.4': baoCao('ngang', { loc: [{ k: 'doiTuong', nhan: 'Đối tượng', kieu: 'chon' }], nhomDuoc: ['doiTuong', 'ngay'], anKhongPS: true }),
   '3.2.5': { loai: 'so', kho: 'ngang', anTam: ['TT133', 'TT99'], th: [1, 2, 3], kyHieu: { TT152: 'S2a-HKD', TT58: 'S1-DNSN', TT133: 'S16-DNN', TT99: 'S35-DN' }, ten: { TT152: 'Sổ doanh thu bán hàng hoá, dịch vụ', TT58: 'Sổ doanh thu bán hàng hoá, dịch vụ', TT133: 'Sổ chi tiết bán hàng', TT99: 'Sổ chi tiết bán hàng' }, congCot: ['dt', 'vat', 'tong'] },
+  // Bán hàng theo ngày, tổng hợp, chi tiết bán hàng (T157)
+  '3.2.6': baoCao('doc', { anKhongPS: true }),
+  '3.2.7': baoCao('ngang', { loc: [{ k: 'nhom', nhan: 'Nhóm hàng', kieu: 'chon' }], nhomDuoc: ['nhom'], anKhongPS: true }),
+  '3.2.8': baoCao('ngang', { nhomDuoc: ['ngay', 'so', 'ten'], anKhongPS: true, phanTrang: 100 }),
   '4.2.1': baoCao('ngang', { loc: [{ k: 'doiTuong', nhan: 'Nhà cung cấp', kieu: 'chon' }, { k: 'nguon', nhan: 'Nguồn', kieu: 'chon' }], nhomDuoc: ['doiTuong', 'ngay'], anKhongPS: true }),
   '4.2.2': baoCao('doc', { anKhongPS: true }),
   '4.2.4': baoCao('doc', { anKhongPS: true }),
@@ -66,14 +71,21 @@ export const CAU_HINH_BC: Record<string, CauHinhBC> = {
     nhomDuoc: ['ncc', 'pttt', 'ngay'],
     anKhongPS: true,
   }),
-  '5.2.1': { loai: 'so', kho: 'doc', anTam: ALL, kyHieu: { TT133: 'S08-DNN', TT99: 'S12-DN' }, congCot: ['nhap', 'xuat'] },
+  '5.2.1': baoCao('doc', { anKhongPS: true }),   // thẻ kho, xuất nhập tồn là báo cáo quản trị kho kiểu iPOS Inventory, mọi thông tư, không ký hiệu mẫu, Trum chốt 11/10/2026 (T157)
   '5.2.2': baoCao('ngang', { loc: [{ k: 'kho', nhan: 'Kho', kieu: 'chon' }, { k: 'loai', nhan: 'Loại phiếu', kieu: 'chon' }], nhomDuoc: ['kho', 'loai', 'ngay'], anKhongPS: true }),
-  '5.2.3': { loai: 'so', kho: 'ngang', anTam: ['TT58', 'TT133', 'TT99'], kyHieu: { TT133: 'S07-DNN', TT99: 'S11-DN' }, anKhongPS: true },
+  '5.2.3': baoCao('ngang', { anKhongPS: true }),
   '5.2.4': baoCao('doc', { loc: [{ k: 'kho', nhan: 'Kho', kieu: 'chon' }], nhomDuoc: ['kho'], anKhongPS: true }),
   '5.2.5': baoCao('ngang', { anKhongPS: true }),
   '5.2.6': baoCao('ngang', { anKhongPS: true }),
   '5.2.7': baoCao('ngang', { anKhongPS: true }),
   '5.2.8': { loai: 'so', kho: 'ngang', anTam: ['TT152', 'TT133', 'TT99'], th: [2, 4], kyHieu: { TT152: 'S2d-HKD', TT58: 'S2c-DNSN', TT133: 'S06-DNN', TT99: 'S10-DN' } },
+  // Tổng hợp, chi tiết nhập kho, xuất kho, hàng trả lại (T157)
+  '5.2.9': baoCao('ngang', { anKhongPS: true }),
+  '5.2.10': baoCao('ngang', { loc: [{ k: 'kho', nhan: 'Kho', kieu: 'chon' }, { k: 'loai', nhan: 'Loại phiếu', kieu: 'chon' }], nhomDuoc: ['kho', 'loai', 'ngay'], anKhongPS: true, phanTrang: 100 }),
+  '5.2.11': baoCao('ngang', { anKhongPS: true }),
+  '5.2.12': baoCao('ngang', { loc: [{ k: 'kho', nhan: 'Kho', kieu: 'chon' }, { k: 'loai', nhan: 'Loại phiếu', kieu: 'chon' }], nhomDuoc: ['kho', 'loai', 'ngay'], anKhongPS: true, phanTrang: 100 }),
+  '5.2.13': baoCao('doc', { loc: [{ k: 'loai', nhan: 'Loại', kieu: 'chon' }], nhomDuoc: ['loai'], anKhongPS: true }),
+  '5.2.14': baoCao('ngang', { loc: [{ k: 'kho', nhan: 'Kho', kieu: 'chon' }, { k: 'loai', nhan: 'Loại phiếu', kieu: 'chon' }], nhomDuoc: ['kho', 'loai', 'ngay'], anKhongPS: true, phanTrang: 100 }),
   '6.2.1': baoCao('ngang', { loc: [{ k: 'doiTuong', nhan: 'Người bán', kieu: 'chon' }], nhomDuoc: ['doiTuong', 'ngay'], anKhongPS: true }),
   '6.2.2': baoCao('ngang', { nhomDuoc: ['ngay'], anKhongPS: true }),
   '6.2.3': { loai: 'tokhai', kho: 'doc', anTam: ALL, khoa: true },

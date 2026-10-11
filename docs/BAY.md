@@ -42,3 +42,9 @@ Lỗi đã từng làm mất thời gian, kèm cách tránh. Đọc trước khi
 - Hiện tượng: `python tools/kiem_tra.py --nhanh` dừng ở `Locator.dblclick: Timeout 30000ms exceeded`, log ghi `<aside class="pn-hop">… intercepts pointer events`.
 - Nguyên nhân: bộ kiểm coi mọi `.voucher-top` có dòng `tr.click` là danh sách chứng từ, bấm dòng rồi bấm đúp. Ở danh mục, bấm dòng mở panel Sửa che mất bảng.
 - Cách tránh: màn không phải danh sách chứng từ dùng class riêng (danh mục dùng `dm-bang`), chỉ mượn khung trang `.page-voucher`.
+
+## Báo cáo nhiều dòng mở chậm vì `ToGiay` vẽ bảng 2 lần (T157)
+
+- Hiện tượng: Chi tiết bán hàng tháng 9/2026 mở mất 6,64 giây, DOM có 4.862 thẻ `tr` cho 2.430 dòng.
+- Nguyên nhân: `src/ui/bao-cao/ToGiay.tsx` vẽ tờ liền trên màn hình và thêm khung đo ẩn `bc-do` để chia trang in, cả hai đều đủ mọi dòng.
+- Cách tránh: báo cáo có thể quá vài trăm dòng thì khai `phanTrang` trong `CAU_HINH_BC`; tờ xem chỉ vẽ trang đang xem, khung đo chỉ vẽ khi in.

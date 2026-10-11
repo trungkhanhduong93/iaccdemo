@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 11/10/2026
 
+- T157: Bán hàng có thêm báo cáo Bán hàng theo ngày, Tổng hợp bán hàng, Chi tiết bán hàng. Kho có thêm Tổng hợp, Chi tiết nhập, xuất, hàng trả. Thẻ kho, Xuất nhập tồn hiện ở mọi thông tư; bấm mã hàng ở Xuất nhập tồn mở Thẻ kho. Báo cáo chi tiết dài xem theo trang 100 dòng.
 - T154: Form tài khoản sửa được cấp, chọn loại tài khoản. Hộp quy đổi trong hàng hoá theo iFaster. Ô chọn nhiều kiểu iFaster có tìm, Tất cả, thẻ đã chọn. Thuế ngành nghề chỉ đọc. Quy đổi ĐVT có Từ, Đến, diễn giải tự sinh, hàng hoá áp dụng chọn nhiều. Lịch chọn ngày vừa khít. Nhóm hàng gọn lại, công việc chỉ còn mã, tên, mô tả, trạng thái. Bảng giá theo iFaster.
 - T156: Form công thức sơ chế, chế biến theo bố cục iPOS Inventory, tổng chi phí kèm tỷ lệ food cost.
 - T150: Danh sách thẻ chi phí: số thẻ màu xanh, bấm mở thẻ. Mở thẻ có sẵn ở chế độ xem, bấm Sửa (Ctrl+E) mới sửa, Huỷ quay về xem như phiếu chi. Thông tin đơn vị: phương pháp thuế GTGT và thuế TNCN (hộ kinh doanh) hoặc TNDN (doanh nghiệp) nằm ở Thông tin kê khai; hộ kinh doanh GTGT trực tiếp, TNCN theo nhóm doanh thu; doanh nghiệp chọn, GTGT khấu trừ thì TNDN theo lợi nhuận; gói Plus, Pro cố định khấu trừ và theo lợi nhuận.

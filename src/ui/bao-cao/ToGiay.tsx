@@ -11,6 +11,7 @@ import { Table } from '../Table'
 import { Dropdown, MenuItem, MenuSep } from '../Dropdown'
 import { Icon } from '../Icon'
 import { heSoZoom } from '../zoom'
+import { PhanTrang } from '../PhanTrang'
 import { chiaCot, coChuTheoKho, paddingTheoMatDo } from './chiaCot'
 import { useTrangThaiLoc } from './tuyChinhBC'
 
@@ -62,6 +63,12 @@ function dongCong(kh: Extract<Khoi, { loai: 'bang' }>, cot: string[], den: numbe
 
 /** Đặt giữa hai khối trong thân: khối sau bắt đầu trang mới (In hàng loạt, mỗi phiếu một trang) */
 export function NgatTrang() { return null }
+
+/** Dòng của một trang khi xem (T157): dòng trong trang, sau đó các dòng tổng cuối bảng */
+function dongTrangXem(rows: Row[], trang: number, coTrang: number): Row[] {
+  const chiTiet = rows.filter(r => !r._t)
+  return [...chiTiet.slice((trang - 1) * coTrang, trang * coTrang), ...rows.filter(r => r._t)]
+}
 
 /** Tách thân báo cáo thành khối: RptTable là bảng (cắt được theo dòng), phần tử khác là khối nguyên */
 export function tachKhoi(than: ReactNode): Khoi[] {
@@ -194,7 +201,7 @@ const khopDo = (d: Do | null, khoi: Khoi[]): d is Do => !!d && d.khoi.length ===
 
 const Net = ({ d }: { d: string }) => <svg className="ic sm" viewBox="0 0 24 24" aria-hidden><path d={d} /></svg>
 
-export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, giay, anSoTrang, onKho, layHtmlRef, coChu, coThayDoi: coThayDoiProp }: {
+export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, giay, anSoTrang, onKho, layHtmlRef, coChu, coThayDoi: coThayDoiProp, xemTrang }: {
   dau: ReactNode; than: ReactNode; cuoi?: ReactNode; khoMacDinh: Kho
   kyHieuCot?: KyHieuCot     // hàng ký hiệu cột A, B, 1, 2 dưới tiêu đề mọi bảng
   congChuyen?: string[]     // sổ: cột cộng chuyển trang
@@ -204,6 +211,7 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
   layHtmlRef?: { current: (() => string) | null } // ref lấy HTML các trang thật
   coChu?: number            // cỡ chữ bảng theo tuỳ chỉnh (px)
   coThayDoi?: boolean       // bản nháp khác đã xem (T72)
+  xemTrang?: number         // báo cáo nhiều dòng (T157): tờ liền chỉ vẽ ngần ấy dòng mỗi trang kèm dòng tổng; khung đo chỉ vẽ lúc in, lấy HTML
 }): JSX.Element {
   const path = useLocation().pathname
   const tt = useTrangThaiLoc(path)
@@ -220,6 +228,8 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
   const [rongBan, setRongBan] = useState(0)
   const [dangIn, setDangIn] = useState(false)
   const [canHtml, setCanHtml] = useState(false)
+  const [trangXem, setTrangXem] = useState(1)
+  const [coTrangXem, setCoTrangXem] = useState(xemTrang ?? 100)
   const ban = useRef<HTMLDivElement>(null)
   const khungDo = useRef<HTMLDivElement>(null)
   const xuatHtmlRef = useRef<HTMLDivElement>(null)
@@ -249,6 +259,13 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
   const bangDau = useMemo(() => khoi.find((k): k is Extract<Khoi, { loai: 'bang' }> => k.loai === 'bang'), [khoi])
   const coBang = !!bangDau
   const tongDong = khoi.reduce((a, k) => a + (k.loai === 'bang' ? k.rows.length : 0), 0)
+  // Chia trang khi xem (T157): chỉ bảng đầu, dòng tổng cuối bảng hiện ở mọi trang và là tổng mọi trang
+  const dongXem = bangDau ? bangDau.rows.filter(r => !r._t).length : 0
+  const chiaXem = !!xemTrang && dongXem > coTrangXem
+  const trangXemHt = Math.min(trangXem, Math.max(1, Math.ceil(dongXem / coTrangXem)))
+  // Khung đo ẩn vẽ lại mọi dòng: báo cáo có xemTrang chỉ vẽ khi in hoặc lấy HTML
+  const coKhungDo = !xemTrang || dangIn || canHtml
+  const hienPhanTrang = !!xemTrang && cheXem === 'to-in' && dongXem > 50   // thanh phân trang đã có số dòng, bỏ chữ "N dòng"
   const maxCols = Math.max(1, ...khoi.map(k => k.loai === 'bang' ? k.cols.length : 0))
   const coChuTinh = coChu ?? coChuTheoKho(maxCols, kho)
   const padO = paddingTheoMatDo(maxCols, kho)
@@ -270,7 +287,7 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
   }
   const doRef = useRef(doLai)
   doRef.current = doLai
-  useLayoutEffect(() => { doLai() }, [than, kho, dau, cuoi, kyHieuCot, congChuyen?.join(), kt.w, le.trai, le.phai, coChuTinh, padO])
+  useLayoutEffect(() => { doLai() }, [than, kho, dau, cuoi, kyHieuCot, congChuyen?.join(), kt.w, le.trai, le.phai, coChuTinh, padO, coKhungDo])
   useEffect(() => {
     let song = true
     document.fonts?.ready.then(() => { if (song) doRef.current() })
@@ -403,7 +420,7 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
       {coThayDoi && <div className="bc-nhac-cap-nhat">Bấm Xem báo cáo để cập nhật</div>}
       <div className="bc-khoi">{dau}</div>
       {khoi.map((kh, i) => kh.loai === 'bang'
-        ? <div key={i} className={`bc-khoi bc-bang-${i}`}><RptTable cols={kh.cols} rows={kh.rows} onRow={kh.onRow} kyHieuCot={kyHieuCot} colWidths={chiaCot(kh.cols, kho, kh.rows)} /></div>
+        ? <div key={i} className={`bc-khoi bc-bang-${i}`}><RptTable cols={kh.cols} rows={chiaXem && kh === bangDau ? dongTrangXem(kh.rows, trangXemHt, coTrangXem) : kh.rows} onRow={kh.onRow} kyHieuCot={kyHieuCot} colWidths={chiaCot(kh.cols, kho, kh.rows)} /></div>
         : kh.loai === 'nguyen' ? <div key={i} className="bc-khoi">{kh.el}</div> : null)}
       {cuoi && <div className="bc-khoi">{cuoi}</div>}
     </div>
@@ -457,7 +474,11 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
 
         <div className="bc-thanh">
           <div className="bc-thanh-nhom">
-            {!giay && tongDong > 0 && <span className="bc-thanh-dem">{tongDong.toLocaleString('vi-VN')} dòng</span>}
+            {!giay && tongDong > 0 && !hienPhanTrang && <span className="bc-thanh-dem">{tongDong.toLocaleString('vi-VN')} dòng</span>}
+            {hienPhanTrang && (
+              <PhanTrang tong={dongXem} trang={trangXemHt} coTrang={coTrangXem} dsCoTrang={[50, 100, 200, 500]}
+                onTrang={t => { setTrangXem(t); ban.current?.scrollTo({ top: 0 }) }} onCoTrang={c => { setCoTrangXem(c); setTrangXem(1) }} />
+            )}
           </div>
 
           {cheXem === 'to-in' ? (
@@ -481,7 +502,7 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
         </div>
 
         {/* Khung đo ẩn: ngoài khối transform, cùng bề rộng và lớp CSS với trang thật */}
-        <div className="bc-do" aria-hidden inert>
+        {coKhungDo && <div className="bc-do" aria-hidden inert>
           <div ref={khungDo} className={`paper bc-trang-do ${pv}`} style={{ width: `${kt.w}mm`, padding: kieuTrang.padding, '--bc-co-chu': `${coChuTinh}px`, '--bc-pad-o': padO } as CSSProperties}>
             <div className="bc-khoi" data-do="dau">{dau}</div>
             {khoi.map((kh, i) => (
@@ -493,7 +514,7 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
             ))}
             {cuoi && <div className="bc-khoi" data-do="cuoi">{cuoi}</div>}
           </div>
-        </div>
+        </div>}
 
         {dangIn && createPortal(<div className={`bc-in-goc ${pv}`}>{trangDs.map((_, i) => veTrang(i, false))}</div>, document.body)}
 

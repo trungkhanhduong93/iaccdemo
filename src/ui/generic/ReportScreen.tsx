@@ -960,7 +960,7 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
       )}
       <ToGiay dau={dau} than={thanBienDoi} cuoi={cuoi} khoMacDinh={khoMacDinh}
         kyHieuCot={kyHieuCot} congChuyen={loai === 'so' ? cfg?.congCot : undefined}
-        onKho={setKhoHienTai} layHtmlRef={layHtmlRef} coChu={tc?.coChu} />
+        onKho={setKhoHienTai} layHtmlRef={layHtmlRef} coChu={tc?.coChu} xemTrang={cfg?.phanTrang} />
     </div>
   )
 }

@@ -479,8 +479,9 @@ Lý do: Trum giao việc thiết kế lại màn hình Gói thuê bao và logo 4
 - Khai ở trường `anTam` trong `CAU_HINH_BC` (`src/modules/bao-cao/danh-sach.ts`). `apDung` trong `registry.ts` đọc trường này, nên menu, tab, Tất cả báo cáo, sơ đồ Quy trình tự ẩn. Mở thẳng link thì `ScreenRoute` hiện "Báo cáo chưa có mẫu".
 - Hiện lại một báo cáo: bỏ chế độ đó khỏi `anTam`. Xoá hẳn chỉ khi Trum bảo.
 - Đang ẩn (23 mã):
-  - Mọi chế độ: 2.2.2, 2.2.4, 2.2.6, 5.2.1, 6.2.3 (tờ khai GTGT), 7.2.3, 7.2.4, 9.2.1, 9.2.2, 10.2.1, 10.2.4, 10.2.5.
-  - TT58, TT133, TT99: 2.2.1, 2.2.3, 5.2.3.
+  - Mọi chế độ: 2.2.2, 2.2.4, 2.2.6, 6.2.3 (tờ khai GTGT), 7.2.3, 7.2.4, 9.2.1, 9.2.2, 10.2.1, 10.2.4, 10.2.5.
+  - TT58, TT133, TT99: 2.2.1, 2.2.3.
+  - Thẻ kho 5.2.1, Xuất nhập tồn 5.2.3 hiện lại ở mọi chế độ từ 11/10/2026, dạng báo cáo quản trị (QD52).
   - TT133, TT99: 2.2.5, 3.2.5, 10.2.3.
   - TT152, TT133, TT99: 5.2.8, 6.2.4, 7.2.1, 10.2.2, 10.4.2.
 - Gói Plus, Pro (TT133, TT99) tạm không còn sổ, báo cáo tài chính. `tools/kiem_tra.py` hạ ngưỡng số màn từ 140 xuống 125.
@@ -562,3 +563,13 @@ Lý do: Trum giao T152 ngày 11/10/2026, chốt các đề xuất của agent c�
 - Form công thức sơ chế, chế biến theo bố cục iPOS Inventory, không có Mức tăng, giảm tối đa. Tổng chi phí công thức chế biến kèm tỷ lệ chi phí nguyên vật liệu trên giá bán (food cost).
 
 Lý do: Trum giao T154, T156 ngày 11/10/2026, chốt các đề xuất của agent cùng ngày. Tỷ lệ food cost do agent chọn thay con số 100% của iPOS Inventory.
+
+## QD52. Báo cáo bán hàng, kho bổ sung (11/10/2026)
+
+- Bán hàng có thêm Bán hàng theo ngày, Tổng hợp bán hàng, Chi tiết bán hàng, lấy từ chứng từ Xuất bán POS.
+- Kho có thêm Tổng hợp nhập, Chi tiết nhập, Tổng hợp xuất, Chi tiết xuất, Tổng hợp hàng trả, Chi tiết hàng trả. Hàng trả gồm khách trả lại và trả nhà cung cấp. Báo cáo 5.2.2 giữ nguyên.
+- Thẻ kho, Xuất nhập tồn là báo cáo quản trị kho như iPOS Inventory, hiện ở mọi thông tư, không gắn ký hiệu mẫu sổ. Bấm mã hàng ở Xuất nhập tồn mở Thẻ kho đã lọc mặt hàng, kho, kỳ.
+- Báo cáo mới mở ở gói Standard, Plus, Pro, mọi thông tư.
+- Báo cáo chi tiết nhiều dòng xem theo trang 100 dòng (khai `phanTrang` trong `CAU_HINH_BC`); in, xuất Excel, HTML vẫn đủ mọi dòng.
+
+Lý do: Trum giao T157 ngày 11/10/2026, chọn phương án hiện Thẻ kho, Xuất nhập tồn dạng báo cáo quản trị.

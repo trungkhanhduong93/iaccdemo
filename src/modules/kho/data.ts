@@ -2,7 +2,7 @@
 import { createElement } from 'react'
 import type { CatalogCfg, Col, Row } from '../types'
 import { HANG, KHO, NVL } from '../../data/mock'
-import { between, money, pad, rng } from '../../ui/format'
+import { between, pad, rng } from '../../ui/format'
 
 const g = (r: () => number, a: number, b: number) => Math.round(between(r, a, b))
 
@@ -25,20 +25,32 @@ export const dinhMucTon: CatalogCfg = {
   },
 }
 
-export const theKho = {
-  cols: [{ k: 'ngay', t: 'Ngày', w: 90 }, { k: 'so', t: 'Số phiếu', cls: 'code' }, { k: 'dg', t: 'Diễn giải' }, { k: 'nhap', t: 'Nhập', num: true }, { k: 'xuat', t: 'Xuất', num: true }, { k: 'ton', t: 'Tồn', num: true }] as Col[],
-  rows: (thang: number): Row[] => {
-    const r = rng('thekho' + thang)
-    let ton = 18.5
-    const out: Row[] = [{ dg: 'Thịt bò thăn · Kho bếp Lê Lợi · Tồn đầu kỳ (kg)', ton, _b: 1 }]
-    const dim = thang === 10 ? 7 : 30
-    for (let d = 1; d <= dim; d++) {
-      if (d % 3 === 1) { const n = g(r, 20, 30); ton += n; out.push({ ngay: `${pad(d)}/${pad(thang)}/2026`, so: `MH26${pad(thang)}-${pad(d * 7, 4)}`, dg: 'Nhập mua từ Thực phẩm Tươi An Phú', nhap: n, ton }) }
-      const x = Math.round(between(r, 6.5, 9.8) * 10) / 10; ton = Math.round((ton - x) * 10) / 10
-      out.push({ ngay: `${pad(d)}/${pad(thang)}/2026`, so: `XB26${pad(thang)}-Q1-${pad(d)}`, dg: 'Xuất bán POS theo định lượng', xuat: x, ton })
-    }
-    return out.map(o => ({ ...o, nhap: o.nhap ? money(o.nhap) : '', xuat: o.xuat ? o.xuat.toLocaleString('vi-VN') : '', ton: o.ton.toLocaleString('vi-VN') }))
-  },
+/** Thẻ kho một mặt hàng, một kho trong tháng (T157): tồn đầu, tổng nhập, tổng xuất lấy đúng dòng của báo cáo xuất nhập tồn,
+ *  chia ra phiếu nhập mua ba ngày một lần và phiếu xuất bán POS mỗi ngày */
+export function theKho(thang: number, kho: string, ma: string) {
+  const x = xnt(thang, kho).find(h => h.ma === ma) ?? xnt(thang, kho)[0]
+  const r = rng('thekho' + thang + kho + x.ma)
+  const dim = thang === 10 ? 7 : new Date(2026, thang, 0).getDate()
+  const ngayNhap = Array.from({ length: dim }, (_, i) => i + 1).filter(d => d % 3 === 1)
+  const nhap = chiaSo(x.sln, ngayNhap.map(() => 0.6 + r()))
+  const xuat = chiaSo(x.slx, Array.from({ length: dim }, () => 0.6 + r()))
+  const cols: Col[] = [{ k: 'ngay', t: 'Ngày', w: 90 }, { k: 'so', t: 'Số phiếu', cls: 'code', w: 120 }, { k: 'dg', t: 'Diễn giải' }, { k: 'nhap', t: 'Nhập', num: true }, { k: 'xuat', t: 'Xuất', num: true }, { k: 'ton', t: 'Tồn', num: true }]
+  let ton = x.sl0
+  const rows: Row[] = [{ dg: 'Tồn đầu kỳ', ton, _b: 1, _z: 1 }]
+  for (let d = 1; d <= dim; d++) {
+    const ngay = `${pad(d)}/${pad(thang)}/2026`
+    const iN = ngayNhap.indexOf(d)
+    if (iN >= 0 && nhap[iN] > 0) { ton += nhap[iN]; rows.push({ ngay, so: `MH26${pad(thang)}-${pad(d * 7, 4)}`, dg: 'Nhập mua từ Thực phẩm Tươi An Phú', nhap: nhap[iN], ton, _z: 1 }) }
+    if (xuat[d - 1] > 0) { ton -= xuat[d - 1]; rows.push({ ngay, so: `XB26${pad(thang)}-${pad(d)}`, dg: 'Xuất bán POS theo định lượng', xuat: xuat[d - 1], ton, _z: 1 }) }
+  }
+  rows.push({ dg: 'Cộng phát sinh', nhap: x.sln, xuat: x.slx, _t: 1 }, { dg: 'Tồn cuối kỳ', ton: x.sl1, _t: 1, _z: 1 })
+  return { hang: x, cols, rows }
+}
+/** Chia số nguyên theo tỷ lệ, phần cuối nhận số dư để cộng lại đúng tổng */
+function chiaSo(tong: number, ty: number[]) {
+  const s = ty.reduce((a, b) => a + b, 0)
+  let con = tong
+  return ty.map((t, i) => { const v = i === ty.length - 1 ? con : Math.min(con, Math.round(tong * t / s)); con -= v; return v })
 }
 
 export const nhapXuat = {
@@ -69,10 +81,13 @@ export const tonTucThoi = {
   },
 }
 
+/** Hàng có trên báo cáo xuất nhập tồn, thẻ kho: nguyên vật liệu và bia (T157) */
+export const HANG_XNT = [...NVL, ...HANG.filter(h => h.nhom === 'Bia, rượu').map(h => ({ ...h, gia: 14800 }))]
+
 /** Xuất nhập tồn theo kỳ: số lượng và giá trị */
 export function xnt(thang: number, kho: string) {
   const r = rng('xnt' + thang + kho)
-  return [...NVL, ...HANG.filter(h => h.nhom === 'Bia, rượu').map(h => ({ ...h, gia: 14800 }))].map(n => {
+  return HANG_XNT.map(n => {
     const sl0 = g(r, 8, 60), n1 = g(r, 40, 260), x1 = Math.min(sl0 + n1 - 2, g(r, 35, 250))
     const gia = n.gia
     return { ma: n.ma, ten: n.ten, dvt: n.dvt, sl0, gt0: sl0 * gia, sln: n1, gtn: n1 * gia, slx: x1, gtx: x1 * gia, sl1: sl0 + n1 - x1, gt1: (sl0 + n1 - x1) * gia }

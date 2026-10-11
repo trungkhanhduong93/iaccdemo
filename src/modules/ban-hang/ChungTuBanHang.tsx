@@ -90,7 +90,7 @@ function dongMonDon(x: XPos) {
 }
 
 /** Dòng món của chứng từ: hoá đơn FABi lấy món của đơn, chứng từ gộp chia doanh thu theo cơ cấu món */
-function dongCuaPhieu(x: NgayPOS) {
+export function dongCuaPhieu(x: NgayPOS) {
   return (x as XPos).loai === 'don' ? dongMonDon(x as XPos) : dongMonGiam(x.dt, x.vat)
 }
 
@@ -111,12 +111,12 @@ export type XPos = NgayPOS & { kenh: string; gio: string; loai: 'don' | 'kenh'; 
 const KENH: [string, string][] = [['tq', 'Tại quán'], ['mv', 'Mang về'], ['app', 'App giao đồ ăn']]
 const KT_FABI = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
 /** Số hoá đơn FABi 12 ký tự, cố định theo hạt giống */
-function soFabi(seed: string) {
+export function soFabi(seed: string) {
   const r = rng(seed)
   return Array.from({ length: 12 }, () => KT_FABI[Math.floor(r() * KT_FABI.length)]).join('')
 }
 /** Chia doanh thu ngày cho các phần theo tỷ lệ; phần cuối nhận số dư để cộng lại đúng số ngày */
-function chiaTheo(tong: number, ty: number[], tron = 1000) {
+export function chiaTheo(tong: number, ty: number[], tron = 1000) {
   const s = ty.reduce((a, b) => a + b, 0) || 1
   let con = tong
   return ty.map((t, i) => {
@@ -127,7 +127,7 @@ function chiaTheo(tong: number, ty: number[], tron = 1000) {
   })
 }
 /** Tổng hợp theo kênh: tại quán, mang về chia phần thu tại quầy 70/30; app giao đồ ăn theo tiền app */
-function theoKenh(x: NgayPOS): XPos[] {
+export function theoKenh(x: NgayPOS): XPos[] {
   const tt = x.tm + x.ck + x.the + x.app || 1
   const ty = [(1 - x.app / tt) * 0.7, (1 - x.app / tt) * 0.3, x.app / tt]
   const dt = chiaTheo(x.dt, ty), vat = chiaTheo(x.vat, ty, 1), don = chiaTheo(x.don, ty, 1), gv = chiaTheo(x.gv, ty)
