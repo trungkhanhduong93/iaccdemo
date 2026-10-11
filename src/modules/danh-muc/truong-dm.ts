@@ -244,7 +244,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
       {
         ten: 'Công nợ',
         truong: [
-          { k: 'tkCn', nhan: 'TK công nợ', kieu: 'chon', cot: 'PR_ACCOUNT_ID' },
+          { k: 'tkCn', nhan: 'TK công nợ', kieu: 'chon', cot: 'PR_ACCOUNT_ID', goi: ['PL', 'PR'] },   // gói Free, Standard không dùng tài khoản (T144)
           { k: 'bangGia', nhan: 'Bảng giá', kieu: 'chu', cot: 'PRICE_LEVEL_ID' },
           { k: 'dktt', nhan: 'Điều khoản thanh toán', kieu: 'chu', caHang: true, cot: 'PAYMENT_TERM_ID' },
         ],
@@ -325,12 +325,13 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
           { k: 'ma', nhan: 'Mã kho', kieu: 'chu', batBuoc: true, cot: 'WAREHOUSE_ID' },
           { k: 'ten', nhan: 'Tên kho', kieu: 'chu', batBuoc: true, caHang: true, cot: 'WAREHOUSE_NAME' },
           { k: 'cn', nhan: 'Chi nhánh trực thuộc', kieu: 'chon', ds: ['Lê Lợi', 'Thảo Điền', 'Phan Xích Long', 'Văn phòng'], cot: 'ORGANIZATION_ID' },
-          { k: 'loai', nhan: 'Nhóm kho', kieu: 'chon', ds: TEN_NHOM_KHO, cot: 'WAREHOUSE_CLASS_ID' },
+          { k: 'loai', nhan: 'Nhóm kho', kieu: 'chon', ds: TEN_NHOM_KHO, cot: 'WAREHOUSE_CLASS_ID', goi: ['S', 'PL', 'PR'] },   // gói Free không có nhóm kho (T143)
           { k: 'tk', nhan: 'Thủ kho', kieu: 'chu', cot: 'KEEPER' },
         ],
       },
       {
         ten: 'Hạch toán',
+        goi: ['PL', 'PR'],   // gói Free, Standard ẩn (T144)
         truong: [
           { k: 'tkKho', nhan: 'TK kho ngầm định', kieu: 'chon', cot: 'COST_ACCOUNT_ID' },
           { k: 'tkGv', nhan: 'TK giá vốn ngầm định', kieu: 'chon', cot: 'SALE_COST_ACCOUNT_ID' },
@@ -339,6 +340,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
       },
       {
         ten: 'Ngầm định',
+        goi: ['PL', 'PR'],   // gói Free, Standard ẩn (T144)
         truong: [
           { k: 'mucCp', nhan: 'Mục chi phí ngầm định', kieu: 'chon', ds: TEN_MUC_CHI_PHI },
           { k: 'congViec', nhan: 'Công việc ngầm định', kieu: 'chon', ds: TEN_CONG_VIEC_17 },
@@ -637,12 +639,13 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
         truong: [
           { k: 'ma', nhan: 'Mã nhóm', kieu: 'chu', batBuoc: true },
           { k: 'ten', nhan: 'Tên nhóm', kieu: 'chu', batBuoc: true, caHang: true },
-          { k: 'thuocNhom', nhan: 'Thuộc nhóm', kieu: 'chon', ds: TEN_NHOM_DOI_TUONG },
+          { k: 'thuocNhom', nhan: 'Thuộc nhóm', kieu: 'chon', ds: TEN_NHOM_DOI_TUONG, goi: ['PL', 'PR'] },   // gói Free, Standard bỏ (T144)
           { k: 'dienGiai', nhan: 'Diễn giải', kieu: 'chu', caHang: true },
         ],
       },
       {
         ten: 'Hạch toán',
+        goi: ['PL', 'PR'],   // gói Free, Standard bỏ (T144)
         truong: [
           { k: 'tkThu', nhan: 'TK phải thu ngầm định', kieu: 'chon' },
           { k: 'tkTra', nhan: 'TK phải trả ngầm định', kieu: 'chon' },
