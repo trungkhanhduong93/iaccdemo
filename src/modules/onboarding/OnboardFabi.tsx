@@ -288,7 +288,7 @@ export function OnboardFabi() {
                     {n.b === 2 && (
                       <>
                         <h2 className="ktf-h">Chi nhánh</h2>
-                        <p className="muted ktf-p">Tích chi nhánh lên sổ kế toán. Chi nhánh bỏ tích vẫn bán trên FABi, chỉ không ghi sổ.</p>
+                        <p className="muted ktf-p">Tích chi nhánh lên sổ kế toán.</p>
                         <div className="row ktf-cn-dau">
                           {CHI_NHANH.length >= 6 && (
                             <div className="ktf-cn-tim"><Icon n="search" className="ic sm" /><input value={timCn} onChange={e => setTimCn(e.target.value)} placeholder="Tìm chi nhánh" /></div>
