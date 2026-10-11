@@ -13,6 +13,6 @@ export const quyTrinh: QuyTrinhDef = {
       duoi: [{ ten: 'Thanh lý TSCĐ', icon: 'trash', di: 'tscd/7-1-2/moi?loai=tl' }] },
   ],
   baoCao: ['7-2-1', '7-2-2'],
-  danhMuc: ['danh-muc/1-13', 'danh-muc/1-5'],
+  danhMuc: ['tscd/1-13', 'danh-muc/1-5'],
   tienIch: ['tien-ich/11-14'],
 }

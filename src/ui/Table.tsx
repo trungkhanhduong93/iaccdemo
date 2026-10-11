@@ -255,9 +255,10 @@ export function Table({
   // Hook cuộn ảo theo chuẩn LedgerStudio (T50) - chiều cao dòng thân chuẩn 42px (T74)
   const vs = useVirtualScroll(rows, 42, wrapRef, virtual ?? rows.length > 25)
 
-  // Chống xô giật bề rộng cột khi cuộn: giữ bề rộng lớn nhất đã thấy làm minWidth
+  // Chống xô giật bề rộng cột khi cuộn ảo (T148): chỉ áp dụng khi cuộn ảo đang bật (vs.isVirtual),
+  // không đè minWidth lên bảng tĩnh để tránh hiện tượng giật cột khi đổi trang hay mở màn hình
   useLayoutEffect(() => {
-    if (!wrapRef.current) return
+    if (!wrapRef.current || !vs.isVirtual) return
     const ths = wrapRef.current.querySelectorAll<HTMLTableCellElement>('thead tr:first-child > th')
     const z = heSoZoom()
     ths.forEach(th => {
@@ -270,6 +271,7 @@ export function Table({
     })
   })
 
+  // Đặt lại minWidth chỉ khi cấu hình cột cols0 đổi, không reset theo rows khi phân trang (T148)
   useLayoutEffect(() => {
     if (!wrapRef.current) return
     const ths = wrapRef.current.querySelectorAll<HTMLTableCellElement>('thead tr:first-child > th')
@@ -277,7 +279,7 @@ export function Table({
       const k = th.getAttribute('data-k')
       if (!k || !doRong?.gt[k]) th.style.minWidth = ''
     })
-  }, [rows, cols0])
+  }, [cols0])
 
   const visibleRows = vs.isVirtual ? rows.slice(vs.startIndex, vs.endIndex + 1) : rows
 

@@ -6807,3 +6807,19 @@ table.tbl {
 .pn-fs { display: contents; border: 0; margin: 0; padding: 0; min-width: 0; }
 .pn-fs:disabled .pb-chan, .pn-fs:disabled .tbl td button.icon-btn { display: none; }
 .pn-fs:disabled .inp, .pn-fs:disabled .sel.inp { background: var(--soft); color: var(--body); cursor: default; }
+
+/* ── Sơ đồ danh mục đánh số (T146) ── */
+.qt-ht.danh-so .qt-lan-ten .qt-ht-ic {
+  position: relative;
+}
+.qt-ht.danh-so .qt-lan-ten .qt-so-buoc {
+  top: -8px;
+  left: -8px;
+  width: 20px;
+  height: 20px;
+  font-size: 11px;
+}
+.qt-ht.danh-so .qt-ht-noi:not(:has(small)) {
+  min-width: 40px;
+}
+

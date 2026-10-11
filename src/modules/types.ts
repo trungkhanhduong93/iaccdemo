@@ -22,7 +22,7 @@ export interface Col {
 
 /** Danh mục: bảng có tìm kiếm, nút thêm */
 export interface CatalogCfg {
-  cols: Col[] | ((goi: Goi) => Col[])
+  cols: Col[] | ((goi: Goi, cheDo: CheDo) => Col[])
   rows: (cd: CheDo, ky: number) => Row[] // danh mục đổi theo chế độ kế toán, vd hệ thống tài khoản; ky (yyyymm) khi có kySoLieu
   them?: string
   khongThem?: Goi[]        // gói không có nút thêm mới (vd danh mục Kho gói Free, T143)
@@ -101,6 +101,7 @@ export interface ScreenDef {
   code?: string            // mã tính năng trong Excel; quyết định khoá theo gói
   can?: string[]           // màn không có trong Excel: cần một trong các mã này
   goi?: Goi[]              // màn không có trong Excel chỉ có ở các gói này, gói khác ẩn hẳn (vd Số dư ban đầu ở Thu chi gói Free, T141)
+  cheDo?: CheDo[]          // màn chỉ áp dụng cho các thông tư này (T147)
   ten?: string
   ngan?: string            // nhãn ngắn trên thanh tab
   icon?: string   // biểu tượng riêng của màn (tên trong Icon.tsx); không có thì dùng biểu tượng theo loại màn hoặc của phân hệ
@@ -152,6 +153,7 @@ export interface QuyTrinhDef {
   luongFree?: CotQT[]                     // gói Free dùng sơ đồ luồng theo cột thay sơ đồ chung: ô cột trước nối tới mọi ô cột sau, gộp và tách nhánh (T123)
   danhSo?: boolean                       // đánh số bước, kiểu màn Giá thành của AMIS
   baoCao?: string[]                      // khung Báo cáo bên phải: slug trong phân hệ hoặc 'phân hệ/slug'
+  khongBaoCao?: boolean                  // phân hệ không có báo cáo, ẩn link Tất cả báo cáo ở khối đầu ra sơ đồ hội tụ (T146)
   ghiChu?: { tieuDe: string; dong: [string, string, string?][] }  // thay khung Báo cáo khi phân hệ không có báo cáo
   danhMuc?: string[]                     // hàng dưới: danh mục liên quan, dạng 'phân hệ/slug'
   tienIch?: string[]                     // menu Tiện ích ở hàng dưới

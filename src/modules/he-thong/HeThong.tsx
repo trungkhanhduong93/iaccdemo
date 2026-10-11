@@ -13,6 +13,7 @@ import { Card, Note, PageHead, Pk } from '../../ui/Page'
 import { St, Table } from '../../ui/Table'
 import { Select } from '../../ui/Dropdown'
 import { HopXacNhan } from '../../ui/LocNangCao'
+import { ONgay } from '../../ui/ChonNgay'
 import { thTT58, moTaBoSoTT58 } from '../bao-cao/tt58'
 import { CatalogPanel } from '../../ui/generic/CatalogScreen'
 import type { CauHinhDM } from '../danh-muc/truong-dm'
@@ -292,7 +293,7 @@ export function ThongTinDonVi({ sc }: ScreenProps) {
             </div>
             <div className="f">
               <label>Ngày đầu năm</label>
-              <input className="inp" value={dauNam} placeholder="dd/mm/yyyy" onChange={e => setDauNam(e.target.value)}
+              <ONgay value={dauNam} placeholder="dd/mm/yyyy" onChange={setDauNam}
                 title="Chứng từ thêm mới phải có ngày từ ngày này trở đi, trừ các màn khai số dư đầu kỳ" />
             </div>
             <div className="f">

@@ -12,13 +12,13 @@ import { Note } from '../../ui/Page'
 import { DanhMucChiNhanh } from './DanhMucChiNhanh'
 
 /** Nhãn ngắn trên thanh tab */
-const NGAN: Record<string, string> = { '1.1': 'Tài khoản', '1.2': 'Hàng hoá', '1.3': 'Đơn vị tính', '1.4': 'Quy đổi ĐVT', '1.5': 'Đối tượng', '1.6': 'Mục chi phí', '1.7': 'Công việc', '1.8': 'Kho', '1.9': 'Tiền tệ', '1.10': 'Tỷ giá', '1.11': 'Loại thuế', '1.12': 'Quỹ tiền', '1.13': 'Tài sản cố định', '1.14': 'Bảng giá', '1.15': 'Bút toán tự động', '1.16': 'Lý do' }
+const NGAN: Record<string, string> = { '1.1': 'Tài khoản', '1.2': 'Hàng hoá', '1.3': 'Đơn vị tính', '1.4': 'Quy đổi ĐVT', '1.5': 'Đối tượng', '1.6': 'Mục chi phí', '1.7': 'Công việc', '1.8': 'Kho', '1.9': 'Tiền tệ', '1.10': 'Tỷ giá', '1.11': 'Loại thuế', '1.12': 'Quỹ tiền', '1.14': 'Bảng giá', '1.15': 'Bút toán tự động', '1.16': 'Lý do' }
 
 /** Biểu tượng riêng theo mã màn (T40) */
 const BIEU_TUONG: Record<string, string> = {
   '1.1': 'sotk', '1.2': 'hanghoa', '1.3': 'dvt', '1.4': 'quydoi', '1.5': 'users', '1.6': 'receipt',
   '1.7': 'congviec', '1.8': 'khohang', '1.9': 'tiente', '1.10': 'tygia', '1.11': 'loaithue',
-  '1.12': 'quytien', '1.13': 'building', '1.14': 'banggia', '1.15': 'buttoan', '1.16': 'lydo',
+  '1.12': 'quytien', '1.14': 'banggia', '1.15': 'buttoan', '1.16': 'lydo',
 }
 
 /** 5 màn danh mục nhóm ngoài Excel (T136) */
@@ -26,13 +26,12 @@ const nhomHangHoa: ScreenDef = {
   slug: 'nhom-hang-hoa', ten: 'Danh mục nhóm hàng hoá', ngan: 'Nhóm hàng hoá', nhom: 'Danh mục', kind: 'catalog', icon: 'hanghoa',
   catalog: {
     them: 'Thêm nhóm hàng hoá',
-    cols: goi => [
+    cols: (goi, cheDo) => [
       { k: 'ma', t: 'Mã', cls: 'code' },
       { k: 'ten', t: 'Tên nhóm' },
-      { k: 'thuocNhom', t: 'Thuộc nhóm' },
       { k: 'loai', t: 'Tính chất / Loại' },
       { k: 'dienGiai', t: 'Diễn giải', cls: 'dim' },
-      ...(kieuGhiSo(goi) === 'noco' ? [tkCot('tkKho', 'TK kho'), tkCot('tkDt', 'TK doanh thu'), tkCot('tkGv', 'TK giá vốn')] : []),
+      ...(kieuGhiSo(cheDo) === 'noco' ? [tkCot('tkKho', 'TK kho'), tkCot('tkDt', 'TK doanh thu'), tkCot('tkGv', 'TK giá vốn')] : []),
     ],
     rows: () => NHOM_HANG,
   },
@@ -42,12 +41,11 @@ const nhomDoiTuong: ScreenDef = {
   slug: 'nhom-doi-tuong', ten: 'Danh mục nhóm đối tượng', ngan: 'Nhóm đối tượng', nhom: 'Danh mục', kind: 'catalog', icon: 'users',
   catalog: {
     them: 'Thêm nhóm đối tượng',
-    cols: goi => [
+    cols: (goi, cheDo) => [
       { k: 'ma', t: 'Mã', cls: 'code' },
       { k: 'ten', t: 'Tên nhóm' },
-      { k: 'thuocNhom', t: 'Thuộc nhóm' },
       { k: 'dienGiai', t: 'Diễn giải', cls: 'dim' },
-      ...(kieuGhiSo(goi) === 'noco' ? [tkCot('tkThu', 'TK phải thu'), tkCot('tkTra', 'TK phải trả')] : []),
+      ...(kieuGhiSo(cheDo) === 'noco' ? [tkCot('tkThu', 'TK phải thu'), tkCot('tkTra', 'TK phải trả')] : []),
     ],
     rows: () => NHOM_DOI_TUONG,
   },
@@ -61,7 +59,6 @@ const nhomMucChiPhi: ScreenDef = {
     cols: [
       { k: 'ma', t: 'Mã', cls: 'code' },
       { k: 'ten', t: 'Tên nhóm' },
-      { k: 'thuocNhom', t: 'Thuộc nhóm' },
       { k: 'dienGiai', t: 'Diễn giải', cls: 'dim' },
     ],
     rows: () => NHOM_MUC_CP,
@@ -76,7 +73,6 @@ const nhomCongViec: ScreenDef = {
     cols: [
       { k: 'ma', t: 'Mã', cls: 'code' },
       { k: 'ten', t: 'Tên nhóm' },
-      { k: 'thuocNhom', t: 'Thuộc nhóm' },
       { k: 'dienGiai', t: 'Diễn giải', cls: 'dim' },
     ],
     rows: () => NHOM_CONG_VIEC,
@@ -91,7 +87,6 @@ const nhomKho: ScreenDef = {
     cols: [
       { k: 'ma', t: 'Mã', cls: 'code' },
       { k: 'ten', t: 'Tên nhóm' },
-      { k: 'thuocNhom', t: 'Thuộc nhóm' },
       { k: 'dienGiai', t: 'Diễn giải', cls: 'dim' },
     ],
     rows: () => NHOM_KHO,
@@ -114,13 +109,13 @@ const phuongThucThanhToan: ScreenDef = {
     them: 'Thêm phương thức',
     khongThem: ['F', 'S'],   // gói Free, Standard lấy phương thức từ FABi, không thêm mới (T144)
     nutPhu: { nhan: 'Đồng bộ từ FABi', icon: 'refresh', bao: `Đã đồng bộ ${DS_PTTT.length} phương thức thanh toán từ FABi` },
-    cols: goi => [
+    cols: (goi, cheDo) => [
       { k: 'ma', t: 'Mã', cls: 'code' },
       { k: 'ten', t: 'Tên phương thức' },
       // gói Free, Standard chỉ có mã, tên: loại chứng từ, hạch toán dùng cho tự hạch toán ở gói Plus, Pro (T144)
       ...(goi === 'F' || goi === 'S' ? [] : [
         { k: 'loaiCt', t: 'Loại chứng từ' },
-        ...(kieuGhiSo(goi) === 'noco' ? [tkCot('tkNo', 'TK Nợ')] : []),
+        ...(kieuGhiSo(cheDo) === 'noco' ? [tkCot('tkNo', 'TK Nợ')] : []),
         { k: 'doiTuong', t: 'Đối tượng' },
         { k: 'dienGiai', t: 'Diễn giải', cls: 'dim' },
       ]),
@@ -134,14 +129,14 @@ const danhMuc: ModuleDef = {
   mota: 'Hàng hoá, đối tượng, kho, tài khoản lấy từ FABi và iPOS Inventory',
   quyTrinh,
   screens: tuExcel(0, {
-    '1.1': { kind: 'custom', comp: HeThongTaiKhoan },
+    '1.1': { kind: 'custom', comp: HeThongTaiKhoan, cheDo: ['TT133', 'TT99'] },
     '1.2': { catalog: {
       them: 'Thêm hàng hoá', nhomLoc: 'nhom',
       chucNang: r => r.tkKho === '152' ? [{ nhan: 'Xem thẻ kho', di: 'kho/5-2-1' }] : r.tkKho === '153' ? [{ nhan: 'Xem thẻ chi phí', di: 'ccdc/8-1-1' }] : [{ nhan: 'Xem doanh thu', di: 'ban-hang/3-2-5' }],
-      cols: goi => [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên hàng hoá' }, { k: 'nhom', t: 'Nhóm' }, { k: 'dvt', t: 'ĐVT' },
+      cols: (goi, cheDo) => [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên hàng hoá' }, { k: 'nhom', t: 'Nhóm' }, { k: 'dvt', t: 'ĐVT' },
         { k: 'gia', t: 'Giá bán', num: true }, { k: 'ts', t: 'Thuế suất', num: true, r: r => r.ts ? `${r.ts}%` : 'KCT' },
         { k: 'tonKho', t: 'Theo dõi tồn', c: true, w: 110, r: r => createElement('input', { type: 'checkbox', className: 'o-tich-xem', checked: Boolean(r.tonKho), readOnly: true, tabIndex: -1, 'aria-label': 'Theo dõi tồn kho' }) },   // T114
-        ...(kieuGhiSo(goi) === 'noco' ? [tkCot('tkDt', 'TK doanh thu'), tkCot('tkGv', 'TK giá vốn'), tkCot('tkKho', 'TK kho')] : [])],
+        ...(kieuGhiSo(cheDo) === 'noco' ? [tkCot('tkDt', 'TK doanh thu'), tkCot('tkGv', 'TK giá vốn'), tkCot('tkKho', 'TK kho')] : [])],
       rows: () => [
         ...HANG.map(h => ({ ...h, tkDt: '5111', tkGv: '632', tkKho: '156' })),
         { ma: 'BUN02', ten: 'Bún bò Huế', nhom: 'Món mới tháng 10', dvt: 'Tô', gia: 69000, ts: 8, tkDt: '', tkGv: '', tkKho: '', tonKho: false },
@@ -163,15 +158,15 @@ const danhMuc: ModuleDef = {
         if (r.loai === 'Nhân viên') return [{ nhan: 'Chi tạm ứng', di: 'tien/2-1-1/moi?loai=chi' }]
         return []
       },
-      cols: goi => [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên' }, { k: 'loai', t: 'Loại' }, { k: 'mst', t: 'Mã số thuế' }, { k: 'nhom', t: 'Nhóm', cls: 'dim' },
+      cols: (goi, cheDo) => [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên' }, { k: 'loai', t: 'Loại' }, { k: 'mst', t: 'Mã số thuế' }, { k: 'nhom', t: 'Nhóm', cls: 'dim' },
         { k: 'dongY', t: 'Đồng ý chia sẻ', c: true, r: (r: Row) => r.dongY ? 'Đã đồng ý' : 'Chưa' },
-        { k: 'dktt', t: 'Điều khoản thanh toán' }, ...(kieuGhiSo(goi) === 'noco' ? [tkCot('tkCn', 'TK công nợ')] : [])],
+        { k: 'dktt', t: 'Điều khoản thanh toán' }, ...(kieuGhiSo(cheDo) === 'noco' ? [tkCot('tkCn', 'TK công nợ')] : [])],
       rows: () => [
         ...KHACH.map(x => ({ ...x, loai: 'Khách hàng', dktt: x.ma === 'KL' ? 'Thanh toán ngay' : 'Công nợ 30 ngày', tkCn: '131', dongY: true })),
         ...NCC.map(x => ({ ...x, loai: 'Nhà cung cấp', dktt: 'Công nợ 15 ngày', tkCn: '331', dongY: true })),
         ...NHAN_VIEN.map(x => ({ ...x, mst: '', nhom: x.bp, loai: 'Nhân viên', dktt: '—', tkCn: '141', dongY: true })),
       ] } },
-    '1.6': { catalog: { them: 'Thêm mục chi phí', nhomLoc: 'nhom', cols: goi => [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Mục chi phí' }, { k: 'nhom', t: 'Nhóm' }, ...(kieuGhiSo(goi) === 'noco' ? [{ k: 'tk', t: 'TK chi phí', cls: 'code' } as Col] : [])],
+    '1.6': { catalog: { them: 'Thêm mục chi phí', nhomLoc: 'nhom', cols: (goi, cheDo) => [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Mục chi phí' }, { k: 'nhom', t: 'Nhóm' }, ...(kieuGhiSo(cheDo) === 'noco' ? [{ k: 'tk', t: 'TK chi phí', cls: 'code' } as Col] : [])],
       rows: () => [['CP01', 'Lương nhân viên bếp', 'Nhân công', '6421'], ['CP02', 'Lương phục vụ, thu ngân', 'Nhân công', '6421'], ['CP03', 'Lương văn phòng', 'Nhân công', '6422'],
         ['CP04', 'Thuê mặt bằng', 'Mặt bằng', '6421'], ['CP05', 'Điện', 'Điện, nước, gas', '6421'], ['CP06', 'Nước', 'Điện, nước, gas', '6421'], ['CP07', 'Gas', 'Điện, nước, gas', '6421'],
         ['CP08', 'Hoa hồng app giao đồ ăn', 'Bán hàng', '6421'], ['CP09', 'Quảng cáo, khuyến mãi', 'Bán hàng', '6421'], ['CP10', 'Sửa chữa, bảo trì', 'Khác', '6422'], ['CP11', 'Văn phòng phẩm', 'Khác', '6422']]
@@ -184,8 +179,8 @@ const danhMuc: ModuleDef = {
       // gói Free: mỗi chi nhánh một kho mặc định theo iPOS Inventory (kho đầu của chi nhánh), không thêm kho mới (T143)
       locGoi: (goi, r) => (goi !== 'F' && goi !== 'S') || CHI_NHANH.some(c => c.kho[0] === r.ten),   // gói Free, Standard: dữ liệu mẫu một kho mỗi chi nhánh
       chucNang: () => [{ nhan: 'Xem tồn kho', di: 'kho/5-2-4' }, { nhan: 'Điều chuyển', di: 'kho/5-1-4/moi' }],
-      cols: goi => [{ k: 'ma', t: 'Mã kho', cls: 'code' }, { k: 'ten', t: 'Tên kho' }, { k: 'cn', t: 'Chi nhánh' }, ...(goi === 'F' ? [] : [{ k: 'loai', t: 'Nhóm kho' }]), { k: 'tk', t: 'Thủ kho', cls: 'dim' },
-        ...(kieuGhiSo(goi) === 'noco' ? [tkCot('tkKho', 'TK kho'), tkCot('tkGv', 'TK giá vốn'), tkCot('tkCp', 'TK chi phí')] : [])],
+      cols: (goi, cheDo) => [{ k: 'ma', t: 'Mã kho', cls: 'code' }, { k: 'ten', t: 'Tên kho' }, { k: 'cn', t: 'Chi nhánh' }, ...(goi === 'F' ? [] : [{ k: 'loai', t: 'Nhóm kho' }]), { k: 'tk', t: 'Thủ kho', cls: 'dim' },
+        ...(kieuGhiSo(cheDo) === 'noco' ? [tkCot('tkKho', 'TK kho'), tkCot('tkGv', 'TK giá vốn'), tkCot('tkCp', 'TK chi phí')] : [])],
       rows: () => KHO.map((ten, i) => {
         const isTong = ten.includes('tổng')
         return {
@@ -219,13 +214,9 @@ const danhMuc: ModuleDef = {
       rows: () => [...CHI_NHANH.map((c, i) => ({ ma: `TM0${i + 1}`, ten: `Quỹ tiền mặt ${c.ngan}`, loai: 'Tiền mặt', stk: '', cn: c.ten })),
         { ma: 'NH01', ten: 'Vietcombank, chi nhánh Sài Gòn', loai: 'Ngân hàng', stk: '0071 0012 3456', cn: 'Tất cả' },
         { ma: 'NH02', ten: 'Techcombank, nhận tiền QR', loai: 'Ngân hàng', stk: '1903 6655 8899', cn: 'Tất cả' }] } },
-    '1.13': { catalog: { them: 'Thêm tài sản', cols: [{ k: 'ma', t: 'Mã TS', cls: 'code' }, { k: 'ten', t: 'Tên tài sản' }, { k: 'loai', t: 'Loại' }, { k: 'ngay', t: 'Ngày ghi tăng' }, { k: 'ng', t: 'Nguyên giá', num: true }, { k: 'kh', t: 'Số tháng khấu hao', num: true }],
-      rows: () => [['TS001', 'Hệ thống bếp công nghiệp Lê Lợi', 'Máy móc thiết bị', '01/03/2024', 486_000_000, 60], ['TS002', 'Tủ đông 1.500 lít', 'Máy móc thiết bị', '15/05/2024', 92_500_000, 60],
-        ['TS003', 'Máy pha cà phê La Marzocco', 'Máy móc thiết bị', '01/07/2025', 268_000_000, 60], ['TS004', 'Hệ thống điều hoà Thảo Điền', 'Máy móc thiết bị', '20/06/2026', 214_800_000, 72],
-        ['TS005', 'Xe tải giao hàng 1,5 tấn', 'Phương tiện vận tải', '10/01/2025', 545_000_000, 96]].map(([ma, ten, loai, ngay, ng, kh]) => ({ ma, ten, loai, ngay, ng, kh })) } },
     '1.14': { catalog: { them: 'Thêm bảng giá', nhomLoc: 'loai', cols: [{ k: 'ten', t: 'Hàng hoá' }, { k: 'dvt', t: 'ĐVT' }, { k: 'loai', t: 'Loại giá' }, { k: 'gia', t: 'Giá', num: true }, { k: 'tu', t: 'Áp dụng từ' }, { k: 'cn', t: 'Chi nhánh', cls: 'dim' }],
       rows: () => [...HANG.map(h => ({ ten: h.ten, dvt: h.dvt, loai: 'Giá bán', gia: h.gia, tu: '01/09/2026', cn: 'Tất cả' })), ...NVL.slice(0, 8).map(h => ({ ten: h.ten, dvt: h.dvt, loai: 'Giá mua', gia: h.gia, tu: '01/10/2026', cn: 'Kho tổng' }))] } },
-    '1.15': { catalog: { them: 'Thêm bút toán', nhomLoc: 'lct', nhanLoc: 'Loại chứng từ',
+    '1.15': { cheDo: ['TT133', 'TT99'], catalog: { them: 'Thêm bút toán', nhomLoc: 'lct', nhanLoc: 'Loại chứng từ',
       cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Nghiệp vụ' }, { k: 'lct', t: 'Loại chứng từ' }, { k: 'loc', t: 'Lọc theo', cls: 'dim' },
         { k: 'no', t: 'TK Nợ', cls: 'code', c: true }, { k: 'co', t: 'TK Có', cls: 'code', c: true }, { k: 'tien', t: 'Số tiền lấy từ', cls: 'dim' }],
       rows: cd => [
@@ -243,7 +234,7 @@ const danhMuc: ModuleDef = {
     '1.16': { catalog: { them: 'Thêm lý do', locGoi: (goi, r) => goi !== 'F' || r.dung === 'Thu tiền' || r.dung === 'Chi tiền',   // gói Free chỉ lý do thu, chi (T144)
       nhomLoc: 'dung', nhanLoc: 'Dùng cho', cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Lý do' }, { k: 'dung', t: 'Dùng cho' }],
       rows: () => LY_DO } },
-  }, NGAN).map(sc => ({ ...sc, icon: BIEU_TUONG[sc.code ?? ''] ?? sc.icon })).flatMap(sc => {
+  }, NGAN).filter(sc => sc.code !== '1.13').map(sc => ({ ...sc, icon: BIEU_TUONG[sc.code ?? ''] ?? sc.icon })).flatMap(sc => {
     if (sc.code === '1.2') return [sc, nhomHangHoa]
     if (sc.code === '1.5') return [sc, nhomDoiTuong]
     if (sc.code === '1.6') return [sc, nhomMucChiPhi]

@@ -15,7 +15,7 @@ import { Icon } from '../Icon'
 import { Card, Note } from '../Page'
 import { FormToanMan, useDong } from '../FormToanMan'
 import { Dropdown, MenuHead, MenuItem, Popover, Select } from '../Dropdown'
-import { LichDon } from '../ChonNgay'
+import { LichDon, ONgay } from '../ChonNgay'
 import { ChonDanhMuc } from '../ChonDanhMuc'
 import { heSoZoom } from '../zoom'
 import { St, Table } from '../Table'
@@ -1090,7 +1090,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
                 </div>
                 <div className="f">
                   <label>Ngày hoá đơn</label>
-                  <input className="inp" value={ngayHd} onChange={e => setNgayHd(e.target.value)} disabled={!dangSua} />
+                  <ONgay value={ngayHd} onChange={setNgayHd} disabled={!dangSua} />
                 </div>
                 <div className="f c2">
                   <label>Nhà phát hành / Cơ quan thuế</label>
@@ -1163,22 +1163,6 @@ const LY_THEO_DG: [string, string][] = [
   ['dat tiec', 'Thu tiền bán hàng'], ['tien don', 'Thu tiền bán hàng'], ['tam ung', 'Chi tạm ứng'], ['tra tien', 'Trả tiền nhà cung cấp'],
   ['mua', 'Chi mua nguyên vật liệu'], ['luong', 'Chi trả lương'],
 ]
-/** Ô ngày chứng từ: gõ dd/mm/yyyy hoặc bấm biểu tượng lịch để chọn (T49) */
-function ONgay({ value, onChange }: { value: string; onChange: (v: string) => void }) {
-  const o = useRef<HTMLDivElement>(null)
-  const [mo, setMo] = useState(false)
-  return (
-    <div className="ct-ngay" ref={o}>
-      <input className="inp" value={value} placeholder="dd/mm/yyyy" onChange={e => onChange(e.target.value)} onClick={() => setMo(true)} />
-      <button type="button" className="ct-ngay-nut" title="Chọn ngày" aria-label="Chọn ngày" onClick={() => setMo(m => !m)}>
-        <Icon n="calendar" className="ic sm" />
-      </button>
-      <Popover anchor={o} open={mo} onClose={() => setMo(false)} align="start" width={272} className="dp-pop">
-        <LichDon value={value} onChange={v => { onChange(v); setMo(false) }} onDong={() => setMo(false)} />
-      </Popover>
-    </div>
-  )
-}
 
 /** Tổng tiền ở dải đáy form, số thẳng mép cột Thành tiền của bảng chi tiết; không thấy bảng thì nằm sát phải (T49) */
 /** Dải tổng cố định ở đáy form (T105): các khoản bên trái, khoản bằng 0 hiện mờ; Tổng tiền bên phải.

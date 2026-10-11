@@ -6,6 +6,7 @@ import { CHI_NHANH, KHACH, NCC } from '../../data/mock'
 import type { ReactNode } from 'react'
 import type { Col, Row } from '../types'
 import type { Goi } from '../../app/plan'
+import type { CheDo } from '../../app/che-do'
 
 export type KieuTruong = 'chu' | 'so' | 'tien' | 'chon' | 'chonNhieu' | 'tich' | 'ngay' | 'nhieuDong'   // chonNhieu: chọn nhiều, lưu dạng "A, B", chọn đủ lưu "Tất cả" (T144)
 
@@ -26,6 +27,7 @@ export interface TruongDM {
   cot?: string
   hien?: (v: Record<string, any>) => boolean   // chỉ hiện ô khi điều kiện đúng theo giá trị form
   goi?: Goi[]                                  // chỉ hiện ô ở các gói này (T144)
+  cheDo?: CheDo[]                              // chỉ hiện ô ở các chế độ/thông tư này (T147)
   nhanDs?: (v: string) => string               // nhãn hiện trong ô chọn khác giá trị lưu, vd đơn vị tính hiện mã và tên (T144)
   chiDoc?: boolean                             // ô tự sinh, không sửa được
   // Ô ngày khi thêm mới so với ngày đầu năm của đơn vị: 'tu' phải từ ngày đầu năm trở đi, 'truoc' phải trước ngày đầu năm (khai số dư)
@@ -35,6 +37,7 @@ export interface TruongDM {
 export interface KhoiDM {
   ten: string
   goi?: Goi[]   // chỉ hiện khối ở các gói này (T144)
+  cheDo?: CheDo[]   // chỉ hiện khối ở các chế độ/thông tư này (T147)
   truong: TruongDM[]
   // khối dạng lưới tự tính từ giá trị form; doi ghi giá trị khi gõ trong lưới
   bang?: (v: Record<string, any>, doi: (k: string, val: unknown) => void) => { cols: Col[]; rows: Row[]; sum?: Row; rowCls?: (r: Row) => string; chan?: ReactNode; trong: string }
@@ -87,11 +90,11 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
         ten: 'Hạch toán',
         goi: ['S', 'PL', 'PR'],   // gói Free tạm bỏ (T144)
         truong: [
-          { k: 'tkKho', nhan: 'TK kho', kieu: 'chon', cot: 'ACCOUNT_ID_COST' },
-          { k: 'tkDt', nhan: 'TK doanh thu', kieu: 'chon', cot: 'ACCOUNT_ID_INCOME' },
-          { k: 'tkGv', nhan: 'TK giá vốn', kieu: 'chon', cot: 'ACCOUNT_ID_SALE_COST' },
-          { k: 'tkCp', nhan: 'TK chi phí', kieu: 'chon', cot: 'DEFAULT_ACCOUNT_ID_EXPENSE' },
-          { k: 'tkTraLai', nhan: 'TK hàng bán trả lại', kieu: 'chon', cot: 'ACCOUNT_ID_RETURN' },
+          { k: 'tkKho', nhan: 'TK kho', kieu: 'chon', cot: 'ACCOUNT_ID_COST', cheDo: ['TT133', 'TT99'] },
+          { k: 'tkDt', nhan: 'TK doanh thu', kieu: 'chon', cot: 'ACCOUNT_ID_INCOME', cheDo: ['TT133', 'TT99'] },
+          { k: 'tkGv', nhan: 'TK giá vốn', kieu: 'chon', cot: 'ACCOUNT_ID_SALE_COST', cheDo: ['TT133', 'TT99'] },
+          { k: 'tkCp', nhan: 'TK chi phí', kieu: 'chon', cot: 'DEFAULT_ACCOUNT_ID_EXPENSE', cheDo: ['TT133', 'TT99'] },
+          { k: 'tkTraLai', nhan: 'TK hàng bán trả lại', kieu: 'chon', cot: 'ACCOUNT_ID_RETURN', cheDo: ['TT133', 'TT99'] },
           { k: 'mucCp', nhan: 'Mục chi phí', kieu: 'chon', ds: TEN_MUC_CHI_PHI },
           { k: 'ppGia', nhan: 'Phương pháp tính giá', kieu: 'chon', ds: ['Bình quân cuối kỳ', 'Bình quân tức thời', 'Nhập trước xuất trước', 'Đích danh'] },
         ],
@@ -250,7 +253,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
       {
         ten: 'Công nợ',
         truong: [
-          { k: 'tkCn', nhan: 'TK công nợ', kieu: 'chon', cot: 'PR_ACCOUNT_ID', goi: ['PL', 'PR'] },   // gói Free, Standard không dùng tài khoản (T144)
+          { k: 'tkCn', nhan: 'TK công nợ', kieu: 'chon', cot: 'PR_ACCOUNT_ID', cheDo: ['TT133', 'TT99'] },   // TK chỉ dùng ở TT133, TT99 (T147)
           { k: 'bangGia', nhan: 'Bảng giá', kieu: 'chu', cot: 'PRICE_LEVEL_ID' },
           { k: 'dktt', nhan: 'Điều khoản thanh toán', kieu: 'chu', caHang: true, cot: 'PAYMENT_TERM_ID' },
         ],
@@ -280,6 +283,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
       },
       {
         ten: 'Hạch toán',
+        cheDo: ['TT133', 'TT99'],
         truong: [
           { k: 'tk', nhan: 'TK chi phí ngầm định', kieu: 'chon', cot: 'DEFAULT_ACCOUNT_ID_EXPENSE' },
         ],
@@ -309,6 +313,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
       },
       {
         ten: 'Hạch toán',
+        cheDo: ['TT133', 'TT99'],
         truong: [
           { k: 'tkCp', nhan: 'TK chi phí dở dang', kieu: 'chon', cot: 'EXPENSE_ACCOUNT_ID' },
         ],
@@ -337,7 +342,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
       },
       {
         ten: 'Hạch toán',
-        goi: ['PL', 'PR'],   // gói Free, Standard ẩn (T144)
+        cheDo: ['TT133', 'TT99'],   // thông tư không ghi Nợ/Có thì ẩn (T147)
         truong: [
           { k: 'tkKho', nhan: 'TK kho ngầm định', kieu: 'chon', cot: 'COST_ACCOUNT_ID' },
           { k: 'tkGv', nhan: 'TK giá vốn ngầm định', kieu: 'chon', cot: 'SALE_COST_ACCOUNT_ID' },
@@ -516,6 +521,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
       },
       {
         ten: 'Tài khoản hạch toán',
+        cheDo: ['TT133', 'TT99'],
         truong: [
           { k: 'tkTs', nhan: 'TK tài sản', kieu: 'chon', cot: 'FA_ACCOUNT_ID' },
           { k: 'tkHm', nhan: 'TK hao mòn', kieu: 'chon', cot: 'DEP_ACCOUNT_ID' },
@@ -609,7 +615,6 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
         truong: [
           { k: 'ma', nhan: 'Mã nhóm', kieu: 'chu', batBuoc: true },
           { k: 'ten', nhan: 'Tên nhóm', kieu: 'chu', batBuoc: true, caHang: true },
-          { k: 'thuocNhom', nhan: 'Thuộc nhóm', kieu: 'chon', ds: TEN_NHOM_HANG, goi: ['PL', 'PR'] },   // gói Free, Standard bỏ (T144)
           { k: 'loai', nhan: 'Loại hàng hoá', kieu: 'chon', ds: LOAI_HANG, goi: ['PL'] },
           { k: 'loai', nhan: 'Loại hàng hoá', kieu: 'chon', ds: LOAI_HANG_PRO, goi: ['PR'] },
           { k: 'dienGiai', nhan: 'Diễn giải', kieu: 'chu', caHang: true },
@@ -619,11 +624,11 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
         ten: 'Ngầm định cho hàng hoá',
         goi: ['PL', 'PR'],   // gói Free, Standard ẩn (T144)
         truong: [
-          { k: 'tkKho', nhan: 'TK kho', kieu: 'chon' },
-          { k: 'tkDt', nhan: 'TK doanh thu', kieu: 'chon' },
-          { k: 'tkGv', nhan: 'TK giá vốn', kieu: 'chon' },
-          { k: 'tkCp', nhan: 'TK chi phí', kieu: 'chon' },
-          { k: 'tkTraLai', nhan: 'TK hàng bán trả lại', kieu: 'chon' },
+          { k: 'tkKho', nhan: 'TK kho', kieu: 'chon', cheDo: ['TT133', 'TT99'] },
+          { k: 'tkDt', nhan: 'TK doanh thu', kieu: 'chon', cheDo: ['TT133', 'TT99'] },
+          { k: 'tkGv', nhan: 'TK giá vốn', kieu: 'chon', cheDo: ['TT133', 'TT99'] },
+          { k: 'tkCp', nhan: 'TK chi phí', kieu: 'chon', cheDo: ['TT133', 'TT99'] },
+          { k: 'tkTraLai', nhan: 'TK hàng bán trả lại', kieu: 'chon', cheDo: ['TT133', 'TT99'] },
           { k: 'mucCp', nhan: 'Mục chi phí', kieu: 'chon', ds: TEN_MUC_CHI_PHI },
           { k: 'ppGia', nhan: 'Phương pháp tính giá', kieu: 'chon', ds: ['Bình quân cuối kỳ', 'Bình quân tức thời', 'Nhập trước xuất trước', 'Đích danh'] },
           { k: 'ts', nhan: 'Thuế suất GTGT (%)', kieu: 'chon', ds: ['KCT', '0', '5', '8', '10'] },
@@ -648,13 +653,12 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
         truong: [
           { k: 'ma', nhan: 'Mã nhóm', kieu: 'chu', batBuoc: true },
           { k: 'ten', nhan: 'Tên nhóm', kieu: 'chu', batBuoc: true, caHang: true },
-          { k: 'thuocNhom', nhan: 'Thuộc nhóm', kieu: 'chon', ds: TEN_NHOM_DOI_TUONG, goi: ['PL', 'PR'] },   // gói Free, Standard bỏ (T144)
           { k: 'dienGiai', nhan: 'Diễn giải', kieu: 'chu', caHang: true },
         ],
       },
       {
         ten: 'Hạch toán',
-        goi: ['PL', 'PR'],   // gói Free, Standard bỏ (T144)
+        cheDo: ['TT133', 'TT99'],   // thông tư không ghi Nợ/Có thì ẩn (T147)
         truong: [
           { k: 'tkThu', nhan: 'TK phải thu ngầm định', kieu: 'chon' },
           { k: 'tkTra', nhan: 'TK phải trả ngầm định', kieu: 'chon' },
@@ -678,7 +682,6 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
         truong: [
           { k: 'ma', nhan: 'Mã nhóm', kieu: 'chu', batBuoc: true },
           { k: 'ten', nhan: 'Tên nhóm', kieu: 'chu', batBuoc: true, caHang: true },
-          { k: 'thuocNhom', nhan: 'Thuộc nhóm', kieu: 'chon', ds: TEN_NHOM_MUC_CP },
           { k: 'dienGiai', nhan: 'Diễn giải', kieu: 'chu', caHang: true },
         ],
       },
@@ -699,7 +702,6 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
         truong: [
           { k: 'ma', nhan: 'Mã nhóm', kieu: 'chu', batBuoc: true },
           { k: 'ten', nhan: 'Tên nhóm', kieu: 'chu', batBuoc: true, caHang: true },
-          { k: 'thuocNhom', nhan: 'Thuộc nhóm', kieu: 'chon', ds: TEN_NHOM_CONG_VIEC },
           { k: 'dienGiai', nhan: 'Diễn giải', kieu: 'chu', caHang: true },
         ],
       },
@@ -720,7 +722,6 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
         truong: [
           { k: 'ma', nhan: 'Mã nhóm', kieu: 'chu', batBuoc: true },
           { k: 'ten', nhan: 'Tên nhóm', kieu: 'chu', batBuoc: true, caHang: true },
-          { k: 'thuocNhom', nhan: 'Thuộc nhóm', kieu: 'chon', ds: TEN_NHOM_KHO },
           { k: 'dienGiai', nhan: 'Diễn giải', kieu: 'chu', caHang: true },
         ],
       },
@@ -750,7 +751,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
         ten: 'Hạch toán ngầm định',
         goi: ['PL', 'PR'],
         truong: [
-          { k: 'tkNo', nhan: 'TK Nợ', kieu: 'chon', batBuoc: true },
+          { k: 'tkNo', nhan: 'TK Nợ', kieu: 'chon', batBuoc: true, cheDo: ['TT133', 'TT99'] },
           { k: 'doiTuong', nhan: 'Đối tượng', kieu: 'chon', ds: [...KHACH.map(k => k.ten), ...NCC.map(n => n.ten)] },
           { k: 'congViec', nhan: 'Công việc', kieu: 'chon', ds: TEN_CONG_VIEC_17 },
           { k: 'mucCp', nhan: 'Mục chi phí', kieu: 'chon', ds: TEN_MUC_CHI_PHI },

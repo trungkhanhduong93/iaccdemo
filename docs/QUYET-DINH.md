@@ -511,3 +511,22 @@ Lý do: Trum giao việc T133 ngày 10/10/2026, duyệt các mặc định do ag
 - Đồng bộ hoá đơn POS có tích "Tự động hạch toán chứng từ theo phương thức thanh toán". Phiếu thu đi qua 131: Nợ TK của phương thức, Có 131. Bán hàng kéo chi tiết thì mỗi hoá đơn một phiếu thu. Kéo tổng hợp thì mỗi ngày, mỗi phương thức một phiếu.
 
 Lý do: Trum giao T136, T137 ngày 10/10/2026, chốt các mặc định agent đề xuất ngày 11/10/2026.
+
+## QD48. Thứ tự thiết lập danh mục, danh mục theo thông tư (11/10/2026)
+
+- Sơ đồ Khởi tạo danh mục vẽ kiểu làn như Thu chi, 7 làn đánh số theo thứ tự phải làm. Khối cuối là Số dư ban đầu.
+  1. Nền tảng: chi nhánh, tài khoản, loại thuế, tiền tệ, tỷ giá.
+  2. Chi phí: nhóm mục chi phí, mục chi phí, nhóm công việc, công việc.
+  3. Kho: nhóm kho, kho.
+  4. Hàng hoá: đơn vị tính, nhóm hàng, hàng hoá, quy đổi, bảng giá.
+  5. Đối tượng: nhóm đối tượng, đối tượng.
+  6. Tiền: quỹ tiền, phương thức thanh toán.
+  7. Hạch toán: lý do, bút toán tự động.
+- Thứ tự chỉ đánh số và nối mũi tên, không khoá danh mục sau khi danh mục trước chưa có dữ liệu. Làn trống theo gói hay thông tư thì bỏ, số đánh lại liền nhau.
+- Danh mục tài sản cố định (1.13) nằm ở phân hệ Tài sản cố định, không nằm trong Danh mục.
+- Gói và thông tư chọn riêng ở Hệ thống. Danh mục lọc theo cả hai: gói quyết định danh mục nào mở; thông tư quyết định phần tài khoản. Thông tư không ghi Nợ/Có (TT152, TT58) ẩn Hệ thống tài khoản, Bút toán tự động, mọi cột và ô tài khoản.
+- Danh mục nhóm không có trường Thuộc nhóm. Tài khoản có ô tích Tổng hợp: tích là tài khoản mẹ, bỏ tích là tài khoản hạch toán; tài khoản đang có tài khoản con thì luôn tích.
+- Mọi danh mục có nút chọn cột như danh sách chứng từ. Danh sách chọn gồm mọi trường của form Thêm/Sửa còn hiện theo gói, thông tư; trường chưa có cột thì mặc định ẩn.
+- Mọi ô một ngày dùng chung ô có lịch `ONgay` (`src/ui/ChonNgay.tsx`), giá trị vẫn là dd/mm/yyyy.
+
+Lý do: Trum giao T146 đến T149 ngày 11/10/2026, chốt các mặc định agent đề xuất cùng ngày.

@@ -191,7 +191,7 @@ const FLYOUT_CONFIG: Record<string, FlyoutData> = {
       items: [
         { ten: 'Bảng tính khấu hao TSCĐ', di: '/app/tscd/7-2-1' },
         { ten: 'Sổ tài sản cố định', di: '/app/tscd/7-2-2' },
-        { ten: 'Danh mục loại TSCĐ', di: '/app/danh-muc/1-13' },
+        { ten: 'Danh mục loại TSCĐ', di: '/app/tscd/1-13' },
         { ten: 'Báo cáo tài sản', di: '/app/tscd/bao-cao' },
       ],
     },
@@ -319,7 +319,7 @@ const FLYOUT_CONFIG: Record<string, FlyoutData> = {
         { ten: 'Công việc, đơn đoạn', di: '/app/danh-muc/1-7' },
         { ten: 'Tiền tệ & Tỷ giá', di: '/app/danh-muc/1-9' },
         { ten: 'Loại thuế suất', di: '/app/danh-muc/1-11' },
-        { ten: 'Tài sản cố định', di: '/app/danh-muc/1-13' },
+        { ten: 'Tài sản cố định', di: '/app/tscd/1-13' },
         { ten: 'Bút toán tự động', di: '/app/danh-muc/1-15' },
       ],
     },

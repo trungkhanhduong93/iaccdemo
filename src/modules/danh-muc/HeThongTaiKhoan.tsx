@@ -10,7 +10,11 @@ import { PageHead } from '../../ui/Page'
 import { Table } from '../../ui/Table'
 import { fold } from '../../ui/format'
 import { ThanhLoc } from '../../ui/ThanhLoc'
+import { NutTuyChinhCot, useCotDs } from '../../ui/LocNangCao'
 import { heThongTk, type TaiKhoanDef, type TinhChatTk } from './he-thong-tk'
+
+/** Cột luôn hiện, không ẩn được ở Tuỳ chỉnh cột (T148) */
+const COT_CO_DINH = new Set(['so', 'ten'])
 import { TEN_ANH } from './he-thong-tk-en'
 
 /** Các ô đánh dấu theo dõi chi tiết suy theo số tài khoản */
@@ -31,6 +35,7 @@ interface FormState {
   so: string
   ten: string
   cha: string
+  laCha: boolean
   cap: number
   tinhChat: TinhChatTk
   loai: string
@@ -63,6 +68,7 @@ function taoMacDinh(tk?: TaiKhoanDef | null): FormState {
       so: '',
       ten: '',
       cha: '',
+      laCha: false,
       cap: 1,
       tinhChat: 'Dư Nợ',
       loai: 'Tài sản ngắn hạn',
@@ -106,6 +112,7 @@ function taoMacDinh(tk?: TaiKhoanDef | null): FormState {
     so: tk.so,
     ten: tk.ten,
     cha: tk.cha || '',
+    laCha: Boolean(tk.laCha),
     cap: tk.cap,
     tinhChat: tk.tinhChat,
     loai: tk.loai,
@@ -302,6 +309,8 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
     }
   }
 
+  const dangCoCon = Boolean(dangSua && all.some(t => t.cha === dangSua.so))
+
   const cols: Col[] = useMemo(() => [
     {
       k: 'so',
@@ -310,9 +319,10 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
       cls: 'code',
       r: (r: Row) => {
         const isExp = q.trim() ? true : moRong.has(r.so)
+        const coCon = all.some(t => t.cha === r.so)
         return (
           <div style={{ paddingLeft: (r.cap - 1) * 20, display: 'inline-flex', alignItems: 'center' }}>
-            {r.laCha ? (
+            {coCon ? (
               <button
                 type="button"
                 className="tk-nut-cay"
@@ -368,12 +378,15 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
       c: true,
       r: () => <span className="chip ok">Đang dùng</span>,
     },
-  ], [q, moRong])
+  ], [q, moRong, all])
+
+  const cot = useCotDs('/danh-muc/1-1', cols, COT_CO_DINH)
+
   // Bảng ghi nhớ: mở panel hay gõ trong panel không vẽ lại cây tài khoản (T81)
   const bang = useMemo(() => (
-    <Table cols={cols} rows={rows as unknown as Row[]} motDong onRow={r => moSua(r as unknown as TaiKhoanDef)}
+    <Table cols={cot.colsHien} doRong={cot.doRong} rows={rows as unknown as Row[]} motDong onRow={r => moSua(r as unknown as TaiKhoanDef)}
       rowCls={r => r.laCha ? 'tk-row-cha click' : 'click'} />
-  ), [cols, rows, moSua])
+  ), [cot.colsHien, cot.doRong, rows, moSua])
 
   const ten = tenMan(sc)
 
@@ -400,6 +413,8 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
             <div className="row" style={{ gap: 8 }}>
               <button type="button" className="btn sm" onClick={moRongHet}>Mở rộng hết</button>
               <button type="button" className="btn sm" onClick={thuGonHet}>Thu gọn hết</button>
+              <NutTuyChinhCot cols={cot.colsDu} an={cot.an} coDinh={COT_CO_DINH} macDinh={cot.macDinh} dongBang={cot.dongBang}
+                onLuu={cot.luu} onDoRongTuDong={cot.datDoRongTuDong} />
               <button type="button" className="btn" onClick={() => toast(`Đã xuất ${all.length} tài khoản ra Excel`)}>
                 <Icon n="download" className="ic sm" />Xuất
               </button>
@@ -473,9 +488,20 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
                         {errors.ten && <span className="muted pn-loi">{errors.ten}</span>}
                       </div>
                       <div className="f">
-                        <label>Tài khoản tổng hợp</label>
-                        <Select className="inp" value={form.cha} ds={dsCha} aria-label="Tài khoản tổng hợp"
+                        <label>Thuộc tài khoản</label>
+                        <Select className="inp" value={form.cha} ds={dsCha} aria-label="Thuộc tài khoản"
                           onChange={e => handleChaChange(e.target.value)} />
+                      </div>
+                      <div className="f" style={{ display: 'flex', alignItems: 'center', marginTop: 24 }}>
+                        <label className="row pn-tich" title={dangCoCon ? 'Tài khoản đang có tài khoản con, không thể bỏ tổng hợp' : undefined} style={{ cursor: dangCoCon ? 'not-allowed' : 'pointer' }}>
+                          <input
+                            type="checkbox"
+                            checked={form.laCha}
+                            disabled={dangCoCon}
+                            onChange={e => setForm(f => ({ ...f, laCha: e.target.checked }))}
+                          />
+                          <span>Tổng hợp</span>
+                        </label>
                       </div>
                       <div className="f">
                         <label>Cấp</label>

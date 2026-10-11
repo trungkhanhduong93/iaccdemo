@@ -2,7 +2,7 @@
 // Phân hệ có quyTrinh được thêm tab Quy trình đứng đầu; có màn báo cáo thì thêm tab Báo cáo đứng cuối.
 import type { ModuleDef, ScreenDef } from '../modules/types'
 import { FEATURE, GOIS, anNgoaiGoi, coTrongGoi, coMotTrong, minGoi, type Goi } from './plan'
-import type { CheDo } from './che-do'
+import { CHE_DO_MAC_DINH, type CheDo } from './che-do'
 import home from '../modules/home'
 import danhMuc from '../modules/danh-muc'
 import tien from '../modules/tien'
@@ -117,6 +117,8 @@ const khongApDung = (sc: ScreenDef, goi: Goi) => {
 }
 export const hienMan = (sc: ScreenDef, goi: Goi, cheDo?: CheDo, session?: Pick<Session, 'ppGtgt' | 'ppTndn'> | Session) => {
   if (sc.goi && !sc.goi.includes(goi)) return false
+  const cd = cheDo ?? CHE_DO_MAC_DINH[goi]
+  if (sc.cheDo && !sc.cheDo.includes(cd)) return false
   const isBC = Boolean((sc.code && CAU_HINH_BC[sc.code]) || sc.goc || vaoBaoCao(sc))
   if (isBC) {
     if (cheDo && !apDung(sc, cheDo, session)) return false

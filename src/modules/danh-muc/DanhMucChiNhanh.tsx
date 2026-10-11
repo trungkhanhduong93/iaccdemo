@@ -3,15 +3,19 @@
 import { useMemo, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import type { Row, ScreenProps } from '../types'
+import type { Col, Row, ScreenProps } from '../types'
 import { tenMan } from '../../app/registry'
 import { ngayDauNam, useSession, type CnThem } from '../../app/session'
 import { CHI_NHANH, DON_VI } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
 import { Note, PageHead } from '../../ui/Page'
 import { Table } from '../../ui/Table'
+import { NutTuyChinhCot, useCotDs } from '../../ui/LocNangCao'
 import { cuaHangChuaDung } from '../onboarding/cua-hang-fabi'
 import { DsChiNhanh } from '../onboarding/OnboardFabi'
+
+/** Cột luôn hiện, không ẩn được ở Tuỳ chỉnh cột (T148) */
+const COT_CO_DINH = new Set(['ma', 'ten'])
 
 export function DanhMucChiNhanh({ sc, mod }: ScreenProps) {
   const { s, set, toast } = useSession()
@@ -30,6 +34,16 @@ export function DanhMucChiNhanh({ sc, mod }: ScreenProps) {
     ...them.map(c => ({ ma: c.id.toUpperCase(), ten: c.ten, kv: c.khuVuc, kho: kho(c.id, c.ten), nguon: 'FABi', moi: !c.banDau })),
   ], [coSan, them, free])   // eslint-disable-line react-hooks/exhaustive-deps
 
+  const colsGoc: Col[] = useMemo(() => [
+    { k: 'ma', t: 'Mã', cls: 'code', w: 100 },
+    { k: 'ten', t: 'Tên chi nhánh', w: 220, r: r => <>{r.ten}{r.moi && <span className="chip info" style={{ marginLeft: 8 }}>Mới lên sổ</span>}</> },
+    { k: 'kv', t: 'Khu vực', cls: 'dim' },
+    { k: 'kho', t: 'Kho', cls: 'dim', r: r => <>{r.kho}{free && <span className="chip" style={{ marginLeft: 8 }}>Mặc định</span>}</> },
+    { k: 'nguon', t: 'Nguồn', cls: 'dim' },
+  ], [free])
+
+  const cot = useCotDs('/danh-muc/chi-nhanh', colsGoc, COT_CO_DINH)
+
   const lenSo = (ds: CnThem[], khaiSoDu: boolean) => {
     set({ cnThem: { ...s.cnThem, [s.donVi]: [...them, ...ds] } })
     setMo(false)
@@ -40,17 +54,13 @@ export function DanhMucChiNhanh({ sc, mod }: ScreenProps) {
   return (
     <div className="page">
       <PageHead crumb={[mod.ten]} title={tenMan(sc)}>
+        <NutTuyChinhCot cols={cot.colsDu} an={cot.an} coDinh={COT_CO_DINH} macDinh={cot.macDinh} dongBang={cot.dongBang}
+          onLuu={cot.luu} onDoRongTuDong={cot.datDoRongTuDong} />
         <button type="button" className="btn pri" onClick={() => setMo(true)}><Icon n="plus" className="ic sm" />Thêm chi nhánh từ FABi</button>
       </PageHead>
       {s.goi === 'F' && <Note icon="info">Gói Free: mỗi chi nhánh tự có một kho mặc định theo iPOS Inventory, không cần khai báo kho.</Note>}
       <section className="card">
-        <Table cols={[
-          { k: 'ma', t: 'Mã', cls: 'code', w: 90 },
-          { k: 'ten', t: 'Tên chi nhánh', r: r => <>{r.ten}{r.moi && <span className="chip info" style={{ marginLeft: 8 }}>Mới lên sổ</span>}</> },
-          { k: 'kv', t: 'Khu vực', cls: 'dim' },
-          { k: 'kho', t: 'Kho', cls: 'dim', r: r => <>{r.kho}{free && <span className="chip" style={{ marginLeft: 8 }}>Mặc định</span>}</> },
-          { k: 'nguon', t: 'Nguồn', cls: 'dim' },
-        ]} rows={rows} />
+        <Table cols={cot.colsHien} doRong={cot.doRong} rows={rows} />
       </section>
       {mo && <HopThemChiNhanh onDong={() => setMo(false)} onLenSo={lenSo} />}
     </div>

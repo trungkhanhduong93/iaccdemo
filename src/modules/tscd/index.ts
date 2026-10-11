@@ -1,5 +1,5 @@
 // Phân hệ Tài sản cố định (chỉ gói Pro)
-import type { ModuleDef } from '../types'
+import type { ModuleDef, ScreenDef } from '../types'
 import { tuExcel } from '../types'
 import { quyTrinh } from './quy-trinh'
 import { SO_BO_SUNG } from '../bao-cao/so-bo-sung'
@@ -9,6 +9,35 @@ export { DS, DS_TSCD }
 
 /** Nhãn ngắn trên thanh tab */
 const NGAN: Record<string, string> = { '7.1.1': 'Danh sách TSCĐ', '7.1.2': 'Tăng, giảm TSCĐ', '7.1.3': 'Tính khấu hao' }
+
+/** Danh mục tài sản cố định chuyển từ phân hệ Danh mục (1.13, T146) */
+const dmTaiSan: ScreenDef = {
+  slug: '1-13',
+  code: '1.13',
+  ten: 'Danh mục tài sản cố định',
+  ngan: 'Danh mục TSCĐ',
+  nhom: 'Danh mục',
+  kind: 'catalog',
+  icon: 'building',
+  catalog: {
+    them: 'Thêm tài sản',
+    cols: [
+      { k: 'ma', t: 'Mã TS', cls: 'code' },
+      { k: 'ten', t: 'Tên tài sản' },
+      { k: 'loai', t: 'Loại' },
+      { k: 'ngay', t: 'Ngày ghi tăng' },
+      { k: 'ng', t: 'Nguyên giá', num: true },
+      { k: 'kh', t: 'Số tháng khấu hao', num: true },
+    ],
+    rows: () => [
+      ['TS001', 'Hệ thống bếp công nghiệp Lê Lợi', 'Máy móc thiết bị', '01/03/2024', 486_000_000, 60],
+      ['TS002', 'Tủ đông 1.500 lít', 'Máy móc thiết bị', '15/05/2024', 92_500_000, 60],
+      ['TS003', 'Máy pha cà phê La Marzocco', 'Máy móc thiết bị', '01/07/2025', 268_000_000, 60],
+      ['TS004', 'Hệ thống điều hoà Thảo Điền', 'Máy móc thiết bị', '20/06/2026', 214_800_000, 72],
+      ['TS005', 'Xe tải giao hàng 1,5 tấn', 'Phương tiện vận tải', '10/01/2025', 545_000_000, 96],
+    ].map(([ma, ten, loai, ngay, ng, kh]) => ({ ma, ten, loai, ngay, ng, kh })),
+  },
+}
 
 const tscd: ModuleDef = {
   key: 'tscd', ten: 'Tài sản cố định', ngan: 'Tài sản cố định', icon: 'building', mod: 6,
@@ -36,6 +65,6 @@ const tscd: ModuleDef = {
     '7.2.2': { report: { kieu: 'tonghop', doiTuong: 'ts' } },
     '7.2.3': { report: SO_BO_SUNG['7.2.3'] },
     '7.2.4': { report: SO_BO_SUNG['7.2.4'] },
-  }, NGAN),
+  }, NGAN).concat(dmTaiSan),
 }
 export default tscd

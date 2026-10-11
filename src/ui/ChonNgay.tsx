@@ -695,3 +695,80 @@ export function LichDon({ value, onChange, onDong }: LichDonProps) {
   )
 }
 
+export interface ONgayProps {
+  value?: string
+  onChange: (val: string) => void
+  placeholder?: string
+  disabled?: boolean
+  readOnly?: boolean
+  className?: string
+  inputClassName?: string
+  title?: string
+  ariaLabel?: string
+  autoFocus?: boolean
+}
+
+/** Ô chọn ngày đơn dùng chung: gõ tay dd/mm/yyyy hoặc bấm icon/click ô mở lịch chọn (T149) */
+export function ONgay({
+  value = '',
+  onChange,
+  placeholder = 'dd/mm/yyyy',
+  disabled = false,
+  readOnly = false,
+  className = '',
+  inputClassName = '',
+  title,
+  ariaLabel,
+  autoFocus,
+}: ONgayProps) {
+  const o = useRef<HTMLDivElement>(null)
+  const [mo, setMo] = useState(false)
+
+  const moLich = () => {
+    if (!disabled && !readOnly) {
+      setMo(true)
+    }
+  }
+
+  const wrapCls = `ct-ngay ${className.split(' ').filter(c => c && c !== 'inp').join(' ')}`.trim()
+  const inpCls = `inp ${inputClassName} ${className.includes('pb-o') ? 'pb-o' : ''}`.trim()
+
+  return (
+    <div className={wrapCls} ref={o} title={title}>
+      <input
+        className={inpCls}
+        value={value}
+        placeholder={placeholder}
+        disabled={disabled}
+        readOnly={readOnly}
+        aria-label={ariaLabel}
+        autoFocus={autoFocus}
+        onChange={e => onChange(e.target.value)}
+        onClick={moLich}
+      />
+      {!disabled && !readOnly && (
+        <button
+          type="button"
+          className="ct-ngay-nut"
+          title="Chọn ngày"
+          aria-label={ariaLabel ? `Chọn ngày ${ariaLabel}` : 'Chọn ngày'}
+          tabIndex={-1}
+          onClick={() => setMo(m => !m)}
+        >
+          <Icon n="calendar" className="ic sm" />
+        </button>
+      )}
+      <Popover anchor={o} open={mo} onClose={() => setMo(false)} align="start" width={272} className="dp-pop">
+        <LichDon
+          value={value}
+          onChange={v => {
+            onChange(v)
+            setMo(false)
+          }}
+          onDong={() => setMo(false)}
+        />
+      </Popover>
+    </div>
+  )
+}
+

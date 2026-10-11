@@ -17,12 +17,14 @@ import { FormToanMan } from '../FormToanMan'
 import { LichSu } from './ChungTuForm'
 import { HopXacNhan, NutTuyChinhCot, ONhanVien, useCotDs } from '../LocNangCao'
 import { NutExcel, NutThemMoiSplit } from '../CongCuDs'
+import { sinhCotBoSung } from './TuyChonCotDM'
+import { ONgay } from '../ChonNgay'
 
 /** Mã mở form thêm hàng loạt trên đường dẫn: ?moi=hang-loat */
 const HANG_LOAT = 'hang-loat'
 
-/** Cột luôn hiện, không ẩn được ở Tuỳ chỉnh cột */
-const COT_CO_DINH = new Set(['_stt'])
+/** Cột luôn hiện, không ẩn được ở Tuỳ chỉnh cột (T148) */
+const COT_CO_DINH = new Set(['_stt', 'ma', 'ten', 'so'])
 import { TEN_DVT, demHangTheoNhom } from '../../modules/danh-muc/data'
 
 export function CatalogScreen({ sc }: ScreenProps) {
@@ -42,11 +44,15 @@ export function CatalogScreen({ sc }: ScreenProps) {
   const [tichLoc, setTichLoc] = useState(cfg.tich?.macDinh ?? false)
   const [moHangLoat, setMoHangLoat] = useState(false)
   const rows = useMemo(() => all.filter(r => (!nhom || r[cfg.nhomLoc!] === nhom) && (!q || fold(Object.values(r).join(' ')).includes(fold(q))) && (!tichLoc || !cfg.tich || cfg.tich.loc(r))), [all, nhom, q, tichLoc])
-  const cols0 = useMemo(() => typeof cfg.cols === 'function' ? cfg.cols(s.goi) : cfg.cols, [sc, s.goi])
+  const cols0 = useMemo(() => typeof cfg.cols === 'function' ? cfg.cols(s.goi, s.cheDo) : cfg.cols, [sc, s.goi, s.cheDo])
   const cols: Col[] = useMemo(() => [
     ...(cfg.stt ? [{ k: '_stt', t: 'STT', w: 60, c: true }] : []),
-    ...cols0,
-    { k: '_tt', t: 'Trạng thái', r: r => r._tt === 0 ? <St k="dim">Ngừng dùng</St> : <St k="ok">Đang dùng</St> },
+    ...cols0.map(c => {
+      if (c.k === 'ma' && !c.w) return { ...c, w: 100 }
+      if (c.k === 'ten' && !c.w) return { ...c, w: 220 }
+      return c
+    }),
+    { k: '_tt', t: 'Trạng thái', w: 120, c: true, r: r => r._tt === 0 ? <St k="dim">Ngừng dùng</St> : <St k="ok">Đang dùng</St> },
     ...(cfg.chucNang ? [{
       k: '_cn',
       t: 'Chức năng',
@@ -74,9 +80,13 @@ export function CatalogScreen({ sc }: ScreenProps) {
         )
       },
     }] : []),
-  ], [cols0, sc])
+  ], [cols0, sc, cfg.stt, cfg.chucNang])
   // Khối trường của danh mục: cấu hình riêng của màn, theo mã màn, hoặc dự phòng từ cột
   const cauHinh = cfg.truong ?? TRUONG_DM[sc.code ?? ''] ?? TRUONG_DM[sc.slug ?? '']
+  const cotBoSung = useMemo(() => sinhCotBoSung(cols, cauHinh, s.goi, s.cheDo), [cols, cauHinh, s.goi, s.cheDo])
+  const tatCaCols = useMemo(() => [...cols, ...cotBoSung], [cols, cotBoSung])
+  // Thứ tự, ẩn hiện, độ rộng cột lưu theo màn dùng chung useCotDs (T148)
+  const cot = useCotDs(`/danh-muc/${sc.slug ?? sc.code ?? 'chung'}`, tatCaCols, COT_CO_DINH)
   const [dienSan, setDienSan] = useState<Row | undefined>(undefined)
   // Bấm dòng: gán luôn giá trị form cùng lượt vẽ, không đợi useEffect vẽ lần hai
   const moSua = useCallback((r: Row | null, kieu?: string, them?: Row) => {
@@ -84,7 +94,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
     setDienSan(them)
   }, [])
   // STT đánh lại theo dòng đang hiện sau tìm, lọc
-  const rowsHien = useMemo((): Row[] => cfg.stt ? rows.map((r, i) => ({ ...r, _stt: i + 1 })) : rows, [rows])
+  const rowsHien = useMemo((): Row[] => cfg.stt ? rows.map((r, i) => ({ ...r, _stt: i + 1 })) : rows, [rows, cfg.stt])
   // Kiểu danh sách chứng từ (dsChungTu): phân trang, dòng Tổng, chọn dòng xem chi tiết ở khung dưới như danh sách thu chi
   const dsct = cfg.dsChungTu
   // Kiểu thêm mới hiện theo gói đang dùng
@@ -98,19 +108,17 @@ export function CatalogScreen({ sc }: ScreenProps) {
   const [chon, setChon] = useState<Row | null>(null)
   const [moCt, setMoCt] = useState(false)
   const trangHt = Math.min(trang, Math.max(1, Math.ceil(rowsHien.length / coTrang)))
-  const rowsTrang = useMemo(() => dsct ? rowsHien.slice((trangHt - 1) * coTrang, trangHt * coTrang) : rowsHien, [rowsHien, trangHt, coTrang])
+  const rowsTrang = useMemo(() => dsct ? rowsHien.slice((trangHt - 1) * coTrang, trangHt * coTrang) : rowsHien, [rowsHien, trangHt, coTrang, dsct])
   const cong = (ds: Row[]) => Object.fromEntries((dsct?.cotCong ?? []).map(k => [k, ds.reduce((a, r) => a + (Number(r[k]) || 0), 0)]))
   // Dòng đang xem ở khung dưới: dòng đã chọn nếu còn trong danh sách, không thì dòng đầu
   const dangChon = (chon && rowsHien.find(r => r[cols0[0].k] === chon[cols0[0].k])) ?? rowsHien[0]
-  // Thứ tự, ẩn hiện, độ rộng cột lưu theo màn như danh sách chứng từ
-  const cot = useCotDs(`/danh-muc/${sc.slug}`, cols, COT_CO_DINH)
   const bang = useMemo(() => dsct
     ? <Table cols={cot.colsHien.map(c => c.k === dsct.cotSo ? { ...c, r: (r: Row) => (
           <button type="button" className="ds-link-so" title={String(r[c.k] ?? '')} onClick={e => { e.stopPropagation(); moSua(r) }}>{r[c.k]}</button>
         ) } : c)} doRong={cot.doRong} rows={rowsTrang} motDong keDoc onRow={setChon} onDbl={moSua}
         rowCls={r => dangChon && r[cols0[0].k] === dangChon[cols0[0].k] ? 'dang-chon' : ''}
         sum={{ [cols[0].k]: `Tổng: ${rowsTrang.length}`, ...cong(rowsTrang) }} />
-    : <Table cols={cols} rows={rowsHien} motDong onRow={moSua} />, [cols, cot.colsHien, cot.doRong, rowsHien, rowsTrang, moSua, dangChon])
+    : <Table cols={cot.colsHien} doRong={cot.doRong} rows={rowsHien} motDong onRow={moSua} />, [dsct, cot.colsHien, cot.doRong, rowsTrang, dangChon, cols0, cols, rowsHien, moSua])
   const ten = tenMan(sc)
 
 
@@ -191,6 +199,8 @@ export function CatalogScreen({ sc }: ScreenProps) {
             phai={
               <div className="row" style={{ gap: 8 }}>
                 <span className="muted" style={{ fontSize: 12, marginRight: 4 }}>{rows.length}/{all.length} dòng</span>
+                <NutTuyChinhCot cols={cot.colsDu} an={cot.an} coDinh={COT_CO_DINH} macDinh={cot.macDinh} dongBang={cot.dongBang}
+                  onLuu={cot.luu} onDoRongTuDong={cot.datDoRongTuDong} />
                 <button type="button" className="btn" onClick={() => toast('Nhập danh mục từ Excel')}><Icon n="upload" className="ic sm" />Nhập Excel</button>
                 <button type="button" className="btn" onClick={() => toast(`Đã xuất ${rows.length} dòng ra Excel`)}><Icon n="download" className="ic sm" />Xuất Excel</button>
                 {cfg.nutPhu && <button type="button" className={`btn${choThem ? '' : ' pri'}`} onClick={() => toast(cfg.nutPhu!.bao)}><Icon n={cfg.nutPhu.icon} className="ic sm" />{cfg.nutPhu.nhan}</button>}
@@ -383,7 +393,7 @@ export function CatalogPanel({
   }, [edit, onDong])
 
   const dsKhoi: KhoiDM[] = useMemo(() => {
-    if (cauHinh?.khoi) return cauHinh.khoi.filter(kh => !kh.goi || kh.goi.includes(s.goi))
+    if (cauHinh?.khoi) return cauHinh.khoi.filter(kh => (!kh.goi || kh.goi.includes(s.goi)) && (!kh.cheDo || kh.cheDo.includes(s.cheDo)))
     if (cols0.length > 0) {
       const dsTuCot: TruongDM[] = cols0.map(c => ({
         k: c.k,
@@ -394,7 +404,7 @@ export function CatalogPanel({
       return [{ ten: 'Thông tin chung', truong: dsTuCot }]
     }
     return []
-  }, [cauHinh, cols0, s.goi])
+  }, [cauHinh, cols0, s.goi, s.cheDo])
 
   const dsTk = useMemo(() => heThongTk(s.cheDo), [s.cheDo])
   // Lựa chọn của ô chọn tính một lần theo khoá trường, dùng lại giữa các lần vẽ
@@ -426,7 +436,7 @@ export function CatalogPanel({
     return v ?? ''
   }
 
-  const hienO = (tr: TruongDM) => (!tr.goi || tr.goi.includes(s.goi)) && (!tr.hien || tr.hien(formVal))
+  const hienO = (tr: TruongDM) => (!tr.goi || tr.goi.includes(s.goi)) && (!tr.cheDo || tr.cheDo.includes(s.cheDo)) && (!tr.hien || tr.hien(formVal))
   // Nút phụ ở chân panel theo màn (vd Áp cho hàng hoá trong nhóm, T136)
   const nutPhu = typeof nutChanPhu === 'function' ? nutChanPhu(formVal) : nutChanPhu
   const isMo = (tenK: string) => moKhoi[tenK] !== false
@@ -588,11 +598,21 @@ export function CatalogPanel({
                           setErrors(err => ({ ...err, [tr.k]: '' }))
                         }}
                       />
+                    ) : tr.kieu === 'ngay' ? (
+                      <ONgay
+                        value={String(formVal[tr.k] ?? '')}
+                        readOnly={tr.chiDoc}
+                        placeholder="dd/mm/yyyy"
+                        ariaLabel={tr.nhan}
+                        onChange={v => {
+                          doiO(tr.k, v)
+                          setErrors(err => ({ ...err, [tr.k]: '' }))
+                        }}
+                      />
                     ) : (
                       <input
                         className={`inp${tr.kieu === 'tien' ? ' pn-tien' : tr.kieu === 'so' ? ' pn-so' : ''}`}
                         readOnly={tr.chiDoc}
-                        placeholder={tr.kieu === 'ngay' ? 'dd/mm/yyyy' : undefined}
                         value={formatGiaTri(tr, formVal[tr.k])}
                         onChange={e => {
                           doiO(tr.k, cauHinh?.soQuocTe && laSo(tr) ? nhapSoQT(e.target.value) : e.target.value)

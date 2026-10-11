@@ -9,6 +9,7 @@ import { ChonDanhMuc } from '../../ui/ChonDanhMuc'
 import { CCDC_HANG } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
 import { docSoQT, nhapSoQT, soQT } from '../../ui/format'
+import { ONgay } from '../../ui/ChonNgay'
 
 export const LOAI_THE: Record<string, { tienTo: string; muc: string }> = {
   'Chi phí trả trước': { tienTo: 'CPTT', muc: 'mục chi phí' },
@@ -112,11 +113,23 @@ function capMa(v: V, the: Row[]): DongPb[] {
   return dong.map(d => d._maTay && !CCDC_HANG.some(h => h.ma === d.ma) ? d : { ...d, ma: `${tt.tienTo}.${pad(++n, 4)}`, dvt: undefined, _maTay: false })
 }
 
-/** Ô nhập trong lưới: số kiểu quốc tế hoặc chữ */
+/** Ô nhập trong lưới: số kiểu quốc tế hoặc chữ, ngày có lịch (T149) */
 export function ONhap({ v, so: laSo, ten, onDoi, chiDoc }: { v: unknown; so?: boolean; ten: string; onDoi?: (s: string) => void; chiDoc?: boolean }) {
+  if (ten.startsWith('Ngày')) {
+    return (
+      <ONgay
+        className="pb-o"
+        ariaLabel={ten}
+        readOnly={chiDoc}
+        value={String(v ?? '')}
+        placeholder="dd/mm/yyyy"
+        onChange={s => onDoi?.(s)}
+      />
+    )
+  }
   return (
     <input className={`inp pb-o${laSo ? ' pn-tien' : ''}`} aria-label={ten} readOnly={chiDoc}
-      value={laSo ? soQT(v) : String(v ?? '')} placeholder={ten.startsWith('Ngày') ? 'dd/mm/yyyy' : undefined}
+      value={laSo ? soQT(v) : String(v ?? '')}
       onChange={e => onDoi?.(laSo ? nhapSoQT(e.target.value) : e.target.value)} />
   )
 }
@@ -253,7 +266,7 @@ export const THE_PHAN_BO: CauHinhDM = {
           {v._goc ? <Link className="inp tt-mua-so" to={v._goc} title="Mở phiếu chi gốc">{v.soCt}</Link>
             : <input className="inp" value={v.soCt ?? ''} onChange={e => doi('soCt', e.target.value)} />}</div>
         <div className="f"><label>Ngày chứng từ</label>
-          <input className="inp" value={v.ngayCt ?? ''} placeholder="dd/mm/yyyy" readOnly={Boolean(v._goc)} onChange={e => doi('ngayCt', e.target.value)} /></div>
+          <ONgay value={v.ngayCt ?? ''} placeholder="dd/mm/yyyy" readOnly={Boolean(v._goc)} onChange={val => doi('ngayCt', val)} /></div>
         <div className="f tt-mua-gc"><label>Ghi chú</label>
           <input className="inp" value={v.ghiChuCt ?? ''} readOnly={Boolean(v._goc)} onChange={e => doi('ghiChuCt', e.target.value)} /></div>
       </div>

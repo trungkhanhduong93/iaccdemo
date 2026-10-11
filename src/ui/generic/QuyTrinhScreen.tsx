@@ -19,10 +19,10 @@ const TOP = 8         // khoảng từ mép hàng tới ô biểu tượng
 export function QuyTrinhScreen({ mod }: ScreenProps) {
   const { s, set } = useSession()
   const an = anNgoaiGoi(s.goi)
-  // Gói Free bỏ ô ngoài gói, làn trống, bước trống (QD22); ô tới màn chỉ có ở gói khác (khai goi, T141) thì gói nào cũng bỏ
+  // Gói Free bỏ ô ngoài gói, làn trống, bước trống (QD22); ô tới màn chỉ có ở gói khác (khai goi, T141) hoặc thông tư khác (T147) thì ẩn
   const hien = (n: NutQT) => {
     const m = moNut(n, s.goi)
-    if (m.sc?.goi && !m.sc.goi.includes(s.goi)) return false
+    if (m.sc && !hienMan(m.sc, s.goi, s.cheDo, s)) return false
     return !an || m.ok
   }
   const goc0 = mod.quyTrinh!
@@ -64,7 +64,7 @@ export function QuyTrinhScreen({ mod }: ScreenProps) {
               <button className="btn sm" onClick={() => set({ goi: can })}>Xem thử gói {GOI[can].ten}</button>
             </Note>
           )}
-          {qt.hoiTu ? <SoDoHoiTu lan={qt.hoiTu.lan} ra={qt.hoiTu.ra} goi={s.goi} modKey={mod.key} />
+          {qt.hoiTu ? <SoDoHoiTu lan={qt.hoiTu.lan} ra={qt.hoiTu.ra} goi={s.goi} modKey={mod.key} danhSo={qt.danhSo} hienLinkBaoCao={!qt.khongBaoCao && Boolean(qt.baoCao && qt.baoCao.length > 0)} />
             : luong ? <SoDoLuong cot={luong} goi={s.goi} /> : <SoDo qt={qt} goi={s.goi} />}
         </section>
         {/* Sơ đồ hội tụ đã có khối sổ sách, báo cáo ở cuối nên bỏ khung Báo cáo bên phải để khỏi trùng */}
@@ -230,7 +230,7 @@ function SoDoLuong({ cot, goi }: { cot: CotQT[]; goi: Goi }) {
 }
 
 /** Sơ đồ hội tụ: mỗi làn một hàng thấp xếp dọc bên trái, đường nối từ từng làn gom về khối kết quả bên phải */
-function SoDoHoiTu({ lan, ra, goi, modKey }: { lan: LanQT[]; ra: LanQT; goi: Goi; modKey: string }) {
+function SoDoHoiTu({ lan, ra, goi, modKey, danhSo, hienLinkBaoCao }: { lan: LanQT[]; ra: LanQT; goi: Goi; modKey: string; danhSo?: boolean; hienLinkBaoCao?: boolean }) {
   const ref = useRef<HTMLDivElement>(null)
   const [ve, setVe] = useState<{ w: number; h: number; d: string; mui: string } | null>(null)
   // Đo vị trí thật của làn, nút cuối mỗi làn, cột gom, khối Sổ sách rồi vẽ toàn bộ đường nối bằng một SVG.
@@ -282,7 +282,7 @@ function SoDoHoiTu({ lan, ra, goi, modKey }: { lan: LanQT[]; ra: LanQT; goi: Goi
 
   return (
     <div className="qt-so">
-      <div className="qt-ht" ref={ref}>
+      <div className={`qt-ht ${danhSo ? 'danh-so' : ''}`} ref={ref}>
         {ve && (
           <svg className="qt-ht-svg" width={ve.w} height={ve.h} aria-hidden>
             <path d={ve.d} />
@@ -290,16 +290,23 @@ function SoDoHoiTu({ lan, ra, goi, modKey }: { lan: LanQT[]; ra: LanQT; goi: Goi
           </svg>
         )}
         <div className="qt-ht-lan">
-          {lan.map(l => (
+          {lan.map((l, i) => (
             <div key={l.ten} className={`qt-lan qt-ht-${l.tone ?? 'info'}`}>
               <div className="qt-lan-ten" title={l.ten}>
-                <span className="qt-ht-ic"><Icon n={l.icon ?? l.nut[0].icon} className="ic" /></span>
+                <span className="qt-ht-ic">
+                  <Icon n={l.icon ?? l.nut[0].icon} className="ic" />
+                  {danhSo && <i className="qt-so-buoc">{i + 1}</i>}
+                </span>
                 <span className="qt-ht-t">{l.ten}</span>
               </div>
-              <div className="qt-lan-nut">{l.nut.map(n => (
+              <div className="qt-lan-nut">{l.nut.map((n, idx) => (
                 <Fragment key={n.di || n.ten}>
-                  {/* Ô nối tiếp ô trước trong làn: mũi tên có chữ nhỏ, mờ (T98) */}
-                  {n.noi && <span className="qt-ht-noi" aria-hidden><small>{n.noi}</small><i /></span>}
+                  {/* Ô nối tiếp ô trước trong làn: mũi tên có chữ nhỏ, mờ (T98); khi danhSo thì các ô nối nhau bằng mũi tên không chữ (T146) */}
+                  {n.noi ? (
+                    <span className="qt-ht-noi" aria-hidden><small>{n.noi}</small><i /></span>
+                  ) : (danhSo && idx > 0 ? (
+                    <span className="qt-ht-noi" aria-hidden><i /></span>
+                  ) : null)}
                   <NutNgang n={n} goi={goi} />
                 </Fragment>
               ))}</div>
@@ -308,9 +315,9 @@ function SoDoHoiTu({ lan, ra, goi, modKey }: { lan: LanQT[]; ra: LanQT; goi: Goi
         </div>
         <div className="qt-ht-gom" />
         <div className="qt-ht-ra">
-          <div className="qt-ht-dau"><span className="qt-ht-ic"><Icon n="book" className="ic" /></span>{ra.ten}</div>
+          <div className="qt-ht-dau"><span className="qt-ht-ic"><Icon n={ra.icon ?? 'book'} className="ic" /></span>{ra.ten}</div>
           {ra.nut.map(n => <NutNgang key={n.di} n={n} goi={goi} dong />)}
-          <Link to={`/app/${modKey}/bao-cao`} className="qt-ht-all">Tất cả báo cáo<Icon n="arrow" className="ic sm" /></Link>
+          {hienLinkBaoCao && <Link to={`/app/${modKey}/bao-cao`} className="qt-ht-all">Tất cả báo cáo<Icon n="arrow" className="ic sm" /></Link>}
         </div>
       </div>
     </div>
