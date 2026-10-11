@@ -19,6 +19,7 @@ import { HopXacNhan, NutTuyChinhCot, ONhanVien, useCotDs } from '../LocNangCao'
 import { NutExcel, NutThemMoiSplit } from '../CongCuDs'
 import { sinhCotBoSung } from './TuyChonCotDM'
 import { ONgay } from '../ChonNgay'
+import { ChonCoTim } from '../../modules/danh-muc/QuyDoiDvt'
 
 /** Mã mở form thêm hàng loạt trên đường dẫn: ?moi=hang-loat */
 const HANG_LOAT = 'hang-loat'
@@ -37,7 +38,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
   const [q, setQ] = useState('')
   const [nhom, setNhom] = useState('')
   const [edit, setEdit] = useState<Row | null>(null)
-  const [xacNhanAp, setXacNhanAp] = useState<{ n: number; ten: string } | null>(null)
+  const [xacNhanAp, setXacNhanAp] = useState<{ n: number; ten: string; nganhNghe?: string } | null>(null)
 
   // Danh sách, cột và bảng ghi nhớ lại: mở panel hay gõ trong panel không vẽ lại cả bảng danh sách phía sau (T81)
   const nhoms = useMemo(() => cfg.nhomLoc ? [...new Set(all.map(r => r[cfg.nhomLoc!]))] : [], [all])
@@ -281,7 +282,10 @@ export function CatalogScreen({ sc }: ScreenProps) {
               <button
                 type="button"
                 className="btn"
-                onClick={() => setXacNhanAp({ n: val.ten ? demHangTheoNhom(val.ten) : 0, ten: val.ten || '' })}
+                onClick={() => setXacNhanAp({
+                  n: val.ten ? demHangTheoNhom(val.ten) : 0, ten: val.ten || '',
+                  nganhNghe: (s.cheDo === 'TT152' || s.cheDo === 'TT58') && val.nganhNghe ? String(val.nganhNghe) : undefined,   // T151: TT152, TT58 áp cả ngành nghề, ghi đè ngành nghề của hàng
+                })}
               >
                 Áp cho {val.ten ? demHangTheoNhom(val.ten) : 0} hàng hoá trong nhóm
               </button>
@@ -302,11 +306,11 @@ export function CatalogScreen({ sc }: ScreenProps) {
           nutHuy="Không"
           onDong={() => setXacNhanAp(null)}
           onDongY={() => {
-            toast(`Đã áp thông tin ngầm định cho ${xacNhanAp.n} hàng hoá`)
+            toast(`Đã áp thông tin ngầm định${xacNhanAp.nganhNghe ? `, ngành nghề ${xacNhanAp.nganhNghe}` : ''} cho ${xacNhanAp.n} hàng hoá`)
             setXacNhanAp(null)
           }}
         >
-          Áp thông tin ngầm định của nhóm {xacNhanAp.ten} cho {xacNhanAp.n} hàng hoá trong nhóm?
+          Áp thông tin ngầm định của nhóm {xacNhanAp.ten}{xacNhanAp.nganhNghe && `, gồm nhóm ngành nghề con ${xacNhanAp.nganhNghe}`} cho {xacNhanAp.n} hàng hoá trong nhóm?
         </HopXacNhan>
       )}
     </div>
@@ -590,8 +594,14 @@ export function CatalogPanel({
                         }}
                       />
                     ) : tr.kieu === 'chonNhieu' ? (
-                      <ChonNhieu ds={tr.ds ?? []} giaTri={String(formVal[tr.k] ?? '')} nhan={tr.nhan}
+                      <ChonNhieu ds={tr.ds ?? []} giaTri={String(formVal[tr.k] ?? '')} nhan={tr.nhan} goiY={tr.goiY}
                         onDoi={v => { doiO(tr.k, v); setErrors(err => ({ ...err, [tr.k]: '' })) }} />
+                    ) : tr.kieu === 'chonTim' ? (
+                      // Ô chọn có tìm, mỗi dòng tên và mã; ô đã chọn hiện "mã · tên" (T151)
+                      <ChonCoTim nhan={tr.nhan} value={String(formVal[tr.k] ?? '')}
+                        ds={(tr.ds ?? []).map(v => ({ v, t: tr.nhanDs ? tr.nhanDs(v) : v, phu: `Mã: ${v}` }))}
+                        hienChon={m => `${m.v} · ${m.t}`}
+                        onChange={v => { doiO(tr.k, v); setErrors(err => ({ ...err, [tr.k]: '' })) }} />
                     ) : tr.kieu === 'chon' ? (
                       <Select
                         className="inp"
@@ -766,16 +776,18 @@ export function CatalogPanel({
   )
 }
 
-/** Ô chọn nhiều của form danh mục: lưu dạng "A, B"; chọn đủ lưu "Tất cả", bỏ hết cũng hiểu là tất cả (T144) */
-function ChonNhieu({ ds, giaTri, nhan, onDoi }: { ds: string[]; giaTri: string; nhan: string; onDoi: (v: string) => void }) {
+/** Ô chọn nhiều của form danh mục: lưu dạng "A, B"; chọn đủ lưu "Tất cả", bỏ hết cũng hiểu là tất cả (T144)
+ *  Có goiY thì chọn đủ hay bỏ hết đều lưu rỗng, ô hiện chữ gợi ý mờ (T151) */
+function ChonNhieu({ ds, giaTri, nhan, goiY, onDoi }: { ds: string[]; giaTri: string; nhan: string; goiY?: string; onDoi: (v: string) => void }) {
   const chon = !giaTri || giaTri === 'Tất cả' ? ds : giaTri.split(', ').filter(x => ds.includes(x))
   const bat = (x: string) => {
     const moi = chon.includes(x) ? chon.filter(y => y !== x) : ds.filter(y => y === x || chon.includes(y))
-    onDoi(moi.length === ds.length || moi.length === 0 ? 'Tất cả' : moi.join(', '))
+    onDoi(moi.length === ds.length || moi.length === 0 ? (goiY ? '' : 'Tất cả') : moi.join(', '))
   }
+  const trong = goiY && chon.length === ds.length
   return (
     <Dropdown btnClass="inp pn-nhieu" title={nhan} label={<>
-      <span className="pn-nhieu-chon">{chon.length === ds.length ? 'Tất cả' : chon.join(', ')}</span>
+      <span className={`pn-nhieu-chon${trong ? ' pn-nhieu-goi-y' : ''}`}>{trong ? goiY : chon.length === ds.length ? 'Tất cả' : chon.join(', ')}</span>
       <Icon n="chevd" className="ic sm" />
     </>}>
       {ds.map(x => <MenuItem key={x} on={chon.includes(x)} onClick={() => bat(x)}>{x}</MenuItem>)}

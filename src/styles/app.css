@@ -6835,3 +6835,52 @@ table.tbl {
 .dm-bang > .empty { flex: 1; }
 .dm-bang > .tbl-foot { flex: none; border-top: 1px solid var(--line-2); }
 .page-dm .tk-tbl-wrap .tbl-wrap { max-height: none; min-height: 0; }
+
+/* ── Hàng hoá theo iFaster: thuế ngành nghề, quy đổi ĐVT (T151) ── */
+/* Ô chọn có tìm: tên ngành nghề dài thì xuống dòng, tối đa 2 dòng */
+.pop-tim { max-height: 380px; }
+.pop-tim .mi { align-items: flex-start; padding: 8px 10px; }
+.pop-tim .mi + .mi { margin-top: 2px; }
+.pop-tim .mi-t { gap: 2px; }
+.pop-tim .mi-t b { font-weight: 600; white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.35; }
+.pop-tim .mi-ok { margin-top: 2px; }
+.ct-dau { flex: none; display: flex; gap: 4px; padding: 6px 8px; border-bottom: 1px solid var(--line-2); background: var(--soft); }
+.ct-goi-y, .pn-nhieu-goi-y { color: var(--faint); }
+
+/* Bảng quy đổi trong form hàng hoá */
+.qd-khoi { display: flex; flex-direction: column; gap: 10px; }
+.qd-thanh { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 12.5px; }
+.qd-thanh b { color: var(--ink); }
+.qd-bang { width: 100%; border-collapse: collapse; font-size: 12.5px; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.qd-bang th { background: var(--th); color: var(--ink); font-weight: 600; text-align: left; padding: 7px 10px; white-space: nowrap; }
+.qd-bang td { padding: 7px 10px; border-top: 1px solid var(--line-2); color: var(--body); vertical-align: middle; }
+.qd-bang tbody tr { cursor: pointer; }
+.qd-bang tbody tr:hover td { background: var(--tint); }
+.qd-bang tr.qd-tat td { color: var(--faint); }
+.qd-bang .qd-so { text-align: right; font-variant-numeric: tabular-nums; }
+.qd-bang .qd-giua { text-align: center; width: 76px; }
+.qd-bang td b { font-weight: 600; color: var(--ink); }
+.qd-bang tr.qd-tat td b { color: var(--faint); }
+.qd-ma { display: block; font-size: 11px; color: var(--muted); }
+
+/* Hộp thêm, sửa quy đổi: nằm trên panel danh mục */
+.qd-hop-nen { z-index: 70; }
+.qd-hop { width: 480px; }
+.qd-hop .ds-hop-dau { border-bottom: 1px solid var(--line-2); color: var(--blue-d); }
+.qd-hop .ds-hop-dau b { color: var(--ink); }
+.qd-hop-than { display: flex; flex-direction: column; gap: 12px; padding: 14px 16px 16px; overflow: auto; }
+.qd-hop-than .f { display: flex; flex-direction: column; gap: 4px; }
+.qd-hop-than .f label { font-size: 12.5px; font-weight: 600; color: var(--body); }
+.qd-hop-than .f label em { color: var(--red); font-style: normal; }
+.qd-goi-y { margin: 0; font-size: 12.5px; }
+.qd-cap { display: flex; flex-direction: column; gap: 6px; padding: 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--hdb-chan); }
+.qd-dao { align-self: center; display: grid; place-items: center; width: 30px; height: 30px; border: 1px solid var(--line); border-radius: 50%; background: var(--white); color: var(--blue); cursor: pointer; transform: rotate(90deg); transition: border-color .15s, background .15s; }
+.qd-dao:hover { border-color: var(--blue); background: var(--tint); }
+.qd-xem { display: flex; align-items: center; gap: 8px; padding: 9px 12px; border-radius: 8px; background: var(--tint); color: var(--blue-d); font-size: 13.5px; }
+.qd-xem b { font-weight: 700; }
+.qd-xem.trong { background: var(--soft); color: var(--muted); }
+.qd-ap { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.qd-ap button { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--white); color: var(--ink); font-size: 13px; font-weight: 600; text-align: left; cursor: pointer; min-width: 0; }
+.qd-ap button small { font-size: 11.5px; font-weight: 400; color: var(--muted); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.qd-ap button.on { border-color: var(--blue); background: var(--tint); color: var(--blue-d); box-shadow: 0 0 0 1px var(--blue) inset; }
+.qd-loi { display: flex; align-items: center; gap: 6px; padding: 8px 10px; border-radius: 8px; background: var(--red-t); color: var(--red); font-size: 12.5px; font-weight: 500; }

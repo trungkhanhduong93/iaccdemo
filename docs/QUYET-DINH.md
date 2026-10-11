@@ -530,3 +530,13 @@ Lý do: Trum giao T136, T137 ngày 10/10/2026, chốt các mặc định agent �
 - Mọi ô một ngày dùng chung ô có lịch `ONgay` (`src/ui/ChonNgay.tsx`), giá trị vẫn là dd/mm/yyyy.
 
 Lý do: Trum giao T146 đến T149 ngày 11/10/2026, chốt các mặc định agent đề xuất cùng ngày.
+
+## QD49. Hàng hoá theo iFaster: thuế ngành nghề, thương hiệu (11/10/2026)
+
+- Hàng hoá ở TT152, TT58 khai thuế theo nhóm ngành nghề con, danh sách 37 ngành nghề lấy từ iFaster. Chọn ngành nghề con thì tự điền nhóm ngành nghề và % GTGT, % TNCN (TT58 ghi là TNDN). Tỷ lệ vẫn sửa được.
+- TT133, TT99 giữ thuế suất GTGT 0, 5, 8, 10%, không có khối ngành nghề.
+- Nhóm hàng hoá có ngành nghề con ngầm định ở khối Thông tin chung. Hàng chọn nhóm thì tự điền khi ô ngành nghề đang trống.
+- Danh mục Thương hiệu đứng sau Chi nhánh, đồng bộ từ FABi. Hàng hoá thuộc một thương hiệu. Kho phục vụ nhiều thương hiệu, để trống là mọi thương hiệu.
+- Form hàng hoá có Kho theo dõi, Nhà cung cấp (để trống là tất cả) và bảng quy đổi ĐVT có hộp thêm, sửa như iFaster.
+
+Lý do: Trum giao T151 ngày 11/10/2026, chốt các đề xuất của agent cùng ngày.

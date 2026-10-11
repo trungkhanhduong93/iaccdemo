@@ -5,7 +5,8 @@ import { tuExcel } from '../types'
 import { quyTrinh } from './quy-trinh'
 import { kieuGhiSo } from '../../app/plan'
 import { CCDC_HANG, CHI_NHANH, HANG, KHACH, KHO, LY_DO, NCC, NHAN_VIEN, NVL } from '../../data/mock'
-import { DON_VI_TINH, tkCot, taiKhoan, NHOM_HANG, NHOM_DOI_TUONG, NHOM_MUC_CP, NHOM_CONG_VIEC, NHOM_KHO, DS_PTTT } from './data'
+import { DON_VI_TINH, tkCot, taiKhoan, NHOM_HANG, NHOM_DOI_TUONG, NHOM_MUC_CP, NHOM_CONG_VIEC, NHOM_KHO, DS_PTTT, DS_THUONG_HIEU, QUY_DOI_DVT } from './data'
+import { timNganhNghe } from './nganh-nghe'
 import { HeThongTaiKhoan } from './HeThongTaiKhoan'
 import { tkTheoCheDo } from '../tong-hop/so-cai'
 import { Note } from '../../ui/Page'
@@ -97,6 +98,32 @@ const nhomKho: ScreenDef = {
  *  Thêm chi nhánh từ cửa hàng FABi chưa dùng kế toán (T142) */
 const chiNhanh: ScreenDef = { slug: 'chi-nhanh', ten: 'Danh mục chi nhánh', ngan: 'Chi nhánh', nhom: 'Danh mục', kind: 'custom', icon: 'chinhanh', comp: DanhMucChiNhanh }
 
+/** Thương hiệu của chuỗi lấy từ FABi, gói nào cũng mở (T151) */
+const thuongHieu: ScreenDef = {
+  slug: 'thuong-hieu', ten: 'Danh mục thương hiệu', ngan: 'Thương hiệu', nhom: 'Danh mục', kind: 'catalog', icon: 'tag',
+  catalog: {
+    them: 'Thêm thương hiệu',
+    khongThem: ['F', 'S'],   // gói Free, Standard lấy thương hiệu từ FABi, không thêm mới
+    nutPhu: { nhan: 'Đồng bộ từ FABi', icon: 'refresh', bao: `Đã đồng bộ ${DS_THUONG_HIEU.length} thương hiệu từ FABi` },
+    cols: [
+      { k: 'ma', t: 'Mã', cls: 'code' },
+      { k: 'ten', t: 'Tên thương hiệu' },
+      { k: 'ghiChu', t: 'Ghi chú', cls: 'dim' },
+    ],
+    rows: () => DS_THUONG_HIEU,
+  },
+}
+
+/** Ngành nghề tính thuế của hàng hoá theo mã: tự điền nhóm và 2 tỷ lệ (T151) */
+const nganhNghe = (ma: string) => {
+  const n = timNganhNghe(ma)
+  return n ? { nganhNghe: ma, nhomNganh: n.tenNhom, thueGtgt: String(n.gtgt).replace('.', ','), thueTn: String(n.tncn).replace('.', ',') } : {}
+}
+/** Hàng bán thẳng mua về bán lại: bia, nước suối */
+const BAN_THANG = new Set(['BIA01', 'NS01'])
+/** Đồ uống pha chế bán dưới thương hiệu quầy cà phê */
+const PHA_CHE = new Set(['CF01', 'TRA01'])
+
 /** Danh mục phương thức thanh toán ngoài Excel (T137, chưa đối chiếu bảng DM_) */
 const phuongThucThanhToan: ScreenDef = {
   slug: 'phuong-thuc-thanh-toan',
@@ -134,13 +161,18 @@ const danhMuc: ModuleDef = {
       them: 'Thêm hàng hoá', nhomLoc: 'nhom',
       chucNang: r => r.tkKho === '152' ? [{ nhan: 'Xem thẻ kho', di: 'kho/5-2-1' }] : r.tkKho === '153' ? [{ nhan: 'Xem thẻ chi phí', di: 'ccdc/8-1-1' }] : [{ nhan: 'Xem doanh thu', di: 'ban-hang/3-2-5' }],
       cols: (goi, cheDo) => [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên hàng hoá' }, { k: 'nhom', t: 'Nhóm' }, { k: 'dvt', t: 'ĐVT' },
-        { k: 'gia', t: 'Giá bán', num: true }, { k: 'ts', t: 'Thuế suất', num: true, r: r => r.ts ? `${r.ts}%` : 'KCT' },
+        { k: 'thuongHieu', t: 'Thương hiệu' },
+        // TT152, TT58 tính thuế theo tỷ lệ % trên doanh thu của ngành nghề; TT133, TT99 theo thuế suất GTGT (T151)
+        { k: 'gia', t: 'Giá bán', num: true }, cheDo === 'TT152' || cheDo === 'TT58'
+          ? { k: 'thueGtgt', t: 'Thuế suất', num: true, r: r => r.thueGtgt === undefined || r.thueGtgt === '' ? '—' : `${String(r.thueGtgt).replace('.', ',')}%` }
+          : { k: 'ts', t: 'Thuế suất', num: true, r: r => r.ts ? `${r.ts}%` : 'KCT' },
         { k: 'tonKho', t: 'Theo dõi tồn', c: true, w: 110, r: r => createElement('input', { type: 'checkbox', className: 'o-tich-xem', checked: Boolean(r.tonKho), readOnly: true, tabIndex: -1, 'aria-label': 'Theo dõi tồn kho' }) },   // T114
         ...(kieuGhiSo(cheDo) === 'noco' ? [tkCot('tkDt', 'TK doanh thu'), tkCot('tkGv', 'TK giá vốn'), tkCot('tkKho', 'TK kho')] : [])],
       rows: () => [
-        ...HANG.map(h => ({ ...h, tkDt: '5111', tkGv: '632', tkKho: '156' })),
-        { ma: 'BUN02', ten: 'Bún bò Huế', nhom: 'Món mới tháng 10', dvt: 'Tô', gia: 69000, ts: 8, tkDt: '', tkGv: '', tkKho: '', tonKho: false },
-        { ma: 'MI01', ten: 'Mì Quảng tôm thịt', nhom: 'Món mới tháng 10', dvt: 'Tô', gia: 65000, ts: 8, tkDt: '', tkGv: '', tkKho: '', tonKho: false },
+        ...HANG.map(h => ({ ...h, tkDt: '5111', tkGv: '632', tkKho: '156', ...nganhNghe(BAN_THANG.has(h.ma) ? '101-1' : '301-5'),
+          thuongHieu: PHA_CHE.has(h.ma) ? 'Mây Cà Phê' : 'Phố Mây', ...(BAN_THANG.has(h.ma) ? { ncc: 'Công ty TNHH Nước giải khát Nam Bộ' } : {}) })),
+        { ma: 'BUN02', ten: 'Bún bò Huế', nhom: 'Món mới tháng 10', dvt: 'Tô', gia: 69000, ts: 8, tkDt: '', tkGv: '', tkKho: '', tonKho: false, ...nganhNghe('301-5'), thuongHieu: 'Phố Mây' },
+        { ma: 'MI01', ten: 'Mì Quảng tôm thịt', nhom: 'Món mới tháng 10', dvt: 'Tô', gia: 65000, ts: 8, tkDt: '', tkGv: '', tkKho: '', tonKho: false, ...nganhNghe('301-5'), thuongHieu: 'Phố Mây Express' },
         ...NVL.map(h => ({ ...h, gia: 0, tkDt: '', tkGv: '632', tkKho: '152', tonKho: true })),   // nguyên vật liệu luôn theo dõi tồn (T114)
         ...CCDC_HANG.map(h => ({ ...h, loai: 'Khác (Công cụ dụng cụ)', gia: 0, ts: 10, tkDt: '', tkGv: '', tkKho: '153', tonKho: false })),   // CCDC: thẻ chi phí phân bổ chọn mã từ đây
       ],
@@ -148,9 +180,7 @@ const danhMuc: ModuleDef = {
     '1.3': { catalog: { them: 'Thêm đơn vị tính', cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên đơn vị tính' }, { k: 'mota', t: 'Mô tả', cls: 'dim' }],
       rows: () => DON_VI_TINH.map(([ma, ten, mota]) => ({ ma, ten, mota })) } },
     '1.4': { catalog: { them: 'Thêm quy đổi', cols: [{ k: 'hang', t: 'Hàng hoá' }, { k: 'goc', t: 'ĐVT gốc', c: true }, { k: 'qd', t: 'ĐVT quy đổi', c: true }, { k: 'tl', t: 'Tỷ lệ', num: true }, { k: 'dung', t: 'Dùng khi', cls: 'dim' }],
-      rows: () => [['Bia Sài Gòn lon', 'Lon', 'Thùng', 24, 'Nhập hàng'], ['Sữa đặc', 'Lon', 'Thùng', 48, 'Nhập hàng'], ['Thịt bò thăn', 'g', 'kg', 1000, 'Nhập hàng, kiểm kê'],
-        ['Dầu ăn', 'Lít', 'Can 5 lít', 5, 'Nhập hàng'], ['Cà phê hạt Robusta', 'kg', 'Bao 25 kg', 25, 'Nhập hàng'], ['Bánh phở tươi', 'g', 'kg', 1000, 'Định lượng công thức']]
-        .map(([hang, goc, qd, tl, dung]) => ({ hang, goc, qd, tl, dung })) } },
+      rows: () => QUY_DOI_DVT } },
     '1.5': { catalog: { them: 'Thêm đối tượng', nhomLoc: 'loai', nhanLoc: 'Loại',
       chucNang: r => {
         if (r.loai === 'Khách hàng') return [{ nhan: 'Lập hoá đơn', di: 'ban-hang/3-1-2/moi' }, { nhan: 'Thu tiền', di: 'tien/2-1-1/moi?loai=thu' }, { nhan: 'Xem công nợ', di: 'tien/2-2-5' }]
@@ -180,6 +210,7 @@ const danhMuc: ModuleDef = {
       locGoi: (goi, r) => (goi !== 'F' && goi !== 'S') || CHI_NHANH.some(c => c.kho[0] === r.ten),   // gói Free, Standard: dữ liệu mẫu một kho mỗi chi nhánh
       chucNang: () => [{ nhan: 'Xem tồn kho', di: 'kho/5-2-4' }, { nhan: 'Điều chuyển', di: 'kho/5-1-4/moi' }],
       cols: (goi, cheDo) => [{ k: 'ma', t: 'Mã kho', cls: 'code' }, { k: 'ten', t: 'Tên kho' }, { k: 'cn', t: 'Chi nhánh' }, ...(goi === 'F' ? [] : [{ k: 'loai', t: 'Nhóm kho' }]), { k: 'tk', t: 'Thủ kho', cls: 'dim' },
+        { k: 'thuongHieu', t: 'Thương hiệu', an: true, r: (r: Row) => r.thuongHieu || 'Tất cả' },   // bảng rộng nên mặc định ẩn, bật ở Tuỳ chỉnh cột (T151)
         ...(kieuGhiSo(cheDo) === 'noco' ? [tkCot('tkKho', 'TK kho'), tkCot('tkGv', 'TK giá vốn'), tkCot('tkCp', 'TK chi phí')] : [])],
       rows: () => KHO.map((ten, i) => {
         const isTong = ten.includes('tổng')
@@ -189,6 +220,7 @@ const danhMuc: ModuleDef = {
           cn: CHI_NHANH.find(c => c.kho.includes(ten))?.ten ?? 'Văn phòng',
           loai: ten.includes('bar') ? 'Kho pha chế' : isTong ? 'Kho tổng' : 'Kho bếp',
           tk: 'Võ Thanh Tùng',
+          thuongHieu: ten.includes('bar') ? 'Mây Cà Phê' : isTong ? '' : 'Phố Mây',   // để trống là mọi thương hiệu (T151)
           tkKho: '152',
           tkGv: '632',
           tkCp: isTong ? '6422' : '6421',
@@ -239,7 +271,7 @@ const danhMuc: ModuleDef = {
     if (sc.code === '1.5') return [sc, nhomDoiTuong]
     if (sc.code === '1.6') return [sc, nhomMucChiPhi]
     if (sc.code === '1.7') return [sc, nhomCongViec]
-    if (sc.code === '1.8') return [sc, nhomKho, chiNhanh]
+    if (sc.code === '1.8') return [sc, nhomKho, chiNhanh, thuongHieu]
     if (sc.code === '1.12') return [sc, phuongThucThanhToan]
     return [sc]
   }),

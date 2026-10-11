@@ -77,19 +77,20 @@ export interface NhomHang {
   ts?: string
   tonKho?: boolean
   khoMacDinh?: string
+  nganhNghe?: string   // nhóm ngành nghề con ngầm định, chỉ dùng ở TT152, TT58 (T151)
 }
 
 export const NHOM_HANG: NhomHang[] = [
-  { ma: 'NHH01', ten: 'Món khai vị', loai: 'Thành phẩm', dienGiai: 'Món ăn nhẹ đầu bữa', tkKho: '', tkDt: '5111', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: 'Quảng cáo, khuyến mãi', ppGia: 'Bình quân cuối kỳ', ts: '8', tonKho: false, khoMacDinh: 'Kho bếp Lê Lợi' },
-  { ma: 'NHH02', ten: 'Món chính', loai: 'Thành phẩm', dienGiai: 'Món ăn no chính của quán', tkKho: '', tkDt: '5111', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: 'Quảng cáo, khuyến mãi', ppGia: 'Bình quân cuối kỳ', ts: '8', tonKho: false, khoMacDinh: 'Kho bếp Lê Lợi' },
-  { ma: 'NHH03', ten: 'Món lẩu', loai: 'Thành phẩm', dienGiai: 'Các món lẩu và đồ nhúng', tkKho: '', tkDt: '5111', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: 'Quảng cáo, khuyến mãi', ppGia: 'Bình quân cuối kỳ', ts: '8', tonKho: false, khoMacDinh: 'Kho bếp Lê Lợi' },
-  { ma: 'NHH04', ten: 'Đồ uống', loai: 'Hàng bán thẳng', dienGiai: 'Cà phê, trà, nước ngọt', tkKho: '1561', tkDt: '5111', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: 'Quảng cáo, khuyến mãi', ppGia: 'Bình quân cuối kỳ', ts: '8', tonKho: true, khoMacDinh: 'Kho bar Lê Lợi' },
-  { ma: 'NHH05', ten: 'Tráng miệng', loai: 'Thành phẩm', dienGiai: 'Chè, bánh ngọt, trái cây', tkKho: '', tkDt: '5111', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: 'Quảng cáo, khuyến mãi', ppGia: 'Bình quân cuối kỳ', ts: '8', tonKho: false, khoMacDinh: 'Kho bếp Lê Lợi' },
-  { ma: 'NHH06', ten: 'Món mới tháng 10', loai: 'Thành phẩm', dienGiai: 'Các món ăn ra mắt trong tháng 10', tkKho: '', tkDt: '5111', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: 'Quảng cáo, khuyến mãi', ppGia: 'Bình quân cuối kỳ', ts: '8', tonKho: false, khoMacDinh: 'Kho bếp Lê Lợi' },
-  { ma: 'NHH07', ten: 'Thịt, cá', loai: 'Nguyên vật liệu', dienGiai: 'Nguyên liệu thịt tươi sống, thuỷ hải sản', tkKho: '152', tkDt: '', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: '', ppGia: 'Bình quân cuối kỳ', ts: 'KCT', tonKho: true, khoMacDinh: 'Kho tổng' },
-  { ma: 'NHH08', ten: 'Rau củ', loai: 'Nguyên vật liệu', dienGiai: 'Rau sạch, nấm, củ quả tươi', tkKho: '152', tkDt: '', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: '', ppGia: 'Bình quân cuối kỳ', ts: '0', tonKho: true, khoMacDinh: 'Kho tổng' },
-  { ma: 'NHH09', ten: 'Gia vị', loai: 'Nguyên vật liệu', dienGiai: 'Dầu ăn, nước mắm, sốt, đồ khô', tkKho: '152', tkDt: '', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: '', ppGia: 'Bình quân cuối kỳ', ts: '8', tonKho: true, khoMacDinh: 'Kho tổng' },
-  { ma: 'NHH10', ten: 'Bia, nước ngọt', loai: 'Hàng bán thẳng', dienGiai: 'Bia lon, nước đóng chai', tkKho: '1561', tkDt: '5111', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: 'Quảng cáo, khuyến mãi', ppGia: 'Bình quân cuối kỳ', ts: '10', tonKho: true, khoMacDinh: 'Kho bar Lê Lợi' },
+  { ma: 'NHH01', ten: 'Món khai vị', loai: 'Thành phẩm', dienGiai: 'Món ăn nhẹ đầu bữa', tkKho: '', tkDt: '5111', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: 'Quảng cáo, khuyến mãi', ppGia: 'Bình quân cuối kỳ', ts: '8', tonKho: false, khoMacDinh: 'Kho bếp Lê Lợi', nganhNghe: '301-5' },
+  { ma: 'NHH02', ten: 'Món chính', loai: 'Thành phẩm', dienGiai: 'Món ăn no chính của quán', tkKho: '', tkDt: '5111', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: 'Quảng cáo, khuyến mãi', ppGia: 'Bình quân cuối kỳ', ts: '8', tonKho: false, khoMacDinh: 'Kho bếp Lê Lợi', nganhNghe: '301-5' },
+  { ma: 'NHH03', ten: 'Món lẩu', loai: 'Thành phẩm', dienGiai: 'Các món lẩu và đồ nhúng', tkKho: '', tkDt: '5111', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: 'Quảng cáo, khuyến mãi', ppGia: 'Bình quân cuối kỳ', ts: '8', tonKho: false, khoMacDinh: 'Kho bếp Lê Lợi', nganhNghe: '301-5' },
+  { ma: 'NHH04', ten: 'Đồ uống', loai: 'Hàng bán thẳng', dienGiai: 'Cà phê, trà, nước ngọt', tkKho: '1561', tkDt: '5111', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: 'Quảng cáo, khuyến mãi', ppGia: 'Bình quân cuối kỳ', ts: '8', tonKho: true, khoMacDinh: 'Kho bar Lê Lợi', nganhNghe: '301-5' },
+  { ma: 'NHH05', ten: 'Tráng miệng', loai: 'Thành phẩm', dienGiai: 'Chè, bánh ngọt, trái cây', tkKho: '', tkDt: '5111', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: 'Quảng cáo, khuyến mãi', ppGia: 'Bình quân cuối kỳ', ts: '8', tonKho: false, khoMacDinh: 'Kho bếp Lê Lợi', nganhNghe: '301-5' },
+  { ma: 'NHH06', ten: 'Món mới tháng 10', loai: 'Thành phẩm', dienGiai: 'Các món ăn ra mắt trong tháng 10', tkKho: '', tkDt: '5111', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: 'Quảng cáo, khuyến mãi', ppGia: 'Bình quân cuối kỳ', ts: '8', tonKho: false, khoMacDinh: 'Kho bếp Lê Lợi', nganhNghe: '301-5' },
+  { ma: 'NHH07', ten: 'Thịt, cá', loai: 'Nguyên vật liệu', dienGiai: 'Nguyên liệu thịt tươi sống, thuỷ hải sản', tkKho: '152', tkDt: '', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: '', ppGia: 'Bình quân cuối kỳ', ts: 'KCT', tonKho: true, khoMacDinh: 'Kho tổng', nganhNghe: '' },
+  { ma: 'NHH08', ten: 'Rau củ', loai: 'Nguyên vật liệu', dienGiai: 'Rau sạch, nấm, củ quả tươi', tkKho: '152', tkDt: '', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: '', ppGia: 'Bình quân cuối kỳ', ts: '0', tonKho: true, khoMacDinh: 'Kho tổng', nganhNghe: '' },
+  { ma: 'NHH09', ten: 'Gia vị', loai: 'Nguyên vật liệu', dienGiai: 'Dầu ăn, nước mắm, sốt, đồ khô', tkKho: '152', tkDt: '', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: '', ppGia: 'Bình quân cuối kỳ', ts: '8', tonKho: true, khoMacDinh: 'Kho tổng', nganhNghe: '' },
+  { ma: 'NHH10', ten: 'Bia, nước ngọt', loai: 'Hàng bán thẳng', dienGiai: 'Bia lon, nước đóng chai', tkKho: '1561', tkDt: '5111', tkGv: '632', tkCp: '6421', tkTraLai: '', mucCp: 'Quảng cáo, khuyến mãi', ppGia: 'Bình quân cuối kỳ', ts: '10', tonKho: true, khoMacDinh: 'Kho bar Lê Lợi', nganhNghe: '101-1' },
 ]
 export const TEN_NHOM_HANG = NHOM_HANG.map(n => n.ten)
 
@@ -250,4 +251,17 @@ export const DS_PTTT: PhuongThucTT[] = [
   },
 ]
 
+/** Thương hiệu của chuỗi, đồng bộ từ FABi (T151) */
+export const DS_THUONG_HIEU = [
+  { ma: 'PM', ten: 'Phố Mây', ghiChu: 'Nhà hàng món Việt, bếp chính của chuỗi' },
+  { ma: 'MCP', ten: 'Mây Cà Phê', ghiChu: 'Quầy cà phê, trà pha chế trong nhà hàng' },
+  { ma: 'PMX', ten: 'Phố Mây Express', ghiChu: 'Bán mang về, giao qua app' },
+]
+export const TEN_THUONG_HIEU = DS_THUONG_HIEU.map(t => t.ten)
 
+/** Quy đổi đơn vị tính (1.4): 1 qd = tl goc. Dòng "Tất cả hàng hoá" áp cho mọi hàng có ĐVT khớp (T151) */
+export const QUY_DOI_DVT = [
+  ['Bia Sài Gòn lon', 'Lon', 'Thùng', 24, 'Nhập hàng'], ['Sữa đặc', 'Lon', 'Thùng', 48, 'Nhập hàng'], ['Thịt bò thăn', 'g', 'kg', 1000, 'Nhập hàng, kiểm kê'],
+  ['Dầu ăn', 'Lít', 'Can 5 lít', 5, 'Nhập hàng'], ['Cà phê hạt Robusta', 'kg', 'Bao 25 kg', 25, 'Nhập hàng'], ['Bánh phở tươi', 'g', 'kg', 1000, 'Định lượng công thức'],
+  ['Tất cả hàng hoá', 'ml', 'Lít', 1000, 'Định lượng pha chế'],
+].map(([hang, goc, qd, tl, dung]) => ({ hang: String(hang), goc: String(goc), qd: String(qd), tl: Number(tl), dung: String(dung) }))
