@@ -50,6 +50,7 @@ const THEO_ROADMAP: Record<string, Goi[]> = {
   '3.2.5': ['F', 'S', 'PL', 'PR'],
   '2.2.5': ['F', 'S', 'PL', 'PR'],
   '5.2.2': ['F', 'S', 'PL', 'PR'],
+  '10.1.3': ['S', 'PL', 'PR'],   // Số dư ban đầu mở cho Standard: tiền, công nợ, tồn kho, PhuongXT chốt 11/10/2026 (T141)
 }
 
 /** Màn bổ sung theo thông tư chưa có trong Excel (T47, kế hoạch mục 7.3). Trum cập nhật Excel và chạy lại tools/xuat_tinh_nang.py có đủ mã thì xoá dòng tương ứng ở đây */

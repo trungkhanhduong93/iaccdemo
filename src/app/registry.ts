@@ -88,6 +88,7 @@ export const MODULES: ModuleDef[] = [
 export const tenMan = (sc: ScreenDef) => sc.ten ?? (sc.code ? FEATURE[sc.code]?.n : undefined) ?? sc.slug
 
 export function moDuoc(sc: ScreenDef, goi: Goi) {
+  if (sc.goi && !sc.goi.includes(goi)) return false
   if (sc.code) return coTrongGoi(sc.code, goi)
   if (sc.can) return coMotTrong(sc.can, goi)
   return true
@@ -115,6 +116,7 @@ const khongApDung = (sc: ScreenDef, goi: Goi) => {
   return !!ma && GOIS.indexOf(minGoi(ma)) < GOIS.indexOf(goi)
 }
 export const hienMan = (sc: ScreenDef, goi: Goi, cheDo?: CheDo, session?: Pick<Session, 'ppGtgt' | 'ppTndn'> | Session) => {
+  if (sc.goi && !sc.goi.includes(goi)) return false
   const isBC = Boolean((sc.code && CAU_HINH_BC[sc.code]) || sc.goc || vaoBaoCao(sc))
   if (isBC) {
     if (cheDo && !apDung(sc, cheDo, session)) return false

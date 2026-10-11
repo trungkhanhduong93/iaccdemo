@@ -96,6 +96,7 @@ export interface ScreenDef {
   slug: string
   code?: string            // mã tính năng trong Excel; quyết định khoá theo gói
   can?: string[]           // màn không có trong Excel: cần một trong các mã này
+  goi?: Goi[]              // màn không có trong Excel chỉ có ở các gói này, gói khác ẩn hẳn (vd Số dư ban đầu ở Thu chi gói Free, T141)
   ten?: string
   ngan?: string            // nhãn ngắn trên thanh tab
   icon?: string   // biểu tượng riêng của màn (tên trong Icon.tsx); không có thì dùng biểu tượng theo loại màn hoặc của phân hệ

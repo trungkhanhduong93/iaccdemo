@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 11/10/2026
 
+- T141: Số dư ban đầu theo gói. Gói Free có tab Số dư ban đầu ở Thu chi, chỉ khai số dư tiền theo quỹ tiền mặt, tài khoản ngân hàng. Gói Standard mở màn Số dư ban đầu ở Tổng hợp: tiền, công nợ khách hàng, nhà cung cấp, tồn kho. Plus, Pro thêm số dư tài khoản, cột Dư Nợ, Dư Có. Màn ghi ngày số dư là ngày bắt đầu năm tài chính.
 - T138: Màn đăng nhập tạm bỏ nút Đăng nhập bằng tài khoản iPOS và dòng Dùng thử gói Free; còn liên kết Thử mở từ FABi.
 - T60: Gói Free ghi không giới hạn chi nhánh, mỗi chi nhánh một kho (mô tả gói, điểm nổi bật, thẻ gói và hỏi đáp ở màn Gói thuê bao).
 - T138 (sửa): Màn mở từ FABi gồm màn chào (thông tin từ FABi: thương hiệu, cửa hàng, kênh bán, món) và màn giới thiệu giao diện kế toán. Bấm Dùng thử là vào phần mềm gói Free; các bước khởi tạo (4 bước: loại hình và gói kèm giá, điểm nổi bật gói; đơn vị; chi nhánh; đồng bộ bán hàng) mở thành popup trong phần mềm, đóng lại thì còn thẻ nhắc ở góc dưới phải. Để sau là quay lại FABi.
