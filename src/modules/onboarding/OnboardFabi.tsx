@@ -1,4 +1,4 @@
-// Khởi tạo sổ sách khi mở từ FABi (T138), phần popup: bấm Dùng thử ở /khoi-tao-fabi thì vào phần mềm gói Free,
+// Khởi tạo dữ liệu khi mở từ FABi (T138), phần popup: bấm Dùng thử ở /khoi-tao-fabi thì vào phần mềm gói Free,
 // popup 4 bước (loại hình và gói, đơn vị, chi nhánh, đồng bộ bán hàng) mở đè lên. Đóng popup thì còn thẻ nhắc nổi ở góc dưới phải.
 // Tiến độ lưu ở localStorage để quay lại đúng bước.
 import { useEffect, useState } from 'react'
@@ -219,6 +219,7 @@ export function OnboardFabi() {
   const cnChon = CHI_NHANH.filter(c => n.chon.includes(c.id))
   const soCt = demCt(n.chon, n.dongBo, +HOM_NAY - 29 * 86400000)   // ước một tháng, hiện ở bước đồng bộ
   const soCtDaTao = demCt(n.chon, n.dongBo, ngay(n.ngayDauNam))
+  const dmGoi = FEATURES.filter(f => f.m === 0 && f.g.includes(n.goi))   // danh mục của gói, gợi ý khởi tạo ở màn hoàn tất
   const dem = demTheoGoi(n.goi)
   // Điểm nổi bật của gói, bỏ dòng nói về thông tư khác chế độ đang chọn (vd hộ kinh doanh dùng Standard vẫn TT152)
   const ngan = nganCheDo(n.loai, n.cheDo)
@@ -248,7 +249,7 @@ export function OnboardFabi() {
     return (
       <div className="ktf-dai">
         <Icon n="sparkle" className="ic sm" />
-        <span><b>Hoàn tất khởi tạo sổ sách</b> · bước {Math.min(n.b + 1, BUOC.length)}/{BUOC.length}{n.b < XONG ? `: ${BUOC[n.b]}` : ''}</span>
+        <span><b>Hoàn tất khởi tạo dữ liệu</b> · bước {Math.min(n.b + 1, BUOC.length)}/{BUOC.length}{n.b < XONG ? `: ${BUOC[n.b]}` : ''}</span>
         <span className="ktf-dai-tien"><i style={{ width: `${Math.min(n.b, BUOC.length) / BUOC.length * 100}%` }} /></span>
         <button className="btn sm pri" onClick={() => sua({ mo: true })}>Tiếp tục</button>
       </div>
@@ -257,9 +258,9 @@ export function OnboardFabi() {
 
   return (
     <div className="ktf-pop-nen">
-      <div className="ktf-pop" role="dialog" aria-label="Khởi tạo sổ sách">
+      <div className="ktf-pop" role="dialog" aria-label="Khởi tạo dữ liệu">
         <div className="row ktf-pop-dau">
-          <h2 className="ktf-h">Khởi tạo sổ sách</h2>
+          <h2 className="ktf-h">Khởi tạo dữ liệu</h2>
           <span className="grow" />
           {n.b < XONG && <span className="muted ktf-luu"><Icon n="check" className="ic sm" />Đã lưu, đóng lại vẫn dùng thử gói Free</span>}
           {n.b < XONG && <button className="btn ghost sm" title="Đóng, làm tiếp sau (Esc)" onClick={() => sua({ mo: false })}><Icon n="x" className="ic sm" /></button>}
@@ -431,13 +432,11 @@ export function OnboardFabi() {
                     </>
                   : <>
                       <div className="ktf-chao-ic ok"><Icon n="check" className="ic lg" /></div>
-                      <h1>Xong. Sổ sách đã sẵn sàng</h1>
-                      <p>Đã tạo {so(soCtDaTao)} chứng từ Xuất bán POS từ {n.ngayDauNam}. Việc nên làm tiếp:</p>
+                      <h1>Dữ liệu đã sẵn sàng</h1>
+                      <p>Việc nên làm tiếp: khởi tạo các loại danh mục</p>
                       <ul className="ktf-viec">
-                        <li><Icon n="bank" className="ic sm" />Khai báo tài khoản ngân hàng</li>
-                        <li><Icon n="calc" className="ic sm" />Nhập số dư đầu kỳ khi đã có danh mục</li>
-                        <li><Icon n="alert" className="ic sm" />Xem đơn POS đồng bộ lỗi</li>
-                        <li><Icon n="users" className="ic sm" />Mời kế toán cùng làm</li>
+                        {dmGoi.slice(0, 6).map(f => <li key={f.c}><Icon n="folder" className="ic sm" />{f.n}</li>)}
+                        {dmGoi.length > 6 && <li className="muted">và {dmGoi.length - 6} danh mục khác</li>}
                       </ul>
                       <button className="btn acc lg" onClick={xong}>Bắt đầu làm việc<Icon n="arrow" className="ic sm" /></button>
                     </>}
