@@ -3,7 +3,6 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useSession } from '../../app/session'
 import { NGUOI_DUNG } from '../../data/mock'
-import { Icon } from '../../ui/Icon'
 import { Logo } from '../../ui/Logo'
 
 export function AuthBrand() {
@@ -48,15 +47,7 @@ export function Login() {
             <label className="row" style={{ fontSize: 13 }}><input type="checkbox" defaultChecked /> Ghi nhớ đăng nhập trên máy này</label>
             <button className="btn pri lg" type="submit">Đăng nhập</button>
           </div>
-          <div className="or">hoặc</div>
-          <button type="button" className="btn lg" style={{ width: '100%' }} onClick={() => { set({ loggedIn: true }); nav('/chon-don-vi') }}>
-            <Icon n="key" className="ic sm" />
-            Đăng nhập bằng tài khoản iPOS
-          </button>
-          <p style={{ marginTop: 22, fontSize: 13, color: 'var(--muted)', textAlign: 'center' }}>
-            Chưa có tài khoản? <Link to="/khoi-tao" style={{ fontWeight: 600 }}>Dùng thử gói Free</Link>
-          </p>
-          <p style={{ marginTop: 6, fontSize: 12, color: 'var(--faint)', textAlign: 'center' }}>Bản mẫu: gõ mật khẩu bất kỳ từ 6 ký tự. <Link to="/khoi-tao-fabi">Thử mở từ FABi</Link></p>
+          <p style={{ marginTop: 22, fontSize: 12, color: 'var(--faint)', textAlign: 'center' }}>Bản mẫu: gõ mật khẩu bất kỳ từ 6 ký tự. <Link to="/khoi-tao-fabi">Thử mở từ FABi</Link></p>
         </form>
       </div>
     </div>

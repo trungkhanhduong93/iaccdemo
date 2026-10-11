@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 11/10/2026
 
+- T138: Màn đăng nhập tạm bỏ nút Đăng nhập bằng tài khoản iPOS và dòng Dùng thử gói Free; còn liên kết Thử mở từ FABi.
 - T60: Gói Free ghi không giới hạn chi nhánh, mỗi chi nhánh một kho (mô tả gói, điểm nổi bật, thẻ gói và hỏi đáp ở màn Gói thuê bao).
 - T138 (sửa): Màn mở từ FABi gồm màn chào (thông tin từ FABi: thương hiệu, cửa hàng, kênh bán, món) và màn giới thiệu giao diện kế toán. Bấm Dùng thử là vào phần mềm gói Free; các bước khởi tạo (4 bước: loại hình và gói kèm giá, điểm nổi bật gói; đơn vị; chi nhánh; đồng bộ bán hàng) mở thành popup trong phần mềm, đóng lại thì còn thẻ nhắc ở góc dưới phải. Để sau là quay lại FABi.
 - T138: Màn khởi tạo mới khi mở từ FABi (`/khoi-tao-fabi`, lối vào "Thử mở từ FABi" ở màn đăng nhập): màn chào kèm dữ liệu đã nhận từ FABi, 6 bước: Loại hình (hộ kinh doanh chọn 1 trong 4 nhóm theo doanh thu và cách tính thuế TNCN), Chọn gói (gợi ý gói, liệt kê tính năng từng gói; doanh nghiệp chọn cả 4 gói, Plus, Pro chọn TT133 hoặc TT99), Đơn vị, Chi nhánh và kho, Đồng bộ bán hàng (ước số chứng từ), Số dư đầu kỳ (bỏ qua được). Khung bên phải tóm tắt những gì sẽ có. Thoát giữa chừng, mở lại vẫn ở đúng bước.
