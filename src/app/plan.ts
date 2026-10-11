@@ -128,7 +128,7 @@ export const FEATURE: Record<string, Feature> = Object.fromEntries(FEATURES.map(
 import { CHE_DO, CHE_DO_MAC_DINH, type CheDo } from './che-do'
 
 export const GOI: Record<Goi, { ten: string; cls: string; mota: string }> = {
-  F: { ten: 'Free', cls: 'fr', mota: 'Hộ kinh doanh, cửa hàng nhỏ, 1 điểm bán' },
+  F: { ten: 'Free', cls: 'fr', mota: 'Hộ kinh doanh, cửa hàng nhỏ, không giới hạn chi nhánh, mỗi chi nhánh một kho' },
   S: { ten: 'Standard', cls: 'st', mota: 'DN siêu nhỏ, 1 điểm bán, không dùng tài khoản' },
   PL: { ten: 'Plus', cls: 'md', mota: 'DN nhỏ và vừa, 1–10 điểm bán, Nợ/Có' },
   PR: { ten: 'Pro', cls: 'ad', mota: 'DN vừa và lớn, trên 10 điểm bán' },
@@ -158,7 +158,7 @@ export const DIEM_NOI_BAT: Record<Goi, { tieuDe: string; ds: string[] }> = {
       'Tự động nhận đơn bán hàng trực tiếp từ POS FABi',
       'Quản lý xuất bán POS và kiểm kê kho định kỳ',
       'Theo dõi quỹ tiền mặt, doanh thu và chi phí hoạt động',
-      'Miễn phí 100% trọn đời cho 1 điểm bán',
+      'Miễn phí 100% trọn đời, không giới hạn chi nhánh',
     ],
   },
   S: {

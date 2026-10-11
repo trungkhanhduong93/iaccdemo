@@ -86,7 +86,7 @@ export function KhoiTaoFabi() {
               </ol>
             </div>
             <div className="ktf-gt-hoi">
-              <b>Bạn có muốn dùng thử không?</b>
+              <span><b>Bạn có muốn dùng thử không?</b><small className="muted ktf-gt-chu">Dùng thử gói Free với cả {CHI_NHANH.length} cửa hàng trên FABi, miễn phí.</small></span>
               <span className="grow" />
               <button className="btn lg" onClick={() => sua({ b: -2 })}>Quay lại</button>
               <button className="btn ghost lg" onClick={() => setVeFabi(true)}>Để sau</button>

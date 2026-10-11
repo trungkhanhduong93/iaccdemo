@@ -247,7 +247,7 @@ export function GoiThueBao({ sc }: ScreenProps) {
                 <div className="gtb-spec-row">
                   <span className="gtb-spec-label">Quy mô điểm bán</span>
                   <span className="gtb-spec-val">
-                    {g === 'F' ? '1 điểm' : g === 'S' ? '1 điểm' : g === 'PL' ? '1–10 điểm' : 'Không giới hạn'}
+                    {g === 'S' ? '1 điểm' : g === 'PL' ? '1–10 điểm' : 'Không giới hạn'}
                   </span>
                 </div>
               </div>
@@ -439,7 +439,7 @@ export function GoiThueBao({ sc }: ScreenProps) {
           <div className="gtb-faq-item">
             <b>3. Gói Free có bị giới hạn thời gian hay số lượng chứng từ không?</b>
             <p>
-              Gói Free mở vĩnh viễn cho hộ kinh doanh 1 điểm bán.
+              Gói Free mở vĩnh viễn cho hộ kinh doanh, không giới hạn chi nhánh, mỗi chi nhánh một kho.
               Gói đáp ứng đủ 17 báo cáo theo Thông tư 152/2025/TT-BTC.
             </p>
           </div>
