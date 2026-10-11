@@ -1,6 +1,6 @@
 // Khai báo trường thông tin panel Thêm / Sửa cho các danh mục (T70)
 // Lấy theo bảng DM_ tương ứng trong CSDL kế toán iPOS (schema-dm.md)
-import { TEN_DVT } from './data'
+import { TEN_DVT, TEN_NHOM_HANG, TEN_NHOM_DOI_TUONG, TEN_NHOM_MUC_CP, TEN_NHOM_CONG_VIEC, TEN_NHOM_KHO, TEN_MUC_CHI_PHI, TEN_CONG_VIEC_17, NHOM_HANG } from './data'
 
 import type { ReactNode } from 'react'
 import type { Col, Row } from '../types'
@@ -40,6 +40,7 @@ export interface CauHinhDM {
   bien?: { k: string; ten: string; nut: string; icon?: string; goi?: Goi[] }[]   // goi: chỉ hiện ở các gói này
   moi?: (rows: Row[], ctx: { kieu?: string; ngayDauNam: string }) => Record<string, any>   // giá trị sẵn khi thêm mới theo kiểu thêm mới, ngày đầu năm của đơn vị
   doi?: (k: string, v: Record<string, any>, rows: Row[]) => Record<string, any>   // ô tự tính khi ô k đổi
+  hoiDoi?: (k: string, v: Record<string, any>, rows: Row[]) => { tieuDe: string; hoi: string; sua: Record<string, any>; dien?: Record<string, any> } | null   // hỏi khi đổi ô (T136)
   loi?: (v: Record<string, any>) => string | null   // lỗi chặn lưu, báo bằng thông báo
   kiemLuu?: (v: Record<string, any>) => { tieuDe: string; hoi: string; sua: Record<string, any> } | null   // lỗi cần hỏi trước khi lưu; đồng ý thì áp sua rồi lưu
 }
@@ -53,7 +54,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
         truong: [
           { k: 'ma', nhan: 'Mã hàng hoá', kieu: 'chu', batBuoc: true, cot: 'ITEM_ID' },
           { k: 'ten', nhan: 'Tên hàng hoá', kieu: 'chu', batBuoc: true, caHang: true, cot: 'ITEM_NAME' },
-          { k: 'nhom', nhan: 'Nhóm hàng hoá', kieu: 'chon', ds: ['Món khai vị', 'Món chính', 'Món lẩu', 'Đồ uống', 'Tráng miệng', 'Món mới tháng 10', 'Thịt, cá', 'Rau củ', 'Gia vị', 'Bia, nước ngọt'], cot: 'ITEM_CLASS_ID' },
+          { k: 'nhom', nhan: 'Nhóm hàng hoá', kieu: 'chon', ds: TEN_NHOM_HANG, cot: 'ITEM_CLASS_ID' },
           { k: 'loai', nhan: 'Tính chất / Loại', kieu: 'chon', ds: ['Hàng hoá', 'Thành phẩm', 'Nguyên vật liệu', 'Công cụ dụng cụ', 'Dịch vụ'], cot: 'ITEM_TYPE_ID' },
           { k: 'dvt', nhan: 'Đơn vị tính', kieu: 'chon', ds: TEN_DVT, cot: 'UNIT_ID' },
           { k: 'dvtPhu', nhan: 'ĐVT phụ', kieu: 'chon', ds: TEN_DVT, cot: 'UNIT_ID_EXTRA' },
@@ -76,6 +77,8 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
           { k: 'tkGv', nhan: 'TK giá vốn', kieu: 'chon', cot: 'ACCOUNT_ID_SALE_COST' },
           { k: 'tkCp', nhan: 'TK chi phí', kieu: 'chon', cot: 'DEFAULT_ACCOUNT_ID_EXPENSE' },
           { k: 'tkTraLai', nhan: 'TK hàng bán trả lại', kieu: 'chon', cot: 'ACCOUNT_ID_RETURN' },
+          { k: 'mucCp', nhan: 'Mục chi phí', kieu: 'chon', ds: TEN_MUC_CHI_PHI },
+          { k: 'ppGia', nhan: 'Phương pháp tính giá', kieu: 'chon', ds: ['Bình quân cuối kỳ', 'Bình quân tức thời', 'Nhập trước xuất trước', 'Đích danh'] },
         ],
       },
       {
@@ -94,6 +97,63 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
         ],
       },
     ],
+    hoiDoi: (k, v) => {
+      if (k !== 'nhom' || !v.nhom) return null
+      const nhomMoi = NHOM_HANG.find(n => n.ten === v.nhom)
+      if (!nhomMoi) return null
+
+      const O_NGAM_DINH: (keyof typeof nhomMoi)[] = [
+        'tkKho', 'tkDt', 'tkGv', 'tkCp', 'tkTraLai', 'mucCp', 'ppGia', 'ts', 'loai', 'tonKho', 'khoMacDinh',
+      ]
+      const TEN_O: Record<string, string> = {
+        tkKho: 'TK kho',
+        tkDt: 'TK doanh thu',
+        tkGv: 'TK giá vốn',
+        tkCp: 'TK chi phí',
+        tkTraLai: 'TK hàng bán trả lại',
+        mucCp: 'Mục chi phí',
+        ppGia: 'Phương pháp tính giá',
+        ts: 'Thuế suất GTGT',
+        loai: 'Tính chất / Loại',
+        tonKho: 'Theo dõi tồn kho',
+        khoMacDinh: 'Kho mặc định',
+      }
+
+      const dien: Record<string, any> = {}
+      const sua: Record<string, any> = {}
+      const tenDoi: string[] = []
+
+      for (const f of O_NGAM_DINH) {
+        let valNhom: any = nhomMoi[f]
+        if (valNhom === undefined) continue
+        if (f === 'tonKho') valNhom = valNhom ? 1 : 0
+        const valForm = v[f]
+        const laRong = valForm === undefined || valForm === null || valForm === ''
+
+        if (laRong) {
+          dien[f] = valNhom
+        } else {
+          const khac = f === 'tonKho'
+            ? (valForm === 0 || valForm === '0' || valForm === false || valForm === 'false' ? 0 : 1) !== valNhom
+            : String(valForm) !== String(valNhom)
+          if (khac) {
+            sua[f] = valNhom
+            tenDoi.push(TEN_O[f] ?? f)
+          }
+        }
+      }
+
+      if (Object.keys(sua).length === 0) {
+        return { tieuDe: '', hoi: '', sua: {}, dien }
+      }
+
+      return {
+        tieuDe: `Áp thông tin ngầm định của nhóm ${v.nhom}?`,
+        hoi: `Các ô sẽ đổi: ${tenDoi.join(', ')}`,
+        sua,
+        dien,
+      }
+    },
   },
 
   // 1.3 Đơn vị tính (DM_UNIT)
@@ -147,7 +207,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
           { k: 'ma', nhan: 'Mã đối tượng', kieu: 'chu', batBuoc: true, cot: 'PR_DETAIL_ID' },
           { k: 'ten', nhan: 'Tên đối tượng', kieu: 'chu', batBuoc: true, caHang: true, cot: 'PR_DETAIL_NAME' },
           { k: 'loai', nhan: 'Loại đối tượng', kieu: 'chon', ds: ['Khách hàng', 'Nhà cung cấp', 'Nhân viên'], batBuoc: true, cot: 'PR_DETAIL_TYPE_ID' },
-          { k: 'nhom', nhan: 'Nhóm đối tượng', kieu: 'chu', cot: 'PR_DETAIL_CLASS_ID' },
+          { k: 'nhom', nhan: 'Nhóm đối tượng', kieu: 'chon', ds: TEN_NHOM_DOI_TUONG, cot: 'PR_DETAIL_CLASS_ID' },
           { k: 'mst', nhan: 'Mã số thuế', kieu: 'chu', cot: 'TAX_FILE_NUMBER' },
         ],
       },
@@ -183,9 +243,11 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
         ten: 'Trạng thái',
         truong: [
           { k: '_tt', nhan: 'Đang sử dụng', kieu: 'tich', caHang: true, cot: 'ACTIVE' },
+          { k: 'dongY', nhan: 'Đã đồng ý chia sẻ thông tin cá nhân', kieu: 'tich', batBuoc: true, caHang: true },
         ],
       },
     ],
+    moi: () => ({ dongY: false }),
   },
 
   // 1.6 Mục chi phí (DM_EXPENSE)
@@ -196,7 +258,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
         truong: [
           { k: 'ma', nhan: 'Mã mục chi phí', kieu: 'chu', batBuoc: true, cot: 'EXPENSE_ID' },
           { k: 'ten', nhan: 'Tên mục chi phí', kieu: 'chu', batBuoc: true, caHang: true, cot: 'EXPENSE_NAME' },
-          { k: 'nhom', nhan: 'Nhóm chi phí', kieu: 'chon', ds: ['Nhân công', 'Mặt bằng', 'Điện, nước, gas', 'Bán hàng', 'Khác'], cot: 'EXPENSE_CLASS_ID' },
+          { k: 'nhom', nhan: 'Nhóm chi phí', kieu: 'chon', ds: TEN_NHOM_MUC_CP, cot: 'EXPENSE_CLASS_ID' },
           { k: 'congViec', nhan: 'Công việc liên quan', kieu: 'chu', cot: 'JOB_ID' },
         ],
       },
@@ -223,7 +285,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
         truong: [
           { k: 'ma', nhan: 'Mã công việc', kieu: 'chu', batBuoc: true, cot: 'JOB_ID' },
           { k: 'ten', nhan: 'Tên công việc', kieu: 'chu', batBuoc: true, caHang: true, cot: 'JOB_NAME' },
-          { k: 'nhom', nhan: 'Nhóm công việc', kieu: 'chon', ds: ['Mở rộng', 'Marketing', 'Sửa chữa lớn', 'Bán hàng'], cot: 'JOB_CLASS_ID' },
+          { k: 'nhom', nhan: 'Nhóm công việc', kieu: 'chon', ds: TEN_NHOM_CONG_VIEC, cot: 'JOB_CLASS_ID' },
           { k: 'pt', nhan: 'Người phụ trách', kieu: 'chu', cot: 'PERSON_IN_CHARGE' },
           { k: 'tg', nhan: 'Thời gian', kieu: 'chu', cot: 'PERIOD' },
           { k: 'doiTuong', nhan: 'Đối tượng liên quan', kieu: 'chu', cot: 'PR_DETAIL_ID' },
@@ -253,7 +315,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
           { k: 'ma', nhan: 'Mã kho', kieu: 'chu', batBuoc: true, cot: 'WAREHOUSE_ID' },
           { k: 'ten', nhan: 'Tên kho', kieu: 'chu', batBuoc: true, caHang: true, cot: 'WAREHOUSE_NAME' },
           { k: 'cn', nhan: 'Chi nhánh trực thuộc', kieu: 'chon', ds: ['Lê Lợi', 'Thảo Điền', 'Phan Xích Long', 'Văn phòng'], cot: 'ORGANIZATION_ID' },
-          { k: 'loai', nhan: 'Loại kho', kieu: 'chon', ds: ['Kho bếp', 'Kho pha chế', 'Kho tổng', 'Kho phụ trợ'], cot: 'WAREHOUSE_CLASS_ID' },
+          { k: 'loai', nhan: 'Nhóm kho', kieu: 'chon', ds: TEN_NHOM_KHO, cot: 'WAREHOUSE_CLASS_ID' },
           { k: 'tk', nhan: 'Thủ kho', kieu: 'chu', cot: 'KEEPER' },
         ],
       },
@@ -263,6 +325,22 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
           { k: 'tkKho', nhan: 'TK kho ngầm định', kieu: 'chon', cot: 'COST_ACCOUNT_ID' },
           { k: 'tkGv', nhan: 'TK giá vốn ngầm định', kieu: 'chon', cot: 'SALE_COST_ACCOUNT_ID' },
           { k: 'tkCp', nhan: 'TK chi phí ngầm định', kieu: 'chon', cot: 'EXPENSE_ACCOUNT_ID' },
+        ],
+      },
+      {
+        ten: 'Ngầm định',
+        truong: [
+          { k: 'mucCp', nhan: 'Mục chi phí ngầm định', kieu: 'chon', ds: TEN_MUC_CHI_PHI },
+          { k: 'congViec', nhan: 'Công việc ngầm định', kieu: 'chon', ds: TEN_CONG_VIEC_17 },
+        ],
+      },
+      {
+        ten: 'Liên hệ',
+        truong: [
+          { k: 'diaChi', nhan: 'Địa chỉ', kieu: 'chu', caHang: true },
+          { k: 'dienThoai', nhan: 'Số điện thoại', kieu: 'chu' },
+          { k: 'nguoiLienHe', nhan: 'Người liên hệ', kieu: 'chu' },
+          { k: 'ghiChu', nhan: 'Ghi chú', kieu: 'nhieuDong', caHang: true },
         ],
       },
       {
@@ -492,6 +570,135 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
           { k: 'ma', nhan: 'Mã lý do', kieu: 'chu', batBuoc: true },
           { k: 'ten', nhan: 'Lý do nghiệp vụ', kieu: 'chu', batBuoc: true, caHang: true },
           { k: 'dung', nhan: 'Dùng cho nghiệp vụ', kieu: 'chon', ds: ['Thu tiền', 'Chi tiền', 'Nhập kho', 'Xuất kho'], batBuoc: true },
+        ],
+      },
+      {
+        ten: 'Trạng thái',
+        truong: [
+          { k: '_tt', nhan: 'Đang sử dụng', kieu: 'tich', caHang: true },
+        ],
+      },
+    ],
+  },
+
+  // Nhóm hàng hoá (chưa đối chiếu bảng DM_)
+  'nhom-hang-hoa': {
+    khoi: [
+      {
+        ten: 'Thông tin chung',
+        truong: [
+          { k: 'ma', nhan: 'Mã nhóm', kieu: 'chu', batBuoc: true },
+          { k: 'ten', nhan: 'Tên nhóm', kieu: 'chu', batBuoc: true, caHang: true },
+          { k: 'thuocNhom', nhan: 'Thuộc nhóm', kieu: 'chon', ds: TEN_NHOM_HANG },
+          { k: 'loai', nhan: 'Tính chất / Loại', kieu: 'chon', ds: ['Hàng hoá', 'Thành phẩm', 'Nguyên vật liệu', 'Dịch vụ'] },
+          { k: 'dienGiai', nhan: 'Diễn giải', kieu: 'chu', caHang: true },
+        ],
+      },
+      {
+        ten: 'Ngầm định cho hàng hoá',
+        truong: [
+          { k: 'tkKho', nhan: 'TK kho', kieu: 'chon' },
+          { k: 'tkDt', nhan: 'TK doanh thu', kieu: 'chon' },
+          { k: 'tkGv', nhan: 'TK giá vốn', kieu: 'chon' },
+          { k: 'tkCp', nhan: 'TK chi phí', kieu: 'chon' },
+          { k: 'tkTraLai', nhan: 'TK hàng bán trả lại', kieu: 'chon' },
+          { k: 'mucCp', nhan: 'Mục chi phí', kieu: 'chon', ds: TEN_MUC_CHI_PHI },
+          { k: 'ppGia', nhan: 'Phương pháp tính giá', kieu: 'chon', ds: ['Bình quân cuối kỳ', 'Bình quân tức thời', 'Nhập trước xuất trước', 'Đích danh'] },
+          { k: 'ts', nhan: 'Thuế suất GTGT (%)', kieu: 'chon', ds: ['KCT', '0', '5', '8', '10'] },
+          { k: 'tonKho', nhan: 'Theo dõi tồn kho', kieu: 'tich' },
+          { k: 'khoMacDinh', nhan: 'Kho mặc định', kieu: 'chon', ds: ['Kho tổng', 'Kho bếp Lê Lợi', 'Kho bar Lê Lợi', 'Kho bếp Thảo Điền', 'Kho bar Thảo Điền'] },
+        ],
+      },
+      {
+        ten: 'Trạng thái',
+        truong: [
+          { k: '_tt', nhan: 'Đang sử dụng', kieu: 'tich', caHang: true },
+        ],
+      },
+    ],
+  },
+
+  // Nhóm đối tượng (chưa đối chiếu bảng DM_)
+  'nhom-doi-tuong': {
+    khoi: [
+      {
+        ten: 'Thông tin chung',
+        truong: [
+          { k: 'ma', nhan: 'Mã nhóm', kieu: 'chu', batBuoc: true },
+          { k: 'ten', nhan: 'Tên nhóm', kieu: 'chu', batBuoc: true, caHang: true },
+          { k: 'thuocNhom', nhan: 'Thuộc nhóm', kieu: 'chon', ds: TEN_NHOM_DOI_TUONG },
+          { k: 'dienGiai', nhan: 'Diễn giải', kieu: 'chu', caHang: true },
+        ],
+      },
+      {
+        ten: 'Hạch toán',
+        truong: [
+          { k: 'tkThu', nhan: 'TK phải thu ngầm định', kieu: 'chon' },
+          { k: 'tkTra', nhan: 'TK phải trả ngầm định', kieu: 'chon' },
+        ],
+      },
+      {
+        ten: 'Trạng thái',
+        truong: [
+          { k: '_tt', nhan: 'Đang sử dụng', kieu: 'tich', caHang: true },
+        ],
+      },
+    ],
+    moi: () => ({ tkThu: '131', tkTra: '331' }),
+  },
+
+  // Nhóm mục chi phí (chưa đối chiếu bảng DM_)
+  'nhom-muc-chi-phi': {
+    khoi: [
+      {
+        ten: 'Thông tin chung',
+        truong: [
+          { k: 'ma', nhan: 'Mã nhóm', kieu: 'chu', batBuoc: true },
+          { k: 'ten', nhan: 'Tên nhóm', kieu: 'chu', batBuoc: true, caHang: true },
+          { k: 'thuocNhom', nhan: 'Thuộc nhóm', kieu: 'chon', ds: TEN_NHOM_MUC_CP },
+          { k: 'dienGiai', nhan: 'Diễn giải', kieu: 'chu', caHang: true },
+        ],
+      },
+      {
+        ten: 'Trạng thái',
+        truong: [
+          { k: '_tt', nhan: 'Đang sử dụng', kieu: 'tich', caHang: true },
+        ],
+      },
+    ],
+  },
+
+  // Nhóm công việc (chưa đối chiếu bảng DM_)
+  'nhom-cong-viec': {
+    khoi: [
+      {
+        ten: 'Thông tin chung',
+        truong: [
+          { k: 'ma', nhan: 'Mã nhóm', kieu: 'chu', batBuoc: true },
+          { k: 'ten', nhan: 'Tên nhóm', kieu: 'chu', batBuoc: true, caHang: true },
+          { k: 'thuocNhom', nhan: 'Thuộc nhóm', kieu: 'chon', ds: TEN_NHOM_CONG_VIEC },
+          { k: 'dienGiai', nhan: 'Diễn giải', kieu: 'chu', caHang: true },
+        ],
+      },
+      {
+        ten: 'Trạng thái',
+        truong: [
+          { k: '_tt', nhan: 'Đang sử dụng', kieu: 'tich', caHang: true },
+        ],
+      },
+    ],
+  },
+
+  // Nhóm kho (chưa đối chiếu bảng DM_)
+  'nhom-kho': {
+    khoi: [
+      {
+        ten: 'Thông tin chung',
+        truong: [
+          { k: 'ma', nhan: 'Mã nhóm', kieu: 'chu', batBuoc: true },
+          { k: 'ten', nhan: 'Tên nhóm', kieu: 'chu', batBuoc: true, caHang: true },
+          { k: 'thuocNhom', nhan: 'Thuộc nhóm', kieu: 'chon', ds: TEN_NHOM_KHO },
+          { k: 'dienGiai', nhan: 'Diễn giải', kieu: 'chu', caHang: true },
         ],
       },
       {

@@ -6636,3 +6636,7 @@ table.tbl {
 .gt-hl { padding: 12px; }
 .gt-hl .tbl tr.gt-hl-loi td { background: #fdecec; }
 .gt-hl-chon { gap: 8px; padding-top: 10px; font-size: 13px; }
+
+/* ── Nhóm danh mục và đồng ý dữ liệu cá nhân (T136) ── */
+.pn-tich-loi { color: var(--red); font-size: 11.5px; margin-top: 2px; display: block; }
+

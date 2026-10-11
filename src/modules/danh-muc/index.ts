@@ -1,11 +1,11 @@
 // Phân hệ Danh mục: 16 danh mục theo Excel mục 1
 import { createElement } from 'react'
-import type { Col, ModuleDef, ScreenDef } from '../types'
+import type { Col, ModuleDef, Row, ScreenDef } from '../types'
 import { tuExcel } from '../types'
 import { quyTrinh } from './quy-trinh'
 import { kieuGhiSo } from '../../app/plan'
 import { CCDC_HANG, CHI_NHANH, HANG, KHACH, KHO, LY_DO, NCC, NHAN_VIEN, NVL } from '../../data/mock'
-import { DON_VI_TINH, tkCot, taiKhoan } from './data'
+import { DON_VI_TINH, tkCot, taiKhoan, NHOM_HANG, NHOM_DOI_TUONG, NHOM_MUC_CP, NHOM_CONG_VIEC, NHOM_KHO } from './data'
 import { HeThongTaiKhoan } from './HeThongTaiKhoan'
 import { tkTheoCheDo } from '../tong-hop/so-cai'
 import { Note } from '../../ui/Page'
@@ -18,6 +18,80 @@ const BIEU_TUONG: Record<string, string> = {
   '1.1': 'sotk', '1.2': 'hanghoa', '1.3': 'dvt', '1.4': 'quydoi', '1.5': 'users', '1.6': 'receipt',
   '1.7': 'congviec', '1.8': 'khohang', '1.9': 'tiente', '1.10': 'tygia', '1.11': 'loaithue',
   '1.12': 'quytien', '1.13': 'building', '1.14': 'banggia', '1.15': 'buttoan', '1.16': 'lydo',
+}
+
+/** 5 màn danh mục nhóm ngoài Excel (T136) */
+const nhomHangHoa: ScreenDef = {
+  slug: 'nhom-hang-hoa', ten: 'Danh mục nhóm hàng hoá', ngan: 'Nhóm hàng hoá', nhom: 'Danh mục', kind: 'catalog', icon: 'hanghoa',
+  catalog: {
+    them: 'Thêm nhóm hàng hoá',
+    cols: goi => [
+      { k: 'ma', t: 'Mã', cls: 'code' },
+      { k: 'ten', t: 'Tên nhóm' },
+      { k: 'thuocNhom', t: 'Thuộc nhóm' },
+      { k: 'loai', t: 'Tính chất / Loại' },
+      { k: 'dienGiai', t: 'Diễn giải', cls: 'dim' },
+      ...(kieuGhiSo(goi) === 'noco' ? [tkCot('tkKho', 'TK kho'), tkCot('tkDt', 'TK doanh thu'), tkCot('tkGv', 'TK giá vốn')] : []),
+    ],
+    rows: () => NHOM_HANG,
+  },
+}
+
+const nhomDoiTuong: ScreenDef = {
+  slug: 'nhom-doi-tuong', ten: 'Danh mục nhóm đối tượng', ngan: 'Nhóm đối tượng', nhom: 'Danh mục', kind: 'catalog', icon: 'users',
+  catalog: {
+    them: 'Thêm nhóm đối tượng',
+    cols: goi => [
+      { k: 'ma', t: 'Mã', cls: 'code' },
+      { k: 'ten', t: 'Tên nhóm' },
+      { k: 'thuocNhom', t: 'Thuộc nhóm' },
+      { k: 'dienGiai', t: 'Diễn giải', cls: 'dim' },
+      ...(kieuGhiSo(goi) === 'noco' ? [tkCot('tkThu', 'TK phải thu'), tkCot('tkTra', 'TK phải trả')] : []),
+    ],
+    rows: () => NHOM_DOI_TUONG,
+  },
+}
+
+const nhomMucChiPhi: ScreenDef = {
+  slug: 'nhom-muc-chi-phi', ten: 'Danh mục nhóm mục chi phí', ngan: 'Nhóm mục chi phí', nhom: 'Danh mục', kind: 'catalog', icon: 'receipt',
+  catalog: {
+    them: 'Thêm nhóm mục chi phí',
+    cols: [
+      { k: 'ma', t: 'Mã', cls: 'code' },
+      { k: 'ten', t: 'Tên nhóm' },
+      { k: 'thuocNhom', t: 'Thuộc nhóm' },
+      { k: 'dienGiai', t: 'Diễn giải', cls: 'dim' },
+    ],
+    rows: () => NHOM_MUC_CP,
+  },
+}
+
+const nhomCongViec: ScreenDef = {
+  slug: 'nhom-cong-viec', ten: 'Danh mục nhóm công việc', ngan: 'Nhóm công việc', nhom: 'Danh mục', kind: 'catalog', icon: 'congviec',
+  catalog: {
+    them: 'Thêm nhóm công việc',
+    cols: [
+      { k: 'ma', t: 'Mã', cls: 'code' },
+      { k: 'ten', t: 'Tên nhóm' },
+      { k: 'thuocNhom', t: 'Thuộc nhóm' },
+      { k: 'dienGiai', t: 'Diễn giải', cls: 'dim' },
+    ],
+    rows: () => NHOM_CONG_VIEC,
+  },
+}
+
+const nhomKho: ScreenDef = {
+  slug: 'nhom-kho', ten: 'Danh mục nhóm kho', ngan: 'Nhóm kho', nhom: 'Danh mục', kind: 'catalog', icon: 'khohang',
+  catalog: {
+    them: 'Thêm nhóm kho',
+    cols: [
+      { k: 'ma', t: 'Mã', cls: 'code' },
+      { k: 'ten', t: 'Tên nhóm' },
+      { k: 'thuocNhom', t: 'Thuộc nhóm' },
+      { k: 'dienGiai', t: 'Diễn giải', cls: 'dim' },
+    ],
+    rows: () => NHOM_KHO,
+  },
 }
 
 /** Chi nhánh của đơn vị: một mã số thuế có nhiều chi nhánh. Không có trong Excel, gói nào cũng mở. Thanh trên chọn chi nhánh làm việc từ danh mục này. */
@@ -62,11 +136,12 @@ const danhMuc: ModuleDef = {
         return []
       },
       cols: goi => [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên' }, { k: 'loai', t: 'Loại' }, { k: 'mst', t: 'Mã số thuế' }, { k: 'nhom', t: 'Nhóm', cls: 'dim' },
+        { k: 'dongY', t: 'Đồng ý chia sẻ', c: true, r: (r: Row) => r.dongY ? 'Đã đồng ý' : 'Chưa' },
         { k: 'dktt', t: 'Điều khoản thanh toán' }, ...(kieuGhiSo(goi) === 'noco' ? [tkCot('tkCn', 'TK công nợ')] : [])],
       rows: () => [
-        ...KHACH.map(x => ({ ...x, loai: 'Khách hàng', dktt: x.ma === 'KL' ? 'Thanh toán ngay' : 'Công nợ 30 ngày', tkCn: '131' })),
-        ...NCC.map(x => ({ ...x, loai: 'Nhà cung cấp', dktt: 'Công nợ 15 ngày', tkCn: '331' })),
-        ...NHAN_VIEN.map(x => ({ ...x, mst: '', nhom: x.bp, loai: 'Nhân viên', dktt: '—', tkCn: '141' })),
+        ...KHACH.map(x => ({ ...x, loai: 'Khách hàng', dktt: x.ma === 'KL' ? 'Thanh toán ngay' : 'Công nợ 30 ngày', tkCn: '131', dongY: true })),
+        ...NCC.map(x => ({ ...x, loai: 'Nhà cung cấp', dktt: 'Công nợ 15 ngày', tkCn: '331', dongY: true })),
+        ...NHAN_VIEN.map(x => ({ ...x, mst: '', nhom: x.bp, loai: 'Nhân viên', dktt: '—', tkCn: '141', dongY: true })),
       ] } },
     '1.6': { catalog: { them: 'Thêm mục chi phí', nhomLoc: 'nhom', cols: goi => [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Mục chi phí' }, { k: 'nhom', t: 'Nhóm' }, ...(kieuGhiSo(goi) === 'noco' ? [{ k: 'tk', t: 'TK chi phí', cls: 'code' } as Col] : [])],
       rows: () => [['CP01', 'Lương nhân viên bếp', 'Nhân công', '6421'], ['CP02', 'Lương phục vụ, thu ngân', 'Nhân công', '6421'], ['CP03', 'Lương văn phòng', 'Nhân công', '6422'],
@@ -79,11 +154,26 @@ const danhMuc: ModuleDef = {
         .map(([ma, ten, nhom, pt, tg]) => ({ ma, ten, nhom, pt, tg })) } },
     '1.8': { catalog: { them: 'Thêm kho',
       chucNang: () => [{ nhan: 'Xem tồn kho', di: 'kho/5-2-4' }, { nhan: 'Điều chuyển', di: 'kho/5-1-4/moi' }],
-      cols: goi => [{ k: 'ma', t: 'Mã kho', cls: 'code' }, { k: 'ten', t: 'Tên kho' }, { k: 'cn', t: 'Chi nhánh' }, { k: 'loai', t: 'Loại' }, { k: 'tk', t: 'Thủ kho', cls: 'dim' },
+      cols: goi => [{ k: 'ma', t: 'Mã kho', cls: 'code' }, { k: 'ten', t: 'Tên kho' }, { k: 'cn', t: 'Chi nhánh' }, { k: 'loai', t: 'Nhóm kho' }, { k: 'tk', t: 'Thủ kho', cls: 'dim' },
         ...(kieuGhiSo(goi) === 'noco' ? [tkCot('tkKho', 'TK kho'), tkCot('tkGv', 'TK giá vốn'), tkCot('tkCp', 'TK chi phí')] : [])],
       rows: () => KHO.map((ten, i) => {
         const isTong = ten.includes('tổng')
-        return { ma: `K${String(i + 1).padStart(2, '0')}`, ten, cn: CHI_NHANH.find(c => c.kho.includes(ten))?.ten ?? 'Văn phòng', loai: ten.includes('bar') ? 'Kho pha chế' : isTong ? 'Kho tổng' : 'Kho bếp', tk: 'Võ Thanh Tùng', tkKho: '152', tkGv: '632', tkCp: isTong ? '6422' : '6421' }
+        return {
+          ma: `K${String(i + 1).padStart(2, '0')}`,
+          ten,
+          cn: CHI_NHANH.find(c => c.kho.includes(ten))?.ten ?? 'Văn phòng',
+          loai: ten.includes('bar') ? 'Kho pha chế' : isTong ? 'Kho tổng' : 'Kho bếp',
+          tk: 'Võ Thanh Tùng',
+          tkKho: '152',
+          tkGv: '632',
+          tkCp: isTong ? '6422' : '6421',
+          mucCp: isTong ? 'Thuê mặt bằng' : 'Lương nhân viên bếp',
+          congViec: isTong ? 'Cải tạo bếp Lê Lợi' : 'Khai trương chi nhánh Thảo Điền',
+          diaChi: isTong ? 'Kho tổng Bình Tân, TP.HCM' : '86 Lê Lợi, P. Sài Gòn, TP.HCM',
+          dienThoai: '028 3822 1234',
+          nguoiLienHe: 'Võ Thanh Tùng',
+          ghiChu: isTong ? 'Kho tổng phân phối toàn chuỗi' : 'Kho phục vụ chi nhánh',
+        }
       }),
       note: goi => goi === 'F' ? createElement(Note, { kind: 'gray', icon: 'info', children: 'Gói Free dùng các kho nhận từ FABi và iPOS Inventory, không tạo thêm kho mới.' }) : null } },
     '1.9': { catalog: { them: 'Thêm tiền tệ', cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên tiền tệ' }, { k: 'kh', t: 'Ký hiệu', c: true }, { k: 'le', t: 'Số lẻ', num: true }],
@@ -122,6 +212,13 @@ const danhMuc: ModuleDef = {
       ].map(([ma, ten, lct, loc, no, co, tien]) => ({ ma, ten, lct, loc, no: tkTheoCheDo(no, cd).so, co: tkTheoCheDo(co, cd).so, tien })) } },
     '1.16': { catalog: { them: 'Thêm lý do', nhomLoc: 'dung', nhanLoc: 'Dùng cho', cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Lý do' }, { k: 'dung', t: 'Dùng cho' }],
       rows: () => LY_DO } },
-  }, NGAN).map(sc => ({ ...sc, icon: BIEU_TUONG[sc.code ?? ''] ?? sc.icon })).flatMap(sc => sc.code === '1.8' ? [sc, chiNhanh] : [sc]),
+  }, NGAN).map(sc => ({ ...sc, icon: BIEU_TUONG[sc.code ?? ''] ?? sc.icon })).flatMap(sc => {
+    if (sc.code === '1.2') return [sc, nhomHangHoa]
+    if (sc.code === '1.5') return [sc, nhomDoiTuong]
+    if (sc.code === '1.6') return [sc, nhomMucChiPhi]
+    if (sc.code === '1.7') return [sc, nhomCongViec]
+    if (sc.code === '1.8') return [sc, nhomKho, chiNhanh]
+    return [sc]
+  }),
 }
 export default danhMuc

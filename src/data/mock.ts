@@ -31,11 +31,11 @@ export const KHO = ['Kho tổng', ...CHI_NHANH.flatMap(c => c.kho)]
 export type Role = 'owner' | 'ktt' | 'ktv'
 export const ROLE: Record<Role, string> = { owner: 'Chủ doanh nghiệp', ktt: 'Kế toán trưởng', ktv: 'Kế toán viên' }
 export const NGUOI_DUNG = [
-  { ten: 'Nguyễn Minh Anh', email: 'minhanh@phomay.vn', role: 'owner' as Role, vaiTro: 'Chủ doanh nghiệp', pham: 'Tất cả chi nhánh', lan: 'Hôm nay 08:12', tt: 'ok' },
-  { ten: 'Trần Thu Hà', email: 'thuha@phomay.vn', role: 'ktt' as Role, vaiTro: 'Kế toán trưởng', pham: 'Tất cả chi nhánh', lan: 'Hôm nay 09:40', tt: 'ok' },
-  { ten: 'Lê Quốc Bảo', email: 'quocbao@phomay.vn', role: 'ktv' as Role, vaiTro: 'Kế toán viên', pham: 'Tất cả chi nhánh', lan: 'Hôm nay 10:05', tt: 'ok' },
-  { ten: 'Phạm Ngọc Lan', email: 'ngoclan@phomay.vn', role: 'ktv' as Role, vaiTro: 'Quản lý chi nhánh', pham: 'Phố Mây Thảo Điền', lan: 'Hôm qua 21:30', tt: 'ok' },
-  { ten: 'Võ Thanh Tùng', email: 'thanhtung@phomay.vn', role: 'ktv' as Role, vaiTro: 'Thủ kho', pham: 'Kho tổng, Kho bếp Lê Lợi', lan: 'Chưa đăng nhập', tt: 'warn' },
+  { ten: 'Nguyễn Minh Anh', username: 'minhanh', email: 'minhanh@phomay.vn', sdt: '0901 234 567', bp: 'Ban giám đốc', cv: 'Giám đốc', role: 'owner' as Role, vaiTro: 'Chủ doanh nghiệp', pham: 'Tất cả chi nhánh', kho: 'Tất cả kho', otp2fa: true, hieuLucTu: '01/01/2026', lan: 'Hôm nay 08:12', tt: 'ok', _tt: 1, dongY: true },
+  { ten: 'Trần Thu Hà', username: 'thuha', email: 'thuha@phomay.vn', sdt: '0912 345 678', bp: 'Phòng kế toán', cv: 'Kế toán trưởng', role: 'ktt' as Role, vaiTro: 'Kế toán trưởng', pham: 'Tất cả chi nhánh', kho: 'Tất cả kho', otp2fa: true, hieuLucTu: '01/01/2026', lan: 'Hôm nay 09:40', tt: 'ok', _tt: 1, dongY: true },
+  { ten: 'Lê Quốc Bảo', username: 'quocbao', email: 'quocbao@phomay.vn', sdt: '0923 456 789', bp: 'Phòng kế toán', cv: 'Kế toán viên', role: 'ktv' as Role, vaiTro: 'Kế toán viên', pham: 'Tất cả chi nhánh', kho: 'Tất cả kho', otp2fa: false, hieuLucTu: '01/01/2026', lan: 'Hôm nay 10:05', tt: 'ok', _tt: 1, dongY: true },
+  { ten: 'Phạm Ngọc Lan', username: 'ngoclan', email: 'ngoclan@phomay.vn', sdt: '0934 567 890', bp: 'Chi nhánh Thảo Điền', cv: 'Cửa hàng trưởng', role: 'ktv' as Role, vaiTro: 'Quản lý chi nhánh', pham: 'Phố Mây Thảo Điền', kho: 'Kho bếp Thảo Điền', otp2fa: false, hieuLucTu: '01/01/2026', lan: 'Hôm qua 21:30', tt: 'ok', _tt: 1, dongY: true },
+  { ten: 'Võ Thanh Tùng', username: 'thanhtung', email: 'thanhtung@phomay.vn', sdt: '0945 678 901', bp: 'Kho vận', cv: 'Thủ kho', role: 'ktv' as Role, vaiTro: 'Thủ kho', pham: 'Phố Mây Lê Lợi', kho: 'Kho tổng', otp2fa: false, hieuLucTu: '01/01/2026', lan: 'Chưa đăng nhập', tt: 'warn', _tt: 1, dongY: true },
 ]
 
 /** tonKho: hàng có theo dõi tồn kho (T114). Món chế biến không theo dõi tồn, kho trừ nguyên vật liệu theo định lượng; hàng mua về bán lại có theo dõi tồn */

@@ -1,37 +1,105 @@
 // Hệ thống: người dùng, phân quyền, gói thuê bao, cấu hình, thông tin đơn vị
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import type { ScreenProps } from '../types'
+import type { Row, ScreenProps } from '../types'
 import { MODULES, duongDan } from '../../app/registry'
 import { donViHienTai, useSession, cheDoHienTai, namTaiChinh, ngayDauNam, type PpGtgt, type PpTndn } from '../../app/session'
 import { FEATURES, GOI, GOIS, MODS, demTheoGoi, kieuGhiSo, type Goi } from '../../app/plan'
 import { CHE_DO, CHE_DO_HOP_LE, cheDoCuaGoi, type CheDo } from '../../app/che-do'
-import { CHI_NHANH, NGUOI_DUNG } from '../../data/mock'
+import { CHI_NHANH, KHO, NGUOI_DUNG } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
 import { Card, Note, PageHead, Pk } from '../../ui/Page'
 import { St, Table } from '../../ui/Table'
 import { Select } from '../../ui/Dropdown'
 import { HopXacNhan } from '../../ui/LocNangCao'
 import { thTT58, moTaBoSoTT58 } from '../bao-cao/tt58'
+import { CatalogPanel } from '../../ui/generic/CatalogScreen'
+import type { CauHinhDM } from '../danh-muc/truong-dm'
+
+const VAI_TRO = ['Chủ doanh nghiệp', 'Kế toán trưởng', 'Kế toán viên', 'Quản lý chi nhánh', 'Thủ kho']
+const PHAM_VI_DS = ['Tất cả chi nhánh', ...CHI_NHANH.map(c => c.ten)]
+const KHO_DS = ['Tất cả kho', ...KHO]
+
+const CAU_HINH_NGUOI_DUNG: CauHinhDM = {
+  ten: 'Người dùng',
+  khoi: [
+    {
+      ten: 'Thông tin chung',
+      truong: [
+        { k: 'username', nhan: 'Tên đăng nhập', kieu: 'chu', batBuoc: true },
+        { k: 'ten', nhan: 'Họ tên', kieu: 'chu', caHang: true, batBuoc: true },
+        { k: 'email', nhan: 'Email', kieu: 'chu', batBuoc: true },
+        { k: 'sdt', nhan: 'Số điện thoại', kieu: 'chu' },
+        { k: 'bp', nhan: 'Bộ phận', kieu: 'chu' },
+        { k: 'cv', nhan: 'Chức vụ', kieu: 'chu' },
+      ],
+    },
+    {
+      ten: 'Phân quyền',
+      truong: [
+        { k: 'vaiTro', nhan: 'Vai trò', kieu: 'chon', ds: VAI_TRO, batBuoc: true },
+        { k: 'pham', nhan: 'Chi nhánh được giao', kieu: 'chon', ds: PHAM_VI_DS },
+        { k: 'kho', nhan: 'Kho được giao', kieu: 'chon', ds: KHO_DS },
+        { k: 'otp2fa', nhan: 'Bắt buộc xác thực hai lớp', kieu: 'tich', caHang: false },
+      ],
+    },
+    {
+      ten: 'Trạng thái',
+      truong: [
+        { k: 'hieuLucTu', nhan: 'Hiệu lực từ ngày', kieu: 'ngay' },
+        { k: '_tt', nhan: 'Đang sử dụng', kieu: 'tich' },
+        { k: 'dongY', nhan: 'Đã đồng ý chia sẻ thông tin cá nhân', kieu: 'tich', caHang: true, batBuoc: true },
+      ],
+    },
+  ],
+  moi: () => ({ _tt: 1, dongY: false, vaiTro: 'Kế toán viên', pham: 'Tất cả chi nhánh', kho: 'Tất cả kho' }),
+}
 
 export function NguoiDung({ sc }: ScreenProps) {
   const { toast } = useSession()
+  const [editUser, setEditUser] = useState<Row | null>(null)
+
   return (
     <div className="page">
       <PageHead crumb={['Hệ thống']} title={sc.ten!} meta={<span className="chip">{NGUOI_DUNG.length}/10 người dùng của gói</span>}>
-        <button className="btn pri" onClick={() => toast('Đã gửi lời mời tới email')}><Icon n="mail" className="ic sm" />Mời người dùng</button>
+        <button type="button" className="btn pri" onClick={() => setEditUser({})}><Icon n="mail" className="ic sm" />Mời người dùng</button>
       </PageHead>
       <section className="card">
-        <Table cols={[{ k: 'ten', t: 'Họ tên', r: r => <span className="row"><span className="avatar" style={{ width: 28, height: 28, fontSize: 11 }}>{r.ten.split(' ').slice(-2).map((x: string) => x[0]).join('')}</span><b style={{ color: 'var(--ink)' }}>{r.ten}</b></span> },
-          { k: 'email', t: 'Email', cls: 'dim' }, { k: 'vaiTro', t: 'Vai trò' }, { k: 'pham', t: 'Phạm vi dữ liệu' }, { k: 'lan', t: 'Đăng nhập gần nhất', cls: 'dim' },
-          { k: 'tt', t: 'Trạng thái', r: r => r.tt === 'ok' ? <St k="ok">Đang dùng</St> : <St k="warn">Chưa nhận lời mời</St> }, { k: 'x', t: '', r: () => <button className="btn sm ghost">Sửa</button> }]} rows={NGUOI_DUNG} />
+        <Table
+          cols={[
+            { k: 'ten', t: 'Họ tên', r: r => <span className="row"><span className="avatar" style={{ width: 28, height: 28, fontSize: 11 }}>{r.ten.split(' ').slice(-2).map((x: string) => x[0]).join('')}</span><b style={{ color: 'var(--ink)' }}>{r.ten}</b></span> },
+            { k: 'email', t: 'Email', cls: 'dim' },
+            { k: 'vaiTro', t: 'Vai trò' },
+            { k: 'pham', t: 'Phạm vi dữ liệu' },
+            { k: 'lan', t: 'Đăng nhập gần nhất', cls: 'dim' },
+            { k: 'tt', t: 'Trạng thái', r: r => r.tt === 'ok' ? <St k="ok">Đang dùng</St> : <St k="warn">Chưa nhận lời mời</St> },
+            { k: 'x', t: '', r: (r: Row) => <button type="button" className="btn sm ghost" onClick={() => setEditUser(r)}>Sửa</button> },
+          ]}
+          rows={NGUOI_DUNG}
+          onRow={r => setEditUser(r)}
+        />
       </section>
       <Note icon="shield">Xác thực hai lớp bắt buộc với kế toán trưởng và chủ doanh nghiệp. Người dùng chỉ thấy dữ liệu chi nhánh, kho được giao.</Note>
+
+      {editUser && (
+        <CatalogPanel
+          cauHinh={CAU_HINH_NGUOI_DUNG}
+          edit={editUser}
+          all={NGUOI_DUNG}
+          ten="Người dùng"
+          tenNgan="Người dùng"
+          anNutThemTiep
+          onDong={() => setEditUser(null)}
+          onLuu={(_val) => {
+            const isMoi = !editUser.ten
+            toast(isMoi ? 'Đã gửi lời mời tới email' : 'Đã lưu người dùng')
+            setEditUser(null)
+          }}
+        />
+      )}
     </div>
   )
 }
-
-const VAI_TRO = ['Chủ doanh nghiệp', 'Kế toán trưởng', 'Kế toán viên', 'Quản lý chi nhánh', 'Thủ kho']
 const QUYEN = ['Xem', 'Thêm', 'Sửa', 'Xoá', 'Ghi sổ', 'Khoá sổ']
 const MAC_DINH: Record<string, string[]> = {
   'Chủ doanh nghiệp': ['Xem'], 'Kế toán trưởng': QUYEN, 'Kế toán viên': ['Xem', 'Thêm', 'Sửa', 'Ghi sổ'], 'Quản lý chi nhánh': ['Xem', 'Thêm'], 'Thủ kho': ['Xem', 'Thêm', 'Sửa'],

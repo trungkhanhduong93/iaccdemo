@@ -11,7 +11,7 @@ import { PhanTrang } from '../PhanTrang'
 import { fold, nhapSoQT, soQT } from '../format'
 import { Dropdown, MenuItem, Select } from '../Dropdown'
 import { LocO, ThanhLoc } from '../ThanhLoc'
-import { TRUONG_DM, type KhoiDM, type TruongDM, type KieuTruong } from '../../modules/danh-muc/truong-dm'
+import { TRUONG_DM, type CauHinhDM, type KhoiDM, type TruongDM, type KieuTruong } from '../../modules/danh-muc/truong-dm'
 import { heThongTk } from '../../modules/danh-muc/he-thong-tk'
 import { FormToanMan } from '../FormToanMan'
 import { LichSu } from './ChungTuForm'
@@ -23,11 +23,10 @@ const HANG_LOAT = 'hang-loat'
 
 /** Cột luôn hiện, không ẩn được ở Tuỳ chỉnh cột */
 const COT_CO_DINH = new Set(['_stt'])
-import { TEN_DVT } from '../../modules/danh-muc/data'
+import { TEN_DVT, demHangTheoNhom } from '../../modules/danh-muc/data'
 
 export function CatalogScreen({ sc }: ScreenProps) {
   const { s, set, toast } = useSession()
-  const cnChon = chiNhanhHienTai(s)
   const cfg = sc.catalog ?? { cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên' }], rows: () => [] }
   // Kỳ số liệu (yyyymm): màn có kySoLieu tính số liệu tới hết kỳ đang chọn
   const [ky, setKy] = useState(() => kyMacDinh(s))
@@ -35,11 +34,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
   const [q, setQ] = useState('')
   const [nhom, setNhom] = useState('')
   const [edit, setEdit] = useState<Row | null>(null)
-  const [formVal, setFormVal] = useState<Record<string, any>>({})
-  const [errors, setErrors] = useState<Record<string, string>>({})
-  const [moKhoi, setMoKhoi] = useState<Record<string, boolean>>({})
-  const [tab, setTab] = useState('')
-  const [hoi, setHoi] = useState<{ tieuDe: string; hoi: string; sua: Record<string, any>; themTiep: boolean } | null>(null)
+  const [xacNhanAp, setXacNhanAp] = useState<{ n: number; ten: string } | null>(null)
 
   // Danh sách, cột và bảng ghi nhớ lại: mở panel hay gõ trong panel không vẽ lại cả bảng danh sách phía sau (T81)
   const nhoms = useMemo(() => cfg.nhomLoc ? [...new Set(all.map(r => r[cfg.nhomLoc!]))] : [], [all])
@@ -81,28 +76,12 @@ export function CatalogScreen({ sc }: ScreenProps) {
   ], [cols0, sc])
   // Khối trường của danh mục: cấu hình riêng của màn, theo mã màn, hoặc dự phòng từ cột
   const cauHinh = cfg.truong ?? TRUONG_DM[sc.code ?? ''] ?? TRUONG_DM[sc.slug ?? '']
+  const [dienSan, setDienSan] = useState<Row | undefined>(undefined)
   // Bấm dòng: gán luôn giá trị form cùng lượt vẽ, không đợi useEffect vẽ lần hai
   const moSua = useCallback((r: Row | null, kieu?: string, them?: Row) => {
-    setEdit(r)
-    // Thêm mới: giá trị sẵn của cấu hình, kèm kiểu thêm mới (_kieu) khi màn có nhiều kiểu
-    const moi = r && Object.keys(r).length === 0
-      ? (k => ({ ...cauHinh?.moi?.(all, { kieu: k, ngayDauNam: ngayDauNam(s) }), ...(k ? { _kieu: k } : {}) }))(kieu ?? cauHinh?.bien?.[0].k)
-      : undefined
-    let v: Record<string, any> = r ? { ...r, ...moi, _sua: moi ? 0 : 1, _tt: r._tt === undefined ? 1 : r._tt } : {}   // _sua: đang sửa dòng có sẵn
-    // Giá trị điền sẵn từ màn khác (vd tạo thẻ từ phiếu chi): ghi đè rồi cho cấu hình tự tính các ô phụ thuộc
-    for (const [k, val] of Object.entries(them ?? {})) {
-      v = { ...v, [k]: val }
-      if (cauHinh?.doi) v = { ...v, ...cauHinh.doi(k, v, all) }
-    }
-    setFormVal(v)
-    setErrors({})
-    setTab('')
-  }, [cauHinh, all, s])
-  // Gõ một ô: ghi giá trị rồi cho cấu hình tự tính các ô phụ thuộc
-  const doiO = (k: string, val: unknown) => setFormVal(v => {
-    const m = { ...v, [k]: val }
-    return cauHinh?.doi ? { ...m, ...cauHinh.doi(k, m, all) } : m
-  })
+    setEdit(r ? (kieu ? { ...r, _kieu: kieu } : r) : {})
+    setDienSan(them)
+  }, [])
   // STT đánh lại theo dòng đang hiện sau tìm, lọc
   const rowsHien = useMemo((): Row[] => cfg.stt ? rows.map((r, i) => ({ ...r, _stt: i + 1 })) : rows, [rows])
   // Kiểu danh sách chứng từ (dsChungTu): phân trang, dòng Tổng, chọn dòng xem chi tiết ở khung dưới như danh sách thu chi
@@ -130,8 +109,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
         sum={{ [cols[0].k]: `Tổng: ${rowsTrang.length}`, ...cong(rowsTrang) }} />
     : <Table cols={cols} rows={rowsHien} motDong onRow={moSua} />, [cols, cot.colsHien, cot.doRong, rowsHien, rowsTrang, moSua, dangChon])
   const ten = tenMan(sc)
-  const tenNgan = cauHinh?.bien?.find(b => b.k === formVal._kieu)?.ten ?? cauHinh?.ten ?? sc.ngan ?? ten
-  const hienO = (tr: TruongDM) => !tr.hien || tr.hien(formVal)
+
 
   // Mở thẳng form thêm mới từ sơ đồ Quy trình: ?moi=<kiểu>, mở xong bỏ tham số khỏi đường dẫn
   const [thamSo, setThamSo] = useSearchParams()
@@ -143,215 +121,9 @@ export function CatalogScreen({ sc }: ScreenProps) {
     moSua({}, cauHinh?.bien?.some(b => b.k === k) ? k : undefined, (viTri.state as { tuPhieu?: Row } | null)?.tuPhieu)
     setThamSo({}, { replace: true })
   }, [thamSo])
-  const dangSua = Boolean(edit && (edit.ma || edit.ten || Object.keys(edit).length > 1))
 
-  const dsKhoi: KhoiDM[] = useMemo(() => {
-    if (cauHinh?.khoi) return cauHinh.khoi
-    const dsTuCot: TruongDM[] = cols0.map(c => ({
-      k: c.k,
-      nhan: c.t,
-      kieu: (c.num ? 'so' : 'chu') as KieuTruong,
-    }))
-    dsTuCot.push({ k: '_tt', nhan: 'Đang sử dụng', kieu: 'tich', caHang: true })
-    return [{ ten: 'Thông tin chung', truong: dsTuCot }]
-  }, [cauHinh, cols0])
 
-  const dsTk = useMemo(() => heThongTk(s.cheDo), [s.cheDo])
 
-  // Khung panel hiện ngay, thân nhiều trường vẽ ở khung hình sau để bấm mở không bị khựng (T81)
-  const editThan = useDeferredValue(edit)
-
-  // Đóng panel bằng phím Escape
-  useEffect(() => {
-    if (!edit) return
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && !document.querySelector('.ds-hop-nen')) setEdit(null)   // đang mở hộp hỏi thì Esc chỉ đóng hộp
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [edit])
-
-  const dongPanel = () => setEdit(null)
-
-  const isMo = (tenK: string) => moKhoi[tenK] !== false
-  const toggleKhoi = (tenK: string) => setMoKhoi(m => ({ ...m, [tenK]: !isMo(tenK) }))
-
-  const handleLuu = (themTiep: boolean) => {
-    const errs: Record<string, string> = {}
-    for (const kh of dsKhoi) {
-      for (const tr of kh.truong) {
-        // Thêm mới: ngày so với ngày đầu năm của đơn vị (chứng từ phát sinh từ ngày đầu năm, số dư trước ngày đầu năm)
-        const dn = !dangSua && hienO(tr) && formVal[tr.k] ? tr.dauNam?.(formVal) : undefined
-        if (dn) {
-          const truoc = truocDauNam(s, String(formVal[tr.k]))
-          if (dn === 'tu' && truoc) errs[tr.k] = `Phải từ ngày đầu năm ${ngayDauNam(s)} trở đi`
-          if (dn === 'truoc' && !truoc) errs[tr.k] = `Thẻ dư đầu kỳ phải có ngày trước ngày đầu năm ${ngayDauNam(s)}`
-        }
-        if (tr.batBuoc && hienO(tr)) {
-          const val = formVal[tr.k]
-          if (val === undefined || val === null || String(val).trim() === '') {
-            errs[tr.k] = `Vui lòng nhập ${tr.nhan.toLowerCase()}`
-          }
-        }
-      }
-    }
-    if (Object.keys(errs).length > 0) {
-      setErrors(errs)
-      return
-    }
-    // Lỗi cần người dùng chọn cách xử lý (vd tổng phân bổ lệch): hỏi trước, không lưu khi chưa khớp
-    const chan = cauHinh?.loi?.(formVal)
-    if (chan) {
-      toast(chan)
-      return
-    }
-    const loi = cauHinh?.kiemLuu?.(formVal)
-    if (loi) {
-      setHoi({ ...loi, themTiep })
-      return
-    }
-    luuXong(themTiep)
-  }
-
-  const luuXong = (themTiep: boolean) => {
-    toast('Đã lưu')
-    if (themTiep) {
-      setFormVal({ ...cauHinh?.moi?.(all, { kieu: formVal._kieu, ngayDauNam: ngayDauNam(s) }), _kieu: formVal._kieu, _tt: 1 })
-      setErrors({})
-    } else {
-      setEdit(null)
-    }
-  }
-
-  // Lựa chọn của ô chọn tính một lần theo khoá trường, dùng lại giữa các lần vẽ
-  const dsTkChon = useMemo(() => dsTk.map(t => ({ v: t.so, t: `${t.so} - ${t.ten}` })), [dsTk])
-  const boNho = useMemo(() => new Map<string, { v: string; t: string }[]>(), [dsTkChon, nhoms])
-  const getOptions = (tr: TruongDM): { v: string; t: string }[] => {
-    const daCo = boNho.get(tr.k)
-    if (daCo) return daCo
-    const dau = { v: '', t: `(Chọn ${tr.nhan.toLowerCase()})` }
-    let ds: { v: string; t: string }[] = []
-    // ô Nhóm lấy nhóm có trong dữ liệu trước, để dòng đang sửa luôn có nhóm của nó trong danh sách (T87)
-    if (tr.k === 'nhom' && cfg.nhomLoc === 'nhom' && nhoms.length > 0) ds = nhoms.map(d => ({ v: d, t: d }))
-    else if (tr.ds && tr.ds.length > 0) ds = tr.ds.map(d => ({ v: d, t: d }))
-    else if (tr.k.toLowerCase().startsWith('tk')) ds = dsTkChon
-    else if (tr.k === 'dvt') ds = TEN_DVT.map(d => ({ v: d, t: d }))
-    const kq = [dau, ...ds]
-    boNho.set(tr.k, kq)
-    return kq
-  }
-
-  const laSo = (tr: TruongDM) => tr.kieu === 'tien' || tr.kieu === 'so'
-  const formatGiaTri = (tr: TruongDM, v: any) => {
-    // Số kiểu quốc tế: phẩy ngăn nghìn, chấm thập phân, chèn phẩy cả khi đang gõ
-    if (cauHinh?.soQuocTe && laSo(tr)) return soQT(v)
-    if (typeof v === 'number') {
-      return tr.kieu === 'tien' ? v.toLocaleString('vi-VN') : String(v)
-    }
-    return v ?? ''
-  }
-
-  const veBang = (kh: KhoiDM, maxH = 280) => {
-    const b = kh.bang!(formVal, doiO)
-    // Lưới có ô nhập dùng chung kiểu bảng chi tiết phiếu (bang-sua): ô cao 30px, chữ 12.5px
-    return (
-      <div className="bang-sua">
-        {b.rows.length ? <Table cols={b.cols} rows={b.rows} sum={b.sum} rowCls={b.rowCls} maxH={maxH || undefined} /> : <div className="muted">{b.trong}</div>}
-        {b.chan}
-      </div>
-    )
-  }
-  // Tab đang mở ở form toàn màn hình: mặc định khối lưới đầu tiên
-  const tabTm = tab || dsKhoi.find(kh => kh.bang)?.ten || 'Lịch sử'
-
-  // Một khối của panel: ô nhập theo lưới, hoặc lưới tự tính (kh.bang)
-  const veKhoi = (kh: KhoiDM) => {
-    const mo = isMo(kh.ten)
-    return (
-      <div key={kh.ten} className={`pn-khoi${mo ? ' mo' : ''}`}>
-        <div className="pn-khoi-dau" onClick={() => toggleKhoi(kh.ten)}>
-          {/* Form toàn màn hình: mô tả nằm cạnh tên khối đầu, đầu form chỉ có nhãn chi nhánh như phiếu chi */}
-          <span>{kh.ten}{cauHinh?.toanMan && cauHinh.moTa && kh === dsKhoi[0] && <small className="muted"> · {cauHinh.moTa}</small>}</span>
-          <Icon n={mo ? 'chevd' : 'chevr'} className="ic sm" />
-        </div>
-        {mo && kh.bang && <div className="pn-khoi-than">{veBang(kh)}</div>}
-        {mo && kh.ve && <div className="pn-khoi-than">{kh.ve(formVal, doiO)}</div>}
-        {mo && !kh.bang && !kh.ve && (
-          <div className="pn-khoi-than">
-            <div className="pn-luoi">
-              {kh.truong.filter(hienO).map(tr => {
-                if (tr.kieu === 'tich') {
-                  // Ô tích mặc định chiếm cả hàng; caHang: false thì nằm cùng hàng với ô khác
-                  return (
-                    <div className={tr.caHang === false ? 'f pn-tich-o' : 'f pn-hang-dai'} key={tr.k}>
-                      <label className="row pn-tich">
-                        <input
-                          type="checkbox"
-                          checked={formVal[tr.k] !== 0 && formVal[tr.k] !== false}
-                          onChange={e => {
-                            doiO(tr.k, e.target.checked ? 1 : 0)
-                          }}
-                        />
-                        {tr.nhan}
-                      </label>
-                    </div>
-                  )
-                }
-
-                const chon = tr.kieu === 'chon' ? getOptions(tr) : []
-                // giá trị của dòng không có trong danh sách chọn thì thêm vào cuối, ô chọn khỏi bị trống
-                const gt = String(formVal[tr.k] ?? '')
-                const opts = gt && !chon.some(o => o.v === gt) ? [...chon, { v: gt, t: gt }] : chon
-                const hangDai = tr.caHang || tr.kieu === 'nhieuDong'
-
-                return (
-                  <div className={`f${hangDai ? ' pn-hang-dai' : ''}`} key={tr.k}>
-                    <label>
-                      {tr.nhan} {tr.batBuoc && <em>*</em>}
-                    </label>
-                    {tr.kieu === 'nhieuDong' ? (
-                      <textarea
-                        className="inp"
-                        rows={2}
-                        value={formVal[tr.k] ?? ''}
-                        onChange={e => {
-                          doiO(tr.k, e.target.value)
-                          setErrors(err => ({ ...err, [tr.k]: '' }))
-                        }}
-                      />
-                    ) : tr.kieu === 'chon' ? (
-                      <Select
-                        className="inp"
-                        value={String(formVal[tr.k] ?? '')}
-                        ds={opts}
-                        aria-label={tr.nhan}
-                        onChange={e => {
-                          doiO(tr.k, e.target.value)
-                          setErrors(err => ({ ...err, [tr.k]: '' }))
-                        }}
-                      />
-                    ) : (
-                      <input
-                        className={`inp${tr.kieu === 'tien' ? ' pn-tien' : tr.kieu === 'so' ? ' pn-so' : ''}`}
-                        readOnly={tr.chiDoc}
-                        placeholder={tr.kieu === 'ngay' ? 'dd/mm/yyyy' : undefined}
-                        value={formatGiaTri(tr, formVal[tr.k])}
-                        onChange={e => {
-                          doiO(tr.k, cauHinh?.soQuocTe && laSo(tr) ? nhapSoQT(e.target.value) : e.target.value)
-                          setErrors(err => ({ ...err, [tr.k]: '' }))
-                        }}
-                      />
-                    )}
-                    {errors[tr.k] && <span className="muted pn-loi">{errors[tr.k]}</span>}
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-        )}
-      </div>
-    )
-  }
 
   return (
     <div className={dsct ? 'page page-voucher' : 'page'}>
@@ -472,13 +244,369 @@ export function CatalogScreen({ sc }: ScreenProps) {
       )}
       </div>
 
+      {edit && (
+        <CatalogPanel
+          key={String(edit.ma ?? edit.username ?? (edit.ten ? edit.ten : 'moi'))}
+          cauHinh={cauHinh}
+          edit={edit}
+          dienSan={dienSan}
+          nhomLoc={cfg.nhomLoc}
+          all={all}
+          cols0={cols0}
+          nhoms={nhoms}
+          ten={ten}
+          tenNgan={sc.ngan ?? ten}
+          scSlug={sc.slug}
+          nutChanPhu={val => (
+            Boolean(edit.ma || edit.ten) && sc.slug === 'nhom-hang-hoa' ? (
+              <button
+                type="button"
+                className="btn"
+                onClick={() => setXacNhanAp({ n: val.ten ? demHangTheoNhom(val.ten) : 0, ten: val.ten || '' })}
+              >
+                Áp cho {val.ten ? demHangTheoNhom(val.ten) : 0} hàng hoá trong nhóm
+              </button>
+            ) : null
+          )}
+          onDong={() => setEdit(null)}
+          onLuu={(_val, themTiep) => {
+            toast('Đã lưu')
+            if (!themTiep) setEdit(null)
+          }}
+        />
+      )}
+      {moHangLoat && cfg.hangLoat && <cfg.hangLoat.Form soDong={all.length} onDong={() => setMoHangLoat(false)} />}
+      {xacNhanAp && (
+        <HopXacNhan
+          tieuDe="Áp thông tin ngầm định"
+          nut="Đồng ý"
+          nutHuy="Không"
+          onDong={() => setXacNhanAp(null)}
+          onDongY={() => {
+            toast(`Đã áp thông tin ngầm định cho ${xacNhanAp.n} hàng hoá`)
+            setXacNhanAp(null)
+          }}
+        >
+          Áp thông tin ngầm định của nhóm {xacNhanAp.ten} cho {xacNhanAp.n} hàng hoá trong nhóm?
+        </HopXacNhan>
+      )}
+    </div>
+  )
+}
+
+export interface CatalogPanelProps {
+  cauHinh?: CauHinhDM
+  edit: Row | null
+  dienSan?: Row
+  nhomLoc?: string
+  all?: Row[]
+  cols0?: Col[]
+  nhoms?: string[]
+  ten?: string
+  tenNgan?: string
+  scSlug?: string
+  anNutThemTiep?: boolean
+  nutChanPhu?: React.ReactNode | ((formVal: Record<string, any>) => React.ReactNode)
+  onDong: () => void
+  onLuu?: (formVal: Record<string, any>, themTiep: boolean) => void
+}
+
+export function CatalogPanel({
+  cauHinh,
+  edit,
+  dienSan,
+  nhomLoc,
+  all = [],
+  cols0 = [],
+  nhoms = [],
+  ten = '',
+  tenNgan,
+  scSlug = '',
+  anNutThemTiep = false,
+  nutChanPhu,
+  onDong,
+  onLuu,
+}: CatalogPanelProps) {
+  const { s, set, toast } = useSession()
+  const cnChon = chiNhanhHienTai(s)
+
+  const dangSua = Boolean(edit && (edit.ma || edit.ten || edit.username || Object.keys(edit).length > 1))
+
+  const [formVal, setFormVal] = useState<Record<string, any>>(() => {
+    if (!edit) return {}
+    const kieu = edit._kieu ?? cauHinh?.bien?.[0]?.k
+    // Thêm mới: giá trị sẵn của cấu hình, kèm kiểu thêm mới (_kieu) khi màn có nhiều kiểu
+    const moi = !dangSua ? (cauHinh?.moi?.(all, { kieu, ngayDauNam: ngayDauNam(s) }) ?? {}) : {}
+    let v: Record<string, any> = dangSua
+      ? { ...edit, _sua: 1, _tt: edit._tt === undefined ? 1 : edit._tt } // _sua: đang sửa dòng có sẵn
+      : { ...moi, ...(kieu ? { _kieu: kieu } : {}), _tt: 1, _sua: 0 }
+    // Giá trị điền sẵn từ màn khác (vd tạo thẻ từ phiếu chi): ghi đè rồi cho cấu hình tự tính các ô phụ thuộc
+    if (!dangSua && dienSan) {
+      for (const [k, val] of Object.entries(dienSan)) {
+        v[k] = val
+        if (cauHinh?.doi) v = { ...v, ...cauHinh.doi(k, v, all) }
+      }
+    }
+    return v
+  })
+
+  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [moKhoi, setMoKhoi] = useState<Record<string, boolean>>({})
+  const [tab, setTab] = useState('')
+  const [hoi, setHoi] = useState<{ tieuDe: string; hoi: string; sua: Record<string, any>; themTiep: boolean; luu?: boolean } | null>(null)
+
+  // Khung panel hiện ngay, thân nhiều trường vẽ ở khung hình sau để bấm mở không bị khựng (T81)
+  const editThan = useDeferredValue(edit)
+
+  // Đóng panel bằng phím Escape
+  useEffect(() => {
+    if (!edit) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !document.querySelector('.ds-hop-nen')) onDong()   // đang mở hộp hỏi thì Esc chỉ đóng hộp
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [edit, onDong])
+
+  const dsKhoi: KhoiDM[] = useMemo(() => {
+    if (cauHinh?.khoi) return cauHinh.khoi
+    if (cols0.length > 0) {
+      const dsTuCot: TruongDM[] = cols0.map(c => ({
+        k: c.k,
+        nhan: c.t,
+        kieu: (c.num ? 'so' : 'chu') as KieuTruong,
+      }))
+      dsTuCot.push({ k: '_tt', nhan: 'Đang sử dụng', kieu: 'tich', caHang: true })
+      return [{ ten: 'Thông tin chung', truong: dsTuCot }]
+    }
+    return []
+  }, [cauHinh, cols0])
+
+  const dsTk = useMemo(() => heThongTk(s.cheDo), [s.cheDo])
+  // Lựa chọn của ô chọn tính một lần theo khoá trường, dùng lại giữa các lần vẽ
+  const dsTkChon = useMemo(() => dsTk.map(t => ({ v: t.so, t: `${t.so} - ${t.ten}` })), [dsTk])
+  const boNho = useMemo(() => new Map<string, { v: string; t: string }[]>(), [dsTkChon, nhoms, nhomLoc])
+
+  const getOptions = (tr: TruongDM): { v: string; t: string }[] => {
+    const daCo = boNho.get(tr.k)
+    if (daCo) return daCo
+    const dau = { v: '', t: `(Chọn ${tr.nhan.toLowerCase()})` }
+    let ds: { v: string; t: string }[] = []
+    // ô Nhóm lấy nhóm có trong dữ liệu trước, để dòng đang sửa luôn có nhóm của nó trong danh sách (T87)
+    if (tr.k === 'nhom' && nhomLoc === 'nhom' && nhoms.length > 0) ds = nhoms.map(d => ({ v: d, t: d }))
+    else if (tr.ds && tr.ds.length > 0) ds = tr.ds.map(d => ({ v: d, t: d }))
+    else if (tr.k.toLowerCase().startsWith('tk')) ds = dsTkChon
+    else if (tr.k === 'dvt') ds = TEN_DVT.map(d => ({ v: d, t: d }))
+    const kq = [dau, ...ds]
+    boNho.set(tr.k, kq)
+    return kq
+  }
+
+  const laSo = (tr: TruongDM) => tr.kieu === 'tien' || tr.kieu === 'so'
+  const formatGiaTri = (tr: TruongDM, v: any) => {
+    // Số kiểu quốc tế: phẩy ngăn nghìn, chấm thập phân, chèn phẩy cả khi đang gõ
+    if (cauHinh?.soQuocTe && laSo(tr)) return soQT(v)
+    if (typeof v === 'number') {
+      return tr.kieu === 'tien' ? v.toLocaleString('vi-VN') : String(v)
+    }
+    return v ?? ''
+  }
+
+  const hienO = (tr: TruongDM) => !tr.hien || tr.hien(formVal)
+  // Nút phụ ở chân panel theo màn (vd Áp cho hàng hoá trong nhóm, T136)
+  const nutPhu = typeof nutChanPhu === 'function' ? nutChanPhu(formVal) : nutChanPhu
+  const isMo = (tenK: string) => moKhoi[tenK] !== false
+  const toggleKhoi = (tenK: string) => setMoKhoi(m => ({ ...m, [tenK]: !isMo(tenK) }))
+
+  // Gõ một ô: ghi giá trị rồi cho cấu hình tự tính các ô phụ thuộc
+  const doiO = (k: string, val: unknown) => {
+    let m = { ...formVal, [k]: val }
+    if (cauHinh?.doi) m = { ...m, ...cauHinh.doi(k, m, all) }
+    if (cauHinh?.hoiDoi) {
+      const hd = cauHinh.hoiDoi(k, m, all)
+      if (hd) {
+        if (hd.dien) m = { ...m, ...hd.dien }
+        if (hd.sua && Object.keys(hd.sua).length > 0) {
+          setHoi({ tieuDe: hd.tieuDe, hoi: hd.hoi, sua: hd.sua, themTiep: false, luu: false })
+        }
+      }
+    }
+    setFormVal(m)
+  }
+
+  const handleLuu = (themTiep: boolean) => {
+    const errs: Record<string, string> = {}
+    for (const kh of dsKhoi) {
+      for (const tr of kh.truong) {
+        if (!hienO(tr)) continue
+        // Thêm mới: ngày so với ngày đầu năm của đơn vị (chứng từ phát sinh từ ngày đầu năm, số dư trước ngày đầu năm)
+        const dn = !dangSua && formVal[tr.k] ? tr.dauNam?.(formVal) : undefined
+        if (dn) {
+          const truoc = truocDauNam(s, String(formVal[tr.k]))
+          if (dn === 'tu' && truoc) errs[tr.k] = `Phải từ ngày đầu năm ${ngayDauNam(s)} trở đi`
+          if (dn === 'truoc' && !truoc) errs[tr.k] = `Thẻ dư đầu kỳ phải có ngày trước ngày đầu năm ${ngayDauNam(s)}`
+        }
+        if (tr.batBuoc) {
+          const val = formVal[tr.k]
+          if (tr.kieu === 'tich') {
+            if (val === 0 || val === '0' || val === false || val === 'false') {
+              errs[tr.k] = tr.k === 'dongY'
+                ? 'Cần tích xác nhận đã đồng ý chia sẻ thông tin cá nhân'
+                : `Cần tích ${tr.nhan.toLowerCase()}`
+            }
+          } else {
+            if (val === undefined || val === null || String(val).trim() === '') {
+              errs[tr.k] = `Vui lòng nhập ${tr.nhan.toLowerCase()}`
+            }
+          }
+        }
+      }
+    }
+    if (Object.keys(errs).length > 0) {
+      setErrors(errs)
+      return
+    }
+    // Lỗi cần người dùng chọn cách xử lý (vd tổng phân bổ lệch): hỏi trước, không lưu khi chưa khớp
+    const chan = cauHinh?.loi?.(formVal)
+    if (chan) {
+      toast(chan)
+      return
+    }
+    const loi = cauHinh?.kiemLuu?.(formVal)
+    if (loi) {
+      setHoi({ ...loi, themTiep, luu: true })
+      return
+    }
+    luuXong(themTiep)
+  }
+
+  const luuXong = (themTiep: boolean) => {
+    onLuu?.(formVal, themTiep)
+    if (themTiep) {
+      const resetVal = cauHinh?.moi?.(all, { kieu: formVal._kieu, ngayDauNam: ngayDauNam(s) }) ?? {}
+      setFormVal({ ...resetVal, _kieu: formVal._kieu, _tt: 1, _sua: 0 })
+      setErrors({})
+    }
+  }
+
+  const veBang = (kh: KhoiDM, maxH = 280) => {
+    const b = kh.bang!(formVal, doiO)
+    // Lưới có ô nhập dùng chung kiểu bảng chi tiết phiếu (bang-sua): ô cao 30px, chữ 12.5px
+    return (
+      <div className="bang-sua">
+        {b.rows.length ? <Table cols={b.cols} rows={b.rows} sum={b.sum} rowCls={b.rowCls} maxH={maxH || undefined} /> : <div className="muted">{b.trong}</div>}
+        {b.chan}
+      </div>
+    )
+  }
+
+  // Tab đang mở ở form toàn màn hình: mặc định khối lưới đầu tiên
+  const tabTm = tab || dsKhoi.find(kh => kh.bang)?.ten || 'Lịch sử'
+
+  // Một khối của panel: ô nhập theo lưới, hoặc lưới tự tính (kh.bang)
+  const veKhoi = (kh: KhoiDM) => {
+    const mo = isMo(kh.ten)
+    return (
+      <div key={kh.ten} className={`pn-khoi${mo ? ' mo' : ''}`}>
+        <div className="pn-khoi-dau" onClick={() => toggleKhoi(kh.ten)}>
+          {/* Form toàn màn hình: mô tả nằm cạnh tên khối đầu, đầu form chỉ có nhãn chi nhánh như phiếu chi */}
+          <span>{kh.ten}{cauHinh?.toanMan && cauHinh.moTa && kh === dsKhoi[0] && <small className="muted"> · {cauHinh.moTa}</small>}</span>
+          <Icon n={mo ? 'chevd' : 'chevr'} className="ic sm" />
+        </div>
+        {mo && kh.bang && <div className="pn-khoi-than">{veBang(kh)}</div>}
+        {mo && kh.ve && <div className="pn-khoi-than">{kh.ve(formVal, doiO)}</div>}
+        {mo && !kh.bang && !kh.ve && (
+          <div className="pn-khoi-than">
+            <div className="pn-luoi">
+              {kh.truong.filter(hienO).map(tr => {
+                if (tr.kieu === 'tich') {
+                  // Ô tích mặc định chiếm cả hàng; caHang: false thì nằm cùng hàng với ô khác
+                  return (
+                    <div className={tr.caHang === false ? 'f pn-tich-o' : 'f pn-hang-dai'} key={tr.k}>
+                      <label className="row pn-tich">
+                        <input
+                          type="checkbox"
+                          checked={formVal[tr.k] !== 0 && formVal[tr.k] !== false}
+                          onChange={e => {
+                            doiO(tr.k, e.target.checked ? 1 : 0)
+                            setErrors(err => ({ ...err, [tr.k]: '' }))
+                          }}
+                        />
+                        <span>{tr.nhan}{tr.batBuoc && <em>*</em>}</span>
+                      </label>
+                      {errors[tr.k] && <span className="pn-loi pn-tich-loi">{errors[tr.k]}</span>}
+                    </div>
+                  )
+                }
+
+                const chon = tr.kieu === 'chon' ? getOptions(tr) : []
+                // giá trị của dòng không có trong danh sách chọn thì thêm vào cuối, ô chọn khỏi bị trống
+                const gt = String(formVal[tr.k] ?? '')
+                const opts = gt && !chon.some(o => o.v === gt) ? [...chon, { v: gt, t: gt }] : chon
+                const hangDai = tr.caHang || tr.kieu === 'nhieuDong'
+
+                return (
+                  <div className={`f${hangDai ? ' pn-hang-dai' : ''}`} key={tr.k}>
+                    <label>
+                      {tr.nhan} {tr.batBuoc && <em>*</em>}
+                    </label>
+                    {tr.kieu === 'nhieuDong' ? (
+                      <textarea
+                        className="inp"
+                        rows={2}
+                        value={formVal[tr.k] ?? ''}
+                        onChange={e => {
+                          doiO(tr.k, e.target.value)
+                          setErrors(err => ({ ...err, [tr.k]: '' }))
+                        }}
+                      />
+                    ) : tr.kieu === 'chon' ? (
+                      <Select
+                        className="inp"
+                        value={String(formVal[tr.k] ?? '')}
+                        ds={opts}
+                        aria-label={tr.nhan}
+                        onChange={e => {
+                          doiO(tr.k, e.target.value)
+                          setErrors(err => ({ ...err, [tr.k]: '' }))
+                        }}
+                      />
+                    ) : (
+                      <input
+                        className={`inp${tr.kieu === 'tien' ? ' pn-tien' : tr.kieu === 'so' ? ' pn-so' : ''}`}
+                        readOnly={tr.chiDoc}
+                        placeholder={tr.kieu === 'ngay' ? 'dd/mm/yyyy' : undefined}
+                        value={formatGiaTri(tr, formVal[tr.k])}
+                        onChange={e => {
+                          doiO(tr.k, cauHinh?.soQuocTe && laSo(tr) ? nhapSoQT(e.target.value) : e.target.value)
+                          setErrors(err => ({ ...err, [tr.k]: '' }))
+                        }}
+                      />
+                    )}
+                    {errors[tr.k] && <span className="muted pn-loi">{errors[tr.k]}</span>}
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  if (!edit) return null
+
+  const tenNganHien = cauHinh?.bien?.find(b => b.k === formVal._kieu)?.ten ?? cauHinh?.ten ?? tenNgan ?? ten ?? 'danh mục'
+
+  return (
+    <>
       {/* Đang xem tất cả chi nhánh thì chọn chi nhánh trước khi thêm, như form chứng từ */}
-      {edit && cauHinh?.toanMan && !dangSua && !cnChon && (
-        <FormToanMan icon={cauHinh.toanMan.icon} onClose={dongPanel} title={`Thêm ${tenNgan}`}
-          foot={<button type="button" className="btn" onClick={dongPanel}>Huỷ</button>}>
+      {cauHinh?.toanMan && !dangSua && !cnChon && (
+        <FormToanMan icon={cauHinh.toanMan.icon} onClose={onDong} title={`Thêm ${tenNganHien}`}
+          foot={<button type="button" className="btn" onClick={onDong}>Huỷ</button>}>
           <section className="card chon-cn">
-            <b>Chọn chi nhánh lập {tenNgan}</b>
-            <p className="muted">Bạn đang xem tất cả chi nhánh. {tenNgan.charAt(0).toUpperCase() + tenNgan.slice(1)} mới lập cho một chi nhánh và không đổi được sau khi lập.</p>
+            <b>Chọn chi nhánh lập {tenNganHien}</b>
+            <p className="muted">Bạn đang xem tất cả chi nhánh. {tenNganHien.charAt(0).toUpperCase() + tenNganHien.slice(1)} mới lập cho một chi nhánh và không đổi được sau khi lập.</p>
             <div className="chon-cn-ds">
               {CHI_NHANH.map(c => (
                 <button key={c.id} type="button" className="btn" onClick={() => set({ chiNhanh: c.id })}>
@@ -490,11 +618,11 @@ export function CatalogScreen({ sc }: ScreenProps) {
         </FormToanMan>
       )}
 
-      {edit && cauHinh?.toanMan && (dangSua || cnChon) && (
+      {cauHinh?.toanMan && (dangSua || cnChon) && (
         <FormToanMan
           icon={cauHinh.toanMan.icon}
-          onClose={dongPanel}
-          title={dangSua ? `Sửa ${tenNgan}` : `Thêm ${tenNgan}`}
+          onClose={onDong}
+          title={dangSua ? `Sửa ${tenNganHien}` : `Thêm ${tenNganHien}`}
           meta={(
             <>
               {(edit.cn ?? cnChon?.ten) && (
@@ -507,10 +635,11 @@ export function CatalogScreen({ sc }: ScreenProps) {
           giua={dangSua ? <span className="fsf-tt sua">Đang chỉnh sửa <b>{edit.soThe ?? edit.ma}</b></span> : <span className="fsf-tt moi">Thêm mới</span>}
           foot={(
             <>
-              <button type="button" className="btn" onClick={dongPanel}>Huỷ</button>
+              {nutPhu}
+              <button type="button" className="btn" onClick={onDong}>Huỷ</button>
               <span className="grow" />
               <button type="button" className="btn" onClick={() => handleLuu(false)}>Lưu</button>
-              <button type="button" className="btn pri" onClick={() => handleLuu(true)}>Lưu và thêm</button>
+              {!anNutThemTiep && <button type="button" className="btn pri" onClick={() => handleLuu(true)}>Lưu và thêm</button>}
             </>
           )}
         >
@@ -526,7 +655,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
                   </div>
                   <div className="pn-khoi-than">
                     {tabTm === 'Lịch sử'
-                      ? <LichSu goi={s.goi} moi={!dangSua} man={`${sc.slug}`} id={String(edit.ma ?? '')} />
+                      ? <LichSu goi={s.goi} moi={!dangSua} man={`${scSlug}`} id={String(edit.ma ?? '')} />
                       : (() => { const kh = dsKhoi.find(k => k.ten === tabTm); return kh && veBang(kh, 0) })()}
                   </div>
                 </div>
@@ -536,18 +665,20 @@ export function CatalogScreen({ sc }: ScreenProps) {
         </FormToanMan>
       )}
 
-      {edit && !cauHinh?.toanMan && (
+      {!cauHinh?.toanMan && (
         <>
-          <div className="overlay" onClick={dongPanel} />
+          <div className="overlay" onClick={onDong} />
           <aside className="pn-hop">
             <div className="pn-dau">
               <div>
-                <h3>{dangSua ? `Sửa ${tenNgan}` : `Thêm ${tenNgan}`}</h3>
+                <h3>{dangSua ? `Sửa ${tenNganHien}` : `Thêm ${tenNganHien}`}</h3>
                 <small className="muted">
-                  {dangSua ? ([edit.ma, edit.ten].filter(Boolean).join(' - ') || ten) : cauHinh?.moTa ?? ten}
+                  {dangSua
+                    ? ([formVal.ma ?? formVal.username, formVal.ten].filter(Boolean).join(' - ') || tenNganHien)
+                    : (cauHinh?.moTa ?? tenNganHien)}
                 </small>
               </div>
-              <button type="button" className="icon-btn" onClick={dongPanel} aria-label="Đóng">
+              <button type="button" className="icon-btn" onClick={onDong} aria-label="Đóng">
                 <Icon n="x" />
               </button>
             </div>
@@ -557,24 +688,28 @@ export function CatalogScreen({ sc }: ScreenProps) {
             </div>
 
             <div className="pn-chan">
-              <button type="button" className="btn" onClick={dongPanel}>Huỷ</button>
-              <button type="button" className="btn" onClick={() => handleLuu(true)}>Lưu và thêm</button>
+              {nutPhu}
+              {nutPhu && <span className="grow" />}
+              <button type="button" className="btn" onClick={onDong}>Huỷ</button>
+              {!anNutThemTiep && <button type="button" className="btn" onClick={() => handleLuu(true)}>Lưu và thêm</button>}
               <button type="button" className="btn pri" onClick={() => handleLuu(false)}>Lưu</button>
             </div>
           </aside>
         </>
       )}
-      {moHangLoat && cfg.hangLoat && <cfg.hangLoat.Form soDong={all.length} onDong={() => setMoHangLoat(false)} />}
+
       {hoi && (
         <HopXacNhan tieuDe={hoi.tieuDe} nut="Đồng ý" nutHuy="Không" onDong={() => setHoi(null)} onDongY={() => {
           // Đồng ý: áp phần sửa (vd dồn phần lệch vào kỳ cuối) rồi lưu; Không: về form để người dùng tự sửa
           setFormVal(v => ({ ...v, ...hoi.sua }))
+          const isSave = Boolean(hoi.luu || hoi.themTiep)
+          const themTiep = hoi.themTiep
           setHoi(null)
-          luuXong(hoi.themTiep)
+          if (isSave) luuXong(themTiep)
         }}>
           {hoi.hoi}
         </HopXacNhan>
       )}
-    </div>
+    </>
   )
 }
