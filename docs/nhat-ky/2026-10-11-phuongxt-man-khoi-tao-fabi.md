@@ -2,7 +2,7 @@
 
 - Ngày: 11/10/2026
 - Người: PhuongXT, agent: Claude Code
-- Trạng thái cuối phiên: Dở dang (bản nháp đã push để PhuongXT xem trên bản online)
+- Trạng thái cuối phiên: Dở dang (đã push, PhuongXT xem lại một lượt trên bản online)
 
 ## Đã làm
 
@@ -35,6 +35,7 @@
 - Hộ kinh doanh: thêm nút Chính trên dòng để chọn chi nhánh chính (bắt buộc, không tự lấy chi nhánh đầu), Kênh bán online và Kênh bán qua sàn đã khấu trừ thuế chọn bằng ô thả xuống (danh sách kênh mẫu ở `KENH_ONLINE`, `KENH_SAN`). Doanh nghiệp chỉ chọn chi nhánh. Chi nhánh chính, kênh bán chưa lưu vào phiên.
 - Bước Đồng bộ bán hàng bỏ giờ chốt cuối ngày. Bỏ bước Số dư đầu kỳ vì lúc khởi tạo chưa có danh mục; màn hoàn tất có thêm việc "Nhập số dư đầu kỳ khi đã có danh mục". Popup còn 4 bước: Loại hình và gói, Đơn vị, Chi nhánh, Đồng bộ bán hàng.
 - Popup đổi tên thành Khởi tạo dữ liệu. Màn hoàn tất: "Dữ liệu đã sẵn sàng", bỏ câu số chứng từ đã tạo, gợi ý khởi tạo các danh mục có trong gói đã chọn (6 danh mục đầu, còn lại ghi "và N danh mục khác"). Bấm Bắt đầu làm việc thì vào phân hệ Danh mục, sơ đồ Khởi tạo danh mục.
+- Dùng thử gói Free với tất cả cửa hàng trên FABi (PhuongXT chọn cách A: gói Free không giới hạn chi nhánh). Màn giới thiệu ghi rõ. Sửa luôn việc T60 cho gói Free: mô tả gói, điểm nổi bật, thẻ gói và hỏi đáp màn Gói thuê bao.
 - Lối vào bản mẫu: liên kết "Thử mở từ FABi" dưới form đăng nhập (`src/modules/auth/Login.tsx`).
 - CSS mục cuối `app.css`: "Khởi tạo khi mở từ FABi (T138)", lớp `.ktf-*`.
 
@@ -52,7 +53,7 @@
 - PhuongXT xem bản nháp trên https://iaccdemo.pages.dev (đăng nhập, bấm "Thử mở từ FABi") rồi góp ý. PhuongXT chốt không cần Trum duyệt các điểm: gói Standard thêm TT152 (đổi QD31), doanh nghiệp gói Free quản lý lãi lỗ, không theo thông tư (vẫn lưu `cheDo` TT152). Thuế suất 15%, 17%, 20% chưa đối chiếu văn bản gốc.
 - Doanh nghiệp gợi ý gói theo số chi nhánh (`goiGoiY`). Doanh thu FABi 29 tỷ là số cứng (`DT_FABI`).
 - Nhóm hộ kinh doanh, cách tính thuế TNCN chưa lưu vào phiên, chỉ nằm trong màn khởi tạo.
-- Điểm nổi bật gói Standard ghi "tính thuế GTGT và TNDN", hộ kinh doanh dùng Standard thì nộp TNCN; gói Free ghi "1 điểm bán" (T60). Câu chữ ở `DIEM_NOI_BAT`, chờ PhuongXT sửa.
+- Điểm nổi bật gói Standard ghi "tính thuế GTGT và TNDN", hộ kinh doanh dùng Standard thì nộp TNCN; gói Standard còn ghi "1 điểm bán" (T60). Câu chữ ở `DIEM_NOI_BAT`, `GOI`, chờ PhuongXT chốt.
 - Ba việc nên làm tiếp ở màn Hoàn tất chưa nối tới màn nào; có thể đưa thành thẻ Việc cần làm trên Bàn làm việc.
 - Mô tả gói Free trong `GOI` còn ghi "1 điểm bán", hiện ở khung bên phải (việc T60).
 
