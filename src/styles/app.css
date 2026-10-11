@@ -6742,3 +6742,6 @@ table.tbl {
 .ktf-pop-dau .ktf-h { margin: 0; }
 .ktf-pop .ktf-ben { top: 0; }
 .ktf-pop .ktf-chao { margin: 20px auto; }
+.ktf-goi-xem { display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: 12px; }
+.ktf-goi-xem > div { display: grid; grid-template-columns: 96px minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 10px 14px; font-size: 13px; color: var(--muted); }
+.ktf-goi-xem > div + div { border-top: 1px solid var(--line); }

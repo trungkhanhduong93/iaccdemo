@@ -195,6 +195,21 @@ export function OnboardFabi() {
                             </button>
                           ))}
                         </div>
+                        {n.loai === 'dn' && (
+                          <>
+                            <h3 className="ktf-h3">Doanh nghiệp chọn được cả 4 gói</h3>
+                            <div className="ktf-goi-xem">
+                              {GOIS.map(g => (
+                                <div key={g}>
+                                  <Pk g={g} logo />
+                                  <span>{MO_TA_GOI.dn[g]}</span>
+                                  {g === goiY ? <span className="chip info">Gợi ý</span> : <span />}
+                                </div>
+                              ))}
+                            </div>
+                            <p className="muted" style={{ fontSize: 12.5, margin: '10px 0 0' }}>Bước sau chọn gói và xem đủ tính năng từng gói.</p>
+                          </>
+                        )}
                         {n.loai === 'hkd' && (
                           <>
                             <h3 className="ktf-h3">Hộ kinh doanh thuộc nhóm nào?</h3>
@@ -371,6 +386,7 @@ export function OnboardFabi() {
                       <li><Icon n="pos" className="ic sm" /><span>Bán hàng {n.dongBo === 'kenh' ? 'tổng hợp theo kênh' : 'chi tiết theo hoá đơn'}, chốt {n.gioChot}</span></li>
                       <li><Icon n="grid" className="ic sm" /><span>{dem.co}/{dem.tong} tính năng</span></li>
                     </ul>
+                    <small className="muted">{MO_TA_GOI[n.loai][n.goi]}.</small>
                   </aside>
                 </div>
               </>
