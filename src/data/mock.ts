@@ -64,6 +64,34 @@ export const NVL = [
   { ma: 'NVL011', ten: 'Bia Sài Gòn lon (thùng 24)', nhom: 'Bia, rượu', dvt: 'Thùng', gia: 355000, ts: 10 },
   { ma: 'NVL012', ten: 'Dầu ăn', nhom: 'Gia vị', dvt: 'Lít', gia: 48000, ts: 8 },
 ]
+/** Hàng dùng riêng cho sơ chế, chế biến (T152): nguyên liệu thô đem sơ chế, phần sau sơ chế, gia vị nấu và bán thành phẩm bếp trung tâm.
+ *  Tách khỏi NVL để không đổi số liệu giả của các màn đang sinh từ NVL. tkKho: tài khoản kho khi nhập (bán thành phẩm vẫn để 152 vì dùng tiếp như nguyên liệu) */
+export const HANG_SX = [
+  { ma: 'NVL013', ten: 'Thịt bò nguyên tảng', nhom: 'Thịt, cá', dvt: 'kg', gia: 255000, tkKho: '152' },
+  { ma: 'NVL014', ten: 'Thịt bò gầu', nhom: 'Thịt, cá', dvt: 'kg', gia: 240000, tkKho: '152' },
+  { ma: 'NVL015', ten: 'Thịt bò nạm', nhom: 'Thịt, cá', dvt: 'kg', gia: 210000, tkKho: '152' },
+  { ma: 'NVL016', ten: 'Tôm sú nguyên con', nhom: 'Thịt, cá', dvt: 'kg', gia: 245000, tkKho: '152' },
+  { ma: 'NVL017', ten: 'Tôm sú bóc vỏ', nhom: 'Thịt, cá', dvt: 'kg', gia: 390000, tkKho: '152' },
+  { ma: 'NVL018', ten: 'Đầu, vỏ tôm nấu nước dùng', nhom: 'Thịt, cá', dvt: 'kg', gia: 25000, tkKho: '152' },
+  { ma: 'NVL019', ten: 'Sườn heo nguyên dẻ', nhom: 'Thịt, cá', dvt: 'kg', gia: 128000, tkKho: '152' },
+  { ma: 'NVL020', ten: 'Sụn sườn heo', nhom: 'Thịt, cá', dvt: 'kg', gia: 110000, tkKho: '152' },
+  { ma: 'NVL021', ten: 'Gà ta nguyên con', nhom: 'Thịt, cá', dvt: 'kg', gia: 135000, tkKho: '152' },
+  { ma: 'NVL022', ten: 'Ức gà', nhom: 'Thịt, cá', dvt: 'kg', gia: 150000, tkKho: '152' },
+  { ma: 'NVL023', ten: 'Đùi gà', nhom: 'Thịt, cá', dvt: 'kg', gia: 165000, tkKho: '152' },
+  { ma: 'NVL024', ten: 'Xương gà', nhom: 'Thịt, cá', dvt: 'kg', gia: 30000, tkKho: '152' },
+  { ma: 'NVL025', ten: 'Bún tươi', nhom: 'Tinh bột', dvt: 'kg', gia: 16000, tkKho: '152' },
+  { ma: 'NVL026', ten: 'Sả cây', nhom: 'Rau củ', dvt: 'kg', gia: 22000, tkKho: '152' },
+  { ma: 'NVL027', ten: 'Hành tím', nhom: 'Rau củ', dvt: 'kg', gia: 45000, tkKho: '152' },
+  { ma: 'NVL028', ten: 'Mắm ruốc Huế', nhom: 'Gia vị', dvt: 'kg', gia: 90000, tkKho: '152' },
+  { ma: 'NVL029', ten: 'Nước mắm', nhom: 'Gia vị', dvt: 'Lít', gia: 55000, tkKho: '152' },
+  { ma: 'NVL030', ten: 'Đường cát', nhom: 'Gia vị', dvt: 'kg', gia: 24000, tkKho: '152' },
+  { ma: 'NVL031', ten: 'Quế, hồi, thảo quả', nhom: 'Gia vị', dvt: 'kg', gia: 260000, tkKho: '152' },
+  { ma: 'NVL032', ten: 'Trứng gà', nhom: 'Trứng, sữa', dvt: 'Quả', gia: 3200, tkKho: '152' },
+  { ma: 'BTP01', ten: 'Nước dùng phở bò', nhom: 'Bán thành phẩm', dvt: 'Lít', gia: 32000, tkKho: '152' },
+  { ma: 'BTP02', ten: 'Nước dùng bún bò', nhom: 'Bán thành phẩm', dvt: 'Lít', gia: 30000, tkKho: '152' },
+  { ma: 'BTP03', ten: 'Sườn nướng ướp sẵn', nhom: 'Bán thành phẩm', dvt: 'kg', gia: 165000, tkKho: '152' },
+  { ma: 'BUN02', ten: 'Bún bò Huế', nhom: 'Món nước', dvt: 'Tô', gia: 0, tkKho: '' },
+]
 // Công cụ dụng cụ trong danh mục hàng hoá (loại Công cụ dụng cụ), thẻ chi phí phân bổ loại CCDC chọn mã từ đây
 export const CCDC_HANG = [
   { ma: 'CC001', ten: 'Bộ nồi inox 50 lít', nhom: 'Dụng cụ bếp', dvt: 'Bộ' },

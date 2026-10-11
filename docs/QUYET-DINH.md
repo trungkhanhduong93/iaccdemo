@@ -540,3 +540,12 @@ Lý do: Trum giao T146 đến T149 ngày 11/10/2026, chốt các mặc định a
 - Form hàng hoá có Kho theo dõi, Nhà cung cấp (để trống là tất cả) và bảng quy đổi ĐVT có hộp thêm, sửa như iFaster.
 
 Lý do: Trum giao T151 ngày 11/10/2026, chốt các đề xuất của agent cùng ngày.
+
+## QD50. Sản xuất ở Kho theo iPOS Inventory (11/10/2026)
+
+- Kho có 4 tab phiếu như iPOS Inventory: Xuất sơ chế, Nhập sơ chế, Xuất chế biến, Nhập chế biến. Phiếu nhập phải chọn phiếu xuất làm tham chiếu.
+- Form phiếu dùng form chứng từ chung của IACC Cloud, chỉ lấy cột của iPOS Inventory. Chưa làm số lô.
+- Xuất ghi Nợ 154 / Có 152. Nhập ghi Nợ 152 / Có 154.
+- Công thức sơ chế, chế biến làm theo iPOS Inventory: chip trạng thái, danh sách gộp ô theo nguyên vật liệu, form chi tiết.
+
+Lý do: Trum giao T152 ngày 11/10/2026, chốt các đề xuất của agent cùng ngày.

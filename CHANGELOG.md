@@ -5,6 +5,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 ## 11/10/2026
 
 - T150: Danh sách thẻ chi phí: số thẻ màu xanh, bấm mở thẻ. Mở thẻ có sẵn ở chế độ xem, bấm Sửa (Ctrl+E) mới sửa, Huỷ quay về xem như phiếu chi. Thông tin đơn vị: phương pháp thuế GTGT và thuế TNCN (hộ kinh doanh) hoặc TNDN (doanh nghiệp) nằm ở Thông tin kê khai; hộ kinh doanh GTGT trực tiếp, TNCN theo nhóm doanh thu; doanh nghiệp chọn, GTGT khấu trừ thì TNDN theo lợi nhuận; gói Plus, Pro cố định khấu trừ và theo lợi nhuận.
+- T152: Kho có 4 tab Xuất sơ chế, Nhập sơ chế, Xuất chế biến, Nhập chế biến như iPOS Inventory: phiếu nhập chọn phiếu xuất tham chiếu, số lượng kế hoạch và thực tế, xuất chế biến tự kéo nguyên vật liệu theo công thức. Công thức sơ chế, chế biến làm lại: lọc theo trạng thái, danh sách gộp theo nguyên vật liệu, form chi tiết có chi phí.
 - T151: Form hàng hoá có khối Thông tin thuế theo ngành nghề (TT152, TT58: chọn ngành nghề con tự điền nhóm ngành, thuế GTGT, TNCN hoặc TNDN), Thương hiệu, Kho theo dõi, Nhà cung cấp, bảng quy đổi đơn vị tính có hộp thêm, sửa. Danh mục Thương hiệu mới. Nhóm hàng có ngành nghề ngầm định. Kho chọn được thương hiệu.
 - T150: Mọi danh mục vừa một trang như danh sách chứng từ: chỉ bảng cuộn, chân bảng đứng yên có Tổng số dòng, phân trang 50, 100, 200, 500, 1000 dòng (mặc định 50). Hệ thống tài khoản không phân trang, chân bảng đếm số tài khoản.
 - T146: Sơ đồ Khởi tạo danh mục vẽ lại thành 7 làn đánh số theo thứ tự thiết lập, ô trong làn nối mũi tên. Danh mục tài sản cố định chuyển sang phân hệ Tài sản cố định.

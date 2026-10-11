@@ -10,7 +10,7 @@ import { tkTheoCheDo } from '../../modules/tong-hop/so-cai'
 import { CHI_NHANH, KHACH, KHO, KHOA_SO_DEN, LY_DO, NCC, NHAN_VIEN, TK_NGAN_HANG, daKhoaSo } from '../../data/mock'
 import { DS_PTTT } from '../../modules/danh-muc/data'
 import { HopXacNhan } from '../LocNangCao'
-import { ctTtCon, dsDcCon, dsTtCon, ghiNhatKy, soDaTra, soKeTiep, suaPhieu, themPhieu, ttThamChieu, useNhatKy, xoaPhieu, type CtTt, type PhieuTt } from './daXoa'
+import { bayGio, ctTtCon, dsDcCon, dsTtCon, ghiNhatKy, soDaTra, soKeTiep, suaPhieu, themPhieu, ttThamChieu, useNhatKy, xoaPhieu, type CtTt, type PhieuTt } from './daXoa'
 import { Icon } from '../Icon'
 import { Card, Note } from '../Page'
 import { FormToanMan, useDong } from '../FormToanMan'
@@ -24,6 +24,8 @@ import { NGUON, TT_CT, dongCua, ttNghiepVu, type Dong } from './gen'
 import { boO, nhomCua, theoLoai } from './nhom'
 import { BangKiemKe, COT_KK } from './BangKiemKe'
 import { MAN_DC, phieuDieuChinh, type LoaiDc } from '../../modules/kho/dieu-chinh'
+import { BangSanXuat, OThamChieuSx, cotSx } from '../../modules/kho/BangSanXuat'
+import { SX, TT_SX, dongNhapTuXuat, type DongSx } from '../../modules/kho/san-xuat'
 import { BangSua, DS_DOI_TUONG, HopCotPhieu, cotTuyChon } from './BangSua'
 import { HopInChungTu, type PhieuIn } from '../bao-cao/InChungTu'
 import { createPortal } from 'react-dom'
@@ -56,7 +58,11 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   const bo = boO(nhom, cfg)
   const laKk = Boolean(cfg.kiemKe)   // phiếu kiểm kê: bỏ đối tượng, kho ở đầu phiếu, bảng tồn hệ thống, tồn thực tế (T124)
   const laDc = Boolean(cfg.dieuChinh)   // phiếu xuất, nhập điều chỉnh sinh từ kiểm kê (T126)
-  const gonDau = laKk || laDc            // đầu phiếu gọn: Kho, Nhân viên thực hiện; Ghi chú
+  // Phiếu sản xuất theo iPOS Inventory (T152): đầu phiếu gọn như kiểm kê, bảng dòng riêng; phiếu nhập bắt buộc tham chiếu phiếu xuất
+  const sx = cfg.sanXuat
+  const laSx = Boolean(sx)
+  const sxNhap = sx ? SX[sx].nhap : false
+  const gonDau = laKk || laDc || laSx    // đầu phiếu gọn: Kho, Nhân viên thực hiện; Ghi chú
   // Phiếu điều chỉnh (T131): không có thuế; gói Free không hiện giá trị (đơn giá, thành tiền, tổng tiền)
   const anDc = laDc ? ['ts', 'thue', ...(s.goi === 'F' ? ['gia', 'tien'] : [])] : []
   const nv = useMemo(() => (row ? ttNghiepVu(row) : null), [row])
@@ -80,7 +86,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   // Dữ liệu dòng
   const idSeed = row ? `${sc.code ?? sc.slug}-${row.id}` : 'moi'
   const dongGoc = useMemo(() => (
-    moi ? dongCua(cfg, `mau-${loai?.k ?? ''}`).slice(0, 1) : (row?._dong as Dong[] | undefined) ?? dongCua(cfg, idSeed)
+    moi ? (laSx ? [] : dongCua(cfg, `mau-${loai?.k ?? ''}`).slice(0, 1)) : (row?._dong as Dong[] | undefined) ?? dongCua(cfg, idSeed)   // phiếu sản xuất mới chưa có dòng tới khi chọn kho, tham chiếu (T152)
   ), [idSeed, loai?.k, moi])
 
   const [dsDong, setDsDong] = useState<Dong[]>(dongGoc)
@@ -95,7 +101,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
     : [hinhThucTt === 'congno' ? 'TK công nợ (131)' : hinhThucTt === 'tienmat' ? 'TK tiền mặt (1111)' : 'TK tiền gửi (1121)', bo.tk[1]]
 
   // Thông tin chung
-  const [ngayCt, setNgayCt] = useState(row?.ngay ? String(row.ngay) : '07/10/2026')
+  const [ngayCt, setNgayCt] = useState(row?.ngay ? String(row.ngay) : laSx ? bayGio() : '07/10/2026')   // phiếu sản xuất ghi cả giờ xuất, nhập như IVT (T152)
   const [soCt, setSoCt] = useState(row?.so ? String(row.so) : soKeTiep(`${mod.key}/${sc.slug}`, `${cfg.prefix}2610-`))
   // Chi nhánh không sửa trên form: phiếu cũ giữ chi nhánh đã lập, phiếu mới theo chi nhánh chọn trên thanh trên
   const cnChon = chiNhanhHienTai(s)
@@ -182,6 +188,13 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   useEffect(() => {
     if (khoDau) setDsDong(ds => ds.map(d => ({ ...d, kho })))
   }, [dongGoc, kho, khoDau])
+  // Phiếu nhập sản xuất (T152): chọn phiếu xuất cùng loại đang chờ nhập, lấy kho và dòng kế hoạch theo phiếu xuất, công thức
+  const [thamChieuSx, setThamChieuSx] = useState({ id: String(row?._thamChieuId ?? ''), so: String(row?._thamChieu ?? '') })
+  function chonThamChieuSx(px: Row) {
+    setThamChieuSx({ id: String(px.id), so: String(px.so) })
+    setKho(String(px._kho ?? ''))
+    setDsDong(dongNhapTuXuat(sx!, px))
+  }
   const truocThue = nhom === 'mua' && Boolean(bo.tongNhap)   // phiếu mua: các số tiền ở dòng, khối tổng chỉ Tổng tiền (T84)
   const coHdDau = (nhom === 'mua' || nhom === 'ban') && Boolean(bo.hd) && nhanKemHd
   const coThangLl = laTien && s.goi === 'F' && nhom !== 'cq'   // chuyển quỹ không ảnh hưởng lãi lỗ
@@ -297,9 +310,14 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
 
   function luu(moMoi = false) {
     // Chứng từ thêm mới không được có ngày trước ngày đầu năm của đơn vị (Thông tin đơn vị)
-    if (moi && truocDauNam(s, ngayCt)) {
+    if (moi && truocDauNam(s, ngayCt.split(' ')[0])) {
       toast(`Ngày chứng từ phải từ ngày đầu năm ${ngayDauNam(s)} trở đi`)
       return
+    }
+    // Phiếu sản xuất (T152): bắt buộc kho, phiếu nhập bắt buộc tham chiếu, phải có dòng
+    if (laSx) {
+      const thieu = sxNhap && !thamChieuSx.id ? 'Chọn phiếu tham chiếu' : !kho ? `Chọn ${sxNhap ? 'Kho nhập' : 'Kho xuất'}` : !dsDong.length ? 'Phiếu chưa có dòng hàng nào' : ''
+      if (thieu) { toast(thieu); return }
     }
     const idMoi = `moi-${Date.now()}`
     const ctTt = dongBoCtTt(moi ? idMoi : String(row?.id))
@@ -312,6 +330,12 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
       _nhanKemHd: nhanKemHd, _soHd: soHd, _ngayHd: ngayHd, _kyHieuHd: kyHieuHd, _httt: hinhThucTt, _ctTt: ctTt,
       ...(nhom === 'ban' && hinhThucTt !== 'congno' ? { _pttt: pttt } : {}),
       ...(dsDc ? { _dsDc: dsDc } : {}),
+      // Phiếu sản xuất (T152): tham chiếu phiếu xuất, người cập nhật; phiếu xuất mới chờ nhập, phiếu nhập lưu là đã nhập
+      ...(laSx ? {
+        ttSx: row?.ttSx ?? (sxNhap ? 'da' : 'cho'),
+        ...(moi ? {} : { _ngayCapNhat: bayGio(), _nguoiCapNhat: s.ten }),
+        ...(sxNhap ? { _thamChieu: thamChieuSx.so, _thamChieuId: thamChieuSx.id, _thamChieuDi: `/app/${SX[SX[sx!].doi!].man}/${thamChieuSx.id}` } : {}),
+      } : {}),
     }
     const man = `${mod.key}/${sc.slug}`
     if (moi) {
@@ -327,6 +351,12 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
         .filter(([k]) => g[k] !== m[k]).map(([, ten]): string => ten)
       if (g.tong !== m.tong) doi.push(`Tổng tiền ${money(g.tong)} → ${money(m.tong)}`)
       if (doi.length) ghiNhatKy(man, String(row.id), soCt, s.ten, `Sửa chứng từ: ${doi.join(', ')}`)
+    }
+    // Lưu phiếu nhập sản xuất: phiếu xuất tham chiếu chuyển Đã nhập; đổi tham chiếu thì phiếu xuất cũ về Chờ nhập (T152)
+    if (laSx && sxNhap) {
+      const manXuat = SX[SX[sx!].doi!].man, cu = String(row?._thamChieuId ?? '')
+      if (cu && cu !== thamChieuSx.id) suaPhieu(manXuat, cu, { ttSx: 'cho', _phieuNhap: undefined })
+      suaPhieu(manXuat, thamChieuSx.id, { ttSx: 'da', _phieuNhap: { id: moi ? idMoi : String(row?.id), so: soCt } })
     }
     toast(moi ? `Đã lưu ${soCt}` : `Đã lưu thay đổi ${soCt}`)
     // Phiếu chi mới lý do Chi phí chờ phân bổ: hỏi tạo luôn thẻ chi phí phân bổ, điền sẵn từ phiếu
@@ -478,7 +508,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
       day={laKk || (laDc && s.goi === 'F') || !hienChan('tongTien') ? undefined
         : laTien && chiTien ? <TongDay tong={tongThanhToan} soDong={dsDong.length} />
           // Phần tổng thành dải cố định ở đáy form, cuộn bảng vẫn thấy (T105); phiếu mua chỉ Tổng tiền vì số khác đã có trên dòng (T84)
-          : <DaiTong tong={tongThanhToan} muc={chiTien || truocThue || laDc ? [] : [
+          : <DaiTong tong={tongThanhToan} muc={chiTien || truocThue || laDc || laSx ? [] : [
             ['Tiền hàng', tongTien],
             ...(bo.ck ? [['Chiết khấu', tongCk ? -tongCk : 0] as [string, number]] : []),
             ['Tiền thuế GTGT', tongThue],
@@ -520,6 +550,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               const [c, tx] = TT_CT[row.tt] ?? ['warn', 'Chưa ghi sổ']
               return <St k={c}>{tx}</St>
             })()}
+            {/* Trạng thái xuất, nhập của phiếu sản xuất (T152) */}
+            {laSx && TT_SX[String(row.ttSx)] && <St k={TT_SX[String(row.ttSx)][0]}>{TT_SX[String(row.ttSx)][1]}</St>}
             <span className={`src ${NGUON[row.nguon]?.[0] ?? 'tay'}`}>
               {NGUON[row.nguon]?.[1] ?? 'Thủ công'}
             </span>
@@ -630,6 +662,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
                   if (daKhoaSo(row.ngay)) toast(`${row.so} thuộc kỳ đã khoá sổ, không xoá được`)
                   else if (kieu !== 'khong' && row.tt !== 'nhap') toast(`${row.so} đã ghi sổ, bỏ ghi sổ rồi mới xoá`)
                   else if (ttThamChieu(row)) toast(`${row.so} có phiếu ${ttThamChieu(row)!.so} tham chiếu, xoá ${ttThamChieu(row)!.so} trước`)   // T85, T91
+                  else if (laSx && !sxNhap && row._phieuNhap) toast(`${row.so} đã có phiếu nhập ${(row._phieuNhap as { so: string }).so}, xoá phiếu nhập trước`)   // T152
                   else setHoiXoa(true)
                 }}>
                   Xoá chứng từ
@@ -638,7 +671,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               </>}
             </Dropdown>
             {hopCot && (
-              <HopCotPhieu dsDau={dsDau} dsChan={dsChan} ds={laKk ? COT_KK : cotTuyChon(cfg, { coKho: Boolean(bo.kho) && !khoDau && !laDc, coLo: nhom === 'mua' && s.goi === 'PR', coCk: Boolean(bo.ck), coKm: kieu !== 'khong', coLy: Boolean(oLy), coNhapKho: truocThue }).filter(([k]) => !anDc.includes(k))}
+              <HopCotPhieu dsDau={dsDau} dsChan={dsChan} ds={laKk ? COT_KK : laSx ? cotSx(sx!) : cotTuyChon(cfg, { coKho: Boolean(bo.kho) && !khoDau && !laDc, coLo: nhom === 'mua' && s.goi === 'PR', coCk: Boolean(bo.ck), coKm: kieu !== 'khong', coLy: Boolean(oLy), coNhapKho: truocThue }).filter(([k]) => !anDc.includes(k))}
                 an={anCot} onDoi={doiAnCot} onDong={() => setHopCot(false)} />
             )}
             {hopTt && row && (
@@ -647,7 +680,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
             )}
             {hoiXoa && row && (
               <HopXacNhan tieuDe={`Xoá ${row.so}?`} nut="Xoá phiếu" onDong={() => setHoiXoa(false)}
-                onDongY={() => { setHoiXoa(false); xoaPhieu(`${mod.key}/${sc.slug}`, [{ id: String(row.id), so: soCt }], s.ten); if (laKk) xoaPhieu(MAN_DC, dsDcCon(row).map(c => ({ id: c.id, so: c.so })), s.ten); toast(`Đã xoá ${row.so}`); dongForm() }}>
+                onDongY={() => { setHoiXoa(false); xoaPhieu(`${mod.key}/${sc.slug}`, [{ id: String(row.id), so: soCt }], s.ten); if (laSx && sxNhap && row._thamChieuId) suaPhieu(SX[SX[sx!].doi!].man, String(row._thamChieuId), { ttSx: 'cho', _phieuNhap: undefined }); if (laKk) xoaPhieu(MAN_DC, dsDcCon(row).map(c => ({ id: c.id, so: c.so })), s.ten); toast(`Đã xoá ${row.so}`); dongForm() }}>
                 Phiếu đã xoá không lấy lại được.{laKk && dsDcCon(row).length > 0 && <> Phiếu điều chỉnh {dsDcCon(row).map(c => c.so).join(', ')} cũng bị xoá theo.</>}
               </HopXacNhan>
             )}
@@ -893,7 +926,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               {gonDau && (
                 <div className="row" style={{ gap: 10 }}>
                   <div className="f" style={{ flex: 1 }}>
-                    <label>{laKk ? 'Kho kiểm kê' : laDc && loai?.k === 'ndc' ? 'Kho nhập' : 'Kho xuất'} <em>*</em></label>
+                    <label>{laKk ? 'Kho kiểm kê' : (laDc && loai?.k === 'ndc') || sxNhap ? 'Kho nhập' : 'Kho xuất'} <em>*</em></label>
                     {dangSua ? (
                       <ChonDanhMuc dm="kho" nhan="kho" value={kho} onChange={setKho} ds={!kho || dsKhoCn.includes(kho) ? dsKhoCn : [kho, ...dsKhoCn]} />
                     ) : <input className="inp" readOnly value={kho} />}
@@ -907,6 +940,14 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
                       ) : <input className="inp" readOnly value={nhanVien} />}
                     </div>
                   )}
+                </div>
+              )}
+              {/* Phiếu nhập sản xuất: tham chiếu bắt buộc, chọn phiếu xuất cùng loại đang chờ nhập (T152) */}
+              {sxNhap && (
+                <div className="f">
+                  <label>Tham chiếu <em>*</em></label>
+                  {dangSua ? <OThamChieuSx loai={sx!} cn={chiNhanh} value={thamChieuSx.id} onChon={chonThamChieuSx} />
+                    : <div className="sx-tc-xem">{thamChieuSx.id ? <Link className="ds-link-so" to={`/app/${SX[SX[sx!].doi!].man}/${thamChieuSx.id}`}>{thamChieuSx.so}</Link> : <span className="dim">Chưa có</span>}</div>}
                 </div>
               )}
               {!gonDau && !laTien && !muaBan && hienDau('nhanVien') && (
@@ -977,7 +1018,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
             {/* Cột 3: Ngày chứng từ, số chứng từ. Chi nhánh hiện trên đầu form. Ghi chú kéo dài thì cột này chiếm cả hàng Ghi chú (T78) */}
             <div className="stack" style={{ gap: 10, gridRow: keoGc ? 'span 2' : undefined }}>
               <div className="f">
-                <label>Ngày chứng từ <em>*</em></label>
+                <label>{laSx ? (sxNhap ? 'Thời gian nhập' : 'Thời gian xuất') : 'Ngày chứng từ'} <em>*</em></label>
                 {dangSua && laTien ? (
                   <ONgay value={ngayCt} onChange={setNgayCt} />
                 ) : dangSua ? (
@@ -991,7 +1032,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
                 )}
               </div>
               <div className="f">
-                <label>{bo.so ?? 'Số chứng từ'}</label>
+                <label>{laSx ? 'Mã phiếu' : bo.so ?? 'Số chứng từ'}</label>
                 <input className="inp code" readOnly value={soCt} />
               </div>
               {/* Gói dưới Pro: một kho cho cả phiếu, chọn trong kho của chi nhánh lập phiếu (T83) */}
@@ -1051,7 +1092,11 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
           <div className="ct-than">
           {/* Tab 1: Chi tiết / Hàng tiền */}
           {tab === 'ct' && laKk && <BangKiemKe dong={dsDong} onChange={setDsDong} cheDo={dangSua ? 'sua' : 'xem'} an={anCot} khongTong={!hienChan('dongTong')} />}
-          {tab === 'ct' && !laKk && (
+          {tab === 'ct' && laSx && (
+            <BangSanXuat loai={sx!} dong={dsDong as DongSx[]} onChange={setDsDong} cheDo={dangSua ? 'sua' : 'xem'} coTk={hienTk} an={anCot}
+              khongTong={!hienChan('dongTong')} kho={kho} coThamChieu={Boolean(thamChieuSx.id)} />
+          )}
+          {tab === 'ct' && !laKk && !laSx && (
             <BangSua
               cfg={cfg}
               dong={dsDong}

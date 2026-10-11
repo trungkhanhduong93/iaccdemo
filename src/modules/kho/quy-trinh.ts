@@ -7,9 +7,10 @@ export const quyTrinh: QuyTrinhDef = {
     { ten: 'Nhập kho', chinh: { ten: 'Nhập khác', icon: 'filein', di: 'kho/5-1-1/moi' },
       tren: [{ ten: 'Phiếu mua hàng', icon: 'truck', di: 'mua-hang/4-1-1/moi' }],
       duoi: [{ ten: 'Điều chuyển kho', icon: 'swap', di: 'kho/5-1-4/moi' }] },
-    { ten: 'Sơ chế, chế biến', chinh: { ten: 'Chế biến', icon: 'flask', di: 'kho/5-1-3/moi' },
-      tren: [{ ten: 'Sơ chế', icon: 'chef', di: 'kho/5-1-6/moi' }],
-      duoi: [{ ten: 'Công thức chế biến', icon: 'book', di: 'kho/9-1-3' }] },
+    // Sản xuất theo IVT (T152): sơ chế tách, chế biến gộp; phiếu nhập tham chiếu phiếu xuất. Hai màn công thức ở hàng Danh mục liên quan
+    { ten: 'Sơ chế, chế biến', chinh: { ten: 'Xuất chế biến', icon: 'flask', di: 'kho/5-1-3/moi' },
+      tren: [{ ten: 'Xuất sơ chế', icon: 'chef', di: 'kho/5-1-6/moi' }, { ten: 'Nhập sơ chế', icon: 'chef', di: 'kho/5-1-6-2/moi' }],
+      duoi: [{ ten: 'Nhập chế biến', icon: 'filein', di: 'kho/5-1-3-2/moi' }] },
     { ten: 'Xuất kho', chinh: { ten: 'Xuất bán POS', icon: 'pos', di: 'kho/5-1-2/moi' },
       tren: [{ ten: 'Xuất bán hàng', icon: 'cart', di: 'kho/5-1-2-2/moi' }],
       duoi: [{ ten: 'Xuất huỷ', icon: 'trash', di: 'kho/5-1-2-3/moi' }, { ten: 'Xuất khác', icon: 'more', di: 'kho/5-1-2-4/moi' }] },
@@ -36,6 +37,6 @@ export const quyTrinh: QuyTrinhDef = {
     ] },
   ],
   baoCao: ['5-2-3', '5-2-4', '5-2-1', '5-2-2', '5-2-5'],
-  danhMuc: ['danh-muc/1-8', 'danh-muc/1-2', 'danh-muc/1-3', 'danh-muc/1-4'],
+  danhMuc: ['danh-muc/1-8', 'danh-muc/1-2', 'danh-muc/1-3', 'danh-muc/1-4', 'kho/5-1-5', 'kho/9-1-3'],
   tienIch: ['tien-ich/11-3', 'tien-ich/11-15'],   // bỏ 11.2 (T100)
 }

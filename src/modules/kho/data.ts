@@ -1,28 +1,10 @@
-// Dữ liệu giả phân hệ Kho: công thức, sơ chế, tồn đầu, định mức tồn, thẻ kho, nhập xuất, tồn tức thời, xuất nhập tồn
+// Dữ liệu giả phân hệ Kho (công thức, phiếu sản xuất ở san-xuat.ts, T152): tồn đầu, định mức tồn, thẻ kho, nhập xuất, tồn tức thời, xuất nhập tồn
 import { createElement } from 'react'
 import type { CatalogCfg, Col, Row } from '../types'
 import { HANG, KHO, NVL } from '../../data/mock'
 import { between, money, pad, rng } from '../../ui/format'
 
 const g = (r: () => number, a: number, b: number) => Math.round(between(r, a, b))
-
-export const congThuc: CatalogCfg = {
-  them: 'Thêm công thức', nhomLoc: 'mon',
-  cols: [{ k: 'mon', t: 'Món' }, { k: 'nvl', t: 'Nguyên vật liệu' }, { k: 'dl', t: 'Định lượng', num: true }, { k: 'dvt', t: 'ĐVT' }, { k: 'gv', t: 'Giá vốn ước tính', num: true }],
-  rows: () => ([
-    ['Phở bò tái', 'Bánh phở tươi', 200, 'g', 3600], ['Phở bò tái', 'Thịt bò thăn', 80, 'g', 25600], ['Phở bò tái', 'Xương ống bò (nước dùng)', 150, 'g', 9750], ['Phở bò tái', 'Rau thơm các loại', 20, 'g', 800],
-    ['Cơm tấm sườn bì chả', 'Gạo tấm', 180, 'g', 3420], ['Cơm tấm sườn bì chả', 'Sườn heo', 160, 'g', 23200], ['Cơm tấm sườn bì chả', 'Dầu ăn', 15, 'ml', 720],
-    ['Cà phê sữa đá', 'Cà phê hạt Robusta', 25, 'g', 5250], ['Cà phê sữa đá', 'Sữa đặc', 40, 'ml', 2400],
-    ['Trà đào cam sả', 'Đào ngâm', 60, 'g', 3900], ['Gỏi cuốn tôm thịt', 'Tôm sú', 50, 'g', 14000],
-  ] as [string, string, number, string, number][]).map(([mon, nvl, dl, dvt, gv]) => ({ mon, nvl, dl, dvt, gv })),
-}
-
-export const soChe: CatalogCfg = {
-  them: 'Thêm công thức sơ chế',
-  cols: [{ k: 'tho', t: 'Nguyên liệu thô' }, { k: 'tp', t: 'Sau sơ chế' }, { k: 'hh', t: 'Tỷ lệ hao hụt', num: true }, { k: 'gc', t: 'Ghi chú', cls: 'dim' }],
-  rows: () => [['Thịt bò nguyên tảng', 'Thịt bò thăn thái lát', '18%', 'Lọc gân, mỡ'], ['Tôm sú nguyên con', 'Tôm sú bóc vỏ', '35%', 'Bỏ đầu, vỏ'], ['Sườn heo nguyên dẻ', 'Sườn cắt miếng ướp', '6%', 'Ướp 4 giờ'], ['Rau thơm', 'Rau đã nhặt rửa', '22%', 'Nhặt lá úa']]
-    .map(([tho, tp, hh, gc]) => ({ tho, tp, hh, gc })),
-}
 
 export const tonBanDau: CatalogCfg = {
   them: 'Thêm dòng tồn đầu', nhomLoc: 'kho',

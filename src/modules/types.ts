@@ -61,6 +61,7 @@ export interface VoucherCfg {
   dieuChinh?: boolean                    // phiếu xuất, nhập điều chỉnh sinh từ kiểm kê: đầu phiếu như kiểm kê, có tham chiếu về phiếu kiểm kê (T126)
   khongThem?: boolean                    // danh sách không có nút Thêm mới, phiếu chỉ do phiếu khác sinh ra (T126)
   rowsMau?: () => Row[]                  // phiếu mẫu riêng thay phiếu sinh ngẫu nhiên (T126)
+  sanXuat?: 'xsc' | 'nsc' | 'xcb' | 'ncb' // phiếu sản xuất theo iPOS Inventory: xuất, nhập sơ chế; xuất, nhập chế biến. Bảng dòng riêng, phiếu nhập có tham chiếu phiếu xuất (T152)
 }
 
 /** Một loại phiếu trong màn chứng từ. Mở form đúng loại bằng ?loai=k */
