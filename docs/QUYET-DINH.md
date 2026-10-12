@@ -26,6 +26,8 @@ Mục ngoài gói vẫn hiện trên menu, kèm khoá và nhãn gói thấp nh�
 
 ## QD06. Chỉ làm web (07/10/2026)
 
+Đã thay bằng QD54 từ 12/10/2026.
+
 Chỉ làm giao diện web. Không làm bản điện thoại, không làm app.
 
 ## QD07. Đưa lên GitHub và Cloudflare (07/10/2026 tối)
@@ -581,4 +583,12 @@ Lý do: Trum giao T157 ngày 11/10/2026, chọn phương án hiện Thẻ kho, X
 
 Lý do: Trum giao T155 ngày 11/10/2026, chọn hạch toán qua 1368, 3368 theo đề xuất của agent.
 
-## QD54. Giao diện điện thoại theo IVT Pro (đang soạn)
+## QD54. Giao diện điện thoại theo IVT Pro (12/10/2026)
+
+- iaccdemo có giao diện điện thoại. Thay QD06.
+- Giao diện điện thoại làm theo app IVT Pro (iPOS Inventory). IVT Pro là app của iPOS, nên được dùng lại màu, biểu tượng, hình minh hoạ của IVT. Luật QD12 không áp cho app iPOS.
+- Làm khung chung trước, rồi tới màn nghiệp vụ. Kho là một phân hệ, các phân hệ khác dùng cùng khung.
+- Không dùng phông SF Pro của IVT trên web vì giấy phép Apple. Bản điện thoại dùng phông hệ thống trước, rồi Be Vietnam Pro.
+- Kế hoạch chi tiết ở `docs/ke-hoach-mobile-ivt.md`.
+
+Lý do: Trum giao T170 ngày 12/10/2026, muốn iaccdemo khớp hệ sinh thái iPOS trên điện thoại.

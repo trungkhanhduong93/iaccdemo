@@ -9,3 +9,4 @@ __pycache__/
 .env
 .env.*
 .claude/settings.local.json
+*.apk

@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T170 | Lập kế hoạch clone giao diện điện thoại từ app IVT Pro (iPOS Inventory) sang iaccdemo: đọc APK, rút màu, phông, icon, khung màn, bản đồ màn | Trum | Đang làm | Chỉ thêm tài liệu `docs/ke-hoach-mobile-ivt.md`, chưa sửa `src/`. APK để ở `mobile/`, không commit |
 | T169 | Form chứng từ: gõ đổi địa chỉ từ phiếu này sang phiếu khác (vd `#/app/tien/2-1-1/chi-3` sang `chi-6`) thì form giữ số phiếu, đối tượng của phiếu cũ; mở từ danh sách, Trước, Sau thì đúng | | Chờ | Phát hiện ở T168. Sửa `ChungTuForm.tsx`, có thể `VoucherScreen.tsx` (key của form) |
 | T138 | Màn onboard khi bấm từ FABi sang IACC: khởi tạo đơn vị kế toán, điền sẵn từ FABi (chi nhánh, kho, cách đồng bộ, số dư đầu kỳ) | PhuongXT | Dở dang | Popup khởi tạo dữ liệu 4 bước trong phần mềm (`OnboardFabi.tsx`, `Shell.tsx`) đã push, PhuongXT xem lại một lượt. Xem `2026-10-11-phuongxt-man-khoi-tao-fabi.md` |
 | T139 | Phiếu nhập, xuất, điều chuyển kho tự lấy mục chi phí, công việc ngầm định theo kho đã chọn | | Chờ | Tách từ T136. Kho đã có ô `mucCp`, `congViec` ở `truong-dm.ts` 1.8. Sửa `ChungTuForm.tsx` |
@@ -42,6 +41,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T170 | Lập kế hoạch giao diện điện thoại theo app IVT Pro: đọc APK, bộ nhận diện, khung màn, 9 đợt làm, danh sách ảnh cần chụp | Trum | 12/10/2026 | [2026-10-12-trum-ke-hoach-mobile-ivt](nhat-ky/2026-10-12-trum-ke-hoach-mobile-ivt.md) |
 | T168 | Thu chi: phiếu chi mẫu Chi phí chờ phân bổ (Tiền nhà 6 tháng, 72 triệu) có dòng tham chiếu Thẻ chi phí mở thẻ; phiếu thu, chi bỏ Mã số thuế, Ghi chú lên cột giữa, đầu phiếu 3 hàng; cột danh sách Lý do | dinhlanphuongipacc | 12/10/2026 | [2026-10-12-dinhlanphuongipacc-form-the-va-phieu-chi-cho-pb](nhat-ky/2026-10-12-dinhlanphuongipacc-form-the-va-phieu-chi-cho-pb.md) |
 | T165 | Form thẻ chi phí: bỏ thanh tiêu đề Thông tin chung; thẻ ghi tăng không xoá, thêm dòng, sửa thì Ngày ghi tăng, Số tiền chỉ đọc; thẻ dư đầu kỳ giữ nút; Free, Standard ngừng theo tháng (bảng 12 tháng); danh sách bỏ cột Số kỳ, Trạng thái | dinhlanphuongipacc | 12/10/2026 | [2026-10-12-dinhlanphuongipacc-form-the-va-phieu-chi-cho-pb](nhat-ky/2026-10-12-dinhlanphuongipacc-form-the-va-phieu-chi-cho-pb.md) |
 | T167 | Kho: tab Kiểm kê chia 3 tab con Kiểm kê, Xuất điều chỉnh, Nhập điều chỉnh; bỏ tab Điều chỉnh kho trên thanh tab | PhuongXT | 12/10/2026 | `2026-10-12-phuongxt-tab-kiem-ke.md` |
