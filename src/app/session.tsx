@@ -2,7 +2,8 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import type { Goi } from './plan'
 import { CHE_DO, CHE_DO_MAC_DINH, chuanHoaCheDo, type CheDo } from './che-do'
-import { CHI_NHANH, DON_VI, type DonVi, type Role } from '../data/mock'
+import { CHI_NHANH, DON_VI, HOM_NAY, type DonVi, type Role } from '../data/mock'
+import { dmy } from '../ui/format'
 
 export type PpGtgt = 'tyLe' | 'khauTru'
 export type PpTndn = 'tyLe' | 'thuNhap'
@@ -32,6 +33,7 @@ export interface Session {
   ppGtgt: PpGtgt         // phương pháp tính thuế GTGT (TT58): 'tyLe' hoặc 'khauTru', mặc định 'tyLe'
   ppTndn: PpTndn         // phương pháp tính thuế TNDN (TT58): 'tyLe' hoặc 'thuNhap', mặc định 'thuNhap'
   dvMoi?: DonVi        // đơn vị mới tạo khi dùng thử từ FABi (T138): tên FABi, chưa có MST; 3 đơn vị mẫu giữ nguyên
+  dungThu?: Record<string, string>   // ngày bắt đầu dùng thử (dd/mm/yyyy) của đơn vị mới tạo từ FABi, thêm đơn vị (T158)
   ttDv?: Record<string, TtDonVi>   // thông tin kê khai từng đơn vị (T145)
   cnThem?: Record<string, CnThem[]>   // chi nhánh lên sổ thêm từ cửa hàng FABi theo từng đơn vị (T142)
   dongBoFabi?: 'chiTiet' | 'kenh'   // cách đồng bộ bán hàng FABi (T113): mỗi hoá đơn một chứng từ, hoặc tổng hợp theo kênh mỗi ngày; thiếu là theo kênh
@@ -121,6 +123,18 @@ export const dsDonVi = (s: Pick<Session, 'dvMoi' | 'ttDv'>): DonVi[] => (s.dvMoi
 })
 /** Loại hình đơn vị: theo Thông tin đơn vị; chưa khai thì tên "Hộ kinh doanh..." là hộ kinh doanh (T145) */
 export const loaiHinhDv = (s: Pick<Session, 'ttDv'>, d: DonVi): 'hkd' | 'dn' => s.ttDv?.[d.id]?.loai ?? (d.ten.startsWith('Hộ kinh doanh') ? 'hkd' : 'dn')
+/** Dùng thử: mọi gói được 30 ngày tính từ lúc tạo đơn vị (PhuongXT chốt 12/10/2026, T158) */
+export const SO_NGAY_DUNG_THU = 30
+export const batDauDungThu = () => dmy(HOM_NAY)
+/** Đơn vị đang dùng thử: còn bao nhiêu ngày, đến ngày nào; null là không dùng thử (3 đơn vị mẫu đã mua) */
+export function dungThuDv(s: Pick<Session, 'dungThu' | 'donVi'>): { con: number; den: string } | null {
+  const tu = s.dungThu?.[s.donVi]
+  if (!tu) return null
+  const [d, m, y] = tu.split('/').map(Number)
+  const den = new Date(y, m - 1, d + SO_NGAY_DUNG_THU)
+  const con = Math.max(0, Math.ceil((+den - +HOM_NAY) / 86400000))
+  return { con, den: dmy(den) }
+}
 export const donViHienTai = (s: Session) => dsDonVi(s).find(d => d.id === s.donVi) ?? DON_VI[0]
 export const cheDoHienTai = (s: Session) => CHE_DO[s.cheDo]
 /** Chi nhánh đang chọn trên thanh trên; undefined khi đang xem tất cả chi nhánh */

@@ -1,7 +1,7 @@
 // Thanh trên: đơn vị kế toán, chi nhánh làm việc, nút "Trải nghiệm gói" đổi gói, tài khoản. Vai trò lấy theo tài khoản đăng nhập.
 // Tìm nhanh nằm ở sidebar; kỳ chọn ở bộ lọc từng màn.
 import { useNavigate } from 'react-router-dom'
-import { donViHienTai, dsChiNhanh, dsDonVi, loaiHinhDv, useSession, cheDoHienTai } from './session'
+import { donViHienTai, dsChiNhanh, dsDonVi, dungThuDv, loaiHinhDv, useSession, cheDoHienTai } from './session'
 import { cheDoCuaGoi } from './che-do'
 import { GOI, GOIS, demTheoGoi } from './plan'
 import { ROLE } from '../data/mock'
@@ -15,6 +15,7 @@ export function Topbar({ onSearch }: { onSearch?: () => void }) {
   const { s, set } = useSession()
   const nav = useNavigate()
   const dv = donViHienTai(s)
+  const dt = dungThuDv(s)
   const themDv = useThemDonVi()
   const dsCn = dsChiNhanh(s)
   const cn = dsCn.find(c => c.id === s.chiNhanh)
@@ -69,6 +70,9 @@ export function Topbar({ onSearch }: { onSearch?: () => void }) {
         </>}
       </Dropdown>
 
+      {/* đơn vị đang dùng thử: còn bao nhiêu ngày, bấm mở Gói thuê bao để mua (T158) */}
+      {dt && <button type="button" className={`tb-dung-thu${dt.con <= 7 ? ' gan-het' : ''}`} title={`Dùng thử đến ${dt.den}. Bấm để chọn gói`} onClick={() => nav('/app/he-thong/goi-thue-bao')}>
+        <Icon n="clock" className="ic sm" /><span>Dùng thử · còn <b>{dt.con}</b> ngày</span></button>}
       <Dropdown btnClass="demo" align="end" width={330} title="Bấm để trải nghiệm giao diện các gói khác"
         label={<><Icon n="sparkle" className="ic sm" /><span>Trải nghiệm gói</span><Pk g={s.goi} /><Icon n="chevd" className="ic sm" /></>}>
         {dong => <>

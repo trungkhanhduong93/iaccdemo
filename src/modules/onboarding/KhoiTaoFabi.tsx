@@ -2,7 +2,7 @@
 // Dùng thử thì vào phần mềm gói Free; các bước khởi tạo mở thành popup trong phần mềm (OnboardFabi). Màn /khoi-tao giữ cho người tự đăng ký.
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useSession } from '../../app/session'
+import { SO_NGAY_DUNG_THU, batDauDungThu, useSession } from '../../app/session'
 import { CHI_NHANH, type DonVi } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
 import { Logo } from '../../ui/Logo'
@@ -25,7 +25,7 @@ export function KhoiTaoFabi() {
     const dvMoi: DonVi = { id: 'fabi', ten: TEN_FABI, viettat: 'PM', mst: '', goi: 'F', diaChi: '', diem: chon.length, nguoiDaiDien: '' }
     // chi nhánh của đơn vị mới là các cửa hàng chọn dùng thử; khởi tạo xong popup ghi lại theo bước Chi nhánh
     const cnThem = CHI_NHANH.filter(c => chon.includes(c.id)).map(c => ({ id: c.id, ten: c.ten, khuVuc: 'TP.HCM', tuNgay: '', banDau: true }))
-    set({ loggedIn: true, goi: 'F', cheDo: 'TT152', donVi: dvMoi.id, dvMoi, khoiTao: true, chiNhanh: 'all', cnThem: { ...s.cnThem, [dvMoi.id]: cnThem } })
+    set({ loggedIn: true, goi: 'F', cheDo: 'TT152', donVi: dvMoi.id, dvMoi, khoiTao: true, chiNhanh: 'all', cnThem: { ...s.cnThem, [dvMoi.id]: cnThem }, dungThu: { ...s.dungThu, [dvMoi.id]: batDauDungThu() } })   // dùng thử 30 ngày tính từ hôm nay (T158)
     nav('/app')
   }
   // cửa hàng chọn dùng thử điền sẵn vào bước Chi nhánh của popup
@@ -55,7 +55,7 @@ export function KhoiTaoFabi() {
           <div className="card ktf-chao">
             <div className="ktf-chao-ic"><Icon n="pos" className="ic lg" /></div>
             <h1>Chào {tenNguoi}</h1>
-            <p>Bắt đầu sổ sách cho <b>Phố Mây</b>, dùng thử ngay trên số bán thật từ FABi.</p>
+            <p>Bắt đầu sổ sách cho <b>Phố Mây</b>, dùng thử miễn phí {SO_NGAY_DUNG_THU} ngày trên số bán thật từ FABi.</p>
             <div className="ktf-nhan">
               <span className="muted">Thông tin từ FABi</span>
               <div><b>1</b> thương hiệu</div>
@@ -95,7 +95,7 @@ export function KhoiTaoFabi() {
               <DsChiNhanh ds={CHI_NHANH.map(c => ({ id: c.id, ten: c.ten, khuVuc: 'TP.HCM' }))} chon={chon} chinh="" doi={moi => setChon(moi)} coChinh={false} />
             </div>
             <div className="ktf-gt-hoi">
-              <span><b>Bạn có muốn dùng thử không?</b><small className="muted ktf-gt-chu">Dùng thử gói Free với {chon.length} cửa hàng đã chọn, miễn phí. Thêm cửa hàng sau ở Danh mục chi nhánh.</small></span>
+              <span><b>Bạn có muốn dùng thử không?</b><small className="muted ktf-gt-chu">Dùng thử miễn phí {SO_NGAY_DUNG_THU} ngày với {chon.length} cửa hàng đã chọn; chọn gói ở bước khởi tạo tiếp theo. Thêm cửa hàng sau ở Danh mục chi nhánh.</small></span>
               <span className="grow" />
               <button className="btn lg" onClick={() => sua({ b: -2 })}>Quay lại</button>
               <button className="btn ghost lg" onClick={() => setVeFabi(true)}>Để sau</button>

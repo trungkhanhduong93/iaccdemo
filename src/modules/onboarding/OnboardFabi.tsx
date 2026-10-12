@@ -3,7 +3,7 @@
 // Tiến độ lưu ở localStorage để quay lại đúng bước.
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useSession, type Session } from '../../app/session'
+import { SO_NGAY_DUNG_THU, batDauDungThu, dungThuDv, useSession, type Session } from '../../app/session'
 import { CUA_HANG_FABI, cuaHangChuaDung, type CuaHangFabi } from './cua-hang-fabi'
 import { DIEM_NOI_BAT, FEATURES, GIA_GOI_NAM, GIA_GOI_THANG, GOI, GOIS, MODS, demTheoGoi, type Goi } from '../../app/plan'
 import { CHE_DO, CHE_DO_HOP_LE, CHE_DO_MAC_DINH, type CheDo } from '../../app/che-do'
@@ -12,7 +12,7 @@ import { Icon } from '../../ui/Icon'
 import { Note, Pk } from '../../ui/Page'
 import { Dropdown, MenuItem, Select } from '../../ui/Dropdown'
 
-export const BUOC = ['Loại hình và gói', 'Đơn vị', 'Chi nhánh', 'Đồng bộ bán hàng']
+export const BUOC = ['Loại hình và gói', 'Đơn vị', 'Chi nhánh']   // bỏ Đồng bộ bán hàng, mặc định tổng hợp theo kênh, sửa ở Cấu hình kế toán (T158)
 const XONG = BUOC.length   // bước hoàn tất
 export const KEY = 'iacc-khoi-tao-fabi'
 /** Tên đơn vị trên FABi; FABi không có mã số thuế (T138) */
@@ -157,7 +157,7 @@ function TinhNangGoi({ g, truoc }: { g: Goi; truoc?: Goi }) {
 export interface Nhap {
   kieu: 'fabi' | 'them'   // fabi: dùng thử từ FABi (đơn vị mới, mọi cửa hàng); them: Thêm đơn vị kế toán khi đã dùng IACC
   b: number            // bước đang làm; -2 là màn chào, -1 là giới thiệu giao diện, 0 tới 3 là bước trong popup, XONG là hoàn tất
-  mo: boolean          // popup đang mở; đóng thì hiện thẻ nhắc
+  mo: boolean          // popup đang mở (3 bước bắt buộc nên luôn mở khi đang khởi tạo, T158)
   loai: LoaiHinh
   nhom: number         // nhóm hộ kinh doanh 1 tới 4
   ppHkd: PpHkd         // cách tính thuế TNCN của hộ kinh doanh
@@ -202,7 +202,7 @@ export function useThemDonVi() {
   const nav = useNavigate()
   return () => {
     const dvMoi: DonVi = { id: 'moi', ten: 'Đơn vị mới', viettat: 'DV', mst: '', goi: 'F', diaChi: '', diem: 0, nguoiDaiDien: '' }
-    set({ goi: 'F', cheDo: 'TT152', donVi: dvMoi.id, dvMoi, khoiTao: true, chiNhanh: 'all' })
+    set({ goi: 'F', cheDo: 'TT152', donVi: dvMoi.id, dvMoi, khoiTao: true, chiNhanh: 'all', dungThu: { ...s.dungThu, [dvMoi.id]: batDauDungThu() } })
     const moi = dsCuaHang('them', s).map(c => c.id)
     moKhoiTao({ ...MAC_DINH, kieu: 'them', b: 0, mo: true, tenDv: '', chon: moi })
     nav('/app')
@@ -230,6 +230,7 @@ export function OnboardFabi() {
   const { s, set } = useSession()
   const nav = useNavigate()
   const [n, setN] = useState<Nhap>(docNhap)
+  const dt = dungThuDv(s)
   useEffect(() => {
     const doc = () => setN(docNhap())
     window.addEventListener(SU_KIEN, doc)
@@ -239,14 +240,6 @@ export function OnboardFabi() {
   const [tai, setTai] = useState(0)   // phần trăm lấy dữ liệu ở bước hoàn tất
 
   useEffect(() => { if (n.b >= 0) luuNhap(n) }, [n])
-
-  // Esc đóng popup, vẫn ở gói đang dùng
-  useEffect(() => {
-    if (!n.mo || n.b >= XONG) return
-    const on = (e: KeyboardEvent) => { if (e.key === 'Escape') sua({ mo: false }) }
-    window.addEventListener('keydown', on)
-    return () => window.removeEventListener('keydown', on)
-  }, [n.mo, n.b])
 
   useEffect(() => {
     if (n.b !== XONG || tai >= 100) return
@@ -290,25 +283,15 @@ export function OnboardFabi() {
   const chonGoi = (g: Goi) => sua({ goi: g, cheDo: cheDoMoi(n.loai, g) })
 
   if (n.b < 0) return null
-  if (!n.mo) {
-    return (
-      <div className="ktf-dai">
-        <Icon n="sparkle" className="ic sm" />
-        <span><b>Hoàn tất khởi tạo dữ liệu</b> · bước {Math.min(n.b + 1, BUOC.length)}/{BUOC.length}{n.b < XONG ? `: ${BUOC[n.b]}` : ''}</span>
-        <span className="ktf-dai-tien"><i style={{ width: `${Math.min(n.b, BUOC.length) / BUOC.length * 100}%` }} /></span>
-        <button className="btn sm pri" onClick={() => sua({ mo: true })}>Tiếp tục</button>
-      </div>
-    )
-  }
-
+  // 3 bước khởi tạo bắt buộc: popup không đóng được, xong mới dùng phần mềm (T158)
   return (
     <div className="ktf-pop-nen">
       <div className="ktf-pop" role="dialog" aria-label="Khởi tạo dữ liệu">
         <div className="row ktf-pop-dau">
           <h2 className="ktf-h">Khởi tạo dữ liệu</h2>
           <span className="grow" />
-          {n.b < XONG && <span className="muted ktf-luu"><Icon n="check" className="ic sm" />Đã lưu, đóng lại vẫn dùng thử gói Free</span>}
-          {n.b < XONG && <button className="btn ghost sm" title="Đóng, làm tiếp sau (Esc)" onClick={() => sua({ mo: false })}><Icon n="x" className="ic sm" /></button>}
+          {dt && <span className="chip info ktf-dt"><Icon n="clock" className="ic sm" />Dùng thử {SO_NGAY_DUNG_THU} ngày · đến {dt.den}</span>}
+          {n.b < XONG && <span className="muted ktf-luu">Hoàn tất {BUOC.length} bước để bắt đầu dùng phần mềm</span>}
         </div>
             {n.b < XONG && (
               <>
@@ -425,23 +408,6 @@ export function OnboardFabi() {
                       </>
                     )}
 
-                    {n.b === 3 && (
-                      <>
-                        <h2 className="ktf-h">Đồng bộ bán hàng từ FABi</h2>
-                        <p className="muted ktf-p">Đơn bán trên FABi tự về thành chứng từ Xuất bán POS. Chọn cách gom.</p>
-                        <div className="grid g2">
-                          <button className={`opt ${n.dongBo === 'kenh' ? 'on' : ''}`} onClick={() => sua({ dongBo: 'kenh' })}><span className="radio" />
-                            <span><b>Tổng hợp theo kênh</b><small>Mỗi ngày, mỗi chi nhánh, mỗi kênh bán một chứng từ. Sổ gọn</small></span></button>
-                          <button className={`opt ${n.dongBo === 'chiTiet' ? 'on' : ''}`} onClick={() => sua({ dongBo: 'chiTiet' })}><span className="radio" />
-                            <span><b>Chi tiết theo hoá đơn</b><small>Mỗi hoá đơn FABi một chứng từ. Tra được từng đơn</small></span></button>
-                        </div>
-                        <div className="ktf-xem">
-                          <Icon n="receipt" />
-                          <span>Theo số đơn 30 ngày gần nhất, cách này sinh khoảng <b>{so(soCt)} chứng từ</b> Xuất bán POS mỗi tháng cho {cnChon.length} chi nhánh.</span>
-                        </div>
-                      </>
-                    )}
-
                     <div className="row" style={{ marginTop: 22, justifyContent: 'flex-end', gap: 8 }}>
                       {n.b > 0 && <button className="btn lg" onClick={() => sua({ b: n.b - 1 })}>Quay lại</button>}
                       <button className="btn pri lg" disabled={n.b === 2 && (cnChon.length === 0 || (n.loai === 'hkd' && !n.cnChinh))} onClick={tiep}>
@@ -454,6 +420,7 @@ export function OnboardFabi() {
                     <h3>Bạn sẽ có gì</h3>
                     <div className="row" style={{ gap: 8 }}><Pk g={n.goi} logo /><span className="chip">{nganCheDo(n.loai, n.cheDo)}</span></div>
                     <div className="ktf-gia">
+                      <small className="ktf-gia-thu">Miễn phí {SO_NGAY_DUNG_THU} ngày dùng thử, sau đó</small>
                       <b>{GIA_GOI_NAM[n.goi].gia}</b><span>{GIA_GOI_NAM[n.goi].chuKy}</span>
                       <small>{n.goi === 'F' ? GIA_GOI_NAM.F.ghiChu : `${GIA_GOI_NAM[n.goi].ghiChu}. Trả từng tháng ${GIA_GOI_THANG[n.goi].gia}`}</small>
                     </div>
