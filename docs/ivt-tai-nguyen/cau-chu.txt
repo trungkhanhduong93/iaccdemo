@@ -1,0 +1,1640 @@
+### THÔNG TIN LỖI
+#count cửa hàng
+#count dòng chờ xử lý danh mục
+#count dòng khớp tự động
+#count kết quả. Chạm để chọn:
+#count mặt hàng
+#count mặt hàng đã lên danh sách
+#count mục
+#count sắp hết hạn
+#count đã hết hạn
+#count ảnh
+#day ngày nữa giao
+#days ngày nữa hết hạn dùng thử (#date)
+#days ngày nữa hết hạn(#date)
+#doc_count loại chứng từ
+#field_name là bắt buộc
+#gift TẶNG
+#hour giờ nữa giao
+#minute phút nữa giao
+#months tháng
+#months tháng bản quyền
+#months tháng × #count cửa hàng
+#purchased tháng mua + #gift tháng tặng
+#term tháng
+(Tổng cộng:
+* Loại thiết bị: ANDROID
+* Phiên bản App/Web:
+* Phiên bản OS:
+* Thông tin lỗi:
+* Tên thiết bị:
+* Yêu cầu hỗ trợ gia hạn bản quyền
++ #months tháng tặng
+, thêm vào
+- Cửa hàng: #value
+- Dịch vụ: #value
+- Số tiền: #value
+- Thời gian thanh toán: #value
+- Trạng thái thanh toán: #value
+. Chạm để chọn:
+/ cửa hàng / tháng
+0 nghìn tỷ
+0 triệu
+0 tỷ
+0XlTâ
+1 chờ duyệt
+1 đang mở
+1. Thông tin đặt hàng
+2 bao gạo ST25 25kg, giá 620k/bao
+20 kg thịt bò loại 1, giá 320 nghìn
+3 chai dầu ăn Simply 1L, 52 nghìn
+3 chờ duyệt
+3 tháng gần đây
+4 tuần gần nhất
+4. Chi tiết:
+5. Thông tin thiết bị:
+8 đến hạn
+=> Đăng ký Firebase thành công
+=> Đăng ký Firebase thất bại
+A - Báo cáo quản trị kho
+A01 - Kiểm kê
+A02 - Tổng hợp xuất
+A03 - Chi tiết xuất
+A04 - Tổng hợp nhập
+A05 - Chi tiết nhập
+A06 - Xuất nhập tồn
+A07 - Tồn kho hiện tại
+A08 - Hao hụt NVL
+A09 - Tỷ lệ trả hàng
+A10 - Tổng hợp mua hàng
+A11 - Chi tiết mua hàng
+A12 - Tổng hợp bán hàng
+A13 - Chi tiết bán hàng
+A14 - Tổng hợp trả hàng
+A15 - Chi tiết trả hàng
+AI & hỗ trợ
+Alertă
+B - Báo cáo đặt hàng
+B02 - Chi tiết kế hoạch
+B03 - Yêu cầu mua hàng
+B04 - Đặt mua hàng
+B05 - Đặt hàng nội bộ
+B06 - Chi tiết yêu cầu mua hàng
+B07 - Chi tiết đặt mua hàng
+B08 - Chi tiết đặt hàng nội bộ
+Biến thiên hao hụt theo thời gian
+Biến thiên sử dụng
+Biến thiên tỷ lệ thu hồi theo thời gian
+Biến động SL bán theo thời gian
+Biến động giá mua
+Biến động giá theo thời gian
+Biểu đồ thể hiện giá trị, tỷ lệ hao hụt nguyên vật liệu theo từng tháng dựa theo giá trị chênh lệch khi kiểm kê (xuất điều chỉnh) và xuất huỷ
+Bàn phím mở
+Bàn phím đóng
+Bán nội bộ
+Bán thành phẩm
+Báo cáo chi tiết bán hàng theo từng chứng từ
+Báo cáo chi tiết kế hoạch nội bộ
+Báo cáo chi tiết mua hàng theo từng chứng từ
+Báo cáo chi tiết nhập kho theo chứng từ
+Báo cáo chi tiết trả hàng theo từng chứng từ
+Báo cáo chi tiết xuất kho theo chứng từ
+Báo cáo công nợ
+Báo cáo công nợ nhà cung cấp, khách hàng
+Báo cáo giá thành sản phẩm, giá thành chế biến
+Báo cáo kiểm soát hao hụt nguyên vật liệu
+Báo cáo kiểm soát trả hàng nhà cung cấp
+Báo cáo kiểm soát, quản trị kho hàng
+Báo cáo kiểm soát, quản trị sản xuất
+Báo cáo kiểm soát, quản trị đặt hàng
+Báo cáo phân tích chi tiết nhà cung cấp
+Báo cáo phân tích chi tiết sử dụng nguyên vật liệu
+Báo cáo phân tích nhà cung cấp
+Báo cáo phân tích tổng quan nhà cung cấp
+Báo cáo quản lý chi tiết yêu cầu mua hàng
+Báo cáo quản lý chi tiết đặt hàng nội bộ tới kho tổng, bếp trung tâm
+Báo cáo quản lý chi tiết đặt mua hàng tới nhà cung cấp ngoài
+Báo cáo quản lý kiểm kê hàng hóa
+Báo cáo quản lý yêu cầu mua hàng
+Báo cáo quản lý đặt hàng nội bộ tới kho tổng, bếp trung tâm
+Báo cáo quản lý đặt mua hàng tới nhà cung cấp ngoài
+Báo cáo quản trị kho
+Báo cáo sản xuất
+Báo cáo tồn kho hàng hóa tại thời điểm hiện tại
+Báo cáo tổng hợp bán hàng theo hàng hoá
+Báo cáo tổng hợp mua hàng theo hàng hoá
+Báo cáo tổng hợp nhập kho theo hàng hóa
+Báo cáo tổng hợp trả hàng theo hàng hoá
+Báo cáo tổng hợp xuất kho theo hàng hóa
+Báo cáo xuất nhập tồn hàng hóa theo kỳ
+Báo cáo đặt hàng
+Bạn bị nhỡ
+Bạn bị từ chối
+Bạn chỉ có thể thêm tối đa 5 nghiệp vụ
+Bạn có chắc chắn muốn hủy mã hỗ trợ này không?
+Bạn có chắc chắn muốn hủy phiếu #code?
+Bạn có chắc chắn muốn kích hoạt lại #type #name không?
+Bạn có chắc chắn muốn ngừng hoạt động #type #name không?
+Bạn có chắc chắn muốn xóa #item_name ra khỏi danh sách?
+Bạn có chắc chắn muốn xóa hết toàn bộ hàng hóa trong danh sách đã chọn?
+Bạn có muốn đăng xuất khỏi thiết bị này không?
+Bạn có thể tạo lô mới bằng cách bấm vào nút thêm mới
+Bạn cần hỗ trợ vấn đề gì?
+Bạn không có quyền tạo chứng từ này, xin vui lòng liên hệ quản l
+Bạn không có quyền xem báo cáo này, xin vui lòng liên hệ quản lý hoặc chủ
+Bạn không có quyền xem chứng từ này, xin vui lòng liên hệ quản lý hoặc chủ
+Bạn không có quyền xem thông tin giá và số tiền
+Bạn sẽ chuyển Trang chủ và Nghiệp vụ về giao diện cũ. Chứng từ và quyền truy cập không thay đổi.
+Bạn vừa duyệt thành công #type #receipt_id
+Bạn vừa sao chép thành công phiếu #type #receipt_id từ phiếu #from_receipt_id
+Bạn vừa sửa thành công #type #receipt_id, bạn có thể xem lại phiếu ở chờ nhập
+Bạn vừa sửa thành công chứng từ #type #receipt_id
+Bạn vừa trả lại thành công #type #receipt_id, bạn có thể xem lại phiếu ở chờ hiệu chỉnh
+Bạn vừa trả lại thành công phiếu #receipt_id, bạn có thể xem lại phiếu ở mục chờ hiệu chỉnh
+Bạn vừa tạo thành công #count phiếu #doc_type. Bấm vào từng phiếu để xem chi tiết, hoặc bấm đóng để quay lại danh sách chứng từ
+Bạn vừa tạo thành công các phiếu #doc_type #receipt_id. Bấm đóng để quay lại danh sách phiếu
+Bạn vừa tạo thành công phiếu #doc_type #receipt_id. Bấm #pay để thực hiện quá trình thanh toán hoặc bấm đóng để quay lại danh sách phiếu
+Bạn vừa tạo thành công phiếu #doc_type #receipt_id. Bấm có thể bấm vào '#continue' để đặt lại chứng từ, hoặc bấm đóng để quay lại danh sách chứng từ
+Bạn vừa tạo thành công phiếu #doc_type #receipt_id. Bấm có thể bấm vào '#detail' để xem lại chứng từ, hoặc bấm đóng để quay lại danh sách chứng từ
+Bạn vừa xác nhận thành công #type #receipt_id, bạn có thể xem lại phiếu ở mục chờ nhập
+Bạn vừa xác nhận thành công phiếu kiểm kê #receipt_id
+Bạn đang dùng gói Standard
+Bạn đã gửi kế hoạch thành công cho #week với mã #receipt_id tới #provider
+Bạn đã hủy
+Bạn đã thanh toán hết công nợ
+Bạn đã thanh toán hết công nợ với nhà cung cấp #sup_name
+Bạn đã thu hết công nợ với nhà cung cấp #sup_name
+Bạn đọc
+Bản quyền
+Bản quyền của bạn còn #days ngày
+Bản quyền của bạn đã hết hạn #days ngày
+Bảng giá
+Bảo trì
+Bấm "Tự chọn hàng hóa -> Tiếp tục" để thêm từng mặt hàng, hoặc sử dụng mẫu có sẵn để thêm hàng loạt mặt hàng vào danh sách hàng đặt
+Bấm Gửi để nhắn tin tới nhà cung cấp của bạn
+Bấm mở nếu hàng hóa có theo dõi tồn kho
+Bấm thêm hàng hóa để chọn mặt hàng cần đặt
+Bấm vào token để sao chép
+Bấm vào đây
+Bấm vào đây để bắt đầu cuộc gọi với nhân viên hỗ trợ!
+Bấm vào đây để cấu hình lại các cột cần hiển thị
+Bắt buộc
+Bắt đầu dùng thử Pro
+Bắt đầu kiểm kê
+Bếp/chi nhánh đề xuất nhu cầu. Có thể tạo tự động từ định mức tồn.
+Bỏ chọn tất cả
+Bỏ dòng cuối
+Bỏ qua
+Bổ sung giá
+Bổ sung giá #receipt_id
+Bổ sung giá sau
+Bộ lọc
+Bội số
+C - Báo cáo sản xuất
+C01 - Tỷ lệ thu hồi
+C03 - Hiệu quả chế biến
+C04 - Hao hụt chế biến
+CHIỀU
+CHUYÊN NGHIỆP
+Casetă de dialog
+Chat với nhân viên hỗ trợ
+Chat để lập phiếu
+Chi nhánh đặt hàng từ kho tổng thay vì mua ngoài.
+Chi phí dự kiến/1sp
+Chi phí nguyên vật liệu
+Chi tiết
+Chi tiết biến động giá nhập
+Chi tiết bản quyền
+Chi tiết bảng giá
+Chi tiết chi phí
+Chi tiết chức vụ
+Chi tiết công thức chế biến
+Chi tiết giá thành chế biến
+Chi tiết hao hụt
+Chi tiết hao hụt chế biến
+Chi tiết hiệu quả chế biến
+Chi tiết hàng hóa
+Chi tiết kho hàng
+Chi tiết khách haàng
+Chi tiết lý do
+Chi tiết mẫu
+Chi tiết nhà cung cấp
+Chi tiết nhóm hàng hóa
+Chi tiết nhóm nhà cung cấp
+Chi tiết phiếu yêu cầu
+Chi tiết sử dụng
+Chi tiết thanh toán công nợ
+Chi tiết tài khoản
+Chi tiết tỷ lệ thu hồi
+Chi tiết xếp hạng
+Chi tiết định mức tồn kho
+Chia sẻ
+Chia sẻ thất bại!
+Chia sẻ...
+Cho bạn biết chi phí nguyên liệu chiếm bao nhiêu % so với doanh thu bán hàng theo từng tháng
+Cho bạn biết giá trị hao hụt nguyên liệu dựa trên giá trị chênh lệch khi kiểm kê và xuất hủy
+Cho kỹ thuật viên truy cập
+Chu kỳ
+Chuyển khoản
+Chuyển sang chế độ nhập
+Chuyển sang lịch
+Chên lệch(Giao - Bán)
+Chênh lệch
+Chênh lệch kiểm kê
+Chúc mừng bạn đã xử lý hết công nợ
+Chế biến
+Chỉ dòng lỗi
+Chỉnh sửa
+Chọn
+Chọn #option_name
+Chọn chứng từ áp dụng
+Chọn cách nhanh nhất với bạn lúc này
+Chọn cửa hàng
+Chọn cửa hàng gia hạn bản quyền
+Chọn gói
+Chọn gói #service_name
+Chọn hàng hóa
+Chọn hàng hóa thuộc nhóm hàng hóa này
+Chọn hàng hóa trong danh mục
+Chọn hàng hóa đồng bộ
+Chọn kho
+Chọn kho nhận
+Chọn kho áp dụng
+Chọn khách hàng
+Chọn kế hoạch
+Chọn loại
+Chọn loại mẫu
+Chọn lô
+Chọn lại
+Chọn lại nhà cung cấp
+Chọn mẫu
+Chọn ngày giao
+Chọn ngày đặt hàng
+Chọn ngân hàng của bạn
+Chọn nhà cung cấp
+Chọn nhóm hàng hóa
+Chọn năm
+Chọn thời gian
+Chọn trạng thái xác thực
+Chọn tất cả
+Chọn từ danh sách hàng hóa
+Chốt phiếu
+Chốt, xử lý sau
+Chờ duyệt
+Chờ hiệu chỉnh
+Chờ hủy
+Chờ nhận
+Chờ nhập
+Chờ thanh toán
+Chờ xuất
+Chờ xác nhận
+Chờ xử lý
+Chụp ảnh
+Chụp ảnh, trợ lý đọc dòng hàng và điền sẵn phiếu nháp cho bạn soát.
+Chủ Nhật
+Chủ sở hữu
+Chủ tài khoản
+Chức vụ
+Chứng từ
+Chứng từ áp dụng
+Cuộc gọi bị từ chối
+Cuộc gọi nhỡ
+Cuộc gọi đã hủy
+Cuộc gọi đã kết thúc
+Cuộc gọi đến
+Cuộc thoại gọi đi
+Cuộc thoại gọi đến
+CÔNG TY CỔ PHẦN IPOS.VN
+Cài đặt
+Cài đặt thông báo
+Các phát sinh tồn kho không gắn với mua, bán hay điều chuyển
+Còn #count dòng cần xác nhận
+Còn #count thông số cần quản trị
+Còn #count thông số cần theo dõi
+Còn #days ngày sẽ hết hạn (#date)
+Còn bản quyền
+Còn chờ xử lý danh mục
+Còn hiệu lực
+Còn lại cần thanh toán
+Có #count kết quả ở mục khác
+Có #count mẫu
+Có #count mặt hàng
+Có #count mặt hàng(#item_name) không có công thức chế biến hoặc công thức đã hết hạn. Vui lòng kiểm tra lại
+Có #value yêu cầu
+Có ghi chú gì cho phiếu này không?
+Có gì mới #version
+Có lỗi khi nhận diện giọng nói, bạn thử nói lại nhé.
+Có lỗi xảy ra trong quá trình kiểm tra kế hoạch, xin vui lòng thử lại(checking_info null)
+Có lỗi xảy ra vui lòng thử lại
+Có lỗi xảy ra, vui lòng chạm để tải lại
+Có mặt hàng cần kiểm lại
+Có nợ đầu kỳ
+Có theo dõi tồn kho
+Có ít nhất 1 chữ hoa
+Có ít nhất 1 chữ số
+Công cụ dụng cụ
+Công nợ
+Công nợ KH
+Công nợ NCC
+Công nợ NCC, hoa don
+Công nợ hiện tại
+Công nợ khách hàng & nội bộ
+Công nợ mua hàng từ nhà cung cấp ngoài
+Công nợ nhà cung cấp
+Công nợ nội bộ
+Công nợ theo hạn
+Công thức chế biến
+Căuta
+Cảnh báo
+Cảnh báo ảnh tải lỗi
+Cấu hình
+Cần gia hạn (#count)
+Cần gói #tier
+Cần gói Plus
+Cần gói Pro
+Cần nhận lúc: #time
+Cần theo dõi
+Cần xác nhận
+Cập nhật
+Cập nhật bởi
+Cập nhật giá mua
+Cập nhật lúc
+Cập nhật thành công
+Cột hiển thị
+Cửa hàng
+Cửa hàng không hợp lệ
+Cửa hàng áp dụng
+D01 - Giá thành sản phẩm
+D02 - Giá thành chế biến
+Danh mục
+Danh mục & thiết lập
+Danh mục tài khoản
+Danh mục tài khoản không hỗ trợ xóa
+Danh sách hàng hóa rỗng, xin vui lòng chọn thêm vào danh sách
+Danh sách hàng hóa trống
+Danh sách mặt hàng (#count)
+Danh sách nguyên vật liệu
+Danh sách nguyên vật liệu đích
+Danh sách ngày đặt
+Danh sách phiếu
+Danh sách sau quy đổi
+Danh sách đã chọn
+Di chuyê
+Di chuyển lên
+Di chuyển lên đầu danh sách
+Di chuyển sang phải
+Di chuyển sang trái
+Di chuyển xuống cuối danh sách
+Discount #value đ
+Diễn giải
+Do hao hụt
+Do hỏng huỷ
+Doanh nghiệp
+Doanh thu theo khách/mặt hàng, tỷ lệ trả hàng theo kỳ.
+Duyệt
+Duyệt chứng từ thành công
+Dòng vừa tạo mới/chọn lại hàng hóa
+Dòng đã sửa tay
+Dùng thử
+Dùng thử Pro #days ngày miễn phí
+Dùng thử còn #days ngày sẽ hết hạn (#date)
+Dùng thử gói Pro #days ngày
+Dùng thử hết hạn hôm nay (#date)
+Dùng thử đã hết hạn #days ngày (#date)
+Dầu ăn năm lít, bốn can
+Dịch vụ
+Dữ liệu xuất bán hàng đồng bộ từ POS
+E - Báo cáo công nợ
+E01 - Công nợ nội bộ
+E02 - Công nợ khách hàng
+E03 - Công nợ nhà cung cấp
+Email không hợp lệ
+Enter để mở
+F01 - Tổng quan nhà cung cấp
+F02 - Chi tiết nhà cung cấp
+F03 - Chi tiết nguyên vật liệu
+Fără acoperire.
+Ghi chú nhập kho
+Ghi chú xuất kho
+Ghi chú:
+Ghi giảm tồn cho phần thiếu so với sổ sách.
+Ghi giảm tồn ngoài luồng bán: xuất dùng nội bộ, biếu tặng, lấy mẫu.
+Ghi phiếu nhập
+Ghi tăng tồn cho phần thừa so với sổ sách.
+Ghi tăng tồn ngoài luồng mua: hàng tặng, thu hồi bao bì, tìm lại hàng thất lạc.
+Ghi vào phiếu: #qty #unit = #converted #mainUnit.
+Ghi vào phiếu: #qty #unit.
+Gia hạn
+Gia hạn #count cửa hàng
+Gia hạn bản quyền
+Gia hạn ngay
+Gia hạn nhanh #count cửa hàng cần xử lý
+Gia hạn sớm
+Gia hạn tất cả
+Giá cuối
+Giá nhập
+Giá nhập lần này
+Giá trị
+Giá trị gốc
+Giá trị hao hụt
+Giá trị hao hụt khi có phát sinh chênh lệch dựa theo chứng từ kiểm kê trong 7 ngày gần nhất
+Giá trị huỷ hàng
+Giá trị huỷ hàng (xuất huỷ) trong 7 ngày gần nhất
+Giá trị huỷ theo lý do, theo nhóm hàng và theo kho
+Giá trị huỷ, lý do huỷ theo kho và theo ca
+Giá trị không hợp lệ cho #field_name
+Giá trị nhập hàng từ nhà cung cấp (nhập mua hàng) trong 7 ngày gần nhất
+Giá trị nhập/xuất khác theo lý do, theo kho, theo kỳ.
+Giá trị sửa
+Giá trị tồn
+Giá trị tồn tại các kho bạn quản lý tính tới hiện tại
+Giá trị và tỷ lệ hao hụt NVL qua kiểm kê, xuất huỷ
+Giá trị đầu ra
+Giá trị đầu vào
+Giá vốn
+Giá vốn & công nợ
+Giá vốn & lợi nhuận theo món
+Giải phóng vốn đang chôn ở hàng tồn quá mức
+Giảm giá
+Giảm giá #value đ
+Giảm giá #value%
+Giữ nút mic để nói tên hàng, thả ra để tìm hàng hoá
+Giữ và kéo để đổi vị trí nghiệp vụ đã chọn
+Gói #tier
+Gói #tier đã kích hoạt cho #count cửa hàng.
+Gói hiện tại của bạn
+Gói triển khai
+Góp ý sản phẩm
+Góp ý(Nếu có)
+Gõ ghi chú của bạn, hoặc chọn gợi ý
+Gõ không dấu hoặc chữ cái đầu cũng ra
+Gõ tên kho nếu không có trong gợi ý
+Gõ tên nhà cung cấp nếu không có trong gợi ý
+Gần đây
+Gặp khó khăn khi thanh toán?
+Gọi lại
+Gọi tổng đài
+Gồm #expired cửa hàng đã hết hạn và #soon cửa hàng hết hạn trong 60 ngày tới.
+Gồm #expired cửa hàng đã hết hạn.
+Gồm #soon cửa hàng hết hạn trong 60 ngày tới.
+GỢI Ý GIA HẠN
+Gợi ý cho bạn
+Gợi ý: #tier
+Gửi Text
+Gửi kế hoạch
+Gửi kế hoạch thành công
+Gửi kỹ thuật hỗ trợ
+Gửi ngay
+Gửi yêu cầu hiệu chỉnh thành công
+Gửi yêu cầu lỗi #error
+Gửi ảnh
+Hao hụt
+Hao hụt nguyên vật liệu
+Hao hụt thực tế so định mức theo món, theo ca và theo kho.
+Hiển thị menu
+Hiện biểu đồ
+Hiện tất cả
+Hiệu chỉnh
+Hiệu chỉnh tồn kho khi có phát sinh kiểm kê
+Hiệu quả chi nhánh
+Hiệu quả chế biến theo thời gian
+Hiệu suất chế biến
+Hoặc nhập vấn đề của bạn vào đây và nhấn gửi!
+Hoặc xem theo khu vực
+Huỷ hàng
+Hàng bán thẳng
+Hàng hoá bị huỷ
+Hàng hoá đã hết
+Hàng hóa có thay đổi giá
+Hàng hóa tự thêm vào phiếu, không đọc từ ảnh
+Hàng hóa áp dụng
+Hàng trả lại NCC, chờ thu hồi tiền hoặc hàng
+Hàng tuần
+Hãy hỗ trợ tôi lỗi này nhé!
+Hình thức
+Hình thức bán
+Hình thức mua
+Hình thức nhập
+Hình thức thanh toán
+Hình thức xem
+Hình thức xuất
+Hình ảnh
+Hôm nay đặt
+Hạch toán công nợ vào phiếu nhập mua hàng
+Hạn mức
+Hạn mức hao hụt
+Hạn sử dụng đến #date
+Hằng ngày
+Hết hàng
+Hết hạn
+Hết hạn dùng thử #days ngày(#date)
+Hết hạn hôm nay (#date)
+Hết hạn lúc
+Hết hạn sau
+Hết hạn thanh toán
+Hết thời gian chờ cuộc gọi
+Hệ thống
+Hệ thống chỉ hỗ trợ chọn ảnh, video, excel trong một lần gửi tin nhắn. Xin vui lòng gửi tin nhắn khác!
+Hệ thống tự sinh mã hàng
+Hệ thống đang gia hạn bản quyền cho cửa hàng, quá trình này có thể mất vài phút. Chúng tôi sẽ thông báo khi hoàn tất. Bạn cũng có thể kiểm tra lại sau tại mục `Khác/Bản quyền`.
+Hỏi trợ lý iOne
+Hỏng hủy
+Hỗ trợ
+Hỗ trợ qua chatbox & tổng đài
+Hỗ trợ thanh toán
+Hỗ trợ tiếp
+Hỗ trợ trực tuyến
+Hội thoại
+Hộp thoại
+Hợp lệ
+Hủy bởi
+Hủy hàng
+Hủy lúc
+Hủy mã
+Hủy mã hỗ trợ thành công
+Hủy phiếu không thành công
+Hủy thành công
+KHO & SẢN XUẤT
+Khai báo công nợ cũ đầu kỳ
+Khai báo tình trạng hàng hóa
+Kho bếp trung tâm
+Kho chế biến
+Kho cung ứng
+Kho cửa hàng
+Kho giao trực tiếp
+Kho gửi nhận lại phần hàng kho nhận không lấy.
+Kho gửi xuất chuyển hàng theo đề nghị của chi nhánh.
+Kho kiểm
+Kho nhận
+Kho nhập
+Kho quản lý
+Kho theo dõi tồn kho
+Kho trả
+Kho tổng
+Kho xuất
+Kho yêu cầu
+Kho áp dụng
+Kho đáp ứng
+Kho đặt hàng
+Khác
+Khách hàng đã đồng ý chia sẻ dữ liệu cá nhân
+Khách hàng đồng ý chia sẻ dữ liệu cá nhân
+Khách hàng đồng ý chia sẻ dữ liệu cá nhân khi thanh toán bản quyền
+Khách trả hàng
+Không còn cửa hàng nào khác để thêm
+Không có chứng từ nào
+Không có chứng từ nào phát sinh trong kỳ
+Không có công thức chế biến
+Không có cửa hàng nào cần gia hạn
+Không có dữ liệu
+Không có dữ liệu cuộc gọi để hiển thị
+Không có dữ liệu(response.data = null)
+Không có gói bản quyền
+Không có gói dịch vụ
+Không có kho nào có công nợ
+Không có kế hoạch nào
+Không có mã hỗ trợ nào
+Không có nhà cung cấp nào có nợ đầu kỳ
+Không có nợ đầu kỳ
+Không có quyền
+Không có quyền truy cập
+Không hoạt động
+Không hợp lệ
+Không nhận
+Không nhận dc offer từ sự kiện cuộc gọi
+Không nhận nữa
+Không theo dõi tồn kho
+Không thể khởi tạo cuộc hội thoại, vui lòng thử lại sau
+Không thể kiểm tra mã voucher, vui lòng thử lại.
+Không thể mở chứng từ
+Không thể mở giao diện cuộc gọi, context hiện tại null
+Không thể reset mật khẩu của chính mình. Bấm đổi mật khẩu nếu muốn đặt lại
+Không tìm thấy #count mặt hàng trong danh mục: #names. Sửa lại tên hàng rồi tạo phiếu lại nhé.
+Không tìm thấy chi tiết lần gia hạn
+Không tìm thấy cửa hàng cần gia hạn
+Không tìm thấy cửa hàng phù hợp
+Không tìm thấy dữ liệu
+Không tìm thấy dữ liệu(response.data null)
+Không tìm thấy kho kiểm kê
+Không tìm thấy kho nào khớp từ khoá.
+Không tìm thấy kết quả phù hợp
+Không tìm thấy thông tin bản quyền
+Không tìm thấy thông tin chứng từ
+Không tìm thấy thông tin cửa hàng(warehouse_menu)
+Không tìm thấy tin nhắn
+Không đặt
+Khớp danh mục & dựng phiếu
+Khớp danh mục, tính tiền, đánh dấu chỗ cần xử lý
+Kiểm cho kho hàng nào?
+Kiểm kê
+Kiểm kê bằng giọng nói
+Kiểm kê hàng bán thẳng
+Kiểm kê kho
+Kiểm kê kho hàng định kỳ
+Kiểm kê phiếu khác
+Kiểm kê theo mẫu
+Kiểm kê theo mẫu này
+Kiểm kê theo mẫu đã khai báo
+Kiểm kê tới thời điểm nào?
+Kiểm kê v2
+Kiểm kê, nhập mua và công nợ miễn phí không giới hạn thời gian.
+Kiểm soát hàng hỏng, huỷ
+Kiểm tra
+Kiểm tới
+Kiểm tới #datetime
+Kopírovať
+Kênh áp dụng
+Kế hoạch
+Kế hoạch nội bộ
+Kế hoạch đặt hàng
+Kế toán
+Kết thúc
+Kết thúc cuộc gọi với UUID:
+Liên hệ hỗ trợ
+Loại
+Loại chứng từ
+Loại công nợ
+Loại hàng
+Loại hàng hóa
+Loại kho
+Loại khách hàng
+Loại lý do
+Loại mẫu
+Loại nhà cung cấp
+Loại nợ
+Loại phiếu
+Loại thanh toán
+Loại tài khoản
+Luna trecută
+Làm mới
+Lý do Y/C hiệu chỉnh
+Lý do hiệu chỉnh
+Lý do hủy
+Lấy hợp đồng giấy
+Lấy mã hỗ trợ
+Lấy ảnh từ
+Lần này
+Lần sau tìm ở: #path
+Lần đọc gần nhất
+Lần đồng bộ cuối
+Lập kế hoạch nội bộ theo tuần/tháng
+Lập phiếu nhập mua
+Lịch sử
+Lịch sử chế biến
+Lịch sử chỉnh sửa
+Lịch sử gia hạn
+Lịch sử gia hạn bản quyền
+Lịch sử phiên bản
+Lịch sử phát sinh hao hụt
+Lịch sử thanh toán công nợ nhà cung cấp
+Lịch sử thay đổi giá
+Lịch sử trạng thái
+Lỗi callId rỗng, không thể hiển thị cuộc gọi
+Lỗi khi bắt đầu cuộc gọi:
+Lỗi khi chọn file
+Lỗi khi chọn ảnh
+Lỗi khi chụp ảnh
+Lỗi khi chụp ảnh:
+Lỗi khi hiển thị cuộc gọi đến với callkit:
+Lỗi khi hiển thị cuộc gọi đến:
+Lỗi khi kết thúc cuộc gọi:
+Lỗi khi thiết lập remote description:
+Lỗi khi thêm ICE candidate:
+Lỗi kết nối
+Lỗi kết nối. Vui lòng kiểm tra lại kết nối mạng
+Lợi nhuận
+Megosztás
+Menu bật lên
+Miễn phí
+Mua bản quyền
+Mua bản quyền luôn
+Mua bản quyền thành công
+Mua nội bộ
+Mua từ nhà cung cấp
+Mua/gia hạn bản quyền nhiều cửa hàng
+Muốn nhận lúc
+Muốn nhận lúc:
+Mã QR thanh toán gia hạn bản quyền
+Mã chứng từ
+Mã công thức
+Mã cửa hàng
+Mã giảm giá
+Mã giới thiệu
+Mã hỗ trợ
+Mã hỗ trợ đã hết hạn
+Mã hợp đồng
+Mã kế toán
+Mã lỗi
+Mã nhà cung cấp
+Mã nhóm nhà cung cấp
+Mã phiếu
+Mã phiếu nhập
+Mã phiếu xuất
+Mã quyền
+Mã sinh tự động
+Mã số thuế
+Mã số thuế không hợp lệ (định dạng: 1234567891 hoặc 1234567891-123)
+Mã vạch
+Mã xác nhận
+Mình là iOne. Bạn có cần hỗ trợ gì không?
+Mình đã đủ thông tin. Soát lại rồi bấm Tạo phiếu nhé.
+Mô tả
+Mất kết nối
+Mất kết nối - Nhấn để kết nối lại
+Mật khẩu
+Mật khẩu cũ
+Mật khẩu mới
+Mật khẩu mới không hợp lệ
+Mật khẩu nhập lại không khớp
+Mặt hàng
+Mặt hàng #item_name không có công thức chế biến hoặc công thức đã hết hạn
+Mặt hàng đã đếm
+Một chỗ xem toàn bộ phải thu
+Một lần
+Mới nhất
+Mới thêm
+Mở Momo
+Mở app ngân hàng
+Mở khóa với gói Plus
+Mở khóa với gói Pro
+Mở menu di chuyển
+Mở phiếu kiểm kê trống, tự chọn hàng và điền số.
+Mở rộng
+Mở rộng để xem thêm chi tiết
+Mở tham chiếu
+Mức độ cung ứng
+NCC đổi giá so với lần nhập gần nhất
+Nghiệp vụ
+Nghiệp vụ v2
+Ngoài phạm vi.
+Nguyên vật liệu
+Nguyên vật liệu gốc
+Nguyên vật liệu đích
+Ngày chứng từ
+Ngày hết hạn
+Ngày mai hết hạn
+Ngày mai hết hạn dùng thử
+Ngày muốn nhận
+Ngày nhận
+Ngày nhập
+Ngày tính tồn
+Ngày tạo
+Ngày xuất
+Ngày áp dụng
+Ngày đặt hàng
+Ngân hàng có dấu
+Ngừng hoạt động
+Ngừng s
+Ngừng sử dụng
+Ngừng sử dụng mẫu thành công
+Nhà cung cấp
+Nhà cung cấp / Hàng hoá
+Nhà cung cấp đã đồng ý chia sẻ dữ liệu cá nhân
+Nhà cung cấp đồng ý chia sẻ dữ liệu cá nhân
+Nhân viên mới hay tìm
+Nhân viên đã đồng ý chia sẻ dữ liệu cá nhân
+Nhóm nguyên vật liệu
+Nhóm nhà cung cấp
+Nhóm sản phẩm
+Nhận
+Nhận hàng, trả hàng lỗi và theo dõi tiền phải trả nhà cung cấp.
+Nhận lần này
+Nhận một phần
+Nhận thiếu
+Nhận thêm
+Nhận thừa
+Nhập
+Nhập #option_name
+Nhập bán thành phẩm sau chế biến
+Nhập bán thành phẩm về kho, ghi nhận tỷ lệ hao hụt thực tế.
+Nhập chế biến
+Nhập ghi chú cho phiếu kiểm kê
+Nhập ghi chú nếu có
+Nhập giá trị cần sửa
+Nhập hàng
+Nhập hàng trực tiếp từ nhà cung cấp
+Nhập hàng tặng...
+Nhập kho
+Nhập kho hàng hóa bị trả lại từ khách hàng
+Nhập kho sau chế biến
+Nhập kho theo mẫu
+Nhập kho thành công
+Nhập kho thành công phiếu #receipt_id, bạn có thể xem lại phiếu ở mục đã hoàn thành
+Nhập khác
+Nhập loại thông báo
+Nhập lúc
+Nhập lý do
+Nhập lý do(Nhận thiếu/thừa)
+Nhập lại mật khẩu
+Nhập lại mật khẩu không đúng
+Nhập lại mật khẩu mới
+Nhập mua
+Nhập mua hàng
+Nhập mua.
+Nhập mã chứng từ
+Nhập mã giới thiệu (nếu có)
+Nhập mã hoặc tên nhà cung cấp
+Nhập mã hỗ trợ
+Nhập mã hợp đồng (nếu có)
+Nhập mã nếu có
+Nhập mã phiếu
+Nhập mã số thuế
+Nhập mã voucher
+Nhập mã, tên hàng hóa
+Nhập mã, tên kho hàng
+Nhập mã, tên nhà cung cấp
+Nhập mô tả
+Nhập ngày
+Nhập số tiền
+Nhập số tiền cần thanh toán
+Nhập số điện thoại liên hệ
+Nhập tay từng dòng
+Nhập theo mẫu này
+Nhập theo mẫu đã khai báo
+Nhập thu hồi
+Nhập thu hồi hàng hóa khi điều chuyển có chênh lệch
+Nhập tin nhắn
+Nhập trả
+Nhập trả lại
+Nhập tên
+Nhập tên mã NVL
+Nhập tên mã món
+Nhập tên mẫu
+Nhập tên pháp nhân
+Nhập tên, mã hàng hóa
+Nhập từ
+Nhập từ khóa
+Nhập tỷ lệ quy đổi
+Nhập vào kho hàng nào?
+Nhập xuất khác
+Nhập xuất khác v2
+Nhập điều chuyển
+Nhập điều chuyển nội bộ các kho cùng hệ thống
+Nhập điều chỉnh
+Nhập địa chỉ công ty
+Nhắc nhở
+Nhắc tôi sau
+Nhắn hoặc nói:
+Nâng cấp lên V3
+Nâng cấp lên gói #tier
+Nâng cấp ngay
+Nếu cần gặp nhân viên hỗ trợ, hãy nhấn vào đây để yêu cầu!
+Nội bộ
+Nội dung CK
+Nợ cuối kỳ
+Nợ phải thu
+Nợ phải trả
+Nợ đầu kỳ
+Odstrániť
+PHIÊN BẢN V3
+PHỔ BIẾN NHẤT
+Phiên bản
+Phiên làm việc đã hết hạn, xin vui lòng đăng nhập lại
+Phiên đăng nhập của bạn đã hết hạn. Vui lòng đăng nhập lại để tiếp tục sử dụng dịch vụ.
+Phiếu
+Phiếu thanh toán
+Phiếu thu
+Phiếu thu ##code
+Phiếu xuất chế biến
+Phiếu yêu cầu mua đang chờ bạn duyệt
+Phân tích hình ảnh
+Phù hợp nhất
+Phạm vi áp dụng
+Phải thu, phải trả
+Phải thêm mới hàng hóa
+Phải trả NCC
+Phải tạo quy đổi
+Prepnúť na kalendár
+Prepnúť na zadávanie
+Presunúť doprava
+Presunúť doľava
+Presunúť na koniec
+Presunúť nadol
+Presunúť nahor
+Pređite na kalendar
+Pređite na unos
+Prijeđite na kalendar
+Prijeđite na unos
+Pro #days ngày
+Quay lại
+Quay về bản V2
+Quay về bản V2 cũ
+Quay về giao diện V2?
+Quy tắc làm tròn
+Quy đổi
+Quyền
+Quyền gốc
+Quét mã QR để thanh toán
+Quét mã QR để thanh toán trên mọi ứng dụng ngân hàng hoặc
+Quét văn bản
+Quên mật khẩu
+Quản lý bán hàng: bán khách & nội bộ
+Quản lý giá vốn
+Quản lý theo lô, date
+Quản lý tồn kho hàng bán thẳng
+Quản trị
+Quản trị tồn kho
+Restrânge
+SL duyệt
+SL dự kiến/1sp
+SL kế hoạch
+SL thực bán
+Sao chép từ
+Sdílet
+Selectată
+Selectează tot
+SlideTransition đã hoàn thành!
+So với doanh thu
+So với tổng xuất
+Soát lại thông tin rồi bấm Tạo phiếu
+Sản phẩm
+Sản xuất
+Sản xuất v2
+Sắp hết
+Sắp hết hạn
+Sắp xếp theo
+SỐ TIỀN CẦN THANH TOÁN
+Số chứng từ
+Số kho có nợ
+Số lô
+Số mặt hàng thiếu giá
+Số ngày đặt
+Số phiếu
+Số tiền
+Số tiền thanh toán
+Số tài khoản
+Số điểm
+Số điện thoại
+Số điện thoại không hợp lệ
+Số điện thoại liên hệ
+Số điện thoại liên hệ không hợp lệ
+Sử dụng
+Sử dụng ngay
+Sử dụng tới ngày #date
+Sửa bảng giá
+Sửa chức vụ
+Sửa chứng từ thành công
+Sửa công thức chế biến
+Sửa giảm giá
+Sửa hàng hóa
+Sửa kho hàng
+Sửa khách hàng
+Sửa lý do
+Sửa mẫu
+Sửa nhà cung cấp
+Sửa nhóm hàng hóa
+Sửa nhóm nhà cung cấp
+Sửa thông tin xuất
+Sửa thông tin đặt
+Sửa tiền VAT
+Sửa tài khoản
+Sửa tình trạng hàng hóa
+Sửa tổng tiền
+Sửa và sắp xếp
+Sửa định mức tồn kho
+TB 4 #week_day gần nhất bán
+TOÀN BỘ GÓI #service_name, CỘNG THÊM
+Tab $tabIndex trong tổng số $tabCount
+Tham chiếu
+Thanh toán công nợ
+Thanh toán không thành công, vui lòng thử lại.
+Thanh toán lỗi
+Thanh toán một phần
+Thanh toán nợ
+Thanh toán thất bại
+Thay thế
+Thay thế bởi
+Thay thế cho
+Thay đổi
+Thay đổi thông tin chứng từ
+Thay đổi thời gian chứng từ
+Theo dõi công nợ bán hàng cho khách hàng từ Inventory
+Theo dõi công nợ mua hàng nội bộ
+Theo dõi công nợ mua hàng từ nhà cung cấp
+Theo dõi tồn kho
+Theo hàng đặt
+Theo kho, theo kỳ
+Theo kỳ
+Theo xuất bán POS
+Theo xuất bán hàng
+Thiết lập chu kỳ
+Thiết lập lại
+Thiếu
+Thiếu mã giao dịch để tạo thanh toán
+Thiếu mã phiếu để thực hiện thanh toán lại
+Thiếu thông tin phiếu để thực hiện hủy
+Thoát ứng dụng
+Thu công nợ
+Thu gọn
+Thu hồi
+Thu hồi bán nội bộ
+Thu hồi hàng hoá do chênh lệch Xuất điều chuyển nội bộ số #export_id
+Thu hồi hàng hoá do chênh lệch xuất điều chuyển nội bộ số #export_id và nhập điều chuyển nội bộ số #import_id
+Thu hồi trả nội bộ
+Thu hồi điều chuyển nội bộ
+Thành phẩm
+Thành tiền mặt hàng
+Thêm #count cửa hàng
+Thêm cửa hàng
+Thêm mới
+Thêm mới #receipt_name
+Thêm nguyên vật liệu
+Thêm nguyên vật liệu công thức
+Thêm từ mẫu đã định nghĩa
+Thêm ảnh
+Thêm ảnh rồi bấm Xong
+Thông tin chu kỳ
+Thông tin chuyển khoản
+Thông tin công nợ hiện tại theo nhà cung cấp
+Thông tin kiểm kê
+Thông tin kế hoạch
+Thông tin mẫu
+Thông tin nhà cung cấp
+Thông tin nhận hàng
+Thông tin nhập
+Thông tin phiếu kiểm kê
+Thông tin tham khảo
+Thông tin tài khoản
+Thông tin xuất
+Thông tin yêu cầu
+Thông tin điều chuyển
+Thông tin đặt hàng
+Thả tay để hủy
+Thời gian
+Thời gian chế biến
+Thời gian cung ứng
+Thời gian hết hạn: #formattedExpiration
+Thời gian kiểm kê
+Thời gian kế hoạch
+Thời gian muốn nhận
+Thời gian muốn nhận giảm dần
+Thời gian muốn nhận tăng dần
+Thời gian nhận
+Thời gian nhập
+Thời gian nhập kho
+Thời gian thanh toán
+Thời gian thanh toán đã hết. Vui lòng thực hiện lại quá trình gia hạnẃ
+Thời gian tạo
+Thời gian xuất
+Thời gian xuất kho
+Thời gian áp dụng
+Thời gian đặt
+Thời hạn
+Thời hạn mới cộng dồn vào ngày hết hạn hiện tại - gia hạn sớm không mất ngày nào.
+Thứ Ba
+Thứ Bảy
+Thứ Hai
+Thứ Năm
+Thứ Sáu
+Thừa
+Thử lại
+Thử lại sau
+Thực tế
+Tiến độ đặt
+Tiếng Việt
+Tiếp tục
+Tiếp tục lập phiếu khác
+Tiếp tục phiếu nháp
+Tiếp tục thanh toán
+Tiết kiệm
+Tiền VAT
+Tiền cọc còn lại
+Tiền giảm giá
+Tiền hao hụt
+Tiền mua hàng
+Tiền nhận lần này
+Tiền nhập hàng
+Tiền nợ cũ
+Tiền sau VAT
+Tiền thanh toán
+Tiền trả hàng
+Tiền vốn
+Tiền đang nằm trong kho
+Top nguyên vật liệu có hao hụt cao
+Tra cứu
+Trang chủ
+Trên chính dữ liệu kho của bạn
+Trạng thái
+Trạng thái hoạt động
+Trạng thái hàng hoá
+Trạng thái hàng hóa
+Trạng thái thanh toán
+Trạng thái: nháp
+Trả công nợ
+Trả hàng
+Trả lại
+Trả lại phiếu thành công
+Trả lời
+Trả nội bộ
+Trợ lí iOne có thể mắc lỗi, hãy kiểm tra các thông tin quan trọng.
+Trợ lý
+Trợ lý iOne
+Trợ lý iOne đặt hàng thay bạn
+Trợ lý điền từ ảnh
+Trợ lý đã đọc & phân tích xong
+Trợ lý đọc & phân tích ảnh
+Tuần
+Tuần này
+Tài khoản
+Tài khoản thanh toán
+Tài liệu
+Tác vụ
+Tác vụ DMTF (bàn phím số)
+Tác vụ khác
+Tên cột
+Tên loại tài khoản
+Tên mẫu đặt hàng
+Tên nhà cung cấp
+Tên nhóm nhà cung cấp
+Tên quyền
+Tên tài khoản
+Tìm cài đặt, danh mục, tài liệu...
+Tìm cửa hàng để thêm
+Tìm hiểu thêm
+Tìm kho theo tên hoặc địa chỉ
+Tìm kiếm
+Tìm kiếm trên web
+Tìm lại trong danh mục
+Tìm theo mã hoặc tên báo cáo...
+Tìm theo tên hoặc mã cửa hàng
+Tìm trong các dòng đã đếm
+Tìm tính năng
+Tìm tính năng, báo cáo, danh mục
+Tình trạng
+Tình trạng hàng hóa
+Tính năng
+Tính năng AI
+Tính năng AI nâng cao
+Tính năng gọi thoại không áp dụng cho thiết bị ở Store Trung Quốc
+Tôi muốn gặp nhân viên hỗ trợ!
+Tùy chỉnh
+Tùy chọn
+Tạo bảng giá
+Tạo bởi
+Tạo chứng từ thành công
+Tạo hàng hóa
+Tạo hàng hóa & ghi số
+Tạo hàng hóa mới
+Tạo lô mới
+Tạo lúc
+Tạo lại
+Tạo mã hỗ trợ
+Tạo mẫu
+Tạo mẫu thành công
+Tạo mới
+Tạo mới chức vụ
+Tạo mới công thức chế biến
+Tạo mới hàng hóa
+Tạo mới kho hàng
+Tạo mới khách hàng
+Tạo mới lý do
+Tạo mới nhà cung cấp
+Tạo mới nhóm hàng hóa
+Tạo mới nhóm nhà cung cấp
+Tạo mới thành công
+Tạo mới tài khoản
+Tạo mới định mức tồn kho
+Tạo phiếu
+Tạo phiếu nhập mua
+Tạo phiếu nhập thành công
+Tạo quy đổi
+Tải lại
+Tải thêm không thành công, nhấn để tải lại
+Tải ảnh QR
+Tải ảnh lên
+Tất cả
+Tất cả hàng hóa
+Tắt tiếng cuộc gọi
+Tắt tiếng hoặc giữ cuộc gọi
+Tặng #months tháng sử dụng
+Tặng tới #max tháng bản quyền
+Tỉ lệ thu hồi
+Tối thiểu 8 kí tự
+Tối đa #months tháng sử dụng nếu mua ngay hôm nay
+Tốn thêm
+Tồn cuối kỳ
+Tồn hiện tại
+Tồn hệ thống
+Tồn phân bổ giữa kho tổng và các cửa hàng
+Tồn thực tế
+Tồn tối thiểu
+Tồn tối đa
+Tồn đầu kỳ
+Tổng
+Tổng #count hàng hóa
+Tổng #months tháng tặng cho #count cửa hàng
+Tổng #total tháng tặng
+Tổng CP thực tế
+Tổng GT xuất
+Tổng SL dự kiến
+Tổng SL thực tế
+Tổng bán
+Tổng chi phí
+Tổng chi phí NVL
+Tổng chi phí NVL sử dụng trong tháng dựa theo số liệu xuất bán POS, xuất hủy, xuất điều chỉnh do kiểm kê:
+Tổng công nợ
+Tổng cọc
+Tổng cộng
+Tổng giá trị xuất
+Tổng giá trị đầu ra
+Tổng giá trị đầu vào
+Tổng hao hụt
+Tổng nhập
+Tổng nợ phải thu
+Tổng nợ phải trả
+Tổng số dòng hàng
+Tổng số món, NVL
+Tổng thanh toán
+Tổng tiền
+Tổng tiền giảm giá
+Tổng tiền hàng
+Tổng tiền hàng tạm tính
+Tổng tiền mua hàng
+Tổng tiền thanh toán
+Tổng tiền thuế
+Tổng tồn
+Tổng tồn kho
+Tổng xuất
+Tổng điểm
+Tới dòng cần xác nhận
+Từ chối
+Từ dòng đã đọc:
+Từ ngày 1/11/2025 hệ thống sẽ ẩn danh mục Công nợ hiện tại. Vui lòng xem công nợ nhà cung cấp bên báo cáo E03 - Công nợ nhà cung cấp
+Từ ngày 1/9/2025 mục Chờ hiệu chỉnh sẽ bị thay thế bởi tính năng Sửa thông tin xuất. Bấm vào đây để tìm hiểu thêm
+Tự chọn hàng hóa
+Tỷ lệ
+Tỷ lệ (II/I)
+Tỷ lệ NVL / doanh thu 12 tháng
+Tỷ lệ chi phí
+Tỷ lệ chi phí NVL / doanh thu
+Tỷ lệ chi phí NVL = Chi phí NVL / DT bán hàng
+Tỷ lệ chi phí nguyên vật liệu
+Tỷ lệ hao hụt
+Tỷ lệ hao hụt = Giá trị hao hụt / #value
+Tỷ lệ hao hụt theo kỳ
+Tỷ lệ trả hàng
+Tỷ lệ tồn tại các kho
+Tỷ trọng
+Tỷ trọng sức mua
+Tỷ trọng sử dụng theo sản phẩm
+Tỷ trọng trả hàng
+Upozornění
+Việc sửa lại thông tin có thể gây sai sót số liệu. Bạn chỉ nên sửa khi gặp phải tình huống số tiền hệ thống tinh ra bị lẻ và cần điều chỉnh số cho tròn so với số thực tế
+Vui lòng bấm Xác nhận để thực hiện xóa #type #name
+Vui lòng chuyển đúng số tiền
+Vui lòng chọn gói bản quyền
+Vui lòng chọn gói dịch vụ
+Vui lòng chọn hàng hoá
+Vui lòng chọn loại hàng
+Vui lòng chọn nghiệp vụ
+Vui lòng hỗ trợ giúp tôi.
+Vui lòng kiểm tra mã số thuế để lấy tên pháp nhân
+Vui lòng nhập lý do và bấm Xác nhận để thực hiện hủy phiếu #doc_type_name #receipt_id
+Vui lòng nhập lý do và bấm Xác nhận để thực hiện trả lại phiếu #doc_type_name #receipt_id
+Vui lòng nhập lý do và bấm xác nhận để thực hiện sửa
+Vui lòng nhập mã số thuế
+Vui lòng nhập mã voucher
+Vui lòng nhập ngày hết hạn
+Vui lòng nhập số lô
+Vui lòng nhập số điện thoại liên hệ
+Vui lòng nhập tỷ lệ quy đổi
+Vui lòng nhập địa chỉ công ty
+Vui lòng nâng cấp lên gói #tier để xem tính năng này
+Vui lòng quét #code có trên #receipt hoặc trên ứng dụng #app_name
+Vui lòng thêm ít nhất 1 nguyên vật liệu
+Vui lòng thêm ít nhất một mặt hàng
+Vui lòng thêm ít nhất một nguyên vật liệu đích
+Vui lòng xác nhận khách hàng đồng ý chia sẻ dữ liệu cá nhân
+Vui lòng xác nhận nhà cung cấp đồng ý chia sẻ dữ liệu cá nhân
+Vui lòng xác nhận nhân viên đồng ý chia sẻ dữ liệu cá nhân
+Vystrihnúť
+Ví điện tử
+Vẫn gửi ảnh
+Vận hành
+Vận hành chuỗi & sản xuất
+Về tổng quan
+Vừa xong
+Xem chi tiết
+Xem chi tiết phiếu
+Xem kho của bạn đang giữ bao nhiêu tiền, nên đặt gì tiếp theo và món nào đang ăn mất lãi.
+Xem lại
+Xem lịch sử trò chuyện
+Xem theo nguyên vật liệu
+Xem thêm #count #kind
+Xem tất cả
+Xem đầy đủ tính năng
+Xem ảnh
+Xin vui lòng nhập lý do và bấm xác nhận để gửi yêu cầu hiệu chỉnh phiếu #receipt_id
+Xin vui lòng thử lại với từ khóa khác
+Xoay dọc
+Xuất
+Xuất bán
+Xuất bán POS
+Xuất bán cho khách, nhận lại hàng trả và theo dõi tiền phải thu.
+Xuất bán hàng
+Xuất bán hàng POS
+Xuất chế biến
+Xuất hủy
+Xuất hủy v2
+Xuất kho
+Xuất kho bán hàng trực tiếp cho khách
+Xuất kho chế biến bán thành phẩm
+Xuất kho hủy hàng hỏng, hết hạn sử dụng...
+Xuất kho theo mẫu
+Xuất kho trả hàng nhà cung cấp
+Xuất khác
+Xuất lúc
+Xuất nguyên liệu vào sản xuất và nhập lại thành phẩm, hao hụt tính theo định mức.
+Xuất nhập tồn, no ncc
+Xuất theo mẫu này
+Xuất theo mẫu đã khai báo
+Xuất trả
+Xuất trả lại
+Xuất điều chuyển
+Xuất điều chuyển nội bộ các kho cùng hệ thống
+Xuất điều chuyển từ
+Xuất điều chỉnh
+Xác nhận
+Xác nhận Y/C hiệu chỉnh
+Xác nhận bổ sung giá
+Xác nhận hủy mã
+Xác nhận hủy phiếu
+Xác nhận kích hoạt lại
+Xác nhận ngừng hoạt động
+Xác nhận nhập hàng
+Xác nhận sửa phiếu #reciept_id
+Xác nhận thoát
+Xác nhận thành công
+Xác nhận trả lại phiếu
+Xác nhận tạo mẫu
+Xác nhận xóa
+Xác nhận đăng xuất
+Xác nhận đặt hàng
+Xác thực
+Xóa tình trạng hàng hóa thành công
+Xếp hạng nhà cung cấp
+Xử lý
+Xử lý ngay
+Y/C Hiệu chỉnh
+Yêu cầu chờ bạn duyệt
+Yêu cầu mua hàng
+Yêu cầu mua hàng chờ duyệt
+Yêu cầu mua hàng tới nhà cung cấp
+[GrPurchaseScan] documentParserWithAgent lỗi:
+[GrPurchaseScan] searchSupplier theo id lỗi:
+[GrPurchaseScan] searchSupplier theo tên lỗi:
+[GrPurchaseScan] searchWarehouse theo id lỗi:
+[GrPurchaseScan] searchWarehouse theo tên lỗi:
+bạn có thể mua cho cửa hàng đó sau.
+bạn có thể xử lý tiếp sau khi tạo phiếu.
+bảng giá
+bắt buộc có lý do và minh chứng.
+bỏ qua
+cho dòng này.
+chờ bạn ghi sổ
+chờ duyệt
+chứng từ
+chứng từ khác
+có sẵn và thêm vào phiếu.
+công nợ
+công thức
+của
+của hàng hóa này.
+danh sách tự lên theo lời bạn.
+duminică
+după Hristos
+dụng
+endCall: không có UUID hợp lệ
+giờ
+hoặc
+hoặc chủ
+hết hạn #date
+hệ số
+hệ thống tự sinh mã.
+i de două ori pentru a extinde
+i de două ori pentru a restrânge
+i la sfâr
+i la stânga
+kho tổng
+không còn active
+khớp #count hàng hóa
+kiểm tra lại
+kết thúc dùng thử
+luôn phải chọn lý do.
+mình lên danh sách giúp bạn.
+mặt hàng
+mở toàn bộ Pro
+n xuô
+nguyên vật liệu đầu vào
+ngày còn lại
+ngày kể từ khi hết hạn
+nhà cung cấp
+nhấn đúp để mở rộng
+nhấn đúp để thu gọn
+nhắn tin hoặc nói
+nói lại số mới nếu cần.
+nằm ở đâu trong app?
+phiếu
+phiếu giao hàng
+phiếu tự lên theo lời bạn.
+phải thu
+phải trả
+phải trả, theo hạn và theo đối tác.
+phần trăm
+pondělí
+quy đổi
+sâmbătă
+thay vì chỉ biết số hàng đã hết.
+thành #qty #unit.
+thành tiền
+thả tay để kết thúc và tìm hàng hoá
+thẻ khác
+tiền
+tiền mua hàng
+tiền thanh toán
+tiền trả hàng
+trong kỳ
+trên ảnh gốc
+tồn
+tồn kho và doanh thu tự điều chỉnh.
+từ #date
+tự động xác nhận
+tỷ lệ
+và #count dòng khác
+và ghi số vào phiếu.
+và nội dung
+và thêm vào phiếu.
+xanh tự động điền sẵn thông tin chuyển khoản, các ngân hàng còn lại chỉ mở đúng app - bạn cần tự nhập lại.
+xem tất cả
+xuất
+xác nhận tổng tiền
+ÀàÐÈÄ
+Áp dụng
+Áp dụng cho tất cả các kho
+Áp dụng cho tất cả các loại chứng từ
+Áp dụng cho: #warehouse
+Áp dụng toàn bộ kho
+Áp dụng toàn bộ kênh
+ýpüð
+ĐVT: #unit
+Đang chỉnh sửa
+Đang chờ thanh toán
+Đang cập nhật
+Đang cập nhật...
+Đang dùng
+Đang dựng phiếu nhập nháp
+Đang gọi...
+Đang gửi
+Đang gửi yêu cầu...
+Đang hoạt động
+Đang hủy...
+Đang khởi tạo thông tin thanh toán
+Đang kiểm tra giao dịch
+Đang kiểm tra trạng thái cửa hàng...
+Đang kiểm tra...
+Đang kích hoạt lại
+Đang kết nối
+Đang nghe
+Đang phân tích ...
+Đang sao chép
+Đang sử dụng
+Đang theo dõi
+Đang theo dõi ở tất cả các kho đang quản lý. Bấm cấu hình nếu chỉ theo dõi 1 số kho nhất định
+Đang theo dõi ở tất cả các kho đang quản lý. Bấm sửa -> theo dõi tồn kho -> Cấu hình để thiết lập lại nếu chỉ theo dõi ở một số kho nhất định
+Đang trả lại...
+Đang trả lời
+Đang tìm hàng hóa
+Đang tạo phiếu
+Đang tải
+Đang tải lên...
+Đang tải ảnh lên...
+Đang tải...
+Đang vận chuyển
+Đang xem một phiên bản chỉnh sửa cũ - không thể sửa, xóa hoặc đổi trạng thái
+Đang xác nhận...
+Đang xác thực...
+Đang xóa
+Đang đăng nhập...
+Đang đổ chuông...
+Điều chuyển
+Điều chuyển hàng giữa các kho
+Điều chuyển nội bộ
+Điều chuyển v2
+Điều chỉnh
+Điều chỉnh giá trị
+Điều chỉnh nợ
+Điểm bình quân
+Điểm xếp hạng
+Điểm xếp hạng = Tổng điểm / Số lần mua
+Điểm xếp hạng là điểm bình quân những lần đã mua hàng từ nhà cung cấp
+Điện thoại
+ĐÃ THÊM VÀO DANH SÁCH
+Đánh giá
+Đánh giá chi phí giá thành trung bình theo tháng
+Đánh giá hao hụt nguyên vật liệu khi chế biến sản phẩm
+Đánh giá hiệu quả chế biến sản phẩm
+Đánh giá mức chi phí chế biến sản phẩm
+Đây là nhân viên hoặc AI đang hỗ trợ bạn!
+Đã bỏ dòng
+Đã chỉnh sửa lại
+Đã chọn
+Đã chọn #count cửa hàng
+Đã chọn lại hàng hóa
+Đã chọn: #count
+Đã chốt danh sách #count mặt hàng. Bạn mua từ nhà cung cấp nào?
+Đã có định mức
+Đã cập nhật lại tồn kho, bạn kiểm tra rồi chốt phiếu lại nhé.
+Đã duyệt
+Đã ghi #qty #unit vào
+Đã gửi
+Đã gửi NCC
+Đã hiểu
+Đã huỷ
+Đã hết hạn
+Đã hết hạn #days ngày
+Đã hết hạn #days ngày (#date)
+Đã hết hạn #days ngày(#date)
+Đã hết hạn ngày
+Đã hủy
+Đã khớp danh mục
+Đã kết nối
+Đã mở rộng
+Đã nhận
+Đã phân loại
+Đã sao chép
+Đã sửa
+Đã sửa tay
+Đã thanh toán
+Đã thu gọn
+Đã tạo hàng hoá
+Đã tạo hàng hóa
+Đã tạo mới hàng hóa
+Đã tạo phiếu kiểm kê
+Đã tạo phiếu nhập mua
+Đã tạo quy đổi
+Đã tạo quy đổi và thêm vào phiếu.
+Đã tải ảnh lên xong
+Đã xem
+Đã xuất kho
+Đã xác nhận
+Đã xác nhận đúng hàng hóa
+Đã xác thực
+Đã xác thực: #date
+Đã đặt #count hàng hóa
+Đã đếm
+Đóng
+Đóng $modalRouteContentName
+Đúng rồi, giữ nguyên
+Đăng nhập
+Đăng nhập bằng mã hỗ trợ
+Đăng nhập hệ thống iPOS IVT
+Đăng xuất
+Đảo vị trí
+Đầu vào
+Đặt #day
+Đặt hàng
+Đặt hàng nội bộ
+Đặt hàng nội bộ: cửa hàng
+Đặt hàng theo mẫu
+Đặt hàng tiếp
+Đặt hàng tới kho tổng/kho bếp
+Đặt hàng tới nhà cung cấp
+Đặt hàng tới nhà cung cấp ngoài
+Đặt hàng v2
+Đặt lại mật khẩu
+Đặt mua hàng
+Đặt mật khẩu mới
+Đặt theo mẫu
+Đặt theo mẫu này
+Đặt theo mẫu đã khai báo
+Đếm cùng ca sáng
+Đếm số tồn thực tế trong kho
+Đếm theo ca/kỳ, nhập trực tiếp trên điện thoại hoặc đọc bằng giọng nói.
+Đếm thực tế, so lệch với sổ sách và chốt lại tồn kho.
+Đến thời gian giao hàng
+Đề xuất tính năng
+Để sau
+Để tiết kiệm thời gian, bạn có thể chọn nhanh câu hỏi gợi ý tại đây!
+Để trống
+Để trống nếu áp dụng toàn bộ
+Địa chỉ
+Địa chỉ công ty
+Định dạng không hợp lệ.
+Định mức tồn kho
+Đọc dữ liệu lỗi
+Đối chiếu và ghi nhận thanh toán cho nhà cung cấp theo kỳ.
+Đồng bộ
+Đồng bộ FABi
+Đồng bộ hàng hóa thành công
+Đồng bộ trạng thái thành công
+Đồng ý
+Đổi
+Đổi mật khẩu
+Đổi mật khẩu thành công
+Đội triển khai sẽ liên hệ trong 24h để chốt lịch onsite.
+đã có trong hệ thống
+để hệ thống tự động xác nhận thanh toán.
+để thanh toán
+để trống sẽ tự sinh
+Ở lại
+Ở lại bản V3

@@ -1,0 +1,26 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="aiG" x1="3" y1="1" x2="29" y2="31" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#4F8DFF" />
+      <stop offset="0.42" stop-color="#6366F1" />
+      <stop offset="1" stop-color="#8B3DD6" />
+    </linearGradient>
+    <linearGradient id="aiGloss" x1="16" y1="1.6" x2="16" y2="17" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.30" />
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0" />
+    </linearGradient>
+    <linearGradient id="aiEdge" x1="16" y1="1.6" x2="16" y2="30.4" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.55" />
+      <stop offset="0.45" stop-color="#FFFFFF" stop-opacity="0" />
+    </linearGradient>
+  </defs>
+  <path
+      d="M1.6 16c0-6.06 0-9.09 1.6-11.16a7.2 7.2 0 011.64-1.64C6.91 1.6 9.94 1.6 16 1.6s9.09 0 11.16 1.6c.63.49 1.15 1.01 1.64 1.64 1.6 2.07 1.6 5.1 1.6 11.16s0 9.09-1.6 11.16a7.2 7.2 0 01-1.64 1.64c-2.07 1.6-5.1 1.6-11.16 1.6s-9.09 0-11.16-1.6a7.2 7.2 0 01-1.64-1.64C1.6 25.09 1.6 22.06 1.6 16z"
+      fill="url(#aiG)" />
+  <path
+      d="M1.6 16c0-6.06 0-9.09 1.6-11.16a7.2 7.2 0 011.64-1.64C6.91 1.6 9.94 1.6 16 1.6s9.09 0 11.16 1.6c.63.49 1.15 1.01 1.64 1.64 1.6 2.07 1.6 5.1 1.6 11.16s0 9.09-1.6 11.16a7.2 7.2 0 01-1.64 1.64c-2.07 1.6-5.1 1.6-11.16 1.6s-9.09 0-11.16-1.6a7.2 7.2 0 01-1.64-1.64C1.6 25.09 1.6 22.06 1.6 16z"
+      fill="url(#aiGloss)" />
+  <path
+      d="M1.6 16c0-6.06 0-9.09 1.6-11.16a7.2 7.2 0 011.64-1.64C6.91 1.6 9.94 1.6 16 1.6s9.09 0 11.16 1.6c.63.49 1.15 1.01 1.64 1.64 1.6 2.07 1.6 5.1 1.6 11.16s0 9.09-1.6 11.16a7.2 7.2 0 01-1.64 1.64c-2.07 1.6-5.1 1.6-11.16 1.6s-9.09 0-11.16-1.6a7.2 7.2 0 01-1.64-1.64C1.6 25.09 1.6 22.06 1.6 16z"
+      stroke="url(#aiEdge)" stroke-width="1" />
+</svg>
