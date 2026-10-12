@@ -4,10 +4,11 @@ import { createElement } from 'react'
 import { Link } from 'react-router-dom'
 import type { Col, Row, VoucherCfg } from '../types'
 import { CHI_NHANH } from '../../data/mock'
-import { chungTu, dongCua } from '../../ui/generic/gen'
+import { chungTu, dongCua, type Dong } from '../../ui/generic/gen'
 
-/** Một loại phiếu nguồn: cấu hình chứng từ, hạt giống (mã màn) và đường dẫn màn chứng từ sau /app/ */
-export interface NguonPhieu { loai: string; cfg: VoucherCfg; seed: string; di: string }
+/** Một loại phiếu nguồn: cấu hình chứng từ, hạt giống (mã màn) và đường dẫn màn chứng từ sau /app/.
+ *  ds: phiếu mẫu riêng có sẵn dòng hàng ở _dong, thay phiếu sinh theo hạt giống (điều chuyển, T155) */
+export interface NguonPhieu { loai: string; cfg: VoucherCfg; seed: string; di: string; ds?: () => Row[] }
 
 interface DongKho {
   d: number; ngay: string; so: string; loai: string; kho: string; doiTuong: string; ma: string; ten: string; dvt: string
@@ -16,9 +17,9 @@ interface DongKho {
 
 /** Dòng hàng các phiếu trong tháng; cn là tên chi nhánh chọn trên thanh trên. Kho lấy như form phiếu: kho ghi trên phiếu, không có thì kho đầu của chi nhánh */
 function dongKho(nguon: NguonPhieu[], thang: number, cn?: string): DongKho[] {
-  return nguon.flatMap(n => chungTu(n.cfg, n.seed)
-    .filter(r => r.thang === thang && (!cn || r.cn === cn))
-    .flatMap(r => dongCua(n.cfg, `${n.seed}-${r.id}`).map((x): DongKho => ({
+  return nguon.flatMap(n => (n.ds ? n.ds() : chungTu(n.cfg, n.seed))
+    .filter(r => r.thang === thang && (!cn || r.cn === cn) && r.ttSx !== 'huy')   // phiếu điều chuyển đã huỷ không vào báo cáo (T155)
+    .flatMap(r => (n.ds ? (r._dong as Dong[] | undefined) ?? [] : dongCua(n.cfg, `${n.seed}-${r.id}`)).map((x): DongKho => ({
       d: Number(String(r.ngay).slice(0, 2)), ngay: r.ngay, so: r.so, loai: n.loai,
       kho: String(r._kho || CHI_NHANH.find(c => c.ten === r.cn)?.kho[0] || ''), doiTuong: r.doiTuong,
       ma: x.ma, ten: x.ten, dvt: x.dvt, sl: x.sl, gia: x.gia, tien: x.tien, _di: `${n.di}/${r.id}`,

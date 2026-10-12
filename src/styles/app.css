@@ -7007,3 +7007,7 @@ button.chip.sx-kenh.info { border-color: var(--blue); }
 .sx-nvl-bang .sx-xoa { color: var(--red); }
 .sx-nvl-bang .sx-xoa:hover { background: var(--red-t); color: var(--red); }
 .sx-nvl-bang tfoot td { font-weight: 700; }
+
+/* ── Điều chuyển, chuyển kho (T155) ── */
+/* Đầu phiếu điều chuyển: các ô kho, chi nhánh, tham chiếu xếp một hàng, hẹp thì xuống dòng */
+.dcn-dau { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }

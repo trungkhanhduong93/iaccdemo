@@ -35,7 +35,8 @@ const TEN_QUEN: Record<string, string> = {
   '3.1.7': 'phiếu xuất bán hàng',
   '4.1.1': 'nhập mua hàng phiếu nhập mua',
   '4.1.4': 'xuất trả hàng mua',
-  '5.1.4': 'chuyển kho',
+  '5.1.4': 'điều chuyển chi nhánh',
+  '5-1-4-3': 'chuyển kho',   // màn ngoài Excel, tra theo slug; chuyển kho trong chi nhánh tách khỏi điều chuyển (T155)
 }
 
 interface Muc { m: ModuleDef; sc: ScreenDef; goc: ModuleDef; t: string; tf: string; q: string; f: string; p: string }
@@ -51,7 +52,7 @@ const TAT_CA: Muc[] = MODULES.flatMap(m =>
       const t = (laBaoCao(sc) && sc.code ? sc.code + ' - ' : '') + tenMan(sc)
       // gấp từng chữ để vị trí trong chuỗi gấp trùng vị trí trong tên, tô đậm được phần khớp
       const tf = Array.from(t, c => fold(c)[0] ?? c).join('')
-      const q = fold(TEN_QUEN[sc.code ?? ''] ?? '')
+      const q = fold(TEN_QUEN[sc.code ?? ''] ?? TEN_QUEN[sc.slug] ?? '')
       return { m, sc, goc, t, tf, q, f: tf + ' ' + q + ' ' + fold(m.ten + ' ' + goc.ten + ' ' + (sc.code ?? '')), p: duongDan(m, sc) }
     })
 )

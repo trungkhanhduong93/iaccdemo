@@ -6,13 +6,14 @@ export const quyTrinh: QuyTrinhDef = {
   buoc: [
     { ten: 'Nhập kho', chinh: { ten: 'Nhập khác', icon: 'filein', di: 'kho/5-1-1/moi' },
       tren: [{ ten: 'Phiếu mua hàng', icon: 'truck', di: 'mua-hang/4-1-1/moi' }],
-      duoi: [{ ten: 'Điều chuyển kho', icon: 'swap', di: 'kho/5-1-4/moi' }] },
+      // Điều chuyển tách ba phiếu (T155): nhập từ chi nhánh khác, chuyển giữa các kho cùng chi nhánh; xuất sang chi nhánh khác ở bước Xuất kho
+      duoi: [{ ten: 'Nhập điều chuyển', icon: 'filein', di: 'kho/5-1-4-2/moi' }, { ten: 'Chuyển kho', icon: 'swap', di: 'kho/5-1-4-3/moi' }] },
     // Sản xuất theo IVT (T152): sơ chế tách, chế biến gộp; phiếu nhập tham chiếu phiếu xuất. Hai màn công thức ở hàng Danh mục liên quan
     { ten: 'Sơ chế, chế biến', chinh: { ten: 'Xuất chế biến', icon: 'flask', di: 'kho/5-1-3/moi' },
       tren: [{ ten: 'Xuất sơ chế', icon: 'chef', di: 'kho/5-1-6/moi' }, { ten: 'Nhập sơ chế', icon: 'chef', di: 'kho/5-1-6-2/moi' }],
       duoi: [{ ten: 'Nhập chế biến', icon: 'filein', di: 'kho/5-1-3-2/moi' }] },
     { ten: 'Xuất kho', chinh: { ten: 'Xuất bán POS', icon: 'pos', di: 'kho/5-1-2/moi' },
-      tren: [{ ten: 'Xuất bán hàng', icon: 'cart', di: 'kho/5-1-2-2/moi' }],
+      tren: [{ ten: 'Xuất bán hàng', icon: 'cart', di: 'kho/5-1-2-2/moi' }, { ten: 'Xuất điều chuyển', icon: 'truck', di: 'kho/5-1-4/moi' }],
       duoi: [{ ten: 'Xuất huỷ', icon: 'trash', di: 'kho/5-1-2-3/moi' }, { ten: 'Xuất khác', icon: 'more', di: 'kho/5-1-2-4/moi' }] },
     { ten: 'Kiểm kê', chinh: { ten: 'Kiểm kê kho', icon: 'clipboard', di: 'kho/5-1-10/moi' },
       duoi: [{ ten: 'Định mức tồn kho', icon: 'chart', di: 'kho/5-1-13' }] },

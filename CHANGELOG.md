@@ -2,6 +2,10 @@
 
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
+## 12/10/2026
+
+- T155: Kho tách Xuất điều chuyển, Nhập điều chuyển giữa chi nhánh (phiếu nhập chọn phiếu xuất tham chiếu, hạch toán qua 1368, 3368) và Chuyển kho trong chi nhánh, không hạch toán.
+
 ## 11/10/2026
 
 - T157: Bán hàng có thêm báo cáo Bán hàng theo ngày, Tổng hợp bán hàng, Chi tiết bán hàng. Kho có thêm Tổng hợp, Chi tiết nhập, xuất, hàng trả. Thẻ kho, Xuất nhập tồn hiện ở mọi thông tư; bấm mã hàng ở Xuất nhập tồn mở Thẻ kho. Báo cáo chi tiết dài xem theo trang 100 dòng.

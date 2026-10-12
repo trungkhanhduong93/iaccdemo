@@ -1,6 +1,7 @@
 // Danh sách phiếu xuất, nhập sơ chế và xuất, nhập chế biến theo iPOS Inventory (T152).
 // Chip trạng thái Chờ nhập, Đã nhập, Đã huỷ; lọc Thời gian, mã phiếu, kho; cột như IVT. Form phiếu dùng form chứng từ chung
-import { useState } from 'react'
+// Danh sách dùng chung cho phiếu điều chuyển, chuyển kho (T155): cột, chip, dải giải thích khai qua KieuDs
+import { useState, type ReactNode } from 'react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import type { Col, Row, ScreenProps } from '../types'
 import { duongDan, tenMan } from '../../app/registry'
@@ -16,7 +17,7 @@ import { dangLoc, khopLoc, type GiaTriLoc, type KieuLoc } from '../../ui/LocCot'
 import { BoLoc, ChipTrangThai, NutTuyChinhCot, useCauHinhLoc, useCotDs, useLocNhap, type Chip, type OLocDef } from '../../ui/LocNangCao'
 import { ChungTuForm } from '../../ui/generic/ChungTuForm'
 import { useDsPhieuSx } from './BangSanXuat'
-import { SX, type LoaiSx } from './san-xuat'
+import { SX } from './san-xuat'
 
 /** Dải giải thích đầu màn sản xuất, đóng được, nhớ trên máy người dùng */
 export function DaiGiaiThich({ soChe }: { soChe: boolean }) {
@@ -55,7 +56,33 @@ export function PhieuSanXuat({ sc, mod }: ScreenProps) {
     const row = id === 'moi' ? undefined : rows.find(r => r.id === id)
     return <ChungTuForm key={loc.key + loc.search} sc={sc} mod={mod} cfg={cfg} row={row} rows={rows} />
   }
-  return <DsPhieuSx sc={sc} mod={mod} loai={loai} rows={rows} />
+  const t = SX[loai]
+  const nhanKho = t.nhap ? 'Kho nhập' : 'Kho xuất'
+  const kieu: KieuDs = {
+    ten: t.ten, nhap: t.nhap, manDoi: SX[t.doi!].man, chips: t.nhap ? ['da', 'huy'] : ['cho', 'da', 'huy'], nhanKho, coTien: true,
+    dai: <DaiGiaiThich soChe={t.soChe} />,
+    cot: [
+      { k: 'kho', t: nhanKho, w: 170 },
+      { k: 'ngay', t: t.nhap ? 'Thời gian nhập' : 'Thời gian xuất', w: 140 },
+      { k: 'ghiChu', t: 'Ghi chú' },
+      { k: 'ngayTao', t: 'Ngày tạo', w: 140 },
+      { k: 'nguoiTao', t: 'Người tạo', w: 140 },
+      { k: 'ngayCapNhat', t: 'Ngày cập nhật', w: 140 },
+      { k: 'nguoiCapNhat', t: 'Người cập nhật', w: 140 },
+    ],
+  }
+  return <DsPhieuTc sc={sc} mod={mod} kieu={kieu} rows={rows} />
+}
+
+/** Cấu hình danh sách phiếu có tham chiếu xuất, nhập (T155) */
+export interface KieuDs {
+  ten: string; nhap: boolean
+  manDoi?: string            // màn của phiếu đối ứng; có thì hiện cột Tham chiếu
+  chips?: string[]           // trạng thái trên chip; không khai thì không có chip
+  nhanKho: string            // nhãn ô lọc kho (lọc theo kho ghi trên phiếu)
+  cot: Col[]                 // cột giữa Tham chiếu và Tổng tiền
+  coTien: boolean            // cột Tổng tiền
+  dai?: ReactNode            // dải giải thích đầu màn
 }
 
 interface GtLoc { thoiGian: KhoangNgay; tim: string; kho: string }
@@ -63,33 +90,33 @@ const locMacDinh = (): GtLoc => ({ thoiGian: thangNay(), tim: '', kho: '' })
 const COT_CO_DINH = new Set(['stt', 'so'])
 const MAU_TT: Record<string, [string, string]> = { cho: ['Chờ nhập', 'var(--amber)'], da: ['Đã nhập', 'var(--green)'], huy: ['Đã huỷ', 'var(--red)'] }
 
-function DsPhieuSx({ sc, mod, loai, rows: rowsGoc }: ScreenProps & { loai: LoaiSx; rows: Row[] }) {
+const COT_CHON = new Set(['kho', 'khoNhan', 'khoXuat', 'cnNhan', 'cnXuat'])
+
+export function DsPhieuTc({ sc, mod, kieu: t, rows: rowsGoc }: ScreenProps & { kieu: KieuDs; rows: Row[] }) {
   const { s, toast } = useSession()
   const nav = useNavigate()
-  const t = SX[loai]
-  const doi = SX[t.doi!]
   const path = duongDan(mod, sc)
   const cnChon = chiNhanhHienTai(s)
-  const [chip, setChip] = useState(t.nhap ? 'da' : 'cho')
+  const [chip, setChip] = useState(t.chips ? (t.nhap ? 'da' : 'cho') : '')
   const [locCot, setLocCot] = useState<Record<string, GiaTriLoc>>({})
   const [trang, setTrang] = useState(1)
   const [coTrang, setCoTrang] = useState(50)
   const [activeId, setActiveId] = useState('')
   const loc0 = useLocNhap(locMacDinh)
   const { nhap, dat, ap } = loc0
-  const nhanKho = t.nhap ? 'Kho nhập' : 'Kho xuất'
+  const nhanKho = t.nhanKho
 
   // Cột hiện: kho, ghi chú, tham chiếu (phiếu nhập: phiếu xuất gốc; phiếu xuất: phiếu nhập đã lập), người, ngày cập nhật
   const rows: Row[] = rowsGoc.map(r => {
     const pn = r._phieuNhap as { id: string; so: string } | undefined
     return {
-      ...r, kho: String(r._kho ?? ''), ghiChu: String(r._ghiChu ?? r.dienGiai ?? ''),
+      ...r, kho: String(r._kho ?? ''), khoNhan: String(r._khoNhan ?? ''), khoXuat: String(r._khoXuat ?? ''), cnNhan: String(r._cnNhan ?? ''), cnXuat: String(r._cnXuat ?? ''), ghiChu: String(r._ghiChu ?? r.dienGiai ?? ''),
       thamChieu: t.nhap ? String(r._thamChieu ?? '') : pn?.so ?? '', _tcId: t.nhap ? String(r._thamChieuId ?? '') : pn?.id ?? '',
       ngayTao: String(r._ngayTao ?? ''), nguoiTao: String(r._nguoiTao ?? ''), ngayCapNhat: String(r._ngayCapNhat ?? ''), nguoiCapNhat: String(r._nguoiCapNhat ?? ''),
     }
   })
   const dsKho = [...new Set(rows.map(r => r.kho).filter(Boolean))].sort()
-  const kieuCot = (k: string): KieuLoc => (k === 'ngay' ? 'ngay' : k === 'kho' ? 'chon' : k === 'tong' ? 'so' : 'chu')
+  const kieuCot = (k: string): KieuLoc => (k === 'ngay' ? 'ngay' : COT_CHON.has(k) ? 'chon' : k === 'tong' ? 'so' : 'chu')
 
   const apLoc = () => { loc0.loc(); setTrang(1) }
   const oLoc: OLocDef[] = [
@@ -118,7 +145,7 @@ function DsPhieuSx({ sc, mod, loai, rows: rowsGoc }: ScreenProps & { loai: LoaiS
     }
     return true
   })
-  const chips: Chip[] = (t.nhap ? ['da', 'huy'] : ['cho', 'da', 'huy']).map(k => ({ k, ten: MAU_TT[k][0], mau: MAU_TT[k][1], so: truocChip.filter(r => r.ttSx === k).length }))
+  const chips: Chip[] = (t.chips ?? []).map(k => ({ k, ten: MAU_TT[k][0], mau: MAU_TT[k][1], so: truocChip.filter(r => r.ttSx === k).length }))
   const list = chip ? truocChip.filter(r => r.ttSx === chip) : truocChip
   const soTrang = Math.max(1, Math.ceil(list.length / coTrang))
   const trangHt = Math.min(trang, soTrang)
@@ -132,28 +159,22 @@ function DsPhieuSx({ sc, mod, loai, rows: rowsGoc }: ScreenProps & { loai: LoaiS
     { k: 'so', t: 'Mã phiếu', w: 140, dinh: 'trai', r: r => (
       <button type="button" className="ds-link-so" onClick={e => { e.stopPropagation(); moPhieu(r) }}>{r.so}</button>
     ) },
-    { k: 'thamChieu', t: 'Tham chiếu', w: 140, r: r => r._tcId
-      ? <Link className="ds-link-so" to={`/app/${doi.man}/${r._tcId}`} onClick={e => e.stopPropagation()}>{r.thamChieu}</Link> : '' },
-    { k: 'kho', t: nhanKho, w: 170 },
-    { k: 'ngay', t: t.nhap ? 'Thời gian nhập' : 'Thời gian xuất', w: 140 },
-    { k: 'ghiChu', t: 'Ghi chú' },
-    { k: 'ngayTao', t: 'Ngày tạo', w: 140 },
-    { k: 'nguoiTao', t: 'Người tạo', w: 140 },
-    { k: 'ngayCapNhat', t: 'Ngày cập nhật', w: 140 },
-    { k: 'nguoiCapNhat', t: 'Người cập nhật', w: 140 },
-    { k: 'tong', t: 'Tổng tiền', num: true, w: 130 },
+    ...(t.manDoi ? [{ k: 'thamChieu', t: 'Tham chiếu', w: 140, r: (r: Row) => r._tcId
+      ? <Link className="ds-link-so" to={`/app/${t.manDoi}/${r._tcId}`} onClick={e => e.stopPropagation()}>{r.thamChieu}</Link> : '' }] : []),
+    ...t.cot,
+    ...(t.coTien ? [{ k: 'tong', t: 'Tổng tiền', num: true, w: 130 }] : []),
   ]
   const cot = useCotDs(path, cols, COT_CO_DINH)
-  const luaChon = { kho: dsKho }
+  const luaChon = Object.fromEntries([...COT_CHON].map(k => [k, [...new Set(rows.map(r => String(r[k])).filter(Boolean))].sort()]))
 
   return (
     <div className="page page-voucher page-dm">
       <h1 className="sr-only">{tenMan(sc)}</h1>
-      <DaiGiaiThich soChe={t.soChe} />
+      {t.dai}
       <div className="dm-khung">
         <section className="card dm-bang">
           <div className="ds-thanh">
-            <ChipTrangThai ds={chips} chon={chip} onChon={k => { setChip(c => (c === k ? '' : k)); setTrang(1) }} />
+            {t.chips && <ChipTrangThai ds={chips} chon={chip} onChon={k => { setChip(c => (c === k ? '' : k)); setTrang(1) }} />}
             <div className="ds-thanh-phai">
               <BoLoc ds={oLoc} cauHinh={cauHinhLoc} datCauHinh={datCauHinhLoc} dangLoc={loc0.dangLoc} khacNhap={loc0.khacNhap}
                 onLoc={apLoc} onXoaHet={loc0.xoaNhap} />
@@ -168,8 +189,8 @@ function DsPhieuSx({ sc, mod, loai, rows: rowsGoc }: ScreenProps & { loai: LoaiS
               loc={{ gt: locCot, dat: (k, g) => { setLocCot(x => ({ ...x, [k]: g })); setTrang(1) }, bo: new Set(['stt']), kieu: c => kieuCot(c.k), luaChon }}
               onRow={r => setActiveId(String(r.id))} onDbl={moPhieu}
               rowCls={r => [r.id === activeId ? 'dang-chon' : '', r.ttSx === 'huy' ? 'sx-huy' : ''].filter(Boolean).join(' ')}
-              sum={{ stt: `Tổng: ${rowsTrang.length}`, tong: tongTien(rowsTrang) }} />
-            <PhanTrang tong={list.length} tongCong={{ tong: tongTien(list) }} trang={trangHt} coTrang={coTrang}
+              sum={{ stt: `Tổng: ${rowsTrang.length}`, ...(t.coTien ? { tong: tongTien(rowsTrang) } : {}) }} />
+            <PhanTrang tong={list.length} tongCong={t.coTien ? { tong: tongTien(list) } : undefined} trang={trangHt} coTrang={coTrang}
               onTrang={setTrang} onCoTrang={ct => { setCoTrang(ct); setTrang(1) }} />
           </> : (
             <div className="empty">

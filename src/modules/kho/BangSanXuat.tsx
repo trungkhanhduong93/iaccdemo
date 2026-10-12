@@ -42,7 +42,7 @@ export function OThamChieuSx({ loai, cn, value, onChon }: { loai: LoaiSx; cn: st
 }
 
 /** Ô số lượng: gõ số thô (có phần thập phân), rời ô hiện kiểu Việt Nam */
-function OSo({ val, onChange, tien }: { val: number; onChange: (v: number) => void; tien?: boolean }) {
+export function OSo({ val, onChange, tien }: { val: number; onChange: (v: number) => void; tien?: boolean }) {
   const [focus, setFocus] = useState(false)
   const [str, setStr] = useState(String(val))
   useEffect(() => { if (!focus) setStr(String(val)) }, [val, focus])

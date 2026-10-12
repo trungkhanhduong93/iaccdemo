@@ -573,3 +573,10 @@ Lý do: Trum giao T154, T156 ngày 11/10/2026, chốt các đề xuất của ag
 - Báo cáo chi tiết nhiều dòng xem theo trang 100 dòng (khai `phanTrang` trong `CAU_HINH_BC`); in, xuất Excel, HTML vẫn đủ mọi dòng.
 
 Lý do: Trum giao T157 ngày 11/10/2026, chọn phương án hiện Thẻ kho, Xuất nhập tồn dạng báo cáo quản trị.
+
+## QD53. Điều chuyển giữa chi nhánh và chuyển kho (12/10/2026)
+
+- Xuất điều chuyển, Nhập điều chuyển dùng khi chuyển hàng giữa hai chi nhánh. Phiếu nhập phải chọn phiếu xuất đang chờ nhập, hai phiếu tham chiếu nhau. Xuất ghi Nợ 1368 / Có 152, nhập ghi Nợ 152 / Có 3368.
+- Chuyển kho dùng khi chuyển giữa các kho trong cùng chi nhánh, không hạch toán.
+
+Lý do: Trum giao T155 ngày 11/10/2026, chọn hạch toán qua 1368, 3368 theo đề xuất của agent.
