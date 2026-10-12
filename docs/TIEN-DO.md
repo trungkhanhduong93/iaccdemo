@@ -4,13 +4,14 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T159.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T160.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T160 | Mọi form chứng từ khi thêm mới, sửa có nút Tuỳ chỉnh giao diện như lúc xem chi tiết | PhuongXT | Đang làm | Sửa `ui/generic/ChungTuForm.tsx` |
 | T138 | Màn onboard khi bấm từ FABi sang IACC: khởi tạo đơn vị kế toán, điền sẵn từ FABi (chi nhánh, kho, cách đồng bộ, số dư đầu kỳ) | PhuongXT | Dở dang | Popup khởi tạo dữ liệu 4 bước trong phần mềm (`OnboardFabi.tsx`, `Shell.tsx`) đã push, PhuongXT xem lại một lượt. Xem `2026-10-11-phuongxt-man-khoi-tao-fabi.md` |
 | T139 | Phiếu nhập, xuất, điều chuyển kho tự lấy mục chi phí, công việc ngầm định theo kho đã chọn | | Chờ | Tách từ T136. Kho đã có ô `mucCp`, `congViec` ở `truong-dm.ts` 1.8. Sửa `ChungTuForm.tsx` |
 | T140 | Đồng bộ POS có tích tự hạch toán theo phương thức thanh toán thì sinh phiếu thu thật vào danh sách Thu tiền mặt, Thu ngân hàng (hiện chỉ báo số phiếu bằng toast) | | Chờ | Tách từ T137. Phiếu thu Nợ TK của phương thức / Có 131, lấy từ `DS_PTTT` ở `danh-muc/data.ts` |
