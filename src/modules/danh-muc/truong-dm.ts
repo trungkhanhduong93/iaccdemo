@@ -788,26 +788,6 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
     ],
   },
 
-  // Thương hiệu, đồng bộ từ FABi (T151)
-  'thuong-hieu': {
-    khoi: [
-      {
-        ten: 'Thông tin chung',
-        truong: [
-          { k: 'ma', nhan: 'Mã thương hiệu', kieu: 'chu', batBuoc: true },
-          { k: 'ten', nhan: 'Tên thương hiệu', kieu: 'chu', batBuoc: true },
-          { k: 'ghiChu', nhan: 'Ghi chú', kieu: 'nhieuDong', caHang: true },
-        ],
-      },
-      {
-        ten: 'Trạng thái',
-        truong: [
-          { k: '_tt', nhan: 'Đang sử dụng', kieu: 'tich', caHang: true },
-        ],
-      },
-    ],
-  },
-
   // Phương thức thanh toán (chưa đối chiếu bảng DM_)
   'phuong-thuc-thanh-toan': {
     khoi: [

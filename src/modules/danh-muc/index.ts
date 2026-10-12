@@ -5,7 +5,7 @@ import { tuExcel } from '../types'
 import { quyTrinh } from './quy-trinh'
 import { kieuGhiSo } from '../../app/plan'
 import { CCDC_HANG, CHI_NHANH, HANG, KHACH, KHO, LY_DO, NCC, NHAN_VIEN, NVL } from '../../data/mock'
-import { DON_VI_TINH, tkCot, taiKhoan, NHOM_HANG, NHOM_DOI_TUONG, NHOM_MUC_CP, NHOM_CONG_VIEC, NHOM_KHO, DS_PTTT, DS_THUONG_HIEU, QUY_DOI_DVT } from './data'
+import { DON_VI_TINH, tkCot, taiKhoan, NHOM_HANG, NHOM_DOI_TUONG, NHOM_MUC_CP, NHOM_CONG_VIEC, NHOM_KHO, DS_PTTT, QUY_DOI_DVT } from './data'
 import { timNganhNghe } from './nganh-nghe'
 import { HeThongTaiKhoan } from './HeThongTaiKhoan'
 import { tkTheoCheDo } from '../tong-hop/so-cai'
@@ -96,22 +96,6 @@ const nhomKho: ScreenDef = {
 /** Chi nhánh của đơn vị: một mã số thuế có nhiều chi nhánh. Không có trong Excel, gói nào cũng mở. Thanh trên chọn chi nhánh làm việc từ danh mục này.
  *  Thêm chi nhánh từ cửa hàng FABi chưa dùng kế toán (T142) */
 const chiNhanh: ScreenDef = { slug: 'chi-nhanh', ten: 'Danh mục chi nhánh', ngan: 'Chi nhánh', nhom: 'Danh mục', kind: 'custom', icon: 'chinhanh', comp: DanhMucChiNhanh }
-
-/** Thương hiệu của chuỗi lấy từ FABi, gói nào cũng mở (T151) */
-const thuongHieu: ScreenDef = {
-  slug: 'thuong-hieu', ten: 'Danh mục thương hiệu', ngan: 'Thương hiệu', nhom: 'Danh mục', kind: 'catalog', icon: 'tag',
-  catalog: {
-    them: 'Thêm thương hiệu',
-    khongThem: ['F', 'S'],   // gói Free, Standard lấy thương hiệu từ FABi, không thêm mới
-    nutPhu: { nhan: 'Đồng bộ từ FABi', icon: 'refresh', bao: `Đã đồng bộ ${DS_THUONG_HIEU.length} thương hiệu từ FABi` },
-    cols: [
-      { k: 'ma', t: 'Mã', cls: 'code' },
-      { k: 'ten', t: 'Tên thương hiệu' },
-      { k: 'ghiChu', t: 'Ghi chú', cls: 'dim' },
-    ],
-    rows: () => DS_THUONG_HIEU,
-  },
-}
 
 /** Ngành nghề tính thuế của hàng hoá theo mã: tự điền nhóm và 2 tỷ lệ (T151) */
 const nganhNghe = (ma: string) => {
@@ -280,7 +264,7 @@ const danhMuc: ModuleDef = {
     if (sc.code === '1.5') return [sc, nhomDoiTuong]
     if (sc.code === '1.6') return [sc, nhomMucChiPhi]
     if (sc.code === '1.7') return [sc, nhomCongViec]
-    if (sc.code === '1.8') return [sc, nhomKho, chiNhanh, thuongHieu]
+    if (sc.code === '1.8') return [sc, nhomKho, chiNhanh]   // bỏ danh mục Thương hiệu (T165)
     if (sc.code === '1.12') return [sc, phuongThucThanhToan]
     return [sc]
   }),

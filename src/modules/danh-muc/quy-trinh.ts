@@ -10,7 +10,6 @@ export const quyTrinh: QuyTrinhDef = {
       {
         ten: 'Nền tảng', icon: 'chinhanh', nut: [
           { ten: 'Chi nhánh', icon: 'chinhanh', di: 'danh-muc/chi-nhanh' },
-          { ten: 'Thương hiệu', icon: 'tag', di: 'danh-muc/thuong-hieu', tone: 'fabi' },
           { ten: 'Hệ thống tài khoản', icon: 'sotk', di: 'danh-muc/1-1' },
           { ten: 'Loại thuế', icon: 'loaithue', di: 'danh-muc/1-11' },
           { ten: 'Tiền tệ', icon: 'tiente', di: 'danh-muc/1-9' },
