@@ -349,10 +349,10 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
           <div className="ds-thanh">
             <div className="ds-chips-wrap" />
             <div className="ds-thanh-phai">
-              {/* Cách đồng bộ FABi đang dùng, bấm để đổi ở Cấu hình (T113) */}
-              <Link className="chip info" to="/app/he-thong/cau-hinh" title={`Đồng bộ FABi ${(s.dongBoFabi ?? 'kenh') === 'chiTiet' ? 'chi tiết theo hoá đơn' : 'tổng hợp theo kênh'}; đổi ở Hệ thống, Cấu hình kế toán`}>
+              {/* Cách đồng bộ FABi đang dùng, chỉ để xem, không bấm được (T113, T161) */}
+              <span className="chip info" title={`Đồng bộ FABi ${(s.dongBoFabi ?? 'kenh') === 'chiTiet' ? 'chi tiết theo hoá đơn' : 'tổng hợp theo kênh'}`}>
                 <Icon n="refresh" className="ic sm" />{(s.dongBoFabi ?? 'kenh') === 'chiTiet' ? 'Chi tiết' : 'Tổng hợp'}
-              </Link>
+              </span>
               <BoLoc ds={oLoc} cauHinh={cauHinhLoc} datCauHinh={datCauHinhLoc} dangLoc={loc0.dangLoc} khacNhap={loc0.khacNhap}
                 onLoc={apLoc} onXoaHet={loc0.xoaNhap} />
               <NutTuyChinhCot

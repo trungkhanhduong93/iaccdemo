@@ -7,7 +7,7 @@ import { Select } from '../Dropdown'
 import { ChonDanhMuc, useMucDaThem } from '../ChonDanhMuc'
 import { Icon } from '../Icon'
 import { money } from '../format'
-import type { Dong } from './gen'
+import { NHOM_HHDV, type Dong } from './gen'
 
 export const DS_DOI_TUONG = Array.from(new Set([
   ...KHACH.map(x => x.ten),
@@ -32,10 +32,11 @@ export interface BangSuaProps {
   an?: string[]                // mã cột người dùng ẩn qua Tuỳ chỉnh giao diện phiếu (T49)
   khongTong?: boolean          // bỏ dòng Tổng cộng khi tổng đã hiện ở đáy form (phiếu thu chi)
   coNhapKho?: boolean          // phiếu mua: Tiền trước thuế trước cột thuế; Tổng tiền, Giá trị nhập kho cuối dòng (T84)
+  coNhomHhdv?: boolean         // phiếu mua có hoá đơn, gói Plus, Pro: cột Nhóm HHDV mua vào sau Tiền thuế (T161)
 }
 
 /** Các cột ẩn hiện được của bảng chi tiết, theo loại phiếu (T49). Mỗi cột trên bảng là một mục, theo thứ tự trên bảng (T86) */
-export function cotTuyChon(cfg: VoucherCfg, o: { coKho?: boolean; coLo?: boolean; coCk?: boolean; coKm?: boolean; coLy?: boolean; coNhapKho?: boolean }): [string, string][] {
+export function cotTuyChon(cfg: VoucherCfg, o: { coKho?: boolean; coLo?: boolean; coCk?: boolean; coKm?: boolean; coLy?: boolean; coNhapKho?: boolean; coNhomHhdv?: boolean }): [string, string][] {
   const hang = cfg.dong === 'hang' || cfg.dong === 'nvl'
   const tien = cfg.dong === 'tien'
   const coThue = cfg.thue !== undefined || hang
@@ -46,7 +47,7 @@ export function cotTuyChon(cfg: VoucherCfg, o: { coKho?: boolean; coLo?: boolean
     ['km', 'Khoản mục', tien && o.coKm], ['cv', 'Công việc', tien && o.coKm],
     ['sl', 'Số lượng', hang], ['gia', 'Đơn giá', hang], ['tien', 'Thành tiền', true],
     ['ptCk', '% CK', o.coCk], ['ck', 'Tiền CK', o.coCk], ['truocThue', 'Tiền trước thuế', o.coNhapKho],
-    ['ts', 'Thuế suất', coThue], ['thue', 'Tiền thuế', coThue],
+    ['ts', 'Thuế suất', coThue], ['thue', 'Tiền thuế', coThue], ['nhomHhdv', 'Nhóm HHDV mua vào', o.coNhomHhdv],
     ['gtnk', 'Giá trị nhập kho', o.coNhapKho], ['tongTien', 'Tổng tiền', o.coNhapKho],
   ]
   return ds.filter(x => x[2]).map(([k, ten]) => [k, ten])
@@ -112,6 +113,7 @@ export function BangSua({
   an = [],
   khongTong = false,
   coNhapKho = false,
+  coNhomHhdv = false,
 }: BangSuaProps) {
   const hang = cfg.dong === 'hang' || cfg.dong === 'nvl'
   const tienDong = cfg.dong === 'tien'
@@ -132,6 +134,7 @@ export function BangSua({
   const coThue = cfg.thue !== undefined || hang
   const tsCot = coThue && hien('ts')
   const thueCot = coThue && hien('thue')
+  const nhomCot = coNhomHhdv && hien('nhomHhdv')
   const gtnkCot = coNhapKho && hien('gtnk')
   const tongTienCot = coNhapKho && hien('tongTien')
   const kmDong = tienDong && coKm && hien('km')
@@ -282,6 +285,7 @@ export function BangSua({
               {truocThueCot && <th className="num" style={{ width: 120 }}>Tiền trước thuế</th>}
               {tsCot && <th className="num" style={{ width: 75 }}>Thuế suất</th>}
               {thueCot && <th className="num" style={{ width: 110 }}>Tiền thuế</th>}
+              {nhomCot && <th style={{ width: 240 }}>Nhóm HHDV mua vào</th>}
               {gtnkCot && <th className="num" style={{ width: 130 }}>Giá trị nhập kho</th>}
               {tongTienCot && <th className="num" style={{ width: 120 }}>Tổng tiền</th>}
             </tr>
@@ -318,6 +322,7 @@ export function BangSua({
                 {truocThueCot && <td className="num">{money((d.tien || 0) - (d.ck || 0))}</td>}
                 {tsCot && <td className="num">{d.ts ? `${d.ts}%` : 'KCT'}</td>}
                 {thueCot && <td className="num">{money(d.thue)}</td>}
+                {nhomCot && <td>{d.nhomHhdv || NHOM_HHDV[0]}</td>}
                 {gtnkCot && <td className="num">{money((d.tien || 0) - (d.ck || 0))}</td>}
                 {tongTienCot && <td className="num">{money((d.tien || 0) - (d.ck || 0) + (d.thue || 0))}</td>}
               </tr>
@@ -334,6 +339,7 @@ export function BangSua({
               {truocThueCot && <td className="num">{money(tongTien - tongCk)}</td>}
               {tsCot && <td />}
               {thueCot && <td className="num">{money(tongThue)}</td>}
+              {nhomCot && <td />}
               {gtnkCot && <td className="num">{money(tongTien - tongCk)}</td>}
               {tongTienCot && <td className="num">{money(tongTien - tongCk + tongThue)}</td>}
             </tr>
@@ -379,6 +385,7 @@ export function BangSua({
               {truocThueCot && <th className="num" style={{ width: 120 }}>Tiền trước thuế</th>}
               {tsCot && <th className="num" style={{ width: 80 }}>Thuế suất</th>}
               {thueCot && <th className="num" style={{ width: 110 }}>Tiền thuế</th>}
+              {nhomCot && <th style={{ width: 240 }}>Nhóm HHDV mua vào</th>}
               {gtnkCot && <th className="num" style={{ width: 130 }}>Giá trị nhập kho</th>}
               {tongTienCot && <th className="num" style={{ width: 120 }}>Tổng tiền</th>}
               <th style={{ width: 44 }} />
@@ -526,6 +533,12 @@ export function BangSua({
                     <OSo val={d.thue} onChange={thue => capNhat(i, { thue })} />
                   </td>
                 )}
+                {nhomCot && (
+                  <td>
+                    <Select className="inp sm" value={d.nhomHhdv || NHOM_HHDV[0]} aria-label="Nhóm HHDV mua vào" onChange={e => capNhat(i, { nhomHhdv: e.target.value })}
+                      ds={NHOM_HHDV.map(v => ({ v, t: v }))} />
+                  </td>
+                )}
                 {gtnkCot && <td className="num">{money((d.tien || 0) - (d.ck || 0))}</td>}
                 {tongTienCot && <td className="num">{money((d.tien || 0) - (d.ck || 0) + (d.thue || 0))}</td>}
                 <td className="c">
@@ -552,6 +565,7 @@ export function BangSua({
               {truocThueCot && <td className="num">{money(tongTien - tongCk)}</td>}
               {tsCot && <td />}
               {thueCot && <td className="num">{money(tongThue)}</td>}
+              {nhomCot && <td />}
               {gtnkCot && <td className="num">{money(tongTien - tongCk)}</td>}
               {tongTienCot && <td className="num">{money(tongTien - tongCk + tongThue)}</td>}
               <td />

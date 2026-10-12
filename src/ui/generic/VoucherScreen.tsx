@@ -199,7 +199,8 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
     ...(cfg.loai && !cfg.dieuChinh ? [{ k: 'loai', ten: 'Loại phiếu', o: chonO('loai', 'Loại phiếu', cfg.loai.map(v => [v.k, v.ten])) }] : []),
     ...(muaBan ? [
       { k: 'ttTien', ten: nhom === 'mua' ? 'TT thanh toán' : 'TT thu tiền', o: chonO('ttTien', 'Trạng thái thanh toán', Object.entries(TT_TIEN[nhom as 'mua' | 'ban']).map(([v, x]) => [v, x[1]])) },
-      { k: 'ttHd', ten: nhom === 'mua' ? 'Nhận hoá đơn' : 'Xuất hoá đơn', o: chonO('ttHd', 'Trạng thái hoá đơn', Object.entries(TT_HD[nhom as 'mua' | 'ban']).map(([v, x]) => [v, x[1]])) },
+      // danh sách mua bỏ trạng thái nhận hoá đơn, bán giữ xuất hoá đơn (T161)
+      ...(nhom === 'ban' ? [{ k: 'ttHd', ten: 'Xuất hoá đơn', o: chonO('ttHd', 'Trạng thái hoá đơn', Object.entries(TT_HD.ban).map(([v, x]) => [v, x[1]])) }] : []),
       ...(dsKhoLoc.length ? [{ k: 'kho', ten: 'Kho', o: chonO('kho', 'Kho', dsKhoLoc.map(v => [v, v])) }] : []),
       ...(dsHangLoc.length ? [{ k: 'hang', ten: 'Hàng hoá', o: chonO('hang', 'Hàng hoá', dsHangLoc) }] : []),
     ] : []),
@@ -323,16 +324,17 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
           return <St k={cls}>{nhan}</St>
         },
       } as Col,
-      {
+      // Danh sách mua bỏ cột nhận hoá đơn, bán giữ xuất hoá đơn (T161)
+      ...(nhom === 'mua' ? [] : [{
         k: 'ttHd',
-        t: nhom === 'mua' ? 'Nhận hoá đơn' : 'Xuất hoá đơn',
+        t: 'Xuất hoá đơn',
         w: 130,
         r: (r: Row) => {
           const nv = ttNghiepVu(r)
           const [cls, nhan] = TT_HD[nhom as 'mua' | 'ban'][nv.ttHd] ?? ['dim', '—']
           return <St k={cls}>{nhan}</St>
         },
-      } as Col,
+      } as Col]),
       // Cột mặc định ẩn, bật ở Tuỳ chỉnh cột (T92)
       { k: 'kyHieuHd', t: 'Ký hiệu HĐ', cls: 'code', w: 110, an: true } as Col,
       { k: 'soHd', t: 'Số hoá đơn', cls: 'code', w: 110, an: true } as Col,
