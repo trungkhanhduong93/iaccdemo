@@ -496,7 +496,7 @@ export function CatalogPanel({
   }
 
   const veBang = (kh: KhoiDM, maxH = 280) => {
-    const b = kh.bang!(formVal, doiO)
+    const b = kh.bang!(formVal, doiO, s.goi)
     // Lưới có ô nhập dùng chung kiểu bảng chi tiết phiếu (bang-sua): ô cao 30px, chữ 12.5px
     return (
       <div className="bang-sua">
