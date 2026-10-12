@@ -580,3 +580,5 @@ Lý do: Trum giao T157 ngày 11/10/2026, chọn phương án hiện Thẻ kho, X
 - Chuyển kho dùng khi chuyển giữa các kho trong cùng chi nhánh, không hạch toán.
 
 Lý do: Trum giao T155 ngày 11/10/2026, chọn hạch toán qua 1368, 3368 theo đề xuất của agent.
+
+## QD54. Giao diện điện thoại theo IVT Pro (đang soạn)
