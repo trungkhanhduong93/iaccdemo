@@ -12,7 +12,7 @@
 
 - `npm run typecheck`, `npm run build`: không lỗi.
 - `PYTHONIOENCODING=utf-8 python tools/kiem_tra.py --nhanh`: Không có lỗi.
-- `kiem_van.py ChungTuForm.tsx`: sạch.
+- `kiem_van.py ChungTuForm.tsx`: 0 ĐỎ, 1 VÀNG có từ trước (câu "Bạn có chắc chắn" ở hộp hỏi đóng phiếu), không do T160.
 - Bấm thử Phố Mây gói Plus: thêm phiếu thu tiền mặt, chân form có Huỷ, Tuỳ chỉnh giao diện, Lưu, Lưu và thêm; bấm mở hộp Tuỳ chỉnh giao diện phiếu. Sửa phiếu xuất bán hàng cũng có nút. Thử xong trả phiên như cũ.
 
 ## Dở dang, việc tiếp theo
