@@ -264,7 +264,7 @@ const danhMuc: ModuleDef = {
     if (sc.code === '1.5') return [sc, nhomDoiTuong]
     if (sc.code === '1.6') return [sc, nhomMucChiPhi]
     if (sc.code === '1.7') return [sc, nhomCongViec]
-    if (sc.code === '1.8') return [sc, nhomKho, chiNhanh]   // bỏ danh mục Thương hiệu (T165)
+    if (sc.code === '1.8') return [sc, nhomKho, chiNhanh]   // bỏ danh mục Thương hiệu (T166)
     if (sc.code === '1.12') return [sc, phuongThucThanhToan]
     return [sc]
   }),

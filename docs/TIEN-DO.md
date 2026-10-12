@@ -4,7 +4,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T165.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T166.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
@@ -40,7 +40,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
-| T165 | Bỏ danh mục Thương hiệu cho mọi đơn vị; ô, cột Thương hiệu ở Hàng hoá, Kho, Bảng giá giữ nguyên | PhuongXT | 12/10/2026 | `2026-10-12-phuongxt-bo-thuong-hieu.md` |
+| T166 | Bỏ danh mục Thương hiệu cho mọi đơn vị; ô, cột Thương hiệu ở Hàng hoá, Kho, Bảng giá giữ nguyên | PhuongXT | 12/10/2026 | `2026-10-12-phuongxt-bo-thuong-hieu.md` |
 | T164 | Mua hàng của hộ kinh doanh: Giá trị nhập kho = tiền trước thuế + tiền thuế GTGT | PhuongXT | 12/10/2026 | `2026-10-12-phuongxt-nhap-kho-hkd.md` |
 | T163 | Xuất bán POS: đơn vị hộ kinh doanh bỏ cột Thuế suất, Tiền thuế, hiện cột Giảm thuế GTGT; doanh nghiệp luôn hiện Thuế suất, Tiền thuế | PhuongXT | 12/10/2026 | `2026-10-12-phuongxt-thue-xuat-ban-pos.md` |
 | T162 | Mua hàng gói Plus, Pro tích nhận kèm hoá đơn thì dòng chi tiết có cột Nhóm HHDV mua vào; xem chi tiết phiếu mua, bán bỏ ô tích kèm hoá đơn; danh sách mua bỏ cột Nhận hoá đơn; nút Tổng hợp, Chi tiết ở danh sách bán hàng chỉ xem | PhuongXT | 12/10/2026 | `2026-10-12-phuongxt-nhom-hhdv-mua-vao.md` |

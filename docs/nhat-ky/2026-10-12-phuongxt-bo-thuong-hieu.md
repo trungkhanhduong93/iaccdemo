@@ -1,4 +1,4 @@
-# Bỏ danh mục Thương hiệu (T165)
+# Bỏ danh mục Thương hiệu (T166)
 
 - Ngày: 12/10/2026
 - Người: PhuongXT, agent: Claude Code

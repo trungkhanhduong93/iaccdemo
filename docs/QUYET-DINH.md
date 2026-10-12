@@ -537,7 +537,7 @@ Lý do: Trum giao T146 đến T149 ngày 11/10/2026, chốt các mặc định a
 - Hàng hoá ở TT152, TT58 khai thuế theo nhóm ngành nghề con, danh sách 37 ngành nghề lấy từ iFaster. Chọn ngành nghề con thì tự điền nhóm ngành nghề và % GTGT, % TNCN (TT58 ghi là TNDN). Hai ô tỷ lệ chỉ đọc (sửa ở T154, QD51).
 - TT133, TT99 giữ thuế suất GTGT 0, 5, 8, 10%, không có khối ngành nghề.
 - Nhóm hàng hoá có ngành nghề con ngầm định ở khối Thông tin chung. Hàng chọn nhóm thì tự điền khi ô ngành nghề đang trống.
-- ~~Danh mục Thương hiệu đứng sau Chi nhánh, đồng bộ từ FABi.~~ Bỏ danh mục Thương hiệu cho mọi đơn vị (PhuongXT chốt 12/10/2026, T165). Ô Thương hiệu vẫn còn: hàng hoá thuộc một thương hiệu; kho phục vụ nhiều thương hiệu, để trống là mọi thương hiệu. Danh sách chọn lấy từ dữ liệu FABi.
+- ~~Danh mục Thương hiệu đứng sau Chi nhánh, đồng bộ từ FABi.~~ Bỏ danh mục Thương hiệu cho mọi đơn vị (PhuongXT chốt 12/10/2026, T166). Ô Thương hiệu vẫn còn: hàng hoá thuộc một thương hiệu; kho phục vụ nhiều thương hiệu, để trống là mọi thương hiệu. Danh sách chọn lấy từ dữ liệu FABi.
 - Form hàng hoá có Kho theo dõi, Nhà cung cấp (để trống là tất cả) và bảng quy đổi ĐVT có hộp thêm, sửa như iFaster.
 
 Lý do: Trum giao T151 ngày 11/10/2026, chốt các đề xuất của agent cùng ngày.
