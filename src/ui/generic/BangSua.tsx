@@ -32,6 +32,7 @@ export interface BangSuaProps {
   an?: string[]                // mã cột người dùng ẩn qua Tuỳ chỉnh giao diện phiếu (T49)
   khongTong?: boolean          // bỏ dòng Tổng cộng khi tổng đã hiện ở đáy form (phiếu thu chi)
   coNhapKho?: boolean          // phiếu mua: Tiền trước thuế trước cột thuế; Tổng tiền, Giá trị nhập kho cuối dòng (T84)
+  gtnkCoThue?: boolean         // hộ kinh doanh: Giá trị nhập kho gồm cả tiền thuế GTGT (T164)
   coNhomHhdv?: boolean         // phiếu mua có hoá đơn, gói Plus, Pro: cột Nhóm HHDV mua vào sau Tiền thuế (T162)
 }
 
@@ -114,6 +115,7 @@ export function BangSua({
   khongTong = false,
   coNhapKho = false,
   coNhomHhdv = false,
+  gtnkCoThue = false,
 }: BangSuaProps) {
   const hang = cfg.dong === 'hang' || cfg.dong === 'nvl'
   const tienDong = cfg.dong === 'tien'
@@ -323,7 +325,7 @@ export function BangSua({
                 {tsCot && <td className="num">{d.ts ? `${d.ts}%` : 'KCT'}</td>}
                 {thueCot && <td className="num">{money(d.thue)}</td>}
                 {nhomCot && <td>{d.nhomHhdv || NHOM_HHDV[0]}</td>}
-                {gtnkCot && <td className="num">{money((d.tien || 0) - (d.ck || 0))}</td>}
+                {gtnkCot && <td className="num">{money((d.tien || 0) - (d.ck || 0) + (gtnkCoThue ? d.thue || 0 : 0))}</td>}
                 {tongTienCot && <td className="num">{money((d.tien || 0) - (d.ck || 0) + (d.thue || 0))}</td>}
               </tr>
             ))}
@@ -340,7 +342,7 @@ export function BangSua({
               {tsCot && <td />}
               {thueCot && <td className="num">{money(tongThue)}</td>}
               {nhomCot && <td />}
-              {gtnkCot && <td className="num">{money(tongTien - tongCk)}</td>}
+              {gtnkCot && <td className="num">{money(tongTien - tongCk + (gtnkCoThue ? tongThue : 0))}</td>}
               {tongTienCot && <td className="num">{money(tongTien - tongCk + tongThue)}</td>}
             </tr>
           </tfoot>}
@@ -539,7 +541,7 @@ export function BangSua({
                       ds={NHOM_HHDV.map(v => ({ v, t: v }))} />
                   </td>
                 )}
-                {gtnkCot && <td className="num">{money((d.tien || 0) - (d.ck || 0))}</td>}
+                {gtnkCot && <td className="num">{money((d.tien || 0) - (d.ck || 0) + (gtnkCoThue ? d.thue || 0 : 0))}</td>}
                 {tongTienCot && <td className="num">{money((d.tien || 0) - (d.ck || 0) + (d.thue || 0))}</td>}
                 <td className="c">
                   <button
@@ -566,7 +568,7 @@ export function BangSua({
               {tsCot && <td />}
               {thueCot && <td className="num">{money(tongThue)}</td>}
               {nhomCot && <td />}
-              {gtnkCot && <td className="num">{money(tongTien - tongCk)}</td>}
+              {gtnkCot && <td className="num">{money(tongTien - tongCk + (gtnkCoThue ? tongThue : 0))}</td>}
               {tongTienCot && <td className="num">{money(tongTien - tongCk + tongThue)}</td>}
               <td />
             </tr>

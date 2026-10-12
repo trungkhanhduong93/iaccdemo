@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import type { Col, Row, ScreenProps, VoucherCfg } from '../../modules/types'
 import { duongDan, tenMan } from '../../app/registry'
-import { chiNhanhHienTai, useSession } from '../../app/session'
+import { chiNhanhHienTai, donViHienTai, loaiHinhDv, useSession } from '../../app/session'
 import { kieuGhiSo } from '../../app/plan'
 import { Icon } from '../Icon'
 import { PageHead } from '../Page'
@@ -649,6 +649,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
                       coCk={Boolean(bo.ck)}
                       coKm={ghi}
                       coNhapKho={nhom === 'mua' && Boolean(boO(nhom, cfgDong).tongNhap)}
+                      gtnkCoThue={loaiHinhDv(s, donViHienTai(s)) === 'hkd'}   // T164
                       lyDo={oLy ? { nhan: oLy.nhan, ds: oLy.ds ?? [], macDinh: '' } : undefined}
                       an={cfg.dieuChinh ? ['ts', 'thue', ...(s.goi === 'F' ? ['gia', 'tien'] : [])] : undefined}   // phiếu điều chỉnh không thuế; Free không giá trị (T131)
                     />

@@ -3,7 +3,7 @@ import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import type { Row, ScreenProps, VoucherCfg } from '../../modules/types'
 import { duongDan, tenMan } from '../../app/registry'
-import { chiNhanhHienTai, useSession, cheDoHienTai, ngayDauNam, truocDauNam } from '../../app/session'
+import { chiNhanhHienTai, useSession, cheDoHienTai, ngayDauNam, truocDauNam, donViHienTai, loaiHinhDv } from '../../app/session'
 import { kieuGhiSo, type Goi } from '../../app/plan'
 import { CHE_DO } from '../../app/che-do'
 import { tkTheoCheDo } from '../../modules/tong-hop/so-cai'
@@ -226,6 +226,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   const tongCk = dsDong.reduce((a, d) => a + (d.ck || 0), 0)
   const tongThue = dsDong.reduce((a, d) => a + (d.thue || 0), 0)
   const tongThanhToan = tongTien - tongCk + tongThue
+  // Hộ kinh doanh không khấu trừ thuế GTGT đầu vào: Giá trị nhập kho = tiền trước thuế + tiền thuế (T164)
+  const hkd = loaiHinhDv(s, donViHienTai(s)) === 'hkd'
   // Phiếu thu, chi không có thuế, chiết khấu: khối tổng chỉ cần một dòng
   const chiTien = cfg.dong === 'tien' && tongThue === 0 && !bo.ck
 
@@ -546,7 +548,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
             ['Tiền hàng', tongTien],
             ...(bo.ck ? [['Chiết khấu', tongCk ? -tongCk : 0] as [string, number]] : []),
             ['Tiền thuế GTGT', tongThue],
-            ...(bo.tongNhap ? [['Giá trị nhập kho', tongTien - tongCk] as [string, number]] : []),
+            ...(bo.tongNhap ? [['Giá trị nhập kho', tongTien - tongCk + (hkd ? tongThue : 0)] as [string, number]] : []),
           ]} />}
       giua={(
         moi ? <span className="fsf-tt moi">Thêm mới</span>
@@ -1158,6 +1160,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               coKho={Boolean(bo.kho) && !khoDau && !laDc}   // phiếu điều chỉnh: kho ở đầu phiếu (T126)
               khoMacDinh={khoMotCn || 'Kho tổng'}
               coNhapKho={nhom === 'mua' && Boolean(bo.tongNhap)}
+              gtnkCoThue={hkd}
               coNhomHhdv={nhom === 'mua' && nhanKemHd && (s.goi === 'PL' || s.goi === 'PR')}   // T162
               coCk={Boolean(bo.ck)}
               coLo={nhom === 'mua' && s.goi === 'PR'}   // số lô, hạn dùng chỉ có ở gói Pro (T68)
