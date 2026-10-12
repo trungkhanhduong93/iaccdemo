@@ -7013,3 +7013,6 @@ button.chip.sx-kenh.info { border-color: var(--blue); }
 .tb-dung-thu.gan-het { background: var(--amber-t); color: var(--amber); }
 .ktf-dt { margin-right: 4px; }
 .ktf-gia-thu { flex-basis: 100%; font-size: 11.5px; color: var(--green); font-weight: 600; }
+
+/* ── Ô chọn tháng ngừng phân bổ (T165) ── */
+.pb-thang-pop { padding: 10px 12px; }

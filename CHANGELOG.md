@@ -4,6 +4,8 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 12/10/2026
 
+- T168: Thu, chi tiền có phiếu chi mẫu PC2610-0261 (Chi phí chờ phân bổ, Tiền nhà 6 tháng, 72 triệu); phiếu chi đã tạo thẻ có dòng Thẻ chi phí dưới đầu phiếu, bấm mở thẻ. Phiếu thu, chi bỏ ô Mã số thuế, Ghi chú lên cột giữa, đầu phiếu gọn 3 hàng. Cột Lý do thu, chi ở danh sách đổi tên thành Lý do.
+- T165: Form thẻ chi phí phân bổ gọn hơn: bỏ thanh tiêu đề Thông tin chung, lưới chi tiết rộng hơn, Thông tin mua sát đáy. Thẻ ghi tăng không thêm, xoá dòng, sửa thẻ thì Ngày ghi tăng, Số tiền chỉ xem; thẻ dư đầu kỳ vẫn thêm, xoá dòng. Gói Free, Standard chọn tháng ngừng phân bổ từ bảng 12 tháng; Plus, Pro chọn ngày. Danh sách thẻ bỏ cột Số kỳ phân bổ, Trạng thái.
 - T167: Kho bỏ tab Điều chỉnh kho; tab Kiểm kê có 3 tab con Kiểm kê, Xuất điều chỉnh, Nhập điều chỉnh.
 - T166: Bỏ danh mục Thương hiệu. Ô Thương hiệu ở Hàng hoá, Kho, Bảng giá vẫn giữ.
 - T164: Phiếu mua của hộ kinh doanh: Giá trị nhập kho = tiền trước thuế + tiền thuế GTGT.

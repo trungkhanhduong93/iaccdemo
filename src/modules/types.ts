@@ -61,6 +61,7 @@ export interface VoucherCfg {
   dieuChinh?: boolean                    // phiếu xuất, nhập điều chỉnh sinh từ kiểm kê: đầu phiếu như kiểm kê, có tham chiếu về phiếu kiểm kê (T126)
   khongThem?: boolean                    // danh sách không có nút Thêm mới, phiếu chỉ do phiếu khác sinh ra (T126)
   rowsMau?: () => Row[]                  // phiếu mẫu riêng thay phiếu sinh ngẫu nhiên (T126)
+  phieuThem?: () => Row[]                // phiếu mẫu cố định thêm vào đầu danh sách phiếu sinh ngẫu nhiên (T168)
   sanXuat?: 'xsc' | 'nsc' | 'xcb' | 'ncb' // phiếu sản xuất theo iPOS Inventory: xuất, nhập sơ chế; xuất, nhập chế biến. Bảng dòng riêng, phiếu nhập có tham chiếu phiếu xuất (T152)
   dieuChuyen?: 'xdc' | 'ndc' | 'ck'     // xuất, nhập điều chuyển giữa chi nhánh; chuyển kho trong chi nhánh, không hạch toán. Phiếu nhập tham chiếu phiếu xuất như sản xuất (T155)
 }

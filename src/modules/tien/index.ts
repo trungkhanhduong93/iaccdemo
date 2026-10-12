@@ -7,6 +7,15 @@ import { nhatKyChung } from './data'
 import { SO_BO_SUNG } from '../bao-cao/so-bo-sung'
 import { SoDuBanDau } from '../tong-hop/SoDuBanDau'
 
+/** Phiếu chi mẫu lý do Chi phí chờ phân bổ, đã tạo thẻ chi phí phân bổ TPB2610-0011 (thẻ mẫu ở ccdc/index.ts trỏ về phiếu này) (T168) */
+const PHIEU_CHO_PB = {
+  id: 'chi-cpb', loai: 'chi', tenLoai: 'Chi tiền mặt', so: 'PC2610-0261', ngay: '07/10/2026', gio: '09:15', thang: 10,
+  doiTuong: 'Bà Nguyễn Thị Hạnh', maDt: '', cn: 'Phố Mây Lê Lợi', dienGiai: 'Tiền nhà 6 tháng', tien: 72_000_000, thue: 0, tong: 72_000_000,
+  nguon: 'tay', tt: 'ghi', _lyDo: 'Chi phí chờ phân bổ', _ghiChu: 'Tiền nhà 6 tháng',
+  _dong: [{ ma: '', ten: 'Tiền nhà 6 tháng', dvt: '', sl: 1, gia: 72_000_000, tien: 72_000_000, ts: 0, thue: 0, ly: 'Chi phí chờ phân bổ', km: '', cv: '' }],
+  _theCp: ['TPB2610-0011'],
+}
+
 /** Nhãn ngắn trên thanh tab */
 const NGAN: Record<string, string> = { '2.1.1': 'Thu, chi tiền', '2.1.2': 'Đối chiếu công nợ', '2.1.3': 'Phân bổ chi phí chuỗi' }
 
@@ -30,7 +39,7 @@ const tien: ModuleDef = {
         { k: 'cq', ten: 'Chuyển quỹ', icon: 'swap', prefix: 'CQ', doiTuong: 'none', soTT58: 'Sổ chi tiết tiền',
           dienGiai: ['Nộp tiền bán hàng trong ngày vào Vietcombank', 'Rút tiền gửi ngân hàng về quỹ tiền mặt', 'Chuyển tiền quỹ chi nhánh về tài khoản công ty'],
           noCo: [['1121', '1111', 'Chuyển tiền giữa các quỹ']] },
-      ] } },
+      ], phieuThem: () => [PHIEU_CHO_PB] } },
     '2.1.2': { voucher: { prefix: 'DCCN', doiTuong: 'kh', nhan: 'Khách hàng, nhà cung cấp', them: 'Lập biên bản', dong: 'tien', tien: [5_000_000, 120_000_000],
       dienGiai: ['Đối chiếu công nợ đến 30/09/2026', 'Đối chiếu công nợ quý 3/2026'], noCo: [['131', '131', 'Số dư đối chiếu, không sinh bút toán']] } },
     '2.1.3': { tool: { nut: 'Phân bổ kỳ 9/2026', mota: 'Phân bổ chi phí chung của văn phòng cho từng chi nhánh: lương quản lý, marketing, thuê kho tổng. Tiêu thức là doanh thu, số đơn hoặc tỷ lệ cố định. Sinh bút toán phân bổ cho từng chi nhánh.',

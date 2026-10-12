@@ -54,7 +54,7 @@ export interface TruongDM {
   goi?: Goi[]                                  // chỉ hiện ô ở các gói này (T144)
   cheDo?: CheDo[]                              // chỉ hiện ô ở các chế độ/thông tư này (T147)
   nhanDs?: (v: string) => string               // nhãn hiện trong ô chọn khác giá trị lưu, vd đơn vị tính hiện mã và tên (T144)
-  chiDoc?: boolean                             // ô tự sinh, không sửa được
+  chiDoc?: boolean | ((v: Record<string, any>) => boolean)   // ô tự sinh, không sửa được; hàm: chỉ đọc theo giá trị form, vd khi sửa thẻ có sẵn (T165)
   goiY?: string                                // chữ mờ khi ô chọn nhiều để trống (T151)
   maDs?: (v: string) => string                 // mã của mục trong ô chọn nhiều, ô chọn có tìm: dòng hiện "Mã: X", ô hiện "Tên (MÃ)" (T154)
   // Ô ngày khi thêm mới so với ngày đầu năm của đơn vị: 'tu' phải từ ngày đầu năm trở đi, 'truoc' phải trước ngày đầu năm (khai số dư)
@@ -69,6 +69,7 @@ export interface KhoiDM {
   // khối dạng lưới tự tính từ giá trị form; doi ghi giá trị khi gõ trong lưới; goi: gói đang dùng (T159)
   bang?: (v: Record<string, any>, doi: (k: string, val: unknown) => void, goi: Goi) => { cols: Col[]; rows: Row[]; sum?: Row; rowCls?: (r: Row) => string; chan?: ReactNode; trong: string }
   ve?: (v: Record<string, any>, doi: (k: string, val: unknown) => void) => ReactNode   // khối vẽ riêng (vd Thông tin mua: ô nhập, hoặc chỉ xem khi lấy từ phiếu gốc)
+  anDau?: boolean    // không vẽ thanh tiêu đề khối, khối luôn mở, nhường chỗ cho lưới bên dưới (T165)
   congTac?: string   // khoá ô tích hiện thành công tắc ở đầu khối, vd '_tt' trạng thái (T154)
 }
 

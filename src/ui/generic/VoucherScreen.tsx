@@ -71,7 +71,7 @@ export function VoucherScreen({ sc, mod }: ScreenProps) {
   const { id } = useParams()
   const loc = useLocation()
   const cfg = sc.voucher ?? { ...MAC_DINH, dienGiai: [tenMan(sc)] }
-  const tatCa = useMemo(() => (cfg.rowsMau ? cfg.rowsMau() : cfg.loai ? gopLoai(cfg, sc.code ?? sc.slug) : chungTu(cfg, sc.code ?? sc.slug)), [sc])   // rowsMau: phiếu mẫu riêng (T126)
+  const tatCa = useMemo(() => [...(cfg.phieuThem?.() ?? []), ...(cfg.rowsMau ? cfg.rowsMau() : cfg.loai ? gopLoai(cfg, sc.code ?? sc.slug) : chungTu(cfg, sc.code ?? sc.slug))], [sc])   // rowsMau: phiếu mẫu riêng (T126); phieuThem: phiếu mẫu cố định (T168)
   const { ban, laDaXoa, phieuMoi, apSua } = useDaXoa(`${mod.key}/${sc.slug}`)
   const rows = useMemo(() => [...phieuMoi, ...tatCa].filter(r => !laDaXoa(r.id)).map(apSua), [tatCa, ban])
 
@@ -306,7 +306,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
     },
     ...(cfg.loai && !cfg.dieuChinh ? [{ k: 'tenLoai', t: 'Loại', w: 130 } as Col] : []),   // điều chỉnh kho: loại đã là tab (T126)
     { k: 'dienGiai', t: cfg.kiemKe || cfg.dieuChinh ? 'Ghi chú' : 'Diễn giải' },   // phiếu kiểm kê ghi Ghi chú như đầu phiếu (T124)
-    ...(mod.key === 'tien' ? [{ k: 'lyDo', t: 'Lý do thu, chi', w: 170 } as Col] : []),   // T96
+    ...(mod.key === 'tien' ? [{ k: 'lyDo', t: 'Lý do', w: 170 } as Col] : []),   // T96; tên cột ngắn Lý do (T168)
     ...(cfg.doiTuong !== 'none' ? [{ k: 'doiTuong', t: cfg.nhan ?? 'Đối tượng' } as Col] : []),
     // Đang chọn một chi nhánh trên thanh trên thì cột chi nhánh thừa
     ...(cnChon ? [] : [{ k: 'cn', t: 'Chi nhánh', cls: 'dim', w: 130 } as Col]),

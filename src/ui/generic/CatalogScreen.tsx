@@ -54,7 +54,8 @@ export function CatalogScreen({ sc }: ScreenProps) {
       if (c.k === 'ten' && !c.w) return { ...c, w: 220 }
       return c
     }),
-    { k: '_tt', t: 'Trạng thái', w: 120, c: true, r: r => r._tt === 0 ? <St k="dim">Ngừng dùng</St> : <St k="ok">Đang dùng</St> },
+    // Danh sách kiểu chứng từ (dsChungTu, vd thẻ chi phí) không có cột Trạng thái như danh sách thu chi (T165)
+    ...(cfg.dsChungTu ? [] : [{ k: '_tt', t: 'Trạng thái', w: 120, c: true, r: (r: Row) => r._tt === 0 ? <St k="dim">Ngừng dùng</St> : <St k="ok">Đang dùng</St> }]),
     ...(cfg.chucNang ? [{
       k: '_cn',
       t: 'Chức năng',
@@ -130,6 +131,14 @@ export function CatalogScreen({ sc }: ScreenProps) {
   const [thamSo, setThamSo] = useSearchParams()
   const viTri = useLocation()
   useEffect(() => {
+    // ?mo=<số>: mở thẳng một dòng có sẵn, vd bấm số thẻ chi phí ở phiếu chi (T168)
+    const mo = thamSo.get('mo')
+    if (mo !== null) {
+      const r = all.find(x => String(x[dsct?.cotSo ?? cols0[0].k]) === mo)
+      if (r) moSua(r)
+      setThamSo({}, { replace: true })
+      return
+    }
     const k = thamSo.get('moi') ?? thamSo.get('loai')   // ?loai= từ menu Thêm theo loại của nút thêm
     if (k === null) return
     if (k === HANG_LOAT) { setMoHangLoat(true); setThamSo({}, { replace: true }); return }
@@ -500,8 +509,9 @@ export function CatalogPanel({
     // Lưới có ô nhập dùng chung kiểu bảng chi tiết phiếu (bang-sua): ô cao 30px, chữ 12.5px
     return (
       <div className="bang-sua">
-        {b.rows.length ? <Table cols={b.cols} rows={b.rows} sum={b.sum} rowCls={b.rowCls} maxH={maxH || undefined} /> : <div className="muted">{b.trong}</div>}
-        {b.chan}
+        {/* Chế độ xem: ẩn cột xoá dòng (_xoa) và nút dưới lưới (Thêm dòng, Xoá hết) (T165) */}
+        {b.rows.length ? <Table cols={xem ? b.cols.filter(c => c.k !== '_xoa') : b.cols} rows={b.rows} sum={b.sum} rowCls={b.rowCls} maxH={maxH || undefined} /> : <div className="muted">{b.trong}</div>}
+        {!xem && b.chan}
       </div>
     )
   }
@@ -511,10 +521,10 @@ export function CatalogPanel({
 
   // Một khối của panel: ô nhập theo lưới, hoặc lưới tự tính (kh.bang)
   const veKhoi = (kh: KhoiDM) => {
-    const mo = isMo(kh.ten)
+    const mo = kh.anDau || isMo(kh.ten)
     return (
-      <div key={kh.ten} className={`pn-khoi${mo ? ' mo' : ''}`}>
-        <div className="pn-khoi-dau" onClick={() => toggleKhoi(kh.ten)}>
+      <div key={kh.ten} className={`pn-khoi${mo ? ' mo' : ''}${kh.anDau ? ' pn-an-dau' : ''}`}>
+        {!kh.anDau && <div className="pn-khoi-dau" onClick={() => toggleKhoi(kh.ten)}>
           {/* Form toàn màn hình: mô tả nằm cạnh tên khối đầu, đầu form chỉ có nhãn chi nhánh như phiếu chi */}
           <span>{kh.ten}{cauHinh?.toanMan && cauHinh.moTa && kh === dsKhoi[0] && <small className="muted"> · {cauHinh.moTa}</small>}</span>
           {kh.congTac && (() => {
@@ -526,7 +536,7 @@ export function CatalogPanel({
             )
           })()}
           <Icon n={mo ? 'chevd' : 'chevr'} className="ic sm" />
-        </div>
+        </div>}
         {mo && kh.bang && <div className="pn-khoi-than">{veBang(kh)}</div>}
         {mo && kh.ve && <div className="pn-khoi-than">{kh.ve(formVal, doiO)}</div>}
         {mo && !kh.bang && !kh.ve && (
@@ -601,7 +611,7 @@ export function CatalogPanel({
                     ) : tr.kieu === 'ngay' ? (
                       <ONgay
                         value={String(formVal[tr.k] ?? '')}
-                        readOnly={tr.chiDoc}
+                        readOnly={typeof tr.chiDoc === 'function' ? tr.chiDoc(formVal) : tr.chiDoc}
                         placeholder="dd/mm/yyyy"
                         ariaLabel={tr.nhan}
                         onChange={v => {
@@ -612,7 +622,7 @@ export function CatalogPanel({
                     ) : (
                       <input
                         className={`inp${tr.kieu === 'tien' ? ' pn-tien' : tr.kieu === 'so' ? ' pn-so' : ''}`}
-                        readOnly={tr.chiDoc}
+                        readOnly={typeof tr.chiDoc === 'function' ? tr.chiDoc(formVal) : tr.chiDoc}
                         value={formatGiaTri(tr, formVal[tr.k])}
                         onChange={e => {
                           doiO(tr.k, cauHinh?.soQuocTe && laSo(tr) ? nhapSoQT(e.target.value) : e.target.value)

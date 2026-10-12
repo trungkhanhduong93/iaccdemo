@@ -481,6 +481,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
 
   // Tuỳ chỉnh giao diện phiếu (T89): ô đầu phiếu không bắt buộc và tổng chân phiếu bật tắt được, nhớ chung khoá với cột bảng (tiền tố dau:, chan:)
   const hienDau = (k: string) => !anCot.includes(`dau:${k}`)
+  // Phiếu thu, chi tiền (2.1.1) không có ô Mã số thuế; chuyển quỹ cũng không (T168)
+  const coMst = nhom !== 'cq' && !(laTien && sc.code === '2.1.1')
   const hienChan = (k: string) => !anCot.includes(`chan:${k}`)
   const muaBan = nhom === 'mua' || nhom === 'ban'
   const nhanNguoi = nhom === 'cq' ? 'Người thực hiện' : laTien || muaBan ? 'Người giao dịch' : 'Người giao / nhận'   // mua, bán ghi Người giao dịch (T90)
@@ -488,7 +490,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
     ['nguoi', nhanNguoi],
     ...(nhom !== 'cq' ? [['diaChi', 'Địa chỉ'] as [string, string]] : []),
     ...(!laTien && !muaBan ? [['nhanVien', 'Nhân viên thực hiện'] as [string, string]] : []),
-    ...(nhom !== 'cq' ? [['mst', 'Mã số thuế'] as [string, string]] : []),
+    ...(coMst ? [['mst', 'Mã số thuế'] as [string, string]] : []),
     ...(bo.tt ? [['hanTt', 'Hạn thanh toán'] as [string, string]] : []),
     ['ghiChu', 'Ghi chú'],
   ]
@@ -521,7 +523,9 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   // Phân hệ Thu chi (trừ chuyển quỹ): Địa chỉ ở cột giữa, Ghi chú kéo dài qua hai cột trái (T77).
   // Phiếu khác: Địa chỉ ở cột trái, Ghi chú ở cột giữa cùng hàng Địa chỉ (T78). Hai cột trái luôn đều hàng
   // Mua, bán (T90): hàng 1 Đối tượng, Mã số thuế; hàng 2 Địa chỉ, Người giao dịch; Ghi chú kéo dài như thu chi; bỏ Nhân viên thực hiện
-  const keoGc = (laTien && nhom !== 'cq') || muaBan
+  // Thu chi (trừ chuyển quỹ) từ T168: Địa chỉ, Ghi chú ở cột giữa dưới Lý do, đầu phiếu gọn 3 hàng; Ghi chú chỉ còn kéo dài ở mua, bán
+  const tcGiua = laTien && nhom !== 'cq'
+  const keoGc = muaBan
   const oNguoi = hienDau('nguoi') && (
     <div className="f">
       <label>{nhanNguoi}</label>
@@ -947,7 +951,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
                 )}
               </div>
               {!muaBan && oNguoi}
-              {(!keoGc || muaBan) && oDiaChi}
+              {!tcGiua && oDiaChi}
               </>)}
             </div>}
 
@@ -965,7 +969,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               )}
               {/* Chuyển quỹ: hàng 1 Từ quỹ, Đến quỹ; hàng 2 Người thực hiện, Ghi chú (T77) */}
               {nhom === 'cq' && oQuyCq('Đến quỹ', denQuy, setDenQuy)}
-              {keoGc && !muaBan && oDiaChi}
+              {tcGiua && oDiaChi}
               {/* Phiếu kiểm kê: hàng 1 Kho kiểm kê, Nhân viên thực hiện; hàng 2 Ghi chú (T124) */}
               {gonDau && !laDcn && (
                 <div className="row" style={{ gap: 10 }}>
@@ -1008,8 +1012,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
                   ) : <input className="inp" readOnly value={nhanVien} />}
                 </div>
               )}
-              {!gonDau && nhom !== 'cq' && (hienDau('mst') || (bo.tt && hinhThucTt === 'congno' && hienDau('hanTt'))) && <div className="row" style={{ gap: 10 }}>
-                {hienDau('mst') && <div className="f" style={{ flex: 1 }}>
+              {!gonDau && nhom !== 'cq' && ((coMst && hienDau('mst')) || (bo.tt && hinhThucTt === 'congno' && hienDau('hanTt'))) && <div className="row" style={{ gap: 10 }}>
+                {coMst && hienDau('mst') && <div className="f" style={{ flex: 1 }}>
                   <label>Mã số thuế</label>
                   {dangSua ? (
                     <input
@@ -1108,6 +1112,14 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
             </div>
             {keoGc && oGhiChu}
           </div>
+          {/* Chứng từ tham chiếu ở dòng dưới đầu phiếu; thêm loại tham chiếu mới thì nối vào đây.
+              Phiếu chi có dòng Chi phí chờ phân bổ đã tạo thẻ: Thẻ chi phí, số thẻ bấm mở thẻ (T168) */}
+          {oLy && Array.isArray(row?._theCp) && dsDong.some(d => (d.ly ?? lyDo) === LY_CHO_PHAN_BO) && (
+            <div className="row ct-tham-chieu">
+              <span className="dim">Thẻ chi phí:</span>
+              {(row._theCp as string[]).map(so => <Link key={so} className="ds-link-so" to={`/app/ccdc/8-1-1?mo=${so}`} title="Mở thẻ chi phí phân bổ">{so}</Link>)}
+            </div>
+          )}
           {/* Tham chiếu kiểm kê và phiếu điều chỉnh (T126) */}
           {laKk && dsDcCon(row).length > 0 && (
             <div className="row ct-tham-chieu">
