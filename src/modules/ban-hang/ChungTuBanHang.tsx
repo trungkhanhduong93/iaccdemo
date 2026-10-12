@@ -27,6 +27,7 @@ import { DaiTong } from '../../ui/generic/ChungTuForm'
 import { HopCotPhieu } from '../../ui/generic/BangSua'
 import { HopDongBo } from '../../ui/HopDongBo'
 import { DS_PTTT } from '../danh-muc/data'
+import { timNganhNghe } from '../danh-muc/nganh-nghe'
 
 /** Bán hàng ngoài POS: tiệc mang về, khách công ty đặt trước. Lập tay, không qua FABi; là tab Bán hàng 3.1.7 từ gói Plus (T52) */
 export const NGOAI_POS: VoucherCfg = {
@@ -88,6 +89,14 @@ function dongMonDon(x: XPos) {
     ptCk: 0, ck: 0, ptPhiDv: 0, phiDv: 0, giamThue: 0, phiVc: 0, dtTruocThue: d.tien,
   }))
 }
+
+/** Hộ kinh doanh được giảm 20% mức tỷ lệ % tính thuế GTGT trên doanh thu (PhuongXT chốt 12/10/2026, T162).
+ *  Tỷ lệ lấy theo ngành Dịch vụ ăn uống của danh mục ngành nghề */
+const TL_GTGT_HKD = timNganhNghe('301-5')?.gtgt ?? 3
+export const giamThueHkd = (dt: number) => Math.round(dt * TL_GTGT_HKD * 0.2 / 100)
+
+/** Cột theo loại hình đơn vị (T162): hộ kinh doanh bỏ Thuế suất, Tiền thuế, luôn hiện Giảm thuế GTGT; doanh nghiệp luôn hiện Thuế suất, Tiền thuế */
+const anTheoLoai = (an: string[], hkd: boolean) => hkd ? [...an.filter(k => k !== 'giamThue'), 'ts', 'thue'] : an.filter(k => k !== 'ts' && k !== 'thue')
 
 /** Dòng món của chứng từ: hoá đơn FABi lấy món của đơn, chứng từ gộp chia doanh thu theo cơ cấu món */
 export function dongCuaPhieu(x: NgayPOS) {
@@ -192,14 +201,16 @@ export function ChungTuBanHang({ sc, mod }: ScreenProps) {
   const { s } = useSession()
   const { ban, laDaXoa } = useDaXoa(`${mod.key}/${sc.slug}`)
   const cach = s.dongBoFabi ?? 'kenh'
+  const hkd = loaiHinhDv(s, donViHienTai(s)) === 'hkd'
   const tatCa = useMemo(() => DAILY.filter(x => x.date.getMonth() >= 8).slice().reverse().flatMap(x => (cach === 'chiTiet' ? theoDon(x).reverse() : theoKenh(x)))
     .map((x, i) => ({
       id: String(i), so: soFabi(`fabi-${x.seed}`), ngay: `${dmy(x.date)} ${x.gio}`, thang: x.date.getMonth() + 1, cn: cnTen(x.cn), x, kenh: x.kenh,
       dienGiai: x.loai === 'don' ? `Hoá đơn FABi ${x.kenh.toLowerCase()} ${x.gio} ngày ${dmy(x.date).slice(0, 5)}` : `Doanh thu ${x.kenh.toLowerCase()} ${x.don} đơn POS ngày ${dmy(x.date).slice(0, 5)}`,
       doiTuong: 'Khách lẻ POS',
-      tien: x.dt, thue: x.vat, tong: x.dt + x.vat, nguon: 'FABi', tt: i < 3 ? 'nhap' : 'ghi',
+      // hộ kinh doanh: không tiền thuế, tổng tiền = doanh thu − giảm thuế GTGT (T162)
+      tien: x.dt, thue: hkd ? 0 : x.vat, giamThue: hkd ? giamThueHkd(x.dt) : 0, tong: hkd ? x.dt - giamThueHkd(x.dt) : x.dt + x.vat, nguon: 'FABi', tt: i < 3 ? 'nhap' : 'ghi',
       ngayTao: `${dmy(x.date)} 23:30`, nguoiTao: 'Hệ thống',   // tạo khi đồng bộ FABi cuối ngày (T132)
-    })), [cach])
+    })), [cach, hkd])
   const rows = useMemo(() => tatCa.filter(r => !laDaXoa(r.id)), [tatCa, ban])
   if (id === 'moi') return <Navigate to={duongDan(mod, sc)} replace />   // không lập tay Xuất bán POS (T52)
   if (id) return <ChiTiet sc={sc} mod={mod} row={rows.find(r => r.id === id) ?? rows[0]} />
@@ -232,6 +243,7 @@ const ptttCua = (x: NgayPOS) => PTTT.filter(([k]) => Number(x[k]) > 0).map(([, t
 
 function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
   const { s, toast } = useSession()
+  const hkd = loaiHinhDv(s, donViHienTai(s)) === 'hkd'
   const nav = useNavigate()
   const path = duongDan(mod, sc)
   const loc0 = useLocNhap(locMacDinh)
@@ -332,7 +344,8 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
     { k: 'dienGiai', t: 'Diễn giải' },
     { k: 'kenh', t: 'Kênh bán', w: 140 },   // T113
     ...(cnChon ? [] : [{ k: 'cn', t: 'Chi nhánh', cls: 'dim' } as Col]),
-    { k: 'tien', t: 'Doanh thu trước thuế', num: true, w: 160 }, { k: 'thue', t: 'Tiền thuế', num: true, w: 120 },
+    { k: 'tien', t: 'Doanh thu trước thuế', num: true, w: 160 },
+    hkd ? { k: 'giamThue', t: 'Giảm thuế GTGT', num: true, w: 130 } : { k: 'thue', t: 'Tiền thuế', num: true, w: 120 },   // T162
     // bỏ cột Nguồn: Xuất bán POS chỉ có nguồn FABi (T115)
     { k: 'ngayTao', t: 'Ngày tạo', w: 140 }, { k: 'nguoiTao', t: 'Người tạo', w: 130 },   // T132
     { k: 'tong', t: 'Tổng tiền', num: true, w: 120 },   // Tổng tiền là cột cuối (T48)
@@ -430,11 +443,11 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
                   r.id === activeId ? 'dang-chon' : '',
                   r.tt === 'nhap' && ghi ? 'chua-ghi' : '',
                 ].filter(Boolean).join(' ')}
-                sum={{ ngay: 'Tổng trang', tien: sum('tien'), thue: sum('thue'), tong: sum('tong') }}
+                sum={{ ngay: 'Tổng trang', tien: sum('tien'), thue: sum('thue'), giamThue: sum('giamThue'), tong: sum('tong') }}
               />
               <PhanTrang
                 tong={list.length}
-                tongCong={{ tien: tongDs('tien'), thue: tongDs('thue'), tong: tongDs('tong') }}
+                tongCong={{ tien: tongDs('tien'), thue: tongDs('thue'), giamThue: tongDs('giamThue'), tong: tongDs('tong') }}
                 trang={trangHienTai}
                 coTrang={coTrang}
                 onTrang={setTrang}
@@ -505,7 +518,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
                   </button>
                 </div>
                 <div className="voucher-bottom-b">
-                  <NoiDungTab x={activeRow.x} tab={tabPanel === 'ht' && kieu === 'khong' ? 'ct' : tabPanel} kieu={kieu} />
+                  <NoiDungTab x={activeRow.x} tab={tabPanel === 'ht' && kieu === 'khong' ? 'ct' : tabPanel} kieu={kieu} hkd={hkd} />
                 </div>
               </>
             ) : (
@@ -587,8 +600,12 @@ const COT_POS: [string, string][] = [
 ]
 const AN_POS_MAC_DINH = ['giamThue', 'phiVc']
 
-function NoiDungTab({ x, tab, kieu, an = AN_POS_MAC_DINH }: { x: (typeof DAILY)[number]; tab: string; kieu: ReturnType<typeof kieuGhiSo>; an?: string[] }) {
-  const dong = dongCuaPhieu(x)
+function NoiDungTab({ x, tab, kieu, an: an0 = AN_POS_MAC_DINH, hkd = false }: { x: (typeof DAILY)[number]; tab: string; kieu: ReturnType<typeof kieuGhiSo>; an?: string[]; hkd?: boolean }) {
+  const an = anTheoLoai(an0, hkd)
+  const dong0 = dongCuaPhieu(x)
+  // hộ kinh doanh: giảm thuế GTGT của phiếu chia cho các món theo doanh thu trước thuế (T162)
+  const giam = hkd ? chiaTheo(giamThueHkd(x.dt), dong0.map(d => d.dtTruocThue), 1) : []
+  const dong = hkd ? dong0.map((d, i) => ({ ...d, giamThue: giam[i] })) : dong0
   const ht = [
     { dg: 'Thu tiền mặt', no: '1111', co: '5111, 33311', tien: x.tm },
     { dg: 'Thu chuyển khoản, QR, thẻ', no: '1121', co: '5111, 33311', tien: x.ck + x.the },
@@ -699,9 +716,8 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
   const [anCot, setAnCot] = useState<string[]>(() => {
     try { const v = JSON.parse(localStorage.getItem(khoaCot) ?? 'null'); return Array.isArray(v) ? v : AN_POS_MAC_DINH } catch { return AN_POS_MAC_DINH }
   })
-  // Hộ kinh doanh không có Thuế suất, Tiền thuế, luôn hiện Giảm thuế GTGT; doanh nghiệp luôn hiện Thuế suất, Tiền thuế (T162)
+  // Cột thuế theo loại hình đơn vị, cố định nên không có trong Tuỳ chỉnh giao diện (T162)
   const hkd = loaiHinhDv(s, donViHienTai(s)) === 'hkd'
-  const anHien = hkd ? [...anCot.filter(k => k !== 'giamThue'), 'ts', 'thue'] : anCot.filter(k => k !== 'ts' && k !== 'thue')
   const cotChinh = hkd ? ['ts', 'thue', 'giamThue'] : ['ts', 'thue']
   const [hopCot, setHopCot] = useState(false)
   const doiAnCot = (an: string[]) => {
@@ -712,7 +728,9 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
   const kieu = kieuGhiSo(s.cheDo)
   // phiếu giảm giá áp cho cả đơn nên ở dải đáy; chiết khấu đã thành cột trên dòng; dữ liệu mẫu bằng 0 (T106)
   const phieuGiam = 0
-  const tong = x.dt + x.vat - phieuGiam
+  // hộ kinh doanh: tổng tiền = doanh thu − giảm thuế GTGT, không cộng tiền thuế (T162)
+  const giamThue = hkd ? giamThueHkd(x.dt) : 0
+  const tong = hkd ? x.dt - giamThue - phieuGiam : x.dt + x.vat - phieuGiam
   const pttt = PTTT.filter(([k]) => Number(x[k]) > 0).map(([, t]) => t).join(', ')
   const kenh = (x as XPos).kenh ?? (x.app > 0 ? 'Tại quán, Mang về, App giao đồ ăn' : 'Tại quán, Mang về')
   // In: bảng kê lấy đúng các món của chứng từ, không sinh dòng giả
@@ -725,7 +743,7 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
     <FormToanMan icon={mod.icon} onClose={dong0} title="Xuất bán POS"
       // Phần tổng thành dải cố định ở đáy form, cuộn bảng vẫn thấy (T104); khoản bằng 0 hiện mờ cho gọn
       // các khoản theo món đã lên bảng chi tiết; dải đáy còn khoản của cả đơn và Tổng tiền (T106)
-      day={<DaiTong tong={tong} muc={[]} tren={[['Phiếu giảm giá', phieuGiam ? -phieuGiam : 0]]} />}   // Phiếu giảm giá thành hàng ngay trên Tổng tiền
+      day={<DaiTong tong={tong} muc={[]} tren={[...(hkd ? [['Giảm thuế GTGT', -giamThue] as [string, number]] : []), ['Phiếu giảm giá', phieuGiam ? -phieuGiam : 0]]} />}   // Phiếu giảm giá thành hàng ngay trên Tổng tiền
       giua={<span className="fsf-tt xem">Chi tiết phiếu <b>{row.so}</b></span>}
       meta={<><St k={cTt}>{tTt}</St><span className="src">FABi</span><span className="chip info"><Icon n="store" className="ic sm" />{row.cn}</span></>}
       foot={<>
@@ -751,7 +769,7 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
           <div className="tabs">
             {[['ct', 'Hàng bán'], ['ht', kieu === 'noco' ? 'Hạch toán' : 'Ghi sổ']].filter(([k]) => k !== 'ht' || kieu !== 'khong').map(([k, l]) => <button key={k} type="button" className={tab === k ? 'on' : ''} onClick={() => setTab(k)}>{l}</button>)}
           </div>
-          <div className="ct-than"><NoiDungTab x={x} tab={tab} kieu={kieu} an={anHien} /></div>
+          <div className="ct-than"><NoiDungTab x={x} tab={tab} kieu={kieu} an={anCot} hkd={hkd} /></div>
         </section>
       </div>
       {phieuIn && <HopInChungTu ds={phieuIn} onDong={() => setPhieuIn(null)} />}
