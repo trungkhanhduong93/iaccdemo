@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react'
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import type { Col, Row, ScreenProps, VoucherCfg } from '../types'
 import { duongDan, tenMan } from '../../app/registry'
-import { chiNhanhHienTai, useSession } from '../../app/session'
+import { chiNhanhHienTai, donViHienTai, loaiHinhDv, useSession } from '../../app/session'
 import { kieuGhiSo } from '../../app/plan'
 import { CHE_DO } from '../../app/che-do'
 import { CHI_NHANH, DAILY, HANG, cnTen, soBH } from '../../data/mock'
@@ -699,6 +699,10 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
   const [anCot, setAnCot] = useState<string[]>(() => {
     try { const v = JSON.parse(localStorage.getItem(khoaCot) ?? 'null'); return Array.isArray(v) ? v : AN_POS_MAC_DINH } catch { return AN_POS_MAC_DINH }
   })
+  // Hộ kinh doanh không có Thuế suất, Tiền thuế, luôn hiện Giảm thuế GTGT; doanh nghiệp luôn hiện Thuế suất, Tiền thuế (T162)
+  const hkd = loaiHinhDv(s, donViHienTai(s)) === 'hkd'
+  const anHien = hkd ? [...anCot.filter(k => k !== 'giamThue'), 'ts', 'thue'] : anCot.filter(k => k !== 'ts' && k !== 'thue')
+  const cotChinh = hkd ? ['ts', 'thue', 'giamThue'] : ['ts', 'thue']
   const [hopCot, setHopCot] = useState(false)
   const doiAnCot = (an: string[]) => {
     setAnCot(an)
@@ -747,11 +751,11 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
           <div className="tabs">
             {[['ct', 'Hàng bán'], ['ht', kieu === 'noco' ? 'Hạch toán' : 'Ghi sổ']].filter(([k]) => k !== 'ht' || kieu !== 'khong').map(([k, l]) => <button key={k} type="button" className={tab === k ? 'on' : ''} onClick={() => setTab(k)}>{l}</button>)}
           </div>
-          <div className="ct-than"><NoiDungTab x={x} tab={tab} kieu={kieu} an={anCot} /></div>
+          <div className="ct-than"><NoiDungTab x={x} tab={tab} kieu={kieu} an={anHien} /></div>
         </section>
       </div>
       {phieuIn && <HopInChungTu ds={phieuIn} onDong={() => setPhieuIn(null)} />}
-      {hopCot && <HopCotPhieu ds={COT_POS} an={anCot} macDinh={AN_POS_MAC_DINH} onDoi={doiAnCot} onDong={() => setHopCot(false)} />}
+      {hopCot && <HopCotPhieu ds={COT_POS.filter(([k]) => !cotChinh.includes(k))} an={anCot} macDinh={AN_POS_MAC_DINH} onDoi={doiAnCot} onDong={() => setHopCot(false)} />}
     </FormToanMan>
   )
 }

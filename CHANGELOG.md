@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 12/10/2026
 
+- T162: Chi tiết Xuất bán POS: hộ kinh doanh bỏ cột Thuế suất, Tiền thuế, hiện cột Giảm thuế GTGT; doanh nghiệp luôn hiện Thuế suất, Tiền thuế.
 - T161: Phiếu mua gói Plus, Pro tích Nhận kèm hoá đơn thì dòng chi tiết có cột Nhóm HHDV mua vào. Xem chi tiết phiếu mua, bán không còn ô tích kèm hoá đơn. Danh sách mua hàng bỏ cột Nhận hoá đơn. Chip Tổng hợp, Chi tiết ở danh sách Xuất bán POS chỉ để xem.
 - T160: Form chứng từ khi thêm mới, sửa có nút Tuỳ chỉnh giao diện như lúc xem chi tiết.
 - T159: Số dư ban đầu tab tiền hiện sẵn đủ mọi quỹ, không còn Thêm mới; quỹ nào có số dư thì gõ rồi bấm Lưu.
