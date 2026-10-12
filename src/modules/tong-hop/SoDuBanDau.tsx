@@ -14,7 +14,7 @@ import { fold, k, money } from '../../ui/format'
 import { ThanhLoc } from '../../ui/ThanhLoc'
 import { Select } from '../../ui/Dropdown'
 import { HopXacNhan } from '../../ui/LocNangCao'
-import { CHI_NHANH, KHACH, NCC, NVL } from '../../data/mock'
+import { CHI_NHANH, DON_VI, KHACH, NCC, NVL } from '../../data/mock'
 import { TEN_TK, soCai } from './so-cai'
 
 type TabKey = 'tk' | 'tien' | 'kh' | 'ncc' | 'kho'
@@ -85,7 +85,7 @@ function loaiTheo(goi: string, noCo: boolean): TabKey[] {
 }
 
 export function SoDuBanDau({ sc, mod }: ScreenProps) {
-  const { s, toast } = useSession()   // toast báo đã xoá dòng
+  const { s, set, toast } = useSession()   // toast báo đã xoá dòng, đã lưu
   const noCo = kieuGhiSo(s.cheDo) === 'noco'
   // Số dư khai trực tiếp trên bảng: Thêm mới chèn dòng trống chọn đối tượng, ô số tiền gõ thẳng, xoá dòng có hỏi lại (T141)
   const [q0] = useSearchParams()
@@ -93,11 +93,23 @@ export function SoDuBanDau({ sc, mod }: ScreenProps) {
   const quyThem = cnThem.map(quyCua)
   // Mở từ Thêm chi nhánh từ FABi (?cnMoi=id,id): chèn sẵn dòng quỹ tiền mặt của chi nhánh mới để gõ số dư (T142)
   const cnMoi = (q0.get('cnMoi') ?? '').split(',').filter(Boolean)
+  // Tab tiền hiện đủ mọi quỹ của đơn vị, quỹ nào có số dư thì gõ rồi Lưu (T159): đơn vị mẫu có quỹ mẫu kèm số dư mẫu;
+  // đơn vị mới (dùng thử, thêm đơn vị) có quỹ tiền mặt của chi nhánh đã lên sổ và các tài khoản ngân hàng, số dư 0
+  const coSan = DON_VI.some(d => d.id === s.donVi)
   const [all, setAll] = useState<Row[]>(() => {
     const ds = soDuRows()
-    const them = cnThem.filter(c => cnMoi.includes(c.id)).map(c => ({ loai: 'tien', ...quyCua(c), no: 0, co: 0, du: 0, moi: true }))
-    return [...ds, ...them].map((r, i) => ({ ...r, id: i + 1 }))
+    const mau = coSan ? ds.filter(r => r.loai === 'tien') : []
+    const quy: Row[] = [...cnThem.filter(c => !mau.some(r => r.ma === quyCua(c).ma)).map(c => ({ loai: 'tien', ...quyCua(c), ten: TEN_TK['1111'], no: 0, co: 0, du: 0 })),
+      ...(coSan ? [] : QUY.filter(q => q.kieu === 'Ngân hàng').map(q => ({ loai: 'tien', ...q, ten: TEN_TK[q.tk], no: 0, co: 0, du: 0 })))]
+    const luu = s.soDuQuy?.[s.donVi] ?? {}
+    const tien = [...mau, ...quy].map(r => luu[r.ma] ? { ...r, ...luu[r.ma], du: luu[r.ma].no - luu[r.ma].co } : r)
+    return [...ds.filter(r => r.loai !== 'tien'), ...tien].map((r, i) => ({ ...r, id: i + 1 }))
   })
+  const luuSoDu = () => {
+    const quy = Object.fromEntries(all.filter(r => r.loai === 'tien').map(r => [r.ma, { no: Number(r.no) || 0, co: Number(r.co) || 0 }]))
+    set({ soDuQuy: { ...s.soDuQuy, [s.donVi]: quy } })
+    toast('Đã lưu số dư ban đầu')
+  }
   const [hoiXoa, setHoiXoa] = useState<Row | null>(null)
   const suaDong = (id: number, p: Row) => setAll(ds => ds.map(r => r.id === id ? { ...r, ...p } : r))
   const soTien = (v: string) => Number(v.replace(/[^\d-]/g, '')) || 0
@@ -158,7 +170,7 @@ export function SoDuBanDau({ sc, mod }: ScreenProps) {
       <input className="inp sdb-so" inputMode="numeric" value={Number(r.sl) ? money(Number(r.sl)) : ''} placeholder="0" onChange={(e: ChangeEvent<HTMLInputElement>) => suaDong(r.id, { sl: soTien(e.target.value) })} />
     )
     if (tab === 'tk') return [{ k: 'tk', t: 'Số hiệu TK', cls: 'code' }, { k: 'ten', t: 'Tên tài khoản', r: oTen('ten') }, ...tien(''), xoa]
-    if (tab === 'tien') return [{ k: 'ma', t: 'Mã quỹ', cls: 'code' }, { k: 'ct', t: 'Tên quỹ', r: oTen('ct') }, { k: 'kieu', t: 'Loại' }, { k: 'cn', t: 'Chi nhánh', cls: 'dim' }, ...tk, ...tien('Số dư'), xoa]
+    if (tab === 'tien') return [{ k: 'ma', t: 'Mã quỹ', cls: 'code' }, { k: 'ct', t: 'Tên quỹ', r: oTen('ct') }, { k: 'kieu', t: 'Loại' }, { k: 'cn', t: 'Chi nhánh', cls: 'dim' }, ...tk, ...tien('Số dư')]   // đủ mọi quỹ, không xoá dòng (T159)
     if (tab === 'kho') return [{ k: 'kho', t: 'Kho' }, { k: 'ma', t: 'Mã hàng', cls: 'code' }, { k: 'ct', t: 'Tên hàng', r: oTen('ct') }, { k: 'dvt', t: 'ĐVT' }, { k: 'sl', t: 'Số lượng', num: true, w: 110, r: oSl }, ...tk, ...tien('Giá trị tồn'), xoa]
     return [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ct', t: tab === 'kh' ? 'Khách hàng' : 'Nhà cung cấp', r: oTen('ct') }, ...tk, ...tien(tab === 'kh' ? 'Còn phải thu' : 'Còn phải trả'), xoa]
   }, [tab, noCo, all])   // eslint-disable-line react-hooks/exhaustive-deps
@@ -175,7 +187,8 @@ export function SoDuBanDau({ sc, mod }: ScreenProps) {
       <PageHead crumb={[mod.ten]} title={tenMan(sc)} code={sc.code} meta={<span className="muted">Số dư tại ngày {ngayDauNam(s)}, ngày bắt đầu năm tài chính</span>}>
         <button type="button" className="btn"><Icon n="upload" className="ic sm" />Nhập Excel</button>
         <button type="button" className="btn"><Icon n="download" className="ic sm" />Xuất Excel</button>
-        <button type="button" className="btn pri" onClick={themDong}><Icon n="plus" className="ic sm" />Thêm mới</button>
+        {tab !== 'tien' && <button type="button" className="btn" onClick={themDong}><Icon n="plus" className="ic sm" />Thêm mới</button>}
+        <button type="button" className="btn pri" onClick={luuSoDu}><Icon n="check" className="ic sm" />Lưu</button>
       </PageHead>
       {theData.length > 1 && (
         <div className="rpt-grid" style={{ gridTemplateColumns: `repeat(${theData.length}, minmax(0, 1fr))`, marginBottom: 14 }}>

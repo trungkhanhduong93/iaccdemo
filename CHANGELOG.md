@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 12/10/2026
 
+- T159: Số dư ban đầu tab tiền hiện sẵn đủ mọi quỹ, không còn Thêm mới; quỹ nào có số dư thì gõ rồi bấm Lưu.
 - T158: Dùng thử 30 ngày cho mọi gói: màn chào, màn giới thiệu, popup khởi tạo ghi rõ, thanh trên có nhãn Dùng thử · còn N ngày (bấm mở Gói thuê bao). Popup khởi tạo còn 3 bước (bỏ Đồng bộ bán hàng) và bắt buộc làm xong mới dùng phần mềm.
 - T155: Kho tách Xuất điều chuyển, Nhập điều chuyển giữa chi nhánh (phiếu nhập chọn phiếu xuất tham chiếu, hạch toán qua 1368, 3368) và Chuyển kho trong chi nhánh, không hạch toán.
 

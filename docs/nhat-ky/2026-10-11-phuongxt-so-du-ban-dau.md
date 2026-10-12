@@ -20,6 +20,8 @@
 - `docs/KIEN-TRUC.md`: ghi cách dùng trường `goi`.
 - Sơ đồ Thu chi (`src/modules/tien/quy-trinh.ts`) thêm làn Số dư đầu kỳ đứng đầu: ô tới `tien/so-du-ban-dau` (gói Free) và ô tới `tong-hop/10-1-3` (gói khác). `QuyTrinhScreen.tsx` bỏ ô tới màn khai `goi` không gồm gói đang dùng, để mỗi gói chỉ thấy một ô.
 
+- 12/10/2026 (T159): tab tiền bỏ Thêm mới và nút xoá, hiện đủ mọi quỹ của đơn vị (đơn vị mẫu: quỹ mẫu kèm số dư mẫu; đơn vị mới: quỹ tiền mặt của chi nhánh đã lên sổ rồi tới tài khoản ngân hàng, số dư 0); nút Lưu ghi số dư quỹ theo đơn vị (`soDuQuy` trong phiên), mở lại vẫn còn. Đã thử: Phố Mây lưu 12.000.000 cho TM01, tải lại còn; đơn vị dùng thử 2 chi nhánh có 4 quỹ số dư trống.
+
 ## Đã kiểm
 
 - `npm run typecheck`, `npm run build`: không lỗi.
