@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 12/10/2026
 
+- T167: Kho bỏ tab Điều chỉnh kho; tab Kiểm kê có 3 tab con Kiểm kê, Xuất điều chỉnh, Nhập điều chỉnh.
 - T166: Bỏ danh mục Thương hiệu. Ô Thương hiệu ở Hàng hoá, Kho, Bảng giá vẫn giữ.
 - T164: Phiếu mua của hộ kinh doanh: Giá trị nhập kho = tiền trước thuế + tiền thuế GTGT.
 - T163: Chi tiết Xuất bán POS: hộ kinh doanh bỏ cột Thuế suất, Tiền thuế, hiện cột Giảm thuế GTGT; doanh nghiệp luôn hiện Thuế suất, Tiền thuế. Hộ kinh doanh được giảm 20% mức tỷ lệ thuế GTGT, Tổng tiền trừ phần giảm này, ở cả danh sách và chi tiết.

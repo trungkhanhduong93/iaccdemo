@@ -19,7 +19,7 @@ import {
   BoLoc, ChipTrangThai, NutHangLoat, NutTuyChinhCot, cotChon, dsChipTT, khopChipTT, useCauHinhLoc, useCotDs, useLocNhap, type OLocDef,
 } from '../LocNangCao'
 import { ctTtCon, dsDcCon, dsTtCon, soDaTra, ttTienTheoTra, useDaXoa, xoaPhieu } from './daXoa'
-import { MAN_DC } from '../../modules/kho/dieu-chinh'
+import { MAN_DC, MAN_KK, TEN_DC } from '../../modules/kho/dieu-chinh'
 
 import { CHI_NHANH, HANG, NHAN_VIEN, NVL } from '../../data/mock'
 import { NGUON, TT_CT, chungTu, dongCua, gioPhieu, ttNghiepVu, type Dong } from './gen'
@@ -427,9 +427,18 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
         <section className="card voucher-top">
           {/* Thanh công cụ: chip trạng thái bên trái; ô lọc, phễu, Lọc, Tuỳ chỉnh cột, Excel, Hàng loạt, Thêm mới | ⌄ (T43) */}
           <div className="ds-thanh">
-            {/* Điều chỉnh kho: tab con Xuất, Nhập điều chỉnh cùng hàng bộ lọc (T126) */}
+            {/* Tab Kiểm kê có 3 tab con Kiểm kê, Xuất điều chỉnh, Nhập điều chỉnh cùng hàng bộ lọc (T126, T167) */}
+            {cfg.kiemKe && (
+              <div className="seg dc-tabs" role="tablist" aria-label="Kiểm kê, điều chỉnh kho">
+                <button type="button" role="tab" aria-selected className="on">Kiểm kê</button>
+                {(Object.keys(TEN_DC) as (keyof typeof TEN_DC)[]).map(k => (
+                  <button key={k} type="button" role="tab" aria-selected={false} onClick={() => nav(`/app/${MAN_DC}?loai=${k}`)}>{TEN_DC[k]}</button>
+                ))}
+              </div>
+            )}
             {cfg.dieuChinh && cfg.loai && (
-              <div className="seg dc-tabs" role="tablist" aria-label="Loại phiếu điều chỉnh">
+              <div className="seg dc-tabs" role="tablist" aria-label="Kiểm kê, điều chỉnh kho">
+                <button type="button" role="tab" aria-selected={false} onClick={() => nav(`/app/${MAN_KK}`)}>Kiểm kê</button>
                 {cfg.loai.map(l => (
                   <button key={l.k} type="button" role="tab" aria-selected={tabLoai === l.k} className={tabLoai === l.k ? 'on' : ''}
                     onClick={() => { setTabLoai(l.k); setTrang(1); setActiveId(String(rows.find(r => r.loai === l.k)?.id ?? '')) }}>

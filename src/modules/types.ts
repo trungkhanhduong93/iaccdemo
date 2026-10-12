@@ -106,6 +106,7 @@ export interface ScreenDef {
   cheDo?: CheDo[]          // màn chỉ áp dụng cho các thông tư này (T147)
   ten?: string
   ngan?: string            // nhãn ngắn trên thanh tab
+  tabCha?: string          // màn con không có tab riêng trên thanh tab; mở màn này thì tab có slug này sáng (T167)
   icon?: string   // biểu tượng riêng của màn (tên trong Icon.tsx); không có thì dùng biểu tượng theo loại màn hoặc của phân hệ
   nhom?: string            // nhóm Excel; nhóm có chữ "báo cáo" vào tab Báo cáo
   tab?: boolean            // ép màn báo cáo thành tab riêng (true) hoặc màn khác vào tab Báo cáo (false)

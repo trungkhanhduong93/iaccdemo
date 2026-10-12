@@ -5,6 +5,7 @@ import { NVL } from '../../data/mock'
 import { chungTu, dongCua, type Dong } from '../../ui/generic/gen'
 
 export const MAN_DC = 'kho/dieu-chinh'
+export const MAN_KK = 'kho/5-1-10'   // màn Kiểm kê, chứa 2 tab con Xuất, Nhập điều chỉnh (T167)
 export type LoaiDc = 'xdc' | 'ndc'
 export const TEN_DC: Record<LoaiDc, string> = { xdc: 'Xuất điều chỉnh', ndc: 'Nhập điều chỉnh' }
 

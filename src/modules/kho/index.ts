@@ -6,7 +6,7 @@ import { XuatNhapTon } from './XuatNhapTon'
 import { dinhMucTon, nhapXuat, tonBanDau, tonTucThoi } from './data'
 import { TheKho } from './TheKho'
 import { SO_BO_SUNG } from '../bao-cao/so-bo-sung'
-import { mauDieuChinh, mauKiemKe } from './dieu-chinh'
+import { MAN_KK, mauDieuChinh, mauKiemKe } from './dieu-chinh'
 import { PhieuSanXuat } from './PhieuSanXuat'
 import { CongThucScreen } from './CongThuc'
 import { cauHinhSx, type LoaiSx } from './san-xuat'
@@ -29,6 +29,7 @@ const KK = kiemKe(phieu('KK', 'Thêm phiếu kiểm kê', ['Kiểm kê cuối th
 /** Màn Điều chỉnh kho (T126): phiếu xuất, nhập điều chỉnh do phiếu kiểm kê có chênh lệch sinh ra. Ngoài Excel, không mã tính năng nên gói nào cũng có */
 const DIEU_CHINH: ScreenDef = {
   slug: 'dieu-chinh', ten: 'Xuất, nhập điều chỉnh', ngan: 'Điều chỉnh kho', nhom: 'Chứng từ', kind: 'voucher',
+  tabCha: MAN_KK.split('/')[1],   // không còn tab riêng: là 2 tab con trong tab Kiểm kê (T167)
   voucher: {
     prefix: 'XDC', doiTuong: 'none', dong: 'nvl', tien: [0, 0], thue: 0, dienGiai: ['Điều chỉnh theo kiểm kê'], dieuChinh: true, khongThem: true,
     soTT58: 'Sổ chi tiết vật liệu, dụng cụ, hàng hoá', rowsMau: () => mauDieuChinh(KK.voucher!),

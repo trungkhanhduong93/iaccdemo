@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T167 | Kho: tab Kiểm kê chia 3 tab con Kiểm kê, Xuất điều chỉnh, Nhập điều chỉnh; bỏ tab Điều chỉnh kho trên thanh tab | PhuongXT | Đang làm | Sửa `ui/generic/VoucherScreen.tsx`, `app/ModuleTabs.tsx`, `modules/types.ts`, `kho/index.ts` |
 | T165 | Form thẻ chi phí: bỏ thanh tiêu đề Thông tin chung, bỏ nút xoá dòng; Thêm dòng, Xoá hết chỉ ở thẻ dư đầu kỳ; Thông tin mua sát mép dưới, lưới chi tiết cao hết phần còn lại | dinhlanphuongipacc | Đang làm | Sửa `ccdc/the-phan-bo.tsx`, có thể `CatalogScreen.tsx` (panel toàn màn), `truong-dm.ts`, `app.css` (mục cuối T165) |
 | T138 | Màn onboard khi bấm từ FABi sang IACC: khởi tạo đơn vị kế toán, điền sẵn từ FABi (chi nhánh, kho, cách đồng bộ, số dư đầu kỳ) | PhuongXT | Dở dang | Popup khởi tạo dữ liệu 4 bước trong phần mềm (`OnboardFabi.tsx`, `Shell.tsx`) đã push, PhuongXT xem lại một lượt. Xem `2026-10-11-phuongxt-man-khoi-tao-fabi.md` |
 | T139 | Phiếu nhập, xuất, điều chuyển kho tự lấy mục chi phí, công việc ngầm định theo kho đã chọn | | Chờ | Tách từ T136. Kho đã có ô `mucCp`, `congViec` ở `truong-dm.ts` 1.8. Sửa `ChungTuForm.tsx` |
@@ -42,6 +41,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T167 | Kho: tab Kiểm kê chia 3 tab con Kiểm kê, Xuất điều chỉnh, Nhập điều chỉnh; bỏ tab Điều chỉnh kho trên thanh tab | PhuongXT | 12/10/2026 | `2026-10-12-phuongxt-tab-kiem-ke.md` |
 | T166 | Bỏ danh mục Thương hiệu cho mọi đơn vị; ô, cột Thương hiệu ở Hàng hoá, Kho, Bảng giá giữ nguyên | PhuongXT | 12/10/2026 | `2026-10-12-phuongxt-bo-thuong-hieu.md` |
 | T164 | Mua hàng của hộ kinh doanh: Giá trị nhập kho = tiền trước thuế + tiền thuế GTGT | PhuongXT | 12/10/2026 | `2026-10-12-phuongxt-nhap-kho-hkd.md` |
 | T163 | Xuất bán POS: đơn vị hộ kinh doanh bỏ cột Thuế suất, Tiền thuế, hiện cột Giảm thuế GTGT; doanh nghiệp luôn hiện Thuế suất, Tiền thuế | PhuongXT | 12/10/2026 | `2026-10-12-phuongxt-thue-xuat-ban-pos.md` |
