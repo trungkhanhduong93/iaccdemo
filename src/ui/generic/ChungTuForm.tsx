@@ -620,6 +620,14 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
                 <span className={`tk-badge ${hienTk ? 'on' : ''}`}>{hienTk ? 'Đang hiện' : 'Đang ẩn'}</span>
               </button>
             )}
+            {/* Tuỳ chỉnh giao diện cả khi thêm mới, sửa, như lúc xem (T160) */}
+            <button type="button" className="btn" onClick={() => setHopCot(true)} title="Bật tắt ô đầu phiếu, cột bảng chi tiết, tổng chân phiếu">
+              <Icon n="chinh" className="ic sm" />Tuỳ chỉnh giao diện
+            </button>
+            {hopCot && (
+              <HopCotPhieu dsDau={dsDau} dsChan={dsChan} ds={laKk ? COT_KK : laSx ? cotSx(sx!) : laDcn ? cotDcn(dcn!) : cotTuyChon(cfg, { coKho: Boolean(bo.kho) && !khoDau && !laDc, coLo: nhom === 'mua' && s.goi === 'PR', coCk: Boolean(bo.ck), coKm: kieu !== 'khong', coLy: Boolean(oLy), coNhapKho: truocThue }).filter(([k]) => !anDc.includes(k))}
+                an={anCot} onDoi={doiAnCot} onDong={() => setHopCot(false)} />
+            )}
             <button type="button" className="btn" onClick={() => luu(false)}>
               Lưu (Ctrl+S)
             </button>
