@@ -4,14 +4,14 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T163.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T164.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T163 | Mua hàng của hộ kinh doanh: Giá trị nhập kho = tiền trước thuế + tiền thuế GTGT | PhuongXT | Đang làm | Sửa `ui/generic/BangSua.tsx`, `ChungTuForm.tsx`, `VoucherScreen.tsx` |
+| T164 | Mua hàng của hộ kinh doanh: Giá trị nhập kho = tiền trước thuế + tiền thuế GTGT | PhuongXT | Đang làm | Sửa `ui/generic/BangSua.tsx`, `ChungTuForm.tsx`, `VoucherScreen.tsx` |
 | T138 | Màn onboard khi bấm từ FABi sang IACC: khởi tạo đơn vị kế toán, điền sẵn từ FABi (chi nhánh, kho, cách đồng bộ, số dư đầu kỳ) | PhuongXT | Dở dang | Popup khởi tạo dữ liệu 4 bước trong phần mềm (`OnboardFabi.tsx`, `Shell.tsx`) đã push, PhuongXT xem lại một lượt. Xem `2026-10-11-phuongxt-man-khoi-tao-fabi.md` |
 | T139 | Phiếu nhập, xuất, điều chuyển kho tự lấy mục chi phí, công việc ngầm định theo kho đã chọn | | Chờ | Tách từ T136. Kho đã có ô `mucCp`, `congViec` ở `truong-dm.ts` 1.8. Sửa `ChungTuForm.tsx` |
 | T140 | Đồng bộ POS có tích tự hạch toán theo phương thức thanh toán thì sinh phiếu thu thật vào danh sách Thu tiền mặt, Thu ngân hàng (hiện chỉ báo số phiếu bằng toast) | | Chờ | Tách từ T137. Phiếu thu Nợ TK của phương thức / Có 131, lấy từ `DS_PTTT` ở `danh-muc/data.ts` |
@@ -41,10 +41,10 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
-| T162 | Xuất bán POS: đơn vị hộ kinh doanh bỏ cột Thuế suất, Tiền thuế, hiện cột Giảm thuế GTGT; doanh nghiệp luôn hiện Thuế suất, Tiền thuế | PhuongXT | 12/10/2026 | `2026-10-12-phuongxt-thue-xuat-ban-pos.md` |
-| T161 | Mua hàng gói Plus, Pro tích nhận kèm hoá đơn thì dòng chi tiết có cột Nhóm HHDV mua vào; xem chi tiết phiếu mua, bán bỏ ô tích kèm hoá đơn; danh sách mua bỏ cột Nhận hoá đơn; nút Tổng hợp, Chi tiết ở danh sách bán hàng chỉ xem | PhuongXT | 12/10/2026 | `2026-10-12-phuongxt-nhom-hhdv-mua-vao.md` |
-| T160 | Mọi form chứng từ khi thêm mới, sửa có nút Tuỳ chỉnh giao diện như lúc xem chi tiết | PhuongXT | 12/10/2026 | `2026-10-12-phuongxt-tuy-chinh-khi-sua.md` |
-| T159 | Số dư ban đầu tab tiền: bỏ Thêm mới, hiện đủ mọi quỹ của đơn vị, gõ số dư rồi Lưu (lưu theo đơn vị) | PhuongXT | 12/10/2026 | `2026-10-11-phuongxt-so-du-ban-dau.md` |
+| T163 | Xuất bán POS: đơn vị hộ kinh doanh bỏ cột Thuế suất, Tiền thuế, hiện cột Giảm thuế GTGT; doanh nghiệp luôn hiện Thuế suất, Tiền thuế | PhuongXT | 12/10/2026 | `2026-10-12-phuongxt-thue-xuat-ban-pos.md` |
+| T162 | Mua hàng gói Plus, Pro tích nhận kèm hoá đơn thì dòng chi tiết có cột Nhóm HHDV mua vào; xem chi tiết phiếu mua, bán bỏ ô tích kèm hoá đơn; danh sách mua bỏ cột Nhận hoá đơn; nút Tổng hợp, Chi tiết ở danh sách bán hàng chỉ xem | PhuongXT | 12/10/2026 | `2026-10-12-phuongxt-nhom-hhdv-mua-vao.md` |
+| T161 | Mọi form chứng từ khi thêm mới, sửa có nút Tuỳ chỉnh giao diện như lúc xem chi tiết | PhuongXT | 12/10/2026 | `2026-10-12-phuongxt-tuy-chinh-khi-sua.md` |
+| T160 | Số dư ban đầu tab tiền: bỏ Thêm mới, hiện đủ mọi quỹ của đơn vị, gõ số dư rồi Lưu (lưu theo đơn vị) | PhuongXT | 12/10/2026 | `2026-10-11-phuongxt-so-du-ban-dau.md` |
 | T158 | Khởi tạo từ FABi: bỏ bước Đồng bộ bán hàng, popup 3 bước bắt buộc; dùng thử 30 ngày cho mọi gói, hiện ở màn chào, giới thiệu, popup và thanh trên (còn N ngày) | PhuongXT | 12/10/2026 | `2026-10-12-phuongxt-dung-thu-30-ngay.md` |
 | T155 | Kho tách Xuất điều chuyển, Nhập điều chuyển giữa chi nhánh (tham chiếu nhau, Nợ 1368/Có 152, Nợ 152/Có 3368) và Chuyển kho trong chi nhánh (không hạch toán) | Trum | 12/10/2026 | [2026-10-12-trum-dieu-chuyen-chuyen-kho](nhat-ky/2026-10-12-trum-dieu-chuyen-chuyen-kho.md) |
 | T157 | Báo cáo: bán hàng theo ngày, tổng hợp, chi tiết bán hàng; kho: xuất nhập tồn (mã hàng mở thẻ kho), tổng hợp, chi tiết nhập, xuất, hàng trả | Trum | 11/10/2026 | [2026-10-11-trum-bao-cao-ban-hang-kho](nhat-ky/2026-10-11-trum-bao-cao-ban-hang-kho.md) |

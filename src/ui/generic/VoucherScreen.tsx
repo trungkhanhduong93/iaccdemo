@@ -199,7 +199,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
     ...(cfg.loai && !cfg.dieuChinh ? [{ k: 'loai', ten: 'Loại phiếu', o: chonO('loai', 'Loại phiếu', cfg.loai.map(v => [v.k, v.ten])) }] : []),
     ...(muaBan ? [
       { k: 'ttTien', ten: nhom === 'mua' ? 'TT thanh toán' : 'TT thu tiền', o: chonO('ttTien', 'Trạng thái thanh toán', Object.entries(TT_TIEN[nhom as 'mua' | 'ban']).map(([v, x]) => [v, x[1]])) },
-      // danh sách mua bỏ trạng thái nhận hoá đơn, bán giữ xuất hoá đơn (T161)
+      // danh sách mua bỏ trạng thái nhận hoá đơn, bán giữ xuất hoá đơn (T162)
       ...(nhom === 'ban' ? [{ k: 'ttHd', ten: 'Xuất hoá đơn', o: chonO('ttHd', 'Trạng thái hoá đơn', Object.entries(TT_HD.ban).map(([v, x]) => [v, x[1]])) }] : []),
       ...(dsKhoLoc.length ? [{ k: 'kho', ten: 'Kho', o: chonO('kho', 'Kho', dsKhoLoc.map(v => [v, v])) }] : []),
       ...(dsHangLoc.length ? [{ k: 'hang', ten: 'Hàng hoá', o: chonO('hang', 'Hàng hoá', dsHangLoc) }] : []),
@@ -324,7 +324,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
           return <St k={cls}>{nhan}</St>
         },
       } as Col,
-      // Danh sách mua bỏ cột nhận hoá đơn, bán giữ xuất hoá đơn (T161)
+      // Danh sách mua bỏ cột nhận hoá đơn, bán giữ xuất hoá đơn (T162)
       ...(nhom === 'mua' ? [] : [{
         k: 'ttHd',
         t: 'Xuất hoá đơn',

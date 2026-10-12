@@ -620,7 +620,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
                 <span className={`tk-badge ${hienTk ? 'on' : ''}`}>{hienTk ? 'Đang hiện' : 'Đang ẩn'}</span>
               </button>
             )}
-            {/* Tuỳ chỉnh giao diện cả khi thêm mới, sửa, như lúc xem (T160) */}
+            {/* Tuỳ chỉnh giao diện cả khi thêm mới, sửa, như lúc xem (T161) */}
             <button type="button" className="btn" onClick={() => setHopCot(true)} title="Bật tắt ô đầu phiếu, cột bảng chi tiết, tổng chân phiếu">
               <Icon n="chinh" className="ic sm" />Tuỳ chỉnh giao diện
             </button>
@@ -893,7 +893,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
 
               <span className="grow" />
 
-              {/* Ô tích kèm hoá đơn chỉ khi thêm mới, sửa; xem chi tiết thì bỏ, thông tin hoá đơn vẫn hiện ở đầu phiếu (T161) */}
+              {/* Ô tích kèm hoá đơn chỉ khi thêm mới, sửa; xem chi tiết thì bỏ, thông tin hoá đơn vẫn hiện ở đầu phiếu (T162) */}
               {dangSua && <label className="row" style={{ gap: 6, cursor: 'pointer', fontSize: 13 }}>
                 <input
                   type="checkbox"
@@ -1158,7 +1158,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               coKho={Boolean(bo.kho) && !khoDau && !laDc}   // phiếu điều chỉnh: kho ở đầu phiếu (T126)
               khoMacDinh={khoMotCn || 'Kho tổng'}
               coNhapKho={nhom === 'mua' && Boolean(bo.tongNhap)}
-              coNhomHhdv={nhom === 'mua' && nhanKemHd && (s.goi === 'PL' || s.goi === 'PR')}   // T161
+              coNhomHhdv={nhom === 'mua' && nhanKemHd && (s.goi === 'PL' || s.goi === 'PR')}   // T162
               coCk={Boolean(bo.ck)}
               coLo={nhom === 'mua' && s.goi === 'PR'}   // số lô, hạn dùng chỉ có ở gói Pro (T68)
               coKm={kieu !== 'khong'}

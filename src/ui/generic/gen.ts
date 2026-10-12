@@ -11,7 +11,7 @@ export function doiTuongDs(kind: VoucherCfg['doiTuong']): { ma: string; ten: str
   return [{ ma: '', ten: '' }]
 }
 
-/** Nhóm hàng hoá, dịch vụ mua vào theo tờ khai 01/GTGT, chọn trên dòng phiếu mua có hoá đơn (gói Plus, Pro, T161) */
+/** Nhóm hàng hoá, dịch vụ mua vào theo tờ khai 01/GTGT, chọn trên dòng phiếu mua có hoá đơn (gói Plus, Pro, T162) */
 export const NHOM_HHDV = [
   'HHDV dùng riêng cho SXKD chịu thuế, đủ điều kiện khấu trừ',
   'HHDV không đủ điều kiện khấu trừ',
@@ -21,7 +21,7 @@ export const NHOM_HHDV = [
 ]
 
 export interface Dong {
-  nhomHhdv?: string            // nhóm HHDV mua vào (T161), thiếu là nhóm đầu
+  nhomHhdv?: string            // nhóm HHDV mua vào (T162), thiếu là nhóm đầu
   ma: string
   ten: string
   dvt: string

@@ -93,7 +93,7 @@ export function SoDuBanDau({ sc, mod }: ScreenProps) {
   const quyThem = cnThem.map(quyCua)
   // Mở từ Thêm chi nhánh từ FABi (?cnMoi=id,id): chèn sẵn dòng quỹ tiền mặt của chi nhánh mới để gõ số dư (T142)
   const cnMoi = (q0.get('cnMoi') ?? '').split(',').filter(Boolean)
-  // Tab tiền hiện đủ mọi quỹ của đơn vị, quỹ nào có số dư thì gõ rồi Lưu (T159): đơn vị mẫu có quỹ mẫu kèm số dư mẫu;
+  // Tab tiền hiện đủ mọi quỹ của đơn vị, quỹ nào có số dư thì gõ rồi Lưu (T160): đơn vị mẫu có quỹ mẫu kèm số dư mẫu;
   // đơn vị mới (dùng thử, thêm đơn vị) có quỹ tiền mặt của chi nhánh đã lên sổ và các tài khoản ngân hàng, số dư 0
   const coSan = DON_VI.some(d => d.id === s.donVi)
   const [all, setAll] = useState<Row[]>(() => {
@@ -170,7 +170,7 @@ export function SoDuBanDau({ sc, mod }: ScreenProps) {
       <input className="inp sdb-so" inputMode="numeric" value={Number(r.sl) ? money(Number(r.sl)) : ''} placeholder="0" onChange={(e: ChangeEvent<HTMLInputElement>) => suaDong(r.id, { sl: soTien(e.target.value) })} />
     )
     if (tab === 'tk') return [{ k: 'tk', t: 'Số hiệu TK', cls: 'code' }, { k: 'ten', t: 'Tên tài khoản', r: oTen('ten') }, ...tien(''), xoa]
-    if (tab === 'tien') return [{ k: 'ma', t: 'Mã quỹ', cls: 'code' }, { k: 'ct', t: 'Tên quỹ', r: oTen('ct') }, { k: 'kieu', t: 'Loại' }, { k: 'cn', t: 'Chi nhánh', cls: 'dim' }, ...tk, ...tien('Số dư')]   // đủ mọi quỹ, không xoá dòng (T159)
+    if (tab === 'tien') return [{ k: 'ma', t: 'Mã quỹ', cls: 'code' }, { k: 'ct', t: 'Tên quỹ', r: oTen('ct') }, { k: 'kieu', t: 'Loại' }, { k: 'cn', t: 'Chi nhánh', cls: 'dim' }, ...tk, ...tien('Số dư')]   // đủ mọi quỹ, không xoá dòng (T160)
     if (tab === 'kho') return [{ k: 'kho', t: 'Kho' }, { k: 'ma', t: 'Mã hàng', cls: 'code' }, { k: 'ct', t: 'Tên hàng', r: oTen('ct') }, { k: 'dvt', t: 'ĐVT' }, { k: 'sl', t: 'Số lượng', num: true, w: 110, r: oSl }, ...tk, ...tien('Giá trị tồn'), xoa]
     return [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ct', t: tab === 'kh' ? 'Khách hàng' : 'Nhà cung cấp', r: oTen('ct') }, ...tk, ...tien(tab === 'kh' ? 'Còn phải thu' : 'Còn phải trả'), xoa]
   }, [tab, noCo, all])   // eslint-disable-line react-hooks/exhaustive-deps

@@ -90,12 +90,12 @@ function dongMonDon(x: XPos) {
   }))
 }
 
-/** Hộ kinh doanh được giảm 20% mức tỷ lệ % tính thuế GTGT trên doanh thu (PhuongXT chốt 12/10/2026, T162).
+/** Hộ kinh doanh được giảm 20% mức tỷ lệ % tính thuế GTGT trên doanh thu (PhuongXT chốt 12/10/2026, T163).
  *  Tỷ lệ lấy theo ngành Dịch vụ ăn uống của danh mục ngành nghề */
 const TL_GTGT_HKD = timNganhNghe('301-5')?.gtgt ?? 3
 export const giamThueHkd = (dt: number) => Math.round(dt * TL_GTGT_HKD * 0.2 / 100)
 
-/** Cột theo loại hình đơn vị (T162): hộ kinh doanh bỏ Thuế suất, Tiền thuế, luôn hiện Giảm thuế GTGT; doanh nghiệp luôn hiện Thuế suất, Tiền thuế */
+/** Cột theo loại hình đơn vị (T163): hộ kinh doanh bỏ Thuế suất, Tiền thuế, luôn hiện Giảm thuế GTGT; doanh nghiệp luôn hiện Thuế suất, Tiền thuế */
 const anTheoLoai = (an: string[], hkd: boolean) => hkd ? [...an.filter(k => k !== 'giamThue'), 'ts', 'thue'] : an.filter(k => k !== 'ts' && k !== 'thue')
 
 /** Dòng món của chứng từ: hoá đơn FABi lấy món của đơn, chứng từ gộp chia doanh thu theo cơ cấu món */
@@ -207,7 +207,7 @@ export function ChungTuBanHang({ sc, mod }: ScreenProps) {
       id: String(i), so: soFabi(`fabi-${x.seed}`), ngay: `${dmy(x.date)} ${x.gio}`, thang: x.date.getMonth() + 1, cn: cnTen(x.cn), x, kenh: x.kenh,
       dienGiai: x.loai === 'don' ? `Hoá đơn FABi ${x.kenh.toLowerCase()} ${x.gio} ngày ${dmy(x.date).slice(0, 5)}` : `Doanh thu ${x.kenh.toLowerCase()} ${x.don} đơn POS ngày ${dmy(x.date).slice(0, 5)}`,
       doiTuong: 'Khách lẻ POS',
-      // hộ kinh doanh: không tiền thuế, tổng tiền = doanh thu − giảm thuế GTGT (T162)
+      // hộ kinh doanh: không tiền thuế, tổng tiền = doanh thu − giảm thuế GTGT (T163)
       tien: x.dt, thue: hkd ? 0 : x.vat, giamThue: hkd ? giamThueHkd(x.dt) : 0, tong: hkd ? x.dt - giamThueHkd(x.dt) : x.dt + x.vat, nguon: 'FABi', tt: i < 3 ? 'nhap' : 'ghi',
       ngayTao: `${dmy(x.date)} 23:30`, nguoiTao: 'Hệ thống',   // tạo khi đồng bộ FABi cuối ngày (T132)
     })), [cach, hkd])
@@ -345,7 +345,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
     { k: 'kenh', t: 'Kênh bán', w: 140 },   // T113
     ...(cnChon ? [] : [{ k: 'cn', t: 'Chi nhánh', cls: 'dim' } as Col]),
     { k: 'tien', t: 'Doanh thu trước thuế', num: true, w: 160 },
-    hkd ? { k: 'giamThue', t: 'Giảm thuế GTGT', num: true, w: 130 } : { k: 'thue', t: 'Tiền thuế', num: true, w: 120 },   // T162
+    hkd ? { k: 'giamThue', t: 'Giảm thuế GTGT', num: true, w: 130 } : { k: 'thue', t: 'Tiền thuế', num: true, w: 120 },   // T163
     // bỏ cột Nguồn: Xuất bán POS chỉ có nguồn FABi (T115)
     { k: 'ngayTao', t: 'Ngày tạo', w: 140 }, { k: 'nguoiTao', t: 'Người tạo', w: 130 },   // T132
     { k: 'tong', t: 'Tổng tiền', num: true, w: 120 },   // Tổng tiền là cột cuối (T48)
@@ -362,7 +362,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
           <div className="ds-thanh">
             <div className="ds-chips-wrap" />
             <div className="ds-thanh-phai">
-              {/* Cách đồng bộ FABi đang dùng, chỉ để xem, không bấm được (T113, T161) */}
+              {/* Cách đồng bộ FABi đang dùng, chỉ để xem, không bấm được (T113, T162) */}
               <span className="chip info" title={`Đồng bộ FABi ${(s.dongBoFabi ?? 'kenh') === 'chiTiet' ? 'chi tiết theo hoá đơn' : 'tổng hợp theo kênh'}`}>
                 <Icon n="refresh" className="ic sm" />{(s.dongBoFabi ?? 'kenh') === 'chiTiet' ? 'Chi tiết' : 'Tổng hợp'}
               </span>
@@ -603,7 +603,7 @@ const AN_POS_MAC_DINH = ['giamThue', 'phiVc']
 function NoiDungTab({ x, tab, kieu, an: an0 = AN_POS_MAC_DINH, hkd = false }: { x: (typeof DAILY)[number]; tab: string; kieu: ReturnType<typeof kieuGhiSo>; an?: string[]; hkd?: boolean }) {
   const an = anTheoLoai(an0, hkd)
   const dong0 = dongCuaPhieu(x)
-  // hộ kinh doanh: giảm thuế GTGT của phiếu chia cho các món theo doanh thu trước thuế (T162)
+  // hộ kinh doanh: giảm thuế GTGT của phiếu chia cho các món theo doanh thu trước thuế (T163)
   const giam = hkd ? chiaTheo(giamThueHkd(x.dt), dong0.map(d => d.dtTruocThue), 1) : []
   const dong = hkd ? dong0.map((d, i) => ({ ...d, giamThue: giam[i] })) : dong0
   const ht = [
@@ -716,7 +716,7 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
   const [anCot, setAnCot] = useState<string[]>(() => {
     try { const v = JSON.parse(localStorage.getItem(khoaCot) ?? 'null'); return Array.isArray(v) ? v : AN_POS_MAC_DINH } catch { return AN_POS_MAC_DINH }
   })
-  // Cột thuế theo loại hình đơn vị, cố định nên không có trong Tuỳ chỉnh giao diện (T162)
+  // Cột thuế theo loại hình đơn vị, cố định nên không có trong Tuỳ chỉnh giao diện (T163)
   const hkd = loaiHinhDv(s, donViHienTai(s)) === 'hkd'
   const cotChinh = hkd ? ['ts', 'thue', 'giamThue'] : ['ts', 'thue']
   const [hopCot, setHopCot] = useState(false)
@@ -728,7 +728,7 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
   const kieu = kieuGhiSo(s.cheDo)
   // phiếu giảm giá áp cho cả đơn nên ở dải đáy; chiết khấu đã thành cột trên dòng; dữ liệu mẫu bằng 0 (T106)
   const phieuGiam = 0
-  // hộ kinh doanh: tổng tiền = doanh thu − giảm thuế GTGT, không cộng tiền thuế (T162)
+  // hộ kinh doanh: tổng tiền = doanh thu − giảm thuế GTGT, không cộng tiền thuế (T163)
   const giamThue = hkd ? giamThueHkd(x.dt) : 0
   const tong = hkd ? x.dt - giamThue - phieuGiam : x.dt + x.vat - phieuGiam
   const pttt = PTTT.filter(([k]) => Number(x[k]) > 0).map(([, t]) => t).join(', ')

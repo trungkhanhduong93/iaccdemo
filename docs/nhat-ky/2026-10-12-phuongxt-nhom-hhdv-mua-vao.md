@@ -1,4 +1,4 @@
-# Nhóm HHDV mua vào, bỏ ô kèm hoá đơn khi xem (T161)
+# Nhóm HHDV mua vào, bỏ ô kèm hoá đơn khi xem (T162)
 
 - Ngày: 12/10/2026
 - Người: PhuongXT, agent: Claude Code
@@ -16,7 +16,7 @@
 
 - `npm run typecheck`, `npm run build`: không lỗi.
 - `PYTHONIOENCODING=utf-8 python tools/kiem_tra.py --nhanh`: Không có lỗi.
-- `kiem_van.py` 5 file đã sửa: 0 ĐỎ. Còn 1 VÀNG có từ trước ở `ChungTuForm.tsx` (câu "Bạn có chắc chắn"), không do T161.
+- `kiem_van.py` 5 file đã sửa: 0 ĐỎ. Còn 1 VÀNG có từ trước ở `ChungTuForm.tsx` (câu "Bạn có chắc chắn"), không do T162.
 - Bấm thử Phố Mây gói Plus. Danh sách mua hàng không còn cột Nhận hoá đơn. Xem chi tiết phiếu mua không có ô tích. Thêm phiếu mua, tích Nhận kèm hoá đơn thì hiện cột Nhóm HHDV mua vào; bỏ tích thì cột ẩn. Chip ở danh sách Xuất bán POS là chữ, không bấm được. Phiên giữ nguyên Phố Mây gói Plus.
 
 ## Dở dang, việc tiếp theo
