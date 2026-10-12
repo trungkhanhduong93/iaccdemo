@@ -9,6 +9,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 - T162: Phiếu mua gói Plus, Pro tích Nhận kèm hoá đơn thì dòng chi tiết có cột Nhóm HHDV mua vào. Xem chi tiết phiếu mua, bán không còn ô tích kèm hoá đơn. Danh sách mua hàng bỏ cột Nhận hoá đơn. Chip Tổng hợp, Chi tiết ở danh sách Xuất bán POS chỉ để xem.
 - T161: Form chứng từ khi thêm mới, sửa có nút Tuỳ chỉnh giao diện như lúc xem chi tiết.
 - T160: Số dư ban đầu tab tiền hiện sẵn đủ mọi quỹ, không còn Thêm mới; quỹ nào có số dư thì gõ rồi bấm Lưu.
+- T159: Thẻ chi phí phân bổ: mọi gói bỏ ghi tăng từng thẻ, nút chính là Ghi tăng (trước là Ghi tăng hàng loạt), kèm Ghi tăng dư đầu kỳ. Ngày bắt đầu phân bổ và ngừng phân bổ đặt theo từng dòng chi tiết; tích ngừng thì hiện cột ngày ngừng (gói Standard, Plus chọn tháng, lưu ngày cuối tháng), phải sau hoặc bằng ngày bắt đầu. Thông tin mua của thẻ ghi tăng chỉ xem, bấm số chứng từ mở chứng từ gốc.
 - T158: Dùng thử 30 ngày cho mọi gói: màn chào, màn giới thiệu, popup khởi tạo ghi rõ, thanh trên có nhãn Dùng thử · còn N ngày (bấm mở Gói thuê bao). Popup khởi tạo còn 3 bước (bỏ Đồng bộ bán hàng) và bắt buộc làm xong mới dùng phần mềm.
 - T155: Kho tách Xuất điều chuyển, Nhập điều chuyển giữa chi nhánh (phiếu nhập chọn phiếu xuất tham chiếu, hạch toán qua 1368, 3368) và Chuyển kho trong chi nhánh, không hạch toán.
 

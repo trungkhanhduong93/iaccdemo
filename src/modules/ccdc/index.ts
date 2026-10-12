@@ -6,6 +6,15 @@ import { THE_PHAN_BO, bangPhanBo, daPhanBoToiKy, veChiTietThe } from './the-phan
 import { GhiTangHangLoat } from './GhiTangHangLoat'
 import { CCDC_HANG, CHI_NHANH } from '../../data/mock'
 
+/** Chứng từ gốc của thẻ mẫu theo thứ tự thẻ: phiếu chi, uỷ nhiệm chi mẫu có sẵn ở Thu, chi tiền (T159) */
+const GOC_MAU = ([
+  ['chi-3', 'PC2610-0250', '03/10/2026', 'Chi mua rau, củ tại chợ'], ['chi-6', 'PC2609-0240', '29/09/2026', 'Chi mua rau, củ tại chợ'],
+  ['unc-1', 'UNC2610-0256', '05/10/2026', 'Trả tiền nhà cung cấp thịt bò'], ['unc-8', 'UNC2609-0236', '25/09/2026', 'Trả tiền thuê mặt bằng tháng 10'],
+  ['unc-7', 'UNC2609-0237', '26/09/2026', 'Trả tiền nhà cung cấp thịt bò'], ['chi-8', 'PC2609-0236', '26/09/2026', 'Chi tiền gas tháng 10'],
+  ['chi-0', 'PC2610-0259', '07/10/2026', 'Chi tiền điện tháng 9'], ['unc-2', 'UNC2610-0252', '03/10/2026', 'Trả tiền thuê mặt bằng tháng 10'],
+  ['chi-5', 'PC2609-0243', '30/09/2026', 'Chi tiền gas tháng 10'], ['unc-5', 'UNC2609-0244', '28/09/2026', 'Nộp thuế GTGT tháng 9'],
+] as const).map(([id, soCt, ngayCt, ghiChuCt]) => ({ _goc: `/app/tien/2-1-1/${id}`, soCt, ngayCt, ghiChuCt }))
+
 /** Thẻ chi phí phân bổ mẫu: [số thẻ, loại, ngày ghi tăng, các dòng [mã, tên, số tiền, số tháng, thêm?]]; thêm: số lượng (CCDC), số hiệu, mô tả (TSCĐ) */
 const THE_MAU = ([
   ['TPB2601-0001', 'Công cụ dụng cụ', '05/01/2026', [['CC001', 'Bộ nồi inox 50 lít', 24_600_000, 12]]],
@@ -24,8 +33,8 @@ const THE_MAU = ([
     ['TSCD.0001', 'Máy rửa chén công nghiệp', 186_000_000, 60, { soHieu: 'MRC-2026-01', moTa: 'Máy rửa chén băng chuyền, 1.000 đĩa mỗi giờ, đặt tại bếp Lê Lợi' }],
     ['TSCD.0002', 'Hệ thống hút khói bếp', 124_000_000, 60, { soHieu: 'HK-LL-02', moTa: 'Chụp hút inox 6m, quạt ly tâm, ống dẫn ra mái' }]]],
 ] as [string, string, string, [string, string, number, number, { sl?: number; soHieu?: string; moTa?: string }?][]][]).map(([soThe, loai, ngay, dong], i) => ({
-  soThe, loai, ngay, ngayPb: ngay, _kieu: 'the', ngung: 0, cn: CHI_NHANH[i % CHI_NHANH.length].ten,
-  dong: dong.map(([ma, ten, gt, ky, them]) => ({ ma, ten, dvt: CCDC_HANG.find(h => h.ma === ma)?.dvt, gt, ky, sl: them?.sl ?? 1, dg: gt / (them?.sl ?? 1),
+  soThe, loai, ngay, ngayPb: ngay, _kieu: 'the', cn: CHI_NHANH[i % CHI_NHANH.length].ten, ...GOC_MAU[i],
+  dong: dong.map(([ma, ten, gt, ky, them]) => ({ ma, ten, dvt: CCDC_HANG.find(h => h.ma === ma)?.dvt, gt, ky, sl: them?.sl ?? 1, dg: gt / (them?.sl ?? 1), ngayPb: ngay,
     soHieu: them?.soHieu, moTa: them?.moTa, _maTay: true })),
 }))
 
@@ -43,7 +52,7 @@ const ccdc: ModuleDef = {
   screens: [...tuExcel(7, {
     '8.1.1': { kind: 'catalog', catalog: { them: 'Ghi tăng', nhomLoc: 'loai', nhanLoc: 'Loại thẻ', truong: THE_PHAN_BO, stt: true, kySoLieu: true,
       // Như danh sách chứng từ: phân trang, dòng Tổng, xem nhanh các dòng của thẻ ở khung dưới
-      hangLoat: { nhan: 'Ghi tăng hàng loạt', Form: GhiTangHangLoat },
+      hangLoat: { nhan: 'Ghi tăng', Form: GhiTangHangLoat },   // ghi tăng thẻ từ các dòng phiếu chi chờ phân bổ, mọi gói (T159)
       dsChungTu: { cotCong: ['gt', 'da', 'con'], cotSo: 'soThe', so: r => r.soThe, moTa: r => `(${r.ngay}) — ${r.ten}`, chiTiet: veChiTietThe }, cols: [{ k: 'soThe', t: 'Số thẻ', cls: 'code' }, { k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên' }, { k: 'loai', t: 'Loại' }, { k: 'ngay', t: 'Ngày ghi tăng' },
       { k: 'gt', t: 'Giá trị', num: true }, { k: 'ky', t: 'Số kỳ phân bổ', num: true }, { k: 'da', t: 'Đã phân bổ', num: true }, { k: 'con', t: 'Còn lại', num: true }],
       // Mặc định ẩn thẻ hết phân bổ: chỉ hiện thẻ còn phân bổ ở kỳ này hoặc còn giá trị sau kỳ này

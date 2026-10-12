@@ -1,4 +1,4 @@
-// Ghi tăng hàng loạt thẻ chi phí phân bổ: các dòng phiếu chi lý do Chi phí chờ phân bổ chưa thành thẻ (sau bổ sung hoá đơn mua hàng).
+// Ghi tăng thẻ chi phí phân bổ (nút Ghi tăng, trước là Ghi tăng hàng loạt): các dòng phiếu chi lý do Chi phí chờ phân bổ chưa thành thẻ (sau bổ sung hoá đơn mua hàng).
 // Mỗi dòng thành một thẻ: chọn loại thẻ, ngày bắt đầu phân bổ, số kỳ; số thẻ tự sinh, số tiền mỗi kỳ tự tính. Bấm Tạo để ghi tăng.
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -76,7 +76,7 @@ export function GhiTangHangLoat({ soDong, onDong }: { soDong: number; onDong: ()
   }
 
   return (
-    <FormToanMan icon="tool" title="Ghi tăng hàng loạt thẻ chi phí phân bổ" onClose={onDong}
+    <FormToanMan icon="tool" title="Ghi tăng thẻ chi phí phân bổ" onClose={onDong}
       meta={<span className="muted">Các dòng phiếu chi lý do Chi phí chờ phân bổ chưa tạo thẻ. Mỗi dòng được chọn thành một thẻ.</span>}
       foot={(
         <>
