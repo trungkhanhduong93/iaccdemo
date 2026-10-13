@@ -20,7 +20,7 @@
 ## Dở dang, việc tiếp theo
 
 - Không.
-- Ảnh PhuongXT gửi ghi bộ sổ nhóm 2 là S2a (sổ chi tiết tiền và tài sản), S2d (sổ TSCĐ), khác với phần mềm đang làm theo T108 (S2a sổ doanh thu theo dõi GTGT, S2d sổ chi tiết tiền, S4b sổ TSCĐ). Chưa đổi, chờ đối chiếu văn bản TT58 gốc (T04).
+- Ảnh PhuongXT gửi ghi bộ sổ nhóm 2 là S2a (sổ chi tiết tiền và tài sản), S2d (sổ TSCĐ), khác với phần mềm đang làm theo T108 (S2a sổ doanh thu theo dõi GTGT, S2d sổ chi tiết tiền, S4b sổ TSCĐ). PhuongXT xác nhận phần mềm đúng, theo danh sách biểu mẫu TT58 ở https://thuvienphapluat.vn/hoi-dap-phap-luat/toan-bo-bieu-mau-thong-tu-582026ttbtc-bieu-mau-ke-toan-cho-doanh-nghiep-sieu-nho-tu-01072026-nhu-th-138091871.html. Giữ nguyên.
 
 ## Bẫy, quyết định mới
 
