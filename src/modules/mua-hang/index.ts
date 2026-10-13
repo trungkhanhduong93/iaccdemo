@@ -28,7 +28,7 @@ const muaHang: ModuleDef = {
       dienGiai: ['Gắn hoá đơn cho phiếu mua tuần trước', 'Nhà cung cấp xuất hoá đơn gộp cuối tháng'], noCo: [['1331', '331', 'Thuế GTGT được khấu trừ bổ sung']] } },
     // Báo cáo mua hàng, nhập hàng tính từ phiếu mua 4.1.1, theo chi nhánh trên thanh trên (T63)
     '4.2.1': { ten: 'Chi tiết mua hàng', report: { kieu: 'bangke', theoCn: true, ...chiTietMua } },
-    '4.2.2': { ten: 'Tổng hợp mua hàng', report: { kieu: 'bangke', theoCn: true, ...tongHopMua } },
+    '4.2.2': { ten: 'Tổng hợp mua hàng theo NCC', report: { kieu: 'bangke', theoCn: true, ...tongHopMua } },   // PhuongXT đổi tên (T200)
     '4.2.4': { report: { kieu: 'bangke', theoCn: true, ...tongHopNhap } },
     '4.2.5': { report: { kieu: 'bangke', theoCn: true, ...chiTietNhap } },
     '4.2.3': { ten: 'Công nợ nhà cung cấp', report: { kieu: 'bangke', theoCn: true, cols: colsCongNo('ncc'), rows: (t, cn) => rowsCongNo('ncc', t, cn) } },   // theo mẫu iFaster, bấm tên mở lịch sử công nợ (T185)

@@ -26,7 +26,7 @@ export const quyTrinh: QuyTrinhDef = {
       ] },
     ],
     ra: { ten: 'Sổ sách, báo cáo', nut: [
-      { ten: 'Tổng hợp mua hàng', icon: 'truck', di: 'mua-hang/4-2-2' },
+      { ten: 'Tổng hợp mua hàng theo NCC', icon: 'truck', di: 'mua-hang/4-2-2' },
       { ten: 'Chi tiết mua hàng', icon: 'doc', di: 'mua-hang/4-2-1' },
       { ten: 'Tổng hợp nhập', icon: 'box', di: 'mua-hang/4-2-4' },
       { ten: 'Chi tiết nhập', icon: 'filein', di: 'mua-hang/4-2-5' },
