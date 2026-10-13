@@ -4,13 +4,16 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T201.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T204.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T202 | Điện thoại: Sổ quỹ tiền mặt (2.2.1) hiện dạng bảng như Sổ ngân hàng (chip Thời gian, Kho/CN, ô lọc dòng), bỏ tờ giấy thu nhỏ | Trum | Đang làm | Anti B code. Sửa `src/ui/mobile/manMobile.ts`, `MSoBaoCao.tsx`. Bản máy tính giữ nguyên |
+| T203 | Điện thoại: báo cáo tạm bỏ đóng băng cột và tiêu đề, cuộn tự do bốn hướng | Trum | Đang làm | Anti B code. Sửa `MSoBaoCao.tsx`, `app.css` mục T202–T204 |
+| T204 | Điện thoại: trang chủ theo bố cục IVT (`docs/ivt-anh/01-trang-chu.png`): tab Quản trị, Cần theo dõi, chip Kho, thẻ tồn kho, chi phí nguyên vật liệu, hao hụt, tỷ lệ tồn các kho | Trum | Đang làm | Anti B code. Sửa `src/ui/mobile/MTrangChu.tsx`, `app.css` |
 | T201 | Mọi báo cáo có cột số chứng từ: bấm số mở chứng từ chi tiết | PhuongXT | Đang làm | Sửa `src/ui/generic/ReportScreen.tsx`, file mới dò số chứng từ trong `src/ui/generic/`, `bao-cao/cong-no.tsx` |
 | T186 | Điện thoại: Xuất bán POS (3.1.1) còn báo dùng máy tính | | Chờ | Từ rà soát T184 (`MChiMayTinh`). Làm màn điện thoại riêng trong `src/ui/mobile/`, nối ở `manMobile.ts` |
 | T187 | Điện thoại: Danh mục tài khoản (1.1), Danh mục chi nhánh còn báo dùng máy tính | | Chờ | Từ rà soát T184. Có thể dùng lại `MDanhMuc`, `MFormDm` của đợt 3, 6 |
