@@ -17,19 +17,24 @@
 - `tools/kiem_tra.py`: cờ `--dien-thoai` (khung 390×844, 17 địa chỉ, bấm 4 tab, chụp `tools/shots/m-*.png`); in tiếng Việt không lỗi mã hoá trên Windows.
 - `docs/ke-hoach-mobile-ivt.md`: mục 8 ghi rõ cách chụp và từng ảnh phải thấy gì; đợt 7 ghi chú báo cáo còn lại sau T171.
 
+- Vòng 2 (Trum duyệt 3 đề xuất): tắt thu phóng `heSoZoom` khi ở điện thoại (`src/ui/zoom.ts`, `app.css`), khung rộng đủ màn hình (trước chỉ 332px trên màn 390px), phông Be Vietnam Pro đứng đầu, logo ACCOUNTING trên thanh trên tab Trang chủ, `kiem_tra.py --dien-thoai` kiểm bề rộng khung và logo.
+- Đợt 0: Trum chụp 15 ảnh IVT Pro vào `docs/ivt-anh/`. Kế hoạch có mục 4b mô tả từng khung ảnh, bảng 5.2 điền số đo; QD54 thêm phông, biểu tượng, logo.
+
 ## Đã kiểm
 
 - `npm run typecheck`: không lỗi. `npm run build`: chạy xong, không lỗi.
 - `python tools/kiem_tra.py`: 571 lượt mở màn, Không có lỗi.
 - `python tools/kiem_tra.py --dien-thoai`: 17 địa chỉ, Không có lỗi.
 - So 25 ảnh bản máy tính trước và sau: 14 ảnh khác ở nút "Trải nghiệm gói" góc trên phải (hiệu ứng chạy theo thời gian), xem bằng mắt giống nhau. Không có chỗ khác.
+- Vòng 2: typecheck, build, `--nhanh`, `--dien-thoai`, lượt đủ 4 gói đều sạch; so ảnh bản máy tính chỉ khác vùng nút có hiệu ứng. Ảnh 390px: khung rộng đủ, có logo.
+- Mô tả ảnh 06 tới 14 do Anti B viết lần đầu bị bịa (ghi 1 khung cho ảnh 3 khung); Anti A viết lại sau khi cắt từng khung, đã đối chiếu ảnh 06 với mắt.
 - Chưa thử trên điện thoại thật.
 
 ## Dở dang, việc tiếp theo
 
-- Đợt 0: Trum chụp 16 ảnh theo mục 8 của `docs/ke-hoach-mobile-ivt.md`, bỏ vào `docs/ivt-anh/`. Có ảnh thì đo số, thay số tạm trong bảng 5.2 và biến `--m-*` ở `app.css`.
+- Đợt 0 xong, còn chờ Trum báo đời iPhone để chốt hệ số (đang giả định 1 khung 587px = 390pt). Đợt 2 dùng số đo bảng 5.2 thay biến `--m-*` tạm ở `app.css`.
 - Đợt 2: Trang chủ, Nghiệp vụ, Khác (mục 7 của kế hoạch). Thay `RouteTamMobile` trong `App.tsx` bằng màn thật.
 
 ## Bẫy, quyết định mới
 
-- Anti B chạy `agy` trong WSL: tab Orca phải là PowerShell chạy `wsl.exe`, đặt `WSLENV` gồm các biến `ORCA_*` và tạo lệnh `orca` trỏ về `orca.exe`, xem `backup/anti-b.sh` trên máy Trum. `--shell wsl.exe` bị Orca từ chối vì dự án chạy trên Windows.
+- Anti B chạy `agy` trong WSL: tab Orca phải là PowerShell chạy `wsl.exe`, đặt `WSLENV` gồm các biến `ORCA_*` và tạo lệnh `orca` trỏ về `orca.exe`, xem `backup/anti-b.sh` trên máy Trum. `--shell wsl.exe` bị Orca từ chối vì dự án chạy trên Windows. Orca không nhận ra agy trong WSL nên phải gửi việc bằng `orca terminal send`. Anti B trong WSL không xem được ảnh: việc đọc ảnh giao Anti A (Windows).

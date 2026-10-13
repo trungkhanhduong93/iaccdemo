@@ -86,6 +86,24 @@ def kiem_tra_dien_thoai():
                 loi.append(f'{path}: không có .m-than (trắng trang)')
             elif not than_txt:
                 loi.append(f'{path}: .m-than không có chữ (trắng trang)')
+            win_w, app_w, duoi_w = pg.evaluate("""() => {
+                const w = window.innerWidth;
+                const a = document.querySelector('.m-app');
+                const d = document.querySelector('.m-thanh-duoi');
+                return [
+                    w,
+                    a ? a.getBoundingClientRect().width : null,
+                    d ? d.getBoundingClientRect().width : null,
+                ];
+            }""")
+            for rong in (app_w, duoi_w):
+                if rong is None or abs(rong - win_w) > 1:
+                    loi.append(f'{path}: khung rộng {round(rong if rong is not None else 0)}px, màn rộng {round(win_w)}px')
+                    break
+            if path == '/app':
+                co_logo = pg.locator('.m-thanh-tren img, .m-thanh-tren .m-thanh-tren-tieu-de svg, .m-thanh-tren svg.logo').count() > 0
+                if not co_logo:
+                    loi.append('/app: không có logo trên .m-thanh-tren')
 
         SHOTS.mkdir(exist_ok=True)
         tabs = [

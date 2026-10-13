@@ -7,7 +7,8 @@ import { ghiGanDay } from '../../app/CommandPalette'
 import { OnboardFabi } from '../../modules/onboarding/OnboardFabi'
 import { Icon } from '../Icon'
 import { Dropdown, MenuHead, MenuItem, MenuSep } from '../Dropdown'
-import { ThanhDuoi } from './ThanhDuoi'
+import { Logo } from '../Logo'
+import { ThanhDuoi, tabDangChon } from './ThanhDuoi'
 
 function laManGoc(pathname: string): boolean {
   const p = pathname.replace(/\/+$/, '')
@@ -57,6 +58,7 @@ export function MobileShell() {
   const cn = dsCn.find(c => c.id === s.chiNhanh)
 
   const laGoc = laManGoc(loc.pathname)
+  const laTrangChu = tabDangChon(loc.pathname) === 'trang-chu'
   const tieuDe = layTieuDe(loc.pathname)
 
   return (
@@ -74,7 +76,9 @@ export function MobileShell() {
             </button>
           )}
         </div>
-        <h1 className="m-thanh-tren-tieu-de">{tieuDe}</h1>
+        <h1 className="m-thanh-tren-tieu-de">
+          {laTrangChu ? <Logo cao={30} nen="sang" /> : tieuDe}
+        </h1>
         <div className="m-thanh-tren-phai">
           <Dropdown
             btnClass="m-cn-btn"
