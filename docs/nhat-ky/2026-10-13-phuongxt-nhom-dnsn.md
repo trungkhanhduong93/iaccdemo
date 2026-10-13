@@ -8,7 +8,7 @@
 
 - `src/modules/bao-cao/tt58.ts`: thêm `NHOM_DNSN`, 4 nhóm theo cách nộp thuế (1: GTGT, TNDN tỷ lệ % doanh thu; 2: GTGT tỷ lệ %, TNDN thu nhập tính thuế; 3: GTGT khấu trừ, TNDN tỷ lệ %; 4: GTGT khấu trừ, TNDN thu nhập tính thuế). `moTaBoSoTT58` ghi gọn danh sách sổ, bỏ chữ "Trường hợp".
 - `src/modules/onboarding/OnboardFabi.tsx`: bước 1 popup khởi tạo, chọn Doanh nghiệp gói Standard (TT58) thì hiện "Doanh nghiệp siêu nhỏ thuộc nhóm nào?" với 4 nhóm, mỗi nhóm ghi bộ sổ. Mặc định Nhóm 2. Lưu `ppGtgt`, `ppTndn` vào phiên khi hoàn tất.
-- `src/modules/he-thong/HeThong.tsx`: Thông tin đơn vị, doanh nghiệp chế độ TT58 thay hai ô Phương pháp thuế GTGT, TNDN bằng ô Nhóm doanh nghiệp siêu nhỏ, dưới ô ghi bộ sổ. Doanh nghiệp chế độ khác giữ như cũ.
+- `src/modules/he-thong/HeThong.tsx`: Thông tin đơn vị, doanh nghiệp chế độ TT58 thay hai ô Phương pháp thuế GTGT, TNDN bằng ô Nhóm doanh nghiệp siêu nhỏ, dưới ô ghi bộ sổ. Doanh nghiệp chế độ khác giữ như cũ. Ô Thông tư áp dụng chuyển từ card Chế độ kế toán lên card Thông tin kê khai, cạnh ô Loại hình.
 
 ## Đã kiểm
 
