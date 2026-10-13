@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import type { ModuleDef, ScreenDef, ScreenProps } from '../types'
 import { MODULES, apDung, hienMan, hienPhanHe, maKhoa, moDuoc, phanHeKhoa, tenMan } from '../../app/registry'
-import { useSession } from '../../app/session'
+import { useSession, type Session } from '../../app/session'
 import { CHE_DO } from '../../app/che-do'
 import { anNgoaiGoi, minGoi } from '../../app/plan'
 import { Icon } from '../../ui/Icon'
@@ -11,6 +11,36 @@ import { PageHead, Pk } from '../../ui/Page'
 import { fold } from '../../ui/format'
 import { ThanhLoc } from '../../ui/ThanhLoc'
 import { cauHinhBC, kyHieuBC } from './danh-sach'
+
+export interface NhomBaoCaoItem {
+  mod: ModuleDef
+  screens: ScreenDef[]
+}
+
+/** Tách hàm thuần gom nhóm báo cáo dùng chung cho bản máy tính và điện thoại (T182) */
+export function layNhomBaoCao(s: Session): NhomBaoCaoItem[] {
+  const phanHeBC = MODULES.find(m => m.key === 'bao-cao')
+  const tatCaBC = phanHeBC?.screens.filter(x => x.goc) ?? []
+
+  // Sổ, báo cáo có mẫu của thông tư đang dùng gom vào một nhóm riêng đứng đầu ở Tất cả báo cáo (T171)
+  const laSoTT = (x: ScreenDef) => Boolean(kyHieuBC(x.code, s.cheDo, s))
+  // Xếp theo ký hiệu mẫu như thứ tự trong thông tư: sổ (S...) trước, báo cáo tài chính (B...) sau
+  const thuTuMau = (x: ScreenDef) => { const k = kyHieuBC(x.code, s.cheDo, s) ?? ''; return `${/^S/.test(k) ? 0 : 1}${k}` }
+  const soTT = tatCaBC.filter(laSoTT).sort((a, b) => thuTuMau(a).localeCompare(thuTuMau(b), 'vi', { numeric: true }))
+  const tenSoTT = `Sổ sách kế toán theo ${CHE_DO[s.cheDo].ngan}`
+
+  // Gom theo x.goc theo thứ tự phân hệ trong MODULES
+  const nhomGoc: NhomBaoCaoItem[] = []
+  for (const m of MODULES) {
+    if (m.key === 'bao-cao') continue
+    // Nhóm phân hệ vẫn hiện khi chưa có báo cáo (phân hệ mở được ở gói); sổ đã ở nhóm thông tư thì không lặp lại
+    if (!tatCaBC.some(x => x.goc === m.key) || !hienPhanHe(m, s.goi) || phanHeKhoa(m, s.goi)) continue
+    nhomGoc.push({ mod: m, screens: tatCaBC.filter(x => x.goc === m.key && !laSoTT(x)) })
+  }
+
+  const modSoTT = { key: 'so-sach', ten: tenSoTT, ngan: 'Sổ sách', mota: `Sổ sách và báo cáo theo ${CHE_DO[s.cheDo].ngan}` } as ModuleDef
+  return [{ mod: modSoTT, screens: soTT }, ...nhomGoc]
+}
 
 function docGhim(): string[] {
   try {
@@ -63,22 +93,11 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
   const phanHeBC = MODULES.find(m => m.key === 'bao-cao')
   const tatCaBC = phanHeBC?.screens.filter(x => x.goc) ?? []
 
-  // Sổ, báo cáo có mẫu của thông tư đang dùng gom vào một nhóm riêng đứng đầu ở Tất cả báo cáo (T171)
-  const laSoTT = (x: ScreenDef) => Boolean(kyHieuBC(x.code, s.cheDo, s))
-  // Xếp theo ký hiệu mẫu như thứ tự trong thông tư: sổ (S...) trước, báo cáo tài chính (B...) sau
-  const thuTuMau = (x: ScreenDef) => { const k = kyHieuBC(x.code, s.cheDo, s) ?? ''; return `${/^S/.test(k) ? 0 : 1}${k}` }
-  const soTT = tatCaBC.filter(laSoTT).sort((a, b) => thuTuMau(a).localeCompare(thuTuMau(b), 'vi', { numeric: true }))
-  const tenSoTT = `Sổ sách kế toán theo ${CHE_DO[s.cheDo].ngan}`
+  const nhomTatCa = layNhomBaoCao(s)
+  const [nhomSoTT, ...nhomGoc] = nhomTatCa
+  const soTT = nhomSoTT.screens
+  const tenSoTT = nhomSoTT.mod.ten
   const chiSoTT = sc.slug === 'tat-ca' && tham.get('nhom') === 'so-sach'
-
-  // Gom theo x.goc theo thứ tự phân hệ trong MODULES
-  const nhomGoc: { mod: ModuleDef; screens: ScreenDef[] }[] = []
-  for (const m of MODULES) {
-    if (m.key === 'bao-cao') continue
-    // Nhóm phân hệ vẫn hiện khi chưa có báo cáo (phân hệ mở được ở gói); sổ đã ở nhóm thông tư thì không lặp lại
-    if (!tatCaBC.some(x => x.goc === m.key) || !hienPhanHe(m, s.goi) || phanHeKhoa(m, s.goi)) continue
-    nhomGoc.push({ mod: m, screens: tatCaBC.filter(x => x.goc === m.key && !laSoTT(x)) })
-  }
 
   // Số báo cáo hiện được ở rail (ẩn màn theo hienMan)
   const nhomRail = nhomGoc

@@ -914,7 +914,7 @@ export function gopSo(phan: { cn: string; mo: number; rows: Row[]; tn: number; t
   return { mo, rows, tn: phan.reduce((a, p) => a + p.tn, 0), tc: phan.reduce((a, p) => a + p.tc, 0), cuoi: du }
 }
 
-function renderReport(cfg: ReportCfg, seed: string, thang: number, cd: CheDo, cn?: string, loc: Record<string, string[]> = {}, session?: Session): ReactNode {
+export function renderReport(cfg: ReportCfg, seed: string, thang: number, cd: CheDo, cn?: string, loc: Record<string, string[]> = {}, session?: Session): ReactNode {
   if (cd === 'TT58') {
     const th = thTT58(session?.ppGtgt, session?.ppTndn)
     if (seed === '3.2.5') {

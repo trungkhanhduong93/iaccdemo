@@ -68,7 +68,7 @@ export function ScreenRoute() {
     const modGoc = MODULES.find(m => m.key === sc.goc) ?? mod
     return (
       <>
-        <ThanhChonBaoCao sc={sc} />
+        {!laMobile && <ThanhChonBaoCao sc={sc} />}
         <C key={mk + '/' + slug} sc={sc} mod={modGoc} />
       </>
     )

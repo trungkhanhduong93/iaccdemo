@@ -1,12 +1,14 @@
 """Bấm hết sidebar, thanh tab, tab Báo cáo, ô trên sơ đồ Quy trình ở cả 4 gói; bắt lỗi console, trang trắng, tràn ngang;
 kiểm form chứng từ mở toàn màn hình và đóng về đúng màn trước; kiểm báo cáo tài chính cân; chụp ảnh màn chính.
 
-Chạy khi `npm run dev` đang mở ở cổng 5180:
+Chạy khi `npm run dev` đang mở ở cổng 5180 (đổi cổng qua biến môi trường KIEM_TRA_URL):
     python tools/kiem_tra.py            # đủ 4 gói + ảnh chụp
     python tools/kiem_tra.py --nhanh    # chỉ gói Medium, không chụp ảnh
     python tools/kiem_tra.py --dien-thoai   # khung 375, 390, 440 (iPhone 13 trở lên), thanh dưới, tràn ngang
+    KIEM_TRA_URL=http://localhost:5181/ python tools/kiem_tra.py  # đổi địa chỉ qua biến môi trường
 """
 import json
+import os
 import re
 import sys
 from pathlib import Path
@@ -17,7 +19,7 @@ if sys.platform == 'win32':
     sys.stdout.reconfigure(encoding='utf-8')
     sys.stderr.reconfigure(encoding='utf-8')
 
-URL = 'http://localhost:5180/'
+URL = os.environ.get('KIEM_TRA_URL', 'http://localhost:5180/')
 REPO = Path(__file__).resolve().parent.parent
 SHOTS = Path(__file__).resolve().parent / 'shots'
 NHANH = '--nhanh' in sys.argv
@@ -824,6 +826,126 @@ def kiem_tra_form_dm_dot_6():
     return loi
 
 
+def kiem_tra_bao_cao_dot_7():
+    loi = []
+    print('Kiểm tra báo cáo đợt 7 (390px, gói PL, chế độ mặc định & TT58):')
+    with sync_playwright() as p:
+        b = p.chromium.launch(channel='chrome')
+        pg = b.new_page(
+            viewport={'width': 390, 'height': 844},
+            is_mobile=True,
+            has_touch=True,
+            device_scale_factor=3,
+        )
+        con = []
+        pg.on('console', lambda m: con.append(m.text) if m.type == 'error' else None)
+        pg.on('pageerror', lambda e: con.append(str(e)))
+
+        def vao(path, goi='PL', che_do=None):
+            pg.goto(URL + '#/dang-nhap')
+            pg.wait_for_selector('.auth-box')
+            s = json.loads(phien(goi))
+            if che_do:
+                s['cheDo'] = che_do
+            pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(json.dumps(s))})")
+            pg.goto(f'{URL}?goi={goi}&cd={che_do or "df"}&p={abs(hash(path))}#{path}')
+            pg.wait_for_selector('.m-than > *')
+            pg.wait_for_timeout(300)
+
+        SHOTS.mkdir(exist_ok=True)
+        # 1. Mở tab Báo cáo, thấy ít nhất 2 thẻ nhóm
+        vao('/app/bao-cao/tat-ca', 'PL')
+        pg.screenshot(path=str(SHOTS / 'm-07-bao-cao.png'))
+        the_nhom = pg.locator('.m-bc-the-nhom')
+        if the_nhom.count() < 2:
+            loi.append(f'Tab Báo cáo: không đủ 2 thẻ nhóm (thấy {the_nhom.count()})')
+        else:
+            print(f'  - Tab Báo cáo: thấy {the_nhom.count()} thẻ nhóm')
+
+        # 2. Gõ tìm "quỹ" thấy Sổ quỹ tiền mặt
+        pg.locator('.m-ds-tim-inp').first.fill('quỹ')
+        pg.wait_for_timeout(200)
+        co_so_quy = pg.locator(':text("Sổ quỹ tiền mặt")').count() > 0
+        if not co_so_quy:
+            loi.append('Tìm kiếm "quỹ" trong Báo cáo: không thấy Sổ quỹ tiền mặt')
+        else:
+            print('  - Tìm "quỹ": thấy Sổ quỹ tiền mặt')
+
+        # 3. Mở Sổ quỹ tiền mặt, Sổ ngân hàng, hai báo cáo tài chính TT58 (B01 và B02) gói S
+        ds_man = [
+            ('Sổ quỹ tiền mặt', '/app/tien/2-2-1', False, 'PL', None, 'm-07-so-quy.png'),
+            ('Sổ ngân hàng', '/app/tien/2-2-3', True, 'PL', None, 'm-07-so-ngan-hang.png'),
+            ('Báo cáo tài chính TT58 (B01)', '/app/tong-hop/10-2-2', False, 'S', 'TT58', 'm-07-bctc-tt58.png'),
+            ('Báo cáo tài chính TT58 (B02)', '/app/tong-hop/10-2-3', False, 'S', 'TT58', 'm-07-bctc-b02.png'),
+        ]
+
+        for ten_man, path, la_sbc, goi, cd, anh in ds_man:
+            vao(path, goi, che_do=cd)
+            pg.screenshot(path=str(SHOTS / anh))
+            if con:
+                loi.append(f'{ten_man} ({path}): lỗi console {con[:2]}')
+                con.clear()
+
+            than_txt = pg.evaluate("() => { const e = document.querySelector('.m-than'); return e ? (e.innerText || e.textContent || '').trim() : null; }")
+            if not than_txt:
+                loi.append(f'{ten_man} ({path}): trắng trang hoặc không có nội dung')
+            else:
+                than_lower = than_txt.lower()
+                if 'chưa có mẫu' in than_lower or 'không dùng với thiết lập' in than_lower:
+                    loi.append(f'{ten_man} ({path}): báo lỗi nội dung không hợp lệ ("chưa có mẫu" hoặc "không dùng với thiết lập")')
+
+            tran = pg.evaluate("document.documentElement.scrollWidth > window.innerWidth")
+            if tran:
+                loi.append(f'{ten_man} ({path}): tràn ngang (scrollWidth > innerWidth)')
+
+            co_bc_chon = pg.locator('.bc-chon').count() > 0
+            if co_bc_chon:
+                loi.append(f'{ten_man} ({path}): còn xuất hiện .bc-chon trong khung điện thoại')
+
+            co_to_giay = pg.locator('.m-to-giay').count() > 0
+            if co_to_giay:
+                kiem_table = pg.evaluate("""() => {
+                    const toGiay = document.querySelector('.m-to-giay');
+                    if (!toGiay) return { ok: true };
+                    const tables = Array.from(toGiay.querySelectorAll('table'));
+                    if (tables.length === 0) return { ok: true };
+                    let maxW = -1;
+                    let maxRight = 0;
+                    for (const t of tables) {
+                        const r = t.getBoundingClientRect();
+                        if (r.width > maxW) {
+                            maxW = r.width;
+                            maxRight = r.right;
+                        }
+                    }
+                    return { ok: maxRight <= window.innerWidth + 1, right: maxRight, innerWidth: window.innerWidth };
+                }""")
+                if not kiem_table.get('ok'):
+                    loi.append(f"{ten_man} ({path}): table lớn nhất trong .m-to-giay có right ({kiem_table.get('right')}) vượt innerWidth ({kiem_table.get('innerWidth')}) khi thu nhỏ")
+
+            if la_sbc:
+                wrap = pg.locator('.m-sbc-bang-wrap')
+                if wrap.count() == 0:
+                    loi.append(f'{ten_man} ({path}): không tìm thấy .m-sbc-bang-wrap')
+                else:
+                    co_cuon_ngang = pg.evaluate("() => { const e = document.querySelector('.m-sbc-bang-wrap'); return e ? e.scrollWidth > e.clientWidth : false; }")
+                    if co_cuon_ngang:
+                        pos_truoc = pg.evaluate("() => { const th = document.querySelector('.m-sbc-bang-wrap th:first-child'); return th ? th.getBoundingClientRect().left : 0; }")
+                        pg.evaluate("() => { document.querySelector('.m-sbc-bang-wrap').scrollLeft = 250; }")
+                        pg.wait_for_timeout(100)
+                        scroll_left = pg.evaluate("() => document.querySelector('.m-sbc-bang-wrap').scrollLeft")
+                        pos_sau = pg.evaluate("() => { const th = document.querySelector('.m-sbc-bang-wrap th:first-child'); return th ? th.getBoundingClientRect().left : 0; }")
+                        if scroll_left < 50:
+                            loi.append(f'{ten_man} ({path}): không cuộn ngang được khung bảng (scrollLeft = {scroll_left})')
+                        if abs(pos_truoc - pos_sau) > 2:
+                            loi.append(f'{ten_man} ({path}): cột ghim không giữ vị trí trái sau khi cuộn (trước: {pos_truoc}, sau: {pos_sau})')
+
+            print(f'  - Đã kiểm: {ten_man} ({path})')
+
+        b.close()
+    return loi
+
+
 def kiem_tra_cac_khung_dt():
     loi, dem = [], 0
     for rong, cao in KHUNG_DT:
@@ -841,6 +963,8 @@ def kiem_tra_cac_khung_dt():
     loi += loi_d5
     loi_d6 = kiem_tra_form_dm_dot_6()
     loi += loi_d6
+    loi_d7 = kiem_tra_bao_cao_dot_7()
+    loi += loi_d7
     if loi:
         print(f'{len(loi)} LỖI:')
         for x in loi:
