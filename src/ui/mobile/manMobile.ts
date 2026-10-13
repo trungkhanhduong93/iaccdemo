@@ -35,6 +35,11 @@ export function manMobile(sc: ScreenDef, mod: ModuleDef): ComponentType<ScreenPr
   // Báo cáo sổ sách dạng bảng
   if (sc.kind === 'report') return MSoBaoCao
 
+  // T202: Sổ quỹ tiền mặt trên điện thoại hiện bằng MSoBaoCao thay vì MToGiay
+  if (sc.code === '2.2.1' || sc.slug === '2-2-1' || k === 'tien/2-2-1') {
+    return MSoBaoCao
+  }
+
   // Báo cáo tuỳ chỉnh (xuất nhập tồn, sổ quỹ, thẻ kho, BCTC, tờ khai thuế...)
   if (sc.kind === 'custom' && (vaoBaoCao(sc) || Boolean(sc.goc) || mod.key === 'bao-cao')) {
     return MToGiay

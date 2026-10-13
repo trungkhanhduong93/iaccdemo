@@ -937,8 +937,9 @@ def kiem_tra_bao_cao_dot_7():
                         pos_sau = pg.evaluate("() => { const th = document.querySelector('.m-sbc-bang-wrap th:first-child'); return th ? th.getBoundingClientRect().left : 0; }")
                         if scroll_left < 50:
                             loi.append(f'{ten_man} ({path}): không cuộn ngang được khung bảng (scrollLeft = {scroll_left})')
-                        if abs(pos_truoc - pos_sau) > 2:
-                            loi.append(f'{ten_man} ({path}): cột ghim không giữ vị trí trái sau khi cuộn (trước: {pos_truoc}, sau: {pos_sau})')
+                        # T203: báo cáo điện thoại bỏ cột ghim, cột đầu phải trôi theo khi cuộn ngang
+                        if scroll_left >= 50 and abs(pos_truoc - pos_sau) < 50:
+                            loi.append(f'{ten_man} ({path}): cột đầu vẫn bị ghim sau khi cuộn (trước: {pos_truoc}, sau: {pos_sau})')
 
             print(f'  - Đã kiểm: {ten_man} ({path})')
 
@@ -1373,6 +1374,136 @@ def kiem_tra_dot_9():
     return loi
 
 
+def kiem_tra_dot_10():
+    """Đợt 10: Sổ quỹ dạng bảng, báo cáo cuộn tự do, trang chủ theo IVT (T202–T204)"""
+    loi = []
+    with sync_playwright() as p:
+        b = p.chromium.launch(channel='chrome')
+        pg = b.new_page(viewport={'width': 390, 'height': 844}, is_mobile=True, has_touch=True)
+        con = []
+        pg.on('console', lambda m: con.append(m.text) if m.type == 'error' else None)
+        pg.on('pageerror', lambda e: con.append(str(e)))
+
+        def kiem_man(ten):
+            if pg.evaluate("document.documentElement.scrollWidth > innerWidth"):
+                loi.append(f'{ten}: tràn ngang màn hình')
+            if con:
+                loi.append(f'{ten}: lỗi console {con[:2]}')
+                con.clear()
+
+        # Đăng nhập gói PL
+        pg.goto(URL + '#/dang-nhap')
+        pg.wait_for_selector('.auth-box')
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PL'))})")
+        pg.goto(URL + '?goi=PL#/app/trang-chu/tong-quan')
+        pg.wait_for_selector('.m-app')
+        pg.wait_for_timeout(300)
+
+        # ── Bước 1: Trang chủ có tab "Quản trị", "Cần theo dõi", chip "Kho". Có ít nhất 4 thẻ. Chụp đầu trang và cuộn cuối ──
+        tab_qt = pg.locator('.m-tc-tab', has_text='Quản trị')
+        tab_ctd = pg.locator('.m-tc-tab', has_text='Cần theo dõi')
+        chip_kho = pg.locator('.m-tc-chip-kho', has_text='Kho')
+
+        if tab_qt.count() == 0:
+            loi.append('Trang chủ: thiếu tab "Quản trị"')
+        if tab_ctd.count() == 0:
+            loi.append('Trang chủ: thiếu tab "Cần theo dõi"')
+        if chip_kho.count() == 0:
+            loi.append('Trang chủ: thiếu chip "Kho"')
+
+        the_ds = pg.locator('.m-tc-the-ivt')
+        if the_ds.count() < 4:
+            loi.append(f'Trang chủ: cần ít nhất 4 thẻ, nhưng chỉ thấy {the_ds.count()} thẻ')
+        else:
+            print(f'  - Bước 1: Trang chủ có các tab, chip kho và {the_ds.count()} thẻ')
+
+        kiem_man('Trang chủ IVT đầu trang')
+        pg.screenshot(path=str(SHOTS / 'm-10-01-trang-chu-dau.png'))
+
+        # Cuộn xuống cuối trang
+        pg.evaluate("() => { const m = document.querySelector('.m-than'); if (m) m.scrollTop = m.scrollHeight }")
+        pg.wait_for_timeout(200)
+        kiem_man('Trang chủ IVT cuối trang')
+        pg.screenshot(path=str(SHOTS / 'm-10-02-trang-chu-cuoi.png'))
+
+        # ── Bước 2: Mở #/app/bao-cao/2-2-1: có bảng trong khung MSoBaoCao, không có .m-to-giay. Gõ ô lọc dòng thì số dòng giảm ──
+        pg.goto(URL + '?goi=PL&p=soquy#/app/bao-cao/2-2-1')
+        pg.wait_for_selector('.m-app')
+        pg.wait_for_timeout(350)
+
+        so_bc = pg.locator('.m-so-bc')
+        to_giay = pg.locator('.m-to-giay')
+        if so_bc.count() == 0:
+            loi.append('Sổ quỹ (2-2-1): không tìm thấy khung MSoBaoCao (.m-so-bc)')
+        if to_giay.count() > 0:
+            loi.append('Sổ quỹ (2-2-1): vẫn còn khung .m-to-giay (chưa chuyển sang MSoBaoCao)')
+
+        bang = pg.locator('.m-so-bc table.rpt')
+        if bang.count() == 0:
+            loi.append('Sổ quỹ (2-2-1): không tìm thấy bảng trong khung MSoBaoCao')
+        else:
+            so_dong_truoc = pg.locator('.m-so-bc table.rpt tbody tr').count()
+            inp_loc = pg.locator('.m-ds-tim-inp')
+            if inp_loc.count() == 0:
+                loi.append('Sổ quỹ (2-2-1): không tìm thấy ô lọc dòng (.m-ds-tim-inp)')
+            else:
+                inp_loc.first.fill('Thu')
+                pg.wait_for_timeout(250)
+                so_dong_sau = pg.locator('.m-so-bc table.rpt tbody tr').count()
+                if so_dong_sau >= so_dong_truoc:
+                    loi.append(f'Sổ quỹ (2-2-1): gõ lọc dòng nhưng số dòng không giảm ({so_dong_truoc} -> {so_dong_sau})')
+                else:
+                    print(f'  - Bước 2: Sổ quỹ dạng bảng thành công (lọc dòng: {so_dong_truoc} -> {so_dong_sau})')
+
+        kiem_man('Sổ quỹ tiền mặt 2-2-1')
+        pg.screenshot(path=str(SHOTS / 'm-10-03-so-quy-bang.png'))
+
+        # ── Bước 3: Sổ ngân hàng: cuộn ngang khung 300px, ô đầu tiên trôi khỏi mép trái. Cuộn dọc thì tiêu đề trôi lên ──
+        pg.goto(URL + '?goi=PL&p=songanhang#/app/bao-cao/2-2-3')
+        pg.wait_for_selector('.m-so-bc table.rpt')
+        pg.wait_for_timeout(300)
+
+        wrap = pg.locator('.m-sbc-bang-wrap')
+        if wrap.count() == 0:
+            loi.append('Sổ ngân hàng (2-2-3): không tìm thấy khung bảng .m-sbc-bang-wrap')
+        else:
+            # Kiểm tra cuộn ngang 300px: ô đầu tiên trôi khỏi mép trái (không ghim)
+            td_dau = pg.locator('.m-so-bc table.rpt tbody tr td').first
+            box_truoc = td_dau.bounding_box()
+
+            wrap.first.evaluate("el => el.scrollLeft = 300")
+            pg.wait_for_timeout(200)
+
+            box_sau = td_dau.bounding_box()
+            if box_truoc and box_sau:
+                delta_x = box_truoc['x'] - box_sau['x']
+                if delta_x < 200:
+                    loi.append(f'Sổ ngân hàng (2-2-3): ô đầu tiên không trôi khi cuộn ngang (delta_x={delta_x:.1f}px, nghi ngờ bị ghim)')
+                else:
+                    print(f'  - Bước 3a: Cuộn ngang 300px ô đầu trôi {delta_x:.1f}px (không ghim)')
+
+            # Kiểm tra cuộn dọc: tiêu đề bảng trôi lên (không dính)
+            th_dau = pg.locator('.m-so-bc table.rpt thead th').first
+            th_box_truoc = th_dau.bounding_box()
+
+            wrap.first.evaluate("el => el.scrollTop = 300")
+            pg.wait_for_timeout(200)
+
+            th_box_sau = th_dau.bounding_box()
+            if th_box_truoc and th_box_sau:
+                delta_y = th_box_truoc['y'] - th_box_sau['y']
+                if delta_y < 150:
+                    loi.append(f'Sổ ngân hàng (2-2-3): tiêu đề bảng không trôi lên khi cuộn dọc (delta_y={delta_y:.1f}px, nghi ngờ bị dính)')
+                else:
+                    print(f'  - Bước 3b: Cuộn dọc tiêu đề trôi lên {delta_y:.1f}px (không dính)')
+
+        kiem_man('Sổ ngân hàng cuộn tự do')
+        pg.screenshot(path=str(SHOTS / 'm-10-04-so-ngan-hang-cuon.png'))
+
+        b.close()
+    return loi
+
+
 def kiem_tra_cac_khung_dt():
     loi, dem = [], 0
     for rong, cao in KHUNG_DT:
@@ -1396,6 +1527,7 @@ def kiem_tra_cac_khung_dt():
     loi += loi_d8
     loi += kiem_tra_popup_khoi_tao_dot_8()
     loi += kiem_tra_dot_9()
+    loi += kiem_tra_dot_10()
     if loi:
         print(f'{len(loi)} LỖI:')
         for x in loi:

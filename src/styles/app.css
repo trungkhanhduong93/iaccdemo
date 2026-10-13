@@ -12032,3 +12032,633 @@ button.cn-ten {
     white-space: nowrap;
   }
 }
+
+/* ── Điện thoại: sổ quỹ dạng bảng, báo cáo cuộn tự do, trang chủ theo IVT (T202–T204) ── */
+@media (max-width: 767px) {
+  /* T203: Bỏ đóng băng ở báo cáo điện thoại: cuộn tự do lên xuống, trái phải */
+  .m-so-bc .m-sbc-bang-wrap table.rpt thead th,
+  .m-so-bc .m-sbc-bang-wrap table.rpt th,
+  .m-so-bc .m-sbc-bang-wrap table.rpt td,
+  .m-so-bc table th,
+  .m-so-bc table td {
+    position: static !important;
+    top: auto !important;
+    left: auto !important;
+    box-shadow: none !important;
+    z-index: auto !important;
+  }
+
+  /* T204: Trang chủ theo IVT */
+  /* Đầu trang nền vàng kem chuyển dần trắng */
+  .m-tc-dau {
+    padding: 14px 16px 12px;
+    background: linear-gradient(180deg, #F6E4BE 0%, #FFFFFF 85%, var(--bg, #f8fafc) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .m-tc-dau-trai {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .m-tc-logo-hop {
+    position: relative;
+    flex: none;
+  }
+
+  .m-tc-goi-badge {
+    position: absolute;
+    top: -5px;
+    left: -4px;
+    background: var(--orange, #f28020);
+    color: #fff;
+    font-size: 9px;
+    font-weight: 800;
+    padding: 1px 4px;
+    border-radius: 4px;
+    line-height: 1.1;
+    z-index: 2;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  }
+
+  .m-tc-logo-av {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: var(--blue, #0560a6);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: 700;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  }
+
+  .m-tc-don-vi {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .m-tc-dv-ten {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink, #0f172a);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.3;
+  }
+
+  .m-tc-dv-vai-tro {
+    font-size: 12px;
+    color: var(--muted, #64748b);
+    line-height: 1.2;
+    margin-top: 2px;
+  }
+
+  .m-tc-dau-phai {
+    flex: none;
+  }
+
+  /* Khối trắng bo tròn chứa nút kính lúp và nút chuông */
+  .m-tc-cum-phai {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: #fff;
+    padding: 3px 6px;
+    border-radius: 20px;
+    border: 1px solid var(--line, #e2e8f0);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+  }
+
+  .m-tc-nut-tron {
+    position: relative;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: var(--ink, #0f172a);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .m-tc-nut-tron:active {
+    background: var(--hover, #f1f5f9);
+  }
+
+  .m-tc-badge-so {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    min-width: 14px;
+    height: 14px;
+    padding: 0 3px;
+    border-radius: 7px;
+    background: var(--red, #ef4444);
+    color: #fff;
+    font-size: 9px;
+    font-weight: 700;
+    line-height: 14px;
+    text-align: center;
+  }
+
+  /* Hàng dưới: tab viên thuốc + chip chọn kho */
+  .m-tc-thanh-dieu-huong {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 16px 10px;
+    background: var(--bg, #f8fafc);
+    gap: 8px;
+  }
+
+  .m-tc-vien-thuoc {
+    display: flex;
+    background: #e2e8f0;
+    padding: 3px;
+    border-radius: 20px;
+    gap: 2px;
+  }
+
+  .m-tc-tab {
+    border: none;
+    background: transparent;
+    padding: 6px 14px;
+    border-radius: 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted, #64748b);
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .m-tc-tab.on {
+    background: #fff;
+    color: var(--ink, #0f172a);
+    font-weight: 700;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  }
+
+  .m-tc-tab-dem {
+    display: inline-block;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    border-radius: 8px;
+    background: var(--red, #ef4444);
+    color: #fff;
+    font-size: 10px;
+    line-height: 16px;
+    text-align: center;
+    font-weight: 700;
+  }
+
+  .m-tc-chip-kho {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    height: 32px;
+    padding: 0 12px;
+    border-radius: 16px;
+    background: #fff;
+    border: 1px solid var(--line, #e2e8f0);
+    color: var(--ink, #0f172a);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    flex: none;
+  }
+
+  .m-tc-chip-kho:active {
+    background: var(--hover, #f8fafc);
+  }
+
+  .m-tc-chip-kho-nhan {
+    max-width: 110px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Thẻ trắng bo góc xếp dọc theo IVT */
+  .m-tc-the-ivt {
+    background: #fff;
+    border-radius: 14px;
+    border: 1px solid var(--line, #e2e8f0);
+    padding: 14px 16px;
+    margin: 0 16px 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  }
+
+  .m-tc-the-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .m-tc-the-tieu-hop {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .m-tc-the-tieu {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink, #0f172a);
+  }
+
+  .m-tc-the-info {
+    color: var(--muted, #94a3b8);
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .m-tc-the-link {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--blue, #0560a6);
+    text-decoration: none;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-family: inherit;
+    padding: 0;
+  }
+
+  /* 1. Thao tác nhanh: 5 ô biểu tượng tròn */
+  .m-tc-nhanh-5 {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+    text-align: center;
+  }
+
+  .m-tc-nhanh-o5 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .m-tc-nhanh-ic-tron {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--tint, #e6eff7);
+    color: var(--blue, #0560a6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .m-tc-nhanh-o5.khoa .m-tc-nhanh-ic-tron {
+    opacity: 0.55;
+  }
+
+  .m-tc-nhanh-lk {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #64748b;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .m-tc-nhanh-ten5 {
+    font-size: 11.5px;
+    color: var(--ink, #0f172a);
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+
+  /* 2. Lưới KPI tài chính */
+  .m-tc-kpi-luoi {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .m-tc-kpi-muc {
+    background: #f8fafc;
+    border-radius: 10px;
+    padding: 10px 12px;
+  }
+
+  .m-tc-kpi-nhan {
+    font-size: 12px;
+    color: var(--muted, #64748b);
+    margin-bottom: 4px;
+  }
+
+  .m-tc-kpi-so {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink, #0f172a);
+    margin-bottom: 4px;
+  }
+
+  .m-tc-ss {
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .m-tc-ss.tot {
+    color: var(--green, #138a52);
+  }
+
+  .m-tc-ss.xau {
+    color: var(--red, #c2362b);
+  }
+
+  .m-tc-ss.neutral {
+    color: var(--muted, #64748b);
+  }
+
+  .m-tc-ss-val {
+    font-weight: 600;
+  }
+
+  .m-tc-ss-lbl {
+    color: var(--muted, #64748b);
+  }
+
+  /* 3. Tổng tồn kho */
+  .m-tc-so-lon {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--ink, #0f172a);
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+
+  .m-tc-ke {
+    border: none;
+    border-top: 1px solid var(--line, #e2e8f0);
+    margin: 10px 0;
+  }
+
+  .m-tc-3cot {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    text-align: center;
+    gap: 6px;
+  }
+
+  .m-tc-cot-muc {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .m-tc-cot-nhan {
+    font-size: 12px;
+    color: var(--muted, #64748b);
+  }
+
+  .m-tc-cot-so {
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  .m-tc-cot-so.do {
+    color: var(--red, #c2362b);
+  }
+
+  .m-tc-cot-so.cam {
+    color: var(--amber, #a86a0c);
+  }
+
+  /* 4. Chi phí NVL */
+  .m-tc-nvl-hang-so {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .m-tc-nvl-cam {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--amber, #a86a0c);
+  }
+
+  .m-tc-2cot {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .m-tc-ss-ivt {
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+  }
+
+  .m-tc-ss-ivt.tang {
+    color: var(--green, #138a52);
+  }
+
+  .m-tc-ss-ivt.giam {
+    color: var(--red, #c2362b);
+  }
+
+  .m-tc-ss-mui-ten {
+    font-weight: 700;
+  }
+
+  .m-tc-ss-chu {
+    font-size: 11.5px;
+    color: var(--muted, #64748b);
+  }
+
+  /* 5. Biểu đồ tỷ lệ chi phí NVL */
+  .m-tc-bd-head-chon {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink, #0f172a);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .m-tc-bd-wrap {
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  /* 7. Tỷ lệ tồn tại các kho */
+  .m-tc-kho-khung-xam {
+    background: #f1f5f9;
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+  }
+
+  .m-tc-kho-ten {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink, #0f172a);
+    margin-bottom: 6px;
+  }
+
+  .m-tc-kho-chu-thich {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    font-size: 11.5px;
+    color: var(--ink, #0f172a);
+  }
+
+  .m-tc-ct-muc {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .m-tc-ct-cham {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .m-tc-ct-cham.do {
+    background: var(--red, #c2362b);
+  }
+
+  .m-tc-ct-cham.cam {
+    background: var(--amber, #a86a0c);
+  }
+
+  .m-tc-ct-cham.tim {
+    background: #8b5cf6;
+  }
+
+  .m-tc-ct-cham.xanh {
+    background: var(--green, #138a52);
+  }
+
+  .m-tc-ct-cham.xam {
+    background: #94a3b8;
+  }
+
+  .m-tc-kho-ds-dong {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .m-tc-kho-dong {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .m-tc-kho-dong-ten {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink, #0f172a);
+    width: 115px;
+    flex: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .m-tc-kho-thanh-wrap {
+    flex: 1;
+    display: flex;
+    height: 10px;
+    border-radius: 5px;
+    overflow: hidden;
+    background: #e2e8f0;
+  }
+
+  .m-tc-kho-phan {
+    height: 100%;
+  }
+
+  .m-tc-kho-phan.do {
+    background: var(--red, #c2362b);
+  }
+
+  .m-tc-kho-phan.cam {
+    background: var(--amber, #a86a0c);
+  }
+
+  .m-tc-kho-phan.tim {
+    background: #8b5cf6;
+  }
+
+  .m-tc-kho-phan.xanh {
+    background: var(--green, #138a52);
+  }
+
+  .m-tc-ds-theo-doi {
+    padding-bottom: 24px;
+  }
+
+  .m-tc-theo-doi-mui-ten {
+    color: var(--muted, #94a3b8);
+    flex: none;
+  }
+}
+
+
+
+/* Sửa sau kiểm ảnh 390px (T204): tab không xuống dòng, dòng so sánh gọn */
+@media (max-width: 767px) {
+  .m-tc-tab {
+    white-space: nowrap;
+  }
+  .m-tc-ss {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 2px 4px;
+    font-size: 11.5px;
+    line-height: 1.4;
+  }
+  .m-tc-ss-lbl {
+    white-space: nowrap;
+  }
+}

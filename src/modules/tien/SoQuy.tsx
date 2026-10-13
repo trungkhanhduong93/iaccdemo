@@ -14,7 +14,7 @@ import { tenQuyTm } from '../bao-cao/danh-sach'
 import { between, dmy, k, pad, pick, rng } from '../../ui/format'
 
 /** Sổ quỹ tiền mặt một chi nhánh trong tháng */
-function soQuyCn(cn: string, thang: number) {
+export function soQuyCn(cn: string, thang: number) {
   const r = rng('soquy' + cn + thang)
   const mo = k(between(r, 38e6, 52e6))
   let du = mo, pt = 0, pc = 0, tn = 0, tc = 0
