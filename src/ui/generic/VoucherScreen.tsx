@@ -344,7 +344,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
       { k: 'kyHieuHd', t: 'Ký hiệu HĐ', cls: 'code', w: 110, an: true } as Col,
       { k: 'soHd', t: 'Số hoá đơn', cls: 'code', w: 110, an: true } as Col,
       { k: 'ngayHd', t: 'Ngày hoá đơn', w: 115, an: true } as Col,
-      { k: 'hanTt', t: 'Hạn thanh toán', w: 125, an: true } as Col,
+      ...(s.goi !== 'F' && s.goi !== 'S' ? [{ k: 'hanTt', t: 'Hạn thanh toán', w: 125, an: true } as Col] : []),
       { k: 'daTra', t: nhom === 'mua' ? 'Đã trả' : 'Đã thu', num: true, w: 120, an: true } as Col,
       { k: 'conNo', t: nhom === 'mua' ? 'Còn phải trả' : 'Còn phải thu', num: true, w: 125, an: true } as Col,
     ] : []),

@@ -175,7 +175,8 @@ const danhMuc: ModuleDef = {
       },
       cols: (goi, cheDo) => [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên' }, { k: 'loai', t: 'Loại' }, { k: 'mst', t: 'Mã số thuế' }, { k: 'nhom', t: 'Nhóm', cls: 'dim' },
         { k: 'dongY', t: 'Đồng ý chia sẻ', c: true, r: (r: Row) => r.dongY ? 'Đã đồng ý' : 'Chưa' },
-        { k: 'dktt', t: 'Điều khoản thanh toán' }, ...(kieuGhiSo(cheDo) === 'noco' ? [tkCot('tkCn', 'TK công nợ')] : [])],
+        ...(goi !== 'F' && goi !== 'S' ? [{ k: 'dktt', t: 'Điều khoản thanh toán' } as Col] : []),
+        ...(goi !== 'F' && goi !== 'S' && kieuGhiSo(cheDo) === 'noco' ? [tkCot('tkCn', 'TK công nợ')] : [])],
       rows: () => [
         ...KHACH.map(x => ({ ...x, loai: 'Khách hàng', dktt: x.ma === 'KL' ? 'Thanh toán ngay' : 'Công nợ 30 ngày', tkCn: '131', dongY: true })),
         ...NCC.map(x => ({ ...x, loai: 'Nhà cung cấp', dktt: 'Công nợ 15 ngày', tkCn: '331', dongY: true })),

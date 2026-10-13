@@ -608,3 +608,12 @@ Lý do: Trum giao T170 ngày 12/10/2026, duyệt 3 điểm mới ngày 13/10/202
 
 Lý do: PhuongXT chốt ngày 13/10/2026 (T179), báo không cần Trum duyệt: cột lọc bên trái chiếm chỗ của tờ báo cáo; đặt ô lọc thẳng trên thanh thì chật khi nhiều bộ lọc; xem báo cáo dạng bảng gọn hơn, tờ in chỉ cần khi in. Thay phần cột lọc trái của QD40 và phần Tờ in mặc định của QD37.
 
+## QD56. Ẩn số thẻ, khối công nợ ở đối tượng và hạn thanh toán với gói Free, Standard (13/10/2026)
+
+- Ở danh mục Đối tượng (1.5): ẩn ô Số thẻ trong khối Ngân hàng và toàn bộ khối Công nợ (Bảng giá, Điều khoản thanh toán, TK công nợ) ở panel Thêm/Sửa đối tượng với gói Free và Standard. Bảng danh mục đối tượng ẩn cột Điều khoản thanh toán và TK công nợ ở gói Free và Standard.
+- Ở form chứng từ: ẩn ô Hạn thanh toán ở đầu form và trong danh sách trường tuỳ chỉnh đầu phiếu với gói Free và Standard (vẫn giữ hình thức thanh toán Chưa thanh toán/Công nợ để ghi nhận sổ công nợ đơn giản).
+- Ở danh sách chứng từ: ẩn cột Hạn thanh toán và trong hộp tuỳ chỉnh cột với gói Free và Standard. Giữ cột Đã trả/Đã thu và Còn phải trả/Còn phải thu.
+- Báo cáo: giữ nguyên các sổ công nợ (2.2.5, 4.2.3) như T52/T141 đã duyệt.
+
+Lý do: Trum chốt ngày 13/10/2026 (T180). Khách hàng dùng gói Free, Standard theo dõi tài chính gọn nhẹ, không dùng bảng giá hay điều khoản thanh toán phức tạp.
+

@@ -483,6 +483,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   const hienDau = (k: string) => !anCot.includes(`dau:${k}`)
   // Phiếu thu, chi tiền (2.1.1) không có ô Mã số thuế; chuyển quỹ cũng không (T168)
   const coMst = nhom !== 'cq' && !(laTien && sc.code === '2.1.1')
+  const coHanTt = Boolean(bo.tt) && s.goi !== 'F' && s.goi !== 'S'   // gói Free, Standard ẩn hạn thanh toán (T180)
   const hienChan = (k: string) => !anCot.includes(`chan:${k}`)
   const muaBan = nhom === 'mua' || nhom === 'ban'
   const nhanNguoi = nhom === 'cq' ? 'Người thực hiện' : laTien || muaBan ? 'Người giao dịch' : 'Người giao / nhận'   // mua, bán ghi Người giao dịch (T90)
@@ -491,7 +492,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
     ...(nhom !== 'cq' ? [['diaChi', 'Địa chỉ'] as [string, string]] : []),
     ...(!laTien && !muaBan ? [['nhanVien', 'Nhân viên thực hiện'] as [string, string]] : []),
     ...(coMst ? [['mst', 'Mã số thuế'] as [string, string]] : []),
-    ...(bo.tt ? [['hanTt', 'Hạn thanh toán'] as [string, string]] : []),
+    ...(coHanTt ? [['hanTt', 'Hạn thanh toán'] as [string, string]] : []),
     ['ghiChu', 'Ghi chú'],
   ]
   const dsChan: [string, string][] = laKk || dcn === 'ck' ? [['dongTong', 'Dòng Tổng cộng cuối bảng']] : [
@@ -1012,7 +1013,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
                   ) : <input className="inp" readOnly value={nhanVien} />}
                 </div>
               )}
-              {!gonDau && nhom !== 'cq' && ((coMst && hienDau('mst')) || (bo.tt && hinhThucTt === 'congno' && hienDau('hanTt'))) && <div className="row" style={{ gap: 10 }}>
+              {!gonDau && nhom !== 'cq' && ((coMst && hienDau('mst')) || (coHanTt && hinhThucTt === 'congno' && hienDau('hanTt'))) && <div className="row" style={{ gap: 10 }}>
                 {coMst && hienDau('mst') && <div className="f" style={{ flex: 1 }}>
                   <label>Mã số thuế</label>
                   {dangSua ? (
@@ -1025,7 +1026,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
                     <input className="inp" readOnly value={mst} />
                   )}
                 </div>}
-                {bo.tt && hinhThucTt === 'congno' && hienDau('hanTt') && (
+                {coHanTt && hinhThucTt === 'congno' && hienDau('hanTt') && (
                   <div className="f" style={{ flex: 1 }}>
                     <label>Hạn thanh toán</label>
                     {dangSua ? (

@@ -4,7 +4,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T179.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T180.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
@@ -41,6 +41,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T180 | Ẩn số thẻ, khối công nợ ở danh mục đối tượng, ẩn hạn thanh toán ở form và danh sách chứng từ với gói Free, Standard (QD56) | Trum | 13/10/2026 | [2026-10-13-trum-an-thong-tin-doi-tuong-free-standard](nhat-ky/2026-10-13-trum-an-thong-tin-doi-tuong-free-standard.md) |
 | T179 | Hiện lại bộ sổ hộ kinh doanh TT152 (S1a đến S2e-HKD) theo mẫu iFaster; màn xem báo cáo dạng bảng, bộ lọc trong nút phễu, tờ in thành xem trước khi in (QD55); S2d lọc hàng hoá, nhóm hàng hoá, S2e lọc quỹ | PhuongXT | 13/10/2026 | [2026-10-13-phuongxt-so-hkd](nhat-ky/2026-10-13-phuongxt-so-hkd.md) |
 | T178 | Điện thoại đợt 5: lập, sửa phiếu kiểu giỏ hàng IVT (`MLapPhieu` 5 bước, `MChon` có tìm, Huỷ, Áp dụng); lập phiếu chi, nhập kho, bán hàng; sửa phiếu giữ tổng, trạng thái | Trum | 13/10/2026 | [2026-10-13-trum-dien-thoai-dot-5](nhat-ky/2026-10-13-trum-dien-thoai-dot-5.md) |
 | T177 | Điện thoại đợt 4: xem phiếu (đầu phiếu, dòng dạng thẻ, tổng, hạch toán, lịch sử, tham chiếu, thanh đáy Ghi sổ và menu Sửa, In, Sao chép, Xoá); tổng tiền khớp máy tính | Trum | 13/10/2026 | [2026-10-13-trum-dien-thoai-dot-4](nhat-ky/2026-10-13-trum-dien-thoai-dot-4.md) |

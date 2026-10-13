@@ -305,11 +305,12 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
           { k: 'chiNhanhNh', nhan: 'Chi nhánh ngân hàng', kieu: 'chu', cot: 'BANK_BRANCH' },
           { k: 'soTkNh', nhan: 'Số tài khoản ngân hàng', kieu: 'chu', cot: 'BANK_ACCOUNT' },
           { k: 'chuTk', nhan: 'Chủ tài khoản', kieu: 'chu', cot: 'BANK_ACCOUNT_HOLDER' },
-          { k: 'soThe', nhan: 'Số thẻ', kieu: 'chu', cot: 'BANK_CARD_NO' },
+          { k: 'soThe', nhan: 'Số thẻ', kieu: 'chu', cot: 'BANK_CARD_NO', goi: ['PL', 'PR'] },   // gói Free, Standard ẩn (T180)
         ],
       },
       {
         ten: 'Công nợ',
+        goi: ['PL', 'PR'],   // gói Free, Standard ẩn (T180)
         truong: [
           { k: 'tkCn', nhan: 'TK công nợ', kieu: 'chon', cot: 'PR_ACCOUNT_ID', cheDo: ['TT133', 'TT99'] },   // TK chỉ dùng ở TT133, TT99 (T147)
           { k: 'bangGia', nhan: 'Bảng giá', kieu: 'chu', cot: 'PRICE_LEVEL_ID' },
