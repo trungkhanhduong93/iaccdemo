@@ -9817,3 +9817,419 @@ body:has(.m-lp) .m-thanh-duoi {
 .cham-tt.tat {
   background-color: var(--red);
 }
+
+/* ── Điện thoại đợt 6 (T183) ── */
+
+.m-app:has(.m-form-dm) .m-thanh-duoi,
+.m-app:has(.m-form-dm) .m-nut-them-fab {
+  display: none !important;
+}
+
+@media (max-width: 767px) {
+  body:has(.m-app) .pop {
+    z-index: 600;
+  }
+}
+
+.m-form-dm {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  pointer-events: none;
+}
+
+.m-form-dm .overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 501;
+  pointer-events: auto;
+  animation: m-fade-in 0.2s ease;
+}
+
+@keyframes m-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes m-truot-len {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.m-form-dm .pn-hop {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: auto;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  height: 90%;
+  max-height: 90vh;
+  background: var(--bg);
+  border-radius: 16px 16px 0 0;
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.15);
+  z-index: 502;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  pointer-events: auto;
+  animation: m-truot-len 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+.m-form-dm .pn-dau {
+  position: relative;
+  height: 56px;
+  min-height: 56px;
+  padding: 0 16px;
+  background: var(--white);
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  box-sizing: border-box;
+}
+
+.m-form-dm .pn-dau > div {
+  width: 100%;
+  text-align: center;
+  padding: 0 44px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.m-form-dm .pn-dau h3 {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.m-form-dm .pn-dau small {
+  font-size: 11.5px;
+  color: var(--muted);
+  margin-top: 2px;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.m-form-dm .pn-dau button.icon-btn {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #EBECEF;
+  color: var(--muted);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  z-index: 2;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.m-form-dm .pn-dau button.icon-btn:active {
+  background: var(--line);
+}
+
+.m-form-dm .pn-than {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background: var(--bg);
+  padding: 12px var(--m-le-man) 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-sizing: border-box;
+}
+
+.m-form-dm .pn-khoi {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+  overflow: hidden;
+  flex: none;
+  box-sizing: border-box;
+}
+
+.m-form-dm .pn-khoi-dau {
+  padding: 12px 14px;
+  background: var(--white);
+  border-bottom: 1px solid var(--line-2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.m-form-dm .pn-khoi:not(.mo) .pn-khoi-dau {
+  border-bottom: none;
+}
+
+.m-form-dm .pn-khoi-dau .pn-cong-tac {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  flex: none;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: var(--line);
+  transition: background 0.15s ease;
+  margin: 0 10px 0 auto;
+  cursor: pointer;
+}
+
+.m-form-dm .pn-khoi-dau .pn-cong-tac i {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--white);
+  box-shadow: 0 1px 2px rgba(14, 26, 43, 0.2);
+  transition: left 0.15s ease;
+}
+
+.m-form-dm .pn-khoi-dau .pn-cong-tac.on {
+  background: var(--blue);
+}
+
+.m-form-dm .pn-khoi-dau .pn-cong-tac.on i {
+  left: 22px;
+}
+
+.m-form-dm .pn-khoi-than {
+  padding: 14px;
+  background: var(--white);
+  box-sizing: border-box;
+}
+
+.m-form-dm .pn-luoi {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  box-sizing: border-box;
+}
+
+.m-form-dm .pn-luoi .f {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.m-form-dm .f label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  display: block;
+}
+
+.m-form-dm .f label em {
+  color: var(--red);
+  font-style: normal;
+  margin-left: 2px;
+}
+
+.m-form-dm .inp {
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--white);
+  padding: 0 12px;
+  font-size: 14px;
+  color: var(--ink);
+  width: 100%;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.m-form-dm .inp:focus {
+  outline: none;
+  border-color: var(--blue);
+}
+
+.m-form-dm textarea.inp {
+  height: auto;
+  min-height: 70px;
+  padding: 8px 12px;
+  resize: none;
+}
+
+/* label.pn-tich: lớp .row của panel đè display về block, chữ dính công tắc */
+.m-form-dm label.pn-tich {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.m-form-dm .pn-chan {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px var(--m-le-man) calc(10px + env(safe-area-inset-bottom, 0px));
+  background: var(--white);
+  border-top: 1px solid var(--line);
+  flex: none;
+  z-index: 10;
+  box-sizing: border-box;
+}
+
+.m-form-dm .pn-chan .btn {
+  height: 44px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  font-family: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.m-form-dm .pn-chan .btn.pri {
+  flex: 1.3;
+  background: var(--blue);
+  color: var(--white);
+  border: none;
+}
+
+.m-form-dm .pn-chan .btn.pri:active {
+  background: var(--blue-d);
+}
+
+.m-form-dm .pn-chan .btn:not(.pri) {
+  flex: 1;
+  background: var(--soft);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  padding: 0 8px;
+}
+
+.m-form-dm .pn-chan .btn:not(.pri):active {
+  background: var(--hover);
+}
+
+/* Tab và bảng trong panel */
+.m-form-dm .tabs {
+  display: flex;
+  overflow-x: auto;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  gap: 8px;
+  padding: 4px 0;
+  margin-bottom: 8px;
+}
+
+.m-form-dm .tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.m-form-dm .tabs button {
+  height: 32px;
+  padding: 0 14px;
+  border-radius: 16px;
+  background: var(--soft);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+.m-form-dm .tabs button.on {
+  background: var(--blue);
+  color: var(--white);
+  border-color: var(--blue);
+  font-weight: 600;
+}
+
+.m-form-dm .bang-sua,
+.m-form-dm .qd-khoi {
+  overflow-x: auto;
+  max-width: 100%;
+  -webkit-overflow-scrolling: touch;
+  box-sizing: border-box;
+}
+
+/* Quy đổi đơn vị tính trên mobile */
+@media (max-width: 767px) {
+  body:has(.m-app) .qd-hop-nen {
+    z-index: 2000;
+  }
+  body:has(.m-app) .qd-hop {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    max-width: 100%;
+    border-radius: 16px 16px 0 0;
+    margin: 0;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+  }
+  body:has(.m-app) .qd-hop-dau {
+    position: relative;
+    padding: 14px 44px;
+    text-align: center;
+    border-radius: 16px 16px 0 0;
+  }
+  body:has(.m-app) .qd-hop-dau .icon-btn {
+    left: 14px;
+    right: auto;
+  }
+  body:has(.m-app) .qd-hop-than {
+    padding: 14px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  body:has(.m-app) .qd-khung {
+    border-radius: 12px;
+    background: #F5F6FA;
+  }
+  body:has(.m-app) .qd-hop-chan {
+    padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0px));
+  }
+}
+

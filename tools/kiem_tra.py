@@ -655,6 +655,175 @@ def kiem_tra_lap_phieu_dot_5():
     return loi
 
 
+def kiem_tra_form_dm_dot_6():
+    loi = []
+    print('Kiểm tra form danh mục đợt 6 (390px, gói PL):')
+    with sync_playwright() as p:
+        b = p.chromium.launch(channel='chrome')
+        pg = b.new_page(
+            viewport={'width': 390, 'height': 844},
+            is_mobile=True,
+            has_touch=True,
+            device_scale_factor=3,
+        )
+        con = []
+        pg.on('console', lambda m: con.append(m.text) if m.type == 'error' else None)
+        pg.on('pageerror', lambda e: con.append(str(e)))
+
+        pg.goto(URL + '#/dang-nhap')
+        pg.wait_for_selector('.auth-box')
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PL'))})")
+
+        def kiem_nut_luu(mo_ta):
+            tran = pg.evaluate("document.documentElement.scrollWidth > 390")
+            if tran:
+                loi.append(f'{mo_ta}: tràn ngang (scrollWidth > 390)')
+            nut = pg.locator('.m-form-dm .pn-chan button.btn.pri:has-text("Lưu")')
+            if nut.count() == 0:
+                loi.append(f'{mo_ta}: không tìm thấy nút Lưu')
+                return None
+            che = pg.evaluate("""() => {
+                const btn = document.querySelector('.m-form-dm .pn-chan button.btn.pri');
+                if (!btn) return 'không thấy nút';
+                const rect = btn.getBoundingClientRect();
+                const cx = rect.left + rect.width / 2;
+                const cy = rect.top + rect.height / 2;
+                const el = document.elementFromPoint(cx, cy);
+                if (!el) return 'elementFromPoint rỗng';
+                if (btn.contains(el) || el.contains(btn)) return null;
+                return 'bị che bởi ' + (el.className || el.tagName);
+            }""")
+            if che:
+                loi.append(f'{mo_ta}: nút Lưu {che}')
+            return nut.first
+
+        # 1. Hàng hoá danh-muc/1-2: bấm thêm, gõ mã, tên, chọn đơn vị tính, bấm Lưu. Phải thấy toast "Đã lưu" và modal đóng.
+        path_hh = '/app/danh-muc/1-2'
+        pg.goto(f'{URL}?goi=PL&p={abs(hash(path_hh))}#{path_hh}')
+        pg.wait_for_timeout(800)
+        nut_them = pg.locator('.m-nut-them-fab')
+        if nut_them.count() == 0:
+            loi.append('Hàng hoá (1-2): không tìm thấy nút thêm mới .m-nut-them-fab')
+        else:
+            nut_them.first.click()
+            pg.wait_for_timeout(400)
+            if pg.locator('.m-form-dm').count() == 0:
+                loi.append('Hàng hoá (1-2): không mở modal .m-form-dm')
+            else:
+                inps = pg.locator('.m-form-dm input.inp')
+                if inps.count() >= 2:
+                    inps.nth(0).fill('HH_TEST_T183')
+                    inps.nth(1).fill('Hàng hoá thử nghiệm T183')
+                dvt_nut = pg.locator('.m-form-dm .pop-nut').first
+                if dvt_nut.count() > 0:
+                    dvt_nut.click()
+                    pg.wait_for_timeout(200)
+                    dvt_opt = pg.locator('.pop .pop-opt').first
+                    if dvt_opt.count() > 0:
+                        dvt_opt.click()
+                        pg.wait_for_timeout(200)
+
+                nut_luu = kiem_nut_luu('Hàng hoá thêm mới')
+                if nut_luu:
+                    nut_luu.click()
+                    pg.wait_for_timeout(400)
+                    toast = pg.locator('.toast, :has-text("Đã lưu")')
+                    if toast.count() == 0:
+                        loi.append('Hàng hoá: không thấy toast "Đã lưu"')
+                    if pg.locator('.m-form-dm').count() > 0:
+                        loi.append('Hàng hoá: modal chưa đóng sau khi Lưu')
+            print('  - Hàng hoá (1-2): thêm mới và lưu thành công')
+
+        # 2. Kho danh-muc/1-8: bấm thẻ đầu, form mở đúng tên dòng, sửa 1 ô chữ, Lưu
+        path_kho = '/app/danh-muc/1-8'
+        pg.goto(f'{URL}?goi=PL&p={abs(hash(path_kho))}#{path_kho}')
+        pg.wait_for_timeout(800)
+        the_kho = pg.locator('.m-the-dm').first
+        ten_kho_cu = pg.locator('.m-the-dm-ten').first.inner_text().strip() if pg.locator('.m-the-dm-ten').count() > 0 else ''
+        the_kho.click()
+        pg.wait_for_timeout(400)
+
+        if pg.locator('.m-form-dm').count() == 0:
+            loi.append('Kho (1-8): bấm thẻ không mở modal .m-form-dm')
+        else:
+            inps = pg.locator('.m-form-dm input.inp')
+            val = inps.nth(1).input_value() if inps.count() >= 2 else ''
+            if ten_kho_cu and ten_kho_cu not in val:
+                loi.append(f'Kho (1-8): form mở không đúng tên dòng (thấy {val}, kỳ vọng chứa {ten_kho_cu})')
+            if inps.count() >= 2:
+                inps.nth(1).fill(val + ' (sửa)')
+            nut_luu = kiem_nut_luu('Kho sửa')
+            if nut_luu:
+                nut_luu.click()
+                pg.wait_for_timeout(400)
+                if pg.locator('.m-form-dm').count() > 0:
+                    loi.append('Kho: modal chưa đóng sau khi Lưu')
+            print('  - Kho (1-8): sửa và lưu thành công')
+
+        # 3. Đối tượng danh-muc/1-5 (một dòng nhà cung cấp): bấm thẻ đầu ncc, form mở đúng tên dòng, sửa 1 ô chữ, Lưu
+        path_dt = '/app/danh-muc/1-5'
+        pg.goto(f'{URL}?goi=PL&p={abs(hash(path_dt))}#{path_dt}')
+        pg.wait_for_timeout(800)
+        chip_ncc = pg.locator('.m-chip:has-text("Nhà cung cấp")')
+        if chip_ncc.count() > 0:
+            chip_ncc.first.click()
+            pg.wait_for_timeout(300)
+
+        the_dt = pg.locator('.m-the-dm').first
+        ten_dt_cu = pg.locator('.m-the-dm-ten').first.inner_text().strip() if pg.locator('.m-the-dm-ten').count() > 0 else ''
+        the_dt.click()
+        pg.wait_for_timeout(400)
+
+        if pg.locator('.m-form-dm').count() == 0:
+            loi.append('Đối tượng (1-5): bấm thẻ không mở modal .m-form-dm')
+        else:
+            inps = pg.locator('.m-form-dm input.inp')
+            val = inps.nth(1).input_value() if inps.count() >= 2 else ''
+            if ten_dt_cu and ten_dt_cu not in val:
+                loi.append(f'Đối tượng (1-5): form mở không đúng tên dòng (thấy {val}, kỳ vọng chứa {ten_dt_cu})')
+            if inps.count() >= 2:
+                inps.nth(1).fill(val + ' (sửa)')
+            nut_luu = kiem_nut_luu('Đối tượng sửa')
+            if nut_luu:
+                nut_luu.click()
+                pg.wait_for_timeout(400)
+                if pg.locator('.m-form-dm').count() > 0:
+                    loi.append('Đối tượng: modal chưa đóng sau khi Lưu')
+            print('  - Đối tượng (1-5): sửa và lưu thành công')
+
+        # 4. Phương thức thanh toán: bấm thẻ đầu, form mở đúng tên dòng, sửa 1 ô chữ, Lưu
+        path_pttt = '/app/danh-muc/phuong-thuc-thanh-toan'
+        pg.goto(f'{URL}?goi=PL&p={abs(hash(path_pttt))}#{path_pttt}')
+        pg.wait_for_timeout(800)
+        the_pttt = pg.locator('.m-the-dm').first
+        ten_pttt_cu = pg.locator('.m-the-dm-ten').first.inner_text().strip() if pg.locator('.m-the-dm-ten').count() > 0 else ''
+        the_pttt.click()
+        pg.wait_for_timeout(400)
+
+        if pg.locator('.m-form-dm').count() == 0:
+            loi.append('Phương thức thanh toán: bấm thẻ không mở modal .m-form-dm')
+        else:
+            inps = pg.locator('.m-form-dm input.inp')
+            val = inps.nth(1).input_value() if inps.count() >= 2 else ''
+            if ten_pttt_cu and ten_pttt_cu not in val:
+                loi.append(f'Phương thức thanh toán: form mở không đúng tên dòng (thấy {val}, kỳ vọng chứa {ten_pttt_cu})')
+            if inps.count() >= 2:
+                inps.nth(1).fill(val + ' (sửa)')
+            nut_luu = kiem_nut_luu('Phương thức thanh toán sửa')
+            if nut_luu:
+                nut_luu.click()
+                pg.wait_for_timeout(400)
+                if pg.locator('.m-form-dm').count() > 0:
+                    loi.append('Phương thức thanh toán: modal chưa đóng sau khi Lưu')
+            print('  - Phương thức thanh toán: sửa và lưu thành công')
+
+        if con:
+            loi.append(f'Form danh mục: lỗi console {con[:2]}')
+
+        b.close()
+    return loi
+
+
 def kiem_tra_cac_khung_dt():
     loi, dem = [], 0
     for rong, cao in KHUNG_DT:
@@ -670,6 +839,8 @@ def kiem_tra_cac_khung_dt():
     loi += loi_d4
     loi_d5 = kiem_tra_lap_phieu_dot_5()
     loi += loi_d5
+    loi_d6 = kiem_tra_form_dm_dot_6()
+    loi += loi_d6
     if loi:
         print(f'{len(loi)} LỖI:')
         for x in loi:
