@@ -14,7 +14,7 @@ import { St, Table } from '../../ui/Table'
 import { Select } from '../../ui/Dropdown'
 import { HopXacNhan } from '../../ui/LocNangCao'
 import { ONgay } from '../../ui/ChonNgay'
-import { thTT58, moTaBoSoTT58 } from '../bao-cao/tt58'
+import { NHOM_DNSN, thTT58, moTaBoSoTT58 } from '../bao-cao/tt58'
 import { CatalogPanel } from '../../ui/generic/CatalogScreen'
 import type { CauHinhDM } from '../danh-muc/truong-dm'
 
@@ -209,7 +209,9 @@ export function ThongTinDonVi({ sc }: ScreenProps) {
   const dnCoDinh = s.goi === 'PL' || s.goi === 'PR'   // doanh nghiệp gói Plus, Pro: GTGT khấu trừ, TNDN theo lợi nhuận, không chọn
   // Doanh nghiệp nộp GTGT khấu trừ thì TNDN chỉ theo lợi nhuận tính thuế
   const ppCoDinh = NHOM_HKD[f.nhom - 1]?.pp ?? null
-  const tndnCoDinh = f.loai === 'dn' && (dnCoDinh || f.ppGtgt === 'khauTru')   // nhóm 1, 3, 4 cách tính thuế cố định; nhóm 2 được chọn
+  // Doanh nghiệp siêu nhỏ TT58 chọn 1 trong 4 nhóm, nhóm quyết định cả GTGT và TNDN (T174)
+  const laDnsn = f.loai === 'dn' && s.cheDo === 'TT58'
+  const tndnCoDinh = f.loai === 'dn' && !laDnsn && (dnCoDinh || f.ppGtgt === 'khauTru')   // nhóm 1, 3, 4 cách tính thuế cố định; nhóm 2 được chọn
   const bat = (ds: string[], k: string) => ds.includes(k) ? ds.filter(x => x !== k) : [...ds, k]
   const mstGoc = Boolean(dsDonVi({ dvMoi: s.dvMoi }).find(d => d.id === s.donVi)?.mst)   // MST đã khai lúc khởi tạo thì không sửa; chưa khai thì nhập ở đây
   const luuDv = () => {
@@ -268,7 +270,15 @@ export function ThongTinDonVi({ sc }: ScreenProps) {
                 <ChonKenh ds={KENH_SAN.filter(k => f.kenhOnline.includes(k))} chon={f.kenhSan.filter(k => f.kenhOnline.includes(k))} doi={k => sua({ kenhSan: bat(f.kenhSan, k) })} trong="Chọn sàn" /></div>
             </>}
             {/* Doanh nghiệp: chọn thuế GTGT trực tiếp hoặc khấu trừ; thuế TNDN theo doanh thu hoặc theo lợi nhuận tính thuế */}
-            {loai === 'dn' && <>
+            {laDnsn && (
+              <div className="f c4"><label>Nhóm doanh nghiệp siêu nhỏ</label>
+                <Select className="inp" value={String(thTT58(f.ppGtgt, f.ppTndn))} aria-label="Nhóm doanh nghiệp siêu nhỏ"
+                  onChange={e => { const x = NHOM_DNSN[Number(e.target.value) - 1]; sua({ ppGtgt: x.ppGtgt, ppTndn: x.ppTndn }) }}
+                  ds={NHOM_DNSN.map(x => ({ v: String(x.nhom), t: `Nhóm ${x.nhom}: ${x.thue}` }))} />
+                <small className="muted" style={{ display: 'block', marginTop: 4 }}>{moTaBoSoTT58(thTT58(f.ppGtgt, f.ppTndn))}</small>
+              </div>
+            )}
+            {loai === 'dn' && !laDnsn && <>
               <div className="f c2"><label>Phương pháp thuế GTGT</label>
                 <Select className="inp" value={dnCoDinh ? 'khauTru' : f.ppGtgt} disabled={dnCoDinh} aria-label="Phương pháp thuế GTGT" onChange={e => sua({ ppGtgt: e.target.value as PpGtgt })}
                   ds={(dnCoDinh ? (['khauTru'] as const) : (['tyLe', 'khauTru'] as const)).map(v => ({ v, t: PP_GTGT[v] }))} /></div>
@@ -302,11 +312,6 @@ export function ThongTinDonVi({ sc }: ScreenProps) {
                 ds={[-2, -1, 0, 1].map(d => String(new Date().getFullYear() + d)).map(n => ({ v: n, t: n }))} />
             </div>
             <div className="f c2"><label>Phương pháp tính giá xuất kho</label><Select className="inp"><option>Bình quân gia quyền cuối kỳ</option><option>Bình quân tức thời</option><option>Nhập trước xuất trước</option></Select></div>
-            {s.cheDo === 'TT58' && loai === 'dn' && (
-              <div className="f c4">
-                <small className="muted">{moTaBoSoTT58(thTT58(f.ppGtgt, tndnCoDinh ? 'thuNhap' : f.ppTndn))}</small>
-              </div>
-            )}
           </div>
         </Card>
       </div>

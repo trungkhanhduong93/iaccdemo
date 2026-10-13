@@ -3,7 +3,8 @@
 // Tiến độ lưu ở localStorage để quay lại đúng bước.
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { SO_NGAY_DUNG_THU, batDauDungThu, dungThuDv, useSession, type Session } from '../../app/session'
+import { SO_NGAY_DUNG_THU, batDauDungThu, dungThuDv, useSession, type PpGtgt, type PpTndn, type Session } from '../../app/session'
+import { NHOM_DNSN, moTaBoSoTT58, thTT58 } from '../bao-cao/tt58'
 import { CUA_HANG_FABI, cuaHangChuaDung, type CuaHangFabi } from './cua-hang-fabi'
 import { DIEM_NOI_BAT, FEATURES, GIA_GOI_NAM, GIA_GOI_THANG, GOI, GOIS, MODS, demTheoGoi, type Goi } from '../../app/plan'
 import { CHE_DO, CHE_DO_HOP_LE, CHE_DO_MAC_DINH, type CheDo } from '../../app/che-do'
@@ -161,6 +162,8 @@ export interface Nhap {
   loai: LoaiHinh
   nhom: number         // nhóm hộ kinh doanh 1 tới 4
   ppHkd: PpHkd         // cách tính thuế TNCN của hộ kinh doanh
+  ppGtgt: PpGtgt       // doanh nghiệp siêu nhỏ TT58: nhóm 1 tới 4 theo cách nộp thuế GTGT, TNDN (T174)
+  ppTndn: PpTndn
   goi: Goi
   cheDo: CheDo
   traCuu: boolean
@@ -175,7 +178,7 @@ export interface Nhap {
   dongBo: 'chiTiet' | 'kenh'
 }
 export const MAC_DINH: Nhap = {
-  kieu: 'fabi', b: -2, mo: false, loai: 'dn', nhom: nhomTheoDt(DT_FABI), ppHkd: 'loiNhuan', goi: goiGoiY('dn', 'loiNhuan'), cheDo: cheDoMoi('dn', goiGoiY('dn', 'loiNhuan')), traCuu: false, mst: '', tenDv: TEN_FABI, diaChi: '', ngayDauNam: '01/01/2026', chon: CHI_NHANH.map(c => c.id),
+  kieu: 'fabi', b: -2, mo: false, loai: 'dn', nhom: nhomTheoDt(DT_FABI), ppHkd: 'loiNhuan', ppGtgt: 'tyLe', ppTndn: 'thuNhap', goi: goiGoiY('dn', 'loiNhuan'), cheDo: cheDoMoi('dn', goiGoiY('dn', 'loiNhuan')), traCuu: false, mst: '', tenDv: TEN_FABI, diaChi: '', ngayDauNam: '01/01/2026', chon: CHI_NHANH.map(c => c.id),
   cnChinh: '', kenhOnline: KENH_ONLINE, kenhSan: KENH_SAN,
   dongBo: 'kenh',
 }
@@ -266,7 +269,7 @@ export function OnboardFabi() {
   const xong = () => {
     // thông tin kê khai lưu theo đơn vị, sửa lại ở Hệ thống, Thông tin đơn vị (T145)
     const ttDv = { ...s.ttDv, [s.donVi]: { ...s.ttDv?.[s.donVi], loai: n.loai, nhom: n.nhom, ppHkd: n.ppHkd, cnChinh: n.cnChinh, kenhOnline: n.kenhOnline, kenhSan: n.kenhSan } }
-    set({ goi: n.goi, cheDo: n.cheDo, khoiTao: true, dongBoFabi: n.dongBo, ttDv, ...(s.dvMoi && s.donVi === s.dvMoi.id ? { cnThem: { ...s.cnThem, [s.donVi]: cnChon.map(c => ({ id: c.id, ten: c.ten, khuVuc: c.khuVuc, tuNgay: n.ngayDauNam, banDau: true })) }, dvMoi: { ...s.dvMoi, ten: n.tenDv || s.dvMoi.ten, viettat: vietTat(n.tenDv) || s.dvMoi.viettat, mst: n.mst, diaChi: n.diaChi, goi: n.goi, diem: n.chon.length } } : {}),
+    set({ goi: n.goi, cheDo: n.cheDo, khoiTao: true, dongBoFabi: n.dongBo, ttDv, ...(n.loai === 'dn' && n.cheDo === 'TT58' ? { ppGtgt: n.ppGtgt, ppTndn: n.ppTndn } : {}), ...(s.dvMoi && s.donVi === s.dvMoi.id ? { cnThem: { ...s.cnThem, [s.donVi]: cnChon.map(c => ({ id: c.id, ten: c.ten, khuVuc: c.khuVuc, tuNgay: n.ngayDauNam, banDau: true })) }, dvMoi: { ...s.dvMoi, ten: n.tenDv || s.dvMoi.ten, viettat: vietTat(n.tenDv) || s.dvMoi.viettat, mst: n.mst, diaChi: n.diaChi, goi: n.goi, diem: n.chon.length } } : {}),
       ngayDauNam: { ...s.ngayDauNam, [s.donVi]: n.ngayDauNam }, namTaiChinh: { ...s.namTaiChinh, [s.donVi]: Number(n.ngayDauNam.slice(-4)) } })
     try { localStorage.removeItem(KEY) } catch { /* bỏ qua */ }
     setN(MAC_DINH)
@@ -356,6 +359,22 @@ export function OnboardFabi() {
                               {CHE_DO_HOP_LE[n.goi].map(cd => <option key={cd} value={cd}>{CHE_DO[cd].ngan} · {CHE_DO[cd].ten}</option>)}
                             </Select>
                           </div>
+                        )}
+                        {n.loai === 'dn' && n.cheDo === 'TT58' && (
+                          <>
+                            <h3 className="ktf-h3">Doanh nghiệp siêu nhỏ thuộc nhóm nào?</h3>
+                            <div className="ktf-nhom">
+                              {NHOM_DNSN.map(x => (
+                                <button key={x.nhom} className={`opt ${thTT58(n.ppGtgt, n.ppTndn) === x.nhom ? 'on' : ''}`} onClick={() => sua({ ppGtgt: x.ppGtgt, ppTndn: x.ppTndn })}>
+                                  <span className="radio" />
+                                  <span className="grow">
+                                    <span className="row"><b>Nhóm {x.nhom}</b><span className="muted ktf-nhom-dt">{x.thue}</span></span>
+                                    <small>{moTaBoSoTT58(x.nhom)}</small>
+                                  </span>
+                                </button>
+                              ))}
+                            </div>
+                          </>
                         )}
                         <details className="ktf-tn-mo">
                           <summary>Xem {demTheoGoi(n.goi).co} tính năng gói {GOI[n.goi].ten}</summary>

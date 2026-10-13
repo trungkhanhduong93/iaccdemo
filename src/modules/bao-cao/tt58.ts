@@ -40,17 +40,25 @@ export function thTT58(ppGtgt?: PpGtgt, ppTndn?: PpTndn): ThTT58 {
   return 4
 }
 
-/** Tên trường hợp và bộ sổ bắt buộc tương ứng */
+/** 4 nhóm doanh nghiệp siêu nhỏ theo cách nộp thuế GTGT, TNDN (TT58), chọn ở popup khởi tạo và Thông tin đơn vị (T174) */
+export const NHOM_DNSN: { nhom: ThTT58; ppGtgt: PpGtgt; ppTndn: PpTndn; thue: string }[] = [
+  { nhom: 1, ppGtgt: 'tyLe', ppTndn: 'tyLe', thue: 'GTGT và TNDN theo tỷ lệ % trên doanh thu' },
+  { nhom: 2, ppGtgt: 'tyLe', ppTndn: 'thuNhap', thue: 'GTGT theo tỷ lệ % trên doanh thu, TNDN theo thu nhập tính thuế' },
+  { nhom: 3, ppGtgt: 'khauTru', ppTndn: 'tyLe', thue: 'GTGT theo phương pháp khấu trừ, TNDN theo tỷ lệ % trên doanh thu' },
+  { nhom: 4, ppGtgt: 'khauTru', ppTndn: 'thuNhap', thue: 'GTGT theo phương pháp khấu trừ, TNDN theo thu nhập tính thuế' },
+]
+
+/** Bộ sổ bắt buộc của từng nhóm */
 export function moTaBoSoTT58(th: ThTT58): string {
   switch (th) {
     case 1:
-      return 'Trường hợp 1: S1-DNSN'
+      return 'Sổ S1-DNSN'
     case 2:
-      return 'Trường hợp 2: S2a, S2b, S2c, S2d-DNSN'
+      return 'Sổ S2a, S2b, S2c, S2d-DNSN'
     case 3:
-      return 'Trường hợp 3: S3a, S3b-DNSN'
+      return 'Sổ S3a, S3b-DNSN'
     case 4:
-      return 'Trường hợp 4: S2b, S2c, S2d, S3b-DNSN'
+      return 'Sổ S2b, S2c, S2d, S3b-DNSN'
   }
 }
 

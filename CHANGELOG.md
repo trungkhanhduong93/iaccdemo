@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 13/10/2026
 
+- T174: Doanh nghiệp siêu nhỏ (TT58, gói Standard) chọn 1 trong 4 nhóm theo cách nộp thuế GTGT, TNDN ở bước 1 popup khởi tạo và ở Hệ thống, Thông tin đơn vị; mỗi nhóm ghi bộ sổ tương ứng.
 - T171: Bỏ mọi báo cáo ở mọi gói, chỉ còn Sổ quỹ tiền mặt, Sổ ngân hàng. Đơn vị theo TT58 (gói Standard) có thêm 11 sổ, báo cáo: Sổ doanh thu (mẫu S1, S2a hoặc S3a theo cách tính thuế), S2b, S2c, S2d, S3b, S4a, S4b, S4c, S4d-DNSN, Báo cáo tình hình tài chính B01-DNSN, Báo cáo kết quả kinh doanh B02-DNSN, không còn ẩn theo trường hợp thuế.
 
 ## 12/10/2026

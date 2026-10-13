@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T174 | Doanh nghiệp siêu nhỏ TT58 chọn 1 trong 4 nhóm (GTGT, TNDN theo tỷ lệ % doanh thu hay khấu trừ, thu nhập tính thuế) ở bước 1 popup khởi tạo và ở Hệ thống, Thông tin đơn vị | PhuongXT | Đang làm | Sửa `OnboardFabi.tsx`, `HeThong.tsx`, `tt58.ts` |
 | T173 | Điện thoại đợt 1: khung `MobileShell`, thanh trên, thanh dưới 4 tab, chuyển khung theo bề rộng 767px, màn chưa có bản điện thoại ra `MChiMayTinh`; `kiem_tra.py --dien-thoai` | Trum | Đang làm | Theo `docs/ke-hoach-mobile-ivt.md` mục 7 đợt 1. Điều phối Anti A, Anti B. Sửa `App.tsx`, `Screen.tsx`, `index.html`, `app.css` (mục cuối), `tools/kiem_tra.py`, file mới ở `src/ui/mobile/` |
 | T172 | Chạy lại `python tools/xuat_bao_cao_he_thong.py` trên máy có thư mục `Present` để làm mới `docs/IACC-Cloud-Chi-Tiet-He-Thong.xlsx` sau T171 (sheet Báo cáo & Mẫu in có cột Còn dùng) | Trum | Chờ | Máy PhuongXT thiếu `../Present/tools/build_present.py` nên không chạy được |
 | T169 | Form chứng từ: gõ đổi địa chỉ từ phiếu này sang phiếu khác (vd `#/app/tien/2-1-1/chi-3` sang `chi-6`) thì form giữ số phiếu, đối tượng của phiếu cũ; mở từ danh sách, Trước, Sau thì đúng | | Chờ | Phát hiện ở T168. Sửa `ChungTuForm.tsx`, có thể `VoucherScreen.tsx` (key của form) |
@@ -44,6 +43,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T174 | Doanh nghiệp siêu nhỏ TT58 chọn 1 trong 4 nhóm (GTGT, TNDN theo tỷ lệ % doanh thu hay khấu trừ, thu nhập tính thuế) ở bước 1 popup khởi tạo và ở Hệ thống, Thông tin đơn vị | PhuongXT | 13/10/2026 | [2026-10-13-phuongxt-nhom-dnsn](nhat-ky/2026-10-13-phuongxt-nhom-dnsn.md) |
 | T171 | Bỏ mọi báo cáo ở mọi gói, chỉ giữ Sổ quỹ tiền mặt, Sổ ngân hàng và bộ sổ, báo cáo tài chính TT58; gói Standard (TT58) hiện đủ mẫu TT58, không lọc theo trường hợp thuế | PhuongXT | 13/10/2026 | [2026-10-13-phuongxt-bo-bao-cao](nhat-ky/2026-10-13-phuongxt-bo-bao-cao.md) |
 | T170 | Lập kế hoạch giao diện điện thoại theo app IVT Pro: đọc APK, bộ nhận diện, khung màn, 9 đợt làm, danh sách ảnh cần chụp | Trum | 12/10/2026 | [2026-10-12-trum-ke-hoach-mobile-ivt](nhat-ky/2026-10-12-trum-ke-hoach-mobile-ivt.md) |
 | T168 | Thu chi: phiếu chi mẫu Chi phí chờ phân bổ (Tiền nhà 6 tháng, 72 triệu) có dòng tham chiếu Thẻ chi phí mở thẻ; phiếu thu, chi bỏ Mã số thuế, Ghi chú lên cột giữa, đầu phiếu 3 hàng; cột danh sách Lý do | dinhlanphuongipacc | 12/10/2026 | [2026-10-12-dinhlanphuongipacc-form-the-va-phieu-chi-cho-pb](nhat-ky/2026-10-12-dinhlanphuongipacc-form-the-va-phieu-chi-cho-pb.md) |
