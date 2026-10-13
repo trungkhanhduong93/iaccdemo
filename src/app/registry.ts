@@ -17,7 +17,7 @@ import tongHop from '../modules/tong-hop'
 import tienIch from '../modules/tien-ich'
 import heThong from '../modules/he-thong'
 import { TrungTamBaoCao } from '../modules/bao-cao/TrungTam'
-import { CAU_HINH_BC, giuBC, kyHieuBC } from '../modules/bao-cao/danh-sach'
+import { CAU_HINH_BC, giuBC } from '../modules/bao-cao/danh-sach'
 import { thTT58 } from '../modules/bao-cao/tt58'
 import type { Session } from './session'
 
@@ -109,13 +109,15 @@ export function apDung(sc: ScreenDef, cheDo?: CheDo, session?: Pick<Session, 'pp
   return true
 }
 
-/** Tab Báo cáo của phân hệ, nhóm báo cáo ở phân hệ Báo cáo: chỉ hiện khi còn ít nhất một báo cáo hiện được (T171) */
+/** Tab Báo cáo của phân hệ: chỉ hiện khi còn ít nhất một báo cáo hiện được (T171).
+ *  Nhóm báo cáo ở phân hệ Báo cáo vẫn hiện khi chưa có báo cáo, miễn phân hệ mở được ở gói (T171) */
 function conBaoCao(sc: ScreenDef, goi: Goi, cheDo?: CheDo, session?: Pick<Session, 'ppGtgt' | 'ppTndn'> | Session) {
-  const m = sc.kind === 'baocao' ? MODULES.find(x => x.screens.includes(sc)) : MODULES.find(x => x.key === sc.slug.slice(5))
-  // Nhóm báo cáo ở phân hệ Báo cáo không tính sổ theo mẫu thông tư, các sổ đó nằm ở nhóm Sổ sách kế toán theo thông tư (T171)
-  const con = (m?.screens.filter(sc.kind === 'baocao' ? laBaoCao : vaoBaoCao) ?? [])
-    .filter(x => sc.kind === 'baocao' || !kyHieuBC(x.code, cheDo ?? CHE_DO_MAC_DINH[goi], session))
-  return con.some(x => hienMan(x, goi, cheDo, session))
+  if (sc.kind !== 'baocao') {
+    const m = MODULES.find(x => x.key === sc.slug.slice(5))
+    return Boolean(m && hienPhanHe(m, goi) && !phanHeKhoa(m, goi))
+  }
+  const m = MODULES.find(x => x.screens.includes(sc))
+  return (m?.screens.filter(laBaoCao) ?? []).some(x => hienMan(x, goi, cheDo, session))
 }
 
 /** Mã quyết định khoá của màn (để tìm gói thấp nhất) */

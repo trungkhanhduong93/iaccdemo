@@ -2,7 +2,7 @@
 import { useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import type { ModuleDef, ScreenDef, ScreenProps } from '../types'
-import { MODULES, apDung, hienMan, maKhoa, moDuoc, tenMan } from '../../app/registry'
+import { MODULES, apDung, hienMan, hienPhanHe, maKhoa, moDuoc, phanHeKhoa, tenMan } from '../../app/registry'
 import { useSession } from '../../app/session'
 import { CHE_DO } from '../../app/che-do'
 import { anNgoaiGoi, minGoi } from '../../app/plan'
@@ -73,10 +73,9 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
   const nhomGoc: { mod: ModuleDef; screens: ScreenDef[] }[] = []
   for (const m of MODULES) {
     if (m.key === 'bao-cao') continue
-    const scs = tatCaBC.filter(x => x.goc === m.key && !laSoTT(x))   // sổ đã ở nhóm thông tư thì không lặp ở nhóm phân hệ
-    if (scs.length > 0) {
-      nhomGoc.push({ mod: m, screens: scs })
-    }
+    // Nhóm phân hệ vẫn hiện khi chưa có báo cáo (phân hệ mở được ở gói); sổ đã ở nhóm thông tư thì không lặp lại
+    if (!tatCaBC.some(x => x.goc === m.key) || !hienPhanHe(m, s.goi) || phanHeKhoa(m, s.goi)) continue
+    nhomGoc.push({ mod: m, screens: tatCaBC.filter(x => x.goc === m.key && !laSoTT(x)) })
   }
 
   // Số báo cáo hiện được ở rail (ẩn màn theo hienMan)
@@ -85,7 +84,6 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
       mod: g.mod,
       hienCount: g.screens.filter(x => hienMan(x, s.goi, s.cheDo, s)).length,
     }))
-    .filter(g => g.hienCount > 0)
 
   const tongHienRail = nhomRail.reduce((acc, g) => acc + g.hienCount, 0)
   const demSoTT = soTT.filter(x => hienMan(x, s.goi, s.cheDo, s)).length
@@ -118,7 +116,7 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
       mod: g.mod,
       screens: g.screens.filter(x => hienMan(x, s.goi, s.cheDo, s)).filter(match),
     }))
-    .filter(g => g.screens.length > 0)
+    .filter(g => g.screens.length > 0 || (!q && g.mod.key !== 'so-sach'))   // không tìm kiếm thì nhóm phân hệ trống vẫn hiện
 
   // Danh sách ghim và mở gần đây (chỉ hiện khi ở tab Tất cả, không tìm kiếm, có báo cáo mở được)
   const tatCaBCMap = useMemo(() => new Map(tatCaBC.map(x => [x.slug, x])), [tatCaBC])
@@ -210,7 +208,7 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
           )}
           {nhomKetQua.length === 0 ? (
             <div className="card">
-              <div className="empty"><b>{q ? `Không có báo cáo khớp "${q}"` : `Báo cáo của phân hệ này nằm ở nhóm ${tenSoTT}`}</b></div>
+              <div className="empty"><b>{q ? `Không có báo cáo khớp "${q}"` : 'Chưa có báo cáo'}</b></div>
             </div>
           ) : (
             nhomKetQua.map(g => (
@@ -220,6 +218,7 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
                   <span className="rpt-head-count">{g.screens.length}</span>
                   <span className="rpt-head-line" />
                 </div>
+                {g.screens.length === 0 && <div className="muted" style={{ padding: '4px 2px 12px' }}>Chưa có báo cáo</div>}
                 <div className="rpt-list">
                   {g.screens.map(x => {
                     const ok = moDuoc(x, s.goi)
