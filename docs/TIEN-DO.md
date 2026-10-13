@@ -4,13 +4,14 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T170.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T173.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T173 | Điện thoại đợt 1: khung `MobileShell`, thanh trên, thanh dưới 4 tab, chuyển khung theo bề rộng 767px, màn chưa có bản điện thoại ra `MChiMayTinh`; `kiem_tra.py --dien-thoai` | Trum | Đang làm | Theo `docs/ke-hoach-mobile-ivt.md` mục 7 đợt 1. Điều phối Anti A, Anti B. Sửa `App.tsx`, `Screen.tsx`, `index.html`, `app.css` (mục cuối), `tools/kiem_tra.py`, file mới ở `src/ui/mobile/` |
 | T172 | Chạy lại `python tools/xuat_bao_cao_he_thong.py` trên máy có thư mục `Present` để làm mới `docs/IACC-Cloud-Chi-Tiet-He-Thong.xlsx` sau T171 (sheet Báo cáo & Mẫu in có cột Còn dùng) | Trum | Chờ | Máy PhuongXT thiếu `../Present/tools/build_present.py` nên không chạy được |
 | T169 | Form chứng từ: gõ đổi địa chỉ từ phiếu này sang phiếu khác (vd `#/app/tien/2-1-1/chi-3` sang `chi-6`) thì form giữ số phiếu, đối tượng của phiếu cũ; mở từ danh sách, Trước, Sau thì đúng | | Chờ | Phát hiện ở T168. Sửa `ChungTuForm.tsx`, có thể `VoucherScreen.tsx` (key của form) |
 | T138 | Màn onboard khi bấm từ FABi sang IACC: khởi tạo đơn vị kế toán, điền sẵn từ FABi (chi nhánh, kho, cách đồng bộ, số dư đầu kỳ) | PhuongXT | Dở dang | Popup khởi tạo dữ liệu 4 bước trong phần mềm (`OnboardFabi.tsx`, `Shell.tsx`) đã push, PhuongXT xem lại một lượt. Xem `2026-10-11-phuongxt-man-khoi-tao-fabi.md` |
