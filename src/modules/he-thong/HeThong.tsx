@@ -207,9 +207,8 @@ export function ThongTinDonVi({ sc }: ScreenProps) {
   }))
   const sua = (p: Partial<typeof f>) => setF(x => ({ ...x, ...p }))
   const dnCoDinh = s.goi === 'PL' || s.goi === 'PR'   // doanh nghiệp gói Plus, Pro: GTGT khấu trừ, TNDN theo lợi nhuận, không chọn
-  // Doanh nghiệp nộp GTGT khấu trừ thì TNDN chỉ theo lợi nhuận tính thuế
   const ppCoDinh = NHOM_HKD[f.nhom - 1]?.pp ?? null
-  const tndnCoDinh = f.loai === 'dn' && (dnCoDinh || f.ppGtgt === 'khauTru')   // nhóm 1, 3, 4 cách tính thuế cố định; nhóm 2 được chọn
+  const tndnCoDinh = f.loai === 'dn' && dnCoDinh   // doanh nghiệp gói Free, Standard chọn TNDN kể cả khi GTGT khấu trừ (T174)
   const bat = (ds: string[], k: string) => ds.includes(k) ? ds.filter(x => x !== k) : [...ds, k]
   const mstGoc = Boolean(dsDonVi({ dvMoi: s.dvMoi }).find(d => d.id === s.donVi)?.mst)   // MST đã khai lúc khởi tạo thì không sửa; chưa khai thì nhập ở đây
   const luuDv = () => {
