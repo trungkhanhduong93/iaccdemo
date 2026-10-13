@@ -4,13 +4,14 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T200.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T201.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T201 | Mọi báo cáo có cột số chứng từ: bấm số mở chứng từ chi tiết | PhuongXT | Đang làm | Sửa `src/ui/generic/ReportScreen.tsx`, file mới dò số chứng từ trong `src/ui/generic/`, `bao-cao/cong-no.tsx` |
 | T193 | Điện thoại: trang chủ hai tab "Tổng quan" (4 thẻ số, biểu đồ doanh thu 6 tháng, cơ cấu chi phí) và "Cần theo dõi" (chứng từ chưa ghi sổ, công nợ quá hạn, hàng dưới định mức, hạn nộp tờ khai) | Trum | Đang làm | Anti B code. Sửa `src/ui/mobile/MTrangChu.tsx`, `app.css` mục T193–T199 |
 | T194 | Điện thoại: tab Nghiệp vụ chỉ hiện màn của gói Free và Standard, kể cả phiên gói Plus, Pro | Trum | Đang làm | Anti B code. Sửa `src/ui/mobile/MNghiepVu.tsx` |
 | T195 | Điện thoại: kính lúp ở trang chủ mở màn tìm kiếm màn hình, gõ không dấu | Trum | Đang làm | Anti B code. Sửa `MTrangChu.tsx`, thêm file trong `src/ui/mobile/` |
