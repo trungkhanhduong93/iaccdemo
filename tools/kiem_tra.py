@@ -4,7 +4,7 @@ kiểm form chứng từ mở toàn màn hình và đóng về đúng màn trư�
 Chạy khi `npm run dev` đang mở ở cổng 5180:
     python tools/kiem_tra.py            # đủ 4 gói + ảnh chụp
     python tools/kiem_tra.py --nhanh    # chỉ gói Medium, không chụp ảnh
-    python tools/kiem_tra.py --dien-thoai   # khung 390x844, thanh dưới, tràn ngang
+    python tools/kiem_tra.py --dien-thoai   # khung 375, 390, 440 (iPhone 13 trở lên), thanh dưới, tràn ngang
 """
 import json
 import re
@@ -22,6 +22,8 @@ REPO = Path(__file__).resolve().parent.parent
 SHOTS = Path(__file__).resolve().parent / 'shots'
 NHANH = '--nhanh' in sys.argv
 DIEN_THOAI = '--dien-thoai' in sys.argv
+# Bề rộng iPhone 13 trở lên: 13 mini, 13/14, 16 Pro Max (pt); ảnh chụp chỉ lấy khung 390
+KHUNG_DT = [(375, 812), (390, 844), (440, 956)]
 GOIS = ['PL'] if NHANH else ['F', 'S', 'PL', 'PR']
 
 
@@ -40,7 +42,7 @@ def lay_keys_phan_he():
     return keys
 
 
-def kiem_tra_dien_thoai():
+def kiem_tra_dien_thoai(rong=390, cao=844):
     loi, dem = [], 0
     dia_chi = ['/app', '/app/nghiep-vu', '/app/bao-cao/tat-ca', '/app/khac']
     for k in lay_keys_phan_he():
@@ -51,7 +53,7 @@ def kiem_tra_dien_thoai():
     with sync_playwright() as p:
         b = p.chromium.launch(channel='chrome')
         pg = b.new_page(
-            viewport={'width': 390, 'height': 844},
+            viewport={'width': rong, 'height': cao},
             is_mobile=True,
             has_touch=True,
             device_scale_factor=3,
@@ -118,7 +120,8 @@ def kiem_tra_dien_thoai():
             for nhan, hsh, ten_anh in tabs:
                 pg.goto(f'{URL}{hsh}')
                 pg.wait_for_timeout(150)
-                pg.screenshot(path=str(SHOTS / ten_anh))
+                if rong == 390:
+                    pg.screenshot(path=str(SHOTS / ten_anh))
         else:
             for i, (nhan, hsh, ten_anh) in enumerate(tabs):
                 the_tabs.nth(i).click()
@@ -136,11 +139,20 @@ def kiem_tra_dien_thoai():
                 if con:
                     loi.append(f'tab {nhan}: lỗi console {con[:2]}')
                     con.clear()
-                pg.screenshot(path=str(SHOTS / ten_anh))
+                if rong == 390:
+                    pg.screenshot(path=str(SHOTS / ten_anh))
 
         b.close()
+    return [f'{rong}px {x}' for x in loi], dem
 
-    print(f'đã kiểm {dem} địa chỉ')
+
+def kiem_tra_cac_khung_dt():
+    loi, dem = [], 0
+    for rong, cao in KHUNG_DT:
+        l, d = kiem_tra_dien_thoai(rong, cao)
+        loi += l
+        dem += d
+    print(f'đã kiểm {dem} lượt địa chỉ ở {len(KHUNG_DT)} bề rộng')
     if loi:
         print(f'{len(loi)} LỖI:')
         for x in loi:
@@ -151,7 +163,7 @@ def kiem_tra_dien_thoai():
 
 def main():
     if DIEN_THOAI:
-        kiem_tra_dien_thoai()
+        kiem_tra_cac_khung_dt()
         return
     loi, dem = [], 0
     with sync_playwright() as p:

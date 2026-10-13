@@ -588,6 +588,7 @@ Lý do: Trum giao T155 ngày 11/10/2026, chọn hạch toán qua 1368, 3368 theo
 - iaccdemo có giao diện điện thoại. Thay QD06.
 - Giao diện điện thoại làm theo app IVT Pro (iPOS Inventory). IVT Pro là app của iPOS, nên được dùng lại màu, biểu tượng, hình minh hoạ của IVT. Luật QD12 không áp cho app iPOS.
 - Làm khung chung trước, rồi tới màn nghiệp vụ. Kho là một phân hệ, các phân hệ khác dùng cùng khung.
+- Hỗ trợ iPhone 13 trở lên (bề rộng 375pt tới 440pt), thiết kế theo 390pt của iPhone 13. Trum chốt 13/10/2026.
 - Bản điện thoại dùng phông `'Be Vietnam Pro', -apple-system, 'Segoe UI', Roboto, sans-serif` cho mọi máy, giống web. Không dùng phông SF Pro của IVT vì giấy phép Apple.
 - Biểu tượng: thanh dưới và hình màn trống vẫn dùng của IVT. Ô phân hệ ở tab Nghiệp vụ dùng biểu tượng khối đặc của bản web (`Icon` theo `m.icon`, như sidebar, QD23).
 - Thương hiệu: thanh trên tab Trang chủ hiện logo ACCOUNTING của web thay chữ tiêu đề.

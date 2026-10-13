@@ -32,7 +32,7 @@
 
 ## Dở dang, việc tiếp theo
 
-- Đợt 0 xong, còn chờ Trum báo đời iPhone để chốt hệ số (đang giả định 1 khung 587px = 390pt). Đợt 2 dùng số đo bảng 5.2 thay biến `--m-*` tạm ở `app.css`.
+- Đợt 0 xong. Trum chốt hỗ trợ iPhone 13 trở lên (375pt tới 440pt), ảnh chụp trên iPhone 13 (390pt, hệ số 1,505); `--dien-thoai` kiểm ở 375, 390, 440. Đợt 2 dùng số đo bảng 5.2 thay biến `--m-*` tạm ở `app.css`.
 - Đợt 2: Trang chủ, Nghiệp vụ, Khác (mục 7 của kế hoạch). Thay `RouteTamMobile` trong `App.tsx` bằng màn thật.
 
 ## Bẫy, quyết định mới

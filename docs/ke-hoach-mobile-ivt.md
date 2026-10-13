@@ -35,6 +35,7 @@ Không bàn lại các điểm sau. Muốn đổi thì hỏi Trum.
 | Điểm | Chốt |
 |---|---|
 | Ngưỡng | `max-width: 767px` là điện thoại |
+| Máy hỗ trợ | iPhone 13 trở lên, bề rộng 375pt (13 mini) tới 440pt (16 Pro Max). Thiết kế theo 390pt (iPhone 13), `kiem_tra.py --dien-thoai` kiểm ở 375, 390, 440 |
 | Địa chỉ | Giữ `#/app/<phân hệ>/<màn>/<id>` như bản máy tính. Không làm `/m/...` |
 | Chuyển khung | `useLaMobile()` đúng thì dùng `MobileShell`, sai thì dùng `Shell` cũ |
 | Thư mục | Mọi component điện thoại nằm ở `src/ui/mobile/`. Biểu tượng, hình IVT dùng thật thì chép vào `src/assets/ivt/` |
@@ -50,7 +51,7 @@ Không bàn lại các điểm sau. Muốn đổi thì hỏi Trum.
 
 Còn mở:
 
-- Chờ đời máy chụp từ Trum để chốt hệ số điểm ảnh chính xác (tạm dùng giả định 1,505).
+- Không còn mục mở. Máy chụp chốt iPhone 13 ngày 13/10/2026.
 
 ## 3. Tài nguyên IVT trong repo
 
@@ -93,7 +94,7 @@ IVT Pro viết bằng Flutter. Không có file bố cục để đọc, bố c�
 
 ## 4b. Bố cục đọc từ ảnh IVT
 
-Số đo tính theo hệ số giả định 1,505 (587px = 390pt).
+Số đo tính theo hệ số 1,505 (587px = 390pt, màn iPhone 13).
 
 ### 01-trang-chu.png
 
@@ -734,7 +735,7 @@ Làm theo thứ tự. Đợt sau cần đợt trước đã push.
 
 ## 8. Ảnh cần chụp từ IVT Pro
 
-Máy chụp: iPhone, chưa rõ đời (giả định 1 khung 587px = 390pt, đổi khi Trum báo đời máy). Độ phân giải ảnh: mỗi khung 587×1280px, file ghép nhiều khung. Hệ số điểm ảnh: giả định 1,505.
+Máy chụp: iPhone 13 (390pt). Độ phân giải ảnh: mỗi khung 587×1280px, file ghép nhiều khung. Hệ số điểm ảnh: 1,505.
 
 Cách chụp:
 
