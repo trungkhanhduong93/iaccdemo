@@ -127,6 +127,25 @@ def load_all_tasks():
     return tasks
 
 
+def doc_bao_cao_giu():
+    """Đọc từ phần mềm báo cáo nào còn dùng sau T171 và ký hiệu mẫu TT58 (src/modules/bao-cao/danh-sach.ts),
+    tên sổ bổ sung (BO_SUNG ở src/app/plan.ts). Trả về (mã giữ mọi chế độ, mã giữ khi TT58, ký hiệu TT58 theo mã, tên theo mã)."""
+    ds = (ROOT / 'src' / 'modules' / 'bao-cao' / 'danh-sach.ts').read_text(encoding='utf-8')
+    plan = (ROOT / 'src' / 'app' / 'plan.ts').read_text(encoding='utf-8')
+
+    def mang(ten):
+        m = re.search(rf"const {ten} = \[([^\]]*)\]", ds)
+        return re.findall(r"'([\d.]+)'", m.group(1)) if m else []
+
+    ky_hieu = {}
+    for ma, kh in re.findall(r"^\s*'([\d.]+)':.*?kyHieu: \{([^}]*)\}", ds, re.M):
+        m = re.search(r"TT58: '([^']+)'", kh)
+        if m:
+            ky_hieu[ma] = m.group(1)
+    ten = dict(re.findall(r"\{ c: '([\d.]+)', m: \d+, n: '([^']+)'", plan))
+    return mang('GIU_MOI_CHE_DO'), mang('GIU_TT58'), ky_hieu, ten
+
+
 def main():
     wb = openpyxl.Workbook()
     wb.remove(wb.active)  # xoá sheet rỗng mặc định
@@ -468,7 +487,7 @@ def main():
     ws4 = wb.create_sheet(title='Báo cáo & Mẫu in')
     headers_bc = [
         'STT', 'Phân loại', 'Mã báo cáo / ID mẫu in', 'Tên báo cáo / Biểu mẫu', 'Phân hệ gốc',
-        'Khổ in', 'Mẫu số TT58', 'Mẫu số TT133', 'Mẫu số TT99/200', 'Gói áp dụng', 'Trạng thái trên Web'
+        'Khổ in', 'Mẫu số TT58', 'Mẫu số TT133', 'Mẫu số TT99/200', 'Gói áp dụng', 'Trạng thái trên Web', 'Còn dùng (T171)'
     ]
     apply_header(ws4, 1, headers_bc, fill_hex=NAVY_HEADER)
 
@@ -549,6 +568,31 @@ def main():
         ('Mẫu in chứng từ', 'bien-ban-doi-chieu', 'Biên bản đối chiếu công nợ', 'Mẫu in', 'A4 Dọc', '-', '-', '-', 'Mọi gói', 'Đã dựng hoàn chỉnh theo QD31'),
     ]
 
+    # T171: chỉ giữ sổ quỹ, sổ ngân hàng ở mọi gói và bộ sổ TT58. Đọc từ phần mềm để sheet khớp bản online
+    giu_moi, giu_tt58, ky_hieu_58, ten_bs = doc_bao_cao_giu()
+    co_san = {r[1] for r in bc_data}
+    them = [ma for ma in giu_moi + giu_tt58 if ma not in co_san]
+    for ma in them:
+        ph = {'2': 'Thu chi', '3': 'Bán hàng', '5': 'Kho hàng', '6': 'Thuế GTGT', '7': 'TSCĐ', '10': 'Tổng hợp'}.get(ma.split('.')[0], '-')
+        vi_tri = next((i for i, r in enumerate(bc_data) if r[0] == 'Mẫu in chứng từ'), len(bc_data))   # chèn trước phần mẫu in
+        bc_data.insert(vi_tri, ('Sổ TT58', ma, ten_bs.get(ma, ma), ph, '-', '-', '-', '-', 'S (TT58)', 'Đã có mẫu tờ in & bảng dữ liệu'))
+    la_bao_cao = lambda ma: re.fullmatch(r'\d+(\.\d+)+', ma) is not None
+
+    def con_dung(ma):
+        if not la_bao_cao(ma):
+            return '-'
+        if ma in giu_moi:
+            return 'Còn dùng, mọi gói'
+        if ma in giu_tt58:
+            return 'Còn dùng, chỉ TT58'
+        return 'Đã ẩn'
+
+    for i, r_item in enumerate(bc_data):
+        r = list(r_item)
+        if la_bao_cao(r[1]):
+            r[5] = ky_hieu_58.get(r[1], '-')   # ký hiệu TT58 lấy theo phần mềm
+        bc_data[i] = tuple(r) + (con_dung(r[1]),)
+
     for idx, r_item in enumerate(bc_data, 2):
         row_vals = [idx - 1] + list(r_item)
         zebra = (idx % 2 == 0)
@@ -566,8 +610,16 @@ def main():
                 c.font = font_bold
             if col_idx == 11 and 'Đã' in str(val):
                 c.font = Font(name=FONT_NAME, size=10, color=TEXT_GREEN)
+            if col_idx == 12:
+                c.alignment = Alignment(horizontal='center', vertical='center')
+                if str(val).startswith('Còn dùng'):
+                    c.fill = PatternFill(start_color=FILL_GREEN, end_color=FILL_GREEN, fill_type='solid')
+                    c.font = Font(name=FONT_NAME, size=10, color=TEXT_GREEN)
+                elif val == 'Đã ẩn':
+                    c.fill = PatternFill(start_color=FILL_GRAY, end_color=FILL_GRAY, fill_type='solid')
+                    c.font = Font(name=FONT_NAME, size=10, color=TEXT_GRAY)
 
-    ws4.auto_filter.ref = f'A1:K{len(bc_data)+1}'
+    ws4.auto_filter.ref = f'A1:L{len(bc_data)+1}'
     autofit_and_freeze(ws4, freeze_cell='E2')
 
     # ─────────────────────────────────────────────────────────────────────────

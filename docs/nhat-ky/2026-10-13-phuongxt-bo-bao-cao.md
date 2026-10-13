@@ -15,6 +15,7 @@
 - `src/modules/kho/XuatNhapTon.tsx`: gọi `apDung` theo chữ ký mới.
 - `tools/kiem_tra.py`: hạ ngưỡng số màn tối thiểu của gói Standard, Plus, Pro từ 125 xuống 110 vì đã bỏ báo cáo.
 - `docs/KIEN-TRUC.md`: ghi quy ước báo cáo còn dùng.
+- `tools/xuat_bao_cao_he_thong.py`: sheet Báo cáo & Mẫu in đọc danh sách giữ lại và ký hiệu TT58 từ `danh-sach.ts` (hàm `doc_bao_cao_giu`), thêm cột Còn dùng (T171) (Còn dùng mọi gói, Còn dùng chỉ TT58, Đã ẩn), thêm 4 sổ TT58 còn thiếu (6.2.4, 6.2.5, 10.4.1, 10.4.2). Ký hiệu TT58 sai trước đây (Sổ quỹ S2a, Sổ ngân hàng S2b, Sổ công nợ NCC S4b...) nay theo phần mềm.
 
 ## Đã kiểm
 
@@ -22,11 +23,13 @@
 - `python tools/kiem_tra.py --nhanh`: Không có lỗi (gói Plus 117 màn).
 - Đếm bằng registry trên bản chạy thử: Free, Standard TT152, Plus, Pro chỉ còn 2.2.1, 2.2.3; Standard TT58 còn 13 báo cáo. Xem bằng mắt Tất cả báo cáo (Standard), sơ đồ Kho, mở thẳng 5-2-3.
 - `python tools/kiem_van.py`: các file đã sửa không có mục ĐỎ.
-- `python tools/xuat_bao_cao_he_thong.py` không chạy được trên máy này (thiếu `../Present/tools/build_present`), chưa làm mới file Excel.
+- `python tools/xuat_bao_cao_he_thong.py` không chạy được trên máy này (thiếu `../Present/tools/build_present`), chưa làm mới file Excel trong repo.
+- Chạy thử công cụ với bản giả `build_present` (không có tính năng) ra file tạm: sheet Báo cáo & Mẫu in có 62 dòng, 2 Còn dùng mọi gói, 11 Còn dùng chỉ TT58, 32 Đã ẩn, ký hiệu TT58 đúng.
 
 ## Dở dang, việc tiếp theo
 
-- Không. Báo cáo bị bỏ mới chỉ ẩn, code và cấu hình vẫn còn. Muốn xoá hẳn code thì mở việc mới.
+- Trum chạy `python tools/xuat_bao_cao_he_thong.py` trên máy có thư mục `Present` để làm mới `docs/IACC-Cloud-Chi-Tiet-He-Thong.xlsx`, rồi commit file đó.
+- Báo cáo bị bỏ mới chỉ ẩn, code và cấu hình vẫn còn. Muốn xoá hẳn code thì mở việc mới.
 - Sổ doanh thu 3.2.5 chế độ TT58 vẫn là một màn, đổi mẫu S1, S2a, S3a theo trường hợp thuế; ký hiệu đầu trang luôn ghi S1-DNSN. Muốn tách 3 màn riêng thì mở việc mới.
 
 ## Bẫy, quyết định mới
