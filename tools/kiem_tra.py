@@ -4,16 +4,24 @@ kiểm form chứng từ mở toàn màn hình và đóng về đúng màn trư�
 Chạy khi `npm run dev` đang mở ở cổng 5180:
     python tools/kiem_tra.py            # đủ 4 gói + ảnh chụp
     python tools/kiem_tra.py --nhanh    # chỉ gói Medium, không chụp ảnh
+    python tools/kiem_tra.py --dien-thoai   # khung 390x844, thanh dưới, tràn ngang
 """
 import json
+import re
 import sys
 from pathlib import Path
 
 from playwright.sync_api import sync_playwright
 
+if sys.platform == 'win32':
+    sys.stdout.reconfigure(encoding='utf-8')
+    sys.stderr.reconfigure(encoding='utf-8')
+
 URL = 'http://localhost:5180/'
+REPO = Path(__file__).resolve().parent.parent
 SHOTS = Path(__file__).resolve().parent / 'shots'
 NHANH = '--nhanh' in sys.argv
+DIEN_THOAI = '--dien-thoai' in sys.argv
 GOIS = ['PL'] if NHANH else ['F', 'S', 'PL', 'PR']
 
 
@@ -21,7 +29,112 @@ def phien(goi, role='ktt', thu_gon=False):
     return json.dumps(dict(loggedIn=True, ten='Trần Thu Hà', email='thuha@phomay.vn', role=role, donVi='pm', goi=goi, khoiTao=True, thuGon=thu_gon))
 
 
+def lay_keys_phan_he():
+    keys = []
+    for f in sorted((REPO / 'src' / 'modules').glob('*/index.ts')):
+        m = re.search(r"key:\s*'([a-z-]+)'", f.read_text(encoding='utf-8'))
+        if m:
+            k = m.group(1)
+            if k not in keys:
+                keys.append(k)
+    return keys
+
+
+def kiem_tra_dien_thoai():
+    loi, dem = [], 0
+    dia_chi = ['/app', '/app/nghiep-vu', '/app/bao-cao/tat-ca', '/app/khac']
+    for k in lay_keys_phan_he():
+        p = f'/app/{k}'
+        if p not in dia_chi:
+            dia_chi.append(p)
+
+    with sync_playwright() as p:
+        b = p.chromium.launch(channel='chrome')
+        pg = b.new_page(
+            viewport={'width': 390, 'height': 844},
+            is_mobile=True,
+            has_touch=True,
+            device_scale_factor=3,
+        )
+        con = []
+        pg.on('console', lambda m: con.append(m.text) if m.type == 'error' else None)
+        pg.on('pageerror', lambda e: con.append(str(e)))
+
+        def vao(path, goi='PL'):
+            pg.goto(URL + '#/dang-nhap')
+            pg.wait_for_selector('.auth-box')
+            pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien(goi))})")
+            pg.goto(f'{URL}?goi={goi}&p={abs(hash(path))}#{path}')
+            pg.wait_for_timeout(200)
+
+        vao('/app', 'PL')
+
+        for path in dia_chi:
+            dem += 1
+            pg.goto(f'{URL}#{path}')
+            pg.wait_for_timeout(100)
+            if con:
+                loi.append(f'{path}: lỗi console {con[:2]}')
+                con.clear()
+            if not pg.locator('.m-thanh-duoi').count():
+                loi.append(f'{path}: không thấy .m-thanh-duoi')
+            tran = pg.evaluate('document.documentElement.scrollWidth > window.innerWidth + 1')
+            if tran:
+                loi.append(f'{path}: tràn ngang')
+            than_txt = pg.evaluate("() => { const e = document.querySelector('.m-than'); return e ? (e.innerText || e.textContent || '').trim() : null; }")
+            if than_txt is None:
+                loi.append(f'{path}: không có .m-than (trắng trang)')
+            elif not than_txt:
+                loi.append(f'{path}: .m-than không có chữ (trắng trang)')
+
+        SHOTS.mkdir(exist_ok=True)
+        tabs = [
+            ('Trang chủ', '#/app', 'm-01-trang-chu.png'),
+            ('Nghiệp vụ', '#/app/nghiep-vu', 'm-02-nghiep-vu.png'),
+            ('Báo cáo', '#/app/bao-cao/tat-ca', 'm-03-bao-cao.png'),
+            ('Khác', '#/app/khac', 'm-04-khac.png'),
+        ]
+        the_tabs = pg.locator('.m-thanh-duoi a')
+        if the_tabs.count() < 4:
+            loi.append(f'.m-thanh-duoi: không đủ 4 thẻ a (thấy {the_tabs.count()})')
+            for nhan, hsh, ten_anh in tabs:
+                pg.goto(f'{URL}{hsh}')
+                pg.wait_for_timeout(150)
+                pg.screenshot(path=str(SHOTS / ten_anh))
+        else:
+            for i, (nhan, hsh, ten_anh) in enumerate(tabs):
+                the_tabs.nth(i).click()
+                pg.wait_for_timeout(150)
+                lop_on = pg.eval_on_selector_all(
+                    '.m-thanh-duoi a',
+                    'as => as.map(a => a.classList.contains("on"))'
+                )
+                if not (i < len(lop_on) and lop_on[i] and lop_on.count(True) == 1):
+                    loi.append(f'tab {nhan}: lớp on không đúng ({lop_on})')
+                cur_hash = pg.evaluate('location.hash')
+                hop_le = (cur_hash == hsh or cur_hash.startswith('#/app/trang-chu')) if i == 0 else (cur_hash == hsh)
+                if not hop_le:
+                    loi.append(f'tab {nhan}: đổi hash sai, mong đợi {hsh}, thực tế {cur_hash}')
+                if con:
+                    loi.append(f'tab {nhan}: lỗi console {con[:2]}')
+                    con.clear()
+                pg.screenshot(path=str(SHOTS / ten_anh))
+
+        b.close()
+
+    print(f'đã kiểm {dem} địa chỉ')
+    if loi:
+        print(f'{len(loi)} LỖI:')
+        for x in loi:
+            print('  -', x)
+        sys.exit(1)
+    print('Không có lỗi.')
+
+
 def main():
+    if DIEN_THOAI:
+        kiem_tra_dien_thoai()
+        return
     loi, dem = [], 0
     with sync_playwright() as p:
         b = p.chromium.launch(channel='chrome')   # dùng Chrome đã cài trên máy, khỏi tải bản Playwright

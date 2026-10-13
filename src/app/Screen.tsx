@@ -17,12 +17,15 @@ import { QuyTrinhScreen } from '../ui/generic/QuyTrinhScreen'
 import { BaoCaoScreen } from '../ui/generic/BaoCaoScreen'
 import { ThanhChonBaoCao } from '../modules/bao-cao/ThanhChon'
 import { CAU_HINH_BC } from '../modules/bao-cao/danh-sach'
+import { useLaMobile } from '../ui/mobile/useLaMobile'
+import { manMobile } from '../ui/mobile/manMobile'
 
 const GENERIC: Record<string, ComponentType<ScreenProps>> = {
   catalog: CatalogScreen, voucher: VoucherScreen, report: ReportScreen, tool: ToolScreen, quytrinh: QuyTrinhScreen, baocao: BaoCaoScreen,
 }
 
 export function ScreenRoute() {
+  const laMobile = useLaMobile()
   const { s } = useSession()
   const { mod: mk, slug } = useParams()
   const { mod, sc } = timMan(mk, slug)
@@ -59,7 +62,7 @@ export function ScreenRoute() {
     )
   }
   if (!moDuoc(sc, s.goi)) return <Locked code={maKhoa(sc)!} ten={tenMan(sc)} crumb={[mod.ten, sc.nhom ?? '']} />
-  const C = sc.comp ?? GENERIC[sc.kind]
+  const C = laMobile ? manMobile(sc, mod) : (sc.comp ?? GENERIC[sc.kind])
   if (sc.goc) {
     const modGoc = MODULES.find(m => m.key === sc.goc) ?? mod
     return (

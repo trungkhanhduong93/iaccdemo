@@ -245,7 +245,7 @@ Làm theo thứ tự. Đợt sau cần đợt trước đã push.
 - Người làm: Trum chụp, agent đo.
 - Bắt đầu khi: luôn bắt đầu được.
 - Bước:
-  1. Trum chụp 14 ảnh ở mục 8 trên điện thoại thật, bỏ vào `docs/ivt-anh/`, tên đúng như mục 8.
+  1. Trum chụp 16 ảnh ở mục 8 trên điện thoại thật, bỏ vào `docs/ivt-anh/`, tên đúng như mục 8.
   2. Agent ghi vào đầu mục 8 tên máy và độ phân giải ảnh. Tính hệ số điểm ảnh: bề rộng ảnh chia bề rộng logic của máy (iPhone 13: 1170 / 390 = 3).
   3. Đo từng mục trong bảng 5.2 trên ảnh bằng Python `PIL`, chia cho hệ số, điền cột "Số đo".
   4. Chốt nhãn thanh dưới theo ảnh 01, sửa mục 2 phần "Còn mở".
@@ -340,7 +340,8 @@ Làm theo thứ tự. Đợt sau cần đợt trước đã push.
   2. `MSoBaoCao` cho `report` và `baocao`: thanh chọn kỳ dính đầu (dùng `KY_CHON` ở `ReportScreen.tsx`), bảng cuộn ngang trong khung riêng, cột đầu đứng yên, dòng Tổng dính đáy. Bảng lấy lại `RptTable` nếu được.
   3. Báo cáo tài chính, tờ khai (giấy A4) giữ tờ giấy, thu nhỏ vừa bề rộng, chạm để phóng to.
 - Không làm: thiết kế mẫu in, tuỳ chỉnh báo cáo, xuất Excel trên điện thoại.
-- Nghiệm thu: xuất nhập tồn, sổ quỹ, bảng cân đối kế toán đọc được trên 390px; trang không tràn ngang, chỉ khung bảng cuộn ngang.
+- Lưu ý: từ T171 (13/10/2026) chỉ còn Sổ quỹ tiền mặt 2.2.1, Sổ ngân hàng 2.2.3 ở mọi chế độ; TT58 giữ thêm bộ sổ, báo cáo tài chính TT58. Đọc `giuBC` ở `src/modules/bao-cao/danh-sach.ts` trước khi làm.
+- Nghiệm thu: xuất nhập tồn (màn của Kho), sổ quỹ tiền mặt, sổ ngân hàng, một báo cáo tài chính TT58 đọc được trên 390px; trang không tràn ngang, chỉ khung bảng cuộn ngang.
 
 ### Đợt 8. Đăng nhập, chọn đơn vị, popup
 
@@ -355,26 +356,32 @@ Làm theo thứ tự. Đợt sau cần đợt trước đã push.
 
 Máy chụp: _(đợt 0 điền)_. Độ phân giải ảnh: _(đợt 0 điền)_. Hệ số điểm ảnh: _(đợt 0 điền)_.
 
-Chụp trên cùng một điện thoại, bản IVT Pro mới nhất, tài khoản có dữ liệu. Lưu PNG vào `docs/ivt-anh/`, tên đúng như dưới.
+Cách chụp:
 
-| Tên file | Màn |
-|---|---|
-| `01-trang-chu.png` | Trang chủ, thấy thanh dưới |
-| `01b-trang-chu-cuoi.png` | Trang chủ cuộn tới cuối |
-| `02-nghiep-vu.png` | Tab Nghiệp vụ |
-| `03-ds-nhap-kho.png` | Danh sách phiếu nhập kho, thấy chip trạng thái |
-| `04-loc.png` | Màn lọc của danh sách |
-| `05-xem-phieu.png` | Phiếu nhập kho đã duyệt, phần đầu |
-| `05b-xem-phieu-cuoi.png` | Cùng phiếu, cuộn tới cuối, thấy thanh thao tác |
-| `06-chon-hang.png` | Lập phiếu nhập kho: bước chọn hàng |
-| `07-gio-hang.png` | Lập phiếu nhập kho: giỏ hàng, sửa số lượng |
-| `08-tam-truot.png` | Tấm trượt chọn kho hoặc nhà cung cấp |
-| `09-ds-hang-hoa.png` | Danh sách hàng hoá |
-| `10-form-hang-hoa.png` | Form thêm hàng hoá |
-| `11-bao-cao.png` | Danh sách báo cáo |
-| `12-xem-bao-cao.png` | Một báo cáo đang mở, vd xuất nhập tồn |
-| `13-khac.png` | Tab cuối của thanh dưới (Khác hoặc Tài khoản) |
-| `14-trong.png` | Màn trống, vd tìm không ra kết quả |
+1. Dùng một điện thoại cho cả bộ ảnh, cầm dọc. Chụp cả màn hình, không cắt, không phóng to.
+2. Để giao diện sáng (không bật chế độ tối), ngôn ngữ tiếng Việt, cỡ chữ hệ thống mặc định.
+3. Đăng nhập IVT Pro bằng tài khoản thử có dữ liệu (bản STG). Ảnh sẽ nằm trong repo, nên không dùng tài khoản có dữ liệu khách thật.
+4. Màn nào có chữ "Xem thêm", số đếm, chip trạng thái thì chụp lúc đang có dữ liệu, không chụp lúc trống (trừ ảnh 14).
+5. Gửi ảnh về máy tính, đổi tên đúng cột "Tên file", bỏ vào `D:\IACC-CLOUD\Web\docs\ivt-anh\`. Định dạng PNG hoặc JPG đều được, giữ nguyên độ phân giải gốc.
+
+| Tên file | Mở màn nào | Ảnh phải thấy |
+|---|---|---|
+| `01-trang-chu.png` | Mở app, đứng ở tab đầu của thanh dưới | Thanh trên, ảnh nền đầu trang, các thẻ số liệu, thanh dưới đủ tab và nhãn |
+| `01b-trang-chu-cuoi.png` | Trang chủ, vuốt xuống tới cuối | Các khối dưới: truy cập nhanh, việc cần xử lý, thanh dưới |
+| `02-nghiep-vu.png` | Bấm tab Nghiệp vụ | Toàn bộ lưới ô nghiệp vụ, biểu tượng, nhãn dưới ô |
+| `03-ds-nhap-kho.png` | Nghiệp vụ, Nhập kho | Ô tìm, nút lọc, hàng chip trạng thái, ít nhất 3 thẻ phiếu, nút thêm |
+| `04-loc.png` | Danh sách nhập kho, bấm nút lọc | Toàn màn lọc: chọn ngày, kho, trạng thái, nút Áp dụng, Đặt lại |
+| `05-xem-phieu.png` | Bấm một phiếu nhập kho đã duyệt | Phần đầu phiếu: số phiếu, chip trạng thái, ngày, kho, nhà cung cấp, vài dòng hàng |
+| `05b-xem-phieu-cuoi.png` | Cùng phiếu, vuốt xuống tới cuối | Dòng tổng tiền, thanh nút thao tác dưới đáy |
+| `06-chon-hang.png` | Danh sách nhập kho, bấm thêm phiếu, tới bước chọn hàng | Danh sách hàng có nút cộng trừ, ô tìm hàng, thanh dưới đếm số dòng, tổng tiền |
+| `07-gio-hang.png` | Chọn 2 tới 3 mặt hàng, mở giỏ hàng | Các dòng đã chọn, ô số lượng, nút Lưu hoặc Tạo phiếu |
+| `08-tam-truot.png` | Trong phiếu đang lập, bấm ô chọn kho hoặc nhà cung cấp | Tấm trượt từ dưới lên: thanh kéo, tiêu đề, ô tìm, danh sách |
+| `09-ds-hang-hoa.png` | Danh mục, Hàng hoá | Danh sách hàng, ô tìm, nút thêm |
+| `10-form-hang-hoa.png` | Danh sách hàng hoá, bấm thêm | Các ô nhập, nhãn ô, ô bắt buộc, nút Lưu |
+| `11-bao-cao.png` | Bấm tab Báo cáo | Nhóm báo cáo, tên và mô tả từng báo cáo |
+| `12-xem-bao-cao.png` | Mở báo cáo xuất nhập tồn | Chọn kỳ, bảng số liệu, dòng tổng |
+| `13-khac.png` | Bấm tab cuối của thanh dưới | Thẻ tài khoản, danh sách mục cài đặt, nút Đăng xuất |
+| `14-trong.png` | Danh sách hàng hoá, gõ tìm một chữ không có, vd `zzzz` | Hình minh hoạ, câu báo không có kết quả |
 
 ## 9. Rủi ro và cách chặn
 

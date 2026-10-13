@@ -7016,3 +7016,241 @@ button.chip.sx-kenh.info { border-color: var(--blue); }
 
 /* ── Ô chọn tháng ngừng phân bổ (T165) ── */
 .pb-thang-pop { padding: 10px 12px; }
+
+/* ── Điện thoại đợt 1 (T173) ── */
+:root {
+  --m-thanh-tren: 56px;
+  --m-thanh-tren-chu: 17px;
+  --m-thanh-duoi: 60px;
+  --m-thanh-duoi-ic: 24px;
+  --m-thanh-duoi-chu: 11px;
+  --m-chu-than: 15px;
+  --m-chu-phu: 13px;
+  --m-chu-tien: 15px;
+  --m-le-man: 16px;
+  --m-the-pad: 12px 16px;
+  --m-the-r: 12px;
+  --m-the-gap: 8px;
+  --m-chip-h: 22px;
+  --m-chip-r: 11px;
+  --m-chip-chu: 12px;
+  --m-nut-h: 44px;
+  --m-nut-r: 8px;
+  --m-inp-h: 44px;
+  --m-tam-r: 16px;
+  --m-nut-them: 56px;
+}
+
+.m-app {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  width: 100%;
+  max-width: 100vw;
+  box-sizing: border-box;
+  overflow: hidden;
+  font-family: -apple-system, 'Be Vietnam Pro', 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+.m-thanh-tren {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--m-thanh-tren);
+  padding: 0 var(--m-le-man);
+  background: var(--white);
+  border-bottom: 1px solid var(--line);
+  box-sizing: border-box;
+  z-index: 10;
+}
+
+.m-thanh-tren-trai {
+  display: flex;
+  align-items: center;
+  min-width: 36px;
+}
+
+.m-nut-back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  padding: 0;
+  margin-left: -6px;
+  border-radius: 8px;
+}
+
+.m-nut-back:active {
+  background: var(--hover);
+}
+
+.m-thanh-tren-tieu-de {
+  flex: 1;
+  font-size: var(--m-thanh-tren-chu);
+  font-weight: 600;
+  color: var(--ink);
+  margin: 0;
+  padding: 0 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+}
+
+.m-thanh-tren-phai {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: none;
+  min-width: 36px;
+}
+
+.m-cn-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--soft);
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  max-width: 140px;
+}
+
+.m-cn-nhan {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 80px;
+}
+
+.m-cn-btn:active {
+  background: var(--hover);
+}
+
+.m-than {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  -webkit-overflow-scrolling: touch;
+}
+
+.m-thanh-duoi {
+  flex: none;
+  display: flex;
+  align-items: stretch;
+  height: calc(var(--m-thanh-duoi) + env(safe-area-inset-bottom, 0px));
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: var(--white);
+  border-top: 1px solid var(--line);
+  box-sizing: border-box;
+  z-index: 10;
+}
+
+.m-thanh-duoi > a,
+.m-thanh-duoi .m-tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: var(--muted);
+  font-size: var(--m-thanh-duoi-chu);
+  gap: 3px;
+  padding: 4px 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.m-tab-ic {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--m-thanh-duoi-ic);
+  height: var(--m-thanh-duoi-ic);
+  color: inherit;
+}
+
+.m-tab-ic svg {
+  width: var(--m-thanh-duoi-ic);
+  height: var(--m-thanh-duoi-ic);
+  display: block;
+}
+
+.m-tab-nhan {
+  font-size: var(--m-thanh-duoi-chu);
+  font-weight: 500;
+  line-height: 1;
+  color: inherit;
+}
+
+.m-thanh-duoi > a.on,
+.m-thanh-duoi .m-tab.on {
+  color: var(--blue);
+}
+
+.m-thanh-duoi > a.on .m-tab-nhan,
+.m-thanh-duoi .m-tab.on .m-tab-nhan {
+  font-weight: 600;
+  color: var(--blue);
+}
+
+.m-thanh-duoi > a.on .m-tab-ic,
+.m-thanh-duoi .m-tab.on .m-tab-ic {
+  color: var(--blue);
+}
+
+.m-chi-may-tinh {
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--m-the-r);
+  padding: 32px 20px;
+  box-shadow: var(--sh);
+  max-width: 320px;
+  width: calc(100% - 32px);
+  box-sizing: border-box;
+  gap: 16px;
+}
+
+.m-chi-may-tinh p {
+  margin: 0;
+  font-size: var(--m-chu-than);
+  color: var(--body);
+  line-height: 1.5;
+}
+
+.m-chi-may-tinh .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--m-nut-h);
+  padding: 0 20px;
+  border-radius: var(--m-nut-r);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+}
+
