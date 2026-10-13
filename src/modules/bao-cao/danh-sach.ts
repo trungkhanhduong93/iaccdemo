@@ -20,7 +20,7 @@ export interface CauHinhBC {
   kho: Kho
   cheDo?: CheDo[]                          // thông tư áp dụng; thiếu là mọi thông tư (T97)
   anTam?: CheDo[]                          // ẩn tạm ở các chế độ chưa có mẫu Trum cung cấp (T122); bỏ chế độ khỏi danh sách để hiện lại
-  th?: (1 | 2 | 3 | 4)[]                   // trường hợp TT58 của mẫu, chỉ để ghi; từ T171 TT58 hiện đủ mẫu, không lọc theo TH
+  th?: (1 | 2 | 3 | 4)[]                   // trường hợp TT58 áp dụng; thiếu là mọi TH (T108, T171)
   kyHieu?: Partial<Record<CheDo, string>>   // thiếu chế độ nào thì đầu trang chế độ đó không ghi "Mẫu số"
   ten?: Partial<Record<CheDo, string>>      // tên in trên tờ theo chế độ, thiếu thì giữ tên đang có
   congCot?: string[]                        // sổ: cột cộng chuyển trang

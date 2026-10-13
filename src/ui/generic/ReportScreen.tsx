@@ -1060,7 +1060,7 @@ function renderReport(cfg: ReportCfg, seed: string, thang: number, cd: CheDo, cn
       if (th === 1) return <RptTable cols={colsS1} rows={rowsS1(thang)} kyHieuCot="chuSo" />
       if (th === 2) return <RptTable cols={colsS2a} rows={rowsS2a(thang)} kyHieuCot="chuSo" />
       if (th === 3) return <RptTable cols={colsS3a} rows={rowsS3a(thang)} kyHieuCot="chuSo" />
-      return <RptTable cols={colsS2a} rows={rowsS2a(thang)} kyHieuCot="chuSo" />   // TH4 vẫn mở sổ, dùng mẫu S2a (T171)
+      return <div className="note muted">Phương pháp nộp thuế hiện tại không mở sổ 3.2.5.</div>
     }
     if (seed === '10.4.1') return <RptTable cols={colsS2b} rows={rowsS2b(thang)} kyHieuCot="chuSo" />
     if (seed === '5.2.8') return <RptTable cols={colsS2c} rows={rowsS2c(thang)} kyHieuCot="chuSo" />

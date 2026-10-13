@@ -17,6 +17,8 @@
 - `docs/KIEN-TRUC.md`: ghi quy ước báo cáo còn dùng.
 - `tools/xuat_bao_cao_he_thong.py`: sheet Báo cáo & Mẫu in đọc danh sách giữ lại và ký hiệu TT58 từ `danh-sach.ts` (hàm `doc_bao_cao_giu`), thêm cột Còn dùng (T171) (Còn dùng mọi gói, Còn dùng chỉ TT58, Đã ẩn), thêm 4 sổ TT58 còn thiếu (6.2.4, 6.2.5, 10.4.1, 10.4.2). Ký hiệu TT58 sai trước đây (Sổ quỹ S2a, Sổ ngân hàng S2b, Sổ công nợ NCC S4b...) nay theo phần mềm.
 
+- Sau đó PhuongXT chốt bộ sổ TT58 hiện theo dòng ghi chú của từng trường hợp thuế: `apDung` ở `registry.ts` lọc lại theo `th` như T108, `ReportScreen.tsx` trả lại dòng báo không mở sổ 3.2.5 ở trường hợp 4. TH1: S1, TH2: S2a (sổ doanh thu), S2b, S2c, S2d, TH3: S3a, S3b, TH4: S2b, S2c, S2d, S3b; S4a đến S4d mọi trường hợp; B01, B02 ở TH2, TH4.
+
 ## Đã kiểm
 
 - `npm run typecheck`: không lỗi. `npm run build`: chạy xong, không lỗi.

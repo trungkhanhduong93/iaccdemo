@@ -34,7 +34,7 @@ export function ScreenRoute() {
   }
   const code = sc.code ?? (sc.slug.includes('-') ? sc.slug.replace(/-/g, '.') : undefined)
   const cfg = code ? CAU_HINH_BC[code] : undefined
-  if ((sc.goc || vaoBaoCao(sc)) && sc.comp !== TrungTamBaoCao && !apDung(sc, s.cheDo) && !cfg?.anTam?.includes(s.cheDo)) {
+  if ((sc.goc || vaoBaoCao(sc)) && sc.comp !== TrungTamBaoCao && !apDung(sc, s.cheDo, s) && !cfg?.anTam?.includes(s.cheDo)) {
     return (
       <div className="page">
         <PageHead crumb={[mod.ten, sc.nhom ?? '']} title={tenMan(sc)} code={sc.code} />

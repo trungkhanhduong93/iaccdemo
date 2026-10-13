@@ -5,7 +5,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 ## 13/10/2026
 
 - T174: Hệ thống, Thông tin đơn vị: ô Thông tư áp dụng chuyển lên mục Thông tin kê khai, cạnh ô Loại hình. Doanh nghiệp gói Standard chỉ dùng TT58, không đổi được. Doanh nghiệp gói Free, Standard chọn được phương pháp thuế TNDN cả khi nộp GTGT khấu trừ.
-- T171: Bỏ mọi báo cáo ở mọi gói, chỉ còn Sổ quỹ tiền mặt, Sổ ngân hàng. Đơn vị theo TT58 (gói Standard) có thêm 11 sổ, báo cáo: Sổ doanh thu (mẫu S1, S2a hoặc S3a theo cách tính thuế), S2b, S2c, S2d, S3b, S4a, S4b, S4c, S4d-DNSN, Báo cáo tình hình tài chính B01-DNSN, Báo cáo kết quả kinh doanh B02-DNSN, không còn ẩn theo trường hợp thuế.
+- T171: Bỏ mọi báo cáo ở mọi gói, chỉ còn Sổ quỹ tiền mặt, Sổ ngân hàng. Đơn vị theo TT58 (gói Standard) có thêm 11 sổ, báo cáo: Sổ doanh thu (mẫu S1, S2a hoặc S3a theo cách tính thuế), S2b, S2c, S2d, S3b, S4a, S4b, S4c, S4d-DNSN, Báo cáo tình hình tài chính B01-DNSN, Báo cáo kết quả kinh doanh B02-DNSN; bộ sổ hiện theo trường hợp thuế của đơn vị, khớp dòng ghi chú ở Thông tin đơn vị.
 
 ## 12/10/2026
 
