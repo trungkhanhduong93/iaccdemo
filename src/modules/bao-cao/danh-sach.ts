@@ -2,13 +2,16 @@
 import type { CheDo } from '../../app/che-do'
 import type { Kho } from '../../ui/bao-cao/ToGiay'
 import { CHI_NHANH, NCC, TK_NGAN_HANG } from '../../data/mock'
-import type { PpGtgt, PpTndn } from '../../app/session'
+import { dsDonVi, loaiHinhDv, type Session } from '../../app/session'
+import { DON_VI } from '../../data/mock'
 import { thTT58 } from './tt58'
+import { KENH_BAN } from './tt152'
 
 export type LoaiBC = 'so' | 'bctc' | 'baocao' | 'tokhai'
 export interface LocBC {
   k: string; nhan: string; kieu: 'chon' | 'chonNhieu'
   ds?: (cnId?: string) => string[]   // danh sách chọn cố định theo chi nhánh trên thanh trên, không lấy từ dòng bảng (T54)
+  cheDo?: CheDo[]                    // chỉ hiện ở các chế độ này; thiếu là mọi chế độ (T179)
 }
 
 /** Bộ lọc Quỹ tiền của sổ thu chi; chi nhánh theo thanh trên. Số liệu sổ tính lại theo lựa chọn để tồn đầu, tồn cuối đúng (T54) */
@@ -17,12 +20,30 @@ export const tenQuyTm = (ngan: string) => `Quỹ tiền mặt ${ngan}`
 export const tenTkNh = (t: { so: string; nh: string }) => `${t.nh.split(',')[0]} ${t.so}`
 
 
+/** Cách tính thuế của hộ kinh doanh, quyết định bộ sổ TT152 (T179): nhóm 1 (S1a), TNCN theo % doanh thu (S2a), theo lợi nhuận (S2b đến S2e) */
+export type CachHkd = 'n1' | 'doanhThu' | 'loiNhuan'
+/** Phần phiên dùng để chọn báo cáo theo đơn vị đang làm việc */
+export type PhienBC = Partial<Pick<Session, 'ppGtgt' | 'ppTndn' | 'ttDv' | 'donVi' | 'dvMoi'>>
+/** Đơn vị đang làm việc là hộ kinh doanh */
+export const laHkd = (s?: PhienBC) => {
+  if (!s?.donVi) return false
+  const dv = dsDonVi({ dvMoi: s.dvMoi, ttDv: s.ttDv }).find(d => d.id === s.donVi) ?? DON_VI[0]
+  return loaiHinhDv({ ttDv: s.ttDv }, dv) === 'hkd'
+}
+/** Nhóm 1 dùng S1a; nhóm 3, 4 theo lợi nhuận; nhóm 2 theo lựa chọn khai ở Thông tin đơn vị (mặc định như ở đó: nhóm 1, theo doanh thu) */
+export function cachHkd(s?: PhienBC): CachHkd {
+  const tt = s?.donVi ? s.ttDv?.[s.donVi] : undefined
+  const nhom = tt?.nhom ?? 1
+  return nhom === 1 ? 'n1' : nhom >= 3 ? 'loiNhuan' : tt?.ppHkd ?? 'doanhThu'
+}
+
 export interface CauHinhBC {
   loai: LoaiBC
   kho: Kho
   cheDo?: CheDo[]                          // thông tư áp dụng; thiếu là mọi thông tư (T97)
   anTam?: CheDo[]                          // ẩn tạm ở các chế độ chưa có mẫu Trum cung cấp (T122); bỏ chế độ khỏi danh sách để hiện lại
   th?: (1 | 2 | 3 | 4)[]                   // trường hợp TT58 áp dụng; thiếu là mọi TH (T108, T171)
+  hkd?: CachHkd[]                          // cách tính thuế của hộ kinh doanh TT152 áp dụng; thiếu là mọi cách (T179)
   kyHieu?: Partial<Record<CheDo, string>>   // thiếu chế độ nào thì đầu trang chế độ đó không ghi "Mẫu số"
   ten?: Partial<Record<CheDo, string>>      // tên in trên tờ theo chế độ, thiếu thì giữ tên đang có
   congCot?: string[]                        // sổ: cột cộng chuyển trang
@@ -47,7 +68,7 @@ export const CAU_HINH_BC: Record<string, CauHinhBC> = {
   '2.2.5': { loai: 'so', kho: 'ngang', anTam: ['TT133', 'TT99'], kyHieu: { TT58: 'S4a-DNSN', TT133: 'S12-DNN', TT99: 'S31-DN' }, anKhongPS: true,
     loc: [{ k: 'ten', nhan: 'Đối tượng', kieu: 'chonNhieu' }] },
   '2.2.6': { loai: 'so', kho: 'ngang', anTam: ALL, kyHieu: { TT133: 'S15-DNN', TT99: 'S34-DN' }, congCot: ['no', 'co'] },
-  '2.2.7': { loai: 'so', kho: 'doc', cheDo: ['TT58'], th: [2, 4], kyHieu: { TT152: 'S2e-HKD', TT58: 'S2d-DNSN' }, congCot: ['thu', 'chi'] },
+  '2.2.7': { loai: 'so', kho: 'doc', cheDo: ['TT58', 'TT152'], th: [2, 4], hkd: ['loiNhuan'], kyHieu: { TT152: 'S2e-HKD', TT58: 'S2d-DNSN' }, congCot: ['thu', 'chi'] },
   '2.2.8': baoCao('doc', {
     loc: [{ k: 'locQuy', nhan: 'Quỹ tiền', kieu: 'chon', ds: () => [...CHI_NHANH.map(c => tenQuyTm(c.ngan)), ...TK_NGAN_HANG.map(tenTkNh)] }],
   }),
@@ -56,7 +77,8 @@ export const CAU_HINH_BC: Record<string, CauHinhBC> = {
   '3.2.2': baoCao('ngang'),
   '3.2.3': baoCao('ngang', { anKhongPS: true }),
   '3.2.4': baoCao('ngang', { loc: [{ k: 'doiTuong', nhan: 'Đối tượng', kieu: 'chon' }], nhomDuoc: ['doiTuong', 'ngay'], anKhongPS: true }),
-  '3.2.5': { loai: 'so', kho: 'ngang', anTam: ['TT133', 'TT99'], th: [1, 2, 3], kyHieu: { TT152: 'S2a-HKD', TT58: 'S1-DNSN', TT133: 'S16-DNN', TT99: 'S35-DN' }, ten: { TT152: 'Sổ doanh thu bán hàng hoá, dịch vụ', TT58: 'Sổ doanh thu bán hàng hoá, dịch vụ', TT133: 'Sổ chi tiết bán hàng', TT99: 'Sổ chi tiết bán hàng' }, congCot: ['dt', 'vat', 'tong'] },
+  '3.2.5': { loai: 'so', kho: 'ngang', anTam: ['TT133', 'TT99'], th: [1, 2, 3], kyHieu: { TT152: 'S2a-HKD', TT58: 'S1-DNSN', TT133: 'S16-DNN', TT99: 'S35-DN' }, ten: { TT152: 'Sổ doanh thu bán hàng hoá, dịch vụ', TT58: 'Sổ doanh thu bán hàng hoá, dịch vụ', TT133: 'Sổ chi tiết bán hàng', TT99: 'Sổ chi tiết bán hàng' }, congCot: ['dt', 'vat', 'tong'],
+    loc: [{ k: 'kenh', nhan: 'Kênh bán', kieu: 'chonNhieu', cheDo: ['TT152'], ds: () => KENH_BAN }] },   // S1a, S2a, S2b-HKD lọc theo kênh bán như iFaster (T179)
   // Bán hàng theo ngày, tổng hợp, chi tiết bán hàng (T157)
   '3.2.6': baoCao('doc', { anKhongPS: true }),
   '3.2.7': baoCao('ngang', { loc: [{ k: 'nhom', nhan: 'Nhóm hàng', kieu: 'chon' }], nhomDuoc: ['nhom'], anKhongPS: true }),
@@ -80,7 +102,7 @@ export const CAU_HINH_BC: Record<string, CauHinhBC> = {
   '5.2.5': baoCao('ngang', { anKhongPS: true }),
   '5.2.6': baoCao('ngang', { anKhongPS: true }),
   '5.2.7': baoCao('ngang', { anKhongPS: true }),
-  '5.2.8': { loai: 'so', kho: 'ngang', anTam: ['TT152', 'TT133', 'TT99'], th: [2, 4], kyHieu: { TT152: 'S2d-HKD', TT58: 'S2c-DNSN', TT133: 'S06-DNN', TT99: 'S10-DN' } },
+  '5.2.8': { loai: 'so', kho: 'ngang', anTam: ['TT133', 'TT99'], th: [2, 4], hkd: ['loiNhuan'], kyHieu: { TT152: 'S2d-HKD', TT58: 'S2c-DNSN', TT133: 'S06-DNN', TT99: 'S10-DN' }, ten: { TT152: 'Sổ chi tiết vật liệu, dụng cụ, sản phẩm, hàng hoá' } },
   // Tổng hợp, chi tiết nhập kho, xuất kho, hàng trả lại (T157)
   '5.2.9': baoCao('ngang', { anKhongPS: true }),
   '5.2.10': baoCao('ngang', { loc: [{ k: 'kho', nhan: 'Kho', kieu: 'chon' }, { k: 'loai', nhan: 'Loại phiếu', kieu: 'chon' }], nhomDuoc: ['kho', 'loai', 'ngay'], anKhongPS: true, phanTrang: 100 }),
@@ -109,7 +131,7 @@ export const CAU_HINH_BC: Record<string, CauHinhBC> = {
   '10.2.4': { loai: 'bctc', kho: 'doc', anTam: ALL, khoa: true, kyHieu: { TT133: 'B03-DNN', TT99: 'B03-DN' } },
   '10.2.5': { loai: 'bctc', kho: 'doc', anTam: ALL, khoa: true, kyHieu: { TT133: 'B09-DNN', TT99: 'B09-DN' } },
   '10.3.1': baoCao('ngang', { anKhongPS: true }),
-  '10.4.1': { loai: 'so', kho: 'ngang', cheDo: ['TT58'], th: [2, 4], kyHieu: { TT152: 'S2c-HKD', TT58: 'S2b-DNSN' } },
+  '10.4.1': { loai: 'so', kho: 'ngang', cheDo: ['TT58', 'TT152'], th: [2, 4], hkd: ['loiNhuan'], kyHieu: { TT152: 'S2c-HKD', TT58: 'S2b-DNSN' } },
   '10.4.2': { loai: 'so', kho: 'doc', anTam: ['TT152', 'TT133', 'TT99'], kyHieu: { TT58: 'S4d-DNSN', TT133: 'S23-DNN', TT99: 'S51-DN' } },
   '10.4.3': baoCao('doc', {
     loc: [
@@ -125,16 +147,31 @@ export const CAU_HINH_BC: Record<string, CauHinhBC> = {
  *  chế độ TT58 thêm bộ sổ S1 đến S4d-DNSN và báo cáo tài chính B01, B02-DNSN. Báo cáo khác ẩn ở mọi gói, cấu hình vẫn giữ để mở lại */
 const GIU_MOI_CHE_DO = ['2.2.1', '2.2.3']
 const GIU_TT58 = ['2.2.5', '2.2.7', '3.2.5', '5.2.8', '6.2.4', '6.2.5', '7.2.1', '10.2.2', '10.2.3', '10.4.1', '10.4.2']
-export const giuBC = (code: string | undefined, cheDo: CheDo) =>
-  !!code && (GIU_MOI_CHE_DO.includes(code) || (cheDo === 'TT58' && GIU_TT58.includes(code)))
+/** Hộ kinh doanh TT152 (T179): S1a, S2a, S2b-HKD (3.2.5), S2c (10.4.1), S2d (5.2.8), S2e (2.2.7); doanh nghiệp gói Free cũng chạy TT152 nhưng không có các sổ này */
+const GIU_TT152_HKD = ['2.2.7', '3.2.5', '5.2.8', '10.4.1']
+export const giuBC = (code: string | undefined, cheDo: CheDo, hkd = false) =>
+  !!code && (GIU_MOI_CHE_DO.includes(code) || (cheDo === 'TT58' && GIU_TT58.includes(code)) || (cheDo === 'TT152' && hkd && GIU_TT152_HKD.includes(code)))
 
-/** Ký hiệu mẫu theo chế độ; Sổ doanh thu 3.2.5 ở TT58 đổi mẫu theo trường hợp thuế (S1, S2a, S3a) */
-export function kyHieuBC(code: string | undefined, cheDo: CheDo, pp?: { ppGtgt?: PpGtgt; ppTndn?: PpTndn }): string | undefined {
+/** Ký hiệu mẫu theo chế độ; Sổ doanh thu 3.2.5 đổi mẫu theo trường hợp thuế: TT58 S1, S2a, S3a-DNSN; hộ kinh doanh TT152 S1a, S2a, S2b-HKD (T179) */
+export function kyHieuBC(code: string | undefined, cheDo: CheDo, s?: PhienBC): string | undefined {
   if (code === '3.2.5' && cheDo === 'TT58') {
-    const th = thTT58(pp?.ppGtgt, pp?.ppTndn)
+    const th = thTT58(s?.ppGtgt, s?.ppTndn)
     return th === 1 ? 'S1-DNSN' : th === 2 ? 'S2a-DNSN' : 'S3a-DNSN'
   }
+  if (code === '3.2.5' && cheDo === 'TT152') {
+    const c = cachHkd(s)
+    return c === 'n1' ? 'S1a-HKD' : c === 'doanhThu' ? 'S2a-HKD' : 'S2b-HKD'
+  }
   return code ? CAU_HINH_BC[code]?.kyHieu?.[cheDo] : undefined
+}
+
+/** S2b-HKD (hộ kinh doanh tính thuế theo lợi nhuận) chỉ có ở gói Standard như RoadMap; gói Free không hiện Sổ doanh thu 3.2.5 (T179) */
+export const anSoHkdGoiFree = (code: string | undefined, goi: string, s?: PhienBC) => code === '3.2.5' && goi === 'F' && cachHkd(s) === 'loiNhuan'
+
+/** Tên in trên tờ theo chế độ; S1a-HKD (hộ kinh doanh nhóm 1) in Sổ chi tiết doanh thu như iFaster (T179) */
+export function tenBC(code: string | undefined, cheDo: CheDo, s?: PhienBC): string | undefined {
+  if (code === '3.2.5' && cheDo === 'TT152' && cachHkd(s) === 'n1') return 'Sổ chi tiết doanh thu bán hàng hoá, dịch vụ'
+  return code ? CAU_HINH_BC[code]?.ten?.[cheDo] : undefined
 }
 
 export const cauHinhBC = (code?: string) => code ? CAU_HINH_BC[code] : undefined

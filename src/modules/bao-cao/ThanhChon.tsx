@@ -7,13 +7,11 @@ import { useSession } from '../../app/session'
 import { GOI, minGoi } from '../../app/plan'
 import { Icon } from '../../ui/Icon'
 import { Select } from '../../ui/Dropdown'
-import { datChoThanhCongCu } from '../../ui/bao-cao/choThanh'
+import { kyHieuBC } from './danh-sach'
 
 export function ThanhChonBaoCao({ sc }: { sc: ScreenDef }) {
   const { s } = useSession()
   const nav = useNavigate()
-  const modGoc = MODULES.find(m => m.key === sc.goc)
-  const tenPhanHeGoc = modGoc?.ten ?? ''
   const bcMod = MODULES.find(m => m.key === 'bao-cao')
   const cungGoc = bcMod?.screens.filter(x => x.goc === sc.goc && hienMan(x, s.goi, s.cheDo, s)) ?? []
 
@@ -32,20 +30,18 @@ export function ThanhChonBaoCao({ sc }: { sc: ScreenDef }) {
   return (
     <div className="bc-chon">
       <Link className="btn sm ghost" to="/app/bao-cao/tat-ca"><Icon n="chevl" className="ic sm" />Tất cả báo cáo</Link>
-      <span className="bc-chon-nhan">{tenPhanHeGoc}</span>
       <Select value={sc.slug} onChange={e => nav(`/app/bao-cao/${e.target.value}`)} aria-label="Đổi báo cáo">
         {cungGoc.map(x => {
           const ok = moDuoc(x, s.goi)
           const code = maKhoa(x)
+          const kh = kyHieuBC(x.code, s.cheDo, s)   // ký hiệu mẫu viết liền sau tên báo cáo (T179)
           return (
             <option key={x.slug} value={x.slug}>
-              {tenMan(x)}{ok || !code ? '' : ` (gói ${GOI[minGoi(code)].ten})`}
+              {tenMan(x)}{kh ? ` · ${kh}` : ''}{ok || !code ? '' : ` (gói ${GOI[minGoi(code)].ten})`}
             </option>
           )
         })}
       </Select>
-      {/* Thanh công cụ của báo cáo (ngày, lọc, in, xuất) gắn vào đây, cùng hàng tên báo cáo (T55) */}
-      <div className="bc-chon-phai" ref={datChoThanhCongCu} />
     </div>
   )
 }

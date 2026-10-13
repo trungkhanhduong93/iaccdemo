@@ -211,11 +211,15 @@ export function ThongTinDonVi({ sc }: ScreenProps) {
   const tndnCoDinh = f.loai === 'dn' && dnCoDinh   // doanh nghiệp gói Free, Standard chọn TNDN kể cả khi GTGT khấu trừ (T174)
   const bat = (ds: string[], k: string) => ds.includes(k) ? ds.filter(x => x !== k) : [...ds, k]
   const mstGoc = Boolean(dsDonVi({ dvMoi: s.dvMoi }).find(d => d.id === s.donVi)?.mst)   // MST đã khai lúc khởi tạo thì không sửa; chưa khai thì nhập ở đây
+  // Chế độ kế toán đổi theo loại hình khi lưu (T179): hộ kinh doanh dùng TT152, doanh nghiệp gói Standard dùng TT58; gói Plus, Pro giữ chế độ đang chọn
+  const cheDoTheoLoai = (l: LoaiHinh): CheDo =>
+    l === 'hkd' ? (CHE_DO_HOP_LE[s.goi].includes('TT152') ? 'TT152' : s.cheDo) : s.goi === 'S' ? 'TT58' : s.cheDo
   const luuDv = () => {
     if (!/^\d{2}\/\d{2}\/\d{4}$/.test(dauNam)) { toast('Ngày đầu năm cần nhập dạng dd/mm/yyyy'); return }
     if (!f.ten.trim()) { toast('Tên đơn vị không được để trống'); return }
     const { ten, mst, diaChi, loai, nhom, ppHkd, cnChinh, kenhOnline, kenhSan } = f
     set({
+      cheDo: cheDoTheoLoai(loai),
       // Doanh nghiệp chọn thuế GTGT, TNDN (gói Plus, Pro cố định khấu trừ, theo lợi nhuận); hộ kinh doanh luôn GTGT trực tiếp trên doanh thu
       ppGtgt: loai === 'hkd' ? 'tyLe' : dnCoDinh ? 'khauTru' : f.ppGtgt, ppTndn: tndnCoDinh ? 'thuNhap' : f.ppTndn,
       ngayDauNam: { ...s.ngayDauNam, [s.donVi]: dauNam }, namTaiChinh: { ...s.namTaiChinh, [s.donVi]: nam },
@@ -295,7 +299,9 @@ export function ThongTinDonVi({ sc }: ScreenProps) {
               )}
             </>}
           </div>
-          {doiLoai && <Note kind="warn" icon="alert">Đổi loại hình không tự đổi gói, chế độ kế toán. Xem lại ở <Link to="/app/he-thong/goi-thue-bao">Gói thuê bao</Link> và Cấu hình kế toán.</Note>}
+          {doiLoai && <Note kind="warn" icon="alert">
+            {cheDoTheoLoai(loai) !== s.cheDo ? `Lưu sẽ đổi chế độ kế toán sang ${CHE_DO[cheDoTheoLoai(loai)].ngan}, sổ và báo cáo đổi theo. ` : ''}Đổi loại hình không tự đổi gói, xem lại ở <Link to="/app/he-thong/goi-thue-bao">Gói thuê bao</Link>.
+          </Note>}
         </Card>
         <Card title="Chế độ kế toán">
           <div className="form-grid">

@@ -3,7 +3,7 @@ import type { ComponentType } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { useSession, cheDoHienTai } from './session'
 import { cheDoCuaGoi } from './che-do'
-import { MODULES, apDung, duongDan, laBaoCao, maKhoa, manDau, moDuoc, tenMan, timMan, vaoBaoCao } from './registry'
+import { MODULES, duongDan, hienMan, laBaoCao, maKhoa, manDau, moDuoc, tenMan, timMan, vaoBaoCao } from './registry'
 import { FEATURE, FEATURES, GOI, GOIS, minGoi, type Goi } from './plan'
 import type { ScreenProps } from '../modules/types'
 import { Icon } from '../ui/Icon'
@@ -37,12 +37,13 @@ export function ScreenRoute() {
   }
   const code = sc.code ?? (sc.slug.includes('-') ? sc.slug.replace(/-/g, '.') : undefined)
   const cfg = code ? CAU_HINH_BC[code] : undefined
-  if ((sc.goc || vaoBaoCao(sc)) && sc.comp !== TrungTamBaoCao && !apDung(sc, s.cheDo, s) && !cfg?.anTam?.includes(s.cheDo)) {
+  // Báo cáo không hiện ở gói, chế độ, cách tính thuế đang chọn (vd đang xem S2b-HKD rồi đổi sang gói Free): chặn theo đúng điều kiện ẩn hiện của danh sách (T179)
+  if ((sc.goc || vaoBaoCao(sc)) && sc.comp !== TrungTamBaoCao && !hienMan(sc, s.goi, s.cheDo, s) && !cfg?.anTam?.includes(s.cheDo)) {
     return (
       <div className="page">
         <PageHead crumb={[mod.ten, sc.nhom ?? '']} title={tenMan(sc)} code={sc.code} />
         <div className="card lockpage">
-          <Empty title="Báo cáo không còn dùng" sub="Phần mềm chỉ giữ Sổ quỹ tiền mặt, Sổ ngân hàng và bộ sổ, báo cáo tài chính theo TT58.">
+          <Empty title="Báo cáo không dùng với thiết lập hiện tại" sub={`Gói ${GOI[s.goi].ten}, chế độ ${cheDoHienTai(s).ngan} không có báo cáo này. Xem các báo cáo đang dùng ở Tất cả báo cáo.`}>
             <Link className="btn" to="/app/bao-cao/tat-ca">Về Tất cả báo cáo</Link>
           </Empty>
         </div>

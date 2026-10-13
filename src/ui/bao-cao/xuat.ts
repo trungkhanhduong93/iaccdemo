@@ -110,7 +110,7 @@ body {
 .bc-cho-duyet { display: inline-block; margin-top: 4px; padding: 1px 8px; border-radius: 999px; background: #f1f5f9; color: #64748b; font-size: 10.5px; }
 h2 { text-align: center; font-size: 19px; font-weight: 800; color: #0f172a; margin: 22px 0 4px; text-transform: uppercase; letter-spacing: .2px; }
 .sub { text-align: center; color: #64748b; font-size: 12.5px; }
-.unit { text-align: right; font-size: 12px; color: #64748b; font-style: italic; margin: 10px 0 6px; }
+.unit, .paper-dvt-bang { text-align: right; font-size: 12px; color: #64748b; font-style: italic; margin: 10px 0 6px; }
 .bc-khoi { display: flow-root; }
 .rpt { width: 100%; font-size: 11.5px; border-collapse: collapse; border: 1px solid #cfd8e4; margin-top: 4px; }
 .rpt th { background: #e8edf3; font-weight: 700; color: #0f172a; padding: 5px 6px; border: 1px solid #cfd8e4; font-size: 11px; text-align: center; }

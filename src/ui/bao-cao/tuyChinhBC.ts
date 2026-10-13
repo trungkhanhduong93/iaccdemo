@@ -297,8 +297,8 @@ export function bienDoiBang(
   const cotNum = cols.filter(c => c.num)
 
   const conLai = dongChiTiet.filter(r => {
-    // Bỏ qua dòng tiêu đề nhóm hoặc phân cách sẵn có nếu có
-    if (r._nhom) return false
+    // Dòng tiêu đề nhóm sẵn có của mẫu sổ (vd "2. Ngành nghề") giữ lại; chỉ bỏ khi người dùng gom nhóm lại (T179)
+    if (r._nhom) return nhom.length === 0
 
     // Lọc theo từng khoá loc
     for (const k of keysLoc) {

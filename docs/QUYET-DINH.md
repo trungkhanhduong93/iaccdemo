@@ -595,3 +595,16 @@ Lý do: Trum giao T155 ngày 11/10/2026, chọn hạch toán qua 1368, 3368 theo
 - Kế hoạch chi tiết ở `docs/ke-hoach-mobile-ivt.md`.
 
 Lý do: Trum giao T170 ngày 12/10/2026, duyệt 3 điểm mới ngày 13/10/2026 (T173). Giữ bản điện thoại cùng concept với bản web iaccdemo, IVT chỉ lấy bố cục, thanh dưới, hình minh hoạ.
+
+## QD55. Màn xem báo cáo dạng bảng, tờ in thành xem trước khi in, bộ lọc trong nút phễu (đang soạn, chờ Trum duyệt)
+
+- Màn xem báo cáo mặc định là bảng dữ liệu: trên bảng có tên báo cáo và một dòng phụ (chi nhánh hoặc địa điểm kinh doanh, kỳ) căn giữa. Bỏ nút chuyển Tờ in / Bảng dữ liệu và chọn khổ ở màn chính (thay phần Tờ in mặc định của QD37).
+- Thanh công cụ nằm đầu khung bảng, dồn phải: phễu lọc, ô Tìm trong báo cáo, Tuỳ chỉnh, Xuất, In. Ô tìm chỉ lọc dòng trên màn xem, không đổi số in.
+- Nút In mở bản xem trước khi in toàn màn hình: tờ in theo khổ, chọn Dọc/Ngang, zoom, nút In gọi hộp in, Đóng hoặc Esc để quay lại. Xuất PDF trong menu Xuất vẫn in thẳng. Mẫu in chứng từ và báo cáo không có bảng (tờ khai) vẫn vẽ tờ như cũ.
+
+- Màn xem báo cáo không còn cột Bộ lọc bên trái. Thanh công cụ có nút phễu ghi khoảng ngày đang xem và số bộ lọc đang bật; bấm mở popup gồm Khoảng ngày, các ô lọc (khai tay ở `cfg.loc` và tự sinh theo cột như QD40), Ẩn dòng không phát sinh, nút Xoá lọc, Xem báo cáo. Bấm Xem báo cáo thì đóng popup và vẽ lại báo cáo.
+- Điều kiện đang lọc không hiện trên thanh (chỉ số bộ lọc trên nút phễu). Trên tờ in, dưới dòng kỳ ghi điều kiện đang lọc (vd "Kênh bán: Tại quán", không có chữ "Điều kiện lọc:"); bảng dữ liệu có dòng "Điều kiện lọc: …" trên đầu bảng.
+- Phần còn lại của QD40 (bộ lọc tự sinh, không tự sinh cho báo cáo tài chính và tờ khai, lọc xong tính lại dòng tổng) giữ nguyên.
+
+Lý do: PhuongXT đề xuất ngày 13/10/2026 (T179): cột lọc bên trái chiếm chỗ của tờ báo cáo; đặt ô lọc thẳng trên thanh thì chật khi nhiều bộ lọc. Chờ Trum duyệt vì đổi QD40.
+

@@ -555,15 +555,17 @@ def main():
             for path in ['/app/tong-hop/10-2-2', '/app/tong-hop/10-2-1', '/app/tong-hop/10-2-4']:
                 vao(path, goi)
                 # chờ trang hiện hẳn (trang khoá theo gói hoặc nút chọn kỳ) rồi mới xét; chờ cố định 0,2 giây thì máy chậm sẽ bấm hụt (T65)
-                pg.wait_for_selector('.lockpage, .bc-chon .kn-nut, .report .kn-nut')
+                pg.wait_for_selector('.lockpage, .bc-nut-loc')
                 if pg.locator('.lockpage').count():
                     continue
                 for ky in ['8', '9', '10']:
-                    # kỳ chọn bằng ô khoảng ngày (ui/ChonNgay.tsx): mở lịch, sang Chọn tháng, bấm tháng của năm 2026 rồi Xác nhận
-                    pg.locator('.bc-chon .kn-nut, .report .kn-nut').first.click()   # thanh công cụ báo cáo nằm ở hàng tiêu đề (T55)
+                    # kỳ chọn trong popup lọc (nút phễu, T179): mở lịch, sang Chọn tháng, bấm tháng của năm 2026, Xác nhận, rồi Xem báo cáo
+                    pg.locator('.bc-nut-loc').first.click()
+                    pg.locator('.bc-loc-pop .kn-nut').click()
                     pg.locator('.kn-pop').get_by_role('button', name='Chọn tháng', exact=True).click()
                     pg.locator('.kn-luoi-thang').first.get_by_role('button', name=f'Thg {ky}', exact=True).click()
                     pg.locator('.kn-pop').get_by_role('button', name='Xác nhận', exact=True).click()
+                    pg.locator('.bc-loc-pop-chan .bc-btn-xem').click()
                     pg.wait_for_timeout(60)
                     if pg.locator('.report .chip.err').count():
                         loi.append(f'[{goi}] {path} kỳ {ky}: báo cáo lệch')

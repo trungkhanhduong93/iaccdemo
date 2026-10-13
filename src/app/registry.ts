@@ -17,7 +17,7 @@ import tongHop from '../modules/tong-hop'
 import tienIch from '../modules/tien-ich'
 import heThong from '../modules/he-thong'
 import { TrungTamBaoCao } from '../modules/bao-cao/TrungTam'
-import { CAU_HINH_BC, giuBC } from '../modules/bao-cao/danh-sach'
+import { CAU_HINH_BC, anSoHkdGoiFree, cachHkd, giuBC, laHkd, type PhienBC } from '../modules/bao-cao/danh-sach'
 import { thTT58 } from '../modules/bao-cao/tt58'
 import type { Session } from './session'
 
@@ -101,11 +101,13 @@ const maBC = (sc: ScreenDef) => sc.code ?? (/^\d+(-\d+)+$/.test(sc.slug) ? sc.sl
  *  TT58 lọc tiếp theo trường hợp thuế, khớp dòng bộ sổ ở Thông tin đơn vị (T108, T171) */
 export function apDung(sc: ScreenDef, cheDo?: CheDo, session?: Pick<Session, 'ppGtgt' | 'ppTndn'> | Session): boolean {
   if (!cheDo) return true
-  if (!giuBC(maBC(sc), cheDo)) return false
+  const hkd = cheDo === 'TT152' && laHkd(session as PhienBC)
+  if (!giuBC(maBC(sc), cheDo, hkd)) return false
   const cfg = sc.code ? CAU_HINH_BC[sc.code] : undefined
   if (cfg?.anTam?.includes(cheDo)) return false
   if (cfg?.cheDo && !cfg.cheDo.includes(cheDo)) return false
   if (cheDo === 'TT58' && cfg?.th && !cfg.th.includes(thTT58(session?.ppGtgt, session?.ppTndn))) return false
+  if (hkd && cfg?.hkd && !cfg.hkd.includes(cachHkd(session as PhienBC))) return false   // bộ sổ hộ kinh doanh theo cách tính thuế (T179)
   return true
 }
 
@@ -137,6 +139,7 @@ export const hienMan = (sc: ScreenDef, goi: Goi, cheDo?: CheDo, session?: Pick<S
   const isBC = Boolean((sc.code && CAU_HINH_BC[sc.code]) || sc.goc || vaoBaoCao(sc))
   if (isBC) {
     if (!apDung(sc, cd, session)) return false
+    if (cd === 'TT152' && anSoHkdGoiFree(maBC(sc), goi, session as PhienBC)) return false
     return moDuoc(sc, goi) || !anNgoaiGoi(goi)
   }
   return moDuoc(sc, goi) || (!anNgoaiGoi(goi) && !khongApDung(sc, goi))

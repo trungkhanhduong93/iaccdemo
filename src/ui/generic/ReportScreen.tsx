@@ -5,9 +5,10 @@ import { useLocation, useParams } from 'react-router-dom'
 import type { Col, ReportCfg, Row, ScreenProps } from '../../modules/types'
 import { tenMan } from '../../app/registry'
 import { kieuGhiSo } from '../../app/plan'
-import { chiNhanhHienTai, donViHienTai, useSession, cheDoHienTai } from '../../app/session'
+import { chiNhanhHienTai, donViHienTai, dsChiNhanh, useSession, cheDoHienTai } from '../../app/session'
 import { canCu, type CheDo } from '../../app/che-do'
-import { cauHinhBC, kyHieuBC, tenTkNh, type LoaiBC } from '../../modules/bao-cao/danh-sach'
+import { cachHkd, cauHinhBC, kyHieuBC, laHkd, tenBC, tenTkNh, type LoaiBC } from '../../modules/bao-cao/danh-sach'
+import * as HKD from '../../modules/bao-cao/tt152'
 import { dsTkTheoCheDo } from '../../modules/tong-hop/so-cai'
 import { CHI_NHANH, HANG, HOM_NAY, KHACH, NCC, NVL, TK_NGAN_HANG } from '../../data/mock'
 import { Icon } from '../Icon'
@@ -15,7 +16,7 @@ import { PageHead } from '../Page'
 import { Table } from '../Table'
 import { between, k, money, pad, pick, rng } from '../format'
 import { chungTu, soChiTiet } from './gen'
-import { Dropdown, MenuHead, MenuItem, MenuSep, Select } from '../Dropdown'
+import { Dropdown, MenuHead, MenuItem, MenuSep, Popover, Select } from '../Dropdown'
 import { ChonKhoangNgay, dmy, khoangThang, type KhoangNgay } from '../ChonNgay'
 import { SoTrangCtx, ToGiay, NgatTrang, tachKhoi, type Kho } from '../bao-cao/ToGiay'
 import { datNguonXuat, layNguonXuat, taoTenFile, xuatFile, type NguonXuat } from '../bao-cao/xuat'
@@ -26,7 +27,6 @@ import {
 import { layNguoiKy } from '../bao-cao/khoMauIn'
 // @ts-ignore
 import { TuyChinhBC } from '../bao-cao/TuyChinhBC.tsx'
-import { useChoThanhCongCu } from '../bao-cao/choThanh'
 import type { Session } from '../../app/session'
 import {
   thTT58,
@@ -48,32 +48,30 @@ export const KY_CHON: [string, string][] = [['9', 'Tháng 9/2026'], ['10', 'Thá
 // Không tự sinh bộ lọc cho báo cáo tài chính (10.2.2, 10.2.3, 10.2.4, 10.2.5, 10.3.1) và tờ khai thuế (6.2.x): lọc dòng làm sai ý nghĩa số tổng
 export const LOAI_TRU_TU_SINH = new Set(['10.2.2', '10.2.3', '10.2.4', '10.2.5', '10.3.1'])
 
-const khoCoBoLoc = new Map<string, boolean>()
+/** Bộ lọc của trang báo cáo đang xem (ReportPaper dựng, ReportToolbar vẽ trên thanh ngang, T179) */
+type BoLocTrang = { ds: BoLocMuc[]; anKhongPS: boolean }
+const khoBoLoc = new Map<string, BoLocTrang>()
 const ngheBoLoc = new Set<() => void>()
 
-export function datCoBoLoc(path: string, co: boolean) {
-  if (khoCoBoLoc.get(path) === co) return
-  khoCoBoLoc.set(path, co)
+function datBoLoc(path: string, v: BoLocTrang) {
+  const cu = khoBoLoc.get(path)
+  if (cu && JSON.stringify(cu) === JSON.stringify(v)) return
+  khoBoLoc.set(path, v)
   ngheBoLoc.forEach(f => f())
 }
 
-function doanCoBoLoc(slug?: string): boolean {
-  if (!slug) return false
-  if (LOAI_TRU_TU_SINH.has(slug) || slug.startsWith('6.2.3')) return false
-  const cfg = cauHinhBC(slug)
-  if (cfg?.loai === 'bctc' && slug !== '10.2.1') return false
-  if (cfg?.loc && cfg.loc.length > 0) return true
-  if (cfg?.anKhongPS) return true
-  const loai = cfg?.loai ?? 'baocao'
-  if (loai === 'tokhai') return false
-  return true
+/** Chữ tìm nhanh trên bảng dữ liệu của trang báo cáo (ô tìm ở thanh công cụ, T179) */
+const khoTim = new Map<string, string>()
+const ngheTim = new Set<() => void>()
+function datTim(path: string, v: string) { khoTim.set(path, v); ngheTim.forEach(f => f()) }
+function useTim(path: string) {
+  return useSyncExternalStore(f => { ngheTim.add(f); return () => { ngheTim.delete(f) } }, () => khoTim.get(path) ?? '')
 }
 
-export function useCoBoLoc(path: string, slug?: string) {
-  const doan = useMemo(() => doanCoBoLoc(slug), [slug])
+function useBoLoc(path: string) {
   return useSyncExternalStore(
     f => { ngheBoLoc.add(f); return () => { ngheBoLoc.delete(f) } },
-    () => khoCoBoLoc.has(path) ? khoCoBoLoc.get(path)! : doan
+    () => khoBoLoc.get(path)
   )
 }
 
@@ -85,7 +83,14 @@ export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: 
   const path = useLocation().pathname
   const slug = useParams().slug?.replace(/-/g, '.')
   const tt = useTrangThaiLoc(path)
-  const coBoLoc = useCoBoLoc(path, slug)
+  const boLoc = useBoLoc(path)
+  const nutLoc = useRef<HTMLButtonElement>(null)
+  const [moLoc, setMoLoc] = useState(false)
+  // Số bộ lọc đang áp (đã bấm Xem) ghi trên nút phễu; số đang nhập để bật nút Xoá lọc
+  const demLoc = (loc: Record<string, string[]>, an: boolean) =>
+    (boLoc?.ds ?? []).filter(l => (loc[l.k] ?? []).length > 0).length + (boLoc?.anKhongPS && an ? 1 : 0)
+  const soLoc = demLoc(tt.loc, tt.anKhongPS)
+  const soLocNhap = demLoc(tt.nhap.loc, tt.nhap.anKhongPS)
 
   // Khởi tạo kỳ mặc định vào kho
   useEffect(() => {
@@ -96,6 +101,9 @@ export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: 
 
   // Tờ giấy (ToGiay) nghe sự kiện này để in đúng các trang đang xem
   const inBaoCao = () => window.dispatchEvent(new CustomEvent('bc-in'))
+  // Nút In mở bản xem trước khi in (khổ, zoom, In thật nằm trong đó, T179)
+  const xemTruocIn = () => window.dispatchEvent(new CustomEvent('bc-xem-in'))
+  const tim = useTim(path)
 
   // Đồng bộ kỳ khi đã xem thay đổi (từ nút Xem báo cáo hoặc Enter cột lọc)
   useEffect(() => {
@@ -152,31 +160,60 @@ export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: 
     toast('Chọn máy in "Lưu dưới dạng PDF" để lưu file')
   }
 
-  // Đang xem trong phân hệ Báo cáo: thanh công cụ nằm cùng hàng tên báo cáo ở thanh chọn (T55)
-  const trongBaoCao = path.startsWith('/app/bao-cao/')
-  const oPhai = useChoThanhCongCu()
-
+  // Thanh công cụ nằm đầu khung bảng, dồn phải: phễu lọc, điều kiện lọc, tìm, Tuỳ chỉnh, Xuất, In (T179)
   const thanh = (
-    <div className="thanh-loc">
-      {!coBoLoc && (
-        <>
-          <ChonKhoangNgay value={khoang} onChange={doiKhoang} />
-          <button
-            type="button"
-            className="btn sm pri bc-btn-xem"
-            title="Xem báo cáo"
-            onClick={apDungXem}
-          >
-            <Icon n="refresh" className="ic sm" />
-            <span className="bc-btn-xem-txt">Xem báo cáo</span>
-            {tt.coThayDoi && <span className="bc-btn-xem-dot" />}
-          </button>
-        </>
-      )}
-      {children}
+    <div className="thanh-loc bc-thanh-cong-cu">
       <span className="grow" />
+      {/* Bộ lọc gọn trong một nút phễu: nút ghi kỳ đang xem và số bộ lọc đang bật; bấm mở popup lọc, Xem báo cáo thì đóng (T179) */}
+      <button ref={nutLoc} type="button" className={`btn sm bc-nut-loc${moLoc ? ' on' : ''}`} title="Bộ lọc" aria-haspopup="dialog" aria-expanded={moLoc} onClick={() => setMoLoc(o => !o)}>
+        <Icon n="filter" className="ic sm" />
+        <span>{dmy(khoang.tu)} → {dmy(khoang.den)}</span>
+        {soLoc > 0 && <span className="chip pri sm">{soLoc}</span>}
+        <Icon n="chevd" className="ic sm" />
+      </button>
+      <Popover anchor={nutLoc} open={moLoc} onClose={() => setMoLoc(false)} role="dialog" width={300} className="bc-loc-pop">
+        <div onKeyDown={e => { if (e.key === 'Enter') { apDungXem(); setMoLoc(false) } }}>
+          <div className="bc-loc-muc">
+            <span className="bc-loc-nhan">Khoảng ngày</span>
+            <ChonKhoangNgay value={khoang} onChange={doiKhoang} />
+          </div>
+          {boLoc?.ds.map(l => {
+            const opts = (tt.tuyChon[l.k] && tt.tuyChon[l.k].length > 0) ? tt.tuyChon[l.k] : (l.ds ?? [])
+            if (l.kieu === 'chon') {
+              return (
+                <div key={l.k} className="bc-loc-muc">
+                  <span className="bc-loc-nhan">{l.nhan}</span>
+                  <Select className="inp sm bc-loc-btn" value={tt.nhap.loc[l.k]?.[0] ?? ''} aria-label={l.nhan}
+                    onChange={e => datLoc(path, l.k, e.target.value ? [e.target.value] : [])}>
+                    <option value="">Tất cả</option>
+                    {opts.map(v => <option key={v} value={v}>{v}</option>)}
+                  </Select>
+                </div>
+              )
+            }
+            return <LocChonNhieu key={l.k} nhan={l.nhan} opts={opts} daChon={tt.nhap.loc[l.k] ?? []} onDoi={vals => datLoc(path, l.k, vals)} />
+          })}
+          {boLoc?.anKhongPS && (
+            <label className="bc-loc-gat">
+              <input type="checkbox" checked={tt.nhap.anKhongPS} onChange={e => datAnKhongPS(path, e.target.checked)} />
+              <span>Ẩn dòng không phát sinh</span>
+            </label>
+          )}
+          <div className="bc-loc-pop-chan">
+            <button type="button" className="btn sm" disabled={soLocNhap === 0} onClick={() => xoaLoc(path)}>Xoá lọc</button>
+            <button type="button" className="btn sm pri bc-btn-xem" onClick={() => { apDungXem(); setMoLoc(false) }}>
+              <Icon n="refresh" className="ic sm" />
+              <span className="bc-btn-xem-txt">Xem báo cáo</span>
+            </button>
+          </div>
+        </div>
+      </Popover>
+      {children}
+      <label className="bc-tim">
+        <Icon n="search" className="ic sm" />
+        <input className="inp sm" value={tim} placeholder="Tìm trong báo cáo" aria-label="Tìm trong báo cáo" onChange={e => datTim(path, e.target.value)} />
+      </label>
       <div className="thanh-loc-phai">
-        <span className="bc-xem-cho" id="bc-xem-cho" />
         <button
           type="button"
           className="btn sm"
@@ -218,8 +255,8 @@ export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: 
         <button
           type="button"
           className="btn sm"
-          title="In"
-          onClick={inBaoCao}
+          title="Xem trước khi in"
+          onClick={xemTruocIn}
         >
           <Icon n="printer" className="ic sm" />
           In
@@ -230,7 +267,7 @@ export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: 
 
   return (
     <>
-      {oPhai ? createPortal(thanh, oPhai) : trongBaoCao ? null : thanh}
+      {thanh}
       <TuyChinhBC
         open={moTuyChinh}
         onClose={() => setMoTuyChinh(false)}
@@ -341,193 +378,6 @@ function LocChonNhieu({
         )}
       </Dropdown>
     </div>
-  )
-}
-
-function CotLocBaoCao({
-  dsLoc,
-  anKhongPS,
-  path,
-  tt,
-}: {
-  dsLoc: BoLocMuc[]
-  anKhongPS: boolean
-  path: string
-  tt: ReturnType<typeof useTrangThaiLoc>
-}) {
-  const [thuGon, setThuGon] = useState(() => {
-    try {
-      return localStorage.getItem('bc-loc-thu') === '1'
-    } catch {
-      return false
-    }
-  })
-
-  const doiThuGon = (v: boolean) => {
-    setThuGon(v)
-    try {
-      if (v) localStorage.setItem('bc-loc-thu', '1')
-      else localStorage.removeItem('bc-loc-thu')
-    } catch {}
-  }
-
-  const thangDaXem = Number(tt.daXem.ky || '9')
-  const [khoang, setKhoang] = useState<KhoangNgay>(() => khoangThang(thangDaXem, 2026))
-
-  useEffect(() => {
-    const thang = Number(tt.daXem.ky)
-    if (thang && khoang.tu.getMonth() + 1 !== thang) {
-      setKhoang(khoangThang(thang, 2026))
-    }
-  }, [tt.daXem.ky])
-
-  const doiKhoang = (k: KhoangNgay) => {
-    setKhoang(k)
-    datKyNhap(path, String(k.tu.getMonth() + 1))
-  }
-
-  const apDungXem = () => {
-    xemBaoCao(path)
-  }
-
-  const soLocDangAp = useMemo(() => {
-    let n = 0
-    for (const l of dsLoc) {
-      if ((tt.nhap.loc[l.k] ?? []).length > 0) n++
-    }
-    if (anKhongPS && tt.nhap.anKhongPS) n++
-    return n
-  }, [dsLoc, tt.nhap.loc, tt.nhap.anKhongPS, anKhongPS])
-
-  if (thuGon) {
-    const nhanKhoang = `Tháng ${thangDaXem}/2026`
-    return (
-      <aside className="bc-loc-cot thu">
-        <button
-          type="button"
-          className="icon-btn sm"
-          title="Mở rộng bộ lọc"
-          aria-label="Mở rộng"
-          onClick={() => doiThuGon(false)}
-        >
-          <Icon n="chevr" className="ic sm" />
-        </button>
-        <button
-          type="button"
-          className="icon-btn sm bc-btn-xem bc-btn-xem-thu"
-          title="Xem báo cáo"
-          aria-label="Xem báo cáo"
-          onClick={apDungXem}
-        >
-          <Icon n="refresh" className="ic sm" />
-          {tt.coThayDoi && <span className="bc-btn-xem-dot" />}
-        </button>
-        <button
-          type="button"
-          className="chip sm bc-loc-chip-ngay-thu"
-          title={`Khoảng ngày đang xem: ${nhanKhoang} (${dmy(khoang.tu)} → ${dmy(khoang.den)})`}
-          aria-label="Mở lại bộ lọc ngày"
-          onClick={() => doiThuGon(false)}
-        >
-          T{thangDaXem}
-        </button>
-        {soLocDangAp > 0 && (
-          <span className="chip pri sm bc-loc-chip-thu" title={`${soLocDangAp} bộ lọc đang áp`}>
-            {soLocDangAp}
-          </span>
-        )}
-      </aside>
-    )
-  }
-
-  return (
-    <aside className="bc-loc-cot" onKeyDown={e => { if (e.key === 'Enter') apDungXem() }}>
-      <div className="bc-loc-dau">
-        <div className="bc-loc-tieu-de">
-          <span>Bộ lọc</span>
-          {soLocDangAp > 0 && <span className="chip pri sm">{soLocDangAp}</span>}
-        </div>
-        <button
-          type="button"
-          className="icon-btn sm"
-          title="Thu gọn bộ lọc"
-          aria-label="Thu gọn"
-          onClick={() => doiThuGon(true)}
-        >
-          <Icon n="chevl" className="ic sm" />
-        </button>
-      </div>
-
-      <div className="bc-loc-muc bc-loc-khoang-ngay">
-        <div className="bc-loc-nhan">Khoảng ngày</div>
-        <ChonKhoangNgay value={khoang} onChange={doiKhoang} />
-      </div>
-
-      <div className="bc-loc-ds">
-        {dsLoc.map(l => {
-          const opts = (tt.tuyChon[l.k] && tt.tuyChon[l.k].length > 0) ? tt.tuyChon[l.k] : (l.ds ?? [])
-          if (l.kieu === 'chon') {
-            const val = tt.nhap.loc[l.k]?.[0] ?? ''
-            return (
-              <div key={l.k} className="bc-loc-muc">
-                <div className="bc-loc-nhan">{l.nhan}</div>
-                <Select
-                  className="inp sm"
-                  value={val}
-                  onChange={e => datLoc(path, l.k, e.target.value ? [e.target.value] : [])}
-                >
-                  <option value="">Tất cả</option>
-                  {opts.map(v => <option key={v} value={v}>{v}</option>)}
-                </Select>
-              </div>
-            )
-          }
-          return (
-            <LocChonNhieu
-              key={l.k}
-              nhan={l.nhan}
-              opts={opts}
-              daChon={tt.nhap.loc[l.k] ?? []}
-              onDoi={vals => datLoc(path, l.k, vals)}
-            />
-          )
-        })}
-
-        {anKhongPS && (
-          <div className="bc-loc-muc">
-            <label className="bc-loc-gat">
-              <input
-                type="checkbox"
-                checked={tt.nhap.anKhongPS}
-                onChange={e => datAnKhongPS(path, e.target.checked)}
-              />
-              <span>Ẩn dòng không phát sinh</span>
-            </label>
-          </div>
-        )}
-      </div>
-
-      <div className="bc-loc-chan">
-        <button
-          type="button"
-          className="btn sm pri bc-btn-xem bc-loc-btn-xem"
-          title="Xem báo cáo"
-          onClick={apDungXem}
-        >
-          <Icon n="refresh" className="ic sm" />
-          <span className="bc-btn-xem-txt">Xem báo cáo</span>
-          {tt.coThayDoi && <span className="bc-btn-xem-dot" />}
-        </button>
-        <button
-          type="button"
-          className="btn sm"
-          disabled={soLocDangAp === 0}
-          onClick={() => xoaLoc(path)}
-        >
-          Xoá lọc
-        </button>
-      </div>
-    </aside>
   )
 }
 
@@ -754,6 +604,7 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
 
     // 1. Khai tay trong cfg.loc
     for (const l of cfg?.loc ?? []) {
+      if (l.cheDo && !l.cheDo.includes(s.cheDo)) continue   // bộ lọc chỉ có ở một số chế độ, vd Kênh bán của sổ doanh thu TT152 (T179)
       res.push({
         k: l.k,
         nhan: l.nhan,
@@ -892,7 +743,7 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
   useEffect(() => {
     const nx: NguonXuat = {
       ma: slug,
-      tieuDe: cfg?.ten?.[s.cheDo] ?? title,
+      tieuDe: tenBC(slug, s.cheDo, s) ?? title,
       phu: sub,
       kyHieu,
       canCu: kyHieu ? canCu(cd) : undefined,
@@ -910,6 +761,21 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
 
   const cn = chiNhanhHienTai(s)
   const { subLines, periodText } = tachSub(sub)
+  // Đầu bảng dữ liệu: tên báo cáo, một dòng phụ (chi nhánh hoặc địa điểm kinh doanh, kỳ) căn giữa (T179)
+  const timBang = useTim(path)
+  const coDiaDiem = subLines.some(l => /địa điểm|chi nhánh/i.test(l))   // dòng phụ đã ghi chi nhánh, địa điểm thì không thêm
+  const dongPhuBang = [coDiaDiem ? '' : `Chi nhánh: ${cn ? cn.ten : 'Tất cả chi nhánh'}`, ...subLines, (periodText ?? '').replace(/ Năm /, ' năm ')].filter(Boolean).join(', ')
+  const dauBang = (
+    <>
+      <div className="bc-bang-tieu-de">{tenBC(slug, s.cheDo, s) ?? title}</div>
+      {dongPhuBang && <div className="bc-bang-phu">{dongPhuBang}</div>}
+    </>
+  )
+  // Điều kiện lọc đang áp in trên tờ dưới dòng kỳ, để tờ in, file xuất biết sổ đang bị lọc (T179)
+  const dongLoc = [
+    ...dsLocCot.filter(l => (tt.loc[l.k] ?? []).length > 0).map(l => `${l.nhan}: ${tt.loc[l.k].join(', ')}`),
+    ...(cfg?.anKhongPS && tt.anKhongPS ? ['Ẩn dòng không phát sinh'] : []),
+  ].join('; ')
 
   const dau = (
     <>
@@ -917,7 +783,7 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
         <div className="paper-dv-trai">
           <div className="paper-ten-dv">{dv.ten}</div>
           <div className="paper-dc-mst">{dv.diaChi}{dv.mst ? ` — MST: ${dv.mst}` : ''}</div>
-          <div className="paper-dv-cs">Đơn vị: {cn ? cn.ten : dv.ten}</div>
+          <div className="paper-dv-cs">Chi nhánh: {cn ? cn.ten : 'Tất cả chi nhánh'}</div>
         </div>
         {kyHieu && (
           <div className="bc-mau">
@@ -928,33 +794,25 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
         )}
       </div>
       <div className="paper-tieu-de-khoi">
-        <h2 className="paper-tieu-de">{cfg?.ten?.[s.cheDo] ?? title}</h2>
+        <h2 className="paper-tieu-de">{tenBC(slug, s.cheDo, s) ?? title}</h2>
         {subLines.map((line, i) => (
           <div key={i} className="paper-dong-phu">{line}</div>
         ))}
         {periodText && <div className="paper-dong-ky">{periodText}</div>}
-        <div className="paper-dvt">Đơn vị tính: đồng</div>
+        {dongLoc && <div className="paper-dong-phu paper-dong-loc">{dongLoc}</div>}
       </div>
+      {/* Đơn vị tính sát trên bảng, căn phải như sổ in (T179) */}
+      <div className="paper-dvt paper-dvt-bang">Đơn vị tính: đồng</div>
     </>
   )
   const cuoi = ky ? <KhoiCuoi loai={loai} cheDo={s.cheDo} nguoiDaiDien={dv.nguoiDaiDien} dsKy={dsKy} /> : undefined
-  const coBoLoc = dsLocCot.length > 0 || !!cfg?.anKhongPS
-
   useLayoutEffect(() => {
-    datCoBoLoc(path, coBoLoc)
-  }, [path, coBoLoc])
+    datBoLoc(path, { ds: dsLocCot, anKhongPS: !!cfg?.anKhongPS })
+  }, [path, dsLocCot, cfg?.anKhongPS])
 
   return (
     <div className="bc-xem">
-      {coBoLoc && (
-        <CotLocBaoCao
-          dsLoc={dsLocCot}
-          anKhongPS={!!cfg?.anKhongPS}
-          path={path}
-          tt={tt}
-        />
-      )}
-      <ToGiay dau={dau} than={thanBienDoi} cuoi={cuoi} khoMacDinh={khoMacDinh}
+      <ToGiay dau={dau} than={thanBienDoi} cuoi={cuoi} khoMacDinh={khoMacDinh} dieuKienLoc={dongLoc || undefined} dauBang={dauBang} tim={timBang}
         kyHieuCot={kyHieuCot} congChuyen={loai === 'so' ? cfg?.congCot : undefined}
         onKho={setKhoHienTai} layHtmlRef={layHtmlRef} coChu={tc?.coChu} xemTrang={cfg?.phanTrang} />
     </div>
@@ -1024,7 +882,13 @@ export function ReportScreen({ sc, mod }: ScreenProps) {
   const cn = cfg.theoCn ? chiNhanhHienTai(s) : undefined
   const body = useMemo(() => renderReport(cfg, sc.code ?? sc.slug, thang, s.cheDo, cn?.id, loc, s), [cfg, kyDaXem, sc, s.cheDo, cn, loc, s])
   // Dòng dưới tiêu đề ghi chi nhánh (theo thanh trên) và quỹ đang lọc (T54)
-  const sub = ((sc.code ?? sc.slug) === '5.2.8' && s.cheDo === 'TT58')
+  // Sổ hộ kinh doanh TT152 ghi địa điểm kinh doanh như iFaster; S2d thêm tên mặt hàng (T179)
+  const ma = sc.code ?? sc.slug
+  const soHkd = s.cheDo === 'TT152' && laHkd(s) && ['3.2.5', '10.4.1', '5.2.8'].includes(ma)
+  const diaDiem = cn?.ten ?? dsChiNhanh(s).find(c => c.id === s.ttDv?.[s.donVi]?.cnChinh)?.ten ?? donViHienTai(s).ten
+  const sub = soHkd
+    ? `Địa điểm kinh doanh: ${diaDiem}${ma === '5.2.8' ? ` · Tên vật liệu, dụng cụ, sản phẩm, hàng hoá: ${HKD.MAT_HANG_S2D.ten}` : ''} · ${kyTen(kyDaXem)}`
+    : (ma === '5.2.8' && s.cheDo === 'TT58')
     ? `${kyTen(kyDaXem)} · Tên vật liệu, dụng cụ, sản phẩm, hàng hoá: ${NVL[0].ten} · Kho: ${cn ? cn.ten : CHI_NHANH[0].ten}`
     : (cfg.theoCn ? `${kyTen(kyDaXem)} · ${cn ? 'Chi nhánh ' + cn.ngan : 'Tất cả chi nhánh'}${loc.locQuy?.[0] ? ' · ' + loc.locQuy[0] : ''}` : kyTen(kyDaXem))
   return (
@@ -1066,6 +930,19 @@ function renderReport(cfg: ReportCfg, seed: string, thang: number, cd: CheDo, cn
     if (seed === '7.2.1') return <RptTable cols={colsS4b} rows={rowsS4b(thang)} kyHieuCot="chuSo" />
     if (seed === '6.2.5') return <RptTable cols={colsS4c} rows={rowsS4c(thang)} kyHieuCot="chuSo" />
     if (seed === '10.4.2') return <RptTable cols={colsS4d} rows={rowsS4d(thang)} kyHieuCot="chuSo" />
+  }
+  // Bộ sổ hộ kinh doanh TT152 theo mẫu iFaster (T179)
+  if (cd === 'TT152' && laHkd(session)) {
+    const c = cachHkd(session)
+    if (seed === '3.2.5') {
+      const kenh = loc.kenh ?? []   // bộ lọc Kênh bán
+      if (c === 'n1') return <RptTable cols={HKD.colsS1a} rows={HKD.rowsS1a(thang, kenh)} />
+      if (c === 'doanhThu') return <RptTable cols={HKD.colsS2a} rows={HKD.rowsS2a(thang, kenh)} />
+      return <RptTable cols={HKD.colsS2b} rows={HKD.rowsS2b(thang, kenh)} />
+    }
+    if (seed === '10.4.1') return <RptTable cols={HKD.colsS2c} rows={HKD.rowsS2c(thang, session?.ttDv?.[session.donVi]?.nhom)} />
+    if (seed === '5.2.8') return <RptTable cols={HKD.colsS2d} rows={HKD.rowsS2d(thang)} />
+    if (seed === '2.2.7') return <RptTable cols={HKD.colsS2e} rows={HKD.rowsS2e(thang)} />
   }
   const r = rng(seed + thang)
   // Sổ, báo cáo theo chi nhánh: mỗi chi nhánh một hạt giống riêng, xem tất cả thì cộng các chi nhánh.

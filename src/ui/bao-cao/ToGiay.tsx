@@ -10,6 +10,7 @@ import { RptTable, type KyHieuCot } from '../generic/ReportScreen'
 import { Table } from '../Table'
 import { Dropdown, MenuItem, MenuSep } from '../Dropdown'
 import { Icon } from '../Icon'
+import { fold } from '../format'
 import { heSoZoom } from '../zoom'
 import { PhanTrang } from '../PhanTrang'
 import { chiaCot, coChuTheoKho, paddingTheoMatDo } from './chiaCot'
@@ -102,15 +103,6 @@ function docKho(path: string): Kho | null {
 
 type CheXem = 'to-in' | 'bang-du-lieu'
 
-function docCheXem(): CheXem {
-  try {
-    const v = localStorage.getItem('bc-che-xem')
-    return v === 'bang-du-lieu' ? 'bang-du-lieu' : 'to-in'
-  } catch {
-    return 'to-in'
-  }
-}
-
 function ghi(khoa: string, v: string) {
   try { localStorage.setItem(khoa, v) } catch { /* trình duyệt chặn lưu thì dùng mặc định lần sau */ }
 }
@@ -201,7 +193,7 @@ const khopDo = (d: Do | null, khoi: Khoi[]): d is Do => !!d && d.khoi.length ===
 
 const Net = ({ d }: { d: string }) => <svg className="ic sm" viewBox="0 0 24 24" aria-hidden><path d={d} /></svg>
 
-export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, giay, anSoTrang, onKho, layHtmlRef, coChu, coThayDoi: coThayDoiProp, xemTrang }: {
+export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, giay, anSoTrang, onKho, layHtmlRef, coChu, coThayDoi: coThayDoiProp, xemTrang, dieuKienLoc, dauBang, tim }: {
   dau: ReactNode; than: ReactNode; cuoi?: ReactNode; khoMacDinh: Kho
   kyHieuCot?: KyHieuCot     // hàng ký hiệu cột A, B, 1, 2 dưới tiêu đề mọi bảng
   congChuyen?: string[]     // sổ: cột cộng chuyển trang
@@ -212,6 +204,9 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
   coChu?: number            // cỡ chữ bảng theo tuỳ chỉnh (px)
   coThayDoi?: boolean       // bản nháp khác đã xem (T72)
   xemTrang?: number         // báo cáo nhiều dòng (T157): tờ liền chỉ vẽ ngần ấy dòng mỗi trang kèm dòng tổng; khung đo chỉ vẽ lúc in, lấy HTML
+  dieuKienLoc?: string      // điều kiện lọc đang áp, ghi trên Bảng dữ liệu (tờ in đã ghi ở đầu tờ, T179)
+  dauBang?: ReactNode       // tên báo cáo, dòng phụ căn giữa trên bảng dữ liệu (T179)
+  tim?: string              // chữ tìm nhanh: bảng dữ liệu chỉ giữ dòng chứa chữ này (T179)
 }): JSX.Element {
   const path = useLocation().pathname
   const tt = useTrangThaiLoc(path)
@@ -220,8 +215,8 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
   const khoaKho = `${path}:${khoMacDinh}`
   const [kho, setKho] = useState<Kho>(() => docKho(khoaKho) ?? khoMacDinh)
   const [xem, setXem] = useState<Xem>(docXem)
-  const [cheXem, setCheXem] = useState<CheXem>(docCheXem)
-  const doiCheXem = (c: CheXem) => { setCheXem(c); ghi('bc-che-xem', c) }
+  // Màn xem báo cáo hiện bảng dữ liệu; tờ in chỉ là bản xem trước khi in, mở bằng nút In (T179)
+  const [moXemTruoc, setMoXemTruoc] = useState(false)
   const [d, setD] = useState<Do | null>(null)
   const [trang, setTrang] = useState(0)
   const [oTrang, setOTrang] = useState('1')
@@ -257,7 +252,14 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
 
   const khoi = useMemo(() => tachKhoi(than), [than])
   const bangDau = useMemo(() => khoi.find((k): k is Extract<Khoi, { loai: 'bang' }> => k.loai === 'bang'), [khoi])
-  const coBang = !!bangDau
+  const laBang = !giay && !!bangDau          // màn chính vẽ bảng dữ liệu; mẫu in (giay) hoặc báo cáo không có bảng vẫn vẽ tờ
+  const cheXem: CheXem = laBang && !moXemTruoc ? 'bang-du-lieu' : 'to-in'
+  const dongBang = useMemo(() => {
+    if (!bangDau) return []
+    const q = fold(tim?.trim() ?? '')
+    if (!q) return bangDau.rows
+    return bangDau.rows.filter(r => r._t || (!r._b && !r._nhom && bangDau.cols.some(c => fold(String(r[c.k] ?? '')).includes(q))))
+  }, [bangDau, tim])
   const tongDong = khoi.reduce((a, k) => a + (k.loai === 'bang' ? k.rows.length : 0), 0)
   // Chia trang khi xem (T157): chỉ bảng đầu, dòng tổng cuối bảng hiện ở mọi trang và là tổng mọi trang
   const dongXem = bangDau ? bangDau.rows.filter(r => !r._t).length : 0
@@ -306,7 +308,7 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
     ro.observe(e)
     setRongBan(e.clientWidth)
     return () => ro.disconnect()
-  }, [cheXem])
+  }, [cheXem, moXemTruoc])
 
   const hNoiDung = (kt.h - le.tren - le.duoi) * PX - 1      // chừa 1px cho sai số làm tròn
   const trangDs = useMemo(() => khopDo(d, khoi) ? chiaTrang(d, khoi, hNoiDung, !!cuoi) : [], [d, khoi, hNoiDung, cuoi])
@@ -320,23 +322,6 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
   const doiXem = (p: Partial<Xem>) => setXem(x => { const n = { ...x, ...p }; ghi('bc-xem', JSON.stringify(n)); return n })
   const doiKho = (k: Kho) => { setKho(k); ghi(`bc-kho:${khoaKho}`, k) }
 
-  // Chỗ đặt nút Tờ in / Bảng dữ liệu và Khổ trên thanh công cụ (T68)
-  const [choXem, setChoXem] = useState<HTMLElement | null>(() => typeof document !== 'undefined' ? document.getElementById('bc-xem-cho') : null)
-
-  useEffect(() => {
-    const tim = () => {
-      const el = document.getElementById('bc-xem-cho')
-      setChoXem(el)
-      return !!el
-    }
-    if (tim()) return
-
-    const mo = new MutationObserver(() => {
-      if (tim()) mo.disconnect()
-    })
-    mo.observe(document.body, { childList: true, subtree: true })
-    return () => mo.disconnect()
-  }, [path])
 
   // Xem trên màn hình là một tờ liền, không chia trang (T55): đo chiều cao tờ để khung cuộn đúng theo zoom.
   // Chia trang, dòng cộng chuyển trang, số trang chỉ còn khi in và xuất file
@@ -349,7 +334,22 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
     ro.observe(e)
     setCaoLien(e.offsetHeight)
     return () => ro.disconnect()
-  }, [cheXem])
+  }, [cheXem, moXemTruoc])
+
+  // Nút In của thanh công cụ báo cáo mở bản xem trước; nút In trong bản xem trước mới gọi hộp in (bc-in)
+  useEffect(() => {
+    if (giay) return
+    const mo = () => setMoXemTruoc(true)
+    window.addEventListener('bc-xem-in', mo)
+    return () => window.removeEventListener('bc-xem-in', mo)
+  }, [giay])
+  // Esc đóng bản xem trước, kể cả khi con trỏ chưa nằm trong khung; menu con (zoom) đang mở thì để menu tự đóng
+  useEffect(() => {
+    if (!moXemTruoc) return
+    const esc = (e: KeyboardEvent) => { if (e.key === 'Escape' && !document.querySelector('.pop')) setMoXemTruoc(false) }
+    window.addEventListener('keydown', esc)
+    return () => window.removeEventListener('keydown', esc)
+  }, [moXemTruoc])
 
   // In: vẽ mọi trang ra khung riêng gắn vào body, đặt khổ giấy theo khổ đang xem rồi gọi hộp in
   useEffect(() => {
@@ -434,12 +434,16 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
     <SoTrangCtx.Provider value={N}>
       <div className="bc-giay" style={{ '--bc-co-chu': `${coChuTinh}px`, '--bc-pad-o': padO } as CSSProperties}>
         {css && <style>{css}</style>}
-        {cheXem === 'bang-du-lieu' && bangDau ? (
+        {laBang && bangDau ? (
           <div className={`bc-ban-du-lieu${coThayDoi ? ' cho-cap-nhat' : ''}`}>
             {coThayDoi && <div className="bc-nhac-cap-nhat">Bấm Xem báo cáo để cập nhật</div>}
-            <Table cols={bangDau.cols} rows={bangDau.rows} onRow={bangDau.onRow} motDong keDoc virtual />
+            {dauBang && <div className="bc-bang-dau">{dauBang}</div>}
+            {dieuKienLoc && <div className="bc-bang-dk-loc"><Icon n="filter" className="ic sm" />Điều kiện lọc: {dieuKienLoc}</div>}
+            {/* Dòng nhóm, dòng cộng, dòng tổng in đậm như ở Tờ in (T179) */}
+            <Table cols={bangDau.cols} rows={dongBang} onRow={bangDau.onRow} motDong keDoc virtual
+              rowCls={r => r._t ? 'bc-dong-tong' : r._b || r._nhom ? 'bc-dong-dam' : ''} />
           </div>
-        ) : (
+        ) : !moXemTruoc && (
           <div className="bc-ban" ref={ban}>
             <div className="bc-sizer" style={{ width: wPx * z, height: caoSizer }}>
               <div className={`bc-ds-trang ${pv}`} style={{ width: wPx, transform: `scale(${z})` }}>
@@ -449,39 +453,15 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
           </div>
         )}
 
-        {choXem && !giay && createPortal(
-          <>
-            {coBang && (
-              <div className="seg bc-seg-xem bc-pill" data-chon={cheXem === 'to-in' ? 0 : 1}>
-                <button type="button" className={cheXem === 'to-in' ? 'on' : ''} onClick={() => doiCheXem('to-in')}>Tờ in</button>
-                <button type="button" className={cheXem === 'bang-du-lieu' ? 'on' : ''} onClick={() => doiCheXem('bang-du-lieu')}>
-                  <span className="bc-btn-bang-dai">Bảng dữ liệu</span>
-                  <span className="bc-btn-bang-gon">Bảng</span>
-                </button>
-              </div>
-            )}
-            {/* Khổ luôn hiện để các nút không nhảy chỗ; ở Bảng dữ liệu thì mờ và khoá vì khổ chỉ áp cho tờ in */}
-            <div className={`bc-kho-nhom${cheXem === 'to-in' ? '' : ' tat'}`} title={cheXem === 'to-in' ? undefined : 'Khổ giấy chỉ áp cho Tờ in'}>
-              <span className="bc-thanh-nhan">Khổ</span>
-              <div className="seg bc-seg-kho bc-pill" data-chon={kho === 'doc' ? 0 : 1}>
-                <button type="button" className={kho === 'doc' ? 'on' : ''} disabled={cheXem !== 'to-in'} onClick={() => doiKho('doc')}>Dọc</button>
-                <button type="button" className={kho === 'ngang' ? 'on' : ''} disabled={cheXem !== 'to-in'} onClick={() => doiKho('ngang')}>Ngang</button>
-              </div>
-            </div>
-          </>,
-          choXem
-        )}
-
         <div className="bc-thanh">
           <div className="bc-thanh-nhom">
-            {!giay && tongDong > 0 && !hienPhanTrang && <span className="bc-thanh-dem">{tongDong.toLocaleString('vi-VN')} dòng</span>}
+            {!giay && tongDong > 0 && !hienPhanTrang && <span className="bc-thanh-dem">{(laBang ? dongBang.length : tongDong).toLocaleString('vi-VN')} dòng</span>}
             {hienPhanTrang && (
               <PhanTrang tong={dongXem} trang={trangXemHt} coTrang={coTrangXem} dsCoTrang={[50, 100, 200, 500]}
                 onTrang={t => { setTrangXem(t); ban.current?.scrollTo({ top: 0 }) }} onCoTrang={c => { setCoTrangXem(c); setTrangXem(1) }} />
             )}
           </div>
-
-          {cheXem === 'to-in' ? (
+          {!laBang && !moXemTruoc && (
             <div className="bc-thanh-nhom">
               <button type="button" className="icon-btn sm" title="Thu nhỏ" aria-label="Thu nhỏ" disabled={pct <= MUC_ZOOM[0]} onClick={nho}><Net d="M6 12h12" /></button>
               <Dropdown label={`${pct}%`} btnClass="bc-zoom" title="Chọn mức zoom" align="end" width={150}>
@@ -496,10 +476,52 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
               <button type="button" className="icon-btn sm" title="Phóng to" aria-label="Phóng to" disabled={pct >= MUC_ZOOM[MUC_ZOOM.length - 1]} onClick={to}><Icon n="plus" className="ic sm" /></button>
               <button type="button" className={`btn sm${xem.zoom === 'vua' ? ' on' : ''}`} onClick={() => doiXem({ zoom: 'vua' })}>Vừa khung</button>
             </div>
-          ) : (
-            <div className="bc-thanh-nhom" />
           )}
         </div>
+
+        {/* Xem trước khi in: tờ in theo khổ, zoom, nút In thật; mở từ nút In của thanh công cụ (T179) */}
+        {moXemTruoc && createPortal(
+          <div className="bc-xem-truoc" role="dialog" aria-label="Xem trước khi in">
+            <div className="bc-xem-truoc-dau">
+              <b>Xem trước khi in</b>
+              <div className="bc-kho-nhom">
+                <span className="bc-thanh-nhan">Khổ</span>
+                <div className="seg bc-seg-kho bc-pill" data-chon={kho === 'doc' ? 0 : 1}>
+                  <button type="button" className={kho === 'doc' ? 'on' : ''} onClick={() => doiKho('doc')}>Dọc</button>
+                  <button type="button" className={kho === 'ngang' ? 'on' : ''} onClick={() => doiKho('ngang')}>Ngang</button>
+                </div>
+              </div>
+              <span className="grow" />
+              <div className="bc-thanh-nhom">
+                <button type="button" className="icon-btn sm" title="Thu nhỏ" aria-label="Thu nhỏ" disabled={pct <= MUC_ZOOM[0]} onClick={nho}><Net d="M6 12h12" /></button>
+                <Dropdown label={`${pct}%`} btnClass="bc-zoom" title="Chọn mức zoom" align="end" width={150}>
+                  {dong => (
+                    <>
+                      {MUC_ZOOM.map(m => <MenuItem key={m} on={xem.zoom === m} onClick={() => { doiXem({ zoom: m }); dong() }}>{m}%</MenuItem>)}
+                      <MenuSep />
+                      <MenuItem on={xem.zoom === 'vua'} onClick={() => { doiXem({ zoom: 'vua' }); dong() }}>Vừa khung</MenuItem>
+                    </>
+                  )}
+                </Dropdown>
+                <button type="button" className="icon-btn sm" title="Phóng to" aria-label="Phóng to" disabled={pct >= MUC_ZOOM[MUC_ZOOM.length - 1]} onClick={to}><Icon n="plus" className="ic sm" /></button>
+                <button type="button" className={`btn sm${xem.zoom === 'vua' ? ' on' : ''}`} onClick={() => doiXem({ zoom: 'vua' })}>Vừa khung</button>
+              </div>
+              <button type="button" className="btn sm pri" onClick={() => setDangIn(true)}><Icon n="printer" className="ic sm" />In</button>
+              <button type="button" className="icon-btn sm" title="Đóng" aria-label="Đóng xem trước" onClick={() => setMoXemTruoc(false)}><Icon n="x" className="ic sm" /></button>
+            </div>
+            <div className={`bc-giay bc-xem-truoc-than`} style={{ '--bc-co-chu': `${coChuTinh}px`, '--bc-pad-o': padO } as CSSProperties}>
+              {css && <style>{css}</style>}
+              <div className="bc-ban" ref={ban}>
+                <div className="bc-sizer" style={{ width: wPx * z, height: caoSizer }}>
+                  <div className={`bc-ds-trang ${pv}`} style={{ width: wPx, transform: `scale(${z})` }}>
+                    {toMotTrang}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
 
         {/* Khung đo ẩn: ngoài khối transform, cùng bề rộng và lớp CSS với trang thật */}
         {coKhungDo && <div className="bc-do" aria-hidden inert>
