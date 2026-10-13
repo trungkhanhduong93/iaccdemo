@@ -85,8 +85,10 @@ export const CAU_HINH_BC: Record<string, CauHinhBC> = {
   '3.2.6': baoCao('doc', { anKhongPS: true }),
   '3.2.7': baoCao('ngang', { loc: [{ k: 'nhom', nhan: 'Nhóm hàng', kieu: 'chon' }], nhomDuoc: ['nhom'], anKhongPS: true }),
   '3.2.8': baoCao('ngang', { nhomDuoc: ['ngay', 'so', 'ten'], anKhongPS: true, phanTrang: 100 }),
+  '3.2.9': baoCao('ngang', { loc: [{ k: 'ten', nhan: 'Khách hàng', kieu: 'chonNhieu' }], anKhongPS: true }),   // Công nợ khách hàng theo iFaster (T185)
   '4.2.1': baoCao('ngang', { loc: [{ k: 'doiTuong', nhan: 'Nhà cung cấp', kieu: 'chon' }, { k: 'nguon', nhan: 'Nguồn', kieu: 'chon' }], nhomDuoc: ['doiTuong', 'ngay'], anKhongPS: true }),
   '4.2.2': baoCao('doc', { anKhongPS: true }),
+  '4.2.3': baoCao('ngang', { loc: [{ k: 'ten', nhan: 'Nhà cung cấp', kieu: 'chonNhieu' }], anKhongPS: true }),   // Công nợ nhà cung cấp theo iFaster (T185)
   '4.2.4': baoCao('doc', { anKhongPS: true }),
   '4.2.5': baoCao('ngang', { loc: [{ k: 'doiTuong', nhan: 'Nhà cung cấp', kieu: 'chon' }, { k: 'ten', nhan: 'Mặt hàng', kieu: 'chonNhieu' }], nhomDuoc: ['doiTuong', 'ten', 'ngay'], anKhongPS: true }),
   '4.2.6': baoCao('ngang', {
@@ -152,9 +154,9 @@ export const CAU_HINH_BC: Record<string, CauHinhBC> = {
 /** Báo cáo còn giữ (T171, PhuongXT chốt 13/10/2026): mọi gói chỉ còn Sổ quỹ tiền mặt, Sổ ngân hàng;
  *  chế độ TT58 thêm bộ sổ S1 đến S4d-DNSN và báo cáo tài chính B01, B02-DNSN. Báo cáo khác ẩn ở mọi gói, cấu hình vẫn giữ để mở lại */
 const GIU_MOI_CHE_DO = ['2.2.1', '2.2.3']
-/** Báo cáo lấy theo danh sách iFaster, mở mọi gói, mọi chế độ, PhuongXT chốt 13/10/2026 (T185): quỹ tiền, công nợ (gộp nhà cung cấp, khách hàng),
- *  quản trị, kho, mua hàng, bán hàng. Không lọc theo anTam, cheDo, trường hợp thuế; muốn ẩn ở gói nào thì bỏ mã khỏi đây hoặc lọc thêm */
-export const MO_IFASTER = ['2.2.8', '2.2.9', '2.2.5', '10.2.3', '10.4.3', '5.2.3', '5.2.11', '5.2.12', '5.2.9', '5.2.10', '4.2.2', '4.2.1', '4.2.6', '3.2.7', '3.2.8', '3.2.6']
+/** Báo cáo lấy theo danh sách iFaster, mở mọi gói, mọi chế độ, PhuongXT chốt 13/10/2026 (T185): quỹ tiền,
+ *  công nợ nhà cung cấp 4.2.3, khách hàng 3.2.9, quản trị, kho, mua hàng, bán hàng. Sổ công nợ 2.2.5 bỏ (PhuongXT: thay bằng Công nợ nhà cung cấp, Công nợ khách hàng theo iFaster); TT58 vẫn giữ S4a-DNSN. Không lọc theo anTam, cheDo, trường hợp thuế; muốn ẩn ở gói nào thì bỏ mã khỏi đây hoặc lọc thêm */
+export const MO_IFASTER = ['2.2.8', '2.2.9', '4.2.3', '3.2.9', '10.2.3', '10.4.3', '5.2.3', '5.2.11', '5.2.12', '5.2.9', '5.2.10', '4.2.2', '4.2.1', '4.2.6', '3.2.7', '3.2.8', '3.2.6']
 const GIU_TT58 = ['2.2.5', '2.2.7', '3.2.5', '5.2.8', '6.2.4', '6.2.5', '7.2.1', '10.2.2', '10.2.3', '10.4.1', '10.4.2']
 /** Hộ kinh doanh TT152 (T179): S1a, S2a, S2b-HKD (3.2.5), S2c (10.4.1), S2d (5.2.8), S2e (2.2.7); doanh nghiệp gói Free cũng chạy TT152 nhưng không có các sổ này */
 const GIU_TT152_HKD = ['2.2.7', '3.2.5', '5.2.8', '10.4.1']

@@ -30,7 +30,7 @@ export const quyTrinh: QuyTrinhDef = {
       { ten: 'Chi tiết mua hàng', icon: 'doc', di: 'mua-hang/4-2-1' },
       { ten: 'Tổng hợp nhập', icon: 'box', di: 'mua-hang/4-2-4' },
       { ten: 'Chi tiết nhập', icon: 'filein', di: 'mua-hang/4-2-5' },
-      { ten: 'Sổ công nợ nhà cung cấp', icon: 'users', di: 'mua-hang/4-2-3' },
+      { ten: 'Công nợ nhà cung cấp', icon: 'users', di: 'mua-hang/4-2-3' },
     ] },
   },
   baoCao: ['4-2-2', '4-2-1', '4-2-4', '4-2-5', '4-2-3', 'tien/2-2-5', 'thue/6-2-1', 'kho/5-2-2'],

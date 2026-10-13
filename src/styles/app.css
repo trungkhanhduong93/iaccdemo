@@ -10231,6 +10231,7 @@ body:has(.m-lp) .m-thanh-duoi {
   body:has(.m-app) .qd-hop-chan {
     padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0px));
   }
+}
 /* ── Điện thoại đợt 7 (T182) ── */
 .m-bc {
   display: flex;
@@ -11144,4 +11145,139 @@ body:has(.m-lp) .m-thanh-duoi {
     bottom: 0 !important;
     padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px)) !important;
   }
+}
+
+/* ── Ghim và mở gần đây dưới cột nhóm báo cáo (T185) ── */
+.bc-trai {
+  position: sticky;
+  top: 12px;
+  height: calc(100vh - 150px);   /* cột trái cao hết màn để khối ghim nằm sát đáy */
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.bc-trai .bc-rail {
+  position: static;
+}
+.bc-trai .bc-quick {
+  margin: auto 0 0;
+  padding: 10px 6px 6px;
+  border: 0;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: var(--sh);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.bc-trai .bc-quick-head {
+  padding: 0 10px;
+  margin-bottom: 4px;
+}
+.bc-trai .bc-quick-chip {
+  height: auto;
+  min-height: 34px;
+  padding: 7px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--body);
+  font-size: 13px;
+  font-weight: 400;
+  white-space: normal;
+}
+.bc-trai .bc-quick-chip:hover {
+  background: var(--soft);
+  color: var(--blue);
+}
+.bc-trai .bc-quick-text {
+  flex: 1;
+  min-width: 0;
+  max-width: none;
+  white-space: normal;
+}
+.bc-quick-ma {
+  flex: none;
+  font-size: 11.5px;
+  color: var(--faint);
+}
+@media (max-width: 1100px) {
+  .bc-trai {
+    position: static;
+    height: auto;
+  }
+}
+/* Nút quay lại Tất cả báo cáo ở màn báo cáo chưa có trong gói */
+.ph-quay-lai {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+}
+/* Tên quỹ ở Tổng hợp quỹ tiền bấm mở sổ quỹ */
+.bc-mo-so {
+  color: var(--blue);
+  text-decoration: none;
+}
+.bc-mo-so:hover {
+  text-decoration: underline;
+}
+/* Bảng dữ liệu tiêu đề 2 tầng theo nhom của cột (Báo cáo dòng tiền: Kỳ này) */
+.tbl thead tr.tbl-nhom th,
+.tbl thead tr.tbl-nhom + tr.tbl-cot th {
+  height: 36px;
+  box-sizing: border-box;
+  padding: 0 12px;
+  background: var(--th);
+  color: rgb(54, 54, 54);
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  border-top: 0;
+  border-left: 0;
+  border-bottom: 1px solid var(--luoi-vien);
+  border-right: 1px solid var(--line-2);
+}
+.tbl thead tr.tbl-nhom + tr.tbl-cot th {
+  text-align: center;
+}
+.tbl thead tr.tbl-nhom th.c {
+  text-align: center;
+}
+.tbl thead tr.tbl-nhom th.trong {
+  border-bottom: 0;
+}
+.tbl thead tr.tbl-cot th.tbl-le > span {
+  position: relative;
+  top: -18px;   /* nửa hàng nhóm: chữ cột lẻ nằm giữa khối tiêu đề 2 tầng */
+}
+/* Công nợ nhà cung cấp, khách hàng: tên bấm mở popup Lịch sử công nợ */
+button.cn-ten {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+}
+.cn-hop {
+  width: min(1400px, 96vw);
+}
+.cn-hop-than {
+  display: flex;
+  min-height: 0;
+  padding: 0 16px 16px;
+}
+.cn-hop-than .tbl-wrap {
+  flex: 1;
+  max-height: 64vh;
+}
+.cn-tieu-de {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1.25;
+  padding: 4px 0;
+}
+.cn-tieu-de small {
+  font-weight: 500;
+  color: var(--muted);
 }

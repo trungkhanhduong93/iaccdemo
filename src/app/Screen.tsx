@@ -62,7 +62,7 @@ export function ScreenRoute() {
       </div>
     )
   }
-  if (!moDuoc(sc, s.goi)) return <Locked code={maKhoa(sc)!} ten={tenMan(sc)} crumb={[mod.ten, sc.nhom ?? '']} />
+  if (!moDuoc(sc, s.goi)) return <Locked code={maKhoa(sc)!} ten={tenMan(sc)} crumb={[mod.ten, sc.nhom ?? '']} quayLai={mod.key === 'bao-cao' ? '/app/bao-cao/tat-ca' : undefined} />
   const C = laMobile ? manMobile(sc, mod) : (sc.comp ?? GENERIC[sc.kind])
   if (sc.goc) {
     const modGoc = MODULES.find(m => m.key === sc.goc) ?? mod
@@ -82,7 +82,8 @@ export function HomeRedirect() {
 }
 
 /** Trang nâng cấp khi bấm vào tính năng ngoài gói */
-export function Locked({ code, ten, crumb }: { code: string; ten: string; crumb: string[] }) {
+/** quayLai: đường dẫn nút quay lại cạnh tiêu đề, vd báo cáo, nhóm báo cáo chưa có ở gói quay về Tất cả báo cáo (T185) */
+export function Locked({ code, ten, crumb, quayLai }: { code: string; ten: string; crumb: string[]; quayLai?: string }) {
   const { s, set } = useSession()
   const can = minGoi(code)
   const f = FEATURE[code]
@@ -91,7 +92,8 @@ export function Locked({ code, ten, crumb }: { code: string; ten: string; crumb:
   const moi = them(can).sort((a, b) => Number(b.m === f?.m) - Number(a.m === f?.m))
   return (
     <div className="page">
-      <PageHead crumb={crumb.filter(Boolean)} title={ten} code={code} />
+      <PageHead crumb={crumb.filter(Boolean)} code={code}
+        title={quayLai ? <span className="ph-quay-lai"><Link className="btn sm ghost" to={quayLai}><Icon n="chevl" className="ic sm" />Tất cả báo cáo</Link>{ten}</span> : ten} />
       <div className="card lockpage" style={{ padding: '34px 40px' }}>
         <div className="lock-ic"><Icon n="lock" className="ic lg" /></div>
         <h1>{ten} có ở gói {goiCo.map(g => GOI[g].ten).join(', ')}</h1>

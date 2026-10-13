@@ -185,6 +185,14 @@ export function xemBaoCao(path: string) {
   window.dispatchEvent(new CustomEvent('bc-da-xem', { detail: { path, ky: daXemMoi.ky } }))
 }
 
+/** Mở báo cáo khác với sẵn bộ lọc, kỳ (bấm dòng ở báo cáo tổng hợp xem sổ chi tiết, T185): đặt cả bản đang nhập và bản đã xem */
+export function datLocDaXem(path: string, loc: Record<string, string[]>, ky: string) {
+  const s = layTrangThai(path)
+  const ban: BanLoc = { loc: { ...loc }, anKhongPS: false, ky }
+  khoPath.set(path, { ...s, nhap: { ...ban }, daXem: { ...ban }, loc: ban.loc, anKhongPS: false, ky, coThayDoi: false })
+  phatSong()
+}
+
 export function useTrangThaiLoc(path: string): TrangThaiLoc {
   return useSyncExternalStore(subscribe, () => layTrangThai(path))
 }

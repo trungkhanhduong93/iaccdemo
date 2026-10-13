@@ -180,7 +180,7 @@ export function Table({
   const doCot = useCallback(() => {
     const tbl = tblRef.current
     if (!tbl) return
-    const ths = tbl.querySelectorAll<HTMLTableCellElement>('thead tr:first-child > th')
+    const ths = tbl.querySelectorAll<HTMLTableCellElement>('thead tr.tbl-cot > th')
     if (!ths.length) return
 
     let accL = 0
@@ -212,7 +212,7 @@ export function Table({
     doCot()
     const tbl = tblRef.current
     if (!tbl) return
-    const ths = tbl.querySelectorAll<HTMLTableCellElement>('thead tr:first-child > th')
+    const ths = tbl.querySelectorAll<HTMLTableCellElement>('thead tr.tbl-cot > th')
     if (!ths.length) return
 
     const ro = new ResizeObserver(() => {
@@ -259,7 +259,7 @@ export function Table({
   // không đè minWidth lên bảng tĩnh để tránh hiện tượng giật cột khi đổi trang hay mở màn hình
   useLayoutEffect(() => {
     if (!wrapRef.current || !vs.isVirtual) return
-    const ths = wrapRef.current.querySelectorAll<HTMLTableCellElement>('thead tr:first-child > th')
+    const ths = wrapRef.current.querySelectorAll<HTMLTableCellElement>('thead tr.tbl-cot > th')
     const z = heSoZoom()
     ths.forEach(th => {
       const w = th.getBoundingClientRect().width / z
@@ -274,20 +274,31 @@ export function Table({
   // Đặt lại minWidth chỉ khi cấu hình cột cols0 đổi, không reset theo rows khi phân trang (T148)
   useLayoutEffect(() => {
     if (!wrapRef.current) return
-    const ths = wrapRef.current.querySelectorAll<HTMLTableCellElement>('thead tr:first-child > th')
+    const ths = wrapRef.current.querySelectorAll<HTMLTableCellElement>('thead tr.tbl-cot > th')
     ths.forEach(th => {
       const k = th.getAttribute('data-k')
       if (!k || !doRong?.gt[k]) th.style.minWidth = ''
     })
   }, [cols0])
 
+  const coNhomCot = cols.some(c => c.nhom)   // tiêu đề 2 tầng; cột lẻ (không nhóm) căn giữa cả hai tầng như iFaster (T185)
   const visibleRows = vs.isVirtual ? rows.slice(vs.startIndex, vs.endIndex + 1) : rows
 
   return (
     <div ref={wrapRef} className="tbl-wrap" style={maxH ? { maxHeight: maxH } : undefined}>
       <table ref={tblRef} className={`tbl${motDong ? ' mot-dong' : ''}${keDoc ? ' ke-doc' : ''}`} style={initVars as CSSProperties}>
         <thead>
-          <tr>{cols.map((c, i) => {
+          {coNhomCot && (   // tiêu đề 2 tầng: ô nhóm gộp các cột liền nhau cùng nhom, cột lẻ để trống (T185)
+            <tr className="tbl-nhom">
+              {cols.map((c, i) => {
+                if (c.nhom && cols[i - 1]?.nhom === c.nhom) return null
+                let n = 1
+                while (c.nhom && cols[i + n]?.nhom === c.nhom) n++
+                return <th key={c.k} colSpan={n} className={c.nhom ? 'c' : 'trong'}>{c.nhom ?? ''}</th>
+              })}
+            </tr>
+          )}
+          <tr className="tbl-cot">{cols.map((c, i) => {
             const rd = rongDef(c)
             const thStyle: CSSProperties = {
               ...(rd.w ? { width: rd.w } : {}),
@@ -296,9 +307,9 @@ export function Table({
               ...vt[i].style,
             }
             return (
-              <th key={c.k} data-k={c.k} className={[lop(c, i), keo(c) ? 'da-keo' : ''].join(' ')}
+              <th key={c.k} data-k={c.k} className={[lop(c, i), keo(c) ? 'da-keo' : '', coNhomCot && !c.nhom ? 'tbl-le' : ''].join(' ')}
                 style={thStyle}>
-                {c.hd ?? c.t}
+                {coNhomCot && !c.nhom ? <span>{c.hd ?? c.t}</span> : c.hd ?? c.t}
                 {doRong && c.k !== 'chk' && <span className="ds-keo-rong" aria-hidden onPointerDown={e => keoRong(e, c.k, doRong.dat)} />}
               </th>
             )

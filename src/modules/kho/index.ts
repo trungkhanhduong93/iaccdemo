@@ -62,7 +62,7 @@ const NHAP_DC: ScreenDef = { slug: '5-1-4-2', can: ['5.1.4'], ngan: 'Nhập đi�
 const CHUYEN_KHO: ScreenDef = { slug: '5-1-4-3', can: ['5.1.4'], ngan: 'Chuyển kho', nhom: 'Chứng từ', ...phieuDcn('ck', 'swap'), kind: 'custom' }
 const sauDieuChuyen = (ds: ScreenDef[]) => { const i = ds.findIndex(x => x.slug === '5-1-4'); return [...ds.slice(0, i + 1), NHAP_DC, CHUYEN_KHO, ...ds.slice(i + 1)] }
 
-/** Báo cáo nhập, xuất, hàng trả ngoài Excel (T157): đọc phiếu của các màn chứng từ lúc vẽ báo cáo; gói Standard, Plus, Pro, mọi thông tư.
+/** Báo cáo nhập, xuất, hàng trả ngoài Excel (T157): đọc phiếu của các màn chứng từ lúc vẽ báo cáo; mọi gói, mọi thông tư (T185).
  *  Nhập, xuất điều chuyển đọc phiếu mẫu của màn điều chuyển, bỏ phiếu đã huỷ; chuyển kho không vào báo cáo nhập, xuất (T155).
  *  Mã trên đường dẫn 5-2-9 tới 5-2-14 là khoá cấu hình mẫu trong bao-cao/danh-sach.ts */
 const phieuCua = (m: ModuleDef, ma: string, loai: string): NguonPhieu => {

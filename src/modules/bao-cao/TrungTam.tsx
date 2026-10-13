@@ -185,50 +185,49 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
         <ThanhLoc tim={{ value: q, onChange: setQ, placeholder: 'Tìm báo cáo' }} />
       </PageHead>
       <div className="bc-tt">
-        <nav className="bc-rail">
-          <Link to="/app/bao-cao/tat-ca" className={sc.slug === 'tat-ca' && !chiSoTT ? 'on' : ''}>
-            <Icon n="chart" />
-            <span>Tất cả</span>
-            <span className="bc-dem">{tongHienRail + demSoTT}</span>
-          </Link>
-          {demSoTT > 0 && (
-            <Link to="/app/bao-cao/tat-ca?nhom=so-sach" className={chiSoTT ? 'on' : ''} title={tenSoTT}>
-              <Icon n="book" />
-              <span>Sổ sách {CHE_DO[s.cheDo].ngan}</span>
-              <span className="bc-dem">{demSoTT}</span>
+        <div className="bc-trai">
+          <nav className="bc-rail">
+            <Link to="/app/bao-cao/tat-ca" className={sc.slug === 'tat-ca' && !chiSoTT ? 'on' : ''}>
+              <Icon n="chart" />
+              <span>Tất cả</span>
+              <span className="bc-dem">{tongHienRail + demSoTT}</span>
             </Link>
-          )}
-          {nhomRail.map(g => (
-            <Link
-              key={g.mod.key}
-              to={`/app/bao-cao/nhom-${g.mod.key}`}
-              className={sc.slug === `nhom-${g.mod.key}` ? 'on' : ''}
-            >
-              <Icon n={g.mod.icon} />
-              <span>{g.mod.ngan}</span>
-              <span className="bc-dem">{g.hienCount}</span>
-            </Link>
-          ))}
-        </nav>
-        <div className="bc-ds">
-          {hienGhimGanDay && (
+            {demSoTT > 0 && (
+              <Link to="/app/bao-cao/tat-ca?nhom=so-sach" className={chiSoTT ? 'on' : ''} title={tenSoTT}>
+                <Icon n="book" />
+                <span>Sổ sách {CHE_DO[s.cheDo].ngan}</span>
+                <span className="bc-dem">{demSoTT}</span>
+              </Link>
+            )}
+            {nhomRail.map(g => (
+              <Link
+                key={g.mod.key}
+                to={`/app/bao-cao/nhom-${g.mod.key}`}
+                className={sc.slug === `nhom-${g.mod.key}` ? 'on' : ''}
+              >
+                <Icon n={g.mod.icon} />
+                <span>{g.mod.ngan}</span>
+                <span className="bc-dem">{g.hienCount}</span>
+              </Link>
+            ))}
+          </nav>
+          {hienGhimGanDay && (   // ghim và mở gần đây nằm dưới cột nhóm, kèm ký hiệu mẫu (T185)
             <div className="bc-quick">
               <div className="bc-quick-head">Ghim và mở gần đây</div>
-              <div className="bc-quick-row">
-                {topItems.map(item => (
-                  <Link
-                    key={item.sc.slug}
-                    to={`/app/bao-cao/${item.sc.slug}`}
-                    className="bc-quick-chip"
-                    title={tenMan(item.sc)}
-                  >
+              {topItems.map(item => {
+                const kh = kyHieuBC(item.sc.code, s.cheDo, s)
+                return (
+                  <Link key={item.sc.slug} to={`/app/bao-cao/${item.sc.slug}`} className="bc-quick-chip" title={tenMan(item.sc)}>
                     {item.isGhim && <span className="bc-quick-star">★</span>}
                     <span className="bc-quick-text">{tenMan(item.sc)}</span>
+                    {kh && <span className="bc-quick-ma">{kh}</span>}
                   </Link>
-                ))}
-              </div>
+                )
+              })}
             </div>
           )}
+        </div>
+        <div className="bc-ds">
           {nhomKetQua.length === 0 ? (
             <div className="card">
               <div className="empty"><b>{q ? `Không có báo cáo khớp "${q}"` : 'Chưa có báo cáo'}</b></div>

@@ -1,7 +1,11 @@
 // Sổ bổ sung theo thông tư (T47, kế hoạch mục 7.1, 7.3). Số liệu đọc từ nguồn có sẵn.
 import type { Col, ReportCfg, Row } from '../types'
 import { soCai } from '../tong-hop/so-cai'
-import { CHI_NHANH, NVL, daysOf, kqkd, tongKy } from '../../data/mock'
+import { createElement } from 'react'
+import { Link } from 'react-router-dom'
+import { CHI_NHANH, NVL, TK_NGAN_HANG, daysOf, kqkd, tongKy } from '../../data/mock'
+import { datLocDaXem } from '../../ui/bao-cao/tuyChinhBC'
+import { tenQuyTm, tenTkNh } from './danh-sach'
 import { between, pad, rng } from '../../ui/format'
 import { DS_TSCD } from '../tscd/data'
 
@@ -557,9 +561,14 @@ function rows1042(thang: number): Row[] {
 }
 
 // ── 2.2.8 Tổng hợp quỹ tiền ──
+/** Bấm tên quỹ mở Sổ quỹ tiền mặt hoặc Sổ ngân hàng, lọc sẵn quỹ đó, cùng kỳ (T185) */
+const moSoQuy = (x: Row) => createElement(Link, {
+  to: `/app/bao-cao/${x._so}`, className: 'bc-mo-so', title: `Xem ${x._so === '2-2-1' ? 'Sổ quỹ tiền mặt' : 'Sổ ngân hàng'}`,
+  onClick: () => datLocDaXem(`/app/bao-cao/${x._so}`, { locQuy: [x.locQuy] }, String(x._ky)),
+}, x.tenQuy)
 const cols228: Col[] = [
   { k: 'ma', t: 'Mã', cls: 'code', w: 100 },
-  { k: 'tenQuy', t: 'Tên quỹ' },
+  { k: 'tenQuy', t: 'Tên quỹ', r: x => x._so ? moSoQuy(x) : x.tenQuy },
   { k: 'dau', t: 'Dư đầu kỳ', num: true },
   { k: 'thu', t: 'Thu', num: true },
   { k: 'chi', t: 'Chi', num: true },
@@ -601,12 +610,15 @@ function rows228(thang: number): Row[] {
   const tcb_chi = coNh - vcb_chi
   const tcb_cuoi = tcb_dau + tcb_thu - tcb_chi
 
+  // Tên quỹ trùng danh sách bộ lọc Quỹ tiền của sổ quỹ, sổ ngân hàng để bấm mở sổ lọc đúng quỹ (T185)
+  const quyTm = (ngan: string) => ({ tenQuy: tenQuyTm(ngan), locQuy: tenQuyTm(ngan), _so: '2-2-1', _ky: thang })
+  const quyNh = (i: number) => ({ tenQuy: tenTkNh(TK_NGAN_HANG[i]), locQuy: tenTkNh(TK_NGAN_HANG[i]), _so: '2-2-3', _ky: thang })
   const ds: Row[] = [
-    { ma: 'TM-Q1', tenQuy: 'Quỹ tiền mặt Lê Lợi', locQuy: 'Quỹ tiền mặt Lê Lợi', dau: tmQ1_dau, thu: tmQ1_thu, chi: tmQ1_chi, cuoi: tmQ1_cuoi },
-    { ma: 'TM-Q5', tenQuy: 'Quỹ tiền mặt Nguyễn Trãi', locQuy: 'Quỹ tiền mặt Nguyễn Trãi', dau: tmQ5_dau, thu: tmQ5_thu, chi: tmQ5_chi, cuoi: tmQ5_cuoi },
-    { ma: 'TM-TD', tenQuy: 'Quỹ tiền mặt Thảo Điền', locQuy: 'Quỹ tiền mặt Thảo Điền', dau: tmTd_dau, thu: tmTd_thu, chi: tmTd_chi, cuoi: tmTd_cuoi },
-    { ma: 'VCB-001', tenQuy: 'Vietcombank 0071000987654', locQuy: 'Vietcombank 0071000987654', dau: vcb_dau, thu: vcb_thu, chi: vcb_chi, cuoi: vcb_cuoi },
-    { ma: 'TCB-002', tenQuy: 'Techcombank 19036789012345', locQuy: 'Techcombank 19036789012345', dau: tcb_dau, thu: tcb_thu, chi: tcb_chi, cuoi: tcb_cuoi },
+    { ma: 'TM-Q1', ...quyTm(CHI_NHANH[0].ngan), dau: tmQ1_dau, thu: tmQ1_thu, chi: tmQ1_chi, cuoi: tmQ1_cuoi },
+    { ma: 'TM-Q5', ...quyTm(CHI_NHANH[1].ngan), dau: tmQ5_dau, thu: tmQ5_thu, chi: tmQ5_chi, cuoi: tmQ5_cuoi },
+    { ma: 'TM-TD', ...quyTm(CHI_NHANH[2].ngan), dau: tmTd_dau, thu: tmTd_thu, chi: tmTd_chi, cuoi: tmTd_cuoi },
+    { ma: 'VCB-001', ...quyNh(0), dau: vcb_dau, thu: vcb_thu, chi: vcb_chi, cuoi: vcb_cuoi },
+    { ma: 'TCB-002', ...quyNh(1), dau: tcb_dau, thu: tcb_thu, chi: tcb_chi, cuoi: tcb_cuoi },
   ]
 
   const tongDau = ds.reduce((a, x) => a + x.dau, 0)
@@ -627,91 +639,72 @@ function rows228(thang: number): Row[] {
 }
 
 // ── 2.2.9 Báo cáo dòng tiền ──
+// Nhóm chỉ tiêu, cột theo iFaster (T185): Kỳ này chia Tổng, Tiền mặt, Ngân hàng; Kỳ trước. Khoản iFaster không tách (lương, lãi vay, nộp tiền mặt vào ngân hàng...) vào Thu khác, Chi khác để tiền cuối kỳ khớp sổ
 const cols229: Col[] = [
   { k: 'chiTieu', t: 'Chỉ tiêu' },
-  { k: 'tongNay', t: 'Tổng kỳ này', num: true },
-  { k: 'tienMat', t: 'Tiền mặt', num: true },
-  { k: 'nganHang', t: 'Ngân hàng', num: true },
+  { k: 'tongNay', t: 'Tổng kỳ này', num: true, nhom: 'Kỳ này' },
+  { k: 'tienMat', t: 'Tiền mặt', num: true, nhom: 'Kỳ này' },
+  { k: 'nganHang', t: 'Ngân hàng', num: true, nhom: 'Kỳ này' },
   { k: 'kyTruoc', t: 'Kỳ trước', num: true },
 ]
 
-function rows229(thang: number): Row[] {
+type DongTien = Record<'dau' | 'thuBh' | 'thuKh' | 'thuNcc' | 'thuKhac' | 'chiMh' | 'chiNcc' | 'chiKh' | 'chiKhac', [tm: number, nh: number]>
+
+function tinhDongTien(thang: number): DongTien {
   const sc = soCai(thang)
-  const thangTruoc = thang === 8 ? 7 : thang - 1
-  const scTr = soCai(thangTruoc)
-
-  const tinhDongTien = (s: typeof sc) => {
-    let thuBhTm = 0, thuBhNh = 0, thuKhacTm = 0, thuKhacNh = 0
-    let chiMhTm = 0, chiMhNh = 0, chiHdTm = 0, chiHdNh = 0, chiKhacTm = 0, chiKhacNh = 0
-    for (const b of s.bt) {
-      const [tkNo, tkCo, tien, nhom] = b
-      if (tkNo === '1111') {
-        if (nhom === 'thu') thuBhTm += tien
-        else if (nhom === 'tc' || nhom === 'thukhac') thuKhacTm += tien
-      } else if (tkNo === '1121') {
-        if (nhom === 'thu') thuBhNh += tien
-        else if (nhom === 'tc' || nhom === 'thukhac') thuKhacNh += tien
-      }
-      if (tkCo === '1111') {
-        if (nhom === 'trancc') chiMhTm += tien
-        else if (nhom === 'luong' || nhom === 'chikhac') chiHdTm += tien
-        else if (nhom === 'laivay' || nhom === 'travay' || nhom === 'thuetruoc') chiKhacTm += tien
-      } else if (tkCo === '1121') {
-        if (nhom === 'trancc') chiMhNh += tien
-        else if (nhom === 'luong' || nhom === 'chikhac') chiHdNh += tien
-        else if (nhom === 'laivay' || nhom === 'travay' || nhom === 'thuetruoc') chiKhacNh += tien
-      }
+  const d: DongTien = {
+    dau: [sc.mo['1111'] ?? 0, sc.mo['1121'] ?? 0],
+    thuBh: [0, 0], thuKh: [0, 0], thuNcc: [0, 0], thuKhac: [0, 0], chiMh: [0, 0], chiNcc: [0, 0], chiKh: [0, 0], chiKhac: [0, 0],
+  }
+  const app = sc.bt.filter(b => b[3] === 'thu' && b[0] === '1121').at(-1)   // tiền ứng dụng giao hàng trả sau: thu công nợ khách hàng
+  const muaHang = sc.bt.filter(b => b[3] === 'trancc')[0]                     // trả tiền hàng mua; lần trả sau là trả nhà cung cấp dịch vụ
+  for (const b of sc.bt) {
+    const [tkNo, tkCo, tien, nhom] = b
+    const thu = tkNo === '1111' ? 0 : tkNo === '1121' ? 1 : -1
+    const chi = tkCo === '1111' ? 0 : tkCo === '1121' ? 1 : -1
+    if (thu >= 0) {
+      const k = tkCo === '131' ? (b === app ? 'thuKh' : 'thuBh') : tkCo === '331' ? 'thuNcc' : 'thuKhac'
+      d[k][thu as 0 | 1] += tien
     }
-    const tongVaoTm = thuBhTm + thuKhacTm
-    const tongVaoNh = thuBhNh + thuKhacNh
-    const tongVao = tongVaoTm + tongVaoNh
-
-    const tongRaTm = chiMhTm + chiHdTm + chiKhacTm
-    const tongRaNh = chiMhNh + chiHdNh + chiKhacNh
-    const tongRa = tongRaTm + tongRaNh
-
-    const thuanTm = tongVaoTm - tongRaTm
-    const thuanNh = tongVaoNh - tongRaNh
-    const thuan = tongVao - tongRa
-
-    const dauTm = s.mo['1111'] ?? 0
-    const dauNh = s.mo['1121'] ?? 0
-    const dau = dauTm + dauNh
-
-    const cuoiTm = dauTm + thuanTm
-    const cuoiNh = dauNh + thuanNh
-    const cuoi = dau + thuan
-
-    return {
-      thuBhTm, thuBhNh, thuBh: thuBhTm + thuBhNh,
-      thuKhacTm, thuKhacNh, thuKhac: thuKhacTm + thuKhacNh,
-      tongVaoTm, tongVaoNh, tongVao,
-      chiMhTm, chiMhNh, chiMh: chiMhTm + chiMhNh,
-      chiHdTm, chiHdNh, chiHd: chiHdTm + chiHdNh,
-      chiKhacTm, chiKhacNh, chiKhac: chiKhacTm + chiKhacNh,
-      tongRaTm, tongRaNh, tongRa,
-      thuanTm, thuanNh, thuan,
-      dauTm, dauNh, dau,
-      cuoiTm, cuoiNh, cuoi,
+    if (chi >= 0) {
+      const k = tkNo === '331' ? (b === muaHang ? 'chiMh' : 'chiNcc') : tkNo === '131' ? 'chiKh' : nhom === 'mua' ? 'chiMh' : 'chiKhac'
+      d[k][chi as 0 | 1] += tien
     }
   }
+  return d
+}
 
-  const dtNay = tinhDongTien(sc)
-  const dtTr = tinhDongTien(scTr)
-
+function rows229(thang: number): Row[] {
+  const nay = tinhDongTien(thang)
+  const truoc = tinhDongTien(thang === 8 ? 7 : thang - 1)
+  const cong = (d: DongTien, ...ks: (keyof DongTien)[]): [number, number] => [ks.reduce((a, x) => a + d[x][0], 0), ks.reduce((a, x) => a + d[x][1], 0)]
+  const THU: (keyof DongTien)[] = ['thuBh', 'thuKh', 'thuNcc', 'thuKhac']
+  const CHI: (keyof DongTien)[] = ['chiMh', 'chiNcc', 'chiKh', 'chiKhac']
+  const tinh = (d: DongTien) => {
+    const thu = cong(d, ...THU), chi = cong(d, ...CHI)
+    const thuan: [number, number] = [thu[0] - chi[0], thu[1] - chi[1]]
+    return { dau: d.dau, thu, chi, thuan, cuoi: [d.dau[0] + thuan[0], d.dau[1] + thuan[1]] as [number, number] }
+  }
+  const n = tinh(nay), t = tinh(truoc)
+  const dong = (chiTieu: string, v: [number, number], vTr: [number, number], co: Row = {}): Row =>
+    ({ chiTieu, tienMat: v[0], nganHang: v[1], tongNay: v[0] + v[1], kyTruoc: vTr[0] + vTr[1], ...co })
+  const con = (chiTieu: string, k: keyof DongTien) => dong(chiTieu, nay[k], truoc[k], { _i: 1 })
   return [
-    { chiTieu: 'I. Dòng tiền vào', _b: 1 },
-    { chiTieu: '1. Thu từ bán hàng, cung cấp dịch vụ', tienMat: dtNay.thuBhTm, nganHang: dtNay.thuBhNh, tongNay: dtNay.thuBh, kyTruoc: dtTr.thuBh, _i: 1 },
-    { chiTieu: '2. Thu nhập khác và thu tài chính', tienMat: dtNay.thuKhacTm, nganHang: dtNay.thuKhacNh, tongNay: dtNay.thuKhac, kyTruoc: dtTr.thuKhac, _i: 1 },
-    { chiTieu: 'Cộng dòng tiền vào', tienMat: dtNay.tongVaoTm, nganHang: dtNay.tongVaoNh, tongNay: dtNay.tongVao, kyTruoc: dtTr.tongVao, _b: 1 },
-    { chiTieu: 'II. Dòng tiền ra', _b: 1 },
-    { chiTieu: '1. Chi trả cho nhà cung cấp hàng hoá, dịch vụ', tienMat: dtNay.chiMhTm, nganHang: dtNay.chiMhNh, tongNay: dtNay.chiMh, kyTruoc: dtTr.chiMh, _i: 1 },
-    { chiTieu: '2. Chi trả cho người lao động, chi phí hoạt động', tienMat: dtNay.chiHdTm, nganHang: dtNay.chiHdNh, tongNay: dtNay.chiHd, kyTruoc: dtTr.chiHd, _i: 1 },
-    { chiTieu: '3. Chi phí lãi vay, nợ gốc và chi khác', tienMat: dtNay.chiKhacTm, nganHang: dtNay.chiKhacNh, tongNay: dtNay.chiKhac, kyTruoc: dtTr.chiKhac, _i: 1 },
-    { chiTieu: 'Cộng dòng tiền ra', tienMat: dtNay.tongRaTm, nganHang: dtNay.tongRaNh, tongNay: dtNay.tongRa, kyTruoc: dtTr.tongRa, _b: 1 },
-    { chiTieu: 'III. Dòng tiền thuần trong kỳ (I - II)', tienMat: dtNay.thuanTm, nganHang: dtNay.thuanNh, tongNay: dtNay.thuan, kyTruoc: dtTr.thuan, _b: 1, _t: 1 },
-    { chiTieu: 'IV. Tiền tồn đầu kỳ', tienMat: dtNay.dauTm, nganHang: dtNay.dauNh, tongNay: dtNay.dau, kyTruoc: dtTr.dau, _b: 1 },
-    { chiTieu: 'V. Tiền tồn cuối kỳ (III + IV)', tienMat: dtNay.cuoiTm, nganHang: dtNay.cuoiNh, tongNay: dtNay.cuoi, kyTruoc: dtTr.cuoi, _b: 1, _t: 1 },
+    dong('I. Tiền đầu kỳ', n.dau, t.dau, { _b: 1 }),
+    dong('Tiền mặt', [n.dau[0], 0], [t.dau[0], 0], { _i: 1 }),
+    dong('Tiền gửi ngân hàng', [0, n.dau[1]], [0, t.dau[1]], { _i: 1 }),
+    dong('II. Tổng tiền thu trong kỳ', n.thu, t.thu, { _b: 1 }),
+    con('Thu bán hàng, cung cấp dịch vụ', 'thuBh'),
+    con('Thu công nợ khách hàng', 'thuKh'),
+    con('Thu từ nhà cung cấp', 'thuNcc'),
+    con('Thu khác', 'thuKhac'),
+    dong('III. Tổng tiền chi trong kỳ', n.chi, t.chi, { _b: 1 }),
+    con('Chi mua hàng, nguyên vật liệu', 'chiMh'),
+    con('Chi trả nhà cung cấp', 'chiNcc'),
+    con('Chi trả khách hàng', 'chiKh'),
+    con('Chi khác', 'chiKhac'),
+    dong('IV. Dòng tiền thuần (II - III)', n.thuan, t.thuan, { _b: 1 }),
+    dong('V. Tiền cuối kỳ (I + IV)', n.cuoi, t.cuoi, { _b: 1, _t: 1 }),
   ]
 }
 
