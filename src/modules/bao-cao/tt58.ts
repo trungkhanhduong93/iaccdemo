@@ -46,11 +46,11 @@ export function moTaBoSoTT58(th: ThTT58): string {
     case 1:
       return 'Trường hợp 1: S1-DNSN'
     case 2:
-      return 'Trường hợp 2: S2a, S2b, S2c, S2d-DNSN; báo cáo tài chính B01, B02-DNSN'
+      return 'Trường hợp 2: S2a, S2b, S2c, S2d-DNSN; báo cáo tài chính B01-DNSN, B02-DNSN'
     case 3:
       return 'Trường hợp 3: S3a, S3b-DNSN'
     case 4:
-      return 'Trường hợp 4: S2b, S2c, S2d, S3b-DNSN; báo cáo tài chính B01, B02-DNSN'
+      return 'Trường hợp 4: S2b, S2c, S2d, S3b-DNSN; báo cáo tài chính B01-DNSN, B02-DNSN'
   }
 }
 
