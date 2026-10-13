@@ -4,13 +4,14 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T181.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T182.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T182 | Điện thoại đợt 7: báo cáo (`MBaoCao` danh sách nhóm báo cáo, `MSoBaoCao` bảng ghim cột trái cuộn ngang, báo cáo A4 thu nhỏ vừa màn) | Trum | Đang làm | Anti B viết code ở bản clone `Web-dt`. Sửa `src/ui/mobile/*`, `manMobile.ts`, `app.css` (mục T182 cuối file), `tools/kiem_tra.py` |
 | T181 | Danh mục: nút icon "Đồng bộ theo POS" ở hàng hoá, đơn vị tính, kho, phương thức thanh toán, chi nhánh; cột POS ID ở chi nhánh; trạng thái bật tắt trong bảng danh mục thành chấm tròn xanh, đỏ; phương thức thanh toán thêm chứng từ mặc định, TK Nợ ngầm định, mã đối tượng, công việc, mục chi phí, quỹ tiền | Trum | Đang làm | Sửa `CatalogScreen.tsx`, `danh-muc/index.ts`, `truong-dm.ts`, `data.ts`, `DanhMucChiNhanh.tsx`, `QuyDoiDvt.tsx`, `types.ts`, `app.css` (mục T181 cuối file) |
 | T169 | Form chứng từ: gõ đổi địa chỉ từ phiếu này sang phiếu khác (vd `#/app/tien/2-1-1/chi-3` sang `chi-6`) thì form giữ số phiếu, đối tượng của phiếu cũ; mở từ danh sách, Trước, Sau thì đúng | | Chờ | Phát hiện ở T168. Sửa `ChungTuForm.tsx`, có thể `VoucherScreen.tsx` (key của form) |
 | T138 | Màn onboard khi bấm từ FABi sang IACC: khởi tạo đơn vị kế toán, điền sẵn từ FABi (chi nhánh, kho, cách đồng bộ, số dư đầu kỳ) | PhuongXT | Dở dang | Popup khởi tạo dữ liệu 4 bước trong phần mềm (`OnboardFabi.tsx`, `Shell.tsx`) đã push, PhuongXT xem lại một lượt. Xem `2026-10-11-phuongxt-man-khoi-tao-fabi.md` |
