@@ -9,21 +9,34 @@ import { money } from '../format'
 import { dsChipTT, khopChipTT } from '../LocNangCao'
 import { TT_CT } from '../generic/gen'
 import { useDongChungTu } from '../generic/VoucherScreen'
+import { useDsPhieuDcn } from '../../modules/kho/BangDieuChuyen'
+import { useDsPhieuSx } from '../../modules/kho/BangSanXuat'
 import { MChiMayTinh } from './MChiMayTinh'
 import { MChon } from './MChon'
 import { MDanhSach } from './MDanhSach'
 import { coLocKhacMacDinh, MAC_DINH_LOC_MOBILE, MLoc, tinhKhoangNgay, type GtLocMobile } from './MLoc'
+import { MXemPhieu } from './MXemPhieu'
 
+// Tách lớp ngoài để danh sách luôn gọi đủ hook, không trả sớm theo id
 export const MChungTu: FC<ScreenProps> = ({ sc, mod }) => {
   const { id } = useParams()
-  if (id !== undefined) {
+  if (id === 'moi') {
     return <MChiMayTinh />
   }
+  if (id !== undefined) {
+    return <MXemPhieu sc={sc} mod={mod} id={id} />
+  }
+  return <DsChungTu sc={sc} mod={mod} />
+}
 
+const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
   const { s } = useSession()
   const nav = useNavigate()
   const path = duongDan(mod, sc)
-  const { cfg, rows } = useDongChungTu(sc, mod)
+  const { cfg, rows: rowsGoc } = useDongChungTu(sc, mod)
+  const rowsDcn = useDsPhieuDcn(cfg.dieuChuyen ?? 'xdc')
+  const rowsSx = useDsPhieuSx(cfg.sanXuat ?? 'xsc')
+  const rows = cfg.dieuChuyen ? rowsDcn : cfg.sanXuat ? rowsSx : rowsGoc
 
   const ghi = kieuGhiSo(s.goi) !== 'khong'
   const cnChon = chiNhanhHienTai(s)

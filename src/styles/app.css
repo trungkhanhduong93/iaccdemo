@@ -8618,5 +8618,369 @@ button.chip.sx-kenh.info { border-color: var(--blue); }
   flex: none;
 }
 
+/* ── Điện thoại đợt 4 (T177) ── */
+
+.m-xp {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 10px var(--m-le-man) calc(var(--m-thanh-duoi) + 70px + env(safe-area-inset-bottom, 0px));
+  box-sizing: border-box;
+}
+
+.m-xp-dau {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 4px 0 6px;
+}
+
+.m-xp-dau-trai {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.m-xp-loai {
+  font-size: var(--m-chu-phu);
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.m-xp-so {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0;
+  word-break: break-word;
+}
+
+.m-xp-dau-phai {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.m-the-trang {
+  background: var(--white);
+  border-radius: var(--m-bo-the);
+  padding: 12px 14px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--line);
+  box-sizing: border-box;
+}
+
+.m-xp-dong-tt {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 13px;
+  line-height: 1.4;
+  padding: 3.5px 0;
+}
+
+.m-xp-nhan {
+  color: var(--muted);
+  flex-shrink: 0;
+  min-width: 80px;
+}
+
+.m-xp-tri {
+  color: var(--body);
+  text-align: right;
+  word-break: break-word;
+  flex: 1;
+}
+
+.m-xp-tri.dam {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.m-xp-tri.cam {
+  color: var(--orange);
+  font-weight: 700;
+}
+
+.m-xp-tri.lon {
+  font-size: 16px;
+}
+
+.m-xp-tri.do {
+  color: var(--red);
+}
+
+.m-xp-tri.xanh {
+  color: var(--green);
+}
+
+.m-xp-tc {
+  padding-top: 6px;
+  border-top: 1px dashed var(--line);
+  margin-top: 4px;
+}
+
+.m-xp-link-tc {
+  color: var(--blue);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.m-xp-link-tc:hover {
+  text-decoration: underline;
+}
+
+.m-xp-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.m-xp-khoi-dong {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.m-xp-tieu-khoi {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 0;
+}
+
+.m-xp-tim-wrap {
+  position: relative;
+  margin-bottom: 4px;
+}
+
+.m-xp-tim-inp {
+  width: 100%;
+  height: 38px;
+  border-radius: 10px;
+  background: #F0F1F5;
+  border: 1px solid transparent;
+  padding: 0 32px 0 34px;
+  font-size: 13px;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.m-xp-tim-inp:focus {
+  border-color: var(--blue);
+  background: var(--white);
+  outline: none;
+}
+
+.m-xp-tim-ic {
+  position: absolute;
+  left: 10px;
+  top: 11px;
+  color: var(--faint);
+  pointer-events: none;
+}
+
+.m-xp-tim-x {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--muted);
+  padding: 3px;
+}
+
+.m-xp-ds-the {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.m-xp-the-dong {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.m-xp-dong-tieu {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.m-xp-dong-ma {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.m-xp-dong-chi-tiet {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 4px;
+  border-top: 1px dashed var(--line);
+  padding-top: 6px;
+}
+
+.m-xp-the-tong {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  border-top: 2px solid var(--blue);
+}
+
+.m-xp-dong-tong-cong {
+  border-top: 1px solid var(--line);
+  margin-top: 4px;
+  padding-top: 6px;
+}
+
+.m-xp-accordion {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.m-xp-acc-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: none;
+  background: transparent;
+  padding: 2px 0;
+  cursor: pointer;
+  width: 100%;
+  font-family: inherit;
+  color: inherit;
+}
+
+.m-xp-acc-tieu {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.m-xp-acc-nd {
+  margin-top: 8px;
+  border-top: 1px solid var(--line);
+  padding-top: 8px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.m-xp-acc-nd .tbl {
+  font-size: 12px;
+}
+
+.m-xp-day {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--m-thanh-duoi) + 22px + env(safe-area-inset-bottom, 0px));
+  background: var(--white);
+  border-top: 1px solid var(--line);
+  padding: 8px var(--m-le-man);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 95;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+  box-sizing: border-box;
+  height: 56px;
+}
+
+.m-xp-day-trai {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+}
+
+.m-xp-day-nhan {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.m-xp-day-tong {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.m-xp-day-phai {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.m-xp-nut-cam {
+  background: var(--orange);
+  color: var(--white);
+  border: none;
+  border-radius: 12px;
+  height: 40px;
+  padding: 0 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.m-xp-nut-cam:active {
+  opacity: 0.9;
+  transform: scale(0.98);
+}
+
+.m-xp-nut-menu {
+  background: var(--hover);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.m-xp-nut-menu:active {
+  background: var(--line);
+}
+
+.m-xp-trong {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px var(--m-le-man);
+  gap: 16px;
+  text-align: center;
+}
+
+.m-xp-trong-nut {
+  margin-top: 12px;
+}
+
+
 
 

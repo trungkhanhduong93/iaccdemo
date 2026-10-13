@@ -14,7 +14,7 @@ const BANG_RIENG: Record<string, ComponentType<ScreenProps>> = {
 export function manMobile(sc: ScreenDef, mod: ModuleDef): ComponentType<ScreenProps> {
   const k = `${mod.key}/${sc.slug}`
   if (BANG_RIENG[k]) return BANG_RIENG[k]
-  if (sc.kind === 'voucher' && sc.voucher) return MChungTu
+  if ((sc.kind === 'voucher' || sc.voucher) && sc.voucher) return MChungTu
   if (sc.kind === 'catalog' && sc.catalog) return MDanhMuc
   return MChiMayTinh
 }

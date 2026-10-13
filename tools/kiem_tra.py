@@ -342,6 +342,103 @@ def kiem_tra_man_dot_3():
     return loi
 
 
+def kiem_tra_xem_phieu_dot_4():
+    loi = []
+    kho_txt = (REPO / 'src' / 'modules' / 'kho' / 'index.ts').read_text(encoding='utf-8')
+    m_xdc = re.search(r"'([0-9\.\-]+)':\s*phieuDcn\('xdc'", kho_txt)
+    slug_xdc = m_xdc.group(1).replace('.', '-') if m_xdc else '5-1-4'
+
+    danh_sach = [
+        ('Thu chi', 'tien/2-1-1'),
+        ('Nhập kho', 'kho/5-1-1'),
+        ('Kiểm kê', 'kho/5-1-10'),
+        ('Xuất điều chuyển', f'kho/{slug_xdc}'),
+    ]
+
+    print('Kiểm tra màn xem chi tiết phiếu đợt 4 (390px vs 1440px, gói PL):')
+    with sync_playwright() as p:
+        b_dt = p.chromium.launch(channel='chrome')
+        pg_dt = b_dt.new_page(
+            viewport={'width': 390, 'height': 844},
+            is_mobile=True,
+            has_touch=True,
+            device_scale_factor=3,
+        )
+        con_dt = []
+        pg_dt.on('console', lambda m: con_dt.append(m.text) if m.type == 'error' else None)
+        pg_dt.on('pageerror', lambda e: con_dt.append(str(e)))
+
+        pg_dt.goto(URL + '#/dang-nhap')
+        pg_dt.wait_for_selector('.auth-box')
+        pg_dt.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PL'))})")
+
+        b_mt = p.chromium.launch(channel='chrome')
+        pg_mt = b_mt.new_page(viewport={'width': 1440, 'height': 900})
+        con_mt = []
+        pg_mt.on('console', lambda m: con_mt.append(m.text) if m.type == 'error' else None)
+        pg_mt.on('pageerror', lambda e: con_mt.append(str(e)))
+
+        pg_mt.goto(URL + '#/dang-nhap')
+        pg_mt.wait_for_selector('.auth-box')
+        pg_mt.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PL'))})")
+
+        for ten_loai, slug in danh_sach:
+            path_ds = f'/app/{slug}'
+            pg_dt.goto(f'{URL}?goi=PL&p={abs(hash(path_ds))}#{path_ds}')
+            pg_dt.wait_for_timeout(300)
+
+            thes = pg_dt.locator('.m-the-ct')
+            if thes.count() == 0:
+                loi.append(f'{ten_loai} ({path_ds}): không tìm thấy thẻ chứng từ nào')
+                continue
+
+            thes.first.click()
+            pg_dt.wait_for_timeout(300)
+
+            if con_dt:
+                loi.append(f'{ten_loai} ({path_ds}): lỗi console điện thoại {con_dt[:2]}')
+                con_dt.clear()
+
+            if pg_dt.locator('.m-chi-may-tinh').count() > 0:
+                loi.append(f'{ten_loai} ({path_ds}): bị rơi về .m-chi-may-tinh')
+                continue
+
+            tran = pg_dt.evaluate("document.documentElement.scrollWidth > window.innerWidth")
+            if tran:
+                loi.append(f'{ten_loai} ({path_ds}): bị tràn ngang ở màn xem chi tiết điện thoại')
+
+            so_phieu = pg_dt.locator('.m-xp-so').inner_text().strip() if pg_dt.locator('.m-xp-so').count() > 0 else ''
+            ten_phieu = pg_dt.locator('.m-xp-loai').inner_text().strip() if pg_dt.locator('.m-xp-loai').count() > 0 else ten_loai
+
+            tong_dt_txt = pg_dt.locator('.m-xp-day-tong').inner_text().strip() if pg_dt.locator('.m-xp-day-tong').count() > 0 else '0'
+            so_dt = int(re.sub(r'\D', '', tong_dt_txt) or 0)
+
+            url_phieu = pg_dt.evaluate("window.location.hash").lstrip('#')
+
+            pg_mt.goto(f'{URL}?goi=PL&p={abs(hash(url_phieu))}#{url_phieu}')
+            pg_mt.wait_for_timeout(300)
+
+            if con_mt:
+                loi.append(f'{ten_loai} ({url_phieu}): lỗi console máy tính {con_mt[:2]}')
+                con_mt.clear()
+
+            el_tong_mt = pg_mt.locator('.pos-day-tong b, .pos-day-cot .lon, .fsf-day-tong b')
+            if el_tong_mt.count() > 0:
+                tong_mt_txt = el_tong_mt.first.inner_text().strip()
+                so_mt = int(re.sub(r'\D', '', tong_mt_txt) or 0)
+            else:
+                so_mt = 0
+
+            if so_dt != so_mt:
+                loi.append(f'{ten_phieu} ({so_phieu}): tổng tiền không bằng nhau (điện thoại: {so_dt:,} đ, máy tính: {so_mt:,} đ)'.replace(',', '.'))
+
+            print(f'  - {ten_phieu} ({so_phieu}): điện thoại {so_dt:,} đ = máy tính {so_mt:,} đ'.replace(',', '.'))
+
+        b_dt.close()
+        b_mt.close()
+    return loi
+
+
 def kiem_tra_cac_khung_dt():
     loi, dem = [], 0
     for rong, cao in KHUNG_DT:
@@ -353,6 +450,8 @@ def kiem_tra_cac_khung_dt():
     loi += loi_nv
     loi_d3 = kiem_tra_man_dot_3()
     loi += loi_d3
+    loi_d4 = kiem_tra_xem_phieu_dot_4()
+    loi += loi_d4
     if loi:
         print(f'{len(loi)} LỖI:')
         for x in loi:
