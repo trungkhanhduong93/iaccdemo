@@ -6,6 +6,7 @@ import { Icon } from '../../ui/Icon'
 import { fold } from '../../ui/format'
 import { useSession } from '../../app/session'
 import { DON_VI_TINH, QUY_DOI_DVT, TEN_DVT } from './data'
+import { ChamTrangThai } from '../../ui/ChamTrangThai'
 
 /** Một dòng quy đổi của hàng hoá. nguoc: false là 1 ĐVT chính = tl dv, true là 1 dv = tl ĐVT chính */
 export interface QuyDoi { dv: string; tl: number; nguoc: boolean; apTatCa: boolean; bat: boolean }
@@ -79,11 +80,12 @@ export function KhoiQuyDoi({ v, doi }: { v: Record<string, any>; doi: (k: string
                 <td>{dienGiai(q, chinh)}</td>
                 <td>{q.apTatCa ? TAT_CA : (tenHang || 'Hàng hoá này')}</td>
                 <td className="qd-giua">
-                  <button type="button" role="switch" aria-checked={q.bat} aria-label={`Sử dụng quy đổi ${q.dv}`}
-                    className={`ds-ct${q.bat ? ' on' : ''}`}
-                    onClick={e => { e.stopPropagation(); doi('_quyDoi', ds.map((x, j) => j === i ? { ...x, bat: !x.bat } : x)) }}>
-                    <i />
-                  </button>
+                  <ChamTrangThai
+                    bat={Boolean(q.bat)}
+                    ariaLabel={`Sử dụng quy đổi ${q.dv}`}
+                    title={`Sử dụng quy đổi ${q.dv}`}
+                    onToggle={() => doi('_quyDoi', ds.map((x, j) => j === i ? { ...x, bat: !x.bat } : x))}
+                  />
                 </td>
               </tr>
             ))}

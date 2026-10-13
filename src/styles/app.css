@@ -9794,3 +9794,26 @@ body:has(.m-lp) .m-thanh-duoi {
   cursor: pointer;
   font-family: inherit;
 }
+
+/* ── Danh mục: đồng bộ POS, chấm trạng thái (T181) ── */
+.cham-tt {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  transition: transform .15s ease, opacity .15s ease;
+  vertical-align: middle;
+}
+.cham-tt:hover:not(:disabled) {
+  opacity: 0.85;
+  transform: scale(1.15);
+}
+.cham-tt.bat {
+  background-color: var(--green);
+}
+.cham-tt.tat {
+  background-color: var(--red);
+}

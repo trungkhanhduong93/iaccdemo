@@ -20,11 +20,11 @@ export const DON_VI: DonVi[] = [
   { id: 'gn', ten: 'Hộ kinh doanh Cà phê Góc Nhỏ', viettat: 'GN', mst: '8090 112 233', goi: 'F', diaChi: '5 Hẻm 42 Trần Quang Khải, phường Tân Định, TP.HCM', diem: 1, nguoiDaiDien: 'Nguyễn Minh Anh' },
 ]
 
-export interface ChiNhanh { id: string; ten: string; ngan: string; base: number; kho: string[] }
+export interface ChiNhanh { id: string; posId?: string; ten: string; ngan: string; base: number; kho: string[] }
 export const CHI_NHANH: ChiNhanh[] = [
-  { id: 'q1', ten: 'Phố Mây Lê Lợi', ngan: 'Lê Lợi', base: 33_500_000, kho: ['Kho bếp Lê Lợi', 'Kho bar Lê Lợi'] },
-  { id: 'q5', ten: 'Phố Mây Nguyễn Trãi', ngan: 'Nguyễn Trãi', base: 24_800_000, kho: ['Kho bếp Nguyễn Trãi'] },
-  { id: 'td', ten: 'Phố Mây Thảo Điền', ngan: 'Thảo Điền', base: 28_600_000, kho: ['Kho bếp Thảo Điền', 'Kho bar Thảo Điền'] },
+  { id: 'q1', posId: '10001', ten: 'Phố Mây Lê Lợi', ngan: 'Lê Lợi', base: 33_500_000, kho: ['Kho bếp Lê Lợi', 'Kho bar Lê Lợi'] },
+  { id: 'q5', posId: '10002', ten: 'Phố Mây Nguyễn Trãi', ngan: 'Nguyễn Trãi', base: 24_800_000, kho: ['Kho bếp Nguyễn Trãi'] },
+  { id: 'td', posId: '10003', ten: 'Phố Mây Thảo Điền', ngan: 'Thảo Điền', base: 28_600_000, kho: ['Kho bếp Thảo Điền', 'Kho bar Thảo Điền'] },
 ]
 export const KHO = ['Kho tổng', ...CHI_NHANH.flatMap(c => c.kho)]
 

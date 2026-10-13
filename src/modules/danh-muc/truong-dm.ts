@@ -1,8 +1,8 @@
 // Khai báo trường thông tin panel Thêm / Sửa cho các danh mục (T70)
 // Lấy theo bảng DM_ tương ứng trong CSDL kế toán iPOS (schema-dm.md)
 import { DON_VI_TINH, TEN_DVT, TEN_NHOM_HANG, TEN_NHOM_DOI_TUONG, TEN_NHOM_MUC_CP, TEN_NHOM_KHO, TEN_MUC_CHI_PHI, TEN_CONG_VIEC_17, NHOM_HANG, TEN_THUONG_HIEU, DS_THUONG_HIEU,
-  DS_HANG_HOA_12, dienGiaiQd, maDvt, maHang, maKho } from './data'
-import { CHI_NHANH, HOM_NAY, KHACH, KHO, NCC } from '../../data/mock'
+  DS_HANG_HOA_12, dienGiaiQd, maDvt, maHang, maKho, DS_CHUNG_TU_TIEN, DS_MUC_CHI_PHI_16, DS_CONG_VIEC_17, DS_QUY_TIEN_112 } from './data'
+import { CHI_NHANH, HOM_NAY, KHACH, KHO, NCC, NHAN_VIEN } from '../../data/mock'
 import { dmy } from '../../ui/format'
 import { NGANH_NGHE_CON, timNganhNghe } from './nganh-nghe'
 import { KhoiQuyDoi } from './QuyDoiDvt'
@@ -22,6 +22,28 @@ const maNcc = (ten: string) => NCC.find(n => n.ten === ten)?.ma ?? ''
 const maThuongHieu = (ten: string) => DS_THUONG_HIEU.find(t => t.ten === ten)?.ma ?? ''
 const maChiNhanh = (ten: string) => CHI_NHANH.find(c => c.ten === ten)?.id.toUpperCase() ?? ''
 const TEN_HANG = DS_HANG_HOA_12.map(h => h.ten)
+
+/** T181: danh sách mã và nhãn hiển thị "<mã> - <tên>" cho phương thức thanh toán */
+const MA_DOI_TUONG = [...KHACH.map(k => k.ma), ...NCC.map(n => n.ma), ...NHAN_VIEN.map(nv => nv.ma)]
+const nhanDoiTuong = (ma: string) => {
+  const d = [...KHACH, ...NCC, ...NHAN_VIEN].find(x => x.ma === ma || `${x.ma} - ${x.ten}` === ma)
+  return d ? `${d.ma} - ${d.ten}` : ma
+}
+const MA_CONG_VIEC_17 = DS_CONG_VIEC_17.map(c => c.ma)
+const nhanCongViec = (ma: string) => {
+  const c = DS_CONG_VIEC_17.find(x => x.ma === ma || `${x.ma} - ${x.ten}` === ma)
+  return c ? `${c.ma} - ${c.ten}` : ma
+}
+const MA_MUC_CHI_PHI = DS_MUC_CHI_PHI_16.map(m => m.ma)
+const nhanMucCp = (ma: string) => {
+  const m = DS_MUC_CHI_PHI_16.find(x => x.ma === ma || `${x.ma} - ${x.ten}` === ma)
+  return m ? `${m.ma} - ${m.ten}` : ma
+}
+const MA_QUY_TIEN_112 = DS_QUY_TIEN_112.map(q => q.ma)
+const nhanQuyTien = (ma: string) => {
+  const q = DS_QUY_TIEN_112.find(x => x.ma === ma || `${x.ma} - ${x.ten}` === ma)
+  return q ? `${q.ma} - ${q.ten}` : ma
+}
 
 /** Ngành nghề con trong ô chọn: lưu mã, hiện tên (T151) */
 const MA_NGANH_NGHE = NGANH_NGHE_CON.map(n => n.ma)
@@ -798,8 +820,8 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
         truong: [
           { k: 'ma', nhan: 'Mã phương thức', kieu: 'chu', batBuoc: true },
           { k: 'ten', nhan: 'Tên phương thức', kieu: 'chu', batBuoc: true, caHang: true },
-          // gói Free, Standard bỏ: loại chứng từ, hạch toán chỉ dùng cho tự hạch toán theo phương thức ở gói Plus, Pro (T137, T144)
-          { k: 'loaiCt', nhan: 'Loại chứng từ thu tiền', kieu: 'chon', ds: ['Thu tiền mặt', 'Thu ngân hàng'], batBuoc: true, goi: ['PL', 'PR'] },
+          // gói Free, Standard bỏ: loại chứng từ, hạch toán chỉ dùng cho tự hạch toán theo phương thức ở gói Plus, Pro (T137, T144, T181)
+          { k: 'loaiCt', nhan: 'Chứng từ mặc định', kieu: 'chon', ds: DS_CHUNG_TU_TIEN, batBuoc: true, goi: ['PL', 'PR'] },
           { k: 'dienGiai', nhan: 'Diễn giải', kieu: 'chu', caHang: true, goi: ['PL', 'PR'] },
         ],
       },
@@ -807,10 +829,11 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
         ten: 'Hạch toán ngầm định',
         goi: ['PL', 'PR'],
         truong: [
-          { k: 'tkNo', nhan: 'TK Nợ', kieu: 'chon', batBuoc: true, cheDo: ['TT133', 'TT99'] },
-          { k: 'doiTuong', nhan: 'Đối tượng', kieu: 'chon', ds: [...KHACH.map(k => k.ten), ...NCC.map(n => n.ten)] },
-          { k: 'congViec', nhan: 'Công việc', kieu: 'chon', ds: TEN_CONG_VIEC_17 },
-          { k: 'mucCp', nhan: 'Mục chi phí', kieu: 'chon', ds: TEN_MUC_CHI_PHI },
+          { k: 'tkNo', nhan: 'Tài khoản Nợ ngầm định', kieu: 'chon', batBuoc: true, cheDo: ['TT133', 'TT99'] },
+          { k: 'doiTuong', nhan: 'Mã đối tượng', kieu: 'chon', ds: MA_DOI_TUONG, nhanDs: nhanDoiTuong },
+          { k: 'congViec', nhan: 'Mã công việc', kieu: 'chon', ds: MA_CONG_VIEC_17, nhanDs: nhanCongViec },
+          { k: 'mucCp', nhan: 'Mã mục chi phí', kieu: 'chon', ds: MA_MUC_CHI_PHI, nhanDs: nhanMucCp },
+          { k: 'quyTien', nhan: 'Mã quỹ tiền', kieu: 'chon', ds: MA_QUY_TIEN_112, nhanDs: nhanQuyTien },
         ],
       },
       {

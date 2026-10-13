@@ -6,7 +6,8 @@ import { tenMan } from '../../app/registry'
 import { chiNhanhHienTai, dsKyNam, kyMacDinh, ngayDauNam, truocDauNam, useSession } from '../../app/session'
 import { CHI_NHANH } from '../../data/mock'
 import { Icon } from '../Icon'
-import { St, Table } from '../Table'
+import { Table } from '../Table'
+import { ChamTrangThai } from '../ChamTrangThai'
 import { CO_TRANG_DM, PhanTrang } from '../PhanTrang'
 import { fold, nhapSoQT, soQT } from '../format'
 import { Dropdown, MenuItem, Select } from '../Dropdown'
@@ -35,7 +36,29 @@ export function CatalogScreen({ sc }: ScreenProps) {
   const cfg = sc.catalog ?? { cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên' }], rows: () => [] }
   // Kỳ số liệu (yyyymm): màn có kySoLieu tính số liệu tới hết kỳ đang chọn
   const [ky, setKy] = useState(() => kyMacDinh(s))
-  const all = useMemo(() => cfg.rows(s.cheDo, ky).filter(r => !cfg.locGoi || cfg.locGoi(s.goi, r)), [sc, s.cheDo, ky, s.goi])
+  const cols0 = useMemo(() => typeof cfg.cols === 'function' ? cfg.cols(s.goi, s.cheDo) : cfg.cols, [sc, s.goi, s.cheDo])
+  // Ghi đè trạng thái bật/tắt theo dòng khi người dùng bấm chấm tròn (T181)
+  const [ttGhiDe, setTtGhiDe] = useState<Record<string, number>>({})
+  useEffect(() => {
+    setTtGhiDe({})
+  }, [sc, s.cheDo])
+  const khoaDong = useCallback((r: Row) => String(r._k ?? r.ma ?? r.so ?? r.username ?? r.id ?? (cols0[0]?.k ? r[cols0[0].k] : undefined) ?? r.ten ?? ''), [cols0])
+  const doiTrangThai = useCallback((r: Row) => {
+    const k = khoaDong(r)
+    if (!k) return
+    const ttMoi = r._tt === 0 ? 1 : 0
+    setTtGhiDe(prev => ({ ...prev, [k]: ttMoi }))
+  }, [khoaDong])
+
+  const allGoc = useMemo(() => cfg.rows(s.cheDo, ky).filter(r => !cfg.locGoi || cfg.locGoi(s.goi, r)), [sc, s.cheDo, ky, s.goi])
+  const all = useMemo((): Row[] => {
+    return allGoc.map((r, i) => {
+      const k = String(r.ma ?? r.so ?? r.username ?? r.id ?? (cols0[0]?.k ? r[cols0[0].k] : undefined) ?? r.ten ?? `_r_${i}`)
+      const _k = r._k ?? k
+      const tt = ttGhiDe[_k] !== undefined ? ttGhiDe[_k] : r._tt
+      return { ...r, _k, _tt: tt }
+    })
+  }, [allGoc, ttGhiDe, cols0])
   const choThem = !cfg.khongThem?.includes(s.goi)
   const [q, setQ] = useState('')
   const [nhom, setNhom] = useState('')
@@ -46,7 +69,6 @@ export function CatalogScreen({ sc }: ScreenProps) {
   const [tichLoc, setTichLoc] = useState(cfg.tich?.macDinh ?? false)
   const [moHangLoat, setMoHangLoat] = useState(false)
   const rows = useMemo(() => all.filter(r => (!nhom || r[cfg.nhomLoc!] === nhom) && (!q || fold(Object.values(r).join(' ')).includes(fold(q))) && (!tichLoc || !cfg.tich || cfg.tich.loc(r))), [all, nhom, q, tichLoc])
-  const cols0 = useMemo(() => typeof cfg.cols === 'function' ? cfg.cols(s.goi, s.cheDo) : cfg.cols, [sc, s.goi, s.cheDo])
   const cols: Col[] = useMemo(() => [
     ...(cfg.stt ? [{ k: '_stt', t: 'STT', w: 60, c: true }] : []),
     ...cols0.map(c => {
@@ -55,7 +77,13 @@ export function CatalogScreen({ sc }: ScreenProps) {
       return c
     }),
     // Danh sách kiểu chứng từ (dsChungTu, vd thẻ chi phí) không có cột Trạng thái như danh sách thu chi (T165)
-    ...(cfg.dsChungTu ? [] : [{ k: '_tt', t: 'Trạng thái', w: 120, c: true, r: (r: Row) => r._tt === 0 ? <St k="dim">Ngừng dùng</St> : <St k="ok">Đang dùng</St> }]),
+    ...(cfg.dsChungTu ? [] : [{
+      k: '_tt',
+      t: 'Trạng thái',
+      w: 100,
+      c: true,
+      r: (r: Row) => <ChamTrangThai bat={r._tt !== 0} onToggle={() => doiTrangThai(r)} />,
+    }]),
     ...(cfg.chucNang ? [{
       k: '_cn',
       t: 'Chức năng',
@@ -216,7 +244,27 @@ export function CatalogScreen({ sc }: ScreenProps) {
                   onLuu={cot.luu} onDoRongTuDong={cot.datDoRongTuDong} />
                 <button type="button" className="btn" onClick={() => toast('Nhập danh mục từ Excel')}><Icon n="upload" className="ic sm" />Nhập Excel</button>
                 <button type="button" className="btn" onClick={() => toast(`Đã xuất ${rows.length} dòng ra Excel`)}><Icon n="download" className="ic sm" />Xuất Excel</button>
-                {cfg.nutPhu && <button type="button" className={`btn${choThem ? '' : ' pri'}`} onClick={() => toast(cfg.nutPhu!.bao)}><Icon n={cfg.nutPhu.icon} className="ic sm" />{cfg.nutPhu.nhan}</button>}
+                {cfg.nutPhu && (
+                  cfg.nutPhu.chiIcon ? (
+                    <button
+                      type="button"
+                      className="nut-vuong"
+                      title={cfg.nutPhu.nhan}
+                      aria-label={cfg.nutPhu.nhan}
+                      onClick={() => toast(cfg.nutPhu!.bao)}
+                    >
+                      <Icon n={cfg.nutPhu.icon} className="ic sm" />
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      className={`btn${choThem ? '' : ' pri'}`}
+                      onClick={() => toast(cfg.nutPhu!.bao)}
+                    >
+                      <Icon n={cfg.nutPhu.icon} className="ic sm" />{cfg.nutPhu.nhan}
+                    </button>
+                  )
+                )}
                 {choThem && <button type="button" className="btn pri" onClick={() => moSua({})}><Icon n="plus" className="ic sm" />{cfg.them ?? 'Thêm mới'}</button>}
               </div>
             }
@@ -288,7 +336,11 @@ export function CatalogScreen({ sc }: ScreenProps) {
           tenNgan={sc.ngan ?? ten}
           scSlug={sc.slug}
           onDong={() => setEdit(null)}
-          onLuu={(_val, themTiep) => {
+          onLuu={(val, themTiep) => {
+            if (val && val._tt !== undefined) {
+              const k = khoaDong(val)
+              if (k) setTtGhiDe(prev => ({ ...prev, [k]: Number(val._tt) }))
+            }
             toast('Đã lưu')
             if (!themTiep) setEdit(null)
           }}

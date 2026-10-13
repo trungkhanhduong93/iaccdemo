@@ -2,7 +2,7 @@
 import { createElement } from 'react'
 import type { Col, Row } from '../types'
 import type { CheDo } from '../../app/che-do'
-import { CCDC_HANG, HANG, KHO, NVL } from '../../data/mock'
+import { CCDC_HANG, CHI_NHANH, HANG, KHO, NVL } from '../../data/mock'
 
 export const tkCot = (k: string, t: string): Col => ({
   k, t, cls: 'code',
@@ -193,6 +193,39 @@ export function demHangTheoNhom(tenNhom: string): number {
   }).length
 }
 
+/** Các loại chứng từ của phân hệ Thu chi, theo loại phiếu ở tien/index.ts, làm chứng từ mặc định (T181) */
+export const DS_CHUNG_TU_TIEN = ['Thu tiền mặt', 'Chi tiền mặt', 'Thu ngân hàng', 'Chi ngân hàng', 'Chuyển quỹ']
+
+/** Nguồn dữ liệu danh mục mục chi phí 1.6 (T181) */
+export const DS_MUC_CHI_PHI_16 = [
+  ['CP01', 'Lương nhân viên bếp', 'Nhân công', '6421'],
+  ['CP02', 'Lương phục vụ, thu ngân', 'Nhân công', '6421'],
+  ['CP03', 'Lương văn phòng', 'Nhân công', '6422'],
+  ['CP04', 'Thuê mặt bằng', 'Mặt bằng', '6421'],
+  ['CP05', 'Điện', 'Điện, nước, gas', '6421'],
+  ['CP06', 'Nước', 'Điện, nước, gas', '6421'],
+  ['CP07', 'Gas', 'Điện, nước, gas', '6421'],
+  ['CP08', 'Hoa hồng app giao đồ ăn', 'Bán hàng', '6421'],
+  ['CP09', 'Quảng cáo, khuyến mãi', 'Bán hàng', '6421'],
+  ['CP10', 'Sửa chữa, bảo trì', 'Khác', '6422'],
+  ['CP11', 'Văn phòng phẩm', 'Khác', '6422'],
+].map(([ma, ten, nhom, tk]) => ({ ma, ten, nhom, tk }))
+
+/** Nguồn dữ liệu danh mục công việc 1.7 (T181) */
+export const DS_CONG_VIEC_17 = [
+  { ma: 'CV01', ten: 'Khai trương chi nhánh Thảo Điền', moTa: 'Chi phí mở điểm bán mới tháng 6 đến tháng 8/2026' },
+  { ma: 'CV02', ten: 'Sự kiện Trung thu 2026', moTa: 'Trang trí, quà tặng, quảng cáo tháng 9/2026' },
+  { ma: 'CV03', ten: 'Cải tạo bếp Lê Lợi', moTa: 'Sửa bếp, thay hút mùi tháng 10, 11/2026' },
+  { ma: 'CV04', ten: 'Tiệc cuối năm khách công ty', moTa: 'Tiệc theo hợp đồng tháng 12/2026' },
+]
+
+/** Nguồn dữ liệu danh mục quỹ tiền 1.12 (T181) */
+export const DS_QUY_TIEN_112 = [
+  ...CHI_NHANH.map((c, i) => ({ ma: `TM0${i + 1}`, ten: `Quỹ tiền mặt ${c.ngan}`, loai: 'Tiền mặt', stk: '', cn: c.ten })),
+  { ma: 'NH01', ten: 'Vietcombank, chi nhánh Sài Gòn', loai: 'Ngân hàng', stk: '0071 0012 3456', cn: 'Tất cả' },
+  { ma: 'NH02', ten: 'Techcombank, nhận tiền QR', loai: 'Ngân hàng', stk: '1903 6655 8899', cn: 'Tất cả' },
+]
+
 export interface PhuongThucTT {
   ma: string
   ten: string
@@ -201,11 +234,12 @@ export interface PhuongThucTT {
   doiTuong: string
   congViec: string
   mucCp: string
+  quyTien: string
   dienGiai: string
   _tt: number
 }
 
-/** Danh mục phương thức thanh toán (T137) */
+/** Danh mục phương thức thanh toán (T137, T181) */
 export const DS_PTTT: PhuongThucTT[] = [
   {
     ma: 'TM',
@@ -215,6 +249,7 @@ export const DS_PTTT: PhuongThucTT[] = [
     doiTuong: '',
     congViec: '',
     mucCp: '',
+    quyTien: 'TM01',
     dienGiai: 'Thanh toán trực tiếp bằng tiền mặt',
     _tt: 1,
   },
@@ -226,6 +261,7 @@ export const DS_PTTT: PhuongThucTT[] = [
     doiTuong: '',
     congViec: '',
     mucCp: '',
+    quyTien: 'NH01',
     dienGiai: 'Chuyển khoản ngân hàng hoặc quét mã QR',
     _tt: 1,
   },
@@ -237,6 +273,7 @@ export const DS_PTTT: PhuongThucTT[] = [
     doiTuong: '',
     congViec: '',
     mucCp: '',
+    quyTien: 'NH01',
     dienGiai: 'Thanh toán quẹt thẻ qua máy POS',
     _tt: 1,
   },
@@ -245,9 +282,10 @@ export const DS_PTTT: PhuongThucTT[] = [
     ten: 'App giao đồ ăn',
     loaiCt: 'Thu tiền mặt',
     tkNo: '131',
-    doiTuong: 'GrabFood',
+    doiTuong: 'GRAB',
     congViec: '',
-    mucCp: 'Hoa hồng app giao đồ ăn',
+    mucCp: 'CP08',
+    quyTien: 'TM01',
     dienGiai: 'Đơn hàng qua ứng dụng giao đồ ăn',
     _tt: 1,
   },

@@ -31,12 +31,13 @@ export function DanhMucChiNhanh({ sc, mod }: ScreenProps) {
   const khoCua = (id: string, ten: string) => CHI_NHANH.find(c => c.id === id)?.kho ?? [`Kho ${ten.replace(/^Phố Mây /, '')}`]
   const kho = (id: string, ten: string) => free ? khoCua(id, ten)[0] : khoCua(id, ten).join(', ')
   const rows: Row[] = useMemo(() => [
-    ...(coSan ? CHI_NHANH.map(c => ({ ma: c.id.toUpperCase(), ten: c.ten, kv: 'TP.HCM', kho: kho(c.id, c.ten), nguon: 'FABi' })) : []),
-    ...them.map(c => ({ ma: c.id.toUpperCase(), ten: c.ten, kv: c.khuVuc, kho: kho(c.id, c.ten), nguon: 'FABi', moi: !c.banDau })),
+    ...(coSan ? CHI_NHANH.map(c => ({ ma: c.id.toUpperCase(), posId: c.posId, ten: c.ten, kv: 'TP.HCM', kho: kho(c.id, c.ten), nguon: 'FABi' })) : []),
+    ...them.map((c, i) => ({ ma: c.id.toUpperCase(), posId: `2000${i + 1}`, ten: c.ten, kv: c.khuVuc, kho: kho(c.id, c.ten), nguon: 'FABi', moi: !c.banDau })),
   ], [coSan, them, free])   // eslint-disable-line react-hooks/exhaustive-deps
 
   const colsGoc: Col[] = useMemo(() => [
     { k: 'ma', t: 'Mã', cls: 'code', w: 100 },
+    { k: 'posId', t: 'POS ID', cls: 'code' },
     { k: 'ten', t: 'Tên chi nhánh', w: 220, r: r => <>{r.ten}{r.moi && <span className="chip info" style={{ marginLeft: 8 }}>Mới lên sổ</span>}</> },
     { k: 'kv', t: 'Khu vực', cls: 'dim' },
     { k: 'kho', t: 'Kho', cls: 'dim', r: r => <>{r.kho}{free && <span className="chip" style={{ marginLeft: 8 }}>Mặc định</span>}</> },
@@ -62,6 +63,15 @@ export function DanhMucChiNhanh({ sc, mod }: ScreenProps) {
       <PageHead crumb={[mod.ten]} title={tenMan(sc)}>
         <NutTuyChinhCot cols={cot.colsDu} an={cot.an} coDinh={COT_CO_DINH} macDinh={cot.macDinh} dongBang={cot.dongBang}
           onLuu={cot.luu} onDoRongTuDong={cot.datDoRongTuDong} />
+        <button
+          type="button"
+          className="nut-vuong"
+          title="Đồng bộ theo POS"
+          aria-label="Đồng bộ theo POS"
+          onClick={() => toast(`Đã đồng bộ ${rows.length} chi nhánh theo POS`)}
+        >
+          <Icon n="refresh" className="ic sm" />
+        </button>
         <button type="button" className="btn pri" onClick={() => setMo(true)}><Icon n="plus" className="ic sm" />Thêm chi nhánh từ FABi</button>
       </PageHead>
       {s.goi === 'F' && <Note icon="info">Gói Free: mỗi chi nhánh tự có một kho mặc định theo iPOS Inventory, không cần khai báo kho.</Note>}

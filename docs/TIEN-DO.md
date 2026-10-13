@@ -12,7 +12,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
 | T182 | Điện thoại đợt 7: báo cáo (`MBaoCao` danh sách nhóm báo cáo, `MSoBaoCao` bảng ghim cột trái cuộn ngang, báo cáo A4 thu nhỏ vừa màn) | Trum | Đang làm | Anti B viết code ở bản clone `Web-dt`. Sửa `src/ui/mobile/*`, `manMobile.ts`, `app.css` (mục T182 cuối file), `tools/kiem_tra.py` |
-| T181 | Danh mục: nút icon "Đồng bộ theo POS" ở hàng hoá, đơn vị tính, kho, phương thức thanh toán, chi nhánh; cột POS ID ở chi nhánh; trạng thái bật tắt trong bảng danh mục thành chấm tròn xanh, đỏ; phương thức thanh toán thêm chứng từ mặc định, TK Nợ ngầm định, mã đối tượng, công việc, mục chi phí, quỹ tiền | Trum | Đang làm | Sửa `CatalogScreen.tsx`, `danh-muc/index.ts`, `truong-dm.ts`, `data.ts`, `DanhMucChiNhanh.tsx`, `QuyDoiDvt.tsx`, `types.ts`, `app.css` (mục T181 cuối file) |
 | T169 | Form chứng từ: gõ đổi địa chỉ từ phiếu này sang phiếu khác (vd `#/app/tien/2-1-1/chi-3` sang `chi-6`) thì form giữ số phiếu, đối tượng của phiếu cũ; mở từ danh sách, Trước, Sau thì đúng | | Chờ | Phát hiện ở T168. Sửa `ChungTuForm.tsx`, có thể `VoucherScreen.tsx` (key của form) |
 | T138 | Màn onboard khi bấm từ FABi sang IACC: khởi tạo đơn vị kế toán, điền sẵn từ FABi (chi nhánh, kho, cách đồng bộ, số dư đầu kỳ) | PhuongXT | Dở dang | Popup khởi tạo dữ liệu 4 bước trong phần mềm (`OnboardFabi.tsx`, `Shell.tsx`) đã push, PhuongXT xem lại một lượt. Xem `2026-10-11-phuongxt-man-khoi-tao-fabi.md` |
 | T139 | Phiếu nhập, xuất, điều chuyển kho tự lấy mục chi phí, công việc ngầm định theo kho đã chọn | | Chờ | Tách từ T136. Kho đã có ô `mucCp`, `congViec` ở `truong-dm.ts` 1.8. Sửa `ChungTuForm.tsx` |
@@ -43,6 +42,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T181 | Danh mục: nút icon "Đồng bộ theo POS" ở hàng hoá, đơn vị tính, kho, phương thức thanh toán, chi nhánh; cột POS ID ở chi nhánh; trạng thái bật tắt trong bảng danh mục thành chấm tròn xanh, đỏ; phương thức thanh toán thêm chứng từ mặc định, TK Nợ ngầm định, mã đối tượng, công việc, mục chi phí, quỹ tiền | Trum | 13/10/2026 | [2026-10-13-trum-dong-bo-pos-danh-muc](nhat-ky/2026-10-13-trum-dong-bo-pos-danh-muc.md) |
 | T180 | Ẩn số thẻ, khối công nợ ở danh mục đối tượng, ẩn hạn thanh toán ở form và danh sách chứng từ với gói Free, Standard (QD56) | Trum | 13/10/2026 | [2026-10-13-trum-an-thong-tin-doi-tuong-free-standard](nhat-ky/2026-10-13-trum-an-thong-tin-doi-tuong-free-standard.md) |
 | T179 | Hiện lại bộ sổ hộ kinh doanh TT152 (S1a đến S2e-HKD) theo mẫu iFaster; màn xem báo cáo dạng bảng, bộ lọc trong nút phễu, tờ in thành xem trước khi in (QD55); S2d lọc hàng hoá, nhóm hàng hoá, S2e lọc quỹ | PhuongXT | 13/10/2026 | [2026-10-13-phuongxt-so-hkd](nhat-ky/2026-10-13-phuongxt-so-hkd.md) |
 | T178 | Điện thoại đợt 5: lập, sửa phiếu kiểu giỏ hàng IVT (`MLapPhieu` 5 bước, `MChon` có tìm, Huỷ, Áp dụng); lập phiếu chi, nhập kho, bán hàng; sửa phiếu giữ tổng, trạng thái | Trum | 13/10/2026 | [2026-10-13-trum-dien-thoai-dot-5](nhat-ky/2026-10-13-trum-dien-thoai-dot-5.md) |

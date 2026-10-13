@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 13/10/2026
 
+- T181: Danh mục hàng hoá, đơn vị tính, kho, phương thức thanh toán, chi nhánh có nút icon "Đồng bộ theo POS". Danh mục chi nhánh thêm cột POS ID. Cột Trạng thái ở bảng danh mục và cột Sử dụng ở quy đổi đơn vị tính hiện chấm tròn: xanh lá là đang dùng, đỏ là ngừng dùng, bấm để đổi. Phương thức thanh toán (gói Plus, Pro) có Chứng từ mặc định chọn trong các phiếu thu chi, Tài khoản Nợ ngầm định, Mã đối tượng, Mã công việc, Mã mục chi phí, Mã quỹ tiền.
 - T180: Danh mục Đối tượng (1.5) ẩn ô Số thẻ và khối Công nợ (Bảng giá, Điều khoản thanh toán) ở panel Thêm/Sửa đối tượng, ẩn cột Điều khoản thanh toán ở bảng danh mục với gói Free và Standard. Form chứng từ và danh sách chứng từ ẩn trường, cột Hạn thanh toán với gói Free, Standard (QD56).
 - T178: Trên điện thoại lập được phiếu thu chi, nhập, xuất kho, mua, bán theo từng bước: chọn kho, đối tượng, thời gian; tích chọn hàng; sửa số lượng, đơn giá; xem lại rồi Lưu hoặc Lưu và thêm; màn "Tạo chứng từ thành công". Sửa, Sao chép phiếu mở cùng các bước. Phiếu kiểm kê, điều chỉnh, sản xuất, điều chuyển vẫn báo dùng máy tính.
 - T177: Trên điện thoại, bấm một phiếu thì mở màn xem chi tiết: thông tin phiếu, từng dòng hàng hoặc khoản thu chi, tổng tiền, hạch toán, lịch sử; thanh dưới có Ghi sổ hoặc Bỏ ghi sổ và menu In, Xoá. Sửa, Sao chép phiếu vẫn báo dùng máy tính.
