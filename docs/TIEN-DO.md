@@ -12,7 +12,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
 | T173 | Điện thoại đợt 1: khung `MobileShell`, thanh trên, thanh dưới 4 tab, chuyển khung theo bề rộng 767px, màn chưa có bản điện thoại ra `MChiMayTinh`; `kiem_tra.py --dien-thoai` | Trum | Đang làm | Theo `docs/ke-hoach-mobile-ivt.md` mục 7 đợt 1. Điều phối Anti A, Anti B. Sửa `App.tsx`, `Screen.tsx`, `index.html`, `app.css` (mục cuối), `tools/kiem_tra.py`, file mới ở `src/ui/mobile/` |
-| T172 | Chạy lại `python tools/xuat_bao_cao_he_thong.py` trên máy có thư mục `Present` để làm mới `docs/IACC-Cloud-Chi-Tiet-He-Thong.xlsx` sau T171 (sheet Báo cáo & Mẫu in có cột Còn dùng) | Trum | Chờ | Máy PhuongXT thiếu `../Present/tools/build_present.py` nên không chạy được |
 | T169 | Form chứng từ: gõ đổi địa chỉ từ phiếu này sang phiếu khác (vd `#/app/tien/2-1-1/chi-3` sang `chi-6`) thì form giữ số phiếu, đối tượng của phiếu cũ; mở từ danh sách, Trước, Sau thì đúng | | Chờ | Phát hiện ở T168. Sửa `ChungTuForm.tsx`, có thể `VoucherScreen.tsx` (key của form) |
 | T138 | Màn onboard khi bấm từ FABi sang IACC: khởi tạo đơn vị kế toán, điền sẵn từ FABi (chi nhánh, kho, cách đồng bộ, số dư đầu kỳ) | PhuongXT | Dở dang | Popup khởi tạo dữ liệu 4 bước trong phần mềm (`OnboardFabi.tsx`, `Shell.tsx`) đã push, PhuongXT xem lại một lượt. Xem `2026-10-11-phuongxt-man-khoi-tao-fabi.md` |
 | T139 | Phiếu nhập, xuất, điều chuyển kho tự lấy mục chi phí, công việc ngầm định theo kho đã chọn | | Chờ | Tách từ T136. Kho đã có ô `mucCp`, `congViec` ở `truong-dm.ts` 1.8. Sửa `ChungTuForm.tsx` |
@@ -43,6 +42,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T172 | Chạy lại `python tools/xuat_bao_cao_he_thong.py` để làm mới `docs/IACC-Cloud-Chi-Tiet-He-Thong.xlsx` sau T171 (sheet Báo cáo & Mẫu in có cột Còn dùng) | PhuongXT | 13/10/2026 | [2026-10-13-phuongxt-xuat-excel](nhat-ky/2026-10-13-phuongxt-xuat-excel.md) |
 | T174 | Doanh nghiệp siêu nhỏ TT58 chọn 1 trong 4 nhóm ở popup khởi tạo, Thông tin đơn vị. PhuongXT bỏ chia nhóm, trả code về như cũ; chỉ giữ ô Thông tư áp dụng ở Thông tin đơn vị chuyển lên cạnh Loại hình, doanh nghiệp gói Standard khoá ở TT58, ô thuế TNDN mở cho chọn | PhuongXT | 13/10/2026 | [2026-10-13-phuongxt-nhom-dnsn](nhat-ky/2026-10-13-phuongxt-nhom-dnsn.md) |
 | T171 | Bỏ mọi báo cáo ở mọi gói, chỉ giữ Sổ quỹ tiền mặt, Sổ ngân hàng và bộ sổ, báo cáo tài chính TT58; gói Standard (TT58) hiện bộ sổ theo trường hợp thuế của đơn vị | PhuongXT | 13/10/2026 | [2026-10-13-phuongxt-bo-bao-cao](nhat-ky/2026-10-13-phuongxt-bo-bao-cao.md) |
 | T170 | Lập kế hoạch giao diện điện thoại theo app IVT Pro: đọc APK, bộ nhận diện, khung màn, 9 đợt làm, danh sách ảnh cần chụp | Trum | 12/10/2026 | [2026-10-12-trum-ke-hoach-mobile-ivt](nhat-ky/2026-10-12-trum-ke-hoach-mobile-ivt.md) |
