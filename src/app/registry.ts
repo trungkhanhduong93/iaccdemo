@@ -17,7 +17,7 @@ import tongHop from '../modules/tong-hop'
 import tienIch from '../modules/tien-ich'
 import heThong from '../modules/he-thong'
 import { TrungTamBaoCao } from '../modules/bao-cao/TrungTam'
-import { CAU_HINH_BC, anSoHkdGoiFree, cachHkd, giuBC, laHkd, type PhienBC } from '../modules/bao-cao/danh-sach'
+import { CAU_HINH_BC, MO_IFASTER, anSoHkdGoiFree, cachHkd, giuBC, laHkd, type PhienBC } from '../modules/bao-cao/danh-sach'
 import { thTT58 } from '../modules/bao-cao/tt58'
 import type { Session } from './session'
 
@@ -103,6 +103,7 @@ export function apDung(sc: ScreenDef, cheDo?: CheDo, session?: Pick<Session, 'pp
   if (!cheDo) return true
   const hkd = cheDo === 'TT152' && laHkd(session as PhienBC)
   if (!giuBC(maBC(sc), cheDo, hkd)) return false
+  if (MO_IFASTER.includes(maBC(sc) ?? '')) return true   // báo cáo theo iFaster mở mọi chế độ (T185)
   const cfg = sc.code ? CAU_HINH_BC[sc.code] : undefined
   if (cfg?.anTam?.includes(cheDo)) return false
   if (cfg?.cheDo && !cfg.cheDo.includes(cheDo)) return false
@@ -116,7 +117,10 @@ export function apDung(sc: ScreenDef, cheDo?: CheDo, session?: Pick<Session, 'pp
 function conBaoCao(sc: ScreenDef, goi: Goi, cheDo?: CheDo, session?: Pick<Session, 'ppGtgt' | 'ppTndn'> | Session) {
   if (sc.kind !== 'baocao') {
     const m = MODULES.find(x => x.key === sc.slug.slice(5))
-    return Boolean(m && hienPhanHe(m, goi) && !phanHeKhoa(m, goi))
+    if (!m) return false
+    if (hienPhanHe(m, goi) && !phanHeKhoa(m, goi)) return true
+    // phân hệ ẩn ở gói (gói Free ẩn Tổng hợp) mà còn báo cáo mở được thì nhóm vẫn hiện (T185)
+    return Boolean(MODULES.find(x => x.key === 'bao-cao')?.screens.some(x => x.goc === m.key && hienMan(x, goi, cheDo, session)))
   }
   const m = MODULES.find(x => x.screens.includes(sc))
   return (m?.screens.filter(laBaoCao) ?? []).some(x => hienMan(x, goi, cheDo, session))

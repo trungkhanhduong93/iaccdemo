@@ -34,7 +34,9 @@ export function layNhomBaoCao(s: Session): NhomBaoCaoItem[] {
   for (const m of MODULES) {
     if (m.key === 'bao-cao') continue
     // Nhóm phân hệ vẫn hiện khi chưa có báo cáo (phân hệ mở được ở gói); sổ đã ở nhóm thông tư thì không lặp lại
-    if (!tatCaBC.some(x => x.goc === m.key) || !hienPhanHe(m, s.goi) || phanHeKhoa(m, s.goi)) continue
+    if (!tatCaBC.some(x => x.goc === m.key)) continue
+    // phân hệ ẩn ở gói mà còn báo cáo mở được (Tổng hợp ở gói Free) thì nhóm vẫn hiện (T185)
+    if ((!hienPhanHe(m, s.goi) || phanHeKhoa(m, s.goi)) && !tatCaBC.some(x => x.goc === m.key && hienMan(x, s.goi, s.cheDo, s))) continue
     nhomGoc.push({ mod: m, screens: tatCaBC.filter(x => x.goc === m.key && !laSoTT(x)) })
   }
 

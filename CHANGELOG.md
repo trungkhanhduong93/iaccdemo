@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 13/10/2026
 
+- T185: Mở lại báo cáo theo danh sách iFaster ở mọi gói: Tổng hợp quỹ tiền, Báo cáo dòng tiền, Sổ công nợ (chung nhà cung cấp, khách hàng), Báo cáo kết quả kinh doanh, Sổ chi phí, Báo cáo xuất nhập tồn, Tổng hợp, Chi tiết nhập kho, xuất kho, Tổng hợp, Chi tiết mua hàng, Mua hàng theo ngày, Tổng hợp, Chi tiết bán hàng, Bán hàng theo ngày. Gói Free thấy nhóm Kế toán tổng hợp ở màn Báo cáo (Báo cáo kết quả kinh doanh, Sổ chi phí).
 - T184: Trên điện thoại, màn Đăng nhập, Quên mật khẩu, Chọn đơn vị, Khởi tạo, Khởi tạo FABi gọn một cột, ô nhập và nút đủ lớn để chạm. Popup khởi tạo đơn vị và các hộp thoại phủ kín màn, nút dưới cùng không bị che.
 - T183: Trên điện thoại thêm mới, sửa được danh mục (hàng hoá, kho, đối tượng, phương thức thanh toán và các danh mục khác) bằng form nổi từ đáy: các khối trường dạng thẻ, nút Huỷ, Lưu và thêm, Lưu dính đáy. Hệ thống tài khoản, chi nhánh vẫn báo dùng máy tính.
 - T181: Danh mục hàng hoá, đơn vị tính, kho, phương thức thanh toán, chi nhánh có nút icon "Đồng bộ theo POS". Danh mục chi nhánh thêm cột POS ID. Cột Trạng thái ở bảng danh mục và cột Sử dụng ở quy đổi đơn vị tính hiện chấm tròn: xanh lá là đang dùng, đỏ là ngừng dùng, bấm để đổi. Phương thức thanh toán (gói Plus, Pro) có Chứng từ mặc định chọn trong các phiếu thu chi, Tài khoản Nợ ngầm định, Mã đối tượng, Mã công việc, Mã mục chi phí, Mã quỹ tiền.

@@ -152,11 +152,14 @@ export const CAU_HINH_BC: Record<string, CauHinhBC> = {
 /** Báo cáo còn giữ (T171, PhuongXT chốt 13/10/2026): mọi gói chỉ còn Sổ quỹ tiền mặt, Sổ ngân hàng;
  *  chế độ TT58 thêm bộ sổ S1 đến S4d-DNSN và báo cáo tài chính B01, B02-DNSN. Báo cáo khác ẩn ở mọi gói, cấu hình vẫn giữ để mở lại */
 const GIU_MOI_CHE_DO = ['2.2.1', '2.2.3']
+/** Báo cáo lấy theo danh sách iFaster, mở mọi gói, mọi chế độ, PhuongXT chốt 13/10/2026 (T185): quỹ tiền, công nợ (gộp nhà cung cấp, khách hàng),
+ *  quản trị, kho, mua hàng, bán hàng. Không lọc theo anTam, cheDo, trường hợp thuế; muốn ẩn ở gói nào thì bỏ mã khỏi đây hoặc lọc thêm */
+export const MO_IFASTER = ['2.2.8', '2.2.9', '2.2.5', '10.2.3', '10.4.3', '5.2.3', '5.2.11', '5.2.12', '5.2.9', '5.2.10', '4.2.2', '4.2.1', '4.2.6', '3.2.7', '3.2.8', '3.2.6']
 const GIU_TT58 = ['2.2.5', '2.2.7', '3.2.5', '5.2.8', '6.2.4', '6.2.5', '7.2.1', '10.2.2', '10.2.3', '10.4.1', '10.4.2']
 /** Hộ kinh doanh TT152 (T179): S1a, S2a, S2b-HKD (3.2.5), S2c (10.4.1), S2d (5.2.8), S2e (2.2.7); doanh nghiệp gói Free cũng chạy TT152 nhưng không có các sổ này */
 const GIU_TT152_HKD = ['2.2.7', '3.2.5', '5.2.8', '10.4.1']
 export const giuBC = (code: string | undefined, cheDo: CheDo, hkd = false) =>
-  !!code && (GIU_MOI_CHE_DO.includes(code) || (cheDo === 'TT58' && GIU_TT58.includes(code)) || (cheDo === 'TT152' && hkd && GIU_TT152_HKD.includes(code)))
+  !!code && (GIU_MOI_CHE_DO.includes(code) || MO_IFASTER.includes(code) || (cheDo === 'TT58' && GIU_TT58.includes(code)) || (cheDo === 'TT152' && hkd && GIU_TT152_HKD.includes(code)))
 
 /** Ký hiệu mẫu theo chế độ; Sổ doanh thu 3.2.5 đổi mẫu theo trường hợp thuế: TT58 S1, S2a, S3a-DNSN; hộ kinh doanh TT152 S1a, S2a, S2b-HKD (T179) */
 export function kyHieuBC(code: string | undefined, cheDo: CheDo, s?: PhienBC): string | undefined {

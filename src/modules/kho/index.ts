@@ -75,7 +75,7 @@ const XUAT = () => [phieuCua(kho, '5.1.2', 'Xuất bán POS'), phieuCua(kho, '5.
   phieuCua(kho, '5.1.2-4', 'Xuất khác'), phieuDc('xdc'), phieuCua(muaHang, '4.1.4', 'Trả nhà cung cấp')]
 const TRA = () => [phieuCua(banHang, '3.1.4', 'Khách trả lại'), phieuCua(muaHang, '4.1.4', 'Trả nhà cung cấp')]
 const baoCaoMoi = (slug: string, ten: string, report: Omit<ReportCfg, 'kieu'>): ScreenDef =>
-  ({ slug, ten, nhom: 'Sổ sách, báo cáo', kind: 'report', goi: ['S', 'PL', 'PR'], report: { kieu: 'bangke', theoCn: true, ...report } })
+  ({ slug, ten, nhom: 'Sổ sách, báo cáo', kind: 'report', report: { kieu: 'bangke', theoCn: true, ...report } })
 const BAO_CAO_MOI = [
   baoCaoMoi('5-2-9', 'Tổng hợp nhập kho', tongHopKho(NHAP, ['Nhập mua', 'Nhập khác', 'Khách trả lại', 'Nhập điều chuyển'])), baoCaoMoi('5-2-10', 'Chi tiết nhập kho', chiTietKho(NHAP)),
   baoCaoMoi('5-2-11', 'Tổng hợp xuất kho', tongHopKho(XUAT, ['Xuất bán POS', 'Xuất bán hàng', 'Xuất huỷ', 'Xuất khác', 'Xuất điều chuyển', 'Trả nhà cung cấp'])), baoCaoMoi('5-2-12', 'Chi tiết xuất kho', chiTietKho(XUAT)),

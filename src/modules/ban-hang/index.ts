@@ -11,7 +11,7 @@ import { banHangTheoNgay, chiTietBanHang, tongHopBanHang } from './bao-cao'
 /** Báo cáo bán hàng ngoài Excel (T157): lấy dòng món của chứng từ Xuất bán POS, chi nhánh theo thanh trên; gói Standard, Plus, Pro, mọi thông tư.
  *  Mã trên đường dẫn 3-2-6, 3-2-7, 3-2-8 là khoá cấu hình mẫu trong bao-cao/danh-sach.ts */
 const baoCaoMoi = (slug: string, ten: string, report: Omit<ReportCfg, 'kieu'>): ScreenDef =>
-  ({ slug, ten, nhom: 'Sổ sách, báo cáo', kind: 'report', goi: ['S', 'PL', 'PR'], report: { kieu: 'bangke', theoCn: true, ...report } })
+  ({ slug, ten, nhom: 'Sổ sách, báo cáo', kind: 'report', report: { kieu: 'bangke', theoCn: true, ...report } })
 const BAO_CAO_MOI = [baoCaoMoi('3-2-6', 'Bán hàng theo ngày', banHangTheoNgay), baoCaoMoi('3-2-7', 'Tổng hợp bán hàng', tongHopBanHang), baoCaoMoi('3-2-8', 'Chi tiết bán hàng', chiTietBanHang)]
 
 /** Nhãn ngắn trên thanh tab */
