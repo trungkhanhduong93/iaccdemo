@@ -65,7 +65,9 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
 
   // Sổ, báo cáo có mẫu của thông tư đang dùng gom vào một nhóm riêng đứng đầu ở Tất cả báo cáo (T171)
   const laSoTT = (x: ScreenDef) => Boolean(kyHieuBC(x.code, s.cheDo, s))
-  const soTT = tatCaBC.filter(laSoTT)
+  // Xếp theo ký hiệu mẫu như thứ tự trong thông tư: sổ (S...) trước, báo cáo tài chính (B...) sau
+  const thuTuMau = (x: ScreenDef) => { const k = kyHieuBC(x.code, s.cheDo, s) ?? ''; return `${/^S/.test(k) ? 0 : 1}${k}` }
+  const soTT = tatCaBC.filter(laSoTT).sort((a, b) => thuTuMau(a).localeCompare(thuTuMau(b), 'vi', { numeric: true }))
   const tenSoTT = `Sổ sách kế toán theo ${CHE_DO[s.cheDo].ngan}`
   const chiSoTT = sc.slug === 'tat-ca' && tham.get('nhom') === 'so-sach'
 
@@ -225,9 +227,7 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
                     const ma = maKhoa(x)
                     const ten = tenMan(x)
                     const { loai, icon } = loaiVaIconBC(x, ten)
-                    const kyHieu = kyHieuBC(x.code, s.cheDo, s)
-                    const code = x.code ?? ''
-                    const metaText = code && kyHieu ? `${code} · ${kyHieu}` : (code || kyHieu || '')
+                    const metaText = kyHieuBC(x.code, s.cheDo, s) ?? ''   // chỉ hiện ký hiệu mẫu theo thông tư, không hiện mã tính năng (T171)
                     const isGhim = ghim.includes(x.slug)
                     return (
                       <Link

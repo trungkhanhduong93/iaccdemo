@@ -20,6 +20,7 @@
 - Sau đó PhuongXT chốt bộ sổ TT58 hiện theo dòng ghi chú của từng trường hợp thuế: `apDung` ở `registry.ts` lọc lại theo `th` như T108, `ReportScreen.tsx` trả lại dòng báo không mở sổ 3.2.5 ở trường hợp 4. TH1: S1, TH2: S2a (sổ doanh thu), S2b, S2c, S2d, TH3: S3a, S3b, TH4: S2b, S2c, S2d, S3b; S4a đến S4d mọi trường hợp; B01, B02 ở TH2, TH4.
 - Thêm `kyHieuBC` ở `danh-sach.ts`: danh sách báo cáo (Tất cả báo cáo, tab Báo cáo của phân hệ) ghi ký hiệu Sổ doanh thu 3.2.5 theo trường hợp (S1, S2a, S3a), trước luôn ghi S1-DNSN; tờ sổ dùng chung hàm này.
 - `TrungTam.tsx`: Tất cả báo cáo gom mọi sổ, báo cáo có mẫu của thông tư đang dùng (có ký hiệu mẫu) vào nhóm đầu "Sổ sách kế toán theo TT58" (tên đổi theo chế độ), nhóm phân hệ bỏ các sổ đó; cột trái thêm mục "Sổ sách TT58" mở `tat-ca?nhom=so-sach`. Sổ đã ở nhóm thông tư thì không lặp ở nhóm phân hệ, kể cả cột trái, trang `nhom-<phân hệ>` và menu (`conBaoCao` ở `registry.ts` không tính các sổ đó); nhóm phân hệ vẫn hiện ở cột trái, Tất cả báo cáo và menu khi chưa có báo cáo (số 0, dòng "Chưa có báo cáo"), trừ phân hệ bị khoá ở gói, để PhuongXT chọn dần báo cáo đưa vào. Tab Báo cáo của từng phân hệ vẫn ẩn khi không có báo cáo. Ẩn hiện vẫn theo phương pháp thuế.
+- Danh sách báo cáo (`TrungTam.tsx`, `BaoCaoScreen.tsx`) bỏ mã tính năng (vd 2.2.5), chỉ hiện ký hiệu mẫu theo thông tư; nhóm sổ theo thông tư xếp theo ký hiệu mẫu, sổ S trước, báo cáo tài chính B sau. Ô tìm vẫn tìm được theo mã tính năng.
 
 ## Đã kiểm
 
