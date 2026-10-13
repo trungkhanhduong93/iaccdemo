@@ -7,7 +7,7 @@ import { tenMan } from '../../app/registry'
 import { kieuGhiSo } from '../../app/plan'
 import { chiNhanhHienTai, donViHienTai, useSession, cheDoHienTai } from '../../app/session'
 import { canCu, type CheDo } from '../../app/che-do'
-import { cauHinhBC, tenTkNh, type LoaiBC } from '../../modules/bao-cao/danh-sach'
+import { cauHinhBC, kyHieuBC, tenTkNh, type LoaiBC } from '../../modules/bao-cao/danh-sach'
 import { dsTkTheoCheDo } from '../../modules/tong-hop/so-cai'
 import { CHI_NHANH, HANG, HOM_NAY, KHACH, NCC, NVL, TK_NGAN_HANG } from '../../data/mock'
 import { Icon } from '../Icon'
@@ -736,11 +736,7 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
   const path = useLocation().pathname
   const slug = useParams().slug?.replace(/-/g, '.')
   const cfg = cauHinhBC(slug)
-  const th = s.cheDo === 'TT58' ? thTT58(s.ppGtgt, s.ppTndn) : undefined
-  const kyHieuGoc = cfg ? cfg.kyHieu?.[s.cheDo] : cd.ma !== 'TT152' ? mau : undefined
-  const kyHieu = (slug === '3.2.5' && s.cheDo === 'TT58')
-    ? (th === 1 ? 'S1-DNSN' : th === 2 ? 'S2a-DNSN' : 'S3a-DNSN')
-    : kyHieuGoc
+  const kyHieu = cfg ? kyHieuBC(slug, s.cheDo, s) : cd.ma !== 'TT152' ? mau : undefined
   const loai: LoaiBC = cfg?.loai ?? 'baocao'
   const khoMacDinh = kho ?? cfg?.kho ?? tuDoanKho(children)
   const [khoHienTai, setKhoHienTai] = useState<Kho>(khoMacDinh)

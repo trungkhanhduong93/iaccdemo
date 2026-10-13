@@ -9,7 +9,7 @@ import { Icon } from '../../ui/Icon'
 import { PageHead, Pk } from '../../ui/Page'
 import { fold } from '../../ui/format'
 import { ThanhLoc } from '../../ui/ThanhLoc'
-import { cauHinhBC } from './danh-sach'
+import { cauHinhBC, kyHieuBC } from './danh-sach'
 
 function docGhim(): string[] {
   try {
@@ -98,7 +98,7 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
 
   // Tìm kiếm không dấu theo tên, mã, mẫu
   const match = (x: ScreenDef) =>
-    !q || fold(`${tenMan(x)} ${x.code ?? ''} ${cauHinhBC(x.code)?.kyHieu?.[s.cheDo] ?? ''}`).includes(fold(q))
+    !q || fold(`${tenMan(x)} ${x.code ?? ''} ${kyHieuBC(x.code, s.cheDo, s) ?? ''}`).includes(fold(q))
 
   const nhomKetQua = nhomHienThi
     .map(g => ({
@@ -206,7 +206,7 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
                     const ma = maKhoa(x)
                     const ten = tenMan(x)
                     const { loai, icon } = loaiVaIconBC(x, ten)
-                    const kyHieu = cauHinhBC(x.code)?.kyHieu?.[s.cheDo]
+                    const kyHieu = kyHieuBC(x.code, s.cheDo, s)
                     const code = x.code ?? ''
                     const metaText = code && kyHieu ? `${code} · ${kyHieu}` : (code || kyHieu || '')
                     const isGhim = ghim.includes(x.slug)

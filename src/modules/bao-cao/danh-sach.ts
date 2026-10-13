@@ -2,6 +2,8 @@
 import type { CheDo } from '../../app/che-do'
 import type { Kho } from '../../ui/bao-cao/ToGiay'
 import { CHI_NHANH, NCC, TK_NGAN_HANG } from '../../data/mock'
+import type { PpGtgt, PpTndn } from '../../app/session'
+import { thTT58 } from './tt58'
 
 export type LoaiBC = 'so' | 'bctc' | 'baocao' | 'tokhai'
 export interface LocBC {
@@ -125,5 +127,14 @@ const GIU_MOI_CHE_DO = ['2.2.1', '2.2.3']
 const GIU_TT58 = ['2.2.5', '2.2.7', '3.2.5', '5.2.8', '6.2.4', '6.2.5', '7.2.1', '10.2.2', '10.2.3', '10.4.1', '10.4.2']
 export const giuBC = (code: string | undefined, cheDo: CheDo) =>
   !!code && (GIU_MOI_CHE_DO.includes(code) || (cheDo === 'TT58' && GIU_TT58.includes(code)))
+
+/** Ký hiệu mẫu theo chế độ; Sổ doanh thu 3.2.5 ở TT58 đổi mẫu theo trường hợp thuế (S1, S2a, S3a) */
+export function kyHieuBC(code: string | undefined, cheDo: CheDo, pp?: { ppGtgt?: PpGtgt; ppTndn?: PpTndn }): string | undefined {
+  if (code === '3.2.5' && cheDo === 'TT58') {
+    const th = thTT58(pp?.ppGtgt, pp?.ppTndn)
+    return th === 1 ? 'S1-DNSN' : th === 2 ? 'S2a-DNSN' : 'S3a-DNSN'
+  }
+  return code ? CAU_HINH_BC[code]?.kyHieu?.[cheDo] : undefined
+}
 
 export const cauHinhBC = (code?: string) => code ? CAU_HINH_BC[code] : undefined
