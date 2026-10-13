@@ -1,7 +1,7 @@
 // Màn chứng từ chung: danh sách theo bố cục AMIS với cột đứng yên, bộ lọc kỳ nhanh, khung chi tiết bên dưới, thao tác hàng loạt.
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
-import type { Col, Row, ScreenProps, VoucherCfg } from '../../modules/types'
+import type { Col, ModuleDef, Row, ScreenDef, ScreenProps, VoucherCfg } from '../../modules/types'
 import { duongDan, tenMan } from '../../app/registry'
 import { chiNhanhHienTai, donViHienTai, loaiHinhDv, useSession } from '../../app/session'
 import { kieuGhiSo } from '../../app/plan'
@@ -62,18 +62,23 @@ const COT_CHON = new Set(['tenLoai', 'nguon', 'ttTien', 'ttHd', 'kho', 'lyDo'])
 export { ChungTuForm, VoucherDetail, HachToan, LichSu }
 
 /** Giá trị các ô lọc ngoài và trong Bộ lọc nâng cao. Chuỗi rỗng là tất cả */
-interface GtLoc { thoiGian: KhoangNgay; tim: string; doiTuong: string; nguon: string; loai: string; ttTien: string; ttHd: string; kho: string; hang: string }
-const locMacDinh = (): GtLoc => ({ thoiGian: thangNay(), tim: '', doiTuong: '', nguon: '', loai: '', ttTien: '', ttHd: '', kho: '', hang: '' })
+export interface GtLoc { thoiGian: KhoangNgay; tim: string; doiTuong: string; nguon: string; loai: string; ttTien: string; ttHd: string; kho: string; hang: string }
+export const locMacDinh = (): GtLoc => ({ thoiGian: thangNay(), tim: '', doiTuong: '', nguon: '', loai: '', ttTien: '', ttHd: '', kho: '', hang: '' })
 
 const MAC_DINH: VoucherCfg ={ prefix: 'CT', doiTuong: 'none', dienGiai: ['Chứng từ'], tien: [1_000_000, 20_000_000] }
 
-export function VoucherScreen({ sc, mod }: ScreenProps) {
-  const { id } = useParams()
-  const loc = useLocation()
+export function useDongChungTu(sc: ScreenDef, mod: ModuleDef): { cfg: VoucherCfg; rows: Row[] } {
   const cfg = sc.voucher ?? { ...MAC_DINH, dienGiai: [tenMan(sc)] }
   const tatCa = useMemo(() => [...(cfg.phieuThem?.() ?? []), ...(cfg.rowsMau ? cfg.rowsMau() : cfg.loai ? gopLoai(cfg, sc.code ?? sc.slug) : chungTu(cfg, sc.code ?? sc.slug))], [sc])   // rowsMau: phiếu mẫu riêng (T126); phieuThem: phiếu mẫu cố định (T168)
   const { ban, laDaXoa, phieuMoi, apSua } = useDaXoa(`${mod.key}/${sc.slug}`)
   const rows = useMemo(() => [...phieuMoi, ...tatCa].filter(r => !laDaXoa(r.id)).map(apSua), [tatCa, ban])
+  return { cfg, rows }
+}
+
+export function VoucherScreen({ sc, mod }: ScreenProps) {
+  const { id } = useParams()
+  const loc = useLocation()
+  const { cfg, rows } = useDongChungTu(sc, mod)
 
   if (id !== undefined) {
     const row = id === 'moi' ? undefined : rows.find(r => r.id === id)
@@ -84,7 +89,7 @@ export function VoucherScreen({ sc, mod }: ScreenProps) {
 }
 
 /** Màn nhiều loại phiếu: mỗi loại lấy 9 phiếu gần nhất rồi xếp chung theo ngày */
-function gopLoai(cfg: VoucherCfg, seed: string): Row[] {
+export function gopLoai(cfg: VoucherCfg, seed: string): Row[] {
   const ngay = (r: Row) => String(r.ngay).split(' ')[0].split('/').reverse().join('')
   return cfg.loai!.flatMap(v => chungTu(theoLoai(cfg, v.k), `${seed}-${v.k}`).slice(0, 9)
     .map((r): Row => ({ ...r, id: `${v.k}-${r.id}`, loai: v.k, tenLoai: v.ten })))

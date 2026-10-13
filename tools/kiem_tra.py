@@ -214,6 +214,134 @@ def kiem_tra_nghiep_vu_4_goi():
     return loi
 
 
+def tim_cac_man_dot_3():
+    mans = [('Thu chi tiền mặt (2-1-1)', '/app/tien/2-1-1')]
+
+    # Mua hàng
+    mh_txt = (REPO / 'src' / 'modules' / 'mua-hang' / 'index.ts').read_text(encoding='utf-8')
+    m_mh = re.search(r"'([0-9\.\-]+)':\s*\{[^}]*voucher", mh_txt)
+    slug_mh = m_mh.group(1).replace('.', '-') if m_mh else '4-1-1'
+    mans.append(('Danh sách mua hàng', f'/app/mua-hang/{slug_mh}'))
+
+    # Bán hàng
+    bh_txt = (REPO / 'src' / 'modules' / 'ban-hang' / 'index.ts').read_text(encoding='utf-8')
+    feats = set()
+    try:
+        f_json = json.loads((REPO / 'src' / 'app' / 'features.json').read_text(encoding='utf-8'))
+        feats = set(x['c'] for x in f_json.get('feats', []))
+    except Exception:
+        pass
+    m_bh = re.findall(r"'([0-9\.\-]+)':\s*\{[^}]*voucher", bh_txt)
+    slug_bh = '3-1-2'
+    for c in m_bh:
+        if not feats or c in feats:
+            slug_bh = c.replace('.', '-')
+            break
+    mans.append(('Danh sách bán hàng', f'/app/ban-hang/{slug_bh}'))
+
+    # Kho
+    kho_txt = (REPO / 'src' / 'modules' / 'kho' / 'index.ts').read_text(encoding='utf-8')
+    m_nk = re.search(r"'([0-9\.\-]+)':\s*phieu\('NK'", kho_txt)
+    slug_nk = m_nk.group(1).replace('.', '-') if m_nk else '5-1-1'
+    mans.append(('Nhập kho', f'/app/kho/{slug_nk}'))
+
+    m_xk = re.search(r"'([0-9\.\-]+)':\s*phieu\('XB'", kho_txt)
+    slug_xk = m_xk.group(1).replace('.', '-') if m_xk else '5-1-2'
+    mans.append(('Xuất kho', f'/app/kho/{slug_xk}'))
+
+    m_kk = re.search(r"'([0-9\.\-]+)':\s*KK", kho_txt)
+    slug_kk = m_kk.group(1).replace('.', '-') if m_kk else '5-1-10'
+    mans.append(('Kiểm kê', f'/app/kho/{slug_kk}'))
+
+    # Danh mục
+    dm_txt = (REPO / 'src' / 'modules' / 'danh-muc' / 'index.ts').read_text(encoding='utf-8')
+    m_hh = re.search(r"'([0-9\.\-]+)':\s*\{\s*catalog:[^}]*them:\s*'[^']*hàng hoá", dm_txt, re.IGNORECASE)
+    slug_hh = m_hh.group(1).replace('.', '-') if m_hh else '1-2'
+    mans.append(('Danh mục hàng hoá', f'/app/danh-muc/{slug_hh}'))
+
+    m_kho = re.search(r"'([0-9\.\-]+)':\s*\{\s*catalog:[^}]*them:\s*'[^']*kho", dm_txt, re.IGNORECASE)
+    slug_kho = m_kho.group(1).replace('.', '-') if m_kho else '1-8'
+    mans.append(('Danh mục kho', f'/app/danh-muc/{slug_kho}'))
+
+    m_ncc = re.search(r"'([0-9\.\-]+)':\s*\{\s*catalog:[^}]*them:\s*'[^']*đối tượng", dm_txt, re.IGNORECASE)
+    slug_ncc = m_ncc.group(1).replace('.', '-') if m_ncc else '1-5'
+    mans.append(('Danh mục nhà cung cấp', f'/app/danh-muc/{slug_ncc}'))
+
+    return mans
+
+
+def kiem_tra_man_dot_3():
+    loi = []
+    with sync_playwright() as p:
+        b = p.chromium.launch(channel='chrome')
+        pg = b.new_page(
+            viewport={'width': 390, 'height': 844},
+            is_mobile=True,
+            has_touch=True,
+            device_scale_factor=3,
+        )
+        con = []
+        pg.on('console', lambda m: con.append(m.text) if m.type == 'error' else None)
+        pg.on('pageerror', lambda e: con.append(str(e)))
+
+        pg.goto(URL + '#/dang-nhap')
+        pg.wait_for_selector('.auth-box')
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PL'))})")
+
+        mans = tim_cac_man_dot_3()
+        print('Kiểm tra các màn danh sách & danh mục đợt 3 (390px, gói PL):')
+        for ten, path in mans:
+            pg.goto(f'{URL}?goi=PL&p={abs(hash(path))}#{path}')
+            pg.wait_for_timeout(250)
+            if con:
+                loi.append(f'{path}: lỗi console khi mở {con[:2]}')
+                con.clear()
+
+            if pg.locator('.m-chi-may-tinh').count() > 0:
+                loi.append(f'{ten} ({path}): bị rơi về .m-chi-may-tinh')
+
+            so_the = pg.locator('.m-the-ct, .m-the-dm').count()
+            co_trong = pg.locator('.m-trong').count() > 0
+            if so_the == 0 and not co_trong:
+                loi.append(f'{ten} ({path}): không có thẻ và không có màn trống')
+
+            print(f'  - {ten} ({path}): {so_the} thẻ mặc định')
+
+            # Gõ zzzz vào ô tìm thì ra màn trống
+            inp = pg.locator('.m-ds-tim-inp')
+            if inp.count() == 0:
+                loi.append(f'{ten} ({path}): thiếu ô tìm kiếm .m-ds-tim-inp')
+            else:
+                inp.fill('zzzz')
+                pg.wait_for_timeout(100)
+                the_zzzz = pg.locator('.m-the-ct, .m-the-dm').count()
+                trong_zzzz = pg.locator('.m-trong').count()
+                if the_zzzz > 0 or trong_zzzz == 0:
+                    loi.append(f'{ten} ({path}): gõ zzzz không ra màn trống (thẻ: {the_zzzz}, trống: {trong_zzzz})')
+
+                inp.fill('')
+                pg.wait_for_timeout(100)
+                the_lai = pg.locator('.m-the-ct, .m-the-dm').count()
+                if the_lai != so_the:
+                    loi.append(f'{ten} ({path}): xoá tìm kiếm không phục hồi thẻ (cũ: {so_the}, mới: {the_lai})')
+
+            # Bấm từng chip không lỗi console
+            chips = pg.locator('.m-ds-chips .m-chip')
+            n_chips = chips.count()
+            for i in range(n_chips):
+                chips.nth(i).click()
+                pg.wait_for_timeout(50)
+                if con:
+                    loi.append(f'{ten} ({path}): lỗi console khi bấm chip #{i} {con[:2]}')
+                    con.clear()
+            if n_chips > 0:
+                chips.first.click()
+                pg.wait_for_timeout(50)
+
+        b.close()
+    return loi
+
+
 def kiem_tra_cac_khung_dt():
     loi, dem = [], 0
     for rong, cao in KHUNG_DT:
@@ -223,6 +351,8 @@ def kiem_tra_cac_khung_dt():
     print(f'đã kiểm {dem} lượt địa chỉ ở {len(KHUNG_DT)} bề rộng')
     loi_nv = kiem_tra_nghiep_vu_4_goi()
     loi += loi_nv
+    loi_d3 = kiem_tra_man_dot_3()
+    loi += loi_d3
     if loi:
         print(f'{len(loi)} LỖI:')
         for x in loi:

@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { dsChiNhanh, useSession } from '../../app/session'
 import { CHI_NHANH } from '../../data/mock'
-import { MODULES, tenMan, timMan } from '../../app/registry'
+import { MODULES, nhanTab, timMan } from '../../app/registry'
 import { ghiGanDay } from '../../app/CommandPalette'
 import { OnboardFabi } from '../../modules/onboarding/OnboardFabi'
 import { Icon } from '../Icon'
@@ -40,7 +40,7 @@ function layTieuDe(pathname: string, search = ''): string {
   const slug = parts[2]
   if (!modKey) return 'Trang chủ'
   const { mod, sc } = timMan(modKey, slug)
-  if (sc) return tenMan(sc)
+  if (sc) return nhanTab(sc)
   if (mod) return mod.ten
   return 'IACC Cloud'
 }

@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 13/10/2026
 
+- T176: Trên điện thoại, danh sách chứng từ (thu chi, mua, bán, kho) và danh mục hiện dạng thẻ, có ô tìm, chip trạng thái, chip loại phiếu, màn lọc theo thời gian, đối tượng, nguồn, màn trống khi không có kết quả. Mở chi tiết phiếu vẫn báo dùng máy tính.
 - T175: Trên điện thoại, tab Trang chủ có thao tác nhanh Thu tiền, Chi tiền, Nhập kho, Xuất kho và thẻ doanh thu, lợi nhuận, tiền; tab Nghiệp vụ có lưới phân hệ, bấm vào ra danh sách màn; tab Khác có tài khoản, danh mục, hệ thống, chọn đơn vị, gói, đăng xuất. Thanh dưới dạng nổi.
 - T174: Hệ thống, Thông tin đơn vị: ô Thông tư áp dụng chuyển lên mục Thông tin kê khai, cạnh ô Loại hình. Doanh nghiệp gói Standard chỉ dùng TT58, không đổi được. Doanh nghiệp gói Free, Standard chọn được phương pháp thuế TNDN cả khi nộp GTGT khấu trừ.
 - T173: Mở trên điện thoại (màn rộng dưới 768px) thì có khung riêng theo app IVT Pro: thanh trên có logo ACCOUNTING ở Trang chủ, tên màn ở các màn khác, chọn chi nhánh; thanh dưới 4 tab Trang chủ, Nghiệp vụ, Báo cáo, Khác. Các màn chưa làm bản điện thoại hiện thẻ "Màn này chưa có trên điện thoại". Bản máy tính không đổi.
