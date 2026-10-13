@@ -4,6 +4,7 @@ import { HOM_NAY } from '../data/mock'
 import { Popover } from './Dropdown'
 import { Icon } from './Icon'
 import { dmy } from './format'
+import { useLaMobile } from './mobile/useLaMobile'
 
 export { dmy }
 
@@ -51,8 +52,326 @@ const THU = ['Th2', 'Th3', 'Th4', 'Th5', 'Th6', 'Th7', 'CN']
 
 type CheDo = 'ngay' | 'thang' | 'quy'
 
+function taoLich(thang: number, nam: number): { d: Date; ngoai: boolean; khoa: string }[] {
+  const firstDay = new Date(nam, thang - 1, 1)
+  const dayOfWeek = (firstDay.getDay() + 6) % 7
+  const startDate = new Date(nam, thang - 1, 1 - dayOfWeek)
+  const ds: { d: Date; ngoai: boolean; khoa: string }[] = []
+  for (let i = 0; i < 42; i++) {
+    const d = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate() + i)
+    ds.push({
+      d,
+      ngoai: d.getMonth() !== thang - 1,
+      khoa: `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`,
+    })
+  }
+  return ds
+}
+
+interface MLichSheetKhoangNgayProps {
+  value: KhoangNgay
+  onChange: (k: KhoangNgay) => void
+  onDong: () => void
+}
+
+function MLichSheetKhoangNgay({ value, onChange, onDong }: MLichSheetKhoangNgayProps) {
+  const [thang, setThang] = useState(value.tu.getMonth() + 1)
+  const [nam, setNam] = useState(value.tu.getFullYear())
+  const [draftTu, setDraftTu] = useState<Date>(value.tu)
+  const [draftDen, setDraftDen] = useState<Date | null>(value.den)
+  const [dangChon, setDangChon] = useState(false)
+  const touchStartX = useRef<number | null>(null)
+
+  const doiThang = (delta: number) => {
+    let m = thang + delta
+    let y = nam
+    while (m > 12) { m -= 12; y += 1 }
+    while (m < 1) { m += 12; y -= 1 }
+    setThang(m)
+    setNam(y)
+  }
+
+  const dsNgay = useMemo(() => taoLich(thang, nam), [thang, nam])
+
+  const chonNgay = (d: Date) => {
+    if (dangChon) {
+      let tu = draftTu
+      let den = d
+      if (den.getTime() < tu.getTime()) {
+        const tmp = tu
+        tu = den
+        den = tmp
+      }
+      setDraftTu(tu)
+      setDraftDen(den)
+      setDangChon(false)
+    } else {
+      setDraftTu(d)
+      setDraftDen(null)
+      setDangChon(true)
+    }
+  }
+
+  const chonNhanh = (loai: 'hom-nay' | 'tuan-nay' | 'thang-nay' | 'thang-truoc') => {
+    let k: KhoangNgay
+    const homNay = new Date(HOM_NAY.getFullYear(), HOM_NAY.getMonth(), HOM_NAY.getDate())
+    if (loai === 'hom-nay') {
+      k = { tu: homNay, den: homNay }
+    } else if (loai === 'tuan-nay') {
+      const day = homNay.getDay()
+      const diff = (day === 0 ? -6 : 1) - day
+      const tu = new Date(homNay.getFullYear(), homNay.getMonth(), homNay.getDate() + diff)
+      const den = new Date(tu.getFullYear(), tu.getMonth(), tu.getDate() + 6)
+      k = { tu, den }
+    } else if (loai === 'thang-nay') {
+      k = thangNay()
+    } else {
+      const m = HOM_NAY.getMonth()
+      const y = HOM_NAY.getFullYear()
+      k = m === 0 ? khoangThang(12, y - 1) : khoangThang(m, y)
+    }
+    setDraftTu(k.tu)
+    setDraftDen(k.den)
+    setDangChon(false)
+    setThang(k.tu.getMonth() + 1)
+    setNam(k.tu.getFullYear())
+  }
+
+  const handleXong = () => {
+    const tu = draftTu
+    const den = draftDen ?? draftTu
+    const k = tu.getTime() <= den.getTime() ? { tu, den } : { tu: den, den: tu }
+    onChange(k)
+    onDong()
+  }
+
+  const tTu = layMoc(draftTu)
+  const tDen = draftDen ? layMoc(draftDen) : tTu
+  const minMoc = Math.min(tTu, tDen)
+  const maxMoc = Math.max(tTu, tDen)
+
+  return (
+    <div className="m-lich-overlay">
+      <div className="m-lich-backdrop" onClick={onDong} />
+      <div
+        className="m-lich-sheet"
+        onTouchStart={e => { touchStartX.current = e.touches[0].clientX }}
+        onTouchEnd={e => {
+          if (touchStartX.current === null) return
+          const dx = e.changedTouches[0].clientX - touchStartX.current
+          if (dx > 40) doiThang(-1)
+          else if (dx < -40) doiThang(1)
+          touchStartX.current = null
+        }}
+      >
+        <div className="m-lich-dau">
+          <button type="button" className="m-lich-nav-btn" onClick={() => doiThang(-1)} aria-label="Tháng trước">
+            <Icon n="chevl" className="ic sm" />
+          </button>
+          <span className="m-lich-tieu-de">Tháng {thang}/{nam}</span>
+          <button type="button" className="m-lich-nav-btn" onClick={() => doiThang(1)} aria-label="Tháng sau">
+            <Icon n="chevr" className="ic sm" />
+          </button>
+        </div>
+
+        <div className="m-lich-thu-hang">
+          {THU.map(t => (
+            <span key={t} className="m-lich-thu">{t}</span>
+          ))}
+        </div>
+
+        <div className="m-lich-luoi">
+          {dsNgay.map(({ d, ngoai, khoa }) => {
+            const t = layMoc(d)
+            const laDau = cungNgay(d, draftTu)
+            const laCuoi = draftDen ? cungNgay(d, draftDen) : false
+            const trongDoan = t >= minMoc && t <= maxMoc
+            const laHn = cungNgay(d, HOM_NAY)
+            const cls = [
+              'm-lich-o',
+              ngoai ? 'ngoai' : '',
+              laHn ? 'hom-nay' : '',
+              laDau || laCuoi ? 'chon' : '',
+              trongDoan && !laDau && !laCuoi ? 'trong-khoang' : '',
+            ].filter(Boolean).join(' ')
+
+            return (
+              <button
+                key={khoa}
+                type="button"
+                className={cls}
+                onClick={() => chonNgay(d)}
+              >
+                <span>{d.getDate()}</span>
+              </button>
+            )
+          })}
+        </div>
+
+        <div className="m-lich-chip-ds">
+          <button type="button" className="m-lich-chip" onClick={() => chonNhanh('hom-nay')}>Hôm nay</button>
+          <button type="button" className="m-lich-chip" onClick={() => chonNhanh('tuan-nay')}>Tuần này</button>
+          <button type="button" className="m-lich-chip" onClick={() => chonNhanh('thang-nay')}>Tháng này</button>
+          <button type="button" className="m-lich-chip" onClick={() => chonNhanh('thang-truoc')}>Tháng trước</button>
+        </div>
+
+        <div className="m-lich-day-nut">
+          <button type="button" className="m-lich-btn-huy" onClick={onDong}>
+            Huỷ
+          </button>
+          <button type="button" className="m-lich-btn-xong" onClick={handleXong}>
+            Xong
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+interface MLichSheetDonProps {
+  value?: string
+  onChange: (val: string) => void
+  onDong: () => void
+}
+
+function MLichSheetDon({ value, onChange, onDong }: MLichSheetDonProps) {
+  const ngayGoc = useMemo(() => {
+    if (value) {
+      const d = docNgay(value)
+      if (!isNaN(d.getTime())) return d
+    }
+    return HOM_NAY
+  }, [value])
+
+  const [thang, setThang] = useState(ngayGoc.getMonth() + 1)
+  const [nam, setNam] = useState(ngayGoc.getFullYear())
+  const [draftNgay, setDraftNgay] = useState<Date>(ngayGoc)
+  const touchStartX = useRef<number | null>(null)
+
+  useEffect(() => {
+    if (value) {
+      const d = docNgay(value)
+      if (!isNaN(d.getTime())) {
+        setThang(d.getMonth() + 1)
+        setNam(d.getFullYear())
+        setDraftNgay(d)
+      }
+    }
+  }, [value])
+
+  const doiThang = (delta: number) => {
+    let m = thang + delta
+    let y = nam
+    while (m > 12) { m -= 12; y += 1 }
+    while (m < 1) { m += 12; y -= 1 }
+    setThang(m)
+    setNam(y)
+  }
+
+  const dsNgay = useMemo(() => taoLich(thang, nam), [thang, nam])
+
+  const chonNgay = (d: Date) => {
+    setDraftNgay(d)
+    if (d.getMonth() !== thang - 1) {
+      setThang(d.getMonth() + 1)
+      setNam(d.getFullYear())
+    }
+  }
+
+  const chonNhanh = (kieu: 'hom-nay' | 'hom-qua' | 'dau-thang') => {
+    let d = new Date(HOM_NAY)
+    if (kieu === 'hom-qua') {
+      d = new Date(HOM_NAY.getFullYear(), HOM_NAY.getMonth(), HOM_NAY.getDate() - 1)
+    } else if (kieu === 'dau-thang') {
+      d = new Date(nam, thang - 1, 1)
+    }
+    setDraftNgay(d)
+    setThang(d.getMonth() + 1)
+    setNam(d.getFullYear())
+  }
+
+  const handleXong = () => {
+    onChange(dmy(draftNgay))
+    onDong()
+  }
+
+  return (
+    <div className="m-lich-overlay">
+      <div className="m-lich-backdrop" onClick={onDong} />
+      <div
+        className="m-lich-sheet"
+        onTouchStart={e => { touchStartX.current = e.touches[0].clientX }}
+        onTouchEnd={e => {
+          if (touchStartX.current === null) return
+          const dx = e.changedTouches[0].clientX - touchStartX.current
+          if (dx > 40) doiThang(-1)
+          else if (dx < -40) doiThang(1)
+          touchStartX.current = null
+        }}
+      >
+        <div className="m-lich-dau">
+          <button type="button" className="m-lich-nav-btn" onClick={() => doiThang(-1)} aria-label="Tháng trước">
+            <Icon n="chevl" className="ic sm" />
+          </button>
+          <span className="m-lich-tieu-de">Tháng {thang}/{nam}</span>
+          <button type="button" className="m-lich-nav-btn" onClick={() => doiThang(1)} aria-label="Tháng sau">
+            <Icon n="chevr" className="ic sm" />
+          </button>
+        </div>
+
+        <div className="m-lich-thu-hang">
+          {THU.map(t => (
+            <span key={t} className="m-lich-thu">{t}</span>
+          ))}
+        </div>
+
+        <div className="m-lich-luoi">
+          {dsNgay.map(({ d, ngoai, khoa }) => {
+            const laChon = cungNgay(d, draftNgay)
+            const laHn = cungNgay(d, HOM_NAY)
+            const cls = [
+              'm-lich-o',
+              ngoai ? 'ngoai' : '',
+              laHn ? 'hom-nay' : '',
+              laChon ? 'chon' : '',
+            ].filter(Boolean).join(' ')
+
+            return (
+              <button
+                key={khoa}
+                type="button"
+                className={cls}
+                onClick={() => chonNgay(d)}
+                aria-label={dmy(d)}
+              >
+                <span>{d.getDate()}</span>
+              </button>
+            )
+          })}
+        </div>
+
+        <div className="m-lich-chip-ds">
+          <button type="button" className="m-lich-chip" onClick={() => chonNhanh('hom-nay')}>Hôm nay</button>
+          <button type="button" className="m-lich-chip" onClick={() => chonNhanh('hom-qua')}>Hôm qua</button>
+          <button type="button" className="m-lich-chip" onClick={() => chonNhanh('dau-thang')}>Đầu tháng</button>
+        </div>
+
+        <div className="m-lich-day-nut">
+          <button type="button" className="m-lich-btn-huy" onClick={onDong}>
+            Huỷ
+          </button>
+          <button type="button" className="m-lich-btn-xong" onClick={handleXong}>
+            Xong
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 /** align 'end': mép phải khung lịch thẳng mép phải ô ngày, dùng khi ô nằm sát bên phải màn (T41) */
 export function ChonKhoangNgay({ value, onChange, align = 'start' }: { value: KhoangNgay; onChange: (k: KhoangNgay) => void; align?: 'start' | 'end' }) {
+  const laMobile = useLaMobile()
   const [open, setOpen] = useState(false)
   const btnRef = useRef<HTMLButtonElement>(null)
 
@@ -278,6 +597,30 @@ export function ChonKhoangNgay({ value, onChange, align = 'start' }: { value: Kh
       >
         <span>{d.getDate()}</span>
       </button>
+    )
+  }
+
+  if (laMobile) {
+    return (
+      <>
+        <button
+          ref={btnRef}
+          type="button"
+          className={`kn-nut${open ? ' open' : ''}`}
+          onClick={() => setOpen(o => !o)}
+          aria-label="Chọn khoảng thời gian"
+        >
+          <span className="kn-nut-txt">{dmy(value.tu)} <span className="kn-nut-arr">→</span> {dmy(value.den)}</span>
+          <Icon n="calendar" className="ic sm kn-nut-ic" />
+        </button>
+        {open && (
+          <MLichSheetKhoangNgay
+            value={value}
+            onChange={onChange}
+            onDong={handleDong}
+          />
+        )}
+      </>
     )
   }
 
@@ -548,6 +891,7 @@ export interface LichDonProps {
 
 /** Bảng Date Picker chọn 1 ngày theo chuẩn theme hệ thống iFaster (T46) */
 export function LichDon({ value, onChange, onDong }: LichDonProps) {
+  const laMobile = useLaMobile()
   const ngayGoc = useMemo(() => {
     if (value) {
       const d = docNgay(value)
@@ -624,6 +968,10 @@ export function LichDon({ value, onChange, onDong }: LichDonProps) {
     }
     onChange(dmy(d))
     onDong?.()
+  }
+
+  if (laMobile) {
+    return <MLichSheetDon value={value} onChange={onChange} onDong={onDong ?? (() => {})} />
   }
 
   return (
@@ -721,6 +1069,7 @@ export function ONgay({
   ariaLabel,
   autoFocus,
 }: ONgayProps) {
+  const laMobile = useLaMobile()
   const o = useRef<HTMLDivElement>(null)
   const [mo, setMo] = useState(false)
 
@@ -732,6 +1081,46 @@ export function ONgay({
 
   const wrapCls = `ct-ngay ${className.split(' ').filter(c => c && c !== 'inp').join(' ')}`.trim()
   const inpCls = `inp ${inputClassName} ${className.includes('pb-o') ? 'pb-o' : ''}`.trim()
+
+  if (laMobile) {
+    return (
+      <div className={wrapCls} ref={o} title={title}>
+        <input
+          className={inpCls}
+          value={value}
+          placeholder={placeholder}
+          disabled={disabled}
+          readOnly={readOnly}
+          aria-label={ariaLabel}
+          autoFocus={autoFocus}
+          onChange={e => onChange(e.target.value)}
+          onClick={moLich}
+        />
+        {!disabled && !readOnly && (
+          <button
+            type="button"
+            className="ct-ngay-nut"
+            title="Chọn ngày"
+            aria-label={ariaLabel ? `Chọn ngày ${ariaLabel}` : 'Chọn ngày'}
+            tabIndex={-1}
+            onClick={() => setMo(m => !m)}
+          >
+            <Icon n="calendar" className="ic sm" />
+          </button>
+        )}
+        {mo && (
+          <MLichSheetDon
+            value={value}
+            onChange={v => {
+              onChange(v)
+              setMo(false)
+            }}
+            onDong={() => setMo(false)}
+          />
+        )}
+      </div>
+    )
+  }
 
   return (
     <div className={wrapCls} ref={o} title={title}>

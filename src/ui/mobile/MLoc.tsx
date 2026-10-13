@@ -1,30 +1,38 @@
 import { useEffect, useState, type FC } from 'react'
 import { HOM_NAY } from '../../data/mock'
-import { khoangThang, thangNay, type KhoangNgay } from '../ChonNgay'
+import { dmy, fold } from '../format'
+import { ChonKhoangNgay, khoangThang, thangNay, type KhoangNgay } from '../ChonNgay'
 import { Icon } from '../Icon'
 
-export type KyThoiGian = 'hom-nay' | 'tuan-nay' | 'thang-nay' | 'thang-truoc' | 'tat-ca'
+export type KyThoiGian = 'hom-nay' | 'tuan-nay' | 'thang-nay' | 'thang-truoc' | 'tat-ca' | 'tuy-chon'
 
 export interface GtLocMobile {
   thoiGian: KyThoiGian
-  doiTuong?: string
-  nguon?: string
-  kho?: string
+  khoangNgay?: KhoangNgay | null
+  doiTuong: string[]
+  nguon: string[]
+  kho: string[]
 }
 
 export const MAC_DINH_LOC_MOBILE: GtLocMobile = {
   thoiGian: 'thang-nay',
-  doiTuong: '',
-  nguon: '',
-  kho: '',
+  khoangNgay: null,
+  doiTuong: [],
+  nguon: [],
+  kho: [],
 }
 
 export function coLocKhacMacDinh(gt: GtLocMobile): boolean {
-  return gt.thoiGian !== 'thang-nay' || Boolean(gt.doiTuong) || Boolean(gt.nguon) || Boolean(gt.kho)
+  if (gt.thoiGian !== 'thang-nay') return true
+  if (gt.doiTuong && gt.doiTuong.length > 0) return true
+  if (gt.nguon && gt.nguon.length > 0) return true
+  if (gt.kho && gt.kho.length > 0) return true
+  return false
 }
 
-export function tinhKhoangNgay(ky: KyThoiGian): KhoangNgay | null {
+export function tinhKhoangNgay(ky: KyThoiGian, knTuyChon?: KhoangNgay | null): KhoangNgay | null {
   if (ky === 'tat-ca') return null
+  if (ky === 'tuy-chon') return knTuyChon ?? null
   if (ky === 'hom-nay') {
     const d = new Date(HOM_NAY)
     return {
@@ -65,6 +73,7 @@ const CAC_KY: { k: KyThoiGian; ten: string }[] = [
   { k: 'tuan-nay', ten: 'Tuần này' },
   { k: 'thang-nay', ten: 'Tháng này' },
   { k: 'thang-truoc', ten: 'Tháng trước' },
+  { k: 'tat-ca', ten: 'Tất cả' },
 ]
 
 export const MLoc: FC<MLocProps> = ({
@@ -78,10 +87,14 @@ export const MLoc: FC<MLocProps> = ({
   dsKho,
 }) => {
   const [draft, setDraft] = useState<GtLocMobile>(giaTri)
+  const [trangCon, setTrangCon] = useState<'thoiGian' | 'doiTuong' | 'nguon' | 'kho' | null>(null)
+  const [timKiem, setTimKiem] = useState('')
 
   useEffect(() => {
     if (mo) {
       setDraft(giaTri)
+      setTrangCon(null)
+      setTimKiem('')
     }
   }, [mo, giaTri])
 
@@ -104,97 +117,304 @@ export const MLoc: FC<MLocProps> = ({
     onDong()
   }
 
+  // Tóm tắt hiển thị trên từng dòng của tấm chính
+  const moTaThoiGian = () => {
+    if (draft.thoiGian === 'tuy-chon') {
+      if (draft.khoangNgay) {
+        return `${dmy(draft.khoangNgay.tu)} - ${dmy(draft.khoangNgay.den)}`
+      }
+      return 'Tuỳ chọn'
+    }
+    const found = CAC_KY.find(k => k.k === draft.thoiGian)
+    return found ? found.ten : 'Tháng này'
+  }
+
+  const moTaDoiTuong = () => {
+    const len = draft.doiTuong.length
+    if (len === 0) return 'Tất cả'
+    if (len === 1) return draft.doiTuong[0]
+    return `${len} ${nhanDoiTuong.toLowerCase()}`
+  }
+
+  const moTaNguon = () => {
+    const len = draft.nguon.length
+    if (len === 0) return 'Tất cả'
+    if (len === 1) {
+      const found = nguons.find(n => n.k === draft.nguon[0])
+      return found ? found.ten : draft.nguon[0]
+    }
+    return `${len} nguồn`
+  }
+
+  const moTaKho = () => {
+    const len = draft.kho.length
+    if (len === 0) return 'Tất cả'
+    if (len === 1) return draft.kho[0]
+    return `${len} kho`
+  }
+
+  // Toggle chọn / bỏ chọn mục
+  const toggleChon = (truong: 'doiTuong' | 'nguon' | 'kho', val: string) => {
+    setDraft(prev => {
+      const cur = prev[truong]
+      const next = cur.includes(val) ? cur.filter(x => x !== val) : [...cur, val]
+      return { ...prev, [truong]: next }
+    })
+  }
+
+  const chonTatCa = (truong: 'doiTuong' | 'nguon' | 'kho', ds: string[]) => {
+    setDraft(prev => ({ ...prev, [truong]: Array.from(new Set([...prev[truong], ...ds])) }))
+  }
+
+  const boChonTatCa = (truong: 'doiTuong' | 'nguon' | 'kho', ds: string[]) => {
+    setDraft(prev => ({
+      ...prev,
+      [truong]: prev[truong].filter(x => !ds.includes(x)),
+    }))
+  }
+
   return (
     <div className="m-loc-man">
-      <div className="m-thanh-tren">
-        <div className="m-thanh-tren-trai">
-          <button type="button" className="m-nut-back" onClick={onDong} aria-label="Quay lại">
-            <Icon n="chevl" className="ic sm" />
+      {/* ── TẤM LỌC CHÍNH ── */}
+      <div className={`m-loc-chinh ${trangCon ? 'm-loc-an' : ''}`}>
+        <div className="m-thanh-tren">
+          <div className="m-thanh-tren-trai">
+            <button type="button" className="m-nut-back" onClick={onDong} aria-label="Đóng">
+              <Icon n="x" className="ic sm" />
+            </button>
+          </div>
+          <h1 className="m-thanh-tren-tieu-de">Bộ lọc</h1>
+          <div className="m-thanh-tren-phai" style={{ width: 36 }} />
+        </div>
+
+        <div className="m-loc-than">
+          {/* Dòng Thời gian */}
+          <div className="m-loc-dong" onClick={() => setTrangCon('thoiGian')}>
+            <div className="m-loc-dong-trai">
+              <span className="m-loc-dong-nhan">Thời gian</span>
+              <span className="m-loc-dong-tri">{moTaThoiGian()}</span>
+            </div>
+            <Icon n="chevr" className="ic sm m-loc-dong-ic" />
+          </div>
+
+          {/* Dòng Đối tượng */}
+          {dsDoiTuong && dsDoiTuong.length > 0 && (
+            <div className="m-loc-dong" onClick={() => setTrangCon('doiTuong')}>
+              <div className="m-loc-dong-trai">
+                <span className="m-loc-dong-nhan">{nhanDoiTuong}</span>
+                <span className="m-loc-dong-tri">{moTaDoiTuong()}</span>
+              </div>
+              <Icon n="chevr" className="ic sm m-loc-dong-ic" />
+            </div>
+          )}
+
+          {/* Dòng Nguồn */}
+          <div className="m-loc-dong" onClick={() => setTrangCon('nguon')}>
+            <div className="m-loc-dong-trai">
+              <span className="m-loc-dong-nhan">Nguồn dữ liệu</span>
+              <span className="m-loc-dong-tri">{moTaNguon()}</span>
+            </div>
+            <Icon n="chevr" className="ic sm m-loc-dong-ic" />
+          </div>
+
+          {/* Dòng Kho */}
+          {dsKho && dsKho.length > 0 && (
+            <div className="m-loc-dong" onClick={() => setTrangCon('kho')}>
+              <div className="m-loc-dong-trai">
+                <span className="m-loc-dong-nhan">Kho</span>
+                <span className="m-loc-dong-tri">{moTaKho()}</span>
+              </div>
+              <Icon n="chevr" className="ic sm m-loc-dong-ic" />
+            </div>
+          )}
+        </div>
+
+        <div className="m-loc-day">
+          <button type="button" className="m-loc-btn-reset" onClick={handleReset}>
+            Đặt lại
+          </button>
+          <button type="button" className="m-loc-btn-apply" onClick={handleApply}>
+            Áp dụng
           </button>
         </div>
-        <h1 className="m-thanh-tren-tieu-de">Bộ lọc</h1>
-        <div className="m-thanh-tren-phai" style={{ width: 36 }} />
       </div>
 
-      <div className="m-loc-than">
-        {/* Khoảng thời gian */}
-        <div className="m-loc-the">
-          <div className="m-loc-the-nhan">Thời gian</div>
-          <div className="m-loc-ky-ds">
-            {CAC_KY.map(ky => (
+      {/* ── TRANG DANH MỤC CON TRƯỢT VÀO ── */}
+      {trangCon && (
+        <div className="m-loc-trang-con">
+          <div className="m-thanh-tren">
+            <div className="m-thanh-tren-trai">
               <button
-                key={ky.k}
                 type="button"
-                className={`m-loc-ky-btn ${draft.thoiGian === ky.k ? 'on' : ''}`}
-                onClick={() => setDraft(prev => ({ ...prev, thoiGian: ky.k }))}
+                className="m-nut-back"
+                onClick={() => {
+                  setTrangCon(null)
+                  setTimKiem('')
+                }}
+                aria-label="Quay lại"
               >
-                {ky.ten}
+                <Icon n="chevl" className="ic sm" />
               </button>
-            ))}
+            </div>
+            <h1 className="m-thanh-tren-tieu-de">
+              {trangCon === 'thoiGian'
+                ? 'Thời gian'
+                : trangCon === 'doiTuong'
+                  ? nhanDoiTuong
+                  : trangCon === 'nguon'
+                    ? 'Nguồn dữ liệu'
+                    : 'Kho'}
+            </h1>
+            <div className="m-thanh-tren-phai" style={{ width: 36 }} />
+          </div>
+
+          <div className="m-loc-con-than">
+            {trangCon === 'thoiGian' ? (
+              <div className="m-loc-ky-ds-doc">
+                {CAC_KY.map(ky => {
+                  const chon = draft.thoiGian === ky.k
+                  return (
+                    <div
+                      key={ky.k}
+                      className={`m-loc-muc-dong ${chon ? 'on' : ''}`}
+                      onClick={() => setDraft(prev => ({ ...prev, thoiGian: ky.k, khoangNgay: null }))}
+                    >
+                      <span className="m-loc-muc-ten">{ky.ten}</span>
+                      {chon && <Icon n="check" className="ic sm m-loc-muc-tick" />}
+                    </div>
+                  )
+                })}
+
+                <div className="m-loc-tuy-chon-kn">
+                  <div className="m-loc-muc-dong">
+                    <span className="m-loc-muc-ten">Tuỳ chọn khoảng ngày</span>
+                  </div>
+                  <div className="m-loc-kn-picker">
+                    <ChonKhoangNgay
+                      value={draft.khoangNgay ?? thangNay()}
+                      onChange={kn => {
+                        setDraft(prev => ({
+                          ...prev,
+                          thoiGian: 'tuy-chon',
+                          khoangNgay: kn,
+                        }))
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <>
+                {/* Ô tìm kiếm */}
+                <div className="m-loc-tim-hop">
+                  <Icon n="search" className="ic sm m-loc-tim-ic" />
+                  <input
+                    type="search"
+                    className="m-loc-tim-inp"
+                    placeholder={`Tìm ${
+                      trangCon === 'doiTuong'
+                        ? nhanDoiTuong.toLowerCase()
+                        : trangCon === 'nguon'
+                          ? 'nguồn'
+                          : 'kho'
+                    }...`}
+                    value={timKiem}
+                    onChange={e => setTimKiem(e.target.value)}
+                    autoFocus
+                  />
+                  {timKiem && (
+                    <button
+                      type="button"
+                      className="m-loc-tim-x"
+                      onClick={() => setTimKiem('')}
+                      aria-label="Xoá tìm kiếm"
+                    >
+                      <Icon n="x" className="ic sm" />
+                    </button>
+                  )}
+                </div>
+
+                {/* Hàng nút Chọn tất cả / Bỏ chọn */}
+                {(() => {
+                  const dsHienTai = (
+                    trangCon === 'doiTuong'
+                      ? (dsDoiTuong ?? [])
+                      : trangCon === 'nguon'
+                        ? nguons.map(n => n.k)
+                        : (dsKho ?? [])
+                  ).filter(item => {
+                    if (!timKiem.trim()) return true
+                    const ten = trangCon === 'nguon' ? (nguons.find(n => n.k === item)?.ten ?? item) : item
+                    return fold(ten).includes(fold(timKiem))
+                  })
+
+                  return (
+                    <>
+                      <div className="m-loc-tac-vu">
+                        <button
+                          type="button"
+                          className="m-loc-btn-tv"
+                          onClick={() => chonTatCa(trangCon, dsHienTai)}
+                        >
+                          Chọn tất cả ({dsHienTai.length})
+                        </button>
+                        <button
+                          type="button"
+                          className="m-loc-btn-tv"
+                          onClick={() => boChonTatCa(trangCon, dsHienTai)}
+                        >
+                          Bỏ chọn
+                        </button>
+                      </div>
+
+                      {/* Danh sách các mục */}
+                      <div className="m-loc-ds-muc">
+                        {dsHienTai.length === 0 ? (
+                          <div className="m-loc-muc-trong">Không có kết quả</div>
+                        ) : (
+                          dsHienTai.map(val => {
+                            const chon = draft[trangCon].includes(val)
+                            const tenHienThi =
+                              trangCon === 'nguon'
+                                ? (nguons.find(n => n.k === val)?.ten ?? val)
+                                : val
+
+                            return (
+                              <div
+                                key={val}
+                                className={`m-loc-muc-dong ${chon ? 'on' : ''}`}
+                                onClick={() => toggleChon(trangCon, val)}
+                              >
+                                <div className={`m-loc-checkbox ${chon ? 'on' : ''}`}>
+                                  {chon && <Icon n="check" className="ic sm" />}
+                                </div>
+                                <span className="m-loc-muc-ten">{tenHienThi}</span>
+                              </div>
+                            )
+                          })
+                        )}
+                      </div>
+                    </>
+                  )
+                })()}
+              </>
+            )}
+          </div>
+
+          <div className="m-loc-day">
+            <button
+              type="button"
+              className="m-loc-btn-apply m-loc-con-btn-xong"
+              onClick={() => {
+                setTrangCon(null)
+                setTimKiem('')
+              }}
+            >
+              Xong
+            </button>
           </div>
         </div>
-
-        {/* Kho */}
-        {dsKho && dsKho.length > 0 && (
-          <div className="m-loc-the">
-            <label className="m-loc-the-nhan" htmlFor="m-loc-kho">Kho</label>
-            <select
-              id="m-loc-kho"
-              className="m-loc-sel"
-              value={draft.kho ?? ''}
-              onChange={e => setDraft(prev => ({ ...prev, kho: e.target.value }))}
-            >
-              <option value="">Tất cả</option>
-              {dsKho.map(k => (
-                <option key={k} value={k}>{k}</option>
-              ))}
-            </select>
-          </div>
-        )}
-
-        {/* Đối tượng */}
-        {dsDoiTuong && dsDoiTuong.length > 0 && (
-          <div className="m-loc-the">
-            <label className="m-loc-the-nhan" htmlFor="m-loc-dt">{nhanDoiTuong}</label>
-            <select
-              id="m-loc-dt"
-              className="m-loc-sel"
-              value={draft.doiTuong ?? ''}
-              onChange={e => setDraft(prev => ({ ...prev, doiTuong: e.target.value }))}
-            >
-              <option value="">Tất cả</option>
-              {dsDoiTuong.map(dt => (
-                <option key={dt} value={dt}>{dt}</option>
-              ))}
-            </select>
-          </div>
-        )}
-
-        {/* Nguồn */}
-        <div className="m-loc-the">
-          <label className="m-loc-the-nhan" htmlFor="m-loc-nguon">Nguồn dữ liệu</label>
-          <select
-            id="m-loc-nguon"
-            className="m-loc-sel"
-            value={draft.nguon ?? ''}
-            onChange={e => setDraft(prev => ({ ...prev, nguon: e.target.value }))}
-          >
-            <option value="">Tất cả</option>
-            {nguons.map(n => (
-              <option key={n.k} value={n.k}>{n.ten}</option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      <div className="m-loc-day">
-        <button type="button" className="m-loc-btn-reset" onClick={handleReset}>
-          Thiết lập lại
-        </button>
-        <button type="button" className="m-loc-btn-apply" onClick={handleApply}>
-          Áp dụng
-        </button>
-      </div>
+      )}
     </div>
   )
 }

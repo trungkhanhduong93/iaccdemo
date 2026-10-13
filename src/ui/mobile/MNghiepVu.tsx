@@ -1,6 +1,7 @@
 import { Link, useSearchParams } from 'react-router-dom'
 import { useSession } from '../../app/session'
 import { MODULES, duongDan, hienMan, hienPhanHe, moDuoc, phanHeKhoa, tabCua, tenMan } from '../../app/registry'
+import type { ScreenDef } from '../../modules/types'
 import { Icon } from '../Icon'
 
 export function MNghiepVu() {
@@ -8,19 +9,24 @@ export function MNghiepVu() {
   const [params] = useSearchParams()
   const modKey = params.get('m')
 
+  // Chỉ hiện màn mà gói Free hoặc Standard mở được trên điện thoại, áp cho mọi gói (Trum chốt 13/10/2026, T194)
+  const manMoTrenMobile = (sc: ScreenDef) =>
+    hienMan(sc, s.goi, s.cheDo, s) && (moDuoc(sc, 'F') || moDuoc(sc, 'S'))
+
   const dsPhanHe = MODULES.filter(
     m =>
       hienPhanHe(m, s.goi) &&
       m.key !== 'trang-chu' &&
       m.key !== 'bao-cao' &&
       m.key !== 'danh-muc' &&
-      m.key !== 'he-thong'
+      m.key !== 'he-thong' &&
+      tabCua(m).some(manMoTrenMobile)
   )
 
-  const modHienTai = modKey ? MODULES.find(m => m.key === modKey) : null
+  const modHienTai = modKey ? dsPhanHe.find(m => m.key === modKey) : null
 
   if (modHienTai) {
-    const dsMan = tabCua(modHienTai).filter(sc => hienMan(sc, s.goi, s.cheDo, s))
+    const dsMan = tabCua(modHienTai).filter(manMoTrenMobile)
 
     return (
       <div className="m-nghiep-vu m-nv-chi-tiet">

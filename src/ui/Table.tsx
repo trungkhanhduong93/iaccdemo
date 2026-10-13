@@ -126,13 +126,19 @@ export function Table({
   const vt = viTri(cols)
   const lop = (c: Col, i: number) => [c.num ? 'num' : c.c ? 'c' : '', vt[i].cls].join(' ')
 
+  // Bề rộng cột số tính một lần mỗi cột, không tính lại cho từng ô: sổ nhiều dòng từng treo vài giây (T196)
+  const rongNum = new Map<string, number>()
   const rongDef = (c: Col) => {
     if (keo(c)) {
       const w = Math.max(60, c.w ?? 60)
       return { w, minW: w, maxW: w }
     }
     if (c.num) {
-      const w = tinhRongNum(c, rows as Row[], sum)
+      let w = rongNum.get(c.k)
+      if (w === undefined) {
+        w = tinhRongNum(c, rows as Row[], sum)
+        rongNum.set(c.k, w)
+      }
       return { w, minW: w }
     }
     if (c.w) {

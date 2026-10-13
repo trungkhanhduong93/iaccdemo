@@ -1,5 +1,5 @@
 import { useMemo, useState, type FC } from 'react'
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import type { ScreenProps } from '../../modules/types'
 import { duongDan } from '../../app/registry'
 import { chiNhanhHienTai, useSession } from '../../app/session'
@@ -8,6 +8,7 @@ import { docNgay, trongKhoang } from '../ChonNgay'
 import { money } from '../format'
 import { dsChipTT, khopChipTT } from '../LocNangCao'
 import { TT_CT } from '../generic/gen'
+import { ChungTuForm } from '../generic/ChungTuForm'
 import { useDongChungTu } from '../generic/VoucherScreen'
 import { useDsPhieuDcn } from '../../modules/kho/BangDieuChuyen'
 import { useDsPhieuSx } from '../../modules/kho/BangSanXuat'
@@ -34,12 +35,22 @@ export const MChungTu: FC<ScreenProps> = ({ sc, mod }) => {
 
   if (id === 'moi' || sua) {
     if (laKhongLam) return <MChiMayTinh />
+    if (sp.get('full') === '1' || sp.get('form') === 'full') {
+      return <ChungTuMoiForm sc={sc} mod={mod} id={id} />
+    }
     return <MLapPhieu sc={sc} mod={mod} id={id} />
   }
   if (id !== undefined) {
     return <MXemPhieu sc={sc} mod={mod} id={id} />
   }
   return <DsChungTu sc={sc} mod={mod} />
+}
+
+const ChungTuMoiForm: FC<{ sc: ScreenProps['sc']; mod: ScreenProps['mod']; id?: string }> = ({ sc, mod, id }) => {
+  const loc = useLocation()
+  const { cfg, rows } = useDongChungTu(sc, mod)
+  const row = id === 'moi' ? undefined : rows.find(r => String(r.id) === String(id))
+  return <ChungTuForm key={loc.key + loc.search} sc={sc} mod={mod} cfg={cfg} row={row} rows={rows} />
 }
 
 const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
@@ -82,7 +93,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
   }, [rows])
 
   // Lọc sơ bộ (thời gian, chi nhánh, loại, bộ lọc nâng cao)
-  const kn = tinhKhoangNgay(locVal.thoiGian)
+  const kn = tinhKhoangNgay(locVal.thoiGian, locVal.khoangNgay)
   const truocTT = useMemo(() => {
     return rows.filter(r => {
       // 1. Thời gian
@@ -95,13 +106,17 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
       // 3. Loại chứng từ (tab con)
       if (loaiChon && r.loai !== loaiChon) return false
       // 4. Đối tượng từ bộ lọc
-      if (locVal.doiTuong && r.doiTuong !== locVal.doiTuong) return false
+      if (locVal.doiTuong && locVal.doiTuong.length > 0) {
+        if (!locVal.doiTuong.includes(String(r.doiTuong ?? ''))) return false
+      }
       // 5. Nguồn từ bộ lọc
-      if (locVal.nguon && String(r.nguon ?? 'tay') !== locVal.nguon) return false
+      if (locVal.nguon && locVal.nguon.length > 0) {
+        if (!locVal.nguon.includes(String(r.nguon ?? 'tay'))) return false
+      }
       // 6. Kho từ bộ lọc
-      if (locVal.kho) {
+      if (locVal.kho && locVal.kho.length > 0) {
         const khoDs = (r._khoDs as string[] | undefined) ?? (r.kho ? [String(r.kho)] : [])
-        if (!khoDs.includes(locVal.kho)) return false
+        if (!khoDs.some(k => locVal.kho.includes(k))) return false
       }
       return true
     })

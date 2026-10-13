@@ -13,6 +13,7 @@ import { QUY_TIEN } from '../generic/ChungTuForm'
 import { useDongChungTu } from '../generic/VoucherScreen'
 import { fold, money } from '../format'
 import { Icon } from '../Icon'
+import { LichDon } from '../ChonNgay'
 import { MChon } from './MChon'
 import { MTrong } from './MTrong'
 
@@ -120,6 +121,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
   const [buoc, setBuoc] = useState<number>(1)
 
   // Thời gian
+  const [moLich, setMoLich] = useState(false)
   const [thoiGian, setThoiGian] = useState(() => {
     if (gocData?.ngay) return [gocData.ngay, gocData.gio || '10:00'].filter(Boolean).join(' ')
     const now = new Date()
@@ -576,9 +578,18 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                     type="text"
                     className="m-lp-inp-tri"
                     value={thoiGian}
-                    onChange={e => setThoiGian(e.target.value)}
+                    readOnly
+                    onClick={() => setMoLich(true)}
                     placeholder="DD/MM/YYYY HH:mm"
                   />
+                  {/* Chạm ô thời gian mở tấm lịch, giữ nguyên giờ đã có (T199) */}
+                  {moLich && (
+                    <LichDon
+                      value={thoiGian.slice(0, 10)}
+                      onChange={v => setThoiGian(v + thoiGian.slice(10))}
+                      onDong={() => setMoLich(false)}
+                    />
+                  )}
                 </div>
               </div>
             </div>

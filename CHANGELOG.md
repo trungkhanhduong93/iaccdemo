@@ -2,6 +2,10 @@
 
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
+## 14/10/2026
+
+- T193–T199: Trên điện thoại, Trang chủ có hai tab, vuốt ngang để chuyển. Tab Tổng quan có 4 thẻ số, biểu đồ doanh thu theo tháng, cơ cấu chi phí, thao tác nhanh. Tab Cần theo dõi có công nợ quá hạn, hàng dưới định mức, hạn nộp tờ khai. Kính lúp mở màn tìm màn hình theo tên hoặc mã, gõ không dấu được. Tab Nghiệp vụ chỉ hiện nghiệp vụ của gói Free, Standard. Tab Khác chia thẻ nhóm rõ ràng. Bộ lọc danh sách chứng từ: chạm từng dòng mở danh mục có ô tìm, chọn nhiều. Chạm ô ngày mở lịch từ đáy màn. Mở Sổ quỹ tiền mặt và các sổ nhiều dòng hết đơ, cả trên máy tính.
+
 ## 13/10/2026
 
 - T200: Tổng hợp mua hàng đổi tên thành Tổng hợp mua hàng theo NCC. Tổng hợp và Chi tiết mua hàng có cột Thành tiền, Chiết khấu, Tiền trước thuế (trước là Tiền hàng). Bấm tên nhà cung cấp ở Tổng hợp mua hàng mở Chi tiết mua hàng của nhà cung cấp đó. Chi tiết mua hàng không còn ở danh sách báo cáo. Thêm báo cáo Bảng kê mua hàng theo hàng hoá: mỗi mặt hàng của phiếu mua một dòng, lọc theo nhà cung cấp, mặt hàng. Mua hàng theo ngày: Giảm giá đổi thành Chiết khấu, Tiền hàng sau giảm giá thành Tiền trước thuế, bỏ cột Đã trả hàng; số tiền khớp Tổng hợp mua hàng.

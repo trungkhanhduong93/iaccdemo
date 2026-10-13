@@ -1153,6 +1153,226 @@ def kiem_tra_popup_khoi_tao_dot_8():
     return loi
 
 
+def kiem_tra_dot_9():
+    """Đợt 9: Trang chủ 2 tab, tìm kiếm, tab Nghiệp vụ gói PL, tab Khác, bộ lọc nâng cao, lịch đáy (T193–T199)"""
+    loi = []
+    with sync_playwright() as p:
+        b = p.chromium.launch(channel='chrome')
+        pg = b.new_page(viewport={'width': 390, 'height': 844}, is_mobile=True, has_touch=True)
+        con = []
+        pg.on('console', lambda m: con.append(m.text) if m.type == 'error' else None)
+        pg.on('pageerror', lambda e: con.append(str(e)))
+
+        def kiem_man(ten, nut=None):
+            if pg.evaluate("document.documentElement.scrollWidth > innerWidth"):
+                loi.append(f'{ten}: tràn ngang màn hình')
+            if con:
+                loi.append(f'{ten}: lỗi console {con[:2]}')
+                con.clear()
+            if nut and nut.count() > 0:
+                box = nut.first.bounding_box()
+                if box and box['y'] + box['height'] > 844:
+                    loi.append(f'{ten}: nút nằm ngoài khung nhìn 844px (y={box["y"] + box["height"]})')
+
+        # Đăng nhập gói PL
+        pg.goto(URL + '#/dang-nhap')
+        pg.wait_for_selector('.auth-box')
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PL'))})")
+        pg.goto(URL + '?goi=PL#/app/trang-chu/tong-quan')
+        pg.wait_for_selector('.m-app')
+        pg.wait_for_timeout(300)
+
+        # ── Bước 1: Trang chủ có 2 tab. Bấm Cần theo dõi: có ít nhất 1 dòng, bấm dòng đầu thì URL đổi ──
+        tabs = pg.locator('.m-tc-tab')
+        if tabs.count() < 2:
+            loi.append('Trang chủ: không tìm thấy 2 tab Tổng quan | Cần theo dõi')
+        else:
+            tab_ctd = pg.locator('.m-tc-tab', has_text='Cần theo dõi')
+            if tab_ctd.count() == 0:
+                loi.append('Trang chủ: thiếu tab Cần theo dõi')
+            else:
+                tab_ctd.first.click()
+                pg.wait_for_timeout(300)
+                kiem_man('Tab Cần theo dõi')
+                pg.screenshot(path=str(SHOTS / 'm-09-01-can-theo-doi.png'))
+
+                dong_ctd = pg.locator('.m-tc-ctd-dong')
+                if dong_ctd.count() == 0:
+                    loi.append('Tab Cần theo dõi: không có dòng việc cần theo dõi nào')
+                else:
+                    url_truoc = pg.url
+                    dong_ctd.first.click()
+                    pg.wait_for_timeout(400)
+                    if pg.url == url_truoc:
+                        loi.append(f'Tab Cần theo dõi: bấm dòng đầu nhưng URL không đổi ({pg.url})')
+                    print('  - Bước 1: Trang chủ 2 tab và Cần theo dõi thành công')
+
+        # ── Bước 2: Bấm kính lúp, gõ "phieu chi" -> kết quả "Phiếu chi", URL chứa tien/2-1-1 ──
+        pg.goto(URL + '?goi=PL#/app/trang-chu/tong-quan')
+        pg.wait_for_selector('.m-app')
+        pg.wait_for_timeout(200)
+
+        nut_kinh_lup = pg.locator('button[aria-label="Tìm kiếm màn hình"], .m-dau-kinh-lup')
+        if nut_kinh_lup.count() == 0:
+            loi.append('Trang chủ: không tìm thấy nút kính lúp tìm kiếm')
+        else:
+            nut_kinh_lup.first.click()
+            pg.wait_for_timeout(200)
+            inp_tim = pg.locator('.m-tk-inp')
+            if inp_tim.count() == 0:
+                loi.append('Tìm kiếm: lớp phủ không mở hoặc thiếu ô tìm kiếm')
+            else:
+                inp_tim.fill('phieu chi')
+                pg.wait_for_timeout(250)
+                kiem_man('Lớp phủ tìm kiếm màn')
+                pg.screenshot(path=str(SHOTS / 'm-09-02-tim-kiem.png'))
+
+                kq = pg.locator('.m-tk-dong', has_text='Phiếu chi')
+                if kq.count() == 0:
+                    loi.append('Tìm kiếm: gõ "phieu chi" không thấy kết quả "Phiếu chi"')
+                else:
+                    kq.first.click()
+                    pg.wait_for_timeout(400)
+                    if 'tien/2-1-1' not in pg.url:
+                        loi.append(f'Tìm kiếm: bấm Phiếu chi nhưng URL không chứa tien/2-1-1 ({pg.url})')
+                    print('  - Bước 2: Tìm kiếm "phieu chi" trỏ đúng tien/2-1-1')
+
+        # ── Bước 3: Tab Nghiệp vụ ở gói PL: không có màn chỉ mở cho Plus, Pro (vd ban-hang/3-1-7) ──
+        pg.goto(URL + '?goi=PL#/app/nghiep-vu')
+        pg.wait_for_selector('.m-nghiep-vu')
+        pg.wait_for_timeout(200)
+        kiem_man('Tab Nghiệp vụ gói PL')
+        pg.screenshot(path=str(SHOTS / 'm-09-03-nghiep-vu-pl.png'))
+
+        o_bh = pg.locator('.m-nv-o', has_text='Bán hàng')
+        if o_bh.count() > 0:
+            o_bh.first.click()
+            pg.wait_for_timeout(250)
+            if pg.locator('a[href*="ban-hang/3-1-7"], .m-nv-dong:has-text("3.1.7")').count() > 0:
+                loi.append('Tab Nghiệp vụ: màn 3.1.7 (chỉ PL/PR) vẫn xuất hiện dù quy định chỉ hiện F/S')
+            else:
+                print('  - Bước 3: Tab Nghiệp vụ ẩn đúng các màn ngoài gói Free/Standard')
+        else:
+            loi.append('Tab Nghiệp vụ: không tìm thấy phân hệ Bán hàng')
+
+        # ── Bước 4: Tab Khác có ít nhất 5 thẻ nhóm ──
+        pg.goto(URL + '?goi=PL#/app/khac')
+        pg.wait_for_selector('.m-khac')
+        pg.wait_for_timeout(200)
+        kiem_man('Tab Khác')
+        pg.screenshot(path=str(SHOTS / 'm-09-04-tab-khac.png'))
+
+        the_nhom = pg.locator('.m-khac-the')
+        if the_nhom.count() < 5:
+            loi.append(f'Tab Khác: chỉ có {the_nhom.count()} thẻ nhóm, yêu cầu ít nhất 5')
+        else:
+            print(f'  - Bước 4: Tab Khác có {the_nhom.count()} thẻ nhóm riêng biệt')
+
+        # ── Bước 5: Danh sách Phiếu chi -> bộ lọc -> chọn Đối tượng -> Xong -> Áp dụng ──
+        pg.goto(URL + '?goi=PL#/app/tien/2-1-1')
+        pg.wait_for_selector('.m-ds-khung')
+        pg.wait_for_timeout(300)
+
+        so_dong_goc = pg.locator('.m-the-ct').count()
+        nut_loc = pg.locator('.m-ds-nut-loc, button:has-text("Lọc")')
+        if nut_loc.count() == 0:
+            loi.append('Phiếu chi: không tìm thấy nút mở bộ lọc')
+        else:
+            nut_loc.first.click()
+            pg.wait_for_selector('.m-loc-man')
+            pg.wait_for_timeout(200)
+
+            dong_dt = pg.locator('.m-loc-dong', has_text='Đối tượng')
+            if dong_dt.count() == 0:
+                dong_dt = pg.locator('.m-loc-dong', has_text='Người nhận')
+            if dong_dt.count() == 0:
+                loi.append('Bộ lọc: không thấy dòng Đối tượng')
+            else:
+                dong_dt.first.click()
+                pg.wait_for_timeout(250)
+
+                inp_tim_dt = pg.locator('.m-loc-tim-inp')
+                if inp_tim_dt.count() == 0:
+                    loi.append('Bộ lọc: trang danh mục đối tượng không có ô tìm')
+                else:
+                    muc_dt = pg.locator('.m-loc-muc-dong')
+                    if muc_dt.count() == 0:
+                        loi.append('Bộ lọc: không có mục đối tượng nào để chọn')
+                    else:
+                        muc_dt.first.click()
+                        pg.wait_for_timeout(100)
+
+                        nut_xong_con = pg.locator('.m-loc-con-btn-xong, button:has-text("Xong")')
+                        if nut_xong_con.count() == 0:
+                            loi.append('Bộ lọc: thiếu nút Xong ở trang con')
+                        else:
+                            nut_xong_con.first.click()
+                            pg.wait_for_timeout(200)
+
+                            nut_ap_dung = pg.locator('.m-loc-btn-apply', has_text='Áp dụng')
+                            if nut_ap_dung.count() == 0:
+                                loi.append('Bộ lọc: thiếu nút Áp dụng ở đáy tấm lọc')
+                            else:
+                                nut_ap_dung.first.click()
+                                pg.wait_for_timeout(300)
+                                kiem_man('Sau khi áp dụng bộ lọc')
+                                pg.screenshot(path=str(SHOTS / 'm-09-05-bo-loc.png'))
+
+                                so_dong_sau = pg.locator('.m-the-ct').count()
+                                if so_dong_sau > so_dong_goc:
+                                    loi.append(f'Bộ lọc: số dòng sau lọc ({so_dong_sau}) lớn hơn gốc ({so_dong_goc})')
+                                else:
+                                    print(f'  - Bước 5: Lọc đối tượng thành công ({so_dong_goc} -> {so_dong_sau} dòng)')
+
+        # ── Bước 6: Lập phiếu chi, chạm ô Ngày chứng từ. Tấm lịch hiện ra, nút Xong dính đáy, chọn ngày 1 đổi giá trị ──
+        pg.goto(URL + '?goi=PL#/app/tien/2-1-1')
+        pg.wait_for_selector('.m-nut-them-fab')
+        pg.locator('.m-nut-them-fab').first.click()
+        pg.wait_for_timeout(200)
+        pg.locator('.m-tam-dong:has-text("Chi")').first.click()
+        pg.wait_for_selector('.m-lp')
+        pg.wait_for_timeout(300)
+
+        inp_ngay = pg.locator('.m-lp-the-truong:has-text("Thời gian") input')
+        if inp_ngay.count() == 0:
+            loi.append('Lập phiếu chi: không tìm thấy ô Ngày chứng từ')
+        else:
+            val_truoc = inp_ngay.first.input_value()
+            inp_ngay.first.click()
+            pg.wait_for_timeout(250)
+
+            sheet_lich = pg.locator('.m-lich-sheet')
+            if sheet_lich.count() == 0:
+                loi.append('Lập phiếu chi: chạm ô ngày không mở tấm lịch đáy .m-lich-sheet')
+            else:
+                nut_xong_lich = pg.locator('.m-lich-btn-xong, button:has-text("Xong")')
+                if nut_xong_lich.count() == 0:
+                    loi.append('Tấm lịch đáy: thiếu nút Xong')
+                else:
+                    bottom_xong = pg.evaluate("() => document.querySelector('.m-lich-btn-xong').getBoundingClientRect().bottom")
+                    if bottom_xong > 844 + 1:
+                        loi.append(f'Tấm lịch đáy: nút Xong bị tràn ngoài màn hình (bottom={bottom_xong} > 844)')
+
+                    o_ngay_1 = pg.locator('.m-lich-o:not(.ngoai) span', has_text='1').first
+                    if o_ngay_1.count() == 0:
+                        loi.append('Tấm lịch đáy: không tìm thấy ngày 1 trong tháng hiện tại')
+                    else:
+                        o_ngay_1.click()
+                        pg.wait_for_timeout(100)
+                        nut_xong_lich.first.click()
+                        pg.wait_for_timeout(250)
+
+                        val_sau = inp_ngay.first.input_value()
+                        if val_sau == val_truoc and not val_sau.startswith('01/'):
+                            loi.append(f'Lập phiếu chi: chọn ngày 1 nhưng ô ngày không đổi (trước={val_truoc}, sau={val_sau})')
+                        kiem_man('Sau khi chọn ngày lịch')
+                        pg.screenshot(path=str(SHOTS / 'm-09-06-chon-ngay.png'))
+                        print(f'  - Bước 6: Lịch đáy chọn ngày thành công ({val_truoc} -> {val_sau})')
+
+        b.close()
+    return loi
+
+
 def kiem_tra_cac_khung_dt():
     loi, dem = [], 0
     for rong, cao in KHUNG_DT:
@@ -1175,6 +1395,7 @@ def kiem_tra_cac_khung_dt():
     loi_d8 = kiem_tra_dang_nhap_dot_8()
     loi += loi_d8
     loi += kiem_tra_popup_khoi_tao_dot_8()
+    loi += kiem_tra_dot_9()
     if loi:
         print(f'{len(loi)} LỖI:')
         for x in loi:
