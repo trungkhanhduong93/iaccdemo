@@ -19,6 +19,7 @@
 
 - Sau đó PhuongXT chốt bộ sổ TT58 hiện theo dòng ghi chú của từng trường hợp thuế: `apDung` ở `registry.ts` lọc lại theo `th` như T108, `ReportScreen.tsx` trả lại dòng báo không mở sổ 3.2.5 ở trường hợp 4. TH1: S1, TH2: S2a (sổ doanh thu), S2b, S2c, S2d, TH3: S3a, S3b, TH4: S2b, S2c, S2d, S3b; S4a đến S4d mọi trường hợp; B01, B02 ở TH2, TH4.
 - Thêm `kyHieuBC` ở `danh-sach.ts`: danh sách báo cáo (Tất cả báo cáo, tab Báo cáo của phân hệ) ghi ký hiệu Sổ doanh thu 3.2.5 theo trường hợp (S1, S2a, S3a), trước luôn ghi S1-DNSN; tờ sổ dùng chung hàm này.
+- `TrungTam.tsx`: Tất cả báo cáo gom mọi sổ, báo cáo có mẫu của thông tư đang dùng (có ký hiệu mẫu) vào nhóm đầu "Sổ sách kế toán theo TT58" (tên đổi theo chế độ), nhóm phân hệ bỏ các sổ đó; cột trái thêm mục "Sổ sách TT58" mở `tat-ca?nhom=so-sach`. Trang nhóm phân hệ (`nhom-<phân hệ>`) giữ đủ báo cáo của phân hệ. Ẩn hiện vẫn theo phương pháp thuế.
 
 ## Đã kiểm
 

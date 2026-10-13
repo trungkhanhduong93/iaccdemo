@@ -1,9 +1,10 @@
 // Trung tâm báo cáo: gom toàn bộ sổ sách, báo cáo của mọi phân hệ chia theo nhóm
 import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import type { ModuleDef, ScreenDef, ScreenProps } from '../types'
 import { MODULES, apDung, hienMan, maKhoa, moDuoc, tenMan } from '../../app/registry'
 import { useSession } from '../../app/session'
+import { CHE_DO } from '../../app/che-do'
 import { anNgoaiGoi, minGoi } from '../../app/plan'
 import { Icon } from '../../ui/Icon'
 import { PageHead, Pk } from '../../ui/Page'
@@ -57,9 +58,16 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
   const { s } = useSession()
   const [q, setQ] = useState('')
   const [ghim, setGhim] = useState<string[]>(() => docGhim())
+  const [tham] = useSearchParams()
 
   const phanHeBC = MODULES.find(m => m.key === 'bao-cao')
   const tatCaBC = phanHeBC?.screens.filter(x => x.goc) ?? []
+
+  // Sổ, báo cáo có mẫu của thông tư đang dùng gom vào một nhóm riêng đứng đầu ở Tất cả báo cáo (T171)
+  const laSoTT = (x: ScreenDef) => Boolean(kyHieuBC(x.code, s.cheDo, s))
+  const soTT = tatCaBC.filter(laSoTT)
+  const tenSoTT = `Sổ sách kế toán theo ${CHE_DO[s.cheDo].ngan}`
+  const chiSoTT = sc.slug === 'tat-ca' && tham.get('nhom') === 'so-sach'
 
   // Gom theo x.goc theo thứ tự phân hệ trong MODULES
   const nhomGoc: { mod: ModuleDef; screens: ScreenDef[] }[] = []
@@ -80,15 +88,20 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
     .filter(g => g.hienCount > 0)
 
   const tongHienRail = nhomRail.reduce((acc, g) => acc + g.hienCount, 0)
+  const demSoTT = soTT.filter(x => hienMan(x, s.goi, s.cheDo, s)).length
 
   // Lọc theo sc.slug: 'tat-ca' là mọi nhóm; 'nhom-<key>' chỉ nhóm của phân hệ <key>
   const keyHienTai = sc.slug.startsWith('nhom-') ? sc.slug.slice(5) : null
+  // Tất cả: nhóm sổ theo thông tư đứng đầu, nhóm phân hệ bỏ các sổ đó; trang nhóm phân hệ giữ đủ báo cáo của phân hệ
+  const modSoTT = { key: 'so-sach', ten: tenSoTT } as ModuleDef
   const nhomHienThi = keyHienTai
     ? nhomGoc.filter(g => g.mod.key === keyHienTai)
-    : nhomGoc
+    : chiSoTT
+    ? [{ mod: modSoTT, screens: soTT }]
+    : [{ mod: modSoTT, screens: soTT }, ...nhomGoc.map(g => ({ mod: g.mod, screens: g.screens.filter(x => !laSoTT(x)) }))]
 
   const modHienTai = keyHienTai ? nhomHienThi[0]?.mod : null
-  const title = modHienTai ? `Báo cáo ${modHienTai.ten}` : 'Báo cáo'
+  const title = modHienTai ? `Báo cáo ${modHienTai.ten}` : chiSoTT ? tenSoTT : 'Báo cáo'
 
   const manTrongNhom = nhomHienThi.flatMap(g => g.screens).filter(x => apDung(x, s.cheDo, s))   // không đếm báo cáo đã bỏ (T171)
   const co = manTrongNhom.filter(x => moDuoc(x, s.goi)).length
@@ -133,7 +146,7 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
     return [...pinned, ...recent]
   }, [ghim, tatCaBCMap, s.goi, s.cheDo, s.ppGtgt, s.ppTndn])
 
-  const hienGhimGanDay = sc.slug === 'tat-ca' && !q.trim() && topItems.length > 0
+  const hienGhimGanDay = sc.slug === 'tat-ca' && !chiSoTT && !q.trim() && topItems.length > 0
 
   const toggleGhim = (slug: string, e: React.MouseEvent) => {
     e.preventDefault()
@@ -152,11 +165,18 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
       </PageHead>
       <div className="bc-tt">
         <nav className="bc-rail">
-          <Link to="/app/bao-cao/tat-ca" className={sc.slug === 'tat-ca' ? 'on' : ''}>
+          <Link to="/app/bao-cao/tat-ca" className={sc.slug === 'tat-ca' && !chiSoTT ? 'on' : ''}>
             <Icon n="chart" />
             <span>Tất cả</span>
             <span className="bc-dem">{tongHienRail}</span>
           </Link>
+          {demSoTT > 0 && (
+            <Link to="/app/bao-cao/tat-ca?nhom=so-sach" className={chiSoTT ? 'on' : ''} title={tenSoTT}>
+              <Icon n="book" />
+              <span>Sổ sách {CHE_DO[s.cheDo].ngan}</span>
+              <span className="bc-dem">{demSoTT}</span>
+            </Link>
+          )}
           {nhomRail.map(g => (
             <Link
               key={g.mod.key}
