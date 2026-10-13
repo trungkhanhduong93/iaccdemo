@@ -287,6 +287,12 @@ export function ThongTinDonVi({ sc }: ScreenProps) {
               <div className="f c2"><label>Phương pháp thuế TNDN</label>
                 <Select className="inp" value={tndnCoDinh ? 'thuNhap' : f.ppTndn} disabled={tndnCoDinh} aria-label="Phương pháp thuế TNDN" onChange={e => sua({ ppTndn: e.target.value as PpTndn })}
                   ds={[...(tndnCoDinh ? [] : [{ v: 'tyLe', t: PP_THU_NHAP.doanhThu }]), { v: 'thuNhap', t: PP_THU_NHAP.loiNhuan }]} /></div>
+              {/* Bộ sổ TT58 theo cách tính thuế, ngay dưới hai ô phương pháp thuế (T174) */}
+              {s.cheDo === 'TT58' && (
+                <div className="f c4">
+                  <small className="muted">{moTaBoSoTT58(thTT58(f.ppGtgt, tndnCoDinh ? 'thuNhap' : f.ppTndn))}</small>
+                </div>
+              )}
             </>}
           </div>
           {doiLoai && <Note kind="warn" icon="alert">Đổi loại hình không tự đổi gói, chế độ kế toán. Xem lại ở <Link to="/app/he-thong/goi-thue-bao">Gói thuê bao</Link> và Cấu hình kế toán.</Note>}
@@ -304,11 +310,6 @@ export function ThongTinDonVi({ sc }: ScreenProps) {
                 ds={[-2, -1, 0, 1].map(d => String(new Date().getFullYear() + d)).map(n => ({ v: n, t: n }))} />
             </div>
             <div className="f c2"><label>Phương pháp tính giá xuất kho</label><Select className="inp"><option>Bình quân gia quyền cuối kỳ</option><option>Bình quân tức thời</option><option>Nhập trước xuất trước</option></Select></div>
-            {s.cheDo === 'TT58' && loai === 'dn' && (
-              <div className="f c4">
-                <small className="muted">{moTaBoSoTT58(thTT58(f.ppGtgt, tndnCoDinh ? 'thuNhap' : f.ppTndn))}</small>
-              </div>
-            )}
           </div>
         </Card>
       </div>
