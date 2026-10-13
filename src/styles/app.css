@@ -10601,3 +10601,547 @@ body:has(.m-lp) .m-thanh-duoi {
   box-sizing: border-box !important;
 }
 
+/* ── Điện thoại đợt 8 (T184) ── */
+@media (max-width: 767px) {
+  /* Ẩn thanh dưới nổi và nút thêm FAB khi mở popup hoặc khởi tạo */
+  body:has(.ktf-pop) .m-thanh-duoi,
+  body:has(.ktf-pop) .m-nut-them-fab,
+  body:has(.hdb-hop) .m-thanh-duoi,
+  body:has(.hdb-hop) .m-nut-them-fab,
+  body:has(.ds-hop) .m-thanh-duoi,
+  body:has(.ds-hop) .m-nut-them-fab,
+  body:has(.tq-modal-box) .m-thanh-duoi,
+  body:has(.tq-modal-box) .m-nut-them-fab {
+    display: none !important;
+  }
+
+  /* ── 1. Đăng nhập & Quên mật khẩu ── */
+  .auth {
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: 100dvh !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    background: #fff !important;
+  }
+
+  .auth-l {
+    display: none !important;
+  }
+
+  .auth-r {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    justify-content: center !important;
+    padding: 24px var(--m-le-man) !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    flex: 1 !important;
+  }
+
+  .auth-box {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+  }
+
+  .auth-box .inp,
+  .auth-box input.inp {
+    min-height: var(--m-nut-h, 44px) !important;
+    height: var(--m-nut-h, 44px) !important;
+    font-size: 16px !important;
+    box-sizing: border-box !important;
+  }
+
+  .auth-box .btn.pri,
+  .auth-box button[type="submit"] {
+    width: 100% !important;
+    min-height: var(--m-nut-h, 44px) !important;
+    font-size: 16px !important;
+    justify-content: center !important;
+  }
+
+  .auth-box .btn.ghost {
+    min-height: var(--m-nut-h, 44px) !important;
+    justify-content: center !important;
+    width: 100% !important;
+  }
+
+  /* ── 2. Chọn đơn vị kế toán (ChonDonVi) ── */
+  div:has(> div > .stack > .dv-card) {
+    padding: 24px var(--m-le-man) !important;
+    box-sizing: border-box !important;
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 100dvh !important;
+  }
+
+  div:has(> .stack > .dv-card) {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .dv-card {
+    padding: 12px 14px !important;
+    gap: 10px !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    min-height: 44px !important;
+  }
+
+  .dv-card .grow {
+    min-width: 0 !important;
+    overflow: hidden !important;
+    word-break: break-word !important;
+  }
+
+  .dv-card b {
+    font-size: var(--m-chu-than, 14px) !important;
+    line-height: 1.3 !important;
+  }
+
+  .dv-card small {
+    font-size: var(--m-chu-phu, 12px) !important;
+    line-height: 1.35 !important;
+  }
+
+  /* ── 3. Khởi tạo đơn vị (KhoiTao) ── */
+  /* Bỏ nền popup khởi tạo: nền đó cũng chứa div > .steps */
+  div:not(.ktf-pop-nen):has(> div > .steps) {
+    padding: 16px var(--m-le-man) !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 100dvh !important;
+  }
+
+  div:has(> .steps) {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  div:has(> .steps) .card {
+    padding: 16px 14px !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+  }
+
+  /* Thanh bước (stepper) cuộn ngang được, không tràn trang */
+  .steps {
+    display: flex !important;
+    gap: 8px !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+    margin-bottom: 16px !important;
+    padding-bottom: 4px !important;
+    flex-wrap: nowrap !important;
+  }
+
+  .steps::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .steps > div {
+    flex: 1 0 auto !important;
+    min-width: 70px !important;
+  }
+
+  .steps span {
+    font-size: 11px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  /* Bảng hoặc lưới nhiều cột chuyển thành 1 cột */
+  div:has(> .steps) .grid.g2,
+  div:has(> .steps) .grid.g3,
+  div:has(> .steps) .form-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  div:has(> .steps) .form-grid .f.c2,
+  div:has(> .steps) .form-grid .f.c4 {
+    grid-column: span 1 !important;
+  }
+
+  div:has(> .steps) .inp,
+  div:has(> .steps) input.inp,
+  div:has(> .steps) select.inp {
+    min-height: 44px !important;
+    font-size: 16px !important;
+    box-sizing: border-box !important;
+  }
+
+  div:has(> .steps) .f .row > .btn {
+    min-height: 44px !important;
+  }
+
+  div:has(> .steps) .tbl-wrap,
+  div:has(> .steps) table {
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    display: block !important;
+  }
+
+  div:has(> .steps) .card > .row:last-child {
+    flex-direction: column-reverse !important;
+    gap: 10px !important;
+    width: 100% !important;
+    margin-top: 20px !important;
+  }
+
+  div:has(> .steps) .card > .row:last-child .btn {
+    width: 100% !important;
+    min-height: 44px !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+  }
+
+  /* ── 4. Khởi tạo FABi (KhoiTaoFabi) ── */
+  .ktf {
+    padding: 16px var(--m-le-man) !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    min-height: 100dvh !important;
+  }
+
+  .ktf-in {
+    max-width: 100% !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .ktf-dau {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    margin-bottom: 16px !important;
+  }
+
+  .ktf-chao {
+    padding: 24px 16px !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+  }
+
+  .ktf-chao .btn {
+    width: 100% !important;
+    min-height: 44px !important;
+    justify-content: center !important;
+  }
+
+  .ktf-nhan {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+  }
+
+  .ktf-gt {
+    padding: 16px 14px !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+  }
+
+  .ktf-gt-luoi {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  .ktf-mo {
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    box-sizing: border-box !important;
+  }
+
+  .ktf-gt-hoi {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+  }
+
+  .ktf-gt-hoi .btn {
+    width: 100% !important;
+    min-height: 44px !important;
+    justify-content: center !important;
+  }
+
+  .ktf .inp,
+  .ktf input.inp {
+    min-height: 44px !important;
+    font-size: 16px !important;
+  }
+
+  /* ── 5. OnboardFabi & các hộp thoại toàn màn (100dvh) ── */
+  .ktf-pop-nen {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100dvh !important;
+    padding: 0 !important;
+    z-index: 500 !important;
+    display: flex !important;
+    align-items: stretch !important;
+    justify-content: flex-start !important;
+  }
+
+  /* Phủ kín khung nền */
+  .ktf-pop {
+    flex: 1 1 auto !important;
+    width: 100% !important;
+    max-width: none !important;
+    height: 100% !important;
+    max-height: none !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    padding: 16px var(--m-le-man) calc(16px + env(safe-area-inset-bottom, 0px)) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    box-sizing: border-box !important;
+    overflow-y: auto !important;
+    background: var(--bg) !important;
+  }
+
+  .ktf-pop-dau {
+    flex: none !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    margin-bottom: 12px !important;
+  }
+
+  .ktf-pop .steps {
+    flex: none !important;
+  }
+
+  .ktf-pop .ktf-luoi {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 14px !important;
+    flex: 1 !important;
+    min-height: 0 !important;
+  }
+
+  .ktf-pop .card {
+    padding: 16px 14px !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+  }
+
+  .ktf-pop .ktf-ben {
+    position: static !important;
+    width: 100% !important;
+  }
+
+  .ktf-pop .card > .row:last-child {
+    position: sticky !important;
+    bottom: 0 !important;
+    background: #fff !important;
+    padding: 12px 0 0 !important;
+    margin-top: 16px !important;
+    border-top: 1px solid var(--line) !important;
+    display: flex !important;
+    gap: 8px !important;
+    width: 100% !important;
+    z-index: 10 !important;
+  }
+
+  .ktf-pop .card > .row:last-child .btn {
+    flex: 1 !important;
+    min-height: 44px !important;
+    justify-content: center !important;
+  }
+
+  .ktf-pop .inp,
+  .ktf-pop input.inp,
+  .ktf-pop select.inp {
+    min-height: 44px !important;
+    font-size: 16px !important;
+  }
+
+  .ktf-goi-xem > button {
+    grid-template-columns: 18px 80px minmax(0, 1fr) !important;
+    gap: 8px !important;
+    padding: 10px 12px !important;
+    font-size: 12.5px !important;
+  }
+
+  .ktf-goi-xem .ktf-goi-dem {
+    grid-column: 2 / -1 !important;
+    margin-top: 2px !important;
+  }
+
+  /* Hộp đồng bộ HopDongBo */
+  .hdb-overlay {
+    padding: 0 !important;
+    align-items: stretch !important;
+    justify-content: stretch !important;
+    z-index: 500 !important;
+  }
+
+  .hdb-hop {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    box-sizing: border-box !important;
+  }
+
+  .hdb-dau {
+    flex: none !important;
+    padding: 14px 16px !important;
+  }
+
+  .hdb-than {
+    flex: 1 !important;
+    overflow-y: auto !important;
+    min-height: 0 !important;
+    padding: 14px 16px !important;
+  }
+
+  .hdb-chan {
+    flex: none !important;
+    position: sticky !important;
+    bottom: 0 !important;
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px)) !important;
+    background: #fff !important;
+    border-top: 1px solid var(--line) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    z-index: 10 !important;
+  }
+
+  .hdb-chan-phai {
+    width: 100% !important;
+    display: flex !important;
+    gap: 8px !important;
+  }
+
+  .hdb-chan-phai .btn {
+    flex: 1 !important;
+    min-height: 44px !important;
+    justify-content: center !important;
+  }
+
+  /* Hộp thoại dùng chung ds-hop */
+  .overlay:has(> .ds-hop) {
+    padding: 0 !important;
+    align-items: stretch !important;
+    justify-content: stretch !important;
+    z-index: 500 !important;
+  }
+
+  .overlay:has(> .ds-hop) > .ds-hop,
+  .ds-hop-nen > .ds-hop {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    box-sizing: border-box !important;
+    background: #fff !important;
+  }
+
+  .ds-hop > .ds-hop-dau {
+    flex: none !important;
+    padding: 14px 16px !important;
+    border-bottom: 1px solid var(--line) !important;
+  }
+
+  .ds-hop > .ds-hop-ds,
+  .ds-hop > .dm-hop-than,
+  .ds-hop > .ds-hop-than,
+  .ds-hop > .stack {
+    flex: 1 !important;
+    overflow-y: auto !important;
+    min-height: 0 !important;
+    padding: 14px 16px !important;
+    box-sizing: border-box !important;
+  }
+
+  .ds-hop > .ds-chan {
+    flex: none !important;
+    position: sticky !important;
+    bottom: 0 !important;
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px)) !important;
+    background: #fff !important;
+    border-top: 1px solid var(--line) !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    z-index: 10 !important;
+  }
+
+  .ds-hop > .ds-chan .btn {
+    flex: 1 !important;
+    min-height: 44px !important;
+    justify-content: center !important;
+  }
+
+  /* Hộp in chứng từ in-ct-hop */
+  .in-ct-nen {
+    padding: 0 !important;
+    z-index: 500 !important;
+  }
+
+  .in-ct-hop {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    border-radius: 0 !important;
+  }
+
+  .in-ct-dau-hop {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    padding: 10px 14px !important;
+  }
+
+  /* Hộp phím tắt */
+  .pop-backdrop:has(> .card) {
+    padding: 16px !important;
+    box-sizing: border-box !important;
+    z-index: 500 !important;
+  }
+
+  .pop-backdrop > .card {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Hộp tổng quan tq-modal */
+  .tq-modal-bg {
+    padding: 0 !important;
+    z-index: 500 !important;
+  }
+
+  .tq-modal-box {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    border-radius: 0 !important;
+  }
+
+  .tq-modal-ft {
+    position: sticky !important;
+    bottom: 0 !important;
+    padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+}

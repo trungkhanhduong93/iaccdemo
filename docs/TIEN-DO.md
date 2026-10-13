@@ -4,7 +4,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T185.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T192.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
@@ -12,7 +12,13 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
 | T185 | Mở lại báo cáo theo danh sách iFaster cho mọi gói (giữ khung báo cáo IACC): Tổng hợp quỹ tiền, Báo cáo dòng tiền, Sổ công nợ (gộp nhà cung cấp, khách hàng), Báo cáo kết quả kinh doanh, Sổ chi phí, Nhập xuất tồn, tổng hợp, chi tiết nhập kho, xuất kho, báo cáo mua hàng, bán hàng (tổng hợp, chi tiết, theo ngày) | PhuongXT | Đang làm | Sửa `src/modules/bao-cao/danh-sach.ts`, `src/app/registry.ts`, `src/app/plan.ts`, `src/modules/{ban-hang,kho,mua-hang}/index.ts` |
-| T184 | Điện thoại đợt 8: đăng nhập, quên mật khẩu, chọn đơn vị, khởi tạo, khởi tạo FABi, popup onboard và hộp thoại toàn màn ở điện thoại; liệt kê màn còn báo dùng máy tính thành việc mới | Trum | Đang làm | Anti B viết code ở bản clone `Web-dt`, Anti A kiểm. Chỉ thêm CSS mục T184 cuối `app.css` (không đổi markup `OnboardFabi.tsx` của T138), `tools/kiem_tra.py` |
+| T186 | Điện thoại: Xuất bán POS (3.1.1) còn báo dùng máy tính | | Chờ | Từ rà soát T184 (`MChiMayTinh`). Làm màn điện thoại riêng trong `src/ui/mobile/`, nối ở `manMobile.ts` |
+| T187 | Điện thoại: Danh mục tài khoản (1.1), Danh mục chi nhánh còn báo dùng máy tính | | Chờ | Từ rà soát T184. Có thể dùng lại `MDanhMuc`, `MFormDm` của đợt 3, 6 |
+| T188 | Điện thoại: Công thức sơ chế (5.1.5), Công thức chế biến (9.1.3) còn báo dùng máy tính | | Chờ | Từ rà soát T184. Hai màn chung `CongThucScreen` |
+| T189 | Điện thoại: Số dư ban đầu (`tien/so-du-ban-dau`, 10.1.3) còn báo dùng máy tính | | Chờ | Từ rà soát T184 |
+| T190 | Điện thoại: Kiểm tra cuối kỳ (10.1.4), Khoá sổ (10.1.6) và các màn chạy tác vụ (`kind: 'tool'`: 2.1.3, 5.1.7, 5.1.8, 7.1.3, 9.1.1, 9.1.2, 10.1.2, 10.1.5, 10.1.7, 10.1.8, 10.1.9) còn báo dùng máy tính | | Chờ | Từ rà soát T184. Màn `tool` có chung khuôn nút chạy và phần cài đặt, làm một màn điện thoại chung |
+| T191 | Điện thoại: Hệ thống (Người dùng, Vai trò và phân quyền, Nhật ký thao tác, Gói thuê bao, Thông tin đơn vị, Cấu hình kế toán) còn báo dùng máy tính | | Chờ | Từ rà soát T184. Mở từ tab Khác |
+| T192 | Điện thoại: Tiện ích bổ sung (11.1, 11.4, 11.5, 11.6, 11.7, 11.11, 11.16, X2 và màn tác vụ 11.2, 11.3, 11.8–11.10, 11.12–11.15) còn báo dùng máy tính | | Chờ | Từ rà soát T184. Thiết kế mẫu in 11.11 nên giữ chỉ máy tính, hỏi Trum |
 | T169 | Form chứng từ: gõ đổi địa chỉ từ phiếu này sang phiếu khác (vd `#/app/tien/2-1-1/chi-3` sang `chi-6`) thì form giữ số phiếu, đối tượng của phiếu cũ; mở từ danh sách, Trước, Sau thì đúng | | Chờ | Phát hiện ở T168. Sửa `ChungTuForm.tsx`, có thể `VoucherScreen.tsx` (key của form) |
 | T138 | Màn onboard khi bấm từ FABi sang IACC: khởi tạo đơn vị kế toán, điền sẵn từ FABi (chi nhánh, kho, cách đồng bộ, số dư đầu kỳ) | PhuongXT | Dở dang | Popup khởi tạo dữ liệu 4 bước trong phần mềm (`OnboardFabi.tsx`, `Shell.tsx`) đã push, PhuongXT xem lại một lượt. Xem `2026-10-11-phuongxt-man-khoi-tao-fabi.md` |
 | T139 | Phiếu nhập, xuất, điều chuyển kho tự lấy mục chi phí, công việc ngầm định theo kho đã chọn | | Chờ | Tách từ T136. Kho đã có ô `mucCp`, `congViec` ở `truong-dm.ts` 1.8. Sửa `ChungTuForm.tsx` |
@@ -43,6 +49,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T184 | Điện thoại đợt 8: đăng nhập, quên mật khẩu, chọn đơn vị, khởi tạo, khởi tạo FABi gọn trên 390px; popup khởi tạo và hộp thoại phủ kín màn; `kiem_tra.py --dien-thoai` đi trọn đăng nhập tới lập phiếu chi; rà màn còn báo dùng máy tính ra T186–T192 | Trum | 13/10/2026 | [2026-10-13-trum-dien-thoai-dot-8](nhat-ky/2026-10-13-trum-dien-thoai-dot-8.md) |
 | T183 | Điện thoại đợt 6: form danh mục (`MFormDm` dùng lại `CatalogPanel`, modal nổi từ đáy, thêm, sửa hàng hoá, kho, nhà cung cấp, tài khoản ở 390px) | Trum | 13/10/2026 | [2026-10-13-trum-dien-thoai-dot-6](nhat-ky/2026-10-13-trum-dien-thoai-dot-6.md) |
 | T182 | Điện thoại đợt 7: tab Báo cáo (thẻ nhóm A, B, C theo nhóm thật, tìm), sổ dạng bảng (chip kỳ, chi nhánh, lọc dòng, cột ghim, cuộn ngang), báo cáo tờ giấy thu nhỏ vừa màn, chạm phóng to; `kiem_tra.py` nhận `KIEM_TRA_URL` | Trum | 13/10/2026 | [2026-10-13-trum-dien-thoai-dot-7](nhat-ky/2026-10-13-trum-dien-thoai-dot-7.md) |
 | T181 | Danh mục: nút icon "Đồng bộ theo POS" ở hàng hoá, đơn vị tính, kho, phương thức thanh toán, chi nhánh; cột POS ID ở chi nhánh; trạng thái bật tắt trong bảng danh mục thành chấm tròn xanh, đỏ; phương thức thanh toán thêm chứng từ mặc định, TK Nợ ngầm định, mã đối tượng, công việc, mục chi phí, quỹ tiền | Trum | 13/10/2026 | [2026-10-13-trum-dong-bo-pos-danh-muc](nhat-ky/2026-10-13-trum-dong-bo-pos-danh-muc.md) |

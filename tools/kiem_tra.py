@@ -946,6 +946,213 @@ def kiem_tra_bao_cao_dot_7():
     return loi
 
 
+def kiem_tra_dang_nhap_dot_8():
+    loi = []
+    print('Kiểm tra đăng nhập, chọn đơn vị, lập phiếu đợt 8 (390px):')
+    with sync_playwright() as p:
+        b = p.chromium.launch(channel='chrome')
+        pg = b.new_page(
+            viewport={'width': 390, 'height': 844},
+            is_mobile=True,
+            has_touch=True,
+            device_scale_factor=3,
+        )
+        con = []
+        pg.on('console', lambda m: con.append(m.text) if m.type == 'error' else None)
+        pg.on('pageerror', lambda e: con.append(str(e)))
+
+        def kiem_man(ten_man, nut_chinh_loc=None):
+            if con:
+                loi.append(f'{ten_man}: lỗi console {con[:2]}')
+                con.clear()
+            tran = pg.evaluate("document.documentElement.scrollWidth > window.innerWidth")
+            if tran:
+                loi.append(f'{ten_man}: tràn ngang (scrollWidth > innerWidth)')
+            if nut_chinh_loc and nut_chinh_loc.count() > 0:
+                nut = nut_chinh_loc.first
+                nut.scroll_into_view_if_needed()
+                pg.wait_for_timeout(100)
+                bottom = nut.evaluate("el => el.getBoundingClientRect().bottom")
+                inner_h = pg.evaluate("window.innerHeight")
+                if bottom > inner_h + 1:
+                    loi.append(f'{ten_man}: nút chính nằm ngoài khung nhìn (bottom={bottom} > innerHeight={inner_h})')
+
+        SHOTS.mkdir(exist_ok=True)
+
+        # 1. Bắt đầu từ localStorage trống
+        pg.goto(URL + '#/dang-nhap')
+        pg.evaluate("localStorage.clear()")
+        pg.wait_for_timeout(200)
+
+        # 2. Mở màn quên mật khẩu, kiểm không tràn ngang
+        pg.goto(URL + '#/quen-mat-khau')
+        pg.wait_for_selector('.auth-box')
+        pg.wait_for_timeout(300)
+        pg.screenshot(path=str(SHOTS / 'm-08-quen-mat-khau.png'))
+        kiem_man('Quên mật khẩu')
+        print('  - Màn Quên mật khẩu: không tràn ngang')
+
+        # 3. Mở #/dang-nhap từ localStorage trống
+        pg.goto(URL + '#/dang-nhap')
+        pg.wait_for_selector('.auth-box')
+        pg.wait_for_timeout(300)
+        pg.screenshot(path=str(SHOTS / 'm-08-dang-nhap.png'))
+        nut_login = pg.locator('.auth-box button[type="submit"]')
+        kiem_man('Đăng nhập', nut_login)
+        print('  - Màn Đăng nhập: không tràn ngang, nút trong khung nhìn')
+
+        # Gõ email và mật khẩu như người dùng thật
+        pg.locator('.auth-box input.inp').nth(0).fill('thuha@phomay.vn')
+        pg.locator('.auth-box input[type="password"]').fill('123456')
+        pg.wait_for_timeout(150)
+        nut_login.click()
+        pg.wait_for_timeout(500)
+
+        # 4. Nếu có màn chọn đơn vị thì chọn đơn vị đầu tiên
+        if pg.locator('.dv-card').count() > 0:
+            pg.screenshot(path=str(SHOTS / 'm-08-chon-don-vi.png'))
+            nut_dv = pg.locator('.dv-card').first
+            kiem_man('Chọn đơn vị', nut_dv)
+            print('  - Màn Chọn đơn vị: không tràn ngang, thẻ đơn vị trong khung nhìn')
+            nut_dv.click()
+            pg.wait_for_timeout(500)
+
+        # 5. Vào được /app
+        pg.wait_for_selector('.m-app')
+        pg.wait_for_timeout(300)
+        pg.screenshot(path=str(SHOTS / 'm-08-trang-chu.png'))
+        kiem_man('Trang chủ /app')
+        print('  - Vào được /app thành công')
+
+        # 6. Mở Phiếu chi qua thao tác người dùng (Nghiệp vụ -> Thu chi -> Phiếu thu chi)
+        tab_nv = pg.locator('.m-thanh-duoi a[href*="/app/nghiep-vu"]')
+        if tab_nv.count() == 0:
+            loi.append('Thanh dưới: không tìm thấy tab Nghiệp vụ')
+        else:
+            kiem_man('Tab Nghiệp vụ', tab_nv)
+            tab_nv.click()
+            pg.wait_for_timeout(300)
+            kiem_man('Màn Nghiệp vụ')
+
+            o_tien = pg.locator('.m-nv-o:has-text("Thu chi")')
+            if o_tien.count() == 0:
+                loi.append('Nghiệp vụ: không tìm thấy phân hệ Thu chi')
+            else:
+                kiem_man('Phân hệ Thu chi', o_tien)
+                o_tien.click()
+                pg.wait_for_timeout(300)
+                kiem_man('Chi tiết phân hệ Thu chi')
+
+                dong_pc = pg.locator('.m-nv-dong[href*="tien/2-1-1"]')
+                if dong_pc.count() == 0:
+                    loi.append('Phân hệ Thu chi: không tìm thấy màn Phiếu thu chi')
+                else:
+                    kiem_man('Dòng Phiếu thu chi', dong_pc)
+                    dong_pc.click()
+                    pg.wait_for_timeout(500)
+                    pg.screenshot(path=str(SHOTS / 'm-08-ds-phieu-chi.png'))
+                    kiem_man('Danh sách Phiếu chi')
+
+                    nut_them = pg.locator('.m-nut-them-fab')
+                    if nut_them.count() == 0:
+                        loi.append('Phiếu chi: không tìm thấy nút thêm mới')
+                    else:
+                        kiem_man('Nút thêm Phiếu chi', nut_them)
+                        nut_them.first.click()
+                        pg.wait_for_timeout(200)
+
+                        # Chọn loại "Chi" nếu có tấm trượt chọn loại
+                        dong_chi = pg.locator('.m-tam-dong:has-text("Chi")')
+                        if dong_chi.count() > 0:
+                            dong_chi.first.click()
+                            pg.wait_for_timeout(200)
+
+                        if pg.locator('.m-lp').count() == 0:
+                            loi.append('Phiếu chi: không mở form lập phiếu .m-lp')
+                        else:
+                            # Bước 1
+                            nut_tiep_1 = pg.locator('.m-lp-nut-tiep, .m-lp-day button:has-text("Tiếp tục")')
+                            if nut_tiep_1.count() == 0:
+                                loi.append('Phiếu chi: thiếu nút Tiếp tục ở Bước 1')
+                            else:
+                                kiem_man('Lập phiếu chi Bước 1', nut_tiep_1)
+                                pg.screenshot(path=str(SHOTS / 'm-08-lap-phieu-b1.png'))
+                                nut_tiep_1.first.click()
+                                pg.wait_for_timeout(250)
+
+                                # Bước 2: Thêm dòng và điền số tiền
+                                nut_them_dong = pg.locator('.m-lp-btn-them-dong, button:has-text("Thêm dòng")')
+                                if nut_them_dong.count() > 0:
+                                    nut_them_dong.first.click()
+                                    pg.wait_for_timeout(150)
+
+                                inps_tien = pg.locator('.m-lp-sua-inp.num')
+                                if inps_tien.count() >= 1:
+                                    inps_tien.nth(0).fill('600.000')
+
+                                nut_tiep_2 = pg.locator('.m-lp-day button:has-text("Tiếp tục")')
+                                kiem_man('Lập phiếu chi Bước 2', nut_tiep_2)
+                                pg.screenshot(path=str(SHOTS / 'm-08-lap-phieu-b2.png'))
+                                nut_tiep_2.first.click()
+                                pg.wait_for_timeout(250)
+
+                                # Bước 4: Lưu phiếu
+                                nut_luu = pg.locator('.m-lp-day button.m-lp-nut-chinh')
+                                if nut_luu.count() == 0:
+                                    loi.append('Phiếu chi: không tìm thấy nút Lưu ở Bước 4')
+                                else:
+                                    kiem_man('Lập phiếu chi Bước 4', nut_luu)
+                                    pg.screenshot(path=str(SHOTS / 'm-08-lap-phieu-b4.png'))
+                                    nut_luu.first.click()
+                                    pg.wait_for_timeout(400)
+
+                                    thanh_cong = pg.locator('.m-lp-thanh-cong-tieu, :has-text("Tạo chứng từ thành công")')
+                                    if thanh_cong.count() == 0:
+                                        loi.append('Phiếu chi: không hiện màn hình Tạo chứng từ thành công')
+                                    else:
+                                        mota_txt = pg.locator('.m-lp-thanh-cong-mota').inner_text() if pg.locator('.m-lp-thanh-cong-mota').count() > 0 else ''
+                                        m_so = re.search(r'([A-Z0-9\-\/]+2610\-[0-9]+|[A-Z]+2610\-[0-9]+)', mota_txt)
+                                        so_phieu = m_so.group(1) if m_so else ''
+                                        if not so_phieu:
+                                            m_b = pg.locator('.m-lp-thanh-cong-mota b')
+                                            if m_b.count() > 0:
+                                                so_phieu = m_b.first.inner_text().strip()
+                                        pg.screenshot(path=str(SHOTS / 'm-08-lap-phieu-thanh-cong.png'))
+                                        nut_dong_xem = pg.locator('button:has-text("Xem phiếu"), button:has-text("Đóng")')
+                                        kiem_man('Màn hình hoàn tất lập phiếu', nut_dong_xem)
+                                        print(f'  - Lập phiếu chi thành công {so_phieu}: mọi màn không tràn ngang, nút chính trong khung nhìn')
+
+        b.close()
+    return loi
+
+
+def kiem_tra_popup_khoi_tao_dot_8():
+    """Popup khởi tạo (Thêm đơn vị kế toán) phủ kín màn 390px, nút cuối nằm trong khung nhìn (T184)"""
+    loi = []
+    with sync_playwright() as p:
+        b = p.chromium.launch(channel='chrome')
+        pg = b.new_page(viewport={'width': 390, 'height': 844}, is_mobile=True, has_touch=True)
+        con = []
+        pg.on('pageerror', lambda e: con.append(str(e)))
+        pg.goto(URL + '#/dang-nhap')
+        pg.wait_for_selector('.auth-box')
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PL'))})")
+        pg.goto(URL + '?popup=1#/chon-don-vi')
+        pg.get_by_text('Thêm đơn vị kế toán').click()
+        pg.wait_for_selector('.ktf-pop')
+        pg.wait_for_timeout(500)
+        r = pg.evaluate("() => { const q = document.querySelector('.ktf-pop').getBoundingClientRect(); return [q.x, q.y, q.width, q.height] }")
+        if abs(r[0]) > 1 or abs(r[1]) > 1 or abs(r[2] - 390) > 1 or abs(r[3] - 844) > 1:
+            loi.append(f'Popup khởi tạo: không phủ kín màn 390x844 (x={r[0]}, y={r[1]}, {r[2]}x{r[3]})')
+        if pg.evaluate("document.documentElement.scrollWidth > innerWidth"):
+            loi.append('Popup khởi tạo: tràn ngang')
+        if con:
+            loi.append(f'Popup khởi tạo: lỗi console {con[:2]}')
+        print('  - Popup khởi tạo: phủ kín màn' if not loi else '  - Popup khởi tạo: có lỗi')
+        b.close()
+    return loi
+
+
 def kiem_tra_cac_khung_dt():
     loi, dem = [], 0
     for rong, cao in KHUNG_DT:
@@ -965,12 +1172,16 @@ def kiem_tra_cac_khung_dt():
     loi += loi_d6
     loi_d7 = kiem_tra_bao_cao_dot_7()
     loi += loi_d7
+    loi_d8 = kiem_tra_dang_nhap_dot_8()
+    loi += loi_d8
+    loi += kiem_tra_popup_khoi_tao_dot_8()
     if loi:
         print(f'{len(loi)} LỖI:')
         for x in loi:
             print('  -', x)
         sys.exit(1)
     print('Không có lỗi.')
+
 
 
 def main():
