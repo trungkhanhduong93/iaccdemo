@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 13/10/2026
 
+- T178: Trên điện thoại lập được phiếu thu chi, nhập, xuất kho, mua, bán theo từng bước: chọn kho, đối tượng, thời gian; tích chọn hàng; sửa số lượng, đơn giá; xem lại rồi Lưu hoặc Lưu và thêm; màn "Tạo chứng từ thành công". Sửa, Sao chép phiếu mở cùng các bước. Phiếu kiểm kê, điều chỉnh, sản xuất, điều chuyển vẫn báo dùng máy tính.
 - T177: Trên điện thoại, bấm một phiếu thì mở màn xem chi tiết: thông tin phiếu, từng dòng hàng hoặc khoản thu chi, tổng tiền, hạch toán, lịch sử; thanh dưới có Ghi sổ hoặc Bỏ ghi sổ và menu In, Xoá. Sửa, Sao chép phiếu vẫn báo dùng máy tính.
 - T176: Trên điện thoại, danh sách chứng từ (thu chi, mua, bán, kho) và danh mục hiện dạng thẻ, có ô tìm, chip trạng thái, chip loại phiếu, màn lọc theo thời gian, đối tượng, nguồn, màn trống khi không có kết quả. Mở chi tiết phiếu vẫn báo dùng máy tính.
 - T175: Trên điện thoại, tab Trang chủ có thao tác nhanh Thu tiền, Chi tiền, Nhập kho, Xuất kho và thẻ doanh thu, lợi nhuận, tiền; tab Nghiệp vụ có lưới phân hệ, bấm vào ra danh sách màn; tab Khác có tài khoản, danh mục, hệ thống, chọn đơn vị, gói, đăng xuất. Thanh dưới dạng nổi.

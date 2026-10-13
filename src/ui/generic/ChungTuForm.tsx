@@ -1261,16 +1261,16 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
 }
 
 /** Các quỹ chuyển qua lại trên phiếu chuyển quỹ: quỹ tiền mặt từng chi nhánh, rồi tài khoản ngân hàng */
-const QUY_TIEN = [
+export const QUY_TIEN = [
   ...CHI_NHANH.map(c => `Quỹ tiền mặt ${c.ngan}`),
   ...TK_NGAN_HANG.map(t => `${t.nh.split(',')[0]} ${t.so}`),
 ]
 
 /** Đoán lý do thu, chi từ diễn giải; không khớp thì lấy lý do cuối danh sách (Thu khác, Chi phí khác) */
 /** Lý do chi đưa vào chi phí chờ phân bổ (LD17): lưu phiếu xong hỏi tạo thẻ chi phí phân bổ */
-const LY_CHO_PHAN_BO = 'Chi phí chờ phân bổ'
+export const LY_CHO_PHAN_BO = 'Chi phí chờ phân bổ'
 
-const LY_THEO_DG: [string, string][] = [
+export const LY_THEO_DG: [string, string][] = [
   ['thue', 'Chi phí khác'], ['no khach', 'Thu nợ khách hàng'], ['tra no', 'Thu nợ khách hàng'], ['ban hang', 'Thu tiền bán hàng'],
   ['dat tiec', 'Thu tiền bán hàng'], ['tien don', 'Thu tiền bán hàng'], ['tam ung', 'Chi tạm ứng'], ['tra tien', 'Trả tiền nhà cung cấp'],
   ['mua', 'Chi mua nguyên vật liệu'], ['luong', 'Chi trả lương'],
@@ -1329,7 +1329,7 @@ function TongDay({ tong, soDong }: { tong: number; soDong: number }) {
 }
 
 /** Tháng hạch toán lãi lỗ chọn được: tháng của ngày chứng từ rồi lùi về các tháng trước, dừng ở tháng đã khoá sổ */
-function thangLaiLo(ngay: string): string[] {
+export function thangLaiLo(ngay: string): string[] {
   const [, m0, y0] = ngay.split('/').map(Number)
   if (!m0 || !y0) return []
   const ds: string[] = []
@@ -1402,11 +1402,11 @@ function HopThanhToan({ tieuDe, chiTt, conLai, quyTm, ngay0, dg0, onDong, onLuu 
 }
 
 /** Chứng từ thu, chi sinh từ phiếu mua, bán trả tiền ngay (T85), theo loại phiếu của màn Thu chi 2.1.1 */
-const MAN_THU_CHI = 'tien/2-1-1'
+export const MAN_THU_CHI = 'tien/2-1-1'
 /** Ô chọn quỹ trên hàng Thanh toán: chữ và chiều cao như phần còn lại của hàng */
 const O_TT = { fontSize: 13, height: 30, minWidth: 220 }
-const TEN_CT_TT: Record<string, string> = { chi: 'Chi tiền mặt', unc: 'Chi ngân hàng', thu: 'Thu tiền mặt', bc: 'Thu ngân hàng' }
-const TIEN_TO_CT_TT: Record<string, string> = { chi: 'PC', unc: 'UNC', thu: 'PT', bc: 'BC' }
+export const TEN_CT_TT: Record<string, string> = { chi: 'Chi tiền mặt', unc: 'Chi ngân hàng', thu: 'Thu tiền mặt', bc: 'Thu ngân hàng' }
+export const TIEN_TO_CT_TT: Record<string, string> = { chi: 'PC', unc: 'UNC', thu: 'PT', bc: 'BC' }
 
 export function lyMacDinh(ds: string[], dg: string) {
   const l = fold(dg)

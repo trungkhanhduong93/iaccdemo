@@ -439,6 +439,222 @@ def kiem_tra_xem_phieu_dot_4():
     return loi
 
 
+def kiem_tra_lap_phieu_dot_5():
+    loi = []
+    bh_txt = (REPO / 'src' / 'modules' / 'ban-hang' / 'index.ts').read_text(encoding='utf-8')
+    feats = set()
+    try:
+        f_json = json.loads((REPO / 'src' / 'app' / 'features.json').read_text(encoding='utf-8'))
+        feats = set(x['c'] for x in f_json.get('feats', []))
+    except Exception:
+        pass
+    m_bh = re.findall(r"'([0-9\.\-]+)':\s*\{[^}]*voucher", bh_txt)
+    slug_bh = '3-1-2'
+    for c in m_bh:
+        if not feats or c in feats:
+            slug_bh = c.replace('.', '-')
+            break
+
+    ds_phieu = [
+        ('Phiếu chi', 'tien/2-1-1', True),
+        ('Nhập kho', 'kho/5-1-1', False),
+        ('Bán hàng', f'ban-hang/{slug_bh}', False),
+    ]
+
+    print('Kiểm tra lập phiếu đợt 5 (390px -> 1440px, gói PL):')
+    with sync_playwright() as p:
+        b = p.chromium.launch(channel='chrome')
+        pg = b.new_page(
+            viewport={'width': 390, 'height': 844},
+            is_mobile=True,
+            has_touch=True,
+            device_scale_factor=3,
+        )
+        con = []
+        pg.on('console', lambda m: con.append(m.text) if m.type == 'error' else None)
+        pg.on('pageerror', lambda e: con.append(str(e)))
+
+        pg.goto(URL + '#/dang-nhap')
+        pg.wait_for_selector('.auth-box')
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PL'))})")
+
+        for ten_phieu, slug, la_tien in ds_phieu:
+            path_ds = f'/app/{slug}'
+            pg.goto(f'{URL}?goi=PL&p={abs(hash(path_ds))}#{path_ds}')
+            pg.wait_for_timeout(800)
+
+            nut_them = pg.locator('.m-nut-them-fab')
+            if nut_them.count() == 0:
+                loi.append(f'{ten_phieu} ({path_ds}): không tìm thấy nút thêm mới')
+                continue
+            nut_them.first.click()
+            pg.wait_for_timeout(200)
+
+            if la_tien:
+                dong_chi = pg.locator('.m-tam-dong:has-text("Chi")')
+                if dong_chi.count() > 0:
+                    dong_chi.first.click()
+                    pg.wait_for_timeout(200)
+
+            if pg.locator('.m-lp').count() == 0:
+                loi.append(f'{ten_phieu} ({path_ds}): không mở form lập phiếu .m-lp')
+                continue
+
+            if pg.locator('.m-thanh-tren').count() > 0 and pg.locator('.m-thanh-tren').is_visible():
+                loi.append(f'{ten_phieu} ({path_ds}): .m-thanh-tren vẫn hiển thị khi mở MLapPhieu')
+
+            tran_b1 = pg.evaluate("document.documentElement.scrollWidth > window.innerWidth")
+            if tran_b1:
+                loi.append(f'{ten_phieu} ({path_ds}): tràn ngang ở Bước 1')
+
+            nut_tiep_1 = pg.locator('.m-lp-nut-tiep, .m-lp-day button:has-text("Tiếp tục")')
+            if nut_tiep_1.count() == 0:
+                loi.append(f'{ten_phieu} ({path_ds}): thiếu nút Tiếp tục ở Bước 1')
+                continue
+            nut_tiep_1.first.click()
+            pg.wait_for_timeout(250)
+
+            if la_tien:
+                nut_them_dong = pg.locator('.m-lp-btn-them-dong, button:has-text("Thêm dòng")')
+                if nut_them_dong.count() > 0:
+                    nut_them_dong.first.click()
+                    pg.wait_for_timeout(150)
+
+                inps_tien = pg.locator('.m-lp-sua-inp.num')
+                if inps_tien.count() >= 2:
+                    inps_tien.nth(0).fill('600.000')
+                    inps_tien.nth(1).fill('400.000')
+                elif inps_tien.count() >= 1:
+                    inps_tien.nth(0).fill('600.000')
+
+                nut_tiep_3 = pg.locator('.m-lp-day button:has-text("Tiếp tục")')
+                nut_tiep_3.first.click()
+                pg.wait_for_timeout(250)
+            else:
+                the_hang = pg.locator('.m-lp-the-hang')
+                if the_hang.count() < 2:
+                    loi.append(f'{ten_phieu} ({path_ds}): không đủ 2 thẻ hàng ở Bước 2')
+                    continue
+                the_hang.nth(0).click()
+                pg.wait_for_timeout(100)
+                the_hang.nth(1).click()
+                pg.wait_for_timeout(100)
+
+                nut_ds_chon = pg.locator('.m-lp-day button:has-text("Danh sách đã chọn")')
+                nut_ds_chon.first.click()
+                pg.wait_for_timeout(250)
+
+                inps_num = pg.locator('.m-lp-sua-hang .m-lp-sua-inp.num')
+                if inps_num.count() >= 2:
+                    inps_num.nth(0).fill('2')
+                if inps_num.count() >= 4:
+                    inps_num.nth(2).fill('3')
+
+                nut_tiep_3 = pg.locator('.m-lp-day button:has-text("Tiếp tục")')
+                nut_tiep_3.first.click()
+                pg.wait_for_timeout(250)
+
+            tran_b4 = pg.evaluate("document.documentElement.scrollWidth > window.innerWidth")
+            if tran_b4:
+                loi.append(f'{ten_phieu} ({path_ds}): tràn ngang ở Bước 4')
+
+            nut_luu = pg.locator('.m-lp-day button.m-lp-nut-chinh')
+            if nut_luu.count() == 0:
+                loi.append(f'{ten_phieu} ({path_ds}): không tìm thấy nút Lưu ở Bước 4')
+                continue
+            nut_luu.first.click()
+            pg.wait_for_timeout(400)
+
+            thanh_cong = pg.locator('.m-lp-thanh-cong-tieu, :has-text("Tạo chứng từ thành công")')
+            if thanh_cong.count() == 0:
+                loi.append(f'{ten_phieu} ({path_ds}): không hiện màn hình Tạo chứng từ thành công')
+                continue
+
+            mota_txt = pg.locator('.m-lp-thanh-cong-mota').inner_text() if pg.locator('.m-lp-thanh-cong-mota').count() > 0 else ''
+            m_so = re.search(r'([A-Z0-9\-\/]+2610\-[0-9]+|[A-Z]+2610\-[0-9]+)', mota_txt)
+            so_phieu = m_so.group(1) if m_so else ''
+            if not so_phieu:
+                m_b = pg.locator('.m-lp-thanh-cong-mota b')
+                if m_b.count() > 0:
+                    so_phieu = m_b.first.inner_text().strip()
+
+            if not so_phieu:
+                loi.append(f'{ten_phieu} ({path_ds}): không đọc được số phiếu từ màn hình thành công')
+
+            nut_xem = pg.locator('button:has-text("Xem phiếu")')
+            if nut_xem.count() == 0:
+                loi.append(f'{ten_phieu} ({path_ds}): thiếu nút Xem phiếu')
+                continue
+            nut_xem.first.click()
+            pg.wait_for_timeout(350)
+
+            tong_txt = pg.locator('.m-xp-day-tong').inner_text().strip() if pg.locator('.m-xp-day-tong').count() > 0 else '0'
+            so_tien = int(re.sub(r'\D', '', tong_txt) or 0)
+            if so_tien == 0:
+                loi.append(f'{ten_phieu} ({so_phieu}): tổng tiền bằng 0 đ')
+
+            pg.goto(f'{URL}?goi=PL&p={abs(hash(path_ds))}#{path_ds}')
+            pg.wait_for_timeout(300)
+
+            so_the_dau = pg.locator('.m-the-ct .m-the-ct-so').first.inner_text().strip() if pg.locator('.m-the-ct .m-the-ct-so').count() > 0 else ''
+            if so_phieu and so_phieu not in so_the_dau:
+                loi.append(f'{ten_phieu}: số phiếu {so_phieu} không nằm ở thẻ đầu danh sách điện thoại (thấy {so_the_dau})')
+
+            pg.set_viewport_size({'width': 1440, 'height': 900})
+            pg.wait_for_timeout(300)
+
+            row_dau = pg.locator('table.tbl tbody tr:first-child').inner_text() if pg.locator('table.tbl tbody tr').count() > 0 else ''
+            if so_phieu and so_phieu not in row_dau:
+                loi.append(f'{ten_phieu}: số phiếu {so_phieu} không nằm ở dòng đầu bảng máy tính (thấy {row_dau[:40]})')
+
+            pg.set_viewport_size({'width': 390, 'height': 844})
+            pg.wait_for_timeout(150)
+
+            if con:
+                loi.append(f'{ten_phieu}: lỗi console {con[:2]}')
+                con.clear()
+
+            print(f'  - {ten_phieu}: lập thành công {so_phieu}, tổng {so_tien:,} đ'.replace(',', '.'))
+
+        # Sửa phiếu mẫu có sẵn (chưa có _dong): mở sửa, lưu không đổi gì, tổng và trạng thái phải giữ nguyên
+        def doc_xem():
+            tong = pg.locator('.m-xp-day-tong')
+            chip = pg.locator('.m-xp .m-ct-chip')
+            return (tong.inner_text().strip() if tong.count() else '',
+                    chip.first.inner_text().strip() if chip.count() else '')
+        for ten_phieu, slug in [('Phiếu thu chi', 'tien/2-1-1'), ('Nhập kho', 'kho/5-1-1')]:
+            path_ds = f'/app/{slug}'
+            pg.goto(f'{URL}?goi=PL&sua=1#{path_ds}')
+            pg.wait_for_timeout(800)
+            pg.locator('.m-the-ct').first.click()
+            pg.wait_for_timeout(600)
+            truoc = doc_xem()
+            pg.locator('.m-xp-nut-menu').click()
+            pg.wait_for_timeout(300)
+            pg.get_by_text('Sửa chứng từ', exact=True).last.click()
+            pg.wait_for_timeout(600)
+            for _ in range(5):
+                if pg.locator('.m-lp-day button:text-is("Lưu")').count():
+                    break
+                nut = pg.locator('.m-lp-day button').last
+                if not nut.is_enabled():
+                    break
+                nut.click()
+                pg.wait_for_timeout(400)
+            if not pg.locator('.m-lp-day button:text-is("Lưu")').count():
+                loi.append(f'Sửa {ten_phieu}: không tới được nút Lưu (dòng phiếu trống?)')
+                continue
+            pg.locator('.m-lp-day button:text-is("Lưu")').click()
+            pg.wait_for_timeout(600)
+            sau = doc_xem()
+            if sau != truoc:
+                loi.append(f'Sửa {ten_phieu}: trước {truoc}, sau khi lưu {sau}')
+            print(f'  - Sửa {ten_phieu}: giữ nguyên {sau[0]}, {sau[1]}')
+
+        b.close()
+    return loi
+
+
 def kiem_tra_cac_khung_dt():
     loi, dem = [], 0
     for rong, cao in KHUNG_DT:
@@ -452,6 +668,8 @@ def kiem_tra_cac_khung_dt():
     loi += loi_d3
     loi_d4 = kiem_tra_xem_phieu_dot_4()
     loi += loi_d4
+    loi_d5 = kiem_tra_lap_phieu_dot_5()
+    loi += loi_d5
     if loi:
         print(f'{len(loi)} LỖI:')
         for x in loi:

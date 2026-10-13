@@ -1,5 +1,5 @@
 import { useMemo, useState, type FC } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import type { ScreenProps } from '../../modules/types'
 import { duongDan } from '../../app/registry'
 import { chiNhanhHienTai, useSession } from '../../app/session'
@@ -14,14 +14,27 @@ import { useDsPhieuSx } from '../../modules/kho/BangSanXuat'
 import { MChiMayTinh } from './MChiMayTinh'
 import { MChon } from './MChon'
 import { MDanhSach } from './MDanhSach'
+import { MLapPhieu } from './MLapPhieu'
 import { coLocKhacMacDinh, MAC_DINH_LOC_MOBILE, MLoc, tinhKhoangNgay, type GtLocMobile } from './MLoc'
 import { MXemPhieu } from './MXemPhieu'
 
 // Tách lớp ngoài để danh sách luôn gọi đủ hook, không trả sớm theo id
 export const MChungTu: FC<ScreenProps> = ({ sc, mod }) => {
   const { id } = useParams()
-  if (id === 'moi') {
-    return <MChiMayTinh />
+  const [sp] = useSearchParams()
+  const sua = sp.get('sua') === '1'
+  const cfgMan = sc.voucher
+
+  const laKhongLam = Boolean(
+    cfgMan?.kiemKe ||
+    cfgMan?.dieuChinh ||
+    cfgMan?.sanXuat ||
+    cfgMan?.dieuChuyen
+  )
+
+  if (id === 'moi' || sua) {
+    if (laKhongLam) return <MChiMayTinh />
+    return <MLapPhieu sc={sc} mod={mod} id={id} />
   }
   if (id !== undefined) {
     return <MXemPhieu sc={sc} mod={mod} id={id} />

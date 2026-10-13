@@ -182,6 +182,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
       ])
     } else if (k === 'copy') {
       toast('Đã sao chép chứng từ')
+      nav(`${path}/moi${row.loai ? `?loai=${row.loai}` : ''}`, { state: { saoChep: row } })
     } else if (k === 'xoa') {
       if (daKhoaSo(String(row.ngay))) {
         toast(`${row.so} thuộc kỳ đã khoá sổ, không xoá được`)
