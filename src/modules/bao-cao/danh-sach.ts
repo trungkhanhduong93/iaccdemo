@@ -5,7 +5,7 @@ import { CHI_NHANH, NCC, TK_NGAN_HANG } from '../../data/mock'
 import { dsDonVi, loaiHinhDv, type Session } from '../../app/session'
 import { DON_VI } from '../../data/mock'
 import { thTT58 } from './tt58'
-import { KENH_BAN } from './tt152'
+import { DS_HANG_S2D, DS_NHOM_HANG_S2D, DS_QUY_S2E, KENH_BAN } from './tt152'
 
 export type LoaiBC = 'so' | 'bctc' | 'baocao' | 'tokhai'
 export interface LocBC {
@@ -68,7 +68,9 @@ export const CAU_HINH_BC: Record<string, CauHinhBC> = {
   '2.2.5': { loai: 'so', kho: 'ngang', anTam: ['TT133', 'TT99'], kyHieu: { TT58: 'S4a-DNSN', TT133: 'S12-DNN', TT99: 'S31-DN' }, anKhongPS: true,
     loc: [{ k: 'ten', nhan: 'Đối tượng', kieu: 'chonNhieu' }] },
   '2.2.6': { loai: 'so', kho: 'ngang', anTam: ALL, kyHieu: { TT133: 'S15-DNN', TT99: 'S34-DN' }, congCot: ['no', 'co'] },
-  '2.2.7': { loai: 'so', kho: 'doc', cheDo: ['TT58', 'TT152'], th: [2, 4], hkd: ['loiNhuan'], kyHieu: { TT152: 'S2e-HKD', TT58: 'S2d-DNSN' }, congCot: ['thu', 'chi'] },
+  '2.2.7': { loai: 'so', kho: 'doc', cheDo: ['TT58', 'TT152'], th: [2, 4], hkd: ['loiNhuan'], kyHieu: { TT152: 'S2e-HKD', TT58: 'S2d-DNSN' },
+    congCot: ['thu', 'chi'],
+    loc: [{ k: 'quy', nhan: 'Quỹ', kieu: 'chonNhieu', cheDo: ['TT152'], ds: () => DS_QUY_S2E }] },   // S2e-HKD lọc theo quỹ (T179)
   '2.2.8': baoCao('doc', {
     loc: [{ k: 'locQuy', nhan: 'Quỹ tiền', kieu: 'chon', ds: () => [...CHI_NHANH.map(c => tenQuyTm(c.ngan)), ...TK_NGAN_HANG.map(tenTkNh)] }],
   }),
@@ -102,7 +104,11 @@ export const CAU_HINH_BC: Record<string, CauHinhBC> = {
   '5.2.5': baoCao('ngang', { anKhongPS: true }),
   '5.2.6': baoCao('ngang', { anKhongPS: true }),
   '5.2.7': baoCao('ngang', { anKhongPS: true }),
-  '5.2.8': { loai: 'so', kho: 'ngang', anTam: ['TT133', 'TT99'], th: [2, 4], hkd: ['loiNhuan'], kyHieu: { TT152: 'S2d-HKD', TT58: 'S2c-DNSN', TT133: 'S06-DNN', TT99: 'S10-DN' }, ten: { TT152: 'Sổ chi tiết vật liệu, dụng cụ, sản phẩm, hàng hoá' } },
+  '5.2.8': { loai: 'so', kho: 'ngang', anTam: ['TT133', 'TT99'], th: [2, 4], hkd: ['loiNhuan'], kyHieu: { TT152: 'S2d-HKD', TT58: 'S2c-DNSN', TT133: 'S06-DNN', TT99: 'S10-DN' }, ten: { TT152: 'Sổ chi tiết vật liệu, dụng cụ, sản phẩm, hàng hoá' },
+    loc: [   // S2d-HKD là sổ một mặt hàng: chọn một hàng hoá, một nhóm hàng hoá (T179)
+      { k: 'hang', nhan: 'Hàng hoá', kieu: 'chon', cheDo: ['TT152'], ds: () => DS_HANG_S2D },
+      { k: 'nhomHang', nhan: 'Nhóm hàng hoá', kieu: 'chon', cheDo: ['TT152'], ds: () => DS_NHOM_HANG_S2D },
+    ] },
   // Tổng hợp, chi tiết nhập kho, xuất kho, hàng trả lại (T157)
   '5.2.9': baoCao('ngang', { anKhongPS: true }),
   '5.2.10': baoCao('ngang', { loc: [{ k: 'kho', nhan: 'Kho', kieu: 'chon' }, { k: 'loai', nhan: 'Loại phiếu', kieu: 'chon' }], nhomDuoc: ['kho', 'loai', 'ngay'], anKhongPS: true, phanTrang: 100 }),

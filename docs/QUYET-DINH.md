@@ -596,7 +596,7 @@ Lý do: Trum giao T155 ngày 11/10/2026, chọn hạch toán qua 1368, 3368 theo
 
 Lý do: Trum giao T170 ngày 12/10/2026, duyệt 3 điểm mới ngày 13/10/2026 (T173). Giữ bản điện thoại cùng concept với bản web iaccdemo, IVT chỉ lấy bố cục, thanh dưới, hình minh hoạ.
 
-## QD55. Màn xem báo cáo dạng bảng, tờ in thành xem trước khi in, bộ lọc trong nút phễu (đang soạn, chờ Trum duyệt)
+## QD55. Màn xem báo cáo dạng bảng, tờ in thành xem trước khi in, bộ lọc trong nút phễu (13/10/2026)
 
 - Màn xem báo cáo mặc định là bảng dữ liệu: trên bảng có tên báo cáo và một dòng phụ (chi nhánh hoặc địa điểm kinh doanh, kỳ) căn giữa. Bỏ nút chuyển Tờ in / Bảng dữ liệu và chọn khổ ở màn chính (thay phần Tờ in mặc định của QD37).
 - Thanh công cụ nằm đầu khung bảng, dồn phải: phễu lọc, ô Tìm trong báo cáo, Tuỳ chỉnh, Xuất, In. Ô tìm chỉ lọc dòng trên màn xem, không đổi số in.
@@ -606,5 +606,5 @@ Lý do: Trum giao T170 ngày 12/10/2026, duyệt 3 điểm mới ngày 13/10/202
 - Điều kiện đang lọc không hiện trên thanh (chỉ số bộ lọc trên nút phễu). Trên tờ in, dưới dòng kỳ ghi điều kiện đang lọc (vd "Kênh bán: Tại quán", không có chữ "Điều kiện lọc:"); bảng dữ liệu có dòng "Điều kiện lọc: …" trên đầu bảng.
 - Phần còn lại của QD40 (bộ lọc tự sinh, không tự sinh cho báo cáo tài chính và tờ khai, lọc xong tính lại dòng tổng) giữ nguyên.
 
-Lý do: PhuongXT đề xuất ngày 13/10/2026 (T179): cột lọc bên trái chiếm chỗ của tờ báo cáo; đặt ô lọc thẳng trên thanh thì chật khi nhiều bộ lọc. Chờ Trum duyệt vì đổi QD40.
+Lý do: PhuongXT chốt ngày 13/10/2026 (T179), báo không cần Trum duyệt: cột lọc bên trái chiếm chỗ của tờ báo cáo; đặt ô lọc thẳng trên thanh thì chật khi nhiều bộ lọc; xem báo cáo dạng bảng gọn hơn, tờ in chỉ cần khi in. Thay phần cột lọc trái của QD40 và phần Tờ in mặc định của QD37.
 

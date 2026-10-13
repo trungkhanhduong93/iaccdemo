@@ -42,7 +42,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
-| T179 | Hiện lại bộ sổ hộ kinh doanh TT152 (S1a đến S2e-HKD) theo mẫu iFaster; màn xem báo cáo dạng bảng, bộ lọc trong nút phễu, tờ in thành xem trước khi in (QD55 chờ Trum duyệt) | PhuongXT | 13/10/2026 | [2026-10-13-phuongxt-so-hkd](nhat-ky/2026-10-13-phuongxt-so-hkd.md) |
+| T179 | Hiện lại bộ sổ hộ kinh doanh TT152 (S1a đến S2e-HKD) theo mẫu iFaster; màn xem báo cáo dạng bảng, bộ lọc trong nút phễu, tờ in thành xem trước khi in (QD55); S2d lọc hàng hoá, nhóm hàng hoá, S2e lọc quỹ | PhuongXT | 13/10/2026 | [2026-10-13-phuongxt-so-hkd](nhat-ky/2026-10-13-phuongxt-so-hkd.md) |
 | T177 | Điện thoại đợt 4: xem phiếu (đầu phiếu, dòng dạng thẻ, tổng, hạch toán, lịch sử, tham chiếu, thanh đáy Ghi sổ và menu Sửa, In, Sao chép, Xoá); tổng tiền khớp máy tính | Trum | 13/10/2026 | [2026-10-13-trum-dien-thoai-dot-4](nhat-ky/2026-10-13-trum-dien-thoai-dot-4.md) |
 | T176 | Điện thoại đợt 3: danh sách chứng từ, danh mục dạng thẻ, chip trạng thái, chip loại phiếu, màn lọc, màn trống; số thẻ khớp bản máy tính | Trum | 13/10/2026 | [2026-10-13-trum-dien-thoai-dot-3](nhat-ky/2026-10-13-trum-dien-thoai-dot-3.md) |
 | T175 | Điện thoại đợt 2: Trang chủ (thao tác nhanh, thẻ số liệu), Nghiệp vụ (lưới phân hệ, danh sách màn), Khác (tài khoản, danh mục, hệ thống, đơn vị, gói, đăng xuất); số đo IVT, thanh dưới nổi | Trum | 13/10/2026 | [2026-10-13-trum-dien-thoai-dot-2](nhat-ky/2026-10-13-trum-dien-thoai-dot-2.md) |

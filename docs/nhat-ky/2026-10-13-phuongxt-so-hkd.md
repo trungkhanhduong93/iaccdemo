@@ -31,10 +31,11 @@
 - `Screen.tsx`: mở báo cáo không hiện ở gói, chế độ, cách tính thuế đang chọn (vd đang xem S2b-HKD ở Standard rồi đổi sang Free) thì báo "Báo cáo không dùng với thiết lập hiện tại", chặn theo `hienMan` thay cho `apDung`. Trước đây sổ vẫn hiện mà ô tên báo cáo trống (PhuongXT phát hiện).
 - `ToGiay.tsx`, `app.css`: Bảng dữ liệu của báo cáo (bảng chung `Table`) đánh dấu dòng nhóm, dòng cộng (`bc-dong-dam`), dòng tổng (`bc-dong-tong`) qua `rowCls`, in đậm, nền nhạt như Tờ in.
 - Bộ lọc Kênh bán (Tại quán, Mang về, GrabFood, ShopeeFood, Be; chọn nhiều) cho Sổ doanh thu 3.2.5 ở TT152 (S1a, S2a, S2b): `LocBC` có thêm `cheDo` để chỉ hiện ở TT152; `tt152.ts` sinh hoá đơn có kênh, lọc tại nguồn nên dòng cộng, thuế tính lại; dòng cộng mang kênh đang chọn để khung lọc chung giữ lại. 
-- Bộ lọc báo cáo (QD55, đang soạn, chờ Trum duyệt vì đổi QD40): bỏ cột Bộ lọc bên trái (`CotLocBaoCao` và CSS `.bc-loc-cot`); thanh công cụ có nút phễu ghi khoảng ngày và số bộ lọc, bấm mở popup lọc (khoảng ngày, ô lọc, Ẩn dòng không phát sinh, Xoá lọc, Xem báo cáo). Điều kiện đang lọc hiện thành nhãn cạnh nút phễu, bấm × bỏ; tờ báo cáo có dòng "Điều kiện lọc: …"; Bảng dữ liệu cũng có dòng này trên đầu bảng (`dieuKienLoc` của `ToGiay`). Bỏ chữ tên nhóm (vd Kế toán bán hàng) trên hàng tiêu đề. `kiem_tra.py` đổi kỳ báo cáo tài chính qua nút phễu.
+- Bộ lọc báo cáo (QD55, thay cột lọc trái của QD40): bỏ cột Bộ lọc bên trái (`CotLocBaoCao` và CSS `.bc-loc-cot`); thanh công cụ có nút phễu ghi khoảng ngày và số bộ lọc, bấm mở popup lọc (khoảng ngày, ô lọc, Ẩn dòng không phát sinh, Xoá lọc, Xem báo cáo). Điều kiện đang lọc hiện thành nhãn cạnh nút phễu, bấm × bỏ; tờ báo cáo có dòng "Điều kiện lọc: …"; Bảng dữ liệu cũng có dòng này trên đầu bảng (`dieuKienLoc` của `ToGiay`). Bỏ chữ tên nhóm (vd Kế toán bán hàng) trên hàng tiêu đề. `kiem_tra.py` đổi kỳ báo cáo tài chính qua nút phễu.
 - Màn xem báo cáo dạng bảng (QD55): `ToGiay.tsx` mặc định vẽ bảng dữ liệu, trên bảng có tên báo cáo và dòng phụ (`dauBang`), ô tìm nhanh (`tim`); tờ in thành bản xem trước toàn màn hình (`bc-xem-in`: khổ Dọc/Ngang, zoom, In, Đóng/Esc). `ReportScreen.tsx`: thanh công cụ vào đầu khung bảng (phễu, nhãn lọc, ô Tìm trong báo cáo, Tuỳ chỉnh, Xuất, In), nút In mở xem trước. Bỏ chỗ gắn thanh công cụ lên hàng tiêu đề (`choThanh.ts`, `bc-chon-phai`), bỏ nút Tờ in / Bảng dữ liệu và Khổ ở thanh đáy, gỡ CSS cũ.
 - Bỏ nhãn điều kiện lọc cạnh nút phễu (PhuongXT: để dưới thôi); điều kiện lọc chỉ còn ở dòng "Điều kiện lọc: …" trên bảng và trên tờ in.
 - Tờ in bỏ chữ "Điều kiện lọc:", chỉ ghi điều kiện (vd Kênh bán: Tại quán); bảng dữ liệu vẫn ghi "Điều kiện lọc: …".
+- S2d (5.2.8) thêm bộ lọc Hàng hoá, Nhóm hàng hoá, chọn một (sổ một mặt hàng; chỉ chọn nhóm thì lấy mặt hàng đầu tiên của nhóm, `matHangS2d`); S2e (2.2.7) thêm bộ lọc Quỹ (tiền mặt, từng tài khoản ngân hàng, chọn nhiều). Hai bộ lọc chỉ hiện ở TT152; dòng sổ mang mặt hàng, nhóm, quỹ để khung lọc chung giữ lại.
 
 ## Đã kiểm
 
@@ -45,9 +46,8 @@
 ## Dở dang, việc tiếp theo
 
 - Bản chạy thử: nhóm 1 ra S1a; nhóm 2 theo doanh thu ra S2a; nhóm 3 ra S2b, S2c (thuế 17%), S2d, S2e; dòng nhóm thứ hai hiện đủ; số dư tiền không âm. Số liệu sổ HKD là số mẫu sinh theo tháng, chưa nối dữ liệu bán hàng, kho, thu chi thật của đơn vị.
-- Sổ S2d chưa có ô lọc chọn mặt hàng (iFaster có); đang cố định Cà phê hạt Robusta.
 - S3a-HKD (Sổ theo dõi nghĩa vụ thuế khác 6.2.5) chưa mở lại, PhuongXT chưa nêu.
 
 ## Bẫy, quyết định mới
 
-- QD55 (đang soạn): bộ lọc báo cáo trong nút phễu thay cột lọc bên trái của QD40. Trum cần duyệt trước khi coi là chốt.
+- QD55: màn xem báo cáo dạng bảng, bộ lọc trong nút phễu, tờ in thành xem trước khi in. PhuongXT chốt, không cần Trum duyệt.

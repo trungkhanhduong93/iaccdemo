@@ -147,7 +147,7 @@ export const colsS2d: Col[] = [
 /** Mặt hàng mặc định của sổ S2d: cà phê hạt, nguyên liệu chính của quán */
 export const MAT_HANG_S2D = NVL.find(n => n.ma === 'NVL008') ?? NVL[0]
 
-export function rowsS2d(thang: number, mh = MAT_HANG_S2D): Row[] {
+function rowsMotHang(thang: number, mh: typeof MAT_HANG_S2D): Row[] {
   const r = rng(`hkd-kho-${thang}-${mh.ma}`)
   let sl = 8 + Math.floor(r() * 6), tt = sl * mh.gia
   const rows: Row[] = [{ ngay: ngay(1, thang), dienGiai: 'Số dư đầu kỳ', dvt: mh.dvt, slTon: sl, ttTon: tt, _b: 1 }]
@@ -168,7 +168,20 @@ export function rowsS2d(thang: number, mh = MAT_HANG_S2D): Row[] {
     }
   }
   rows.push({ ngay: ngay(soNgay(thang), thang), dienGiai: 'Số dư cuối kỳ', dvt: mh.dvt, slTon: sl, ttTon: tt, _t: 1 })
-  return rows
+  // mọi dòng mang mặt hàng, nhóm hàng để khung lọc chung (bienDoiBang) giữ lại khi đang lọc
+  return rows.map(x => ({ ...x, hang: mh.ten, nhomHang: mh.nhom }))
+}
+
+/** Bộ lọc của sổ S2d (T179): danh sách hàng hoá, nhóm hàng hoá */
+export const DS_HANG_S2D = NVL.map(n => n.ten)
+export const DS_NHOM_HANG_S2D = [...new Set(NVL.map(n => n.nhom))]
+/** Sổ S2d một mặt hàng: chọn hàng thì lấy hàng đó; chỉ chọn nhóm thì lấy mặt hàng đầu tiên của nhóm; không chọn thì mặt hàng mặc định */
+export function matHangS2d(hang: string[] = [], nhom: string[] = []) {
+  return NVL.find(n => n.ten === hang[0]) ?? NVL.find(n => n.nhom === nhom[0]) ?? MAT_HANG_S2D
+}
+
+export function rowsS2d(thang: number, hang: string[] = [], nhom: string[] = []): Row[] {
+  return rowsMotHang(thang, matHangS2d(hang, nhom))
 }
 
 // ── S2e-HKD: Sổ chi tiết tiền (tiền mặt và từng tài khoản ngân hàng) ──
@@ -180,13 +193,18 @@ export const colsS2e: Col[] = [
   { k: 'chi', t: 'Chi/Rút ra', num: true, w: 130, nhom: 'Số tiền' },
 ]
 
-export function rowsS2e(thang: number): Row[] {
-  const quy = [
-    { ten: 'Tiền mặt tại quỹ', tm: true },
-    ...TK_NGAN_HANG.map(t => ({ ten: `${t.nh.split(',')[0]} - ${t.so}`, tm: false })),
-  ]
+const QUY_S2E = [
+  { ten: 'Tiền mặt tại quỹ', tm: true },
+  ...TK_NGAN_HANG.map(t => ({ ten: `${t.nh.split(',')[0]} - ${t.so}`, tm: false })),
+]
+/** Bộ lọc Quỹ của sổ S2e (T179) */
+export const DS_QUY_S2E = QUY_S2E.map(q => q.ten)
+
+export function rowsS2e(thang: number, chonQuy: string[] = []): Row[] {
   const rows: Row[] = []
-  quy.forEach((q, qi) => {
+  QUY_S2E.forEach((q, qi) => {
+    if (chonQuy.length && !chonQuy.includes(q.ten)) return
+    const dau0 = rows.length
     const r = rng(`hkd-tien-${thang}-${qi}`)
     const dau = k((q.tm ? 6_000_000 : 20_000_000) * (0.8 + r() * 0.4))
     const nhan = q.tm ? ['Tiền mặt', 'Tổng thu trong kỳ', 'Tổng chi trong kỳ'] : ['Tiền gửi', 'Tổng gửi vào trong kỳ', 'Tổng tiền rút ra trong kỳ']
@@ -206,6 +224,8 @@ export function rowsS2e(thang: number): Row[] {
     rows.push({ dienGiai: nhan[1], thu, _b: 1 })
     rows.push({ dienGiai: nhan[2], chi, _b: 1 })
     rows.push({ dienGiai: `${nhan[0]} cuối kỳ`, thu: dau + thu - chi, _b: 1 })
+    // mọi dòng của quỹ mang tên quỹ để khung lọc chung (bienDoiBang) giữ lại khi đang lọc
+    for (let i = dau0; i < rows.length; i++) rows[i].quy = q.ten
   })
   return rows
 }

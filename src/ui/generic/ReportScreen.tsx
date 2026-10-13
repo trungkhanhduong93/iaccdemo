@@ -885,9 +885,10 @@ export function ReportScreen({ sc, mod }: ScreenProps) {
   // Sổ hộ kinh doanh TT152 ghi địa điểm kinh doanh như iFaster; S2d thêm tên mặt hàng (T179)
   const ma = sc.code ?? sc.slug
   const soHkd = s.cheDo === 'TT152' && laHkd(s) && ['3.2.5', '10.4.1', '5.2.8'].includes(ma)
+  const matHangSo = HKD.matHangS2d(loc.hang, loc.nhomHang)   // S2d ghi tên mặt hàng đang xem dưới tiêu đề
   const diaDiem = cn?.ten ?? dsChiNhanh(s).find(c => c.id === s.ttDv?.[s.donVi]?.cnChinh)?.ten ?? donViHienTai(s).ten
   const sub = soHkd
-    ? `Địa điểm kinh doanh: ${diaDiem}${ma === '5.2.8' ? ` · Tên vật liệu, dụng cụ, sản phẩm, hàng hoá: ${HKD.MAT_HANG_S2D.ten}` : ''} · ${kyTen(kyDaXem)}`
+    ? `Địa điểm kinh doanh: ${diaDiem}${ma === '5.2.8' ? ` · Tên vật liệu, dụng cụ, sản phẩm, hàng hoá: ${matHangSo.ten}` : ''} · ${kyTen(kyDaXem)}`
     : (ma === '5.2.8' && s.cheDo === 'TT58')
     ? `${kyTen(kyDaXem)} · Tên vật liệu, dụng cụ, sản phẩm, hàng hoá: ${NVL[0].ten} · Kho: ${cn ? cn.ten : CHI_NHANH[0].ten}`
     : (cfg.theoCn ? `${kyTen(kyDaXem)} · ${cn ? 'Chi nhánh ' + cn.ngan : 'Tất cả chi nhánh'}${loc.locQuy?.[0] ? ' · ' + loc.locQuy[0] : ''}` : kyTen(kyDaXem))
@@ -941,8 +942,8 @@ function renderReport(cfg: ReportCfg, seed: string, thang: number, cd: CheDo, cn
       return <RptTable cols={HKD.colsS2b} rows={HKD.rowsS2b(thang, kenh)} />
     }
     if (seed === '10.4.1') return <RptTable cols={HKD.colsS2c} rows={HKD.rowsS2c(thang, session?.ttDv?.[session.donVi]?.nhom)} />
-    if (seed === '5.2.8') return <RptTable cols={HKD.colsS2d} rows={HKD.rowsS2d(thang)} />
-    if (seed === '2.2.7') return <RptTable cols={HKD.colsS2e} rows={HKD.rowsS2e(thang)} />
+    if (seed === '5.2.8') return <RptTable cols={HKD.colsS2d} rows={HKD.rowsS2d(thang, loc.hang, loc.nhomHang)} />
+    if (seed === '2.2.7') return <RptTable cols={HKD.colsS2e} rows={HKD.rowsS2e(thang, loc.quy)} />
   }
   const r = rng(seed + thang)
   // Sổ, báo cáo theo chi nhánh: mỗi chi nhánh một hạt giống riêng, xem tất cả thì cộng các chi nhánh.
