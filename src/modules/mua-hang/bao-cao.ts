@@ -1,6 +1,9 @@
 // Báo cáo mua hàng, nhập hàng lấy từ đúng các phiếu mua hàng 4.1.1 trong danh sách (cùng hạt giống), nên số khớp nhau (T63)
+import { createElement } from 'react'
+import { Link } from 'react-router-dom'
 import type { Col, Row, VoucherCfg } from '../types'
 import { chungTu, dongCua, type Dong } from '../../ui/generic/gen'
+import { datLocDaXem } from '../../ui/bao-cao/tuyChinhBC'
 
 const MUA = ['Mua thịt bò, xương ống', 'Mua bánh phở tươi', 'Mua cà phê hạt Robusta', 'Mua bia Sài Gòn', 'Mua rau thơm các loại', 'Mua dầu ăn, gia vị']
 
@@ -16,29 +19,47 @@ function phieuThang(thang: number, cn?: string) {
 }
 const cong = (ds: Row[], k: string) => ds.reduce((a, x) => a + (Number(x[k]) || 0), 0)
 
-/** Chi tiết mua hàng: mỗi phiếu một dòng */
+/** Thành tiền (số lượng × đơn giá), chiết khấu, tiền trước thuế của dòng hàng; phiếu mẫu chưa có chiết khấu thì 0, nên tổng khớp phiếu (T200) */
+const tienDong = (d: Dong) => { const ck = d.ck ?? 0; return { thanhTien: d.tien, ck, truocThue: d.tien - ck, thue: d.thue, tong: d.tien - ck + d.thue } }
+const cotTien: Col[] = [{ k: 'thanhTien', t: 'Thành tiền', num: true }, { k: 'ck', t: 'Chiết khấu', num: true }, { k: 'truocThue', t: 'Tiền trước thuế', num: true },
+  { k: 'thue', t: 'Thuế GTGT', num: true }, { k: 'tong', t: 'Tổng tiền', num: true }]
+const KHOA_TIEN = ['thanhTien', 'ck', 'truocThue', 'thue', 'tong'] as const
+const congTien = (ds: Row[]): Row => Object.fromEntries(KHOA_TIEN.map(k => [k, cong(ds, k)]))
+const tienPhieu = (dong: Dong[]): Row => congTien(dong.map(tienDong))
+
+/** Chi tiết mua hàng: mỗi phiếu một dòng. Không hiện ở danh sách báo cáo, mở khi bấm nhà cung cấp ở Tổng hợp mua hàng (T200) */
 export const chiTietMua = {
-  cols: [{ k: 'ngay', t: 'Ngày', w: 92 }, { k: 'so', t: 'Số phiếu', cls: 'code', w: 120 }, { k: 'doiTuong', t: 'Nhà cung cấp' }, { k: 'dienGiai', t: 'Diễn giải' },
-    { k: 'tien', t: 'Tiền hàng', num: true }, { k: 'thue', t: 'Thuế GTGT', num: true }, { k: 'tong', t: 'Tổng tiền', num: true }] as Col[],
+  cols: [{ k: 'ngay', t: 'Ngày', w: 92 }, { k: 'so', t: 'Số phiếu', cls: 'code', w: 120 }, { k: 'doiTuong', t: 'Nhà cung cấp' }, { k: 'dienGiai', t: 'Diễn giải' }, ...cotTien] as Col[],
   rows: (thang: number, cn?: string): Row[] => {
-    const ds: Row[] = phieuThang(thang, cn).map(r => ({ ngay: r.ngay, so: r.so, doiTuong: r.doiTuong, dienGiai: r.dienGiai, tien: r.tien, thue: r.thue, tong: r.tong, nguon: r.nguon }))
-    return [...ds, { doiTuong: 'Tổng cộng', tien: cong(ds, 'tien'), thue: cong(ds, 'thue'), tong: cong(ds, 'tong'), _t: 1 }]
+    const ds: Row[] = phieuThang(thang, cn).map(r => ({ ngay: r.ngay, so: r.so, doiTuong: r.doiTuong, dienGiai: r.dienGiai, nguon: r.nguon, ...tienPhieu(r.dong) }))
+    return [...ds, { doiTuong: 'Tổng cộng', ...congTien(ds), _t: 1 }]
   },
 }
 
+/** Bấm nhà cung cấp mở Chi tiết mua hàng lọc sẵn nhà cung cấp đó, cùng kỳ (T200) */
+const moChiTiet = (x: Row) => createElement(Link, {
+  to: '/app/bao-cao/4-2-1', className: 'bc-mo-so', title: 'Xem chi tiết mua hàng',
+  onClick: () => datLocDaXem('/app/bao-cao/4-2-1', { doiTuong: [x.doiTuong] }, String(x._ky)),
+}, x.doiTuong)
+
 /** Tổng hợp mua hàng: gom theo nhà cung cấp */
 export const tongHopMua = {
-  cols: [{ k: 'doiTuong', t: 'Nhà cung cấp' }, { k: 'soPhieu', t: 'Số phiếu', num: true, w: 90 },
-    { k: 'tien', t: 'Tiền hàng', num: true }, { k: 'thue', t: 'Thuế GTGT', num: true }, { k: 'tong', t: 'Tổng tiền', num: true }] as Col[],
+  cols: [{ k: 'doiTuong', t: 'Nhà cung cấp', r: x => x._t ? x.doiTuong : moChiTiet(x) }, { k: 'soPhieu', t: 'Số phiếu', num: true, w: 90 }, ...cotTien] as Col[],
   rows: (thang: number, cn?: string): Row[] => {
-    const nhom = new Map<string, Row>()
-    for (const r of phieuThang(thang, cn)) {
-      const g = nhom.get(r.doiTuong) ?? { doiTuong: r.doiTuong, soPhieu: 0, tien: 0, thue: 0, tong: 0 }
-      g.soPhieu += 1; g.tien += r.tien; g.thue += r.thue; g.tong += r.tong
-      nhom.set(r.doiTuong, g)
-    }
-    const ds = [...nhom.values()].sort((a, b) => b.tong - a.tong)
-    return [...ds, { doiTuong: 'Tổng cộng', soPhieu: cong(ds, 'soPhieu'), tien: cong(ds, 'tien'), thue: cong(ds, 'thue'), tong: cong(ds, 'tong'), _t: 1 }]
+    const nhom = new Map<string, Row[]>()
+    for (const r of phieuThang(thang, cn)) nhom.set(r.doiTuong, [...(nhom.get(r.doiTuong) ?? []), tienPhieu(r.dong)])
+    const ds = [...nhom].map(([doiTuong, phieu]): Row => ({ doiTuong, soPhieu: phieu.length, ...congTien(phieu), _ky: thang })).sort((a, b) => b.tong - a.tong)
+    return [...ds, { doiTuong: 'Tổng cộng', soPhieu: cong(ds, 'soPhieu'), ...congTien(ds), _t: 1 }]
+  },
+}
+
+/** Bảng kê mua hàng theo hàng hoá: như Chi tiết mua hàng nhưng mỗi mặt hàng của phiếu một dòng (T200) */
+export const bangKeMuaTheoHang = {
+  cols: [{ k: 'ngay', t: 'Ngày', w: 92 }, { k: 'so', t: 'Số phiếu', cls: 'code', w: 120 }, { k: 'doiTuong', t: 'Nhà cung cấp' }, { k: 'ma', t: 'Mã hàng', cls: 'code', w: 90 },
+    { k: 'ten', t: 'Tên hàng' }, { k: 'dvt', t: 'ĐVT', c: true, w: 60 }, { k: 'sl', t: 'Số lượng', num: true }, { k: 'gia', t: 'Đơn giá', num: true }, ...cotTien] as Col[],
+  rows: (thang: number, cn?: string): Row[] => {
+    const ds: Row[] = phieuThang(thang, cn).flatMap(r => r.dong.map(d => ({ ngay: r.ngay, so: r.so, doiTuong: r.doiTuong, ma: d.ma, ten: d.ten, dvt: d.dvt, sl: d.sl, gia: d.gia, ...tienDong(d) })))
+    return [...ds, { doiTuong: 'Tổng cộng', ...congTien(ds), _t: 1 }]
   },
 }
 

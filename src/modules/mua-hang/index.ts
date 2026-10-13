@@ -3,7 +3,7 @@ import type { ModuleDef } from '../types'
 import { tuExcel } from '../types'
 import { quyTrinh } from './quy-trinh'
 import { colsCongNo, rowsCongNo } from '../bao-cao/cong-no'
-import { PHIEU_MUA, chiTietMua, chiTietNhap, muaHangTheoNgay, tongHopMua, tongHopNhap } from './bao-cao'
+import { PHIEU_MUA, bangKeMuaTheoHang, chiTietMua, chiTietNhap, muaHangTheoNgay, tongHopMua, tongHopNhap } from './bao-cao'
 
 const MUA = PHIEU_MUA.dienGiai
 
@@ -33,6 +33,9 @@ const muaHang: ModuleDef = {
     '4.2.5': { report: { kieu: 'bangke', theoCn: true, ...chiTietNhap } },
     '4.2.3': { ten: 'Công nợ nhà cung cấp', report: { kieu: 'bangke', theoCn: true, cols: colsCongNo('ncc'), rows: (t, cn) => rowsCongNo('ncc', t, cn) } },   // theo mẫu iFaster, bấm tên mở lịch sử công nợ (T185)
     '4.2.6': { ten: 'Mua hàng theo ngày', report: { kieu: 'bangke', theoCn: true, ...muaHangTheoNgay } },
-  }, NGAN),
+  }, NGAN).concat([
+    // Bảng kê mua hàng theo hàng hoá, ngoài Excel; mã 4.2.7 lấy theo slug, khoá cấu hình ở bao-cao/danh-sach.ts (T200)
+    { slug: '4-2-7', ten: 'Bảng kê mua hàng theo hàng hoá', nhom: 'Sổ sách, báo cáo', kind: 'report', report: { kieu: 'bangke', theoCn: true, ...bangKeMuaTheoHang } },
+  ]),
 }
 export default muaHang

@@ -17,7 +17,7 @@ import tongHop from '../modules/tong-hop'
 import tienIch from '../modules/tien-ich'
 import heThong from '../modules/he-thong'
 import { TrungTamBaoCao } from '../modules/bao-cao/TrungTam'
-import { CAU_HINH_BC, MO_IFASTER, anSoHkdGoiFree, cachHkd, giuBC, laHkd, type PhienBC } from '../modules/bao-cao/danh-sach'
+import { CAU_HINH_BC, CHI_MO_TU_BC, MO_IFASTER, anSoHkdGoiFree, cachHkd, giuBC, laHkd, type PhienBC } from '../modules/bao-cao/danh-sach'
 import { thTT58 } from '../modules/bao-cao/tt58'
 import type { Session } from './session'
 
@@ -134,7 +134,8 @@ const khongApDung = (sc: ScreenDef, goi: Goi) => {
   const ma = maKhoa(sc)
   return !!ma && GOIS.indexOf(minGoi(ma)) < GOIS.indexOf(goi)
 }
-export const hienMan = (sc: ScreenDef, goi: Goi, cheDo?: CheDo, session?: Pick<Session, 'ppGtgt' | 'ppTndn'> | Session): boolean => {
+/** moThang: đang mở thẳng màn (Screen.tsx), báo cáo chỉ mở từ báo cáo khác (CHI_MO_TU_BC, T200) vẫn coi là hiện */
+export const hienMan = (sc: ScreenDef, goi: Goi, cheDo?: CheDo, session?: Pick<Session, 'ppGtgt' | 'ppTndn'> | Session, moThang = false): boolean => {
   if (sc.goi && !sc.goi.includes(goi)) return false
   const cd = cheDo ?? CHE_DO_MAC_DINH[goi]
   if (sc.cheDo && !sc.cheDo.includes(cd)) return false
@@ -142,6 +143,7 @@ export const hienMan = (sc: ScreenDef, goi: Goi, cheDo?: CheDo, session?: Pick<S
   if (sc.kind === 'baocao' || sc.comp === TrungTamBaoCao) return conBaoCao(sc, goi, cd, session)
   const isBC = Boolean((sc.code && CAU_HINH_BC[sc.code]) || sc.goc || vaoBaoCao(sc))
   if (isBC) {
+    if (!moThang && CHI_MO_TU_BC.includes(maBC(sc) ?? '')) return false
     if (!apDung(sc, cd, session)) return false
     if (cd === 'TT152' && anSoHkdGoiFree(maBC(sc), goi, session as PhienBC)) return false
     return moDuoc(sc, goi) || !anNgoaiGoi(goi)

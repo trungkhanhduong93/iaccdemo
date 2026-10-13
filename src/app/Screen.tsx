@@ -38,7 +38,7 @@ export function ScreenRoute() {
   const code = sc.code ?? (sc.slug.includes('-') ? sc.slug.replace(/-/g, '.') : undefined)
   const cfg = code ? CAU_HINH_BC[code] : undefined
   // Báo cáo không hiện ở gói, chế độ, cách tính thuế đang chọn (vd đang xem S2b-HKD rồi đổi sang gói Free): chặn theo đúng điều kiện ẩn hiện của danh sách (T179)
-  if ((sc.goc || vaoBaoCao(sc)) && sc.comp !== TrungTamBaoCao && !hienMan(sc, s.goi, s.cheDo, s) && !cfg?.anTam?.includes(s.cheDo)) {
+  if ((sc.goc || vaoBaoCao(sc)) && sc.comp !== TrungTamBaoCao && !hienMan(sc, s.goi, s.cheDo, s, true) && !cfg?.anTam?.includes(s.cheDo)) {
     return (
       <div className="page">
         <PageHead crumb={[mod.ten, sc.nhom ?? '']} title={tenMan(sc)} code={sc.code} />

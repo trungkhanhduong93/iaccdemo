@@ -13,7 +13,7 @@ export function ThanhChonBaoCao({ sc }: { sc: ScreenDef }) {
   const { s } = useSession()
   const nav = useNavigate()
   const bcMod = MODULES.find(m => m.key === 'bao-cao')
-  const cungGoc = bcMod?.screens.filter(x => x.goc === sc.goc && hienMan(x, s.goi, s.cheDo, s)) ?? []
+  const cungGoc = bcMod?.screens.filter(x => x.goc === sc.goc && (x.slug === sc.slug || hienMan(x, s.goi, s.cheDo, s))) ?? []   // báo cáo đang xem luôn có trong ô chọn, kể cả báo cáo chỉ mở từ báo cáo khác (T200)
 
   // Ghi nhận báo cáo vừa mở vào danh sách mở gần đây (tối đa 8, mới nhất trước, T58)
   useEffect(() => {

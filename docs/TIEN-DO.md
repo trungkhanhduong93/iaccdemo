@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T200 | Tổng hợp mua hàng, Chi tiết mua hàng thêm cột Thành tiền, Chiết khấu, đổi Tiền hàng thành Tiền trước thuế; bấm nhà cung cấp ở Tổng hợp mở Chi tiết mua hàng; ẩn Chi tiết mua hàng khỏi danh sách báo cáo; thêm Bảng kê mua hàng theo hàng hoá | PhuongXT | Đang làm | Sửa `src/modules/mua-hang/bao-cao.ts`, `mua-hang/index.ts`, `bao-cao/danh-sach.ts`, `TrungTam.tsx`, `ThanhChon.tsx`, `BaoCaoScreen.tsx` |
 | T193 | Điện thoại: trang chủ hai tab "Tổng quan" (4 thẻ số, biểu đồ doanh thu 6 tháng, cơ cấu chi phí) và "Cần theo dõi" (chứng từ chưa ghi sổ, công nợ quá hạn, hàng dưới định mức, hạn nộp tờ khai) | Trum | Đang làm | Anti B code. Sửa `src/ui/mobile/MTrangChu.tsx`, `app.css` mục T193–T199 |
 | T194 | Điện thoại: tab Nghiệp vụ chỉ hiện màn của gói Free và Standard, kể cả phiên gói Plus, Pro | Trum | Đang làm | Anti B code. Sửa `src/ui/mobile/MNghiepVu.tsx` |
 | T195 | Điện thoại: kính lúp ở trang chủ mở màn tìm kiếm màn hình, gõ không dấu | Trum | Đang làm | Anti B code. Sửa `MTrangChu.tsx`, thêm file trong `src/ui/mobile/` |
@@ -56,6 +55,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T200 | Tổng hợp mua hàng, Chi tiết mua hàng thêm cột Thành tiền, Chiết khấu, đổi Tiền hàng thành Tiền trước thuế; bấm nhà cung cấp ở Tổng hợp mở Chi tiết mua hàng; ẩn Chi tiết mua hàng khỏi danh sách báo cáo; thêm Bảng kê mua hàng theo hàng hoá | PhuongXT | 13/10/2026 | [2026-10-13-phuongxt-bao-cao-mua-hang](nhat-ky/2026-10-13-phuongxt-bao-cao-mua-hang.md) |
 | T185 | Mở lại báo cáo theo danh sách iFaster cho mọi gói (giữ khung báo cáo IACC): Tổng hợp quỹ tiền, Báo cáo dòng tiền, Công nợ nhà cung cấp, khách hàng (popup lịch sử công nợ), Báo cáo kết quả kinh doanh, Sổ chi phí, Nhập xuất tồn, tổng hợp, chi tiết nhập kho, xuất kho, báo cáo mua hàng, bán hàng (tổng hợp, chi tiết, theo ngày) | PhuongXT | 13/10/2026 | [2026-10-13-phuongxt-bao-cao-ifaster](nhat-ky/2026-10-13-phuongxt-bao-cao-ifaster.md) |
 | T184 | Điện thoại đợt 8: đăng nhập, quên mật khẩu, chọn đơn vị, khởi tạo, khởi tạo FABi gọn trên 390px; popup khởi tạo và hộp thoại phủ kín màn; `kiem_tra.py --dien-thoai` đi trọn đăng nhập tới lập phiếu chi; rà màn còn báo dùng máy tính ra T186–T192 | Trum | 13/10/2026 | [2026-10-13-trum-dien-thoai-dot-8](nhat-ky/2026-10-13-trum-dien-thoai-dot-8.md) |
 | T183 | Điện thoại đợt 6: form danh mục (`MFormDm` dùng lại `CatalogPanel`, modal nổi từ đáy, thêm, sửa hàng hoá, kho, nhà cung cấp, tài khoản ở 390px) | Trum | 13/10/2026 | [2026-10-13-trum-dien-thoai-dot-6](nhat-ky/2026-10-13-trum-dien-thoai-dot-6.md) |
