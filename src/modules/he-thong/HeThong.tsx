@@ -225,6 +225,8 @@ export function ThongTinDonVi({ sc }: ScreenProps) {
     toast('Đã lưu thông tin đơn vị')
   }
   const { loai } = f
+  // Doanh nghiệp gói Standard chỉ dùng TT58, không đổi; TT152 của gói Standard chỉ dành cho hộ kinh doanh (T174)
+  const cdDn: CheDo[] = s.goi === 'S' ? ['TT58'] : CHE_DO_HOP_LE[s.goi]
   const [choDoi, setChoDoi] = useState<CheDo | null>(null)   // đổi chế độ kế toán, hỏi lại trước khi đổi
   const doiLoai = loai !== loaiHinhDv(s, dv)
   return (
@@ -254,10 +256,10 @@ export function ThongTinDonVi({ sc }: ScreenProps) {
                 ? <input className="inp" readOnly value={`${CHE_DO.TT152.soHieu} · ${CHE_DO.TT152.ten}`} />
                 : s.goi === 'F'
                 ? <input className="inp" readOnly value="Quản lý lãi lỗ, không theo thông tư" />
-                : <Select className="inp" value={s.cheDo} disabled={CHE_DO_HOP_LE[s.goi].length <= 1} aria-label="Thông tư áp dụng"
+                : <Select className="inp" value={cdDn.includes(s.cheDo) ? s.cheDo : cdDn[0]} disabled={cdDn.length <= 1} aria-label="Thông tư áp dụng"
                     onChange={e => { const moi = e.target.value as CheDo; if (moi !== s.cheDo) setChoDoi(moi) }}
-                    ds={CHE_DO_HOP_LE[s.goi].map(cd => ({ v: cd, t: `${CHE_DO[cd].soHieu} · ${CHE_DO[cd].ten}` }))} />}
-              {loai === 'dn' && s.goi !== 'F' && CHE_DO_HOP_LE[s.goi].length <= 1 && <small className="muted" style={{ display: 'block', marginTop: 4 }}>Gói {GOI[s.goi].ten} chỉ dùng {cheDoHienTai(s).ngan}</small>}
+                    ds={cdDn.map(cd => ({ v: cd, t: `${CHE_DO[cd].soHieu} · ${CHE_DO[cd].ten}` }))} />}
+              {loai === 'dn' && s.goi !== 'F' && cdDn.length <= 1 && <small className="muted" style={{ display: 'block', marginTop: 4 }}>Gói {GOI[s.goi].ten} chỉ dùng {CHE_DO[cdDn[0]].ngan}</small>}
             </div>
             {loai === 'hkd' && <>
               <div className="f c2"><label>Nhóm doanh thu</label>
