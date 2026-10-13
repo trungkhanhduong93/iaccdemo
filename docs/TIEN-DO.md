@@ -4,7 +4,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T192.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T199.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
@@ -12,6 +12,13 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
 | T185 | Mở lại báo cáo theo danh sách iFaster cho mọi gói (giữ khung báo cáo IACC): Tổng hợp quỹ tiền, Báo cáo dòng tiền, Sổ công nợ (gộp nhà cung cấp, khách hàng), Báo cáo kết quả kinh doanh, Sổ chi phí, Nhập xuất tồn, tổng hợp, chi tiết nhập kho, xuất kho, báo cáo mua hàng, bán hàng (tổng hợp, chi tiết, theo ngày) | PhuongXT | Đang làm | Sửa `src/modules/bao-cao/danh-sach.ts`, `src/app/registry.ts`, `src/app/plan.ts`, `src/modules/{ban-hang,kho,mua-hang}/index.ts` |
+| T193 | Điện thoại: trang chủ hai tab "Tổng quan" (4 thẻ số, biểu đồ doanh thu 6 tháng, cơ cấu chi phí) và "Cần theo dõi" (chứng từ chưa ghi sổ, công nợ quá hạn, hàng dưới định mức, hạn nộp tờ khai) | Trum | Đang làm | Anti B code. Sửa `src/ui/mobile/MTrangChu.tsx`, `app.css` mục T193–T199 |
+| T194 | Điện thoại: tab Nghiệp vụ chỉ hiện màn của gói Free và Standard, kể cả phiên gói Plus, Pro | Trum | Đang làm | Anti B code. Sửa `src/ui/mobile/MNghiepVu.tsx` |
+| T195 | Điện thoại: kính lúp ở trang chủ mở màn tìm kiếm màn hình, gõ không dấu | Trum | Đang làm | Anti B code. Sửa `MTrangChu.tsx`, thêm file trong `src/ui/mobile/` |
+| T196 | Điện thoại: tab Báo cáo và mở báo cáo bị giật, đơ | Trum | Đang làm | Anti A đo và sửa. Sửa `MBaoCao.tsx`, `MSoBaoCao.tsx`, `MToGiay.tsx` |
+| T197 | Điện thoại: thiết kế lại tab Khác, chia thẻ nhóm rõ ràng | Trum | Đang làm | Anti B code. Sửa `src/ui/mobile/MKhac.tsx` |
+| T198 | Điện thoại: thiết kế lại tấm bộ lọc, chạm từng dòng mở danh mục tương ứng toàn màn, có ô tìm, chọn nhiều | Trum | Đang làm | Anti B code. Sửa `src/ui/mobile/MLoc.tsx` và các màn gọi `MLoc` |
+| T199 | Điện thoại: lịch chọn ngày dạng tấm từ đáy, lịch một tháng, nút nhanh, chọn khoảng ngày | Trum | Đang làm | Anti B code. Sửa `src/ui/ChonNgay.tsx` (16 chỗ gọi), chỉ đổi khi ≤767px |
 | T186 | Điện thoại: Xuất bán POS (3.1.1) còn báo dùng máy tính | | Chờ | Từ rà soát T184 (`MChiMayTinh`). Làm màn điện thoại riêng trong `src/ui/mobile/`, nối ở `manMobile.ts` |
 | T187 | Điện thoại: Danh mục tài khoản (1.1), Danh mục chi nhánh còn báo dùng máy tính | | Chờ | Từ rà soát T184. Có thể dùng lại `MDanhMuc`, `MFormDm` của đợt 3, 6 |
 | T188 | Điện thoại: Công thức sơ chế (5.1.5), Công thức chế biến (9.1.3) còn báo dùng máy tính | | Chờ | Từ rà soát T184. Hai màn chung `CongThucScreen` |
