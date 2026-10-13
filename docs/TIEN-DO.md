@@ -11,7 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T201 | Mọi báo cáo có cột số chứng từ: bấm số mở chứng từ chi tiết | PhuongXT | Đang làm | Sửa `src/ui/generic/ReportScreen.tsx`, file mới dò số chứng từ trong `src/ui/generic/`, `bao-cao/cong-no.tsx` |
+| T201 | Mọi báo cáo có cột số chứng từ: bấm số mở chứng từ chi tiết | PhuongXT | Dở dang | Báo cáo đọc thẳng từ phiếu đã bấm được (chi tiết mua, bảng kê theo hàng hoá, chi tiết nhập, xuất kho, chi tiết bán hàng). Sổ tự sinh số riêng (sổ ngân hàng, sổ chi phí, bộ sổ TT58, TT152, lịch sử công nợ) chưa khớp phiếu, chờ PhuongXT chọn cách. Xem `2026-10-14-phuongxt-so-chung-tu.md` |
 | T186 | Điện thoại: Xuất bán POS (3.1.1) còn báo dùng máy tính | | Chờ | Từ rà soát T184 (`MChiMayTinh`). Làm màn điện thoại riêng trong `src/ui/mobile/`, nối ở `manMobile.ts` |
 | T187 | Điện thoại: Danh mục tài khoản (1.1), Danh mục chi nhánh còn báo dùng máy tính | | Chờ | Từ rà soát T184. Có thể dùng lại `MDanhMuc`, `MFormDm` của đợt 3, 6 |
 | T188 | Điện thoại: Công thức sơ chế (5.1.5), Công thức chế biến (9.1.3) còn báo dùng máy tính | | Chờ | Từ rà soát T184. Hai màn chung `CongThucScreen` |

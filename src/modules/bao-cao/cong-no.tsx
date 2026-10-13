@@ -7,6 +7,7 @@ import { CHI_NHANH, KHACH, NCC } from '../../data/mock'
 import { between, k, pad, rng } from '../../ui/format'
 import { Icon } from '../../ui/Icon'
 import { Table } from '../../ui/Table'
+import { ganMoPhieu } from '../../ui/generic/SoChungTu'
 
 type Loai = 'ncc' | 'kh'
 interface PhieuCn { ngay: string; kho: string; so: string; ghiChu: string; dienGiai: string; ps: number; tra: number; tt: number }
@@ -79,7 +80,7 @@ function LichSuCongNo({ loai, ma, ten, thang, cnTen, onDong }: { loai: Loai; ma:
       <div className="ds-hop cn-hop" role="dialog" aria-modal="true" aria-label={`Lịch sử công nợ - ${ten}`}>
         <div className="ds-hop-dau"><b>Lịch sử công nợ - {ten}</b><span className="grow" />
           <button type="button" className="btn ghost sm" title="Đóng" onClick={onDong} autoFocus><Icon n="x" className="ic sm" /></button></div>
-        <div className="cn-hop-than"><Table cols={cols} rows={rows} motDong keDoc /></div>
+        <div className="cn-hop-than"><Table cols={ganMoPhieu(cols)} rows={rows} motDong keDoc /></div>
       </div>
     </div>,
     document.body,

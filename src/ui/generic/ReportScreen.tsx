@@ -16,6 +16,7 @@ import { PageHead } from '../Page'
 import { Table } from '../Table'
 import { between, k, money, pad, pick, rng } from '../format'
 import { chungTu, soChiTiet } from './gen'
+import { ganMoPhieu } from './SoChungTu'
 import { Dropdown, MenuHead, MenuItem, MenuSep, Popover, Select } from '../Dropdown'
 import { ChonKhoangNgay, dmy, khoangThang, type KhoangNgay } from '../ChonNgay'
 import { SoTrangCtx, ToGiay, NgatTrang, tachKhoi, type Kho } from '../bao-cao/ToGiay'
@@ -733,7 +734,7 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
         })
         bx.push({ cols: resDuCot.cols, rows: resDuCot.rows, kyHieuCot })
       }
-      return <RptTable key={i} cols={res.cols} rows={res.rows} onRow={kh.onRow} kyHieuCot={kyHieuCot} />
+      return <RptTable key={i} cols={ganMoPhieu(res.cols)} rows={res.rows} onRow={kh.onRow} kyHieuCot={kyHieuCot} />   // số chứng từ bấm mở phiếu (T201)
     })
 
     return { thanBienDoi: thanMoi, bangXuat: bx }
