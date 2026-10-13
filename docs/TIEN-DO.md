@@ -43,7 +43,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
-| T174 | Doanh nghiệp siêu nhỏ TT58 chọn 1 trong 4 nhóm (GTGT, TNDN theo tỷ lệ % doanh thu hay khấu trừ, thu nhập tính thuế) ở bước 1 popup khởi tạo và ở Hệ thống, Thông tin đơn vị | PhuongXT | 13/10/2026 | [2026-10-13-phuongxt-nhom-dnsn](nhat-ky/2026-10-13-phuongxt-nhom-dnsn.md) |
+| T174 | Doanh nghiệp siêu nhỏ TT58 chọn 1 trong 4 nhóm ở popup khởi tạo, Thông tin đơn vị. PhuongXT bỏ việc, đã trả code về như cũ | PhuongXT | 13/10/2026 | [2026-10-13-phuongxt-nhom-dnsn](nhat-ky/2026-10-13-phuongxt-nhom-dnsn.md) |
 | T171 | Bỏ mọi báo cáo ở mọi gói, chỉ giữ Sổ quỹ tiền mặt, Sổ ngân hàng và bộ sổ, báo cáo tài chính TT58; gói Standard (TT58) hiện đủ mẫu TT58, không lọc theo trường hợp thuế | PhuongXT | 13/10/2026 | [2026-10-13-phuongxt-bo-bao-cao](nhat-ky/2026-10-13-phuongxt-bo-bao-cao.md) |
 | T170 | Lập kế hoạch giao diện điện thoại theo app IVT Pro: đọc APK, bộ nhận diện, khung màn, 9 đợt làm, danh sách ảnh cần chụp | Trum | 12/10/2026 | [2026-10-12-trum-ke-hoach-mobile-ivt](nhat-ky/2026-10-12-trum-ke-hoach-mobile-ivt.md) |
 | T168 | Thu chi: phiếu chi mẫu Chi phí chờ phân bổ (Tiền nhà 6 tháng, 72 triệu) có dòng tham chiếu Thẻ chi phí mở thẻ; phiếu thu, chi bỏ Mã số thuế, Ghi chú lên cột giữa, đầu phiếu 3 hàng; cột danh sách Lý do | dinhlanphuongipacc | 12/10/2026 | [2026-10-12-dinhlanphuongipacc-form-the-va-phieu-chi-cho-pb](nhat-ky/2026-10-12-dinhlanphuongipacc-form-the-va-phieu-chi-cho-pb.md) |
