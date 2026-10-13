@@ -3,11 +3,12 @@ import type { ComponentType } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { useSession, cheDoHienTai } from './session'
 import { cheDoCuaGoi } from './che-do'
-import { MODULES, duongDan, laBaoCao, maKhoa, manDau, moDuoc, tenMan, timMan } from './registry'
+import { MODULES, apDung, duongDan, laBaoCao, maKhoa, manDau, moDuoc, tenMan, timMan, vaoBaoCao } from './registry'
 import { FEATURE, FEATURES, GOI, GOIS, minGoi, type Goi } from './plan'
 import type { ScreenProps } from '../modules/types'
 import { Icon } from '../ui/Icon'
 import { Empty, PageHead, Pk } from '../ui/Page'
+import { TrungTamBaoCao } from '../modules/bao-cao/TrungTam'
 import { CatalogScreen } from '../ui/generic/CatalogScreen'
 import { VoucherScreen } from '../ui/generic/VoucherScreen'
 import { ReportScreen } from '../ui/generic/ReportScreen'
@@ -33,6 +34,18 @@ export function ScreenRoute() {
   }
   const code = sc.code ?? (sc.slug.includes('-') ? sc.slug.replace(/-/g, '.') : undefined)
   const cfg = code ? CAU_HINH_BC[code] : undefined
+  if ((sc.goc || vaoBaoCao(sc)) && sc.comp !== TrungTamBaoCao && !apDung(sc, s.cheDo) && !cfg?.anTam?.includes(s.cheDo)) {
+    return (
+      <div className="page">
+        <PageHead crumb={[mod.ten, sc.nhom ?? '']} title={tenMan(sc)} code={sc.code} />
+        <div className="card lockpage">
+          <Empty title="Báo cáo không còn dùng" sub="Phần mềm chỉ giữ Sổ quỹ tiền mặt, Sổ ngân hàng và bộ sổ, báo cáo tài chính theo TT58.">
+            <Link className="btn" to="/app/bao-cao/tat-ca">Về Tất cả báo cáo</Link>
+          </Empty>
+        </div>
+      </div>
+    )
+  }
   if (cfg?.anTam?.includes(s.cheDo)) {
     return (
       <div className="page">

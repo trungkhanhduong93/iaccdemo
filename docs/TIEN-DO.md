@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T171 | Bỏ mọi báo cáo ở mọi gói, chỉ giữ Sổ quỹ tiền mặt, Sổ ngân hàng và bộ sổ, báo cáo tài chính TT58; gói Standard (TT58) hiện đủ mẫu TT58, không lọc theo trường hợp thuế | PhuongXT | Đang làm | Sửa `src/modules/bao-cao/danh-sach.ts`, `src/app/registry.ts`, `src/app/Screen.tsx`, `src/ui/generic/ReportScreen.tsx` |
 | T169 | Form chứng từ: gõ đổi địa chỉ từ phiếu này sang phiếu khác (vd `#/app/tien/2-1-1/chi-3` sang `chi-6`) thì form giữ số phiếu, đối tượng của phiếu cũ; mở từ danh sách, Trước, Sau thì đúng | | Chờ | Phát hiện ở T168. Sửa `ChungTuForm.tsx`, có thể `VoucherScreen.tsx` (key của form) |
 | T138 | Màn onboard khi bấm từ FABi sang IACC: khởi tạo đơn vị kế toán, điền sẵn từ FABi (chi nhánh, kho, cách đồng bộ, số dư đầu kỳ) | PhuongXT | Dở dang | Popup khởi tạo dữ liệu 4 bước trong phần mềm (`OnboardFabi.tsx`, `Shell.tsx`) đã push, PhuongXT xem lại một lượt. Xem `2026-10-11-phuongxt-man-khoi-tao-fabi.md` |
 | T139 | Phiếu nhập, xuất, điều chuyển kho tự lấy mục chi phí, công việc ngầm định theo kho đã chọn | | Chờ | Tách từ T136. Kho đã có ô `mucCp`, `congViec` ở `truong-dm.ts` 1.8. Sửa `ChungTuForm.tsx` |
@@ -42,6 +41,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T171 | Bỏ mọi báo cáo ở mọi gói, chỉ giữ Sổ quỹ tiền mặt, Sổ ngân hàng và bộ sổ, báo cáo tài chính TT58; gói Standard (TT58) hiện đủ mẫu TT58, không lọc theo trường hợp thuế | PhuongXT | 13/10/2026 | [2026-10-13-phuongxt-bo-bao-cao](nhat-ky/2026-10-13-phuongxt-bo-bao-cao.md) |
 | T170 | Lập kế hoạch giao diện điện thoại theo app IVT Pro: đọc APK, bộ nhận diện, khung màn, 9 đợt làm, danh sách ảnh cần chụp | Trum | 12/10/2026 | [2026-10-12-trum-ke-hoach-mobile-ivt](nhat-ky/2026-10-12-trum-ke-hoach-mobile-ivt.md) |
 | T168 | Thu chi: phiếu chi mẫu Chi phí chờ phân bổ (Tiền nhà 6 tháng, 72 triệu) có dòng tham chiếu Thẻ chi phí mở thẻ; phiếu thu, chi bỏ Mã số thuế, Ghi chú lên cột giữa, đầu phiếu 3 hàng; cột danh sách Lý do | dinhlanphuongipacc | 12/10/2026 | [2026-10-12-dinhlanphuongipacc-form-the-va-phieu-chi-cho-pb](nhat-ky/2026-10-12-dinhlanphuongipacc-form-the-va-phieu-chi-cho-pb.md) |
 | T165 | Form thẻ chi phí: bỏ thanh tiêu đề Thông tin chung; thẻ ghi tăng không xoá, thêm dòng, sửa thì Ngày ghi tăng, Số tiền chỉ đọc; thẻ dư đầu kỳ giữ nút; Free, Standard ngừng theo tháng (bảng 12 tháng); danh sách bỏ cột Số kỳ, Trạng thái | dinhlanphuongipacc | 12/10/2026 | [2026-10-12-dinhlanphuongipacc-form-the-va-phieu-chi-cho-pb](nhat-ky/2026-10-12-dinhlanphuongipacc-form-the-va-phieu-chi-cho-pb.md) |

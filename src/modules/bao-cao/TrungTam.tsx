@@ -2,7 +2,7 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { ModuleDef, ScreenDef, ScreenProps } from '../types'
-import { MODULES, hienMan, maKhoa, moDuoc, tenMan } from '../../app/registry'
+import { MODULES, apDung, hienMan, maKhoa, moDuoc, tenMan } from '../../app/registry'
 import { useSession } from '../../app/session'
 import { anNgoaiGoi, minGoi } from '../../app/plan'
 import { Icon } from '../../ui/Icon'
@@ -90,7 +90,7 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
   const modHienTai = keyHienTai ? nhomHienThi[0]?.mod : null
   const title = modHienTai ? `Báo cáo ${modHienTai.ten}` : 'Báo cáo'
 
-  const manTrongNhom = nhomHienThi.flatMap(g => g.screens)
+  const manTrongNhom = nhomHienThi.flatMap(g => g.screens).filter(x => apDung(x, s.cheDo))   // không đếm báo cáo đã bỏ (T171)
   const co = manTrongNhom.filter(x => moDuoc(x, s.goi)).length
   const meta = anNgoaiGoi(s.goi) ? undefined : (
     <span className="chip">Gói đang dùng mở {co}/{manTrongNhom.length} báo cáo</span>

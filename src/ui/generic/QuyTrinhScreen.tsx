@@ -3,7 +3,7 @@
 import { Fragment, useLayoutEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { CotQT, LanQT, NutQT, QuyTrinhDef, ScreenProps } from '../../modules/types'
-import { MODULES, anPhanHeGoi, dich, hienMan, maKhoa, moDuoc, nhanTab, phanHeKhoa, tenMan } from '../../app/registry'
+import { MODULES, anPhanHeGoi, dich, hienMan, laBaoCao, maKhoa, moDuoc, nhanTab, phanHeKhoa, tenMan } from '../../app/registry'
 import { useSession, type Session } from '../../app/session'
 import { GOI, GOIS, anNgoaiGoi, minGoi, type Goi } from '../../app/plan'
 import type { CheDo } from '../../app/che-do'
@@ -347,7 +347,12 @@ function NutNgang({ n, goi, dong }: { n: NutQT; goi: Goi; dong?: boolean }) {
 
 /** Khung bên phải: 5 báo cáo hay dùng và "Tất cả báo cáo"; phân hệ không có báo cáo thì hiện ghi chú */
 function BenPhai({ qt, modKey, goi, cheDo, session }: { qt: QuyTrinhDef; modKey: string; goi: Goi; cheDo?: CheDo; session?: Pick<Session, 'ppGtgt' | 'ppTndn'> }) {
-  if (!qt.baoCao?.length) {
+  // Chỉ lấy báo cáo còn hiện; báo cáo khai sẵn bị bỏ hết thì lấy báo cáo còn hiện của phân hệ (T171)
+  const hien = (di: string) => { const d = dich(di, modKey); return Boolean(d.sc && hienMan(d.sc, goi, cheDo, session)) }
+  const khai = (qt.baoCao ?? []).filter(hien)
+  const cuaPh = (MODULES.find(m => m.key === modKey)?.screens ?? []).filter(laBaoCao).map(x => x.slug).filter(hien)
+  const dsBc = khai.length ? khai : cuaPh
+  if (!dsBc.length) {
     if (!qt.ghiChu) return null
     return (
       <aside className="card qt-bc">
@@ -361,9 +366,9 @@ function BenPhai({ qt, modKey, goi, cheDo, session }: { qt: QuyTrinhDef; modKey:
   return (
     <aside className="card qt-bc">
       <h2>Báo cáo</h2>
-      {qt.baoCao.map(di => {
+      {dsBc.map(di => {
         const d = dich(di, modKey)
-        if (!d.sc || !hienMan(d.sc, goi, cheDo, session)) return null
+        if (!d.sc) return null
         const ok = moDuoc(d.sc, goi)
         const ma = maKhoa(d.sc)
         return (

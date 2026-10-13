@@ -21,7 +21,7 @@ export function XuatNhapTon({ sc, mod }: ScreenProps) {
   // Mã hàng thành liên kết khi gói, thông tư đang dùng mở được thẻ kho
   const { s } = useSession()
   const the = timMan('bao-cao', '5-2-1').sc
-  const coThe = Boolean(the && moDuoc(the, s.goi) && apDung(the, s.cheDo, s))
+  const coThe = Boolean(the && moDuoc(the, s.goi) && apDung(the, s.cheDo))
   return (
     <div className="page">
       <PageHead crumb={[mod.ten, sc.nhom ?? '']} title={tenMan(sc)} code={sc.code} meta={<span className="chip">IACC Cloud tự tính từ phiếu kho đồng bộ</span>} />

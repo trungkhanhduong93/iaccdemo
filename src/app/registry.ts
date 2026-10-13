@@ -17,8 +17,7 @@ import tongHop from '../modules/tong-hop'
 import tienIch from '../modules/tien-ich'
 import heThong from '../modules/he-thong'
 import { TrungTamBaoCao } from '../modules/bao-cao/TrungTam'
-import { CAU_HINH_BC } from '../modules/bao-cao/danh-sach'
-import { thTT58 } from '../modules/bao-cao/tt58'
+import { CAU_HINH_BC, giuBC } from '../modules/bao-cao/danh-sach'
 import type { Session } from './session'
 
 /** Màn thuộc tab Báo cáo: nhóm Excel có chữ "báo cáo", trừ màn khai tab: true */
@@ -94,17 +93,25 @@ export function moDuoc(sc: ScreenDef, goi: Goi) {
   return true
 }
 
-/** Báo cáo có áp dụng cho chế độ (thông tư) không. Thiếu khai báo cheDo là áp dụng mọi thông tư (T97). Với TT58, lọc tiếp theo trường hợp thuế (T108). */
-export function apDung(sc: ScreenDef, cheDo?: CheDo, session?: Pick<Session, 'ppGtgt' | 'ppTndn'> | Session): boolean {
-  if (!cheDo || !sc.code) return true
-  const cfg = CAU_HINH_BC[sc.code]
+/** Mã tính năng của màn báo cáo; màn chưa có trong Excel lấy theo slug (3-2-6 thành 3.2.6) */
+const maBC = (sc: ScreenDef) => sc.code ?? (/^\d+(-\d+)+$/.test(sc.slug) ? sc.slug.replace(/-/g, '.') : undefined)
+
+/** Báo cáo có áp dụng cho chế độ (thông tư) không: phải nằm trong danh sách giữ lại (T171), rồi theo khai báo cheDo, anTam (T97).
+ *  TT58 hiện đủ bộ sổ, không lọc theo trường hợp thuế nữa (T171) */
+export function apDung(sc: ScreenDef, cheDo?: CheDo): boolean {
+  if (!cheDo) return true
+  if (!giuBC(maBC(sc), cheDo)) return false
+  const cfg = sc.code ? CAU_HINH_BC[sc.code] : undefined
   if (cfg?.anTam?.includes(cheDo)) return false
   if (cfg?.cheDo && !cfg.cheDo.includes(cheDo)) return false
-  if (cheDo === 'TT58' && cfg?.th) {
-    const curTh = thTT58(session?.ppGtgt, session?.ppTndn)
-    if (!cfg.th.includes(curTh)) return false
-  }
   return true
+}
+
+/** Tab Báo cáo của phân hệ, nhóm báo cáo ở phân hệ Báo cáo: chỉ hiện khi còn ít nhất một báo cáo hiện được (T171) */
+function conBaoCao(sc: ScreenDef, goi: Goi, cheDo?: CheDo) {
+  const m = sc.kind === 'baocao' ? MODULES.find(x => x.screens.includes(sc)) : MODULES.find(x => x.key === sc.slug.slice(5))
+  const con = m?.screens.filter(sc.kind === 'baocao' ? laBaoCao : vaoBaoCao) ?? []
+  return con.some(x => hienMan(x, goi, cheDo))
 }
 
 /** Mã quyết định khoá của màn (để tìm gói thấp nhất) */
@@ -115,13 +122,15 @@ const khongApDung = (sc: ScreenDef, goi: Goi) => {
   const ma = maKhoa(sc)
   return !!ma && GOIS.indexOf(minGoi(ma)) < GOIS.indexOf(goi)
 }
-export const hienMan = (sc: ScreenDef, goi: Goi, cheDo?: CheDo, session?: Pick<Session, 'ppGtgt' | 'ppTndn'> | Session) => {
+export const hienMan = (sc: ScreenDef, goi: Goi, cheDo?: CheDo, _session?: Pick<Session, 'ppGtgt' | 'ppTndn'> | Session): boolean => {
   if (sc.goi && !sc.goi.includes(goi)) return false
   const cd = cheDo ?? CHE_DO_MAC_DINH[goi]
   if (sc.cheDo && !sc.cheDo.includes(cd)) return false
+  if (sc.comp === TrungTamBaoCao && sc.slug === 'tat-ca') return true
+  if (sc.kind === 'baocao' || sc.comp === TrungTamBaoCao) return conBaoCao(sc, goi, cd)
   const isBC = Boolean((sc.code && CAU_HINH_BC[sc.code]) || sc.goc || vaoBaoCao(sc))
   if (isBC) {
-    if (cheDo && !apDung(sc, cheDo, session)) return false
+    if (!apDung(sc, cd)) return false
     return moDuoc(sc, goi) || !anNgoaiGoi(goi)
   }
   return moDuoc(sc, goi) || (!anNgoaiGoi(goi) && !khongApDung(sc, goi))

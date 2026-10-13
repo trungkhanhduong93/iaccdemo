@@ -20,7 +20,7 @@ export interface CauHinhBC {
   kho: Kho
   cheDo?: CheDo[]                          // thông tư áp dụng; thiếu là mọi thông tư (T97)
   anTam?: CheDo[]                          // ẩn tạm ở các chế độ chưa có mẫu Trum cung cấp (T122); bỏ chế độ khỏi danh sách để hiện lại
-  th?: (1 | 2 | 3 | 4)[]                   // trường hợp TT58 áp dụng; thiếu là mọi TH (T108)
+  th?: (1 | 2 | 3 | 4)[]                   // trường hợp TT58 của mẫu, chỉ để ghi; từ T171 TT58 hiện đủ mẫu, không lọc theo TH
   kyHieu?: Partial<Record<CheDo, string>>   // thiếu chế độ nào thì đầu trang chế độ đó không ghi "Mẫu số"
   ten?: Partial<Record<CheDo, string>>      // tên in trên tờ theo chế độ, thiếu thì giữ tên đang có
   congCot?: string[]                        // sổ: cột cộng chuyển trang
@@ -36,10 +36,10 @@ const baoCao = (kho: Kho, opt?: { loc?: LocBC[]; nhomDuoc?: string[]; anKhongPS?
 const ALL: CheDo[] = ['TT152', 'TT58', 'TT133', 'TT99']
 
 export const CAU_HINH_BC: Record<string, CauHinhBC> = {
-  '2.2.1': { loai: 'so', kho: 'doc', anTam: ['TT58', 'TT133', 'TT99'], kyHieu: { TT133: 'S04a-DNN', TT99: 'S07-DN' }, congCot: ['no', 'co'],
+  '2.2.1': { loai: 'so', kho: 'doc', kyHieu: { TT133: 'S04a-DNN', TT99: 'S07-DN' }, congCot: ['no', 'co'],
     loc: [{ k: 'locQuy', nhan: 'Quỹ tiền', kieu: 'chon', ds: id => cnCua(id).map(c => tenQuyTm(c.ngan)) }] },
   '2.2.2': { loai: 'so', kho: 'ngang', anTam: ALL, kyHieu: { TT133: 'S19-DNN', TT99: 'S38-DN' }, ten: { TT133: 'Sổ chi tiết các tài khoản', TT99: 'Sổ chi tiết các tài khoản' }, congCot: ['no', 'co'] },
-  '2.2.3': { loai: 'so', kho: 'doc', anTam: ['TT58', 'TT133', 'TT99'], kyHieu: { TT133: 'S05-DNN', TT99: 'S08-DN' }, ten: { TT133: 'Sổ tiền gửi ngân hàng', TT99: 'Sổ tiền gửi ngân hàng' }, congCot: ['no', 'co'],
+  '2.2.3': { loai: 'so', kho: 'doc', kyHieu: { TT133: 'S05-DNN', TT99: 'S08-DN' }, ten: { TT133: 'Sổ tiền gửi ngân hàng', TT99: 'Sổ tiền gửi ngân hàng' }, congCot: ['no', 'co'],
     loc: [{ k: 'locQuy', nhan: 'Quỹ tiền', kieu: 'chon', ds: () => TK_NGAN_HANG.map(tenTkNh) }] },
   '2.2.4': { loai: 'so', kho: 'ngang', anTam: ALL, kyHieu: { TT133: 'S03a-DNN', TT99: 'S03a-DN' }, ten: { TT133: 'Sổ nhật ký chung', TT99: 'Sổ nhật ký chung' }, congCot: ['no', 'co'] },
   '2.2.5': { loai: 'so', kho: 'ngang', anTam: ['TT133', 'TT99'], kyHieu: { TT58: 'S4a-DNSN', TT133: 'S12-DNN', TT99: 'S31-DN' }, anKhongPS: true,
@@ -118,5 +118,12 @@ export const CAU_HINH_BC: Record<string, CauHinhBC> = {
     anKhongPS: true,
   }),
 }
+
+/** Báo cáo còn giữ (T171, PhuongXT chốt 13/10/2026): mọi gói chỉ còn Sổ quỹ tiền mặt, Sổ ngân hàng;
+ *  chế độ TT58 thêm bộ sổ S1 đến S4d-DNSN và báo cáo tài chính B01, B02-DNSN. Báo cáo khác ẩn ở mọi gói, cấu hình vẫn giữ để mở lại */
+const GIU_MOI_CHE_DO = ['2.2.1', '2.2.3']
+const GIU_TT58 = ['2.2.5', '2.2.7', '3.2.5', '5.2.8', '6.2.4', '6.2.5', '7.2.1', '10.2.2', '10.2.3', '10.4.1', '10.4.2']
+export const giuBC = (code: string | undefined, cheDo: CheDo) =>
+  !!code && (GIU_MOI_CHE_DO.includes(code) || (cheDo === 'TT58' && GIU_TT58.includes(code)))
 
 export const cauHinhBC = (code?: string) => code ? CAU_HINH_BC[code] : undefined
