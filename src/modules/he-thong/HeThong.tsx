@@ -248,6 +248,17 @@ export function ThongTinDonVi({ sc }: ScreenProps) {
             <div className="f c2"><label>Loại hình</label>
               <Select className="inp" value={loai} aria-label="Loại hình" onChange={e => sua({ loai: e.target.value as LoaiHinh })}
                 ds={[{ v: 'hkd', t: 'Hộ kinh doanh' }, { v: 'dn', t: 'Doanh nghiệp' }]} /></div>
+            {/* Thông tư áp dụng đứng cạnh Loại hình (T174) */}
+            <div className="f c2"><label>Thông tư áp dụng</label>
+              {loai === 'hkd'
+                ? <input className="inp" readOnly value={`${CHE_DO.TT152.soHieu} · ${CHE_DO.TT152.ten}`} />
+                : s.goi === 'F'
+                ? <input className="inp" readOnly value="Quản lý lãi lỗ, không theo thông tư" />
+                : <Select className="inp" value={s.cheDo} disabled={CHE_DO_HOP_LE[s.goi].length <= 1} aria-label="Thông tư áp dụng"
+                    onChange={e => { const moi = e.target.value as CheDo; if (moi !== s.cheDo) setChoDoi(moi) }}
+                    ds={CHE_DO_HOP_LE[s.goi].map(cd => ({ v: cd, t: `${CHE_DO[cd].soHieu} · ${CHE_DO[cd].ten}` }))} />}
+              {loai === 'dn' && s.goi !== 'F' && CHE_DO_HOP_LE[s.goi].length <= 1 && <small className="muted" style={{ display: 'block', marginTop: 4 }}>Gói {GOI[s.goi].ten} chỉ dùng {cheDoHienTai(s).ngan}</small>}
+            </div>
             {loai === 'hkd' && <>
               <div className="f c2"><label>Nhóm doanh thu</label>
                 <Select className="inp" value={String(f.nhom)} aria-label="Nhóm doanh thu" onChange={e => sua({ nhom: Number(e.target.value) })}
@@ -281,16 +292,6 @@ export function ThongTinDonVi({ sc }: ScreenProps) {
         </Card>
         <Card title="Chế độ kế toán">
           <div className="form-grid">
-            <div className="f c2"><label>Thông tư áp dụng</label>
-              {loai === 'hkd'
-                ? <input className="inp" readOnly value={`${CHE_DO.TT152.soHieu} · ${CHE_DO.TT152.ten}`} />
-                : s.goi === 'F'
-                ? <input className="inp" readOnly value="Quản lý lãi lỗ, không theo thông tư" />
-                : <Select className="inp" value={s.cheDo} disabled={CHE_DO_HOP_LE[s.goi].length <= 1} aria-label="Thông tư áp dụng"
-                    onChange={e => { const moi = e.target.value as CheDo; if (moi !== s.cheDo) setChoDoi(moi) }}
-                    ds={CHE_DO_HOP_LE[s.goi].map(cd => ({ v: cd, t: `${CHE_DO[cd].soHieu} · ${CHE_DO[cd].ten}` }))} />}
-              {loai === 'dn' && s.goi !== 'F' && CHE_DO_HOP_LE[s.goi].length <= 1 && <small className="muted" style={{ display: 'block', marginTop: 4 }}>Gói {GOI[s.goi].ten} chỉ dùng {cheDoHienTai(s).ngan}</small>}
-            </div>
             <div className="f">
               <label>Ngày đầu năm</label>
               <ONgay value={dauNam} placeholder="dd/mm/yyyy" onChange={setDauNam}
