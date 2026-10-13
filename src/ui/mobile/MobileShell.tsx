@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { dsChiNhanh, useSession } from '../../app/session'
 import { CHI_NHANH } from '../../data/mock'
-import { tenMan, timMan } from '../../app/registry'
+import { MODULES, tenMan, timMan } from '../../app/registry'
 import { ghiGanDay } from '../../app/CommandPalette'
 import { OnboardFabi } from '../../modules/onboarding/OnboardFabi'
 import { Icon } from '../Icon'
@@ -10,7 +10,8 @@ import { Dropdown, MenuHead, MenuItem, MenuSep } from '../Dropdown'
 import { Logo } from '../Logo'
 import { ThanhDuoi, tabDangChon } from './ThanhDuoi'
 
-function laManGoc(pathname: string): boolean {
+function laManGoc(pathname: string, search = ''): boolean {
+  if (pathname === '/app/nghiep-vu' && search.includes('m=')) return false
   const p = pathname.replace(/\/+$/, '')
   return (
     p === '/app' ||
@@ -22,9 +23,17 @@ function laManGoc(pathname: string): boolean {
   )
 }
 
-function layTieuDe(pathname: string): string {
+function layTieuDe(pathname: string, search = ''): string {
   if (pathname === '/app' || pathname === '/app/') return 'Trang chủ'
-  if (pathname.startsWith('/app/nghiep-vu')) return 'Nghiệp vụ'
+  if (pathname.startsWith('/app/nghiep-vu')) {
+    if (search.includes('m=')) {
+      const sp = new URLSearchParams(search)
+      const mk = sp.get('m')
+      const mod = MODULES.find(m => m.key === mk)
+      if (mod) return mod.ten
+    }
+    return 'Nghiệp vụ'
+  }
   if (pathname.startsWith('/app/khac')) return 'Khác'
   const parts = pathname.split('/').filter(Boolean)
   const modKey = parts[1]
@@ -57,9 +66,17 @@ export function MobileShell() {
   const dsCn = dsCnRaw.length ? dsCnRaw : CHI_NHANH
   const cn = dsCn.find(c => c.id === s.chiNhanh)
 
-  const laGoc = laManGoc(loc.pathname)
+  const laGoc = laManGoc(loc.pathname, loc.search)
   const laTrangChu = tabDangChon(loc.pathname) === 'trang-chu'
-  const tieuDe = layTieuDe(loc.pathname)
+  const tieuDe = layTieuDe(loc.pathname, loc.search)
+
+  const quayLai = () => {
+    if (loc.pathname === '/app/nghiep-vu' && loc.search.includes('m=')) {
+      nav('/app/nghiep-vu')
+    } else {
+      nav(-1)
+    }
+  }
 
   return (
     <div className="m-app">
@@ -69,7 +86,7 @@ export function MobileShell() {
             <button
               type="button"
               className="m-nut-back"
-              onClick={() => nav(-1)}
+              onClick={quayLai}
               title="Quay lại"
             >
               <Icon n="chevl" className="ic sm" />

@@ -7,11 +7,17 @@ import { ChonDonVi } from './modules/auth/ChonDonVi'
 import { KhoiTao } from './modules/onboarding/KhoiTao'
 import { KhoiTaoFabi } from './modules/onboarding/KhoiTaoFabi'
 import { useLaMobile } from './ui/mobile/useLaMobile'
-import { MChiMayTinh } from './ui/mobile/MChiMayTinh'
+import { MNghiepVu } from './ui/mobile/MNghiepVu'
+import { MKhac } from './ui/mobile/MKhac'
 
-function RouteTamMobile() {
+function RouteNghiepVu() {
   const laMobile = useLaMobile()
-  return laMobile ? <MChiMayTinh /> : <Navigate to="/app" replace />
+  return laMobile ? <MNghiepVu /> : <Navigate to="/app" replace />
+}
+
+function RouteKhac() {
+  const laMobile = useLaMobile()
+  return laMobile ? <MKhac /> : <Navigate to="/app" replace />
 }
 
 export default function App() {
@@ -27,8 +33,8 @@ export default function App() {
           <Route path="/khoi-tao-fabi" element={<KhoiTaoFabi />} />
           <Route path="/app" element={<KhungApp />}>
             <Route index element={<HomeRedirect />} />
-            <Route path="nghiep-vu" element={<RouteTamMobile />} />
-            <Route path="khac" element={<RouteTamMobile />} />
+            <Route path="nghiep-vu" element={<RouteNghiepVu />} />
+            <Route path="khac" element={<RouteKhac />} />
             <Route path=":mod" element={<ScreenRoute />} />
             <Route path=":mod/:slug" element={<ScreenRoute />} />
             <Route path=":mod/:slug/:id" element={<ScreenRoute />} />

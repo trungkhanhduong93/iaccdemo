@@ -98,10 +98,10 @@ def kiem_tra_dien_thoai(rong=390, cao=844):
                     d ? d.getBoundingClientRect().width : null,
                 ];
             }""")
-            for rong in (app_w, duoi_w):
-                if rong is None or abs(rong - win_w) > 1:
-                    loi.append(f'{path}: khung rộng {round(rong if rong is not None else 0)}px, màn rộng {round(win_w)}px')
-                    break
+            if app_w is None or abs(app_w - win_w) > 1:
+                loi.append(f'{path}: khung rộng {round(app_w if app_w is not None else 0)}px, màn rộng {round(win_w)}px')
+            if duoi_w is None or duoi_w > win_w + 1:
+                loi.append(f'{path}: thanh dưới rộng {round(duoi_w if duoi_w is not None else 0)}px vượt màn rộng {round(win_w)}px')
             if path == '/app':
                 co_logo = pg.locator('.m-thanh-tren img, .m-thanh-tren .m-thanh-tren-tieu-de svg, .m-thanh-tren svg.logo').count() > 0
                 if not co_logo:
@@ -146,6 +146,74 @@ def kiem_tra_dien_thoai(rong=390, cao=844):
     return [f'{rong}px {x}' for x in loi], dem
 
 
+def kiem_tra_nghiep_vu_4_goi():
+    loi = []
+    with sync_playwright() as p:
+        b = p.chromium.launch(channel='chrome')
+        pg = b.new_page(
+            viewport={'width': 390, 'height': 844},
+            is_mobile=True,
+            has_touch=True,
+            device_scale_factor=3,
+        )
+        con = []
+        pg.on('console', lambda m: con.append(m.text) if m.type == 'error' else None)
+        pg.on('pageerror', lambda e: con.append(str(e)))
+
+        for goi in ['F', 'S', 'PL', 'PR']:
+            pg.goto(URL + '#/dang-nhap')
+            pg.wait_for_selector('.auth-box')
+            pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien(goi))})")
+            pg.goto(f'{URL}?goi={goi}&p={abs(hash(goi))}#/app/nghiep-vu')
+            pg.wait_for_timeout(150)
+
+            o_links = pg.eval_on_selector_all(
+                '.m-nv-luoi a',
+                'as => as.map(a => a.getAttribute("href"))'
+            )
+            so_man = 0
+            for o_href in o_links:
+                if not o_href or 'm=' not in o_href:
+                    continue
+                k = o_href.split('m=')[1]
+                pg.goto(f'{URL}{o_href}')
+                pg.wait_for_timeout(60)
+                if con:
+                    loi.append(f'[{goi}] {o_href}: lỗi console {con[:2]}')
+                    con.clear()
+
+                man_links = pg.eval_on_selector_all(
+                    '.m-nv-ds a',
+                    'as => as.map(a => a.getAttribute("href"))'
+                )
+                for man_href in man_links:
+                    if not man_href:
+                        continue
+                    so_man += 1
+                    pg.goto(f'{URL}{man_href}')
+                    pg.wait_for_timeout(40)
+                    cur_h = pg.evaluate('location.hash')
+                    hop_le = cur_h.startswith(f'#/app/{k}/') or cur_h == f'#/app/bao-cao/nhom-{k}'
+                    if not hop_le:
+                        loi.append(f'[{goi}] {man_href}: hash {cur_h} không bắt đầu bằng #/app/{k}/')
+                    if con:
+                        loi.append(f'[{goi}] {man_href}: lỗi console {con[:2]}')
+                        con.clear()
+                    than_txt = pg.evaluate("() => { const e = document.querySelector('.m-than'); return e ? (e.innerText || e.textContent || '').trim() : null; }")
+                    if not than_txt:
+                        loi.append(f'[{goi}] {man_href}: trắng trang')
+                    pg.goto(f'{URL}{o_href}')
+                    pg.wait_for_timeout(30)
+
+                pg.goto(f'{URL}#/app/nghiep-vu')
+                pg.wait_for_timeout(30)
+
+            print(f'gói {goi}: đã bấm {so_man} màn')
+
+        b.close()
+    return loi
+
+
 def kiem_tra_cac_khung_dt():
     loi, dem = [], 0
     for rong, cao in KHUNG_DT:
@@ -153,6 +221,8 @@ def kiem_tra_cac_khung_dt():
         loi += l
         dem += d
     print(f'đã kiểm {dem} lượt địa chỉ ở {len(KHUNG_DT)} bề rộng')
+    loi_nv = kiem_tra_nghiep_vu_4_goi()
+    loi += loi_nv
     if loi:
         print(f'{len(loi)} LỖI:')
         for x in loi:
