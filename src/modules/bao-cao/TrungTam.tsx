@@ -73,7 +73,7 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
   const nhomGoc: { mod: ModuleDef; screens: ScreenDef[] }[] = []
   for (const m of MODULES) {
     if (m.key === 'bao-cao') continue
-    const scs = tatCaBC.filter(x => x.goc === m.key)
+    const scs = tatCaBC.filter(x => x.goc === m.key && !laSoTT(x))   // sổ đã ở nhóm thông tư thì không lặp ở nhóm phân hệ
     if (scs.length > 0) {
       nhomGoc.push({ mod: m, screens: scs })
     }
@@ -92,13 +92,13 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
 
   // Lọc theo sc.slug: 'tat-ca' là mọi nhóm; 'nhom-<key>' chỉ nhóm của phân hệ <key>
   const keyHienTai = sc.slug.startsWith('nhom-') ? sc.slug.slice(5) : null
-  // Tất cả: nhóm sổ theo thông tư đứng đầu, nhóm phân hệ bỏ các sổ đó; trang nhóm phân hệ giữ đủ báo cáo của phân hệ
+  // Tất cả: nhóm sổ theo thông tư đứng đầu, rồi các nhóm phân hệ (đã bỏ sổ theo thông tư)
   const modSoTT = { key: 'so-sach', ten: tenSoTT } as ModuleDef
   const nhomHienThi = keyHienTai
     ? nhomGoc.filter(g => g.mod.key === keyHienTai)
     : chiSoTT
     ? [{ mod: modSoTT, screens: soTT }]
-    : [{ mod: modSoTT, screens: soTT }, ...nhomGoc.map(g => ({ mod: g.mod, screens: g.screens.filter(x => !laSoTT(x)) }))]
+    : [{ mod: modSoTT, screens: soTT }, ...nhomGoc]
 
   const modHienTai = keyHienTai ? nhomHienThi[0]?.mod : null
   const title = modHienTai ? `Báo cáo ${modHienTai.ten}` : chiSoTT ? tenSoTT : 'Báo cáo'
@@ -168,7 +168,7 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
           <Link to="/app/bao-cao/tat-ca" className={sc.slug === 'tat-ca' && !chiSoTT ? 'on' : ''}>
             <Icon n="chart" />
             <span>Tất cả</span>
-            <span className="bc-dem">{tongHienRail}</span>
+            <span className="bc-dem">{tongHienRail + demSoTT}</span>
           </Link>
           {demSoTT > 0 && (
             <Link to="/app/bao-cao/tat-ca?nhom=so-sach" className={chiSoTT ? 'on' : ''} title={tenSoTT}>
@@ -210,7 +210,7 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
           )}
           {nhomKetQua.length === 0 ? (
             <div className="card">
-              <div className="empty"><b>Không có báo cáo khớp "{q}"</b></div>
+              <div className="empty"><b>{q ? `Không có báo cáo khớp "${q}"` : `Báo cáo của phân hệ này nằm ở nhóm ${tenSoTT}`}</b></div>
             </div>
           ) : (
             nhomKetQua.map(g => (
