@@ -4,7 +4,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T204.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T210.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
@@ -14,13 +14,16 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | T207 | Bộ lọc báo cáo mua hàng, bán hàng, kho: thêm Kho, Hàng hoá, Nhóm hàng hoá; mua hàng, bán hàng thêm Đối tượng (bán hàng không lọc kho vì đơn POS không ghi kho). Lọc trên từng phiếu, dòng hàng trước khi cộng | PhuongXT | Đang làm | Sửa `ReportScreen.tsx`, `bao-cao/danh-sach.ts`, `bao-cao.ts` của mua-hang, ban-hang, kho, `XuatNhapTon.tsx`; file mới `bao-cao/loc-nguon.ts` |
 | T206 | Báo cáo xuất nhập tồn: ô lọc Kho trên thanh công cụ báo cáo để nhãn cùng hàng với ô chọn, không xuống dòng | PhuongXT | Đang làm | Sửa `src/styles/app.css` (mục mới cuối file) |
 | T205 | Báo cáo Mua hàng theo ngày (4.2.6): bỏ cột Đã thanh toán, Còn nợ | PhuongXT | Đang làm | Sửa `src/modules/mua-hang/bao-cao.ts` |
-| T186 | Điện thoại: Xuất bán POS (3.1.1) còn báo dùng máy tính | | Chờ | Từ rà soát T184 (`MChiMayTinh`). Làm màn điện thoại riêng trong `src/ui/mobile/`, nối ở `manMobile.ts` |
-| T187 | Điện thoại: Danh mục tài khoản (1.1), Danh mục chi nhánh còn báo dùng máy tính | | Chờ | Từ rà soát T184. Có thể dùng lại `MDanhMuc`, `MFormDm` của đợt 3, 6 |
-| T188 | Điện thoại: Công thức sơ chế (5.1.5), Công thức chế biến (9.1.3) còn báo dùng máy tính | | Chờ | Từ rà soát T184. Hai màn chung `CongThucScreen` |
-| T189 | Điện thoại: Số dư ban đầu (`tien/so-du-ban-dau`, 10.1.3) còn báo dùng máy tính | | Chờ | Từ rà soát T184 |
-| T190 | Điện thoại: Kiểm tra cuối kỳ (10.1.4), Khoá sổ (10.1.6) và các màn chạy tác vụ (`kind: 'tool'`: 2.1.3, 5.1.7, 5.1.8, 7.1.3, 9.1.1, 9.1.2, 10.1.2, 10.1.5, 10.1.7, 10.1.8, 10.1.9) còn báo dùng máy tính | | Chờ | Từ rà soát T184. Màn `tool` có chung khuôn nút chạy và phần cài đặt, làm một màn điện thoại chung |
-| T191 | Điện thoại: Hệ thống (Người dùng, Vai trò và phân quyền, Nhật ký thao tác, Gói thuê bao, Thông tin đơn vị, Cấu hình kế toán) còn báo dùng máy tính | | Chờ | Từ rà soát T184. Mở từ tab Khác |
-| T192 | Điện thoại: Tiện ích bổ sung (11.1, 11.4, 11.5, 11.6, 11.7, 11.11, 11.16, X2 và màn tác vụ 11.2, 11.3, 11.8–11.10, 11.12–11.15) còn báo dùng máy tính | | Chờ | Từ rà soát T184. Thiết kế mẫu in 11.11 nên giữ chỉ máy tính, hỏi Trum |
+| T208 | Điện thoại: chỉnh giao diện đang có: trang chủ bỏ thanh trên chung, chip chọn chi nhánh và kho; kính lúp tìm cả báo cáo; bảng sổ gọn hơn; đệm đáy mọi màn; chip danh sách chứng từ một hàng | Trum | Đang làm | Anti B, đợt 13. Kế hoạch `docs/ke-hoach-mobile-dot-11.md`. Sửa `MobileShell.tsx`, `MTrangChu.tsx`, `MTimKiem.tsx`, `app.css` |
+| T209 | Điện thoại: lập phiếu kiểm kê, điều chỉnh, sản xuất, điều chuyển | Trum | Đang làm | Anti B, đợt 12. Sửa `MLapPhieu.tsx`, `MChungTu.tsx` |
+| T210 | Điện thoại: sơ đồ quy trình 11 phân hệ dạng danh sách bước | Trum | Đang làm | Anti B, đợt 11. File mới trong `src/ui/mobile/`, `manMobile.ts` |
+| T186 | Điện thoại: Xuất bán POS (3.1.1) còn báo dùng máy tính | Trum | Đang làm | Anti A, đợt 12. Từ rà soát T184 (`MChiMayTinh`). Làm màn điện thoại riêng trong `src/ui/mobile/`, nối ở `manMobile.ts` |
+| T187 | Điện thoại: Danh mục tài khoản (1.1), Danh mục chi nhánh còn báo dùng máy tính | Trum | Đang làm | Anti A, đợt 11. Từ rà soát T184. Có thể dùng lại `MDanhMuc`, `MFormDm` của đợt 3, 6 |
+| T188 | Điện thoại: Công thức sơ chế (5.1.5), Công thức chế biến (9.1.3) còn báo dùng máy tính | Trum | Đang làm | Anti A, đợt 12. Từ rà soát T184. Hai màn chung `CongThucScreen` |
+| T189 | Điện thoại: Số dư ban đầu (`tien/so-du-ban-dau`, 10.1.3) còn báo dùng máy tính | Trum | Đang làm | Anti A, đợt 12. Từ rà soát T184 |
+| T190 | Điện thoại: Kiểm tra cuối kỳ (10.1.4), Khoá sổ (10.1.6) và các màn chạy tác vụ (`kind: 'tool'`: 2.1.3, 5.1.7, 5.1.8, 7.1.3, 9.1.1, 9.1.2, 10.1.2, 10.1.5, 10.1.7, 10.1.8, 10.1.9) còn báo dùng máy tính | Trum | Đang làm | Anti B, đợt 11. Thêm 10.1.4, 10.1.6 và tool 11.x. Từ rà soát T184. Màn `tool` có chung khuôn nút chạy và phần cài đặt, làm một màn điện thoại chung |
+| T191 | Điện thoại: Hệ thống (Người dùng, Vai trò và phân quyền, Nhật ký thao tác, Gói thuê bao, Thông tin đơn vị, Cấu hình kế toán) còn báo dùng máy tính | Trum | Đang làm | Anti A, đợt 11. Từ rà soát T184. Mở từ tab Khác |
+| T192 | Điện thoại: Tiện ích bổ sung (11.1, 11.4, 11.5, 11.6, 11.7, 11.11, 11.16, X2 và màn tác vụ 11.2, 11.3, 11.8–11.10, 11.12–11.15) còn báo dùng máy tính | Trum | Đang làm | Anti A, đợt 13. 11.11 giữ chỉ máy tính. Từ rà soát T184. Thiết kế mẫu in 11.11 nên giữ chỉ máy tính, hỏi Trum |
 | T169 | Form chứng từ: gõ đổi địa chỉ từ phiếu này sang phiếu khác (vd `#/app/tien/2-1-1/chi-3` sang `chi-6`) thì form giữ số phiếu, đối tượng của phiếu cũ; mở từ danh sách, Trước, Sau thì đúng | | Chờ | Phát hiện ở T168. Sửa `ChungTuForm.tsx`, có thể `VoucherScreen.tsx` (key của form) |
 | T138 | Màn onboard khi bấm từ FABi sang IACC: khởi tạo đơn vị kế toán, điền sẵn từ FABi (chi nhánh, kho, cách đồng bộ, số dư đầu kỳ) | PhuongXT | Dở dang | Popup khởi tạo dữ liệu 4 bước trong phần mềm (`OnboardFabi.tsx`, `Shell.tsx`) đã push, PhuongXT xem lại một lượt. Xem `2026-10-11-phuongxt-man-khoi-tao-fabi.md` |
 | T139 | Phiếu nhập, xuất, điều chuyển kho tự lấy mục chi phí, công việc ngầm định theo kho đã chọn | | Chờ | Tách từ T136. Kho đã có ô `mucCp`, `congViec` ở `truong-dm.ts` 1.8. Sửa `ChungTuForm.tsx` |
