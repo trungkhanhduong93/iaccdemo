@@ -14,6 +14,8 @@ import { dinhMucTon } from '../../modules/kho/data'
 import { MODULES, hienMan, moDuoc, timMan } from '../../app/registry'
 import { chungTu, dongCua } from '../generic/gen'
 import { mauDieuChinh } from '../../modules/kho/dieu-chinh'
+import { datLocDaXem } from '../bao-cao/tuyChinhBC'
+import { moTaCach, nvlKy } from '../../modules/home/chi-phi-nvl'
 import {
   BranchBarChart,
   CashFlowChart,
@@ -113,8 +115,13 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
   }, [isFree, kyXemFree, selCns, s.cheDo, thangF, d])
 
   // 1. Lãi lỗ gói Free: chi phí trong tháng không gồm phân bổ; lợi nhuận bỏ thu nhập, chi phí khác (T220, T230)
+  // Chi phí NVL theo cách tính từng chi nhánh (T232), thay giá vốn món bán
+  const nvlFree = useMemo(() => {
+    if (!isFree) return { tien: 0, ds: [] }
+    return nvlKy(s, selCns, thangF)
+  }, [isFree, s, selCns, thangF])
   const cpThangFree = dFree.cpHoatDong - dFree.cpPhanBo
-  const loiNhuanFree = dFree.lnGop - cpThangFree - dFree.cpPhanBo
+  const loiNhuanFree = dFree.dtThuan - nvlFree.tien - cpThangFree - dFree.cpPhanBo
   const bienFree = dFree.dtThuan > 0 ? loiNhuanFree / dFree.dtThuan : 0
   const chiLonFree = useMemo(() => [...dFree.coCauCp].sort((a, b) => b.v - a.v)[0], [dFree.coCauCp])
 
@@ -639,16 +646,21 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
                     </div>
                   </div>
 
-                  <div className="m-free-tll-the cp">
+                  <Link
+                    to={`/app/trang-chu/chi-phi-nvl?thang=${thangF}`}
+                    className="m-free-tll-the cp link"
+                    title="Xem chi phí nguyên vật liệu"
+                  >
                     <div className="m-free-tll-trai">
                       <b>Chi phí nguyên vật liệu</b>
-                      <span>Giá vốn món bán theo định lượng</span>
+                      <span>{moTaCach(nvlFree.ds)}</span>
                     </div>
                     <div className="m-free-tll-phai">
-                      <b>{moneyD(dFree.gv)}</b>
-                      <span>{pct(dFree.dtThuan > 0 ? dFree.gv / dFree.dtThuan : 0)}</span>
+                      <b>{moneyD(nvlFree.tien)}</b>
+                      <span>{pct(dFree.dtThuan > 0 ? nvlFree.tien / dFree.dtThuan : 0)}</span>
                     </div>
-                  </div>
+                    <Icon n="chevr" className="ic sm m-free-mui" />
+                  </Link>
 
                   <Link
                     to={`/app/trang-chu/chi-phi-thang?thang=${thangF}`}
@@ -709,11 +721,13 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
                       <Icon n="wallet" className="ic sm" /> 2. Quản lý thu chi
                     </h3>
                   </div>
-                  <Link to="/app/tien/2-1-1" className="m-tc-the-link">
-                    Lập thu/chi
+                  <Link to="/app/danh-muc/1-12?moi=1" className="m-tc-the-link">
+                    Tạo quỹ
                   </Link>
                 </div>
-                <div className="m-free-hoi">Số dư hiện có</div>
+                <div className="m-free-hoi">
+                  {thangF === 10 ? 'Tồn quỹ hiện tại' : `Tồn quỹ cuối tháng ${thangF}/2026`}
+                </div>
                 <div className="m-tc-so-lon m-free-tra">
                   {short(tongQuyFree.cuoi)}
                   <span className="m-free-so-phu"> ({moneyD(tongQuyFree.cuoi)})</span>
@@ -721,6 +735,7 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
                 <div className="m-free-phu">
                   Thu +{short(tongQuyFree.thu)} · Chi −{short(tongQuyFree.chi)}
                 </div>
+                <div className="m-free-goiy">Bấm vào quỹ bên dưới để xem lịch sử thu chi</div>
 
                 <div className="m-free-ds-tll">
                   <div className="m-free-tll-the dt">
@@ -796,9 +811,10 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
                     <Icon n="chevr" className="ic sm m-free-mui" />
                   </Link>
                   <Link
-                    to="/app/kho/dieu-chinh?loai=xdc"
+                    to="/app/bao-cao/5-2-15"
                     className="m-free-tll-the hh link"
                     title="Xem hao hụt kiểm kê"
+                    onClick={() => datLocDaXem('/app/bao-cao/5-2-15', {}, String(thangF))}
                   >
                     <div className="m-free-tll-trai">
                       <b>Hao hụt kiểm kê</b>

@@ -6,6 +6,8 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 - T248: Phiếu mua hàng: ô Kho nhập đứng đầu, trước Nhà cung cấp; Ghi chú lên cột giữa. Xuất bán POS có ô Kho xuất đứng đầu.
 - T247: Xuất bán POS chỉ còn kéo chi tiết theo hoá đơn FABi ở mọi gói. Bỏ lựa chọn tổng hợp theo kênh, dải Đã/Chưa đồng bộ và nút Đồng bộ POS.
+- T241: Điện thoại: 22 báo cáo đổi từ bảng cuộn ngang, tờ A4 thu nhỏ sang dạng dòng. Có ba kiểu: chi tiết theo ngày, tổng hợp theo đối tượng, chỉ tiêu phân cấp. Chip Bảng và nút Xem mẫu in vẫn còn.
+- T240: Điện thoại gói Free: trang chủ giống bản web với ba bài toán, nút Tạo quỹ, thẻ Chi phí NVL. Có thêm màn Chi phí trong tháng và Lịch sử thu chi, có lọc thu, chi.
 
 ## 14/10/2026
 

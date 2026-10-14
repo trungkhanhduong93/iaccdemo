@@ -1943,9 +1943,10 @@ def kiem_tra_dot_12_a():
         pg.wait_for_timeout(350)
         if pg.locator('.m-chi-mt').count() > 0:
             loi.append('Số dư ban đầu gói Free: vẫn ra MChiMayTinh')
-        the_f = pg.locator('.m-sdb-the')
+        # T245: gói Free khai số dư ở Danh mục Quỹ tiền (1-12), đường dẫn cũ chuyển sang danh mục
+        the_f = pg.locator('.m-sdb-the, .m-the-dm')
         if the_f.count() == 0:
-            loi.append('Số dư ban đầu gói Free: không thấy thẻ số dư .m-sdb-the')
+            loi.append('Số dư ban đầu gói Free: không thấy thẻ số dư .m-sdb-the hoặc .m-the-dm')
         kiem_man('Số dư ban đầu gói Free')
         pg.screenshot(path=str(SHOTS / 'm-12-05-so-du-free.png'))
 
@@ -3852,6 +3853,14 @@ def kiem_tra_dot_19_b():
         lai_lo_web = loc_lai_lo_web.inner_text().strip() if loc_lai_lo_web.count() > 0 else ''
         if not lai_lo_web:
             loi.append('19B: không tìm thấy số lãi lỗ trên bản web 1440x900 gói Free')
+
+        # Lấy thu chi ở bài toán 2 trên web
+        loc_tc_web = pg_web.locator('.bbt-cot:has-text("Quản lý thu chi") .bbt-phu')
+        tc_web = loc_tc_web.inner_text().strip() if loc_tc_web.count() > 0 else ''
+        if not tc_web:
+            loi.append('19B: không tìm thấy thu chi trên bản web 1440x900 gói Free')
+
+        co_tao_quy_web = pg_web.locator('.bbt-cot:has-text("Quản lý thu chi") a:has-text("Tạo quỹ")').count() > 0
         pg_web.close()
 
         # ── 2. Kiểm tra trên điện thoại 390x844 gói Free ──
@@ -3894,6 +3903,23 @@ def kiem_tra_dot_19_b():
                     f'19B: số lãi lỗ điện thoại ({txt_lai_lo_dt}) không khớp bản web ({lai_lo_web})'
                 )
 
+        # Số tổng thu, tổng chi trên điện thoại bằng số trên web
+        loc_tc_dt = pg.locator('.m-free-the:has-text("Quản lý thu chi") .m-free-phu')
+        if loc_tc_dt.count() == 0:
+            loi.append('19B: không tìm thấy thu chi trên trang chủ Free điện thoại')
+        else:
+            txt_tc_dt = loc_tc_dt.inner_text().strip()
+            if tc_web and tc_web != txt_tc_dt:
+                loi.append(
+                    f'19B: thu chi điện thoại ({txt_tc_dt}) không khớp bản web ({tc_web})'
+                )
+
+        # Gói F có nút Tạo quỹ ở trang chủ điện thoại (nếu web có)
+        if co_tao_quy_web:
+            loc_tao_quy = pg.locator('.m-free-the:has-text("Quản lý thu chi") a:has-text("Tạo quỹ")')
+            if loc_tao_quy.count() == 0:
+                loi.append('19B: trang chủ Free điện thoại thiếu nút Tạo quỹ ở Quản lý thu chi')
+
         # Chụp ảnh trang chủ Free
         pg.screenshot(path=str(SHOTS / 'm-19-free-trang-chu.png'))
 
@@ -3932,6 +3958,23 @@ def kiem_tra_dot_19_b():
                 loi.append('19B: màn Lịch sử thu chi bị rơi về MChiMayTinh')
             if pg.locator('.m-free-lsq-dong, .m-free-lsq-the').count() == 0:
                 loi.append('19B: màn Lịch sử thu chi không có dòng hoặc thẻ dữ liệu')
+
+            # Kiểm tra bộ lọc thu chi dạng chip (T246)
+            loc_chip = pg.locator('.m-free-lsq-chip')
+            if loc_chip.count() < 3:
+                loi.append('19B: màn Lịch sử thu chi thiếu bộ lọc thu chi dạng chip')
+            else:
+                chip_thu = pg.locator('.m-free-lsq-chip:has-text("Khoản thu")')
+                if chip_thu.count() > 0:
+                    chip_thu.click()
+                    pg.wait_for_timeout(150)
+                    if pg.locator('.m-free-lsq-ic.ra').count() > 0:
+                        loi.append('19B: lọc Khoản thu vẫn hiện giao dịch chi')
+                chip_all = pg.locator('.m-free-lsq-chip:has-text("Tất cả")')
+                if chip_all.count() > 0:
+                    chip_all.click()
+                    pg.wait_for_timeout(150)
+
             kiem_man('Màn Lịch sử thu chi')
             pg.screenshot(path=str(SHOTS / 'm-19-lich-su-quy.png'))
 

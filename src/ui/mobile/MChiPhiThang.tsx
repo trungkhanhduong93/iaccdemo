@@ -29,6 +29,7 @@ export function MChiPhiThang(_: ScreenProps) {
       <div className="m-free-cpt-tong-the">
         <div className="m-free-cpt-tong-nhan">
           Tổng chi phí trong tháng {thang}/2026{cn ? ` · ${cn.ten}` : ''}
+          <small className="m-free-cpt-tong-phu">Các khoản chi tiền có lý do nghiệp vụ là chi phí</small>
         </div>
         <div className="m-free-cpt-tong-so">{moneyD(cpThang)}</div>
       </div>

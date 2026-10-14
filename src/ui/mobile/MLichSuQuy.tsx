@@ -1,5 +1,6 @@
 // Lịch sử thu chi một quỹ kiểu app trên điện thoại (T240): mở từ khối Tồn quỹ trang chủ gói Free.
 // Cùng số liệu với bản web, gom theo ngày, mới nhất trên cùng
+import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import type { ScreenProps } from '../../modules/types'
 import { CHI_NHANH } from '../../data/mock'
@@ -30,10 +31,13 @@ export function MLichSuQuy(_: ScreenProps) {
   const thang = Math.min(10, Math.max(7, Number(tham.get('thang')) || 10))
   const gd = giaoDich(quy, thang)
   const tienMat = CHI_NHANH.some(c => tenQuyTm(c.ngan) === quy)
+  // Lọc loại giao dịch: tất cả, chỉ khoản thu, chỉ khoản chi (T246); danh sách theo bộ lọc, số dư đầu, cuối kỳ giữ nguyên
+  const [loai, setLoai] = useState<'' | 'thu' | 'chi'>('')
+  const dsLoc = (gd?.ds ?? []).filter(x => !loai || (loai === 'thu' ? x.thu > 0 : x.chi > 0))
 
   // Mới nhất trên cùng, gom theo ngày
   const nhom = new Map<string, GiaoDichItem[]>()
-  for (const x of [...(gd?.ds ?? [])].reverse()) {
+  for (const x of [...dsLoc].reverse()) {
     nhom.set(x.ngay, [...(nhom.get(x.ngay) ?? []), x])
   }
   const tn = (gd?.ds ?? []).reduce((a, x) => a + x.thu, 0)
@@ -57,8 +61,35 @@ export function MLichSuQuy(_: ScreenProps) {
         </div>
       </div>
 
+      {/* Bộ lọc thu chi dạng chip (T246) */}
+      <div className="m-free-lsq-loc">
+        <button
+          type="button"
+          className={`m-free-lsq-chip ${loai === '' ? 'on' : ''}`}
+          onClick={() => setLoai('')}
+        >
+          Tất cả thu, chi
+        </button>
+        <button
+          type="button"
+          className={`m-free-lsq-chip ${loai === 'thu' ? 'on' : ''}`}
+          onClick={() => setLoai('thu')}
+        >
+          Khoản thu
+        </button>
+        <button
+          type="button"
+          className={`m-free-lsq-chip ${loai === 'chi' ? 'on' : ''}`}
+          onClick={() => setLoai('chi')}
+        >
+          Khoản chi
+        </button>
+      </div>
+
       {!gd || nhom.size === 0 ? (
-        <div className="m-free-trong">Quỹ chưa có giao dịch trong tháng {thang}/2026.</div>
+        <div className="m-free-trong">
+          {loai ? `Quỹ không có khoản ${loai} nào trong tháng ${thang}/2026.` : `Quỹ chưa có giao dịch trong tháng ${thang}/2026.`}
+        </div>
       ) : (
         <div className="m-free-lsq-ds">
           {[...nhom].map(([ngay, ds]) => (
