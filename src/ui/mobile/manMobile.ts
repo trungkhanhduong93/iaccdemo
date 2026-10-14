@@ -14,6 +14,10 @@ import { MGoiThueBao } from './MGoiThueBao'
 import { MCauHinh, MNguoiDung, MNhatKyThaoTac, MPhanQuyen, MThongTinDonVi } from './MHeThong'
 import { MTacVu } from './MTacVu'
 import { MQuyTrinh } from './MQuyTrinh'
+import { MXuatBanPos } from './MXuatBanPos'
+import { MCongThuc } from './MCongThuc'
+import { MSoDuBanDau } from './MSoDuBanDau'
+import { CongThucScreen } from '../../modules/kho/CongThuc'
 
 // Bảng riêng theo mod.key + '/' + sc.slug
 const BANG_RIENG: Record<string, ComponentType<ScreenProps>> = {
@@ -52,6 +56,21 @@ export function manMobile(sc: ScreenDef, mod: ModuleDef): ComponentType<ScreenPr
   }
   if (mod.key === 'tien-ich' && (sc.slug === 'x2' || sc.code === 'X2')) {
     return MNhatKyThaoTac
+  }
+
+  // T186: Xuất bán POS (3.1.1)
+  if (mod.key === 'ban-hang' && (sc.code === '3.1.1' || sc.slug === '3-1-1')) {
+    return MXuatBanPos
+  }
+
+  // T188: Công thức sơ chế 5.1.5 và Công thức chế biến 9.1.3
+  if ((sc.code === '5.1.5' || sc.slug === '5-1-5' || sc.code === '9.1.3' || sc.slug === '9-1-3') && (mod.key === 'kho' || sc.comp === CongThucScreen)) {
+    return MCongThuc
+  }
+
+  // T189: Số dư ban đầu (10.1.3 và tien/so-du-ban-dau)
+  if ((mod.key === 'tong-hop' && (sc.code === '10.1.3' || sc.slug === '10-1-3')) || (mod.key === 'tien' && sc.slug === 'so-du-ban-dau')) {
+    return MSoDuBanDau
   }
 
   // ── Luật Anti B thêm ngay dưới dòng này (đợt 11–13) ──

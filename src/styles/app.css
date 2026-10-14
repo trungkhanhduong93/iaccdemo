@@ -13900,3 +13900,719 @@ button.cn-ten {
   }
 }
 
+/* ── Điện thoại: lập phiếu kiểm kê, điều chỉnh, sản xuất, điều chuyển (T209) ── */
+@media (max-width: 767px) {
+  .m-lp-kk-doc {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    background: var(--soft, #f8fafc);
+    border: 1px solid var(--line, #e2e8f0);
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink, #0f172a);
+  }
+
+  .m-lp-kk-chenh {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .m-lp-tp-hop {
+    padding: 12px 14px;
+    background: var(--soft, #f8fafc);
+    border-radius: var(--m-the-r, 16px);
+    border: 1px solid var(--line, #e2e8f0);
+    margin-bottom: 12px;
+  }
+
+  .m-lp-tp-the {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    cursor: pointer;
+    border: 1px solid var(--line, #e2e8f0);
+    border-radius: 10px;
+    transition: all .15s ease;
+  }
+
+  .m-lp-tp-the.on {
+    border-color: var(--orange, #ff7a00);
+    background: #fff8f0;
+  }
+
+  .m-lp-tp-sl {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--line, #e2e8f0);
+  }
+
+  .m-lp-tp-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    background: var(--tint, #e0f2fe);
+    color: var(--blue, #0284c7);
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .m-lp-kho-nhan-wrap {
+    margin-top: -4px;
+  }
+
+  .m-lp-ds-sua {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .m-lp-thanh-cong-tich {
+    color: #fff;
+  }
+}
+
+/* ── Điện thoại: xuất bán POS, công thức, số dư ban đầu (T186, T188, T189) ── */
+@media (max-width: 767px) {
+  /* Xuất bán POS (T186) */
+  .m-pos-khung {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    padding: 12px 14px calc(68px + env(safe-area-inset-bottom, 0px));
+    gap: 12px;
+  }
+
+  .m-pos-dau {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .m-pos-chip-hang {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    white-space: nowrap;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .m-pos-chip-hang::-webkit-scrollbar {
+    display: none;
+  }
+
+  .m-pos-chip {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 36px;
+    padding: 0 12px;
+    border-radius: 18px;
+    border: 1px solid var(--line, #e2e8f0);
+    background: var(--white, #fff);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink, #0f172a);
+    cursor: pointer;
+  }
+
+  .m-pos-chip.on {
+    border-color: var(--blue, #2563eb);
+    color: var(--blue, #2563eb);
+    background: var(--tint, #eff6ff);
+    font-weight: 600;
+  }
+
+  .m-pos-btn-db {
+    align-self: flex-start;
+    height: 38px;
+    padding: 0 14px;
+    border-radius: 19px;
+    font-size: 13px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .m-pos-ds {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .m-pos-the {
+    background: var(--white, #fff);
+    border-radius: var(--m-the-r, 14px);
+    border: 1px solid var(--line, #e2e8f0);
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  }
+
+  .m-pos-the:active {
+    background: var(--soft, #f8fafc);
+  }
+
+  .m-pos-the-dau {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .m-pos-so {
+    font-family: var(--font-code, monospace);
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--ink, #0f172a);
+  }
+
+  .m-pos-gio {
+    font-size: 12px;
+    color: var(--muted, #64748b);
+  }
+
+  .m-pos-the-than {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--muted, #64748b);
+  }
+
+  .m-pos-kenh {
+    display: inline-flex;
+    padding: 2px 8px;
+    background: var(--soft, #f1f5f9);
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink, #334155);
+  }
+
+  .m-pos-cn {
+    color: var(--muted, #64748b);
+    font-size: 12.5px;
+  }
+
+  .m-pos-the-chan {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 6px;
+    border-top: 1px dashed var(--line-2, #f1f5f9);
+  }
+
+  .m-pos-tien {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--blue, #2563eb);
+  }
+
+  .m-pos-tt {
+    font-size: 11.5px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 6px;
+  }
+
+  .m-pos-tt.da-ghi {
+    background: #ecfdf5;
+    color: #059669;
+  }
+
+  .m-pos-tt.chua-ghi {
+    background: #fffbeb;
+    color: #d97706;
+  }
+
+  .m-pos-tong-dai {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: var(--soft, #f8fafc);
+    border-radius: 10px;
+    font-size: 13px;
+    color: var(--ink, #334155);
+    border: 1px solid var(--line, #e2e8f0);
+    margin-top: 4px;
+  }
+
+  .m-pos-ct-hop {
+    /* chi tiết đơn POS */
+  }
+
+  .m-pos-ct-dau {
+    /* đầu panel */
+  }
+
+  .m-pos-ct-than {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+
+  .m-pos-ct-mon {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .m-pos-mon-dong {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 8px 10px;
+    background: var(--soft, #f8fafc);
+    border-radius: 8px;
+    font-size: 13px;
+  }
+
+  .m-pos-mon-trai {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .m-pos-mon-ten {
+    font-weight: 600;
+    color: var(--ink, #0f172a);
+  }
+
+  .m-pos-mon-phai {
+    text-align: right;
+  }
+
+  .m-pos-mon-sl-gia {
+    font-size: 12px;
+    color: var(--muted, #64748b);
+  }
+
+  .m-pos-mon-tien {
+    font-size: 13.5px;
+    color: var(--ink, #0f172a);
+  }
+
+  .m-pos-mon-tong {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    margin-top: 6px;
+    background: var(--tint, #eff6ff);
+    border-radius: 8px;
+    font-size: 14px;
+    color: var(--ink, #0f172a);
+  }
+
+  .m-pos-ct-tt {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .m-pos-tt-dong {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 10px;
+    background: var(--soft, #f8fafc);
+    border-radius: 8px;
+    font-size: 13px;
+    color: var(--ink, #0f172a);
+  }
+
+  .m-pos-tt-dong.tong {
+    background: var(--tint, #eff6ff);
+    font-weight: 700;
+    font-size: 14px;
+    margin-top: 4px;
+  }
+
+  /* Công thức (T188) */
+  .m-ct-khung {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    padding: 12px 14px calc(68px + env(safe-area-inset-bottom, 0px));
+    gap: 12px;
+  }
+
+  .m-ct-dau {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .m-ct-tim {
+    display: flex;
+    align-items: center;
+    position: relative;
+    width: 100%;
+  }
+
+  .m-ct-tim-ic {
+    position: absolute;
+    left: 12px;
+    color: var(--muted, #94a3b8);
+    pointer-events: none;
+  }
+
+  .m-ct-tim-inp {
+    width: 100%;
+    height: 42px;
+    padding: 0 36px 0 38px;
+    border-radius: 21px;
+    border: 1px solid var(--line, #cbd5e1);
+    background: var(--white, #fff);
+    font-size: 16px;
+    color: var(--ink, #0f172a);
+    box-sizing: border-box;
+  }
+
+  .m-ct-tim-inp:focus {
+    outline: none;
+    border-color: var(--blue, #2563eb);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+  }
+
+  .m-ct-tim-x {
+    position: absolute;
+    right: 8px;
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: transparent;
+    color: var(--muted, #94a3b8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 50%;
+  }
+
+  .m-ct-ds {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .m-ct-the {
+    background: var(--white, #fff);
+    border-radius: var(--m-the-r, 14px);
+    border: 1px solid var(--line, #e2e8f0);
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  }
+
+  .m-ct-the:active {
+    background: var(--soft, #f8fafc);
+  }
+
+  .m-ct-the-dau {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .m-ct-tp {
+    font-size: 14.5px;
+    color: var(--ink, #0f172a);
+  }
+
+  .m-ct-ma {
+    font-size: 12px;
+    color: var(--muted, #64748b);
+  }
+
+  .m-ct-the-than {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 13px;
+  }
+
+  .m-ct-nvl-so {
+    color: var(--muted, #64748b);
+  }
+
+  .m-ct-gia-von {
+    color: var(--ink, #0f172a);
+  }
+
+  .m-ct-the-chan {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 6px;
+    border-top: 1px dashed var(--line-2, #f1f5f9);
+  }
+
+  .m-ct-tt-chip {
+    font-size: 11.5px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 6px;
+  }
+
+  .m-ct-tt-chip.on {
+    background: #ecfdf5;
+    color: #059669;
+  }
+
+  .m-ct-tt-chip.off {
+    background: #fef2f2;
+    color: #dc2626;
+  }
+
+  .m-ct-tt-chip.nhap {
+    background: #f1f5f9;
+    color: #64748b;
+  }
+
+  .m-ct-sheet-hop {
+    /* sheet container */
+  }
+
+  .m-ct-sheet-dau {
+    /* sheet header */
+  }
+
+  .m-ct-sheet-than {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+
+  .m-ct-sheet-tt-hang {
+    display: flex;
+    gap: 16px;
+    padding: 10px 12px;
+    background: var(--soft, #f8fafc);
+    border-radius: 8px;
+    font-size: 13px;
+  }
+
+  .m-ct-sheet-nvl {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .m-ct-nvl-dong {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 8px 10px;
+    background: var(--soft, #f8fafc);
+    border-radius: 8px;
+    font-size: 13px;
+  }
+
+  .m-ct-nvl-trai {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .m-ct-nvl-ten {
+    font-weight: 600;
+    color: var(--ink, #0f172a);
+  }
+
+  .m-ct-nvl-phai {
+    text-align: right;
+  }
+
+  .m-ct-nvl-sl {
+    font-size: 13px;
+    color: var(--ink, #0f172a);
+  }
+
+  .m-ct-nvl-tien {
+    font-size: 12px;
+    color: var(--muted, #64748b);
+  }
+
+  .m-ct-nvl-tong {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    margin-top: 6px;
+    background: var(--tint, #eff6ff);
+    border-radius: 8px;
+    font-size: 14px;
+    color: var(--ink, #0f172a);
+  }
+
+  /* Số dư ban đầu (T189) */
+  .m-sdb-khung {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    padding: 12px 14px calc(68px + env(safe-area-inset-bottom, 0px));
+    gap: 12px;
+  }
+
+  .m-sdb-dau {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .m-sdb-tabs {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    white-space: nowrap;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .m-sdb-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .m-sdb-tab-btn {
+    flex: none;
+    height: 36px;
+    padding: 0 12px;
+    border-radius: 18px;
+    border: 1px solid var(--line, #e2e8f0);
+    background: var(--white, #fff);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink, #0f172a);
+    cursor: pointer;
+  }
+
+  .m-sdb-tab-btn.on {
+    border-color: var(--blue, #2563eb);
+    background: var(--blue, #2563eb);
+    color: #fff;
+    font-weight: 600;
+  }
+
+  .m-sdb-btn-luu {
+    flex: none;
+    height: 36px;
+    padding: 0 14px;
+    border-radius: 18px;
+    font-size: 13px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .m-sdb-ds {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .m-sdb-the {
+    background: var(--white, #fff);
+    border-radius: var(--m-the-r, 14px);
+    border: 1px solid var(--line, #e2e8f0);
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  }
+
+  .m-sdb-the:active {
+    background: var(--soft, #f8fafc);
+  }
+
+  .m-sdb-the-dau {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .m-sdb-ten {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink, #0f172a);
+  }
+
+  .m-sdb-ma {
+    font-size: 12px;
+  }
+
+  .m-sdb-the-than {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 13px;
+  }
+
+  .m-sdb-phu {
+    font-size: 12px;
+    color: var(--muted, #64748b);
+  }
+
+  .m-sdb-du {
+    font-size: 14px;
+    color: var(--ink, #0f172a);
+  }
+
+  .m-sdb-no-co {
+    display: flex;
+    gap: 12px;
+    font-size: 13.5px;
+    color: var(--ink, #0f172a);
+  }
+
+  .m-sdb-tong {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: var(--soft, #f8fafc);
+    border-radius: 10px;
+    border: 1px solid var(--line, #e2e8f0);
+    margin-top: 4px;
+  }
+
+  .m-sdb-tong-txt {
+    font-size: 13px;
+    color: var(--ink, #334155);
+  }
+
+  .m-sdb-form-hop {
+    /* sheet container */
+  }
+}
+
+

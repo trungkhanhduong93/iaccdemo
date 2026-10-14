@@ -16,12 +16,25 @@ import { Icon } from '../Icon'
 import { LichDon } from '../ChonNgay'
 import { MChon } from './MChon'
 import { MTrong } from './MTrong'
+import { MLapPhieuKho } from './MLapPhieuKho'
 
 export interface MLapPhieuProps extends ScreenProps {
   id?: string
 }
 
 export const MLapPhieu: FC<MLapPhieuProps> = ({ sc, mod, id }) => {
+  const cfgMan = sc.voucher
+  const laPhieuKho = Boolean(
+    cfgMan?.kiemKe ||
+    cfgMan?.dieuChinh ||
+    cfgMan?.sanXuat ||
+    cfgMan?.dieuChuyen
+  )
+
+  if (laPhieuKho) {
+    return <MLapPhieuKho key={id ?? 'moi'} sc={sc} mod={mod} id={id} />
+  }
+
   const nav = useNavigate()
   const path = duongDan(mod, sc)
   const dangSua = Boolean(id && id !== 'moi')

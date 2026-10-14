@@ -31,18 +31,18 @@ const MAN: Record<LoaiCt, string> = { cb: 'kho/9-1-3', sc: 'kho/5-1-5' }
 const KENH = ['Tại quán', 'Mang về', 'GrabFood', 'ShopeeFood']
 const KHO_BEP = KHO.filter(k => k !== 'Kho tổng')
 /** Hàng làm thành phẩm của công thức chế biến: món và bán thành phẩm; nguyên vật liệu chọn trong NVL và hàng sơ chế */
-const DS_SP = [...HANG.filter(h => !h.tonKho), ...HANG_SX.filter(h => h.nhom === 'Bán thành phẩm' || h.nhom.startsWith('Món'))]
-const DS_NVL = [...NVL, ...HANG_SX.filter(h => !h.nhom.startsWith('Món'))]
+export const DS_SP = [...HANG.filter(h => !h.tonKho), ...HANG_SX.filter(h => h.nhom === 'Bán thành phẩm' || h.nhom.startsWith('Món'))]
+export const DS_NVL = [...NVL, ...HANG_SX.filter(h => !h.nhom.startsWith('Món'))]
 const mucHang = (ds: { ma: string; ten: string }[]) => ds.map(h => ({ v: h.ma, t: `${h.ten} - ${h.ma}` }))
 
 /** Công thức của màn: mẫu, công thức lưu trong phiên, áp nội dung đã sửa (bật tắt, sửa form) */
-function useDsCongThuc(loai: LoaiCt): Row[] {
+export function useDsCongThuc(loai: LoaiCt): Row[] {
   const { phieuMoi, apSua } = useDaXoa(MAN[loai])
   const [mau] = useState<Row[]>(() => (loai === 'cb' ? CONG_THUC_CB : CONG_THUC_SC).map(c => ({ ...c })))
   return [...phieuMoi, ...mau].map(apSua)
 }
 
-const nvlCua = (c: Row): NvlCongThuc[] => (c.nvl ?? c.dich ?? []) as NvlCongThuc[]
+export const nvlCua = (c: Row): NvlCongThuc[] => (c.nvl ?? c.dich ?? []) as NvlCongThuc[]
 /** Tên hiện kiểu IVT: tên, mã mờ phía sau */
 const TenMa = ({ ma }: { ma: string }) => <span className="sx-ten">{hangCua(ma)?.ten ?? ma}<small> - {ma}</small></span>
 

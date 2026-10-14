@@ -149,7 +149,7 @@ export function theoKenh(x: NgayPOS): XPos[] {
   }).filter(p => p.dt > 0)
 }
 /** Chi tiết: mỗi đơn POS một hoá đơn; giờ trải từ 09:00 tới 22:00, kênh và phương thức theo tỷ lệ của ngày */
-function theoDon(x: NgayPOS): XPos[] {
+export function theoDon(x: NgayPOS): XPos[] {
   const r = rng(`don-${x.cn}-${dmy(x.date)}`)
   const n = Math.max(1, x.don)
   const w = Array.from({ length: n }, () => 0.4 + r())
@@ -233,13 +233,13 @@ function monCua(x: NgayPOS) {
   return ds
 }
 /** Phương thức thanh toán của chứng từ theo số tiền thu được (T116, T137) */
-const PTTT: [keyof NgayPOS, string][] = [
+export const PTTT: [keyof NgayPOS, string][] = [
   ['tm', DS_PTTT.find(p => p.ma === 'TM')?.ten ?? 'Tiền mặt'],
   ['ck', DS_PTTT.find(p => p.ma === 'CK')?.ten ?? 'Chuyển khoản, QR'],
   ['the', DS_PTTT.find(p => p.ma === 'THE')?.ten ?? 'Thẻ'],
   ['app', DS_PTTT.find(p => p.ma === 'APP')?.ten ?? 'App giao đồ ăn'],
 ]
-const ptttCua = (x: NgayPOS) => PTTT.filter(([k]) => Number(x[k]) > 0).map(([, t]) => t)
+export const ptttCua = (x: NgayPOS) => PTTT.filter(([k]) => Number(x[k]) > 0).map(([, t]) => t)
 
 function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
   const { s, toast } = useSession()

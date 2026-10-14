@@ -4,7 +4,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T210.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T211.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
@@ -16,10 +16,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | T206 | Báo cáo xuất nhập tồn: ô lọc Kho trên thanh công cụ báo cáo để nhãn cùng hàng với ô chọn, không xuống dòng | PhuongXT | Đang làm | Sửa `src/styles/app.css` (mục mới cuối file) |
 | T205 | Báo cáo Mua hàng theo ngày (4.2.6): bỏ cột Đã thanh toán, Còn nợ | PhuongXT | Đang làm | Sửa `src/modules/mua-hang/bao-cao.ts` |
 | T208 | Điện thoại: chỉnh giao diện đang có: trang chủ bỏ thanh trên chung, chip chọn chi nhánh và kho; kính lúp tìm cả báo cáo; bảng sổ gọn hơn; đệm đáy mọi màn; chip danh sách chứng từ một hàng | Trum | Đang làm | Anti B, đợt 13. Kế hoạch `docs/ke-hoach-mobile-dot-11.md`. Sửa `MobileShell.tsx`, `MTrangChu.tsx`, `MTimKiem.tsx`, `app.css` |
-| T209 | Điện thoại: lập phiếu kiểm kê, điều chỉnh, sản xuất, điều chuyển | Trum | Đang làm | Anti B, đợt 12. Sửa `MLapPhieu.tsx`, `MChungTu.tsx` |
-| T186 | Điện thoại: Xuất bán POS (3.1.1) còn báo dùng máy tính | Trum | Đang làm | Anti A, đợt 12. Từ rà soát T184 (`MChiMayTinh`). Làm màn điện thoại riêng trong `src/ui/mobile/`, nối ở `manMobile.ts` |
-| T188 | Điện thoại: Công thức sơ chế (5.1.5), Công thức chế biến (9.1.3) còn báo dùng máy tính | Trum | Đang làm | Anti A, đợt 12. Từ rà soát T184. Hai màn chung `CongThucScreen` |
-| T189 | Điện thoại: Số dư ban đầu (`tien/so-du-ban-dau`, 10.1.3) còn báo dùng máy tính | Trum | Đang làm | Anti A, đợt 12. Từ rà soát T184 |
 | T192 | Điện thoại: Tiện ích bổ sung (11.1, 11.4, 11.5, 11.6, 11.7, 11.11, 11.16, X2 và màn tác vụ 11.2, 11.3, 11.8–11.10, 11.12–11.15) còn báo dùng máy tính | Trum | Đang làm | Anti A, đợt 13. 11.11 giữ chỉ máy tính. Từ rà soát T184. Thiết kế mẫu in 11.11 nên giữ chỉ máy tính, hỏi Trum |
 | T169 | Form chứng từ: gõ đổi địa chỉ từ phiếu này sang phiếu khác (vd `#/app/tien/2-1-1/chi-3` sang `chi-6`) thì form giữ số phiếu, đối tượng của phiếu cũ; mở từ danh sách, Trước, Sau thì đúng | | Chờ | Phát hiện ở T168. Sửa `ChungTuForm.tsx`, có thể `VoucherScreen.tsx` (key của form) |
 | T138 | Màn onboard khi bấm từ FABi sang IACC: khởi tạo đơn vị kế toán, điền sẵn từ FABi (chi nhánh, kho, cách đồng bộ, số dư đầu kỳ) | PhuongXT | Dở dang | Popup khởi tạo dữ liệu 4 bước trong phần mềm (`OnboardFabi.tsx`, `Shell.tsx`) đã push, PhuongXT xem lại một lượt. Xem `2026-10-11-phuongxt-man-khoi-tao-fabi.md` |
@@ -54,6 +50,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | T201 | Mọi báo cáo có cột số chứng từ: bấm số mở chứng từ chi tiết; sổ tự đánh số thì lấy phiếu thật cùng loại, cùng tháng (cách 2, PhuongXT chọn) | PhuongXT | 14/10/2026 | [2026-10-14-phuongxt-so-chung-tu](nhat-ky/2026-10-14-phuongxt-so-chung-tu.md) |
 | T200 | Tổng hợp mua hàng, Chi tiết mua hàng thêm cột Thành tiền, Chiết khấu, đổi Tiền hàng thành Tiền trước thuế; bấm nhà cung cấp ở Tổng hợp mở Chi tiết mua hàng; ẩn Chi tiết mua hàng khỏi danh sách báo cáo; thêm Bảng kê mua hàng theo hàng hoá | PhuongXT | 13/10/2026 | [2026-10-13-phuongxt-bao-cao-mua-hang](nhat-ky/2026-10-13-phuongxt-bao-cao-mua-hang.md) |
 | T185 | Mở lại báo cáo theo danh sách iFaster cho mọi gói (giữ khung báo cáo IACC): Tổng hợp quỹ tiền, Báo cáo dòng tiền, Công nợ nhà cung cấp, khách hàng (popup lịch sử công nợ), Báo cáo kết quả kinh doanh, Sổ chi phí, Nhập xuất tồn, tổng hợp, chi tiết nhập kho, xuất kho, báo cáo mua hàng, bán hàng (tổng hợp, chi tiết, theo ngày) | PhuongXT | 13/10/2026 | [2026-10-13-phuongxt-bao-cao-ifaster](nhat-ky/2026-10-13-phuongxt-bao-cao-ifaster.md) |
+| T209, T186, T188, T189 | Điện thoại đợt 12: lập phiếu kiểm kê, điều chỉnh, sản xuất, điều chuyển; Xuất bán POS; Công thức sơ chế, chế biến; Số dư ban đầu | Trum | 14/10/2026 | [2026-10-14-trum-dien-thoai-dot-12](nhat-ky/2026-10-14-trum-dien-thoai-dot-12.md) |
 | T190, T210, T191, T187 | Điện thoại đợt 11: màn tác vụ chung cho 23 màn chạy tác vụ, kiểm tra cuối kỳ, khoá sổ; sơ đồ quy trình 11 phân hệ dạng danh sách bước; 6 màn Hệ thống; Danh mục tài khoản dạng cây, Danh mục chi nhánh | Trum | 14/10/2026 | [2026-10-14-trum-dien-thoai-dot-11](nhat-ky/2026-10-14-trum-dien-thoai-dot-11.md) |
 | T202–T204 | Điện thoại đợt 10: Sổ quỹ tiền mặt dạng bảng như Sổ ngân hàng; báo cáo bỏ cột ghim và tiêu đề dính, cuộn tự do; trang chủ theo bố cục IVT (tab Quản trị, Cần theo dõi, chip Kho, thẻ tồn kho, chi phí nguyên vật liệu, tỷ lệ tồn các kho) | Trum | 14/10/2026 | [2026-10-14-trum-dien-thoai-dot-10](nhat-ky/2026-10-14-trum-dien-thoai-dot-10.md) |
 | T193–T199 | Điện thoại đợt 9: trang chủ hai tab Tổng quan, Cần theo dõi; tab Nghiệp vụ chỉ màn gói Free, Standard; kính lúp tìm màn; báo cáo hết đơ (Sổ quỹ 8,5 giây còn 1 giây, gốc ở `Table.tsx`); tab Khác chia thẻ nhóm; bộ lọc mở danh mục chọn nhiều; lịch chọn ngày dạng tấm từ đáy | Trum | 14/10/2026 | [2026-10-14-trum-dien-thoai-dot-9](nhat-ky/2026-10-14-trum-dien-thoai-dot-9.md) |

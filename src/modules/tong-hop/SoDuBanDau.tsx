@@ -17,7 +17,7 @@ import { HopXacNhan } from '../../ui/LocNangCao'
 import { CHI_NHANH, DON_VI, KHACH, NCC, NVL } from '../../data/mock'
 import { TEN_TK, soCai } from './so-cai'
 
-type TabKey = 'tk' | 'tien' | 'kh' | 'ncc' | 'kho'
+export type TabKey = 'tk' | 'tien' | 'kh' | 'ncc' | 'kho'
 
 function tach(tong: number, tyLe: number[]) {
   let con = tong
@@ -30,7 +30,7 @@ function tach(tong: number, tyLe: number[]) {
 }
 
 /** Quỹ tiền theo danh mục quỹ tiền 1.12 */
-const QUY: Row[] = [
+export const QUY: Row[] = [
   ...CHI_NHANH.map((c, i) => ({ ma: `TM0${i + 1}`, ct: `Quỹ tiền mặt ${c.ngan}`, kieu: 'Tiền mặt', cn: c.ten, tk: '1111' })),
   { ma: 'NH01', ct: 'Vietcombank, chi nhánh Sài Gòn', kieu: 'Ngân hàng', cn: 'Tất cả', tk: '1121' },
   { ma: 'NH02', ct: 'Techcombank, nhận tiền QR', kieu: 'Ngân hàng', cn: 'Tất cả', tk: '1121' },
@@ -38,9 +38,9 @@ const QUY: Row[] = [
 
 /** Đối tượng chọn được ở dòng thêm mới theo loại số dư; khoá trùng là ma (tài khoản là tk) */
 /** Quỹ tiền mặt của chi nhánh lên sổ thêm từ FABi (T142) */
-const quyCua = (c: CnThem): Row => ({ ma: `TM-${c.id.toUpperCase()}`, ct: `Quỹ tiền mặt ${c.ten.replace(/^Phố Mây /, '')}`, kieu: 'Tiền mặt', cn: c.ten, tk: '1111' })
+export const quyCua = (c: CnThem): Row => ({ ma: `TM-${c.id.toUpperCase()}`, ct: `Quỹ tiền mặt ${c.ten.replace(/^Phố Mây /, '')}`, kieu: 'Tiền mặt', cn: c.ten, tk: '1111' })
 
-function luaChon(tab: TabKey, quyThem: Row[] = []): Row[] {
+export function luaChon(tab: TabKey, quyThem: Row[] = []): Row[] {
   if (tab === 'tien') return [...QUY, ...quyThem]
   if (tab === 'kh') return KHACH.filter(x => x.ma !== 'KL').map(x => ({ ma: x.ma, ct: x.ten, tk: '131', ten: TEN_TK['131'] }))
   if (tab === 'ncc') return NCC.map(x => ({ ma: x.ma, ct: x.ten, tk: '331', ten: TEN_TK['331'] }))
@@ -70,7 +70,7 @@ export function soDuRows(): Row[] {
   return [...tkRows, ...tien, ...kh, ...ncc, ...kho]
 }
 
-const THES: { k: TabKey; ten: string; icon: string }[] = [
+export const THES: { k: TabKey; ten: string; icon: string }[] = [
   { k: 'tk', ten: 'Số dư tài khoản', icon: 'book' },
   { k: 'tien', ten: 'Số dư tiền', icon: 'wallet' },
   { k: 'kh', ten: 'Công nợ khách hàng', icon: 'users' },
@@ -79,7 +79,7 @@ const THES: { k: TabKey; ten: string; icon: string }[] = [
 ]
 
 /** Loại số dư khai được: gói Free chỉ tiền; chế độ Nợ/Có thêm số dư tài khoản */
-function loaiTheo(goi: string, noCo: boolean): TabKey[] {
+export function loaiTheo(goi: string, noCo: boolean): TabKey[] {
   if (goi === 'F') return ['tien']
   return noCo ? ['tk', 'tien', 'kh', 'ncc', 'kho'] : ['tien', 'kh', 'ncc', 'kho']
 }

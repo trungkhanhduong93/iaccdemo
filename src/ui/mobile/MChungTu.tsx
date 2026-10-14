@@ -12,7 +12,6 @@ import { ChungTuForm } from '../generic/ChungTuForm'
 import { useDongChungTu } from '../generic/VoucherScreen'
 import { useDsPhieuDcn } from '../../modules/kho/BangDieuChuyen'
 import { useDsPhieuSx } from '../../modules/kho/BangSanXuat'
-import { MChiMayTinh } from './MChiMayTinh'
 import { MChon } from './MChon'
 import { MDanhSach } from './MDanhSach'
 import { MLapPhieu } from './MLapPhieu'
@@ -24,17 +23,8 @@ export const MChungTu: FC<ScreenProps> = ({ sc, mod }) => {
   const { id } = useParams()
   const [sp] = useSearchParams()
   const sua = sp.get('sua') === '1'
-  const cfgMan = sc.voucher
-
-  const laKhongLam = Boolean(
-    cfgMan?.kiemKe ||
-    cfgMan?.dieuChinh ||
-    cfgMan?.sanXuat ||
-    cfgMan?.dieuChuyen
-  )
 
   if (id === 'moi' || sua) {
-    if (laKhongLam) return <MChiMayTinh />
     if (sp.get('full') === '1' || sp.get('form') === 'full') {
       return <ChungTuMoiForm sc={sc} mod={mod} id={id} />
     }
@@ -137,7 +127,8 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
   const tongTien = useMemo(() => list.reduce((a, r) => a + (Number(r.tong) || 0), 0), [list])
 
   // Thêm mới
-  const handleThem = cfg.khongThem
+  const khongThem = cfg.khongThem && !cfg.dieuChinh
+  const handleThem = khongThem
     ? undefined
     : () => {
         if (cfg.loai && cfg.loai.length > 0) {
