@@ -2681,6 +2681,10 @@ def kiem_tra_dot_14_toc_do():
             loc = pg.locator('.m-so-bc table tbody tr, .m-to-giay table tbody tr, .m-to-giay .paper, .rpt tbody tr, table tbody tr, .lockpage, .empty').first
             loc.wait_for(state='visible', timeout=10000)
             ms = round((time.perf_counter() - t0) * 1000)
+            # Màn khoá hoặc trống cũng hiện nhanh, không tính là đã mở xong
+            if pg.locator('main .lockpage, main .empty').count() > 0:
+                print(f"{item['code']:<10} | {item['ten']:<35} | không có dữ liệu, bỏ qua")
+                continue
 
             line = f"{item['code']:<10} | {item['ten']:<35} | {ms:>7} ms"
             print(line)
