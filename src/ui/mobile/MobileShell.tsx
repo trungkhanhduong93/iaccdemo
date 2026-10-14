@@ -80,53 +80,55 @@ export function MobileShell() {
 
   return (
     <div className="m-app">
-      <header className="m-thanh-tren">
-        <div className="m-thanh-tren-trai">
-          {!laGoc && (
-            <button
-              type="button"
-              className="m-nut-back"
-              onClick={quayLai}
-              title="Quay lại"
-            >
-              <Icon n="chevl" className="ic sm" />
-            </button>
-          )}
-        </div>
-        <h1 className="m-thanh-tren-tieu-de">
-          {laTrangChu ? <Logo cao={30} nen="sang" /> : tieuDe}
-        </h1>
-        <div className="m-thanh-tren-phai">
-          <Dropdown
-            btnClass="m-cn-btn"
-            align="end"
-            width={280}
-            title="Chọn chi nhánh làm việc"
-            label={
-              <>
-                <Icon n="store" className="ic sm" />
-                <span className="m-cn-nhan">{layNhanCn(cn)}</span>
-                <Icon n="chevd" className="ic sm" />
-              </>
-            }
-          >
-            {dong => (
-              <>
-                <MenuHead right={<small className="mh-n">{dsCn.length} chi nhánh</small>}>Chi nhánh làm việc</MenuHead>
-                <MenuItem on={!cn} icon="layers" desc="Chỉ xem gộp, chưa lập chứng từ" onClick={() => { set({ chiNhanh: 'all' }); dong() }}>
-                  Tất cả chi nhánh
-                </MenuItem>
-                <MenuSep />
-                {dsCn.map(c => (
-                  <MenuItem key={c.id} on={c.id === s.chiNhanh} icon="store" onClick={() => { set({ chiNhanh: c.id }); dong() }}>
-                    {c.ten}
-                  </MenuItem>
-                ))}
-              </>
+      {!laTrangChu && (
+        <header className="m-thanh-tren">
+          <div className="m-thanh-tren-trai">
+            {!laGoc && (
+              <button
+                type="button"
+                className="m-nut-back"
+                onClick={quayLai}
+                title="Quay lại"
+              >
+                <Icon n="chevl" className="ic sm" />
+              </button>
             )}
-          </Dropdown>
-        </div>
-      </header>
+          </div>
+          <h1 className="m-thanh-tren-tieu-de">
+            {tieuDe}
+          </h1>
+          <div className="m-thanh-tren-phai">
+            <Dropdown
+              btnClass="m-cn-btn"
+              align="end"
+              width={280}
+              title="Chọn chi nhánh làm việc"
+              label={
+                <>
+                  <Icon n="store" className="ic sm" />
+                  <span className="m-cn-nhan">{layNhanCn(cn)}</span>
+                  <Icon n="chevd" className="ic sm" />
+                </>
+              }
+            >
+              {dong => (
+                <>
+                  <MenuHead right={<small className="mh-n">{dsCn.length} chi nhánh</small>}>Chi nhánh làm việc</MenuHead>
+                  <MenuItem on={!cn} icon="layers" desc="Chỉ xem gộp, chưa lập chứng từ" onClick={() => { set({ chiNhanh: 'all' }); dong() }}>
+                    Tất cả chi nhánh
+                  </MenuItem>
+                  <MenuSep />
+                  {dsCn.map(c => (
+                    <MenuItem key={c.id} on={c.id === s.chiNhanh} icon="store" onClick={() => { set({ chiNhanh: c.id }); dong() }}>
+                      {c.ten}
+                    </MenuItem>
+                  ))}
+                </>
+              )}
+            </Dropdown>
+          </div>
+        </header>
+      )}
 
       <main className="m-than">
         <Outlet />

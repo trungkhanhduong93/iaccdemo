@@ -13,7 +13,7 @@ import { Select } from '../../ui/Dropdown'
 import { LocO, ThanhLoc } from '../../ui/ThanhLoc'
 import type { KhoangNgay } from '../../ui/ChonNgay'
 
-const CAP = ['Tất cả', 'FABi ↔ Sổ', 'Sổ ↔ Hoá đơn', 'Sổ ↔ Tiền']
+export const CAP = ['Tất cả', 'FABi ↔ Sổ', 'Sổ ↔ Hoá đơn', 'Sổ ↔ Tiền']
 
 export function DoiSoat({ sc, mod }: ScreenProps) {
   const { toast } = useSession()

@@ -105,9 +105,9 @@ def kiem_tra_dien_thoai(rong=390, cao=844):
             if duoi_w is None or duoi_w > win_w + 1:
                 loi.append(f'{path}: thanh dưới rộng {round(duoi_w if duoi_w is not None else 0)}px vượt màn rộng {round(win_w)}px')
             if path == '/app':
-                co_logo = pg.locator('.m-thanh-tren img, .m-thanh-tren .m-thanh-tren-tieu-de svg, .m-thanh-tren svg.logo').count() > 0
-                if not co_logo:
-                    loi.append('/app: không có logo trên .m-thanh-tren')
+                # T208: trang chủ bỏ thanh trên chung, đầu trang riêng .m-tc-dau thay chỗ
+                if pg.locator('.m-thanh-tren').count() > 0 or pg.locator('.m-tc-dau').count() == 0:
+                    loi.append('/app: trang chủ phải không có .m-thanh-tren và có đầu trang .m-tc-dau')
 
         SHOTS.mkdir(exist_ok=True)
         tabs = [
@@ -196,6 +196,8 @@ def kiem_tra_nghiep_vu_4_goi():
                     pg.wait_for_timeout(40)
                     cur_h = pg.evaluate('location.hash')
                     hop_le = cur_h.startswith(f'#/app/{k}/') or cur_h == f'#/app/bao-cao/nhom-{k}'
+                    # T192: Dashboard 11.16 trên điện thoại chuyển về trang chủ
+                    hop_le = hop_le or (man_href.endswith('/11-16') and cur_h.startswith('#/app/trang-chu'))
                     if not hop_le:
                         loi.append(f'[{goi}] {man_href}: hash {cur_h} không bắt đầu bằng #/app/{k}/')
                     if con:
@@ -1228,7 +1230,8 @@ def kiem_tra_dot_9():
                 kiem_man('Lớp phủ tìm kiếm màn')
                 pg.screenshot(path=str(SHOTS / 'm-09-02-tim-kiem.png'))
 
-                kq = pg.locator('.m-tk-dong', has_text='Phiếu chi')
+                # T208: kết quả mang tên loại phiếu (vd "Chi tiền mặt") của màn 2.1.1, không còn dòng "Phiếu chi" viết cứng
+                kq = pg.locator('.m-tk-dong').filter(has_text='2.1.1').filter(has_text='Chi')
                 if kq.count() == 0:
                     loi.append('Tìm kiếm: gõ "phieu chi" không thấy kết quả "Phiếu chi"')
                 else:
@@ -1402,14 +1405,14 @@ def kiem_tra_dot_10():
         # ── Bước 1: Trang chủ có tab "Quản trị", "Cần theo dõi", chip "Kho". Có ít nhất 4 thẻ. Chụp đầu trang và cuộn cuối ──
         tab_qt = pg.locator('.m-tc-tab', has_text='Quản trị')
         tab_ctd = pg.locator('.m-tc-tab', has_text='Cần theo dõi')
-        chip_kho = pg.locator('.m-tc-chip-kho', has_text='Kho')
+        chip_kho = pg.locator('.m-tc-chip-kho', has_text='CN:')  # T208: chip Kho thành chip chi nhánh
 
         if tab_qt.count() == 0:
             loi.append('Trang chủ: thiếu tab "Quản trị"')
         if tab_ctd.count() == 0:
             loi.append('Trang chủ: thiếu tab "Cần theo dõi"')
         if chip_kho.count() == 0:
-            loi.append('Trang chủ: thiếu chip "Kho"')
+            loi.append('Trang chủ: thiếu chip "CN:"')
 
         the_ds = pg.locator('.m-tc-the-ivt')
         if the_ds.count() < 4:
@@ -2151,6 +2154,374 @@ def kiem_tra_dot_12_b():
     return loi
 
 
+def kiem_tra_dot_13_b():
+    """Đợt 13B: Chỉnh giao diện điện thoại (T208)"""
+    loi = []
+    print('Kiểm tra đợt 13B (T208): chỉnh giao diện điện thoại đang có:')
+    with sync_playwright() as p:
+        b = p.chromium.launch(channel='chrome')
+        pg = b.new_page(viewport={'width': 390, 'height': 844}, is_mobile=True, has_touch=True)
+        con = []
+        pg.on('console', lambda m: con.append(m.text) if m.type == 'error' else None)
+        pg.on('pageerror', lambda e: con.append(str(e)))
+
+        def kiem_man(ten):
+            if pg.evaluate("document.documentElement.scrollWidth > innerWidth"):
+                loi.append(f'{ten}: tràn ngang màn hình')
+            if con:
+                loi.append(f'{ten}: lỗi console {con[:2]}')
+                con.clear()
+
+        # Đăng nhập với gói Plus
+        pg.goto(URL + '#/dang-nhap')
+        pg.wait_for_selector('.auth-box')
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PL'))})")
+
+        # ── 1. Trang chủ không có thanh trên chung, màn khác vẫn có ──
+        pg.goto(URL + '?goi=PL&p=tc13b#/app/trang-chu/tong-quan')
+        pg.wait_for_selector('.m-app')
+        pg.wait_for_timeout(350)
+        kiem_man('Trang chủ')
+        if pg.locator('.m-thanh-tren').count() > 0 and pg.locator('.m-thanh-tren').is_visible():
+            loi.append('Trang chủ: thanh trên chung .m-thanh-tren vẫn hiển thị')
+
+        pg.goto(URL + '?goi=PL&p=nv13b#/app/nghiep-vu')
+        pg.wait_for_timeout(350)
+        kiem_man('Nghiệp vụ')
+        if pg.locator('.m-thanh-tren').count() == 0 or not pg.locator('.m-thanh-tren').is_visible():
+            loi.append('Nghiệp vụ: thiếu thanh trên chung .m-thanh-tren')
+
+        # ── 2. Chip CN ở trang chủ: chọn chi nhánh thứ hai thì nhãn chip đổi và Doanh thu thuần đổi ──
+        pg.goto(URL + '?goi=PL&p=tc_cn13b#/app/trang-chu/tong-quan')
+        pg.wait_for_selector('.m-app')
+        pg.wait_for_timeout(350)
+        chip_cn = pg.locator('.m-tc-chip-cn, .m-tc-chip-kho')
+        if chip_cn.count() == 0:
+            loi.append('Trang chủ: không tìm thấy chip chọn chi nhánh')
+        else:
+            nhan_cu = chip_cn.first.inner_text().strip()
+            so_dt_cu = pg.locator('.m-tc-kpi-muc:has-text("Doanh thu thuần") .m-tc-kpi-so').inner_text().strip()
+            chip_cn.first.click()
+            pg.wait_for_timeout(300)
+            dong_cn = pg.locator('.m-tam-ds .m-tam-dong')
+            if dong_cn.count() < 2:
+                loi.append('Trang chủ: tấm chọn chi nhánh không đủ 2 chi nhánh')
+            else:
+                dong_cn.nth(1).click()
+                pg.wait_for_timeout(350)
+                nhan_moi = chip_cn.first.inner_text().strip()
+                so_dt_moi = pg.locator('.m-tc-kpi-muc:has-text("Doanh thu thuần") .m-tc-kpi-so').inner_text().strip()
+                if nhan_moi == nhan_cu:
+                    loi.append(f'Trang chủ: chọn chi nhánh thứ hai nhưng nhãn chip không đổi ({nhan_cu})')
+                if so_dt_moi == so_dt_cu:
+                    loi.append(f'Trang chủ: chọn chi nhánh thứ hai nhưng Doanh thu thuần không đổi ({so_dt_cu})')
+        pg.screenshot(path=str(SHOTS / 'm-13b-01-trang-chu.png'))
+
+        # ── 3. Kính lúp gõ "so quy": có mục "Báo cáo" và dòng "Sổ quỹ tiền mặt"; bấm vào URL chứa 2-2-1 ──
+        nut_tim = pg.locator('.m-tc-nut-tron[title*="Tìm kiếm"], button[aria-label="Tìm kiếm màn hình"]')
+        if nut_tim.count() == 0:
+            loi.append('Trang chủ: không tìm thấy nút kính lúp')
+        else:
+            nut_tim.first.click()
+            pg.wait_for_timeout(300)
+            inp_tk = pg.locator('.m-tk-inp')
+            if inp_tk.count() == 0:
+                loi.append('Tìm kiếm: không thấy ô nhập .m-tk-inp')
+            else:
+                inp_tk.fill('so quy')
+                pg.wait_for_timeout(350)
+                muc_bc = pg.locator('.m-tk-nhom-tieu-de', has_text='Báo cáo')
+                if muc_bc.count() == 0:
+                    loi.append('Tìm kiếm "so quy": không thấy mục "Báo cáo"')
+                dong_sq = pg.locator('.m-tk-dong', has_text='Sổ quỹ tiền mặt')
+                if dong_sq.count() == 0:
+                    loi.append('Tìm kiếm "so quy": không thấy dòng "Sổ quỹ tiền mặt"')
+                else:
+                    dong_sq.first.click()
+                    pg.wait_for_timeout(400)
+                    if '2-2-1' not in pg.url:
+                        loi.append(f'Tìm kiếm: bấm vào Sổ quỹ tiền mặt nhưng URL không chứa 2-2-1 (URL={pg.url})')
+        kiem_man('Sổ quỹ tiền mặt (từ tìm kiếm)')
+        pg.screenshot(path=str(SHOTS / 'm-13b-02-so-quy.png'))
+
+        # ── 4. Danh sách Phiếu chi, Xuất bán POS: hàng chip scrollWidth > clientWidth thì cuộn được, chip không xuống dòng (mọi chip cùng top) ──
+        for ten_man, path_man, sel_hang in [
+            ('Phiếu chi', 'tien/2-1-1', '.m-ds-chips'),
+            ('Xuất bán POS', 'ban-hang/3-1-1', '.m-pos-chip-hang'),
+        ]:
+            pg.goto(f'{URL}?goi=PL&p=chip_{ten_man}#/app/{path_man}')
+            pg.wait_for_selector('.m-app')
+            pg.wait_for_timeout(350)
+            hang = pg.locator(sel_hang)
+            if hang.count() == 0:
+                loi.append(f'{ten_man}: không thấy hàng chip {sel_hang}')
+                continue
+            info = pg.evaluate(f"""() => {{
+                const el = document.querySelector('{sel_hang}');
+                if (!el) return null;
+                const chips = Array.from(el.children).filter(c => c.tagName === 'BUTTON' || c.classList.contains('m-chip') || c.classList.contains('m-pos-chip') || c.tagName === 'DIV');
+                if (chips.length === 0) return null;
+                const tops = chips.map(c => Math.round(c.getBoundingClientRect().top));
+                const allSameTop = tops.every(t => Math.abs(t - tops[0]) <= 3);
+                const canScroll = el.scrollWidth > el.clientWidth;
+                return {{ canScroll, allSameTop, scrollWidth: el.scrollWidth, clientWidth: el.clientWidth, tops }};
+            }}""")
+            if not info:
+                loi.append(f'{ten_man}: không đọc được thông tin hàng chip {sel_hang}')
+            else:
+                if not info['allSameTop']:
+                    loi.append(f'{ten_man}: các chip bị xuống dòng (tops={info["tops"]})')
+                if info['canScroll']:
+                    scroll_ok = pg.evaluate(f"""() => {{
+                        const el = document.querySelector('{sel_hang}');
+                        el.scrollLeft = 40;
+                        return el.scrollLeft > 0;
+                    }}""")
+                    if not scroll_ok:
+                        loi.append(f'{ten_man}: hàng chip scrollWidth > clientWidth nhưng không cuộn được')
+            kiem_man(ten_man)
+
+        # ── 5. Cấu hình kế toán: nút Lưu có bottom <= innerHeight và không có phần tử nội dung nào hiện phía dưới nút trong khung nhìn ngoài thanh dưới ──
+        pg.goto(f'{URL}?goi=PL&p=cauhinh13b#/app/he-thong/cau-hinh')
+        pg.wait_for_selector('.m-app')
+        pg.wait_for_timeout(350)
+        nut_luu = pg.locator('button:has-text("Lưu cấu hình")')
+        if nut_luu.count() == 0:
+            loi.append('Cấu hình kế toán: không tìm thấy nút "Lưu cấu hình"')
+        else:
+            chk = pg.evaluate("""() => {
+                const btn = Array.from(document.querySelectorAll('button')).find(b => b.innerText.includes('Lưu cấu hình'));
+                if (!btn) return { error: 'Không thấy nút Lưu' };
+                const rect = btn.getBoundingClientRect();
+                const btnBottom = rect.bottom;
+                const innerHeight = window.innerHeight;
+
+                const theNoiDung = Array.from(document.querySelectorAll('.m-form-the'));
+                const thDuoi = document.querySelector('.m-thanh-duoi');
+                const thDuoiTop = thDuoi ? thDuoi.getBoundingClientRect().top : innerHeight;
+
+                // Lấy phần tử thật đang hiện ở khe giữa nút và thanh dưới (tính cả lớp phủ)
+                let noiDungLo = false;
+                for (let y = btnBottom + 3; y < thDuoiTop - 2; y += 4) {
+                    const el = document.elementFromPoint(window.innerWidth / 2, y);
+                    if (el && theNoiDung.some(t => t.contains(el))) { noiDungLo = true; break; }
+                }
+                return {
+                    bottomValid: btnBottom <= innerHeight + 5,
+                    btnBottom,
+                    innerHeight,
+                    noiDungLo
+                };
+            }""")
+            if 'error' in chk:
+                loi.append(f"Cấu hình kế toán: {chk['error']}")
+            else:
+                if not chk['bottomValid']:
+                    loi.append(f"Cấu hình kế toán: nút Lưu có bottom ({chk['btnBottom']}) > innerHeight ({chk['innerHeight']})")
+                if chk['noiDungLo']:
+                    loi.append("Cấu hình kế toán: có phần tử nội dung hiện phía dưới nút Lưu ngoài thanh dưới")
+        kiem_man('Cấu hình kế toán')
+        pg.screenshot(path=str(SHOTS / 'm-13b-03-cau-hinh.png'))
+
+        b.close()
+    return loi
+
+
+def kiem_tra_dot_13_a():
+    """Đợt 13A: Tiện ích bổ sung trên điện thoại (T192): 11.4, 11.5, 11.6, 11.7, 11.16, 11.11"""
+    loi = []
+    print('Kiểm tra đợt 13A (Anti A): Tiện ích bổ sung trên điện thoại:')
+    with sync_playwright() as p:
+        b = p.chromium.launch(channel='chrome')
+        pg = b.new_page(viewport={'width': 390, 'height': 844}, is_mobile=True, has_touch=True)
+        con = []
+        pg.on('console', lambda m: con.append(m.text) if m.type == 'error' else None)
+        pg.on('pageerror', lambda e: con.append(str(e)))
+
+        def kiem_man(ten):
+            if pg.evaluate("document.documentElement.scrollWidth > innerWidth"):
+                loi.append(f'{ten}: tràn ngang màn hình')
+            if con:
+                loi.append(f'{ten}: lỗi console {con[:2]}')
+                con.clear()
+
+        # Đăng nhập gói PR
+        pg.goto(URL + '#/dang-nhap')
+        pg.wait_for_selector('.auth-box')
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PR'))})")
+
+        # ── 1. Hoá đơn đầu vào 11.4 (gói PL) ──
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PL'))})")
+        pg.goto(URL + '?goi=PL#/app/tien-ich/11-4')
+        pg.reload()
+        pg.wait_for_selector('.m-app')
+        pg.wait_for_timeout(350)
+        if pg.locator('.m-chi-may-tinh, .m-chi-mt').count() > 0:
+            loi.append('Hoá đơn đầu vào: ra MChiMayTinh')
+        the_hddv = pg.locator('.m-hddv-the')
+        if the_hddv.count() == 0:
+            loi.append('Hoá đơn đầu vào: không thấy thẻ .m-hddv-the')
+        else:
+            the_hddv.first.click()
+            pg.wait_for_timeout(300)
+            panel = pg.locator('.m-hddv-hop .pn-hop')
+            if panel.count() == 0:
+                loi.append('Hoá đơn đầu vào: không mở được tấm chi tiết')
+            else:
+                nut_dong = pg.locator('.m-hddv-hop .pn-dau button')
+                if nut_dong.count() > 0:
+                    nut_dong.first.click()
+                    pg.wait_for_timeout(200)
+        nut_chinh_hddv = pg.locator('.m-hddv-day button.btn.pri')
+        if nut_chinh_hddv.count() == 0:
+            loi.append('Hoá đơn đầu vào: thiếu nút chính trong thanh đáy')
+        else:
+            box = nut_chinh_hddv.first.bounding_box()
+            if not box or box['y'] < 0 or box['y'] + box['height'] > 844 + 5:
+                loi.append(f"Hoá đơn đầu vào: nút chính không trong khung nhìn (y={box['y'] if box else 'None'})")
+        kiem_man('Hoá đơn đầu vào')
+        pg.screenshot(path=str(SHOTS / 'm-13-01-hoa-don-dau-vao.png'))
+
+        # ── 2. Duyệt chứng từ 11.5 (gói PR) ──
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PR'))})")
+        pg.goto(URL + '?goi=PR#/app/tien-ich/11-5')
+        pg.reload()
+        pg.wait_for_selector('.m-app')
+        pg.wait_for_timeout(350)
+        if pg.locator('.m-chi-may-tinh, .m-chi-mt').count() > 0:
+            loi.append('Duyệt chứng từ: ra MChiMayTinh')
+        the_dct = pg.locator('.m-dct-the')
+        so_the_ban_dau = the_dct.count()
+        if so_the_ban_dau < 2:
+            loi.append(f'Duyệt chứng từ: số thẻ < 2 ({so_the_ban_dau})')
+        else:
+            chks = pg.locator('.m-dct-the .m-dct-the-trai input[type="checkbox"]')
+            if chks.count() >= 2:
+                chks.nth(0).click()
+                pg.wait_for_timeout(150)
+                chks.nth(1).click()
+                pg.wait_for_timeout(150)
+                nut_duyet = pg.locator('.m-dct-day button.btn.pri')
+                if nut_duyet.count() == 0:
+                    loi.append('Duyệt chứng từ: thiếu nút Duyệt trong thanh đáy')
+                else:
+                    nut_duyet.first.click()
+                    pg.wait_for_timeout(350)
+                    so_the_sau = pg.locator('.m-dct-the').count()
+                    co_toast = pg.locator('.toast, :has-text("Đã duyệt")').count() > 0
+                    if not co_toast and so_the_sau != so_the_ban_dau - 2:
+                        loi.append(f'Duyệt chứng từ: bấm duyệt 2 thẻ nhưng không thấy toast và số thẻ không giảm ({so_the_ban_dau} -> {so_the_sau})')
+            else:
+                loi.append('Duyệt chứng từ: không thấy đủ 2 checkbox')
+        nut_chinh_dct = pg.locator('.m-dct-day button.btn.pri')
+        if nut_chinh_dct.count() > 0:
+            box = nut_chinh_dct.first.bounding_box()
+            if not box or box['y'] < 0 or box['y'] + box['height'] > 844 + 5:
+                loi.append(f"Duyệt chứng từ: nút Duyệt không trong khung nhìn (y={box['y'] if box else 'None'})")
+        kiem_man('Duyệt chứng từ')
+        pg.screenshot(path=str(SHOTS / 'm-13-02-duyet-chung-tu.png'))
+
+        # ── 3. Cảnh báo số liệu cuối kỳ 11.6 (gói PL) ──
+        pg.goto(URL + '?goi=PL#/app/tien-ich/11-6')
+        pg.reload()
+        pg.wait_for_selector('.m-app')
+        pg.wait_for_timeout(350)
+        if pg.locator('.m-chi-may-tinh, .m-chi-mt').count() > 0:
+            loi.append('Cảnh báo số liệu: ra MChiMayTinh')
+        the_cb = pg.locator('.m-cb-the')
+        if the_cb.count() == 0:
+            loi.append('Cảnh báo số liệu: không thấy thẻ cảnh báo .m-cb-the')
+        else:
+            chams = pg.locator('.m-cb-cham')
+            if chams.count() == 0:
+                loi.append('Cảnh báo số liệu: không thấy chấm mức độ .m-cb-cham')
+        kiem_man('Cảnh báo số liệu')
+        pg.screenshot(path=str(SHOTS / 'm-13-03-canh-bao.png'))
+
+        # ── 4. Đối soát tự động 11.7 (gói S) ──
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('S'))})")
+        pg.goto(URL + '?goi=S#/app/tien-ich/11-7')
+        pg.reload()
+        pg.wait_for_selector('.m-app')
+        pg.wait_for_timeout(350)
+        if pg.locator('.m-chi-may-tinh, .m-chi-mt').count() > 0:
+            loi.append('Đối soát tự động: ra MChiMayTinh')
+        kpi_ds = pg.locator('.m-ds-kpi')
+        if kpi_ds.count() == 0:
+            loi.append('Đối soát tự động: thiếu thẻ tổng hợp khớp/lệch .m-ds-kpi')
+        the_ds = pg.locator('.m-ds-the')
+        if the_ds.count() == 0:
+            loi.append('Đối soát tự động: không thấy thẻ dòng lệch .m-ds-the')
+        else:
+            the_ds.first.click()
+            pg.wait_for_timeout(300)
+            panel = pg.locator('.m-ds-hop .pn-hop')
+            if panel.count() == 0:
+                loi.append('Đối soát tự động: không mở được tấm chi tiết dòng lệch')
+            else:
+                nut_dong = pg.locator('.m-ds-hop .pn-dau button')
+                if nut_dong.count() > 0:
+                    nut_dong.first.click()
+                    pg.wait_for_timeout(200)
+        nut_chay = pg.locator('.m-ds-day button.btn.pri')
+        if nut_chay.count() == 0:
+            loi.append('Đối soát tự động: thiếu nút chạy đối soát dính đáy')
+        else:
+            box = nut_chay.first.bounding_box()
+            if not box or box['y'] < 0 or box['y'] + box['height'] > 844 + 5:
+                loi.append(f"Đối soát tự động: nút chạy không trong khung nhìn (y={box['y'] if box else 'None'})")
+        kiem_man('Đối soát tự động')
+        pg.screenshot(path=str(SHOTS / 'm-13-04-doi-soat.png'))
+
+        # ── 5. Dashboard 11.16 (chuyển về trang-chu) ──
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PR'))})")
+        pg.goto(URL + '?goi=PR#/app/tien-ich/11-16')
+        pg.reload()
+        pg.wait_for_selector('.m-app')
+        pg.wait_for_timeout(450)
+        cur_url = pg.evaluate('location.href')
+        if 'trang-chu' not in cur_url:
+            loi.append(f'Dashboard 11.16: URL {cur_url} không chuyển về trang-chu')
+        kiem_man('Dashboard 11.16')
+        pg.screenshot(path=str(SHOTS / 'm-13-05-dashboard.png'))
+
+        # ── 6. Thiết kế mẫu in 11.11 (vẫn ra MChiMayTinh) ──
+        pg.goto(URL + '?goi=PR#/app/tien-ich/11-11')
+        pg.reload()
+        pg.wait_for_selector('.m-app')
+        pg.wait_for_timeout(350)
+        if pg.locator('.m-chi-may-tinh, .m-chi-mt').count() == 0:
+            loi.append('Thiết kế mẫu in 11.11: không ra MChiMayTinh')
+        kiem_man('Thiết kế mẫu in 11.11')
+        pg.screenshot(path=str(SHOTS / 'm-13-06-thiet-ke-mau-in.png'))
+
+        # ── 7. Duyệt mọi màn MODULES ở gói PR qua manMobile ──
+        pg.goto(URL + '?goi=PR#/app/trang-chu/tong-quan')
+        pg.wait_for_selector('.m-app')
+        pg.wait_for_timeout(200)
+        m_chi = pg.evaluate('''async () => {
+            const { MODULES } = await import('/src/app/registry.ts');
+            const { manMobile } = await import('/src/ui/mobile/manMobile.ts');
+            const { MChiMayTinh } = await import('/src/ui/mobile/MChiMayTinh.tsx');
+            const ds = [];
+            for (const m of MODULES) {
+                for (const sc of m.screens) {
+                    const comp = manMobile(sc, m);
+                    if (comp === MChiMayTinh) {
+                        ds.push({ mod: m.key, code: sc.code, slug: sc.slug, ten: sc.ten });
+                    }
+                }
+            }
+            return ds;
+        }''')
+        print(f'Màn còn ra MChiMayTinh ở gói PR ({len(m_chi)}):', m_chi)
+        if len(m_chi) != 1 or m_chi[0].get('code') != '11.11':
+            loi.append(f'Duyệt MODULES qua manMobile: danh sách còn lại phải chỉ có 11.11, thực tế: {m_chi}')
+
+        b.close()
+    return loi
+
+
 def kiem_tra_cac_khung_dt():
     loi, dem = [], 0
     for rong, cao in KHUNG_DT:
@@ -2180,6 +2551,8 @@ def kiem_tra_cac_khung_dt():
     loi += kiem_tra_dot_11_b()
     loi += kiem_tra_dot_12_a()
     loi += kiem_tra_dot_12_b()
+    loi += kiem_tra_dot_13_b()
+    loi += kiem_tra_dot_13_a()
     if loi:
         print(f'{len(loi)} LỖI:')
         for x in loi:

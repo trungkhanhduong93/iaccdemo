@@ -89,7 +89,27 @@ export function DongBo({ sc, mod }: ScreenProps) {
   )
 }
 
-const TT_HD: Record<string, [string, string]> = { ok: ['ok', 'Hợp lệ, chờ hạch toán'], ht: ['dim', 'Đã hạch toán'], huy: ['err', 'Người bán đã huỷ'], mst: ['err', 'Sai mã số thuế người mua'], trung: ['warn', 'Trùng hoá đơn đã nhận'] }
+export const TT_HD: Record<string, [string, string]> = { ok: ['ok', 'Hợp lệ, chờ hạch toán'], ht: ['dim', 'Đã hạch toán'], huy: ['err', 'Người bán đã huỷ'], mst: ['err', 'Sai mã số thuế người mua'], trung: ['warn', 'Trùng hoá đơn đã nhận'] }
+
+export interface HoaDonDauVaoRow {
+  id: number
+  so: string
+  ngay: string
+  ban: string
+  mst: string
+  tien: number
+  thue: number
+  tt: string
+}
+
+export function dsHoaDonDauVao(): HoaDonDauVaoRow[] {
+  const r = rng('hddv')
+  return Array.from({ length: 23 }, (_, i) => {
+    const n = pick(r, NCC), tien = k(between(r, 0.8e6, 36e6)), d = 7 - Math.floor(i / 4)
+    const tt = i === 2 ? 'huy' : i === 6 ? 'mst' : i === 9 || i === 15 ? 'trung' : i === 12 ? 'huy' : i < 18 ? 'ok' : 'ht'
+    return { id: i, so: `C26T${n.ma.slice(-2)}${pad(1200 + i * 7, 6)}`, ngay: `${pad(Math.max(1, d))}/10/2026`, ban: n.ten, mst: n.mst, tien, thue: Math.round(tien * 0.08), tt }
+  })
+}
 
 export function HoaDonDauVao({ sc, mod }: ScreenProps) {
   const { toast, s } = useSession()
@@ -100,12 +120,7 @@ export function HoaDonDauVao({ sc, mod }: ScreenProps) {
     ten: c.ten,
     phu: dv.mst ? `MST: ${dv.mst}` : undefined,
   }))
-  const r = rng('hddv')
-  const rows = Array.from({ length: 23 }, (_, i) => {
-    const n = pick(r, NCC), tien = k(between(r, 0.8e6, 36e6)), d = 7 - Math.floor(i / 4)
-    const tt = i === 2 ? 'huy' : i === 6 ? 'mst' : i === 9 || i === 15 ? 'trung' : i === 12 ? 'huy' : i < 18 ? 'ok' : 'ht'
-    return { id: i, so: `C26T${n.ma.slice(-2)}${pad(1200 + i * 7, 6)}`, ngay: `${pad(Math.max(1, d))}/10/2026`, ban: n.ten, mst: n.mst, tien, thue: Math.round(tien * 0.08), tt }
-  })
+  const rows = dsHoaDonDauVao()
   const cols: Col[] = [{ k: 'chk', t: '', w: 34, r: () => <input type="checkbox" /> }, { k: 'so', t: 'Số hoá đơn', cls: 'code' }, { k: 'ngay', t: 'Ngày' }, { k: 'ban', t: 'Người bán' }, { k: 'mst', t: 'MST người bán', cls: 'dim' },
     { k: 'tien', t: 'Tiền hàng', num: true }, { k: 'thue', t: 'Thuế GTGT', num: true }, { k: 'tt', t: 'Kiểm tra', r: x => <St k={TT_HD[x.tt][0]}>{TT_HD[x.tt][1]}</St> }]
   return (
@@ -136,14 +151,28 @@ export function HoaDonDauVao({ sc, mod }: ScreenProps) {
   )
 }
 
-export function DuyetChungTu({ sc, mod }: ScreenProps) {
-  const { toast } = useSession()
-  const [cap, setCap] = useState(1)
+export interface DuyetChungTuRow {
+  id: string
+  so: string
+  ngay: string
+  loai: string
+  nguoi: string
+  tien: number
+}
+
+export function dsDuyetChungTu(cap: number): DuyetChungTuRow[] {
   const r = rng('duyet' + cap)
-  const rows = Array.from({ length: cap === 1 ? 12 : 5 }, (_, i) => ({
+  return Array.from({ length: cap === 1 ? 12 : 5 }, (_, i) => ({
+    id: `${cap}-${i}`,
     so: `${pick(r, ['PC', 'MH', 'NVK'])}2610-${pad(120 + i * 3, 4)}`, ngay: `${pad(7 - (i % 6))}/10/2026`, loai: pick(r, ['Phiếu chi', 'Phiếu mua hàng', 'Chứng từ tổng hợp']),
     nguoi: pick(r, ['Lê Quốc Bảo', 'Phạm Ngọc Lan']), tien: k(between(r, 1.2e6, 64e6)),
   }))
+}
+
+export function DuyetChungTu({ sc, mod }: ScreenProps) {
+  const { toast } = useSession()
+  const [cap, setCap] = useState(1)
+  const rows = dsDuyetChungTu(cap)
   return (
     <div className="page">
       <PageHead crumb={[mod.ten, sc.nhom ?? '']} title={tenMan(sc)} code={sc.code}>
@@ -162,15 +191,19 @@ export function DuyetChungTu({ sc, mod }: ScreenProps) {
   )
 }
 
+export type CanhBaoItem = [string, string, string, string, string]
+
+export const DS_CANH_BAO: CanhBaoItem[] = [
+  ['err', 'alert', 'Công nợ quá hạn 30 ngày', '4 khách công ty, tổng 86.400.000 đ. Lâu nhất 47 ngày: Công ty CP Du lịch Biển Xanh.', '/app/tien/2-2-5'],
+  ['err', 'receipt', 'Hoá đơn đầu vào bị người bán huỷ', '2 hoá đơn đã nhận, 1 hoá đơn đã hạch toán cần điều chỉnh.', '/app/tien-ich/11-4'],
+  ['warn', 'box', 'Tồn kho âm', 'Thịt bò thăn −2,4 kg, Bánh phở tươi −6 kg tại Kho bếp Lê Lợi.', '/app/kho/5-2-4'],
+  ['warn', 'scale', 'Doanh thu lệch hoá đơn', 'Ngày 03/10 chi nhánh Lê Lợi lệch 85.000 đ.', '/app/tien-ich/11-7'],
+  ['warn', 'flask', 'Giá vốn vượt định mức', 'Phở bò tái tháng 9: giá vốn 41% doanh thu, định mức 36%.', '/app/kho/5-2-6'],
+  ['info', 'percent', 'Sắp đến hạn nộp tờ khai GTGT quý 3', 'Hạn 30/10/2026.', '/app/thue/6-2-3'],
+]
+
 export function CanhBao({ sc, mod }: ScreenProps) {
-  const ds: [string, string, string, string, string][] = [
-    ['err', 'alert', 'Công nợ quá hạn 30 ngày', '4 khách công ty, tổng 86.400.000 đ. Lâu nhất 47 ngày: Công ty CP Du lịch Biển Xanh.', '/app/tien/2-2-5'],
-    ['err', 'receipt', 'Hoá đơn đầu vào bị người bán huỷ', '2 hoá đơn đã nhận, 1 hoá đơn đã hạch toán cần điều chỉnh.', '/app/tien-ich/11-4'],
-    ['warn', 'box', 'Tồn kho âm', 'Thịt bò thăn −2,4 kg, Bánh phở tươi −6 kg tại Kho bếp Lê Lợi.', '/app/kho/5-2-4'],
-    ['warn', 'scale', 'Doanh thu lệch hoá đơn', 'Ngày 03/10 chi nhánh Lê Lợi lệch 85.000 đ.', '/app/tien-ich/11-7'],
-    ['warn', 'flask', 'Giá vốn vượt định mức', 'Phở bò tái tháng 9: giá vốn 41% doanh thu, định mức 36%.', '/app/kho/5-2-6'],
-    ['info', 'percent', 'Sắp đến hạn nộp tờ khai GTGT quý 3', 'Hạn 30/10/2026.', '/app/thue/6-2-3'],
-  ]
+  const ds = DS_CANH_BAO
   return (
     <div className="page">
       <PageHead crumb={[mod.ten, sc.nhom ?? '']} title={tenMan(sc)} code={sc.code} meta={<span className="chip">Gửi email cho kế toán trưởng lúc 08:00 hằng ngày</span>} />

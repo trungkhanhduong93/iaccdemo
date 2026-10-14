@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import type { ScreenProps } from '../../modules/types'
-import { donViHienTai, useSession } from '../../app/session'
+import { donViHienTai, dsChiNhanh, useSession } from '../../app/session'
 import { CHI_NHANH, DAILY, KHO, NVL, ROLE, kqkd } from '../../data/mock'
 import { Icon } from '../Icon'
 import { money, pct } from '../format'
@@ -28,20 +28,41 @@ function SoSanhDong({ tang, label }: { tang: number | null; label?: string }) {
 }
 
 export function MTrangChu(_props?: Partial<ScreenProps>) {
-  const { s } = useSession()
+  const { s, set } = useSession()
   const nav = useNavigate()
   const dv = donViHienTai(s)
 
+  const dsCnRaw = dsChiNhanh(s)
+  const dsCn = dsCnRaw.length ? dsCnRaw : CHI_NHANH
+  const cn = dsCn.find(c => c.id === s.chiNhanh)
+  // dsChiNhanh chỉ có id, ten: tên ngắn lấy từ CHI_NHANH
+  const tenNgan = (id: string) => CHI_NHANH.find(x => x.id === id)?.ngan
+  const nhanCn = cn ? (tenNgan(cn.id) ?? cn.ten) : 'Tất cả'
+
   const [tabActive, setTabActive] = useState<0 | 1>(0)
   const [moTimKiem, setMoTimKiem] = useState(false)
-  const [moChonKho, setMoChonKho] = useState(false)
-  const [khoChon, setKhoChon] = useState<string>('Tất cả')
+  const [moChonCn, setMoChonCn] = useState(false)
+  const [khoChon] = useState<string>('Tất cả')
   const snapRef = useRef<HTMLDivElement>(null)
+
+  const dsChonCn = useMemo(() => {
+    return [
+      { k: 'all', ten: 'Tất cả chi nhánh', moTa: 'Chỉ xem gộp, chưa lập chứng từ' },
+      ...dsCn.map(c => ({ k: c.id, ten: c.ten, moTa: tenNgan(c.id) })),
+    ]
+  }, [dsCn])
 
   // Nhãn gói thuê bao (PRO, PLUS, STD, FREE)
   const nhanGoi = s.goi === 'PR' ? 'PRO' : s.goi === 'PL' ? 'PLUS' : s.goi === 'S' ? 'STD' : 'FREE'
 
-  const d = tinhToanTongQuan('thang-nay', CHI_NHANH.map(c => c.id), s.cheDo)
+  const selCns = useMemo(() => {
+    if (!s.chiNhanh || s.chiNhanh === 'all') {
+      return dsCn.map(c => c.id)
+    }
+    return [s.chiNhanh]
+  }, [s.chiNhanh, dsCn])
+
+  const d = useMemo(() => tinhToanTongQuan('thang-nay', selCns, s.cheDo), [selCns, s.cheDo])
 
   // Phải thu khách hàng (TK 131)
   const sc10 = soCai(10)
@@ -337,11 +358,11 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
 
         <button
           type="button"
-          className="m-tc-chip-kho"
-          onClick={() => setMoChonKho(true)}
-          title="Chọn kho hiển thị"
+          className="m-tc-chip-cn m-tc-chip-kho"
+          onClick={() => setMoChonCn(true)}
+          title="Chọn chi nhánh hiển thị"
         >
-          <span className="m-tc-chip-kho-nhan">Kho: {khoChon}</span>
+          <span className="m-tc-chip-cn-nhan m-tc-chip-kho-nhan">CN: {nhanCn}</span>
           <Icon n="chevd" className="ic xs" />
         </button>
       </div>
@@ -617,14 +638,14 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
       {/* Lớp phủ tìm kiếm màn hình */}
       <MTimKiem mo={moTimKiem} onDong={() => setMoTimKiem(false)} />
 
-      {/* Sheet chọn kho */}
+      {/* Sheet chọn chi nhánh */}
       <MChon
-        mo={moChonKho}
-        onDong={() => setMoChonKho(false)}
-        tieuDe="Chọn kho hiển thị"
-        ds={dsChonKho}
-        chon={khoChon}
-        onChon={k => setKhoChon(k)}
+        mo={moChonCn}
+        onDong={() => setMoChonCn(false)}
+        tieuDe="Chọn chi nhánh làm việc"
+        ds={dsChonCn}
+        chon={s.chiNhanh || 'all'}
+        onChon={k => set({ chiNhanh: k })}
       />
     </div>
   )

@@ -17,6 +17,10 @@ import { MQuyTrinh } from './MQuyTrinh'
 import { MXuatBanPos } from './MXuatBanPos'
 import { MCongThuc } from './MCongThuc'
 import { MSoDuBanDau } from './MSoDuBanDau'
+import { MHoaDonDauVao } from './MHoaDonDauVao'
+import { MDuyetChungTu } from './MDuyetChungTu'
+import { MCanhBao, MChuyenTrangChu } from './MCanhBao'
+import { MDoiSoat } from './MDoiSoat'
 import { CongThucScreen } from '../../modules/kho/CongThuc'
 
 // Bảng riêng theo mod.key + '/' + sc.slug
@@ -71,6 +75,15 @@ export function manMobile(sc: ScreenDef, mod: ModuleDef): ComponentType<ScreenPr
   // T189: Số dư ban đầu (10.1.3 và tien/so-du-ban-dau)
   if ((mod.key === 'tong-hop' && (sc.code === '10.1.3' || sc.slug === '10-1-3')) || (mod.key === 'tien' && sc.slug === 'so-du-ban-dau')) {
     return MSoDuBanDau
+  }
+
+  // T192: Tiện ích bổ sung trên điện thoại (11.4, 11.5, 11.6, 11.7, 11.16)
+  if (mod.key === 'tien-ich') {
+    if (sc.code === '11.4' || sc.slug === '11-4') return MHoaDonDauVao
+    if (sc.code === '11.5' || sc.slug === '11-5') return MDuyetChungTu
+    if (sc.code === '11.6' || sc.slug === '11-6') return MCanhBao
+    if (sc.code === '11.7' || sc.slug === '11-7') return MDoiSoat
+    if (sc.code === '11.16' || sc.slug === '11-16') return MChuyenTrangChu
   }
 
   // ── Luật Anti B thêm ngay dưới dòng này (đợt 11–13) ──

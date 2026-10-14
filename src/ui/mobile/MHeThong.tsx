@@ -831,10 +831,10 @@ export const MCauHinh: FC<ScreenProps> = () => {
       </section>
 
       {/* Nút lưu dính đáy */}
-      <div className="m-form-chan-dinh">
+      <div className="m-form-chan-dinh m-ch-chan-dinh">
         <button
           type="button"
-          className="btn pri"
+          className="btn pri m-ch-btn-luu"
           style={{ width: '100%', height: 44, borderRadius: 12 }}
           onClick={() => toast('Đã lưu cấu hình')}
         >
