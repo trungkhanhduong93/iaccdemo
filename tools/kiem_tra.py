@@ -3992,6 +3992,101 @@ def kiem_tra_t233_may_tinh():
     return loi
 
 
+def kiem_tra_t238_may_tinh():
+    loi = []
+    with sync_playwright() as p:
+        b = p.chromium.launch(channel='chrome')
+        pg = b.new_page(viewport={'width': 1440, 'height': 900})
+        con = []
+        pg.on('console', lambda m: con.append(m.text) if m.type == 'error' else None)
+        pg.on('pageerror', lambda e: con.append(str(e)))
+
+        pg.goto(URL + '#/dang-nhap')
+        pg.wait_for_selector('.auth-box')
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PL'))})")
+        pg.evaluate("localStorage.removeItem('bc-dong-trang')")
+
+        # 1. Mở báo cáo Chi tiết bán hàng (3-2-8) ở chế độ Bảng dữ liệu
+        pg.goto(URL + '?goi=PL&p=ctbh#/app/ban-hang/3-2-8')
+        pg.wait_for_selector('.bc-ban-du-lieu table.tbl')
+        pg.wait_for_timeout(300)
+
+        # 2. Xác nhận bảng có đúng 100 dòng dữ liệu + dòng tổng cuối
+        dong_du_lieu = pg.locator('.bc-ban-du-lieu tbody tr:not(.bc-dong-tong):not(.tbl-spacer)')
+        dong_tong = pg.locator('.bc-ban-du-lieu tbody tr.bc-dong-tong')
+        so_dl = dong_du_lieu.count()
+        so_tong = dong_tong.count()
+        if so_dl != 100:
+            loi.append(f'T238: Chi tiết bán hàng ban đầu có {so_dl} dòng dữ liệu, kỳ vọng đúng 100 dòng')
+        if so_tong < 1:
+            loi.append('T238: Chi tiết bán hàng không thấy dòng tổng cuối (.bc-dong-tong)')
+
+        # Kiểm tra thanh phân trang có hiện và ở 100/trang
+        pt_sel = pg.locator('.bc-thanh button.pt-sel')
+        if pt_sel.count() == 0:
+            loi.append('T238: Không tìm thấy thanh phân trang .bc-thanh .pt-sel trên Bảng dữ liệu')
+        else:
+            txt_sel = pt_sel.first.inner_text().strip()
+            if '100' not in txt_sel:
+                loi.append(f'T238: Cỡ trang mặc định là "{txt_sel}", kỳ vọng có "100"')
+
+        # Chụp ảnh Bảng dữ liệu thấy thanh phân trang và dòng tổng cuối (lưu ngoài repo)
+        pg.locator('.bc-ban-du-lieu .tbl-wrap').evaluate('el => el.scrollTop = el.scrollHeight')
+        pg.wait_for_timeout(200)
+        anh_t238 = Path('C:/Users/trung.duong/.gemini/antigravity-cli/brain/a61c3403-fb50-4f28-838a-585283d26367/t238-bang-du-lieu.png')
+        anh_t238.parent.mkdir(parents=True, exist_ok=True)
+        pg.screenshot(path=str(anh_t238))
+        pg.locator('.bc-ban-du-lieu .tbl-wrap').evaluate('el => el.scrollTop = 0')
+        pg.wait_for_timeout(100)
+
+        # 3. Chọn 200: số dòng đổi thành 200 dòng dữ liệu
+        if pt_sel.count() > 0:
+            pt_sel.first.click()
+            pg.wait_for_timeout(150)
+            opt_200 = pg.locator('.pop-sel button[role="option"]:has-text("200")')
+            if opt_200.count() == 0:
+                loi.append('T238: Không tìm thấy tuỳ chọn 200/trang trong menu phân trang')
+            else:
+                opt_200.first.click()
+                pg.wait_for_timeout(300)
+                so_dl_200 = pg.locator('.bc-ban-du-lieu tbody tr:not(.bc-dong-tong):not(.tbl-spacer)').count()
+                if so_dl_200 != 200:
+                    loi.append(f'T238: Sau khi chọn 200/trang, có {so_dl_200} dòng dữ liệu, kỳ vọng đúng 200 dòng')
+
+                luu_storage = pg.evaluate("localStorage.getItem('bc-dong-trang')")
+                if luu_storage != '200':
+                    loi.append(f'T238: localStorage "bc-dong-trang" lưu "{luu_storage}", kỳ vọng "200"')
+
+        # 4. Sang trang 2 rồi bấm Lọc thì về trang 1
+        btn_trang2 = pg.locator('.bc-thanh .pt-num', has_text='2')
+        if btn_trang2.count() == 0:
+            loi.append('T238: Không tìm thấy nút trang 2 trên thanh phân trang')
+        else:
+            btn_trang2.first.click()
+            pg.wait_for_timeout(200)
+            trang_on = pg.locator('.bc-thanh .pt-num.on')
+            if trang_on.count() == 0 or trang_on.first.inner_text().strip() != '2':
+                loi.append('T238: Bấm trang 2 nhưng nút 2 không có trạng thái chọn (.on)')
+
+            # Bấm nút Lọc
+            btn_loc = pg.locator('.ds-nut-loc, button:has-text("Lọc")')
+            if btn_loc.count() == 0:
+                loi.append('T238: Không tìm thấy nút Lọc trên thanh công cụ báo cáo')
+            else:
+                btn_loc.first.click()
+                pg.wait_for_timeout(300)
+                trang_ve = pg.locator('.bc-thanh .pt-num.on')
+                txt_ve = trang_ve.first.inner_text().strip() if trang_ve.count() > 0 else ''
+                if txt_ve != '1':
+                    loi.append(f'T238: Sau khi bấm Lọc, trang đang chọn là "{txt_ve}", kỳ vọng về trang 1')
+
+        if con:
+            loi.append(f'T238: lỗi console {con[:2]}')
+        b.close()
+    return loi
+
+
+
 def main():
     if DIEN_THOAI:
         kiem_tra_cac_khung_dt()
@@ -4141,6 +4236,7 @@ def main():
 
     print(f'đã kiểm {dem} lượt mở màn')
     loi += kiem_tra_t233_may_tinh()
+    loi += kiem_tra_t238_may_tinh()
     if loi:
         print(f'{len(loi)} LỖI:')
         for x in loi:

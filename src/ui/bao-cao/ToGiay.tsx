@@ -101,6 +101,17 @@ function docKho(path: string): Kho | null {
   }
 }
 
+const DS_CO_TRANG_BANG = [100, 200, 500]
+
+function docDongTrang(): number {
+  try {
+    const v = Number(localStorage.getItem('bc-dong-trang'))
+    return DS_CO_TRANG_BANG.includes(v) ? v : 100
+  } catch {
+    return 100
+  }
+}
+
 type CheXem = 'to-in' | 'bang-du-lieu'
 
 function ghi(khoa: string, v: string) {
@@ -261,6 +272,56 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
     return bangDau.rows.filter(r => r._t || (!r._b && !r._nhom && bangDau.cols.some(c => fold(String(r[c.k] ?? '')).includes(q))))
   }, [bangDau, tim])
   const tongDong = khoi.reduce((a, k) => a + (k.loai === 'bang' ? k.rows.length : 0), 0)
+
+  // Phân trang Bảng dữ liệu (T238): cắt dongBang theo trang, dòng tổng _t luôn ghim cuối mọi trang
+  const [coTrangBang, setCoTrangBang] = useState(docDongTrang)
+  const [trangBang, setTrangBang] = useState(1)
+  const banDuLieuRef = useRef<HTMLDivElement>(null)
+
+  const { dongBangDuLieu, dongTongBang } = useMemo(() => {
+    let idx = dongBang.length
+    while (idx > 0 && dongBang[idx - 1]?._t && !dongBang[idx - 1]?._nhom) {
+      idx--
+    }
+    return {
+      dongBangDuLieu: dongBang.slice(0, idx),
+      dongTongBang: dongBang.slice(idx),
+    }
+  }, [dongBang])
+  const tongDongBang = dongBangDuLieu.length
+  const hienPhanTrangBang = laBang && tongDongBang > 100
+  const soTrangBang = Math.max(1, Math.ceil(tongDongBang / coTrangBang))
+  const trangBangHt = Math.min(trangBang, soTrangBang)
+
+  const cuonBangLenDau = () => {
+    const wrap = banDuLieuRef.current?.querySelector<HTMLElement>('.tbl-wrap')
+    if (wrap) wrap.scrollTop = 0
+  }
+
+  const doiCoTrangBang = (c: number) => {
+    const hopLe = DS_CO_TRANG_BANG.includes(c) ? c : 100
+    setCoTrangBang(hopLe)
+    setTrangBang(1)
+    try { localStorage.setItem('bc-dong-trang', String(hopLe)) } catch { /* bỏ qua lỗi storage */ }
+    cuonBangLenDau()
+  }
+
+  // Về trang 1 khi: đổi báo cáo, đổi ô tìm, đổi kỳ, báo cáo vẽ lại (T238)
+  useEffect(() => {
+    setTrangBang(1)
+  }, [path, tim, tt.daXem.ky, bangDau?.rows])
+
+  useEffect(() => {
+    const onDaXem = () => setTrangBang(1)
+    window.addEventListener('bc-da-xem', onDaXem)
+    return () => window.removeEventListener('bc-da-xem', onDaXem)
+  }, [])
+
+  const dongBangHienThi = useMemo(() => {
+    if (!hienPhanTrangBang) return dongBang
+    const batDau = (trangBangHt - 1) * coTrangBang
+    return [...dongBangDuLieu.slice(batDau, batDau + coTrangBang), ...dongTongBang]
+  }, [hienPhanTrangBang, dongBang, dongBangDuLieu, dongTongBang, trangBangHt, coTrangBang])
   // Chia trang khi xem (T157): chỉ bảng đầu, dòng tổng cuối bảng hiện ở mọi trang và là tổng mọi trang
   const dongXem = bangDau ? bangDau.rows.filter(r => !r._t).length : 0
   const chiaXem = !!xemTrang && dongXem > coTrangXem
@@ -435,12 +496,12 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
       <div className="bc-giay" style={{ '--bc-co-chu': `${coChuTinh}px`, '--bc-pad-o': padO } as CSSProperties}>
         {css && <style>{css}</style>}
         {laBang && bangDau ? (
-          <div className={`bc-ban-du-lieu${coThayDoi ? ' cho-cap-nhat' : ''}`}>
+          <div ref={banDuLieuRef} className={`bc-ban-du-lieu${coThayDoi ? ' cho-cap-nhat' : ''}`}>
             {coThayDoi && <div className="bc-nhac-cap-nhat">Bấm Lọc để cập nhật</div>}
             {dauBang && <div className="bc-bang-dau">{dauBang}</div>}
             {dieuKienLoc && <div className="bc-bang-dk-loc"><Icon n="filter" className="ic sm" />Điều kiện lọc: {dieuKienLoc}</div>}
             {/* Dòng nhóm, dòng cộng, dòng tổng in đậm như ở Tờ in (T179) */}
-            <Table cols={bangDau.cols} rows={dongBang} onRow={bangDau.onRow} motDong keDoc virtual
+            <Table cols={bangDau.cols} rows={dongBangHienThi} onRow={bangDau.onRow} motDong keDoc virtual={false}
               rowCls={r => r._t ? 'bc-dong-tong' : r._b || r._nhom ? 'bc-dong-dam' : ''} />
           </div>
         ) : !moXemTruoc && (
@@ -455,10 +516,21 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
 
         <div className="bc-thanh">
           <div className="bc-thanh-nhom">
-            {!giay && tongDong > 0 && !hienPhanTrang && <span className="bc-thanh-dem">{(laBang ? dongBang.length : tongDong).toLocaleString('vi-VN')} dòng</span>}
-            {hienPhanTrang && (
-              <PhanTrang tong={dongXem} trang={trangXemHt} coTrang={coTrangXem} dsCoTrang={[50, 100, 200, 500]}
-                onTrang={t => { setTrangXem(t); ban.current?.scrollTo({ top: 0 }) }} onCoTrang={c => { setCoTrangXem(c); setTrangXem(1) }} />
+            {laBang ? (
+              hienPhanTrangBang ? (
+                <PhanTrang tong={tongDongBang} trang={trangBangHt} coTrang={coTrangBang} dsCoTrang={[100, 200, 500]}
+                  onTrang={t => { setTrangBang(t); cuonBangLenDau() }} onCoTrang={doiCoTrangBang} />
+              ) : (
+                tongDong > 0 && <span className="bc-thanh-dem">{dongBang.length.toLocaleString('vi-VN')} dòng</span>
+              )
+            ) : (
+              <>
+                {!giay && tongDong > 0 && !hienPhanTrang && <span className="bc-thanh-dem">{tongDong.toLocaleString('vi-VN')} dòng</span>}
+                {hienPhanTrang && (
+                  <PhanTrang tong={dongXem} trang={trangXemHt} coTrang={coTrangXem} dsCoTrang={[50, 100, 200, 500]}
+                    onTrang={t => { setTrangXem(t); ban.current?.scrollTo({ top: 0 }) }} onCoTrang={c => { setCoTrangXem(c); setTrangXem(1) }} />
+                )}
+              </>
             )}
           </div>
           {!laBang && !moXemTruoc && (

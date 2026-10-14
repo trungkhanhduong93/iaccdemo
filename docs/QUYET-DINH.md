@@ -636,4 +636,11 @@ Lý do: Trum duyệt ngày 14/10/2026 (T222). Trang chủ giống IVT, đầu tr
 
 Lý do: Trum duyệt ngày 14/10/2026 (T237). Hai loại màn cùng một kiểu lọc, người dùng không phải học hai cách.
 
-## QD60. Phân trang Bảng dữ liệu báo cáo (đang soạn)
+## QD60. Phân trang Bảng dữ liệu báo cáo (14/10/2026)
+
+- Màn xem báo cáo trên máy tính, chế độ Bảng dữ liệu: phân trang mặc định 100 dòng/trang, chọn 100, 200, 500. Lựa chọn lưu trên máy, chung mọi báo cáo.
+- Thanh phân trang hiện khi trên 100 dòng. Dòng tổng cuối báo cáo là tổng cả báo cáo theo bộ lọc, ghim cuối mọi trang; không có dòng Tổng trang.
+- Bấm Lọc, đổi kỳ, tìm, đổi số dòng/trang thì về trang 1.
+- Tờ in, bản in, xuất file, giao diện điện thoại giữ nguyên.
+
+Lý do: Trum duyệt ngày 14/10/2026 (T238).

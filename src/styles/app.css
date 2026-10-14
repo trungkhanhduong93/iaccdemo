@@ -16429,3 +16429,11 @@ a.lsq-dong:hover { background: var(--tint); }
     opacity: 0.65;
   }
 }
+
+/* ── Phân trang Bảng dữ liệu báo cáo (T238) ── */
+.bc-thanh .pt-bar {
+  border-top: none;
+  background: transparent;
+  padding: 0;
+  height: auto;
+}
