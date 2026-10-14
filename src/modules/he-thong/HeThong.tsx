@@ -156,22 +156,6 @@ export function CauHinh({ sc }: ScreenProps) {
             { loai: 'Phiếu thu', mau: 'PT{YY}{MM}-{0000}', vd: 'PT2610-0001' }, { loai: 'Phiếu chi', mau: 'PC{YY}{MM}-{0000}', vd: 'PC2610-0241' },
             { loai: 'Xuất bán POS', mau: 'Số hoá đơn FABi', vd: 'YHLTJTAKD76Z' }, { loai: 'Mua hàng', mau: 'MH{YY}{MM}-{0000}', vd: 'MH2610-0118' }]} />
         </Card>
-        {/* Cách đồng bộ bán hàng FABi thành chứng từ Xuất bán POS (T113) */}
-        <Card title="Đồng bộ bán hàng từ FABi">
-          <div className="stack" style={{ gap: 10 }}>
-            {([
-              ['chiTiet', 'Chi tiết theo hoá đơn', 'Mỗi hoá đơn trên FABi là một chứng từ Xuất bán POS, số chứng từ là số hoá đơn FABi. Xem được từng đơn, giờ bán, kênh, cách thanh toán.'],
-              ['kenh', 'Tổng hợp theo kênh', 'Mỗi ngày, mỗi chi nhánh, mỗi kênh bán (Tại quán, Mang về, App giao đồ ăn) là một chứng từ. Ít chứng từ, sổ gọn.'],
-            ] as const).map(([k, ten, mota]) => (
-              <label key={k} className="row" style={{ gap: 10, alignItems: 'flex-start', cursor: 'pointer' }}>
-                <input type="radio" name="dongBoFabi" style={{ marginTop: 3 }} checked={(s.dongBoFabi ?? 'kenh') === k}
-                  onChange={() => { set({ dongBoFabi: k }); toast(`Đồng bộ FABi: ${ten.toLowerCase()}`) }} />
-                <span><b style={{ fontSize: 13 }}>{ten}</b><br /><small className="muted">{mota}</small></span>
-              </label>
-            ))}
-            <Note kind="gray">Đổi cách đồng bộ áp cho dữ liệu đồng bộ từ lúc đổi; tổng doanh thu, thuế mỗi ngày không đổi.</Note>
-          </div>
-        </Card>
         <Card title="Chi nhánh và ánh xạ POS">
           <Table cols={[{ k: 'ten', t: 'Chi nhánh' }, { k: 'fabi', t: 'Mã trên FABi', cls: 'code' }, { k: 'kho', t: 'Kho' }]} rows={dsChiNhanh(s).map(c => {
             // gói Free, Standard: dữ liệu mẫu một kho mỗi chi nhánh, ghi tên kho; gói khác ghi số kho (T145)

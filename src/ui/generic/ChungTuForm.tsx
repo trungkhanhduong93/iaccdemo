@@ -515,6 +515,15 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   ]
 
   // Đầu phiếu thu chi, chuyển quỹ: bỏ ô Diễn giải vì Ghi chú chép sang, Địa chỉ lên cột giữa, Ghi chú kéo dài qua hai cột (T77)
+  // Gói dưới Pro: một kho cho cả phiếu, chọn trong kho của chi nhánh lập phiếu (T83); trả lại hàng mua thì xuất, trả lại hàng bán thì nhập
+  const oKhoDau = (
+    <div className="f">
+      <label>{(nhom === 'ban') !== (cfg.prefix === 'TLN' || cfg.prefix === 'TL') ? 'Kho xuất' : 'Kho nhập'} <em>*</em></label>
+      {dangSua ? (
+        <ChonDanhMuc dm="kho" nhan="kho" value={kho} onChange={setKho} ds={!kho || dsKhoCn.includes(kho) ? dsKhoCn : [kho, ...dsKhoCn]} />
+      ) : <input className="inp" readOnly value={kho} />}
+    </div>
+  )
   const oDiaChi = hienDau('diaChi') && (
     <div className="f">
       <label>Địa chỉ</label>
@@ -540,7 +549,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   // Mua, bán (T90): hàng 1 Đối tượng, Mã số thuế; hàng 2 Địa chỉ, Người giao dịch; Ghi chú kéo dài như thu chi; bỏ Nhân viên thực hiện
   // Thu chi (trừ chuyển quỹ) từ T168: Địa chỉ, Ghi chú ở cột giữa dưới Lý do, đầu phiếu gọn 3 hàng; Ghi chú chỉ còn kéo dài ở mua, bán
   const tcGiua = laTien && nhom !== 'cq'
-  const keoGc = muaBan
+  // Ô kho đứng đầu cột 1 (T248) làm cột 1 dài thêm một hàng: Ghi chú lên cột giữa dưới Người giao dịch, đầu phiếu vẫn 3 hàng
+  const keoGc = muaBan && !khoDau
   const oNguoi = hienDau('nguoi') && (
     <div className="f">
       <label>{nhanNguoi}</label>
@@ -938,7 +948,9 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
             }}
           >
             {/* Cột 1: Đối tượng; phiếu chuyển quỹ thì là quỹ đi, quỹ đến. Phiếu kiểm kê không có đối tượng (T124) */}
+            {/* Ô kho của phiếu (gói dưới Pro) đứng đầu, trước nhà cung cấp, khách hàng (T248) */}
             {!gonDau && <div className="stack" style={{ gap: 10 }}>
+              {khoDau && oKhoDau}
               {nhom === 'cq' ? (
                 <>
                   {oQuyCq('Từ quỹ', tuQuy, setTuQuy)}
@@ -1104,15 +1116,6 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
                 <label>{laSx || laDcn ? 'Mã phiếu' : bo.so ?? 'Số chứng từ'}</label>
                 <input className="inp code" readOnly value={soCt} />
               </div>
-              {/* Gói dưới Pro: một kho cho cả phiếu, chọn trong kho của chi nhánh lập phiếu (T83) */}
-              {khoDau && (
-                <div className="f">
-                  <label>{(nhom === 'ban') !== (cfg.prefix === 'TLN' || cfg.prefix === 'TL') ? 'Kho xuất' : 'Kho nhập'} <em>*</em></label>   {/* trả lại hàng mua thì xuất, trả lại hàng bán thì nhập */}
-                  {dangSua ? (
-                    <ChonDanhMuc dm="kho" nhan="kho" value={kho} onChange={setKho} ds={!kho || dsKhoCn.includes(kho) ? dsKhoCn : [kho, ...dsKhoCn]} />
-                  ) : <input className="inp" readOnly value={kho} />}
-                </div>
-              )}
               {coThangLl && (
                 <div className="f">
                   <label>Tháng hạch toán lãi lỗ</label>

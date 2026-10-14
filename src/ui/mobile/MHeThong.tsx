@@ -758,51 +758,6 @@ export const MCauHinh: FC<ScreenProps> = () => {
         </div>
       </section>
 
-      {/* Thẻ 3: Đồng bộ bán hàng từ FABi */}
-      <section className="m-form-the">
-        <h3 className="m-form-the-tieu">Đồng bộ bán hàng từ FABi</h3>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          {[
-            [
-              'chiTiet',
-              'Chi tiết theo hoá đơn',
-              'Mỗi hoá đơn trên FABi là một chứng từ Xuất bán POS. Xem được từng đơn, giờ bán, kênh.',
-            ],
-            [
-              'kenh',
-              'Tổng hợp theo kênh',
-              'Mỗi ngày, mỗi chi nhánh, mỗi kênh bán là một chứng từ. Ít chứng từ, sổ gọn.',
-            ],
-          ].map(([k, ten, mota]) => (
-            <label
-              key={k}
-              style={{
-                display: 'flex',
-                gap: 10,
-                alignItems: 'flex-start',
-                cursor: 'pointer',
-              }}
-            >
-              <input
-                type="radio"
-                name="dongBoFabiMobile"
-                style={{ marginTop: 3 }}
-                checked={(s.dongBoFabi ?? 'kenh') === k}
-                onChange={() => {
-                  set({ dongBoFabi: k as 'chiTiet' | 'kenh' })
-                  toast(`Đồng bộ FABi: ${ten.toLowerCase()}`)
-                }}
-              />
-              <div>
-                <b style={{ fontSize: 13.5 }}>{ten}</b>
-                <div className="muted" style={{ fontSize: 12, marginTop: 2 }}>
-                  {mota}
-                </div>
-              </div>
-            </label>
-          ))}
-        </div>
-      </section>
 
       {/* Thẻ 4: Chi nhánh và ánh xạ POS */}
       <section className="m-form-the">

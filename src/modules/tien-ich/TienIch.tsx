@@ -12,7 +12,6 @@ import { between, dmy, k, pad, pick, rng } from '../../ui/format'
 import { Select } from '../../ui/Dropdown'
 import { useNhatKy } from '../../ui/generic/daXoa'
 import { HopDongBo } from '../../ui/HopDongBo'
-import { DS_PTTT } from '../danh-muc/data'
 
 const dsKho = CHI_NHANH.flatMap(c =>
   c.kho.map(ten => {
@@ -68,19 +67,14 @@ export function DongBo({ sc, mod }: ScreenProps) {
           nutChinh="Đồng bộ ngay"
           tichPhu={{
             nhan: 'Tự động hạch toán chứng từ theo phương thức thanh toán',
-            ghiChu: (s.dongBoFabi ?? 'kenh') === 'chiTiet'
-              ? 'Mỗi hoá đơn sinh một phiếu thu: Nợ TK của phương thức, Có 131'
-              : 'Mỗi ngày, mỗi phương thức sinh một phiếu thu tổng: Nợ TK của phương thức, Có 131',
+            ghiChu: 'Mỗi hoá đơn sinh một phiếu thu: Nợ TK của phương thức, Có 131',   // FABi kéo chi tiết theo hoá đơn (T247)
             macDinh: true,
           }}
           onDong={() => setMoHop(false)}
           onDongBo={({ tu: dTu, den: dDen, chon, tichPhu }) => {
             setMoHop(false)
             const soDon = chon.length === 3 ? 188 : chon.length * 62 + 2
-            const ngay = Math.max(1, Math.round((dDen.getTime() - dTu.getTime()) / 864e5) + 1)
-            const soPttt = DS_PTTT.filter(p => p._tt !== 0).length
-            const nThu = (s.dongBoFabi ?? 'kenh') === 'chiTiet' ? soDon : (ngay * chon.length * soPttt)
-            const vThu = tichPhu ? `, sinh ${nThu} phiếu thu theo phương thức thanh toán` : ''
+            const vThu = tichPhu ? `, sinh ${soDon} phiếu thu theo phương thức thanh toán` : ''
             toast(`Đã đồng bộ ${soDon} đơn từ ${chon.length} kho, ${dmy(dTu)} đến ${dmy(dDen)}${vThu}`)
           }}
         />

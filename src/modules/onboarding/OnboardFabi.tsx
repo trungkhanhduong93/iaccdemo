@@ -12,7 +12,7 @@ import { Icon } from '../../ui/Icon'
 import { Note, Pk } from '../../ui/Page'
 import { Dropdown, MenuItem, Select } from '../../ui/Dropdown'
 
-export const BUOC = ['Loại hình và gói', 'Đơn vị', 'Chi nhánh']   // bỏ Đồng bộ bán hàng, mặc định tổng hợp theo kênh, sửa ở Cấu hình kế toán (T158)
+export const BUOC = ['Loại hình và gói', 'Đơn vị', 'Chi nhánh']   // bỏ Đồng bộ bán hàng; FABi luôn kéo chi tiết theo hoá đơn (T158, T247)
 const XONG = BUOC.length   // bước hoàn tất
 export const KEY = 'iacc-khoi-tao-fabi'
 /** Tên đơn vị trên FABi; FABi không có mã số thuế (T138) */
@@ -177,7 +177,7 @@ export interface Nhap {
 export const MAC_DINH: Nhap = {
   kieu: 'fabi', b: -2, mo: false, loai: 'dn', nhom: nhomTheoDt(DT_FABI), ppHkd: 'loiNhuan', goi: goiGoiY('dn', 'loiNhuan'), cheDo: cheDoMoi('dn', goiGoiY('dn', 'loiNhuan')), traCuu: false, mst: '', tenDv: TEN_FABI, diaChi: '', ngayDauNam: '01/01/2026', chon: CHI_NHANH.map(c => c.id),
   cnChinh: '', kenhOnline: KENH_ONLINE, kenhSan: KENH_SAN,
-  dongBo: 'kenh',
+  dongBo: 'chiTiet',   // đồng bộ FABi chỉ kéo chi tiết theo hoá đơn (T247)
 }
 
 export function docNhap(): Nhap {
@@ -266,7 +266,7 @@ export function OnboardFabi() {
   const xong = () => {
     // thông tin kê khai lưu theo đơn vị, sửa lại ở Hệ thống, Thông tin đơn vị (T145)
     const ttDv = { ...s.ttDv, [s.donVi]: { ...s.ttDv?.[s.donVi], loai: n.loai, nhom: n.nhom, ppHkd: n.ppHkd, cnChinh: n.cnChinh, kenhOnline: n.kenhOnline, kenhSan: n.kenhSan } }
-    set({ goi: n.goi, cheDo: n.cheDo, khoiTao: true, dongBoFabi: n.dongBo, ttDv, ...(s.dvMoi && s.donVi === s.dvMoi.id ? { cnThem: { ...s.cnThem, [s.donVi]: cnChon.map(c => ({ id: c.id, ten: c.ten, khuVuc: c.khuVuc, tuNgay: n.ngayDauNam, banDau: true })) }, dvMoi: { ...s.dvMoi, ten: n.tenDv || s.dvMoi.ten, viettat: vietTat(n.tenDv) || s.dvMoi.viettat, mst: n.mst, diaChi: n.diaChi, goi: n.goi, diem: n.chon.length } } : {}),
+    set({ goi: n.goi, cheDo: n.cheDo, khoiTao: true, ttDv, ...(s.dvMoi && s.donVi === s.dvMoi.id ? { cnThem: { ...s.cnThem, [s.donVi]: cnChon.map(c => ({ id: c.id, ten: c.ten, khuVuc: c.khuVuc, tuNgay: n.ngayDauNam, banDau: true })) }, dvMoi: { ...s.dvMoi, ten: n.tenDv || s.dvMoi.ten, viettat: vietTat(n.tenDv) || s.dvMoi.viettat, mst: n.mst, diaChi: n.diaChi, goi: n.goi, diem: n.chon.length } } : {}),
       ngayDauNam: { ...s.ngayDauNam, [s.donVi]: n.ngayDauNam }, namTaiChinh: { ...s.namTaiChinh, [s.donVi]: Number(n.ngayDauNam.slice(-4)) } })
     try { localStorage.removeItem(KEY) } catch { /* bỏ qua */ }
     setN(MAC_DINH)

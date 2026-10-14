@@ -8,22 +8,18 @@ import { Icon } from '../Icon'
 import { dmy, money } from '../format'
 import { MChon } from './MChon'
 import { MTrong } from './MTrong'
-import { HopDongBo } from '../HopDongBo'
-import { DS_PTTT } from '../../modules/danh-muc/data'
 import {
   dongCuaPhieu,
   giamThueHkd,
   soFabi,
   theoDon,
-  theoKenh,
   type XPos,
 } from '../../modules/ban-hang/ChungTuBanHang'
 import { useDaXoa } from '../generic/daXoa'
 
 export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
-  const { s, toast } = useSession()
+  const { s } = useSession()
   const { ban, laDaXoa } = useDaXoa(`${mod.key}/${sc.slug}`)
-  const cach = s.dongBoFabi ?? 'kenh'
   const hkd = loaiHinhDv(s, donViHienTai(s)) === 'hkd'
   const ghi = kieuGhiSo(s.cheDo) !== 'khong'
   const cnChon = chiNhanhHienTai(s)
@@ -39,15 +35,13 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
   // Tấm chi tiết đơn
   const [donDangXem, setDonDangXem] = useState<Row | null>(null)
   const [tabCt, setTabCt] = useState<'hang' | 'tt'>('hang')
-  // Hộp đồng bộ POS
-  const [moDongBo, setMoDongBo] = useState(false)
 
   // Danh sách chứng từ theo cách đồng bộ FABi
   const tatCa = useMemo(() => {
     return DAILY.filter(x => x.date.getMonth() >= 8)
       .slice()
       .reverse()
-      .flatMap(x => (cach === 'chiTiet' ? theoDon(x).reverse() : theoKenh(x)))
+      .flatMap(x => theoDon(x).reverse())   // FABi kéo chi tiết theo hoá đơn (T247)
       .map((x, i) => ({
         id: String(i),
         so: soFabi(`fabi-${x.seed}`),
@@ -70,7 +64,7 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
         ngayTao: `${dmy(x.date)} 23:30`,
         nguoiTao: 'Hệ thống',
       }))
-  }, [cach, hkd])
+  }, [hkd])
 
   const rows = useMemo(() => tatCa.filter(r => !laDaXoa(r.id)), [tatCa, ban, laDaXoa])
 
@@ -150,15 +144,6 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
           </button>
         </div>
 
-        <button
-          type="button"
-          className="m-pos-btn-db btn pri sm"
-          onClick={() => setMoDongBo(true)}
-          title="Đồng bộ theo POS"
-        >
-          <Icon n="refresh" className="ic sm" />
-          <span>Đồng bộ theo POS</span>
-        </button>
       </div>
 
       {/* Danh sách đơn dạng thẻ */}
@@ -329,42 +314,6 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
         </div>
       )}
 
-      {/* Hộp đồng bộ hoá đơn từ POS */}
-      {moDongBo && (
-        <HopDongBo
-          tieuDe="Đồng bộ hoá đơn từ POS"
-          phu="Chọn khoảng thời gian và chi nhánh cần lấy hoá đơn từ FABi về Xuất bán POS."
-          nhanDs="Chi nhánh đồng bộ"
-          ds={CHI_NHANH.map(c => ({ ma: c.id, ten: c.ten, phu: `FB-${c.id.toUpperCase()}-01` }))}
-          chonSan={cnChon ? [cnChon.id] : []}
-          nhanLamLai="Bỏ qua hoá đơn đã đồng bộ"
-          ghiChuLamLai="Chỉ lấy hoá đơn còn thiếu, thừa, bị xoá hoặc sửa trên FABi"
-          lamLaiMacDinh
-          tichPhu={{
-            nhan: 'Tự động hạch toán chứng từ theo phương thức thanh toán',
-            ghiChu:
-              (s.dongBoFabi ?? 'kenh') === 'chiTiet'
-                ? 'Mỗi hoá đơn sinh một phiếu thu: Nợ TK của phương thức, Có 131'
-                : 'Mỗi ngày, mỗi phương thức sinh một phiếu thu tổng: Nợ TK của phương thức, Có 131',
-            macDinh: true,
-          }}
-          nutChinh="Đồng bộ ngay"
-          onDong={() => setMoDongBo(false)}
-          onDongBo={({ tu, den, chon, lamLai, tichPhu }) => {
-            setMoDongBo(false)
-            const ngay = Math.max(1, Math.round((den.getTime() - tu.getTime()) / 864e5) + 1)
-            const soHd = lamLai ? chon.length * 3 + 2 : chon.length * ngay * 104
-            const soPttt = DS_PTTT.filter(p => p._tt !== 0).length
-            const nThu = (s.dongBoFabi ?? 'kenh') === 'chiTiet' ? soHd : ngay * chon.length * soPttt
-            const vThu = tichPhu ? `, sinh ${nThu} phiếu thu theo phương thức thanh toán` : ''
-            toast(
-              (lamLai
-                ? `Đã đồng bộ ${soHd} hoá đơn thiếu, thừa, xoá, sửa của ${chon.length} chi nhánh, ${dmy(tu)} đến ${dmy(den)}`
-                : `Đã đồng bộ lại ${soHd} hoá đơn của ${chon.length} chi nhánh, ${dmy(tu)} đến ${dmy(den)}`) + vThu
-            )
-          }}
-        />
-      )}
     </div>
   )
 }

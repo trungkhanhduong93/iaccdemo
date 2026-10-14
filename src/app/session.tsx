@@ -38,7 +38,6 @@ export interface Session {
   dungThu?: Record<string, string>   // ngày bắt đầu dùng thử (dd/mm/yyyy) của đơn vị mới tạo từ FABi, thêm đơn vị (T158)
   ttDv?: Record<string, TtDonVi>   // thông tin kê khai từng đơn vị (T145)
   cnThem?: Record<string, CnThem[]>   // chi nhánh lên sổ thêm từ cửa hàng FABi theo từng đơn vị (T142)
-  dongBoFabi?: 'chiTiet' | 'kenh'   // cách đồng bộ bán hàng FABi (T113): mỗi hoá đơn một chứng từ, hoặc tổng hợp theo kênh mỗi ngày; thiếu là theo kênh
   cachNvl?: Record<string, Record<string, LichCachNvl[]>>   // cách tính chi phí NVL gói Free theo đơn vị, chi nhánh; mỗi lần đổi áp dụng từ kỳ đầu chưa khoá sổ (T232)
   giaThanhTay?: Record<string, Record<string, number>>   // giá thành món nhập tay theo đơn vị; khoá chi nhánh-yyyymm-mã món (T232)
 }

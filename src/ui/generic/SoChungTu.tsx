@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import type { Col, Row } from '../../modules/types'
 import { MODULES } from '../../app/registry'
 import { DAILY } from '../../data/mock'
-import { soFabi, theoKenh } from '../../modules/ban-hang/ChungTuBanHang'
+import { soFabi, theoDon } from '../../modules/ban-hang/ChungTuBanHang'
 import { chungTu } from './gen'
 import { gopLoai } from './VoucherScreen'
 
@@ -28,8 +28,8 @@ function bangSo(): Map<string, string> {
       }
     }
   }
-  // Xuất bán POS 3.1.1 (màn riêng, không có voucher): id là thứ tự trong danh sách khi đồng bộ tổng hợp theo kênh, như ChungTuBanHang
-  DAILY.filter(x => x.date.getMonth() >= 8).slice().reverse().flatMap(theoKenh).forEach((x, i) => {
+  // Xuất bán POS 3.1.1 (màn riêng, không có voucher): id là thứ tự trong danh sách, mỗi hoá đơn một chứng từ như ChungTuBanHang (T247)
+  DAILY.filter(x => x.date.getMonth() >= 8).slice().reverse().flatMap(x => theoDon(x).reverse()).forEach((x, i) => {
     const so = soFabi(`fabi-${x.seed}`)
     if (!BANG!.has(so)) BANG!.set(so, `/app/ban-hang/3-1-1/${i}`)
     POS.push({ so, to: `/app/ban-hang/3-1-1/${i}` })
