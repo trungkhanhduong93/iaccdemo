@@ -4,15 +4,13 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T248.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T249.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T247 | Đồng bộ FABi chỉ còn kéo chi tiết (mỗi hoá đơn một chứng từ), mọi gói: bỏ lựa chọn tổng hợp theo kênh ở Cấu hình kế toán, khởi tạo đơn vị, điện thoại; danh sách Xuất bán POS bỏ nhãn Tổng hợp, dải Đã/Chưa đồng bộ và số liệu đồng bộ, nút Đồng bộ POS | PhuongXT | Đang làm | Sửa `ChungTuBanHang.tsx`, `he-thong/HeThong.tsx`, `onboarding/OnboardFabi.tsx`, `tien-ich/TienIch.tsx`, `mobile/MHeThong.tsx`, `mobile/MXuatBanPos.tsx`, `app/session.tsx`. Giữ chỗ QD62 |
-| T248 | Form phiếu mua hàng: ô Kho nhập đứng đầu, trước Nhà cung cấp; Xuất bán POS tương tự (kho đứng đầu phần thông tin) | PhuongXT | Đang làm | Sửa `ui/generic/ChungTuForm.tsx` (đầu phiếu mua hàng), `ban-hang/ChungTuBanHang.tsx` (chi tiết Xuất bán POS) |
 | T240 | Điện thoại gói Free: trang chủ giống trang chủ Free bản web (ba bài toán của T230), kèm bản điện thoại của Chi phí trong tháng, Lịch sử thu chi (T234) | Trum | Đang làm | Sửa `src/ui/mobile/MTrangChu.tsx` (nhánh Free), file mới trong `src/ui/mobile/`, `manMobile.ts`, `app.css` (mục cuối T240), `tools/kiem_tra.py`. Chỉ đọc `home/BaBaiToanFree.tsx`, `home/chiSo.ts` (T232 đang sửa) |
 | T241 | Điện thoại: báo cáo còn hiện kiểu web (mẫu giấy qua `MToGiay`, màn rơi về `MChiMayTinh`) chuyển sang dạng dòng điện thoại, có nút Xem mẫu in | Trum | Đang làm | Sửa `src/ui/mobile/MToGiay.tsx`, `MSoBaoCao.tsx`, `manMobile.ts`, `app.css` (mục cuối T241), `tools/kiem_tra.py`. Làm sau T240 |
 | T234 | Điện thoại: hai màn mới Chi phí trong tháng (`trang-chu/chi-phi-thang`), Lịch sử thu chi (`trang-chu/lich-su-quy`) của T230, T231 chưa có bản điện thoại, `kiem_tra.py --dien-thoai` báo lỗi ở bước duyệt `manMobile` | Trum | Đang làm | Làm cùng T240 Phát hiện khi kiểm T233 ngày 14/10/2026 |
@@ -44,11 +42,14 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | T20 | Cột trạng thái duyệt trong danh sách chứng từ, tách khỏi ghi sổ | | Chờ | DB iPOS có `REVIEW_STATUS` CHECKED/UNCHECKED riêng với `STATUS` DRAFT/POSTED |
 | T242 | Điện thoại: màn Chi phí NVL (`trang-chu/chi-phi-nvl`, T232) chưa có bản điện thoại, cùng lỗi với T234 | | Chờ | Phát hiện khi làm T232 ngày 14/10/2026. Bản máy tính ở `src/modules/home/ChiPhiNvl.tsx`, số liệu ở `chi-phi-nvl.ts` |
 | T243 | `tools/kiem_tra.py` (bước T238) lưu ảnh chụp vào đường dẫn cố định `C:/Users/trung.duong/.gemini/...`, máy khác chạy `--nhanh` báo PermissionError, dừng giữa chừng. Đổi sang thư mục tạm hoặc bỏ chụp | | Chờ | Phát hiện khi PhuongXT kiểm T232 ngày 14/10/2026; đã kiểm bằng bản sao tạm đổi đường dẫn, không lỗi |
+| T249 | Báo cáo bán hàng (`src/modules/ban-hang/bao-cao.ts`, hàm `dongBan`) còn đọc chứng từ Xuất bán POS theo kênh (`theoKenh`), số chứng từ trên báo cáo khác số hoá đơn ở danh sách từ T247; đổi sang `theoDon` để bấm số mở đúng phiếu | | Chờ | Phát hiện khi làm T247 ngày 15/10/2026. Tổng doanh thu không đổi |
 
 ## Đã xong
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T247 | Đồng bộ FABi chỉ kéo chi tiết (mỗi hoá đơn một chứng từ), mọi gói: bỏ lựa chọn tổng hợp theo kênh (Cấu hình kế toán, khởi tạo, điện thoại, bỏ trường `dongBoFabi`); Xuất bán POS bỏ nhãn Tổng hợp, dải Đã/Chưa đồng bộ, nút Đồng bộ POS (cả điện thoại); `SoChungTu.tsx` dò số POS theo hoá đơn. Báo cáo bán hàng (`ban-hang/bao-cao.ts`) vẫn đọc theo kênh | PhuongXT | 15/10/2026 | [2026-10-15-phuongxt-pos-chi-tiet-kho-dau](nhat-ky/2026-10-15-phuongxt-pos-chi-tiet-kho-dau.md) |
+| T248 | Phiếu mua hàng (gói dưới Pro): ô Kho nhập đứng đầu, trước Nhà cung cấp, Ghi chú lên cột giữa dưới Người giao dịch; Xuất bán POS thêm Kho xuất (kho mặc định của chi nhánh) đứng đầu, Ghi chú một ô để đầu phiếu 2 hàng | PhuongXT | 15/10/2026 | [2026-10-15-phuongxt-pos-chi-tiet-kho-dau](nhat-ky/2026-10-15-phuongxt-pos-chi-tiet-kho-dau.md) |
 | T244 | Báo cáo kiểm kê 5.2.15: Mã hàng, Tên hàng, ĐVT, Kho, Số lượng Thừa, Thiếu từ phiếu điều chỉnh sinh từ kiểm kê, mọi gói; thẻ Hao hụt kiểm kê ở trang chủ mở báo cáo cùng tháng; ô lọc chọn nhiều của thanh lọc báo cáo thiếu lớp `sel` (chữ căn giữa) đã sửa ở `ReportScreen.tsx` | PhuongXT | 14/10/2026 | [2026-10-14-phuongxt-kiem-ke-quy-tien](nhat-ky/2026-10-14-phuongxt-kiem-ke-quy-tien.md) |
 | T245 | Gói Free: số dư ban đầu quỹ khai ở Danh mục Quỹ tiền (cột, ô trong form, lưu cùng chỗ `soDuQuy`; `CatalogCfg.phien` mới), bỏ tab Số dư ban đầu ở Thu chi (đường dẫn cũ chuyển sang danh mục); trang chủ cột Thu chi nút Tạo quỹ mở form thêm quỹ, gợi ý bấm quỹ xem lịch sử thu chi | PhuongXT | 14/10/2026 | [2026-10-14-phuongxt-kiem-ke-quy-tien](nhat-ky/2026-10-14-phuongxt-kiem-ke-quy-tien.md) |
 | T246 | Chi phí trong tháng ghi rõ là các khoản chi tiền có lý do nghiệp vụ là chi phí; phiếu chi chọn lý do được tích Là chi phí thì hiện nhãn Chi phí cạnh ô Lý do chi (`ChungTuForm.tsx`); Lịch sử thu chi có bộ lọc Khoản thu, Khoản chi (danh sách, xuất Excel theo bộ lọc) | PhuongXT | 14/10/2026 | [2026-10-14-phuongxt-kiem-ke-quy-tien](nhat-ky/2026-10-14-phuongxt-kiem-ke-quy-tien.md) |

@@ -2,6 +2,11 @@
 
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
+## 15/10/2026
+
+- T248: Phiếu mua hàng: ô Kho nhập đứng đầu, trước Nhà cung cấp; Ghi chú lên cột giữa. Xuất bán POS có ô Kho xuất đứng đầu.
+- T247: Xuất bán POS chỉ còn kéo chi tiết theo hoá đơn FABi ở mọi gói. Bỏ lựa chọn tổng hợp theo kênh, dải Đã/Chưa đồng bộ và nút Đồng bộ POS.
+
 ## 14/10/2026
 
 - T246: Chi phí trong tháng ghi rõ chỉ gồm khoản chi có lý do nghiệp vụ là chi phí. Phiếu chi có nhãn Chi phí cạnh ô Lý do chi khi lý do được tích Là chi phí. Lịch sử thu chi lọc được Khoản thu, Khoản chi.

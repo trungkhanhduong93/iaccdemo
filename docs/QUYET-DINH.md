@@ -663,4 +663,9 @@ Lý do: Trum duyệt ngày 14/10/2026 (T238).
 
 Lý do: PhuongXT chốt ngày 14/10/2026 (T245). Gói Free chỉ khai số dư tiền, khai ngay lúc tạo quỹ gọn hơn mở màn riêng.
 
-## QD62. Đồng bộ FABi chỉ kéo chi tiết theo hoá đơn (đang soạn)
+## QD62. Đồng bộ FABi chỉ kéo chi tiết theo hoá đơn (15/10/2026)
+
+- Mọi gói: mỗi hoá đơn FABi là một chứng từ Xuất bán POS. Bỏ cách tổng hợp theo kênh và lựa chọn ở Cấu hình kế toán, khởi tạo đơn vị, điện thoại. Thay điểm cấu hình đồng bộ của T113.
+- Danh sách Xuất bán POS không còn nhãn cách đồng bộ, dải Đã/Chưa đồng bộ (T118) và nút Đồng bộ POS (T117). Đồng bộ chạy tự động; tiện ích đồng bộ FABi vẫn giữ.
+
+Lý do: PhuongXT chốt ngày 15/10/2026 (T247). Một cách đồng bộ duy nhất, xem được từng đơn, cách thanh toán; màn danh sách gọn.
