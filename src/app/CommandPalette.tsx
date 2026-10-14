@@ -3,7 +3,7 @@
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSession } from './session'
-import { MODULES, duongDan, hienMan, hienPhanHe, laBaoCao, maKhoa, moDuoc, tenMan } from './registry'
+import { MODULES, duongDan, hienMan, hienPhanHe, laBaoCao, maKhoa, moDuoc, tenMan, tenPhanHe } from './registry'
 import { minGoi } from './plan'
 import { fold } from '../ui/format'
 import { Icon } from '../ui/Icon'
@@ -132,7 +132,7 @@ export function CommandPalette({ onClose }: { onClose: () => void }) {
                     <span className="cmdk-ic"><Icon n={x.sc.icon ?? x.goc.icon} className="ic sm" /></span>
                     <span className="cmdk-chu">
                       <b><Ten x={x} words={words} /></b>
-                      <small>{x.m === x.goc ? x.m.ngan : `${x.m.ngan} · ${x.goc.ngan}`}{x.sc.nhom && x.m === x.goc && x.sc.nhom !== x.m.ngan ? ` · ${x.sc.nhom}` : ''}</small>
+                      <small>{x.m === x.goc ? tenPhanHe(x.m, s.goi).ngan : `${tenPhanHe(x.m, s.goi).ngan} · ${tenPhanHe(x.goc, s.goi).ngan}`}{x.sc.nhom && x.m === x.goc && x.sc.nhom !== x.m.ngan ? ` · ${x.sc.nhom}` : ''}</small>
                     </span>
                     {!ok && ma && <Pk g={minGoi(ma)} o />}
                   </button>

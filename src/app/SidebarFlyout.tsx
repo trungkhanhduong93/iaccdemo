@@ -310,7 +310,7 @@ const FLYOUT_CONFIG: Record<string, FlyoutData> = {
         { ten: 'Kho hàng', di: '/app/danh-muc/1-8' },
         { ten: 'Chi nhánh làm việc', di: '/app/danh-muc/chi-nhanh' },
         { ten: 'Bảng giá bán & mua', di: '/app/danh-muc/1-14' },
-        { ten: 'Sơ đồ danh mục', di: '/app/danh-muc/quy-trinh' },
+        // Sơ đồ danh mục tạm ẩn cùng tab Quy trình của Danh mục (T225)
       ],
     },
     phai: {

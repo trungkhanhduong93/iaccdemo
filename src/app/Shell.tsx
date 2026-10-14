@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useRef, useState } from 'react'
 import { Link, Navigate, Outlet, useLocation } from 'react-router-dom'
 import { useSession } from './session'
-import { MODULES, duongDan, hienPhanHe, manDau, phanHeKhoa } from './registry'
+import { MODULES, duongDan, hienPhanHe, manDau, phanHeKhoa, tenPhanHe } from './registry'
 import { GOI } from './plan'
 import type { ModuleDef } from '../modules/types'
 import { Icon } from '../ui/Icon'
@@ -89,6 +89,9 @@ function Sidebar({ mod, onSearch }: { mod: ModuleDef; onSearch: () => void }) {
     }, 180)
   }
 
+  // Menu phụ khi rê chuột vào phân hệ tạm tắt, PhuongXT chốt 14/10/2026 (T227); bật lại thì đổi thành true
+  const coMenuPhu = false
+
   return (
     <nav ref={sbRef} className="sidebar" aria-label="Phân hệ">
       <Link to="/app/he-thong/goi-thue-bao" className="sb-brand" title={`Đang dùng gói ${GOI[s.goi].ten}. Bấm để xem gói thuê bao`}>
@@ -115,11 +118,11 @@ function Sidebar({ mod, onSearch }: { mod: ModuleDef; onSearch: () => void }) {
               {(m.key === 'danh-muc' || m.key === 'he-thong') && <div className="sb-sep" />}
               <Link to={duongDan(m, manDau(m, s.goi))}
                 className={`${m.key === mod.key ? 'on' : ''} ${khoa ? 'lock' : ''}`}
-                title={khoa ? `${m.ten}: chưa có trong gói ${GOI[s.goi].ten}` : m.ten}
-                onMouseEnter={e => onEnterItem(m, e.currentTarget)}
-                onMouseLeave={onLeaveItem}
+                title={khoa ? `${tenPhanHe(m, s.goi).ten}: chưa có trong gói ${GOI[s.goi].ten}` : tenPhanHe(m, s.goi).ten}
+                onMouseEnter={coMenuPhu ? e => onEnterItem(m, e.currentTarget) : undefined}
+                onMouseLeave={coMenuPhu ? onLeaveItem : undefined}
               >
-                <Icon n={m.icon} /><span>{m.ngan}</span>{khoa && <Icon n="lock" className="ic sm lk" />}
+                <Icon n={m.icon} /><span>{tenPhanHe(m, s.goi).ngan}</span>{khoa && <Icon n="lock" className="ic sm lk" />}
               </Link>
             </Fragment>
           )
@@ -130,7 +133,7 @@ function Sidebar({ mod, onSearch }: { mod: ModuleDef; onSearch: () => void }) {
           <Icon n={s.thuGon ? 'chevr' : 'chevl'} /><span>Thu gọn</span>
         </button>
       </div>
-      {hovered && (
+      {coMenuPhu && hovered && (
         <SidebarFlyout
           mod={hovered.mod}
           top={hovered.top}

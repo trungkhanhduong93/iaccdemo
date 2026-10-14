@@ -166,9 +166,16 @@ export function timMan(modKey?: string, slug?: string) {
   return { mod, sc }
 }
 
-/** Màn đầu tiên mở được của phân hệ (Quy trình nếu có); không có thì màn đầu tiên */
+/** Tên phân hệ theo gói: gói Free chỉ có Kiểm kê ở Kho nên gọi phân hệ Kho là Kiểm kê, PhuongXT chốt 14/10/2026 (T228) */
+const TEN_THEO_GOI: Partial<Record<Goi, Record<string, { ten: string; ngan: string }>>> = { F: { kho: { ten: 'Kiểm kê', ngan: 'Kiểm kê' } } }
+export const tenPhanHe = (m: ModuleDef, goi: Goi) => TEN_THEO_GOI[goi]?.[m.key] ?? { ten: m.ten, ngan: m.ngan }
+
+/** Màn mở khi bấm phân hệ: danh sách chứng từ đầu tiên gói đang dùng thấy được, không có thì màn đầu tiên không phải Quy trình,
+ *  PhuongXT chốt 14/10/2026 (T226); tab Quy trình vẫn còn để bấm xem. Không màn nào hiện thì màn đầu tiên mở được */
 export function manDau(m: ModuleDef, goi: Goi) {
-  return m.screens.find(sc => moDuoc(sc, goi)) ?? m.screens[0]
+  const mo = m.screens.filter(sc => moDuoc(sc, goi) && hienMan(sc, goi))
+  return mo.find(sc => sc.nhom === 'Chứng từ') ?? mo.find(sc => sc.kind !== 'quytrinh') ?? mo[0]
+    ?? m.screens.find(sc => moDuoc(sc, goi)) ?? m.screens[0]
 }
 
 /** Phân hệ ẩn khỏi thanh bên trái theo gói dù còn màn trong gói: gói Free không có phân hệ Tổng hợp,

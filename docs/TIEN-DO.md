@@ -11,10 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T228 | Gói Free: phân hệ Kho đổi tên thành Kiểm kê (thanh bên, tìm kiếm Ctrl K, sơ đồ Quy trình, tab Nghiệp vụ điện thoại) | PhuongXT | Đang làm | Sửa `app/registry.ts` (thêm `tenPhanHe`), `Shell.tsx`, `CommandPalette.tsx`, `QuyTrinhScreen.tsx`, `mobile/MNghiepVu.tsx` |
-| T227 | Bỏ menu phụ (Nghiệp vụ, Tiện ích) bật ra khi rê chuột vào phân hệ ở thanh bên | PhuongXT | Đang làm | Sửa `src/app/Shell.tsx` |
-| T226 | Bấm phân hệ ở thanh bên vào thẳng danh sách chứng từ đầu tiên (không mở tab Quy trình trước); phân hệ không có chứng từ vào màn đầu tiên không phải Quy trình | PhuongXT | Đang làm | Sửa `src/app/registry.ts` (`manDau`) |
-| T225 | Tạm ẩn tab Quy trình (sơ đồ) của phân hệ Danh mục, cả mục Sơ đồ danh mục ở menu phụ | PhuongXT | Đang làm | Sửa `src/modules/danh-muc/index.ts`, `src/app/SidebarFlyout.tsx` |
 | T223 | Điện thoại: bổ sung thông tin chứng từ còn thiếu so với bản web theo bảng ở `docs/tu-van-thiet-ke-dien-thoai.md` mục 1 (tài khoản Nợ, Có của phiếu thu chi, hoá đơn, thanh toán, kho, khoản mục), sửa 3 chỗ hiện sai; rồi 8 điểm thiết kế mục 2 | Trum | Đang làm | Trum duyệt cả bảng mục 1 và 8 điểm mục 2 ngày 14/10/2026, làm theo thứ tự mục 3. Thêm tài khoản cho dữ liệu giả dòng thu chi trước. Sửa `src/ui/mobile/MXemPhieu.tsx`, `MChungTu.tsx`, `MDanhSach.tsx`, `MSoBaoCao.tsx`, `MobileShell.tsx`, `ThanhDuoi.tsx`, dữ liệu giả thu chi, `app.css` mục cuối |
 | T229 | Báo cáo kết quả kinh doanh (10.2.3, B02-DNN) ở chế độ TT133 mở ra "Báo cáo chưa có mẫu" ở cả bản máy tính và điện thoại, gói Pro và Free | | Chờ | Phát hiện ở T222 ngày 14/10/2026, mở từ Tất cả báo cáo. Có thể liên quan T220 |
 | T169 | Form chứng từ: gõ đổi địa chỉ từ phiếu này sang phiếu khác (vd `#/app/tien/2-1-1/chi-3` sang `chi-6`) thì form giữ số phiếu, đối tượng của phiếu cũ; mở từ danh sách, Trước, Sau thì đúng | | Chờ | Phát hiện ở T168. Sửa `ChungTuForm.tsx`, có thể `VoucherScreen.tsx` (key của form) |
@@ -47,6 +43,10 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T228 | Gói Free: phân hệ Kho đổi tên thành Kiểm kê (thanh bên, tìm kiếm Ctrl K, sơ đồ Quy trình, tab Nghiệp vụ điện thoại) | PhuongXT | 14/10/2026 | [2026-10-14-phuongxt-thanh-ben](nhat-ky/2026-10-14-phuongxt-thanh-ben.md) |
+| T227 | Bỏ menu phụ (Nghiệp vụ, Tiện ích) bật ra khi rê chuột vào phân hệ ở thanh bên | PhuongXT | 14/10/2026 | [2026-10-14-phuongxt-thanh-ben](nhat-ky/2026-10-14-phuongxt-thanh-ben.md) |
+| T226 | Bấm phân hệ ở thanh bên vào thẳng danh sách chứng từ đầu tiên (không mở tab Quy trình trước); phân hệ không có chứng từ vào màn đầu tiên không phải Quy trình | PhuongXT | 14/10/2026 | [2026-10-14-phuongxt-thanh-ben](nhat-ky/2026-10-14-phuongxt-thanh-ben.md) |
+| T225 | Tạm ẩn tab Quy trình (sơ đồ) của phân hệ Danh mục, cả mục Sơ đồ danh mục ở menu phụ | PhuongXT | 14/10/2026 | [2026-10-14-phuongxt-thanh-ben](nhat-ky/2026-10-14-phuongxt-thanh-ben.md) |
 | T222 | Điện thoại đợt 14: đo 20 báo cáo ở 390px, Chi tiết bán hàng 2,6 giây còn 1,2 đến 2,1 giây (`money()` bỏ `toLocaleString`); thẻ Hao hụt nguyên vật liệu; mục Chứng từ chưa ghi sổ theo chi nhánh, bấm mở danh sách bật sẵn chip | Trum | 14/10/2026 | [2026-10-14-trum-dien-thoai-dot-14](nhat-ky/2026-10-14-trum-dien-thoai-dot-14.md) |
 | T224 | Điện thoại: tư vấn thiết kế dưới góc app kế toán, 8 điểm (số tiền có hướng, tổng thu chi, danh sách theo ngày, xem phiếu gọn có hạch toán, ẩn thanh tab ở màn cấp 2, chống bỏ ghi sổ nhầm, sổ dạng dòng, chip chi nhánh), ảnh mẫu ở `docs/tu-van-anh/` | Trum | 14/10/2026 | [2026-10-14-trum-dien-thoai-dot-14](nhat-ky/2026-10-14-trum-dien-thoai-dot-14.md) |
 | T221 | Sổ chi phí (10.4.3): thêm cột Lý do sau Nội dung và bộ lọc Lý do | PhuongXT | 14/10/2026 | [2026-10-14-phuongxt-nhom-bao-cao](nhat-ky/2026-10-14-phuongxt-nhom-bao-cao.md) |

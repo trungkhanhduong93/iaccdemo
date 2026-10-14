@@ -1,6 +1,6 @@
 import { Link, useSearchParams } from 'react-router-dom'
 import { useSession } from '../../app/session'
-import { MODULES, duongDan, hienMan, hienPhanHe, moDuoc, phanHeKhoa, tabCua, tenMan } from '../../app/registry'
+import { MODULES, duongDan, hienMan, hienPhanHe, moDuoc, phanHeKhoa, tabCua, tenMan, tenPhanHe } from '../../app/registry'
 import type { ScreenDef } from '../../modules/types'
 import { Icon } from '../Icon'
 
@@ -35,7 +35,7 @@ export function MNghiepVu() {
             <Icon n={modHienTai.icon} />
           </div>
           <div className="m-nv-ds-head-info">
-            <h2 className="m-nv-ds-tieu">{modHienTai.ten}</h2>
+            <h2 className="m-nv-ds-tieu">{tenPhanHe(modHienTai, s.goi).ten}</h2>
             {modHienTai.mota && <p className="m-nv-ds-mota">{modHienTai.mota}</p>}
           </div>
         </div>
@@ -90,7 +90,7 @@ export function MNghiepVu() {
                   </span>
                 )}
               </div>
-              <span className="m-nv-o-ten">{m.ten}</span>
+              <span className="m-nv-o-ten">{tenPhanHe(m, s.goi).ten}</span>
             </Link>
           )
         })}

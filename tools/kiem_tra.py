@@ -2801,6 +2801,15 @@ def main():
                 links += tabs
                 if pg.locator('.qt-n').count():
                     nut += hrefs('a.qt-n')                       # ô trên sơ đồ Quy trình
+                else:
+                    # Bấm phân hệ vào thẳng danh sách phiếu (T226): mở tab Quy trình để gom ô sơ đồ
+                    qt = [t for t in tabs if t and t.endswith('/quy-trinh')]
+                    if qt:
+                        pg.goto(URL + qt[0])
+                        pg.wait_for_timeout(80)
+                        nut += hrefs('a.qt-n')
+                        if goi == 'F' and pg.locator('.qt-n.lock, .qt-bc a.lock, .qt-foot a.lock').count():
+                            loi.append(f'[F] {qt[0]}: còn hiện mục ngoài gói có khoá')
                 # Gói Free ẩn hẳn tính năng ngoài gói (QD22): không còn mục mờ có khoá trên sidebar, tab, sơ đồ
                 if goi == 'F' and pg.locator('.sb-nav a.lock, .mtabs-in a.lock, .pop-khac a.lock, .qt-n.lock, .qt-bc a.lock, .qt-foot a.lock').count():
                     loi.append(f'[F] {r}: còn hiện mục ngoài gói có khoá')

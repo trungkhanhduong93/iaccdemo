@@ -2,7 +2,7 @@
 import { createElement } from 'react'
 import type { Col, ModuleDef, Row, ScreenDef } from '../types'
 import { tuExcel } from '../types'
-import { quyTrinh } from './quy-trinh'
+// Tạm ẩn tab Quy trình của Danh mục, PhuongXT chốt 14/10/2026 (T225); mở lại thì khai lại quyTrinh từ './quy-trinh'
 import { kieuGhiSo } from '../../app/plan'
 import { CCDC_HANG, CHI_NHANH, HANG, KHACH, KHO, LY_DO, NCC, NHAN_VIEN, NVL } from '../../data/mock'
 import { DON_VI_TINH, tkCot, taiKhoan, NHOM_HANG, NHOM_DOI_TUONG, NHOM_MUC_CP, NHOM_CONG_VIEC, NHOM_KHO, DS_PTTT, QUY_DOI_DVT, DS_MUC_CHI_PHI_16, DS_CONG_VIEC_17, DS_QUY_TIEN_112, DS_HANG_HOA_12 } from './data'
@@ -138,7 +138,6 @@ const phuongThucThanhToan: ScreenDef = {
 const danhMuc: ModuleDef = {
   key: 'danh-muc', ten: 'Danh mục', ngan: 'Danh mục', icon: 'folder', mod: 0,
   mota: 'Hàng hoá, đối tượng, kho, tài khoản lấy từ FABi và iPOS Inventory',
-  quyTrinh,
   screens: tuExcel(0, {
     '1.1': { kind: 'custom', comp: HeThongTaiKhoan, cheDo: ['TT133', 'TT99'] },
     '1.2': { catalog: {
