@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T201 | Mọi báo cáo có cột số chứng từ: bấm số mở chứng từ chi tiết | PhuongXT | Dở dang | Báo cáo đọc thẳng từ phiếu đã bấm được (chi tiết mua, bảng kê theo hàng hoá, chi tiết nhập, xuất kho, chi tiết bán hàng). Sổ tự sinh số riêng (sổ ngân hàng, sổ chi phí, bộ sổ TT58, TT152, lịch sử công nợ) chưa khớp phiếu, chờ PhuongXT chọn cách. Xem `2026-10-14-phuongxt-so-chung-tu.md` |
 | T186 | Điện thoại: Xuất bán POS (3.1.1) còn báo dùng máy tính | | Chờ | Từ rà soát T184 (`MChiMayTinh`). Làm màn điện thoại riêng trong `src/ui/mobile/`, nối ở `manMobile.ts` |
 | T187 | Điện thoại: Danh mục tài khoản (1.1), Danh mục chi nhánh còn báo dùng máy tính | | Chờ | Từ rà soát T184. Có thể dùng lại `MDanhMuc`, `MFormDm` của đợt 3, 6 |
 | T188 | Điện thoại: Công thức sơ chế (5.1.5), Công thức chế biến (9.1.3) còn báo dùng máy tính | | Chờ | Từ rà soát T184. Hai màn chung `CongThucScreen` |
@@ -49,6 +48,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T201 | Mọi báo cáo có cột số chứng từ: bấm số mở chứng từ chi tiết; sổ tự đánh số thì lấy phiếu thật cùng loại, cùng tháng (cách 2, PhuongXT chọn) | PhuongXT | 14/10/2026 | [2026-10-14-phuongxt-so-chung-tu](nhat-ky/2026-10-14-phuongxt-so-chung-tu.md) |
 | T200 | Tổng hợp mua hàng, Chi tiết mua hàng thêm cột Thành tiền, Chiết khấu, đổi Tiền hàng thành Tiền trước thuế; bấm nhà cung cấp ở Tổng hợp mở Chi tiết mua hàng; ẩn Chi tiết mua hàng khỏi danh sách báo cáo; thêm Bảng kê mua hàng theo hàng hoá | PhuongXT | 13/10/2026 | [2026-10-13-phuongxt-bao-cao-mua-hang](nhat-ky/2026-10-13-phuongxt-bao-cao-mua-hang.md) |
 | T185 | Mở lại báo cáo theo danh sách iFaster cho mọi gói (giữ khung báo cáo IACC): Tổng hợp quỹ tiền, Báo cáo dòng tiền, Công nợ nhà cung cấp, khách hàng (popup lịch sử công nợ), Báo cáo kết quả kinh doanh, Sổ chi phí, Nhập xuất tồn, tổng hợp, chi tiết nhập kho, xuất kho, báo cáo mua hàng, bán hàng (tổng hợp, chi tiết, theo ngày) | PhuongXT | 13/10/2026 | [2026-10-13-phuongxt-bao-cao-ifaster](nhat-ky/2026-10-13-phuongxt-bao-cao-ifaster.md) |
 | T202–T204 | Điện thoại đợt 10: Sổ quỹ tiền mặt dạng bảng như Sổ ngân hàng; báo cáo bỏ cột ghim và tiêu đề dính, cuộn tự do; trang chủ theo bố cục IVT (tab Quản trị, Cần theo dõi, chip Kho, thẻ tồn kho, chi phí nguyên vật liệu, tỷ lệ tồn các kho) | Trum | 14/10/2026 | [2026-10-14-trum-dien-thoai-dot-10](nhat-ky/2026-10-14-trum-dien-thoai-dot-10.md) |

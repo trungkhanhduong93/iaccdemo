@@ -10,7 +10,7 @@ import { Icon } from '../../ui/Icon'
 import { PageHead, Pk } from '../../ui/Page'
 import { fold } from '../../ui/format'
 import { ThanhLoc } from '../../ui/ThanhLoc'
-import { cauHinhBC, kyHieuBC } from './danh-sach'
+import { CHI_MO_TU_BC, cauHinhBC, kyHieuBC } from './danh-sach'
 
 export interface NhomBaoCaoItem {
   mod: ModuleDef
@@ -124,7 +124,7 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
   const modHienTai = keyHienTai ? nhomHienThi[0]?.mod : null
   const title = modHienTai ? `Báo cáo ${modHienTai.ten}` : chiSoTT ? tenSoTT : 'Báo cáo'
 
-  const manTrongNhom = nhomHienThi.flatMap(g => g.screens).filter(x => apDung(x, s.cheDo, s))   // không đếm báo cáo đã bỏ (T171)
+  const manTrongNhom = nhomHienThi.flatMap(g => g.screens).filter(x => apDung(x, s.cheDo, s) && !CHI_MO_TU_BC.includes(x.code ?? ''))   // không đếm báo cáo đã bỏ (T171), báo cáo chỉ mở từ báo cáo khác (T200)
   const co = manTrongNhom.filter(x => moDuoc(x, s.goi)).length
   const meta = anNgoaiGoi(s.goi) ? undefined : (
     <span className="chip">Gói đang dùng mở {co}/{manTrongNhom.length} báo cáo</span>

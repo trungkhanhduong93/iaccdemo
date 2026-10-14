@@ -34,7 +34,7 @@ function soLieu(loai: Loai, ma: string, thang: number, cnTen?: string) {
       const ps = kieu < 0.55 ? tien : 0
       const tra = kieu >= 0.55 && kieu < 0.65 ? k(tien * 0.2) : 0
       const tt = kieu >= 0.65 ? tien : 0
-      const tienTo = ps ? (loai === 'ncc' ? 'NK' : 'BH') : tra ? (loai === 'ncc' ? 'TLN' : 'TL') : (loai === 'ncc' ? 'PC' : 'PT')
+      const tienTo = ps ? (loai === 'ncc' ? 'MH' : 'BH') : tra ? (loai === 'ncc' ? 'TLN' : 'TL') : (loai === 'ncc' ? 'PC' : 'PT')
       phieu.push({
         ngay: `${pad(ngay)}/${pad(thang)}/2026`, kho: c.ten, so: tienTo,
         ghiChu: '', dienGiai: ps ? `${NHAN[loai].ps} ${c.ngan}` : tra ? 'Trả lại hàng' : loai === 'ncc' ? 'Thanh toán nhà cung cấp' : 'Khách hàng thanh toán',
