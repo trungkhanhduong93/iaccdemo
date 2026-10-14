@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T206 | Báo cáo xuất nhập tồn, Thẻ kho: ô lọc Kho, Mặt hàng trên thanh công cụ báo cáo để nhãn cùng hàng với ô chọn, không xuống dòng | PhuongXT | Đang làm | Sửa `src/styles/app.css` (mục mới cuối file) |
 | T205 | Báo cáo Mua hàng theo ngày (4.2.6): bỏ cột Đã thanh toán, Còn nợ | PhuongXT | Đang làm | Sửa `src/modules/mua-hang/bao-cao.ts` |
 | T186 | Điện thoại: Xuất bán POS (3.1.1) còn báo dùng máy tính | | Chờ | Từ rà soát T184 (`MChiMayTinh`). Làm màn điện thoại riêng trong `src/ui/mobile/`, nối ở `manMobile.ts` |
 | T187 | Điện thoại: Danh mục tài khoản (1.1), Danh mục chi nhánh còn báo dùng máy tính | | Chờ | Từ rà soát T184. Có thể dùng lại `MDanhMuc`, `MFormDm` của đợt 3, 6 |
