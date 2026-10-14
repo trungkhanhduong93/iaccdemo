@@ -4,7 +4,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T232.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T239.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
@@ -13,7 +13,8 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 |---|---|---|---|---|
 | T238 | Báo cáo trên máy tính: Bảng dữ liệu phân trang, mặc định 100 dòng/trang, chọn 100, 200, 500 (lưu trên máy, chung mọi báo cáo); thanh phân trang hiện khi trên 100 dòng; dòng tổng cuối báo cáo ghim cuối mọi trang; bấm Lọc, đổi kỳ, tìm, đổi số dòng thì về trang 1. Tờ in, bản in, xuất file giữ nguyên | Trum | Đang làm | Anti làm. Sửa `src/ui/bao-cao/ToGiay.tsx`, có thể `src/ui/PhanTrang.tsx` (prop tuỳ chọn), `app.css` (mục cuối T238), `tools/kiem_tra.py`. Giữ chỗ QD60 |
 | T234 | Điện thoại: hai màn mới Chi phí trong tháng (`trang-chu/chi-phi-thang`), Lịch sử thu chi (`trang-chu/lich-su-quy`) của T230, T231 chưa có bản điện thoại, `kiem_tra.py --dien-thoai` báo lỗi ở bước duyệt `manMobile` | | Chờ | Phát hiện khi kiểm T233 ngày 14/10/2026 |
-| T232 | Gói Free: cách tính chi phí NVL theo từng chi nhánh (Giá thành iPOS Inventory; Giá thành nhập tay: bảng món bán trong kỳ, số lượng, giá thành tự nhập, thành tiền; Tổng giá trị phiếu nhập mua trong tháng, chưa xét thuế). Chọn ở Danh mục chi nhánh; đổi cách thì chỉ tính lại các tháng chưa khoá sổ; dòng Chi phí NVL ở Báo cáo KQKD, trang chủ tính theo cấu hình | PhuongXT | Đang làm | Sửa `DanhMucChiNhanh.tsx`, `BaoCaoTaiChinh.tsx`, `home/chiSo.ts`, `app/session.ts`, `app.css` (mục cuối T232), thêm màn giá thành nhập tay |
+| T232 | Gói Free: cách tính chi phí NVL theo từng chi nhánh (Giá thành iPOS Inventory; Giá thành nhập tay: bảng món bán trong kỳ, số lượng, giá thành tự nhập, thành tiền; Tổng tiền phiếu nhập mua trong tháng, gồm thuế GTGT). Chọn ở Danh mục chi nhánh; đổi cách thì chỉ tính lại các tháng chưa khoá sổ; dòng Chi phí NVL ở Báo cáo KQKD, trang chủ tính theo cấu hình | PhuongXT | Đang làm | Sửa `DanhMucChiNhanh.tsx`, `BaoCaoTaiChinh.tsx`, `home/chiSo.ts`, `app/session.ts`, `app.css` (mục cuối T232), thêm màn giá thành nhập tay |
+| T239 | Màn danh sách chứng từ: cột Tổng tiền cố định bên phải khi cuộn ngang (danh sách chứng từ chung, Xuất bán POS, phiếu sản xuất) | PhuongXT | Đang làm | Sửa `VoucherScreen.tsx`, `ChungTuBanHang.tsx`, `PhieuSanXuat.tsx` |
 | T229 | Báo cáo kết quả kinh doanh (10.2.3, B02-DNN) ở chế độ TT133 mở ra "Báo cáo chưa có mẫu" ở cả bản máy tính và điện thoại, gói Pro và Free | | Chờ | Phát hiện ở T222 ngày 14/10/2026, mở từ Tất cả báo cáo. Có thể liên quan T220 |
 | T169 | Form chứng từ: gõ đổi địa chỉ từ phiếu này sang phiếu khác (vd `#/app/tien/2-1-1/chi-3` sang `chi-6`) thì form giữ số phiếu, đối tượng của phiếu cũ; mở từ danh sách, Trước, Sau thì đúng | | Chờ | Phát hiện ở T168. Sửa `ChungTuForm.tsx`, có thể `VoucherScreen.tsx` (key của form) |
 | T138 | Màn onboard khi bấm từ FABi sang IACC: khởi tạo đơn vị kế toán, điền sẵn từ FABi (chi nhánh, kho, cách đồng bộ, số dư đầu kỳ) | PhuongXT | Dở dang | Popup khởi tạo dữ liệu 4 bước trong phần mềm (`OnboardFabi.tsx`, `Shell.tsx`) đã push, PhuongXT xem lại một lượt. Xem `2026-10-11-phuongxt-man-khoi-tao-fabi.md` |
