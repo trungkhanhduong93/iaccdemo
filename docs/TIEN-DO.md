@@ -11,7 +11,8 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T218 | Gói Free ẩn nhóm báo cáo Kê khai thuế ở màn Báo cáo | PhuongXT | Đang làm | Sửa `bao-cao/danh-sach.ts`, `bao-cao/TrungTam.tsx`, `app/registry.ts` |
+| T219 | Nhóm báo cáo Kho: Báo cáo xuất nhập tồn lên đầu, trước Thẻ kho | PhuongXT | Đang làm | Sửa `bao-cao/danh-sach.ts` (thêm `DAU_NHOM_BC`), `bao-cao/TrungTam.tsx` |
+| T218 | Gói Free ẩn hẳn nhóm báo cáo Bán hàng, Kê khai thuế ở màn Báo cáo, menu phụ, tab Báo cáo của phân hệ | PhuongXT | Đang làm | Sửa `bao-cao/danh-sach.ts`, `bao-cao/TrungTam.tsx`, `app/registry.ts` |
 | T217 | Nhóm báo cáo Công nợ riêng (sau Mua hàng): Công nợ nhà cung cấp 4.2.3, Công nợ khách hàng 3.2.9 rời nhóm Mua hàng, Bán hàng | PhuongXT | Đang làm | Sửa `bao-cao/danh-sach.ts`, `bao-cao/TrungTam.tsx`, `app/registry.ts`, `SidebarFlyout.tsx` |
 | T216 | Gói Free tạm ẩn báo cáo nhóm Kế toán bán hàng: Bán hàng theo ngày, Tổng hợp bán hàng, Chi tiết bán hàng, Công nợ khách hàng (Sổ doanh thu ở nhóm Sổ sách giữ nguyên) | PhuongXT | Đang làm | Sửa `src/modules/ban-hang/index.ts` (`goi` của màn báo cáo) |
 | T208 | Điện thoại: chỉnh giao diện đang có: trang chủ bỏ thanh trên chung, chip chọn chi nhánh và kho; kính lúp tìm cả báo cáo; bảng sổ gọn hơn; đệm đáy mọi màn; chip danh sách chứng từ một hàng | Trum | Đang làm | Anti B, đợt 13. Kế hoạch `docs/ke-hoach-mobile-dot-11.md`. Sửa `MobileShell.tsx`, `MTrangChu.tsx`, `MTimKiem.tsx`, `app.css` |
