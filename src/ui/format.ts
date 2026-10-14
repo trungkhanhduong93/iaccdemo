@@ -15,6 +15,24 @@ export function short(n: number): string {
 }
 export const pct = (n: number, d = 1) => (n * 100).toLocaleString('vi-VN', { maximumFractionDigits: d }) + '%'
 
+/** Rút gọn số tiền kiểu 122,5 tr khi từ 1 triệu trở lên (T223) */
+export function rutGonSo(n: number, kemDonVi = true): string {
+  const a = Math.abs(n)
+  if (a >= 1e9) {
+    const s = (a / 1e9).toLocaleString('vi-VN', { minimumFractionDigits: 0, maximumFractionDigits: 1 })
+    return kemDonVi ? `${s} tỷ` : s
+  }
+  if (a >= 1e6) {
+    const s = (a / 1e6).toLocaleString('vi-VN', { minimumFractionDigits: 0, maximumFractionDigits: 1 })
+    return kemDonVi ? `${s} tr` : s
+  }
+  if (a >= 1e3) {
+    const s = (a / 1e3).toLocaleString('vi-VN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+    return kemDonVi ? `${s} k` : s
+  }
+  return money(a)
+}
+
 export const pad = (n: number, w = 2) => String(n).padStart(w, '0')
 export const dmy = (d: Date) => `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`
 export const dm = (d: Date) => `${pad(d.getDate())}/${pad(d.getMonth() + 1)}`

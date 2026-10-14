@@ -24,6 +24,7 @@ import { HopInChungTu, type PhieuIn } from '../bao-cao/InChungTu'
 import { Icon } from '../Icon'
 import { MChon } from './MChon'
 import { MTrong } from './MTrong'
+import { chieuTien, dauTien, lopChieu } from './chieuTien'
 
 export interface MXemPhieuProps extends ScreenProps {
   id?: string
@@ -84,6 +85,9 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
   const cfg = theoLoai(cfgMan, loai?.k)
   const nhom = nhomCua(mod.key, cfg, loai?.k)
   const bo = boO(nhom, cfg)
+  const chieu = chieuTien(mod.key, cfg, row)
+  const dau = dauTien(chieu)
+  const lop = lopChieu(chieu)
 
   const laKk = Boolean(cfg.kiemKe)
   const laDc = Boolean(cfg.dieuChinh)
@@ -367,20 +371,21 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
 
   return (
     <div className="m-xp">
-      {/* 1. Thanh trên của màn chi tiết (dưới thanh trên chung của MobileShell) */}
-      <div className="m-xp-dau">
-        <div className="m-xp-dau-trai">
-          <span className="m-xp-loai">{tenLoai}</span>
-          <h2 className="m-xp-so">{soCt}</h2>
-        </div>
-        <div className="m-xp-dau-phai">
-          {ghi && ttCtInfo && <span className={`m-ct-chip ${ttCtInfo[0]}`}>{ttCtInfo[1]}</span>}
-          {ttSxInfo && <span className={`m-ct-chip ${ttSxInfo[0]}`}>{ttSxInfo[1]}</span>}
-        </div>
-      </div>
-
-      {/* 2. Thẻ đầu phiếu: ngày giờ, đối tượng, chi nhánh, kho, diễn giải, nguồn, tham chiếu */}
+      {/* 1. Thẻ đầu phiếu như mẫu A: loại & quỹ, số phiếu & chip, số tiền lớn, thông tin chi tiết */}
       <div className="m-the-trang m-xp-the-dau">
+        <div className="m-xp-loai">{[tenLoai, triQuy].filter(Boolean).join(' · ')}</div>
+        <div className="m-xp-dau">
+          <h2 className="m-xp-so">{soCt}</h2>
+          <div className="m-xp-dau-phai">
+            {ghi && ttCtInfo && <span className={`m-ct-chip ${ttCtInfo[0]}`}>{ttCtInfo[1]}</span>}
+            {ttSxInfo && <span className={`m-ct-chip ${ttSxInfo[0]}`}>{ttSxInfo[1]}</span>}
+          </div>
+        </div>
+        {!laKk && (
+          <div className={`m-xp-tien-lon m-num ${lop}`.trim()}>
+            {dau}{money(tongThanhToan)} đ
+          </div>
+        )}
         <div className="m-xp-dong-tt">
           <span className="m-xp-nhan">Thời gian:</span>
           <span className="m-xp-tri">{[row.ngay, row.gio].filter(Boolean).join(' ')}</span>
@@ -681,166 +686,102 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
           </div>
         )}
 
-        <div className="m-xp-ds-the">
-          {dsDongLoc.map((d, i) => {
-            if (laKk) {
-              const chenh = (d.tonTt ?? 0) - (d.tonHt ?? 0)
-              const loaiKk = loaiXuLy(d)
-              return (
-                <div key={i} className="m-the-trang m-xp-the-dong">
-                  <div className="m-xp-dong-tieu">
-                    {i + 1}. {d.ten || 'Mặt hàng'}
-                  </div>
-                  {d.ma && <div className="m-xp-dong-ma">Mã: {d.ma}</div>}
-                  <div className="m-xp-dong-chi-tiet">
-                    <div className="m-xp-dong-tt">
-                      <span className="m-xp-nhan">Tồn hệ thống:</span>
-                      <span className="m-xp-tri">{money(d.tonHt ?? 0)} {d.dvt ?? ''}</span>
-                    </div>
-                    <div className="m-xp-dong-tt">
-                      <span className="m-xp-nhan">Tồn thực tế:</span>
-                      <span className="m-xp-tri dam">{money(d.tonTt ?? 0)} {d.dvt ?? ''}</span>
-                    </div>
-                    <div className="m-xp-dong-tt">
-                      <span className="m-xp-nhan">Chênh lệch:</span>
-                      <span className={`m-xp-tri dam ${chenh < 0 ? 'do' : chenh > 0 ? 'xanh' : ''}`}>
-                        {chenh > 0 ? `+${money(chenh)}` : money(chenh)} {d.dvt ?? ''}
-                        {chenh < 0 && <span className="m-ct-chip err">Thiếu</span>}
-                        {chenh > 0 && <span className="m-ct-chip ok">Thừa</span>}
+        <div className="m-the-trang m-xp-ds-the">
+          {dsDongLoc.length === 0 ? (
+            <div className="m-xp-dong-trong">Không có dòng chi tiết</div>
+          ) : (
+            dsDongLoc.map((d, i) => {
+              if (laKk) {
+                const chenh = (d.tonTt ?? 0) - (d.tonHt ?? 0)
+                const loaiKk = loaiXuLy(d)
+                const chenhTxt = chenh > 0 ? `+${money(chenh)}` : money(chenh)
+                const chenhLop = chenh > 0 ? 'm-tien-vao' : chenh < 0 ? 'm-tien-ra' : ''
+                const dvtTxt = d.dvt ? ` ${d.dvt}` : ''
+                const dong2 = [
+                  `Sổ ${money(d.tonHt ?? 0)}${dvtTxt}`,
+                  `Thực tế ${money(d.tonTt ?? 0)}${dvtTxt}`,
+                  loaiKk || 'Khớp',
+                  d.ghiChu,
+                ].filter(Boolean).join(' · ')
+
+                return (
+                  <div key={i} className="m-xp-dong">
+                    <div className="m-xp-dong-hang1">
+                      <span className="m-xp-dong-ten">{d.ten || 'Mặt hàng'}</span>
+                      <span className={`m-xp-dong-tien m-num ${chenhLop}`.trim()}>
+                        {chenhTxt}{dvtTxt}
                       </span>
                     </div>
-                    <div className="m-xp-dong-tt">
-                      <span className="m-xp-nhan">Loại:</span>
-                      <span className="m-xp-tri">{loaiKk || 'Khớp'}</span>
-                    </div>
-                    {d.ghiChu && (
-                      <div className="m-xp-dong-tt">
-                        <span className="m-xp-nhan">Ghi chú:</span>
-                        <span className="m-xp-tri">{d.ghiChu}</span>
-                      </div>
-                    )}
+                    <div className="m-xp-dong-phu">{dong2}</div>
                   </div>
-                </div>
-              )
-            }
+                )
+              }
 
-            if (laTien) {
+              if (laTien) {
+                const tieuDe = d.ten || d.ly || row.dienGiai || 'Nội dung'
+                const dong2Parts = [
+                  d.ly && d.ly !== tieuDe ? d.ly : '',
+                  d.dt && d.dt !== row.doiTuong ? `Đối tượng: ${d.dt}` : '',
+                  d.km ? `Khoản mục: ${tenKm(d.km)}` : '',
+                  d.cv ? `Công việc: ${d.cv}` : '',
+                  d.ts ? `VAT ${d.ts}%` : d.thue ? `VAT: ${money(d.thue)} đ` : '',
+                  d.ghiChu,
+                ].filter(Boolean)
+                const dong2 = dong2Parts.join(' · ') || (d.ly ? d.ly : '')
+
+                return (
+                  <div key={i} className="m-xp-dong">
+                    <div className="m-xp-dong-hang1">
+                      <span className="m-xp-dong-ten">{tieuDe}</span>
+                      <span className="m-xp-dong-tien m-num">{money(d.tien || 0)} đ</span>
+                    </div>
+                    {dong2 && <div className="m-xp-dong-phu">{dong2}</div>}
+                  </div>
+                )
+              }
+
+              if (laDongDienGiai) {
+                const tieuDe = d.ten || d.ly || row.dienGiai || 'Diễn giải'
+                const dong2Parts = [
+                  d.ly && d.ly !== tieuDe ? d.ly : '',
+                  d.km ? `Khoản mục: ${tenKm(d.km)}` : '',
+                  d.cv ? `Công việc: ${d.cv}` : '',
+                  d.ts ? `VAT ${d.ts}%` : d.thue ? `VAT: ${money(d.thue)} đ` : '',
+                  d.kho ? `Kho: ${d.kho}` : '',
+                  d.ghiChu,
+                ].filter(Boolean)
+                const dong2 = dong2Parts.join(' · ')
+
+                return (
+                  <div key={i} className="m-xp-dong">
+                    <div className="m-xp-dong-hang1">
+                      <span className="m-xp-dong-ten">{tieuDe}</span>
+                      <span className="m-xp-dong-tien m-num">{money(d.tien || 0)} đ</span>
+                    </div>
+                    {dong2 && <div className="m-xp-dong-phu">{dong2}</div>}
+                  </div>
+                )
+              }
+
+              // Dòng hàng, nvl
+              const slGia = `${d.sl ?? 0}${d.dvt ? ` ${d.dvt}` : ''} × ${money(d.gia ?? 0)}`
+              const ckTxt = d.ck ? `Giảm ${money(d.ck)}` : ''
+              const vatTxt = d.ts ? `VAT ${d.ts}%` : d.thue ? `VAT ${money(d.thue)}` : ''
+              const khoTxt = d.kho ? `Kho: ${d.kho}` : ''
+              const dong2Parts = [slGia, ckTxt, vatTxt, khoTxt, d.ghiChu].filter(Boolean)
+              const dong2 = dong2Parts.join(' · ')
+
               return (
-                <div key={i} className="m-the-trang m-xp-the-dong">
-                  <div className="m-xp-dong-tieu">
-                    {i + 1}. {d.ly || d.ten || row.dienGiai || 'Nội dung'}
+                <div key={i} className="m-xp-dong">
+                  <div className="m-xp-dong-hang1">
+                    <span className="m-xp-dong-ten">{d.ten || 'Mặt hàng'}</span>
+                    <span className="m-xp-dong-tien m-num">{money(d.tien || 0)} đ</span>
                   </div>
-                  <div className="m-xp-dong-chi-tiet">
-                    <div className="m-xp-dong-tt">
-                      <span className="m-xp-nhan">Số tiền:</span>
-                      <span className="m-xp-tri dam cam">{money(d.tien || 0)} đ</span>
-                    </div>
-                    {d.dt && d.dt !== row.doiTuong && (
-                      <div className="m-xp-dong-tt">
-                        <span className="m-xp-nhan">Đối tượng:</span>
-                        <span className="m-xp-tri">{d.dt}</span>
-                      </div>
-                    )}
-                    {Boolean(d.km || d.cv) && (
-                      <div className="m-xp-dong-phu">
-                        {[d.km ? `Khoản mục: ${tenKm(d.km)}` : '', d.cv ? `Công việc: ${d.cv}` : ''].filter(Boolean).join(' · ')}
-                      </div>
-                    )}
-                    {d.ghiChu && (
-                      <div className="m-xp-dong-tt">
-                        <span className="m-xp-nhan">Ghi chú:</span>
-                        <span className="m-xp-tri">{d.ghiChu}</span>
-                      </div>
-                    )}
-                  </div>
+                  <div className="m-xp-dong-phu">{dong2}</div>
                 </div>
               )
-            }
-
-            if (laDongDienGiai) {
-              return (
-                <div key={i} className="m-the-trang m-xp-the-dong">
-                  <div className="m-xp-dong-tieu">
-                    {i + 1}. {d.ten || d.ly || row.dienGiai || 'Diễn giải'}
-                  </div>
-                  {d.ma && <div className="m-xp-dong-ma">Mã: {d.ma}</div>}
-                  <div className="m-xp-dong-chi-tiet">
-                    <div className="m-xp-dong-tt">
-                      <span className="m-xp-nhan">Thành tiền:</span>
-                      <span className="m-xp-tri dam cam">{money(d.tien || 0)} đ</span>
-                    </div>
-                    {Boolean(d.thue || d.ts) && (
-                      <div className="m-xp-dong-tt">
-                        <span className="m-xp-nhan">VAT{d.ts ? ` (${d.ts}%)` : ''}:</span>
-                        <span className="m-xp-tri">{money(d.thue || 0)} đ</span>
-                      </div>
-                    )}
-                    {Boolean(d.kho || d.km || d.cv) && (
-                      <div className="m-xp-dong-phu">
-                        {[d.kho ? `Kho: ${d.kho}` : '', d.km ? `Khoản mục: ${tenKm(d.km)}` : '', d.cv ? `Công việc: ${d.cv}` : ''].filter(Boolean).join(' · ')}
-                      </div>
-                    )}
-                    {d.ghiChu && (
-                      <div className="m-xp-dong-tt">
-                        <span className="m-xp-nhan">Ghi chú:</span>
-                        <span className="m-xp-tri">{d.ghiChu}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )
-            }
-
-            return (
-              <div key={i} className="m-the-trang m-xp-the-dong">
-                <div className="m-xp-dong-tieu">
-                  {i + 1}. {d.ten || 'Mặt hàng'}
-                </div>
-                {d.ma && <div className="m-xp-dong-ma">Mã: {d.ma}</div>}
-                <div className="m-xp-dong-chi-tiet">
-                  <div className="m-xp-dong-tt">
-                    <span className="m-xp-nhan">Số lượng:</span>
-                    <span className="m-xp-tri dam">
-                      {d.sl ?? 0} {d.dvt ?? ''}
-                    </span>
-                  </div>
-                  {d.gia !== undefined && (
-                    <div className="m-xp-dong-tt">
-                      <span className="m-xp-nhan">Đơn giá:</span>
-                      <span className="m-xp-tri">{money(d.gia)} đ</span>
-                    </div>
-                  )}
-                  {Boolean(d.ck || bo.ck) && (
-                    <div className="m-xp-dong-tt">
-                      <span className="m-xp-nhan">Giảm giá:</span>
-                      <span className="m-xp-tri">{money(d.ck || 0)} đ</span>
-                    </div>
-                  )}
-                  {Boolean(d.thue || d.ts || tongThue > 0) && (
-                    <div className="m-xp-dong-tt">
-                      <span className="m-xp-nhan">VAT{d.ts ? ` (${d.ts}%)` : ''}:</span>
-                      <span className="m-xp-tri">{money(d.thue || 0)} đ</span>
-                    </div>
-                  )}
-                  <div className="m-xp-dong-tt">
-                    <span className="m-xp-nhan">Thành tiền:</span>
-                    <span className="m-xp-tri dam cam">{money(d.tien || 0)} đ</span>
-                  </div>
-                  {Boolean(d.kho || d.km || d.cv) && (
-                    <div className="m-xp-dong-phu">
-                      {[d.kho ? `Kho: ${d.kho}` : '', d.km ? `Khoản mục: ${tenKm(d.km)}` : '', d.cv ? `Công việc: ${d.cv}` : ''].filter(Boolean).join(' · ')}
-                    </div>
-                  )}
-                  {d.ghiChu && (
-                    <div className="m-xp-dong-tt">
-                      <span className="m-xp-nhan">Ghi chú:</span>
-                      <span className="m-xp-tri">{d.ghiChu}</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )
-          })}
+            })
+          )}
         </div>
       </div>
 

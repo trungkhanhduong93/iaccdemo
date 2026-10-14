@@ -8,6 +8,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 - T227: Rê chuột vào phân hệ ở thanh bên không còn bật menu phụ Nghiệp vụ, Tiện ích.
 - T226: Bấm phân hệ ở thanh bên mở thẳng danh sách chứng từ đầu tiên thay vì sơ đồ Quy trình; tab Quy trình vẫn còn để xem.
 - T225: Phân hệ Danh mục tạm ẩn tab Quy trình.
+- T223: Điện thoại: xem phiếu có số tiền lớn ở đầu (thu dấu + xanh, chi dấu − đỏ) và khối Hạch toán mở sẵn. Đầu phiếu đủ quỹ, lý do, người giao dịch, hoá đơn, tình trạng thanh toán, mã số thuế, hạn thanh toán, kho, khoản mục, thẻ chi phí; mỗi mặt hàng gọn còn 2 dòng. Phiếu đã ghi sổ có nút chính In, Bỏ ghi sổ hỏi lại trước khi làm. Danh sách chứng từ nhóm theo ngày, có Tổng thu, Tổng chi, Chênh lệch. Sổ quỹ, sổ tiền gửi xem được dạng dòng theo ngày. Xem phiếu, xem báo cáo không còn thanh tab ở đáy; chip chi nhánh chỉ còn ở danh sách, báo cáo. Bản máy tính: bật Cột tài khoản ở phiếu thu, chi ra số tài khoản thay cho dấu gạch.
 - T222: Điện thoại: trang chủ có thẻ Hao hụt nguyên vật liệu; tab Cần theo dõi có mục Chứng từ chưa ghi sổ, bấm vào mở danh sách đã lọc sẵn phiếu chưa ghi sổ. Báo cáo Chi tiết bán hàng trên điện thoại mở trong 1,2 đến 2,1 giây, trước khoảng 2,6 giây.
 - T221: Sổ chi phí có cột Lý do và bộ lọc Lý do, gom nhóm được theo lý do.
 - T220: Gói Free, Báo cáo kết quả kinh doanh: Giá vốn đổi tên Chi phí NVL, Chi phí hoạt động đổi tên Chi phí trong tháng, thêm dòng Chi phí phân bổ hàng tháng; ẩn dòng Thu nhập, chi phí khác và không tính vào lợi nhuận.

@@ -1,12 +1,13 @@
-import { useMemo, useState, type FC } from 'react'
+import { useMemo, useState, type FC, type ReactNode } from 'react'
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import type { ScreenProps } from '../../modules/types'
 import { duongDan } from '../../app/registry'
 import { chiNhanhHienTai, useSession } from '../../app/session'
 import { kieuGhiSo } from '../../app/plan'
 import { docNgay, trongKhoang } from '../ChonNgay'
-import { money } from '../format'
+import { money, rutGonSo } from '../format'
 import { dsChipTT, khopChipTT } from '../LocNangCao'
+import { chieuTien, dauTien, lopChieu } from './chieuTien'
 import { TT_CT } from '../generic/gen'
 import { ttTienTheoTra } from '../generic/daXoa'
 import { TT_TIEN } from '../generic/nhom'
@@ -43,6 +44,18 @@ const ChungTuMoiForm: FC<{ sc: ScreenProps['sc']; mod: ScreenProps['mod']; id?: 
   const { cfg, rows } = useDongChungTu(sc, mod)
   const row = id === 'moi' ? undefined : rows.find(r => String(r.id) === String(id))
   return <ChungTuForm key={loc.key + loc.search} sc={sc} mod={mod} cfg={cfg} row={row} rows={rows} />
+}
+
+const CAC_THU = ['Chủ nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy']
+
+function dinhDangThuNgay(chuoiNgay: string): string {
+  const d = docNgay(chuoiNgay)
+  if (isNaN(d.getTime())) return chuoiNgay
+  const thu = CAC_THU[d.getDay()]
+  const ngay = String(d.getDate()).padStart(2, '0')
+  const thang = String(d.getMonth() + 1).padStart(2, '0')
+  const nam = d.getFullYear()
+  return `${thu}, ${ngay}/${thang}/${nam}`
 }
 
 const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
@@ -130,6 +143,24 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
 
   const tongTien = useMemo(() => list.reduce((a, r) => a + (Number(r.tong) || 0), 0), [list])
 
+  // Chiều tiền của từng chứng từ, phục vụ tính tổng thu chi và màu sắc (mục 2.1, 2.2, 2.3)
+  const dsChieu = useMemo(() => list.map(r => chieuTien(mod.key, cfg, r)), [list, mod.key, cfg])
+  const coVao = dsChieu.includes('vao')
+  const coRa = dsChieu.includes('ra')
+  const coCaHaiChieu = coVao && coRa
+  const coChieu = coVao || coRa
+
+  const { tongThu, tongChi, chenhLech } = useMemo(() => {
+    let thu = 0
+    let chi = 0
+    list.forEach((r, idx) => {
+      const tien = Number(r.tong) || 0
+      if (dsChieu[idx] === 'vao') thu += tien
+      else if (dsChieu[idx] === 'ra') chi += tien
+    })
+    return { tongThu: thu, tongChi: chi, chenhLech: thu - chi }
+  }, [list, dsChieu])
+
   // Thêm mới
   const khongThem = cfg.khongThem && !cfg.dieuChinh
   const handleThem = khongThem
@@ -186,39 +217,102 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
         nhanThem={cfg.them ?? '+ Thêm mới'}
         hangPhu={hangPhu}
         tomTat={
-          <span>
-            <b>{list.length}</b> chứng từ · <b>{money(tongTien)} đ</b>
-          </span>
+          coCaHaiChieu ? (
+            <div className="m-tong3-wrap">
+              <div className="m-tong3">
+                <div className="m-tong3-o">
+                  <span className="m-tong3-nhan">Tổng thu</span>
+                  <b className="m-tong3-so m-num m-tien-vao">+{rutGonSo(tongThu)}</b>
+                </div>
+                <div className="m-tong3-o">
+                  <span className="m-tong3-nhan">Tổng chi</span>
+                  <b className="m-tong3-so m-num m-tien-ra">−{rutGonSo(tongChi)}</b>
+                </div>
+                <div className="m-tong3-o">
+                  <span className="m-tong3-nhan">Chênh lệch</span>
+                  <b
+                    className={`m-tong3-so m-num ${
+                      chenhLech > 0 ? 'm-tien-vao' : chenhLech < 0 ? 'm-tien-ra' : ''
+                    }`}
+                  >
+                    {chenhLech > 0
+                      ? `+${rutGonSo(chenhLech)}`
+                      : chenhLech < 0
+                      ? `−${rutGonSo(chenhLech)}`
+                      : rutGonSo(0)}
+                  </b>
+                </div>
+              </div>
+              <div className="m-tong3-dem">{list.length} chứng từ</div>
+            </div>
+          ) : (
+            <span>
+              <b>{list.length}</b> chứng từ · <b>{money(tongTien)} đ</b>
+            </span>
+          )
         }
+        nhomTheo={r => String(r.ngay ?? '').split(' ')[0]}
+        tieuDeNhom={(khoa, dsNhom) => {
+          let tongNgayEl: ReactNode = null
+          if (coChieu) {
+            let tNgay = 0
+            for (const item of dsNhom) {
+              const c = chieuTien(mod.key, cfg, item)
+              const tien = Number(item.tong) || 0
+              if (c === 'vao') tNgay += tien
+              else if (c === 'ra') tNgay -= tien
+            }
+            if (tNgay > 0) {
+              tongNgayEl = <span className="m-ds-ngay-tong m-tien-vao m-num">+{money(tNgay)}</span>
+            } else if (tNgay < 0) {
+              tongNgayEl = <span className="m-ds-ngay-tong m-tien-ra m-num">−{money(Math.abs(tNgay))}</span>
+            } else {
+              tongNgayEl = <span className="m-ds-ngay-tong m-num">0</span>
+            }
+          }
+          return (
+            <>
+              <span className="m-ds-ngay-chu">{dinhDangThuNgay(khoa)}</span>
+              {tongNgayEl}
+            </>
+          )
+        }}
         the={(r, i) => {
           const ttInfo = TT_CT[r.tt] ?? ['dim', r.tt]
           const nhomMb = mod.key === 'mua-hang' ? 'mua' : mod.key === 'ban-hang' ? 'ban' : null
           const ttTien = nhomMb ? ttTienTheoTra(r) : null
           const ttTienInfo = nhomMb && ttTien ? TT_TIEN[nhomMb][ttTien] : null
           const anTien = Boolean(cfg.kiemKe || cfg.dieuChuyen === 'ck' || sc.code === '5.1.10' || sc.code === '5.1.4.3')
+          const chieu = chieuTien(mod.key, cfg, r)
+          const dau = dauTien(chieu)
+          const tienHienThi = anTien ? null : `${dau}${money(r.tong)}`
+          const phu = [r.tenLoai, r.gio].filter(Boolean).join(' · ')
+
           return (
             <div
               key={`${String(r.id ?? r.so ?? '')}_${i}`}
-              className="m-the-ct"
+              className="m-ds-ngay-dong"
               onClick={() => nav(`${path}/${r.id}`)}
               role="button"
               tabIndex={0}
             >
-              <div className="m-the-ct-hang1">
-                <span className="m-the-ct-so">{r.so}</span>
-                {!anTien && <span className="m-the-ct-tien">{money(r.tong)} đ</span>}
+              <div className="m-ds-ngay-hang1">
+                <span className="m-ds-ngay-dt">{r.doiTuong || r.dienGiai || '—'}</span>
+                {tienHienThi !== null && (
+                  <span className={`m-ds-ngay-tien m-num ${lopChieu(chieu)}`}>
+                    {tienHienThi}
+                  </span>
+                )}
               </div>
-              <div className="m-the-ct-hang2">
-                <span className="m-the-ct-dt">{r.doiTuong || r.dienGiai || '—'}</span>
-                <span className="m-the-ct-chips">
-                  {ttTienInfo && <span className={`m-ct-chip ${ttTienInfo[0]}`}>{ttTienInfo[1]}</span>}
-                  {ghi && ttInfo && (
-                    <span className={`m-ct-chip ${ttInfo[0]}`}>{ttInfo[1]}</span>
-                  )}
+              <div className="m-ds-ngay-hang2">
+                <span className="m-ds-ngay-phu">
+                  <span className="m-ds-ngay-so">{r.so}</span>
+                  {phu && ` · ${phu}`}
                 </span>
-              </div>
-              <div className="m-the-ct-hang3">
-                {[r.ngay, r.gio, r.tenLoai].filter(Boolean).join(' · ')}
+                <span className="m-ds-ngay-chips">
+                  {ttTienInfo && <span className={`m-ct-chip ${ttTienInfo[0]}`}>{ttTienInfo[1]}</span>}
+                  {ghi && ttInfo && <span className={`m-ct-chip ${ttInfo[0]}`}>{ttInfo[1]}</span>}
+                </span>
               </div>
             </div>
           )

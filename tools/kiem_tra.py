@@ -305,7 +305,7 @@ def kiem_tra_man_dot_3():
             if pg.locator('.m-chi-may-tinh').count() > 0:
                 loi.append(f'{ten} ({path}): bị rơi về .m-chi-may-tinh')
 
-            so_the = pg.locator('.m-the-ct, .m-the-dm').count()
+            so_the = pg.locator('.m-ds-ngay-dong, .m-the-dm').count()
             co_trong = pg.locator('.m-trong').count() > 0
             if so_the == 0 and not co_trong:
                 loi.append(f'{ten} ({path}): không có thẻ và không có màn trống')
@@ -319,14 +319,14 @@ def kiem_tra_man_dot_3():
             else:
                 inp.fill('zzzz')
                 pg.wait_for_timeout(100)
-                the_zzzz = pg.locator('.m-the-ct, .m-the-dm').count()
+                the_zzzz = pg.locator('.m-ds-ngay-dong, .m-the-dm').count()
                 trong_zzzz = pg.locator('.m-trong').count()
                 if the_zzzz > 0 or trong_zzzz == 0:
                     loi.append(f'{ten} ({path}): gõ zzzz không ra màn trống (thẻ: {the_zzzz}, trống: {trong_zzzz})')
 
                 inp.fill('')
                 pg.wait_for_timeout(100)
-                the_lai = pg.locator('.m-the-ct, .m-the-dm').count()
+                the_lai = pg.locator('.m-ds-ngay-dong, .m-the-dm').count()
                 if the_lai != so_the:
                     loi.append(f'{ten} ({path}): xoá tìm kiếm không phục hồi thẻ (cũ: {so_the}, mới: {the_lai})')
 
@@ -392,7 +392,7 @@ def kiem_tra_xem_phieu_dot_4():
             pg_dt.goto(f'{URL}?goi=PL&p={abs(hash(path_ds))}#{path_ds}')
             pg_dt.wait_for_timeout(300)
 
-            thes = pg_dt.locator('.m-the-ct')
+            thes = pg_dt.locator('.m-ds-ngay-dong')
             if thes.count() == 0:
                 loi.append(f'{ten_loai} ({path_ds}): không tìm thấy thẻ chứng từ nào')
                 continue
@@ -601,7 +601,7 @@ def kiem_tra_lap_phieu_dot_5():
             pg.goto(f'{URL}?goi=PL&p={abs(hash(path_ds))}#{path_ds}')
             pg.wait_for_timeout(300)
 
-            so_the_dau = pg.locator('.m-the-ct .m-the-ct-so').first.inner_text().strip() if pg.locator('.m-the-ct .m-the-ct-so').count() > 0 else ''
+            so_the_dau = pg.locator('.m-ds-ngay-dong .m-ds-ngay-so').first.inner_text().strip() if pg.locator('.m-ds-ngay-dong .m-ds-ngay-so').count() > 0 else ''
             if so_phieu and so_phieu not in so_the_dau:
                 loi.append(f'{ten_phieu}: số phiếu {so_phieu} không nằm ở thẻ đầu danh sách điện thoại (thấy {so_the_dau})')
 
@@ -631,7 +631,7 @@ def kiem_tra_lap_phieu_dot_5():
             path_ds = f'/app/{slug}'
             pg.goto(f'{URL}?goi=PL&sua=1#{path_ds}')
             pg.wait_for_timeout(800)
-            pg.locator('.m-the-ct').first.click()
+            pg.locator('.m-ds-ngay-dong').first.click()
             pg.wait_for_timeout(600)
             truoc = doc_xem()
             pg.locator('.m-xp-nut-menu').click()
@@ -927,6 +927,11 @@ def kiem_tra_bao_cao_dot_7():
                     loi.append(f"{ten_man} ({path}): table lớn nhất trong .m-to-giay có right ({kiem_table.get('right')}) vượt innerWidth ({kiem_table.get('innerWidth')}) khi thu nhỏ")
 
             if la_sbc:
+                # Sổ ngân hàng mặc định dạng dòng (T223): bấm chip Bảng để kiểm cuộn ngang của bảng
+                chip_bang = pg.locator('.m-so-dong-chip:has-text("Bảng")')
+                if chip_bang.count():
+                    chip_bang.first.click()
+                    pg.wait_for_timeout(250)
                 wrap = pg.locator('.m-sbc-bang-wrap')
                 if wrap.count() == 0:
                     loi.append(f'{ten_man} ({path}): không tìm thấy .m-sbc-bang-wrap')
@@ -1278,7 +1283,7 @@ def kiem_tra_dot_9():
         pg.wait_for_selector('.m-ds-khung')
         pg.wait_for_timeout(300)
 
-        so_dong_goc = pg.locator('.m-the-ct').count()
+        so_dong_goc = pg.locator('.m-ds-ngay-dong').count()
         nut_loc = pg.locator('.m-ds-nut-loc, button:has-text("Lọc")')
         if nut_loc.count() == 0:
             loi.append('Phiếu chi: không tìm thấy nút mở bộ lọc')
@@ -1323,7 +1328,7 @@ def kiem_tra_dot_9():
                                 kiem_man('Sau khi áp dụng bộ lọc')
                                 pg.screenshot(path=str(SHOTS / 'm-09-05-bo-loc.png'))
 
-                                so_dong_sau = pg.locator('.m-the-ct').count()
+                                so_dong_sau = pg.locator('.m-ds-ngay-dong').count()
                                 if so_dong_sau > so_dong_goc:
                                     loi.append(f'Bộ lọc: số dòng sau lọc ({so_dong_sau}) lớn hơn gốc ({so_dong_goc})')
                                 else:
@@ -1442,6 +1447,14 @@ def kiem_tra_dot_10():
         if to_giay.count() > 0:
             loi.append('Sổ quỹ (2-2-1): vẫn còn khung .m-to-giay (chưa chuyển sang MSoBaoCao)')
 
+        # Sổ quỹ, sổ ngân hàng mặc định dạng dòng (T223): bấm chip Bảng để kiểm kiểu bảng
+        def chon_kieu_bang():
+            chip = pg.locator('.m-so-dong-chip:has-text("Bảng")')
+            if chip.count():
+                chip.first.click()
+                pg.wait_for_timeout(250)
+
+        chon_kieu_bang()
         bang = pg.locator('.m-so-bc table.rpt')
         if bang.count() == 0:
             loi.append('Sổ quỹ (2-2-1): không tìm thấy bảng trong khung MSoBaoCao')
@@ -1464,6 +1477,8 @@ def kiem_tra_dot_10():
 
         # ── Bước 3: Sổ ngân hàng: cuộn ngang khung 300px, ô đầu tiên trôi khỏi mép trái. Cuộn dọc thì tiêu đề trôi lên ──
         pg.goto(URL + '?goi=PL&p=songanhang#/app/bao-cao/2-2-3')
+        pg.wait_for_selector('.m-so-bc')
+        chon_kieu_bang()
         pg.wait_for_selector('.m-so-bc table.rpt')
         pg.wait_for_timeout(300)
 
@@ -2145,7 +2160,7 @@ def kiem_tra_dot_12_b():
             pg.goto(f'{URL}?goi={goi}#/app/{path}')
             pg.wait_for_timeout(350)
 
-            so_the_dau = pg.locator('.m-the-ct .m-the-ct-so').first.inner_text().strip() if pg.locator('.m-the-ct .m-the-ct-so').count() > 0 else ''
+            so_the_dau = pg.locator('.m-ds-ngay-dong .m-ds-ngay-so').first.inner_text().strip() if pg.locator('.m-ds-ngay-dong .m-ds-ngay-so').count() > 0 else ''
             if so_phieu and so_phieu not in so_the_dau:
                 loi.append(f'{ten}: số phiếu {so_phieu} không nằm ở thẻ đầu danh sách (thấy {so_the_dau})')
             else:
@@ -2678,7 +2693,7 @@ def kiem_tra_dot_14_toc_do():
             slug = item['slug']
             t0 = time.perf_counter()
             pg.goto(f"{URL}#/app/bao-cao/{slug}")
-            loc = pg.locator('.m-so-bc table tbody tr, .m-to-giay table tbody tr, .m-to-giay .paper, .rpt tbody tr, table tbody tr, .lockpage, .empty').first
+            loc = pg.locator('.m-so-dong-item, .m-so-bc table tbody tr, .m-to-giay table tbody tr, .m-to-giay .paper, .rpt tbody tr, table tbody tr, .lockpage, .empty').first
             loc.wait_for(state='visible', timeout=10000)
             ms = round((time.perf_counter() - t0) * 1000)
             # Màn khoá hoặc trống cũng hiện nhanh, không tính là đã mở xong
@@ -2730,12 +2745,12 @@ def kiem_tra_dot_15_a():
 
         # ── 1. Mở PC2610-0250 ở màn thu chi tien/2-1-1 ──
         pg.goto(URL + '?goi=PR#/app/tien/2-1-1')
-        pg.wait_for_selector('.m-the-ct', timeout=8000)
+        pg.wait_for_selector('.m-ds-ngay-dong', timeout=8000)
         pg.wait_for_timeout(350)
 
-        the_pc = pg.locator('.m-the-ct:has-text("PC2610-0250")')
+        the_pc = pg.locator('.m-ds-ngay-dong:has-text("PC2610-0250")')
         if the_pc.count() == 0:
-            the_pc = pg.locator('.m-the-ct:has-text("PC")')
+            the_pc = pg.locator('.m-ds-ngay-dong:has-text("PC")')
         if the_pc.count() == 0:
             loi.append('15A: không tìm thấy phiếu chi PC nào trong danh sách tien/2-1-1')
         else:
@@ -2796,9 +2811,9 @@ def kiem_tra_dot_15_a():
 
         # ── 2. Mở 1 hoá đơn bán hàng 3.1.x và 1 phiếu mua 4.1.x ──
         pg.goto(URL + '?goi=PR#/app/ban-hang/3-1-2')
-        pg.wait_for_selector('.m-the-ct', timeout=8000)
+        pg.wait_for_selector('.m-ds-ngay-dong', timeout=8000)
         pg.wait_for_timeout(350)
-        the_bh = pg.locator('.m-the-ct')
+        the_bh = pg.locator('.m-ds-ngay-dong')
         if the_bh.count() == 0:
             loi.append('15A: không tìm thấy hoá đơn bán hàng nào ở ban-hang/3-1-2')
         else:
@@ -2814,9 +2829,9 @@ def kiem_tra_dot_15_a():
 
         # Phiếu mua 4.1.1
         pg.goto(URL + '?goi=PR#/app/mua-hang/4-1-1')
-        pg.wait_for_selector('.m-the-ct', timeout=8000)
+        pg.wait_for_selector('.m-ds-ngay-dong', timeout=8000)
         pg.wait_for_timeout(350)
-        the_mh = pg.locator('.m-the-ct')
+        the_mh = pg.locator('.m-ds-ngay-dong')
         if the_mh.count() == 0:
             loi.append('15A: không tìm thấy phiếu mua hàng nào ở mua-hang/4-1-1')
         else:
@@ -2831,9 +2846,9 @@ def kiem_tra_dot_15_a():
 
         # ── 3. Mở 1 phiếu 4.1.5 hoặc 10.1.1 (không có chữ "Danh sách hàng hoá") ──
         pg.goto(URL + '?goi=PR#/app/tong-hop/10-1-1')
-        pg.wait_for_selector('.m-the-ct', timeout=8000)
+        pg.wait_for_selector('.m-ds-ngay-dong', timeout=8000)
         pg.wait_for_timeout(350)
-        the_th = pg.locator('.m-the-ct')
+        the_th = pg.locator('.m-ds-ngay-dong')
         if the_th.count() == 0:
             loi.append('15A: không tìm thấy phiếu tổng hợp nào ở tong-hop/10-1-1')
         else:
@@ -2848,9 +2863,9 @@ def kiem_tra_dot_15_a():
 
         # ── 4. Danh sách Chuyển kho: thẻ không có chữ "0 đ" ──
         pg.goto(URL + '?goi=PR#/app/kho/5-1-4-3')
-        pg.wait_for_selector('.m-the-ct', timeout=8000)
+        pg.wait_for_selector('.m-ds-ngay-dong', timeout=8000)
         pg.wait_for_timeout(350)
-        the_ck = pg.locator('.m-the-ct')
+        the_ck = pg.locator('.m-ds-ngay-dong')
         if the_ck.count() == 0:
             loi.append('15A: không tìm thấy thẻ chuyển kho nào ở kho/5-1-4-3')
         else:
@@ -2859,6 +2874,158 @@ def kiem_tra_dot_15_a():
                 if '0 đ' in txt:
                     loi.append(f'15A: thẻ danh sách Chuyển kho thứ {i+1} còn có chữ "0 đ"')
                     break
+
+        b.close()
+    return loi
+
+
+def kiem_tra_dot_16_a():
+    """Đợt 16A (Anti A): Màn xem phiếu điện thoại số tiền lớn có dấu, dòng hàng gọn 2 hàng (T223)"""
+    loi = []
+    print('Kiểm tra đợt 16A (Anti A): Xem phiếu gọn, số tiền lớn:')
+    with sync_playwright() as p:
+        b = p.chromium.launch(channel='chrome')
+        pg = b.new_page(viewport={'width': 390, 'height': 844}, is_mobile=True, has_touch=True)
+        con = []
+        pg.on('console', lambda m: con.append(m.text) if m.type == 'error' else None)
+        pg.on('pageerror', lambda e: con.append(str(e)))
+
+        # Đăng nhập gói PR
+        pg.goto(URL + '#/dang-nhap')
+        pg.wait_for_selector('.auth-box')
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PR'))})")
+
+        # 1. Mở phiếu chi PC2610-0261 (2.1.1): có số tiền lớn bắt đầu "−" với lớp m-tien-ra, nằm trên khối Hạch toán
+        pg.goto(URL + '?goi=PR#/app/tien/2-1-1')
+        pg.wait_for_selector('.m-ds-ngay-dong, .m-ds-ngay-dong', timeout=8000)
+        pg.wait_for_timeout(400)
+        the_pc = pg.locator('.m-ds-ngay-dong:has-text("PC2610-0261"), .m-ds-ngay-dong:has-text("PC2610-0261")')
+        if the_pc.count() == 0:
+            loi.append('16A: không tìm thấy phiếu chi PC2610-0261 ở tien/2-1-1')
+        else:
+            the_pc.first.click()
+            pg.wait_for_selector('.m-xp', timeout=6000)
+            pg.wait_for_timeout(350)
+
+            tien_lon = pg.locator('.m-xp-tien-lon')
+            if tien_lon.count() == 0:
+                loi.append('16A: phiếu chi thiếu phần tử số tiền lớn .m-xp-tien-lon')
+            else:
+                txt = tien_lon.first.inner_text().strip()
+                cls = tien_lon.first.get_attribute('class') or ''
+                if not (txt.startswith('−') or txt.startswith('-')):
+                    loi.append(f'16A: số tiền lớn phiếu chi không bắt đầu bằng "−" (thực tế: {txt})')
+                if 'm-tien-ra' not in cls:
+                    loi.append(f'16A: số tiền lớn phiếu chi thiếu lớp m-tien-ra (class: {cls})')
+
+                the_ht = pg.locator('.m-xp-the-ht, .m-xp-khoi-ht')
+                if the_ht.count() > 0:
+                    box_tien = tien_lon.first.bounding_box()
+                    box_ht = the_ht.first.bounding_box()
+                    if box_tien and box_ht and box_tien['y'] >= box_ht['y']:
+                        loi.append('16A: số tiền lớn không nằm trên khối Hạch toán')
+
+            # Chụp ảnh tools/shots/m-16-xem-chi.png
+            pg.screenshot(path=str(SHOTS / 'm-16-xem-chi.png'))
+
+            if pg.evaluate("document.documentElement.scrollWidth > 390"):
+                loi.append('16A: phiếu chi bị tràn ngang màn hình (> 390px)')
+
+        # 2. Mở phiếu thu bất kỳ: số tiền lớn bắt đầu "+" với lớp m-tien-vao
+        pg.goto(URL + '?goi=PR#/app/tien/2-1-1')
+        pg.wait_for_selector('.m-ds-ngay-dong, .m-ds-ngay-dong', timeout=8000)
+        pg.wait_for_timeout(400)
+        the_pt = pg.locator('.m-ds-ngay-dong:has-text("PT"), .m-ds-ngay-dong:has-text("Thu"), .m-ds-ngay-dong:has-text("PT"), .m-ds-ngay-dong:has-text("Thu")')
+        if the_pt.count() == 0:
+            loi.append('16A: không tìm thấy phiếu thu nào ở tien/2-1-1')
+        else:
+            the_pt.first.click()
+            pg.wait_for_selector('.m-xp', timeout=6000)
+            pg.wait_for_timeout(350)
+
+            tien_lon_thu = pg.locator('.m-xp-tien-lon')
+            if tien_lon_thu.count() == 0:
+                loi.append('16A: phiếu thu thiếu phần tử số tiền lớn .m-xp-tien-lon')
+            else:
+                txt_thu = tien_lon_thu.first.inner_text().strip()
+                cls_thu = tien_lon_thu.first.get_attribute('class') or ''
+                if not txt_thu.startswith('+'):
+                    loi.append(f'16A: số tiền lớn phiếu thu không bắt đầu bằng "+" (thực tế: {txt_thu})')
+                if 'm-tien-vao' not in cls_thu:
+                    loi.append(f'16A: số tiền lớn phiếu thu thiếu lớp m-tien-vao (class: {cls_thu})')
+
+            if pg.evaluate("document.documentElement.scrollWidth > 390"):
+                loi.append('16A: phiếu thu bị tràn ngang màn hình (> 390px)')
+
+        # 3. Mở hoá đơn bán hàng có từ 4 mặt hàng (3.1.2): chiều cao trung bình một dòng hàng dưới 80px; có chữ "×"
+        pg.goto(URL + '?goi=PR#/app/ban-hang/3-1-2')
+        pg.wait_for_selector('.m-ds-ngay-dong, .m-ds-ngay-dong', timeout=8000)
+        pg.wait_for_timeout(400)
+        thes_bh = pg.locator('.m-ds-ngay-dong, .m-ds-ngay-dong')
+        tim_thay_4 = False
+        for i in range(min(thes_bh.count(), 10)):
+            thes_bh.nth(i).click()
+            pg.wait_for_selector('.m-xp', timeout=6000)
+            pg.wait_for_timeout(300)
+            dongs = pg.locator('.m-xp-dong')
+            if dongs.count() >= 4:
+                tim_thay_4 = True
+                the_ds = pg.locator('.m-xp-ds-the')
+                box_ds = the_ds.first.bounding_box() if the_ds.count() > 0 else None
+                chieu_cao_tb = (box_ds['height'] / dongs.count()) if (box_ds and dongs.count() > 0) else 0
+                print(f"16A đo chiều cao: {dongs.count()} dòng, tổng {box_ds['height']:.1f}px, tb {chieu_cao_tb:.1f}px/dòng")
+                if chieu_cao_tb >= 80:
+                    loi.append(f'16A: chiều cao trung bình một dòng hàng {chieu_cao_tb:.1f}px >= 80px')
+
+                txt_ds = the_ds.first.inner_text() if the_ds.count() > 0 else ''
+                if '×' not in txt_ds:
+                    loi.append('16A: dòng hàng hoá đơn thiếu chữ "×"')
+
+                # Chụp ảnh tools/shots/m-16-xem-hoa-don.png
+                the_ds.first.scroll_into_view_if_needed()
+                pg.wait_for_timeout(200)
+                pg.screenshot(path=str(SHOTS / 'm-16-xem-hoa-don.png'))
+
+                if pg.evaluate("document.documentElement.scrollWidth > 390"):
+                    loi.append('16A: hoá đơn bán hàng bị tràn ngang (> 390px)')
+                break
+
+            pg.go_back()
+            pg.wait_for_selector('.m-ds-ngay-dong, .m-ds-ngay-dong', timeout=8000)
+            pg.wait_for_timeout(300)
+
+        if not tim_thay_4:
+            loi.append('16A: không tìm thấy hoá đơn bán hàng có từ 4 mặt hàng ở ban-hang/3-1-2')
+
+        # 4. Mở phiếu kiểm kê (5.1.10): không có số tiền lớn, dòng hàng có chữ "Thực tế"
+        pg.goto(URL + '?goi=PR#/app/kho/5-1-10')
+        pg.wait_for_selector('.m-ds-ngay-dong, .m-ds-ngay-dong', timeout=8000)
+        pg.wait_for_timeout(400)
+        the_kk = pg.locator('.m-ds-ngay-dong, .m-ds-ngay-dong')
+        if the_kk.count() == 0:
+            loi.append('16A: không tìm thấy phiếu kiểm kê nào ở kho/5-1-10')
+        else:
+            the_kk.first.click()
+            pg.wait_for_selector('.m-xp', timeout=6000)
+            pg.wait_for_timeout(350)
+
+            tien_lon_kk = pg.locator('.m-xp-tien-lon')
+            if tien_lon_kk.count() > 0:
+                loi.append('16A: phiếu kiểm kê còn hiện số tiền lớn .m-xp-tien-lon')
+
+            dongs_kk = pg.locator('.m-xp-dong')
+            if dongs_kk.count() == 0:
+                loi.append('16A: phiếu kiểm kê không có dòng hàng .m-xp-dong nào')
+            else:
+                txt_dong_kk = dongs_kk.first.inner_text()
+                if 'Thực tế' not in txt_dong_kk:
+                    loi.append(f'16A: dòng hàng kiểm kê thiếu chữ "Thực tế" (thấy: {txt_dong_kk})')
+
+            if pg.evaluate("document.documentElement.scrollWidth > 390"):
+                loi.append('16A: phiếu kiểm kê bị tràn ngang (> 390px)')
+
+        if con:
+            loi.append(f'16A: lỗi console {con[:2]}')
 
         b.close()
     return loi
@@ -2963,6 +3130,148 @@ def kiem_tra_dot_15_b():
     return loi
 
 
+def kiem_tra_dot_16_b():
+    loi = []
+    print('Kiểm tra đợt 16B (Anti B): Danh sách theo ngày, tổng thu chi trên điện thoại:')
+    with sync_playwright() as p:
+        b = p.chromium.launch(channel='chrome')
+        pg = b.new_page(viewport={'width': 390, 'height': 844}, is_mobile=True, has_touch=True)
+        con = []
+        pg.on('console', lambda m: con.append(m.text) if m.type == 'error' else None)
+        pg.on('pageerror', lambda e: con.append(str(e)))
+
+        # Đăng nhập gói PR
+        pg.goto(URL + '#/dang-nhap')
+        pg.wait_for_selector('.auth-box')
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PR'))})")
+
+        # 1. Mở #/app/tien/2-1-1 (Thu, chi tiền)
+        pg.goto(URL + '?goi=PR#/app/tien/2-1-1')
+        pg.wait_for_selector('.m-ds-khung', timeout=8000)
+        pg.wait_for_timeout(400)
+
+        # - Có thẻ 3 ô chứa "Tổng thu", "Tổng chi", "Chênh lệch"
+        the_tong = pg.locator('.m-tong3')
+        if the_tong.count() == 0:
+            loi.append('DS thu chi: không tìm thấy thẻ 3 ô .m-tong3')
+        else:
+            txt_tong = the_tong.first.inner_text()
+            for o in ['Tổng thu', 'Tổng chi', 'Chênh lệch']:
+                if o not in txt_tong:
+                    loi.append(f'DS thu chi: thẻ 3 ô thiếu nhãn "{o}"')
+
+        # - Có ít nhất 1 tiêu đề nhóm ngày chứa "Thứ" hoặc "Chủ nhật"
+        tieu_de_ngay = pg.locator('.m-ds-ngay-tieu-de')
+        if tieu_de_ngay.count() == 0:
+            loi.append('DS thu chi: không tìm thấy tiêu đề nhóm ngày .m-ds-ngay-tieu-de')
+        else:
+            co_thu = False
+            for i in range(tieu_de_ngay.count()):
+                txt = tieu_de_ngay.nth(i).inner_text()
+                if 'Thứ' in txt or 'Chủ nhật' in txt:
+                    co_thu = True
+                    break
+            if not co_thu:
+                loi.append('DS thu chi: tiêu đề nhóm ngày không chứa "Thứ" hoặc "Chủ nhật"')
+
+        # - Có số bắt đầu "+" mang lớp m-tien-vao và số bắt đầu "−" mang lớp m-tien-ra
+        so_xanh = pg.locator('.m-tien-vao')
+        so_do = pg.locator('.m-tien-ra')
+        co_plus = False
+        for i in range(so_xanh.count()):
+            txt = so_xanh.nth(i).inner_text().strip()
+            if txt.startswith('+'):
+                co_plus = True
+                break
+        if not co_plus:
+            loi.append('DS thu chi: không tìm thấy số mang lớp m-tien-vao bắt đầu bằng "+"')
+
+        co_minus = False
+        for i in range(so_do.count()):
+            txt = so_do.nth(i).inner_text().strip()
+            if txt.startswith('−') or txt.startswith('-'):
+                co_minus = True
+                break
+        if not co_minus:
+            loi.append('DS thu chi: không tìm thấy số mang lớp m-tien-ra bắt đầu bằng "−"')
+
+        # - Chiều cao trung bình một dòng phiếu dưới 70px
+        dong_phieu = pg.locator('.m-ds-ngay-dong')
+        so_dong = dong_phieu.count()
+        if so_dong == 0:
+            loi.append('DS thu chi: không tìm thấy dòng phiếu .m-ds-ngay-dong')
+        else:
+            tong_cao = 0
+            for i in range(so_dong):
+                box = dong_phieu.nth(i).bounding_box()
+                if box:
+                    tong_cao += box['height']
+            tb_cao = tong_cao / so_dong
+            if tb_cao >= 70:
+                loi.append(f'DS thu chi: chiều cao trung bình dòng phiếu ({tb_cao:.1f}px) không dưới 70px')
+
+        # - Không tràn ngang
+        if pg.evaluate("document.documentElement.scrollWidth > 390"):
+            loi.append('DS thu chi: tràn ngang màn hình (> 390px)')
+
+        # - Chụp tools/shots/m-16-ds-thu-chi.png
+        pg.screenshot(path=str(SHOTS / 'm-16-ds-thu-chi.png'))
+
+        # - Bấm dòng đầu thì URL đổi sang trang xem phiếu
+        if so_dong > 0:
+            dong_phieu.first.click()
+            pg.wait_for_timeout(400)
+            cur_h = pg.evaluate('location.hash')
+            if not cur_h.startswith('#/app/tien/2-1-1/'):
+                loi.append(f'DS thu chi: bấm dòng đầu URL không đổi sang xem phiếu, đang là: {cur_h}')
+
+        # 2. Mở #/app/ban-hang/3-1-2: không có thẻ 3 ô, vẫn có tiêu đề nhóm ngày
+        pg.goto(URL + '?goi=PR#/app/ban-hang/3-1-2')
+        pg.wait_for_selector('.m-ds-khung', timeout=8000)
+        pg.wait_for_timeout(400)
+
+        the_tong_bh = pg.locator('.m-tong3')
+        if the_tong_bh.count() > 0:
+            loi.append('DS bán hàng: không được có thẻ 3 ô .m-tong3')
+
+        tieu_de_bh = pg.locator('.m-ds-ngay-tieu-de')
+        if tieu_de_bh.count() == 0:
+            loi.append('DS bán hàng: thiếu tiêu đề nhóm ngày .m-ds-ngay-tieu-de')
+
+        if pg.evaluate("document.documentElement.scrollWidth > 390"):
+            loi.append('DS bán hàng: tràn ngang màn hình (> 390px)')
+
+        # Chụp tools/shots/m-16-ds-ban-hang.png
+        pg.screenshot(path=str(SHOTS / 'm-16-ds-ban-hang.png'))
+
+        # 3. Mở danh mục khách hàng ở tab Khác: vẫn hiện danh sách như cũ, không có tiêu đề nhóm ngày
+        pg.goto(URL + '?goi=PR#/app/khac')
+        pg.wait_for_selector('.m-khac', timeout=8000)
+        pg.wait_for_timeout(300)
+        dong_dm = pg.locator('.m-khac-dong:has-text("Đối tượng")')
+        if dong_dm.count() > 0:
+            dong_dm.first.click()
+            pg.wait_for_selector('.m-ds-khung', timeout=8000)
+            pg.wait_for_timeout(350)
+        else:
+            pg.goto(URL + '?goi=PR#/app/danh-muc/1-5')
+            pg.wait_for_selector('.m-ds-khung', timeout=8000)
+            pg.wait_for_timeout(350)
+
+        tieu_de_dm = pg.locator('.m-ds-ngay-tieu-de')
+        if tieu_de_dm.count() > 0:
+            loi.append('Danh mục khách hàng: không được có tiêu đề nhóm ngày .m-ds-ngay-tieu-de')
+
+        if pg.evaluate("document.documentElement.scrollWidth > 390"):
+            loi.append('Danh mục khách hàng: tràn ngang màn hình (> 390px)')
+
+        if con:
+            loi.append(f'Đợt 16B: lỗi console {con[:2]}')
+
+        b.close()
+    return loi
+
+
 def kiem_tra_cac_khung_dt():
     loi, dem = [], 0
     for rong, cao in KHUNG_DT:
@@ -2997,7 +3306,9 @@ def kiem_tra_cac_khung_dt():
     loi += kiem_tra_dot_14_a()
     loi += kiem_tra_dot_14_toc_do()
     loi += kiem_tra_dot_15_a()
+    loi += kiem_tra_dot_16_a()
     loi += kiem_tra_dot_15_b()
+    loi += kiem_tra_dot_16_b()
     if loi:
         print(f'{len(loi)} LỖI:')
         for x in loi:

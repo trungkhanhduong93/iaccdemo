@@ -8492,14 +8492,6 @@ button.chip.sx-kenh.info { border-color: var(--blue); }
   padding: 4px 0 6px;
 }
 
-.m-xp-dau-trai {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-  flex: 1;
-}
-
 .m-xp-loai {
   font-size: var(--m-chu-phu);
   color: var(--muted);
@@ -8672,11 +8664,6 @@ button.chip.sx-kenh.info { border-color: var(--blue); }
   font-size: 14.5px;
   font-weight: 600;
   color: var(--ink);
-}
-
-.m-xp-dong-ma {
-  font-size: 12px;
-  color: var(--muted);
 }
 
 .m-xp-dong-chi-tiet {
@@ -15690,6 +15677,23 @@ button.cn-ten {
     bottom: 0;
     padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
   }
+
+  /* Số tiền có hướng (mục 2.1 tư vấn): vào xanh, ra đỏ, chữ số thẳng cột */
+  .m-num,
+  .m-tien-vao,
+  .m-tien-ra {
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  /* Thêm .m-app để màu thắng màu chữ mặc định của thẻ tổng, đầu phiếu viết sau */
+  .m-app .m-tien-vao {
+    color: var(--green);
+  }
+
+  .m-app .m-tien-ra {
+    color: var(--red);
+  }
 }
 
 /* ── Điện thoại: sổ dạng dòng (T223) ── */
@@ -15934,3 +15938,240 @@ button.cn-ten {
     flex-shrink: 0;
   }
 }
+
+/* ── Điện thoại: danh sách theo ngày, tổng thu chi (T223) ── */
+@media (max-width: 767px) {
+  /* Thẻ tổng nằm trong hàng tóm tắt dạng flex: cho chiếm hết bề ngang */
+  .m-ds-tom-tat:has(.m-tong3-wrap) {
+    display: block;
+  }
+
+  .m-tong3-wrap {
+    margin: 4px 0 0;
+  }
+
+  .m-tong3 {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 12px 14px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  }
+
+  .m-tong3-o {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .m-tong3-nhan {
+    font-size: 11px;
+    color: var(--muted, #6b7280);
+  }
+
+  .m-tong3-so {
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+    margin-top: 2px;
+    color: var(--ink, #1f2225);
+  }
+
+  .m-tong3-dem {
+    font-size: 11.5px;
+    color: var(--muted, #6b7280);
+    text-align: center;
+    margin-top: 6px;
+  }
+
+  .m-ds-ngay-nhom {
+    margin-top: 6px;
+  }
+
+  .m-ds-ngay-tieu-de {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 16px 4px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted, #6b7280);
+  }
+
+  .m-ds-ngay-chu {
+    color: var(--muted, #6b7280);
+  }
+
+  .m-ds-ngay-tong {
+    color: inherit;
+    font-size: 12px;
+  }
+
+  .m-ds-ngay-so {
+    color: var(--ink);
+  }
+
+  .m-ds-ngay-the {
+    background: #fff;
+    margin: 0 12px;
+    border-radius: 12px;
+    padding: 0 14px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  }
+
+  .m-ds-ngay-dong {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 52px;
+    padding: 7px 0;
+    border-top: 1px solid var(--line, #e5e7eb);
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    box-sizing: border-box;
+  }
+
+  .m-ds-ngay-dong:first-child {
+    border-top: 0;
+  }
+
+  .m-ds-ngay-dong:active {
+    opacity: 0.7;
+  }
+
+  .m-ds-ngay-hang1 {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .m-ds-ngay-dt {
+    font-weight: 600;
+    font-size: 13.5px;
+    color: var(--ink, #1f2225);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .m-ds-ngay-tien {
+    font-weight: 700;
+    font-size: 13.5px;
+    white-space: nowrap;
+    text-align: right;
+  }
+
+  .m-ds-ngay-hang2 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    margin-top: 2px;
+    font-size: 11.5px;
+  }
+
+  .m-ds-ngay-phu {
+    color: var(--muted, #6b7280);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .m-ds-ngay-chips {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  .m-ds-ngay-chips .m-ct-chip {
+    font-size: 10.5px;
+    padding: 1px 6px;
+    line-height: 1.3;
+  }
+}
+
+/* ── Điện thoại: xem phiếu gọn, số tiền lớn (T223) ── */
+@media (max-width: 767px) {
+  .m-xp-the-dau {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .m-xp-the-dau .m-xp-dau {
+    align-items: center;
+    padding: 2px 0 0;
+  }
+
+  .m-xp-the-dau .m-xp-dong-tt:first-of-type {
+    margin-top: 6px;
+    border-top: 1px dashed var(--line);
+    padding-top: 6px;
+  }
+
+  .m-xp-tien-lon {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ink);
+    margin: 4px 0 8px;
+    line-height: 1.2;
+  }
+
+  .m-xp-ds-the.m-the-trang {
+    padding: 4px 14px;
+    gap: 0;
+  }
+
+  .m-xp-dong {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 9px 0;
+    border-top: 1px solid var(--line);
+    font-size: 13px;
+  }
+
+  .m-xp-dong:first-child {
+    border-top: 0;
+  }
+
+  .m-xp-dong-hang1 {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+  }
+
+  .m-xp-dong-ten {
+    font-weight: 600;
+    color: var(--ink);
+    word-break: break-word;
+  }
+
+  .m-xp-dong-tien {
+    font-weight: 600;
+    color: var(--ink);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .m-xp-dong-trong {
+    padding: 20px 0;
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+  }
+}
+

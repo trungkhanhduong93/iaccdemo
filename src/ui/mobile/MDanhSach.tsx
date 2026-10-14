@@ -29,6 +29,8 @@ export interface MDanhSachProps<T> {
   kieuTrong?: KieuMTrong
   tomTat?: ReactNode
   hangPhu?: ReactNode
+  nhomTheo?: (r: T) => string
+  tieuDeNhom?: (khoa: string, ds: T[]) => ReactNode
 }
 
 export function MDanhSach<T>({
@@ -51,6 +53,8 @@ export function MDanhSach<T>({
   kieuTrong = 'tim',
   tomTat,
   hangPhu,
+  nhomTheo,
+  tieuDeNhom,
 }: MDanhSachProps<T>) {
   const [qLocal, setQLocal] = useState('')
   const q = tim !== undefined ? tim : qLocal
@@ -69,6 +73,22 @@ export function MDanhSach<T>({
       return fold(text).includes(qFold)
     })
   }, [rows, q, timTheo])
+
+  const nhoms = useMemo(() => {
+    if (!nhomTheo) return null
+    const res: { khoa: string; ds: T[] }[] = []
+    let hienTai: { khoa: string; ds: T[] } | null = null
+    for (const r of filteredRows) {
+      const k = nhomTheo(r)
+      if (!hienTai || hienTai.khoa !== k) {
+        hienTai = { khoa: k, ds: [r] }
+        res.push(hienTai)
+      } else {
+        hienTai.ds.push(r)
+      }
+    }
+    return res
+  }, [filteredRows, nhomTheo])
 
   return (
     <div className="m-ds-khung">
@@ -137,6 +157,19 @@ export function MDanhSach<T>({
           tieuDe={tieuDeTrong}
           moTa={moTaTrong}
         />
+      ) : nhoms ? (
+        <div className="m-ds-danh-sach">
+          {nhoms.map((nhom, idxNhom) => (
+            <div key={`${idxNhom}-${nhom.khoa}`} className="m-ds-ngay-nhom">
+              <div className="m-ds-ngay-tieu-de">
+                {tieuDeNhom ? tieuDeNhom(nhom.khoa, nhom.ds) : <span>{nhom.khoa}</span>}
+              </div>
+              <div className="m-ds-ngay-the">
+                {nhom.ds.map((r, i) => the(r, i))}
+              </div>
+            </div>
+          ))}
+        </div>
       ) : (
         <div className="m-ds-danh-sach">
           {filteredRows.map((r, i) => the(r, i))}
