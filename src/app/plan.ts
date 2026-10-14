@@ -50,6 +50,7 @@ const THEO_ROADMAP: Record<string, Goi[]> = {
   '3.2.5': ['F', 'S', 'PL', 'PR'],
   '2.2.5': ['F', 'S', 'PL', 'PR'],
   '5.2.2': ['F', 'S', 'PL', 'PR'],
+  '5.2.1': ['F', 'S', 'PL', 'PR'],   // Thẻ kho mở cho gói Free để bấm hàng hoá ở Xuất nhập tồn mở thẻ kho, PhuongXT chốt 14/10/2026 (T211)
   '10.1.3': ['S', 'PL', 'PR'],   // Số dư ban đầu mở cho Standard: tiền, công nợ, tồn kho, PhuongXT chốt 11/10/2026 (T141)
 }
 

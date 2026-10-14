@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 import type { Col, Row, VoucherCfg } from '../types'
 import { CHI_NHANH } from '../../data/mock'
 import { chungTu, dongCua, type Dong } from '../../ui/generic/gen'
+import { docLocNguon, quaLocDong } from '../bao-cao/loc-nguon'
 
 /** Một loại phiếu nguồn: cấu hình chứng từ, hạt giống (mã màn) và đường dẫn màn chứng từ sau /app/.
  *  ds: phiếu mẫu riêng có sẵn dòng hàng ở _dong, thay phiếu sinh theo hạt giống (điều chuyển, T155) */
@@ -15,8 +16,10 @@ interface DongKho {
   sl: number; gia: number; tien: number; _di: string
 }
 
-/** Dòng hàng các phiếu trong tháng; cn là tên chi nhánh chọn trên thanh trên. Kho lấy như form phiếu: kho ghi trên phiếu, không có thì kho đầu của chi nhánh */
-function dongKho(nguon: NguonPhieu[], thang: number, cn?: string): DongKho[] {
+/** Dòng hàng các phiếu trong tháng; cn là tên chi nhánh chọn trên thanh trên. Kho lấy như form phiếu: kho ghi trên phiếu, không có thì kho đầu của chi nhánh.
+ *  Bộ lọc kho, hàng hoá, nhóm hàng hoá lọc dòng hàng trước khi cộng (T207) */
+function dongKho(nguon: NguonPhieu[], thang: number, cn?: string, loc?: Record<string, string[]>): DongKho[] {
+  const f = docLocNguon(loc)
   return nguon.flatMap(n => (n.ds ? n.ds() : chungTu(n.cfg, n.seed))
     .filter(r => r.thang === thang && (!cn || r.cn === cn) && r.ttSx !== 'huy')   // phiếu điều chuyển đã huỷ không vào báo cáo (T155)
     .flatMap(r => (n.ds ? (r._dong as Dong[] | undefined) ?? [] : dongCua(n.cfg, `${n.seed}-${r.id}`)).map((x): DongKho => ({
@@ -24,6 +27,7 @@ function dongKho(nguon: NguonPhieu[], thang: number, cn?: string): DongKho[] {
       kho: String(r._kho || CHI_NHANH.find(c => c.ten === r.cn)?.kho[0] || ''), doiTuong: r.doiTuong,
       ma: x.ma, ten: x.ten, dvt: x.dvt, sl: x.sl, gia: x.gia, tien: x.tien, _di: `${n.di}/${r.id}`,
     }))))
+    .filter(x => quaLocDong(f, x))
     .sort((a, b) => a.d - b.d || a.so.localeCompare(b.so))
 }
 const cong = (ds: Row[], k: string) => ds.reduce((a, x) => a + (Number(x[k]) || 0), 0)
@@ -37,8 +41,8 @@ export const chiTietKho = (nguon: () => NguonPhieu[]) => ({
   cols: [{ k: 'ngay', t: 'Ngày', w: 88 }, cotSo, { k: 'loai', t: 'Loại phiếu', w: 120 }, { k: 'kho', t: 'Kho', w: 130 }, { k: 'doiTuong', t: 'Đối tượng' },
     { k: 'ma', t: 'Mã hàng', cls: 'code', w: 70 }, { k: 'ten', t: 'Tên hàng' }, { k: 'dvt', t: 'ĐVT', c: true, w: 50 },
     { k: 'sl', t: 'Số lượng', num: true }, { k: 'gia', t: 'Đơn giá', num: true }, { k: 'tien', t: 'Thành tiền', num: true }] as Col[],
-  rows: (thang: number, cn?: string): Row[] => {
-    const ds: Row[] = dongKho(nguon(), thang, cn).map(({ d: _, ...x }) => x)
+  rows: (thang: number, cn?: string, loc?: Record<string, string[]>): Row[] => {
+    const ds: Row[] = dongKho(nguon(), thang, cn, loc).map(({ d: _, ...x }) => x)
     return [...ds, { ten: 'Tổng cộng', tien: cong(ds, 'tien'), _t: 1 }]
   },
 })
@@ -50,9 +54,9 @@ export const tongHopKho = (nguon: () => NguonPhieu[], dsLoai: string[]) => {
     cols: [{ k: 'ma', t: 'Mã hàng', cls: 'code', w: 80 }, { k: 'ten', t: 'Tên hàng' }, { k: 'dvt', t: 'ĐVT', c: true, w: 55 },
       { k: 'sl', t: 'Số lượng', num: true }, { k: 'tien', t: 'Giá trị', num: true },
       ...dsLoai.map((l, i) => ({ k: kLoai(i), t: l, num: true, nhom: 'Giá trị theo loại phiếu' }))] as Col[],
-    rows: (thang: number, cn?: string): Row[] => {
+    rows: (thang: number, cn?: string, loc?: Record<string, string[]>): Row[] => {
       const nhom = new Map<string, Row>()
-      for (const x of dongKho(nguon(), thang, cn)) {
+      for (const x of dongKho(nguon(), thang, cn, loc)) {
         const g = nhom.get(x.ma) ?? { ma: x.ma, ten: x.ten, dvt: x.dvt, sl: 0, tien: 0, ...Object.fromEntries(dsLoai.map((_, i) => [kLoai(i), 0])) }
         g.sl += x.sl; g.tien += x.tien
         g[kLoai(dsLoai.indexOf(x.loai))] += x.tien
@@ -68,9 +72,9 @@ export const tongHopKho = (nguon: () => NguonPhieu[], dsLoai: string[]) => {
 export const tongHopTra = (nguon: () => NguonPhieu[]) => ({
   cols: [{ k: 'loai', t: 'Loại', w: 150 }, { k: 'ma', t: 'Mã hàng', cls: 'code', w: 80 }, { k: 'ten', t: 'Tên hàng' }, { k: 'dvt', t: 'ĐVT', c: true, w: 55 },
     { k: 'soPhieu', t: 'Số phiếu', num: true, w: 80 }, { k: 'sl', t: 'Số lượng', num: true }, { k: 'tien', t: 'Giá trị', num: true }] as Col[],
-  rows: (thang: number, cn?: string): Row[] => {
+  rows: (thang: number, cn?: string, loc?: Record<string, string[]>): Row[] => {
     const nhom = new Map<string, Row & { _so: Set<string> }>()
-    for (const x of dongKho(nguon(), thang, cn)) {
+    for (const x of dongKho(nguon(), thang, cn, loc)) {
       const key = `${x.loai}|${x.ma}`
       const g = nhom.get(key) ?? { loai: x.loai, ma: x.ma, ten: x.ten, dvt: x.dvt, sl: 0, tien: 0, _so: new Set<string>() }
       g.sl += x.sl; g.tien += x.tien; g._so.add(x.so)

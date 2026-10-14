@@ -29,6 +29,7 @@ import { layNguoiKy } from '../bao-cao/khoMauIn'
 // @ts-ignore
 import { TuyChinhBC } from '../bao-cao/TuyChinhBC.tsx'
 import type { Session } from '../../app/session'
+import { ganLocNguon } from '../../modules/bao-cao/loc-nguon'
 import {
   thTT58,
   colsS1, rowsS1,
@@ -983,7 +984,7 @@ export function renderReport(cfg: ReportCfg, seed: string, thang: number, cd: Ch
       { k: 'pct', t: 'Tỷ lệ', num: true }, { k: 'gt', t: 'Giá trị chênh lệch', num: true }]} rows={rows} />
   }
   if (cfg.kieu === 'bangke') {
-    if (cfg.cols && cfg.rows) return <RptTable cols={cfg.cols} rows={cfg.rows(thang, CHI_NHANH.find(c => c.id === cn)?.ten)} />
+    if (cfg.cols && cfg.rows) return <RptTable cols={cfg.cols} rows={ganLocNguon(cfg.rows(thang, CHI_NHANH.find(c => c.id === cn)?.ten, loc), loc)} />
     const rows = chungTu({ prefix: 'HD', doiTuong: 'ncc', dienGiai: ['Mua hàng'], tien: [2e6, 40e6], dong: 'nvl' }, seed).filter(x => x.thang === thang || thang === 8)
     return <RptTable cols={[{ k: 'stt', t: 'STT', c: true, w: 50 }, { k: 'so', t: 'Số hoá đơn', cls: 'code' }, { k: 'ngay', t: 'Ngày' }, { k: 'doiTuong', t: 'Tên người bán' },
       { k: 'tien', t: 'Giá trị chưa thuế', num: true }, { k: 'thue', t: 'Thuế GTGT', num: true }]}

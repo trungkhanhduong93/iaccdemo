@@ -1,6 +1,6 @@
 // Báo cáo xuất nhập tồn: đầu kỳ, nhập, xuất, cuối kỳ theo số lượng và giá trị. Bấm mã hàng mở thẻ kho cùng hàng, kho, kỳ (T157)
 import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import type { ScreenProps } from '../types'
 import { apDung, moDuoc, tenMan, timMan } from '../../app/registry'
 import { useSession } from '../../app/session'
@@ -11,17 +11,25 @@ import { money } from '../../ui/format'
 import { xnt } from './data'
 import { Select } from '../../ui/Dropdown'
 import { LocO } from '../../ui/ThanhLoc'
+import { useTrangThaiLoc } from '../../ui/bao-cao/tuyChinhBC'
+import { docLocNguon, quaLocDong } from '../bao-cao/loc-nguon'
 
 export function XuatNhapTon({ sc, mod }: ScreenProps) {
   const [ky, setKy] = useState('9')
   const [kho, setKho] = useState(KHO[1])
-  const rows = useMemo(() => xnt(Number(ky), kho), [ky, kho])
+  // Hàng hoá, nhóm hàng hoá chọn ở nút phễu, lọc sau khi bấm Xem (T207)
+  const daLoc = useTrangThaiLoc(useLocation().pathname).loc
+  const rows = useMemo(() => { const f = docLocNguon(daLoc); return xnt(Number(ky), kho).filter(x => quaLocDong(f, x)) }, [ky, kho, daLoc])
   const sum = (k: string) => rows.reduce((a, x) => a + (x as Record<string, any>)[k], 0)
   const n = (v: number) => money(v)
   // Mã hàng thành liên kết khi gói, thông tư đang dùng mở được thẻ kho
   const { s } = useSession()
   const the = timMan('bao-cao', '5-2-1').sc
   const coThe = Boolean(the && moDuoc(the, s.goi) && apDung(the, s.cheDo, s))
+  // Bấm mã hoặc tên hàng mở thẻ kho của hàng đó (T211)
+  const moThe = (ma: string, chu: string) => coThe
+    ? <Link className="ds-link-so" style={{ fontSize: 'inherit' }} title="Xem thẻ kho" to={`/app/bao-cao/5-2-1?ma=${ma}&kho=${encodeURIComponent(kho)}&ky=${ky}`}>{chu}</Link>
+    : chu
   return (
     <div className="page">
       <PageHead crumb={[mod.ten, sc.nhom ?? '']} title={tenMan(sc)} code={sc.code} meta={<span className="chip">IACC Cloud tự tính từ phiếu kho đồng bộ</span>} />
@@ -38,7 +46,7 @@ export function XuatNhapTon({ sc, mod }: ScreenProps) {
             <tbody>
               {rows.map(x => (
                 <tr key={x.ma}>
-                  <td className="code">{coThe ? <Link className="ds-link-so" style={{ fontSize: 'inherit' }} to={`/app/bao-cao/5-2-1?ma=${x.ma}&kho=${encodeURIComponent(kho)}&ky=${ky}`}>{x.ma}</Link> : x.ma}</td><td>{x.ten}</td><td className="c">{x.dvt}</td>
+                  <td className="code">{moThe(x.ma, x.ma)}</td><td>{moThe(x.ma, x.ten)}</td><td className="c">{x.dvt}</td>
                   <td className="num">{n(x.sl0)}</td><td className="num">{n(x.gt0)}</td><td className="num">{n(x.sln)}</td><td className="num">{n(x.gtn)}</td>
                   <td className="num">{n(x.slx)}</td><td className="num">{n(x.gtx)}</td><td className="num">{n(x.sl1)}</td><td className="num">{n(x.gt1)}</td>
                 </tr>

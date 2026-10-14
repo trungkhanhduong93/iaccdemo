@@ -14615,4 +14615,7 @@ button.cn-ten {
   }
 }
 
-
+/* ── Ô lọc trên thanh công cụ báo cáo: nhãn cùng hàng với ô chọn (T206) ── */
+.bc-thanh-cong-cu .loc-o { flex-direction: row; align-items: center; gap: 8px; flex: none; }
+.bc-thanh-cong-cu .loc-o-nhan { white-space: nowrap; font-size: 13.5px; }
+.bc-thanh-cong-cu .loc-o-ctl { width: auto; min-width: 160px; }

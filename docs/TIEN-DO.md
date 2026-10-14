@@ -11,10 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T211 | Xuất nhập tồn: bấm mã hoặc tên hàng hoá mở Thẻ kho của hàng đó (cùng kho, kỳ); mở Thẻ kho 5.2.1 cho gói Free (PhuongXT chốt 14/10/2026) | PhuongXT | Đang làm | Sửa `src/app/plan.ts` (`THEO_ROADMAP`), `XuatNhapTon.tsx` |
-| T207 | Bộ lọc báo cáo mua hàng, bán hàng, kho: thêm Kho, Hàng hoá, Nhóm hàng hoá; mua hàng, bán hàng thêm Đối tượng (bán hàng không lọc kho vì đơn POS không ghi kho). Lọc trên từng phiếu, dòng hàng trước khi cộng | PhuongXT | Đang làm | Sửa `ReportScreen.tsx`, `bao-cao/danh-sach.ts`, `bao-cao.ts` của mua-hang, ban-hang, kho, `XuatNhapTon.tsx`; file mới `bao-cao/loc-nguon.ts` |
-| T206 | Báo cáo xuất nhập tồn: ô lọc Kho trên thanh công cụ báo cáo để nhãn cùng hàng với ô chọn, không xuống dòng | PhuongXT | Đang làm | Sửa `src/styles/app.css` (mục mới cuối file) |
-| T205 | Báo cáo Mua hàng theo ngày (4.2.6): bỏ cột Đã thanh toán, Còn nợ | PhuongXT | Đang làm | Sửa `src/modules/mua-hang/bao-cao.ts` |
 | T208 | Điện thoại: chỉnh giao diện đang có: trang chủ bỏ thanh trên chung, chip chọn chi nhánh và kho; kính lúp tìm cả báo cáo; bảng sổ gọn hơn; đệm đáy mọi màn; chip danh sách chứng từ một hàng | Trum | Đang làm | Anti B, đợt 13. Kế hoạch `docs/ke-hoach-mobile-dot-11.md`. Sửa `MobileShell.tsx`, `MTrangChu.tsx`, `MTimKiem.tsx`, `app.css` |
 | T192 | Điện thoại: Tiện ích bổ sung (11.1, 11.4, 11.5, 11.6, 11.7, 11.11, 11.16, X2 và màn tác vụ 11.2, 11.3, 11.8–11.10, 11.12–11.15) còn báo dùng máy tính | Trum | Đang làm | Anti A, đợt 13. 11.11 giữ chỉ máy tính. Từ rà soát T184. Thiết kế mẫu in 11.11 nên giữ chỉ máy tính, hỏi Trum |
 | T169 | Form chứng từ: gõ đổi địa chỉ từ phiếu này sang phiếu khác (vd `#/app/tien/2-1-1/chi-3` sang `chi-6`) thì form giữ số phiếu, đối tượng của phiếu cũ; mở từ danh sách, Trước, Sau thì đúng | | Chờ | Phát hiện ở T168. Sửa `ChungTuForm.tsx`, có thể `VoucherScreen.tsx` (key của form) |
@@ -47,6 +43,10 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T211 | Xuất nhập tồn: bấm mã hoặc tên hàng hoá mở Thẻ kho của hàng đó (cùng kho, kỳ); mở Thẻ kho 5.2.1 cho gói Free (PhuongXT chốt 14/10/2026) | PhuongXT | 14/10/2026 | [2026-10-14-phuongxt-loc-bao-cao](nhat-ky/2026-10-14-phuongxt-loc-bao-cao.md) |
+| T207 | Bộ lọc báo cáo mua hàng, bán hàng, kho: thêm Kho, Hàng hoá, Nhóm hàng hoá; mua hàng, bán hàng thêm Đối tượng (bán hàng không lọc kho vì đơn POS không ghi kho). Lọc trên từng phiếu, dòng hàng trước khi cộng | PhuongXT | 14/10/2026 | [2026-10-14-phuongxt-loc-bao-cao](nhat-ky/2026-10-14-phuongxt-loc-bao-cao.md) |
+| T206 | Báo cáo xuất nhập tồn: ô lọc Kho trên thanh công cụ báo cáo để nhãn cùng hàng với ô chọn, không xuống dòng | PhuongXT | 14/10/2026 | [2026-10-14-phuongxt-loc-bao-cao](nhat-ky/2026-10-14-phuongxt-loc-bao-cao.md) |
+| T205 | Báo cáo Mua hàng theo ngày (4.2.6): bỏ cột Đã thanh toán, Còn nợ | PhuongXT | 14/10/2026 | [2026-10-14-phuongxt-loc-bao-cao](nhat-ky/2026-10-14-phuongxt-loc-bao-cao.md) |
 | T201 | Mọi báo cáo có cột số chứng từ: bấm số mở chứng từ chi tiết; sổ tự đánh số thì lấy phiếu thật cùng loại, cùng tháng (cách 2, PhuongXT chọn) | PhuongXT | 14/10/2026 | [2026-10-14-phuongxt-so-chung-tu](nhat-ky/2026-10-14-phuongxt-so-chung-tu.md) |
 | T200 | Tổng hợp mua hàng, Chi tiết mua hàng thêm cột Thành tiền, Chiết khấu, đổi Tiền hàng thành Tiền trước thuế; bấm nhà cung cấp ở Tổng hợp mở Chi tiết mua hàng; ẩn Chi tiết mua hàng khỏi danh sách báo cáo; thêm Bảng kê mua hàng theo hàng hoá | PhuongXT | 13/10/2026 | [2026-10-13-phuongxt-bao-cao-mua-hang](nhat-ky/2026-10-13-phuongxt-bao-cao-mua-hang.md) |
 | T185 | Mở lại báo cáo theo danh sách iFaster cho mọi gói (giữ khung báo cáo IACC): Tổng hợp quỹ tiền, Báo cáo dòng tiền, Công nợ nhà cung cấp, khách hàng (popup lịch sử công nợ), Báo cáo kết quả kinh doanh, Sổ chi phí, Nhập xuất tồn, tổng hợp, chi tiết nhập kho, xuất kho, báo cáo mua hàng, bán hàng (tổng hợp, chi tiết, theo ngày) | PhuongXT | 13/10/2026 | [2026-10-13-phuongxt-bao-cao-ifaster](nhat-ky/2026-10-13-phuongxt-bao-cao-ifaster.md) |

@@ -4,6 +4,10 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 14/10/2026
 
+- T211: Báo cáo xuất nhập tồn: bấm mã hoặc tên hàng mở Thẻ kho của hàng đó, cùng kho, cùng tháng. Thẻ kho mở lại ở mọi gói, kể cả gói Free, có trong danh sách báo cáo.
+- T207: Nút phễu của báo cáo mua hàng (Tổng hợp mua hàng theo NCC, Chi tiết mua hàng, Mua hàng theo ngày, Bảng kê mua hàng theo hàng hoá) có bộ lọc Kho, Hàng hoá, Nhóm hàng hoá, Đối tượng. Báo cáo bán hàng (theo ngày, tổng hợp, chi tiết) có Hàng hoá, Nhóm hàng hoá, Đối tượng. Báo cáo kho (tổng hợp, chi tiết nhập kho, xuất kho) có Kho, Hàng hoá, Nhóm hàng hoá; Xuất nhập tồn có Hàng hoá, Nhóm hàng hoá. Số liệu tính lại theo bộ lọc. Mua hàng theo ngày bỏ bộ lọc Nhà cung cấp, Phương thức TT cũ.
+- T206: Thanh công cụ báo cáo Xuất nhập tồn, Thẻ kho: chữ Kho, Mặt hàng nằm cùng hàng với ô chọn, thanh không còn cao lệch.
+- T205: Báo cáo Mua hàng theo ngày bỏ cột Đã thanh toán, Còn nợ.
 - T209, T186, T188, T189: Trên điện thoại lập được phiếu kiểm kê, điều chỉnh, sản xuất, điều chuyển. Mở được Xuất bán POS (danh sách đơn, chi tiết đơn), Công thức sơ chế, chế biến, Số dư ban đầu theo từng tab.
 - T190, T210, T191, T187: Trên điện thoại mở được các màn chạy tác vụ (tính giá vốn, kết chuyển, khấu hao...), Kiểm tra cuối kỳ, Khoá sổ, sơ đồ quy trình từng phân hệ dạng danh sách bước. Mở được 6 màn Hệ thống, Danh mục tài khoản dạng cây, Danh mục chi nhánh.
 - T201: Số chứng từ trên mọi báo cáo, sổ bấm mở chứng từ chi tiết; bấm Đóng quay lại báo cáo. Sổ tự đánh số (sổ ngân hàng, sổ chi phí, bộ sổ TT58, TT152, lịch sử công nợ) hiện số phiếu thật cùng loại, cùng tháng. Bút toán khấu hao, kết chuyển không có phiếu nên không bấm được.

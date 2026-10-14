@@ -1,11 +1,12 @@
 // Cấu hình mẫu từng sổ, báo cáo theo chế độ kế toán (kế hoạch mục 5, 7.2). Ký hiệu chưa đối chiếu văn bản gốc, chờ kế toán trưởng duyệt (T04).
 import type { CheDo } from '../../app/che-do'
 import type { Kho } from '../../ui/bao-cao/ToGiay'
-import { CHI_NHANH, NCC, TK_NGAN_HANG } from '../../data/mock'
+import { CHI_NHANH, TK_NGAN_HANG } from '../../data/mock'
 import { dsDonVi, loaiHinhDv, type Session } from '../../app/session'
 import { DON_VI } from '../../data/mock'
 import { thTT58 } from './tt58'
 import { DS_HANG_S2D, DS_NHOM_HANG_S2D, DS_QUY_S2E, KENH_BAN } from './tt152'
+import { KHOA_LOC_NGUON, LOC_BAN, LOC_KHO_BC, LOC_MUA } from './loc-nguon'
 
 export type LoaiBC = 'so' | 'bctc' | 'baocao' | 'tokhai'
 export interface LocBC {
@@ -82,30 +83,25 @@ export const CAU_HINH_BC: Record<string, CauHinhBC> = {
   '3.2.5': { loai: 'so', kho: 'ngang', anTam: ['TT133', 'TT99'], th: [1, 2, 3], kyHieu: { TT152: 'S2a-HKD', TT58: 'S1-DNSN', TT133: 'S16-DNN', TT99: 'S35-DN' }, ten: { TT152: 'Sổ doanh thu bán hàng hoá, dịch vụ', TT58: 'Sổ doanh thu bán hàng hoá, dịch vụ', TT133: 'Sổ chi tiết bán hàng', TT99: 'Sổ chi tiết bán hàng' }, congCot: ['dt', 'vat', 'tong'],
     loc: [{ k: 'kenh', nhan: 'Kênh bán', kieu: 'chonNhieu', cheDo: ['TT152'], ds: () => KENH_BAN }] },   // S1a, S2a, S2b-HKD lọc theo kênh bán như iFaster (T179)
   // Bán hàng theo ngày, tổng hợp, chi tiết bán hàng (T157)
-  '3.2.6': baoCao('doc', { anKhongPS: true }),
-  '3.2.7': baoCao('ngang', { loc: [{ k: 'nhom', nhan: 'Nhóm hàng', kieu: 'chon' }], nhomDuoc: ['nhom'], anKhongPS: true }),
-  '3.2.8': baoCao('ngang', { nhomDuoc: ['ngay', 'so', 'ten'], anKhongPS: true, phanTrang: 100 }),
+  // Bộ lọc hàng hoá, nhóm hàng hoá, khách hàng lọc dòng món trước khi cộng (T207)
+  '3.2.6': baoCao('doc', { loc: LOC_BAN, anKhongPS: true }),
+  '3.2.7': baoCao('ngang', { loc: LOC_BAN, nhomDuoc: ['nhom'], anKhongPS: true }),
+  '3.2.8': baoCao('ngang', { loc: LOC_BAN, nhomDuoc: ['ngay', 'so', 'ten'], anKhongPS: true, phanTrang: 100 }),
   '3.2.9': baoCao('ngang', { loc: [{ k: 'ten', nhan: 'Khách hàng', kieu: 'chonNhieu' }], anKhongPS: true }),   // Công nợ khách hàng theo iFaster (T185)
-  '4.2.1': baoCao('ngang', { loc: [{ k: 'doiTuong', nhan: 'Nhà cung cấp', kieu: 'chon' }, { k: 'nguon', nhan: 'Nguồn', kieu: 'chon' }], nhomDuoc: ['doiTuong', 'ngay'], anKhongPS: true }),
-  '4.2.2': baoCao('ngang', { anKhongPS: true }),   // thêm Thành tiền, Chiết khấu, Tiền trước thuế nên in khổ ngang (T200)
+  // Bộ lọc kho, hàng hoá, nhóm hàng hoá, nhà cung cấp lọc phiếu, dòng hàng trước khi cộng (T207)
+  '4.2.1': baoCao('ngang', { loc: [...LOC_MUA, { k: 'nguon', nhan: 'Nguồn', kieu: 'chon' }], nhomDuoc: ['doiTuong', 'ngay'], anKhongPS: true }),
+  '4.2.2': baoCao('ngang', { loc: LOC_MUA, anKhongPS: true }),   // thêm Thành tiền, Chiết khấu, Tiền trước thuế nên in khổ ngang (T200)
   '4.2.3': baoCao('ngang', { loc: [{ k: 'ten', nhan: 'Nhà cung cấp', kieu: 'chonNhieu' }], anKhongPS: true }),   // Công nợ nhà cung cấp theo iFaster (T185)
   '4.2.4': baoCao('doc', { anKhongPS: true }),
   '4.2.5': baoCao('ngang', { loc: [{ k: 'doiTuong', nhan: 'Nhà cung cấp', kieu: 'chon' }, { k: 'ten', nhan: 'Mặt hàng', kieu: 'chonNhieu' }], nhomDuoc: ['doiTuong', 'ten', 'ngay'], anKhongPS: true }),
   '4.2.7': baoCao('ngang', {   // Bảng kê mua hàng theo hàng hoá (T200)
-    loc: [{ k: 'doiTuong', nhan: 'Nhà cung cấp', kieu: 'chon' }, { k: 'ten', nhan: 'Mặt hàng', kieu: 'chonNhieu' }],
+    loc: LOC_MUA,
     nhomDuoc: ['doiTuong', 'ten', 'ngay'], anKhongPS: true, phanTrang: 100,
   }),
-  '4.2.6': baoCao('ngang', {
-    loc: [
-      { k: 'ncc', nhan: 'Nhà cung cấp', kieu: 'chon', ds: () => NCC.map(n => n.ten) },
-      { k: 'pttt', nhan: 'Phương thức TT', kieu: 'chon', ds: () => ['Chuyển khoản', 'Tiền mặt', 'Chưa thanh toán'] },
-    ],
-    nhomDuoc: ['ncc', 'pttt', 'ngay'],
-    anKhongPS: true,
-  }),
+  '4.2.6': baoCao('ngang', { loc: LOC_MUA, nhomDuoc: ['ngay'], anKhongPS: true }),
   '5.2.1': baoCao('doc', { anKhongPS: true }),   // thẻ kho, xuất nhập tồn là báo cáo quản trị kho kiểu iPOS Inventory, mọi thông tư, không ký hiệu mẫu, Trum chốt 11/10/2026 (T157)
   '5.2.2': baoCao('ngang', { loc: [{ k: 'kho', nhan: 'Kho', kieu: 'chon' }, { k: 'loai', nhan: 'Loại phiếu', kieu: 'chon' }], nhomDuoc: ['kho', 'loai', 'ngay'], anKhongPS: true }),
-  '5.2.3': baoCao('ngang', { anKhongPS: true }),
+  '5.2.3': baoCao('ngang', { loc: LOC_KHO_BC.filter(l => l.k !== KHOA_LOC_NGUON.kho), anKhongPS: true }),   // kho chọn trên thanh công cụ của màn (T207)
   '5.2.4': baoCao('doc', { loc: [{ k: 'kho', nhan: 'Kho', kieu: 'chon' }], nhomDuoc: ['kho'], anKhongPS: true }),
   '5.2.5': baoCao('ngang', { anKhongPS: true }),
   '5.2.6': baoCao('ngang', { anKhongPS: true }),
@@ -116,10 +112,11 @@ export const CAU_HINH_BC: Record<string, CauHinhBC> = {
       { k: 'nhomHang', nhan: 'Nhóm hàng hoá', kieu: 'chon', cheDo: ['TT152'], ds: () => DS_NHOM_HANG_S2D },
     ] },
   // Tổng hợp, chi tiết nhập kho, xuất kho, hàng trả lại (T157)
-  '5.2.9': baoCao('ngang', { anKhongPS: true }),
-  '5.2.10': baoCao('ngang', { loc: [{ k: 'kho', nhan: 'Kho', kieu: 'chon' }, { k: 'loai', nhan: 'Loại phiếu', kieu: 'chon' }], nhomDuoc: ['kho', 'loai', 'ngay'], anKhongPS: true, phanTrang: 100 }),
-  '5.2.11': baoCao('ngang', { anKhongPS: true }),
-  '5.2.12': baoCao('ngang', { loc: [{ k: 'kho', nhan: 'Kho', kieu: 'chon' }, { k: 'loai', nhan: 'Loại phiếu', kieu: 'chon' }], nhomDuoc: ['kho', 'loai', 'ngay'], anKhongPS: true, phanTrang: 100 }),
+  // Bộ lọc kho, hàng hoá, nhóm hàng hoá lọc dòng hàng trước khi cộng (T207)
+  '5.2.9': baoCao('ngang', { loc: LOC_KHO_BC, anKhongPS: true }),
+  '5.2.10': baoCao('ngang', { loc: [...LOC_KHO_BC, { k: 'loai', nhan: 'Loại phiếu', kieu: 'chon' }], nhomDuoc: ['kho', 'loai', 'ngay'], anKhongPS: true, phanTrang: 100 }),
+  '5.2.11': baoCao('ngang', { loc: LOC_KHO_BC, anKhongPS: true }),
+  '5.2.12': baoCao('ngang', { loc: [...LOC_KHO_BC, { k: 'loai', nhan: 'Loại phiếu', kieu: 'chon' }], nhomDuoc: ['kho', 'loai', 'ngay'], anKhongPS: true, phanTrang: 100 }),
   '5.2.13': baoCao('doc', { loc: [{ k: 'loai', nhan: 'Loại', kieu: 'chon' }], nhomDuoc: ['loai'], anKhongPS: true }),
   '5.2.14': baoCao('ngang', { loc: [{ k: 'kho', nhan: 'Kho', kieu: 'chon' }, { k: 'loai', nhan: 'Loại phiếu', kieu: 'chon' }], nhomDuoc: ['kho', 'loai', 'ngay'], anKhongPS: true, phanTrang: 100 }),
   '6.2.1': baoCao('ngang', { loc: [{ k: 'doiTuong', nhan: 'Người bán', kieu: 'chon' }], nhomDuoc: ['doiTuong', 'ngay'], anKhongPS: true }),
@@ -160,7 +157,8 @@ export const CAU_HINH_BC: Record<string, CauHinhBC> = {
 const GIU_MOI_CHE_DO = ['2.2.1', '2.2.3']
 /** Báo cáo lấy theo danh sách iFaster, mở mọi gói, mọi chế độ, PhuongXT chốt 13/10/2026 (T185): quỹ tiền,
  *  công nợ nhà cung cấp 4.2.3, khách hàng 3.2.9, quản trị, kho, mua hàng, bán hàng. Sổ công nợ 2.2.5 bỏ (PhuongXT: thay bằng Công nợ nhà cung cấp, Công nợ khách hàng theo iFaster); TT58 vẫn giữ S4a-DNSN. Không lọc theo anTam, cheDo, trường hợp thuế; muốn ẩn ở gói nào thì bỏ mã khỏi đây hoặc lọc thêm */
-export const MO_IFASTER = ['2.2.8', '2.2.9', '4.2.3', '3.2.9', '4.2.7', '10.2.3', '10.4.3', '5.2.3', '5.2.11', '5.2.12', '5.2.9', '5.2.10', '4.2.2', '4.2.1', '4.2.6', '3.2.7', '3.2.8', '3.2.6']
+export const MO_IFASTER = ['2.2.8', '2.2.9', '4.2.3', '3.2.9', '4.2.7', '10.2.3', '10.4.3', '5.2.3', '5.2.11', '5.2.12', '5.2.9', '5.2.10', '4.2.2', '4.2.1', '4.2.6', '3.2.7', '3.2.8', '3.2.6',
+  '5.2.1']   // Thẻ kho mở lại mọi gói để bấm hàng hoá ở Xuất nhập tồn mở thẻ kho, PhuongXT chốt 14/10/2026 (T211)
 /** Báo cáo chỉ mở từ báo cáo khác, không hiện ở danh sách báo cáo, menu, tìm kiếm: Chi tiết mua hàng 4.2.1 mở khi bấm nhà cung cấp ở Tổng hợp mua hàng, PhuongXT 13/10/2026 (T200) */
 export const CHI_MO_TU_BC = ['4.2.1']
 const GIU_TT58 = ['2.2.5', '2.2.7', '3.2.5', '5.2.8', '6.2.4', '6.2.5', '7.2.1', '10.2.2', '10.2.3', '10.4.1', '10.4.2']
