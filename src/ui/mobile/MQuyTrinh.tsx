@@ -1,208 +1,233 @@
 import { useMemo, type FC } from 'react'
 import { Link } from 'react-router-dom'
-import type { NutQT, QuyTrinhDef, ScreenProps } from '../../modules/types'
-import { dich, hienMan, maKhoa, moDuoc } from '../../app/registry'
-import { useSession } from '../../app/session'
-import { anNgoaiGoi, type Goi } from '../../app/plan'
+import type { ModuleDef, NutQT, QuyTrinhDef, ScreenProps } from '../../modules/types'
+import { dich, hienMan, moDuoc } from '../../app/registry'
+import { useSession, type Session } from '../../app/session'
 import { Icon } from '../Icon'
 
-function moNut(n: NutQT, goi: Goi) {
-  if (!n.di) return { path: '', sc: undefined, ok: true, ma: undefined }
-  const d = dich(n.di)
-  const ok = !d.sc || moDuoc(d.sc, goi)
-  return { ...d, ok, ma: d.sc ? maKhoa(d.sc) : undefined }
-}
-
-interface BuocMobile {
+export interface NutMobile {
   id: string
-  so: number
   ten: string
   moTa?: string
   icon: string
   di: string
   path: string
-  ok: boolean
+  tinh?: boolean
 }
 
-export const MQuyTrinh: FC<ScreenProps> = ({ mod }) => {
-  const { s } = useSession()
-  const an = anNgoaiGoi(s.goi)
+export interface BuocMobile {
+  id: string
+  so: number
+  ten: string
+  nut: NutMobile[]
+}
 
-  const hien = (n: NutQT) => {
-    const m = moNut(n, s.goi)
-    if (m.sc && !hienMan(m.sc, s.goi, s.cheDo, s)) return false
-    return !an || m.ok
-  }
-
+export function layDsBuoc(mod: ModuleDef, s: Session): BuocMobile[] {
   const goc0 = mod.quyTrinh
-  const goc: QuyTrinhDef | undefined =
-    goc0 && s.goi === 'F' && goc0.hoiTuFree
+  if (!goc0) return []
+
+  // Gói Free có sơ đồ hội tụ riêng thì thay sơ đồ chung (T98)
+  const goc: QuyTrinhDef =
+    s.goi === 'F' && goc0.hoiTuFree
       ? { ...goc0, buoc: [], hoiTu: goc0.hoiTuFree }
       : goc0
 
-  const luong =
-    goc && s.goi === 'F' && goc.luongFree
-      ? goc.luongFree
-          .map(c => ({ ...c, nut: c.nut.filter(hien) }))
-          .filter(c => c.nut.length > 0)
-      : null
+  // Gói Free có sơ đồ luồng theo cột thì thay sơ đồ chung (T123)
+  const luong = s.goi === 'F' && goc.luongFree ? goc.luongFree : null
 
-  const dsBuoc = useMemo((): BuocMobile[] => {
-    if (!goc) return []
-    const res: BuocMobile[] = []
+  const locNutCuaBuoc = (nutList: NutQT[]): NutMobile[] => {
+    const ketQua: NutMobile[] = []
+    let coNutHanhDong = false
 
-    // 1. Sơ đồ hội tụ (hoiTu)
-    if (goc.hoiTu) {
-      let buocSo = 1
-      const lanLoc = goc.hoiTu.lan
-        .map(l => ({ ...l, nut: l.nut.filter(hien) }))
-        .filter(l => l.nut.length > 0)
-
-      lanLoc.forEach((l, idx) => {
-        l.nut.forEach((n, nIdx) => {
-          const m = moNut(n, s.goi)
-          res.push({
-            id: `lan-${idx}-${nIdx}-${n.di || n.ten}`,
-            so: buocSo,
-            ten: n.ten,
-            moTa: l.ten !== n.ten ? l.ten : n.noi,
-            icon: n.icon || l.icon || 'doc',
-            di: n.di,
-            path: m.path,
-            ok: m.ok,
-          })
+    for (const n of nutList) {
+      if (!n.di) {
+        // Nút chữ tĩnh
+        ketQua.push({
+          id: `tinh-${n.ten}`,
+          ten: n.ten,
+          moTa: n.noi,
+          icon: n.icon || 'doc',
+          di: '',
+          path: '',
+          tinh: true,
         })
-        buocSo++
-      })
+      } else {
+        const d = dich(n.di, mod.key)
+        if (!d.sc) continue
 
-      const raNut = goc.hoiTu.ra.nut.filter(hien)
-      if (raNut.length > 0) {
-        raNut.forEach((n, nIdx) => {
-          const m = moNut(n, s.goi)
-          res.push({
-            id: `ra-${nIdx}-${n.di || n.ten}`,
-            so: buocSo,
-            ten: n.ten,
-            moTa: goc.hoiTu!.ra.ten !== n.ten ? goc.hoiTu!.ra.ten : undefined,
-            icon: n.icon || goc.hoiTu!.ra.icon || 'book',
-            di: n.di,
-            path: m.path,
-            ok: m.ok,
-          })
+        // Ẩn ngoài gói ở MQuyTrinh.tsx, áp cho MỌI gói:
+        // 1. !moDuoc(sc, s.goi)
+        if (!moDuoc(d.sc, s.goi)) continue
+
+        // 2. Màn không qua luật T194 (!(moDuoc(sc, 'F') || moDuoc(sc, 'S')))
+        if (!(moDuoc(d.sc, 'F') || moDuoc(d.sc, 'S'))) continue
+
+        // 3. !hienMan(sc, s.goi, s.cheDo, s)
+        if (!hienMan(d.sc, s.goi, s.cheDo, s)) continue
+
+        coNutHanhDong = true
+        // Nếu là chứng từ, link vào danh sách chứng từ (bỏ /moi nếu có)
+        const path =
+          d.sc.voucher || d.sc.kind === 'voucher'
+            ? d.path.replace(/\/moi(?=[?#]|$)/, '')
+            : d.path
+
+        ketQua.push({
+          id: `link-${n.di}-${n.ten}`,
+          ten: n.ten,
+          moTa: n.noi,
+          icon: n.icon || 'doc',
+          di: n.di,
+          path,
+          tinh: false,
         })
       }
-      return res
     }
 
+    // Nút không có di (chữ tĩnh) giữ nguyên nếu bước còn nút khác.
+    // Nếu bước không còn nút hành động nào, bỏ cả bước
+    if (!coNutHanhDong) {
+      return []
+    }
+
+    return ketQua
+  }
+
+  interface BuocTam {
+    id: string
+    ten: string
+    nut: NutMobile[]
+  }
+
+  const buocRaw: BuocTam[] = []
+
+  // 1. Sơ đồ hội tụ (hoiTu)
+  if (goc.hoiTu) {
+    goc.hoiTu.lan.forEach((l, idx) => {
+      const nutLoc = locNutCuaBuoc(l.nut)
+      if (nutLoc.length > 0) {
+        buocRaw.push({
+          id: `lan-${idx}-${l.ten}`,
+          ten: l.ten,
+          nut: nutLoc,
+        })
+      }
+    })
+
+    const raNut = locNutCuaBuoc(goc.hoiTu.ra.nut)
+    if (raNut.length > 0) {
+      buocRaw.push({
+        id: `ra-${goc.hoiTu.ra.ten}`,
+        ten: goc.hoiTu.ra.ten,
+        nut: raNut,
+      })
+    }
+  } else if (luong) {
     // 2. Sơ đồ luồng cột (luongFree)
-    if (luong) {
-      let buocSo = 1
-      luong.forEach((c, cIdx) => {
-        c.nut.forEach((n, nIdx) => {
-          const m = moNut(n, s.goi)
-          res.push({
-            id: `luong-${cIdx}-${nIdx}-${n.di || n.ten}`,
-            so: buocSo,
-            ten: n.ten,
-            moTa: n.noi || c.noi,
-            icon: n.icon || 'doc',
-            di: n.di,
-            path: m.path,
-            ok: m.ok,
-          })
+    luong.forEach((c, idx) => {
+      const nutLoc = locNutCuaBuoc(c.nut)
+      if (nutLoc.length > 0) {
+        const tenBuoc = c.noi
+          ? c.noi.charAt(0).toUpperCase() + c.noi.slice(1)
+          : nutLoc.length === 1
+            ? nutLoc[0].ten
+            : nutLoc.map(n => n.ten).join(', ')
+        buocRaw.push({
+          id: `luong-${idx}`,
+          ten: tenBuoc,
+          nut: nutLoc,
         })
-        buocSo++
-      })
-      return res
-    }
-
+      }
+    })
+  } else if (goc.buoc) {
     // 3. Sơ đồ bước trục ngang (buoc)
-    if (goc.buoc) {
-      let buocSo = 1
-      goc.buoc.forEach((b, bIdx) => {
-        const tren = (b.tren ?? []).filter(hien)
-        const chinh = hien(b.chinh) ? [b.chinh] : []
-        const duoi = (b.duoi ?? []).filter(hien)
-        const tatCa = [...tren, ...chinh, ...duoi]
-
-        if (tatCa.length === 0) return
-
-        tatCa.forEach((n, nIdx) => {
-          const m = moNut(n, s.goi)
-          res.push({
-            id: `buoc-${bIdx}-${nIdx}-${n.di || n.ten}`,
-            so: buocSo,
-            ten: n.ten,
-            moTa: b.ten && b.ten !== n.ten ? b.ten : n.noi,
-            icon: n.icon || 'doc',
-            di: n.di,
-            path: m.path,
-            ok: m.ok,
-          })
+    goc.buoc.forEach((b, idx) => {
+      const tatCa = [...(b.tren ?? []), b.chinh, ...(b.duoi ?? [])]
+      const nutLoc = locNutCuaBuoc(tatCa)
+      if (nutLoc.length > 0) {
+        buocRaw.push({
+          id: `buoc-${idx}`,
+          ten: b.ten || b.chinh.ten,
+          nut: nutLoc,
         })
-        buocSo++
-      })
-      return res
-    }
+      }
+    })
+  }
 
-    return res
-  }, [goc, luong, s.goi, s.cheDo])
+  // Đánh số lại liên tục: 1, 2, 3...
+  return buocRaw.map((b, idx) => ({
+    ...b,
+    so: idx + 1,
+  }))
+}
+
+export interface MQuyTrinhProps {
+  mod: ModuleDef
+  sc?: ScreenProps['sc']
+}
+
+export const MQuyTrinh: FC<MQuyTrinhProps> = ({ mod }) => {
+  const { s } = useSession()
+  const dsBuoc = useMemo(() => layDsBuoc(mod, s), [mod, s])
+
+  if (dsBuoc.length === 0) {
+    return (
+      <div className="m-quytrinh m-qt2-quytrinh">
+        <p className="m-qt2-mota-dau">Chưa có quy trình cho phân hệ này trên điện thoại.</p>
+      </div>
+    )
+  }
+
+  const goc0 = mod.quyTrinh
 
   return (
-    <div className="m-quytrinh">
+    <div className="m-quytrinh m-qt2-quytrinh">
       {s.goi === 'F' && goc0?.moTaFree && (
-        <p className="m-qt-mota-dau">{goc0.moTaFree}</p>
+        <p className="m-qt2-mota-dau">{goc0.moTaFree}</p>
       )}
 
-      <div className="m-qt-ds">
+      <div className="m-qt2-ds">
         {dsBuoc.map((b, i) => (
-          <div key={b.id} className="m-qt-muc">
-            {i < dsBuoc.length - 1 && <div className="m-qt-duong" />}
-            <div className="m-qt-cot-so">
-              <span className="m-qt-so">{b.so}</span>
-            </div>
-
-            {b.di ? (
-              <Link
-                to={b.path}
-                className={`m-qt-the m-qt-buoc${!b.ok ? ' khoa' : ''}`}
-                title={b.ok ? `Mở ${b.ten.toLowerCase()}` : `${b.ten}: ngoài gói`}
-              >
-                <div className="m-qt-the-nd">
-                  <div className="m-qt-the-trai">
-                    <span className="m-qt-the-ic">
-                      <Icon n={b.icon} className="ic sm" />
-                    </span>
-                    <div className="m-qt-the-chu">
-                      <span className="m-qt-the-ten">{b.ten}</span>
-                      {b.moTa && <span className="m-qt-the-mota">{b.moTa}</span>}
-                    </div>
-                  </div>
-                  <div className="m-qt-the-phai">
-                    {!b.ok && (
-                      <span className="m-qt-the-lk" title="Ngoài gói">
-                        <Icon n="lock" className="ic xs" />
-                      </span>
-                    )}
-                    <Icon n="chevr" className="ic sm m-qt-the-arr" />
-                  </div>
-                </div>
-              </Link>
-            ) : (
-              <div className="m-qt-the m-qt-buoc tinh">
-                <div className="m-qt-the-nd">
-                  <div className="m-qt-the-trai">
-                    <span className="m-qt-the-ic">
-                      <Icon n={b.icon} className="ic sm" />
-                    </span>
-                    <div className="m-qt-the-chu">
-                      <span className="m-qt-the-ten">{b.ten}</span>
-                      {b.moTa && <span className="m-qt-the-mota">{b.moTa}</span>}
-                    </div>
-                  </div>
-                </div>
+          <div key={b.id} className="m-qt2-buoc-muc">
+            {i > 0 && <div className="m-qt2-duong-noi" aria-hidden="true" />}
+            <div className="m-qt2-the">
+              <div className="m-qt2-head">
+                <span className="m-qt2-so">{b.so}</span>
+                <h3 className="m-qt2-ten-buoc">{b.ten}</h3>
               </div>
-            )}
+
+              <div className={`m-qt2-luoi${b.nut.length >= 2 ? ' m-qt2-luoi-2' : ''}`}>
+                {b.nut.map(n =>
+                  n.tinh ? (
+                    <div key={n.id} className="m-qt2-o tinh">
+                      <div className="m-qt2-o-ic">
+                        <Icon n={n.icon} className="ic sm" />
+                      </div>
+                      <div className="m-qt2-o-nd">
+                        <span className="m-qt2-o-ten">{n.ten}</span>
+                        {n.moTa && <span className="m-qt2-o-mota">{n.moTa}</span>}
+                      </div>
+                    </div>
+                  ) : (
+                    <Link
+                      key={n.id}
+                      to={n.path}
+                      className="m-qt2-o"
+                      title={`Mở ${n.ten.toLowerCase()}`}
+                    >
+                      <div className="m-qt2-o-ic">
+                        <Icon n={n.icon} className="ic sm" />
+                      </div>
+                      <div className="m-qt2-o-nd">
+                        <span className="m-qt2-o-ten">{n.ten}</span>
+                        {n.moTa && <span className="m-qt2-o-mota">{n.moTa}</span>}
+                      </div>
+                      <Icon n="chevr" className="ic xs m-qt2-o-arr" />
+                    </Link>
+                  )
+                )}
+              </div>
+            </div>
           </div>
         ))}
       </div>

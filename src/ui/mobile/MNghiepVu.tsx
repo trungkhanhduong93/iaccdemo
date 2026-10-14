@@ -1,13 +1,16 @@
+import { useMemo } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useSession } from '../../app/session'
 import { MODULES, duongDan, hienMan, hienPhanHe, moDuoc, phanHeKhoa, tabCua, tenMan, tenPhanHe } from '../../app/registry'
 import type { ScreenDef } from '../../modules/types'
 import { Icon } from '../Icon'
+import { MQuyTrinh, layDsBuoc } from './MQuyTrinh'
 
 export function MNghiepVu() {
   const { s } = useSession()
-  const [params] = useSearchParams()
+  const [params, setParams] = useSearchParams()
   const modKey = params.get('m')
+  const xem = params.get('xem')
 
   // Chỉ hiện màn mà gói Free hoặc Standard mở được trên điện thoại, áp cho mọi gói (Trum chốt 13/10/2026, T194)
   const manMoTrenMobile = (sc: ScreenDef) =>
@@ -25,6 +28,24 @@ export function MNghiepVu() {
 
   const modHienTai = modKey ? dsPhanHe.find(m => m.key === modKey) : null
 
+  // Kiểm tra phân hệ có sơ đồ quy trình và còn bước sau khi lọc ngoài gói
+  const coQuyTrinh = useMemo(() => {
+    if (!modHienTai) return false
+    return layDsBuoc(modHienTai, s).length > 0
+  }, [modHienTai, s])
+
+  const dangXemDs = xem === 'ds' || !coQuyTrinh
+
+  const chuyenTab = (tab: 'qt' | 'ds') => {
+    const next = new URLSearchParams(params)
+    if (tab === 'ds') {
+      next.set('xem', 'ds')
+    } else {
+      next.delete('xem')
+    }
+    setParams(next)
+  }
+
   if (modHienTai) {
     const dsMan = tabCua(modHienTai).filter(manMoTrenMobile)
 
@@ -40,33 +61,60 @@ export function MNghiepVu() {
           </div>
         </div>
 
-        <div className="m-nv-ds">
-          {dsMan.map(sc => {
-            const khoa = !moDuoc(sc, s.goi)
-            return (
-              <Link
-                key={sc.slug}
-                to={duongDan(modHienTai, sc)}
-                className={`m-nv-dong${khoa ? ' khoa' : ''}`}
-              >
-                <div className="m-nv-dong-trai">
-                  <span className="m-nv-dong-ic">
-                    <Icon n={sc.icon ?? modHienTai.icon} className="ic sm" />
-                  </span>
-                  <span className="m-nv-dong-ten">{tenMan(sc)}</span>
-                </div>
-                <div className="m-nv-dong-phai">
-                  {khoa && (
-                    <span className="m-nv-dong-lk" title="Ngoài gói">
-                      <Icon n="lock" className="ic xs" />
+        {coQuyTrinh && (
+          <div className="m-nv-phan-doan" role="tablist" aria-label="Xem theo quy trình hoặc danh sách">
+            <button
+              type="button"
+              role="tab"
+              aria-selected={!dangXemDs}
+              className={`m-nv-pd-nut${!dangXemDs ? ' on' : ''}`}
+              onClick={() => chuyenTab('qt')}
+            >
+              Quy trình
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={dangXemDs}
+              className={`m-nv-pd-nut${dangXemDs ? ' on' : ''}`}
+              onClick={() => chuyenTab('ds')}
+            >
+              Tất cả
+            </button>
+          </div>
+        )}
+
+        {coQuyTrinh && !dangXemDs ? (
+          <MQuyTrinh mod={modHienTai} />
+        ) : (
+          <div className="m-nv-ds">
+            {dsMan.map(sc => {
+              const khoa = !moDuoc(sc, s.goi)
+              return (
+                <Link
+                  key={sc.slug}
+                  to={duongDan(modHienTai, sc)}
+                  className={`m-nv-dong${khoa ? ' khoa' : ''}`}
+                >
+                  <div className="m-nv-dong-trai">
+                    <span className="m-nv-dong-ic">
+                      <Icon n={sc.icon ?? modHienTai.icon} className="ic sm" />
                     </span>
-                  )}
-                  <Icon n="chevr" className="ic sm m-nv-dong-mui-ten" />
-                </div>
-              </Link>
-            )
-          })}
-        </div>
+                    <span className="m-nv-dong-ten">{tenMan(sc)}</span>
+                  </div>
+                  <div className="m-nv-dong-phai">
+                    {khoa && (
+                      <span className="m-nv-dong-lk" title="Ngoài gói">
+                        <Icon n="lock" className="ic xs" />
+                      </span>
+                    )}
+                    <Icon n="chevr" className="ic sm m-nv-dong-mui-ten" />
+                  </div>
+                </Link>
+              )
+            })}
+          </div>
+        )}
       </div>
     )
   }

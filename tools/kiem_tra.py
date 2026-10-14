@@ -77,7 +77,7 @@ def kiem_tra_dien_thoai(rong=390, cao=844):
         for path in dia_chi:
             dem += 1
             pg.goto(f'{URL}#{path}')
-            pg.wait_for_timeout(100)
+            pg.wait_for_timeout(200)
             if con:
                 loi.append(f'{path}: lỗi console {con[:2]}')
                 con.clear()
@@ -1052,12 +1052,12 @@ def kiem_tra_dang_nhap_dot_8():
                 pg.wait_for_timeout(300)
                 kiem_man('Chi tiết phân hệ Thu chi')
 
-                dong_pc = pg.locator('.m-nv-dong[href*="tien/2-1-1"]')
+                dong_pc = pg.locator('.m-nv-dong[href*="tien/2-1-1"], .m-qt2-o[href*="tien/2-1-1"]')
                 if dong_pc.count() == 0:
                     loi.append('Phân hệ Thu chi: không tìm thấy màn Phiếu thu chi')
                 else:
-                    kiem_man('Dòng Phiếu thu chi', dong_pc)
-                    dong_pc.click()
+                    kiem_man('Dòng Phiếu thu chi', dong_pc.first)
+                    dong_pc.first.click()
                     pg.wait_for_timeout(500)
                     pg.screenshot(path=str(SHOTS / 'm-08-ds-phieu-chi.png'))
                     kiem_man('Danh sách Phiếu chi')
@@ -1760,13 +1760,17 @@ def kiem_tra_dot_11_b():
             pg.wait_for_timeout(300)
             kiem_man(ten)
 
-            the_ds = pg.locator('.m-qt-the')
+            the_ds = pg.locator('.m-qt2-the, .m-qt-the')
             count = the_ds.count()
             if count < 3:
-                loi.append(f'{ten}: cần ít nhất 3 thẻ bước, nhưng chỉ thấy {count} thẻ (.m-qt-the)')
+                loi.append(f'{ten}: cần ít nhất 3 thẻ bước, nhưng chỉ thấy {count} thẻ (.m-qt2-the)')
             else:
                 url_truoc = pg.url
-                the_ds.first.click()
+                o_bam = the_ds.first.locator('.m-qt2-o, a').first
+                if o_bam.count() > 0:
+                    o_bam.click()
+                else:
+                    the_ds.first.click()
                 pg.wait_for_timeout(300)
                 url_sau = pg.url
                 if url_sau == url_truoc:
@@ -3488,6 +3492,332 @@ def kiem_tra_dot_17_a():
     return loi
 
 
+def kiem_tra_dot_18_a():
+    loi = []
+    print('Kiểm tra đợt 18A (Anti A): Biểu đồ trang chủ điện thoại và bản web:')
+    SHOTS.mkdir(exist_ok=True)
+    with sync_playwright() as p:
+        b = p.chromium.launch(channel='chrome')
+        pg = b.new_page(viewport={'width': 390, 'height': 844}, is_mobile=True, has_touch=True)
+        con = []
+        pg.on('console', lambda m: con.append(m.text) if m.type == 'error' else None)
+        pg.on('pageerror', lambda e: con.append(str(e)))
+
+        # ── 1. Đăng nhập gói PR, chi nhánh Tất cả ──
+        pg.goto(URL + '#/dang-nhap')
+        pg.wait_for_selector('.auth-box')
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PR'))})")
+        pg.goto(URL + '?goi=PR#/app')
+        pg.wait_for_selector('.m-tc-the-ivt', timeout=8000)
+        pg.wait_for_timeout(400)
+
+        # 6 tiêu đề thẻ biểu đồ
+        tieu_des = [
+            'Thác nước lợi nhuận',
+            'Xu hướng kinh doanh 4 tháng',
+            'Dòng tiền kỳ',
+            'Hiệu quả theo chi nhánh',
+            'Cơ cấu chi phí',
+            'Món bán chạy',
+        ]
+
+        for td in tieu_des:
+            the = pg.locator(f".m-tc-the-ivt:has(.m-tc-the-tieu:text-is('{td}'))")
+            if the.count() == 0:
+                loi.append(f'18A: không tìm thấy thẻ "{td}" trên trang chủ điện thoại')
+            else:
+                if the.locator('svg').count() == 0:
+                    loi.append(f'18A: thẻ "{td}" không có thẻ svg nào')
+
+        # Thẻ Tổng quan tài chính có 3 hoặc 4 svg.spark
+        the_tc = pg.locator(".m-tc-the-ivt:has(.m-tc-the-tieu:text-is('Tổng quan tài chính'))")
+        if the_tc.count() == 0:
+            loi.append('18A: không tìm thấy thẻ "Tổng quan tài chính"')
+        else:
+            so_spark = the_tc.locator('svg.spark').count()
+            if so_spark not in (3, 4):
+                loi.append(f'18A: thẻ Tổng quan tài chính có {so_spark} svg.spark (mong đợi 3 hoặc 4)')
+
+        # Không tràn ngang, không lỗi console
+        tran_ngang = pg.evaluate("document.documentElement.scrollWidth > window.innerWidth + 1")
+        if tran_ngang:
+            loi.append('18A: trang chủ điện thoại bị tràn ngang')
+        if con:
+            loi.append(f'18A: lỗi console {con[:2]}')
+            con.clear()
+
+        # Chụp 3 ảnh trên điện thoại
+        # Ảnh 1: phần thẻ tài chính và thác nước
+        the_tc.scroll_into_view_if_needed()
+        pg.wait_for_timeout(200)
+        pg.screenshot(path=str(SHOTS / 'm-18-trang-chu-1.png'))
+
+        # Ảnh 2: dòng tiền, chi nhánh
+        the_dt = pg.locator(".m-tc-the-ivt:has(.m-tc-the-tieu:text-is('Dòng tiền kỳ'))")
+        if the_dt.count() > 0:
+            the_dt.scroll_into_view_if_needed()
+            pg.wait_for_timeout(200)
+            pg.screenshot(path=str(SHOTS / 'm-18-trang-chu-2.png'))
+
+        # Ảnh 3: cơ cấu chi phí, món bán chạy
+        the_cp = pg.locator(".m-tc-the-ivt:has(.m-tc-the-tieu:text-is('Cơ cấu chi phí'))")
+        if the_cp.count() > 0:
+            the_cp.scroll_into_view_if_needed()
+            pg.wait_for_timeout(200)
+            pg.screenshot(path=str(SHOTS / 'm-18-trang-chu-3.png'))
+
+        # ── 2. Đổi chi nhánh sang một chi nhánh khác ──
+        chip_cn = pg.locator('.m-tc-chip-cn')
+        if chip_cn.count() > 0:
+            chip_cn.first.click()
+            pg.wait_for_selector('.m-tam-dong', timeout=4000)
+            pg.wait_for_timeout(200)
+            dongs_cn = pg.locator('.m-tam-dong')
+            if dongs_cn.count() > 1:
+                dongs_cn.nth(1).click()
+                pg.wait_for_timeout(400)
+
+                # Kiểm tra thẻ Hiệu quả theo chi nhánh vẫn vẽ
+                the_cn = pg.locator(".m-tc-the-ivt:has(.m-tc-the-tieu:text-is('Hiệu quả theo chi nhánh'))")
+                if the_cn.count() == 0 or the_cn.locator('.branch-bars').count() == 0:
+                    loi.append('18A: sau khi đổi chi nhánh, thẻ Hiệu quả theo chi nhánh không vẽ')
+
+                # Kiểm tra thẻ Dòng tiền kỳ vẫn có số tổng
+                if the_dt.count() > 0:
+                    the_tong_dt_sau = the_dt.locator('.row b')
+                    if the_tong_dt_sau.count() == 0:
+                        loi.append('18A: thẻ Dòng tiền kỳ mất số tổng sau khi đổi chi nhánh')
+            else:
+                loi.append('18A: không tìm thấy chi nhánh thứ 2 trong sheet chọn chi nhánh')
+        else:
+            loi.append('18A: không tìm thấy nút chip chọn chi nhánh .m-tc-chip-cn')
+
+        # ── 3. Gói Free: không có thẻ "Thác nước lợi nhuận" ──
+        pg.goto(URL + '#/dang-nhap')
+        pg.wait_for_selector('.auth-box')
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('F'))})")
+        pg.goto(URL + '?goi=F#/app')
+        pg.wait_for_selector('.m-tc-the-ivt', timeout=8000)
+        pg.wait_for_timeout(400)
+
+        the_thac_f = pg.locator(".m-tc-the-ivt:has(.m-tc-the-tieu:text-is('Thác nước lợi nhuận'))")
+        if the_thac_f.count() > 0:
+            loi.append('18A: gói Free vẫn có thẻ "Thác nước lợi nhuận"')
+
+        if con:
+            loi.append(f'18A: lỗi console gói Free {con[:2]}')
+            con.clear()
+
+        # ── 4. Ở 1440x900 gói PR: màn #/app/trang-chu/tong-quan bản web có 6 thẻ biểu đồ ──
+        pg_w = b.new_page(viewport={'width': 1440, 'height': 900})
+        pg_w.goto(URL + '#/dang-nhap')
+        pg_w.wait_for_selector('.auth-box')
+        pg_w.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PR'))})")
+        pg_w.goto(URL + '?goi=PR#/app/trang-chu/tong-quan')
+        pg_w.wait_for_selector('.card', timeout=8000)
+        pg_w.wait_for_timeout(400)
+
+        for td in tieu_des:
+            card_w = pg_w.locator(f".card:has-text('{td}')")
+            if card_w.count() == 0:
+                loi.append(f'18A: bản web thiếu thẻ "{td}" tại #/app/trang-chu/tong-quan')
+
+        pg_w.screenshot(path=str(SHOTS / 'w-18-tong-quan.png'))
+        pg_w.close()
+
+        b.close()
+    return loi
+
+
+def kiem_tra_dot_18_b():
+    """Đợt 18B: Sơ đồ quy trình kiểu app trên điện thoại (T236)"""
+    loi = []
+    print('Kiểm tra đợt 18B (Anti B): Sơ đồ quy trình điện thoại kiểu app (T236):')
+    with sync_playwright() as p:
+        b = p.chromium.launch(channel='chrome')
+        pg = b.new_page(
+            viewport={'width': 390, 'height': 844},
+            is_mobile=True,
+            has_touch=True,
+        )
+        con = []
+        pg.on('console', lambda m: con.append(m.text) if m.type == 'error' else None)
+        pg.on('pageerror', lambda e: con.append(str(e)))
+
+        def kiem_man(ten):
+            if pg.evaluate('document.documentElement.scrollWidth > innerWidth'):
+                loi.append(f'{ten}: tràn ngang màn hình')
+            if con:
+                loi.append(f'{ten}: lỗi console {con[:2]}')
+                con.clear()
+
+        # ── 1. Gói PR: mở #/app/nghiep-vu, bấm ô "Tiền" (Thu chi) ──
+        pg.goto(URL + '#/dang-nhap')
+        pg.wait_for_selector('.auth-box')
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PR'))})")
+
+        pg.goto(f'{URL}?goi=PR#/app/nghiep-vu')
+        pg.wait_for_selector('.m-nv-luoi', timeout=8000)
+        pg.wait_for_timeout(300)
+        kiem_man('Nghiệp vụ gói PR')
+
+        so_o_pr = 0
+
+        # Bấm ô Tiền (Thu chi: key tien)
+        o_tien = pg.locator('.m-nv-o[href*="m=tien"]')
+        if o_tien.count() == 0:
+            loi.append('18B: không tìm thấy ô phân hệ Tiền trên lưới nghiệp vụ')
+        else:
+            o_tien.first.click()
+            pg.wait_for_selector('.m-nv-chi-tiet', timeout=8000)
+            pg.wait_for_timeout(350)
+            kiem_man('Chi tiết phân hệ Tiền gói PR')
+
+            # Có nút "Quy trình" đang chọn
+            nut_qt = pg.locator('.m-nv-pd-nut:has-text("Quy trình")')
+            if nut_qt.count() == 0:
+                loi.append('18B: không tìm thấy nút phân đoạn "Quy trình"')
+            else:
+                cls_qt = nut_qt.first.get_attribute('class') or ''
+                if 'on' not in cls_qt:
+                    loi.append(f'18B: nút "Quy trình" không ở trạng thái đang chọn (class: {cls_qt})')
+
+            # Có sơ đồ (≥2 thẻ bước)
+            the_buoc = pg.locator('.m-qt2-the')
+            count_the_pr = the_buoc.count()
+            if count_the_pr < 2:
+                loi.append(f'18B: sơ đồ Tiền gói PR cần ≥2 thẻ bước, thấy: {count_the_pr}')
+
+            # Không có biểu tượng khoá trong sơ đồ
+            the_khoa = pg.locator('.m-qt2-the .lock, .m-qt2-the .khoa, .m-qt2-the [title*="ngoài gói"], .m-qt2-the [title*="Ngoài gói"]')
+            if the_khoa.count() > 0:
+                loi.append(f'18B: sơ đồ Tiền gói PR còn biểu tượng khoá ({the_khoa.count()})')
+
+            # Chụp ảnh m-18-qt-tien.png
+            pg.screenshot(path=str(SHOTS / 'm-18-qt-tien.png'))
+
+            # Đếm số ô gói PR để so sánh với gói F
+            so_o_pr = pg.locator('.m-qt2-o').count()
+
+            # ── 2. Bấm một ô chứng từ trên sơ đồ (vd phiếu thu): URL đổi sang màn chứng từ, có danh sách phiếu ──
+            o_thu = pg.locator('.m-qt2-o[href*="tien/2-1-1"]').first
+            if o_thu.count() == 0:
+                o_thu = pg.locator('.m-qt2-o').first
+
+            if o_thu.count() == 0:
+                loi.append('18B: không có ô chứng từ nào để bấm trên sơ đồ Tiền')
+            else:
+                url_truoc = pg.evaluate('location.hash')
+                o_thu.click()
+                pg.wait_for_timeout(400)
+                url_sau = pg.evaluate('location.hash')
+
+                if url_sau == url_truoc:
+                    loi.append(f'18B: bấm ô chứng từ nhưng URL không đổi ({url_truoc})')
+                elif 'tien/2-1-1' not in url_sau and '/app/tien' not in url_sau:
+                    loi.append(f'18B: URL không đổi sang màn chứng từ phù hợp (thấy: {url_sau})')
+
+                # Có danh sách phiếu: .m-ct-ds hoặc thẻ phiếu .m-ct-the
+                pg.wait_for_selector('.m-ct-ds, .m-ct-the, .m-ds-khung', timeout=6000)
+                ds_phieu = pg.locator('.m-ct-ds, .m-ct-the, .m-ds-khung')
+                if ds_phieu.count() == 0:
+                    loi.append('18B: màn chứng từ không có danh sách phiếu (.m-ct-ds/.m-ct-the)')
+                kiem_man('Danh sách phiếu sau khi bấm ô chứng từ')
+
+            # ── 3. Quay lại, bấm "Tất cả": có danh sách màn ──
+            pg.go_back()
+            pg.wait_for_selector('.m-nv-chi-tiet', timeout=6000)
+            pg.wait_for_timeout(300)
+
+            nut_tat_ca = pg.locator('.m-nv-pd-nut:has-text("Tất cả")')
+            if nut_tat_ca.count() == 0:
+                loi.append('18B: không tìm thấy nút phân đoạn "Tất cả"')
+            else:
+                nut_tat_ca.first.click()
+                pg.wait_for_timeout(300)
+
+                cls_tc = nut_tat_ca.first.get_attribute('class') or ''
+                if 'on' not in cls_tc:
+                    loi.append(f'18B: nút "Tất cả" không ở trạng thái đang chọn sau khi bấm (class: {cls_tc})')
+
+                ds_man = pg.locator('.m-nv-ds a.m-nv-dong')
+                if ds_man.count() == 0:
+                    loi.append('18B: tab "Tất cả" không có danh sách màn (.m-nv-ds .m-nv-dong)')
+                kiem_man('Tab Tất cả phân hệ Tiền')
+
+        # ── 4. Gói F: sơ đồ phân hệ Tiền không có ô nào trỏ tới màn ngoài gói F ──
+        pg.goto(URL + '#/dang-nhap')
+        pg.wait_for_selector('.auth-box')
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('F'))})")
+
+        pg.goto(f'{URL}?goi=F#/app/nghiep-vu?m=tien')
+        pg.wait_for_selector('.m-nv-chi-tiet', timeout=8000)
+        pg.wait_for_timeout(350)
+        kiem_man('Phân hệ Tiền gói Free')
+
+        # Kiểm tra không có biểu tượng khoá
+        khoa_f = pg.locator('.m-qt2-the .lock, .m-qt2-the .khoa, .m-qt2-the [title*="ngoài gói"], .m-qt2-the [title*="Ngoài gói"]')
+        if khoa_f.count() > 0:
+            loi.append(f'18B: gói F còn {khoa_f.count()} mục khoá trên sơ đồ')
+
+        # Không có ô trỏ tới tính năng ngoài gói F (vd 2.1.3 Phân bổ chi phí chuỗi hoặc 10.1.3 Số dư ban đầu tổng hợp)
+        o_ngoai_goi = pg.locator('.m-qt2-o[href*="2-1-3"], .m-qt2-o[href*="10-1-3"]')
+        if o_ngoai_goi.count() > 0:
+            loi.append(f'18B: gói F còn {o_ngoai_goi.count()} ô ngoài gói (2.1.3 hoặc 10.1.3)')
+
+        # Chụp ảnh m-18-qt-free.png
+        pg.screenshot(path=str(SHOTS / 'm-18-qt-free.png'))
+
+        # ── 5. Phân hệ Bán hàng, Kho gói PR: sơ đồ có thẻ bước, số bước liên tục 1, 2, 3... ──
+        pg.goto(URL + '#/dang-nhap')
+        pg.wait_for_selector('.auth-box')
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PR'))})")
+
+        # Bán hàng gói PR
+        pg.goto(f'{URL}?goi=PR#/app/nghiep-vu?m=ban-hang')
+        pg.wait_for_selector('.m-qt2-the', timeout=8000)
+        pg.wait_for_timeout(350)
+        kiem_man('Bán hàng gói PR')
+        pg.screenshot(path=str(SHOTS / 'm-18-qt-ban-hang.png'))
+
+        so_buoc_bh = pg.eval_on_selector_all(
+            '.m-qt2-so',
+            'els => els.map(e => parseInt(e.innerText.trim(), 10)).filter(n => !isNaN(n))'
+        )
+        if not so_buoc_bh:
+            loi.append('18B: phân hệ Bán hàng không có thẻ bước nào')
+        elif so_buoc_bh != list(range(1, len(so_buoc_bh) + 1)):
+            loi.append(f'18B: Bán hàng gói PR số bước không liên tục 1, 2, 3... (thấy: {so_buoc_bh})')
+
+        # Kho gói PR
+        pg.goto(f'{URL}?goi=PR#/app/nghiep-vu?m=kho')
+        pg.wait_for_selector('.m-qt2-the', timeout=8000)
+        pg.wait_for_timeout(350)
+        kiem_man('Kho gói PR')
+
+        so_buoc_kho = pg.eval_on_selector_all(
+            '.m-qt2-so',
+            'els => els.map(e => parseInt(e.innerText.trim(), 10)).filter(n => !isNaN(n))'
+        )
+        if not so_buoc_kho:
+            loi.append('18B: phân hệ Kho không có thẻ bước nào')
+        elif so_buoc_kho != list(range(1, len(so_buoc_kho) + 1)):
+            loi.append(f'18B: Kho gói PR số bước không liên tục 1, 2, 3... (thấy: {so_buoc_kho})')
+
+        # Chụp ảnh m-18-qt-kho.png
+        pg.screenshot(path=str(SHOTS / 'm-18-qt-kho.png'))
+
+        b.close()
+
+    if not loi:
+        print('  Không có lỗi đợt 18B.')
+    else:
+        print(f'  Có {len(loi)} lỗi đợt 18B:')
+        for err in loi:
+            print(f'    - {err}')
+    return loi
+
+
 def kiem_tra_cac_khung_dt():
     loi, dem = [], 0
     for rong, cao in KHUNG_DT:
@@ -3526,6 +3856,8 @@ def kiem_tra_cac_khung_dt():
     loi += kiem_tra_dot_15_b()
     loi += kiem_tra_dot_16_b()
     loi += kiem_tra_dot_17_a()
+    loi += kiem_tra_dot_18_a()
+    loi += kiem_tra_dot_18_b()
     if loi:
         print(f'{len(loi)} LỖI:')
         for x in loi:

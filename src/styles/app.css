@@ -13034,161 +13034,6 @@ button.cn-ten {
     gap: 12px;
     box-sizing: border-box;
   }
-
-  .m-qt-mota-dau {
-    font-size: 13px;
-    color: var(--muted);
-    line-height: 1.45;
-    margin: 0;
-    background: var(--white);
-    border-radius: var(--m-the-r, 16px);
-    border: 1px solid var(--line);
-    padding: 10px 14px;
-  }
-
-  .m-qt-ds {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    position: relative;
-  }
-
-  .m-qt-muc {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    position: relative;
-  }
-
-  .m-qt-duong {
-    position: absolute;
-    left: 14px;
-    top: 28px;
-    bottom: -10px;
-    width: 2px;
-    background: var(--line);
-    z-index: 1;
-  }
-
-  .m-qt-cot-so {
-    width: 30px;
-    display: flex;
-    justify-content: center;
-    flex: none;
-    z-index: 2;
-  }
-
-  .m-qt-so {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: var(--pri, #0284c7);
-    color: var(--white);
-    font-size: 12.5px;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 4px rgba(2, 132, 199, 0.25);
-    flex: none;
-  }
-
-  .m-qt-the {
-    flex: 1;
-    min-width: 0;
-    background: var(--white);
-    border-radius: var(--m-the-r, 16px);
-    border: 1px solid var(--line);
-    padding: 12px 14px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-    text-decoration: none;
-    color: var(--ink);
-    box-sizing: border-box;
-    min-height: 44px;
-    display: flex;
-    align-items: center;
-  }
-
-  .m-qt-buoc {
-    /* alias định danh cho thẻ bước quy trình */
-    position: relative;
-  }
-
-  .m-qt-the.khoa {
-    opacity: 0.65;
-  }
-
-  .m-qt-the.tinh {
-    background: #f8fafc;
-    border-style: dashed;
-    cursor: default;
-  }
-
-  .m-qt-the-nd {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    width: 100%;
-  }
-
-  .m-qt-the-trai {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    min-width: 0;
-    flex: 1;
-  }
-
-  .m-qt-the-ic {
-    width: 34px;
-    height: 34px;
-    border-radius: 10px;
-    background: #f1f5f9;
-    color: var(--pri, #0284c7);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex: none;
-  }
-
-  .m-qt-the-chu {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    min-width: 0;
-  }
-
-  .m-qt-the-ten {
-    font-size: 13.5px;
-    font-weight: 600;
-    color: var(--ink);
-    line-height: 1.35;
-  }
-
-  .m-qt-the-mota {
-    font-size: 11.5px;
-    color: var(--muted);
-    line-height: 1.35;
-  }
-
-  .m-qt-the-phai {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    flex: none;
-  }
-
-  .m-qt-the-lk {
-    color: var(--muted);
-    display: inline-flex;
-    align-items: center;
-  }
-
-  .m-qt-the-arr {
-    color: var(--muted);
-    flex: none;
-  }
 }
 
 /* ── Điện thoại: hệ thống, danh mục tài khoản, chi nhánh (T191, T187) ── */
@@ -16324,3 +16169,263 @@ a.lsq-dong:hover { background: var(--tint); }
   border-radius: 8px;
 }
 
+/* ── Điện thoại: biểu đồ trang chủ (T235) ── */
+@media (max-width: 767px) {
+  .m-tc-kpi-spark {
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+  }
+}
+
+/* ── Điện thoại: sơ đồ quy trình kiểu app (T236) ── */
+@media (max-width: 767px) {
+  /* Phân đoạn chuyển Quy trình / Tất cả trên màn phân hệ */
+  .m-nv-phan-doan {
+    display: flex;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: var(--m-nut-r, 12px);
+    padding: 3px;
+    gap: 4px;
+    box-sizing: border-box;
+  }
+
+  .m-nv-pd-nut {
+    flex: 1;
+    min-height: 44px;
+    height: 44px;
+    border-radius: calc(var(--m-nut-r, 12px) - 2px);
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    text-decoration: none;
+    box-sizing: border-box;
+    transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .m-nv-pd-nut.on {
+    background: var(--white);
+    color: var(--ink);
+    font-weight: 600;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  }
+
+  /* Khung sơ đồ quy trình kiểu app trên điện thoại */
+  .m-qt2-quytrinh {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-sizing: border-box;
+  }
+
+  /* Khi nhúng trong màn chi tiết nghiệp vụ, bỏ padding ngang thừa vì .m-nv-chi-tiet đã có lề */
+  .m-nv-chi-tiet .m-qt2-quytrinh {
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 2px;
+  }
+
+  .m-qt2-mota-dau {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.45;
+    margin: 0;
+    background: var(--white);
+    border-radius: var(--m-the-r, 16px);
+    border: 1px solid var(--line);
+    padding: 10px 14px;
+    box-sizing: border-box;
+  }
+
+  /* Dòng thời gian dọc */
+  .m-qt2-ds {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: relative;
+    box-sizing: border-box;
+  }
+
+  .m-qt2-buoc-muc {
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+  }
+
+  /* Nét nối dọc giữa các thẻ bước */
+  .m-qt2-duong-noi {
+    width: 2px;
+    height: 12px;
+    background: var(--line);
+    margin: 0 0 0 25px;
+    flex: none;
+  }
+
+  /* Thẻ bước quy trình */
+  .m-qt2-the {
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: var(--m-the-r, 16px);
+    padding: 12px 14px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  /* Đầu thẻ: vòng số + tên bước */
+  .m-qt2-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .m-qt2-so {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--blue);
+    color: var(--white);
+    font-size: 12.5px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    box-shadow: 0 1px 3px rgba(5, 96, 166, 0.25);
+  }
+
+  .m-qt2-ten-buoc {
+    margin: 0;
+    font-size: 14.5px;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.35;
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* Lưới các ô chứng từ trong bước */
+  .m-qt2-luoi {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    box-sizing: border-box;
+  }
+
+  /* Bước có từ 2 chứng từ song song: lưới 2 cột */
+  .m-qt2-luoi.m-qt2-luoi-2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .m-qt2-luoi.m-qt2-luoi-2 .m-qt2-o {
+    padding: 6px 8px;
+    gap: 6px;
+  }
+
+  .m-qt2-luoi.m-qt2-luoi-2 .m-qt2-o-ic {
+    width: 24px;
+    height: 24px;
+  }
+
+  .m-qt2-luoi.m-qt2-luoi-2 .m-qt2-o-arr {
+    display: none;
+  }
+
+  .m-qt2-luoi.m-qt2-luoi-2 .m-qt2-o-ten {
+    font-size: 12.5px;
+    white-space: normal;
+    line-height: 1.25;
+    word-break: break-word;
+  }
+
+  /* Ô chứng từ: cao tối thiểu 44px */
+  .m-qt2-o {
+    min-height: 44px;
+    padding: 8px 10px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: var(--m-nut-r, 12px);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: var(--ink);
+    box-sizing: border-box;
+    transition: background 0.15s ease;
+    min-width: 0;
+  }
+
+  .m-qt2-o:active {
+    background: var(--tint);
+  }
+
+  .m-qt2-o.tinh {
+    border-style: dashed;
+    cursor: default;
+    opacity: 0.9;
+  }
+
+  /* Biểu tượng tròn */
+  .m-qt2-o-ic {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--white);
+    color: var(--blue);
+    border: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+  }
+
+  .m-qt2-o-nd {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+  }
+
+  .m-qt2-o-ten {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+  }
+
+  /* Mô tả ngắn: 1 dòng, cắt bằng dấu ba chấm */
+  .m-qt2-o-mota {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.25;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+  }
+
+  /* Mũi tên phải */
+  .m-qt2-o-arr {
+    color: var(--muted);
+    flex: none;
+    opacity: 0.65;
+  }
+}

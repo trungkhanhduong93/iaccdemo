@@ -74,9 +74,10 @@ export function HBars({ data, color = '#1b6fe0', fmt = short }: { data: { l: str
 }
 
 /** Thác nước lợi nhuận: Doanh thu thuần → giá vốn → chi phí bán hàng → chi phí quản lý → tài chính, khác → Lợi nhuận trước thuế */
-export function WaterfallChart({ data, h = 240 }: {
+export function WaterfallChart({ data, h = 240, compact = false }: {
   data: { l: string; v: number; isTotal?: boolean; c?: string }[]
   h?: number
+  compact?: boolean
 }) {
   const W = 680, pl = 54, pb = 32, pt = 18, pr = 16
   let run = 0
@@ -131,8 +132,16 @@ export function WaterfallChart({ data, h = 240 }: {
             <text x={x + w / 2} y={yTop - 5} textAnchor="middle" fontSize={10.5} fontWeight={600} fill="var(--ink)">
               {short(Math.abs(s.val)).replace(' tr', 'tr').replace(' tỷ', 'tỷ')}
             </text>
-            <text x={x + w / 2} y={h - 10} textAnchor="middle" fontSize={11} fill="var(--muted)">
-              {s.l}
+            <text x={x + w / 2} y={h - 10} textAnchor="middle" fontSize={compact ? 10 : 11} fill="var(--muted)">
+              {compact
+                ? (s.l === 'Doanh thu thuần' ? 'Doanh thu'
+                  : s.l === 'Giá vốn hàng bán' ? 'Giá vốn'
+                  : s.l === 'Chi phí bán hàng' ? 'Bán hàng'
+                  : s.l === 'Chi phí quản lý' ? 'Quản lý'
+                  : s.l === 'Tài chính, khác' ? 'TC, khác'
+                  : s.l === 'Lợi nhuận trước thuế' ? 'LN trước thuế'
+                  : s.l)
+                : s.l}
             </text>
             {next && !next.isTotal && (
               <line
@@ -357,9 +366,11 @@ export function BranchBarChart({
 
 /** Cơ cấu chi phí hoạt động: thanh ngang 100% kèm danh sách tỷ lệ */
 export function CostStructureChart({
-  parts
+  parts,
+  compact = false,
 }: {
   parts: { l: string; v: number; c: string }[]
+  compact?: boolean
 }) {
   const total = parts.reduce((s, p) => s + p.v, 0) || 1
   return (
@@ -377,7 +388,7 @@ export function CostStructureChart({
           )
         })}
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px 14px', fontSize: 12.5 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: compact ? '1fr' : '1fr 1fr', gap: '8px 14px', fontSize: 12.5 }}>
         {parts.map((p, i) => {
           const w = (p.v / total) * 100
           return (

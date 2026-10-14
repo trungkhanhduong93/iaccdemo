@@ -11,7 +11,15 @@ import { dinhMucTon } from '../../modules/kho/data'
 import { MODULES, hienMan, moDuoc, timMan } from '../../app/registry'
 import { chungTu, dongCua } from '../generic/gen'
 import { mauDieuChinh } from '../../modules/kho/dieu-chinh'
-import { TrendChart } from '../Charts'
+import {
+  BranchBarChart,
+  CashFlowChart,
+  CostStructureChart,
+  HBars,
+  Spark,
+  TrendChart,
+  WaterfallChart,
+} from '../Charts'
 import { MTimKiem } from './MTimKiem'
 import { MChon } from './MChon'
 
@@ -46,6 +54,27 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
   const [moChonCn, setMoChonCn] = useState(false)
   const [khoChon] = useState<string>('Tất cả')
   const snapRef = useRef<HTMLDivElement>(null)
+  const thacNuocRef = useRef<HTMLDivElement>(null)
+  const isFree = s.goi === 'F'
+
+  // Kiểm tra liên kết báo cáo theo gói và chế độ hiện tại (QD45)
+  const layLinkBaoCao = (code?: string): string | null => {
+    if (!code) return null
+    for (const m of MODULES) {
+      const scDef = m.screens.find(x => x.code === code)
+      if (scDef) {
+        if (hienMan(scDef, s.goi, s.cheDo, s)) {
+          return `/app/bao-cao/${scDef.slug}`
+        }
+        return null
+      }
+    }
+    return null
+  }
+
+  const linkKQ = layLinkBaoCao('10.2.3')
+  const linkDTien = layLinkBaoCao('2.2.9')
+  const linkCP = layLinkBaoCao('10.4.3')
 
   const dsChonCn = useMemo(() => {
     return [
@@ -513,25 +542,52 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
                   <Icon n="info" className="ic xs" />
                 </span>
               </div>
-              <Link to="/app/trang-chu/tong-quan" className="m-tc-the-link">
-                Chi tiết
-              </Link>
+              {isFree ? (
+                <Link to="/app/trang-chu/tong-quan" className="m-tc-the-link">
+                  Chi tiết
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  className="m-tc-the-link"
+                  onClick={() => {
+                    thacNuocRef.current?.scrollIntoView({ behavior: 'smooth' })
+                  }}
+                >
+                  Chi tiết
+                </button>
+              )}
             </div>
             <div className="m-tc-kpi-luoi">
               <div className="m-tc-kpi-muc">
                 <div className="m-tc-kpi-nhan">Doanh thu thuần</div>
                 <div className="m-tc-kpi-so">{money(d.dtThuan)} đ</div>
                 <SoSanhDong tang={d.tangDT} label={d.tangDT !== null ? d.soSanhLabel : ''} />
+                {!isFree && d.sparkDT && d.sparkDT.length > 1 && (
+                  <div className="m-tc-kpi-spark">
+                    <Spark values={d.sparkDT} w={86} h={24} color="#0560a6" />
+                  </div>
+                )}
               </div>
               <div className="m-tc-kpi-muc">
                 <div className="m-tc-kpi-nhan">Lợi nhuận trước thuế</div>
                 <div className="m-tc-kpi-so">{money(d.lnTruocThue)} đ</div>
                 <SoSanhDong tang={d.tangLNTT} label={`· Biên ${pct(d.bienLNTT)}`} />
+                {!isFree && d.sparkLNTT && d.sparkLNTT.length > 1 && (
+                  <div className="m-tc-kpi-spark">
+                    <Spark values={d.sparkLNTT} w={86} h={24} color="#138a52" />
+                  </div>
+                )}
               </div>
               <div className="m-tc-kpi-muc">
                 <div className="m-tc-kpi-nhan">Tiền hiện có</div>
                 <div className="m-tc-kpi-so">{money(d.tienKhaDung)} đ</div>
                 <SoSanhDong tang={d.tangTien} label={`· Đủ chi ${d.soNgayDuChi} ngày`} />
+                {!isFree && d.sparkTien && d.sparkTien.length > 1 && (
+                  <div className="m-tc-kpi-spark">
+                    <Spark values={d.sparkTien} w={86} h={24} color="#0b2c6b" />
+                  </div>
+                )}
               </div>
               <div className="m-tc-kpi-muc">
                 <div className="m-tc-kpi-nhan">Phải thu khách hàng</div>
@@ -540,6 +596,154 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
               </div>
             </div>
           </div>
+
+          {!isFree && (
+            <>
+              {/* Thẻ: Thác nước lợi nhuận */}
+              <div className="m-tc-the-ivt" ref={thacNuocRef} id="m-the-thac-nuoc">
+                <div className="m-tc-the-head">
+                  <div className="m-tc-the-tieu-hop">
+                    <h3 className="m-tc-the-tieu">Thác nước lợi nhuận</h3>
+                    <span className="m-tc-the-info" title="Doanh thu thuần → Giá vốn → Chi phí → Lợi nhuận trước thuế">
+                      <Icon n="info" className="ic xs" />
+                    </span>
+                  </div>
+                  {linkKQ && (
+                    <Link to={linkKQ} className="m-tc-the-link">
+                      Chi tiết
+                    </Link>
+                  )}
+                </div>
+                <div className="chart-legend-row">
+                  <span className="chart-legend-item"><i className="chart-legend-dot" style={{ background: '#0560a6' }} /> Doanh thu</span>
+                  <span className="chart-legend-item"><i className="chart-legend-dot" style={{ background: '#f28020' }} /> Giá vốn</span>
+                  <span className="chart-legend-item"><i className="chart-legend-dot" style={{ background: '#c2362b' }} /> Bán hàng</span>
+                  <span className="chart-legend-item"><i className="chart-legend-dot" style={{ background: '#a86a0c' }} /> Quản lý</span>
+                  <span className="chart-legend-item"><i className="chart-legend-dot" style={{ background: '#138a52' }} /> Lợi nhuận</span>
+                </div>
+                <WaterfallChart data={d.thacNuoc} h={230} compact />
+              </div>
+
+              {/* Thẻ: Xu hướng kinh doanh 4 tháng */}
+              <div className="m-tc-the-ivt">
+                <div className="m-tc-the-head">
+                  <div className="m-tc-the-tieu-hop">
+                    <h3 className="m-tc-the-tieu">Xu hướng kinh doanh 4 tháng</h3>
+                    <span className="m-tc-the-info" title="Doanh thu (cột), lợi nhuận trước thuế và biên lãi (%) qua các tháng">
+                      <Icon n="info" className="ic xs" />
+                    </span>
+                  </div>
+                </div>
+                <div className="chart-legend-row">
+                  <span className="chart-legend-item"><i className="chart-legend-dot" style={{ background: '#0560a6' }} /> Doanh thu thuần</span>
+                  <span className="chart-legend-item"><i className="chart-legend-dot" style={{ background: '#138a52' }} /> LNTT</span>
+                  <span className="chart-legend-item"><i className="chart-legend-dot" style={{ background: '#f28020' }} /> Biên lãi %</span>
+                </div>
+                <TrendChart data={d.trend} h={230} />
+              </div>
+
+              {/* Thẻ: Dòng tiền kỳ */}
+              <div className="m-tc-the-ivt">
+                <div className="m-tc-the-head">
+                  <div className="m-tc-the-tieu-hop">
+                    <h3 className="m-tc-the-tieu">Dòng tiền kỳ</h3>
+                    <span className="m-tc-the-info" title={d.ghiChuDongTien ?? "Số dư đầu kỳ, dòng tiền thu, chi và tiền cuối kỳ khớp sổ cái"}>
+                      <Icon n="info" className="ic xs" />
+                    </span>
+                  </div>
+                  {linkDTien && (
+                    <Link to={linkDTien} className="m-tc-the-link">
+                      Chi tiết
+                    </Link>
+                  )}
+                </div>
+                <div className="chart-legend-row">
+                  <span className="chart-legend-item"><i className="chart-legend-dot" style={{ background: '#0b2c6b' }} /> Đầu kỳ</span>
+                  <span className="chart-legend-item"><i className="chart-legend-dot" style={{ background: '#138a52' }} /> Thu tiền</span>
+                  <span className="chart-legend-item"><i className="chart-legend-dot" style={{ background: '#c2362b' }} /> Chi tiền</span>
+                  <span className="chart-legend-item"><i className="chart-legend-dot" style={{ background: '#0560a6' }} /> Cuối kỳ</span>
+                </div>
+                <CashFlowChart
+                  dau={d.dongTien.dau}
+                  thu={d.dongTien.thu}
+                  chi={d.dongTien.chi}
+                  cuoi={d.dongTien.cuoi}
+                  h={210}
+                />
+                <div className="row" style={{ marginTop: 10, paddingTop: 8, borderTop: '1px solid var(--line-2)', fontSize: 13 }}>
+                  <span className="muted">Dòng tiền thuần trong kỳ:</span>
+                  <span className="grow" />
+                  <b className={d.dongTien.thu >= d.dongTien.chi ? 'up' : 'down'}>
+                    {d.dongTien.thu >= d.dongTien.chi ? '+' : ''}{money(d.dongTien.thu - d.dongTien.chi)} đ
+                  </b>
+                </div>
+              </div>
+
+              {/* Thẻ: Hiệu quả theo chi nhánh */}
+              <div className="m-tc-the-ivt">
+                <div className="m-tc-the-head">
+                  <div className="m-tc-the-tieu-hop">
+                    <h3 className="m-tc-the-tieu">Hiệu quả theo chi nhánh</h3>
+                    <span className="m-tc-the-info" title={`Doanh thu và biên lãi gộp từng điểm bán · ${d.kyLabel}`}>
+                      <Icon n="info" className="ic xs" />
+                    </span>
+                  </div>
+                </div>
+                <BranchBarChart data={d.chiNhanh} />
+                <div style={{ marginTop: 12, paddingTop: 10, borderTop: '1px solid var(--line-2)' }} className="row">
+                  <span className="muted">Số đơn hàng</span>
+                  <span className="grow" />
+                  <b className="num" style={{ color: 'var(--ink)' }}>{money(d.soDon)}</b>
+                </div>
+                <div className="row" style={{ marginTop: 4 }}>
+                  <span className="muted">Giá trị trung bình một đơn (AOV)</span>
+                  <span className="grow" />
+                  <b className="num" style={{ color: 'var(--ink)' }}>{money(d.aov)} đ</b>
+                </div>
+              </div>
+
+              {/* Thẻ: Cơ cấu chi phí */}
+              <div className="m-tc-the-ivt">
+                <div className="m-tc-the-head">
+                  <div className="m-tc-the-tieu-hop">
+                    <h3 className="m-tc-the-tieu">Cơ cấu chi phí</h3>
+                    <span className="m-tc-the-info" title={d.isLocCn ? 'Chi phí phân bổ theo doanh thu' : `Chi phí hoạt động · ${d.kyLabel}`}>
+                      <Icon n="info" className="ic xs" />
+                    </span>
+                  </div>
+                  {linkCP && (
+                    <Link to={linkCP} className="m-tc-the-link">
+                      Chi tiết
+                    </Link>
+                  )}
+                </div>
+                <CostStructureChart parts={d.coCauCp} compact />
+              </div>
+
+              {/* Thẻ: Món bán chạy */}
+              <div className="m-tc-the-ivt">
+                <div className="m-tc-the-head">
+                  <div className="m-tc-the-tieu-hop">
+                    <h3 className="m-tc-the-tieu">Món bán chạy</h3>
+                    <span className="m-tc-the-info" title={d.kyLabel}>
+                      <Icon n="info" className="ic xs" />
+                    </span>
+                  </div>
+                </div>
+                <HBars
+                  color="#f28020"
+                  fmt={n => money(n) + ' phần'}
+                  data={[
+                    { l: 'Phở bò tái', v: Math.round(d.soDon * 0.42) },
+                    { l: 'Cà phê sữa đá', v: Math.round(d.soDon * 0.38) },
+                    { l: 'Cơm tấm sườn bì chả', v: Math.round(d.soDon * 0.27) },
+                    { l: 'Trà đào cam sả', v: Math.round(d.soDon * 0.22) },
+                    { l: 'Bún chả Hà Nội', v: Math.round(d.soDon * 0.18) },
+                  ]}
+                />
+              </div>
+            </>
+          )}
 
           {/* Thẻ 3: Tổng tồn kho */}
           <div className="m-tc-the-ivt">
