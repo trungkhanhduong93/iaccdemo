@@ -13,6 +13,7 @@ import { fold, money, rutGonSo } from '../format'
 import { Icon } from '../Icon'
 import { MChon } from './MChon'
 import { duongPhieu } from '../generic/SoChungTu'
+import { layKhuonDong, MBaoCaoDong } from './MBaoCaoDong'
 
 /** Dò đường dẫn mở chứng từ gốc nếu có (T201, T223) */
 function layDuongDan(so: unknown): string | undefined {
@@ -31,12 +32,14 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
   const { s, set } = useSession()
   const path = useLocation().pathname
 
-  // Sổ xem dạng dòng: Sổ quỹ 2.2.1, Sổ ngân hàng 2.2.3, Sổ công nợ 2.2.5.
-  // 3.2.9, 4.2.3 là bảng tổng hợp theo đối tượng, không có dòng theo ngày nên giữ kiểu bảng
+  // Sổ xem dạng dòng: Sổ quỹ 2.2.1, Sổ ngân hàng 2.2.3, Sổ công nợ 2.2.5 (T223)
+  // Các màn khác áp dụng 3 khuôn mới chung theo BANG_KHUON_DONG (T241)
   const isSoQuy = sc.code === '2.2.1' || sc.slug === '2-2-1'
   const isSoTienGui = sc.code === '2.2.3' || sc.slug === '2-2-3'
   const isSoCongNo = sc.code === '2.2.5' || sc.slug === '2-2-5'
-  const isSoApDung = isSoQuy || isSoTienGui || isSoCongNo
+  const isSoCu = isSoQuy || isSoTienGui || isSoCongNo
+  const khuon = layKhuonDong(sc)
+  const isSoApDung = isSoCu || Boolean(khuon)
 
   const [kieuXem, setKieuXem] = useState<'dong' | 'bang'>(() => (isSoApDung ? 'dong' : 'bang'))
 
@@ -112,12 +115,13 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
     return renderReport(cfg, sc.code ?? sc.slug, thang, s.cheDo, cn?.id, loc, s)
   }, [isSoQuy, soQuyData, dsCnSoQuy.length, noco, cfg, sc.code, sc.slug, thang, s, cn?.id, loc])
 
-  // Lấy danh sách hàng gốc từ body
-  const { rawRows } = useMemo(() => {
-    if (!React.isValidElement(body)) return { rawRows: [] as Row[] }
-    const p = body.props as { rows?: Row[] }
+  // Lấy danh sách hàng và cột gốc từ body
+  const { rawRows, rawCols } = useMemo(() => {
+    if (!React.isValidElement(body)) return { rawRows: [] as Row[], rawCols: [] as Col[] }
+    const p = body.props as { rows?: Row[]; cols?: Col[] }
     return {
       rawRows: Array.isArray(p?.rows) ? p.rows : [],
+      rawCols: Array.isArray(p?.cols) ? p.cols : [],
     }
   }, [body])
 
@@ -280,8 +284,20 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
 
       {/* Nội dung báo cáo: Dạng dòng hoặc Bảng cuộn ngang */}
       {kieuXem === 'dong' && isSoApDung ? (
-        <div className="m-so-dong">
-          {/* Thẻ tổng ở đầu: 3 ô */}
+        !isSoCu && khuon ? (
+          <div className="m-so-dong">
+            <MBaoCaoDong
+              maBc={sc.code ?? sc.slug}
+              khuon={khuon}
+              cols={rawCols}
+              rows={rowsLoc}
+              q={q}
+              xemTatCaCn={xemTatCaCn}
+            />
+          </div>
+        ) : (
+          <div className="m-so-dong">
+            {/* Thẻ tổng ở đầu: 3 ô */}
           <div className="m-so-dong-tong">
             <div className="m-so-dong-tong-o">
               <span className="m-so-dong-tong-nhan">{nhanDau}</span>
@@ -369,6 +385,7 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
             ))
           )}
         </div>
+        )
       ) : (
         /* Khung bảng cuộn ngang, trang không cuộn ngang */
         <div ref={bangWrapRef} className="m-sbc-bang-wrap">

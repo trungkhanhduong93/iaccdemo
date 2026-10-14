@@ -4,8 +4,11 @@ import type { ScreenProps } from '../../modules/types'
 import { donViHienTai, dsChiNhanh, useSession } from '../../app/session'
 import { CHI_NHANH, DAILY, KHO, NVL, ROLE, kqkd } from '../../data/mock'
 import { Icon } from '../Icon'
-import { money, pct } from '../format'
-import { tinhToanTongQuan } from '../../modules/home/chiSo'
+import { money, moneyD, pct, short } from '../format'
+import { type KyBaoCao, tinhToanTongQuan } from '../../modules/home/chiSo'
+import { tonQuyTheoSo } from '../../modules/home/LichSuQuy'
+import { PHIEU_MUA } from '../../modules/mua-hang/bao-cao'
+import { rowsCongNo } from '../../modules/bao-cao/cong-no'
 import { soCai } from '../../modules/tong-hop/so-cai'
 import { dinhMucTon } from '../../modules/kho/data'
 import { MODULES, hienMan, moDuoc, timMan } from '../../app/registry'
@@ -52,10 +55,17 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
   const [tabActive, setTabActive] = useState<0 | 1>(0)
   const [moTimKiem, setMoTimKiem] = useState(false)
   const [moChonCn, setMoChonCn] = useState(false)
+  const [thangF, setThangF] = useState(10)
+  const [moChonThang, setMoChonThang] = useState(false)
   const [khoChon] = useState<string>('Tất cả')
   const snapRef = useRef<HTMLDivElement>(null)
   const thacNuocRef = useRef<HTMLDivElement>(null)
   const isFree = s.goi === 'F'
+
+  const dsChonThang = useMemo(
+    () => [10, 9, 8, 7].map(t => ({ k: String(t), ten: `Tháng ${t}/2026` })),
+    []
+  )
 
   // Kiểm tra liên kết báo cáo theo gói và chế độ hiện tại (QD45)
   const layLinkBaoCao = (code?: string): string | null => {
@@ -94,6 +104,49 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
   }, [s.chiNhanh, dsCn])
 
   const d = useMemo(() => tinhToanTongQuan('thang-nay', selCns, s.cheDo), [selCns, s.cheDo])
+
+  // Gói Free xem theo chi nhánh trên chip CN điện thoại (selCns) và tháng chọn (thangF)
+  const kyXemFree: KyBaoCao = isFree ? (thangF === 10 ? 'thang-nay' : 'thang-truoc') : 'thang-nay'
+  const dFree = useMemo(() => {
+    if (!isFree) return d
+    return tinhToanTongQuan(kyXemFree, selCns, s.cheDo, thangF)
+  }, [isFree, kyXemFree, selCns, s.cheDo, thangF, d])
+
+  // 1. Lãi lỗ gói Free: chi phí trong tháng không gồm phân bổ; lợi nhuận bỏ thu nhập, chi phí khác (T220, T230)
+  const cpThangFree = dFree.cpHoatDong - dFree.cpPhanBo
+  const loiNhuanFree = dFree.lnGop - cpThangFree - dFree.cpPhanBo
+  const bienFree = dFree.dtThuan > 0 ? loiNhuanFree / dFree.dtThuan : 0
+  const chiLonFree = useMemo(() => [...dFree.coCauCp].sort((a, b) => b.v - a.v)[0], [dFree.coCauCp])
+
+  // 2. Thu chi gói Free: số dư, thu, chi cộng từ Sổ quỹ tiền mặt, Sổ ngân hàng (T230)
+  const quyFree = useMemo(() => {
+    if (!isFree) return []
+    return tonQuyTheoSo(thangF, selCns)
+  }, [isFree, thangF, selCns])
+
+  const tongQuyFree = useMemo(() => {
+    return {
+      cuoi: quyFree.reduce((a, r) => a + r.cuoi, 0),
+      thu: quyFree.reduce((a, r) => a + r.thu, 0),
+      chi: quyFree.reduce((a, r) => a + r.chi, 0),
+    }
+  }, [quyFree])
+
+  // 3. Kho gói Free: mua hàng, công nợ, hao hụt trong tháng (T230)
+  const tenCnSet = useMemo(() => new Set(CHI_NHANH.filter(c => selCns.includes(c.id)).map(c => c.ten)), [selCns])
+  const khoFree = useMemo(() => {
+    if (!isFree) return { nhapMua: 0, soDon: 0, congNo: 0, soNcc: 0, soPhieuHH: 0, matHH: 0 }
+    const thangArr = [thangF]
+    const mua = chungTu(PHIEU_MUA, '4.1.1').filter(r => thangArr.includes(Number(r.thang)) && tenCnSet.has(String(r.cn)))
+    const nhapMua = mua.reduce((a, r) => a + (Number(r.tong) || 0), 0)
+    const motCn = selCns.length === 1 ? CHI_NHANH.find(c => c.id === selCns[0])?.ten : undefined
+    const ncc = rowsCongNo('ncc', thangF, motCn).filter(r => !r._t)
+    const congNo = ncc.reduce((a, r) => a + Math.max(0, Number(r.cuoi) || 0), 0)
+    const cfgKK = timMan('kho', '5-1-10').sc?.voucher
+    const xdc = cfgKK ? mauDieuChinh(cfgKK).filter(r => r.loai === 'xdc' && thangArr.includes(Number(r.thang)) && tenCnSet.has(String(r.cn))) : []
+    const matHH = new Set(xdc.flatMap(r => ((r._dong as { ma: string }[] | undefined) ?? []).map(d => d.ma))).size
+    return { nhapMua, soDon: mua.length, congNo, soNcc: ncc.filter(r => Number(r.cuoi) > 0).length, soPhieuHH: xdc.length, matHH }
+  }, [isFree, selCns, tenCnSet, thangF])
 
   // Phải thu khách hàng (TK 131)
   const sc10 = soCai(10)
@@ -489,6 +542,18 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
           <span className="m-tc-chip-cn-nhan m-tc-chip-kho-nhan">CN: {nhanCn}</span>
           <Icon n="chevd" className="ic xs" />
         </button>
+
+        {isFree && (
+          <button
+            type="button"
+            className="m-tc-chip-cn m-free-chip-thang"
+            onClick={() => setMoChonThang(true)}
+            title="Chọn tháng xem số liệu"
+          >
+            <span className="m-tc-chip-cn-nhan">Tháng {thangF}/2026</span>
+            <Icon n="chevd" className="ic xs" />
+          </button>
+        )}
       </div>
 
       {/* Khung chứa 2 trang vuốt ngang bằng scroll-snap */}
@@ -533,8 +598,226 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
             </div>
           </div>
 
-          {/* Thẻ 2: Doanh thu, lợi nhuận, tiền hiện có (lưới 2 cột) */}
-          <div className="m-tc-the-ivt">
+          {isFree ? (
+            <>
+              {/* Lời dẫn ba bài toán Free */}
+              <div className="m-free-dau">
+                <span>
+                  IACC Free giúp bạn nắm 3 việc: <b>quán lãi hay lỗ</b>, <b>quản lý thu chi</b>,{' '}
+                  <b>công nợ, hao hụt</b>. Số liệu tháng {thangF}/2026.
+                </span>
+              </div>
+
+              {/* 1. Quản lý lãi lỗ */}
+              <div className="m-tc-the-ivt m-free-the">
+                <div className="m-tc-the-head">
+                  <div className="m-tc-the-tieu-hop">
+                    <h3 className="m-tc-the-tieu">
+                      <Icon n="chart" className="ic sm" /> 1. Quản lý lãi lỗ
+                    </h3>
+                  </div>
+                  <Link to="/app/bao-cao/10-2-3" className="m-tc-the-link">
+                    Xem KQKD
+                  </Link>
+                </div>
+                <div className="m-free-hoi">
+                  {thangF === 10 ? 'Tháng này' : `Tháng ${thangF}`} lãi bao nhiêu?
+                </div>
+                <div className={`m-tc-so-lon m-free-tra ${loiNhuanFree >= 0 ? 'lai' : 'lo'}`}>
+                  {loiNhuanFree >= 0 ? '+' : '−'}{short(Math.abs(loiNhuanFree))}
+                  <span className="m-free-so-phu"> ({moneyD(loiNhuanFree)})</span>
+                </div>
+                <div className="m-free-phu">Biên lãi {pct(bienFree)} trên doanh thu</div>
+
+                <div className="m-free-ds-tll">
+                  <div className="m-free-tll-the dt">
+                    <div className="m-free-tll-trai">
+                      <b>Doanh thu</b>
+                    </div>
+                    <div className="m-free-tll-phai">
+                      <b>{moneyD(dFree.dtThuan)}</b>
+                    </div>
+                  </div>
+
+                  <div className="m-free-tll-the cp">
+                    <div className="m-free-tll-trai">
+                      <b>Chi phí nguyên vật liệu</b>
+                      <span>Giá vốn món bán theo định lượng</span>
+                    </div>
+                    <div className="m-free-tll-phai">
+                      <b>{moneyD(dFree.gv)}</b>
+                      <span>{pct(dFree.dtThuan > 0 ? dFree.gv / dFree.dtThuan : 0)}</span>
+                    </div>
+                  </div>
+
+                  <Link
+                    to={`/app/trang-chu/chi-phi-thang?thang=${thangF}`}
+                    className="m-free-tll-the cp link"
+                    title="Xem chi phí trong tháng"
+                  >
+                    <div className="m-free-tll-trai">
+                      <b>Chi phí trong tháng</b>
+                      <span>
+                        {chiLonFree
+                          ? `Nhiều nhất: ${chiLonFree.l} ${short(chiLonFree.v)}`
+                          : 'Lương, mặt bằng, điện nước, chi khác'}
+                      </span>
+                    </div>
+                    <div className="m-free-tll-phai">
+                      <b>{moneyD(cpThangFree)}</b>
+                      <span>{pct(dFree.dtThuan > 0 ? cpThangFree / dFree.dtThuan : 0)}</span>
+                    </div>
+                    <Icon n="chevr" className="ic sm m-free-mui" />
+                  </Link>
+
+                  <Link
+                    to="/app/ccdc/8-1-1"
+                    className="m-free-tll-the cp link"
+                    title="Xem phân bổ CCDC"
+                  >
+                    <div className="m-free-tll-trai">
+                      <b>Chi phí phân bổ hàng tháng</b>
+                      <span>Phân bổ công cụ dụng cụ, khấu hao</span>
+                    </div>
+                    <div className="m-free-tll-phai">
+                      <b>{moneyD(dFree.cpPhanBo)}</b>
+                      <span>{pct(dFree.dtThuan > 0 ? dFree.cpPhanBo / dFree.dtThuan : 0)}</span>
+                    </div>
+                    <Icon n="chevr" className="ic sm m-free-mui" />
+                  </Link>
+
+                  <div className={`m-free-tll-the ${loiNhuanFree >= 0 ? 'lai' : 'lo'}`}>
+                    <div className="m-free-tll-trai">
+                      <b>Lợi nhuận</b>
+                    </div>
+                    <div className="m-free-tll-phai">
+                      <b>
+                        {loiNhuanFree < 0 ? '−' : ''}
+                        {moneyD(Math.abs(loiNhuanFree))}
+                      </b>
+                      <span>{pct(dFree.dtThuan > 0 ? loiNhuanFree / dFree.dtThuan : 0)}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 2. Quản lý thu chi */}
+              <div className="m-tc-the-ivt m-free-the">
+                <div className="m-tc-the-head">
+                  <div className="m-tc-the-tieu-hop">
+                    <h3 className="m-tc-the-tieu">
+                      <Icon n="wallet" className="ic sm" /> 2. Quản lý thu chi
+                    </h3>
+                  </div>
+                  <Link to="/app/tien/2-1-1" className="m-tc-the-link">
+                    Lập thu/chi
+                  </Link>
+                </div>
+                <div className="m-free-hoi">Số dư hiện có</div>
+                <div className="m-tc-so-lon m-free-tra">
+                  {short(tongQuyFree.cuoi)}
+                  <span className="m-free-so-phu"> ({moneyD(tongQuyFree.cuoi)})</span>
+                </div>
+                <div className="m-free-phu">
+                  Thu +{short(tongQuyFree.thu)} · Chi −{short(tongQuyFree.chi)}
+                </div>
+
+                <div className="m-free-ds-tll">
+                  <div className="m-free-tll-the dt">
+                    <div className="m-free-tll-trai">
+                      <b>
+                        {thangF === 10
+                          ? 'Tồn quỹ hiện tại'
+                          : `Tồn quỹ cuối tháng ${thangF}/2026`}
+                      </b>
+                    </div>
+                    <div className="m-free-tll-phai">
+                      <b>{moneyD(tongQuyFree.cuoi)}</b>
+                    </div>
+                  </div>
+                  {quyFree.map(r => (
+                    <Link
+                      key={r.quy}
+                      to={`/app/trang-chu/lich-su-quy?quy=${encodeURIComponent(r.quy)}&thang=${thangF}`}
+                      className="m-free-tll-the quy link"
+                      title={`Xem lịch sử thu chi ${r.quy}`}
+                    >
+                      <div className="m-free-tll-trai">
+                        <b>{r.quy}</b>
+                        <span>{r.tienMat ? 'Tiền mặt' : 'Ngân hàng'}</span>
+                      </div>
+                      <div className="m-free-tll-phai">
+                        <b>{moneyD(r.cuoi)}</b>
+                        <span>{pct(tongQuyFree.cuoi ? r.cuoi / tongQuyFree.cuoi : 0)}</span>
+                      </div>
+                      <Icon n="chevr" className="ic sm m-free-mui" />
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              {/* 3. Quản lý kho */}
+              <div className="m-tc-the-ivt m-free-the">
+                <div className="m-tc-the-head">
+                  <div className="m-tc-the-tieu-hop">
+                    <h3 className="m-tc-the-tieu">
+                      <Icon n="khohang" className="ic sm" /> 3. Quản lý kho
+                    </h3>
+                  </div>
+                </div>
+                <div className="m-free-hoi">Quản lý mua hàng, công nợ, hao hụt hàng bán thẳng</div>
+                <div className="m-free-phu" style={{ marginTop: 6 }}>
+                  Mua {khoFree.soDon} đơn · Công nợ {short(khoFree.congNo)} · {khoFree.matHH} mặt hàng hao hụt
+                </div>
+
+                <div className="m-free-ds-tll" style={{ marginTop: 12 }}>
+                  <Link to="/app/mua-hang/4-1-1" className="m-free-tll-the quy link" title="Xem nhập mua">
+                    <div className="m-free-tll-trai">
+                      <b>Nhập mua</b>
+                      <span>{khoFree.soDon} đơn mua hàng</span>
+                    </div>
+                    <div className="m-free-tll-phai">
+                      <b>{moneyD(khoFree.nhapMua)}</b>
+                    </div>
+                    <Icon n="chevr" className="ic sm m-free-mui" />
+                  </Link>
+                  <Link
+                    to="/app/bao-cao/4-2-3"
+                    className="m-free-tll-the cp link"
+                    title="Xem công nợ phải trả"
+                  >
+                    <div className="m-free-tll-trai">
+                      <b>Công nợ phải trả</b>
+                      <span>{khoFree.soNcc} nhà cung cấp còn nợ</span>
+                    </div>
+                    <div className="m-free-tll-phai">
+                      <b>{moneyD(khoFree.congNo)}</b>
+                    </div>
+                    <Icon n="chevr" className="ic sm m-free-mui" />
+                  </Link>
+                  <Link
+                    to="/app/kho/dieu-chinh?loai=xdc"
+                    className="m-free-tll-the hh link"
+                    title="Xem hao hụt kiểm kê"
+                  >
+                    <div className="m-free-tll-trai">
+                      <b>Hao hụt kiểm kê</b>
+                      <span>
+                        {khoFree.soPhieuHH} phiếu xuất điều chỉnh khi kiểm kê thiếu
+                      </span>
+                    </div>
+                    <div className="m-free-tll-phai">
+                      <b>{khoFree.matHH} mặt hàng</b>
+                    </div>
+                    <Icon n="chevr" className="ic sm m-free-mui" />
+                  </Link>
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              {/* Thẻ 2: Doanh thu, lợi nhuận, tiền hiện có (lưới 2 cột) */}
+              <div className="m-tc-the-ivt">
             <div className="m-tc-the-head">
               <div className="m-tc-the-tieu-hop">
                 <h3 className="m-tc-the-tieu">Tổng quan tài chính</h3>
@@ -935,6 +1218,8 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
               ))}
             </div>
           </div>
+            </>
+          )}
         </div>
 
         {/* TRANG 2: CẦN THEO DÕI */}
@@ -980,6 +1265,18 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
         chon={s.chiNhanh || 'all'}
         onChon={k => set({ chiNhanh: k })}
       />
+
+      {/* Sheet chọn tháng cho gói Free */}
+      {isFree && (
+        <MChon
+          mo={moChonThang}
+          onDong={() => setMoChonThang(false)}
+          tieuDe="Chọn tháng xem số liệu"
+          ds={dsChonThang}
+          chon={String(thangF)}
+          onChon={k => setThangF(Number(k))}
+        />
+      )}
     </div>
   )
 }

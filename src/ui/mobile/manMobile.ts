@@ -22,11 +22,15 @@ import { MDuyetChungTu } from './MDuyetChungTu'
 import { MCanhBao, MChuyenTrangChu } from './MCanhBao'
 import { MDoiSoat } from './MDoiSoat'
 import { CongThucScreen } from '../../modules/kho/CongThuc'
+import { MChiPhiThang } from './MChiPhiThang'
+import { MLichSuQuy } from './MLichSuQuy'
 
 // Bảng riêng theo mod.key + '/' + sc.slug
 const BANG_RIENG: Record<string, ComponentType<ScreenProps>> = {
   'trang-chu/tong-quan': MTrangChu,
   'trang-chu/ban-lam-viec': MTrangChu,
+  'trang-chu/chi-phi-thang': MChiPhiThang,
+  'trang-chu/lich-su-quy': MLichSuQuy,
 }
 
 export function manMobile(sc: ScreenDef, mod: ModuleDef): ComponentType<ScreenProps> {
@@ -89,6 +93,12 @@ export function manMobile(sc: ScreenDef, mod: ModuleDef): ComponentType<ScreenPr
   }
 
   // ── Luật Anti B thêm ngay dưới dòng này (đợt 11–13) ──
+  // T240: Hai màn cho gói Free (Chi phí trong tháng, Lịch sử thu chi)
+  if (mod.key === 'trang-chu') {
+    if (sc.slug === 'chi-phi-thang') return MChiPhiThang
+    if (sc.slug === 'lich-su-quy') return MLichSuQuy
+  }
+
   // T190: Màn tác vụ kind: 'tool', Kiểm tra cuối kỳ 10.1.4, Khoá sổ 10.1.6
   if (
     sc.kind === 'tool' ||

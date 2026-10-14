@@ -16466,3 +16466,809 @@ a.lsq-dong:hover { background: var(--tint); }
 .bbt-chan { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: auto; padding-top: 10px; }
 .bbt-chan .bbt-nut { margin-top: 0; padding-top: 0; }
 .bbt-goiy { font-size: 12.5px; color: var(--muted); text-align: right; }
+/* ── Điện thoại: trang chủ Free giống bản web (T240) ── */
+
+@media (max-width: 767px) {
+  /* Chip chọn tháng trên trang chủ Free */
+  .m-free-chip-thang {
+    background: var(--white);
+    border: 1px solid var(--line);
+    color: var(--ink);
+  }
+
+  /* Khối giới thiệu 3 bài toán ở đầu */
+  .m-free-dau {
+    background: var(--white);
+    border: 1px solid var(--line-2);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 12px;
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--ink);
+  }
+
+  .m-free-dau b {
+    color: var(--blue);
+  }
+
+  /* Thẻ bài toán Free */
+  .m-free-the {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Câu hỏi và số lớn của từng bài toán */
+  .m-free-hoi {
+    font-size: 13.5px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  .m-free-tra {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin-top: 4px;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .m-free-tra.lai {
+    color: var(--green);
+  }
+
+  .m-free-tra.lo {
+    color: var(--red);
+  }
+
+  .m-free-so-phu {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+  }
+
+  .m-free-phu {
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  /* Danh sách thẻ dòng chi tiết bên trong từng bài toán */
+  .m-free-ds-tll {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--line-2);
+  }
+
+  .m-free-tll-the {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: var(--bg);
+    border: 1px solid var(--line-2);
+    text-decoration: none;
+    color: var(--ink);
+    min-height: 44px;
+    box-sizing: border-box;
+  }
+
+  .m-free-tll-the.link {
+    cursor: pointer;
+  }
+
+  .m-free-tll-the.link:active {
+    opacity: 0.85;
+  }
+
+  .m-free-tll-the.dt {
+    background: var(--white);
+    border-left: 3px solid var(--blue);
+  }
+
+  .m-free-tll-the.lai {
+    background: var(--white);
+    border-left: 3px solid var(--green);
+  }
+
+  .m-free-tll-the.lo {
+    background: var(--white);
+    border-left: 3px solid var(--red);
+  }
+
+  .m-free-tll-the.lai .m-free-tll-phai b {
+    color: var(--green);
+  }
+
+  .m-free-tll-the.lo .m-free-tll-phai b {
+    color: var(--red);
+  }
+
+  .m-free-tll-trai {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .m-free-tll-trai b {
+    font-size: 13.5px;
+    color: var(--ink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .m-free-tll-trai span {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.3;
+  }
+
+  .m-free-tll-phai {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+    margin-left: 10px;
+    flex-shrink: 0;
+  }
+
+  .m-free-tll-phai b {
+    font-size: 13.5px;
+    font-family: inherit;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink);
+  }
+
+  .m-free-tll-phai span {
+    font-size: 11.5px;
+    color: var(--muted);
+  }
+
+  .m-free-mui {
+    margin-left: 8px;
+    color: var(--muted);
+    flex-shrink: 0;
+  }
+
+  /* ── Màn Chi phí trong tháng (MChiPhiThang) ── */
+  .m-free-cpt {
+    padding: 12px 16px 180px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .m-free-cpt-tong-the {
+    background: var(--white);
+    border: 1px solid var(--line-2);
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  }
+
+  .m-free-cpt-tong-nhan {
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .m-free-cpt-tong-so {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--blue);
+    margin-top: 6px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .m-free-cpt-ds {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .m-free-cpt-dong {
+    display: flex;
+    align-items: center;
+    padding: 12px 14px;
+    background: var(--white);
+    border: 1px solid var(--line-2);
+    border-radius: 12px;
+    text-decoration: none;
+    color: var(--ink);
+    min-height: 52px;
+    box-sizing: border-box;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  }
+
+  .m-free-cpt-dong:active {
+    opacity: 0.85;
+  }
+
+  .m-free-cpt-ic {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--tint);
+    color: var(--blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+    flex-shrink: 0;
+  }
+
+  .m-free-cpt-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .m-free-cpt-ten {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .m-free-cpt-phu {
+    font-size: 12px;
+    color: var(--muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .m-free-cpt-so {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+    margin-left: 10px;
+    flex-shrink: 0;
+  }
+
+  .m-free-cpt-tien {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .m-free-cpt-phantram {
+    font-size: 11.5px;
+    color: var(--muted);
+  }
+
+  .m-free-cpt-mui {
+    margin-left: 8px;
+    color: var(--muted);
+    flex-shrink: 0;
+  }
+
+  /* ── Màn Lịch sử thu chi (MLichSuQuy) ── */
+  .m-free-lsq {
+    padding: 12px 16px 180px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .m-free-lsq-the {
+    background: var(--white);
+    border: 1px solid var(--line-2);
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  }
+
+  .m-free-lsq-quy {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .m-free-lsq-du {
+    margin-top: 10px;
+  }
+
+  .m-free-lsq-du small {
+    display: block;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .m-free-lsq-du b {
+    display: block;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--blue);
+    font-variant-numeric: tabular-nums;
+    margin-top: 2px;
+  }
+
+  .m-free-lsq-tom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid var(--line-2);
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+
+  .m-free-lsq-tom b {
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .m-free-lsq-tom .m-tien-vao b {
+    color: var(--green);
+  }
+
+  .m-free-lsq-tom .m-tien-ra b {
+    color: var(--red);
+  }
+
+  .m-free-lsq-ds {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .m-free-lsq-ngay-nhom {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .m-free-lsq-ngay {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--muted);
+    padding: 0 4px;
+  }
+
+  .m-free-lsq-khoi {
+    background: var(--white);
+    border: 1px solid var(--line-2);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  }
+
+  .m-free-lsq-dong {
+    display: flex;
+    align-items: center;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--line-2);
+    text-decoration: none;
+    color: var(--ink);
+    min-height: 52px;
+    box-sizing: border-box;
+  }
+
+  .m-free-lsq-dong:last-child {
+    border-bottom: none;
+  }
+
+  .m-free-lsq-dong.link:active {
+    background: var(--bg);
+  }
+
+  .m-free-lsq-ic {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+    flex-shrink: 0;
+  }
+
+  .m-free-lsq-ic.vao {
+    background: var(--green-t, rgba(19, 138, 82, 0.1));
+    color: var(--green);
+  }
+
+  .m-free-lsq-ic.ra {
+    background: var(--red-t, rgba(194, 54, 43, 0.1));
+    color: var(--red);
+  }
+
+  .m-free-lsq-chu {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .m-free-lsq-dg {
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--ink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .m-free-lsq-soct {
+    font-size: 11.5px;
+    color: var(--muted);
+  }
+
+  .m-free-lsq-so {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+    margin-left: 10px;
+    flex-shrink: 0;
+  }
+
+  .m-free-lsq-tien {
+    font-size: 13.5px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .m-free-lsq-sodu {
+    font-size: 11px;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .m-free-lsq-mui {
+    margin-left: 8px;
+    color: var(--muted);
+    flex-shrink: 0;
+  }
+
+  /* ── Nút dính đáy màn hình kiểu app ── */
+  .m-free-day-nut {
+    position: fixed;
+    bottom: calc(var(--m-thanh-duoi, 56px) + 22px + env(safe-area-inset-bottom, 0px));
+    left: 0;
+    right: 0;
+    padding: 10px 16px;
+    background: var(--white);
+    border-top: 1px solid var(--line-2);
+    display: flex;
+    gap: 10px;
+    z-index: 10;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+  }
+
+  .m-free-nut-chinh,
+  .m-free-nut-phu {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 44px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    box-sizing: border-box;
+    cursor: pointer;
+  }
+
+  .m-free-nut-chinh {
+    background: var(--blue);
+    color: #fff;
+    border: none;
+  }
+
+  .m-free-nut-chinh:active {
+    opacity: 0.9;
+  }
+
+  .m-free-nut-phu {
+    background: var(--bg);
+    color: var(--ink);
+    border: 1px solid var(--line);
+  }
+
+  .m-free-nut-phu:active {
+    background: var(--line-2);
+  }
+
+  .m-free-trong {
+    text-align: center;
+    padding: 32px 16px;
+    color: var(--muted);
+    font-size: 13.5px;
+  }
+}
+
+/* ── Điện thoại: báo cáo dạng dòng theo 3 khuôn (T241) ── */
+
+@media (max-width: 767px) {
+  /* Nút chuyển sang mẫu in ở đầu màn MToGiay */
+  .m-bcd-to-dau {
+    display: flex;
+    justify-content: flex-end;
+    padding: 10px 16px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--line-2);
+  }
+
+  .m-bcd-nut-mau-in {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 36px;
+    padding: 0 14px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    color: var(--primary);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .m-bcd-nut-mau-in:active {
+    background: var(--line-2);
+  }
+
+  /* ── Khuôn 1: Chi tiết theo ngày ── */
+  .m-bcd-khuon1 {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .m-bcd-ngay-khoi {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .m-bcd-dong {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    min-height: 52px;
+    box-sizing: border-box;
+    width: 100%;
+  }
+
+  .m-bcd-link-wrap {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    border-bottom: 1px solid var(--line-2);
+  }
+
+  .m-bcd-link-wrap:last-child {
+    border-bottom: none;
+  }
+
+  .m-bcd-link-wrap:active {
+    background: var(--bg);
+  }
+
+  /* ── Khuôn 2: Tổng hợp theo đối tượng ── */
+  .m-bcd-khuon2 {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .m-bcd-the-ds {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 0 16px;
+  }
+
+  .m-bcd-the {
+    background: var(--card);
+    border: 1px solid var(--line-2);
+    border-radius: 12px;
+    padding: 14px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  /* Tầng 1: Tên đối tượng và số cuối */
+  .m-bcd-the-t1 {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .m-bcd-the-trai {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .m-bcd-the-ten {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.35;
+  }
+
+  .m-bcd-the-ma {
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .m-bcd-the-phai {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+    flex-shrink: 0;
+  }
+
+  .m-bcd-the-so-cuoi {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .m-bcd-the-nhan-cuoi {
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  /* Tầng 2: 3 ô nhỏ */
+  .m-bcd-the-t2 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    background: var(--bg);
+    border-radius: 8px;
+    padding: 8px 10px;
+    border: 1px solid var(--line-2);
+  }
+
+  .m-bcd-t2-o {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .m-bcd-t2-nhan {
+    font-size: 11px;
+    color: var(--muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .m-bcd-t2-val {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+
+  /* ── Khuôn 3: Chỉ tiêu phân cấp ── */
+  .m-bcd-khuon3 {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .m-bcd-ct-ds {
+    display: flex;
+    flex-direction: column;
+    background: var(--card);
+    border: 1px solid var(--line-2);
+    border-radius: 12px;
+    margin: 0 16px;
+    overflow: hidden;
+  }
+
+  .m-bcd-ct-dong {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--line-2);
+    min-height: 48px;
+    box-sizing: border-box;
+    gap: 12px;
+  }
+
+  .m-bcd-ct-dong:last-child {
+    border-bottom: none;
+  }
+
+  .m-bcd-ct-dong.dam {
+    background: var(--bg);
+  }
+
+  .m-bcd-ct-dong.dam .m-bcd-ct-ten {
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .m-bcd-ct-dong.dam .m-bcd-ct-so {
+    font-weight: 700;
+  }
+
+  .m-bcd-ct-dong.thut {
+    padding-left: 28px;
+  }
+
+  .m-bcd-ct-trai {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+
+  .m-bcd-ct-ma {
+    font-size: 11.5px;
+    font-family: inherit;
+    color: var(--muted);
+    background: var(--line-2);
+    padding: 1px 5px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+
+  .m-bcd-ct-ten {
+    font-size: 13.5px;
+    color: var(--text);
+    line-height: 1.4;
+  }
+
+  .m-bcd-ct-phai {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+    flex-shrink: 0;
+  }
+
+  .m-bcd-ct-so {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .m-bcd-ct-truoc {
+    font-size: 11.5px;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+}

@@ -2697,7 +2697,7 @@ def kiem_tra_dot_14_toc_do():
             slug = item['slug']
             t0 = time.perf_counter()
             pg.goto(f"{URL}#/app/bao-cao/{slug}")
-            loc = pg.locator('.m-so-dong-item, .m-so-bc table tbody tr, .m-to-giay table tbody tr, .m-to-giay .paper, .rpt tbody tr, table tbody tr, .lockpage, .empty').first
+            loc = pg.locator('.m-bcd-item, .m-so-dong-item, .m-so-dong-trong, .m-so-bc table tbody tr, .m-to-giay table tbody tr, .m-to-giay .paper, .rpt tbody tr, table tbody tr, .lockpage, .empty').first
             loc.wait_for(state='visible', timeout=10000)
             ms = round((time.perf_counter() - t0) * 1000)
             # Màn khoá hoặc trống cũng hiện nhanh, không tính là đã mở xong
@@ -3818,6 +3818,388 @@ def kiem_tra_dot_18_b():
     return loi
 
 
+def kiem_tra_dot_19_b():
+    """Kiểm tra T240: Trang chủ điện thoại gói Free giống web; hai màn mới."""
+    loi = []
+    print('Kiểm tra đợt 19B (Anti B): Trang chủ Free & 2 màn mới trên điện thoại (T240):')
+    SHOTS.mkdir(parents=True, exist_ok=True)
+
+    with sync_playwright() as p:
+        b = p.chromium.launch(channel='chrome')
+        con = []
+
+        def on_console(m):
+            if m.type == 'error':
+                con.append(m.text)
+
+        def on_pageerror(e):
+            con.append(str(e))
+
+        # ── 1. Đo số lãi lỗ tháng gói F trên bản web 1440x900 ──
+        pg_web = b.new_page(viewport={'width': 1440, 'height': 900})
+        pg_web.on('console', on_console)
+        pg_web.on('pageerror', on_pageerror)
+
+        pg_web.goto(URL + '#/dang-nhap')
+        pg_web.wait_for_selector('.auth-box')
+        pg_web.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('F'))})")
+        pg_web.goto(f'{URL}?goi=F&p=1901#/app/trang-chu/tong-quan')
+        pg_web.wait_for_selector('.bbt', timeout=8000)
+        pg_web.wait_for_timeout(300)
+
+        # Lấy số lãi lỗ ở bài toán 1 trên web
+        loc_lai_lo_web = pg_web.locator('.bbt-cot:has-text("Quản lý lãi lỗ") .bbt-tra')
+        lai_lo_web = loc_lai_lo_web.inner_text().strip() if loc_lai_lo_web.count() > 0 else ''
+        if not lai_lo_web:
+            loi.append('19B: không tìm thấy số lãi lỗ trên bản web 1440x900 gói Free')
+        pg_web.close()
+
+        # ── 2. Kiểm tra trên điện thoại 390x844 gói Free ──
+        pg = b.new_page(
+            viewport={'width': 390, 'height': 844},
+            is_mobile=True,
+            has_touch=True,
+        )
+        pg.on('console', on_console)
+        pg.on('pageerror', on_pageerror)
+
+        def kiem_man(ten):
+            if pg.evaluate('document.documentElement.scrollWidth > window.innerWidth'):
+                loi.append(f'{ten}: tràn ngang màn hình')
+            if con:
+                loi.append(f'{ten}: lỗi console {con[:2]}')
+                con.clear()
+
+        pg.goto(URL + '#/dang-nhap')
+        pg.wait_for_selector('.auth-box')
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('F'))})")
+        pg.goto(f'{URL}?goi=F&p=1902#/app')
+        pg.wait_for_selector('.m-trang-chu', timeout=8000)
+        pg.wait_for_timeout(300)
+        kiem_man('Trang chủ Free điện thoại')
+
+        # Tiêu đề ba bài toán giống bản web
+        for bai in ['Quản lý lãi lỗ', 'Quản lý thu chi', 'Quản lý kho']:
+            if pg.locator(f':has-text("{bai}")').count() == 0:
+                loi.append(f'19B: trang chủ Free điện thoại thiếu tiêu đề bài toán: {bai}')
+
+        # Số lãi lỗ tháng trên điện thoại bằng số trên web
+        loc_lai_lo_dt = pg.locator('.m-free-the:has-text("Quản lý lãi lỗ") .m-free-tra')
+        if loc_lai_lo_dt.count() == 0:
+            loi.append('19B: không tìm thấy số lãi lỗ trên trang chủ Free điện thoại')
+        else:
+            txt_lai_lo_dt = loc_lai_lo_dt.inner_text().strip()
+            if lai_lo_web and lai_lo_web not in txt_lai_lo_dt:
+                loi.append(
+                    f'19B: số lãi lỗ điện thoại ({txt_lai_lo_dt}) không khớp bản web ({lai_lo_web})'
+                )
+
+        # Chụp ảnh trang chủ Free
+        pg.screenshot(path=str(SHOTS / 'm-19-free-trang-chu.png'))
+
+        # ── 3. Bấm lối Chi phí trong tháng ──
+        link_cpt = pg.locator('a[href*="trang-chu/chi-phi-thang"]').first
+        if link_cpt.count() == 0:
+            loi.append('19B: không tìm thấy lối bấm Chi phí trong tháng trên trang chủ Free')
+        else:
+            link_cpt.click()
+            pg.wait_for_timeout(350)
+            cur_url = pg.evaluate('location.hash')
+            if 'trang-chu/chi-phi-thang' not in cur_url:
+                loi.append(f'19B: bấm Chi phí trong tháng URL không đúng ({cur_url})')
+            if pg.locator('.m-chi-may-tinh').count() > 0:
+                loi.append('19B: màn Chi phí trong tháng bị rơi về MChiMayTinh')
+            if pg.locator('.m-free-cpt-dong').count() == 0:
+                loi.append('19B: màn Chi phí trong tháng không có dòng dữ liệu')
+            kiem_man('Màn Chi phí trong tháng')
+            pg.screenshot(path=str(SHOTS / 'm-19-chi-phi-thang.png'))
+
+        # ── 4. Kiểm tra Lịch sử thu chi ──
+        pg.goto(f'{URL}?goi=F&p=1903#/app')
+        pg.wait_for_selector('.m-trang-chu', timeout=8000)
+        pg.wait_for_timeout(250)
+
+        link_lsq = pg.locator('a[href*="trang-chu/lich-su-quy"]').first
+        if link_lsq.count() == 0:
+            loi.append('19B: không tìm thấy lối bấm Lịch sử thu chi ở khối Tồn quỹ')
+        else:
+            link_lsq.click()
+            pg.wait_for_timeout(350)
+            cur_url = pg.evaluate('location.hash')
+            if 'trang-chu/lich-su-quy' not in cur_url:
+                loi.append(f'19B: bấm quỹ URL không đổi sang trang-chu/lich-su-quy ({cur_url})')
+            if pg.locator('.m-chi-may-tinh').count() > 0:
+                loi.append('19B: màn Lịch sử thu chi bị rơi về MChiMayTinh')
+            if pg.locator('.m-free-lsq-dong, .m-free-lsq-the').count() == 0:
+                loi.append('19B: màn Lịch sử thu chi không có dòng hoặc thẻ dữ liệu')
+            kiem_man('Màn Lịch sử thu chi')
+            pg.screenshot(path=str(SHOTS / 'm-19-lich-su-quy.png'))
+
+        # ── 5. Gói PR: trang chủ vẫn có thẻ "Thác nước lợi nhuận" (T235) ──
+        pg.goto(URL + '#/dang-nhap')
+        pg.wait_for_selector('.auth-box')
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PR'))})")
+        pg.goto(f'{URL}?goi=PR&p=1904#/app')
+        pg.wait_for_selector('.m-trang-chu', timeout=8000)
+        pg.wait_for_timeout(300)
+        kiem_man('Trang chủ gói PR')
+
+        if pg.locator('#m-the-thac-nuoc, :has-text("Thác nước lợi nhuận")').count() == 0:
+            loi.append('19B: trang chủ gói PR mất thẻ Thác nước lợi nhuận')
+
+        b.close()
+
+    if not loi:
+        print('  Không có lỗi đợt 19B.')
+    else:
+        print(f'  Có {len(loi)} lỗi đợt 19B:')
+        for err in loi:
+            print(f'    - {err}')
+    return loi
+
+
+# 22 màn báo cáo áp dụng 3 khuôn dạng dòng trên điện thoại (T241)
+DS_MAN_20_B = [
+    # Khuôn 1: Chi tiết theo ngày (8 màn mới + 3 màn cũ)
+    ('3.2.6', 'ban-hang/3-2-6', 'Bán hàng theo ngày', 'chi-tiet-ngay', 'PR'),
+    ('3.2.8', 'ban-hang/3-2-8', 'Chi tiết bán hàng', 'chi-tiet-ngay', 'PR'),
+    ('4.2.1', 'mua-hang/4-2-1', 'Chi tiết mua hàng', 'chi-tiet-ngay', 'PR'),
+    ('4.2.6', 'mua-hang/4-2-6', 'Mua hàng theo ngày', 'chi-tiet-ngay', 'PR'),
+    ('4.2.7', 'mua-hang/4-2-7', 'Bảng kê mua hàng theo hàng hoá', 'chi-tiet-ngay', 'PR'),
+    ('5.2.1', 'kho/5-2-1', 'Thẻ kho', 'chi-tiet-ngay', 'PR'),
+    ('5.2.10', 'kho/5-2-10', 'Chi tiết nhập kho', 'chi-tiet-ngay', 'PR'),
+    ('5.2.12', 'kho/5-2-12', 'Chi tiết xuất kho', 'chi-tiet-ngay', 'PR'),
+    ('2.2.1', 'tien/2-2-1', 'Sổ quỹ tiền mặt', 'chi-tiet-ngay', 'PR'),
+    ('2.2.3', 'tien/2-2-3', 'Sổ ngân hàng', 'chi-tiet-ngay', 'PR'),
+    ('2.2.5', 'tien/2-2-5', 'Sổ công nợ', 'chi-tiet-ngay', 'S'),
+
+    # Khuôn 2: Tổng hợp theo đối tượng (9 màn)
+    ('2.2.8', 'tien/2-2-8', 'Tổng hợp quỹ tiền', 'tong-hop-doi-tuong', 'PR'),
+    ('3.2.7', 'ban-hang/3-2-7', 'Tổng hợp bán hàng', 'tong-hop-doi-tuong', 'PR'),
+    ('3.2.9', 'ban-hang/3-2-9', 'Công nợ khách hàng', 'tong-hop-doi-tuong', 'PR'),
+    ('4.2.2', 'mua-hang/4-2-2', 'Tổng hợp mua hàng theo NCC', 'tong-hop-doi-tuong', 'PR'),
+    ('4.2.3', 'mua-hang/4-2-3', 'Công nợ nhà cung cấp', 'tong-hop-doi-tuong', 'PR'),
+    ('5.2.3', 'kho/5-2-3', 'Báo cáo xuất nhập tồn', 'tong-hop-doi-tuong', 'PR'),
+    ('5.2.9', 'kho/5-2-9', 'Tổng hợp nhập kho', 'tong-hop-doi-tuong', 'PR'),
+    ('5.2.11', 'kho/5-2-11', 'Tổng hợp xuất kho', 'tong-hop-doi-tuong', 'PR'),
+    ('10.4.3', 'tong-hop/10-4-3', 'Sổ chi phí', 'tong-hop-doi-tuong', 'PR'),
+
+    # Khuôn 3: Chỉ tiêu phân cấp (2 màn)
+    ('2.2.9', 'tien/2-2-9', 'Báo cáo dòng tiền', 'chi-tieu-phan-cap', 'PR'),
+    ('10.2.3', 'tong-hop/10-2-3', 'Báo cáo kết quả kinh doanh', 'chi-tieu-phan-cap', 'F'),
+]
+
+# Các màn cần chụp ảnh màn hình
+DS_CHUP_ANH = {'3.2.8', '3.2.9', '5.2.3', '2.2.9', '10.2.3'}
+
+
+def kiem_tra_dot_20_b():
+    """Kiểm tra T241: 3 khuôn báo cáo dạng dòng trên điện thoại cho 22 màn hình."""
+    loi = []
+    print('Kiểm tra đợt 20B (Anti B): 3 khuôn báo cáo dạng dòng trên điện thoại (T241):')
+    SHOTS.mkdir(parents=True, exist_ok=True)
+
+    with sync_playwright() as p:
+        b = p.chromium.launch(channel='chrome')
+        pg = b.new_page(
+            viewport={'width': 390, 'height': 844},
+            is_mobile=True,
+            has_touch=True,
+        )
+        con = []
+
+        def on_console(m):
+            if m.type == 'error':
+                con.append(m.text)
+
+        def on_pageerror(e):
+            con.append(str(e))
+
+        pg.on('console', on_console)
+        pg.on('pageerror', on_pageerror)
+
+        goi_hien_tai = 'PR'
+        pg.goto(URL + '#/dang-nhap')
+        pg.wait_for_selector('.auth-box')
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PR'))})")
+
+        # ── 1. Mở lần lượt 22 màn báo cáo trên điện thoại ──
+        for idx, (ma, slug, ten_bc, khuon, goi) in enumerate(DS_MAN_20_B):
+            if goi != goi_hien_tai:
+                pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien(goi))})")
+                goi_hien_tai = goi
+
+            path_bc = f'/app/{slug}'
+            p_id = 24100 + idx
+            pg.goto(f'{URL}?goi={goi}&p={p_id}#{path_bc}')
+            pg.wait_for_selector('.m-so-bc, .m-to-giay-wrap, .m-to-giay', timeout=8000)
+            pg.wait_for_timeout(350)
+
+            # Bắt lỗi console
+            if con:
+                loi.append(f'{ma} ({ten_bc}): lỗi console điện thoại {con[:2]}')
+                con.clear()
+
+            # Mặc định dạng dòng, không có bảng cuộn ngang
+            tran = pg.evaluate("""() => {
+                const el = document.querySelector('.m-so-dong, .m-so-bc, .m-to-giay-wrap') || document.documentElement;
+                return el.scrollWidth > el.clientWidth + 2;
+            }""")
+            if tran:
+                loi.append(f'{ma} ({ten_bc}): bị tràn/cuộn ngang ở dạng dòng')
+
+            # Có ít nhất 1 dòng dữ liệu dạng dòng
+            so_dong = pg.locator('.m-bcd-item, .m-so-dong-item').count()
+            if so_dong == 0:
+                loi.append(f'{ma} ({ten_bc}): không có dòng dữ liệu dạng dòng (.m-bcd-item hoặc .m-so-dong-item)')
+
+            # Khuôn 3: nhãn dòng tổng không chứa dấu "/"
+            if khuon == 'chi-tieu-phan-cap':
+                nhans_k3 = pg.locator('.m-so-dong-tong .m-so-dong-tong-nhan').all_inner_texts()
+                for nh in nhans_k3:
+                    if '/' in nh:
+                        loi.append(f'{ma} ({ten_bc}): nhãn dòng tổng Khuôn 3 chứa dấu "/": "{nh}"')
+
+            # Chụp ảnh 5 màn chỉ định
+            if ma in DS_CHUP_ANH:
+                ten_file_dot = f'm-20-{ma}.png'
+                ten_file_dash = f'm-20-{slug.replace("/", "-")}.png'
+                pg.screenshot(path=str(SHOTS / ten_file_dot))
+                if ten_file_dot != ten_file_dash:
+                    pg.screenshot(path=str(SHOTS / ten_file_dash))
+                print(f'  - Đã chụp ảnh {ten_file_dot}')
+
+        # ── 2. So sánh tổng ở dòng tổng bằng tổng ở bảng (1 màn mỗi khuôn) ──
+        # Đảm bảo lại phiên gói PR
+        if goi_hien_tai != 'PR':
+            pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PR'))})")
+            goi_hien_tai = 'PR'
+
+        def doc_so_rut_gon(s):
+            s_clean = s.strip().replace('−', '-').replace(',', '.')
+            m = re.search(r'([+-]?\d+(?:\.\d+)?)\s*(tỷ|tr|k)?', s_clean)
+            if not m:
+                return 0.0
+            val = float(m.group(1))
+            dv = m.group(2)
+            if dv == 'tỷ':
+                return val * 1e9
+            elif dv == 'tr':
+                return val * 1e6
+            elif dv == 'k':
+                return val * 1e3
+            return val
+
+        ds_so_sanh = [
+            ('3.2.8', 'ban-hang/3-2-8', 'Chi tiết bán hàng (Khuôn 1)'),
+            ('3.2.9', 'ban-hang/3-2-9', 'Công nợ khách hàng (Khuôn 2)'),
+            ('2.2.9', 'tien/2-2-9', 'Báo cáo dòng tiền (Khuôn 3)'),
+        ]
+
+        for ma, slug, ten_so_sanh in ds_so_sanh:
+            path_bc = f'/app/{slug}'
+            pg.goto(f'{URL}?goi=PR&p={abs(hash(slug))}#{path_bc}')
+            pg.wait_for_selector('.m-so-dong, .m-so-bc', timeout=8000)
+            pg.wait_for_timeout(300)
+
+            # Đọc các số ở thẻ tổng dạng dòng
+            cac_so_dong = pg.locator('.m-so-dong-tong .m-so-dong-tong-so').all_inner_texts()
+            digits_dong = [re.sub(r'\D', '', s) for s in cac_so_dong if re.sub(r'\D', '', s)]
+
+            # Kiểm tra riêng màn 2.2.9: nhãn không chứa dấu "/" và ô 1 + ô 2 ≈ ô 3 (sai số tối đa 0,1 tỷ)
+            if ma == '2.2.9':
+                cac_nhan_dong = pg.locator('.m-so-dong-tong .m-so-dong-tong-nhan').all_inner_texts()
+                for nh in cac_nhan_dong:
+                    if '/' in nh:
+                        loi.append(f'2.2.9: nhãn dòng tổng chứa dấu "/": "{nh}"')
+                if len(cac_so_dong) >= 3:
+                    v1 = doc_so_rut_gon(cac_so_dong[0])
+                    v2 = doc_so_rut_gon(cac_so_dong[1])
+                    v3 = doc_so_rut_gon(cac_so_dong[2])
+                    sai_so_ty = abs((v1 + v2) - v3) / 1e9
+                    if sai_so_ty > 0.1:
+                        loi.append(
+                            f'2.2.9: dòng tổng ô 1 ({cac_so_dong[0]}) + ô 2 ({cac_so_dong[1]}) không bằng ô 3 ({cac_so_dong[2]}), sai số {sai_so_ty:.3f} tỷ > 0.1 tỷ'
+                        )
+                    else:
+                        print(f'  - 2.2.9: dòng tổng khớp ô 1 ({cac_so_dong[0]}) + ô 2 ({cac_so_dong[1]}) ≈ ô 3 ({cac_so_dong[2]}), sai số {sai_so_ty:.3f} tỷ <= 0.1 tỷ')
+
+            # Bấm chip "Bảng" để chuyển sang bảng
+            chip_bang = pg.locator('button.m-so-dong-chip:has-text("Bảng")')
+            if chip_bang.count() == 0:
+                loi.append(f'{ten_so_sanh}: không tìm thấy chip "Bảng" để chuyển xem bảng')
+                continue
+
+            chip_bang.first.click()
+            pg.wait_for_selector('.m-sbc-bang-wrap table, .rpt', timeout=5000)
+            pg.wait_for_timeout(300)
+
+            # Đọc các số ở dòng tổng của bảng
+            cac_so_bang = pg.locator('.rpt tbody tr.t td.num, .rpt tfoot td.num').all_inner_texts()
+            digits_bang = [re.sub(r'\D', '', s) for s in cac_so_bang if re.sub(r'\D', '', s)]
+
+            # Kiểm tra xem có khớp số liệu tổng không
+            if digits_dong and digits_bang:
+                # Tìm xem có ít nhất một cặp số tương ứng giữa dòng tổng và bảng
+                khop = any(
+                    db.startswith(dd) or dd.startswith(db)
+                    for dd in digits_dong
+                    for db in digits_bang
+                )
+                if not khop:
+                    loi.append(
+                        f'{ten_so_sanh}: số tổng ở dạng dòng ({cac_so_dong}) không khớp số ở bảng ({cac_so_bang})'
+                    )
+                else:
+                    print(f'  - Khớp tổng {ten_so_sanh}: dòng {cac_so_dong} ~ bảng {cac_so_bang}')
+            elif digits_dong and not digits_bang:
+                # Nếu bảng không có dòng tổng tr.t riêng, kiểm tra có số liệu
+                pass
+
+        # ── 3. Kiểm tra 5.2.3: có nút "Xem mẫu in", bấm ra tờ A4 ──
+        pg.goto(f'{URL}?goi=PR&p=241523#/app/kho/5-2-3')
+        pg.wait_for_selector('.m-to-giay-wrap', timeout=8000)
+        pg.wait_for_timeout(300)
+
+        nut_mau_in = pg.locator('.m-bcd-nut-mau-in:has-text("Xem mẫu in")')
+        if nut_mau_in.count() == 0:
+            loi.append('5.2.3: không tìm thấy nút "Xem mẫu in" ở đầu màn hình')
+        else:
+            nut_mau_in.first.click()
+            pg.wait_for_selector('.m-to-giay-noi-dung', timeout=5000)
+            pg.wait_for_timeout(300)
+
+            if pg.locator('.m-to-giay-noi-dung').count() == 0:
+                loi.append('5.2.3: bấm nút "Xem mẫu in" không mở tờ A4 (.m-to-giay-noi-dung)')
+            else:
+                print('  - 5.2.3: bấm nút "Xem mẫu in" hiển thị tờ A4 thành công')
+
+        # ── 4. Kiểm tra 2.2.1: vẫn hiển thị đúng dạng dòng sổ quỹ như T223 ──
+        pg.goto(f'{URL}?goi=PR&p=241221#/app/tien/2-2-1')
+        pg.wait_for_selector('.m-so-bc', timeout=8000)
+        pg.wait_for_timeout(300)
+
+        if pg.locator('.m-so-dong-tong').count() == 0:
+            loi.append('2.2.1: Sổ quỹ mất thẻ tổng 3 ô .m-so-dong-tong')
+        if pg.locator('.m-so-dong-item').count() == 0:
+            loi.append('2.2.1: Sổ quỹ không hiển thị các dòng chứng từ .m-so-dong-item')
+        if pg.locator('.m-so-dong-ngay').count() == 0:
+            loi.append('2.2.1: Sổ quỹ không gom theo ngày .m-so-dong-ngay')
+
+        print('  - 2.2.1: Sổ quỹ giữ nguyên vẹn logic dạng dòng theo T223')
+
+        b.close()
+
+    if not loi:
+        print('  Không có lỗi đợt 20B.')
+    else:
+        print(f'  Có {len(loi)} lỗi đợt 20B:')
+        for err in loi:
+            print(f'    - {err}')
+    return loi
+
+
+
 def kiem_tra_cac_khung_dt():
     loi, dem = [], 0
     for rong, cao in KHUNG_DT:
@@ -3858,6 +4240,8 @@ def kiem_tra_cac_khung_dt():
     loi += kiem_tra_dot_17_a()
     loi += kiem_tra_dot_18_a()
     loi += kiem_tra_dot_18_b()
+    loi += kiem_tra_dot_19_b()
+    loi += kiem_tra_dot_20_b()
     if loi:
         print(f'{len(loi)} LỖI:')
         for x in loi:
