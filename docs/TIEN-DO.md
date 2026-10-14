@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T228 | Gói Free: phân hệ Kho đổi tên thành Kiểm kê (thanh bên, tìm kiếm Ctrl K, sơ đồ Quy trình, tab Nghiệp vụ điện thoại) | PhuongXT | Đang làm | Sửa `app/registry.ts` (thêm `tenPhanHe`), `Shell.tsx`, `CommandPalette.tsx`, `QuyTrinhScreen.tsx`, `mobile/MNghiepVu.tsx` |
 | T227 | Bỏ menu phụ (Nghiệp vụ, Tiện ích) bật ra khi rê chuột vào phân hệ ở thanh bên | PhuongXT | Đang làm | Sửa `src/app/Shell.tsx` |
 | T226 | Bấm phân hệ ở thanh bên vào thẳng danh sách chứng từ đầu tiên (không mở tab Quy trình trước); phân hệ không có chứng từ vào màn đầu tiên không phải Quy trình | PhuongXT | Đang làm | Sửa `src/app/registry.ts` (`manDau`) |
 | T225 | Tạm ẩn tab Quy trình (sơ đồ) của phân hệ Danh mục, cả mục Sơ đồ danh mục ở menu phụ | PhuongXT | Đang làm | Sửa `src/modules/danh-muc/index.ts`, `src/app/SidebarFlyout.tsx` |
