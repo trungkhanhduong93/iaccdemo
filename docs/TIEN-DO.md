@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T215 | Tổng hợp nhập kho (5.2.9) bấm hàng hoá mở Chi tiết nhập kho (5.2.10), Tổng hợp xuất kho (5.2.11) bấm hàng hoá mở Chi tiết xuất kho (5.2.12), lọc sẵn hàng đó, cùng kỳ | PhuongXT | Đang làm | Sửa `src/modules/kho/bao-cao.ts`, `kho/index.ts` |
 | T214 | Tổng hợp xuất kho (5.2.11), Chi tiết xuất kho (5.2.12): bỏ bộ lọc Đối tượng (tự sinh từ cột Đối tượng ở Chi tiết xuất kho) | PhuongXT | Đang làm | Sửa `bao-cao/danh-sach.ts` (thêm `boTuSinh`), `ReportScreen.tsx` |
 | T213 | Chi tiết nhập kho (5.2.10), Chi tiết xuất kho (5.2.12): cột Đơn giá, Thành tiền đổi tên thành Giá vốn, Tiền vốn | PhuongXT | Đang làm | Sửa `src/modules/kho/bao-cao.ts` (`chiTietKho`) |
 | T212 | Tổng hợp nhập kho (5.2.9), Tổng hợp xuất kho (5.2.11): mỗi loại phiếu tách hai cột Số lượng, Giá trị (trước chỉ có giá trị) | PhuongXT | Đang làm | Sửa `src/modules/kho/bao-cao.ts` (`tongHopKho`) |
