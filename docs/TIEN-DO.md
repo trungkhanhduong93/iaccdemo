@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T220 | Báo cáo kết quả kinh doanh gói Free: Giá vốn đổi Chi phí NVL, Chi phí hoạt động đổi Chi phí trong tháng, thêm dòng Chi phí phân bổ hàng tháng (phân bổ CCDC + khấu hao, tách khỏi chi phí trong tháng), ẩn Thu nhập, chi phí khác (bỏ khỏi lợi nhuận) | PhuongXT | Đang làm | Sửa `src/modules/tong-hop/BaoCaoTaiChinh.tsx` |
 | T219 | Nhóm báo cáo Kho: Báo cáo xuất nhập tồn lên đầu, trước Thẻ kho | PhuongXT | Đang làm | Sửa `bao-cao/danh-sach.ts` (thêm `DAU_NHOM_BC`), `bao-cao/TrungTam.tsx` |
 | T218 | Gói Free ẩn hẳn nhóm báo cáo Bán hàng, Kê khai thuế ở màn Báo cáo, menu phụ, tab Báo cáo của phân hệ | PhuongXT | Đang làm | Sửa `bao-cao/danh-sach.ts`, `bao-cao/TrungTam.tsx`, `app/registry.ts` |
 | T217 | Nhóm báo cáo Công nợ riêng (sau Mua hàng): Công nợ nhà cung cấp 4.2.3, Công nợ khách hàng 3.2.9 rời nhóm Mua hàng, Bán hàng | PhuongXT | Đang làm | Sửa `bao-cao/danh-sach.ts`, `bao-cao/TrungTam.tsx`, `app/registry.ts`, `SidebarFlyout.tsx` |
