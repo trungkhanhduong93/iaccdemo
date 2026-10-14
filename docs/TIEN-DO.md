@@ -11,12 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T221 | Sổ chi phí (10.4.3): thêm cột Lý do sau Nội dung và bộ lọc Lý do | PhuongXT | Đang làm | Sửa `bao-cao/so-bo-sung.ts`, `bao-cao/danh-sach.ts` |
-| T220 | Báo cáo kết quả kinh doanh gói Free: Giá vốn đổi Chi phí NVL, Chi phí hoạt động đổi Chi phí trong tháng, thêm dòng Chi phí phân bổ hàng tháng (phân bổ CCDC + khấu hao, tách khỏi chi phí trong tháng), ẩn Thu nhập, chi phí khác (bỏ khỏi lợi nhuận) | PhuongXT | Đang làm | Sửa `src/modules/tong-hop/BaoCaoTaiChinh.tsx` |
-| T219 | Nhóm báo cáo Kho: Báo cáo xuất nhập tồn lên đầu, trước Thẻ kho | PhuongXT | Đang làm | Sửa `bao-cao/danh-sach.ts` (thêm `DAU_NHOM_BC`), `bao-cao/TrungTam.tsx` |
-| T218 | Gói Free ẩn hẳn nhóm báo cáo Bán hàng, Kê khai thuế ở màn Báo cáo, menu phụ, tab Báo cáo của phân hệ | PhuongXT | Đang làm | Sửa `bao-cao/danh-sach.ts`, `bao-cao/TrungTam.tsx`, `app/registry.ts` |
-| T217 | Nhóm báo cáo Công nợ riêng (sau Mua hàng): Công nợ nhà cung cấp 4.2.3, Công nợ khách hàng 3.2.9 rời nhóm Mua hàng, Bán hàng | PhuongXT | Đang làm | Sửa `bao-cao/danh-sach.ts`, `bao-cao/TrungTam.tsx`, `app/registry.ts`, `SidebarFlyout.tsx` |
-| T216 | Gói Free tạm ẩn báo cáo nhóm Kế toán bán hàng: Bán hàng theo ngày, Tổng hợp bán hàng, Chi tiết bán hàng, Công nợ khách hàng (Sổ doanh thu ở nhóm Sổ sách giữ nguyên) | PhuongXT | Đang làm | Sửa `src/modules/ban-hang/index.ts` (`goi` của màn báo cáo) |
 | T169 | Form chứng từ: gõ đổi địa chỉ từ phiếu này sang phiếu khác (vd `#/app/tien/2-1-1/chi-3` sang `chi-6`) thì form giữ số phiếu, đối tượng của phiếu cũ; mở từ danh sách, Trước, Sau thì đúng | | Chờ | Phát hiện ở T168. Sửa `ChungTuForm.tsx`, có thể `VoucherScreen.tsx` (key của form) |
 | T138 | Màn onboard khi bấm từ FABi sang IACC: khởi tạo đơn vị kế toán, điền sẵn từ FABi (chi nhánh, kho, cách đồng bộ, số dư đầu kỳ) | PhuongXT | Dở dang | Popup khởi tạo dữ liệu 4 bước trong phần mềm (`OnboardFabi.tsx`, `Shell.tsx`) đã push, PhuongXT xem lại một lượt. Xem `2026-10-11-phuongxt-man-khoi-tao-fabi.md` |
 | T139 | Phiếu nhập, xuất, điều chuyển kho tự lấy mục chi phí, công việc ngầm định theo kho đã chọn | | Chờ | Tách từ T136. Kho đã có ô `mucCp`, `congViec` ở `truong-dm.ts` 1.8. Sửa `ChungTuForm.tsx` |
@@ -47,6 +41,12 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T221 | Sổ chi phí (10.4.3): thêm cột Lý do sau Nội dung và bộ lọc Lý do | PhuongXT | 14/10/2026 | [2026-10-14-phuongxt-nhom-bao-cao](nhat-ky/2026-10-14-phuongxt-nhom-bao-cao.md) |
+| T220 | Báo cáo kết quả kinh doanh gói Free: Giá vốn đổi Chi phí NVL, Chi phí hoạt động đổi Chi phí trong tháng, thêm dòng Chi phí phân bổ hàng tháng (phân bổ CCDC + khấu hao, tách khỏi chi phí trong tháng), ẩn Thu nhập, chi phí khác (bỏ khỏi lợi nhuận) | PhuongXT | 14/10/2026 | [2026-10-14-phuongxt-nhom-bao-cao](nhat-ky/2026-10-14-phuongxt-nhom-bao-cao.md) |
+| T219 | Nhóm báo cáo Kho: Báo cáo xuất nhập tồn lên đầu, trước Thẻ kho | PhuongXT | 14/10/2026 | [2026-10-14-phuongxt-nhom-bao-cao](nhat-ky/2026-10-14-phuongxt-nhom-bao-cao.md) |
+| T218 | Gói Free ẩn hẳn nhóm báo cáo Bán hàng, Kê khai thuế ở màn Báo cáo, menu phụ, tab Báo cáo của phân hệ | PhuongXT | 14/10/2026 | [2026-10-14-phuongxt-nhom-bao-cao](nhat-ky/2026-10-14-phuongxt-nhom-bao-cao.md) |
+| T217 | Nhóm báo cáo Công nợ riêng (sau Mua hàng): Công nợ nhà cung cấp 4.2.3, Công nợ khách hàng 3.2.9 rời nhóm Mua hàng, Bán hàng | PhuongXT | 14/10/2026 | [2026-10-14-phuongxt-nhom-bao-cao](nhat-ky/2026-10-14-phuongxt-nhom-bao-cao.md) |
+| T216 | Gói Free tạm ẩn báo cáo nhóm Kế toán bán hàng: Bán hàng theo ngày, Tổng hợp bán hàng, Chi tiết bán hàng, Công nợ khách hàng (Sổ doanh thu ở nhóm Sổ sách giữ nguyên) | PhuongXT | 14/10/2026 | [2026-10-14-phuongxt-nhom-bao-cao](nhat-ky/2026-10-14-phuongxt-nhom-bao-cao.md) |
 | T215 | Tổng hợp nhập kho (5.2.9) bấm hàng hoá mở Chi tiết nhập kho (5.2.10), Tổng hợp xuất kho (5.2.11) bấm hàng hoá mở Chi tiết xuất kho (5.2.12), lọc sẵn hàng đó, cùng kỳ | PhuongXT | 14/10/2026 | [2026-10-14-phuongxt-bao-cao-kho](nhat-ky/2026-10-14-phuongxt-bao-cao-kho.md) |
 | T214 | Tổng hợp xuất kho (5.2.11), Chi tiết xuất kho (5.2.12): bỏ bộ lọc Đối tượng (tự sinh từ cột Đối tượng ở Chi tiết xuất kho) | PhuongXT | 14/10/2026 | [2026-10-14-phuongxt-bao-cao-kho](nhat-ky/2026-10-14-phuongxt-bao-cao-kho.md) |
 | T213 | Chi tiết nhập kho (5.2.10), Chi tiết xuất kho (5.2.12): cột Đơn giá, Thành tiền đổi tên thành Giá vốn, Tiền vốn | PhuongXT | 14/10/2026 | [2026-10-14-phuongxt-bao-cao-kho](nhat-ky/2026-10-14-phuongxt-bao-cao-kho.md) |

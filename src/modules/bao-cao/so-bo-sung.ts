@@ -713,23 +713,24 @@ const cols1043: Col[] = [
   { k: 'so', t: 'Số chứng từ', cls: 'code', w: 130 },
   { k: 'ngay', t: 'Ngày chứng từ', w: 95 },
   { k: 'nd', t: 'Nội dung' },
+  { k: 'lyDo', t: 'Lý do', w: 160 },   // lý do chi lấy ở danh mục Lý do thu, chi (T221)
   { k: 'cp', t: 'Chi phí phát sinh', num: true },
 ]
 
 const DS_CHI_PHI = [
-  { kmcp: 'Thuê mặt bằng Lê Lợi', nhomCp: 'Chi phí mặt bằng', nd: 'Chi tiền thuê mặt bằng chi nhánh Lê Lợi', cp: 65_000_000, ngay: 5 },
-  { kmcp: 'Thuê mặt bằng Nguyễn Trãi', nhomCp: 'Chi phí mặt bằng', nd: 'Chi tiền thuê mặt bằng chi nhánh Nguyễn Trãi', cp: 42_000_000, ngay: 5 },
-  { kmcp: 'Thuê mặt bằng Thảo Điền', nhomCp: 'Chi phí mặt bằng', nd: 'Chi tiền thuê mặt bằng chi nhánh Thảo Điền', cp: 55_000_000, ngay: 6 },
-  { kmcp: 'Tiền điện', nhomCp: 'Chi phí tiện ích', nd: 'Thanh toán tiền điện 3 chi nhánh kỳ này', cp: 18_500_000, ngay: 10 },
-  { kmcp: 'Tiền nước', nhomCp: 'Chi phí tiện ích', nd: 'Thanh toán hoá đơn tiền nước sinh hoạt', cp: 4_200_000, ngay: 11 },
-  { kmcp: 'Tiền gas công nghiệp', nhomCp: 'Chi phí tiện ích', nd: 'Chi tiền đổi gas bếp công nghiệp', cp: 8_900_000, ngay: 12 },
-  { kmcp: 'Lương nhân viên bếp', nhomCp: 'Chi phí nhân công', nd: 'Chi trả lương nhân viên bộ phận bếp', cp: 78_000_000, ngay: 15 },
-  { kmcp: 'Lương nhân viên phục vụ', nhomCp: 'Chi phí nhân công', nd: 'Chi trả lương nhân viên phục vụ bàn', cp: 52_000_000, ngay: 15 },
-  { kmcp: 'Lương quản lý chi nhánh', nhomCp: 'Chi phí nhân công', nd: 'Chi trả lương quản lý và giám sát ca', cp: 36_000_000, ngay: 15 },
-  { kmcp: 'Quảng cáo Facebook & TikTok', nhomCp: 'Chi phí bán hàng', nd: 'Chi phí chạy chiến dịch quảng cáo món mới', cp: 25_000_000, ngay: 18 },
-  { kmcp: 'Phí giao hàng Grab & ShopeeFood', nhomCp: 'Chi phí bán hàng', nd: 'Chi phí chiết khấu ứng dụng giao thức ăn', cp: 14_600_000, ngay: 20 },
-  { kmcp: 'Dụng cụ vệ sinh & hoá chất', nhomCp: 'Chi phí quản lý', nd: 'Mua sắm hoá chất tẩy rửa và vệ sinh', cp: 5_400_000, ngay: 22 },
-  { kmcp: 'Văn phòng phẩm & in ấn', nhomCp: 'Chi phí quản lý', nd: 'Chi tiền in thực đơn và giấy tờ quản lý', cp: 3_200_000, ngay: 25 },
+  { kmcp: 'Thuê mặt bằng Lê Lợi', nhomCp: 'Chi phí mặt bằng', lyDo: 'Chi phí thuê nhà', nd: 'Chi tiền thuê mặt bằng chi nhánh Lê Lợi', cp: 65_000_000, ngay: 5 },
+  { kmcp: 'Thuê mặt bằng Nguyễn Trãi', nhomCp: 'Chi phí mặt bằng', lyDo: 'Chi phí thuê nhà', nd: 'Chi tiền thuê mặt bằng chi nhánh Nguyễn Trãi', cp: 42_000_000, ngay: 5 },
+  { kmcp: 'Thuê mặt bằng Thảo Điền', nhomCp: 'Chi phí mặt bằng', lyDo: 'Chi phí thuê nhà', nd: 'Chi tiền thuê mặt bằng chi nhánh Thảo Điền', cp: 55_000_000, ngay: 6 },
+  { kmcp: 'Tiền điện', nhomCp: 'Chi phí tiện ích', lyDo: 'Chi phí khác', nd: 'Thanh toán tiền điện 3 chi nhánh kỳ này', cp: 18_500_000, ngay: 10 },
+  { kmcp: 'Tiền nước', nhomCp: 'Chi phí tiện ích', lyDo: 'Chi phí khác', nd: 'Thanh toán hoá đơn tiền nước sinh hoạt', cp: 4_200_000, ngay: 11 },
+  { kmcp: 'Tiền gas công nghiệp', nhomCp: 'Chi phí tiện ích', lyDo: 'Chi phí khác', nd: 'Chi tiền đổi gas bếp công nghiệp', cp: 8_900_000, ngay: 12 },
+  { kmcp: 'Lương nhân viên bếp', nhomCp: 'Chi phí nhân công', lyDo: 'Chi trả lương', nd: 'Chi trả lương nhân viên bộ phận bếp', cp: 78_000_000, ngay: 15 },
+  { kmcp: 'Lương nhân viên phục vụ', nhomCp: 'Chi phí nhân công', lyDo: 'Chi trả lương', nd: 'Chi trả lương nhân viên phục vụ bàn', cp: 52_000_000, ngay: 15 },
+  { kmcp: 'Lương quản lý chi nhánh', nhomCp: 'Chi phí nhân công', lyDo: 'Chi trả lương', nd: 'Chi trả lương quản lý và giám sát ca', cp: 36_000_000, ngay: 15 },
+  { kmcp: 'Quảng cáo Facebook & TikTok', nhomCp: 'Chi phí bán hàng', lyDo: 'Chi phí khác', nd: 'Chi phí chạy chiến dịch quảng cáo món mới', cp: 25_000_000, ngay: 18 },
+  { kmcp: 'Phí giao hàng Grab & ShopeeFood', nhomCp: 'Chi phí bán hàng', lyDo: 'Chi phí khác', nd: 'Chi phí chiết khấu ứng dụng giao thức ăn', cp: 14_600_000, ngay: 20 },
+  { kmcp: 'Dụng cụ vệ sinh & hoá chất', nhomCp: 'Chi phí quản lý', lyDo: 'Chi phí CCDC', nd: 'Mua sắm hoá chất tẩy rửa và vệ sinh', cp: 5_400_000, ngay: 22 },
+  { kmcp: 'Văn phòng phẩm & in ấn', nhomCp: 'Chi phí quản lý', lyDo: 'Chi phí khác', nd: 'Chi tiền in thực đơn và giấy tờ quản lý', cp: 3_200_000, ngay: 25 },
 ]
 
 function rows1043(thang: number): Row[] {
@@ -741,6 +742,7 @@ function rows1043(thang: number): Row[] {
       so: `PC26${pad(thang)}-${pad(idx + 1, 4)}`,
       ngay: `${pad(x.ngay)}/${pad(thang)}/2026`,
       nd: x.nd,
+      lyDo: x.lyDo,
       kmcp: x.kmcp,
       nhomCp: x.nhomCp,
       cp: x.cp,

@@ -17,7 +17,7 @@ import tongHop from '../modules/tong-hop'
 import tienIch from '../modules/tien-ich'
 import heThong from '../modules/he-thong'
 import { TrungTamBaoCao } from '../modules/bao-cao/TrungTam'
-import { CAU_HINH_BC, CHI_MO_TU_BC, MO_IFASTER, anSoHkdGoiFree, cachHkd, giuBC, laHkd, type PhienBC } from '../modules/bao-cao/danh-sach'
+import { AN_NHOM_BC, CAU_HINH_BC, CHI_MO_TU_BC, MO_IFASTER, NHOM_CONG_NO, anSoHkdGoiFree, cachHkd, giuBC, laHkd, type PhienBC } from '../modules/bao-cao/danh-sach'
 import { thTT58 } from '../modules/bao-cao/tt58'
 import type { Session } from './session'
 
@@ -65,6 +65,8 @@ function phanHeBaoCao(nguon: ModuleDef[]): ModuleDef {
       banSao.push({ ...sc, goc: m.key, tab: false })
     }
   }
+  // Nhóm Công nợ không theo phân hệ, gom công nợ nhà cung cấp, khách hàng (T217)
+  nhoms.push({ slug: `nhom-${NHOM_CONG_NO.key}`, ten: `Nhóm báo cáo ${NHOM_CONG_NO.ngan}`, nhom: 'Báo cáo', kind: 'custom', comp: TrungTamBaoCao, tab: false, can: ['4.2.3'] })
   return {
     key: 'bao-cao',
     ten: 'Báo cáo',
@@ -116,13 +118,18 @@ export function apDung(sc: ScreenDef, cheDo?: CheDo, session?: Pick<Session, 'pp
  *  Nhóm báo cáo ở phân hệ Báo cáo vẫn hiện khi chưa có báo cáo, miễn phân hệ mở được ở gói (T171) */
 function conBaoCao(sc: ScreenDef, goi: Goi, cheDo?: CheDo, session?: Pick<Session, 'ppGtgt' | 'ppTndn'> | Session) {
   if (sc.kind !== 'baocao') {
-    const m = MODULES.find(x => x.key === sc.slug.slice(5))
+    const key = sc.slug.slice(5)
+    if (AN_NHOM_BC[goi]?.includes(key)) return false   // nhóm ẩn hẳn ở gói (T218)
+    if (key === NHOM_CONG_NO.key) return Boolean(MODULES.find(x => x.key === 'bao-cao')?.screens
+      .some(x => NHOM_CONG_NO.ma.includes(x.code ?? x.slug.replace(/-/g, '.')) && hienMan(x, goi, cheDo, session)))
+    const m = MODULES.find(x => x.key === key)
     if (!m) return false
     if (hienPhanHe(m, goi) && !phanHeKhoa(m, goi)) return true
     // phân hệ ẩn ở gói (gói Free ẩn Tổng hợp) mà còn báo cáo mở được thì nhóm vẫn hiện (T185)
     return Boolean(MODULES.find(x => x.key === 'bao-cao')?.screens.some(x => x.goc === m.key && hienMan(x, goi, cheDo, session)))
   }
   const m = MODULES.find(x => x.screens.includes(sc))
+  if (m && AN_NHOM_BC[goi]?.includes(m.key)) return false   // tab Báo cáo của phân hệ có nhóm ẩn ở gói (T218)
   return (m?.screens.filter(laBaoCao) ?? []).some(x => hienMan(x, goi, cheDo, session))
 }
 

@@ -10,7 +10,7 @@ import { Icon } from '../../ui/Icon'
 import { PageHead, Pk } from '../../ui/Page'
 import { fold } from '../../ui/format'
 import { ThanhLoc } from '../../ui/ThanhLoc'
-import { CHI_MO_TU_BC, cauHinhBC, kyHieuBC } from './danh-sach'
+import { AN_NHOM_BC, CHI_MO_TU_BC, DAU_NHOM_BC, NHOM_CONG_NO, cauHinhBC, kyHieuBC } from './danh-sach'
 
 export interface NhomBaoCaoItem {
   mod: ModuleDef
@@ -29,16 +29,28 @@ export function layNhomBaoCao(s: Session): NhomBaoCaoItem[] {
   const soTT = tatCaBC.filter(laSoTT).sort((a, b) => thuTuMau(a).localeCompare(thuTuMau(b), 'vi', { numeric: true }))
   const tenSoTT = `Sổ sách kế toán theo ${CHE_DO[s.cheDo].ngan}`
 
+  // Công nợ nhà cung cấp, khách hàng gom vào nhóm Công nợ riêng, đứng sau nhóm Mua hàng (T217)
+  const viTriCongNo = (x: ScreenDef) => NHOM_CONG_NO.ma.indexOf(x.code ?? x.slug.replace(/-/g, '.'))
+  const laCongNo = (x: ScreenDef) => viTriCongNo(x) >= 0
+  const nhomCongNo: NhomBaoCaoItem = { mod: NHOM_CONG_NO as unknown as ModuleDef, screens: tatCaBC.filter(laCongNo).sort((a, b) => viTriCongNo(a) - viTriCongNo(b)) }
+
   // Gom theo x.goc theo thứ tự phân hệ trong MODULES
   const nhomGoc: NhomBaoCaoItem[] = []
   for (const m of MODULES) {
     if (m.key === 'bao-cao') continue
+    if (AN_NHOM_BC[s.goi]?.includes(m.key)) continue   // nhóm ẩn hẳn ở gói (T218)
     // Nhóm phân hệ vẫn hiện khi chưa có báo cáo (phân hệ mở được ở gói); sổ đã ở nhóm thông tư thì không lặp lại
     if (!tatCaBC.some(x => x.goc === m.key)) continue
     // phân hệ ẩn ở gói mà còn báo cáo mở được (Tổng hợp ở gói Free) thì nhóm vẫn hiện (T185)
     if ((!hienPhanHe(m, s.goi) || phanHeKhoa(m, s.goi)) && !tatCaBC.some(x => x.goc === m.key && hienMan(x, s.goi, s.cheDo, s))) continue
-    nhomGoc.push({ mod: m, screens: tatCaBC.filter(x => x.goc === m.key && !laSoTT(x)) })
+    // Báo cáo khai ở DAU_NHOM_BC lên đầu nhóm, còn lại giữ thứ tự màn (T219)
+    const dau = DAU_NHOM_BC[m.key] ?? []
+    const viTri = (x: ScreenDef) => { const i = dau.indexOf(x.code ?? x.slug.replace(/-/g, '.')); return i < 0 ? dau.length : i }
+    nhomGoc.push({ mod: m, screens: tatCaBC.filter(x => x.goc === m.key && !laSoTT(x) && !laCongNo(x)).sort((a, b) => viTri(a) - viTri(b)) })
   }
+  // Nhóm Công nợ chèn ngay sau Mua hàng; gói không có nhóm Mua hàng thì đứng cuối
+  const iSau = nhomGoc.findIndex(g => g.mod.key === NHOM_CONG_NO.sau)
+  nhomGoc.splice(iSau < 0 ? nhomGoc.length : iSau + 1, 0, nhomCongNo)
 
   const modSoTT = { key: 'so-sach', ten: tenSoTT, ngan: 'Sổ sách', mota: `Sổ sách và báo cáo theo ${CHE_DO[s.cheDo].ngan}` } as ModuleDef
   return [{ mod: modSoTT, screens: soTT }, ...nhomGoc]

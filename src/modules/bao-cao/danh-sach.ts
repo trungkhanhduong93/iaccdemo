@@ -1,7 +1,8 @@
 // Cấu hình mẫu từng sổ, báo cáo theo chế độ kế toán (kế hoạch mục 5, 7.2). Ký hiệu chưa đối chiếu văn bản gốc, chờ kế toán trưởng duyệt (T04).
 import type { CheDo } from '../../app/che-do'
+import type { Goi } from '../../app/plan'
 import type { Kho } from '../../ui/bao-cao/ToGiay'
-import { CHI_NHANH, TK_NGAN_HANG } from '../../data/mock'
+import { CHI_NHANH, LY_DO, TK_NGAN_HANG } from '../../data/mock'
 import { dsDonVi, loaiHinhDv, type Session } from '../../app/session'
 import { DON_VI } from '../../data/mock'
 import { thTT58 } from './tt58'
@@ -147,8 +148,9 @@ export const CAU_HINH_BC: Record<string, CauHinhBC> = {
     loc: [
       { k: 'kmcp', nhan: 'Khoản mục chi phí', kieu: 'chon', ds: () => ['Tiền điện', 'Tiền nước', 'Tiền gas công nghiệp', 'Thuê mặt bằng Lê Lợi', 'Thuê mặt bằng Nguyễn Trãi', 'Thuê mặt bằng Thảo Điền', 'Lương nhân viên bếp', 'Lương nhân viên phục vụ', 'Lương quản lý chi nhánh', 'Quảng cáo Facebook & TikTok', 'Phí giao hàng Grab & ShopeeFood', 'Dụng cụ vệ sinh & hoá chất', 'Văn phòng phẩm & in ấn'] },
       { k: 'nhomCp', nhan: 'Nhóm khoản mục chi phí', kieu: 'chon', ds: () => ['Chi phí tiện ích', 'Chi phí mặt bằng', 'Chi phí nhân công', 'Chi phí bán hàng', 'Chi phí quản lý'] },
+      { k: 'lyDo', nhan: 'Lý do', kieu: 'chonNhieu', ds: () => LY_DO.filter(l => l.dung === 'Chi tiền').map(l => l.ten) },   // T221
     ],
-    nhomDuoc: ['nhomCp', 'kmcp'],
+    nhomDuoc: ['nhomCp', 'kmcp', 'lyDo'],
     anKhongPS: true,
   }),
 }
@@ -160,6 +162,12 @@ const GIU_MOI_CHE_DO = ['2.2.1', '2.2.3']
  *  công nợ nhà cung cấp 4.2.3, khách hàng 3.2.9, quản trị, kho, mua hàng, bán hàng. Sổ công nợ 2.2.5 bỏ (PhuongXT: thay bằng Công nợ nhà cung cấp, Công nợ khách hàng theo iFaster); TT58 vẫn giữ S4a-DNSN. Không lọc theo anTam, cheDo, trường hợp thuế; muốn ẩn ở gói nào thì bỏ mã khỏi đây hoặc lọc thêm */
 export const MO_IFASTER = ['2.2.8', '2.2.9', '4.2.3', '3.2.9', '4.2.7', '10.2.3', '10.4.3', '5.2.3', '5.2.11', '5.2.12', '5.2.9', '5.2.10', '4.2.2', '4.2.1', '4.2.6', '3.2.7', '3.2.8', '3.2.6',
   '5.2.1']   // Thẻ kho mở lại mọi gói để bấm hàng hoá ở Xuất nhập tồn mở thẻ kho, PhuongXT chốt 14/10/2026 (T211)
+/** Nhóm báo cáo Công nợ riêng, đứng sau nhóm Mua hàng: công nợ nhà cung cấp, khách hàng rời nhóm phân hệ, PhuongXT chốt 14/10/2026 (T217) */
+export const NHOM_CONG_NO = { key: 'cong-no', ten: 'Công nợ', ngan: 'Công nợ', icon: 'users', mota: 'Công nợ nhà cung cấp, công nợ khách hàng', sau: 'mua-hang', ma: ['4.2.3', '3.2.9'] }
+/** Nhóm báo cáo (khoá phân hệ) ẩn hẳn theo gói ở màn Báo cáo và tab Báo cáo của phân hệ: gói Free ẩn Bán hàng, Kê khai thuế, PhuongXT chốt 14/10/2026 (T218) */
+export const AN_NHOM_BC: Partial<Record<Goi, string[]>> = { F: ['ban-hang', 'thue'] }
+/** Báo cáo đứng đầu nhóm phân hệ ở màn Báo cáo, theo thứ tự khai; báo cáo khác giữ thứ tự màn: Kho đưa Xuất nhập tồn lên trước Thẻ kho, PhuongXT chốt 14/10/2026 (T219) */
+export const DAU_NHOM_BC: Record<string, string[]> = { kho: ['5.2.3'] }
 /** Báo cáo chỉ mở từ báo cáo khác, không hiện ở danh sách báo cáo, menu, tìm kiếm: Chi tiết mua hàng 4.2.1 mở khi bấm nhà cung cấp ở Tổng hợp mua hàng, PhuongXT 13/10/2026 (T200) */
 export const CHI_MO_TU_BC = ['4.2.1']
 const GIU_TT58 = ['2.2.5', '2.2.7', '3.2.5', '5.2.8', '6.2.4', '6.2.5', '7.2.1', '10.2.2', '10.2.3', '10.4.1', '10.4.2']

@@ -4,6 +4,12 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 14/10/2026
 
+- T221: Sổ chi phí có cột Lý do và bộ lọc Lý do, gom nhóm được theo lý do.
+- T220: Gói Free, Báo cáo kết quả kinh doanh: Giá vốn đổi tên Chi phí NVL, Chi phí hoạt động đổi tên Chi phí trong tháng, thêm dòng Chi phí phân bổ hàng tháng; ẩn dòng Thu nhập, chi phí khác và không tính vào lợi nhuận.
+- T219: Nhóm báo cáo Kho: Báo cáo xuất nhập tồn đứng đầu, trước Thẻ kho.
+- T218: Gói Free không còn nhóm báo cáo Bán hàng, Kê khai thuế ở màn Báo cáo và menu phụ.
+- T217: Màn Báo cáo có nhóm Công nợ riêng, đứng sau Mua hàng, gồm Công nợ nhà cung cấp, Công nợ khách hàng.
+- T216: Gói Free tạm ẩn các báo cáo bán hàng: Bán hàng theo ngày, Tổng hợp, Chi tiết bán hàng, Công nợ khách hàng.
 - T215: Tổng hợp nhập kho, Tổng hợp xuất kho: bấm mã hoặc tên hàng mở Chi tiết nhập kho, Chi tiết xuất kho của hàng đó, cùng kỳ, giữ bộ lọc đang xem.
 - T214: Chi tiết xuất kho bỏ bộ lọc Đối tượng.
 - T213: Chi tiết nhập kho, Chi tiết xuất kho: cột Đơn giá, Thành tiền đổi tên thành Giá vốn, Tiền vốn.

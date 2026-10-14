@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import type { Col, Row, ScreenProps } from '../types'
 import { tenMan } from '../../app/registry'
 import { useSession } from '../../app/session'
-import { kieuGhiSo } from '../../app/plan'
+import { kieuGhiSo, type Goi } from '../../app/plan'
 import type { CheDo } from '../../app/che-do'
 import { CHI_NHANH, chiPhiThang, kqkd, tongKy } from '../../data/mock'
 import { Note, PageHead } from '../../ui/Page'
@@ -29,8 +29,19 @@ function Khung({ sc, mod, children, note }: ScreenProps & { children: (ky: strin
 }
 
 // ── Báo cáo kết quả kinh doanh ──
-function dongKqkd(cd: CheDo, thang: number) {
+function dongKqkd(cd: CheDo, thang: number, goi?: Goi) {
   const q = kqkd(thang, 2026)
+  // Gói Free (T220): Giá vốn ghi Chi phí NVL; chi phí phân bổ hàng tháng (phân bổ CCDC, khấu hao) tách khỏi chi phí trong tháng;
+  // bỏ thu nhập, chi phí khác khỏi bảng và lợi nhuận, nên lợi nhuận lệch Tổng quan đúng bằng khoản khác (PhuongXT chốt 14/10/2026)
+  if (goi === 'F' && cd === 'TT152') {
+    const pb = q.cp.ccdc + q.cp.khauHao
+    const cpThang = q.cpQlkd + q.cpTc - q.dtTc - pb
+    return [
+      { ct: 'Doanh thu bán hàng', v: q.dtThuan, _b: 1, _drill: '/app/ban-hang/3-2-5' }, { ct: 'Chi phí NVL', v: q.gv, _drill: '/app/kho/5-2-3' },
+      { ct: 'Lãi gộp', v: q.lnGop, _b: 1 }, { ct: 'Chi phí trong tháng', v: cpThang }, { ct: 'Chi phí phân bổ hàng tháng', v: pb },
+      { ct: 'Lợi nhuận trước thuế', v: q.lnGop - cpThang - pb, _t: 1 },
+    ]
+  }
   if (cd === 'TT152' || cd === 'TT58') return [
     { ct: 'Doanh thu bán hàng', v: q.dtThuan, _b: 1, _drill: '/app/ban-hang/3-2-5' }, { ct: 'Giá vốn', v: q.gv, _drill: '/app/kho/5-2-3' },
     { ct: 'Lãi gộp', v: q.lnGop, _b: 1 }, { ct: 'Chi phí hoạt động', v: q.cpQlkd + q.cpTc - q.dtTc },
@@ -57,7 +68,9 @@ export function KetQuaKinhDoanh(p: ScreenProps) {
   const { s } = useSession()
   const nav = useNavigate()
   return (
-    <Khung {...p} note={<Note icon="info">Bấm dòng doanh thu hoặc giá vốn để xem số chi tiết. Số khớp Tổng quan, báo cáo doanh thu, bảng cân đối số phát sinh.</Note>}>
+    <Khung {...p} note={<Note icon="info">{s.goi === 'F' && s.cheDo === 'TT152'
+      ? 'Bấm dòng doanh thu hoặc chi phí NVL để xem số chi tiết. Lợi nhuận chưa tính thu nhập, chi phí khác.'
+      : 'Bấm dòng doanh thu hoặc giá vốn để xem số chi tiết. Số khớp Tổng quan, báo cáo doanh thu, bảng cân đối số phát sinh.'}</Note>}>
       {ky => {
         if (s.cheDo === 'TT58') {
           const rows = dongB02(Number(ky))
@@ -73,7 +86,7 @@ export function KetQuaKinhDoanh(p: ScreenProps) {
             </ReportPaper>
           )
         }
-        const nay = dongKqkd(s.cheDo, Number(ky)), cu = dongKqkd(s.cheDo, Number(truoc(ky)))
+        const nay = dongKqkd(s.cheDo, Number(ky), s.goi), cu = dongKqkd(s.cheDo, Number(truoc(ky)), s.goi)
         const ma = kieuGhiSo(s.cheDo) === 'noco'
         const cols: Col[] = [{ k: 'ct', t: 'Chỉ tiêu' }, ...(ma ? [{ k: 'ma', t: 'Mã số', c: true, w: 70 } as Col] : []), { k: 'v', t: kyTen(ky).replace(' (đến 07/10)', ''), num: true }, { k: 'cu', t: kyTen(truoc(ky)), num: true }]
         return (

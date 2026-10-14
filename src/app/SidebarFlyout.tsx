@@ -289,6 +289,7 @@ const FLYOUT_CONFIG: Record<string, FlyoutData> = {
         { ten: 'Thu chi', di: '/app/bao-cao/nhom-tien' },
         { ten: 'Bán hàng', di: '/app/bao-cao/nhom-ban-hang' },
         { ten: 'Mua hàng', di: '/app/bao-cao/nhom-mua-hang' },
+        { ten: 'Công nợ', di: '/app/bao-cao/nhom-cong-no' },   // nhóm Công nợ riêng (T217)
         { ten: 'Kho', di: '/app/bao-cao/nhom-kho' },
         { ten: 'Kê khai thuế', di: '/app/bao-cao/nhom-thue' },
         { ten: 'Tài sản cố định', di: '/app/bao-cao/nhom-tscd' },
