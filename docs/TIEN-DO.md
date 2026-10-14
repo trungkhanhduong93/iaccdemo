@@ -4,7 +4,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T247.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T248.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
@@ -12,6 +12,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
 | T247 | Đồng bộ FABi chỉ còn kéo chi tiết (mỗi hoá đơn một chứng từ), mọi gói: bỏ lựa chọn tổng hợp theo kênh ở Cấu hình kế toán, khởi tạo đơn vị, điện thoại; danh sách Xuất bán POS bỏ nhãn Tổng hợp, dải Đã/Chưa đồng bộ và số liệu đồng bộ, nút Đồng bộ POS | PhuongXT | Đang làm | Sửa `ChungTuBanHang.tsx`, `he-thong/HeThong.tsx`, `onboarding/OnboardFabi.tsx`, `tien-ich/TienIch.tsx`, `mobile/MHeThong.tsx`, `mobile/MXuatBanPos.tsx`, `app/session.tsx`. Giữ chỗ QD62 |
+| T248 | Form phiếu mua hàng: ô Kho nhập đứng đầu, trước Nhà cung cấp; Xuất bán POS tương tự (kho đứng đầu phần thông tin) | PhuongXT | Đang làm | Sửa `ui/generic/ChungTuForm.tsx` (đầu phiếu mua hàng), `ban-hang/ChungTuBanHang.tsx` (chi tiết Xuất bán POS) |
 | T240 | Điện thoại gói Free: trang chủ giống trang chủ Free bản web (ba bài toán của T230), kèm bản điện thoại của Chi phí trong tháng, Lịch sử thu chi (T234) | Trum | Đang làm | Sửa `src/ui/mobile/MTrangChu.tsx` (nhánh Free), file mới trong `src/ui/mobile/`, `manMobile.ts`, `app.css` (mục cuối T240), `tools/kiem_tra.py`. Chỉ đọc `home/BaBaiToanFree.tsx`, `home/chiSo.ts` (T232 đang sửa) |
 | T241 | Điện thoại: báo cáo còn hiện kiểu web (mẫu giấy qua `MToGiay`, màn rơi về `MChiMayTinh`) chuyển sang dạng dòng điện thoại, có nút Xem mẫu in | Trum | Đang làm | Sửa `src/ui/mobile/MToGiay.tsx`, `MSoBaoCao.tsx`, `manMobile.ts`, `app.css` (mục cuối T241), `tools/kiem_tra.py`. Làm sau T240 |
 | T234 | Điện thoại: hai màn mới Chi phí trong tháng (`trang-chu/chi-phi-thang`), Lịch sử thu chi (`trang-chu/lich-su-quy`) của T230, T231 chưa có bản điện thoại, `kiem_tra.py --dien-thoai` báo lỗi ở bước duyệt `manMobile` | Trum | Đang làm | Làm cùng T240 Phát hiện khi kiểm T233 ngày 14/10/2026 |
