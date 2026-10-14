@@ -8,7 +8,9 @@ import { money, pct } from '../format'
 import { tinhToanTongQuan } from '../../modules/home/chiSo'
 import { soCai } from '../../modules/tong-hop/so-cai'
 import { dinhMucTon } from '../../modules/kho/data'
-import { moDuoc, timMan } from '../../app/registry'
+import { MODULES, hienMan, moDuoc, timMan } from '../../app/registry'
+import { chungTu, dongCua } from '../generic/gen'
+import { mauDieuChinh } from '../../modules/kho/dieu-chinh'
 import { TrendChart } from '../Charts'
 import { MTimKiem } from './MTimKiem'
 import { MChon } from './MChon'
@@ -218,6 +220,87 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
     }
   }, [rowsDm, khoChon])
 
+  // 6. Hao hụt nguyên vật liệu (T222)
+  const scXH = useMemo(() => timMan('kho', '5-1-2-3').sc, [])
+  const scKK = useMemo(() => timMan('kho', '5-1-10').sc, [])
+
+  const { tongTienHaoHut, pctHaoHut, top3HaoHut } = useMemo(() => {
+    const cfgXH = scXH?.voucher
+    const cfgKK = scKK?.voucher
+    if (!cfgXH) return { tongTienHaoHut: 0, pctHaoHut: 0, top3HaoHut: [] }
+
+    const rowsXH = chungTu(cfgXH, '5.1.2-3').filter(r => r.thang === 10)
+    const rowsXDC = cfgKK ? mauDieuChinh(cfgKK).filter(r => r.thang === 10 && r.loai === 'xdc') : []
+
+    const tenCnLoc = cn ? cn.ten : undefined
+    const xhLoc = tenCnLoc ? rowsXH.filter(r => r.cn === tenCnLoc) : rowsXH
+    const xdcLoc = tenCnLoc ? rowsXDC.filter(r => r.cn === tenCnLoc) : rowsXDC
+
+    let tong = 0
+    const itemMap = new Map<string, { ten: string; ma: string; tien: number }>()
+
+    for (const r of xhLoc) {
+      tong += Number(r.tien) || 0
+      const lines = dongCua(cfgXH, '5.1.2-3-' + r.id)
+      for (const l of lines) {
+        const item = itemMap.get(l.ten) ?? { ten: l.ten, ma: l.ma, tien: 0 }
+        item.tien += Number(l.tien) || 0
+        itemMap.set(l.ten, item)
+      }
+    }
+
+    for (const r of xdcLoc) {
+      tong += Number(r.tien) || 0
+      const lines = (r._dong as { ten: string; ma: string; tien: number }[] | undefined) ?? []
+      for (const l of lines) {
+        const item = itemMap.get(l.ten) ?? { ten: l.ten, ma: l.ma, tien: 0 }
+        item.tien += Number(l.tien) || 0
+        itemMap.set(l.ten, item)
+      }
+    }
+
+    const top3 = [...itemMap.values()].sort((a, b) => b.tien - a.tien).slice(0, 3)
+    const pctHh = k10.gv > 0 ? (tong / k10.gv) * 100 : 0
+
+    return {
+      tongTienHaoHut: tong,
+      pctHaoHut: pctHh,
+      top3HaoHut: top3,
+    }
+  }, [scXH, scKK, cn, k10.gv])
+
+  // Thống kê chứng từ chưa ghi sổ (T222)
+  const thongKeChungTuChuaGhi = useMemo(() => {
+    let tongDem = 0
+    let soMan = 0
+    let topScreen: { to: string; scKey: [string, string]; dem: number } | null = null
+
+    for (const m of MODULES) {
+      for (const sc of m.screens) {
+        if (!((sc.kind === 'voucher' || sc.voucher) && sc.voucher)) continue
+        if (!hienMan(sc, s.goi, s.cheDo, s) || !moDuoc(sc, s.goi)) continue
+
+        const cfg = sc.voucher
+        const rows = cfg.rowsMau ? cfg.rowsMau() : chungTu(cfg, sc.code ?? sc.slug)
+        const chuaGhi = rows.filter(r => r.tt === 'nhap' && (!cn || r.cn === cn.ten))
+        if (chuaGhi.length === 0) continue
+
+        tongDem += chuaGhi.length
+        soMan += 1
+
+        if (!topScreen || chuaGhi.length > topScreen.dem) {
+          topScreen = {
+            to: `/app/${m.key}/${sc.slug}?tt=nhap`,
+            scKey: [m.key, sc.slug],
+            dem: chuaGhi.length,
+          }
+        }
+      }
+    }
+
+    return { tongDem, soMan, topScreen }
+  }, [s.goi, s.cheDo, s, cn])
+
   // Danh sách việc cần theo dõi (Tab 2)
   const dsTheoDoi = useMemo(() => {
     const viecs: {
@@ -262,13 +345,25 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
       scKey: ['thue', '6-2-3'],
     })
 
+    // 4. Chứng từ chưa ghi sổ (T222)
+    if (thongKeChungTuChuaGhi.tongDem > 0 && thongKeChungTuChuaGhi.topScreen) {
+      viecs.push({
+        id: 'chung-tu-chua-ghi',
+        ten: 'Chứng từ chưa ghi sổ',
+        chiTiet: `${thongKeChungTuChuaGhi.tongDem} chứng từ ở ${thongKeChungTuChuaGhi.soMan} màn`,
+        icon: 'doc',
+        to: thongKeChungTuChuaGhi.topScreen.to,
+        scKey: thongKeChungTuChuaGhi.topScreen.scKey,
+      })
+    }
+
     // Lọc theo quyền gói: dòng nào màn gói không mở được thì ẩn
     return viecs.filter(v => {
       const { sc } = timMan(v.scKey[0], v.scKey[1])
       if (!sc) return true
       return moDuoc(sc, s.goi)
     })
-  }, [rowsDm, s.goi])
+  }, [rowsDm, s.goi, thongKeChungTuChuaGhi])
 
   // Danh sách chọn kho
   const dsChonKho = useMemo(() => {
@@ -526,6 +621,40 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
             </div>
             <div className="m-tc-bd-wrap">
               <TrendChart data={dataTrendNvl} h={210} />
+            </div>
+          </div>
+
+          {/* Thẻ 6: Hao hụt nguyên vật liệu (T222) */}
+          <div className="m-tc-the-ivt m-tc-the">
+            <div className="m-tc-the-head">
+              <div className="m-tc-the-tieu-hop">
+                <h3 className="m-tc-the-tieu">Hao hụt nguyên vật liệu</h3>
+                <span className="m-tc-the-info" title="Hao hụt nguyên vật liệu trong tháng">
+                  <Icon n="info" className="ic xs" />
+                </span>
+              </div>
+              <Link to="/app/kho/5-1-2-3" className="m-tc-the-link">
+                Chi tiết
+              </Link>
+            </div>
+            <div className="m-tc-nvl-hang-so">
+              <span className="m-tc-so-lon">{money(tongTienHaoHut)} đ</span>
+              <span className="m-tc-nvl-cam">({pctHaoHut.toFixed(1)}% chi phí NVL)</span>
+            </div>
+            <hr className="m-tc-ke" />
+            <div className="m-tc-hh-top3">
+              <div className="m-tc-hh-top3-tieu">Mặt hàng hao hụt nhiều nhất</div>
+              <div className="m-tc-hh-ds">
+                {top3HaoHut.map((item, idx) => (
+                  <div key={item.ma || idx} className="m-tc-hh-dong">
+                    <div className="m-tc-hh-dong-trai">
+                      <span className="m-tc-hh-rank">{idx + 1}</span>
+                      <span className="m-tc-hh-ten" title={item.ten}>{item.ten}</span>
+                    </div>
+                    <span className="m-tc-hh-tien">{money(item.tien)} đ</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 

@@ -11,6 +11,7 @@ import json
 import os
 import re
 import sys
+import time
 from pathlib import Path
 
 from playwright.sync_api import sync_playwright
@@ -2522,6 +2523,191 @@ def kiem_tra_dot_13_a():
     return loi
 
 
+def kiem_tra_dot_14_a():
+    """Đợt 14A (Anti A): Thẻ Hao hụt và mục Chứng từ chưa ghi sổ trên điện thoại (T222)"""
+    loi = []
+    print('Kiểm tra đợt 14A (Anti A): Hao hụt nguyên vật liệu và Chứng từ chưa ghi sổ:')
+    with sync_playwright() as p:
+        b = p.chromium.launch(channel='chrome')
+        pg = b.new_page(viewport={'width': 390, 'height': 844}, is_mobile=True, has_touch=True)
+        con = []
+        pg.on('console', lambda m: con.append(m.text) if m.type == 'error' else None)
+        pg.on('pageerror', lambda e: con.append(str(e)))
+
+        def kiem_man(ten):
+            if pg.evaluate("document.documentElement.scrollWidth > innerWidth"):
+                loi.append(f'{ten}: tràn ngang màn hình')
+            if con:
+                loi.append(f'{ten}: lỗi console {con[:2]}')
+                con.clear()
+
+        # Đăng nhập gói PR
+        pg.goto(URL + '#/dang-nhap')
+        pg.wait_for_selector('.auth-box')
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PR'))})")
+
+        # ── 1. Thẻ Hao hụt nguyên vật liệu ở tab Quản trị ──
+        pg.goto(URL + '?goi=PR#/app')
+        pg.wait_for_selector('.m-app')
+        pg.wait_for_selector('.m-tc-hh-top3')
+        pg.wait_for_timeout(350)
+
+        # Lấy số tiền hao hụt ban đầu (Tất cả chi nhánh)
+        the_hh = pg.locator('.m-tc-the-ivt:has-text("Hao hụt nguyên vật liệu")')
+        if the_hh.count() == 0:
+            loi.append('Thẻ Hao hụt: không tìm thấy thẻ trên trang chủ')
+        else:
+            so_text = the_hh.locator('.m-tc-nvl-hang-so .m-tc-so-lon').inner_text().strip()
+            print(f'Thẻ Hao hụt (Tất cả chi nhánh): {so_text}')
+            if not so_text or so_text.startswith('0'):
+                loi.append(f'Thẻ Hao hụt: giá trị ban đầu bằng 0 hoặc rỗng ({so_text})')
+
+            dong_top3 = the_hh.locator('.m-tc-hh-dong')
+            if dong_top3.count() < 1:
+                loi.append(f'Thẻ Hao hụt: thiếu danh sách mặt hàng hao hụt ({dong_top3.count()})')
+
+            # Đổi chi nhánh ở chip "CN:"
+            chip_cn = pg.locator('.m-tc-chip-cn')
+            if chip_cn.count() == 0:
+                loi.append('Không tìm thấy chip chọn chi nhánh .m-tc-chip-cn')
+            else:
+                chip_cn.click()
+                pg.wait_for_selector('.m-tam-hop', state='visible')
+                pg.wait_for_timeout(200)
+                muc_cn = pg.locator('.m-tam-dong')
+                if muc_cn.count() >= 2:
+                    muc_cn.nth(1).click()
+                    pg.wait_for_timeout(350)
+                    so_text_moi = the_hh.locator('.m-tc-nvl-hang-so .m-tc-so-lon').inner_text().strip()
+                    print(f'Thẻ Hao hụt (Sau khi đổi chi nhánh): {so_text_moi}')
+                    if not so_text_moi or so_text_moi.startswith('0'):
+                        loi.append(f'Thẻ Hao hụt: giá trị sau khi đổi chi nhánh bằng 0 ({so_text_moi})')
+                    if so_text_moi == so_text:
+                        loi.append(f'Thẻ Hao hụt: giá trị không đổi sau khi chọn chi nhánh ({so_text} -> {so_text_moi})')
+                else:
+                    loi.append('Sheet chọn chi nhánh: không đủ mục chi nhánh')
+
+        the_hh.scroll_into_view_if_needed()
+        pg.wait_for_timeout(200)
+        kiem_man('Trang chủ - Thẻ Hao hụt')
+        pg.screenshot(path=str(SHOTS / 'm-14-hao-hut.png'))
+
+        # ── 2. Mục Chứng từ chưa ghi sổ ở tab Cần theo dõi ──
+        tab_ctd = pg.locator('.m-tc-tab:has-text("Cần theo dõi")')
+        if tab_ctd.count() == 0:
+            loi.append('Không tìm thấy tab Cần theo dõi')
+        else:
+            tab_ctd.click()
+            pg.wait_for_timeout(300)
+            muc_ct = pg.locator('.m-tc-ctd-dong:has-text("Chứng từ chưa ghi sổ")')
+            if muc_ct.count() == 0:
+                loi.append('Tab Cần theo dõi: không có mục Chứng từ chưa ghi sổ')
+            else:
+                sub_txt = muc_ct.locator('.m-tc-ctd-sub').inner_text().strip()
+                print(f'Mục Chứng từ chưa ghi sổ: {sub_txt}')
+                if not sub_txt or '0 chứng từ' in sub_txt:
+                    loi.append(f'Mục Chứng từ chưa ghi sổ: dòng phụ không hợp lệ ({sub_txt})')
+
+                pg.screenshot(path=str(SHOTS / 'm-14-theo-doi.png'))
+
+                muc_ct.click()
+                pg.wait_for_timeout(400)
+                cur_url = pg.evaluate('location.href')
+                print(f'Sau khi bấm Chứng từ chưa ghi sổ: URL = {cur_url}')
+                if 'mua-hang' not in cur_url and 'ban-hang' not in cur_url and 'tien' not in cur_url and 'kho' not in cur_url:
+                    loi.append(f'Bấm Chứng từ chưa ghi sổ: không mở danh sách chứng từ (URL: {cur_url})')
+                chip_on = pg.locator('.m-ds-chips .m-chip.on')
+                if chip_on.count() == 0 or 'Chưa ghi sổ' not in chip_on.first.inner_text():
+                    loi.append('Bấm Chứng từ chưa ghi sổ: danh sách không bật sẵn chip Chưa ghi sổ')
+
+        kiem_man('Trang chủ - Tab Cần theo dõi')
+        b.close()
+    return loi
+
+
+def kiem_tra_dot_14_toc_do():
+    """Đo tốc độ mọi báo cáo trên điện thoại 390px, ghi ra tools/shots/toc-do-bao-cao-390.txt"""
+    loi = []
+    print('Đo tốc độ mọi báo cáo trên điện thoại 390px (gói PR):')
+    with sync_playwright() as p:
+        b = p.chromium.launch(channel='chrome')
+        pg = b.new_page(viewport={'width': 390, 'height': 844}, is_mobile=True, has_touch=True)
+        con = []
+        pg.on('console', lambda m: con.append(m.text) if m.type == 'error' else None)
+        pg.on('pageerror', lambda e: con.append(str(e)))
+
+        # Đăng nhập gói PR
+        pg.goto(URL + '#/dang-nhap')
+        pg.wait_for_selector('.auth-box')
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PR'))})")
+        pg.goto(URL + '?goi=PR#/app/bao-cao/tat-ca')
+        pg.wait_for_selector('.m-bc')
+        pg.wait_for_timeout(200)
+
+        # Lấy danh sách báo cáo hiển thị
+        bc_list = pg.evaluate('''async () => {
+            const { layNhomBaoCao } = await import('/src/modules/bao-cao/TrungTam.tsx');
+            const { hienMan, tenMan } = await import('/src/app/registry.ts');
+            const s = JSON.parse(localStorage.getItem('iacc-cloud-session'));
+            const nhom = layNhomBaoCao(s);
+            const map = new Map();
+            for (const g of nhom) {
+                for (const item of g.screens) {
+                    if (hienMan(item, s.goi, s.cheDo, s)) {
+                        map.set(item.slug, {
+                            slug: item.slug,
+                            code: item.code || item.slug,
+                            ten: tenMan(item)
+                        });
+                    }
+                }
+            }
+            return Array.from(map.values());
+        }''')
+
+        print(f'Tổng số báo cáo cần đo: {len(bc_list)}')
+        ket_qua = []
+
+        header = f"{'Mã':<10} | {'Tên báo cáo':<35} | {'Mili giây':>10}"
+        sep = '-' * len(header)
+        lines_out = [header, sep]
+        print(header)
+        print(sep)
+
+        for item in bc_list:
+            slug = item['slug']
+            t0 = time.perf_counter()
+            pg.goto(f"{URL}#/app/bao-cao/{slug}")
+            loc = pg.locator('.m-so-bc table tbody tr, .m-to-giay table tbody tr, .m-to-giay .paper, .rpt tbody tr, table tbody tr, .lockpage, .empty').first
+            loc.wait_for(state='visible', timeout=10000)
+            ms = round((time.perf_counter() - t0) * 1000)
+
+            line = f"{item['code']:<10} | {item['ten']:<35} | {ms:>7} ms"
+            print(line)
+            lines_out.append(line)
+            ket_qua.append((item['code'], item['ten'], ms))
+
+            if ms > 2000:
+                print(f'  CHẬM: {item["code"]} {ms} ms > 2000 ms')
+            # Đo trên dev server dao động theo tải máy (3.2.8 đo 1,2 đến 2,1 giây), nên chỉ tính lỗi khi quá 3 giây
+            if ms > 3000:
+                cdp = pg.context.new_cdp_session(pg)
+                cdp.send('Profiler.enable')
+                cdp.send('Profiler.start')
+                pg.goto(f"{URL}#/app/bao-cao/{slug}")
+                loc.wait_for(state='visible', timeout=10000)
+                profile = cdp.send('Profiler.stop')['profile']
+                loi.append(f"Báo cáo {item['code']} ({item['ten']}) chậm: {ms} ms > 3000 ms")
+
+        # Ghi ra file toc-do-bao-cao-390.txt
+        out_path = SHOTS / 'toc-do-bao-cao-390.txt'
+        out_path.write_text('\n'.join(lines_out) + '\n', encoding='utf-8')
+        print(f'Đã ghi kết quả đo vào {out_path}')
+
+        b.close()
+    return loi
+
+
 def kiem_tra_cac_khung_dt():
     loi, dem = [], 0
     for rong, cao in KHUNG_DT:
@@ -2553,6 +2739,8 @@ def kiem_tra_cac_khung_dt():
     loi += kiem_tra_dot_12_b()
     loi += kiem_tra_dot_13_b()
     loi += kiem_tra_dot_13_a()
+    loi += kiem_tra_dot_14_a()
+    loi += kiem_tra_dot_14_toc_do()
     if loi:
         print(f'{len(loi)} LỖI:')
         for x in loi:

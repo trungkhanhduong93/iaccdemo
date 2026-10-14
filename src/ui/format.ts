@@ -1,6 +1,9 @@
 // Định dạng số tiền, ngày theo kiểu Việt Nam và bộ sinh số giả có hạt giống (chạy lại ra đúng số cũ)
 
-export const money = (n: number) => Math.round(n).toLocaleString('vi-VN')
+export const money = (n: number) => {
+  if (isNaN(n) || !isFinite(n)) return ''
+  return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+}
 export const moneyD = (n: number) => money(n) + ' đ'
 /** 1.284.560.000 -> "1,28 tỷ"; 45.600.000 -> "45,6 tr" */
 export function short(n: number): string {

@@ -63,7 +63,9 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
   const [loaiChon, setLoaiChon] = useState<string>(() => (cfg.dieuChinh ? (cfg.loai?.[0]?.k ?? '') : ''))
 
   // Chip trạng thái
-  const [chipTT, setChipTT] = useState('all')
+  // ?tt=nhap từ mục Chứng từ chưa ghi sổ ở trang chủ thì bật sẵn chip đó
+  const [sp] = useSearchParams()
+  const [chipTT, setChipTT] = useState(() => sp.get('tt') ?? 'all')
 
   // Chọn loại khi bấm thêm mới
   const [moChonLoai, setMoChonLoai] = useState(false)
