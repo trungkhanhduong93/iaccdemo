@@ -4,7 +4,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T239.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T242.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
@@ -14,8 +14,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | T240 | Điện thoại gói Free: trang chủ giống trang chủ Free bản web (ba bài toán của T230), kèm bản điện thoại của Chi phí trong tháng, Lịch sử thu chi (T234) | Trum | Đang làm | Sửa `src/ui/mobile/MTrangChu.tsx` (nhánh Free), file mới trong `src/ui/mobile/`, `manMobile.ts`, `app.css` (mục cuối T240), `tools/kiem_tra.py`. Chỉ đọc `home/BaBaiToanFree.tsx`, `home/chiSo.ts` (T232 đang sửa) |
 | T241 | Điện thoại: báo cáo còn hiện kiểu web (mẫu giấy qua `MToGiay`, màn rơi về `MChiMayTinh`) chuyển sang dạng dòng điện thoại, có nút Xem mẫu in | Trum | Đang làm | Sửa `src/ui/mobile/MToGiay.tsx`, `MSoBaoCao.tsx`, `manMobile.ts`, `app.css` (mục cuối T241), `tools/kiem_tra.py`. Làm sau T240 |
 | T234 | Điện thoại: hai màn mới Chi phí trong tháng (`trang-chu/chi-phi-thang`), Lịch sử thu chi (`trang-chu/lich-su-quy`) của T230, T231 chưa có bản điện thoại, `kiem_tra.py --dien-thoai` báo lỗi ở bước duyệt `manMobile` | Trum | Đang làm | Làm cùng T240 Phát hiện khi kiểm T233 ngày 14/10/2026 |
-| T232 | Gói Free: cách tính chi phí NVL theo từng chi nhánh (Giá thành iPOS Inventory; Giá thành nhập tay: bảng món bán trong kỳ, số lượng, giá thành tự nhập, thành tiền; Tổng tiền phiếu nhập mua trong tháng, gồm thuế GTGT). Chọn ở Danh mục chi nhánh; đổi cách thì chỉ tính lại các tháng chưa khoá sổ; dòng Chi phí NVL ở Báo cáo KQKD, trang chủ tính theo cấu hình | PhuongXT | Đang làm | Sửa `DanhMucChiNhanh.tsx`, `BaoCaoTaiChinh.tsx`, `home/chiSo.ts`, `app/session.ts`, `app.css` (mục cuối T232), thêm màn giá thành nhập tay |
-| T239 | Màn danh sách chứng từ: cột Tổng tiền cố định bên phải khi cuộn ngang (danh sách chứng từ chung, Xuất bán POS, phiếu sản xuất) | PhuongXT | Đang làm | Sửa `VoucherScreen.tsx`, `ChungTuBanHang.tsx`, `PhieuSanXuat.tsx` |
 | T229 | Báo cáo kết quả kinh doanh (10.2.3, B02-DNN) ở chế độ TT133 mở ra "Báo cáo chưa có mẫu" ở cả bản máy tính và điện thoại, gói Pro và Free | | Chờ | Phát hiện ở T222 ngày 14/10/2026, mở từ Tất cả báo cáo. Có thể liên quan T220 |
 | T169 | Form chứng từ: gõ đổi địa chỉ từ phiếu này sang phiếu khác (vd `#/app/tien/2-1-1/chi-3` sang `chi-6`) thì form giữ số phiếu, đối tượng của phiếu cũ; mở từ danh sách, Trước, Sau thì đúng | | Chờ | Phát hiện ở T168. Sửa `ChungTuForm.tsx`, có thể `VoucherScreen.tsx` (key của form) |
 | T138 | Màn onboard khi bấm từ FABi sang IACC: khởi tạo đơn vị kế toán, điền sẵn từ FABi (chi nhánh, kho, cách đồng bộ, số dư đầu kỳ) | PhuongXT | Dở dang | Popup khởi tạo dữ liệu 4 bước trong phần mềm (`OnboardFabi.tsx`, `Shell.tsx`) đã push, PhuongXT xem lại một lượt. Xem `2026-10-11-phuongxt-man-khoi-tao-fabi.md` |
@@ -42,11 +40,14 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | T14 | Thay biểu tượng chìa khoá ở nút "Đăng nhập bằng tài khoản iPOS" bằng logo iPOS | | Chờ | Chưa có file logo iPOS |
 | T19 | Khoá sổ theo từng đơn vị, chi nhánh | | Chờ | DB iPOS lưu ngày khoá ở `DM_ORGANIZATION.DATE_LOCK`, màn Khoá sổ đang khoá chung |
 | T20 | Cột trạng thái duyệt trong danh sách chứng từ, tách khỏi ghi sổ | | Chờ | DB iPOS có `REVIEW_STATUS` CHECKED/UNCHECKED riêng với `STATUS` DRAFT/POSTED |
+| T242 | Điện thoại: màn Chi phí NVL (`trang-chu/chi-phi-nvl`, T232) chưa có bản điện thoại, cùng lỗi với T234 | | Chờ | Phát hiện khi làm T232 ngày 14/10/2026. Bản máy tính ở `src/modules/home/ChiPhiNvl.tsx`, số liệu ở `chi-phi-nvl.ts` |
 
 ## Đã xong
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T232 | Gói Free: cách tính chi phí NVL theo từng chi nhánh, chọn ở cột mới của Danh mục chi nhánh (Giá thành iPOS Inventory = tổng giá thành món iPOS Inventory + chi phí NVL tiêu hao: xuất huỷ + xuất điều chỉnh − nhập điều chỉnh; Giá thành nhập tay: bảng món bán trong kỳ, số lượng, giá thành tự nhập, nhập, xuất Excel; Tổng chi phí NVL trong tháng: tổng tiền phiếu nhập mua, gồm thuế GTGT). Đổi cách chỉ tính lại tháng chưa khoá sổ. Màn mới Chi phí NVL (`trang-chu/chi-phi-nvl`); trang chủ, Báo cáo KQKD gói Free tính theo cấu hình. Màn mở từ trang chủ có nút Trang chủ ở thanh tab (`app/tuTrangChu.ts`, `ModuleTabs.tsx`, `bao-cao/ThanhChon.tsx`) và nút Xuất Excel (`ui/xuatBangExcel.ts`, `NutXuatExcel`); câu hỏi cột Thu chi trang chủ đổi Tồn quỹ hiện tại, cuối tháng | PhuongXT | 14/10/2026 | [2026-10-14-phuongxt-chi-phi-nvl](nhat-ky/2026-10-14-phuongxt-chi-phi-nvl.md) |
+| T239 | Danh sách chứng từ (chung, Xuất bán POS, phiếu sản xuất): cột Tổng tiền cố định bên phải khi cuộn ngang | PhuongXT | 14/10/2026 | [2026-10-14-phuongxt-chi-phi-nvl](nhat-ky/2026-10-14-phuongxt-chi-phi-nvl.md) |
 | T238 | Báo cáo trên máy tính: Bảng dữ liệu phân trang, mặc định 100 dòng/trang, chọn 100, 200, 500 (lưu trên máy, chung mọi báo cáo); thanh phân trang hiện khi trên 100 dòng; dòng tổng cuối báo cáo ghim cuối mọi trang; bấm Lọc, đổi kỳ, tìm, đổi số dòng thì về trang 1. Tờ in, bản in, xuất file giữ nguyên | Trum | 14/10/2026 | [2026-10-14-trum-phan-trang-bao-cao](nhat-ky/2026-10-14-trum-phan-trang-bao-cao.md) |
 | T237 | Báo cáo trên máy tính: bộ lọc đổi sang kiểu danh sách chứng từ (ô nhãn trên viền, nút Lọc, Bộ lọc nâng cao, cấu hình đưa ô ra ngoài), thay popup phễu của QD55. Ô ngoài mặc định: Khoảng ngày, Tìm trong báo cáo, ô đầu của `cfg.loc`; báo cáo tài chính, tờ khai chỉ có Khoảng ngày. Không đụng điện thoại, tờ in | Trum | 14/10/2026 | [2026-10-14-trum-loc-bao-cao](nhat-ky/2026-10-14-trum-loc-bao-cao.md) |
 | T236 | Điện thoại: bấm ô nghiệp vụ mở thẳng sơ đồ quy trình; bấm chứng từ trên sơ đồ vào danh sách chứng từ đó; vẽ lại sơ đồ kiểu app; ẩn chứng từ ngoài gói đang dùng | Trum | 14/10/2026 | [2026-10-14-trum-bieu-do-quy-trinh-dien-thoai](nhat-ky/2026-10-14-trum-bieu-do-quy-trinh-dien-thoai.md) |

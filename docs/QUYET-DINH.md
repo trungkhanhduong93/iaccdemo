@@ -624,7 +624,17 @@ Lý do: Trum chốt ngày 13/10/2026 (T180). Khách hàng dùng gói Free, Stand
 
 Lý do: Trum duyệt ngày 14/10/2026 (T222). Trang chủ giống IVT, đầu trang dành cho số liệu. Kéo thả thiết kế mẫu in trên màn 390px không dùng được.
 
-## QD58. Cách tính chi phí NVL theo chi nhánh (đang soạn)
+## QD58. Cách tính chi phí NVL theo chi nhánh (14/10/2026)
+
+- Gói Free có 3 cách tính chi phí NVL, chọn riêng cho từng chi nhánh ở Danh mục chi nhánh. Chưa chọn thì theo Giá thành iPOS Inventory.
+  - Giá thành iPOS Inventory: tổng số lượng món bán × giá thành món trên iPOS Inventory, cộng chi phí NVL tiêu hao (xuất huỷ + xuất điều chỉnh − nhập điều chỉnh).
+  - Giá thành nhập tay: món có bán trong kỳ, số lượng bán, giá thành người dùng tự nhập (gõ trên bảng hoặc nhập Excel theo mã món). Món chưa có giá tính bằng 0.
+  - Tổng chi phí NVL trong tháng: tổng tiền phiếu nhập mua hàng hoá trong tháng, gồm thuế GTGT. Chỉ lấy phiếu nhập mua.
+- Đổi cách tính chỉ áp dụng từ tháng đầu chưa khoá sổ; tháng đã khoá giữ cách cũ, số cũ.
+- Xem cả đơn vị thì cộng chi phí NVL từng chi nhánh, mỗi chi nhánh theo cách riêng. Trang chủ, Báo cáo kết quả kinh doanh gói Free dùng số này.
+- Màn mở từ trang chủ gói Free có nút về Trang chủ và nút Xuất Excel.
+
+Lý do: PhuongXT chốt ngày 14/10/2026 (T232). Chuỗi có chi nhánh chưa dùng iPOS Inventory đủ để có giá thành món, cần cách tính thay thế.
 
 ## QD59. Bộ lọc báo cáo theo kiểu danh sách chứng từ (14/10/2026)
 

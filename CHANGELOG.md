@@ -4,6 +4,8 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 14/10/2026
 
+- T239: Danh sách chứng từ, Xuất bán POS, phiếu sản xuất: cột Tổng tiền đứng yên bên phải khi cuộn ngang.
+- T232: Gói Free: chọn cách tính chi phí NVL cho từng chi nhánh ở Danh mục chi nhánh (giá thành iPOS Inventory cộng NVL tiêu hao, giá thành nhập tay, tổng phiếu nhập mua). Màn mới Chi phí NVL mở từ trang chủ và Báo cáo kết quả kinh doanh; giá thành nhập tay gõ trên bảng hoặc nhập Excel. Màn mở từ trang chủ có nút Trang chủ và nút Xuất Excel. Trang chủ cột Thu chi hỏi Tồn quỹ hiện tại hoặc cuối tháng.
 - T238: Báo cáo xem dạng Bảng dữ liệu chia trang, mặc định 100 dòng mỗi trang, chọn được 100, 200, 500. Dòng tổng cuối báo cáo hiện ở mọi trang.
 - T237: Bộ lọc báo cáo trên máy tính cùng kiểu với danh sách chứng từ. Khoảng ngày, Tìm trong báo cáo và ô lọc chính nằm ngoài thanh; các ô khác trong Bộ lọc nâng cao, đưa ra ngoài được tối đa 4 ô. Bấm Lọc để xem, thay nút phễu và nút Xem báo cáo.
 - T236: Điện thoại: bấm ô nghiệp vụ mở thẳng sơ đồ quy trình, nút Tất cả để xem danh sách màn. Sơ đồ vẽ lại theo từng bước, bấm chứng từ vào danh sách chứng từ đó, chứng từ ngoài gói đang dùng tự ẩn.
