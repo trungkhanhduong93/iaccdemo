@@ -8,6 +8,12 @@ import { MDanhMuc } from './MDanhMuc'
 import { MBaoCao } from './MBaoCao'
 import { MSoBaoCao } from './MSoBaoCao'
 import { MToGiay } from './MToGiay'
+import { MTaiKhoan } from './MTaiKhoan'
+import { MChiNhanh } from './MChiNhanh'
+import { MGoiThueBao } from './MGoiThueBao'
+import { MCauHinh, MNguoiDung, MNhatKyThaoTac, MPhanQuyen, MThongTinDonVi } from './MHeThong'
+import { MTacVu } from './MTacVu'
+import { MQuyTrinh } from './MQuyTrinh'
 
 // Bảng riêng theo mod.key + '/' + sc.slug
 const BANG_RIENG: Record<string, ComponentType<ScreenProps>> = {
@@ -26,6 +32,44 @@ export function manMobile(sc: ScreenDef, mod: ModuleDef): ComponentType<ScreenPr
     sc.kind === 'baocao'
   ) {
     return MBaoCao
+  }
+
+  // ── Luật Anti A thêm ngay dưới dòng này (đợt 11–13) ──
+  // T187: Danh mục tài khoản 1.1 và Danh mục chi nhánh
+  if (mod.key === 'danh-muc') {
+    if (sc.code === '1.1' || sc.slug === '1-1') return MTaiKhoan
+    if (sc.slug === 'chi-nhanh') return MChiNhanh
+  }
+
+  // T191: Hệ thống (6 màn mở từ tab Khác)
+  if (mod.key === 'he-thong') {
+    if (sc.slug === 'nguoi-dung') return MNguoiDung
+    if (sc.slug === 'phan-quyen') return MPhanQuyen
+    if (sc.slug === 'nhat-ky') return MNhatKyThaoTac
+    if (sc.slug === 'goi-thue-bao') return MGoiThueBao
+    if (sc.slug === 'thong-tin') return MThongTinDonVi
+    if (sc.slug === 'cau-hinh') return MCauHinh
+  }
+  if (mod.key === 'tien-ich' && (sc.slug === 'x2' || sc.code === 'X2')) {
+    return MNhatKyThaoTac
+  }
+
+  // ── Luật Anti B thêm ngay dưới dòng này (đợt 11–13) ──
+  // T190: Màn tác vụ kind: 'tool', Kiểm tra cuối kỳ 10.1.4, Khoá sổ 10.1.6
+  if (
+    sc.kind === 'tool' ||
+    Boolean(sc.tool) ||
+    sc.code === '10.1.4' ||
+    sc.code === '10.1.6' ||
+    sc.slug === '10-1-4' ||
+    sc.slug === '10-1-6'
+  ) {
+    return MTacVu
+  }
+
+  // T210: Sơ đồ quy trình (kind: 'quytrinh') của 11 phân hệ
+  if (sc.kind === 'quytrinh' || sc.slug === 'quy-trinh') {
+    return MQuyTrinh
   }
 
   // Chứng từ và danh mục

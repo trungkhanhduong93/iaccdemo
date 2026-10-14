@@ -86,7 +86,7 @@ export function DanhMucChiNhanh({ sc, mod }: ScreenProps) {
 }
 
 /** Hộp chọn cửa hàng FABi chưa dùng kế toán để lên sổ thành chi nhánh */
-function HopThemChiNhanh({ onDong, onLenSo }: { onDong: () => void; onLenSo: (ds: CnThem[], khaiSoDu: boolean) => void }) {
+export function HopThemChiNhanh({ onDong, onLenSo }: { onDong: () => void; onLenSo: (ds: CnThem[], khaiSoDu: boolean) => void }) {
   const { s } = useSession()
   const ds = cuaHangChuaDung(s)
   const [chon, setChon] = useState<string[]>(() => ds.map(c => c.id))

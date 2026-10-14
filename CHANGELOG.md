@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 14/10/2026
 
+- T190, T210, T191, T187: Trên điện thoại mở được các màn chạy tác vụ (tính giá vốn, kết chuyển, khấu hao...), Kiểm tra cuối kỳ, Khoá sổ, sơ đồ quy trình từng phân hệ dạng danh sách bước. Mở được 6 màn Hệ thống, Danh mục tài khoản dạng cây, Danh mục chi nhánh.
 - T201: Số chứng từ trên mọi báo cáo, sổ bấm mở chứng từ chi tiết; bấm Đóng quay lại báo cáo. Sổ tự đánh số (sổ ngân hàng, sổ chi phí, bộ sổ TT58, TT152, lịch sử công nợ) hiện số phiếu thật cùng loại, cùng tháng. Bút toán khấu hao, kết chuyển không có phiếu nên không bấm được.
 - T202–T204: Trên điện thoại, Sổ quỹ tiền mặt hiện dạng bảng như Sổ ngân hàng, có chip kỳ, chi nhánh, ô lọc dòng. Bảng báo cáo cuộn tự do bốn hướng, không còn cột ghim và tiêu đề dính. Trang chủ đổi theo bố cục IVT: tab Quản trị, Cần theo dõi, chip Kho, thẻ tồn kho, chi phí nguyên vật liệu, tỷ lệ tồn các kho.
 - T193–T199: Trên điện thoại, Trang chủ có hai tab, vuốt ngang để chuyển. Tab Tổng quan có 4 thẻ số, biểu đồ doanh thu theo tháng, cơ cấu chi phí, thao tác nhanh. Tab Cần theo dõi có công nợ quá hạn, hàng dưới định mức, hạn nộp tờ khai. Kính lúp mở màn tìm màn hình theo tên hoặc mã, gõ không dấu được. Tab Nghiệp vụ chỉ hiện nghiệp vụ của gói Free, Standard. Tab Khác chia thẻ nhóm rõ ràng. Bộ lọc danh sách chứng từ: chạm từng dòng mở danh mục có ô tìm, chọn nhiều. Chạm ô ngày mở lịch từ đáy màn. Mở Sổ quỹ tiền mặt và các sổ nhiều dòng hết đơ, cả trên máy tính.

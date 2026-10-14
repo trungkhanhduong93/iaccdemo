@@ -18,11 +18,11 @@ import { thTT58, moTaBoSoTT58 } from '../bao-cao/tt58'
 import { CatalogPanel } from '../../ui/generic/CatalogScreen'
 import type { CauHinhDM } from '../danh-muc/truong-dm'
 
-const VAI_TRO = ['Chủ doanh nghiệp', 'Kế toán trưởng', 'Kế toán viên', 'Quản lý chi nhánh', 'Thủ kho']
+export const VAI_TRO = ['Chủ doanh nghiệp', 'Kế toán trưởng', 'Kế toán viên', 'Quản lý chi nhánh', 'Thủ kho']
 const PHAM_VI_DS = ['Tất cả chi nhánh', ...CHI_NHANH.map(c => c.ten)]
 const KHO_DS = ['Tất cả kho', ...KHO]
 
-const CAU_HINH_NGUOI_DUNG: CauHinhDM = {
+export const CAU_HINH_NGUOI_DUNG: CauHinhDM = {
   ten: 'Người dùng',
   khoi: [
     {
@@ -102,8 +102,8 @@ export function NguoiDung({ sc }: ScreenProps) {
     </div>
   )
 }
-const QUYEN = ['Xem', 'Thêm', 'Sửa', 'Xoá', 'Ghi sổ', 'Khoá sổ']
-const MAC_DINH: Record<string, string[]> = {
+export const QUYEN = ['Xem', 'Thêm', 'Sửa', 'Xoá', 'Ghi sổ', 'Khoá sổ']
+export const MAC_DINH: Record<string, string[]> = {
   'Chủ doanh nghiệp': ['Xem'], 'Kế toán trưởng': QUYEN, 'Kế toán viên': ['Xem', 'Thêm', 'Sửa', 'Ghi sổ'], 'Quản lý chi nhánh': ['Xem', 'Thêm'], 'Thủ kho': ['Xem', 'Thêm', 'Sửa'],
 }
 
