@@ -417,7 +417,7 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
 
   const toMotTrang = (
     <div ref={toLien} className={`bc-trang paper bc-to-lien${coThayDoi ? ' cho-cap-nhat' : ''}`} style={{ width: `${kt.w}mm`, minHeight: `${kt.h}mm`, padding: kieuTrang.padding }}>
-      {coThayDoi && <div className="bc-nhac-cap-nhat">Bấm Xem báo cáo để cập nhật</div>}
+      {coThayDoi && <div className="bc-nhac-cap-nhat">Bấm Lọc để cập nhật</div>}
       <div className="bc-khoi">{dau}</div>
       {khoi.map((kh, i) => kh.loai === 'bang'
         ? <div key={i} className={`bc-khoi bc-bang-${i}`}><RptTable cols={kh.cols} rows={chiaXem && kh === bangDau ? dongTrangXem(kh.rows, trangXemHt, coTrangXem) : kh.rows} onRow={kh.onRow} kyHieuCot={kyHieuCot} colWidths={chiaCot(kh.cols, kho, kh.rows)} /></div>
@@ -436,7 +436,7 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
         {css && <style>{css}</style>}
         {laBang && bangDau ? (
           <div className={`bc-ban-du-lieu${coThayDoi ? ' cho-cap-nhat' : ''}`}>
-            {coThayDoi && <div className="bc-nhac-cap-nhat">Bấm Xem báo cáo để cập nhật</div>}
+            {coThayDoi && <div className="bc-nhac-cap-nhat">Bấm Lọc để cập nhật</div>}
             {dauBang && <div className="bc-bang-dau">{dauBang}</div>}
             {dieuKienLoc && <div className="bc-bang-dk-loc"><Icon n="filter" className="ic sm" />Điều kiện lọc: {dieuKienLoc}</div>}
             {/* Dòng nhóm, dòng cộng, dòng tổng in đậm như ở Tờ in (T179) */}

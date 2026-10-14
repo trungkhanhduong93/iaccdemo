@@ -16286,3 +16286,41 @@ a.lsq-dong:hover { background: var(--tint); }
   }
 }
 
+/* ── Bộ lọc báo cáo kiểu danh sách chứng từ (T237) ── */
+.bc-thanh-cong-cu {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line-2);
+  background: var(--white);
+  flex-wrap: wrap;
+}
+.bc-thanh-cong-cu .ds-thanh-phai {
+  flex: 1 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-left: auto;
+}
+.bc-thanh-cong-cu .ds-o-khoangNgay,
+.bc-thanh-cong-cu .ds-o-thoiGian {
+  width: 222px;
+  min-width: 180px;
+  flex-shrink: 1;
+}
+.bc-thanh-cong-cu .ds-o-tim {
+  width: 176px;
+  min-width: 140px;
+  flex-shrink: 1;
+}
+.bc-thanh-cong-cu .ds-o-sel.btn {
+  font-weight: 400;
+  text-align: left;
+}
+.bc-thanh-cong-cu .btn.sm {
+  height: 34px;
+  border-radius: 8px;
+}
+

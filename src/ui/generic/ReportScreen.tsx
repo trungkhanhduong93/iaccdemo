@@ -19,6 +19,7 @@ import { chungTu, soChiTiet } from './gen'
 import { ganMoPhieu } from './SoChungTu'
 import { Dropdown, MenuHead, MenuItem, MenuSep, Popover, Select } from '../Dropdown'
 import { ChonKhoangNgay, dmy, khoangThang, type KhoangNgay } from '../ChonNgay'
+import { BoLoc, useCauHinhLoc, type OLocDef } from '../LocNangCao'
 import { SoTrangCtx, ToGiay, NgatTrang, tachKhoi, type Kho } from '../bao-cao/ToGiay'
 import { datNguonXuat, layNguonXuat, taoTenFile, xuatFile, type NguonXuat } from '../bao-cao/xuat'
 import {
@@ -84,15 +85,14 @@ export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: 
   const { s, toast } = useSession()
   const path = useLocation().pathname
   const slug = useParams().slug?.replace(/-/g, '.')
+  const cfgBC = cauHinhBC(slug)
+  const loaiBC = cfgBC?.loai ?? 'baocao'
   const tt = useTrangThaiLoc(path)
   const boLoc = useBoLoc(path)
-  const nutLoc = useRef<HTMLButtonElement>(null)
-  const [moLoc, setMoLoc] = useState(false)
-  // Số bộ lọc đang áp (đã bấm Xem) ghi trên nút phễu; số đang nhập để bật nút Xoá lọc
-  const demLoc = (loc: Record<string, string[]>, an: boolean) =>
-    (boLoc?.ds ?? []).filter(l => (loc[l.k] ?? []).length > 0).length + (boLoc?.anKhongPS && an ? 1 : 0)
-  const soLoc = demLoc(tt.loc, tt.anKhongPS)
-  const soLocNhap = demLoc(tt.nhap.loc, tt.nhap.anKhongPS)
+  const tim = useTim(path)
+  const [timNhap, setTimNhap] = useState(tim)
+
+  useEffect(() => { setTimNhap(tim) }, [path, tim])
 
   // Khởi tạo kỳ mặc định vào kho
   useEffect(() => {
@@ -105,9 +105,8 @@ export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: 
   const inBaoCao = () => window.dispatchEvent(new CustomEvent('bc-in'))
   // Nút In mở bản xem trước khi in (khổ, zoom, In thật nằm trong đó, T179)
   const xemTruocIn = () => window.dispatchEvent(new CustomEvent('bc-xem-in'))
-  const tim = useTim(path)
 
-  // Đồng bộ kỳ khi đã xem thay đổi (từ nút Xem báo cáo hoặc Enter cột lọc)
+  // Đồng bộ kỳ khi đã xem thay đổi (từ nút Lọc hoặc Enter)
   useEffect(() => {
     if (tt.daXem.ky && tt.daXem.ky !== ky) {
       setKy(tt.daXem.ky)
@@ -127,9 +126,115 @@ export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: 
   }
 
   const apDungXem = () => {
+    datTim(path, timNhap)
     xemBaoCao(path)
     setKy(tt.nhap.ky)
   }
+
+  const xoaNhap = () => {
+    xoaLoc(path)
+    setTimNhap('')
+  }
+
+  // Báo cáo tài chính, tờ khai chỉ có Khoảng ngày; 6.2.x có `cfg.loc` khai tay thì vẫn giữ ô lọc
+  const khongCoLocDong = Boolean((slug && LOAI_TRU_TU_SINH.has(slug)) || loaiBC === 'tokhai' || (slug && slug.startsWith('6.2.'))) && !boLoc?.ds.length && !boLoc?.anKhongPS
+
+  // Xây dựng các ô lọc theo kiểu danh sách chứng từ (T237)
+  const oLoc: OLocDef[] = useMemo(() => {
+    const res: OLocDef[] = [
+      {
+        k: 'khoangNgay',
+        ten: 'Khoảng ngày',
+        o: <ChonKhoangNgay align="end" value={khoang} onChange={doiKhoang} />,
+      },
+    ]
+
+    if (khongCoLocDong) return res
+
+    res.push({
+      k: 'tim',
+      ten: 'Tìm trong báo cáo',
+      o: (
+        <input
+          className="ds-o-inp"
+          value={timNhap}
+          placeholder="Tìm trong báo cáo"
+          aria-label="Tìm trong báo cáo"
+          onChange={e => setTimNhap(e.target.value)}
+          onKeyDown={e => {
+            if (e.key === 'Enter') apDungXem()
+          }}
+        />
+      ),
+    })
+
+    for (const l of boLoc?.ds ?? []) {
+      const opts = (tt.tuyChon[l.k] && tt.tuyChon[l.k].length > 0) ? tt.tuyChon[l.k] : (l.ds ?? [])
+      if (l.kieu === 'chon') {
+        res.push({
+          k: l.k,
+          ten: l.nhan,
+          o: (
+            <Select
+              className="ds-o-sel"
+              value={tt.nhap.loc[l.k]?.[0] ?? ''}
+              aria-label={l.nhan}
+              onChange={e => datLoc(path, l.k, e.target.value ? [e.target.value] : [])}
+            >
+              <option value="">Tất cả</option>
+              {opts.map(v => <option key={v} value={v}>{v}</option>)}
+            </Select>
+          ),
+        })
+      } else {
+        res.push({
+          k: l.k,
+          ten: l.nhan,
+          o: (
+            <DropdownChonNhieu
+              nhan={l.nhan}
+              opts={opts}
+              daChon={tt.nhap.loc[l.k] ?? []}
+              onDoi={vals => datLoc(path, l.k, vals)}
+            />
+          ),
+        })
+      }
+    }
+
+    if (boLoc?.anKhongPS) {
+      res.push({
+        k: 'anKhongPS',
+        ten: 'Ẩn dòng không phát sinh',
+        o: (
+          <Select
+            className="ds-o-sel"
+            value={tt.nhap.anKhongPS ? 'an' : ''}
+            aria-label="Ẩn dòng không phát sinh"
+            onChange={e => datAnKhongPS(path, e.target.value === 'an')}
+          >
+            <option value="">Tất cả</option>
+            <option value="an">Ẩn không phát sinh</option>
+          </Select>
+        ),
+      })
+    }
+
+    return res
+  }, [khoang, timNhap, khongCoLocDong, boLoc, tt.nhap, tt.tuyChon, path])
+
+  const oDauTienKhaiTay = cfgBC?.loc?.find(l => !l.cheDo || l.cheDo.includes(s.cheDo))
+  const macDinhNgoai = useMemo(() => {
+    if (khongCoLocDong) return ['khoangNgay']
+    return ['khoangNgay', 'tim', ...(oDauTienKhaiTay ? [oDauTienKhaiTay.k] : [])]
+  }, [khongCoLocDong, oDauTienKhaiTay])
+
+  const dsKhoa = useMemo(() => oLoc.map(o => o.k), [oLoc])
+  const [cauHinhLoc, datCauHinhLoc] = useCauHinhLoc(path, dsKhoa, macDinhNgoai)
+
+  const soLoc = (boLoc?.ds ?? []).filter(l => (tt.loc[l.k] ?? []).length > 0).length + (boLoc?.anKhongPS && tt.anKhongPS ? 1 : 0)
+  const dangLoc = soLoc > 0 || Boolean(tim.trim())
+  const khacNhap = tt.coThayDoi || timNhap !== tim
 
   const xuat = async (dinhDang: 'xlsx' | 'csv' | 'html' | 'xml') => {
     const n = layNguonXuat()
@@ -162,107 +267,72 @@ export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: 
     toast('Chọn máy in "Lưu dưới dạng PDF" để lưu file')
   }
 
-  // Thanh công cụ nằm đầu khung bảng, dồn phải: phễu lọc, điều kiện lọc, tìm, Tuỳ chỉnh, Xuất, In (T179)
+  // Thanh lọc báo cáo kiểu danh sách chứng từ (T237)
   const thanh = (
     <div className="thanh-loc bc-thanh-cong-cu">
       <span className="grow" />
-      {/* Bộ lọc gọn trong một nút phễu: nút ghi kỳ đang xem và số bộ lọc đang bật; bấm mở popup lọc, Xem báo cáo thì đóng (T179) */}
-      <button ref={nutLoc} type="button" className={`btn sm bc-nut-loc${moLoc ? ' on' : ''}`} title="Bộ lọc" aria-haspopup="dialog" aria-expanded={moLoc} onClick={() => setMoLoc(o => !o)}>
-        <Icon n="filter" className="ic sm" />
-        <span>{dmy(khoang.tu)} → {dmy(khoang.den)}</span>
-        {soLoc > 0 && <span className="chip pri sm">{soLoc}</span>}
-        <Icon n="chevd" className="ic sm" />
-      </button>
-      <Popover anchor={nutLoc} open={moLoc} onClose={() => setMoLoc(false)} role="dialog" width={300} className="bc-loc-pop">
-        <div onKeyDown={e => { if (e.key === 'Enter') { apDungXem(); setMoLoc(false) } }}>
-          <div className="bc-loc-muc">
-            <span className="bc-loc-nhan">Khoảng ngày</span>
-            <ChonKhoangNgay value={khoang} onChange={doiKhoang} />
-          </div>
-          {boLoc?.ds.map(l => {
-            const opts = (tt.tuyChon[l.k] && tt.tuyChon[l.k].length > 0) ? tt.tuyChon[l.k] : (l.ds ?? [])
-            if (l.kieu === 'chon') {
-              return (
-                <div key={l.k} className="bc-loc-muc">
-                  <span className="bc-loc-nhan">{l.nhan}</span>
-                  <Select className="inp sm bc-loc-btn" value={tt.nhap.loc[l.k]?.[0] ?? ''} aria-label={l.nhan}
-                    onChange={e => datLoc(path, l.k, e.target.value ? [e.target.value] : [])}>
-                    <option value="">Tất cả</option>
-                    {opts.map(v => <option key={v} value={v}>{v}</option>)}
-                  </Select>
-                </div>
-              )
+      <div className="ds-thanh-phai">
+        <BoLoc
+          ds={oLoc}
+          cauHinh={cauHinhLoc}
+          datCauHinh={datCauHinhLoc}
+          dangLoc={dangLoc}
+          khacNhap={khacNhap}
+          onLoc={apDungXem}
+          onXoaHet={xoaNhap}
+          anNangCao={khongCoLocDong}
+          nhanXoa="Xoá lọc"
+        />
+        {children}
+        <div className="thanh-loc-phai">
+          <button
+            type="button"
+            className="btn sm"
+            title="Tuỳ chỉnh"
+            onClick={() => setMoTuyChinh(true)}
+          >
+            <Icon n="layers" className="ic sm" />
+            <span className="rpt-btn-txt">Tuỳ chỉnh</span>
+          </button>
+          <Dropdown
+            label={
+              <>
+                <Icon n="download" className="ic sm" />
+                <span className="rpt-btn-txt">Xuất</span>
+                <Icon n="chevd" className="ic sm" />
+              </>
             }
-            return <LocChonNhieu key={l.k} nhan={l.nhan} opts={opts} daChon={tt.nhap.loc[l.k] ?? []} onDoi={vals => datLoc(path, l.k, vals)} />
-          })}
-          {boLoc?.anKhongPS && (
-            <label className="bc-loc-gat">
-              <input type="checkbox" checked={tt.nhap.anKhongPS} onChange={e => datAnKhongPS(path, e.target.checked)} />
-              <span>Ẩn dòng không phát sinh</span>
-            </label>
-          )}
-          <div className="bc-loc-pop-chan">
-            <button type="button" className="btn sm" disabled={soLocNhap === 0} onClick={() => xoaLoc(path)}>Xoá lọc</button>
-            <button type="button" className="btn sm pri bc-btn-xem" onClick={() => { apDungXem(); setMoLoc(false) }}>
-              <Icon n="refresh" className="ic sm" />
-              <span className="bc-btn-xem-txt">Xem báo cáo</span>
-            </button>
-          </div>
+            btnClass="btn sm"
+            title="Xuất báo cáo"
+            align="end"
+            width={180}
+          >
+            {dong => (
+              <>
+                <MenuHead>Tuỳ chọn cột</MenuHead>
+                <MenuItem on={tt.cotNhuDangXem} onClick={() => datCotNhuDangXem(path, !tt.cotNhuDangXem)}>
+                  Cột như đang xem
+                </MenuItem>
+                <MenuSep />
+                <MenuHead>Xuất báo cáo</MenuHead>
+                <MenuItem icon="doc" onClick={() => { dong(); xuat('xlsx') }}>Excel (.xlsx)</MenuItem>
+                <MenuItem icon="doc" onClick={() => { dong(); xuat('csv') }}>CSV (.csv)</MenuItem>
+                <MenuItem icon="printer" onClick={() => { dong(); inPdf() }}>PDF (hộp in)</MenuItem>
+                <MenuItem icon="doc" onClick={() => { dong(); xuat('html') }}>HTML (.html)</MenuItem>
+                <MenuItem icon="doc" onClick={() => { dong(); xuat('xml') }}>XML (.xml)</MenuItem>
+              </>
+            )}
+          </Dropdown>
+          <button
+            type="button"
+            className="btn sm"
+            title="Xem trước khi in"
+            onClick={xemTruocIn}
+          >
+            <Icon n="printer" className="ic sm" />
+            In
+          </button>
         </div>
-      </Popover>
-      {children}
-      <label className="bc-tim">
-        <Icon n="search" className="ic sm" />
-        <input className="inp sm" value={tim} placeholder="Tìm trong báo cáo" aria-label="Tìm trong báo cáo" onChange={e => datTim(path, e.target.value)} />
-      </label>
-      <div className="thanh-loc-phai">
-        <button
-          type="button"
-          className="btn sm"
-          title="Tuỳ chỉnh"
-          onClick={() => setMoTuyChinh(true)}
-        >
-          <Icon n="layers" className="ic sm" />
-          <span className="rpt-btn-txt">Tuỳ chỉnh</span>
-        </button>
-        <Dropdown
-          label={
-            <>
-              <Icon n="download" className="ic sm" />
-              <span className="rpt-btn-txt">Xuất</span>
-              <Icon n="chevd" className="ic sm" />
-            </>
-          }
-          btnClass="btn sm"
-          title="Xuất báo cáo"
-          align="end"
-          width={180}
-        >
-          {dong => (
-            <>
-              <MenuHead>Tuỳ chọn cột</MenuHead>
-              <MenuItem on={tt.cotNhuDangXem} onClick={() => datCotNhuDangXem(path, !tt.cotNhuDangXem)}>
-                Cột như đang xem
-              </MenuItem>
-              <MenuSep />
-              <MenuHead>Xuất báo cáo</MenuHead>
-              <MenuItem icon="doc" onClick={() => { dong(); xuat('xlsx') }}>Excel (.xlsx)</MenuItem>
-              <MenuItem icon="doc" onClick={() => { dong(); xuat('csv') }}>CSV (.csv)</MenuItem>
-              <MenuItem icon="printer" onClick={() => { dong(); inPdf() }}>PDF (hộp in)</MenuItem>
-              <MenuItem icon="doc" onClick={() => { dong(); xuat('html') }}>HTML (.html)</MenuItem>
-              <MenuItem icon="doc" onClick={() => { dong(); xuat('xml') }}>XML (.xml)</MenuItem>
-            </>
-          )}
-        </Dropdown>
-        <button
-          type="button"
-          className="btn sm"
-          title="Xem trước khi in"
-          onClick={xemTruocIn}
-        >
-          <Icon n="printer" className="ic sm" />
-          In
-        </button>
       </div>
     </div>
   )
@@ -303,19 +373,18 @@ interface BoLocMuc {
   ds?: string[]
 }
 
-function LocChonNhieu({
-  nhan,
+function DropdownChonNhieu({
   opts,
   daChon,
   onDoi,
 }: {
-  nhan: string
+  nhan?: string
   opts: string[]
   daChon: string[]
   onDoi: (vals: string[]) => void
 }) {
   const [tim, setTim] = useState('')
-  const nhanNut = daChon.length === 0 ? 'Tất cả' : `${daChon.length} đã chọn`
+  const nhanNut = daChon.length === 0 ? 'Tất cả' : (daChon.length === 1 ? daChon[0] : `${daChon.length} đã chọn`)
   const canTim = opts.length > 8
   const optsLoc = useMemo(() => {
     if (!canTim || !tim.trim()) return opts
@@ -324,62 +393,59 @@ function LocChonNhieu({
   }, [opts, tim, canTim])
 
   return (
-    <div className="bc-loc-muc">
-      <div className="bc-loc-nhan">{nhan}</div>
-      <Dropdown
-        label={
-          <>
-            <span className="bc-loc-btn-txt" title={daChon.length === 1 ? daChon[0] : nhanNut}>
-              {daChon.length === 1 ? daChon[0] : nhanNut}
-            </span>
-            <Icon n="chevd" className="ic sm" />
-          </>
-        }
-        btnClass="inp sm bc-loc-btn"
-        width={224}
-      >
-        {() => (
-          <>
-            {canTim && (
-              <div className="bc-loc-tim-o">
-                <Icon n="search" className="ic sm" />
-                <input
-                  type="text"
-                  className="inp sm"
-                  placeholder="Tìm..."
-                  value={tim}
-                  onChange={e => setTim(e.target.value)}
-                  onClick={e => e.stopPropagation()}
-                  onKeyDown={e => e.stopPropagation()}
-                />
-              </div>
-            )}
-            <MenuItem on={daChon.length === 0} onClick={() => onDoi([])}>
-              Tất cả
-            </MenuItem>
-            <MenuSep />
-            <div className="bc-loc-menu-ds">
-              {optsLoc.map(v => {
-                const on = daChon.includes(v)
-                return (
-                  <MenuItem
-                    key={v}
-                    on={on}
-                    onClick={() => {
-                      const moi = on ? daChon.filter(x => x !== v) : [...daChon, v]
-                      onDoi(moi)
-                    }}
-                  >
-                    {v}
-                  </MenuItem>
-                )
-              })}
-              {optsLoc.length === 0 && <div className="bc-loc-trong">Không tìm thấy</div>}
+    <Dropdown
+      label={
+        <>
+          <span className="sel-v" title={daChon.length === 1 ? daChon[0] : nhanNut}>
+            {nhanNut}
+          </span>
+          <Icon n="chevd" className="ic sm sel-arr" />
+        </>
+      }
+      btnClass="ds-o-sel"
+      width={224}
+    >
+      {() => (
+        <>
+          {canTim && (
+            <div className="bc-loc-tim-o">
+              <Icon n="search" className="ic sm" />
+              <input
+                type="text"
+                className="inp sm"
+                placeholder="Tìm..."
+                value={tim}
+                onChange={e => setTim(e.target.value)}
+                onClick={e => e.stopPropagation()}
+                onKeyDown={e => e.stopPropagation()}
+              />
             </div>
-          </>
-        )}
-      </Dropdown>
-    </div>
+          )}
+          <MenuItem on={daChon.length === 0} onClick={() => onDoi([])}>
+            Tất cả
+          </MenuItem>
+          <MenuSep />
+          <div className="bc-loc-menu-ds">
+            {optsLoc.map(v => {
+              const on = daChon.includes(v)
+              return (
+                <MenuItem
+                  key={v}
+                  on={on}
+                  onClick={() => {
+                    const moi = on ? daChon.filter(x => x !== v) : [...daChon, v]
+                    onDoi(moi)
+                  }}
+                >
+                  {v}
+                </MenuItem>
+              )
+            })}
+            {optsLoc.length === 0 && <div className="bc-loc-trong">Không tìm thấy</div>}
+          </div>
+        </>
+      )}
+    </Dropdown>
   )
 }
 

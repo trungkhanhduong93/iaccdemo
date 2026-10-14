@@ -626,4 +626,12 @@ Lý do: Trum duyệt ngày 14/10/2026 (T222). Trang chủ giống IVT, đầu tr
 
 ## QD58. Cách tính chi phí NVL theo chi nhánh (đang soạn)
 
-## QD59. Bộ lọc báo cáo theo kiểu danh sách chứng từ (đang soạn)
+## QD59. Bộ lọc báo cáo theo kiểu danh sách chứng từ (14/10/2026)
+
+- Màn xem báo cáo trên máy tính dùng thanh lọc như danh sách chứng từ (QD25): ô nhãn trên viền, nút Bộ lọc nâng cao, nút Lọc. Bỏ nút phễu mở popup của QD55.
+- Ô ngoài mặc định: Khoảng ngày, Tìm trong báo cáo, ô đầu khai tay trong `cfg.loc`. Ô tự sinh theo cột (QD40) và Ẩn dòng không phát sinh nằm trong Bộ lọc nâng cao. Đưa ra ngoài tối đa 4 ô, lưu theo từng báo cáo.
+- Lọc, đổi kỳ, ô Tìm chỉ áp khi bấm Lọc hoặc Enter trong ô Tìm. Nút Lọc thay nút Xem báo cáo.
+- Báo cáo tài chính, tờ khai không có ô lọc dòng thì chỉ có Khoảng ngày và nút Lọc.
+- Giữ nguyên: dòng điều kiện lọc trên tờ in và bảng dữ liệu (QD55), giao diện điện thoại.
+
+Lý do: Trum duyệt ngày 14/10/2026 (T237). Hai loại màn cùng một kiểu lọc, người dùng không phải học hai cách.

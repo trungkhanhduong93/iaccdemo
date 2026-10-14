@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 14/10/2026
 
+- T237: Bộ lọc báo cáo trên máy tính cùng kiểu với danh sách chứng từ. Khoảng ngày, Tìm trong báo cáo và ô lọc chính nằm ngoài thanh; các ô khác trong Bộ lọc nâng cao, đưa ra ngoài được tối đa 4 ô. Bấm Lọc để xem, thay nút phễu và nút Xem báo cáo.
 - T233: Lập phiếu thu, chi mới có tài khoản hạch toán. Trên máy tính, dòng thêm mới và dòng đổi lý do tự điền TK Nợ, TK Có, cột ghi TK Nợ, TK Có. Trên điện thoại, mỗi dòng ghi Nợ, Có theo lý do, bấm để đổi tài khoản; bước Xác nhận của mọi phiếu có khối Hạch toán. Lập hoá đơn bán trên điện thoại ghi Kho xuất.
 - T231: Danh mục Lý do đổi tên Lý do nghiệp vụ; lý do Chi tiền có ô tích Là chi phí (tích sẵn mua NVL, trả lương, thuê nhà, CCDC, TSCĐ, chờ phân bổ, chi phí khác). Sổ chi phí chỉ lấy lý do được tích chi phí.
 - T230: Trang chủ gói Free vẽ lại theo ba bài toán: Quản lý lãi lỗ (thẻ báo cáo lãi lỗ tháng, bấm Chi phí trong tháng xem tổng theo lý do chi phí), Quản lý thu chi (số dư, tồn quỹ từng quỹ, bấm quỹ xem Lịch sử thu chi kiểu app ngân hàng, bấm giao dịch mở chứng từ), Quản lý kho (nhập mua, công nợ phải trả, hao hụt kiểm kê). Chọn năm rồi tháng; bỏ tab Bàn làm việc và các khối khác. Sửa lỗi trang trắng khi mở báo cáo kèm kỳ khác tháng 9 từ báo cáo khác.
