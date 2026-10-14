@@ -663,3 +663,4 @@ Lý do: Trum duyệt ngày 14/10/2026 (T238).
 
 Lý do: PhuongXT chốt ngày 14/10/2026 (T245). Gói Free chỉ khai số dư tiền, khai ngay lúc tạo quỹ gọn hơn mở màn riêng.
 
+## QD62. Đồng bộ FABi chỉ kéo chi tiết theo hoá đơn (đang soạn)
