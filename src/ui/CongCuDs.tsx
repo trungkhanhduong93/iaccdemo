@@ -30,6 +30,11 @@ export function NutExcel({ onNhap, onXuat }: { onNhap: () => void; onXuat: () =>
   )
 }
 
+/** Nút chỉ xuất Excel, cùng biểu tượng với NutExcel; dùng ở màn chỉ xem, vd màn chi tiết mở từ trang chủ gói Free (T232) */
+export function NutXuatExcel({ onXuat }: { onXuat: () => void }) {
+  return <button type="button" className="nut-vuong ds-nut-excel" title="Xuất Excel" aria-label="Xuất Excel" onClick={onXuat}><LogoExcel /></button>
+}
+
 /** Nút xổ liền cạnh "Thêm mới" (split button "Thêm mới | ⌄"):
  * nửa trái mở form thêm mới; nửa phải mở menu gom Thêm theo loại và Tải từ nguồn (T43) */
 export function NutThemMoiSplit({

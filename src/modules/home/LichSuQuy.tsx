@@ -10,6 +10,9 @@ import { soChiTiet } from '../../ui/generic/gen'
 import { gopSo } from '../../ui/generic/ReportScreen'
 import { phieuTheoSo } from '../../ui/generic/SoChungTu'
 import { useMoTuTrangChu } from '../../app/tuTrangChu'
+import { NutXuatExcel } from '../../ui/CongCuDs'
+import { xuatBangExcel } from '../../ui/xuatBangExcel'
+import { useSession } from '../../app/session'
 import { soQuyCn } from '../tien/SoQuy'
 import { tenQuyTm, tenTkNh } from '../bao-cao/danh-sach'
 
@@ -48,6 +51,7 @@ const tenNgay = (ngay: string) => { const [d, m, y] = ngay.split('/').map(Number
 
 export function LichSuQuy(_: ScreenProps) {
   const moTuTrangChu = useMoTuTrangChu()   // liên kết trong màn mở kèm nút về Trang chủ (T232)
+  const { toast } = useSession()
   const [tham] = useSearchParams()
   const quy = tham.get('quy') ?? tenQuyTm(CHI_NHANH[0].ngan)
   const thang = Math.min(10, Math.max(7, Number(tham.get('thang')) || 10))
@@ -64,6 +68,10 @@ export function LichSuQuy(_: ScreenProps) {
         <Link to="/app/trang-chu/tong-quan" className="cpt-ve" title="Về Tổng quan" aria-label="Về Tổng quan"><Icon n="chevl" /></Link>
         <h1>Lịch sử thu chi</h1>
         <span className="grow" />
+        <NutXuatExcel onXuat={() => xuatBangExcel(`Lịch sử thu chi ${quy} tháng ${thang}/2026`, `Đầu kỳ ${moneyD(gd?.mo ?? 0)} · Cuối kỳ ${moneyD(gd?.cuoi ?? 0)}`,
+          [{ t: 'Ngày', rong: 12 }, { t: 'Số chứng từ', rong: 18 }, { t: 'Diễn giải', rong: 44 }, { t: 'Thu', so: true }, { t: 'Chi', so: true }, { t: 'Số dư', so: true }],
+          [['', '', 'Số dư đầu kỳ', null, null, gd?.mo ?? 0], ...(gd?.ds ?? []).map(x => [x.ngay, phieuTheoSo(x.so)?.so ?? x.so, x.dg, x.thu || null, x.chi || null, x.du])],
+          ['', '', 'Cộng', tn, tc, gd?.cuoi ?? 0]).catch(() => toast('Không xuất được file Excel'))} />
         <Link to={`/app/tien/2-1-1/moi?loai=${tienMat ? 'thu' : 'bc'}`} className="btn"><Icon n="plus" className="ic sm" />Lập phiếu thu</Link>
         <Link to={`/app/tien/2-1-1/moi?loai=${tienMat ? 'chi' : 'unc'}`} className="btn primary"><Icon n="plus" className="ic sm" />Lập phiếu chi</Link>
       </div>

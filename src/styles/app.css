@@ -16453,3 +16453,8 @@ a.lsq-dong:hover { background: var(--tint); }
 .mtabs-ve { display: inline-flex; align-items: center; gap: 4px; flex: none; padding: 0 12px 0 4px; margin-right: 6px; border-right: 1px solid var(--line); color: var(--blue); font-size: 14px; white-space: nowrap; }
 .mtabs-ve:hover { color: var(--blue-d); }
 .bc-ve-tc { color: var(--blue); }
+.cpt-tong .nvl-ct { flex: 1; text-align: center; font-size: 13px; color: var(--body); }
+.cpt-tong .nvl-ct b { font-size: 13px; font-weight: 600; }
+.nvl-tab-dau { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--line); }
+.nvl-tabs { border-bottom: 0; padding: 0; }
+.nvl-loc { width: 190px; flex: none; }

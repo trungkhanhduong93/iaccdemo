@@ -1,5 +1,5 @@
 // Cách tính chi phí NVL gói Free theo từng chi nhánh (T232), chọn ở Danh mục chi nhánh:
-// - ivt: giá thành món trên iPOS Inventory (giá vốn món bán theo định lượng, như trước)
+// - ivt: tổng giá thành món trên iPOS Inventory + chi phí NVL tiêu hao (xuất huỷ + xuất điều chỉnh − nhập điều chỉnh)
 // - tay: món bán trong kỳ × giá thành người dùng tự nhập ở màn Chi phí NVL
 // - nhap: tổng tiền phiếu nhập mua (4.1.1) trong tháng, gồm cả thuế GTGT (PhuongXT chốt 14/10/2026)
 // Đổi cách tính chỉ áp dụng từ tháng đầu chưa khoá sổ; tháng đã khoá giữ cách cũ.
@@ -8,13 +8,16 @@ import { CHI_NHANH, HANG, KHOA_SO_DEN, tongKy } from '../../data/mock'
 import { between, rng } from '../../ui/format'
 import { chungTu } from '../../ui/generic/gen'
 import { PHIEU_MUA } from '../mua-hang/bao-cao'
+import { timMan } from '../../app/registry'
+import { mauDieuChinh } from '../kho/dieu-chinh'
+import type { Row } from '../types'
 
 export type CachNvl = 'ivt' | 'tay' | 'nhap'
 /** Một lần đặt cách tính: áp dụng từ kỳ tu (yyyymm) cho tới lần đặt sau */
 export interface LichCachNvl { tu: number; cach: CachNvl }
 
 export const CACH_NVL: Record<CachNvl, { ten: string; theo: string; mota: string }> = {
-  ivt: { ten: 'Giá thành iPOS Inventory', theo: 'theo giá thành iPOS Inventory', mota: 'Số lượng món bán × giá thành món trên iPOS Inventory' },
+  ivt: { ten: 'Giá thành iPOS Inventory', theo: 'theo giá thành iPOS Inventory', mota: 'Tổng giá thành iPOS Inventory + Chi phí NVL tiêu hao' },
   tay: { ten: 'Giá thành nhập tay', theo: 'theo giá thành nhập tay', mota: 'Số lượng món bán × giá thành tự nhập cho từng món' },
   nhap: { ten: 'Tổng chi phí NVL trong tháng', theo: 'theo phiếu nhập mua', mota: 'Tổng tiền phiếu nhập mua hàng hoá trong tháng, gồm thuế GTGT' },
 }
@@ -54,6 +57,17 @@ export function monBanKy(cn: string, thang: number, nam = NAM) {
   return HANG.map((h, i) => ({ ma: h.ma, ten: h.ten, dvt: h.dvt, sl: Math.round(dt * ty[i] / tong) })).filter(m => m.sl > 0)
 }
 
+/** Giá thành món iPOS Inventory trong tháng (đồng, làm tròn): tỷ lệ giá vốn từng món quanh 28–42% giá bán,
+ *  chỉnh chung một hệ số để số lượng × giá thành cộng lại sát giá vốn xuất bán POS của chi nhánh trong tháng */
+export function giaThanhIvt(cn: string, thang: number, nam = NAM): Map<string, number> {
+  const mon = monBanKy(cn, thang, nam)
+  const r = rng(`gia-thanh-ivt-${cn}-${nam}-${thang}`)
+  const tho = new Map(mon.map(m => [m.ma, (HANG.find(h => h.ma === m.ma)?.gia ?? 0) * between(r, 0.28, 0.42)]))
+  const tong = mon.reduce((a, m) => a + m.sl * (tho.get(m.ma) ?? 0), 0)
+  const he = tong ? tongKy(thang, nam, cn).gv / tong : 0
+  return new Map(mon.map(m => [m.ma, Math.round((tho.get(m.ma) ?? 0) * he)]))
+}
+
 const khoaGia = (cn: string, thang: number, ma: string, nam = NAM) => `${cn}-${kySo(thang, nam)}-${ma}`
 export const giaThanhTayCua = (s: SNvl, cn: string, thang: number, ma: string) => s.giaThanhTay?.[s.donVi]?.[khoaGia(cn, thang, ma)]
 export function datGiaThanhTay(s: SNvl, cn: string, thang: number, ma: string, gia: number | undefined): Pick<Session, 'giaThanhTay'> {
@@ -69,21 +83,41 @@ export function phieuMuaKy(cn: string, thang: number) {
   return chungTu(PHIEU_MUA, '4.1.1').filter(r => Number(r.thang) === thang && r.cn === ten)
 }
 
-export interface NvlCn { cn: string; ten: string; cach: CachNvl; tien: number; dt: number; thieuGia: number }
+/** Chi phí NVL tiêu hao trong tháng của chi nhánh: xuất huỷ + xuất điều chỉnh − nhập điều chỉnh (phiếu điều chỉnh sinh từ kiểm kê).
+ *  Phiếu nhập điều chỉnh mang số âm để cộng thẳng ra tổng */
+export function tieuHaoKy(cn: string, thang: number) {
+  const ten = CHI_NHANH.find(c => c.id === cn)?.ten
+  const trong = (r: Row) => Number(r.thang) === thang && r.cn === ten
+  const cfgHuy = timMan('kho', '5-1-2-3').sc?.voucher
+  const cfgKk = timMan('kho', '5-1-10').sc?.voucher
+  const huy = cfgHuy ? chungTu(cfgHuy, '5.1.2-3').filter(trong).map(r => ({ ...r, tenLoai: 'Xuất huỷ', gt: Number(r.tong) || 0 })) : []
+  const dc = cfgKk ? mauDieuChinh(cfgKk).filter(trong).map(r => ({ ...r, gt: (r.loai === 'ndc' ? -1 : 1) * (Number(r.tong) || 0) })) : []
+  const ds: (Row & { gt: number })[] = [...huy, ...dc]
+  ds.sort((a, b) => String(a.ngay).split('/').reverse().join('').localeCompare(String(b.ngay).split('/').reverse().join('')))
+  const cong = (f: (r: Row) => boolean) => ds.filter(f).reduce((a, r) => a + r.gt, 0)
+  return { ds, huy: cong(r => r.tenLoai === 'Xuất huỷ'), xdc: cong(r => r.loai === 'xdc'), ndc: -cong(r => r.loai === 'ndc'), tong: ds.reduce((a, r) => a + r.gt, 0) }
+}
+
+export interface NvlCn { cn: string; ten: string; cach: CachNvl; tien: number; dt: number; thieuGia: number; gtMon?: number; tieuHao?: number }
 
 /** Chi phí NVL một chi nhánh trong tháng theo cách tính của chi nhánh ở tháng đó */
 export function nvlChiNhanh(s: SNvl, cn: string, thang: number): NvlCn {
   const cach = cachNvlCua(s, cn, thang)
   const t = tongKy(thang, NAM, cn)
-  let tien = t.gv, thieuGia = 0
-  if (cach === 'tay') {
+  let tien = t.gv, thieuGia = 0, gtMon: number | undefined, tieuHao: number | undefined
+  if (cach === 'ivt') {
+    const gt = giaThanhIvt(cn, thang)
+    gtMon = monBanKy(cn, thang).reduce((a, m) => a + m.sl * (gt.get(m.ma) ?? 0), 0)
+    tieuHao = tieuHaoKy(cn, thang).tong
+    tien = gtMon + tieuHao
+  } else if (cach === 'tay') {
     const mon = monBanKy(cn, thang)
     tien = mon.reduce((a, m) => a + m.sl * (giaThanhTayCua(s, cn, thang, m.ma) ?? 0), 0)
     thieuGia = mon.filter(m => giaThanhTayCua(s, cn, thang, m.ma) === undefined).length
   } else if (cach === 'nhap') {
     tien = phieuMuaKy(cn, thang).reduce((a, r) => a + (Number(r.tong) || 0), 0)
   }
-  return { cn, ten: CHI_NHANH.find(c => c.id === cn)?.ten ?? cn, cach, tien, dt: t.dt, thieuGia }
+  return { cn, ten: CHI_NHANH.find(c => c.id === cn)?.ten ?? cn, cach, tien, dt: t.dt, thieuGia, gtMon, tieuHao }
 }
 
 /** Chi phí NVL cộng các chi nhánh, mỗi chi nhánh theo cách riêng; cns rỗng là mọi chi nhánh */

@@ -151,7 +151,7 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
         <Cot so={1} icon="chart" ten="Quản lý lãi lỗ" hoi={`${thangXem === 10 ? 'Tháng này' : `Tháng ${thangXem}`} lãi bao nhiêu?`}
           tra={`${loiNhuan >= 0 ? '+' : '−'}${short(Math.abs(loiNhuan))}`} traCls={loiNhuan >= 0 ? 'lai' : 'lo'}
           phu={`Biên lãi ${pct(bien)} trên doanh thu`} di="/app/bao-cao/10-2-3" nut="Xem kết quả kinh doanh" />
-        <Cot so={2} icon="wallet" ten="Quản lý thu chi" hoi="Số dư hiện có"
+        <Cot so={2} icon="wallet" ten="Quản lý thu chi" hoi={thangXem === 10 ? 'Tồn quỹ hiện tại' : `Tồn quỹ cuối tháng ${thangXem}/2026`}
           tra={short(tongQuy.cuoi)} phu={`Thu +${short(tongQuy.thu)} · Chi −${short(tongQuy.chi)}`} di="/app/tien/2-1-1" nut="Lập phiếu thu, chi" />
         <Cot so={3} icon="khohang" ten="Quản lý kho" hoi="Quản lý mua hàng, công nợ, hao hụt hàng bán thẳng"
           phu={`Mua ${kho.soDon} đơn · Công nợ ${short(kho.congNo)} · ${kho.matHH} mặt hàng hao hụt`} />
