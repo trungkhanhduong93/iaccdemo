@@ -6,7 +6,7 @@ import { useSearchParams } from 'react-router-dom'
 import type { Col, Row, ScreenProps } from '../types'
 import { tenMan } from '../../app/registry'
 import { kieuGhiSo } from '../../app/plan'
-import { ngayDauNam, useSession, type CnThem } from '../../app/session'
+import { ngayDauNam, useSession, type CnThem, type Session } from '../../app/session'
 import { Icon } from '../../ui/Icon'
 import { PageHead } from '../../ui/Page'
 import { Table } from '../../ui/Table'
@@ -35,6 +35,19 @@ export const QUY: Row[] = [
   { ma: 'NH01', ct: 'Vietcombank, chi nhánh Sài Gòn', kieu: 'Ngân hàng', cn: 'Tất cả', tk: '1121' },
   { ma: 'NH02', ct: 'Techcombank, nhận tiền QR', kieu: 'Ngân hàng', cn: 'Tất cả', tk: '1121' },
 ]
+
+let soDuMau: Record<string, number> | null = null
+/** Số dư ban đầu một quỹ: số đã lưu (Danh mục Quỹ tiền gói Free, màn Số dư ban đầu), không có thì số dư mẫu của đơn vị mẫu, đơn vị mới là 0 (T245) */
+export function soDuQuyBanDau(s: Pick<Session, 'donVi' | 'soDuQuy'>, ma: string): number {
+  const luu = s.soDuQuy?.[s.donVi]?.[ma]
+  if (luu) return luu.no - luu.co
+  if (!DON_VI.some(d => d.id === s.donVi)) return 0
+  const mau = soDuMau ??= Object.fromEntries(soDuRows().filter(r => r.loai === 'tien').map(r => [r.ma, Number(r.du) || 0]))
+  return mau[ma] ?? 0
+}
+/** Ghi số dư ban đầu một quỹ vào phiên, cùng chỗ với màn Số dư ban đầu (T245) */
+export const datSoDuQuy = (s: Pick<Session, 'donVi' | 'soDuQuy'>, ma: string, du: number): Pick<Session, 'soDuQuy'> =>
+  ({ soDuQuy: { ...s.soDuQuy, [s.donVi]: { ...s.soDuQuy?.[s.donVi], [ma]: { no: Math.max(0, du), co: Math.max(0, -du) } } } })
 
 /** Đối tượng chọn được ở dòng thêm mới theo loại số dư; khoá trùng là ma (tài khoản là tk) */
 /** Quỹ tiền mặt của chi nhánh lên sổ thêm từ FABi (T142) */

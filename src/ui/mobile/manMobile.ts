@@ -72,6 +72,8 @@ export function manMobile(sc: ScreenDef, mod: ModuleDef): ComponentType<ScreenPr
     return MCongThuc
   }
 
+  // T245: gói Free bỏ màn Số dư ban đầu riêng, đường dẫn cũ chuyển sang Danh mục Quỹ tiền
+  if (mod.key === 'tien' && sc.slug === 'so-du-ban-dau' && sc.comp) return sc.comp
   // T189: Số dư ban đầu (10.1.3 và tien/so-du-ban-dau)
   if ((mod.key === 'tong-hop' && (sc.code === '10.1.3' || sc.slug === '10-1-3')) || (mod.key === 'tien' && sc.slug === 'so-du-ban-dau')) {
     return MSoDuBanDau

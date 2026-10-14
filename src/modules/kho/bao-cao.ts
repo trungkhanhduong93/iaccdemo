@@ -7,6 +7,7 @@ import { CHI_NHANH } from '../../data/mock'
 import { chungTu, dongCua, type Dong } from '../../ui/generic/gen'
 import { KHOA_LOC_NGUON, docLocNguon, quaLocDong } from '../bao-cao/loc-nguon'
 import { datLocDaXem } from '../../ui/bao-cao/tuyChinhBC'
+import { mauDieuChinh } from './dieu-chinh'
 
 /** Một loại phiếu nguồn: cấu hình chứng từ, hạt giống (mã màn) và đường dẫn màn chứng từ sau /app/.
  *  ds: phiếu mẫu riêng có sẵn dòng hàng ở _dong, thay phiếu sinh theo hạt giống (điều chuyển, T155) */
@@ -76,6 +77,29 @@ export const tongHopKho = (nguon: () => NguonPhieu[], dsLoai: string[], chiTiet:
     },
   }
 }
+
+/** Báo cáo kiểm kê (T244): mỗi mặt hàng, kho một dòng; số lượng thừa, thiếu cộng từ phiếu kiểm kê trong tháng
+ *  (thừa là phiếu nhập điều chỉnh, thiếu là phiếu xuất điều chỉnh sinh từ kiểm kê). Không có dòng tổng vì các mặt hàng khác đơn vị tính */
+export const baoCaoKiemKe = (cfgKk: () => VoucherCfg) => ({
+  cols: [{ k: 'ma', t: 'Mã hàng', cls: 'code', w: 80 }, { k: 'ten', t: 'Tên hàng' }, { k: 'dvt', t: 'ĐVT', c: true, w: 55 }, { k: 'kho', t: 'Kho', w: 160 },
+    { k: 'thua', t: 'Thừa', num: true, w: 110, nhom: 'Số lượng' }, { k: 'thieu', t: 'Thiếu', num: true, w: 110, nhom: 'Số lượng' }] as Col[],
+  rows: (thang: number, cn?: string, loc?: Record<string, string[]>): Row[] => {
+    const f = docLocNguon(loc)
+    const nhom = new Map<string, Row>()
+    for (const r of mauDieuChinh(cfgKk()).filter(x => Number(x.thang) === thang && (!cn || x.cn === cn))) {
+      const kho = String(r._kho || CHI_NHANH.find(c => c.ten === r.cn)?.kho[0] || '')
+      for (const d of (r._dong as Dong[] | undefined) ?? []) {
+        if (!quaLocDong(f, { ...d, kho })) continue
+        const key = `${d.ma}|${kho}`
+        const g = nhom.get(key) ?? { ma: d.ma, ten: d.ten, dvt: d.dvt, kho, thua: 0, thieu: 0 }
+        if (r.loai === 'ndc') g.thua += d.sl
+        else g.thieu += d.sl
+        nhom.set(key, g)
+      }
+    }
+    return [...nhom.values()].sort((a, b) => a.ma.localeCompare(b.ma) || a.kho.localeCompare(b.kho))
+  },
+})
 
 /** Tổng hợp hàng trả lại: mỗi loại (khách trả lại, trả nhà cung cấp) và mặt hàng một dòng */
 export const tongHopTra = (nguon: () => NguonPhieu[]) => ({

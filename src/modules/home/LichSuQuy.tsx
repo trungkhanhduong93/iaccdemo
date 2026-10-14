@@ -1,6 +1,7 @@
 // Lịch sử thu chi một quỹ kiểu app ngân hàng (T230): mở khi bấm quỹ ở khối Tồn quỹ trang chủ gói Free.
 // Giao dịch lấy từ Sổ quỹ tiền mặt (quỹ tiền mặt chi nhánh) hoặc Sổ ngân hàng (tài khoản), gom theo ngày, mới nhất trên cùng;
 // bấm giao dịch mở chứng từ chi tiết theo số phiếu (cách dò phiếu thật của T201)
+import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import type { Row, ScreenProps } from '../types'
 import { CHI_NHANH, TK_NGAN_HANG } from '../../data/mock'
@@ -13,6 +14,7 @@ import { useMoTuTrangChu } from '../../app/tuTrangChu'
 import { NutXuatExcel } from '../../ui/CongCuDs'
 import { xuatBangExcel } from '../../ui/xuatBangExcel'
 import { useSession } from '../../app/session'
+import { Select } from '../../ui/Dropdown'
 import { soQuyCn } from '../tien/SoQuy'
 import { tenQuyTm, tenTkNh } from '../bao-cao/danh-sach'
 
@@ -56,10 +58,13 @@ export function LichSuQuy(_: ScreenProps) {
   const quy = tham.get('quy') ?? tenQuyTm(CHI_NHANH[0].ngan)
   const thang = Math.min(10, Math.max(7, Number(tham.get('thang')) || 10))
   const gd = giaoDich(quy, thang)
+  // Lọc loại giao dịch: tất cả, chỉ khoản thu, chỉ khoản chi (T246); danh sách và file Excel theo bộ lọc, số dư đầu, cuối kỳ giữ nguyên
+  const [loai, setLoai] = useState<'' | 'thu' | 'chi'>('')
+  const dsLoc = (gd?.ds ?? []).filter(x => !loai || (loai === 'thu' ? x.thu > 0 : x.chi > 0))
   const tienMat = CHI_NHANH.some(c => tenQuyTm(c.ngan) === quy)
   // Mới nhất trên cùng, gom theo ngày
   const nhom = new Map<string, GiaoDich[]>()
-  for (const x of [...(gd?.ds ?? [])].reverse()) nhom.set(x.ngay, [...(nhom.get(x.ngay) ?? []), x])
+  for (const x of [...dsLoc].reverse()) nhom.set(x.ngay, [...(nhom.get(x.ngay) ?? []), x])
   const tn = (gd?.ds ?? []).reduce((a, x) => a + x.thu, 0), tc = (gd?.ds ?? []).reduce((a, x) => a + x.chi, 0)
 
   return (
@@ -68,10 +73,12 @@ export function LichSuQuy(_: ScreenProps) {
         <Link to="/app/trang-chu/tong-quan" className="cpt-ve" title="Về Tổng quan" aria-label="Về Tổng quan"><Icon n="chevl" /></Link>
         <h1>Lịch sử thu chi</h1>
         <span className="grow" />
-        <NutXuatExcel onXuat={() => xuatBangExcel(`Lịch sử thu chi ${quy} tháng ${thang}/2026`, `Đầu kỳ ${moneyD(gd?.mo ?? 0)} · Cuối kỳ ${moneyD(gd?.cuoi ?? 0)}`,
+        <Select className="inp lsq-loc" value={loai} aria-label="Loại giao dịch" onChange={e => setLoai(e.target.value as '' | 'thu' | 'chi')}
+          ds={[{ v: '', t: 'Tất cả thu, chi' }, { v: 'thu', t: 'Khoản thu' }, { v: 'chi', t: 'Khoản chi' }]} />
+        <NutXuatExcel onXuat={() => xuatBangExcel(`Lịch sử thu chi ${quy} tháng ${thang}/2026`, `${loai === 'thu' ? 'Khoản thu · ' : loai === 'chi' ? 'Khoản chi · ' : ''}Đầu kỳ ${moneyD(gd?.mo ?? 0)} · Cuối kỳ ${moneyD(gd?.cuoi ?? 0)}`,
           [{ t: 'Ngày', rong: 12 }, { t: 'Số chứng từ', rong: 18 }, { t: 'Diễn giải', rong: 44 }, { t: 'Thu', so: true }, { t: 'Chi', so: true }, { t: 'Số dư', so: true }],
-          [['', '', 'Số dư đầu kỳ', null, null, gd?.mo ?? 0], ...(gd?.ds ?? []).map(x => [x.ngay, phieuTheoSo(x.so)?.so ?? x.so, x.dg, x.thu || null, x.chi || null, x.du])],
-          ['', '', 'Cộng', tn, tc, gd?.cuoi ?? 0]).catch(() => toast('Không xuất được file Excel'))} />
+          [['', '', 'Số dư đầu kỳ', null, null, gd?.mo ?? 0], ...dsLoc.map(x => [x.ngay, phieuTheoSo(x.so)?.so ?? x.so, x.dg, x.thu || null, x.chi || null, x.du])],
+          ['', '', 'Cộng', loai === 'chi' ? null : tn, loai === 'thu' ? null : tc, gd?.cuoi ?? 0]).catch(() => toast('Không xuất được file Excel'))} />
         <Link to={`/app/tien/2-1-1/moi?loai=${tienMat ? 'thu' : 'bc'}`} className="btn"><Icon n="plus" className="ic sm" />Lập phiếu thu</Link>
         <Link to={`/app/tien/2-1-1/moi?loai=${tienMat ? 'chi' : 'unc'}`} className="btn primary"><Icon n="plus" className="ic sm" />Lập phiếu chi</Link>
       </div>
@@ -84,7 +91,7 @@ export function LichSuQuy(_: ScreenProps) {
           <span className="chi">Chi <b>−{moneyD(tc)}</b></span>
         </div>
       </div>
-      {!gd || nhom.size === 0 ? <div className="note muted">Quỹ chưa có giao dịch trong tháng {thang}/2026.</div> : (
+      {!gd || nhom.size === 0 ? <div className="note muted">{loai ? `Quỹ không có khoản ${loai} nào trong tháng ${thang}/2026.` : `Quỹ chưa có giao dịch trong tháng ${thang}/2026.`}</div> : (
         <div className="lsq-ds">
           {[...nhom].map(([ngay, ds]) => (
             <section key={ngay}>

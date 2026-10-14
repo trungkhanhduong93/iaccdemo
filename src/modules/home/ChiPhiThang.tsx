@@ -40,7 +40,7 @@ export function ChiPhiThang(_: ScreenProps) {
         <Link to="/app/tien/2-1-1/moi?loai=chi" className="btn primary"><Icon n="plus" className="ic sm" />Lập phiếu chi</Link>
       </div>
       <div className="cpt-tong">
-        <span>Tổng chi phí trong tháng{cn ? ` · ${cn.ten}` : ''}</span>
+        <span>Tổng chi phí trong tháng{cn ? ` · ${cn.ten}` : ''}<small className="nvl-phu">Các khoản chi tiền có lý do nghiệp vụ là chi phí</small></span>
         <b>{moneyD(cpThang)}</b>
       </div>
       <div className="cpt-ds">

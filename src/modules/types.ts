@@ -3,6 +3,7 @@ import type { ComponentType, ReactNode } from 'react'
 import { FEATURES, type Goi } from '../app/plan'
 import type { CheDo } from '../app/che-do'
 import type { CauHinhDM } from './danh-muc/truong-dm'
+import type { Session } from '../app/session'
 
 export type Row = Record<string, any>
 export interface Col {
@@ -37,6 +38,8 @@ export interface CatalogCfg {
   hangLoat?: { nhan: string; Form: ComponentType<{ soDong: number; onDong: () => void }> }   // nút thêm hàng loạt mở form riêng, soDong: số dòng đang có
   // Danh sách kiểu danh sách chứng từ: phân trang, dòng Tổng, cộng các cột cotCong; bấm dòng chọn và xem nhanh chi tiết ở khung dưới, đúp chuột mở form;
   // cotSo: cột số chứng từ hiện link xanh, bấm mở form như danh sách thu chi
+  // Dòng lấy thêm giá trị lưu trong phiên, lưu form thì ghi vào phiên; vd số dư ban đầu quỹ ở Danh mục Quỹ tiền (T245)
+  phien?: { gan: (r: Row, s: Session) => Row; luu: (val: Record<string, any>, s: Session) => Partial<Session> }
   dsChungTu?: { cotCong: string[]; cotSo?: string; so: (r: Row) => string; moTa: (r: Row) => string; chiTiet: (r: Row) => ReactNode }
   note?: (goi: Goi) => ReactNode
   truong?: CauHinhDM                     // trường panel Thêm / Sửa riêng của màn, không khai thì lấy TRUONG_DM theo mã màn

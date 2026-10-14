@@ -16458,3 +16458,11 @@ a.lsq-dong:hover { background: var(--tint); }
 .nvl-tab-dau { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--line); }
 .nvl-tabs { border-bottom: 0; padding: 0; }
 .nvl-loc { width: 190px; flex: none; }
+
+/* ── Nhãn Chi phí cạnh ô Lý do phiếu chi (T246) ── */
+.ly-nhan { display: flex; align-items: center; gap: 6px; }
+.ly-cp { font-size: 11px; padding: 0 6px; line-height: 16px; }
+.lsq-loc { width: 170px; }
+.bbt-chan { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: auto; padding-top: 10px; }
+.bbt-chan .bbt-nut { margin-top: 0; padding-top: 0; }
+.bbt-goiy { font-size: 12.5px; color: var(--muted); text-align: right; }

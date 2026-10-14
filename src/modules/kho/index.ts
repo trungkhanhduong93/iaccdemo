@@ -10,7 +10,7 @@ import { MAN_KK, mauDieuChinh, mauKiemKe } from './dieu-chinh'
 import { PhieuSanXuat } from './PhieuSanXuat'
 import { CongThucScreen } from './CongThuc'
 import { cauHinhSx, type LoaiSx } from './san-xuat'
-import { chiTietKho, tongHopKho, tongHopTra, type NguonPhieu } from './bao-cao'
+import { baoCaoKiemKe, chiTietKho, tongHopKho, tongHopTra, type NguonPhieu } from './bao-cao'
 import { PhieuDieuChuyen } from './PhieuDieuChuyen'
 import { DCN, cauHinhDcn, phieuMauDcn, type LoaiDcn } from './dieu-chuyen'
 import banHang from '../ban-hang'
@@ -80,6 +80,7 @@ const BAO_CAO_MOI = [
   baoCaoMoi('5-2-9', 'Tổng hợp nhập kho', tongHopKho(NHAP, ['Nhập mua', 'Nhập khác', 'Khách trả lại', 'Nhập điều chuyển'], '5-2-10')), baoCaoMoi('5-2-10', 'Chi tiết nhập kho', chiTietKho(NHAP)),
   baoCaoMoi('5-2-11', 'Tổng hợp xuất kho', tongHopKho(XUAT, ['Xuất bán POS', 'Xuất bán hàng', 'Xuất huỷ', 'Xuất khác', 'Xuất điều chuyển', 'Trả nhà cung cấp'], '5-2-12')), baoCaoMoi('5-2-12', 'Chi tiết xuất kho', chiTietKho(XUAT)),
   baoCaoMoi('5-2-13', 'Tổng hợp hàng trả lại', tongHopTra(TRA)), baoCaoMoi('5-2-14', 'Chi tiết hàng trả lại', chiTietKho(TRA)),
+  baoCaoMoi('5-2-15', 'Báo cáo kiểm kê', baoCaoKiemKe(() => KK.voucher!)),   // thừa, thiếu theo mặt hàng, kho từ phiếu kiểm kê (T244)
 ]
 
 /** Nhãn ngắn trên thanh tab */

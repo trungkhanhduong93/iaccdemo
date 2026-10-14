@@ -64,7 +64,7 @@ export function DanhMucChiNhanh({ sc, mod }: ScreenProps) {
     set({ cnThem: { ...s.cnThem, [s.donVi]: [...them, ...ds] } })
     setMo(false)
     toast(`Đã lên sổ ${ds.length} chi nhánh từ FABi`)
-    if (khaiSoDu) nav(`${s.goi === 'F' ? '/app/tien/so-du-ban-dau' : '/app/tong-hop/10-1-3'}?cnMoi=${ds.map(c => c.id).join(',')}`)
+    if (khaiSoDu) nav(s.goi === 'F' ? '/app/danh-muc/1-12' : `/app/tong-hop/10-1-3?cnMoi=${ds.map(c => c.id).join(',')}`)   // gói Free khai số dư ở Danh mục Quỹ tiền (T245)
   }
 
   return (

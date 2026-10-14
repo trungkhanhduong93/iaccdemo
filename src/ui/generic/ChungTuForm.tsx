@@ -7,7 +7,7 @@ import { chiNhanhHienTai, useSession, cheDoHienTai, ngayDauNam, truocDauNam, don
 import { kieuGhiSo, type Goi } from '../../app/plan'
 import { CHE_DO, type CheDo } from '../../app/che-do'
 import { tkTheoCheDo } from '../../modules/tong-hop/so-cai'
-import { CHI_NHANH, KHACH, KHO, KHOA_SO_DEN, LY_DO, NCC, NHAN_VIEN, TK_NGAN_HANG, daKhoaSo } from '../../data/mock'
+import { CHI_NHANH, KHACH, KHO, KHOA_SO_DEN, LY_CHI_PHI, LY_DO, NCC, NHAN_VIEN, TK_NGAN_HANG, daKhoaSo } from '../../data/mock'
 import { DS_PTTT } from '../../modules/danh-muc/data'
 import { HopXacNhan } from '../LocNangCao'
 import { bayGio, ctTtCon, dsDcCon, dsTtCon, ghiNhatKy, soDaTra, soKeTiep, suaPhieu, themPhieu, ttThamChieu, useNhatKy, xoaPhieu, type CtTt, type PhieuTt } from './daXoa'
@@ -974,7 +974,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
             <div className="stack" style={{ gap: 10 }}>
               {oLy && (
                 <div className="f">
-                  <label>{oLy.nhan}</label>
+                  {/* Lý do chi được tích Là chi phí (danh mục Lý do nghiệp vụ) thì hiện nhãn Chi phí cạnh tên ô (T246) */}
+                  <label className="ly-nhan">{oLy.nhan}{LY_CHI_PHI.includes(lyDo) && <span className="chip ok ly-cp" title="Lý do nghiệp vụ được tích Là chi phí: khoản chi tính vào Chi phí trong tháng">Chi phí</span>}</label>
                   {dangSua ? (
                     <ChonDanhMuc dm={`ly:${oLy.nhan}`} nhan={oLy.nhan.toLowerCase()} value={lyDo} onChange={chonLyDo} ds={oLy.ds!} />
                   ) : (

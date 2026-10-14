@@ -18,8 +18,8 @@ import { useSession } from '../../app/session'
 import { moTaCach, nvlKy } from './chi-phi-nvl'
 import { useMoTuTrangChu } from '../../app/tuTrangChu'
 
-function Cot({ so, icon, ten, hoi, tra, traCls, phu, di, nut, children }: {
-  so: number; icon: string; ten: string; hoi: string; tra?: string; traCls?: string; phu: string; di?: string; nut?: string; children?: ReactNode
+function Cot({ so, icon, ten, hoi, tra, traCls, phu, di, nut, goiY, children }: {
+  so: number; icon: string; ten: string; hoi: string; tra?: string; traCls?: string; phu: string; di?: string; nut?: string; goiY?: string; children?: ReactNode
 }) {
   return (
     <section className="bbt-cot">
@@ -28,7 +28,7 @@ function Cot({ so, icon, ten, hoi, tra, traCls, phu, di, nut, children }: {
       {tra && <div className={`bbt-tra ${traCls ?? ''}`}>{tra}</div>}
       <div className="bbt-phu">{phu}</div>
       {children && <div className="bbt-ds">{children}</div>}
-      {di && <Link to={di} className="bbt-nut">{nut}<Icon n="chevr" className="ic sm" /></Link>}
+      {di && <div className="bbt-chan"><Link to={di} className="bbt-nut">{nut}<Icon n="chevr" className="ic sm" /></Link>{goiY && <span className="bbt-goiy">{goiY}</span>}</div>}
     </section>
   )
 }
@@ -87,7 +87,7 @@ function TheTonQuy({ thang, ds }: { thang: number; ds: ReturnType<typeof tonQuyT
   )
 }
 
-/** Mua hàng, công nợ, hao hụt trong tháng dạng thẻ (T230); bấm thẻ mở màn tương ứng: phiếu mua hàng, báo cáo Công nợ nhà cung cấp, danh sách xuất điều chỉnh */
+/** Mua hàng, công nợ, hao hụt trong tháng dạng thẻ (T230); bấm thẻ mở màn tương ứng: phiếu mua hàng, báo cáo Công nợ nhà cung cấp, Báo cáo kiểm kê (T244) */
 function TheKho({ thang, nhapMua, soDon, congNo, soNcc, soPhieuHH, matHH }: { thang: number; nhapMua: number; soDon: number; congNo: number; soNcc: number; soPhieuHH: number; matHH: number }) {
   const the = (cls: string, ten: string, phu: string, v: string, di: string, onClick?: () => void) => (
     <Link to={di} className={`tll-the ${cls} tll-link`} title={`Xem ${ten.toLowerCase()}`} onClick={onClick}>
@@ -101,7 +101,8 @@ function TheKho({ thang, nhapMua, soDon, congNo, soNcc, soPhieuHH, matHH }: { th
       <div className="tll-dau"><b>Mua hàng, công nợ, hao hụt tháng {thang}</b></div>
       {the('quy', 'Nhập mua', `${soDon} đơn mua hàng`, moneyD(nhapMua), '/app/mua-hang/4-1-1')}
       {the('cp', 'Công nợ phải trả', `${soNcc} nhà cung cấp còn nợ`, moneyD(congNo), '/app/bao-cao/4-2-3', () => datLocDaXem('/app/bao-cao/4-2-3', {}, String(thang)))}
-      {the('hh', 'Hao hụt kiểm kê', `${soPhieuHH} phiếu xuất điều chỉnh khi kiểm kê thiếu`, `${matHH} mặt hàng`, '/app/kho/dieu-chinh?loai=xdc')}
+      {/* Hao hụt kiểm kê mở Báo cáo kiểm kê cùng tháng: thừa, thiếu theo mặt hàng, kho (T244) */}
+      {the('hh', 'Hao hụt kiểm kê', `${soPhieuHH} phiếu xuất điều chỉnh khi kiểm kê thiếu`, `${matHH} mặt hàng`, '/app/bao-cao/5-2-15', () => datLocDaXem('/app/bao-cao/5-2-15', {}, String(thang)))}
     </section>
   )
 }
@@ -152,7 +153,7 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
           tra={`${loiNhuan >= 0 ? '+' : '−'}${short(Math.abs(loiNhuan))}`} traCls={loiNhuan >= 0 ? 'lai' : 'lo'}
           phu={`Biên lãi ${pct(bien)} trên doanh thu`} di="/app/bao-cao/10-2-3" nut="Xem kết quả kinh doanh" />
         <Cot so={2} icon="wallet" ten="Quản lý thu chi" hoi={thangXem === 10 ? 'Tồn quỹ hiện tại' : `Tồn quỹ cuối tháng ${thangXem}/2026`}
-          tra={short(tongQuy.cuoi)} phu={`Thu +${short(tongQuy.thu)} · Chi −${short(tongQuy.chi)}`} di="/app/tien/2-1-1" nut="Lập phiếu thu, chi" />
+          tra={short(tongQuy.cuoi)} phu={`Thu +${short(tongQuy.thu)} · Chi −${short(tongQuy.chi)}`} di="/app/danh-muc/1-12?moi=1" nut="Tạo quỹ" goiY="Bấm vào quỹ bên dưới để xem lịch sử thu chi" />   {/* mở form thêm quỹ ở Danh mục Quỹ tiền (T245) */}
         <Cot so={3} icon="khohang" ten="Quản lý kho" hoi="Quản lý mua hàng, công nợ, hao hụt hàng bán thẳng"
           phu={`Mua ${kho.soDon} đơn · Công nợ ${short(kho.congNo)} · ${kho.matHH} mặt hàng hao hụt`} />
       </div>

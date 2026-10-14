@@ -11,6 +11,7 @@ import { HeThongTaiKhoan } from './HeThongTaiKhoan'
 import { tkTheoCheDo } from '../tong-hop/so-cai'
 import { Note } from '../../ui/Page'
 import { DanhMucChiNhanh } from './DanhMucChiNhanh'
+import { datSoDuQuy, soDuQuyBanDau } from '../tong-hop/SoDuBanDau'
 
 /** Nhãn ngắn trên thanh tab */
 const NGAN: Record<string, string> = { '1.1': 'Tài khoản', '1.2': 'Hàng hoá', '1.3': 'Đơn vị tính', '1.4': 'Quy đổi ĐVT', '1.5': 'Đối tượng', '1.6': 'Mục chi phí', '1.7': 'Công việc', '1.8': 'Kho', '1.9': 'Tiền tệ', '1.10': 'Tỷ giá', '1.11': 'Loại thuế', '1.12': 'Quỹ tiền', '1.14': 'Bảng giá', '1.15': 'Bút toán tự động', '1.16': 'Lý do nghiệp vụ' }
@@ -228,8 +229,19 @@ const danhMuc: ModuleDef = {
       rows: () => [['GTGT0', 'Thuế GTGT 0%', '0%', 'Hàng xuất khẩu'], ['GTGT5', 'Thuế GTGT 5%', '5%', 'Nước sạch, một số nông sản'], ['GTGT8', 'Thuế GTGT 8%', '8%', 'Dịch vụ ăn uống được giảm thuế'],
         ['GTGT10', 'Thuế GTGT 10%', '10%', 'Bia, rượu và hàng hoá khác'], ['KCT', 'Không chịu thuế', '—', 'Rau, thịt tươi sống chưa chế biến'], ['KKKNT', 'Không kê khai, tính nộp', '—', 'Khoản thu hộ']]
         .map(([ma, ten, ts, gc]) => ({ ma, ten, ts, gc })) } },
-    '1.12': { catalog: { them: 'Thêm quỹ', nhomLoc: 'loai', nhanLoc: 'Loại', cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên quỹ' }, { k: 'loai', t: 'Loại' }, { k: 'stk', t: 'Số tài khoản' }, { k: 'cn', t: 'Chi nhánh', cls: 'dim' }],
-      rows: () => DS_QUY_TIEN_112 } },
+    // Gói Free khai số dư ban đầu quỹ ngay ở danh mục (cột, ô trong form), không còn màn Số dư ban đầu riêng; lưu cùng chỗ soDuQuy (T245)
+    '1.12': { catalog: { them: 'Thêm quỹ', nhomLoc: 'loai', nhanLoc: 'Loại',
+      cols: goi => [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên quỹ' }, { k: 'loai', t: 'Loại' }, { k: 'stk', t: 'Số tài khoản' }, { k: 'cn', t: 'Chi nhánh', cls: 'dim' },
+        ...(goi === 'F' ? [{ k: 'soDu', t: 'Số dư ban đầu', num: true, w: 150 }] : [])],
+      rows: () => DS_QUY_TIEN_112,
+      phien: {
+        gan: (r, s) => s.goi === 'F' ? { ...r, soDu: soDuQuyBanDau(s, String(r.ma)) } : r,
+        luu: (v, s) => {
+          if (s.goi !== 'F' || !v.ma || v.soDu === undefined || v.soDu === '') return {}
+          const du = typeof v.soDu === 'number' ? v.soDu : Number(String(v.soDu).replace(/[^\d-]/g, '')) || 0
+          return datSoDuQuy(s, String(v.ma), du)
+        },
+      } } },
     // T154: bảng giá theo iFaster; giá nhập có nhà cung cấp, kho áp dụng để trống là mọi kho
     '1.14': { catalog: { them: 'Thêm bảng giá', nhomLoc: 'loai', nhanLoc: 'Loại giá',
       cols: [{ k: 'loai', t: 'Loại giá' }, { k: 'ten', t: 'Hàng hoá' }, { k: 'dvt', t: 'ĐVT' }, { k: 'thoiGian', t: 'Thời gian áp dụng', w: 200 }, { k: 'gia', t: 'Đơn giá', num: true },

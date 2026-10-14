@@ -50,7 +50,8 @@ export function CatalogScreen({ sc }: ScreenProps) {
     setTtGhiDe(prev => ({ ...prev, [k]: ttMoi }))
   }, [khoaDong])
 
-  const allGoc = useMemo(() => cfg.rows(s.cheDo, ky).filter(r => !cfg.locGoi || cfg.locGoi(s.goi, r)), [sc, s.cheDo, ky, s.goi])
+  const allGoc = useMemo(() => cfg.rows(s.cheDo, ky).filter(r => !cfg.locGoi || cfg.locGoi(s.goi, r)).map(r => cfg.phien ? cfg.phien.gan(r, s) : r),
+    [sc, s.cheDo, ky, s.goi, cfg.phien ? s : null])   // eslint-disable-line react-hooks/exhaustive-deps
   const all = useMemo((): Row[] => {
     return allGoc.map((r, i) => {
       const k = String(r.ma ?? r.so ?? r.username ?? r.id ?? (cols0[0]?.k ? r[cols0[0].k] : undefined) ?? r.ten ?? `_r_${i}`)
@@ -341,6 +342,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
               const k = khoaDong(val)
               if (k) setTtGhiDe(prev => ({ ...prev, [k]: Number(val._tt) }))
             }
+            if (val && cfg.phien) set(cfg.phien.luu(val, s))   // T245
             toast('Đã lưu')
             if (!themTiep) setEdit(null)
           }}

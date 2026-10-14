@@ -5,7 +5,8 @@ import { quyTrinh } from './quy-trinh'
 import { SoQuy } from './SoQuy'
 import { nhatKyChung } from './data'
 import { SO_BO_SUNG } from '../bao-cao/so-bo-sung'
-import { SoDuBanDau } from '../tong-hop/SoDuBanDau'
+import { createElement } from 'react'
+import { Navigate } from 'react-router-dom'
 
 /** Phiếu chi mẫu lý do Chi phí chờ phân bổ, đã tạo thẻ chi phí phân bổ TPB2610-0011 (thẻ mẫu ở ccdc/index.ts trỏ về phiếu này) (T168) */
 const PHIEU_CHO_PB = {
@@ -55,7 +56,7 @@ const tien: ModuleDef = {
     '2.2.8': { report: SO_BO_SUNG['2.2.8'] },
     '2.2.9': { report: SO_BO_SUNG['2.2.9'] },
   }, NGAN),
-  // Gói Free chỉ khai số dư tiền, đặt ở Thu chi vì gói Free ẩn phân hệ Tổng hợp; gói khác khai ở Tổng hợp 10.1.3 (T141)
-  { slug: 'so-du-ban-dau', ten: 'Số dư ban đầu', icon: 'db', kind: 'custom', comp: SoDuBanDau, goi: ['F'] }],
+  // Gói Free khai số dư quỹ ngay ở Danh mục Quỹ tiền (T245): đường dẫn cũ (sơ đồ quy trình, thêm chi nhánh) chuyển sang danh mục, không còn tab riêng
+  { slug: 'so-du-ban-dau', ten: 'Số dư ban đầu', icon: 'db', kind: 'custom', comp: () => createElement(Navigate, { to: '/app/danh-muc/1-12', replace: true }), goi: ['F'], tabCha: '2-1-1' }],
 }
 export default tien

@@ -402,7 +402,7 @@ function DropdownChonNhieu({
           <Icon n="chevd" className="ic sm sel-arr" />
         </>
       }
-      btnClass="ds-o-sel"
+      btnClass="sel ds-o-sel"   // lớp sel như ô chọn danh sách chứng từ: chữ căn trái, mũi tên cuối ô (T244)
       width={224}
     >
       {() => (
