@@ -5,17 +5,20 @@ import { duongDan, tenMan } from '../../app/registry'
 import { useSession } from '../../app/session'
 import { kieuGhiSo } from '../../app/plan'
 import { money } from '../format'
-import { NGUON, TT_CT, dongCua, type Dong } from '../generic/gen'
-import { boO, nhomCua, theoLoai } from '../generic/nhom'
+import { NGUON, TT_CT, dongCua, doanLyDoThuChi, ttNghiepVu, type Dong } from '../generic/gen'
+import { boO, nhomCua, theoLoai, TT_TIEN } from '../generic/nhom'
 import { useDongChungTu } from '../generic/VoucherScreen'
 import { useDsPhieuDcn } from '../../modules/kho/BangDieuChuyen'
 import { useDsPhieuSx } from '../../modules/kho/BangSanXuat'
 import { SX, TT_SX } from '../../modules/kho/san-xuat'
 import { DCN } from '../../modules/kho/dieu-chuyen'
 import { MAN_DC } from '../../modules/kho/dieu-chinh'
-import { daKhoaSo } from '../../data/mock'
-import { ctTtCon, dsDcCon, dsTtCon, suaPhieu, ttThamChieu, xoaPhieu } from '../generic/daXoa'
-import { HachToan, LichSu } from '../generic/ChungTuForm'
+import { CHI_NHANH, KHOAN_MUC, TK_NGAN_HANG, daKhoaSo } from '../../data/mock'
+import { ctTtCon, dsDcCon, dsTtCon, suaPhieu, ttThamChieu, ttTienTheoTra, xoaPhieu } from '../generic/daXoa'
+import { LichSu, layButToan } from '../generic/ChungTuForm'
+import { tkTheoCheDo } from '../../modules/tong-hop/so-cai'
+import { TAI_KHOAN } from '../../modules/danh-muc/data'
+import { loaiXuLy } from '../generic/BangKiemKe'
 import { HopXacNhan } from '../LocNangCao'
 import { HopInChungTu, type PhieuIn } from '../bao-cao/InChungTu'
 import { Icon } from '../Icon'
@@ -25,6 +28,15 @@ import { MTrong } from './MTrong'
 export interface MXemPhieuProps extends ScreenProps {
   id?: string
 }
+
+// Bảng tên tài khoản của sổ cái thiếu vài tài khoản (141, 153): lấy tên trong danh mục tài khoản
+const tenTk = (so: string, cd: Parameters<typeof tkTheoCheDo>[1]) => {
+  const t = tkTheoCheDo(so, cd)
+  return { so: t.so, ten: t.ten || (TAI_KHOAN.find(x => x.so === t.so)?.ten ?? '') }
+}
+
+// Dòng thu chi lưu mã khoản mục, bản máy tính hiện tên
+const tenKm = (ma: string) => KHOAN_MUC.find(x => x.ma === ma)?.ten ?? ma
 
 export const MXemPhieu: FC<MXemPhieuProps> = ({ sc, mod, id }) => {
   const nav = useNavigate()
@@ -62,10 +74,10 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
   const cfgMan = sc.voucher ?? { prefix: 'CT', doiTuong: 'none', dienGiai: [tenMan(sc)], tien: [0, 0] }
 
   const [timKiem, setTimKiem] = useState('')
-  const [moHt, setMoHt] = useState(false)
   const [moLs, setMoLs] = useState(false)
   const [moMenu, setMoMenu] = useState(false)
   const [hoiXoa, setHoiXoa] = useState(false)
+  const [hoiBoGhi, setHoiBoGhi] = useState(false)
   const [phieuIn, setPhieuIn] = useState<PhieuIn[] | null>(null)
 
   const loai = cfgMan.loai?.find(x => x.k === row.loai) ?? cfgMan.loai?.[0]
@@ -87,11 +99,87 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
   const kieu = kieuGhiSo(s.cheDo)
   const ghi = kieuGhiSo(s.goi) !== 'khong'
 
+  // Nghiệp vụ (đối tượng, địa chỉ, mst, hoá đơn, hạn tt)
+  const nv = useMemo(() => (row ? ttNghiepVu(row) : null), [row])
+
+  // Màn có dòng chi tiết dạng diễn giải (không có cột số lượng trên máy tính)
+  const laDongDienGiai = cfg.dong === 'tien' || cfg.dong === 'ts' ||
+    ['4.1.5', '4.1.6', '6.1.1', '6.1.2', '7.1.2', '8.1.2', '8.1.3', '10.1.1'].includes(String(sc.code ?? sc.slug))
+
+  // Thu chi 2.1.1
+  const laThuChi211 = sc.code === '2.1.1' || sc.slug === '2-1-1'
+  const chiNhanhTen = String(row.cn ?? '')
+  const quyTm = `Quỹ tiền mặt ${CHI_NHANH.find(c => c.ten === chiNhanhTen)?.ngan ?? CHI_NHANH[0].ngan}`
+  const quyNhMacDinh = TK_NGAN_HANG[0] ? `${TK_NGAN_HANG[0].nh.split(',')[0]} ${TK_NGAN_HANG[0].so}` : 'Vietcombank 0071000888999'
+
+  // Quỹ
+  let nhanQuy = ''
+  let triQuy = ''
+  if (laThuChi211 || laTien) {
+    if (nhom === 'cq') {
+      nhanQuy = 'Từ quỹ'
+      triQuy = String(row._tuQuy ?? row._quy ?? quyTm)
+    } else if (loai?.k === 'bc' || loai?.k === 'unc' || nhom === 'nhthu' || nhom === 'nhchi') {
+      nhanQuy = 'Quỹ ngân hàng'
+      triQuy = String(row._quy ?? quyNhMacDinh)
+    } else {
+      nhanQuy = 'Quỹ tiền mặt'
+      triQuy = String(row._quy ?? quyTm)
+    }
+  }
+  const triDenQuy = nhom === 'cq' ? String(row._denQuy ?? quyNhMacDinh) : ''
+
   // Dòng chi tiết
   const idSeed = `${sc.code ?? sc.slug}-${row.id}`
   const dsDong: Dong[] = useMemo(() => {
     return (row._dong as Dong[] | undefined) ?? dongCua(cfg, idSeed)
   }, [row, cfg, idSeed])
+
+  // Lý do thu / chi
+  let nhanLyDo = ''
+  let triLyDo = ''
+  if (laThuChi211 || laTien) {
+    const isThu = loai?.k === 'thu' || loai?.k === 'bc' || nhom === 'thu' || nhom === 'nhthu'
+    nhanLyDo = isThu ? 'Lý do thu' : 'Lý do chi'
+    triLyDo = String(row._lyDo ?? dsDong[0]?.ly ?? doanLyDoThuChi(loai?.k ?? '', String(row.dienGiai || '')) ?? '')
+  }
+
+  // Người giao dịch / Người thực hiện
+  let nhanNguoiGiaoDich = ''
+  let triNguoiGiaoDich = ''
+  if (laThuChi211) {
+    nhanNguoiGiaoDich = nhom === 'cq' ? 'Người thực hiện' : 'Người giao dịch'
+    triNguoiGiaoDich = String(row._nguoiGiao ?? row._nguoi ?? nv?.nguoi ?? '')
+  }
+
+  // Thông tin hoá đơn (3.1.2, 3.1.3, 3.1.4, 4.1.1-4.1.6, 6.1.1, 6.1.2)
+  const manCoHd = ['3.1.2', '3.1.3', '3.1.4', '4.1.1', '4.1.2', '4.1.3', '4.1.4', '4.1.5', '4.1.6', '6.1.1', '6.1.2'].includes(String(sc.code ?? sc.slug)) || Boolean(bo.hd)
+  // Có hoá đơn: theo đúng cách danh sách bản máy tính tính cột hoá đơn (VoucherScreen)
+  const coHd = manCoHd && (row._nhanKemHd !== undefined ? Boolean(row._nhanKemHd) : nv?.ttHd === 'da')
+  const soHd = coHd ? String(row._soHd ?? nv?.soHd ?? '') : ''
+  const kyHieuHd = coHd ? String(row._kyHieuHd ?? nv?.kyHieuHd ?? '') : ''
+  const ngayHd = coHd ? String(row._ngayHd ?? nv?.ngayHd ?? '') : ''
+  const mauSoHd = coHd ? '1' : ''   // bản máy tính để mặc định Mẫu số HĐ là 1
+
+  // Tình trạng thanh toán (3.1.x, 4.1.x)
+  const nhomMb = mod.key === 'mua-hang' ? 'mua' : mod.key === 'ban-hang' ? 'ban' : null
+  const ttTienTri = nhomMb ? ttTienTheoTra(row) : null
+  const ttTienText = nhomMb && ttTienTri ? TT_TIEN[nhomMb][ttTienTri]?.[1] : ''
+
+  // Mã số thuế và Hạn thanh toán (QD56: hạn tt ẩn ở gói Free, Standard)
+  const coMst = nhom !== 'cq' && !(laTien && laThuChi211) && Boolean(row.doiTuong)
+  const mst = coMst ? String(row._mst ?? nv?.mst ?? '') : ''
+  const coHanTt = Boolean(bo.tt) && s.goi !== 'F' && s.goi !== 'S'
+  const hanTt = (coHanTt && nhomMb) ? String(row._hanTt ?? nv?.hanTt ?? '') : ''
+
+  // Nhãn kho
+  const nhanKho = laKk
+    ? 'Kho kiểm kê'
+    : (nhom === 'mua' || nhom === 'nhap' || cfg.prefix === 'TL' || loai?.k === 'ndc')
+    ? 'Kho nhập'
+    : (nhom === 'ban' || nhom === 'xuat' || cfg.prefix === 'TLN' || loai?.k === 'xdc')
+    ? 'Kho xuất'
+    : 'Kho'
 
   // Lọc dòng nếu có tìm kiếm
   const dsDongLoc = useMemo(() => {
@@ -108,6 +196,43 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
   const tongCk = dsDong.reduce((a, d) => a + (Number(d.ck) || 0), 0)
   const tongThue = dsDong.reduce((a, d) => a + (Number(d.thue) || 0), 0)
   const tongThanhToan = laKk ? 0 : tongTien - tongCk + tongThue
+
+  // Bút toán hạch toán mở sẵn (Mẫu A)
+  const coButToan = kieu !== 'khong' && !laKk && dcn !== 'ck'
+  const dsButToan = useMemo(() => {
+    if (!coButToan) return []
+    const btDong = dsDong.filter(d => Boolean(d.tkNo && d.tkCo))
+    if (btDong.length > 0) {
+      return btDong.flatMap(d => {
+        const tNo = tenTk(String(d.tkNo), s.cheDo)
+        const tCo = tenTk(String(d.tkCo), s.cheDo)
+        const soTien = Number(d.tien) || 0
+        return [
+          { kieu: 'no' as const, so: tNo.so, ten: tNo.ten, tien: soTien },
+          { kieu: 'co' as const, so: tCo.so, ten: tCo.ten, tien: soTien },
+        ]
+      })
+    }
+    const hinhThucTt = (row._httt as 'congno' | 'tienmat' | 'chuyenkhoan' | undefined) ?? (nv?.ttTien === 'da' ? 'tienmat' : 'congno')
+    const tkDoiUng = hinhThucTt === 'tienmat' ? '1111' : hinhThucTt === 'chuyenkhoan' ? '1121' : (nhom === 'mua' ? '331' : '131')
+    const bts = layButToan(
+      cfg,
+      tongTien - tongCk,
+      tongThue,
+      String(row.doiTuong ?? ''),
+      String(row.cn ?? ''),
+      s.cheDo,
+      tkDoiUng,
+    )
+    return bts.flatMap(b => {
+      const tNo = tenTk(b.no, s.cheDo)
+      const tCo = tenTk(b.co, s.cheDo)
+      return [
+        { kieu: 'no' as const, so: tNo.so, ten: tNo.ten, tien: b.tien },
+        { kieu: 'co' as const, so: tCo.so, ten: tCo.ten, tien: b.tien },
+      ]
+    })
+  }, [coButToan, dsDong, row, nv, cfg, tongTien, tongCk, tongThue, s.cheDo, nhom])
 
   // Tên loại phiếu
   const tenLoai = loai?.ten ?? (row.tenLoai ? String(row.tenLoai) : tenMan(sc))
@@ -131,16 +256,41 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
   const dsTt = dsTtCon(row)
   const dsDc = dsDcCon(row)
 
-  // Nút hành động chính màu cam (var(--orange))
-  // Theo bản máy tính: ở chế độ xem, nếu có ghi sổ thì là nút Ghi sổ / Bỏ ghi sổ
-  // nếu gói Free (không ghi sổ) thì là nút Sửa
-  // phiếu điều chỉnh chỉ xem (không sửa, không ghi sổ)
+  const thucHienIn = () => {
+    setPhieuIn([
+      {
+        sc,
+        cfg,
+        loai,
+        row: {
+          ...row,
+          id: row.id,
+          so: soCt,
+          ngay: row.ngay,
+          cn: row.cn,
+          doiTuong: row.doiTuong,
+          dienGiai: row.dienGiai,
+          loai: loai?.k,
+          tien: tongTien,
+          thue: tongThue,
+          tong: tongThanhToan,
+        },
+      },
+    ])
+  }
+
+  // Nút hành động chính: phiếu đã ghi sổ thì nút chính là In (chống bỏ ghi sổ nhầm)
   const coNutGhiSo = kieu !== 'khong' && !laDc
   const nutChinh = coNutGhiSo
-    ? {
-        nhan: row.tt === 'ghi' ? 'Bỏ ghi sổ' : 'Ghi sổ',
-        action: () => toast(row.tt === 'ghi' ? 'Đã bỏ ghi sổ' : 'Đã ghi sổ'),
-      }
+    ? (row.tt === 'ghi'
+        ? {
+            nhan: 'In',
+            action: thucHienIn,
+          }
+        : {
+            nhan: 'Ghi sổ',
+            action: () => toast('Đã ghi sổ'),
+          })
     : !laDc
     ? {
         nhan: 'Sửa',
@@ -215,9 +365,6 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
     nav(path)
   }
 
-  // Khối Hạch toán có hiển thị không
-  const coHachToan = kieu !== 'khong' && !laTien && !laKk && dcn !== 'ck'
-
   return (
     <div className="m-xp">
       {/* 1. Thanh trên của màn chi tiết (dưới thanh trên chung của MobileShell) */}
@@ -238,10 +385,34 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
           <span className="m-xp-nhan">Thời gian:</span>
           <span className="m-xp-tri">{[row.ngay, row.gio].filter(Boolean).join(' ')}</span>
         </div>
+        {nhanQuy && triQuy && (
+          <div className="m-xp-dong-tt">
+            <span className="m-xp-nhan">{nhanQuy}:</span>
+            <span className="m-xp-tri dam">{triQuy}</span>
+          </div>
+        )}
+        {triDenQuy && (
+          <div className="m-xp-dong-tt">
+            <span className="m-xp-nhan">Đến quỹ:</span>
+            <span className="m-xp-tri dam">{triDenQuy}</span>
+          </div>
+        )}
         {row.doiTuong && (
           <div className="m-xp-dong-tt">
             <span className="m-xp-nhan">{laTien ? 'Đối tượng' : cfg.nhan ?? 'Đối tượng'}:</span>
             <span className="m-xp-tri dam">{String(row.doiTuong)}</span>
+          </div>
+        )}
+        {nhanNguoiGiaoDich && triNguoiGiaoDich && (
+          <div className="m-xp-dong-tt">
+            <span className="m-xp-nhan">{nhanNguoiGiaoDich}:</span>
+            <span className="m-xp-tri">{triNguoiGiaoDich}</span>
+          </div>
+        )}
+        {nhanLyDo && triLyDo && (
+          <div className="m-xp-dong-tt">
+            <span className="m-xp-nhan">{nhanLyDo}:</span>
+            <span className="m-xp-tri">{triLyDo}</span>
           </div>
         )}
         {row.cn && (
@@ -310,10 +481,54 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
         ) : (
           kho && (
             <div className="m-xp-dong-tt">
-              <span className="m-xp-nhan">{laKk ? 'Kho kiểm kê' : 'Kho'}:</span>
+              <span className="m-xp-nhan">{nhanKho}:</span>
               <span className="m-xp-tri dam">{kho}</span>
             </div>
           )
+        )}
+        {soHd && (
+          <>
+            {mauSoHd && (
+              <div className="m-xp-dong-tt">
+                <span className="m-xp-nhan">Mẫu số HĐ:</span>
+                <span className="m-xp-tri">{mauSoHd}</span>
+              </div>
+            )}
+            {kyHieuHd && (
+              <div className="m-xp-dong-tt">
+                <span className="m-xp-nhan">Ký hiệu HĐ:</span>
+                <span className="m-xp-tri">{kyHieuHd}</span>
+              </div>
+            )}
+            <div className="m-xp-dong-tt">
+              <span className="m-xp-nhan">Số hoá đơn:</span>
+              <span className="m-xp-tri dam">{soHd}</span>
+            </div>
+            {ngayHd && (
+              <div className="m-xp-dong-tt">
+                <span className="m-xp-nhan">Ngày hoá đơn:</span>
+                <span className="m-xp-tri">{ngayHd}</span>
+              </div>
+            )}
+          </>
+        )}
+        {ttTienText && (
+          <div className="m-xp-dong-tt">
+            <span className="m-xp-nhan">Tình trạng thanh toán:</span>
+            <span className="m-xp-tri dam">{ttTienText}</span>
+          </div>
+        )}
+        {mst && (
+          <div className="m-xp-dong-tt">
+            <span className="m-xp-nhan">Mã số thuế:</span>
+            <span className="m-xp-tri">{mst}</span>
+          </div>
+        )}
+        {hanTt && (
+          <div className="m-xp-dong-tt">
+            <span className="m-xp-nhan">Hạn thanh toán:</span>
+            <span className="m-xp-tri">{hanTt}</span>
+          </div>
         )}
         {(row.dienGiai || row._ghiChu) && (
           <div className="m-xp-dong-tt">
@@ -329,6 +544,19 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
             </span>
           </span>
         </div>
+        {/* Tham chiếu thẻ chi phí phân bổ (2.1.1) */}
+        {Array.isArray(row._theCp) && (row._theCp as string[]).length > 0 && (
+          <div className="m-xp-dong-tt m-xp-tc">
+            <span className="m-xp-nhan">Tham chiếu:</span>
+            <span className="m-xp-tri m-xp-links">
+              {(row._theCp as string[]).map(so => (
+                <Link key={so} className="m-xp-link-tc" to={`/app/ccdc/8-1-1?mo=${so}`}>
+                  Thẻ chi phí {so}
+                </Link>
+              ))}
+            </span>
+          </div>
+        )}
 
         {/* Dòng tham chiếu */}
         {coTcNhap && row._thamChieu && (
@@ -410,10 +638,29 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
         )}
       </div>
 
+      {/* Khối Hạch toán mở sẵn (Mẫu A) */}
+      {coButToan && dsButToan.length > 0 && (
+        <div className="m-xp-khoi-ht">
+          <div className="m-xp-tieu-khoi">Hạch toán</div>
+          <div className="m-the-trang m-xp-the-ht">
+            <div className="m-xp-ht-ds">
+              {dsButToan.map((bt, idx) => (
+                <div key={idx} className="m-xp-ht-dong">
+                  <span className="m-xp-ht-tk">
+                    {bt.kieu === 'no' ? 'Nợ' : 'Có'} {bt.so} <i className="m-xp-ht-ten">{bt.ten}</i>
+                  </span>
+                  <span className="m-xp-ht-tien num">{money(bt.tien)}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* 3. Danh sách dòng hàng / dòng thu chi / dòng kiểm kê */}
       <div className="m-xp-khoi-dong">
         <div className="m-xp-tieu-khoi">
-          {laTien ? 'CHI TIẾT THU CHI' : laKk ? 'DANH SÁCH KIỂM KÊ' : 'DANH SÁCH HÀNG HOÁ'} ({dsDong.length})
+          {laTien ? 'CHI TIẾT THU CHI' : laKk ? 'DANH SÁCH KIỂM KÊ' : laDongDienGiai ? 'CHI TIẾT' : 'DANH SÁCH HÀNG HOÁ'} ({dsDong.length})
         </div>
 
         {dsDong.length > 3 && (
@@ -438,6 +685,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
           {dsDongLoc.map((d, i) => {
             if (laKk) {
               const chenh = (d.tonTt ?? 0) - (d.tonHt ?? 0)
+              const loaiKk = loaiXuLy(d)
               return (
                 <div key={i} className="m-the-trang m-xp-the-dong">
                   <div className="m-xp-dong-tieu">
@@ -460,6 +708,10 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
                         {chenh < 0 && <span className="m-ct-chip err">Thiếu</span>}
                         {chenh > 0 && <span className="m-ct-chip ok">Thừa</span>}
                       </span>
+                    </div>
+                    <div className="m-xp-dong-tt">
+                      <span className="m-xp-nhan">Loại:</span>
+                      <span className="m-xp-tri">{loaiKk || 'Khớp'}</span>
                     </div>
                     {d.ghiChu && (
                       <div className="m-xp-dong-tt">
@@ -487,6 +739,45 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
                       <div className="m-xp-dong-tt">
                         <span className="m-xp-nhan">Đối tượng:</span>
                         <span className="m-xp-tri">{d.dt}</span>
+                      </div>
+                    )}
+                    {Boolean(d.km || d.cv) && (
+                      <div className="m-xp-dong-phu">
+                        {[d.km ? `Khoản mục: ${tenKm(d.km)}` : '', d.cv ? `Công việc: ${d.cv}` : ''].filter(Boolean).join(' · ')}
+                      </div>
+                    )}
+                    {d.ghiChu && (
+                      <div className="m-xp-dong-tt">
+                        <span className="m-xp-nhan">Ghi chú:</span>
+                        <span className="m-xp-tri">{d.ghiChu}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )
+            }
+
+            if (laDongDienGiai) {
+              return (
+                <div key={i} className="m-the-trang m-xp-the-dong">
+                  <div className="m-xp-dong-tieu">
+                    {i + 1}. {d.ten || d.ly || row.dienGiai || 'Diễn giải'}
+                  </div>
+                  {d.ma && <div className="m-xp-dong-ma">Mã: {d.ma}</div>}
+                  <div className="m-xp-dong-chi-tiet">
+                    <div className="m-xp-dong-tt">
+                      <span className="m-xp-nhan">Thành tiền:</span>
+                      <span className="m-xp-tri dam cam">{money(d.tien || 0)} đ</span>
+                    </div>
+                    {Boolean(d.thue || d.ts) && (
+                      <div className="m-xp-dong-tt">
+                        <span className="m-xp-nhan">VAT{d.ts ? ` (${d.ts}%)` : ''}:</span>
+                        <span className="m-xp-tri">{money(d.thue || 0)} đ</span>
+                      </div>
+                    )}
+                    {Boolean(d.kho || d.km || d.cv) && (
+                      <div className="m-xp-dong-phu">
+                        {[d.kho ? `Kho: ${d.kho}` : '', d.km ? `Khoản mục: ${tenKm(d.km)}` : '', d.cv ? `Công việc: ${d.cv}` : ''].filter(Boolean).join(' · ')}
                       </div>
                     )}
                     {d.ghiChu && (
@@ -535,6 +826,11 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
                     <span className="m-xp-nhan">Thành tiền:</span>
                     <span className="m-xp-tri dam cam">{money(d.tien || 0)} đ</span>
                   </div>
+                  {Boolean(d.kho || d.km || d.cv) && (
+                    <div className="m-xp-dong-phu">
+                      {[d.kho ? `Kho: ${d.kho}` : '', d.km ? `Khoản mục: ${tenKm(d.km)}` : '', d.cv ? `Công việc: ${d.cv}` : ''].filter(Boolean).join(' · ')}
+                    </div>
+                  )}
                   {d.ghiChu && (
                     <div className="m-xp-dong-tt">
                       <span className="m-xp-nhan">Ghi chú:</span>
@@ -548,20 +844,22 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
         </div>
       </div>
 
-      {/* 4. Khối tổng kết: khớp số với DaiTong */}
+      {/* 4. Khối tổng kết: khớp số với DaiTong, thu chi bỏ Thành tiền mặt hàng */}
       {!laKk && (
         <div className="m-the-trang m-xp-the-tong">
-          <div className="m-xp-dong-tt">
-            <span className="m-xp-nhan">Thành tiền mặt hàng:</span>
-            <span className="m-xp-tri">{money(tongTien)} đ</span>
-          </div>
-          {Boolean(bo.ck || tongCk) && (
+          {!laTien && (
+            <div className="m-xp-dong-tt">
+              <span className="m-xp-nhan">{laDongDienGiai ? 'Thành tiền' : 'Thành tiền mặt hàng'}:</span>
+              <span className="m-xp-tri">{money(tongTien)} đ</span>
+            </div>
+          )}
+          {!laTien && Boolean(bo.ck || tongCk) && (
             <div className="m-xp-dong-tt">
               <span className="m-xp-nhan">Tổng tiền giảm giá:</span>
               <span className="m-xp-tri">{tongCk ? `-${money(tongCk)}` : '0'} đ</span>
             </div>
           )}
-          {Boolean(tongThue > 0) && (
+          {!laTien && Boolean(tongThue > 0) && (
             <div className="m-xp-dong-tt">
               <span className="m-xp-nhan">Tổng tiền thuế:</span>
               <span className="m-xp-tri">{money(tongThue)} đ</span>
@@ -574,36 +872,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
         </div>
       )}
 
-      {/* 5. Khối Hạch toán thu gọn, bấm để mở */}
-      {coHachToan && (
-        <div className="m-the-trang m-xp-accordion">
-          <button
-            type="button"
-            className="m-xp-acc-head"
-            onClick={() => setMoHt(!moHt)}
-            aria-expanded={moHt}
-          >
-            <div className="m-xp-acc-tieu">
-              <Icon n="book" className="ic sm" />
-              <span>{kieu === 'noco' ? 'Hạch toán' : 'Ghi sổ'}</span>
-            </div>
-            <Icon n={moHt ? 'chevu' : 'chevd'} className="ic sm" />
-          </button>
-          {moHt && (
-            <div className="m-xp-acc-nd">
-              <HachToan
-                cfg={cfg}
-                tien={tongTien - tongCk}
-                thue={tongThue}
-                dt={String(row.doiTuong ?? '')}
-                cn={String(row.cn ?? '')}
-              />
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* 6. Khối Lịch sử */}
+      {/* 5. Khối Lịch sử */}
       <div className="m-the-trang m-xp-accordion">
         <button
           type="button"
@@ -624,13 +893,22 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
         )}
       </div>
 
-      {/* 7. Thanh thao tác dính đáy (nằm trên thanh dưới nổi, không bị che) */}
+      {/* 6. Thanh thao tác dính đáy (nằm trên thanh dưới nổi, không bị che) */}
       <div className="m-xp-day">
         <div className="m-xp-day-trai">
           <span className="m-xp-day-nhan">Tổng:</span>
           <span className="m-xp-day-tong">{money(tongThanhToan)} đ</span>
         </div>
         <div className="m-xp-day-phai">
+          {coNutGhiSo && row.tt === 'ghi' && (
+            <button
+              type="button"
+              className="m-xp-nut-bo-ghi"
+              onClick={() => setHoiBoGhi(true)}
+            >
+              Bỏ ghi sổ
+            </button>
+          )}
           {nutChinh && (
             <button type="button" className="m-xp-nut-cam" onClick={nutChinh.action}>
               {nutChinh.nhan}
@@ -655,6 +933,21 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
         ds={dsMenu}
         onChon={handleMenuChon}
       />
+
+      {/* Hộp xác nhận bỏ ghi sổ */}
+      {hoiBoGhi && (
+        <HopXacNhan
+          tieuDe={`Bỏ ghi sổ ${soCt}?`}
+          nut="Bỏ ghi sổ"
+          onDong={() => setHoiBoGhi(false)}
+          onDongY={() => {
+            setHoiBoGhi(false)
+            toast('Đã bỏ ghi sổ')
+          }}
+        >
+          Bỏ ghi sổ sẽ huỷ các bút toán và cập nhật lại số dư sổ sách liên quan.
+        </HopXacNhan>
+      )}
 
       {/* Hộp xác nhận xoá */}
       {hoiXoa && (

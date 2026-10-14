@@ -45,6 +45,26 @@ function layTieuDe(pathname: string, search = ''): string {
   return 'IACC Cloud'
 }
 
+// Màn cấp 2 (xem, sửa phiếu, xem báo cáo) ẩn thanh tab, nút quay lại đủ để thoát (T223)
+function laBaoCao(pathname: string): boolean {
+  const [, modKey, slug] = pathname.split('/').filter(Boolean)
+  if (modKey === 'bao-cao') return Boolean(slug) && slug !== 'tat-ca' && !slug.startsWith('nhom-')
+  const { sc } = timMan(modKey, slug)
+  return sc?.kind === 'report' || sc?.kind === 'baocao'
+}
+
+function laXemPhieu(pathname: string): boolean {
+  return pathname.split('/').filter(Boolean).length >= 4
+}
+
+// Chip chi nhánh chỉ có nghĩa ở danh sách, báo cáo; trang chủ có chip riêng (T223)
+function coChipCn(pathname: string): boolean {
+  if (laXemPhieu(pathname)) return false
+  const [, modKey, slug] = pathname.split('/').filter(Boolean)
+  if (!slug) return false
+  return !['bao-cao', 'danh-muc', 'he-thong'].includes(modKey) || laBaoCao(pathname)
+}
+
 function layNhanCn(c?: { id: string; ten: string; ngan?: string }): string {
   if (!c) return 'Tất cả'
   return c.ngan ?? c.ten
@@ -69,6 +89,7 @@ export function MobileShell() {
   const laGoc = laManGoc(loc.pathname, loc.search)
   const laTrangChu = tabDangChon(loc.pathname) === 'trang-chu'
   const tieuDe = layTieuDe(loc.pathname, loc.search)
+  const capHai = laXemPhieu(loc.pathname) || laBaoCao(loc.pathname)
 
   const quayLai = () => {
     if (loc.pathname === '/app/nghiep-vu' && loc.search.includes('m=')) {
@@ -79,7 +100,7 @@ export function MobileShell() {
   }
 
   return (
-    <div className="m-app">
+    <div className={`m-app${capHai ? ' m-cap-2' : ''}`}>
       {!laTrangChu && (
         <header className="m-thanh-tren">
           <div className="m-thanh-tren-trai">
@@ -98,7 +119,7 @@ export function MobileShell() {
             {tieuDe}
           </h1>
           <div className="m-thanh-tren-phai">
-            <Dropdown
+            {coChipCn(loc.pathname) && <Dropdown
               btnClass="m-cn-btn"
               align="end"
               width={280}
@@ -125,7 +146,7 @@ export function MobileShell() {
                   ))}
                 </>
               )}
-            </Dropdown>
+            </Dropdown>}
           </div>
         </header>
       )}
@@ -134,7 +155,7 @@ export function MobileShell() {
         <Outlet />
       </main>
 
-      <ThanhDuoi />
+      {!capHai && <ThanhDuoi />}
       <OnboardFabi />
     </div>
   )

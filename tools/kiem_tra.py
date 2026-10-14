@@ -2712,6 +2712,257 @@ def kiem_tra_dot_14_toc_do():
     return loi
 
 
+def kiem_tra_dot_15_a():
+    """Đợt 15A (T223): Màn xem phiếu và thẻ chứng từ điện thoại đủ thông tin, chống bỏ ghi sổ nhầm"""
+    loi = []
+    print('Kiểm tra đợt 15A (T223): Thông tin chứng từ điện thoại và chống bỏ ghi sổ nhầm:')
+    with sync_playwright() as p:
+        b = p.chromium.launch(channel='chrome')
+        pg = b.new_page(viewport={'width': 390, 'height': 844}, is_mobile=True, has_touch=True)
+        con = []
+        pg.on('console', lambda m: con.append(m.text) if m.type == 'error' else None)
+        pg.on('pageerror', lambda e: con.append(str(e)))
+
+        # Đăng nhập gói PR
+        pg.goto(URL + '#/dang-nhap')
+        pg.wait_for_selector('.auth-box')
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PR'))})")
+
+        # ── 1. Mở PC2610-0250 ở màn thu chi tien/2-1-1 ──
+        pg.goto(URL + '?goi=PR#/app/tien/2-1-1')
+        pg.wait_for_selector('.m-the-ct', timeout=8000)
+        pg.wait_for_timeout(350)
+
+        the_pc = pg.locator('.m-the-ct:has-text("PC2610-0250")')
+        if the_pc.count() == 0:
+            the_pc = pg.locator('.m-the-ct:has-text("PC")')
+        if the_pc.count() == 0:
+            loi.append('15A: không tìm thấy phiếu chi PC nào trong danh sách tien/2-1-1')
+        else:
+            the_pc.first.click()
+            pg.wait_for_selector('.m-xp', timeout=6000)
+            pg.wait_for_timeout(400)
+
+            # Có khối Hạch toán mở sẵn với ít nhất 2 dòng có "Nợ" và "Có" kèm số tài khoản
+            the_ht = pg.locator('.m-xp-the-ht')
+            if the_ht.count() == 0:
+                loi.append('15A: phiếu chi thiếu khối Hạch toán mở sẵn (.m-xp-the-ht)')
+            else:
+                ht_txt = the_ht.first.inner_text()
+                if 'Nợ' not in ht_txt or 'Có' not in ht_txt:
+                    loi.append(f'15A: khối Hạch toán không đủ dòng "Nợ" và "Có" (thấy: {ht_txt})')
+                dong_ht = the_ht.locator('.m-xp-ht-dong')
+                if dong_ht.count() < 2:
+                    loi.append(f'15A: khối Hạch toán có ít hơn 2 dòng ({dong_ht.count()} dòng)')
+
+            # Có trường Lý do chi, Quỹ
+            xp_txt = pg.locator('.m-xp-the-dau').first.inner_text()
+            if 'Lý do chi' not in xp_txt and 'Lý do thu' not in xp_txt:
+                loi.append('15A: phiếu chi thiếu trường "Lý do chi" ở thẻ đầu')
+            if 'Quỹ' not in xp_txt:
+                loi.append('15A: phiếu chi thiếu trường "Quỹ" ở thẻ đầu')
+
+            # Không có chữ "Thành tiền mặt hàng"
+            tong_txt = pg.locator('.m-xp-the-tong').inner_text() if pg.locator('.m-xp-the-tong').count() > 0 else ''
+            if 'Thành tiền mặt hàng' in tong_txt:
+                loi.append('15A: phiếu chi còn hiện chữ "Thành tiền mặt hàng" ở khối tổng')
+
+            # Chụp ảnh tools/shots/m-15-phieu-chi.png
+            pg.screenshot(path=str(SHOTS / 'm-15-phieu-chi.png'))
+
+            # Kiểm tra chống bỏ ghi sổ nhầm:
+            # Nếu phiếu đã ghi sổ: nút "Bỏ ghi sổ" không phải nút chính; bấm thì hiện hộp hỏi lại, bấm Huỷ thì phiếu vẫn "Đã ghi sổ"
+            chip_ghi = pg.locator('.m-xp-dau-phai .m-ct-chip:has-text("Đã ghi sổ")')
+            if chip_ghi.count() > 0:
+                nut_cam = pg.locator('.m-xp-day-phai .m-xp-nut-cam')
+                if nut_cam.count() > 0 and 'Bỏ ghi sổ' in nut_cam.first.inner_text():
+                    loi.append('15A: nút "Bỏ ghi sổ" vẫn là nút chính màu cam')
+                nut_bo_ghi = pg.locator('.m-xp-nut-bo-ghi:has-text("Bỏ ghi sổ")')
+                if nut_bo_ghi.count() == 0:
+                    loi.append('15A: phiếu đã ghi sổ thiếu nút viền "Bỏ ghi sổ"')
+                else:
+                    nut_bo_ghi.first.click()
+                    pg.wait_for_timeout(300)
+                    hop_xac_nhan = pg.locator('.ds-hop:has-text("Bỏ ghi sổ")')
+                    if hop_xac_nhan.count() == 0:
+                        loi.append('15A: bấm "Bỏ ghi sổ" không hiện hộp xác nhận hỏi lại')
+                    else:
+                        nut_huy = hop_xac_nhan.locator('button:has-text("Bỏ qua"), button:has-text("Huỷ")')
+                        if nut_huy.count() > 0:
+                            nut_huy.first.click()
+                            pg.wait_for_timeout(250)
+                            if pg.locator('.m-xp-dau-phai .m-ct-chip:has-text("Đã ghi sổ")').count() == 0:
+                                loi.append('15A: bấm Huỷ trong hộp hỏi lại nhưng trạng thái không còn "Đã ghi sổ"')
+
+        # ── 2. Mở 1 hoá đơn bán hàng 3.1.x và 1 phiếu mua 4.1.x ──
+        pg.goto(URL + '?goi=PR#/app/ban-hang/3-1-2')
+        pg.wait_for_selector('.m-the-ct', timeout=8000)
+        pg.wait_for_timeout(350)
+        the_bh = pg.locator('.m-the-ct')
+        if the_bh.count() == 0:
+            loi.append('15A: không tìm thấy hoá đơn bán hàng nào ở ban-hang/3-1-2')
+        else:
+            the_bh.first.click()
+            pg.wait_for_selector('.m-xp', timeout=6000)
+            pg.wait_for_timeout(350)
+            dau_txt = pg.locator('.m-xp-the-dau').first.inner_text()
+            if 'Số hoá đơn' not in dau_txt:
+                loi.append('15A: hoá đơn bán hàng 3.1.2 thiếu trường "Số hoá đơn"')
+            if 'Tình trạng thanh toán' not in dau_txt:
+                loi.append('15A: hoá đơn bán hàng 3.1.2 thiếu trường "Tình trạng thanh toán"')
+            pg.screenshot(path=str(SHOTS / 'm-15-hoa-don.png'))
+
+        # Phiếu mua 4.1.1
+        pg.goto(URL + '?goi=PR#/app/mua-hang/4-1-1')
+        pg.wait_for_selector('.m-the-ct', timeout=8000)
+        pg.wait_for_timeout(350)
+        the_mh = pg.locator('.m-the-ct')
+        if the_mh.count() == 0:
+            loi.append('15A: không tìm thấy phiếu mua hàng nào ở mua-hang/4-1-1')
+        else:
+            the_mh.first.click()
+            pg.wait_for_selector('.m-xp', timeout=6000)
+            pg.wait_for_timeout(350)
+            dau_txt = pg.locator('.m-xp-the-dau').first.inner_text()
+            if 'Số hoá đơn' not in dau_txt:
+                loi.append('15A: phiếu mua 4.1.1 thiếu trường "Số hoá đơn"')
+            if 'Tình trạng thanh toán' not in dau_txt:
+                loi.append('15A: phiếu mua 4.1.1 thiếu trường "Tình trạng thanh toán"')
+
+        # ── 3. Mở 1 phiếu 4.1.5 hoặc 10.1.1 (không có chữ "Danh sách hàng hoá") ──
+        pg.goto(URL + '?goi=PR#/app/tong-hop/10-1-1')
+        pg.wait_for_selector('.m-the-ct', timeout=8000)
+        pg.wait_for_timeout(350)
+        the_th = pg.locator('.m-the-ct')
+        if the_th.count() == 0:
+            loi.append('15A: không tìm thấy phiếu tổng hợp nào ở tong-hop/10-1-1')
+        else:
+            the_th.first.click()
+            pg.wait_for_selector('.m-xp', timeout=6000)
+            pg.wait_for_timeout(350)
+            tieu_khoi = pg.locator('.m-xp-tieu-khoi').all_inner_texts()
+            for t in tieu_khoi:
+                if 'Danh sách hàng hoá' in t or 'DANH SÁCH HÀNG HOÁ' in t:
+                    loi.append(f'15A: phiếu 10.1.1 còn có tiêu đề "{t}" (phải là CHI TIẾT)')
+            pg.screenshot(path=str(SHOTS / 'm-15-chi-phi.png'))
+
+        # ── 4. Danh sách Chuyển kho: thẻ không có chữ "0 đ" ──
+        pg.goto(URL + '?goi=PR#/app/kho/5-1-4-3')
+        pg.wait_for_selector('.m-the-ct', timeout=8000)
+        pg.wait_for_timeout(350)
+        the_ck = pg.locator('.m-the-ct')
+        if the_ck.count() == 0:
+            loi.append('15A: không tìm thấy thẻ chuyển kho nào ở kho/5-1-4-3')
+        else:
+            for i in range(min(5, the_ck.count())):
+                txt = the_ck.nth(i).inner_text()
+                if '0 đ' in txt:
+                    loi.append(f'15A: thẻ danh sách Chuyển kho thứ {i+1} còn có chữ "0 đ"')
+                    break
+
+        b.close()
+    return loi
+
+
+def kiem_tra_dot_15_b():
+    """Đợt 15B (Anti B): Sổ dạng dòng trên điện thoại (T223, mục 2.7)"""
+    loi = []
+    print('Kiểm tra đợt 15B (Anti B): Sổ dạng dòng trên điện thoại:')
+    with sync_playwright() as p:
+        b = p.chromium.launch(channel='chrome')
+        pg = b.new_page(viewport={'width': 390, 'height': 844}, is_mobile=True, has_touch=True)
+        con = []
+        pg.on('console', lambda m: con.append(m.text) if m.type == 'error' else None)
+        pg.on('pageerror', lambda e: con.append(str(e)))
+
+        # Đăng nhập gói PR
+        pg.goto(URL + '#/dang-nhap')
+        pg.wait_for_selector('.auth-box')
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PR'))})")
+
+        # Mở Sổ quỹ tiền mặt 2.2.1
+        pg.goto(URL + '?goi=PR#/app/bao-cao/2-2-1')
+        pg.wait_for_selector('.m-so-bc', timeout=8000)
+        pg.wait_for_timeout(400)
+
+        # 1. Có chip "Dạng dòng" đang bật
+        chip_dong = pg.locator('.m-so-dong-chip:has-text("Dạng dòng")')
+        if chip_dong.count() == 0:
+            loi.append('Sổ dạng dòng: không tìm thấy chip "Dạng dòng"')
+        else:
+            cls = chip_dong.first.get_attribute('class') or ''
+            if 'm-so-dong-chip-on' not in cls:
+                loi.append(f'Sổ dạng dòng: chip "Dạng dòng" không ở trạng thái bật (class: {cls})')
+
+        # 2. Có thẻ tổng 3 ô
+        the_tong = pg.locator('.m-so-dong-tong')
+        if the_tong.count() == 0:
+            loi.append('Sổ dạng dòng: không tìm thấy thẻ tổng .m-so-dong-tong')
+        else:
+            o_tong = the_tong.locator('.m-so-dong-tong-o')
+            if o_tong.count() != 3:
+                loi.append(f'Sổ dạng dòng: thẻ tổng không đủ 3 ô (thực tế: {o_tong.count()})')
+
+        # 3. Có ít nhất 1 tiêu đề ngày chứa "Tồn"
+        tieu_de_ngay = pg.locator('.m-so-dong-ngay')
+        if tieu_de_ngay.count() == 0:
+            loi.append('Sổ dạng dòng: không tìm thấy tiêu đề ngày .m-so-dong-ngay')
+        else:
+            co_ton = False
+            for i in range(tieu_de_ngay.count()):
+                txt = tieu_de_ngay.nth(i).inner_text()
+                if 'Tồn' in txt:
+                    co_ton = True
+                    break
+            if not co_ton:
+                loi.append('Sổ dạng dòng: tiêu đề ngày không chứa chữ "Tồn"')
+
+        # 4. Có số màu xanh bắt đầu "+" và số màu đỏ bắt đầu "−"
+        so_xanh = pg.locator('.m-so-dong-duong')
+        so_do = pg.locator('.m-so-dong-am')
+        co_plus = False
+        for i in range(so_xanh.count()):
+            txt = so_xanh.nth(i).inner_text().strip()
+            if txt.startswith('+'):
+                co_plus = True
+                break
+        if not co_plus:
+            loi.append('Sổ dạng dòng: không tìm thấy số màu xanh bắt đầu bằng "+"')
+
+        co_minus = False
+        for i in range(so_do.count()):
+            txt = so_do.nth(i).inner_text().strip()
+            if txt.startswith('−') or txt.startswith('-'):
+                co_minus = True
+                break
+        if not co_minus:
+            loi.append('Sổ dạng dòng: không tìm thấy số màu đỏ bắt đầu bằng "−"')
+
+        # 5. Chụp ảnh tools/shots/m-15-so-dong.png
+        pg.screenshot(path=str(SHOTS / 'm-15-so-dong.png'))
+
+        # 6. Bấm chip "Bảng" thì hiện lại bảng (table)
+        chip_bang = pg.locator('.m-so-dong-chip:has-text("Bảng")')
+        if chip_bang.count() == 0:
+            loi.append('Sổ dạng dòng: không tìm thấy chip "Bảng"')
+        else:
+            chip_bang.first.click()
+            pg.wait_for_timeout(350)
+            bang = pg.locator('.m-sbc-bang-wrap table')
+            if bang.count() == 0:
+                loi.append('Sổ dạng dòng: bấm chip "Bảng" không hiện lại bảng table')
+
+        # 7. Không tràn ngang
+        if pg.evaluate("document.documentElement.scrollWidth > 390"):
+            loi.append('Sổ dạng dòng: tràn ngang màn hình (> 390px)')
+
+        if con:
+            loi.append(f'Sổ dạng dòng: lỗi console {con[:2]}')
+
+        b.close()
+    return loi
+
+
 def kiem_tra_cac_khung_dt():
     loi, dem = [], 0
     for rong, cao in KHUNG_DT:
@@ -2745,6 +2996,8 @@ def kiem_tra_cac_khung_dt():
     loi += kiem_tra_dot_13_a()
     loi += kiem_tra_dot_14_a()
     loi += kiem_tra_dot_14_toc_do()
+    loi += kiem_tra_dot_15_a()
+    loi += kiem_tra_dot_15_b()
     if loi:
         print(f'{len(loi)} LỖI:')
         for x in loi:

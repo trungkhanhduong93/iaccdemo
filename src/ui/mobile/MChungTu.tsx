@@ -8,6 +8,8 @@ import { docNgay, trongKhoang } from '../ChonNgay'
 import { money } from '../format'
 import { dsChipTT, khopChipTT } from '../LocNangCao'
 import { TT_CT } from '../generic/gen'
+import { ttTienTheoTra } from '../generic/daXoa'
+import { TT_TIEN } from '../generic/nhom'
 import { ChungTuForm } from '../generic/ChungTuForm'
 import { useDongChungTu } from '../generic/VoucherScreen'
 import { useDsPhieuDcn } from '../../modules/kho/BangDieuChuyen'
@@ -190,6 +192,10 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
         }
         the={(r, i) => {
           const ttInfo = TT_CT[r.tt] ?? ['dim', r.tt]
+          const nhomMb = mod.key === 'mua-hang' ? 'mua' : mod.key === 'ban-hang' ? 'ban' : null
+          const ttTien = nhomMb ? ttTienTheoTra(r) : null
+          const ttTienInfo = nhomMb && ttTien ? TT_TIEN[nhomMb][ttTien] : null
+          const anTien = Boolean(cfg.kiemKe || cfg.dieuChuyen === 'ck' || sc.code === '5.1.10' || sc.code === '5.1.4.3')
           return (
             <div
               key={`${String(r.id ?? r.so ?? '')}_${i}`}
@@ -200,13 +206,16 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
             >
               <div className="m-the-ct-hang1">
                 <span className="m-the-ct-so">{r.so}</span>
-                <span className="m-the-ct-tien">{money(r.tong)} đ</span>
+                {!anTien && <span className="m-the-ct-tien">{money(r.tong)} đ</span>}
               </div>
               <div className="m-the-ct-hang2">
                 <span className="m-the-ct-dt">{r.doiTuong || r.dienGiai || '—'}</span>
-                {ghi && ttInfo && (
-                  <span className={`m-ct-chip ${ttInfo[0]}`}>{ttInfo[1]}</span>
-                )}
+                <span className="m-the-ct-chips">
+                  {ttTienInfo && <span className={`m-ct-chip ${ttTienInfo[0]}`}>{ttTienInfo[1]}</span>}
+                  {ghi && ttInfo && (
+                    <span className={`m-ct-chip ${ttInfo[0]}`}>{ttInfo[1]}</span>
+                  )}
+                </span>
               </div>
               <div className="m-the-ct-hang3">
                 {[r.ngay, r.gio, r.tenLoai].filter(Boolean).join(' · ')}

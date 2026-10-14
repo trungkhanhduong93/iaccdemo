@@ -5,7 +5,7 @@ import type { Row, ScreenProps, VoucherCfg } from '../../modules/types'
 import { duongDan, tenMan } from '../../app/registry'
 import { chiNhanhHienTai, useSession, cheDoHienTai, ngayDauNam, truocDauNam, donViHienTai, loaiHinhDv } from '../../app/session'
 import { kieuGhiSo, type Goi } from '../../app/plan'
-import { CHE_DO } from '../../app/che-do'
+import { CHE_DO, type CheDo } from '../../app/che-do'
 import { tkTheoCheDo } from '../../modules/tong-hop/so-cai'
 import { CHI_NHANH, KHACH, KHO, KHOA_SO_DEN, LY_DO, NCC, NHAN_VIEN, TK_NGAN_HANG, daKhoaSo } from '../../data/mock'
 import { DS_PTTT } from '../../modules/danh-muc/data'
@@ -1414,6 +1414,39 @@ export function lyMacDinh(ds: string[], dg: string) {
   return LY_THEO_DG.find(([tu, ly]) => l.includes(tu) && ds.includes(ly))?.[1] ?? ds[ds.length - 1] ?? ''
 }
 
+export function layButToan(
+  cfg: VoucherCfg,
+  tien: number,
+  thue: number,
+  dt: string,
+  cn: string,
+  cdMa: CheDo,
+  tkDoiUng?: string,
+) {
+  const mau = cfg.noCo ?? [['642', '111', 'Chi phí']]
+  return mau.map(([no, co, dg]) => {
+    const l = fold(dg)
+    const v = l.includes('thue')
+      ? thue
+      : l.includes('gia von')
+      ? Math.round(tien * 0.35)
+      : l.includes('thanh toan')
+      ? tien + thue
+      : tien
+
+    // Nếu có tkDoiUng thì thay thế TK công nợ
+    let noFinal = no
+    let coFinal = co
+    if (tkDoiUng) {
+      if (co === '331' || co === '111' || co === '112') coFinal = tkDoiUng
+      if (no === '131' || no === '111' || no === '112') noFinal = tkDoiUng
+    }
+
+    // Số hiệu hiển thị theo chế độ: bộ định khoản lưu theo TT133
+    return { no: tkTheoCheDo(noFinal, cdMa).so, co: tkTheoCheDo(coFinal, cdMa).so, dg, tien: v, dt, cn }
+  }).filter(r => r.tien > 0)
+}
+
 /** Hạch toán theo chế độ: TT152 không hạch toán, TT58 ghi sổ, TT133/TT99 Nợ/Có */
 export function HachToan({
   cfg,
@@ -1460,28 +1493,7 @@ export function HachToan({
     )
   }
 
-  const mau = cfg.noCo ?? [['642', '111', 'Chi phí']]
-  const rows = mau.map(([no, co, dg]) => {
-    const l = fold(dg)
-    const v = l.includes('thue')
-      ? thue
-      : l.includes('gia von')
-      ? Math.round(tien * 0.35)
-      : l.includes('thanh toan')
-      ? tien + thue
-      : tien
-
-    // Nếu có tkDoiUng thì thay thế TK công nợ
-    let noFinal = no
-    let coFinal = co
-    if (tkDoiUng) {
-      if (co === '331' || co === '111' || co === '112') coFinal = tkDoiUng
-      if (no === '131' || no === '111' || no === '112') noFinal = tkDoiUng
-    }
-
-    // Số hiệu hiển thị theo chế độ: bộ định khoản lưu theo TT133
-    return { no: tkTheoCheDo(noFinal, cd.ma).so, co: tkTheoCheDo(coFinal, cd.ma).so, dg, tien: v, dt, cn }
-  }).filter(r => r.tien > 0)
+  const rows = layButToan(cfg, tien, thue, dt, cn, cd.ma, tkDoiUng)
 
   return (
     <div className="stack" style={{ gap: 10 }}>

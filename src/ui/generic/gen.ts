@@ -1,7 +1,7 @@
 // Sinh dữ liệu giả cho màn chung. Có hạt giống theo mã màn nên mở lại vẫn ra đúng số cũ.
 import type { Row, VoucherCfg } from '../../modules/types'
 import { CHI_NHANH, HANG, HOM_NAY, KHACH, KHOAN_MUC, NCC, NHAN_VIEN, NVL } from '../../data/mock'
-import { between, dmy, k, pad, pick, rng } from '../format'
+import { between, dmy, fold, k, pad, pick, rng } from '../format'
 
 export function doiTuongDs(kind: VoucherCfg['doiTuong']): { ma: string; ten: string }[] {
   if (kind === 'kh') return KHACH
@@ -98,6 +98,88 @@ export function ttNghiepVu(row: Row): TTNghiepVu {
   return { ttTien, ttHd, dc, nguoi, mst, soHd, ngayHd, kyHieuHd, hanTt, dieuKhoan }
 }
 
+/** Xác định loại thu chi từ cấu hình và mã hạt giống */
+export function loaiThuChiCua(cfg: VoucherCfg, id: string): 'thu' | 'chi' | 'bc' | 'unc' | 'cq' | 'dccn' | '' {
+  const p = cfg.prefix
+  if (p === 'PT' || id.includes('-thu-') || id.includes('mau-thu')) return 'thu'
+  if (p === 'PC' || id.includes('-chi-') || id.includes('mau-chi')) return 'chi'
+  if (p === 'BC' || id.includes('-bc-') || id.includes('mau-bc')) return 'bc'
+  if (p === 'UNC' || id.includes('-unc-') || id.includes('mau-unc')) return 'unc'
+  if (p === 'CQ' || id.includes('-cq-') || id.includes('mau-cq')) return 'cq'
+  if (p === 'DCCN' || id.includes('-dccn-') || id.includes('mau-dccn')) return 'dccn'
+  return ''
+}
+
+/** Đoán lý do thu chi từ diễn giải; thứ tự kiểm quan trọng: "trả tiền nhà cung cấp thịt bò" là trả NCC, không phải mua */
+export function doanLyDoThuChi(loai: string, ten: string): string {
+  const l = fold(ten)
+  const co = (...ds: string[]) => ds.some(x => l.includes(x))
+  if (loai === 'thu' || loai === 'bc') {
+    if (co('tra no', 'no khach', 'grabfood')) return 'Thu nợ khách hàng'
+    if (co('rut tien')) return 'Rút tiền ngân hàng nhập quỹ'
+    if (co('hoan ung')) return 'Thu hoàn ứng'
+    if (co('ban hang', 'dat tiec', 'don')) return 'Thu tiền bán hàng'
+    return 'Thu khác'
+  }
+  if (loai === 'chi' || loai === 'unc') {
+    if (co('cho phan bo', '6 thang')) return 'Chi phí chờ phân bổ'
+    if (co('tam ung')) return 'Chi tạm ứng'
+    if (co('nha cung cap', 'tra tien')) return 'Trả tiền nhà cung cấp'
+    if (co('luong')) return 'Chi trả lương'
+    if (co('thue mat bang', 'tien nha', 'thue nha')) return 'Chi phí thuê nhà'
+    if (co('ccdc')) return 'Chi phí CCDC'
+    if (co('tscd')) return 'Chi phí TSCĐ'
+    if (co('mua', 'nguyen lieu', 'rau', 'thit')) return 'Chi mua nguyên vật liệu'
+    return 'Chi phí khác'
+  }
+  return ''
+}
+
+// Tài khoản đối ứng ngầm định của từng lý do thu chi (danh mục LY_DO chưa có cột tài khoản), số hiệu TT133
+const TK_LY_DO: Record<string, string> = {
+  'Thu tiền bán hàng': '5111', 'Thu nợ khách hàng': '131', 'Rút tiền ngân hàng nhập quỹ': '1121',
+  'Thu hoàn ứng': '141', 'Thu khác': '711',
+  'Chi mua nguyên vật liệu': '152', 'Trả tiền nhà cung cấp': '331', 'Chi trả lương': '334', 'Chi tạm ứng': '141',
+  'Chi phí thuê nhà': '6422', 'Chi phí CCDC': '153', 'Chi phí TSCĐ': '211', 'Chi phí chờ phân bổ': '242',
+  'Chi phí khác': '6422',
+}
+const tkDoiUngTheoLyDo = (ly: string) => TK_LY_DO[ly] ?? '6422'
+
+/** Cặp tài khoản Nợ/Có ngầm định cho dòng thu chi hoặc các màn dong: 'tien' */
+export function dinhKhoanDongTien(cfg: VoucherCfg, id: string, ten: string): { tkNo?: string; tkCo?: string; ly?: string } {
+  const loai = loaiThuChiCua(cfg, id)
+  if (loai === 'thu') {
+    const ly = doanLyDoThuChi('thu', ten)
+    return { tkNo: '1111', tkCo: tkDoiUngTheoLyDo(ly), ly }
+  }
+  if (loai === 'chi') {
+    const ly = doanLyDoThuChi('chi', ten)
+    return { tkNo: tkDoiUngTheoLyDo(ly), tkCo: '1111', ly }
+  }
+  if (loai === 'bc') {
+    const ly = doanLyDoThuChi('bc', ten)
+    return { tkNo: '1121', tkCo: tkDoiUngTheoLyDo(ly), ly }
+  }
+  if (loai === 'unc') {
+    const ly = doanLyDoThuChi('unc', ten)
+    return { tkNo: tkDoiUngTheoLyDo(ly), tkCo: '1121', ly }
+  }
+  if (loai === 'cq') {
+    const isRut = ten.toLowerCase().includes('rút')
+    return {
+      tkNo: isRut ? '1111' : '1121',
+      tkCo: isRut ? '1121' : '1111',
+    }
+  }
+  if (loai === 'dccn') {
+    return { tkNo: '131', tkCo: '131' }
+  }
+  if (cfg.noCo && cfg.noCo.length > 0) {
+    return { tkNo: cfg.noCo[0][0], tkCo: cfg.noCo[0][1] }
+  }
+  return {}
+}
+
 export function dongCua(cfg: VoucherCfg, id: string): Dong[] {
   const r = rng(id)
   const r2 = rng(id + '-ct')
@@ -109,16 +191,18 @@ export function dongCua(cfg: VoucherCfg, id: string): Dong[] {
       const ts = cfg.thue ?? 0
       const km = kind === 'tien' ? pick(r2, KHOAN_MUC).ma : undefined
       const cv = kind === 'tien' ? '' : undefined
+      const ten = cfg.dienGiai[(i + Math.floor(r() * 9)) % cfg.dienGiai.length]
+      const dk = dinhKhoanDongTien(cfg, id, ten)
       return {
         ma: '',
-        ten: cfg.dienGiai[(i + Math.floor(r() * 9)) % cfg.dienGiai.length],
+        ten,
         dvt: '',
         sl: 1,
         gia: tien,
         tien,
         ts,
         thue: Math.round(tien * ts / 100),
-        ...(kind === 'tien' ? { km, cv } : {}),
+        ...(kind === 'tien' ? { km, cv, ...dk } : {}),
       }
     })
   }
