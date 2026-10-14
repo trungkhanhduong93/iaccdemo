@@ -635,3 +635,5 @@ Lý do: Trum duyệt ngày 14/10/2026 (T222). Trang chủ giống IVT, đầu tr
 - Giữ nguyên: dòng điều kiện lọc trên tờ in và bảng dữ liệu (QD55), giao diện điện thoại.
 
 Lý do: Trum duyệt ngày 14/10/2026 (T237). Hai loại màn cùng một kiểu lọc, người dùng không phải học hai cách.
+
+## QD60. Phân trang Bảng dữ liệu báo cáo (đang soạn)
