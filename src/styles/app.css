@@ -16264,3 +16264,25 @@ a.lsq-dong:hover { background: var(--tint); }
 .lsq-so b.thu { color: var(--green); }
 .lsq-so b.chi { color: var(--red); }
 .lsq-mui { color: var(--faint); flex: none; }
+
+/* ── Điện thoại: tài khoản khi lập phiếu (T233) ── */
+@media (max-width: 767px) {
+  .m-lp-hang-tk {
+    margin-top: 2px;
+  }
+  .m-lp-tk-tri {
+    cursor: pointer;
+    user-select: none;
+  }
+  .m-lp-tk-chu {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+  }
+  .m-lp-tk-nut {
+    color: var(--blue);
+    font-weight: 600;
+  }
+}
+

@@ -22,6 +22,7 @@ export interface BangSuaProps {
   cheDo: 'xem' | 'sua'
   coTk?: boolean
   nhanTk?: [string, string]
+  tkTheoLy?: (ly: string) => { tkNo?: string; tkCo?: string }
   coKho?: boolean
   coCk?: boolean
   coLo?: boolean
@@ -104,6 +105,7 @@ export function BangSua({
   cheDo,
   coTk = false,
   nhanTk = ['TK Nợ', 'TK Có'],
+  tkTheoLy,
   coKho = false,
   coCk = false,
   coLo = false,
@@ -154,9 +156,15 @@ export function BangSua({
 
   function capNhat(idx: number, patch: Partial<Dong>) {
     if (!onChange) return
+    const tkMoi = tkTheoLy && patch.ly !== undefined ? tkTheoLy(patch.ly) : undefined
     const moi = dong.map((d, i) => {
       if (i !== idx) return d
-      const hopNhat = { ...d, ...patch }
+      const hopNhat = {
+        ...d,
+        ...patch,
+        ...(tkMoi?.tkNo ? { tkNo: tkMoi.tkNo } : {}),
+        ...(tkMoi?.tkCo ? { tkCo: tkMoi.tkCo } : {}),
+      }
       const sl = hopNhat.sl ?? 0
       const gia = hopNhat.gia ?? 0
       const tien = patch.tien !== undefined ? patch.tien : Math.round(sl * gia)
@@ -201,6 +209,7 @@ export function BangSua({
   function themDong() {
     if (!onChange) return
     const mauHang = danhMucHang[0]
+    const tkMoi = tkTheoLy && lyDo?.macDinh ? tkTheoLy(lyDo.macDinh) : undefined
     const dongMoi: Dong = hang && mauHang ? {
       ma: mauHang.ma,
       ten: mauHang.ten,
@@ -233,6 +242,8 @@ export function BangSua({
       cv: '',
       lo: '',
       hsd: '',
+      ...(tkMoi?.tkNo ? { tkNo: tkMoi.tkNo } : {}),
+      ...(tkMoi?.tkCo ? { tkCo: tkMoi.tkCo } : {}),
     }
     onChange([...dong, dongMoi])
   }

@@ -1,7 +1,7 @@
 import { useMemo, useState, type FC } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import type { Row, ScreenProps } from '../../modules/types'
-import { dongCua, type Dong } from '../generic/gen'
+import { dongCua, tkTheoLyDo, type Dong } from '../generic/gen'
 import { duongDan, tenMan } from '../../app/registry'
 import { chiNhanhHienTai, ngayDauNam, truocDauNam, useSession } from '../../app/session'
 import { kieuGhiSo } from '../../app/plan'
@@ -17,6 +17,12 @@ import { LichDon } from '../ChonNgay'
 import { MChon } from './MChon'
 import { MTrong } from './MTrong'
 import { MLapPhieuKho } from './MLapPhieuKho'
+import { TAI_KHOAN } from '../../modules/danh-muc/data'
+import { KhoiHachToan, tinhButToan } from './butToan'
+
+const DS_TK_CHI_TIET = TAI_KHOAN.filter(
+  t => !TAI_KHOAN.some(other => other.so !== t.so && other.so.startsWith(t.so))
+)
 
 export interface MLapPhieuProps extends ScreenProps {
   id?: string
@@ -116,6 +122,13 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
     return khoCn && khoCn.length ? khoCn : KHO
   }, [chiNhanh])
 
+  // Nhãn kho
+  const nhanKho = (nhom === 'mua' || nhom === 'nhap' || cfg.prefix === 'TL' || loai?.k === 'ndc')
+    ? 'Kho nhập'
+    : (nhom === 'ban' || nhom === 'xuat' || cfg.prefix === 'TLN' || loai?.k === 'xdc')
+    ? 'Kho xuất'
+    : 'Kho'
+
   // Quỹ
   const quyTm = `Quỹ tiền mặt ${CHI_NHANH.find(c => c.ten === chiNhanh)?.ngan ?? CHI_NHANH[0].ngan}`
   const dsQuy = useMemo(() => {
@@ -176,8 +189,21 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
   // Danh sách dòng
   const [dsDong, setDsDong] = useState<Dong[]>(() => {
     // Phiếu mẫu chưa có _dong thì sinh dòng cùng hạt giống như MXemPhieu, bản máy tính
-    if (gocData) return (gocData._dong as Dong[] | undefined) ?? dongCua(cfg, `${sc.code ?? sc.slug}-${gocData.id}`)
+    if (gocData) {
+      const rows = (gocData._dong as Dong[] | undefined) ?? dongCua(cfg, `${sc.code ?? sc.slug}-${gocData.id}`)
+      if (laTien) {
+        return rows.map(d => {
+          if (d.tkNo && d.tkCo) return d
+          const lyMacDinh = d.ly || dsLyDo[0] || (nhom === 'chi' ? 'Chi tiền' : 'Thu tiền')
+          const tk = tkTheoLyDo(loai?.k ?? nhom, lyMacDinh)
+          return { ...d, tkNo: d.tkNo || tk.tkNo, tkCo: d.tkCo || tk.tkCo }
+        })
+      }
+      return rows
+    }
     if (laTien) {
+      const lyMacDinh = dsLyDo[0] ?? (nhom === 'chi' ? 'Chi tiền' : 'Thu tiền')
+      const tk = tkTheoLyDo(loai?.k ?? nhom, lyMacDinh)
       return [{
         ma: '',
         ten: cfg.dienGiai?.[0] ?? (nhom === 'chi' ? 'Chi tiền mặt' : 'Thu tiền mặt'),
@@ -189,9 +215,11 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
         thue: 0,
         ptCk: 0,
         ck: 0,
-        ly: dsLyDo[0] ?? (nhom === 'chi' ? 'Chi tiền' : 'Thu tiền'),
+        ly: lyMacDinh,
         dt: dsDoiTuong[0] ?? '',
         ghiChu: '',
+        tkNo: tk.tkNo,
+        tkCo: tk.tkCo,
       }]
     }
     return []
@@ -209,6 +237,8 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
 
   // Sheet chọn lý do ở Bước 3
   const [dongDangChonLyDo, setDongDangChonLyDo] = useState<number | null>(null)
+  // Sheet chọn tài khoản Nợ / Có ở Bước 3
+  const [chonTk, setChonTk] = useState<{ dong: number; kieu: 'no' | 'co' } | null>(null)
 
   // Sau khi lưu ở Bước 5
   const [soPhieuMoi, setSoPhieuMoi] = useState('')
@@ -219,6 +249,22 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
   const tongCk = useMemo(() => dsDong.reduce((a, d) => a + (Number(d.ck) || 0), 0), [dsDong])
   const tongThue = useMemo(() => dsDong.reduce((a, d) => a + (Number(d.thue) || 0), 0), [dsDong])
   const tongThanhToan = useMemo(() => tongTien - tongCk + tongThue, [tongTien, tongCk, tongThue])
+
+  // Bút toán hạch toán Bước 4
+  const dsButToan = useMemo(() => {
+    return tinhButToan(
+      cfg,
+      dsDong,
+      tongTien,
+      tongCk,
+      tongThue,
+      doiTuong,
+      chiNhanh,
+      s.cheDo,
+      nhom,
+      row?._httt ?? 'congno',
+    )
+  }, [cfg, dsDong, tongTien, tongCk, tongThue, doiTuong, chiNhanh, s.cheDo, nhom, row?._httt])
 
   // Cập nhật dòng
   const doiDong = (idx: number, patch: Partial<Dong>) => {
@@ -351,6 +397,8 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
   }
 
   const themDongTien = () => {
+    const lyMacDinh = dsLyDo[0] ?? (nhom === 'chi' ? 'Chi tiền' : 'Thu tiền')
+    const tk = tkTheoLyDo(loai?.k ?? nhom, lyMacDinh)
     setDsDong(ds => [
       ...ds,
       {
@@ -364,9 +412,11 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
         thue: 0,
         ptCk: 0,
         ck: 0,
-        ly: dsLyDo[0] ?? (nhom === 'chi' ? 'Chi tiền' : 'Thu tiền'),
+        ly: lyMacDinh,
         dt: doiTuong,
         ghiChu: '',
+        tkNo: tk.tkNo,
+        tkCo: tk.tkCo,
       },
     ])
   }
@@ -435,6 +485,8 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
       setNhomHangChon('Tất cả')
       setTimHang('')
       if (laTien) {
+        const lyMacDinh = dsLyDo[0] ?? (nhom === 'chi' ? 'Chi tiền' : 'Thu tiền')
+        const tk = tkTheoLyDo(loai?.k ?? nhom, lyMacDinh)
         setDsDong([{
           ma: '',
           ten: cfg.dienGiai?.[0] ?? (nhom === 'chi' ? 'Chi tiền mặt' : 'Thu tiền mặt'),
@@ -446,9 +498,11 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
           thue: 0,
           ptCk: 0,
           ck: 0,
-          ly: dsLyDo[0] ?? (nhom === 'chi' ? 'Chi tiền' : 'Thu tiền'),
+          ly: lyMacDinh,
           dt: dsDoiTuong[0] ?? '',
           ghiChu: '',
+          tkNo: tk.tkNo,
+          tkCo: tk.tkCo,
         }])
       } else {
         setDsDong([])
@@ -502,7 +556,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                   <Icon n="store" className="ic sm m-lp-truong-ic" />
                   <div className="m-lp-truong-nd">
                     <span className="m-lp-truong-nhan">
-                      Kho nhập <b className="m-lp-sao">*</b>
+                      {nhanKho} <b className="m-lp-sao">*</b>
                     </span>
                     <span className="m-lp-truong-tri">{kho || 'Chọn kho'}</span>
                   </div>
@@ -817,6 +871,33 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                         <span className="m-lp-sua-nhan">Lý do:</span>
                         <span className="m-lp-sua-tri-chon">{d.ly || 'Chọn lý do'} <Icon n="chevd" className="ic sm" /></span>
                       </div>
+                      <div className="m-lp-sua-o m-lp-hang-tk" onClick={() => setChonTk({ dong: i, kieu: 'no' })}>
+                        <span className="m-lp-sua-nhan">Tài khoản:</span>
+                        <div className="m-lp-sua-tri-chon m-lp-tk-tri">
+                          <span className="m-lp-tk-chu">
+                            <span
+                              className="m-lp-tk-nut"
+                              onClick={e => {
+                                e.stopPropagation()
+                                setChonTk({ dong: i, kieu: 'no' })
+                              }}
+                            >
+                              Nợ {d.tkNo || '...'}
+                            </span>
+                            {' · '}
+                            <span
+                              className="m-lp-tk-nut"
+                              onClick={e => {
+                                e.stopPropagation()
+                                setChonTk({ dong: i, kieu: 'co' })
+                              }}
+                            >
+                              Có {d.tkCo || '...'}
+                            </span>
+                          </span>
+                          <Icon n="chevd" className="ic sm" />
+                        </div>
+                      </div>
                       <div className="m-lp-sua-o">
                         <span className="m-lp-sua-nhan">Số tiền:</span>
                         <input
@@ -966,10 +1047,32 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
               chon={dsDong[dongDangChonLyDo]?.ly}
               onChon={ly => {
                 if (dongDangChonLyDo !== null) {
-                  doiDong(dongDangChonLyDo, { ly })
+                  const tk = tkTheoLyDo(loai?.k ?? nhom, ly)
+                  doiDong(dongDangChonLyDo, { ly, tkNo: tk.tkNo, tkCo: tk.tkCo })
                 }
               }}
               apDung
+              tim
+            />
+          )}
+
+          {/* Sheet chọn tài khoản Nợ / Có */}
+          {chonTk !== null && (
+            <MChon
+              mo={chonTk !== null}
+              onDong={() => setChonTk(null)}
+              tieuDe={chonTk.kieu === 'no' ? 'Chọn tài khoản Nợ' : 'Chọn tài khoản Có'}
+              ds={DS_TK_CHI_TIET.map(t => ({ k: t.so, ten: `${t.so} - ${t.ten}` }))}
+              chon={chonTk.kieu === 'no' ? dsDong[chonTk.dong]?.tkNo : dsDong[chonTk.dong]?.tkCo}
+              onChon={soTk => {
+                if (chonTk !== null) {
+                  if (chonTk.kieu === 'no') {
+                    doiDong(chonTk.dong, { tkNo: soTk })
+                  } else {
+                    doiDong(chonTk.dong, { tkCo: soTk })
+                  }
+                }
+              }}
               tim
             />
           )}
@@ -1052,6 +1155,9 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                 </div>
               </div>
             )}
+
+            {/* Khối Hạch toán */}
+            <KhoiHachToan dsButToan={dsButToan} />
 
             {/* Danh sách dòng hàng */}
             <div className="m-lp-khoi-dong">

@@ -3272,6 +3272,222 @@ def kiem_tra_dot_16_b():
     return loi
 
 
+def kiem_tra_dot_17_a():
+    loi = []
+    print('Kiểm tra đợt 17A (Anti A): Màn lập phiếu trên điện thoại có tài khoản hạch toán:')
+    with sync_playwright() as p:
+        b = p.chromium.launch(channel='chrome')
+        pg = b.new_page(viewport={'width': 390, 'height': 844}, is_mobile=True, has_touch=True)
+        con = []
+        pg.on('console', lambda m: con.append(m.text) if m.type == 'error' else None)
+        pg.on('pageerror', lambda e: con.append(str(e)))
+
+        # Đăng nhập gói PR
+        pg.goto(URL + '#/dang-nhap')
+        pg.wait_for_selector('.auth-box')
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PR'))})")
+
+        # ── 1. Lập phiếu chi (#/app/tien/2-1-1/moi?loai=chi) ──
+        pg.goto(URL + '?goi=PR#/app/tien/2-1-1/moi?loai=chi')
+        pg.wait_for_selector('.m-lp', timeout=8000)
+        pg.wait_for_timeout(300)
+
+        # Chọn chi nhánh nếu có hộp thoại / tấm chọn
+        if pg.locator('.m-tam-hop:has-text("chi nhánh"), .m-tam-hop:has-text("Chi nhánh")').count() > 0:
+            pg.locator('.m-tam-dong').first.click()
+            pg.wait_for_timeout(300)
+
+        # Qua bước 3
+        nut_tiep = pg.locator('.m-lp-nut-tiep, .m-lp-nut-chinh:has-text("Tiếp tục")')
+        if nut_tiep.count() == 0:
+            loi.append('17A: không tìm thấy nút Tiếp tục ở bước 1 lập phiếu chi')
+        else:
+            nut_tiep.first.click()
+            pg.wait_for_selector('.m-lp-ds-sua', timeout=6000)
+            pg.wait_for_timeout(350)
+
+            # Dòng có chữ "Nợ" và "Có" kèm số tài khoản
+            hang_tk = pg.locator('.m-lp-hang-tk')
+            if hang_tk.count() == 0:
+                loi.append('17A: bước 3 thiếu hàng tài khoản .m-lp-hang-tk')
+            else:
+                txt_tk = hang_tk.first.inner_text()
+                if 'Nợ' not in txt_tk or 'Có' not in txt_tk:
+                    loi.append(f'17A: hàng tài khoản bước 3 thiếu "Nợ" hoặc "Có" (thấy: {txt_tk})')
+
+                # Đổi lý do dòng sang "Chi trả lương": tài khoản Nợ thành 334
+                o_ly_do = pg.locator('.m-lp-sua-o:has-text("Lý do")')
+                if o_ly_do.count() == 0:
+                    loi.append('17A: bước 3 thiếu ô chọn Lý do')
+                else:
+                    o_ly_do.first.click()
+                    pg.wait_for_selector('.m-tam-hop', timeout=4000)
+                    pg.wait_for_timeout(250)
+                    muc_luong = pg.locator('.m-tam-dong:has-text("Chi trả lương")')
+                    if muc_luong.count() == 0:
+                        loi.append('17A: tấm chọn lý do thiếu "Chi trả lương"')
+                    else:
+                        muc_luong.first.click()
+                        pg.wait_for_timeout(200)
+                        if pg.locator('.m-tam-btn-apdung').count() > 0:
+                            pg.locator('.m-tam-btn-apdung').first.click()
+                        pg.wait_for_timeout(300)
+
+                        txt_tk_sau_doi = hang_tk.first.inner_text()
+                        if '334' not in txt_tk_sau_doi:
+                            loi.append(f'17A: đổi lý do sang "Chi trả lương" nhưng tài khoản Nợ không thành 334 (thấy: {txt_tk_sau_doi})')
+
+                # Bấm hàng tài khoản, chọn TK Nợ 6422: hàng ghi "Nợ 6422"
+                hang_tk.first.click()
+                pg.wait_for_selector('.m-tam-hop', timeout=4000)
+                pg.wait_for_timeout(250)
+                muc_6422 = pg.locator('.m-tam-dong:has-text("6422")')
+                if muc_6422.count() == 0:
+                    loi.append('17A: tấm chọn tài khoản thiếu mục 6422')
+                else:
+                    muc_6422.first.click()
+                    pg.wait_for_timeout(200)
+                    if pg.locator('.m-tam-btn-apdung').count() > 0:
+                        pg.locator('.m-tam-btn-apdung').first.click()
+                    pg.wait_for_timeout(300)
+
+                    txt_tk_sau_chon = hang_tk.first.inner_text()
+                    if 'Nợ 6422' not in txt_tk_sau_chon:
+                        loi.append(f'17A: sau khi chọn TK 6422, hàng không ghi "Nợ 6422" (thấy: {txt_tk_sau_chon})')
+
+            # Kiểm tra tràn ngang và chụp ảnh Bước 3
+            if pg.evaluate("document.documentElement.scrollWidth > 390"):
+                loi.append('17A: bước 3 lập phiếu chi tràn ngang màn hình (> 390px)')
+            pg.screenshot(path=str(SHOTS / 'm-17-lap-chi-b3.png'))
+
+            # Qua bước 4
+            nut_qua_b4 = pg.locator('.m-lp-day .m-lp-nut-chinh:has-text("Tiếp tục")')
+            if nut_qua_b4.count() == 0:
+                loi.append('17A: bước 3 thiếu nút Tiếp tục để qua bước 4')
+            else:
+                nut_qua_b4.first.click()
+                pg.wait_for_selector('.m-lp-buoc-b4', timeout=6000)
+                pg.wait_for_timeout(350)
+
+                # Có khối Hạch toán với dòng "Nợ 6422" và "Có 1111"
+                the_ht_b4 = pg.locator('.m-xp-the-ht')
+                if the_ht_b4.count() == 0:
+                    loi.append('17A: bước 4 thiếu khối Hạch toán (.m-xp-the-ht)')
+                else:
+                    ht_b4_txt = the_ht_b4.first.inner_text()
+                    if 'Nợ 6422' not in ht_b4_txt:
+                        loi.append(f'17A: bước 4 khối Hạch toán thiếu dòng "Nợ 6422" (thấy: {ht_b4_txt})')
+                    if 'Có 1111' not in ht_b4_txt:
+                        loi.append(f'17A: bước 4 khối Hạch toán thiếu dòng "Có 1111" (thấy: {ht_b4_txt})')
+
+                if pg.evaluate("document.documentElement.scrollWidth > 390"):
+                    loi.append('17A: bước 4 lập phiếu chi tràn ngang màn hình (> 390px)')
+                pg.screenshot(path=str(SHOTS / 'm-17-lap-chi-b4.png'))
+
+                # Lưu, mở lại phiếu vừa lưu: khối Hạch toán màn xem phiếu có "Nợ 6422"
+                nut_luu = pg.locator('.m-lp-day-hang-nut .m-lp-nut-chinh:has-text("Lưu")')
+                if nut_luu.count() == 0:
+                    loi.append('17A: bước 4 thiếu nút Lưu')
+                else:
+                    nut_luu.first.click()
+                    pg.wait_for_selector('.m-lp-buoc-thanh-cong, .m-xp', timeout=6000)
+                    pg.wait_for_timeout(350)
+                    nut_xem = pg.locator('.m-lp-btn-xem:has-text("Xem phiếu")')
+                    if nut_xem.count() > 0:
+                        nut_xem.first.click()
+                        pg.wait_for_selector('.m-xp', timeout=6000)
+                        pg.wait_for_timeout(350)
+
+                    the_ht_xp = pg.locator('.m-xp-the-ht')
+                    if the_ht_xp.count() == 0:
+                        loi.append('17A: màn xem phiếu sau khi lưu thiếu khối Hạch toán')
+                    else:
+                        xp_ht_txt = the_ht_xp.first.inner_text()
+                        if 'Nợ 6422' not in xp_ht_txt:
+                            loi.append(f'17A: khối Hạch toán màn xem phiếu vừa lưu thiếu "Nợ 6422" (thấy: {xp_ht_txt})')
+
+        # ── 2. Lập hoá đơn bán hàng 3.1.2 ──
+        pg.goto(URL + '?goi=PR#/app/ban-hang/3-1-2/moi')
+        pg.wait_for_selector('.m-lp', timeout=8000)
+        pg.wait_for_timeout(300)
+
+        # Chọn chi nhánh nếu có
+        if pg.locator('.m-tam-hop:has-text("chi nhánh"), .m-tam-hop:has-text("Chi nhánh")').count() > 0:
+            pg.locator('.m-tam-dong').first.click()
+            pg.wait_for_timeout(300)
+
+        # Bước 1 có chữ "Kho xuất", không có "Kho nhập"
+        b1_txt = pg.locator('.m-lp-than').first.inner_text()
+        if 'Kho xuất' not in b1_txt:
+            loi.append('17A: hoá đơn bán hàng 3.1.2 bước 1 thiếu chữ "Kho xuất"')
+        if 'Kho nhập' in b1_txt:
+            loi.append('17A: hoá đơn bán hàng 3.1.2 bước 1 còn có chữ "Kho nhập"')
+
+        # Qua bước 2
+        nut_tiep_bh = pg.locator('.m-lp-nut-tiep, .m-lp-nut-chinh:has-text("Tiếp tục")')
+        if nut_tiep_bh.count() > 0:
+            nut_tiep_bh.first.click()
+            pg.wait_for_selector('.m-lp-ds-hang', timeout=6000)
+            pg.wait_for_timeout(300)
+
+            # Chọn 1 mặt hàng
+            the_hang = pg.locator('.m-lp-the-hang')
+            if the_hang.count() > 0:
+                the_hang.first.click()
+                pg.wait_for_timeout(200)
+
+            # Qua bước 3
+            nut_ds_chon = pg.locator('.m-lp-nut-chinh:has-text("Danh sách đã chọn")')
+            if nut_ds_chon.count() > 0:
+                nut_ds_chon.first.click()
+                pg.wait_for_selector('.m-lp-ds-sua', timeout=6000)
+                pg.wait_for_timeout(300)
+
+                # Qua bước 4
+                nut_b3_tiep = pg.locator('.m-lp-nut-chinh:has-text("Tiếp tục")')
+                if nut_b3_tiep.count() > 0:
+                    nut_b3_tiep.first.click()
+                    pg.wait_for_selector('.m-lp-buoc-b4', timeout=6000)
+                    pg.wait_for_timeout(350)
+
+                    # Bước 4 có khối Hạch toán có "Nợ 131" hoặc "Nợ 1111" và "Có 5111"
+                    the_ht_bh = pg.locator('.m-xp-the-ht')
+                    if the_ht_bh.count() == 0:
+                        loi.append('17A: hoá đơn bán hàng bước 4 thiếu khối Hạch toán')
+                    else:
+                        ht_bh_txt = the_ht_bh.first.inner_text()
+                        if ('Nợ 131' not in ht_bh_txt and 'Nợ 1111' not in ht_bh_txt):
+                            loi.append(f'17A: hoá đơn bán hàng bước 4 thiếu "Nợ 131" hoặc "Nợ 1111" (thấy: {ht_bh_txt})')
+                        if 'Có 5111' not in ht_bh_txt:
+                            loi.append(f'17A: hoá đơn bán hàng bước 4 thiếu "Có 5111" (thấy: {ht_bh_txt})')
+
+                    if pg.evaluate("document.documentElement.scrollWidth > 390"):
+                        loi.append('17A: hoá đơn bán hàng bước 4 tràn ngang (> 390px)')
+                    pg.screenshot(path=str(SHOTS / 'm-17-lap-hoa-don-b4.png'))
+
+        # ── 3. Mở lại PC2610-0261 ở màn xem phiếu: Hạch toán vẫn "Nợ 242", "Có 1111" ──
+        pg.goto(URL + '?goi=PR#/app/tien/2-1-1/chi-cpb')
+        pg.wait_for_selector('.m-xp', timeout=8000)
+        pg.wait_for_timeout(350)
+
+        the_ht_261 = pg.locator('.m-xp-the-ht')
+        if the_ht_261.count() == 0:
+            loi.append('17A: phiếu PC2610-0261 thiếu khối Hạch toán ở màn xem phiếu')
+        else:
+            txt_261 = the_ht_261.first.inner_text()
+            if 'Nợ 242' not in txt_261:
+                loi.append(f'17A: phiếu PC2610-0261 Hạch toán thiếu "Nợ 242" (thấy: {txt_261})')
+            if 'Có 1111' not in txt_261:
+                loi.append(f'17A: phiếu PC2610-0261 Hạch toán thiếu "Có 1111" (thấy: {txt_261})')
+
+        # Kiểm tra console
+        if con:
+            loi.append(f'17A: lỗi console {con[:2]}')
+
+        b.close()
+    return loi
+
+
 def kiem_tra_cac_khung_dt():
     loi, dem = [], 0
     for rong, cao in KHUNG_DT:
@@ -3309,6 +3525,7 @@ def kiem_tra_cac_khung_dt():
     loi += kiem_tra_dot_16_a()
     loi += kiem_tra_dot_15_b()
     loi += kiem_tra_dot_16_b()
+    loi += kiem_tra_dot_17_a()
     if loi:
         print(f'{len(loi)} LỖI:')
         for x in loi:
@@ -3316,6 +3533,131 @@ def kiem_tra_cac_khung_dt():
         sys.exit(1)
     print('Không có lỗi.')
 
+
+def kiem_tra_t233_may_tinh():
+    loi = []
+    print('Kiểm tra T233 máy tính (Anti B): điền tài khoản theo lý do, nhãn cột tài khoản:')
+    with sync_playwright() as p:
+        b = p.chromium.launch(channel='chrome')
+        pg = b.new_page(viewport={'width': 1440, 'height': 900})
+        con = []
+        pg.on('console', lambda m: con.append(m.text) if m.type == 'error' else None)
+        pg.on('pageerror', lambda e: con.append(str(e)))
+
+        # Đăng nhập gói PR
+        pg.goto(URL + '#/dang-nhap')
+        pg.wait_for_selector('.auth-box')
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PR'))})")
+
+        def chon_cn_neu_hoi():
+            btn = pg.locator('.chon-cn button:has-text("Phố Mây Lê Lợi")')
+            if btn.count() > 0 and btn.first.is_visible():
+                btn.first.click()
+                pg.wait_for_timeout(300)
+
+        # 1. Mở #/app/tien/2-1-1/moi?loai=chi, bật Cột tài khoản
+        pg.goto(URL + '?goi=PR&p=chi#/app/tien/2-1-1/moi?loai=chi')
+        pg.wait_for_timeout(600)
+        chon_cn_neu_hoi()
+
+        btn_tk = pg.locator('.btn-tk-toggle')
+        if btn_tk.count() == 0:
+            loi.append('T233: Phiếu chi mới không tìm thấy nút bật cột tài khoản (.btn-tk-toggle)')
+        else:
+            if 'on' not in (btn_tk.first.get_attribute('class') or ''):
+                btn_tk.first.click()
+                pg.wait_for_timeout(200)
+
+        th_texts = pg.locator('.bang-sua thead th').all_inner_texts()
+        if 'TK Nợ' not in th_texts or 'TK Có' not in th_texts:
+            loi.append(f'T233: Phiếu chi mới tiêu đề cột tài khoản thiếu "TK Nợ" hoặc "TK Có" (thấy {th_texts})')
+        if any('TK công nợ' in t for t in th_texts):
+            loi.append(f'T233: Phiếu chi mới tiêu đề cột tài khoản vẫn còn "TK công nợ" (thấy {th_texts})')
+
+        # 2. Bấm "Thêm dòng": dòng mới có TK Có 1111 và TK Nợ khác rỗng
+        btn_them = pg.locator('button:has-text("Thêm dòng")')
+        if btn_them.count() == 0:
+            loi.append('T233: Phiếu chi mới không tìm thấy nút "Thêm dòng"')
+        else:
+            btn_them.first.click()
+            pg.wait_for_timeout(200)
+
+        rows = pg.locator('.bang-sua tbody tr')
+        if rows.count() < 2:
+            loi.append(f'T233: Phiếu chi mới sau khi thêm dòng chỉ có {rows.count()} dòng')
+        else:
+            dong_moi = rows.last
+            inp_no = dong_moi.locator('input[placeholder="TK Nợ"]') if dong_moi.locator('input[placeholder="TK Nợ"]').count() > 0 else dong_moi.locator('input.code').nth(0)
+            inp_co = dong_moi.locator('input[placeholder="TK Có"]') if dong_moi.locator('input[placeholder="TK Có"]').count() > 0 else dong_moi.locator('input.code').nth(1)
+            val_no = inp_no.input_value().strip() if inp_no.count() > 0 else ''
+            val_co = inp_co.input_value().strip() if inp_co.count() > 0 else ''
+            if val_co != '1111':
+                loi.append(f'T233: Phiếu chi mới dòng mới có TK Có "{val_co}", kỳ vọng "1111"')
+            if not val_no:
+                loi.append('T233: Phiếu chi mới dòng mới có TK Nợ rỗng')
+
+            # 3. Đổi lý do dòng mới sang "Chi trả lương": TK Nợ dòng đó thành 334
+            sel_ly = dong_moi.locator('button.sel').first
+            if sel_ly.count() == 0:
+                loi.append('T233: Phiếu chi mới không tìm thấy ô chọn lý do dòng mới')
+            else:
+                sel_ly.click()
+                pg.wait_for_timeout(200)
+                opt_luong = pg.locator('.pop-dm button[data-mi]:has-text("Chi trả lương"), .pop-dm .mi:has-text("Chi trả lương")')
+                if opt_luong.count() == 0:
+                    loi.append('T233: Phiếu chi mới không tìm thấy mục "Chi trả lương" trong danh mục lý do')
+                else:
+                    opt_luong.first.click()
+                    pg.wait_for_timeout(200)
+                    val_no_sau = inp_no.input_value().strip() if inp_no.count() > 0 else ''
+                    if val_no_sau != '334':
+                        loi.append(f'T233: Phiếu chi mới sau khi đổi lý do sang "Chi trả lương", TK Nợ là "{val_no_sau}", kỳ vọng "334"')
+
+        # 4. Mở #/app/tien/2-1-1/moi?loai=thu, thêm dòng: TK Nợ 1111
+        pg.goto(URL + '?goi=PR&p=thu#/app/tien/2-1-1/moi?loai=thu')
+        pg.wait_for_timeout(600)
+        chon_cn_neu_hoi()
+
+        btn_tk = pg.locator('.btn-tk-toggle')
+        if btn_tk.count() > 0 and 'on' not in (btn_tk.first.get_attribute('class') or ''):
+            btn_tk.first.click()
+            pg.wait_for_timeout(200)
+
+        btn_them = pg.locator('button:has-text("Thêm dòng")')
+        if btn_them.count() == 0:
+            loi.append('T233: Phiếu thu mới không tìm thấy nút "Thêm dòng"')
+        else:
+            btn_them.first.click()
+            pg.wait_for_timeout(200)
+
+        rows = pg.locator('.bang-sua tbody tr')
+        if rows.count() < 2:
+            loi.append(f'T233: Phiếu thu mới sau khi thêm dòng chỉ có {rows.count()} dòng')
+        else:
+            dong_moi = rows.last
+            inp_no = dong_moi.locator('input[placeholder="TK Nợ"]') if dong_moi.locator('input[placeholder="TK Nợ"]').count() > 0 else dong_moi.locator('input.code').nth(0)
+            val_no = inp_no.input_value().strip() if inp_no.count() > 0 else ''
+            if val_no != '1111':
+                loi.append(f'T233: Phiếu thu mới dòng mới có TK Nợ "{val_no}", kỳ vọng "1111"')
+
+        # 5. Mở #/app/ban-hang/3-1-2/moi, bật Cột tài khoản: tiêu đề vẫn có "TK công nợ (131)" như cũ
+        pg.goto(URL + '?goi=PR&p=bh#/app/ban-hang/3-1-2/moi')
+        pg.wait_for_timeout(600)
+        chon_cn_neu_hoi()
+
+        btn_tk = pg.locator('.btn-tk-toggle')
+        if btn_tk.count() > 0 and 'on' not in (btn_tk.first.get_attribute('class') or ''):
+            btn_tk.first.click()
+            pg.wait_for_timeout(200)
+
+        th_texts = pg.locator('.bang-sua thead th').all_inner_texts()
+        if not any('TK công nợ (131)' in t for t in th_texts):
+            loi.append(f'T233: Màn bán hàng 3-1-2 tiêu đề cột tài khoản thiếu "TK công nợ (131)" (thấy {th_texts})')
+
+        if con:
+            loi.append(f'T233: lỗi console {con[:2]}')
+        b.close()
+    return loi
 
 
 def main():
@@ -3467,6 +3809,7 @@ def main():
         b.close()
 
     print(f'đã kiểm {dem} lượt mở màn')
+    loi += kiem_tra_t233_may_tinh()
     if loi:
         print(f'{len(loi)} LỖI:')
         for x in loi:

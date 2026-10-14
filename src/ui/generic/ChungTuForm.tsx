@@ -20,7 +20,7 @@ import { ChonDanhMuc } from '../ChonDanhMuc'
 import { heSoZoom } from '../zoom'
 import { St, Table } from '../Table'
 import { fold, money, moneyD } from '../format'
-import { NGUON, TT_CT, dongCua, ttNghiepVu, type Dong } from './gen'
+import { NGUON, TT_CT, dongCua, tkTheoLyDo, ttNghiepVu, type Dong } from './gen'
 import { boO, nhomCua, theoLoai } from './nhom'
 import { BangKiemKe, COT_KK } from './BangKiemKe'
 import { MAN_DC, phieuDieuChinh, type LoaiDc } from '../../modules/kho/dieu-chinh'
@@ -103,11 +103,14 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
     setDsDong(dongGoc)
   }, [dongGoc])
 
+  const laTien = mod.key === 'tien'
   // Cập nhật TK nợ/có trên dòng theo hình thức thanh toán
   const tkDoiUng = hinhThucTt === 'tienmat' ? '1111' : hinhThucTt === 'chuyenkhoan' ? '1121' : (nhom === 'mua' ? '331' : '131')
-  const nhanTkDong: [string, string] = nhom === 'mua'
-    ? [bo.tk[0], hinhThucTt === 'congno' ? 'TK công nợ (331)' : hinhThucTt === 'tienmat' ? 'TK tiền mặt (1111)' : 'TK tiền gửi (1121)']
-    : [hinhThucTt === 'congno' ? 'TK công nợ (131)' : hinhThucTt === 'tienmat' ? 'TK tiền mặt (1111)' : 'TK tiền gửi (1121)', bo.tk[1]]
+  const nhanTkDong: [string, string] = laTien
+    ? ['TK Nợ', 'TK Có']
+    : nhom === 'mua'
+      ? [bo.tk[0], hinhThucTt === 'congno' ? 'TK công nợ (331)' : hinhThucTt === 'tienmat' ? 'TK tiền mặt (1111)' : 'TK tiền gửi (1121)']
+      : [hinhThucTt === 'congno' ? 'TK công nợ (131)' : hinhThucTt === 'tienmat' ? 'TK tiền mặt (1111)' : 'TK tiền gửi (1121)', bo.tk[1]]
 
   // Thông tin chung
   const [ngayCt, setNgayCt] = useState(row?.ngay ? String(row.ngay) : laSx || laDcn ? bayGio() : '07/10/2026')   // phiếu sản xuất ghi cả giờ xuất, nhập như IVT (T152)
@@ -141,11 +144,22 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   useEffect(() => {
     setLyDo(row?._lyDo ? String(row._lyDo) : lyGoc(row?.dienGiai ? String(row.dienGiai) : cfg.dienGiai[0]))
   }, [loai?.k, row?.id])
-  // Phiếu thu, chi (T49): dòng chi tiết có cột lý do theo lý do đầu phiếu
-  const laTien = mod.key === 'tien'
+  // Phiếu thu, chi (T49): dòng chi tiết có cột lý do theo lý do đầu phiếu; gán thêm tài khoản theo lý do (T233)
+  const coTkTheoLy = Boolean(oLy) && loai?.k !== 'cq'
+  const loaiPhieuTien = (loai?.k || nhom) as string
   useEffect(() => {
-    if (oLy) setDsDong(ds => ds.map(d => ({ ...d, ly: lyDo })))
-  }, [dongGoc, lyDo])
+    if (coTkTheoLy) {
+      const tkMoi = tkTheoLyDo(loaiPhieuTien, lyDo)
+      setDsDong(ds => ds.map(d => ({
+        ...d,
+        ly: lyDo,
+        ...(tkMoi.tkNo ? { tkNo: tkMoi.tkNo } : {}),
+        ...(tkMoi.tkCo ? { tkCo: tkMoi.tkCo } : {}),
+      })))
+    } else if (oLy) {
+      setDsDong(ds => ds.map(d => ({ ...d, ly: lyDo })))
+    }
+  }, [dongGoc, lyDo, coTkTheoLy, loaiPhieuTien])   // không đưa oLy vào: object tạo lại mỗi lần vẽ làm effect chạy lặp
   // Đối tượng đầu phiếu đổi thì đối tượng mọi dòng đổi theo, vẫn sửa lại được từng dòng
   useEffect(() => {
     if (laTien && cfg.doiTuong !== 'none') setDsDong(ds => ds.map(d => ({ ...d, dt: doiTuong })))
@@ -1170,6 +1184,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               cheDo={dangSua ? 'sua' : 'xem'}
               coTk={hienTk}
               nhanTk={nhanTkDong}
+              tkTheoLy={coTkTheoLy ? (ly => tkTheoLyDo(loaiPhieuTien, ly)) : undefined}
               coKho={Boolean(bo.kho) && !khoDau && !laDc}   // phiếu điều chỉnh: kho ở đầu phiếu (T126)
               khoMacDinh={khoMotCn || 'Kho tổng'}
               coNhapKho={nhom === 'mua' && Boolean(bo.tongNhap)}

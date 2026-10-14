@@ -145,24 +145,22 @@ const TK_LY_DO: Record<string, string> = {
 }
 const tkDoiUngTheoLyDo = (ly: string) => TK_LY_DO[ly] ?? '6422'
 
+/** TK Nợ, Có của dòng thu chi theo loại phiếu (thu, chi, bc, unc hoặc nhóm nhthu, nhchi) và lý do; loại khác trả rỗng (T233) */
+export function tkTheoLyDo(loai: string, ly: string): { tkNo?: string; tkCo?: string } {
+  const du = tkDoiUngTheoLyDo(ly)
+  if (loai === 'thu') return { tkNo: '1111', tkCo: du }
+  if (loai === 'chi') return { tkNo: du, tkCo: '1111' }
+  if (loai === 'bc' || loai === 'nhthu') return { tkNo: '1121', tkCo: du }
+  if (loai === 'unc' || loai === 'nhchi') return { tkNo: du, tkCo: '1121' }
+  return {}
+}
+
 /** Cặp tài khoản Nợ/Có ngầm định cho dòng thu chi hoặc các màn dong: 'tien' */
 export function dinhKhoanDongTien(cfg: VoucherCfg, id: string, ten: string): { tkNo?: string; tkCo?: string; ly?: string } {
   const loai = loaiThuChiCua(cfg, id)
-  if (loai === 'thu') {
-    const ly = doanLyDoThuChi('thu', ten)
-    return { tkNo: '1111', tkCo: tkDoiUngTheoLyDo(ly), ly }
-  }
-  if (loai === 'chi') {
-    const ly = doanLyDoThuChi('chi', ten)
-    return { tkNo: tkDoiUngTheoLyDo(ly), tkCo: '1111', ly }
-  }
-  if (loai === 'bc') {
-    const ly = doanLyDoThuChi('bc', ten)
-    return { tkNo: '1121', tkCo: tkDoiUngTheoLyDo(ly), ly }
-  }
-  if (loai === 'unc') {
-    const ly = doanLyDoThuChi('unc', ten)
-    return { tkNo: tkDoiUngTheoLyDo(ly), tkCo: '1121', ly }
+  if (loai === 'thu' || loai === 'chi' || loai === 'bc' || loai === 'unc') {
+    const ly = doanLyDoThuChi(loai, ten)
+    return { ...tkTheoLyDo(loai, ly), ly }
   }
   if (loai === 'cq') {
     const isRut = ten.toLowerCase().includes('rút')

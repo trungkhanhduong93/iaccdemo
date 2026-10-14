@@ -15,9 +15,7 @@ import { DCN } from '../../modules/kho/dieu-chuyen'
 import { MAN_DC } from '../../modules/kho/dieu-chinh'
 import { CHI_NHANH, KHOAN_MUC, TK_NGAN_HANG, daKhoaSo } from '../../data/mock'
 import { ctTtCon, dsDcCon, dsTtCon, suaPhieu, ttThamChieu, ttTienTheoTra, xoaPhieu } from '../generic/daXoa'
-import { LichSu, layButToan } from '../generic/ChungTuForm'
-import { tkTheoCheDo } from '../../modules/tong-hop/so-cai'
-import { TAI_KHOAN } from '../../modules/danh-muc/data'
+import { LichSu } from '../generic/ChungTuForm'
 import { loaiXuLy } from '../generic/BangKiemKe'
 import { HopXacNhan } from '../LocNangCao'
 import { HopInChungTu, type PhieuIn } from '../bao-cao/InChungTu'
@@ -25,15 +23,10 @@ import { Icon } from '../Icon'
 import { MChon } from './MChon'
 import { MTrong } from './MTrong'
 import { chieuTien, dauTien, lopChieu } from './chieuTien'
+import { KhoiHachToan, tinhButToan } from './butToan'
 
 export interface MXemPhieuProps extends ScreenProps {
   id?: string
-}
-
-// Bảng tên tài khoản của sổ cái thiếu vài tài khoản (141, 153): lấy tên trong danh mục tài khoản
-const tenTk = (so: string, cd: Parameters<typeof tkTheoCheDo>[1]) => {
-  const t = tkTheoCheDo(so, cd)
-  return { so: t.so, ten: t.ten || (TAI_KHOAN.find(x => x.so === t.so)?.ten ?? '') }
 }
 
 // Dòng thu chi lưu mã khoản mục, bản máy tính hiện tên
@@ -202,41 +195,21 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
   const tongThanhToan = laKk ? 0 : tongTien - tongCk + tongThue
 
   // Bút toán hạch toán mở sẵn (Mẫu A)
-  const coButToan = kieu !== 'khong' && !laKk && dcn !== 'ck'
   const dsButToan = useMemo(() => {
-    if (!coButToan) return []
-    const btDong = dsDong.filter(d => Boolean(d.tkNo && d.tkCo))
-    if (btDong.length > 0) {
-      return btDong.flatMap(d => {
-        const tNo = tenTk(String(d.tkNo), s.cheDo)
-        const tCo = tenTk(String(d.tkCo), s.cheDo)
-        const soTien = Number(d.tien) || 0
-        return [
-          { kieu: 'no' as const, so: tNo.so, ten: tNo.ten, tien: soTien },
-          { kieu: 'co' as const, so: tCo.so, ten: tCo.ten, tien: soTien },
-        ]
-      })
-    }
     const hinhThucTt = (row._httt as 'congno' | 'tienmat' | 'chuyenkhoan' | undefined) ?? (nv?.ttTien === 'da' ? 'tienmat' : 'congno')
-    const tkDoiUng = hinhThucTt === 'tienmat' ? '1111' : hinhThucTt === 'chuyenkhoan' ? '1121' : (nhom === 'mua' ? '331' : '131')
-    const bts = layButToan(
+    return tinhButToan(
       cfg,
-      tongTien - tongCk,
+      dsDong,
+      tongTien,
+      tongCk,
       tongThue,
       String(row.doiTuong ?? ''),
       String(row.cn ?? ''),
       s.cheDo,
-      tkDoiUng,
+      nhom,
+      hinhThucTt,
     )
-    return bts.flatMap(b => {
-      const tNo = tenTk(b.no, s.cheDo)
-      const tCo = tenTk(b.co, s.cheDo)
-      return [
-        { kieu: 'no' as const, so: tNo.so, ten: tNo.ten, tien: b.tien },
-        { kieu: 'co' as const, so: tCo.so, ten: tCo.ten, tien: b.tien },
-      ]
-    })
-  }, [coButToan, dsDong, row, nv, cfg, tongTien, tongCk, tongThue, s.cheDo, nhom])
+  }, [cfg, dsDong, tongTien, tongCk, tongThue, row, nv, s.cheDo, nhom])
 
   // Tên loại phiếu
   const tenLoai = loai?.ten ?? (row.tenLoai ? String(row.tenLoai) : tenMan(sc))
@@ -644,23 +617,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
       </div>
 
       {/* Khối Hạch toán mở sẵn (Mẫu A) */}
-      {coButToan && dsButToan.length > 0 && (
-        <div className="m-xp-khoi-ht">
-          <div className="m-xp-tieu-khoi">Hạch toán</div>
-          <div className="m-the-trang m-xp-the-ht">
-            <div className="m-xp-ht-ds">
-              {dsButToan.map((bt, idx) => (
-                <div key={idx} className="m-xp-ht-dong">
-                  <span className="m-xp-ht-tk">
-                    {bt.kieu === 'no' ? 'Nợ' : 'Có'} {bt.so} <i className="m-xp-ht-ten">{bt.ten}</i>
-                  </span>
-                  <span className="m-xp-ht-tien num">{money(bt.tien)}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
+      <KhoiHachToan dsButToan={dsButToan} />
 
       {/* 3. Danh sách dòng hàng / dòng thu chi / dòng kiểm kê */}
       <div className="m-xp-khoi-dong">
