@@ -162,7 +162,7 @@ export function DsPhieuTc({ sc, mod, kieu: t, rows: rowsGoc }: ScreenProps & { k
     ...(t.manDoi ? [{ k: 'thamChieu', t: 'Tham chiếu', w: 140, r: (r: Row) => r._tcId
       ? <Link className="ds-link-so" to={`/app/${t.manDoi}/${r._tcId}`} onClick={e => e.stopPropagation()}>{r.thamChieu}</Link> : '' }] : []),
     ...t.cot,
-    ...(t.coTien ? [{ k: 'tong', t: 'Tổng tiền', num: true, w: 130 }] : []),
+    ...(t.coTien ? [{ k: 'tong', t: 'Tổng tiền', num: true, w: 130, dinh: 'phai' as const }] : []),   // cố định bên phải (T239)
   ]
   const cot = useCotDs(path, cols, COT_CO_DINH)
   const luaChon = Object.fromEntries([...COT_CHON].map(k => [k, [...new Set(rows.map(r => String(r[k])).filter(Boolean))].sort()]))

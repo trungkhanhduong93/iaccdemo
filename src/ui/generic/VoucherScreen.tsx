@@ -375,7 +375,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
       },
     },
     // Tổng tiền là cột cuối; không còn cột Chức năng, xem phiếu bằng đúp chuột hoặc khung chi tiết (T48)
-    ...(cfg.kiemKe || (cfg.dieuChinh && s.goi === 'F') ? [] : [{ k: 'tong', t: 'Tổng tiền', num: true, w: 120 } as Col]),   // điều chỉnh kho gói Free không hiện giá trị (T131)
+    ...(cfg.kiemKe || (cfg.dieuChinh && s.goi === 'F') ? [] : [{ k: 'tong', t: 'Tổng tiền', num: true, w: 120, dinh: 'phai' } as Col]),   // điều chỉnh kho gói Free không hiện giá trị (T131); cố định bên phải khi cuộn ngang (T239)
   ]
 
   // Thứ tự, ẩn hiện, độ rộng cột lưu theo màn (T41)
