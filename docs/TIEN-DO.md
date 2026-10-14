@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T227 | Bỏ menu phụ (Nghiệp vụ, Tiện ích) bật ra khi rê chuột vào phân hệ ở thanh bên | PhuongXT | Đang làm | Sửa `src/app/Shell.tsx` |
 | T226 | Bấm phân hệ ở thanh bên vào thẳng danh sách chứng từ đầu tiên (không mở tab Quy trình trước); phân hệ không có chứng từ vào màn đầu tiên không phải Quy trình | PhuongXT | Đang làm | Sửa `src/app/registry.ts` (`manDau`) |
 | T225 | Tạm ẩn tab Quy trình (sơ đồ) của phân hệ Danh mục, cả mục Sơ đồ danh mục ở menu phụ | PhuongXT | Đang làm | Sửa `src/modules/danh-muc/index.ts`, `src/app/SidebarFlyout.tsx` |
 | T222 | Điện thoại đợt 14, nghiệm thu: đo thời gian mở mọi báo cáo ở 390px, sửa báo cáo quá 2 giây; dữ liệu giả cho thẻ Hao hụt nguyên vật liệu và mục Chứng từ chưa ghi sổ ở trang chủ; so ảnh màn chính với bản máy tính | Trum | Đang làm | Anti A code. Sửa `src/ui/mobile/`, `MTrangChu.tsx`, có thể `src/ui/Table.tsx`, `app.css` mục cuối |
