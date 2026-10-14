@@ -11,10 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T215 | Tổng hợp nhập kho (5.2.9) bấm hàng hoá mở Chi tiết nhập kho (5.2.10), Tổng hợp xuất kho (5.2.11) bấm hàng hoá mở Chi tiết xuất kho (5.2.12), lọc sẵn hàng đó, cùng kỳ | PhuongXT | Đang làm | Sửa `src/modules/kho/bao-cao.ts`, `kho/index.ts` |
-| T214 | Tổng hợp xuất kho (5.2.11), Chi tiết xuất kho (5.2.12): bỏ bộ lọc Đối tượng (tự sinh từ cột Đối tượng ở Chi tiết xuất kho) | PhuongXT | Đang làm | Sửa `bao-cao/danh-sach.ts` (thêm `boTuSinh`), `ReportScreen.tsx` |
-| T213 | Chi tiết nhập kho (5.2.10), Chi tiết xuất kho (5.2.12): cột Đơn giá, Thành tiền đổi tên thành Giá vốn, Tiền vốn | PhuongXT | Đang làm | Sửa `src/modules/kho/bao-cao.ts` (`chiTietKho`) |
-| T212 | Tổng hợp nhập kho (5.2.9), Tổng hợp xuất kho (5.2.11): mỗi loại phiếu tách hai cột Số lượng, Giá trị (trước chỉ có giá trị) | PhuongXT | Đang làm | Sửa `src/modules/kho/bao-cao.ts` (`tongHopKho`) |
 | T208 | Điện thoại: chỉnh giao diện đang có: trang chủ bỏ thanh trên chung, chip chọn chi nhánh và kho; kính lúp tìm cả báo cáo; bảng sổ gọn hơn; đệm đáy mọi màn; chip danh sách chứng từ một hàng | Trum | Đang làm | Anti B, đợt 13. Kế hoạch `docs/ke-hoach-mobile-dot-11.md`. Sửa `MobileShell.tsx`, `MTrangChu.tsx`, `MTimKiem.tsx`, `app.css` |
 | T192 | Điện thoại: Tiện ích bổ sung (11.1, 11.4, 11.5, 11.6, 11.7, 11.11, 11.16, X2 và màn tác vụ 11.2, 11.3, 11.8–11.10, 11.12–11.15) còn báo dùng máy tính | Trum | Đang làm | Anti A, đợt 13. 11.11 giữ chỉ máy tính. Từ rà soát T184. Thiết kế mẫu in 11.11 nên giữ chỉ máy tính, hỏi Trum |
 | T169 | Form chứng từ: gõ đổi địa chỉ từ phiếu này sang phiếu khác (vd `#/app/tien/2-1-1/chi-3` sang `chi-6`) thì form giữ số phiếu, đối tượng của phiếu cũ; mở từ danh sách, Trước, Sau thì đúng | | Chờ | Phát hiện ở T168. Sửa `ChungTuForm.tsx`, có thể `VoucherScreen.tsx` (key của form) |
@@ -47,6 +43,10 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T215 | Tổng hợp nhập kho (5.2.9) bấm hàng hoá mở Chi tiết nhập kho (5.2.10), Tổng hợp xuất kho (5.2.11) bấm hàng hoá mở Chi tiết xuất kho (5.2.12), lọc sẵn hàng đó, cùng kỳ | PhuongXT | 14/10/2026 | [2026-10-14-phuongxt-bao-cao-kho](nhat-ky/2026-10-14-phuongxt-bao-cao-kho.md) |
+| T214 | Tổng hợp xuất kho (5.2.11), Chi tiết xuất kho (5.2.12): bỏ bộ lọc Đối tượng (tự sinh từ cột Đối tượng ở Chi tiết xuất kho) | PhuongXT | 14/10/2026 | [2026-10-14-phuongxt-bao-cao-kho](nhat-ky/2026-10-14-phuongxt-bao-cao-kho.md) |
+| T213 | Chi tiết nhập kho (5.2.10), Chi tiết xuất kho (5.2.12): cột Đơn giá, Thành tiền đổi tên thành Giá vốn, Tiền vốn | PhuongXT | 14/10/2026 | [2026-10-14-phuongxt-bao-cao-kho](nhat-ky/2026-10-14-phuongxt-bao-cao-kho.md) |
+| T212 | Tổng hợp nhập kho (5.2.9), Tổng hợp xuất kho (5.2.11): mỗi loại phiếu tách hai cột Số lượng, Giá trị (trước chỉ có giá trị) | PhuongXT | 14/10/2026 | [2026-10-14-phuongxt-bao-cao-kho](nhat-ky/2026-10-14-phuongxt-bao-cao-kho.md) |
 | T211 | Xuất nhập tồn: bấm mã hoặc tên hàng hoá mở Thẻ kho của hàng đó (cùng kho, kỳ); mở Thẻ kho 5.2.1 cho gói Free (PhuongXT chốt 14/10/2026) | PhuongXT | 14/10/2026 | [2026-10-14-phuongxt-loc-bao-cao](nhat-ky/2026-10-14-phuongxt-loc-bao-cao.md) |
 | T207 | Bộ lọc báo cáo mua hàng, bán hàng, kho: thêm Kho, Hàng hoá, Nhóm hàng hoá; mua hàng, bán hàng thêm Đối tượng (bán hàng không lọc kho vì đơn POS không ghi kho). Lọc trên từng phiếu, dòng hàng trước khi cộng | PhuongXT | 14/10/2026 | [2026-10-14-phuongxt-loc-bao-cao](nhat-ky/2026-10-14-phuongxt-loc-bao-cao.md) |
 | T206 | Báo cáo xuất nhập tồn: ô lọc Kho trên thanh công cụ báo cáo để nhãn cùng hàng với ô chọn, không xuống dòng | PhuongXT | 14/10/2026 | [2026-10-14-phuongxt-loc-bao-cao](nhat-ky/2026-10-14-phuongxt-loc-bao-cao.md) |

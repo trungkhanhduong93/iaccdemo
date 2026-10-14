@@ -5,7 +5,8 @@ import { Link } from 'react-router-dom'
 import type { Col, Row, VoucherCfg } from '../types'
 import { CHI_NHANH } from '../../data/mock'
 import { chungTu, dongCua, type Dong } from '../../ui/generic/gen'
-import { docLocNguon, quaLocDong } from '../bao-cao/loc-nguon'
+import { KHOA_LOC_NGUON, docLocNguon, quaLocDong } from '../bao-cao/loc-nguon'
+import { datLocDaXem } from '../../ui/bao-cao/tuyChinhBC'
 
 /** Một loại phiếu nguồn: cấu hình chứng từ, hạt giống (mã màn) và đường dẫn màn chứng từ sau /app/.
  *  ds: phiếu mẫu riêng có sẵn dòng hàng ở _dong, thay phiếu sinh theo hạt giống (điều chuyển, T155) */
@@ -36,29 +37,37 @@ const cong = (ds: Row[], k: string) => ds.reduce((a, x) => a + (Number(x[k]) || 
 const cotSo: Col = { k: 'so', t: 'Số phiếu', cls: 'code', w: 120,
   r: x => x._di ? createElement(Link, { to: `/app/${x._di}`, className: 'ds-link-so', style: { fontSize: 'inherit' } }, x.so) : x.so }
 
-/** Chi tiết: mỗi dòng hàng của phiếu một dòng */
+/** Chi tiết: mỗi dòng hàng của phiếu một dòng; đơn giá, thành tiền ghi là Giá vốn, Tiền vốn (T213) */
 export const chiTietKho = (nguon: () => NguonPhieu[]) => ({
   cols: [{ k: 'ngay', t: 'Ngày', w: 88 }, cotSo, { k: 'loai', t: 'Loại phiếu', w: 120 }, { k: 'kho', t: 'Kho', w: 130 }, { k: 'doiTuong', t: 'Đối tượng' },
     { k: 'ma', t: 'Mã hàng', cls: 'code', w: 70 }, { k: 'ten', t: 'Tên hàng' }, { k: 'dvt', t: 'ĐVT', c: true, w: 50 },
-    { k: 'sl', t: 'Số lượng', num: true }, { k: 'gia', t: 'Đơn giá', num: true }, { k: 'tien', t: 'Thành tiền', num: true }] as Col[],
+    { k: 'sl', t: 'Số lượng', num: true }, { k: 'gia', t: 'Giá vốn', num: true }, { k: 'tien', t: 'Tiền vốn', num: true }] as Col[],
   rows: (thang: number, cn?: string, loc?: Record<string, string[]>): Row[] => {
     const ds: Row[] = dongKho(nguon(), thang, cn, loc).map(({ d: _, ...x }) => x)
     return [...ds, { ten: 'Tổng cộng', tien: cong(ds, 'tien'), _t: 1 }]
   },
 })
 
-/** Tổng hợp theo mặt hàng: số lượng, giá trị, kèm giá trị theo từng loại phiếu */
-export const tongHopKho = (nguon: () => NguonPhieu[], dsLoai: string[]) => {
+/** Tổng hợp theo mặt hàng: số lượng, giá trị, kèm số lượng, giá trị theo từng loại phiếu (T212).
+ *  Dòng tổng không cộng số lượng vì các mặt hàng khác đơn vị tính */
+export const tongHopKho = (nguon: () => NguonPhieu[], dsLoai: string[], chiTiet: string) => {
   const kLoai = (i: number) => `l${i}`
+  const kSlLoai = (i: number) => `sl${i}`
+  // Bấm mã, tên hàng mở báo cáo chi tiết (slug chiTiet) lọc sẵn hàng đó, cùng kỳ, giữ bộ lọc đang xem (T215)
+  const moChiTiet = (x: Row, chu: string) => x._t ? chu : createElement(Link, {
+    to: `/app/bao-cao/${chiTiet}`, className: 'bc-mo-so', title: 'Xem chi tiết',
+    onClick: () => datLocDaXem(`/app/bao-cao/${chiTiet}`, { ...x._loc, [KHOA_LOC_NGUON.hang]: [x.ten] }, String(x._ky)),
+  }, chu)
   return {
-    cols: [{ k: 'ma', t: 'Mã hàng', cls: 'code', w: 80 }, { k: 'ten', t: 'Tên hàng' }, { k: 'dvt', t: 'ĐVT', c: true, w: 55 },
-      { k: 'sl', t: 'Số lượng', num: true }, { k: 'tien', t: 'Giá trị', num: true },
-      ...dsLoai.map((l, i) => ({ k: kLoai(i), t: l, num: true, nhom: 'Giá trị theo loại phiếu' }))] as Col[],
+    cols: [{ k: 'ma', t: 'Mã hàng', cls: 'code', w: 80, r: x => moChiTiet(x, x.ma) }, { k: 'ten', t: 'Tên hàng', r: x => moChiTiet(x, x.ten) }, { k: 'dvt', t: 'ĐVT', c: true, w: 55 },
+      { k: 'sl', t: 'Số lượng', num: true, nhom: 'Tổng' }, { k: 'tien', t: 'Giá trị', num: true, nhom: 'Tổng' },
+      ...dsLoai.flatMap((l, i) => [{ k: kSlLoai(i), t: 'Số lượng', num: true, nhom: l }, { k: kLoai(i), t: 'Giá trị', num: true, nhom: l }])] as Col[],
     rows: (thang: number, cn?: string, loc?: Record<string, string[]>): Row[] => {
       const nhom = new Map<string, Row>()
       for (const x of dongKho(nguon(), thang, cn, loc)) {
-        const g = nhom.get(x.ma) ?? { ma: x.ma, ten: x.ten, dvt: x.dvt, sl: 0, tien: 0, ...Object.fromEntries(dsLoai.map((_, i) => [kLoai(i), 0])) }
+        const g = nhom.get(x.ma) ?? { ma: x.ma, ten: x.ten, dvt: x.dvt, sl: 0, tien: 0, _ky: thang, _loc: loc, ...Object.fromEntries(dsLoai.flatMap((_, i) => [[kSlLoai(i), 0], [kLoai(i), 0]])) }
         g.sl += x.sl; g.tien += x.tien
+        g[kSlLoai(dsLoai.indexOf(x.loai))] += x.sl
         g[kLoai(dsLoai.indexOf(x.loai))] += x.tien
         nhom.set(x.ma, g)
       }

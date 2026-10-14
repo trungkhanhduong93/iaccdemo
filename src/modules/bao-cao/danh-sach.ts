@@ -51,11 +51,12 @@ export interface CauHinhBC {
   khoa?: boolean                            // bố cục pháp định: không cho ẩn, đổi thứ tự cột (dùng ở đợt sau)
   loc?: LocBC[]                             // bộ lọc riêng (ngoài kỳ, chi nhánh)
   nhomDuoc?: string[]                       // khoá cột được gom nhóm
+  boTuSinh?: string[]                       // tên bộ lọc tự sinh từ cột không hiện, vd Đối tượng ở Chi tiết xuất kho (T214)
   anKhongPS?: boolean                       // có tuỳ chọn "Ẩn dòng không phát sinh"
   phanTrang?: number                        // báo cáo nhiều dòng: tờ trên màn hình chỉ vẽ ngần ấy dòng mỗi trang, in và xuất vẫn đủ dòng (T157)
 }
 
-const baoCao = (kho: Kho, opt?: { loc?: LocBC[]; nhomDuoc?: string[]; anKhongPS?: boolean; phanTrang?: number }): CauHinhBC => ({ loai: 'baocao', kho, ...opt })
+const baoCao = (kho: Kho, opt?: { loc?: LocBC[]; nhomDuoc?: string[]; boTuSinh?: string[]; anKhongPS?: boolean; phanTrang?: number }): CauHinhBC => ({ loai: 'baocao', kho, ...opt })
 
 const ALL: CheDo[] = ['TT152', 'TT58', 'TT133', 'TT99']
 
@@ -116,7 +117,7 @@ export const CAU_HINH_BC: Record<string, CauHinhBC> = {
   '5.2.9': baoCao('ngang', { loc: LOC_KHO_BC, anKhongPS: true }),
   '5.2.10': baoCao('ngang', { loc: [...LOC_KHO_BC, { k: 'loai', nhan: 'Loại phiếu', kieu: 'chon' }], nhomDuoc: ['kho', 'loai', 'ngay'], anKhongPS: true, phanTrang: 100 }),
   '5.2.11': baoCao('ngang', { loc: LOC_KHO_BC, anKhongPS: true }),
-  '5.2.12': baoCao('ngang', { loc: [...LOC_KHO_BC, { k: 'loai', nhan: 'Loại phiếu', kieu: 'chon' }], nhomDuoc: ['kho', 'loai', 'ngay'], anKhongPS: true, phanTrang: 100 }),
+  '5.2.12': baoCao('ngang', { loc: [...LOC_KHO_BC, { k: 'loai', nhan: 'Loại phiếu', kieu: 'chon' }], nhomDuoc: ['kho', 'loai', 'ngay'], boTuSinh: ['Đối tượng'], anKhongPS: true, phanTrang: 100 }),
   '5.2.13': baoCao('doc', { loc: [{ k: 'loai', nhan: 'Loại', kieu: 'chon' }], nhomDuoc: ['loai'], anKhongPS: true }),
   '5.2.14': baoCao('ngang', { loc: [{ k: 'kho', nhan: 'Kho', kieu: 'chon' }, { k: 'loai', nhan: 'Loại phiếu', kieu: 'chon' }], nhomDuoc: ['kho', 'loai', 'ngay'], anKhongPS: true, phanTrang: 100 }),
   '6.2.1': baoCao('ngang', { loc: [{ k: 'doiTuong', nhan: 'Người bán', kieu: 'chon' }], nhomDuoc: ['doiTuong', 'ngay'], anKhongPS: true }),

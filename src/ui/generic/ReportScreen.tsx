@@ -640,9 +640,9 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
             nhomCols.set(q.nhom, list)
           }
 
-          // Mỗi nhóm danh mục chỉ tạo MỘT bộ lọc
+          // Mỗi nhóm danh mục chỉ tạo MỘT bộ lọc; bỏ bộ lọc cấu hình báo cáo khai trong boTuSinh (T214)
           for (const [, list] of nhomCols) {
-            if (res.some(r => r.nhan === list[0].quyTac.ten)) continue
+            if (res.some(r => r.nhan === list[0].quyTac.ten) || cfg?.boTuSinh?.includes(list[0].quyTac.ten)) continue
 
             const chon = list.find(x => x.quyTac.laMa) ?? list[0]
             if (!daCo.has(chon.col.k)) {
@@ -654,7 +654,7 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
       }
     }
     return res
-  }, [cfg?.loc, khongTuSinh, children, s])
+  }, [cfg?.loc, cfg?.boTuSinh, khongTuSinh, children, s])
 
   const dsKy = useMemo(() => {
     if (!ky) return []
