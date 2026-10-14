@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T216 | Gói Free tạm ẩn báo cáo nhóm Kế toán bán hàng: Bán hàng theo ngày, Tổng hợp bán hàng, Chi tiết bán hàng, Công nợ khách hàng (Sổ doanh thu ở nhóm Sổ sách giữ nguyên) | PhuongXT | Đang làm | Sửa `src/modules/ban-hang/index.ts` (`goi` của màn báo cáo) |
 | T208 | Điện thoại: chỉnh giao diện đang có: trang chủ bỏ thanh trên chung, chip chọn chi nhánh và kho; kính lúp tìm cả báo cáo; bảng sổ gọn hơn; đệm đáy mọi màn; chip danh sách chứng từ một hàng | Trum | Đang làm | Anti B, đợt 13. Kế hoạch `docs/ke-hoach-mobile-dot-11.md`. Sửa `MobileShell.tsx`, `MTrangChu.tsx`, `MTimKiem.tsx`, `app.css` |
 | T192 | Điện thoại: Tiện ích bổ sung (11.1, 11.4, 11.5, 11.6, 11.7, 11.11, 11.16, X2 và màn tác vụ 11.2, 11.3, 11.8–11.10, 11.12–11.15) còn báo dùng máy tính | Trum | Đang làm | Anti A, đợt 13. 11.11 giữ chỉ máy tính. Từ rà soát T184. Thiết kế mẫu in 11.11 nên giữ chỉ máy tính, hỏi Trum |
 | T169 | Form chứng từ: gõ đổi địa chỉ từ phiếu này sang phiếu khác (vd `#/app/tien/2-1-1/chi-3` sang `chi-6`) thì form giữ số phiếu, đối tượng của phiếu cũ; mở từ danh sách, Trước, Sau thì đúng | | Chờ | Phát hiện ở T168. Sửa `ChungTuForm.tsx`, có thể `VoucherScreen.tsx` (key của form) |
