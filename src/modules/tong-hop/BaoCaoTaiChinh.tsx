@@ -13,6 +13,8 @@ import { KY_CHON, ReportPaper, ReportToolbar, RptTable } from '../../ui/generic/
 import { pct } from '../../ui/format'
 import { TEN_TK, du, soCai, tkTheoCheDo } from './so-cai'
 import { dongB01, dongB02 } from '../bao-cao/tt58'
+import type { Session } from '../../app/session'
+import { nvlKy } from '../home/chi-phi-nvl'
 
 const kyTen = (ky: string) => KY_CHON.find(x => x[0] === ky)![1]
 const truoc = (ky: string) => String(Math.max(8, Number(ky) - 1))
@@ -29,17 +31,20 @@ function Khung({ sc, mod, children, note }: ScreenProps & { children: (ky: strin
 }
 
 // ── Báo cáo kết quả kinh doanh ──
-function dongKqkd(cd: CheDo, thang: number, goi?: Goi) {
+function dongKqkd(cd: CheDo, thang: number, goi?: Goi, s?: Session) {
   const q = kqkd(thang, 2026)
   // Gói Free (T220): Giá vốn ghi Chi phí NVL; chi phí phân bổ hàng tháng (phân bổ CCDC, khấu hao) tách khỏi chi phí trong tháng;
   // bỏ thu nhập, chi phí khác khỏi bảng và lợi nhuận, nên lợi nhuận lệch Tổng quan đúng bằng khoản khác (PhuongXT chốt 14/10/2026)
   if (goi === 'F' && cd === 'TT152') {
     const pb = q.cp.ccdc + q.cp.khauHao
     const cpThang = q.cpQlkd + q.cpTc - q.dtTc - pb
+    // Chi phí NVL cộng từng chi nhánh theo cách tính của chi nhánh (T232); chưa có phiên thì theo giá vốn
+    const nvl = s ? nvlKy(s, [], thang).tien : q.gv
+    const lnGop = q.dtThuan - nvl
     return [
-      { ct: 'Doanh thu bán hàng', v: q.dtThuan, _b: 1, _drill: '/app/ban-hang/3-2-5' }, { ct: 'Chi phí NVL', v: q.gv, _drill: '/app/kho/5-2-3' },
-      { ct: 'Lãi gộp', v: q.lnGop, _b: 1 }, { ct: 'Chi phí trong tháng', v: cpThang }, { ct: 'Chi phí phân bổ hàng tháng', v: pb },
-      { ct: 'Lợi nhuận trước thuế', v: q.lnGop - cpThang - pb, _t: 1 },
+      { ct: 'Doanh thu bán hàng', v: q.dtThuan, _b: 1, _drill: '/app/ban-hang/3-2-5' }, { ct: 'Chi phí NVL', v: nvl, _drill: `/app/trang-chu/chi-phi-nvl?thang=${thang}` },
+      { ct: 'Lãi gộp', v: lnGop, _b: 1 }, { ct: 'Chi phí trong tháng', v: cpThang }, { ct: 'Chi phí phân bổ hàng tháng', v: pb },
+      { ct: 'Lợi nhuận trước thuế', v: lnGop - cpThang - pb, _t: 1 },
     ]
   }
   if (cd === 'TT152' || cd === 'TT58') return [
@@ -86,7 +91,7 @@ export function KetQuaKinhDoanh(p: ScreenProps) {
             </ReportPaper>
           )
         }
-        const nay = dongKqkd(s.cheDo, Number(ky), s.goi), cu = dongKqkd(s.cheDo, Number(truoc(ky)), s.goi)
+        const nay = dongKqkd(s.cheDo, Number(ky), s.goi, s), cu = dongKqkd(s.cheDo, Number(truoc(ky)), s.goi, s)
         const ma = kieuGhiSo(s.cheDo) === 'noco'
         const cols: Col[] = [{ k: 'ct', t: 'Chỉ tiêu' }, ...(ma ? [{ k: 'ma', t: 'Mã số', c: true, w: 70 } as Col] : []), { k: 'v', t: kyTen(ky).replace(' (đến 07/10)', ''), num: true }, { k: 'cu', t: kyTen(truoc(ky)), num: true }]
         return (

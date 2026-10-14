@@ -9,6 +9,7 @@ import { between, k, moneyD, pad, rng } from '../../ui/format'
 import { soChiTiet } from '../../ui/generic/gen'
 import { gopSo } from '../../ui/generic/ReportScreen'
 import { phieuTheoSo } from '../../ui/generic/SoChungTu'
+import { useMoTuTrangChu } from '../../app/tuTrangChu'
 import { soQuyCn } from '../tien/SoQuy'
 import { tenQuyTm, tenTkNh } from '../bao-cao/danh-sach'
 
@@ -46,6 +47,7 @@ const THU = ['Chủ nhật', 'Thứ hai', 'Thứ ba', 'Thứ tư', 'Thứ năm',
 const tenNgay = (ngay: string) => { const [d, m, y] = ngay.split('/').map(Number); return `${THU[new Date(y, m - 1, d).getDay()]}, ${ngay}` }
 
 export function LichSuQuy(_: ScreenProps) {
+  const moTuTrangChu = useMoTuTrangChu()   // liên kết trong màn mở kèm nút về Trang chủ (T232)
   const [tham] = useSearchParams()
   const quy = tham.get('quy') ?? tenQuyTm(CHI_NHANH[0].ngan)
   const thang = Math.min(10, Math.max(7, Number(tham.get('thang')) || 10))
@@ -57,7 +59,7 @@ export function LichSuQuy(_: ScreenProps) {
   const tn = (gd?.ds ?? []).reduce((a, x) => a + x.thu, 0), tc = (gd?.ds ?? []).reduce((a, x) => a + x.chi, 0)
 
   return (
-    <div className="page">
+    <div className="page" onClickCapture={moTuTrangChu}>
       <div className="cpt-dau">
         <Link to="/app/trang-chu/tong-quan" className="cpt-ve" title="Về Tổng quan" aria-label="Về Tổng quan"><Icon n="chevl" /></Link>
         <h1>Lịch sử thu chi</h1>

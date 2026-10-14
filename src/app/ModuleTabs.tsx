@@ -8,6 +8,7 @@ import type { ModuleDef, ScreenDef } from '../modules/types'
 import { Icon } from '../ui/Icon'
 import { Pk } from '../ui/Page'
 import { Dropdown, MenuItem } from '../ui/Dropdown'
+import { laTuTrangChu } from './tuTrangChu'
 
 const KHAC = 110  // chỗ cho nút "Khác" kèm số tab bên trong
 
@@ -36,7 +37,10 @@ export function ModuleTabs({ mod }: { mod: ModuleDef }) {
     return () => ro.disconnect()
   }, [tabs, s.goi])
 
-  // Phân hệ Báo cáo chỉ có 1 tab "Tất cả báo cáo": ẩn thanh tab (T58)
+  // Mở từ trang chủ gói Free: nút về Trang chủ đứng đầu thanh tab (T232)
+  const ve = mod.key !== 'trang-chu' && laTuTrangChu(loc.state)
+    ? <Link to="/app/trang-chu/tong-quan" className="mtabs-ve" title="Về trang chủ"><Icon n="chevl" className="ic sm" />Trang chủ</Link> : null
+  // Phân hệ Báo cáo chỉ có 1 tab "Tất cả báo cáo": ẩn thanh tab (T58); nút về Trang chủ của báo cáo nằm ở thanh chọn báo cáo
   if (mod.key === 'bao-cao' && tabs.length <= 1) return null
 
   // Không đủ chỗ: giữ tab đang mở, lấy thêm các tab đầu tới khi hết chỗ, còn lại dồn vào "Khác"
@@ -72,7 +76,8 @@ export function ModuleTabs({ mod }: { mod: ModuleDef }) {
   }
 
   return (
-    <div className="mtabs" aria-label={`Màn hình ${mod.ten}`}>
+    <div className={`mtabs${ve ? ' co-ve' : ''}`} aria-label={`Màn hình ${mod.ten}`}>
+      {ve}
       <div className="mtabs-in" ref={wrap}>
         {hien.map(tab)}
         {khac.length > 0 && (

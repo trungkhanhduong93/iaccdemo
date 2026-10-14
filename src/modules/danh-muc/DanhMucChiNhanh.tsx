@@ -14,6 +14,9 @@ import { CO_TRANG_DM, PhanTrang } from '../../ui/PhanTrang'
 import { NutTuyChinhCot, useCotDs } from '../../ui/LocNangCao'
 import { cuaHangChuaDung } from '../onboarding/cua-hang-fabi'
 import { DsChiNhanh } from '../onboarding/OnboardFabi'
+import { Select } from '../../ui/Dropdown'
+import { HopXacNhan } from '../../ui/LocNangCao'
+import { CACH_NVL, DS_CACH_NVL, cachNvlHienTai, datCachNvl, kyDauChuaKhoa, tenKy, type CachNvl } from '../home/chi-phi-nvl'
 
 /** Cột luôn hiện, không ẩn được ở Tuỳ chỉnh cột (T148) */
 const COT_CO_DINH = new Set(['ma', 'ten'])
@@ -22,7 +25,8 @@ export function DanhMucChiNhanh({ sc, mod }: ScreenProps) {
   const { s, set, toast } = useSession()
   const nav = useNavigate()
   const [q] = useSearchParams()
-  const [mo, setMo] = useState(q.get('them') === '1')   // Bàn làm việc mở thẳng hộp thêm (?them=1)
+  const [mo, setMo] = useState(q.get('them') === '1')
+  const [doiNvl, setDoiNvl] = useState<{ cn: string; ten: string; cach: CachNvl } | null>(null)   // Bàn làm việc mở thẳng hộp thêm (?them=1)
   const them = s.cnThem?.[s.donVi] ?? []
   // đơn vị mẫu có sẵn chi nhánh mẫu; đơn vị mới tạo từ FABi chỉ có chi nhánh đã lên sổ
   const coSan = DON_VI.some(d => d.id === s.donVi)
@@ -31,8 +35,8 @@ export function DanhMucChiNhanh({ sc, mod }: ScreenProps) {
   const khoCua = (id: string, ten: string) => CHI_NHANH.find(c => c.id === id)?.kho ?? [`Kho ${ten.replace(/^Phố Mây /, '')}`]
   const kho = (id: string, ten: string) => free ? khoCua(id, ten)[0] : khoCua(id, ten).join(', ')
   const rows: Row[] = useMemo(() => [
-    ...(coSan ? CHI_NHANH.map(c => ({ ma: c.id.toUpperCase(), posId: c.posId, ten: c.ten, kv: 'TP.HCM', kho: kho(c.id, c.ten), nguon: 'FABi' })) : []),
-    ...them.map((c, i) => ({ ma: c.id.toUpperCase(), posId: `2000${i + 1}`, ten: c.ten, kv: c.khuVuc, kho: kho(c.id, c.ten), nguon: 'FABi', moi: !c.banDau })),
+    ...(coSan ? CHI_NHANH.map(c => ({ id: c.id, ma: c.id.toUpperCase(), posId: c.posId, ten: c.ten, kv: 'TP.HCM', kho: kho(c.id, c.ten), nguon: 'FABi' })) : []),
+    ...them.map((c, i) => ({ id: c.id, ma: c.id.toUpperCase(), posId: `2000${i + 1}`, ten: c.ten, kv: c.khuVuc, kho: kho(c.id, c.ten), nguon: 'FABi', moi: !c.banDau })),
   ], [coSan, them, free])   // eslint-disable-line react-hooks/exhaustive-deps
 
   const colsGoc: Col[] = useMemo(() => [
@@ -42,7 +46,12 @@ export function DanhMucChiNhanh({ sc, mod }: ScreenProps) {
     { k: 'kv', t: 'Khu vực', cls: 'dim' },
     { k: 'kho', t: 'Kho', cls: 'dim', r: r => <>{r.kho}{free && <span className="chip" style={{ marginLeft: 8 }}>Mặc định</span>}</> },
     { k: 'nguon', t: 'Nguồn', cls: 'dim' },
-  ], [free])
+    // Gói Free: mỗi chi nhánh chọn cách tính chi phí NVL (T232)
+    ...(s.goi === 'F' ? [{ k: 'cachNvl', t: 'Cách tính chi phí NVL', w: 250, r: (r: Row) => (
+      <Select className="inp dmcn-nvl" value={cachNvlHienTai(s, String(r.id))} ds={DS_CACH_NVL} aria-label={`Cách tính chi phí NVL ${r.ten}`}
+        onChange={e => { const cach = e.target.value as CachNvl; if (cach !== cachNvlHienTai(s, String(r.id))) setDoiNvl({ cn: String(r.id), ten: String(r.ten), cach }) }} />
+    ) }] : []),
+  ], [free, s])   // eslint-disable-line react-hooks/exhaustive-deps
 
   const cot = useCotDs('/danh-muc/chi-nhanh', colsGoc, COT_CO_DINH)
   // Phân trang như danh mục khác: mặc định 50 dòng/trang (T153)
@@ -74,13 +83,25 @@ export function DanhMucChiNhanh({ sc, mod }: ScreenProps) {
         </button>
         <button type="button" className="btn pri" onClick={() => setMo(true)}><Icon n="plus" className="ic sm" />Thêm chi nhánh từ FABi</button>
       </PageHead>
-      {s.goi === 'F' && <Note icon="info">Gói Free: mỗi chi nhánh tự có một kho mặc định theo iPOS Inventory, không cần khai báo kho.</Note>}
+      {s.goi === 'F' && <Note icon="info">Gói Free: mỗi chi nhánh tự có một kho mặc định theo iPOS Inventory, không cần khai báo kho.
+        Cột Cách tính chi phí NVL quyết định số Chi phí NVL trên trang chủ và Báo cáo kết quả kinh doanh của chi nhánh.</Note>}
       <section className="card dm-bang">
         <Table cols={cot.colsHien} doRong={cot.doRong} rows={rowsTrang} />
         <PhanTrang tong={rows.length} trang={trangHt} coTrang={coTrang} dsCoTrang={CO_TRANG_DM}
           onTrang={setTrang} onCoTrang={ct => { setCoTrang(ct); setTrang(1) }} />
       </section>
       {mo && <HopThemChiNhanh onDong={() => setMo(false)} onLenSo={lenSo} />}
+      {doiNvl && (
+        <HopXacNhan tieuDe="Đổi cách tính chi phí NVL" nut="Đồng ý" onDong={() => setDoiNvl(null)} onDongY={() => {
+          set(datCachNvl(s, doiNvl.cn, doiNvl.cach))
+          setDoiNvl(null)
+          toast(`Đã đổi cách tính chi phí NVL của ${doiNvl.ten}`)
+        }}>
+          {doiNvl.ten} tính chi phí NVL {CACH_NVL[doiNvl.cach].theo}: {CACH_NVL[doiNvl.cach].mota[0].toLowerCase() + CACH_NVL[doiNvl.cach].mota.slice(1)}.
+          Tính lại từ tháng {tenKy(kyDauChuaKhoa())}, tháng đầu chưa khoá sổ. Các tháng đã khoá sổ giữ nguyên số.
+          {doiNvl.cach === 'tay' ? ' Nhập giá thành món ở màn Chi phí NVL, món chưa có giá thành tính bằng 0.' : ''}
+        </HopXacNhan>
+      )}
     </div>
   )
 }

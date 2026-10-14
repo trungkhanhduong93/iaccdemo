@@ -7,9 +7,11 @@ import { chiNhanhHienTai, useSession } from '../../app/session'
 import { CHI_NHANH, LY_CHI_PHI } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
 import { moneyD, pct } from '../../ui/format'
+import { useMoTuTrangChu } from '../../app/tuTrangChu'
 import { tinhToanTongQuan } from './chiSo'
 
 export function ChiPhiThang(_: ScreenProps) {
+  const moTuTrangChu = useMoTuTrangChu()   // liên kết trong màn mở kèm nút về Trang chủ (T232)
   const { s } = useSession()
   const [tham] = useSearchParams()
   const thang = Math.min(10, Math.max(7, Number(tham.get('thang')) || 10))
@@ -25,7 +27,7 @@ export function ChiPhiThang(_: ScreenProps) {
   ].filter(x => x.v !== 0 && LY_CHI_PHI.includes(x.ly)).sort((a, b) => b.v - a.v)   // chỉ lý do được tích là chi phí (T231)
 
   return (
-    <div className="page">
+    <div className="page" onClickCapture={moTuTrangChu}>
       <div className="cpt-dau">
         <Link to="/app/trang-chu/tong-quan" className="cpt-ve" title="Về Tổng quan" aria-label="Về Tổng quan"><Icon n="chevl" /></Link>
         <h1>Chi phí trong tháng {thang}/2026</h1>

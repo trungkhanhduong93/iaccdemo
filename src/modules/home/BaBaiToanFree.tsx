@@ -14,6 +14,9 @@ import { tonQuyTheoSo } from './LichSuQuy'
 import { rowsCongNo } from '../bao-cao/cong-no'
 import { datLocDaXem } from '../../ui/bao-cao/tuyChinhBC'
 import type { TongQuanSoLieu } from './chiSo'
+import { useSession } from '../../app/session'
+import { moTaCach, nvlKy } from './chi-phi-nvl'
+import { useMoTuTrangChu } from '../../app/tuTrangChu'
 
 function Cot({ so, icon, ten, hoi, tra, traCls, phu, di, nut, children }: {
   so: number; icon: string; ten: string; hoi: string; tra?: string; traCls?: string; phu: string; di?: string; nut?: string; children?: ReactNode
@@ -32,7 +35,7 @@ function Cot({ so, icon, ten, hoi, tra, traCls, phu, di, nut, children }: {
 
 /** Báo cáo lãi lỗ tháng dạng thẻ xếp dọc (T230, học bố cục ảnh PhuongXT gửi, màu theo IACC): thẻ doanh thu, ba thẻ chi phí
  *  (tên, dòng giải thích, số tiền, % trên doanh thu), thẻ lợi nhuận; lỗ thì thẻ lợi nhuận đỏ */
-function TheLaiLo({ thang, dt, nvl, cpThang, phanBo, chiLon }: { thang: number; dt: number; nvl: number; cpThang: number; phanBo: number; chiLon?: string }) {
+function TheLaiLo({ thang, dt, nvl, nvlTheo, cpThang, phanBo, chiLon }: { thang: number; dt: number; nvl: number; nvlTheo: string; cpThang: number; phanBo: number; chiLon?: string }) {
   const ln = dt - nvl - cpThang - phanBo
   const tyLe = (v: number) => pct(dt > 0 ? v / dt : 0)
   // Thẻ chi phí; có di thì bấm mở màn chi tiết: chi phí trong tháng sang màn tổng theo lý do chi, phân bổ sang danh sách phân bổ (T230)
@@ -51,7 +54,7 @@ function TheLaiLo({ thang, dt, nvl, cpThang, phanBo, chiLon }: { thang: number; 
         <div className="tll-trai"><b>Doanh thu</b></div>
         <div className="tll-phai"><b>{moneyD(dt)}</b></div>
       </div>
-      {the('Chi phí nguyên vật liệu', 'Giá vốn món bán theo định lượng', nvl)}
+      {the('Chi phí nguyên vật liệu', nvlTheo, nvl, `/app/trang-chu/chi-phi-nvl?thang=${thang}`)}
       {the('Chi phí trong tháng', chiLon ?? 'Lương, mặt bằng, điện nước, chi khác', cpThang, `/app/trang-chu/chi-phi-thang?thang=${thang}`)}
       {the('Chi phí phân bổ hàng tháng', 'Phân bổ công cụ dụng cụ, khấu hao', phanBo, '/app/ccdc/8-1-1')}
       <div className={`tll-the ${ln >= 0 ? 'lai' : 'lo'}`}>
@@ -109,8 +112,12 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
   const tenCn = useMemo(() => new Set(CHI_NHANH.filter(c => selCns.includes(c.id)).map(c => c.ten)), [selCns])
 
   // 1. Lãi lỗ: chi phí trong tháng không gồm phân bổ; lợi nhuận bỏ thu nhập, chi phí khác (T220)
+  // Chi phí NVL theo cách tính từng chi nhánh (T232), thay giá vốn món bán
+  const { s } = useSession()
+  const moTuTrangChu = useMoTuTrangChu()
+  const nvl = nvlKy(s, selCns, thangXem)
   const cpThang = d.cpHoatDong - d.cpPhanBo
-  const loiNhuan = d.lnGop - cpThang - d.cpPhanBo
+  const loiNhuan = d.dtThuan - nvl.tien - cpThang - d.cpPhanBo
   const bien = d.dtThuan > 0 ? loiNhuan / d.dtThuan : 0
 
   // 2. Thu chi: số dư, thu, chi cộng từ Sổ quỹ tiền mặt, Sổ ngân hàng như khối Tồn quỹ, Lịch sử thu chi (T230)
@@ -135,7 +142,7 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
   }, [selCns, tenCn, thang, thangXem])
 
   return (
-    <div className="bbt">
+    <div className="bbt" onClickCapture={moTuTrangChu}>
       <div className="bbt-dau">
         <span>IACC Free giúp bạn nắm 3 việc: <b>quán lãi hay lỗ</b>, <b>quản lý thu chi</b>, <b>công nợ, hao hụt</b>. Số liệu tháng {thangXem}/2026.</span>
         {chonKy}
@@ -151,7 +158,7 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
       </div>
       {/* Biểu đồ dưới từng bài toán: lãi lỗ, thu chi, kho (T230) */}
       <div className="bbt-luoi bbt-bd">
-        <TheLaiLo thang={thangXem} dt={d.dtThuan} nvl={d.gv} cpThang={cpThang} phanBo={d.cpPhanBo} chiLon={chiLon ? `Nhiều nhất: ${chiLon.l} ${short(chiLon.v)}` : undefined} />
+        <TheLaiLo thang={thangXem} dt={d.dtThuan} nvl={nvl.tien} nvlTheo={moTaCach(nvl.ds)} cpThang={cpThang} phanBo={d.cpPhanBo} chiLon={chiLon ? `Nhiều nhất: ${chiLon.l} ${short(chiLon.v)}` : undefined} />
         <TheTonQuy thang={thangXem} ds={quy} />
         <TheKho thang={thangXem} nhapMua={kho.nhapMua} soDon={kho.soDon} congNo={kho.congNo} soNcc={kho.soNcc} soPhieuHH={kho.soPhieuHH} matHH={kho.matHH} />
       </div>

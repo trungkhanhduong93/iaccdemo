@@ -1,0 +1,102 @@
+// Cách tính chi phí NVL gói Free theo từng chi nhánh (T232), chọn ở Danh mục chi nhánh:
+// - ivt: giá thành món trên iPOS Inventory (giá vốn món bán theo định lượng, như trước)
+// - tay: món bán trong kỳ × giá thành người dùng tự nhập ở màn Chi phí NVL
+// - nhap: tổng tiền phiếu nhập mua (4.1.1) trong tháng, gồm cả thuế GTGT (PhuongXT chốt 14/10/2026)
+// Đổi cách tính chỉ áp dụng từ tháng đầu chưa khoá sổ; tháng đã khoá giữ cách cũ.
+import type { Session } from '../../app/session'
+import { CHI_NHANH, HANG, KHOA_SO_DEN, tongKy } from '../../data/mock'
+import { between, rng } from '../../ui/format'
+import { chungTu } from '../../ui/generic/gen'
+import { PHIEU_MUA } from '../mua-hang/bao-cao'
+
+export type CachNvl = 'ivt' | 'tay' | 'nhap'
+/** Một lần đặt cách tính: áp dụng từ kỳ tu (yyyymm) cho tới lần đặt sau */
+export interface LichCachNvl { tu: number; cach: CachNvl }
+
+export const CACH_NVL: Record<CachNvl, { ten: string; theo: string; mota: string }> = {
+  ivt: { ten: 'Giá thành iPOS Inventory', theo: 'theo giá thành iPOS Inventory', mota: 'Số lượng món bán × giá thành món trên iPOS Inventory' },
+  tay: { ten: 'Giá thành nhập tay', theo: 'theo giá thành nhập tay', mota: 'Số lượng món bán × giá thành tự nhập cho từng món' },
+  nhap: { ten: 'Tổng chi phí NVL trong tháng', theo: 'theo phiếu nhập mua', mota: 'Tổng tiền phiếu nhập mua hàng hoá trong tháng, gồm thuế GTGT' },
+}
+export const DS_CACH_NVL = (Object.keys(CACH_NVL) as CachNvl[]).map(v => ({ v, t: CACH_NVL[v].ten }))
+
+const NAM = 2026
+const kySo = (thang: number, nam = NAM) => nam * 100 + thang
+/** Kỳ đầu tiên chưa khoá sổ (yyyymm): đổi cách tính áp dụng từ kỳ này */
+export const kyDauChuaKhoa = () => KHOA_SO_DEN.thang === 12 ? kySo(1, KHOA_SO_DEN.nam + 1) : kySo(KHOA_SO_DEN.thang + 1, KHOA_SO_DEN.nam)
+export const daKhoaThang = (thang: number, nam = NAM) => kySo(thang, nam) < kyDauChuaKhoa()
+export const tenKy = (ky: number) => `${ky % 100}/${Math.floor(ky / 100)}`
+
+type SNvl = Pick<Session, 'donVi' | 'cachNvl' | 'giaThanhTay'>
+
+/** Cách tính của chi nhánh ở một tháng; chưa đặt thì theo iPOS Inventory */
+export function cachNvlCua(s: SNvl, cn: string, thang: number, nam = NAM): CachNvl {
+  const ky = kySo(thang, nam)
+  const lich = s.cachNvl?.[s.donVi]?.[cn] ?? []
+  return [...lich].filter(x => x.tu <= ky).sort((a, b) => b.tu - a.tu)[0]?.cach ?? 'ivt'
+}
+/** Cách tính hiện tại của chi nhánh, tức cách áp dụng cho kỳ đầu chưa khoá sổ */
+export const cachNvlHienTai = (s: SNvl, cn: string) => { const ky = kyDauChuaKhoa(); return cachNvlCua(s, cn, ky % 100, Math.floor(ky / 100)) }
+
+/** Đặt cách tính mới cho chi nhánh từ kỳ đầu chưa khoá sổ; các lần đặt từ kỳ đó trở đi bị thay */
+export function datCachNvl(s: SNvl, cn: string, cach: CachNvl): Pick<Session, 'cachNvl'> {
+  const tu = kyDauChuaKhoa()
+  const cu = (s.cachNvl?.[s.donVi]?.[cn] ?? []).filter(x => x.tu < tu)
+  return { cachNvl: { ...s.cachNvl, [s.donVi]: { ...s.cachNvl?.[s.donVi], [cn]: [...cu, { tu, cach }] } } }
+}
+
+/** Món bán trong tháng của chi nhánh: số lượng từng món theo tỷ trọng ngẫu nhiên cố định, sao cho số lượng × giá bán cộng lại bằng doanh thu tháng */
+export function monBanKy(cn: string, thang: number, nam = NAM) {
+  const dt = tongKy(thang, nam, cn).dt
+  const r = rng(`mon-ban-${cn}-${nam}-${thang}`)
+  const ty = HANG.map(() => between(r, 0.4, 1.6))
+  const tong = HANG.reduce((a, h, i) => a + ty[i] * h.gia, 0)
+  return HANG.map((h, i) => ({ ma: h.ma, ten: h.ten, dvt: h.dvt, sl: Math.round(dt * ty[i] / tong) })).filter(m => m.sl > 0)
+}
+
+const khoaGia = (cn: string, thang: number, ma: string, nam = NAM) => `${cn}-${kySo(thang, nam)}-${ma}`
+export const giaThanhTayCua = (s: SNvl, cn: string, thang: number, ma: string) => s.giaThanhTay?.[s.donVi]?.[khoaGia(cn, thang, ma)]
+export function datGiaThanhTay(s: SNvl, cn: string, thang: number, ma: string, gia: number | undefined): Pick<Session, 'giaThanhTay'> {
+  const cu = { ...s.giaThanhTay?.[s.donVi] }
+  if (gia === undefined) delete cu[khoaGia(cn, thang, ma)]
+  else cu[khoaGia(cn, thang, ma)] = gia
+  return { giaThanhTay: { ...s.giaThanhTay, [s.donVi]: cu } }
+}
+
+/** Phiếu nhập mua trong tháng của chi nhánh (theo tên chi nhánh như danh sách phiếu mua) */
+export function phieuMuaKy(cn: string, thang: number) {
+  const ten = CHI_NHANH.find(c => c.id === cn)?.ten
+  return chungTu(PHIEU_MUA, '4.1.1').filter(r => Number(r.thang) === thang && r.cn === ten)
+}
+
+export interface NvlCn { cn: string; ten: string; cach: CachNvl; tien: number; dt: number; thieuGia: number }
+
+/** Chi phí NVL một chi nhánh trong tháng theo cách tính của chi nhánh ở tháng đó */
+export function nvlChiNhanh(s: SNvl, cn: string, thang: number): NvlCn {
+  const cach = cachNvlCua(s, cn, thang)
+  const t = tongKy(thang, NAM, cn)
+  let tien = t.gv, thieuGia = 0
+  if (cach === 'tay') {
+    const mon = monBanKy(cn, thang)
+    tien = mon.reduce((a, m) => a + m.sl * (giaThanhTayCua(s, cn, thang, m.ma) ?? 0), 0)
+    thieuGia = mon.filter(m => giaThanhTayCua(s, cn, thang, m.ma) === undefined).length
+  } else if (cach === 'nhap') {
+    tien = phieuMuaKy(cn, thang).reduce((a, r) => a + (Number(r.tong) || 0), 0)
+  }
+  return { cn, ten: CHI_NHANH.find(c => c.id === cn)?.ten ?? cn, cach, tien, dt: t.dt, thieuGia }
+}
+
+/** Chi phí NVL cộng các chi nhánh, mỗi chi nhánh theo cách riêng; cns rỗng là mọi chi nhánh */
+export function nvlKy(s: SNvl, cns: string[], thang: number) {
+  const ds = (cns.length ? cns : CHI_NHANH.map(c => c.id)).map(cn => nvlChiNhanh(s, cn, thang))
+  const cach = [...new Set(ds.map(x => x.cach))]
+  return { tien: ds.reduce((a, x) => a + x.tien, 0), ds, cach: cach.length === 1 ? cach[0] : undefined as CachNvl | undefined }
+}
+
+/** Dòng phụ dưới Chi phí NVL: tính theo cách nào; nhiều cách thì đếm chi nhánh mỗi cách */
+export function moTaCach(ds: NvlCn[]) {
+  const dem = new Map<CachNvl, number>()
+  ds.forEach(x => dem.set(x.cach, (dem.get(x.cach) ?? 0) + 1))
+  if (dem.size === 1) { const t = CACH_NVL[ds[0].cach].theo; return t[0].toUpperCase() + t.slice(1) }
+  return [...dem].map(([c, n]) => `${n} chi nhánh ${CACH_NVL[c].theo}`).join(', ')
+}

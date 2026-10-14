@@ -4,6 +4,7 @@ import type { Goi } from './plan'
 import { CHE_DO, CHE_DO_HOP_LE, CHE_DO_MAC_DINH, chuanHoaCheDo, type CheDo } from './che-do'
 import { CHI_NHANH, DON_VI, HOM_NAY, type DonVi, type Role } from '../data/mock'
 import { dmy } from '../ui/format'
+import type { LichCachNvl } from '../modules/home/chi-phi-nvl'
 
 export type PpGtgt = 'tyLe' | 'khauTru'
 export type PpTndn = 'tyLe' | 'thuNhap'
@@ -38,6 +39,8 @@ export interface Session {
   ttDv?: Record<string, TtDonVi>   // thông tin kê khai từng đơn vị (T145)
   cnThem?: Record<string, CnThem[]>   // chi nhánh lên sổ thêm từ cửa hàng FABi theo từng đơn vị (T142)
   dongBoFabi?: 'chiTiet' | 'kenh'   // cách đồng bộ bán hàng FABi (T113): mỗi hoá đơn một chứng từ, hoặc tổng hợp theo kênh mỗi ngày; thiếu là theo kênh
+  cachNvl?: Record<string, Record<string, LichCachNvl[]>>   // cách tính chi phí NVL gói Free theo đơn vị, chi nhánh; mỗi lần đổi áp dụng từ kỳ đầu chưa khoá sổ (T232)
+  giaThanhTay?: Record<string, Record<string, number>>   // giá thành món nhập tay theo đơn vị; khoá chi nhánh-yyyymm-mã món (T232)
 }
 
 /** Đổi mã gói cũ ('M', 'A') sang mã chuẩn ('PL', 'PR'), nhận cả mã cũ và mới */

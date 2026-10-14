@@ -16437,3 +16437,19 @@ a.lsq-dong:hover { background: var(--tint); }
   padding: 0;
   height: auto;
 }
+
+/* ── Cách tính chi phí NVL theo chi nhánh, màn Chi phí NVL gói Free (T232) ── */
+.dmcn-nvl { min-width: 220px; }
+.nvl-thang { width: 170px; }
+.cpt-tong .nvl-phu { display: block; margin-top: 2px; font-size: 12.5px; color: var(--muted); }
+.nvl-bang { padding: 14px 16px; display: flex; flex-direction: column; gap: 12px; }
+.nvl-cach { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: var(--body); font-size: 13.5px; }
+.nvl-chip { margin-left: 8px; }
+.nvl-chan { font-size: 13px; color: var(--muted); }
+.nvl-gia { width: 100%; text-align: right; font-variant-numeric: tabular-nums; }
+.nvl-gia.thieu { background: var(--amber-t); border-color: var(--amber); }
+.mtabs.co-ve { display: flex; align-items: stretch; }
+.mtabs.co-ve .mtabs-in { flex: 1; }
+.mtabs-ve { display: inline-flex; align-items: center; gap: 4px; flex: none; padding: 0 12px 0 4px; margin-right: 6px; border-right: 1px solid var(--line); color: var(--blue); font-size: 14px; white-space: nowrap; }
+.mtabs-ve:hover { color: var(--blue-d); }
+.bc-ve-tc { color: var(--blue); }
