@@ -4,13 +4,14 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T243.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T244.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T244 | Báo cáo kiểm kê: cột Mã hàng, Tên hàng, ĐVT, Kho, Số lượng chia hai cột Thừa, Thiếu (lấy từ phiếu kiểm kê trong kỳ) | PhuongXT | Đang làm | Sửa `src/modules/kho/bao-cao.ts`, `kho/index.ts`, `bao-cao/danh-sach.ts` |
 | T240 | Điện thoại gói Free: trang chủ giống trang chủ Free bản web (ba bài toán của T230), kèm bản điện thoại của Chi phí trong tháng, Lịch sử thu chi (T234) | Trum | Đang làm | Sửa `src/ui/mobile/MTrangChu.tsx` (nhánh Free), file mới trong `src/ui/mobile/`, `manMobile.ts`, `app.css` (mục cuối T240), `tools/kiem_tra.py`. Chỉ đọc `home/BaBaiToanFree.tsx`, `home/chiSo.ts` (T232 đang sửa) |
 | T241 | Điện thoại: báo cáo còn hiện kiểu web (mẫu giấy qua `MToGiay`, màn rơi về `MChiMayTinh`) chuyển sang dạng dòng điện thoại, có nút Xem mẫu in | Trum | Đang làm | Sửa `src/ui/mobile/MToGiay.tsx`, `MSoBaoCao.tsx`, `manMobile.ts`, `app.css` (mục cuối T241), `tools/kiem_tra.py`. Làm sau T240 |
 | T234 | Điện thoại: hai màn mới Chi phí trong tháng (`trang-chu/chi-phi-thang`), Lịch sử thu chi (`trang-chu/lich-su-quy`) của T230, T231 chưa có bản điện thoại, `kiem_tra.py --dien-thoai` báo lỗi ở bước duyệt `manMobile` | Trum | Đang làm | Làm cùng T240 Phát hiện khi kiểm T233 ngày 14/10/2026 |
