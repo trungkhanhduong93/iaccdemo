@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T211 | Xuất nhập tồn: bấm mã hoặc tên hàng hoá mở Thẻ kho của hàng đó (cùng kho, kỳ); mở Thẻ kho 5.2.1 cho gói Free (PhuongXT chốt 14/10/2026) | PhuongXT | Đang làm | Sửa `src/app/plan.ts` (`THEO_ROADMAP`), `XuatNhapTon.tsx` |
 | T207 | Bộ lọc báo cáo mua hàng, bán hàng, kho: thêm Kho, Hàng hoá, Nhóm hàng hoá; mua hàng, bán hàng thêm Đối tượng (bán hàng không lọc kho vì đơn POS không ghi kho). Lọc trên từng phiếu, dòng hàng trước khi cộng | PhuongXT | Đang làm | Sửa `ReportScreen.tsx`, `bao-cao/danh-sach.ts`, `bao-cao.ts` của mua-hang, ban-hang, kho, `XuatNhapTon.tsx`; file mới `bao-cao/loc-nguon.ts` |
 | T206 | Báo cáo xuất nhập tồn: ô lọc Kho trên thanh công cụ báo cáo để nhãn cùng hàng với ô chọn, không xuống dòng | PhuongXT | Đang làm | Sửa `src/styles/app.css` (mục mới cuối file) |
 | T205 | Báo cáo Mua hàng theo ngày (4.2.6): bỏ cột Đã thanh toán, Còn nợ | PhuongXT | Đang làm | Sửa `src/modules/mua-hang/bao-cao.ts` |
