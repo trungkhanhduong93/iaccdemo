@@ -625,3 +625,5 @@ Lý do: Trum chốt ngày 13/10/2026 (T180). Khách hàng dùng gói Free, Stand
 Lý do: Trum duyệt ngày 14/10/2026 (T222). Trang chủ giống IVT, đầu trang dành cho số liệu. Kéo thả thiết kế mẫu in trên màn 390px không dùng được.
 
 ## QD58. Cách tính chi phí NVL theo chi nhánh (đang soạn)
+
+## QD59. Bộ lọc báo cáo theo kiểu danh sách chứng từ (đang soạn)
