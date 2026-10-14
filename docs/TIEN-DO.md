@@ -4,7 +4,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T242.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T243.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
@@ -41,6 +41,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | T19 | Khoá sổ theo từng đơn vị, chi nhánh | | Chờ | DB iPOS lưu ngày khoá ở `DM_ORGANIZATION.DATE_LOCK`, màn Khoá sổ đang khoá chung |
 | T20 | Cột trạng thái duyệt trong danh sách chứng từ, tách khỏi ghi sổ | | Chờ | DB iPOS có `REVIEW_STATUS` CHECKED/UNCHECKED riêng với `STATUS` DRAFT/POSTED |
 | T242 | Điện thoại: màn Chi phí NVL (`trang-chu/chi-phi-nvl`, T232) chưa có bản điện thoại, cùng lỗi với T234 | | Chờ | Phát hiện khi làm T232 ngày 14/10/2026. Bản máy tính ở `src/modules/home/ChiPhiNvl.tsx`, số liệu ở `chi-phi-nvl.ts` |
+| T243 | `tools/kiem_tra.py` (bước T238) lưu ảnh chụp vào đường dẫn cố định `C:/Users/trung.duong/.gemini/...`, máy khác chạy `--nhanh` báo PermissionError, dừng giữa chừng. Đổi sang thư mục tạm hoặc bỏ chụp | | Chờ | Phát hiện khi PhuongXT kiểm T232 ngày 14/10/2026; đã kiểm bằng bản sao tạm đổi đường dẫn, không lỗi |
 
 ## Đã xong
 
