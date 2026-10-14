@@ -654,3 +654,12 @@ Lý do: Trum duyệt ngày 14/10/2026 (T237). Hai loại màn cùng một kiểu
 - Tờ in, bản in, xuất file, giao diện điện thoại giữ nguyên.
 
 Lý do: Trum duyệt ngày 14/10/2026 (T238).
+
+## QD61. Gói Free khai số dư ban đầu quỹ ở Danh mục Quỹ tiền (14/10/2026)
+
+- Gói Free không còn màn Số dư ban đầu riêng ở Thu chi. Số dư ban đầu từng quỹ khai ở Danh mục Quỹ tiền: cột Số dư ban đầu, ô cùng tên trong form thêm, sửa quỹ.
+- Đường dẫn cũ (`tien/so-du-ban-dau`, sơ đồ quy trình, khai số dư sau khi thêm chi nhánh từ FABi) chuyển sang Danh mục Quỹ tiền.
+- Gói khác vẫn khai số dư ở Tổng hợp 10.1.3.
+
+Lý do: PhuongXT chốt ngày 14/10/2026 (T245). Gói Free chỉ khai số dư tiền, khai ngay lúc tạo quỹ gọn hơn mở màn riêng.
+

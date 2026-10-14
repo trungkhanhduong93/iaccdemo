@@ -4,6 +4,9 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 14/10/2026
 
+- T246: Chi phí trong tháng ghi rõ chỉ gồm khoản chi có lý do nghiệp vụ là chi phí. Phiếu chi có nhãn Chi phí cạnh ô Lý do chi khi lý do được tích Là chi phí. Lịch sử thu chi lọc được Khoản thu, Khoản chi.
+- T245: Gói Free: số dư ban đầu quỹ khai ngay ở Danh mục Quỹ tiền, bỏ tab Số dư ban đầu ở Thu chi. Trang chủ cột Thu chi có nút Tạo quỹ và gợi ý bấm quỹ để xem lịch sử thu chi.
+- T244: Báo cáo kiểm kê mới: số lượng thừa, thiếu theo mặt hàng và kho. Thẻ Hao hụt kiểm kê ở trang chủ mở báo cáo này. Ô lọc Kho, Hàng hoá trên thanh lọc báo cáo hết lệch chữ.
 - T239: Danh sách chứng từ, Xuất bán POS, phiếu sản xuất: cột Tổng tiền đứng yên bên phải khi cuộn ngang.
 - T232: Gói Free: chọn cách tính chi phí NVL cho từng chi nhánh ở Danh mục chi nhánh (giá thành iPOS Inventory cộng NVL tiêu hao, giá thành nhập tay, tổng phiếu nhập mua). Màn mới Chi phí NVL mở từ trang chủ và Báo cáo kết quả kinh doanh; giá thành nhập tay gõ trên bảng hoặc nhập Excel. Màn mở từ trang chủ có nút Trang chủ và nút Xuất Excel. Trang chủ cột Thu chi hỏi Tồn quỹ hiện tại hoặc cuối tháng.
 - T238: Báo cáo xem dạng Bảng dữ liệu chia trang, mặc định 100 dòng mỗi trang, chọn được 100, 200, 500. Dòng tổng cuối báo cáo hiện ở mọi trang.
