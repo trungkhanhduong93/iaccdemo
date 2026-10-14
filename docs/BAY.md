@@ -48,3 +48,10 @@ Lỗi đã từng làm mất thời gian, kèm cách tránh. Đọc trước khi
 - Hiện tượng: Chi tiết bán hàng tháng 9/2026 mở mất 6,64 giây, DOM có 4.862 thẻ `tr` cho 2.430 dòng.
 - Nguyên nhân: `src/ui/bao-cao/ToGiay.tsx` vẽ tờ liền trên màn hình và thêm khung đo ẩn `bc-do` để chia trang in, cả hai đều đủ mọi dòng.
 - Cách tránh: báo cáo có thể quá vài trăm dòng thì khai `phanTrang` trong `CAU_HINH_BC`; tờ xem chỉ vẽ trang đang xem, khung đo chỉ vẽ khi in.
+
+## Mở báo cáo kèm kỳ khác tháng 9 thì trang trắng, "Maximum update depth exceeded" (T230)
+
+- Hiện tượng: bấm liên kết mở báo cáo kèm bộ lọc, kỳ (`datLocDaXem`) với kỳ tháng 10 thì trang trắng; console báo vòng lặp cập nhật ở `src/ui/virtual.ts`. Kỳ tháng 9 thì chạy bình thường.
+- Nguyên nhân: trang báo cáo khởi tạo kỳ mặc định '9' (`useState('9')`), `ReportToolbar` gọi `datKyMacDinh` ghi đè kỳ đã xem về 9, đoạn đồng bộ lại đặt kỳ theo kỳ đã xem là 10. Hai bên giành kỳ 9 ↔ 10 mãi.
+- Cách tránh: `datLocDaXem` đánh dấu `kyDatSan`, `datKyMacDinh` bỏ qua khi có dấu này (`src/ui/bao-cao/tuyChinhBC.ts`). Thử liên kết mở báo cáo với cả kỳ khác tháng 9.
+- Lưu ý khi thử bằng console: sau khi sửa file, ứng dụng dùng bản nạp nóng `?t=...`, còn `import('/src/...')` trong console nạp bản khác, hai bên không chung kho trạng thái. Lấy đúng URL có `?t=` trong `performance.getEntriesByType('resource')` rồi mới thử.

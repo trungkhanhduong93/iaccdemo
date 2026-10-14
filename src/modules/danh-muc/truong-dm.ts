@@ -675,6 +675,8 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
           // cùng chữ với danh sách lý do (LY_DO); gói Free chỉ lý do thu, chi (T144)
           { k: 'dung', nhan: 'Dùng cho nghiệp vụ', kieu: 'chon', ds: ['Thu tiền', 'Chi tiền'], batBuoc: true, goi: ['F'] },
           { k: 'dung', nhan: 'Dùng cho nghiệp vụ', kieu: 'chon', ds: ['Thu tiền', 'Chi tiền', 'Nhập kho', 'Xuất kho'], batBuoc: true, goi: ['S', 'PL', 'PR'] },
+          // Lý do chi tiền là chi phí thì báo cáo chi phí lấy lên (T231)
+          { k: 'chiPhi', nhan: 'Là chi phí', kieu: 'tich', caHang: true, hien: v => v.dung === 'Chi tiền' },
         ],
       },
       {

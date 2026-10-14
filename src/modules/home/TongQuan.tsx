@@ -2,7 +2,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import type { ScreenProps } from '../types'
-import { useSession } from '../../app/session'
+import { chiNhanhHienTai, useSession } from '../../app/session'
 import { coTrongGoi, minGoi } from '../../app/plan'
 import { MODULES, hienMan } from '../../app/registry'
 import { CHI_NHANH, HOM_NAY } from '../../data/mock'
@@ -29,12 +29,16 @@ import {
   resetBlocks,
   tinhToanTongQuan,
 } from './chiSo'
+import { BaBaiToanFree } from './BaBaiToanFree'
 
 export function TongQuan({ sc }: ScreenProps) {
   const { s } = useSession()
 
   // 1. Toàn bộ hook khai báo trước
   const [ky, setKy] = useState<KyBaoCao>('thang-nay')
+  // Gói Free chọn năm rồi tháng (T230); dữ liệu có từ tháng 7/2026, đơn vị bắt đầu dùng từ 01/07/2026
+  const [namF, setNamF] = useState(2026)
+  const [thangF, setThangF] = useState(10)
   const [soSanh] = useState<SoSanhKieu>('ky-truoc')
   const [selCns, setSelCns] = useState<string[]>(CHI_NHANH.map(c => c.id))
   const [moCnPop, setMoCnPop] = useState(false)
@@ -54,8 +58,12 @@ export function TongQuan({ sc }: ScreenProps) {
   }, [moCnPop])
 
   // 2. Tính toán số liệu tổng quan
-  const d = tinhToanTongQuan(ky, selCns, s.cheDo)
   const isFree = s.goi === 'F'
+  // Gói Free không có ô chọn chi nhánh riêng của trang, xem theo chi nhánh trên thanh trên (T230)
+  const cnTren = chiNhanhHienTai(s)
+  const cnsXem = isFree ? (cnTren ? [cnTren.id] : CHI_NHANH.map(c => c.id)) : selCns
+  const kyXem: KyBaoCao = isFree ? (thangF === 10 ? 'thang-nay' : 'thang-truoc') : ky
+  const d = tinhToanTongQuan(kyXem, cnsXem, s.cheDo, isFree ? thangF : undefined)
   const canhBao = coTrongGoi('11.6', s.goi)
 
   // Kiểm tra liên kết báo cáo theo gói và chế độ hiện tại (QD45)
@@ -482,12 +490,42 @@ export function TongQuan({ sc }: ScreenProps) {
     }
   }
 
+  // Gói Free: chọn năm rồi tháng (T230)
+  const chonThangFree = (
+    <div className="bbt-chon">
+      <Select className="sel-mini" style={{ height: 34, minWidth: 96 }} value={String(namF)} aria-label="Năm"
+        onChange={e => setNamF(Number(e.target.value))}>
+        <option value="2026">Năm 2026</option>
+      </Select>
+      <Select className="sel-mini" style={{ height: 34, minWidth: 150 }} value={String(thangF)} aria-label="Tháng"
+        onChange={e => setThangF(Number(e.target.value))}>
+        {[10, 9, 8, 7].map(t => <option key={t} value={t}>Tháng {t}</option>)}
+      </Select>
+    </div>
+  )
+
+  const chonKy = (
+    <Select
+      className="sel-mini"
+      style={{ height: 34, minWidth: 170 }}
+      value={ky}
+      onChange={e => setKy(e.target.value as KyBaoCao)}
+    >
+      <option value="thang-nay">Tháng này (đến 07/10)</option>
+      <option value="thang-truoc">Tháng trước (Tháng 9)</option>
+      <option value="quy-nay">Quý này (đến 07/10)</option>
+      <option value="tu-dau-nam">Từ đầu năm (từ 01/07/2026)</option>
+    </Select>
+  )
+
   return (
     <div className="page">
+      {/* Gói Free bỏ tiêu đề, ô chọn kỳ nằm trên khối ba bài toán (T230) */}
+      {!isFree && (
       <PageHead
         title="Tổng quan"
         code={sc.code}
-        meta={
+        meta={isFree ? undefined : (
           <div className="row" style={{ gap: 8 }}>
             <span className="chip">Cập nhật 14:20 từ FABi</span>
             {d.ghiChuCn && (
@@ -496,30 +534,22 @@ export function TongQuan({ sc }: ScreenProps) {
               </span>
             )}
           </div>
-        }
+        )}
       >
         <div className="tq-filters">
           {/* 1. Chọn Kỳ */}
-          <Select
-            className="sel-mini"
-            style={{ height: 34, minWidth: 170 }}
-            value={ky}
-            onChange={e => setKy(e.target.value as KyBaoCao)}
-          >
-            <option value="thang-nay">Tháng này (đến 07/10)</option>
-            <option value="thang-truoc">Tháng trước (Tháng 9)</option>
-            <option value="quy-nay">Quý này (đến 07/10)</option>
-            <option value="tu-dau-nam">Từ đầu năm (từ 01/07/2026)</option>
-          </Select>
+          {chonKy}
 
-          {/* 2. So với */}
+          {/* 2. So với; 3. Lọc chi nhánh: gói Free bỏ, xem theo chi nhánh trên thanh trên (T230) */}
+          {!isFree && (
           <div className="tq-so-sanh">
             <span className="tq-ss-label">So với:</span>
             <span className="tq-ss-pill">Kỳ trước</span>
             <span className="tq-ss-pill dis" title="Chưa lập kế hoạch">Kế hoạch</span>
           </div>
+          )}
 
-          {/* 3. Lọc Chi nhánh (chọn nhiều) */}
+          {!isFree && (
           <div className="tq-cn-wrap" ref={cnPopRef}>
             <button
               type="button"
@@ -555,23 +585,30 @@ export function TongQuan({ sc }: ScreenProps) {
               </div>
             )}
           </div>
+          )}
 
-          {/* 4. Nút Tuỳ chỉnh */}
-          <button
-            type="button"
-            className="btn sm ghost"
-            style={{ height: 34, gap: 6 }}
-            onClick={() => setMoTuyChinh(true)}
-          >
-            <Icon n="tool" className="ic sm" />
-            <span>Tuỳ chỉnh</span>
-          </button>
+          {/* 4. Nút Tuỳ chỉnh; gói Free chỉ có ba bài toán nên không có (T230) */}
+          {!isFree && (
+            <button
+              type="button"
+              className="btn sm ghost"
+              style={{ height: 34, gap: 6 }}
+              onClick={() => setMoTuyChinh(true)}
+            >
+              <Icon n="tool" className="ic sm" />
+              <span>Tuỳ chỉnh</span>
+            </button>
+          )}
         </div>
       </PageHead>
+      )}
 
       {/* Lưới các khối Tổng quan */}
       <div className="tq-grid-12">
-        {blocks.map(renderBlock)}
+        {isFree ? (
+          // Gói Free chỉ hiện ba bài toán lãi lỗ, thu chi, kho; các khối khác tạm ẩn, PhuongXT chốt 14/10/2026 (T230)
+          <div className="tq-col-12"><BaBaiToanFree d={d} thang={thangF} selCns={cnsXem} chonKy={chonThangFree} /></div>
+        ) : blocks.map(renderBlock)}
       </div>
 
       {/* Modal Tuỳ chỉnh hiển thị khối */}

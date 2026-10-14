@@ -136,6 +136,8 @@ export interface TongQuanSoLieu {
   thacNuoc: WaterfallItem[]
   trend: TrendItem[]
   dongTien: { dau: number; thu: number; chi: number; cuoi: number }
+  // Trang chủ gói Free tách chi phí như Báo cáo kết quả kinh doanh bản Free (T220, T230)
+  gv: number; cpHoatDong: number; cpPhanBo: number; lnKhac: number
   chiNhanh: BranchItem[]
   coCauCp: CostItem[]
   theoNgay: { l: string; v: number; v2: number }[]
@@ -163,7 +165,8 @@ function congDaily(a: Date, b: Date, cnList?: string[]) {
 export function tinhToanTongQuan(
   ky: KyBaoCao,
   selCns: string[],
-  cheDo: CheDo
+  cheDo: CheDo,
+  thangChon = 9   // tháng của kỳ 'thang-truoc': trang chủ gói Free chọn năm rồi tháng (T230), mặc định tháng 9
 ): TongQuanSoLieu {
   const isLocCn = selCns.length > 0 && selCns.length < CHI_NHANH.length
   const cns = isLocCn ? selCns : CHI_NHANH.map(c => c.id)
@@ -201,77 +204,78 @@ export function tinhToanTongQuan(
   let coSoSanh = true
 
   if (ky === 'thang-truoc') {
-    // Tháng 9/2026
-    thangCai = 9
-    soNgay = 30
-    kyLabel = 'Tháng 9/2026'
-    soSanhLabel = 'so với tháng 8'
+    // Tháng đã qua (mặc định tháng 9/2026)
+    const thangTr = thangChon - 1
+    thangCai = thangChon
+    soNgay = new Date(2026, thangChon, 0).getDate()
+    kyLabel = `Tháng ${thangChon}/2026`
+    soSanhLabel = `so với tháng ${thangTr}`
 
-    const k9 = kqkd(9, 2026)
-    const k8 = kqkd(8, 2026)
+    const kM = kqkd(thangChon, 2026)
+    const kT = kqkd(thangTr, 2026)
 
     if (!isLocCn) {
-      dtThuan = k9.dtThuan
-      gv = k9.gv
-      lnGop = k9.lnGop
-      cpBh = k9.cpBh
-      cpQl = k9.cpQl
-      dtTc = k9.dtTc
-      cpTc = k9.cpTc
-      tnKhac = k9.tnKhac
-      cpKhac = k9.cpKhac
-      lnTruocThue = k9.lnTruocThue
-      cpLuong = k9.cp.luong
-      cpMatBang = k9.cp.matBang
-      cpDienNuoc = k9.cp.dienNuoc
-      cpKhauHao = k9.cp.khauHao
-      cpCcdc = k9.cp.ccdc
-      cpChiPhiKhac = k9.cp.khac
-      soDon = k9.t.don
+      dtThuan = kM.dtThuan
+      gv = kM.gv
+      lnGop = kM.lnGop
+      cpBh = kM.cpBh
+      cpQl = kM.cpQl
+      dtTc = kM.dtTc
+      cpTc = kM.cpTc
+      tnKhac = kM.tnKhac
+      cpKhac = kM.cpKhac
+      lnTruocThue = kM.lnTruocThue
+      cpLuong = kM.cp.luong
+      cpMatBang = kM.cp.matBang
+      cpDienNuoc = kM.cp.dienNuoc
+      cpKhauHao = kM.cp.khauHao
+      cpCcdc = kM.cp.ccdc
+      cpChiPhiKhac = kM.cp.khac
+      soDon = kM.t.don
 
-      dtThuanTruoc = k8.dtThuan
-      lnGopTruoc = k8.lnGop
-      lnTruocThueTruoc = k8.lnTruocThue
+      dtThuanTruoc = kT.dtThuan
+      lnGopTruoc = kT.lnGop
+      lnTruocThueTruoc = kT.lnTruocThue
     } else {
       let dtCn = 0, gvCn = 0, donCn = 0
       for (const cid of cns) {
-        const tk = tongKy(9, 2026, cid)
+        const tk = tongKy(thangChon, 2026, cid)
         dtCn += tk.dt
         gvCn += tk.gv
         donCn += tk.don
       }
-      const tyTrong = dtCn / (k9.t.dt || 1)
-      dtThuan = dtCn - Math.round(k9.giamTru * tyTrong)
+      const tyTrong = dtCn / (kM.t.dt || 1)
+      dtThuan = dtCn - Math.round(kM.giamTru * tyTrong)
       gv = gvCn
       lnGop = dtThuan - gv
-      cpBh = Math.round(k9.cpBh * tyTrong)
-      cpQl = Math.round(k9.cpQl * tyTrong)
-      dtTc = Math.round(k9.dtTc * tyTrong)
-      cpTc = Math.round(k9.cpTc * tyTrong)
-      tnKhac = Math.round(k9.tnKhac * tyTrong)
-      cpKhac = Math.round(k9.cpKhac * tyTrong)
+      cpBh = Math.round(kM.cpBh * tyTrong)
+      cpQl = Math.round(kM.cpQl * tyTrong)
+      dtTc = Math.round(kM.dtTc * tyTrong)
+      cpTc = Math.round(kM.cpTc * tyTrong)
+      tnKhac = Math.round(kM.tnKhac * tyTrong)
+      cpKhac = Math.round(kM.cpKhac * tyTrong)
       lnTruocThue = lnGop + dtTc - cpTc - cpBh - cpQl + (tnKhac - cpKhac)
 
-      cpLuong = Math.round(k9.cp.luong * tyTrong)
-      cpMatBang = Math.round(k9.cp.matBang * tyTrong)
-      cpDienNuoc = Math.round(k9.cp.dienNuoc * tyTrong)
-      cpKhauHao = Math.round(k9.cp.khauHao * tyTrong)
-      cpCcdc = Math.round(k9.cp.ccdc * tyTrong)
-      cpChiPhiKhac = Math.round(k9.cp.khac * tyTrong)
+      cpLuong = Math.round(kM.cp.luong * tyTrong)
+      cpMatBang = Math.round(kM.cp.matBang * tyTrong)
+      cpDienNuoc = Math.round(kM.cp.dienNuoc * tyTrong)
+      cpKhauHao = Math.round(kM.cp.khauHao * tyTrong)
+      cpCcdc = Math.round(kM.cp.ccdc * tyTrong)
+      cpChiPhiKhac = Math.round(kM.cp.khac * tyTrong)
       soDon = donCn
 
       let dtCn8 = 0, gvCn8 = 0
       for (const cid of cns) {
-        const tk = tongKy(8, 2026, cid)
+        const tk = tongKy(thangTr, 2026, cid)
         dtCn8 += tk.dt
         gvCn8 += tk.gv
       }
-      const tt8 = dtCn8 / (k8.t.dt || 1)
-      dtThuanTruoc = dtCn8 - Math.round(k8.giamTru * tt8)
+      const tt8 = dtCn8 / (kT.t.dt || 1)
+      dtThuanTruoc = dtCn8 - Math.round(kT.giamTru * tt8)
       lnGopTruoc = dtThuanTruoc - gvCn8
-      lnTruocThueTruoc = Math.round(k8.lnTruocThue * tt8)
+      lnTruocThueTruoc = Math.round(kT.lnTruocThue * tt8)
     }
-    tienTruoc = du(soCai(8).cuoi, '1111', '1121')
+    tienTruoc = du(soCai(thangTr).cuoi, '1111', '1121')
   } else if (ky === 'thang-nay') {
     // Tháng 10/2026 (01/10 đến 07/10)
     thangCai = 10
@@ -791,6 +795,7 @@ export function tinhToanTongQuan(
     thacNuoc,
     trend,
     dongTien,
+    gv, cpHoatDong: cpBh + cpQl + cpTc - dtTc, cpPhanBo: cpKhauHao + cpCcdc, lnKhac: tnKhac - cpKhac,
     chiNhanh,
     coCauCp,
     theoNgay,

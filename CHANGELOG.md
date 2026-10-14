@@ -4,6 +4,8 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 14/10/2026
 
+- T231: Danh mục Lý do đổi tên Lý do nghiệp vụ; lý do Chi tiền có ô tích Là chi phí (tích sẵn mua NVL, trả lương, thuê nhà, CCDC, TSCĐ, chờ phân bổ, chi phí khác). Sổ chi phí chỉ lấy lý do được tích chi phí.
+- T230: Trang chủ gói Free vẽ lại theo ba bài toán: Quản lý lãi lỗ (thẻ báo cáo lãi lỗ tháng, bấm Chi phí trong tháng xem tổng theo lý do chi phí), Quản lý thu chi (số dư, tồn quỹ từng quỹ, bấm quỹ xem Lịch sử thu chi kiểu app ngân hàng, bấm giao dịch mở chứng từ), Quản lý kho (nhập mua, công nợ phải trả, hao hụt kiểm kê). Chọn năm rồi tháng; bỏ tab Bàn làm việc và các khối khác. Sửa lỗi trang trắng khi mở báo cáo kèm kỳ khác tháng 9 từ báo cáo khác.
 - T228: Gói Free: phân hệ Kho trên thanh bên đổi tên thành Kiểm kê.
 - T227: Rê chuột vào phân hệ ở thanh bên không còn bật menu phụ Nghiệp vụ, Tiện ích.
 - T226: Bấm phân hệ ở thanh bên mở thẳng danh sách chứng từ đầu tiên thay vì sơ đồ Quy trình; tab Quy trình vẫn còn để xem.

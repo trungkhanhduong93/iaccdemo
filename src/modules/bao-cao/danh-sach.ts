@@ -2,7 +2,7 @@
 import type { CheDo } from '../../app/che-do'
 import type { Goi } from '../../app/plan'
 import type { Kho } from '../../ui/bao-cao/ToGiay'
-import { CHI_NHANH, LY_DO, TK_NGAN_HANG } from '../../data/mock'
+import { CHI_NHANH, LY_CHI_PHI, TK_NGAN_HANG } from '../../data/mock'
 import { dsDonVi, loaiHinhDv, type Session } from '../../app/session'
 import { DON_VI } from '../../data/mock'
 import { thTT58 } from './tt58'
@@ -148,7 +148,7 @@ export const CAU_HINH_BC: Record<string, CauHinhBC> = {
     loc: [
       { k: 'kmcp', nhan: 'Khoản mục chi phí', kieu: 'chon', ds: () => ['Tiền điện', 'Tiền nước', 'Tiền gas công nghiệp', 'Thuê mặt bằng Lê Lợi', 'Thuê mặt bằng Nguyễn Trãi', 'Thuê mặt bằng Thảo Điền', 'Lương nhân viên bếp', 'Lương nhân viên phục vụ', 'Lương quản lý chi nhánh', 'Quảng cáo Facebook & TikTok', 'Phí giao hàng Grab & ShopeeFood', 'Dụng cụ vệ sinh & hoá chất', 'Văn phòng phẩm & in ấn'] },
       { k: 'nhomCp', nhan: 'Nhóm khoản mục chi phí', kieu: 'chon', ds: () => ['Chi phí tiện ích', 'Chi phí mặt bằng', 'Chi phí nhân công', 'Chi phí bán hàng', 'Chi phí quản lý'] },
-      { k: 'lyDo', nhan: 'Lý do', kieu: 'chonNhieu', ds: () => LY_DO.filter(l => l.dung === 'Chi tiền').map(l => l.ten) },   // T221
+      { k: 'lyDo', nhan: 'Lý do', kieu: 'chonNhieu', ds: () => LY_CHI_PHI },   // T221; chỉ lý do được tích là chi phí (T231)
     ],
     nhomDuoc: ['nhomCp', 'kmcp', 'lyDo'],
     anKhongPS: true,

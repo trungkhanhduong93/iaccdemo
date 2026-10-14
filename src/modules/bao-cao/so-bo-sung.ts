@@ -3,7 +3,7 @@ import type { Col, ReportCfg, Row } from '../types'
 import { soCai } from '../tong-hop/so-cai'
 import { createElement } from 'react'
 import { Link } from 'react-router-dom'
-import { CHI_NHANH, NVL, TK_NGAN_HANG, daysOf, kqkd, tongKy } from '../../data/mock'
+import { CHI_NHANH, LY_CHI_PHI, NVL, TK_NGAN_HANG, daysOf, kqkd, tongKy } from '../../data/mock'
 import { datLocDaXem } from '../../ui/bao-cao/tuyChinhBC'
 import { tenQuyTm, tenTkNh } from './danh-sach'
 import { between, pad, rng } from '../../ui/format'
@@ -734,7 +734,8 @@ const DS_CHI_PHI = [
 ]
 
 function rows1043(thang: number): Row[] {
-  const filtered = DS_CHI_PHI.filter(x => thang !== 10 || x.ngay <= 7)
+  // Sổ chi phí chỉ lấy khoản có lý do được tích là chi phí ở danh mục Lý do nghiệp vụ (T231)
+  const filtered = DS_CHI_PHI.filter(x => (thang !== 10 || x.ngay <= 7) && LY_CHI_PHI.includes(x.lyDo))
   let tongCp = 0
   const rows: Row[] = filtered.map((x, idx) => {
     tongCp += x.cp

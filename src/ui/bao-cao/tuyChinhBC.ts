@@ -30,6 +30,7 @@ export interface TrangThaiLoc {
   daXem: BanLoc
   nhap: BanLoc
   coThayDoi: boolean
+  kyDatSan?: boolean   // mở từ báo cáo, trang khác kèm kỳ (datLocDaXem): kỳ mặc định của trang không ghi đè, tránh giành kỳ lặp vô hạn (T230)
   tuyChon: Record<string, string[]>
   cotNhuDangXem: boolean
   colsGoc?: Col[]
@@ -104,6 +105,7 @@ export function datDsKyMacDinh(path: string, ds: OKy[]) {
 export function datKyMacDinh(path: string, ky: string) {
   const s = layTrangThai(path)
   if (s.daXem.ky === ky && s.nhap.ky === ky) return
+  if (s.kyDatSan) return
   if (!s.coThayDoi) {
     const ban: BanLoc = { ...s.daXem, ky }
     khoPath.set(path, {
@@ -189,7 +191,7 @@ export function xemBaoCao(path: string) {
 export function datLocDaXem(path: string, loc: Record<string, string[]>, ky: string) {
   const s = layTrangThai(path)
   const ban: BanLoc = { loc: { ...loc }, anKhongPS: false, ky }
-  khoPath.set(path, { ...s, nhap: { ...ban }, daXem: { ...ban }, loc: ban.loc, anKhongPS: false, ky, coThayDoi: false })
+  khoPath.set(path, { ...s, nhap: { ...ban }, daXem: { ...ban }, loc: ban.loc, anKhongPS: false, ky, coThayDoi: false, kyDatSan: true })
   phatSong()
 }
 

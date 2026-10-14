@@ -153,6 +153,8 @@ export const CONG_VIEC = [
 ]
 
 // Danh mục lý do nghiệp vụ 1.16. Form phiếu thu, chi lấy lý do theo cột "Dùng cho".
+/** Lý do chi tiền tích sẵn là chi phí: chi mua nguyên vật liệu, chi trả lương, chi phí khác, CCDC, thuê nhà, TSCĐ, chờ phân bổ, PhuongXT chốt 14/10/2026 (T231) */
+const LY_LA_CHI_PHI = ['LD04', 'LD05', 'LD13', 'LD14', 'LD15', 'LD16', 'LD17']
 export const LY_DO = [
   ['LD01', 'Thu tiền bán hàng', 'Thu tiền'], ['LD02', 'Thu nợ khách hàng', 'Thu tiền'], ['LD03', 'Rút tiền ngân hàng nhập quỹ', 'Thu tiền'],
   ['LD04', 'Chi mua nguyên vật liệu', 'Chi tiền'], ['LD05', 'Chi trả lương', 'Chi tiền'], ['LD06', 'Chi tạm ứng', 'Chi tiền'],
@@ -160,7 +162,9 @@ export const LY_DO = [
   ['LD10', 'Thu hoàn ứng', 'Thu tiền'], ['LD11', 'Thu khác', 'Thu tiền'], ['LD12', 'Trả tiền nhà cung cấp', 'Chi tiền'],
   ['LD13', 'Chi phí khác', 'Chi tiền'], ['LD14', 'Chi phí CCDC', 'Chi tiền'], ['LD15', 'Chi phí thuê nhà', 'Chi tiền'],
   ['LD16', 'Chi phí TSCĐ', 'Chi tiền'], ['LD17', 'Chi phí chờ phân bổ', 'Chi tiền'],
-].map(([ma, ten, dung]) => ({ ma, ten, dung }))
+].map(([ma, ten, dung]) => ({ ma, ten, dung, chiPhi: LY_LA_CHI_PHI.includes(ma) }))
+/** Tên lý do chi tiền được tích là chi phí: báo cáo chi phí (Sổ chi phí, Chi phí trong tháng) chỉ lấy các lý do này (T231) */
+export const LY_CHI_PHI = LY_DO.filter(x => x.dung === 'Chi tiền' && x.chiPhi).map(x => x.ten)
 
 // ── Doanh thu từng ngày, từng chi nhánh (đồng bộ từ FABi, gom theo ngày) ──
 export interface Ngay {

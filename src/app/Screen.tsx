@@ -31,6 +31,8 @@ export function ScreenRoute() {
   const { mod, sc } = timMan(mk, slug)
   if (!mod) return <Navigate to="/app" replace />
   if (!sc) return <Navigate to={duongDan(mod, manDau(mod, s.goi))} replace />
+  // Màn chỉ có ở một số gói (sc.goi) thì gói khác ẩn hẳn: về màn đầu phân hệ, không hiện màn khoá (vd Bàn làm việc gói Free, T230)
+  if (sc.goi && !sc.goi.includes(s.goi)) return <Navigate to={duongDan(mod, manDau(mod, s.goi))} replace />
   if (mod.key !== 'bao-cao') {
     if (sc.kind === 'baocao') return <Navigate to={`/app/bao-cao/nhom-${mod.key}`} replace />
     if (laBaoCao(sc)) return <Navigate to={`/app/bao-cao/${sc.slug}`} replace />
@@ -78,7 +80,8 @@ export function ScreenRoute() {
 
 export function HomeRedirect() {
   const { s } = useSession()
-  return <Navigate to={s.role === 'owner' ? '/app/trang-chu/tong-quan' : '/app/trang-chu/ban-lam-viec'} replace />
+  // Gói Free không có Bàn làm việc nên mọi vai trò vào Tổng quan (T230)
+  return <Navigate to={s.role === 'owner' || s.goi === 'F' ? '/app/trang-chu/tong-quan' : '/app/trang-chu/ban-lam-viec'} replace />
 }
 
 /** Trang nâng cấp khi bấm vào tính năng ngoài gói */

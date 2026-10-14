@@ -13,7 +13,7 @@ import { Note } from '../../ui/Page'
 import { DanhMucChiNhanh } from './DanhMucChiNhanh'
 
 /** Nhãn ngắn trên thanh tab */
-const NGAN: Record<string, string> = { '1.1': 'Tài khoản', '1.2': 'Hàng hoá', '1.3': 'Đơn vị tính', '1.4': 'Quy đổi ĐVT', '1.5': 'Đối tượng', '1.6': 'Mục chi phí', '1.7': 'Công việc', '1.8': 'Kho', '1.9': 'Tiền tệ', '1.10': 'Tỷ giá', '1.11': 'Loại thuế', '1.12': 'Quỹ tiền', '1.14': 'Bảng giá', '1.15': 'Bút toán tự động', '1.16': 'Lý do' }
+const NGAN: Record<string, string> = { '1.1': 'Tài khoản', '1.2': 'Hàng hoá', '1.3': 'Đơn vị tính', '1.4': 'Quy đổi ĐVT', '1.5': 'Đối tượng', '1.6': 'Mục chi phí', '1.7': 'Công việc', '1.8': 'Kho', '1.9': 'Tiền tệ', '1.10': 'Tỷ giá', '1.11': 'Loại thuế', '1.12': 'Quỹ tiền', '1.14': 'Bảng giá', '1.15': 'Bút toán tự động', '1.16': 'Lý do nghiệp vụ' }
 
 /** Biểu tượng riêng theo mã màn (T40) */
 const BIEU_TUONG: Record<string, string> = {
@@ -254,8 +254,10 @@ const danhMuc: ModuleDef = {
         ['BT07', 'Mua nguyên vật liệu chưa trả tiền', 'Phiếu mua hàng', 'Nhóm nhà cung cấp Thịt, cá; Tinh bột; Pha chế', '152', '331', 'Tiền hàng chưa thuế'],
         ['BT07', 'Mua nguyên vật liệu chưa trả tiền', 'Phiếu mua hàng', 'Nhóm nhà cung cấp Thịt, cá; Tinh bột; Pha chế', '1331', '331', 'Tiền thuế GTGT'],
       ].map(([ma, ten, lct, loc, no, co, tien]) => ({ ma, ten, lct, loc, no: tkTheoCheDo(no, cd).so, co: tkTheoCheDo(co, cd).so, tien })) } },
-    '1.16': { catalog: { them: 'Thêm lý do', locGoi: (goi, r) => goi !== 'F' || r.dung === 'Thu tiền' || r.dung === 'Chi tiền',   // gói Free chỉ lý do thu, chi (T144)
-      nhomLoc: 'dung', nhanLoc: 'Dùng cho', cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Lý do' }, { k: 'dung', t: 'Dùng cho' }],
+    '1.16': { catalog: { them: 'Thêm lý do nghiệp vụ', locGoi: (goi, r) => goi !== 'F' || r.dung === 'Thu tiền' || r.dung === 'Chi tiền',   // gói Free chỉ lý do thu, chi (T144)
+      nhomLoc: 'dung', nhanLoc: 'Dùng cho', cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Lý do nghiệp vụ' }, { k: 'dung', t: 'Dùng cho' },
+        // Là chi phí: chỉ lý do chi tiền có ô này (T231)
+        { k: 'chiPhi', t: 'Là chi phí', c: true, w: 100, r: r => r.dung !== 'Chi tiền' ? '' : createElement('input', { type: 'checkbox', className: 'o-tich-xem', checked: Boolean(r.chiPhi), readOnly: true, tabIndex: -1, 'aria-label': 'Là chi phí' }) }],
       rows: () => LY_DO } },
   }, NGAN).filter(sc => sc.code !== '1.13').map(sc => ({ ...sc, icon: BIEU_TUONG[sc.code ?? ''] ?? sc.icon })).flatMap(sc => {
     if (sc.code === '1.2') return [sc, nhomHangHoa]

@@ -1,13 +1,20 @@
 import type { ModuleDef } from '../types'
 import { TongQuan } from './TongQuan'
 import { BanLamViec } from './BanLamViec'
+import { ChiPhiThang } from './ChiPhiThang'
+import { LichSuQuy } from './LichSuQuy'
 
 const home: ModuleDef = {
   key: 'trang-chu', ten: 'Trang chủ', ngan: 'Trang chủ', icon: 'home',
   mota: 'Chủ doanh nghiệp xem Tổng quan, kế toán xem Bàn làm việc',
   screens: [
     { slug: 'tong-quan', code: '11.16', ten: 'Tổng quan', nhom: 'Trang chủ', kind: 'custom', comp: TongQuan },
-    { slug: 'ban-lam-viec', ten: 'Bàn làm việc', nhom: 'Trang chủ', kind: 'custom', comp: BanLamViec },
+    // Gói Free bỏ Bàn làm việc, Trang chủ chỉ còn Tổng quan ba bài toán, PhuongXT chốt 14/10/2026 (T230)
+    // Chi phí trong tháng theo lý do chi, mở từ thẻ Chi phí trong tháng ở trang chủ gói Free; không có tab riêng (T230)
+    { slug: 'chi-phi-thang', ten: 'Chi phí trong tháng', nhom: 'Trang chủ', kind: 'custom', comp: ChiPhiThang, tabCha: 'tong-quan', goi: ['F'] },
+    // Lịch sử thu chi một quỹ kiểu app ngân hàng, mở từ khối Tồn quỹ trang chủ gói Free (T230)
+    { slug: 'lich-su-quy', ten: 'Lịch sử thu chi', nhom: 'Trang chủ', kind: 'custom', comp: LichSuQuy, tabCha: 'tong-quan', goi: ['F'] },
+    { slug: 'ban-lam-viec', ten: 'Bàn làm việc', nhom: 'Trang chủ', kind: 'custom', comp: BanLamViec, goi: ['S', 'PL', 'PR'] },
   ],
 }
 export default home
