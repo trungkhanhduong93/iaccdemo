@@ -617,3 +617,9 @@ Lý do: PhuongXT chốt ngày 13/10/2026 (T179), báo không cần Trum duyệt:
 
 Lý do: Trum chốt ngày 13/10/2026 (T180). Khách hàng dùng gói Free, Standard theo dõi tài chính gọn nhẹ, không dùng bảng giá hay điều khoản thanh toán phức tạp.
 
+## QD57. Trang chủ điện thoại không có thanh trên, thiết kế mẫu in chỉ dùng máy tính (14/10/2026)
+
+- Trang chủ điện thoại (`trang-chu/tong-quan`, `trang-chu/ban-lam-viec`) không hiện thanh trên chung (logo ACCOUNTING, chọn chi nhánh). Chọn chi nhánh nằm ở chip "CN:" trong đầu trang chủ. Thay điểm Thương hiệu của QD54.
+- Màn 11.11 Tự thiết kế phiếu in, báo cáo không có bản điện thoại, vẫn ra màn báo dùng máy tính.
+
+Lý do: Trum duyệt ngày 14/10/2026 (T222). Trang chủ giống IVT, đầu trang dành cho số liệu. Kéo thả thiết kế mẫu in trên màn 390px không dùng được.

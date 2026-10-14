@@ -4,13 +4,16 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T218.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T224.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T222 | Điện thoại đợt 14, nghiệm thu: đo thời gian mở mọi báo cáo ở 390px, sửa báo cáo quá 2 giây; dữ liệu giả cho thẻ Hao hụt nguyên vật liệu và mục Chứng từ chưa ghi sổ ở trang chủ; so ảnh màn chính với bản máy tính | Trum | Đang làm | Anti A code. Sửa `src/ui/mobile/`, `MTrangChu.tsx`, có thể `src/ui/Table.tsx`, `app.css` mục cuối |
+| T223 | Điện thoại: rà thông tin chứng từ so với bản web (tài khoản Nợ, Có, đối tượng, diễn giải, hoá đơn, thuế, kho) ở danh sách, xem phiếu, lập phiếu; bổ sung trường còn thiếu | Trum | Đang làm | Claude rà, Trum duyệt bảng rồi anti code. Sửa `src/ui/mobile/M*.tsx`, `app.css` mục cuối |
+| T224 | Điện thoại: tư vấn thiết kế dưới góc app kế toán (mật độ số liệu, đọc số tiền, phân cấp chữ, màu trạng thái, thao tác một tay, chống bấm nhầm), ghi `docs/tu-van-thiet-ke-dien-thoai.md` kèm ảnh 390px | Trum | Đang làm | Chỉ đề xuất bố cục; đổi màu, phông ghi riêng để Trum quyết |
 | T169 | Form chứng từ: gõ đổi địa chỉ từ phiếu này sang phiếu khác (vd `#/app/tien/2-1-1/chi-3` sang `chi-6`) thì form giữ số phiếu, đối tượng của phiếu cũ; mở từ danh sách, Trước, Sau thì đúng | | Chờ | Phát hiện ở T168. Sửa `ChungTuForm.tsx`, có thể `VoucherScreen.tsx` (key của form) |
 | T138 | Màn onboard khi bấm từ FABi sang IACC: khởi tạo đơn vị kế toán, điền sẵn từ FABi (chi nhánh, kho, cách đồng bộ, số dư đầu kỳ) | PhuongXT | Dở dang | Popup khởi tạo dữ liệu 4 bước trong phần mềm (`OnboardFabi.tsx`, `Shell.tsx`) đã push, PhuongXT xem lại một lượt. Xem `2026-10-11-phuongxt-man-khoi-tao-fabi.md` |
 | T139 | Phiếu nhập, xuất, điều chuyển kho tự lấy mục chi phí, công việc ngầm định theo kho đã chọn | | Chờ | Tách từ T136. Kho đã có ô `mucCp`, `congViec` ở `truong-dm.ts` 1.8. Sửa `ChungTuForm.tsx` |
