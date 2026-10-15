@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T256 | Trung tâm báo cáo máy tính: khối ghim luôn hiện hai phần Đã ghim, Báo cáo gần đây (đổi tên từ Mở gần đây); phần trống ghi "Chưa có báo cáo" | Trum | Đang làm | Sửa `src/modules/bao-cao/TrungTam.tsx`, mục CSS T253 cuối `app.css` |
 | T229 | Báo cáo kết quả kinh doanh (10.2.3, B02-DNN) ở chế độ TT133 mở ra "Báo cáo chưa có mẫu" ở cả bản máy tính và điện thoại, gói Pro và Free | | Chờ | Phát hiện ở T222 ngày 14/10/2026, mở từ Tất cả báo cáo. Có thể liên quan T220 |
 | T169 | Form chứng từ: gõ đổi địa chỉ từ phiếu này sang phiếu khác (vd `#/app/tien/2-1-1/chi-3` sang `chi-6`) thì form giữ số phiếu, đối tượng của phiếu cũ; mở từ danh sách, Trước, Sau thì đúng | | Chờ | Phát hiện ở T168. Sửa `ChungTuForm.tsx`, có thể `VoucherScreen.tsx` (key của form) |
 | T138 | Màn onboard khi bấm từ FABi sang IACC: khởi tạo đơn vị kế toán, điền sẵn từ FABi (chi nhánh, kho, cách đồng bộ, số dư đầu kỳ) | PhuongXT | Dở dang | Popup khởi tạo dữ liệu 4 bước trong phần mềm (`OnboardFabi.tsx`, `Shell.tsx`) đã push, PhuongXT xem lại một lượt. Xem `2026-10-11-phuongxt-man-khoi-tao-fabi.md` |
@@ -46,6 +45,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T256 | Trung tâm báo cáo máy tính: khối ghim luôn hiện hai phần Đã ghim, Báo cáo gần đây (đổi tên từ Mở gần đây); phần trống ghi "Chưa có báo cáo" | Trum | 15/10/2026 | [2026-10-15-trum-ghim-bao-cao](nhat-ky/2026-10-15-trum-ghim-bao-cao.md) |
 | T255 | Trang chủ gói Free máy tính: nút "Xem biểu đồ lãi lỗ 13 tháng" ở thẻ Quản lý lãi lỗ mở hộp biểu đồ doanh thu, chi phí, lãi lỗ 10/2025–10/2026 kèm tóm tắt; tháng 7–10/2026 số thật, 9 tháng trước số mẫu | PhuongXT | 15/10/2026 | [2026-10-15-phuongxt-bieu-do-lai-lo-13-thang](nhat-ky/2026-10-15-phuongxt-bieu-do-lai-lo-13-thang.md) |
 | T253 | Trung tâm báo cáo máy tính: khối Ghim và mở gần đây giữ ở cột trái, nằm sát dưới khung nhóm (trước bị đẩy xuống đáy); chia hai phần Đã ghim, Mở gần đây; dòng có biểu tượng loại báo cáo, ký hiệu mẫu, nút bỏ ghim khi rê chuột | Trum | 15/10/2026 | [2026-10-15-trum-ghim-bao-cao](nhat-ky/2026-10-15-trum-ghim-bao-cao.md) |
 | T254 | Trang chủ điện thoại gói Free: bỏ câu "IACC Free giúp bạn nắm 3 việc…", giữ "Số liệu tháng X/2026" (bản web bỏ ở T250) | Trum | 15/10/2026 | [2026-10-15-trum-ghim-bao-cao](nhat-ky/2026-10-15-trum-ghim-bao-cao.md) |

@@ -180,7 +180,7 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
     return { dsGhim: pinned, dsGanDay: recent }
   }, [ghim, tatCaBCMap, s.goi, s.cheDo, s.ppGtgt, s.ppTndn])
 
-  const hienGhimGanDay = sc.slug === 'tat-ca' && !chiSoTT && !q.trim() && (dsGhim.length > 0 || dsGanDay.length > 0)
+  const hienGhimGanDay = sc.slug === 'tat-ca' && !chiSoTT && !q.trim()   // luôn hiện, phần trống ghi Chưa có báo cáo (T256)
 
   const toggleGhim = (slug: string, e: React.MouseEvent) => {
     e.preventDefault()
@@ -224,65 +224,63 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
               </Link>
             ))}
           </nav>
-          {hienGhimGanDay && (   // ghim và mở gần đây nằm dưới cột nhóm, chia Đã ghim, Mở gần đây (T185, T253)
+          {hienGhimGanDay && (   // ghim và mở gần đây nằm dưới cột nhóm, chia Đã ghim, Báo cáo gần đây (T185, T253)
             <div className="bc-quick">
-              {dsGhim.length > 0 && (
-                <div className="bc-quick-sec">
-                  <div className="bc-quick-head">Đã ghim</div>
-                  {dsGhim.map(x => {
-                    const ten = tenMan(x)
-                    const { loai, icon } = loaiVaIconBC(x, ten)
-                    const metaText = kyHieuBC(x.code, s.cheDo, s)
-                    return (
-                      <Link
-                        key={x.slug}
-                        to={`/app/bao-cao/${x.slug}`}
-                        className="bc-quick-item bc-quick-pinned"
-                        title={ten}
+              <div className="bc-quick-sec">
+                <div className="bc-quick-head">Đã ghim</div>
+                {dsGhim.length === 0 && <div className="bc-quick-trong">Chưa có báo cáo</div>}
+                {dsGhim.map(x => {
+                  const ten = tenMan(x)
+                  const { loai, icon } = loaiVaIconBC(x, ten)
+                  const metaText = kyHieuBC(x.code, s.cheDo, s)
+                  return (
+                    <Link
+                      key={x.slug}
+                      to={`/app/bao-cao/${x.slug}`}
+                      className="bc-quick-item bc-quick-pinned"
+                      title={ten}
+                    >
+                      <span className={`rpt-ic rpt-ic-${loai}`}>
+                        <Icon n={icon} />
+                      </span>
+                      <span className="bc-quick-name">{ten}</span>
+                      {metaText && <span className="bc-quick-ma">{metaText}</span>}
+                      <button
+                        type="button"
+                        className="bc-quick-unpin"
+                        onClick={e => toggleGhim(x.slug, e)}
+                        title="Bỏ ghim"
+                        aria-label="Bỏ ghim"
                       >
-                        <span className={`rpt-ic rpt-ic-${loai}`}>
-                          <Icon n={icon} />
-                        </span>
-                        <span className="bc-quick-name">{ten}</span>
-                        {metaText && <span className="bc-quick-ma">{metaText}</span>}
-                        <button
-                          type="button"
-                          className="bc-quick-unpin"
-                          onClick={e => toggleGhim(x.slug, e)}
-                          title="Bỏ ghim"
-                          aria-label="Bỏ ghim"
-                        >
-                          ★
-                        </button>
-                      </Link>
-                    )
-                  })}
-                </div>
-              )}
-              {dsGanDay.length > 0 && (
-                <div className="bc-quick-sec">
-                  <div className="bc-quick-head">Mở gần đây</div>
-                  {dsGanDay.map(x => {
-                    const ten = tenMan(x)
-                    const { loai, icon } = loaiVaIconBC(x, ten)
-                    const metaText = kyHieuBC(x.code, s.cheDo, s)
-                    return (
-                      <Link
-                        key={x.slug}
-                        to={`/app/bao-cao/${x.slug}`}
-                        className="bc-quick-item"
-                        title={ten}
-                      >
-                        <span className={`rpt-ic rpt-ic-${loai}`}>
-                          <Icon n={icon} />
-                        </span>
-                        <span className="bc-quick-name">{ten}</span>
-                        {metaText && <span className="bc-quick-ma">{metaText}</span>}
-                      </Link>
-                    )
-                  })}
-                </div>
-              )}
+                        ★
+                      </button>
+                    </Link>
+                  )
+                })}
+              </div>
+              <div className="bc-quick-sec">
+                <div className="bc-quick-head">Báo cáo gần đây</div>
+                {dsGanDay.length === 0 && <div className="bc-quick-trong">Chưa có báo cáo</div>}
+                {dsGanDay.map(x => {
+                  const ten = tenMan(x)
+                  const { loai, icon } = loaiVaIconBC(x, ten)
+                  const metaText = kyHieuBC(x.code, s.cheDo, s)
+                  return (
+                    <Link
+                      key={x.slug}
+                      to={`/app/bao-cao/${x.slug}`}
+                      className="bc-quick-item"
+                      title={ten}
+                    >
+                      <span className={`rpt-ic rpt-ic-${loai}`}>
+                        <Icon n={icon} />
+                      </span>
+                      <span className="bc-quick-name">{ten}</span>
+                      {metaText && <span className="bc-quick-ma">{metaText}</span>}
+                    </Link>
+                  )
+                })}
+              </div>
             </div>
           )}
         </div>
