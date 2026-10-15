@@ -2526,6 +2526,7 @@ def kiem_tra_dot_13_a():
             const { MChiMayTinh } = await import('/src/ui/mobile/MChiMayTinh.tsx');
             const ds = [];
             for (const m of MODULES) {
+                if (m.key === 'thao-tac-nhanh') continue;
                 for (const sc of m.screens) {
                     const comp = manMobile(sc, m);
                     if (comp === MChiMayTinh) {

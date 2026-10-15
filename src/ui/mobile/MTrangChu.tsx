@@ -21,6 +21,7 @@ import { moTaCach, nvlKy } from '../../modules/home/chi-phi-nvl'
 import { useMoTuTrangChu } from '../../app/tuTrangChu'
 import { Select } from '../Dropdown'
 import { HopLaiLo13, laiLo13Thang } from '../../modules/home/BaBaiToanFree'
+import { useThaoTacNhanh, type ThaoTacMuc } from '../../app/thaoTacNhanh'
 import {
   BranchBarChart,
   CashFlowChart,
@@ -181,73 +182,67 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
   const phaiThuTruoc = Math.max(0, sc9.cuoi['131'] || 0)
   const tangPhaiThu = phaiThuTruoc > 0 ? (phaiThuNay - phaiThuTruoc) / phaiThuTruoc : null
 
-  // 1. Thao tác nhanh (5 ô biểu tượng tròn nền nhạt chữ dưới)
-  const { sc: scThu } = timMan('tien', '2-1-1')
-  const { sc: scChi } = timMan('tien', '2-1-1')
-  const { sc: scNhap } = timMan('kho', '5-1-1')
-  const { sc: scXuat } = timMan('kho', '5-1-2')
-  const { sc: scSoQuy } = timMan('tien', '2-2-1')
-  const { sc: scNhapMua } = timMan('mua-hang', '4-1-1')
-  const { sc: scKiemKe } = timMan('kho', '5-1-10')
+  // 1. Thao tác nhanh (dùng chung web và điện thoại, T266)
+  const {
+    ds: thaoTacNhanhDs,
+    tatCa: thaoTacTatCa,
+    ids: thaoTacIds,
+    luu: luuThaoTac,
+  } = useThaoTacNhanh(s)
+  const [moTuyChinhThaoTac, setMoTuyChinhThaoTac] = useState(false)
+  const [hangsThaoTac, setHangsThaoTac] = useState<(ThaoTacMuc & { tich: boolean })[]>([])
 
-  const thaoTac5 = [
-    {
-      ten: 'Thu tiền',
-      icon: 'cashin',
-      to: '/app/tien/2-1-1/moi?loai=thu',
-      khoa: scThu ? !moDuoc(scThu, s.goi) : false,
-      ma: scThu ? maKhoa(scThu) : undefined,
-    },
-    {
-      ten: 'Chi tiền',
-      icon: 'cashout',
-      to: '/app/tien/2-1-1/moi?loai=chi',
-      khoa: scChi ? !moDuoc(scChi, s.goi) : false,
-      ma: scChi ? maKhoa(scChi) : undefined,
-    },
-    {
-      ten: 'Nhập kho',
-      icon: 'filein',
-      to: '/app/kho/5-1-1/moi',
-      khoa: scNhap ? !moDuoc(scNhap, s.goi) : false,
-      ma: scNhap ? maKhoa(scNhap) : undefined,
-    },
-    {
-      ten: 'Xuất kho',
-      icon: 'pos',
-      to: '/app/kho/5-1-2/moi',
-      khoa: scXuat ? !moDuoc(scXuat, s.goi) : false,
-      ma: scXuat ? maKhoa(scXuat) : undefined,
-    },
-    {
-      ten: 'Sổ quỹ',
-      icon: 'wallet',
-      to: '/app/tien/2-2-1',
-      khoa: scSoQuy ? !moDuoc(scSoQuy, s.goi) : false,
-      ma: scSoQuy ? maKhoa(scSoQuy) : undefined,
-    },
-  ]
+  useEffect(() => {
+    if (!moTuyChinhThaoTac) return
+    const idSet = new Set(thaoTacIds)
+    const map = new Map(thaoTacTatCa.map(m => [m.id, m]))
+    const dsDau: (ThaoTacMuc & { tich: boolean })[] = []
+    for (const id of thaoTacIds) {
+      const item = map.get(id)
+      if (item) {
+        dsDau.push({ ...item, tich: true })
+      }
+    }
+    const dsCon: (ThaoTacMuc & { tich: boolean })[] = []
+    for (const item of thaoTacTatCa) {
+      if (!idSet.has(item.id)) {
+        dsCon.push({ ...item, tich: false })
+      }
+    }
+    setHangsThaoTac([...dsDau, ...dsCon])
+  }, [moTuyChinhThaoTac, thaoTacIds, thaoTacTatCa])
 
-  // Thao tác nhanh riêng cho gói Free (T259): thêm Nhập mua và Kiểm kê
-  const thaoTacFree = [
-    thaoTac5[0],
-    thaoTac5[1],
-    {
-      ten: 'Nhập mua',
-      icon: 'truck',
-      to: '/app/mua-hang/4-1-1/moi',
-      khoa: scNhapMua ? !moDuoc(scNhapMua, s.goi) : false,
-      ma: scNhapMua ? maKhoa(scNhapMua) : undefined,
-    },
-    {
-      ten: 'Kiểm kê',
-      icon: 'clipboard',
-      to: '/app/kho/5-1-10/moi',
-      khoa: scKiemKe ? !moDuoc(scKiemKe, s.goi) : false,
-      ma: scKiemKe ? maKhoa(scKiemKe) : undefined,
-    },
-    thaoTac5[4],
-  ]
+  const handleToggleThaoTac = (id: string) => {
+    setHangsThaoTac(prev => prev.map(h => (h.id === id ? { ...h, tich: !h.tich } : h)))
+  }
+
+  const handleLenThaoTac = (idx: number) => {
+    if (idx <= 0) return
+    setHangsThaoTac(prev => {
+      const next = [...prev]
+      const tam = next[idx - 1]
+      next[idx - 1] = next[idx]
+      next[idx] = tam
+      return next
+    })
+  }
+
+  const handleXuongThaoTac = (idx: number) => {
+    setHangsThaoTac(prev => {
+      if (idx >= prev.length - 1) return prev
+      const next = [...prev]
+      const tam = next[idx + 1]
+      next[idx + 1] = next[idx]
+      next[idx] = tam
+      return next
+    })
+  }
+
+  const handleLuuThaoTac = () => {
+    const nextIds = hangsThaoTac.filter(h => h.tich).map(h => h.id)
+    luuThaoTac(nextIds)
+    setMoTuyChinhThaoTac(false)
+  }
 
   // 3. Dữ liệu tổng tồn kho
   const rowsDm = useMemo(() => dinhMucTon.rows(s.cheDo, 202610), [s.cheDo])
@@ -656,15 +651,15 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
                 <button
                   type="button"
                   className="m-tc-the-link"
-                  onClick={() => nav('/app/trang-chu/tong-quan')}
+                  onClick={() => setMoTuyChinhThaoTac(true)}
                 >
                   Tuỳ chỉnh
                 </button>
               </div>
               <div className="m-tc-nhanh-5">
-                {thaoTac5.map(item => (
+                {thaoTacNhanhDs.map(item => (
                   <Link
-                    key={item.ten}
+                    key={item.id}
                     to={item.to}
                     className={`m-tc-nhanh-o5${item.khoa ? ' khoa' : ''}`}
                   >
@@ -686,7 +681,7 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
           {isFree ? (
             <>
               {/* Thao tác nhanh cho gói Free (đặt trên thẻ Quản lý lãi lỗ, ẩn các thao tác bị khoá (T259)) */}
-              {thaoTacFree.filter(i => !i.khoa).length > 0 && (
+              {thaoTacNhanhDs.length > 0 && (
                 <div className="m-tc-the-ivt">
                   <div className="m-tc-the-head">
                     <div className="m-tc-the-tieu-hop">
@@ -695,11 +690,18 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
                         <Icon n="info" className="ic xs" />
                       </span>
                     </div>
+                    <button
+                      type="button"
+                      className="m-tc-the-link"
+                      onClick={() => setMoTuyChinhThaoTac(true)}
+                    >
+                      Tuỳ chỉnh
+                    </button>
                   </div>
                   <div className="m-tc-nhanh-5">
-                    {thaoTacFree.filter(i => !i.khoa).map(item => (
+                    {thaoTacNhanhDs.map(item => (
                       <Link
-                        key={item.ten}
+                        key={item.id}
                         to={item.to}
                         className="m-tc-nhanh-o5"
                       >
@@ -1401,6 +1403,86 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
 
       {/* Hộp biểu đồ lãi lỗ 13 tháng cho gói Free */}
       {moBieuDo && <HopLaiLo13 ds={laiLo13} onDong={() => setMoBieuDo(false)} />}
+
+      {/* Tấm trượt tuỳ chỉnh thao tác nhanh (T266) */}
+      {moTuyChinhThaoTac && (
+        <div className="m-tam-overlay" onClick={() => setMoTuyChinhThaoTac(false)}>
+          <div className="m-tam-hop m-tam-hop-apdung" onClick={e => e.stopPropagation()}>
+            <div className="m-tam-dau m-tam-dau-apdung">
+              <h2 className="m-tam-tieu">Tuỳ chỉnh thao tác nhanh</h2>
+              <button
+                type="button"
+                className="m-tam-dong-btn"
+                onClick={() => setMoTuyChinhThaoTac(false)}
+                aria-label="Đóng"
+              >
+                <Icon n="x" className="ic sm" />
+              </button>
+            </div>
+            <div className="m-tam-ds" style={{ flex: 1, overflowY: 'auto' }}>
+              {hangsThaoTac.map((h, i) => (
+                <div
+                  key={h.id}
+                  className="m-tam-dong"
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}
+                >
+                  <label style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1, minWidth: 0, cursor: 'pointer' }}>
+                    <input
+                      type="checkbox"
+                      checked={h.tich}
+                      onChange={() => handleToggleThaoTac(h.id)}
+                      style={{ width: 18, height: 18, accentColor: 'var(--blue)' }}
+                    />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+                      <Icon n={h.icon} className="ic sm" />
+                      <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ink)' }}>{h.ten}</span>
+                      {h.khoa && h.ma && <Pk g={minGoi(h.ma)} o />}
+                    </div>
+                  </label>
+                  <div style={{ display: 'flex', gap: 4, flex: 'none' }}>
+                    <button
+                      type="button"
+                      className="ttn-btn-mui-ten"
+                      title="Lên trên"
+                      aria-label={`Chuyển ${h.ten} lên trên`}
+                      disabled={i === 0}
+                      onClick={() => handleLenThaoTac(i)}
+                    >
+                      ▲
+                    </button>
+                    <button
+                      type="button"
+                      className="ttn-btn-mui-ten"
+                      title="Xuống dưới"
+                      aria-label={`Chuyển ${h.ten} xuống dưới`}
+                      disabled={i === hangsThaoTac.length - 1}
+                      onClick={() => handleXuongThaoTac(i)}
+                    >
+                      ▼
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="m-tam-day">
+              <button
+                type="button"
+                className="m-tam-btn-huy"
+                onClick={() => setMoTuyChinhThaoTac(false)}
+              >
+                Huỷ
+              </button>
+              <button
+                type="button"
+                className="m-tam-btn-apdung"
+                onClick={handleLuuThaoTac}
+              >
+                Lưu
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

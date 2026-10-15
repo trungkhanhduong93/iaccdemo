@@ -16,6 +16,7 @@ import giaThanh from '../modules/gia-thanh'
 import tongHop from '../modules/tong-hop'
 import tienIch from '../modules/tien-ich'
 import heThong from '../modules/he-thong'
+import thaoTacNhanh from '../modules/thao-tac-nhanh'
 import { TrungTamBaoCao } from '../modules/bao-cao/TrungTam'
 import { AN_NHOM_BC, CAU_HINH_BC, CHI_MO_TU_BC, MO_IFASTER, NHOM_CONG_NO, anSoHkdGoiFree, cachHkd, giuBC, laHkd, type PhienBC } from '../modules/bao-cao/danh-sach'
 import { thTT58 } from '../modules/bao-cao/tt58'
@@ -77,8 +78,8 @@ function phanHeBaoCao(nguon: ModuleDef[]): ModuleDef {
   }
 }
 
-// Kê khai thuế ngay dưới Công cụ dụng cụ; Danh mục nằm dưới, ngay trên Hệ thống (T52)
-const danhSachCu = [home, tien, banHang, muaHang, kho, tscd, ccdc, thue, giaThanh, tongHop, tienIch, danhMuc, heThong].map(dung)
+// Kê khai thuế ngay dưới Công cụ dụng cụ; Danh mục nằm dưới, ngay trên Hệ thống (T52); Thao tác nhanh dưới Hệ thống (T266)
+const danhSachCu = [home, tien, banHang, muaHang, kho, tscd, ccdc, thue, giaThanh, tongHop, tienIch, danhMuc, heThong, thaoTacNhanh].map(dung)
 const iTongHop = danhSachCu.findIndex(m => m.key === 'tong-hop')
 const baoCao = phanHeBaoCao(danhSachCu)
 export const MODULES: ModuleDef[] = [

@@ -27,6 +27,7 @@ export function MNghiepVu() {
       m.key !== 'bao-cao' &&
       m.key !== 'danh-muc' &&
       m.key !== 'he-thong' &&
+      m.key !== 'thao-tac-nhanh' &&
       (!anNgoaiGoi(s.goi) || !phanHeKhoa(m, s.goi)) &&
       tabCua(m).some(sc => manMoTrenMobile(sc) && (!anNgoaiGoi(s.goi) || moDuoc(sc, s.goi)))
   )

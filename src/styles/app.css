@@ -17772,3 +17772,178 @@ button.bbt-nut { background: none; border: 0; padding-left: 0; padding-right: 0;
 .dmcn-ch-dong + .dmcn-ch-dong { border-top: 1px solid var(--line-2); }
 .dmcn-ch-tieu { font-size: 12px; color: var(--muted); padding-top: 6px; padding-bottom: 6px; }
 .dmcn-ch-ten { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink); }
+
+/* ── Thao tác nhanh dùng chung web, điện thoại (T266) ── */
+.ttn-man {
+  display: flex;
+  flex-direction: column;
+}
+
+.ttn-luoi {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 16px;
+  padding: 20px 24px;
+  max-width: 960px;
+}
+
+.ttn-o {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-decoration: none;
+  color: var(--ink);
+  padding: 16px 12px;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius, 12px);
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.ttn-o:hover {
+  transform: translateY(-2px);
+  border-color: var(--blue);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.ttn-ic-tron {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--tint, #e6eff7);
+  color: var(--blue, #0560a6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ttn-o.khoa .ttn-ic-tron {
+  opacity: 0.6;
+}
+
+.ttn-lk {
+  position: absolute;
+  bottom: -4px;
+  right: -6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ttn-ten {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--ink);
+  text-align: center;
+}
+
+.ds-hop-ttn {
+  width: 460px;
+  max-width: 92vw;
+}
+
+.ttn-hop-ds {
+  display: flex;
+  flex-direction: column;
+  max-height: 380px;
+  overflow-y: auto;
+}
+
+.ttn-dong {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--line);
+  gap: 12px;
+  transition: background 0.1s ease;
+}
+
+.ttn-dong:last-child {
+  border-bottom: none;
+}
+
+.ttn-dong:hover {
+  background: var(--hover);
+}
+
+.ttn-dong.on {
+  background: var(--tint-s, rgba(5, 96, 166, 0.04));
+}
+
+.ttn-dong-lbl {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+  margin: 0;
+}
+
+.ttn-dong-lbl input[type="checkbox"] {
+  width: 17px;
+  height: 17px;
+  cursor: pointer;
+  accent-color: var(--blue);
+}
+
+.ttn-dong-ic {
+  color: var(--blue);
+  display: flex;
+  align-items: center;
+}
+
+.ttn-dong-ten {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.ttn-dong-pk {
+  margin-left: 6px;
+}
+
+.ttn-dong-dieu-khien {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+}
+
+.ttn-btn-mui-ten {
+  border: 1px solid var(--line);
+  background: var(--white);
+  color: var(--ink);
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 10px;
+  padding: 0;
+  line-height: 1;
+}
+
+.ttn-btn-mui-ten:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+
+.ttn-btn-mui-ten:not(:disabled):hover {
+  background: var(--hover);
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
+/* Lưới thao tác nhanh điện thoại xuống hàng khi > 5 mục */
+.m-tc-nhanh-5 {
+  row-gap: 12px;
+}
+
