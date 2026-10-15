@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T272 | Trang chủ gói Free theo mẫu E (số đầy đủ, ba cột đều, Thao tác nhanh lấy 4 mục đầu T266), bấm quỹ hoặc tổng tồn quỹ mở modal biểu đồ thu chi M2, Lịch sử thu chi theo L1 (4 ô Đầu kỳ, Thu, Chi, Cuối kỳ, bảng gom ngày, số phiếu mở tab mới); điện thoại làm theo cho giống web | Trum | Đang làm | Sửa `home/BaBaiToanFree.tsx`, `home/LichSuQuy.tsx`, `ui/mobile/MLichSuQuy.tsx`, phần Free của `ui/mobile/MTrangChu.tsx`, mục CSS mới cuối `app.css`. Mẫu: canvas https://claude.ai/artifact/GB2jrKovkPxjybbT1KodZe |
 | T271 | Trung tâm báo cáo máy tính làm lại bố cục theo mẫu A: cột trái gồm khung nhóm, Đã ghim, Mở gần đây; bên phải mỗi nhóm một thẻ, xếp 2 cột; mỗi dòng có biểu tượng loại báo cáo, tên, ký hiệu mẫu, nút ghim | Trum | Đang làm | Sửa `src/modules/bao-cao/TrungTam.tsx`, thêm mục CSS cuối `app.css`. Không đụng điện thoại |
 | T265 | Phiếu thu, chi đồng bộ từ FABi (T264) chưa vào Sổ quỹ tiền mặt, Sổ ngân hàng, Lịch sử thu chi, tồn quỹ trang chủ; đưa vào thì đổi số dư | | Chờ | Phát hiện khi làm T264, chờ PhuongXT quyết |
 | T269 | Danh mục Lý do nghiệp vụ thay bằng 44 lý do thu, chi theo file FABi của PhuongXT (mã, tên, thu/chi), giữ thêm Chi phí chờ phân bổ và 3 lý do kho; cờ Là chi phí theo đề xuất PhuongXT duyệt | PhuongXT | Đang làm | Sửa `data/mock.ts` (LY_DO), `ui/generic/gen.ts`, `ChungTuForm.tsx` và các chỗ dùng tên lý do cũ |
