@@ -4,6 +4,8 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 15/10/2026
 
+- T253: Trung tâm báo cáo: khối Ghim và mở gần đây nằm ngay dưới danh sách nhóm, chia hai phần Đã ghim, Mở gần đây, có biểu tượng loại báo cáo; rê chuột vào báo cáo đã ghim để bỏ ghim.
+- T254: Trang chủ điện thoại gói Free bỏ câu giới thiệu, chỉ giữ dòng tháng đang xem.
 - T252: Trang Báo cáo ẩn nhóm không có báo cáo nào, cả máy tính và điện thoại. Gói Free không còn nhóm Chi phí phân bổ.
 - T251: Gói Free ẩn tạm 5 báo cáo: Tổng hợp quỹ tiền, Báo cáo dòng tiền, Tổng hợp mua hàng theo NCC, Mua hàng theo ngày, Sổ chi phí. Gói khác giữ nguyên.
 - T250: Trang chủ gói Free: tạo quỹ xong có gợi ý lập phiếu thu, phiếu chi ngay (quỹ ngân hàng: báo có, UNC); lưu phiếu xong hỏi quay lại trang chủ. Bỏ dòng giới thiệu, chọn năm, tháng nằm trên thanh tab. Thẻ Hao hụt kiểm kê ghi "Các mặt hàng thừa thiếu trong kỳ".

@@ -607,12 +607,9 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
 
           {isFree ? (
             <>
-              {/* Lời dẫn ba bài toán Free */}
+              {/* Tháng đang xem của ba bài toán Free (T254: bỏ câu giới thiệu như bản web) */}
               <div className="m-free-dau">
-                <span>
-                  IACC Free giúp bạn nắm 3 việc: <b>quán lãi hay lỗ</b>, <b>quản lý thu chi</b>,{' '}
-                  <b>công nợ, hao hụt</b>. Số liệu tháng {thangF}/2026.
-                </span>
+                <span>Số liệu tháng {thangF}/2026.</span>
               </div>
 
               {/* 1. Quản lý lãi lỗ */}

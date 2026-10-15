@@ -11,8 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T253 | Trung tâm báo cáo máy tính: khối Ghim và mở gần đây chuyển từ đáy cột nhóm lên đầu danh sách bên phải, trên nhóm đầu tiên; chia hai dòng Đã ghim, Mở gần đây; thẻ giống thẻ báo cáo (biểu tượng, ký hiệu mẫu, nút bỏ ghim) | Trum | Đang làm | Sửa `src/modules/bao-cao/TrungTam.tsx` (chung file với T252, đã báo), `app.css` mục cuối file |
-| T254 | Trang chủ điện thoại gói Free: bỏ câu "IACC Free giúp bạn nắm 3 việc…", giữ "Số liệu tháng X/2026" (bản web bỏ ở T250) | Trum | Đang làm | Sửa `src/ui/mobile/MTrangChu.tsx` |
 | T255 | Trang chủ gói Free máy tính: biểu đồ lãi lỗ 13 tháng (10/2025–10/2026) ở hàng riêng dưới cùng; tháng 7–10/2026 dùng số thật như thẻ Lãi lỗ, 9 tháng trước sinh số mẫu | PhuongXT | Đang làm | Sửa `src/modules/home/BaBaiToanFree.tsx`, thêm mục CSS cuối `app.css` |
 | T229 | Báo cáo kết quả kinh doanh (10.2.3, B02-DNN) ở chế độ TT133 mở ra "Báo cáo chưa có mẫu" ở cả bản máy tính và điện thoại, gói Pro và Free | | Chờ | Phát hiện ở T222 ngày 14/10/2026, mở từ Tất cả báo cáo. Có thể liên quan T220 |
 | T169 | Form chứng từ: gõ đổi địa chỉ từ phiếu này sang phiếu khác (vd `#/app/tien/2-1-1/chi-3` sang `chi-6`) thì form giữ số phiếu, đối tượng của phiếu cũ; mở từ danh sách, Trước, Sau thì đúng | | Chờ | Phát hiện ở T168. Sửa `ChungTuForm.tsx`, có thể `VoucherScreen.tsx` (key của form) |
@@ -48,6 +46,8 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T253 | Trung tâm báo cáo máy tính: khối Ghim và mở gần đây giữ ở cột trái, nằm sát dưới khung nhóm (trước bị đẩy xuống đáy); chia hai phần Đã ghim, Mở gần đây; dòng có biểu tượng loại báo cáo, ký hiệu mẫu, nút bỏ ghim khi rê chuột | Trum | 15/10/2026 | [2026-10-15-trum-ghim-bao-cao](nhat-ky/2026-10-15-trum-ghim-bao-cao.md) |
+| T254 | Trang chủ điện thoại gói Free: bỏ câu "IACC Free giúp bạn nắm 3 việc…", giữ "Số liệu tháng X/2026" (bản web bỏ ở T250) | Trum | 15/10/2026 | [2026-10-15-trum-ghim-bao-cao](nhat-ky/2026-10-15-trum-ghim-bao-cao.md) |
 | T252 | Trung tâm báo cáo (máy tính, điện thoại): nhóm không còn báo cáo hiện được thì ẩn cả nhóm, vd Chi phí phân bổ ở gói Free | PhuongXT | 15/10/2026 | [2026-10-15-phuongxt-an-nhom-bao-cao-trong](nhat-ky/2026-10-15-phuongxt-an-nhom-bao-cao-trong.md) |
 | T251 | Gói Free ẩn tạm 5 báo cáo: Tổng hợp quỹ tiền (2.2.8), Báo cáo dòng tiền (2.2.9), Tổng hợp mua hàng theo NCC (4.2.2), Mua hàng theo ngày (4.2.6), Sổ chi phí (10.4.3); gói khác giữ nguyên | PhuongXT | 15/10/2026 | [2026-10-15-phuongxt-an-bao-cao-free](nhat-ky/2026-10-15-phuongxt-an-bao-cao-free.md) |
 | T250 | Trang chủ gói Free: tạo quỹ xong gợi ý lập phiếu thu, chi (quỹ ngân hàng: báo có, UNC), lưu phiếu xong hỏi về trang chủ; bỏ dòng giới thiệu, chọn tháng năm lên thanh tab; thẻ Hao hụt kiểm kê ghi "Các mặt hàng thừa thiếu trong kỳ". Sửa đường dẫn ảnh máy Trum trong `kiem_tra.py` | PhuongXT | 15/10/2026 | [2026-10-15-phuongxt-goi-y-lap-phieu-sau-tao-quy](nhat-ky/2026-10-15-phuongxt-goi-y-lap-phieu-sau-tao-quy.md) |

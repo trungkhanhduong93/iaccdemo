@@ -157,30 +157,30 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
   // Danh sách ghim và mở gần đây (chỉ hiện khi ở tab Tất cả, không tìm kiếm, có báo cáo mở được)
   const tatCaBCMap = useMemo(() => new Map(tatCaBC.map(x => [x.slug, x])), [tatCaBC])
 
-  const topItems = useMemo(() => {
-    const pinned: { sc: ScreenDef; isGhim: boolean }[] = []
+  const { dsGhim, dsGanDay } = useMemo(() => {
+    const pinned: ScreenDef[] = []
     for (const slug of ghim) {
       const item = tatCaBCMap.get(slug)
       if (item && hienMan(item, s.goi, s.cheDo, s) && moDuoc(item, s.goi)) {
-        pinned.push({ sc: item, isGhim: true })
+        pinned.push(item)
       }
     }
 
-    const recent: { sc: ScreenDef; isGhim: boolean }[] = []
+    const recent: ScreenDef[] = []
     const ganDay = docGanDay()
     for (const slug of ganDay) {
       if (ghim.includes(slug)) continue
       const item = tatCaBCMap.get(slug)
       if (item && hienMan(item, s.goi, s.cheDo, s) && moDuoc(item, s.goi)) {
-        recent.push({ sc: item, isGhim: false })
+        recent.push(item)
         if (recent.length >= 4) break
       }
     }
 
-    return [...pinned, ...recent]
+    return { dsGhim: pinned, dsGanDay: recent }
   }, [ghim, tatCaBCMap, s.goi, s.cheDo, s.ppGtgt, s.ppTndn])
 
-  const hienGhimGanDay = sc.slug === 'tat-ca' && !chiSoTT && !q.trim() && topItems.length > 0
+  const hienGhimGanDay = sc.slug === 'tat-ca' && !chiSoTT && !q.trim() && (dsGhim.length > 0 || dsGanDay.length > 0)
 
   const toggleGhim = (slug: string, e: React.MouseEvent) => {
     e.preventDefault()
@@ -224,19 +224,65 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
               </Link>
             ))}
           </nav>
-          {hienGhimGanDay && (   // ghim và mở gần đây nằm dưới cột nhóm, kèm ký hiệu mẫu (T185)
+          {hienGhimGanDay && (   // ghim và mở gần đây nằm dưới cột nhóm, chia Đã ghim, Mở gần đây (T185, T253)
             <div className="bc-quick">
-              <div className="bc-quick-head">Ghim và mở gần đây</div>
-              {topItems.map(item => {
-                const kh = kyHieuBC(item.sc.code, s.cheDo, s)
-                return (
-                  <Link key={item.sc.slug} to={`/app/bao-cao/${item.sc.slug}`} className="bc-quick-chip" title={tenMan(item.sc)}>
-                    {item.isGhim && <span className="bc-quick-star">★</span>}
-                    <span className="bc-quick-text">{tenMan(item.sc)}</span>
-                    {kh && <span className="bc-quick-ma">{kh}</span>}
-                  </Link>
-                )
-              })}
+              {dsGhim.length > 0 && (
+                <div className="bc-quick-sec">
+                  <div className="bc-quick-head">Đã ghim</div>
+                  {dsGhim.map(x => {
+                    const ten = tenMan(x)
+                    const { loai, icon } = loaiVaIconBC(x, ten)
+                    const metaText = kyHieuBC(x.code, s.cheDo, s)
+                    return (
+                      <Link
+                        key={x.slug}
+                        to={`/app/bao-cao/${x.slug}`}
+                        className="bc-quick-item bc-quick-pinned"
+                        title={ten}
+                      >
+                        <span className={`rpt-ic rpt-ic-${loai}`}>
+                          <Icon n={icon} />
+                        </span>
+                        <span className="bc-quick-name">{ten}</span>
+                        {metaText && <span className="bc-quick-ma">{metaText}</span>}
+                        <button
+                          type="button"
+                          className="bc-quick-unpin"
+                          onClick={e => toggleGhim(x.slug, e)}
+                          title="Bỏ ghim"
+                          aria-label="Bỏ ghim"
+                        >
+                          ★
+                        </button>
+                      </Link>
+                    )
+                  })}
+                </div>
+              )}
+              {dsGanDay.length > 0 && (
+                <div className="bc-quick-sec">
+                  <div className="bc-quick-head">Mở gần đây</div>
+                  {dsGanDay.map(x => {
+                    const ten = tenMan(x)
+                    const { loai, icon } = loaiVaIconBC(x, ten)
+                    const metaText = kyHieuBC(x.code, s.cheDo, s)
+                    return (
+                      <Link
+                        key={x.slug}
+                        to={`/app/bao-cao/${x.slug}`}
+                        className="bc-quick-item"
+                        title={ten}
+                      >
+                        <span className={`rpt-ic rpt-ic-${loai}`}>
+                          <Icon n={icon} />
+                        </span>
+                        <span className="bc-quick-name">{ten}</span>
+                        {metaText && <span className="bc-quick-ma">{metaText}</span>}
+                      </Link>
+                    )
+                  })}
+                </div>
+              )}
             </div>
           )}
         </div>

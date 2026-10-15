@@ -3652,61 +3652,7 @@ body.tkmi-dang-keo, body.tkmi-dang-keo * {
   display: none;
 }
 
-/* Ghim và mở gần đây */
-.bc-quick {
-  margin-bottom: 16px;
-  padding-bottom: 14px;
-  border-bottom: 1px solid var(--line);
-}
-.bc-quick-head {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: .5px;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 8px;
-}
-.bc-quick-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  overflow-x: auto;
-  scrollbar-width: thin;
-  padding-bottom: 2px;
-}
-.bc-quick-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  height: 30px;
-  padding: 0 12px;
-  border-radius: 15px;
-  background: var(--white);
-  border: 1px solid var(--line);
-  color: var(--ink);
-  font-size: 12.5px;
-  font-weight: 500;
-  white-space: nowrap;
-  flex: none;
-  text-decoration: none;
-  transition: background-color .15s ease, border-color .15s ease, color .15s ease;
-}
-.bc-quick-chip:hover {
-  background: var(--tint);
-  border-color: var(--blue);
-  color: var(--blue);
-}
-.bc-quick-star {
-  color: var(--amber);
-  font-size: 13px;
-  line-height: 1;
-}
-.bc-quick-text {
-  max-width: 240px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
+
 
 /* Tiêu đề nhóm báo cáo */
 .rpt-head {
@@ -11134,66 +11080,7 @@ body:has(.m-lp) .m-thanh-duoi {
   }
 }
 
-/* ── Ghim và mở gần đây dưới cột nhóm báo cáo (T185) ── */
-.bc-trai {
-  position: sticky;
-  top: 12px;
-  height: calc(100vh - 150px);   /* cột trái cao hết màn để khối ghim nằm sát đáy */
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-.bc-trai .bc-rail {
-  position: static;
-}
-.bc-trai .bc-quick {
-  margin: auto 0 0;
-  padding: 10px 6px 6px;
-  border: 0;
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: var(--sh);
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.bc-trai .bc-quick-head {
-  padding: 0 10px;
-  margin-bottom: 4px;
-}
-.bc-trai .bc-quick-chip {
-  height: auto;
-  min-height: 34px;
-  padding: 7px 10px;
-  border: 0;
-  border-radius: 8px;
-  background: transparent;
-  color: var(--body);
-  font-size: 13px;
-  font-weight: 400;
-  white-space: normal;
-}
-.bc-trai .bc-quick-chip:hover {
-  background: var(--soft);
-  color: var(--blue);
-}
-.bc-trai .bc-quick-text {
-  flex: 1;
-  min-width: 0;
-  max-width: none;
-  white-space: normal;
-}
-.bc-quick-ma {
-  flex: none;
-  font-size: 11.5px;
-  color: var(--faint);
-}
-@media (max-width: 1100px) {
-  .bc-trai {
-    position: static;
-    height: auto;
-  }
-}
+
 /* Nút quay lại Tất cả báo cáo ở màn báo cáo chưa có trong gói */
 .ph-quay-lai {
   display: inline-flex;
@@ -17347,3 +17234,105 @@ a.lsq-dong:hover { background: var(--tint); }
 /* Ô bên phải thanh tab: chọn tháng năm ở Tổng quan gói Free (T250) */
 .mtabs-phai { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; }
 .mtabs-phai:empty { display: none; }
+
+/* ── Ghim và mở gần đây ở cột trái (T253) ── */
+.bc-trai {
+  position: sticky;
+  top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.bc-trai .bc-rail {
+  position: static;
+}
+@media (max-width: 1100px) {
+  .bc-trai {
+    position: static;
+  }
+}
+
+.bc-quick {
+  background: var(--white);
+  border-radius: 10px;
+  box-shadow: var(--sh);
+  padding: 8px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.bc-quick-sec {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.bc-quick-head {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 2px 8px 4px;
+}
+.bc-quick-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  color: var(--body);
+  font-size: 12.5px;
+  text-decoration: none;
+  transition: background-color .15s ease, color .15s ease;
+}
+.bc-quick-item:hover {
+  background: var(--soft);
+  color: var(--blue);
+}
+.bc-quick-item .rpt-ic {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  flex: none;
+}
+.bc-quick-item .rpt-ic .ic {
+  width: 12px;
+  height: 12px;
+}
+.bc-quick-name {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.bc-quick-ma {
+  flex: none;
+  font-size: 11px;
+  color: var(--faint);
+  white-space: nowrap;
+}
+.bc-quick-unpin {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font-size: 13px;
+  line-height: 1;
+  color: var(--amber);
+  padding: 0;
+  flex: none;
+}
+.bc-quick-unpin:hover {
+  color: var(--muted);
+}
+.bc-quick-pinned:hover .bc-quick-unpin {
+  display: flex;
+}
+.bc-quick-pinned:hover .bc-quick-ma {
+  display: none;
+}
