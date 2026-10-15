@@ -17955,3 +17955,90 @@ button.bbt-nut { background: none; border: 0; padding-left: 0; padding-right: 0;
 .sb-flyout-item.lock > :not(.pk) { opacity: .55; }
 .sb-nav a.lock .pk,
 .sb-flyout-item.lock .pk { flex: none; margin-left: auto; }
+
+/* ── Cột Tham chiếu một dòng, popup chọn mã (T270) ── */
+.ds-tc {
+  display: block;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ds-tc-btn {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--blue);
+  cursor: pointer;
+}
+.ds-tc-btn:hover {
+  text-decoration: underline;
+}
+.ds-tc-btn:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+.ds-tc-pop {
+  position: fixed;
+  z-index: 100;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  box-shadow: 0 10px 25px rgba(14, 26, 43, 0.15), 0 2px 6px rgba(14, 26, 43, 0.08);
+  min-width: 160px;
+  max-width: 280px;
+  padding: 6px 0;
+  animation: pop 0.12s cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+.ds-tc-pop-hdr {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 12px 6px;
+  border-bottom: 1px solid var(--line-2);
+}
+.ds-tc-pop-body {
+  padding: 4px 0;
+  max-height: 220px;
+  overflow-y: auto;
+}
+.ds-tc-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--blue);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+.ds-tc-item:hover,
+.ds-tc-item:focus-visible {
+  background: var(--soft);
+  text-decoration: none;
+  outline: none;
+}
+.ds-tc-item-plain {
+  color: var(--body);
+  cursor: default;
+}
+.ds-tc-item-plain:hover {
+  background: none;
+}
+

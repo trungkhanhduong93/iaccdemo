@@ -1,6 +1,7 @@
 // Màn chứng từ chung: danh sách theo bố cục AMIS với cột đứng yên, bộ lọc kỳ nhanh, khung chi tiết bên dưới, thao tác hàng loạt.
-import { useEffect, useMemo, useState } from 'react'
-import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
+import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import type { Col, ModuleDef, Row, ScreenDef, ScreenProps, VoucherCfg } from '../../modules/types'
 import { duongDan, tenMan } from '../../app/registry'
 import { chiNhanhHienTai, donViHienTai, loaiHinhDv, useSession } from '../../app/session'
@@ -14,6 +15,7 @@ import { buildGroupedData } from '../virtual'
 import { ChonKhoangNgay, docNgay, thangNay, trongKhoang, type KhoangNgay } from '../ChonNgay'
 import { NutExcel, NutThemMoiSplit } from '../CongCuDs'
 import { fold, money, pad, rng } from '../format'
+import { heSoZoom } from '../zoom'
 import { dangLoc, khopLoc, type GiaTriLoc, type KieuLoc } from '../LocCot'
 import {
   BoLoc, ChipTrangThai, NutHangLoat, NutTuyChinhCot, cotChon, dsChipTT, khopChipTT, useCauHinhLoc, useCotDs, useLocNhap, type OLocDef,
@@ -52,6 +54,142 @@ function thamChieuCua(r: Row): { so: string; to?: string }[] {
     ...dsDcCon(r).map(c => ({ so: c.so, to: `/app/${MAN_DC}/${c.id}` })),
     ...(r._thamChieu ? [{ so: String(r._thamChieu), to: r._thamChieuDi ? String(r._thamChieuDi) : undefined }] : []),
   ]
+}
+
+/** Ô cột Tham chiếu một dòng: 1 mã mở tab mới; từ 2 mã bấm mở popup chọn mã (T270) */
+function OThamChieu({ ds }: { ds: { so: string; to?: string }[] }) {
+  const [mo, setMo] = useState(false)
+  const [toaDo, setToaDo] = useState<{ top: number; left: number } | null>(null)
+  const btnRef = useRef<HTMLButtonElement>(null)
+  const popRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!mo) return
+    const down = (e: MouseEvent) => {
+      const t = e.target as Node
+      if (popRef.current?.contains(t) || btnRef.current?.contains(t)) return
+      setMo(false)
+    }
+    const key = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.stopPropagation()
+        setMo(false)
+        btnRef.current?.focus()
+      }
+    }
+    const cuon = () => setMo(false)
+    document.addEventListener('mousedown', down, true)
+    document.addEventListener('keydown', key, true)
+    window.addEventListener('scroll', cuon, true)
+    return () => {
+      document.removeEventListener('mousedown', down, true)
+      document.removeEventListener('keydown', key, true)
+      window.removeEventListener('scroll', cuon, true)
+    }
+  }, [mo])
+
+  useLayoutEffect(() => {
+    if (!mo || !btnRef.current || !popRef.current) return
+    const a = btnRef.current.getBoundingClientRect()
+    const p = popRef.current
+    const z = heSoZoom()
+    const aLeft = a.left / z, aBottom = a.bottom / z, aTop = a.top / z
+    const winW = window.innerWidth / z, winH = window.innerHeight / z
+    const w = p.offsetWidth, h = p.offsetHeight
+    const duoi = winH - aBottom
+    const len = duoi < h + 10 && aTop > duoi
+    const left = Math.max(8, Math.min(aLeft, winW - w - 8))
+    const top = len ? Math.max(8, aTop - h - 4) : aBottom + 4
+    setToaDo({ top: Math.round(top), left: Math.round(left) })
+  }, [mo])
+
+  if (!ds.length) return null
+
+  if (ds.length === 1) {
+    const x = ds[0]
+    return (
+      <span className="ds-tc" title={x.so}>
+        {x.to ? (
+          <a
+            className="ds-link-so"
+            href={`#${x.to}`}
+            target="_blank"
+            rel="noopener"
+            onClick={e => e.stopPropagation()}
+          >
+            {x.so}
+          </a>
+        ) : (
+          <span className="code">{x.so}</span>
+        )}
+      </span>
+    )
+  }
+
+  const chuoi = ds.map(x => x.so).join(', ')
+
+  const moPopup = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (mo) {
+      setMo(false)
+      return
+    }
+    const a = btnRef.current?.getBoundingClientRect()
+    if (a) {
+      const z = heSoZoom()
+      const aLeft = a.left / z, aBottom = a.bottom / z, winW = window.innerWidth / z
+      const left = Math.max(8, Math.min(aLeft, winW - 180))
+      setToaDo({ top: Math.round(aBottom + 4), left: Math.round(left) })
+    }
+    setMo(true)
+  }
+
+  return (
+    <span className="ds-tc" title={chuoi}>
+      <button
+        ref={btnRef}
+        type="button"
+        className="ds-tc-btn"
+        onClick={moPopup}
+      >
+        {chuoi}
+      </button>
+      {mo && toaDo && createPortal(
+        <div
+          ref={popRef}
+          className="ds-tc-pop"
+          style={{ top: `${toaDo.top}px`, left: `${toaDo.left}px` }}
+          onClick={e => e.stopPropagation()}
+        >
+          <div className="ds-tc-pop-hdr">Phiếu tham chiếu</div>
+          <div className="ds-tc-pop-body">
+            {ds.map((x, i) => (
+              x.to ? (
+                <a
+                  key={i}
+                  className="ds-tc-item"
+                  href={`#${x.to}`}
+                  target="_blank"
+                  rel="noopener"
+                  onClick={e => {
+                    e.stopPropagation()
+                    setMo(false)
+                  }}
+                >
+                  {x.so}
+                </a>
+              ) : (
+                <div key={i} className="ds-tc-item ds-tc-item-plain">
+                  <span className="code">{x.so}</span>
+                </div>
+              )
+            ))}
+          </div>
+        </div>,
+        document.body
+      )}
+    </span>
+  )
 }
 
 const COT_CO_DINH = new Set(['chk', 'stt', 'ngay', 'so'])
@@ -354,15 +492,10 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
     ...(cfg.kiemKe ? [{ k: 'kho', t: 'Kho', w: 180 } as Col, { k: 'soMat', t: 'Số mặt hàng', num: true, w: 120 } as Col] : []),
     ...(cfg.dieuChinh ? [{ k: 'kho', t: 'Kho', w: 180 } as Col] : []),   // T126
     ...(!cfg.kiemKe && !cfg.dieuChinh && (cfg.thue !== undefined || cfg.dong === 'hang') ? [{ k: 'thue', t: 'Tiền thuế', num: true, w: 120 } as Col] : []),
-    // Tham chiếu (T127): các phiếu liên quan, bấm số phiếu để mở
+    // Tham chiếu (T127, T270): các phiếu liên quan, một dòng, mở tab mới hoặc mở popup chọn mã
     {
       k: 'thamChieu', t: 'Tham chiếu', w: 150,
-      r: r => {
-        const ds = thamChieuCua(r)
-        return ds.length ? <span className="ds-tc">{ds.map((x, i) => x.to
-          ? <Link key={i} className="ds-link-so" to={x.to} onClick={e => e.stopPropagation()}>{x.so}</Link>
-          : <span key={i} className="code">{x.so}</span>)}</span> : ''
-      },
+      r: r => <OThamChieu ds={thamChieuCua(r)} />,
     },
     // Ngày tạo, người tạo (T132)
     { k: 'ngayTao', t: 'Ngày tạo', w: 140 },
