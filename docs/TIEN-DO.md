@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T278 | Thanh gom nhóm ở danh sách chứng từ: thiết kế lại cho đẹp, ô Thêm cột gom thành menu Dropdown thay thẻ select gốc | Trum | Đang làm | Sửa `src/ui/generic/VoucherScreen.tsx` (khối `ds-groupzone`), `src/styles/app.css` (mục riêng cuối file) |
 | T274 | Trang chủ gói Free 2 tab Tổng quan, Cần theo dõi, có lọc chi nhánh: 5 biểu đồ top (mặt hàng doanh thu, chi phí, giá vốn, nhà cung cấp, khoản chi), lãi lỗ so sánh chi nhánh, modal lãi lỗ 2 kiểu xem 13 tháng hoặc theo chi nhánh; cảnh báo công nợ quá hạn, âm kho, hàng huỷ cao, doanh thu lệch POS, tháng chưa khoá sổ; web và điện thoại | Trum | Chờ | Làm sau T273. Sửa `home/BaBaiToanFree.tsx`, `mobile/MTrangChu.tsx`, `app.css`, thêm file số liệu riêng, không sửa `data/mock.ts` (T269 đang sửa) |
 | T265 | Phiếu thu, chi đồng bộ từ FABi (T264) chưa vào Sổ quỹ tiền mặt, Sổ ngân hàng, Lịch sử thu chi, tồn quỹ trang chủ; đưa vào thì đổi số dư | | Chờ | Phát hiện khi làm T264, chờ PhuongXT quyết |
 | T269 | Danh mục Lý do nghiệp vụ thay bằng 44 lý do thu, chi theo file FABi của PhuongXT (mã, tên, thu/chi), giữ thêm Chi phí chờ phân bổ và 3 lý do kho; cờ Là chi phí theo đề xuất PhuongXT duyệt | PhuongXT | Đang làm | Sửa `data/mock.ts` (LY_DO), `ui/generic/gen.ts`, `ChungTuForm.tsx` và các chỗ dùng tên lý do cũ |
@@ -49,6 +48,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T278 | Thanh gom nhóm ở danh sách chứng từ: thiết kế lại cho đẹp, ô Thêm cột gom thành menu Dropdown thay thẻ select gốc | Trum | 16/10/2026 | [2026-10-16-trum-thanh-gom-nhom](nhat-ky/2026-10-16-trum-thanh-gom-nhom.md) |
 | T277 | Danh sách Kiểm kê: thiết kế lại 3 tab con Kiểm kê, Xuất điều chỉnh, Nhập điều chỉnh cho đẹp | Trum | 16/10/2026 | [2026-10-16-trum-tab-con-kiem-ke](nhat-ky/2026-10-16-trum-tab-con-kiem-ke.md) |
 | T276 | Bảng vai trò, phân quyền: ô tích quyền thành nút bật tắt, web và điện thoại | Trum | 16/10/2026 | [2026-10-16-trum-nut-bat-tat-phan-quyen](nhat-ky/2026-10-16-trum-nut-bat-tat-phan-quyen.md) |
 | T275 | Bộ biểu tượng Solar nâng cao, web và điện thoại: đồ vật Solar Bold Duotone tô theo 8 nhóm màu nghiệp vụ (ô màu đặc ở thẻ lớn, nền nhạt ở icon nhỏ), thanh bên bỏ iFaster sang Solar hai trạng thái (thường nét Linear, đang chọn khối Bold Duotone), nút thao tác Solar Linear nét 1.8 | Trum | 16/10/2026 | [2026-10-16-trum-bieu-tuong-solar-nang-cao](nhat-ky/2026-10-16-trum-bieu-tuong-solar-nang-cao.md) |

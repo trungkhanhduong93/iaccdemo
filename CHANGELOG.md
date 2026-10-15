@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 16/10/2026
 
+- T278: Thanh Gom nhóm ở các danh sách chứng từ làm lại. Mỗi cột đang gom là một thẻ có số cấp, giữa các cấp có mũi tên. Nút Thêm cột gom mở menu cùng kiểu với các menu khác.
 - T277: Danh sách Kiểm kê: ba tab Kiểm kê, Xuất điều chỉnh, Nhập điều chỉnh có chấm màu riêng, tab đang chọn nổi lên nền trắng.
 - T276: Màn Vai trò và phân quyền: ô tích quyền thành nút bật tắt, trên web và điện thoại.
 - T275: Đổi bộ biểu tượng trên web và điện thoại. Mỗi nhóm nghiệp vụ có một màu riêng: tiền, chi, ngân hàng, thuế, báo cáo, chứng từ, kho, hệ thống. Thẻ số liệu trang chủ có ô màu đặc. Thao tác nhanh, menu Khác, ô phân hệ điện thoại có ô nền nhạt. Thanh bên: mục thường là nét mảnh, mục đang chọn là khối trắng.

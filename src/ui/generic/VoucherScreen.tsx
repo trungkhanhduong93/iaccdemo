@@ -1,5 +1,5 @@
 // Màn chứng từ chung: danh sách theo bố cục AMIS với cột đứng yên, bộ lọc kỳ nhanh, khung chi tiết bên dưới, thao tác hàng loạt.
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import type { Col, ModuleDef, Row, ScreenDef, ScreenProps, VoucherCfg } from '../../modules/types'
@@ -8,7 +8,7 @@ import { chiNhanhHienTai, donViHienTai, loaiHinhDv, useSession } from '../../app
 import { kieuGhiSo } from '../../app/plan'
 import { Icon } from '../Icon'
 import { PageHead } from '../Page'
-import { Select } from '../Dropdown'
+import { Dropdown, MenuItem, Select } from '../Dropdown'
 import { St, Table } from '../Table'
 import { PhanTrang } from '../PhanTrang'
 import { buildGroupedData } from '../virtual'
@@ -632,51 +632,36 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
           {/* Thanh gom nhóm kéo thả theo LedgerStudio (T50) */}
           <div className="ds-groupzone">
             <div className="ds-groupzone-nhan">
-              <Icon n="filter" className="ic sm" />
-              <span>Gom nhóm:</span>
+              <Icon n="layers" className="ic sm" />
+              <span>Gom nhóm</span>
             </div>
             {nhomCols.length === 0 ? (
-              <span style={{ color: 'var(--muted)' }}>— chọn cột để gom nhóm xem tổng hợp</span>
+              <span className="ds-gz-goi">Chọn cột để gom dòng và xem tổng theo từng nhóm</span>
             ) : (
-              nhomCols.map(k => (
-                <span key={k} className="ds-gchip">
-                  {tenCotMap[k] || k}
-                  <button
-                    type="button"
-                    onClick={() => setNhomCols(nhomCols.filter(x => x !== k))}
-                    title="Bỏ gom nhóm cột này"
-                  >
-                    ×
-                  </button>
-                </span>
+              nhomCols.map((k, i) => (
+                <Fragment key={k}>
+                  {i > 0 && <Icon n="chevr" className="ic sm ds-gz-sep" />}
+                  <span className="ds-gchip">
+                    <b>{i + 1}</b>
+                    {tenCotMap[k] || k}
+                    <button type="button" onClick={() => setNhomCols(nhomCols.filter(x => x !== k))} title="Bỏ gom nhóm cột này">
+                      <Icon n="x" className="ic sm" />
+                    </button>
+                  </span>
+                </Fragment>
               ))
             )}
             {dsCotGomNhom.filter(c => !nhomCols.includes(c.k)).length > 0 && (
-              <select
-                className="ds-group-sel"
-                value=""
-                aria-label="Thêm cột gom nhóm"
-                onChange={e => {
-                  if (e.target.value) setNhomCols([...nhomCols, e.target.value])
-                }}
-              >
-                <option value="">+ Thêm cột gom</option>
-                {dsCotGomNhom
+              <Dropdown label={<><Icon n="plus" className="ic sm" />{nhomCols.length ? 'Thêm cấp' : 'Thêm cột gom'}</>} btnClass="ds-gz-them" title="Thêm cột gom nhóm">
+                {dong => dsCotGomNhom
                   .filter(c => !nhomCols.includes(c.k))
                   .map(c => (
-                    <option key={c.k} value={c.k}>
-                      {c.t || c.k}
-                    </option>
+                    <MenuItem key={c.k} onClick={() => { setNhomCols([...nhomCols, c.k]); dong() }}>{c.t || c.k}</MenuItem>
                   ))}
-              </select>
+              </Dropdown>
             )}
             {nhomCols.length > 0 && (
-              <button
-                type="button"
-                className="btn sm ghost"
-                style={{ padding: '0 6px', height: 22, fontSize: 11.5, marginLeft: 'auto' }}
-                onClick={() => setNhomCols([])}
-              >
+              <button type="button" className="ds-gz-xoa" onClick={() => setNhomCols([])}>
                 Xoá gom nhóm
               </button>
             )}
