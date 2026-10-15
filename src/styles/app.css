@@ -19504,3 +19504,7 @@ button.m-free-ton-quy-lon {
 .sb-flyout-ttn .sb-flyout-item:hover .ic-thuong { display: none; }
 .sb-flyout-ttn .sb-flyout-item:hover .ic-chon { display: block; }
 .sb-flyout-ttn .sb-flyout-item:hover .ic-chon .l2 { opacity: 1; fill: #ffb878; }
+
+/* Ô quy trình và khung Sổ sách: ô icon giữ cỡ 28px như trước, không tràn viền ô */
+.qt-ht .o-nen.o-sm, .qt-ht-dau .o-nen.o-sm, [class*="qt-hub-item"] > .o-nen.o-sm { width: 28px; height: 28px; border-radius: 8px; }
+.qt-ht .o-nen.o-sm .ic, .qt-ht-dau .o-nen.o-sm .ic, [class*="qt-hub-item"] > .o-nen.o-sm .ic { width: 17px; height: 17px; }
