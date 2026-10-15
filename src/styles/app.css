@@ -19522,3 +19522,14 @@ button.m-free-ton-quy-lon {
 .matrix td.c input[type="checkbox"]:checked, .m-pq-quyen-dong input[type="checkbox"]:checked { background: var(--blue); }
 .matrix td.c input[type="checkbox"]:checked::after, .m-pq-quyen-dong input[type="checkbox"]:checked::after { transform: translateX(14px); }
 .matrix td.c input[type="checkbox"]:focus-visible, .m-pq-quyen-dong input[type="checkbox"]:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+/* ── Tab con Kiểm kê, Xuất điều chỉnh, Nhập điều chỉnh (T277) ── */
+.seg.dc-tabs { padding: 3px; gap: 2px; border: 1px solid var(--line); border-radius: 10px; background: #eef2f7; }
+.seg.dc-tabs button { gap: 7px; padding: 6px 14px; border-radius: 7px; font-weight: 500; color: var(--muted); transition: background .12s, color .12s; }
+.seg.dc-tabs button::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--dc-c, var(--blue)); opacity: .45; }
+.seg.dc-tabs button:nth-child(2) { --dc-c: var(--orange); }
+.seg.dc-tabs button:nth-child(3) { --dc-c: var(--green); }
+.seg.dc-tabs button:hover:not(.on) { color: var(--ink); background: rgba(255, 255, 255, .6); }
+.seg.dc-tabs button.on { background: #fff; color: var(--ink); font-weight: 600; box-shadow: 0 1px 2px rgba(14, 26, 43, .08), 0 2px 6px rgba(14, 26, 43, .06); }
+.seg.dc-tabs button.on::before { opacity: 1; box-shadow: 0 0 0 3px color-mix(in srgb, var(--dc-c, var(--blue)) 18%, transparent); }
+.seg.dc-tabs button:focus-visible { outline: 2px solid var(--blue); outline-offset: 1px; }
