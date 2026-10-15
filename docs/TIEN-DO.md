@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T270 | Cột Tham chiếu ở danh sách chứng từ: các mã trên một dòng cách nhau dấu phẩy; một mã bấm mở phiếu ở tab mới, nhiều mã bấm mở popup nhỏ chọn mã rồi mở tab mới | Trum | Đang làm | Sửa `ui/generic/VoucherScreen.tsx`, thêm mục CSS cuối `app.css`. Phiếu tạo trong phiên không mở được ở tab mới (dữ liệu chỉ nằm trong bộ nhớ tab), Trum chấp nhận |
 | T267 | Gói Free: sơ đồ Quy trình của Kiểm kê (kho), Chi phí phân bổ (ccdc), Kê khai thuế (thue) vẽ kiểu hội tụ như Thu chi, Mua hàng, Bán hàng: các làn nghiệp vụ đổ về khối Sổ sách, báo cáo; giữ đủ ô, đường dẫn hiện có (4 bước tờ khai T261) | Trum | Đang làm | Sửa `src/modules/kho/quy-trinh.ts`, `ccdc/quy-trinh.ts`, `thue/quy-trinh.ts`, có thể `QuyTrinhScreen.tsx`, `MQuyTrinh.tsx`, `tools/kiem_tra.py`. Báo PhuongXT vì đổi sơ đồ Free T261, T262 |
 | T265 | Phiếu thu, chi đồng bộ từ FABi (T264) chưa vào Sổ quỹ tiền mặt, Sổ ngân hàng, Lịch sử thu chi, tồn quỹ trang chủ; đưa vào thì đổi số dư | | Chờ | Phát hiện khi làm T264, chờ PhuongXT quyết |
 | T269 | Danh mục Lý do nghiệp vụ thay bằng 44 lý do thu, chi theo file FABi của PhuongXT (mã, tên, thu/chi), giữ thêm Chi phí chờ phân bổ và 3 lý do kho; cờ Là chi phí theo đề xuất PhuongXT duyệt | PhuongXT | Đang làm | Sửa `data/mock.ts` (LY_DO), `ui/generic/gen.ts`, `ChungTuForm.tsx` và các chỗ dùng tên lý do cũ |
