@@ -13,6 +13,7 @@
 - Giữ ổ khoá ở chỗ mang nghĩa khoá sổ, khoá kỳ: `ChiPhiNvl.tsx`, `CuoiKy.tsx`, `MTacVu.tsx`. Giữ ở `TuyChinhBC.tsx` (cột mẫu thông tư), `DsCot.tsx` (cột bắt buộc).
 - Gói Free trên điện thoại vẫn ẩn hẳn mục khoá (T257).
 - `app.css`: mục T260 cuối file.
+- Sửa sau (Trum báo nhãn chìm): sidebar, menu bay nền tối dùng nhãn nền đặc (bỏ kiểu viền `o`). Dòng khoá chỉ làm mờ biểu tượng và chữ, không làm mờ nhãn. CSS ở mục "Nhãn gói rõ trên sidebar, menu bay nền tối (T260)" cuối `app.css`.
 
 ## Đã kiểm
 

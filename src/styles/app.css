@@ -17947,3 +17947,11 @@ button.bbt-nut { background: none; border: 0; padding-left: 0; padding-right: 0;
   row-gap: 12px;
 }
 
+
+/* ── Nhãn gói rõ trên sidebar, menu bay nền tối (T260) ── */
+.sb-nav a.lock,
+.sb-flyout-item.lock { opacity: 1; }
+.sb-nav a.lock > :not(.pk),
+.sb-flyout-item.lock > :not(.pk) { opacity: .55; }
+.sb-nav a.lock .pk,
+.sb-flyout-item.lock .pk { flex: none; margin-left: auto; }

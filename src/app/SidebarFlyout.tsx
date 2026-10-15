@@ -446,7 +446,7 @@ export function SidebarFlyout({
                 onClick={onClose}
               >
                 <span>{it.ten}</span>
-                {it.khoa && it.ma && <Pk g={minGoi(it.ma)} o />}
+                {it.khoa && it.ma && <Pk g={minGoi(it.ma)} />}
               </Link>
             ))}
           </div>
@@ -462,7 +462,7 @@ export function SidebarFlyout({
                 onClick={onClose}
               >
                 <span>{it.ten}</span>
-                {it.khoa && it.ma && <Pk g={minGoi(it.ma)} o />}
+                {it.khoa && it.ma && <Pk g={minGoi(it.ma)} />}
               </Link>
             ))}
           </div>

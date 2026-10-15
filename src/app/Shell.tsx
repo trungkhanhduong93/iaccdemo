@@ -125,7 +125,7 @@ function Sidebar({ mod, onSearch }: { mod: ModuleDef; onSearch: () => void }) {
                 onMouseEnter={coMenuPhu ? e => onEnterItem(m, e.currentTarget) : undefined}
                 onMouseLeave={coMenuPhu ? onLeaveItem : undefined}
               >
-                <Icon n={m.icon} /><span>{tenPhanHe(m, s.goi).ngan}</span>{khoa && <Pk g={minGoiPhanHe(m)} o />}
+                <Icon n={m.icon} /><span>{tenPhanHe(m, s.goi).ngan}</span>{khoa && <Pk g={minGoiPhanHe(m)} />}
               </Link>
             </Fragment>
           )
