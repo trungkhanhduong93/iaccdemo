@@ -6,6 +6,8 @@ import { tenMan } from '../../app/registry'
 import { TRUONG_DM } from '../../modules/danh-muc/truong-dm'
 import { MDanhSach } from './MDanhSach'
 import { MFormDm } from './MFormDm'
+import { useSearchParams } from 'react-router-dom'
+import { GoiYLapPhieu } from '../generic/GoiYLapPhieu'
 import type { KieuMTrong } from './MTrong'
 
 export const MDanhMuc: FC<ScreenProps> = ({ sc }) => {
@@ -111,6 +113,18 @@ export const MDanhMuc: FC<ScreenProps> = ({ sc }) => {
 
   const ten = tenMan(sc)
 
+  // Tạo quỹ từ trang chủ (?moi=1&goiY=thuchi): mở thẳng form thêm, lưu quỹ mới xong gợi ý lập phiếu thu, chi (T250)
+  const [thamSo, setThamSo] = useSearchParams()
+  const [goiYThuChi, setGoiYThuChi] = useState(false)
+  const [quyVuaTao, setQuyVuaTao] = useState<Row | null>(null)
+  useEffect(() => {
+    if (thamSo.get('moi') === null) return
+    setGoiYThuChi(thamSo.get('goiY') === 'thuchi')
+    setEdit({})
+    setDienSan(undefined)
+    setThamSo({}, { replace: true })
+  }, [thamSo])   // eslint-disable-line react-hooks/exhaustive-deps
+
   const handleLuu = useCallback(
     (val: Record<string, any>, themTiep: boolean) => {
       if (val && val._tt !== undefined) {
@@ -118,9 +132,10 @@ export const MDanhMuc: FC<ScreenProps> = ({ sc }) => {
         if (k) setTtGhiDe(prev => ({ ...prev, [k]: Number(val._tt) }))
       }
       toast('Đã lưu')
+      if (goiYThuChi && val && !edit?.ma && !themTiep) { setQuyVuaTao(val); setGoiYThuChi(false) }
       if (!themTiep) setEdit(null)
     },
-    [khoaDong, toast],
+    [khoaDong, toast, goiYThuChi, edit],
   )
 
   return (
@@ -194,6 +209,7 @@ export const MDanhMuc: FC<ScreenProps> = ({ sc }) => {
           onLuu={handleLuu}
         />
       )}
+      {quyVuaTao && <GoiYLapPhieu quy={quyVuaTao} onDong={() => setQuyVuaTao(null)} />}
     </>
   )
 }

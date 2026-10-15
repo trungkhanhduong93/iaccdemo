@@ -4460,7 +4460,7 @@ def kiem_tra_t238_may_tinh():
         # Chụp ảnh Bảng dữ liệu thấy thanh phân trang và dòng tổng cuối (lưu ngoài repo)
         pg.locator('.bc-ban-du-lieu .tbl-wrap').evaluate('el => el.scrollTop = el.scrollHeight')
         pg.wait_for_timeout(200)
-        anh_t238 = Path('C:/Users/trung.duong/.gemini/antigravity-cli/brain/a61c3403-fb50-4f28-838a-585283d26367/t238-bang-du-lieu.png')
+        anh_t238 = SHOTS / 't238-bang-du-lieu.png'   # trước ghi đường dẫn máy Trum, máy khác báo lỗi quyền (T250)
         anh_t238.parent.mkdir(parents=True, exist_ok=True)
         pg.screenshot(path=str(anh_t238))
         pg.locator('.bc-ban-du-lieu .tbl-wrap').evaluate('el => el.scrollTop = 0')

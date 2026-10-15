@@ -142,7 +142,7 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
   // 3. Kho gói Free: mua hàng, công nợ, hao hụt trong tháng (T230)
   const tenCnSet = useMemo(() => new Set(CHI_NHANH.filter(c => selCns.includes(c.id)).map(c => c.ten)), [selCns])
   const khoFree = useMemo(() => {
-    if (!isFree) return { nhapMua: 0, soDon: 0, congNo: 0, soNcc: 0, soPhieuHH: 0, matHH: 0 }
+    if (!isFree) return { nhapMua: 0, soDon: 0, congNo: 0, soNcc: 0, matHH: 0 }
     const thangArr = [thangF]
     const mua = chungTu(PHIEU_MUA, '4.1.1').filter(r => thangArr.includes(Number(r.thang)) && tenCnSet.has(String(r.cn)))
     const nhapMua = mua.reduce((a, r) => a + (Number(r.tong) || 0), 0)
@@ -152,7 +152,7 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
     const cfgKK = timMan('kho', '5-1-10').sc?.voucher
     const xdc = cfgKK ? mauDieuChinh(cfgKK).filter(r => r.loai === 'xdc' && thangArr.includes(Number(r.thang)) && tenCnSet.has(String(r.cn))) : []
     const matHH = new Set(xdc.flatMap(r => ((r._dong as { ma: string }[] | undefined) ?? []).map(d => d.ma))).size
-    return { nhapMua, soDon: mua.length, congNo, soNcc: ncc.filter(r => Number(r.cuoi) > 0).length, soPhieuHH: xdc.length, matHH }
+    return { nhapMua, soDon: mua.length, congNo, soNcc: ncc.filter(r => Number(r.cuoi) > 0).length, matHH }
   }, [isFree, selCns, tenCnSet, thangF])
 
   // Phải thu khách hàng (TK 131)
@@ -721,7 +721,7 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
                       <Icon n="wallet" className="ic sm" /> 2. Quản lý thu chi
                     </h3>
                   </div>
-                  <Link to="/app/danh-muc/1-12?moi=1" className="m-tc-the-link">
+                  <Link to="/app/danh-muc/1-12?moi=1&goiY=thuchi" className="m-tc-the-link">
                     Tạo quỹ
                   </Link>
                 </div>
@@ -819,7 +819,7 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
                     <div className="m-free-tll-trai">
                       <b>Hao hụt kiểm kê</b>
                       <span>
-                        {khoFree.soPhieuHH} phiếu xuất điều chỉnh khi kiểm kê thiếu
+                        Các mặt hàng thừa thiếu trong kỳ
                       </span>
                     </div>
                     <div className="m-free-tll-phai">

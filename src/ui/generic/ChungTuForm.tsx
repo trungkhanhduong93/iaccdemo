@@ -135,6 +135,9 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   const lyUrl = moi ? LY_DO.find(x => x.ma === sp.get('ly'))?.ten : undefined
   const lyGoc = (dg: string) => lyUrl && oLy?.ds?.includes(lyUrl) ? lyUrl : lyMacDinh(oLy?.ds ?? [], dg)
   const [hoiThe, setHoiThe] = useState<{ moMoi: boolean; idMoi: string; tu: Record<string, unknown> } | null>(null)
+  // Lập phiếu từ gợi ý sau khi tạo quỹ ở trang chủ: lưu xong hỏi quay lại trang chủ làm tiếp (T250)
+  const [goiYVe] = useState(() => Boolean((loc.state as { goiYVeTrangChu?: boolean } | null)?.goiYVeTrangChu))
+  const [hoiVe, setHoiVe] = useState<{ moMoi: boolean; idMoi: string } | null>(null)
   const [lyDo, setLyDo] = useState(() => row?._lyDo ? String(row._lyDo) : lyGoc(dienGiai))
   // Phiếu chuyển quỹ: quỹ đi và quỹ đến. Rút tiền ngân hàng thì đi từ tài khoản về quỹ tiền mặt
   const quyTm = `Quỹ tiền mặt ${CHI_NHANH.find(c => c.ten === chiNhanh)?.ngan ?? CHI_NHANH[0].ngan}`
@@ -419,6 +422,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
       } })
       return
     }
+    if (moi && goiYVe && !moMoi) { setHoiVe({ moMoi, idMoi }); return }
     sauLuu(moMoi, idMoi)
   }
 
@@ -1274,6 +1278,13 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
           onDong={() => { const h = hoiThe; setHoiThe(null); sauLuu(h.moMoi, h.idMoi) }}
           onDongY={() => { const h = hoiThe; setHoiThe(null); nav('/app/ccdc/8-1-1?moi=the', { state: { tuPhieu: h.tu } }) }}>
           Bạn có muốn tạo Thẻ chi phí phân bổ ngay không? Tên mục chi phí, số tiền, ngày và chứng từ gốc lấy sẵn từ {soCt}, bạn vẫn sửa lại được.
+        </HopXacNhan>
+      )}
+      {hoiVe && (
+        <HopXacNhan tieuDe={`Đã lưu ${soCt}`} nut="Về trang chủ" nutHuy="Ở lại phiếu" nutDo={false}
+          onDong={() => { const h = hoiVe; setHoiVe(null); sauLuu(h.moMoi, h.idMoi) }}
+          onDongY={() => { setHoiVe(null); nav('/app/trang-chu/tong-quan') }}>
+          Quay lại trang chủ để xem tồn quỹ và làm tiếp các việc khác?
         </HopXacNhan>
       )}
     </FormToanMan>

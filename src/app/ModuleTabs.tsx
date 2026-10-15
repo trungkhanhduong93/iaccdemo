@@ -1,5 +1,6 @@
 // Thanh tab ngang của phân hệ: Quy trình, các màn chứng từ, danh mục, chức năng, Báo cáo. Tab không đủ chỗ dồn vào "Khác".
-import { useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { createPortal } from 'react-dom'
 import { Link, useLocation } from 'react-router-dom'
 import { useSession } from './session'
 import { duongDan, hienMan, laBaoCao, maKhoa, moDuoc, nhanTab, tabCua } from './registry'
@@ -94,6 +95,7 @@ export function ModuleTabs({ mod }: { mod: ModuleDef }) {
         )}
         {bc && tab(bc)}
       </div>
+      <div className="mtabs-phai" id="mtabs-phai" />
       <div className="mtabs-meas" ref={meas} aria-hidden>
         {[...giua, ...(bc ? [bc] : [])].map(sc => (
           <span key={sc.slug}>{sc.kind === 'quytrinh' && <Icon n="flow" className="ic sm" />}{nhanTab(sc)}{!moDuoc(sc, s.goi) && <Icon n="lock" className="ic sm" />}</span>
@@ -101,4 +103,11 @@ export function ModuleTabs({ mod }: { mod: ModuleDef }) {
       </div>
     </div>
   )
+}
+
+/** Đưa nút, bộ lọc của màn lên bên phải thanh tab cho đỡ tốn chỗ, vd chọn tháng năm ở Tổng quan gói Free (T250) */
+export function LenThanhTab({ children }: { children: ReactNode }) {
+  const [el, setEl] = useState<HTMLElement | null>(null)
+  useEffect(() => { setEl(document.getElementById('mtabs-phai')) }, [])
+  return el ? createPortal(children, el) : null
 }

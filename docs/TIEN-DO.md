@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T250 | Trang chủ gói Free: bấm Tạo quỹ, lưu quỹ mới xong hiện gợi ý lập phiếu thu, phiếu chi ngay (quỹ tiền mặt mở thu/chi tiền mặt, quỹ ngân hàng mở báo có/UNC) | PhuongXT | Đang làm | Sửa `CatalogScreen.tsx`, `BaBaiToanFree.tsx`, `MTrangChu.tsx`, thêm mục CSS cuối `app.css` |
 | T229 | Báo cáo kết quả kinh doanh (10.2.3, B02-DNN) ở chế độ TT133 mở ra "Báo cáo chưa có mẫu" ở cả bản máy tính và điện thoại, gói Pro và Free | | Chờ | Phát hiện ở T222 ngày 14/10/2026, mở từ Tất cả báo cáo. Có thể liên quan T220 |
 | T169 | Form chứng từ: gõ đổi địa chỉ từ phiếu này sang phiếu khác (vd `#/app/tien/2-1-1/chi-3` sang `chi-6`) thì form giữ số phiếu, đối tượng của phiếu cũ; mở từ danh sách, Trước, Sau thì đúng | | Chờ | Phát hiện ở T168. Sửa `ChungTuForm.tsx`, có thể `VoucherScreen.tsx` (key của form) |
 | T138 | Màn onboard khi bấm từ FABi sang IACC: khởi tạo đơn vị kế toán, điền sẵn từ FABi (chi nhánh, kho, cách đồng bộ, số dư đầu kỳ) | PhuongXT | Dở dang | Popup khởi tạo dữ liệu 4 bước trong phần mềm (`OnboardFabi.tsx`, `Shell.tsx`) đã push, PhuongXT xem lại một lượt. Xem `2026-10-11-phuongxt-man-khoi-tao-fabi.md` |
@@ -46,6 +45,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T250 | Trang chủ gói Free: tạo quỹ xong gợi ý lập phiếu thu, chi (quỹ ngân hàng: báo có, UNC), lưu phiếu xong hỏi về trang chủ; bỏ dòng giới thiệu, chọn tháng năm lên thanh tab; thẻ Hao hụt kiểm kê ghi "Các mặt hàng thừa thiếu trong kỳ". Sửa đường dẫn ảnh máy Trum trong `kiem_tra.py` | PhuongXT | 15/10/2026 | [2026-10-15-phuongxt-goi-y-lap-phieu-sau-tao-quy](nhat-ky/2026-10-15-phuongxt-goi-y-lap-phieu-sau-tao-quy.md) |
 | T247 | Đồng bộ FABi chỉ kéo chi tiết (mỗi hoá đơn một chứng từ), mọi gói: bỏ lựa chọn tổng hợp theo kênh (Cấu hình kế toán, khởi tạo, điện thoại, bỏ trường `dongBoFabi`); Xuất bán POS bỏ nhãn Tổng hợp, dải Đã/Chưa đồng bộ, nút Đồng bộ POS (cả điện thoại); `SoChungTu.tsx` dò số POS theo hoá đơn. Báo cáo bán hàng (`ban-hang/bao-cao.ts`) vẫn đọc theo kênh | PhuongXT | 15/10/2026 | [2026-10-15-phuongxt-pos-chi-tiet-kho-dau](nhat-ky/2026-10-15-phuongxt-pos-chi-tiet-kho-dau.md) |
 | T248 | Phiếu mua hàng (gói dưới Pro): ô Kho nhập đứng đầu, trước Nhà cung cấp, Ghi chú lên cột giữa dưới Người giao dịch; Xuất bán POS thêm Kho xuất (kho mặc định của chi nhánh) đứng đầu, Ghi chú một ô để đầu phiếu 2 hàng | PhuongXT | 15/10/2026 | [2026-10-15-phuongxt-pos-chi-tiet-kho-dau](nhat-ky/2026-10-15-phuongxt-pos-chi-tiet-kho-dau.md) |
 | T241 | Điện thoại: báo cáo còn hiện kiểu web (mẫu giấy qua `MToGiay`, màn rơi về `MChiMayTinh`) chuyển sang dạng dòng điện thoại, có nút Xem mẫu in | Trum | 15/10/2026 | [2026-10-15-trum-free-bao-cao-dien-thoai](nhat-ky/2026-10-15-trum-free-bao-cao-dien-thoai.md) |

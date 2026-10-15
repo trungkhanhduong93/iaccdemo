@@ -28,6 +28,7 @@ const HANG_LOAT = 'hang-loat'
 /** Cột luôn hiện, không ẩn được ở Tuỳ chỉnh cột (T148) */
 const COT_CO_DINH = new Set(['_stt', 'ma', 'ten', 'so'])
 import { TEN_DVT } from '../../modules/danh-muc/data'
+import { GoiYLapPhieu } from './GoiYLapPhieu'
 import { HOM_NAY } from '../../data/mock'
 import { dmy } from '../format'
 
@@ -159,6 +160,9 @@ export function CatalogScreen({ sc }: ScreenProps) {
   // Mở thẳng form thêm mới từ sơ đồ Quy trình: ?moi=<kiểu>, mở xong bỏ tham số khỏi đường dẫn
   const [thamSo, setThamSo] = useSearchParams()
   const viTri = useLocation()
+  // ?goiY=thuchi: tạo quỹ từ trang chủ, lưu quỹ mới xong gợi ý lập phiếu thu, chi (T250)
+  const [goiYThuChi, setGoiYThuChi] = useState(false)
+  const [quyVuaTao, setQuyVuaTao] = useState<Row | null>(null)
   useEffect(() => {
     // ?mo=<số>: mở thẳng một dòng có sẵn, vd bấm số thẻ chi phí ở phiếu chi (T168)
     const mo = thamSo.get('mo')
@@ -170,6 +174,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
     }
     const k = thamSo.get('moi') ?? thamSo.get('loai')   // ?loai= từ menu Thêm theo loại của nút thêm
     if (k === null) return
+    setGoiYThuChi(thamSo.get('goiY') === 'thuchi')
     if (k === HANG_LOAT) { setMoHangLoat(true); setThamSo({}, { replace: true }); return }
     moSua({}, cauHinh?.bien?.some(b => b.k === k) ? k : undefined, (viTri.state as { tuPhieu?: Row } | null)?.tuPhieu)
     setThamSo({}, { replace: true })
@@ -344,10 +349,12 @@ export function CatalogScreen({ sc }: ScreenProps) {
             }
             if (val && cfg.phien) set(cfg.phien.luu(val, s))   // T245
             toast('Đã lưu')
+            if (goiYThuChi && val && !edit.ma && !themTiep) { setQuyVuaTao(val); setGoiYThuChi(false) }
             if (!themTiep) setEdit(null)
           }}
         />
       )}
+      {quyVuaTao && <GoiYLapPhieu quy={quyVuaTao} onDong={() => setQuyVuaTao(null)} />}
       {moHangLoat && cfg.hangLoat && <cfg.hangLoat.Form soDong={all.length} onDong={() => setMoHangLoat(false)} />}
     </div>
   )

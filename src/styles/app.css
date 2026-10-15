@@ -17332,3 +17332,18 @@ a.lsq-dong:hover { background: var(--tint); }
     font-variant-numeric: tabular-nums;
   }
 }
+
+/* ── Gợi ý lập phiếu thu, chi sau khi tạo quỹ từ trang chủ (T250) ── */
+.goiy-lap-phieu .ds-hop-dau .ic { color: var(--green); }
+.goiy-lap-phieu-nut { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0 16px 14px; }
+.goiy-lap-phieu-nut .btn { justify-content: center; }
+/* Điện thoại: hộp nhỏ giữa màn hình, không phủ kín như các hộp ds-hop khác */
+@media (max-width: 767px) {
+  .ds-hop-nen:has(> .goiy-lap-phieu) { align-items: center !important; justify-content: center !important; padding: 16px !important; }
+  .ds-hop-nen > .ds-hop.goiy-lap-phieu { width: 100% !important; height: auto !important; border-radius: 14px !important; }
+  .ds-hop.goiy-lap-phieu > .ds-hop-than { flex: none !important; }
+  .ds-hop.goiy-lap-phieu > .ds-chan { position: static !important; }
+}
+/* Ô bên phải thanh tab: chọn tháng năm ở Tổng quan gói Free (T250) */
+.mtabs-phai { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; }
+.mtabs-phai:empty { display: none; }
