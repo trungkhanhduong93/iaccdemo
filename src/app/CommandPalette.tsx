@@ -6,7 +6,7 @@ import { useSession } from './session'
 import { MODULES, duongDan, hienMan, hienPhanHe, laBaoCao, maKhoa, moDuoc, tenMan, tenPhanHe } from './registry'
 import { minGoi } from './plan'
 import { fold } from '../ui/format'
-import { Icon } from '../ui/Icon'
+import { Icon, ONen } from '../ui/Icon'
 import { Pk } from '../ui/Page'
 import type { ModuleDef, ScreenDef } from '../modules/types'
 
@@ -129,7 +129,7 @@ export function CommandPalette({ onClose }: { onClose: () => void }) {
                 const ma = maKhoa(x.sc)
                 return (
                   <button key={x.p} type="button" className={`cmdk-dong${k === i ? ' on' : ''}${ok ? '' : ' khoa'}`} onMouseMove={() => k !== i && setI(k)} onClick={() => go(k)}>
-                    <span className="cmdk-ic"><Icon n={x.sc.icon ?? x.goc.icon} className="ic sm" /></span>
+                    <ONen n={x.sc.icon ?? x.goc.icon} kieu="nhat" co="sm" />
                     <span className="cmdk-chu">
                       <b><Ten x={x} words={words} /></b>
                       <small>{x.m === x.goc ? tenPhanHe(x.m, s.goi).ngan : `${tenPhanHe(x.m, s.goi).ngan} · ${tenPhanHe(x.goc, s.goi).ngan}`}{x.sc.nhom && x.m === x.goc && x.sc.nhom !== x.m.ngan ? ` · ${x.sc.nhom}` : ''}</small>

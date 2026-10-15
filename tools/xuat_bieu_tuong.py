@@ -1,11 +1,10 @@
-"""Xuất biểu tượng khối đặc iFaster và Solar cho web.
+"""Xuất biểu tượng khối Solar (Bold Duotone / Bold) và nét Solar (Linear) cho web.
 
 Nguồn:
-- Bộ biểu tượng menu của iFaster (iPOS): tải từ CSS https://ifaster.ipos.vn/login
 - Solar Icon Set by 480 Design, CC BY 4.0, https://creativecommons.org/licenses/by/4.0/: tải qua API Iconify
 
 Sinh ra:
-- src/ui/icon-dac.ts: gồm 54 biểu tượng khối đặc (9 của iFaster + 45 của Solar).
+- src/ui/icon-dac.ts: gồm DAC (khối), NET (nét), NHOM (nhóm màu).
 
 Chạy lại:
     python tools/xuat_bieu_tuong.py
@@ -15,7 +14,6 @@ Kiểm tra tên thiếu:
 import json
 import re
 import sys
-import urllib.parse
 import urllib.request
 from pathlib import Path
 
@@ -25,145 +23,189 @@ if hasattr(sys.stdout, 'reconfigure'):
 WEB = Path(__file__).resolve().parent.parent
 DICH = WEB / 'src' / 'ui' / 'icon-dac.ts'
 
-# 1. Bộ iFaster i-me (9 cặp)
-IFASTER = {
-    'home': 'menu_dashboard',
-    'folder': 'menu_catalog',
-    'wallet': 'menu_income_expense',
-    'cart': 'menu_sale',
-    'truck': 'menu_order',
-    'box': 'menu_warehouse',
-    'percent': 'menu_business',
-    'book': 'menu_report',
-    'cog': 'menu_setting',
-}
-
-# 2. Solar bold (45 cặp)
+# 1. 9 phân hệ và icon khối (SOLAR base names, không có hậu tố)
 SOLAR = {
-    'building': 'buildings-2-bold',
-    'tool': 'sledgehammer-bold',
-    'flask': 'test-tube-bold',
-    'grid': 'magic-stick-3-bold',
-    'bell': 'bell-bold',
-    'lock': 'lock-keyhole-minimalistic-bold',
-    'eye': 'eye-bold',
-    'edit': 'pen-bold',
-    'trash': 'trash-bin-trash-bold',
-    'logout': 'logout-2-bold',
-    'user': 'user-bold',
-    'users': 'users-group-rounded-bold',
-    'alert': 'danger-triangle-bold',
-    'info': 'info-circle-bold',
-    'clock': 'clock-circle-bold',
-    'keyboard': 'keyboard-bold',
-    'chart': 'chart-2-bold',
-    'pulse': 'pulse-2-bold',
-    'receipt': 'bill-list-bold',
-    'filein': 'file-download-bold',
-    'doc': 'document-text-bold',
-    'bank': 'card-bold',
-    'scale': 'scale-bold',
-    'sparkle': 'stars-bold',
-    'layers': 'layers-bold',
-    'history': 'history-bold',
-    'pos': 'monitor-smartphone-bold',
-    'store': 'shop-bold',
-    'db': 'database-bold',
-    'shield': 'shield-check-bold',
-    'mail': 'letter-bold',
-    'key': 'key-bold',
-    'play': 'play-bold',
-    'phone': 'phone-bold',
-    'flag': 'flag-bold',
-    'cashin': 'card-recive-bold',
-    'cashout': 'card-send-bold',
-    'chef': 'chef-hat-bold',
-    'calc': 'calculator-bold',
-    'clipboard': 'clipboard-list-bold',
-    'send': 'plain-bold',
-    'help': 'question-circle-bold',
-    'tag': 'tag-bold',
-    'flow': 'routing-2-bold',
-    'printer': 'printer-bold',
+    # 9 phân hệ (chuyển sang Solar)
+    'home': 'home-2',
+    'folder': 'folder-with-files',
+    'wallet': 'wallet',
+    'cart': 'cart-large-2',
+    'truck': 'delivery',
+    'box': 'box',
+    'percent': 'sale',
+    'book': 'notebook-bookmark',
+    'cog': 'settings',
+    # Các icon đồ vật / nghiệp vụ khác
+    'building': 'buildings-2',
+    'tool': 'sledgehammer',
+    'flask': 'test-tube',
+    'grid': 'magic-stick-3',
+    'bell': 'bell',
+    'lock': 'lock-keyhole-minimalistic',
+    'eye': 'eye',
+    'edit': 'pen',
+    'trash': 'trash-bin-trash',
+    'logout': 'logout-2',
+    'user': 'user',
+    'users': 'users-group-rounded',
+    'alert': 'danger-triangle',
+    'info': 'info-circle',
+    'clock': 'clock-circle',
+    'keyboard': 'keyboard',
+    'chart': 'chart-2',
+    'pulse': 'pulse-2',
+    'receipt': 'bill-list',
+    'filein': 'file-download',
+    'doc': 'document-text',
+    'bank': 'card',
+    'scale': 'scale',
+    'sparkle': 'stars',
+    'layers': 'layers',
+    'history': 'history',
+    'pos': 'monitor-smartphone',
+    'store': 'shop',
+    'db': 'database',
+    'shield': 'shield-check',
+    'mail': 'letter',
+    'key': 'key',
+    'play': 'play',
+    'phone': 'phone',
+    'flag': 'flag',
+    'cashin': 'card-recive',
+    'cashout': 'card-send',
+    'chef': 'chef-hat',
+    'calc': 'calculator',
+    'clipboard': 'clipboard-list',
+    'send': 'plain',
+    'help': 'question-circle',
+    'tag': 'tag',
+    'flow': 'routing-2',
+    'printer': 'printer',
     # Danh mục (T40)
-    'sotk': 'notebook-bold',
-    'hanghoa': 'cup-hot-bold',
-    'dvt': 'ruler-bold',
-    'quydoi': 'transfer-horizontal-bold',
-    'congviec': 'checklist-minimalistic-bold',
-    'khohang': 'box-bold',
-    'tiente': 'dollar-bold',
-    'tygia': 'graph-up-bold',
-    'loaithue': 'sale-bold',
-    'quytien': 'safe-square-bold',
-    'banggia': 'tag-price-bold',
-    'buttoan': 'refresh-circle-bold',
-    'lydo': 'notes-bold',
-    'chinhanh': 'shop-2-bold',
+    'sotk': 'notebook',
+    'hanghoa': 'cup-hot',
+    'dvt': 'ruler',
+    'quydoi': 'transfer-horizontal',
+    'congviec': 'checklist-minimalistic',
+    'khohang': 'box',
+    'tiente': 'dollar',
+    'tygia': 'graph-up',
+    'loaithue': 'sale',
+    'quytien': 'safe-square',
+    'banggia': 'tag-price',
+    'buttoan': 'refresh-circle',
+    'lydo': 'notes',
+    'chinhanh': 'shop-2',
 }
 
+# 2. Bảng NET tải bản -linear cho: 9 phân hệ và 19 thao tác
+NET_DEF = {
+    # 9 phân hệ
+    'home': 'home-2',
+    'folder': 'folder-with-files',
+    'wallet': 'wallet',
+    'cart': 'cart-large-2',
+    'truck': 'delivery',
+    'box': 'box',
+    'percent': 'sale',
+    'book': 'notebook-bookmark',
+    'cog': 'settings',
+    # 19 thao tác
+    'chevd': 'alt-arrow-down',
+    'chevr': 'alt-arrow-right',
+    'chevl': 'alt-arrow-left',
+    'plus': 'add-circle',
+    'x': 'close-circle',
+    'check': 'check-read',
+    'arrow': 'arrow-right',
+    'back': 'undo-left',
+    'more': 'menu-dots',
+    'search': 'magnifer',
+    'refresh': 'refresh',
+    'filter': 'filter',
+    'download': 'download-minimalistic',
+    'upload': 'upload-minimalistic',
+    'link': 'link',
+    'swap': 'transfer-horizontal',
+    'copy': 'copy',
+    'calendar': 'calendar',
+    'chinh': 'tuning-2',
+}
 
-def lay_ifaster():
-    """Tải và trích xuất các biểu tượng i-me từ CSS công khai của iFaster."""
-    url_login = 'https://ifaster.ipos.vn/login'
-    req = urllib.request.Request(url_login, headers={'User-Agent': 'Mozilla/5.0'})
-    with urllib.request.urlopen(req) as resp:
-        html = resp.read().decode('utf-8')
+# 3. Phân nhóm màu (8 nhóm nghiệp vụ)
+NHOM_MAP = {
+    'tien': {'wallet', 'cashin', 'quytien', 'tiente'},
+    'chi': {'cashout'},
+    'nh': {'bank', 'tygia', 'cart', 'pos', 'store'},
+    'thue': {'percent', 'loaithue'},
+    'bc': {'book', 'chart', 'scale', 'doc', 'pulse'},
+    'ct': {'receipt', 'sotk', 'buttoan', 'calc', 'clipboard', 'filein', 'congviec', 'lydo'},
+    'kho': {'box', 'truck', 'hanghoa', 'dvt', 'quydoi', 'banggia', 'khohang', 'tag', 'chef'},
+    'ht': {
+        'home', 'folder', 'cog', 'building', 'chinhanh', 'users', 'history', 'printer', 'shield', 'bell',
+        'tool', 'flask', 'grid', 'lock', 'eye', 'edit', 'trash', 'logout', 'user', 'alert', 'info',
+        'clock', 'keyboard', 'sparkle', 'layers', 'db', 'mail', 'key', 'play', 'phone', 'flag', 'send',
+        'help', 'flow',
+    },
+}
 
-    m_css = re.search(r'href=[\'"](/assets/index-[^\'"]+\.css)[\'"]', html)
-    if not m_css:
-        raise RuntimeError('Không tìm thấy liên kết CSS trên trang đăng nhập iFaster')
-
-    url_css = 'https://ifaster.ipos.vn' + m_css.group(1)
-    req_css = urllib.request.Request(url_css, headers={'User-Agent': 'Mozilla/5.0'})
-    with urllib.request.urlopen(req_css) as resp:
-        css = resp.read().decode('utf-8')
-
-    pattern = re.compile(r'\.i.me.:([A-Za-z_0-9-]+)[^{]*\{--un-icon:url\("data:image/svg\+xml;utf8,([^"]*)"\)')
-    icons = {}
-    for m in pattern.finditer(css):
-        name = m.group(1)
-        svg_raw = urllib.parse.unquote(m.group(2))
-        icons[name] = svg_raw
-    return icons
-
-
-def chuan_hoa_ime(svg_str):
-    """Chuẩn hoá SVG i-me: lấy viewBox, bỏ <svg>, bỏ opacity, fill/stroke -> currentColor."""
-    m_vb = re.search(r'viewBox=[\'"]([^\'"]+)[\'"]', svg_str)
-    vb = m_vb.group(1) if m_vb else '0 0 20 20'
-
-    # Bỏ thẻ <svg ...> ngoài và </svg>
-    body = re.sub(r'^\s*<svg[^>]*>', '', svg_str.strip(), flags=re.IGNORECASE)
-    body = re.sub(r'</svg>\s*$', '', body, flags=re.IGNORECASE).strip()
-
-    # Bỏ thuộc tính opacity (màu và độ mờ do CSS quyết định)
-    body = re.sub(r'\s+opacity=[\'"][^\'"]*[\'"]', '', body)
-
-    # Đổi fill / stroke khác none về currentColor
-    def rep_attr(m):
-        attr = m.group(1)
-        val = m.group(2)
-        if val == 'none':
-            return f'{attr}="none"'
-        return f'{attr}="currentColor"'
-
-    body = re.sub(r'\b(fill|stroke)=[\'"]([^\'"]*)[\'"]', rep_attr, body)
-
-    # Chuẩn hoá các thuộc tính nháy đơn thành nháy kép
-    body = re.sub(r'\b([a-zA-Z0-9_-]+)=\'([^\']*)\'', r'\1="\2"', body)
-
-    return vb, body
+NHOM = {}
+for local_name in SOLAR:
+    found = False
+    for group, names in NHOM_MAP.items():
+        if local_name in names:
+            NHOM[local_name] = group
+            found = True
+            break
+    if not found:
+        NHOM[local_name] = 'ht'
 
 
-def lay_solar():
-    """Tải bộ biểu tượng Solar từ API Iconify."""
-    solar_icons = list(SOLAR.values())
-    url = f"https://api.iconify.design/solar.json?icons={','.join(solar_icons)}"
-    req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
-    with urllib.request.urlopen(req) as resp:
-        data = json.loads(resp.read().decode('utf-8'))
-    return data
+def tai_iconify(names):
+    """Tải một danh sách icon từ API Iconify (chia thành từng chunk nếu quá dài)."""
+    icons_dict = {}
+    aliases_dict = {}
+    not_found = []
+    root_w = 24
+    root_h = 24
+
+    chunk_size = 60
+    for i in range(0, len(names), chunk_size):
+        chunk = names[i:i + chunk_size]
+        url = f"https://api.iconify.design/solar.json?icons={','.join(chunk)}"
+        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+        with urllib.request.urlopen(req) as resp:
+            data = json.loads(resp.read().decode('utf-8'))
+        root_w = data.get('width', root_w)
+        root_h = data.get('height', root_h)
+        icons_dict.update(data.get('icons', {}))
+        aliases_dict.update(data.get('aliases', {}))
+        not_found.extend(data.get('not_found', []))
+
+    return {
+        'icons': icons_dict,
+        'aliases': aliases_dict,
+        'not_found': not_found,
+        'width': root_w,
+        'height': root_h,
+    }
+
+
+def lay_thong_tin_icon(icons_dict, aliases_dict, root_w, root_h, full_name):
+    """Lấy dữ liệu viewBox và body của icon, giải quyết alias nếu có."""
+    lookup = full_name
+    seen = set()
+    while lookup in aliases_dict:
+        if lookup in seen:
+            break
+        seen.add(lookup)
+        lookup = aliases_dict[lookup].get('parent', lookup)
+    if lookup not in icons_dict:
+        return None
+    data = icons_dict[lookup]
+    w = data.get('width', root_w)
+    h = data.get('height', root_h)
+    return {'vb': f'0 0 {w} {h}', 'body': data['body']}
 
 
 def escape_nhay_don(s):
@@ -173,58 +215,95 @@ def escape_nhay_don(s):
 
 def main():
     kiem_tra_chi_dinh = '--kiem' in sys.argv
+    canh_bao = []
 
-    ifaster_raw = lay_ifaster()
-    solar_data = lay_solar()
+    # 1. Thử tải bold-duotone trước cho mọi icon trong SOLAR
+    duotone_targets = {k: f'{v}-bold-duotone' for k, v in SOLAR.items()}
+    duotone_names = list(set(duotone_targets.values()))
+    duotone_res = tai_iconify(duotone_names)
 
-    not_found = []
-    for k, v in IFASTER.items():
-        if v not in ifaster_raw:
-            not_found.append(f'iFaster: {k} -> {v}')
+    # Các icon thiếu bold-duotone sẽ thử sang -bold
+    bold_needed = {}
+    for local_name, full_duotone in duotone_targets.items():
+        if full_duotone in duotone_res['not_found']:
+            base = SOLAR[local_name]
+            bold_needed[local_name] = f'{base}-bold'
 
-    for name in solar_data.get('not_found', []):
-        not_found.append(f'Solar: {name}')
+    bold_res = {'icons': {}, 'aliases': {}, 'not_found': []}
+    if bold_needed:
+        bold_res = tai_iconify(list(set(bold_needed.values())))
+
+    # Kiểm tra thiếu hẳn trong DAC
+    dac_not_found = []
+    for local_name in SOLAR:
+        full_duo = duotone_targets[local_name]
+        if full_duo in duotone_res['not_found']:
+            full_bld = bold_needed[local_name]
+            if full_bld in bold_res['not_found']:
+                dac_not_found.append(f'DAC: {local_name} ({full_duo} / {full_bld})')
+
+    # 2. Tải bản linear cho NET
+    net_targets = {k: f'{v}-linear' for k, v in NET_DEF.items()}
+    net_names = list(set(net_targets.values()))
+    net_res = tai_iconify(net_names)
+
+    net_not_found = []
+    for local_name, full_lin in net_targets.items():
+        if full_lin in net_res['not_found']:
+            net_not_found.append(f'NET: {local_name} ({full_lin})')
 
     if kiem_tra_chi_dinh:
-        for nf in not_found:
-            print(nf)
+        if dac_not_found or net_not_found:
+            for nf in dac_not_found + net_not_found:
+                print(nf)
+        else:
+            print('Tất cả icon đều hợp lệ trên API Iconify.')
         return
 
-    if not_found:
+    if dac_not_found or net_not_found:
         print('Lỗi: có biểu tượng không tìm thấy:')
-        for nf in not_found:
+        for nf in dac_not_found + net_not_found:
             print(' ', nf)
         sys.exit(1)
 
+    # 3. Trích xuất DAC
     dac = {}
+    for local_name, full_duo in duotone_targets.items():
+        info = None
+        if full_duo not in duotone_res['not_found']:
+            info = lay_thong_tin_icon(
+                duotone_res['icons'], duotone_res['aliases'],
+                duotone_res['width'], duotone_res['height'], full_duo
+            )
+        if not info:
+            full_bld = bold_needed[local_name]
+            info = lay_thong_tin_icon(
+                bold_res['icons'], bold_res['aliases'],
+                bold_res['width'], bold_res['height'], full_bld
+            )
+            canh_bao.append(f'{local_name}: dùng {full_bld} thay vì bold-duotone')
 
-    # 1. Trích xuất 9 biểu tượng iFaster
-    for local_name, ifaster_name in IFASTER.items():
-        vb, body = chuan_hoa_ime(ifaster_raw[ifaster_name])
-        dac[local_name] = {'vb': vb, 'body': body}
+        body = info['body']
+        # Đổi thuộc tính opacity=".5" (lớp phụ) thành class="l2"
+        body = re.sub(r'\s+opacity=[\'"]0?\.5[\'"]', ' class="l2"', body)
+        dac[local_name] = {'vb': info['vb'], 'body': body}
 
-    # 2. Trích xuất 45 biểu tượng Solar (xử lý alias nếu có)
-    root_w = solar_data.get('width', 24)
-    root_h = solar_data.get('height', 24)
-    icons_dict = solar_data.get('icons', {})
-    aliases_dict = solar_data.get('aliases', {})
+    # 4. Trích xuất NET
+    net = {}
+    for local_name, full_lin in net_targets.items():
+        info = lay_thong_tin_icon(
+            net_res['icons'], net_res['aliases'],
+            net_res['width'], net_res['height'], full_lin
+        )
+        body = info['body']
+        # Body nét: bỏ stroke-width="1.5" để CSS quyết định nét
+        body = re.sub(r'\s+stroke-width=[\'"]1\.5[\'"]', '', body)
+        net[local_name] = {'vb': info['vb'], 'body': body}
 
-    for local_name, solar_name in SOLAR.items():
-        lookup = solar_name
-        while lookup in aliases_dict:
-            lookup = aliases_dict[lookup].get('parent', lookup)
-        if lookup not in icons_dict:
-            print(f'Lỗi: không có dữ liệu cho Solar {solar_name} ({lookup})')
-            sys.exit(1)
-        s_data = icons_dict[lookup]
-        w = s_data.get('width', root_w)
-        h = s_data.get('height', root_h)
-        dac[local_name] = {'vb': f'0 0 {w} {h}', 'body': s_data['body']}
-
+    # 5. Ghi file icon-dac.ts
     lines = [
         '// Sinh bởi tools/xuat_bieu_tuong.py, không sửa tay',
         '// Nguồn:',
-        '// - Bộ biểu tượng menu của iFaster (iPOS)',
         '// - Solar Icon Set by 480 Design, CC BY 4.0, https://creativecommons.org/licenses/by/4.0/',
         '',
         'export const DAC: Record<string, { vb: string; body: string }> = {',
@@ -237,8 +316,26 @@ def main():
 
     lines.append('}\n')
 
+    lines.append('export const NET: Record<string, { vb: string; body: string }> = {')
+    for k, v in net.items():
+        vb_esc = escape_nhay_don(v['vb'])
+        body_esc = escape_nhay_don(v['body'])
+        lines.append(f"  {k}: {{ vb: '{vb_esc}', body: '{body_esc}' }},")
+    lines.append('}\n')
+
+    lines.append('export const NHOM: Record<string, string> = {')
+    for k, v in NHOM.items():
+        lines.append(f"  {k}: '{v}',")
+    lines.append('}\n')
+
     DICH.write_text('\n'.join(lines), encoding='utf-8')
-    print(f'Đã sinh {DICH.relative_to(WEB)} với {len(dac)} biểu tượng.')
+    print(f'Đã sinh {DICH.relative_to(WEB)} với {len(dac)} icon khối, {len(net)} icon nét.')
+    if canh_bao:
+        print(f'Cảnh báo ({len(canh_bao)}):')
+        for cb in canh_bao:
+            print('  -', cb)
+    else:
+        print('Không có cảnh báo (tất cả icon khối đều có bản bold-duotone).')
 
 
 if __name__ == '__main__':

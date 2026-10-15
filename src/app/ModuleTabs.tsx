@@ -6,7 +6,7 @@ import { useSession } from './session'
 import { duongDan, hienMan, laBaoCao, maKhoa, moDuoc, nhanTab, tabCua } from './registry'
 import { GOI, minGoi } from './plan'
 import type { ModuleDef, ScreenDef } from '../modules/types'
-import { Icon } from '../ui/Icon'
+import { Icon, ONen } from '../ui/Icon'
 import { Pk } from '../ui/Page'
 import { Dropdown, MenuItem } from '../ui/Dropdown'
 import { laTuTrangChu } from './tuTrangChu'
@@ -87,8 +87,9 @@ export function ModuleTabs({ mod }: { mod: ModuleDef }) {
             {khac.map(sc => {
               const ok = moDuoc(sc, s.goi)
               const ma = maKhoa(sc)
+              const iconName = sc.icon ?? (sc.kind === 'voucher' ? 'doc' : sc.kind === 'catalog' ? 'folder' : sc.kind === 'tool' ? 'play' : mod.icon)
               return (
-                <MenuItem key={sc.slug} to={duongDan(mod, sc)} icon={sc.icon ?? (sc.kind === 'voucher' ? 'doc' : sc.kind === 'catalog' ? 'folder' : sc.kind === 'tool' ? 'play' : mod.icon)}
+                <MenuItem key={sc.slug} to={duongDan(mod, sc)} icon={<ONen n={iconName} kieu="nhat" co="sm" />}
                   lock={!ok} right={!ok && ma ? <Pk g={minGoi(ma)} o /> : undefined}>{nhanTab(sc)}</MenuItem>
               )
             })}

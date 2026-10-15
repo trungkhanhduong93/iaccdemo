@@ -4,7 +4,7 @@ import { useSession } from '../../app/session'
 import { MODULES, duongDan, hienMan, hienPhanHe, maKhoa, moDuoc, phanHeKhoa, tabCua, tenMan, tenPhanHe } from '../../app/registry'
 import { GOIS, anNgoaiGoi, minGoi, type Goi } from '../../app/plan'
 import type { ModuleDef, ScreenDef } from '../../modules/types'
-import { Icon } from '../Icon'
+import { Icon, ONen } from '../Icon'
 import { Pk } from '../Page'
 import { MQuyTrinh, layDsBuoc } from './MQuyTrinh'
 
@@ -134,7 +134,7 @@ export function MNghiepVu() {
               className={`m-nv-o${khoa ? ' khoa' : ''}`}
             >
               <div className="m-nv-o-ic">
-                <Icon n={m.icon} />
+                <ONen n={m.icon} kieu="nhat" co="md" />
                 {khoa && (
                   <span className="m-nv-o-lk" title="Ngoài gói">
                     <Pk g={minGoiPhanHe(m)} o />

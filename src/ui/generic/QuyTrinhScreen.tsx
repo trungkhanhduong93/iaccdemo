@@ -7,7 +7,7 @@ import { MODULES, anPhanHeGoi, dich, hienMan, laBaoCao, maKhoa, moDuoc, nhanTab,
 import { useSession, type Session } from '../../app/session'
 import { GOI, GOIS, anNgoaiGoi, minGoi, type Goi } from '../../app/plan'
 import type { CheDo } from '../../app/che-do'
-import { Icon } from '../Icon'
+import { Icon, ONen } from '../Icon'
 import { Note, Pk } from '../Page'
 import { Dropdown, MenuHead, MenuItem } from '../Dropdown'
 import { heSoZoom } from '../zoom'
@@ -325,7 +325,7 @@ function SoDoHoiTu({ lan, ra, goi, modKey, danhSo, hienLinkBaoCao }: { lan: LanQ
         </div>
         <div className="qt-ht-gom" />
         <div className="qt-ht-ra">
-          <div className="qt-ht-dau"><span className="qt-ht-ic"><Icon n={ra.icon ?? 'book'} className="ic" /></span>{ra.ten}</div>
+          <div className="qt-ht-dau"><ONen n={ra.icon ?? 'book'} kieu="nhat" co="sm" />{ra.ten}</div>
           {ra.nut.map((n, idx) => <NutNgang key={`${n.di || ''}-${n.ten}-${idx}`} n={n} goi={goi} dong />)}
           {hienLinkBaoCao && <Link to={`/app/${modKey}/bao-cao`} className="qt-ht-all">Tất cả báo cáo<Icon n="arrow" className="ic sm" /></Link>}
         </div>
@@ -340,14 +340,14 @@ function NutNgang({ n, goi, dong }: { n: NutQT; goi: Goi; dong?: boolean }) {
   const x = moNut(n, goi)
   if (!n.di) return (
     <span className={`qt-n tinh ${dong ? 'qt-ht-dong' : 'qt-ht-nut'} ${n.tone ?? ''}`}>
-      <span className="qt-ht-ic"><Icon n={n.icon} className="ic" /></span>
+      {dong ? <span className="qt-ht-ic"><Icon n={n.icon} className="ic" /></span> : <ONen n={n.icon} kieu="nhat" co="sm" />}
       <span className="qt-ht-t">{n.ten}</span>
     </span>
   )
   return (
     <Link to={x.path} className={`qt-n ${dong ? 'qt-ht-dong' : 'qt-ht-nut'} ${n.tone ?? ''} ${x.ok ? '' : 'lock'}`}
       title={x.ok ? `Mở ${n.ten.toLowerCase()}` : `${n.ten}: có ở gói ${GOI[minGoi(x.ma!)].ten}`}>
-      <span className="qt-ht-ic"><Icon n={n.icon} className="ic" /></span>
+      {dong ? <span className="qt-ht-ic"><Icon n={n.icon} className="ic" /></span> : <ONen n={n.icon} kieu="nhat" co="sm" />}
       <span className="qt-ht-t">{n.ten}</span>
       {!x.ok && x.ma && <Pk g={minGoi(x.ma)} o />}
     </Link>
@@ -438,7 +438,7 @@ function HangDuoi({ qt, modKey, goi, cheDo, session }: { qt: QuyTrinhDef; modKey
           {dsDanhMuc.length ? (
             dsDanhMuc.map((m, idx) => m && (
               <Link key={m.d.path || idx} to={m.d.path} className={`qt-hub-link${m.ok ? '' : ' lock'}`}>
-                <span className="qt-hub-item-ic blue"><Icon n={m.icon} className="ic sm" /></span>
+                <ONen n={m.icon} kieu="nhat" co="sm" />
                 <span className="qt-hub-item-name">{m.ten}</span>
                 {!m.ok && m.ma && <Pk g={minGoi(m.ma)} o />}
                 <Icon n="chevr" className="ic sm qt-hub-arr" />
@@ -466,7 +466,7 @@ function HangDuoi({ qt, modKey, goi, cheDo, session }: { qt: QuyTrinhDef; modKey
         <div className="qt-hub-items">
           {dsTienIch.map((m, idx) => m && (
             <Link key={m.d.path || idx} to={m.d.path} className={`qt-hub-link${m.ok ? '' : ' lock'}`}>
-              <span className="qt-hub-item-ic orange"><Icon n={m.icon} className="ic sm" /></span>
+              <ONen n={m.icon} kieu="nhat" co="sm" />
               <div className="qt-hub-item-info">
                 <span className="qt-hub-item-name">{m.tenDayDu}</span>
                 {m.code && <span className="qt-hub-item-code">Mã {m.code}</span>}
@@ -493,7 +493,7 @@ function HangDuoi({ qt, modKey, goi, cheDo, session }: { qt: QuyTrinhDef; modKey
         </div>
         <div className="qt-hub-setting-card">
           <Link to="/app/he-thong/cau-hinh" className="qt-hub-setting-link">
-            <span className="qt-hub-item-ic purple"><Icon n="chinh" className="ic sm" /></span>
+            <ONen n="chinh" kieu="nhat" co="sm" />
             <div style={{ minWidth: 0, flex: '1 1 auto' }}>
               <b className="qt-hub-setting-title">Tuỳ chọn hệ thống</b>
               <p className="qt-hub-setting-desc">Thiết lập tài khoản ngầm định, phương pháp ghi sổ, ngày khoá số liệu</p>

@@ -19393,3 +19393,107 @@ button.m-free-ton-quy-lon {
     text-overflow: ellipsis;
   }
 }
+
+/* ── Biểu tượng Solar nâng cao (T275) ── */
+:root {
+  --k-tien: #138a52;
+  --k-chi: #c2362b;
+  --k-nh: #1b6fe0;
+  --k-thue: #f28020;
+  --k-bc: #0560a6;
+  --k-ct: #0f8f84;
+  --k-kho: #b1852b;
+  --k-ht: #64748b;
+}
+
+.k-tien { --c: var(--k-tien); }
+.k-chi { --c: var(--k-chi); }
+.k-nh { --c: var(--k-nh); }
+.k-thue { --c: var(--k-thue); }
+.k-bc { --c: var(--k-bc); }
+.k-ct { --c: var(--k-ct); }
+.k-kho { --c: var(--k-kho); }
+.k-ht { --c: var(--k-ht); }
+
+.ic.dac .l2 {
+  opacity: .5;
+}
+
+.o-nen {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  box-sizing: border-box;
+}
+.o-nen.o-sm { width: 38px; height: 38px; border-radius: 10px; }
+.o-nen.o-sm .ic { width: 22px; height: 22px; }
+.o-nen.o-md { width: 46px; height: 46px; border-radius: 12px; }
+.o-nen.o-md .ic { width: 26px; height: 26px; }
+.o-nen.o-lg { width: 50px; height: 50px; border-radius: 13px; }
+.o-nen.o-lg .ic { width: 28px; height: 28px; }
+
+.o-nen.o-nhat {
+  background: color-mix(in srgb, var(--c) 12%, #fff);
+  color: var(--c);
+}
+.o-nen.o-nhat .l2 {
+  opacity: 1;
+  fill: color-mix(in srgb, var(--c) 42%, #fff);
+}
+
+.o-nen.o-dac {
+  color: #fff;
+  background: linear-gradient(150deg, color-mix(in srgb, var(--c) 72%, #fff), var(--c));
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .28), 0 6px 14px -6px color-mix(in srgb, var(--c) 70%, transparent);
+}
+.o-nen.o-dac .l2 {
+  opacity: 1;
+  fill: rgb(255 255 255 / .5);
+}
+
+.ic:not(.dac) *, .ic-thuong * {
+  stroke-width: 1.8;
+}
+
+/* Thanh bên */
+.sb-nav a .ic-thuong,
+.sb-nav button.sb-item-btn .ic-thuong {
+  display: block;
+  color: #8197a8;
+}
+.sb-nav a .ic-chon,
+.sb-nav button.sb-item-btn .ic-chon {
+  display: none;
+}
+.sb-nav a:hover .ic-thuong,
+.sb-nav a.on .ic-thuong,
+.sb-nav button.sb-item-btn:hover .ic-thuong,
+.sb-nav button.sb-item-btn.on .ic-thuong {
+  display: none;
+}
+.sb-nav a:hover .ic-chon,
+.sb-nav a.on .ic-chon,
+.sb-nav button.sb-item-btn:hover .ic-chon,
+.sb-nav button.sb-item-btn.on .ic-chon {
+  display: block;
+  color: #fff;
+}
+.sb-nav a:hover .ic-chon .l2,
+.sb-nav a.on .ic-chon .l2,
+.sb-nav button.sb-item-btn:hover .ic-chon .l2,
+.sb-nav button.sb-item-btn.on .ic-chon .l2 {
+  opacity: 1;
+  fill: #ffb878;
+}
+
+/* Khử ô nền cũ khi dùng .o-nen */
+.pop-khac .mi-ic,
+.ttn-ic-tron,
+.m-nv-o-ic,
+.m-tc-nhanh-ic-tron {
+  background: none;
+  box-shadow: none;
+  width: auto;
+  height: auto;
+}
+

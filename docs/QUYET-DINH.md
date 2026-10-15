@@ -201,6 +201,8 @@ Lý do: PhuongXT chốt khi làm T36.
 
 ## QD23. Biểu tượng theo iFaster (08/10/2026)
 
+Đã thay bằng QD63 từ 15/10/2026.
+
 Thay phần biểu tượng của QD12. Tên gọi trong `src/ui/Icon.tsx` giữ nguyên, màn nào cũng gọi như cũ.
 
 - Biểu tượng phân hệ (9) dùng bộ khối đặc `menu_*` của iFaster. iFaster là sản phẩm iPOS nên được dùng, như QD15.
@@ -670,4 +672,19 @@ Lý do: PhuongXT chốt ngày 14/10/2026 (T245). Gói Free chỉ khai số dư t
 
 Lý do: PhuongXT chốt ngày 15/10/2026 (T247). Một cách đồng bộ duy nhất, xem được từng đơn, cách thanh toán; màn danh sách gọn.
 
-## QD63. Bộ biểu tượng Solar nâng cao (đang soạn)
+## QD63. Bộ biểu tượng Solar nâng cao (15/10/2026)
+
+Thay QD23 phần biểu tượng, web và điện thoại cùng dùng. Tên gọi trong `src/ui/Icon.tsx` giữ nguyên, màn nào cũng gọi như cũ.
+
+- Bỏ bộ iFaster. 9 phân hệ dùng Solar như các biểu tượng khác.
+- Đồ vật và phân hệ dùng Solar Bold Duotone: lớp chính đặc, lớp phụ (`class="l2"`) do CSS tô.
+- Mỗi biểu tượng thuộc một trong 8 nhóm màu nghiệp vụ, khai trong bảng `NHOM` của `tools/xuat_bieu_tuong.py`: tiền, chi, ngân hàng, thuế, báo cáo, chứng từ, kho, hệ thống. Màu nằm ở biến `--k-*` trong `app.css`.
+- Biểu tượng lớn trong thẻ (thẻ số liệu, thẻ nhóm Trung tâm báo cáo) dùng `ONen kieu="dac"`: ô đổ màu nhóm, biểu tượng trắng.
+- Biểu tượng nhỏ nằm trong ô nền (Thao tác nhanh, menu Khác, Ctrl K, ô phân hệ điện thoại) dùng `ONen kieu="nhat"`: nền nhạt, biểu tượng màu nhóm.
+- Thanh bên: mục thường hiện bản nét Solar Linear màu `#8197a8`. Mục đang chọn hoặc rê chuột hiện bản khối màu trắng, lớp phụ cam nhạt.
+- Nút thao tác, dòng bảng, form dùng Solar Linear nét 1.8.
+- Thanh dưới và hình màn trống điện thoại vẫn của IVT.
+- `src/ui/icon-dac.ts` sinh bởi `python tools/xuat_bieu_tuong.py`, không sửa tay. Nguồn Solar (CC BY 4.0) ghi ở đầu file, không được xoá.
+- Mẫu đã chốt: https://claude.ai/artifact/X9uknzvG2Bgc26Vgo6GjKm
+
+Lý do: Trum chốt việc T275 ngày 15/10/2026.

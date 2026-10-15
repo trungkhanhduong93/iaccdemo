@@ -4,7 +4,7 @@ import type { ScreenProps } from '../types'
 import { useSession } from '../../app/session'
 import { useThaoTacNhanh, type ThaoTacMuc } from '../../app/thaoTacNhanh'
 import { Empty, PageHead, Pk } from '../../ui/Page'
-import { Icon } from '../../ui/Icon'
+import { Icon, ONen } from '../../ui/Icon'
 import { GOI, minGoi } from '../../app/plan'
 import { useDongEsc } from '../../ui/LocNangCao'
 
@@ -134,7 +134,7 @@ export function ThaoTacNhanhScreen(_props?: Partial<ScreenProps>) {
               }
             >
               <div className="ttn-ic-tron">
-                <Icon n={item.icon} className="ic lg" />
+                <ONen n={item.icon} kieu="nhat" co="sm" />
                 {item.khoa && item.ma && (
                   <span className="ttn-lk">
                     <Pk g={minGoi(item.ma)} o />

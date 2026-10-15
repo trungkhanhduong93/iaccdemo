@@ -6,7 +6,7 @@ import { chiNhanhHienTai, useSession } from '../../app/session'
 import { coTrongGoi, minGoi } from '../../app/plan'
 import { MODULES, hienMan } from '../../app/registry'
 import { CHI_NHANH, HOM_NAY } from '../../data/mock'
-import { Icon } from '../../ui/Icon'
+import { Icon, ONen } from '../../ui/Icon'
 import { Card, PageHead, Pk } from '../../ui/Page'
 import { Select } from '../../ui/Dropdown'
 import { money, pct, short } from '../../ui/format'
@@ -154,7 +154,7 @@ export function TongQuan({ sc }: ScreenProps) {
               <div className="card kpi kpi-adv">
                 <div>
                   <div className="row">
-                    <span className="kpi-ic"><Icon n="receipt" className="ic sm" /></span>
+                    <ONen n="receipt" kieu="dac" co="md" />
                     <span className="kpi-l">Doanh thu thuần</span>
                     <span className="grow" />
                     {linkDT && <Link to={linkDT} className="btn sm ghost" style={{ padding: '2px 6px', height: 24, fontSize: 11.5 }}>Sổ doanh thu</Link>}
@@ -172,7 +172,7 @@ export function TongQuan({ sc }: ScreenProps) {
               <div className="card kpi kpi-adv">
                 <div>
                   <div className="row">
-                    <span className="kpi-ic"><Icon n="pulse" className="ic sm" /></span>
+                    <ONen n="pulse" kieu="dac" co="md" />
                     <span className="kpi-l">Lợi nhuận gộp</span>
                     <span className="grow" />
                     {linkKQ && <Link to={linkKQ} className="btn sm ghost" style={{ padding: '2px 6px', height: 24, fontSize: 11.5 }}>KQKD</Link>}
@@ -190,7 +190,7 @@ export function TongQuan({ sc }: ScreenProps) {
               <div className="card kpi kpi-adv">
                 <div>
                   <div className="row">
-                    <span className="kpi-ic"><Icon n="chart" className="ic sm" /></span>
+                    <ONen n="chart" kieu="dac" co="md" />
                     <span className="kpi-l">Lợi nhuận trước thuế</span>
                     <span className="grow" />
                     {linkKQ && <Link to={linkKQ} className="btn sm ghost" style={{ padding: '2px 6px', height: 24, fontSize: 11.5 }}>KQKD</Link>}
@@ -208,7 +208,7 @@ export function TongQuan({ sc }: ScreenProps) {
               <div className="card kpi kpi-adv">
                 <div>
                   <div className="row">
-                    <span className="kpi-ic"><Icon n="wallet" className="ic sm" /></span>
+                    <ONen n="wallet" kieu="dac" co="md" />
                     <span className="kpi-l">Tiền khả dụng</span>
                     <span className="grow" />
                     {linkQuy && <Link to={linkQuy} className="btn sm ghost" style={{ padding: '2px 6px', height: 24, fontSize: 11.5 }}>{nhanLinkQuy}</Link>}

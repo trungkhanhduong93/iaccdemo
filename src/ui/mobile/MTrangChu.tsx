@@ -3,7 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import type { ScreenProps } from '../../modules/types'
 import { donViHienTai, dsChiNhanh, useSession } from '../../app/session'
 import { CHI_NHANH, DAILY, KHO, NVL, ROLE, kqkd } from '../../data/mock'
-import { Icon } from '../Icon'
+import { Icon, ONen } from '../Icon'
 import { money, moneyD, pct, short } from '../format'
 import { type KyBaoCao, tinhToanTongQuan } from '../../modules/home/chiSo'
 import { tonQuyTheoSo } from '../../modules/home/LichSuQuy'
@@ -666,7 +666,7 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
                     className={`m-tc-nhanh-o5${item.khoa ? ' khoa' : ''}`}
                   >
                     <div className="m-tc-nhanh-ic-tron">
-                      <Icon n={item.icon} className="ic sm" />
+                      <ONen n={item.icon} kieu="nhat" co="sm" />
                       {item.khoa && item.ma && (
                         <span className="m-tc-nhanh-lk">
                           <Pk g={minGoi(item.ma)} o />
@@ -708,7 +708,7 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
                         className="m-tc-nhanh-o5"
                       >
                         <div className="m-tc-nhanh-ic-tron">
-                          <Icon n={item.icon} className="ic sm" />
+                          <ONen n={item.icon} kieu="nhat" co="sm" />
                         </div>
                         <span className="m-tc-nhanh-ten5">{item.ten}</span>
                       </Link>

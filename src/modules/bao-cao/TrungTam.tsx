@@ -6,7 +6,7 @@ import { MODULES, apDung, hienMan, hienPhanHe, maKhoa, moDuoc, phanHeKhoa, tenMa
 import { useSession, type Session } from '../../app/session'
 import { CHE_DO } from '../../app/che-do'
 import { anNgoaiGoi, minGoi } from '../../app/plan'
-import { Icon } from '../../ui/Icon'
+import { Icon, ONen } from '../../ui/Icon'
 import { PageHead, Pk } from '../../ui/Page'
 import { fold } from '../../ui/format'
 import { ThanhLoc } from '../../ui/ThanhLoc'
@@ -240,9 +240,7 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
                       className="bc-quick-item bc-quick-pinned"
                       title={ten}
                     >
-                      <span className={`rpt-ic rpt-ic-${loai}`}>
-                        <Icon n={icon} />
-                      </span>
+                      <ONen n={icon} kieu="nhat" co="sm" />
                       <span className="bc-quick-name">{ten}</span>
                       {metaText && <span className="bc-quick-ma">{metaText}</span>}
                       <button
@@ -272,9 +270,7 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
                       className="bc-quick-item"
                       title={ten}
                     >
-                      <span className={`rpt-ic rpt-ic-${loai}`}>
-                        <Icon n={icon} />
-                      </span>
+                      <ONen n={icon} kieu="nhat" co="sm" />
                       <span className="bc-quick-name">{ten}</span>
                       {metaText && <span className="bc-quick-ma">{metaText}</span>}
                     </Link>
@@ -294,9 +290,7 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
               // Nhóm báo cáo dạng thẻ mẫu A (T271)
               <section key={g.mod.key} className="bc-nhom">
                 <div className="bc-nhom-dau">
-                  <span className="bc-nhom-ic">
-                    <Icon n={g.mod.icon || 'book'} />
-                  </span>
+                  <ONen n={g.mod.icon || 'book'} kieu="dac" co="md" />
                   <h2>{g.mod.ten}</h2>
                   <span className="bc-nhom-dem">{g.screens.length} báo cáo</span>
                 </div>
@@ -315,9 +309,7 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
                         className={`rpt-row rpt-card${ok ? '' : ' lock'}`}
                         title={ten}
                       >
-                        <span className={`rpt-ic rpt-ic-${loai}`}>
-                          <Icon n={icon} />
-                        </span>
+                        <ONen n={icon} kieu="nhat" co="sm" />
                         <span className="rpt-name">{ten}</span>
                         {metaText && <span className="rpt-meta">{metaText}</span>}
                         {!ok && ma && <Pk g={minGoi(ma)} o />}

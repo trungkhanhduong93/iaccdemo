@@ -2,6 +2,10 @@
 
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
+## 16/10/2026
+
+- T275: Đổi bộ biểu tượng trên web và điện thoại. Mỗi nhóm nghiệp vụ có một màu riêng: tiền, chi, ngân hàng, thuế, báo cáo, chứng từ, kho, hệ thống. Thẻ số liệu trang chủ có ô màu đặc. Thao tác nhanh, menu Khác, ô phân hệ điện thoại có ô nền nhạt. Thanh bên: mục thường là nét mảnh, mục đang chọn là khối trắng.
+
 ## 15/10/2026
 
 - T273: Trang chủ: nút Biểu đồ thu chi mở biểu đồ tất cả quỹ, số tiền chỉ tô màu xanh, đỏ, không còn dấu + −; lãi âm ghi "Lỗ". Báo cáo trên điện thoại thành bảng không ghim cột, 100 dòng một trang, dòng tổng là tổng cả báo cáo. Web: rê chuột vào Thao tác nhanh ở sidebar hiện bảng các thao tác để bấm.
