@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState, type FC } from 'react'
+import React, { useEffect, useMemo, useRef, useState, type FC } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import type { Col, ReportCfg, Row, ScreenProps } from '../../modules/types'
 import { KY_CHON, renderReport, gopSo, RptTable } from '../generic/ReportScreen'
@@ -15,6 +15,7 @@ import { MChon } from './MChon'
 import { duongPhieu } from '../generic/SoChungTu'
 import { layKhuonDong, MBaoCaoDong } from './MBaoCaoDong'
 import { cotMobile, useBangMauA } from './bangMauA'
+import { tinhPhanTrang, ThanhPhanTrangM } from './phanTrangM'
 
 /** Dò đường dẫn mở chứng từ gốc nếu có (T201, T223) */
 function layDuongDan(so: unknown): string | undefined {
@@ -56,8 +57,14 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
   const [moChonKy, setMoChonKy] = useState(false)
   const [moChonCn, setMoChonCn] = useState(false)
   const [q, setQ] = useState('')
+  const [trangBang, setTrangBang] = useState(1)
 
   const bangWrapRef = useRef<HTMLDivElement>(null)
+
+  // Về trang 1 khi đổi bộ lọc hoặc tìm kiếm (T273)
+  useEffect(() => {
+    setTrangBang(1)
+  }, [q, kyDaXem, s.chiNhanh, path])
 
   // Nhãn hiển thị kỳ
   const tenKy = useMemo(() => {
@@ -140,15 +147,27 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
     })
   }, [rawRows, q])
 
+  // Phân trang 100 dòng dữ liệu một trang (T273)
+  const pt = useMemo(() => {
+    return tinhPhanTrang(rowsLoc, trangBang, 100)
+  }, [rowsLoc, trangBang])
+
+  const doiTrangBang = (trangMoi: number) => {
+    setTrangBang(trangMoi)
+    if (bangWrapRef.current) {
+      bangWrapRef.current.scrollTop = 0
+    }
+  }
+
   const noiDungBang = useMemo(() => {
     if (!React.isValidElement(body)) return body
     const p = body.props as { rows?: Row[]; cols?: Col[] }
     const colsGoc = p?.cols || rawCols
     return React.cloneElement(body as React.ReactElement<{ rows?: Row[]; cols?: Col[] }>, {
-      rows: rowsLoc,
+      rows: pt.rowsHienThi,
       cols: cotMobile(colsGoc),
     })
-  }, [body, rowsLoc, rawCols])
+  }, [body, pt.rowsHienThi, rawCols])
 
   const coCuonNgang = useBangMauA(bangWrapRef, [noiDungBang, kieuXem])
 
@@ -314,8 +333,8 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
             <div className="m-so-dong-tong-o">
               <span className="m-so-dong-tong-nhan">{nhanGiua}</span>
               <b className="m-so-dong-tong-so m-so-dong-num">
-                <span className="m-so-dong-duong">+{rutGonSo(tongThu)}</span>{' '}
-                <span className="m-so-dong-am">−{rutGonSo(tongChi)}</span>
+                <span className="m-so-dong-duong">{rutGonSo(tongThu)}</span>{' '}
+                <span className="m-so-dong-am">{rutGonSo(tongChi)}</span>
               </b>
             </div>
             <div className="m-so-dong-tong-o">
@@ -362,12 +381,12 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
                         </div>
                         {tienThu > 0 && (
                           <span className="m-so-dong-tien m-so-dong-duong m-so-dong-num">
-                            +{money(tienThu)}
+                            {money(tienThu)}
                           </span>
                         )}
                         {tienChi > 0 && (
                           <span className="m-so-dong-tien m-so-dong-am m-so-dong-num">
-                            −{money(tienChi)}
+                            {money(tienChi)}
                           </span>
                         )}
                       </>
@@ -395,16 +414,25 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
         </div>
         )
       ) : (
-        /* Khung bảng cuộn ngang, trang không cuộn ngang (Mẫu A T258) */
+        /* Khung bảng cuộn ngang, trang không cuộn ngang (T273) */
         <div className="m-sbc-the-bang">
-          <div ref={bangWrapRef} className={`m-sbc-bang-wrap ${coCuonNgang ? 'co-goi' : ''}`}>
+          <div ref={bangWrapRef} className={`m-sbc-bang-wrap ${coCuonNgang || pt.canPhanTrang ? 'co-goi' : ''}`}>
             {noiDungBang}
           </div>
           {coCuonNgang && (
             <div className="m-sbc-goi">
               <span>Vuốt ngang xem thêm cột</span>
-              <span>Cột đầu luôn đứng yên</span>
             </div>
+          )}
+          {pt.canPhanTrang && (
+            <ThanhPhanTrangM
+              trang={pt.trangHt}
+              soTrang={pt.soTrang}
+              batDau={pt.batDau}
+              ketThuc={pt.ketThuc}
+              tongDong={pt.tongDong}
+              onDoiTrang={doiTrangBang}
+            />
           )}
         </div>
       )}

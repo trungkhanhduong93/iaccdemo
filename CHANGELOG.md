@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 15/10/2026
 
+- T273: Trang chủ: nút Biểu đồ thu chi mở biểu đồ tất cả quỹ, số tiền chỉ tô màu xanh, đỏ, không còn dấu + −; lãi âm ghi "Lỗ". Báo cáo trên điện thoại thành bảng không ghim cột, 100 dòng một trang, dòng tổng là tổng cả báo cáo. Web: rê chuột vào Thao tác nhanh ở sidebar hiện bảng các thao tác để bấm.
 - T272: Trang chủ gói Free làm lại: ba cột đều, số tiền ghi đủ, cột kho có Thao tác nhanh. Bấm quỹ mở biểu đồ số dư từng ngày; Lịch sử thu chi có 4 ô Đầu kỳ, Thu, Chi, Cuối kỳ, bảng gom theo ngày, bấm số phiếu mở chứng từ ở tab mới. Điện thoại làm theo.
 - T271: Màn Báo cáo trên máy tính: mỗi nhóm báo cáo là một thẻ, các thẻ xếp 2 cột. Cột trái có ba khung: nhóm báo cáo, Đã ghim, Báo cáo gần đây.
 - T270: Cột Tham chiếu ở danh sách chứng từ hiện các mã trên một dòng, cách nhau dấu phẩy. Bấm mã để mở phiếu ở tab mới; ô có nhiều mã thì bấm ra danh sách nhỏ để chọn phiếu.

@@ -258,7 +258,14 @@ export function ModalQuy({
       {/* 1. Phần đầu: Tên quỹ + dòng phụ + nút đóng */}
       <div className={isMobile ? 'pn-dau mq-dau' : 'mq-dau'}>
         <div>
-          <h3 className="mq-tieu-de">{tenHien}</h3>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <h3 className="mq-tieu-de">{tenHien}</h3>
+            {isTatCa && isMobile && (
+              <Link to="/app/danh-muc/1-12?moi=1&goiY=thuchi" className="mq-btn-tao-quy" onClick={onDong} title="Tạo quỹ mới">
+                + Tạo quỹ
+              </Link>
+            )}
+          </div>
           <div className="mq-dong-phu">{dongPhu}</div>
         </div>
         <button
@@ -314,7 +321,7 @@ export function ModalQuy({
                 return (
                   <div key={i} className="mq-gd-dong">
                     <span className={`mq-dot ${laThu ? 'thu' : 'chi'}`}>
-                      {laThu ? '+' : '−'}
+                      <Icon n={laThu ? 'cashin' : 'cashout'} className="ic sm" />
                     </span>
                     <span className="mq-gd-tt">
                       <span className="mq-gd-dg">{x.dg}</span>
@@ -324,7 +331,7 @@ export function ModalQuy({
                       </small>
                     </span>
                     <b className={`mq-gd-tien ${laThu ? 'thu' : 'chi'}`}>
-                      {laThu ? `+${moneyD(x.thu)}` : `−${moneyD(x.chi)}`}
+                      {laThu ? moneyD(x.thu) : moneyD(x.chi)}
                     </b>
                   </div>
                 )
@@ -334,20 +341,43 @@ export function ModalQuy({
         </div>
       </div>
 
-      {/* 5. Chân: Lập phiếu thu, Lập phiếu chi, Xem chi tiết lịch sử thu chi */}
-      <div className={isMobile ? 'pn-chan mq-chan' : 'mq-chan'}>
-        <div className="mq-chan-trai">
-          <Link to={linkThu} className="mq-btn" onClick={onDong}>
-            + Lập phiếu thu
-          </Link>
-          <Link to={linkChi} className="mq-btn" onClick={onDong}>
-            + Lập phiếu chi
+      {/* 5. Chân: Lập phiếu thu, Lập phiếu chi, Xem chi tiết lịch sử thu chi (T273: 2 hàng trên mobile) */}
+      {isMobile ? (
+        <div className="m-quy-chan">
+          <div className="m-quy-chan-hang1">
+            <Link to={linkThu} className="m-quy-btn-phieu" onClick={onDong}>
+              <Icon n="plus" className="ic sm" />
+              <span>Lập phiếu thu</span>
+            </Link>
+            <Link to={linkChi} className="m-quy-btn-phieu" onClick={onDong}>
+              <Icon n="plus" className="ic sm" />
+              <span>Lập phiếu chi</span>
+            </Link>
+          </div>
+          <Link to={linkChiTiet} className="m-quy-btn-chinh" onClick={onDong}>
+            Xem chi tiết lịch sử thu chi ›
           </Link>
         </div>
-        <Link to={linkChiTiet} className="mq-btn pri" onClick={onDong}>
-          Xem chi tiết lịch sử thu chi ›
-        </Link>
-      </div>
+      ) : (
+        <div className="mq-chan">
+          <div className="mq-chan-trai">
+            {isTatCa && (
+              <Link to="/app/danh-muc/1-12?moi=1&goiY=thuchi" className="mq-btn mq-btn-phu" onClick={onDong}>
+                + Tạo quỹ
+              </Link>
+            )}
+            <Link to={linkThu} className="mq-btn" onClick={onDong}>
+              Lập phiếu thu
+            </Link>
+            <Link to={linkChi} className="mq-btn" onClick={onDong}>
+              Lập phiếu chi
+            </Link>
+          </div>
+          <Link to={linkChiTiet} className="mq-btn pri" onClick={onDong}>
+            Xem chi tiết lịch sử thu chi ›
+          </Link>
+        </div>
+      )}
     </div>
   )
 

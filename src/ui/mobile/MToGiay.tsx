@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useMemo, useRef, useState, type FC } from 'react'
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState, type FC } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import type { Col, Row, ScreenProps } from '../../modules/types'
 import { useSession } from '../../app/session'
@@ -8,6 +8,7 @@ import { Icon } from '../Icon'
 import { RptTable } from '../generic/ReportScreen'
 import { layKhuonDong, MBaoCaoDong, type LoaiKhuonDong } from './MBaoCaoDong'
 import { cotMobile, useBangMauA } from './bangMauA'
+import { tinhPhanTrang, ThanhPhanTrangM } from './phanTrangM'
 
 const RONG_MAY_TINH = 900
 
@@ -37,7 +38,13 @@ export const MToGiay: FC<ScreenProps> = ({ sc, mod }) => {
 
   const [phongTo, setPhongTo] = useState(false)
   const [kieuXem, setKieuXem] = useState<'dong' | 'bang' | 'in'>('dong')
+  const [trangBang, setTrangBang] = useState(1)
   const bangWrapRef = useRef<HTMLDivElement>(null)
+
+  // Về trang 1 khi đổi tham số hoặc kiểu xem (T273)
+  useEffect(() => {
+    setTrangBang(1)
+  }, [params, sc.slug, kieuXem])
 
   const khungRef = useRef<HTMLDivElement>(null)
   const noiDungRef = useRef<HTMLDivElement>(null)
@@ -149,7 +156,19 @@ export const MToGiay: FC<ScreenProps> = ({ sc, mod }) => {
     return cotMobile(raw)
   }, [is523, isDong1023, colsDong])
 
-  const coCuonNgang = useBangMauA(bangWrapRef, [kieuXem, rowsDong])
+  // Phân trang 100 dòng cho bảng (T273)
+  const pt = useMemo(() => {
+    return tinhPhanTrang(rowsDong, trangBang, 100)
+  }, [rowsDong, trangBang])
+
+  const doiTrangBang = (trangMoi: number) => {
+    setTrangBang(trangMoi)
+    if (bangWrapRef.current) {
+      bangWrapRef.current.scrollTop = 0
+    }
+  }
+
+  const coCuonNgang = useBangMauA(bangWrapRef, [kieuXem, pt.rowsHienThi])
 
   if (!Comp) return null
 
@@ -227,14 +246,23 @@ export const MToGiay: FC<ScreenProps> = ({ sc, mod }) => {
           </div>
         ) : kieuXem === 'bang' ? (
           <div className="m-sbc-the-bang">
-            <div ref={bangWrapRef} className={`m-sbc-bang-wrap ${coCuonNgang ? 'co-goi' : ''}`}>
-              <RptTable cols={colsBang} rows={rowsDong} />
+            <div ref={bangWrapRef} className={`m-sbc-bang-wrap ${coCuonNgang || pt.canPhanTrang ? 'co-goi' : ''}`}>
+              <RptTable cols={colsBang} rows={pt.rowsHienThi} />
             </div>
             {coCuonNgang && (
               <div className="m-sbc-goi">
                 <span>Vuốt ngang xem thêm cột</span>
-                <span>Cột đầu luôn đứng yên</span>
               </div>
+            )}
+            {pt.canPhanTrang && (
+              <ThanhPhanTrangM
+                trang={pt.trangHt}
+                soTrang={pt.soTrang}
+                batDau={pt.batDau}
+                ketThuc={pt.ketThuc}
+                tongDong={pt.tongDong}
+                onDoiTrang={doiTrangBang}
+              />
             )}
           </div>
         ) : (

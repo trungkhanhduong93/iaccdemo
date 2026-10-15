@@ -10,7 +10,7 @@ import { Pk } from '../ui/Page'
 import { Topbar } from './Topbar'
 import { ModuleTabs } from './ModuleTabs'
 import { CommandPalette, ghiGanDay } from './CommandPalette'
-import { SidebarFlyout } from './SidebarFlyout'
+import { SidebarFlyout, ThaoTacNhanhFlyout } from './SidebarFlyout'
 import { heSoZoom } from '../ui/zoom'
 import { OnboardFabi } from '../modules/onboarding/OnboardFabi'
 
@@ -55,10 +55,18 @@ function Sidebar({ mod, onSearch }: { mod: ModuleDef; onSearch: () => void }) {
   const sbRef = useRef<HTMLElement>(null)
   const timerRef = useRef<number | null>(null)
   const [hovered, setHovered] = useState<{ mod: ModuleDef; top: number } | null>(null)
+  // T273: Bảng nổi Thao tác nhanh
+  const [ttnOpen, setTtnOpen] = useState(false)
+  const [ttnTop, setTtnTop] = useState(0)
+  const ttnTimerRef = useRef<number | null>(null)
+  useEffect(() => () => {
+    if (ttnTimerRef.current) window.clearTimeout(ttnTimerRef.current)
+  }, [])
 
   // Đóng flyout khi đổi trang
   useEffect(() => {
     setHovered(null)
+    setTtnOpen(false)
   }, [loc.pathname])
 
   const onEnterItem = (m: ModuleDef, el: HTMLElement) => {
@@ -92,6 +100,47 @@ function Sidebar({ mod, onSearch }: { mod: ModuleDef; onSearch: () => void }) {
     }, 180)
   }
 
+  // T273: Thao tác nhanh flyout
+  const onEnterTtn = (el: HTMLElement) => {
+    if (ttnTimerRef.current) {
+      window.clearTimeout(ttnTimerRef.current)
+      ttnTimerRef.current = null
+    }
+    const sbRect = sbRef.current?.getBoundingClientRect()
+    const itemRect = el.getBoundingClientRect()
+    const z = heSoZoom()
+    const relTop = sbRect ? (itemRect.top - sbRect.top) / z : 0
+    setTtnTop(relTop)
+    setTtnOpen(true)
+  }
+
+  const onLeaveTtn = () => {
+    ttnTimerRef.current = window.setTimeout(() => {
+      setTtnOpen(false)
+    }, 180)
+  }
+
+  const onEnterTtnFlyout = () => {
+    if (ttnTimerRef.current) {
+      window.clearTimeout(ttnTimerRef.current)
+      ttnTimerRef.current = null
+    }
+  }
+
+  const onLeaveTtnFlyout = () => {
+    ttnTimerRef.current = window.setTimeout(() => {
+      setTtnOpen(false)
+    }, 180)
+  }
+
+  const toggleTtn = (el: HTMLElement) => {
+    if (ttnOpen) {
+      setTtnOpen(false)
+    } else {
+      onEnterTtn(el)
+    }
+  }
+
   // Menu phụ khi rê chuột vào phân hệ tạm tắt, PhuongXT chốt 14/10/2026 (T227); bật lại thì đổi thành true
   const coMenuPhu = false
 
@@ -115,18 +164,36 @@ function Sidebar({ mod, onSearch }: { mod: ModuleDef; onSearch: () => void }) {
       <div className="sb-nav">
         {MODULES.filter(m => hienPhanHe(m, s.goi)).map(m => {
           const khoa = phanHeKhoa(m, s.goi)
+          const isTtn = m.key === 'thao-tac-nhanh'
           return (
             <Fragment key={m.key}>
               {/* Đường kẻ trên Danh mục và giữa Danh mục, Hệ thống (T53) */}
               {(m.key === 'danh-muc' || m.key === 'he-thong') && <div className="sb-sep" />}
-              <Link to={duongDan(m, manDau(m, s.goi))}
-                className={`${m.key === mod.key ? 'on' : ''} ${khoa ? 'lock' : ''}`}
-                title={khoa ? `${tenPhanHe(m, s.goi).ten}: chưa có trong gói ${GOI[s.goi].ten}` : tenPhanHe(m, s.goi).ten}
-                onMouseEnter={coMenuPhu ? e => onEnterItem(m, e.currentTarget) : undefined}
-                onMouseLeave={coMenuPhu ? onLeaveItem : undefined}
-              >
-                <Icon n={m.icon} /><span>{tenPhanHe(m, s.goi).ngan}</span>{khoa && <Pk g={minGoiPhanHe(m)} />}
-              </Link>
+              {isTtn ? (
+                <button
+                  type="button"
+                  className={`sb-item-btn${ttnOpen ? ' on' : ''}`}
+                  title={tenPhanHe(m, s.goi).ten}
+                  onClick={e => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    toggleTtn(e.currentTarget)
+                  }}
+                  onMouseEnter={e => onEnterTtn(e.currentTarget)}
+                  onMouseLeave={onLeaveTtn}
+                >
+                  <Icon n={m.icon} /><span>{tenPhanHe(m, s.goi).ngan}</span>
+                </button>
+              ) : (
+                <Link to={duongDan(m, manDau(m, s.goi))}
+                  className={`${m.key === mod.key ? 'on' : ''} ${khoa ? 'lock' : ''}`}
+                  title={khoa ? `${tenPhanHe(m, s.goi).ten}: chưa có trong gói ${GOI[s.goi].ten}` : tenPhanHe(m, s.goi).ten}
+                  onMouseEnter={coMenuPhu ? e => onEnterItem(m, e.currentTarget) : undefined}
+                  onMouseLeave={coMenuPhu ? onLeaveItem : undefined}
+                >
+                  <Icon n={m.icon} /><span>{tenPhanHe(m, s.goi).ngan}</span>{khoa && <Pk g={minGoiPhanHe(m)} />}
+                </Link>
+              )}
             </Fragment>
           )
         })}
@@ -143,6 +210,14 @@ function Sidebar({ mod, onSearch }: { mod: ModuleDef; onSearch: () => void }) {
           onClose={() => setHovered(null)}
           onMouseEnter={onEnterFlyout}
           onMouseLeave={onLeaveFlyout}
+        />
+      )}
+      {ttnOpen && (
+        <ThaoTacNhanhFlyout
+          top={ttnTop}
+          onClose={() => setTtnOpen(false)}
+          onMouseEnter={onEnterTtnFlyout}
+          onMouseLeave={onLeaveTtnFlyout}
         />
       )}
     </nav>

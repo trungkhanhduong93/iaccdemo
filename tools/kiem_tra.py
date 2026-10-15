@@ -947,11 +947,14 @@ def kiem_tra_bao_cao_dot_7():
                         pg.wait_for_timeout(100)
                         scroll_left = pg.evaluate("() => document.querySelector('.m-sbc-bang-wrap').scrollLeft")
                         pos_sau = pg.evaluate("() => { const th = document.querySelector('.m-sbc-bang-wrap th:first-child'); return th ? th.getBoundingClientRect().left : 0; }")
-                        if scroll_left < 50:
-                            loi.append(f'{ten_man} ({path}): không cuộn ngang được khung bảng (scrollLeft = {scroll_left})')
-                        # T258 (Mẫu A): báo cáo điện thoại ghim cột đầu theo mẫu A, cột đầu đứng yên khi cuộn ngang
-                        if scroll_left >= 50 and abs(pos_truoc - pos_sau) >= 50:
-                            loi.append(f'{ten_man} ({path}): cột đầu không được ghim theo mẫu A (trước: {pos_truoc}, sau: {pos_sau})')
+                        # T273: Báo cáo điện thoại không đóng băng cột nào theo chiều ngang, cột đầu trôi khi cuộn ngang
+                        pos_td = pg.evaluate("() => { const td = document.querySelector('.m-sbc-bang-wrap table tbody tr td:first-child'); return td ? getComputedStyle(td).position : ''; }")
+                        left_td = pg.evaluate("() => { const td = document.querySelector('.m-sbc-bang-wrap table tbody tr td:first-child'); return td ? getComputedStyle(td).left : ''; }")
+                        if pos_td == 'sticky' and left_td == '0px':
+                            loi.append(f'{ten_man} ({path}): cột đầu vẫn bị ghim sticky ngang left: 0px (luật mới T273 không đóng băng cột ngang)')
+                        scroll_w = pg.evaluate("() => document.documentElement.scrollWidth")
+                        if scroll_w > 390:
+                            loi.append(f'{ten_man} ({path}): trang bị tràn ngang khi cuộn bảng (scrollWidth = {scroll_w} > 390)')
 
             print(f'  - Đã kiểm: {ten_man} ({path})')
 
@@ -1500,10 +1503,10 @@ def kiem_tra_dot_10():
             box_sau = td_dau.bounding_box()
             if box_truoc and box_sau:
                 delta_x = abs(box_truoc['x'] - box_sau['x'])
-                if delta_x > 2:
-                    loi.append(f'Sổ ngân hàng (2-2-3): ô đầu tiên không ghim khi cuộn ngang (delta_x={delta_x:.1f}px, chưa theo mẫu A)')
+                if delta_x < 50:
+                    loi.append(f'Sổ ngân hàng (2-2-3): ô đầu tiên bị ghim khi cuộn ngang (delta_x={delta_x:.1f}px, luật mới T273 không ghim cột ngang)')
                 else:
-                    print(f'  - Bước 3a: Cuộn ngang 300px ô đầu đứng yên (delta_x={delta_x:.1f}px, ghim theo mẫu A)')
+                    print(f'  - Bước 3a: Cuộn ngang 300px ô đầu trôi theo cuộn (delta_x={delta_x:.1f}px, không ghim theo T273)')
 
             # Kiểm tra cuộn dọc: tiêu đề bảng dính trên theo Mẫu A (T258)
             th_dau = pg.locator('.m-so-bc table.rpt thead th').first
@@ -3094,26 +3097,32 @@ def kiem_tra_dot_15_b():
             if not co_ton:
                 loi.append('Sổ dạng dòng: tiêu đề ngày không chứa chữ "Tồn"')
 
-        # 4. Có số màu xanh bắt đầu "+" và số màu đỏ bắt đầu "−"
+        # 4. Có số màu xanh và số màu đỏ KHÔNG bắt đầu bằng "+" hay "−" (T273)
         so_xanh = pg.locator('.m-so-dong-duong')
         so_do = pg.locator('.m-so-dong-am')
-        co_plus = False
-        for i in range(so_xanh.count()):
-            txt = so_xanh.nth(i).inner_text().strip()
-            if txt.startswith('+'):
-                co_plus = True
-                break
-        if not co_plus:
-            loi.append('Sổ dạng dòng: không tìm thấy số màu xanh bắt đầu bằng "+"')
+        if so_xanh.count() == 0:
+            loi.append('Sổ dạng dòng: không tìm thấy số màu xanh .m-so-dong-duong')
+        else:
+            co_plus = False
+            for i in range(so_xanh.count()):
+                txt = so_xanh.nth(i).inner_text().strip()
+                if txt.startswith('+'):
+                    co_plus = True
+                    break
+            if co_plus:
+                loi.append('Sổ dạng dòng: số màu xanh vẫn bắt đầu bằng "+" (luật mới T273 bỏ dấu +)')
 
-        co_minus = False
-        for i in range(so_do.count()):
-            txt = so_do.nth(i).inner_text().strip()
-            if txt.startswith('−') or txt.startswith('-'):
-                co_minus = True
-                break
-        if not co_minus:
-            loi.append('Sổ dạng dòng: không tìm thấy số màu đỏ bắt đầu bằng "−"')
+        if so_do.count() == 0:
+            loi.append('Sổ dạng dòng: không tìm thấy số màu đỏ .m-so-dong-am')
+        else:
+            co_minus = False
+            for i in range(so_do.count()):
+                txt = so_do.nth(i).inner_text().strip()
+                if txt.startswith('−') or txt.startswith('-'):
+                    co_minus = True
+                    break
+            if co_minus:
+                loi.append('Sổ dạng dòng: số màu đỏ vẫn bắt đầu bằng "−" (luật mới T273 bỏ dấu −)')
 
         # 5. Chụp ảnh tools/shots/m-15-so-dong.png
         pg.screenshot(path=str(SHOTS / 'm-15-so-dong.png'))
@@ -3865,7 +3874,7 @@ def kiem_tra_dot_19_b():
         if not tc_web:
             loi.append('19B: không tìm thấy thu chi trên bản web 1440x900 gói Free')
 
-        co_tao_quy_web = pg_web.locator('.bbt-cot:has-text("Quản lý thu chi") a:has-text("Tạo quỹ")').count() > 0
+        co_bd_tc_web = pg_web.locator('.bbt-cot:has-text("Quản lý thu chi") :has-text("Biểu đồ thu chi")').count() > 0
 
         # Kiểm tra bấm thẻ quỹ mở modal M2 trên web (T272)
         the_quy_web = pg_web.locator('.bbt-cot:has-text("Quản lý thu chi") .t.qy, .bbt-the-btn').first
@@ -3948,11 +3957,11 @@ def kiem_tra_dot_19_b():
                     f'19B: thu chi điện thoại ({txt_tc_dt}) không khớp bản web ({tc_web})'
                 )
 
-        # Gói F có nút Tạo quỹ ở trang chủ điện thoại (nếu web có)
-        if co_tao_quy_web:
-            loc_tao_quy = pg.locator('.m-free-the:has-text("Quản lý thu chi") a:has-text("Tạo quỹ")')
-            if loc_tao_quy.count() == 0:
-                loi.append('19B: trang chủ Free điện thoại thiếu nút Tạo quỹ ở Quản lý thu chi')
+        # Gói F có nút Biểu đồ thu chi ở trang chủ điện thoại (nếu web có) (T273)
+        if co_bd_tc_web:
+            loc_bd_tc = pg.locator('.m-free-the:has-text("Quản lý thu chi") :has-text("Biểu đồ thu chi")')
+            if loc_bd_tc.count() == 0:
+                loi.append('19B: trang chủ Free điện thoại thiếu nút Biểu đồ thu chi ở Quản lý thu chi')
 
         # Chụp ảnh trang chủ Free
         pg.screenshot(path=str(SHOTS / 'm-19-free-trang-chu.png'))
@@ -4431,32 +4440,50 @@ def kiem_tra_dot_21_b():
             if kiem_kq['posTh'] != 'sticky':
                 loi.append(f'{ma} ({ten_bc}): ô tiêu đề th không có position: sticky (hiện là "{kiem_kq["posTh"]}")')
 
-            # Kiểm tra ô cột đầu dòng dữ liệu sticky left 0
-            if kiem_kq['posTd'] != 'sticky':
-                loi.append(f'{ma} ({ten_bc}): ô cột đầu không có position: sticky (hiện là "{kiem_kq["posTd"]}")')
-            if kiem_kq['leftTd'] != '0px':
-                loi.append(f'{ma} ({ten_bc}): ô cột đầu không có left: 0px (hiện là "{kiem_kq["leftTd"]}")')
+            # T273: Kiểm tra cột đầu KHÔNG sticky ngang (position khác sticky hoặc left auto)
+            if kiem_kq['posTd'] == 'sticky' and kiem_kq['leftTd'] == '0px':
+                loi.append(f'{ma} ({ten_bc}): ô cột đầu vẫn có position: sticky left: 0px (luật mới T273 không ghim cột ngang)')
 
-            # Kiểm tra sau khi cuộn ngang 200px: ô cột đầu không đổi vị trí trái (dx <= 1.5)
-            if kiem_kq['dx'] > 1.5:
-                loi.append(f'{ma} ({ten_bc}): ô cột đầu bị lệch khi cuộn ngang 200px (dx={kiem_kq["dx"]}px)')
-
-            # Kiểm tra sau khi cuộn ngang 200px: ô chứa chữ tên (cột tên/diễn giải/chỉ tiêu) không đổi vị trí trái và vẫn nằm trong thẻ (T258 vòng sửa 1)
-            if ma in ['3.2.9', '3.2.8', '5.2.3', '2.2.9']:
-                if kiem_kq['dxGhim'] > 1.5:
-                    loi.append(f'{ma} ({ten_bc}): ô ghim (tên/diễn giải/chỉ tiêu) bị lệch khi cuộn ngang 200px (dx={kiem_kq["dxGhim"]}px)')
-                if not kiem_kq['insideCard']:
-                    loi.append(f'{ma} ({ten_bc}): ô ghim (tên/diễn giải/chỉ tiêu) không nằm trọn trong thẻ sau khi cuộn')
+            # T273: Sau khi cuộn ngang 200px: ô cột đầu trôi theo cuộn (dx > 50)
+            if kiem_kq['dx'] <= 1.5:
+                loi.append(f'{ma} ({ten_bc}): ô cột đầu không trôi khi cuộn ngang 200px (dx={kiem_kq["dx"]}px, luật mới T273 không ghim)')
 
             # Kiểm tra dòng tổng (nếu có) phải có position: sticky
             if kiem_kq['hasTrT'] and kiem_kq['posTrT'] != 'sticky':
                 loi.append(f'{ma} ({ten_bc}): dòng tổng không có position: sticky (hiện là "{kiem_kq["posTrT"]}")')
 
+            # T273: Kiểm tra phân trang cho báo cáo >100 dòng (ở báo cáo 3.2.8)
+            if ma == '3.2.8':
+                thanh_pt = pg.locator('.m-sbc-phan-trang')
+                if thanh_pt.count() == 0:
+                    loi.append(f'{ma} ({ten_bc}): báo cáo >100 dòng nhưng không có thanh phân trang .m-sbc-phan-trang')
+                else:
+                    tr_t_loc = pg.locator('.m-sbc-bang-wrap table tbody tr.t, .m-sbc-bang-wrap table tfoot tr')
+                    val_tong_trang_1 = tr_t_loc.first.inner_text().strip() if tr_t_loc.count() else ''
+                    nut_sau = pg.locator('.m-sbc-pt-nut:has-text("Sau")')
+                    if nut_sau.count() == 0:
+                        loi.append(f'{ma} ({ten_bc}): không tìm thấy nút "Sau" trong thanh phân trang')
+                    elif nut_sau.is_disabled():
+                        loi.append(f'{ma} ({ten_bc}): nút "Sau" bị disabled ở trang 1')
+                    else:
+                        nut_sau.click()
+                        pg.wait_for_timeout(350)
+                        so_dong_trang_2 = pg.locator('.m-sbc-bang-wrap table tbody tr:not(.t):not(.nhom)').count()
+                        if so_dong_trang_2 > 100:
+                            loi.append(f'{ma} ({ten_bc}): sau khi bấm "Sau", số dòng hiện tại vượt quá 100 ({so_dong_trang_2})')
+                        val_tong_trang_2 = tr_t_loc.first.inner_text().strip() if tr_t_loc.count() else ''
+                        if val_tong_trang_1 != val_tong_trang_2:
+                            loi.append(f'{ma} ({ten_bc}): dòng tổng cuối bảng bị đổi giá trị sau khi sang trang 2 (trang 1: "{val_tong_trang_1}", trang 2: "{val_tong_trang_2}")')
+                        nut_truoc = pg.locator('.m-sbc-pt-nut:has-text("Trước")')
+                        if nut_truoc.count():
+                            nut_truoc.click()
+                            pg.wait_for_timeout(250)
+
             # Chụp ảnh sau khi cuộn ngang
             pg.wait_for_timeout(150)
             ten_file_sau = f'm-21-{ma}-cuon.png'
             pg.screenshot(path=str(SHOTS / ten_file_sau))
-            print(f'  - {ma} ({ten_bc}): đạt Mẫu A (sticky header, sticky col1 left: 0, dx={kiem_kq["dx"]:.1f}px, dxGhim={kiem_kq["dxGhim"]:.1f}px, ghim2={kiem_kq["hasGhim2"]}, cuộn={kiem_kq["scrollW"]}px, tổng sticky={kiem_kq["posTrT"]})')
+            print(f'  - {ma} ({ten_bc}): đạt luật mới T273 (sticky header dọc, không ghim cột ngang dx={kiem_kq["dx"]:.1f}px, cuộn={kiem_kq["scrollW"]}px, tổng sticky={kiem_kq["posTrT"]})')
 
         b.close()
 

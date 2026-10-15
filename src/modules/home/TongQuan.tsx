@@ -351,7 +351,7 @@ export function TongQuan({ sc }: ScreenProps) {
                     <span className="muted">Dòng tiền thuần trong kỳ:</span>
                     <span className="grow" />
                     <b className={d.dongTien.thu >= d.dongTien.chi ? 'up' : 'down'}>
-                      {d.dongTien.thu >= d.dongTien.chi ? '+' : ''}{money(d.dongTien.thu - d.dongTien.chi)} đ
+                      {money(Math.abs(d.dongTien.thu - d.dongTien.chi))} đ
                     </b>
                   </div>
                 </>

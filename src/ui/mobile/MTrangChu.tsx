@@ -730,7 +730,7 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
                   {thangF === 10 ? 'Tháng này' : `Tháng ${thangF}`} lãi bao nhiêu?
                 </div>
                 <div className={`m-tc-so-lon m-free-tra ${loiNhuanFree >= 0 ? 'lai' : 'lo'}`}>
-                  {loiNhuanFree >= 0 ? '+' : '−'}{moneyD(Math.abs(loiNhuanFree))}
+                  {loiNhuanFree < 0 ? `Lỗ ${moneyD(Math.abs(loiNhuanFree))}` : moneyD(loiNhuanFree)}
                 </div>
                 <div className="m-free-phu">Biên lãi {pct(bienFree)} trên doanh thu</div>
 
@@ -804,8 +804,7 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
                     </div>
                     <div className="tll-phai">
                       <b>
-                        {loiNhuanFree < 0 ? '−' : ''}
-                        {moneyD(Math.abs(loiNhuanFree))}
+                        {loiNhuanFree < 0 ? `Lỗ ${moneyD(Math.abs(loiNhuanFree))}` : moneyD(loiNhuanFree)}
                       </b>
                       <span>{pct(dFree.dtThuan > 0 ? loiNhuanFree / dFree.dtThuan : 0)}</span>
                     </div>
@@ -814,7 +813,7 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
 
                 <div className="bbt-chan" style={{ marginTop: 10 }}>
                   <button type="button" className="bbt-nut" onClick={() => setMoBieuDo(true)}>
-                    Xem biểu đồ lãi lỗ 13 tháng ›
+                    Xem biểu đồ lãi lỗ 13 tháng
                     <Icon n="chevr" className="ic sm" />
                   </button>
                 </div>
@@ -832,27 +831,24 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
                 <div className="m-free-hoi">
                   {thangF === 10 ? 'Tồn quỹ hiện tại' : `Tồn quỹ cuối tháng ${thangF}/2026`}
                 </div>
+                {/* T273: số tồn quỹ tổng to, đậm, có mũi tên › */}
                 <button
                   type="button"
-                  className="m-tc-so-lon m-free-tra m-btn-so-lon"
-                  style={{ color: 'var(--blue, #0560a6)', background: 'none', border: 0, padding: 0, font: 'inherit', textAlign: 'left', cursor: 'pointer' }}
+                  className="m-tc-so-lon m-free-tra m-btn-so-lon m-free-ton-quy-lon"
                   onClick={() => setSheetQuy('tat-ca')}
                   title="Xem biểu đồ thu chi tất cả quỹ"
                 >
-                  {moneyD(tongQuyFree.cuoi)}
+                  {moneyD(tongQuyFree.cuoi)} ›
                 </button>
                 <div className="m-free-phu">
-                  Thu +{short(tongQuyFree.thu)} · Chi −{short(tongQuyFree.chi)}
+                  Thu <span style={{ color: 'var(--green, #138a52)' }}>{short(tongQuyFree.thu)}</span> · Chi <span style={{ color: 'var(--red, #c2362b)' }}>{short(tongQuyFree.chi)}</span>
                 </div>
 
                 {/* Tồn quỹ hiện tại */}
                 <div className="tll" style={{ marginTop: 14 }}>
                   <div className="tll-dau">
-                    <b>
-                      {thangF === 10
-                        ? 'Tồn quỹ hiện tại'
-                        : `Tồn quỹ cuối tháng ${thangF}/2026`}
-                    </b>
+                    {/* T273: đổi tiêu đề tránh lặp */}
+                    <b>Các quỹ</b>
                   </div>
                   {quyFree.map(r => (
                     <button
@@ -876,12 +872,12 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
                   ))}
                 </div>
 
-                <div className="bbt-chan" style={{ marginTop: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Link to="/app/danh-muc/1-12?moi=1&goiY=thuchi" className="bbt-nut">
-                    Tạo quỹ ›
+                {/* T273: nút "Biểu đồ thu chi ›" mở sheet gộp, bỏ dòng gợi ý */}
+                <div className="bbt-chan" style={{ marginTop: 10 }}>
+                  <button type="button" className="bbt-nut" onClick={() => setSheetQuy('tat-ca')}>
+                    Biểu đồ thu chi
                     <Icon n="chevr" className="ic sm" />
-                  </Link>
-                  <span className="bbt-goiy">Bấm vào quỹ để xem biểu đồ thu chi</span>
+                  </button>
                 </div>
               </div>
 
@@ -957,7 +953,7 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
                     className="bbt-nut"
                     onClick={() => datLocDaXem('/app/bao-cao/5-2-15', {}, String(thangF))}
                   >
-                    Mở báo cáo kiểm kê ›
+                    Mở báo cáo kiểm kê
                     <Icon n="chevr" className="ic sm" />
                   </Link>
                 </div>
@@ -1106,7 +1102,7 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
                   <span className="muted">Dòng tiền thuần trong kỳ:</span>
                   <span className="grow" />
                   <b className={d.dongTien.thu >= d.dongTien.chi ? 'up' : 'down'}>
-                    {d.dongTien.thu >= d.dongTien.chi ? '+' : ''}{money(d.dongTien.thu - d.dongTien.chi)} đ
+                    {money(Math.abs(d.dongTien.thu - d.dongTien.chi))} đ
                   </b>
                 </div>
               </div>

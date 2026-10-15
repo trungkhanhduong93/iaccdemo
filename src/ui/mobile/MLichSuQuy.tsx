@@ -69,11 +69,11 @@ export function MLichSuQuy(_: ScreenProps) {
           </div>
           <div className="m-free-lsq-o-st st-thu">
             <span>Tiền thu vào</span>
-            <b>+{moneyD(tn)}</b>
+            <b>{moneyD(tn)}</b>
           </div>
           <div className="m-free-lsq-o-st st-chi">
             <span>Tiền chi ra</span>
-            <b>−{moneyD(tc)}</b>
+            <b>{moneyD(tc)}</b>
           </div>
           <div className="m-free-lsq-o-st st-cuoi">
             <span>Tồn cuối kỳ</span>
@@ -129,8 +129,8 @@ export function MLichSuQuy(_: ScreenProps) {
                 <div className="m-free-lsq-ngay-dau">
                   <b>{tenNgay(ngay)}</b>
                   <div className="m-free-lsq-ngay-tong">
-                    {tongThuNgay > 0 && <span className="m-tien-vao">+{money(tongThuNgay)}</span>}
-                    {tongChiNgay > 0 && <span className="m-tien-ra">−{money(tongChiNgay)}</span>}
+                    {tongThuNgay > 0 && <span className="m-tien-vao">{money(tongThuNgay)}</span>}
+                    {tongChiNgay > 0 && <span className="m-tien-ra">{money(tongChiNgay)}</span>}
                     <span className="m-tien-cuoi">Cuối {money(cuoiNgay)}</span>
                   </div>
                 </div>
@@ -185,7 +185,7 @@ export function MLichSuQuy(_: ScreenProps) {
                         </div>
                         <div className="m-free-lsq-so">
                           <div className={`m-free-lsq-tien ${laThu ? 'm-tien-vao' : 'm-tien-ra'}`}>
-                            {laThu ? `+${moneyD(x.thu)}` : `−${moneyD(x.chi)}`}
+                            {laThu ? moneyD(x.thu) : moneyD(x.chi)}
                           </div>
                           <small className="m-free-lsq-sodu">Số dư {moneyD(x.du)}</small>
                         </div>

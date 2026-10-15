@@ -189,8 +189,8 @@ const Khuon1ChiTietNgay: FC<{ rows: Row[]; q?: string; xemTatCaCn?: boolean }> =
             <b className="m-so-dong-tong-so m-so-dong-num">
               {rTong.no !== undefined || rTong.co !== undefined ? (
                 <>
-                  <span className="m-so-dong-duong">+{rutGonSo(Number(rTong.no ?? 0))}</span>{' '}
-                  <span className="m-so-dong-am">−{rutGonSo(Number(rTong.co ?? 0))}</span>
+                  <span className="m-so-dong-duong">{rutGonSo(Number(rTong.no ?? 0))}</span>{' '}
+                  <span className="m-so-dong-am">{rutGonSo(Number(rTong.co ?? 0))}</span>
                 </>
               ) : (
                 rutGonSo(Number(rTong.tienHang ?? rTong.tien ?? rTong.sln ?? 0))
@@ -252,12 +252,12 @@ const Khuon1ChiTietNgay: FC<{ rows: Row[]; q?: string; xemTatCaCn?: boolean }> =
                     <div className="m-so-dong-phai">
                       {tienThu > 0 && (
                         <div className="m-so-dong-tien m-so-dong-duong m-so-dong-num">
-                          +{money(tienThu)}
+                          {money(tienThu)}
                         </div>
                       )}
                       {tienChi > 0 && (
                         <div className="m-so-dong-tien m-so-dong-am m-so-dong-num">
-                          −{money(tienChi)}
+                          {money(tienChi)}
                         </div>
                       )}
                       {!tienThu && !tienChi && tienChinh !== 0 && (
@@ -383,11 +383,11 @@ const Khuon2TongHopDoiTuong: FC<{ rows: Row[]; q?: string }> = ({ rows, q = '' }
                   </div>
                   <div className="m-bcd-t2-o">
                     <span className="m-bcd-t2-nhan">{o2Nhan}</span>
-                    <b className="m-bcd-t2-val m-so-dong-duong">+{money(o2Val)}</b>
+                    <b className="m-bcd-t2-val m-so-dong-duong">{money(o2Val)}</b>
                   </div>
                   <div className="m-bcd-t2-o">
                     <span className="m-bcd-t2-nhan">{o3Nhan}</span>
-                    <b className="m-bcd-t2-val m-so-dong-am">−{money(o3Val)}</b>
+                    <b className="m-bcd-t2-val m-so-dong-am">{money(o3Val)}</b>
                   </div>
                 </div>
               </div>

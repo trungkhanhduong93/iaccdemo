@@ -18974,3 +18974,422 @@ button.bbt-nut { background: none; border: 0; padding-left: 0; padding-right: 0;
   font-weight: 500;
   margin-top: 1px;
 }
+
+/* ── Trang chủ sửa vòng 2, sheet quỹ, sidebar Thao tác nhanh nổi (T273) ── */
+button.m-free-ton-quy-lon {
+  color: var(--blue, #0560a6) !important;
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1.15;
+  background: none;
+  border: 0;
+  padding: 0;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.mq-btn-tao-quy {
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--blue, #0560a6);
+  background: var(--tint, #e6eff7);
+  padding: 3px 8px;
+  border-radius: 6px;
+  text-decoration: none;
+  line-height: 1.2;
+}
+.mq-btn-tao-quy:hover {
+  background: #d4e5f5;
+}
+.mq-btn.mq-btn-phu {
+  color: var(--muted, #6b7280);
+  border-style: dashed;
+}
+.mq-btn.mq-btn-phu:hover {
+  color: var(--blue, #0560a6);
+  border-color: var(--blue, #0560a6);
+}
+.m-quy-sheet .mq-than-m {
+  padding-bottom: 24px;
+}
+.m-quy-chan {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 14px;
+  padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+  background: #fff;
+  border-top: 1px solid var(--line-2, #eeeeee);
+}
+.m-quy-chan-hang1 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.m-quy-btn-phieu {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 38px;
+  border-radius: 8px;
+  border: 1px solid var(--line, #e5e7eb);
+  background: #fff;
+  color: var(--ink, #1f2225);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.m-quy-btn-phieu:hover {
+  background: #f8fafc;
+}
+.m-quy-btn-chinh {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 42px;
+  border-radius: 8px;
+  background: var(--blue, #0560a6);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  width: 100%;
+}
+.m-quy-btn-chinh:hover {
+  background: #044a80;
+}
+.sb-nav button.sb-item-btn {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 12px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  position: relative;
+  white-space: nowrap;
+  background: none;
+  border: 0;
+  font-family: inherit;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+}
+.sb-nav button.sb-item-btn:hover {
+  background: rgba(255, 255, 255, .08);
+  color: #fff;
+}
+.sb-nav button.sb-item-btn.on {
+  background: var(--sb-on, rgba(255, 255, 255, .15));
+  color: #fff;
+  font-weight: 600;
+}
+.sb-nav button.sb-item-btn .ic {
+  width: 20px;
+  height: 20px;
+}
+.shell.gon .sb-nav button.sb-item-btn {
+  justify-content: center;
+  padding: 0;
+}
+.shell.gon .sb-nav button.sb-item-btn > span {
+  display: none;
+}
+.sb-flyout-ttn {
+  width: 260px;
+  padding: 14px 16px;
+}
+.sb-ttn-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  max-height: 340px;
+  overflow-y: auto;
+}
+.sb-ttn-chan {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, .1);
+  display: flex;
+  justify-content: flex-end;
+}
+.sb-ttn-tuy-chinh {
+  color: var(--blue-l, #4ba3e3);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.sb-ttn-tuy-chinh:hover {
+  text-decoration: underline;
+  color: #fff;
+}
+.sb-flyout-x {
+  background: none;
+  border: 0;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.sb-flyout-x:hover {
+  color: #fff;
+}
+
+/* ── Báo cáo điện thoại dạng bảng, phân trang (T273) ── */
+@media (max-width: 767px) {
+  /* 1. Bỏ hoàn toàn đóng băng cột theo chiều ngang (không sticky cột nào) */
+  .m-sbc-the-bang .m-sbc-bang-wrap table.rpt thead tr:first-child > th:first-child,
+  .m-sbc-the-bang .m-sbc-bang-wrap table.rpt thead tr:nth-child(2) > th:first-child,
+  .m-sbc-the-bang .m-sbc-bang-wrap table.rpt tbody td:first-child,
+  .m-sbc-the-bang .m-sbc-bang-wrap table.rpt tbody tr.nhom td:first-child,
+  .m-sbc-the-bang .m-sbc-bang-wrap table.rpt tbody tr.t td:first-child,
+  .m-sbc-the-bang .m-sbc-bang-wrap.m-ghim-2-cot table.rpt thead tr:first-child > th:first-child,
+  .m-sbc-the-bang .m-sbc-bang-wrap.m-ghim-2-cot table.rpt tbody td:first-child,
+  .m-sbc-the-bang .m-sbc-bang-wrap.m-ghim-2-cot table.rpt tbody tr.t td:first-child,
+  .m-sbc-the-bang .m-sbc-bang-wrap.m-ghim-2-cot table.rpt thead tr:first-child > th:nth-child(2),
+  .m-sbc-the-bang .m-sbc-bang-wrap.m-ghim-2-cot table.rpt tbody td:nth-child(2),
+  .m-sbc-the-bang .m-sbc-bang-wrap.m-ghim-2-cot table.rpt tbody tr.nhom td:nth-child(2),
+  .m-sbc-the-bang .m-sbc-bang-wrap.m-ghim-2-cot table.rpt tbody tr.t td:nth-child(2) {
+    position: static !important;
+    left: auto !important;
+    right: auto !important;
+    box-shadow: none !important;
+    max-width: none !important;
+    width: auto !important;
+    border-right: none !important;
+  }
+
+  /* Tiêu đề vẫn dính trên khi cuộn dọc (không dính ngang), cao vừa chữ, padding 8px 10px */
+  .m-sbc-the-bang .m-sbc-bang-wrap table.rpt thead th,
+  .m-sbc-bang-wrap table.rpt thead th,
+  .m-sbc-the-bang .m-sbc-bang-wrap table.rpt thead tr:first-child > th:first-child,
+  .m-sbc-the-bang .m-sbc-bang-wrap.m-ghim-2-cot table.rpt thead tr:first-child > th:first-child,
+  .m-sbc-the-bang .m-sbc-bang-wrap.m-ghim-2-cot table.rpt thead tr:first-child > th:nth-child(2) {
+    position: sticky !important;
+    top: 0 !important;
+    left: auto !important;
+    z-index: 10 !important;
+    background: var(--tint) !important;
+    color: var(--navy) !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    padding: 8px 10px !important;
+    height: auto !important;
+    line-height: 1.35 !important;
+    text-align: left !important;
+    box-shadow: none !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Tiêu đề nhóm nhiều cột căn giữa */
+  .m-sbc-the-bang .m-sbc-bang-wrap table.rpt thead th[colspan],
+  .m-sbc-bang-wrap table.rpt thead th[colspan] {
+    text-align: center !important;
+  }
+
+  .m-sbc-the-bang .m-sbc-bang-wrap table.rpt thead tr:nth-child(2) th,
+  .m-sbc-the-bang .m-sbc-bang-wrap table.rpt thead tr:nth-child(2) > th:first-child {
+    top: 34px !important;
+    left: auto !important;
+  }
+
+  .m-sbc-the-bang .m-sbc-bang-wrap table.rpt thead tr:nth-child(3) th {
+    top: 68px !important;
+    left: auto !important;
+  }
+
+  /* 2. Bảng gọn gàng cho màn 390px, cỡ chữ 13px */
+  .m-sbc-the-bang .m-sbc-bang-wrap table.rpt,
+  .m-sbc-bang-wrap table.rpt {
+    width: max-content;
+    min-width: 100%;
+    font-size: 13px !important;
+    font-variant-numeric: tabular-nums !important;
+  }
+
+  /* Dòng thường: chữ 13px, viền mỏng, xen kẽ màu nền */
+  .m-sbc-the-bang .m-sbc-bang-wrap table.rpt tbody td,
+  .m-sbc-bang-wrap table.rpt tbody td {
+    font-size: 13px !important;
+    padding: 8px 10px !important;
+    border-bottom: 1px solid var(--line-2) !important;
+    color: var(--body);
+    box-sizing: border-box;
+  }
+
+  .m-sbc-the-bang .m-sbc-bang-wrap table.rpt tbody tr:nth-child(odd):not(.t):not(.nhom) td {
+    background: var(--white) !important;
+  }
+
+  .m-sbc-the-bang .m-sbc-bang-wrap table.rpt tbody tr:nth-child(even):not(.t):not(.nhom) td {
+    background: var(--hdb-chan, #f8fafc) !important;
+  }
+
+  /* Cột mã hẹp */
+  .m-sbc-the-bang .m-sbc-bang-wrap table.rpt td.code,
+  .m-sbc-the-bang .m-sbc-bang-wrap table.rpt th.code,
+  .m-sbc-bang-wrap table.rpt td.code,
+  .m-sbc-bang-wrap table.rpt th.code {
+    max-width: 80px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Cột ĐVT hẹp căn giữa */
+  .m-sbc-the-bang .m-sbc-bang-wrap table.rpt td.c,
+  .m-sbc-the-bang .m-sbc-bang-wrap table.rpt th.c,
+  .m-sbc-bang-wrap table.rpt td.c,
+  .m-sbc-bang-wrap table.rpt th.c {
+    text-align: center !important;
+    max-width: 55px;
+    white-space: nowrap;
+  }
+
+  /* Cột chữ (tên hàng, diễn giải) có max-width tối đa ~160px, xuống dòng tối đa 2 dòng */
+  .m-sbc-the-bang .m-sbc-bang-wrap table.rpt tbody td:not(.num):not(.c):not(.code),
+  .m-sbc-bang-wrap table.rpt tbody td:not(.num):not(.c):not(.code) {
+    max-width: 160px !important;
+    white-space: normal;
+  }
+
+  .m-sbc-the-bang .m-sbc-bang-wrap table.rpt .m-cot-chu-2-dong,
+  .m-sbc-bang-wrap table.rpt .m-cot-chu-2-dong {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.35;
+    max-width: 160px !important;
+    word-break: break-word;
+  }
+
+  /* Cột số căn phải, không xuống dòng, tabular-nums */
+  .m-sbc-the-bang .m-sbc-bang-wrap table.rpt tbody td.num,
+  .m-sbc-bang-wrap table.rpt tbody td.num {
+    text-align: right !important;
+    font-variant-numeric: tabular-nums !important;
+    white-space: nowrap !important;
+  }
+
+  /* Dòng tổng cộng: nền --tint, chữ đậm, dính dưới khi cuộn dọc nhưng KHÔNG dính ngang */
+  .m-sbc-the-bang .m-sbc-bang-wrap table.rpt tbody tr.t td,
+  .m-sbc-bang-wrap table.rpt tbody tr.t td,
+  .m-sbc-the-bang .m-sbc-bang-wrap table.rpt tbody tr.t td:first-child,
+  .m-sbc-the-bang .m-sbc-bang-wrap.m-ghim-2-cot table.rpt tbody tr.t td:nth-child(2) {
+    position: sticky !important;
+    bottom: 0 !important;
+    left: auto !important;
+    z-index: 15 !important;
+    background: var(--tint) !important;
+    color: var(--navy) !important;
+    font-weight: 700 !important;
+    border-top: 1px solid var(--line) !important;
+    border-bottom: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .m-sbc-the-bang .m-sbc-bang-wrap table.rpt tbody tr.t td .m-o-rong,
+  .m-sbc-bang-wrap table.rpt tbody tr.t td .m-o-rong {
+    color: var(--faint) !important;
+  }
+
+  /* 3. Chân bảng: chỉ dẫn vuốt ngang khi có cuộn ngang */
+  .m-sbc-goi {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin: 0;
+    padding: 7px 12px;
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-top: 0;
+    font-size: 12px;
+    color: var(--muted);
+    box-sizing: border-box;
+    flex: none;
+  }
+
+  /* 4. Thanh phân trang T273 */
+  .m-sbc-phan-trang {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin: 0;
+    padding: 8px 12px;
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-top: 0;
+    border-radius: 0 0 12px 12px;
+    box-sizing: border-box;
+    flex: none;
+    gap: 8px;
+  }
+
+  /* Khi có cả dải gợi ý và thanh phân trang: dải gợi ý không bo góc dưới */
+  .m-sbc-the-bang:has(.m-sbc-phan-trang) .m-sbc-goi {
+    border-radius: 0;
+  }
+
+  /* Khi không có phân trang nhưng có dải gợi ý: bo góc dưới dải gợi ý */
+  .m-sbc-the-bang:not(:has(.m-sbc-phan-trang)) .m-sbc-goi {
+    border-radius: 0 0 12px 12px;
+  }
+
+  /* Nút bấm phân trang */
+  .m-sbc-pt-nut {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 14px;
+    height: 32px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--navy);
+    background: var(--tint);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    cursor: pointer;
+    flex: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .m-sbc-pt-nut:active:not(:disabled) {
+    background: var(--hdb-bg);
+  }
+
+  .m-sbc-pt-nut:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+    color: var(--muted);
+    background: var(--soft);
+  }
+
+  .m-sbc-pt-chu {
+    font-size: 12px;
+    color: var(--body);
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}

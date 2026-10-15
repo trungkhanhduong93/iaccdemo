@@ -150,7 +150,7 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
             className={`tra bbt-tra ${loiNhuan >= 0 ? 'lai' : 'lo'}`}
             style={{ color: loiNhuan >= 0 ? 'var(--green, #138a52)' : 'var(--red, #c2362b)' }}
           >
-            {loiNhuan >= 0 ? '+' : '−'}{moneyD(Math.abs(loiNhuan))}
+            {loiNhuan < 0 ? `Lỗ ${moneyD(Math.abs(loiNhuan))}` : moneyD(loiNhuan)}
           </div>
           <div className="phu bbt-phu bbt-e-phu">
             Biên lãi {pct(bien)} trên doanh thu
@@ -174,6 +174,7 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
               <b>{moneyD(nvl.tien)}</b>
               <span>{pct(d.dtThuan > 0 ? nvl.tien / d.dtThuan : 0)}</span>
             </div>
+            <Icon n="chevr" className="ic sm muted" />
           </Link>
 
           <Link
@@ -189,6 +190,7 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
               <b>{moneyD(cpThang)}</b>
               <span>{pct(d.dtThuan > 0 ? cpThang / d.dtThuan : 0)}</span>
             </div>
+            <Icon n="chevr" className="ic sm muted" />
           </Link>
 
           <Link
@@ -204,13 +206,14 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
               <b>{moneyD(d.cpPhanBo)}</b>
               <span>{pct(d.dtThuan > 0 ? d.cpPhanBo / d.dtThuan : 0)}</span>
             </div>
+            <Icon n="chevr" className="ic sm muted" />
           </Link>
 
           <div className={`t ${loiNhuan >= 0 ? 'lai' : 'lo'}`}>
             <div className="l"><b>Lợi nhuận</b></div>
             <div className="r">
               <b style={{ fontSize: '17px' }}>
-                {loiNhuan < 0 ? '−' : ''}{moneyD(Math.abs(loiNhuan))}
+                {loiNhuan < 0 ? `Lỗ ${moneyD(Math.abs(loiNhuan))}` : moneyD(loiNhuan)}
               </b>
               <span>{pct(bien)}</span>
             </div>
@@ -240,10 +243,10 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
             onClick={() => setModalQuy('tat-ca')}
             title="Xem biểu đồ thu chi tất cả quỹ"
           >
-            {moneyD(tongQuy.cuoi)}
+            {moneyD(tongQuy.cuoi)} ›
           </button>
           <div className="phu bbt-phu bbt-e-phu">
-            Thu +{short(tongQuy.thu)} · Chi −{short(tongQuy.chi)}
+            Thu <span style={{ color: 'var(--green, #138a52)' }}>{short(tongQuy.thu)}</span> · Chi <span style={{ color: 'var(--red, #c2362b)' }}>{short(tongQuy.chi)}</span>
           </div>
 
           {quy.map(r => (
@@ -262,17 +265,18 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
                 <b>{moneyD(r.cuoi)}</b>
                 <span>{pct(tongQuy.cuoi ? r.cuoi / tongQuy.cuoi : 0)}</span>
               </div>
+              <Icon n="chevr" className="ic sm muted" />
             </button>
           ))}
 
-          <div className="bbt-e-chan-tc">
-            <Link to="/app/danh-muc/1-12?moi=1&goiY=thuchi" className="nut">
-              Tạo quỹ ›
-            </Link>
-            <span className="bbt-e-ghi-chu-quy">
-              Bấm vào quỹ để xem biểu đồ thu chi
-            </span>
-          </div>
+          {/* T273: nút "Biểu đồ thu chi ›" mở modal gộp, bỏ dòng gợi ý */}
+          <button
+            type="button"
+            className="nut bbt-e-nut"
+            onClick={() => setModalQuy('tat-ca')}
+          >
+            Biểu đồ thu chi ›
+          </button>
         </section>
 
         {/* Cột 3: Quản lý kho */}
@@ -298,6 +302,7 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
             <div className="r">
               <b>{moneyD(kho.nhapMua)}</b>
             </div>
+            <Icon n="chevr" className="ic sm muted" />
           </Link>
 
           <Link
@@ -313,6 +318,7 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
             <div className="r">
               <b>{moneyD(kho.congNo)}</b>
             </div>
+            <Icon n="chevr" className="ic sm muted" />
           </Link>
 
           <Link
@@ -328,6 +334,7 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
             <div className="r">
               <b>{kho.matHH} mặt hàng</b>
             </div>
+            <Icon n="chevr" className="ic sm muted" />
           </Link>
 
           <div className="bbt-e-tt-nhanh-tieu">Thao tác nhanh</div>

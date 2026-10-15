@@ -3,10 +3,11 @@ import { Link, useNavigate } from 'react-router-dom'
 import type { ModuleDef } from '../modules/types'
 import { useSession } from './session'
 import { hienMan, maKhoa, moDuoc, timMan } from './registry'
-import { minGoi } from './plan'
+import { GOI, minGoi } from './plan'
 import { Icon } from '../ui/Icon'
 import { Pk } from '../ui/Page'
 import { heSoZoom } from '../ui/zoom'
+import { useThaoTacNhanh } from './thaoTacNhanh'
 
 export interface FlyoutItem {
   ten: string
@@ -467,6 +468,100 @@ export function SidebarFlyout({
             ))}
           </div>
         </div>
+      </div>
+    </div>
+  )
+}
+
+/** Bảng nổi Thao tác nhanh bên cạnh sidebar (T273) */
+export function ThaoTacNhanhFlyout({
+  top,
+  onClose,
+  onMouseEnter,
+  onMouseLeave,
+}: {
+  top: number
+  onClose: () => void
+  onMouseEnter: () => void
+  onMouseLeave: () => void
+}) {
+  const { s } = useSession()
+  const { ds } = useThaoTacNhanh(s)
+  const flyoutRef = useRef<HTMLDivElement>(null)
+
+  // Esc và bấm ra ngoài đóng (T273)
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+    }
+    const onMouseDown = (e: MouseEvent) => {
+      if (flyoutRef.current && !flyoutRef.current.contains(e.target as Node)) {
+        const el = e.target as HTMLElement
+        if (el.closest('.sb-item-btn')) return
+        onClose()
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    document.addEventListener('mousedown', onMouseDown)
+    return () => {
+      window.removeEventListener('keydown', onKey)
+      document.removeEventListener('mousedown', onMouseDown)
+    }
+  }, [onClose])
+
+  const adjustedTop = (() => {
+    const z = heSoZoom()
+    const winH = typeof window !== 'undefined' ? window.innerHeight / z : 800
+    const maxTop = Math.max(12, winH - 360)
+    return Math.max(8, Math.min(top, maxTop))
+  })()
+
+  return (
+    <div
+      ref={flyoutRef}
+      className="sb-flyout sb-flyout-ttn"
+      style={{ top: `${adjustedTop}px` }}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+    >
+      <div className="sb-flyout-bridge" />
+      <div className="sb-flyout-title" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <span>Thao tác nhanh</span>
+        <button
+          type="button"
+          className="sb-flyout-x"
+          onClick={onClose}
+          aria-label="Đóng"
+          title="Đóng (Esc)"
+        >
+          <Icon n="x" className="ic sm" />
+        </button>
+      </div>
+      <div className="sb-flyout-list sb-ttn-list">
+        {ds.map(it => (
+          <Link
+            key={it.id}
+            to={it.to}
+            className={`sb-flyout-item${it.khoa ? ' lock' : ''}`}
+            onClick={onClose}
+            title={it.khoa && it.ma ? `${it.ten}: chưa có trong gói ${GOI[s.goi].ten}` : it.ten}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <Icon n={it.icon} className="ic sm" />
+              <span>{it.ten}</span>
+            </div>
+            {it.khoa && it.ma && <Pk g={minGoi(it.ma)} />}
+          </Link>
+        ))}
+      </div>
+      <div className="sb-ttn-chan">
+        <Link
+          to="/app/thao-tac-nhanh/danh-sach"
+          className="sb-ttn-tuy-chinh"
+          onClick={onClose}
+        >
+          Tuỳ chỉnh
+        </Link>
       </div>
     </div>
   )

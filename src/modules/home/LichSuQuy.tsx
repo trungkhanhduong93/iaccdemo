@@ -217,12 +217,12 @@ export function LichSuQuy(_: ScreenProps) {
             </div>
             <div className="lsq-l1-st st-thu">
               <span>Tiền thu vào</span>
-              <b>+{moneyD(tn)}</b>
+              <b>{moneyD(tn)}</b>
               <small>Phiếu thu trong kỳ</small>
             </div>
             <div className="lsq-l1-st st-chi">
               <span>Tiền chi ra</span>
-              <b>−{moneyD(tc)}</b>
+              <b>{moneyD(tc)}</b>
               <small>Phiếu chi trong kỳ</small>
             </div>
             <div className="lsq-l1-st st-cuoi">
@@ -266,10 +266,10 @@ export function LichSuQuy(_: ScreenProps) {
                   <div className={`lsq-l1-row lsq-l1-ng ${isTatCa ? 'tat-ca' : ''}`}>
                     <span style={{ gridColumn: isTatCa ? 'span 4' : 'span 3' }}>{tenNgay(ngay)}</span>
                     <span className="n" style={{ color: 'var(--green, #138a52)' }}>
-                      {tongThuNgay > 0 ? `+${money(tongThuNgay)}` : ''}
+                      {tongThuNgay > 0 ? money(tongThuNgay) : ''}
                     </span>
                     <span className="n" style={{ color: 'var(--red, #c2362b)' }}>
-                      {tongChiNgay > 0 ? `−${money(tongChiNgay)}` : ''}
+                      {tongChiNgay > 0 ? money(tongChiNgay) : ''}
                     </span>
                     <span className="n">{money(cuoiNgay)}</span>
                   </div>
@@ -317,11 +317,11 @@ export function LichSuQuy(_: ScreenProps) {
                         </span>
 
                         <span className="n" style={{ color: 'var(--green, #138a52)', fontWeight: 700 }}>
-                          {x.thu > 0 ? `+${money(x.thu)}` : ''}
+                          {x.thu > 0 ? money(x.thu) : ''}
                         </span>
 
                         <span className="n" style={{ color: 'var(--red, #c2362b)', fontWeight: 700 }}>
-                          {x.chi > 0 ? `−${money(x.chi)}` : ''}
+                          {x.chi > 0 ? money(x.chi) : ''}
                         </span>
 
                         <span className="n" style={{ color: '#4b5563' }}>
