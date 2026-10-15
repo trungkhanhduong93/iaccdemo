@@ -27,11 +27,11 @@ export function Icon({ n, className = 'ic', title, kieu }: IconProps) {
     return (
       <>
         <svg
-          className={`${className} ic-thuong`}
-          viewBox={net ? net.vb : '0 0 24 24'}
+          className={`${className} ic-thuong${net ? '' : ' dac'}`}
+          viewBox={net ? net.vb : dac.vb}
           aria-hidden={title ? undefined : true}
           dangerouslySetInnerHTML={{
-            __html: (title ? `<title>${title}</title>` : '') + (net ? net.body : (P[n] || ''))
+            __html: (title ? `<title>${title}</title>` : '') + (net ? net.body : dac.body)
           }}
         />
         <svg

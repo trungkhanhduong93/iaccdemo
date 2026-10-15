@@ -243,14 +243,19 @@ def main():
                 dac_not_found.append(f'DAC: {local_name} ({full_duo} / {full_bld})')
 
     # 2. Tải bản linear cho NET
-    net_targets = {k: f'{v}-linear' for k, v in NET_DEF.items()}
+    # Mọi icon khối đều cần bản nét: thanh bên hiện bản nét ở mục thường (T275)
+    net_targets = {k: f'{v}-linear' for k, v in {**SOLAR, **NET_DEF}.items()}
     net_names = list(set(net_targets.values()))
     net_res = tai_iconify(net_names)
 
     net_not_found = []
-    for local_name, full_lin in net_targets.items():
+    for local_name, full_lin in list(net_targets.items()):
         if full_lin in net_res['not_found']:
-            net_not_found.append(f'NET: {local_name} ({full_lin})')
+            if local_name in NET_DEF:
+                net_not_found.append(f'NET: {local_name} ({full_lin})')
+            else:
+                print(f'Cảnh báo: {local_name} không có bản nét, thanh bên dùng bản khối')
+                del net_targets[local_name]
 
     if kiem_tra_chi_dinh:
         if dac_not_found or net_not_found:
