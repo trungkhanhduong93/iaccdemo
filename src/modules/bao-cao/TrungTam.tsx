@@ -291,13 +291,16 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
             </div>
           ) : (
             nhomKetQua.map(g => (
-              <div key={g.mod.key}>
-                <div className="rpt-head">
-                  <span className="rpt-head-title">{g.mod.ten}</span>
-                  <span className="rpt-head-count">{g.screens.length}</span>
-                  <span className="rpt-head-line" />
+              // Nhóm báo cáo dạng thẻ mẫu A (T271)
+              <section key={g.mod.key} className="bc-nhom">
+                <div className="bc-nhom-dau">
+                  <span className="bc-nhom-ic">
+                    <Icon n={g.mod.icon || 'book'} />
+                  </span>
+                  <h2>{g.mod.ten}</h2>
+                  <span className="bc-nhom-dem">{g.screens.length} báo cáo</span>
                 </div>
-                <div className="rpt-list">
+                <div className="bc-nhom-ds">
                   {g.screens.map(x => {
                     const ok = moDuoc(x, s.goi)
                     const ma = maKhoa(x)
@@ -331,7 +334,7 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
                     )
                   })}
                 </div>
-              </div>
+              </section>
             ))
           )}
         </div>

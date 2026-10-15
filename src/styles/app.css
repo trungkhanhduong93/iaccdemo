@@ -18042,3 +18042,174 @@ button.bbt-nut { background: none; border: 0; padding-left: 0; padding-right: 0;
   background: none;
 }
 
+/* ── Trung tâm báo cáo mẫu A (T271) ── */
+.bc-tt {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+@media (max-width: 1100px) {
+  .bc-tt {
+    grid-template-columns: 220px minmax(0, 1fr);
+  }
+  .bc-tt .bc-rail {
+    flex-direction: column;
+    flex-wrap: nowrap;
+  }
+}
+
+.bc-tt .bc-rail {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  box-shadow: none;
+}
+
+.bc-tt .bc-quick {
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+  border-radius: 0;
+  border: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.bc-tt .bc-quick-sec {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 10px 8px;
+  box-shadow: none;
+}
+
+.bc-tt .bc-quick-head {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--navy);
+  padding: 4px 8px 6px;
+}
+
+.bc-tt .bc-quick-item {
+  border-radius: 8px;
+}
+
+.bc-tt .bc-quick-item:hover {
+  background: var(--hdb-bg);
+}
+
+.bc-tt .bc-ds {
+  columns: 2 380px;
+  column-gap: 16px;
+}
+
+.bc-tt .bc-nhom {
+  break-inside: avoid;
+  margin-bottom: 16px;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  overflow: hidden;
+}
+
+.bc-tt .bc-nhom-dau {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--line-2);
+}
+
+.bc-tt .bc-nhom-ic {
+  width: 32px;
+  height: 32px;
+  background: var(--fr-t);
+  color: var(--navy);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+
+.bc-tt .bc-nhom-ic .ic {
+  width: 18px;
+  height: 18px;
+}
+
+.bc-tt .bc-nhom-dau h2 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--navy);
+  line-height: 1.3;
+}
+
+.bc-tt .bc-nhom-dem {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.bc-tt .bc-nhom-ds {
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+}
+
+.bc-tt .bc-nhom-ds .rpt-row.rpt-card {
+  height: auto;
+  min-height: 40px;
+  padding: 10px;
+  border-radius: 8px;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.bc-tt .bc-nhom-ds .rpt-row.rpt-card:hover,
+.bc-tt .bc-nhom-ds .rpt-row.rpt-card.lock:hover {
+  background: var(--hdb-bg);
+}
+
+.bc-tt .bc-nhom-ds .rpt-row.rpt-card.lock {
+  background: transparent;
+}
+
+.bc-tt .bc-nhom-ds .rpt-meta {
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--orange-t);
+  color: var(--amber);
+  border: 1px solid var(--orange-b);
+  border-radius: 5px;
+  padding: 1px 6px;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.bc-tt .bc-nhom-ds .rpt-ghim {
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  color: var(--muted);
+  font-size: 16px;
+  display: grid;
+  place-items: center;
+}
+
+.bc-tt .bc-nhom-ds .rpt-ghim.on {
+  color: var(--orange);
+}
+
+.bc-tt .bc-nhom-ds .rpt-ghim:hover {
+  background: var(--orange-t);
+  color: var(--orange);
+}
+
