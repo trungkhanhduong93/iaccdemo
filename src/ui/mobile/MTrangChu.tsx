@@ -21,6 +21,7 @@ import { moTaCach, nvlKy } from '../../modules/home/chi-phi-nvl'
 import { useMoTuTrangChu } from '../../app/tuTrangChu'
 import { Select } from '../Dropdown'
 import { HopLaiLo13, laiLo13Thang } from '../../modules/home/BaBaiToanFree'
+import { ModalQuy } from '../../modules/home/quyThuChi'
 import { useThaoTacNhanh, type ThaoTacMuc } from '../../app/thaoTacNhanh'
 import {
   BranchBarChart,
@@ -144,6 +145,7 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
   const chiLonFree = useMemo(() => [...dFree.coCauCp].sort((a, b) => b.v - a.v)[0], [dFree.coCauCp])
   const laiLo13 = useMemo(() => (isFree ? laiLo13Thang(s, selCns) : []), [isFree, s, selCns])
   const [moBieuDo, setMoBieuDo] = useState(false)
+  const [sheetQuy, setSheetQuy] = useState<string | null>(null)
 
   // 2. Thu chi gói Free: số dư, thu, chi cộng từ Sổ quỹ tiền mặt, Sổ ngân hàng (T230)
   const quyFree = useMemo(() => {
@@ -728,16 +730,9 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
                   {thangF === 10 ? 'Tháng này' : `Tháng ${thangF}`} lãi bao nhiêu?
                 </div>
                 <div className={`m-tc-so-lon m-free-tra ${loiNhuanFree >= 0 ? 'lai' : 'lo'}`}>
-                  {loiNhuanFree >= 0 ? '+' : '−'}{short(Math.abs(loiNhuanFree))}
+                  {loiNhuanFree >= 0 ? '+' : '−'}{moneyD(Math.abs(loiNhuanFree))}
                 </div>
                 <div className="m-free-phu">Biên lãi {pct(bienFree)} trên doanh thu</div>
-
-                <div className="bbt-chan" style={{ marginTop: 8 }}>
-                  <button type="button" className="bbt-nut" onClick={() => setMoBieuDo(true)}>
-                    Xem biểu đồ lãi lỗ 13 tháng
-                    <Icon n="chevr" className="ic sm" />
-                  </button>
-                </div>
 
                 {/* Báo cáo lãi lỗ tháng */}
                 <div className="tll" style={{ marginTop: 14 }}>
@@ -816,6 +811,13 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
                     </div>
                   </div>
                 </div>
+
+                <div className="bbt-chan" style={{ marginTop: 10 }}>
+                  <button type="button" className="bbt-nut" onClick={() => setMoBieuDo(true)}>
+                    Xem biểu đồ lãi lỗ 13 tháng ›
+                    <Icon n="chevr" className="ic sm" />
+                  </button>
+                </div>
               </div>
 
               {/* 2. Quản lý thu chi */}
@@ -830,19 +832,17 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
                 <div className="m-free-hoi">
                   {thangF === 10 ? 'Tồn quỹ hiện tại' : `Tồn quỹ cuối tháng ${thangF}/2026`}
                 </div>
-                <div className="m-tc-so-lon m-free-tra">
-                  {short(tongQuyFree.cuoi)}
-                </div>
+                <button
+                  type="button"
+                  className="m-tc-so-lon m-free-tra m-btn-so-lon"
+                  style={{ color: 'var(--blue, #0560a6)', background: 'none', border: 0, padding: 0, font: 'inherit', textAlign: 'left', cursor: 'pointer' }}
+                  onClick={() => setSheetQuy('tat-ca')}
+                  title="Xem biểu đồ thu chi tất cả quỹ"
+                >
+                  {moneyD(tongQuyFree.cuoi)}
+                </button>
                 <div className="m-free-phu">
                   Thu +{short(tongQuyFree.thu)} · Chi −{short(tongQuyFree.chi)}
-                </div>
-
-                <div className="bbt-chan" style={{ marginTop: 8 }}>
-                  <Link to="/app/danh-muc/1-12?moi=1&goiY=thuchi" className="bbt-nut">
-                    Tạo quỹ
-                    <Icon n="chevr" className="ic sm" />
-                  </Link>
-                  <span className="bbt-goiy">Bấm vào quỹ bên dưới để xem lịch sử thu chi</span>
                 </div>
 
                 {/* Tồn quỹ hiện tại */}
@@ -854,20 +854,14 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
                         : `Tồn quỹ cuối tháng ${thangF}/2026`}
                     </b>
                   </div>
-                  <div className="tll-the dt">
-                    <div className="tll-trai">
-                      <b>Tổng tồn quỹ</b>
-                    </div>
-                    <div className="tll-phai">
-                      <b>{moneyD(tongQuyFree.cuoi)}</b>
-                    </div>
-                  </div>
                   {quyFree.map(r => (
-                    <Link
+                    <button
                       key={r.quy}
-                      to={`/app/trang-chu/lich-su-quy?quy=${encodeURIComponent(r.quy)}&thang=${thangF}`}
-                      className="tll-the quy tll-link"
-                      title={`Xem lịch sử thu chi ${r.quy}`}
+                      type="button"
+                      className="tll-the quy tll-link m-quy-the-btn"
+                      onClick={() => setSheetQuy(r.quy)}
+                      title={`Xem biểu đồ thu chi ${r.quy}`}
+                      style={{ width: '100%', border: 0, font: 'inherit', textAlign: 'left', cursor: 'pointer' }}
                     >
                       <div className="tll-trai">
                         <b>{r.quy}</b>
@@ -878,8 +872,16 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
                         <span>{pct(tongQuyFree.cuoi ? r.cuoi / tongQuyFree.cuoi : 0)}</span>
                       </div>
                       <Icon n="chevr" className="ic sm tll-mui" />
-                    </Link>
+                    </button>
                   ))}
+                </div>
+
+                <div className="bbt-chan" style={{ marginTop: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Link to="/app/danh-muc/1-12?moi=1&goiY=thuchi" className="bbt-nut">
+                    Tạo quỹ ›
+                    <Icon n="chevr" className="ic sm" />
+                  </Link>
+                  <span className="bbt-goiy">Bấm vào quỹ để xem biểu đồ thu chi</span>
                 </div>
               </div>
 
@@ -892,9 +894,12 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
                     </h3>
                   </div>
                 </div>
-                <div className="m-free-hoi">Quản lý mua hàng, công nợ, hao hụt hàng bán thẳng</div>
+                <div className="m-free-hoi">Hao hụt kiểm kê tháng {thangF}</div>
+                <div className="m-tc-so-lon m-free-tra" style={{ color: 'var(--red, #c2362b)' }}>
+                  {khoFree.matHH} mặt hàng
+                </div>
                 <div className="m-free-phu" style={{ marginTop: 6 }}>
-                  Mua {khoFree.soDon} đơn · Công nợ {short(khoFree.congNo)} · {khoFree.matHH} mặt hàng hao hụt
+                  Mua {khoFree.soDon} đơn · Công nợ {short(khoFree.congNo)}
                 </div>
 
                 {/* Mua hàng, công nợ, hao hụt tháng X */}
@@ -943,6 +948,17 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
                       <b>{khoFree.matHH} mặt hàng</b>
                     </div>
                     <Icon n="chevr" className="ic sm tll-mui" />
+                  </Link>
+                </div>
+
+                <div className="bbt-chan" style={{ marginTop: 10 }}>
+                  <Link
+                    to="/app/bao-cao/5-2-15"
+                    className="bbt-nut"
+                    onClick={() => datLocDaXem('/app/bao-cao/5-2-15', {}, String(thangF))}
+                  >
+                    Mở báo cáo kiểm kê ›
+                    <Icon n="chevr" className="ic sm" />
                   </Link>
                 </div>
               </div>
@@ -1403,6 +1419,17 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
 
       {/* Hộp biểu đồ lãi lỗ 13 tháng cho gói Free */}
       {moBieuDo && <HopLaiLo13 ds={laiLo13} onDong={() => setMoBieuDo(false)} />}
+
+      {/* Sheet biểu đồ thu chi quỹ cho gói Free (T272) */}
+      {sheetQuy && (
+        <ModalQuy
+          quyKey={sheetQuy}
+          thang={thangF}
+          isMobile={true}
+          onDong={() => setSheetQuy(null)}
+          selCns={selCns}
+        />
+      )}
 
       {/* Tấm trượt tuỳ chỉnh thao tác nhanh (T266) */}
       {moTuyChinhThaoTac && (

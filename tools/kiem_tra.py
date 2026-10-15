@@ -3866,6 +3866,35 @@ def kiem_tra_dot_19_b():
             loi.append('19B: không tìm thấy thu chi trên bản web 1440x900 gói Free')
 
         co_tao_quy_web = pg_web.locator('.bbt-cot:has-text("Quản lý thu chi") a:has-text("Tạo quỹ")').count() > 0
+
+        # Kiểm tra bấm thẻ quỹ mở modal M2 trên web (T272)
+        the_quy_web = pg_web.locator('.bbt-cot:has-text("Quản lý thu chi") .t.qy, .bbt-the-btn').first
+        if the_quy_web.count() == 0:
+            loi.append('19B: không tìm thấy thẻ quỹ ở trang chủ web')
+        else:
+            the_quy_web.click()
+            pg_web.wait_for_timeout(350)
+            for o in ['Tồn đầu kỳ', 'Tiền thu vào', 'Tiền chi ra', 'Tồn cuối kỳ']:
+                if pg_web.locator(f'.mq-hop :has-text("{o}")').count() == 0:
+                    loi.append(f'19B: modal quỹ web thiếu ô {o}')
+            pg_web.keyboard.press('Escape')
+            pg_web.wait_for_timeout(250)
+            if pg_web.locator('.mq-hop').count() > 0:
+                loi.append('19B: Esc không đóng được modal quỹ trên web')
+
+        # Kiểm tra trang lịch sử quy=tat-ca tháng 10, số dư ở dòng tổng ngày mới nhất bằng số Tồn cuối kỳ (T272)
+        pg_web.goto(f'{URL}?goi=F&p=1903#/app/trang-chu/lich-su-quy?quy=tat-ca&thang=10')
+        pg_web.wait_for_selector('.lsq-l1-bang', timeout=8000)
+        pg_web.wait_for_timeout(300)
+        ton_cuoi_el = pg_web.locator('.lsq-l1-st.st-cuoi b')
+        ton_cuoi_txt = ton_cuoi_el.inner_text().strip() if ton_cuoi_el.count() > 0 else ''
+        ngay_dau_du_el = pg_web.locator('.lsq-l1-ng').first.locator('.n').last
+        ngay_dau_du_txt = ngay_dau_du_el.inner_text().strip() if ngay_dau_du_el.count() > 0 else ''
+        so_ton_cuoi = ton_cuoi_txt.replace(' đ', '').replace('.', '').strip()
+        so_ngay_dau = ngay_dau_du_txt.replace('.', '').strip()
+        if not so_ton_cuoi or so_ton_cuoi != so_ngay_dau:
+            loi.append(f'19B: lịch sử tat-ca số dư dòng ngày mới nhất ({ngay_dau_du_txt}) không khớp Tồn cuối kỳ ({ton_cuoi_txt})')
+
         pg_web.close()
 
         # ── 2. Kiểm tra trên điện thoại 390x844 gói Free ──
@@ -3950,38 +3979,61 @@ def kiem_tra_dot_19_b():
         pg.wait_for_selector('.m-trang-chu', timeout=8000)
         pg.wait_for_timeout(250)
 
-        link_lsq = pg.locator('a[href*="trang-chu/lich-su-quy"]').first
-        if link_lsq.count() == 0:
-            loi.append('19B: không tìm thấy lối bấm Lịch sử thu chi ở khối Tồn quỹ')
+        # Bấm thẻ quỹ để mở sheet quỹ M2 (T272)
+        the_quy = pg.locator('.m-quy-the-btn, .tll-the.quy').first
+        if the_quy.count() == 0:
+            loi.append('19B: không tìm thấy thẻ quỹ ở khối Quản lý thu chi trên điện thoại')
         else:
-            link_lsq.click()
+            the_quy.click()
             pg.wait_for_timeout(350)
-            cur_url = pg.evaluate('location.hash')
-            if 'trang-chu/lich-su-quy' not in cur_url:
-                loi.append(f'19B: bấm quỹ URL không đổi sang trang-chu/lich-su-quy ({cur_url})')
-            if pg.locator('.m-chi-may-tinh').count() > 0:
-                loi.append('19B: màn Lịch sử thu chi bị rơi về MChiMayTinh')
-            if pg.locator('.m-free-lsq-dong, .m-free-lsq-the').count() == 0:
-                loi.append('19B: màn Lịch sử thu chi không có dòng hoặc thẻ dữ liệu')
 
-            # Kiểm tra bộ lọc thu chi dạng chip (T246)
-            loc_chip = pg.locator('.m-free-lsq-chip')
-            if loc_chip.count() < 3:
-                loi.append('19B: màn Lịch sử thu chi thiếu bộ lọc thu chi dạng chip')
+            # Kiểm tra sheet quỹ có đủ 4 ô: Tồn đầu kỳ, Tiền thu vào, Tiền chi ra, Tồn cuối kỳ (T272)
+            for o in ['Tồn đầu kỳ', 'Tiền thu vào', 'Tiền chi ra', 'Tồn cuối kỳ']:
+                if pg.locator(f'.m-quy-sheet :has-text("{o}")').count() == 0:
+                    loi.append(f'19B: sheet quỹ mobile thiếu ô {o}')
+
+            # Kiểm tra Esc đóng sheet quỹ (T272)
+            pg.keyboard.press('Escape')
+            pg.wait_for_timeout(250)
+            if pg.locator('.m-quy-sheet').count() > 0:
+                loi.append('19B: Esc không đóng được sheet quỹ mobile')
+
+            # Mở lại sheet để bấm vào Lịch sử thu chi
+            the_quy.click()
+            pg.wait_for_timeout(350)
+
+            link_lsq = pg.locator('.m-quy-sheet a:has-text("Xem chi tiết lịch sử thu chi")').first
+            if link_lsq.count() == 0:
+                loi.append('19B: không tìm thấy nút Xem chi tiết lịch sử thu chi trong sheet quỹ mobile')
             else:
-                chip_thu = pg.locator('.m-free-lsq-chip:has-text("Khoản thu")')
-                if chip_thu.count() > 0:
-                    chip_thu.click()
-                    pg.wait_for_timeout(150)
-                    if pg.locator('.m-free-lsq-ic.ra').count() > 0:
-                        loi.append('19B: lọc Khoản thu vẫn hiện giao dịch chi')
-                chip_all = pg.locator('.m-free-lsq-chip:has-text("Tất cả")')
-                if chip_all.count() > 0:
-                    chip_all.click()
-                    pg.wait_for_timeout(150)
+                link_lsq.click()
+                pg.wait_for_timeout(350)
+                cur_url = pg.evaluate('location.hash')
+                if 'trang-chu/lich-su-quy' not in cur_url:
+                    loi.append(f'19B: bấm quỹ URL không đổi sang trang-chu/lich-su-quy ({cur_url})')
+                if pg.locator('.m-chi-may-tinh').count() > 0:
+                    loi.append('19B: màn Lịch sử thu chi bị rơi về MChiMayTinh')
+                if pg.locator('.m-free-lsq-dong, .m-free-lsq-the, .m-free-lsq-the-hop').count() == 0:
+                    loi.append('19B: màn Lịch sử thu chi không có dòng hoặc thẻ dữ liệu')
 
-            kiem_man('Màn Lịch sử thu chi')
-            pg.screenshot(path=str(SHOTS / 'm-19-lich-su-quy.png'))
+                # Kiểm tra bộ lọc thu chi dạng chip (T246)
+                loc_chip = pg.locator('.m-free-lsq-chip')
+                if loc_chip.count() < 3:
+                    loi.append('19B: màn Lịch sử thu chi thiếu bộ lọc thu chi dạng chip')
+                else:
+                    chip_thu = pg.locator('.m-free-lsq-chip:has-text("Khoản thu")')
+                    if chip_thu.count() > 0:
+                        chip_thu.click()
+                        pg.wait_for_timeout(150)
+                        if pg.locator('.m-free-lsq-ic.ra').count() > 0:
+                            loi.append('19B: lọc Khoản thu vẫn hiện giao dịch chi')
+                    chip_all = pg.locator('.m-free-lsq-chip:has-text("Tất cả")')
+                    if chip_all.count() > 0:
+                        chip_all.click()
+                        pg.wait_for_timeout(150)
+
+                kiem_man('Màn Lịch sử thu chi')
+                pg.screenshot(path=str(SHOTS / 'm-19-lich-su-quy.png'))
 
         # ── 5. Gói PR: trang chủ vẫn có thẻ "Thác nước lợi nhuận" (T235) ──
         pg.goto(URL + '#/dang-nhap')
