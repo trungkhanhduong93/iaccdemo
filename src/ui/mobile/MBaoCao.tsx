@@ -197,7 +197,7 @@ export const MBaoCao: FC<ScreenProps> = ({ sc, mod }) => {
         ) : (
           // Màn chính: hiển thị các thẻ nhóm A, B, C...
           <div className="m-bc-ds-nhom">
-            {nhomHienThi.map((g, index) => {
+            {nhomHienThi.filter(g => g.screens.some(x => hienMan(x, s.goi, s.cheDo, s))).map((g, index) => {   // nhóm không có báo cáo thì ẩn (T252)
               const char = String.fromCharCode(65 + index)
               const soBc = g.screens.filter(x => hienMan(x, s.goi, s.cheDo, s)).length
               const moTa = g.mod.mota ?? `${soBc} báo cáo`

@@ -119,6 +119,7 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
       mod: g.mod,
       hienCount: g.screens.filter(x => hienMan(x, s.goi, s.cheDo, s)).length,
     }))
+    .filter(g => g.hienCount > 0)   // nhóm không còn báo cáo hiện được thì ẩn cả nhóm, vd Chi phí phân bổ gói Free (T252)
 
   const tongHienRail = nhomRail.reduce((acc, g) => acc + g.hienCount, 0)
   const demSoTT = soTT.filter(x => hienMan(x, s.goi, s.cheDo, s)).length
@@ -151,7 +152,7 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
       mod: g.mod,
       screens: g.screens.filter(x => hienMan(x, s.goi, s.cheDo, s)).filter(match),
     }))
-    .filter(g => g.screens.length > 0 || (!q && g.mod.key !== 'so-sach'))   // không tìm kiếm thì nhóm phân hệ trống vẫn hiện
+    .filter(g => g.screens.length > 0)   // nhóm trống ẩn luôn, trước đây không tìm kiếm thì vẫn hiện "Chưa có báo cáo" (T252)
 
   // Danh sách ghim và mở gần đây (chỉ hiện khi ở tab Tất cả, không tìm kiếm, có báo cáo mở được)
   const tatCaBCMap = useMemo(() => new Map(tatCaBC.map(x => [x.slug, x])), [tatCaBC])
@@ -252,7 +253,6 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
                   <span className="rpt-head-count">{g.screens.length}</span>
                   <span className="rpt-head-line" />
                 </div>
-                {g.screens.length === 0 && <div className="muted" style={{ padding: '4px 2px 12px' }}>Chưa có báo cáo</div>}
                 <div className="rpt-list">
                   {g.screens.map(x => {
                     const ok = moDuoc(x, s.goi)

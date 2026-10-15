@@ -4,14 +4,13 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T252.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T254.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T252 | Trung tâm báo cáo (máy tính, điện thoại): nhóm không còn báo cáo hiện được thì ẩn cả nhóm, vd Chi phí phân bổ ở gói Free | PhuongXT | Đang làm | Sửa `src/modules/bao-cao/TrungTam.tsx`, `src/ui/mobile/MBaoCao.tsx` |
 | T253 | Trung tâm báo cáo máy tính: khối Ghim và mở gần đây chuyển từ đáy cột nhóm lên đầu danh sách bên phải, trên nhóm đầu tiên; chia hai dòng Đã ghim, Mở gần đây; thẻ giống thẻ báo cáo (biểu tượng, ký hiệu mẫu, nút bỏ ghim) | Trum | Đang làm | Sửa `src/modules/bao-cao/TrungTam.tsx` (chung file với T252, đã báo), `app.css` mục cuối file |
 | T254 | Trang chủ điện thoại gói Free: bỏ câu "IACC Free giúp bạn nắm 3 việc…", giữ "Số liệu tháng X/2026" (bản web bỏ ở T250) | Trum | Đang làm | Sửa `src/ui/mobile/MTrangChu.tsx` |
 | T229 | Báo cáo kết quả kinh doanh (10.2.3, B02-DNN) ở chế độ TT133 mở ra "Báo cáo chưa có mẫu" ở cả bản máy tính và điện thoại, gói Pro và Free | | Chờ | Phát hiện ở T222 ngày 14/10/2026, mở từ Tất cả báo cáo. Có thể liên quan T220 |
@@ -48,6 +47,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T252 | Trung tâm báo cáo (máy tính, điện thoại): nhóm không còn báo cáo hiện được thì ẩn cả nhóm, vd Chi phí phân bổ ở gói Free | PhuongXT | 15/10/2026 | [2026-10-15-phuongxt-an-nhom-bao-cao-trong](nhat-ky/2026-10-15-phuongxt-an-nhom-bao-cao-trong.md) |
 | T251 | Gói Free ẩn tạm 5 báo cáo: Tổng hợp quỹ tiền (2.2.8), Báo cáo dòng tiền (2.2.9), Tổng hợp mua hàng theo NCC (4.2.2), Mua hàng theo ngày (4.2.6), Sổ chi phí (10.4.3); gói khác giữ nguyên | PhuongXT | 15/10/2026 | [2026-10-15-phuongxt-an-bao-cao-free](nhat-ky/2026-10-15-phuongxt-an-bao-cao-free.md) |
 | T250 | Trang chủ gói Free: tạo quỹ xong gợi ý lập phiếu thu, chi (quỹ ngân hàng: báo có, UNC), lưu phiếu xong hỏi về trang chủ; bỏ dòng giới thiệu, chọn tháng năm lên thanh tab; thẻ Hao hụt kiểm kê ghi "Các mặt hàng thừa thiếu trong kỳ". Sửa đường dẫn ảnh máy Trum trong `kiem_tra.py` | PhuongXT | 15/10/2026 | [2026-10-15-phuongxt-goi-y-lap-phieu-sau-tao-quy](nhat-ky/2026-10-15-phuongxt-goi-y-lap-phieu-sau-tao-quy.md) |
 | T247 | Đồng bộ FABi chỉ kéo chi tiết (mỗi hoá đơn một chứng từ), mọi gói: bỏ lựa chọn tổng hợp theo kênh (Cấu hình kế toán, khởi tạo, điện thoại, bỏ trường `dongBoFabi`); Xuất bán POS bỏ nhãn Tổng hợp, dải Đã/Chưa đồng bộ, nút Đồng bộ POS (cả điện thoại); `SoChungTu.tsx` dò số POS theo hoá đơn. Báo cáo bán hàng (`ban-hang/bao-cao.ts`) vẫn đọc theo kênh | PhuongXT | 15/10/2026 | [2026-10-15-phuongxt-pos-chi-tiet-kho-dau](nhat-ky/2026-10-15-phuongxt-pos-chi-tiet-kho-dau.md) |
