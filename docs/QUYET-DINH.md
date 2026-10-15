@@ -682,6 +682,7 @@ Thay QD23 phần biểu tượng, web và điện thoại cùng dùng. Tên gọ
 - Biểu tượng lớn trong thẻ (thẻ số liệu, thẻ nhóm Trung tâm báo cáo) dùng `ONen kieu="dac"`: ô đổ màu nhóm, biểu tượng trắng.
 - Biểu tượng nhỏ nằm trong ô nền (Thao tác nhanh, menu Khác, Ctrl K, ô phân hệ điện thoại) dùng `ONen kieu="nhat"`: nền nhạt, biểu tượng màu nhóm.
 - Thanh bên: mục thường hiện bản nét Solar Linear màu `#8197a8`. Mục đang chọn hoặc rê chuột hiện bản khối màu trắng, lớp phụ cam nhạt.
+- Bảng nổi Thao tác nhanh ở thanh bên dùng icon như thanh bên, không có ô nền.
 - Nút thao tác, dòng bảng, form dùng Solar Linear nét 1.8.
 - Thanh dưới và hình màn trống điện thoại vẫn của IVT.
 - `src/ui/icon-dac.ts` sinh bởi `python tools/xuat_bieu_tuong.py`, không sửa tay. Nguồn Solar (CC BY 4.0) ghi ở đầu file, không được xoá.

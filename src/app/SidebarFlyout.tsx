@@ -4,7 +4,7 @@ import type { ModuleDef } from '../modules/types'
 import { useSession } from './session'
 import { hienMan, maKhoa, moDuoc, timMan } from './registry'
 import { GOI, minGoi } from './plan'
-import { Icon, ONen } from '../ui/Icon'
+import { Icon } from '../ui/Icon'
 import { Pk } from '../ui/Page'
 import { heSoZoom } from '../ui/zoom'
 import { useThaoTacNhanh } from './thaoTacNhanh'
@@ -547,7 +547,7 @@ export function ThaoTacNhanhFlyout({
             title={it.khoa && it.ma ? `${it.ten}: chưa có trong gói ${GOI[s.goi].ten}` : it.ten}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <ONen n={it.icon} kieu="nhat" co="sm" />
+              <Icon n={it.icon} kieu="hai" />
               <span>{it.ten}</span>
             </div>
             {it.khoa && it.ma && <Pk g={minGoi(it.ma)} />}

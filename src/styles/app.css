@@ -19497,3 +19497,10 @@ button.m-free-ton-quy-lon {
   height: auto;
 }
 
+/* Bảng nổi Thao tác nhanh: icon giống thanh bên, thường là nét xám, rê chuột là khối trắng */
+.sb-flyout-ttn .sb-flyout-item .ic { width: 20px; height: 20px; }
+.sb-flyout-ttn .sb-flyout-item .ic-thuong { display: block; color: #8197a8; }
+.sb-flyout-ttn .sb-flyout-item .ic-chon { display: none; color: #fff; }
+.sb-flyout-ttn .sb-flyout-item:hover .ic-thuong { display: none; }
+.sb-flyout-ttn .sb-flyout-item:hover .ic-chon { display: block; }
+.sb-flyout-ttn .sb-flyout-item:hover .ic-chon .l2 { opacity: 1; fill: #ffb878; }

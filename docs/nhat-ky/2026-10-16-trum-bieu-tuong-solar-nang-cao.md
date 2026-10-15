@@ -13,6 +13,7 @@
 - Chuyển chỗ gọi sang `ONen`: thẻ số liệu `TongQuan`, bảng nổi và màn Thao tác nhanh, menu Khác, Ctrl K, sơ đồ quy trình, Trung tâm báo cáo, tab Nghiệp vụ và trang chủ điện thoại.
 - Thanh bên `Shell.tsx`: mục thường hiện nét, mục đang chọn hoặc rê chuột hiện khối.
 - Sửa sau khi push: 6 mục thanh bên (Tài sản cố định, Chi phí phân bổ, Giá thành, Báo cáo, Tiện ích, Thao tác nhanh) mất icon ở trạng thái thường vì bảng `NET` chỉ có 9 phân hệ gốc. Script giờ sinh bản nét cho mọi icon khối (87 icon nét). `Icon` kiểu `hai` thiếu bản nét thì dùng bản khối.
+- Theo Trum: bảng nổi Thao tác nhanh (`SidebarFlyout.tsx`) bỏ ô nền, dùng icon hai trạng thái như thanh bên.
 
 ## Đã kiểm
 
