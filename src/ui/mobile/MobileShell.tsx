@@ -87,13 +87,21 @@ export function MobileShell() {
   const cn = dsCn.find(c => c.id === s.chiNhanh)
 
   const laGoc = laManGoc(loc.pathname, loc.search)
-  const laTrangChu = tabDangChon(loc.pathname) === 'trang-chu'
+  const laTrangChu =
+    loc.pathname === '/app' ||
+    loc.pathname === '/app/' ||
+    loc.pathname === '/app/trang-chu/tong-quan' ||
+    loc.pathname === '/app/trang-chu/ban-lam-viec'
   const tieuDe = layTieuDe(loc.pathname, loc.search)
   const capHai = laXemPhieu(loc.pathname) || laBaoCao(loc.pathname)
 
   const quayLai = () => {
     if (loc.pathname === '/app/nghiep-vu' && loc.search.includes('m=')) {
       nav('/app/nghiep-vu')
+    } else if (loc.pathname.startsWith('/app/trang-chu/')) {
+      const sp = new URLSearchParams(loc.search)
+      const th = sp.get('thang')
+      nav(th ? `/app/trang-chu/tong-quan?thang=${th}` : '/app/trang-chu/tong-quan')
     } else {
       nav(-1)
     }

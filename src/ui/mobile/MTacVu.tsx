@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import type { ScreenProps } from '../../modules/types'
 import { tenMan } from '../../app/registry'
 import { useSession } from '../../app/session'
-import { coTrongGoi } from '../../app/plan'
+import { anNgoaiGoi, coTrongGoi } from '../../app/plan'
 import { KY_KHOA_SO } from '../../data/mock'
 import { Icon } from '../Icon'
 import { MChon, type MChonMuc } from './MChon'
@@ -110,6 +110,8 @@ function MTacVuKhoaSo({ sc }: ScreenProps) {
     ['', 'Kết chuyển lãi lỗ', coKc ? 'Kết chuyển 632, 642, 511 sang 911' : 'Có từ gói Plus', coKc],
   ]
 
+  const dsBuoc = anNgoaiGoi(s.goi) ? buoc.filter(b => b[3]) : buoc
+
   const dsKy: MChonMuc[] = [
     { k: 'Tháng 9/2026', ten: 'Tháng 9/2026', moTa: 'Khoá sổ đến 30/09/2026' },
     { k: 'Tháng 10/2026', ten: 'Tháng 10/2026', moTa: 'Khoá sổ đến 31/10/2026' },
@@ -163,7 +165,7 @@ function MTacVuKhoaSo({ sc }: ScreenProps) {
       <div className="m-tacvu-the">
         <div className="m-tacvu-the-tieu">Các bước khoá sổ {kyChon}</div>
         <div className="m-tacvu-bc-ds">
-          {buoc.map(([st, b, sub, ok]) => (
+          {dsBuoc.map(([st, b, sub, ok]) => (
             <div key={b} className={`m-tacvu-bc-dong${!ok ? ' mo' : ''}`}>
               <span className={`m-tacvu-bc-ic ${khoa || st === 'done' ? 'ok' : st === 'now' ? 'now' : ''}`}>
                 {(khoa || st === 'done') ? <Icon n="check" className="ic sm" /> : null}

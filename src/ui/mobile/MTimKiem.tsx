@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type FC } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { MODULES, duongDan, hienMan, hienPhanHe, moDuoc, tabCua, tenMan } from '../../app/registry'
+import { anNgoaiGoi } from '../../app/plan'
 import { useSession } from '../../app/session'
 import type { ModuleDef, ScreenDef } from '../../modules/types'
 import { layNhomBaoCao } from '../../modules/bao-cao/TrungTam'
@@ -57,7 +58,7 @@ export const MTimKiem: FC<MTimKiemProps> = ({ mo, onDong }) => {
       const screens = tabCua(mod).filter(
         sc =>
           hienMan(sc, s.goi, s.cheDo, s) &&
-          (moDuoc(sc, 'F') || moDuoc(sc, 'S')) &&
+          (anNgoaiGoi(s.goi) ? moDuoc(sc, s.goi) : (moDuoc(sc, 'F') || moDuoc(sc, 'S'))) &&
           sc.kind !== 'quytrinh' &&
           !sc.slug.startsWith('nhom-'),
       )
@@ -101,7 +102,7 @@ export const MTimKiem: FC<MTimKiemProps> = ({ mo, onDong }) => {
       const dmScreens = tabCua(modDm).filter(
         sc =>
           hienMan(sc, s.goi, s.cheDo, s) &&
-          (moDuoc(sc, 'F') || moDuoc(sc, 'S')) &&
+          (anNgoaiGoi(s.goi) ? moDuoc(sc, s.goi) : (moDuoc(sc, 'F') || moDuoc(sc, 'S'))) &&
           sc.kind !== 'quytrinh',
       )
       for (const sc of dmScreens) {
@@ -122,7 +123,7 @@ export const MTimKiem: FC<MTimKiemProps> = ({ mo, onDong }) => {
     const tatCaBcHienMap = new Map<string, ScreenDef>()
     for (const g of nhomBaoCao) {
       for (const item of g.screens) {
-        if (hienMan(item, s.goi, s.cheDo, s)) {
+        if (hienMan(item, s.goi, s.cheDo, s) && (!anNgoaiGoi(s.goi) || moDuoc(item, s.goi))) {
           tatCaBcHienMap.set(item.slug, item)
         }
       }

@@ -121,7 +121,7 @@ const MUA_VU: [number, number, number][] = [   // [tháng, năm, hệ số doanh
 /** Lãi lỗ 13 tháng 10/2025–10/2026, cùng công thức thẻ Lãi lỗ: doanh thu thuần trừ chi phí NVL, chi phí hoạt động.
  *  Dữ liệu mẫu chỉ có từ 01/07/2026: tháng 7–10 tính thật; 9 tháng trước sinh từ trung bình tháng 7–9 theo hệ số mùa vụ,
  *  NVL theo tỷ lệ doanh thu, chi phí hoạt động gần như cố định (T255) */
-function laiLo13Thang(s: Session, selCns: string[]) {
+export function laiLo13Thang(s: Session, selCns: string[]) {
   const that = [7, 8, 9, 10].map(t => {
     const d = tinhToanTongQuan(t === 10 ? 'thang-nay' : 'thang-truoc', selCns, s.cheDo, t)
     return { t, dt: d.dtThuan, nvl: nvlKy(s, selCns, t).tien, cp: d.cpHoatDong }
@@ -160,7 +160,7 @@ function TomTat13({ ds }: { ds: ReturnType<typeof laiLo13Thang> }) {
 }
 
 /** Hộp biểu đồ lãi lỗ 13 tháng, mở từ nút ở thẻ Quản lý lãi lỗ: biểu đồ bên trái, tóm tắt bên phải; chân hộp vẫn mở được Kết quả kinh doanh (T255) */
-function HopLaiLo13({ ds, onDong }: { ds: ReturnType<typeof laiLo13Thang>; onDong: () => void }) {
+export function HopLaiLo13({ ds, onDong }: { ds: ReturnType<typeof laiLo13Thang>; onDong: () => void }) {
   useDongEsc(onDong)
   return createPortal(
     <div className="overlay ds-hop-nen" onMouseDown={e => { if (e.target === e.currentTarget) onDong() }}>

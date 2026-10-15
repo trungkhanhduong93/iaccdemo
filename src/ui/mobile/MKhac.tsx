@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { dsDonVi, useSession } from '../../app/session'
 import { ROLE } from '../../data/mock'
-import { GOI, GOIS } from '../../app/plan'
+import { GOI, GOIS, anNgoaiGoi } from '../../app/plan'
 import { MODULES, duongDan, hienMan, moDuoc, tabCua, tenMan } from '../../app/registry'
 import { Icon } from '../Icon'
 import { Pk } from '../Page'
@@ -15,8 +15,8 @@ export function MKhac() {
   const modDm = MODULES.find(m => m.key === 'danh-muc')
   const modHt = MODULES.find(m => m.key === 'he-thong')
 
-  const dsDm = modDm ? tabCua(modDm).filter(sc => hienMan(sc, s.goi, s.cheDo, s)) : []
-  const dsHt = modHt ? tabCua(modHt).filter(sc => hienMan(sc, s.goi, s.cheDo, s)) : []
+  const dsDm = modDm ? tabCua(modDm).filter(sc => hienMan(sc, s.goi, s.cheDo, s) && (!anNgoaiGoi(s.goi) || moDuoc(sc, s.goi))) : []
+  const dsHt = modHt ? tabCua(modHt).filter(sc => hienMan(sc, s.goi, s.cheDo, s) && (!anNgoaiGoi(s.goi) || moDuoc(sc, s.goi))) : []
 
   return (
     <div className="m-khac">

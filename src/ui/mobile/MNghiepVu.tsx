@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useSession } from '../../app/session'
 import { MODULES, duongDan, hienMan, hienPhanHe, moDuoc, phanHeKhoa, tabCua, tenMan, tenPhanHe } from '../../app/registry'
+import { anNgoaiGoi } from '../../app/plan'
 import type { ScreenDef } from '../../modules/types'
 import { Icon } from '../Icon'
 import { MQuyTrinh, layDsBuoc } from './MQuyTrinh'
@@ -23,7 +24,8 @@ export function MNghiepVu() {
       m.key !== 'bao-cao' &&
       m.key !== 'danh-muc' &&
       m.key !== 'he-thong' &&
-      tabCua(m).some(manMoTrenMobile)
+      (!anNgoaiGoi(s.goi) || !phanHeKhoa(m, s.goi)) &&
+      tabCua(m).some(sc => manMoTrenMobile(sc) && (!anNgoaiGoi(s.goi) || moDuoc(sc, s.goi)))
   )
 
   const modHienTai = modKey ? dsPhanHe.find(m => m.key === modKey) : null
@@ -47,7 +49,7 @@ export function MNghiepVu() {
   }
 
   if (modHienTai) {
-    const dsMan = tabCua(modHienTai).filter(manMoTrenMobile)
+    const dsMan = tabCua(modHienTai).filter(sc => manMoTrenMobile(sc) && (!anNgoaiGoi(s.goi) || moDuoc(sc, s.goi)))
 
     return (
       <div className="m-nghiep-vu m-nv-chi-tiet">
@@ -122,7 +124,7 @@ export function MNghiepVu() {
   return (
     <div className="m-nghiep-vu">
       <div className="m-nv-luoi">
-        {dsPhanHe.map(m => {
+        {dsPhanHe.filter(m => !anNgoaiGoi(s.goi) || !phanHeKhoa(m, s.goi)).map(m => {
           const khoa = phanHeKhoa(m, s.goi)
           return (
             <Link

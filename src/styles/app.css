@@ -17365,3 +17365,86 @@ button.bbt-nut { background: none; border: 0; padding-left: 0; padding-right: 0;
   font-size: 12.5px;
   color: var(--faint);
 }
+
+/* ── Trang chủ Free điện thoại giống bản web (T257) ── */
+.m-tc-thanh-dieu-huong {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.m-tc-thanh-dieu-huong--free {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 14px 10px;
+  background: var(--bg, #f8fafc);
+  width: 100%;
+  box-sizing: border-box;
+}
+.m-tc-thanh-dieu-huong--free .m-tc-chip-cn {
+  flex: 1;
+  min-width: 0;
+  max-width: 160px;
+  justify-content: space-between;
+}
+.m-free-ky-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.m-free-sel-nam {
+  height: 32px;
+  width: 112px;
+  min-width: 0;
+}
+.m-free-sel-thang {
+  height: 32px;
+  width: 96px;
+  min-width: 0;
+  font-weight: 600;
+  color: var(--blue);
+}
+
+/* Gói khác: tab hàng trên, chip hàng dưới chia đều (T257 phần D) */
+.m-tc-thanh-dieu-huong--goi-khac {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 14px 10px;
+  background: var(--bg, #f8fafc);
+  width: 100%;
+  box-sizing: border-box;
+}
+.m-tc-hang-tab {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+.m-tc-hang-chip {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
+}
+@media (max-width: 600px) {
+  .hop-13t {
+    width: calc(100vw - 20px);
+    max-height: 92vh;
+    margin: 10px auto;
+  }
+  .hop-13t-than {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 10px 12px;
+  }
+  .hop-13t .ds-hop-dau {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .hop-13t .ds-chan {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}
+
