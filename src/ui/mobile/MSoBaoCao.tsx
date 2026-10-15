@@ -14,6 +14,7 @@ import { Icon } from '../Icon'
 import { MChon } from './MChon'
 import { duongPhieu } from '../generic/SoChungTu'
 import { layKhuonDong, MBaoCaoDong } from './MBaoCaoDong'
+import { cotMobile, useBangMauA } from './bangMauA'
 
 /** Dò đường dẫn mở chứng từ gốc nếu có (T201, T223) */
 function layDuongDan(so: unknown): string | undefined {
@@ -141,8 +142,15 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
 
   const noiDungBang = useMemo(() => {
     if (!React.isValidElement(body)) return body
-    return React.cloneElement(body as React.ReactElement<{ rows?: Row[] }>, { rows: rowsLoc })
-  }, [body, rowsLoc])
+    const p = body.props as { rows?: Row[]; cols?: Col[] }
+    const colsGoc = p?.cols || rawCols
+    return React.cloneElement(body as React.ReactElement<{ rows?: Row[]; cols?: Col[] }>, {
+      rows: rowsLoc,
+      cols: cotMobile(colsGoc),
+    })
+  }, [body, rowsLoc, rawCols])
+
+  const coCuonNgang = useBangMauA(bangWrapRef, [noiDungBang, kieuXem])
 
   // Số liệu thẻ tổng 3 ô: lấy đúng từ dòng đầu kỳ, cộng phát sinh, cuối kỳ của bảng
   const { soDau, tongThu, tongChi, soCuoi } = useMemo(() => {
@@ -387,9 +395,17 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
         </div>
         )
       ) : (
-        /* Khung bảng cuộn ngang, trang không cuộn ngang */
-        <div ref={bangWrapRef} className="m-sbc-bang-wrap">
-          {noiDungBang}
+        /* Khung bảng cuộn ngang, trang không cuộn ngang (Mẫu A T258) */
+        <div className="m-sbc-the-bang">
+          <div ref={bangWrapRef} className={`m-sbc-bang-wrap ${coCuonNgang ? 'co-goi' : ''}`}>
+            {noiDungBang}
+          </div>
+          {coCuonNgang && (
+            <div className="m-sbc-goi">
+              <span>Vuốt ngang xem thêm cột</span>
+              <span>Cột đầu luôn đứng yên</span>
+            </div>
+          )}
         </div>
       )}
 

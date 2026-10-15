@@ -10430,74 +10430,6 @@ body:has(.m-lp) .m-thanh-duoi {
   background: #fff;
 }
 
-.m-sbc-bang-wrap {
-  width: 100%;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  background: #fff;
-  padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
-}
-
-.m-sbc-bang-wrap table.rpt {
-  width: max-content;
-  min-width: 100%;
-  border-collapse: separate !important;
-  border-spacing: 0;
-  margin: 0;
-}
-
-.m-sbc-bang-wrap table.rpt thead th {
-  background: #F5F5F5 !important;
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 700;
-  height: 38px;
-  padding: 6px 10px;
-  border-bottom: 1px solid var(--line);
-  position: sticky;
-  top: 0;
-  z-index: 3;
-  white-space: nowrap;
-}
-
-/* Ghim cột 1 và cột 2 ở khung MSoBaoCao */
-.m-sbc-bang-wrap table.rpt th:first-child,
-.m-sbc-bang-wrap table.rpt td:first-child {
-  position: sticky !important;
-  left: 0 !important;
-  z-index: 2;
-  background: #fff;
-  box-shadow: 1px 0 0 var(--line);
-}
-
-.m-sbc-bang-wrap table.rpt thead th:first-child {
-  z-index: 6 !important;
-  background: #F5F5F5 !important;
-}
-
-.m-sbc-bang-wrap table.rpt th:nth-child(2),
-.m-sbc-bang-wrap table.rpt td:nth-child(2) {
-  position: sticky !important;
-  left: var(--m-cot1-w, 54px) !important;
-  z-index: 2;
-  background: #fff;
-  box-shadow: 2px 0 4px -2px rgba(0, 0, 0, 0.12);
-}
-
-.m-sbc-bang-wrap table.rpt thead th:nth-child(2) {
-  z-index: 6 !important;
-  background: #F5F5F5 !important;
-}
-
-.m-sbc-bang-wrap table.rpt tbody td {
-  height: 44px;
-  padding: 6px 10px;
-  border-bottom: 1px solid var(--line);
-  font-size: 13px;
-  color: var(--body);
-  white-space: nowrap;
-}
-
 /* ── Màn báo cáo tờ giấy (MToGiay) ── */
 .m-to-giay {
   width: 100%;
@@ -11909,19 +11841,6 @@ button.cn-ten {
 
 /* ── Điện thoại: sổ quỹ dạng bảng, báo cáo cuộn tự do, trang chủ theo IVT (T202–T204) ── */
 @media (max-width: 767px) {
-  /* T203: Bỏ đóng băng ở báo cáo điện thoại: cuộn tự do lên xuống, trái phải */
-  .m-so-bc .m-sbc-bang-wrap table.rpt thead th,
-  .m-so-bc .m-sbc-bang-wrap table.rpt th,
-  .m-so-bc .m-sbc-bang-wrap table.rpt td,
-  .m-so-bc table th,
-  .m-so-bc table td {
-    position: static !important;
-    top: auto !important;
-    left: auto !important;
-    box-shadow: none !important;
-    z-index: auto !important;
-  }
-
   /* T204: Trang chủ theo IVT */
   /* Đầu trang nền vàng kem chuyển dần trắng */
   .m-tc-dau {
@@ -14393,35 +14312,6 @@ button.cn-ten {
     padding: 0 4px;
   }
 
-  /* 4. Bảng sổ MSoBaoCao gọn hơn (chỉ CSS trong .m-so-bc) */
-  .m-so-bc table,
-  .m-so-bc table.rpt,
-  .m-so-bc .m-sbc-bang-wrap table {
-    font-size: 13px !important;
-  }
-
-  .m-so-bc table th,
-  .m-so-bc table td,
-  .m-so-bc .m-sbc-bang-wrap table.rpt tbody td,
-  .m-so-bc .m-sbc-bang-wrap table.rpt thead th {
-    padding: 8px 10px !important;
-    font-size: 13px !important;
-    height: auto !important;
-  }
-
-  .m-so-bc table tr.t td,
-  .m-so-bc table tr.t th,
-  .m-so-bc table tfoot tr td,
-  .m-so-bc .m-sbc-bang-wrap table.rpt tr.t td {
-    font-weight: 700 !important;
-    background: #f1f5f9 !important;
-  }
-
-  .m-so-bc table tbody tr:nth-child(even):not(.t):not(.b) td,
-  .m-so-bc .m-sbc-bang-wrap table.rpt tbody tr:nth-child(even):not(.t):not(.b) td {
-    background-color: #fafbfc;
-  }
-
   /* 5. Đệm đáy: mọi màn trong main.m-than đủ để dòng cuối nằm trên thanh dưới nổi */
   main.m-than,
   .m-than {
@@ -14429,7 +14319,6 @@ button.cn-ten {
   }
 
   .m-ds-danh-sach,
-  .m-sbc-bang-wrap,
   .m-sdb-khung,
   .m-pos-khung,
   .m-ht-khung,
@@ -17587,3 +17476,276 @@ button.bbt-nut { background: none; border: 0; padding-left: 0; padding-right: 0;
 .cpt-cuon > .nvl-bang { flex: 0 1 auto; min-height: 0; display: flex; flex-direction: column; }
 .cpt-cuon > .nvl-bang > * { flex: none; }
 .cpt-cuon > .nvl-bang > .tbl-wrap { flex: 0 1 auto; min-height: 0; }
+/* ── Bảng báo cáo điện thoại mẫu A (T258) ── */
+@media (max-width: 767px) {
+  /* Khung thẻ chứa bảng */
+  .m-sbc-the-bang {
+    display: flex;
+    flex-direction: column;
+    width: calc(100% - 24px);
+    margin: 8px 12px 12px 12px;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .m-sbc-bang-wrap {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: auto;
+    position: relative;
+    -webkit-overflow-scrolling: touch;
+    max-height: calc(100vh - 175px);
+    box-sizing: border-box;
+  }
+
+  .m-sbc-bang-wrap.co-goi {
+    border-radius: 12px 12px 0 0;
+    border-bottom: 0;
+  }
+
+  /* Dải chữ nhỏ dưới thẻ: Vuốt ngang xem thêm cột */
+  .m-sbc-goi {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin: 0;
+    padding: 8px 12px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-top: 0;
+    border-radius: 0 0 12px 12px;
+    font-size: 12px;
+    color: var(--muted);
+    box-sizing: border-box;
+    flex: none;
+  }
+
+  /* Cấu trúc bảng */
+  .m-sbc-bang-wrap table.rpt {
+    width: max-content;
+    min-width: 100%;
+    border-collapse: separate !important;
+    border-spacing: 0;
+    margin: 0;
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+    background: #fff;
+  }
+
+  /* Tiêu đề nền var(--tint), chữ var(--navy) 12px đậm 600, dính trên khi cuộn dọc */
+  .m-sbc-bang-wrap table.rpt thead th {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 10 !important;
+    background: var(--tint) !important;
+    color: var(--navy) !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    padding: 10px 12px !important;
+    border-bottom: 1px solid #d5e2ef !important;
+    white-space: nowrap;
+    text-align: right;
+    box-sizing: border-box;
+    height: 38px;
+  }
+
+  /* Bảng có tiêu đề nhiều tầng: mọi tầng đều dính trên đúng thứ tự không đè nhau */
+  .m-sbc-bang-wrap table.rpt thead tr:nth-child(2) th {
+    top: 38px !important;
+    z-index: 10 !important;
+  }
+
+  .m-sbc-bang-wrap table.rpt thead tr:nth-child(3) th {
+    top: 76px !important;
+    z-index: 10 !important;
+  }
+
+  /* === GHIM CỘT 1 (Mặc định: khi cột 1 rộng như Chỉ tiêu 2.2.9) === */
+  .m-sbc-bang-wrap table.rpt thead tr:first-child > th:first-child {
+    position: sticky !important;
+    left: 0 !important;
+    top: 0 !important;
+    z-index: 25 !important;
+    background: var(--tint) !important;
+    text-align: left !important;
+    box-shadow: inset -1px 0 0 #d5e2ef, 6px 0 8px -6px rgba(14, 26, 43, 0.18) !important;
+    max-width: 148px;
+  }
+
+  .m-sbc-bang-wrap table.rpt thead tr:nth-child(2) > th:first-child {
+    top: 38px !important;
+  }
+
+  .m-sbc-bang-wrap table.rpt tbody td:first-child {
+    position: sticky !important;
+    left: 0 !important;
+    z-index: 5 !important;
+    background: #ffffff;
+    max-width: 148px;
+    white-space: normal !important;
+    word-break: break-word;
+    text-align: left;
+    box-shadow: inset -1px 0 0 var(--line), 6px 0 8px -6px rgba(14, 26, 43, 0.18) !important;
+  }
+
+  /* === GHIM 2 CỘT (.m-ghim-2-cot: khi cột 1 hẹp <= 96px, ghim cả cột 1 và cột 2) === */
+  .m-sbc-bang-wrap.m-ghim-2-cot table.rpt thead tr:first-child > th:first-child {
+    box-shadow: none !important;
+    border-right: 1px solid var(--line) !important;
+    white-space: nowrap !important;
+    padding: 8px 6px !important;
+    max-width: 96px;
+  }
+
+  .m-sbc-bang-wrap.m-ghim-2-cot table.rpt tbody td:first-child {
+    box-shadow: none !important;
+    border-right: 1px solid #eeeeee !important;
+    white-space: nowrap !important;
+    padding: 11px 6px !important;
+    max-width: 96px;
+  }
+
+  .m-sbc-bang-wrap.m-ghim-2-cot table.rpt tbody tr.t td:first-child {
+    box-shadow: none !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.15) !important;
+  }
+
+  /* Cột 2 ghim tại left = var(--m-cot1-w), bóng mờ mép phải, rộng tối đa 148px, chữ xuống dòng */
+  .m-sbc-bang-wrap.m-ghim-2-cot table.rpt thead tr:first-child > th:nth-child(2) {
+    position: sticky !important;
+    left: var(--m-cot1-w, 54px) !important;
+    top: 0 !important;
+    z-index: 25 !important;
+    background: var(--tint) !important;
+    color: var(--navy) !important;
+    text-align: left !important;
+    max-width: 148px;
+    width: 148px;
+    white-space: normal !important;
+    word-break: break-word;
+    box-shadow: inset -1px 0 0 #d5e2ef, 6px 0 8px -6px rgba(14, 26, 43, 0.18) !important;
+  }
+
+  .m-sbc-bang-wrap.m-ghim-2-cot table.rpt tbody td:nth-child(2) {
+    position: sticky !important;
+    left: var(--m-cot1-w, 54px) !important;
+    z-index: 5 !important;
+    max-width: 148px;
+    width: 148px;
+    white-space: normal !important;
+    word-break: break-word;
+    text-align: left !important;
+    box-shadow: inset -1px 0 0 var(--line), 6px 0 8px -6px rgba(14, 26, 43, 0.18) !important;
+  }
+
+  .m-sbc-bang-wrap.m-ghim-2-cot table.rpt tbody tr:nth-child(odd):not(.t):not(.nhom) td:nth-child(2) {
+    background: #fff !important;
+  }
+
+  .m-sbc-bang-wrap.m-ghim-2-cot table.rpt tbody tr:nth-child(even):not(.t):not(.nhom) td:nth-child(2) {
+    background: #f8fafc !important;
+  }
+
+  .m-sbc-bang-wrap.m-ghim-2-cot table.rpt tbody tr.nhom td:nth-child(2) {
+    position: sticky !important;
+    left: var(--m-cot1-w, 54px) !important;
+    z-index: 5 !important;
+    background: var(--hdb-bg) !important;
+  }
+
+  .m-sbc-bang-wrap.m-ghim-2-cot table.rpt tbody tr.t td:nth-child(2) {
+    position: sticky !important;
+    bottom: 0 !important;
+    left: var(--m-cot1-w, 54px) !important;
+    z-index: 20 !important;
+    background: var(--navy) !important;
+    color: #fff !important;
+    box-shadow: 6px 0 8px -6px rgba(0, 0, 0, 0.35) !important;
+  }
+
+  /* Dòng thường: chữ 13px, đệm 11px 12px, kẻ dưới #eeeeee */
+  .m-sbc-bang-wrap table.rpt tbody td {
+    font-size: 13px !important;
+    padding: 11px 12px !important;
+    border-bottom: 1px solid #eeeeee !important;
+    color: var(--body);
+    box-sizing: border-box;
+  }
+
+  /* Dòng chẵn nền #f8fafc (cả ô cột đầu cùng màu dòng) */
+  .m-sbc-bang-wrap table.rpt tbody tr:nth-child(odd):not(.t):not(.nhom) td {
+    background: #fff !important;
+  }
+
+  .m-sbc-bang-wrap table.rpt tbody tr:nth-child(even):not(.t):not(.nhom) td {
+    background: #f8fafc !important;
+  }
+
+  /* Cột số căn phải, tabular-nums, không xuống dòng */
+  .m-sbc-bang-wrap table.rpt tbody td.num {
+    text-align: right !important;
+    font-variant-numeric: tabular-nums !important;
+    white-space: nowrap !important;
+  }
+
+  /* Ô trống hoặc bằng 0 ghi – màu #9ca3af */
+  .m-sbc-bang-wrap table.rpt tbody td.num:empty::before {
+    content: '–';
+    color: var(--faint, #9ca3af);
+  }
+
+  .m-sbc-bang-wrap table.rpt .m-o-rong {
+    color: var(--faint, #9ca3af) !important;
+    font-weight: normal;
+  }
+
+  /* Dòng cộng nhóm giữa bảng (nếu có): đậm, nền var(--hdb-bg), không dính */
+  .m-sbc-bang-wrap table.rpt tbody tr.nhom td {
+    position: static !important;
+    background: var(--hdb-bg) !important;
+    font-weight: 600 !important;
+    color: var(--ink) !important;
+  }
+
+  .m-sbc-bang-wrap table.rpt tbody tr.nhom td:first-child {
+    position: sticky !important;
+    left: 0 !important;
+    z-index: 5 !important;
+    background: var(--hdb-bg) !important;
+  }
+
+  /* Dòng cộng, dòng tổng của báo cáo: nền var(--navy), chữ trắng đậm, dính dưới khi cuộn dọc */
+  .m-sbc-bang-wrap table.rpt tbody tr.t td {
+    position: sticky !important;
+    bottom: 0 !important;
+    z-index: 15 !important;
+    background: var(--navy) !important;
+    color: #fff !important;
+    font-weight: 600 !important;
+    border-bottom: 0 !important;
+  }
+
+  .m-sbc-bang-wrap table.rpt tbody tr.t td:first-child {
+    position: sticky !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    z-index: 20 !important;
+    box-shadow: 6px 0 8px -6px rgba(0, 0, 0, 0.35) !important;
+    background: var(--navy) !important;
+    color: #fff !important;
+  }
+
+  .m-sbc-bang-wrap table.rpt tbody tr.t:nth-last-child(2) td {
+    bottom: 39px !important;
+  }
+
+  .m-sbc-bang-wrap table.rpt tbody tr.t td .m-o-rong {
+    color: rgba(255, 255, 255, 0.6) !important;
+  }
+}
+

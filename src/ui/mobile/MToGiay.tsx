@@ -5,9 +5,30 @@ import { useSession } from '../../app/session'
 import { KHO, kqkd } from '../../data/mock'
 import { HANG_XNT, theKho, xnt } from '../../modules/kho/data'
 import { Icon } from '../Icon'
+import { RptTable } from '../generic/ReportScreen'
 import { layKhuonDong, MBaoCaoDong, type LoaiKhuonDong } from './MBaoCaoDong'
+import { cotMobile, useBangMauA } from './bangMauA'
 
 const RONG_MAY_TINH = 900
+
+const COLS_523: Col[] = [
+  { k: 'ma', t: 'Mã', cls: 'code' },
+  { k: 'ten', t: 'Tên nguyên vật liệu, hàng hoá' },
+  { k: 'dvt', t: 'ĐVT', c: true },
+  { k: 'sl0', t: 'SL', num: true, nhom: 'Đầu kỳ' },
+  { k: 'gt0', t: 'Giá trị', num: true, nhom: 'Đầu kỳ' },
+  { k: 'sln', t: 'SL', num: true, nhom: 'Nhập trong kỳ' },
+  { k: 'gtn', t: 'Giá trị', num: true, nhom: 'Nhập trong kỳ' },
+  { k: 'slx', t: 'SL', num: true, nhom: 'Xuất trong kỳ' },
+  { k: 'gtx', t: 'Giá trị', num: true, nhom: 'Xuất trong kỳ' },
+  { k: 'sl1', t: 'SL', num: true, nhom: 'Cuối kỳ' },
+  { k: 'gt1', t: 'Giá trị', num: true, nhom: 'Cuối kỳ' },
+]
+
+const COLS_1023: Col[] = [
+  { k: 'ct', t: 'Chỉ tiêu' },
+  { k: 'v', t: 'Số tiền', num: true },
+]
 
 export const MToGiay: FC<ScreenProps> = ({ sc, mod }) => {
   const Comp = sc.comp
@@ -15,7 +36,8 @@ export const MToGiay: FC<ScreenProps> = ({ sc, mod }) => {
   const [params] = useSearchParams()
 
   const [phongTo, setPhongTo] = useState(false)
-  const [xemMauIn, setXemMauIn] = useState(false)
+  const [kieuXem, setKieuXem] = useState<'dong' | 'bang' | 'in'>('dong')
+  const bangWrapRef = useRef<HTMLDivElement>(null)
 
   const khungRef = useRef<HTMLDivElement>(null)
   const noiDungRef = useRef<HTMLDivElement>(null)
@@ -120,7 +142,14 @@ export const MToGiay: FC<ScreenProps> = ({ sc, mod }) => {
       clearTimeout(timer)
       window.removeEventListener('resize', tinhToan)
     }
-  }, [phongTo, sc.slug, xemMauIn])
+  }, [phongTo, sc.slug, kieuXem])
+
+  const colsBang = useMemo(() => {
+    const raw: Col[] = is523 ? COLS_523 : isDong1023 ? COLS_1023 : (colsDong.length ? colsDong : COLS_523)
+    return cotMobile(raw)
+  }, [is523, isDong1023, colsDong])
+
+  const coCuonNgang = useBangMauA(bangWrapRef, [kieuXem, rowsDong])
 
   if (!Comp) return null
 
@@ -137,22 +166,39 @@ export const MToGiay: FC<ScreenProps> = ({ sc, mod }) => {
     setPhongTo(p => !p)
   }
 
-  // Màn hình 5.2.1, 5.2.3, 10.2.3: mặc định dạng dòng, có nút "Xem mẫu in"
+  // Màn hình 5.2.1, 5.2.3, 10.2.3: mặc định dạng dòng, có chip Bảng và nút "Xem mẫu in"
   if (isApDungDong && khuon) {
     return (
       <div className="m-to-giay-wrap">
-        <div className="m-bcd-to-dau">
+        <div className="m-sbc-loc-hang">
+          <div className="m-so-dong-kieu-wrap">
+            <button
+              type="button"
+              className={`m-so-dong-chip ${kieuXem === 'dong' ? 'm-so-dong-chip-on' : ''}`}
+              onClick={() => setKieuXem('dong')}
+            >
+              Dạng dòng
+            </button>
+            <button
+              type="button"
+              className={`m-so-dong-chip ${kieuXem === 'bang' ? 'm-so-dong-chip-on' : ''}`}
+              onClick={() => setKieuXem('bang')}
+            >
+              Bảng
+            </button>
+          </div>
           <button
             type="button"
             className="m-bcd-nut-mau-in"
-            onClick={() => setXemMauIn(p => !p)}
+            onClick={() => setKieuXem(k => (k === 'in' ? 'dong' : 'in'))}
+            style={{ marginLeft: 'auto' }}
           >
-            <Icon n={xemMauIn ? 'list' : 'printer'} className="ic sm" />
-            <span>{xemMauIn ? 'Xem dạng dòng' : 'Xem mẫu in'}</span>
+            <Icon n={kieuXem === 'in' ? 'list' : 'printer'} className="ic sm" />
+            <span>{kieuXem === 'in' ? 'Xem dạng dòng' : 'Xem mẫu in'}</span>
           </button>
         </div>
 
-        {xemMauIn ? (
+        {kieuXem === 'in' ? (
           <div
             ref={khungRef}
             className={`m-to-giay ${phongTo ? 'phong-to' : 'thu-nho'}`}
@@ -178,6 +224,18 @@ export const MToGiay: FC<ScreenProps> = ({ sc, mod }) => {
             >
               <Comp sc={sc} mod={mod} />
             </div>
+          </div>
+        ) : kieuXem === 'bang' ? (
+          <div className="m-sbc-the-bang">
+            <div ref={bangWrapRef} className={`m-sbc-bang-wrap ${coCuonNgang ? 'co-goi' : ''}`}>
+              <RptTable cols={colsBang} rows={rowsDong} />
+            </div>
+            {coCuonNgang && (
+              <div className="m-sbc-goi">
+                <span>Vuốt ngang xem thêm cột</span>
+                <span>Cột đầu luôn đứng yên</span>
+              </div>
+            )}
           </div>
         ) : (
           <div className="m-so-dong" style={{ padding: '0 0 40px 0' }}>

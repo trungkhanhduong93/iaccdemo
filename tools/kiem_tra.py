@@ -945,9 +945,9 @@ def kiem_tra_bao_cao_dot_7():
                         pos_sau = pg.evaluate("() => { const th = document.querySelector('.m-sbc-bang-wrap th:first-child'); return th ? th.getBoundingClientRect().left : 0; }")
                         if scroll_left < 50:
                             loi.append(f'{ten_man} ({path}): không cuộn ngang được khung bảng (scrollLeft = {scroll_left})')
-                        # T203: báo cáo điện thoại bỏ cột ghim, cột đầu phải trôi theo khi cuộn ngang
-                        if scroll_left >= 50 and abs(pos_truoc - pos_sau) < 50:
-                            loi.append(f'{ten_man} ({path}): cột đầu vẫn bị ghim sau khi cuộn (trước: {pos_truoc}, sau: {pos_sau})')
+                        # T258 (Mẫu A): báo cáo điện thoại ghim cột đầu theo mẫu A, cột đầu đứng yên khi cuộn ngang
+                        if scroll_left >= 50 and abs(pos_truoc - pos_sau) >= 50:
+                            loi.append(f'{ten_man} ({path}): cột đầu không được ghim theo mẫu A (trước: {pos_truoc}, sau: {pos_sau})')
 
             print(f'  - Đã kiểm: {ten_man} ({path})')
 
@@ -1495,13 +1495,13 @@ def kiem_tra_dot_10():
 
             box_sau = td_dau.bounding_box()
             if box_truoc and box_sau:
-                delta_x = box_truoc['x'] - box_sau['x']
-                if delta_x < 200:
-                    loi.append(f'Sổ ngân hàng (2-2-3): ô đầu tiên không trôi khi cuộn ngang (delta_x={delta_x:.1f}px, nghi ngờ bị ghim)')
+                delta_x = abs(box_truoc['x'] - box_sau['x'])
+                if delta_x > 2:
+                    loi.append(f'Sổ ngân hàng (2-2-3): ô đầu tiên không ghim khi cuộn ngang (delta_x={delta_x:.1f}px, chưa theo mẫu A)')
                 else:
-                    print(f'  - Bước 3a: Cuộn ngang 300px ô đầu trôi {delta_x:.1f}px (không ghim)')
+                    print(f'  - Bước 3a: Cuộn ngang 300px ô đầu đứng yên (delta_x={delta_x:.1f}px, ghim theo mẫu A)')
 
-            # Kiểm tra cuộn dọc: tiêu đề bảng trôi lên (không dính)
+            # Kiểm tra cuộn dọc: tiêu đề bảng dính trên theo Mẫu A (T258)
             th_dau = pg.locator('.m-so-bc table.rpt thead th').first
             th_box_truoc = th_dau.bounding_box()
 
@@ -1510,13 +1510,13 @@ def kiem_tra_dot_10():
 
             th_box_sau = th_dau.bounding_box()
             if th_box_truoc and th_box_sau:
-                delta_y = th_box_truoc['y'] - th_box_sau['y']
-                if delta_y < 150:
-                    loi.append(f'Sổ ngân hàng (2-2-3): tiêu đề bảng không trôi lên khi cuộn dọc (delta_y={delta_y:.1f}px, nghi ngờ bị dính)')
+                delta_y = abs(th_box_truoc['y'] - th_box_sau['y'])
+                if delta_y > 2:
+                    loi.append(f'Sổ ngân hàng (2-2-3): tiêu đề bảng không dính khi cuộn dọc (delta_y={delta_y:.1f}px, chưa theo mẫu A)')
                 else:
-                    print(f'  - Bước 3b: Cuộn dọc tiêu đề trôi lên {delta_y:.1f}px (không dính)')
+                    print(f'  - Bước 3b: Cuộn dọc tiêu đề dính trên (delta_y={delta_y:.1f}px, mẫu A)')
 
-        kiem_man('Sổ ngân hàng cuộn tự do')
+        kiem_man('Sổ ngân hàng bảng mẫu A')
         pg.screenshot(path=str(SHOTS / 'm-10-04-so-ngan-hang-cuon.png'))
 
         b.close()
@@ -4242,6 +4242,176 @@ def kiem_tra_dot_20_b():
     return loi
 
 
+def kiem_tra_dot_21_b():
+    """Kiểm tra T258 (Mẫu A): Chế độ Bảng của các báo cáo trên điện thoại."""
+    loi = []
+    print('Kiểm tra đợt 21B (T258): Bảng báo cáo điện thoại mẫu A:')
+    SHOTS.mkdir(parents=True, exist_ok=True)
+
+    ds_man_21_b = [
+        ('3.2.8', 'ban-hang/3-2-8', 'Chi tiết bán hàng'),
+        ('3.2.9', 'ban-hang/3-2-9', 'Công nợ khách hàng'),
+        ('5.2.3', 'kho/5-2-3', 'Báo cáo xuất nhập tồn (tiêu đề nhiều tầng)'),
+        ('2.2.9', 'tien/2-2-9', 'Báo cáo dòng tiền'),
+        ('4.2.1', 'mua-hang/4-2-1', 'Chi tiết mua hàng'),
+        ('10.4.3', 'tong-hop/10-4-3', 'Sổ chi phí'),
+        ('2.2.8', 'tien/2-2-8', 'Tổng hợp quỹ tiền'),
+        ('5.2.9', 'kho/5-2-9', 'Tổng hợp nhập kho'),
+    ]
+
+    with sync_playwright() as p:
+        b = p.chromium.launch(channel='chrome')
+        pg = b.new_page(
+            viewport={'width': 390, 'height': 844},
+            is_mobile=True,
+            has_touch=True,
+        )
+        con = []
+
+        def on_console(m):
+            if m.type == 'error':
+                con.append(m.text)
+
+        def on_pageerror(e):
+            con.append(str(e))
+
+        pg.on('console', on_console)
+        pg.on('pageerror', on_pageerror)
+
+        pg.goto(URL + '#/dang-nhap')
+        pg.wait_for_selector('.auth-box')
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PR'))})")
+
+        for ma, slug, ten_bc in ds_man_21_b:
+            path_bc = f'/app/{slug}'
+            p_id = 25800 + abs(hash(ma)) % 1000
+            pg.goto(f'{URL}?goi=PR&p={p_id}#{path_bc}')
+            pg.wait_for_selector('.m-so-bc, .m-to-giay-wrap', timeout=8000)
+            pg.wait_for_timeout(300)
+
+            # Bấm chip "Bảng"
+            chip_bang = pg.locator('button:has-text("Bảng")')
+            if chip_bang.count() == 0:
+                loi.append(f'{ma} ({ten_bc}): không tìm thấy chip "Bảng"')
+                continue
+
+            chip_bang.first.click()
+            pg.wait_for_selector('.m-sbc-bang-wrap table', timeout=5000)
+            pg.wait_for_timeout(350)
+
+            # Bắt lỗi console
+            if con:
+                loi.append(f'{ma} ({ten_bc}): lỗi console điện thoại {con[:2]}')
+                con.clear()
+
+            # Chụp ảnh trước khi cuộn ngang
+            ten_file_truoc = f'm-21-{ma}.png'
+            pg.screenshot(path=str(SHOTS / ten_file_truoc))
+
+            # Kiểm tra các điều kiện Mẫu A theo spec:
+            # 1. ô tiêu đề có position: sticky
+            # 2. ô cột đầu dòng dữ liệu có position: sticky, left: 0
+            # 3. cuộn ngang thẻ bảng 200px rồi đo: ô cột đầu không đổi vị trí trái
+            # 4. trang không cuộn ngang (document.documentElement.scrollWidth <= 390)
+            # 5. báo cáo có dòng tổng: dòng tổng có position: sticky
+            kiem_kq = pg.evaluate('''() => {
+                const wrap = document.querySelector('.m-sbc-bang-wrap');
+                const th = document.querySelector('.m-sbc-bang-wrap table th');
+                const td = document.querySelector('.m-sbc-bang-wrap table tbody tr td:first-child');
+                const trT = document.querySelector('.m-sbc-bang-wrap table tbody tr.t td, .m-sbc-bang-wrap table tfoot tr td');
+                const scrollW = document.documentElement.scrollWidth;
+
+                const posTh = th ? getComputedStyle(th).position : '';
+                const posTd = td ? getComputedStyle(td).position : '';
+                const leftTd = td ? getComputedStyle(td).left : '';
+                const posTrT = trT ? getComputedStyle(trT).position : '';
+
+                const hasGhim2 = wrap ? wrap.classList.contains('m-ghim-2-cot') : false;
+                const tdGhim = hasGhim2
+                    ? wrap.querySelector('table tbody tr:not(.t):not(.nhom) > td:nth-child(2)')
+                    : td;
+
+                let dx = 0;
+                let dxGhim = 0;
+                let insideCard = false;
+
+                if (wrap && td) {
+                    const b1 = td.getBoundingClientRect();
+                    const bGhim1 = tdGhim ? tdGhim.getBoundingClientRect() : null;
+
+                    wrap.scrollLeft = 200;
+
+                    const b2 = td.getBoundingClientRect();
+                    dx = Math.abs(b1.left - b2.left);
+
+                    if (bGhim1 && tdGhim) {
+                        const bGhim2 = tdGhim.getBoundingClientRect();
+                        dxGhim = Math.abs(bGhim1.left - bGhim2.left);
+                        const wrapRect = wrap.getBoundingClientRect();
+                        insideCard = (bGhim2.left >= wrapRect.left - 2) && (bGhim2.right <= wrapRect.right + 2);
+                    }
+                }
+
+                return {
+                    scrollW,
+                    posTh,
+                    posTd,
+                    leftTd,
+                    hasTrT: !!trT,
+                    posTrT,
+                    dx,
+                    hasGhim2,
+                    dxGhim,
+                    insideCard,
+                };
+            }''')
+
+            # Kiểm tra trang không cuộn ngang
+            if kiem_kq['scrollW'] > 390:
+                loi.append(f'{ma} ({ten_bc}): trang bị tràn ngang (scrollWidth={kiem_kq["scrollW"]} > 390)')
+
+            # Kiểm tra ô tiêu đề th sticky
+            if kiem_kq['posTh'] != 'sticky':
+                loi.append(f'{ma} ({ten_bc}): ô tiêu đề th không có position: sticky (hiện là "{kiem_kq["posTh"]}")')
+
+            # Kiểm tra ô cột đầu dòng dữ liệu sticky left 0
+            if kiem_kq['posTd'] != 'sticky':
+                loi.append(f'{ma} ({ten_bc}): ô cột đầu không có position: sticky (hiện là "{kiem_kq["posTd"]}")')
+            if kiem_kq['leftTd'] != '0px':
+                loi.append(f'{ma} ({ten_bc}): ô cột đầu không có left: 0px (hiện là "{kiem_kq["leftTd"]}")')
+
+            # Kiểm tra sau khi cuộn ngang 200px: ô cột đầu không đổi vị trí trái (dx <= 1.5)
+            if kiem_kq['dx'] > 1.5:
+                loi.append(f'{ma} ({ten_bc}): ô cột đầu bị lệch khi cuộn ngang 200px (dx={kiem_kq["dx"]}px)')
+
+            # Kiểm tra sau khi cuộn ngang 200px: ô chứa chữ tên (cột tên/diễn giải/chỉ tiêu) không đổi vị trí trái và vẫn nằm trong thẻ (T258 vòng sửa 1)
+            if ma in ['3.2.9', '3.2.8', '5.2.3', '2.2.9']:
+                if kiem_kq['dxGhim'] > 1.5:
+                    loi.append(f'{ma} ({ten_bc}): ô ghim (tên/diễn giải/chỉ tiêu) bị lệch khi cuộn ngang 200px (dx={kiem_kq["dxGhim"]}px)')
+                if not kiem_kq['insideCard']:
+                    loi.append(f'{ma} ({ten_bc}): ô ghim (tên/diễn giải/chỉ tiêu) không nằm trọn trong thẻ sau khi cuộn')
+
+            # Kiểm tra dòng tổng (nếu có) phải có position: sticky
+            if kiem_kq['hasTrT'] and kiem_kq['posTrT'] != 'sticky':
+                loi.append(f'{ma} ({ten_bc}): dòng tổng không có position: sticky (hiện là "{kiem_kq["posTrT"]}")')
+
+            # Chụp ảnh sau khi cuộn ngang
+            pg.wait_for_timeout(150)
+            ten_file_sau = f'm-21-{ma}-cuon.png'
+            pg.screenshot(path=str(SHOTS / ten_file_sau))
+            print(f'  - {ma} ({ten_bc}): đạt Mẫu A (sticky header, sticky col1 left: 0, dx={kiem_kq["dx"]:.1f}px, dxGhim={kiem_kq["dxGhim"]:.1f}px, ghim2={kiem_kq["hasGhim2"]}, cuộn={kiem_kq["scrollW"]}px, tổng sticky={kiem_kq["posTrT"]})')
+
+        b.close()
+
+    if not loi:
+        print('  Không có lỗi đợt 21B.')
+    else:
+        print(f'  Có {len(loi)} lỗi đợt 21B:')
+        for err in loi:
+            print(f'    - {err}')
+    return loi
+
+
 
 def kiem_tra_cac_khung_dt():
     loi, dem = [], 0
@@ -4285,6 +4455,7 @@ def kiem_tra_cac_khung_dt():
     loi += kiem_tra_dot_18_b()
     loi += kiem_tra_dot_19_b()
     loi += kiem_tra_dot_20_b()
+    loi += kiem_tra_dot_21_b()
     if loi:
         print(f'{len(loi)} LỖI:')
         for x in loi:
