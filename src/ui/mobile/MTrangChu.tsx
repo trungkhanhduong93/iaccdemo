@@ -186,6 +186,8 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
   const { sc: scNhap } = timMan('kho', '5-1-1')
   const { sc: scXuat } = timMan('kho', '5-1-2')
   const { sc: scSoQuy } = timMan('tien', '2-2-1')
+  const { sc: scNhapMua } = timMan('mua-hang', '4-1-1')
+  const { sc: scKiemKe } = timMan('kho', '5-1-10')
 
   const thaoTac5 = [
     {
@@ -218,6 +220,25 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
       to: '/app/tien/2-2-1',
       khoa: scSoQuy ? !moDuoc(scSoQuy, s.goi) : false,
     },
+  ]
+
+  // Thao tác nhanh riêng cho gói Free (T259): thêm Nhập mua và Kiểm kê
+  const thaoTacFree = [
+    thaoTac5[0],
+    thaoTac5[1],
+    {
+      ten: 'Nhập mua',
+      icon: 'truck',
+      to: '/app/mua-hang/4-1-1/moi',
+      khoa: scNhapMua ? !moDuoc(scNhapMua, s.goi) : false,
+    },
+    {
+      ten: 'Kiểm kê',
+      icon: 'clipboard',
+      to: '/app/kho/5-1-10/moi',
+      khoa: scKiemKe ? !moDuoc(scKiemKe, s.goi) : false,
+    },
+    thaoTac5[4],
   ]
 
   // 3. Dữ liệu tổng tồn kho
@@ -656,6 +677,34 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
 
           {isFree ? (
             <>
+              {/* Thao tác nhanh cho gói Free (đặt trên thẻ Quản lý lãi lỗ, ẩn các thao tác bị khoá (T259)) */}
+              {thaoTacFree.filter(i => !i.khoa).length > 0 && (
+                <div className="m-tc-the-ivt">
+                  <div className="m-tc-the-head">
+                    <div className="m-tc-the-tieu-hop">
+                      <h3 className="m-tc-the-tieu">Thao tác nhanh</h3>
+                      <span className="m-tc-the-info" title="Các thao tác nhanh thường dùng">
+                        <Icon n="info" className="ic xs" />
+                      </span>
+                    </div>
+                  </div>
+                  <div className="m-tc-nhanh-5">
+                    {thaoTacFree.filter(i => !i.khoa).map(item => (
+                      <Link
+                        key={item.ten}
+                        to={item.to}
+                        className="m-tc-nhanh-o5"
+                      >
+                        <div className="m-tc-nhanh-ic-tron">
+                          <Icon n={item.icon} className="ic sm" />
+                        </div>
+                        <span className="m-tc-nhanh-ten5">{item.ten}</span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* 1. Quản lý lãi lỗ */}
               <div className="m-tc-the-ivt m-free-the">
                 <div className="m-tc-the-head">
@@ -887,34 +936,6 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
                   </Link>
                 </div>
               </div>
-
-              {/* Thao tác nhanh cho gói Free (đặt sau 3 thẻ, ẩn các thao tác bị khoá) */}
-              {thaoTac5.filter(i => !i.khoa).length > 0 && (
-                <div className="m-tc-the-ivt">
-                  <div className="m-tc-the-head">
-                    <div className="m-tc-the-tieu-hop">
-                      <h3 className="m-tc-the-tieu">Thao tác nhanh</h3>
-                      <span className="m-tc-the-info" title="Các thao tác nhanh thường dùng">
-                        <Icon n="info" className="ic xs" />
-                      </span>
-                    </div>
-                  </div>
-                  <div className="m-tc-nhanh-5">
-                    {thaoTac5.filter(i => !i.khoa).map(item => (
-                      <Link
-                        key={item.ten}
-                        to={item.to}
-                        className="m-tc-nhanh-o5"
-                      >
-                        <div className="m-tc-nhanh-ic-tron">
-                          <Icon n={item.icon} className="ic sm" />
-                        </div>
-                        <span className="m-tc-nhanh-ten5">{item.ten}</span>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              )}
             </>
           ) : (
             <>

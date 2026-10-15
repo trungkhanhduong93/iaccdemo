@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T259 | Điện thoại gói Free: khối Thao tác nhanh lên trên thẻ Quản lý lãi lỗ, thêm nút Nhập mua (phiếu mua hàng 4.1.1), Kiểm kê (5.1.10) | Trum | Đang làm | Anti B làm. Sửa `src/ui/mobile/MTrangChu.tsx` |
 | T258 | Điện thoại: chế độ Bảng của mọi báo cáo vẽ lại theo mẫu A (cột tên đứng yên khi vuốt ngang, tiêu đề dính trên, dòng cộng dính dưới, dòng kẻ xen màu, số căn phải, ô trống ghi –) | Trum | Đang làm | Sửa `src/ui/mobile/MSoBaoCao.tsx` và màn điện thoại có bảng báo cáo, mục CSS cuối `app.css`, `tools/kiem_tra.py`. Mẫu: https://claude.ai/artifact/6STCSHwynaQTBqeJJbVKkB |
 | T229 | Báo cáo kết quả kinh doanh (10.2.3, B02-DNN) ở chế độ TT133 mở ra "Báo cáo chưa có mẫu" ở cả bản máy tính và điện thoại, gói Pro và Free | | Chờ | Phát hiện ở T222 ngày 14/10/2026, mở từ Tất cả báo cáo. Có thể liên quan T220 |
 | T169 | Form chứng từ: gõ đổi địa chỉ từ phiếu này sang phiếu khác (vd `#/app/tien/2-1-1/chi-3` sang `chi-6`) thì form giữ số phiếu, đối tượng của phiếu cũ; mở từ danh sách, Trước, Sau thì đúng | | Chờ | Phát hiện ở T168. Sửa `ChungTuForm.tsx`, có thể `VoucherScreen.tsx` (key của form) |
@@ -47,6 +46,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T259 | Điện thoại gói Free: khối Thao tác nhanh lên trên thẻ Quản lý lãi lỗ, thêm nút Nhập mua (phiếu mua hàng 4.1.1), Kiểm kê (5.1.10); gói khác giữ 5 ô cũ | Trum | 15/10/2026 | [2026-10-15-trum-trang-chu-free-dien-thoai](nhat-ky/2026-10-15-trum-trang-chu-free-dien-thoai.md) |
 | T257 | Điện thoại: trang chủ gói Free giống bản web (ba thẻ lãi lỗ, thu chi, kho kèm bảng chi tiết, chọn năm, tháng), bỏ tab Cần theo dõi ở gói Free; gói Free ẩn hẳn mục ngoài gói (Nghiệp vụ, Khác, Tìm kiếm, Khoá sổ, Thao tác nhanh); màn con mở từ trang chủ có nút quay lại; hàng tab, chip đầu trang không tràn ở 375px | Trum | 15/10/2026 | [2026-10-15-trum-trang-chu-free-dien-thoai](nhat-ky/2026-10-15-trum-trang-chu-free-dien-thoai.md) |
 | T256 | Trung tâm báo cáo máy tính: khối ghim luôn hiện hai phần Đã ghim, Báo cáo gần đây (đổi tên từ Mở gần đây); phần trống ghi "Chưa có báo cáo" | Trum | 15/10/2026 | [2026-10-15-trum-ghim-bao-cao](nhat-ky/2026-10-15-trum-ghim-bao-cao.md) |
 | T255 | Trang chủ gói Free máy tính: nút "Xem biểu đồ lãi lỗ 13 tháng" ở thẻ Quản lý lãi lỗ mở hộp biểu đồ doanh thu, chi phí, lãi lỗ 10/2025–10/2026 kèm tóm tắt; tháng 7–10/2026 số thật, 9 tháng trước số mẫu | PhuongXT | 15/10/2026 | [2026-10-15-phuongxt-bieu-do-lai-lo-13-thang](nhat-ky/2026-10-15-phuongxt-bieu-do-lai-lo-13-thang.md) |
