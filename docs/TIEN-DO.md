@@ -4,7 +4,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T265.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T268.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
@@ -14,6 +14,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | T267 | Gói Free: sơ đồ Quy trình của Kiểm kê (kho), Chi phí phân bổ (ccdc), Kê khai thuế (thue) vẽ kiểu hội tụ như Thu chi, Mua hàng, Bán hàng: các làn nghiệp vụ đổ về khối Sổ sách, báo cáo; giữ đủ ô, đường dẫn hiện có (4 bước tờ khai T261) | Trum | Đang làm | Sửa `src/modules/kho/quy-trinh.ts`, `ccdc/quy-trinh.ts`, `thue/quy-trinh.ts`, có thể `QuyTrinhScreen.tsx`, `MQuyTrinh.tsx`, `tools/kiem_tra.py`. Báo PhuongXT vì đổi sơ đồ Free T261, T262 |
 | T266 | Thao tác nhanh dùng chung web và điện thoại: web có mục Thao tác nhanh dưới Hệ thống trên sidebar, mở màn riêng lưới ô; người dùng tự chọn thao tác (nút Tuỳ chỉnh, lưu trên máy); trang chủ điện thoại dùng cùng danh sách. Mục ngoài gói: Free ẩn, gói khác hiện nhãn gói | Trum | Đang làm | Anti A làm. Thêm phân hệ mới `src/modules/thao-tac-nhanh/`, file dùng chung trong `src/app/`, sửa `src/app/registry.ts` (đăng ký), `src/ui/mobile/MTrangChu.tsx`, mục CSS cuối `app.css` |
 | T265 | Phiếu thu, chi đồng bộ từ FABi (T264) chưa vào Sổ quỹ tiền mặt, Sổ ngân hàng, Lịch sử thu chi, tồn quỹ trang chủ; đưa vào thì đổi số dư | | Chờ | Phát hiện khi làm T264, chờ PhuongXT quyết |
+| T268 | Hệ thống › Cấu hình kế toán: bỏ thẻ "Chi nhánh và ánh xạ POS" | PhuongXT | Đang làm | Sửa `he-thong/HeThong.tsx` |
 | T229 | Báo cáo kết quả kinh doanh (10.2.3, B02-DNN) ở chế độ TT133 mở ra "Báo cáo chưa có mẫu" ở cả bản máy tính và điện thoại, gói Pro và Free | | Chờ | Phát hiện ở T222 ngày 14/10/2026, mở từ Tất cả báo cáo. Có thể liên quan T220 |
 | T169 | Form chứng từ: gõ đổi địa chỉ từ phiếu này sang phiếu khác (vd `#/app/tien/2-1-1/chi-3` sang `chi-6`) thì form giữ số phiếu, đối tượng của phiếu cũ; mở từ danh sách, Trước, Sau thì đúng | | Chờ | Phát hiện ở T168. Sửa `ChungTuForm.tsx`, có thể `VoucherScreen.tsx` (key của form) |
 | T138 | Màn onboard khi bấm từ FABi sang IACC: khởi tạo đơn vị kế toán, điền sẵn từ FABi (chi nhánh, kho, cách đồng bộ, số dư đầu kỳ) | PhuongXT | Dở dang | Popup khởi tạo dữ liệu 4 bước trong phần mềm (`OnboardFabi.tsx`, `Shell.tsx`) đã push, PhuongXT xem lại một lượt. Xem `2026-10-11-phuongxt-man-khoi-tao-fabi.md` |
