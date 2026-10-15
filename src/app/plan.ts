@@ -45,7 +45,7 @@ const THEO_ROADMAP: Record<string, Goi[]> = {
   '5.2.4': ['S', 'PL', 'PR'],
   '4.1.1': ['F', 'S', 'PL', 'PR'],
   '4.2.1': ['F', 'S', 'PL', 'PR'],    // Chi tiết mua hàng mở cho gói Free, PhuongXT chốt (T63)
-  '4.2.2': ['F', 'S', 'PL', 'PR'],    // Tổng hợp mua hàng mở cho gói Free, PhuongXT chốt (T63)
+  '4.2.2': ['S', 'PL', 'PR'],    // Tổng hợp mua hàng mở cho gói Free (T63); gói Free ẩn tạm, PhuongXT chốt 15/10/2026 (T251)
   // Bộ báo cáo hộ kinh doanh theo iFaster, Trum chốt 10/10/2026 (T97)
   '3.2.5': ['F', 'S', 'PL', 'PR'],
   '2.2.5': ['F', 'S', 'PL', 'PR'],
@@ -58,14 +58,14 @@ const THEO_ROADMAP: Record<string, Goi[]> = {
 const BO_SUNG: (Omit<Feature, 'g'> & { g: Goi[] })[] = [
   { c: '2.2.6', m: 1, n: 'Sổ chi tiết tiền vay', grp: 'Sổ sách, báo cáo', g: ['PL', 'PR'], gd: 2, ivt: 0 },
   { c: '2.2.7', m: 1, n: 'Sổ chi tiết tiền', grp: 'Sổ sách, báo cáo', g: ['S', 'PL', 'PR'], gd: 2, ivt: 0 },
-  { c: '2.2.8', m: 1, n: 'Tổng hợp quỹ tiền', grp: 'Sổ sách, báo cáo', g: ['F', 'S', 'PL', 'PR'], gd: 2, ivt: 0 },
-  { c: '2.2.9', m: 1, n: 'Báo cáo dòng tiền', grp: 'Sổ sách, báo cáo', g: ['F', 'S', 'PL', 'PR'], gd: 2, ivt: 0 },
+  { c: '2.2.8', m: 1, n: 'Tổng hợp quỹ tiền', grp: 'Sổ sách, báo cáo', g: ['S', 'PL', 'PR'], gd: 2, ivt: 0 },   // gói Free ẩn tạm (T251)
+  { c: '2.2.9', m: 1, n: 'Báo cáo dòng tiền', grp: 'Sổ sách, báo cáo', g: ['S', 'PL', 'PR'], gd: 2, ivt: 0 },   // gói Free ẩn tạm (T251)
   { c: '3.2.5', m: 2, n: 'Sổ doanh thu bán hàng', grp: 'Sổ sách, báo cáo', g: ['F', 'S', 'PL', 'PR'], gd: 2, ivt: 0 },
   { c: '3.1.7', m: 2, n: 'Bán hàng', grp: 'Chứng từ', g: ['PL', 'PR'], gd: 2, ivt: 0 },   // bán hàng lập tay ngoài POS, từ gói Plus, PhuongXT thêm (T52)
   { c: '4.2.3', m: 3, n: 'Sổ công nợ nhà cung cấp', grp: 'Sổ sách, báo cáo', g: ['F', 'S', 'PL', 'PR'], gd: 2, ivt: 0 },   // PhuongXT thêm cho gói Free (T52)
   { c: '4.2.4', m: 3, n: 'Tổng hợp nhập', grp: 'Sổ sách, báo cáo', g: ['F', 'S', 'PL', 'PR'], gd: 2, ivt: 0 },   // PhuongXT thêm (T63)
   { c: '4.2.5', m: 3, n: 'Chi tiết nhập', grp: 'Sổ sách, báo cáo', g: ['F', 'S', 'PL', 'PR'], gd: 2, ivt: 0 },   // PhuongXT thêm (T63)
-  { c: '4.2.6', m: 3, n: 'Mua hàng theo ngày', grp: 'Sổ sách, báo cáo', g: ['F', 'S', 'PL', 'PR'], gd: 2, ivt: 0 },
+  { c: '4.2.6', m: 3, n: 'Mua hàng theo ngày', grp: 'Sổ sách, báo cáo', g: ['S', 'PL', 'PR'], gd: 2, ivt: 0 },   // gói Free ẩn tạm (T251)
   { c: '5.2.8', m: 4, n: 'Sổ chi tiết vật liệu, dụng cụ, hàng hoá', grp: 'Sổ sách, báo cáo', g: ['S', 'PL', 'PR'], gd: 2, ivt: 0 },   // gói Free bỏ (T52)
   { c: '6.2.4', m: 5, n: 'Sổ theo dõi nghĩa vụ thuế GTGT', grp: 'Báo cáo', g: ['S', 'PL', 'PR'], gd: 2, ivt: 0 },
   { c: '6.2.5', m: 5, n: 'Sổ theo dõi nghĩa vụ thuế khác', grp: 'Báo cáo', g: ['F', 'S', 'PL', 'PR'], gd: 2, ivt: 0 },
@@ -73,7 +73,7 @@ const BO_SUNG: (Omit<Feature, 'g'> & { g: Goi[] })[] = [
   { c: '7.2.4', m: 6, n: 'Sổ theo dõi TSCĐ, CCDC tại nơi sử dụng', grp: 'Sổ sách, báo cáo', g: ['PL', 'PR'], gd: 2, ivt: 0 },
   { c: '10.4.1', m: 9, n: 'Sổ chi tiết doanh thu, chi phí', grp: 'Sổ sách, báo cáo', g: ['S', 'PL', 'PR'], gd: 2, ivt: 0 },
   { c: '10.4.2', m: 9, n: 'Sổ theo dõi vốn chủ sở hữu', grp: 'Sổ sách, báo cáo', g: ['S', 'PL', 'PR'], gd: 2, ivt: 0 },
-  { c: '10.4.3', m: 9, n: 'Sổ chi phí', grp: 'Sổ sách, báo cáo', g: ['F', 'S', 'PL', 'PR'], gd: 2, ivt: 0 },
+  { c: '10.4.3', m: 9, n: 'Sổ chi phí', grp: 'Sổ sách, báo cáo', g: ['S', 'PL', 'PR'], gd: 2, ivt: 0 },   // gói Free ẩn tạm (T251)
 ]
 
 const CHEN_SAU: Record<string, string[]> = {

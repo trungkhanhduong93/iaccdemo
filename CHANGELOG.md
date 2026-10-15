@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 15/10/2026
 
+- T251: Gói Free ẩn tạm 5 báo cáo: Tổng hợp quỹ tiền, Báo cáo dòng tiền, Tổng hợp mua hàng theo NCC, Mua hàng theo ngày, Sổ chi phí. Gói khác giữ nguyên.
 - T250: Trang chủ gói Free: tạo quỹ xong có gợi ý lập phiếu thu, phiếu chi ngay (quỹ ngân hàng: báo có, UNC); lưu phiếu xong hỏi quay lại trang chủ. Bỏ dòng giới thiệu, chọn năm, tháng nằm trên thanh tab. Thẻ Hao hụt kiểm kê ghi "Các mặt hàng thừa thiếu trong kỳ".
 - T248: Phiếu mua hàng: ô Kho nhập đứng đầu, trước Nhà cung cấp; Ghi chú lên cột giữa. Xuất bán POS có ô Kho xuất đứng đầu.
 - T247: Xuất bán POS chỉ còn kéo chi tiết theo hoá đơn FABi ở mọi gói. Bỏ lựa chọn tổng hợp theo kênh, dải Đã/Chưa đồng bộ và nút Đồng bộ POS.
