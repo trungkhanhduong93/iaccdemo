@@ -1,11 +1,14 @@
 import { useMemo } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useSession } from '../../app/session'
-import { MODULES, duongDan, hienMan, hienPhanHe, moDuoc, phanHeKhoa, tabCua, tenMan, tenPhanHe } from '../../app/registry'
-import { anNgoaiGoi } from '../../app/plan'
-import type { ScreenDef } from '../../modules/types'
+import { MODULES, duongDan, hienMan, hienPhanHe, maKhoa, moDuoc, phanHeKhoa, tabCua, tenMan, tenPhanHe } from '../../app/registry'
+import { GOIS, anNgoaiGoi, minGoi, type Goi } from '../../app/plan'
+import type { ModuleDef, ScreenDef } from '../../modules/types'
 import { Icon } from '../Icon'
+import { Pk } from '../Page'
 import { MQuyTrinh, layDsBuoc } from './MQuyTrinh'
+
+const minGoiPhanHe = (m: ModuleDef): Goi => GOIS.find(g => !phanHeKhoa(m, g)) ?? 'PR'
 
 export function MNghiepVu() {
   const { s } = useSession()
@@ -92,6 +95,7 @@ export function MNghiepVu() {
           <div className="m-nv-ds">
             {dsMan.map(sc => {
               const khoa = !moDuoc(sc, s.goi)
+              const ma = maKhoa(sc)
               return (
                 <Link
                   key={sc.slug}
@@ -105,11 +109,7 @@ export function MNghiepVu() {
                     <span className="m-nv-dong-ten">{tenMan(sc)}</span>
                   </div>
                   <div className="m-nv-dong-phai">
-                    {khoa && (
-                      <span className="m-nv-dong-lk" title="Ngoài gói">
-                        <Icon n="lock" className="ic xs" />
-                      </span>
-                    )}
+                    {khoa && ma && <Pk g={minGoi(ma)} o />}
                     <Icon n="chevr" className="ic sm m-nv-dong-mui-ten" />
                   </div>
                 </Link>
@@ -136,7 +136,7 @@ export function MNghiepVu() {
                 <Icon n={m.icon} />
                 {khoa && (
                   <span className="m-nv-o-lk" title="Ngoài gói">
-                    <Icon n="lock" className="ic xs" />
+                    <Pk g={minGoiPhanHe(m)} o />
                   </span>
                 )}
               </div>

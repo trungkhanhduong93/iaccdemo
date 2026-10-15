@@ -1,8 +1,8 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { dsDonVi, useSession } from '../../app/session'
 import { ROLE } from '../../data/mock'
-import { GOI, GOIS, anNgoaiGoi } from '../../app/plan'
-import { MODULES, duongDan, hienMan, moDuoc, tabCua, tenMan } from '../../app/registry'
+import { GOI, GOIS, anNgoaiGoi, minGoi } from '../../app/plan'
+import { MODULES, duongDan, hienMan, maKhoa, moDuoc, tabCua, tenMan } from '../../app/registry'
 import { Icon } from '../Icon'
 import { Pk } from '../Page'
 
@@ -43,6 +43,7 @@ export function MKhac() {
             <div className="m-khac-ds">
               {dsDm.map(sc => {
                 const khoa = !moDuoc(sc, s.goi)
+                const ma = maKhoa(sc)
                 return (
                   <Link
                     key={`dm-${sc.slug}`}
@@ -58,11 +59,7 @@ export function MKhac() {
                       </div>
                     </div>
                     <div className="m-khac-dong-phai">
-                      {khoa && (
-                        <span className="m-khac-dong-lk" title="Ngoài gói">
-                          <Icon n="lock" className="ic xs" />
-                        </span>
-                      )}
+                      {khoa && ma && <Pk g={minGoi(ma)} o />}
                       <Icon n="chevr" className="ic sm m-khac-mui-ten" />
                     </div>
                   </Link>
@@ -81,6 +78,7 @@ export function MKhac() {
             <div className="m-khac-ds">
               {dsHt.map(sc => {
                 const khoa = !moDuoc(sc, s.goi)
+                const ma = maKhoa(sc)
                 return (
                   <Link
                     key={`ht-${sc.slug}`}
@@ -96,11 +94,7 @@ export function MKhac() {
                       </div>
                     </div>
                     <div className="m-khac-dong-phai">
-                      {khoa && (
-                        <span className="m-khac-dong-lk" title="Ngoài gói">
-                          <Icon n="lock" className="ic xs" />
-                        </span>
-                      )}
+                      {khoa && ma && <Pk g={minGoi(ma)} o />}
                       <Icon n="chevr" className="ic sm m-khac-mui-ten" />
                     </div>
                   </Link>

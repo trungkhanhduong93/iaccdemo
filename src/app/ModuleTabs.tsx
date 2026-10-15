@@ -66,12 +66,13 @@ export function ModuleTabs({ mod }: { mod: ModuleDef }) {
 
   const tab = (sc: ScreenDef) => {
     const ok = moDuoc(sc, s.goi)
+    const ma = maKhoa(sc)
     return (
       <Link key={sc.slug} to={duongDan(mod, sc)} className={`${sc.slug === active ? 'on' : ''} ${ok ? '' : 'lock'}`}
-        title={ok ? undefined : `Có ở gói ${GOI[minGoi(maKhoa(sc)!)].ten}`}>
+        title={ok ? undefined : `Có ở gói ${GOI[minGoi(ma!)].ten}`}>
         {sc.kind === 'quytrinh' && <Icon n="flow" className="ic sm" />}
         {nhanTab(sc)}
-        {!ok && <Icon n="lock" className="ic sm" />}
+        {!ok && ma && <Pk g={minGoi(ma)} o />}
       </Link>
     )
   }
@@ -97,9 +98,12 @@ export function ModuleTabs({ mod }: { mod: ModuleDef }) {
       </div>
       <div className="mtabs-phai" id="mtabs-phai" />
       <div className="mtabs-meas" ref={meas} aria-hidden>
-        {[...giua, ...(bc ? [bc] : [])].map(sc => (
-          <span key={sc.slug}>{sc.kind === 'quytrinh' && <Icon n="flow" className="ic sm" />}{nhanTab(sc)}{!moDuoc(sc, s.goi) && <Icon n="lock" className="ic sm" />}</span>
-        ))}
+        {[...giua, ...(bc ? [bc] : [])].map(sc => {
+          const ma = maKhoa(sc)
+          return (
+            <span key={sc.slug}>{sc.kind === 'quytrinh' && <Icon n="flow" className="ic sm" />}{nhanTab(sc)}{!moDuoc(sc, s.goi) && ma && <Pk g={minGoi(ma)} o />}</span>
+          )
+        })}
       </div>
     </div>
   )

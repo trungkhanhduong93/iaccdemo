@@ -2,14 +2,18 @@ import { useEffect, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import type { ModuleDef } from '../modules/types'
 import { useSession } from './session'
-import { hienMan, moDuoc, timMan } from './registry'
+import { hienMan, maKhoa, moDuoc, timMan } from './registry'
+import { minGoi } from './plan'
 import { Icon } from '../ui/Icon'
+import { Pk } from '../ui/Page'
 import { heSoZoom } from '../ui/zoom'
 
 export interface FlyoutItem {
   ten: string
   di: string
   icon?: string
+  khoa?: boolean
+  ma?: string
 }
 
 export interface FlyoutData {
@@ -410,7 +414,8 @@ export function SidebarFlyout({
         if (sc) {
           if (!hienMan(sc, s.goi, s.cheDo, s)) return null
           const khoa = !moDuoc(sc, s.goi)
-          return { ...it, khoa }
+          const ma = maKhoa(sc)
+          return { ...it, khoa, ma }
         }
         return { ...it, khoa: false }
       })
@@ -441,7 +446,7 @@ export function SidebarFlyout({
                 onClick={onClose}
               >
                 <span>{it.ten}</span>
-                {it.khoa && <Icon n="lock" className="ic sm lk" />}
+                {it.khoa && it.ma && <Pk g={minGoi(it.ma)} o />}
               </Link>
             ))}
           </div>
@@ -457,7 +462,7 @@ export function SidebarFlyout({
                 onClick={onClose}
               >
                 <span>{it.ten}</span>
-                {it.khoa && <Icon n="lock" className="ic sm lk" />}
+                {it.khoa && it.ma && <Pk g={minGoi(it.ma)} o />}
               </Link>
             ))}
           </div>

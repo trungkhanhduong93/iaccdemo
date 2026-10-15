@@ -11,8 +11,9 @@ import { PHIEU_MUA } from '../../modules/mua-hang/bao-cao'
 import { rowsCongNo } from '../../modules/bao-cao/cong-no'
 import { soCai } from '../../modules/tong-hop/so-cai'
 import { dinhMucTon } from '../../modules/kho/data'
-import { MODULES, hienMan, moDuoc, timMan } from '../../app/registry'
-import { anNgoaiGoi } from '../../app/plan'
+import { MODULES, hienMan, maKhoa, moDuoc, timMan } from '../../app/registry'
+import { anNgoaiGoi, minGoi } from '../../app/plan'
+import { Pk } from '../Page'
 import { chungTu, dongCua } from '../generic/gen'
 import { mauDieuChinh } from '../../modules/kho/dieu-chinh'
 import { datLocDaXem } from '../bao-cao/tuyChinhBC'
@@ -195,30 +196,35 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
       icon: 'cashin',
       to: '/app/tien/2-1-1/moi?loai=thu',
       khoa: scThu ? !moDuoc(scThu, s.goi) : false,
+      ma: scThu ? maKhoa(scThu) : undefined,
     },
     {
       ten: 'Chi tiền',
       icon: 'cashout',
       to: '/app/tien/2-1-1/moi?loai=chi',
       khoa: scChi ? !moDuoc(scChi, s.goi) : false,
+      ma: scChi ? maKhoa(scChi) : undefined,
     },
     {
       ten: 'Nhập kho',
       icon: 'filein',
       to: '/app/kho/5-1-1/moi',
       khoa: scNhap ? !moDuoc(scNhap, s.goi) : false,
+      ma: scNhap ? maKhoa(scNhap) : undefined,
     },
     {
       ten: 'Xuất kho',
       icon: 'pos',
       to: '/app/kho/5-1-2/moi',
       khoa: scXuat ? !moDuoc(scXuat, s.goi) : false,
+      ma: scXuat ? maKhoa(scXuat) : undefined,
     },
     {
       ten: 'Sổ quỹ',
       icon: 'wallet',
       to: '/app/tien/2-2-1',
       khoa: scSoQuy ? !moDuoc(scSoQuy, s.goi) : false,
+      ma: scSoQuy ? maKhoa(scSoQuy) : undefined,
     },
   ]
 
@@ -231,12 +237,14 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
       icon: 'truck',
       to: '/app/mua-hang/4-1-1/moi',
       khoa: scNhapMua ? !moDuoc(scNhapMua, s.goi) : false,
+      ma: scNhapMua ? maKhoa(scNhapMua) : undefined,
     },
     {
       ten: 'Kiểm kê',
       icon: 'clipboard',
       to: '/app/kho/5-1-10/moi',
       khoa: scKiemKe ? !moDuoc(scKiemKe, s.goi) : false,
+      ma: scKiemKe ? maKhoa(scKiemKe) : undefined,
     },
     thaoTac5[4],
   ]
@@ -662,9 +670,9 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
                   >
                     <div className="m-tc-nhanh-ic-tron">
                       <Icon n={item.icon} className="ic sm" />
-                      {item.khoa && (
+                      {item.khoa && item.ma && (
                         <span className="m-tc-nhanh-lk">
-                          <Icon n="lock" className="ic xs" />
+                          <Pk g={minGoi(item.ma)} o />
                         </span>
                       )}
                     </div>

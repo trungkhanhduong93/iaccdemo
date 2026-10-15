@@ -17513,3 +17513,67 @@ button.bbt-nut { background: none; border: 0; padding-left: 0; padding-right: 0;
 .qt-so:has(> .qt-lg.gon) { margin: 44px 0 28px; }
 /* Quy trình không có khung Báo cáo bên phải: sơ đồ rộng hết trang, không chừa cột trống */
 .qt-top:not(:has(> :nth-child(2))) { grid-template-columns: minmax(0, 1fr); }
+
+/* ── Nhãn gói thay biểu tượng khoá (T260) ── */
+.sb-nav a > .pk {
+  margin-left: auto;
+}
+.shell.gon .sb-nav a > .pk {
+  display: none;
+}
+.sb-flyout-item > .pk {
+  margin-left: auto;
+  flex: none;
+}
+.lockpage .lock-ic {
+  width: auto;
+  height: auto;
+  background: none;
+  margin: 0 auto 16px;
+  display: flex;
+  justify-content: center;
+}
+.m-tc-nhanh-lk {
+  position: absolute;
+  bottom: -4px;
+  right: -6px;
+  width: auto;
+  height: auto;
+  background: none;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+.m-tc-nhanh-lk .pk {
+  height: 14px;
+  padding: 0 4px;
+  font-size: 8.5px;
+  font-weight: 700;
+  line-height: 1;
+  background: #fff !important;
+  border-width: 1px !important;
+}
+.m-nv-o-lk {
+  position: absolute;
+  top: -4px;
+  right: -6px;
+  width: auto;
+  height: auto;
+  background: none;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+.m-nv-o-lk .pk {
+  height: 14px;
+  padding: 0 4px;
+  font-size: 8.5px;
+  font-weight: 700;
+  line-height: 1;
+  background: #fff !important;
+  border-width: 1px !important;
+}

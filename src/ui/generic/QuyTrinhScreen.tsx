@@ -60,8 +60,8 @@ export function QuyTrinhScreen({ mod }: ScreenProps) {
           </div>
           {s.goi === 'F' && goc0.moTaFree && <p className="qt-mo-ta">{goc0.moTaFree}</p>}
           {khoa && can && (
-            <Note kind="warn" icon="lock">
-              {mod.ten} có từ gói {GOI[can].ten}. Sơ đồ vẫn hiện để xem trước.{' '}
+            <Note kind="warn">
+              <Pk g={can} o /> {mod.ten} có từ gói {GOI[can].ten}. Sơ đồ vẫn hiện để xem trước.{' '}
               <button className="btn sm" onClick={() => set({ goi: can })}>Xem thử gói {GOI[can].ten}</button>
             </Note>
           )}
@@ -155,7 +155,6 @@ function ONut({ n, goi, chinh, so, style }: { n: NutQT; goi: Goi; chinh?: boolea
       <span className="qt-tile">
         <Icon n={n.icon} className="ic lg" />
         {so && <i className="qt-so-buoc">{so}</i>}
-        {!x.ok && <i className="qt-khoa"><Icon n="lock" className="ic sm" /></i>}
       </span>
       <span className="qt-l">{n.ten}</span>
       {!x.ok && x.ma && <Pk g={minGoi(x.ma)} o />}
@@ -348,7 +347,6 @@ function NutNgang({ n, goi, dong }: { n: NutQT; goi: Goi; dong?: boolean }) {
       title={x.ok ? `Mở ${n.ten.toLowerCase()}` : `${n.ten}: có ở gói ${GOI[minGoi(x.ma!)].ten}`}>
       <span className="qt-ht-ic"><Icon n={n.icon} className="ic" /></span>
       <span className="qt-ht-t">{n.ten}</span>
-      {!x.ok && <Icon n="lock" className="ic sm qt-ht-khoa" />}
       {!x.ok && x.ma && <Pk g={minGoi(x.ma)} o />}
     </Link>
   )

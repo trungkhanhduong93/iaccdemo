@@ -2,16 +2,19 @@ import { Fragment, useEffect, useRef, useState } from 'react'
 import { Link, Navigate, Outlet, useLocation } from 'react-router-dom'
 import { useSession } from './session'
 import { MODULES, duongDan, hienPhanHe, manDau, phanHeKhoa, tenPhanHe } from './registry'
-import { GOI } from './plan'
+import { GOI, GOIS, type Goi } from './plan'
 import type { ModuleDef } from '../modules/types'
 import { Icon } from '../ui/Icon'
 import { Logo, DauLogo } from '../ui/Logo'
+import { Pk } from '../ui/Page'
 import { Topbar } from './Topbar'
 import { ModuleTabs } from './ModuleTabs'
 import { CommandPalette, ghiGanDay } from './CommandPalette'
 import { SidebarFlyout } from './SidebarFlyout'
 import { heSoZoom } from '../ui/zoom'
 import { OnboardFabi } from '../modules/onboarding/OnboardFabi'
+
+const minGoiPhanHe = (m: ModuleDef): Goi => GOIS.find(g => !phanHeKhoa(m, g)) ?? 'PR'
 
 export function Shell() {
   const { s } = useSession()
@@ -122,7 +125,7 @@ function Sidebar({ mod, onSearch }: { mod: ModuleDef; onSearch: () => void }) {
                 onMouseEnter={coMenuPhu ? e => onEnterItem(m, e.currentTarget) : undefined}
                 onMouseLeave={coMenuPhu ? onLeaveItem : undefined}
               >
-                <Icon n={m.icon} /><span>{tenPhanHe(m, s.goi).ngan}</span>{khoa && <Icon n="lock" className="ic sm lk" />}
+                <Icon n={m.icon} /><span>{tenPhanHe(m, s.goi).ngan}</span>{khoa && <Pk g={minGoiPhanHe(m)} o />}
               </Link>
             </Fragment>
           )

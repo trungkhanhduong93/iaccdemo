@@ -74,7 +74,7 @@ export function BanLamViec({ sc }: ScreenProps) {
                 <div className={`task ${ok ? '' : 'lock'}`} key={v.b}>
                   <span className={`task-ic ${v.k}`}><Icon n={v.ic} /></span>
                   <span className="task-b"><b>{v.b}</b><span>{v.sub}</span></span>
-                  {ok ? <Link className="btn sm" to={v.to}>{v.nut}</Link> : <><Icon n="lock" className="ic sm" /><Pk g={minGoi(v.ma!)} o /></>}
+                  {ok ? <Link className="btn sm" to={v.to}>{v.nut}</Link> : <Pk g={minGoi(v.ma!)} o />}
                 </div>
               )
             })}

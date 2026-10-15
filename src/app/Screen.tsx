@@ -98,7 +98,7 @@ export function Locked({ code, ten, crumb, quayLai }: { code: string; ten: strin
       <PageHead crumb={crumb.filter(Boolean)} code={code}
         title={quayLai ? <span className="ph-quay-lai"><Link className="btn sm ghost" to={quayLai}><Icon n="chevl" className="ic sm" />Tất cả báo cáo</Link>{ten}</span> : ten} />
       <div className="card lockpage" style={{ padding: '34px 40px' }}>
-        <div className="lock-ic"><Icon n="lock" className="ic lg" /></div>
+        <div className="lock-ic"><Pk g={can} o /></div>
         <h1>{ten} có ở gói {goiCo.map(g => GOI[g].ten).join(', ')}</h1>
         <p>Đơn vị đang dùng gói {GOI[s.goi].ten} ({cheDoHienTai(s).soHieu}). Lên gói {GOI[can].ten} mở thêm {moi.length} tính năng, dùng {cheDoCuaGoi(can).soHieu}.</p>
         <div className="row" style={{ justifyContent: 'center', marginTop: 20, gap: 10 }}>

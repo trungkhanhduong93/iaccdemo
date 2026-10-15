@@ -236,14 +236,11 @@ export function TongQuan({ sc }: ScreenProps) {
             >
               {isFree ? (
                 <div className="empty" style={{ padding: 24 }}>
-                  <Icon n="lock" className="ic lg" />
+                  <div><Pk g="S" o /></div>
                   <b style={{ marginTop: 8 }}>Chỉ số sức khoẻ tài chính F&B có từ gói Standard</b>
                   <span style={{ maxWidth: 460 }}>
                     Theo dõi tự động Prime cost, Food cost, Chi phí mặt bằng, Điểm hoà vốn, Chu kỳ tiền mặt và Hệ số thanh toán.
                   </span>
-                  <div style={{ marginTop: 10 }}>
-                    <Pk g="S" o />
-                  </div>
                 </div>
               ) : (
                 <div className="tq-sk-grid">
@@ -332,9 +329,8 @@ export function TongQuan({ sc }: ScreenProps) {
             >
               {isFree ? (
                 <div className="empty" style={{ padding: 24 }}>
-                  <Icon n="lock" className="ic lg" />
+                  <div><Pk g="PL" o /></div>
                   <b style={{ marginTop: 8 }}>Báo cáo lưu chuyển tiền tệ có ở gói Plus</b>
-                  <Pk g="PL" o />
                 </div>
               ) : (
                 <>
@@ -374,9 +370,8 @@ export function TongQuan({ sc }: ScreenProps) {
             >
               {isFree ? (
                 <div className="empty" style={{ padding: 24 }}>
-                  <Icon n="lock" className="ic lg" />
+                  <div><Pk g="S" o /></div>
                   <b style={{ marginTop: 8 }}>Quản lý đa chi nhánh có ở gói Standard</b>
-                  <Pk g="S" o />
                 </div>
               ) : (
                 <>
@@ -409,9 +404,8 @@ export function TongQuan({ sc }: ScreenProps) {
             >
               {isFree ? (
                 <div className="empty" style={{ padding: 24 }}>
-                  <Icon n="lock" className="ic lg" />
+                  <div><Pk g="S" o /></div>
                   <b style={{ marginTop: 8 }}>Phân tích chi phí có ở gói Standard</b>
-                  <Pk g="S" o />
                 </div>
               ) : (
                 <CostStructureChart parts={d.coCauCp} />
@@ -442,14 +436,11 @@ export function TongQuan({ sc }: ScreenProps) {
             ) : (
               <Card title="Cảnh báo rủi ro">
                 <div className="empty" style={{ padding: 20 }}>
-                  <Icon n="lock" className="ic lg" />
+                  <div><Pk g={minGoi('11.6')} o /></div>
                   <b style={{ marginTop: 8 }}>Cảnh báo số liệu có ở gói Plus</b>
                   <span style={{ fontSize: 12.5, color: 'var(--muted)', marginTop: 4 }}>
                     Công nợ quá hạn, tồn kho âm, hoá đơn bị huỷ, lệch hoá đơn.
                   </span>
-                  <div style={{ marginTop: 8 }}>
-                    <Pk g={minGoi('11.6')} o />
-                  </div>
                 </div>
               </Card>
             )}
@@ -463,9 +454,8 @@ export function TongQuan({ sc }: ScreenProps) {
             <Card title="Món bán chạy" sub={d.kyLabel}>
               {isFree ? (
                 <div className="empty" style={{ padding: 24 }}>
-                  <Icon n="lock" className="ic lg" />
+                  <div><Pk g="S" o /></div>
                   <b style={{ marginTop: 8 }}>Phân tích món bán chạy có ở gói Standard</b>
-                  <Pk g="S" o />
                 </div>
               ) : (
                 <HBars
