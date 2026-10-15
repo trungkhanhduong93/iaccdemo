@@ -4,6 +4,8 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 15/10/2026
 
+- T263: Trang chủ gói Free: màn Chi phí trong tháng, Chi phí NVL, Lịch sử thu chi giữ đứng yên phần đầu và thẻ tổng, chỉ danh sách cuộn.
+- T262: Gói Free: sơ đồ quy trình Thu chi, Mua hàng, Bán hàng, Kiểm kê có thêm báo cáo liên quan (công nợ nhà cung cấp, xuất nhập tồn, nhập kho, xuất kho, kiểm kê).
 - T260: Màn, phân hệ, thao tác ngoài gói không còn hiện ổ khoá, thay bằng nhãn gói cần mua (Standard, Plus, Pro), cả bản web và điện thoại.
 - T261: Gói Free: Kê khai thuế theo iFaster. Quy trình 4 bước có khung Báo cáo sổ TT152; tab Danh sách tờ khai, lập tờ khai kỳ 6 tháng, tờ khai 4 bước (thông tin hộ kinh doanh, doanh thu tính thuế, phụ lục tài khoản ngân hàng, xem và nộp). Khung Báo cáo ở các quy trình có mã mẫu báo cáo.
 - T259: Điện thoại gói Free: Thao tác nhanh nằm trên cùng trang chủ, có thêm nút Nhập mua và Kiểm kê.

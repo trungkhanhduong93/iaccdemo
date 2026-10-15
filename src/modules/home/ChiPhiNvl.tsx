@@ -86,7 +86,7 @@ export function ChiPhiNvl(_: ScreenProps) {
     : <Link to="/app/trang-chu/tong-quan" className="cpt-ve" title="Về Tổng quan" aria-label="Về Tổng quan"><Icon n="chevl" /></Link>
 
   return (
-    <div className="page" onClickCapture={moTuTrangChu}>
+    <div className="page cpt-trang" onClickCapture={moTuTrangChu}>   {/* phần đầu, thẻ tổng cố định; phần dưới cuộn riêng (T263) */}
       <div className="cpt-dau">
         {ve}
         <h1>Chi phí NVL tháng {thang}/2026</h1>
@@ -104,6 +104,7 @@ export function ChiPhiNvl(_: ScreenProps) {
         {cn && tong.ds[0].cach === 'ivt' && <span className="nvl-ct">= Tổng giá thành iPOS Inventory <b>{moneyD(tong.ds[0].gtMon ?? 0)}</b> + Chi phí NVL tiêu hao <b>{moneyD(tong.ds[0].tieuHao ?? 0)}</b></span>}
         <b>{moneyD(tong.tien)}</b>
       </div>
+      <div className="cpt-cuon">
       {khoa && <Note kind="gray" icon="lock">Tháng {thang}/2026 đã khoá sổ: chi phí NVL giữ theo cách tính lúc khoá, không sửa được.</Note>}
       {cn ? <ChiTietCn cn={cn.id} thang={thang} khoa={khoa} tab={tab} setTab={setTab} locLoai={locLoai} setLocLoai={setLocLoai} /> : (
         <section className="card nvl-bang">
@@ -119,6 +120,7 @@ export function ChiPhiNvl(_: ScreenProps) {
           <div className="nvl-chan">Bấm chi nhánh để xem chi tiết. Đổi cách tính ở <Link to="/app/danh-muc/chi-nhanh">Danh mục chi nhánh</Link>.</div>
         </section>
       )}
+      </div>
     </div>
   )
 }

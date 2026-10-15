@@ -29,7 +29,7 @@ export function ChiPhiThang(_: ScreenProps) {
   ].filter(x => x.v !== 0 && LY_CHI_PHI.includes(x.ly)).sort((a, b) => b.v - a.v)   // chỉ lý do được tích là chi phí (T231)
 
   return (
-    <div className="page" onClickCapture={moTuTrangChu}>
+    <div className="page cpt-trang" onClickCapture={moTuTrangChu}>   {/* phần đầu, thẻ tổng cố định; danh sách cuộn riêng (T263) */}
       <div className="cpt-dau">
         <Link to="/app/trang-chu/tong-quan" className="cpt-ve" title="Về Tổng quan" aria-label="Về Tổng quan"><Icon n="chevl" /></Link>
         <h1>Chi phí trong tháng {thang}/2026</h1>
@@ -43,7 +43,7 @@ export function ChiPhiThang(_: ScreenProps) {
         <span>Tổng chi phí trong tháng{cn ? ` · ${cn.ten}` : ''}<small className="nvl-phu">Các khoản chi tiền có lý do nghiệp vụ là chi phí</small></span>
         <b>{moneyD(cpThang)}</b>
       </div>
-      <div className="cpt-ds">
+      <div className="cpt-cuon"><div className="cpt-ds">
         {ds.map(x => (
           <Link key={x.ly} to="/app/tien/2-1-1" className="cpt-dong" title={`Xem phiếu chi ${x.ly.toLowerCase()}`}>
             <span className="cpt-ic"><Icon n={x.icon} /></span>
@@ -52,7 +52,7 @@ export function ChiPhiThang(_: ScreenProps) {
             <Icon n="chevr" className="ic sm cpt-mui" />
           </Link>
         ))}
-      </div>
+      </div></div>
     </div>
   )
 }

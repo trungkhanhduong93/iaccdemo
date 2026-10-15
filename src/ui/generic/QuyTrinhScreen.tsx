@@ -28,7 +28,9 @@ export function QuyTrinhScreen({ mod }: ScreenProps) {
   }
   const goc0 = mod.quyTrinh!
   // Gói Free có sơ đồ hội tụ riêng thì thay sơ đồ chung (T98)
-  const goc: QuyTrinhDef = s.goi === 'F' && goc0.hoiTuFree ? { ...goc0, buoc: [], hoiTu: goc0.hoiTuFree } : goc0
+  const goc1: QuyTrinhDef = s.goi === 'F' && goc0.hoiTuFree ? { ...goc0, buoc: [], hoiTu: goc0.hoiTuFree } : goc0
+  // Gói Free có khối báo cáo riêng thì thay khối báo cáo, giữ các làn (T262)
+  const goc: QuyTrinhDef = s.goi === 'F' && goc0.raFree && goc1.hoiTu ? { ...goc1, hoiTu: { ...goc1.hoiTu, ra: goc0.raFree } } : goc1
   // Gói Free có sơ đồ luồng theo cột thì thay sơ đồ chung (T123)
   const luong = s.goi === 'F' && goc0.luongFree ? goc0.luongFree.map(c => ({ ...c, nut: c.nut.filter(hien) })).filter(c => c.nut.length) : null
   const qt: QuyTrinhDef = {

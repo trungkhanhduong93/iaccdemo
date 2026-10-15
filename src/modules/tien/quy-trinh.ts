@@ -37,6 +37,12 @@ export const quyTrinh: QuyTrinhDef = {
       { ten: 'Sổ nhật ký', icon: 'doc', di: 'tien/2-2-4' },
     ] },
   },
+  // Gói Free (T262): sổ quỹ, sổ ngân hàng và Công nợ nhà cung cấp
+  raFree: { ten: 'Sổ sách, báo cáo', nut: [
+    { ten: 'Sổ quỹ tiền mặt', icon: 'wallet', di: 'tien/2-2-1' },
+    { ten: 'Sổ ngân hàng', icon: 'bank', di: 'tien/2-2-3' },
+    { ten: 'Công nợ nhà cung cấp', icon: 'users', di: 'mua-hang/4-2-3' },
+  ] },
   baoCao: ['2-2-1', '2-2-3', '2-2-5', '2-2-2', '2-2-4'],
   danhMuc: ['danh-muc/1-12', 'danh-muc/1-5', 'danh-muc/1-16'],
   tienIch: ['tien-ich/11-8', 'tien-ich/11-10', 'tien-ich/11-11'],

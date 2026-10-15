@@ -160,6 +160,7 @@ export interface QuyTrinhDef {
   tenFree?: string                       // tiêu đề sơ đồ riêng ở gói Free, vd Quy trình lập tờ khai thuế (T261)
   anDuoiFree?: boolean                   // gói Free ẩn hàng dưới (Danh mục liên quan), vd Kê khai thuế (T261)
   baoCaoFree?: string[]                  // gói Free dùng danh sách báo cáo riêng ở khung Báo cáo, vd sổ TT152 của Kê khai thuế (T261)
+  raFree?: LanQT                         // gói Free thay khối báo cáo của sơ đồ hội tụ, các làn giữ nguyên (T262)
   luongFree?: CotQT[]                     // gói Free dùng sơ đồ luồng theo cột thay sơ đồ chung: ô cột trước nối tới mọi ô cột sau, gộp và tách nhánh (T123)
   danhSo?: boolean                       // đánh số bước, kiểu màn Giá thành của AMIS
   baoCao?: string[]                      // khung Báo cáo bên phải: slug trong phân hệ hoặc 'phân hệ/slug'

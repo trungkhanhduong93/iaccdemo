@@ -17577,3 +17577,13 @@ button.bbt-nut { background: none; border: 0; padding-left: 0; padding-right: 0;
   background: #fff !important;
   border-width: 1px !important;
 }
+
+/* ── Màn chi tiết trang chủ: phần đầu, thẻ tổng cố định, chỉ danh sách cuộn (T263) ── */
+.page.cpt-trang { height: 100%; display: flex; flex-direction: column; overflow: hidden; padding-bottom: 0; box-sizing: border-box; }
+.cpt-trang > * { flex: none; }
+.cpt-trang > .cpt-cuon { flex: 1; min-height: 0; overflow: auto; padding-bottom: 32px; display: flex; flex-direction: column; gap: 12px; }
+/* Chi phí NVL: tab, dòng Cách tính đứng yên, chỉ bảng cuộn (dòng tiêu đề cột vẫn dính trên) */
+.cpt-cuon:has(> .nvl-bang) { overflow: hidden; }
+.cpt-cuon > .nvl-bang { flex: 0 1 auto; min-height: 0; display: flex; flex-direction: column; }
+.cpt-cuon > .nvl-bang > * { flex: none; }
+.cpt-cuon > .nvl-bang > .tbl-wrap { flex: 0 1 auto; min-height: 0; }

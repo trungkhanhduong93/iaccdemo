@@ -24,8 +24,11 @@ export const quyTrinh: QuyTrinhDef = {
         { ten: 'Xuất bán POS', icon: 'cart', di: 'ban-hang/3-1-1', noi: 'đồng bộ' },
       ] },
     ],
+    // Bỏ Sổ doanh thu, thay bằng tồn kho và xuất kho do bán hàng sinh ra, PhuongXT chốt 15/10/2026 (T262)
     ra: { ten: 'Báo cáo', nut: [
-      { ten: 'Sổ doanh thu bán hàng', icon: 'book', di: 'ban-hang/3-2-5' },
+      { ten: 'Báo cáo xuất nhập tồn', icon: 'box', di: 'kho/5-2-3' },
+      { ten: 'Tổng hợp xuất kho', icon: 'cashout', di: 'kho/5-2-11' },
+      { ten: 'Chi tiết xuất kho', icon: 'cashout', di: 'kho/5-2-12' },
     ] },
   },
   baoCao: ['3-2-5', '3-2-2', '3-2-4', 'thue/6-2-2'],

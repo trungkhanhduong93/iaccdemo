@@ -33,6 +33,14 @@ export const quyTrinh: QuyTrinhDef = {
       { ten: 'Công nợ nhà cung cấp', icon: 'users', di: 'mua-hang/4-2-3' },
     ] },
   },
+  // Gói Free (T262): bảng kê theo hàng hoá, tồn kho, nhập kho, công nợ nhà cung cấp
+  raFree: { ten: 'Sổ sách, báo cáo', nut: [
+    { ten: 'Bảng kê mua hàng theo hàng hoá', icon: 'doc', di: 'mua-hang/4-2-7' },
+    { ten: 'Báo cáo xuất nhập tồn', icon: 'box', di: 'kho/5-2-3' },
+    { ten: 'Tổng hợp nhập kho', icon: 'filein', di: 'kho/5-2-9' },
+    { ten: 'Chi tiết nhập kho', icon: 'filein', di: 'kho/5-2-10' },
+    { ten: 'Công nợ nhà cung cấp', icon: 'users', di: 'mua-hang/4-2-3' },
+  ] },
   baoCao: ['4-2-2', '4-2-1', '4-2-4', '4-2-5', '4-2-3', 'tien/2-2-5', 'thue/6-2-1', 'kho/5-2-2'],
   danhMuc: ['danh-muc/1-5', 'danh-muc/1-2', 'danh-muc/1-14'],
   tienIch: ['tien-ich/11-4', 'tien-ich/11-10'],   // bỏ tải từ iPOS Inventory (T64)

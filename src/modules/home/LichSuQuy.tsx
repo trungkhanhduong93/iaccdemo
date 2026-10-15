@@ -68,7 +68,7 @@ export function LichSuQuy(_: ScreenProps) {
   const tn = (gd?.ds ?? []).reduce((a, x) => a + x.thu, 0), tc = (gd?.ds ?? []).reduce((a, x) => a + x.chi, 0)
 
   return (
-    <div className="page" onClickCapture={moTuTrangChu}>
+    <div className="page cpt-trang" onClickCapture={moTuTrangChu}>   {/* phần đầu, thẻ số dư cố định; danh sách cuộn riêng (T263) */}
       <div className="cpt-dau">
         <Link to="/app/trang-chu/tong-quan" className="cpt-ve" title="Về Tổng quan" aria-label="Về Tổng quan"><Icon n="chevl" /></Link>
         <h1>Lịch sử thu chi</h1>
@@ -91,6 +91,7 @@ export function LichSuQuy(_: ScreenProps) {
           <span className="chi">Chi <b>−{moneyD(tc)}</b></span>
         </div>
       </div>
+      <div className="cpt-cuon">
       {!gd || nhom.size === 0 ? <div className="note muted">{loai ? `Quỹ không có khoản ${loai} nào trong tháng ${thang}/2026.` : `Quỹ chưa có giao dịch trong tháng ${thang}/2026.`}</div> : (
         <div className="lsq-ds">
           {[...nhom].map(([ngay, ds]) => (
@@ -113,6 +114,7 @@ export function LichSuQuy(_: ScreenProps) {
           ))}
         </div>
       )}
+      </div>
     </div>
   )
 }
