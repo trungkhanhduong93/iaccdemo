@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 15/10/2026
 
+- T271: Màn Báo cáo trên máy tính: mỗi nhóm báo cáo là một thẻ, các thẻ xếp 2 cột. Cột trái có ba khung: nhóm báo cáo, Đã ghim, Báo cáo gần đây.
 - T270: Cột Tham chiếu ở danh sách chứng từ hiện các mã trên một dòng, cách nhau dấu phẩy. Bấm mã để mở phiếu ở tab mới; ô có nhiều mã thì bấm ra danh sách nhỏ để chọn phiếu.
 - T266: Web có mục Thao tác nhanh dưới Hệ thống trên sidebar. Bấm Tuỳ chỉnh để chọn thao tác và đổi thứ tự; trang chủ điện thoại dùng cùng danh sách.
 - T268: Cấu hình kế toán bỏ thẻ Chi nhánh và ánh xạ POS. Gói Free chỉ còn tính giá xuất kho Bình quân gia quyền cuối kỳ. Danh mục Phương thức thanh toán gói Free, Standard bỏ nút Nhập, Xuất Excel.
