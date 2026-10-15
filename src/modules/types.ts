@@ -27,6 +27,7 @@ export interface CatalogCfg {
   rows: (cd: CheDo, ky: number) => Row[] // danh mục đổi theo chế độ kế toán, vd hệ thống tài khoản; ky (yyyymm) khi có kySoLieu
   them?: string
   khongThem?: Goi[]        // gói không có nút thêm mới (vd danh mục Kho gói Free, T143)
+  khongExcel?: Goi[]       // gói không có nút Nhập, Xuất Excel (vd Phương thức thanh toán lấy từ FABi, T268)
   nutPhu?: { nhan: string; icon: string; bao: string; chiIcon?: boolean }   // nút phụ trên thanh công cụ, bấm thì báo bao (vd Đồng bộ từ FABi, T144, T181)
   locGoi?: (goi: Goi, r: Row) => boolean   // lọc dòng theo gói (vd gói Free chỉ thấy kho mặc định của chi nhánh, T143)
   nhomLoc?: string

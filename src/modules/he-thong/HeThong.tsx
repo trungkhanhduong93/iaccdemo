@@ -156,13 +156,6 @@ export function CauHinh({ sc }: ScreenProps) {
             { loai: 'Phiếu thu', mau: 'PT{YY}{MM}-{0000}', vd: 'PT2610-0001' }, { loai: 'Phiếu chi', mau: 'PC{YY}{MM}-{0000}', vd: 'PC2610-0241' },
             { loai: 'Xuất bán POS', mau: 'Số hoá đơn FABi', vd: 'YHLTJTAKD76Z' }, { loai: 'Mua hàng', mau: 'MH{YY}{MM}-{0000}', vd: 'MH2610-0118' }]} />
         </Card>
-        <Card title="Chi nhánh và ánh xạ POS">
-          <Table cols={[{ k: 'ten', t: 'Chi nhánh' }, { k: 'fabi', t: 'Mã trên FABi', cls: 'code' }, { k: 'kho', t: 'Kho' }]} rows={dsChiNhanh(s).map(c => {
-            // gói Free, Standard: dữ liệu mẫu một kho mỗi chi nhánh, ghi tên kho; gói khác ghi số kho (T145)
-            const kho = CHI_NHANH.find(x => x.id === c.id)?.kho ?? [`Kho ${c.ten.replace(/^Phố Mây /, '')}`]
-            return { ten: c.ten, fabi: `FB-${c.id.toUpperCase()}-01`, kho: s.goi === 'F' || s.goi === 'S' ? kho[0] : kho.length }
-          })} />
-        </Card>
       </div>
     </div>
   )
@@ -299,7 +292,7 @@ export function ThongTinDonVi({ sc }: ScreenProps) {
               <Select className="inp" value={String(nam)} aria-label="Năm làm việc hiện tại" onChange={e => doiNam(Number(e.target.value))}
                 ds={[-2, -1, 0, 1].map(d => String(new Date().getFullYear() + d)).map(n => ({ v: n, t: n }))} />
             </div>
-            <div className="f c2"><label>Phương pháp tính giá xuất kho</label><Select className="inp"><option>Bình quân gia quyền cuối kỳ</option><option>Bình quân tức thời</option><option>Nhập trước xuất trước</option></Select></div>
+            <div className="f c2"><label>Phương pháp tính giá xuất kho</label><Select className="inp"><option>Bình quân gia quyền cuối kỳ</option>{s.goi !== 'F' && <><option>Bình quân tức thời</option><option>Nhập trước xuất trước</option></>}</Select></div>   {/* gói Free chỉ bình quân cuối kỳ (T268) */}
           </div>
         </Card>
       </div>
