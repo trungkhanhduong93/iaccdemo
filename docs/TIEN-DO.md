@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T267 | Gói Free: sơ đồ Quy trình của Kiểm kê (kho), Chi phí phân bổ (ccdc), Kê khai thuế (thue) vẽ kiểu hội tụ như Thu chi, Mua hàng, Bán hàng: các làn nghiệp vụ đổ về khối Sổ sách, báo cáo; giữ đủ ô, đường dẫn hiện có (4 bước tờ khai T261) | Trum | Đang làm | Sửa `src/modules/kho/quy-trinh.ts`, `ccdc/quy-trinh.ts`, `thue/quy-trinh.ts`, có thể `QuyTrinhScreen.tsx`, `MQuyTrinh.tsx`, `tools/kiem_tra.py`. Báo PhuongXT vì đổi sơ đồ Free T261, T262 |
 | T266 | Thao tác nhanh dùng chung web và điện thoại: web có mục Thao tác nhanh dưới Hệ thống trên sidebar, mở màn riêng lưới ô; người dùng tự chọn thao tác (nút Tuỳ chỉnh, lưu trên máy); trang chủ điện thoại dùng cùng danh sách. Mục ngoài gói: Free ẩn, gói khác hiện nhãn gói | Trum | Đang làm | Anti A làm. Thêm phân hệ mới `src/modules/thao-tac-nhanh/`, file dùng chung trong `src/app/`, sửa `src/app/registry.ts` (đăng ký), `src/ui/mobile/MTrangChu.tsx`, mục CSS cuối `app.css` |
 | T265 | Phiếu thu, chi đồng bộ từ FABi (T264) chưa vào Sổ quỹ tiền mặt, Sổ ngân hàng, Lịch sử thu chi, tồn quỹ trang chủ; đưa vào thì đổi số dư | | Chờ | Phát hiện khi làm T264, chờ PhuongXT quyết |
 | T229 | Báo cáo kết quả kinh doanh (10.2.3, B02-DNN) ở chế độ TT133 mở ra "Báo cáo chưa có mẫu" ở cả bản máy tính và điện thoại, gói Pro và Free | | Chờ | Phát hiện ở T222 ngày 14/10/2026, mở từ Tất cả báo cáo. Có thể liên quan T220 |
