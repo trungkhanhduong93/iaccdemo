@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T278 | Thanh gom nhóm ở danh sách chứng từ: thiết kế lại cho đẹp, ô Thêm cột gom thành menu Dropdown thay thẻ select gốc | Trum | Đang làm | Sửa `src/ui/generic/VoucherScreen.tsx` (khối `ds-groupzone`), `src/styles/app.css` (mục riêng cuối file) |
 | T277 | Danh sách Kiểm kê: thiết kế lại 3 tab con Kiểm kê, Xuất điều chỉnh, Nhập điều chỉnh cho đẹp | Trum | Đang làm | Sửa `src/styles/app.css` (mục riêng cuối file), chỉ trong `.dc-tabs` |
 | T276 | Bảng vai trò, phân quyền: ô tích quyền thành nút bật tắt, web và điện thoại | Trum | Đang làm | Sửa `src/styles/app.css` (mục riêng cuối file). Không đổi `HeThong.tsx`, `MHeThong.tsx` |
 | T274 | Trang chủ gói Free 2 tab Tổng quan, Cần theo dõi, có lọc chi nhánh: 5 biểu đồ top (mặt hàng doanh thu, chi phí, giá vốn, nhà cung cấp, khoản chi), lãi lỗ so sánh chi nhánh, modal lãi lỗ 2 kiểu xem 13 tháng hoặc theo chi nhánh; cảnh báo công nợ quá hạn, âm kho, hàng huỷ cao, doanh thu lệch POS, tháng chưa khoá sổ; web và điện thoại | Trum | Chờ | Làm sau T273. Sửa `home/BaBaiToanFree.tsx`, `mobile/MTrangChu.tsx`, `app.css`, thêm file số liệu riêng, không sửa `data/mock.ts` (T269 đang sửa) |
