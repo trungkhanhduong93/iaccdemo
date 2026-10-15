@@ -669,3 +669,5 @@ Lý do: PhuongXT chốt ngày 14/10/2026 (T245). Gói Free chỉ khai số dư t
 - Danh sách Xuất bán POS không còn nhãn cách đồng bộ, dải Đã/Chưa đồng bộ (T118) và nút Đồng bộ POS (T117). Đồng bộ chạy tự động; tiện ích đồng bộ FABi vẫn giữ.
 
 Lý do: PhuongXT chốt ngày 15/10/2026 (T247). Một cách đồng bộ duy nhất, xem được từng đơn, cách thanh toán; màn danh sách gọn.
+
+## QD63. Bộ biểu tượng Solar nâng cao (đang soạn)
