@@ -69,7 +69,9 @@ const MAC_DINH: VoucherCfg ={ prefix: 'CT', doiTuong: 'none', dienGiai: ['Chứn
 
 export function useDongChungTu(sc: ScreenDef, mod: ModuleDef): { cfg: VoucherCfg; rows: Row[] } {
   const cfg = sc.voucher ?? { ...MAC_DINH, dienGiai: [tenMan(sc)] }
-  const tatCa = useMemo(() => [...(cfg.phieuThem?.() ?? []), ...(cfg.rowsMau ? cfg.rowsMau() : cfg.loai ? gopLoai(cfg, sc.code ?? sc.slug) : chungTu(cfg, sc.code ?? sc.slug))], [sc])   // rowsMau: phiếu mẫu riêng (T126); phieuThem: phiếu mẫu cố định (T168)
+  const { s } = useSession()
+  // phieuThem đọc phiên (vd phiếu thu chi đồng bộ từ FABi theo công tắc, map PTTT, T264) nên tính lại khi các trường đó đổi
+  const tatCa = useMemo(() => [...(cfg.phieuThem?.(s) ?? []), ...(cfg.rowsMau ? cfg.rowsMau() : cfg.loai ? gopLoai(cfg, sc.code ?? sc.slug) : chungTu(cfg, sc.code ?? sc.slug))], [sc, s.donVi, s.dongBoThuChi, s.mapPttt])   // eslint-disable-line react-hooks/exhaustive-deps   // rowsMau: phiếu mẫu riêng (T126); phieuThem: phiếu mẫu cố định (T168)
   const { ban, laDaXoa, phieuMoi, apSua } = useDaXoa(`${mod.key}/${sc.slug}`)
   const rows = useMemo(() => [...phieuMoi, ...tatCa].filter(r => !laDaXoa(r.id)).map(apSua), [tatCa, ban])
   return { cfg, rows }

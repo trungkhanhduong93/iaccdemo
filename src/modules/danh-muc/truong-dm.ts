@@ -6,6 +6,7 @@ import { CHI_NHANH, HOM_NAY, KHACH, KHO, NCC, NHAN_VIEN } from '../../data/mock'
 import { dmy } from '../../ui/format'
 import { NGANH_NGHE_CON, timNganhNghe } from './nganh-nghe'
 import { KhoiQuyDoi } from './QuyDoiDvt'
+import { KhoiPtttQuy } from './QuyPttt'
 
 import { createElement, type ReactNode } from 'react'
 import type { Col, Row } from '../types'
@@ -549,6 +550,12 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
           { k: 'cn', nhan: 'Chi nhánh áp dụng', kieu: 'chonNhieu', ds: CHI_NHANH.map(c => c.ten), maDs: maChiNhanh },   // một quỹ dùng cho nhiều chi nhánh (T144)
           { k: 'soDu', nhan: 'Số dư ban đầu', kieu: 'tien', goi: ['F'] },   // gói Free khai số dư quỹ ở đây, thay màn Số dư ban đầu (T245)
         ],
+      },
+      {
+        // Map PTTT FABi về quỹ theo cửa hàng, cho đồng bộ phiếu thu, chi từ FABi (T264)
+        ten: 'Phương thức thanh toán từ FABi',
+        truong: [],
+        ve: (v, doi) => createElement(KhoiPtttQuy, { v, doi }),
       },
       {
         ten: 'Trạng thái',

@@ -4,16 +4,16 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T264.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T265.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T264 | Mọi gói: tự động đồng bộ phiếu thu, chi lập trên FABi. Cấu hình kế toán có công tắc bật, tắt; Danh mục Quỹ tiền map phương thức thanh toán theo từng cửa hàng như FABi (một PTTT của một cửa hàng chỉ thuộc một quỹ); phiếu đồng bộ hiện trong danh sách Thu chi, nhãn nguồn FABi, PTTT chưa map thì chờ | PhuongXT | Đang làm | Sửa `he-thong/HeThong.tsx`, `danh-muc/` (Quỹ tiền), `tien/`, `session.ts`; có thể `CatalogScreen.tsx` (ô form tuỳ biến) |
 | T260 | Web và điện thoại: chỗ nào hiện biểu tượng khoá (màn, phân hệ, thao tác ngoài gói) thì thay bằng nhãn gói thấp nhất mở được (`Pk`), để biết cần mua gói nào. Gói Free trên điện thoại vẫn ẩn hẳn mục khoá (T257) | Trum | Đang làm | Anti A làm. Sửa các file còn `n="lock"`: `src/app/ModuleTabs.tsx`, `Screen.tsx`, `Shell.tsx`, `SidebarFlyout.tsx`, `src/modules/home/BanLamViec.tsx`, `ChiPhiNvl.tsx`, `TongQuan.tsx`, `src/modules/tong-hop/CuoiKy.tsx`, `src/ui/bao-cao/TuyChinhBC.tsx`, `src/ui/generic/QuyTrinhScreen.tsx`, `src/ui/thiet-ke/DsCot.tsx`, `src/ui/mobile/MKhac.tsx`, `MNghiepVu.tsx`, `MTacVu.tsx`, `MTrangChu.tsx`, mục CSS cuối `app.css` |
 | T257 | Điện thoại gói Free: trang chủ dựng lại giống trang chủ Free bản web (ba thẻ Quản lý lãi lỗ, thu chi, kho; Báo cáo lãi lỗ tháng, Tồn quỹ hiện tại, Mua hàng công nợ hao hụt; chọn năm, tháng) | Trum | Đang làm | Sửa `src/ui/mobile/MTrangChu.tsx`, mục CSS cuối `app.css` |
+| T265 | Phiếu thu, chi đồng bộ từ FABi (T264) chưa vào Sổ quỹ tiền mặt, Sổ ngân hàng, Lịch sử thu chi, tồn quỹ trang chủ; đưa vào thì đổi số dư | | Chờ | Phát hiện khi làm T264, chờ PhuongXT quyết |
 | T229 | Báo cáo kết quả kinh doanh (10.2.3, B02-DNN) ở chế độ TT133 mở ra "Báo cáo chưa có mẫu" ở cả bản máy tính và điện thoại, gói Pro và Free | | Chờ | Phát hiện ở T222 ngày 14/10/2026, mở từ Tất cả báo cáo. Có thể liên quan T220 |
 | T169 | Form chứng từ: gõ đổi địa chỉ từ phiếu này sang phiếu khác (vd `#/app/tien/2-1-1/chi-3` sang `chi-6`) thì form giữ số phiếu, đối tượng của phiếu cũ; mở từ danh sách, Trước, Sau thì đúng | | Chờ | Phát hiện ở T168. Sửa `ChungTuForm.tsx`, có thể `VoucherScreen.tsx` (key của form) |
 | T138 | Màn onboard khi bấm từ FABi sang IACC: khởi tạo đơn vị kế toán, điền sẵn từ FABi (chi nhánh, kho, cách đồng bộ, số dư đầu kỳ) | PhuongXT | Dở dang | Popup khởi tạo dữ liệu 4 bước trong phần mềm (`OnboardFabi.tsx`, `Shell.tsx`) đã push, PhuongXT xem lại một lượt. Xem `2026-10-11-phuongxt-man-khoi-tao-fabi.md` |
@@ -48,6 +48,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T264 | Mọi gói: đồng bộ phiếu thu, chi lập trên FABi. Danh mục chi nhánh có công tắc từng chi nhánh cạnh cách tính chi phí NVL, chọn được ngay lúc thêm chi nhánh từ FABi; Danh mục Quỹ tiền map PTTT theo cửa hàng; phiếu vào danh sách Thu chi, PTTT chưa map thì chờ. Lịch sử thu chi trang chủ có nguồn | PhuongXT | 15/10/2026 | [2026-10-15-phuongxt-dong-bo-thu-chi-fabi](nhat-ky/2026-10-15-phuongxt-dong-bo-thu-chi-fabi.md) |
 | T263 | Trang chủ gói Free máy tính: màn Chi phí trong tháng, Chi phí NVL, Lịch sử thu chi giữ cố định phần đầu, thẻ tổng (Chi phí NVL cả tab, dòng Cách tính), chỉ danh sách cuộn | PhuongXT | 15/10/2026 | [2026-10-15-phuongxt-bao-cao-quy-trinh-cuon-chi-tiet](nhat-ky/2026-10-15-phuongxt-bao-cao-quy-trinh-cuon-chi-tiet.md) |
 | T262 | Gói Free: báo cáo trên sơ đồ quy trình. Thu chi thêm Công nợ nhà cung cấp; Mua hàng: Bảng kê mua hàng theo hàng hoá, Xuất nhập tồn, Tổng hợp, Chi tiết nhập kho, Công nợ nhà cung cấp; Bán hàng: Xuất nhập tồn, Tổng hợp, Chi tiết xuất kho; Kiểm kê: Xuất nhập tồn, Báo cáo kiểm kê, Tổng hợp, Chi tiết xuất, nhập kho | PhuongXT | 15/10/2026 | [2026-10-15-phuongxt-bao-cao-quy-trinh-cuon-chi-tiet](nhat-ky/2026-10-15-phuongxt-bao-cao-quy-trinh-cuon-chi-tiet.md) |
 | T260 | Web và điện thoại: chỗ khoá vì ngoài gói thay ổ khoá bằng nhãn gói thấp nhất mở được (`Pk`): tab màn, sidebar, menu bay, trang màn khoá, Bàn làm việc, Tổng quan, sơ đồ quy trình, Nghiệp vụ, Khác, Thao tác nhanh điện thoại. Ổ khoá nghĩa khoá sổ, khoá kỳ giữ nguyên. Gói Free điện thoại vẫn ẩn mục khoá | Trum | 15/10/2026 | [2026-10-15-trum-nhan-goi-thay-khoa](nhat-ky/2026-10-15-trum-nhan-goi-thay-khoa.md) |

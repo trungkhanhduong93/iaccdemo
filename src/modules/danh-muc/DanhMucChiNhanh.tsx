@@ -2,10 +2,10 @@
 // Thêm chi nhánh từ FABi: chỉ chọn cửa hàng chưa dùng kế toán, lên sổ từ ngày bắt đầu năm tài chính của đơn vị, có thể mở ngay màn Số dư ban đầu để khai quỹ tiền của chi nhánh mới.
 import { useMemo, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import type { Col, Row, ScreenProps } from '../types'
 import { tenMan } from '../../app/registry'
-import { ngayDauNam, useSession, type CnThem } from '../../app/session'
+import { ngayDauNam, useSession, type CnThem, type Session } from '../../app/session'
 import { CHI_NHANH, DON_VI } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
 import { Note, PageHead } from '../../ui/Page'
@@ -17,6 +17,7 @@ import { DsChiNhanh } from '../onboarding/OnboardFabi'
 import { Select } from '../../ui/Dropdown'
 import { HopXacNhan } from '../../ui/LocNangCao'
 import { CACH_NVL, DS_CACH_NVL, cachNvlHienTai, datCachNvl, kyDauChuaKhoa, tenKy, type CachNvl } from '../home/chi-phi-nvl'
+import { batDongBoThuChi, datDongBoThuChi, phieuThuChiFabi } from '../tien/dong-bo-fabi'
 
 /** Cột luôn hiện, không ẩn được ở Tuỳ chỉnh cột (T148) */
 const COT_CO_DINH = new Set(['ma', 'ten'])
@@ -51,7 +52,20 @@ export function DanhMucChiNhanh({ sc, mod }: ScreenProps) {
       <Select className="inp dmcn-nvl" value={cachNvlHienTai(s, String(r.id))} ds={DS_CACH_NVL} aria-label={`Cách tính chi phí NVL ${r.ten}`}
         onChange={e => { const cach = e.target.value as CachNvl; if (cach !== cachNvlHienTai(s, String(r.id))) setDoiNvl({ cn: String(r.id), ten: String(r.ten), cach }) }} />
     ) }] : []),
+    // Mọi gói: bật, tắt tự động đồng bộ phiếu thu, chi lập trên FABi theo chi nhánh, cùng chỗ với cách tính chi phí NVL (T264)
+    { k: 'dongBo', t: 'Đồng bộ thu chi FABi', w: 210, r: (r: Row) => {
+      const bat = batDongBoThuChi(s, String(r.id))
+      return (
+        <span className="dmcn-db">
+          <button type="button" role="switch" aria-checked={bat} aria-label={`Tự động đồng bộ thu chi FABi ${r.ten}`} className={`ds-ct${bat ? ' on' : ''}`}
+            onClick={e => { e.stopPropagation(); set(datDongBoThuChi(s, String(r.id), !bat)); toast(`${bat ? 'Đã tắt' : 'Đã bật'} đồng bộ thu chi từ FABi cho ${r.ten}`) }}><i /></button>
+          <small>{bat ? 'Tự động' : 'Không đồng bộ'}</small>
+        </span>
+      )
+    } },
   ], [free, s])   // eslint-disable-line react-hooks/exhaustive-deps
+  // Phiếu thu, chi FABi của chi nhánh đang bật mà PTTT chưa map quỹ: chờ, không vào sổ (T264)
+  const cho = phieuThuChiFabi(s).cho
 
   const cot = useCotDs('/danh-muc/chi-nhanh', colsGoc, COT_CO_DINH)
   // Phân trang như danh mục khác: mặc định 50 dòng/trang (T153)
@@ -60,8 +74,8 @@ export function DanhMucChiNhanh({ sc, mod }: ScreenProps) {
   const trangHt = Math.min(trang, Math.max(1, Math.ceil(rows.length / coTrang)))
   const rowsTrang = rows.slice((trangHt - 1) * coTrang, trangHt * coTrang)
 
-  const lenSo = (ds: CnThem[], khaiSoDu: boolean) => {
-    set({ cnThem: { ...s.cnThem, [s.donVi]: [...them, ...ds] } })
+  const lenSo = (ds: CnThem[], khaiSoDu: boolean, caiDat: Partial<Session>) => {
+    set({ cnThem: { ...s.cnThem, [s.donVi]: [...them, ...ds] }, ...caiDat })   // cấu hình đồng bộ thu chi, cách tính NVL chọn lúc thêm (T264)
     setMo(false)
     toast(`Đã lên sổ ${ds.length} chi nhánh từ FABi`)
     if (khaiSoDu) nav(s.goi === 'F' ? '/app/danh-muc/1-12' : `/app/tong-hop/10-1-3?cnMoi=${ds.map(c => c.id).join(',')}`)   // gói Free khai số dư ở Danh mục Quỹ tiền (T245)
@@ -85,6 +99,8 @@ export function DanhMucChiNhanh({ sc, mod }: ScreenProps) {
       </PageHead>
       {s.goi === 'F' && <Note icon="info">Gói Free: mỗi chi nhánh tự có một kho mặc định theo iPOS Inventory, không cần khai báo kho.
         Cột Cách tính chi phí NVL quyết định số Chi phí NVL trên trang chủ và Báo cáo kết quả kinh doanh của chi nhánh.</Note>}
+      {cho.length > 0 && <Note kind="warn" icon="alert">{cho.length} phiếu thu, chi từ FABi đang chờ vì phương thức thanh toán chưa map quỹ
+        ({[...new Set(cho.map(x => `${x.pttt} · ${x.cn}`))].join('; ')}). <Link to="/app/danh-muc/1-12">Map ở Danh mục Quỹ tiền</Link></Note>}
       <section className="card dm-bang">
         <Table cols={cot.colsHien} doRong={cot.doRong} rows={rowsTrang} />
         <PhanTrang tong={rows.length} trang={trangHt} coTrang={coTrang} dsCoTrang={CO_TRANG_DM}
@@ -107,10 +123,20 @@ export function DanhMucChiNhanh({ sc, mod }: ScreenProps) {
 }
 
 /** Hộp chọn cửa hàng FABi chưa dùng kế toán để lên sổ thành chi nhánh */
-export function HopThemChiNhanh({ onDong, onLenSo }: { onDong: () => void; onLenSo: (ds: CnThem[], khaiSoDu: boolean) => void }) {
+export function HopThemChiNhanh({ onDong, onLenSo }: { onDong: () => void; onLenSo: (ds: CnThem[], khaiSoDu: boolean, caiDat: Partial<Session>) => void }) {
   const { s } = useSession()
   const ds = cuaHangChuaDung(s)
   const [chon, setChon] = useState<string[]>(() => ds.map(c => c.id))
+  // Cấu hình từng chi nhánh chọn ngay lúc thêm, như cột ở Danh mục chi nhánh (T264): đồng bộ thu chi FABi mọi gói, cách tính chi phí NVL gói Free
+  const [cauHinh, setCauHinh] = useState<Record<string, { dongBo: boolean; cach: CachNvl }>>({})
+  const chCua = (id: string) => cauHinh[id] ?? { dongBo: true, cach: cachNvlHienTai(s, id) }
+  const doiCh = (id: string, p: Partial<{ dongBo: boolean; cach: CachNvl }>) => setCauHinh(x => ({ ...x, [id]: { ...chCua(id), ...p } }))
+  // Gộp cấu hình đã chọn thành phần phiên cần lưu khi lên sổ
+  const caiDat = () => chon.reduce<Partial<Session>>((p, id) => {
+    const ch = chCua(id)
+    const p2 = { ...p, ...datDongBoThuChi({ ...s, ...p }, id, ch.dongBo) }
+    return s.goi === 'F' ? { ...p2, ...datCachNvl({ ...s, ...p2 }, id, ch.cach) } : p2
+  }, {})
   const tuNgay = ngayDauNam(s)   // chi nhánh mới lên sổ từ ngày bắt đầu năm tài chính của đơn vị
   const [khaiSoDu, setKhaiSoDu] = useState(true)
   const ok = chon.length > 0
@@ -123,6 +149,26 @@ export function HopThemChiNhanh({ onDong, onLenSo }: { onDong: () => void; onLen
           {ds.length ? <>
             <p className="muted">Chỉ hiện cửa hàng FABi chưa dùng kế toán ở đơn vị nào. Tích cửa hàng muốn lên sổ.</p>
             <DsChiNhanh ds={ds} chon={chon} chinh="" doi={moi => setChon(moi)} coChinh={false} />
+            {chon.length > 0 && (
+              <div className="dmcn-ch">
+                <div className="dmcn-ch-dau">Cấu hình chi nhánh lên sổ</div>
+                <div className={`dmcn-ch-dong dmcn-ch-tieu${s.goi === 'F' ? ' co-nvl' : ''}`}><span>Chi nhánh</span>{s.goi === 'F' && <span>Cách tính chi phí NVL</span>}<span>Đồng bộ thu chi FABi</span></div>
+                {ds.filter(c => chon.includes(c.id)).map(c => {
+                  const ch = chCua(c.id)
+                  return (
+                    <div key={c.id} className={`dmcn-ch-dong${s.goi === 'F' ? ' co-nvl' : ''}`}>
+                      <span className="dmcn-ch-ten">{c.ten}</span>
+                      {s.goi === 'F' && <Select className="inp dmcn-nvl" value={ch.cach} ds={DS_CACH_NVL} aria-label={`Cách tính chi phí NVL ${c.ten}`} onChange={e => doiCh(c.id, { cach: e.target.value as CachNvl })} />}
+                      <span className="dmcn-db">
+                        <button type="button" role="switch" aria-checked={ch.dongBo} aria-label={`Tự động đồng bộ thu chi FABi ${c.ten}`} className={`ds-ct${ch.dongBo ? ' on' : ''}`}
+                          onClick={() => doiCh(c.id, { dongBo: !ch.dongBo })}><i /></button>
+                        <small>{ch.dongBo ? 'Tự động' : 'Không đồng bộ'}</small>
+                      </span>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
             <label className="row dmcn-tich"><input type="checkbox" checked={khaiSoDu} onChange={e => setKhaiSoDu(e.target.checked)} />
               <span>Khai số dư ban đầu cho chi nhánh mới ngay sau khi lên sổ</span></label>
           </> : <Note kind="ok" icon="check">Mọi cửa hàng trên FABi đã lên sổ kế toán.</Note>}
@@ -130,7 +176,7 @@ export function HopThemChiNhanh({ onDong, onLenSo }: { onDong: () => void; onLen
         <div className="ds-chan">
           <button type="button" className="btn" onClick={onDong}>Huỷ</button>
           {ds.length > 0 && <button type="button" className="btn pri" disabled={!ok}
-            onClick={() => onLenSo(ds.filter(c => chon.includes(c.id)).map(c => ({ id: c.id, ten: c.ten, khuVuc: c.khuVuc, tuNgay })), khaiSoDu)}>
+            onClick={() => onLenSo(ds.filter(c => chon.includes(c.id)).map(c => ({ id: c.id, ten: c.ten, khuVuc: c.khuVuc, tuNgay })), khaiSoDu, caiDat())}>
             Lên sổ {chon.length} chi nhánh</button>}
         </div>
       </div>

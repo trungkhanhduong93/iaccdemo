@@ -7,7 +7,7 @@ import type { Row, ScreenProps } from '../types'
 import { CHI_NHANH, TK_NGAN_HANG } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
 import { between, k, moneyD, pad, rng } from '../../ui/format'
-import { soChiTiet } from '../../ui/generic/gen'
+import { NGUON, soChiTiet } from '../../ui/generic/gen'
 import { gopSo } from '../../ui/generic/ReportScreen'
 import { phieuTheoSo } from '../../ui/generic/SoChungTu'
 import { useMoTuTrangChu } from '../../app/tuTrangChu'
@@ -48,6 +48,9 @@ export function tonQuyTheoSo(thang: number, cnIds: string[]) {
   })
 }
 
+/** Nguồn giao dịch (T264): tiền bán hàng do FABi đẩy về, còn lại là phiếu lập tay; nhãn như cột Nguồn của danh sách chứng từ */
+const nguonGd = (dg: string) => NGUON[/bán hàng/i.test(dg) ? 'FABi' : 'tay']
+
 const THU = ['Chủ nhật', 'Thứ hai', 'Thứ ba', 'Thứ tư', 'Thứ năm', 'Thứ sáu', 'Thứ bảy']
 const tenNgay = (ngay: string) => { const [d, m, y] = ngay.split('/').map(Number); return `${THU[new Date(y, m - 1, d).getDay()]}, ${ngay}` }
 
@@ -76,9 +79,9 @@ export function LichSuQuy(_: ScreenProps) {
         <Select className="inp lsq-loc" value={loai} aria-label="Loại giao dịch" onChange={e => setLoai(e.target.value as '' | 'thu' | 'chi')}
           ds={[{ v: '', t: 'Tất cả thu, chi' }, { v: 'thu', t: 'Khoản thu' }, { v: 'chi', t: 'Khoản chi' }]} />
         <NutXuatExcel onXuat={() => xuatBangExcel(`Lịch sử thu chi ${quy} tháng ${thang}/2026`, `${loai === 'thu' ? 'Khoản thu · ' : loai === 'chi' ? 'Khoản chi · ' : ''}Đầu kỳ ${moneyD(gd?.mo ?? 0)} · Cuối kỳ ${moneyD(gd?.cuoi ?? 0)}`,
-          [{ t: 'Ngày', rong: 12 }, { t: 'Số chứng từ', rong: 18 }, { t: 'Diễn giải', rong: 44 }, { t: 'Thu', so: true }, { t: 'Chi', so: true }, { t: 'Số dư', so: true }],
-          [['', '', 'Số dư đầu kỳ', null, null, gd?.mo ?? 0], ...dsLoc.map(x => [x.ngay, phieuTheoSo(x.so)?.so ?? x.so, x.dg, x.thu || null, x.chi || null, x.du])],
-          ['', '', 'Cộng', loai === 'chi' ? null : tn, loai === 'thu' ? null : tc, gd?.cuoi ?? 0]).catch(() => toast('Không xuất được file Excel'))} />
+          [{ t: 'Ngày', rong: 12 }, { t: 'Số chứng từ', rong: 18 }, { t: 'Diễn giải', rong: 44 }, { t: 'Nguồn', rong: 12 }, { t: 'Thu', so: true }, { t: 'Chi', so: true }, { t: 'Số dư', so: true }],
+          [['', '', 'Số dư đầu kỳ', '', null, null, gd?.mo ?? 0], ...dsLoc.map(x => [x.ngay, phieuTheoSo(x.so)?.so ?? x.so, x.dg, nguonGd(x.dg)[1], x.thu || null, x.chi || null, x.du])],
+          ['', '', 'Cộng', '', loai === 'chi' ? null : tn, loai === 'thu' ? null : tc, gd?.cuoi ?? 0]).catch(() => toast('Không xuất được file Excel'))} />
         <Link to={`/app/tien/2-1-1/moi?loai=${tienMat ? 'thu' : 'bc'}`} className="btn"><Icon n="plus" className="ic sm" />Lập phiếu thu</Link>
         <Link to={`/app/tien/2-1-1/moi?loai=${tienMat ? 'chi' : 'unc'}`} className="btn primary"><Icon n="plus" className="ic sm" />Lập phiếu chi</Link>
       </div>
@@ -102,7 +105,7 @@ export function LichSuQuy(_: ScreenProps) {
                   const p = phieuTheoSo(x.so)
                   const noiDung = <>
                     <span className={`lsq-ic ${x.thu ? 'thu' : 'chi'}`}><Icon n={x.thu ? 'cashin' : 'cashout'} /></span>
-                    <span className="lsq-chu"><b>{x.dg}</b><small>{p?.so ?? x.so}</small></span>
+                    <span className="lsq-chu"><b>{x.dg}</b><small>{p?.so ?? x.so}<span className={`src ${nguonGd(x.dg)[0]} lsq-nguon`}>{nguonGd(x.dg)[1]}</span></small></span>
                     <span className="lsq-so"><b className={x.thu ? 'thu' : 'chi'}>{x.thu ? `+${moneyD(x.thu)}` : `−${moneyD(x.chi)}`}</b><small>Số dư {moneyD(x.du)}</small></span>
                   </>
                   return p

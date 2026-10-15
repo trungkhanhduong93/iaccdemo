@@ -1,7 +1,7 @@
 import { useMemo, useState, type FC } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { Row, ScreenProps } from '../../modules/types'
-import { useSession, type CnThem } from '../../app/session'
+import { useSession, type CnThem, type Session } from '../../app/session'
 import { CHI_NHANH, DON_VI } from '../../data/mock'
 import { HopThemChiNhanh } from '../../modules/danh-muc/DanhMucChiNhanh'
 import { MDanhSach } from './MDanhSach'
@@ -44,8 +44,8 @@ export const MChiNhanh: FC<ScreenProps> = () => {
     })),
   ], [coSan, them, free]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const lenSo = (ds: CnThem[], khaiSoDu: boolean) => {
-    set({ cnThem: { ...s.cnThem, [s.donVi]: [...them, ...ds] } })
+  const lenSo = (ds: CnThem[], khaiSoDu: boolean, caiDat: Partial<Session>) => {
+    set({ cnThem: { ...s.cnThem, [s.donVi]: [...them, ...ds] }, ...caiDat })   // cấu hình đồng bộ thu chi, cách tính NVL chọn lúc thêm (T264)
     setMoThem(false)
     toast(`Đã lên sổ ${ds.length} chi nhánh từ FABi`)
     if (khaiSoDu) {

@@ -12,6 +12,7 @@ import { tkTheoCheDo } from '../tong-hop/so-cai'
 import { Note } from '../../ui/Page'
 import { DanhMucChiNhanh } from './DanhMucChiNhanh'
 import { datSoDuQuy, soDuQuyBanDau } from '../tong-hop/SoDuBanDau'
+import { luuPtttQuy, ptttCuaQuy, tomTatPttt } from '../tien/dong-bo-fabi'
 
 /** Nhãn ngắn trên thanh tab */
 const NGAN: Record<string, string> = { '1.1': 'Tài khoản', '1.2': 'Hàng hoá', '1.3': 'Đơn vị tính', '1.4': 'Quy đổi ĐVT', '1.5': 'Đối tượng', '1.6': 'Mục chi phí', '1.7': 'Công việc', '1.8': 'Kho', '1.9': 'Tiền tệ', '1.10': 'Tỷ giá', '1.11': 'Loại thuế', '1.12': 'Quỹ tiền', '1.14': 'Bảng giá', '1.15': 'Bút toán tự động', '1.16': 'Lý do nghiệp vụ' }
@@ -232,14 +233,20 @@ const danhMuc: ModuleDef = {
     // Gói Free khai số dư ban đầu quỹ ngay ở danh mục (cột, ô trong form), không còn màn Số dư ban đầu riêng; lưu cùng chỗ soDuQuy (T245)
     '1.12': { catalog: { them: 'Thêm quỹ', nhomLoc: 'loai', nhanLoc: 'Loại',
       cols: goi => [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên quỹ' }, { k: 'loai', t: 'Loại' }, { k: 'stk', t: 'Số tài khoản' }, { k: 'cn', t: 'Chi nhánh', cls: 'dim' },
+        { k: 'pttt', t: 'PTTT từ FABi', cls: 'dim', w: 260 },   // phương thức thanh toán map về quỹ (T264)
         ...(goi === 'F' ? [{ k: 'soDu', t: 'Số dư ban đầu', num: true, w: 150 }] : [])],
       rows: () => DS_QUY_TIEN_112,
       phien: {
-        gan: (r, s) => s.goi === 'F' ? { ...r, soDu: soDuQuyBanDau(s, String(r.ma)) } : r,
+        gan: (r, s) => {
+          const pt = ptttCuaQuy(s, String(r.ma))
+          return { ...r, _pttt: pt, pttt: tomTatPttt(pt), ...(s.goi === 'F' ? { soDu: soDuQuyBanDau(s, String(r.ma)) } : {}) }
+        },
         luu: (v, s) => {
-          if (s.goi !== 'F' || !v.ma || v.soDu === undefined || v.soDu === '') return {}
+          // Lưu map PTTT của quỹ (T264) cùng số dư ban đầu gói Free (T245)
+          const map = v.ma && Array.isArray(v._pttt) ? luuPtttQuy(s, String(v.ma), v._pttt) : {}
+          if (s.goi !== 'F' || !v.ma || v.soDu === undefined || v.soDu === '') return map
           const du = typeof v.soDu === 'number' ? v.soDu : Number(String(v.soDu).replace(/[^\d-]/g, '')) || 0
-          return datSoDuQuy(s, String(v.ma), du)
+          return { ...datSoDuQuy(s, String(v.ma), du), ...map }
         },
       } } },
     // T154: bảng giá theo iFaster; giá nhập có nhà cung cấp, kho áp dụng để trống là mọi kho

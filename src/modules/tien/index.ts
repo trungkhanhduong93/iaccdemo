@@ -4,6 +4,7 @@ import { tuExcel } from '../types'
 import { quyTrinh } from './quy-trinh'
 import { SoQuy } from './SoQuy'
 import { nhatKyChung } from './data'
+import { phieuThuChiFabi } from './dong-bo-fabi'
 import { SO_BO_SUNG } from '../bao-cao/so-bo-sung'
 import { createElement } from 'react'
 import { Navigate } from 'react-router-dom'
@@ -40,7 +41,7 @@ const tien: ModuleDef = {
         { k: 'cq', ten: 'Chuyển quỹ', icon: 'swap', prefix: 'CQ', doiTuong: 'none', soTT58: 'Sổ chi tiết tiền',
           dienGiai: ['Nộp tiền bán hàng trong ngày vào Vietcombank', 'Rút tiền gửi ngân hàng về quỹ tiền mặt', 'Chuyển tiền quỹ chi nhánh về tài khoản công ty'],
           noCo: [['1121', '1111', 'Chuyển tiền giữa các quỹ']] },
-      ], phieuThem: () => [PHIEU_CHO_PB] } },
+      ], phieuThem: s => [PHIEU_CHO_PB, ...(s ? phieuThuChiFabi(s).da : [])] } },   // phiếu thu, chi đồng bộ từ FABi, chi nhánh đang bật (T264)
     '2.1.2': { voucher: { prefix: 'DCCN', doiTuong: 'kh', nhan: 'Khách hàng, nhà cung cấp', them: 'Lập biên bản', dong: 'tien', tien: [5_000_000, 120_000_000],
       dienGiai: ['Đối chiếu công nợ đến 30/09/2026', 'Đối chiếu công nợ quý 3/2026'], noCo: [['131', '131', 'Số dư đối chiếu, không sinh bút toán']] } },
     '2.1.3': { tool: { nut: 'Phân bổ kỳ 9/2026', mota: 'Phân bổ chi phí chung của văn phòng cho từng chi nhánh: lương quản lý, marketing, thuê kho tổng. Tiêu thức là doanh thu, số đơn hoặc tỷ lệ cố định. Sinh bút toán phân bổ cho từng chi nhánh.',

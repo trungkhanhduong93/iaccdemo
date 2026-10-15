@@ -17749,3 +17749,26 @@ button.bbt-nut { background: none; border: 0; padding-left: 0; padding-right: 0;
   }
 }
 
+
+
+/* ── Đồng bộ thu chi từ FABi, map PTTT ở Quỹ tiền (T264) ── */
+.qp { display: flex; flex-direction: column; gap: 10px; }
+.qp-goi-y, .qp-trong { margin: 0; font-size: 12.5px; color: var(--muted); }
+.qp-cn { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.qp-cn-dau { display: flex; align-items: center; gap: 8px; padding: 9px 12px; background: var(--hdb-chan); border-bottom: 1px solid var(--line-2); font-size: 13.5px; cursor: pointer; }
+.qp-cn-dau small { margin-left: auto; color: var(--muted); font-size: 12px; }
+.qp-ds { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 12px; padding: 8px 12px 10px 32px; }
+.qp-pt { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--body); cursor: pointer; min-width: 0; }
+.qp-pt.khoa { color: var(--faint); cursor: not-allowed; }
+.qp-pt small { margin-left: auto; font-size: 11.5px; color: var(--faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dmcn-db { display: inline-flex; align-items: center; gap: 8px; }
+.dmcn-db small { color: var(--muted); font-size: 12px; }
+.lsq-nguon { margin-left: 8px; vertical-align: 1px; }   /* nhãn nguồn giao dịch ở Lịch sử thu chi (T264) */
+/* Cấu hình chi nhánh lên sổ trong hộp Thêm chi nhánh từ FABi (T264) */
+.dmcn-ch { margin-top: 12px; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.dmcn-ch-dau { padding: 8px 12px; font-weight: 600; font-size: 13.5px; color: var(--ink); background: var(--hdb-chan); border-bottom: 1px solid var(--line-2); }
+.dmcn-ch-dong { display: grid; grid-template-columns: minmax(0, 1fr) 180px; align-items: center; gap: 12px; padding: 7px 12px; font-size: 13px; }
+.dmcn-ch-dong.co-nvl { grid-template-columns: minmax(0, 1fr) 230px 160px; }
+.dmcn-ch-dong + .dmcn-ch-dong { border-top: 1px solid var(--line-2); }
+.dmcn-ch-tieu { font-size: 12px; color: var(--muted); padding-top: 6px; padding-bottom: 6px; }
+.dmcn-ch-ten { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink); }

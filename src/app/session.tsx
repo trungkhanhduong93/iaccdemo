@@ -40,6 +40,8 @@ export interface Session {
   cnThem?: Record<string, CnThem[]>   // chi nhánh lên sổ thêm từ cửa hàng FABi theo từng đơn vị (T142)
   cachNvl?: Record<string, Record<string, LichCachNvl[]>>   // cách tính chi phí NVL gói Free theo đơn vị, chi nhánh; mỗi lần đổi áp dụng từ kỳ đầu chưa khoá sổ (T232)
   giaThanhTay?: Record<string, Record<string, number>>   // giá thành món nhập tay theo đơn vị; khoá chi nhánh-yyyymm-mã món (T232)
+  dongBoThuChi?: Record<string, Record<string, boolean>>   // tự động đồng bộ phiếu thu, chi lập trên FABi theo đơn vị, từng chi nhánh (mã chi nhánh); chưa đặt là bật (T264)
+  mapPttt?: Record<string, Record<string, string>>   // map PTTT FABi về quỹ theo đơn vị; khoá 'mã chi nhánh|mã PTTT', giá trị mã quỹ (T264)
 }
 
 /** Đổi mã gói cũ ('M', 'A') sang mã chuẩn ('PL', 'PR'), nhận cả mã cũ và mới */
