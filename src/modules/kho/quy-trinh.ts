@@ -21,24 +21,33 @@ export const quyTrinh: QuyTrinhDef = {
       tren: [{ ten: 'Bổ sung giá nhập', icon: 'edit', di: 'kho/5-1-11/moi' }],
       duoi: [{ ten: 'Giá thành đơn giản', icon: 'flask', di: 'kho/5-1-8' }] },
   ],
-  // Gói Free (T123): mua hàng, bán hàng làm nên tồn hệ thống (kết quả, không phải màn hình); kiểm kê kho so sánh với tồn hệ thống
-  // ra chênh lệch: thiếu thì xuất điều chỉnh, thừa thì nhập điều chỉnh.
+  // Gói Free (T267): sơ đồ hội tụ như Thu chi, Mua hàng; các làn nghiệp vụ đổ về Sổ sách, báo cáo
   moTaFree: 'Gói Free theo dõi tồn kho với hàng bán thẳng: mua về bán ra nguyên đơn vị, không qua chế biến.',
-  luongFree: [
-    { nut: [
-      { ten: 'Mua hàng', icon: 'truck', di: 'mua-hang/4-1-1' },
-      { ten: 'Bán hàng', icon: 'pos', di: 'ban-hang/3-1-1' },
+  hoiTuFree: {
+    lan: [
+      { ten: 'Nhập hàng', tone: 'ok', nut: [
+        { ten: 'Mua hàng', icon: 'truck', di: 'mua-hang/4-1-1' },
+      ] },
+      { ten: 'Xuất hàng', tone: 'err', nut: [
+        { ten: 'Bán hàng', icon: 'pos', di: 'ban-hang/3-1-1' },
+      ] },
+      { ten: 'Kiểm kê', tone: 'info', nut: [
+        { ten: 'Tồn hệ thống', icon: 'box', di: '', tone: 'kq' },
+        { ten: 'Kiểm kê kho', icon: 'clipboard', di: 'kho/5-1-10', noi: 'so sánh' },
+        { ten: 'Xuất điều chỉnh', icon: 'cashout', di: 'kho/dieu-chinh?loai=xdc' },
+        { ten: 'Nhập điều chỉnh', icon: 'filein', di: 'kho/dieu-chinh?loai=ndc' },
+      ] },
+    ],
+    ra: { ten: 'Sổ sách, báo cáo', nut: [
+      { ten: 'Báo cáo xuất nhập tồn', icon: 'box', di: 'kho/5-2-3' },
+      { ten: 'Báo cáo kiểm kê', icon: 'clipboard', di: 'kho/5-2-15' },
+      { ten: 'Tổng hợp xuất kho', icon: 'cashout', di: 'kho/5-2-11' },
+      { ten: 'Chi tiết xuất kho', icon: 'cashout', di: 'kho/5-2-12' },
+      { ten: 'Tổng hợp nhập kho', icon: 'filein', di: 'kho/5-2-9' },
+      { ten: 'Chi tiết nhập kho', icon: 'filein', di: 'kho/5-2-10' },
     ] },
-    { noi: 'tổng hợp', nut: [{ ten: 'Tồn hệ thống', icon: 'box', di: '', tone: 'kq' }] },
-    { noi: 'so sánh', nut: [{ ten: 'Kiểm kê kho', icon: 'clipboard', di: 'kho/5-1-10' }] },   // mở danh sách kiểm kê (T128)
-    { nut: [
-      // Mở màn Điều chỉnh kho đúng tab con (T128)
-      { ten: 'Xuất điều chỉnh', icon: 'cashout', di: 'kho/dieu-chinh?loai=xdc', noi: 'thiếu' },
-      { ten: 'Nhập điều chỉnh', icon: 'filein', di: 'kho/dieu-chinh?loai=ndc', noi: 'thừa' },
-    ] },
-  ],
+  },
   baoCao: ['5-2-3', '5-2-4', '5-2-1', '5-2-2', '5-2-5'],
-  baoCaoFree: ['5-2-3', '5-2-15', '5-2-11', '5-2-12', '5-2-9', '5-2-10'],   // Kiểm kê gói Free (T262)
   danhMuc: ['danh-muc/1-8', 'danh-muc/1-2', 'danh-muc/1-3', 'danh-muc/1-4', 'kho/5-1-5', 'kho/9-1-3'],
   tienIch: ['tien-ich/11-3', 'tien-ich/11-15'],   // bỏ 11.2 (T100)
 }

@@ -27,10 +27,16 @@ export function layDsBuoc(mod: ModuleDef, s: Session): BuocMobile[] {
   if (!goc0) return []
 
   // Gói Free có sơ đồ hội tụ riêng thì thay sơ đồ chung (T98)
-  const goc: QuyTrinhDef =
+  const goc1: QuyTrinhDef =
     s.goi === 'F' && goc0.hoiTuFree
       ? { ...goc0, buoc: [], hoiTu: goc0.hoiTuFree }
       : goc0
+
+  // Gói Free có khối báo cáo riêng thì thay khối báo cáo, giữ các làn (T262)
+  const goc: QuyTrinhDef =
+    s.goi === 'F' && goc0.raFree && goc1.hoiTu
+      ? { ...goc1, hoiTu: { ...goc1.hoiTu, ra: goc0.raFree } }
+      : goc1
 
   // Gói Free có sơ đồ luồng theo cột thì thay sơ đồ chung (T123)
   const luong = s.goi === 'F' && goc.luongFree ? goc.luongFree : null

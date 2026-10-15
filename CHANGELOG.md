@@ -7,6 +7,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 - T270: Cột Tham chiếu ở danh sách chứng từ hiện các mã trên một dòng, cách nhau dấu phẩy. Bấm mã để mở phiếu ở tab mới; ô có nhiều mã thì bấm ra danh sách nhỏ để chọn phiếu.
 - T266: Web có mục Thao tác nhanh dưới Hệ thống trên sidebar. Bấm Tuỳ chỉnh để chọn thao tác và đổi thứ tự; trang chủ điện thoại dùng cùng danh sách.
 - T268: Cấu hình kế toán bỏ thẻ Chi nhánh và ánh xạ POS. Gói Free chỉ còn tính giá xuất kho Bình quân gia quyền cuối kỳ. Danh mục Phương thức thanh toán gói Free, Standard bỏ nút Nhập, Xuất Excel.
+- T267: Gói Free: sơ đồ Quy trình của Kiểm kê, Chi phí phân bổ, Kê khai thuế vẽ giống Thu chi, Mua hàng, Bán hàng. Các làn nghiệp vụ đổ về khối Sổ sách, báo cáo, không còn khung Báo cáo bên phải.
 - T264: Đồng bộ phiếu thu, chi lập trên FABi, mọi gói. Bật, tắt từng chi nhánh ở Danh mục chi nhánh (cạnh cách tính chi phí NVL, chọn được ngay khi thêm chi nhánh từ FABi); Danh mục Quỹ tiền map phương thức thanh toán theo cửa hàng; phiếu FABi hiện trong danh sách Thu chi. Lịch sử thu chi trang chủ có nhãn nguồn.
 - T263: Trang chủ gói Free: màn Chi phí trong tháng, Chi phí NVL, Lịch sử thu chi giữ đứng yên phần đầu và thẻ tổng, chỉ danh sách cuộn.
 - T262: Gói Free: sơ đồ quy trình Thu chi, Mua hàng, Bán hàng, Kiểm kê có thêm báo cáo liên quan (công nợ nhà cung cấp, xuất nhập tồn, nhập kho, xuất kho, kiểm kê).

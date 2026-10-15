@@ -310,7 +310,7 @@ function SoDoHoiTu({ lan, ra, goi, modKey, danhSo, hienLinkBaoCao }: { lan: LanQ
                 <span className="qt-ht-t">{l.ten}</span>
               </div>
               <div className="qt-lan-nut">{l.nut.map((n, idx) => (
-                <Fragment key={n.di || n.ten}>
+                <Fragment key={`${n.di || ''}-${n.ten}-${idx}`}>
                   {/* Ô nối tiếp ô trước trong làn: mũi tên có chữ nhỏ, mờ (T98); khi danhSo thì các ô nối nhau bằng mũi tên không chữ (T146) */}
                   {n.noi ? (
                     <span className="qt-ht-noi" aria-hidden><small>{n.noi}</small><i /></span>
@@ -326,7 +326,7 @@ function SoDoHoiTu({ lan, ra, goi, modKey, danhSo, hienLinkBaoCao }: { lan: LanQ
         <div className="qt-ht-gom" />
         <div className="qt-ht-ra">
           <div className="qt-ht-dau"><span className="qt-ht-ic"><Icon n={ra.icon ?? 'book'} className="ic" /></span>{ra.ten}</div>
-          {ra.nut.map(n => <NutNgang key={n.di} n={n} goi={goi} dong />)}
+          {ra.nut.map((n, idx) => <NutNgang key={`${n.di || ''}-${n.ten}-${idx}`} n={n} goi={goi} dong />)}
           {hienLinkBaoCao && <Link to={`/app/${modKey}/bao-cao`} className="qt-ht-all">Tất cả báo cáo<Icon n="arrow" className="ic sm" /></Link>}
         </div>
       </div>

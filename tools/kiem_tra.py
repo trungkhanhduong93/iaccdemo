@@ -77,6 +77,10 @@ def kiem_tra_dien_thoai(rong=390, cao=844):
         for path in dia_chi:
             dem += 1
             pg.goto(f'{URL}#{path}')
+            try:
+                pg.wait_for_selector('.m-than', timeout=3000)
+            except Exception:
+                pass
             pg.wait_for_timeout(200)
             if con:
                 loi.append(f'{path}: lỗi console {con[:2]}')
@@ -4414,6 +4418,51 @@ def kiem_tra_dot_21_b():
 
 
 
+def kiem_tra_dot_22_b():
+    """Kiểm tra T267 (Anti A): Sơ đồ quy trình điện thoại cho kho, ccdc, thue."""
+    loi = []
+    print('Kiểm tra đợt 22B (T267): Sơ đồ quy trình điện thoại cho kho, ccdc, thue (390x844):')
+    SHOTS.mkdir(parents=True, exist_ok=True)
+
+    mods = [('kho', 'Kiểm kê'), ('ccdc', 'Chi phí phân bổ'), ('thue', 'Kê khai thuế')]
+
+    with sync_playwright() as p:
+        b = p.chromium.launch(channel='chrome')
+        pg = b.new_page(viewport={'width': 390, 'height': 844}, is_mobile=True, has_touch=True)
+        con = []
+        pg.on('console', lambda m: con.append(m.text) if m.type == 'error' else None)
+        pg.on('pageerror', lambda e: con.append(str(e)))
+
+        pg.goto(URL + '#/dang-nhap')
+        pg.wait_for_selector('.auth-box')
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('F'))})")
+
+        for mod, ten_ph in mods:
+            path_qt = f'/app/{mod}/quy-trinh'
+            pg.goto(f"{URL}?goi=F&p=m22-{mod}#{path_qt}")
+            pg.wait_for_selector('.m-quytrinh', timeout=8000)
+            pg.wait_for_timeout(350)
+
+            # 1. Mở được, có ít nhất 1 thẻ bước
+            the_ds = pg.locator('.m-qt2-the')
+            count = the_ds.count()
+            if count == 0:
+                loi.append(f'T267 mobile ({mod}): Không tìm thấy thẻ bước (.m-qt2-the)')
+
+            # 2. Không cuộn ngang trang
+            tran = pg.evaluate("['.main', '.m-than', '.m-quytrinh'].filter(q => { const e = document.querySelector(q); return e && e.scrollWidth > e.clientWidth + 2 })")
+            if tran:
+                loi.append(f'T267 mobile ({mod}): Tràn ngang tại {tran}')
+
+            # 3. Chụp ảnh
+            pg.screenshot(path=str(SHOTS / f'm-22-{mod}.png'))
+
+        if con:
+            loi.append(f'T267 mobile: lỗi console {con[:2]}')
+        b.close()
+    return loi
+
+
 def kiem_tra_cac_khung_dt():
     loi, dem = [], 0
     for rong, cao in KHUNG_DT:
@@ -4457,6 +4506,7 @@ def kiem_tra_cac_khung_dt():
     loi += kiem_tra_dot_19_b()
     loi += kiem_tra_dot_20_b()
     loi += kiem_tra_dot_21_b()
+    loi += kiem_tra_dot_22_b()
     if loi:
         print(f'{len(loi)} LỖI:')
         for x in loi:
@@ -4685,6 +4735,99 @@ def kiem_tra_t238_may_tinh():
     return loi
 
 
+def kiem_tra_dot_22_a():
+    """Kiểm tra T267 (Anti A): Sơ đồ hội tụ gói Free cho Kiểm kê (kho), Chi phí phân bổ (ccdc), Kê khai thuế (thue)."""
+    loi = []
+    print('Kiểm tra đợt 22A (T267): Sơ đồ hội tụ gói Free cho kho, ccdc, thue (1440x900):')
+    SHOTS.mkdir(parents=True, exist_ok=True)
+
+    cac_man = [
+        ('kho', 'Kiểm kê', [
+            ('mua-hang/4-1-1', 'Mua hàng'),
+            ('ban-hang/3-1-1', 'Bán hàng'),
+            ('', 'Tồn hệ thống'),
+            ('kho/5-1-10', 'Kiểm kê kho'),
+            ('kho/dieu-chinh?loai=xdc', 'Xuất điều chỉnh'),
+            ('kho/dieu-chinh?loai=ndc', 'Nhập điều chỉnh'),
+        ]),
+        ('ccdc', 'Chi phí phân bổ', [
+            ('tien/2-1-1/moi?loai=chi&ly=LD17', 'Chi tiền mặt'),
+            ('tien/2-1-1/moi?loai=unc&ly=LD17', 'Chi ngân hàng'),
+            ('ccdc/8-1-1', 'Thẻ chi phí phân bổ'),
+            ('ccdc/8-1-1', 'Thẻ CPPB dư đầu kỳ'),
+        ]),
+        ('thue', 'Kê khai thuế', [
+            ('thue/to-khai?buoc=1', 'Thông tin hộ kinh doanh'),
+            ('thue/to-khai?buoc=2', 'Kê khai doanh thu'),
+            ('thue/to-khai?buoc=3', 'Khai phụ lục'),
+            ('thue/to-khai?buoc=4', 'Xem và nộp tờ khai'),
+        ]),
+    ]
+
+    with sync_playwright() as p:
+        b = p.chromium.launch(channel='chrome')
+        pg = b.new_page(viewport={'width': 1440, 'height': 900})
+        con = []
+        pg.on('console', lambda m: con.append(m.text) if m.type == 'error' else None)
+        pg.on('pageerror', lambda e: con.append(str(e)))
+
+        pg.goto(URL + '#/dang-nhap')
+        pg.wait_for_selector('.auth-box')
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('F'))})")
+
+        # Chụp ảnh tien gói F để so sánh (spec item 5)
+        pg.goto(f"{URL}?goi=F&p=tien-so-sanh#/app/tien/quy-trinh")
+        pg.wait_for_selector('.qt-ht')
+        pg.wait_for_timeout(300)
+        pg.screenshot(path=str(SHOTS / 'qt-22-tien.png'))
+
+        for mod, ten_ph, ds_o in cac_man:
+            path_qt = f'/app/{mod}/quy-trinh'
+            pg.goto(f"{URL}?goi=F&p={mod}-qt22#{path_qt}")
+            pg.wait_for_selector('.qt-card', timeout=8000)
+            pg.wait_for_timeout(350)
+
+            # 1. Có sơ đồ hội tụ: lớp .qt-ht, có .qt-ht-lan, .qt-ht-ra, .qt-ht-gom
+            if pg.locator('.qt-ht').count() == 0:
+                loi.append(f'T267 ({mod}): Không thấy sơ đồ hội tụ (.qt-ht)')
+            if pg.locator('.qt-ht-lan').count() == 0:
+                loi.append(f'T267 ({mod}): Thiếu vùng làn nghiệp vụ (.qt-ht-lan)')
+            if pg.locator('.qt-ht-ra').count() == 0:
+                loi.append(f'T267 ({mod}): Thiếu khối Sổ sách, báo cáo (.qt-ht-ra)')
+
+            # 2. Không có khung Báo cáo bên phải (.qt-bc)
+            if pg.locator('.qt-bc').count() > 0:
+                loi.append(f'T267 ({mod}): Vẫn còn khung Báo cáo bên phải (.qt-bc)')
+
+            # 3. Kiểm tra mỗi ô di cũ có mặt và mở đúng màn
+            for di, ten_o in ds_o:
+                if not di:
+                    # Ô tĩnh (Tồn hệ thống)
+                    o_tinh = pg.locator('.qt-n.tinh', has_text=ten_o)
+                    if o_tinh.count() == 0:
+                        loi.append(f'T267 ({mod}): Không tìm thấy ô tĩnh "{ten_o}"')
+                else:
+                    o_nut = pg.locator(f'a.qt-n[href*="{di}"], a.qt-n', has_text=ten_o)
+                    if o_nut.count() == 0:
+                        loi.append(f'T267 ({mod}): Không tìm thấy ô "{ten_o}" với đường dẫn {di}')
+                    else:
+                        href = o_nut.first.get_attribute('href') or ''
+                        if di not in href:
+                            loi.append(f'T267 ({mod}): Ô "{ten_o}" có href "{href}", không khớp "{di}"')
+
+            # 4. Kiểm tra tràn ngang và chụp ảnh
+            tran = pg.evaluate("['.main', '.page', '.qt-ht'].filter(q => { const e = document.querySelector(q); return e && e.scrollWidth > e.clientWidth + 2 })")
+            if tran:
+                loi.append(f'T267 ({mod}): Tràn ngang tại {tran}')
+
+            pg.screenshot(path=str(SHOTS / f'qt-22-{mod}.png'))
+
+        if con:
+            loi.append(f'T267: lỗi console {con[:2]}')
+        b.close()
+    return loi
+
+
 
 def main():
     if DIEN_THOAI:
@@ -4836,6 +4979,7 @@ def main():
     print(f'đã kiểm {dem} lượt mở màn')
     loi += kiem_tra_t233_may_tinh()
     loi += kiem_tra_t238_may_tinh()
+    loi += kiem_tra_dot_22_a()
     if loi:
         print(f'{len(loi)} LỖI:')
         for x in loi:
