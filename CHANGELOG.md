@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 15/10/2026
 
+- T255: Trang chủ gói Free: thẻ Quản lý lãi lỗ có nút Xem biểu đồ lãi lỗ 13 tháng, mở hộp biểu đồ doanh thu, chi phí, lãi lỗ từng tháng kèm tóm tắt 13 tháng.
 - T253: Trung tâm báo cáo: khối Ghim và mở gần đây nằm ngay dưới danh sách nhóm, chia hai phần Đã ghim, Mở gần đây, có biểu tượng loại báo cáo; rê chuột vào báo cáo đã ghim để bỏ ghim.
 - T254: Trang chủ điện thoại gói Free bỏ câu giới thiệu, chỉ giữ dòng tháng đang xem.
 - T252: Trang Báo cáo ẩn nhóm không có báo cáo nào, cả máy tính và điện thoại. Gói Free không còn nhóm Chi phí phân bổ.

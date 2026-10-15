@@ -1,7 +1,8 @@
 // Trang chủ gói Free theo ba bài toán: Quản lý lãi lỗ, Quản lý thu chi, Quản lý kho (T230).
 // Mỗi bài toán một cột: câu hỏi chủ quán hay hỏi, số trả lời, 4 dòng chi tiết, nút đi tới màn làm việc.
 // Lãi lỗ tách chi phí như Báo cáo kết quả kinh doanh bản Free (T220): bỏ thu nhập, chi phí khác khỏi lợi nhuận
-import { useMemo, type ReactNode } from 'react'
+import { useMemo, useState, type ReactNode } from 'react'
+import { createPortal } from 'react-dom'
 import { Link } from 'react-router-dom'
 import { LenThanhTab } from '../../app/ModuleTabs'
 import { CHI_NHANH } from '../../data/mock'
@@ -14,13 +15,15 @@ import { PHIEU_MUA } from '../mua-hang/bao-cao'
 import { tonQuyTheoSo } from './LichSuQuy'
 import { rowsCongNo } from '../bao-cao/cong-no'
 import { datLocDaXem } from '../../ui/bao-cao/tuyChinhBC'
-import type { TongQuanSoLieu } from './chiSo'
-import { useSession } from '../../app/session'
+import { tinhToanTongQuan, type TongQuanSoLieu } from './chiSo'
+import { useSession, type Session } from '../../app/session'
+import { LaiLoChart } from '../../ui/Charts'
 import { moTaCach, nvlKy } from './chi-phi-nvl'
 import { useMoTuTrangChu } from '../../app/tuTrangChu'
+import { useDongEsc } from '../../ui/LocNangCao'
 
-function Cot({ so, icon, ten, hoi, tra, traCls, phu, di, nut, goiY, children }: {
-  so: number; icon: string; ten: string; hoi: string; tra?: string; traCls?: string; phu: string; di?: string; nut?: string; goiY?: string; children?: ReactNode
+function Cot({ so, icon, ten, hoi, tra, traCls, phu, di, nut, onNut, goiY, children }: {
+  so: number; icon: string; ten: string; hoi: string; tra?: string; traCls?: string; phu: string; di?: string; nut?: string; onNut?: () => void; goiY?: string; children?: ReactNode
 }) {
   return (
     <section className="bbt-cot">
@@ -30,6 +33,7 @@ function Cot({ so, icon, ten, hoi, tra, traCls, phu, di, nut, goiY, children }: 
       <div className="bbt-phu">{phu}</div>
       {children && <div className="bbt-ds">{children}</div>}
       {di && <div className="bbt-chan"><Link to={di} className="bbt-nut">{nut}<Icon n="chevr" className="ic sm" /></Link>{goiY && <span className="bbt-goiy">{goiY}</span>}</div>}
+      {onNut && <div className="bbt-chan"><button type="button" className="bbt-nut" onClick={onNut}>{nut}<Icon n="chevr" className="ic sm" /></button>{goiY && <span className="bbt-goiy">{goiY}</span>}</div>}   {/* nút mở hộp thay vì chuyển màn (T255) */}
     </section>
   )
 }
@@ -108,6 +112,79 @@ function TheKho({ thang, nhapMua, soDon, congNo, soNcc, matHH }: { thang: number
   )
 }
 
+// Hệ số mùa vụ quán ăn uống tháng 10/2025 đến 6/2026 so với trung bình tháng 7–9/2026: Tết (tháng 1) cao, sau Tết (tháng 2) thấp (T255)
+const MUA_VU: [number, number, number][] = [   // [tháng, năm, hệ số doanh thu]
+  [10, 2025, 0.9], [11, 2025, 0.94], [12, 2025, 1.08], [1, 2026, 1.16], [2, 2026, 0.74],
+  [3, 2026, 0.86], [4, 2026, 0.93], [5, 2026, 0.97], [6, 2026, 1.01],
+]
+
+/** Lãi lỗ 13 tháng 10/2025–10/2026, cùng công thức thẻ Lãi lỗ: doanh thu thuần trừ chi phí NVL, chi phí hoạt động.
+ *  Dữ liệu mẫu chỉ có từ 01/07/2026: tháng 7–10 tính thật; 9 tháng trước sinh từ trung bình tháng 7–9 theo hệ số mùa vụ,
+ *  NVL theo tỷ lệ doanh thu, chi phí hoạt động gần như cố định (T255) */
+function laiLo13Thang(s: Session, selCns: string[]) {
+  const that = [7, 8, 9, 10].map(t => {
+    const d = tinhToanTongQuan(t === 10 ? 'thang-nay' : 'thang-truoc', selCns, s.cheDo, t)
+    return { t, dt: d.dtThuan, nvl: nvlKy(s, selCns, t).tien, cp: d.cpHoatDong }
+  })
+  const du = that.slice(0, 3)
+  const tb = (f: (x: typeof du[number]) => number) => du.reduce((a, x) => a + f(x), 0) / du.length
+  const dtTb = tb(x => x.dt), tyLeNvl = tb(x => x.nvl) / (dtTb || 1), cpTb = tb(x => x.cp)
+  const mau = MUA_VU.map(([t, n, h], i) => {
+    const dt = dtTb * h
+    const cp = cpTb * (0.97 + (i % 3) * 0.025)
+    const chi = Math.round(dt * tyLeNvl + cp)
+    return { l: `T${t}/${String(n).slice(2)}`, dt: Math.round(dt), cp: chi, v: Math.round(dt) - chi, ghiChu: 'số mẫu' }
+  })
+  return [...mau, ...that.map(x => ({
+    l: `T${x.t}/26`, dt: x.dt, cp: x.nvl + x.cp, v: Math.round(x.dt - x.nvl - x.cp),
+    ghiChu: x.t === 10 ? 'tháng 10 mới có số liệu đến 07/10' : undefined, do: x.t === 10,
+  }))]
+}
+
+/** Tóm tắt 13 tháng cạnh biểu đồ: tổng doanh thu, chi phí, lãi lỗ, tháng lãi cao nhất, số tháng lỗ (T255) */
+function TomTat13({ ds }: { ds: ReturnType<typeof laiLo13Thang> }) {
+  const tong = (f: (x: typeof ds[number]) => number) => ds.reduce((a, x) => a + f(x), 0)
+  const ln = tong(x => x.v)
+  const cao = ds.reduce((a, x) => (x.v > a.v ? x : a), ds[0])
+  const lo = ds.filter(x => x.v < 0)
+  const dong = (ten: string, gt: string, cls = '') => <div className="bbt-13t-dong"><span>{ten}</span><b className={cls}>{gt}</b></div>
+  return (
+    <div className="bbt-13t-tt">
+      {dong('Tổng doanh thu', moneyD(tong(x => x.dt)))}
+      {dong('Tổng chi phí', moneyD(tong(x => x.cp)))}
+      {dong(ln >= 0 ? 'Tổng lãi' : 'Tổng lỗ', moneyD(Math.abs(ln)), ln >= 0 ? 'lai' : 'lo')}
+      {dong('Lãi cao nhất', `${cao.l} · ${short(cao.v)}`)}
+      {dong('Tháng lỗ', lo.length ? lo.map(x => x.l).join(', ') : 'Không có', lo.length ? 'lo' : '')}
+    </div>
+  )
+}
+
+/** Hộp biểu đồ lãi lỗ 13 tháng, mở từ nút ở thẻ Quản lý lãi lỗ: biểu đồ bên trái, tóm tắt bên phải; chân hộp vẫn mở được Kết quả kinh doanh (T255) */
+function HopLaiLo13({ ds, onDong }: { ds: ReturnType<typeof laiLo13Thang>; onDong: () => void }) {
+  useDongEsc(onDong)
+  return createPortal(
+    <div className="overlay ds-hop-nen" onMouseDown={e => { if (e.target === e.currentTarget) onDong() }}>
+      <div className="ds-hop hop-13t" role="dialog" aria-modal="true" aria-label="Biểu đồ lãi lỗ 13 tháng">
+        <div className="ds-hop-dau">
+          <Icon n="chart" className="ic sm" /><b>Lãi lỗ 13 tháng</b><span className="grow" />
+          <span className="bbt-13t-chu"><i className="dt" />Doanh thu<i className="cp" />Chi phí<i className="lai tron" />Lãi<i className="lo tron" />Lỗ</span>
+          <button type="button" className="pheu-dong" title="Đóng" aria-label="Đóng" onClick={onDong}><Icon n="x" className="ic sm" /></button>
+        </div>
+        <div className="hop-13t-than">
+          <div className="bbt-13t-bd"><LaiLoChart data={ds} /><div className="hop-13t-goiy">Rê chuột vào từng tháng để xem doanh thu, chi phí, lãi lỗ</div></div>
+          <TomTat13 ds={ds} />
+        </div>
+        <div className="ds-chan">
+          <Link to="/app/bao-cao/10-2-3" className="btn" onClick={onDong}>Xem kết quả kinh doanh</Link>
+          <span className="grow" />
+          <button type="button" className="btn pri" onClick={onDong}>Đóng</button>
+        </div>
+      </div>
+    </div>,
+    document.body,
+  )
+}
+
 /** thang: tháng đang xem của năm 2026, chọn ở ô Năm, Tháng (T230) */
 export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQuanSoLieu; thang: number; selCns: string[]; chonKy?: ReactNode }) {
   const thang = useMemo(() => [thangXem], [thangXem])
@@ -121,6 +198,8 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
   const cpThang = d.cpHoatDong - d.cpPhanBo
   const loiNhuan = d.dtThuan - nvl.tien - cpThang - d.cpPhanBo
   const bien = d.dtThuan > 0 ? loiNhuan / d.dtThuan : 0
+  const laiLo13 = useMemo(() => laiLo13Thang(s, selCns), [s, selCns])
+  const [moBieuDo, setMoBieuDo] = useState(false)
 
   // 2. Thu chi: số dư, thu, chi cộng từ Sổ quỹ tiền mặt, Sổ ngân hàng như khối Tồn quỹ, Lịch sử thu chi (T230)
   const quy = useMemo(() => tonQuyTheoSo(thangXem, selCns), [thangXem, selCns])
@@ -150,7 +229,7 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
       <div className="bbt-luoi">
         <Cot so={1} icon="chart" ten="Quản lý lãi lỗ" hoi={`${thangXem === 10 ? 'Tháng này' : `Tháng ${thangXem}`} lãi bao nhiêu?`}
           tra={`${loiNhuan >= 0 ? '+' : '−'}${short(Math.abs(loiNhuan))}`} traCls={loiNhuan >= 0 ? 'lai' : 'lo'}
-          phu={`Biên lãi ${pct(bien)} trên doanh thu`} di="/app/bao-cao/10-2-3" nut="Xem kết quả kinh doanh" />
+          phu={`Biên lãi ${pct(bien)} trên doanh thu`} onNut={() => setMoBieuDo(true)} nut="Xem biểu đồ lãi lỗ 13 tháng" />
         <Cot so={2} icon="wallet" ten="Quản lý thu chi" hoi={thangXem === 10 ? 'Tồn quỹ hiện tại' : `Tồn quỹ cuối tháng ${thangXem}/2026`}
           tra={short(tongQuy.cuoi)} phu={`Thu +${short(tongQuy.thu)} · Chi −${short(tongQuy.chi)}`} di="/app/danh-muc/1-12?moi=1&goiY=thuchi" nut="Tạo quỹ" goiY="Bấm vào quỹ bên dưới để xem lịch sử thu chi" />   {/* mở form thêm quỹ ở Danh mục Quỹ tiền (T245), lưu xong gợi ý lập phiếu thu, chi (T250) */}
         <Cot so={3} icon="khohang" ten="Quản lý kho" hoi="Quản lý mua hàng, công nợ, hao hụt hàng bán thẳng"
@@ -162,6 +241,7 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
         <TheTonQuy thang={thangXem} ds={quy} />
         <TheKho thang={thangXem} nhapMua={kho.nhapMua} soDon={kho.soDon} congNo={kho.congNo} soNcc={kho.soNcc} matHH={kho.matHH} />
       </div>
+      {moBieuDo && <HopLaiLo13 ds={laiLo13} onDong={() => setMoBieuDo(false)} />}
     </div>
   )
 }

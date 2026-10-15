@@ -17336,3 +17336,25 @@ a.lsq-dong:hover { background: var(--tint); }
 .bc-quick-pinned:hover .bc-quick-ma {
   display: none;
 }
+
+/* ── Biểu đồ lãi lỗ 13 tháng trang chủ gói Free (T255) ── */
+.bbt-13t-chu { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--muted); }
+.bbt-13t-chu i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-left: 8px; }
+.bbt-13t-chu i.lai { background: var(--green); }
+.bbt-13t-chu i.lo { background: var(--red); }
+.bbt-13t-chu i.dt { background: var(--blue); }
+.bbt-13t-chu i.cp { background: var(--orange); }
+.bbt-13t-chu i.tron { border-radius: 50%; }
+button.bbt-nut { background: none; border: 0; padding-left: 0; padding-right: 0; font-family: inherit; cursor: pointer; }
+.hop-13t { width: min(1100px, calc(100vw - 48px)); }
+.hop-13t .ds-hop-dau { border-bottom: 1px solid var(--line-2); }
+.hop-13t-than { display: grid; grid-template-columns: minmax(0, 2.2fr) minmax(0, 1fr); gap: 16px; align-items: start; padding: 14px 16px; overflow-y: auto; }
+.hop-13t-goiy { margin-top: 4px; font-size: 12px; color: var(--muted); }
+.hop-13t .ds-chan { justify-content: flex-start; }
+.bbt-13t-bd { min-width: 0; }
+.lai-lo-thang:hover > rect:first-of-type { fill: var(--soft); }
+.bbt-13t-tt { display: flex; flex-direction: column; gap: 8px; }
+.bbt-13t-dong { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 10px 12px; border-radius: 8px; background: var(--hdb-chan); font-size: 13px; color: var(--muted); }
+.bbt-13t-dong b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; }
+.bbt-13t-dong b.lai { color: var(--green); }
+.bbt-13t-dong b.lo { color: var(--red); }

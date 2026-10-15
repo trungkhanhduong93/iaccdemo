@@ -406,3 +406,59 @@ export function CostStructureChart({
   )
 }
 
+
+/** Lãi lỗ theo tháng: cột doanh thu (xanh dương), cột chi phí (cam), đường lãi lỗ có điểm xanh khi lãi, đỏ khi lỗ.
+ *  Không ghi số trên biểu đồ cho gọn; rê chuột vào tháng hiện doanh thu, chi phí, lãi lỗ. Tháng chưa hết (do) cột viền nét đứt (T255) */
+export function LaiLoChart({ data, h = 260 }: {
+  data: { l: string; dt: number; cp: number; v: number; ghiChu?: string; do?: boolean }[]
+  h?: number
+}) {
+  const W = 640, pl = 44, pr = 6, pb = 24, pt = 10
+  // Bước vạch tròn (1, 2, 2,5, 5 nhân 10 mũ n) để trục đọc dễ
+  const lon = Math.max(0, ...data.flatMap(d => [d.dt, d.cp, d.v])), nho = Math.min(0, ...data.map(d => d.v))
+  const tho = (lon - nho) / 4 || 1, mu = 10 ** Math.floor(Math.log10(tho))
+  const buoc = [1, 2, 2.5, 5, 10].map(x => x * mu).find(x => x >= tho) ?? 10 * mu
+  // Phần dưới 0 chỉ vừa đủ cho tháng lỗ, không kéo thêm cả một bước vạch
+  const max = Math.ceil((lon * 1.04) / buoc) * buoc, min = nho < 0 ? nho - (max - nho) * 0.06 : 0
+  const span = max - min || 1
+  const y = (v: number) => pt + (h - pt - pb) * ((max - v) / span)
+  const bw = (W - pl - pr) / (data.length || 1)
+  const cx = (i: number) => pl + i * bw + bw / 2
+  const gon = (v: number) => short(v).replace(' tr', 'tr').replace(' tỷ', 'tỷ').replace(' k', 'k')
+  const ticks = Array.from({ length: Math.round(max / buoc) + 1 }, (_, i) => buoc * i).concat(min <= -buoc ? Array.from({ length: Math.floor(-min / buoc) }, (_, i) => -buoc * (i + 1)) : [])
+  const tien = (v: number) => `${v.toLocaleString('vi-VN')} đ`
+  return (
+    <svg className="chart lai-lo-chart" viewBox={`0 0 ${W} ${h}`} width="100%" role="img" aria-label="Biểu đồ doanh thu, chi phí, lãi lỗ theo tháng">
+      {ticks.map((t, i) => (
+        <g key={i}>
+          <line x1={pl} x2={W - pr} y1={y(t)} y2={y(t)} stroke="var(--line-2)" />
+          <text x={pl - 6} y={y(t) + 4} textAnchor="end">{gon(t)}</text>
+        </g>
+      ))}
+      <line x1={pl} x2={W - pr} y1={y(0)} y2={y(0)} stroke="var(--line)" />
+      {data.map((d, i) => {
+        const w = bw * 0.28, x = cx(i) - w - 1
+        const cot = (x0: number, v: number, mau: string) => (
+          <rect x={x0} y={y(v)} width={w} height={Math.max(1, y(0) - y(v))} rx={2} fill={mau} opacity={d.do ? 0.3 : 0.92}
+            stroke={d.do ? mau : 'none'} strokeDasharray={d.do ? '3 2' : undefined} />
+        )
+        return (
+          <g key={i} className="lai-lo-thang">
+            <title>{`${d.l}${d.ghiChu ? ` (${d.ghiChu})` : ''}
+Doanh thu: ${tien(d.dt)}
+Chi phí: ${tien(d.cp)}
+${d.v >= 0 ? 'Lãi' : 'Lỗ'}: ${tien(Math.abs(d.v))}`}</title>
+            <rect x={pl + i * bw} y={pt} width={bw} height={h - pt - pb} fill="transparent" />
+            {cot(x, d.dt, 'var(--blue)')}
+            {cot(x + w + 2, d.cp, 'var(--orange)')}
+            <text x={cx(i)} y={h - 7} textAnchor="middle">{d.l}</text>
+          </g>
+        )
+      })}
+      <polyline points={data.map((d, i) => `${cx(i)},${y(d.v)}`).join(' ')} fill="none" stroke="var(--ink)" strokeWidth={2} strokeLinejoin="round" pointerEvents="none" />
+      {data.map((d, i) => (
+        <circle key={i} cx={cx(i)} cy={y(d.v)} r={4.5} fill={d.v >= 0 ? 'var(--green)' : 'var(--red)'} stroke="#fff" strokeWidth={1.5} pointerEvents="none" />
+      ))}
+    </svg>
+  )
+}
