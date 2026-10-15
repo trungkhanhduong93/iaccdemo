@@ -3,11 +3,12 @@
 // Lãi lỗ tách chi phí như Báo cáo kết quả kinh doanh bản Free (T220): bỏ thu nhập, chi phí khác khỏi lợi nhuận
 import { useMemo, useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { LenThanhTab } from '../../app/ModuleTabs'
 import { CHI_NHANH } from '../../data/mock'
 import { timMan } from '../../app/registry'
 import { Icon } from '../../ui/Icon'
+import { Select } from '../../ui/Dropdown'
 import { moneyD, pct, short } from '../../ui/format'
 import { chungTu } from '../../ui/generic/gen'
 import { mauDieuChinh } from '../kho/dieu-chinh'
@@ -23,6 +24,22 @@ import { useMoTuTrangChu } from '../../app/tuTrangChu'
 import { useDongEsc } from '../../ui/LocNangCao'
 import { useThaoTacNhanh } from '../../app/thaoTacNhanh'
 import { ModalQuy } from './quyThuChi'
+import {
+  layDuLieuCanTheoDoi,
+  layLaiLoChiNhanh,
+  layTop5ChiPhi,
+  layTop5ChiTien,
+  layTop5DoanhThu,
+  layTop5GiaVon,
+  layTop5NhaCungCap,
+  type LaiLoCnItem,
+} from './soLieuBieuDoFree'
+import {
+  BieuDoChiNhanhModal,
+  LuoiCanTheoDoi,
+  TheLaiLoChiNhanh,
+  TheTop5Hbar,
+} from './BieuDoFree'
 
 // Hệ số mùa vụ quán ăn uống tháng 10/2025 đến 6/2026 so với trung bình tháng 7–9/2026: Tết (tháng 1) cao, sau Tết (tháng 2) thấp (T255)
 const MUA_VU: [number, number, number][] = [   // [tháng, năm, hệ số doanh thu]
@@ -71,20 +88,64 @@ function TomTat13({ ds }: { ds: ReturnType<typeof laiLo13Thang> }) {
   )
 }
 
-/** Hộp biểu đồ lãi lỗ 13 tháng, mở từ nút ở thẻ Quản lý lãi lỗ: biểu đồ bên trái, tóm tắt bên phải; chân hộp vẫn mở được Kết quả kinh doanh (T255) */
-export function HopLaiLo13({ ds, onDong }: { ds: ReturnType<typeof laiLo13Thang>; onDong: () => void }) {
+/** Hộp biểu đồ lãi lỗ 13 tháng, mở từ nút ở thẻ Quản lý lãi lỗ: biểu đồ bên trái, tóm tắt bên phải; chân hộp vẫn mở được Kết quả kinh doanh (T255, T274) */
+export function HopLaiLo13({
+  ds,
+  onDong,
+  thangXem,
+  selCns,
+  laiLoCn,
+}: {
+  ds: ReturnType<typeof laiLo13Thang>
+  onDong: () => void
+  thangXem?: number
+  selCns?: string[]
+  laiLoCn?: LaiLoCnItem[]
+}) {
   useDongEsc(onDong)
+  const isTatCa = !selCns || selCns.length > 1
+  const [kieuXem, setKieuXem] = useState<'13t' | 'cn'>('13t')
+
   return createPortal(
     <div className="overlay ds-hop-nen" onMouseDown={e => { if (e.target === e.currentTarget) onDong() }}>
-      <div className="ds-hop hop-13t" role="dialog" aria-modal="true" aria-label="Biểu đồ lãi lỗ 13 tháng">
+      <div className={`ds-hop hop-13t ${kieuXem === 'cn' ? 'hop-13t--cn' : ''}`} role="dialog" aria-modal="true" aria-label="Biểu đồ lãi lỗ 13 tháng">
         <div className="ds-hop-dau">
-          <Icon n="chart" className="ic sm" /><b>Lãi lỗ 13 tháng</b><span className="grow" />
+          <Icon n="chart" className="ic sm" /><b>{kieuXem === 'cn' ? `Lãi lỗ theo chi nhánh tháng ${thangXem ?? 10}/2026` : 'Lãi lỗ 13 tháng'}</b>
+          {isTatCa && (
+            <div className="bbt-modal-segmented" role="tablist" aria-label="Kiểu xem lãi lỗ">
+              <button
+                type="button"
+                role="tab"
+                aria-selected={kieuXem === '13t'}
+                className={`bbt-seg-btn ${kieuXem === '13t' ? 'on' : ''}`}
+                onClick={() => setKieuXem('13t')}
+              >
+                13 tháng
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={kieuXem === 'cn'}
+                className={`bbt-seg-btn ${kieuXem === 'cn' ? 'on' : ''}`}
+                onClick={() => setKieuXem('cn')}
+              >
+                Theo chi nhánh
+              </button>
+            </div>
+          )}
+          <span className="grow" />
           <span className="bbt-13t-chu"><i className="dt" />Doanh thu<i className="cp" />Chi phí<i className="lai tron" />Lãi<i className="lo tron" />Lỗ</span>
           <button type="button" className="pheu-dong" title="Đóng" aria-label="Đóng" onClick={onDong}><Icon n="x" className="ic sm" /></button>
         </div>
         <div className="hop-13t-than">
-          <div className="bbt-13t-bd"><LaiLoChart data={ds} /><div className="hop-13t-goiy">Rê chuột vào từng tháng để xem doanh thu, chi phí, lãi lỗ</div></div>
-          <TomTat13 ds={ds} />
+          {kieuXem === 'cn' && laiLoCn ? (
+            <BieuDoChiNhanhModal ds={laiLoCn} thang={thangXem ?? 10} />
+          ) : (
+            <>
+              <div className="bbt-13t-bd"><LaiLoChart data={ds} /><div className="hop-13t-goiy">Rê chuột vào từng tháng để xem doanh thu, chi phí, lãi lỗ</div></div>
+              <TomTat13 ds={ds} />
+            </>
+          )}
         </div>
         <div className="ds-chan">
           <Link to="/app/bao-cao/10-2-3" className="btn" onClick={onDong}>Xem kết quả kinh doanh</Link>
@@ -97,25 +158,52 @@ export function HopLaiLo13({ ds, onDong }: { ds: ReturnType<typeof laiLo13Thang>
   )
 }
 
-/** Trang chủ Free theo ba bài toán mẫu E (T272): 3 cột cao bằng nhau, số lớn đủ tiền, modal quỹ M2 */
+/** Trang chủ Free theo ba bài toán mẫu E (T272, T274): 2 tab Tổng quan | Cần theo dõi, lọc chi nhánh, 6 biểu đồ */
 export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQuanSoLieu; thang: number; selCns: string[]; chonKy?: ReactNode }) {
+  const { s, set } = useSession()
+  const moTuTrangChu = useMoTuTrangChu()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const tabParam = searchParams.get('tab')
+  const tabHien = tabParam === 'theo-doi' ? 'theo-doi' : 'tong-quan'
+
+  const chuyenTab = (t: 'tong-quan' | 'theo-doi') => {
+    setSearchParams(prev => {
+      const n = new URLSearchParams(prev)
+      if (t === 'theo-doi') n.set('tab', 'theo-doi')
+      else n.delete('tab')
+      return n
+    }, { replace: true })
+  }
+
+  // Chi nhánh chọn từ thanh trên / session (T274)
+  const cnChon = s.chiNhanh || 'all'
+  const cnsHien = useMemo(() => {
+    if (s.chiNhanh && s.chiNhanh !== 'all') return [s.chiNhanh]
+    return CHI_NHANH.map(c => c.id)
+  }, [s.chiNhanh])
+
+  // Tính lại số liệu tổng quan nếu chi nhánh đổi
+  const dHien = useMemo(() => {
+    const khop = cnsHien.length === selCns.length && cnsHien.every(id => selCns.includes(id))
+    if (khop) return d
+    return tinhToanTongQuan(thangXem === 10 ? 'thang-nay' : 'thang-truoc', cnsHien, s.cheDo, thangXem)
+  }, [d, cnsHien, selCns, s.cheDo, thangXem])
+
   const thang = useMemo(() => [thangXem], [thangXem])
-  const tenCn = useMemo(() => new Set(CHI_NHANH.filter(c => selCns.includes(c.id)).map(c => c.ten)), [selCns])
+  const tenCn = useMemo(() => new Set(CHI_NHANH.filter(c => cnsHien.includes(c.id)).map(c => c.ten)), [cnsHien])
 
   // 1. Lãi lỗ
-  const { s } = useSession()
-  const moTuTrangChu = useMoTuTrangChu()
-  const nvl = nvlKy(s, selCns, thangXem)
-  const cpThang = d.cpHoatDong - d.cpPhanBo
-  const loiNhuan = d.dtThuan - nvl.tien - cpThang - d.cpPhanBo
-  const bien = d.dtThuan > 0 ? loiNhuan / d.dtThuan : 0
-  const laiLo13 = useMemo(() => laiLo13Thang(s, selCns), [s, selCns])
+  const nvl = nvlKy(s, cnsHien, thangXem)
+  const cpThang = dHien.cpHoatDong - dHien.cpPhanBo
+  const loiNhuan = dHien.dtThuan - nvl.tien - cpThang - dHien.cpPhanBo
+  const bien = dHien.dtThuan > 0 ? loiNhuan / dHien.dtThuan : 0
+  const laiLo13 = useMemo(() => laiLo13Thang(s, cnsHien), [s, cnsHien])
   const [moBieuDo, setMoBieuDo] = useState(false)
 
   // 2. Thu chi: số dư, thu, chi cộng từ Sổ quỹ tiền mặt, Sổ ngân hàng
-  const quy = useMemo(() => tonQuyTheoSo(thangXem, selCns), [thangXem, selCns])
+  const quy = useMemo(() => tonQuyTheoSo(thangXem, cnsHien), [thangXem, cnsHien])
   const tongQuy = { cuoi: quy.reduce((a, r) => a + r.cuoi, 0), thu: quy.reduce((a, r) => a + r.thu, 0), chi: quy.reduce((a, r) => a + r.chi, 0) }
-  const chiLon = [...d.coCauCp].sort((a, b) => b.v - a.v)[0]
+  const chiLon = [...dHien.coCauCp].sort((a, b) => b.v - a.v)[0]
   const [modalQuy, setModalQuy] = useState<string | null>(null)
 
   // 3. Kho & Thao tác nhanh tuỳ chỉnh dùng chung (T266, T272)
@@ -125,19 +213,60 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
   const kho = useMemo(() => {
     const mua = chungTu(PHIEU_MUA, '4.1.1').filter(r => thang.includes(Number(r.thang)) && tenCn.has(String(r.cn)))
     const nhapMua = mua.reduce((a, r) => a + (Number(r.tong) || 0), 0)
-    const motCn = selCns.length === 1 ? CHI_NHANH.find(c => c.id === selCns[0])?.ten : undefined
+    const motCn = cnsHien.length === 1 ? CHI_NHANH.find(c => c.id === cnsHien[0])?.ten : undefined
     const ncc = rowsCongNo('ncc', thangXem, motCn).filter(r => !r._t)
     const congNo = ncc.reduce((a, r) => a + Math.max(0, Number(r.cuoi) || 0), 0)
     const cfgKK = timMan('kho', '5-1-10').sc?.voucher
     const xdc = cfgKK ? mauDieuChinh(cfgKK).filter(r => r.loai === 'xdc' && thang.includes(Number(r.thang)) && tenCn.has(String(r.cn))) : []
     const matHH = new Set(xdc.flatMap(r => ((r._dong as { ma: string }[] | undefined) ?? []).map(d => d.ma))).size
     return { nhapMua, soDon: mua.length, congNo, soNcc: ncc.filter(r => Number(r.cuoi) > 0).length, matHH }
-  }, [selCns, tenCn, thang, thangXem])
+  }, [cnsHien, tenCn, thang, thangXem])
+
+  // Số liệu 5 biểu đồ top 5 + Lãi lỗ chi nhánh + Cần theo dõi (T274)
+  const top5Dt = useMemo(() => layTop5DoanhThu(thangXem, cnsHien, dHien.dtThuan), [thangXem, cnsHien, dHien.dtThuan])
+  const top5Cp = useMemo(() => layTop5ChiPhi(thangXem, cnsHien, cpThang, dHien.coCauCp), [thangXem, cnsHien, cpThang, dHien.coCauCp])
+  const top5Gv = useMemo(() => layTop5GiaVon(thangXem, cnsHien, nvl.tien), [thangXem, cnsHien, nvl.tien])
+  const top5Ncc = useMemo(() => layTop5NhaCungCap(thangXem, cnsHien, kho.nhapMua), [thangXem, cnsHien, kho.nhapMua])
+  const top5Chi = useMemo(() => layTop5ChiTien(thangXem, cnsHien, tongQuy.chi), [thangXem, cnsHien, tongQuy.chi])
+  const laiLoCn = useMemo(() => layLaiLoChiNhanh(thangXem, cnsHien, s), [thangXem, cnsHien, s])
+  const ctdData = useMemo(() => layDuLieuCanTheoDoi(thangXem, cnsHien, dHien.dtThuan), [thangXem, cnsHien, dHien.dtThuan])
 
   return (
     <div className="bbt bbt-e" onClickCapture={moTuTrangChu}>
-      <LenThanhTab>{chonKy}</LenThanhTab>
-      <div className="bbt-e-luoi">
+      <LenThanhTab>
+        {chonKy}
+      </LenThanhTab>
+
+      {/* Thanh 2 tab: Tổng quan | Cần theo dõi (T274) */}
+      <div className="bbt-thanh-dau">
+        <div className="bbt-tabs" role="tablist" aria-label="Chuyển tab trang chủ">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={tabHien === 'tong-quan'}
+            className={`bbt-tab-btn ${tabHien === 'tong-quan' ? 'on' : ''}`}
+            onClick={() => chuyenTab('tong-quan')}
+          >
+            Tổng quan
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={tabHien === 'theo-doi'}
+            className={`bbt-tab-btn ${tabHien === 'theo-doi' ? 'on' : ''}`}
+            onClick={() => chuyenTab('theo-doi')}
+          >
+            Cần theo dõi
+            {ctdData.soCanhBao > 0 && <span className="bbt-tab-badge">{ctdData.soCanhBao}</span>}
+          </button>
+        </div>
+      </div>
+
+      {tabHien === 'theo-doi' ? (
+        <LuoiCanTheoDoi data={ctdData} thang={thangXem} />
+      ) : (
+        <>
+          <div className="bbt-e-luoi">
         {/* Cột 1: Quản lý lãi lỗ */}
         <section className="bbt-cot col">
           <h2 className="ten bbt-e-ten">
@@ -359,8 +488,29 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
           </Link>
         </section>
       </div>
-      {moBieuDo && <HopLaiLo13 ds={laiLo13} onDong={() => setMoBieuDo(false)} />}
-      {modalQuy && <ModalQuy quyKey={modalQuy} thang={thangXem} selCns={selCns} onDong={() => setModalQuy(null)} />}
-    </div>
+
+      {/* Lưới 6 thẻ biểu đồ cân đối 3 cột (T274) */}
+      <div className="bbt-luoi-bieu-do">
+        <TheTop5Hbar data={top5Dt} loai="doanhThu" />
+        <TheTop5Hbar data={top5Cp} loai="chiPhi" />
+        <TheTop5Hbar data={top5Gv} loai="giaVon" />
+        <TheTop5Hbar data={top5Ncc} loai="nhaCungCap" />
+        <TheTop5Hbar data={top5Chi} loai="chiTien" />
+        <TheLaiLoChiNhanh ds={laiLoCn} thang={thangXem} />
+      </div>
+    </>
+  )}
+
+  {moBieuDo && (
+    <HopLaiLo13
+      ds={laiLo13}
+      onDong={() => setMoBieuDo(false)}
+      thangXem={thangXem}
+      selCns={cnsHien}
+      laiLoCn={laiLoCn}
+    />
+  )}
+  {modalQuy && <ModalQuy quyKey={modalQuy} thang={thangXem} selCns={cnsHien} onDong={() => setModalQuy(null)} />}
+</div>
   )
 }

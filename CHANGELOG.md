@@ -8,6 +8,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 - T277: Danh sách Kiểm kê: ba tab Kiểm kê, Xuất điều chỉnh, Nhập điều chỉnh có chấm màu riêng, tab đang chọn nổi lên nền trắng.
 - T276: Màn Vai trò và phân quyền: ô tích quyền thành nút bật tắt, trên web và điện thoại.
 - T275: Đổi bộ biểu tượng trên web và điện thoại. Mỗi nhóm nghiệp vụ có một màu riêng: tiền, chi, ngân hàng, thuế, báo cáo, chứng từ, kho, hệ thống. Thẻ số liệu trang chủ có ô màu đặc. Thao tác nhanh, menu Khác, ô phân hệ điện thoại có ô nền nhạt. Thanh bên: mục thường là nét mảnh, mục đang chọn là khối trắng.
+- T274: Trang chủ gói Free có 2 tab. Tổng quan thêm 5 biểu đồ top 5 (mặt hàng doanh thu, chi phí, giá vốn, nhà cung cấp, khoản chi) và lãi lỗ theo chi nhánh; bấm số lãi khi xem tất cả chi nhánh chọn được xem 13 tháng hoặc theo chi nhánh. Cần theo dõi có cảnh báo công nợ quá hạn, âm kho, hàng huỷ cao, doanh thu lệch POS, tháng chưa khoá sổ. Web và điện thoại.
 
 ## 15/10/2026
 

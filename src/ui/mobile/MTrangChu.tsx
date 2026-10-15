@@ -22,6 +22,20 @@ import { useMoTuTrangChu } from '../../app/tuTrangChu'
 import { Select } from '../Dropdown'
 import { HopLaiLo13, laiLo13Thang } from '../../modules/home/BaBaiToanFree'
 import { ModalQuy } from '../../modules/home/quyThuChi'
+import {
+  layDuLieuCanTheoDoi,
+  layLaiLoChiNhanh,
+  layTop5ChiPhi,
+  layTop5ChiTien,
+  layTop5DoanhThu,
+  layTop5GiaVon,
+  layTop5NhaCungCap,
+} from '../../modules/home/soLieuBieuDoFree'
+import {
+  LuoiCanTheoDoi,
+  TheLaiLoChiNhanh,
+  TheTop5Hbar,
+} from '../../modules/home/BieuDoFree'
 import { useThaoTacNhanh, type ThaoTacMuc } from '../../app/thaoTacNhanh'
 import {
   BranchBarChart,
@@ -61,10 +75,11 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
   const tenNgan = (id: string) => CHI_NHANH.find(x => x.id === id)?.ngan
   const nhanCn = cn ? (tenNgan(cn.id) ?? cn.ten) : 'Tất cả'
 
-  const [tabActive, setTabActive] = useState<0 | 1>(0)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const tabUrl = searchParams.get('tab')
+  const [tabActive, setTabActive] = useState<0 | 1>(tabUrl === 'theo-doi' ? 1 : 0)
   const [moTimKiem, setMoTimKiem] = useState(false)
   const [moChonCn, setMoChonCn] = useState(false)
-  const [searchParams, setSearchParams] = useSearchParams()
   const thangUrl = Number(searchParams.get('thang'))
   const [thangF, setThangFState] = useState(thangUrl >= 7 && thangUrl <= 10 ? thangUrl : 10)
   const setThangF = (t: number) => {
@@ -82,6 +97,27 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
     const t = Number(searchParams.get('thang'))
     if (t >= 7 && t <= 10 && t !== thangF) setThangFState(t)
   }, [searchParams, thangF])
+
+  // Đồng bộ tab trên URL query ?tab=theo-doi cho gói Free (T274)
+  useEffect(() => {
+    const t = searchParams.get('tab')
+    const want: 0 | 1 = t === 'theo-doi' ? 1 : 0
+    if (want !== tabActive) {
+      setTabActive(want)
+      if (snapRef.current) {
+        const w = snapRef.current.clientWidth
+        snapRef.current.scrollTo({ left: want * w, behavior: 'smooth' })
+      }
+    }
+  }, [searchParams, tabActive])
+
+  useEffect(() => {
+    const t = searchParams.get('tab')
+    if (t === 'theo-doi' && snapRef.current) {
+      const w = snapRef.current.clientWidth
+      snapRef.current.scrollTo({ left: w, behavior: 'auto' })
+    }
+  }, [])
   const [khoChon] = useState<string>('Tất cả')
   const snapRef = useRef<HTMLDivElement>(null)
   const thacNuocRef = useRef<HTMLDivElement>(null)
@@ -176,6 +212,42 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
     const matHH = new Set(xdc.flatMap(r => ((r._dong as { ma: string }[] | undefined) ?? []).map(d => d.ma))).size
     return { nhapMua, soDon: mua.length, congNo, soNcc: ncc.filter(r => Number(r.cuoi) > 0).length, matHH }
   }, [isFree, selCns, tenCnSet, thangF])
+
+  // 4. Biểu đồ và thẻ cảnh báo gói Free (T274)
+  const topDtFree = useMemo(() => {
+    if (!isFree) return null
+    return layTop5DoanhThu(thangF, selCns, dFree.dtThuan)
+  }, [isFree, thangF, selCns, dFree.dtThuan])
+
+  const topCpFree = useMemo(() => {
+    if (!isFree) return null
+    return layTop5ChiPhi(thangF, selCns, cpThangFree, dFree.coCauCp)
+  }, [isFree, thangF, selCns, cpThangFree, dFree.coCauCp])
+
+  const topGvFree = useMemo(() => {
+    if (!isFree) return null
+    return layTop5GiaVon(thangF, selCns, nvlFree.tien)
+  }, [isFree, thangF, selCns, nvlFree.tien])
+
+  const topNccFree = useMemo(() => {
+    if (!isFree) return null
+    return layTop5NhaCungCap(thangF, selCns, khoFree.nhapMua)
+  }, [isFree, thangF, selCns, khoFree.nhapMua])
+
+  const topChiTienFree = useMemo(() => {
+    if (!isFree) return null
+    return layTop5ChiTien(thangF, selCns, tongQuyFree.chi)
+  }, [isFree, thangF, selCns, tongQuyFree.chi])
+
+  const laiLoCnFree = useMemo(() => {
+    if (!isFree) return []
+    return layLaiLoChiNhanh(thangF, selCns, s)
+  }, [isFree, thangF, selCns, s])
+
+  const canTheoDoiFree = useMemo(() => {
+    if (!isFree) return null
+    return layDuLieuCanTheoDoi(thangF, selCns, dFree.dtThuan)
+  }, [isFree, thangF, selCns, dFree.dtThuan])
 
   // Phải thu khách hàng (TK 131)
   const sc10 = soCai(10)
@@ -506,9 +578,20 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
     ]
   }, [])
 
-  // Điều khiển chuyển tab bằng click và cuộn vuốt ngang
+  // Điều khiển chuyển tab bằng click và cuộn vuốt ngang (T274)
   const handleChuyenTab = (idx: 0 | 1) => {
     setTabActive(idx)
+    if (isFree) {
+      setSearchParams(
+        prev => {
+          const n = new URLSearchParams(prev)
+          if (idx === 1) n.set('tab', 'theo-doi')
+          else n.delete('tab')
+          return n
+        },
+        { replace: true }
+      )
+    }
     if (snapRef.current) {
       const w = snapRef.current.clientWidth
       snapRef.current.scrollTo({ left: idx * w, behavior: 'smooth' })
@@ -522,6 +605,17 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
         const idx = (Math.round(scrollLeft / clientWidth) as number) >= 1 ? 1 : 0
         if (idx !== tabActive) {
           setTabActive(idx)
+          if (isFree) {
+            setSearchParams(
+              prev => {
+                const n = new URLSearchParams(prev)
+                if (idx === 1) n.set('tab', 'theo-doi')
+                else n.delete('tab')
+                return n
+              },
+              { replace: true }
+            )
+          }
         }
       }
     }
@@ -558,47 +652,75 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
               title="Thông báo"
             >
               <Icon n="bell" className="ic sm" />
-              {dsTheoDoi.length > 0 && <span className="m-tc-badge-so">{dsTheoDoi.length}</span>}
+              {((isFree ? canTheoDoiFree?.soCanhBao : dsTheoDoi.length) ?? 0) > 0 && (
+                <span className="m-tc-badge-so">
+                  {isFree ? canTheoDoiFree?.soCanhBao : dsTheoDoi.length}
+                </span>
+              )}
             </button>
           </div>
         </div>
       </section>
 
-      {/* Hàng điều hướng đầu trang chủ: gói Free 1 hàng gọn, gói khác tab một hàng, chip chi nhánh hàng dưới (T257 phần D) */}
+      {/* Hàng điều hướng đầu trang chủ: gói Free 2 tab (T274), gói khác tab một hàng, chip chi nhánh hàng dưới (T257 phần D) */}
       {isFree ? (
-        <div className="m-tc-thanh-dieu-huong m-tc-thanh-dieu-huong--free">
-          <div className="m-free-ky-wrap">
-            <Select
-              className="sel-mini m-free-sel-nam"
-              value="2026"
-              aria-label="Năm"
-              disabled
-            >
-              <option value="2026">Năm 2026</option>
-            </Select>
-            <Select
-              className="sel-mini m-free-sel-thang"
-              value={String(thangF)}
-              aria-label="Tháng"
-              onChange={e => setThangF(Number(e.target.value))}
-            >
-              {[10, 9, 8, 7].map(t => (
-                <option key={t} value={t}>
-                  Tháng {t}
-                </option>
-              ))}
-            </Select>
+        <div className="m-tc-thanh-dieu-huong m-tc-thanh-dieu-huong--free m-tc-thanh-dieu-huong--free-t274">
+          <div className="m-tc-hang-tab">
+            <div className="m-tc-vien-thuoc">
+              <button
+                type="button"
+                className={`m-tc-tab ${tabActive === 0 ? 'on' : ''}`}
+                onClick={() => handleChuyenTab(0)}
+              >
+                Tổng quan
+              </button>
+              <button
+                type="button"
+                className={`m-tc-tab ${tabActive === 1 ? 'on' : ''}`}
+                onClick={() => handleChuyenTab(1)}
+              >
+                Cần theo dõi
+                {(canTheoDoiFree?.soCanhBao || 0) > 0 && (
+                  <span className="m-tc-tab-dem">{canTheoDoiFree?.soCanhBao}</span>
+                )}
+              </button>
+            </div>
           </div>
 
-          <button
-            type="button"
-            className="m-tc-chip-cn m-tc-chip-kho"
-            onClick={() => setMoChonCn(true)}
-            title="Chọn chi nhánh hiển thị"
-          >
-            <span className="m-tc-chip-cn-nhan m-tc-chip-kho-nhan">CN: {nhanCn}</span>
-            <Icon n="chevd" className="ic xs" />
-          </button>
+          <div className="m-free-hang-duoi">
+            <div className="m-free-ky-wrap">
+              <Select
+                className="sel-mini m-free-sel-nam"
+                value="2026"
+                aria-label="Năm"
+                disabled
+              >
+                <option value="2026">Năm 2026</option>
+              </Select>
+              <Select
+                className="sel-mini m-free-sel-thang"
+                value={String(thangF)}
+                aria-label="Tháng"
+                onChange={e => setThangF(Number(e.target.value))}
+              >
+                {[10, 9, 8, 7].map(t => (
+                  <option key={t} value={t}>
+                    Tháng {t}
+                  </option>
+                ))}
+              </Select>
+            </div>
+
+            <button
+              type="button"
+              className="m-tc-chip-cn m-tc-chip-kho"
+              onClick={() => setMoChonCn(true)}
+              title="Chọn chi nhánh hiển thị"
+            >
+              <span className="m-tc-chip-cn-nhan m-tc-chip-kho-nhan">CN: {nhanCn}</span>
+              <Icon n="chevd" className="ic xs" />
+            </button>
+          </div>
         </div>
       ) : (
         <div className="m-tc-thanh-dieu-huong m-tc-thanh-dieu-huong--goi-khac">
@@ -957,6 +1079,16 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
                     <Icon n="chevr" className="ic sm" />
                   </Link>
                 </div>
+              </div>
+
+              {/* Lưới 6 biểu đồ trang chủ gói Free (T274) */}
+              <div className="bbt-luoi-bd" style={{ marginTop: 14 }}>
+                {topDtFree && <TheTop5Hbar data={topDtFree} loai="doanhThu" />}
+                {topCpFree && <TheTop5Hbar data={topCpFree} loai="chiPhi" />}
+                {topGvFree && <TheTop5Hbar data={topGvFree} loai="giaVon" />}
+                {topNccFree && <TheTop5Hbar data={topNccFree} loai="nhaCungCap" />}
+                {topChiTienFree && <TheTop5Hbar data={topChiTienFree} loai="chiTien" />}
+                {laiLoCnFree.length > 0 && <TheLaiLoChiNhanh ds={laiLoCnFree} thang={thangF} />}
               </div>
             </>
           ) : (
@@ -1367,8 +1499,12 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
           )}
         </div>
 
-        {/* TRANG 2: CẦN THEO DÕI (chỉ các gói khác) */}
-        {!isFree && (
+        {/* TRANG 2: CẦN THEO DÕI (T274: gói Free hiển thị lưới thẻ cảnh báo) */}
+        {isFree ? (
+          <div className="m-tc-snap-trang" style={{ padding: '10px 14px 28px' }}>
+            {canTheoDoiFree && <LuoiCanTheoDoi data={canTheoDoiFree} thang={thangF} />}
+          </div>
+        ) : (
           <div className="m-tc-snap-trang">
             <section className="m-tc-ds-theo-doi">
               {dsTheoDoi.length === 0 ? (
@@ -1413,8 +1549,16 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
         onChon={k => set({ chiNhanh: k })}
       />
 
-      {/* Hộp biểu đồ lãi lỗ 13 tháng cho gói Free */}
-      {moBieuDo && <HopLaiLo13 ds={laiLo13} onDong={() => setMoBieuDo(false)} />}
+      {/* Hộp biểu đồ lãi lỗ 13 tháng cho gói Free (T274: xem 13 tháng hoặc theo chi nhánh) */}
+      {moBieuDo && (
+        <HopLaiLo13
+          ds={laiLo13}
+          onDong={() => setMoBieuDo(false)}
+          laiLoCn={laiLoCnFree}
+          selCns={selCns}
+          thangXem={thangF}
+        />
+      )}
 
       {/* Sheet biểu đồ thu chi quỹ cho gói Free (T272) */}
       {sheetQuy && (

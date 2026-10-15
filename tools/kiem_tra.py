@@ -4586,6 +4586,7 @@ def kiem_tra_cac_khung_dt():
     loi += kiem_tra_dot_20_b()
     loi += kiem_tra_dot_21_b()
     loi += kiem_tra_dot_22_b()
+    loi += kiem_tra_t274_dien_thoai()
     if loi:
         print(f'{len(loi)} LỖI:')
         for x in loi:
@@ -4907,6 +4908,246 @@ def kiem_tra_dot_22_a():
     return loi
 
 
+def kiem_tra_t274_web():
+    """Kiểm tra T274: Trang chủ Free 2 tab Tổng quan | Cần theo dõi, bộ lọc chi nhánh, biểu đồ và modal lãi lỗ."""
+    loi = []
+    print('Kiểm tra T274 web (1440x900): Trang chủ Free 2 tab, biểu đồ, lọc chi nhánh, modal lãi lỗ:')
+    with sync_playwright() as p:
+        b = p.chromium.launch(channel='chrome')
+        pg = b.new_page(viewport={'width': 1440, 'height': 900})
+        con = []
+        pg.on('console', lambda m: con.append(m.text) if m.type == 'error' else None)
+        pg.on('pageerror', lambda e: con.append(str(e)))
+
+        # 1. Đăng nhập gói Free
+        pg.goto(URL + '#/dang-nhap')
+        pg.wait_for_selector('.auth-box')
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('F'))})")
+        pg.goto(f"{URL}?goi=F&p=t274web#/app/trang-chu/tong-quan")
+        pg.wait_for_selector('.bbt', timeout=8000)
+        pg.wait_for_timeout(300)
+
+        # 2. Kiểm tra 2 tab: "Tổng quan" và "Cần theo dõi"
+        tab_tq = pg.locator('.bbt-tab-btn:has-text("Tổng quan")')
+        tab_ctd = pg.locator('.bbt-tab-btn:has-text("Cần theo dõi")')
+        if tab_tq.count() == 0:
+            loi.append('T274 web: không tìm thấy tab Tổng quan')
+        if tab_ctd.count() == 0:
+            loi.append('T274 web: không tìm thấy tab Cần theo dõi')
+        huy_hieu = pg.locator('.bbt-tab-badge')
+        if huy_hieu.count() == 0:
+            loi.append('T274 web: tab Cần theo dõi thiếu huy hiệu số cảnh báo')
+
+        # 3. Tab Tổng quan có đủ 5 thẻ top + thẻ lãi lỗ chi nhánh
+        the_top = [
+            'Mặt hàng doanh thu cao',
+            'Chi phí trong tháng cao',
+            'Mặt hàng giá vốn cao',
+            'Nhà cung cấp mua hàng nhiều',
+            'Khoản chi tiền trong tháng cao',
+            'Lãi lỗ theo chi nhánh',
+        ]
+        for t in the_top:
+            if pg.locator(f'.bbt-the-bd-tieu:has-text("{t}")').count() == 0:
+                loi.append(f'T274 web: tab Tổng quan thiếu thẻ biểu đồ "{t}"')
+
+        # 4. Tổng thẻ "Mặt hàng doanh thu cao" <= doanh thu trang chủ
+        txt_dt_el = pg.locator('.bbt-the-bd:has-text("Mặt hàng doanh thu cao") .bbt-the-bd-tong-so').first
+        txt_dt = txt_dt_el.inner_text().strip() if txt_dt_el.count() > 0 else '0'
+        so_dt = int(re.sub(r'[^\d]', '', txt_dt) or 0)
+
+        the_bars = pg.locator('.bbt-the-bd:has-text("Mặt hàng doanh thu cao") .bbt-hbar-so')
+        tong_top5_dt = 0
+        for i in range(the_bars.count()):
+            st = the_bars.nth(i).inner_text().strip()
+            tong_top5_dt += int(re.sub(r'[^\d]', '', st) or 0)
+
+        if tong_top5_dt > so_dt:
+            loi.append(f'T274 web: tổng 5 mặt hàng doanh thu cao ({tong_top5_dt}) > doanh thu trang chủ ({so_dt})')
+
+        # 4b. Tổng lãi các chi nhánh = lãi trang chủ (T274 vòng 1)
+        txt_lai_tc = pg.locator('.bbt-cot:has-text("Quản lý lãi lỗ") .bbt-tra').inner_text().strip()
+        is_lo_tc = 'Lỗ' in txt_lai_tc
+        so_lai_tc = int(re.sub(r'[^\d]', '', txt_lai_tc) or 0)
+        if is_lo_tc:
+            so_lai_tc = -so_lai_tc
+
+        the_lai_cns = pg.locator('.bbt-the-bd--cn .bbt-cn-lai-dong')
+        tong_lai_cn = 0
+        for i in range(the_lai_cns.count()):
+            t = the_lai_cns.nth(i).inner_text().strip()
+            is_lo_cn = 'Lỗ' in t
+            v = int(re.sub(r'[^\d]', '', t) or 0)
+            tong_lai_cn += -v if is_lo_cn else v
+
+        if the_lai_cns.count() == 0:
+            loi.append('T274 web: không tìm thấy dòng lãi lỗ chi nhánh trong thẻ Lãi lỗ theo chi nhánh')
+        elif tong_lai_cn != so_lai_tc:
+            loi.append(f'T274 web: tổng lãi các chi nhánh ({tong_lai_cn}) != lãi trang chủ ({so_lai_tc})')
+
+        # 5. Modal lãi lỗ khi Tất cả có 2 nút kiểu xem, bấm "Theo chi nhánh" ra biểu đồ chi nhánh
+        nut_xem_13 = pg.locator('.bbt-e-nut:has-text("Xem biểu đồ lãi lỗ 13 tháng"), .bbt-nut:has-text("Xem biểu đồ lãi lỗ 13 tháng")').first
+        if nut_xem_13.count() == 0:
+            loi.append('T274 web: không tìm thấy nút Xem biểu đồ lãi lỗ 13 tháng')
+        else:
+            nut_xem_13.click()
+            pg.wait_for_timeout(350)
+            btn_13t = pg.locator('.bbt-modal-segmented button:has-text("13 tháng"), .bbt-seg-btn:has-text("13 tháng")')
+            btn_cn = pg.locator('.bbt-modal-segmented button:has-text("Theo chi nhánh"), .bbt-seg-btn:has-text("Theo chi nhánh")')
+            if btn_13t.count() == 0 or btn_cn.count() == 0:
+                loi.append('T274 web: modal lãi lỗ khi chi nhánh=Tất cả thiếu nút chuyển 13 tháng / Theo chi nhánh')
+            else:
+                btn_cn.click()
+                pg.wait_for_timeout(300)
+                if pg.locator('.bbt-modal-cn-wrap, .bbt-modal-cn-luoi').count() == 0:
+                    loi.append('T274 web: bấm "Theo chi nhánh" không hiện biểu đồ chi nhánh trong modal')
+            pg.keyboard.press('Escape')
+            pg.wait_for_timeout(250)
+
+        # 6. Đổi chi nhánh làm đổi số ít nhất 1 thẻ (dùng ô chi nhánh có sẵn ở header .cn-btn)
+        first_bar_truoc = pg.locator('.bbt-the-bd:has-text("Mặt hàng doanh thu cao") .bbt-hbar-so').first
+        so_truoc = first_bar_truoc.inner_text().strip() if first_bar_truoc.count() > 0 else ''
+
+        btn_cn_hdr = pg.locator('.cn-btn')
+        if btn_cn_hdr.count() == 0:
+            loi.append('T274 web: không tìm thấy nút chi nhánh .cn-btn ở header')
+        else:
+            btn_cn_hdr.click()
+            pg.wait_for_timeout(250)
+            opt_cn1 = pg.locator('.pop [data-mi]:has-text("Lê Lợi"), .pop [data-mi]:has-text("Quận 1")').first
+            if opt_cn1.count() == 0:
+                loi.append('T274 web: không tìm thấy chi nhánh Lê Lợi trong menu header')
+            else:
+                opt_cn1.click()
+                pg.wait_for_timeout(400)
+                first_bar_sau = pg.locator('.bbt-the-bd:has-text("Mặt hàng doanh thu cao") .bbt-hbar-so').first
+                so_sau = first_bar_sau.inner_text().strip() if first_bar_sau.count() > 0 else ''
+                if so_sau and so_sau == so_truoc:
+                    loi.append(f'T274 web: đổi chi nhánh sang CN1 nhưng số thẻ không đổi ({so_truoc} -> {so_sau})')
+
+                # Đổi lại Tất cả chi nhánh
+                btn_cn_hdr.click()
+                pg.wait_for_timeout(250)
+                opt_all = pg.locator('.pop [data-mi]:has-text("Tất cả chi nhánh")').first
+                if opt_all.count() > 0:
+                    opt_all.click()
+                    pg.wait_for_timeout(300)
+
+        # 7. Tab Cần theo dõi có đủ 5 thẻ cảnh báo
+        tab_ctd.click()
+        pg.wait_for_timeout(350)
+        cur_hash = pg.evaluate('location.hash')
+        if 'tab=theo-doi' not in cur_hash:
+            loi.append(f'T274 web: bấm tab Cần theo dõi URL không có tab=theo-doi ({cur_hash})')
+
+        the_ctd = [
+            'Công nợ quá hạn',
+            'Hàng hoá âm kho',
+            'Hàng hoá huỷ cao',
+            'Doanh thu lệch',
+            'Tháng chưa khoá sổ',
+        ]
+        for c in the_ctd:
+            if pg.locator(f'.bbt-ctd-title:has-text("{c}")').count() == 0:
+                loi.append(f'T274 web: tab Cần theo dõi thiếu thẻ cảnh báo "{c}"')
+
+        if con:
+            loi.append(f'T274 web: lỗi console {con[:2]}')
+        b.close()
+    return loi
+
+
+def kiem_tra_t274_dien_thoai():
+    """Kiểm tra T274: Trang chủ điện thoại gói Free 2 tab, 6 biểu đồ, 5 thẻ cảnh báo."""
+    loi = []
+    print('Kiểm tra T274 điện thoại (390x844): Trang chủ Free 2 tab, 6 biểu đồ, 5 cảnh báo, modal:')
+    with sync_playwright() as p:
+        b = p.chromium.launch(channel='chrome')
+        pg = b.new_page(
+            viewport={'width': 390, 'height': 844},
+            is_mobile=True,
+            has_touch=True,
+        )
+        con = []
+        pg.on('console', lambda m: con.append(m.text) if m.type == 'error' else None)
+        pg.on('pageerror', lambda e: con.append(str(e)))
+
+        pg.goto(URL + '#/dang-nhap')
+        pg.wait_for_selector('.auth-box')
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('F'))})")
+        pg.goto(f"{URL}?goi=F&p=t274dt#/app")
+        pg.wait_for_selector('.m-trang-chu', timeout=8000)
+        pg.wait_for_timeout(300)
+
+        # 1. Kiểm tra 2 tab trong .m-tc-vien-thuoc
+        tab_tq = pg.locator('.m-tc-vien-thuoc .m-tc-tab:has-text("Tổng quan")')
+        tab_ctd = pg.locator('.m-tc-vien-thuoc .m-tc-tab:has-text("Cần theo dõi")')
+        if tab_tq.count() == 0:
+            loi.append('T274 dt: không tìm thấy tab Tổng quan trên điện thoại')
+        if tab_ctd.count() == 0:
+            loi.append('T274 dt: không tìm thấy tab Cần theo dõi trên điện thoại')
+        if pg.locator('.m-tc-vien-thuoc .m-tc-tab-dem').count() == 0:
+            loi.append('T274 dt: tab Cần theo dõi thiếu huy hiệu số đếm')
+
+        # 2. Trang 1 (Tổng quan) có 5 thẻ top + thẻ lãi lỗ chi nhánh
+        the_top = [
+            'Mặt hàng doanh thu cao',
+            'Chi phí trong tháng cao',
+            'Mặt hàng giá vốn cao',
+            'Nhà cung cấp mua hàng nhiều',
+            'Khoản chi tiền trong tháng cao',
+            'Lãi lỗ theo chi nhánh',
+        ]
+        for t in the_top:
+            if pg.locator(f'.bbt-the-bd-tieu:has-text("{t}")').count() == 0:
+                loi.append(f'T274 dt: trang 1 thiếu thẻ biểu đồ "{t}"')
+
+        # 3. Modal lãi lỗ trên điện thoại có 2 nút kiểu xem khi Tất cả
+        nut_xem_13 = pg.locator('.bbt-nut:has-text("Xem biểu đồ lãi lỗ 13 tháng")').first
+        if nut_xem_13.count() == 0:
+            loi.append('T274 dt: không tìm thấy nút Xem biểu đồ lãi lỗ 13 tháng trên điện thoại')
+        else:
+            nut_xem_13.click()
+            pg.wait_for_timeout(350)
+            btn_13t = pg.locator('.bbt-modal-segmented button:has-text("13 tháng"), .bbt-seg-btn:has-text("13 tháng")')
+            btn_cn = pg.locator('.bbt-modal-segmented button:has-text("Theo chi nhánh"), .bbt-seg-btn:has-text("Theo chi nhánh")')
+            if btn_13t.count() == 0 or btn_cn.count() == 0:
+                loi.append('T274 dt: modal lãi lỗ thiếu 2 nút segmented')
+            else:
+                btn_cn.click()
+                pg.wait_for_timeout(300)
+                if pg.locator('.bbt-modal-cn-wrap, .bbt-modal-cn-luoi').count() == 0:
+                    loi.append('T274 dt: modal bấm Theo chi nhánh không hiện biểu đồ')
+            nut_dong = pg.locator('.hop-13t .ds-dong-x, .hop-13t-dau button').first
+            if nut_dong.count() > 0:
+                nut_dong.click()
+            else:
+                pg.keyboard.press('Escape')
+            pg.wait_for_timeout(250)
+
+        # 4. Tab Cần theo dõi trên điện thoại
+        tab_ctd.click()
+        pg.wait_for_timeout(400)
+        the_ctd = [
+            'Công nợ quá hạn',
+            'Hàng hoá âm kho',
+            'Hàng hoá huỷ cao',
+            'Doanh thu lệch',
+            'Tháng chưa khoá sổ',
+        ]
+        for c in the_ctd:
+            if pg.locator(f'.bbt-ctd-title:has-text("{c}")').count() == 0:
+                loi.append(f'T274 dt: tab Cần theo dõi thiếu thẻ cảnh báo "{c}"')
+
+        # Kiểm tra không tràn ngang
+        if pg.evaluate('document.documentElement.scrollWidth > window.innerWidth + 1'):
+            loi.append('T274 dt: màn hình bị tràn ngang')
+
+        if con:
+            loi.append(f'T274 dt: lỗi console {con[:2]}')
+        b.close()
+    return loi
+
 
 def main():
     if DIEN_THOAI:
@@ -5059,6 +5300,7 @@ def main():
     loi += kiem_tra_t233_may_tinh()
     loi += kiem_tra_t238_may_tinh()
     loi += kiem_tra_dot_22_a()
+    loi += kiem_tra_t274_web()
     if loi:
         print(f'{len(loi)} LỖI:')
         for x in loi:
