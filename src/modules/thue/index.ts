@@ -3,6 +3,7 @@ import type { Col, ModuleDef, Row } from '../types'
 import { tuExcel } from '../types'
 import { quyTrinh } from './quy-trinh'
 import { ToKhaiGTGT } from './ToKhaiGTGT'
+import { ToKhaiHKD } from './ToKhaiHKD'
 import { DAILY, cnTen } from '../../data/mock'
 import { dmy, pad } from '../../ui/format'
 import { SO_BO_SUNG } from '../bao-cao/so-bo-sung'
@@ -24,7 +25,10 @@ const thue: ModuleDef = {
   key: 'thue', ten: 'Kê khai thuế', ngan: 'Kê khai thuế', icon: 'percent', mod: 5,
   mota: 'Kê khai, bảng kê hoá đơn, tờ khai, nộp qua kết nối cơ quan thuế',
   quyTrinh,
-  screens: tuExcel(5, {
+  screens: [
+    // Gói Free kê khai thuế hộ kinh doanh theo iFaster: danh sách tờ khai, lập tờ khai 4 bước (T261)
+    { slug: 'to-khai', ten: 'Danh sách tờ khai', ngan: 'Danh sách tờ khai', nhom: 'Kê khai', kind: 'custom', comp: ToKhaiHKD, goi: ['F'], tab: true },
+    ...tuExcel(5, {
     '6.1.1': { voucher: { prefix: 'KKV', doiTuong: 'ncc', nhan: 'Người bán', them: 'Thêm dòng kê khai', dong: 'tien', tien: [1_500_000, 42_000_000], thue: 8, nguon: 'HĐ',
       dienGiai: ['Hoá đơn mua nguyên vật liệu', 'Hoá đơn tiền điện', 'Hoá đơn thuê mặt bằng'], noCo: [['1331', '331', 'Thuế GTGT được khấu trừ']] } },
     '6.1.2': { voucher: { prefix: 'KKR', doiTuong: 'kh', nhan: 'Người mua', them: 'Thêm dòng kê khai', dong: 'tien', tien: [5_000_000, 40_000_000], thue: 8, nguon: 'HĐ',
@@ -34,6 +38,6 @@ const thue: ModuleDef = {
     '6.2.3': { kind: 'custom', comp: ToKhaiGTGT, tab: true },
     '6.2.4': { report: SO_BO_SUNG['6.2.4'] },
     '6.2.5': { report: SO_BO_SUNG['6.2.5'] },
-  }, NGAN),
+  }, NGAN)],
 }
 export default thue

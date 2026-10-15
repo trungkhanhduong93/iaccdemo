@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 15/10/2026
 
+- T261: Gói Free: Kê khai thuế theo iFaster. Quy trình 4 bước có khung Báo cáo sổ TT152; tab Danh sách tờ khai, lập tờ khai kỳ 6 tháng, tờ khai 4 bước (thông tin hộ kinh doanh, doanh thu tính thuế, phụ lục tài khoản ngân hàng, xem và nộp). Khung Báo cáo ở các quy trình có mã mẫu báo cáo.
 - T259: Điện thoại gói Free: Thao tác nhanh nằm trên cùng trang chủ, có thêm nút Nhập mua và Kiểm kê.
 - T257: Điện thoại gói Free: trang chủ giống bản web với ba thẻ lãi lỗ, thu chi, kho, bỏ tab Cần theo dõi; mục ngoài gói ẩn hẳn, không hiện khoá. Màn mở từ trang chủ có nút quay lại. Hàng tab, chi nhánh, tháng đầu trang không còn tràn mép phải.
 - T256: Trung tâm báo cáo: khối dưới danh sách nhóm luôn hiện hai phần Đã ghim, Báo cáo gần đây; chưa có báo cáo nào thì ghi "Chưa có báo cáo".

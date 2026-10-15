@@ -11,6 +11,7 @@ import { Icon } from '../Icon'
 import { Note, Pk } from '../Page'
 import { Dropdown, MenuHead, MenuItem } from '../Dropdown'
 import { heSoZoom } from '../zoom'
+import { kyHieuBC, type PhienBC } from '../../modules/bao-cao/danh-sach'
 
 const RH = 128        // chiều cao một hàng ô
 const TILE = 54       // cạnh ô biểu tượng
@@ -52,7 +53,7 @@ export function QuyTrinhScreen({ mod }: ScreenProps) {
       <div className={`qt-top ${qt.hoiTu ? 'mot-cot' : ''}`}>
         <section className="card qt-card">
           <div className="qt-h">
-            <h1>{qt.ten}</h1>
+            <h1>{s.goi === 'F' && goc0.tenFree ? goc0.tenFree : qt.ten}</h1>
             <span className="sub">{coForm ? 'Bấm vào ô để mở chứng từ' : 'Bấm vào ô để mở màn hình'}</span>
             <span className="grow" />
             {!an && <span className="qt-dem">Gói {GOI[s.goi].ten} mở {mo}/{nut.length} nghiệp vụ</span>}
@@ -70,7 +71,7 @@ export function QuyTrinhScreen({ mod }: ScreenProps) {
         {/* Sơ đồ hội tụ đã có khối sổ sách, báo cáo ở cuối nên bỏ khung Báo cáo bên phải để khỏi trùng */}
         {!qt.hoiTu && <BenPhai qt={qt} modKey={mod.key} goi={s.goi} cheDo={s.cheDo} session={s} />}
       </div>
-      <HangDuoi qt={qt} modKey={mod.key} goi={s.goi} cheDo={s.cheDo} session={s} />
+      {!(s.goi === 'F' && goc0.anDuoiFree) && <HangDuoi qt={qt} modKey={mod.key} goi={s.goi} cheDo={s.cheDo} session={s} />}
     </div>
   )
 }
@@ -200,6 +201,13 @@ function SoDoLuong({ cot, goi }: { cot: CotQT[]; goi: Goi }) {
           if (t) chu.push({ x: Math.round((ax + x - MUI) / 2), y: o.y - 7, t })
         })
       }
+      // Sơ đồ thẳng một hàng: mũi tên từ ô cuối chạy tới mép phải, chỉ sang khung Báo cáo (T261)
+      const cuoi = hop[hop.length - 1]
+      if (el.classList.contains('gon') && cuoi?.length === 1) {
+        const o = cuoi[0], x = Math.round(g.width / zoom) - 4
+        p.push(`M${Math.round(o.r)} ${o.y}H${x - MUI + 2}`)
+        mui.push(`M${x - MUI} ${o.y - 5}L${x} ${o.y}L${x - MUI} ${o.y + 5}Z`)
+      }
       setVe({ w: Math.round(g.width / zoom), h: Math.round(g.height / zoom), d: p.join(''), mui, chu })
     }
     const ro = new ResizeObserver(doLai)
@@ -211,7 +219,8 @@ function SoDoLuong({ cot, goi }: { cot: CotQT[]; goi: Goi }) {
 
   return (
     <div className="qt-so">
-      <div className="qt-ht qt-lg" ref={ref}>
+      {/* Sơ đồ thẳng một hàng, không chữ trên mũi tên: thu khoảng cách cho vừa khung cạnh khung Báo cáo (T261) */}
+      <div className={`qt-ht qt-lg${cot.every(c => c.nut.length === 1 && !c.noi && !c.nut[0].noi) ? ' gon' : ''}`} ref={ref}>
         {ve && (
           <svg className="qt-ht-svg" width={ve.w} height={ve.h} aria-hidden>
             <path d={ve.d} />
@@ -349,7 +358,7 @@ function NutNgang({ n, goi, dong }: { n: NutQT; goi: Goi; dong?: boolean }) {
 function BenPhai({ qt, modKey, goi, cheDo, session }: { qt: QuyTrinhDef; modKey: string; goi: Goi; cheDo?: CheDo; session?: Pick<Session, 'ppGtgt' | 'ppTndn'> }) {
   // Chỉ lấy báo cáo còn hiện; báo cáo khai sẵn bị bỏ hết thì lấy báo cáo còn hiện của phân hệ (T171)
   const hien = (di: string) => { const d = dich(di, modKey); return Boolean(d.sc && hienMan(d.sc, goi, cheDo, session)) }
-  const khai = (qt.baoCao ?? []).filter(hien)
+  const khai = ((goi === 'F' && qt.baoCaoFree) || qt.baoCao || []).filter(hien)
   const cuaPh = (MODULES.find(m => m.key === modKey)?.screens ?? []).filter(laBaoCao).map(x => x.slug).filter(hien)
   const dsBc = khai.length ? khai : cuaPh
   if (!dsBc.length) {
@@ -371,10 +380,12 @@ function BenPhai({ qt, modKey, goi, cheDo, session }: { qt: QuyTrinhDef; modKey:
         if (!d.sc) return null
         const ok = moDuoc(d.sc, goi)
         const ma = maKhoa(d.sc)
+        const kh = cheDo ? kyHieuBC(d.sc.code, cheDo, session as PhienBC) : undefined   // mã mẫu báo cáo, vd S1a-HKD (T261)
         return (
           <Link key={di} to={d.path} className={ok ? '' : 'lock'}>
             <Icon n={d.sc.report?.kieu === 'so' ? 'book' : 'chart'} className="ic sm" />
             <span className="grow">{tenMan(d.sc)}</span>
+            {kh && <small className="qt-bc-ma">{kh}</small>}
             {!ok && ma && <Pk g={minGoi(ma)} o />}
           </Link>
         )

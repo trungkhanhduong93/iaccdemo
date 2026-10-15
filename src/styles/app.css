@@ -17448,3 +17448,68 @@ button.bbt-nut { background: none; border: 0; padding-left: 0; padding-right: 0;
   }
 }
 
+
+/* ── Kê khai thuế gói Free theo iFaster (T261) ── */
+.tk-tim { display: flex; align-items: center; gap: 8px; height: 34px; width: 300px; max-width: 100%; padding: 0 10px; border: 1px solid var(--line); border-radius: 8px; color: var(--faint); background: var(--white); }
+.tk-tim:focus-within { border-color: var(--blue); }
+.tk-tim input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; color: var(--ink); font-size: 13.5px; }
+.tk-lap { width: 560px; }
+.tk-lap-than { display: flex; flex-direction: column; gap: 12px; padding: 4px 16px 16px; }
+.tk-o { display: grid; grid-template-columns: 130px minmax(0, 1fr); align-items: center; gap: 12px; font-size: 13.5px; }
+.tk-o > span { color: var(--muted); }
+.tk-o .inp { width: 100%; }
+.tk-ten { color: var(--ink); line-height: 1.45; }
+.tk-hop { width: min(1180px, calc(100vw - 48px)); height: min(760px, calc(100vh - 48px)); max-height: none; }
+.tk-hop .ds-hop-dau { border-bottom: 1px solid var(--line-2); }
+.tk-hop-than { flex: 1; min-height: 0; display: grid; grid-template-columns: 300px minmax(0, 1fr); }
+.tk-buoc { display: flex; flex-direction: column; gap: 6px; padding: 14px; border-right: 1px solid var(--line-2); background: var(--hdb-chan); overflow-y: auto; }
+.tk-buoc > p { margin: 0 0 6px; font-size: 13px; color: var(--muted); line-height: 1.45; }
+.tk-tien-do { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--ink); }
+.tk-vach { display: inline-flex; gap: 3px; }
+.tk-vach i { width: 18px; height: 5px; border-radius: 3px; background: var(--line); }
+.tk-vach i.on { background: var(--blue); }
+.tk-buoc-nut { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px; border: 1px solid transparent; border-radius: 10px; background: transparent; text-align: left; font-family: inherit; font-size: 13.5px; color: var(--ink); cursor: pointer; }
+.tk-buoc-nut:hover { background: var(--white); }
+.tk-buoc-nut.on { background: var(--tint); border-color: var(--blue); }
+.tk-buoc-nut > .ic { margin-left: auto; color: var(--faint); }
+.tk-so { flex: none; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--blue); color: var(--blue); font-weight: 700; font-size: 13px; background: var(--white); }
+.tk-buoc-nut.on .tk-so { background: var(--blue); color: #fff; }
+.tk-buoc-chu { display: flex; flex-direction: column; gap: 1px; font-weight: 600; }
+.tk-buoc-chu small { font-weight: 400; font-size: 12px; color: var(--muted); }
+.tk-noi-dung { min-width: 0; overflow: auto; padding: 16px 18px; display: flex; flex-direction: column; gap: 12px; }
+.tk-noi-dung h3 { margin: 0; font-size: 16px; color: var(--ink); }
+.tk-noi-dung h4 { margin: 6px 0 0; font-size: 14px; color: var(--ink); }
+.tk-luu-y, .tk-giam { display: flex; align-items: center; gap: 8px; padding: 9px 12px; border-radius: 8px; background: var(--amber-t); color: var(--amber); font-size: 13px; }
+.tk-giam { background: var(--tint); color: var(--blue-d); }
+.tk-luoi { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 16px; }
+.tk-truong { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--muted); }
+.tk-truong i { color: var(--red); font-style: normal; }
+.tk-truong .inp { width: 100%; background: var(--soft); }
+.tk-the-hai { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.tk-the { display: flex; flex-direction: column; gap: 4px; padding: 12px 14px; border-radius: 10px; background: var(--tint); }
+.tk-the span { font-size: 13px; color: var(--muted); }
+.tk-the b { font-size: 20px; color: var(--ink); font-variant-numeric: tabular-nums; }
+.tk-nhom { display: flex; flex-direction: column; gap: 8px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; }
+.tk-nhom-dau { font-weight: 700; color: var(--ink); font-size: 13.5px; }
+.tk-nhom-ten { font-size: 13px; color: var(--muted); }
+.tk-dong { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; border-bottom: 1px dashed var(--line-2); font-size: 13.5px; }
+.tk-dong b { font-variant-numeric: tabular-nums; color: var(--ink); }
+.tk-pl { font-weight: 600; color: var(--ink); font-size: 13.5px; }
+.tk-giay { align-self: center; width: 100%; max-width: 760px; padding: 28px 32px; border: 1px solid var(--line); border-radius: 6px; background: var(--white); box-shadow: var(--sh); font-size: 13px; color: var(--ink); }
+.tk-giay-dau { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.tk-giay h2 { margin: 16px 0 4px; text-align: center; font-size: 15px; }
+.tk-giay-ky { margin: 0 0 12px; text-align: center; color: var(--muted); }
+.tk-giay-tt { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 16px; margin-bottom: 12px; }
+.tk-giay-bang { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.tk-giay-bang th, .tk-giay-bang td { padding: 6px 8px; border: 1px solid var(--line); text-align: right; }
+.tk-giay-bang th:first-child, .tk-giay-bang td:first-child { text-align: left; }
+.tk-giay-bang tr.tong td { font-weight: 700; }
+.tk-giay-chu { margin: 12px 0 0; font-size: 12px; color: var(--muted); font-style: italic; }
+.tk-hop .ds-chan { justify-content: flex-start; }
+/* Sơ đồ luồng thẳng một hàng (Kê khai thuế gói Free) thu khoảng cách cho vừa khung cạnh khung Báo cáo */
+/* Giãn 4 ô đều hết bề ngang, chừa đuôi bên phải cho mũi tên sang khung Báo cáo; đẩy sơ đồ xuống xa dòng mô tả */
+.qt-ht.qt-lg.gon { width: 100%; min-width: max-content; justify-content: space-between; gap: 20px; padding: 18px 50px 18px 4px; box-sizing: border-box; }
+.qt-bc-ma { flex: none; font-size: 12px; color: var(--faint); white-space: nowrap; }   /* mã mẫu báo cáo ở khung Báo cáo quy trình */
+.qt-so:has(> .qt-lg.gon) { margin: 44px 0 28px; }
+/* Quy trình không có khung Báo cáo bên phải: sơ đồ rộng hết trang, không chừa cột trống */
+.qt-top:not(:has(> :nth-child(2))) { grid-template-columns: minmax(0, 1fr); }

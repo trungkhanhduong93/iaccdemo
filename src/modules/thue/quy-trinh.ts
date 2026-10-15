@@ -14,6 +14,18 @@ export const quyTrinh: QuyTrinhDef = {
     { chinh: { ten: 'Nộp tờ khai', icon: 'send', di: 'tien-ich/11-9' } },
     { chinh: { ten: 'Nộp tiền thuế', icon: 'cashout', di: 'tien/2-1-1/moi?loai=unc' } },
   ],
+  // Gói Free: sơ đồ ngang 4 bước của hộp tờ khai (ToKhaiHKD.tsx) như iFaster, ô mở tờ khai chưa nộp mới nhất đúng bước đó;
+  // khung Báo cáo là sổ sách TT152 của hộ kinh doanh, chỉ hiện sổ đơn vị mở được (T261)
+  tenFree: 'Quy trình lập tờ khai thuế',
+  moTaFree: 'Tờ khai lấy doanh thu từ FABi, tính GTGT, TNCN theo tỷ lệ của ngành nghề.',
+  anDuoiFree: true,   // bỏ Danh mục liên quan, PhuongXT chốt 15/10/2026
+  luongFree: [
+    { nut: [{ ten: 'Thông tin hộ kinh doanh', icon: 'user', di: 'thue/to-khai?buoc=1' }] },
+    { nut: [{ ten: 'Kê khai doanh thu', icon: 'cashin', di: 'thue/to-khai?buoc=2' }] },
+    { nut: [{ ten: 'Khai phụ lục', icon: 'doc', di: 'thue/to-khai?buoc=3' }] },
+    { nut: [{ ten: 'Xem và nộp tờ khai', icon: 'send', di: 'thue/to-khai?buoc=4' }] },
+  ],
+  baoCaoFree: ['ban-hang/3-2-5', 'tong-hop/10-4-1', 'kho/5-2-8', 'tien/2-2-7', '6-2-5'],
   baoCao: ['6-2-3', '6-2-1', '6-2-2'],
   danhMuc: ['danh-muc/1-11', 'danh-muc/1-5'],
   tienIch: ['tien-ich/11-4', 'tien-ich/11-9'],
