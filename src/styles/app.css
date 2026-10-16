@@ -22176,3 +22176,30 @@ button[class*="btn-"] .ic .l2 {
 }
 
 
+
+/* ── Tooltip biểu đồ cột trang chủ (T306) ── */
+.ll-khung { position: relative; }
+.ll-khung .lai-lo-thang { outline: none; cursor: pointer; }
+.lai-lo-thang.on > rect:first-of-type,
+.lai-lo-thang:focus-visible > rect:first-of-type { fill: rgba(5, 96, 166, .06); }
+.ll-tip {
+  position: absolute; z-index: 5; width: max-content; min-width: 264px; max-width: 320px;
+  background: var(--white); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px;
+  box-shadow: 0 14px 34px rgba(14, 26, 43, .14), 0 2px 6px rgba(14, 26, 43, .06);
+  pointer-events: none; font-variant-numeric: tabular-nums; text-align: left;
+}
+.ll-tip-dau { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding-bottom: 7px; margin-bottom: 6px; border-bottom: 1px solid #eef1f5; }
+.ll-tip-dau > b { font-size: 13.5px; color: var(--ink); white-space: nowrap; }
+.ll-tip-dau > span { font-size: 11.5px; color: var(--muted); white-space: nowrap; }
+.ll-tip-dong { display: grid; grid-template-columns: 12px minmax(0, 1fr) auto; align-items: center; gap: 8px; padding: 2.5px 0; font-size: 12.5px; }
+.ll-tip-dong > span { color: var(--muted); white-space: nowrap; }
+.ll-tip-dong > b { color: var(--ink); font-weight: 600; white-space: nowrap; padding-left: 12px; }
+.ll-tip-mk { width: 10px; height: 10px; border-radius: 2px; }
+.ll-tip-mk.tron { width: 9px; height: 9px; border-radius: 50%; }
+.ll-tip-mk.net { width: 12px; height: 0; border-radius: 0; border-top: 2px dashed; }
+.ll-tip-ke { height: 1px; background: #eef1f5; margin: 5px 0; }
+.ll-tip-dong.kq > span { color: var(--ink); font-weight: 600; }
+.ll-tip-dong.kq > b { font-weight: 700; font-size: 13.5px; }
+.ll-tip-xanh, .ll-tip-dong.kq.ll-tip-xanh > b { color: var(--green); }
+.ll-tip-do, .ll-tip-dong.kq.ll-tip-do > b { color: var(--red); }
+.ll-tip-ghi { margin-top: 7px; font-size: 11.5px; color: var(--amber); background: var(--amber-t); border-radius: 6px; padding: 3px 8px; }

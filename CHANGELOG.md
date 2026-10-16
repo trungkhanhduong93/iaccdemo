@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 17/10/2026
 
+- T306: Trang chủ, biểu đồ Hiệu quả kinh doanh và Dòng tiền 13 tháng: rê chuột hoặc chạm vào tháng hiện thẻ chi tiết trắng đặt cạnh cột: tháng, biên lãi hoặc thu chi bên nào nhiều hơn, từng khoản có dấu màu, dòng lãi, lỗ hoặc dòng tiền thuần tô màu, tồn quỹ cuối tháng.
 - T301, T302: Web và điện thoại: icon đổi sang nét 2 màu iPOS, thân xanh, nét nhấn cam, bỏ ô nền màu. Icon còn 3 cỡ 16, 20, 24, nét đều 1.5px; điện thoại không còn icon dưới 20px. Sidebar web nền xanh iPOS đậm, mục đang chọn rõ hơn. Thanh dưới điện thoại dùng icon mới, tab Nghiệp vụ có icon riêng.
 
 ## 16/10/2026

@@ -1,4 +1,5 @@
 // Biểu đồ SVG tự vẽ, không thư viện
+import { useEffect, useRef, useState } from 'react'
 import { short } from './format'
 
 /** Cột đứng, có thể chồng 2 lớp (vd doanh thu và giá vốn) */
@@ -436,7 +437,45 @@ export function LaiLoChart({ data, h = 260, rong = 640, ten = ['Doanh thu', 'Chi
   const gon = (v: number) => short(v).replace(' tr', 'tr').replace(' tỷ', 'tỷ').replace(' k', 'k')
   const ticks = Array.from({ length: Math.round(max / buoc) + 1 }, (_, i) => buoc * i).concat(min <= -buoc ? Array.from({ length: Math.floor(-min / buoc) }, (_, i) => -buoc * (i + 1)) : [])
   const tien = (v: number) => `${v.toLocaleString('vi-VN')} đ`
+  // Tooltip tự vẽ thay <title> của trình duyệt (T306): rê, focus hoặc chạm vào tháng thì hiện, chạm ra ngoài thì ẩn
+  const [chon, setChon] = useState<number | null>(null)
+  const khung = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (chon === null) return
+    const ngoai = (e: PointerEvent) => { if (!khung.current?.contains(e.target as Node)) setChon(null) }
+    document.addEventListener('pointerdown', ngoai)
+    return () => document.removeEventListener('pointerdown', ngoai)
+  }, [chon])
+  const tenThang = (l: string) => { const m = /^T(\d{1,2})\/(\d{2})$/.exec(l); return m ? `Tháng ${m[1]}/20${m[2]}` : l }
+  const dc = chon === null ? null : data[chon]
+  const tip = dc && (() => {
+    const kq = dc.v, lai = kq >= 0
+    const phu = duong
+      ? (lai ? 'Thu nhiều hơn chi' : 'Chi nhiều hơn thu')
+      : dc.dt ? <>Biên lãi <b className={lai ? 'll-tip-xanh' : 'll-tip-do'}>{(kq / dc.dt * 100).toLocaleString('vi-VN', { maximumFractionDigits: 1 })}%</b></> : null
+    // Đặt bên phải cột nếu đủ chỗ, không thì bên trái cột, cả hai không vừa (điện thoại) thì canh giữa cho khỏi tràn
+    const kw = khung.current?.clientWidth ?? W, tw = 290
+    const trai = ((pl + chon! * bw) / W) * kw, phai = ((pl + (chon! + 1) * bw) / W) * kw
+    const viTri = phai + 8 + tw <= kw ? { left: phai + 8 }
+      : trai - 8 - tw >= 0 ? { left: trai - 8 - tw }
+      : { left: '50%', transform: 'translateX(-50%)' }
+    return (
+      <div className="ll-tip" style={{ ...viTri, top: `calc(${(pt / h) * 100}% + 6px)` }} role="status">
+        <div className="ll-tip-dau"><b>{tenThang(dc.l)}</b>{phu && <span>{phu}</span>}</div>
+        <div className="ll-tip-dong"><i className="ll-tip-mk" style={{ background: mau[0] }} /><span>{ten[0]}</span><b>{tien(dc.dt)}</b></div>
+        <div className="ll-tip-dong"><i className="ll-tip-mk" style={{ background: mau[1] }} /><span>{ten[1]}</span><b>{tien(dc.cp)}</b></div>
+        <div className="ll-tip-ke" />
+        <div className={`ll-tip-dong kq ${lai ? 'll-tip-xanh' : 'll-tip-do'}`}>
+          <i className="ll-tip-mk tron" style={{ background: lai ? 'var(--green)' : 'var(--red)' }} />
+          <span>{duong ? duong.ten : lai ? 'Lãi' : 'Lỗ'}</span><b>{tien(Math.abs(kq))}</b>
+        </div>
+        {duong2 && <div className="ll-tip-dong"><i className="ll-tip-mk net" style={{ borderColor: duong2.mau }} /><span>{duong2.ten} cuối tháng</span><b>{tien(v2(dc))}</b></div>}
+        {dc.ghiChu && <div className="ll-tip-ghi">{dc.ghiChu}</div>}
+      </div>
+    )
+  })()
   return (
+    <div className="ll-khung" ref={khung} onMouseLeave={() => setChon(null)}>
     <svg className="chart lai-lo-chart" viewBox={`0 0 ${W} ${h}`} width="100%" role="img" aria-label={`Biểu đồ ${ten[0].toLowerCase()}, ${ten[1].toLowerCase()}, ${duong ? duong.ten.toLowerCase() : 'lãi lỗ'} theo tháng`}>
       {ticks.map((t, i) => (
         <g key={i}>
@@ -452,13 +491,9 @@ export function LaiLoChart({ data, h = 260, rong = 640, ten = ['Doanh thu', 'Chi
             stroke={d.do ? mau : 'none'} strokeDasharray={d.do ? '3 2' : undefined} />
         )
         return (
-          <g key={i} className="lai-lo-thang">
-            <title>{`${d.l}${d.ghiChu ? ` (${d.ghiChu})` : ''}
-${ten[0]}: ${tien(d.dt)}
-${ten[1]}: ${tien(d.cp)}
-${duong ? `${duong.ten}: ${tien(d.v)}` : `${d.v >= 0 ? 'Lãi' : 'Lỗ'}: ${tien(Math.abs(d.v))}`}${duong2 ? `
-${duong2.ten}: ${tien(v2(d))}` : ''}`}</title>
-            <rect x={pl + i * bw} y={pt} width={bw} height={h - pt - pb} fill="transparent" />
+          <g key={i} className={`lai-lo-thang${chon === i ? ' on' : ''}`} tabIndex={0} aria-label={tenThang(d.l)}
+            onMouseEnter={() => setChon(i)} onFocus={() => setChon(i)} onClick={() => setChon(i)}>
+            <rect x={pl + i * bw} y={pt} width={bw} height={h - pt - pb} rx={4} fill="transparent" />
             {cot(x, d.dt, mau[0])}
             {cot(x + w + 2, d.cp, mau[1])}
             <text x={cx(i)} y={h - 7} textAnchor="middle">{d.l}</text>
@@ -474,5 +509,7 @@ ${duong2.ten}: ${tien(v2(d))}` : ''}`}</title>
         {data.map((d, i) => <circle key={i} cx={cx(i)} cy={y(v2(d))} r={3.5} fill={duong2.mau} stroke="#fff" strokeWidth={1.5} pointerEvents="none" />)}
       </>}
     </svg>
+    {tip}
+    </div>
   )
 }
