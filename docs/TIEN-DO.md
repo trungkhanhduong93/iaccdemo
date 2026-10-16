@@ -4,13 +4,14 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T303.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T304.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T304 | Trang chủ gói Free máy tính, khối Quản lý kho chia 3 khối Mua hàng (tổng nhập, số đơn, NCC, so tháng trước, tỷ lệ trên doanh thu, top mặt hàng, biểu đồ 6 tháng), Công nợ phải trả NCC (nợ cuối kỳ, phát sinh, đã trả, nợ lâu theo ngày mua, top NCC có nút Trả nợ, biểu đồ 6 tháng; gói Free không có hạn thanh toán), Hao hụt kiểm kê (chỉ số lượng: mặt hàng thiếu, thừa, tỷ lệ lệch, top mặt hàng thiếu kèm ĐVT, cửa hàng lệch nhiều, biểu đồ) | dinhlanphuongipacc | Đang làm | Sửa `home/BaBaiToanFree.tsx`, `app.css` (mục cuối T304), có thể thêm file số liệu trong `modules/home/`. Làm ở máy HAN-IPOS381 |
 | T301 | Bộ biểu tượng tô theo màu thương hiệu iPOS cam, xanh thay 8 màu nhóm, web và điện thoại | Trum | Chờ | Chờ Trum chốt phương án A hoặc B ở trang xem trước https://claude.ai/artifact/8bD189Sn5BhvJQXtfUsDLa. Sẽ sửa `src/ui/Icon.tsx`, `app.css` |
 | T302 | Quy chuẩn cỡ icon web và điện thoại: nét 16, 20, 24, ô nền 36, 44, 52, nét cố định 1.5px ở mọi cỡ | Trum | Chờ | Chờ Trum chốt cùng T301. Sẽ sửa `app.css` (18 luật cỡ icon), svg viết tay ở `src/ui/mobile/*` |
 | T300 | Điện thoại, phiếu mua hàng: thẻ mặt hàng theo mẫu (Số lượng kèm đơn vị tính, Đơn giá, Giảm giá % hoặc tiền, Tiền giảm giá, VAT, Tổng tiền có nút sửa, ô ghi chú); gói Free khoá đơn vị tính, gói khác chọn đơn vị quy đổi nếu mặt hàng có; phiếu nhập, xuất khác bỏ giảm giá, thuế; kiểm kê bỏ giảm giá, thuế, đơn giá, thành tiền | Trum | Đang làm | Giao Anti sau T299. Sửa `src/ui/mobile/MLapPhieu.tsx`, `MLapPhieuKho.tsx`, `app.css` mục cuối |
