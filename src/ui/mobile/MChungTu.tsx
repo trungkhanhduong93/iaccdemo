@@ -3,7 +3,7 @@ import { useLocation, useNavigate, useParams, useSearchParams } from 'react-rout
 import type { ScreenProps } from '../../modules/types'
 import { duongDan } from '../../app/registry'
 import { cuaHangHienTai, useSession } from '../../app/session'
-import { kieuGhiSo } from '../../app/plan'
+import { anNgoaiGoi, kieuGhiSo } from '../../app/plan'
 import { docNgay, trongKhoang } from '../ChonNgay'
 import { money, rutGonSo } from '../format'
 import { dsChipTT, khopChipTT } from '../LocNangCao'
@@ -111,8 +111,20 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
       }
       // 2. Cửa hàng
       if (cnChon && r.cn !== cnChon.ten) return false
-      // 3. Loại chứng từ (tab con)
-      if (loaiChon && r.loai !== loaiChon) return false
+      // 3. Loại chứng từ (tab con) (T299: Thu chi gói Free gộp Tiền mặt và Ngân hàng)
+      if (loaiChon) {
+        if (mod.key === 'tien' && s.goi === 'F') {
+          if (loaiChon === 'tien-mat') {
+            if (r.loai !== 'thu' && r.loai !== 'chi') return false
+          } else if (loaiChon === 'ngan-hang') {
+            if (r.loai !== 'bc' && r.loai !== 'unc') return false
+          } else if (loaiChon === 'cq') {
+            if (r.loai !== 'cq') return false
+          }
+        } else {
+          if (r.loai !== loaiChon) return false
+        }
+      }
       // 4. Đối tượng từ bộ lọc
       if (locVal.doiTuong && locVal.doiTuong.length > 0) {
         if (!locVal.doiTuong.includes(String(r.doiTuong ?? ''))) return false
@@ -162,11 +174,19 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
     return { tongThu: thu, tongChi: chi, chenhLech: thu - chi }
   }, [list, dsChieu])
 
-  // Thêm mới
+  // Thêm mới (T299: gói Free ở tab Chuyển quỹ mở thẳng, tab Tiền mặt/Ngân hàng mở 2 loại)
   const khongThem = cfg.khongThem && !cfg.dieuChinh
   const handleThem = khongThem
     ? undefined
     : () => {
+        if (mod.key === 'tien' && s.goi === 'F') {
+          if (loaiChon === 'cq') {
+            nav(`${path}/moi?loai=cq`)
+          } else {
+            setMoChonLoai(true)
+          }
+          return
+        }
         if (cfg.loai && cfg.loai.length > 0) {
           setMoChonLoai(true)
         } else {
@@ -174,11 +194,83 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
         }
       }
 
+  // Danh sách loại phiếu khi thêm mới (T299: gói Free lọc theo tab Tiền mặt / Ngân hàng)
+  const dsLoaiThemMoi = useMemo(() => {
+    if (!cfg.loai) return []
+    if (mod.key === 'tien' && s.goi === 'F') {
+      if (loaiChon === 'tien-mat') {
+        return cfg.loai.filter(l => l.k === 'thu' || l.k === 'chi')
+      }
+      if (loaiChon === 'ngan-hang') {
+        return cfg.loai.filter(l => l.k === 'bc' || l.k === 'unc')
+      }
+    }
+    return cfg.loai
+  }, [cfg.loai, mod.key, s.goi, loaiChon])
+
   const [moTheoDoi, setMoTheoDoi] = useState(false)
 
   // Hàng tabs ngang: các loại phiếu / màn chứng từ trong phân hệ + tab Báo cáo theo dõi
   const hangTabs = useMemo(() => {
+    // T299: Phân hệ Thu chi gói Free đúng 5 tab: Tất cả, Tiền mặt, Ngân hàng, Chuyển quỹ, Báo cáo theo dõi
+    if (mod.key === 'tien' && s.goi === 'F') {
+      const tabsFree = [
+        { k: '', ten: 'Tất cả' },
+        { k: 'tien-mat', ten: 'Tiền mặt' },
+        { k: 'ngan-hang', ten: 'Ngân hàng' },
+        { k: 'cq', ten: 'Chuyển quỹ' },
+      ]
+      return (
+        <div className="m-ds-hang-tabs" role="tablist">
+          {tabsFree.map(t => (
+            <button
+              key={t.k}
+              type="button"
+              role="tab"
+              aria-selected={loaiChon === t.k}
+              className={`m-tab-chu${loaiChon === t.k ? ' on' : ''}`}
+              onClick={() => setLoaiChon(t.k)}
+            >
+              {t.ten}
+            </button>
+          ))}
+          <button
+            type="button"
+            role="tab"
+            aria-selected={false}
+            className="m-tab-chu"
+            onClick={() => setMoTheoDoi(true)}
+          >
+            Báo cáo theo dõi
+          </button>
+        </div>
+      )
+    }
+
     if (mod.key === 'kho') {
+      if (anNgoaiGoi(s.goi)) {
+        return (
+          <div className="m-ds-hang-tabs" role="tablist">
+            <button
+              type="button"
+              role="tab"
+              aria-selected={true}
+              className="m-tab-chu on"
+            >
+              {sc.ngan ?? sc.ten}
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={false}
+              className="m-tab-chu"
+              onClick={() => setMoTheoDoi(true)}
+            >
+              Báo cáo theo dõi
+            </button>
+          </div>
+        )
+      }
       const isNk = sc.code === '5.1.1' || sc.slug === '5-1-1'
       const isXk = sc.code === '5.1.2-4' || sc.slug === '5-1-2-4'
       const isXh = sc.code === '5.1.2-3' || sc.slug === '5-1-2-3'
@@ -271,6 +363,29 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
     }
 
     if (mod.key === 'mua-hang') {
+      if (anNgoaiGoi(s.goi)) {
+        return (
+          <div className="m-ds-hang-tabs" role="tablist">
+            <button
+              type="button"
+              role="tab"
+              aria-selected={true}
+              className="m-tab-chu on"
+            >
+              Chứng từ mua hàng
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={false}
+              className="m-tab-chu"
+              onClick={() => setMoTheoDoi(true)}
+            >
+              Báo cáo theo dõi
+            </button>
+          </div>
+        )
+      }
       const is411 = sc.code === '4.1.1' || sc.slug === '4-1-1'
       const is412 = sc.code === '4.1.2' || sc.slug === '4-1-2'
       const is414 = sc.code === '4.1.4' || sc.slug === '4-1-4'
@@ -387,7 +502,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
         </button>
       </div>
     )
-  }, [mod.key, sc, cfg.loai, cfg.dieuChinh, loaiChon, nav])
+  }, [mod.key, sc, cfg.loai, cfg.dieuChinh, loaiChon, nav, s.goi])
 
   const pad = (n: number) => String(n).padStart(2, '0')
   const khoangNgayHienThi = kn
@@ -491,7 +606,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
           mo={moChonLoai}
           onDong={() => setMoChonLoai(false)}
           tieuDe="Chọn loại phiếu"
-          ds={cfg.loai.map(l => ({ k: l.k, ten: l.ten }))}
+          ds={dsLoaiThemMoi.map(l => ({ k: l.k, ten: l.ten }))}
           onChon={k => nav(`${path}/moi?loai=${k}`)}
         />
       )}

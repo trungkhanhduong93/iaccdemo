@@ -1,5 +1,8 @@
 import { type FC } from 'react'
 import { Link } from 'react-router-dom'
+import { useSession } from '../../app/session'
+import { anNgoaiGoi } from '../../app/plan'
+import { moDuoc, timMan } from '../../app/registry'
 import { Icon } from '../Icon'
 
 export interface MucTheoDoi {
@@ -82,8 +85,15 @@ export const MBaoCaoTheoDoi: FC<MBaoCaoTheoDoiProps> = ({
   modKey,
   tieuDe = 'Báo cáo theo dõi & Danh mục',
 }) => {
+  const { s } = useSession()
   if (!mo) return null
-  const ds = MUC_THEO_DOI[modKey] ?? []
+  const dsRaw = MUC_THEO_DOI[modKey] ?? []
+  const ds = dsRaw.filter(item => {
+    if (!anNgoaiGoi(s.goi)) return true
+    const [, mKey, slug] = item.path.split('/').filter(Boolean)
+    const { sc } = timMan(mKey, slug)
+    return sc ? moDuoc(sc, s.goi) : true
+  })
   const dsBc = ds.filter(x => x.loai === 'bc')
   const dsDm = ds.filter(x => x.loai === 'dm')
 

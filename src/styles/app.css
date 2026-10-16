@@ -21673,3 +21673,26 @@ input.bat-tat:disabled { opacity: .5; cursor: not-allowed; }
 .bbt-e-luoi-2 .bbt-kho-khoi > .t .l b .bbt-kho-ma { display: inline; margin-right: 6px; font-size: 12px; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
 /* Nút tiện ích cuối khối kho (Tạo phiếu mua hàng, Kiểm kê ngay), dồn xuống đáy cho thẳng hàng (T304) */
 .bbt-kho-chan { margin-top: auto; padding-top: 10px; display: flex; gap: 8px; }
+/* ── Điện thoại gói Free (T299) ── */
+.m-nut-them-fab {
+  bottom: calc(var(--m-thanh-duoi, 85px) + 22px + 12px + env(safe-area-inset-bottom, 0px)) !important;
+  z-index: 110 !important;
+}
+
+.m-app.m-cap-2 .m-nut-them-fab {
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px)) !important;
+}
+
+.m-ds-o-ngay {
+  cursor: default !important;
+  justify-content: flex-start !important;
+}
+
+.m-ds-danh-sach {
+  padding-bottom: calc(var(--m-thanh-duoi, 85px) + 85px + env(safe-area-inset-bottom, 0px)) !important;
+}
+
+.m-app.m-cap-2 .m-ds-danh-sach {
+  padding-bottom: calc(75px + env(safe-area-inset-bottom, 0px)) !important;
+}
+

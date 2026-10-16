@@ -2,6 +2,7 @@ import { useMemo, type FC } from 'react'
 import { Link } from 'react-router-dom'
 import type { ModuleDef, NutQT, QuyTrinhDef, ScreenProps } from '../../modules/types'
 import { dich, hienMan, moDuoc } from '../../app/registry'
+import { anNgoaiGoi } from '../../app/plan'
 import { useSession, type Session } from '../../app/session'
 import { Icon } from '../Icon'
 
@@ -65,8 +66,8 @@ export function layDsBuoc(mod: ModuleDef, s: Session): BuocMobile[] {
         // 1. !moDuoc(sc, s.goi)
         if (!moDuoc(d.sc, s.goi)) continue
 
-        // 2. Màn không qua luật T194 (!(moDuoc(sc, 'F') || moDuoc(sc, 'S')))
-        if (!(moDuoc(d.sc, 'F') || moDuoc(d.sc, 'S'))) continue
+        // 2. Màn không qua luật T194 (T299: gói Free ẩn màn ngoài gói)
+        if (anNgoaiGoi(s.goi) ? !moDuoc(d.sc, s.goi) : !(moDuoc(d.sc, 'F') || moDuoc(d.sc, 'S'))) continue
 
         // 3. !hienMan(sc, s.goi, s.cheDo, s)
         if (!hienMan(d.sc, s.goi, s.cheDo, s)) continue

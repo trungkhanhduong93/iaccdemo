@@ -1264,7 +1264,7 @@ def kiem_tra_dot_9():
             loi.append('Phiếu chi: không tìm thấy nút mở bộ lọc')
         else:
             nut_loc.first.click()
-            pg.wait_for_selector('.m-loc-man')
+            pg.wait_for_selector('.m-loc-tam, .m-loc-man')
             pg.wait_for_timeout(200)
 
             dong_dt = pg.locator('.m-loc-dong', has_text='Đối tượng')

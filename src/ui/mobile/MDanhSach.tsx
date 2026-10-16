@@ -137,17 +137,10 @@ export function MDanhSach<T>({
           {coLoc && <span className="m-ds-loc-cham" />}
         </button>
 
-        <button
-          type="button"
-          className="m-ds-o-ngay"
-          onClick={onMoChonNgay ?? onMoLoc}
-          aria-label="Chọn khoảng ngày"
-        >
+        {/* Ô ngày tháng chỉ để hiển thị: bấm không mở gì, không mũi tên (T299) */}
+        <div className="m-ds-o-ngay" aria-label="Khoảng ngày hiển thị">
           <span className="m-ds-o-ngay-chu">{khoangNgayHienThi}</span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
-        </button>
+        </div>
 
         {chips && chips.length > 0 ? (
           <button

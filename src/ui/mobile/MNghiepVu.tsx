@@ -14,9 +14,9 @@ export function MNghiepVu() {
   const [params] = useSearchParams()
   const modKey = params.get('m')
 
-  // Chỉ hiện màn mà gói Free hoặc Standard mở được trên điện thoại, áp cho mọi gói (Trum chốt 13/10/2026, T194)
+  // Chỉ hiện màn mà gói Free hoặc Standard mở được trên điện thoại, áp cho mọi gói (Trum chốt 13/10/2026, T194; gói Free ẩn màn ngoài gói, T299)
   const manMoTrenMobile = (sc: ScreenDef) =>
-    hienMan(sc, s.goi, s.cheDo, s) && (moDuoc(sc, 'F') || moDuoc(sc, 'S'))
+    hienMan(sc, s.goi, s.cheDo, s) && (anNgoaiGoi(s.goi) ? moDuoc(sc, s.goi) : (moDuoc(sc, 'F') || moDuoc(sc, 'S')))
 
   const dsPhanHe = MODULES.filter(
     m =>
@@ -42,7 +42,7 @@ export function MNghiepVu() {
     <div className="m-nghiep-vu">
       <div className="m-nv-luoi">
         {dsPhanHe.filter(m => !anNgoaiGoi(s.goi) || !phanHeKhoa(m, s.goi)).map(m => {
-          const khoa = phanHeKhoa(m, s.goi)
+          const khoa = !anNgoaiGoi(s.goi) && phanHeKhoa(m, s.goi)
           return (
             <Link
               key={m.key}

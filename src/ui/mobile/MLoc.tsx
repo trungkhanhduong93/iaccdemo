@@ -174,17 +174,14 @@ export const MLoc: FC<MLocProps> = ({
   }
 
   return (
-    <div className="m-loc-man">
-      {/* ── TẤM LỌC CHÍNH ── */}
-      <div className={`m-loc-chinh ${trangCon ? 'm-loc-an' : ''}`}>
-        <div className="m-thanh-tren">
-          <div className="m-thanh-tren-trai">
-            <button type="button" className="m-nut-back" onClick={onDong} aria-label="Đóng">
-              <Icon n="x" className="ic sm" />
-            </button>
-          </div>
-          <h1 className="m-thanh-tren-tieu-de">Bộ lọc</h1>
-          <div className="m-thanh-tren-phai" style={{ width: 36 }} />
+    <div className="m-loc-overlay" onClick={onDong}>
+      {/* ── TẤM LỌC NỔI TỪ ĐÁY (T299) ── */}
+      <div className="m-loc-tam" onClick={e => e.stopPropagation()}>
+        <div className="m-loc-dau">
+          <h2 className="m-loc-tieu-de">Bộ lọc</h2>
+          <button type="button" className="m-loc-btn-dong" onClick={onDong} aria-label="Đóng">
+            <Icon n="x" className="ic sm" />
+          </button>
         </div>
 
         <div className="m-loc-than">
@@ -241,7 +238,7 @@ export const MLoc: FC<MLocProps> = ({
 
       {/* ── TRANG DANH MỤC CON TRƯỢT VÀO ── */}
       {trangCon && (
-        <div className="m-loc-trang-con">
+        <div className="m-loc-trang-con" onClick={e => e.stopPropagation()}>
           <div className="m-thanh-tren">
             <div className="m-thanh-tren-trai">
               <button

@@ -1,8 +1,8 @@
 import { useMemo, useState, type FC } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import type { ScreenDef, ScreenProps } from '../../modules/types'
-import { GOI } from '../../app/plan'
-import { hienMan, tenMan } from '../../app/registry'
+import { GOI, anNgoaiGoi } from '../../app/plan'
+import { hienMan, moDuoc, tenMan } from '../../app/registry'
 import { useSession } from '../../app/session'
 import { layNhomBaoCao } from '../../modules/bao-cao/TrungTam'
 import { kyHieuBC } from '../../modules/bao-cao/danh-sach'
@@ -31,12 +31,12 @@ export const MBaoCao: FC<ScreenProps> = ({ sc, mod }) => {
     return nhomTatCa.find(g => g.mod.key === keyNhom) ?? null
   }, [keyNhom, nhomTatCa])
 
-  // Danh sách toàn bộ báo cáo hiện được để tìm kiếm
+  // Danh sách toàn bộ báo cáo hiện được để tìm kiếm (T299: gói Free chỉ giữ màn trong gói)
   const tatCaBcHien = useMemo(() => {
     const map = new Map<string, ScreenDef>()
     for (const g of nhomTatCa) {
       for (const item of g.screens) {
-        if (hienMan(item, s.goi, s.cheDo, s)) {
+        if (hienMan(item, s.goi, s.cheDo, s) && (!anNgoaiGoi(s.goi) || moDuoc(item, s.goi))) {
           map.set(item.slug, item)
         }
       }
@@ -61,10 +61,10 @@ export const MBaoCao: FC<ScreenProps> = ({ sc, mod }) => {
   // Nhóm hiển thị ở tab Tất cả (dùng đúng các nhóm của TrungTamBaoCao)
   const nhomHienThi = nhomTatCa
 
-  // Danh sách báo cáo trong nhóm đang xem
+  // Danh sách báo cáo trong nhóm đang xem (T299: gói Free chỉ giữ màn trong gói)
   const dsBcTrongNhom = useMemo(() => {
     if (!nhomDangXem) return []
-    return nhomDangXem.screens.filter(x => hienMan(x, s.goi, s.cheDo, s))
+    return nhomDangXem.screens.filter(x => hienMan(x, s.goi, s.cheDo, s) && (!anNgoaiGoi(s.goi) || moDuoc(x, s.goi)))
   }, [nhomDangXem, s])
 
   const moBaoCao = (item: ScreenDef) => {
@@ -197,9 +197,9 @@ export const MBaoCao: FC<ScreenProps> = ({ sc, mod }) => {
         ) : (
           // Màn chính: hiển thị các thẻ nhóm A, B, C...
           <div className="m-bc-ds-nhom">
-            {nhomHienThi.filter(g => g.screens.some(x => hienMan(x, s.goi, s.cheDo, s))).map((g, index) => {   // nhóm không có báo cáo thì ẩn (T252)
+            {nhomHienThi.filter(g => g.screens.some(x => hienMan(x, s.goi, s.cheDo, s) && (!anNgoaiGoi(s.goi) || moDuoc(x, s.goi)))).map((g, index) => {   // nhóm không có báo cáo thì ẩn (T252, T299)
               const char = String.fromCharCode(65 + index)
-              const soBc = g.screens.filter(x => hienMan(x, s.goi, s.cheDo, s)).length
+              const soBc = g.screens.filter(x => hienMan(x, s.goi, s.cheDo, s) && (!anNgoaiGoi(s.goi) || moDuoc(x, s.goi))).length
               const moTa = g.mod.mota ?? `${soBc} báo cáo`
               return (
                 <div

@@ -282,8 +282,8 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
     [thaoTacTatCa]
   )
   const chonThaoTacItems = useMemo(
-    () => chonThaoTacIds.map(id => mapThaoTac.get(id)).filter((x): x is ThaoTacMuc => Boolean(x)),
-    [chonThaoTacIds, mapThaoTac]
+    () => chonThaoTacIds.map(id => mapThaoTac.get(id)).filter((x): x is ThaoTacMuc => x !== undefined && (!anNgoaiGoi(s.goi) || !x.khoa)),
+    [chonThaoTacIds, mapThaoTac, s.goi]
   )
 
   const handleLenThaoTac = (idx: number) => {
@@ -346,6 +346,7 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
       }
       const kq = thaoTacTatCa
         .filter(x => {
+          if (anNgoaiGoi(s.goi) && x.khoa) return false
           const tf = fold(x.ten) + ' ' + fold(x.tenMod ?? '')
           return wordsThaoTac.every(w => tf.includes(w))
         })
@@ -357,6 +358,7 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
 
     const theoMod = new Map<string, ThaoTacMuc[]>()
     for (const item of thaoTacTatCa) {
+      if (anNgoaiGoi(s.goi) && item.khoa) continue
       const k = item.modKey
       const list = theoMod.get(k) ?? []
       list.push(item)
