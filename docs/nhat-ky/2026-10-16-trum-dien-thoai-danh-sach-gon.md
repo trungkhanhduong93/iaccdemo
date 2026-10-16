@@ -26,6 +26,11 @@
   - Bài kiểm 22B có điều kiện không bao giờ báo lỗi. Đã sửa cho bắt lỗi thật.
   - Form ghi tăng dùng thẻ `select` gốc. Đã đổi sang tấm `MChon`.
 
+## Sửa sau khi push
+
+- Bản đã push làm trang chủ điện thoại mất thanh tab dưới. Lý do: `laBaoCao` trong `MobileShell.tsx` coi mọi màn `custom` là báo cáo, mà trang chủ cũng là màn `custom`. Đã sửa: màn `custom` chỉ tính là báo cáo khi `vaoBaoCao(sc)` đúng.
+- Bài `kiem_tra_dang_nhap_dot_8` bắt được lỗi này, nhưng `--nhanh` không chạy bài đó. Đã sửa bài này theo luồng mới: bấm Thu chi vào thẳng danh sách.
+
 ## Dở dang, việc tiếp theo
 
 - T282: phiếu nhập liệu 1 màn cho mọi nghiệp vụ trên điện thoại.

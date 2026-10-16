@@ -1057,15 +1057,12 @@ def kiem_tra_dang_nhap_dot_8():
                 kiem_man('Phân hệ Thu chi', o_tien)
                 o_tien.click()
                 pg.wait_for_timeout(300)
-                kiem_man('Chi tiết phân hệ Thu chi')
 
-                dong_pc = pg.locator('.m-nv-dong[href*="tien/2-1-1"], .m-qt2-o[href*="tien/2-1-1"]')
-                if dong_pc.count() == 0:
-                    loi.append('Phân hệ Thu chi: không tìm thấy màn Phiếu thu chi')
+                # Bỏ sơ đồ quy trình (T281): bấm Thu chi vào thẳng danh sách Phiếu thu chi
+                if 'tien/2-1-1' not in pg.url:
+                    loi.append(f'Phân hệ Thu chi: bấm không vào thẳng danh sách Phiếu thu chi ({pg.url})')
                 else:
-                    kiem_man('Dòng Phiếu thu chi', dong_pc.first)
-                    dong_pc.first.click()
-                    pg.wait_for_timeout(500)
+                    pg.wait_for_timeout(200)
                     pg.screenshot(path=str(SHOTS / 'm-08-ds-phieu-chi.png'))
                     kiem_man('Danh sách Phiếu chi')
 

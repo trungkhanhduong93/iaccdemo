@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { dsCuaHang, useSession } from '../../app/session'
 import { CUA_HANG } from '../../data/mock'
-import { MODULES, nhanTab, timMan } from '../../app/registry'
+import { MODULES, nhanTab, timMan, vaoBaoCao } from '../../app/registry'
 import { ghiGanDay } from '../../app/CommandPalette'
 import { OnboardFabi } from '../../modules/onboarding/OnboardFabi'
 import { Icon } from '../Icon'
@@ -52,7 +52,8 @@ function laBaoCao(pathname: string): boolean {
   const [, modKey, slug] = pathname.split('/').filter(Boolean)
   if (modKey === 'bao-cao') return Boolean(slug) && slug !== 'tat-ca' && !slug.startsWith('nhom-')
   const { sc } = timMan(modKey, slug)
-  return sc?.kind === 'report' || sc?.kind === 'baocao' || sc?.kind === 'custom'
+  // Màn custom chỉ tính là báo cáo khi vào Trung tâm báo cáo; trang chủ cũng là custom, cần giữ thanh dưới (T281)
+  return sc?.kind === 'report' || sc?.kind === 'baocao' || (sc?.kind === 'custom' && vaoBaoCao(sc))
 }
 
 function laXemPhieu(pathname: string): boolean {
