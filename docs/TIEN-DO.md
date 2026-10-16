@@ -11,6 +11,8 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T301 | Bộ biểu tượng tô theo màu thương hiệu iPOS cam, xanh thay 8 màu nhóm, web và điện thoại | Trum | Chờ | Chờ Trum chốt phương án A hoặc B ở trang xem trước https://claude.ai/artifact/8bD189Sn5BhvJQXtfUsDLa. Sẽ sửa `src/ui/Icon.tsx`, `app.css` |
+| T302 | Quy chuẩn cỡ icon web và điện thoại: nét 16, 20, 24, ô nền 36, 44, 52, nét cố định 1.5px ở mọi cỡ | Trum | Chờ | Chờ Trum chốt cùng T301. Sẽ sửa `app.css` (18 luật cỡ icon), svg viết tay ở `src/ui/mobile/*` |
 | T300 | Điện thoại, phiếu mua hàng: thẻ mặt hàng theo mẫu (Số lượng kèm đơn vị tính, Đơn giá, Giảm giá % hoặc tiền, Tiền giảm giá, VAT, Tổng tiền có nút sửa, ô ghi chú); gói Free khoá đơn vị tính, gói khác chọn đơn vị quy đổi nếu mặt hàng có; phiếu nhập, xuất khác bỏ giảm giá, thuế; kiểm kê bỏ giảm giá, thuế, đơn giá, thành tiền | Trum | Đang làm | Giao Anti sau T299. Sửa `src/ui/mobile/MLapPhieu.tsx`, `MLapPhieuKho.tsx`, `app.css` mục cuối |
 | T299 | Điện thoại gói Free: bộ lọc danh sách chứng từ thành tấm nổi nửa màn như báo cáo, chỉ mở bằng nút lọc, ô ngày chỉ hiển thị; ẩn màn ngoài gói Free; nút Thêm mới không đè thanh dưới; Thu chi còn 5 tab Tất cả, Tiền mặt, Ngân hàng, Chuyển quỹ, Báo cáo theo dõi, Thêm mới ở Tiền mặt chỉ có Thu, Chi tiền mặt, Ngân hàng tương tự | Trum | Đang làm | Giao Anti. Sửa `src/ui/mobile/*` (MDanhSach, MLoc, MChungTu, MNghiepVu, MBaoCao, MKhac, MTimKiem), `app.css` mục cuối |
 | T265 | Phiếu thu, chi đồng bộ từ FABi (T264) chưa vào Sổ quỹ tiền mặt, Sổ ngân hàng, Lịch sử thu chi, tồn quỹ trang chủ; đưa vào thì đổi số dư | | Chờ | Phát hiện khi làm T264, chờ PhuongXT quyết |
