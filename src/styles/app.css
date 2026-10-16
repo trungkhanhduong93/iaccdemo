@@ -20342,3 +20342,7 @@ input.bat-tat:disabled { opacity: .5; cursor: not-allowed; }
 .bc-hoi-loc-o > span { color: var(--body); }
 .bc-hoi-loc-o > .ds-o { width: auto; }
 .bc-cho-loc { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 240px; color: var(--muted); font-size: 14px; }
+
+/* ── Xem báo cáo gom nhóm dạng Tổng hợp, Chi tiết (T289) ── */
+.bc-xem-nhom { flex: none; align-self: center; }
+.bc-xem-nhom button { padding: 5px 12px; font-size: 13px; }

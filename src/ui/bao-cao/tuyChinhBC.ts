@@ -13,6 +13,7 @@ export interface TuyChinhCot {
 export interface TuyChinhLuu {
   cot?: TuyChinhCot[]
   nhom?: string[]
+  xemNhom?: 'tongHop' | 'chiTiet'   // đang gom nhóm thì xem tổng hợp (mỗi nhóm một dòng) hay chi tiết; thiếu là chi tiết (T289)
   coChu?: number
   ky?: OKy[]
 }
@@ -259,6 +260,7 @@ export interface BienDoiOpts {
   loc?: Record<string, string[]>
   anKhongPS?: boolean
   nhom?: string[]
+  tongHop?: boolean   // T289: gom nhóm xem dạng tổng hợp
   cot?: TuyChinhCot[]
   tinhLaiTong?: boolean
   khoa?: boolean
@@ -373,6 +375,26 @@ export function bienDoiBang(
       }
     }
     return res
+  }
+
+  // 4a. Gom nhóm dạng tổng hợp (T289): mỗi nhóm một dòng, chỉ còn cột gom nhóm và cột số đã cộng; cấp 2 thụt dưới cấp 1; dòng Tổng cộng cuối bảng
+  if (nhom.length > 0 && tc.tongHop) {
+    const cotNhom = nhom.map(k => cols.find(c => c.k === k)).filter((c): c is Col => !!c).map(c => ({ ...c, num: false, w: c.w && c.w > 180 ? c.w : 180 }))
+    const cotSo = colsMoi.filter(c => c.num && !nhom.includes(c.k) && c.k !== 'gia' && !c.t.includes('Đơn giá'))
+    const nhomTheo = (ds: Row[], k: string) => {
+      const m = new Map<string, Row[]>()
+      for (const r of ds) { const v = String(r[k] ?? ''); m.set(v, [...(m.get(v) ?? []), r]) }
+      return m
+    }
+    const tongSo = (ds: Row[]) => Object.fromEntries(cotSo.map(c => [c.k, ds.reduce((a, r) => a + soO(r[c.k]), 0)]))
+    const [k1, k2] = nhom
+    const dong: Row[] = []
+    for (const [v1, ds1] of nhomTheo(conLai, k1)) {
+      dong.push({ [k1]: v1 || '(Trống)', ...tongSo(ds1), ...(k2 ? { _b: 1 } : {}) })
+      if (k2) for (const [v2, ds2] of nhomTheo(ds1, k2)) dong.push({ [k2]: v2 || '(Trống)', ...tongSo(ds2), _i: 1 })
+    }
+    dong.push({ [cotNhom[0]?.k ?? k1]: 'Tổng cộng', ...tongSo(conLai), _t: 1 })
+    return { cols: [...cotNhom, ...cotSo], rows: dong }
   }
 
   // 4. Gom nhóm

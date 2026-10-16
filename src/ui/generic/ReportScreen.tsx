@@ -24,7 +24,7 @@ import { SoTrangCtx, ToGiay, NgatTrang, tachKhoi, type Kho } from '../bao-cao/To
 import { datNguonXuat, layNguonXuat, taoTenFile, xuatFile, type NguonXuat } from '../bao-cao/xuat'
 import {
   useTrangThaiLoc, datLoc, datAnKhongPS, datCotNhuDangXem, datTuyChon, xoaLoc,
-  datColsGoc, datDsKyMacDinh, datKyNhap, datKyMacDinh, xemBaoCao, useTuyChinhBC, bienDoiBang
+  datColsGoc, datDsKyMacDinh, datKyNhap, datKyMacDinh, xemBaoCao, useTuyChinhBC, bienDoiBang, luuTuyChinh
 } from '../bao-cao/tuyChinhBC'
 import { layNguoiKy } from '../bao-cao/khoMauIn'
 // @ts-ignore
@@ -102,6 +102,11 @@ export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: 
   const cfgBC = cauHinhBC(slug)
   // Mở từ Trung tâm báo cáo: bật popup lọc trước khi hiện báo cáo; mở thẳng đường dẫn, tải lại trang thì hiện ngay (T288)
   const hoiLoc = useHoiLoc(path)
+  // Đang gom nhóm (Tuỳ chỉnh › Gom nhóm): chọn xem Tổng hợp hay Chi tiết ngay trên thanh, lưu cùng tuỳ chỉnh báo cáo (T289)
+  const tcBC = useTuyChinhBC(s.donVi, slug)
+  const coNhom = !cfgBC?.khoa && (tcBC?.nhom?.filter(Boolean).length ?? 0) > 0
+  const xemNhom = tcBC?.xemNhom ?? 'chiTiet'
+  const doiXemNhom = (v: 'tongHop' | 'chiTiet') => { if (slug && tcBC) luuTuyChinh(s.donVi, slug, { ...tcBC, xemNhom: v }) }
   useLayoutEffect(() => {
     if (!(viTri.state as { hoiLoc?: boolean } | null)?.hoiLoc) return
     datHoiLoc(path, true)
@@ -291,6 +296,14 @@ export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: 
   // Thanh lọc báo cáo kiểu danh sách chứng từ (T237)
   const thanh = (
     <div className="thanh-loc bc-thanh-cong-cu">
+      {coNhom && (
+        <div className="seg bc-xem-nhom" role="tablist" aria-label="Kiểu xem nhóm">
+          {([['tongHop', 'Tổng hợp'], ['chiTiet', 'Chi tiết']] as const).map(([k, ten]) => (
+            <button key={k} type="button" role="tab" aria-selected={xemNhom === k} className={xemNhom === k ? 'on' : ''}
+              title={k === 'tongHop' ? 'Mỗi nhóm một dòng, cộng các cột số' : 'Đủ dòng chi tiết trong từng nhóm'} onClick={() => doiXemNhom(k)}>{ten}</button>
+          ))}
+        </div>
+      )}
       <span className="grow" />
       <div className="ds-thanh-phai">
         <BoLoc
@@ -834,6 +847,7 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
         loc: tt.loc,
         anKhongPS: tt.anKhongPS,
         nhom: tc?.nhom,
+        tongHop: tc?.xemNhom === 'tongHop',
         cot: tc?.cot,
         tinhLaiTong,
         khoa,
@@ -847,6 +861,7 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
           loc: tt.loc,
           anKhongPS: tt.anKhongPS,
           nhom: tc?.nhom,
+          tongHop: tc?.xemNhom === 'tongHop',
           cot: undefined,
           tinhLaiTong,
           khoa,
@@ -857,7 +872,7 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
     })
 
     return { thanBienDoi: thanMoi, bangXuat: bx }
-  }, [children, tt.loc, tt.anKhongPS, tt.cotNhuDangXem, tc?.nhom, tc?.cot, loai, cfg?.congCot, cfg?.khoa, kyHieuCot, slug])
+  }, [children, tt.loc, tt.anKhongPS, tt.cotNhuDangXem, tc?.nhom, tc?.xemNhom, tc?.cot, loai, cfg?.congCot, cfg?.khoa, kyHieuCot, slug])
 
   // Dựng NguonXuat cho chức năng xuất file
   useEffect(() => {

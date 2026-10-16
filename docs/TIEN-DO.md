@@ -44,12 +44,12 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | T242 | Điện thoại: màn Chi phí NVL (`trang-chu/chi-phi-nvl`, T232) chưa có bản điện thoại, cùng lỗi với T234 | | Chờ | Phát hiện khi làm T232 ngày 14/10/2026. Bản máy tính ở `src/modules/home/ChiPhiNvl.tsx`, số liệu ở `chi-phi-nvl.ts` |
 | T243 | `tools/kiem_tra.py` (bước T238) lưu ảnh chụp vào đường dẫn cố định `C:/Users/trung.duong/.gemini/...`, máy khác chạy `--nhanh` báo PermissionError, dừng giữa chừng. Đổi sang thư mục tạm hoặc bỏ chụp | | Chờ | Phát hiện khi PhuongXT kiểm T232 ngày 14/10/2026; đã kiểm bằng bản sao tạm đổi đường dẫn, không lỗi |
 | T249 | Báo cáo bán hàng (`src/modules/ban-hang/bao-cao.ts`, hàm `dongBan`) còn đọc chứng từ Xuất bán POS theo kênh (`theoKenh`), số chứng từ trên báo cáo khác số hoá đơn ở danh sách từ T247; đổi sang `theoDon` để bấm số mở đúng phiếu | | Chờ | Phát hiện khi làm T247 ngày 15/10/2026. Tổng doanh thu không đổi |
-| T289 | Báo cáo máy tính: đang gom nhóm thì thanh công cụ có nút xem Tổng hợp (mỗi nhóm một dòng, cột gom nhóm và cột số đã cộng) hoặc Chi tiết (như hiện tại) | PhuongXT | Đang làm | Sửa `ReportScreen.tsx`, `tuyChinhBC.ts`, `app.css` (mục cuối T289) |
 
 ## Đã xong
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T289 | Báo cáo máy tính: đang gom nhóm thì thanh công cụ có nút Tổng hợp (mỗi nhóm một dòng, cột gom nhóm và cột số đã cộng, dòng Tổng cộng) hoặc Chi tiết (như cũ), lưu cùng tuỳ chỉnh báo cáo, áp cho cả xuất file. Bản điện thoại chưa sửa | PhuongXT | 16/10/2026 | [2026-10-16-phuongxt-gom-nhom-tong-hop](nhat-ky/2026-10-16-phuongxt-gom-nhom-tong-hop.md) |
 | T288 | Phân hệ Báo cáo máy tính: bấm mở báo cáo ở Trung tâm báo cáo bật popup Điều kiện xem báo cáo (đủ ô lọc), bấm Xem báo cáo mới hiện tờ báo cáo, Huỷ quay lại; mở thẳng đường dẫn, từ trang chủ, tải lại thì hiện ngay. Bản điện thoại chưa sửa | PhuongXT | 16/10/2026 | [2026-10-16-phuongxt-popup-loc-bao-cao](nhat-ky/2026-10-16-phuongxt-popup-loc-bao-cao.md) |
 | T284 | Ô gõ số ở bảng chi tiết phiếu, thẻ chi phí: chấm ngăn nghìn kiểu Việt Nam ngay khi gõ, tổng đổi ngay; thẻ: số TPB, TPBDK{YY}{MM}-{0000} theo ngày ghi tăng, menu Ghi tăng đầu kỳ, Thông tin mua dạng chỉ xem, 3 thẻ dư đầu kỳ mẫu | dinhlanphuongipacc | 16/10/2026 | [2026-10-16-dinhlanphuongipacc-go-so-vn-so-the](nhat-ky/2026-10-16-dinhlanphuongipacc-go-so-vn-so-the.md) |
 | T286 | Danh sách mua hàng, bán hàng (cả Xuất bán POS) máy tính: cột diễn giải cũ đổi tên Ghi chú; cột Diễn giải mới liệt kê tên hàng trong phiếu, quá 3 tên thì "..."; tìm kiếm theo tên hàng. Bản điện thoại chưa sửa | PhuongXT | 16/10/2026 | [2026-10-16-phuongxt-dien-giai-ten-hang](nhat-ky/2026-10-16-phuongxt-dien-giai-ten-hang.md) |
