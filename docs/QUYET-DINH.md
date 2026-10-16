@@ -689,3 +689,5 @@ Thay QD23 phần biểu tượng, web và điện thoại cùng dùng. Tên gọ
 - Mẫu đã chốt: https://claude.ai/artifact/X9uknzvG2Bgc26Vgo6GjKm
 
 Lý do: Trum chốt việc T275 ngày 15/10/2026.
+
+## QD64. Ô tích tuỳ chọn thành nút bật tắt (đang soạn)
