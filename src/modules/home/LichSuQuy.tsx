@@ -6,7 +6,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import type { Row, ScreenProps } from '../types'
 import { CUA_HANG, TK_NGAN_HANG } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
-import { between, k, money, moneyD, pad, rng } from '../../ui/format'
+import { between, k, moneyD, pad, rng } from '../../ui/format'
 import { NGUON, soChiTiet } from '../../ui/generic/gen'
 import { gopSo } from '../../ui/generic/ReportScreen'
 import { phieuTheoSo } from '../../ui/generic/SoChungTu'
@@ -119,16 +119,6 @@ export function LichSuQuy(_: ScreenProps) {
   const tn = (gd?.ds ?? []).reduce((a, x) => a + x.thu, 0)
   const tc = (gd?.ds ?? []).reduce((a, x) => a + x.chi, 0)
 
-  // Thống kê từng ngày từ giao dịch gốc chưa lọc (gd.ds) (T272-sửa 1):
-  // tổng thu, tổng chi, số dư cuối ngày (nếu tat-ca lấy duGop, còn lại lấy du của giao dịch muộn nhất trong ngày)
-  const thongKeNgay = new Map<string, { thu: number; chi: number; cuoi: number }>()
-  for (const x of gd?.ds ?? []) {
-    const cu = thongKeNgay.get(x.ngay)
-    const thu = (cu?.thu ?? 0) + x.thu
-    const chi = (cu?.chi ?? 0) + x.chi
-    const cuoi = isTatCa ? (x.duGop ?? x.du) : x.du
-    thongKeNgay.set(x.ngay, { thu, chi, cuoi })
-  }
 
   const dongPhu = isTatCa
     ? `Tất cả quỹ · Tháng ${pad(thang)}/2026`
@@ -210,37 +200,37 @@ export function LichSuQuy(_: ScreenProps) {
         </Link>
       </div>
 
-      <div className="cpt-cuon" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-        {/* 2. Bốn ô màu ngang theo mẫu L1: Tồn đầu kỳ, Tiền thu vào, Tiền chi ra, Tồn cuối kỳ (T272) */}
-        <div>
-          <div className="lsq-l1-the">
-            <div className="lsq-l1-st st-dau">
-              <span>Tồn đầu kỳ</span>
-              <b>{moneyD(gd?.mo ?? 0)}</b>
-              <small>Ngày 01/{pad(thang)}/2026</small>
-            </div>
-            <div className="lsq-l1-st st-thu">
-              <span>Tiền thu vào</span>
-              <b>{moneyD(tn)}</b>
-              <small>Phiếu thu trong kỳ</small>
-            </div>
-            <div className="lsq-l1-st st-chi">
-              <span>Tiền chi ra</span>
-              <b>{moneyD(tc)}</b>
-              <small>Phiếu chi trong kỳ</small>
-            </div>
-            <div className="lsq-l1-st st-cuoi">
-              <span>Tồn cuối kỳ</span>
-              <b>{moneyD(gd?.cuoi ?? 0)}</b>
-              <small>Số dư hiện tại</small>
-            </div>
+      {/* 2. Bốn ô màu ngang theo mẫu L1 (T272), cố định trên vùng cuộn cùng ghi chú (T303) */}
+      <div className="lsq-l1-ghi-chu-hop">
+        <div className="lsq-l1-the">
+          <div className="lsq-l1-st st-dau">
+            <span>Tồn đầu kỳ</span>
+            <b>{moneyD(gd?.mo ?? 0)}</b>
+            <small>Ngày 01/{pad(thang)}/2026</small>
           </div>
-          {isTatCa && (
-            <div className="lsq-l1-chuyen-quy">Gồm tiền chuyển giữa các quỹ</div>
-          )}
+          <div className="lsq-l1-st st-thu">
+            <span>Tiền thu vào</span>
+            <b>{moneyD(tn)}</b>
+            <small>Phiếu thu trong kỳ</small>
+          </div>
+          <div className="lsq-l1-st st-chi">
+            <span>Tiền chi ra</span>
+            <b>{moneyD(tc)}</b>
+            <small>Phiếu chi trong kỳ</small>
+          </div>
+          <div className="lsq-l1-st st-cuoi">
+            <span>Tồn cuối kỳ</span>
+            <b>{moneyD(gd?.cuoi ?? 0)}</b>
+            <small>Số dư hiện tại</small>
+          </div>
         </div>
+        <div className="lsq-l1-ghi-chu">
+          Bấm vào một giao dịch để mở chứng từ gốc ở tab mới.{isTatCa ? ' Thu, chi gồm tiền chuyển giữa các quỹ.' : ''}
+        </div>
+      </div>
 
-        {/* 3. Bảng danh sách chứng từ gom theo ngày theo mẫu L1 (T272) */}
+      <div className="cpt-cuon" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+        {/* 3. Danh sách kiểu app ngân hàng (như T230, T303): gom theo ngày, mới nhất trên cùng; bấm dòng mở chứng từ gốc ở tab mới (T272) */}
         {!gd || nhom.size === 0 ? (
           <div className="note muted">
             {loai
@@ -248,99 +238,40 @@ export function LichSuQuy(_: ScreenProps) {
               : `Quỹ chưa có giao dịch trong tháng ${thang}/2026.`}
           </div>
         ) : (
-          <div className="lsq-l1-bang">
-            <div className={`lsq-l1-row lsq-l1-hd ${isTatCa ? 'tat-ca' : ''}`}>
-              <span>Số phiếu</span>
-              {isTatCa && <span>Quỹ</span>}
-              <span>Diễn giải</span>
-              <span>Nguồn</span>
-              <span className="n">Thu</span>
-              <span className="n">Chi</span>
-              <span className="n">Số dư</span>
-            </div>
-
-            {[...nhom].map(([ngay, ds]) => {
-              const tk = thongKeNgay.get(ngay)
-              const tongThuNgay = tk?.thu ?? 0
-              const tongChiNgay = tk?.chi ?? 0
-              const cuoiNgay = tk?.cuoi ?? 0
-
-              return (
-                <div key={ngay} className="lsq-l1-ngay-nhom">
-                  <div className={`lsq-l1-row lsq-l1-ng ${isTatCa ? 'tat-ca' : ''}`}>
-                    <span style={{ gridColumn: isTatCa ? 'span 4' : 'span 3' }}>{tenNgay(ngay)}</span>
-                    <span className="n" style={{ color: 'var(--green, #138a52)' }}>
-                      {tongThuNgay > 0 ? money(tongThuNgay) : ''}
-                    </span>
-                    <span className="n" style={{ color: 'var(--red, #c2362b)' }}>
-                      {tongChiNgay > 0 ? money(tongChiNgay) : ''}
-                    </span>
-                    <span className="n">{money(cuoiNgay)}</span>
-                  </div>
-
+          <div className="lsq-ds">
+            {[...nhom].map(([ngay, ds]) => (
+              <section key={ngay}>
+                <div className="lsq-ngay">{tenNgay(ngay)}</div>
+                <div className="lsq-khoi">
                   {ds.map((x, i) => {
                     const p = phieuTheoSo(x.so)
-                    const nInfo = nguonGd(x.dg)
-                    const laFabi = nInfo[0] === 'fabi'
-
-                    return (
-                      <div key={i} className={`lsq-l1-row lsq-l1-ln ${isTatCa ? 'tat-ca' : ''}`}>
-                        {p ? (
-                          <a
-                            href={`#${p.to}`}
-                            target="_blank"
-                            rel="noopener"
-                            className="lsq-l1-so"
-                            title="Mở chứng từ gốc ở tab mới"
-                          >
-                            <span>{p.so}</span>
-                            <svg
-                              width="13"
-                              height="13"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2.2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              aria-hidden="true"
-                            >
-                              <path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" />
-                            </svg>
-                          </a>
-                        ) : (
-                          <span className="lsq-l1-so-thuong">{x.so}</span>
-                        )}
-
-                        {isTatCa && <span className="lsq-l1-ten-quy" title={x.quy}>{x.quy}</span>}
-
-                        <span className="lsq-l1-dg">{x.dg}</span>
-
-                        <span className={laFabi ? 'lsq-l1-fabi' : 'lsq-l1-tay'}>
-                          {nInfo[1]}
-                        </span>
-
-                        <span className="n" style={{ color: 'var(--green, #138a52)', fontWeight: 700 }}>
-                          {x.thu > 0 ? money(x.thu) : ''}
-                        </span>
-
-                        <span className="n" style={{ color: 'var(--red, #c2362b)', fontWeight: 700 }}>
-                          {x.chi > 0 ? money(x.chi) : ''}
-                        </span>
-
-                        <span className="n" style={{ color: '#4b5563' }}>
-                          {money(x.du)}
-                        </span>
-                      </div>
-                    )
+                    const [nguonCls, nguonTen] = nguonGd(x.dg)
+                    const noiDung = <>
+                      <span className={`lsq-ic ${x.thu ? 'thu' : 'chi'}`}><Icon n={x.thu ? 'cashin' : 'cashout'} /></span>
+                      <span className="lsq-chu">
+                        <b>{x.dg}</b>
+                        <small>{p?.so ?? x.so}{isTatCa && x.quy ? ` · ${x.quy}` : ''}<span className={`src ${nguonCls} lsq-nguon`}>{nguonTen}</span></small>
+                      </span>
+                      {/* Số tiền chỉ tô màu, không dấu + − (T273); xem tất cả quỹ thì số dư là tổng các quỹ sau giao dịch */}
+                      <span className="lsq-so"><b className={x.thu ? 'thu' : 'chi'}>{moneyD(x.thu || x.chi)}</b><small>Số dư {moneyD(isTatCa ? (x.duGop ?? x.du) : x.du)}</small></span>
+                    </>
+                    return p
+                      ? (
+                        <a key={i} href={`#${p.to}`} target="_blank" rel="noopener" className="lsq-dong" title="Mở chứng từ gốc ở tab mới">
+                          {noiDung}
+                          <svg className="lsq-mui" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                            <path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" />
+                          </svg>
+                        </a>
+                      )
+                      : <div key={i} className="lsq-dong">{noiDung}<span className="lsq-mui-trong" /></div>
                   })}
                 </div>
-              )
-            })}
+              </section>
+            ))}
           </div>
         )}
 
-        <div className="lsq-l1-ghi-chu">Bấm số phiếu để mở chứng từ gốc ở tab mới.</div>
       </div>
     </div>
   )

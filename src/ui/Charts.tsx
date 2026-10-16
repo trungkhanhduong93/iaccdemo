@@ -409,13 +409,22 @@ export function CostStructureChart({
 
 /** Lãi lỗ theo tháng: cột doanh thu (xanh dương), cột chi phí (cam), đường lãi lỗ có điểm xanh khi lãi, đỏ khi lỗ.
  *  Không ghi số trên biểu đồ cho gọn; rê chuột vào tháng hiện doanh thu, chi phí, lãi lỗ. Tháng chưa hết (do) cột viền nét đứt (T255) */
-export function LaiLoChart({ data, h = 260 }: {
-  data: { l: string; dt: number; cp: number; v: number; ghiChu?: string; do?: boolean }[]
+export function LaiLoChart({ data, h = 260, rong = 640, ten = ['Doanh thu', 'Chi phí'], mau = ['var(--bd-dt, #0560a6)', 'var(--bd-cp, #f28020)'], duong, duong2 }: {
+  data: { l: string; dt: number; cp: number; v: number; v2?: number; ghiChu?: string; do?: boolean }[]
   h?: number
+  /** Bề rộng khung vẽ; truyền đúng bề rộng thật (px) để chữ trục không bị co giãn (T303) */
+  rong?: number
+  /** T303: dùng lại cho biểu đồ dòng tiền 13 tháng: tên, màu hai cột; tên đường cố định (vd Dòng tiền thuần) thay cho Lãi, Lỗ, có màu thì đường, điểm một màu */
+  ten?: [string, string]
+  mau?: [string, string]
+  duong?: { ten: string; mau?: string }
+  /** Đường thứ hai lấy số ở v2 (vd Dòng tiền thuần = thu − chi), có thể âm (T303) */
+  duong2?: { ten: string; mau: string }
 }) {
-  const W = 640, pl = 44, pr = 6, pb = 24, pt = 10
+  const W = rong, pl = 44, pr = 6, pb = 24, pt = 10
   // Bước vạch tròn (1, 2, 2,5, 5 nhân 10 mũ n) để trục đọc dễ
-  const lon = Math.max(0, ...data.flatMap(d => [d.dt, d.cp, d.v])), nho = Math.min(0, ...data.map(d => d.v))
+  const v2 = (d: typeof data[number]) => (duong2 ? d.v2 ?? 0 : 0)
+  const lon = Math.max(0, ...data.flatMap(d => [d.dt, d.cp, d.v, v2(d)])), nho = Math.min(0, ...data.flatMap(d => [d.v, v2(d)]))
   const tho = (lon - nho) / 4 || 1, mu = 10 ** Math.floor(Math.log10(tho))
   const buoc = [1, 2, 2.5, 5, 10].map(x => x * mu).find(x => x >= tho) ?? 10 * mu
   // Phần dưới 0 chỉ vừa đủ cho tháng lỗ, không kéo thêm cả một bước vạch
@@ -428,7 +437,7 @@ export function LaiLoChart({ data, h = 260 }: {
   const ticks = Array.from({ length: Math.round(max / buoc) + 1 }, (_, i) => buoc * i).concat(min <= -buoc ? Array.from({ length: Math.floor(-min / buoc) }, (_, i) => -buoc * (i + 1)) : [])
   const tien = (v: number) => `${v.toLocaleString('vi-VN')} đ`
   return (
-    <svg className="chart lai-lo-chart" viewBox={`0 0 ${W} ${h}`} width="100%" role="img" aria-label="Biểu đồ doanh thu, chi phí, lãi lỗ theo tháng">
+    <svg className="chart lai-lo-chart" viewBox={`0 0 ${W} ${h}`} width="100%" role="img" aria-label={`Biểu đồ ${ten[0].toLowerCase()}, ${ten[1].toLowerCase()}, ${duong ? duong.ten.toLowerCase() : 'lãi lỗ'} theo tháng`}>
       {ticks.map((t, i) => (
         <g key={i}>
           <line x1={pl} x2={W - pr} y1={y(t)} y2={y(t)} stroke="var(--line-2)" />
@@ -445,20 +454,25 @@ export function LaiLoChart({ data, h = 260 }: {
         return (
           <g key={i} className="lai-lo-thang">
             <title>{`${d.l}${d.ghiChu ? ` (${d.ghiChu})` : ''}
-Doanh thu: ${tien(d.dt)}
-Chi phí: ${tien(d.cp)}
-${d.v >= 0 ? 'Lãi' : 'Lỗ'}: ${tien(Math.abs(d.v))}`}</title>
+${ten[0]}: ${tien(d.dt)}
+${ten[1]}: ${tien(d.cp)}
+${duong ? `${duong.ten}: ${tien(d.v)}` : `${d.v >= 0 ? 'Lãi' : 'Lỗ'}: ${tien(Math.abs(d.v))}`}${duong2 ? `
+${duong2.ten}: ${tien(v2(d))}` : ''}`}</title>
             <rect x={pl + i * bw} y={pt} width={bw} height={h - pt - pb} fill="transparent" />
-            {cot(x, d.dt, 'var(--blue)')}
-            {cot(x + w + 2, d.cp, 'var(--orange)')}
+            {cot(x, d.dt, mau[0])}
+            {cot(x + w + 2, d.cp, mau[1])}
             <text x={cx(i)} y={h - 7} textAnchor="middle">{d.l}</text>
           </g>
         )
       })}
-      <polyline points={data.map((d, i) => `${cx(i)},${y(d.v)}`).join(' ')} fill="none" stroke="var(--ink)" strokeWidth={2} strokeLinejoin="round" pointerEvents="none" />
+      <polyline points={data.map((d, i) => `${cx(i)},${y(d.v)}`).join(' ')} fill="none" stroke={duong?.mau ?? 'var(--navy, #2a3042)'} strokeWidth={2} strokeLinejoin="round" pointerEvents="none" />
       {data.map((d, i) => (
-        <circle key={i} cx={cx(i)} cy={y(d.v)} r={4.5} fill={d.v >= 0 ? 'var(--green)' : 'var(--red)'} stroke="#fff" strokeWidth={1.5} pointerEvents="none" />
+        <circle key={i} cx={cx(i)} cy={y(d.v)} r={4.5} fill={duong?.mau ?? (d.v >= 0 ? 'var(--green)' : 'var(--red)')} stroke="#fff" strokeWidth={1.5} pointerEvents="none" />
       ))}
+      {duong2 && <>
+        <polyline points={data.map((d, i) => `${cx(i)},${y(v2(d))}`).join(' ')} fill="none" stroke={duong2.mau} strokeWidth={2} strokeDasharray="5 3" strokeLinejoin="round" pointerEvents="none" />
+        {data.map((d, i) => <circle key={i} cx={cx(i)} cy={y(v2(d))} r={3.5} fill={duong2.mau} stroke="#fff" strokeWidth={1.5} pointerEvents="none" />)}
+      </>}
     </svg>
   )
 }

@@ -20,7 +20,7 @@ import { datLocDaXem } from '../bao-cao/tuyChinhBC'
 import { moTaCach, nvlKy } from '../../modules/home/chi-phi-nvl'
 import { useMoTuTrangChu } from '../../app/tuTrangChu'
 import { Select } from '../Dropdown'
-import { HopLaiLo13, laiLo13Thang } from '../../modules/home/BaBaiToanFree'
+import { HopLaiLo13, HopThuChi13, laiLo13Thang, thuChi13Thang } from '../../modules/home/BaBaiToanFree'
 import { ModalQuy } from '../../modules/home/quyThuChi'
 import {
   layDuLieuCanTheoDoi,
@@ -181,6 +181,8 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
   const bienFree = dFree.dtThuan > 0 ? loiNhuanFree / dFree.dtThuan : 0
   const chiLonFree = useMemo(() => [...dFree.coCauCp].sort((a, b) => b.v - a.v)[0], [dFree.coCauCp])
   const laiLo13 = useMemo(() => (isFree ? laiLo13Thang(s, selCns) : []), [isFree, s, selCns])
+  const [moThuChi13, setMoThuChi13] = useState(false)   // T303
+  const thuChi13 = useMemo(() => (moThuChi13 ? thuChi13Thang(selCns) : []), [moThuChi13, selCns])
   const [moBieuDo, setMoBieuDo] = useState(false)
   const [sheetQuy, setSheetQuy] = useState<string | null>(null)
 
@@ -900,7 +902,7 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
                 <div className="m-tc-the-head">
                   <div className="m-tc-the-tieu-hop">
                     <h3 className="m-tc-the-tieu">
-                      <Icon n="chart" className="ic sm" /> 1. Quản lý lãi lỗ
+                      <Icon n="chart" className="ic sm" /> Quản lý lãi lỗ
                     </h3>
                   </div>
                 </div>
@@ -1002,7 +1004,7 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
                 <div className="m-tc-the-head">
                   <div className="m-tc-the-tieu-hop">
                     <h3 className="m-tc-the-tieu">
-                      <Icon n="wallet" className="ic sm" /> 2. Quản lý thu chi
+                      <Icon n="wallet" className="ic sm" /> Quỹ tiền
                     </h3>
                   </div>
                 </div>
@@ -1050,10 +1052,10 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
                   ))}
                 </div>
 
-                {/* T273: nút "Biểu đồ thu chi ›" mở sheet gộp, bỏ dòng gợi ý */}
+                {/* T303: nút mở biểu đồ dòng tiền 13 tháng */}
                 <div className="bbt-chan" style={{ marginTop: 10 }}>
-                  <button type="button" className="bbt-nut" onClick={() => setSheetQuy('tat-ca')}>
-                    Biểu đồ thu chi
+                  <button type="button" className="bbt-nut" onClick={() => setMoThuChi13(true)}>
+                    Xem dòng tiền 13 tháng
                     <Icon n="chevr" className="ic sm" />
                   </button>
                 </div>
@@ -1064,7 +1066,7 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
                 <div className="m-tc-the-head">
                   <div className="m-tc-the-tieu-hop">
                     <h3 className="m-tc-the-tieu">
-                      <Icon n="khohang" className="ic sm" /> 3. Quản lý kho
+                      <Icon n="khohang" className="ic sm" /> Quản lý kho
                     </h3>
                   </div>
                 </div>
@@ -1615,6 +1617,8 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
           thangXem={thangF}
         />
       )}
+
+      {moThuChi13 && <HopThuChi13 ds={thuChi13} onDong={() => setMoThuChi13(false)} />}
 
       {/* Sheet biểu đồ thu chi quỹ cho gói Free (T272) */}
       {sheetQuy && (

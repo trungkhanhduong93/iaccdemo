@@ -17230,9 +17230,21 @@ a.lsq-dong:hover { background: var(--tint); }
 .bbt-13t-chu i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-left: 8px; }
 .bbt-13t-chu i.lai { background: var(--green); }
 .bbt-13t-chu i.lo { background: var(--red); }
-.bbt-13t-chu i.dt { background: var(--blue); }
-.bbt-13t-chu i.cp { background: var(--orange); }
+.bbt-13t-chu i.dt { background: var(--bd-dt, var(--blue)); }
+.bbt-13t-chu i.cp { background: var(--bd-cp, var(--orange)); }
 .bbt-13t-chu i.tron { border-radius: 50%; }
+.bbt-13t-chu i.thuan { background: var(--navy, #2a3042); }   /* Dòng tiền thuần, cùng màu đường lãi lỗ (T303) */
+.bbt-13t-chu i.ton { background: var(--bd-ton); }   /* Tồn quỹ (T303) */
+.bbt-13t-chu i.thu2 { background: var(--bd-thu); }
+.bbt-13t-chu i.chi2 { background: var(--bd-chi); }
+/* Màu biểu đồ 13 tháng trang chủ (T303): màu rõ, không chói; lãi lỗ xanh dương sáng, cam iPOS; dòng tiền xanh ngọc, đỏ san hô, tồn quỹ chàm để hai biểu đồ không lẫn */
+:root {
+  --bd-dt: #2f80ed;
+  --bd-cp: #f5a03a;
+  --bd-thu: #14a38b;
+  --bd-chi: #ef6b5b;
+  --bd-ton: #5b5bd6;
+}
 button.bbt-nut { background: none; border: 0; padding-left: 0; padding-right: 0; font-family: inherit; cursor: pointer; }
 .hop-13t { width: min(1100px, calc(100vw - 48px)); }
 .hop-13t .ds-hop-dau { border-bottom: 1px solid var(--line-2); }
@@ -21532,3 +21544,94 @@ input.bat-tat:disabled { opacity: .5; cursor: not-allowed; }
 .phim-to-hop i { font-style: normal; color: var(--muted); font-size: 12px; }
 .phim-to-hop kbd { min-width: 26px; padding: 2px 7px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 5px;
   background: var(--soft); color: var(--ink); font: 600 12px/1.4 inherit; text-align: center; }
+
+/* ── Trang chủ Free giống nhau mọi máy: chú thích quỹ luôn cạnh vòng tồn quỹ, vòng co theo bề rộng (T303) ── */
+.bbt-e-luoi-2 .bbt-vq { flex-wrap: nowrap; gap: 16px clamp(16px, 2.4vw, 36px); }
+/* Vòng nhường chỗ cho chú thích: rộng bằng khung trừ 260px, trong khoảng 150–260px */
+.bbt-e-luoi-2 .bbt-vq-vong { flex: 0 0 clamp(150px, calc(100% - 260px), 260px); width: auto; height: auto; aspect-ratio: 1; }
+.bbt-e-luoi-2 .bbt-vq-ct { flex: 1 1 0; min-width: 0; max-width: 340px; }
+.bbt-e-luoi-2 .bbt-vq-ten > b { white-space: nowrap; }
+.bbt-e-luoi-2 .bbt-vq-ten > span { white-space: normal; overflow-wrap: anywhere; }
+.bbt-vq-ct .bbt-vq-mui { flex: none; align-self: center; margin-left: 4px; }
+.bbt-vq-ct button:hover .bbt-vq-mui, .bbt-vq-ct button.on .bbt-vq-mui { color: var(--blue); }
+@media (max-width: 900px) { .bbt-e-luoi-2 .bbt-vq { flex-wrap: wrap; } }
+/* Lịch sử thu chi máy tính trở lại kiểu app ngân hàng; dòng không mở được giữ chỗ bằng ô trống cho số tiền thẳng hàng */
+.lsq-mui-trong { width: 14px; flex: none; }
+.cpt-trang > .lsq-l1-ghi-chu-hop { margin-bottom: 12px; }   /* 4 ô tổng và ghi chú cố định trên vùng cuộn */
+.lsq-l1-ghi-chu-hop .lsq-l1-ghi-chu { margin-top: 8px; }
+/* Trang chủ Free: hai cột Quản lý lãi lỗ, Quỹ tiền gọn lại, biểu đồ 13 tháng nằm ngay dưới từng cột, hai biểu đồ thẳng hàng */
+.bbt-gon { display: flex; flex-direction: column; }
+.bbt-e-luoi-2 .bbt-gon .bbt-vq { padding: 0 4px; }
+.bbt-e-luoi-2 .bbt-gon .bbt-vq-vong { flex-basis: clamp(130px, calc(100% - 280px), 190px); }
+.bbt-e-luoi-2 .bbt-gon .bbt-vq-so { font-size: 22px; }
+.bbt-e-luoi-2 .bbt-gon .bbt-vq-ct { gap: 0; }
+.bbt-e-luoi-2 .bbt-gon .bbt-vq-ct button { padding: 5px 10px; }
+.bbt-13t-trong { margin-top: auto; padding-top: 14px; border-top: 1px solid var(--line-2); display: flex; flex-direction: column; gap: 6px; }
+.bbt-13t-trong-dau { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 10px; }
+.bbt-13t-trong-dau > b { font-size: 14px; color: var(--ink); }
+.bbt-13t-trong-dau .bbt-13t-chu { margin-left: auto; }
+.bbt-13t-trong-ten { display: flex; flex-direction: column; gap: 1px; }
+.bbt-13t-trong-dau:has(> .bbt-13t-trong-ten) { align-items: flex-start; }   /* tiêu đề, chú thích hai biểu đồ thẳng hàng trên cùng */
+.bbt-13t-trong-ten > b { font-size: 14px; color: var(--ink); }
+.bbt-13t-trong-ten > small { font-size: 12px; font-style: italic; color: var(--muted); }
+/* Bảng nổi Tất cả quỹ khi bấm "N quỹ khác": nổi trên khối Quỹ tiền, cuộn trong bảng, không đẩy bố cục */
+.bbt-vq { position: relative; }
+/* Nút Tạo quỹ cạnh tiêu đề khối Quỹ tiền; khối trống khi chưa có quỹ */
+.bbt-e-ten-hang { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.bbt-tao-quy { display: inline-flex; align-items: center; gap: 4px; height: 28px; padding: 0 10px; border: 1px solid var(--line); border-radius: 8px; color: var(--blue); font-size: 13px; font-weight: 600; text-decoration: none; white-space: nowrap; }
+.bbt-tao-quy:hover { border-color: var(--blue); background: var(--tint); }
+.bbt-quy-trong { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 24px 16px; text-align: center; border: 1px dashed var(--line); border-radius: 10px; color: var(--muted); font-size: 13px; }
+.bbt-quy-trong > .ic { width: 28px; height: 28px; color: var(--blue); }
+.bbt-quy-trong > b { color: var(--ink); font-size: 14px; }
+.bbt-quy-trong > .btn { margin-top: 6px; }
+.bbt-vq-ds-nen { position: fixed; inset: 0; z-index: 30; }
+.bbt-vq-ds { position: absolute; z-index: 31; top: 0; right: 0; width: min(380px, 100%); max-height: 320px; display: flex; flex-direction: column; gap: 6px; padding: 10px; background: var(--white); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 12px 32px rgba(15, 23, 42, .16); }
+.bbt-vq-ds-dau { display: flex; align-items: center; justify-content: space-between; padding: 0 4px; }
+.bbt-vq-ds-dau b { font-size: 14px; color: var(--ink); }
+.bbt-vq-ds .bbt-vq-ct { flex: 1 1 auto; max-width: none; min-height: 0; overflow-y: auto; }
+.bbt-vq-ds > .bbt-e-nut { align-self: flex-start; padding: 0 4px; }
+/* Gọn thêm để cả hai biểu đồ vừa một màn: số lớn nhỏ lại, dòng chi phí một hàng (mô tả xem khi rê chuột), chú thích quỹ sát nhau */
+.bbt-e-luoi-2 .bbt-gon .bbt-tra { font-size: 26px; line-height: 1.2; }
+.bbt-e-luoi-2 .bbt-gon .bbt-vq-vong { flex-basis: clamp(120px, calc(100% - 280px), 160px); }
+.bbt-e-luoi-2 .bbt-gon .bbt-vq-so { font-size: 20px; }
+.bbt-e-luoi-2 .bbt-gon .bbt-vq-ct button { padding: 3px 10px; }
+.bbt-e-luoi-2 .bbt-gon .bbt-vq-ten > span, .bbt-e-luoi-2 .bbt-gon .bbt-vq-ten > b { font-size: 13px; }
+.bbt-13t-trong { padding-top: 16px; gap: 4px; }
+.bbt-e-luoi-2 .bbt-gon > .bbt-vq { margin-bottom: 10px; }   /* biểu đồ cách phần trên rõ hơn */
+/* Co khối trên thêm để cả cột vẫn vừa một màn sau khi tách biểu đồ: số lớn, dòng kê, vòng, chú thích quỹ nhỏ lại */
+.bbt-e-luoi-2 .bbt-gon .bbt-tra { font-size: 24px; }
+.bbt-e-luoi-2 .bbt-gon .bbt-e-hoi { font-size: 13px; }
+.bbt-e-luoi-2 .bbt-gon > .t { padding-top: 4px; padding-bottom: 4px; }
+.bbt-e-luoi-2 .bbt-gon > .t.lai, .bbt-e-luoi-2 .bbt-gon > .t.lo { padding-top: 6px; }
+.bbt-e-luoi-2 .bbt-gon .bbt-vq-vong { flex-basis: clamp(110px, calc(100% - 300px), 130px); }
+.bbt-e-luoi-2 .bbt-gon .bbt-vq-so { font-size: 18px; }
+.bbt-e-luoi-2 .bbt-gon .bbt-vq-ct button { padding: 1px 8px; }
+.bbt-e-luoi-2 .bbt-gon .bbt-vq-ten > span, .bbt-e-luoi-2 .bbt-gon .bbt-vq-ten > b { font-size: 12.5px; line-height: 1.35; }
+/* Cột lãi lỗ dạng bảng kê gọn: mỗi khoản một hàng, ghi chú nhỏ ngay sau tên, không nền màu; Doanh thu, Lợi nhuận đậm, Lợi nhuận có vạch trên */
+.bbt-e-luoi-2 .bbt-gon > .t { background: none; color: var(--ink); border-radius: 0; padding: 7px 4px; min-height: 0; border-bottom: 1px solid var(--line-2); margin: 0; }
+.bbt-e-luoi-2 .bbt-gon > .t .l { display: flex; align-items: baseline; gap: 8px; min-width: 0; flex: 1; }
+.bbt-e-luoi-2 .bbt-gon > .t .l b { flex: none; font-size: 14px; }
+.bbt-e-luoi-2 .bbt-gon > .t .l span { margin: 0; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bbt-e-luoi-2 .bbt-gon > .t .r { display: flex; align-items: baseline; gap: 8px; }
+.bbt-e-luoi-2 .bbt-gon > .t .r b { font-size: 14.5px !important; }
+.bbt-e-luoi-2 .bbt-gon > .t .r span { margin: 0; min-width: 44px; text-align: right; }
+.bbt-e-luoi-2 .bbt-gon > a.t:hover { background: var(--tint); }
+/* Dòng không bấm được chừa chỗ mũi tên, Doanh thu chừa cột %, để số tiền các dòng thẳng cột */
+.bbt-e-luoi-2 .bbt-gon > div.t { padding-right: 27px; }
+.bbt-e-luoi-2 .bbt-gon > .t.dt .r::after { content: ''; width: 44px; }
+.bbt-e-luoi-2 .bbt-gon > .t.dt .l b, .bbt-e-luoi-2 .bbt-gon > .t.dt .r b { color: var(--blue); }
+.bbt-e-luoi-2 .bbt-gon > .t.lai, .bbt-e-luoi-2 .bbt-gon > .t.lo { border-bottom: 0; border-top: 2px solid var(--line); padding-top: 9px; }
+.bbt-e-luoi-2 .bbt-gon > .t.lai b, .bbt-e-luoi-2 .bbt-gon > .t.lai .r span { color: var(--green); }
+.bbt-e-luoi-2 .bbt-gon > .t.lo b, .bbt-e-luoi-2 .bbt-gon > .t.lo .r span { color: var(--red); }
+.bbt-e-luoi-2 .bbt-gon > .t.lai .r b, .bbt-e-luoi-2 .bbt-gon > .t.lo .r b { font-size: 16px !important; }
+/* Gọn thêm, nhường chỗ cho biểu đồ cao 210px: khoảng cách các khối, dòng kê, chú thích quỹ sát nhau */
+.bbt-e-luoi-2 .bbt-gon { gap: 4px; }
+.bbt-e-luoi-2 .bbt-gon .bbt-e-hoi { margin-top: 2px; }
+.bbt-e-luoi-2 .bbt-gon .bbt-e-phu { margin-bottom: 4px; }
+.bbt-e-luoi-2 .bbt-gon > .t { padding-top: 5px; padding-bottom: 5px; }
+.bbt-e-luoi-2 .bbt-gon > .t.lai, .bbt-e-luoi-2 .bbt-gon > .t.lo { padding-top: 7px; }
+.bbt-e-luoi-2 .bbt-gon .bbt-vq-vong { flex-basis: clamp(120px, calc(100% - 300px), 150px); }
+.bbt-e-luoi-2 .bbt-gon .bbt-vq-ct button { padding: 2px 8px; }
+.bbt-e-luoi-2 .bbt-gon .bbt-vq-ten { gap: 0; }
+/* Tiêu đề ba khối Quản lý lãi lỗ, Quỹ tiền, Quản lý kho in hoa, không đánh số; web và điện thoại */
+.bbt-e-ten, .m-free-the .m-tc-the-tieu { text-transform: uppercase; letter-spacing: .03em; }

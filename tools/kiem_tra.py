@@ -3700,15 +3700,15 @@ def kiem_tra_dot_19_b():
             loi.append('19B: không tìm thấy số lãi lỗ trên bản web 1440x900 gói Free')
 
         # Lấy thu chi ở bài toán 2 trên web
-        loc_tc_web = pg_web.locator('.bbt-cot:has-text("Quản lý thu chi") .bbt-phu')
+        loc_tc_web = pg_web.locator('.bbt-cot:has-text("Quỹ tiền") .bbt-phu')
         tc_web = loc_tc_web.inner_text().strip() if loc_tc_web.count() > 0 else ''
         if not tc_web:
             loi.append('19B: không tìm thấy thu chi trên bản web 1440x900 gói Free')
 
-        co_bd_tc_web = pg_web.locator('.bbt-cot:has-text("Quản lý thu chi") :has-text("Biểu đồ thu chi")').count() > 0
+        co_bd_tc_web = pg_web.locator('.bbt-cot:has-text("Quỹ tiền") :has-text("Dòng tiền 13 tháng")').count() > 0   # T303
 
         # Kiểm tra bấm thẻ quỹ mở modal M2 trên web (T272)
-        the_quy_web = pg_web.locator('.bbt-cot:has-text("Quản lý thu chi") .bbt-tra-btn, .bbt-cot:has-text("Quản lý thu chi") .bbt-vq-ct button, .bbt-cot:has-text("Quản lý thu chi") .t.qy, .bbt-the-btn').first
+        the_quy_web = pg_web.locator('.bbt-cot:has-text("Quỹ tiền") .bbt-tra-btn, .bbt-cot:has-text("Quỹ tiền") .bbt-vq-ct button, .bbt-cot:has-text("Quỹ tiền") .t.qy, .bbt-the-btn').first
         if the_quy_web.count() == 0:
             loi.append('19B: không tìm thấy thẻ quỹ ở trang chủ web')
         else:
@@ -3724,14 +3724,15 @@ def kiem_tra_dot_19_b():
 
         # Kiểm tra trang lịch sử quy=tat-ca tháng 10, số dư ở dòng tổng ngày mới nhất bằng số Tồn cuối kỳ (T272)
         pg_web.goto(f'{URL}?goi=F&p=1903#/app/trang-chu/lich-su-quy?quy=tat-ca&thang=10')
-        pg_web.wait_for_selector('.lsq-l1-bang', timeout=8000)
+        # T303: danh sách kiểu app ngân hàng, dòng mới nhất ghi "Số dư ..." là tổng các quỹ sau giao dịch
+        pg_web.wait_for_selector('.lsq-ds', timeout=8000)
         pg_web.wait_for_timeout(300)
         ton_cuoi_el = pg_web.locator('.lsq-l1-st.st-cuoi b')
         ton_cuoi_txt = ton_cuoi_el.inner_text().strip() if ton_cuoi_el.count() > 0 else ''
-        ngay_dau_du_el = pg_web.locator('.lsq-l1-ng').first.locator('.n').last
+        ngay_dau_du_el = pg_web.locator('.lsq-dong .lsq-so small').first
         ngay_dau_du_txt = ngay_dau_du_el.inner_text().strip() if ngay_dau_du_el.count() > 0 else ''
         so_ton_cuoi = ton_cuoi_txt.replace(' đ', '').replace('.', '').strip()
-        so_ngay_dau = ngay_dau_du_txt.replace('.', '').strip()
+        so_ngay_dau = ngay_dau_du_txt.replace('Số dư', '').replace(' đ', '').replace('.', '').strip()
         if not so_ton_cuoi or so_ton_cuoi != so_ngay_dau:
             loi.append(f'19B: lịch sử tat-ca số dư dòng ngày mới nhất ({ngay_dau_du_txt}) không khớp Tồn cuối kỳ ({ton_cuoi_txt})')
 
@@ -3762,7 +3763,7 @@ def kiem_tra_dot_19_b():
         kiem_man('Trang chủ Free điện thoại')
 
         # Tiêu đề ba bài toán giống bản web
-        for bai in ['Quản lý lãi lỗ', 'Quản lý thu chi', 'Quản lý kho']:
+        for bai in ['Quản lý lãi lỗ', 'Quỹ tiền', 'Quản lý kho']:
             if pg.locator(f':has-text("{bai}")').count() == 0:
                 loi.append(f'19B: trang chủ Free điện thoại thiếu tiêu đề bài toán: {bai}')
 
@@ -3778,7 +3779,7 @@ def kiem_tra_dot_19_b():
                 )
 
         # Số tổng thu, tổng chi trên điện thoại bằng số trên web
-        loc_tc_dt = pg.locator('.m-free-the:has-text("Quản lý thu chi") .m-free-phu')
+        loc_tc_dt = pg.locator('.m-free-the:has-text("Quỹ tiền") .m-free-phu')
         if loc_tc_dt.count() == 0:
             loi.append('19B: không tìm thấy thu chi trên trang chủ Free điện thoại')
         else:
@@ -3790,9 +3791,9 @@ def kiem_tra_dot_19_b():
 
         # Gói F có nút Biểu đồ thu chi ở trang chủ điện thoại (nếu web có) (T273)
         if co_bd_tc_web:
-            loc_bd_tc = pg.locator('.m-free-the:has-text("Quản lý thu chi") :has-text("Biểu đồ thu chi")')
+            loc_bd_tc = pg.locator('.m-free-the:has-text("Quỹ tiền") :has-text("Xem dòng tiền 13 tháng")')
             if loc_bd_tc.count() == 0:
-                loi.append('19B: trang chủ Free điện thoại thiếu nút Biểu đồ thu chi ở Quản lý thu chi')
+                loi.append('19B: trang chủ Free điện thoại thiếu nút Xem dòng tiền 13 tháng ở Quỹ tiền')
 
         # Chụp ảnh trang chủ Free
         pg.screenshot(path=str(SHOTS / 'm-19-free-trang-chu.png'))
@@ -3822,7 +3823,7 @@ def kiem_tra_dot_19_b():
         # Bấm thẻ quỹ để mở sheet quỹ M2 (T272)
         the_quy = pg.locator('.m-quy-the-btn, .tll-the.quy').first
         if the_quy.count() == 0:
-            loi.append('19B: không tìm thấy thẻ quỹ ở khối Quản lý thu chi trên điện thoại')
+            loi.append('19B: không tìm thấy thẻ quỹ ở khối Quỹ tiền trên điện thoại')
         else:
             the_quy.click()
             pg.wait_for_timeout(350)
@@ -4779,24 +4780,11 @@ def kiem_tra_t274_web():
         if pg.locator('.bbt-kho-ngang:has-text("Quản lý kho")').count() == 0:
             loi.append('T293 web: không thấy hàng Quản lý kho dưới 2 cột')
 
-        # 5. Modal lãi lỗ khi Tất cả có 2 nút kiểu xem, bấm "Theo cửa hàng" ra biểu đồ cửa hàng
-        nut_xem_13 = pg.locator('.bbt-e-nut:has-text("Xem biểu đồ lãi lỗ 13 tháng"), .bbt-nut:has-text("Xem biểu đồ lãi lỗ 13 tháng")').first
-        if nut_xem_13.count() == 0:
-            loi.append('T274 web: không tìm thấy nút Xem biểu đồ lãi lỗ 13 tháng')
-        else:
-            nut_xem_13.click()
-            pg.wait_for_timeout(350)
-            btn_13t = pg.locator('.bbt-modal-segmented button:has-text("13 tháng"), .bbt-seg-btn:has-text("13 tháng")')
-            btn_cn = pg.locator('.bbt-modal-segmented button:has-text("Theo cửa hàng"), .bbt-seg-btn:has-text("Theo cửa hàng")')
-            if btn_13t.count() == 0 or btn_cn.count() == 0:
-                loi.append('T274 web: modal lãi lỗ khi cửa hàng=Tất cả thiếu nút chuyển 13 tháng / Theo cửa hàng')
-            else:
-                btn_cn.click()
-                pg.wait_for_timeout(300)
-                if pg.locator('.bbt-modal-cn-wrap, .bbt-modal-cn-luoi').count() == 0:
-                    loi.append('T274 web: bấm "Theo cửa hàng" không hiện biểu đồ cửa hàng trong modal')
-            pg.keyboard.press('Escape')
-            pg.wait_for_timeout(250)
+        # 5. T303: web bỏ hộp lãi lỗ 13 tháng, biểu đồ hiện thẳng trong cột (hộp, kiểu xem Theo cửa hàng còn ở bản điện thoại)
+        if pg.locator('.bbt-13t-trong:has-text("Hiệu quả kinh doanh") svg').count() == 0:
+            loi.append('T303 web: không thấy biểu đồ Hiệu quả kinh doanh trong cột Quản lý lãi lỗ')
+        if pg.locator('.bbt-13t-trong:has-text("Dòng tiền 13 tháng") svg').count() == 0:
+            loi.append('T303 web: không thấy biểu đồ Dòng tiền 13 tháng trong cột Quỹ tiền')
 
         # 6. Đổi cửa hàng làm đổi số ít nhất 1 thẻ (dùng ô cửa hàng có sẵn ở header .cn-btn)
         # T293: thẻ biểu đồ đã bỏ, so số lãi ở cột Quản lý lãi lỗ

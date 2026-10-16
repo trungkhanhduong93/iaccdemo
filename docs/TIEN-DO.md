@@ -4,7 +4,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T297.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T303.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
@@ -50,6 +50,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T303 | Trang chủ gói Free máy tính hiển thị giống nhau mọi máy, kể cả phóng to chữ 125–150%, Cốc Cốc: chú thích quỹ luôn cạnh vòng tồn quỹ (vòng co 150–260px), tên quỹ dài xuống dòng, mỗi dòng quỹ có mũi tên ›, hai cột trên cao bằng nhau; tiêu đề ba khối in hoa, bỏ số, Quản lý thu chi đổi tên Quỹ tiền (web, điện thoại); nút Xem biểu đồ thu chi 13 tháng (cột thu, chi, đường tồn quỹ); Lịch sử thu chi máy tính trở lại kiểu app ngân hàng, bấm dòng mở chứng từ ở tab mới; hai cột trên gọn lại, biểu đồ Lãi lỗ, Dòng tiền 13 tháng hiện thẳng dưới từng cột, bỏ hộp chi tiết ở web; quá 5 quỹ gom N quỹ khác, 5 quỹ mẫu; nút Tạo quỹ, khung chưa có quỹ | dinhlanphuongipacc | 16/10/2026 | [2026-10-16-dinhlanphuongipacc-trang-chu-giong-moi-may](nhat-ky/2026-10-16-dinhlanphuongipacc-trang-chu-giong-moi-may.md) |
 | T298 | Máy tính gói Free: trang chủ Tổng quan, Danh sách tờ khai có tiêu đề màn h1 ẩn, bộ kiểm đầy đủ hết lỗi "không có tiêu đề màn" | Trum | 16/10/2026 | [2026-10-16-trum-bo-kiem-dien-thoai-xong](nhat-ky/2026-10-16-trum-bo-kiem-dien-thoai-xong.md) |
 | T295 | Bộ kiểm `--dien-thoai` chạy trọn theo giao diện T281, T282: bỏ bài kiểm sơ đồ quy trình, kiểm `/quy-trinh` cũ chuyển sang danh sách thẻ | Trum | 16/10/2026 | [2026-10-16-trum-bo-kiem-dien-thoai-xong](nhat-ky/2026-10-16-trum-bo-kiem-dien-thoai-xong.md) |
 | T297 | Form chứng từ, thẻ chi phí: nút Tuỳ chỉnh giao diện, phím tắt nhỏ ở góc trên phải; phím tắt Ctrl+Q huỷ, Ctrl+Insert thêm dòng, Alt+Delete xoá dòng, Ctrl+O sao chép, Ctrl+Delete xoá chứng từ; thẻ có Tiện ích Xoá, Sao chép thẻ dư đầu kỳ | dinhlanphuongipacc | 16/10/2026 | [2026-10-16-dinhlanphuongipacc-the-ngung-phim-tat](nhat-ky/2026-10-16-dinhlanphuongipacc-the-ngung-phim-tat.md) |
