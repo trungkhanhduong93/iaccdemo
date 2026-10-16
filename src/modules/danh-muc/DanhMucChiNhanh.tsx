@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import type { Col, Row, ScreenProps } from '../types'
 import { tenMan } from '../../app/registry'
-import { ngayDauNam, useSession, type CnThem, type Session } from '../../app/session'
+import { donViHienTai, ngayDauNam, useSession, type CnThem, type Session } from '../../app/session'
 import { CHI_NHANH, DON_VI } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
 import { Note, PageHead } from '../../ui/Page'
@@ -15,7 +15,7 @@ import { NutTuyChinhCot, useCotDs } from '../../ui/LocNangCao'
 import { cuaHangChuaDung } from '../onboarding/cua-hang-fabi'
 import { DsChiNhanh } from '../onboarding/OnboardFabi'
 import { Select } from '../../ui/Dropdown'
-import { HopXacNhan } from '../../ui/LocNangCao'
+import { HopXacNhan, useDongEsc } from '../../ui/LocNangCao'
 import { CACH_NVL, DS_CACH_NVL, cachNvlHienTai, datCachNvl, kyDauChuaKhoa, tenKy, type CachNvl } from '../home/chi-phi-nvl'
 import { batDongBoThuChi, datDongBoThuChi, phieuThuChiFabi } from '../tien/dong-bo-fabi'
 
@@ -28,6 +28,8 @@ export function DanhMucChiNhanh({ sc, mod }: ScreenProps) {
   const [q] = useSearchParams()
   const [mo, setMo] = useState(q.get('them') === '1')
   const [doiNvl, setDoiNvl] = useState<{ cn: string; ten: string; cach: CachNvl } | null>(null)   // Bàn làm việc mở thẳng hộp thêm (?them=1)
+  const [xem, setXem] = useState<Row | null>(null)   // hộp chi tiết chi nhánh (T285)
+  const dv = donViHienTai(s)   // chi nhánh thuộc công ty của đơn vị đang mở (T285)
   const them = s.cnThem?.[s.donVi] ?? []
   // đơn vị mẫu có sẵn chi nhánh mẫu; đơn vị mới tạo từ FABi chỉ có chi nhánh đã lên sổ
   const coSan = DON_VI.some(d => d.id === s.donVi)
@@ -43,7 +45,11 @@ export function DanhMucChiNhanh({ sc, mod }: ScreenProps) {
   const colsGoc: Col[] = useMemo(() => [
     { k: 'ma', t: 'Mã', cls: 'code', w: 100 },
     { k: 'posId', t: 'POS ID', cls: 'code' },
-    { k: 'ten', t: 'Tên chi nhánh', w: 220, r: r => <>{r.ten}{r.moi && <span className="chip info" style={{ marginLeft: 8 }}>Mới lên sổ</span>}</> },
+    { k: 'ten', t: 'Tên chi nhánh', w: 220, r: r => <>
+      <button type="button" className="ds-link-so" title="Xem chi tiết chi nhánh" onClick={e => { e.stopPropagation(); setXem(r) }}>{r.ten}</button>
+      {r.moi && <span className="chip info" style={{ marginLeft: 8 }}>Mới lên sổ</span>}</> },
+    // Công ty của chi nhánh: tên, MST của đơn vị đang mở (T285)
+    { k: 'cty', t: 'Công ty', w: 300, r: () => <span className="dmcn-cty"><span>{dv.ten}</span>{dv.mst && <small>MST {dv.mst}</small>}</span> },
     { k: 'kv', t: 'Khu vực', cls: 'dim' },
     { k: 'kho', t: 'Kho', cls: 'dim', r: r => <>{r.kho}{free && <span className="chip" style={{ marginLeft: 8 }}>Mặc định</span>}</> },
     { k: 'nguon', t: 'Nguồn', cls: 'dim' },
@@ -63,7 +69,7 @@ export function DanhMucChiNhanh({ sc, mod }: ScreenProps) {
         </span>
       )
     } },
-  ], [free, s])   // eslint-disable-line react-hooks/exhaustive-deps
+  ], [free, s, dv])   // eslint-disable-line react-hooks/exhaustive-deps
   // Phiếu thu, chi FABi của chi nhánh đang bật mà PTTT chưa map quỹ: chờ, không vào sổ (T264)
   const cho = phieuThuChiFabi(s).cho
 
@@ -107,6 +113,7 @@ export function DanhMucChiNhanh({ sc, mod }: ScreenProps) {
           onTrang={setTrang} onCoTrang={ct => { setCoTrang(ct); setTrang(1) }} />
       </section>
       {mo && <HopThemChiNhanh onDong={() => setMo(false)} onLenSo={lenSo} />}
+      {xem && <HopChiTietCn r={xem} onDong={() => setXem(null)} />}
       {doiNvl && (
         <HopXacNhan tieuDe="Đổi cách tính chi phí NVL" nut="Đồng ý" onDong={() => setDoiNvl(null)} onDongY={() => {
           set(datCachNvl(s, doiNvl.cn, doiNvl.cach))
@@ -119,6 +126,38 @@ export function DanhMucChiNhanh({ sc, mod }: ScreenProps) {
         </HopXacNhan>
       )}
     </div>
+  )
+}
+
+/** Hộp chi tiết một chi nhánh, gồm công ty (tên, MST) của đơn vị đang mở (T285) */
+function HopChiTietCn({ r, onDong }: { r: Row; onDong: () => void }) {
+  const { s } = useSession()
+  const dv = donViHienTai(s)
+  useDongEsc(onDong)
+  const dong: [string, React.ReactNode][] = [
+    ['Mã', <span className="code">{r.ma}</span>],
+    ['POS ID', <span className="code">{r.posId}</span>],
+    ['Tên chi nhánh', r.ten],
+    ['Công ty', dv.ten],
+    ['Mã số thuế', dv.mst ? <span className="code">{dv.mst}</span> : '—'],
+    ['Khu vực', r.kv],
+    ['Kho', r.kho],
+    ['Nguồn', r.nguon],
+    ...(s.goi === 'F' ? [['Cách tính chi phí NVL', DS_CACH_NVL.find(x => x.v === cachNvlHienTai(s, String(r.id)))?.t ?? '']] as [string, string][] : []),
+    ['Đồng bộ thu chi FABi', batDongBoThuChi(s, String(r.id)) ? 'Tự động' : 'Không đồng bộ'],
+  ]
+  return createPortal(
+    <div className="overlay ds-hop-nen" onMouseDown={e => { if (e.target === e.currentTarget) onDong() }}>
+      <div className="ds-hop dmcn-hop-ct" role="dialog" aria-modal="true" aria-label={`Chi tiết ${r.ten}`}>
+        <div className="ds-hop-dau"><b>Chi tiết chi nhánh</b><span className="grow" />
+          <button type="button" className="btn ghost sm" title="Đóng" onClick={onDong}><Icon n="x" className="ic sm" /></button></div>
+        <dl className="dmcn-ct">
+          {dong.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}
+        </dl>
+        <div className="ds-chan"><button type="button" className="btn" onClick={onDong}>Đóng</button></div>
+      </div>
+    </div>,
+    document.body,
   )
 }
 

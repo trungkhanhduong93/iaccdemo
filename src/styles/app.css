@@ -20322,3 +20322,14 @@ input.bat-tat:disabled { opacity: .5; cursor: not-allowed; }
 /* ── Thông tin mua của thẻ chi phí dạng chỉ xem như đầu phiếu POS (T284) ── */
 .pos-dau.tt-mua-xem { padding: 0; grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .pos-dau.tt-mua-xem .ds-link-so { font-size: 13px; }
+
+/* ── Cột Công ty, hộp chi tiết ở Danh mục chi nhánh (T285) ── */
+.dmcn-cty { display: inline-flex; align-items: baseline; gap: 8px; min-width: 0; }
+.dmcn-cty > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dmcn-cty small { flex: none; color: var(--muted); font-size: 12px; }
+.dmcn-hop-ct { width: 480px; }
+.dmcn-ct { margin: 0; padding: 4px 16px 12px; display: flex; flex-direction: column; }
+.dmcn-ct > div { display: grid; grid-template-columns: 160px 1fr; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--line-2); font-size: 13px; }
+.dmcn-ct > div:last-child { border-bottom: 0; }
+.dmcn-ct dt { color: var(--muted); }
+.dmcn-ct dd { margin: 0; color: var(--ink); }
