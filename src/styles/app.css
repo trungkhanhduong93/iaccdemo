@@ -20973,3 +20973,19 @@ input.bat-tat:disabled { opacity: .5; cursor: not-allowed; }
 .bbt-tt-nhanh-nhan .ic { color: var(--blue); }
 .bbt-tt-nhanh-nut { display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 14px 0 6px; border: 1px solid var(--line); border-radius: 10px; background: var(--white); color: var(--ink); font-size: 13px; font-weight: 600; text-decoration: none; white-space: nowrap; }
 .bbt-tt-nhanh-nut:hover { border-color: var(--blue); color: var(--blue-d); }
+
+/* ── Biểu đồ tròn tồn quỹ ở cột Quản lý thu chi trang chủ Free (T291) ── */
+.bbt-vq { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 12px 14px; margin-top: 4px; }
+.bbt-vq-vong { flex: none; }
+.bbt-vq-lat { cursor: pointer; transition: opacity .15s; }
+.bbt-vq-lat.mo { opacity: .35; }
+.bbt-vq-nhan { fill: var(--muted); font-size: 12px; font-weight: 600; }
+.bbt-vq-so { fill: var(--ink); font-size: 19px; font-weight: 800; }
+.bbt-vq-ct { list-style: none; margin: 0; padding: 0; flex: 1 1 220px; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.bbt-vq-ct button { display: flex; align-items: flex-start; gap: 8px; width: 100%; padding: 6px 8px; border-radius: 8px; text-align: left; }
+.bbt-vq-ct button:hover, .bbt-vq-ct button.on { background: var(--tint); }
+.bbt-vq-ct i { flex: none; width: 10px; height: 10px; margin-top: 4px; border-radius: 50%; }
+.bbt-vq-ten { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.bbt-vq-ten > span { font-size: 13px; color: var(--body); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bbt-vq-ten > b { font-size: 13px; font-weight: 700; color: var(--ink); }
+.bbt-vq-ten > b small { margin-left: 6px; font-size: 12px; font-weight: 500; color: var(--muted); }

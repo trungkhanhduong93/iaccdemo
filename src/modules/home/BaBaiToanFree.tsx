@@ -157,6 +157,51 @@ export function HopLaiLo13({
   )
 }
 
+/** Màu lát biểu đồ tròn tồn quỹ (T291): theo thứ tự quỹ, hết màu thì quay vòng */
+const MAU_QUY = ['var(--blue, #0560a6)', 'var(--teal, #0f766e)', 'var(--amber, #b45309)', 'var(--indigo, #4338ca)', 'var(--green, #138a52)', 'var(--orange-d, #d0650a)', '#7c3aed', '#0891b2']
+
+/** Biểu đồ tròn tồn quỹ theo quỹ (T291): giữa vòng là tổng; bấm lát hoặc dòng chú thích mở biểu đồ thu chi của quỹ */
+function VongQuy({ ds, tong, onChon }: { ds: { quy: string; tienMat: boolean; cuoi: number }[]; tong: number; onChon: (quy: string) => void }) {
+  const [tro, setTro] = useState<string | null>(null)
+  const co = 176, rr = 70, day = 32, C = 2 * Math.PI * rr
+  const duong = ds.map(r => Math.max(0, r.cuoi))
+  const tongDuong = duong.reduce((a, v) => a + v, 0) || 1
+  let off = 0
+  const dangTro = ds.find(r => r.quy === tro)
+  return (
+    <div className="bbt-vq">
+      <svg className="bbt-vq-vong" viewBox={`0 0 ${co} ${co}`} width={co} height={co} role="img" aria-label="Biểu đồ tròn tồn quỹ theo quỹ">
+        <circle cx={co / 2} cy={co / 2} r={rr} fill="none" stroke="var(--line-2, #eee)" strokeWidth={day} />
+        {ds.map((r, i) => {
+          const len = (duong[i] / tongDuong) * C
+          const el = (
+            <circle key={r.quy} cx={co / 2} cy={co / 2} r={rr} fill="none" stroke={MAU_QUY[i % MAU_QUY.length]} strokeWidth={day}
+              strokeDasharray={`${len} ${C - len}`} strokeDashoffset={-off} transform={`rotate(-90 ${co / 2} ${co / 2})`}
+              className={`bbt-vq-lat${tro && tro !== r.quy ? ' mo' : ''}`} onClick={() => onChon(r.quy)} onMouseEnter={() => setTro(r.quy)} onMouseLeave={() => setTro(null)}>
+              <title>{`${r.quy}: ${moneyD(r.cuoi)}`}</title>
+            </circle>
+          )
+          off += len
+          return el
+        })}
+        <text x={co / 2} y={co / 2 - 6} textAnchor="middle" className="bbt-vq-nhan">{dangTro ? pct(tong ? dangTro.cuoi / tong : 0) : 'Tổng tồn'}</text>
+        <text x={co / 2} y={co / 2 + 14} textAnchor="middle" className="bbt-vq-so">{short(dangTro ? dangTro.cuoi : tong)}</text>
+      </svg>
+      <ul className="bbt-vq-ct">
+        {ds.map((r, i) => (
+          <li key={r.quy}>
+            <button type="button" className={tro === r.quy ? 'on' : ''} title={`Xem biểu đồ thu chi ${r.quy}`} onClick={() => onChon(r.quy)}
+              onMouseEnter={() => setTro(r.quy)} onMouseLeave={() => setTro(null)}>
+              <i style={{ background: MAU_QUY[i % MAU_QUY.length] }} />
+              <span className="bbt-vq-ten"><span>{r.quy}</span><b>{moneyD(r.cuoi)}<small>{pct(tong ? r.cuoi / tong : 0)}</small></b></span>
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
 /** Thao tác nhanh đầu trang chủ Free (T290): cố định 5 nút, không theo danh sách tuỳ chỉnh ở thanh bên */
 const TT_NHANH_FREE = [
   { ten: 'Thu tiền', icon: 'cashin', to: '/app/tien/2-1-1/moi?loai=thu', goiY: 'Lập phiếu thu tiền' },
@@ -392,25 +437,7 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
             Thu <span style={{ color: 'var(--green, #138a52)' }}>{short(tongQuy.thu)}</span> · Chi <span style={{ color: 'var(--red, #c2362b)' }}>{short(tongQuy.chi)}</span>
           </div>
 
-          {quy.map(r => (
-            <button
-              key={r.quy}
-              type="button"
-              className="t qy bbt-the-btn"
-              onClick={() => setModalQuy(r.quy)}
-              title={`Xem biểu đồ thu chi ${r.quy}`}
-            >
-              <div className="l">
-                <b>{r.quy}</b>
-                <span>{r.tienMat ? 'Tiền mặt' : 'Ngân hàng'}</span>
-              </div>
-              <div className="r">
-                <b>{moneyD(r.cuoi)}</b>
-                <span>{pct(tongQuy.cuoi ? r.cuoi / tongQuy.cuoi : 0)}</span>
-              </div>
-              <Icon n="chevr" className="ic sm muted" />
-            </button>
-          ))}
+          <VongQuy ds={quy} tong={tongQuy.cuoi} onChon={setModalQuy} />
 
           {/* T273: nút "Biểu đồ thu chi ›" mở modal gộp, bỏ dòng gợi ý */}
           <button
