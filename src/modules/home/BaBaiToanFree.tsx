@@ -272,6 +272,7 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
 
   return (
     <div className="bbt bbt-e" onClickCapture={moTuTrangChu}>
+      <h1 className="sr-only">Tổng quan</h1>
       <LenThanhTab>
         {chonKy}
       </LenThanhTab>

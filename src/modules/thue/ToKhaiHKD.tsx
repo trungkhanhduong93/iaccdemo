@@ -94,6 +94,7 @@ export function ToKhaiHKD(_: ScreenProps) {
   }
   return (
     <div className="page page-voucher">
+      <h1 className="sr-only">Danh sách tờ khai</h1>
       <section className="card voucher-top">
         <div className="ds-thanh">
           <label className="tk-tim"><Icon n="search" className="ic sm" /><input value={q} onChange={e => setQ(e.target.value)} placeholder="Tìm kiếm theo tên tờ khai" aria-label="Tìm tờ khai" /></label>
