@@ -21696,3 +21696,293 @@ input.bat-tat:disabled { opacity: .5; cursor: not-allowed; }
   padding-bottom: calc(75px + env(safe-area-inset-bottom, 0px)) !important;
 }
 
+/* ── Thẻ mặt hàng phiếu điện thoại (T300) ── */
+.m-th-the {
+  background: var(--white);
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.m-th-dau {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 8px;
+  margin-bottom: 2px;
+  border-bottom: 1px solid var(--line-2);
+}
+
+.m-th-ten-hang {
+  font-size: 14px;
+  color: var(--ink);
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.m-th-ma {
+  color: var(--muted);
+  font-weight: normal;
+  margin-left: 2px;
+}
+
+.m-th-nut-nhom {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.m-th-btn-nhan-ban {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: var(--tint);
+  color: var(--blue);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+}
+
+.m-th-btn-xoa {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: var(--red-t);
+  color: var(--red);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+}
+
+.m-th-hang {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 38px;
+  gap: 8px;
+}
+
+.m-th-nhan {
+  font-size: 13px;
+  color: var(--body);
+  flex: 1;
+  min-width: 80px;
+}
+
+.m-th-nhan.dam {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.m-th-o-nhap {
+  flex: 0 0 60%;
+  max-width: 60%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--white);
+  height: 36px;
+  padding: 0 8px;
+  position: relative;
+}
+
+.m-th-o-nhap:focus-within {
+  border-color: var(--blue);
+}
+
+.m-th-o-nhap.khong-khung {
+  border: none;
+  background: transparent;
+  padding: 0;
+}
+
+.m-th-inp {
+  flex: 1;
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--blue);
+  text-align: right;
+  padding: 0 4px;
+}
+
+.m-th-don-vi {
+  color: var(--muted);
+  font-size: 13px;
+  margin-left: 4px;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.m-th-btn-dvt {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  color: var(--blue);
+  font-size: 13px;
+  font-weight: 500;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  margin-left: 4px;
+  flex-shrink: 0;
+}
+
+.m-th-btn-dvt.khoa {
+  color: var(--muted);
+  cursor: default;
+}
+
+.m-th-btn-loai-giam {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  color: var(--blue);
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--tint);
+  border: none;
+  border-radius: 4px;
+  padding: 2px 6px;
+  margin-left: 4px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.m-th-so-tien {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--blue);
+  text-align: right;
+  flex: 1;
+}
+
+.m-th-so-tien.cam {
+  color: var(--blue);
+}
+
+.m-th-btn-but-chi {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  color: var(--muted);
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 6px;
+  flex-shrink: 0;
+  cursor: pointer;
+  padding: 0;
+}
+
+.m-th-btn-but-chi:hover,
+.m-th-btn-but-chi.dang-sua {
+  color: var(--blue);
+  background: var(--tint);
+}
+
+.m-th-vat-wrap {
+  flex: 0 0 60%;
+  max-width: 60%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.m-th-vat-pt-hop {
+  width: 58px;
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--white);
+  height: 36px;
+  padding: 0 4px;
+}
+
+.m-th-vat-pt-hop:focus-within {
+  border-color: var(--blue);
+}
+
+.m-th-vat-pt-inp {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  text-align: right;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--blue);
+}
+
+.m-th-vat-tien-hop {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.m-th-ghi-chu {
+  width: 100%;
+  min-height: 48px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--soft);
+  font-size: 13px;
+  color: var(--ink);
+  resize: none;
+  outline: none;
+  line-height: 1.4;
+  margin-top: 4px;
+  box-sizing: border-box;
+}
+
+.m-th-ghi-chu:focus {
+  border-color: var(--blue);
+  background: var(--white);
+}
+
+.m-th-btn-them-duoi {
+  width: 100%;
+  height: 40px;
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  background: var(--white);
+  color: var(--blue);
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  margin-top: 6px;
+}
+
+

@@ -3,6 +3,7 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import type { Row, ScreenProps } from '../../modules/types'
 import { duongDan, tenMan } from '../../app/registry'
 import { cuaHangHienTai, ngayDauNam, truocDauNam, useSession } from '../../app/session'
+import { anNgoaiGoi, type Goi } from '../../app/plan'
 import { CUA_HANG, HANG, KHO, NVL } from '../../data/mock'
 import { fold, money } from '../format'
 import { Icon } from '../Icon'
@@ -20,6 +21,8 @@ import {
 } from '../../modules/kho/san-xuat'
 import { DCN, khoCuaCn, type LoaiDcn } from '../../modules/kho/dieu-chuyen'
 import type { Dong } from '../generic/gen'
+import { quyDoiTuDanhMuc } from '../../modules/danh-muc/QuyDoiDvt'
+import { goSoVN, docSoVN } from '../OSoGo'
 
 export interface MLapPhieuKhoProps extends ScreenProps {
   id?: string
@@ -55,6 +58,303 @@ export const MLapPhieuKho: FC<MLapPhieuKhoProps> = ({ sc, mod, id }) => {
   }
 
   return <ThanLapPhieuKho key={id ?? 'moi'} sc={sc} mod={mod} id={id} row={row} />
+}
+
+// ── Thẻ mặt hàng phiếu kho điện thoại (T300) ──
+type DongM = Dong & { giaGoc?: number; dvtChinh?: string }
+
+interface TheHangKhoProps {
+  idx: number
+  d: DongM
+  laKk: boolean
+  dcn?: string
+  goi: Goi
+  onDoi: (patch: Partial<DongM>) => void
+  onNhanBan: () => void
+  onXoa: () => void
+  onMoChonDvt: () => void
+  onSuaTong: (tong: number) => void
+}
+
+const TheHangKho: FC<TheHangKhoProps> = ({
+  idx,
+  d,
+  laKk,
+  dcn,
+  goi,
+  onDoi,
+  onNhanBan,
+  onXoa,
+  onMoChonDvt,
+  onSuaTong,
+}) => {
+  const [dangSuaTong, setDangSuaTong] = useState(false)
+  const [strSuaTong, setStrSuaTong] = useState('')
+  const [focusSl, setFocusSl] = useState(false)
+  const [strSl, setStrSl] = useState('')
+  const [focusGia, setFocusGia] = useState(false)
+  const [strGia, setStrGia] = useState('')
+
+  const dvtChinh = d.dvtChinh || NVL.find(n => n.ma === d.ma || n.ten === d.ten)?.dvt || HANG.find(h => h.ma === d.ma || h.ten === d.ten)?.dvt || d.dvt
+  const dsQd = useMemo(() => quyDoiTuDanhMuc(d.ten, dvtChinh), [d.ten, dvtChinh])
+  const coQuyDoi = !anNgoaiGoi(goi) && dsQd.length > 0
+
+  if (laKk) {
+    const tonHt = Number(d.tonHt ?? 0)
+    const tonTt = Number(d.tonTt ?? tonHt)
+    const chenh = tonTt - tonHt
+    return (
+      <div className="m-th-the">
+        <div className="m-th-dau">
+          <div className="m-th-ten-hang">
+            <b>{idx + 1}. {d.ten}</b>
+            {d.ma && <span className="m-th-ma"> -{d.ma}</span>}
+          </div>
+          <div className="m-th-nut-nhom">
+            <button
+              type="button"
+              className="m-th-btn-nhan-ban"
+              onClick={onNhanBan}
+              title="Nhân bản dòng"
+              aria-label="Nhân bản dòng"
+            >
+              <Icon n="copy" className="ic sm" />
+            </button>
+            <button
+              type="button"
+              className="m-th-btn-xoa"
+              onClick={onXoa}
+              title="Xoá dòng"
+              aria-label="Xoá dòng"
+            >
+              <Icon n="x" className="ic sm" />
+            </button>
+          </div>
+        </div>
+
+        {/* Số thực tế */}
+        <div className="m-th-hang">
+          <span className="m-th-nhan dam">Số thực tế:</span>
+          <div className="m-th-o-nhap">
+            <input
+              type="text"
+              className="m-th-inp num"
+              inputMode="decimal"
+              value={focusSl ? strSl : (d.tonTt ?? tonHt)}
+              onFocus={() => {
+                setFocusSl(true)
+                setStrSl(String(d.tonTt ?? tonHt))
+              }}
+              onChange={e => {
+                const str = goSoVN(e.target.value, true)
+                setStrSl(str)
+                const v = docSoVN(str)
+                onDoi({ tonTt: v, sl: v })
+              }}
+              onBlur={() => setFocusSl(false)}
+            />
+            <span className="m-th-don-vi">{d.dvt || 'Cái'}</span>
+          </div>
+        </div>
+
+        {/* Tồn sổ sách */}
+        <div className="m-th-hang">
+          <span className="m-th-nhan">Tồn sổ sách:</span>
+          <div className="m-th-o-nhap khong-khung">
+            <span className="m-th-so-tien" style={{ color: 'var(--ink)' }}>
+              {money(tonHt)} {d.dvt || 'Cái'}
+            </span>
+          </div>
+        </div>
+
+        {/* Chênh lệch */}
+        <div className="m-th-hang">
+          <span className="m-th-nhan dam">Chênh lệch:</span>
+          <div className="m-th-o-nhap khong-khung" style={{ gap: 6 }}>
+            <span className={`dam ${chenh < 0 ? 'do' : chenh > 0 ? 'xanh' : ''}`}>
+              {chenh > 0 ? `+${money(chenh)}` : money(chenh)} {d.dvt}
+            </span>
+            {chenh < 0 && <span className="m-ct-chip err">Thiếu</span>}
+            {chenh > 0 && <span className="m-ct-chip ok">Thừa</span>}
+            {chenh === 0 && <span className="m-ct-chip dim">Khớp</span>}
+          </div>
+        </div>
+
+        {/* Ghi chú lý do chênh lệch */}
+        <textarea
+          className="m-th-ghi-chu"
+          placeholder="Lý do chênh lệch nếu có"
+          value={d.ghiChu || ''}
+          onChange={e => onDoi({ ghiChu: e.target.value })}
+          rows={2}
+        />
+      </div>
+    )
+  }
+
+  const dongSx = d as DongSx
+  return (
+    <div className="m-th-the">
+      <div className="m-th-dau">
+        <div className="m-th-ten-hang">
+          <b>{idx + 1}. {d.ten}</b>
+          {d.ma && <span className="m-th-ma"> -{d.ma}</span>}
+        </div>
+        <div className="m-th-nut-nhom">
+          <button
+            type="button"
+            className="m-th-btn-nhan-ban"
+            onClick={onNhanBan}
+            title="Nhân bản dòng"
+            aria-label="Nhân bản dòng"
+          >
+            <Icon n="copy" className="ic sm" />
+          </button>
+          <button
+            type="button"
+            className="m-th-btn-xoa"
+            onClick={onXoa}
+            title="Xoá dòng"
+            aria-label="Xoá dòng"
+          >
+            <Icon n="x" className="ic sm" />
+          </button>
+        </div>
+      </div>
+
+      {dongSx.tp && (
+        <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: -4 }}>
+          Thành phẩm: {dongSx.tp}
+        </div>
+      )}
+
+      {/* Dòng 1: Số lượng */}
+      <div className="m-th-hang">
+        <span className="m-th-nhan">
+          Số lượng:
+          {dongSx.slKh !== undefined && (
+            <small style={{ color: 'var(--muted)', marginLeft: 4 }}>
+              (KH: {soLuong(dongSx.slKh)})
+            </small>
+          )}
+        </span>
+        <div className="m-th-o-nhap">
+          <input
+            type="text"
+            className="m-th-inp num"
+            inputMode="decimal"
+            value={focusSl ? strSl : (d.sl ?? 1)}
+            onFocus={() => {
+              setFocusSl(true)
+              setStrSl(String(d.sl ?? 1))
+            }}
+            onChange={e => {
+              const str = goSoVN(e.target.value, true)
+              setStrSl(str)
+              const v = docSoVN(str)
+              onDoi({ sl: v })
+            }}
+            onBlur={() => setFocusSl(false)}
+          />
+          {coQuyDoi ? (
+            <button
+              type="button"
+              className="m-th-btn-dvt"
+              onClick={onMoChonDvt}
+              title="Đổi đơn vị tính"
+            >
+              <span>{d.dvt || 'Cái'}</span>
+              <Icon n="chevd" className="ic sm" />
+            </button>
+          ) : (
+            <span className="m-th-don-vi">{d.dvt || 'Cái'}</span>
+          )}
+        </div>
+      </div>
+
+      {/* Dòng 2: Đơn giá (nếu không phải chuyển kho ck) */}
+      {dcn !== 'ck' && (
+        <div className="m-th-hang">
+          <span className="m-th-nhan">Đơn giá:</span>
+          <div className="m-th-o-nhap">
+            <input
+              type="text"
+              className="m-th-inp num"
+              inputMode="numeric"
+              value={focusGia ? strGia : money(d.gia || 0)}
+              onFocus={() => {
+                setFocusGia(true)
+                setStrGia(money(d.gia || 0))
+              }}
+              onChange={e => {
+                const str = goSoVN(e.target.value, false)
+                setStrGia(str)
+                const v = docSoVN(str)
+                onDoi({ gia: v, giaGoc: v })
+              }}
+              onBlur={() => setFocusGia(false)}
+            />
+            <span className="m-th-don-vi">đ</span>
+          </div>
+        </div>
+      )}
+
+      {/* Dòng 3: Tổng tiền (nếu không phải chuyển kho ck) */}
+      {dcn !== 'ck' && (
+        <div className="m-th-hang">
+          <span className="m-th-nhan dam">Tổng tiền:</span>
+          <div className="m-th-o-nhap khong-khung">
+            {dangSuaTong ? (
+              <div className="m-th-o-nhap" style={{ flex: 1, maxWidth: '100%' }}>
+                <input
+                  autoFocus
+                  type="text"
+                  className="m-th-inp num"
+                  inputMode="numeric"
+                  value={strSuaTong}
+                  onChange={e => {
+                    const str = goSoVN(e.target.value, false)
+                    setStrSuaTong(str)
+                    onSuaTong(docSoVN(str))
+                  }}
+                  onBlur={() => setDangSuaTong(false)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') setDangSuaTong(false)
+                  }}
+                />
+                <span className="m-th-don-vi">đ</span>
+              </div>
+            ) : (
+              <>
+                <span className="m-th-so-tien dam cam">{money(d.tien || 0)} đ</span>
+                <button
+                  type="button"
+                  className="m-th-btn-but-chi"
+                  onClick={() => {
+                    setDangSuaTong(true)
+                    setStrSuaTong(money(d.tien || 0))
+                  }}
+                  title="Sửa tổng tiền"
+                  aria-label="Sửa tổng tiền"
+                >
+                  <Icon n="edit" className="ic sm" />
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Cuối thẻ: Ô ghi chú */}
+      <textarea
+        className="m-th-ghi-chu"
+        placeholder="Nhập ghi chú nếu có"
+        value={d.ghiChu || ''}
+        onChange={e => onDoi({ ghiChu: e.target.value })}
+        rows={2}
+      />
+    </div>
+  )
 }
 
 interface ThanLapPhieuKhoProps extends ScreenProps {
@@ -147,8 +447,8 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
   })
 
   // Danh sách dòng
-  const [dsDong, setDsDong] = useState<Dong[]>(() => {
-    if (gocData?._dong && Array.isArray(gocData._dong)) return gocData._dong as Dong[]
+  const [dsDong, setDsDong] = useState<DongM[]>(() => {
+    if (gocData?._dong && Array.isArray(gocData._dong)) return gocData._dong as DongM[]
     return []
   })
 
@@ -193,8 +493,10 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
     return dsDong.reduce((a, d) => a + (Number(d.tien) || 0), 0)
   }, [dsDong, laKk])
 
-  // Cập nhật dòng
-  const doiDong = (idx: number, patch: Partial<Dong>) => {
+  // Cập nhật dòng (T300)
+  const [dvtSheet, setDvtSheet] = useState<{ idx: number; ten: string; ds: { k: string; ten: string }[] } | null>(null)
+
+  const doiDong = (idx: number, patch: Partial<DongM>) => {
     setDsDong(ds => ds.map((d, i) => {
       if (i !== idx) return d
       const hopNhat = { ...d, ...patch }
@@ -212,6 +514,60 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
 
   const xoaDong = (idx: number) => {
     setDsDong(ds => ds.filter((_, i) => i !== idx))
+  }
+
+  // Nhân bản dòng (T300)
+  const nhanBanDong = (idx: number) => {
+    setDsDong(ds => {
+      const banSao = { ...ds[idx] }
+      const moi = [...ds]
+      moi.splice(idx + 1, 0, banSao)
+      return moi
+    })
+  }
+
+  // Đổi đơn vị tính theo quy đổi (T300)
+  const doiDvt = (idx: number, dvMoi: string) => {
+    const d = dsDong[idx]
+    if (!d) return
+    const dvtChinh = d.dvtChinh || NVL.find(n => n.ma === d.ma || n.ten === d.ten)?.dvt || HANG.find(h => h.ma === d.ma || h.ten === d.ten)?.dvt || d.dvt
+    const giaGoc = d.giaGoc ?? (NVL.find(n => n.ma === d.ma || n.ten === d.ten)?.gia || d.gia || 0)
+    let giaMoi = giaGoc
+    if (dvMoi !== dvtChinh) {
+      const dsQd = quyDoiTuDanhMuc(d.ten, dvtChinh)
+      const q = dsQd.find(x => x.dv === dvMoi)
+      if (q) {
+        // Tính lại đơn giá theo hệ số quy đổi (T300). Luôn tính từ đơn giá theo ĐVT chính
+        giaMoi = q.nguoc ? Math.round(giaGoc * q.tl) : Math.round(giaGoc / q.tl)
+      }
+    }
+    doiDong(idx, { dvt: dvMoi, gia: giaMoi, giaGoc, dvtChinh })
+  }
+
+  const moChonDvt = (idx: number) => {
+    const d = dsDong[idx]
+    if (!d) return
+    const dvtChinh = d.dvtChinh || NVL.find(n => n.ma === d.ma || n.ten === d.ten)?.dvt || HANG.find(h => h.ma === d.ma || h.ten === d.ten)?.dvt || d.dvt
+    const dsQd = quyDoiTuDanhMuc(d.ten, dvtChinh)
+    if (dsQd.length === 0) return
+    const ds = [
+      { k: dvtChinh, ten: `${dvtChinh} (ĐVT chính)` },
+      ...dsQd.map(q => ({
+        k: q.dv,
+        ten: `${q.dv} (${q.nguoc ? `1 ${q.dv} = ${q.tl} ${dvtChinh}` : `1 ${dvtChinh} = ${q.tl} ${q.dv}`})`,
+      })),
+    ]
+    setDvtSheet({ idx, ten: d.ten, ds })
+  }
+
+  // Sửa tổng tiền tính ngược lại đơn giá (T300)
+  const suaTongTien = (idx: number, tongMoi: number) => {
+    const d = dsDong[idx]
+    if (!d) return
+    const sl = Number(d.sl) || 1
+    const giaMoi = Math.round(tongMoi / sl)
+    const tien = Math.round(sl * giaMoi)
+    doiDong(idx, { gia: giaMoi, tien, giaGoc: giaMoi })
   }
 
   // Chọn thành phẩm trong sản xuất
@@ -253,6 +609,8 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
             ma: h.ma,
             ten: h.ten,
             dvt: h.dvt,
+            dvtChinh: h.dvt,
+            giaGoc: 0,
             sl: 10,
             gia: 0,
             tien: 0,
@@ -271,6 +629,8 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
             ma: h.ma,
             ten: h.ten,
             dvt: h.dvt,
+            dvtChinh: h.dvt,
+            giaGoc: gia,
             sl,
             gia,
             tien,
@@ -301,6 +661,8 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
               ma: h.ma,
               ten: h.ten,
               dvt: h.dvt,
+              dvtChinh: h.dvt,
+              giaGoc: 0,
               sl: 10,
               gia: 0,
               tien: 0,
@@ -316,6 +678,8 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
               ma: h.ma,
               ten: h.ten,
               dvt: h.dvt,
+              dvtChinh: h.dvt,
+              giaGoc: gia,
               sl,
               gia,
               tien,
@@ -555,7 +919,7 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
       </div>
 
       <div className="m-lp-than m-lp-than-cuon">
-        {/* ════ NHÓM 1: KHO, CỬA HÀNG NHẬN, KHO NHẬN ════ */}
+        {/* ════ THÔNG TIN CHUNG: KHO, KHO NHẬN, THỜI GIAN, GHI CHÚ (T300) ════ */}
         <div className="m-the-trang m-lp-nhom-dong">
           {/* Kho chính */}
           <div
@@ -623,6 +987,43 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
               {loiO.khoNhan && <div className="m-lp-loi-o">{loiO.khoNhan}</div>}
             </>
           )}
+
+          {/* Thời gian */}
+          <div
+            className="m-lp-dong-o m-lp-the-truong"
+            id="m-lp-o-thoiGian"
+            onClick={() => setMoLich(true)}
+          >
+            <div className="m-lp-dong-trai">
+              <Icon n="clock" className="ic sm m-lp-dong-ic" />
+              <div className="m-lp-dong-nd">
+                <span className="m-lp-dong-nhan">Thời gian <b className="m-lp-sao">*</b></span>
+                <span className="m-lp-dong-tri m-lp-tri-xanh">{thoiGian}</span>
+                <input
+                  type="text"
+                  className="m-lp-inp-tri"
+                  value={thoiGian}
+                  readOnly
+                  style={{ display: 'none' }}
+                />
+              </div>
+            </div>
+            <Icon n="chevr" className="ic sm m-lp-dong-mui-ten" />
+          </div>
+
+          {/* Ghi chú / Diễn giải */}
+          <div className="m-lp-dong-o m-lp-dong-nhap">
+            <div className="m-lp-dong-trai" style={{ width: '100%' }}>
+              <Icon n="file" className="ic sm m-lp-dong-ic" />
+              <input
+                type="text"
+                className="m-lp-dong-inp"
+                placeholder={laDc ? 'Lý do điều chỉnh' : 'Ghi chú'}
+                value={ghiChu}
+                onChange={e => setGhiChu(e.target.value)}
+              />
+            </div>
+          </div>
         </div>
 
         {/* ════ NHÓM 2: DANH SÁCH HÀNG HOÁ / KIỂM KÊ / SẢN XUẤT ════ */}
@@ -704,219 +1105,36 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
               )}
             </div>
           ) : (
-            <div className="m-lp-ds-hang-the">
-              {dsDong.map((d, i) => {
-                if (laKk) {
-                  const tonHt = Number(d.tonHt ?? 0)
-                  const tonTt = Number(d.tonTt ?? tonHt)
-                  const chenh = tonTt - tonHt
-                  return (
-                    <div key={i} className="m-the-trang m-lp-the-hang-item m-lp-the-sua">
-                      <div className="m-lp-hang-item-dau">
-                        <div className="m-lp-hang-item-ten">
-                          <b>{i + 1}. {d.ten}</b>
-                          {d.ma && <span className="m-lp-hang-item-ma">· {d.ma}</span>}
-                        </div>
-                        <button
-                          type="button"
-                          className="m-lp-hang-item-xoa"
-                          onClick={() => xoaDong(i)}
-                          aria-label="Xoá hàng"
-                        >
-                          <Icon n="x" className="ic sm" />
-                        </button>
-                      </div>
+            <div className="m-th-danh-sach">
+              {dsDong.map((d, i) => (
+                <TheHangKho
+                  key={i}
+                  d={d}
+                  idx={i}
+                  laKk={laKk}
+                  dcn={dcn}
+                  goi={s.goi}
+                  onDoi={patch => doiDong(i, patch)}
+                  onXoa={() => xoaDong(i)}
+                  onNhanBan={() => nhanBanDong(i)}
+                  onMoChonDvt={() => moChonDvt(i)}
+                  onSuaTong={tien => suaTongTien(i, tien)}
+                />
+              ))}
 
-                      <div className="m-lp-hang-item-luoi">
-                        {/* Tồn sổ sách */}
-                        <div className="m-lp-hang-item-o">
-                          <span className="m-lp-hang-item-nhan">Tồn sổ sách:</span>
-                          <span className="m-lp-dong-tri">{money(tonHt)} {d.dvt || 'Cái'}</span>
-                        </div>
-
-                        {/* Số thực tế */}
-                        <div className="m-lp-hang-item-o">
-                          <span className="m-lp-hang-item-nhan dam">Số thực tế:</span>
-                          <div className="m-lp-sl-stepper" style={{ width: 'auto' }}>
-                            <input
-                              type="text"
-                              className="m-lp-sua-inp num m-lp-sl-inp"
-                              style={{ width: 80 }}
-                              value={d.tonTt ?? tonHt}
-                              onChange={e => {
-                                const v = Number(e.target.value.replace(/[^0-9.]/g, '')) || 0
-                                doiDong(i, { tonTt: v, sl: v })
-                              }}
-                            />
-                            <span className="m-lp-dvt-gia" style={{ marginLeft: 4 }}>{d.dvt || 'Cái'}</span>
-                          </div>
-                        </div>
-
-                        {/* Chênh lệch */}
-                        <div className="m-lp-hang-item-o">
-                          <span className="m-lp-hang-item-nhan dam">Chênh lệch:</span>
-                          <div className="m-lp-kk-chenh" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                            <span className={`dam ${chenh < 0 ? 'do' : chenh > 0 ? 'xanh' : ''}`}>
-                              {chenh > 0 ? `+${money(chenh)}` : money(chenh)} {d.dvt}
-                            </span>
-                            {chenh < 0 && <span className="m-ct-chip err">Thiếu</span>}
-                            {chenh > 0 && <span className="m-ct-chip ok">Thừa</span>}
-                            {chenh === 0 && <span className="m-ct-chip dim">Khớp</span>}
-                          </div>
-                        </div>
-
-                        {/* Ghi chú lý do chênh lệch */}
-                        <div className="m-lp-hang-item-o" style={{ width: '100%', marginTop: 4 }}>
-                          <input
-                            type="text"
-                            className="m-lp-sua-inp ghi-chu"
-                            style={{ width: '100%' }}
-                            placeholder="Lý do chênh lệch nếu có"
-                            value={d.ghiChu || ''}
-                            onChange={e => doiDong(i, { ghiChu: e.target.value })}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  )
-                }
-
-                const dongSx = d as DongSx
-                return (
-                  <div key={i} className="m-the-trang m-lp-the-hang-item m-lp-the-sua">
-                    <div className="m-lp-hang-item-dau">
-                      <div className="m-lp-hang-item-ten">
-                        <b>{i + 1}. {d.ten}</b>
-                        {d.ma && <span className="m-lp-hang-item-ma">· {d.ma}</span>}
-                        {d.dvt && <span className="m-lp-hang-item-dvt">({d.dvt})</span>}
-                      </div>
-                      <button
-                        type="button"
-                        className="m-lp-hang-item-xoa"
-                        onClick={() => xoaDong(i)}
-                        aria-label="Xoá hàng"
-                      >
-                        <Icon n="x" className="ic sm" />
-                      </button>
-                    </div>
-
-                    {dongSx.tp && (
-                      <div className="m-lp-tp-badge" style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 6 }}>
-                        Thành phẩm: {dongSx.tp}
-                      </div>
-                    )}
-
-                    <div className="m-lp-hang-item-luoi">
-                      {/* Số lượng */}
-                      <div className="m-lp-hang-item-o">
-                        <span className="m-lp-hang-item-nhan">
-                          Số lượng:
-                          {dongSx.slKh !== undefined && (
-                            <small style={{ color: 'var(--muted)', marginLeft: 4 }}>
-                              (KH: {soLuong(dongSx.slKh)})
-                            </small>
-                          )}
-                        </span>
-                        <div className="m-lp-sl-stepper">
-                          <button
-                            type="button"
-                            className="m-lp-step-btn"
-                            onClick={() => doiDong(i, { sl: Math.max(1, (d.sl || 1) - 1) })}
-                          >
-                            -
-                          </button>
-                          <input
-                            type="text"
-                            className="m-lp-sua-inp num m-lp-sl-inp"
-                            value={d.sl ?? 1}
-                            onChange={e => {
-                              const v = Number(e.target.value.replace(/[^0-9.]/g, '')) || 0
-                              doiDong(i, { sl: v })
-                            }}
-                          />
-                          <button
-                            type="button"
-                            className="m-lp-step-btn"
-                            onClick={() => doiDong(i, { sl: (d.sl || 1) + 1 })}
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* Đơn giá */}
-                      {dcn !== 'ck' && (
-                        <div className="m-lp-hang-item-o">
-                          <span className="m-lp-hang-item-nhan">Đơn giá:</span>
-                          <div className="m-lp-gia-wrap">
-                            <input
-                              type="text"
-                              className="m-lp-sua-inp num m-lp-gia-inp"
-                              value={money(d.gia || 0)}
-                              onChange={e => {
-                                const v = Number(e.target.value.replace(/\D/g, '')) || 0
-                                doiDong(i, { gia: v })
-                              }}
-                            />
-                            <span className="m-lp-dvt-gia">đ</span>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Thành tiền */}
-                      {dcn !== 'ck' && (
-                        <div className="m-lp-hang-item-o">
-                          <span className="m-lp-hang-item-nhan dam">Thành tiền:</span>
-                          <span className="m-lp-hang-item-tien dam cam">{money(d.tien || 0)} đ</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )
-              })}
+              {(!laSx || sx !== 'xcb') && (
+                <button
+                  type="button"
+                  className="m-th-btn-them-hang-duoi"
+                  onClick={() => setMoChonHang(true)}
+                >
+                  <Icon n="plus" className="ic sm" />
+                  <span>Thêm hàng</span>
+                </button>
+              )}
             </div>
           )}
           {loiO.hang && <div className="m-lp-loi-o">{loiO.hang}</div>}
-        </div>
-
-        {/* ════ NHÓM 3: NGÀY, GHI CHÚ ════ */}
-        <div className="m-the-trang m-lp-nhom-dong">
-          {/* Ngày */}
-          <div
-            className="m-lp-dong-o m-lp-the-truong"
-            id="m-lp-o-thoiGian"
-            onClick={() => setMoLich(true)}
-          >
-            <div className="m-lp-dong-trai">
-              <Icon n="clock" className="ic sm m-lp-dong-ic" />
-              <div className="m-lp-dong-nd">
-                <span className="m-lp-dong-nhan">Thời gian <b className="m-lp-sao">*</b></span>
-                <span className="m-lp-dong-tri m-lp-tri-xanh">{thoiGian}</span>
-                <input
-                  type="text"
-                  className="m-lp-inp-tri"
-                  value={thoiGian}
-                  readOnly
-                  style={{ display: 'none' }}
-                />
-              </div>
-            </div>
-            <Icon n="chevr" className="ic sm m-lp-dong-mui-ten" />
-          </div>
-
-          {/* Ghi chú / Diễn giải */}
-          <div className="m-lp-dong-o m-lp-dong-nhap">
-            <div className="m-lp-dong-trai" style={{ width: '100%' }}>
-              <Icon n="file" className="ic sm m-lp-dong-ic" />
-              <input
-                type="text"
-                className="m-lp-dong-inp"
-                placeholder={laDc ? 'Lý do điều chỉnh' : 'Ghi chú'}
-                value={ghiChu}
-                onChange={e => setGhiChu(e.target.value)}
-              />
-            </div>
-          </div>
         </div>
       </div>
 
@@ -1107,6 +1325,22 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
           value={thoiGian.slice(0, 10)}
           onChange={v => setThoiGian(v + thoiGian.slice(10))}
           onDong={() => setMoLich(false)}
+        />
+      )}
+
+      {/* ── SHEET CHỌN ĐƠN VỊ TÍNH (T300) ── */}
+      {dvtSheet && (
+        <MChon
+          mo={Boolean(dvtSheet)}
+          onDong={() => setDvtSheet(null)}
+          tieuDe={`Chọn đơn vị: ${dvtSheet.ten}`}
+          ds={dvtSheet.ds}
+          chon={dsDong[dvtSheet.idx]?.dvt || ''}
+          onChon={v => {
+            doiDvt(dvtSheet.idx, v)
+            setDvtSheet(null)
+          }}
+          apDung
         />
       )}
     </div>
