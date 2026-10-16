@@ -20968,6 +20968,8 @@ input.bat-tat:disabled { opacity: .5; cursor: not-allowed; }
 /* ── Cột rộng cố định wCung: tiêu đề dài xuống dòng (T287) ── */
 .tbl thead tr th.w-cung { white-space: normal; line-height: 1.25; }
 /* ── Thao tác nhanh trên hàng tab trang chủ Free (T290) ── */
-.bbt-tt-nhanh { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+.bbt-tt-nhanh { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; justify-content: flex-end; }
+.bbt-tt-nhanh-nhan { display: inline-flex; align-items: center; gap: 6px; margin-right: 4px; color: var(--muted); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; white-space: nowrap; }
+.bbt-tt-nhanh-nhan .ic { color: var(--blue); }
 .bbt-tt-nhanh-nut { display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 14px 0 6px; border: 1px solid var(--line); border-radius: 10px; background: var(--white); color: var(--ink); font-size: 13px; font-weight: 600; text-decoration: none; white-space: nowrap; }
 .bbt-tt-nhanh-nut:hover { border-color: var(--blue); color: var(--blue-d); }

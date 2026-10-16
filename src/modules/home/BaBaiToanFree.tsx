@@ -159,11 +159,11 @@ export function HopLaiLo13({
 
 /** Thao tác nhanh đầu trang chủ Free (T290): cố định 5 nút, không theo danh sách tuỳ chỉnh ở thanh bên */
 const TT_NHANH_FREE = [
-  { ten: 'Thu tiền', icon: 'cashin', to: '/app/tien/2-1-1/moi?loai=thu' },
-  { ten: 'Chi tiền', icon: 'cashout', to: '/app/tien/2-1-1/moi?loai=chi' },
-  { ten: 'Mua hàng', icon: 'truck', to: '/app/mua-hang/4-1-1/moi' },
-  { ten: 'Kiểm kê', icon: 'clipboard', to: '/app/kho/5-1-10/moi' },
-  { ten: 'Kê khai thuế', icon: 'percent', to: '/app/thue/to-khai' },
+  { ten: 'Thu tiền', icon: 'cashin', to: '/app/tien/2-1-1/moi?loai=thu', goiY: 'Lập phiếu thu tiền' },
+  { ten: 'Chi tiền', icon: 'cashout', to: '/app/tien/2-1-1/moi?loai=chi', goiY: 'Lập phiếu chi tiền' },
+  { ten: 'Mua hàng', icon: 'truck', to: '/app/mua-hang/4-1-1/moi', goiY: 'Lập phiếu mua hàng' },
+  { ten: 'Kiểm kê', icon: 'clipboard', to: '/app/kho/5-1-10/moi', goiY: 'Lập phiếu kiểm kê' },
+  { ten: 'Kê khai thuế', icon: 'percent', to: '/app/thue/to-khai', goiY: 'Mở danh sách tờ khai thuế' },
 ]
 
 /** Trang chủ Free theo ba bài toán mẫu E (T272, T274): 2 tab Tổng quan | Cần theo dõi, lọc chi nhánh, 6 biểu đồ */
@@ -268,8 +268,10 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
         </div>
         {/* Thao tác nhanh cố định trên hàng tab, cả 2 tab (T290) */}
         <nav className="bbt-tt-nhanh" aria-label="Thao tác nhanh">
+          {/* Nhãn cùng tên, cùng biểu tượng với mục Thao tác nhanh ở thanh bên để khách nhận ra */}
+          <span className="bbt-tt-nhanh-nhan"><Icon n="sparkle" className="ic sm" />Thao tác nhanh</span>
           {TT_NHANH_FREE.map(m => (
-            <Link key={m.ten} to={m.to} className="bbt-tt-nhanh-nut"><ONen n={m.icon} kieu="nhat" co="sm" />{m.ten}</Link>
+            <Link key={m.ten} to={m.to} title={m.goiY} className="bbt-tt-nhanh-nut"><ONen n={m.icon} kieu="nhat" co="sm" />{m.ten}</Link>
           ))}
         </nav>
       </div>
