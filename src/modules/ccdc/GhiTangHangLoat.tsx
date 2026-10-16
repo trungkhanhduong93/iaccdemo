@@ -7,11 +7,11 @@ import { useSession } from '../../app/session'
 import { FormToanMan } from '../../ui/FormToanMan'
 import { Table } from '../../ui/Table'
 import { Select } from '../../ui/Dropdown'
-import { docSoQT, soQT } from '../../ui/format'
+import { docSoQT, money, soQT } from '../../ui/format'
 import { useDaXoa } from '../../ui/generic/daXoa'
 import { LOAI_THE, ONhap, soTheKeTiep } from './the-phan-bo'
 import { ChonDanhMuc } from '../../ui/ChonDanhMuc'
-import { CCDC_HANG } from '../../data/mock'
+import { CCDC_HANG, MA_LY_CHO_PHAN_BO } from '../../data/mock'
 
 const LY_CHO = 'Chi phí chờ phân bổ'
 const MAN_THU_CHI = 'tien/2-1-1'
@@ -35,15 +35,59 @@ interface DongCho {
 }
 const CCDC = 'Công cụ dụng cụ'
 
-export function GhiTangHangLoat({ rows: daCo, onDong }: { soDong: number; rows: Row[]; onDong: () => void }) {
-  const { toast } = useSession()
+type DongGoc = Pick<DongCho, 'key' | 'soCt' | 'ngayCt' | 'ten' | 'gt' | '_goc'>
+
+/** Dòng chờ: mẫu cộng các phiếu chi lưu trong phiên có dòng lý do Chi phí chờ phân bổ, bỏ dòng đã tạo thẻ.
+ *  Dùng chung cho form Ghi tăng và cảnh báo ở danh sách thẻ (T287); tính lại mỗi lần vẽ vì daTao đổi khi tạo thẻ */
+function useDongCho(): DongGoc[] {
   const { phieuMoi } = useDaXoa(MAN_THU_CHI)
-  // Dòng chờ: mẫu cộng các phiếu chi lưu trong phiên có dòng lý do Chi phí chờ phân bổ, bỏ dòng đã tạo thẻ
-  const goc = useMemo((): DongCho[] => [
+  return [
     ...CHO_MAU.map(([soCt, ngayCt, ten, gt], i) => ({ key: `mau-${i}`, soCt, ngayCt, ten, gt })),
     ...phieuMoi.flatMap(p => ((p._dong as Row[] | undefined) ?? []).map((d, i) => ({ d, i })).filter(({ d }) => d.ly === LY_CHO)
-      .map(({ d, i }) => ({ key: `${p.id}-${i}`, soCt: String(p.so), ngayCt: String(p.ngay), ten: String(d.ten ?? ''), gt: Number(d.tien) || 0, _goc: `/app/${MAN_THU_CHI}/${p.id}` }))),
-  ].filter(d => !daTao.has(d.key)).map(d => ({ ...d, chon: true, loai: 'Chi phí trả trước', ngayPb: d.ngayCt, ky: '' })), [phieuMoi])
+      .map(({ d, i }) => ({ key: `${p.id}-${i}`, soCt: String(p.so), ngayCt: String(p.ngay).split(' ')[0], ten: String(d.ten ?? ''), gt: Number(d.tien) || 0, _goc: `/app/${MAN_THU_CHI}/${p.id}` }))),
+  ].filter(d => !daTao.has(d.key))
+}
+
+/** Các bước lập thẻ cho người ít nghiệp vụ, mở từ link Cách làm ở dải cảnh báo (T287) */
+const CACH_LAM = (
+  <div className="cach-lam">
+    <b>Lập thẻ chi phí phân bổ</b>
+    <ol>
+      <li>Lập phiếu chi, lý do <b>Chi phí chờ phân bổ</b>:{' '}
+        <Link to={`/app/${MAN_THU_CHI}/moi?loai=chi&ly=${MA_LY_CHO_PHAN_BO}`}>Chi tiền mặt</Link> ·{' '}
+        <Link to={`/app/${MAN_THU_CHI}/moi?loai=unc&ly=${MA_LY_CHO_PHAN_BO}`}>Chi ngân hàng</Link></li>
+      <li>Lưu phiếu, phần mềm hỏi tạo thẻ:
+        <ul>
+          <li><b>Đồng ý</b>: chọn Loại thẻ, nhập Số tháng phân bổ, bấm Lưu.</li>
+          <li><b>Không</b>: tạo sau bằng nút <b>Ghi tăng</b> (số màu cam).</li>
+        </ul>
+      </li>
+    </ol>
+  </div>
+)
+
+/** Dải trên danh sách thẻ (T287): còn khoản chờ phân bổ chưa tạo thẻ (ngày chứng từ tới hết kỳ số liệu yyyymm, gồm khoản tồn kỳ trước)
+ *  thì cảnh báo vàng; hết thì gợi ý xám cách lập thẻ. Cả hai có link Cách làm */
+export function useCanhBaoCho(ky: number) {
+  const ds = useDongCho().filter(d => Math.floor(ngaySo(d.ngayCt) / 100) <= ky)
+  if (!ds.length) return {
+    so: 0, cachLam: CACH_LAM,
+    noiDung: <>Có khoản chi cần phân bổ nhiều kỳ? Lập phiếu chi với lý do <b>Chi phí chờ phân bổ</b>, rồi bấm <b>Ghi tăng</b>.</>,
+  }
+  const truoc = ds.filter(d => Math.floor(ngaySo(d.ngayCt) / 100) < ky).length
+  return {
+    so: ds.length, cachLam: CACH_LAM,
+    noiDung: <>
+      <b>Còn {ds.length} khoản chi phí chờ phân bổ chưa tạo thẻ</b> · tổng {money(ds.reduce((s, d) => s + d.gt, 0))}
+      {truoc > 0 && <> · trong đó {truoc} khoản từ kỳ trước</>}. Bấm nút <b>Ghi tăng</b> phía trên để tạo thẻ bổ sung.
+    </>,
+  }
+}
+
+export function GhiTangHangLoat({ rows: daCo, onDong }: { soDong: number; rows: Row[]; onDong: () => void }) {
+  const { toast } = useSession()
+  const dongCho = useDongCho()
+  const goc = useMemo((): DongCho[] => dongCho.map(d => ({ ...d, chon: true, loai: 'Chi phí trả trước', ngayPb: d.ngayCt, ky: '' })), [])
   const [ds, setDs] = useState(goc)
   const [loi, setLoi] = useState<Set<string>>(new Set())
   const sua = (key: string, p: Partial<DongCho>) => { setDs(x => x.map(d => d.key === key ? { ...d, ...p } : d)); setLoi(l => { const n = new Set(l); n.delete(key); return n }) }
@@ -80,7 +124,7 @@ export function GhiTangHangLoat({ rows: daCo, onDong }: { soDong: number; rows: 
 
   return (
     <FormToanMan icon="tool" title="Ghi tăng thẻ chi phí phân bổ" onClose={onDong}
-      meta={<span className="muted">Các dòng phiếu chi lý do Chi phí chờ phân bổ chưa tạo thẻ. Mỗi dòng được chọn thành một thẻ.</span>}
+      meta={<span className="muted">Danh sách lấy từ các phiếu chi có lý do "Chi phí chờ phân bổ" chưa tạo thẻ.</span>}
       foot={(
         <>
           <button type="button" className="btn" onClick={onDong}>Huỷ</button>
@@ -127,7 +171,7 @@ export function GhiTangHangLoat({ rows: daCo, onDong }: { soDong: number; rows: 
                 : <ONhap v={r.ky} so ten={`Số kỳ phân bổ ${r.ten}`} onDoi={s => sua(r.key, { ky: s })} /> },
               { k: 'tienKy', t: 'Số tiền phân bổ hằng kỳ', num: true, w: 150, r: r => r.key === undefined ? <b>{r.tienKy}</b> : <ONhap v={r.tienKy} so ten="Số tiền phân bổ hằng kỳ" chiDoc /> },
             ]} />
-        ) : <div className="empty"><b>Không còn dòng phiếu chi chờ phân bổ nào chưa tạo thẻ</b></div>}
+        ) : <div className="empty"><b>Chưa có khoản chi phí chờ phân bổ nào</b></div>}
         {rows.length > 0 && (
           <label className="row gt-hl-chon">
             <input type="checkbox" checked={tatCa} onChange={e => setDs(x => x.map(d => ({ ...d, chon: e.target.checked })))} />

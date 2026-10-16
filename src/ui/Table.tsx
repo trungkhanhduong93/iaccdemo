@@ -124,7 +124,7 @@ export function Table({
   const cols = doRong ? cols0.map(c => doRong.gt[c.k] ? { ...c, w: Math.max(60, doRong.gt[c.k]) } : c) : cols0
   const keo = (c: Col) => Boolean(doRong?.gt[c.k])
   const vt = viTri(cols)
-  const lop = (c: Col, i: number) => [c.num ? 'num' : c.c ? 'c' : '', vt[i].cls].join(' ')
+  const lop = (c: Col, i: number) => [c.num ? 'num' : c.c ? 'c' : '', c.wCung && c.w ? 'w-cung' : '', vt[i].cls].join(' ')
 
   // Bề rộng cột số tính một lần mỗi cột, không tính lại cho từng ô: sổ nhiều dòng từng treo vài giây (T196)
   const rongNum = new Map<string, number>()
@@ -133,6 +133,8 @@ export function Table({
       const w = Math.max(60, c.w ?? 60)
       return { w, minW: w, maxW: w }
     }
+    // Cột khai wCung: rộng đúng w, không giãn theo tiêu đề (T287)
+    if (c.wCung && c.w) return { w: c.w, minW: c.w, maxW: c.w }
     if (c.num) {
       let w = rongNum.get(c.k)
       if (w === undefined) {

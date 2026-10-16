@@ -12,7 +12,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
 | T292 | Điện thoại, Lịch sử thu chi: thanh nút Lập phiếu thu, Lập phiếu chi nằm sát đáy màn, không lơ lửng | Trum | Đang làm | Sửa `app.css` (mục cuối T292) |
-| T287 | Danh sách thẻ chi phí: dải cảnh báo số khoản chi phí chờ phân bổ chưa tạo thẻ tới hết kỳ số liệu, nút Ghi tăng ngay; nút Ghi tăng có số đếm | dinhlanphuongipacc | Đang làm | Sửa `ccdc/GhiTangHangLoat.tsx`, `ccdc/index.ts`, `CatalogScreen.tsx` (ô cảnh báo trên bảng), `CongCuDs.tsx` (số trên nút), `types.ts`, `app.css` (mục cuối T287) |
 | T282 | Điện thoại đợt B, mọi gói: phiếu nhập liệu 1 màn cho mọi nghiệp vụ, bỏ luồng 5 bước; gói Plus, Pro có khối Hạch toán thu gọn; phiếu chi lý do chờ phân bổ hỏi tạo thẻ như web | Trum | Đang làm | Giao Anti. Sửa `MLapPhieu.tsx`, `MLapPhieuKho.tsx`, `app.css` (mục cuối T282), `tools/kiem_tra.py` (bài kiểm lập phiếu điện thoại) |
 | T265 | Phiếu thu, chi đồng bộ từ FABi (T264) chưa vào Sổ quỹ tiền mặt, Sổ ngân hàng, Lịch sử thu chi, tồn quỹ trang chủ; đưa vào thì đổi số dư | | Chờ | Phát hiện khi làm T264, chờ PhuongXT quyết |
 | T229 | Báo cáo kết quả kinh doanh (10.2.3, B02-DNN) ở chế độ TT133 mở ra "Báo cáo chưa có mẫu" ở cả bản máy tính và điện thoại, gói Pro và Free | | Chờ | Phát hiện ở T222 ngày 14/10/2026, mở từ Tất cả báo cáo. Có thể liên quan T220 |
@@ -52,6 +51,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T287 | Danh sách thẻ chi phí: dải cảnh báo khoản chờ phân bổ chưa tạo thẻ (gợi ý xám khi hết), link Cách làm, số trên nút Ghi tăng; lưới thẻ cột gọn, tiêu đề PB, xem dạng chữ trơn; tiêu đề sơ đồ chi phí trả trước | dinhlanphuongipacc | 16/10/2026 | [2026-10-16-dinhlanphuongipacc-canh-bao-cho-phan-bo](nhat-ky/2026-10-16-dinhlanphuongipacc-canh-bao-cho-phan-bo.md) |
 | T289 | Báo cáo máy tính: đang gom nhóm thì thanh công cụ có nút Tổng hợp (mỗi nhóm một dòng, cột gom nhóm và cột số đã cộng, dòng Tổng cộng) hoặc Chi tiết (như cũ), lưu cùng tuỳ chỉnh báo cáo, áp cho cả xuất file. Bản điện thoại chưa sửa | PhuongXT | 16/10/2026 | [2026-10-16-phuongxt-gom-nhom-tong-hop](nhat-ky/2026-10-16-phuongxt-gom-nhom-tong-hop.md) |
 | T288 | Phân hệ Báo cáo máy tính: bấm mở báo cáo ở Trung tâm báo cáo bật popup Điều kiện xem báo cáo (đủ ô lọc), bấm Xem báo cáo mới hiện tờ báo cáo, Huỷ quay lại; mở thẳng đường dẫn, từ trang chủ, tải lại thì hiện ngay. Bản điện thoại chưa sửa | PhuongXT | 16/10/2026 | [2026-10-16-phuongxt-popup-loc-bao-cao](nhat-ky/2026-10-16-phuongxt-popup-loc-bao-cao.md) |
 | T284 | Ô gõ số ở bảng chi tiết phiếu, thẻ chi phí: chấm ngăn nghìn kiểu Việt Nam ngay khi gõ, tổng đổi ngay; thẻ: số TPB, TPBDK{YY}{MM}-{0000} theo ngày ghi tăng, menu Ghi tăng đầu kỳ, Thông tin mua dạng chỉ xem, 3 thẻ dư đầu kỳ mẫu | dinhlanphuongipacc | 16/10/2026 | [2026-10-16-dinhlanphuongipacc-go-so-vn-so-the](nhat-ky/2026-10-16-dinhlanphuongipacc-go-so-vn-so-the.md) |

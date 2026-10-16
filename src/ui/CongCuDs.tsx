@@ -42,8 +42,10 @@ export function NutThemMoiSplit({
   loai,
   taiNguon,
   nhan = 'Thêm mới',
+  so,
 }: {
   nhan?: string                    // chữ trên nút, vd Ghi tăng ở danh sách thẻ chi phí
+  so?: number                      // số đếm nhỏ cạnh chữ, vd số khoản chờ phân bổ chưa tạo thẻ (T287)
   toMoi: string
   loai?: { k: string; ten: string; prefix?: string; icon?: string }[]
   taiNguon?: { ten: string; onTai: () => void }
@@ -55,6 +57,7 @@ export function NutThemMoiSplit({
       <Link className="btn pri ds-nut-them" to={toMoi}>
         <Icon n="plus" className="ic sm" />
         <span>{nhan}</span>
+        {so ? <span className="ds-nut-so" title={`${so} khoản cần xử lý`}>{so}</span> : null}
       </Link>
     )
   }
@@ -64,6 +67,7 @@ export function NutThemMoiSplit({
       <Link className="btn pri ds-them-trai" to={toMoi}>
         <Icon n="plus" className="ic sm" />
         <span>{nhan}</span>
+        {so ? <span className="ds-nut-so" title={`${so} khoản cần xử lý`}>{so}</span> : null}
       </Link>
       <Dropdown
         btnClass="btn pri ds-them-phai"

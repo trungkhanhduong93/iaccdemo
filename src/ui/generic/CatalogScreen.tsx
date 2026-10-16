@@ -6,6 +6,7 @@ import { tenMan } from '../../app/registry'
 import { chiNhanhHienTai, dsKyNam, kyMacDinh, ngayDauNam, truocDauNam, useSession } from '../../app/session'
 import { CHI_NHANH } from '../../data/mock'
 import { Icon } from '../Icon'
+import { DaiCanhBao } from '../DaiCanhBao'
 import { Table } from '../Table'
 import { ChamTrangThai } from '../ChamTrangThai'
 import { CO_TRANG_DM, PhanTrang } from '../PhanTrang'
@@ -37,6 +38,8 @@ export function CatalogScreen({ sc }: ScreenProps) {
   const cfg = sc.catalog ?? { cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên' }], rows: () => [] }
   // Kỳ số liệu (yyyymm): màn có kySoLieu tính số liệu tới hết kỳ đang chọn
   const [ky, setKy] = useState(() => kyMacDinh(s))
+  // Cảnh báo trên bảng theo kỳ số liệu, vd khoản chờ phân bổ chưa tạo thẻ (T287); màn đổi thì CatalogScreen vẽ lại từ đầu nên gọi hook có điều kiện vẫn đúng thứ tự
+  const canhBao = cfg.useCanhBao?.(ky) ?? null
   const cols0 = useMemo(() => typeof cfg.cols === 'function' ? cfg.cols(s.goi, s.cheDo) : cfg.cols, [sc, s.goi, s.cheDo])
   // Ghi đè trạng thái bật/tắt theo dòng khi người dùng bấm chấm tròn (T181)
   const [ttGhiDe, setTtGhiDe] = useState<Record<string, number>>({})
@@ -220,6 +223,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
               <NutExcel onNhap={() => toast('Nhập danh sách từ Excel')} onXuat={() => toast(`Đã xuất ${rows.length} dòng ra Excel`)} />
               {nutThem.length > 0 && (
                 <NutThemMoiSplit nhan={nutThem[0].nut} toMoi={`${viTri.pathname}?moi=${nutThem[0].k}`}
+                  so={nutThem[0].k === HANG_LOAT && canhBao?.so ? canhBao.so : undefined}
                   loai={nutThem.length > 1 ? nutThem.map(b => ({ k: b.k, ten: b.ten, icon: b.icon })) : undefined} />
               )}
             </div>
@@ -278,6 +282,8 @@ export function CatalogScreen({ sc }: ScreenProps) {
             }
           />
         )}
+        {/* Dải cảnh báo trên bảng; không có nút riêng, chỉ sang nút thêm hàng loạt đang có số đếm ngay phía trên (T287) */}
+        {canhBao && <DaiCanhBao cb={canhBao} />}
         {rows.length ? bang : (
           all.length ? (
             <div className="empty">
@@ -568,7 +574,7 @@ export function CatalogPanel({
   }
 
   const veBang = (kh: KhoiDM, maxH = 280) => {
-    const b = kh.bang!(formVal, doiO, s.goi)
+    const b = kh.bang!(formVal, doiO, s.goi, xem)
     // Lưới có ô nhập dùng chung kiểu bảng chi tiết phiếu (bang-sua): ô cao 30px, chữ 12.5px
     return (
       <div className="bang-sua">

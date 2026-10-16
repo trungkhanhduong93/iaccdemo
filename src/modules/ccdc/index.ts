@@ -3,7 +3,7 @@ import type { ModuleDef } from '../types'
 import { tuExcel } from '../types'
 import { quyTrinh } from './quy-trinh'
 import { THE_PHAN_BO, bangPhanBo, daPhanBoToiKy, veChiTietThe } from './the-phan-bo'
-import { GhiTangHangLoat } from './GhiTangHangLoat'
+import { GhiTangHangLoat, useCanhBaoCho } from './GhiTangHangLoat'
 import { CCDC_HANG, CHI_NHANH } from '../../data/mock'
 
 /** Chứng từ gốc của thẻ mẫu theo thứ tự thẻ: phiếu chi, uỷ nhiệm chi mẫu có sẵn ở Thu, chi tiền (T159) */
@@ -67,6 +67,7 @@ const ccdc: ModuleDef = {
     '8.1.1': { kind: 'catalog', catalog: { them: 'Ghi tăng', nhomLoc: 'loai', nhanLoc: 'Loại thẻ', truong: THE_PHAN_BO, stt: true, kySoLieu: true,
       // Như danh sách chứng từ: phân trang, dòng Tổng, xem nhanh các dòng của thẻ ở khung dưới
       hangLoat: { nhan: 'Ghi tăng', Form: GhiTangHangLoat },   // ghi tăng thẻ từ các dòng phiếu chi chờ phân bổ, mọi gói (T159)
+      useCanhBao: useCanhBaoCho,   // dải cảnh báo khoản chờ phân bổ chưa tạo thẻ, số trên nút Ghi tăng (T287)
       dsChungTu: { cotCong: ['gt', 'da', 'con'], cotSo: 'soThe', so: r => r.soThe, moTa: r => `(${r.ngay}) — ${r.ten}`, chiTiet: veChiTietThe }, cols: [{ k: 'soThe', t: 'Số thẻ', cls: 'code' }, { k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên' }, { k: 'loai', t: 'Loại' }, { k: 'ngay', t: 'Ngày ghi tăng' },
       { k: 'gt', t: 'Giá trị', num: true }, { k: 'da', t: 'Đã phân bổ', num: true }, { k: 'con', t: 'Còn lại', num: true }],
       // Mặc định ẩn thẻ hết phân bổ: chỉ hiện thẻ còn phân bổ ở kỳ này hoặc còn giá trị sau kỳ này

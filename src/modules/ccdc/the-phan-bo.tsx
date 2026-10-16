@@ -227,16 +227,19 @@ export const THE_PHAN_BO: CauHinhDM = {
   }, {
     ten: 'Chi tiết phân bổ',
     truong: [],
-    bang: (v, doi, goi) => {
+    bang: (v, doi, goi, xem) => {
       const dong: DongPb[] = v.dong ?? []
       const thang = theoThang(goi)
+      // Đang xem: ô hiện chữ trơn như bảng chi tiết phiếu chi, bấm Sửa mới hiện ô nhập (T287)
+      const SO = new Set(['sl', 'dg', 'gt', 'da', 'kyDa', 'ky', 'kyCon', 'can', 'tienKy'])
+      const chu = (k: string, r: Row) => SO.has(k) ? soQT(r[k]) : String(r[k] ?? '')
       // Sửa thẻ ghi tăng có sẵn: số tiền chỉ đọc theo chứng từ gốc; CCDC sửa số lượng thì đơn giá = số tiền / số lượng (T165)
       const khoaTien = !laDau(v) && Boolean(v._sua)
       const sua = (i: number, p: Partial<DongPb>, giuLich = false) =>
         doi('dong', dong.map((d, j) => j === i ? { ...d, ...p, ...(giuLich ? {} : { _pbSua: undefined }) } : d))
       const rows: Row[] = dong.map((d, i) => ({ ...d, ...tinhDong(v, d), _i: i }))
       // Dòng Cộng (không có _i) chỉ hiện chữ, không vẽ ô nhập
-      const o = (k: keyof DongPb, ten: string, laSo = true, giuLich = false) => (r: Row) => r._i === undefined ? <b>{r[k]}</b> :
+      const o = (k: keyof DongPb, ten: string, laSo = true, giuLich = false) => (r: Row) => r._i === undefined ? <b>{r[k]}</b> : xem ? chu(k, r) :
         <ONhap v={r[k]} so={laSo} ten={`${ten} dòng ${r._i + 1}`} onDoi={s => {
           const p: Partial<DongPb> = { [k]: s }
           // CCDC: số tiền = số lượng x đơn giá
@@ -245,43 +248,44 @@ export const THE_PHAN_BO: CauHinhDM = {
           if (k === 'ma') p._maTay = true
           sua(r._i, p, giuLich)
         }} />
-      const ro = (k: string) => (r: Row) => r._i === undefined ? <b>{r[k]}</b> : <ONhap v={r[k]} so ten={k} chiDoc />
+      const ro = (k: string) => (r: Row) => r._i === undefined ? <b>{r[k]}</b> : xem ? chu(k, r) : <ONhap v={r[k]} so ten={k} chiDoc />
       const tong = (k: string) => soQT(rows.reduce((s, r) => s + so(r[k]), 0))
       return {
         cols: [
           { k: '_stt', t: '#', c: true, w: 36, r: r => r._i + 1 },   // như bảng chi tiết phiếu chi
           // Thẻ CCDC: chọn mã như chọn hàng hoá ở phiếu mua (ô có tìm, thêm mới tại form) từ danh mục hàng hoá loại Công cụ dụng cụ;
           // tên, ĐVT lấy theo danh mục, tên vẫn sửa được như phiếu mua
-          { k: 'ma', t: `Mã ${muc(v)}`, w: 120, r: laCcdc(v) ? (r: Row) => r._i === undefined ? null
-            : <ChonDanhMuc dm="ccdc" nhan="công cụ dụng cụ" coMa chiMa className="inp sm" trong="Chọn" value={r.ma ?? ''}
+          { k: 'ma', t: `Mã ${muc(v)}`, w: 96, wCung: true, r: laCcdc(v) ? (r: Row) => r._i === undefined ? null
+            : xem ? r.ma : <ChonDanhMuc dm="ccdc" nhan="công cụ dụng cụ" coMa chiMa className="inp sm" trong="Chọn" value={r.ma ?? ''}
               ds={CCDC_HANG.map(h => ({ v: h.ma, t: `${h.ma} - ${h.ten}` }))}
               onChange={(ma, m) => {
                 const h = CCDC_HANG.find(x => x.ma === ma)
                 sua(r._i, { ma, ten: h?.ten ?? m?.t.split(' - ').slice(1).join(' - ') ?? r.ten, dvt: h?.dvt ?? '', _maTay: Boolean(ma) }, true)
               }} />
             : o('ma', 'Mã', false, true) },
-          { k: 'ten', t: `Tên ${muc(v)}`, w: 240, r: o('ten', 'Tên', false, true) },
-          ...(laCcdc(v) ? [{ k: 'dvt', t: 'ĐVT', w: 70, r: (r: Row) => r._i === undefined ? null : <ONhap v={r.dvt} ten={`ĐVT dòng ${r._i + 1}`} chiDoc /> }] : []),
-          ...(laCcdc(v) ? [{ k: 'sl', t: 'Số lượng', num: true, w: 90, r: o('sl', 'Số lượng') }, { k: 'dg', t: 'Đơn giá', num: true, w: 130, r: khoaTien ? ro('dg') : o('dg', 'Đơn giá') }] : []),
-          { k: 'gt', t: 'Số tiền', num: true, w: 140, r: khoaTien ? ro('gt') : o('gt', 'Số tiền') },
+          { k: 'ten', t: `Tên ${muc(v)}`, w: 180, r: o('ten', 'Tên', false, true) },   // cột tên nhận phần rộng còn dư (T287)
+          ...(laCcdc(v) ? [{ k: 'dvt', t: 'ĐVT', w: 64, wCung: true, r: (r: Row) => r._i === undefined ? null : xem ? r.dvt : <ONhap v={r.dvt} ten={`ĐVT dòng ${r._i + 1}`} chiDoc /> }] : []),
+          ...(laCcdc(v) ? [{ k: 'sl', t: 'Số lượng', num: true, w: 84, wCung: true, r: o('sl', 'Số lượng') }, { k: 'dg', t: 'Đơn giá', num: true, w: 112, wCung: true, r: khoaTien ? ro('dg') : o('dg', 'Đơn giá') }] : []),
+          { k: 'gt', t: 'Số tiền', num: true, w: 112, wCung: true, r: khoaTien ? ro('gt') : o('gt', 'Số tiền') },
           // Thẻ dư đầu kỳ: Số tháng phân bổ đứng trước Số tháng đã phân bổ (T284)
-          ...(laDau(v) ? [{ k: 'da', t: 'Giá trị đã phân bổ', num: true, w: 140, r: o('da', 'Giá trị đã phân bổ') }] : []),
-          { k: 'ky', t: 'Số tháng phân bổ', num: true, w: 100, r: o('ky', 'Số tháng phân bổ') },
-          ...(laDau(v) ? [{ k: 'kyDa', t: 'Số tháng đã phân bổ', num: true, w: 100, r: o('kyDa', 'Số tháng đã phân bổ') }] : []),
-          ...(laDau(v) ? [{ k: 'kyCon', t: 'Số tháng còn phân bổ', num: true, w: 100, r: ro('kyCon') }, { k: 'can', t: 'Giá trị cần phân bổ', num: true, w: 140, r: ro('can') }] : []),
-          { k: 'tienKy', t: 'Số tiền phân bổ hằng kỳ', num: true, w: 140, r: ro('tienKy') },
-          // Mỗi dòng một ngày bắt đầu phân bổ; đổi ngày thì lịch tính lại, bỏ số đã gõ lại ở các kỳ (T159)
-          { k: 'ngayPb', t: 'Ngày bắt đầu phân bổ', w: 140, r: (r: Row) => r._i === undefined ? null
-            : <ONhap v={ngayBd(v, r as DongPb)} ten={`Ngày bắt đầu phân bổ dòng ${r._i + 1}`} onDoi={s => sua(r._i, { ngayPb: s })} /> },
+          ...(laDau(v) ? [{ k: 'da', t: 'Giá trị đã PB', num: true, w: 112, wCung: true, r: o('da', 'Giá trị đã phân bổ') }] : []),
+          { k: 'ky', t: 'Số tháng PB', num: true, w: 84, wCung: true, r: o('ky', 'Số tháng phân bổ') },
+          ...(laDau(v) ? [{ k: 'kyDa', t: 'Số tháng đã PB', num: true, w: 92, wCung: true, r: o('kyDa', 'Số tháng đã phân bổ') }] : []),
+          ...(laDau(v) ? [{ k: 'kyCon', t: 'Số tháng còn PB', num: true, w: 92, wCung: true, r: ro('kyCon') }, { k: 'can', t: 'Giá trị cần PB', num: true, w: 112, wCung: true, r: ro('can') }] : []),
+          { k: 'tienKy', t: 'Số tiền PB hằng kỳ', num: true, w: 112, wCung: true, r: ro('tienKy') },
+          // Tiêu đề cột viết tắt phân bổ thành PB cho lưới gọn (T287). Mỗi dòng một ngày bắt đầu phân bổ; đổi ngày thì lịch tính lại, bỏ số đã gõ lại ở các kỳ (T159)
+          { k: 'ngayPb', t: 'Ngày bắt đầu PB', w: 132, wCung: true, r: (r: Row) => r._i === undefined ? null
+            : xem ? ngayBd(v, r as DongPb) : <ONhap v={ngayBd(v, r as DongPb)} ten={`Ngày bắt đầu phân bổ dòng ${r._i + 1}`} onDoi={s => sua(r._i, { ngayPb: s })} /> },
           // Chỉ có khi sửa thẻ: tích ngừng từng dòng; có dòng tích thì hiện cột ngày (gói Free, Standard: tháng) ngừng phân bổ
-          ...(v._sua ? [{ k: 'ngung', t: 'Ngừng phân bổ', w: 100, c: true, r: (r: Row) => r._i === undefined ? null
+          // Đang xem mà không dòng nào ngừng thì ẩn cột cho lưới gọn (T287)
+          ...(v._sua && (!xem || dong.some(d => d.ngung)) ? [{ k: 'ngung', t: 'Ngừng PB', w: 72, wCung: true, c: true, r: (r: Row) => r._i === undefined ? null
             : <input type="checkbox" aria-label={`Ngừng phân bổ dòng ${r._i + 1}`} checked={Boolean(r.ngung)}
               onChange={e => sua(r._i, { ngung: e.target.checked, ngayNgung: e.target.checked ? ngayNgungMd(ngayBd(v, r as DongPb), thang) : undefined }, true)} /> }] : []),
-          ...(dong.some(d => d.ngung) ? [{ k: 'ngayNgung', t: thang ? 'Tháng ngừng phân bổ' : 'Ngày ngừng phân bổ', w: 150, r: (r: Row) => r._i === undefined || !r.ngung ? null
-            : thang ? <OThang v={r.ngayNgung} ten={`Tháng ngừng phân bổ dòng ${r._i + 1}`} onDoi={s => sua(r._i, { ngayNgung: s }, true)} />
+          ...(dong.some(d => d.ngung) ? [{ k: 'ngayNgung', t: thang ? 'Tháng ngừng PB' : 'Ngày ngừng PB', w: 132, wCung: true, r: (r: Row) => r._i === undefined || !r.ngung ? null
+            : xem ? (thang ? String(r.ngayNgung ?? '').slice(3) : r.ngayNgung) : thang ? <OThang v={r.ngayNgung} ten={`Tháng ngừng phân bổ dòng ${r._i + 1}`} onDoi={s => sua(r._i, { ngayNgung: s }, true)} />
             : <ONhap v={r.ngayNgung} ten={`Ngày ngừng phân bổ dòng ${r._i + 1}`} onDoi={s => sua(r._i, { ngayNgung: s }, true)} /> }] : []),
           // Thẻ TSCĐ: Số hiệu, Mô tả chi tiết là hai cột cuối
-          ...(laTscd(v) ? [{ k: 'soHieu', t: 'Số hiệu', w: 120, r: o('soHieu', 'Số hiệu', false, true) }, { k: 'moTa', t: 'Mô tả chi tiết', w: 220, r: o('moTa', 'Mô tả chi tiết', false, true) }] : []),
+          ...(laTscd(v) ? [{ k: 'soHieu', t: 'Số hiệu', w: 110, wCung: true, r: o('soHieu', 'Số hiệu', false, true) }, { k: 'moTa', t: 'Mô tả chi tiết', w: 220, r: o('moTa', 'Mô tả chi tiết', false, true) }] : []),
           // Thẻ ghi tăng lấy dòng từ chứng từ gốc, không xoá dòng; chỉ thẻ dư đầu kỳ nhập tay có nút xoá dòng (T165)
           ...(laDau(v) ? [{ k: '_xoa', t: '', w: 44, c: true, r: (r: Row) => r._i === undefined ? null : (
             <button type="button" className="icon-btn sm" title="Xoá dòng" aria-label={`Xoá dòng ${r._i + 1}`}
@@ -309,7 +313,7 @@ export const THE_PHAN_BO: CauHinhDM = {
   }, {
     ten: 'Đã phân bổ',
     truong: [],
-    bang: (v, doi) => {
+    bang: (v, doi, _goi, xem) => {
       const dong: DongPb[] = v.dong ?? []
       // Hết các kỳ của dòng 1 rồi tới dòng 2; sau mỗi dòng là dòng cộng của dòng đó
       let stt = 0
@@ -329,7 +333,7 @@ export const THE_PHAN_BO: CauHinhDM = {
           { k: 'ten', t: `Tên ${muc(v)}`, r: r => r._cong ? <b>{r.ten}</b> : r.ten },
           { k: 'ngay', t: 'Ngày được phân bổ', w: 150 },
           // Gõ lại số tiền từng kỳ; kỳ đã ngừng và dòng cộng chỉ xem
-          { k: 'tien', t: 'Số tiền phân bổ', num: true, w: 200, r: r => r._cong ? <b>{soQT(r.tien)}</b> : r._i === undefined ? <b>{r.tien}</b> : r.ngung ? soQT(r.tien)
+          { k: 'tien', t: 'Số tiền phân bổ', num: true, w: 200, r: r => r._cong ? <b>{soQT(r.tien)}</b> : r._i === undefined ? <b>{r.tien}</b> : r.ngung || xem ? soQT(r.tien)
             : <ONhap v={r.nhap ?? r.tien} so ten={`Số tiền phân bổ ${r.ten} kỳ ${r._j + 1}`} onDoi={s =>
               doi('dong', dong.map((d, j) => j === r._i ? { ...d, _pbSua: { ...d._pbSua, [r._j]: s } } : d))} /> },
           { k: 'tt', t: 'Trạng thái', w: 140, r: r => r._cong ? null : <St k={r.ngung ? 'dim' : 'ok'}>{r.ngung ? 'Ngừng phân bổ' : 'Phân bổ'}</St> },

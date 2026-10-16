@@ -4,7 +4,7 @@ import { MA_LY_CHO_PHAN_BO } from '../../data/mock'
 
 // Chi tiền từ sơ đồ này mở phiếu với lý do Chi phí chờ phân bổ (mã MA_LY_CHO_PHAN_BO, T269)
 export const quyTrinh: QuyTrinhDef = {
-  ten: 'Nghiệp vụ công cụ dụng cụ',
+  ten: 'Nghiệp vụ chi phí trả trước cần phân bổ',   // T287
   buoc: [
     { chinh: { ten: 'Chi tiền mặt', icon: 'cashout', di: `tien/2-1-1/moi?loai=chi&ly=${MA_LY_CHO_PHAN_BO}` },
       tren: [{ ten: 'Chi ngân hàng', icon: 'bank', di: `tien/2-1-1/moi?loai=unc&ly=${MA_LY_CHO_PHAN_BO}` }] },

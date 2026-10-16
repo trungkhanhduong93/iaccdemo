@@ -20952,3 +20952,18 @@ input.bat-tat:disabled { opacity: .5; cursor: not-allowed; }
   background: #fff !important;
 }
 .m-form-chon { display: flex; align-items: center; justify-content: space-between; text-align: left; cursor: pointer; }
+
+/* ── Cảnh báo khoản chờ phân bổ ở danh sách thẻ chi phí (T287) ── */
+.ds-canh-bao { padding: 0 12px 10px; }
+.ds-canh-bao .note { align-items: center; }
+.ds-cach-lam-nut { margin-left: 8px; }
+.ds-cach-lam-link { color: var(--blue); font-weight: 600; text-decoration: underline; font-size: inherit; }
+.ds-cach-lam .cach-lam { padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; font-size: 13px; color: var(--body); }
+.ds-cach-lam .cach-lam ol { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; }
+.ds-cach-lam .cach-lam a { color: var(--blue); font-weight: 600; }
+.ds-cach-lam .cach-lam ul { margin: 4px 0 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; list-style: disc; }
+.ds-nut-so { display: inline-grid; place-items: center; min-width: 18px; height: 18px; padding: 0 5px; margin-left: 6px; border-radius: 9px;
+  background: var(--amber); color: #fff; font-size: 11px; font-weight: 700; line-height: 1; }
+
+/* ── Cột rộng cố định wCung: tiêu đề dài xuống dòng (T287) ── */
+.tbl thead tr th.w-cung { white-space: normal; line-height: 1.25; }

@@ -90,7 +90,7 @@ export interface KhoiDM {
   cheDo?: CheDo[]   // chỉ hiện khối ở các chế độ/thông tư này (T147)
   truong: TruongDM[]
   // khối dạng lưới tự tính từ giá trị form; doi ghi giá trị khi gõ trong lưới; goi: gói đang dùng (T159)
-  bang?: (v: Record<string, any>, doi: (k: string, val: unknown) => void, goi: Goi) => { cols: Col[]; rows: Row[]; sum?: Row; rowCls?: (r: Row) => string; chan?: ReactNode; trong: string }
+  bang?: (v: Record<string, any>, doi: (k: string, val: unknown) => void, goi: Goi, xem: boolean) => { cols: Col[]; rows: Row[]; sum?: Row; rowCls?: (r: Row) => string; chan?: ReactNode; trong: string }
   ve?: (v: Record<string, any>, doi: (k: string, val: unknown) => void, xem: boolean) => ReactNode   // khối vẽ riêng (vd Thông tin mua: ô nhập, hoặc chỉ xem khi lấy từ phiếu gốc); xem: form đang ở chế độ xem (T284)
   anDau?: boolean    // không vẽ thanh tiêu đề khối, khối luôn mở, nhường chỗ cho lưới bên dưới (T165)
   congTac?: string   // khoá ô tích hiện thành công tắc ở đầu khối, vd '_tt' trạng thái (T154)
