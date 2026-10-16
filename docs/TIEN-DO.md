@@ -47,6 +47,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | T243 | `tools/kiem_tra.py` (bước T238) lưu ảnh chụp vào đường dẫn cố định `C:/Users/trung.duong/.gemini/...`, máy khác chạy `--nhanh` báo PermissionError, dừng giữa chừng. Đổi sang thư mục tạm hoặc bỏ chụp | | Chờ | Phát hiện khi PhuongXT kiểm T232 ngày 14/10/2026; đã kiểm bằng bản sao tạm đổi đường dẫn, không lỗi |
 | T249 | Báo cáo bán hàng (`src/modules/ban-hang/bao-cao.ts`, hàm `dongBan`) còn đọc chứng từ Xuất bán POS theo kênh (`theoKenh`), số chứng từ trên báo cáo khác số hoá đơn ở danh sách từ T247; đổi sang `theoDon` để bấm số mở đúng phiếu | | Chờ | Phát hiện khi làm T247 ngày 15/10/2026. Tổng doanh thu không đổi |
 | T286 | Danh sách mua hàng, bán hàng (cả Xuất bán POS) máy tính: cột Diễn giải hiện tại đổi tên Ghi chú; thêm cột Diễn giải liệt kê tên hàng hoá trong phiếu, dài thì vài tên rồi "..." | PhuongXT | Đang làm | Sửa `VoucherScreen.tsx`, `ChungTuBanHang.tsx` |
+| T288 | Phân hệ Báo cáo máy tính: bấm mở báo cáo ở Trung tâm báo cáo thì bật popup điều kiện lọc, bấm Xem báo cáo mới tính và hiện báo cáo | PhuongXT | Đang làm | Sửa `ReportScreen.tsx`, `TrungTam.tsx`, `app.css` (mục cuối T288) |
 
 ## Đã xong
 
