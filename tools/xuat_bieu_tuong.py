@@ -40,6 +40,7 @@ SOLAR = {
     'tool': 'sledgehammer',
     'flask': 'test-tube',
     'grid': 'magic-stick-3',
+    'nghiepvu': 'widget-5',
     'bell': 'bell',
     'lock': 'lock-keyhole-minimalistic',
     'eye': 'eye',
@@ -96,6 +97,7 @@ SOLAR = {
     'buttoan': 'refresh-circle',
     'lydo': 'notes',
     'chinhanh': 'shop-2',
+    'more': 'menu-dots',
 }
 
 # 2. Bảng NET tải bản -linear cho: 9 phân hệ và 19 thao tác
@@ -213,6 +215,113 @@ def escape_nhay_don(s):
     return s.replace('\\', '\\\\').replace("'", "\\'")
 
 
+# Bảng sửa tay: icon có trong bảng lấy ngược kết quả đo hộp bao (đo đảo thì giữ, đo giữ thì đảo)
+# tool: đo hộp bao ra đảo nhầm, đầu búa thành cam (T301)
+DAO_TAY = {'tool'}
+
+_CMD_RE = re.compile(r'([a-zA-Z])([^a-zA-Z]*)')
+_NUM_RE = re.compile(r'[-+]?(?:\d*\.\d+|\d+)')
+
+
+def trich_toa_do_d(d_str):
+    """Trích xuất các điểm toạ độ (x, y) từ chuỗi d trong SVG."""
+    cur_x, cur_y = 0.0, 0.0
+    start_x, start_y = 0.0, 0.0
+    points = []
+    for cmd, args in _CMD_RE.findall(d_str):
+        nums = [float(n) for n in _NUM_RE.findall(args)]
+        if cmd in ('M', 'm'):
+            is_rel = (cmd == 'm')
+            for i in range(0, len(nums), 2):
+                if i + 1 < len(nums):
+                    cur_x = (cur_x + nums[i]) if is_rel and points else nums[i]
+                    cur_y = (cur_y + nums[i+1]) if is_rel and points else nums[i+1]
+                    points.append((cur_x, cur_y))
+                    if i == 0:
+                        start_x, start_y = cur_x, cur_y
+        elif cmd in ('L', 'l'):
+            is_rel = (cmd == 'l')
+            for i in range(0, len(nums), 2):
+                if i + 1 < len(nums):
+                    cur_x = (cur_x + nums[i]) if is_rel else nums[i]
+                    cur_y = (cur_y + nums[i+1]) if is_rel else nums[i+1]
+                    points.append((cur_x, cur_y))
+        elif cmd in ('H', 'h'):
+            is_rel = (cmd == 'h')
+            for x in nums:
+                cur_x = (cur_x + x) if is_rel else x
+                points.append((cur_x, cur_y))
+        elif cmd in ('V', 'v'):
+            is_rel = (cmd == 'v')
+            for y in nums:
+                cur_y = (cur_y + y) if is_rel else y
+                points.append((cur_x, cur_y))
+        elif cmd in ('C', 'c'):
+            is_rel = (cmd == 'c')
+            for i in range(0, len(nums), 6):
+                if i + 5 < len(nums):
+                    if is_rel:
+                        p1 = (cur_x + nums[i], cur_y + nums[i+1])
+                        p2 = (cur_x + nums[i+2], cur_y + nums[i+3])
+                        cur_x += nums[i+4]
+                        cur_y += nums[i+5]
+                    else:
+                        p1 = (nums[i], nums[i+1])
+                        p2 = (nums[i+2], nums[i+3])
+                        cur_x = nums[i+4]
+                        cur_y = nums[i+5]
+                    points.extend([p1, p2, (cur_x, cur_y)])
+        elif cmd in ('S', 's', 'Q', 'q'):
+            is_rel = cmd.islower()
+            step = 4
+            for i in range(0, len(nums), step):
+                if i + step - 1 < len(nums):
+                    if is_rel:
+                        p1 = (cur_x + nums[i], cur_y + nums[i+1])
+                        cur_x += nums[i+step-2]
+                        cur_y += nums[i+step-1]
+                    else:
+                        p1 = (nums[i], nums[i+1])
+                        cur_x = nums[i+step-2]
+                        cur_y = nums[i+step-1]
+                    points.extend([p1, (cur_x, cur_y)])
+        elif cmd in ('A', 'a'):
+            is_rel = (cmd == 'a')
+            for i in range(0, len(nums), 7):
+                if i + 6 < len(nums):
+                    cur_x = (cur_x + nums[i+5]) if is_rel else nums[i+5]
+                    cur_y = (cur_y + nums[i+6]) if is_rel else nums[i+6]
+                    points.append((cur_x, cur_y))
+        elif cmd in ('Z', 'z'):
+            cur_x, cur_y = start_x, start_y
+            points.append((cur_x, cur_y))
+    return points
+
+
+def dien_tich_hop_bao(points):
+    """Tính diện tích hộp bao (w * h) của danh sách toạ độ (x, y)."""
+    if not points:
+        return 0.0
+    xs = [p[0] for p in points]
+    ys = [p[1] for p in points]
+    return (max(xs) - min(xs)) * (max(ys) - min(ys))
+
+
+def dao_class_l2(body):
+    """Đảo class='l2' cho các thẻ con: thẻ có l2 thành không class, thẻ không class thành l2."""
+    def swap_tag(match):
+        tag_name = match.group(1)
+        attrs = match.group(2)
+        end = match.group(3)
+        if 'class="l2"' in attrs or "class='l2'" in attrs:
+            attrs = re.sub(r'\s+class=[\'"]l2[\'"]', '', attrs)
+        else:
+            attrs = attrs.rstrip() + ' class="l2"'
+        return f'<{tag_name}{attrs}{end}'
+
+    return re.sub(r'<(path|circle|ellipse|rect)\b([^>]*?)(/?>)', swap_tag, body)
+
+
 def main():
     kiem_tra_chi_dinh = '--kiem' in sys.argv
     canh_bao = []
@@ -242,20 +351,33 @@ def main():
             if full_bld in bold_res['not_found']:
                 dac_not_found.append(f'DAC: {local_name} ({full_duo} / {full_bld})')
 
-    # 2. Tải bản linear cho NET
-    # Mọi icon khối đều cần bản nét: thanh bên hiện bản nét ở mục thường (T275)
-    net_targets = {k: f'{v}-linear' for k, v in {**SOLAR, **NET_DEF}.items()}
-    net_names = list(set(net_targets.values()))
+    # 2. Tải bản Line Duotone cho NET (nếu không có thì thử Linear) (T301)
+    all_net_items = {**SOLAR, **NET_DEF}
+    duotone_net_targets = {k: f'{v}-line-duotone' for k, v in all_net_items.items()}
+    net_names = list(set(duotone_net_targets.values()))
     net_res = tai_iconify(net_names)
 
+    # Các icon thiếu line-duotone sẽ thử sang -linear
+    linear_needed = {}
+    for local_name, full_ld in duotone_net_targets.items():
+        if full_ld in net_res['not_found']:
+            base = all_net_items[local_name]
+            linear_needed[local_name] = f'{base}-linear'
+
+    linear_res = {'icons': {}, 'aliases': {}, 'not_found': []}
+    if linear_needed:
+        linear_res = tai_iconify(list(set(linear_needed.values())))
+
     net_not_found = []
-    for local_name, full_lin in list(net_targets.items()):
-        if full_lin in net_res['not_found']:
-            if local_name in NET_DEF:
-                net_not_found.append(f'NET: {local_name} ({full_lin})')
+    linear_fallback = []
+    for local_name in all_net_items:
+        full_ld = duotone_net_targets[local_name]
+        if full_ld in net_res['not_found']:
+            full_lin = linear_needed[local_name]
+            if full_lin in linear_res['not_found']:
+                net_not_found.append(f'NET: {local_name} ({full_ld} / {full_lin})')
             else:
-                print(f'Cảnh báo: {local_name} không có bản nét, thanh bên dùng bản khối')
-                del net_targets[local_name]
+                linear_fallback.append(f'{local_name} (dùng {full_lin})')
 
     if kiem_tra_chi_dinh:
         if dac_not_found or net_not_found:
@@ -290,19 +412,54 @@ def main():
 
         body = info['body']
         # Đổi thuộc tính opacity=".5" (lớp phụ) thành class="l2"
-        body = re.sub(r'\s+opacity=[\'"]0?\.5[\'"]', ' class="l2"', body)
+        body = re.sub(r'\s+opacity=[\'"]0?\.\d+[\'"]', ' class="l2"', body)
         dac[local_name] = {'vb': info['vb'], 'body': body}
 
-    # 4. Trích xuất NET
+    # 4. Trích xuất NET (Line Duotone, nét phụ class="l2", bỏ stroke-width="1.5")
     net = {}
-    for local_name, full_lin in net_targets.items():
-        info = lay_thong_tin_icon(
-            net_res['icons'], net_res['aliases'],
-            net_res['width'], net_res['height'], full_lin
-        )
+    icon_da_dao = []
+    for local_name, full_ld in duotone_net_targets.items():
+        info = None
+        if full_ld not in net_res['not_found']:
+            info = lay_thong_tin_icon(
+                net_res['icons'], net_res['aliases'],
+                net_res['width'], net_res['height'], full_ld
+            )
+        if not info and local_name in linear_needed:
+            full_lin = linear_needed[local_name]
+            info = lay_thong_tin_icon(
+                linear_res['icons'], linear_res['aliases'],
+                linear_res['width'], linear_res['height'], full_lin
+            )
+            canh_bao.append(f'{local_name}: dùng {full_lin} thay vì line-duotone')
+
         body = info['body']
+        # Đổi thuộc tính opacity=".5" / ".4" thành class="l2" (bỏ opacity để CSS tô màu nhấn)
+        body = re.sub(r'\s+opacity=[\'"]0?\.\d+[\'"]', ' class="l2"', body)
         # Body nét: bỏ stroke-width="1.5" để CSS quyết định nét
         body = re.sub(r'\s+stroke-width=[\'"]1\.5[\'"]', '', body)
+
+        # Tính hộp bao diện tích của lớp l2 vs lớp không class trong các d
+        pts_l2 = []
+        pts_non = []
+        for t in re.findall(r'<path\b[^>]*>', body):
+            dm = re.search(r'\bd=([\'"])(.*?)\1', t)
+            if not dm:
+                continue
+            d_val = dm.group(2)
+            is_l2 = 'class="l2"' in t or "class='l2'" in t
+            if is_l2:
+                pts_l2.extend(trich_toa_do_d(d_val))
+            else:
+                pts_non.extend(trich_toa_do_d(d_val))
+
+        dt_l2 = dien_tich_hop_bao(pts_l2)
+        dt_non = dien_tich_hop_bao(pts_non)
+
+        if (local_name in DAO_TAY) != (dt_l2 > dt_non):
+            body = dao_class_l2(body)
+            icon_da_dao.append(local_name)
+
         net[local_name] = {'vb': info['vb'], 'body': body}
 
     # 5. Ghi file icon-dac.ts
@@ -335,6 +492,9 @@ def main():
 
     DICH.write_text('\n'.join(lines), encoding='utf-8')
     print(f'Đã sinh {DICH.relative_to(WEB)} với {len(dac)} icon khối, {len(net)} icon nét.')
+    if icon_da_dao:
+        print(f'Đã đảo {len(icon_da_dao)} icon NET (lớp l2 có hộp bao lớn hơn -> đảo để thân xanh, cam chi tiết):')
+        print('  ' + ', '.join(sorted(icon_da_dao)))
     if canh_bao:
         print(f'Cảnh báo ({len(canh_bao)}):')
         for cb in canh_bao:

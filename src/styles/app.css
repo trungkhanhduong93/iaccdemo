@@ -1,7 +1,10 @@
 /* IACC Cloud web — ngôn ngữ thiết kế theo iFaster (QD15): xanh #0560a6, sidebar xám đen, cam iPOS, màu 4 gói */
 :root {
   --navy: #2a3042; --navy-d: #1d2231; --navy-2: #353c52; --sb-on: #0560a6; --blue: #0560a6; --blue-d: #044a80; --tint: #e6eff7;
+  --sb-nen: linear-gradient(180deg, #074477, #06365e); --sb-nen-d: #06365e;
   --orange: #f28020; --orange-d: #d0650a; --orange-t: #fff5ea; --orange-b: #f9d6ad;
+  --ic-sm: 16px; --ic: 20px; --ic-lg: 24px;
+  --ic-than: var(--blue); --ic-nhan: var(--orange);
   --ink: #1f2225; --body: #363636; --muted: #6b7280; --faint: #9ca3af;
   --line: #e5e7eb; --line-2: #eeeeee; --soft: #f5f5f5; --bg: #f5f5f5; --white: #fff; --th: #e6eff7; --hdb-bg: #f4f7fa; --hdb-chan: #f8fafc;
   --fr: #64748b; --fr-t: #eef1f5; --st: #0f8f84; --st-t: #e2f3f1;
@@ -26,9 +29,10 @@ a { color: var(--blue); text-decoration: none; }
 table { border-collapse: collapse; }
 .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .muted { color: var(--muted); }
-.ic { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
-.ic.sm { width: 15px; height: 15px; }
-.ic.lg { width: 22px; height: 22px; }
+.ic { width: var(--ic); height: var(--ic); fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.ic * { vector-effect: non-scaling-stroke; }
+.ic.sm { width: var(--ic-sm); height: var(--ic-sm); }
+.ic.lg { width: var(--ic-lg); height: var(--ic-lg); }
 .grow { flex: 1; }
 .row { display: flex; align-items: center; gap: 8px; }
 .stack { display: flex; flex-direction: column; gap: 14px; }
@@ -40,7 +44,7 @@ table { border-collapse: collapse; }
 .logo-dau { display: none; }
 .shell.gon .logo-dau { display: block; }
 .shell.gon .logo-chu { display: none; }
-.sidebar { grid-row: 1 / 4; background: var(--navy); display: flex; flex-direction: column; min-height: 0; position: relative; z-index: 30; }
+.sidebar { grid-row: 1 / 4; background: var(--sb-nen); display: flex; flex-direction: column; min-height: 0; position: relative; z-index: 30; }
 .sb-brand { display: flex; align-items: center; gap: 10px; height: 56px; padding: 0 16px; color: #fff; flex: none; white-space: nowrap; }
 .sb-tim { padding: 0 12px 8px; flex: none; }
 .sb-tim-btn { width: 100%; height: 34px; display: flex; align-items: center; gap: 8px; padding: 0 10px; border-radius: 9px; background: rgba(255, 255, 255, .08); border: 1px solid rgba(255, 255, 255, .12); color: #c2cde4; font-size: 13px; white-space: nowrap; cursor: text; }
@@ -57,7 +61,7 @@ table { border-collapse: collapse; }
 .sb-nav a.lock { opacity: .55; }
 .sb-nav a .lk { margin-left: auto; }
 .sb-sep { height: 1px; background: rgba(255, 255, 255, .1); margin: 6px 10px; }
-.sb-foot { flex: none; background: var(--navy-d); border-top: 1px solid rgba(255, 255, 255, .08); padding: 8px; }
+.sb-foot { flex: none; background: var(--sb-nen-d); border-top: 1px solid rgba(255, 255, 255, .08); padding: 8px; }
 .sb-foot button { display: flex; align-items: center; gap: 10px; width: 100%; height: 34px; padding: 0 10px; border-radius: 8px; color: #9fb0d2; font-size: 12.5px; white-space: nowrap; }
 .sb-foot button:hover { background: rgba(255, 255, 255, .07); color: #fff; }
 .shell.gon .sb-brand > span, .shell.gon .sb-nav a > span, .shell.gon .sb-add-btn > span, .shell.gon .sb-tim-btn > span, .shell.gon .sb-foot span, .shell.gon .sb-nav a .lk { display: none; }
@@ -436,7 +440,7 @@ textarea.inp { height: auto; padding: 8px 11px; resize: vertical; }
 .qt-lan-ten { display: flex; align-items: center; gap: 10px; width: 200px; flex: none; min-width: 0; padding-right: 12px; font-size: 14px; font-weight: 600; color: var(--ink); }
 .qt-lan-nut { display: flex; gap: 8px; flex: none; }
 .qt-ht-ic { width: 28px; height: 28px; flex: none; border-radius: 8px; display: grid; place-items: center; background: var(--tint); color: var(--blue); }
-.qt-ht-ic .ic { width: 17px; height: 17px; }
+.qt-ht-ic .ic { width: 20px; height: 20px; }
 .qt-ht-t { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .qt-lan.qt-ht-ok .qt-lan-ten .qt-ht-ic { background: var(--green-t); color: var(--green); }
 .qt-lan.qt-ht-err .qt-lan-ten .qt-ht-ic { background: var(--red-t); color: var(--red); }
@@ -452,13 +456,13 @@ textarea.inp { height: auto; padding: 8px 11px; resize: vertical; }
 .qt-ht-nut.lock { border-style: dashed; border-color: #cdd5e1; }
 .qt-ht .qt-n.lock, .qt-ht .qt-n.lock .qt-ht-ic { color: var(--faint); }
 .qt-ht-nut.lock .qt-ht-ic { background: var(--soft); }
-.qt-ht-khoa { width: 13px; height: 13px; color: var(--faint); }
+.qt-ht-khoa { width: 16px; height: 16px; color: var(--faint); }
 .qt-ht-ra { display: flex; flex-direction: column; gap: 2px; padding: 14px; border: 1px solid #cfe0f2; border-radius: 14px; background: linear-gradient(180deg, #eef5fb 0%, #fff 60%); }
 .qt-ht-dau { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 14px; font-weight: 700; color: var(--ink); }
 .qt-ht-dau .qt-ht-ic { width: 32px; height: 32px; border-radius: 9px; background: var(--blue); color: #fff; }
 .qt-ht .qt-ht-dong { gap: 10px; height: 36px; padding: 0 8px; border-radius: 8px; font-size: 13.5px; }
 .qt-ht-dong .qt-ht-ic { width: 18px; height: 18px; background: none; }
-.qt-ht-dong .qt-ht-ic .ic { width: 18px; height: 18px; }
+.qt-ht-dong .qt-ht-ic .ic { width: 20px; height: 20px; }
 .qt-ht-dong:hover { background: var(--tint); }
 .qt-bc { display: flex; flex-direction: column; overflow: hidden; }
 .qt-bc h2 { font-size: 13px; font-weight: 800; letter-spacing: .6px; text-transform: uppercase; color: var(--ink); padding: 16px 16px 10px; }
@@ -2893,8 +2897,8 @@ body.tkmi-dang-keo, body.tkmi-dang-keo * {
   color: var(--faint);
 }
 .tkmi-khoa .ic {
-  width: 13px;
-  height: 13px;
+  width: 16px;
+  height: 16px;
 }
 .tkmi-o-ten.inp {
   flex: 1;
@@ -3739,8 +3743,8 @@ body.tkmi-dang-keo, body.tkmi-dang-keo * {
   flex: none;
 }
 .rpt-ic .ic {
-  width: 15px;
-  height: 15px;
+  width: 16px;
+  height: 16px;
 }
 .rpt-ic-so {
   background: var(--tint);
@@ -17184,8 +17188,8 @@ a.lsq-dong:hover { background: var(--tint); }
   flex: none;
 }
 .bc-quick-item .rpt-ic .ic {
-  width: 12px;
-  height: 12px;
+  width: 16px;
+  height: 16px;
 }
 .bc-quick-name {
   flex: 1;
@@ -18149,8 +18153,8 @@ button.bbt-nut { background: none; border: 0; padding-left: 0; padding-right: 0;
 }
 
 .bc-tt .bc-nhom-ic .ic {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
 }
 
 .bc-tt .bc-nhom-dau h2 {
@@ -19436,12 +19440,12 @@ button.m-free-ton-quy-lon {
   flex: none;
   box-sizing: border-box;
 }
-.o-nen.o-sm { width: 38px; height: 38px; border-radius: 10px; }
-.o-nen.o-sm .ic { width: 22px; height: 22px; }
-.o-nen.o-md { width: 46px; height: 46px; border-radius: 12px; }
-.o-nen.o-md .ic { width: 26px; height: 26px; }
-.o-nen.o-lg { width: 50px; height: 50px; border-radius: 13px; }
-.o-nen.o-lg .ic { width: 28px; height: 28px; }
+.o-nen.o-sm { width: 24px; height: 24px; }
+.o-nen.o-sm .ic { width: 24px; height: 24px; }
+.o-nen.o-md { width: 28px; height: 28px; }
+.o-nen.o-md .ic { width: 28px; height: 28px; }
+.o-nen.o-lg { width: 32px; height: 32px; }
+.o-nen.o-lg .ic { width: 32px; height: 32px; }
 
 .o-nen.o-nhat {
   background: color-mix(in srgb, var(--c) 12%, #fff);
@@ -19463,7 +19467,7 @@ button.m-free-ton-quy-lon {
 }
 
 .ic:not(.dac) *, .ic-thuong * {
-  stroke-width: 1.8;
+  stroke-width: 1.5;
 }
 
 /* Thanh bên */
@@ -19518,7 +19522,7 @@ button.m-free-ton-quy-lon {
 
 /* Ô quy trình và khung Sổ sách: ô icon giữ cỡ 28px như trước, không tràn viền ô */
 .qt-ht .o-nen.o-sm, .qt-ht-dau .o-nen.o-sm, [class*="qt-hub-item"] > .o-nen.o-sm { width: 28px; height: 28px; border-radius: 8px; }
-.qt-ht .o-nen.o-sm .ic, .qt-ht-dau .o-nen.o-sm .ic, [class*="qt-hub-item"] > .o-nen.o-sm .ic { width: 17px; height: 17px; }
+.qt-ht .o-nen.o-sm .ic, .qt-ht-dau .o-nen.o-sm .ic, [class*="qt-hub-item"] > .o-nen.o-sm .ic { width: 20px; height: 20px; }
 
 /* ── Nút bật tắt ở bảng phân quyền, web và điện thoại (T276), áp dụng toàn app (T280) ── */
 input.bat-tat, .matrix td.c input[type="checkbox"], .m-pq-quyen-dong input[type="checkbox"] {
@@ -19557,11 +19561,11 @@ label:has(> input.bat-tat), label:has(input.bat-tat) { display: inline-flex; ali
 .ds-gchip b { display: grid; place-items: center; width: 18px; height: 18px; border-radius: 5px; background: var(--blue); color: #fff; font-size: 10.5px; }
 .ds-gchip button { width: 18px; height: 18px; margin: 0; border-radius: 5px; color: var(--muted); }
 .ds-gchip button:hover { background: var(--red-t); color: var(--red); }
-.ds-gchip button .ic { width: 12px; height: 12px; }
+.ds-gchip button .ic { width: 16px; height: 16px; }
 .ds-gz-them { display: inline-flex; align-items: center; gap: 5px; height: 26px; padding: 0 10px 0 8px; border: 1px dashed #b7c6d8;
   border-radius: 8px; background: transparent; color: var(--blue); font-size: 12px; font-weight: 600; }
 .ds-gz-them:hover, .ds-gz-them.open { border-style: solid; border-color: var(--blue); background: var(--tint); }
-.ds-gz-them .ic { width: 13px; height: 13px; }
+.ds-gz-them .ic { width: 16px; height: 16px; }
 .ds-gz-xoa { margin-left: auto; height: 26px; padding: 0 8px; border-radius: 6px; color: var(--muted); font-size: 12px; }
 .ds-gz-xoa:hover { background: var(--red-t); color: var(--red); }
 .ds-gchip button:focus-visible, .ds-gz-them:focus-visible, .ds-gz-xoa:focus-visible { outline: 2px solid var(--blue); outline-offset: 1px; }
@@ -21983,6 +21987,192 @@ input.bat-tat:disabled { opacity: .5; cursor: not-allowed; }
   gap: 6px;
   cursor: pointer;
   margin-top: 6px;
+}
+
+/* ── Icon màu thương hiệu, cỡ chuẩn, sidebar xanh (T301, T302) ── */
+
+/* 1. Icon 2 màu thương hiệu iPOS: thân xanh (#0560a6), nhấn cam (#f28020) */
+.ic.ic-2m,
+.o-nen .ic {
+  color: var(--ic-than, var(--blue));
+  stroke: var(--ic-than, var(--blue));
+}
+.ic.ic-2m .l2,
+.o-nen .ic .l2 {
+  color: var(--ic-nhan, var(--orange));
+  stroke: var(--ic-nhan, var(--orange));
+  fill: none;
+}
+
+/* 2. Icon thao tác (nút, menu, ô nhập...): 1 màu theo currentColor */
+.ic:not(.ic-2m) .l2,
+.btn .ic .l2,
+.sb-add-btn .ic .l2,
+.icon-btn .ic .l2,
+button .ic .l2,
+.inp-wrap .ic .l2,
+.fld .ic .l2,
+.menu .ic .l2,
+.pop .ic .l2 {
+  color: currentColor;
+  stroke: currentColor;
+  fill: none;
+}
+.btn .ic,
+.sb-add-btn .ic,
+button[class*="btn-"] .ic {
+  color: currentColor;
+  stroke: currentColor;
+}
+.btn .ic .l2,
+.sb-add-btn .ic .l2,
+button[class*="btn-"] .ic .l2 {
+  color: currentColor;
+  stroke: currentColor;
+  fill: none;
+}
+
+/* 3. Bỏ ô nền của ONen (không nền, không bo, không bóng), icon trần */
+.o-nen {
+  background: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+.o-nen.o-nhat,
+.o-nen.o-dac {
+  background: none !important;
+  box-shadow: none !important;
+}
+.o-nen.o-sm { width: 24px; height: 24px; }
+.o-nen.o-sm .ic { width: 24px; height: 24px; }
+.o-nen.o-md { width: 28px; height: 28px; }
+.o-nen.o-md .ic { width: 28px; height: 28px; }
+.o-nen.o-lg { width: 32px; height: 32px; }
+.o-nen.o-lg .ic { width: 32px; height: 32px; }
+
+/* 4. Sidebar web: nền xanh thương hiệu đậm, mục thường, mục đang chọn */
+.sidebar {
+  background: var(--sb-nen);
+}
+.sb-foot {
+  background: var(--sb-nen-d);
+}
+.sb-flyout {
+  background: #074477;
+}
+
+.sb-nav a,
+.sb-nav button.sb-item-btn {
+  color: rgb(255 255 255 / .86);
+}
+.sb-nav a .ic-thuong,
+.sb-nav button.sb-item-btn .ic-thuong,
+.sb-flyout-ttn .sb-flyout-item .ic-thuong {
+  display: block;
+  color: rgb(255 255 255 / .62);
+  stroke: rgb(255 255 255 / .62);
+}
+.sb-nav a .ic-thuong .l2,
+.sb-nav button.sb-item-btn .ic-thuong .l2,
+.sb-flyout-ttn .sb-flyout-item .ic-thuong .l2 {
+  color: rgb(255 255 255 / .62);
+  stroke: rgb(255 255 255 / .62);
+  fill: none;
+}
+.sb-nav a .ic-chon,
+.sb-nav button.sb-item-btn .ic-chon,
+.sb-flyout-ttn .sb-flyout-item .ic-chon {
+  display: none;
+}
+
+.sb-nav a:hover,
+.sb-nav button.sb-item-btn:hover {
+  background: rgb(255 255 255 / .08);
+  color: #fff;
+}
+.sb-nav a:hover .ic-thuong,
+.sb-nav button.sb-item-btn:hover .ic-thuong,
+.sb-flyout-ttn .sb-flyout-item:hover .ic-thuong {
+  display: none;
+}
+.sb-nav a:hover .ic-chon,
+.sb-nav button.sb-item-btn:hover .ic-chon,
+.sb-flyout-ttn .sb-flyout-item:hover .ic-chon {
+  display: block;
+  color: #fff;
+  stroke: #fff;
+}
+.sb-nav a:hover .ic-chon .l2,
+.sb-nav button.sb-item-btn:hover .ic-chon .l2,
+.sb-flyout-ttn .sb-flyout-item:hover .ic-chon .l2 {
+  color: #f9a04a;
+  stroke: #f9a04a;
+  fill: none;
+}
+
+.sb-nav a.on,
+.sb-nav button.sb-item-btn.on {
+  background: rgb(255 255 255 / .13);
+  color: #fff;
+  font-weight: 600;
+}
+.sb-nav a.on .ic-thuong,
+.sb-nav button.sb-item-btn.on .ic-thuong {
+  display: none;
+}
+.sb-nav a.on .ic-chon,
+.sb-nav button.sb-item-btn.on .ic-chon {
+  display: block;
+  color: #fff;
+  stroke: #fff;
+}
+.sb-nav a.on .ic-chon .l2,
+.sb-nav button.sb-item-btn.on .ic-chon .l2 {
+  color: #f9a04a;
+  stroke: #f9a04a;
+  fill: none;
+}
+
+/* 5. Thanh dưới điện thoại (ThanhDuoi.tsx) */
+.m-thanh-duoi .m-tab:not(.on) .m-tab-ic .ic {
+  color: #8e9aab;
+  stroke: #8e9aab;
+}
+.m-thanh-duoi .m-tab:not(.on) .m-tab-ic .ic .l2 {
+  color: #8e9aab;
+  stroke: #8e9aab;
+  fill: none;
+}
+.m-thanh-duoi .m-tab.on .m-tab-ic .ic {
+  color: var(--blue);
+  stroke: var(--blue);
+}
+.m-thanh-duoi .m-tab.on .m-tab-ic .ic .l2 {
+  color: var(--orange);
+  stroke: var(--orange);
+  fill: none;
+}
+.m-thanh-duoi .m-tab.on .m-tab-nhan {
+  color: var(--blue);
+  font-weight: 600;
+}
+
+/* 6. Điện thoại (<= 768px): không icon nào dưới 20px */
+@media (max-width: 768px) {
+  :root {
+    --ic-sm: 20px;
+    --ic: 20px;
+    --ic-lg: 24px;
+  }
+  .ic {
+    min-width: 20px;
+    min-height: 20px;
+  }
+  .ic.sm {
+    width: 20px;
+    height: 20px;
+  }
 }
 
 

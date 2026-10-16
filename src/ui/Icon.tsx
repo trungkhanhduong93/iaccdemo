@@ -1,4 +1,4 @@
-// Biểu tượng Solar nâng cao: nét mảnh cho thao tác, khối đặc cho phân hệ và đồ vật (T275)
+// Biểu tượng Solar nâng cao: nét 2 màu thương hiệu iPOS cho phân hệ và đồ vật, nét đơn cho thao tác (T301, T302)
 
 import { DAC, NET, NHOM } from './icon-dac'
 
@@ -18,28 +18,26 @@ export interface IconProps {
 }
 
 export function Icon({ n, className = 'ic', title, kieu }: IconProps) {
-  const nhom = NHOM[n] || 'ht'
   const mode = kieu || (DAC[n] ? 'khoi' : 'net')
 
   if (mode === 'hai') {
-    const net = NET[n]
-    const dac = DAC[n] || DAC.doc
+    const net = NET[n] || NET.doc || DAC[n] || DAC.doc
     return (
       <>
         <svg
-          className={`${className} ic-thuong${net ? '' : ' dac'}`}
-          viewBox={net ? net.vb : dac.vb}
+          className={`${className} ic-thuong`}
+          viewBox={net.vb}
           aria-hidden={title ? undefined : true}
           dangerouslySetInnerHTML={{
-            __html: (title ? `<title>${title}</title>` : '') + (net ? net.body : dac.body)
+            __html: (title ? `<title>${title}</title>` : '') + net.body
           }}
         />
         <svg
-          className={`${className} dac ic-chon k-${nhom}`}
-          viewBox={dac.vb}
+          className={`${className} ic-chon`}
+          viewBox={net.vb}
           aria-hidden={title ? undefined : true}
           dangerouslySetInnerHTML={{
-            __html: (title ? `<title>${title}</title>` : '') + dac.body
+            __html: (title ? `<title>${title}</title>` : '') + net.body
           }}
         />
       </>
@@ -47,14 +45,14 @@ export function Icon({ n, className = 'ic', title, kieu }: IconProps) {
   }
 
   if (mode === 'khoi') {
-    const dac = DAC[n] || DAC.doc
+    const net = NET[n] || NET.doc || DAC[n] || DAC.doc
     return (
       <svg
-        className={`${className} dac k-${nhom}`}
-        viewBox={dac.vb}
+        className={`${className} ic-2m`}
+        viewBox={net.vb}
         aria-hidden={title ? undefined : true}
         dangerouslySetInnerHTML={{
-          __html: (title ? `<title>${title}</title>` : '') + dac.body
+          __html: (title ? `<title>${title}</title>` : '') + net.body
         }}
       />
     )
@@ -89,10 +87,10 @@ export function Icon({ n, className = 'ic', title, kieu }: IconProps) {
     )
   }
 
-  const def = DAC.doc
+  const def = NET.doc || DAC.doc
   return (
     <svg
-      className={`${className} dac k-${nhom}`}
+      className={`${className} ic-2m`}
       viewBox={def.vb}
       aria-hidden={title ? undefined : true}
       dangerouslySetInnerHTML={{
@@ -111,8 +109,7 @@ export interface ONenProps {
 }
 
 export function ONen({ n, kieu, co = 'sm', className = '', title }: ONenProps) {
-  const nhom = NHOM[n] || 'ht'
-  const cls = ['o-nen', `o-${kieu}`, `o-${co}`, `k-${nhom}`, className].filter(Boolean).join(' ')
+  const cls = ['o-nen', `o-${kieu}`, `o-${co}`, className].filter(Boolean).join(' ')
   return (
     <span className={cls} title={title}>
       <Icon n={n} kieu="khoi" />
