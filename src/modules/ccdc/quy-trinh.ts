@@ -1,12 +1,13 @@
 // Sơ đồ công cụ dụng cụ: chi tiền, lập thẻ chi phí phân bổ (thẻ thường hoặc thẻ dư đầu kỳ), phân bổ hằng tháng, điều chuyển, ghi giảm, kiểm kê
 import type { QuyTrinhDef } from '../types'
+import { MA_LY_CHO_PHAN_BO } from '../../data/mock'
 
-// Chi tiền từ sơ đồ này mở phiếu với lý do LD17 Chi phí chờ phân bổ
+// Chi tiền từ sơ đồ này mở phiếu với lý do Chi phí chờ phân bổ (mã MA_LY_CHO_PHAN_BO, T269)
 export const quyTrinh: QuyTrinhDef = {
   ten: 'Nghiệp vụ công cụ dụng cụ',
   buoc: [
-    { chinh: { ten: 'Chi tiền mặt', icon: 'cashout', di: 'tien/2-1-1/moi?loai=chi&ly=LD17' },
-      tren: [{ ten: 'Chi ngân hàng', icon: 'bank', di: 'tien/2-1-1/moi?loai=unc&ly=LD17' }] },
+    { chinh: { ten: 'Chi tiền mặt', icon: 'cashout', di: `tien/2-1-1/moi?loai=chi&ly=${MA_LY_CHO_PHAN_BO}` },
+      tren: [{ ten: 'Chi ngân hàng', icon: 'bank', di: `tien/2-1-1/moi?loai=unc&ly=${MA_LY_CHO_PHAN_BO}` }] },
     { chinh: { ten: 'Thẻ chi phí phân bổ', icon: 'grid', di: 'ccdc/8-1-1' },
       tren: [{ ten: 'Thẻ CPPB dư đầu kỳ', icon: 'clock', di: 'ccdc/8-1-1' }],
       duoi: [{ ten: 'Ghi tăng CCDC', icon: 'tool', di: 'ccdc/8-1-2/moi?loai=tang' }] },
@@ -19,8 +20,8 @@ export const quyTrinh: QuyTrinhDef = {
   hoiTuFree: {
     lan: [
       { ten: 'Chi tiền', tone: 'err', nut: [
-        { ten: 'Chi tiền mặt', icon: 'cashout', di: 'tien/2-1-1/moi?loai=chi&ly=LD17' },
-        { ten: 'Chi ngân hàng', icon: 'bank', di: 'tien/2-1-1/moi?loai=unc&ly=LD17' },
+        { ten: 'Chi tiền mặt', icon: 'cashout', di: `tien/2-1-1/moi?loai=chi&ly=${MA_LY_CHO_PHAN_BO}` },
+        { ten: 'Chi ngân hàng', icon: 'bank', di: `tien/2-1-1/moi?loai=unc&ly=${MA_LY_CHO_PHAN_BO}` },
       ] },
       { ten: 'Thẻ chi phí phân bổ', tone: 'info', nut: [
         { ten: 'Thẻ chi phí phân bổ', icon: 'grid', di: 'ccdc/8-1-1' },

@@ -12,7 +12,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
 | T265 | Phiếu thu, chi đồng bộ từ FABi (T264) chưa vào Sổ quỹ tiền mặt, Sổ ngân hàng, Lịch sử thu chi, tồn quỹ trang chủ; đưa vào thì đổi số dư | | Chờ | Phát hiện khi làm T264, chờ PhuongXT quyết |
-| T269 | Danh mục Lý do nghiệp vụ thay bằng 44 lý do thu, chi theo file FABi của PhuongXT (mã, tên, thu/chi), giữ thêm Chi phí chờ phân bổ và 3 lý do kho; cờ Là chi phí theo đề xuất PhuongXT duyệt | PhuongXT | Đang làm | Sửa `data/mock.ts` (LY_DO), `ui/generic/gen.ts`, `ChungTuForm.tsx` và các chỗ dùng tên lý do cũ |
 | T229 | Báo cáo kết quả kinh doanh (10.2.3, B02-DNN) ở chế độ TT133 mở ra "Báo cáo chưa có mẫu" ở cả bản máy tính và điện thoại, gói Pro và Free | | Chờ | Phát hiện ở T222 ngày 14/10/2026, mở từ Tất cả báo cáo. Có thể liên quan T220 |
 | T169 | Form chứng từ: gõ đổi địa chỉ từ phiếu này sang phiếu khác (vd `#/app/tien/2-1-1/chi-3` sang `chi-6`) thì form giữ số phiếu, đối tượng của phiếu cũ; mở từ danh sách, Trước, Sau thì đúng | | Chờ | Phát hiện ở T168. Sửa `ChungTuForm.tsx`, có thể `VoucherScreen.tsx` (key của form) |
 | T138 | Màn onboard khi bấm từ FABi sang IACC: khởi tạo đơn vị kế toán, điền sẵn từ FABi (chi nhánh, kho, cách đồng bộ, số dư đầu kỳ) | PhuongXT | Dở dang | Popup khởi tạo dữ liệu 4 bước trong phần mềm (`OnboardFabi.tsx`, `Shell.tsx`) đã push, PhuongXT xem lại một lượt. Xem `2026-10-11-phuongxt-man-khoi-tao-fabi.md` |
@@ -47,6 +46,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T269 | Danh mục Lý do nghiệp vụ thay bằng 44 lý do theo file FABi, giữ Chi phí chờ phân bổ và 3 lý do kho; mã đánh lại THU01.., CHI01.., XK, NK; cờ Là chi phí theo đề xuất; đổi tên lý do ở các chỗ dùng | PhuongXT | 16/10/2026 | [2026-10-16-phuongxt-ly-do-nghiep-vu-fabi](nhat-ky/2026-10-16-phuongxt-ly-do-nghiep-vu-fabi.md) |
 | T278 | Thanh gom nhóm ở danh sách chứng từ: thiết kế lại cho đẹp, ô Thêm cột gom thành menu Dropdown thay thẻ select gốc | Trum | 16/10/2026 | [2026-10-16-trum-thanh-gom-nhom](nhat-ky/2026-10-16-trum-thanh-gom-nhom.md) |
 | T277 | Danh sách Kiểm kê: thiết kế lại 3 tab con Kiểm kê, Xuất điều chỉnh, Nhập điều chỉnh cho đẹp | Trum | 16/10/2026 | [2026-10-16-trum-tab-con-kiem-ke](nhat-ky/2026-10-16-trum-tab-con-kiem-ke.md) |
 | T276 | Bảng vai trò, phân quyền: ô tích quyền thành nút bật tắt, web và điện thoại | Trum | 16/10/2026 | [2026-10-16-trum-nut-bat-tat-phan-quyen](nhat-ky/2026-10-16-trum-nut-bat-tat-phan-quyen.md) |

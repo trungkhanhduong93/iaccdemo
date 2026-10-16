@@ -131,7 +131,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   const [hanTt, setHanTt] = useState(luuCu('hanTt') ?? nv?.hanTt ?? '06/11/2026')
   // Lý do thu, chi ở đầu phiếu (danh mục 1.16), chỉ có ở phân hệ tiền
   const oLy = mod.key === 'tien' ? bo.a.find(o => o.k === 'ly') : undefined
-  // Lý do mặc định khi thêm mới: theo mã lý do trên đường dẫn (?ly=LD17, vd mở từ sơ đồ Chi phí phân bổ), không có thì đoán từ diễn giải
+  // Lý do mặc định khi thêm mới: theo mã lý do trên đường dẫn (?ly=mã lý do Chi phí chờ phân bổ, vd mở từ sơ đồ Chi phí phân bổ), không có thì đoán từ diễn giải
   const lyUrl = moi ? LY_DO.find(x => x.ma === sp.get('ly'))?.ten : undefined
   const lyGoc = (dg: string) => lyUrl && oLy?.ds?.includes(lyUrl) ? lyUrl : lyMacDinh(oLy?.ds ?? [], dg)
   const [hoiThe, setHoiThe] = useState<{ moMoi: boolean; idMoi: string; tu: Record<string, unknown> } | null>(null)
@@ -274,7 +274,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   const loaiTt = !bo.tt ? '' : hinhThucTt === 'tienmat' ? (chiTt ? 'chi' : 'thu') : hinhThucTt === 'chuyenkhoan' ? (chiTt ? 'unc' : 'bc') : ''
   const viecTt = nhom === 'mua' ? (traLai ? 'trả lại hàng mua' : 'mua hàng') : (traLai ? 'trả lại hàng bán' : 'bán hàng')
   const dgTt = `${chiTt ? 'Chi' : 'Thu'} tiền ${viecTt} theo ${soCt}`
-  const lyTt = nhom === 'mua' ? (traLai ? 'Thu khác' : 'Trả tiền nhà cung cấp') : (traLai ? 'Chi phí khác' : 'Thu tiền bán hàng')
+  const lyTt = nhom === 'mua' ? (traLai ? 'Thu khác' : 'Thanh toán tiền cho nhà cung cấp') : (traLai ? 'Chi phí khác' : 'Thu tiền bán hàng')
   function dongBoCtTt(idGoc: string): CtTt | undefined {
     if (!bo.tt) return ctTtCu
     if (ctTtCu && ctTtCu.loai !== loaiTt) xoaPhieu(MAN_THU_CHI, [{ id: ctTtCu.id, so: ctTtCu.so }], s.ten)
@@ -1298,13 +1298,13 @@ export const QUY_TIEN = [
 ]
 
 /** Đoán lý do thu, chi từ diễn giải; không khớp thì lấy lý do cuối danh sách (Thu khác, Chi phí khác) */
-/** Lý do chi đưa vào chi phí chờ phân bổ (LD17): lưu phiếu xong hỏi tạo thẻ chi phí phân bổ */
+/** Lý do chi đưa vào chi phí chờ phân bổ (MA_LY_CHO_PHAN_BO): lưu phiếu xong hỏi tạo thẻ chi phí phân bổ */
 export const LY_CHO_PHAN_BO = 'Chi phí chờ phân bổ'
 
 export const LY_THEO_DG: [string, string][] = [
-  ['thue', 'Chi phí khác'], ['no khach', 'Thu nợ khách hàng'], ['tra no', 'Thu nợ khách hàng'], ['ban hang', 'Thu tiền bán hàng'],
-  ['dat tiec', 'Thu tiền bán hàng'], ['tien don', 'Thu tiền bán hàng'], ['tam ung', 'Chi tạm ứng'], ['tra tien', 'Trả tiền nhà cung cấp'],
-  ['mua', 'Chi mua nguyên vật liệu'], ['luong', 'Chi trả lương'],
+  ['thue', 'Chi phí khác'], ['no khach', 'Thu Nợ'], ['tra no', 'Thu Nợ'], ['ban hang', 'Thu tiền bán hàng'],
+  ['dat tiec', 'Thu tiền bán hàng'], ['tien don', 'Thu tiền bán hàng'], ['tam ung', 'Tạm ứng cho nhân viên'], ['tra tien', 'Thanh toán tiền cho nhà cung cấp'],
+  ['mua', 'Chi phí nguyên liệu phụ'], ['luong', 'Thanh toán tiền lương'],   // tên lý do theo danh sách FABi (T269)
 ]
 
 /** Tổng tiền ở dải đáy form, số thẳng mép cột Thành tiền của bảng chi tiết; không thấy bảng thì nằm sát phải (T49) */

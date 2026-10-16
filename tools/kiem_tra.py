@@ -3334,7 +3334,7 @@ def kiem_tra_dot_17_a():
                 if 'Nợ' not in txt_tk or 'Có' not in txt_tk:
                     loi.append(f'17A: hàng tài khoản bước 3 thiếu "Nợ" hoặc "Có" (thấy: {txt_tk})')
 
-                # Đổi lý do dòng sang "Chi trả lương": tài khoản Nợ thành 334
+                # Đổi lý do dòng sang "Thanh toán tiền lương": tài khoản Nợ thành 334
                 o_ly_do = pg.locator('.m-lp-sua-o:has-text("Lý do")')
                 if o_ly_do.count() == 0:
                     loi.append('17A: bước 3 thiếu ô chọn Lý do')
@@ -3342,9 +3342,9 @@ def kiem_tra_dot_17_a():
                     o_ly_do.first.click()
                     pg.wait_for_selector('.m-tam-hop', timeout=4000)
                     pg.wait_for_timeout(250)
-                    muc_luong = pg.locator('.m-tam-dong:has-text("Chi trả lương")')
+                    muc_luong = pg.locator('.m-tam-dong:has-text("Thanh toán tiền lương")')
                     if muc_luong.count() == 0:
-                        loi.append('17A: tấm chọn lý do thiếu "Chi trả lương"')
+                        loi.append('17A: tấm chọn lý do thiếu "Thanh toán tiền lương"')
                     else:
                         muc_luong.first.click()
                         pg.wait_for_timeout(200)
@@ -3354,7 +3354,7 @@ def kiem_tra_dot_17_a():
 
                         txt_tk_sau_doi = hang_tk.first.inner_text()
                         if '334' not in txt_tk_sau_doi:
-                            loi.append(f'17A: đổi lý do sang "Chi trả lương" nhưng tài khoản Nợ không thành 334 (thấy: {txt_tk_sau_doi})')
+                            loi.append(f'17A: đổi lý do sang "Thanh toán tiền lương" nhưng tài khoản Nợ không thành 334 (thấy: {txt_tk_sau_doi})')
 
                 # Bấm hàng tài khoản, chọn TK Nợ 6422: hàng ghi "Nợ 6422"
                 hang_tk.first.click()
@@ -4657,22 +4657,22 @@ def kiem_tra_t233_may_tinh():
             if not val_no:
                 loi.append('T233: Phiếu chi mới dòng mới có TK Nợ rỗng')
 
-            # 3. Đổi lý do dòng mới sang "Chi trả lương": TK Nợ dòng đó thành 334
+            # 3. Đổi lý do dòng mới sang "Thanh toán tiền lương": TK Nợ dòng đó thành 334
             sel_ly = dong_moi.locator('button.sel').first
             if sel_ly.count() == 0:
                 loi.append('T233: Phiếu chi mới không tìm thấy ô chọn lý do dòng mới')
             else:
                 sel_ly.click()
                 pg.wait_for_timeout(200)
-                opt_luong = pg.locator('.pop-dm button[data-mi]:has-text("Chi trả lương"), .pop-dm .mi:has-text("Chi trả lương")')
+                opt_luong = pg.locator('.pop-dm button[data-mi]:has-text("Thanh toán tiền lương"), .pop-dm .mi:has-text("Thanh toán tiền lương")')
                 if opt_luong.count() == 0:
-                    loi.append('T233: Phiếu chi mới không tìm thấy mục "Chi trả lương" trong danh mục lý do')
+                    loi.append('T233: Phiếu chi mới không tìm thấy mục "Thanh toán tiền lương" trong danh mục lý do')
                 else:
                     opt_luong.first.click()
                     pg.wait_for_timeout(200)
                     val_no_sau = inp_no.input_value().strip() if inp_no.count() > 0 else ''
                     if val_no_sau != '334':
-                        loi.append(f'T233: Phiếu chi mới sau khi đổi lý do sang "Chi trả lương", TK Nợ là "{val_no_sau}", kỳ vọng "334"')
+                        loi.append(f'T233: Phiếu chi mới sau khi đổi lý do sang "Thanh toán tiền lương", TK Nợ là "{val_no_sau}", kỳ vọng "334"')
 
         # 4. Mở #/app/tien/2-1-1/moi?loai=thu, thêm dòng: TK Nợ 1111
         pg.goto(URL + '?goi=PR&p=thu#/app/tien/2-1-1/moi?loai=thu')
@@ -4831,8 +4831,8 @@ def kiem_tra_dot_22_a():
             ('kho/dieu-chinh?loai=ndc', 'Nhập điều chỉnh'),
         ]),
         ('ccdc', 'Chi phí phân bổ', [
-            ('tien/2-1-1/moi?loai=chi&ly=LD17', 'Chi tiền mặt'),
-            ('tien/2-1-1/moi?loai=unc&ly=LD17', 'Chi ngân hàng'),
+            ('tien/2-1-1/moi?loai=chi&ly=CHI35', 'Chi tiền mặt'),   # mã lý do Chi phí chờ phân bổ đổi từ LD17 (T269)
+            ('tien/2-1-1/moi?loai=unc&ly=CHI35', 'Chi ngân hàng'),
             ('ccdc/8-1-1', 'Thẻ chi phí phân bổ'),
             ('ccdc/8-1-1', 'Thẻ CPPB dư đầu kỳ'),
         ]),

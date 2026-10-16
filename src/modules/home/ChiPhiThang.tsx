@@ -1,6 +1,6 @@
 // Chi phí trong tháng theo lý do chi (T230): mở từ thẻ Chi phí trong tháng ở trang chủ gói Free.
 // Chia chi phí trong tháng theo cơ cấu chi phí, gọi tên theo danh mục Lý do chi, nên cộng lại đúng bằng số trên thẻ:
-// Chi trả lương (lương nhân sự), Chi phí thuê nhà (thuê mặt bằng), Chi phí khác (điện nước gas, chi khác, chi phí tài chính)
+// Thanh toán tiền lương (lương nhân sự), Chi tiền thuê nhà (thuê mặt bằng), Chi phí khác (điện nước gas, chi khác, chi phí tài chính)
 import { Link, useSearchParams } from 'react-router-dom'
 import type { ScreenProps } from '../types'
 import { chiNhanhHienTai, useSession } from '../../app/session'
@@ -23,8 +23,8 @@ export function ChiPhiThang(_: ScreenProps) {
   const cp = (ten: string) => d.coCauCp.find(x => x.l === ten)?.v ?? 0
   const luong = cp('Lương nhân sự'), matBang = cp('Thuê mặt bằng')
   const ds = [
-    { ly: 'Chi trả lương', phu: 'Lương nhân viên bếp, phục vụ, quản lý', v: luong, icon: 'users' },
-    { ly: 'Chi phí thuê nhà', phu: 'Thuê mặt bằng các chi nhánh', v: matBang, icon: 'store' },
+    { ly: 'Thanh toán tiền lương', phu: 'Lương nhân viên bếp, phục vụ, quản lý', v: luong, icon: 'users' },
+    { ly: 'Chi tiền thuê nhà', phu: 'Thuê mặt bằng các chi nhánh', v: matBang, icon: 'store' },
     { ly: 'Chi phí khác', phu: 'Điện, nước, gas, chi khác, chi phí tài chính', v: cpThang - luong - matBang, icon: 'cashout' },
   ].filter(x => x.v !== 0 && LY_CHI_PHI.includes(x.ly)).sort((a, b) => b.v - a.v)   // chỉ lý do được tích là chi phí (T231)
 

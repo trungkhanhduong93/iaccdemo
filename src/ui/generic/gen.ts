@@ -114,22 +114,32 @@ export function loaiThuChiCua(cfg: VoucherCfg, id: string): 'thu' | 'chi' | 'bc'
 export function doanLyDoThuChi(loai: string, ten: string): string {
   const l = fold(ten)
   const co = (...ds: string[]) => ds.some(x => l.includes(x))
+  // Tên lý do theo danh sách FABi (T269)
   if (loai === 'thu' || loai === 'bc') {
-    if (co('tra no', 'no khach', 'grabfood')) return 'Thu nợ khách hàng'
-    if (co('rut tien')) return 'Rút tiền ngân hàng nhập quỹ'
-    if (co('hoan ung')) return 'Thu hoàn ứng'
+    if (co('tra no', 'no khach', 'grabfood')) return 'Thu Nợ'
+    if (co('hoan ung')) return 'Thu tiền hoàn ứng của nhân viên'
+    if (co('phe lieu')) return 'Thu tiền bán phế liệu'
+    if (co('dat coc')) return 'Khách hàng đặt cọc'
     if (co('ban hang', 'dat tiec', 'don')) return 'Thu tiền bán hàng'
     return 'Thu khác'
   }
   if (loai === 'chi' || loai === 'unc') {
     if (co('cho phan bo', '6 thang')) return 'Chi phí chờ phân bổ'
-    if (co('tam ung')) return 'Chi tạm ứng'
-    if (co('nha cung cap', 'tra tien')) return 'Trả tiền nhà cung cấp'
-    if (co('luong')) return 'Chi trả lương'
-    if (co('thue mat bang', 'tien nha', 'thue nha')) return 'Chi phí thuê nhà'
-    if (co('ccdc')) return 'Chi phí CCDC'
-    if (co('tscd')) return 'Chi phí TSCĐ'
-    if (co('mua', 'nguyen lieu', 'rau', 'thit')) return 'Chi mua nguyên vật liệu'
+    if (co('tam ung')) return 'Tạm ứng cho nhân viên'
+    if (co('nop thue', 'thue gtgt')) return 'Chi tiền nộp thuế'
+    if (co('thue mat bang', 'thue nha')) return 'Chi tiền thuê nhà'
+    if (co('nha cung cap', 'tra tien')) return 'Thanh toán tiền cho nhà cung cấp'
+    if (co('tien nha')) return 'Chi tiền thuê nhà'
+    if (co('luong')) return 'Thanh toán tiền lương'
+    if (co('tien dien')) return 'Thanh toán tiền điện'
+    if (co('tien nuoc')) return 'Thanh toán tiền nước'
+    if (co('internet')) return 'Thanh toán tiền internet'
+    if (co('van chuyen', 'ship')) return 'Chi phí vận chuyển'
+    if (co('quang cao', 'marketing')) return 'Chi tiền quảng cáo, marketing'
+    if (co('sua')) return 'Chi phí sửa chữa'
+    if (co('ccdc', 'cong cu')) return 'Chi phí công cụ dụng cụ'
+    if (co('tscd', 'tai san')) return 'Chi phí tài sản cố định'
+    if (co('mua', 'nguyen lieu', 'rau', 'thit', 'gas')) return 'Chi phí nguyên liệu phụ'
     return 'Chi phí khác'
   }
   return ''
@@ -137,10 +147,10 @@ export function doanLyDoThuChi(loai: string, ten: string): string {
 
 // Tài khoản đối ứng ngầm định của từng lý do thu chi (danh mục LY_DO chưa có cột tài khoản), số hiệu TT133
 const TK_LY_DO: Record<string, string> = {
-  'Thu tiền bán hàng': '5111', 'Thu nợ khách hàng': '131', 'Rút tiền ngân hàng nhập quỹ': '1121',
-  'Thu hoàn ứng': '141', 'Thu khác': '711',
-  'Chi mua nguyên vật liệu': '152', 'Trả tiền nhà cung cấp': '331', 'Chi trả lương': '334', 'Chi tạm ứng': '141',
-  'Chi phí thuê nhà': '6422', 'Chi phí CCDC': '153', 'Chi phí TSCĐ': '211', 'Chi phí chờ phân bổ': '242',
+  'Thu tiền bán hàng': '5111', 'Thu Nợ': '131', 'Thu tiền hoàn ứng của nhân viên': '141', 'Thu khác': '711',
+  'Chi phí nguyên liệu phụ': '152', 'Thanh toán tiền cho nhà cung cấp': '331', 'Thanh Toán Công Nợ Nhà Cung Cấp': '331',
+  'Thanh toán tiền lương': '334', 'Tạm ứng cho nhân viên': '141',
+  'Chi tiền thuê nhà': '6422', 'Chi phí công cụ dụng cụ': '153', 'Chi phí tài sản cố định': '211', 'Chi phí chờ phân bổ': '242',
   'Chi phí khác': '6422',
 }
 const tkDoiUngTheoLyDo = (ly: string) => TK_LY_DO[ly] ?? '6422'

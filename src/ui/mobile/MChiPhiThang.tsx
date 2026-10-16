@@ -19,8 +19,8 @@ export function MChiPhiThang(_: ScreenProps) {
   const luong = cp('Lương nhân sự')
   const matBang = cp('Thuê mặt bằng')
   const ds = [
-    { ly: 'Chi trả lương', phu: 'Lương nhân viên bếp, phục vụ, quản lý', v: luong, icon: 'users' },
-    { ly: 'Chi phí thuê nhà', phu: 'Thuê mặt bằng các chi nhánh', v: matBang, icon: 'store' },
+    { ly: 'Thanh toán tiền lương', phu: 'Lương nhân viên bếp, phục vụ, quản lý', v: luong, icon: 'users' },
+    { ly: 'Chi tiền thuê nhà', phu: 'Thuê mặt bằng các chi nhánh', v: matBang, icon: 'store' },
     { ly: 'Chi phí khác', phu: 'Điện, nước, gas, chi khác, chi phí tài chính', v: cpThang - luong - matBang, icon: 'cashout' },
   ].filter(x => x.v !== 0 && LY_CHI_PHI.includes(x.ly)).sort((a, b) => b.v - a.v)
 

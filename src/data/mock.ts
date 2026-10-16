@@ -153,15 +153,61 @@ export const CONG_VIEC = [
 ]
 
 // Danh mục lý do nghiệp vụ 1.16. Form phiếu thu, chi lấy lý do theo cột "Dùng cho".
-/** Lý do chi tiền tích sẵn là chi phí: chi mua nguyên vật liệu, chi trả lương, chi phí khác, CCDC, thuê nhà, TSCĐ, chờ phân bổ, PhuongXT chốt 14/10/2026 (T231) */
-const LY_LA_CHI_PHI = ['LD04', 'LD05', 'LD13', 'LD14', 'LD15', 'LD16', 'LD17']
+// Lý do nghiệp vụ thu, chi theo danh sách FABi PhuongXT gửi 15/10/2026 (T269): tên, thu hay chi như FABi; mã đánh lại THU01.., CHI01.. theo thứ tự,
+// lý do kho XK01.., NK01... Giữ thêm Chi phí chờ phân bổ (phiếu chi sinh thẻ chi phí phân bổ) và 3 lý do kho.
+// Lý do chi tính là chi phí (Sổ chi phí, Chi phí trong tháng) theo đề xuất PhuongXT duyệt; trả nợ, nhà cung cấp, tạm ứng, vay, nộp thuế, TSCĐ, đầu tư không tính
+const LY_LA_CHI_PHI = ['CHI01', 'CHI03', 'CHI04', 'CHI06', 'CHI07', 'CHI08', 'CHI09', 'CHI12', 'CHI13', 'CHI14', 'CHI15', 'CHI18', 'CHI19', 'CHI20', 'CHI21', 'CHI22', 'CHI24', 'CHI25', 'CHI26', 'CHI27', 'CHI29', 'CHI30', 'CHI31', 'CHI35']
+/** Mã lý do Chi phí chờ phân bổ: phiếu chi lý do này sinh thẻ chi phí phân bổ; sơ đồ Chi phí phân bổ mở phiếu chi với ?ly=mã này */
+export const MA_LY_CHO_PHAN_BO = 'CHI35'
 export const LY_DO = [
-  ['LD01', 'Thu tiền bán hàng', 'Thu tiền'], ['LD02', 'Thu nợ khách hàng', 'Thu tiền'], ['LD03', 'Rút tiền ngân hàng nhập quỹ', 'Thu tiền'],
-  ['LD04', 'Chi mua nguyên vật liệu', 'Chi tiền'], ['LD05', 'Chi trả lương', 'Chi tiền'], ['LD06', 'Chi tạm ứng', 'Chi tiền'],
-  ['LD07', 'Xuất huỷ hàng hỏng', 'Xuất kho'], ['LD08', 'Xuất dùng nội bộ', 'Xuất kho'], ['LD09', 'Nhập hàng khách trả lại', 'Nhập kho'],
-  ['LD10', 'Thu hoàn ứng', 'Thu tiền'], ['LD11', 'Thu khác', 'Thu tiền'], ['LD12', 'Trả tiền nhà cung cấp', 'Chi tiền'],
-  ['LD13', 'Chi phí khác', 'Chi tiền'], ['LD14', 'Chi phí CCDC', 'Chi tiền'], ['LD15', 'Chi phí thuê nhà', 'Chi tiền'],
-  ['LD16', 'Chi phí TSCĐ', 'Chi tiền'], ['LD17', 'Chi phí chờ phân bổ', 'Chi tiền'],
+  ['THU01', 'Khách hàng đặt cọc', 'Thu tiền'],
+  ['THU02', 'Thu Nợ', 'Thu tiền'],
+  ['THU03', 'Thu khác', 'Thu tiền'],
+  ['THU04', 'Thu tiền bán hàng', 'Thu tiền'],
+  ['THU05', 'Thu tiền bán phế liệu', 'Thu tiền'],
+  ['THU06', 'Thu tiền hoàn ứng của nhân viên', 'Thu tiền'],
+  ['THU07', 'Thu tiền nạp ví Heo Vàng', 'Thu tiền'],
+  ['THU08', 'Thu tiền phạt nhân viên', 'Thu tiền'],
+  ['THU09', 'Thu tiền từ thanh lý tài sản cố định', 'Thu tiền'],
+  ['THU10', 'Đi vay', 'Thu tiền'],
+  ['CHI01', 'Chi mua đồ thắp hương', 'Chi tiền'],
+  ['CHI02', 'Thanh Toán Công Nợ Nhà Cung Cấp', 'Chi tiền'],
+  ['CHI03', 'Chi phí công cụ dụng cụ', 'Chi tiền'],
+  ['CHI04', 'Chi phí đồng phục nhân viên', 'Chi tiền'],
+  ['CHI05', 'Chi phí đầu tư mở rộng', 'Chi tiền'],
+  ['CHI06', 'Chi phí giặt là', 'Chi tiền'],
+  ['CHI07', 'Chi phí in ấn tài liệu', 'Chi tiền'],
+  ['CHI08', 'Chi phí khác', 'Chi tiền'],
+  ['CHI09', 'Chi phí vận chuyển', 'Chi tiền'],
+  ['CHI10', 'Chuyển tiền cho nhà hàng', 'Chi tiền'],
+  ['CHI11', 'Chi tiền nộp thuế', 'Chi tiền'],
+  ['CHI12', 'Công tác phí', 'Chi tiền'],
+  ['CHI13', 'Chi tiền quảng cáo, marketing', 'Chi tiền'],
+  ['CHI14', 'Chi tiền thuê nhà', 'Chi tiền'],
+  ['CHI15', 'Phí ngân hàng', 'Chi tiền'],
+  ['CHI16', 'Trả nợ', 'Chi tiền'],
+  ['CHI17', 'Chi phí tài sản cố định', 'Chi tiền'],
+  ['CHI18', 'Chi phí nguyên liệu phụ', 'Chi tiền'],
+  ['CHI19', 'Chi phí sửa chữa', 'Chi tiền'],
+  ['CHI20', 'Chi phí tư vấn, setup', 'Chi tiền'],
+  ['CHI21', 'Trả lãi vay', 'Chi tiền'],
+  ['CHI22', 'Thanh toán tiền bảo hiểm', 'Chi tiền'],
+  ['CHI23', 'Thanh toán tiền cho nhà cung cấp', 'Chi tiền'],
+  ['CHI24', 'Thanh toán tiền điện', 'Chi tiền'],
+  ['CHI25', 'Thanh toán tiền điện thoại', 'Chi tiền'],
+  ['CHI26', 'Thanh toán tiền internet', 'Chi tiền'],
+  ['CHI27', 'Thanh toán tiền lương', 'Chi tiền'],
+  ['CHI28', 'Chi tiền khác (Không đưa vào chi phí)', 'Chi tiền'],
+  ['CHI29', 'Chi tiền tiếp khách', 'Chi tiền'],
+  ['CHI30', 'Phí an ninh', 'Chi tiền'],
+  ['CHI31', 'Thanh toán tiền nước', 'Chi tiền'],
+  ['CHI32', 'Thanh toán tiền vay', 'Chi tiền'],
+  ['CHI33', 'Tạm ứng cho nhân viên', 'Chi tiền'],
+  ['CHI34', 'Cho vay', 'Chi tiền'],
+  ['CHI35', 'Chi phí chờ phân bổ', 'Chi tiền'],
+  ['XK01', 'Xuất huỷ hàng hỏng', 'Xuất kho'],
+  ['XK02', 'Xuất dùng nội bộ', 'Xuất kho'],
+  ['NK01', 'Nhập hàng khách trả lại', 'Nhập kho'],
 ].map(([ma, ten, dung]) => ({ ma, ten, dung, chiPhi: LY_LA_CHI_PHI.includes(ma) }))
 /** Tên lý do chi tiền được tích là chi phí: báo cáo chi phí (Sổ chi phí, Chi phí trong tháng) chỉ lấy các lý do này (T231) */
 export const LY_CHI_PHI = LY_DO.filter(x => x.dung === 'Chi tiền' && x.chiPhi).map(x => x.ten)
