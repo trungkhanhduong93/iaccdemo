@@ -17,6 +17,8 @@ import { TRUONG_DM, type CauHinhDM, type KhoiDM, type TruongDM, type KieuTruong 
 import { heThongTk } from '../../modules/danh-muc/he-thong-tk'
 import { FormToanMan } from '../FormToanMan'
 import { LichSu } from './ChungTuForm'
+import { HopCotPhieu } from './BangSua'
+import { NutPhimTat, phimDong } from '../BangPhimTat'
 import { HopXacNhan, NutTuyChinhCot, ONhanVien, useCotDs } from '../LocNangCao'
 import { NutExcel, NutThemMoiSplit } from '../CongCuDs'
 import { sinhCotBoSung } from './TuyChonCotDM'
@@ -43,6 +45,8 @@ export function CatalogScreen({ sc }: ScreenProps) {
   const cols0 = useMemo(() => typeof cfg.cols === 'function' ? cfg.cols(s.goi, s.cheDo) : cfg.cols, [sc, s.goi, s.cheDo])
   // Ghi đè trạng thái bật/tắt theo dòng khi người dùng bấm chấm tròn (T181)
   const [ttGhiDe, setTtGhiDe] = useState<Record<string, number>>({})
+  // Dòng xoá qua Tiện ích ở form toàn màn (T297): ẩn trong phiên, theo số chứng từ (vd số thẻ) hoặc khoá dòng
+  const [daXoaDm, setDaXoaDm] = useState<Set<string>>(new Set())
   useEffect(() => {
     setTtGhiDe({})
   }, [sc, s.cheDo])
@@ -73,7 +77,8 @@ export function CatalogScreen({ sc }: ScreenProps) {
   const nhoms = useMemo(() => cfg.nhomLoc ? [...new Set(all.map(r => r[cfg.nhomLoc!]))] : [], [all])
   const [tichLoc, setTichLoc] = useState(cfg.tich?.macDinh ?? false)
   const [moHangLoat, setMoHangLoat] = useState(false)
-  const rows = useMemo(() => all.filter(r => (!nhom || r[cfg.nhomLoc!] === nhom) && (!q || fold(Object.values(r).join(' ')).includes(fold(q))) && (!tichLoc || !cfg.tich || cfg.tich.loc(r))), [all, nhom, q, tichLoc])
+  const khoaXoa = (r: Row) => String(cfg.dsChungTu?.cotSo ? r[cfg.dsChungTu.cotSo] : khoaDong(r))
+  const rows = useMemo(() => all.filter(r => !daXoaDm.has(khoaXoa(r)) && (!nhom || r[cfg.nhomLoc!] === nhom) && (!q || fold(Object.values(r).join(' ')).includes(fold(q))) && (!tichLoc || !cfg.tich || cfg.tich.loc(r))), [all, nhom, q, tichLoc, daXoaDm])
   const cols: Col[] = useMemo(() => [
     ...(cfg.stt ? [{ k: '_stt', t: 'STT', w: 60, c: true }] : []),
     ...cols0.map(c => {
@@ -350,6 +355,8 @@ export function CatalogScreen({ sc }: ScreenProps) {
           tenNgan={sc.ngan ?? ten}
           scSlug={sc.slug}
           onDong={() => setEdit(null)}
+          onXoa={val => { setDaXoaDm(x => new Set(x).add(khoaXoa(val))); setEdit(null); toast(`Đã xoá ${val.soThe ?? val.ma ?? ''}`) }}
+          onSaoChep={(kieu, d) => { setEdit(null); setTimeout(() => moSua({}, kieu, d), 0) }}
           onLuu={(val, themTiep) => {
             if (val && val._tt !== undefined) {
               const k = khoaDong(val)
@@ -383,6 +390,8 @@ export interface CatalogPanelProps {
   nutChanPhu?: React.ReactNode | ((formVal: Record<string, any>) => React.ReactNode)
   onDong: () => void
   onLuu?: (formVal: Record<string, any>, themTiep: boolean) => void
+  onXoa?: (formVal: Record<string, any>) => void            // Tiện ích Xoá (T297)
+  onSaoChep?: (kieu: string | undefined, dienSan: Record<string, any>) => void   // Tiện ích Sao chép: mở form thêm mới điền sẵn
 }
 
 export function CatalogPanel({
@@ -400,6 +409,8 @@ export function CatalogPanel({
   nutChanPhu,
   onDong,
   onLuu,
+  onXoa,
+  onSaoChep,
 }: CatalogPanelProps) {
   const { s, set, toast } = useSession()
   const cnChon = cuaHangHienTai(s)
@@ -427,16 +438,43 @@ export function CatalogPanel({
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [moKhoi, setMoKhoi] = useState<Record<string, boolean>>({})
   const [tab, setTab] = useState('')
+  // Tuỳ chỉnh giao diện form toàn màn có lưới (T297): cột ẩn theo tab, khoá "tab|cột", nhớ theo màn trên máy
+  const khoaCot = `iacc-cot-dm:${scSlug}`
+  const [anCot, setAnCot] = useState<string[]>(() => {
+    try { const v = JSON.parse(localStorage.getItem(khoaCot) ?? '[]'); return Array.isArray(v) ? v : [] } catch { return [] }
+  })
+  const [hopCot, setHopCot] = useState(false)
+  const doiAnCot = (an: string[]) => {
+    setAnCot(an)
+    try { localStorage.setItem(khoaCot, JSON.stringify(an)) } catch { /* trình duyệt chặn lưu thì chỉ giữ trong phiên */ }
+  }
+  // Cột luôn hiện: cột hệ thống (_stt, _xoa), Mã, Tên
+  const cotKhoa = (k: string) => k.startsWith('_') || k === 'ma' || k === 'ten'
   // Form toàn màn hình mở dòng có sẵn: chỉ xem như phiếu chi, bấm Sửa (Ctrl+E) mới sửa; Huỷ khi đang sửa thì về xem, bỏ thay đổi
   const [xem, setXem] = useState(Boolean(cauHinh?.toanMan && dangSua))
   const goc = useRef(formVal)
   useEffect(() => {
     if (!xem) return
-    const onKey = (e: KeyboardEvent) => { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'e') { e.preventDefault(); setXem(false) } }
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'e') { e.preventDefault(); setXem(false) }
+      // Ctrl+O sao chép như Tiện ích Sao chép (T297)
+      else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'o') { e.preventDefault(); saoChepRef.current() }
+      // Ctrl+Delete xoá như Tiện ích Xoá, hỏi lại trước (T297)
+      else if ((e.ctrlKey || e.metaKey) && e.key === 'Delete' && cauHinhRef.current?.tienIch?.xoa?.(formValRef.current)) { e.preventDefault(); setHoiXoa(true) }
+    }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [xem])
   const huySua = () => { setFormVal(goc.current); setErrors({}); setXem(true) }
+  // Tiện ích (T297): sao chép mở form thêm mới điền sẵn; xoá hỏi lại trước
+  const [hoiXoa, setHoiXoa] = useState(false)
+  const saoChep = () => { const d = cauHinh?.tienIch?.saoChep?.(formVal); if (d) onSaoChep?.(formVal._kieu, d) }
+  const saoChepRef = useRef(saoChep)
+  saoChepRef.current = saoChep
+  const cauHinhRef = useRef(cauHinh)
+  cauHinhRef.current = cauHinh
+  const formValRef = useRef(formVal)
+  formValRef.current = formVal
   const [hoi, setHoi] = useState<{ tieuDe: string; hoi: string; sua: Record<string, any>; themTiep: boolean; luu?: boolean } | null>(null)
 
   // Khung panel hiện ngay, thân nhiều trường vẽ ở khung hình sau để bấm mở không bị khựng (T81)
@@ -563,6 +601,22 @@ export function CatalogPanel({
     }
     luuXong(themTiep)
   }
+  // Form toàn màn đang thêm, sửa: Ctrl+S lưu, Ctrl+Shift+S lưu và thêm như phiếu chứng từ (T297)
+  const luuRef = useRef(handleLuu)
+  luuRef.current = handleLuu
+  const huySuaRef = useRef(huySua)
+  huySuaRef.current = huySua
+  useEffect(() => {
+    if (!edit || !cauHinh?.toanMan || xem) return
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') { e.preventDefault(); luuRef.current(e.shiftKey && !anNutThemTiep) }
+      // Ctrl+Q huỷ thay đổi như nút Huỷ: đang sửa thì về xem, thêm mới thì đóng
+      else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'q') { e.preventDefault(); if (dangSua) huySuaRef.current(); else onDong() }
+      else phimDong(e)   // Ctrl+Insert, Alt+Delete ở bảng có nút Thêm dòng, Xoá dòng
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [edit, xem, anNutThemTiep, dangSua, onDong])
 
   const luuXong = (themTiep: boolean) => {
     onLuu?.(formVal, themTiep)
@@ -575,11 +629,13 @@ export function CatalogPanel({
 
   const veBang = (kh: KhoiDM, maxH = 280) => {
     const b = kh.bang!(formVal, doiO, s.goi, xem)
+    // Cột người dùng tắt ở Tuỳ chỉnh giao diện (T297)
+    const cols = b.cols.filter(c => cotKhoa(c.k) || !anCot.includes(`${kh.ten}|${c.k}`))
     // Lưới có ô nhập dùng chung kiểu bảng chi tiết phiếu (bang-sua): ô cao 30px, chữ 12.5px
     return (
       <div className="bang-sua">
         {/* Chế độ xem: ẩn cột xoá dòng (_xoa) và nút dưới lưới (Thêm dòng, Xoá hết) (T165) */}
-        {b.rows.length ? <Table cols={xem ? b.cols.filter(c => c.k !== '_xoa') : b.cols} rows={b.rows} sum={b.sum} rowCls={b.rowCls} maxH={maxH || undefined} /> : <div className="muted">{b.trong}</div>}
+        {b.rows.length ? <Table cols={xem ? cols.filter(c => c.k !== '_xoa') : cols} rows={b.rows} sum={b.sum} rowCls={b.rowCls} maxH={maxH || undefined} /> : <div className="muted">{b.trong}</div>}
         {!xem && b.chan}
       </div>
     )
@@ -740,6 +796,21 @@ export function CatalogPanel({
           icon={cauHinh.toanMan.icon}
           onClose={onDong}
           title={tenNganHien.charAt(0).toUpperCase() + tenNganHien.slice(1)}
+          // Tuỳ chỉnh giao diện: nút vuông nhỏ ở góc trên phải như form chứng từ (T297); chỉ form có lưới
+          phai={<>
+            {dsKhoi.some(kh => kh.bang) && (
+              <button type="button" className={`nut-vuong ds-nut-cot${hopCot ? ' on' : ''}`} onClick={() => setHopCot(true)}
+                title="Tuỳ chỉnh giao diện: bật tắt cột bảng chi tiết" aria-label="Tuỳ chỉnh giao diện"><Icon n="chinh" className="ic sm" /></button>
+            )}
+            {/* Hướng dẫn phím tắt như phiếu thu chi (T297) */}
+            <NutPhimTat ds={[['Lưu', 'Ctrl + S'], ...(!anNutThemTiep ? [['Lưu và thêm mới', 'Ctrl + Shift + S'] as [string, string]] : []),
+              ['Sửa ' + tenNganHien.split(' ')[0], 'Ctrl + E'], ['Huỷ thay đổi', 'Ctrl + Q'],
+              // Thêm, xoá dòng chỉ khi lưới có nút dưới lưới (vd thẻ dư đầu kỳ)
+              ...(dsKhoi.some(kh => kh.bang && kh.bang(formVal, doiO, s.goi, false).chan) ? [['Thêm dòng chi tiết', 'Ctrl + Insert'], ['Xoá dòng chi tiết', 'Alt + Delete']] as [string, string][] : []),
+              ...(cauHinh?.tienIch?.saoChep?.(formVal) ? [['Sao chép ' + tenNganHien.split(' ')[0], 'Ctrl + O'] as [string, string]] : []),
+              ...(cauHinh?.tienIch?.xoa?.(formVal) ? [['Xoá ' + tenNganHien.split(' ')[0], 'Ctrl + Delete'] as [string, string]] : []),
+              ['Đóng form', 'Esc']]} />
+          </>}
           meta={(
             <>
               {(edit.cn ?? cnChon?.ten) && (
@@ -756,6 +827,19 @@ export function CatalogPanel({
             <>
               {nutPhu}
               <span className="grow" />
+              {/* Tiện ích như phiếu thu chi: Sao chép, Xoá (T297) */}
+              {(cauHinh?.tienIch?.saoChep?.(formVal) || cauHinh?.tienIch?.xoa?.(formVal)) && (
+                <Dropdown btnClass="btn sm" align="end" width={180} label={<><Icon n="more" className="ic sm" />Tiện ích</>}>
+                  {dongMenu => <>
+                    {cauHinh?.tienIch?.saoChep?.(formVal) && (
+                      <MenuItem icon="copy" onClick={() => { dongMenu(); saoChep() }}>Sao chép</MenuItem>
+                    )}
+                    {cauHinh?.tienIch?.xoa?.(formVal) && (
+                      <MenuItem icon="trash" onClick={() => { dongMenu(); setHoiXoa(true) }}>Xoá</MenuItem>
+                    )}
+                  </>}
+                </Dropdown>
+              )}
               <button type="button" className="btn sm pri" onClick={() => setXem(false)}><Icon n="edit" className="ic sm" />Sửa (Ctrl+E)</button>
               <button type="button" className="btn sm" onClick={onDong}>Đóng (Esc)</button>
             </>
@@ -789,6 +873,18 @@ export function CatalogPanel({
               ))}
             </div>
           </div>
+          {hopCot && (() => {
+            // Cột của tab đang mở (tab Lịch sử thì lấy tab lưới đầu), bỏ cột luôn hiện
+            const kh = dsKhoi.find(k => k.bang && k.ten === tabTm) ?? dsKhoi.find(k => k.bang)!
+            const ds = kh.bang!(formVal, doiO, s.goi, xem).cols.filter(c => !cotKhoa(c.k) && c.t).map((c): [string, string] => [`${kh.ten}|${c.k}`, c.t])
+            return <HopCotPhieu ds={ds} an={anCot} onDoi={doiAnCot} onDong={() => setHopCot(false)} />
+          })()}
+          {hoiXoa && (
+            <HopXacNhan tieuDe={`Xoá ${tenNganHien}`} nut="Xoá" nutHuy="Không"
+              onDong={() => setHoiXoa(false)} onDongY={() => { setHoiXoa(false); onXoa?.(formVal) }}>
+              Bạn có chắc chắn muốn xoá {tenNganHien} <b>{edit.soThe ?? edit.ma}</b> không?
+            </HopXacNhan>
+          )}
         </FormToanMan>
       )}
 

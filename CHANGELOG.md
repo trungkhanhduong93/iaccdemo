@@ -4,6 +4,8 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 16/10/2026
 
+- T297: Form chứng từ (thu, chi, mua, bán, kho), Xuất bán POS, thẻ chi phí: nút Tuỳ chỉnh giao diện và Xem phím tắt nhỏ ở góc trên phải. Phím tắt mới: Ctrl+Q huỷ thay đổi, Ctrl+Insert thêm dòng, Alt+Delete xoá dòng, Ctrl+O sao chép, Ctrl+Delete xoá chứng từ (có hỏi lại). Thẻ chi phí có Tiện ích Xoá, thẻ dư đầu kỳ có thêm Sao chép.
+- T296: Thẻ chi phí: thẻ CCDC từ phiếu chi tự tính đơn giá theo số lượng; ngừng phân bổ thì tháng trước tháng ngừng nhận phần còn lại, từ tháng ngừng về 0; thẻ dư đầu kỳ không cho đã phân bổ vượt số tiền, số tháng; ngày bắt đầu phân bổ không trước ngày ghi tăng. Danh sách thẻ có cột Phân bổ trong kỳ.
 - T292: Điện thoại, Lịch sử thu chi và Chi phí trong tháng: ẩn thanh tab dưới, hai nút Lập phiếu thu, Lập phiếu chi nằm sát đáy.
 - T282: Điện thoại, mọi gói: lập phiếu trên một màn, bấm Lưu lại là xong. Phiếu thu, chi có ô Số tiền lớn ở đầu. Phiếu mua, bán, nhập, xuất kho hiện danh sách hàng ngay trên màn, sửa số lượng, đơn giá trên dòng. Gói Plus, Pro có khối Hạch toán thu gọn ở cuối. Phiếu chi lý do Chi phí chờ phân bổ lưu xong hỏi tạo thẻ chi phí.
 - T281: Điện thoại: trang chủ có lại thanh tab dưới, bản trước bị mất.

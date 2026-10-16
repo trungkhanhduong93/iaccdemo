@@ -12,6 +12,7 @@ import { DS_PTTT } from '../../modules/danh-muc/data'
 import { HopXacNhan } from '../LocNangCao'
 import { bayGio, ctTtCon, dsDcCon, dsTtCon, ghiNhatKy, soDaTra, soKeTiep, suaPhieu, themPhieu, ttThamChieu, useNhatKy, xoaPhieu, type CtTt, type PhieuTt } from './daXoa'
 import { Icon } from '../Icon'
+import { HopPhimTat, phimDong } from '../BangPhimTat'
 import { Card, Note } from '../Page'
 import { FormToanMan, useDong } from '../FormToanMan'
 import { Dropdown, MenuHead, MenuItem, Popover, Select } from '../Dropdown'
@@ -440,6 +441,16 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
     }
   }
 
+  // Xoá chứng từ (Tiện ích, Ctrl+Delete): cùng luật xoá với danh sách (QD32): kỳ đã khoá sổ không xoá, gói có ghi sổ chỉ xoá phiếu chưa ghi
+  function thuXoa() {
+    if (!row || khoaSua) return
+    if (daKhoaSo(row.ngay)) toast(`${row.so} thuộc kỳ đã khoá sổ, không xoá được`)
+    else if (kieu !== 'khong' && row.tt !== 'nhap') toast(`${row.so} đã ghi sổ, bỏ ghi sổ rồi mới xoá`)
+    else if (ttThamChieu(row)) toast(`${row.so} có phiếu ${ttThamChieu(row)!.so} tham chiếu, xoá ${ttThamChieu(row)!.so} trước`)   // T85, T91
+    else if (((laSx && !sxNhap) || dcn === 'xdc') && row._phieuNhap) toast(`${row.so} đã có phiếu nhập ${(row._phieuNhap as { so: string }).so}, xoá phiếu nhập trước`)   // T152
+    else setHoiXoa(true)
+  }
+
   // In: lấy dữ liệu đang có trên form, phiếu mới chưa lưu cũng in được
   function moIn() {
     setPhieuIn([{
@@ -458,13 +469,27 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
       } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'e') {
         e.preventDefault()
         if (!khoaSua) setDangSua(true)   // phiếu điều chỉnh, phiếu FABi chỉ xem (T129, T283)
+      } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'q') {
+        // Huỷ thay đổi như nút Huỷ (T297)
+        e.preventDefault()
+        if (dangSua) { if (moi) setHoiDong(true); else setDangSua(false) }
+      } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'o') {
+        // Sao chép chứng từ như mục Sao chép ở Tiện ích (T297)
+        e.preventDefault()
+        if (!dangSua && row && !laDc) toast('Đã sao chép chứng từ')
+      } else if ((e.ctrlKey || e.metaKey) && e.key === 'Delete' && !dangSua) {
+        // Ctrl+Delete xoá chứng từ khi đang xem, hỏi lại trước (T297)
+        e.preventDefault()
+        thuXoa()
+      } else if (dangSua && phimDong(e)) {
+        // Ctrl+Insert thêm dòng, Alt+Delete xoá dòng đang đứng (T297)
       } else if (e.key === 'Escape' && !modalPhim) {
         // FormToanMan tự xử lý Esc đóng form
       }
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [modalPhim, soCt, moi])
+  }, [modalPhim, soCt, moi, dangSua, row, laDc])
 
   // Tiêu đề form mọi phiếu chỉ là tên phiếu; trạng thái và số phiếu ở giữa đầu form (T49, T61)
   const tenPhieu = loai?.ten ?? (cfg.them?.startsWith('Thêm ') ? cfg.them.charAt(5).toUpperCase() + cfg.them.slice(6) : tenMan(sc))
@@ -604,16 +629,21 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
           </button>
         )
       }
-      phai={
+      phai={<>
+        {/* Tuỳ chỉnh giao diện phiếu: nút vuông nhỏ chỉ biểu tượng ở góc trên phải, như nút Tuỳ chỉnh cột ở danh sách (T297) */}
+        <button type="button" className={`nut-vuong ds-nut-cot${hopCot ? ' on' : ''}`} onClick={() => setHopCot(true)}
+          title="Tuỳ chỉnh giao diện: bật tắt ô đầu phiếu, cột bảng chi tiết, tổng chân phiếu" aria-label="Tuỳ chỉnh giao diện">
+          <Icon n="chinh" className="ic sm" />
+        </button>
         <button
           type="button"
           className="icon-btn"
-          title="Phím tắt: Ctrl+S lưu, Ctrl+Shift+S lưu và thêm, Ctrl+E sửa, Esc đóng"
+          title="Xem phím tắt" aria-label="Xem phím tắt"
           onClick={() => setModalPhim(m => !m)}
         >
           <Icon n="keyboard" />
         </button>
-      }
+      </>}
       meta={
         row ? (
           <>
@@ -658,10 +688,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
                 <span className={`tk-badge ${hienTk ? 'on' : ''}`}>{hienTk ? 'Đang hiện' : 'Đang ẩn'}</span>
               </button>
             )}
-            {/* Tuỳ chỉnh giao diện cả khi thêm mới, sửa, như lúc xem (T161) */}
-            <button type="button" className="btn" onClick={() => setHopCot(true)} title="Bật tắt ô đầu phiếu, cột bảng chi tiết, tổng chân phiếu">
-              <Icon n="chinh" className="ic sm" />Tuỳ chỉnh giao diện
-            </button>
+            {/* Nút Tuỳ chỉnh giao diện ở góc trên phải đầu form (T297); hộp vẫn mở cả khi thêm mới, sửa (T161) */}
             {hopCot && (
               <HopCotPhieu dsDau={dsDau} dsChan={dsChan} ds={laKk ? COT_KK : laSx ? cotSx(sx!) : laDcn ? cotDcn(dcn!) : cotTuyChon(cfg, { coNhomHhdv: nhom === 'mua' && nhanKemHd && (s.goi === 'PL' || s.goi === 'PR'), coKho: Boolean(bo.kho) && !khoDau && !laDc, coLo: nhom === 'mua' && s.goi === 'PR', coCk: Boolean(bo.ck), coKm: kieu !== 'khong', coLy: Boolean(oLy), coNhapKho: truocThue }).filter(([k]) => !anDc.includes(k))}
                 an={anCot} onDoi={doiAnCot} onDong={() => setHopCot(false)} />
@@ -708,10 +735,6 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               </button>
             )}
             <span className="grow" />
-            {/* Tuỳ chỉnh giao diện phiếu ra ngoài, cạnh nút In (T95) */}
-            <button type="button" className="btn sm" onClick={() => setHopCot(true)} title="Bật tắt ô đầu phiếu, cột bảng chi tiết, tổng chân phiếu">
-              <Icon n="chinh" className="ic sm" />Tuỳ chỉnh giao diện
-            </button>
             <button type="button" className="btn sm" onClick={moIn}>
               <Icon n="printer" className="ic sm" />In
             </button>
@@ -737,14 +760,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
                 Xuất Excel
               </MenuItem>
               {row && !khoaSua && (
-                <MenuItem icon="trash" danger onClick={() => {
-                  // Cùng luật xoá với danh sách (QD32): kỳ đã khoá sổ không xoá, gói có ghi sổ chỉ xoá phiếu chưa ghi
-                  if (daKhoaSo(row.ngay)) toast(`${row.so} thuộc kỳ đã khoá sổ, không xoá được`)
-                  else if (kieu !== 'khong' && row.tt !== 'nhap') toast(`${row.so} đã ghi sổ, bỏ ghi sổ rồi mới xoá`)
-                  else if (ttThamChieu(row)) toast(`${row.so} có phiếu ${ttThamChieu(row)!.so} tham chiếu, xoá ${ttThamChieu(row)!.so} trước`)   // T85, T91
-                  else if (((laSx && !sxNhap) || dcn === 'xdc') && row._phieuNhap) toast(`${row.so} đã có phiếu nhập ${(row._phieuNhap as { so: string }).so}, xoá phiếu nhập trước`)   // T152
-                  else setHoiXoa(true)
-                }}>
+                <MenuItem icon="trash" danger onClick={thuXoa}>
                   Xoá chứng từ
                 </MenuItem>
               )}
@@ -790,56 +806,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
       }
     >
       {phieuIn && <HopInChungTu ds={phieuIn} onDong={() => setPhieuIn(null)} />}
-      {/* Modal hướng dẫn phím tắt */}
-      {modalPhim && (
-        <div
-          className="pop-backdrop"
-          onClick={() => setModalPhim(false)}
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(0,0,0,0.3)',
-            zIndex: 100,
-            display: 'grid',
-            placeItems: 'center',
-          }}
-        >
-          <div
-            className="card"
-            style={{ width: 360, padding: 18 }}
-            onClick={e => e.stopPropagation()}
-          >
-            <div className="row" style={{ justifyContent: 'space-between', marginBottom: 12 }}>
-              <b>Phím tắt thao tác</b>
-              <button
-                type="button"
-                className="icon-btn sm"
-                onClick={() => setModalPhim(false)}
-              >
-                <Icon n="x" />
-              </button>
-            </div>
-            <div className="stack" style={{ gap: 8, fontSize: 13 }}>
-              <div className="row" style={{ justifyContent: 'space-between' }}>
-                <span>Lưu chứng từ:</span>
-                <kbd style={{ padding: '2px 6px', background: 'var(--tint)', borderRadius: 4 }}>Ctrl + S</kbd>
-              </div>
-              <div className="row" style={{ justifyContent: 'space-between' }}>
-                <span>Lưu và thêm mới:</span>
-                <kbd style={{ padding: '2px 6px', background: 'var(--tint)', borderRadius: 4 }}>Ctrl + Shift + S</kbd>
-              </div>
-              <div className="row" style={{ justifyContent: 'space-between' }}>
-                <span>Chuyển sang sửa:</span>
-                <kbd style={{ padding: '2px 6px', background: 'var(--tint)', borderRadius: 4 }}>Ctrl + E</kbd>
-              </div>
-              <div className="row" style={{ justifyContent: 'space-between' }}>
-                <span>Đóng form:</span>
-                <kbd style={{ padding: '2px 6px', background: 'var(--tint)', borderRadius: 4 }}>Esc</kbd>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Hộp hướng dẫn phím tắt, dùng chung với form thẻ chi phí (T297) */}
+      {modalPhim && <HopPhimTat onDong={() => setModalPhim(false)} />}
 
       {/* Phần trên: Thông tin chung kiểu AMIS. Đầu phiếu đứng yên, chỉ vùng bảng chi tiết cuộn (T105) */}
       <div className="stack ct-co-dinh" style={{ gap: 14 }}>

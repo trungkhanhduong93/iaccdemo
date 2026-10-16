@@ -8,6 +8,7 @@ import { kieuGhiSo } from '../../app/plan'
 import { CHE_DO } from '../../app/che-do'
 import { CUA_HANG, DAILY, HANG, cnTen, soBH } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
+import { NutPhimTat } from '../../ui/BangPhimTat'
 import { Card, Note, PageHead } from '../../ui/Page'
 import { FormToanMan, useDong } from '../../ui/FormToanMan'
 import { St, Table } from '../../ui/Table'
@@ -627,9 +628,15 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
       day={<DaiTong tong={tong} muc={[]} tren={[...(hkd ? [['Giảm thuế GTGT', -giamThue] as [string, number]] : []), ['Phiếu giảm giá', phieuGiam ? -phieuGiam : 0]]} />}   // Phiếu giảm giá thành hàng ngay trên Tổng tiền
       giua={<span className="fsf-tt xem">Chi tiết phiếu <b>{row.so}</b></span>}
       meta={<><St k={cTt}>{tTt}</St><span className="src">FABi</span><span className="chip info"><Icon n="store" className="ic sm" />{row.cn}</span></>}
+      // Tuỳ chỉnh giao diện: nút vuông nhỏ ở góc trên phải như form chứng từ khác (T297)
+      phai={<>
+        <button type="button" className={`nut-vuong ds-nut-cot${hopCot ? ' on' : ''}`} onClick={() => setHopCot(true)}
+          title="Tuỳ chỉnh giao diện: bật tắt cột bảng Hàng bán" aria-label="Tuỳ chỉnh giao diện"><Icon n="chinh" className="ic sm" /></button>
+        {/* Phiếu POS chỉ xem: phím tắt chỉ có Esc đóng (T297) */}
+        <NutPhimTat ds={[['Đóng form', 'Esc']]} />
+      </>}
       foot={<>
         <span className="grow" />
-        <button type="button" className="btn sm" onClick={() => setHopCot(true)} title="Bật tắt cột bảng Hàng bán"><Icon n="chinh" className="ic sm" />Tuỳ chỉnh giao diện</button>
         <button type="button" className="btn sm" onClick={moIn}><Icon n="printer" className="ic sm" />In</button>
         <button type="button" className="btn sm" onClick={dong0}>Đóng (Esc)</button>
       </>}>
