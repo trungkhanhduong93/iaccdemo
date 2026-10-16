@@ -34,11 +34,23 @@ const THE_MAU = ([
     ['TSCD.0001', 'Máy rửa chén công nghiệp', 186_000_000, 60, { soHieu: 'MRC-2026-01', moTa: 'Máy rửa chén băng chuyền, 1.000 đĩa mỗi giờ, đặt tại bếp Lê Lợi' }],
     ['TSCD.0002', 'Hệ thống hút khói bếp', 124_000_000, 60, { soHieu: 'HK-LL-02', moTa: 'Chụp hút inox 6m, quạt ly tâm, ống dẫn ra mái' }]]],
   ['TPB2610-0011', 'Chi phí trả trước', '07/10/2026', [['CPTT.0004', 'Tiền nhà 6 tháng', 72_000_000, 6]]],   // tạo từ phiếu chi PC2610-0261 (T168)
-] as [string, string, string, [string, string, number, number, { sl?: number; soHieu?: string; moTa?: string }?][]][]).map(([soThe, loai, ngay, dong], i) => ({
-  soThe, loai, ngay, ngayPb: ngay, _kieu: 'the', cn: CHI_NHANH[i % CHI_NHANH.length].ten, ...GOC_MAU[i],
-  dong: dong.map(([ma, ten, gt, ky, them]) => ({ ma, ten, dvt: CCDC_HANG.find(h => h.ma === ma)?.dvt, gt, ky, sl: them?.sl ?? 1, dg: gt / (them?.sl ?? 1), ngayPb: ngay,
-    soHieu: them?.soHieu, moTa: them?.moTa, _maTay: true })),
-}))
+  // Thẻ dư đầu kỳ (T284): ghi tăng 31/12/2025, trước ngày đầu năm; da, kyDa là phần đã phân bổ trước khi dùng phần mềm, phân bổ tiếp từ 01/01/2026.
+  // Thông tin mua gõ tay (không có chứng từ gốc trong phần mềm)
+  ['TPBDK2512-0001', 'Chi phí trả trước', '31/12/2025', [['CPTT.0005', 'Tiền thuê kho tổng 24 tháng', 120_000_000, 24, { da: 60_000_000, kyDa: 12 }]],
+    { soCt: 'PC2501-0035', ngayCt: '02/01/2025', ghiChuCt: 'Trả trước tiền thuê kho tổng 2 năm' }],
+  ['TPBDK2512-0002', 'Công cụ dụng cụ', '31/12/2025', [['CC001', 'Bộ nồi inox 50 lít', 36_000_000, 24, { sl: 2, da: 9_000_000, kyDa: 6 }],
+    ['CC004', 'Máy xay sinh tố công nghiệp', 14_400_000, 12, { sl: 1, da: 7_200_000, kyDa: 6 }]],
+    { soCt: 'MH2506-0042', ngayCt: '28/06/2025', ghiChuCt: 'Mua dụng cụ bếp mở chi nhánh Thảo Điền' }],
+  ['TPBDK2512-0003', 'Tài sản cố định', '31/12/2025', [['TSCD.0003', 'Lò nướng đối lưu', 96_000_000, 36, { da: 32_000_000, kyDa: 12, soHieu: 'LN-TD-01', moTa: 'Lò nướng đối lưu 10 khay, đặt tại bếp Thảo Điền' }]],
+    { soCt: 'MH2501-0008', ngayCt: '06/01/2025', ghiChuCt: 'Mua lò nướng cho bếp bánh' }],
+] as [string, string, string, [string, string, number, number, { sl?: number; soHieu?: string; moTa?: string; da?: number; kyDa?: number }?][], { soCt: string; ngayCt: string; ghiChuCt: string }?][]).map(([soThe, loai, ngay, dong, mua], i) => {
+  const dau = soThe.startsWith('TPBDK'), ngayPb = dau ? '01/01/2026' : ngay
+  return {
+    soThe, loai, ngay, ngayPb, _kieu: dau ? 'dau' : 'the', cn: CHI_NHANH[i % CHI_NHANH.length].ten, ...(dau ? mua : GOC_MAU[i]),
+    dong: dong.map(([ma, ten, gt, ky, them]) => ({ ma, ten, dvt: CCDC_HANG.find(h => h.ma === ma)?.dvt, gt, ky, sl: them?.sl ?? 1, dg: gt / (them?.sl ?? 1), ngayPb,
+      da: them?.da, kyDa: them?.kyDa, soHieu: them?.soHieu, moTa: them?.moTa, _maTay: true })),
+  }
+})
 
 /** dd/mm/yyyy -> yyyymm; kỳ liền trước của yyyymm */
 const thangCua = (d: string) => { const [, m, y] = d.split('/').map(Number); return y * 100 + m }

@@ -91,7 +91,7 @@ export interface KhoiDM {
   truong: TruongDM[]
   // khối dạng lưới tự tính từ giá trị form; doi ghi giá trị khi gõ trong lưới; goi: gói đang dùng (T159)
   bang?: (v: Record<string, any>, doi: (k: string, val: unknown) => void, goi: Goi) => { cols: Col[]; rows: Row[]; sum?: Row; rowCls?: (r: Row) => string; chan?: ReactNode; trong: string }
-  ve?: (v: Record<string, any>, doi: (k: string, val: unknown) => void) => ReactNode   // khối vẽ riêng (vd Thông tin mua: ô nhập, hoặc chỉ xem khi lấy từ phiếu gốc)
+  ve?: (v: Record<string, any>, doi: (k: string, val: unknown) => void, xem: boolean) => ReactNode   // khối vẽ riêng (vd Thông tin mua: ô nhập, hoặc chỉ xem khi lấy từ phiếu gốc); xem: form đang ở chế độ xem (T284)
   anDau?: boolean    // không vẽ thanh tiêu đề khối, khối luôn mở, nhường chỗ cho lưới bên dưới (T165)
   congTac?: string   // khoá ô tích hiện thành công tắc ở đầu khối, vd '_tt' trạng thái (T154)
 }
@@ -100,11 +100,11 @@ export interface CauHinhDM {
   khoi: KhoiDM[]
   ten?: string                                       // tên trên đầu panel: "Thêm <ten>", "Sửa <ten>"
   moTa?: string                                      // dòng phụ dưới tên khi thêm mới
-  soQuocTe?: boolean                                 // ô số, ô tiền theo kiểu quốc tế: 1,234,567.89
+  soQuocTe?: boolean                                 // ô số, ô tiền gõ có ngăn nghìn ngay khi gõ, lưu dạng chuẩn; hiện kiểu Việt Nam 1.234.567,89 (T284)
   toanMan?: { icon: string }                         // mở toàn màn hình như form chứng từ, khối lưới thành tab cạnh tab Lịch sử
   haiCot?: boolean                                   // lưới ô nhập luôn 2 cột như form iFaster (T154)
   // Nhiều kiểu thêm mới trên cùng màn, mỗi kiểu một nút; kiểu lưu ở form._kieu, mở thẳng bằng ?moi=<k>
-  bien?: { k: string; ten: string; nut: string; icon?: string; goi?: Goi[] }[]   // goi: chỉ hiện ở các gói này
+  bien?: { k: string; ten: string; nut: string; icon?: string; goi?: Goi[]; menu?: string }[]   // goi: chỉ hiện ở các gói này; menu: nhãn ở menu Thêm theo loại, thiếu thì lấy ten (T284)
   moi?: (rows: Row[], ctx: { kieu?: string; ngayDauNam: string }) => Record<string, any>   // giá trị sẵn khi thêm mới theo kiểu thêm mới, ngày đầu năm của đơn vị
   doi?: (k: string, v: Record<string, any>, rows: Row[]) => Record<string, any>   // ô tự tính khi ô k đổi
   goiHoiDoi?: Goi[]   // chỉ hỏi hoiDoi ở các gói này (T144: nhóm hàng hoá gói Free, Standard không có ngầm định)

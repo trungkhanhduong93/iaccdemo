@@ -7,6 +7,7 @@ import { Select } from '../Dropdown'
 import { ChonDanhMuc, useMucDaThem } from '../ChonDanhMuc'
 import { Icon } from '../Icon'
 import { money } from '../format'
+import { OSoGo } from '../OSoGo'
 import { NHOM_HHDV, type Dong } from './gen'
 
 export const DS_DOI_TUONG = Array.from(new Set([
@@ -55,47 +56,16 @@ export function cotTuyChon(cfg: VoucherCfg, o: { coKho?: boolean; coLo?: boolean
   return ds.filter(x => x[2]).map(([k, ten]) => [k, ten])
 }
 
-/** Ô nhập số: hiện số thô khi đang gõ, hiển thị định dạng có dấu chấm khi rời ô */
-function OSo({
-  val,
-  onChange,
-  disabled,
-  placeholder = '0',
-  className = 'inp sm num',
-}: {
+/** Ô nhập số ở bảng chi tiết: đang gõ đã có chấm ngăn nghìn, báo số ngay để tổng tiền đổi theo; rời ô hiện định dạng có dấu chấm (T284) */
+function OSo({ val, onChange, disabled, placeholder = '0', className = 'inp sm num' }: {
   val: number
   onChange?: (v: number) => void
   disabled?: boolean
   placeholder?: string
   className?: string
 }) {
-  const [focus, setFocus] = useState(false)
-  const [str, setStr] = useState(String(val || 0))
-
-  useEffect(() => {
-    if (!focus) setStr(String(val || 0))
-  }, [val, focus])
-
   if (disabled) return <span className="num">{money(val)}</span>
-
-  return (
-    <input
-      type="text"
-      className={className}
-      value={focus ? str : money(val)}
-      placeholder={placeholder}
-      onFocus={() => {
-        setFocus(true)
-        setStr(val === 0 ? '' : String(val))
-      }}
-      onChange={e => setStr(e.target.value.replace(/[^0-9.-]/g, ''))}
-      onBlur={() => {
-        setFocus(false)
-        const n = parseFloat(str) || 0
-        onChange?.(n)
-      }}
-    />
-  )
+  return <OSoGo val={val} onChange={onChange} hien={money} placeholder={placeholder} className={className} />
 }
 
 export function BangSua({

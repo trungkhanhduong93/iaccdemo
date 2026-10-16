@@ -9,6 +9,7 @@ import { ChonDanhMuc } from '../../ui/ChonDanhMuc'
 import { Select } from '../../ui/Dropdown'
 import { Icon } from '../../ui/Icon'
 import { money } from '../../ui/format'
+import { OSoGo } from '../../ui/OSoGo'
 import { useDaXoa } from '../../ui/generic/daXoa'
 import {
   CONG_THUC_CB, CONG_THUC_SC, SX, chiaGia, ctCbCua, ctScCua, dongXuatSc, hangCua, keoNvlCb, phieuMauSx, soLuong, tenMa, tron3,
@@ -41,17 +42,9 @@ export function OThamChieuSx({ loai, cn, value, onChon }: { loai: LoaiSx; cn: st
   )
 }
 
-/** Ô số lượng: gõ số thô (có phần thập phân), rời ô hiện kiểu Việt Nam */
+/** Ô số lượng, tiền: đang gõ đã có chấm ngăn nghìn, phẩy thập phân, báo số ngay; rời ô hiện kiểu Việt Nam (T284) */
 export function OSo({ val, onChange, tien }: { val: number; onChange: (v: number) => void; tien?: boolean }) {
-  const [focus, setFocus] = useState(false)
-  const [str, setStr] = useState(String(val))
-  useEffect(() => { if (!focus) setStr(String(val)) }, [val, focus])
-  return (
-    <input type="text" className="inp sm num" value={focus ? str : tien ? money(val) : soLuong(val)} inputMode="decimal"
-      onFocus={() => { setFocus(true); setStr(val ? String(val) : '') }}
-      onChange={e => setStr(e.target.value.replace(',', '.').replace(/[^0-9.]/g, ''))}
-      onBlur={() => { setFocus(false); onChange(tron3(parseFloat(str) || 0)) }} />
-  )
+  return <OSoGo val={val} onChange={v => onChange(tron3(v))} hien={tien ? money : soLuong} />
 }
 
 /** Số thực tế nằm ngoài mức tăng, giảm tối đa của công thức chế biến */

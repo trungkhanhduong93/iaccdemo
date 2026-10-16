@@ -134,7 +134,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
   const bienHien = cauHinh?.bien?.filter(b => !b.goi || b.goi.includes(s.goi)) ?? []
   // Nút thêm: kiểu thêm từng dòng đầu tiên (nếu gói có), rồi Thêm hàng loạt, rồi các kiểu còn lại; gói không có kiểu đầu tiên thì Thêm hàng loạt là nút chính
   const hl = cfg.hangLoat ? [{ k: HANG_LOAT, ten: cfg.hangLoat.nhan, nut: cfg.hangLoat.nhan, icon: 'layers' }] : []
-  const tung = bienHien.map(b => ({ k: b.k, ten: b.ten.charAt(0).toUpperCase() + b.ten.slice(1), nut: b.nut, icon: b.icon }))
+  const tung = bienHien.map(b => ({ k: b.k, ten: b.menu ?? b.ten.charAt(0).toUpperCase() + b.ten.slice(1), nut: b.nut, icon: b.icon }))
   const nutThem = bienHien[0] === cauHinh?.bien?.[0] ? [tung[0], ...hl, ...tung.slice(1)] : [...hl, ...tung]
   const [trang, setTrang] = useState(1)
   const [coTrang, setCoTrang] = useState(dsct ? 20 : 50)   // danh mục thường mặc định 50 dòng/trang (T153)
@@ -357,7 +357,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
         />
       )}
       {quyVuaTao && <GoiYLapPhieu quy={quyVuaTao} onDong={() => setQuyVuaTao(null)} />}
-      {moHangLoat && cfg.hangLoat && <cfg.hangLoat.Form soDong={all.length} onDong={() => setMoHangLoat(false)} />}
+      {moHangLoat && cfg.hangLoat && <cfg.hangLoat.Form soDong={all.length} rows={all} onDong={() => setMoHangLoat(false)} />}
     </div>
   )
 }
@@ -601,7 +601,7 @@ export function CatalogPanel({
           <Icon n={mo ? 'chevd' : 'chevr'} className="ic sm" />
         </div>}
         {mo && kh.bang && <div className="pn-khoi-than">{veBang(kh)}</div>}
-        {mo && kh.ve && <div className="pn-khoi-than">{kh.ve(formVal, doiO)}</div>}
+        {mo && kh.ve && <div className="pn-khoi-than">{kh.ve(formVal, doiO, xem)}</div>}
         {mo && !kh.bang && !kh.ve && (
           <div className="pn-khoi-than">
             <div className={`pn-luoi${cauHinh?.haiCot ? ' pn-luoi-2' : ''}`}>

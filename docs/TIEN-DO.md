@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T284 | Ô gõ tiền, số lượng, đơn giá ở bảng chi tiết phiếu: chấm ngăn nghìn kiểu Việt Nam ngay khi gõ (phẩy thập phân), Tổng tiền cập nhật ngay khi gõ | dinhlanphuongipacc | Đang làm | Sửa `ui/generic/BangSua.tsx` (ô `OSo`), có thể `ui/format.ts`, `kho/BangSanXuat.tsx` |
 | T283 | Danh sách Thu, chi tiền máy tính: thêm bộ lọc Thu, chi (Khoản thu, Khoản chi); phiếu thu, chi nguồn FABi không sửa, không xoá (form, hàng loạt) | PhuongXT | Đang làm | Sửa `VoucherScreen.tsx`, `ChungTuForm.tsx`, `LocNangCao.tsx` |
 | T285 | Danh mục chi nhánh máy tính: thêm cột Công ty (tên, MST của đơn vị đang mở) ở danh sách và hộp chi tiết mới (bấm tên chi nhánh) | PhuongXT | Đang làm | Sửa `DanhMucChiNhanh.tsx`, `app.css` (mục cuối T284) |
 | T281 | Điện thoại đợt A, mọi gói: bỏ màn quy trình, vào thẳng danh sách; danh sách chứng từ kiểu thẻ gọn; nút quay lại to; nút lọc ở báo cáo; làm lại phân hệ Chi phí phân bổ | Trum | Đang làm | Giao Anti. Sửa `src/ui/mobile/*`, `app.css` (mục cuối T281), `tools/kiem_tra.py` (bài kiểm quy trình điện thoại) |
@@ -52,6 +51,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T284 | Ô gõ số ở bảng chi tiết phiếu, thẻ chi phí: chấm ngăn nghìn kiểu Việt Nam ngay khi gõ, tổng đổi ngay; thẻ: số TPB, TPBDK{YY}{MM}-{0000} theo ngày ghi tăng, menu Ghi tăng đầu kỳ, Thông tin mua dạng chỉ xem, 3 thẻ dư đầu kỳ mẫu | dinhlanphuongipacc | 16/10/2026 | [2026-10-16-dinhlanphuongipacc-go-so-vn-so-the](nhat-ky/2026-10-16-dinhlanphuongipacc-go-so-vn-so-the.md) |
 | T279 | Lịch sử thu chi máy tính: thêm bộ lọc quỹ (Tất cả quỹ, từng quỹ tiền mặt, từng tài khoản ngân hàng) cạnh lọc thu, chi | PhuongXT | 16/10/2026 | [2026-10-16-phuongxt-loc-quy-lich-su-thu-chi](nhat-ky/2026-10-16-phuongxt-loc-quy-lich-su-thu-chi.md) |
 | T269 | Danh mục Lý do nghiệp vụ thay bằng 44 lý do theo file FABi, giữ Chi phí chờ phân bổ và 3 lý do kho; mã đánh lại THU01.., CHI01.., XK, NK; cờ Là chi phí theo đề xuất; đổi tên lý do ở các chỗ dùng | PhuongXT | 16/10/2026 | [2026-10-16-phuongxt-ly-do-nghiep-vu-fabi](nhat-ky/2026-10-16-phuongxt-ly-do-nghiep-vu-fabi.md) |
 | T280 | Tuỳ chỉnh Thao tác nhanh mở hộp kiểu Ctrl K, chọn được mọi màn, tối đa 8; điện thoại tấm toàn màn; bỏ số đếm tab Xuất, Nhập điều chỉnh; ô tích tuỳ chọn toàn app thành nút bật tắt | Trum | 16/10/2026 | [2026-10-16-trum-tuy-chinh-thao-tac-nhanh.md](nhat-ky/2026-10-16-trum-tuy-chinh-thao-tac-nhanh.md) |

@@ -123,19 +123,22 @@ export function docSoTien(n: number): string {
   return chuoi.charAt(0).toUpperCase() + chuoi.slice(1) + ' đồng'
 }
 
-// ── Số kiểu quốc tế: phẩy ngăn hàng nghìn, chấm thập phân (thẻ chi phí phân bổ) ──
-/** Đọc số kiểu quốc tế: bỏ dấu phẩy ngăn nghìn */
-export const docSoQT = (v: unknown) => typeof v === 'number' ? v : Number(String(v ?? '').replace(/,/g, '')) || 0
-/** Chuỗi đang gõ chỉ giữ chữ số và một dấu chấm thập phân, chưa có dấu phẩy */
-export const nhapSoQT = (s: string) => {
+// ── Số ở thẻ chi phí phân bổ: lưu dạng chuẩn (chữ số, chấm thập phân, không ngăn nghìn); hiện và gõ kiểu Việt Nam
+//    như mọi màn: chấm ngăn hàng nghìn, phẩy thập phân (T284, trước là kiểu quốc tế) ──
+/** Giữ chữ số và một dấu chấm thập phân của chuỗi dạng chuẩn */
+const chuanSo = (s: string) => {
   const [nguyen, ...sau] = s.replace(/[^\d.]/g, '').split('.')
   return sau.length ? `${nguyen}.${sau.join('')}` : nguyen
 }
-/** Hiện số kiểu quốc tế, chèn phẩy ngăn nghìn cả khi đang gõ dở (giữ nguyên phần thập phân đã gõ) */
+/** Đọc số dạng chuẩn (chuỗi hoặc số) */
+export const docSoQT = (v: unknown) => typeof v === 'number' ? v : Number(String(v ?? '').replace(/,/g, '')) || 0
+/** Chuỗi đang gõ kiểu Việt Nam (1.234,5) -> dạng chuẩn (1234.5) */
+export const nhapSoQT = (s: string) => chuanSo(s.replace(/\./g, '').replace(/,/g, '.'))
+/** Hiện số kiểu Việt Nam, chèn chấm ngăn nghìn cả khi đang gõ dở (giữ nguyên phần thập phân đã gõ) */
 export const soQT = (v: unknown) => {
-  if (typeof v === 'number') return v.toLocaleString('en-US', { maximumFractionDigits: 4 })
-  const s = nhapSoQT(String(v ?? ''))
+  if (typeof v === 'number') return v.toLocaleString('vi-VN', { maximumFractionDigits: 4 })
+  const s = chuanSo(String(v ?? ''))
   if (!s) return ''
   const [nguyen, thap] = s.split('.')
-  return (nguyen ? Number(nguyen).toLocaleString('en-US') : '0') + (thap !== undefined ? `.${thap}` : '')
+  return (nguyen ? Number(nguyen).toLocaleString('vi-VN') : '0') + (thap !== undefined ? `,${thap}` : '')
 }

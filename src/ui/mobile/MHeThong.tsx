@@ -748,6 +748,8 @@ export const MCauHinh: FC<ScreenProps> = () => {
             { loai: 'Phiếu chi', mau: 'PC{YY}{MM}-{0000}', vd: 'PC2610-0241' },
             { loai: 'Xuất bán POS', mau: 'Số HĐ FABi', vd: 'YHLTJTAKD76Z' },
             { loai: 'Mua hàng', mau: 'MH{YY}{MM}-{0000}', vd: 'MH2610-0118' },
+            { loai: 'Thẻ chi phí phân bổ', mau: 'TPB{YY}{MM}-{0000}', vd: 'TPB2610-0012' },   // T284
+            { loai: 'Thẻ CPPB dư đầu kỳ', mau: 'TPBDK{YY}{MM}-{0000}', vd: 'TPBDK2512-0001' },
           ].map(item => (
             <div key={item.loai} className="m-ch-mau-so">
               <span style={{ fontWeight: 500 }}>{item.loai}</span>

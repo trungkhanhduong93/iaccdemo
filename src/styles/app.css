@@ -20319,3 +20319,6 @@ input.bat-tat:disabled { opacity: .5; cursor: not-allowed; }
   justify-content: center !important;
 }
 
+/* ── Thông tin mua của thẻ chi phí dạng chỉ xem như đầu phiếu POS (T284) ── */
+.pos-dau.tt-mua-xem { padding: 0; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.pos-dau.tt-mua-xem .ds-link-so { font-size: 13px; }

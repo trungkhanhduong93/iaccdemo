@@ -9,7 +9,7 @@ import { Table } from '../../ui/Table'
 import { Select } from '../../ui/Dropdown'
 import { docSoQT, soQT } from '../../ui/format'
 import { useDaXoa } from '../../ui/generic/daXoa'
-import { LOAI_THE, ONhap } from './the-phan-bo'
+import { LOAI_THE, ONhap, soTheKeTiep } from './the-phan-bo'
 import { ChonDanhMuc } from '../../ui/ChonDanhMuc'
 import { CCDC_HANG } from '../../data/mock'
 
@@ -35,7 +35,7 @@ interface DongCho {
 }
 const CCDC = 'Công cụ dụng cụ'
 
-export function GhiTangHangLoat({ soDong, onDong }: { soDong: number; onDong: () => void }) {
+export function GhiTangHangLoat({ rows: daCo, onDong }: { soDong: number; rows: Row[]; onDong: () => void }) {
   const { toast } = useSession()
   const { phieuMoi } = useDaXoa(MAN_THU_CHI)
   // Dòng chờ: mẫu cộng các phiếu chi lưu trong phiên có dòng lý do Chi phí chờ phân bổ, bỏ dòng đã tạo thẻ
@@ -48,11 +48,14 @@ export function GhiTangHangLoat({ soDong, onDong }: { soDong: number; onDong: ()
   const [loi, setLoi] = useState<Set<string>>(new Set())
   const sua = (key: string, p: Partial<DongCho>) => { setDs(x => x.map(d => d.key === key ? { ...d, ...p } : d)); setLoi(l => { const n = new Set(l); n.delete(key); return n }) }
 
-  // Số thẻ nối tiếp các thẻ đã có, chỉ đánh cho dòng được chọn; số tiền mỗi kỳ = số tiền / số kỳ, làm tròn tới đồng
-  let thu = soDong
+  // Số thẻ theo Cấu hình kế toán TPB{YY}{MM}-{0000}, tháng theo ngày chứng từ, nối tiếp số đã có cùng tháng (gồm cả số vừa đánh cho dòng trên);
+  // chỉ đánh cho dòng được chọn; số tiền mỗi kỳ = số tiền / số kỳ, làm tròn tới đồng (T284)
+  const daDanh: unknown[] = daCo.map(r => r.soThe)
   const rows = ds.map(d => {
-    const ky = docSoQT(d.ky), [, mm, yy] = d.ngayCt.split('/')
-    return { ...d, soThe: d.chon ? `TPB${yy.slice(2)}${mm}-${String(++thu).padStart(4, '0')}` : '', tienKy: ky > 0 ? Math.round(d.gt / ky) : 0 }
+    const ky = docSoQT(d.ky)
+    const soThe = d.chon ? soTheKeTiep(daDanh, 'the', d.ngayCt) : ''
+    if (soThe) daDanh.push(soThe)
+    return { ...d, soThe, tienKy: ky > 0 ? Math.round(d.gt / ky) : 0 }
   })
   const chon = rows.filter(r => r.chon)
   const coCcdc = ds.some(d => d.loai === CCDC)

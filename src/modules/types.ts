@@ -36,7 +36,7 @@ export interface CatalogCfg {
   stt?: boolean                          // cột STT đầu bảng, đánh số theo dòng đang hiện
   kySoLieu?: boolean                     // ô chọn Kỳ số liệu (các tháng của năm tài chính), số liệu tính tới hết kỳ
   tich?: { nhan: string; macDinh: boolean; loc: (r: Row) => boolean }   // ô tích lọc nhanh trên thanh công cụ, tích thì chỉ hiện dòng loc đúng
-  hangLoat?: { nhan: string; Form: ComponentType<{ soDong: number; onDong: () => void }> }   // nút thêm hàng loạt mở form riêng, soDong: số dòng đang có
+  hangLoat?: { nhan: string; Form: ComponentType<{ soDong: number; rows: Row[]; onDong: () => void }> }   // nút thêm hàng loạt mở form riêng, soDong: số dòng đang có, rows: các dòng đang có (T284)
   // Danh sách kiểu danh sách chứng từ: phân trang, dòng Tổng, cộng các cột cotCong; bấm dòng chọn và xem nhanh chi tiết ở khung dưới, đúp chuột mở form;
   // cotSo: cột số chứng từ hiện link xanh, bấm mở form như danh sách thu chi
   // Dòng lấy thêm giá trị lưu trong phiên, lưu form thì ghi vào phiên; vd số dư ban đầu quỹ ở Danh mục Quỹ tiền (T245)

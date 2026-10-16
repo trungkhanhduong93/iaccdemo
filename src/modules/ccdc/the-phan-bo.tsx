@@ -145,6 +145,17 @@ export function ONhap({ v, so: laSo, ten, onDoi, chiDoc }: { v: unknown; so?: bo
   )
 }
 
+/** Đánh số thẻ theo Cấu hình kế toán (T284): thẻ ghi tăng TPB{YY}{MM}-{0000}, thẻ dư đầu kỳ TPBDK{YY}{MM}-{0000};
+ *  YY, MM theo ngày ghi tăng, số thứ tự nối tiếp số lớn nhất cùng tiền tố, cùng tháng */
+export const TIEN_TO_THE = { the: 'TPB', dau: 'TPBDK' }
+export function soTheKeTiep(daCo: unknown[], kieu: 'the' | 'dau', ngay: string): string {
+  const [, mm, yy] = ngay.split('/')
+  if (!mm || !yy) return ''
+  const dau = `${TIEN_TO_THE[kieu]}${yy.slice(2)}${pad(+mm)}-`
+  const n = Math.max(0, ...daCo.map(String).filter(s => s.startsWith(dau) && /^\d+$/.test(s.slice(dau.length))).map(s => +s.slice(dau.length)))
+  return `${dau}${pad(n + 1, 4)}`
+}
+
 /** Ngày ngừng mặc định khi tích: hôm nay (gói Free, Standard: cuối tháng này), không sớm hơn ngày bắt đầu phân bổ */
 function ngayNgungMd(bd: string, thang: boolean): string {
   const d = new Date(), hn = thang ? cuoiThang(d.getFullYear(), d.getMonth() + 1) : homNay()
@@ -200,7 +211,7 @@ export const THE_PHAN_BO: CauHinhDM = {
   bien: [
     // Mọi gói bỏ ghi tăng từng thẻ (T159): kiểu 'the' không hiện nút, chỉ dùng mở thẻ có sẵn và tạo thẻ từ phiếu chi; thêm mới qua Ghi tăng (hàng loạt) và Ghi tăng dư đầu kỳ
     { k: 'the', ten: 'thẻ chi phí phân bổ', nut: 'Ghi tăng', icon: 'grid', goi: [] },
-    { k: 'dau', ten: 'thẻ chi phí phân bổ dư đầu kỳ', nut: 'Ghi tăng dư đầu kỳ', icon: 'clock' },
+    { k: 'dau', ten: 'thẻ chi phí phân bổ dư đầu kỳ', nut: 'Ghi tăng dư đầu kỳ', icon: 'clock', menu: 'Ghi tăng đầu kỳ' },
   ],
   khoi: [{
     ten: 'Thông tin chung',
@@ -253,8 +264,10 @@ export const THE_PHAN_BO: CauHinhDM = {
           ...(laCcdc(v) ? [{ k: 'dvt', t: 'ĐVT', w: 70, r: (r: Row) => r._i === undefined ? null : <ONhap v={r.dvt} ten={`ĐVT dòng ${r._i + 1}`} chiDoc /> }] : []),
           ...(laCcdc(v) ? [{ k: 'sl', t: 'Số lượng', num: true, w: 90, r: o('sl', 'Số lượng') }, { k: 'dg', t: 'Đơn giá', num: true, w: 130, r: khoaTien ? ro('dg') : o('dg', 'Đơn giá') }] : []),
           { k: 'gt', t: 'Số tiền', num: true, w: 140, r: khoaTien ? ro('gt') : o('gt', 'Số tiền') },
-          ...(laDau(v) ? [{ k: 'da', t: 'Giá trị đã phân bổ', num: true, w: 140, r: o('da', 'Giá trị đã phân bổ') }, { k: 'kyDa', t: 'Số tháng đã phân bổ', num: true, w: 100, r: o('kyDa', 'Số tháng đã phân bổ') }] : []),
+          // Thẻ dư đầu kỳ: Số tháng phân bổ đứng trước Số tháng đã phân bổ (T284)
+          ...(laDau(v) ? [{ k: 'da', t: 'Giá trị đã phân bổ', num: true, w: 140, r: o('da', 'Giá trị đã phân bổ') }] : []),
           { k: 'ky', t: 'Số tháng phân bổ', num: true, w: 100, r: o('ky', 'Số tháng phân bổ') },
+          ...(laDau(v) ? [{ k: 'kyDa', t: 'Số tháng đã phân bổ', num: true, w: 100, r: o('kyDa', 'Số tháng đã phân bổ') }] : []),
           ...(laDau(v) ? [{ k: 'kyCon', t: 'Số tháng còn phân bổ', num: true, w: 100, r: ro('kyCon') }, { k: 'can', t: 'Giá trị cần phân bổ', num: true, w: 140, r: ro('can') }] : []),
           { k: 'tienKy', t: 'Số tiền phân bổ hằng kỳ', num: true, w: 140, r: ro('tienKy') },
           // Mỗi dòng một ngày bắt đầu phân bổ; đổi ngày thì lịch tính lại, bỏ số đã gõ lại ở các kỳ (T159)
@@ -331,30 +344,36 @@ export const THE_PHAN_BO: CauHinhDM = {
     // Thẻ dư đầu kỳ: gõ Số chứng từ, Ngày chứng từ, Ghi chú. Thẻ ghi tăng: lấy từ chứng từ gốc, chỉ xem, số chứng từ bấm được để mở chứng từ (T159)
     ten: 'Thông tin mua',
     truong: [],
-    ve: (v, doi) => {
-      const goc = !laDau(v)
+    ve: (v, doi, xem) => {
+      // Đang xem, hoặc thẻ ghi tăng (chỉ xem): dạng thông tin gọn như đầu phiếu Xuất bán POS, số chứng từ bấm mở chứng từ gốc (T284)
+      if (xem || !laDau(v)) return (
+        <div className="pos-dau tt-mua-xem">
+          <div><small>Số chứng từ</small>{v._goc ? <Link className="ds-link-so" to={v._goc} title="Mở chứng từ gốc">{v.soCt}</Link> : <b>{v.soCt}</b>}</div>
+          <div><small>Ngày chứng từ</small><b>{v.ngayCt}</b></div>
+          <div className="c2"><small>Ghi chú</small><b title={v.ghiChuCt}>{v.ghiChuCt}</b></div>
+        </div>
+      )
+      // Thẻ dư đầu kỳ đang thêm, sửa: gõ Số chứng từ, Ngày chứng từ, Ghi chú
       return (
         <div className="pn-luoi tt-mua">
           <div className="f"><label>Số chứng từ</label>
-            {v._goc ? <Link className="inp tt-mua-so" to={v._goc} title="Mở chứng từ gốc">{v.soCt}</Link>
-              : <input className="inp" value={v.soCt ?? ''} readOnly={goc} onChange={e => doi('soCt', e.target.value)} />}</div>
+            <input className="inp" value={v.soCt ?? ''} onChange={e => doi('soCt', e.target.value)} /></div>
           <div className="f"><label>Ngày chứng từ</label>
-            <ONgay value={v.ngayCt ?? ''} placeholder="dd/mm/yyyy" readOnly={goc} onChange={val => doi('ngayCt', val)} /></div>
+            <ONgay value={v.ngayCt ?? ''} placeholder="dd/mm/yyyy" onChange={val => doi('ngayCt', val)} /></div>
           <div className="f tt-mua-gc"><label>Ghi chú</label>
-            <input className="inp" value={v.ghiChuCt ?? ''} readOnly={goc} onChange={e => doi('ghiChuCt', e.target.value)} /></div>
+            <input className="inp" value={v.ghiChuCt ?? ''} onChange={e => doi('ghiChuCt', e.target.value)} /></div>
         </div>
       )
     },
   }],
   moi: (rows, { kieu, ngayDauNam }) => {
-    const d = new Date()
     // Thẻ dư đầu kỳ: ghi tăng ngày cuối năm trước (trước ngày đầu năm), phân bổ tiếp từ ngày đầu năm
     const [dd, mm, yy] = ngayDauNam.split('/').map(Number)
     const truoc = new Date(yy, mm - 1, dd - 1)
     const ngay = kieu === 'dau' ? `${pad(truoc.getDate())}/${pad(truoc.getMonth() + 1)}/${truoc.getFullYear()}` : homNay()
     const v: V = {
       loai: 'Chi phí trả trước', ngay, ngayPb: kieu === 'dau' ? ngayDauNam : ngay, _kieu: kieu,
-      soThe: `TPB${String(d.getFullYear()).slice(2)}${pad(d.getMonth() + 1)}-${pad(rows.length + 1, 4)}`,
+      soThe: soTheKeTiep(rows.map(r => r.soThe), kieu === 'dau' ? 'dau' : 'the', ngay),
       dong: [{ sl: 1, ngayPb: kieu === 'dau' ? ngayDauNam : ngay }],
     }
     return { ...v, dong: capMa(v, rows) }
@@ -362,6 +381,8 @@ export const THE_PHAN_BO: CauHinhDM = {
   doi: (k, v, rows) => {
     // Đổi loại thẻ hay thêm, xoá dòng: sinh lại mã các dòng chưa gõ tay
     if (k === 'loai' || k === 'dong') return { dong: capMa(v, rows) }
+    // Thẻ mới đổi ngày ghi tăng: số thẻ đánh lại theo tháng mới (T284)
+    if (k === 'ngay' && !v._sua) return { soThe: soTheKeTiep(rows.map(r => r.soThe), laDau(v) ? 'dau' : 'the', String(v.ngay ?? '')) || v.soThe }
     return {}
   },
   loi: v => {
