@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T292 | Điện thoại, Lịch sử thu chi: thanh nút Lập phiếu thu, Lập phiếu chi nằm sát đáy màn, không lơ lửng | Trum | Đang làm | Sửa `app.css` (mục cuối T292) |
 | T287 | Danh sách thẻ chi phí: dải cảnh báo số khoản chi phí chờ phân bổ chưa tạo thẻ tới hết kỳ số liệu, nút Ghi tăng ngay; nút Ghi tăng có số đếm | dinhlanphuongipacc | Đang làm | Sửa `ccdc/GhiTangHangLoat.tsx`, `ccdc/index.ts`, `CatalogScreen.tsx` (ô cảnh báo trên bảng), `CongCuDs.tsx` (số trên nút), `types.ts`, `app.css` (mục cuối T287) |
 | T282 | Điện thoại đợt B, mọi gói: phiếu nhập liệu 1 màn cho mọi nghiệp vụ, bỏ luồng 5 bước; gói Plus, Pro có khối Hạch toán thu gọn; phiếu chi lý do chờ phân bổ hỏi tạo thẻ như web | Trum | Đang làm | Giao Anti. Sửa `MLapPhieu.tsx`, `MLapPhieuKho.tsx`, `app.css` (mục cuối T282), `tools/kiem_tra.py` (bài kiểm lập phiếu điện thoại) |
 | T265 | Phiếu thu, chi đồng bộ từ FABi (T264) chưa vào Sổ quỹ tiền mặt, Sổ ngân hàng, Lịch sử thu chi, tồn quỹ trang chủ; đưa vào thì đổi số dư | | Chờ | Phát hiện khi làm T264, chờ PhuongXT quyết |
