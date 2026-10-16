@@ -697,3 +697,5 @@ Lý do: Trum chốt việc T275 ngày 15/10/2026.
 - CSS nằm ở mục T276, T280 cuối `src/styles/app.css`. Ô mới thêm sau này theo đúng luật trên.
 
 Lý do: Trum chốt việc T280 ngày 16/10/2026.
+
+## QD65. Điện thoại bỏ sơ đồ quy trình, phiếu nhập liệu 1 màn (đang soạn)
