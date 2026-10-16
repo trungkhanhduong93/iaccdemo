@@ -46,6 +46,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | T249 | Báo cáo bán hàng (`src/modules/ban-hang/bao-cao.ts`, hàm `dongBan`) còn đọc chứng từ Xuất bán POS theo kênh (`theoKenh`), số chứng từ trên báo cáo khác số hoá đơn ở danh sách từ T247; đổi sang `theoDon` để bấm số mở đúng phiếu | | Chờ | Phát hiện khi làm T247 ngày 15/10/2026. Tổng doanh thu không đổi |
 | T290 | Trang chủ gói Free máy tính: Thao tác nhanh lên hàng tab Tổng quan, Cần theo dõi, gồm Thu tiền, Chi tiền, Mua hàng, Kiểm kê, Kê khai thuế; bỏ khối Thao tác nhanh ở cột Quản lý kho | PhuongXT | Đang làm | Sửa `BaBaiToanFree.tsx`, `app.css` (mục cuối T290) |
 | T291 | Trang chủ gói Free máy tính: cột Quản lý thu chi đổi danh sách thẻ quỹ thành biểu đồ tròn tồn quỹ theo quỹ, chú thích từng quỹ bấm mở biểu đồ thu chi quỹ | PhuongXT | Đang làm | Sửa `BaBaiToanFree.tsx`, `app.css` (mục cuối T291) |
+| T293 | Trang chủ gói Free máy tính: hàng trên chỉ còn cột Quản lý lãi lỗ, Quản lý thu chi; Quản lý kho xuống hàng dưới; bỏ 6 thẻ biểu đồ (top 5, lãi lỗ chi nhánh) ở tab Tổng quan | PhuongXT | Đang làm | Sửa `BaBaiToanFree.tsx`, `app.css` (mục cuối T293) |
 
 ## Đã xong
 
