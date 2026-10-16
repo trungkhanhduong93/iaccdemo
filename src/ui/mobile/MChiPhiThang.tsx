@@ -2,8 +2,8 @@
 // Cùng số liệu với bản web, dạng dòng kiểu app
 import { Link, useSearchParams } from 'react-router-dom'
 import type { ScreenProps } from '../../modules/types'
-import { chiNhanhHienTai, useSession } from '../../app/session'
-import { CHI_NHANH, LY_CHI_PHI } from '../../data/mock'
+import { cuaHangHienTai, useSession } from '../../app/session'
+import { CUA_HANG, LY_CHI_PHI } from '../../data/mock'
 import { Icon } from '../Icon'
 import { moneyD, pct } from '../format'
 import { tinhToanTongQuan } from '../../modules/home/chiSo'
@@ -12,15 +12,15 @@ export function MChiPhiThang(_: ScreenProps) {
   const { s } = useSession()
   const [tham] = useSearchParams()
   const thang = Math.min(10, Math.max(7, Number(tham.get('thang')) || 10))
-  const cn = chiNhanhHienTai(s)
-  const d = tinhToanTongQuan(thang === 10 ? 'thang-nay' : 'thang-truoc', cn ? [cn.id] : CHI_NHANH.map(c => c.id), s.cheDo, thang)
+  const cn = cuaHangHienTai(s)
+  const d = tinhToanTongQuan(thang === 10 ? 'thang-nay' : 'thang-truoc', cn ? [cn.id] : CUA_HANG.map(c => c.id), s.cheDo, thang)
   const cpThang = d.cpHoatDong - d.cpPhanBo
   const cp = (ten: string) => d.coCauCp.find(x => x.l === ten)?.v ?? 0
   const luong = cp('Lương nhân sự')
   const matBang = cp('Thuê mặt bằng')
   const ds = [
     { ly: 'Thanh toán tiền lương', phu: 'Lương nhân viên bếp, phục vụ, quản lý', v: luong, icon: 'users' },
-    { ly: 'Chi tiền thuê nhà', phu: 'Thuê mặt bằng các chi nhánh', v: matBang, icon: 'store' },
+    { ly: 'Chi tiền thuê nhà', phu: 'Thuê mặt bằng các cửa hàng', v: matBang, icon: 'store' },
     { ly: 'Chi phí khác', phu: 'Điện, nước, gas, chi khác, chi phí tài chính', v: cpThang - luong - matBang, icon: 'cashout' },
   ].filter(x => x.v !== 0 && LY_CHI_PHI.includes(x.ly)).sort((a, b) => b.v - a.v)
 

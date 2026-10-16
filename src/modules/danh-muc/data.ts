@@ -2,7 +2,7 @@
 import { createElement } from 'react'
 import type { Col, Row } from '../types'
 import type { CheDo } from '../../app/che-do'
-import { CCDC_HANG, CHI_NHANH, HANG, KHO, NVL } from '../../data/mock'
+import { CCDC_HANG, CUA_HANG, HANG, KHO, NVL } from '../../data/mock'
 
 export const tkCot = (k: string, t: string): Col => ({
   k, t, cls: 'code',
@@ -10,7 +10,7 @@ export const tkCot = (k: string, t: string): Col => ({
 })
 
 const TK: [string, string, string, string, string][] = [
-  ['111', 'Tiền mặt', 'Tài sản', 'Dư Nợ', ''], ['1111', 'Tiền Việt Nam', 'Tài sản', 'Dư Nợ', 'Quỹ, chi nhánh'],
+  ['111', 'Tiền mặt', 'Tài sản', 'Dư Nợ', ''], ['1111', 'Tiền Việt Nam', 'Tài sản', 'Dư Nợ', 'Quỹ, cửa hàng'],
   ['112', 'Tiền gửi ngân hàng', 'Tài sản', 'Dư Nợ', ''], ['1121', 'Tiền Việt Nam', 'Tài sản', 'Dư Nợ', 'Tài khoản ngân hàng'],
   ['131', 'Phải thu của khách hàng', 'Tài sản', 'Lưỡng tính', 'Khách hàng'], ['133', 'Thuế GTGT được khấu trừ', 'Tài sản', 'Dư Nợ', ''],
   ['1331', 'Thuế GTGT được khấu trừ của hàng hoá, dịch vụ', 'Tài sản', 'Dư Nợ', ''], ['141', 'Tạm ứng', 'Tài sản', 'Dư Nợ', 'Nhân viên'],
@@ -22,9 +22,9 @@ const TK: [string, string, string, string, string][] = [
   ['334', 'Phải trả người lao động', 'Nợ phải trả', 'Dư Có', 'Nhân viên'], ['338', 'Phải trả, phải nộp khác', 'Nợ phải trả', 'Dư Có', ''],
   ['341', 'Vay và nợ thuê tài chính', 'Nợ phải trả', 'Dư Có', 'Khế ước vay'], ['411', 'Vốn đầu tư của chủ sở hữu', 'Vốn chủ sở hữu', 'Dư Có', ''],
   ['421', 'Lợi nhuận sau thuế chưa phân phối', 'Vốn chủ sở hữu', 'Lưỡng tính', ''], ['511', 'Doanh thu bán hàng và cung cấp dịch vụ', 'Doanh thu', 'Không số dư', ''],
-  ['5111', 'Doanh thu bán hàng hoá', 'Doanh thu', 'Không số dư', 'Chi nhánh, hàng hoá'], ['515', 'Doanh thu hoạt động tài chính', 'Doanh thu', 'Không số dư', ''],
-  ['632', 'Giá vốn hàng bán', 'Chi phí', 'Không số dư', 'Chi nhánh, hàng hoá'], ['635', 'Chi phí tài chính', 'Chi phí', 'Không số dư', ''],
-  ['642', 'Chi phí quản lý kinh doanh', 'Chi phí', 'Không số dư', 'Mục chi phí'], ['6421', 'Chi phí bán hàng', 'Chi phí', 'Không số dư', 'Mục chi phí, chi nhánh'],
+  ['5111', 'Doanh thu bán hàng hoá', 'Doanh thu', 'Không số dư', 'Cửa hàng, hàng hoá'], ['515', 'Doanh thu hoạt động tài chính', 'Doanh thu', 'Không số dư', ''],
+  ['632', 'Giá vốn hàng bán', 'Chi phí', 'Không số dư', 'Cửa hàng, hàng hoá'], ['635', 'Chi phí tài chính', 'Chi phí', 'Không số dư', ''],
+  ['642', 'Chi phí quản lý kinh doanh', 'Chi phí', 'Không số dư', 'Mục chi phí'], ['6421', 'Chi phí bán hàng', 'Chi phí', 'Không số dư', 'Mục chi phí, cửa hàng'],
   ['6422', 'Chi phí quản lý doanh nghiệp', 'Chi phí', 'Không số dư', 'Mục chi phí'], ['711', 'Thu nhập khác', 'Thu nhập khác', 'Không số dư', ''],
   ['811', 'Chi phí khác', 'Chi phí', 'Không số dư', ''], ['821', 'Chi phí thuế thu nhập doanh nghiệp', 'Chi phí', 'Không số dư', ''],
   ['911', 'Xác định kết quả kinh doanh', 'Kết quả', 'Không số dư', ''],
@@ -36,7 +36,7 @@ export function taiKhoan(cd: CheDo) {
   if (cd !== 'TT99') return TAI_KHOAN
   return TAI_KHOAN.flatMap(t => {
     if (t.so === '642') return [
-      { so: '641', ten: 'Chi phí bán hàng', loai: 'Chi phí', tc: 'Không số dư', ct: 'Mục chi phí, chi nhánh' },
+      { so: '641', ten: 'Chi phí bán hàng', loai: 'Chi phí', tc: 'Không số dư', ct: 'Mục chi phí, cửa hàng' },
       { so: '642', ten: 'Chi phí quản lý doanh nghiệp', loai: 'Chi phí', tc: 'Không số dư', ct: 'Mục chi phí' },
     ]
     if (t.so === '6421' || t.so === '6422') return []
@@ -154,7 +154,7 @@ export interface NhomKho {
 }
 
 export const NHOM_KHO: NhomKho[] = [
-  { ma: 'NK01', ten: 'Kho bếp', dienGiai: 'Kho nguyên liệu tại khu vực bếp của chi nhánh' },
+  { ma: 'NK01', ten: 'Kho bếp', dienGiai: 'Kho nguyên liệu tại khu vực bếp của cửa hàng' },
   { ma: 'NK02', ten: 'Kho pha chế', dienGiai: 'Kho đồ uống, nguyên liệu quầy bar' },
   { ma: 'NK03', ten: 'Kho tổng', dienGiai: 'Kho trung tâm điều phối nguyên vật liệu' },
   { ma: 'NK04', ten: 'Kho phụ trợ', dienGiai: 'Kho chứa công cụ dụng cụ, bao bì, vật tư' },
@@ -168,7 +168,7 @@ export const TEN_MUC_CHI_PHI = [
 ]
 
 export const TEN_CONG_VIEC_17 = [
-  'Khai trương chi nhánh Thảo Điền', 'Sự kiện Trung thu 2026', 'Cải tạo bếp Lê Lợi', 'Tiệc cuối năm khách công ty'
+  'Khai trương cửa hàng Thảo Điền', 'Sự kiện Trung thu 2026', 'Cải tạo bếp Lê Lợi', 'Tiệc cuối năm khách công ty'
 ]
 
 export const DS_HANG_HOA_12 = [
@@ -213,7 +213,7 @@ export const DS_MUC_CHI_PHI_16 = [
 
 /** Nguồn dữ liệu danh mục công việc 1.7 (T181) */
 export const DS_CONG_VIEC_17 = [
-  { ma: 'CV01', ten: 'Khai trương chi nhánh Thảo Điền', moTa: 'Chi phí mở điểm bán mới tháng 6 đến tháng 8/2026' },
+  { ma: 'CV01', ten: 'Khai trương cửa hàng Thảo Điền', moTa: 'Chi phí mở điểm bán mới tháng 6 đến tháng 8/2026' },
   { ma: 'CV02', ten: 'Sự kiện Trung thu 2026', moTa: 'Trang trí, quà tặng, quảng cáo tháng 9/2026' },
   { ma: 'CV03', ten: 'Cải tạo bếp Lê Lợi', moTa: 'Sửa bếp, thay hút mùi tháng 10, 11/2026' },
   { ma: 'CV04', ten: 'Tiệc cuối năm khách công ty', moTa: 'Tiệc theo hợp đồng tháng 12/2026' },
@@ -221,7 +221,7 @@ export const DS_CONG_VIEC_17 = [
 
 /** Nguồn dữ liệu danh mục quỹ tiền 1.12 (T181) */
 export const DS_QUY_TIEN_112 = [
-  ...CHI_NHANH.map((c, i) => ({ ma: `TM0${i + 1}`, ten: `Quỹ tiền mặt ${c.ngan}`, loai: 'Tiền mặt', stk: '', cn: c.ten })),
+  ...CUA_HANG.map((c, i) => ({ ma: `TM0${i + 1}`, ten: `Quỹ tiền mặt ${c.ngan}`, loai: 'Tiền mặt', stk: '', cn: c.ten })),
   { ma: 'NH01', ten: 'Vietcombank, chi nhánh Sài Gòn', loai: 'Ngân hàng', stk: '0071 0012 3456', cn: 'Tất cả' },
   { ma: 'NH02', ten: 'Techcombank, nhận tiền QR', loai: 'Ngân hàng', stk: '1903 6655 8899', cn: 'Tất cả' },
 ]

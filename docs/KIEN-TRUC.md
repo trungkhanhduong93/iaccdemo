@@ -13,11 +13,11 @@ src/
     plan.ts                gói, coTrongGoi(), kieuGhiSo(); THEO_ROADMAP đè gói lên features.json (QD19); BO_SUNG thêm màn chưa có trong Excel (QD31); anNgoaiGoi() gói Free ẩn tính năng ngoài gói (QD22)
     che-do.ts              4 chế độ kế toán TT152, TT58, TT133, TT99, cặp gói và chế độ hợp lệ, canCu() (QD31)
     mau-in.ts              17 mẫu in chứng từ theo chế độ, mauCuaChungTu() ghép chứng từ với mẫu
-    session.tsx            phiên: người dùng, vai trò, đơn vị, chi nhánh làm việc, gói (localStorage); chiNhanhHienTai()
+    session.tsx            phiên: người dùng, vai trò, đơn vị, cửa hàng làm việc, gói (localStorage); cuaHangHienTai()
     registry.ts            thứ tự 14 phân hệ trên sidebar; tự thêm màn Quy trình, Báo cáo; dựng phân hệ Báo cáo gom mọi màn báo cáo; moDuoc(), hienMan(), hienPhanHe(), tenMan(), tabCua(), dich()
     Shell.tsx              sidebar: ô tìm nhanh (Ctrl+K), nút Thêm nhanh, phân hệ lớn, thu gọn sidebar
     ModuleTabs.tsx         thanh tab ngang, đo bề rộng để dồn tab thừa vào "Khác"
-    Topbar.tsx             đơn vị kế toán, chi nhánh làm việc, nút Trải nghiệm gói (QD17, QD22). Vai trò lấy theo tài khoản lúc đăng nhập
+    Topbar.tsx             đơn vị kế toán, cửa hàng làm việc, nút Trải nghiệm gói (QD17, QD22, QD66). Vai trò lấy theo tài khoản lúc đăng nhập
     CommandPalette.tsx     tìm nhanh không dấu
     Screen.tsx             mở màn theo đường dẫn, trang Nâng cấp khi màn ngoài gói
   ui/                      Icon, format, Table (có hàng lọc từng cột qua prop loc), LocCot (ô lọc có phễu theo kiểu cột), CongCuDs (nút Excel, Tuỳ chỉnh giao diện),
@@ -27,7 +27,7 @@ src/
                            QuyTrinhScreen (sơ đồ, khung Báo cáo, hàng dưới), BaoCaoScreen (tab Báo cáo)
     bao-cao/               ToGiay (tờ A4 chia trang, zoom, in), InChungTu (mẫu in, hộp in), duLieuIn, khoMauIn (mẫu riêng, người ký), xuat, xuatXlsx, tuyChinhBC, TuyChinhBC
     thiet-ke/              lõi tuỳ chỉnh dùng chung: DsCot, DsKy, CaiTrang
-  data/mock.ts             dữ liệu giả dùng chung; DAILY là doanh thu từng ngày từng chi nhánh 01/07–07/10/2026
+  data/mock.ts             dữ liệu giả dùng chung; DAILY là doanh thu từng ngày từng cửa hàng 01/07–07/10/2026
   modules/
     types.ts               ModuleDef, ScreenDef, tuExcel()
     auth/                  Đăng nhập, quên mật khẩu, chọn đơn vị kế toán
@@ -66,7 +66,7 @@ Phần lớn màn dựng từ 6 màn chung. Các màn sau viết riêng:
 - Thanh tab: màn có nhóm Excel chứa chữ "báo cáo" vào tab Báo cáo, còn lại thành tab riêng. Muốn ép một báo cáo thành tab thì khai `tab: true` (đang dùng cho Tờ khai thuế 6.2.3). Nhãn tab lấy `NGAN[mã]`, không có thì lấy tên Excel. Tab Báo cáo và màn báo cáo của phân hệ tự chuyển sang phân hệ Báo cáo (`ScreenRoute` trong `Screen.tsx`).
 - Sơ đồ Quy trình (`quy-trinh.ts`): mỗi bước có một ô chính trên trục ngang, ô phụ treo `tren` hoặc `duoi`. Nghiệp vụ song song cùng đổ về một kết quả thì khai `hoiTu: { lan, ra }` và để `buoc: []`: mỗi làn một nhóm ô xếp ngang, mũi tên gom về khối `ra` bên phải. Sơ đồ này không có khung Báo cáo riêng, đang dùng ở phân hệ Tiền. Trường `di` là đường dẫn sau `/app/`, luôn ghi đủ phân hệ, vd `'kho/5-1-2-3/moi'`. Có `/moi` thì mở form chứng từ mới; thêm `?loai=k` để chọn loại phiếu. Khoá theo gói tự tính từ màn đích, không khai tay.
 - Một màn nhiều loại phiếu: khai `loai: [{ k, ten, prefix, ... }]` trong `voucher`. Danh sách gộp các loại, có cột Loại; nút thêm có menu chọn loại; form mới có ô "Loại phiếu". Đang dùng ở 2.1.1, 7.1.2, 8.1.2. Loại phiếu 2.1.1: thu, chi, cq (chuyển quỹ), bc (thu qua ngân hàng), unc (chi qua ngân hàng).
-- Chi nhánh: danh sách chứng từ lọc theo `chiNhanhHienTai(s)`; form chứng từ mới lấy chi nhánh từ đó, không cho sửa. Màn mới có chi nhánh thì đọc chi nhánh trên thanh trên, không tự làm ô chọn chi nhánh riêng.
+- Cửa hàng: danh sách chứng từ lọc theo `cuaHangHienTai(s)`; form chứng từ mới lấy cửa hàng từ đó, không cho sửa. Màn mới có cửa hàng thì đọc cửa hàng trên thanh trên, không tự làm ô chọn cửa hàng riêng.
 - Màn mở từ trang chủ gói Free (T232): bọc vùng trang chủ bằng `onClickCapture={useMoTuTrangChu()}` (`src/app/tuTrangChu.ts`) để liên kết mở kèm state `tuTrangChu`; thanh tab, thanh chọn báo cáo đọc state này để hiện nút Trang chủ. Màn tự vẽ cần xuất Excel thì dùng `NutXuatExcel` và `xuatBangExcel()` (`src/ui/xuatBangExcel.ts`).
 - Gói và chế độ kế toán là hai thứ khác nhau (QD31). Điều kiện mở tính năng đọc gói (`coTrongGoi`, `moDuoc`, `hienMan`). Mẫu, tên, ký hiệu, số hiệu tài khoản, cách hạch toán đọc chế độ: `s.cheDo`, `cheDoHienTai(s)`. Đừng viết `s.goi === 'PL'` để chọn mẫu.
 - Kiểu ghi sổ theo chế độ: TT152 không hạch toán (dòng phiếu tiền không có Khoản mục, Công việc); TT58 ghi sổ, không dùng tài khoản; TT133 và TT99 có Nợ/Có. Form chứng từ và báo cáo đọc `kieuGhiSo(s.cheDo)`.

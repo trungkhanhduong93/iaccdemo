@@ -26,7 +26,7 @@ const muaHang: ModuleDef = {
       dienGiai: ['Phí vận chuyển lô hàng đông lạnh', 'Phí bốc xếp', 'Phí kiểm định an toàn thực phẩm'], noCo: [['152', '331', 'Phân bổ chi phí mua vào giá nhập'], ['1331', '331', 'Thuế GTGT được khấu trừ']] } },
     '4.1.6': { voucher: { prefix: 'BSHD', doiTuong: 'ncc', nhan: 'Nhà cung cấp', them: 'Gắn hoá đơn cho phiếu mua', dong: 'tien', tien: [2_000_000, 30_000_000], thue: 8, nguon: 'HĐ',
       dienGiai: ['Gắn hoá đơn cho phiếu mua tuần trước', 'Nhà cung cấp xuất hoá đơn gộp cuối tháng'], noCo: [['1331', '331', 'Thuế GTGT được khấu trừ bổ sung']] } },
-    // Báo cáo mua hàng, nhập hàng tính từ phiếu mua 4.1.1, theo chi nhánh trên thanh trên (T63)
+    // Báo cáo mua hàng, nhập hàng tính từ phiếu mua 4.1.1, theo cửa hàng trên thanh trên (T63)
     '4.2.1': { ten: 'Chi tiết mua hàng', report: { kieu: 'bangke', theoCn: true, ...chiTietMua } },
     '4.2.2': { ten: 'Tổng hợp mua hàng theo NCC', report: { kieu: 'bangke', theoCn: true, ...tongHopMua } },   // PhuongXT đổi tên (T200)
     '4.2.4': { report: { kieu: 'bangke', theoCn: true, ...tongHopNhap } },

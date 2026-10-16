@@ -3,9 +3,9 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import type { Row, ScreenProps } from '../../modules/types'
 import { dongCua, tkTheoLyDo, type Dong } from '../generic/gen'
 import { duongDan, tenMan } from '../../app/registry'
-import { chiNhanhHienTai, ngayDauNam, truocDauNam, useSession } from '../../app/session'
+import { cuaHangHienTai, ngayDauNam, truocDauNam, useSession } from '../../app/session'
 import { kieuGhiSo } from '../../app/plan'
-import { CHI_NHANH, HANG, KHACH, KHO, LY_DO, NCC, NHAN_VIEN, NVL } from '../../data/mock'
+import { CUA_HANG, HANG, KHACH, KHO, LY_DO, NCC, NHAN_VIEN, NVL } from '../../data/mock'
 import { boO, nhomCua, theoLoai } from '../generic/nhom'
 import { DS_DOI_TUONG } from '../generic/BangSua'
 import { ghiNhatKy, soKeTiep, suaPhieu, themPhieu } from '../generic/daXoa'
@@ -86,8 +86,8 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
   const nhom = nhomCua(mod.key, cfg, loai?.k)
   const bo = boO(nhom, cfg)
   const laTien = mod.key === 'tien' || cfg.dong === 'tien'
-  const cnChon = chiNhanhHienTai(s)
-  const chiNhanh = gocData?.cn ? String(gocData.cn) : cnChon?.ten ?? 'Phố Mây Lê Lợi'
+  const cnChon = cuaHangHienTai(s)
+  const cuaHang = gocData?.cn ? String(gocData.cn) : cnChon?.ten ?? 'Phố Mây Lê Lợi'
   const tenLoai = loai?.ten ?? (gocData?.tenLoai ? String(gocData.tenLoai) : tenMan(sc))
 
   // Nguồn hàng
@@ -118,9 +118,9 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
 
   // Kho
   const dsKho = useMemo(() => {
-    const khoCn = CHI_NHANH.find(c => c.ten === chiNhanh)?.kho
+    const khoCn = CUA_HANG.find(c => c.ten === cuaHang)?.kho
     return khoCn && khoCn.length ? khoCn : KHO
-  }, [chiNhanh])
+  }, [cuaHang])
 
   // Nhãn kho
   const nhanKho = (nhom === 'mua' || nhom === 'nhap' || cfg.prefix === 'TL' || loai?.k === 'ndc')
@@ -130,10 +130,10 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
     : 'Kho'
 
   // Quỹ
-  const quyTm = `Quỹ tiền mặt ${CHI_NHANH.find(c => c.ten === chiNhanh)?.ngan ?? CHI_NHANH[0].ngan}`
+  const quyTm = `Quỹ tiền mặt ${CUA_HANG.find(c => c.ten === cuaHang)?.ngan ?? CUA_HANG[0].ngan}`
   const dsQuy = useMemo(() => {
     if (nhom === 'thu' || nhom === 'chi') return [quyTm]
-    if (nhom === 'nhthu' || nhom === 'nhchi') return QUY_TIEN.slice(CHI_NHANH.length)
+    if (nhom === 'nhthu' || nhom === 'nhchi') return QUY_TIEN.slice(CUA_HANG.length)
     return QUY_TIEN
   }, [nhom, quyTm])
 
@@ -259,12 +259,12 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
       tongCk,
       tongThue,
       doiTuong,
-      chiNhanh,
+      cuaHang,
       s.cheDo,
       nhom,
       row?._httt ?? 'congno',
     )
-  }, [cfg, dsDong, tongTien, tongCk, tongThue, doiTuong, chiNhanh, s.cheDo, nhom, row?._httt])
+  }, [cfg, dsDong, tongTien, tongCk, tongThue, doiTuong, cuaHang, s.cheDo, nhom, row?._httt])
 
   // Cập nhật dòng
   const doiDong = (idx: number, patch: Partial<Dong>) => {
@@ -467,7 +467,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
     themPhieu(man, {
       id: idLuu,
       so: soCt,
-      cn: chiNhanh,
+      cn: cuaHang,
       nguon: 'tay',
       loai: loai?.k,
       tenLoai: loai?.ten ?? tenMan(sc),

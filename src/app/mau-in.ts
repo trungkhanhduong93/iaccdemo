@@ -686,7 +686,7 @@ export const MAU_IN: MauIn[] = [
     khoi: taoKhoi(true, true, false, false),
     soCotThongTin: 1,
     thongTin: [
-      { k: 'cn', nhan: 'Chi nhánh', batBuoc: true },
+      { k: 'cn', nhan: 'Cửa hàng', batBuoc: true },
       { k: 'ngayBan', nhan: 'Ngày bán', batBuoc: true },
       { k: 'nguon', nhan: 'Nguồn dữ liệu' },
     ],

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { dsChiNhanh, useSession } from '../../app/session'
-import { CHI_NHANH } from '../../data/mock'
+import { dsCuaHang, useSession } from '../../app/session'
+import { CUA_HANG } from '../../data/mock'
 import { MODULES, nhanTab, timMan } from '../../app/registry'
 import { ghiGanDay } from '../../app/CommandPalette'
 import { OnboardFabi } from '../../modules/onboarding/OnboardFabi'
@@ -59,7 +59,7 @@ function laXemPhieu(pathname: string): boolean {
   return pathname.split('/').filter(Boolean).length >= 4
 }
 
-// Chip chi nhánh chỉ có nghĩa ở danh sách, báo cáo; trang chủ có chip riêng (T223)
+// Chip cửa hàng chỉ có nghĩa ở danh sách, báo cáo; trang chủ có chip riêng (T223)
 function coChipCn(pathname: string): boolean {
   if (laXemPhieu(pathname)) return false
   const [, modKey, slug] = pathname.split('/').filter(Boolean)
@@ -85,9 +85,9 @@ export function MobileShell() {
 
   if (!s.loggedIn) return <Navigate to="/dang-nhap" replace />
 
-  const dsCnRaw = dsChiNhanh(s)
-  const dsCn = dsCnRaw.length ? dsCnRaw : CHI_NHANH
-  const cn = dsCn.find(c => c.id === s.chiNhanh)
+  const dsCnRaw = dsCuaHang(s)
+  const dsCn = dsCnRaw.length ? dsCnRaw : CUA_HANG
+  const cn = dsCn.find(c => c.id === s.cuaHang)
 
   const laGoc = laManGoc(loc.pathname, loc.search)
   const laTrangChu =
@@ -155,7 +155,7 @@ export function MobileShell() {
                 btnClass="m-cn-btn"
                 align="end"
                 width={280}
-                title="Chọn chi nhánh làm việc"
+                title="Chọn cửa hàng làm việc"
                 label={
                   <>
                     <Icon n="store" className="ic sm" />
@@ -166,13 +166,13 @@ export function MobileShell() {
               >
                 {dong => (
                   <>
-                    <MenuHead right={<small className="mh-n">{dsCn.length} chi nhánh</small>}>Chi nhánh làm việc</MenuHead>
-                    <MenuItem on={!cn} icon="layers" desc="Chỉ xem gộp, chưa lập chứng từ" onClick={() => { set({ chiNhanh: 'all' }); dong() }}>
-                      Tất cả chi nhánh
+                    <MenuHead right={<small className="mh-n">{dsCn.length} cửa hàng</small>}>Cửa hàng làm việc</MenuHead>
+                    <MenuItem on={!cn} icon="layers" desc="Chỉ xem gộp, chưa lập chứng từ" onClick={() => { set({ cuaHang: 'all' }); dong() }}>
+                      Tất cả cửa hàng
                     </MenuItem>
                     <MenuSep />
                     {dsCn.map(c => (
-                      <MenuItem key={c.id} on={c.id === s.chiNhanh} icon="store" onClick={() => { set({ chiNhanh: c.id }); dong() }}>
+                      <MenuItem key={c.id} on={c.id === s.cuaHang} icon="store" onClick={() => { set({ cuaHang: c.id }); dong() }}>
                         {c.ten}
                       </MenuItem>
                     ))}

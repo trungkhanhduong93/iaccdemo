@@ -24,7 +24,7 @@ const tongHop: ModuleDef = {
     '10.1.5': { tool: { nut: 'Kết chuyển kỳ 9/2026', mota: 'Kết chuyển doanh thu, giá vốn, chi phí sang tài khoản 911 và kết chuyển lãi lỗ sang 421. Chạy lại được trước khi khoá sổ.',
       caiDat: [['Kỳ', 'Tháng 9/2026'], ['Bộ kết chuyển', 'Mặc định theo chế độ kế toán']] } },
     '10.1.6': { kind: 'custom', comp: KhoaSo },
-    '10.1.7': { tool: { nut: 'Lập kế hoạch 2027', mota: 'Lập kế hoạch doanh thu, chi phí, dòng tiền theo tháng và theo chi nhánh. So sánh thực hiện với kế hoạch trên Tổng quan.', caiDat: [['Năm kế hoạch', '2027'], ['Lấy số gốc từ', 'Thực hiện năm 2026']] } },
+    '10.1.7': { tool: { nut: 'Lập kế hoạch 2027', mota: 'Lập kế hoạch doanh thu, chi phí, dòng tiền theo tháng và theo cửa hàng. So sánh thực hiện với kế hoạch trên Tổng quan.', caiDat: [['Năm kế hoạch', '2027'], ['Lấy số gốc từ', 'Thực hiện năm 2026']] } },
     '10.1.8': { tool: { nut: 'Lập kế hoạch sản xuất', mota: 'Dự trù số lượng bán thành phẩm cần chế biến theo dự báo bán hàng: nước dùng, sốt, bánh. Từ đó ra nhu cầu nguyên vật liệu.', caiDat: [['Tuần', '12–18/10/2026'], ['Dự báo theo', 'Bình quân 4 tuần gần nhất']] } },
     '10.1.9': { tool: { nut: 'Kết chuyển số dư sang năm 2027', mota: 'Chuyển số dư cuối năm tài chính sang đầu năm mới, kể cả khi đổi chế độ kế toán hoặc tách dữ liệu đơn vị.', caiDat: [['Từ năm', '2026'], ['Sang năm', '2027']] } },
     '10.2.1': { kind: 'custom', comp: CanDoiPhatSinh },

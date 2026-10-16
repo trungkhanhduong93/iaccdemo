@@ -1,7 +1,7 @@
 // Báo cáo bán hàng theo ngày, tổng hợp, chi tiết bán hàng (T157). Lấy đúng dòng món của chứng từ Xuất bán POS 3.1.1
-// (tổng hợp theo kênh mỗi ngày, chi nhánh), nên doanh thu, thuế cộng lại bằng DAILY và ba báo cáo khớp nhau
+// (tổng hợp theo kênh mỗi ngày, cửa hàng), nên doanh thu, thuế cộng lại bằng DAILY và ba báo cáo khớp nhau
 import type { Col, Row } from '../types'
-import { CHI_NHANH, DAILY, HANG, trongThang } from '../../data/mock'
+import { CUA_HANG, DAILY, HANG, trongThang } from '../../data/mock'
 import { dmy } from '../../ui/format'
 import { chiaTheo, dongCuaPhieu, soFabi, theoKenh } from './ChungTuBanHang'
 import { docLocNguon, quaLocDong, quaLocDt } from '../bao-cao/loc-nguon'
@@ -14,18 +14,18 @@ interface DongBan {
   sl: number; gia: number; thanh: number; giam: number; tien: number; thue: number; gv: number
 }
 
-/** Dòng món của các chứng từ Xuất bán POS trong tháng; cn là tên chi nhánh chọn trên thanh trên.
+/** Dòng món của các chứng từ Xuất bán POS trong tháng; cn là tên cửa hàng chọn trên thanh trên.
  *  Giá vốn của chứng từ chia cho món theo doanh thu nhân hệ số nhóm, cộng lại bằng giá vốn ngày.
  *  Bộ lọc hàng hoá, nhóm hàng hoá, khách hàng lọc dòng món; không lọc kho vì đơn POS không ghi kho xuất (T207) */
 function dongBan(thang: number, cn?: string, loc?: Record<string, string[]>): DongBan[] {
   const f = docLocNguon(loc)
-  const id = CHI_NHANH.find(c => c.ten === cn)?.id
+  const id = CUA_HANG.find(c => c.ten === cn)?.id
   return DAILY.filter(x => trongThang(x.date, thang, 2026) && (!id || x.cn === id)).flatMap(x => theoKenh(x).flatMap(p => {
     const ds = dongCuaPhieu(p)
     const gv = chiaTheo(p.gv, ds.map(d => d.tien * heSoGv(d.nhom)), 1)
     const so = soFabi(`fabi-${p.seed}`)
     return ds.map((d, i): DongBan => ({
-      ngay: dmy(p.date), so, kh: 'Khách lẻ POS', cn: CHI_NHANH.find(c => c.id === p.cn)?.ten ?? p.cn, ma: d.ma, ten: d.ten, nhom: d.nhom, dvt: d.dvt,
+      ngay: dmy(p.date), so, kh: 'Khách lẻ POS', cn: CUA_HANG.find(c => c.id === p.cn)?.ten ?? p.cn, ma: d.ma, ten: d.ten, nhom: d.nhom, dvt: d.dvt,
       sl: d.sl, gia: d.gia, thanh: d.thanh, giam: d.giam, tien: d.tien, thue: d.thue, gv: gv[i],
     }))
   })).filter(d => quaLocDong(f, d) && quaLocDt(f, d.kh))
@@ -37,7 +37,7 @@ export const banHangTheoNgay = {
   cols: [{ k: 'ngay', t: 'Ngày', w: 92 }, { k: 'don', t: 'Số hoá đơn', num: true, w: 90 }, { k: 'thanh', t: 'Doanh thu hàng', num: true }, { k: 'giam', t: 'Giảm giá', num: true },
     { k: 'tien', t: 'Doanh thu thuần', num: true }, { k: 'thue', t: 'Thuế GTGT', num: true }, { k: 'tong', t: 'Tổng thanh toán', num: true }] as Col[],
   rows: (thang: number, cn?: string, loc?: Record<string, string[]>): Row[] => {
-    const id = CHI_NHANH.find(c => c.ten === cn)?.id
+    const id = CUA_HANG.find(c => c.ten === cn)?.id
     // Số hoá đơn là số đơn POS FABi gửi về trong ngày
     const don = new Map<string, number>()
     for (const x of DAILY) if (trongThang(x.date, thang, 2026) && (!id || x.cn === id)) don.set(dmy(x.date), (don.get(dmy(x.date)) ?? 0) + x.don)

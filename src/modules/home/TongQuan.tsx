@@ -2,10 +2,10 @@
 import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import type { ScreenProps } from '../types'
-import { chiNhanhHienTai, useSession } from '../../app/session'
+import { cuaHangHienTai, useSession } from '../../app/session'
 import { coTrongGoi, minGoi } from '../../app/plan'
 import { MODULES, hienMan } from '../../app/registry'
-import { CHI_NHANH, HOM_NAY } from '../../data/mock'
+import { CUA_HANG, HOM_NAY } from '../../data/mock'
 import { Icon, ONen } from '../../ui/Icon'
 import { Card, PageHead, Pk } from '../../ui/Page'
 import { Select } from '../../ui/Dropdown'
@@ -40,13 +40,13 @@ export function TongQuan({ sc }: ScreenProps) {
   const [namF, setNamF] = useState(2026)
   const [thangF, setThangF] = useState(10)
   const [soSanh] = useState<SoSanhKieu>('ky-truoc')
-  const [selCns, setSelCns] = useState<string[]>(CHI_NHANH.map(c => c.id))
+  const [selCns, setSelCns] = useState<string[]>(CUA_HANG.map(c => c.id))
   const [moCnPop, setMoCnPop] = useState(false)
   const [moTuyChinh, setMoTuyChinh] = useState(false)
   const [blocks, setBlocks] = useState<BlockConfig[]>(() => docBlocks(s.donVi, s.email))
   const cnPopRef = useRef<HTMLDivElement>(null)
 
-  // Đóng popover chi nhánh khi bấm ra ngoài
+  // Đóng popover cửa hàng khi bấm ra ngoài
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (cnPopRef.current && !cnPopRef.current.contains(e.target as Node)) {
@@ -59,9 +59,9 @@ export function TongQuan({ sc }: ScreenProps) {
 
   // 2. Tính toán số liệu tổng quan
   const isFree = s.goi === 'F'
-  // Gói Free không có ô chọn chi nhánh riêng của trang, xem theo chi nhánh trên thanh trên (T230)
-  const cnTren = chiNhanhHienTai(s)
-  const cnsXem = isFree ? (cnTren ? [cnTren.id] : CHI_NHANH.map(c => c.id)) : selCns
+  // Gói Free không có ô chọn cửa hàng riêng của trang, xem theo cửa hàng trên thanh trên (T230)
+  const cnTren = cuaHangHienTai(s)
+  const cnsXem = isFree ? (cnTren ? [cnTren.id] : CUA_HANG.map(c => c.id)) : selCns
   const kyXem: KyBaoCao = isFree ? (thangF === 10 ? 'thang-nay' : 'thang-truoc') : ky
   const d = tinhToanTongQuan(kyXem, cnsXem, s.cheDo, isFree ? thangF : undefined)
   const canhBao = coTrongGoi('11.6', s.goi)
@@ -81,11 +81,11 @@ export function TongQuan({ sc }: ScreenProps) {
     return null
   }
 
-  // Thao tác chi nhánh
-  const tatCaCn = selCns.length === CHI_NHANH.length
+  // Thao tác cửa hàng
+  const tatCaCn = selCns.length === CUA_HANG.length
   const toggleAllCn = () => {
     if (tatCaCn) return
-    setSelCns(CHI_NHANH.map(c => c.id))
+    setSelCns(CUA_HANG.map(c => c.id))
   }
   const toggleCn = (id: string) => {
     if (selCns.includes(id)) {
@@ -96,10 +96,10 @@ export function TongQuan({ sc }: ScreenProps) {
   }
 
   const nhanCnBtn = tatCaCn
-    ? 'Tất cả chi nhánh'
+    ? 'Tất cả cửa hàng'
     : selCns.length === 1
-    ? (CHI_NHANH.find(c => c.id === selCns[0])?.ngan ?? '1 chi nhánh')
-    : `${selCns.length} chi nhánh`
+    ? (CUA_HANG.find(c => c.id === selCns[0])?.ngan ?? '1 cửa hàng')
+    : `${selCns.length} cửa hàng`
 
   // Thao tác tuỳ chỉnh khối
   const doiAnKhoi = (id: string) => {
@@ -361,21 +361,21 @@ export function TongQuan({ sc }: ScreenProps) {
         )
       }
 
-      case 'chi-nhanh': {
+      case 'cua-hang': {
         return (
-          <div key="chi-nhanh" className="tq-col-6">
+          <div key="cua-hang" className="tq-col-6">
             <Card
-              title="Hiệu quả theo chi nhánh"
+              title="Hiệu quả theo cửa hàng"
               sub={`Doanh thu và biên lãi gộp từng điểm bán · ${d.kyLabel}`}
             >
               {isFree ? (
                 <div className="empty" style={{ padding: 24 }}>
                   <div><Pk g="S" o /></div>
-                  <b style={{ marginTop: 8 }}>Quản lý đa chi nhánh có ở gói Standard</b>
+                  <b style={{ marginTop: 8 }}>Quản lý đa cửa hàng có ở gói Standard</b>
                 </div>
               ) : (
                 <>
-                  <BranchBarChart data={d.chiNhanh} />
+                  <BranchBarChart data={d.cuaHang} />
                   <div style={{ marginTop: 12, paddingTop: 10, borderTop: '1px solid var(--line-2)' }} className="row">
                     <span className="muted">Số đơn hàng</span>
                     <span className="grow" />
@@ -530,7 +530,7 @@ export function TongQuan({ sc }: ScreenProps) {
           {/* 1. Chọn Kỳ */}
           {chonKy}
 
-          {/* 2. So với; 3. Lọc chi nhánh: gói Free bỏ, xem theo chi nhánh trên thanh trên (T230) */}
+          {/* 2. So với; 3. Lọc cửa hàng: gói Free bỏ, xem theo cửa hàng trên thanh trên (T230) */}
           {!isFree && (
           <div className="tq-so-sanh">
             <span className="tq-ss-label">So với:</span>
@@ -560,9 +560,9 @@ export function TongQuan({ sc }: ScreenProps) {
                     checked={tatCaCn}
                     onChange={toggleAllCn}
                   />
-                  <span>Tất cả chi nhánh</span>
+                  <span>Tất cả cửa hàng</span>
                 </label>
-                {CHI_NHANH.map(c => (
+                {CUA_HANG.map(c => (
                   <label key={c.id} className="tq-cn-opt">
                     <input
                       type="checkbox"

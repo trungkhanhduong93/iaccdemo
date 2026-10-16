@@ -3,7 +3,7 @@
 import { createElement } from 'react'
 import { Link } from 'react-router-dom'
 import type { Col, Row, VoucherCfg } from '../types'
-import { CHI_NHANH } from '../../data/mock'
+import { CUA_HANG } from '../../data/mock'
 import { chungTu, dongCua, type Dong } from '../../ui/generic/gen'
 import { KHOA_LOC_NGUON, docLocNguon, quaLocDong } from '../bao-cao/loc-nguon'
 import { datLocDaXem } from '../../ui/bao-cao/tuyChinhBC'
@@ -18,7 +18,7 @@ interface DongKho {
   sl: number; gia: number; tien: number; _di: string
 }
 
-/** Dòng hàng các phiếu trong tháng; cn là tên chi nhánh chọn trên thanh trên. Kho lấy như form phiếu: kho ghi trên phiếu, không có thì kho đầu của chi nhánh.
+/** Dòng hàng các phiếu trong tháng; cn là tên cửa hàng chọn trên thanh trên. Kho lấy như form phiếu: kho ghi trên phiếu, không có thì kho đầu của cửa hàng.
  *  Bộ lọc kho, hàng hoá, nhóm hàng hoá lọc dòng hàng trước khi cộng (T207) */
 function dongKho(nguon: NguonPhieu[], thang: number, cn?: string, loc?: Record<string, string[]>): DongKho[] {
   const f = docLocNguon(loc)
@@ -26,7 +26,7 @@ function dongKho(nguon: NguonPhieu[], thang: number, cn?: string, loc?: Record<s
     .filter(r => r.thang === thang && (!cn || r.cn === cn) && r.ttSx !== 'huy')   // phiếu điều chuyển đã huỷ không vào báo cáo (T155)
     .flatMap(r => (n.ds ? (r._dong as Dong[] | undefined) ?? [] : dongCua(n.cfg, `${n.seed}-${r.id}`)).map((x): DongKho => ({
       d: Number(String(r.ngay).slice(0, 2)), ngay: r.ngay, so: r.so, loai: n.loai,
-      kho: String(r._kho || CHI_NHANH.find(c => c.ten === r.cn)?.kho[0] || ''), doiTuong: r.doiTuong,
+      kho: String(r._kho || CUA_HANG.find(c => c.ten === r.cn)?.kho[0] || ''), doiTuong: r.doiTuong,
       ma: x.ma, ten: x.ten, dvt: x.dvt, sl: x.sl, gia: x.gia, tien: x.tien, _di: `${n.di}/${r.id}`,
     }))))
     .filter(x => quaLocDong(f, x))
@@ -87,7 +87,7 @@ export const baoCaoKiemKe = (cfgKk: () => VoucherCfg) => ({
     const f = docLocNguon(loc)
     const nhom = new Map<string, Row>()
     for (const r of mauDieuChinh(cfgKk()).filter(x => Number(x.thang) === thang && (!cn || x.cn === cn))) {
-      const kho = String(r._kho || CHI_NHANH.find(c => c.ten === r.cn)?.kho[0] || '')
+      const kho = String(r._kho || CUA_HANG.find(c => c.ten === r.cn)?.kho[0] || '')
       for (const d of (r._dong as Dong[] | undefined) ?? []) {
         if (!quaLocDong(f, { ...d, kho })) continue
         const key = `${d.ma}|${kho}`

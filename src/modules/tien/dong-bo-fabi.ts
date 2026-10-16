@@ -1,22 +1,22 @@
 // Đồng bộ phiếu thu, chi lập trên máy POS FABi (T264), mọi gói.
-// Bật, tắt theo từng chi nhánh ở Hệ thống › Cấu hình kế toán. Mỗi phiếu FABi có cửa hàng và phương thức thanh toán (PTTT); quỹ nhận phiếu lấy theo
+// Bật, tắt theo từng cửa hàng ở Hệ thống › Cấu hình kế toán. Mỗi phiếu FABi có cửa hàng và phương thức thanh toán (PTTT); quỹ nhận phiếu lấy theo
 // map 'cửa hàng|PTTT' → quỹ khai ở Danh mục Quỹ tiền (một PTTT của một cửa hàng chỉ thuộc một quỹ). PTTT chưa map thì phiếu chờ, không vào sổ.
 import type { Row } from '../types'
 import type { Session } from '../../app/session'
-import { CHI_NHANH } from '../../data/mock'
+import { CUA_HANG } from '../../data/mock'
 import { DS_PTTT, DS_QUY_TIEN_112 } from '../danh-muc/data'
 
 type SDongBo = Pick<Session, 'donVi' | 'dongBoThuChi' | 'mapPttt'>
 
 export const khoaMap = (cn: string, pttt: string) => `${cn}|${pttt}`
 
-/** Map mặc định: tiền mặt về quỹ tiền mặt của chi nhánh; chuyển khoản, thẻ về Vietcombank; App giao đồ ăn chưa map */
-const MAP_MAC_DINH: Record<string, string> = Object.fromEntries(CHI_NHANH.flatMap((c, i) => [
+/** Map mặc định: tiền mặt về quỹ tiền mặt của cửa hàng; chuyển khoản, thẻ về Vietcombank; App giao đồ ăn chưa map */
+const MAP_MAC_DINH: Record<string, string> = Object.fromEntries(CUA_HANG.flatMap((c, i) => [
   [khoaMap(c.id, 'TM'), `TM0${i + 1}`], [khoaMap(c.id, 'CK'), 'NH01'], [khoaMap(c.id, 'THE'), 'NH01'],
 ]))
 
 export const batDongBoThuChi = (s: SDongBo, cn: string) => s.dongBoThuChi?.[s.donVi]?.[cn] ?? true
-/** Bật, tắt đồng bộ một chi nhánh */
+/** Bật, tắt đồng bộ một cửa hàng */
 export const datDongBoThuChi = (s: SDongBo, cn: string, bat: boolean): Partial<Session> =>
   ({ dongBoThuChi: { ...s.dongBoThuChi, [s.donVi]: { ...s.dongBoThuChi?.[s.donVi], [cn]: bat } } })
 export const mapPtttCua = (s: SDongBo) => s.mapPttt?.[s.donVi] ?? MAP_MAC_DINH
@@ -38,11 +38,11 @@ export function tomTatPttt(khoa: string[]) {
   khoa.forEach(k => { const [cn, pt] = k.split('|'); theoPt.set(pt, [...(theoPt.get(pt) ?? []), cn]) })
   return [...theoPt].map(([pt, cns]) => {
     const ten = DS_PTTT.find(x => x.ma === pt)?.ten ?? pt
-    return cns.length === 1 ? `${ten} (${CHI_NHANH.find(c => c.id === cns[0])?.ngan ?? cns[0]})` : `${ten} · ${cns.length} cửa hàng`
+    return cns.length === 1 ? `${ten} (${CUA_HANG.find(c => c.id === cns[0])?.ngan ?? cns[0]})` : `${ten} · ${cns.length} cửa hàng`
   }).join('; ')
 }
 
-// Phiếu thu, chi lập trên máy POS FABi tuần đầu tháng 10/2026 (mẫu): chi nhánh, ngày, giờ, thu hay chi, PTTT, diễn giải, số tiền
+// Phiếu thu, chi lập trên máy POS FABi tuần đầu tháng 10/2026 (mẫu): cửa hàng, ngày, giờ, thu hay chi, PTTT, diễn giải, số tiền
 const MAU: [string, string, string, 'thu' | 'chi', string, string, number][] = [
   ['q1', '01/10/2026', '07:40', 'chi', 'TM', 'Chi mua đá viên đầu ca', 180_000],
   ['q1', '02/10/2026', '21:15', 'thu', 'TM', 'Thu phụ thu đóng gói mang về', 320_000],
@@ -59,14 +59,14 @@ const MAU: [string, string, string, 'thu' | 'chi', string, string, number][] = [
 /** Quỹ theo mã: quỹ mẫu ở Danh mục Quỹ tiền; quỹ thêm mới trong phiên chưa có ở danh sách mẫu thì coi là ngân hàng nếu mã bắt đầu NH */
 const quyTheoMa = (ma: string) => DS_QUY_TIEN_112.find(q => q.ma === ma) ?? { ma, ten: ma, loai: ma.startsWith('NH') ? 'Ngân hàng' : 'Tiền mặt' }
 
-/** Phiếu FABi trong kỳ của các chi nhánh đang bật đồng bộ: đã map thì thành phiếu thu, chi của quỹ; chưa map thì vào danh sách chờ */
+/** Phiếu FABi trong kỳ của các cửa hàng đang bật đồng bộ: đã map thì thành phiếu thu, chi của quỹ; chưa map thì vào danh sách chờ */
 export function phieuThuChiFabi(s: SDongBo) {
   const map = mapPtttCua(s)
   const da: Row[] = [], cho: { cn: string; pttt: string; dienGiai: string; tien: number }[] = []
   MAU.forEach(([cn, ngay, gio, kieu, pttt, dg, tien], i) => {
     if (!batDongBoThuChi(s, cn)) return
     const maQuy = map[khoaMap(cn, pttt)]
-    const tenCn = CHI_NHANH.find(c => c.id === cn)?.ten ?? cn
+    const tenCn = CUA_HANG.find(c => c.id === cn)?.ten ?? cn
     if (!maQuy) { cho.push({ cn: tenCn, pttt: DS_PTTT.find(x => x.ma === pttt)?.ten ?? pttt, dienGiai: dg, tien }); return }
     const quy = quyTheoMa(maQuy)
     const nh = quy.loai === 'Ngân hàng'

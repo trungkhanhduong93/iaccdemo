@@ -55,17 +55,17 @@ export const MDoiSoat: FC<ScreenProps> = () => {
         <div className="m-ds-kpi">
           <span className="m-ds-kpi-nhan">FABi ↔ Sổ</span>
           <span className="m-ds-kpi-so">110/111</span>
-          <span className="m-ds-kpi-sub">1 ngày chi nhánh lệch</span>
+          <span className="m-ds-kpi-sub">1 ngày cửa hàng lệch</span>
         </div>
         <div className="m-ds-kpi">
           <span className="m-ds-kpi-nhan">Sổ ↔ Hoá đơn</span>
           <span className="m-ds-kpi-so">110/111</span>
-          <span className="m-ds-kpi-sub">1 ngày chi nhánh lệch</span>
+          <span className="m-ds-kpi-sub">1 ngày cửa hàng lệch</span>
         </div>
         <div className="m-ds-kpi">
           <span className="m-ds-kpi-nhan">Sổ ↔ Tiền</span>
           <span className="m-ds-kpi-so">110/111</span>
-          <span className="m-ds-kpi-sub">1 ngày chi nhánh lệch</span>
+          <span className="m-ds-kpi-sub">1 ngày cửa hàng lệch</span>
         </div>
         <div className="m-ds-kpi">
           <span className="m-ds-kpi-nhan">Chờ xử lý</span>

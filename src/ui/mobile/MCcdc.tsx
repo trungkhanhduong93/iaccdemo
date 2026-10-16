@@ -1,8 +1,8 @@
 import { useMemo, useState, type FC } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { Row, ScreenProps } from '../../modules/types'
-import { chiNhanhHienTai, useSession } from '../../app/session'
-import { CHI_NHANH } from '../../data/mock'
+import { cuaHangHienTai, useSession } from '../../app/session'
+import { CUA_HANG } from '../../data/mock'
 import { money, fold } from '../format'
 import { Icon } from '../Icon'
 import { MDanhSach } from './MDanhSach'
@@ -39,7 +39,7 @@ type TheItem = (typeof THE_MAU_BASE)[0] & {
 export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
   const { s, toast } = useSession()
   const nav = useNavigate()
-  const cnChon = chiNhanhHienTai(s)
+  const cnChon = cuaHangHienTai(s)
 
   const [theList, setTheList] = useState(THE_MAU_BASE)
   const [theXem, setTheXem] = useState<TheItem | null>(null)
@@ -186,7 +186,7 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
           const text = `${r.soThe} ${r.ten} ${r.cn} ${r.loai}`.toLowerCase()
           return text.includes(q.toLowerCase())
         }}
-        timPlaceholder="Tìm theo số thẻ, tên, chi nhánh..."
+        timPlaceholder="Tìm theo số thẻ, tên, cửa hàng..."
         chips={chips}
         chipChon={chipTT}
         onChipChon={setChipTT}
@@ -213,7 +213,7 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
                 <span className="m-the-ct-so">{r.soThe} - {r.ten}</span>
                 <span className={`m-the-ct-tag ${r.ttCls}`}>{r.ttNhan}</span>
               </div>
-              {/* Dòng 2: chi nhánh */}
+              {/* Dòng 2: cửa hàng */}
               <div className="m-the-ct-hang2">
                 <span className="m-the-ct-dt">{r.cn}</span>
               </div>
@@ -230,12 +230,12 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
         }}
       />
 
-      {/* ── TẤM CHỌN CHI NHÁNH KÉO LÊN TỪ DƯỚI (Item 5 spec) ── */}
+      {/* ── TẤM CHỌN CỬA HÀNG KÉO LÊN TỪ DƯỚI (Item 5 spec) ── */}
       {moChonCn && (
         <div className="m-loc-overlay" onClick={() => setMoChonCn(false)}>
           <div className="m-loc-tam" onClick={e => e.stopPropagation()}>
             <div className="m-loc-dau">
-              <h2 className="m-loc-tieu-de">Chọn chi nhánh ghi tăng</h2>
+              <h2 className="m-loc-tieu-de">Chọn cửa hàng ghi tăng</h2>
               <button
                 type="button"
                 className="m-loc-btn-dong"
@@ -247,10 +247,10 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
             </div>
             <div className="m-loc-than">
               <p style={{ margin: '0 0 12px', fontSize: 14, color: '#666' }}>
-                Bạn đang xem tất cả chi nhánh. Chọn chi nhánh để lập thẻ chi phí mới:
+                Bạn đang xem tất cả cửa hàng. Chọn cửa hàng để lập thẻ chi phí mới:
               </p>
               <div className="m-loc-ds-muc">
-                {CHI_NHANH.map(c => (
+                {CUA_HANG.map(c => (
                   <div
                     key={c.id}
                     className="m-loc-muc-dong"
@@ -301,7 +301,7 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
 
           <div className="m-than-form">
             <div className="m-form-nhom">
-              <div className="m-form-dong-nhan">Chi nhánh</div>
+              <div className="m-form-dong-nhan">Cửa hàng</div>
               <div className="m-form-gia-tri-tinh">{cnGhiTang || 'Phố Mây Lê Lợi'}</div>
             </div>
 

@@ -10,7 +10,7 @@ import { MBaoCao } from './MBaoCao'
 import { MSoBaoCao } from './MSoBaoCao'
 import { MToGiay } from './MToGiay'
 import { MTaiKhoan } from './MTaiKhoan'
-import { MChiNhanh } from './MChiNhanh'
+import { MCuaHang } from './MCuaHang'
 import { MGoiThueBao } from './MGoiThueBao'
 import { MCauHinh, MNguoiDung, MNhatKyThaoTac, MPhanQuyen, MThongTinDonVi } from './MHeThong'
 import { MTacVu } from './MTacVu'
@@ -49,10 +49,10 @@ export function manMobile(sc: ScreenDef, mod: ModuleDef): ComponentType<ScreenPr
   }
 
   // ── Luật Anti A thêm ngay dưới dòng này (đợt 11–13) ──
-  // T187: Danh mục tài khoản 1.1 và Danh mục chi nhánh
+  // T187: Danh mục tài khoản 1.1 và Danh mục cửa hàng
   if (mod.key === 'danh-muc') {
     if (sc.code === '1.1' || sc.slug === '1-1') return MTaiKhoan
-    if (sc.slug === 'chi-nhanh') return MChiNhanh
+    if (sc.slug === 'cua-hang') return MCuaHang
   }
 
   // T191: Hệ thống (6 màn mở từ tab Khác)

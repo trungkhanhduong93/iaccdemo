@@ -3,8 +3,8 @@ import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } f
 import { Link, useLocation, useSearchParams } from 'react-router-dom'
 import type { Col, Row, ScreenProps } from '../../modules/types'
 import { tenMan } from '../../app/registry'
-import { chiNhanhHienTai, dsKyNam, kyMacDinh, ngayDauNam, truocDauNam, useSession } from '../../app/session'
-import { CHI_NHANH } from '../../data/mock'
+import { cuaHangHienTai, dsKyNam, kyMacDinh, ngayDauNam, truocDauNam, useSession } from '../../app/session'
+import { CUA_HANG } from '../../data/mock'
 import { Icon } from '../Icon'
 import { DaiCanhBao } from '../DaiCanhBao'
 import { Table } from '../Table'
@@ -402,7 +402,7 @@ export function CatalogPanel({
   onLuu,
 }: CatalogPanelProps) {
   const { s, set, toast } = useSession()
-  const cnChon = chiNhanhHienTai(s)
+  const cnChon = cuaHangHienTai(s)
 
   const dangSua = Boolean(edit && (edit.ma || edit.ten || edit.username || Object.keys(edit).length > 1))
 
@@ -594,7 +594,7 @@ export function CatalogPanel({
     return (
       <div key={kh.ten} className={`pn-khoi${mo ? ' mo' : ''}${kh.anDau ? ' pn-an-dau' : ''}`}>
         {!kh.anDau && <div className="pn-khoi-dau" onClick={() => toggleKhoi(kh.ten)}>
-          {/* Form toàn màn hình: mô tả nằm cạnh tên khối đầu, đầu form chỉ có nhãn chi nhánh như phiếu chi */}
+          {/* Form toàn màn hình: mô tả nằm cạnh tên khối đầu, đầu form chỉ có nhãn cửa hàng như phiếu chi */}
           <span>{kh.ten}{cauHinh?.toanMan && cauHinh.moTa && kh === dsKhoi[0] && <small className="muted"> · {cauHinh.moTa}</small>}</span>
           {kh.congTac && (() => {
             // Trạng thái dạng công tắc ở đầu khối như iFaster (T154)
@@ -717,16 +717,16 @@ export function CatalogPanel({
 
   return (
     <>
-      {/* Đang xem tất cả chi nhánh thì chọn chi nhánh trước khi thêm, như form chứng từ */}
+      {/* Đang xem tất cả cửa hàng thì chọn cửa hàng trước khi thêm, như form chứng từ */}
       {cauHinh?.toanMan && !dangSua && !cnChon && (
         <FormToanMan icon={cauHinh.toanMan.icon} onClose={onDong} title={`Thêm ${tenNganHien}`}
           foot={<button type="button" className="btn" onClick={onDong}>Huỷ</button>}>
           <section className="card chon-cn">
-            <b>Chọn chi nhánh lập {tenNganHien}</b>
-            <p className="muted">Bạn đang xem tất cả chi nhánh. {tenNganHien.charAt(0).toUpperCase() + tenNganHien.slice(1)} mới lập cho một chi nhánh và không đổi được sau khi lập.</p>
+            <b>Chọn cửa hàng lập {tenNganHien}</b>
+            <p className="muted">Bạn đang xem tất cả cửa hàng. {tenNganHien.charAt(0).toUpperCase() + tenNganHien.slice(1)} mới lập cho một cửa hàng và không đổi được sau khi lập.</p>
             <div className="chon-cn-ds">
-              {CHI_NHANH.map(c => (
-                <button key={c.id} type="button" className="btn" onClick={() => set({ chiNhanh: c.id })}>
+              {CUA_HANG.map(c => (
+                <button key={c.id} type="button" className="btn" onClick={() => set({ cuaHang: c.id })}>
                   <Icon n="store" className="ic sm" />{c.ten}
                 </button>
               ))}
@@ -743,7 +743,7 @@ export function CatalogPanel({
           meta={(
             <>
               {(edit.cn ?? cnChon?.ten) && (
-                <span className="chip info" title={dangSua ? 'Chi nhánh lập thẻ, không sửa được' : 'Theo chi nhánh chọn trên thanh trên, không sửa được'}>
+                <span className="chip info" title={dangSua ? 'Cửa hàng lập thẻ, không sửa được' : 'Theo cửa hàng chọn trên thanh trên, không sửa được'}>
                   <Icon n="store" className="ic sm" />{edit.cn ?? cnChon?.ten}
                 </span>
               )}

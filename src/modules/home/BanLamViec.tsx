@@ -1,7 +1,7 @@
 // Bàn làm việc của kế toán: luồng POS → vùng đệm → sổ → đối soát, việc cần xử lý, tiến độ khoá sổ
 import { Link } from 'react-router-dom'
 import type { ScreenProps } from '../types'
-import { dsChiNhanh, useSession } from '../../app/session'
+import { dsCuaHang, useSession } from '../../app/session'
 import { coTrongGoi, kieuGhiSo, minGoi } from '../../app/plan'
 import { DONG_BO, KY_KHOA_SO, LECH, daysOf } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
@@ -21,7 +21,7 @@ export function BanLamViec({ sc }: ScreenProps) {
   const chMoi = cuaHangChuaDung(s)   // cửa hàng FABi mới chưa lên sổ ở đơn vị nào (T142)
 
   const viec: { k: string; ic: string; b: string; sub: string; nut: string; to: string; ma?: string }[] = [
-    ...(chMoi.length ? [{ k: 'info', ic: 'chinhanh', b: `FABi có ${chMoi.length} cửa hàng mới chưa lên sổ kế toán`, sub: chMoi.map(c => c.ten).join(', '), nut: 'Lên sổ', to: '/app/danh-muc/chi-nhanh?them=1' }] : []),
+    ...(chMoi.length ? [{ k: 'info', ic: 'chinhanh', b: `FABi có ${chMoi.length} cửa hàng mới chưa lên sổ kế toán`, sub: chMoi.map(c => c.ten).join(', '), nut: 'Lên sổ', to: '/app/danh-muc/cua-hang?them=1' }] : []),
     { k: 'err', ic: 'alert', b: `${loi} đơn POS chưa vào sổ`, sub: noco ? 'Nhóm món "Món mới tháng 10" chưa gắn tài khoản doanh thu' : 'Đơn huỷ sau khi chốt ca, chờ xác nhận', nut: noco ? 'Gắn tài khoản' : 'Xem đơn', to: noco ? '/app/danh-muc/1-2' : '/app/ban-hang/3-1-1' },
     { k: 'err', ic: 'scale', b: `${lech} dòng lệch đối soát`, sub: 'FABi với sổ, sổ với hoá đơn, sổ với tiền', nut: 'Xử lý', to: '/app/tien-ich/11-7', ma: '11.7' },
     { k: 'warn', ic: 'filein', b: '18 hoá đơn đầu vào chờ hạch toán, 5 hoá đơn lỗi', sub: 'Tải từ iPOS Invoice lúc 09:12 hôm nay', nut: 'Hạch toán', to: '/app/tien-ich/11-4', ma: '11.4' },
@@ -50,7 +50,7 @@ export function BanLamViec({ sc }: ScreenProps) {
       </PageHead>
 
       <section className="card" style={{ marginBottom: 14 }}>
-        <div className="card-h"><h3>Từ đơn POS tới sổ hôm nay</h3><span className="sub">07/10/2026 · {dsChiNhanh(s).length} chi nhánh · đồng bộ mỗi 15 phút</span></div>
+        <div className="card-h"><h3>Từ đơn POS tới sổ hôm nay</h3><span className="sub">07/10/2026 · {dsCuaHang(s).length} cửa hàng · đồng bộ mỗi 15 phút</span></div>
         <div className="flow">
           {([['pos', 'Đơn POS về', money(don), 'FABi, tới 14:20', ''], ['db', 'Vùng đệm', money(don), 'Chưa đụng vào sổ', ''],
             ['shield', 'Kiểm tra', money(don - loi), `${loi} đơn lỗi`, 'down'], ['book', 'Đã ghi sổ', money(don - loi), '3 chứng từ bán hàng', ''],

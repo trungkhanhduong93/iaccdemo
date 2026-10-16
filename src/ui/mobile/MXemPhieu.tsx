@@ -13,7 +13,7 @@ import { useDsPhieuSx } from '../../modules/kho/BangSanXuat'
 import { SX, TT_SX } from '../../modules/kho/san-xuat'
 import { DCN } from '../../modules/kho/dieu-chuyen'
 import { MAN_DC } from '../../modules/kho/dieu-chinh'
-import { CHI_NHANH, KHOAN_MUC, TK_NGAN_HANG, daKhoaSo } from '../../data/mock'
+import { CUA_HANG, KHOAN_MUC, TK_NGAN_HANG, daKhoaSo } from '../../data/mock'
 import { ctTtCon, dsDcCon, dsTtCon, suaPhieu, ttThamChieu, ttTienTheoTra, xoaPhieu } from '../generic/daXoa'
 import { LichSu } from '../generic/ChungTuForm'
 import { loaiXuLy } from '../generic/BangKiemKe'
@@ -105,8 +105,8 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
 
   // Thu chi 2.1.1
   const laThuChi211 = sc.code === '2.1.1' || sc.slug === '2-1-1'
-  const chiNhanhTen = String(row.cn ?? '')
-  const quyTm = `Quỹ tiền mặt ${CHI_NHANH.find(c => c.ten === chiNhanhTen)?.ngan ?? CHI_NHANH[0].ngan}`
+  const cuaHangTen = String(row.cn ?? '')
+  const quyTm = `Quỹ tiền mặt ${CUA_HANG.find(c => c.ten === cuaHangTen)?.ngan ?? CUA_HANG[0].ngan}`
   const quyNhMacDinh = TK_NGAN_HANG[0] ? `${TK_NGAN_HANG[0].nh.split(',')[0]} ${TK_NGAN_HANG[0].so}` : 'Vietcombank 0071000888999'
 
   // Quỹ
@@ -395,7 +395,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
         )}
         {row.cn && (
           <div className="m-xp-dong-tt">
-            <span className="m-xp-nhan">Chi nhánh:</span>
+            <span className="m-xp-nhan">Cửa hàng:</span>
             <span className="m-xp-tri">{String(row.cn)}</span>
           </div>
         )}
@@ -409,7 +409,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
             )}
             {row._cnNhan && (
               <div className="m-xp-dong-tt">
-                <span className="m-xp-nhan">Chi nhánh nhận:</span>
+                <span className="m-xp-nhan">Cửa hàng nhận:</span>
                 <span className="m-xp-tri">{String(row._cnNhan)}</span>
               </div>
             )}
@@ -424,7 +424,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
           <>
             {row._cnXuat && (
               <div className="m-xp-dong-tt">
-                <span className="m-xp-nhan">Chi nhánh xuất:</span>
+                <span className="m-xp-nhan">Cửa hàng xuất:</span>
                 <span className="m-xp-tri">{String(row._cnXuat)}</span>
               </div>
             )}

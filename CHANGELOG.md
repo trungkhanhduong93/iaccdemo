@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 16/10/2026
 
+- T294: Đổi chi nhánh thành Cửa hàng ở mọi màn: thanh trên Cửa hàng, Tất cả cửa hàng; Danh mục cửa hàng; cột, ô lọc, thông báo; bản điện thoại. Chi nhánh ngân hàng giữ nguyên.
 - T287: Danh sách thẻ chi phí có dải cảnh báo số khoản chi phí chờ phân bổ chưa tạo thẻ tới hết kỳ số liệu, nút Ghi tăng hiện số đếm màu cam; hết khoản thì dải gợi ý xám; link Cách làm hướng dẫn 2 bước. Lưới chi tiết thẻ cột gọn, tiêu đề viết tắt PB, khi xem hiện chữ như bảng phiếu chi. Sơ đồ Quy trình ghi Nghiệp vụ chi phí trả trước cần phân bổ.
 - T293: Trang chủ gói Free, tab Tổng quan gọn lại: hàng trên là Quản lý lãi lỗ và Quản lý thu chi, Quản lý kho nằm hàng dưới. Bỏ 6 thẻ biểu đồ top 5 và lãi lỗ theo chi nhánh.
 - T281: Điện thoại, mọi gói: bỏ sơ đồ quy trình, bấm phân hệ vào thẳng danh sách chứng từ, các loại phiếu là tab trên đầu. Danh sách chứng từ dạng thẻ gọn, có hàng lọc ngày, trạng thái, nút Thêm mới nổi. Nút quay lại to hơn. Mọi báo cáo có nút lọc mở tấm chọn kỳ, chi nhánh. Phân hệ Chi phí phân bổ làm lại cho điện thoại: thẻ chi phí gọn, chọn chi nhánh bằng tấm kéo lên.

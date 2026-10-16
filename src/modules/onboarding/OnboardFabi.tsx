@@ -1,5 +1,5 @@
 // Khởi tạo dữ liệu khi mở từ FABi (T138), phần popup: bấm Dùng thử ở /khoi-tao-fabi thì vào phần mềm gói Free,
-// popup 4 bước (loại hình và gói, đơn vị, chi nhánh, đồng bộ bán hàng) mở đè lên. Đóng popup thì còn thẻ nhắc nổi ở góc dưới phải.
+// popup 4 bước (loại hình và gói, đơn vị, cửa hàng, đồng bộ bán hàng) mở đè lên. Đóng popup thì còn thẻ nhắc nổi ở góc dưới phải.
 // Tiến độ lưu ở localStorage để quay lại đúng bước.
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -7,12 +7,12 @@ import { SO_NGAY_DUNG_THU, batDauDungThu, dungThuDv, useSession, type Session } 
 import { CUA_HANG_FABI, cuaHangChuaDung, type CuaHangFabi } from './cua-hang-fabi'
 import { DIEM_NOI_BAT, FEATURES, GIA_GOI_NAM, GIA_GOI_THANG, GOI, GOIS, MODS, demTheoGoi, type Goi } from '../../app/plan'
 import { CHE_DO, CHE_DO_HOP_LE, CHE_DO_MAC_DINH, type CheDo } from '../../app/che-do'
-import { CHI_NHANH, DAILY, HOM_NAY, type DonVi } from '../../data/mock'
+import { CUA_HANG, DAILY, HOM_NAY, type DonVi } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
 import { Note, Pk } from '../../ui/Page'
 import { Dropdown, MenuItem, Select } from '../../ui/Dropdown'
 
-export const BUOC = ['Loại hình và gói', 'Đơn vị', 'Chi nhánh']   // bỏ Đồng bộ bán hàng; FABi luôn kéo chi tiết theo hoá đơn (T158, T247)
+export const BUOC = ['Loại hình và gói', 'Đơn vị', 'Cửa hàng']   // bỏ Đồng bộ bán hàng; FABi luôn kéo chi tiết theo hoá đơn (T158, T247)
 const XONG = BUOC.length   // bước hoàn tất
 export const KEY = 'iacc-khoi-tao-fabi'
 /** Tên đơn vị trên FABi; FABi không có mã số thuế (T138) */
@@ -21,8 +21,8 @@ export const SO_KENH = 3   // Tại quán, Mang về, App giao đồ ăn (T113)
 
 const DT_FABI = 29_000_000_000   // doanh thu 12 tháng lấy từ FABi
 
-/** Cửa hàng hiện ở bước Chi nhánh: dùng thử từ FABi là đơn vị mới nên có mọi chi nhánh; thêm đơn vị chỉ có cửa hàng chưa dùng kế toán */
-const dsCuaHang = (kieu: Nhap['kieu'], s: Pick<Session, 'cnThem' | 'donVi'>): CuaHangFabi[] => kieu === 'them' ? cuaHangChuaDung(s) : CHI_NHANH.map(c => ({ id: c.id, ten: c.ten, khuVuc: 'TP.HCM' }))
+/** Cửa hàng hiện ở bước Cửa hàng: dùng thử từ FABi là đơn vị mới nên có mọi cửa hàng; thêm đơn vị chỉ có cửa hàng chưa dùng kế toán */
+const dsCuaHang = (kieu: Nhap['kieu'], s: Pick<Session, 'cnThem' | 'donVi'>): CuaHangFabi[] => kieu === 'them' ? cuaHangChuaDung(s) : CUA_HANG.map(c => ({ id: c.id, ten: c.ten, khuVuc: 'TP.HCM' }))
 /** Kênh bán online trên FABi; KENH_SAN là sàn giao đồ ăn khấu trừ, nộp thuế thay cho hộ, doanh nghiệp bán qua sàn (T138) */
 export const KENH_ONLINE = ['GrabFood', 'ShopeeFood', 'Be', 'Zalo', 'Facebook', 'CRM', 'Call center', 'Giao hàng']
 export const KENH_SAN = ['GrabFood', 'ShopeeFood', 'Be']
@@ -42,7 +42,7 @@ export const PP_HKD: Record<PpHkd, string> = { doanhThu: 'Theo tỷ lệ % trên
 /** Hộ kinh doanh luôn theo TT152: tính thuế theo doanh thu gợi ý Free, theo lợi nhuận gợi ý Standard.
  *  Doanh nghiệp chọn đủ 4 gói: Free chỉ quản lý lãi lỗ, không theo thông tư (bên trong ghi sổ như TT152, không hạch toán);
  *  Standard theo TT58; Plus, Pro chọn TT133 hoặc TT99. PhuongXT chốt 11/10/2026 (T138) */
-const goiGoiY = (loai: LoaiHinh, pp: PpHkd): Goi => loai === 'hkd' ? (pp === 'doanhThu' ? 'F' : 'S') : CHI_NHANH.length > 1 ? 'PL' : 'S'
+const goiGoiY = (loai: LoaiHinh, pp: PpHkd): Goi => loai === 'hkd' ? (pp === 'doanhThu' ? 'F' : 'S') : CUA_HANG.length > 1 ? 'PL' : 'S'
 const cheDoMoi = (loai: LoaiHinh, g: Goi): CheDo => loai === 'hkd' ? 'TT152' : CHE_DO_MAC_DINH[g]
 const tenCheDo = (loai: LoaiHinh, cd: CheDo) => loai === 'dn' && cd === 'TT152' ? 'Quản lý lãi lỗ, không theo thông tư' : CHE_DO[cd].ten
 const nganCheDo = (loai: LoaiHinh, cd: CheDo) => loai === 'dn' && cd === 'TT152' ? 'Lãi lỗ' : CHE_DO[cd].ngan
@@ -51,10 +51,10 @@ const MO_TA_GOI: Record<LoaiHinh, Partial<Record<Goi, string>>> = {
   dn: { F: 'Chỉ quản lý lãi lỗ, không theo thông tư nào', S: 'Doanh nghiệp siêu nhỏ theo TT58, ghi sổ không dùng tài khoản', PL: 'Hạch toán Nợ/Có theo TT133 hoặc TT99', PR: 'Như Plus, đủ tính năng cho chuỗi lớn' },
 }
 
-/** Danh sách chi nhánh FABi lên sổ, dùng được cho chuỗi vài chục chi nhánh: gom theo khu vực khi có từ 2 khu vực (tích cả nhóm, thu gọn nhóm),
- *  tìm (từ 6 chi nhánh), lọc đã chọn, chưa chọn, chọn tất cả theo kết quả đang lọc. Hộ kinh doanh (coChinh) chọn chi nhánh chính ngay trên dòng, bắt buộc */
+/** Danh sách cửa hàng FABi lên sổ, dùng được cho chuỗi vài chục cửa hàng: gom theo khu vực khi có từ 2 khu vực (tích cả nhóm, thu gọn nhóm),
+ *  tìm (từ 6 cửa hàng), lọc đã chọn, chưa chọn, chọn tất cả theo kết quả đang lọc. Hộ kinh doanh (coChinh) chọn cửa hàng chính ngay trên dòng, bắt buộc */
 type CnFabi = { id: string; ten: string; khuVuc?: string }
-export function DsChiNhanh({ ds, chon, chinh, doi, coChinh }: { ds: CnFabi[]; chon: string[]; chinh: string; doi: (chon: string[], chinh: string) => void; coChinh: boolean }) {
+export function DsCuaHang({ ds, chon, chinh, doi, coChinh }: { ds: CnFabi[]; chon: string[]; chinh: string; doi: (chon: string[], chinh: string) => void; coChinh: boolean }) {
   const [tim, setTim] = useState('')
   const [loc, setLoc] = useState<'tat' | 'co' | 'chua'>('tat')
   const [dong, setDong] = useState<string[]>([])   // khu vực đang thu gọn
@@ -69,8 +69,8 @@ export function DsChiNhanh({ ds, chon, chinh, doi, coChinh }: { ds: CnFabi[]; ch
     <div key={c.id} className={`ktf-ds-dong ${chon.includes(c.id) ? 'on' : ''}`}>
       <label><input type="checkbox" checked={chon.includes(c.id)} onChange={() => batNhieu([c.id], !chon.includes(c.id))} /><span>{c.ten}</span></label>
       {coChinh && chon.includes(c.id) && (
-        <button className={`ktf-ds-chinh ${c.id === chinh ? 'on' : ''}`} title="Đặt làm chi nhánh chính" onClick={() => doi(chon, c.id)}>
-          <span className="radio" />{c.id === chinh ? 'Chi nhánh chính' : 'Chính'}
+        <button className={`ktf-ds-chinh ${c.id === chinh ? 'on' : ''}`} title="Đặt làm cửa hàng chính" onClick={() => doi(chon, c.id)}>
+          <span className="radio" />{c.id === chinh ? 'Cửa hàng chính' : 'Chính'}
         </button>
       )}
     </div>
@@ -78,17 +78,17 @@ export function DsChiNhanh({ ds, chon, chinh, doi, coChinh }: { ds: CnFabi[]; ch
   return (
     <div className="ktf-ds-khung">
       <div className="row ktf-ds-dau">
-        {ds.length >= 6 && <div className="ktf-cn-tim"><Icon n="search" className="ic sm" /><input value={tim} onChange={e => setTim(e.target.value)} placeholder="Tìm chi nhánh" /></div>}
+        {ds.length >= 6 && <div className="ktf-cn-tim"><Icon n="search" className="ic sm" /><input value={tim} onChange={e => setTim(e.target.value)} placeholder="Tìm cửa hàng" /></div>}
         <div className="ktf-ds-loc">
           {([['tat', 'Tất cả', ds.length], ['co', 'Đã chọn', chon.length], ['chua', 'Chưa chọn', ds.length - chon.length]] as const).map(([k, t, d]) => (
             <button key={k} className={loc === k ? 'on' : ''} onClick={() => setLoc(k)}>{t} <b>{d}</b></button>
           ))}
         </div>
         <span className="grow" />
-        <button className="btn ghost sm" disabled={!hien.length} onClick={() => batNhieu(hien.map(c => c.id), !hetChon)}>{hetChon ? 'Bỏ chọn' : 'Chọn'} {tu || loc !== 'tat' ? `${hien.length} chi nhánh đang lọc` : 'tất cả'}</button>
+        <button className="btn ghost sm" disabled={!hien.length} onClick={() => batNhieu(hien.map(c => c.id), !hetChon)}>{hetChon ? 'Bỏ chọn' : 'Chọn'} {tu || loc !== 'tat' ? `${hien.length} cửa hàng đang lọc` : 'tất cả'}</button>
       </div>
       <div className="ktf-ds">
-        {!hien.length && <div className="ktf-ds-trong muted">Không có chi nhánh khớp</div>}
+        {!hien.length && <div className="ktf-ds-trong muted">Không có cửa hàng khớp</div>}
         {coNhom
           ? khuVuc.map(kv => {
               const nhom = hien.filter(c => (c.khuVuc ?? 'Khác') === kv)
@@ -113,8 +113,8 @@ export function DsChiNhanh({ ds, chon, chinh, doi, coChinh }: { ds: CnFabi[]; ch
       </div>
       {coChinh && <div className={`ktf-ds-chan ${chinh ? '' : 'thieu'}`}>
         {chinh
-          ? <>Chi nhánh chính: <b>{ds.find(c => c.id === chinh)?.ten}</b></>
-          : <><Icon n="alert" className="ic sm" />Chưa chọn chi nhánh chính. Bấm nút <b>Chính</b> ở dòng chi nhánh là địa điểm kinh doanh chính.</>}
+          ? <>Cửa hàng chính: <b>{ds.find(c => c.id === chinh)?.ten}</b></>
+          : <><Icon n="alert" className="ic sm" />Chưa chọn cửa hàng chính. Bấm nút <b>Chính</b> ở dòng cửa hàng là địa điểm kinh doanh chính.</>}
       </div>}
     </div>
   )
@@ -168,14 +168,14 @@ export interface Nhap {
   tenDv: string        // mặc định tên FABi, tra cứu thì theo dữ liệu thuế
   diaChi: string
   ngayDauNam: string   // ngày bắt đầu năm tài chính, ghi vào Thông tin đơn vị; chứng từ POS tính từ ngày này
-  chon: string[]       // id chi nhánh lên sổ
-  cnChinh: string      // địa điểm kinh doanh chính, một trong các chi nhánh đã chọn
+  chon: string[]       // id cửa hàng lên sổ
+  cnChinh: string      // địa điểm kinh doanh chính, một trong các cửa hàng đã chọn
   kenhOnline: string[] // kênh bán online lấy từ FABi
   kenhSan: string[]    // kênh bán qua sàn đã khấu trừ thuế thay
   dongBo: 'chiTiet' | 'kenh'
 }
 export const MAC_DINH: Nhap = {
-  kieu: 'fabi', b: -2, mo: false, loai: 'dn', nhom: nhomTheoDt(DT_FABI), ppHkd: 'loiNhuan', goi: goiGoiY('dn', 'loiNhuan'), cheDo: cheDoMoi('dn', goiGoiY('dn', 'loiNhuan')), traCuu: false, mst: '', tenDv: TEN_FABI, diaChi: '', ngayDauNam: '01/01/2026', chon: CHI_NHANH.map(c => c.id),
+  kieu: 'fabi', b: -2, mo: false, loai: 'dn', nhom: nhomTheoDt(DT_FABI), ppHkd: 'loiNhuan', goi: goiGoiY('dn', 'loiNhuan'), cheDo: cheDoMoi('dn', goiGoiY('dn', 'loiNhuan')), traCuu: false, mst: '', tenDv: TEN_FABI, diaChi: '', ngayDauNam: '01/01/2026', chon: CUA_HANG.map(c => c.id),
   cnChinh: '', kenhOnline: KENH_ONLINE, kenhSan: KENH_SAN,
   dongBo: 'chiTiet',   // đồng bộ FABi chỉ kéo chi tiết theo hoá đơn (T247)
 }
@@ -196,28 +196,28 @@ function moKhoiTao(n: Nhap) {
   window.dispatchEvent(new Event(SU_KIEN))
 }
 
-/** Thêm đơn vị kế toán: tạo đơn vị mới gói Free, chưa có MST, rồi mở popup khởi tạo 4 bước; bước Chi nhánh chỉ có cửa hàng FABi chưa dùng kế toán */
+/** Thêm đơn vị kế toán: tạo đơn vị mới gói Free, chưa có MST, rồi mở popup khởi tạo 4 bước; bước Cửa hàng chỉ có cửa hàng FABi chưa dùng kế toán */
 export function useThemDonVi() {
   const { s, set } = useSession()
   const nav = useNavigate()
   return () => {
     const dvMoi: DonVi = { id: 'moi', ten: 'Đơn vị mới', viettat: 'DV', mst: '', goi: 'F', diaChi: '', diem: 0, nguoiDaiDien: '' }
-    set({ goi: 'F', cheDo: 'TT152', donVi: dvMoi.id, dvMoi, khoiTao: true, chiNhanh: 'all', dungThu: { ...s.dungThu, [dvMoi.id]: batDauDungThu() } })
+    set({ goi: 'F', cheDo: 'TT152', donVi: dvMoi.id, dvMoi, khoiTao: true, cuaHang: 'all', dungThu: { ...s.dungThu, [dvMoi.id]: batDauDungThu() } })
     const moi = dsCuaHang('them', s).map(c => c.id)
     moKhoiTao({ ...MAC_DINH, kieu: 'them', b: 0, mo: true, tenDv: '', chon: moi })
     nav('/app')
   }
 }
 
-/** Số chứng từ Xuất bán POS sinh từ ngày tu tới hôm nay: chi tiết thì mỗi đơn một chứng từ, theo kênh thì mỗi ngày, chi nhánh, kênh một chứng từ */
+/** Số chứng từ Xuất bán POS sinh từ ngày tu tới hôm nay: chi tiết thì mỗi đơn một chứng từ, theo kênh thì mỗi ngày, cửa hàng, kênh một chứng từ */
 function demCt(chon: string[], dongBo: Nhap['dongBo'], tu: number) {
   const dem = (ids: string[]) => {
     const ds = DAILY.filter(d => +d.date >= tu && +d.date <= +HOM_NAY && ids.includes(d.cn))
     return dongBo === 'chiTiet' ? ds.reduce((t, d) => t + d.don, 0) : ds.length * SO_KENH
   }
-  const coSo = chon.filter(id => CHI_NHANH.some(c => c.id === id))
-  // cửa hàng chưa có số bán mẫu (thêm đơn vị) tính bằng bình quân một chi nhánh mẫu
-  return dem(coSo) + Math.round(dem(CHI_NHANH.map(c => c.id)) / CHI_NHANH.length) * (chon.length - coSo.length)
+  const coSo = chon.filter(id => CUA_HANG.some(c => c.id === id))
+  // cửa hàng chưa có số bán mẫu (thêm đơn vị) tính bằng bình quân một cửa hàng mẫu
+  return dem(coSo) + Math.round(dem(CUA_HANG.map(c => c.id)) / CUA_HANG.length) * (chon.length - coSo.length)
 }
 const ngay = (dmy: string) => { const [d, m, y] = dmy.split('/').map(Number); return +new Date(y, m - 1, d) }
 
@@ -387,10 +387,10 @@ export function OnboardFabi() {
 
                     {n.b === 2 && (
                       <>
-                        <h2 className="ktf-h">Chi nhánh</h2>
-                        <p className="muted ktf-p">Tích chi nhánh lên sổ kế toán.{anCh > 0 && ` Chỉ hiện cửa hàng FABi chưa dùng kế toán, đã ẩn ${anCh} cửa hàng đang ở đơn vị khác.`}</p>
-                        <DsChiNhanh ds={cuaHang} chon={n.chon} chinh={n.cnChinh} doi={(chon, cnChinh) => sua({ chon, cnChinh })} coChinh={n.loai === 'hkd'} />
-                        {cnChon.length === 0 && <Note kind="warn" icon="alert">Chọn ít nhất một chi nhánh để tiếp tục.</Note>}
+                        <h2 className="ktf-h">Cửa hàng</h2>
+                        <p className="muted ktf-p">Tích cửa hàng lên sổ kế toán.{anCh > 0 && ` Chỉ hiện cửa hàng FABi chưa dùng kế toán, đã ẩn ${anCh} cửa hàng đang ở đơn vị khác.`}</p>
+                        <DsCuaHang ds={cuaHang} chon={n.chon} chinh={n.cnChinh} doi={(chon, cnChinh) => sua({ chon, cnChinh })} coChinh={n.loai === 'hkd'} />
+                        {cnChon.length === 0 && <Note kind="warn" icon="alert">Chọn ít nhất một cửa hàng để tiếp tục.</Note>}
                         {n.loai === 'hkd' && cnChon.length > 0 && (
                           <>
                             <h3 className="ktf-h3">Kênh bán</h3>
@@ -428,7 +428,7 @@ export function OnboardFabi() {
                       <li><Icon n="book" className="ic sm" /><span>{tenCheDo(n.loai, n.cheDo)}</span></li>
                       {diemGoi.map(t => <li key={t}><Icon n="check" className="ic sm" /><span>{t}</span></li>)}
                     </ul>
-                    <small className="muted">{n.loai === 'hkd' ? `Hộ kinh doanh nhóm ${n.nhom}` : 'Doanh nghiệp'} · {cnChon.length} chi nhánh · {dem.co}/{dem.tong} tính năng</small>
+                    <small className="muted">{n.loai === 'hkd' ? `Hộ kinh doanh nhóm ${n.nhom}` : 'Doanh nghiệp'} · {cnChon.length} cửa hàng · {dem.co}/{dem.tong} tính năng</small>
                   </aside>
                 </div>
               </>
@@ -439,7 +439,7 @@ export function OnboardFabi() {
                 {tai < 100
                   ? <>
                       <h1>Đang lấy dữ liệu từ FABi</h1>
-                      <p>Doanh thu từ {n.ngayDauNam} của {cnChon.length} chi nhánh.</p>
+                      <p>Doanh thu từ {n.ngayDauNam} của {cnChon.length} cửa hàng.</p>
                       <div className="ktf-tai"><i style={{ width: `${tai}%` }} /></div>
                       <p className="muted" style={{ fontSize: 12.5 }}>{tai < 40 ? 'Lấy danh mục món, kênh bán' : tai < 80 ? `Tạo ${so(soCtDaTao)} chứng từ Xuất bán POS` : 'Ghi sổ doanh thu, thuế đầu ra'}</p>
                     </>

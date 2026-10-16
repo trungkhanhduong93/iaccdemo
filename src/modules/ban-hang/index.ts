@@ -9,7 +9,7 @@ import { SO_BO_SUNG } from '../bao-cao/so-bo-sung'
 import { banHangTheoNgay, chiTietBanHang, tongHopBanHang } from './bao-cao'
 import { colsCongNo, rowsCongNo } from '../bao-cao/cong-no'
 
-/** Báo cáo bán hàng ngoài Excel (T157): lấy dòng món của chứng từ Xuất bán POS, chi nhánh theo thanh trên; mọi gói, mọi thông tư (T185).
+/** Báo cáo bán hàng ngoài Excel (T157): lấy dòng món của chứng từ Xuất bán POS, cửa hàng theo thanh trên; mọi gói, mọi thông tư (T185).
  *  Mã trên đường dẫn 3-2-6, 3-2-7, 3-2-8 là khoá cấu hình mẫu trong bao-cao/danh-sach.ts */
 // Gói Free tạm ẩn các báo cáo bán hàng, PhuongXT chốt 14/10/2026 (T216); mở lại thì bỏ goi
 const baoCaoMoi = (slug: string, ten: string, report: Omit<ReportCfg, 'kieu'>): ScreenDef =>
@@ -31,8 +31,8 @@ const banHang: ModuleDef = {
     '3.1.7': { voucher: NGOAI_POS },
     '3.1.2': { voucher: { prefix: 'HDB', doiTuong: 'kh', nhan: 'Khách hàng', them: 'Thêm hoá đơn bán hàng', dong: 'hang', tien: [0, 0], nguon: 'HĐ', soTT58: 'Sổ doanh thu bán hàng hoá, dịch vụ',
       dienGiai: ['Bán tiệc cho khách công ty', 'Bán suất ăn hội nghị', 'Bán set quà Trung thu'], noCo: [['131', '5111', 'Doanh thu'], ['131', '33311', 'Thuế GTGT đầu ra'], ['632', '152', 'Giá vốn']] } },
-    '3.1.3': { voucher: { prefix: 'BNB', doiTuong: 'cn', nhan: 'Chi nhánh nhận', them: 'Thêm phiếu bán nội bộ', dong: 'nvl', tien: [0, 0], thue: 0,
-      dienGiai: ['Bán nước dùng phở cho chi nhánh Nguyễn Trãi', 'Bán bán thành phẩm cho chi nhánh Thảo Điền'], noCo: [['136', '5111', 'Doanh thu nội bộ'], ['632', '152', 'Giá vốn']] } },
+    '3.1.3': { voucher: { prefix: 'BNB', doiTuong: 'cn', nhan: 'Cửa hàng nhận', them: 'Thêm phiếu bán nội bộ', dong: 'nvl', tien: [0, 0], thue: 0,
+      dienGiai: ['Bán nước dùng phở cho cửa hàng Nguyễn Trãi', 'Bán bán thành phẩm cho cửa hàng Thảo Điền'], noCo: [['136', '5111', 'Doanh thu nội bộ'], ['632', '152', 'Giá vốn']] } },
     '3.1.4': { voucher: { prefix: 'TL', doiTuong: 'kh', nhan: 'Khách hàng', them: 'Thêm phiếu trả lại', dong: 'hang', tien: [0, 0], nguon: 'FABi', soTT58: 'Sổ doanh thu bán hàng hoá, dịch vụ',
       dienGiai: ['Khách trả lại món làm sai', 'Huỷ đơn sau khi chốt ca'], noCo: [['5111', '1111', 'Giảm doanh thu hàng bán trả lại'], ['33311', '1111', 'Giảm thuế GTGT đầu ra']] } },
     '3.1.5': { voucher: { prefix: 'C26T', doiTuong: 'kh', nhan: 'Người mua', them: 'Lập hoá đơn', dong: 'hang', tien: [0, 0], nguon: 'HĐ',

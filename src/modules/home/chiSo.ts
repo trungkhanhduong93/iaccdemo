@@ -1,5 +1,5 @@
 // Tính toán chỉ số sức khoẻ tài chính và số liệu tổng quan F&B
-import { CHI_NHANH, DAILY, HOM_NAY, kqkd, tongKy } from '../../data/mock'
+import { CUA_HANG, DAILY, HOM_NAY, kqkd, tongKy } from '../../data/mock'
 import { du, soCai } from '../tong-hop/so-cai'
 import type { CheDo } from '../../app/che-do'
 import { pct, short } from '../../ui/format'
@@ -20,7 +20,7 @@ export const BLOCKS_MAC_DINH: BlockConfig[] = [
   { id: 'thac-nuoc', ten: 'Thác nước lợi nhuận' },
   { id: 'xu-huong', ten: 'Xu hướng kinh doanh' },
   { id: 'dong-tien', ten: 'Dòng tiền kỳ' },
-  { id: 'chi-nhanh', ten: 'Hiệu quả chi nhánh' },
+  { id: 'cua-hang', ten: 'Hiệu quả cửa hàng' },
   { id: 'co-cau-cp', ten: 'Cơ cấu chi phí' },
   { id: 'canh-bao', ten: 'Cảnh báo rủi ro' },
   { id: 'ban-chay', ten: 'Món bán chạy' },
@@ -138,7 +138,7 @@ export interface TongQuanSoLieu {
   dongTien: { dau: number; thu: number; chi: number; cuoi: number }
   // Trang chủ gói Free tách chi phí như Báo cáo kết quả kinh doanh bản Free (T220, T230)
   gv: number; cpHoatDong: number; cpPhanBo: number; lnKhac: number
-  chiNhanh: BranchItem[]
+  cuaHang: BranchItem[]
   coCauCp: CostItem[]
   theoNgay: { l: string; v: number; v2: number }[]
   soDon: number
@@ -168,8 +168,8 @@ export function tinhToanTongQuan(
   cheDo: CheDo,
   thangChon = 9   // tháng của kỳ 'thang-truoc': trang chủ gói Free chọn năm rồi tháng (T230), mặc định tháng 9
 ): TongQuanSoLieu {
-  const isLocCn = selCns.length > 0 && selCns.length < CHI_NHANH.length
-  const cns = isLocCn ? selCns : CHI_NHANH.map(c => c.id)
+  const isLocCn = selCns.length > 0 && selCns.length < CUA_HANG.length
+  const cns = isLocCn ? selCns : CUA_HANG.map(c => c.id)
 
   let kyLabel = ''
   let soSanhLabel = ''
@@ -565,9 +565,9 @@ export function tinhToanTongQuan(
     cuoi: cuoiTien,
   }
 
-  // 8. So sánh chi nhánh: cộng tongKy theo đúng các tháng của kỳ
+  // 8. So sánh cửa hàng: cộng tongKy theo đúng các tháng của kỳ
   const monthsCn = ky === 'tu-dau-nam' ? [7, 8, 9, 10] : ky === 'thang-truoc' ? [9] : [10]
-  const chiNhanh: BranchItem[] = CHI_NHANH.map(c => {
+  const cuaHang: BranchItem[] = CUA_HANG.map(c => {
     let dtC = 0, gvC = 0
     for (const m of monthsCn) {
       const tk = tongKy(m, 2026, c.id)
@@ -796,7 +796,7 @@ export function tinhToanTongQuan(
     trend,
     dongTien,
     gv, cpHoatDong: cpBh + cpQl + cpTc - dtTc, cpPhanBo: cpKhauHao + cpCcdc, lnKhac: tnKhac - cpKhac,
-    chiNhanh,
+    cuaHang,
     coCauCp,
     theoNgay,
     soDon,

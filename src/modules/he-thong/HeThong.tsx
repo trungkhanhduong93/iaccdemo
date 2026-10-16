@@ -3,11 +3,11 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { Row, ScreenProps } from '../types'
 import { MODULES, duongDan } from '../../app/registry'
-import { donViHienTai, dsChiNhanh, dsDonVi, loaiHinhDv, useSession, cheDoHienTai, namTaiChinh, ngayDauNam, type PpGtgt, type PpTndn } from '../../app/session'
+import { donViHienTai, dsCuaHang, dsDonVi, loaiHinhDv, useSession, cheDoHienTai, namTaiChinh, ngayDauNam, type PpGtgt, type PpTndn } from '../../app/session'
 import { ChonKenh, KENH_ONLINE, KENH_SAN, NHOM_HKD, type LoaiHinh, type PpHkd } from '../onboarding/OnboardFabi'
 import { FEATURES, GOI, GOIS, MODS, demTheoGoi, kieuGhiSo, type Goi } from '../../app/plan'
 import { CHE_DO, CHE_DO_HOP_LE, cheDoCuaGoi, type CheDo } from '../../app/che-do'
-import { CHI_NHANH, KHO, NGUOI_DUNG } from '../../data/mock'
+import { CUA_HANG, KHO, NGUOI_DUNG } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
 import { Card, Note, PageHead, Pk } from '../../ui/Page'
 import { St, Table } from '../../ui/Table'
@@ -18,8 +18,8 @@ import { thTT58, moTaBoSoTT58 } from '../bao-cao/tt58'
 import { CatalogPanel } from '../../ui/generic/CatalogScreen'
 import type { CauHinhDM } from '../danh-muc/truong-dm'
 
-export const VAI_TRO = ['Chủ doanh nghiệp', 'Kế toán trưởng', 'Kế toán viên', 'Quản lý chi nhánh', 'Thủ kho']
-const PHAM_VI_DS = ['Tất cả chi nhánh', ...CHI_NHANH.map(c => c.ten)]
+export const VAI_TRO = ['Chủ doanh nghiệp', 'Kế toán trưởng', 'Kế toán viên', 'Quản lý cửa hàng', 'Thủ kho']
+const PHAM_VI_DS = ['Tất cả cửa hàng', ...CUA_HANG.map(c => c.ten)]
 const KHO_DS = ['Tất cả kho', ...KHO]
 
 export const CAU_HINH_NGUOI_DUNG: CauHinhDM = {
@@ -40,7 +40,7 @@ export const CAU_HINH_NGUOI_DUNG: CauHinhDM = {
       ten: 'Phân quyền',
       truong: [
         { k: 'vaiTro', nhan: 'Vai trò', kieu: 'chon', ds: VAI_TRO, batBuoc: true },
-        { k: 'pham', nhan: 'Chi nhánh được giao', kieu: 'chon', ds: PHAM_VI_DS },
+        { k: 'pham', nhan: 'Cửa hàng được giao', kieu: 'chon', ds: PHAM_VI_DS },
         { k: 'kho', nhan: 'Kho được giao', kieu: 'chon', ds: KHO_DS },
         { k: 'otp2fa', nhan: 'Bắt buộc xác thực hai lớp', kieu: 'tich', caHang: false },
       ],
@@ -54,7 +54,7 @@ export const CAU_HINH_NGUOI_DUNG: CauHinhDM = {
       ],
     },
   ],
-  moi: () => ({ _tt: 1, dongY: false, vaiTro: 'Kế toán viên', pham: 'Tất cả chi nhánh', kho: 'Tất cả kho' }),
+  moi: () => ({ _tt: 1, dongY: false, vaiTro: 'Kế toán viên', pham: 'Tất cả cửa hàng', kho: 'Tất cả kho' }),
 }
 
 export function NguoiDung({ sc }: ScreenProps) {
@@ -81,7 +81,7 @@ export function NguoiDung({ sc }: ScreenProps) {
           onRow={r => setEditUser(r)}
         />
       </section>
-      <Note icon="shield">Xác thực hai lớp bắt buộc với kế toán trưởng và chủ doanh nghiệp. Người dùng chỉ thấy dữ liệu chi nhánh, kho được giao.</Note>
+      <Note icon="shield">Xác thực hai lớp bắt buộc với kế toán trưởng và chủ doanh nghiệp. Người dùng chỉ thấy dữ liệu cửa hàng, kho được giao.</Note>
 
       {editUser && (
         <CatalogPanel
@@ -104,7 +104,7 @@ export function NguoiDung({ sc }: ScreenProps) {
 }
 export const QUYEN = ['Xem', 'Thêm', 'Sửa', 'Xoá', 'Ghi sổ', 'Khoá sổ']
 export const MAC_DINH: Record<string, string[]> = {
-  'Chủ doanh nghiệp': ['Xem'], 'Kế toán trưởng': QUYEN, 'Kế toán viên': ['Xem', 'Thêm', 'Sửa', 'Ghi sổ'], 'Quản lý chi nhánh': ['Xem', 'Thêm'], 'Thủ kho': ['Xem', 'Thêm', 'Sửa'],
+  'Chủ doanh nghiệp': ['Xem'], 'Kế toán trưởng': QUYEN, 'Kế toán viên': ['Xem', 'Thêm', 'Sửa', 'Ghi sổ'], 'Quản lý cửa hàng': ['Xem', 'Thêm'], 'Thủ kho': ['Xem', 'Thêm', 'Sửa'],
 }
 
 export function PhanQuyen({ sc }: ScreenProps) {
@@ -177,7 +177,7 @@ export function ThongTinDonVi({ sc }: ScreenProps) {
   const [nam, setNam] = useState(namTaiChinh(s))
   const doiNam = (n: number) => { setNam(n); setDauNam(d => d.replace(/\d{4}$/, String(n))) }
   // Thông tin kê khai khai lúc khởi tạo, sửa lại ở đây (T145); chưa khai thì đơn vị tên "Hộ kinh doanh..." coi là hộ kinh doanh
-  const dsCn = dsChiNhanh(s)
+  const dsCn = dsCuaHang(s)
   const [f, setF] = useState(() => ({
     ten: dv.ten, mst: dv.mst, diaChi: dv.diaChi,
     loai: loaiHinhDv(s, dv) as LoaiHinh,

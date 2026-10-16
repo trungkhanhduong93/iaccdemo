@@ -117,7 +117,7 @@ export function MKhac() {
                   key={d.id}
                   type="button"
                   className={`m-khac-dong-btn${on ? ' on' : ''}`}
-                  onClick={() => set({ donVi: d.id, goi: d.goi, chiNhanh: 'all' })}
+                  onClick={() => set({ donVi: d.id, goi: d.goi, cuaHang: 'all' })}
                 >
                   <div className="m-khac-dong-trai">
                     <span className="m-khac-dv-av">{d.viettat}</span>

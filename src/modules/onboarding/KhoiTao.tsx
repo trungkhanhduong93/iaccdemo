@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { useSession } from '../../app/session'
 import { GOI, GOIS, demTheoGoi, type Goi } from '../../app/plan'
 import { CHE_DO, CHE_DO_HOP_LE, CHE_DO_MAC_DINH, cheDoCuaGoi, type CheDo } from '../../app/che-do'
-import { CHI_NHANH } from '../../data/mock'
+import { CUA_HANG } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
 import { Logo } from '../../ui/Logo'
 import { Note, Pk } from '../../ui/Page'
@@ -96,18 +96,18 @@ export function KhoiTao() {
           {b === 2 && (
             <>
               <h2 style={{ color: 'var(--ink)', fontSize: 20 }}>Kết nối FABi và iPOS Inventory</h2>
-              <p className="muted" style={{ margin: '4px 0 18px' }}>Danh mục, chi nhánh, kho lấy từ FABi và iPOS Inventory. Không phải nhập lại.</p>
+              <p className="muted" style={{ margin: '4px 0 18px' }}>Danh mục, cửa hàng, kho lấy từ FABi và iPOS Inventory. Không phải nhập lại.</p>
               <div className="grid g2" style={{ marginBottom: 16 }}>
-                <div className="opt on"><Icon n="pos" /><span className="grow"><b>FABi</b><small>Đã nhận 3 chi nhánh, 86 món, 9 nhóm món</small></span><span className="chip ok">Đã kết nối</span></div>
+                <div className="opt on"><Icon n="pos" /><span className="grow"><b>FABi</b><small>Đã nhận 3 cửa hàng, 86 món, 9 nhóm món</small></span><span className="chip ok">Đã kết nối</span></div>
                 <div className="opt on"><Icon n="box" /><span className="grow"><b>iPOS Inventory</b><small>Đã nhận 5 kho, 142 nguyên vật liệu, 38 công thức</small></span><span className="chip ok">Đã kết nối</span></div>
               </div>
-              <Table cols={[{ k: 'fabi', t: 'Chi nhánh trên FABi' }, { k: 'iacc', t: 'Chi nhánh kế toán' }, { k: 'kho', t: 'Kho iPOS Inventory' }]}
-                rows={CHI_NHANH.map(c => ({ fabi: c.ten, iacc: c.ten, kho: c.kho.join(', ') }))} />
+              <Table cols={[{ k: 'fabi', t: 'Cửa hàng trên FABi' }, { k: 'iacc', t: 'Cửa hàng kế toán' }, { k: 'kho', t: 'Kho iPOS Inventory' }]}
+                rows={CUA_HANG.map(c => ({ fabi: c.ten, iacc: c.ten, kho: c.kho.join(', ') }))} />
               <div className="grid g2" style={{ marginTop: 16 }}>
                 <button className={`opt ${dongBo === 'tu' ? 'on' : ''}`} onClick={() => setDongBo('tu')}><span className="radio" /><span><b>Tự động theo lịch</b><small>Mỗi 15 phút, chốt cuối ngày lúc 23:30</small></span></button>
-                <button className={`opt ${dongBo === 'tay' ? 'on' : ''}`} onClick={() => setDongBo('tay')}><span className="radio" /><span><b>Bấm tải khi cần</b><small>Chọn khoảng ngày và chi nhánh rồi tải</small></span></button>
+                <button className={`opt ${dongBo === 'tay' ? 'on' : ''}`} onClick={() => setDongBo('tay')}><span className="radio" /><span><b>Bấm tải khi cần</b><small>Chọn khoảng ngày và cửa hàng rồi tải</small></span></button>
               </div>
-              <div className="f" style={{ marginTop: 14, maxWidth: 360 }}><label>Gom đơn bán thành chứng từ</label><Select className="inp"><option>Mỗi chi nhánh một chứng từ mỗi ngày</option><option>Mỗi ca một chứng từ</option></Select></div>
+              <div className="f" style={{ marginTop: 14, maxWidth: 360 }}><label>Gom đơn bán thành chứng từ</label><Select className="inp"><option>Mỗi cửa hàng một chứng từ mỗi ngày</option><option>Mỗi ca một chứng từ</option></Select></div>
             </>
           )}
 

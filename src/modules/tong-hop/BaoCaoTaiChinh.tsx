@@ -7,7 +7,7 @@ import { tenMan } from '../../app/registry'
 import { useSession } from '../../app/session'
 import { kieuGhiSo, type Goi } from '../../app/plan'
 import type { CheDo } from '../../app/che-do'
-import { CHI_NHANH, chiPhiThang, kqkd, tongKy } from '../../data/mock'
+import { CUA_HANG, chiPhiThang, kqkd, tongKy } from '../../data/mock'
 import { Note, PageHead } from '../../ui/Page'
 import { KY_CHON, ReportPaper, ReportToolbar, RptTable } from '../../ui/generic/ReportScreen'
 import { pct } from '../../ui/format'
@@ -38,7 +38,7 @@ function dongKqkd(cd: CheDo, thang: number, goi?: Goi, s?: Session) {
   if (goi === 'F' && cd === 'TT152') {
     const pb = q.cp.ccdc + q.cp.khauHao
     const cpThang = q.cpQlkd + q.cpTc - q.dtTc - pb
-    // Chi phí NVL cộng từng chi nhánh theo cách tính của chi nhánh (T232); chưa có phiên thì theo giá vốn
+    // Chi phí NVL cộng từng cửa hàng theo cách tính của cửa hàng (T232); chưa có phiên thì theo giá vốn
     const nvl = s ? nvlKy(s, [], thang).tien : q.gv
     const lnGop = q.dtThuan - nvl
     return [
@@ -247,14 +247,14 @@ export function BaoCaoQuanTri(p: ScreenProps) {
     <Khung {...p}>
       {ky => {
         const thang = Number(ky), cp = chiPhiThang(thang, 2026), all = tongKy(thang, 2026)
-        const rows = CHI_NHANH.map(c => {
+        const rows = CUA_HANG.map(c => {
           const t = tongKy(thang, 2026, c.id), w = t.dt / all.dt
           const luong = cp.luong * w, mb = cp.matBang * w
           return { cn: c.ten, dt: t.dt, don: t.don, tb: Math.round(t.dt / t.don), fc: pct(t.gv / t.dt), lc: pct(luong / t.dt), rc: pct(mb / t.dt), lg: t.dt - t.gv, lgp: pct((t.dt - t.gv) / t.dt) }
         })
         return (
-          <ReportPaper title="Báo cáo quản trị chuỗi F&B" sub={`${kyTen(ky)} · Theo chi nhánh`} ky={false}>
-            <RptTable cols={[{ k: 'cn', t: 'Chi nhánh' }, { k: 'dt', t: 'Doanh thu', num: true }, { k: 'don', t: 'Số đơn', num: true }, { k: 'tb', t: 'TB một đơn', num: true },
+          <ReportPaper title="Báo cáo quản trị chuỗi F&B" sub={`${kyTen(ky)} · Theo cửa hàng`} ky={false}>
+            <RptTable cols={[{ k: 'cn', t: 'Cửa hàng' }, { k: 'dt', t: 'Doanh thu', num: true }, { k: 'don', t: 'Số đơn', num: true }, { k: 'tb', t: 'TB một đơn', num: true },
               { k: 'fc', t: 'Giá vốn / DT', num: true }, { k: 'lc', t: 'Lương / DT', num: true }, { k: 'rc', t: 'Mặt bằng / DT', num: true }, { k: 'lg', t: 'Lãi gộp', num: true }, { k: 'lgp', t: 'Biên lãi gộp', num: true }]}
               rows={[...rows, { cn: 'Toàn chuỗi', dt: all.dt, don: all.don, tb: Math.round(all.dt / all.don), fc: pct(all.gv / all.dt), lc: pct(cp.luong / all.dt), rc: pct(cp.matBang / all.dt), lg: all.dt - all.gv, lgp: pct((all.dt - all.gv) / all.dt), _t: 1 }]} />
           </ReportPaper>

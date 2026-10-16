@@ -9,7 +9,7 @@ export const quyTrinh: QuyTrinhDef = {
     lan: [
       {
         ten: 'Nền tảng', icon: 'chinhanh', nut: [
-          { ten: 'Chi nhánh', icon: 'chinhanh', di: 'danh-muc/chi-nhanh' },
+          { ten: 'Cửa hàng', icon: 'chinhanh', di: 'danh-muc/cua-hang' },
           { ten: 'Hệ thống tài khoản', icon: 'sotk', di: 'danh-muc/1-1' },
           { ten: 'Loại thuế', icon: 'loaithue', di: 'danh-muc/1-11' },
           { ten: 'Tiền tệ', icon: 'tiente', di: 'danh-muc/1-9' },
@@ -72,7 +72,7 @@ export const quyTrinh: QuyTrinhDef = {
     tieuDe: 'Nguồn danh mục',
     dong: [
       ['Hàng hoá, nhóm hàng', 'FABi'],
-      ['Chi nhánh, khách hàng', 'FABi'],
+      ['Cửa hàng, khách hàng', 'FABi'],
       ['Kho, nguyên vật liệu', 'iPOS Inventory'],
       ['Nhà cung cấp, công thức', 'iPOS Inventory'],
       ['Tài khoản, bút toán', 'IACC Cloud'],

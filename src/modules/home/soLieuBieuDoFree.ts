@@ -1,5 +1,5 @@
 // Số liệu biểu đồ và thẻ cảnh báo cho trang chủ gói Free (T274)
-import { CHI_NHANH, DAILY, HANG, KHOA_SO_DEN, tongKy, trongThang } from '../../data/mock'
+import { CUA_HANG, DAILY, HANG, KHOA_SO_DEN, tongKy, trongThang } from '../../data/mock'
 import { chungTu } from '../../ui/generic/gen'
 import { PHIEU_MUA } from '../mua-hang/bao-cao'
 import { nvlKy } from './chi-phi-nvl'
@@ -127,7 +127,7 @@ export function layTop5DoanhThu(thang: number, selCns: string[], tongDt: number)
   const cnsSet = new Set(selCns)
   const nhomMh = new Map<string, { ten: string; tien: number }>()
 
-  // Tính từ các ngày bán trong tháng của các chi nhánh đang chọn
+  // Tính từ các ngày bán trong tháng của các cửa hàng đang chọn
   for (const row of DAILY) {
     if (trongThang(row.date, thang, 2026) && cnsSet.has(row.cn)) {
       // Phân bổ doanh thu ngày cho các món theo tỷ trọng cố định của HANG
@@ -179,7 +179,7 @@ export function layTop5ChiPhi(
   // 5 khoản mục chi phí tiêu biểu F&B
   const danhMucCp = [
     { ten: 'Lương nhân viên bếp và phục vụ', tyLe: 0.38 },
-    { ten: 'Tiền thuê mặt bằng các chi nhánh', tyLe: 0.28 },
+    { ten: 'Tiền thuê mặt bằng các cửa hàng', tyLe: 0.28 },
     { ten: 'Tiền điện, nước, gas công nghiệp', tyLe: 0.14 },
     { ten: 'Chi phí quảng cáo và bán hàng qua app', tyLe: 0.11 },
     { ten: 'Dụng cụ vệ sinh và chi phí quản lý khác', tyLe: 0.09 },
@@ -257,7 +257,7 @@ export function layTop5NhaCungCap(
   selCns: string[],
   tongMua: number
 ): TheTop5Data {
-  const tenCnSet = new Set(CHI_NHANH.filter(c => selCns.includes(c.id)).map(c => c.ten))
+  const tenCnSet = new Set(CUA_HANG.filter(c => selCns.includes(c.id)).map(c => c.ten))
   const mua = chungTu(PHIEU_MUA, '4.1.1').filter(
     r => Number(r.thang) === thang && tenCnSet.has(String(r.cn))
   )
@@ -330,20 +330,20 @@ export function layTop5ChiTien(
   }
 }
 
-/** 6. Lãi lỗ theo từng chi nhánh tháng đang chọn (T274)
- *  Doanh thu từng chi nhánh là doanh thu thuần; tổng các chi nhánh bằng đúng doanh thu và lãi trang chủ */
-export function layLaiLoChiNhanh(
+/** 6. Lãi lỗ theo từng cửa hàng tháng đang chọn (T274)
+ *  Doanh thu từng cửa hàng là doanh thu thuần; tổng các cửa hàng bằng đúng doanh thu và lãi trang chủ */
+export function layLaiLoCuaHang(
   thang: number,
   selCns: string[],
   s: Session
 ): LaiLoCnItem[] {
-  const allIds = CHI_NHANH.map(c => c.id)
+  const allIds = CUA_HANG.map(c => c.id)
   const tqAll = tinhToanTongQuan(thang === 10 ? 'thang-nay' : 'thang-truoc', allIds, s.cheDo, thang)
   const nvlAll = nvlKy(s, allIds, thang).tien
   const dtTongAll = tqAll.dtThuan
   const cpTongAll = nvlAll + tqAll.cpHoatDong
 
-  const dsRaw = CHI_NHANH.map(cn => {
+  const dsRaw = CUA_HANG.map(cn => {
     const nvl = nvlKy(s, [cn.id], thang).tien
     const tq = tinhToanTongQuan(thang === 10 ? 'thang-nay' : 'thang-truoc', [cn.id], s.cheDo, thang)
     const cp = nvl + tq.cpHoatDong
@@ -359,7 +359,7 @@ export function layLaiLoChiNhanh(
     }
   })
 
-  // Phân bổ phần làm tròn để tổng 3 chi nhánh bằng ĐÚNG doanh thu thuần và chi phí của trang chủ
+  // Phân bổ phần làm tròn để tổng 3 cửa hàng bằng ĐÚNG doanh thu thuần và chi phí của trang chủ
   const tongDtRaw = dsRaw.reduce((a, b) => a + b.dt, 0)
   const chenhDt = dtTongAll - tongDtRaw
 
@@ -412,7 +412,7 @@ export function layDuLieuCanTheoDoi(
   const tongNoQuaHan = top5No.reduce((a, b) => a + b.soTien, 0)
 
   // 2. Hàng hoá âm kho
-  const tenCnDau = CHI_NHANH.find(c => selCns.includes(c.id))?.ten ?? 'Lê Lợi'
+  const tenCnDau = CUA_HANG.find(c => selCns.includes(c.id))?.ten ?? 'Lê Lợi'
   const dsAmKhoRaw = [
     { ten: 'Bò phi lê mềm', kho: `Kho bếp ${tenCnDau}`, dvt: 'kg', soLuong: Math.round((8 + r() * 12) * 10) / 10 },
     { ten: 'Bánh phở tươi Hà Nội', kho: `Kho lạnh ${tenCnDau}`, dvt: 'kg', soLuong: Math.round((15 + r() * 18) * 10) / 10 },

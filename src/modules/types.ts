@@ -30,7 +30,7 @@ export interface CatalogCfg {
   khongThem?: Goi[]        // gói không có nút thêm mới (vd danh mục Kho gói Free, T143)
   khongExcel?: Goi[]       // gói không có nút Nhập, Xuất Excel (vd Phương thức thanh toán lấy từ FABi, T268)
   nutPhu?: { nhan: string; icon: string; bao: string; chiIcon?: boolean }   // nút phụ trên thanh công cụ, bấm thì báo bao (vd Đồng bộ từ FABi, T144, T181)
-  locGoi?: (goi: Goi, r: Row) => boolean   // lọc dòng theo gói (vd gói Free chỉ thấy kho mặc định của chi nhánh, T143)
+  locGoi?: (goi: Goi, r: Row) => boolean   // lọc dòng theo gói (vd gói Free chỉ thấy kho mặc định của cửa hàng, T143)
   nhomLoc?: string
   nhanLoc?: string
   chucNang?: (r: Row) => { nhan: string; di: string; icon?: string }[]
@@ -70,7 +70,7 @@ export interface VoucherCfg {
   rowsMau?: () => Row[]                  // phiếu mẫu riêng thay phiếu sinh ngẫu nhiên (T126)
   phieuThem?: (s?: Session) => Row[]     // phiếu mẫu cố định thêm vào đầu danh sách phiếu sinh ngẫu nhiên (T168); s: phiên, vd phiếu thu chi đồng bộ từ FABi (T264)
   sanXuat?: 'xsc' | 'nsc' | 'xcb' | 'ncb' // phiếu sản xuất theo iPOS Inventory: xuất, nhập sơ chế; xuất, nhập chế biến. Bảng dòng riêng, phiếu nhập có tham chiếu phiếu xuất (T152)
-  dieuChuyen?: 'xdc' | 'ndc' | 'ck'     // xuất, nhập điều chuyển giữa chi nhánh; chuyển kho trong chi nhánh, không hạch toán. Phiếu nhập tham chiếu phiếu xuất như sản xuất (T155)
+  dieuChuyen?: 'xdc' | 'ndc' | 'ck'     // xuất, nhập điều chuyển giữa cửa hàng; chuyển kho trong cửa hàng, không hạch toán. Phiếu nhập tham chiếu phiếu xuất như sản xuất (T155)
 }
 
 /** Một loại phiếu trong màn chứng từ. Mở form đúng loại bằng ?loai=k */
@@ -92,9 +92,9 @@ export interface ReportCfg {
   kieu: 'so' | 'tonghop' | 'bangke' | 'dinhmuc'
   doiTuong?: 'kh' | 'ncc' | 'hang' | 'nvl' | 'tk' | 'ts' | 'ccdc' | 'cn'
   cols?: Col[]                           // bảng kê tự khai cột
-  rows?: (thang: number, cn?: string, loc?: Record<string, string[]>) => Row[]   // cn: tên chi nhánh chọn trên thanh trên (T63); loc: bộ lọc đang xem, lọc trên phiếu trước khi cộng (T207)
+  rows?: (thang: number, cn?: string, loc?: Record<string, string[]>) => Row[]   // cn: tên cửa hàng chọn trên thanh trên (T63); loc: bộ lọc đang xem, lọc trên phiếu trước khi cộng (T207)
   taiKhoan?: string                      // sổ theo tài khoản
-  theoCn?: boolean                       // số liệu theo chi nhánh chọn trên thanh trên
+  theoCn?: boolean                       // số liệu theo cửa hàng chọn trên thanh trên
   theoTk?: boolean                       // sổ tách theo tài khoản ngân hàng, lọc được theo quỹ tiền (T54)
 }
 

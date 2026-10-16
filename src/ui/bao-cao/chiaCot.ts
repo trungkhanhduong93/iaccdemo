@@ -52,8 +52,8 @@ export function phanLoaiCot(c: Col): LoaiCot {
   // Tiêu đề bắt đầu bằng Tên, Diễn giải… là cột chữ dài, kể cả khi có chữ "tài khoản" (vd Tên tài khoản)
   if (/^(tên|diễn giải|nội dung|lý do|ghi chú)/i.test(t)) return 'chudai'
 
-  // 6. Mã, số chứng từ, số hiệu TK, chi nhánh
-  if (k === 'cn' || /chi nhánh/i.test(t)) return 'ma_ct_tk'
+  // 6. Mã, số chứng từ, số hiệu TK, cửa hàng
+  if (k === 'cn' || /cửa hàng/i.test(t)) return 'ma_ct_tk'
   if (c.cls === 'code' || k.includes('ma') || /\bmã\b/i.test(t)) return 'ma_ct_tk'
   if (['so', 'thu', 'chi', 'soct', 'sophieu', 'shd', 'sohoadon'].includes(k) || /số\s+(chứng từ|phiếu|hoá đơn|hđ)/i.test(t)) {
     return 'ma_ct_tk'

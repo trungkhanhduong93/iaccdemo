@@ -2,7 +2,7 @@
 import type { CheDo } from '../../app/che-do'
 import type { Goi } from '../../app/plan'
 import type { Kho } from '../../ui/bao-cao/ToGiay'
-import { CHI_NHANH, LY_CHI_PHI, TK_NGAN_HANG } from '../../data/mock'
+import { CUA_HANG, LY_CHI_PHI, TK_NGAN_HANG } from '../../data/mock'
 import { dsDonVi, loaiHinhDv, type Session } from '../../app/session'
 import { DON_VI } from '../../data/mock'
 import { thTT58 } from './tt58'
@@ -12,12 +12,12 @@ import { KHOA_LOC_NGUON, LOC_BAN, LOC_KHO_BC, LOC_MUA } from './loc-nguon'
 export type LoaiBC = 'so' | 'bctc' | 'baocao' | 'tokhai'
 export interface LocBC {
   k: string; nhan: string; kieu: 'chon' | 'chonNhieu'
-  ds?: (cnId?: string) => string[]   // danh sách chọn cố định theo chi nhánh trên thanh trên, không lấy từ dòng bảng (T54)
+  ds?: (cnId?: string) => string[]   // danh sách chọn cố định theo cửa hàng trên thanh trên, không lấy từ dòng bảng (T54)
   cheDo?: CheDo[]                    // chỉ hiện ở các chế độ này; thiếu là mọi chế độ (T179)
 }
 
-/** Bộ lọc Quỹ tiền của sổ thu chi; chi nhánh theo thanh trên. Số liệu sổ tính lại theo lựa chọn để tồn đầu, tồn cuối đúng (T54) */
-const cnCua = (id?: string) => CHI_NHANH.filter(c => !id || c.id === id)
+/** Bộ lọc Quỹ tiền của sổ thu chi; cửa hàng theo thanh trên. Số liệu sổ tính lại theo lựa chọn để tồn đầu, tồn cuối đúng (T54) */
+const cnCua = (id?: string) => CUA_HANG.filter(c => !id || c.id === id)
 export const tenQuyTm = (ngan: string) => `Quỹ tiền mặt ${ngan}`
 export const tenTkNh = (t: { so: string; nh: string }) => `${t.nh.split(',')[0]} ${t.so}`
 
@@ -50,7 +50,7 @@ export interface CauHinhBC {
   ten?: Partial<Record<CheDo, string>>      // tên in trên tờ theo chế độ, thiếu thì giữ tên đang có
   congCot?: string[]                        // sổ: cột cộng chuyển trang
   khoa?: boolean                            // bố cục pháp định: không cho ẩn, đổi thứ tự cột (dùng ở đợt sau)
-  loc?: LocBC[]                             // bộ lọc riêng (ngoài kỳ, chi nhánh)
+  loc?: LocBC[]                             // bộ lọc riêng (ngoài kỳ, cửa hàng)
   nhomDuoc?: string[]                       // khoá cột được gom nhóm
   boTuSinh?: string[]                       // tên bộ lọc tự sinh từ cột không hiện, vd Đối tượng ở Chi tiết xuất kho (T214)
   anKhongPS?: boolean                       // có tuỳ chọn "Ẩn dòng không phát sinh"
@@ -75,7 +75,7 @@ export const CAU_HINH_BC: Record<string, CauHinhBC> = {
     congCot: ['thu', 'chi'],
     loc: [{ k: 'quy', nhan: 'Quỹ', kieu: 'chonNhieu', cheDo: ['TT152'], ds: () => DS_QUY_S2E }] },   // S2e-HKD lọc theo quỹ (T179)
   '2.2.8': baoCao('doc', {
-    loc: [{ k: 'locQuy', nhan: 'Quỹ tiền', kieu: 'chon', ds: () => [...CHI_NHANH.map(c => tenQuyTm(c.ngan)), ...TK_NGAN_HANG.map(tenTkNh)] }],
+    loc: [{ k: 'locQuy', nhan: 'Quỹ tiền', kieu: 'chon', ds: () => [...CUA_HANG.map(c => tenQuyTm(c.ngan)), ...TK_NGAN_HANG.map(tenTkNh)] }],
   }),
   '2.2.9': baoCao('doc'),
   '3.2.1': baoCao('ngang', { loc: [{ k: 'nhom', nhan: 'Nhóm món', kieu: 'chon' }], nhomDuoc: ['nhom'], anKhongPS: true }),
@@ -147,7 +147,7 @@ export const CAU_HINH_BC: Record<string, CauHinhBC> = {
   '10.4.2': { loai: 'so', kho: 'doc', anTam: ['TT152', 'TT133', 'TT99'], kyHieu: { TT58: 'S4d-DNSN', TT133: 'S23-DNN', TT99: 'S51-DN' } },
   '10.4.3': baoCao('doc', {
     loc: [
-      { k: 'kmcp', nhan: 'Khoản mục chi phí', kieu: 'chon', ds: () => ['Tiền điện', 'Tiền nước', 'Tiền gas công nghiệp', 'Thuê mặt bằng Lê Lợi', 'Thuê mặt bằng Nguyễn Trãi', 'Thuê mặt bằng Thảo Điền', 'Lương nhân viên bếp', 'Lương nhân viên phục vụ', 'Lương quản lý chi nhánh', 'Quảng cáo Facebook & TikTok', 'Phí giao hàng Grab & ShopeeFood', 'Dụng cụ vệ sinh & hoá chất', 'Văn phòng phẩm & in ấn'] },
+      { k: 'kmcp', nhan: 'Khoản mục chi phí', kieu: 'chon', ds: () => ['Tiền điện', 'Tiền nước', 'Tiền gas công nghiệp', 'Thuê mặt bằng Lê Lợi', 'Thuê mặt bằng Nguyễn Trãi', 'Thuê mặt bằng Thảo Điền', 'Lương nhân viên bếp', 'Lương nhân viên phục vụ', 'Lương quản lý cửa hàng', 'Quảng cáo Facebook & TikTok', 'Phí giao hàng Grab & ShopeeFood', 'Dụng cụ vệ sinh & hoá chất', 'Văn phòng phẩm & in ấn'] },
       { k: 'nhomCp', nhan: 'Nhóm khoản mục chi phí', kieu: 'chon', ds: () => ['Chi phí tiện ích', 'Chi phí mặt bằng', 'Chi phí nhân công', 'Chi phí bán hàng', 'Chi phí quản lý'] },
       { k: 'lyDo', nhan: 'Lý do', kieu: 'chonNhieu', ds: () => LY_CHI_PHI },   // T221; chỉ lý do được tích là chi phí (T231)
     ],

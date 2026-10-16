@@ -1,10 +1,10 @@
-// Điều chuyển kho (T155): xuất điều chuyển sang chi nhánh khác, nhập điều chuyển từ chi nhánh khác, chuyển kho trong cùng chi nhánh.
+// Điều chuyển kho (T155): xuất điều chuyển sang cửa hàng khác, nhập điều chuyển từ cửa hàng khác, chuyển kho trong cùng cửa hàng.
 // Xuất ghi Nợ 1368 / Có 152 theo giá xuất kho, nhập ghi Nợ 152 / Có 3368. Chuyển kho không hạch toán.
 // Phiếu nhập tham chiếu phiếu xuất theo cơ chế của sản xuất (T152): trạng thái ttSx, phiếu xuất giữ _phieuNhap, phiếu nhập giữ _thamChieu*.
 // File dữ liệu: không import index.ts (BAY.md, vòng import)
 import type { Row, VoucherCfg } from '../types'
 import type { Dong } from '../../ui/generic/gen'
-import { CHI_NHANH, NVL } from '../../data/mock'
+import { CUA_HANG, NVL } from '../../data/mock'
 
 export type LoaiDcn = NonNullable<VoucherCfg['dieuChuyen']>
 
@@ -13,14 +13,14 @@ export interface DongDcn extends Dong { slXuat?: number; gcDong?: string }
 
 interface ThongTinDcn { ten: string; man: string; prefix: string; nhap: boolean; doi?: LoaiDcn; noCo: [string, string, string][] }
 export const DCN: Record<LoaiDcn, ThongTinDcn> = {
-  xdc: { ten: 'Xuất điều chuyển', man: 'kho/5-1-4', prefix: 'XDCK', nhap: false, doi: 'ndc', noCo: [['1368', '152', 'Xuất điều chuyển cho chi nhánh khác']] },
-  ndc: { ten: 'Nhập điều chuyển', man: 'kho/5-1-4-2', prefix: 'NDCK', nhap: true, doi: 'xdc', noCo: [['152', '3368', 'Nhập điều chuyển từ chi nhánh khác']] },
+  xdc: { ten: 'Xuất điều chuyển', man: 'kho/5-1-4', prefix: 'XDCK', nhap: false, doi: 'ndc', noCo: [['1368', '152', 'Xuất điều chuyển cho cửa hàng khác']] },
+  ndc: { ten: 'Nhập điều chuyển', man: 'kho/5-1-4-2', prefix: 'NDCK', nhap: true, doi: 'xdc', noCo: [['152', '3368', 'Nhập điều chuyển từ cửa hàng khác']] },
   ck: { ten: 'Chuyển kho', man: 'kho/5-1-4-3', prefix: 'CK', nhap: false, noCo: [] },
 }
 
-/** Kho của một chi nhánh, chi nhánh của một kho */
-export const khoCuaCn = (cn: string) => CHI_NHANH.find(c => c.ten === cn)?.kho ?? []
-const cnCuaKho = (kho: string) => CHI_NHANH.find(c => c.kho.includes(kho))?.ten ?? ''
+/** Kho của một cửa hàng, cửa hàng của một kho */
+export const khoCuaCn = (cn: string) => CUA_HANG.find(c => c.ten === cn)?.kho ?? []
+const cnCuaKho = (kho: string) => CUA_HANG.find(c => c.kho.includes(kho))?.ten ?? ''
 
 /** Dòng hàng theo mã nguyên vật liệu, giá xuất kho lấy giá danh mục */
 export function dongDcn(ma: string, sl: number, coGia = true): DongDcn {
@@ -54,7 +54,7 @@ const XDC: Mau[] = [
     dong: [dongDcn('NVL008', 6), dongDcn('NVL009', 24)] },
   { so: 253, ngay: '03/10/2026 07:45', kho: 'Kho bếp Lê Lợi', khoNhan: 'Kho bếp Nguyễn Trãi', gc: 'Hỗ trợ bánh phở, rau thơm cho Nguyễn Trãi', tt: 'da', nv: 0,
     dong: [dongDcn('NVL003', 30), dongDcn('NVL007', 5)] },
-  { so: 254, ngay: '05/10/2026 10:20', kho: 'Kho bếp Nguyễn Trãi', khoNhan: 'Kho bếp Lê Lợi', gc: 'Lập nhầm chi nhánh nhận, đã huỷ', tt: 'huy', nv: 2,
+  { so: 254, ngay: '05/10/2026 10:20', kho: 'Kho bếp Nguyễn Trãi', khoNhan: 'Kho bếp Lê Lợi', gc: 'Lập nhầm cửa hàng nhận, đã huỷ', tt: 'huy', nv: 2,
     dong: [dongDcn('NVL004', 10)], capNhat: '05/10/2026 10:40' },
   { so: 255, ngay: '06/10/2026 14:00', kho: 'Kho bếp Lê Lợi', khoNhan: 'Kho bếp Thảo Điền', gc: 'Chuyển sườn heo, gạo tấm cho Thảo Điền', tt: 'cho', nv: 0,
     dong: [dongDcn('NVL004', 15), dongDcn('NVL005', 50)] },

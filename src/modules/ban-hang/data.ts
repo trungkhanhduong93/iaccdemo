@@ -1,6 +1,6 @@
 // Báo cáo bán hàng theo món và báo cáo doanh thu theo ngày, tính từ DAILY tháng 9/2026
 import type { Col, Row } from '../types'
-import { CHI_NHANH, HANG, daysOf, tongKy } from '../../data/mock'
+import { CUA_HANG, HANG, daysOf, tongKy } from '../../data/mock'
 import { dm } from '../../ui/format'
 
 const TY_LE = [0.21, 0.09, 0.12, 0.14, 0.07, 0.15, 0.1, 0.09, 0.03]
@@ -29,7 +29,7 @@ export const baoCaoBanHang = {
 }
 
 export const baoCaoDoanhThu = {
-  cols: [{ k: 'ngay', t: 'Ngày', w: 70 }, ...CHI_NHANH.map(c => ({ k: c.id, t: c.ngan, num: true })), { k: 'dt', t: 'Doanh thu chưa thuế', num: true },
+  cols: [{ k: 'ngay', t: 'Ngày', w: 70 }, ...CUA_HANG.map(c => ({ k: c.id, t: c.ngan, num: true })), { k: 'dt', t: 'Doanh thu chưa thuế', num: true },
     { k: 'vat', t: 'Thuế GTGT', num: true }, { k: 'don', t: 'Số đơn', num: true }] as Col[],
   rows: (thang: number): Row[] => {
     const ds = daysOf(thang, 2026)
@@ -41,6 +41,6 @@ export const baoCaoDoanhThu = {
       return r
     })
     const s = (k: string) => rows.reduce((a, r) => a + (r[k] ?? 0), 0)
-    return [...rows, { ngay: 'Cộng', ...Object.fromEntries(CHI_NHANH.map(c => [c.id, s(c.id)])), dt: s('dt'), vat: s('vat'), don: s('don'), _t: 1 }]
+    return [...rows, { ngay: 'Cộng', ...Object.fromEntries(CUA_HANG.map(c => [c.id, s(c.id)])), dt: s('dt'), vat: s('vat'), don: s('don'), _t: 1 }]
   },
 }

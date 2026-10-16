@@ -1,7 +1,7 @@
-// Thanh trên: đơn vị kế toán, chi nhánh làm việc, nút "Trải nghiệm gói" đổi gói, tài khoản. Vai trò lấy theo tài khoản đăng nhập.
+// Thanh trên: đơn vị kế toán, cửa hàng làm việc, nút "Trải nghiệm gói" đổi gói, tài khoản. Vai trò lấy theo tài khoản đăng nhập.
 // Tìm nhanh nằm ở sidebar; kỳ chọn ở bộ lọc từng màn.
 import { useNavigate } from 'react-router-dom'
-import { donViHienTai, dsChiNhanh, dsDonVi, dungThuDv, loaiHinhDv, useSession, cheDoHienTai } from './session'
+import { donViHienTai, dsCuaHang, dsDonVi, dungThuDv, loaiHinhDv, useSession, cheDoHienTai } from './session'
 import { cheDoCuaGoi } from './che-do'
 import { GOI, GOIS, demTheoGoi } from './plan'
 import { ROLE } from '../data/mock'
@@ -17,8 +17,8 @@ export function Topbar({ onSearch }: { onSearch?: () => void }) {
   const dv = donViHienTai(s)
   const dt = dungThuDv(s)
   const themDv = useThemDonVi()
-  const dsCn = dsChiNhanh(s)
-  const cn = dsCn.find(c => c.id === s.chiNhanh)
+  const dsCn = dsCuaHang(s)
+  const cn = dsCn.find(c => c.id === s.cuaHang)
   const ten = s.ten.split(' ').slice(-2).map(x => x[0]).join('')
 
   return (
@@ -33,7 +33,7 @@ export function Topbar({ onSearch }: { onSearch?: () => void }) {
           {dsDonVi(s).map(d => (
             <MenuItem key={d.id} on={d.id === s.donVi} icon={<span className="dv-av">{d.viettat}</span>}
               desc={<>{d.mst ? `MST ${d.mst}` : 'Chưa khai MST'} · {cheDoCuaGoi(d.goi).ngan} · {d.diem} điểm bán</>} right={<Pk g={d.goi} />}
-              onClick={() => { set({ donVi: d.id, goi: d.goi, chiNhanh: 'all' }); dong(); nav('/app') }}>{d.ten}</MenuItem>
+              onClick={() => { set({ donVi: d.id, goi: d.goi, cuaHang: 'all' }); dong(); nav('/app') }}>{d.ten}</MenuItem>
           ))}
           <MenuSep />
           <MenuItem icon="plus" onClick={() => { dong(); themDv() }} desc="Khởi tạo 4 bước từ cửa hàng FABi chưa dùng kế toán">Thêm đơn vị kế toán</MenuItem>
@@ -56,17 +56,17 @@ export function Topbar({ onSearch }: { onSearch?: () => void }) {
         </button>
       )}
 
-      <Dropdown btnClass="cn-btn" align="end" width={300} title="Chọn chi nhánh làm việc. Chứng từ thêm mới lập cho chi nhánh này"
-        label={<><Icon n="store" className="ic sm" /><span className="cn-t"><small>Chi nhánh</small><b>{cn ? cn.ten : 'Tất cả chi nhánh'}</b></span><Icon n="chevd" className="ic sm" /></>}>
+      <Dropdown btnClass="cn-btn" align="end" width={300} title="Chọn cửa hàng làm việc. Chứng từ thêm mới lập cho cửa hàng này"
+        label={<><Icon n="store" className="ic sm" /><span className="cn-t"><small>Cửa hàng</small><b>{cn ? cn.ten : 'Tất cả cửa hàng'}</b></span><Icon n="chevd" className="ic sm" /></>}>
         {dong => <>
-          <MenuHead right={<small className="mh-n">{dsCn.length} chi nhánh</small>}>Chi nhánh làm việc</MenuHead>
-          <MenuItem on={!cn} icon="layers" desc="Chỉ xem gộp, chưa lập chứng từ" onClick={() => { set({ chiNhanh: 'all' }); dong() }}>Tất cả chi nhánh</MenuItem>
+          <MenuHead right={<small className="mh-n">{dsCn.length} cửa hàng</small>}>Cửa hàng làm việc</MenuHead>
+          <MenuItem on={!cn} icon="layers" desc="Chỉ xem gộp, chưa lập chứng từ" onClick={() => { set({ cuaHang: 'all' }); dong() }}>Tất cả cửa hàng</MenuItem>
           <MenuSep />
           {dsCn.map(c => (
-            <MenuItem key={c.id} on={c.id === s.chiNhanh} icon="store" onClick={() => { set({ chiNhanh: c.id }); dong() }}>{c.ten}</MenuItem>
+            <MenuItem key={c.id} on={c.id === s.cuaHang} icon="store" onClick={() => { set({ cuaHang: c.id }); dong() }}>{c.ten}</MenuItem>
           ))}
           <MenuSep />
-          <MenuItem icon="edit" to="/app/danh-muc/chi-nhanh">Danh mục chi nhánh</MenuItem>
+          <MenuItem icon="edit" to="/app/danh-muc/cua-hang">Danh mục cửa hàng</MenuItem>
         </>}
       </Dropdown>
 

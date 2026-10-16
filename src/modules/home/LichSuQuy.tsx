@@ -1,10 +1,10 @@
 // Lịch sử thu chi một quỹ kiểu app ngân hàng (T230): mở khi bấm quỹ ở khối Tồn quỹ trang chủ gói Free.
-// Giao dịch lấy từ Sổ quỹ tiền mặt (quỹ tiền mặt chi nhánh) hoặc Sổ ngân hàng (tài khoản), gom theo ngày, mới nhất trên cùng;
+// Giao dịch lấy từ Sổ quỹ tiền mặt (quỹ tiền mặt cửa hàng) hoặc Sổ ngân hàng (tài khoản), gom theo ngày, mới nhất trên cùng;
 // bấm giao dịch mở chứng từ chi tiết theo số phiếu (cách dò phiếu thật của T201)
 import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import type { Row, ScreenProps } from '../types'
-import { CHI_NHANH, TK_NGAN_HANG } from '../../data/mock'
+import { CUA_HANG, TK_NGAN_HANG } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
 import { between, k, money, moneyD, pad, rng } from '../../ui/format'
 import { NGUON, soChiTiet } from '../../ui/generic/gen'
@@ -31,7 +31,7 @@ export interface GiaoDich {
 
 /** Giao dịch gộp tất cả quỹ trong tháng (T272) */
 export function gopGiaoDichTatCa(thang: number, cnIds?: string[]): { mo: number; cuoi: number; thu: number; chi: number; ds: GiaoDich[] } {
-  const ids = cnIds && cnIds.length > 0 ? cnIds : CHI_NHANH.map(c => c.id)
+  const ids = cnIds && cnIds.length > 0 ? cnIds : CUA_HANG.map(c => c.id)
   const quyDs = tonQuyTheoSo(thang, ids)
   const mo = quyDs.reduce((a, r) => a + r.mo, 0)
   const cuoi = quyDs.reduce((a, r) => a + r.cuoi, 0)
@@ -64,7 +64,7 @@ export function giaoDich(quy: string, thang: number, cnIds?: string[]): { mo: nu
   if (quy === 'tat-ca') {
     return gopGiaoDichTatCa(thang, cnIds)
   }
-  const cn = CHI_NHANH.find(c => tenQuyTm(c.ngan) === quy)
+  const cn = CUA_HANG.find(c => tenQuyTm(c.ngan) === quy)
   if (cn) {
     const so = soQuyCn(cn.id, thang)
     const doiSo = (s: unknown) => { const m = /^([A-Z]+)\d+-(\d+)$/.exec(String(s ?? '')); return m ? `${m[1]}26${pad(thang)}-${pad(Number(m[2]), 4)}` : '' }
@@ -72,18 +72,18 @@ export function giaoDich(quy: string, thang: number, cnIds?: string[]): { mo: nu
   }
   const iTk = TK_NGAN_HANG.findIndex(t => tenTkNh(t) === quy)
   if (iTk < 0) return undefined
-  // Như Sổ ngân hàng 2.2.3: mỗi chi nhánh, mỗi tài khoản một phần, gộp các chi nhánh theo ngày
-  const chia = CHI_NHANH.length * TK_NGAN_HANG.length
+  // Như Sổ ngân hàng 2.2.3: mỗi cửa hàng, mỗi tài khoản một phần, gộp các cửa hàng theo ngày
+  const chia = CUA_HANG.length * TK_NGAN_HANG.length
   const soMot = (hat: string) => soChiTiet(hat, k(between(rng(hat + thang), 80e6, 260e6) / chia), ['Thu tiền bán hàng ngày', 'Chi mua nguyên vật liệu', 'Chi tiền điện tháng', 'Thu tiền khách công ty',
     'Chi tạm ứng nhân viên', 'Nộp tiền vào tài khoản ngân hàng', 'Chi phí vận chuyển', 'Thu hoàn ứng'], ['5111', '331', '6422', '131', '141', '1121', '6421'], [1.5e6, 38e6], thang)
-  const so = gopSo(CHI_NHANH.map(c => ({ cn: c.ngan, ...soMot('2.2.3' + c.id + (iTk || '')) })))
+  const so = gopSo(CUA_HANG.map(c => ({ cn: c.ngan, ...soMot('2.2.3' + c.id + (iTk || '')) })))
   return { mo: so.mo, cuoi: so.cuoi, ds: so.rows.map(r => ({ ngay: String(r.ngay), so: String(r.so), dg: String(r.dienGiai), thu: Number(r.no) || 0, chi: Number(r.co) || 0, du: Number(r.du) || 0 })) }
 }
 
 /** Tồn quỹ từng quỹ trong tháng theo Sổ quỹ tiền mặt, Sổ ngân hàng (cùng nguồn với Lịch sử thu chi, T230):
- *  quỹ tiền mặt của chi nhánh đang xem (cnIds) và mọi tài khoản ngân hàng */
+ *  quỹ tiền mặt của cửa hàng đang xem (cnIds) và mọi tài khoản ngân hàng */
 export function tonQuyTheoSo(thang: number, cnIds: string[]) {
-  const ten = [...CHI_NHANH.filter(c => cnIds.includes(c.id)).map(c => tenQuyTm(c.ngan)), ...TK_NGAN_HANG.map(tenTkNh)]
+  const ten = [...CUA_HANG.filter(c => cnIds.includes(c.id)).map(c => tenQuyTm(c.ngan)), ...TK_NGAN_HANG.map(tenTkNh)]
   return ten.map(quy => {
     const g = giaoDich(quy, thang)!
     return { quy, tienMat: quy.startsWith('Quỹ tiền mặt'), mo: g.mo, cuoi: g.cuoi, thu: g.ds.reduce((a, x) => a + x.thu, 0), chi: g.ds.reduce((a, x) => a + x.chi, 0) }
@@ -100,18 +100,18 @@ export function LichSuQuy(_: ScreenProps) {
   const moTuTrangChu = useMoTuTrangChu()   // liên kết trong màn mở kèm nút về Trang chủ (T232)
   const { toast } = useSession()
   const [tham, setTham] = useSearchParams()
-  const quy = tham.get('quy') ?? tenQuyTm(CHI_NHANH[0].ngan)
+  const quy = tham.get('quy') ?? tenQuyTm(CUA_HANG[0].ngan)
   const thang = Math.min(10, Math.max(7, Number(tham.get('thang')) || 10))
   const isTatCa = quy === 'tat-ca'
   const gd = giaoDich(quy, thang)
   // Lọc quỹ (T279): tất cả quỹ hoặc một quỹ tiền mặt, một tài khoản ngân hàng; ghi vào địa chỉ để mở lại đúng quỹ
-  const dsQuy = [{ v: 'tat-ca', t: 'Tất cả quỹ' }, ...CHI_NHANH.map(c => tenQuyTm(c.ngan)), ...TK_NGAN_HANG.map(tenTkNh)].map(q => typeof q === 'string' ? { v: q, t: q } : q)
+  const dsQuy = [{ v: 'tat-ca', t: 'Tất cả quỹ' }, ...CUA_HANG.map(c => tenQuyTm(c.ngan)), ...TK_NGAN_HANG.map(tenTkNh)].map(q => typeof q === 'string' ? { v: q, t: q } : q)
   const doiQuy = (v: string) => { const t = new URLSearchParams(tham); t.set('quy', v); setTham(t, { replace: true }) }
 
   // Lọc loại giao dịch: tất cả, chỉ khoản thu, chỉ khoản chi (T246); danh sách và file Excel theo bộ lọc, số dư đầu, cuối kỳ giữ nguyên
   const [loai, setLoai] = useState<'' | 'thu' | 'chi'>('')
   const dsLoc = (gd?.ds ?? []).filter(x => !loai || (loai === 'thu' ? x.thu > 0 : x.chi > 0))
-  const tienMat = isTatCa ? true : CHI_NHANH.some(c => tenQuyTm(c.ngan) === quy)
+  const tienMat = isTatCa ? true : CUA_HANG.some(c => tenQuyTm(c.ngan) === quy)
 
   // Mới nhất trên cùng, gom theo ngày
   const nhom = new Map<string, GiaoDich[]>()

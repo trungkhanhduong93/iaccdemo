@@ -5,7 +5,7 @@ import { useState, type ReactNode } from 'react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import type { Col, Row, ScreenProps } from '../types'
 import { duongDan, tenMan } from '../../app/registry'
-import { chiNhanhHienTai, useSession } from '../../app/session'
+import { cuaHangHienTai, useSession } from '../../app/session'
 import { Icon } from '../../ui/Icon'
 import { Select } from '../../ui/Dropdown'
 import { Table } from '../../ui/Table'
@@ -96,7 +96,7 @@ export function DsPhieuTc({ sc, mod, kieu: t, rows: rowsGoc }: ScreenProps & { k
   const { s, toast } = useSession()
   const nav = useNavigate()
   const path = duongDan(mod, sc)
-  const cnChon = chiNhanhHienTai(s)
+  const cnChon = cuaHangHienTai(s)
   const [chip, setChip] = useState(t.chips ? (t.nhap ? 'da' : 'cho') : '')
   const [locCot, setLocCot] = useState<Record<string, GiaTriLoc>>({})
   const [trang, setTrang] = useState(1)
@@ -132,7 +132,7 @@ export function DsPhieuTc({ sc, mod, kieu: t, rows: rowsGoc }: ScreenProps & { k
   ]
   const [cauHinhLoc, datCauHinhLoc] = useCauHinhLoc(path, oLoc.map(o => o.k), ['thoiGian', 'tim', 'kho'])
 
-  // Lọc theo ô đã áp dụng, chi nhánh trên thanh trên, hàng lọc từng cột; chip trạng thái lọc sau cùng để đếm số trên chip
+  // Lọc theo ô đã áp dụng, cửa hàng trên thanh trên, hàng lọc từng cột; chip trạng thái lọc sau cùng để đếm số trên chip
   const truocChip = rows.filter(r => {
     if (!trongKhoang(docNgay(String(r.ngay).split(' ')[0]), ap.thoiGian)) return false
     if (cnChon && r.cn !== cnChon.ten) return false

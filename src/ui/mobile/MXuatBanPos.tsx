@@ -1,8 +1,8 @@
 import { useMemo, useState, type FC } from 'react'
 import type { Row, ScreenProps } from '../../modules/types'
-import { chiNhanhHienTai, donViHienTai, loaiHinhDv, useSession } from '../../app/session'
+import { cuaHangHienTai, donViHienTai, loaiHinhDv, useSession } from '../../app/session'
 import { kieuGhiSo } from '../../app/plan'
-import { CHI_NHANH, DAILY, cnTen } from '../../data/mock'
+import { CUA_HANG, DAILY, cnTen } from '../../data/mock'
 import { ChonKhoangNgay, docNgay, thangNay, trongKhoang, type KhoangNgay } from '../ChonNgay'
 import { Icon } from '../Icon'
 import { dmy, money } from '../format'
@@ -22,11 +22,11 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
   const { ban, laDaXoa } = useDaXoa(`${mod.key}/${sc.slug}`)
   const hkd = loaiHinhDv(s, donViHienTai(s)) === 'hkd'
   const ghi = kieuGhiSo(s.cheDo) !== 'khong'
-  const cnChon = chiNhanhHienTai(s)
+  const cnChon = cuaHangHienTai(s)
 
   // Khoảng ngày lọc
   const [thoiGian, setThoiGian] = useState<KhoangNgay>(() => thangNay())
-  // Chi nhánh lọc
+  // Cửa hàng lọc
   const [cn, setCn] = useState<string>('')
   const [moChonCn, setMoChonCn] = useState(false)
   // Kênh bán lọc
@@ -68,7 +68,7 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
 
   const rows = useMemo(() => tatCa.filter(r => !laDaXoa(r.id)), [tatCa, ban, laDaXoa])
 
-  // Lọc theo khoảng ngày, chi nhánh, kênh bán
+  // Lọc theo khoảng ngày, cửa hàng, kênh bán
   const list = useMemo(() => {
     return rows.filter(r => {
       const d = r.x?.date instanceof Date ? r.x.date : docNgay(r.ngay)
@@ -80,11 +80,11 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
     })
   }, [rows, thoiGian, cnChon, cn, kenh])
 
-  // Lựa chọn chi nhánh
+  // Lựa chọn cửa hàng
   const dsChonCn = useMemo(() => {
     return [
-      { k: '', ten: 'Tất cả chi nhánh' },
-      ...CHI_NHANH.map(c => ({ k: c.id, ten: c.ten })),
+      { k: '', ten: 'Tất cả cửa hàng' },
+      ...CUA_HANG.map(c => ({ k: c.id, ten: c.ten })),
     ]
   }, [])
 
@@ -97,7 +97,7 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
     ]
   }, [rows])
 
-  const tenCnHienThi = cn ? CHI_NHANH.find(c => c.id === cn)?.ten ?? 'Tất cả' : 'Tất cả'
+  const tenCnHienThi = cn ? CUA_HANG.find(c => c.id === cn)?.ten ?? 'Tất cả' : 'Tất cả'
   const tenKenhHienThi = kenh || 'Tất cả'
 
   // Tổng cộng
@@ -191,11 +191,11 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
         <span>Doanh thu: <b>{money(tongTien)} đ</b></span>
       </div>
 
-      {/* Sheet chọn chi nhánh */}
+      {/* Sheet chọn cửa hàng */}
       <MChon
         mo={moChonCn}
         onDong={() => setMoChonCn(false)}
-        tieuDe="Chọn chi nhánh"
+        tieuDe="Chọn cửa hàng"
         ds={dsChonCn}
         chon={cn}
         onChon={setCn}

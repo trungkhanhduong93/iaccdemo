@@ -28,7 +28,7 @@ export function tinhButToan(
   tongCk: number,
   tongThue: number,
   doiTuong: string,
-  chiNhanh: string,
+  cuaHang: string,
   cheDo: Parameters<typeof tkTheoCheDo>[1],
   nhom: string,
   hinhThucTt?: 'congno' | 'tienmat' | 'chuyenkhoan' | string,
@@ -60,7 +60,7 @@ export function tinhButToan(
     tongTien - tongCk,
     tongThue,
     doiTuong,
-    chiNhanh,
+    cuaHang,
     cheDo,
     tkDoiUng,
   )

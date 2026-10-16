@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import type { ScreenProps } from '../../modules/types'
-import { CHI_NHANH } from '../../data/mock'
+import { CUA_HANG } from '../../data/mock'
 import { Icon } from '../Icon'
 import { money, moneyD, pad } from '../format'
 import { phieuTheoSo } from '../generic/SoChungTu'
@@ -21,11 +21,11 @@ const tenNgay = (ngay: string) => {
 
 export function MLichSuQuy(_: ScreenProps) {
   const [tham] = useSearchParams()
-  const quy = tham.get('quy') ?? tenQuyTm(CHI_NHANH[0].ngan)
+  const quy = tham.get('quy') ?? tenQuyTm(CUA_HANG[0].ngan)
   const thang = Math.min(10, Math.max(7, Number(tham.get('thang')) || 10))
   const isTatCa = quy === 'tat-ca'
   const gd = giaoDich(quy, thang)
-  const tienMat = isTatCa ? true : CHI_NHANH.some(c => tenQuyTm(c.ngan) === quy)
+  const tienMat = isTatCa ? true : CUA_HANG.some(c => tenQuyTm(c.ngan) === quy)
   const tenHien = isTatCa ? 'Tất cả quỹ' : quy
 
   // Lọc loại giao dịch: tất cả, chỉ khoản thu, chỉ khoản chi (T246); danh sách theo bộ lọc, số dư đầu, cuối kỳ giữ nguyên

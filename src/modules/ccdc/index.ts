@@ -4,7 +4,7 @@ import { tuExcel } from '../types'
 import { quyTrinh } from './quy-trinh'
 import { THE_PHAN_BO, bangPhanBo, daPhanBoToiKy, veChiTietThe } from './the-phan-bo'
 import { GhiTangHangLoat, useCanhBaoCho } from './GhiTangHangLoat'
-import { CCDC_HANG, CHI_NHANH } from '../../data/mock'
+import { CCDC_HANG, CUA_HANG } from '../../data/mock'
 
 /** Chứng từ gốc của thẻ mẫu theo thứ tự thẻ: phiếu chi, uỷ nhiệm chi mẫu có sẵn ở Thu, chi tiền (T159) */
 const GOC_MAU = ([
@@ -13,7 +13,7 @@ const GOC_MAU = ([
   ['unc-7', 'UNC2609-0237', '26/09/2026', 'Trả tiền nhà cung cấp thịt bò'], ['chi-8', 'PC2609-0236', '26/09/2026', 'Chi tiền gas tháng 10'],
   ['chi-0', 'PC2610-0259', '07/10/2026', 'Chi tiền điện tháng 9'], ['unc-2', 'UNC2610-0252', '03/10/2026', 'Trả tiền thuê mặt bằng tháng 10'],
   ['chi-5', 'PC2609-0243', '30/09/2026', 'Chi tiền gas tháng 10'], ['unc-5', 'UNC2609-0244', '28/09/2026', 'Nộp thuế GTGT tháng 9'],
-  ['chi-cpb', 'PC2610-0261', '07/10/2026', 'Tiền nhà 6 tháng', 'Phố Mây Lê Lợi'],   // phiếu chi mẫu Chi phí chờ phân bổ ở tien/index.ts, thẻ theo chi nhánh của phiếu (T168)
+  ['chi-cpb', 'PC2610-0261', '07/10/2026', 'Tiền nhà 6 tháng', 'Phố Mây Lê Lợi'],   // phiếu chi mẫu Chi phí chờ phân bổ ở tien/index.ts, thẻ theo cửa hàng của phiếu (T168)
 ] as [string, string, string, string, string?][]).map(([id, soCt, ngayCt, ghiChuCt, cn]) => ({ _goc: `/app/tien/2-1-1/${id}`, soCt, ngayCt, ghiChuCt, ...(cn ? { cn } : {}) }))
 
 /** Thẻ chi phí phân bổ mẫu: [số thẻ, loại, ngày ghi tăng, các dòng [mã, tên, số tiền, số tháng, thêm?]]; thêm: số lượng (CCDC), số hiệu, mô tả (TSCĐ) */
@@ -26,7 +26,7 @@ const THE_MAU = ([
   ['TPB2602-0006', 'Chi phí trả trước', '01/02/2026', [['TT003', 'Bảo hiểm cháy nổ 6 tháng', 12_000_000, 6]]],
   ['TPB2611-0007', 'Công cụ dụng cụ', '05/11/2026', [['CC005', 'Dao thớt bếp trọn bộ', 9_600_000, 12]]],
   // Thẻ nhiều dòng chi tiết phân bổ, mỗi loại một thẻ
-  ['TPB2609-0008', 'Chi phí trả trước', '01/09/2026', [['CPTT.0001', 'Tiền thuê kho lạnh 6 tháng', 54_000_000, 6], ['CPTT.0002', 'Bảo hiểm cháy nổ chi nhánh 12 tháng', 24_000_000, 12],
+  ['TPB2609-0008', 'Chi phí trả trước', '01/09/2026', [['CPTT.0001', 'Tiền thuê kho lạnh 6 tháng', 54_000_000, 6], ['CPTT.0002', 'Bảo hiểm cháy nổ cửa hàng 12 tháng', 24_000_000, 12],
     ['CPTT.0003', 'Phí phần mềm bán hàng 12 tháng', 14_400_000, 12]]],
   ['TPB2609-0009', 'Công cụ dụng cụ', '15/09/2026', [['CC006', 'Ly thuỷ tinh 300ml', 7_200_000, 12, { sl: 240 }], ['CC008', 'Khay inox chữ nhật', 4_800_000, 6, { sl: 40 }],
     ['CC007', 'Tủ mát 2 cánh', 28_500_000, 24, { sl: 1 }]]],
@@ -40,13 +40,13 @@ const THE_MAU = ([
     { soCt: 'PC2501-0035', ngayCt: '02/01/2025', ghiChuCt: 'Trả trước tiền thuê kho tổng 2 năm' }],
   ['TPBDK2512-0002', 'Công cụ dụng cụ', '31/12/2025', [['CC001', 'Bộ nồi inox 50 lít', 36_000_000, 24, { sl: 2, da: 9_000_000, kyDa: 6 }],
     ['CC004', 'Máy xay sinh tố công nghiệp', 14_400_000, 12, { sl: 1, da: 7_200_000, kyDa: 6 }]],
-    { soCt: 'MH2506-0042', ngayCt: '28/06/2025', ghiChuCt: 'Mua dụng cụ bếp mở chi nhánh Thảo Điền' }],
+    { soCt: 'MH2506-0042', ngayCt: '28/06/2025', ghiChuCt: 'Mua dụng cụ bếp mở cửa hàng Thảo Điền' }],
   ['TPBDK2512-0003', 'Tài sản cố định', '31/12/2025', [['TSCD.0003', 'Lò nướng đối lưu', 96_000_000, 36, { da: 32_000_000, kyDa: 12, soHieu: 'LN-TD-01', moTa: 'Lò nướng đối lưu 10 khay, đặt tại bếp Thảo Điền' }]],
     { soCt: 'MH2501-0008', ngayCt: '06/01/2025', ghiChuCt: 'Mua lò nướng cho bếp bánh' }],
 ] as [string, string, string, [string, string, number, number, { sl?: number; soHieu?: string; moTa?: string; da?: number; kyDa?: number }?][], { soCt: string; ngayCt: string; ghiChuCt: string }?][]).map(([soThe, loai, ngay, dong, mua], i) => {
   const dau = soThe.startsWith('TPBDK'), ngayPb = dau ? '01/01/2026' : ngay
   return {
-    soThe, loai, ngay, ngayPb, _kieu: dau ? 'dau' : 'the', cn: CHI_NHANH[i % CHI_NHANH.length].ten, ...(dau ? mua : GOC_MAU[i]),
+    soThe, loai, ngay, ngayPb, _kieu: dau ? 'dau' : 'the', cn: CUA_HANG[i % CUA_HANG.length].ten, ...(dau ? mua : GOC_MAU[i]),
     dong: dong.map(([ma, ten, gt, ky, them]) => ({ ma, ten, dvt: CCDC_HANG.find(h => h.ma === ma)?.dvt, gt, ky, sl: them?.sl ?? 1, dg: gt / (them?.sl ?? 1), ngayPb,
       da: them?.da, kyDa: them?.kyDa, soHieu: them?.soHieu, moTa: them?.moTa, _maTay: true })),
   }
@@ -79,14 +79,14 @@ const ccdc: ModuleDef = {
         return { ...t, ma: t.dong[0].ma, ten: t.dong[0].ten + (t.dong.length > 1 ? ` và ${t.dong.length - 1} mục khác` : ''), gt, da, con: gt - da,
           kyNay: da - daPhanBoToiKy(t, kyTruoc(ky)) }
       }) } },
-    '8.1.2': { voucher: { prefix: 'DCCC', doiTuong: 'cn', nhan: 'Chi nhánh nhận', them: 'Thêm chứng từ CCDC', dong: 'tien', tien: [2_000_000, 40_000_000],
+    '8.1.2': { voucher: { prefix: 'DCCC', doiTuong: 'cn', nhan: 'Cửa hàng nhận', them: 'Thêm chứng từ CCDC', dong: 'tien', tien: [2_000_000, 40_000_000],
       dienGiai: ['Điều chuyển bàn ghế sang Thảo Điền', 'Ghi giảm nồi hỏng', 'Ghi tăng máy POS cầm tay'], noCo: [['242', '153', 'Ghi tăng CCDC đang dùng']],
       loai: [
         { k: 'tang', ten: 'Ghi tăng CCDC', icon: 'tool', prefix: 'GTCC', dienGiai: ['Ghi tăng máy POS cầm tay', 'Ghi tăng bộ nồi inox 50 lít'] },
-        { k: 'dc', ten: 'Điều chuyển CCDC', icon: 'swap', prefix: 'DCCC', dienGiai: ['Điều chuyển bàn ghế sang Thảo Điền'], noCo: [['242', '242', 'Điều chuyển giữa chi nhánh']] },
+        { k: 'dc', ten: 'Điều chuyển CCDC', icon: 'swap', prefix: 'DCCC', dienGiai: ['Điều chuyển bàn ghế sang Thảo Điền'], noCo: [['242', '242', 'Điều chuyển giữa cửa hàng']] },
         { k: 'giam', ten: 'Ghi giảm CCDC', icon: 'trash', prefix: 'GGCC', dienGiai: ['Ghi giảm nồi hỏng', 'Ghi giảm ly thuỷ tinh vỡ'], noCo: [['6421', '242', 'Phân bổ nốt giá trị còn lại']] },
       ] } },
-    '8.1.3': { voucher: { prefix: 'KKCC', doiTuong: 'cn', nhan: 'Chi nhánh', them: 'Thêm phiếu kiểm kê', dong: 'tien', tien: [0, 1_000_000],
+    '8.1.3': { voucher: { prefix: 'KKCC', doiTuong: 'cn', nhan: 'Cửa hàng', them: 'Thêm phiếu kiểm kê', dong: 'tien', tien: [0, 1_000_000],
       dienGiai: ['Kiểm kê CCDC cuối quý 3', 'Kiểm kê CCDC đột xuất'], noCo: [['1381', '242', 'CCDC thiếu chờ xử lý']] } },
     '8.2.1': { report: { kieu: 'tonghop', doiTuong: 'ccdc' } },
     '8.2.2': { report: { kieu: 'tonghop', doiTuong: 'ccdc' } },

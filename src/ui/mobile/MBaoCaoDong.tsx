@@ -232,7 +232,7 @@ const Khuon1ChiTietNgay: FC<{ rows: Row[]; q?: string; xemTatCaCn?: boolean }> =
                 const tienChi = Number(r.co ?? (r.chi ? r.co : undefined) ?? 0)
                 const tienChinh = Number(r.tien ?? r.thanhTien ?? r.dtThuan ?? r.tong ?? r.tienHang ?? 0)
 
-                // Dòng phụ: SL, ĐVT, chi nhánh, đối tác
+                // Dòng phụ: SL, ĐVT, cửa hàng, đối tác
                 const slStr = r.sl !== undefined ? `${money(Number(r.sl))} ${r.dvt || ''}` : ''
                 const phuArr = [
                   soCt || null,

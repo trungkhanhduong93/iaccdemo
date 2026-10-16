@@ -709,4 +709,11 @@ Lý do: Trum chốt việc T280 ngày 16/10/2026.
 
 Lý do: Trum chốt việc T281, T282 ngày 16/10/2026.
 
-## QD66. Đổi khái niệm chi nhánh thành Cửa hàng (đang soạn)
+## QD66. Đổi khái niệm chi nhánh thành Cửa hàng (16/10/2026)
+
+Trum đồng ý, dinhlanphuongipacc làm (T294). Thay phần "chi nhánh" của QD17.
+
+- Mọi chữ "chi nhánh" trên giao diện đổi thành "cửa hàng" (thanh trên Cửa hàng · Tất cả cửa hàng, Danh mục cửa hàng, cột, ô lọc, thông báo, bản điện thoại). Khớp cách gọi của FABi, iPOS.
+- Giữ "chi nhánh" khi nói về chi nhánh ngân hàng (vd Vietcombank, chi nhánh Sài Gòn; ô Chi nhánh ngân hàng ở danh mục ngân hàng). Chỗ thuế, pháp lý cần đúng chữ chi nhánh thì giữ.
+- Tên trong code đổi theo: `CHI_NHANH` thành `CUA_HANG`, `chiNhanh` thành `cuaHang`, `DanhMucChiNhanh` thành `DanhMucCuaHang`, slug `danh-muc/chi-nhanh` thành `danh-muc/cua-hang`. Giữ tên biểu tượng `chinhanh` (sinh bởi `tools/xuat_bieu_tuong.py`) và trường `chiNhanhNh` (chi nhánh ngân hàng).
+- Code mới viết sau QD66 dùng "cửa hàng", `cuaHang`. Script `tools/doi_cua_hang.py` đổi lại được nếu còn sót.

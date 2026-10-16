@@ -20,21 +20,21 @@ export const DON_VI: DonVi[] = [
   { id: 'gn', ten: 'Hộ kinh doanh Cà phê Góc Nhỏ', viettat: 'GN', mst: '8090 112 233', goi: 'F', diaChi: '5 Hẻm 42 Trần Quang Khải, phường Tân Định, TP.HCM', diem: 1, nguoiDaiDien: 'Nguyễn Minh Anh' },
 ]
 
-export interface ChiNhanh { id: string; posId?: string; ten: string; ngan: string; base: number; kho: string[] }
-export const CHI_NHANH: ChiNhanh[] = [
+export interface CuaHang { id: string; posId?: string; ten: string; ngan: string; base: number; kho: string[] }
+export const CUA_HANG: CuaHang[] = [
   { id: 'q1', posId: '10001', ten: 'Phố Mây Lê Lợi', ngan: 'Lê Lợi', base: 33_500_000, kho: ['Kho bếp Lê Lợi', 'Kho bar Lê Lợi'] },
   { id: 'q5', posId: '10002', ten: 'Phố Mây Nguyễn Trãi', ngan: 'Nguyễn Trãi', base: 24_800_000, kho: ['Kho bếp Nguyễn Trãi'] },
   { id: 'td', posId: '10003', ten: 'Phố Mây Thảo Điền', ngan: 'Thảo Điền', base: 28_600_000, kho: ['Kho bếp Thảo Điền', 'Kho bar Thảo Điền'] },
 ]
-export const KHO = ['Kho tổng', ...CHI_NHANH.flatMap(c => c.kho)]
+export const KHO = ['Kho tổng', ...CUA_HANG.flatMap(c => c.kho)]
 
 export type Role = 'owner' | 'ktt' | 'ktv'
 export const ROLE: Record<Role, string> = { owner: 'Chủ doanh nghiệp', ktt: 'Kế toán trưởng', ktv: 'Kế toán viên' }
 export const NGUOI_DUNG = [
-  { ten: 'Nguyễn Minh Anh', username: 'minhanh', email: 'minhanh@phomay.vn', sdt: '0901 234 567', bp: 'Ban giám đốc', cv: 'Giám đốc', role: 'owner' as Role, vaiTro: 'Chủ doanh nghiệp', pham: 'Tất cả chi nhánh', kho: 'Tất cả kho', otp2fa: true, hieuLucTu: '01/01/2026', lan: 'Hôm nay 08:12', tt: 'ok', _tt: 1, dongY: true },
-  { ten: 'Trần Thu Hà', username: 'thuha', email: 'thuha@phomay.vn', sdt: '0912 345 678', bp: 'Phòng kế toán', cv: 'Kế toán trưởng', role: 'ktt' as Role, vaiTro: 'Kế toán trưởng', pham: 'Tất cả chi nhánh', kho: 'Tất cả kho', otp2fa: true, hieuLucTu: '01/01/2026', lan: 'Hôm nay 09:40', tt: 'ok', _tt: 1, dongY: true },
-  { ten: 'Lê Quốc Bảo', username: 'quocbao', email: 'quocbao@phomay.vn', sdt: '0923 456 789', bp: 'Phòng kế toán', cv: 'Kế toán viên', role: 'ktv' as Role, vaiTro: 'Kế toán viên', pham: 'Tất cả chi nhánh', kho: 'Tất cả kho', otp2fa: false, hieuLucTu: '01/01/2026', lan: 'Hôm nay 10:05', tt: 'ok', _tt: 1, dongY: true },
-  { ten: 'Phạm Ngọc Lan', username: 'ngoclan', email: 'ngoclan@phomay.vn', sdt: '0934 567 890', bp: 'Chi nhánh Thảo Điền', cv: 'Cửa hàng trưởng', role: 'ktv' as Role, vaiTro: 'Quản lý chi nhánh', pham: 'Phố Mây Thảo Điền', kho: 'Kho bếp Thảo Điền', otp2fa: false, hieuLucTu: '01/01/2026', lan: 'Hôm qua 21:30', tt: 'ok', _tt: 1, dongY: true },
+  { ten: 'Nguyễn Minh Anh', username: 'minhanh', email: 'minhanh@phomay.vn', sdt: '0901 234 567', bp: 'Ban giám đốc', cv: 'Giám đốc', role: 'owner' as Role, vaiTro: 'Chủ doanh nghiệp', pham: 'Tất cả cửa hàng', kho: 'Tất cả kho', otp2fa: true, hieuLucTu: '01/01/2026', lan: 'Hôm nay 08:12', tt: 'ok', _tt: 1, dongY: true },
+  { ten: 'Trần Thu Hà', username: 'thuha', email: 'thuha@phomay.vn', sdt: '0912 345 678', bp: 'Phòng kế toán', cv: 'Kế toán trưởng', role: 'ktt' as Role, vaiTro: 'Kế toán trưởng', pham: 'Tất cả cửa hàng', kho: 'Tất cả kho', otp2fa: true, hieuLucTu: '01/01/2026', lan: 'Hôm nay 09:40', tt: 'ok', _tt: 1, dongY: true },
+  { ten: 'Lê Quốc Bảo', username: 'quocbao', email: 'quocbao@phomay.vn', sdt: '0923 456 789', bp: 'Phòng kế toán', cv: 'Kế toán viên', role: 'ktv' as Role, vaiTro: 'Kế toán viên', pham: 'Tất cả cửa hàng', kho: 'Tất cả kho', otp2fa: false, hieuLucTu: '01/01/2026', lan: 'Hôm nay 10:05', tt: 'ok', _tt: 1, dongY: true },
+  { ten: 'Phạm Ngọc Lan', username: 'ngoclan', email: 'ngoclan@phomay.vn', sdt: '0934 567 890', bp: 'Cửa hàng Thảo Điền', cv: 'Cửa hàng trưởng', role: 'ktv' as Role, vaiTro: 'Quản lý cửa hàng', pham: 'Phố Mây Thảo Điền', kho: 'Kho bếp Thảo Điền', otp2fa: false, hieuLucTu: '01/01/2026', lan: 'Hôm qua 21:30', tt: 'ok', _tt: 1, dongY: true },
   { ten: 'Võ Thanh Tùng', username: 'thanhtung', email: 'thanhtung@phomay.vn', sdt: '0945 678 901', bp: 'Kho vận', cv: 'Thủ kho', role: 'ktv' as Role, vaiTro: 'Thủ kho', pham: 'Phố Mây Lê Lợi', kho: 'Kho tổng', otp2fa: false, hieuLucTu: '01/01/2026', lan: 'Chưa đăng nhập', tt: 'warn', _tt: 1, dongY: true },
 ]
 
@@ -146,7 +146,7 @@ export const KHOAN_MUC = [
 ]
 
 export const CONG_VIEC = [
-  { ma: 'CV01', ten: 'Khai trương chi nhánh Thảo Điền' },
+  { ma: 'CV01', ten: 'Khai trương cửa hàng Thảo Điền' },
   { ma: 'CV02', ten: 'Sự kiện Trung thu 2026' },
   { ma: 'CV03', ten: 'Cải tạo bếp Lê Lợi' },
   { ma: 'CV04', ten: 'Tiệc cuối năm khách công ty' },
@@ -212,7 +212,7 @@ export const LY_DO = [
 /** Tên lý do chi tiền được tích là chi phí: báo cáo chi phí (Sổ chi phí, Chi phí trong tháng) chỉ lấy các lý do này (T231) */
 export const LY_CHI_PHI = LY_DO.filter(x => x.dung === 'Chi tiền' && x.chiPhi).map(x => x.ten)
 
-// ── Doanh thu từng ngày, từng chi nhánh (đồng bộ từ FABi, gom theo ngày) ──
+// ── Doanh thu từng ngày, từng cửa hàng (đồng bộ từ FABi, gom theo ngày) ──
 export interface Ngay {
   date: Date; cn: string; dt: number; vat: number; don: number; gv: number
   tm: number; the: number; ck: number; app: number
@@ -222,7 +222,7 @@ function genDaily(): Ngay[] {
   const r = rng(2026)
   for (let d = new Date(2026, 6, 1); d <= HOM_NAY; d = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1)) {
     const wk = d.getDay() === 0 || d.getDay() === 6 ? 1.24 : d.getDay() === 5 ? 1.1 : 1
-    for (const c of CHI_NHANH) {
+    for (const c of CUA_HANG) {
       const today = +d === +HOM_NAY ? 0.62 : 1                       // hôm nay mới bán tới trưa chiều
       const dt = k(c.base * wk * between(r, 0.88, 1.12) * today)
       const vat = Math.round(dt * 0.88 * 0.08 + dt * 0.12 * 0.1)    // đồ ăn uống 8%, bia rượu 10%
@@ -277,13 +277,13 @@ export function kqkd(thang: number, nam: number) {
     lnThuan, tnKhac, cpKhac, lnKhac: tnKhac - cpKhac, lnTruocThue, thue, lnSauThue: lnTruocThue - thue, cp, t }
 }
 
-/** Số chứng từ Xuất bán POS lấy số hoá đơn FABi (T104): 12 ký tự chữ, số viết hoa, cố định theo chi nhánh và ngày, vd K7QX2PM9WZ4D */
+/** Số chứng từ Xuất bán POS lấy số hoá đơn FABi (T104): 12 ký tự chữ, số viết hoa, cố định theo cửa hàng và ngày, vd K7QX2PM9WZ4D */
 export const soBH = (x: Ngay) => {
   const r = rng(`fabi-${x.cn}-${x.date.getFullYear()}-${x.date.getMonth()}-${x.date.getDate()}`)
   const kt = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
   return Array.from({ length: 12 }, () => kt[Math.floor(r() * kt.length)]).join('')
 }
-export const cnTen = (id: string) => CHI_NHANH.find(c => c.id === id)?.ten ?? id
+export const cnTen = (id: string) => CUA_HANG.find(c => c.id === id)?.ten ?? id
 
 // ── Dòng lệch đối soát (Bàn làm việc, màn Đối soát) ──
 export interface Lech { id: string; cap: string; ngay: string; cn: string; nguon: string; nguonV: number; soV: number; nghi: string; ct: string; tt: 'moi' | 'xem' | 'xong' }
@@ -296,12 +296,12 @@ export const LECH: Lech[] = [
 
 // ── Nhật ký đồng bộ ──
 export const DONG_BO = [
-  { luc: '07/10 14:20', nguon: 'FABi', loai: 'Đơn bán hàng', pham: '3 chi nhánh · 07/10', lay: 612, vao: 612, loi: 0, ai: 'Lịch mỗi 15 phút' },
-  { luc: '07/10 14:05', nguon: 'FABi', loai: 'Đơn bán hàng', pham: '3 chi nhánh · 07/10', lay: 188, vao: 186, loi: 2, ai: 'Lịch mỗi 15 phút' },
+  { luc: '07/10 14:20', nguon: 'FABi', loai: 'Đơn bán hàng', pham: '3 cửa hàng · 07/10', lay: 612, vao: 612, loi: 0, ai: 'Lịch mỗi 15 phút' },
+  { luc: '07/10 14:05', nguon: 'FABi', loai: 'Đơn bán hàng', pham: '3 cửa hàng · 07/10', lay: 188, vao: 186, loi: 2, ai: 'Lịch mỗi 15 phút' },
   { luc: '07/10 13:00', nguon: 'iPOS Inventory', loai: 'Phiếu nhập, xuất kho', pham: '5 kho · 07/10', lay: 46, vao: 46, loi: 0, ai: 'Lịch mỗi giờ' },
   { luc: '07/10 09:12', nguon: 'iPOS Invoice', loai: 'Hoá đơn đầu vào', pham: 'MST 0319 990 001', lay: 23, vao: 18, loi: 5, ai: 'Lê Quốc Bảo bấm tải' },
   { luc: '07/10 06:00', nguon: 'FABi', loai: 'Danh mục món, nhóm món', pham: 'Toàn bộ', lay: 4, vao: 4, loi: 0, ai: 'Lịch hằng ngày' },
-  { luc: '06/10 23:30', nguon: 'FABi', loai: 'Chốt ca, thanh toán', pham: '3 chi nhánh · 06/10', lay: 9, vao: 9, loi: 0, ai: 'Lịch cuối ngày' },
+  { luc: '06/10 23:30', nguon: 'FABi', loai: 'Chốt ca, thanh toán', pham: '3 cửa hàng · 06/10', lay: 9, vao: 9, loi: 0, ai: 'Lịch cuối ngày' },
 ]
 
 export const tenThang = (thang: number, nam: number) => `Tháng ${thang}/${nam}`

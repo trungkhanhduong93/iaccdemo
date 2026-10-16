@@ -35,8 +35,8 @@ const TEN_QUEN: Record<string, string> = {
   '3.1.7': 'phiếu xuất bán hàng',
   '4.1.1': 'nhập mua hàng phiếu nhập mua',
   '4.1.4': 'xuất trả hàng mua',
-  '5.1.4': 'điều chuyển chi nhánh',
-  '5-1-4-3': 'chuyển kho',   // màn ngoài Excel, tra theo slug; chuyển kho trong chi nhánh tách khỏi điều chuyển (T155)
+  '5.1.4': 'điều chuyển cửa hàng',
+  '5-1-4-3': 'chuyển kho',   // màn ngoài Excel, tra theo slug; chuyển kho trong cửa hàng tách khỏi điều chuyển (T155)
 }
 
 interface Muc { m: ModuleDef; sc: ScreenDef; goc: ModuleDef; t: string; tf: string; q: string; f: string; p: string }

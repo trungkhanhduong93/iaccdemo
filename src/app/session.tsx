@@ -2,14 +2,14 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import type { Goi } from './plan'
 import { CHE_DO, CHE_DO_HOP_LE, CHE_DO_MAC_DINH, chuanHoaCheDo, type CheDo } from './che-do'
-import { CHI_NHANH, DON_VI, HOM_NAY, type DonVi, type Role } from '../data/mock'
+import { CUA_HANG, DON_VI, HOM_NAY, type DonVi, type Role } from '../data/mock'
 import { dmy } from '../ui/format'
 import type { LichCachNvl } from '../modules/home/chi-phi-nvl'
 
 export type PpGtgt = 'tyLe' | 'khauTru'
 export type PpTndn = 'tyLe' | 'thuNhap'
 
-/** Chi nhánh lên sổ thêm từ một cửa hàng FABi: tuNgay là ngày bắt đầu lên sổ, doanh thu FABi đồng bộ từ ngày này (T142) */
+/** Cửa hàng lên sổ thêm từ một cửa hàng FABi: tuNgay là ngày bắt đầu lên sổ, doanh thu FABi đồng bộ từ ngày này (T142) */
 export interface CnThem { id: string; ten: string; khuVuc: string; tuNgay: string; banDau?: boolean }   // banDau: chọn lúc khởi tạo đơn vị, không phải bổ sung sau
 
 /** Thông tin kê khai của đơn vị, khai lúc khởi tạo, sửa ở Hệ thống, Thông tin đơn vị (T145); ten, mst, diaChi sửa đè lên đơn vị */
@@ -26,7 +26,7 @@ export interface Session {
   donVi: string          // id đơn vị kế toán
   goi: Goi               // gói của đơn vị; thanh "Xem thử" đổi được để xem khoá theo gói
   cheDo: CheDo           // chế độ kế toán của đơn vị, chọn ở Cấu hình hệ thống; đổi gói thì về chế độ mặc định của gói
-  chiNhanh: string       // chi nhánh đang làm việc chọn trên thanh trên; 'all' là xem gộp mọi chi nhánh
+  cuaHang: string       // cửa hàng đang làm việc chọn trên thanh trên; 'all' là xem gộp mọi cửa hàng
   khoiTao: boolean       // đã chạy xong khởi tạo
   thuGon?: boolean       // sidebar thu gọn còn biểu tượng
   ngayDauNam?: Record<string, string>   // ngày đầu năm từng đơn vị (dd/mm/yyyy), khai ở Thông tin đơn vị
@@ -37,11 +37,11 @@ export interface Session {
   soDuQuy?: Record<string, Record<string, { no: number; co: number }>>   // số dư ban đầu từng quỹ theo đơn vị, lưu ở màn Số dư ban đầu (T160)
   dungThu?: Record<string, string>   // ngày bắt đầu dùng thử (dd/mm/yyyy) của đơn vị mới tạo từ FABi, thêm đơn vị (T158)
   ttDv?: Record<string, TtDonVi>   // thông tin kê khai từng đơn vị (T145)
-  cnThem?: Record<string, CnThem[]>   // chi nhánh lên sổ thêm từ cửa hàng FABi theo từng đơn vị (T142)
-  cachNvl?: Record<string, Record<string, LichCachNvl[]>>   // cách tính chi phí NVL gói Free theo đơn vị, chi nhánh; mỗi lần đổi áp dụng từ kỳ đầu chưa khoá sổ (T232)
-  giaThanhTay?: Record<string, Record<string, number>>   // giá thành món nhập tay theo đơn vị; khoá chi nhánh-yyyymm-mã món (T232)
-  dongBoThuChi?: Record<string, Record<string, boolean>>   // tự động đồng bộ phiếu thu, chi lập trên FABi theo đơn vị, từng chi nhánh (mã chi nhánh); chưa đặt là bật (T264)
-  mapPttt?: Record<string, Record<string, string>>   // map PTTT FABi về quỹ theo đơn vị; khoá 'mã chi nhánh|mã PTTT', giá trị mã quỹ (T264)
+  cnThem?: Record<string, CnThem[]>   // cửa hàng lên sổ thêm từ cửa hàng FABi theo từng đơn vị (T142)
+  cachNvl?: Record<string, Record<string, LichCachNvl[]>>   // cách tính chi phí NVL gói Free theo đơn vị, cửa hàng; mỗi lần đổi áp dụng từ kỳ đầu chưa khoá sổ (T232)
+  giaThanhTay?: Record<string, Record<string, number>>   // giá thành món nhập tay theo đơn vị; khoá cửa hàng-yyyymm-mã món (T232)
+  dongBoThuChi?: Record<string, Record<string, boolean>>   // tự động đồng bộ phiếu thu, chi lập trên FABi theo đơn vị, từng cửa hàng (mã cửa hàng); chưa đặt là bật (T264)
+  mapPttt?: Record<string, Record<string, string>>   // map PTTT FABi về quỹ theo đơn vị; khoá 'mã cửa hàng|mã PTTT', giá trị mã quỹ (T264)
 }
 
 /** Đổi mã gói cũ ('M', 'A') sang mã chuẩn ('PL', 'PR'), nhận cả mã cũ và mới */
@@ -61,7 +61,7 @@ const MAC_DINH: Session = {
   donVi: 'pm',
   goi: 'PL',
   cheDo: 'TT133',
-  chiNhanh: 'all',
+  cuaHang: 'all',
   khoiTao: true,
   thuGon: false,
   ppGtgt: 'tyLe',
@@ -145,11 +145,11 @@ export function dungThuDv(s: Pick<Session, 'dungThu' | 'donVi'>): { con: number;
 }
 export const donViHienTai = (s: Session) => dsDonVi(s).find(d => d.id === s.donVi) ?? DON_VI[0]
 export const cheDoHienTai = (s: Session) => CHE_DO[s.cheDo]
-/** Chi nhánh đang chọn trên thanh trên; undefined khi đang xem tất cả chi nhánh */
-export const chiNhanhHienTai = (s: Session) => CHI_NHANH.find(c => c.id === s.chiNhanh)
-/** Chi nhánh của đơn vị đang làm việc: đơn vị mẫu có 3 chi nhánh mẫu; đơn vị mới từ FABi chỉ có cửa hàng đã chọn; cộng chi nhánh lên sổ thêm (T142) */
-export const dsChiNhanh = (s: Pick<Session, 'donVi' | 'cnThem'>): { id: string; ten: string }[] => [
-  ...(DON_VI.some(d => d.id === s.donVi) ? CHI_NHANH.map(c => ({ id: c.id, ten: c.ten })) : []),
+/** Cửa hàng đang chọn trên thanh trên; undefined khi đang xem tất cả cửa hàng */
+export const cuaHangHienTai = (s: Session) => CUA_HANG.find(c => c.id === s.cuaHang)
+/** Cửa hàng của đơn vị đang làm việc: đơn vị mẫu có 3 cửa hàng mẫu; đơn vị mới từ FABi chỉ có cửa hàng đã chọn; cộng cửa hàng lên sổ thêm (T142) */
+export const dsCuaHang = (s: Pick<Session, 'donVi' | 'cnThem'>): { id: string; ten: string }[] => [
+  ...(DON_VI.some(d => d.id === s.donVi) ? CUA_HANG.map(c => ({ id: c.id, ten: c.ten })) : []),
   ...(s.cnThem?.[s.donVi] ?? []).map(c => ({ id: c.id, ten: c.ten })),
 ]
 

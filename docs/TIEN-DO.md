@@ -4,14 +4,14 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T294.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T295.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T294 | Đổi khái niệm chi nhánh thành Cửa hàng ở mọi nơi (trừ chỗ thuế, pháp lý), đổi cả tên trong code (`chiNhanh`, `CHI_NHANH`, `DanhMucChiNhanh`...) | dinhlanphuongipacc | Đang làm | Trum đồng ý (QD66, đổi QD17). Sửa gần như mọi file `src/`, `tools/kiem_tra.py`. Chờ T282, T290, T291, T292, T293 push xong mới push, để không xung đột việc đang dở |
+| T295 | `python tools/kiem_tra.py --dien-thoai` dừng: không bấm được `.m-thanh-duoi a` nth(1), có lẽ thanh dưới điện thoại đổi ở T281 mà bài kiểm chưa theo | | Chờ | Phát hiện ở T294, bản trước T294 cũng hỏng. Sửa `tools/kiem_tra.py` |
 | T292 | Điện thoại, Lịch sử thu chi: thanh nút Lập phiếu thu, Lập phiếu chi nằm sát đáy màn, không lơ lửng | Trum | Đang làm | Sửa `app.css` (mục cuối T292) |
 | T282 | Điện thoại đợt B, mọi gói: phiếu nhập liệu 1 màn cho mọi nghiệp vụ, bỏ luồng 5 bước; gói Plus, Pro có khối Hạch toán thu gọn; phiếu chi lý do chờ phân bổ hỏi tạo thẻ như web | Trum | Đang làm | Giao Anti. Sửa `MLapPhieu.tsx`, `MLapPhieuKho.tsx`, `app.css` (mục cuối T282), `tools/kiem_tra.py` (bài kiểm lập phiếu điện thoại) |
 | T265 | Phiếu thu, chi đồng bộ từ FABi (T264) chưa vào Sổ quỹ tiền mặt, Sổ ngân hàng, Lịch sử thu chi, tồn quỹ trang chủ; đưa vào thì đổi số dư | | Chờ | Phát hiện khi làm T264, chờ PhuongXT quyết |
@@ -49,6 +49,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T294 | Đổi khái niệm chi nhánh thành Cửa hàng mọi nơi (giữ chi nhánh ngân hàng), đổi cả tên code (`cuaHang`, `CUA_HANG`, `DanhMucCuaHang`), script `tools/doi_cua_hang.py` (QD66) | dinhlanphuongipacc | 16/10/2026 | [2026-10-16-dinhlanphuongipacc-chi-nhanh-thanh-cua-hang](nhat-ky/2026-10-16-dinhlanphuongipacc-chi-nhanh-thanh-cua-hang.md) |
 | T287 | Danh sách thẻ chi phí: dải cảnh báo khoản chờ phân bổ chưa tạo thẻ (gợi ý xám khi hết), link Cách làm, số trên nút Ghi tăng; lưới thẻ cột gọn, tiêu đề PB, xem dạng chữ trơn; tiêu đề sơ đồ chi phí trả trước | dinhlanphuongipacc | 16/10/2026 | [2026-10-16-dinhlanphuongipacc-canh-bao-cho-phan-bo](nhat-ky/2026-10-16-dinhlanphuongipacc-canh-bao-cho-phan-bo.md) |
 | T293 | Trang chủ gói Free máy tính, tab Tổng quan: hàng trên chỉ còn Quản lý lãi lỗ, Quản lý thu chi; Quản lý kho kéo hết hàng dưới, 3 thẻ ngang; bỏ 6 thẻ biểu đồ top 5, lãi lỗ chi nhánh; `kiem_tra.py` bài T274 sửa theo. Bản điện thoại chưa sửa | PhuongXT | 16/10/2026 | [2026-10-16-phuongxt-tong-quan-hai-cot](nhat-ky/2026-10-16-phuongxt-tong-quan-hai-cot.md) |
 | T291 | Trang chủ gói Free máy tính: cột Quản lý thu chi đổi 5 thẻ quỹ thành biểu đồ vòng tồn quỹ (giữa vòng là tổng), chú thích bên phải tên quỹ trên, tiền và % dưới; rê chuột làm nổi quỹ, bấm mở biểu đồ thu chi quỹ. Bản điện thoại chưa sửa | PhuongXT | 16/10/2026 | [2026-10-16-phuongxt-vong-ton-quy](nhat-ky/2026-10-16-phuongxt-vong-ton-quy.md) |

@@ -130,7 +130,7 @@ export const FEATURE: Record<string, Feature> = Object.fromEntries(FEATURES.map(
 import { CHE_DO, CHE_DO_MAC_DINH, type CheDo } from './che-do'
 
 export const GOI: Record<Goi, { ten: string; cls: string; mota: string }> = {
-  F: { ten: 'Free', cls: 'fr', mota: 'Hộ kinh doanh, cửa hàng nhỏ, không giới hạn chi nhánh, mỗi chi nhánh một kho' },
+  F: { ten: 'Free', cls: 'fr', mota: 'Hộ kinh doanh, cửa hàng nhỏ, không giới hạn cửa hàng, mỗi cửa hàng một kho' },
   S: { ten: 'Standard', cls: 'st', mota: 'DN siêu nhỏ, 1 điểm bán, không dùng tài khoản' },
   PL: { ten: 'Plus', cls: 'md', mota: 'DN nhỏ và vừa, 1–10 điểm bán, Nợ/Có' },
   PR: { ten: 'Pro', cls: 'ad', mota: 'DN vừa và lớn, trên 10 điểm bán' },
@@ -160,7 +160,7 @@ export const DIEM_NOI_BAT: Record<Goi, { tieuDe: string; ds: string[] }> = {
       'Tự động nhận đơn bán hàng trực tiếp từ POS FABi',
       'Quản lý xuất bán POS và kiểm kê kho định kỳ',
       'Theo dõi quỹ tiền mặt, doanh thu và chi phí hoạt động',
-      'Miễn phí 100% trọn đời, không giới hạn chi nhánh',
+      'Miễn phí 100% trọn đời, không giới hạn cửa hàng',
     ],
   },
   S: {
@@ -178,7 +178,7 @@ export const DIEM_NOI_BAT: Record<Goi, { tieuDe: string; ds: string[] }> = {
     ds: [
       'Bao gồm toàn bộ tính năng của gói Standard',
       'Hạch toán kép Nợ/Có đầy đủ theo TT133/2016',
-      'Quản lý chuỗi đa chi nhánh từ 1 đến 10 điểm bán',
+      'Quản lý chuỗi đa cửa hàng từ 1 đến 10 điểm bán',
       'Khấu hao TSCĐ, phân bổ CCDC và thẻ chi phí chuyên sâu',
       'Đầy đủ bộ Báo cáo tài chính, Lưu chuyển tiền tệ, CĐPS',
     ],
@@ -189,7 +189,7 @@ export const DIEM_NOI_BAT: Record<Goi, { tieuDe: string; ds: string[] }> = {
       'Bao gồm toàn bộ tính năng của gói Plus',
       'Không giới hạn số lượng điểm bán, kho hàng và người dùng',
       'Chế độ kế toán pháp định TT99/2025 cho DN vừa và lớn',
-      'Quản lý số lô, hạn sử dụng, hạch toán đa chi nhánh',
+      'Quản lý số lô, hạn sử dụng, hạch toán đa cửa hàng',
       'Báo cáo quản trị tổng hợp chuỗi đa chiều theo thời gian thực',
     ],
   },

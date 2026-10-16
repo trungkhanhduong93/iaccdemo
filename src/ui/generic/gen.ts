@@ -1,13 +1,13 @@
 // Sinh dữ liệu giả cho màn chung. Có hạt giống theo mã màn nên mở lại vẫn ra đúng số cũ.
 import type { Row, VoucherCfg } from '../../modules/types'
-import { CHI_NHANH, HANG, HOM_NAY, KHACH, KHOAN_MUC, NCC, NHAN_VIEN, NVL } from '../../data/mock'
+import { CUA_HANG, HANG, HOM_NAY, KHACH, KHOAN_MUC, NCC, NHAN_VIEN, NVL } from '../../data/mock'
 import { between, dmy, fold, k, pad, pick, rng } from '../format'
 
 export function doiTuongDs(kind: VoucherCfg['doiTuong']): { ma: string; ten: string }[] {
   if (kind === 'kh') return KHACH
   if (kind === 'ncc') return NCC
   if (kind === 'nv') return NHAN_VIEN
-  if (kind === 'cn') return CHI_NHANH.map(c => ({ ma: c.id.toUpperCase(), ten: c.ten }))
+  if (kind === 'cn') return CUA_HANG.map(c => ({ ma: c.id.toUpperCase(), ten: c.ten }))
   return [{ ma: '', ten: '' }]
 }
 
@@ -286,13 +286,13 @@ export function chungTu(cfg: VoucherCfg, seed: string): Row[] {
       const t = tongDong(dongCua(cfg, id))
       const nguon = cfg.nguon && cfg.nguon !== 'tay' && r() < 0.75 ? cfg.nguon : 'tay'
       const g = gioPhieu(so)
-      // Phiếu kiểm kê mẫu (T124): các chi nhánh lần lượt có phiếu để chi nhánh nào cũng thấy phiếu trong tháng; kho, ghi chú theo chi nhánh của phiếu
-      const cnKk = cfg.kiemKe ? CHI_NHANH[i % CHI_NHANH.length] : undefined
-      const khoKk = cnKk ? cnKk.kho[Math.floor(i / CHI_NHANH.length) % cnKk.kho.length] : ''
+      // Phiếu kiểm kê mẫu (T124): các cửa hàng lần lượt có phiếu để cửa hàng nào cũng thấy phiếu trong tháng; kho, ghi chú theo cửa hàng của phiếu
+      const cnKk = cfg.kiemKe ? CUA_HANG[i % CUA_HANG.length] : undefined
+      const khoKk = cnKk ? cnKk.kho[Math.floor(i / CUA_HANG.length) % cnKk.kho.length] : ''
       const dgKk = cnKk ? `${i % 4 === 0 ? 'Kiểm kê cuối tháng' : 'Kiểm kê đột xuất'} ${khoKk}` : ''
       rows.push({
         id: String(i), so, ngay: `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`, gio: g, thang: d.getMonth() + 1,
-        doiTuong: dt.ten, maDt: dt.ma, cn: cnKk ? cnKk.ten : pick(r, CHI_NHANH).ten,
+        doiTuong: dt.ten, maDt: dt.ma, cn: cnKk ? cnKk.ten : pick(r, CUA_HANG).ten,
         dienGiai: cnKk ? dgKk : pick(r, cfg.dienGiai), tien: t.tien, thue: t.thue, tong: t.tong, nguon,
         tt: i < 3 ? 'nhap' : i === 5 ? 'loi' : 'ghi',
         ...(cnKk ? { _kho: khoKk, _ghiChu: dgKk } : {}),
@@ -319,7 +319,7 @@ export function chungTu(cfg: VoucherCfg, seed: string): Row[] {
   }
 
   // Phân bổ số phiếu mỗi ngày (1-4 phiếu, ngày thường nhiều hơn cuối tuần)
-  // Tháng 10 cần đủ số phiếu để 3 chi nhánh mỗi chi nhánh ≥ 5 phiếu
+  // Tháng 10 cần đủ số phiếu để 3 cửa hàng mỗi cửa hàng ≥ 5 phiếu
   const targetT10 = Math.min(26, Math.max(18, Math.round(soPhieu * 0.275)))
   const targetT9 = soPhieu - targetT10
 
@@ -370,7 +370,7 @@ export function chungTu(cfg: VoucherCfg, seed: string): Row[] {
     const { d } = ngayT9[i]
     for (let j = 0; j < countsT9[i]; j++) {
       const so = `${cfg.prefix}2609-${pad(seqT9++, 4)}`
-      const cn = CHI_NHANH[cnIdx % CHI_NHANH.length].ten
+      const cn = CUA_HANG[cnIdx % CUA_HANG.length].ten
       cnIdx++
       const dt = dts[(items.length + Math.floor(r() * dts.length)) % dts.length]
       const dienGiai = pick(r, cfg.dienGiai)
@@ -384,7 +384,7 @@ export function chungTu(cfg: VoucherCfg, seed: string): Row[] {
     const { d } = ngayT10[i]
     for (let j = 0; j < countsT10[i]; j++) {
       const so = `${cfg.prefix}2610-${pad(seqT10++, 4)}`
-      const cn = CHI_NHANH[cnIdx % CHI_NHANH.length].ten
+      const cn = CUA_HANG[cnIdx % CUA_HANG.length].ten
       cnIdx++
       const dt = dts[(items.length + Math.floor(r() * dts.length)) % dts.length]
       const dienGiai = pick(r, cfg.dienGiai)

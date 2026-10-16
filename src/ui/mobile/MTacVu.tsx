@@ -227,7 +227,7 @@ function MTacVuChung({ sc }: ScreenProps) {
   const [chay, setChay] = useState(false)
 
   const [caiDat, setCaiDat] = useState<[string, string][]>(
-    () => cfg.caiDat ?? [['Kỳ áp dụng', 'Tháng 9/2026'], ['Chi nhánh', 'Tất cả chi nhánh']]
+    () => cfg.caiDat ?? [['Kỳ áp dụng', 'Tháng 9/2026'], ['Cửa hàng', 'Tất cả cửa hàng']]
   )
 
   const [nhatKy, setNhatKy] = useState<[string, string, string][]>(

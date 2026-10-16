@@ -3,9 +3,9 @@ import { Link, useLocation } from 'react-router-dom'
 import type { Col, ReportCfg, Row, ScreenProps } from '../../modules/types'
 import { KY_CHON, renderReport, gopSo, RptTable } from '../generic/ReportScreen'
 import { datKyNhap, useTrangThaiLoc, xemBaoCao } from '../bao-cao/tuyChinhBC'
-import { chiNhanhHienTai, dsChiNhanh, useSession } from '../../app/session'
+import { cuaHangHienTai, dsCuaHang, useSession } from '../../app/session'
 import { kieuGhiSo } from '../../app/plan'
-import { CHI_NHANH } from '../../data/mock'
+import { CUA_HANG } from '../../data/mock'
 import { soQuyCn } from '../../modules/tien/SoQuy'
 import { dsTkTheoCheDo } from '../../modules/tong-hop/so-cai'
 import { tenQuyTm } from '../../modules/bao-cao/danh-sach'
@@ -51,7 +51,7 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
   const { loc, daXem } = useTrangThaiLoc(path)
   const kyDaXem = daXem?.ky || '9'
   const thang = Number(kyDaXem)
-  const cn = cfg.theoCn ? chiNhanhHienTai(s) : undefined
+  const cn = cfg.theoCn ? cuaHangHienTai(s) : undefined
   const chonQuy = loc.locQuy?.[0]
 
   const [moChonKy, setMoChonKy] = useState(false)
@@ -64,7 +64,7 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
   // Về trang 1 khi đổi bộ lọc hoặc tìm kiếm (T273)
   useEffect(() => {
     setTrangBang(1)
-  }, [q, kyDaXem, s.chiNhanh, path])
+  }, [q, kyDaXem, s.cuaHang, path])
 
   // Nhãn hiển thị kỳ
   const tenKy = useMemo(() => {
@@ -73,12 +73,12 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
     return `Tháng ${kyDaXem}/2026`
   }, [kyDaXem])
 
-  // Nhãn hiển thị chi nhánh
+  // Nhãn hiển thị cửa hàng
   const tenCn = cn ? (cn.ngan ?? cn.ten) : 'Tất cả'
 
   // Tính số liệu sổ quỹ nếu là màn 2.2.1
   const dsCnSoQuy = useMemo(() => {
-    return CHI_NHANH.filter(c => (!cn || c.id === cn.id) && (!chonQuy || tenQuyTm(c.ngan) === chonQuy))
+    return CUA_HANG.filter(c => (!cn || c.id === cn.id) && (!chonQuy || tenQuyTm(c.ngan) === chonQuy))
   }, [cn, chonQuy])
 
   const soQuyData = useMemo(() => {
@@ -105,7 +105,7 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
         { k: 'ngay', t: 'Ngày chứng từ', w: 100 },
         { k: 'thu', t: 'Số phiếu thu', cls: 'code' },
         { k: 'chi', t: 'Số phiếu chi', cls: 'code' },
-        ...(dsCnSoQuy.length > 1 ? [{ k: 'cn', t: 'Chi nhánh' } as Col] : []),
+        ...(dsCnSoQuy.length > 1 ? [{ k: 'cn', t: 'Cửa hàng' } as Col] : []),
         { k: 'dg', t: 'Diễn giải' },
         ...(noco ? [{ k: 'tk', t: 'TK đối ứng', c: true } as Col] : []),
         { k: 'no', t: 'Thu', num: true },
@@ -225,10 +225,10 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
   }, [])
 
   const dsChonCn = useMemo(() => {
-    const ds = dsChiNhanh(s)
-    const list = ds.length ? ds : CHI_NHANH
+    const ds = dsCuaHang(s)
+    const list = ds.length ? ds : CUA_HANG
     return [
-      { k: 'all', ten: 'Tất cả chi nhánh' },
+      { k: 'all', ten: 'Tất cả cửa hàng' },
       ...list.map(c => ({ k: c.id, ten: c.ten })),
     ]
   }, [s])
@@ -236,11 +236,11 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
   const nhanDau = isSoCongNo ? 'Tồn đầu' : 'Tồn đầu'
   const nhanGiua = isSoCongNo ? 'Phát sinh Nợ / Có' : 'Thu / Chi'
   const nhanCuoi = isSoCongNo ? 'Dư cuối' : 'Tồn cuối'
-  const xemTatCaCn = !cn || s.chiNhanh === 'all' || s.chiNhanh === ''
+  const xemTatCaCn = !cn || s.cuaHang === 'all' || s.cuaHang === ''
 
   return (
     <div className="m-so-bc">
-      {/* Hàng chip lọc theo ảnh 12: chip kỳ, chip chi nhánh, chip chuyển kiểu xem */}
+      {/* Hàng chip lọc theo ảnh 12: chip kỳ, chip cửa hàng, chip chuyển kiểu xem */}
       <div className="m-sbc-loc-hang">
         <button
           type="button"
@@ -257,7 +257,7 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
             type="button"
             className="m-sbc-chip"
             onClick={() => setMoChonCn(true)}
-            title="Chọn chi nhánh"
+            title="Chọn cửa hàng"
           >
             <span className="m-sbc-chip-nhan">Kho/CN: {tenCn}</span>
             <Icon n="chevd" className="ic sm" />
@@ -450,15 +450,15 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
         }}
       />
 
-      {/* Sheet chọn chi nhánh */}
+      {/* Sheet chọn cửa hàng */}
       {cfg.theoCn && (
         <MChon
           mo={moChonCn}
           onDong={() => setMoChonCn(false)}
-          tieuDe="Chọn chi nhánh"
+          tieuDe="Chọn cửa hàng"
           ds={dsChonCn}
-          chon={s.chiNhanh || 'all'}
-          onChon={k => set({ chiNhanh: k })}
+          chon={s.cuaHang || 'all'}
+          onChon={k => set({ cuaHang: k })}
         />
       )}
     </div>

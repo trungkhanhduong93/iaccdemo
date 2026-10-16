@@ -13,7 +13,7 @@ const home: ModuleDef = {
     // Gói Free bỏ Bàn làm việc, Trang chủ chỉ còn Tổng quan ba bài toán, PhuongXT chốt 14/10/2026 (T230)
     // Chi phí trong tháng theo lý do chi, mở từ thẻ Chi phí trong tháng ở trang chủ gói Free; không có tab riêng (T230)
     { slug: 'chi-phi-thang', ten: 'Chi phí trong tháng', nhom: 'Trang chủ', kind: 'custom', comp: ChiPhiThang, tabCha: 'tong-quan', goi: ['F'] },
-    // Chi phí NVL theo cách tính từng chi nhánh, nhập giá thành món; mở từ thẻ Chi phí nguyên vật liệu, dòng Chi phí NVL ở KQKD (T232)
+    // Chi phí NVL theo cách tính từng cửa hàng, nhập giá thành món; mở từ thẻ Chi phí nguyên vật liệu, dòng Chi phí NVL ở KQKD (T232)
     { slug: 'chi-phi-nvl', ten: 'Chi phí NVL', nhom: 'Trang chủ', kind: 'custom', comp: ChiPhiNvl, tabCha: 'tong-quan', goi: ['F'] },
     // Lịch sử thu chi một quỹ kiểu app ngân hàng, mở từ khối Tồn quỹ trang chủ gói Free (T230)
     { slug: 'lich-su-quy', ten: 'Lịch sử thu chi', nhom: 'Trang chủ', kind: 'custom', comp: LichSuQuy, tabCha: 'tong-quan', goi: ['F'] },

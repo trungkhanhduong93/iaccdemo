@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import type { ScreenProps } from '../../modules/types'
-import { donViHienTai, dsChiNhanh, useSession } from '../../app/session'
-import { CHI_NHANH, DAILY, KHO, NVL, ROLE, kqkd } from '../../data/mock'
+import { donViHienTai, dsCuaHang, useSession } from '../../app/session'
+import { CUA_HANG, DAILY, KHO, NVL, ROLE, kqkd } from '../../data/mock'
 import { Icon, ONen } from '../Icon'
 import { money, moneyD, pct, short } from '../format'
 import { type KyBaoCao, tinhToanTongQuan } from '../../modules/home/chiSo'
@@ -24,7 +24,7 @@ import { HopLaiLo13, laiLo13Thang } from '../../modules/home/BaBaiToanFree'
 import { ModalQuy } from '../../modules/home/quyThuChi'
 import {
   layDuLieuCanTheoDoi,
-  layLaiLoChiNhanh,
+  layLaiLoCuaHang,
   layTop5ChiPhi,
   layTop5ChiTien,
   layTop5DoanhThu,
@@ -33,7 +33,7 @@ import {
 } from '../../modules/home/soLieuBieuDoFree'
 import {
   LuoiCanTheoDoi,
-  TheLaiLoChiNhanh,
+  TheLaiLoCuaHang,
   TheTop5Hbar,
 } from '../../modules/home/BieuDoFree'
 import { useThaoTacNhanh, TOI_DA_THAO_TAC, type ThaoTacMuc } from '../../app/thaoTacNhanh'
@@ -69,11 +69,11 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
   const nav = useNavigate()
   const dv = donViHienTai(s)
 
-  const dsCnRaw = dsChiNhanh(s)
-  const dsCn = dsCnRaw.length ? dsCnRaw : CHI_NHANH
-  const cn = dsCn.find(c => c.id === s.chiNhanh)
-  // dsChiNhanh chỉ có id, ten: tên ngắn lấy từ CHI_NHANH
-  const tenNgan = (id: string) => CHI_NHANH.find(x => x.id === id)?.ngan
+  const dsCnRaw = dsCuaHang(s)
+  const dsCn = dsCnRaw.length ? dsCnRaw : CUA_HANG
+  const cn = dsCn.find(c => c.id === s.cuaHang)
+  // dsCuaHang chỉ có id, ten: tên ngắn lấy từ CUA_HANG
+  const tenNgan = (id: string) => CUA_HANG.find(x => x.id === id)?.ngan
   const nhanCn = cn ? (tenNgan(cn.id) ?? cn.ten) : 'Tất cả'
 
   const [searchParams, setSearchParams] = useSearchParams()
@@ -146,7 +146,7 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
 
   const dsChonCn = useMemo(() => {
     return [
-      { k: 'all', ten: 'Tất cả chi nhánh', moTa: 'Chỉ xem gộp, chưa lập chứng từ' },
+      { k: 'all', ten: 'Tất cả cửa hàng', moTa: 'Chỉ xem gộp, chưa lập chứng từ' },
       ...dsCn.map(c => ({ k: c.id, ten: c.ten, moTa: tenNgan(c.id) })),
     ]
   }, [dsCn])
@@ -155,15 +155,15 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
   const nhanGoi = s.goi === 'PR' ? 'PRO' : s.goi === 'PL' ? 'PLUS' : s.goi === 'S' ? 'STD' : 'FREE'
 
   const selCns = useMemo(() => {
-    if (!s.chiNhanh || s.chiNhanh === 'all') {
+    if (!s.cuaHang || s.cuaHang === 'all') {
       return dsCn.map(c => c.id)
     }
-    return [s.chiNhanh]
-  }, [s.chiNhanh, dsCn])
+    return [s.cuaHang]
+  }, [s.cuaHang, dsCn])
 
   const d = useMemo(() => tinhToanTongQuan('thang-nay', selCns, s.cheDo), [selCns, s.cheDo])
 
-  // Gói Free xem theo chi nhánh trên chip CN điện thoại (selCns) và tháng chọn (thangF)
+  // Gói Free xem theo cửa hàng trên chip CN điện thoại (selCns) và tháng chọn (thangF)
   const kyXemFree: KyBaoCao = isFree ? (thangF === 10 ? 'thang-nay' : 'thang-truoc') : 'thang-nay'
   const dFree = useMemo(() => {
     if (!isFree) return d
@@ -171,7 +171,7 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
   }, [isFree, kyXemFree, selCns, s.cheDo, thangF, d])
 
   // 1. Lãi lỗ gói Free: chi phí trong tháng không gồm phân bổ; lợi nhuận bỏ thu nhập, chi phí khác (T220, T230)
-  // Chi phí NVL theo cách tính từng chi nhánh (T232), thay giá vốn món bán
+  // Chi phí NVL theo cách tính từng cửa hàng (T232), thay giá vốn món bán
   const nvlFree = useMemo(() => {
     if (!isFree) return { tien: 0, ds: [] }
     return nvlKy(s, selCns, thangF)
@@ -199,13 +199,13 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
   }, [quyFree])
 
   // 3. Kho gói Free: mua hàng, công nợ, hao hụt trong tháng (T230)
-  const tenCnSet = useMemo(() => new Set(CHI_NHANH.filter(c => selCns.includes(c.id)).map(c => c.ten)), [selCns])
+  const tenCnSet = useMemo(() => new Set(CUA_HANG.filter(c => selCns.includes(c.id)).map(c => c.ten)), [selCns])
   const khoFree = useMemo(() => {
     if (!isFree) return { nhapMua: 0, soDon: 0, congNo: 0, soNcc: 0, matHH: 0 }
     const thangArr = [thangF]
     const mua = chungTu(PHIEU_MUA, '4.1.1').filter(r => thangArr.includes(Number(r.thang)) && tenCnSet.has(String(r.cn)))
     const nhapMua = mua.reduce((a, r) => a + (Number(r.tong) || 0), 0)
-    const motCn = selCns.length === 1 ? CHI_NHANH.find(c => c.id === selCns[0])?.ten : undefined
+    const motCn = selCns.length === 1 ? CUA_HANG.find(c => c.id === selCns[0])?.ten : undefined
     const ncc = rowsCongNo('ncc', thangF, motCn).filter(r => !r._t)
     const congNo = ncc.reduce((a, r) => a + Math.max(0, Number(r.cuoi) || 0), 0)
     const cfgKK = timMan('kho', '5-1-10').sc?.voucher
@@ -242,7 +242,7 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
 
   const laiLoCnFree = useMemo(() => {
     if (!isFree) return []
-    return layLaiLoChiNhanh(thangF, selCns, s)
+    return layLaiLoCuaHang(thangF, selCns, s)
   }, [isFree, thangF, selCns, s])
 
   const canTheoDoiFree = useMemo(() => {
@@ -718,7 +718,7 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
         </div>
       </section>
 
-      {/* Hàng điều hướng đầu trang chủ: gói Free 2 tab (T274), gói khác tab một hàng, chip chi nhánh hàng dưới (T257 phần D) */}
+      {/* Hàng điều hướng đầu trang chủ: gói Free 2 tab (T274), gói khác tab một hàng, chip cửa hàng hàng dưới (T257 phần D) */}
       {isFree ? (
         <div className="m-tc-thanh-dieu-huong m-tc-thanh-dieu-huong--free m-tc-thanh-dieu-huong--free-t274">
           <div className="m-tc-hang-tab">
@@ -771,7 +771,7 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
               type="button"
               className="m-tc-chip-cn m-tc-chip-kho"
               onClick={() => setMoChonCn(true)}
-              title="Chọn chi nhánh hiển thị"
+              title="Chọn cửa hàng hiển thị"
             >
               <span className="m-tc-chip-cn-nhan m-tc-chip-kho-nhan">CN: {nhanCn}</span>
               <Icon n="chevd" className="ic xs" />
@@ -805,7 +805,7 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
               type="button"
               className="m-tc-chip-cn m-tc-chip-kho"
               onClick={() => setMoChonCn(true)}
-              title="Chọn chi nhánh hiển thị"
+              title="Chọn cửa hàng hiển thị"
             >
               <span className="m-tc-chip-cn-nhan m-tc-chip-kho-nhan">CN: {nhanCn}</span>
               <Icon n="chevd" className="ic xs" />
@@ -1144,7 +1144,7 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
                 {topGvFree && <TheTop5Hbar data={topGvFree} loai="giaVon" />}
                 {topNccFree && <TheTop5Hbar data={topNccFree} loai="nhaCungCap" />}
                 {topChiTienFree && <TheTop5Hbar data={topChiTienFree} loai="chiTien" />}
-                {laiLoCnFree.length > 0 && <TheLaiLoChiNhanh ds={laiLoCnFree} thang={thangF} />}
+                {laiLoCnFree.length > 0 && <TheLaiLoCuaHang ds={laiLoCnFree} thang={thangF} />}
               </div>
             </>
           ) : (
@@ -1295,17 +1295,17 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
                 </div>
               </div>
 
-              {/* Thẻ: Hiệu quả theo chi nhánh */}
+              {/* Thẻ: Hiệu quả theo cửa hàng */}
               <div className="m-tc-the-ivt">
                 <div className="m-tc-the-head">
                   <div className="m-tc-the-tieu-hop">
-                    <h3 className="m-tc-the-tieu">Hiệu quả theo chi nhánh</h3>
+                    <h3 className="m-tc-the-tieu">Hiệu quả theo cửa hàng</h3>
                     <span className="m-tc-the-info" title={`Doanh thu và biên lãi gộp từng điểm bán · ${d.kyLabel}`}>
                       <Icon n="info" className="ic xs" />
                     </span>
                   </div>
                 </div>
-                <BranchBarChart data={d.chiNhanh} />
+                <BranchBarChart data={d.cuaHang} />
                 <div style={{ marginTop: 12, paddingTop: 10, borderTop: '1px solid var(--line-2)' }} className="row">
                   <span className="muted">Số đơn hàng</span>
                   <span className="grow" />
@@ -1595,17 +1595,17 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
       {/* Lớp phủ tìm kiếm màn hình */}
       <MTimKiem mo={moTimKiem} onDong={() => setMoTimKiem(false)} />
 
-      {/* Sheet chọn chi nhánh */}
+      {/* Sheet chọn cửa hàng */}
       <MChon
         mo={moChonCn}
         onDong={() => setMoChonCn(false)}
-        tieuDe="Chọn chi nhánh làm việc"
+        tieuDe="Chọn cửa hàng làm việc"
         ds={dsChonCn}
-        chon={s.chiNhanh || 'all'}
-        onChon={k => set({ chiNhanh: k })}
+        chon={s.cuaHang || 'all'}
+        onChon={k => set({ cuaHang: k })}
       />
 
-      {/* Hộp biểu đồ lãi lỗ 13 tháng cho gói Free (T274: xem 13 tháng hoặc theo chi nhánh) */}
+      {/* Hộp biểu đồ lãi lỗ 13 tháng cho gói Free (T274: xem 13 tháng hoặc theo cửa hàng) */}
       {moBieuDo && (
         <HopLaiLo13
           ds={laiLo13}

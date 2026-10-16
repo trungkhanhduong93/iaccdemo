@@ -63,7 +63,7 @@ interface FormState {
   ngoaiBang: boolean
   nganHang: boolean
   tenNganHang: string
-  chiNhanh: string
+  cuaHang: string
   soTkNganHang: string
   tenAnh: string
   tenNhat: string
@@ -96,7 +96,7 @@ function taoMacDinh(tk?: TaiKhoanDef | null): FormState {
       ngoaiBang: false,
       nganHang: false,
       tenNganHang: '',
-      chiNhanh: '',
+      cuaHang: '',
       soTkNganHang: '',
       tenAnh: '',
       tenNhat: '',
@@ -140,7 +140,7 @@ function taoMacDinh(tk?: TaiKhoanDef | null): FormState {
     ngoaiBang: s.startsWith('00'),
     nganHang: isNganHang,
     tenNganHang: isNganHang ? 'Vietcombank' : '',
-    chiNhanh: isNganHang ? 'Sở giao dịch' : '',
+    cuaHang: isNganHang ? 'Sở giao dịch' : '',
     soTkNganHang: isNganHang ? '0011001234567' : '',
     tenAnh: TEN_ANH[tk.so] || '',
     tenNhat: '',
@@ -762,11 +762,11 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
                             />
                           </div>
                           <div className="f">
-                            <label>Chi nhánh</label>
+                            <label>Cửa hàng</label>
                             <input
                               className="inp"
-                              value={form.chiNhanh}
-                              onChange={e => setForm(f => ({ ...f, chiNhanh: e.target.value }))}
+                              value={form.cuaHang}
+                              onChange={e => setForm(f => ({ ...f, cuaHang: e.target.value }))}
                             />
                           </div>
                           <div className="f pn-hang-dai">

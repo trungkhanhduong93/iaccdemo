@@ -1,5 +1,5 @@
 // Xuất một bảng đơn giản ra Excel (.xlsx) cho các màn tự vẽ, vd màn chi tiết mở từ trang chủ gói Free (T232).
-// Dòng 1 tiêu đề, dòng 2 dòng phụ (kỳ, chi nhánh), rồi tiêu đề cột, các dòng, dòng tổng. exceljs nạp động như xuất báo cáo.
+// Dòng 1 tiêu đề, dòng 2 dòng phụ (kỳ, cửa hàng), rồi tiêu đề cột, các dòng, dòng tổng. exceljs nạp động như xuất báo cáo.
 import { fold } from './format'
 
 export interface CotXuat { t: string; so?: boolean; rong?: number }

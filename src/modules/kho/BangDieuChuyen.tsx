@@ -3,7 +3,7 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import type { Row } from '../types'
-import { CHI_NHANH, NVL } from '../../data/mock'
+import { CUA_HANG, NVL } from '../../data/mock'
 import { cheDoHienTai, useSession } from '../../app/session'
 import { tkTheoCheDo } from '../tong-hop/so-cai'
 import { ChonDanhMuc } from '../../ui/ChonDanhMuc'
@@ -28,7 +28,7 @@ export function useDsPhieuDcn(loai: LoaiDcn): Row[] {
   return useMemo(() => [...phieuMoi, ...mau].filter(r => !laDaXoa(r.id)).map(apSua), [mau, ban])
 }
 
-/** Ô Tham chiếu của phiếu nhập: chọn phiếu xuất điều chuyển đang Chờ nhập gửi tới chi nhánh đang làm việc */
+/** Ô Tham chiếu của phiếu nhập: chọn phiếu xuất điều chuyển đang Chờ nhập gửi tới cửa hàng đang làm việc */
 function OThamChieuDcn({ cn, value, onChon }: { cn: string; value: string; onChon: (px: Row) => void }) {
   const ds = useDsPhieuDcn('xdc')
   const chon = ds.filter(r => (r.ttSx === 'cho' && (!cn || r._cnNhan === cn)) || r.id === value)
@@ -47,15 +47,15 @@ function OChon({ nhan, value, ds, trong, sua, onChange }: { nhan: string; value:
     : <input className="inp" readOnly value={value} />
 }
 
-export function DauDieuChuyen({ loai, sua, chiNhanh, kho, setKho, khoNhan, setKhoNhan, cnNhan, setCnNhan, nguon, thamChieu, onChonTc }: {
-  loai: LoaiDcn; sua: boolean; chiNhanh: string
+export function DauDieuChuyen({ loai, sua, cuaHang, kho, setKho, khoNhan, setKhoNhan, cnNhan, setCnNhan, nguon, thamChieu, onChonTc }: {
+  loai: LoaiDcn; sua: boolean; cuaHang: string
   kho: string; setKho: (v: string) => void                // xuất, chuyển kho: kho xuất; nhập: kho nhận
   khoNhan: string; setKhoNhan: (v: string) => void        // xuất, chuyển kho: kho nhận
-  cnNhan: string; setCnNhan: (v: string) => void          // xuất: chi nhánh nhận
-  nguon: { cn: string; kho: string }                      // nhập: chi nhánh, kho của phiếu xuất
+  cnNhan: string; setCnNhan: (v: string) => void          // xuất: cửa hàng nhận
+  nguon: { cn: string; kho: string }                      // nhập: cửa hàng, kho của phiếu xuất
   thamChieu: { id: string; so: string }; onChonTc: (px: Row) => void
 }) {
-  const khoCn = khoCuaCn(chiNhanh)
+  const khoCn = khoCuaCn(cuaHang)
   const oKhoXuat = (
     <div className="f">
       <label>Kho xuất <em>*</em></label>
@@ -70,7 +70,7 @@ export function DauDieuChuyen({ loai, sua, chiNhanh, kho, setKho, khoNhan, setKh
       <div className="dcn-dau">
         <div className="f">
           <label>Tham chiếu <em>*</em></label>
-          {sua ? <OThamChieuDcn cn={chiNhanh} value={thamChieu.id} onChon={onChonTc} />
+          {sua ? <OThamChieuDcn cn={cuaHang} value={thamChieu.id} onChon={onChonTc} />
             : <div className="sx-tc-xem">{thamChieu.id ? <Link className="ds-link-so" to={`/app/${DCN.xdc.man}/${thamChieu.id}`}>{thamChieu.so}</Link> : <span className="dim">Chưa có</span>}</div>}
         </div>
         <div className="f">
@@ -90,7 +90,7 @@ export function DauDieuChuyen({ loai, sua, chiNhanh, kho, setKho, khoNhan, setKh
         {oKhoXuat}
         <div className="f">
           <label>Kho nhận <em>*</em></label>
-          <OChon nhan="Kho nhận" value={khoNhan} ds={khoCn.filter(k => k !== kho)} trong="Chọn kho nhận cùng chi nhánh" sua={sua} onChange={setKhoNhan} />
+          <OChon nhan="Kho nhận" value={khoNhan} ds={khoCn.filter(k => k !== kho)} trong="Chọn kho nhận cùng cửa hàng" sua={sua} onChange={setKhoNhan} />
         </div>
       </div>
     )
@@ -99,13 +99,13 @@ export function DauDieuChuyen({ loai, sua, chiNhanh, kho, setKho, khoNhan, setKh
     <div className="dcn-dau">
       {oKhoXuat}
       <div className="f">
-        <label>Chi nhánh nhận <em>*</em></label>
-        <OChon nhan="Chi nhánh nhận" value={cnNhan} ds={CHI_NHANH.map(c => c.ten).filter(c => c !== chiNhanh)} trong="Chọn chi nhánh nhận" sua={sua}
+        <label>Cửa hàng nhận <em>*</em></label>
+        <OChon nhan="Cửa hàng nhận" value={cnNhan} ds={CUA_HANG.map(c => c.ten).filter(c => c !== cuaHang)} trong="Chọn cửa hàng nhận" sua={sua}
           onChange={v => { setCnNhan(v); const k = khoCuaCn(v); setKhoNhan(k.length === 1 ? k[0] : '') }} />
       </div>
       <div className="f">
         <label>Kho nhận <em>*</em></label>
-        <OChon nhan="Kho nhận" value={khoNhan} ds={khoCuaCn(cnNhan)} trong={cnNhan ? 'Chọn kho nhận' : 'Chọn chi nhánh nhận trước'} sua={sua} onChange={setKhoNhan} />
+        <OChon nhan="Kho nhận" value={khoNhan} ds={khoCuaCn(cnNhan)} trong={cnNhan ? 'Chọn kho nhận' : 'Chọn cửa hàng nhận trước'} sua={sua} onChange={setKhoNhan} />
       </div>
     </div>
   )

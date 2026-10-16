@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import type { Col, ScreenProps } from '../types'
 import { tenMan } from '../../app/registry'
 import { donViHienTai, useSession } from '../../app/session'
-import { CHI_NHANH, DONG_BO, HANG, KHO, NCC } from '../../data/mock'
+import { CUA_HANG, DONG_BO, HANG, KHO, NCC } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
 import { Card, Kpi, Note, PageHead } from '../../ui/Page'
 import { St, Table } from '../../ui/Table'
@@ -13,7 +13,7 @@ import { Select } from '../../ui/Dropdown'
 import { useNhatKy } from '../../ui/generic/daXoa'
 import { HopDongBo } from '../../ui/HopDongBo'
 
-const dsKho = CHI_NHANH.flatMap(c =>
+const dsKho = CUA_HANG.flatMap(c =>
   c.kho.map(ten => {
     const idx = KHO.indexOf(ten)
     const ma = idx >= 0 ? `K${String(idx + 1).padStart(2, '0')}` : `K_${c.id}`
@@ -33,7 +33,7 @@ export function DongBo({ sc, mod }: ScreenProps) {
         <button className="btn pri" onClick={() => setMoHop(true)}><Icon n="refresh" className="ic sm" />Tải ngay</button>
       </PageHead>
       <div className="grid g4" style={{ marginBottom: 14 }}>
-        <Kpi icon="pos" l="Đơn POS hôm nay" v="1.894" d="3 chi nhánh, tới 14:20" />
+        <Kpi icon="pos" l="Đơn POS hôm nay" v="1.894" d="3 cửa hàng, tới 14:20" />
         <Kpi icon="check" l="Đã vào sổ" v="1.892" d="99,9%" />
         <Kpi icon="alert" l="Lỗi chờ xử lý" v="2" d={<Link to="/app/trang-chu/ban-lam-viec">Xem trên Bàn làm việc</Link>} />
         <Kpi icon="clock" l="Lần chạy sau" v="14:35" d="Mỗi 15 phút" />
@@ -50,7 +50,7 @@ export function DongBo({ sc, mod }: ScreenProps) {
               <div className="f"><label>Đơn bán FABi</label><Select className="inp"><option>Mỗi 15 phút</option><option>Theo ca</option><option>Cuối ngày 23:30</option></Select></div>
               <div className="f"><label>Phiếu kho iPOS Inventory</label><Select className="inp"><option>Mỗi giờ</option><option>Cuối ngày</option></Select></div>
             </> : <div className="f"><label>Khoảng ngày</label><input className="inp" defaultValue="01/10/2026 – 07/10/2026" /></div>}
-            <div className="f"><label>Gom chứng từ bán hàng</label><Select className="inp"><option>Mỗi chi nhánh một chứng từ mỗi ngày</option><option>Mỗi ca một chứng từ</option></Select></div>
+            <div className="f"><label>Gom chứng từ bán hàng</label><Select className="inp"><option>Mỗi cửa hàng một chứng từ mỗi ngày</option><option>Mỗi ca một chứng từ</option></Select></div>
             <button className="btn" style={{ alignSelf: 'flex-start' }} onClick={() => toast('Đã lưu cài đặt đồng bộ')}>Lưu cài đặt</button>
           </div>
         </Card>
@@ -109,7 +109,7 @@ export function HoaDonDauVao({ sc, mod }: ScreenProps) {
   const { toast, s } = useSession()
   const dv = donViHienTai(s)
   const [moHop, setMoHop] = useState(false)
-  const dsChiNhanh = CHI_NHANH.map(c => ({
+  const dsCuaHang = CUA_HANG.map(c => ({
     ma: c.id.toUpperCase(),
     ten: c.ten,
     phu: dv.mst ? `MST: ${dv.mst}` : undefined,
@@ -130,7 +130,7 @@ export function HoaDonDauVao({ sc, mod }: ScreenProps) {
           tieuDe="Tải hoá đơn đầu vào từ iPOS Invoice"
           phu="Chọn khoảng thời gian và đơn vị nhận hoá đơn cần tải về."
           nhanDs="Đơn vị nhận hoá đơn"
-          ds={dsChiNhanh}
+          ds={dsCuaHang}
           nhanLamLai="Tải lại hoá đơn đã có"
           nutChinh="Tải hoá đơn"
           onDong={() => setMoHop(false)}
@@ -191,7 +191,7 @@ export const DS_CANH_BAO: CanhBaoItem[] = [
   ['err', 'alert', 'Công nợ quá hạn 30 ngày', '4 khách công ty, tổng 86.400.000 đ. Lâu nhất 47 ngày: Công ty CP Du lịch Biển Xanh.', '/app/tien/2-2-5'],
   ['err', 'receipt', 'Hoá đơn đầu vào bị người bán huỷ', '2 hoá đơn đã nhận, 1 hoá đơn đã hạch toán cần điều chỉnh.', '/app/tien-ich/11-4'],
   ['warn', 'box', 'Tồn kho âm', 'Thịt bò thăn −2,4 kg, Bánh phở tươi −6 kg tại Kho bếp Lê Lợi.', '/app/kho/5-2-4'],
-  ['warn', 'scale', 'Doanh thu lệch hoá đơn', 'Ngày 03/10 chi nhánh Lê Lợi lệch 85.000 đ.', '/app/tien-ich/11-7'],
+  ['warn', 'scale', 'Doanh thu lệch hoá đơn', 'Ngày 03/10 cửa hàng Lê Lợi lệch 85.000 đ.', '/app/tien-ich/11-7'],
   ['warn', 'flask', 'Giá vốn vượt định mức', 'Phở bò tái tháng 9: giá vốn 41% doanh thu, định mức 36%.', '/app/kho/5-2-6'],
   ['info', 'percent', 'Sắp đến hạn nộp tờ khai GTGT quý 3', 'Hạn 30/10/2026.', '/app/thue/6-2-3'],
 ]

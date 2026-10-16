@@ -2,7 +2,7 @@
 // Lấy theo bảng DM_ tương ứng trong CSDL kế toán iPOS (schema-dm.md)
 import { DON_VI_TINH, TEN_DVT, TEN_NHOM_HANG, TEN_NHOM_DOI_TUONG, TEN_NHOM_MUC_CP, TEN_NHOM_KHO, TEN_MUC_CHI_PHI, TEN_CONG_VIEC_17, NHOM_HANG, TEN_THUONG_HIEU, DS_THUONG_HIEU,
   DS_HANG_HOA_12, dienGiaiQd, maDvt, maHang, maKho, DS_CHUNG_TU_TIEN, DS_MUC_CHI_PHI_16, DS_CONG_VIEC_17, DS_QUY_TIEN_112 } from './data'
-import { CHI_NHANH, HOM_NAY, KHACH, KHO, NCC, NHAN_VIEN } from '../../data/mock'
+import { CUA_HANG, HOM_NAY, KHACH, KHO, NCC, NHAN_VIEN } from '../../data/mock'
 import { dmy } from '../../ui/format'
 import { NGANH_NGHE_CON, timNganhNghe } from './nganh-nghe'
 import { KhoiQuyDoi } from './QuyDoiDvt'
@@ -18,10 +18,10 @@ export type KieuTruong = 'chu' | 'so' | 'tien' | 'chon' | 'chonNhieu' | 'chonTim
 /** Đơn vị tính hiện mã và tên trong ô chọn, vd "KG - kg"; giá trị lưu vẫn là tên (T144) */
 const nhanDvt = (ten: string) => { const d = DON_VI_TINH.find(x => x[1] === ten); return d ? `${d[0]} - ${d[1]}` : ten }
 
-/** Mã nhà cung cấp, thương hiệu, chi nhánh theo tên cho dòng "Mã: X" của ô chọn (T154) */
+/** Mã nhà cung cấp, thương hiệu, cửa hàng theo tên cho dòng "Mã: X" của ô chọn (T154) */
 const maNcc = (ten: string) => NCC.find(n => n.ten === ten)?.ma ?? ''
 const maThuongHieu = (ten: string) => DS_THUONG_HIEU.find(t => t.ten === ten)?.ma ?? ''
-const maChiNhanh = (ten: string) => CHI_NHANH.find(c => c.ten === ten)?.id.toUpperCase() ?? ''
+const maCuaHang = (ten: string) => CUA_HANG.find(c => c.ten === ten)?.id.toUpperCase() ?? ''
 const TEN_HANG = DS_HANG_HOA_12.map(h => h.ten)
 
 /** T181: danh sách mã và nhãn hiển thị "<mã> - <tên>" cho phương thức thanh toán */
@@ -407,7 +407,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
         truong: [
           { k: 'ma', nhan: 'Mã kho', kieu: 'chu', batBuoc: true, cot: 'WAREHOUSE_ID' },
           { k: 'ten', nhan: 'Tên kho', kieu: 'chu', batBuoc: true, caHang: true, cot: 'WAREHOUSE_NAME' },
-          { k: 'cn', nhan: 'Chi nhánh trực thuộc', kieu: 'chon', ds: ['Lê Lợi', 'Thảo Điền', 'Phan Xích Long', 'Văn phòng'], cot: 'ORGANIZATION_ID' },
+          { k: 'cn', nhan: 'Cửa hàng trực thuộc', kieu: 'chon', ds: ['Lê Lợi', 'Thảo Điền', 'Phan Xích Long', 'Văn phòng'], cot: 'ORGANIZATION_ID' },
           { k: 'loai', nhan: 'Nhóm kho', kieu: 'chon', ds: TEN_NHOM_KHO, cot: 'WAREHOUSE_CLASS_ID', goi: ['S', 'PL', 'PR'] },   // gói Free không có nhóm kho (T143)
           { k: 'tk', nhan: 'Thủ kho', kieu: 'chu', cot: 'KEEPER' },
           { k: 'thuongHieu', nhan: 'Thương hiệu', kieu: 'chonNhieu', ds: TEN_THUONG_HIEU, maDs: maThuongHieu, caHang: true, goiY: 'Để trống nếu kho dùng cho mọi thương hiệu' },   // T151
@@ -448,14 +448,14 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
     ],
   },
 
-  // Chi nhánh (DM_ORGANIZATION)
-  'chi-nhanh': {
+  // Cửa hàng (DM_ORGANIZATION)
+  'cua-hang': {
     khoi: [
       {
         ten: 'Thông tin chung',
         truong: [
-          { k: 'ma', nhan: 'Mã chi nhánh', kieu: 'chu', batBuoc: true, cot: 'ORGANIZATION_ID' },
-          { k: 'ten', nhan: 'Tên chi nhánh', kieu: 'chu', batBuoc: true, caHang: true, cot: 'ORGANIZATION_NAME' },
+          { k: 'ma', nhan: 'Mã cửa hàng', kieu: 'chu', batBuoc: true, cot: 'ORGANIZATION_ID' },
+          { k: 'ten', nhan: 'Tên cửa hàng', kieu: 'chu', batBuoc: true, caHang: true, cot: 'ORGANIZATION_NAME' },
           { k: 'mst', nhan: 'Mã số thuế', kieu: 'chu', cot: 'TAX_FILE_NUMBER' },
           { k: 'kho', nhan: 'Kho trực thuộc', kieu: 'chu', caHang: true, cot: 'WAREHOUSE_LIST' },
         ],
@@ -547,7 +547,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
           { k: 'ten', nhan: 'Tên quỹ', kieu: 'chu', batBuoc: true, caHang: true },
           { k: 'loai', nhan: 'Loại quỹ', kieu: 'chon', ds: ['Tiền mặt', 'Ngân hàng'], batBuoc: true },
           { k: 'stk', nhan: 'Số tài khoản / Ngân hàng', kieu: 'chu', hien: v => v.loai !== 'Tiền mặt' },   // quỹ tiền mặt không có số tài khoản (T144)
-          { k: 'cn', nhan: 'Chi nhánh áp dụng', kieu: 'chonNhieu', ds: CHI_NHANH.map(c => c.ten), maDs: maChiNhanh },   // một quỹ dùng cho nhiều chi nhánh (T144)
+          { k: 'cn', nhan: 'Cửa hàng áp dụng', kieu: 'chonNhieu', ds: CUA_HANG.map(c => c.ten), maDs: maCuaHang },   // một quỹ dùng cho nhiều cửa hàng (T144)
           { k: 'soDu', nhan: 'Số dư ban đầu', kieu: 'tien', goi: ['F'] },   // gói Free khai số dư quỹ ở đây, thay màn Số dư ban đầu (T245)
         ],
       },
@@ -595,7 +595,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
       {
         ten: 'Bộ phận sử dụng',
         truong: [
-          { k: 'bpSuDung', nhan: 'Bộ phận / Chi nhánh', kieu: 'chon', ds: ['Bếp Lê Lợi', 'Bar Lê Lợi', 'Bếp Thảo Điền', 'Văn phòng', 'Kho tổng'], cot: 'ORGANIZATION_ID' },
+          { k: 'bpSuDung', nhan: 'Bộ phận / Cửa hàng', kieu: 'chon', ds: ['Bếp Lê Lợi', 'Bar Lê Lợi', 'Bếp Thảo Điền', 'Văn phòng', 'Kho tổng'], cot: 'ORGANIZATION_ID' },
           { k: 'nguoiSuDung', nhan: 'Người sử dụng', kieu: 'chu', cot: 'PR_DETAIL_ID' },
         ],
       },

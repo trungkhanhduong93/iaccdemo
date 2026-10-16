@@ -11,7 +11,7 @@ import { Card, Note, PageHead } from '../../ui/Page'
 import { St, Table } from '../../ui/Table'
 
 export const KIEM: [string, string, string, string][] = [
-  ['ok', 'Doanh thu FABi khớp sổ', 'Đủ 30/30 ngày, 3 chi nhánh', '/app/tien-ich/11-7'],
+  ['ok', 'Doanh thu FABi khớp sổ', 'Đủ 30/30 ngày, 3 cửa hàng', '/app/tien-ich/11-7'],
   ['ok', 'Hoá đơn bán ra khớp doanh thu', '90 hoá đơn tổng hợp, lệch 0 đ', '/app/thue/6-2-2'],
   ['warn', 'Tồn kho âm', '2 mặt hàng tại Kho bếp Lê Lợi, cần nhập bổ sung phiếu mua ngày 28/09', '/app/kho/5-2-4'],
   ['ok', 'Chứng từ chưa ghi sổ', '0 chứng từ', '/app/tong-hop/10-1-1'],

@@ -1,11 +1,11 @@
-// Sổ quỹ tiền mặt theo chi nhánh chọn trên thanh trên, xem tất cả thì gộp quỹ các chi nhánh. Thu bán hàng lấy đúng tiền mặt từng ngày trên FABi.
+// Sổ quỹ tiền mặt theo cửa hàng chọn trên thanh trên, xem tất cả thì gộp quỹ các cửa hàng. Thu bán hàng lấy đúng tiền mặt từng ngày trên FABi.
 import { useMemo, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import type { Col, Row, ScreenProps } from '../types'
 import { tenMan } from '../../app/registry'
-import { chiNhanhHienTai, useSession } from '../../app/session'
+import { cuaHangHienTai, useSession } from '../../app/session'
 import { kieuGhiSo } from '../../app/plan'
-import { CHI_NHANH, DAILY } from '../../data/mock'
+import { CUA_HANG, DAILY } from '../../data/mock'
 import { dsTkTheoCheDo } from '../tong-hop/so-cai'
 import { PageHead } from '../../ui/Page'
 import { gopSo, ReportPaper, ReportToolbar, RptTable } from '../../ui/generic/ReportScreen'
@@ -13,7 +13,7 @@ import { useTrangThaiLoc } from '../../ui/bao-cao/tuyChinhBC'
 import { tenQuyTm } from '../bao-cao/danh-sach'
 import { between, dmy, k, pad, pick, rng } from '../../ui/format'
 
-/** Sổ quỹ tiền mặt một chi nhánh trong tháng */
+/** Sổ quỹ tiền mặt một cửa hàng trong tháng */
 export function soQuyCn(cn: string, thang: number) {
   const r = rng('soquy' + cn + thang)
   const mo = k(between(r, 38e6, 52e6))
@@ -39,12 +39,12 @@ export function soQuyCn(cn: string, thang: number) {
 export function SoQuy({ sc, mod }: ScreenProps) {
   const { s } = useSession()
   const [ky, setKy] = useState('9')
-  const cn = chiNhanhHienTai(s)
+  const cn = cuaHangHienTai(s)
   const thang = Number(ky)
-  // Bộ lọc Quỹ tiền (T54); chi nhánh theo thanh trên. Sổ tính lại theo quỹ được chọn nên tồn đầu, tồn cuối đúng
+  // Bộ lọc Quỹ tiền (T54); cửa hàng theo thanh trên. Sổ tính lại theo quỹ được chọn nên tồn đầu, tồn cuối đúng
   const { loc } = useTrangThaiLoc(useLocation().pathname)
   const chonQuy = loc.locQuy?.[0]
-  const dsCn = CHI_NHANH.filter(c => (!cn || c.id === cn.id) && (!chonQuy || tenQuyTm(c.ngan) === chonQuy))
+  const dsCn = CUA_HANG.filter(c => (!cn || c.id === cn.id) && (!chonQuy || tenQuyTm(c.ngan) === chonQuy))
   const noco = kieuGhiSo(s.cheDo) === 'noco'
   // Số hiệu TK đối ứng đổi theo chế độ kế toán (TT99 hiện 641, 642)
   const so = useMemo(() => {
@@ -55,7 +55,7 @@ export function SoQuy({ sc, mod }: ScreenProps) {
 
   const cols: Col[] = [
     { k: 'ngay', t: 'Ngày chứng từ', w: 100 }, { k: 'thu', t: 'Số phiếu thu', cls: 'code' }, { k: 'chi', t: 'Số phiếu chi', cls: 'code' },
-    ...(dsCn.length > 1 ? [{ k: 'cn', t: 'Chi nhánh' } as Col] : []), { k: 'dg', t: 'Diễn giải' },
+    ...(dsCn.length > 1 ? [{ k: 'cn', t: 'Cửa hàng' } as Col] : []), { k: 'dg', t: 'Diễn giải' },
     ...(noco ? [{ k: 'tk', t: 'TK đối ứng', c: true } as Col] : []),
     { k: 'no', t: 'Thu', num: true }, { k: 'co', t: 'Chi', num: true }, { k: 'du', t: 'Tồn', num: true },
   ]
@@ -64,7 +64,7 @@ export function SoQuy({ sc, mod }: ScreenProps) {
       <PageHead crumb={[mod.ten, sc.nhom ?? '']} title={tenMan(sc)} code={sc.code} />
       <section className="report">
         <ReportToolbar ky={ky} setKy={setKy} />
-        <ReportPaper title="Sổ quỹ tiền mặt" sub={`${dsCn.length === 1 ? tenQuyTm(dsCn[0].ngan) : 'Quỹ tiền mặt tất cả chi nhánh'} · Tháng ${thang}/2026`}>
+        <ReportPaper title="Sổ quỹ tiền mặt" sub={`${dsCn.length === 1 ? tenQuyTm(dsCn[0].ngan) : 'Quỹ tiền mặt tất cả cửa hàng'} · Tháng ${thang}/2026`}>
           <RptTable cols={cols} rows={[{ dg: 'Số tồn đầu kỳ', du: so.mo, _b: 1 }, ...so.rows, { dg: 'Cộng phát sinh trong kỳ', no: so.tn, co: so.tc, _t: 1 }, { dg: 'Số tồn cuối kỳ', du: so.cuoi, _t: 1 }]} />
         </ReportPaper>
       </section>

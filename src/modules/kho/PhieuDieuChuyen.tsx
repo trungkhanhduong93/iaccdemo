@@ -11,9 +11,9 @@ const COT_NGUOI: Col[] = [{ k: 'ngay', t: 'Thời gian', w: 140 }, { k: 'ghiChu'
 /** Cột, chip theo loại phiếu: xuất có Chờ nhập, nhập chỉ Đã nhập, Đã huỷ; chuyển kho không có trạng thái, không có tiền */
 const KIEU: Record<'xdc' | 'ndc' | 'ck', KieuDs> = {
   xdc: { ten: DCN.xdc.ten, nhap: false, manDoi: DCN.ndc.man, chips: ['cho', 'da', 'huy'], nhanKho: 'Kho xuất', coTien: true,
-    cot: [{ k: 'kho', t: 'Kho xuất', w: 170 }, { k: 'cnNhan', t: 'Chi nhánh nhận', w: 170 }, { k: 'khoNhan', t: 'Kho nhận', w: 170 }, ...COT_NGUOI] },
+    cot: [{ k: 'kho', t: 'Kho xuất', w: 170 }, { k: 'cnNhan', t: 'Cửa hàng nhận', w: 170 }, { k: 'khoNhan', t: 'Kho nhận', w: 170 }, ...COT_NGUOI] },
   ndc: { ten: DCN.ndc.ten, nhap: true, manDoi: DCN.xdc.man, chips: ['da', 'huy'], nhanKho: 'Kho nhận', coTien: true,
-    cot: [{ k: 'cnXuat', t: 'Chi nhánh xuất', w: 170 }, { k: 'khoXuat', t: 'Kho xuất', w: 170 }, { k: 'kho', t: 'Kho nhận', w: 170 }, ...COT_NGUOI] },
+    cot: [{ k: 'cnXuat', t: 'Cửa hàng xuất', w: 170 }, { k: 'khoXuat', t: 'Kho xuất', w: 170 }, { k: 'kho', t: 'Kho nhận', w: 170 }, ...COT_NGUOI] },
   ck: { ten: DCN.ck.ten, nhap: false, nhanKho: 'Kho xuất', coTien: false,
     cot: [{ k: 'kho', t: 'Kho xuất', w: 170 }, { k: 'khoNhan', t: 'Kho nhận', w: 170 }, ...COT_NGUOI] },
 }

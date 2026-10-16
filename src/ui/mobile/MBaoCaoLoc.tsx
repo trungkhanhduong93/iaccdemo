@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, type FC } from 'react'
 import type { ScreenDef } from '../../modules/types'
-import { chiNhanhHienTai, dsChiNhanh, useSession } from '../../app/session'
-import { CHI_NHANH } from '../../data/mock'
+import { cuaHangHienTai, dsCuaHang, useSession } from '../../app/session'
+import { CUA_HANG } from '../../data/mock'
 import { KY_CHON } from '../generic/ReportScreen'
 import { CAU_HINH_BC } from '../../modules/bao-cao/danh-sach'
 import {
@@ -25,7 +25,7 @@ export const MBaoCaoLoc: FC<MBaoCaoLocProps> = ({ mo, onDong, path, sc }) => {
   const { loc, daXem } = useTrangThaiLoc(path)
 
   const [draftKy, setDraftKy] = useState<string>(() => daXem?.ky || '9')
-  const [draftCn, setDraftCn] = useState<string>(() => s.chiNhanh || 'all')
+  const [draftCn, setDraftCn] = useState<string>(() => s.cuaHang || 'all')
   const [draftLoc, setDraftLoc] = useState<Record<string, string[]>>(() => ({ ...(daXem?.loc || {}) }))
 
   const [trangCon, setTrangCon] = useState<string | null>(null)
@@ -34,18 +34,18 @@ export const MBaoCaoLoc: FC<MBaoCaoLocProps> = ({ mo, onDong, path, sc }) => {
   useEffect(() => {
     if (mo) {
       setDraftKy(daXem?.ky || '9')
-      setDraftCn(s.chiNhanh || 'all')
+      setDraftCn(s.cuaHang || 'all')
       setDraftLoc({ ...(daXem?.loc || {}) })
       setTrangCon(null)
       setTimKiem('')
     }
-  }, [mo, daXem, s.chiNhanh])
+  }, [mo, daXem, s.cuaHang])
 
   if (!mo) return null
 
-  const dsCn = dsChiNhanh(s).length ? dsChiNhanh(s) : CHI_NHANH
+  const dsCn = dsCuaHang(s).length ? dsCuaHang(s) : CUA_HANG
   const cnObj = dsCn.find(c => c.id === draftCn)
-  const tenCn = draftCn === 'all' || !cnObj ? 'Tất cả chi nhánh' : ((cnObj as { ngan?: string; ten: string }).ngan ?? cnObj.ten)
+  const tenCn = draftCn === 'all' || !cnObj ? 'Tất cả cửa hàng' : ((cnObj as { ngan?: string; ten: string }).ngan ?? cnObj.ten)
 
   const tenKy = useMemo(() => {
     const found = KY_CHON.find(k => k[0] === draftKy)
@@ -62,7 +62,7 @@ export const MBaoCaoLoc: FC<MBaoCaoLocProps> = ({ mo, onDong, path, sc }) => {
       res.push({
         k: l.k,
         nhan: l.nhan,
-        ds: l.ds ? l.ds(chiNhanhHienTai(s)?.id) : undefined,
+        ds: l.ds ? l.ds(cuaHangHienTai(s)?.id) : undefined,
       })
     }
     return res
@@ -76,8 +76,8 @@ export const MBaoCaoLoc: FC<MBaoCaoLocProps> = ({ mo, onDong, path, sc }) => {
 
   const handleApply = () => {
     datKyNhap(path, draftKy)
-    if (draftCn !== s.chiNhanh) {
-      set({ chiNhanh: draftCn })
+    if (draftCn !== s.cuaHang) {
+      set({ cuaHang: draftCn })
     }
     xoaLoc(path)
     Object.entries(draftLoc).forEach(([k, vals]) => {
@@ -124,10 +124,10 @@ export const MBaoCaoLoc: FC<MBaoCaoLocProps> = ({ mo, onDong, path, sc }) => {
             <Icon n="chevr" className="ic sm m-loc-dong-ic" />
           </div>
 
-          {/* Dòng Chi nhánh */}
+          {/* Dòng Cửa hàng */}
           <div className="m-loc-dong" onClick={() => setTrangCon('cn')}>
             <div className="m-loc-dong-trai">
-              <span className="m-loc-dong-nhan">Chi nhánh</span>
+              <span className="m-loc-dong-nhan">Cửa hàng</span>
               <span className="m-loc-dong-tri">{tenCn}</span>
             </div>
             <Icon n="chevr" className="ic sm m-loc-dong-ic" />
@@ -195,7 +195,7 @@ export const MBaoCaoLoc: FC<MBaoCaoLocProps> = ({ mo, onDong, path, sc }) => {
         </div>
       )}
 
-      {/* Trang con chọn chi nhánh */}
+      {/* Trang con chọn cửa hàng */}
       {trangCon === 'cn' && (
         <div className="m-loc-trang-con" onClick={e => e.stopPropagation()}>
           <div className="m-thanh-tren">
@@ -211,7 +211,7 @@ export const MBaoCaoLoc: FC<MBaoCaoLocProps> = ({ mo, onDong, path, sc }) => {
                 </svg>
               </button>
             </div>
-            <h1 className="m-thanh-tren-tieu-de">Chọn chi nhánh</h1>
+            <h1 className="m-thanh-tren-tieu-de">Chọn cửa hàng</h1>
           </div>
           <div className="m-loc-ds-muc" style={{ padding: '8px 16px' }}>
             <div
@@ -221,7 +221,7 @@ export const MBaoCaoLoc: FC<MBaoCaoLocProps> = ({ mo, onDong, path, sc }) => {
                 setTrangCon(null)
               }}
             >
-              <span className="m-loc-muc-ten">Tất cả chi nhánh</span>
+              <span className="m-loc-muc-ten">Tất cả cửa hàng</span>
               {draftCn === 'all' && <Icon n="check" className="ic sm" />}
             </div>
             {dsCn.map(c => {

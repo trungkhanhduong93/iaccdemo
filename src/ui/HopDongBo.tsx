@@ -30,7 +30,7 @@ export interface HopDongBoProps {
   nhanLamLai: string
   nutChinh: string
   nutDangChay?: string
-  chonSan?: string[]        // mã chọn sẵn khi mở hộp, vd chi nhánh đang làm việc (T117)
+  chonSan?: string[]        // mã chọn sẵn khi mở hộp, vd cửa hàng đang làm việc (T117)
   lamLaiMacDinh?: boolean   // ô tích ở chân hộp tích sẵn hay không (T117)
   ghiChuLamLai?: string     // dòng giải thích dưới ô tích (T117)
   tichPhu?: { nhan: string; ghiChu?: string; macDinh?: boolean }   // ô tích thứ hai ở chân hộp (T137)

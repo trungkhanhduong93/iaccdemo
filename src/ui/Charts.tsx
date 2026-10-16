@@ -322,7 +322,7 @@ export function CashFlowChart({
   )
 }
 
-/** So sánh chi nhánh: Doanh thu và Biên lãi gộp */
+/** So sánh cửa hàng: Doanh thu và Biên lãi gộp */
 export function BranchBarChart({
   data
 }: {

@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import type { Col, Row, ScreenProps } from '../types'
 import { tenMan } from '../../app/registry'
 import { useSession } from '../../app/session'
-import { CHI_NHANH, HOM_NAY, LECH, cnTen } from '../../data/mock'
+import { CUA_HANG, HOM_NAY, LECH, cnTen } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
 import { Kpi, Note, PageHead } from '../../ui/Page'
 import { St, Table } from '../../ui/Table'
@@ -39,7 +39,7 @@ export function DoiSoat({ sc, mod }: ScreenProps) {
   const ds = LECH.map(l => ({ ...l, tt: xong.includes(l.id) ? 'xong' : l.tt, lech: l.nguonV - l.soV, cnT: cnTen(l.cn) }))
   const list = ds.filter(l => (cap === 'Tất cả' || l.cap === cap) && (tatCa || l.tt !== 'xong'))
   const cols: Col[] = [
-    { k: 'ngay', t: 'Ngày', w: 96 }, { k: 'cap', t: 'Cặp đối soát' }, { k: 'cnT', t: 'Chi nhánh', cls: 'dim' },
+    { k: 'ngay', t: 'Ngày', w: 96 }, { k: 'cap', t: 'Cặp đối soát' }, { k: 'cnT', t: 'Cửa hàng', cls: 'dim' },
     { k: 'nguonV', t: 'Theo nguồn', num: true }, { k: 'soV', t: 'Theo sổ', num: true },
     { k: 'lech', t: 'Lệch', num: true, r: r => <b style={{ color: r.lech === 0 ? 'var(--green)' : 'var(--red)' }}>{r.lech > 0 ? '+' : ''}{r.lech.toLocaleString('vi-VN')}</b> },
     { k: 'nghi', t: 'Nguyên nhân nghi ngờ' },
@@ -53,9 +53,9 @@ export function DoiSoat({ sc, mod }: ScreenProps) {
         <button className="btn pri" onClick={() => toast('Đã đối soát lại 01/09–07/10: 3 dòng lệch')}><Icon n="refresh" className="ic sm" />Đối soát lại</button>
       </PageHead>
       <div className="grid g4" style={{ marginBottom: 14 }}>
-        <Kpi icon="pos" l="FABi ↔ Sổ, số ngày khớp" v="110/111" d={<span className="down">1 ngày chi nhánh lệch</span>} />
-        <Kpi icon="receipt" l="Sổ ↔ Hoá đơn, số ngày khớp" v="110/111" d={<span className="down">1 ngày chi nhánh lệch</span>} />
-        <Kpi icon="bank" l="Sổ ↔ Tiền, số ngày khớp" v="110/111" d={<span className="down">1 ngày chi nhánh lệch</span>} />
+        <Kpi icon="pos" l="FABi ↔ Sổ, số ngày khớp" v="110/111" d={<span className="down">1 ngày cửa hàng lệch</span>} />
+        <Kpi icon="receipt" l="Sổ ↔ Hoá đơn, số ngày khớp" v="110/111" d={<span className="down">1 ngày cửa hàng lệch</span>} />
+        <Kpi icon="bank" l="Sổ ↔ Tiền, số ngày khớp" v="110/111" d={<span className="down">1 ngày cửa hàng lệch</span>} />
         <Kpi icon="scale" l="Ngưỡng chặn ghi sổ" v="500.000" unit="đ" d="Lệch lớn hơn ngưỡng thì chờ kế toán duyệt" />
       </div>
       <section className="card">
@@ -65,10 +65,10 @@ export function DoiSoat({ sc, mod }: ScreenProps) {
         <ThanhLoc
           ngay={{ value: khoang, onChange: setKhoang }}
           boLoc={
-            <LocO nhan="Chi nhánh">
+            <LocO nhan="Cửa hàng">
               <Select className="inp">
                 <option>Tất cả</option>
-                {CHI_NHANH.map(c => <option key={c.id}>{c.ten}</option>)}
+                {CUA_HANG.map(c => <option key={c.id}>{c.ten}</option>)}
               </Select>
             </LocO>
           }

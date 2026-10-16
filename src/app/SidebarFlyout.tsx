@@ -314,7 +314,7 @@ const FLYOUT_CONFIG: Record<string, FlyoutData> = {
         { ten: 'Quy đổi đơn vị tính', di: '/app/danh-muc/1-4' },
         { ten: 'Khách hàng, NCC, nhân viên', di: '/app/danh-muc/1-5' },
         { ten: 'Kho hàng', di: '/app/danh-muc/1-8' },
-        { ten: 'Chi nhánh làm việc', di: '/app/danh-muc/chi-nhanh' },
+        { ten: 'Cửa hàng làm việc', di: '/app/danh-muc/cua-hang' },
         { ten: 'Bảng giá bán & mua', di: '/app/danh-muc/1-14' },
         // Sơ đồ danh mục tạm ẩn cùng tab Quy trình của Danh mục (T225)
       ],
@@ -371,7 +371,7 @@ const FLYOUT_CONFIG: Record<string, FlyoutData> = {
       items: [
         { ten: 'Thông tin doanh nghiệp', di: '/app/he-thong/thong-tin' },
         { ten: 'Cấu hình kế toán', di: '/app/he-thong/cau-hinh' },
-        { ten: 'Danh mục chi nhánh', di: '/app/danh-muc/chi-nhanh' },
+        { ten: 'Danh mục cửa hàng', di: '/app/danh-muc/cua-hang' },
       ],
     },
   },

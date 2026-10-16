@@ -2,7 +2,7 @@ import { useMemo, useState, type FC, type ReactNode } from 'react'
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import type { ScreenProps } from '../../modules/types'
 import { duongDan } from '../../app/registry'
-import { chiNhanhHienTai, useSession } from '../../app/session'
+import { cuaHangHienTai, useSession } from '../../app/session'
 import { kieuGhiSo } from '../../app/plan'
 import { docNgay, trongKhoang } from '../ChonNgay'
 import { money, rutGonSo } from '../format'
@@ -69,7 +69,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
   const rows = cfg.dieuChuyen ? rowsDcn : cfg.sanXuat ? rowsSx : rowsGoc
 
   const ghi = kieuGhiSo(s.goi) !== 'khong'
-  const cnChon = chiNhanhHienTai(s)
+  const cnChon = cuaHangHienTai(s)
 
   // Bộ lọc nâng cao
   const [locMo, setLocMo] = useState(false)
@@ -100,7 +100,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
     return raw.filter(Boolean).sort()
   }, [rows])
 
-  // Lọc sơ bộ (thời gian, chi nhánh, loại, bộ lọc nâng cao)
+  // Lọc sơ bộ (thời gian, cửa hàng, loại, bộ lọc nâng cao)
   const kn = tinhKhoangNgay(locVal.thoiGian, locVal.khoangNgay)
   const truocTT = useMemo(() => {
     return rows.filter(r => {
@@ -109,7 +109,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
         const d = docNgay(String(r.ngay).split(' ')[0])
         if (!trongKhoang(d, kn)) return false
       }
-      // 2. Chi nhánh
+      // 2. Cửa hàng
       if (cnChon && r.cn !== cnChon.ten) return false
       // 3. Loại chứng từ (tab con)
       if (loaiChon && r.loai !== loaiChon) return false

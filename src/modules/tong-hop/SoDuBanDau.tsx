@@ -14,7 +14,7 @@ import { fold, k, money } from '../../ui/format'
 import { ThanhLoc } from '../../ui/ThanhLoc'
 import { Select } from '../../ui/Dropdown'
 import { HopXacNhan } from '../../ui/LocNangCao'
-import { CHI_NHANH, DON_VI, KHACH, NCC, NVL } from '../../data/mock'
+import { CUA_HANG, DON_VI, KHACH, NCC, NVL } from '../../data/mock'
 import { TEN_TK, soCai } from './so-cai'
 
 export type TabKey = 'tk' | 'tien' | 'kh' | 'ncc' | 'kho'
@@ -31,7 +31,7 @@ function tach(tong: number, tyLe: number[]) {
 
 /** Quỹ tiền theo danh mục quỹ tiền 1.12 */
 export const QUY: Row[] = [
-  ...CHI_NHANH.map((c, i) => ({ ma: `TM0${i + 1}`, ct: `Quỹ tiền mặt ${c.ngan}`, kieu: 'Tiền mặt', cn: c.ten, tk: '1111' })),
+  ...CUA_HANG.map((c, i) => ({ ma: `TM0${i + 1}`, ct: `Quỹ tiền mặt ${c.ngan}`, kieu: 'Tiền mặt', cn: c.ten, tk: '1111' })),
   { ma: 'NH01', ct: 'Vietcombank, chi nhánh Sài Gòn', kieu: 'Ngân hàng', cn: 'Tất cả', tk: '1121' },
   { ma: 'NH02', ct: 'Techcombank, nhận tiền QR', kieu: 'Ngân hàng', cn: 'Tất cả', tk: '1121' },
 ]
@@ -50,7 +50,7 @@ export const datSoDuQuy = (s: Pick<Session, 'donVi' | 'soDuQuy'>, ma: string, du
   ({ soDuQuy: { ...s.soDuQuy, [s.donVi]: { ...s.soDuQuy?.[s.donVi], [ma]: { no: Math.max(0, du), co: Math.max(0, -du) } } } })
 
 /** Đối tượng chọn được ở dòng thêm mới theo loại số dư; khoá trùng là ma (tài khoản là tk) */
-/** Quỹ tiền mặt của chi nhánh lên sổ thêm từ FABi (T142) */
+/** Quỹ tiền mặt của cửa hàng lên sổ thêm từ FABi (T142) */
 export const quyCua = (c: CnThem): Row => ({ ma: `TM-${c.id.toUpperCase()}`, ct: `Quỹ tiền mặt ${c.ten.replace(/^Phố Mây /, '')}`, kieu: 'Tiền mặt', cn: c.ten, tk: '1111' })
 
 export function luaChon(tab: TabKey, quyThem: Row[] = []): Row[] {
@@ -68,7 +68,7 @@ export function soDuRows(): Row[] {
   const m = soCai(8).mo
   const du = (tk: string, ct: string, v: number, them: Row = {}) => ({ tk, ten: TEN_TK[tk], ct, no: Math.max(0, v), co: Math.max(0, -v), du: v, ...them })
   const tkRows = Object.keys(m).map(tk => ({ loai: 'tk', ...du(tk, '', m[tk]) }))
-  const tm = tach(m['1111'] ?? 0, CHI_NHANH.map((_, i, a) => i === a.length - 1 ? 1 : 1 / a.length))
+  const tm = tach(m['1111'] ?? 0, CUA_HANG.map((_, i, a) => i === a.length - 1 ? 1 : 1 / a.length))
   const nh = tach(m['1121'] ?? 0, [0.7, 0.3])
   const soTien = [...tm, ...nh]
   const tien = QUY.map((q, i) => ({ loai: 'tien', ...du(q.tk, q.ct, soTien[i], q) }))
@@ -104,10 +104,10 @@ export function SoDuBanDau({ sc, mod }: ScreenProps) {
   const [q0] = useSearchParams()
   const cnThem = s.cnThem?.[s.donVi] ?? []
   const quyThem = cnThem.map(quyCua)
-  // Mở từ Thêm chi nhánh từ FABi (?cnMoi=id,id): chèn sẵn dòng quỹ tiền mặt của chi nhánh mới để gõ số dư (T142)
+  // Mở từ Thêm cửa hàng từ FABi (?cnMoi=id,id): chèn sẵn dòng quỹ tiền mặt của cửa hàng mới để gõ số dư (T142)
   const cnMoi = (q0.get('cnMoi') ?? '').split(',').filter(Boolean)
   // Tab tiền hiện đủ mọi quỹ của đơn vị, quỹ nào có số dư thì gõ rồi Lưu (T160): đơn vị mẫu có quỹ mẫu kèm số dư mẫu;
-  // đơn vị mới (dùng thử, thêm đơn vị) có quỹ tiền mặt của chi nhánh đã lên sổ và các tài khoản ngân hàng, số dư 0
+  // đơn vị mới (dùng thử, thêm đơn vị) có quỹ tiền mặt của cửa hàng đã lên sổ và các tài khoản ngân hàng, số dư 0
   const coSan = DON_VI.some(d => d.id === s.donVi)
   const [all, setAll] = useState<Row[]>(() => {
     const ds = soDuRows()
@@ -183,7 +183,7 @@ export function SoDuBanDau({ sc, mod }: ScreenProps) {
       <input className="inp sdb-so" inputMode="numeric" value={Number(r.sl) ? money(Number(r.sl)) : ''} placeholder="0" onChange={(e: ChangeEvent<HTMLInputElement>) => suaDong(r.id, { sl: soTien(e.target.value) })} />
     )
     if (tab === 'tk') return [{ k: 'tk', t: 'Số hiệu TK', cls: 'code' }, { k: 'ten', t: 'Tên tài khoản', r: oTen('ten') }, ...tien(''), xoa]
-    if (tab === 'tien') return [{ k: 'ma', t: 'Mã quỹ', cls: 'code' }, { k: 'ct', t: 'Tên quỹ', r: oTen('ct') }, { k: 'kieu', t: 'Loại' }, { k: 'cn', t: 'Chi nhánh', cls: 'dim' }, ...tk, ...tien('Số dư')]   // đủ mọi quỹ, không xoá dòng (T160)
+    if (tab === 'tien') return [{ k: 'ma', t: 'Mã quỹ', cls: 'code' }, { k: 'ct', t: 'Tên quỹ', r: oTen('ct') }, { k: 'kieu', t: 'Loại' }, { k: 'cn', t: 'Cửa hàng', cls: 'dim' }, ...tk, ...tien('Số dư')]   // đủ mọi quỹ, không xoá dòng (T160)
     if (tab === 'kho') return [{ k: 'kho', t: 'Kho' }, { k: 'ma', t: 'Mã hàng', cls: 'code' }, { k: 'ct', t: 'Tên hàng', r: oTen('ct') }, { k: 'dvt', t: 'ĐVT' }, { k: 'sl', t: 'Số lượng', num: true, w: 110, r: oSl }, ...tk, ...tien('Giá trị tồn'), xoa]
     return [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ct', t: tab === 'kh' ? 'Khách hàng' : 'Nhà cung cấp', r: oTen('ct') }, ...tk, ...tien(tab === 'kh' ? 'Còn phải thu' : 'Còn phải trả'), xoa]
   }, [tab, noCo, all])   // eslint-disable-line react-hooks/exhaustive-deps

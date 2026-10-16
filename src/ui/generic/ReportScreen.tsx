@@ -1,16 +1,16 @@
-// Sổ, báo cáo chung: thanh lọc kỳ, trang báo cáo kiểu mẫu in, ô ký. Chi nhánh lấy trên thanh trên
+// Sổ, báo cáo chung: thanh lọc kỳ, trang báo cáo kiểu mẫu in, ô ký. Cửa hàng lấy trên thanh trên
 import { useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import type { Col, ReportCfg, Row, ScreenProps } from '../../modules/types'
 import { tenMan } from '../../app/registry'
 import { kieuGhiSo } from '../../app/plan'
-import { chiNhanhHienTai, donViHienTai, dsChiNhanh, useSession, cheDoHienTai } from '../../app/session'
+import { cuaHangHienTai, donViHienTai, dsCuaHang, useSession, cheDoHienTai } from '../../app/session'
 import { canCu, type CheDo } from '../../app/che-do'
 import { cachHkd, cauHinhBC, kyHieuBC, laHkd, tenBC, tenTkNh, type LoaiBC } from '../../modules/bao-cao/danh-sach'
 import * as HKD from '../../modules/bao-cao/tt152'
 import { dsTkTheoCheDo } from '../../modules/tong-hop/so-cai'
-import { CHI_NHANH, HANG, HOM_NAY, KHACH, NCC, NVL, TK_NGAN_HANG } from '../../data/mock'
+import { CUA_HANG, HANG, HOM_NAY, KHACH, NCC, NVL, TK_NGAN_HANG } from '../../data/mock'
 import { Icon } from '../Icon'
 import { PageHead } from '../Page'
 import { Table } from '../Table'
@@ -520,7 +520,7 @@ function DropdownChonNhieu({
  *  - 1.3: Đơn vị tính
  *  - 1.5: Đối tượng (Khách hàng / Nhà cung cấp / Đối tượng)
  *  - 1.8: Kho
- *  - chi-nhanh: Chi nhánh
+ *  - cua-hang: Cửa hàng
  *  - 1.12: Quỹ tiền (Quỹ tiền / Tài khoản ngân hàng)
  *  - 1.13: Tài sản cố định
  *
@@ -555,13 +555,13 @@ const BANG_ANH_XA_DANH_MUC: AnhXaDanhMuc[] = [
     khopTieuDe: ['Tên tài khoản'],
   },
 
-  // Chi nhánh (slug chi-nhanh)
+  // Cửa hàng (slug cua-hang)
   {
-    nhom: 'chinhanh',
-    ten: 'Chi nhánh',
+    nhom: 'cuahang',
+    ten: 'Cửa hàng',
     laMa: false,
-    khopKhoa: ['cn', 'chinhanh'],
-    khopTieuDe: ['Chi nhánh', 'Tên chi nhánh'],
+    khopKhoa: ['cn', 'cuahang', 'chinhanh'],
+    khopTieuDe: ['Cửa hàng', 'Tên cửa hàng'],
   },
 
   // 1.8: Kho
@@ -742,7 +742,7 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
         k: l.k,
         nhan: l.nhan,
         kieu: l.kieu,
-        ds: l.ds ? l.ds(chiNhanhHienTai(s)?.id) : undefined,
+        ds: l.ds ? l.ds(cuaHangHienTai(s)?.id) : undefined,
       })
       daCo.add(l.k)
     }
@@ -816,7 +816,7 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
       if (kh.loai === 'bang') {
         const dongCT = kh.rows.filter(r => !r._b && !r._t)
         for (const l of cfg?.loc ?? []) {
-          const vals = l.ds ? l.ds(chiNhanhHienTai(s)?.id) : [...new Set(dongCT.map(r => String(r[l.k] ?? '')).filter(Boolean))].sort()
+          const vals = l.ds ? l.ds(cuaHangHienTai(s)?.id) : [...new Set(dongCT.map(r => String(r[l.k] ?? '')).filter(Boolean))].sort()
           datTuyChon(path, l.k, vals)
         }
         if (dongCT.some(r => r.cn !== undefined)) {
@@ -894,12 +894,12 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
     return () => datNguonXuat(null)
   }, [slug, title, sub, kyHieu, cd, s.cheDo, dv.ten, dv.diaChi, dv.mst, khoHienTai, bangXuat, kyHieuCot, dsKy, ngayLap, cfg])
 
-  const cn = chiNhanhHienTai(s)
+  const cn = cuaHangHienTai(s)
   const { subLines, periodText } = tachSub(sub)
-  // Đầu bảng dữ liệu: tên báo cáo, một dòng phụ (chi nhánh hoặc địa điểm kinh doanh, kỳ) căn giữa (T179)
+  // Đầu bảng dữ liệu: tên báo cáo, một dòng phụ (cửa hàng hoặc địa điểm kinh doanh, kỳ) căn giữa (T179)
   const timBang = useTim(path)
-  const coDiaDiem = subLines.some(l => /địa điểm|chi nhánh/i.test(l))   // dòng phụ đã ghi chi nhánh, địa điểm thì không thêm
-  const dongPhuBang = [coDiaDiem ? '' : `Chi nhánh: ${cn ? cn.ten : 'Tất cả chi nhánh'}`, ...subLines, (periodText ?? '').replace(/ Năm /, ' năm ')].filter(Boolean).join(', ')
+  const coDiaDiem = subLines.some(l => /địa điểm|cửa hàng/i.test(l))   // dòng phụ đã ghi cửa hàng, địa điểm thì không thêm
+  const dongPhuBang = [coDiaDiem ? '' : `Cửa hàng: ${cn ? cn.ten : 'Tất cả cửa hàng'}`, ...subLines, (periodText ?? '').replace(/ Năm /, ' năm ')].filter(Boolean).join(', ')
   const dauBang = (
     <>
       <div className="bc-bang-tieu-de">{tenBC(slug, s.cheDo, s) ?? title}</div>
@@ -918,7 +918,7 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
         <div className="paper-dv-trai">
           <div className="paper-ten-dv">{dv.ten}</div>
           <div className="paper-dc-mst">{dv.diaChi}{dv.mst ? ` — MST: ${dv.mst}` : ''}</div>
-          <div className="paper-dv-cs">Chi nhánh: {cn ? cn.ten : 'Tất cả chi nhánh'}</div>
+          <div className="paper-dv-cs">Cửa hàng: {cn ? cn.ten : 'Tất cả cửa hàng'}</div>
         </div>
         {kyHieu && (
           <div className="bc-mau">
@@ -1000,7 +1000,7 @@ const tuDoanKho = (than: ReactNode): Kho => tachKhoi(than).some(x => x.loai === 
 
 const kyTen = (ky: string) => KY_CHON.find(x => x[0] === ky)?.[1].replace(' (đến 07/10)', '') || `Tháng ${ky}/2026`
 const dsTongHop: Record<string, { ma: string; ten: string }[]> = {
-  kh: KHACH, ncc: NCC, hang: HANG, nvl: NVL, cn: CHI_NHANH.map(c => ({ ma: c.id.toUpperCase(), ten: c.ten })),
+  kh: KHACH, ncc: NCC, hang: HANG, nvl: NVL, cn: CUA_HANG.map(c => ({ ma: c.id.toUpperCase(), ten: c.ten })),
   tk: [['1111', 'Tiền mặt'], ['1121', 'Tiền gửi ngân hàng'], ['131', 'Phải thu của khách hàng'], ['1331', 'Thuế GTGT được khấu trừ'], ['152', 'Nguyên liệu, vật liệu'],
     ['156', 'Hàng hoá'], ['211', 'Tài sản cố định'], ['242', 'Chi phí trả trước'], ['331', 'Phải trả cho người bán'], ['33311', 'Thuế GTGT đầu ra'],
     ['334', 'Phải trả người lao động'], ['411', 'Vốn đầu tư của chủ sở hữu'], ['421', 'Lợi nhuận chưa phân phối'], ['511', 'Doanh thu bán hàng'], ['632', 'Giá vốn hàng bán'], ['642', 'Chi phí quản lý kinh doanh']].map(([ma, ten]) => ({ ma, ten })),
@@ -1017,19 +1017,19 @@ export function ReportScreen({ sc, mod }: ScreenProps) {
   const { loc, daXem } = useTrangThaiLoc(path)
   const kyDaXem = daXem?.ky ?? ky
   const thang = Number(kyDaXem)
-  const cn = cfg.theoCn ? chiNhanhHienTai(s) : undefined
+  const cn = cfg.theoCn ? cuaHangHienTai(s) : undefined
   const body = useMemo(() => renderReport(cfg, sc.code ?? sc.slug, thang, s.cheDo, cn?.id, loc, s), [cfg, kyDaXem, sc, s.cheDo, cn, loc, s])
-  // Dòng dưới tiêu đề ghi chi nhánh (theo thanh trên) và quỹ đang lọc (T54)
+  // Dòng dưới tiêu đề ghi cửa hàng (theo thanh trên) và quỹ đang lọc (T54)
   // Sổ hộ kinh doanh TT152 ghi địa điểm kinh doanh như iFaster; S2d thêm tên mặt hàng (T179)
   const ma = sc.code ?? sc.slug
   const soHkd = s.cheDo === 'TT152' && laHkd(s) && ['3.2.5', '10.4.1', '5.2.8'].includes(ma)
   const matHangSo = HKD.matHangS2d(loc.hang, loc.nhomHang)   // S2d ghi tên mặt hàng đang xem dưới tiêu đề
-  const diaDiem = cn?.ten ?? dsChiNhanh(s).find(c => c.id === s.ttDv?.[s.donVi]?.cnChinh)?.ten ?? donViHienTai(s).ten
+  const diaDiem = cn?.ten ?? dsCuaHang(s).find(c => c.id === s.ttDv?.[s.donVi]?.cnChinh)?.ten ?? donViHienTai(s).ten
   const sub = soHkd
     ? `Địa điểm kinh doanh: ${diaDiem}${ma === '5.2.8' ? ` · Tên vật liệu, dụng cụ, sản phẩm, hàng hoá: ${matHangSo.ten}` : ''} · ${kyTen(kyDaXem)}`
     : (ma === '5.2.8' && s.cheDo === 'TT58')
-    ? `${kyTen(kyDaXem)} · Tên vật liệu, dụng cụ, sản phẩm, hàng hoá: ${NVL[0].ten} · Kho: ${cn ? cn.ten : CHI_NHANH[0].ten}`
-    : (cfg.theoCn ? `${kyTen(kyDaXem)} · ${cn ? 'Chi nhánh ' + cn.ngan : 'Tất cả chi nhánh'}${loc.locQuy?.[0] ? ' · ' + loc.locQuy[0] : ''}` : kyTen(kyDaXem))
+    ? `${kyTen(kyDaXem)} · Tên vật liệu, dụng cụ, sản phẩm, hàng hoá: ${NVL[0].ten} · Kho: ${cn ? cn.ten : CUA_HANG[0].ten}`
+    : (cfg.theoCn ? `${kyTen(kyDaXem)} · ${cn ? 'Cửa hàng ' + cn.ngan : 'Tất cả cửa hàng'}${loc.locQuy?.[0] ? ' · ' + loc.locQuy[0] : ''}` : kyTen(kyDaXem))
   return (
     <div className="page page-report">
       <PageHead crumb={[mod.ten, sc.nhom ?? '']} title={ten} code={sc.code} />
@@ -1042,7 +1042,7 @@ export function ReportScreen({ sc, mod }: ScreenProps) {
   )
 }
 
-/** Gộp sổ của nhiều chi nhánh: xếp theo ngày, thêm cột chi nhánh, tính lại số dư luỹ kế */
+/** Gộp sổ của nhiều cửa hàng: xếp theo ngày, thêm cột cửa hàng, tính lại số dư luỹ kế */
 export function gopSo(phan: { cn: string; mo: number; rows: Row[]; tn: number; tc: number }[]) {
   const mo = phan.reduce((a, p) => a + p.mo, 0)
   const ngay = (x: Row) => Number(String(x.ngay).slice(0, 2))
@@ -1084,10 +1084,10 @@ export function renderReport(cfg: ReportCfg, seed: string, thang: number, cd: Ch
     if (seed === '2.2.7') return <RptTable cols={HKD.colsS2e} rows={HKD.rowsS2e(thang, loc.quy)} />
   }
   const r = rng(seed + thang)
-  // Sổ, báo cáo theo chi nhánh: mỗi chi nhánh một hạt giống riêng, xem tất cả thì cộng các chi nhánh.
+  // Sổ, báo cáo theo cửa hàng: mỗi cửa hàng một hạt giống riêng, xem tất cả thì cộng các cửa hàng.
   // Bộ lọc Quỹ tiền (T54) chọn lại phần được cộng, nên tồn đầu, tồn cuối đúng với lựa chọn
   const chonQuy = loc.locQuy?.[0]
-  const dsCn = cfg.theoCn ? CHI_NHANH.filter(c => !cn || c.id === cn) : []
+  const dsCn = cfg.theoCn ? CUA_HANG.filter(c => !cn || c.id === cn) : []
   const dsTk = cfg.theoTk ? TK_NGAN_HANG.filter(t => !chonQuy || tenTkNh(t) === chonQuy) : []
   // Dòng mang giá trị đang lọc để khung lọc chung (bienDoiBang) giữ lại
   const gan = (x: Row): Row => ({ ...x, locQuy: chonQuy })
@@ -1104,7 +1104,7 @@ export function renderReport(cfg: ReportCfg, seed: string, thang: number, cd: Ch
       : dsCn.map(c => ({ cn: c.ngan, ...soMot(seed + c.id) }))
     const so0 = cfg.theoCn ? gopSo(phan) : soMot(seed)
     const so = { ...so0, rows: so0.rows.map(gan) }
-    const cols: Col[] = [{ k: 'ngay', t: 'Ngày', w: 92 }, { k: 'so', t: 'Số chứng từ', cls: 'code', w: 130 }, ...(gop ? [{ k: 'cn', t: 'Chi nhánh', w: 110 } as Col] : []),
+    const cols: Col[] = [{ k: 'ngay', t: 'Ngày', w: 92 }, { k: 'so', t: 'Số chứng từ', cls: 'code', w: 130 }, ...(gop ? [{ k: 'cn', t: 'Cửa hàng', w: 110 } as Col] : []),
       ...(gopTk ? [{ k: 'quy', t: 'Quỹ tiền', w: 190 } as Col] : []), { k: 'dienGiai', t: 'Diễn giải' },
       ...(khongTk ? [] : [{ k: 'tk', t: 'TK đối ứng', c: true, w: 90 } as Col]),
       { k: 'no', t: khongTk ? 'Thu' : 'Phát sinh Nợ', num: true }, { k: 'co', t: khongTk ? 'Chi' : 'Phát sinh Có', num: true }, { k: 'du', t: khongTk ? 'Tồn' : 'Số dư', num: true }]
@@ -1120,7 +1120,7 @@ export function renderReport(cfg: ReportCfg, seed: string, thang: number, cd: Ch
       { k: 'pct', t: 'Tỷ lệ', num: true }, { k: 'gt', t: 'Giá trị chênh lệch', num: true }]} rows={rows} />
   }
   if (cfg.kieu === 'bangke') {
-    if (cfg.cols && cfg.rows) return <RptTable cols={cfg.cols} rows={ganLocNguon(cfg.rows(thang, CHI_NHANH.find(c => c.id === cn)?.ten, loc), loc)} />
+    if (cfg.cols && cfg.rows) return <RptTable cols={cfg.cols} rows={ganLocNguon(cfg.rows(thang, CUA_HANG.find(c => c.id === cn)?.ten, loc), loc)} />
     const rows = chungTu({ prefix: 'HD', doiTuong: 'ncc', dienGiai: ['Mua hàng'], tien: [2e6, 40e6], dong: 'nvl' }, seed).filter(x => x.thang === thang || thang === 8)
     return <RptTable cols={[{ k: 'stt', t: 'STT', c: true, w: 50 }, { k: 'so', t: 'Số hoá đơn', cls: 'code' }, { k: 'ngay', t: 'Ngày' }, { k: 'doiTuong', t: 'Tên người bán' },
       { k: 'tien', t: 'Giá trị chưa thuế', num: true }, { k: 'thue', t: 'Thuế GTGT', num: true }]}

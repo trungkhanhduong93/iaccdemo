@@ -1,7 +1,7 @@
 // Bộ lọc Kho, Hàng hoá, Nhóm hàng hoá, Đối tượng của báo cáo mua hàng, bán hàng, kho (T207).
 // Lọc trên từng phiếu, từng dòng hàng trước khi cộng, nên báo cáo gộp theo ngày, nhà cung cấp, mặt hàng vẫn đúng số.
 // File dữ liệu: chỉ import mock, không import index.ts nào
-import { CHI_NHANH, HANG, HANG_SX, KHACH, NCC, NVL } from '../../data/mock'
+import { CUA_HANG, HANG, HANG_SX, KHACH, NCC, NVL } from '../../data/mock'
 
 export interface LocNguon { kho: string[]; hang: string[]; nhom: string[]; dt: string[] }
 
@@ -34,8 +34,8 @@ const KHO_HANG = tenDs([...NVL, ...HANG_SX, ...HANG.filter(h => h.tonKho)])
 const BAN = tenDs(HANG)
 
 type Loc = { k: string; nhan: string; kieu: 'chon' | 'chonNhieu'; ds: (cnId?: string) => string[] }
-/** Kho của chi nhánh đang chọn trên thanh trên, xem tất cả chi nhánh thì mọi kho */
-const LOC_KHO: Loc = { k: KHOA_LOC_NGUON.kho, nhan: 'Kho', kieu: 'chonNhieu', ds: id => CHI_NHANH.filter(c => !id || c.id === id).flatMap(c => c.kho) }
+/** Kho của cửa hàng đang chọn trên thanh trên, xem tất cả cửa hàng thì mọi kho */
+const LOC_KHO: Loc = { k: KHOA_LOC_NGUON.kho, nhan: 'Kho', kieu: 'chonNhieu', ds: id => CUA_HANG.filter(c => !id || c.id === id).flatMap(c => c.kho) }
 const locHang = (ds: string[]): Loc => ({ k: KHOA_LOC_NGUON.hang, nhan: 'Hàng hoá', kieu: 'chonNhieu', ds: () => ds })
 const locNhom = (ds: string[]): Loc => ({ k: KHOA_LOC_NGUON.nhom, nhan: 'Nhóm hàng hoá', kieu: 'chonNhieu', ds: () => ds })
 

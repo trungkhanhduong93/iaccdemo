@@ -6,7 +6,7 @@ import { createPortal } from 'react-dom'
 import { useSearchParams } from 'react-router-dom'
 import type { Col, Row, ScreenProps } from '../types'
 import { useSession } from '../../app/session'
-import { CHI_NHANH, DON_VI, tongKy } from '../../data/mock'
+import { CUA_HANG, DON_VI, tongKy } from '../../data/mock'
 import { DS_QUY_TIEN_112 } from '../danh-muc/data'
 import { NGANH_NGHE_CON, NHOM_NGANH_NGHE } from '../danh-muc/nganh-nghe'
 import { Icon } from '../../ui/Icon'
@@ -175,7 +175,7 @@ function HopToKhai({ tk, buocDau = 0, onDong, onDoi }: { tk: ToKhai; buocDau?: n
       <h4>Danh sách điểm bán hàng</h4>
       <Table cols={[{ k: 'ma', t: 'Mã địa điểm kinh doanh', cls: 'code', w: 150 }, { k: 'ten', t: 'Tên điểm bán', w: 180 }, { k: 'pos', t: 'Mã POS', cls: 'code', w: 90 },
         { k: 'db', t: 'Địa bàn hành chính', w: 260 }, { k: 'cq', t: 'Cơ quan thuế quản lý', w: 260 }, { k: 'dc', t: 'Địa chỉ', w: 320 }]}
-        rows={CHI_NHANH.map((c, i) => ({ ma: `0000${i + 1}`, ten: c.ten, pos: c.posId, ...DIA_BAN[i % DIA_BAN.length] }))} />
+        rows={CUA_HANG.map((c, i) => ({ ma: `0000${i + 1}`, ten: c.ten, pos: c.posId, ...DIA_BAN[i % DIA_BAN.length] }))} />
     </>,
     <>
       <h3>Kê khai doanh thu tính thuế</h3>
@@ -196,9 +196,9 @@ function HopToKhai({ tk, buocDau = 0, onDong, onDoi }: { tk: ToKhai; buocDau?: n
       <h3>Khai phụ lục</h3>
       <div className="tk-pl">01/BK-STK · Bảng kê số tài khoản ngân hàng dùng cho kinh doanh</div>
       <Table cols={[{ k: 'stt', t: 'STT', c: true, w: 50 }, { k: 'diem', t: 'Tên điểm bán', w: 170 }, { k: 'ma', t: 'Mã địa điểm kinh doanh', cls: 'code', w: 150 },
-        { k: 'stk', t: 'Số tài khoản', cls: 'code', w: 140 }, { k: 'chu', t: 'Tên chủ tài khoản', w: 180 }, { k: 'nh', t: 'Ngân hàng, chi nhánh', w: 220 },
+        { k: 'stk', t: 'Số tài khoản', cls: 'code', w: 140 }, { k: 'chu', t: 'Tên chủ tài khoản', w: 180 }, { k: 'nh', t: 'Ngân hàng, cửa hàng', w: 220 },
         { k: 'tt', t: 'Trạng thái tài khoản', w: 140, r: () => <span className="chip ok">Đang hoạt động</span> }]}
-        rows={nganHang.map((x, i) => ({ stt: i + 1, diem: CHI_NHANH[0].ten, ma: '00001', stk: x.stk, chu: dv.nguoiDaiDien.toUpperCase(), nh: x.ten }))} />
+        rows={nganHang.map((x, i) => ({ stt: i + 1, diem: CUA_HANG[0].ten, ma: '00001', stk: x.stk, chu: dv.nguoiDaiDien.toUpperCase(), nh: x.ten }))} />
     </>,
     <>
       <h3>Xem và nộp tờ khai</h3>
@@ -208,7 +208,7 @@ function HopToKhai({ tk, buocDau = 0, onDong, onDoi }: { tk: ToKhai; buocDau?: n
         <p className="tk-giay-ky">Kỳ tính thuế: {tenKy(tk)} · {tenLoai(tk.lan)}</p>
         <div className="tk-giay-tt">
           <span>Người nộp thuế: <b>{dv.ten}</b></span><span>Mã số thuế: <b>{dv.mst || 'Chưa khai'}</b></span>
-          <span>Ngành nghề: <b>{NGANH.ten}</b></span><span>Số điểm kinh doanh: <b>{CHI_NHANH.length}</b></span>
+          <span>Ngành nghề: <b>{NGANH.ten}</b></span><span>Số điểm kinh doanh: <b>{CUA_HANG.length}</b></span>
         </div>
         <table className="tk-giay-bang">
           <thead><tr><th>Nhóm ngành nghề</th><th>Doanh thu</th><th>Thuế GTGT</th><th>Thuế TNCN</th></tr></thead>

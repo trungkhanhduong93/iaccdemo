@@ -30,7 +30,7 @@ export function useDsPhieuSx(loai: LoaiSx): Row[] {
   return useMemo(() => [...phieuMoi, ...mau].filter(r => !laDaXoa(r.id)).map(apSua), [mau, ban])
 }
 
-/** Ô Tham chiếu của phiếu nhập: chọn phiếu xuất cùng loại, cùng chi nhánh, đang Chờ nhập */
+/** Ô Tham chiếu của phiếu nhập: chọn phiếu xuất cùng loại, cùng cửa hàng, đang Chờ nhập */
 export function OThamChieuSx({ loai, cn, value, onChon }: { loai: LoaiSx; cn: string; value: string; onChon: (px: Row) => void }) {
   const doi = SX[loai].doi!
   const ds = useDsPhieuSx(doi)

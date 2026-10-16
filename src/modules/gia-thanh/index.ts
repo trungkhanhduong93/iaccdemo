@@ -2,24 +2,24 @@
 import type { Col, ModuleDef, Row } from '../types'
 import { tuExcel } from '../types'
 import { quyTrinh } from './quy-trinh'
-import { CHI_NHANH, HANG, chiPhiThang, tongKy } from '../../data/mock'
+import { CUA_HANG, HANG, chiPhiThang, tongKy } from '../../data/mock'
 
 const tongHopChiPhi = {
-  cols: [{ k: 'km', t: 'Khoản mục' }, ...CHI_NHANH.map(c => ({ k: c.id, t: c.ngan, num: true })), { k: 'tong', t: 'Tổng', num: true }] as Col[],
+  cols: [{ k: 'km', t: 'Khoản mục' }, ...CUA_HANG.map(c => ({ k: c.id, t: c.ngan, num: true })), { k: 'tong', t: 'Tổng', num: true }] as Col[],
   rows: (thang: number): Row[] => {
     const cp = chiPhiThang(thang, 2026)
-    const dts = CHI_NHANH.map(c => tongKy(thang, 2026, c.id))
+    const dts = CUA_HANG.map(c => tongKy(thang, 2026, c.id))
     const tot = dts.reduce((a, x) => a + x.dt, 0)
     const dong = (km: string, v: number, theo?: number[]) => {
       const r: Row = { km, tong: v }
-      CHI_NHANH.forEach((c, i) => { r[c.id] = Math.round(v * (theo ? theo[i] : dts[i].dt / tot)) })
+      CUA_HANG.forEach((c, i) => { r[c.id] = Math.round(v * (theo ? theo[i] : dts[i].dt / tot)) })
       return r
     }
     const gv = dts.reduce((a, x) => a + x.gv, 0)
     const rows = [dong('Nguyên vật liệu trực tiếp', gv, dts.map(x => x.gv / gv)), dong('Nhân công', cp.luong), dong('Mặt bằng', cp.matBang),
       dong('Điện, nước, gas', cp.dienNuoc), dong('Khấu hao TSCĐ', cp.khauHao), dong('Phân bổ CCDC', cp.ccdc), dong('Chi phí khác', cp.khac)]
     const s = (k: string) => rows.reduce((a, r) => a + (r[k] ?? 0), 0)
-    return [...rows, { km: 'Tổng cộng', ...Object.fromEntries(CHI_NHANH.map(c => [c.id, s(c.id)])), tong: s('tong'), _t: 1 }]
+    return [...rows, { km: 'Tổng cộng', ...Object.fromEntries(CUA_HANG.map(c => [c.id, s(c.id)])), tong: s('tong'), _t: 1 }]
   },
 }
 

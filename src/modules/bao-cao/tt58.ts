@@ -2,7 +2,7 @@
 import type { Col, Row } from '../types'
 import type { PpGtgt, PpTndn } from '../../app/session'
 import { du, soCai } from '../tong-hop/so-cai'
-import { CHI_NHANH, NVL, kqkd } from '../../data/mock'
+import { CUA_HANG, NVL, kqkd } from '../../data/mock'
 import { DS_TSCD } from '../tscd/data'
 import { pad } from '../../ui/format'
 
@@ -317,7 +317,7 @@ export function chiTietS2c(thang: number) {
   }
 }
 
-export function rowsS2c(thang: number, tenMatHang = NVL[0].ten, _tenKho = CHI_NHANH[0].ten): Row[] {
+export function rowsS2c(thang: number, tenMatHang = NVL[0].ten, _tenKho = CUA_HANG[0].ten): Row[] {
   const c = chiTietS2c(thang)
   const dvt = NVL.find(n => n.ten === tenMatHang)?.dvt ?? 'kg'
   let slHien = c.slDau

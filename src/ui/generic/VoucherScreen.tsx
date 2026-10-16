@@ -4,7 +4,7 @@ import { createPortal } from 'react-dom'
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import type { Col, ModuleDef, Row, ScreenDef, ScreenProps, VoucherCfg } from '../../modules/types'
 import { duongDan, tenMan } from '../../app/registry'
-import { chiNhanhHienTai, donViHienTai, loaiHinhDv, useSession } from '../../app/session'
+import { cuaHangHienTai, donViHienTai, loaiHinhDv, useSession } from '../../app/session'
 import { kieuGhiSo } from '../../app/plan'
 import { Icon } from '../Icon'
 import { PageHead } from '../Page'
@@ -23,7 +23,7 @@ import {
 import { ctTtCon, dsDcCon, dsTtCon, soDaTra, ttTienTheoTra, useDaXoa, xoaPhieu } from './daXoa'
 import { MAN_DC, MAN_KK, TEN_DC } from '../../modules/kho/dieu-chinh'
 
-import { CHI_NHANH, HANG, NHAN_VIEN, NVL } from '../../data/mock'
+import { CUA_HANG, HANG, NHAN_VIEN, NVL } from '../../data/mock'
 import { NGUON, TT_CT, chungTu, dongCua, gioPhieu, tomTatTenHang, ttNghiepVu, type Dong } from './gen'
 import { boO, nhomCua, theoLoai, TT_HD, TT_TIEN } from './nhom'
 import { BangKiemKe } from './BangKiemKe'
@@ -256,7 +256,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
   // Chế độ không ghi sổ (gói Free) thì khung chi tiết bỏ tab Ghi sổ, như form (T62, T82)
   const coTabHt = kieuGhiSo(s.cheDo) !== 'khong' && !cfg.kiemKe   // phiếu kiểm kê không có tab Hạch toán (T124)
   const tabPanel = tabChon === 'ht' && !coTabHt ? 'ct' : tabChon
-  const cnChon = chiNhanhHienTai(s)
+  const cnChon = cuaHangHienTai(s)
   const nhom = nhomCua(mod.key, cfg)
   const bo = boO(nhom, cfg)
   const path = duongDan(mod, sc)
@@ -275,7 +275,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
     return { ...r, lyDo: !oLy ? '' : r._lyDo ? String(r._lyDo) : lyMacDinh(oLy.ds ?? [], String(r.dienGiai ?? '')) }
   }) : nhom !== 'mua' && nhom !== 'ban' ? rowsGoc : rowsGoc.map((r): Row => {
     const dsDong = (r._dong as Dong[] | undefined) ?? dongCua(theoLoai(cfg, r.loai), `${sc.code ?? sc.slug}-${r.id}`)
-    const dsKhoCn = CHI_NHANH.find(c => c.ten === r.cn)?.kho ?? []
+    const dsKhoCn = CUA_HANG.find(c => c.ten === r.cn)?.kho ?? []
     const khoDau = String(r._kho ?? dsKhoCn[0] ?? '')
     const khoMd = dsKhoCn.length === 1 ? dsKhoCn[0] : 'Kho tổng'
     const _khoDs = !coKhoDs ? [] : khoDong ? [...new Set(dsDong.map(d => d.kho || khoMd))] : [khoDau]
@@ -357,7 +357,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
   ]
   const [cauHinhLoc, datCauHinhLoc] = useCauHinhLoc(path, oLoc.map(o => o.k), ['thoiGian', 'tim', ...(coLyDo ? ['lyDo'] : []), 'doiTuong', ...(cfg.kiemKe || cfg.dieuChinh ? ['kho'] : [])])
 
-  // Lọc theo các ô đã áp dụng, chi nhánh trên thanh trên, hàng lọc từng cột; chip trạng thái lọc sau cùng để đếm số trên chip
+  // Lọc theo các ô đã áp dụng, cửa hàng trên thanh trên, hàng lọc từng cột; chip trạng thái lọc sau cùng để đếm số trên chip
   const ap = loc0.ap
   const truocLoai = rows.filter(r => {
     if (!trongKhoang(docNgay(String(r.ngay).split(' ')[0]), ap.thoiGian)) return false
@@ -461,8 +461,8 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
     { k: 'dienGiai', t: cfg.kiemKe || cfg.dieuChinh || muaBan ? 'Ghi chú' : 'Diễn giải' },   // phiếu kiểm kê ghi Ghi chú như đầu phiếu (T124)
     ...(mod.key === 'tien' ? [{ k: 'lyDo', t: 'Lý do', w: 170 } as Col] : []),   // T96; tên cột ngắn Lý do (T168)
     ...(cfg.doiTuong !== 'none' ? [{ k: 'doiTuong', t: cfg.nhan ?? 'Đối tượng' } as Col] : []),
-    // Đang chọn một chi nhánh trên thanh trên thì cột chi nhánh thừa
-    ...(cnChon ? [] : [{ k: 'cn', t: 'Chi nhánh', cls: 'dim', w: 130 } as Col]),
+    // Đang chọn một cửa hàng trên thanh trên thì cột cửa hàng thừa
+    ...(cnChon ? [] : [{ k: 'cn', t: 'Cửa hàng', cls: 'dim', w: 130 } as Col]),
     // Mua hàng gói dưới Pro: kho nhập ở đầu phiếu (T94); gói Pro kho trên từng dòng nên không có cột
     ...(nhom === 'mua' && coKhoDs && !khoDong ? [{ k: 'kho', t: 'Kho', w: 150 } as Col] : []),
     // Trạng thái thanh toán & hoá đơn cho nhóm mua / bán
@@ -813,7 +813,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
                 {tabPanel === 'khac' && (
                   <div className="grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)', gap: 14, fontSize: 13, padding: 14 }}>
                     <div><b>Đối tượng:</b> {activeRow.doiTuong || '—'}</div>
-                    <div><b>Chi nhánh:</b> {activeRow.cn || '—'}</div>
+                    <div><b>Cửa hàng:</b> {activeRow.cn || '—'}</div>
                     <div><b>Nguồn dữ liệu:</b> {activeRow.nguon}</div>
                     <div><b>Tổng tiền:</b> {money(activeRow.tong)} đ</div>
                     <div><b>Thuế GTGT:</b> {money(activeRow.thue || 0)} đ</div>

@@ -8,7 +8,7 @@ import { moneyD, pad, short } from '../../ui/format'
 import { useDongEsc } from '../../ui/LocNangCao'
 import { phieuTheoSo } from '../../ui/generic/SoChungTu'
 import { giaoDich, tonQuyTheoSo, type GiaoDich } from './LichSuQuy'
-import { CHI_NHANH } from '../../data/mock'
+import { CUA_HANG } from '../../data/mock'
 
 export interface DiemSoDu {
   nhan: string
@@ -26,7 +26,7 @@ export const toDateNum = (ngay: string): number => {
  *  Điểm đầu = Đầu kỳ, sau đó số dư cuối mỗi ngày từ ngày 1 tới ngày cuối có dữ liệu trong tháng;
  *  ngày không có giao dịch giữ số dư ngày trước */
 export function tinhSoDuTungNgay(quyKey: string, thang: number, cnIds?: string[]): DiemSoDu[] {
-  const ids = cnIds && cnIds.length > 0 ? cnIds : CHI_NHANH.map(c => c.id)
+  const ids = cnIds && cnIds.length > 0 ? cnIds : CUA_HANG.map(c => c.id)
 
   if (quyKey === 'tat-ca') {
     const quyDs = tonQuyTheoSo(thang, ids)
@@ -216,7 +216,7 @@ export function ModalQuy({
   useDongEsc(onDong)
 
   const isTatCa = quyKey === 'tat-ca'
-  const ids = useMemo(() => (selCns && selCns.length > 0 ? selCns : CHI_NHANH.map(c => c.id)), [selCns?.join(',')])
+  const ids = useMemo(() => (selCns && selCns.length > 0 ? selCns : CUA_HANG.map(c => c.id)), [selCns?.join(',')])
 
   const gd = useMemo(() => {
     return giaoDich(quyKey, thang, ids)

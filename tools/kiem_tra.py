@@ -1418,7 +1418,7 @@ def kiem_tra_dot_10():
         # ── Bước 1: Trang chủ có tab "Quản trị", "Cần theo dõi", chip "Kho". Có ít nhất 4 thẻ. Chụp đầu trang và cuộn cuối ──
         tab_qt = pg.locator('.m-tc-tab', has_text='Quản trị')
         tab_ctd = pg.locator('.m-tc-tab', has_text='Cần theo dõi')
-        chip_kho = pg.locator('.m-tc-chip-kho', has_text='CN:')  # T208: chip Kho thành chip chi nhánh
+        chip_kho = pg.locator('.m-tc-chip-kho', has_text='CN:')  # T208: chip Kho thành chip cửa hàng
 
         if tab_qt.count() == 0:
             loi.append('Trang chủ: thiếu tab "Quản trị"')
@@ -1531,7 +1531,7 @@ def kiem_tra_dot_10():
 
 
 def kiem_tra_dot_11_a():
-    """Đợt 11A: Hệ thống (T191) và Danh mục tài khoản, chi nhánh (T187)"""
+    """Đợt 11A: Hệ thống (T191) và Danh mục tài khoản, cửa hàng (T187)"""
     loi = []
     with sync_playwright() as p:
         b = p.chromium.launch(channel='chrome')
@@ -1675,16 +1675,16 @@ def kiem_tra_dot_11_a():
         kiem_man('Danh mục tài khoản')
         pg.screenshot(path=str(SHOTS / 'm-11-07-tai-khoan.png'))
 
-        # ── 8. Danh mục chi nhánh (#/app/danh-muc/chi-nhanh) ──
-        pg.goto(URL + '?goi=PL&p=chinhanh#/app/danh-muc/chi-nhanh')
+        # ── 8. Danh mục cửa hàng (#/app/danh-muc/cua-hang) ──
+        pg.goto(URL + '?goi=PL&p=cuahang#/app/danh-muc/cua-hang')
         pg.wait_for_selector('.m-app')
         pg.wait_for_timeout(300)
         if pg.locator('.m-chi-mt').count() > 0:
-            loi.append('Danh mục chi nhánh: vẫn ra MChiMayTinh')
+            loi.append('Danh mục cửa hàng: vẫn ra MChiMayTinh')
         if pg.locator('.m-cn-the').count() == 0:
-            loi.append('Danh mục chi nhánh: thiếu thẻ chi nhánh .m-cn-the')
-        kiem_man('Danh mục chi nhánh')
-        pg.screenshot(path=str(SHOTS / 'm-11-08-chi-nhanh.png'))
+            loi.append('Danh mục cửa hàng: thiếu thẻ cửa hàng .m-cn-the')
+        kiem_man('Danh mục cửa hàng')
+        pg.screenshot(path=str(SHOTS / 'm-11-08-cua-hang.png'))
 
         b.close()
     return loi
@@ -2223,13 +2223,13 @@ def kiem_tra_dot_13_b():
         if pg.locator('.m-thanh-tren').count() == 0 or not pg.locator('.m-thanh-tren').is_visible():
             loi.append('Nghiệp vụ: thiếu thanh trên chung .m-thanh-tren')
 
-        # ── 2. Chip CN ở trang chủ: chọn chi nhánh thứ hai thì nhãn chip đổi và Doanh thu thuần đổi ──
+        # ── 2. Chip CN ở trang chủ: chọn cửa hàng thứ hai thì nhãn chip đổi và Doanh thu thuần đổi ──
         pg.goto(URL + '?goi=PL&p=tc_cn13b#/app/trang-chu/tong-quan')
         pg.wait_for_selector('.m-app')
         pg.wait_for_timeout(350)
         chip_cn = pg.locator('.m-tc-chip-cn, .m-tc-chip-kho')
         if chip_cn.count() == 0:
-            loi.append('Trang chủ: không tìm thấy chip chọn chi nhánh')
+            loi.append('Trang chủ: không tìm thấy chip chọn cửa hàng')
         else:
             nhan_cu = chip_cn.first.inner_text().strip()
             so_dt_cu = pg.locator('.m-tc-kpi-muc:has-text("Doanh thu thuần") .m-tc-kpi-so').inner_text().strip()
@@ -2237,16 +2237,16 @@ def kiem_tra_dot_13_b():
             pg.wait_for_timeout(300)
             dong_cn = pg.locator('.m-tam-ds .m-tam-dong')
             if dong_cn.count() < 2:
-                loi.append('Trang chủ: tấm chọn chi nhánh không đủ 2 chi nhánh')
+                loi.append('Trang chủ: tấm chọn cửa hàng không đủ 2 cửa hàng')
             else:
                 dong_cn.nth(1).click()
                 pg.wait_for_timeout(350)
                 nhan_moi = chip_cn.first.inner_text().strip()
                 so_dt_moi = pg.locator('.m-tc-kpi-muc:has-text("Doanh thu thuần") .m-tc-kpi-so').inner_text().strip()
                 if nhan_moi == nhan_cu:
-                    loi.append(f'Trang chủ: chọn chi nhánh thứ hai nhưng nhãn chip không đổi ({nhan_cu})')
+                    loi.append(f'Trang chủ: chọn cửa hàng thứ hai nhưng nhãn chip không đổi ({nhan_cu})')
                 if so_dt_moi == so_dt_cu:
-                    loi.append(f'Trang chủ: chọn chi nhánh thứ hai nhưng Doanh thu thuần không đổi ({so_dt_cu})')
+                    loi.append(f'Trang chủ: chọn cửa hàng thứ hai nhưng Doanh thu thuần không đổi ({so_dt_cu})')
         pg.screenshot(path=str(SHOTS / 'm-13b-01-trang-chu.png'))
 
         # ── 3. Kính lúp gõ "so quy": có mục "Báo cáo" và dòng "Sổ quỹ tiền mặt"; bấm vào URL chứa 2-2-1 ──
@@ -2584,13 +2584,13 @@ def kiem_tra_dot_14_a():
         pg.wait_for_selector('.m-tc-hh-top3')
         pg.wait_for_timeout(350)
 
-        # Lấy số tiền hao hụt ban đầu (Tất cả chi nhánh)
+        # Lấy số tiền hao hụt ban đầu (Tất cả cửa hàng)
         the_hh = pg.locator('.m-tc-the-ivt:has-text("Hao hụt nguyên vật liệu")')
         if the_hh.count() == 0:
             loi.append('Thẻ Hao hụt: không tìm thấy thẻ trên trang chủ')
         else:
             so_text = the_hh.locator('.m-tc-nvl-hang-so .m-tc-so-lon').inner_text().strip()
-            print(f'Thẻ Hao hụt (Tất cả chi nhánh): {so_text}')
+            print(f'Thẻ Hao hụt (Tất cả cửa hàng): {so_text}')
             if not so_text or so_text.startswith('0'):
                 loi.append(f'Thẻ Hao hụt: giá trị ban đầu bằng 0 hoặc rỗng ({so_text})')
 
@@ -2598,10 +2598,10 @@ def kiem_tra_dot_14_a():
             if dong_top3.count() < 1:
                 loi.append(f'Thẻ Hao hụt: thiếu danh sách mặt hàng hao hụt ({dong_top3.count()})')
 
-            # Đổi chi nhánh ở chip "CN:"
+            # Đổi cửa hàng ở chip "CN:"
             chip_cn = pg.locator('.m-tc-chip-cn')
             if chip_cn.count() == 0:
-                loi.append('Không tìm thấy chip chọn chi nhánh .m-tc-chip-cn')
+                loi.append('Không tìm thấy chip chọn cửa hàng .m-tc-chip-cn')
             else:
                 chip_cn.click()
                 pg.wait_for_selector('.m-tam-hop', state='visible')
@@ -2611,13 +2611,13 @@ def kiem_tra_dot_14_a():
                     muc_cn.nth(1).click()
                     pg.wait_for_timeout(350)
                     so_text_moi = the_hh.locator('.m-tc-nvl-hang-so .m-tc-so-lon').inner_text().strip()
-                    print(f'Thẻ Hao hụt (Sau khi đổi chi nhánh): {so_text_moi}')
+                    print(f'Thẻ Hao hụt (Sau khi đổi cửa hàng): {so_text_moi}')
                     if not so_text_moi or so_text_moi.startswith('0'):
-                        loi.append(f'Thẻ Hao hụt: giá trị sau khi đổi chi nhánh bằng 0 ({so_text_moi})')
+                        loi.append(f'Thẻ Hao hụt: giá trị sau khi đổi cửa hàng bằng 0 ({so_text_moi})')
                     if so_text_moi == so_text:
-                        loi.append(f'Thẻ Hao hụt: giá trị không đổi sau khi chọn chi nhánh ({so_text} -> {so_text_moi})')
+                        loi.append(f'Thẻ Hao hụt: giá trị không đổi sau khi chọn cửa hàng ({so_text} -> {so_text_moi})')
                 else:
-                    loi.append('Sheet chọn chi nhánh: không đủ mục chi nhánh')
+                    loi.append('Sheet chọn cửa hàng: không đủ mục cửa hàng')
 
         the_hh.scroll_into_view_if_needed()
         pg.wait_for_timeout(200)
@@ -3315,8 +3315,8 @@ def kiem_tra_dot_17_a():
         pg.wait_for_selector('.m-lp', timeout=8000)
         pg.wait_for_timeout(300)
 
-        # Chọn chi nhánh nếu có hộp thoại / tấm chọn
-        if pg.locator('.m-tam-hop:has-text("chi nhánh"), .m-tam-hop:has-text("Chi nhánh")').count() > 0:
+        # Chọn cửa hàng nếu có hộp thoại / tấm chọn
+        if pg.locator('.m-tam-hop:has-text("cửa hàng"), .m-tam-hop:has-text("Cửa hàng")').count() > 0:
             pg.locator('.m-tam-dong').first.click()
             pg.wait_for_timeout(300)
 
@@ -3434,8 +3434,8 @@ def kiem_tra_dot_17_a():
         pg.wait_for_selector('.m-lp', timeout=8000)
         pg.wait_for_timeout(300)
 
-        # Chọn chi nhánh nếu có
-        if pg.locator('.m-tam-hop:has-text("chi nhánh"), .m-tam-hop:has-text("Chi nhánh")').count() > 0:
+        # Chọn cửa hàng nếu có
+        if pg.locator('.m-tam-hop:has-text("cửa hàng"), .m-tam-hop:has-text("Cửa hàng")').count() > 0:
             pg.locator('.m-tam-dong').first.click()
             pg.wait_for_timeout(300)
 
@@ -3522,7 +3522,7 @@ def kiem_tra_dot_18_a():
         pg.on('console', lambda m: con.append(m.text) if m.type == 'error' else None)
         pg.on('pageerror', lambda e: con.append(str(e)))
 
-        # ── 1. Đăng nhập gói PR, chi nhánh Tất cả ──
+        # ── 1. Đăng nhập gói PR, cửa hàng Tất cả ──
         pg.goto(URL + '#/dang-nhap')
         pg.wait_for_selector('.auth-box')
         pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PR'))})")
@@ -3535,7 +3535,7 @@ def kiem_tra_dot_18_a():
             'Thác nước lợi nhuận',
             'Xu hướng kinh doanh 4 tháng',
             'Dòng tiền kỳ',
-            'Hiệu quả theo chi nhánh',
+            'Hiệu quả theo cửa hàng',
             'Cơ cấu chi phí',
             'Món bán chạy',
         ]
@@ -3571,7 +3571,7 @@ def kiem_tra_dot_18_a():
         pg.wait_for_timeout(200)
         pg.screenshot(path=str(SHOTS / 'm-18-trang-chu-1.png'))
 
-        # Ảnh 2: dòng tiền, chi nhánh
+        # Ảnh 2: dòng tiền, cửa hàng
         the_dt = pg.locator(".m-tc-the-ivt:has(.m-tc-the-tieu:text-is('Dòng tiền kỳ'))")
         if the_dt.count() > 0:
             the_dt.scroll_into_view_if_needed()
@@ -3585,7 +3585,7 @@ def kiem_tra_dot_18_a():
             pg.wait_for_timeout(200)
             pg.screenshot(path=str(SHOTS / 'm-18-trang-chu-3.png'))
 
-        # ── 2. Đổi chi nhánh sang một chi nhánh khác ──
+        # ── 2. Đổi cửa hàng sang một cửa hàng khác ──
         chip_cn = pg.locator('.m-tc-chip-cn')
         if chip_cn.count() > 0:
             chip_cn.first.click()
@@ -3596,20 +3596,20 @@ def kiem_tra_dot_18_a():
                 dongs_cn.nth(1).click()
                 pg.wait_for_timeout(400)
 
-                # Kiểm tra thẻ Hiệu quả theo chi nhánh vẫn vẽ
-                the_cn = pg.locator(".m-tc-the-ivt:has(.m-tc-the-tieu:text-is('Hiệu quả theo chi nhánh'))")
+                # Kiểm tra thẻ Hiệu quả theo cửa hàng vẫn vẽ
+                the_cn = pg.locator(".m-tc-the-ivt:has(.m-tc-the-tieu:text-is('Hiệu quả theo cửa hàng'))")
                 if the_cn.count() == 0 or the_cn.locator('.branch-bars').count() == 0:
-                    loi.append('18A: sau khi đổi chi nhánh, thẻ Hiệu quả theo chi nhánh không vẽ')
+                    loi.append('18A: sau khi đổi cửa hàng, thẻ Hiệu quả theo cửa hàng không vẽ')
 
                 # Kiểm tra thẻ Dòng tiền kỳ vẫn có số tổng
                 if the_dt.count() > 0:
                     the_tong_dt_sau = the_dt.locator('.row b')
                     if the_tong_dt_sau.count() == 0:
-                        loi.append('18A: thẻ Dòng tiền kỳ mất số tổng sau khi đổi chi nhánh')
+                        loi.append('18A: thẻ Dòng tiền kỳ mất số tổng sau khi đổi cửa hàng')
             else:
-                loi.append('18A: không tìm thấy chi nhánh thứ 2 trong sheet chọn chi nhánh')
+                loi.append('18A: không tìm thấy cửa hàng thứ 2 trong sheet chọn cửa hàng')
         else:
-            loi.append('18A: không tìm thấy nút chip chọn chi nhánh .m-tc-chip-cn')
+            loi.append('18A: không tìm thấy nút chip chọn cửa hàng .m-tc-chip-cn')
 
         # ── 3. Gói Free: không có thẻ "Thác nước lợi nhuận" ──
         pg.goto(URL + '#/dang-nhap')
@@ -4915,9 +4915,9 @@ def kiem_tra_dot_22_a():
 
 
 def kiem_tra_t274_web():
-    """Kiểm tra T274: Trang chủ Free 2 tab Tổng quan | Cần theo dõi, bộ lọc chi nhánh, biểu đồ và modal lãi lỗ."""
+    """Kiểm tra T274: Trang chủ Free 2 tab Tổng quan | Cần theo dõi, bộ lọc cửa hàng, biểu đồ và modal lãi lỗ."""
     loi = []
-    print('Kiểm tra T274 web (1440x900): Trang chủ Free 2 tab, biểu đồ, lọc chi nhánh, modal lãi lỗ:')
+    print('Kiểm tra T274 web (1440x900): Trang chủ Free 2 tab, biểu đồ, lọc cửa hàng, modal lãi lỗ:')
     with sync_playwright() as p:
         b = p.chromium.launch(channel='chrome')
         pg = b.new_page(viewport={'width': 1440, 'height': 900})
@@ -4946,13 +4946,13 @@ def kiem_tra_t274_web():
 
         # 3. T293: tab Tổng quan bỏ 6 thẻ biểu đồ; hàng trên 2 cột lãi lỗ, thu chi; Quản lý kho kéo hết hàng dưới
         if pg.locator('.bbt-the-bd').count() > 0:
-            loi.append('T293 web: tab Tổng quan còn thẻ biểu đồ top 5, lãi lỗ chi nhánh (đã bỏ)')
+            loi.append('T293 web: tab Tổng quan còn thẻ biểu đồ top 5, lãi lỗ cửa hàng (đã bỏ)')
         if pg.locator('.bbt-e-luoi-2').count() == 0:
             loi.append('T293 web: lưới tab Tổng quan không phải 2 cột')
         if pg.locator('.bbt-kho-ngang:has-text("Quản lý kho")').count() == 0:
             loi.append('T293 web: không thấy hàng Quản lý kho dưới 2 cột')
 
-        # 5. Modal lãi lỗ khi Tất cả có 2 nút kiểu xem, bấm "Theo chi nhánh" ra biểu đồ chi nhánh
+        # 5. Modal lãi lỗ khi Tất cả có 2 nút kiểu xem, bấm "Theo cửa hàng" ra biểu đồ cửa hàng
         nut_xem_13 = pg.locator('.bbt-e-nut:has-text("Xem biểu đồ lãi lỗ 13 tháng"), .bbt-nut:has-text("Xem biểu đồ lãi lỗ 13 tháng")').first
         if nut_xem_13.count() == 0:
             loi.append('T274 web: không tìm thấy nút Xem biểu đồ lãi lỗ 13 tháng')
@@ -4960,42 +4960,42 @@ def kiem_tra_t274_web():
             nut_xem_13.click()
             pg.wait_for_timeout(350)
             btn_13t = pg.locator('.bbt-modal-segmented button:has-text("13 tháng"), .bbt-seg-btn:has-text("13 tháng")')
-            btn_cn = pg.locator('.bbt-modal-segmented button:has-text("Theo chi nhánh"), .bbt-seg-btn:has-text("Theo chi nhánh")')
+            btn_cn = pg.locator('.bbt-modal-segmented button:has-text("Theo cửa hàng"), .bbt-seg-btn:has-text("Theo cửa hàng")')
             if btn_13t.count() == 0 or btn_cn.count() == 0:
-                loi.append('T274 web: modal lãi lỗ khi chi nhánh=Tất cả thiếu nút chuyển 13 tháng / Theo chi nhánh')
+                loi.append('T274 web: modal lãi lỗ khi cửa hàng=Tất cả thiếu nút chuyển 13 tháng / Theo cửa hàng')
             else:
                 btn_cn.click()
                 pg.wait_for_timeout(300)
                 if pg.locator('.bbt-modal-cn-wrap, .bbt-modal-cn-luoi').count() == 0:
-                    loi.append('T274 web: bấm "Theo chi nhánh" không hiện biểu đồ chi nhánh trong modal')
+                    loi.append('T274 web: bấm "Theo cửa hàng" không hiện biểu đồ cửa hàng trong modal')
             pg.keyboard.press('Escape')
             pg.wait_for_timeout(250)
 
-        # 6. Đổi chi nhánh làm đổi số ít nhất 1 thẻ (dùng ô chi nhánh có sẵn ở header .cn-btn)
+        # 6. Đổi cửa hàng làm đổi số ít nhất 1 thẻ (dùng ô cửa hàng có sẵn ở header .cn-btn)
         # T293: thẻ biểu đồ đã bỏ, so số lãi ở cột Quản lý lãi lỗ
         o_lai = pg.locator('.bbt-cot:has-text("Quản lý lãi lỗ") .bbt-tra').first
         so_truoc = o_lai.inner_text().strip() if o_lai.count() > 0 else ''
 
         btn_cn_hdr = pg.locator('.cn-btn')
         if btn_cn_hdr.count() == 0:
-            loi.append('T274 web: không tìm thấy nút chi nhánh .cn-btn ở header')
+            loi.append('T274 web: không tìm thấy nút cửa hàng .cn-btn ở header')
         else:
             btn_cn_hdr.click()
             pg.wait_for_timeout(250)
             opt_cn1 = pg.locator('.pop [data-mi]:has-text("Lê Lợi"), .pop [data-mi]:has-text("Quận 1")').first
             if opt_cn1.count() == 0:
-                loi.append('T274 web: không tìm thấy chi nhánh Lê Lợi trong menu header')
+                loi.append('T274 web: không tìm thấy cửa hàng Lê Lợi trong menu header')
             else:
                 opt_cn1.click()
                 pg.wait_for_timeout(400)
                 so_sau = o_lai.inner_text().strip() if o_lai.count() > 0 else ''
                 if so_sau and so_sau == so_truoc:
-                    loi.append(f'T274 web: đổi chi nhánh sang CN1 nhưng số lãi không đổi ({so_truoc} -> {so_sau})')
+                    loi.append(f'T274 web: đổi cửa hàng sang CN1 nhưng số lãi không đổi ({so_truoc} -> {so_sau})')
 
-                # Đổi lại Tất cả chi nhánh
+                # Đổi lại Tất cả cửa hàng
                 btn_cn_hdr.click()
                 pg.wait_for_timeout(250)
-                opt_all = pg.locator('.pop [data-mi]:has-text("Tất cả chi nhánh")').first
+                opt_all = pg.locator('.pop [data-mi]:has-text("Tất cả cửa hàng")').first
                 if opt_all.count() > 0:
                     opt_all.click()
                     pg.wait_for_timeout(300)
@@ -5056,14 +5056,14 @@ def kiem_tra_t274_dien_thoai():
         if pg.locator('.m-tc-vien-thuoc .m-tc-tab-dem').count() == 0:
             loi.append('T274 dt: tab Cần theo dõi thiếu huy hiệu số đếm')
 
-        # 2. Trang 1 (Tổng quan) có 5 thẻ top + thẻ lãi lỗ chi nhánh
+        # 2. Trang 1 (Tổng quan) có 5 thẻ top + thẻ lãi lỗ cửa hàng
         the_top = [
             'Mặt hàng doanh thu cao',
             'Chi phí trong tháng cao',
             'Mặt hàng giá vốn cao',
             'Nhà cung cấp mua hàng nhiều',
             'Khoản chi tiền trong tháng cao',
-            'Lãi lỗ theo chi nhánh',
+            'Lãi lỗ theo cửa hàng',
         ]
         for t in the_top:
             if pg.locator(f'.bbt-the-bd-tieu:has-text("{t}")').count() == 0:
@@ -5077,14 +5077,14 @@ def kiem_tra_t274_dien_thoai():
             nut_xem_13.click()
             pg.wait_for_timeout(350)
             btn_13t = pg.locator('.bbt-modal-segmented button:has-text("13 tháng"), .bbt-seg-btn:has-text("13 tháng")')
-            btn_cn = pg.locator('.bbt-modal-segmented button:has-text("Theo chi nhánh"), .bbt-seg-btn:has-text("Theo chi nhánh")')
+            btn_cn = pg.locator('.bbt-modal-segmented button:has-text("Theo cửa hàng"), .bbt-seg-btn:has-text("Theo cửa hàng")')
             if btn_13t.count() == 0 or btn_cn.count() == 0:
                 loi.append('T274 dt: modal lãi lỗ thiếu 2 nút segmented')
             else:
                 btn_cn.click()
                 pg.wait_for_timeout(300)
                 if pg.locator('.bbt-modal-cn-wrap, .bbt-modal-cn-luoi').count() == 0:
-                    loi.append('T274 dt: modal bấm Theo chi nhánh không hiện biểu đồ')
+                    loi.append('T274 dt: modal bấm Theo cửa hàng không hiện biểu đồ')
             nut_dong = pg.locator('.hop-13t .ds-dong-x, .hop-13t-dau button').first
             if nut_dong.count() > 0:
                 nut_dong.click()

@@ -2,8 +2,8 @@ import { useMemo, useState, type FC } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import type { Row, ScreenProps } from '../../modules/types'
 import { duongDan, tenMan } from '../../app/registry'
-import { chiNhanhHienTai, ngayDauNam, truocDauNam, useSession } from '../../app/session'
-import { CHI_NHANH, HANG, KHO, NVL } from '../../data/mock'
+import { cuaHangHienTai, ngayDauNam, truocDauNam, useSession } from '../../app/session'
+import { CUA_HANG, HANG, KHO, NVL } from '../../data/mock'
 import { fold, money } from '../format'
 import { Icon } from '../Icon'
 import { LichDon } from '../ChonNgay'
@@ -94,14 +94,14 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
     return tenMan(sc)
   }, [laKk, laDc, loaiKey, laSx, sx, laDcn, dcn, sc])
 
-  const cnChon = chiNhanhHienTai(s)
-  const chiNhanh = gocData?.cn ? String(gocData.cn) : cnChon?.ten ?? 'Phố Mây Lê Lợi'
+  const cnChon = cuaHangHienTai(s)
+  const cuaHang = gocData?.cn ? String(gocData.cn) : cnChon?.ten ?? 'Phố Mây Lê Lợi'
 
-  // Danh sách kho theo chi nhánh
+  // Danh sách kho theo cửa hàng
   const dsKhoCn = useMemo(() => {
-    const k = khoCuaCn(chiNhanh)
+    const k = khoCuaCn(cuaHang)
     return k.length ? k : KHO
-  }, [chiNhanh])
+  }, [cuaHang])
 
   // State các bước: 1: Thông tin chung, 2: Chọn hàng/thành phẩm, 3: Sửa dòng, 4: Xác nhận, 5: Thành công
   const [buoc, setBuoc] = useState<number>(1)
@@ -135,8 +135,8 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
     return ''
   })
 
-  // Chi nhánh nhận (với xuất điều chuyển xdc)
-  const dsCnNhan = useMemo(() => CHI_NHANH.filter(c => c.ten !== chiNhanh), [chiNhanh])
+  // Cửa hàng nhận (với xuất điều chuyển xdc)
+  const dsCnNhan = useMemo(() => CUA_HANG.filter(c => c.ten !== cuaHang), [cuaHang])
   const [cnNhan, setCnNhan] = useState(() => {
     if (gocData?._cnNhan || gocData?.doiTuong) return String(gocData._cnNhan ?? gocData.doiTuong)
     return dsCnNhan[0]?.ten ?? 'Phố Mây Thảo Điền'
@@ -226,7 +226,7 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
         }
       } else if (dcn === 'xdc') {
         if (!cnNhan.trim()) {
-          toast('Vui lòng chọn chi nhánh nhận')
+          toast('Vui lòng chọn cửa hàng nhận')
           return
         }
         if (!khoNhan.trim()) {
@@ -422,7 +422,7 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
     let dsDc: CtTt[] | undefined = undefined
     if (laKk) {
       const cu = dsDcCon(row)
-      const kk = { id: idLuu, so: soCt, ngay: ngayChiTiet, cn: chiNhanh, kho }
+      const kk = { id: idLuu, so: soCt, ngay: ngayChiTiet, cn: cuaHang, kho }
       const ra: CtTt[] = []
       for (const l of ['xdc', 'ndc'] as LoaiDc[]) {
         const c = cu.find(x => x.loai === l)
@@ -479,7 +479,7 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
     themPhieu(man, {
       id: idLuu,
       so: soCt,
-      cn: chiNhanh,
+      cn: cuaHang,
       nguon: 'tay',
       loai: laDc ? loaiKey : loai?.k,
       tenLoai,
@@ -551,16 +551,16 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
               </div>
             </div>
 
-            {/* Chi nhánh nhận (với xuất điều chuyển) */}
+            {/* Cửa hàng nhận (với xuất điều chuyển) */}
             {laDcn && dcn === 'xdc' && (
               <div className="m-the-trang m-lp-the-truong" onClick={() => setMoChonCnNhan(true)}>
                 <div className="m-lp-truong-trai">
                   <Icon n="store" className="ic sm m-lp-truong-ic" />
                   <div className="m-lp-truong-nd">
                     <span className="m-lp-truong-nhan">
-                      Chi nhánh nhận <b className="m-lp-sao">*</b>
+                      Cửa hàng nhận <b className="m-lp-sao">*</b>
                     </span>
-                    <span className="m-lp-truong-tri">{cnNhan || 'Chọn chi nhánh nhận'}</span>
+                    <span className="m-lp-truong-tri">{cnNhan || 'Chọn cửa hàng nhận'}</span>
                   </div>
                 </div>
               </div>
@@ -649,12 +649,12 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
             tim
           />
 
-          {/* Sheet chọn chi nhánh nhận (xdc) */}
+          {/* Sheet chọn cửa hàng nhận (xdc) */}
           {laDcn && dcn === 'xdc' && (
             <MChon
               mo={moChonCnNhan}
               onDong={() => setMoChonCnNhan(false)}
-              tieuDe="Chọn chi nhánh nhận"
+              tieuDe="Chọn cửa hàng nhận"
               ds={dsCnNhan.map(c => ({ k: c.ten, ten: c.ten }))}
               chon={cnNhan}
               onChon={v => {
@@ -1073,7 +1073,7 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
               </div>
               {laDcn && dcn === 'xdc' && (
                 <div className="m-xp-dong-tt">
-                  <span className="m-xp-nhan">Chi nhánh nhận:</span>
+                  <span className="m-xp-nhan">Cửa hàng nhận:</span>
                   <span className="m-xp-tri dam">{cnNhan}</span>
                 </div>
               )}

@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import type { Col, Row, VoucherCfg } from '../types'
 import { chungTu, dongCua, type Dong } from '../../ui/generic/gen'
 import { datLocDaXem } from '../../ui/bao-cao/tuyChinhBC'
-import { CHI_NHANH } from '../../data/mock'
+import { CUA_HANG } from '../../data/mock'
 import { KHOA_LOC_NGUON, docLocNguon, quaLocDong, quaLocDt } from '../bao-cao/loc-nguon'
 
 const MUA = ['Mua thịt bò, xương ống', 'Mua bánh phở tươi', 'Mua cà phê hạt Robusta', 'Mua bia Sài Gòn', 'Mua rau thơm các loại', 'Mua dầu ăn, gia vị']
@@ -13,15 +13,15 @@ const MUA = ['Mua thịt bò, xương ống', 'Mua bánh phở tươi', 'Mua cà
 export const PHIEU_MUA: VoucherCfg = { prefix: 'MH', doiTuong: 'ncc', nhan: 'Nhà cung cấp', them: 'Thêm phiếu mua hàng', dong: 'nvl', tien: [0, 0], nguon: 'excel', dienGiai: MUA, soPhieu: 80,
   soTT58: 'Sổ chi tiết vật liệu, dụng cụ, hàng hoá', noCo: [['152', '331', 'Nhập kho nguyên vật liệu'], ['1331', '331', 'Thuế GTGT được khấu trừ']] }
 
-/** Phiếu mua trong tháng, theo chi nhánh đang chọn (tên chi nhánh), kèm dòng hàng.
+/** Phiếu mua trong tháng, theo cửa hàng đang chọn (tên cửa hàng), kèm dòng hàng.
  *  Bộ lọc nhà cung cấp lọc phiếu; kho, hàng hoá, nhóm hàng hoá lọc dòng hàng, phiếu không còn dòng thì bỏ (T207).
- *  Kho của dòng lấy như danh sách phiếu mua: kho ghi trên dòng, rồi kho trên phiếu, không có thì kho đầu của chi nhánh */
+ *  Kho của dòng lấy như danh sách phiếu mua: kho ghi trên dòng, rồi kho trên phiếu, không có thì kho đầu của cửa hàng */
 function phieuThang(thang: number, cn?: string, loc?: Record<string, string[]>) {
   const f = docLocNguon(loc)
   return chungTu(PHIEU_MUA, '4.1.1')
     .filter(r => r.thang === thang && (!cn || r.cn === cn) && quaLocDt(f, String(r.doiTuong)))
     .map((r): Row & { dong: Dong[] } => {
-      const khoPhieu = String(r._kho || CHI_NHANH.find(c => c.ten === r.cn)?.kho[0] || '')
+      const khoPhieu = String(r._kho || CUA_HANG.find(c => c.ten === r.cn)?.kho[0] || '')
       return { ...r, dong: dongCua(PHIEU_MUA, `4.1.1-${r.id}`).filter(d => quaLocDong(f, { ...d, kho: d.kho || khoPhieu })) }
     })
     .filter(r => r.dong.length > 0)

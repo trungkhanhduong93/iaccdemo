@@ -79,15 +79,15 @@ export function TheTop5Hbar({ data, loai = 'doanhThu' }: { data: TheTop5Data; lo
   )
 }
 
-/** 2. Thẻ biểu đồ Lãi lỗ theo chi nhánh (T274) */
-export function TheLaiLoChiNhanh({ ds, thang }: { ds: LaiLoCnItem[]; thang: number }) {
+/** 2. Thẻ biểu đồ Lãi lỗ theo cửa hàng (T274) */
+export function TheLaiLoCuaHang({ ds, thang }: { ds: LaiLoCnItem[]; thang: number }) {
   const maxVal = Math.max(1, ...ds.flatMap(x => [x.dt, x.cp]))
 
   return (
     <div className="bbt-the-bd bbt-the-bd--cn">
       <div className="bbt-the-bd-dau">
         <div className="bbt-the-bd-tieu-hop">
-          <h3 className="bbt-the-bd-tieu">Lãi lỗ theo chi nhánh</h3>
+          <h3 className="bbt-the-bd-tieu">Lãi lỗ theo cửa hàng</h3>
           <span className="bbt-the-bd-thang">Tháng {thang}/2026</span>
         </div>
         <div className="bbt-bd-chu-thich">
@@ -98,7 +98,7 @@ export function TheLaiLoChiNhanh({ ds, thang }: { ds: LaiLoCnItem[]; thang: numb
         </div>
       </div>
 
-      {/* Biểu đồ cột SVG cho các chi nhánh */}
+      {/* Biểu đồ cột SVG cho các cửa hàng */}
       <div className="bbt-cn-bd-hop">
         <div className="bbt-cn-luoi">
           {ds.map(cn => {
@@ -154,8 +154,8 @@ ${cn.lo ? 'Lỗ' : 'Lãi'}: ${moneyD(Math.abs(cn.lai))}`}
   )
 }
 
-/** 3. Biểu đồ chi nhánh bên trong modal lãi lỗ khi Tất cả chi nhánh (T274) */
-export function BieuDoChiNhanhModal({ ds, thang }: { ds: LaiLoCnItem[]; thang: number }) {
+/** 3. Biểu đồ cửa hàng bên trong modal lãi lỗ khi Tất cả cửa hàng (T274) */
+export function BieuDoCuaHangModal({ ds, thang }: { ds: LaiLoCnItem[]; thang: number }) {
   const maxVal = Math.max(1, ...ds.flatMap(x => [x.dt, x.cp]))
 
   return (
@@ -191,12 +191,12 @@ export function BieuDoChiNhanhModal({ ds, thang }: { ds: LaiLoCnItem[]; thang: n
         })}
       </div>
 
-      {/* Bảng chi tiết lãi lỗ theo chi nhánh */}
+      {/* Bảng chi tiết lãi lỗ theo cửa hàng */}
       <div className="bbt-modal-cn-bang-hop">
         <table className="bbt-modal-cn-bang">
           <thead>
             <tr>
-              <th>Chi nhánh</th>
+              <th>Cửa hàng</th>
               <th className="num">Doanh thu</th>
               <th className="num">Chi phí</th>
               <th className="num">Lãi lỗ</th>

@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { Col, Row } from '../types'
-import { CHI_NHANH, KHACH, NCC } from '../../data/mock'
+import { CUA_HANG, KHACH, NCC } from '../../data/mock'
 import { between, k, pad, rng } from '../../ui/format'
 import { Icon } from '../../ui/Icon'
 import { Table } from '../../ui/Table'
@@ -18,9 +18,9 @@ const NHAN: Record<Loai, { doiTuong: string; ps: string; tienPs: string }> = {
 }
 const dsDoiTuong = (loai: Loai) => (loai === 'ncc' ? NCC : KHACH.filter(x => x.ma !== 'KL'))
 
-/** Nợ đầu kỳ và các phiếu phát sinh trong tháng của một đối tượng, theo cửa hàng chọn trên thanh trên (tên chi nhánh, thiếu là tất cả) */
+/** Nợ đầu kỳ và các phiếu phát sinh trong tháng của một đối tượng, theo cửa hàng chọn trên thanh trên (tên cửa hàng, thiếu là tất cả) */
 function soLieu(loai: Loai, ma: string, thang: number, cnTen?: string) {
-  const dsCn = CHI_NHANH.filter(c => !cnTen || c.ten === cnTen)
+  const dsCn = CUA_HANG.filter(c => !cnTen || c.ten === cnTen)
   let dau = 0
   const phieu: PhieuCn[] = []
   for (const c of dsCn) {

@@ -440,14 +440,14 @@ export function GoiThueBao({ sc }: ScreenProps) {
           <div className="gtb-faq-item">
             <b>3. Gói Free có bị giới hạn thời gian hay số lượng chứng từ không?</b>
             <p>
-              Gói Free mở vĩnh viễn cho hộ kinh doanh, không giới hạn chi nhánh, mỗi chi nhánh một kho.
+              Gói Free mở vĩnh viễn cho hộ kinh doanh, không giới hạn cửa hàng, mỗi cửa hàng một kho.
               Gói đáp ứng đủ 17 báo cáo theo Thông tư 152/2025/TT-BTC.
             </p>
           </div>
           <div className="gtb-faq-item">
             <b>4. Chuỗi nhiều nhà hàng cần gói chuyên biệt thì liên hệ như thế nào?</b>
             <p>
-              Đội ngũ tư vấn iPOS sẵn sàng hỗ trợ khảo sát và demo giải pháp hạch toán đa chi nhánh theo số Hotline{' '}
+              Đội ngũ tư vấn iPOS sẵn sàng hỗ trợ khảo sát và demo giải pháp hạch toán đa cửa hàng theo số Hotline{' '}
               <b>1900 4766 (Nhánh 2)</b> hoặc liên hệ trực tiếp chuyên viên kinh doanh phụ trách khu vực của bạn.
             </p>
           </div>

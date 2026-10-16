@@ -4,7 +4,7 @@ import type { Row, ScreenProps } from '../../modules/types'
 import {
   cheDoHienTai,
   donViHienTai,
-  dsChiNhanh,
+  dsCuaHang,
   dsDonVi,
   loaiHinhDv,
   namTaiChinh,
@@ -14,7 +14,7 @@ import {
   type PpTndn,
 } from '../../app/session'
 import { CHE_DO, CHE_DO_HOP_LE, type CheDo } from '../../app/che-do'
-import { CHI_NHANH, KHO, NGUOI_DUNG } from '../../data/mock'
+import { CUA_HANG, KHO, NGUOI_DUNG } from '../../data/mock'
 import { GOI, MODS, kieuGhiSo } from '../../app/plan'
 import {
   CAU_HINH_NGUOI_DUNG,
@@ -406,7 +406,7 @@ export const MThongTinDonVi: FC<ScreenProps> = () => {
     setDauNam(d => d.replace(/\d{4}$/, String(n)))
   }
 
-  const dsCn = dsChiNhanh(s)
+  const dsCn = dsCuaHang(s)
   const [f, setF] = useState(() => ({
     ten: dv.ten,
     mst: dv.mst,
@@ -762,12 +762,12 @@ export const MCauHinh: FC<ScreenProps> = () => {
       </section>
 
 
-      {/* Thẻ 4: Chi nhánh và ánh xạ POS */}
+      {/* Thẻ 4: Cửa hàng và ánh xạ POS */}
       <section className="m-form-the">
-        <h3 className="m-form-the-tieu">Chi nhánh và ánh xạ POS</h3>
+        <h3 className="m-form-the-tieu">Cửa hàng và ánh xạ POS</h3>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {dsChiNhanh(s).map(c => {
-            const kho = CHI_NHANH.find(x => x.id === c.id)?.kho ?? [
+          {dsCuaHang(s).map(c => {
+            const kho = CUA_HANG.find(x => x.id === c.id)?.kho ?? [
               `Kho ${c.ten.replace(/^Phố Mây /, '')}`,
             ]
             const khoHien = s.goi === 'F' || s.goi === 'S' ? kho[0] : `${kho.length} kho`

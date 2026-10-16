@@ -3,7 +3,7 @@ import type { Col, ReportCfg, Row } from '../types'
 import { soCai } from '../tong-hop/so-cai'
 import { createElement } from 'react'
 import { Link } from 'react-router-dom'
-import { CHI_NHANH, LY_CHI_PHI, NVL, TK_NGAN_HANG, daysOf, kqkd, tongKy } from '../../data/mock'
+import { CUA_HANG, LY_CHI_PHI, NVL, TK_NGAN_HANG, daysOf, kqkd, tongKy } from '../../data/mock'
 import { datLocDaXem } from '../../ui/bao-cao/tuyChinhBC'
 import { tenQuyTm, tenTkNh } from './danh-sach'
 import { between, pad, rng } from '../../ui/format'
@@ -399,7 +399,7 @@ const PHAN_BO_TS: Record<string, { tscd: string[]; ccdc: string[] }> = {
 function rows724(): Row[] {
   const rows: Row[] = []
   let tongCong = 0
-  for (const cn of CHI_NHANH) {
+  for (const cn of CUA_HANG) {
     rows.push({ ten: `Bộ phận sử dụng: ${cn.ten}`, _b: 1 })
     const pb = PHAN_BO_TS[cn.id] ?? { tscd: [], ccdc: [] }
     for (const ma of pb.tscd) {
@@ -614,9 +614,9 @@ function rows228(thang: number): Row[] {
   const quyTm = (ngan: string) => ({ tenQuy: tenQuyTm(ngan), locQuy: tenQuyTm(ngan), _so: '2-2-1', _ky: thang })
   const quyNh = (i: number) => ({ tenQuy: tenTkNh(TK_NGAN_HANG[i]), locQuy: tenTkNh(TK_NGAN_HANG[i]), _so: '2-2-3', _ky: thang })
   const ds: Row[] = [
-    { ma: 'TM-Q1', ...quyTm(CHI_NHANH[0].ngan), dau: tmQ1_dau, thu: tmQ1_thu, chi: tmQ1_chi, cuoi: tmQ1_cuoi },
-    { ma: 'TM-Q5', ...quyTm(CHI_NHANH[1].ngan), dau: tmQ5_dau, thu: tmQ5_thu, chi: tmQ5_chi, cuoi: tmQ5_cuoi },
-    { ma: 'TM-TD', ...quyTm(CHI_NHANH[2].ngan), dau: tmTd_dau, thu: tmTd_thu, chi: tmTd_chi, cuoi: tmTd_cuoi },
+    { ma: 'TM-Q1', ...quyTm(CUA_HANG[0].ngan), dau: tmQ1_dau, thu: tmQ1_thu, chi: tmQ1_chi, cuoi: tmQ1_cuoi },
+    { ma: 'TM-Q5', ...quyTm(CUA_HANG[1].ngan), dau: tmQ5_dau, thu: tmQ5_thu, chi: tmQ5_chi, cuoi: tmQ5_cuoi },
+    { ma: 'TM-TD', ...quyTm(CUA_HANG[2].ngan), dau: tmTd_dau, thu: tmTd_thu, chi: tmTd_chi, cuoi: tmTd_cuoi },
     { ma: 'VCB-001', ...quyNh(0), dau: vcb_dau, thu: vcb_thu, chi: vcb_chi, cuoi: vcb_cuoi },
     { ma: 'TCB-002', ...quyNh(1), dau: tcb_dau, thu: tcb_thu, chi: tcb_chi, cuoi: tcb_cuoi },
   ]
@@ -718,15 +718,15 @@ const cols1043: Col[] = [
 ]
 
 const DS_CHI_PHI = [
-  { kmcp: 'Thuê mặt bằng Lê Lợi', nhomCp: 'Chi phí mặt bằng', lyDo: 'Chi tiền thuê nhà', nd: 'Chi tiền thuê mặt bằng chi nhánh Lê Lợi', cp: 65_000_000, ngay: 5 },
-  { kmcp: 'Thuê mặt bằng Nguyễn Trãi', nhomCp: 'Chi phí mặt bằng', lyDo: 'Chi tiền thuê nhà', nd: 'Chi tiền thuê mặt bằng chi nhánh Nguyễn Trãi', cp: 42_000_000, ngay: 5 },
-  { kmcp: 'Thuê mặt bằng Thảo Điền', nhomCp: 'Chi phí mặt bằng', lyDo: 'Chi tiền thuê nhà', nd: 'Chi tiền thuê mặt bằng chi nhánh Thảo Điền', cp: 55_000_000, ngay: 6 },
-  { kmcp: 'Tiền điện', nhomCp: 'Chi phí tiện ích', lyDo: 'Chi phí khác', nd: 'Thanh toán tiền điện 3 chi nhánh kỳ này', cp: 18_500_000, ngay: 10 },
+  { kmcp: 'Thuê mặt bằng Lê Lợi', nhomCp: 'Chi phí mặt bằng', lyDo: 'Chi tiền thuê nhà', nd: 'Chi tiền thuê mặt bằng cửa hàng Lê Lợi', cp: 65_000_000, ngay: 5 },
+  { kmcp: 'Thuê mặt bằng Nguyễn Trãi', nhomCp: 'Chi phí mặt bằng', lyDo: 'Chi tiền thuê nhà', nd: 'Chi tiền thuê mặt bằng cửa hàng Nguyễn Trãi', cp: 42_000_000, ngay: 5 },
+  { kmcp: 'Thuê mặt bằng Thảo Điền', nhomCp: 'Chi phí mặt bằng', lyDo: 'Chi tiền thuê nhà', nd: 'Chi tiền thuê mặt bằng cửa hàng Thảo Điền', cp: 55_000_000, ngay: 6 },
+  { kmcp: 'Tiền điện', nhomCp: 'Chi phí tiện ích', lyDo: 'Chi phí khác', nd: 'Thanh toán tiền điện 3 cửa hàng kỳ này', cp: 18_500_000, ngay: 10 },
   { kmcp: 'Tiền nước', nhomCp: 'Chi phí tiện ích', lyDo: 'Chi phí khác', nd: 'Thanh toán hoá đơn tiền nước sinh hoạt', cp: 4_200_000, ngay: 11 },
   { kmcp: 'Tiền gas công nghiệp', nhomCp: 'Chi phí tiện ích', lyDo: 'Chi phí khác', nd: 'Chi tiền đổi gas bếp công nghiệp', cp: 8_900_000, ngay: 12 },
   { kmcp: 'Lương nhân viên bếp', nhomCp: 'Chi phí nhân công', lyDo: 'Thanh toán tiền lương', nd: 'Chi trả lương nhân viên bộ phận bếp', cp: 78_000_000, ngay: 15 },
   { kmcp: 'Lương nhân viên phục vụ', nhomCp: 'Chi phí nhân công', lyDo: 'Thanh toán tiền lương', nd: 'Chi trả lương nhân viên phục vụ bàn', cp: 52_000_000, ngay: 15 },
-  { kmcp: 'Lương quản lý chi nhánh', nhomCp: 'Chi phí nhân công', lyDo: 'Thanh toán tiền lương', nd: 'Chi trả lương quản lý và giám sát ca', cp: 36_000_000, ngay: 15 },
+  { kmcp: 'Lương quản lý cửa hàng', nhomCp: 'Chi phí nhân công', lyDo: 'Thanh toán tiền lương', nd: 'Chi trả lương quản lý và giám sát ca', cp: 36_000_000, ngay: 15 },
   { kmcp: 'Quảng cáo Facebook & TikTok', nhomCp: 'Chi phí bán hàng', lyDo: 'Chi phí khác', nd: 'Chi phí chạy chiến dịch quảng cáo món mới', cp: 25_000_000, ngay: 18 },
   { kmcp: 'Phí giao hàng Grab & ShopeeFood', nhomCp: 'Chi phí bán hàng', lyDo: 'Chi phí khác', nd: 'Chi phí chiết khấu ứng dụng giao thức ăn', cp: 14_600_000, ngay: 20 },
   { kmcp: 'Dụng cụ vệ sinh & hoá chất', nhomCp: 'Chi phí quản lý', lyDo: 'Chi phí công cụ dụng cụ', nd: 'Mua sắm hoá chất tẩy rửa và vệ sinh', cp: 5_400_000, ngay: 22 },

@@ -549,7 +549,7 @@ textarea.inp { height: auto; padding: 8px 11px; resize: vertical; }
 .voucher-bottom-b .empty { margin: auto; padding: 30px; text-align: center; color: var(--muted); }
 
 
-/* Chọn chi nhánh trước khi lập chứng từ mới khi thanh trên đang xem tất cả chi nhánh */
+/* Chọn cửa hàng trước khi lập chứng từ mới khi thanh trên đang xem tất cả cửa hàng */
 .chon-cn { max-width: 560px; margin: 40px auto 0; padding: 22px 24px; display: flex; flex-direction: column; gap: 10px; }
 .chon-cn b { font-size: 15px; color: var(--ink); }
 .chon-cn p { margin: 0; }
@@ -6590,7 +6590,7 @@ table.tbl {
 .ktf-gt-ch > b { color: var(--ink); font-size: 14px; }
 .ktf-gt-ch .ktf-ds { max-height: 180px; }
 
-/* ── Thêm chi nhánh từ FABi (T142) ── */
+/* ── Thêm cửa hàng từ FABi (T142) ── */
 .dmcn-hop { width: 620px; }
 .dmcn-than { padding: 0 16px 14px; display: flex; flex-direction: column; gap: 12px; overflow: auto; }
 .dmcn-than > p { margin: 0; font-size: 13px; }
@@ -6805,7 +6805,7 @@ button.chip.sx-kenh.info { border-color: var(--blue); }
 .sx-nvl-bang tfoot td { font-weight: 700; }
 
 /* ── Điều chuyển, chuyển kho (T155) ── */
-/* Đầu phiếu điều chuyển: các ô kho, chi nhánh, tham chiếu xếp một hàng, hẹp thì xuống dòng */
+/* Đầu phiếu điều chuyển: các ô kho, cửa hàng, tham chiếu xếp một hàng, hẹp thì xuống dòng */
 .dcn-dau { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
 
 /* ── Dùng thử 30 ngày (T158) ── */
@@ -12841,7 +12841,7 @@ button.cn-ten {
   }
 }
 
-/* ── Điện thoại: hệ thống, danh mục tài khoản, chi nhánh (T191, T187) ── */
+/* ── Điện thoại: hệ thống, danh mục tài khoản, cửa hàng (T191, T187) ── */
 @media (max-width: 767px) {
   /* 1. Danh mục tài khoản */
   .m-dmtk-khung {
@@ -13004,7 +13004,7 @@ button.cn-ten {
     /* Khung nổi từ đáy */
   }
 
-  /* 2. Danh mục chi nhánh */
+  /* 2. Danh mục cửa hàng */
   .m-cn-the {
     display: flex;
     align-items: center;
@@ -14263,7 +14263,7 @@ button.cn-ten {
     padding-top: calc(14px + env(safe-area-inset-top, 0px)) !important;
   }
 
-  /* 2. Chip chi nhánh trang chủ */
+  /* 2. Chip cửa hàng trang chủ */
   .m-tc-chip-cn {
     display: inline-flex;
     align-items: center;
@@ -16213,7 +16213,7 @@ a.lsq-dong:hover { background: var(--tint); }
   height: auto;
 }
 
-/* ── Cách tính chi phí NVL theo chi nhánh, màn Chi phí NVL gói Free (T232) ── */
+/* ── Cách tính chi phí NVL theo cửa hàng, màn Chi phí NVL gói Free (T232) ── */
 .dmcn-nvl { min-width: 220px; }
 .nvl-thang { width: 170px; }
 .cpt-tong .nvl-phu { display: block; margin-top: 2px; font-size: 12.5px; color: var(--muted); }
@@ -17763,7 +17763,7 @@ button.bbt-nut { background: none; border: 0; padding-left: 0; padding-right: 0;
 .dmcn-db { display: inline-flex; align-items: center; gap: 8px; }
 .dmcn-db small { color: var(--muted); font-size: 12px; }
 .lsq-nguon { margin-left: 8px; vertical-align: 1px; }   /* nhãn nguồn giao dịch ở Lịch sử thu chi (T264) */
-/* Cấu hình chi nhánh lên sổ trong hộp Thêm chi nhánh từ FABi (T264) */
+/* Cấu hình cửa hàng lên sổ trong hộp Thêm cửa hàng từ FABi (T264) */
 .dmcn-ch { margin-top: 12px; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
 .dmcn-ch-dau { padding: 8px 12px; font-weight: 600; font-size: 13.5px; color: var(--ink); background: var(--hdb-chan); border-bottom: 1px solid var(--line-2); }
 .dmcn-ch-dong { display: grid; grid-template-columns: minmax(0, 1fr) 180px; align-items: center; gap: 12px; padding: 7px 12px; font-size: 13px; }
@@ -19778,7 +19778,7 @@ label:has(> input.bat-tat), label:has(input.bat-tat) { display: inline-flex; ali
   text-decoration: underline;
 }
 
-/* Biểu đồ lãi lỗ theo chi nhánh */
+/* Biểu đồ lãi lỗ theo cửa hàng */
 .bbt-bd-chu-thich {
   display: flex;
   align-items: center;
@@ -20323,7 +20323,7 @@ input.bat-tat:disabled { opacity: .5; cursor: not-allowed; }
 .pos-dau.tt-mua-xem { padding: 0; grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .pos-dau.tt-mua-xem .ds-link-so { font-size: 13px; }
 
-/* ── Cột Công ty, hộp chi tiết ở Danh mục chi nhánh (T285) ── */
+/* ── Cột Công ty, hộp chi tiết ở Danh mục cửa hàng (T285) ── */
 .dmcn-cty { display: inline-flex; align-items: baseline; gap: 8px; min-width: 0; }
 .dmcn-cty > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .dmcn-cty small { flex: none; color: var(--muted); font-size: 12px; }
@@ -20654,7 +20654,7 @@ input.bat-tat:disabled { opacity: .5; cursor: not-allowed; }
   transform: scale(0.97) !important;
 }
 
-/* Bottom sheets: Báo cáo theo dõi & Lọc báo cáo & Chọn chi nhánh CCDC */
+/* Bottom sheets: Báo cáo theo dõi & Lọc báo cáo & Chọn cửa hàng CCDC */
 .m-loc-overlay,
 .m-bctd-overlay {
   position: fixed !important;
@@ -20768,7 +20768,7 @@ input.bat-tat:disabled { opacity: .5; cursor: not-allowed; }
   to { transform: translateX(0); }
 }
 
-/* Danh sách mục chọn trong trang con / chọn chi nhánh */
+/* Danh sách mục chọn trong trang con / chọn cửa hàng */
 .m-loc-ds-muc {
   display: flex !important;
   flex-direction: column !important;

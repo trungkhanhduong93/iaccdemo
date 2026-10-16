@@ -1,11 +1,11 @@
 // Chi phí NVL trong tháng gói Free (T232): mở từ thẻ Chi phí nguyên vật liệu ở trang chủ, dòng Chi phí NVL ở Báo cáo kết quả kinh doanh.
-// Xem mọi chi nhánh: bảng từng chi nhánh với cách tính riêng, bấm dòng xem chi nhánh đó.
-// Xem một chi nhánh: chi tiết theo cách tính; cách nhập tay có bảng món bán trong kỳ, số lượng, giá thành tự nhập, thành tiền.
+// Xem mọi cửa hàng: bảng từng cửa hàng với cách tính riêng, bấm dòng xem cửa hàng đó.
+// Xem một cửa hàng: chi tiết theo cách tính; cách nhập tay có bảng món bán trong kỳ, số lượng, giá thành tự nhập, thành tiền.
 import { useRef, useState, type ReactNode } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import type { Col, Row, ScreenProps } from '../types'
-import { chiNhanhHienTai, useSession } from '../../app/session'
-import { CHI_NHANH } from '../../data/mock'
+import { cuaHangHienTai, useSession } from '../../app/session'
+import { CUA_HANG } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
 import { Note } from '../../ui/Page'
 import { Table } from '../../ui/Table'
@@ -24,9 +24,9 @@ export function ChiPhiNvl(_: ScreenProps) {
   const { s, set, toast } = useSession()
   const [tham, setTham] = useSearchParams()
   const thang = THANG.includes(Number(tham.get('thang'))) ? Number(tham.get('thang')) : 10
-  const cnThanh = chiNhanhHienTai(s)
-  // chi nhánh xem: chi nhánh trên thanh trên, không có thì chi nhánh bấm từ bảng (?cn=)
-  const cn = cnThanh ?? CHI_NHANH.find(c => c.id === tham.get('cn'))
+  const cnThanh = cuaHangHienTai(s)
+  // cửa hàng xem: cửa hàng trên thanh trên, không có thì cửa hàng bấm từ bảng (?cn=)
+  const cn = cnThanh ?? CUA_HANG.find(c => c.id === tham.get('cn'))
   const doi = (p: Record<string, string | undefined>) => {
     const n = new URLSearchParams(tham)
     Object.entries(p).forEach(([k, v]) => v === undefined ? n.delete(k) : n.set(k, v))
@@ -41,12 +41,12 @@ export function ChiPhiNvl(_: ScreenProps) {
   const x = cn ? tong.ds[0] : undefined
   const mon = cn ? monBanKy(cn.id, thang) : []
 
-  // Xuất Excel bảng đang xem (T232): mọi chi nhánh, giá thành món, NVL tiêu hao, phiếu nhập mua; nhập tay dùng mẫu nhập được
+  // Xuất Excel bảng đang xem (T232): mọi cửa hàng, giá thành món, NVL tiêu hao, phiếu nhập mua; nhập tay dùng mẫu nhập được
   const loiXuat = () => toast('Không xuất được file Excel')
   const xuat = () => {
     const ky = `Tháng ${thang}/2026`
-    if (!cn || !x) return xuatBangExcel(`Chi phí NVL tháng ${thang}/2026`, 'Tất cả chi nhánh',
-      [{ t: 'Chi nhánh', rong: 28 }, { t: 'Cách tính', rong: 30 }, { t: 'Doanh thu', so: true }, { t: 'Chi phí NVL', so: true }, { t: 'Tỷ lệ trên doanh thu', rong: 18 }],
+    if (!cn || !x) return xuatBangExcel(`Chi phí NVL tháng ${thang}/2026`, 'Tất cả cửa hàng',
+      [{ t: 'Cửa hàng', rong: 28 }, { t: 'Cách tính', rong: 30 }, { t: 'Doanh thu', so: true }, { t: 'Chi phí NVL', so: true }, { t: 'Tỷ lệ trên doanh thu', rong: 18 }],
       tong.ds.map(d => [d.ten, CACH_NVL[d.cach].ten, d.dt, d.tien, pct(d.dt ? d.tien / d.dt : 0)]), ['Cộng', '', dt, tong.tien, pct(dt ? tong.tien / dt : 0)]).catch(loiXuat)
     const cotMonX = [{ t: 'Mã món', rong: 12 }, { t: 'Tên món', rong: 30 }, { t: 'ĐVT', rong: 8 }, { t: 'Số lượng bán', so: true }, { t: 'Giá thành', so: true }, { t: 'Thành tiền', so: true }]
     if (x.cach === 'ivt' && tab === 'mon') {
@@ -82,7 +82,7 @@ export function ChiPhiNvl(_: ScreenProps) {
       toast(nhan ? `Đã nhập giá thành ${nhan} món${thua ? `, bỏ qua ${thua} mã không bán trong tháng` : ''}` : 'File không có giá thành món nào khớp mã món trong tháng')
     } catch { toast('Không đọc được file Excel') }
   }
-  const ve = cn && !cnThanh ? <button type="button" className="cpt-ve" title="Về mọi chi nhánh" aria-label="Về mọi chi nhánh" onClick={() => doi({ cn: undefined })}><Icon n="chevl" /></button>
+  const ve = cn && !cnThanh ? <button type="button" className="cpt-ve" title="Về mọi cửa hàng" aria-label="Về mọi cửa hàng" onClick={() => doi({ cn: undefined })}><Icon n="chevl" /></button>
     : <Link to="/app/trang-chu/tong-quan" className="cpt-ve" title="Về Tổng quan" aria-label="Về Tổng quan"><Icon n="chevl" /></Link>
 
   return (
@@ -109,7 +109,7 @@ export function ChiPhiNvl(_: ScreenProps) {
       {cn ? <ChiTietCn cn={cn.id} thang={thang} khoa={khoa} tab={tab} setTab={setTab} locLoai={locLoai} setLocLoai={setLocLoai} /> : (
         <section className="card nvl-bang">
           <Table cols={[
-            { k: 'ten', t: 'Chi nhánh', r: r => <>{r.ten}{Number(r.thieu) > 0 && <span className="chip warn nvl-chip">Còn {r.thieu} món chưa có giá thành</span>}</> },
+            { k: 'ten', t: 'Cửa hàng', r: r => <>{r.ten}{Number(r.thieu) > 0 && <span className="chip warn nvl-chip">Còn {r.thieu} món chưa có giá thành</span>}</> },
             { k: 'cach', t: 'Cách tính' },
             { k: 'dt', t: 'Doanh thu', num: true },
             { k: 'tien', t: 'Chi phí NVL', num: true },
@@ -117,7 +117,7 @@ export function ChiPhiNvl(_: ScreenProps) {
           ]} rows={tong.ds.map(x => ({ id: x.cn, ten: x.ten, thieu: x.thieuGia, cach: CACH_NVL[x.cach].ten, dt: x.dt, tien: x.tien, tyLe: pct(x.dt ? x.tien / x.dt : 0) }))}
             sum={{ ten: 'Cộng', dt, tien: tong.tien, tyLe: pct(dt ? tong.tien / dt : 0) }}
             onRow={r => doi({ cn: String(r.id) })} />
-          <div className="nvl-chan">Bấm chi nhánh để xem chi tiết. Đổi cách tính ở <Link to="/app/danh-muc/chi-nhanh">Danh mục chi nhánh</Link>.</div>
+          <div className="nvl-chan">Bấm cửa hàng để xem chi tiết. Đổi cách tính ở <Link to="/app/danh-muc/cua-hang">Danh mục cửa hàng</Link>.</div>
         </section>
       )}
       </div>
@@ -134,7 +134,7 @@ function ChiTietCn({ cn, thang, khoa, tab, setTab, locLoai, setLocLoai }: {
   const dau = (
     <div className="nvl-cach">
       <span>Cách tính: <b>{CACH_NVL[x.cach].ten}</b> · {CACH_NVL[x.cach].mota}</span>
-      <Link to="/app/danh-muc/chi-nhanh" className="btn sm ghost">Đổi cách tính</Link>
+      <Link to="/app/danh-muc/cua-hang" className="btn sm ghost">Đổi cách tính</Link>
     </div>
   )
   // Cột bảng món dùng chung cho giá thành iPOS Inventory và nhập tay; gia: ô Giá thành
@@ -159,7 +159,7 @@ function ChiTietCn({ cn, thang, khoa, tab, setTab, locLoai, setLocLoai }: {
             <button type="button" className={tab === 'mon' ? 'on' : ''} onClick={() => setTab('mon')}>Giá thành iPOS Inventory</button>
             <button type="button" className={tab === 'th' ? 'on' : ''} onClick={() => setTab('th')}>Chi phí NVL tiêu hao</button>
           </div>
-          <Link to="/app/danh-muc/chi-nhanh" className="btn sm ghost">Đổi cách tính</Link>
+          <Link to="/app/danh-muc/cua-hang" className="btn sm ghost">Đổi cách tính</Link>
         </div>
         {tab === 'mon' ? <>
           <div className="nvl-cach"><span>Cách tính: <b>Số lượng món bán × giá thành món trên iPOS Inventory</b></span></div>

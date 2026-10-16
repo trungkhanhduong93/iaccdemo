@@ -33,7 +33,7 @@ export function ToolScreen({ sc, mod }: ScreenProps) {
         </div>
         <Card title="Cài đặt">
           <div className="stack" style={{ gap: 12 }}>
-            {(cfg.caiDat ?? [['Kỳ áp dụng', 'Tháng 9/2026'], ['Chi nhánh', 'Tất cả chi nhánh']]).map(([l, v]) => (
+            {(cfg.caiDat ?? [['Kỳ áp dụng', 'Tháng 9/2026'], ['Cửa hàng', 'Tất cả cửa hàng']]).map(([l, v]) => (
               <div className="f" key={l}><label>{l}</label><input className="inp" defaultValue={v} /></div>
             ))}
             <button className="btn" style={{ alignSelf: 'flex-start' }} onClick={() => toast('Đã lưu cài đặt')}>Lưu cài đặt</button>
