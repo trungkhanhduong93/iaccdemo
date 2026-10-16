@@ -169,7 +169,7 @@ export function HopThemChiNhanh({ onDong, onLenSo }: { onDong: () => void; onLen
                 })}
               </div>
             )}
-            <label className="row dmcn-tich"><input type="checkbox" checked={khaiSoDu} onChange={e => setKhaiSoDu(e.target.checked)} />
+            <label className="row dmcn-tich"><input type="checkbox" className="bat-tat" checked={khaiSoDu} onChange={e => setKhaiSoDu(e.target.checked)} />
               <span>Khai số dư ban đầu cho chi nhánh mới ngay sau khi lên sổ</span></label>
           </> : <Note kind="ok" icon="check">Mọi cửa hàng trên FABi đã lên sổ kế toán.</Note>}
         </div>

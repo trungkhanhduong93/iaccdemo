@@ -224,6 +224,7 @@ export const MPhanQuyen: FC<ScreenProps> = () => {
                     <span className="m-pq-quyen-nhan">{q}</span>
                     <input
                       type="checkbox"
+                      className="bat-tat"
                       checked={bat}
                       onChange={() => toggleQuyen(m, q)}
                     />

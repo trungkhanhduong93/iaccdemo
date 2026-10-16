@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import type { ModuleDef } from '../modules/types'
 import { useSession } from './session'
@@ -8,6 +8,7 @@ import { Icon } from '../ui/Icon'
 import { Pk } from '../ui/Page'
 import { heSoZoom } from '../ui/zoom'
 import { useThaoTacNhanh } from './thaoTacNhanh'
+import { TuyChinhThaoTac } from './TuyChinhThaoTac'
 
 export interface FlyoutItem {
   ten: string
@@ -488,16 +489,19 @@ export function ThaoTacNhanhFlyout({
   const { s } = useSession()
   const { ds } = useThaoTacNhanh(s)
   const flyoutRef = useRef<HTMLDivElement>(null)
+  const [moTuyChinh, setMoTuyChinh] = useState(false)
 
   // Esc và bấm ra ngoài đóng (T273)
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      if (moTuyChinh) return
       if (e.key === 'Escape') onClose()
     }
     const onMouseDown = (e: MouseEvent) => {
+      if (moTuyChinh) return
       if (flyoutRef.current && !flyoutRef.current.contains(e.target as Node)) {
         const el = e.target as HTMLElement
-        if (el.closest('.sb-item-btn')) return
+        if (el.closest('.sb-item-btn') || el.closest('.overlay')) return
         onClose()
       }
     }
@@ -507,7 +511,7 @@ export function ThaoTacNhanhFlyout({
       window.removeEventListener('keydown', onKey)
       document.removeEventListener('mousedown', onMouseDown)
     }
-  }, [onClose])
+  }, [onClose, moTuyChinh])
 
   const adjustedTop = (() => {
     const z = heSoZoom()
@@ -555,14 +559,22 @@ export function ThaoTacNhanhFlyout({
         ))}
       </div>
       <div className="sb-ttn-chan">
-        <Link
-          to="/app/thao-tac-nhanh/danh-sach"
+        <button
+          type="button"
           className="sb-ttn-tuy-chinh"
-          onClick={onClose}
+          onClick={() => setMoTuyChinh(true)}
         >
           Tuỳ chỉnh
-        </Link>
+        </button>
       </div>
+      {moTuyChinh && (
+        <TuyChinhThaoTac
+          onClose={() => {
+            setMoTuyChinh(false)
+            onClose()
+          }}
+        />
+      )}
     </div>
   )
 }

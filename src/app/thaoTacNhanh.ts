@@ -1,7 +1,18 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { Session } from './session'
 import type { Goi } from './plan'
-import { maKhoa, moDuoc, timMan } from './registry'
+import {
+  MODULES,
+  duongDan,
+  hienMan,
+  hienPhanHe,
+  laBaoCao,
+  maKhoa,
+  moDuoc,
+  tenMan,
+  tenPhanHe,
+  timMan,
+} from './registry'
 
 export interface ThaoTacUngVien {
   id: string
@@ -10,6 +21,7 @@ export interface ThaoTacUngVien {
   to: string
   modKey: string
   slug: string
+  tenMod?: string
 }
 
 export interface ThaoTacMuc extends ThaoTacUngVien {
@@ -35,6 +47,7 @@ export const MAC_DINH_FREE = ['thu', 'chi', 'nhap-mua', 'kiem-ke', 'so-quy']
 export const MAC_DINH_KHAC = ['thu', 'chi', 'nhap-kho', 'xuat-kho', 'so-quy']
 export const STORAGE_KEY = 'iacc-thao-tac-nhanh'
 export const SU_KIEN_THAY_DOI = 'iacc-thao-tac-nhanh-doi'
+export const TOI_DA_THAO_TAC = 8
 
 export function layMacDinhIds(goi?: string): string[] {
   return goi === 'F' ? [...MAC_DINH_FREE] : [...MAC_DINH_KHAC]
@@ -46,8 +59,8 @@ export function docThaoTacIds(goi?: string): string[] {
     if (!raw) return layMacDinhIds(goi)
     const parsed = JSON.parse(raw)
     if (!Array.isArray(parsed)) return layMacDinhIds(goi)
-    const hopLe = parsed.filter(id => typeof id === 'string' && THAO_TAC_UNG_VIEN.some(c => c.id === id))
-    return hopLe.length > 0 ? hopLe : layMacDinhIds(goi)
+    const hopLe = parsed.filter(id => typeof id === 'string' && id.trim().length > 0)
+    return hopLe.length > 0 ? hopLe.slice(0, TOI_DA_THAO_TAC) : layMacDinhIds(goi)
   } catch {
     return layMacDinhIds(goi)
   }
@@ -55,7 +68,8 @@ export function docThaoTacIds(goi?: string): string[] {
 
 export function ghiThaoTacIds(ids: string[]): void {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(ids))
+    const hopLe = ids.slice(0, TOI_DA_THAO_TAC)
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(hopLe))
     window.dispatchEvent(new Event(SU_KIEN_THAY_DOI))
   } catch {
     // bỏ qua lỗi ghi localStorage (trình duyệt chặn bộ nhớ)
@@ -74,7 +88,112 @@ export function layThaoTacMuc(uv: ThaoTacUngVien, goi: Goi): ThaoTacMuc {
   }
 }
 
-export function useThaoTacNhanh(s: Pick<Session, 'goi'>) {
+function layGoc() {
+  return new Map(
+    MODULES.filter(m => m.key !== 'bao-cao').flatMap(m =>
+      m.screens.filter(laBaoCao).map(sc => [sc.slug, m] as const)
+    )
+  )
+}
+
+export function layTatCaThaoTac(s: Pick<Session, 'goi'> & Partial<Session>): ThaoTacMuc[] {
+  const isFree = s.goi === 'F'
+  const kq: ThaoTacMuc[] = []
+  const daCoDuongDan = new Set<string>()
+  const GOC = layGoc()
+
+  // 1. Thêm 11 mục cũ
+  for (const uv of THAO_TAC_UNG_VIEN) {
+    const mod = MODULES.find(m => m.key === uv.modKey)
+    const { sc } = timMan(uv.modKey, uv.slug)
+    const khoa = sc ? !moDuoc(sc, s.goi) : false
+    const ma = sc ? maKhoa(sc) : undefined
+    const tenMod = mod ? tenPhanHe(mod, s.goi).ngan : uv.modKey
+    const muc: ThaoTacMuc = {
+      ...uv,
+      to: khoa ? `/app/${uv.modKey}/${uv.slug}` : uv.to,
+      khoa,
+      ma,
+      tenMod,
+    }
+    // Gói Free ẩn mục ngoài gói
+    if (isFree && khoa) continue
+    kq.push(muc)
+    daCoDuongDan.add(uv.to)
+  }
+
+  // 2. Thêm các màn trong MODULES
+  for (const m of MODULES) {
+    if (m.key === 'thao-tac-nhanh') continue
+    if (!hienPhanHe(m, s.goi)) continue
+
+    for (const sc of m.screens) {
+      if (m.key !== 'bao-cao' && laBaoCao(sc)) continue
+      if (sc.slug.startsWith('nhom-')) continue
+      if (!hienMan(sc, s.goi, s.cheDo, s as Pick<Session, 'ppGtgt' | 'ppTndn'> | undefined)) continue
+
+      const goc = (m.key === 'bao-cao' && GOC.get(sc.slug)) || m
+      const tenMod =
+        m === goc
+          ? tenPhanHe(m, s.goi).ngan
+          : `${tenPhanHe(m, s.goi).ngan} · ${tenPhanHe(goc, s.goi).ngan}`
+      const icon =
+        sc.icon ??
+        (sc.kind === 'voucher'
+          ? 'doc'
+          : sc.kind === 'catalog'
+          ? 'folder'
+          : sc.kind === 'tool'
+          ? 'play'
+          : m.icon)
+      const khoa = !moDuoc(sc, s.goi)
+      const ma = maKhoa(sc)
+
+      // Gói Free ẩn mục ngoài gói
+      if (isFree && khoa) continue
+
+      // a. Màn danh sách
+      const toMan = duongDan(m, sc)
+      if (!daCoDuongDan.has(toMan)) {
+        daCoDuongDan.add(toMan)
+        kq.push({
+          id: `man:${m.key}/${sc.slug}`,
+          ten: tenMan(sc),
+          icon,
+          to: toMan,
+          modKey: m.key,
+          slug: sc.slug,
+          khoa,
+          ma,
+          tenMod,
+        })
+      }
+
+      // b. Màn chứng từ mới (kind === 'voucher')
+      if (sc.kind === 'voucher') {
+        const toMoi = `${toMan}/moi`
+        if (!daCoDuongDan.has(toMoi)) {
+          daCoDuongDan.add(toMoi)
+          kq.push({
+            id: `moi:${m.key}/${sc.slug}`,
+            ten: `Lập ${tenMan(sc).toLowerCase()}`,
+            icon,
+            to: toMoi,
+            modKey: m.key,
+            slug: sc.slug,
+            khoa,
+            ma,
+            tenMod,
+          })
+        }
+      }
+    }
+  }
+
+  return kq
+}
+
+export function useThaoTacNhanh(s: Pick<Session, 'goi'> & Partial<Session>) {
   const isFree = s.goi === 'F'
   const [ids, setIds] = useState<string[]>(() => docThaoTacIds(s.goi))
 
@@ -90,21 +209,13 @@ export function useThaoTacNhanh(s: Pick<Session, 'goi'>) {
     }
   }, [s.goi])
 
-  const tatCaMuc = useMemo(() => {
-    return THAO_TAC_UNG_VIEN.map(uv => layThaoTacMuc(uv, s.goi))
-  }, [s.goi])
-
-  // Danh mục ứng viên hiển thị cho hộp tuỳ chỉnh (gói Free không liệt kê thao tác ngoài gói)
-  const ungVien = useMemo(() => {
-    if (isFree) {
-      return tatCaMuc.filter(m => !m.khoa)
-    }
-    return tatCaMuc
-  }, [isFree, tatCaMuc])
+  const tatCa = useMemo(() => {
+    return layTatCaThaoTac(s)
+  }, [s.goi, s.cheDo, s.ppGtgt, s.ppTndn])
 
   // Danh sách đã chọn theo thứ tự ids (gói Free lọc bỏ mục khoá)
   const ds = useMemo(() => {
-    const map = new Map(tatCaMuc.map(m => [m.id, m]))
+    const map = new Map(tatCa.map(m => [m.id, m]))
     const res: ThaoTacMuc[] = []
     for (const id of ids) {
       const item = map.get(id)
@@ -114,11 +225,11 @@ export function useThaoTacNhanh(s: Pick<Session, 'goi'>) {
       }
     }
     return res
-  }, [ids, isFree, tatCaMuc])
+  }, [ids, isFree, tatCa])
 
   const luu = (nextIds: string[]) => {
     ghiThaoTacIds(nextIds)
-    setIds(nextIds)
+    setIds(nextIds.slice(0, TOI_DA_THAO_TAC))
   }
 
   const veMacDinh = () => {
@@ -130,7 +241,7 @@ export function useThaoTacNhanh(s: Pick<Session, 'goi'>) {
   return {
     ds,
     ids,
-    tatCa: ungVien,
+    tatCa,
     luu,
     veMacDinh,
     macDinhIds: layMacDinhIds(s.goi),

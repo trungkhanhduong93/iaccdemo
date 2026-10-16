@@ -285,6 +285,7 @@ export const MTaiKhoan: FC<ScreenProps> = () => {
                   <label className="row pn-tich">
                     <input
                       type="checkbox"
+                      className="bat-tat"
                       checked={form.dangDung}
                       onChange={e => setForm(f => ({ ...f, dangDung: e.target.checked }))}
                     />

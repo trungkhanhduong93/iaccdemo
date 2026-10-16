@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 16/10/2026
 
+- T280: Bấm Tuỳ chỉnh ở Thao tác nhanh mở hộp tìm kiểu Ctrl K. Gõ tên để tìm mọi màn hoặc lệnh lập chứng từ, tích để thêm, tối đa 8 mục, kéo thẻ để đổi thứ tự. Gói Free không hiện màn ngoài gói, gói khác hiện kèm ổ khoá. Điện thoại có tấm toàn màn, đổi thứ tự bằng nút lên xuống. Tab Xuất điều chỉnh, Nhập điều chỉnh bỏ số đếm. Ô tích bật tắt tuỳ chọn trên toàn app thành nút bật tắt.
 - T279: Lịch sử thu chi trên máy tính có ô lọc Quỹ: xem tất cả quỹ hoặc từng quỹ tiền mặt, từng tài khoản ngân hàng.
 - T269: Danh mục Lý do nghiệp vụ theo danh sách thu, chi của FABi, mã THU01.., CHI01..; giữ Chi phí chờ phân bổ và lý do kho. Phiếu thu, chi, Chi phí trong tháng dùng tên lý do mới.
 - T278: Thanh Gom nhóm ở các danh sách chứng từ làm lại. Mỗi cột đang gom là một thẻ có số cấp, giữa các cấp có mũi tên. Nút Thêm cột gom mở menu cùng kiểu với các menu khác.

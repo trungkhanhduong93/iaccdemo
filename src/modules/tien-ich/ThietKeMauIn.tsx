@@ -483,18 +483,18 @@ export function ThietKeMauIn({ sc }: ScreenProps) {
                   </Select>
                 </div>
                 <label className="tkmi-check">
-                  <input type="checkbox" checked={mau.tieuDeDam !== false} onChange={e => { const v = e.target.checked; doiMau(m => ({ ...m, tieuDeDam: v })) }} />Tiêu đề in đậm
+                  <input type="checkbox" className="bat-tat" checked={mau.tieuDeDam !== false} onChange={e => { const v = e.target.checked; doiMau(m => ({ ...m, tieuDeDam: v })) }} />Tiêu đề in đậm
                 </label>
                 {coKhoi('mauSo') && (
                   <label className="tkmi-check">
-                    <input type="checkbox" checked={hienKhoi('mauSo')} onChange={e => anKhoi('mauSo', !e.target.checked)} />In mẫu số, quyển số, Nợ Có
+                    <input type="checkbox" className="bat-tat" checked={hienKhoi('mauSo')} onChange={e => anKhoi('mauSo', !e.target.checked)} />In mẫu số, quyển số, Nợ Có
                   </label>
                 )}
                 <label className="tkmi-check">
-                  <input type="checkbox" checked={!!mau.quyenSo} onChange={e => { const v = e.target.checked; doiMau(m => ({ ...m, quyenSo: v })) }} />In dòng quyển số
+                  <input type="checkbox" className="bat-tat" checked={!!mau.quyenSo} onChange={e => { const v = e.target.checked; doiMau(m => ({ ...m, quyenSo: v })) }} />In dòng quyển số
                 </label>
                 <label className="tkmi-check">
-                  <input type="checkbox" checked={!!mau.boPhan} onChange={e => { const v = e.target.checked; doiMau(m => ({ ...m, boPhan: v || undefined })) }} />In dòng bộ phận dưới tên đơn vị
+                  <input type="checkbox" className="bat-tat" checked={!!mau.boPhan} onChange={e => { const v = e.target.checked; doiMau(m => ({ ...m, boPhan: v || undefined })) }} />In dòng bộ phận dưới tên đơn vị
                 </label>
               </div>
             </NhomTt>
@@ -565,7 +565,7 @@ export function ThietKeMauIn({ sc }: ScreenProps) {
                     </Select>
                   </div>
                   <label className="tkmi-check">
-                    <input type="checkbox" checked={mau.bang.dongTong} onChange={e => { const v = e.target.checked; doiBang(b => ({ ...b, dongTong: v })) }} />Hiện dòng cộng
+                    <input type="checkbox" className="bat-tat" checked={mau.bang.dongTong} onChange={e => { const v = e.target.checked; doiBang(b => ({ ...b, dongTong: v })) }} />Hiện dòng cộng
                   </label>
                 </div>
               </NhomTt>
@@ -577,7 +577,7 @@ export function ThietKeMauIn({ sc }: ScreenProps) {
                 <div className="tkmi-nhom-o">
                   {KHOI_TONG.filter(coKhoi).map(k => (
                     <label key={k} className="tkmi-check">
-                      <input type="checkbox" checked={hienKhoi(k)} onChange={e => anKhoi(k, !e.target.checked)} />In {TEN_KHOI[k].toLowerCase()}
+                      <input type="checkbox" className="bat-tat" checked={hienKhoi(k)} onChange={e => anKhoi(k, !e.target.checked)} />In {TEN_KHOI[k].toLowerCase()}
                     </label>
                   ))}
                   {mau.bangChu !== undefined && (

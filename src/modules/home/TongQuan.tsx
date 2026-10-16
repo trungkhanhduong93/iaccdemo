@@ -627,6 +627,7 @@ export function TongQuan({ sc }: ScreenProps) {
                 <div key={b.id} className={`tq-modal-it ${b.an ? 'an' : ''}`}>
                   <input
                     type="checkbox"
+                    className="bat-tat"
                     checked={!b.an}
                     onChange={() => doiAnKhoi(b.id)}
                   />

@@ -195,7 +195,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
             {/* Bên trái thanh: lọc theo trạng thái, đúng chỗ chip trạng thái của danh sách thu chi */}
             {cfg.tich && (
               <label className="row ky-so-lieu">
-                <input type="checkbox" checked={tichLoc} onChange={e => setTichLoc(e.target.checked)} />
+                <input type="checkbox" className="bat-tat" checked={tichLoc} onChange={e => setTichLoc(e.target.checked)} />
                 <span>{cfg.tich.nhan}</span>
               </label>
             )}
@@ -613,6 +613,7 @@ export function CatalogPanel({
                       <label className="row pn-tich">
                         <input
                           type="checkbox"
+                          className="bat-tat"
                           checked={formVal[tr.k] !== 0 && formVal[tr.k] !== false}
                           onChange={e => {
                             doiO(tr.k, e.target.checked ? 1 : 0)

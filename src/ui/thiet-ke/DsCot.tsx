@@ -53,7 +53,7 @@ export function DsCot({ items, onChange, coRong, coCan, suaTen = true, rongTrong
             className={`tkmi-dong${chon === x.k ? ' on' : ''}${hienMuc ? '' : ' tat'}${keo.keo === i ? ' dang-keo' : ''}${keo.dich === i ? ' dich' : ''}`}>
             <span className="tkmi-tay" title="Kéo để đổi thứ tự" {...keo.tay(i)}><TayNam /></span>
             <span className="tkmi-tick">
-              <input type="checkbox" checked={hienMuc} disabled={x.batBuoc} aria-label={`Hiện ${x.ten}`}
+              <input type="checkbox" className="bat-tat" checked={hienMuc} disabled={x.batBuoc} aria-label={`Hiện ${x.ten}`}
                 title={x.batBuoc ? LY_DO_KHOA : undefined} onChange={e => doi(i, { an: !e.target.checked })} />
               {x.batBuoc && <span className="tkmi-khoa" title={LY_DO_KHOA}><Icon n="lock" className="ic sm" title={LY_DO_KHOA} /></span>}
             </span>

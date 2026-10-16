@@ -582,7 +582,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
                 {cfg.loai.map(l => (
                   <button key={l.k} type="button" role="tab" aria-selected={tabLoai === l.k} className={tabLoai === l.k ? 'on' : ''}
                     onClick={() => { setTabLoai(l.k); setTrang(1); setActiveId(String(rows.find(r => r.loai === l.k)?.id ?? '')) }}>
-                    {l.ten}<span className="dc-dem">{truocLoai.filter(r => r.loai === l.k).length}</span>
+                    {l.ten}
                   </button>
                 ))}
               </div>

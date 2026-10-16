@@ -74,7 +74,7 @@ export function DoiSoat({ sc, mod }: ScreenProps) {
           }
           phai={
             <label className="row" style={{ fontSize: 13 }}>
-              <input type="checkbox" checked={tatCa} onChange={e => setTatCa(e.target.checked)} /> Hiện cả dòng đã khớp
+              <input type="checkbox" className="bat-tat" checked={tatCa} onChange={e => setTatCa(e.target.checked)} /> Hiện cả dòng đã khớp
             </label>
           }
         />

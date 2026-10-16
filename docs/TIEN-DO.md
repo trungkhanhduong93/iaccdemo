@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T280 | Tuỳ chỉnh Thao tác nhanh mở modal kiểu Ctrl K, chọn được mọi màn, tối đa 8; điện thoại tấm toàn màn; bỏ số đếm tab Xuất, Nhập điều chỉnh; ô tích tuỳ chọn toàn app thành nút bật tắt | Trum | Đang làm | Giao Anti. Sửa file dùng chung `VoucherScreen.tsx` (khối dc-tabs), `app.css` (mục cuối T280), `MTrangChu.tsx` (tấm Tuỳ chỉnh), nhiều file .tsx chỉ thêm class `bat-tat` |
 | T265 | Phiếu thu, chi đồng bộ từ FABi (T264) chưa vào Sổ quỹ tiền mặt, Sổ ngân hàng, Lịch sử thu chi, tồn quỹ trang chủ; đưa vào thì đổi số dư | | Chờ | Phát hiện khi làm T264, chờ PhuongXT quyết |
 | T229 | Báo cáo kết quả kinh doanh (10.2.3, B02-DNN) ở chế độ TT133 mở ra "Báo cáo chưa có mẫu" ở cả bản máy tính và điện thoại, gói Pro và Free | | Chờ | Phát hiện ở T222 ngày 14/10/2026, mở từ Tất cả báo cáo. Có thể liên quan T220 |
 | T169 | Form chứng từ: gõ đổi địa chỉ từ phiếu này sang phiếu khác (vd `#/app/tien/2-1-1/chi-3` sang `chi-6`) thì form giữ số phiếu, đối tượng của phiếu cũ; mở từ danh sách, Trước, Sau thì đúng | | Chờ | Phát hiện ở T168. Sửa `ChungTuForm.tsx`, có thể `VoucherScreen.tsx` (key của form) |
@@ -49,6 +48,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 |---|---|---|---|---|
 | T279 | Lịch sử thu chi máy tính: thêm bộ lọc quỹ (Tất cả quỹ, từng quỹ tiền mặt, từng tài khoản ngân hàng) cạnh lọc thu, chi | PhuongXT | 16/10/2026 | [2026-10-16-phuongxt-loc-quy-lich-su-thu-chi](nhat-ky/2026-10-16-phuongxt-loc-quy-lich-su-thu-chi.md) |
 | T269 | Danh mục Lý do nghiệp vụ thay bằng 44 lý do theo file FABi, giữ Chi phí chờ phân bổ và 3 lý do kho; mã đánh lại THU01.., CHI01.., XK, NK; cờ Là chi phí theo đề xuất; đổi tên lý do ở các chỗ dùng | PhuongXT | 16/10/2026 | [2026-10-16-phuongxt-ly-do-nghiep-vu-fabi](nhat-ky/2026-10-16-phuongxt-ly-do-nghiep-vu-fabi.md) |
+| T280 | Tuỳ chỉnh Thao tác nhanh mở hộp kiểu Ctrl K, chọn được mọi màn, tối đa 8; điện thoại tấm toàn màn; bỏ số đếm tab Xuất, Nhập điều chỉnh; ô tích tuỳ chọn toàn app thành nút bật tắt | Trum | 16/10/2026 | [2026-10-16-trum-tuy-chinh-thao-tac-nhanh.md](nhat-ky/2026-10-16-trum-tuy-chinh-thao-tac-nhanh.md) |
 | T278 | Thanh gom nhóm ở danh sách chứng từ: thiết kế lại cho đẹp, ô Thêm cột gom thành menu Dropdown thay thẻ select gốc | Trum | 16/10/2026 | [2026-10-16-trum-thanh-gom-nhom](nhat-ky/2026-10-16-trum-thanh-gom-nhom.md) |
 | T277 | Danh sách Kiểm kê: thiết kế lại 3 tab con Kiểm kê, Xuất điều chỉnh, Nhập điều chỉnh cho đẹp | Trum | 16/10/2026 | [2026-10-16-trum-tab-con-kiem-ke](nhat-ky/2026-10-16-trum-tab-con-kiem-ke.md) |
 | T276 | Bảng vai trò, phân quyền: ô tích quyền thành nút bật tắt, web và điện thoại | Trum | 16/10/2026 | [2026-10-16-trum-nut-bat-tat-phan-quyen](nhat-ky/2026-10-16-trum-nut-bat-tat-phan-quyen.md) |

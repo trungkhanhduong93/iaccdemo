@@ -531,6 +531,7 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
                         <label className="row pn-tich" title={dangCoCon ? 'Tài khoản đang có tài khoản con, không thể bỏ tổng hợp' : undefined} style={{ cursor: dangCoCon ? 'not-allowed' : 'pointer' }}>
                           <input
                             type="checkbox"
+                            className="bat-tat"
                             checked={form.laCha}
                             disabled={dangCoCon}
                             onChange={e => setForm(f => ({ ...f, laCha: e.target.checked }))}
@@ -563,6 +564,7 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
                         <label className="row pn-tich">
                           <input
                             type="checkbox"
+                            className="bat-tat"
                             checked={form.dangDung}
                             onChange={e => setForm(f => ({ ...f, dangDung: e.target.checked }))}
                           />
@@ -590,6 +592,7 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
                         <label className="row pn-tich">
                           <input
                             type="checkbox"
+                            className="bat-tat"
                             checked={form.coNgoaiTe}
                             onChange={e => setForm(f => ({ ...f, coNgoaiTe: e.target.checked }))}
                           />
@@ -642,6 +645,7 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
                       <label className="row pn-tich">
                         <input
                           type="checkbox"
+                          className="bat-tat"
                           checked={form.doiTuong}
                           onChange={e => setForm(f => ({ ...f, doiTuong: e.target.checked }))}
                         />
@@ -650,6 +654,7 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
                       <label className="row pn-tich">
                         <input
                           type="checkbox"
+                          className="bat-tat"
                           checked={form.vatTu}
                           onChange={e => setForm(f => ({ ...f, vatTu: e.target.checked }))}
                         />
@@ -658,6 +663,7 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
                       <label className="row pn-tich">
                         <input
                           type="checkbox"
+                          className="bat-tat"
                           checked={form.soLuong}
                           onChange={e => setForm(f => ({ ...f, soLuong: e.target.checked }))}
                         />
@@ -666,6 +672,7 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
                       <label className="row pn-tich">
                         <input
                           type="checkbox"
+                          className="bat-tat"
                           checked={form.khoanMuc}
                           onChange={e => setForm(f => ({ ...f, khoanMuc: e.target.checked }))}
                         />
@@ -674,6 +681,7 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
                       <label className="row pn-tich">
                         <input
                           type="checkbox"
+                          className="bat-tat"
                           checked={form.congViec}
                           onChange={e => setForm(f => ({ ...f, congViec: e.target.checked }))}
                         />
@@ -682,6 +690,7 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
                       <label className="row pn-tich">
                         <input
                           type="checkbox"
+                          className="bat-tat"
                           checked={form.thanhPham}
                           onChange={e => setForm(f => ({ ...f, thanhPham: e.target.checked }))}
                         />
@@ -690,6 +699,7 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
                       <label className="row pn-tich">
                         <input
                           type="checkbox"
+                          className="bat-tat"
                           checked={form.thueVat}
                           onChange={e => setForm(f => ({ ...f, thueVat: e.target.checked }))}
                         />
@@ -698,6 +708,7 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
                       <label className="row pn-tich">
                         <input
                           type="checkbox"
+                          className="bat-tat"
                           checked={form.thanhToan}
                           onChange={e => setForm(f => ({ ...f, thanhToan: e.target.checked }))}
                         />
@@ -706,6 +717,7 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
                       <label className="row pn-tich">
                         <input
                           type="checkbox"
+                          className="bat-tat"
                           checked={form.ngoaiBang}
                           onChange={e => setForm(f => ({ ...f, ngoaiBang: e.target.checked }))}
                         />
@@ -732,6 +744,7 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
                         <label className="row pn-tich">
                           <input
                             type="checkbox"
+                            className="bat-tat"
                             checked={form.nganHang}
                             onChange={e => setForm(f => ({ ...f, nganHang: e.target.checked }))}
                           />

@@ -294,6 +294,7 @@ export function TuyChinhBC({
               <label className="row pn-tich">
                 <input
                   type="checkbox"
+                  className="bat-tat"
                   checked={chiRieng}
                   onChange={e => doiChiRieng(e.target.checked)}
                 />

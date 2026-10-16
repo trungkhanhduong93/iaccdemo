@@ -128,7 +128,7 @@ export function PhanQuyen({ sc }: ScreenProps) {
             <thead><tr><th>Phân hệ</th>{QUYEN.map(q => <th key={q} className="c">{q}</th>)}</tr></thead>
             <tbody>
               {MODS.map(m => (
-                <tr key={m}><td>{m}</td>{QUYEN.map(q => <td key={q} className="c"><input type="checkbox" defaultChecked={MAC_DINH[vt].includes(q)} key={vt + q} /></td>)}</tr>
+                <tr key={m}><td>{m}</td>{QUYEN.map(q => <td key={q} className="c"><input type="checkbox" className="bat-tat" defaultChecked={MAC_DINH[vt].includes(q)} key={vt + q} /></td>)}</tr>
               ))}
             </tbody>
           </table>

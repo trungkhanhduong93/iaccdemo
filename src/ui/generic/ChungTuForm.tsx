@@ -932,6 +932,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               {dangSua && <label className="row" style={{ gap: 6, cursor: 'pointer', fontSize: 13 }}>
                 <input
                   type="checkbox"
+                  className="bat-tat"
                   checked={nhanKemHd}
                   onChange={e => setNhanKemHd(e.target.checked)}
                 />

@@ -690,4 +690,10 @@ Thay QD23 phần biểu tượng, web và điện thoại cùng dùng. Tên gọ
 
 Lý do: Trum chốt việc T275 ngày 15/10/2026.
 
-## QD64. Ô tích tuỳ chọn thành nút bật tắt (đang soạn)
+## QD64. Ô tích tuỳ chọn thành nút bật tắt
+
+- Ô tích bật hoặc tắt một tuỳ chọn có nhãn đi kèm dùng nút bật tắt: thêm `className="bat-tat"` vào `input type="checkbox"`. Ví dụ: Ẩn thẻ hết phân bổ, các ô trong form tài khoản, Thiết kế mẫu in, ẩn hiện cột, khối trang chủ.
+- Giữ ô tích vuông khi chọn nhiều mục. Gồm: ô chọn dòng, ô chọn tất cả, giá trị trong khung lọc cột, phiếu chọn để làm hàng loạt, màn trong hộp Tuỳ chỉnh thao tác nhanh.
+- CSS nằm ở mục T276, T280 cuối `src/styles/app.css`. Ô mới thêm sau này theo đúng luật trên.
+
+Lý do: Trum chốt việc T280 ngày 16/10/2026.

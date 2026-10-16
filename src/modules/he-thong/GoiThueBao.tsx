@@ -298,6 +298,7 @@ export function GoiThueBao({ sc }: ScreenProps) {
             <label className="gtb-khac-nhau-toggle" title="Chỉ hiện tính năng các gói có sự khác nhau">
               <input
                 type="checkbox"
+                className="bat-tat"
                 checked={chiKhacNhau}
                 onChange={e => setChiKhacNhau(e.target.checked)}
               />

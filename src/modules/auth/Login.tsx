@@ -44,7 +44,7 @@ export function Login() {
               <input className="inp" type="password" value={mk} onChange={e => { setMk(e.target.value); setLoi('') }} placeholder="Ít nhất 6 ký tự" />
               {loi && <small style={{ color: 'var(--red)' }}>{loi}</small>}
             </div>
-            <label className="row" style={{ fontSize: 13 }}><input type="checkbox" defaultChecked /> Ghi nhớ đăng nhập trên máy này</label>
+            <label className="row" style={{ fontSize: 13 }}><input type="checkbox" className="bat-tat" defaultChecked /> Ghi nhớ đăng nhập trên máy này</label>
             <button className="btn pri lg" type="submit">Đăng nhập</button>
           </div>
           <p style={{ marginTop: 22, fontSize: 12, color: 'var(--faint)', textAlign: 'center' }}>Bản mẫu: gõ mật khẩu bất kỳ từ 6 ký tự. <Link to="/khoi-tao-fabi">Thử mở từ FABi</Link></p>

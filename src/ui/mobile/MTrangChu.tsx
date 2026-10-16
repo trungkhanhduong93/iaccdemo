@@ -11,7 +11,7 @@ import { PHIEU_MUA } from '../../modules/mua-hang/bao-cao'
 import { rowsCongNo } from '../../modules/bao-cao/cong-no'
 import { soCai } from '../../modules/tong-hop/so-cai'
 import { dinhMucTon } from '../../modules/kho/data'
-import { MODULES, hienMan, maKhoa, moDuoc, timMan } from '../../app/registry'
+import { MODULES, hienMan, maKhoa, moDuoc, timMan, tenPhanHe } from '../../app/registry'
 import { anNgoaiGoi, minGoi } from '../../app/plan'
 import { Pk } from '../Page'
 import { chungTu, dongCua } from '../generic/gen'
@@ -36,7 +36,8 @@ import {
   TheLaiLoChiNhanh,
   TheTop5Hbar,
 } from '../../modules/home/BieuDoFree'
-import { useThaoTacNhanh, type ThaoTacMuc } from '../../app/thaoTacNhanh'
+import { useThaoTacNhanh, TOI_DA_THAO_TAC, type ThaoTacMuc } from '../../app/thaoTacNhanh'
+import { fold } from '../format'
 import {
   BranchBarChart,
   CashFlowChart,
@@ -64,7 +65,7 @@ function SoSanhDong({ tang, label }: { tang: number | null; label?: string }) {
 }
 
 export function MTrangChu(_props?: Partial<ScreenProps>) {
-  const { s, set } = useSession()
+  const { s, set, toast } = useSession()
   const nav = useNavigate()
   const dv = donViHienTai(s)
 
@@ -256,43 +257,36 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
   const phaiThuTruoc = Math.max(0, sc9.cuoi['131'] || 0)
   const tangPhaiThu = phaiThuTruoc > 0 ? (phaiThuNay - phaiThuTruoc) / phaiThuTruoc : null
 
-  // 1. Thao tác nhanh (dùng chung web và điện thoại, T266)
+  // 1. Thao tác nhanh (dùng chung web và điện thoại, T266, T280)
   const {
     ds: thaoTacNhanhDs,
     tatCa: thaoTacTatCa,
     ids: thaoTacIds,
     luu: luuThaoTac,
+    macDinhIds: thaoTacMacDinhIds,
   } = useThaoTacNhanh(s)
   const [moTuyChinhThaoTac, setMoTuyChinhThaoTac] = useState(false)
-  const [hangsThaoTac, setHangsThaoTac] = useState<(ThaoTacMuc & { tich: boolean })[]>([])
+  const [chonThaoTacIds, setChonThaoTacIds] = useState<string[]>([])
+  const [timThaoTac, setTimThaoTac] = useState('')
 
   useEffect(() => {
     if (!moTuyChinhThaoTac) return
-    const idSet = new Set(thaoTacIds)
-    const map = new Map(thaoTacTatCa.map(m => [m.id, m]))
-    const dsDau: (ThaoTacMuc & { tich: boolean })[] = []
-    for (const id of thaoTacIds) {
-      const item = map.get(id)
-      if (item) {
-        dsDau.push({ ...item, tich: true })
-      }
-    }
-    const dsCon: (ThaoTacMuc & { tich: boolean })[] = []
-    for (const item of thaoTacTatCa) {
-      if (!idSet.has(item.id)) {
-        dsCon.push({ ...item, tich: false })
-      }
-    }
-    setHangsThaoTac([...dsDau, ...dsCon])
-  }, [moTuyChinhThaoTac, thaoTacIds, thaoTacTatCa])
+    setChonThaoTacIds([...thaoTacIds])
+    setTimThaoTac('')
+  }, [moTuyChinhThaoTac, thaoTacIds])
 
-  const handleToggleThaoTac = (id: string) => {
-    setHangsThaoTac(prev => prev.map(h => (h.id === id ? { ...h, tich: !h.tich } : h)))
-  }
+  const mapThaoTac = useMemo(
+    () => new Map(thaoTacTatCa.map(m => [m.id, m])),
+    [thaoTacTatCa]
+  )
+  const chonThaoTacItems = useMemo(
+    () => chonThaoTacIds.map(id => mapThaoTac.get(id)).filter((x): x is ThaoTacMuc => Boolean(x)),
+    [chonThaoTacIds, mapThaoTac]
+  )
 
   const handleLenThaoTac = (idx: number) => {
     if (idx <= 0) return
-    setHangsThaoTac(prev => {
+    setChonThaoTacIds(prev => {
       const next = [...prev]
       const tam = next[idx - 1]
       next[idx - 1] = next[idx]
@@ -302,8 +296,8 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
   }
 
   const handleXuongThaoTac = (idx: number) => {
-    setHangsThaoTac(prev => {
-      if (idx >= prev.length - 1) return prev
+    if (idx >= chonThaoTacIds.length - 1) return
+    setChonThaoTacIds(prev => {
       const next = [...prev]
       const tam = next[idx + 1]
       next[idx + 1] = next[idx]
@@ -312,11 +306,73 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
     })
   }
 
+  const handleBoChonThaoTac = (id: string) => {
+    setChonThaoTacIds(prev => prev.filter(x => x !== id))
+  }
+
+  const handleToggleThaoTac = (id: string) => {
+    setChonThaoTacIds(prev => {
+      if (prev.includes(id)) {
+        return prev.filter(x => x !== id)
+      }
+      if (prev.length >= TOI_DA_THAO_TAC) {
+        toast('Tối đa 8 thao tác')
+        return prev
+      }
+      return [...prev, id]
+    })
+  }
+
+  const handleKhoiPhucThaoTac = () => {
+    setChonThaoTacIds([...thaoTacMacDinhIds])
+    toast('Đã khôi phục thao tác mặc định')
+  }
+
   const handleLuuThaoTac = () => {
-    const nextIds = hangsThaoTac.filter(h => h.tich).map(h => h.id)
-    luuThaoTac(nextIds)
+    luuThaoTac(chonThaoTacIds)
+    toast('Đã lưu thao tác nhanh')
     setMoTuyChinhThaoTac(false)
   }
+
+  const wordsThaoTac = useMemo(() => fold(timThaoTac).split(/\s+/).filter(Boolean), [timThaoTac])
+  const mucThaoTac = useMemo(() => {
+    if (wordsThaoTac.length) {
+      const cum = wordsThaoTac.join(' ')
+      const hang = (x: ThaoTacMuc) => {
+        const tf = fold(x.ten)
+        return tf.startsWith(cum) ? 0 : tf.includes(' ' + cum) ? 1 : 2
+      }
+      const kq = thaoTacTatCa
+        .filter(x => {
+          const tf = fold(x.ten) + ' ' + fold(x.tenMod ?? '')
+          return wordsThaoTac.every(w => tf.includes(w))
+        })
+        .map(x => [hang(x), x] as const)
+        .sort((a, b) => a[0] - b[0])
+        .map(([, x]) => x)
+      return [{ ten: 'Kết quả', ds: kq }]
+    }
+
+    const theoMod = new Map<string, ThaoTacMuc[]>()
+    for (const item of thaoTacTatCa) {
+      const k = item.modKey
+      const list = theoMod.get(k) ?? []
+      list.push(item)
+      theoMod.set(k, list)
+    }
+
+    const res: { ten: string; ds: ThaoTacMuc[] }[] = []
+    for (const m of MODULES) {
+      const ds = theoMod.get(m.key)
+      if (ds && ds.length > 0) {
+        res.push({
+          ten: tenPhanHe(m, s.goi).ten,
+          ds,
+        })
+      }
+    }
+    return res
+  }, [thaoTacTatCa, wordsThaoTac, s.goi])
 
   // 3. Dữ liệu tổng tồn kho
   const rowsDm = useMemo(() => dinhMucTon.rows(s.cheDo, 202610), [s.cheDo])
@@ -1571,10 +1627,10 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
         />
       )}
 
-      {/* Tấm trượt tuỳ chỉnh thao tác nhanh (T266) */}
+      {/* Tấm trượt tuỳ chỉnh thao tác nhanh (T266, T280) */}
       {moTuyChinhThaoTac && (
         <div className="m-tam-overlay" onClick={() => setMoTuyChinhThaoTac(false)}>
-          <div className="m-tam-hop m-tam-hop-apdung" onClick={e => e.stopPropagation()}>
+          <div className="m-tam-hop m-tam-hop-apdung" style={{ height: '94vh', maxHeight: '94vh' }} onClick={e => e.stopPropagation()}>
             <div className="m-tam-dau m-tam-dau-apdung">
               <h2 className="m-tam-tieu">Tuỳ chỉnh thao tác nhanh</h2>
               <button
@@ -1586,66 +1642,175 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
                 <Icon n="x" className="ic sm" />
               </button>
             </div>
-            <div className="m-tam-ds" style={{ flex: 1, overflowY: 'auto' }}>
-              {hangsThaoTac.map((h, i) => (
-                <div
-                  key={h.id}
-                  className="m-tam-dong"
-                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}
+
+            <div className="m-tam-tim-wrap">
+              <Icon n="search" className="m-tam-tim-ic ic sm" />
+              <input
+                className="m-tam-tim-inp"
+                placeholder="Tìm thao tác hoặc màn hình..."
+                value={timThaoTac}
+                onChange={e => setTimThaoTac(e.target.value)}
+              />
+              {timThaoTac && (
+                <button
+                  type="button"
+                  className="m-tam-tim-x"
+                  onClick={() => setTimThaoTac('')}
+                  aria-label="Xoá tìm kiếm"
                 >
-                  <label style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1, minWidth: 0, cursor: 'pointer' }}>
-                    <input
-                      type="checkbox"
-                      checked={h.tich}
-                      onChange={() => handleToggleThaoTac(h.id)}
-                      style={{ width: 18, height: 18, accentColor: 'var(--blue)' }}
-                    />
+                  <Icon n="x" className="ic sm" />
+                </button>
+              )}
+            </div>
+
+            {/* Hàng đã chọn */}
+            <div className="ttn-m-da-chon-khung" style={{ padding: '10px 16px', background: 'var(--bg)', borderBottom: '1px solid var(--line)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8, fontSize: 13, fontWeight: 600 }}>
+                <span>Đã chọn ({chonThaoTacIds.length}/{TOI_DA_THAO_TAC})</span>
+                {chonThaoTacIds.length >= TOI_DA_THAO_TAC && (
+                  <span style={{ color: 'var(--orange-d)', fontSize: 11.5 }}>Tối đa {TOI_DA_THAO_TAC} thao tác</span>
+                )}
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6, maxHeight: 150, overflowY: 'auto' }}>
+                {chonThaoTacItems.map((item, idx) => (
+                  <div
+                    key={item.id}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: '6px 10px',
+                      background: '#fff',
+                      borderRadius: 8,
+                      border: '1px solid var(--line-2)',
+                    }}
+                  >
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
-                      <Icon n={h.icon} className="ic sm" />
-                      <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ink)' }}>{h.ten}</span>
-                      {h.khoa && h.ma && <Pk g={minGoi(h.ma)} o />}
+                      <ONen n={item.icon} kieu="nhat" co="sm" />
+                      <span style={{ fontSize: 13, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {item.ten}
+                      </span>
                     </div>
-                  </label>
-                  <div style={{ display: 'flex', gap: 4, flex: 'none' }}>
-                    <button
-                      type="button"
-                      className="ttn-btn-mui-ten"
-                      title="Lên trên"
-                      aria-label={`Chuyển ${h.ten} lên trên`}
-                      disabled={i === 0}
-                      onClick={() => handleLenThaoTac(i)}
-                    >
-                      ▲
-                    </button>
-                    <button
-                      type="button"
-                      className="ttn-btn-mui-ten"
-                      title="Xuống dưới"
-                      aria-label={`Chuyển ${h.ten} xuống dưới`}
-                      disabled={i === hangsThaoTac.length - 1}
-                      onClick={() => handleXuongThaoTac(i)}
-                    >
-                      ▼
-                    </button>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 4, flex: 'none' }}>
+                      <button
+                        type="button"
+                        className="ttn-btn-mui-ten"
+                        title="Lên trên"
+                        disabled={idx === 0}
+                        onClick={() => handleLenThaoTac(idx)}
+                      >
+                        ▲
+                      </button>
+                      <button
+                        type="button"
+                        className="ttn-btn-mui-ten"
+                        title="Xuống dưới"
+                        disabled={idx === chonThaoTacItems.length - 1}
+                        onClick={() => handleXuongThaoTac(idx)}
+                      >
+                        ▼
+                      </button>
+                      <button
+                        type="button"
+                        className="ttn-btn-mui-ten"
+                        style={{ color: 'var(--red)' }}
+                        title={`Bỏ ${item.ten}`}
+                        onClick={() => handleBoChonThaoTac(item.id)}
+                      >
+                        ✕
+                      </button>
+                    </div>
                   </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Danh sách ứng viên gom phân hệ */}
+            <div className="m-tam-ds" style={{ flex: 1, overflowY: 'auto', padding: '8px 16px' }}>
+              {mucThaoTac.length === 0 && (
+                <div className="m-tam-trong" style={{ padding: 24, textAlign: 'center', color: 'var(--muted)' }}>
+                  Không tìm thấy thao tác nào
+                </div>
+              )}
+              {mucThaoTac.map(g => (
+                <div key={g.ten} style={{ marginBottom: 12 }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: 0.5, margin: '10px 0 4px' }}>
+                    {g.ten}
+                  </div>
+                  {g.ds.map(x => {
+                    const isChon = chonThaoTacIds.includes(x.id)
+                    const atLimit = chonThaoTacIds.length >= TOI_DA_THAO_TAC && !isChon
+                    return (
+                      <div
+                        key={x.id}
+                        className="m-tam-dong"
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          gap: 8,
+                          padding: '8px 0',
+                          borderBottom: '1px solid var(--line-2)',
+                          opacity: atLimit ? 0.5 : 1,
+                        }}
+                      >
+                        <label
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 10,
+                            flex: 1,
+                            minWidth: 0,
+                            cursor: x.khoa ? 'not-allowed' : 'pointer',
+                          }}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={isChon}
+                            disabled={x.khoa || atLimit}
+                            onChange={() => !x.khoa && handleToggleThaoTac(x.id)}
+                            style={{ width: 18, height: 18, accentColor: 'var(--blue)' }}
+                          />
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+                            <ONen n={x.icon} kieu="nhat" co="sm" />
+                            <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+                              <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ink)' }}>{x.ten}</span>
+                              <span style={{ fontSize: 11.5, color: 'var(--muted)' }}>{x.tenMod}</span>
+                            </div>
+                            {x.khoa && x.ma && <Pk g={minGoi(x.ma)} o />}
+                          </div>
+                        </label>
+                      </div>
+                    )
+                  })}
                 </div>
               ))}
             </div>
-            <div className="m-tam-day">
+
+            <div className="m-tam-day ttn-m-day">
               <button
                 type="button"
-                className="m-tam-btn-huy"
-                onClick={() => setMoTuyChinhThaoTac(false)}
+                className="btn sm ghost ttn-m-btn-khoiphuc"
+                onClick={handleKhoiPhucThaoTac}
               >
-                Huỷ
+                Khôi phục
               </button>
-              <button
-                type="button"
-                className="m-tam-btn-apdung"
-                onClick={handleLuuThaoTac}
-              >
-                Lưu
-              </button>
+              <div className="ttn-m-day-phai">
+                <button
+                  type="button"
+                  className="m-tam-btn-huy"
+                  onClick={() => setMoTuyChinhThaoTac(false)}
+                >
+                  Huỷ
+                </button>
+                <button
+                  type="button"
+                  className="m-tam-btn-apdung"
+                  onClick={handleLuuThaoTac}
+                >
+                  Lưu
+                </button>
+              </div>
             </div>
           </div>
         </div>

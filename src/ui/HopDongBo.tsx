@@ -393,6 +393,7 @@ export function HopDongBo({
               <label className="hdb-chan-trai">
                 <input
                   type="checkbox"
+                  className="bat-tat"
                   checked={lamLai}
                   disabled={dangChay}
                   onChange={e => setLamLai(e.target.checked)}
@@ -402,6 +403,7 @@ export function HopDongBo({
               <label className="hdb-chan-trai">
                 <input
                   type="checkbox"
+                  className="bat-tat"
                   checked={tichPhuVal}
                   disabled={dangChay}
                   onChange={e => setTichPhuVal(e.target.checked)}
@@ -413,6 +415,7 @@ export function HopDongBo({
             <label className="hdb-chan-trai">
               <input
                 type="checkbox"
+                className="bat-tat"
                 checked={lamLai}
                 disabled={dangChay}
                 onChange={e => setLamLai(e.target.checked)}

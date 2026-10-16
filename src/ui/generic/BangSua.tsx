@@ -617,7 +617,7 @@ export function HopCotPhieu({ ds, dsDau = [], dsChan = [], an, macDinh = [], onD
           {dsK.map(([k, t]) => (
             <label key={k} className="pn-tich pn-dong-cot">
               <span className="grow">{t}</span>
-              <input type="checkbox" checked={!an.includes(k)} onChange={e => onDoi(e.target.checked ? an.filter(x => x !== k) : [...an, k])} />
+              <input type="checkbox" className="bat-tat" checked={!an.includes(k)} onChange={e => onDoi(e.target.checked ? an.filter(x => x !== k) : [...an, k])} />
             </label>
           ))}
           {ghiChu && <p className="muted pn-chu-nho pn-ghi-chu">{ghiChu}</p>}
