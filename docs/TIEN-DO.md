@@ -48,6 +48,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | T249 | Báo cáo bán hàng (`src/modules/ban-hang/bao-cao.ts`, hàm `dongBan`) còn đọc chứng từ Xuất bán POS theo kênh (`theoKenh`), số chứng từ trên báo cáo khác số hoá đơn ở danh sách từ T247; đổi sang `theoDon` để bấm số mở đúng phiếu | | Chờ | Phát hiện khi làm T247 ngày 15/10/2026. Tổng doanh thu không đổi |
 | T286 | Danh sách mua hàng, bán hàng (cả Xuất bán POS) máy tính: cột Diễn giải hiện tại đổi tên Ghi chú; thêm cột Diễn giải liệt kê tên hàng hoá trong phiếu, dài thì vài tên rồi "..." | PhuongXT | Đang làm | Sửa `VoucherScreen.tsx`, `ChungTuBanHang.tsx` |
 | T288 | Phân hệ Báo cáo máy tính: bấm mở báo cáo ở Trung tâm báo cáo thì bật popup điều kiện lọc, bấm Xem báo cáo mới tính và hiện báo cáo | PhuongXT | Đang làm | Sửa `ReportScreen.tsx`, `TrungTam.tsx`, `app.css` (mục cuối T288) |
+| T289 | Báo cáo máy tính: đang gom nhóm thì thanh công cụ có nút xem Tổng hợp (mỗi nhóm một dòng, cột gom nhóm và cột số đã cộng) hoặc Chi tiết (như hiện tại) | PhuongXT | Đang làm | Sửa `ReportScreen.tsx`, `tuyChinhBC.ts`, `app.css` (mục cuối T289) |
 
 ## Đã xong
 
