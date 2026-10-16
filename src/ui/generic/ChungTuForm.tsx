@@ -46,7 +46,9 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   const [sp, setSp] = useSearchParams()
 
   const moi = !row
-  const [dangSua, setDangSua] = useState(moi || sp.get('sua') === '1')
+  // Phiếu thu, chi đồng bộ từ FABi chỉ xem: sửa, xoá ở FABi (T283)
+  const tuFabi = mod.key === 'tien' && row?.nguon === 'FABi'
+  const [dangSua, setDangSua] = useState(moi || (sp.get('sua') === '1' && !tuFabi))
   const [tab, setTab] = useState('ct')
   const [hienTk, setHienTk] = useState(false)
   const [modalPhim, setModalPhim] = useState(false)
@@ -60,6 +62,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   const bo = boO(nhom, cfg)
   const laKk = Boolean(cfg.kiemKe)   // phiếu kiểm kê: bỏ đối tượng, kho ở đầu phiếu, bảng tồn hệ thống, tồn thực tế (T124)
   const laDc = Boolean(cfg.dieuChinh)   // phiếu xuất, nhập điều chỉnh sinh từ kiểm kê (T126)
+  const khoaSua = laDc || tuFabi   // không sửa, không xoá (T129, T283)
   // Phiếu sản xuất theo iPOS Inventory (T152): đầu phiếu gọn như kiểm kê, bảng dòng riêng; phiếu nhập bắt buộc tham chiếu phiếu xuất
   const sx = cfg.sanXuat
   const laSx = Boolean(sx)
@@ -454,7 +457,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
         else luu(false)
       } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'e') {
         e.preventDefault()
-        if (!laDc) setDangSua(true)   // phiếu điều chỉnh chỉ xem (T129)
+        if (!khoaSua) setDangSua(true)   // phiếu điều chỉnh, phiếu FABi chỉ xem (T129, T283)
       } else if (e.key === 'Escape' && !modalPhim) {
         // FormToanMan tự xử lý Esc đóng form
       }
@@ -733,7 +736,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               <MenuItem icon="doc" onClick={() => toast('Đã xuất mẫu Excel')}>
                 Xuất Excel
               </MenuItem>
-              {row && !laDc && (
+              {row && !khoaSua && (
                 <MenuItem icon="trash" danger onClick={() => {
                   // Cùng luật xoá với danh sách (QD32): kỳ đã khoá sổ không xoá, gói có ghi sổ chỉ xoá phiếu chưa ghi
                   if (daKhoaSo(row.ngay)) toast(`${row.so} thuộc kỳ đã khoá sổ, không xoá được`)
@@ -770,7 +773,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
                 {row.tt === 'ghi' ? 'Bỏ ghi sổ' : 'Ghi sổ'}
               </button>
             )}
-            {!laDc && (
+            {!khoaSua && (
               <button
                 type="button"
                 className="btn sm pri"

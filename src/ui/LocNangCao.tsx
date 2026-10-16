@@ -586,12 +586,14 @@ export function NutHangLoat({
   onOpenChange,
   onIn,
   khongXoa = false,
+  khoaXoa,
 }: {
   selectedRows: Row[]
   ghi: boolean
   onBoChon: () => void
   onXoa?: (ids: string[]) => void
   khongXoa?: boolean   // phiếu chỉ xem, không có mục xoá (T129)
+  khoaXoa?: { la: (r: Row) => boolean; ly: string }   // từng phiếu không xoá được, vd phiếu thu, chi từ FABi (T283)
   open?: boolean
   onOpenChange?: (open: boolean) => void
   onIn?: () => void       // mở khung xem trước bản in các phiếu đang chọn; không truyền thì chỉ báo
@@ -627,7 +629,8 @@ export function NutHangLoat({
   const nKhoa = selectedRows.filter(r => daKhoaSo(r.ngay)).length
   // Phiếu mua, bán còn phiếu thu, chi sinh kèm thì xoá phiếu thu, chi trước (T85)
   const nThamChieu = selectedRows.filter(r => ttThamChieu(r)).length
-  const dsXoa = selectedRows.filter(r => !daKhoaSo(r.ngay) && (!ghi || r.tt === 'nhap') && !ttThamChieu(r))
+  const nKhoaRieng = khoaXoa ? selectedRows.filter(khoaXoa.la).length : 0
+  const dsXoa = selectedRows.filter(r => !daKhoaSo(r.ngay) && (!ghi || r.tt === 'nhap') && !ttThamChieu(r) && !khoaXoa?.la(r))
   const nXoa = dsXoa.length
   const tenXoa = `Xoá ${nXoa} phiếu${ghi ? ' chưa ghi' : ''}`
 
@@ -681,12 +684,17 @@ export function NutHangLoat({
             {tenXoa}
           </MenuItem>
         )}
-        {!khongXoa && nXoa === 0 && nKhoa === 0 && nThamChieu > 0 && (
+        {!khongXoa && nXoa === 0 && nKhoaRieng > 0 && (
+          <MenuItem icon="trash" lock onClick={() => lam(`Phiếu ${khoaXoa!.ly} không xoá được`)}>
+            Không xoá: phiếu {khoaXoa!.ly}
+          </MenuItem>
+        )}
+        {!khongXoa && nXoa === 0 && nKhoaRieng === 0 && nKhoa === 0 && nThamChieu > 0 && (
           <MenuItem icon="trash" lock onClick={() => lam('Phiếu có phiếu thu, chi tham chiếu: xoá phiếu thu, chi trước')}>
             Không xoá: còn phiếu thu, chi tham chiếu
           </MenuItem>
         )}
-        {!khongXoa && nXoa === 0 && nKhoa > 0 && (
+        {!khongXoa && nXoa === 0 && nKhoaRieng === 0 && nKhoa > 0 && (
           <MenuItem icon="trash" lock onClick={() => lam(`Phiếu thuộc kỳ đã khoá sổ, không xoá được`)}>
             Không xoá: kỳ đã khoá sổ
           </MenuItem>
@@ -707,7 +715,7 @@ export function NutHangLoat({
             lam(`Đã xoá ${nXoa} phiếu`)
           }}
         >
-          Phiếu đã xoá không lấy lại được.{ghi && ' Phiếu đã ghi sổ không xoá được.'}{nKhoa > 0 && ` ${nKhoa} phiếu thuộc kỳ đã khoá sổ, giữ nguyên.`}{nThamChieu > 0 && ` ${nThamChieu} phiếu còn phiếu thu, chi tham chiếu, giữ nguyên; xoá phiếu thu, chi trước.`}
+          Phiếu đã xoá không lấy lại được.{ghi && ' Phiếu đã ghi sổ không xoá được.'}{nKhoa > 0 && ` ${nKhoa} phiếu thuộc kỳ đã khoá sổ, giữ nguyên.`}{nThamChieu > 0 && ` ${nThamChieu} phiếu còn phiếu thu, chi tham chiếu, giữ nguyên; xoá phiếu thu, chi trước.`}{nKhoaRieng > 0 && ` ${nKhoaRieng} phiếu ${khoaXoa!.ly}, giữ nguyên.`}
         </HopXacNhan>
       )}
     </>

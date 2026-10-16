@@ -200,8 +200,10 @@ const COT_CHON = new Set(['tenLoai', 'nguon', 'ttTien', 'ttHd', 'kho', 'lyDo'])
 export { ChungTuForm, VoucherDetail, HachToan, LichSu }
 
 /** Giá trị các ô lọc ngoài và trong Bộ lọc nâng cao. Chuỗi rỗng là tất cả */
-export interface GtLoc { thoiGian: KhoangNgay; tim: string; doiTuong: string; nguon: string; loai: string; ttTien: string; ttHd: string; kho: string; hang: string }
-export const locMacDinh = (): GtLoc => ({ thoiGian: thangNay(), tim: '', doiTuong: '', nguon: '', loai: '', ttTien: '', ttHd: '', kho: '', hang: '' })
+export interface GtLoc { thoiGian: KhoangNgay; tim: string; doiTuong: string; nguon: string; loai: string; thuChi: string; ttTien: string; ttHd: string; kho: string; hang: string }
+export const locMacDinh = (): GtLoc => ({ thoiGian: thangNay(), tim: '', doiTuong: '', nguon: '', loai: '', thuChi: '', ttTien: '', ttHd: '', kho: '', hang: '' })
+// Lọc Thu, chi ở danh sách Thu, chi tiền (T283): gom loại phiếu thành khoản thu, khoản chi, chuyển quỹ
+const THU_CHI: Record<string, [string, string[]]> = { thu: ['Khoản thu', ['thu', 'bc']], chi: ['Khoản chi', ['chi', 'unc']], cq: ['Chuyển quỹ', ['cq']] }
 
 const MAC_DINH: VoucherCfg ={ prefix: 'CT', doiTuong: 'none', dienGiai: ['Chứng từ'], tien: [1_000_000, 20_000_000] }
 
@@ -331,6 +333,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
       {ds.map(([v, t]) => <option key={v} value={v}>{t}</option>)}
     </Select>
   )
+  const coThuChi = mod.key === 'tien' && Boolean(cfg.loai?.some(x => x.k === 'thu' || x.k === 'bc'))
   const oLoc: OLocDef[] = [
     { k: 'thoiGian', ten: 'Thời gian', o: <ChonKhoangNgay align="end" value={nhap.thoiGian} onChange={k => dat('thoiGian', k)} /> },
     {
@@ -341,6 +344,8 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
     { k: 'nguon', ten: 'Nguồn', o: chonO('nguon', 'Nguồn', dsNguon.map(v => [v, (NGUON[v] ?? NGUON.tay)[1]])) },
     // Kiểm kê, điều chỉnh kho lọc theo kho của phiếu (T130)
     ...((cfg.kiemKe || cfg.dieuChinh) && dsKhoLoc.length ? [{ k: 'kho', ten: 'Kho', o: chonO('kho', 'Kho', dsKhoLoc.map(v => [v, v])) }] : []),
+    ...(coThuChi ? [{ k: 'thuChi', ten: 'Thu, chi', o: chonO('thuChi', 'Thu, chi', Object.entries(THU_CHI)
+      .filter(([, [, ds]]) => ds.some(l => cfg.loai!.some(x => x.k === l))).map(([k, [ten]]) => [k, ten])) }] : []),
     ...(cfg.loai && !cfg.dieuChinh ? [{ k: 'loai', ten: 'Loại phiếu', o: chonO('loai', 'Loại phiếu', cfg.loai.map(v => [v.k, v.ten])) }] : []),
     ...(muaBan ? [
       { k: 'ttTien', ten: nhom === 'mua' ? 'TT thanh toán' : 'TT thu tiền', o: chonO('ttTien', 'Trạng thái thanh toán', Object.entries(TT_TIEN[nhom as 'mua' | 'ban']).map(([v, x]) => [v, x[1]])) },
@@ -350,7 +355,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
       ...(dsHangLoc.length ? [{ k: 'hang', ten: 'Hàng hoá', o: chonO('hang', 'Hàng hoá', dsHangLoc) }] : []),
     ] : []),
   ]
-  const [cauHinhLoc, datCauHinhLoc] = useCauHinhLoc(path, oLoc.map(o => o.k), ['thoiGian', 'tim', 'doiTuong', ...(cfg.kiemKe || cfg.dieuChinh ? ['kho'] : [])])
+  const [cauHinhLoc, datCauHinhLoc] = useCauHinhLoc(path, oLoc.map(o => o.k), ['thoiGian', 'tim', ...(coThuChi ? ['thuChi'] : []), 'doiTuong', ...(cfg.kiemKe || cfg.dieuChinh ? ['kho'] : [])])
 
   // Lọc theo các ô đã áp dụng, chi nhánh trên thanh trên, hàng lọc từng cột; chip trạng thái lọc sau cùng để đếm số trên chip
   const ap = loc0.ap
@@ -361,6 +366,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
     if (ap.doiTuong && r.doiTuong !== ap.doiTuong) return false
     if (ap.nguon && String(r.nguon ?? 'tay') !== ap.nguon) return false
     if (ap.loai && r.loai !== ap.loai) return false
+    if (ap.thuChi && !THU_CHI[ap.thuChi]?.[1].includes(String(r.loai))) return false
     if (muaBan && (ap.ttTien || ap.ttHd)) {
       const nv = ttNghiepVu(r)
       if (ap.ttTien && ttTienTheoTra(r) !== ap.ttTien) return false
@@ -617,6 +623,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
                 onOpenChange={setMoHangLoat}
                 onIn={() => setPhieuIn(selectedRows.map(phieuCua))}
                 khongXoa={cfg.dieuChinh}   // phiếu điều chỉnh chỉ xem (T129)
+                khoaXoa={mod.key === 'tien' ? { la: r => r.nguon === 'FABi', ly: 'đồng bộ từ FABi' } : undefined}   // xoá trên FABi (T283)
               />
               {!cfg.khongThem && <NutThemMoiSplit
                 toMoi={cfg.loai ? `${path}/moi?loai=${cfg.loai[0].k}` : `${path}/moi`}
