@@ -4,13 +4,14 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T284.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T287.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T287 | Danh sách thẻ chi phí: dải cảnh báo số khoản chi phí chờ phân bổ chưa tạo thẻ tới hết kỳ số liệu, nút Ghi tăng ngay; nút Ghi tăng có số đếm | dinhlanphuongipacc | Đang làm | Sửa `ccdc/GhiTangHangLoat.tsx`, `ccdc/index.ts`, `CatalogScreen.tsx` (ô cảnh báo trên bảng), `CongCuDs.tsx` (số trên nút), `types.ts`, `app.css` (mục cuối T287) |
 | T283 | Danh sách Thu, chi tiền máy tính: thêm bộ lọc Thu, chi (Khoản thu, Khoản chi); phiếu thu, chi nguồn FABi không sửa, không xoá (form, hàng loạt) | PhuongXT | Đang làm | Sửa `VoucherScreen.tsx`, `ChungTuForm.tsx`, `LocNangCao.tsx` |
 | T285 | Danh mục chi nhánh máy tính: thêm cột Công ty (tên, MST của đơn vị đang mở) ở danh sách và hộp chi tiết mới (bấm tên chi nhánh) | PhuongXT | Đang làm | Sửa `DanhMucChiNhanh.tsx`, `app.css` (mục cuối T284) |
 | T281 | Điện thoại đợt A, mọi gói: bỏ màn quy trình, vào thẳng danh sách; danh sách chứng từ kiểu thẻ gọn; nút quay lại to; nút lọc ở báo cáo; làm lại phân hệ Chi phí phân bổ | Trum | Đang làm | Giao Anti. Sửa `src/ui/mobile/*`, `app.css` (mục cuối T281), `tools/kiem_tra.py` (bài kiểm quy trình điện thoại) |
