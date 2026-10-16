@@ -7,7 +7,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { LenThanhTab } from '../../app/ModuleTabs'
 import { CHI_NHANH } from '../../data/mock'
 import { timMan } from '../../app/registry'
-import { Icon } from '../../ui/Icon'
+import { Icon, ONen } from '../../ui/Icon'
 import { Select } from '../../ui/Dropdown'
 import { moneyD, pct, short } from '../../ui/format'
 import { chungTu } from '../../ui/generic/gen'
@@ -22,7 +22,6 @@ import { LaiLoChart } from '../../ui/Charts'
 import { moTaCach, nvlKy } from './chi-phi-nvl'
 import { useMoTuTrangChu } from '../../app/tuTrangChu'
 import { useDongEsc } from '../../ui/LocNangCao'
-import { useThaoTacNhanh } from '../../app/thaoTacNhanh'
 import { ModalQuy } from './quyThuChi'
 import {
   layDuLieuCanTheoDoi,
@@ -158,6 +157,15 @@ export function HopLaiLo13({
   )
 }
 
+/** Thao tác nhanh đầu trang chủ Free (T290): cố định 5 nút, không theo danh sách tuỳ chỉnh ở thanh bên */
+const TT_NHANH_FREE = [
+  { ten: 'Thu tiền', icon: 'cashin', to: '/app/tien/2-1-1/moi?loai=thu' },
+  { ten: 'Chi tiền', icon: 'cashout', to: '/app/tien/2-1-1/moi?loai=chi' },
+  { ten: 'Mua hàng', icon: 'truck', to: '/app/mua-hang/4-1-1/moi' },
+  { ten: 'Kiểm kê', icon: 'clipboard', to: '/app/kho/5-1-10/moi' },
+  { ten: 'Kê khai thuế', icon: 'percent', to: '/app/thue/to-khai' },
+]
+
 /** Trang chủ Free theo ba bài toán mẫu E (T272, T274): 2 tab Tổng quan | Cần theo dõi, lọc chi nhánh, 6 biểu đồ */
 export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQuanSoLieu; thang: number; selCns: string[]; chonKy?: ReactNode }) {
   const { s, set } = useSession()
@@ -206,9 +214,7 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
   const chiLon = [...dHien.coCauCp].sort((a, b) => b.v - a.v)[0]
   const [modalQuy, setModalQuy] = useState<string | null>(null)
 
-  // 3. Kho & Thao tác nhanh tuỳ chỉnh dùng chung (T266, T272)
-  const { ds: thaoTacDs } = useThaoTacNhanh(s)
-  const thaoTac4 = thaoTacDs.slice(0, 4)
+  // 3. Kho
 
   const kho = useMemo(() => {
     const mua = chungTu(PHIEU_MUA, '4.1.1').filter(r => thang.includes(Number(r.thang)) && tenCn.has(String(r.cn)))
@@ -260,6 +266,12 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
             {ctdData.soCanhBao > 0 && <span className="bbt-tab-badge">{ctdData.soCanhBao}</span>}
           </button>
         </div>
+        {/* Thao tác nhanh cố định trên hàng tab, cả 2 tab (T290) */}
+        <nav className="bbt-tt-nhanh" aria-label="Thao tác nhanh">
+          {TT_NHANH_FREE.map(m => (
+            <Link key={m.ten} to={m.to} className="bbt-tt-nhanh-nut"><ONen n={m.icon} kieu="nhat" co="sm" />{m.ten}</Link>
+          ))}
+        </nav>
       </div>
 
       {tabHien === 'theo-doi' ? (
@@ -465,19 +477,6 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
             </div>
             <Icon n="chevr" className="ic sm muted" />
           </Link>
-
-          <div className="bbt-e-tt-nhanh-tieu">Thao tác nhanh</div>
-          <div className="bbt-e-tt-nhanh-luoi">
-            {thaoTac4.map(m => (
-              <Link
-                key={m.id}
-                to={m.to}
-                className="t qy bbt-e-tt-nut"
-              >
-                {m.ten}
-              </Link>
-            ))}
-          </div>
 
           <Link
             to="/app/bao-cao/5-2-15"
