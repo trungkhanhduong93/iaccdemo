@@ -708,6 +708,7 @@ Lý do: Trum chốt việc T280 ngày 16/10/2026.
 - Phiếu nhập liệu điện thoại, mọi gói: một màn, bấm "Lưu lại" là xong, không còn 5 bước Tiếp tục. Phiếu tiền có ô Số tiền lớn ở đầu. Phiếu có dòng hàng hiện danh sách hàng ngay trên màn, nút "+ Thêm hàng" mở tấm chọn hàng.
 - Gói Free không hiện Nợ, Có. Gói khác có khối "Hạch toán" thu gọn ở cuối màn.
 - Phiếu chi lý do Chi phí chờ phân bổ: lưu xong hỏi tạo thẻ, đồng ý thì mở form Ghi tăng điền sẵn, như web.
+- Thẻ trong danh sách chứng từ điện thoại hiện số tiền không dấu `+`, `−`, không màu thu chi. Trum chốt 16/10/2026 khi làm T295: T281 bỏ dấu là cố ý. Màn xem phiếu vẫn giữ số tiền có dấu, có màu.
 
 Lý do: Trum chốt việc T281, T282 ngày 16/10/2026.
 
