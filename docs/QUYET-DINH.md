@@ -705,7 +705,9 @@ Lý do: Trum chốt việc T280 ngày 16/10/2026.
 - Đường dẫn `…/quy-trinh` cũ tự chuyển sang danh sách.
 - Phân hệ không có màn nào chạy trên điện thoại thì tab Nghiệp vụ ẩn đi. Vd Kê khai thuế gói Free chỉ có Danh sách tờ khai.
 - Web vẫn giữ sơ đồ quy trình.
-- Phiếu nhập liệu 1 màn: ghi ở việc T282.
+- Phiếu nhập liệu điện thoại, mọi gói: một màn, bấm "Lưu lại" là xong, không còn 5 bước Tiếp tục. Phiếu tiền có ô Số tiền lớn ở đầu. Phiếu có dòng hàng hiện danh sách hàng ngay trên màn, nút "+ Thêm hàng" mở tấm chọn hàng.
+- Gói Free không hiện Nợ, Có. Gói khác có khối "Hạch toán" thu gọn ở cuối màn.
+- Phiếu chi lý do Chi phí chờ phân bổ: lưu xong hỏi tạo thẻ, đồng ý thì mở form Ghi tăng điền sẵn, như web.
 
 Lý do: Trum chốt việc T281, T282 ngày 16/10/2026.
 

@@ -514,60 +514,51 @@ def kiem_tra_lap_phieu_dot_5():
 
             tran_b1 = pg.evaluate("document.documentElement.scrollWidth > window.innerWidth")
             if tran_b1:
-                loi.append(f'{ten_phieu} ({path_ds}): tràn ngang ở Bước 1')
-
-            nut_tiep_1 = pg.locator('.m-lp-nut-tiep, .m-lp-day button:has-text("Tiếp tục")')
-            if nut_tiep_1.count() == 0:
-                loi.append(f'{ten_phieu} ({path_ds}): thiếu nút Tiếp tục ở Bước 1')
-                continue
-            nut_tiep_1.first.click()
-            pg.wait_for_timeout(250)
+                loi.append(f'{ten_phieu} ({path_ds}): tràn ngang')
 
             if la_tien:
-                nut_them_dong = pg.locator('.m-lp-btn-them-dong, button:has-text("Thêm dòng")')
-                if nut_them_dong.count() > 0:
-                    nut_them_dong.first.click()
-                    pg.wait_for_timeout(150)
-
-                inps_tien = pg.locator('.m-lp-sua-inp.num')
-                if inps_tien.count() >= 2:
-                    inps_tien.nth(0).fill('600.000')
-                    inps_tien.nth(1).fill('400.000')
-                elif inps_tien.count() >= 1:
-                    inps_tien.nth(0).fill('600.000')
-
-                nut_tiep_3 = pg.locator('.m-lp-day button:has-text("Tiếp tục")')
-                nut_tiep_3.first.click()
-                pg.wait_for_timeout(250)
+                inp_tien = pg.locator('.m-lp-tien-inp')
+                if inp_tien.count() == 0:
+                    loi.append(f'{ten_phieu} ({path_ds}): thiếu ô nhập số tiền .m-lp-tien-inp')
+                    continue
+                inp_tien.fill('1000000')
+                pg.wait_for_timeout(100)
             else:
+                nut_them_hang = pg.locator('.m-lp-btn-them-hang, .m-lp-btn-them-nhanh, button:has-text("Thêm hàng"), .m-lp-hang-trong-hop')
+                if nut_them_hang.count() == 0:
+                    loi.append(f'{ten_phieu} ({path_ds}): thiếu nút thêm hàng')
+                    continue
+                nut_them_hang.first.click()
+                pg.wait_for_timeout(200)
+
                 the_hang = pg.locator('.m-lp-the-hang')
                 if the_hang.count() < 2:
-                    loi.append(f'{ten_phieu} ({path_ds}): không đủ 2 thẻ hàng ở Bước 2')
+                    loi.append(f'{ten_phieu} ({path_ds}): không đủ 2 thẻ hàng ở sheet chọn hàng')
                     continue
                 the_hang.nth(0).click()
                 pg.wait_for_timeout(100)
                 the_hang.nth(1).click()
                 pg.wait_for_timeout(100)
 
-                nut_ds_chon = pg.locator('.m-lp-day button:has-text("Danh sách đã chọn")')
-                nut_ds_chon.first.click()
-                pg.wait_for_timeout(250)
+                nut_xong = pg.locator('.m-tam-btn-apdung:has-text("Xong")')
+                if nut_xong.count() > 0:
+                    nut_xong.click()
+                pg.wait_for_timeout(200)
 
-                inps_num = pg.locator('.m-lp-sua-hang .m-lp-sua-inp.num')
-                if inps_num.count() >= 2:
-                    inps_num.nth(0).fill('2')
-                if inps_num.count() >= 4:
-                    inps_num.nth(2).fill('3')
-
-                nut_tiep_3 = pg.locator('.m-lp-day button:has-text("Tiếp tục")')
-                nut_tiep_3.first.click()
-                pg.wait_for_timeout(250)
+                dong_hang = pg.locator('.m-lp-dong-hang')
+                if dong_hang.count() >= 2:
+                    sl_0 = dong_hang.nth(0).locator('.m-lp-dong-sl-inp')
+                    if sl_0.count() > 0:
+                        sl_0.fill('2')
+                    sl_1 = dong_hang.nth(1).locator('.m-lp-dong-sl-inp')
+                    if sl_1.count() > 0:
+                        sl_1.fill('3')
 
             tran_b4 = pg.evaluate("document.documentElement.scrollWidth > window.innerWidth")
             if tran_b4:
-                loi.append(f'{ten_phieu} ({path_ds}): tràn ngang ở Bước 4')
+                loi.append(f'{ten_phieu} ({path_ds}): tràn ngang trên màn hình lập phiếu')
 
-            nut_luu = pg.locator('.m-lp-day button.m-lp-nut-chinh')
+            nut_luu = pg.locator('.m-lp-day-luu button.m-lp-nut-luu, .m-lp-day button.m-lp-nut-chinh, button:has-text("Lưu lại")')
             if nut_luu.count() == 0:
                 loi.append(f'{ten_phieu} ({path_ds}): không tìm thấy nút Lưu ở Bước 4')
                 continue
@@ -605,7 +596,7 @@ def kiem_tra_lap_phieu_dot_5():
             pg.goto(f'{URL}?goi=PL&p={abs(hash(path_ds))}#{path_ds}')
             pg.wait_for_timeout(300)
 
-            so_the_dau = pg.locator('.m-ds-ngay-dong .m-ds-ngay-so').first.inner_text().strip() if pg.locator('.m-ds-ngay-dong .m-ds-ngay-so').count() > 0 else ''
+            so_the_dau = pg.locator('.m-the-ct .m-the-ct-so, .m-ds-ngay-dong .m-ds-ngay-so').first.inner_text().strip() if pg.locator('.m-the-ct, .m-ds-ngay-dong').count() > 0 else ''
             if so_phieu and so_phieu not in so_the_dau:
                 loi.append(f'{ten_phieu}: số phiếu {so_phieu} không nằm ở thẻ đầu danh sách điện thoại (thấy {so_the_dau})')
 
@@ -635,25 +626,18 @@ def kiem_tra_lap_phieu_dot_5():
             path_ds = f'/app/{slug}'
             pg.goto(f'{URL}?goi=PL&sua=1#{path_ds}')
             pg.wait_for_timeout(800)
-            pg.locator('.m-ds-ngay-dong').first.click()
+            pg.locator('.m-the-ct, .m-ds-ngay-dong').first.click()
             pg.wait_for_timeout(600)
             truoc = doc_xem()
             pg.locator('.m-xp-nut-menu').click()
             pg.wait_for_timeout(300)
             pg.get_by_text('Sửa chứng từ', exact=True).last.click()
             pg.wait_for_timeout(600)
-            for _ in range(5):
-                if pg.locator('.m-lp-day button:text-is("Lưu")').count():
-                    break
-                nut = pg.locator('.m-lp-day button').last
-                if not nut.is_enabled():
-                    break
-                nut.click()
-                pg.wait_for_timeout(400)
-            if not pg.locator('.m-lp-day button:text-is("Lưu")').count():
-                loi.append(f'Sửa {ten_phieu}: không tới được nút Lưu (dòng phiếu trống?)')
+            nut_luu = pg.locator('.m-lp-day button.m-lp-nut-luu, .m-lp-day button:has-text("Lưu")')
+            if nut_luu.count() == 0:
+                loi.append(f'Sửa {ten_phieu}: không tìm thấy nút Lưu')
                 continue
-            pg.locator('.m-lp-day button:text-is("Lưu")').click()
+            nut_luu.first.click()
             pg.wait_for_timeout(600)
             sau = doc_xem()
             if sau != truoc:
@@ -1083,57 +1067,38 @@ def kiem_tra_dang_nhap_dot_8():
                         if pg.locator('.m-lp').count() == 0:
                             loi.append('Phiếu chi: không mở form lập phiếu .m-lp')
                         else:
-                            # Bước 1
-                            nut_tiep_1 = pg.locator('.m-lp-nut-tiep, .m-lp-day button:has-text("Tiếp tục")')
-                            if nut_tiep_1.count() == 0:
-                                loi.append('Phiếu chi: thiếu nút Tiếp tục ở Bước 1')
+                            # Màn hình một màn: điền số tiền, kiểm không tràn ngang, lưu
+                            inp_tien = pg.locator('.m-lp-tien-inp')
+                            if inp_tien.count() == 0:
+                                loi.append('Phiếu chi: thiếu ô nhập số tiền .m-lp-tien-inp')
                             else:
-                                kiem_man('Lập phiếu chi Bước 1', nut_tiep_1)
+                                inp_tien.fill('600.000')
+                                pg.wait_for_timeout(150)
+
+                            nut_luu = pg.locator('.m-lp-day button.m-lp-nut-luu, .m-lp-day button.m-lp-nut-chinh, button:has-text("Lưu lại")')
+                            if nut_luu.count() == 0:
+                                loi.append('Phiếu chi: không tìm thấy nút Lưu ở Bước 4')
+                            else:
+                                kiem_man('Lập phiếu chi một màn', nut_luu)
                                 pg.screenshot(path=str(SHOTS / 'm-08-lap-phieu-b1.png'))
-                                nut_tiep_1.first.click()
-                                pg.wait_for_timeout(250)
+                                nut_luu.first.click()
+                                pg.wait_for_timeout(400)
 
-                                # Bước 2: Thêm dòng và điền số tiền
-                                nut_them_dong = pg.locator('.m-lp-btn-them-dong, button:has-text("Thêm dòng")')
-                                if nut_them_dong.count() > 0:
-                                    nut_them_dong.first.click()
-                                    pg.wait_for_timeout(150)
-
-                                inps_tien = pg.locator('.m-lp-sua-inp.num')
-                                if inps_tien.count() >= 1:
-                                    inps_tien.nth(0).fill('600.000')
-
-                                nut_tiep_2 = pg.locator('.m-lp-day button:has-text("Tiếp tục")')
-                                kiem_man('Lập phiếu chi Bước 2', nut_tiep_2)
-                                pg.screenshot(path=str(SHOTS / 'm-08-lap-phieu-b2.png'))
-                                nut_tiep_2.first.click()
-                                pg.wait_for_timeout(250)
-
-                                # Bước 4: Lưu phiếu
-                                nut_luu = pg.locator('.m-lp-day button.m-lp-nut-chinh')
-                                if nut_luu.count() == 0:
-                                    loi.append('Phiếu chi: không tìm thấy nút Lưu ở Bước 4')
+                                thanh_cong = pg.locator('.m-lp-thanh-cong-tieu, :has-text("Tạo chứng từ thành công")')
+                                if thanh_cong.count() == 0:
+                                    loi.append('Phiếu chi: không hiện màn hình Tạo chứng từ thành công')
                                 else:
-                                    kiem_man('Lập phiếu chi Bước 4', nut_luu)
-                                    pg.screenshot(path=str(SHOTS / 'm-08-lap-phieu-b4.png'))
-                                    nut_luu.first.click()
-                                    pg.wait_for_timeout(400)
-
-                                    thanh_cong = pg.locator('.m-lp-thanh-cong-tieu, :has-text("Tạo chứng từ thành công")')
-                                    if thanh_cong.count() == 0:
-                                        loi.append('Phiếu chi: không hiện màn hình Tạo chứng từ thành công')
-                                    else:
-                                        mota_txt = pg.locator('.m-lp-thanh-cong-mota').inner_text() if pg.locator('.m-lp-thanh-cong-mota').count() > 0 else ''
-                                        m_so = re.search(r'([A-Z0-9\-\/]+2610\-[0-9]+|[A-Z]+2610\-[0-9]+)', mota_txt)
-                                        so_phieu = m_so.group(1) if m_so else ''
-                                        if not so_phieu:
-                                            m_b = pg.locator('.m-lp-thanh-cong-mota b')
-                                            if m_b.count() > 0:
-                                                so_phieu = m_b.first.inner_text().strip()
-                                        pg.screenshot(path=str(SHOTS / 'm-08-lap-phieu-thanh-cong.png'))
-                                        nut_dong_xem = pg.locator('button:has-text("Xem phiếu"), button:has-text("Đóng")')
-                                        kiem_man('Màn hình hoàn tất lập phiếu', nut_dong_xem)
-                                        print(f'  - Lập phiếu chi thành công {so_phieu}: mọi màn không tràn ngang, nút chính trong khung nhìn')
+                                    mota_txt = pg.locator('.m-lp-thanh-cong-mota').inner_text() if pg.locator('.m-lp-thanh-cong-mota').count() > 0 else ''
+                                    m_so = re.search(r'([A-Z0-9\-\/]+2610\-[0-9]+|[A-Z]+2610\-[0-9]+)', mota_txt)
+                                    so_phieu = m_so.group(1) if m_so else ''
+                                    if not so_phieu:
+                                        m_b = pg.locator('.m-lp-thanh-cong-mota b')
+                                        if m_b.count() > 0:
+                                            so_phieu = m_b.first.inner_text().strip()
+                                    pg.screenshot(path=str(SHOTS / 'm-08-lap-phieu-thanh-cong.png'))
+                                    nut_dong_xem = pg.locator('button:has-text("Xem phiếu"), button:has-text("Đóng")')
+                                    kiem_man('Màn hình hoàn tất lập phiếu', nut_dong_xem)
+                                    print(f'  - Lập phiếu chi thành công {so_phieu}: mọi màn không tràn ngang, nút chính trong khung nhìn')
 
         b.close()
     return loi
@@ -2098,53 +2063,42 @@ def kiem_tra_dot_12_b():
                             dong_khac.nth(1).click()
                             pg.wait_for_timeout(200)
 
-            # Bấm Tiếp tục Bước 1
-            nut_tiep_1 = pg.locator('.m-lp-nut-tiep, .m-lp-day button:has-text("Tiếp tục")')
-            if nut_tiep_1.count() == 0:
-                loi.append(f'{ten}: thiếu nút Tiếp tục ở Bước 1')
-                continue
-            nut_tiep_1.first.click()
-            pg.wait_for_timeout(300)
-            kiem_man(f'{ten} (Bước 2)')
-
-            # Bước 2: Chọn hàng hoá hoặc thành phẩm
+            # Lập phiếu kho một màn: chọn hàng hoặc thành phẩm
             tp_the = pg.locator('.m-lp-tp-the')
-            hang_the = pg.locator('.m-lp-the-hang')
-
             if tp_the.count() > 0:
                 tp_the.first.click()
                 pg.wait_for_timeout(150)
-            elif hang_the.count() > 0:
-                hang_the.first.click()
-                pg.wait_for_timeout(150)
+                inps_sl = pg.locator('.m-lp-tp-sl .m-lp-sua-inp.num')
+                if inps_sl.count() > 0:
+                    inps_sl.first.fill('15')
+                    pg.wait_for_timeout(150)
             else:
-                loi.append(f'{ten}: không có thẻ hàng hoá hoặc thành phẩm ở Bước 2')
-                continue
+                nut_them_hang = pg.locator('.m-lp-btn-them-nhanh, .m-lp-btn-them-hang, button:has-text("Thêm hàng"), .m-lp-hang-trong-hop')
+                if nut_them_hang.count() > 0:
+                    nut_them_hang.first.click()
+                    pg.wait_for_timeout(250)
+                    hang_the = pg.locator('.m-lp-the-hang')
+                    if hang_the.count() == 0:
+                        loi.append(f'{ten}: tấm chọn hàng không có thẻ hàng hoá')
+                        continue
+                    hang_the.first.click()
+                    pg.wait_for_timeout(150)
+                    nut_xong = pg.locator('.m-tam-btn-apdung:has-text("Xong")')
+                    if nut_xong.count() > 0:
+                        nut_xong.click()
+                        pg.wait_for_timeout(200)
+                else:
+                    loi.append(f'{ten}: không có thẻ thành phẩm, cũng không có nút Thêm hàng')
+                    continue
 
-            nut_ds_chon = pg.locator('.m-lp-day button:has-text("Danh sách đã chọn")')
-            if nut_ds_chon.count() == 0:
-                loi.append(f'{ten}: thiếu nút "Danh sách đã chọn" ở Bước 2')
-                continue
-            nut_ds_chon.first.click()
-            pg.wait_for_timeout(300)
-            kiem_man(f'{ten} (Bước 3)')
+                inps = pg.locator('.m-lp-the-sua .m-lp-sua-inp.num')
+                if inps.count() > 0:
+                    inps.first.fill('15')
+                    pg.wait_for_timeout(150)
 
-            # Bước 3: Sửa dòng, nhập số
-            inps = pg.locator('.m-lp-sua-inp.num')
-            if inps.count() > 0:
-                inps.first.fill('15')
-                pg.wait_for_timeout(150)
+            kiem_man(f'{ten} (lập phiếu một màn)')
 
-            nut_tiep_3 = pg.locator('.m-lp-day button:has-text("Tiếp tục")')
-            if nut_tiep_3.count() == 0:
-                loi.append(f'{ten}: thiếu nút Tiếp tục ở Bước 3')
-                continue
-            nut_tiep_3.first.click()
-            pg.wait_for_timeout(300)
-            kiem_man(f'{ten} (Bước 4)')
-
-            # Bước 4: Xác nhận, bấm Lưu
-            nut_luu = pg.locator('.m-lp-day button.m-lp-nut-chinh:has-text("Lưu")')
+            nut_luu = pg.locator('.m-lp-day button.m-lp-nut-chinh, .m-lp-day button.m-lp-nut-luu, button:has-text("Lưu")')
             if nut_luu.count() == 0:
                 loi.append(f'{ten}: thiếu nút Lưu ở Bước 4')
                 continue
@@ -2173,7 +2127,7 @@ def kiem_tra_dot_12_b():
             pg.goto(f'{URL}?goi={goi}#/app/{path}')
             pg.wait_for_timeout(350)
 
-            so_the_dau = pg.locator('.m-ds-ngay-dong .m-ds-ngay-so').first.inner_text().strip() if pg.locator('.m-ds-ngay-dong .m-ds-ngay-so').count() > 0 else ''
+            so_the_dau = pg.locator('.m-the-ct .m-the-ct-so, .m-ds-ngay-dong .m-ds-ngay-so').first.inner_text().strip() if pg.locator('.m-the-ct, .m-ds-ngay-dong').count() > 0 else ''
             if so_phieu and so_phieu not in so_the_dau:
                 loi.append(f'{ten}: số phiếu {so_phieu} không nằm ở thẻ đầu danh sách (thấy {so_the_dau})')
             else:
@@ -2759,12 +2713,12 @@ def kiem_tra_dot_15_a():
 
         # ── 1. Mở PC2610-0250 ở màn thu chi tien/2-1-1 ──
         pg.goto(URL + '?goi=PR#/app/tien/2-1-1')
-        pg.wait_for_selector('.m-ds-ngay-dong', timeout=8000)
+        pg.wait_for_selector('.m-the-ct, .m-ds-ngay-dong', timeout=8000)
         pg.wait_for_timeout(350)
 
-        the_pc = pg.locator('.m-ds-ngay-dong:has-text("PC2610-0250")')
+        the_pc = pg.locator('.m-the-ct:has-text("PC2610-0250"), .m-ds-ngay-dong:has-text("PC2610-0250")')
         if the_pc.count() == 0:
-            the_pc = pg.locator('.m-ds-ngay-dong:has-text("PC")')
+            the_pc = pg.locator('.m-the-ct:has-text("PC"), .m-ds-ngay-dong:has-text("PC")')
         if the_pc.count() == 0:
             loi.append('15A: không tìm thấy phiếu chi PC nào trong danh sách tien/2-1-1')
         else:
@@ -2825,9 +2779,9 @@ def kiem_tra_dot_15_a():
 
         # ── 2. Mở 1 hoá đơn bán hàng 3.1.x và 1 phiếu mua 4.1.x ──
         pg.goto(URL + '?goi=PR#/app/ban-hang/3-1-2')
-        pg.wait_for_selector('.m-ds-ngay-dong', timeout=8000)
+        pg.wait_for_selector('.m-the-ct, .m-ds-ngay-dong', timeout=8000)
         pg.wait_for_timeout(350)
-        the_bh = pg.locator('.m-ds-ngay-dong')
+        the_bh = pg.locator('.m-the-ct, .m-ds-ngay-dong')
         if the_bh.count() == 0:
             loi.append('15A: không tìm thấy hoá đơn bán hàng nào ở ban-hang/3-1-2')
         else:
@@ -2843,9 +2797,9 @@ def kiem_tra_dot_15_a():
 
         # Phiếu mua 4.1.1
         pg.goto(URL + '?goi=PR#/app/mua-hang/4-1-1')
-        pg.wait_for_selector('.m-ds-ngay-dong', timeout=8000)
+        pg.wait_for_selector('.m-the-ct, .m-ds-ngay-dong', timeout=8000)
         pg.wait_for_timeout(350)
-        the_mh = pg.locator('.m-ds-ngay-dong')
+        the_mh = pg.locator('.m-the-ct, .m-ds-ngay-dong')
         if the_mh.count() == 0:
             loi.append('15A: không tìm thấy phiếu mua hàng nào ở mua-hang/4-1-1')
         else:
@@ -2860,9 +2814,9 @@ def kiem_tra_dot_15_a():
 
         # ── 3. Mở 1 phiếu 4.1.5 hoặc 10.1.1 (không có chữ "Danh sách hàng hoá") ──
         pg.goto(URL + '?goi=PR#/app/tong-hop/10-1-1')
-        pg.wait_for_selector('.m-ds-ngay-dong', timeout=8000)
+        pg.wait_for_selector('.m-the-ct, .m-ds-ngay-dong', timeout=8000)
         pg.wait_for_timeout(350)
-        the_th = pg.locator('.m-ds-ngay-dong')
+        the_th = pg.locator('.m-the-ct, .m-ds-ngay-dong')
         if the_th.count() == 0:
             loi.append('15A: không tìm thấy phiếu tổng hợp nào ở tong-hop/10-1-1')
         else:
@@ -2877,9 +2831,9 @@ def kiem_tra_dot_15_a():
 
         # ── 4. Danh sách Chuyển kho: thẻ không có chữ "0 đ" ──
         pg.goto(URL + '?goi=PR#/app/kho/5-1-4-3')
-        pg.wait_for_selector('.m-ds-ngay-dong', timeout=8000)
+        pg.wait_for_selector('.m-the-ct, .m-ds-ngay-dong', timeout=8000)
         pg.wait_for_timeout(350)
-        the_ck = pg.locator('.m-ds-ngay-dong')
+        the_ck = pg.locator('.m-the-ct, .m-ds-ngay-dong')
         if the_ck.count() == 0:
             loi.append('15A: không tìm thấy thẻ chuyển kho nào ở kho/5-1-4-3')
         else:
@@ -3317,114 +3271,102 @@ def kiem_tra_dot_17_a():
             pg.locator('.m-tam-dong').first.click()
             pg.wait_for_timeout(300)
 
-        # Qua bước 3
-        nut_tiep = pg.locator('.m-lp-nut-tiep, .m-lp-nut-chinh:has-text("Tiếp tục")')
-        if nut_tiep.count() == 0:
-            loi.append('17A: không tìm thấy nút Tiếp tục ở bước 1 lập phiếu chi')
+        # Điền số tiền
+        inps_tien = pg.locator('.m-lp-tien-inp, .m-lp-sua-inp.num')
+        if inps_tien.count() > 0:
+            inps_tien.first.fill('600.000')
+
+        # Mở khối Hạch toán thu gọn
+        nut_mo_ht = pg.locator('.m-lp-the-ht-tieu, .m-lp-ht-tieu-chu')
+        if nut_mo_ht.count() > 0:
+            nut_mo_ht.first.click()
+            pg.wait_for_timeout(300)
+
+        # Dòng có chữ "Nợ" và "Có" kèm số tài khoản
+        hang_tk = pg.locator('.m-lp-hang-tk')
+        if hang_tk.count() == 0:
+            loi.append('17A: khối Hạch toán thiếu hàng tài khoản .m-lp-hang-tk')
         else:
-            nut_tiep.first.click()
-            pg.wait_for_selector('.m-lp-ds-sua', timeout=6000)
-            pg.wait_for_timeout(350)
+            txt_tk = ' '.join(hang_tk.all_inner_texts())
+            if 'Nợ' not in txt_tk or 'Có' not in txt_tk:
+                loi.append(f'17A: hàng tài khoản thiếu "Nợ" hoặc "Có" (thấy: {txt_tk})')
 
-            # Dòng có chữ "Nợ" và "Có" kèm số tài khoản
-            hang_tk = pg.locator('.m-lp-hang-tk')
-            if hang_tk.count() == 0:
-                loi.append('17A: bước 3 thiếu hàng tài khoản .m-lp-hang-tk')
+            # Đổi lý do dòng sang "Thanh toán tiền lương": tài khoản Nợ thành 334
+            o_ly_do = pg.locator('.m-lp-sua-o:has-text("Lý do"), .m-lp-sua-o:has-text("Nghiệp vụ"), .m-lp-dong-o:has-text("Nghiệp vụ")')
+            if o_ly_do.count() == 0:
+                loi.append('17A: thiếu ô chọn Lý do')
             else:
-                txt_tk = hang_tk.first.inner_text()
-                if 'Nợ' not in txt_tk or 'Có' not in txt_tk:
-                    loi.append(f'17A: hàng tài khoản bước 3 thiếu "Nợ" hoặc "Có" (thấy: {txt_tk})')
-
-                # Đổi lý do dòng sang "Thanh toán tiền lương": tài khoản Nợ thành 334
-                o_ly_do = pg.locator('.m-lp-sua-o:has-text("Lý do")')
-                if o_ly_do.count() == 0:
-                    loi.append('17A: bước 3 thiếu ô chọn Lý do')
-                else:
-                    o_ly_do.first.click()
-                    pg.wait_for_selector('.m-tam-hop', timeout=4000)
-                    pg.wait_for_timeout(250)
-                    muc_luong = pg.locator('.m-tam-dong:has-text("Thanh toán tiền lương")')
-                    if muc_luong.count() == 0:
-                        loi.append('17A: tấm chọn lý do thiếu "Thanh toán tiền lương"')
-                    else:
-                        muc_luong.first.click()
-                        pg.wait_for_timeout(200)
-                        if pg.locator('.m-tam-btn-apdung').count() > 0:
-                            pg.locator('.m-tam-btn-apdung').first.click()
-                        pg.wait_for_timeout(300)
-
-                        txt_tk_sau_doi = hang_tk.first.inner_text()
-                        if '334' not in txt_tk_sau_doi:
-                            loi.append(f'17A: đổi lý do sang "Thanh toán tiền lương" nhưng tài khoản Nợ không thành 334 (thấy: {txt_tk_sau_doi})')
-
-                # Bấm hàng tài khoản, chọn TK Nợ 6422: hàng ghi "Nợ 6422"
-                hang_tk.first.click()
+                o_ly_do.first.click()
                 pg.wait_for_selector('.m-tam-hop', timeout=4000)
                 pg.wait_for_timeout(250)
-                muc_6422 = pg.locator('.m-tam-dong:has-text("6422")')
-                if muc_6422.count() == 0:
-                    loi.append('17A: tấm chọn tài khoản thiếu mục 6422')
+                muc_luong = pg.locator('.m-tam-dong:has-text("Thanh toán tiền lương")')
+                if muc_luong.count() == 0:
+                    loi.append('17A: tấm chọn lý do thiếu "Thanh toán tiền lương"')
                 else:
-                    muc_6422.first.click()
+                    muc_luong.first.click()
                     pg.wait_for_timeout(200)
                     if pg.locator('.m-tam-btn-apdung').count() > 0:
                         pg.locator('.m-tam-btn-apdung').first.click()
                     pg.wait_for_timeout(300)
 
-                    txt_tk_sau_chon = hang_tk.first.inner_text()
-                    if 'Nợ 6422' not in txt_tk_sau_chon:
-                        loi.append(f'17A: sau khi chọn TK 6422, hàng không ghi "Nợ 6422" (thấy: {txt_tk_sau_chon})')
+                    txt_tk_sau_doi = hang_tk.first.inner_text()
+                    if '334' not in txt_tk_sau_doi:
+                        loi.append(f'17A: đổi lý do sang "Thanh toán tiền lương" nhưng tài khoản Nợ không thành 334 (thấy: {txt_tk_sau_doi})')
 
-            # Kiểm tra tràn ngang và chụp ảnh Bước 3
-            if pg.evaluate("document.documentElement.scrollWidth > 390"):
-                loi.append('17A: bước 3 lập phiếu chi tràn ngang màn hình (> 390px)')
-            pg.screenshot(path=str(SHOTS / 'm-17-lap-chi-b3.png'))
-
-            # Qua bước 4
-            nut_qua_b4 = pg.locator('.m-lp-day .m-lp-nut-chinh:has-text("Tiếp tục")')
-            if nut_qua_b4.count() == 0:
-                loi.append('17A: bước 3 thiếu nút Tiếp tục để qua bước 4')
+            # Bấm hàng tài khoản, chọn TK Nợ 6422: hàng ghi "Nợ 6422"
+            hang_tk.first.click()
+            pg.wait_for_selector('.m-tam-hop', timeout=4000)
+            pg.wait_for_timeout(250)
+            muc_6422 = pg.locator('.m-tam-dong:has-text("6422")')
+            if muc_6422.count() == 0:
+                loi.append('17A: tấm chọn tài khoản thiếu mục 6422')
             else:
-                nut_qua_b4.first.click()
-                pg.wait_for_selector('.m-lp-buoc-b4', timeout=6000)
+                muc_6422.first.click()
+                pg.wait_for_timeout(200)
+                if pg.locator('.m-tam-btn-apdung').count() > 0:
+                    pg.locator('.m-tam-btn-apdung').first.click()
+                pg.wait_for_timeout(300)
+
+                txt_tk_sau_chon = hang_tk.first.inner_text()
+                if 'Nợ 6422' not in txt_tk_sau_chon:
+                    loi.append(f'17A: sau khi chọn TK 6422, hàng không ghi "Nợ 6422" (thấy: {txt_tk_sau_chon})')
+
+        # Có khối Hạch toán với dòng "Nợ 6422" và "Có 1111"
+        the_ht_b4 = pg.locator('.m-xp-the-ht')
+        if the_ht_b4.count() == 0:
+            loi.append('17A: thiếu khối Hạch toán (.m-xp-the-ht)')
+        else:
+            ht_b4_txt = the_ht_b4.first.inner_text()
+            if 'Nợ 6422' not in ht_b4_txt:
+                loi.append(f'17A: khối Hạch toán thiếu dòng "Nợ 6422" (thấy: {ht_b4_txt})')
+            if 'Có 1111' not in ht_b4_txt:
+                loi.append(f'17A: khối Hạch toán thiếu dòng "Có 1111" (thấy: {ht_b4_txt})')
+
+        if pg.evaluate("document.documentElement.scrollWidth > 390"):
+            loi.append('17A: lập phiếu chi một màn tràn ngang màn hình (> 390px)')
+        pg.screenshot(path=str(SHOTS / 'm-17-lap-chi-b4.png'))
+
+        # Lưu, mở lại phiếu vừa lưu: khối Hạch toán màn xem phiếu có "Nợ 6422"
+        nut_luu = pg.locator('.m-lp-day button.m-lp-nut-chinh, button:has-text("Lưu")')
+        if nut_luu.count() == 0:
+            loi.append('17A: thiếu nút Lưu')
+        else:
+            nut_luu.first.click()
+            pg.wait_for_selector('.m-lp-buoc-thanh-cong, .m-xp', timeout=6000)
+            pg.wait_for_timeout(350)
+            nut_xem = pg.locator('.m-lp-btn-xem:has-text("Xem phiếu"), button:has-text("Xem phiếu")')
+            if nut_xem.count() > 0:
+                nut_xem.first.click()
+                pg.wait_for_selector('.m-xp', timeout=6000)
                 pg.wait_for_timeout(350)
 
-                # Có khối Hạch toán với dòng "Nợ 6422" và "Có 1111"
-                the_ht_b4 = pg.locator('.m-xp-the-ht')
-                if the_ht_b4.count() == 0:
-                    loi.append('17A: bước 4 thiếu khối Hạch toán (.m-xp-the-ht)')
-                else:
-                    ht_b4_txt = the_ht_b4.first.inner_text()
-                    if 'Nợ 6422' not in ht_b4_txt:
-                        loi.append(f'17A: bước 4 khối Hạch toán thiếu dòng "Nợ 6422" (thấy: {ht_b4_txt})')
-                    if 'Có 1111' not in ht_b4_txt:
-                        loi.append(f'17A: bước 4 khối Hạch toán thiếu dòng "Có 1111" (thấy: {ht_b4_txt})')
-
-                if pg.evaluate("document.documentElement.scrollWidth > 390"):
-                    loi.append('17A: bước 4 lập phiếu chi tràn ngang màn hình (> 390px)')
-                pg.screenshot(path=str(SHOTS / 'm-17-lap-chi-b4.png'))
-
-                # Lưu, mở lại phiếu vừa lưu: khối Hạch toán màn xem phiếu có "Nợ 6422"
-                nut_luu = pg.locator('.m-lp-day-hang-nut .m-lp-nut-chinh:has-text("Lưu")')
-                if nut_luu.count() == 0:
-                    loi.append('17A: bước 4 thiếu nút Lưu')
-                else:
-                    nut_luu.first.click()
-                    pg.wait_for_selector('.m-lp-buoc-thanh-cong, .m-xp', timeout=6000)
-                    pg.wait_for_timeout(350)
-                    nut_xem = pg.locator('.m-lp-btn-xem:has-text("Xem phiếu")')
-                    if nut_xem.count() > 0:
-                        nut_xem.first.click()
-                        pg.wait_for_selector('.m-xp', timeout=6000)
-                        pg.wait_for_timeout(350)
-
-                    the_ht_xp = pg.locator('.m-xp-the-ht')
-                    if the_ht_xp.count() == 0:
-                        loi.append('17A: màn xem phiếu sau khi lưu thiếu khối Hạch toán')
-                    else:
-                        xp_ht_txt = the_ht_xp.first.inner_text()
-                        if 'Nợ 6422' not in xp_ht_txt:
-                            loi.append(f'17A: khối Hạch toán màn xem phiếu vừa lưu thiếu "Nợ 6422" (thấy: {xp_ht_txt})')
+            the_ht_xp = pg.locator('.m-xp-the-ht')
+            if the_ht_xp.count() == 0:
+                loi.append('17A: màn xem phiếu sau khi lưu thiếu khối Hạch toán')
+            else:
+                xp_ht_txt = the_ht_xp.first.inner_text()
+                if 'Nợ 6422' not in xp_ht_txt:
+                    loi.append(f'17A: khối Hạch toán màn xem phiếu vừa lưu thiếu "Nợ 6422" (thấy: {xp_ht_txt})')
 
         # ── 2. Lập hoá đơn bán hàng 3.1.2 ──
         pg.goto(URL + '?goi=PR#/app/ban-hang/3-1-2/moi')
@@ -3436,54 +3378,48 @@ def kiem_tra_dot_17_a():
             pg.locator('.m-tam-dong').first.click()
             pg.wait_for_timeout(300)
 
-        # Bước 1 có chữ "Kho xuất", không có "Kho nhập"
+        # Màn có chữ "Kho xuất", không có "Kho nhập"
         b1_txt = pg.locator('.m-lp-than').first.inner_text()
         if 'Kho xuất' not in b1_txt:
-            loi.append('17A: hoá đơn bán hàng 3.1.2 bước 1 thiếu chữ "Kho xuất"')
+            loi.append('17A: hoá đơn bán hàng 3.1.2 thiếu chữ "Kho xuất"')
         if 'Kho nhập' in b1_txt:
-            loi.append('17A: hoá đơn bán hàng 3.1.2 bước 1 còn có chữ "Kho nhập"')
+            loi.append('17A: hoá đơn bán hàng 3.1.2 còn có chữ "Kho nhập"')
 
-        # Qua bước 2
-        nut_tiep_bh = pg.locator('.m-lp-nut-tiep, .m-lp-nut-chinh:has-text("Tiếp tục")')
-        if nut_tiep_bh.count() > 0:
-            nut_tiep_bh.first.click()
-            pg.wait_for_selector('.m-lp-ds-hang', timeout=6000)
-            pg.wait_for_timeout(300)
+        # Thêm 1 mặt hàng
+        nut_them_hang = pg.locator('.m-lp-btn-them-nhanh, button:has-text("Thêm hàng"), .m-lp-hang-trong-hop')
+        if nut_them_hang.count() > 0:
+            nut_them_hang.first.click()
+            pg.wait_for_selector('.m-lp-the-hang', timeout=6000)
+            pg.wait_for_timeout(200)
 
-            # Chọn 1 mặt hàng
             the_hang = pg.locator('.m-lp-the-hang')
             if the_hang.count() > 0:
                 the_hang.first.click()
                 pg.wait_for_timeout(200)
 
-            # Qua bước 3
-            nut_ds_chon = pg.locator('.m-lp-nut-chinh:has-text("Danh sách đã chọn")')
-            if nut_ds_chon.count() > 0:
-                nut_ds_chon.first.click()
-                pg.wait_for_selector('.m-lp-ds-sua', timeout=6000)
-                pg.wait_for_timeout(300)
+            pg.locator('.m-tam-btn-apdung:has-text("Xong"), button:has-text("Xong")').first.click()
+            pg.wait_for_timeout(300)
 
-                # Qua bước 4
-                nut_b3_tiep = pg.locator('.m-lp-nut-chinh:has-text("Tiếp tục")')
-                if nut_b3_tiep.count() > 0:
-                    nut_b3_tiep.first.click()
-                    pg.wait_for_selector('.m-lp-buoc-b4', timeout=6000)
-                    pg.wait_for_timeout(350)
+        # Mở khối Hạch toán
+        nut_mo_ht_bh = pg.locator('.m-lp-the-ht-tieu, .m-lp-ht-tieu-chu')
+        if nut_mo_ht_bh.count() > 0:
+            nut_mo_ht_bh.first.click()
+            pg.wait_for_timeout(250)
 
-                    # Bước 4 có khối Hạch toán có "Nợ 131" hoặc "Nợ 1111" và "Có 5111"
-                    the_ht_bh = pg.locator('.m-xp-the-ht')
-                    if the_ht_bh.count() == 0:
-                        loi.append('17A: hoá đơn bán hàng bước 4 thiếu khối Hạch toán')
-                    else:
-                        ht_bh_txt = the_ht_bh.first.inner_text()
-                        if ('Nợ 131' not in ht_bh_txt and 'Nợ 1111' not in ht_bh_txt):
-                            loi.append(f'17A: hoá đơn bán hàng bước 4 thiếu "Nợ 131" hoặc "Nợ 1111" (thấy: {ht_bh_txt})')
-                        if 'Có 5111' not in ht_bh_txt:
-                            loi.append(f'17A: hoá đơn bán hàng bước 4 thiếu "Có 5111" (thấy: {ht_bh_txt})')
+        # Có khối Hạch toán có "Nợ 131" hoặc "Nợ 1111" và "Có 5111"
+        the_ht_bh = pg.locator('.m-xp-the-ht')
+        if the_ht_bh.count() == 0:
+            loi.append('17A: hoá đơn bán hàng thiếu khối Hạch toán')
+        else:
+            ht_bh_txt = the_ht_bh.first.inner_text()
+            if ('Nợ 131' not in ht_bh_txt and 'Nợ 1111' not in ht_bh_txt):
+                loi.append(f'17A: hoá đơn bán hàng thiếu "Nợ 131" hoặc "Nợ 1111" (thấy: {ht_bh_txt})')
+            if 'Có 5111' not in ht_bh_txt:
+                loi.append(f'17A: hoá đơn bán hàng thiếu "Có 5111" (thấy: {ht_bh_txt})')
 
-                    if pg.evaluate("document.documentElement.scrollWidth > 390"):
-                        loi.append('17A: hoá đơn bán hàng bước 4 tràn ngang (> 390px)')
-                    pg.screenshot(path=str(SHOTS / 'm-17-lap-hoa-don-b4.png'))
+        if pg.evaluate("document.documentElement.scrollWidth > 390"):
+            loi.append('17A: hoá đơn bán hàng một màn tràn ngang (> 390px)')
+        pg.screenshot(path=str(SHOTS / 'm-17-lap-hoa-don-b4.png'))
 
         # ── 3. Mở lại PC2610-0261 ở màn xem phiếu: Hạch toán vẫn "Nợ 242", "Có 1111" ──
         pg.goto(URL + '?goi=PR#/app/tien/2-1-1/chi-cpb')

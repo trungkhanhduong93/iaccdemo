@@ -1,5 +1,5 @@
 import { useMemo, useState, type FC } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import type { Row, ScreenProps } from '../../modules/types'
 import { cuaHangHienTai, useSession } from '../../app/session'
 import { CUA_HANG } from '../../data/mock'
@@ -39,23 +39,41 @@ type TheItem = (typeof THE_MAU_BASE)[0] & {
 export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
   const { s, toast } = useSession()
   const nav = useNavigate()
+  const loc = useLocation()
+  const [sp] = useSearchParams()
   const cnChon = cuaHangHienTai(s)
+
+  interface TuPhieuData {
+    cn?: string
+    gt?: number | string
+    tien?: number | string
+    ten?: string
+    ghiChuCt?: string
+    ngay?: string
+    ngayCt?: string
+    ngayPb?: string
+    soCt?: string
+    idMoi?: string
+    _goc?: string
+    dong?: { ten?: string; gt?: number | string }[]
+  }
+  const tuPhieu = (loc.state as { tuPhieu?: TuPhieuData } | null)?.tuPhieu
 
   const [theList, setTheList] = useState(THE_MAU_BASE)
   const [theXem, setTheXem] = useState<TheItem | null>(null)
   const [moChonCn, setMoChonCn] = useState(false)
-  const [moGhiTang, setMoGhiTang] = useState(false)
-  const [cnGhiTang, setCnGhiTang] = useState<string>('')
+  const [moGhiTang, setMoGhiTang] = useState(() => Boolean(tuPhieu || sp.get('moi') === 'the'))
+  const [cnGhiTang, setCnGhiTang] = useState<string>(() => tuPhieu?.cn || cnChon?.ten || 'Phố Mây Lê Lợi')
   const [moTheoDoi, setMoTheoDoi] = useState(false)
 
   // Form state ghi tăng mới
   const [ftLoai, setFtLoai] = useState('Chi phí trả trước')
   const [moChonLoai, setMoChonLoai] = useState(false)
-  const [ftTen, setFtTen] = useState('')
-  const [ftGt, setFtGt] = useState('24000000')
+  const [ftTen, setFtTen] = useState(() => tuPhieu?.ten || tuPhieu?.ghiChuCt || tuPhieu?.dong?.[0]?.ten || '')
+  const [ftGt, setFtGt] = useState(() => String(tuPhieu?.gt || tuPhieu?.tien || tuPhieu?.dong?.[0]?.gt || '24000000'))
   const [ftKy, setFtKy] = useState('12')
-  const [ftNgayPb, setFtNgayPb] = useState('01/10/2026')
-  const [ftNgay, setFtNgay] = useState('01/10/2026')
+  const [ftNgayPb, setFtNgayPb] = useState(() => tuPhieu?.ngayPb || tuPhieu?.ngay || tuPhieu?.ngayCt || '01/10/2026')
+  const [ftNgay, setFtNgay] = useState(() => tuPhieu?.ngay || tuPhieu?.ngayCt || '01/10/2026')
 
   const kyHienTai = 202610
 
@@ -166,10 +184,10 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
       cn: cnGhiTang || 'Phố Mây Lê Lợi',
       gt: valGt,
       ky: valKy,
-      soCt: `PC2610-${String(sttMoi + 200).padStart(4, '0')}`,
-      ngayCt: ftNgay,
-      ghiChuCt: ftTen,
-      _goc: '',
+      soCt: tuPhieu?.soCt || `PC2610-${String(sttMoi + 200).padStart(4, '0')}`,
+      ngayCt: tuPhieu?.ngayCt || ftNgay,
+      ghiChuCt: tuPhieu?.ghiChuCt || ftTen,
+      _goc: tuPhieu?._goc || '',
       dong: [{ ma: `CPTT.${String(sttMoi).padStart(4, '0')}`, ten: ftTen, gt: valGt, ky: valKy, sl: 1, dg: valGt, ngayPb: ftNgayPb }],
     }
     setTheList(prev => [theMoi, ...prev])

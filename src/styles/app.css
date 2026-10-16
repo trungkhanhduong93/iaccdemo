@@ -21007,3 +21007,521 @@ input.bat-tat:disabled { opacity: .5; cursor: not-allowed; }
 /* ── Thanh nút Lập phiếu sát đáy ở màn cấp hai điện thoại, không có thanh dưới (T292) ── */
 .m-cap-2 .m-free-day-nut { bottom: 0; padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px)); }
 .m-cap-2 .m-than:has(.m-free-day-nut) { padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px)); }
+
+/* ── Điện thoại: phiếu nhập liệu một màn (T282) ── */
+.m-lp-mot-man {
+  min-height: 100%;
+  background: var(--bg, #f8fafc);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.m-lp-than-cuon {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px var(--m-le-man, 16px) calc(110px + env(safe-area-inset-bottom, 0px)) !important;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.m-lp-nhom-tien {
+  border-radius: 12px !important;
+  padding: 14px 16px !important;
+  border: 1px solid var(--line, #e2e8f0) !important;
+  background: #fff !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  flex-shrink: 0 !important;
+}
+
+.m-lp-tien-hang {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.m-lp-vnd-badge {
+  background: #f1f5f9;
+  color: var(--ink, #1e293b);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  flex-shrink: 0;
+}
+
+.m-lp-tien-nd {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.m-lp-tien-nhan {
+  font-size: 12px;
+  color: var(--muted, #64748b);
+  font-weight: 500;
+}
+
+.m-lp-tien-inp {
+  font-size: 26px !important;
+  font-weight: 700 !important;
+  color: var(--ink, #0f172a) !important;
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  outline: none !important;
+  width: 100% !important;
+  line-height: 1.2 !important;
+}
+
+.m-lp-nhom-dong {
+  border-radius: 12px !important;
+  overflow: visible !important;
+  border: 1px solid var(--line, #e2e8f0) !important;
+  background: #fff !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  padding: 0 !important;
+  flex-shrink: 0 !important;
+}
+
+.m-lp-dong-o {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f1f5f9;
+  cursor: pointer;
+  min-height: 48px;
+  box-sizing: border-box;
+}
+
+.m-lp-dong-o:last-child {
+  border-bottom: none;
+}
+
+.m-lp-dong-o:active {
+  background: #f8fafc;
+}
+
+.m-lp-dong-trai {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.m-lp-dong-ic {
+  color: #94a3b8 !important;
+  flex-shrink: 0;
+}
+
+.m-lp-dong-nd {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.m-lp-dong-nhan {
+  font-size: 11.5px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.m-lp-dong-tri {
+  font-size: 14.5px;
+  color: var(--ink, #0f172a);
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.m-lp-dong-tri.mo {
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+.m-lp-tri-xanh {
+  color: #0284c7 !important;
+  font-weight: 600 !important;
+}
+
+.m-lp-dong-mui-ten {
+  color: #cbd5e1 !important;
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+
+.m-lp-dong-inp {
+  border: none !important;
+  background: transparent !important;
+  font-size: 14px !important;
+  color: var(--ink, #0f172a) !important;
+  width: 100% !important;
+  outline: none !important;
+  padding: 0 !important;
+}
+
+.m-lp-dong-inp::placeholder {
+  color: #94a3b8;
+}
+
+.m-lp-dong-nhan-tinh {
+  font-size: 13px;
+  color: #64748b;
+  width: 90px;
+  flex-shrink: 0;
+}
+
+.m-lp-loi-o {
+  color: #ef4444;
+  font-size: 12px;
+  margin-top: 4px;
+  padding: 0 4px;
+}
+
+.m-lp-khoi-hang-man {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.m-lp-hang-man-tieu-hang {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 2px;
+}
+
+.m-lp-hang-man-tieu-chu {
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
+  letter-spacing: 0.5px;
+}
+
+.m-lp-btn-them-nhanh {
+  border: none;
+  background: #e0f2fe;
+  color: #0284c7;
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.m-lp-btn-them-nhanh:active {
+  background: #bae6fd;
+}
+
+.m-lp-hang-trong-hop {
+  padding: 24px 16px !important;
+  border-radius: 12px !important;
+  border: 1.5px dashed #cbd5e1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: #fff !important;
+  cursor: pointer !important;
+}
+
+.m-lp-btn-them-chu {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--blue, #0560a6);
+  margin-top: 4px;
+}
+
+.m-lp-ds-hang-the {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.m-lp-the-hang-item {
+  border-radius: 12px !important;
+  padding: 12px 14px !important;
+  border: 1px solid var(--line, #e2e8f0) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  background: #fff !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.m-lp-hang-item-dau {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.m-lp-hang-item-ten {
+  font-size: 14px;
+  color: var(--ink, #0f172a);
+  flex: 1;
+}
+
+.m-lp-hang-item-ma {
+  color: #64748b;
+  font-size: 12.5px;
+  margin-left: 4px;
+}
+
+.m-lp-hang-item-dvt {
+  color: #64748b;
+  font-size: 12px;
+  margin-left: 4px;
+}
+
+.m-lp-hang-item-xoa {
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  padding: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.m-lp-hang-item-xoa:active {
+  color: #ef4444;
+}
+
+.m-lp-hang-item-luoi {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 6px;
+  border-top: 1px dashed #f1f5f9;
+}
+
+.m-lp-hang-item-o {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.m-lp-hang-item-nhan {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.m-lp-sl-stepper {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.m-lp-step-btn {
+  border: none;
+  background: #f8fafc;
+  color: #334155;
+  width: 28px;
+  height: 28px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.m-lp-step-btn:active {
+  background: #e2e8f0;
+}
+
+.m-lp-sl-inp {
+  width: 36px !important;
+  height: 28px !important;
+  border: none !important;
+  border-left: 1px solid #cbd5e1 !important;
+  border-right: 1px solid #cbd5e1 !important;
+  text-align: center !important;
+  font-size: 13.5px !important;
+  font-weight: 600 !important;
+  padding: 0 !important;
+  outline: none !important;
+  background: #fff !important;
+  border-radius: 0 !important;
+}
+
+.m-lp-gia-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.m-lp-gia-inp {
+  width: 85px !important;
+  height: 28px !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 6px !important;
+  padding: 0 6px !important;
+  font-size: 13px !important;
+  text-align: right !important;
+  outline: none !important;
+}
+
+.m-lp-dvt-gia {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.m-lp-hang-item-tien {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.m-lp-khoi-ht {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.m-lp-the-ht-tieu {
+  border-radius: 12px !important;
+  padding: 13px 16px !important;
+  border: 1px solid var(--line, #e2e8f0) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  background: #fff !important;
+  cursor: pointer !important;
+}
+
+.m-lp-ht-tieu-trai {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink, #0f172a);
+}
+
+.m-lp-ht-tieu-phai {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #64748b;
+  font-size: 12.5px;
+}
+
+.m-lp-the-ht-nd {
+  border-radius: 12px !important;
+  padding: 12px 14px !important;
+  border: 1px solid var(--line, #e2e8f0) !important;
+  background: #fff !important;
+}
+
+.m-lp-tk-nut {
+  color: #0284c7;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.m-lp-dau .m-nut-back {
+  width: 44px !important;
+  height: 44px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: none !important;
+  background: transparent !important;
+  color: var(--ink, #1f2225) !important;
+  cursor: pointer !important;
+  padding: 0 !important;
+  flex: none !important;
+}
+
+.m-lp-dau .m-nut-back svg {
+  width: 24px !important;
+  height: 24px !important;
+  stroke-width: 2.5px !important;
+}
+
+.m-lp-dau-phu {
+  width: 44px !important;
+  flex: none !important;
+}
+
+.m-lp-khoi-hang-man,
+.m-lp-the-hang-item,
+.m-lp-khoi-ht,
+.m-lp-the-ht-tieu,
+.m-lp-the-ht-nd,
+.m-the-trang {
+  flex-shrink: 0 !important;
+}
+
+.m-lp-day-mot-man {
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: auto !important;
+  min-height: 84px !important;
+  background: rgba(255, 255, 255, 0.96) !important;
+  backdrop-filter: blur(8px) !important;
+  border-top: 1px solid #e2e8f0 !important;
+  padding: 10px 16px calc(12px + env(safe-area-inset-bottom, 0px)) !important;
+  z-index: 50 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+  box-sizing: border-box !important;
+}
+
+.m-lp-day-hang-tong {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  flex-shrink: 0 !important;
+}
+
+.m-lp-nut-luu {
+  width: 100% !important;
+  height: 46px !important;
+  min-height: 46px !important;
+  flex-shrink: 0 !important;
+  border-radius: 10px !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  background: var(--blue, #0560a6) !important;
+  color: #fff !important;
+  border: none !important;
+  cursor: pointer !important;
+}
+
+.m-lp-sheet-hang {
+  display: flex;
+  flex-direction: column;
+  max-height: 80vh !important;
+}
+
+.m-lp-hop-hoi-the {
+  border-radius: 14px !important;
+  overflow: hidden;
+}
+
+
