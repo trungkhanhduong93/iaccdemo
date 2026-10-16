@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T283 | Danh sách Thu, chi tiền máy tính: thêm bộ lọc Thu, chi (Khoản thu, Khoản chi); phiếu thu, chi nguồn FABi không sửa, không xoá (form, hàng loạt) | PhuongXT | Đang làm | Sửa `VoucherScreen.tsx`, `ChungTuForm.tsx`, `LocNangCao.tsx` |
 | T281 | Điện thoại đợt A, mọi gói: bỏ màn quy trình, vào thẳng danh sách; danh sách chứng từ kiểu thẻ gọn; nút quay lại to; nút lọc ở báo cáo; làm lại phân hệ Chi phí phân bổ | Trum | Đang làm | Giao Anti. Sửa `src/ui/mobile/*`, `app.css` (mục cuối T281), `tools/kiem_tra.py` (bài kiểm quy trình điện thoại) |
 | T282 | Điện thoại đợt B, mọi gói: phiếu nhập liệu 1 màn cho mọi nghiệp vụ, bỏ luồng 5 bước; gói Plus, Pro có khối Hạch toán thu gọn; phiếu chi lý do chờ phân bổ hỏi tạo thẻ như web | Trum | Chờ | Làm sau T281. Sửa `MLapPhieu.tsx`, `MLapPhieuKho.tsx`, `app.css` (mục cuối T282), `tools/kiem_tra.py` (bài kiểm lập phiếu điện thoại) |
 | T265 | Phiếu thu, chi đồng bộ từ FABi (T264) chưa vào Sổ quỹ tiền mặt, Sổ ngân hàng, Lịch sử thu chi, tồn quỹ trang chủ; đưa vào thì đổi số dư | | Chờ | Phát hiện khi làm T264, chờ PhuongXT quyết |
