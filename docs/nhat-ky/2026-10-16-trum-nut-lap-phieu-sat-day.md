@@ -13,6 +13,10 @@
 - Mở Lịch sử thu chi gói Free khung 390x844: thanh nút nằm từ 779px tới 844px, sát đáy. Cuộn tới cuối, dòng cuối hiện đủ trên thanh nút.
 - `npm run typecheck`, `npm run build`, `kiem_tra.py --nhanh`: chạy trước khi push, cùng lần kiểm T282.
 
+## Sửa thêm
+
+- Bản sửa T281 (ce4dc2c) làm Lịch sử thu chi hiện lại thanh tab dưới, hai nút Lập phiếu nằm trên thanh tab. `MobileShell.tsx` thêm `CAP_HAI_CO_NUT`: Lịch sử thu chi, Chi phí trong tháng ẩn thanh tab như màn cấp 2. Đo ở khung 390x844 gói Free: thanh nút từ 779px tới 844px, không còn thanh tab.
+
 ## Dở dang, việc tiếp theo
 
 - Không.

@@ -60,6 +60,9 @@ function laXemPhieu(pathname: string): boolean {
   return pathname.split('/').filter(Boolean).length >= 4
 }
 
+// Màn có thanh nút Lập phiếu riêng ở đáy: ẩn thanh dưới như màn cấp 2 (T292)
+const CAP_HAI_CO_NUT = ['/app/trang-chu/lich-su-quy', '/app/trang-chu/chi-phi-thang']
+
 // Chip cửa hàng chỉ có nghĩa ở danh sách, báo cáo; trang chủ có chip riêng (T223)
 function coChipCn(pathname: string): boolean {
   if (laXemPhieu(pathname)) return false
@@ -97,7 +100,7 @@ export function MobileShell() {
     loc.pathname === '/app/trang-chu/tong-quan' ||
     loc.pathname === '/app/trang-chu/ban-lam-viec'
   const tieuDe = layTieuDe(loc.pathname, loc.search)
-  const capHai = laXemPhieu(loc.pathname) || laBaoCao(loc.pathname)
+  const capHai = laXemPhieu(loc.pathname) || laBaoCao(loc.pathname) || CAP_HAI_CO_NUT.includes(loc.pathname)
   const parts = loc.pathname.split('/').filter(Boolean)
   const currentSc = timMan(parts[1], parts[2])?.sc
 
