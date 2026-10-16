@@ -20236,3 +20236,7 @@ button.m-free-ton-quy-lon {
   justify-content: space-between;
 }
 
+
+
+/* ── Lọc quỹ ở Lịch sử thu chi (T279) ── */
+.lsq-loc-quy { width: 230px; }

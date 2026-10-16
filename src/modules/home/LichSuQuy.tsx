@@ -99,11 +99,14 @@ const tenNgay = (ngay: string) => { const [d, m, y] = ngay.split('/').map(Number
 export function LichSuQuy(_: ScreenProps) {
   const moTuTrangChu = useMoTuTrangChu()   // liên kết trong màn mở kèm nút về Trang chủ (T232)
   const { toast } = useSession()
-  const [tham] = useSearchParams()
+  const [tham, setTham] = useSearchParams()
   const quy = tham.get('quy') ?? tenQuyTm(CHI_NHANH[0].ngan)
   const thang = Math.min(10, Math.max(7, Number(tham.get('thang')) || 10))
   const isTatCa = quy === 'tat-ca'
   const gd = giaoDich(quy, thang)
+  // Lọc quỹ (T279): tất cả quỹ hoặc một quỹ tiền mặt, một tài khoản ngân hàng; ghi vào địa chỉ để mở lại đúng quỹ
+  const dsQuy = [{ v: 'tat-ca', t: 'Tất cả quỹ' }, ...CHI_NHANH.map(c => tenQuyTm(c.ngan)), ...TK_NGAN_HANG.map(tenTkNh)].map(q => typeof q === 'string' ? { v: q, t: q } : q)
+  const doiQuy = (v: string) => { const t = new URLSearchParams(tham); t.set('quy', v); setTham(t, { replace: true }) }
 
   // Lọc loại giao dịch: tất cả, chỉ khoản thu, chỉ khoản chi (T246); danh sách và file Excel theo bộ lọc, số dư đầu, cuối kỳ giữ nguyên
   const [loai, setLoai] = useState<'' | 'thu' | 'chi'>('')
@@ -186,6 +189,7 @@ export function LichSuQuy(_: ScreenProps) {
           <div style={{ fontSize: '12.5px', color: 'var(--muted, #6b7280)' }}>{dongPhu}</div>
         </div>
         <span className="grow" />
+        <Select className="inp lsq-loc-quy" value={quy} aria-label="Quỹ" onChange={e => doiQuy(e.target.value)} ds={dsQuy} />
         <Select
           className="inp lsq-loc"
           value={loai}

@@ -4,7 +4,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T269.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T279.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
@@ -46,6 +46,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T279 | Lịch sử thu chi máy tính: thêm bộ lọc quỹ (Tất cả quỹ, từng quỹ tiền mặt, từng tài khoản ngân hàng) cạnh lọc thu, chi | PhuongXT | 16/10/2026 | [2026-10-16-phuongxt-loc-quy-lich-su-thu-chi](nhat-ky/2026-10-16-phuongxt-loc-quy-lich-su-thu-chi.md) |
 | T269 | Danh mục Lý do nghiệp vụ thay bằng 44 lý do theo file FABi, giữ Chi phí chờ phân bổ và 3 lý do kho; mã đánh lại THU01.., CHI01.., XK, NK; cờ Là chi phí theo đề xuất; đổi tên lý do ở các chỗ dùng | PhuongXT | 16/10/2026 | [2026-10-16-phuongxt-ly-do-nghiep-vu-fabi](nhat-ky/2026-10-16-phuongxt-ly-do-nghiep-vu-fabi.md) |
 | T278 | Thanh gom nhóm ở danh sách chứng từ: thiết kế lại cho đẹp, ô Thêm cột gom thành menu Dropdown thay thẻ select gốc | Trum | 16/10/2026 | [2026-10-16-trum-thanh-gom-nhom](nhat-ky/2026-10-16-trum-thanh-gom-nhom.md) |
 | T277 | Danh sách Kiểm kê: thiết kế lại 3 tab con Kiểm kê, Xuất điều chỉnh, Nhập điều chỉnh cho đẹp | Trum | 16/10/2026 | [2026-10-16-trum-tab-con-kiem-ke](nhat-ky/2026-10-16-trum-tab-con-kiem-ke.md) |

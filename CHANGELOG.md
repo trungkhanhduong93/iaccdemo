@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 16/10/2026
 
+- T279: Lịch sử thu chi trên máy tính có ô lọc Quỹ: xem tất cả quỹ hoặc từng quỹ tiền mặt, từng tài khoản ngân hàng.
 - T269: Danh mục Lý do nghiệp vụ theo danh sách thu, chi của FABi, mã THU01.., CHI01..; giữ Chi phí chờ phân bổ và lý do kho. Phiếu thu, chi, Chi phí trong tháng dùng tên lý do mới.
 - T278: Thanh Gom nhóm ở các danh sách chứng từ làm lại. Mỗi cột đang gom là một thẻ có số cấp, giữa các cấp có mũi tên. Nút Thêm cột gom mở menu cùng kiểu với các menu khác.
 - T277: Danh sách Kiểm kê: ba tab Kiểm kê, Xuất điều chỉnh, Nhập điều chỉnh có chấm màu riêng, tab đang chọn nổi lên nền trắng.
