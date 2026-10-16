@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T300 | Điện thoại, phiếu mua hàng: thẻ mặt hàng theo mẫu (Số lượng kèm đơn vị tính, Đơn giá, Giảm giá % hoặc tiền, Tiền giảm giá, VAT, Tổng tiền có nút sửa, ô ghi chú); gói Free khoá đơn vị tính, gói khác chọn đơn vị quy đổi nếu mặt hàng có; phiếu nhập, xuất khác bỏ giảm giá, thuế; kiểm kê bỏ giảm giá, thuế, đơn giá, thành tiền | Trum | Đang làm | Giao Anti sau T299. Sửa `src/ui/mobile/MLapPhieu.tsx`, `MLapPhieuKho.tsx`, `app.css` mục cuối |
 | T299 | Điện thoại gói Free: bộ lọc danh sách chứng từ thành tấm nổi nửa màn như báo cáo, chỉ mở bằng nút lọc, ô ngày chỉ hiển thị; ẩn màn ngoài gói Free; nút Thêm mới không đè thanh dưới; Thu chi còn 5 tab Tất cả, Tiền mặt, Ngân hàng, Chuyển quỹ, Báo cáo theo dõi, Thêm mới ở Tiền mặt chỉ có Thu, Chi tiền mặt, Ngân hàng tương tự | Trum | Đang làm | Giao Anti. Sửa `src/ui/mobile/*` (MDanhSach, MLoc, MChungTu, MNghiepVu, MBaoCao, MKhac, MTimKiem), `app.css` mục cuối |
 | T265 | Phiếu thu, chi đồng bộ từ FABi (T264) chưa vào Sổ quỹ tiền mặt, Sổ ngân hàng, Lịch sử thu chi, tồn quỹ trang chủ; đưa vào thì đổi số dư | | Chờ | Phát hiện khi làm T264, chờ PhuongXT quyết |
 | T229 | Báo cáo kết quả kinh doanh (10.2.3, B02-DNN) ở chế độ TT133 mở ra "Báo cáo chưa có mẫu" ở cả bản máy tính và điện thoại, gói Pro và Free | | Chờ | Phát hiện ở T222 ngày 14/10/2026, mở từ Tất cả báo cáo. Có thể liên quan T220 |
