@@ -170,6 +170,7 @@ export function layDsBuoc(mod: ModuleDef, s: Session): BuocMobile[] {
 import { Navigate } from 'react-router-dom'
 import { duongDan } from '../../app/registry'
 import { manDauMobile } from './manMobile'
+import { MChiMayTinh } from './MChiMayTinh'
 
 export interface MQuyTrinhProps {
   mod: ModuleDef
@@ -178,5 +179,8 @@ export interface MQuyTrinhProps {
 
 export const MQuyTrinh: FC<MQuyTrinhProps> = ({ mod }) => {
   const { s } = useSession()
-  return <Navigate to={duongDan(mod, manDauMobile(mod, s.goi))} replace />
+  const manDich = manDauMobile(mod, s.goi)
+  // Phân hệ chỉ có sơ đồ: không chuyển hướng về chính nó (T295)
+  if (manDich.kind === 'quytrinh') return <MChiMayTinh />
+  return <Navigate to={duongDan(mod, manDich)} replace />
 }

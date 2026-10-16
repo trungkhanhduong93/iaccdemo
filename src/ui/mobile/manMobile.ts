@@ -147,7 +147,10 @@ export function manMobile(sc: ScreenDef, mod: ModuleDef): ComponentType<ScreenPr
  *  Không có màn nào thì về manDau như web */
 export function manDauMobile(mod: ModuleDef, goi: Goi): ScreenDef {
   const mo = mod.screens.filter(sc => sc.kind !== 'quytrinh' && moDuoc(sc, goi) && hienMan(sc, goi) && manMobile(sc, mod) !== MChiMayTinh)
-  return mo.find(sc => sc.nhom === 'Chứng từ') ?? mo[0] ?? manDau(mod, goi)
+  if (mo.length) return mo.find(sc => sc.nhom === 'Chứng từ') ?? mo[0]
+  // Không màn nào chạy trên điện thoại: lấy màn đầu không phải sơ đồ, tránh MQuyTrinh chuyển hướng về chính nó
+  const dau = manDau(mod, goi)
+  return dau.kind !== 'quytrinh' ? dau : mod.screens.find(sc => sc.kind !== 'quytrinh') ?? dau
 }
 
 /** Phân hệ có ít nhất một màn trong gói có giao diện điện thoại; không có thì tab Nghiệp vụ ẩn phân hệ (T281) */

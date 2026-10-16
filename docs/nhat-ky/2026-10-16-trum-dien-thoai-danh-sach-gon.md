@@ -31,6 +31,8 @@
 - Bản đã push làm trang chủ điện thoại mất thanh tab dưới. Lý do: `laBaoCao` trong `MobileShell.tsx` coi mọi màn `custom` là báo cáo, mà trang chủ cũng là màn `custom`. Đã sửa: màn `custom` chỉ tính là báo cáo khi `vaoBaoCao(sc)` đúng.
 - Bài `kiem_tra_dang_nhap_dot_8` bắt được lỗi này, nhưng `--nhanh` không chạy bài đó. Đã sửa bài này theo luồng mới: bấm Thu chi vào thẳng danh sách.
 
+- Phân hệ không có màn nào chạy trên điện thoại ở gói đó (vd Giá thành, TSCĐ gói Plus): `manDauMobile` rơi về `manDau`, trả về màn sơ đồ, `MQuyTrinh` tự chuyển hướng về chính nó, lặp không dừng. Đã sửa: `manDauMobile` không trả về màn sơ đồ, `MQuyTrinh` không chuyển hướng về chính nó. Anti tìm ra khi làm T295.
+
 ## Dở dang, việc tiếp theo
 
 - T282: phiếu nhập liệu 1 màn cho mọi nghiệp vụ trên điện thoại.
