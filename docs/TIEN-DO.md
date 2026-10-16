@@ -4,7 +4,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T304.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T305.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
@@ -46,6 +46,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T305 | Gỡ 13 skill thiết kế `Leonxlnx/taste-skill` khỏi `.claude/skills`, `.agents/skills` và `skills-lock.json` (thêm ở T16). Bộ này viết cho landing page, chồng với skill `iacc-ui-ux` toàn máy; 6 luật hợp app kế toán đã gộp vào `iacc-ui-ux` | Trum | 17/10/2026 | [2026-10-17-trum-go-skill-taste](nhat-ky/2026-10-17-trum-go-skill-taste.md) |
 | T304 | Trang chủ gói Free máy tính: Quản lý kho chia 3 khối Mua hàng (tổng nhập, so cùng kỳ tháng trước, tỷ lệ trên doanh thu, mặt hàng nhập nhiều tiền nhất kèm mã, nút Tạo phiếu mua hàng, link Bảng kê 4.2.7 gom theo mã hàng xem Tổng hợp), Công nợ phải trả NCC (nợ cuối kỳ, mua chịu, đã trả, nợ cũ chưa trả, NCC nợ nhiều nhất có nút Trả nợ), Hao hụt kiểm kê (theo số lượng: thiếu, thừa, đã kiểm n/n mặt hàng, mặt hàng thiếu nhiều nhất, cửa hàng chưa kiểm kê, nút Kiểm kê ngay); báo cáo 4.2.3 thêm Thanh toán ngay (chỉ trên màn hình, không in, không xuất Excel); Tổng hợp gom một cấp giữ cột chữ không đổi | dinhlanphuongipacc | 16/10/2026 | [2026-10-16-dinhlanphuongipacc-quan-ly-kho-3-khoi](nhat-ky/2026-10-16-dinhlanphuongipacc-quan-ly-kho-3-khoi.md) |
 | T303 | Trang chủ gói Free máy tính hiển thị giống nhau mọi máy, kể cả phóng to chữ 125–150%, Cốc Cốc: chú thích quỹ luôn cạnh vòng tồn quỹ (vòng co 150–260px), tên quỹ dài xuống dòng, mỗi dòng quỹ có mũi tên ›, hai cột trên cao bằng nhau; tiêu đề ba khối in hoa, bỏ số, Quản lý thu chi đổi tên Quỹ tiền (web, điện thoại); nút Xem biểu đồ thu chi 13 tháng (cột thu, chi, đường tồn quỹ); Lịch sử thu chi máy tính trở lại kiểu app ngân hàng, bấm dòng mở chứng từ ở tab mới; hai cột trên gọn lại, biểu đồ Lãi lỗ, Dòng tiền 13 tháng hiện thẳng dưới từng cột, bỏ hộp chi tiết ở web; quá 5 quỹ gom N quỹ khác, 5 quỹ mẫu; nút Tạo quỹ, khung chưa có quỹ | dinhlanphuongipacc | 16/10/2026 | [2026-10-16-dinhlanphuongipacc-trang-chu-giong-moi-may](nhat-ky/2026-10-16-dinhlanphuongipacc-trang-chu-giong-moi-may.md) |
 | T301 | Bộ biểu tượng tô theo màu thương hiệu iPOS cam, xanh thay 8 màu nhóm, web và điện thoại (QD67) | Trum | 17/10/2026 | [2026-10-17-trum-icon-mau-thuong-hieu](nhat-ky/2026-10-17-trum-icon-mau-thuong-hieu.md) |
