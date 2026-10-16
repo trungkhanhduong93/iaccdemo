@@ -167,6 +167,10 @@ export function layDsBuoc(mod: ModuleDef, s: Session): BuocMobile[] {
   }))
 }
 
+import { Navigate } from 'react-router-dom'
+import { duongDan } from '../../app/registry'
+import { manDauMobile } from './manMobile'
+
 export interface MQuyTrinhProps {
   mod: ModuleDef
   sc?: ScreenProps['sc']
@@ -174,69 +178,5 @@ export interface MQuyTrinhProps {
 
 export const MQuyTrinh: FC<MQuyTrinhProps> = ({ mod }) => {
   const { s } = useSession()
-  const dsBuoc = useMemo(() => layDsBuoc(mod, s), [mod, s])
-
-  if (dsBuoc.length === 0) {
-    return (
-      <div className="m-quytrinh m-qt2-quytrinh">
-        <p className="m-qt2-mota-dau">Chưa có quy trình cho phân hệ này trên điện thoại.</p>
-      </div>
-    )
-  }
-
-  const goc0 = mod.quyTrinh
-
-  return (
-    <div className="m-quytrinh m-qt2-quytrinh">
-      {s.goi === 'F' && goc0?.moTaFree && (
-        <p className="m-qt2-mota-dau">{goc0.moTaFree}</p>
-      )}
-
-      <div className="m-qt2-ds">
-        {dsBuoc.map((b, i) => (
-          <div key={b.id} className="m-qt2-buoc-muc">
-            {i > 0 && <div className="m-qt2-duong-noi" aria-hidden="true" />}
-            <div className="m-qt2-the">
-              <div className="m-qt2-head">
-                <span className="m-qt2-so">{b.so}</span>
-                <h3 className="m-qt2-ten-buoc">{b.ten}</h3>
-              </div>
-
-              <div className={`m-qt2-luoi${b.nut.length >= 2 ? ' m-qt2-luoi-2' : ''}`}>
-                {b.nut.map(n =>
-                  n.tinh ? (
-                    <div key={n.id} className="m-qt2-o tinh">
-                      <div className="m-qt2-o-ic">
-                        <Icon n={n.icon} className="ic sm" />
-                      </div>
-                      <div className="m-qt2-o-nd">
-                        <span className="m-qt2-o-ten">{n.ten}</span>
-                        {n.moTa && <span className="m-qt2-o-mota">{n.moTa}</span>}
-                      </div>
-                    </div>
-                  ) : (
-                    <Link
-                      key={n.id}
-                      to={n.path}
-                      className="m-qt2-o"
-                      title={`Mở ${n.ten.toLowerCase()}`}
-                    >
-                      <div className="m-qt2-o-ic">
-                        <Icon n={n.icon} className="ic sm" />
-                      </div>
-                      <div className="m-qt2-o-nd">
-                        <span className="m-qt2-o-ten">{n.ten}</span>
-                        {n.moTa && <span className="m-qt2-o-mota">{n.moTa}</span>}
-                      </div>
-                      <Icon n="chevr" className="ic xs m-qt2-o-arr" />
-                    </Link>
-                  )
-                )}
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
+  return <Navigate to={duongDan(mod, manDauMobile(mod, s.goi))} replace />
 }

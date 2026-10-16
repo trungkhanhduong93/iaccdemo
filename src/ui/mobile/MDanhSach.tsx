@@ -1,7 +1,8 @@
-import { useMemo, useState, type ReactNode } from 'react'
+import { useMemo, useState, type FC, type ReactNode } from 'react'
 import { fold } from '../format'
 import { Icon } from '../Icon'
 import { MTrong, type KieuMTrong } from './MTrong'
+import { MChon } from './MChon'
 
 export interface ChipItem {
   k: string
@@ -21,6 +22,8 @@ export interface MDanhSachProps<T> {
   onChipChon?: (k: string) => void
   onMoLoc?: () => void
   coLoc?: boolean
+  khoangNgayHienThi?: string
+  onMoChonNgay?: () => void
   onThem?: () => void
   nhanThem?: string
   hinhTrong?: string
@@ -28,6 +31,7 @@ export interface MDanhSachProps<T> {
   moTaTrong?: string
   kieuTrong?: KieuMTrong
   tomTat?: ReactNode
+  hangTabs?: ReactNode
   hangPhu?: ReactNode
   nhomTheo?: (r: T) => string
   tieuDeNhom?: (khoa: string, ds: T[]) => ReactNode
@@ -37,7 +41,7 @@ export function MDanhSach<T>({
   rows,
   the,
   timTheo,
-  timPlaceholder = 'Tìm kiếm...',
+  timPlaceholder = 'Số chứng từ, đối tượng...',
   tim,
   onTimChange,
   chips,
@@ -45,13 +49,16 @@ export function MDanhSach<T>({
   onChipChon,
   onMoLoc,
   coLoc,
+  khoangNgayHienThi = '16/09/2026 - 15/11/2026',
+  onMoChonNgay,
   onThem,
-  nhanThem = 'Thêm mới',
+  nhanThem = '+ Thêm mới',
   hinhTrong,
   tieuDeTrong,
   moTaTrong,
   kieuTrong = 'tim',
   tomTat,
+  hangTabs,
   hangPhu,
   nhomTheo,
   tieuDeNhom,
@@ -60,19 +67,30 @@ export function MDanhSach<T>({
   const q = tim !== undefined ? tim : qLocal
   const setQ = onTimChange ?? setQLocal
 
+  const [timMo, setTimMo] = useState(false)
+  const [sortTang, setSortTang] = useState(false)
+  const [moChonTT, setMoChonTT] = useState(false)
+
   const filteredRows = useMemo(() => {
-    if (!q.trim()) return rows
-    if (timTheo) {
-      return rows.filter(r => timTheo(r, q.trim()))
+    let res = rows
+    if (q.trim()) {
+      if (timTheo) {
+        res = res.filter(r => timTheo(r, q.trim()))
+      } else {
+        const qFold = fold(q.trim())
+        res = res.filter(r => {
+          const text = Object.values(r as Record<string, unknown>)
+            .map(v => (v && typeof v === 'object' ? '' : String(v ?? '')))
+            .join(' ')
+          return fold(text).includes(qFold)
+        })
+      }
     }
-    const qFold = fold(q.trim())
-    return rows.filter(r => {
-      const text = Object.values(r as Record<string, unknown>)
-        .map(v => (v && typeof v === 'object' ? '' : String(v ?? '')))
-        .join(' ')
-      return fold(text).includes(qFold)
-    })
-  }, [rows, q, timTheo])
+    if (sortTang) {
+      return [...res].reverse()
+    }
+    return res
+  }, [rows, q, timTheo, sortTang])
 
   const nhoms = useMemo(() => {
     if (!nhomTheo) return null
@@ -90,15 +108,69 @@ export function MDanhSach<T>({
     return res
   }, [filteredRows, nhomTheo])
 
+  // Lấy nhãn chip trạng thái đang chọn
+  const chipHienTai = chips?.find(c => c.k === chipChon)
+  const nhanStatus = chipHienTai
+    ? `${chipHienTai.ten}${chipHienTai.dem !== undefined ? ` ${chipHienTai.dem}` : ''}`
+    : `Tất cả ${filteredRows.length}`
+
   return (
     <div className="m-ds-khung">
-      <div className="m-ds-dau">
-        {hangPhu}
-        <div className="m-ds-hang-tim">
+      {/* Hàng tabs nếu có */}
+      {hangTabs}
+      {hangPhu}
+
+      {/* Hàng lọc: nút icon lọc vuông, ô khoảng ngày có mũi tên, nút trạng thái "Tất cả n" nền xanh */}
+      <div className="m-ds-hang-loc">
+        <button
+          type="button"
+          className={`m-ds-nut-loc-vuong${coLoc ? ' co-loc' : ''}`}
+          onClick={onMoLoc}
+          aria-label="Bộ lọc"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="4" y1="21" x2="4" y2="14" /><line x1="4" y1="10" x2="4" y2="3" />
+            <line x1="12" y1="21" x2="12" y2="12" /><line x1="12" y1="8" x2="12" y2="3" />
+            <line x1="20" y1="21" x2="20" y2="16" /><line x1="20" y1="12" x2="20" y2="3" />
+            <line x1="1" y1="14" x2="7" y2="14" /><line x1="9" y1="8" x2="15" y2="8" /><line x1="17" y1="16" x2="23" y2="16" />
+          </svg>
+          {coLoc && <span className="m-ds-loc-cham" />}
+        </button>
+
+        <button
+          type="button"
+          className="m-ds-o-ngay"
+          onClick={onMoChonNgay ?? onMoLoc}
+          aria-label="Chọn khoảng ngày"
+        >
+          <span className="m-ds-o-ngay-chu">{khoangNgayHienThi}</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </button>
+
+        {chips && chips.length > 0 ? (
+          <button
+            type="button"
+            className="m-ds-nut-trang-thai"
+            onClick={() => setMoChonTT(true)}
+            aria-label="Chọn trạng thái"
+          >
+            {nhanStatus}
+          </button>
+        ) : (
+          <div className="m-ds-nut-trang-thai">{`Tất cả ${filteredRows.length}`}</div>
+        )}
+      </div>
+
+      {/* Dòng tìm kiếm nếu mở */}
+      {timMo && (
+        <div className="m-ds-tim-hang-mo">
           <div className="m-ds-tim">
             <Icon n="search" className="m-ds-tim-ic ic sm" />
             <input
               type="text"
+              autoFocus
               className="m-ds-tim-inp"
               placeholder={timPlaceholder}
               value={q}
@@ -116,40 +188,39 @@ export function MDanhSach<T>({
               </button>
             ) : null}
           </div>
-          {onMoLoc && (
-            <button
-              type="button"
-              className="m-ds-nut-loc"
-              onClick={onMoLoc}
-              aria-label="Bộ lọc"
-            >
-              <Icon n="filter" className="ic sm" />
-              {coLoc && <span className="m-ds-loc-cham" />}
-            </button>
-          )}
         </div>
-        {chips && chips.length > 0 && (
-          <div className="m-ds-chips">
-            {chips.map(c => {
-              const isChon = c.k === chipChon
-              return (
-                <button
-                  key={c.k}
-                  type="button"
-                  className={`m-chip ${isChon ? 'on' : ''}`}
-                  onClick={() => onChipChon?.(c.k)}
-                >
-                  <span>{c.ten}</span>
-                  {c.dem !== undefined && <span className="m-chip-dem">({c.dem})</span>}
-                </button>
-              )
-            })}
-          </div>
-        )}
+      )}
+
+      {/* Dòng tóm tắt: "n chứng từ · tổng tiền" chữ mờ, bên phải có nút sắp xếp và nút tìm */}
+      <div className="m-ds-dong-tom-tat">
+        <div className="m-ds-tt-chu">
+          {tomTat ?? `${filteredRows.length} chứng từ`}
+        </div>
+        <div className="m-ds-tt-nut">
+          <button
+            type="button"
+            className={`m-ds-btn-ic${sortTang ? ' on' : ''}`}
+            onClick={() => setSortTang(s => !s)}
+            title="Sắp xếp"
+            aria-label="Sắp xếp"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 6h18M6 12h12m-9 6h6" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            className={`m-ds-btn-ic${timMo ? ' on' : ''}`}
+            onClick={() => setTimMo(t => !t)}
+            title="Tìm kiếm"
+            aria-label="Tìm kiếm"
+          >
+            <Icon n="search" className="ic sm" />
+          </button>
+        </div>
       </div>
 
-      {tomTat && <div className="m-ds-tom-tat">{tomTat}</div>}
-
+      {/* Danh sách thẻ */}
       {filteredRows.length === 0 ? (
         <MTrong
           kieu={kieuTrong}
@@ -176,6 +247,7 @@ export function MDanhSach<T>({
         </div>
       )}
 
+      {/* Nút nổi thêm mới góc dưới phải, bo tròn, nằm trên thanh dưới */}
       {onThem && (
         <button
           type="button"
@@ -183,9 +255,27 @@ export function MDanhSach<T>({
           onClick={onThem}
           aria-label={nhanThem}
         >
-          <Icon n="plus" className="ic sm" />
+          {!nhanThem.startsWith('+') && <Icon n="plus" className="ic sm" />}
           <span>{nhanThem}</span>
         </button>
+      )}
+
+      {/* Sheet chọn trạng thái nếu bấm nút trạng thái */}
+      {chips && chips.length > 0 && (
+        <MChon
+          mo={moChonTT}
+          onDong={() => setMoChonTT(false)}
+          tieuDe="Chọn trạng thái"
+          ds={chips.map(c => ({
+            k: c.k,
+            ten: `${c.ten}${c.dem !== undefined ? ` (${c.dem})` : ''}`,
+          }))}
+          chon={chipChon}
+          onChon={k => {
+            onChipChon?.(k)
+            setMoChonTT(false)
+          }}
+        />
       )}
     </div>
   )

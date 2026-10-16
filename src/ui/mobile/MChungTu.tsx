@@ -8,9 +8,9 @@ import { docNgay, trongKhoang } from '../ChonNgay'
 import { money, rutGonSo } from '../format'
 import { dsChipTT, khopChipTT } from '../LocNangCao'
 import { chieuTien, dauTien, lopChieu } from './chieuTien'
-import { TT_CT } from '../generic/gen'
+import { TT_CT, dongCua } from '../generic/gen'
 import { ttTienTheoTra } from '../generic/daXoa'
-import { TT_TIEN } from '../generic/nhom'
+import { TT_TIEN, theoLoai } from '../generic/nhom'
 import { ChungTuForm } from '../generic/ChungTuForm'
 import { useDongChungTu } from '../generic/VoucherScreen'
 import { useDsPhieuDcn } from '../../modules/kho/BangDieuChuyen'
@@ -20,6 +20,7 @@ import { MDanhSach } from './MDanhSach'
 import { MLapPhieu } from './MLapPhieu'
 import { coLocKhacMacDinh, MAC_DINH_LOC_MOBILE, MLoc, tinhKhoangNgay, type GtLocMobile } from './MLoc'
 import { MXemPhieu } from './MXemPhieu'
+import { MBaoCaoTheoDoi } from './MBaoCaoTheoDoi'
 
 // Tách lớp ngoài để danh sách luôn gọi đủ hook, không trả sớm theo id
 export const MChungTu: FC<ScreenProps> = ({ sc, mod }) => {
@@ -173,38 +174,232 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
         }
       }
 
-  // Hàng phụ chọn loại phiếu (nếu cfg.loai)
-  const hangPhu =
-    cfg.loai && cfg.loai.length > 0 ? (
-      <div className="m-ct-tabs-loai">
-        {!cfg.dieuChinh && (
+  const [moTheoDoi, setMoTheoDoi] = useState(false)
+
+  // Hàng tabs ngang: các loại phiếu / màn chứng từ trong phân hệ + tab Báo cáo theo dõi
+  const hangTabs = useMemo(() => {
+    if (mod.key === 'kho') {
+      const isNk = sc.code === '5.1.1' || sc.slug === '5-1-1'
+      const isXk = sc.code === '5.1.2-4' || sc.slug === '5-1-2-4'
+      const isXh = sc.code === '5.1.2-3' || sc.slug === '5-1-2-3'
+      return (
+        <div className="m-ds-hang-tabs" role="tablist">
           <button
             type="button"
-            className={`m-ct-tab-loai ${loaiChon === '' ? 'on' : ''}`}
-            onClick={() => setLoaiChon('')}
+            role="tab"
+            aria-selected={isNk}
+            className={`m-tab-chu${isNk ? ' on' : ''}`}
+            onClick={() => nav('/app/kho/5-1-1')}
           >
-            Tất cả
+            Nhập khác
           </button>
-        )}
-        {cfg.loai.map(l => (
           <button
-            key={l.k}
             type="button"
-            className={`m-ct-tab-loai ${loaiChon === l.k ? 'on' : ''}`}
-            onClick={() => setLoaiChon(l.k)}
+            role="tab"
+            aria-selected={isXk}
+            className={`m-tab-chu${isXk ? ' on' : ''}`}
+            onClick={() => nav('/app/kho/5-1-2-4')}
           >
-            {l.ten}
+            Xuất khác
           </button>
-        ))}
+          {isXh && (
+            <button
+              type="button"
+              role="tab"
+              aria-selected={true}
+              className="m-tab-chu on"
+            >
+              Xuất huỷ
+            </button>
+          )}
+          <button
+            type="button"
+            role="tab"
+            aria-selected={false}
+            className="m-tab-chu"
+            onClick={() => setMoTheoDoi(true)}
+          >
+            Báo cáo theo dõi
+          </button>
+        </div>
+      )
+    }
+
+    if (mod.key === 'ccdc') {
+      const is812 = sc.code === '8.1.2' || sc.slug === '8-1-2'
+      const is813 = sc.code === '8.1.3' || sc.slug === '8-1-3'
+      return (
+        <div className="m-ds-hang-tabs" role="tablist">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={false}
+            className="m-tab-chu"
+            onClick={() => nav('/app/ccdc/8-1-1')}
+          >
+            Thẻ chi phí
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={is812}
+            className={`m-tab-chu${is812 ? ' on' : ''}`}
+            onClick={() => nav('/app/ccdc/8-1-2')}
+          >
+            Tăng, giảm CCDC
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={is813}
+            className={`m-tab-chu${is813 ? ' on' : ''}`}
+            onClick={() => nav('/app/ccdc/8-1-3')}
+          >
+            Kiểm kê CCDC
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={false}
+            className="m-tab-chu"
+            onClick={() => setMoTheoDoi(true)}
+          >
+            Báo cáo theo dõi
+          </button>
+        </div>
+      )
+    }
+
+    if (mod.key === 'mua-hang') {
+      const is411 = sc.code === '4.1.1' || sc.slug === '4-1-1'
+      const is412 = sc.code === '4.1.2' || sc.slug === '4-1-2'
+      const is414 = sc.code === '4.1.4' || sc.slug === '4-1-4'
+      const is415 = sc.code === '4.1.5' || sc.slug === '4-1-5'
+      return (
+        <div className="m-ds-hang-tabs" role="tablist">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={is411}
+            className={`m-tab-chu${is411 ? ' on' : ''}`}
+            onClick={() => nav('/app/mua-hang/4-1-1')}
+          >
+            Chứng từ mua hàng
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={is412}
+            className={`m-tab-chu${is412 ? ' on' : ''}`}
+            onClick={() => nav('/app/mua-hang/4-1-2')}
+          >
+            Hoá đơn mua hàng
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={is414}
+            className={`m-tab-chu${is414 ? ' on' : ''}`}
+            onClick={() => nav('/app/mua-hang/4-1-4')}
+          >
+            Trả lại hàng mua
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={is415}
+            className={`m-tab-chu${is415 ? ' on' : ''}`}
+            onClick={() => nav('/app/mua-hang/4-1-5')}
+          >
+            Chi phí mua hàng
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={false}
+            className="m-tab-chu"
+            onClick={() => setMoTheoDoi(true)}
+          >
+            Báo cáo theo dõi
+          </button>
+        </div>
+      )
+    }
+
+    if (cfg.loai && cfg.loai.length > 0) {
+      return (
+        <div className="m-ds-hang-tabs" role="tablist">
+          {!cfg.dieuChinh && (
+            <button
+              type="button"
+              role="tab"
+              aria-selected={loaiChon === ''}
+              className={`m-tab-chu${loaiChon === '' ? ' on' : ''}`}
+              onClick={() => setLoaiChon('')}
+            >
+              Tất cả
+            </button>
+          )}
+          {cfg.loai.map(l => (
+            <button
+              key={l.k}
+              type="button"
+              role="tab"
+              aria-selected={loaiChon === l.k}
+              className={`m-tab-chu${loaiChon === l.k ? ' on' : ''}`}
+              onClick={() => setLoaiChon(l.k)}
+            >
+              {l.ten}
+            </button>
+          ))}
+          <button
+            type="button"
+            role="tab"
+            aria-selected={false}
+            className="m-tab-chu"
+            onClick={() => setMoTheoDoi(true)}
+          >
+            Báo cáo theo dõi
+          </button>
+        </div>
+      )
+    }
+
+    // Các phân hệ khác có 1 màn chính: hiện tab chính và tab Báo cáo theo dõi
+    return (
+      <div className="m-ds-hang-tabs" role="tablist">
+        <button
+          type="button"
+          role="tab"
+          aria-selected={true}
+          className="m-tab-chu on"
+        >
+          {sc.ngan ?? sc.ten}
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={false}
+          className="m-tab-chu"
+          onClick={() => setMoTheoDoi(true)}
+        >
+          Báo cáo theo dõi
+        </button>
       </div>
-    ) : null
+    )
+  }, [mod.key, sc, cfg.loai, cfg.dieuChinh, loaiChon, nav])
+
+  const pad = (n: number) => String(n).padStart(2, '0')
+  const khoangNgayHienThi = kn
+    ? `${pad(kn.tu.getDate())}/${pad(kn.tu.getMonth() + 1)}/${kn.tu.getFullYear()} - ${pad(kn.den.getDate())}/${pad(kn.den.getMonth() + 1)}/${kn.den.getFullYear()}`
+    : '16/09/2026 - 15/11/2026'
 
   return (
     <>
       <MDanhSach
         rows={list}
         timTheo={(r, q) => {
-          const text = `${r.so} ${r.doiTuong ?? ''} ${r.dienGiai ?? ''}`.toLowerCase()
+          const text = `${r.so} ${r.doiTuong ?? ''} ${r.dienGiai ?? ''} ${r.cn ?? ''}`.toLowerCase()
           return text.includes(q.toLowerCase())
         }}
         timPlaceholder="Số chứng từ, đối tượng, diễn giải..."
@@ -213,106 +408,65 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
         onChipChon={setChipTT}
         onMoLoc={() => setLocMo(true)}
         coLoc={coLocKhacMacDinh(locVal)}
+        khoangNgayHienThi={khoangNgayHienThi}
         onThem={handleThem}
         nhanThem={cfg.them ?? '+ Thêm mới'}
-        hangPhu={hangPhu}
+        hangTabs={hangTabs}
         tomTat={
           coCaHaiChieu ? (
-            <div className="m-tong3-wrap">
-              <div className="m-tong3">
-                <div className="m-tong3-o">
-                  <span className="m-tong3-nhan">Tổng thu</span>
-                  <b className="m-tong3-so m-num m-tien-vao">+{rutGonSo(tongThu)}</b>
-                </div>
-                <div className="m-tong3-o">
-                  <span className="m-tong3-nhan">Tổng chi</span>
-                  <b className="m-tong3-so m-num m-tien-ra">−{rutGonSo(tongChi)}</b>
-                </div>
-                <div className="m-tong3-o">
-                  <span className="m-tong3-nhan">Chênh lệch</span>
-                  <b
-                    className={`m-tong3-so m-num ${
-                      chenhLech > 0 ? 'm-tien-vao' : chenhLech < 0 ? 'm-tien-ra' : ''
-                    }`}
-                  >
-                    {chenhLech > 0
-                      ? `+${rutGonSo(chenhLech)}`
-                      : chenhLech < 0
-                      ? `−${rutGonSo(chenhLech)}`
-                      : rutGonSo(0)}
-                  </b>
-                </div>
-              </div>
-              <div className="m-tong3-dem">{list.length} chứng từ</div>
-            </div>
+            <span>
+              {list.length} chứng từ · Thu {rutGonSo(tongThu)} / Chi {rutGonSo(tongChi)}
+            </span>
           ) : (
             <span>
-              <b>{list.length}</b> chứng từ · <b>{money(tongTien)} đ</b>
+              {list.length} chứng từ · {money(tongTien)} đ
             </span>
           )
         }
-        nhomTheo={r => String(r.ngay ?? '').split(' ')[0]}
-        tieuDeNhom={(khoa, dsNhom) => {
-          let tongNgayEl: ReactNode = null
-          if (coChieu) {
-            let tNgay = 0
-            for (const item of dsNhom) {
-              const c = chieuTien(mod.key, cfg, item)
-              const tien = Number(item.tong) || 0
-              if (c === 'vao') tNgay += tien
-              else if (c === 'ra') tNgay -= tien
-            }
-            if (tNgay > 0) {
-              tongNgayEl = <span className="m-ds-ngay-tong m-tien-vao m-num">+{money(tNgay)}</span>
-            } else if (tNgay < 0) {
-              tongNgayEl = <span className="m-ds-ngay-tong m-tien-ra m-num">−{money(Math.abs(tNgay))}</span>
-            } else {
-              tongNgayEl = <span className="m-ds-ngay-tong m-num">0</span>
-            }
-          }
-          return (
-            <>
-              <span className="m-ds-ngay-chu">{dinhDangThuNgay(khoa)}</span>
-              {tongNgayEl}
-            </>
-          )
-        }}
         the={(r, i) => {
           const ttInfo = TT_CT[r.tt] ?? ['dim', r.tt]
-          const nhomMb = mod.key === 'mua-hang' ? 'mua' : mod.key === 'ban-hang' ? 'ban' : null
-          const ttTien = nhomMb ? ttTienTheoTra(r) : null
-          const ttTienInfo = nhomMb && ttTien ? TT_TIEN[nhomMb][ttTien] : null
           const anTien = Boolean(cfg.kiemKe || cfg.dieuChuyen === 'ck' || sc.code === '5.1.10' || sc.code === '5.1.4.3')
-          const chieu = chieuTien(mod.key, cfg, r)
-          const dau = dauTien(chieu)
-          const tienHienThi = anTien ? null : `${dau}${money(r.tong)}`
-          const phu = [r.tenLoai, r.gio].filter(Boolean).join(' · ')
+          const tienHienThi = anTien ? null : `${money(Math.abs(r.tong ?? 0))} đ`
+
+          const cfgLoai = theoLoai(cfg, r.loai)
+          const laHang = cfgLoai.dong === 'hang' || cfgLoai.dong === 'nvl'
+          let soDongHang = 0
+          if (laHang) {
+            if (Array.isArray(r._dong)) {
+              soDongHang = r._dong.length
+            } else {
+              const idSeed = `${sc.code ?? sc.slug}-${r.id}`
+              soDongHang = dongCua(cfgLoai, idSeed).length
+            }
+          }
+
+          const doiTuongOrCn = r.doiTuong || r.cn || r.dienGiai || '—'
+          const ngayHienThi = String(r.ngay ?? '').split(' ')[0]
+          const thongTinHang = soDongHang > 0 ? `${ngayHienThi} · ${soDongHang} hàng hoá` : ngayHienThi
+          const ttNhan = (r.tt === 1 || r.tt === 'ok' || r.tt === '1' || r.tt === 2) ? 'Hoàn thành' : (r.tt === 0 ? 'Chưa ghi sổ' : (ttInfo[1] || 'Hoàn thành'))
+          const ttCls = (r.tt === 1 || r.tt === 'ok' || r.tt === '1' || r.tt === 2) ? 'ok' : (r.tt === 0 ? 'cho' : 'ok')
 
           return (
             <div
               key={`${String(r.id ?? r.so ?? '')}_${i}`}
-              className="m-ds-ngay-dong"
+              className="m-the-ct"
               onClick={() => nav(`${path}/${r.id}`)}
               role="button"
               tabIndex={0}
             >
-              <div className="m-ds-ngay-hang1">
-                <span className="m-ds-ngay-dt">{r.doiTuong || r.dienGiai || '—'}</span>
-                {tienHienThi !== null && (
-                  <span className={`m-ds-ngay-tien m-num ${lopChieu(chieu)}`}>
-                    {tienHienThi}
-                  </span>
-                )}
+              <div className="m-the-ct-hang1">
+                <span className="m-the-ct-so">{r.so}</span>
+                <span className={`m-the-ct-tag ${ttCls}`}>{ttNhan}</span>
               </div>
-              <div className="m-ds-ngay-hang2">
-                <span className="m-ds-ngay-phu">
-                  <span className="m-ds-ngay-so">{r.so}</span>
-                  {phu && ` · ${phu}`}
-                </span>
-                <span className="m-ds-ngay-chips">
-                  {ttTienInfo && <span className={`m-ct-chip ${ttTienInfo[0]}`}>{ttTienInfo[1]}</span>}
-                  {ghi && ttInfo && <span className={`m-ct-chip ${ttInfo[0]}`}>{ttInfo[1]}</span>}
-                </span>
+              <div className="m-the-ct-hang2">
+                <span className="m-the-ct-dt">{doiTuongOrCn}</span>
+              </div>
+              <div className="m-the-ct-vach" />
+              <div className="m-the-ct-hang3">
+                <span className="m-the-ct-ngay-hang">{thongTinHang}</span>
+                {tienHienThi !== null && (
+                  <span className="m-the-ct-tien">{tienHienThi}</span>
+                )}
               </div>
             </div>
           )
@@ -341,6 +495,13 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
           onChon={k => nav(`${path}/moi?loai=${k}`)}
         />
       )}
+
+      {/* Tấm Báo cáo theo dõi & Danh mục */}
+      <MBaoCaoTheoDoi
+        mo={moTheoDoi}
+        onDong={() => setMoTheoDoi(false)}
+        modKey={mod.key}
+      />
     </>
   )
 }

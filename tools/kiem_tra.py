@@ -1760,32 +1760,36 @@ def kiem_tra_dot_11_b():
 
             pg.screenshot(path=str(SHOTS / f'm-11b-0{idx+4}-{path.replace("/", "-")}.png'))
 
-        # ── Bước 3: Mở quy trình của phân hệ Thu chi (tien/quy-trinh) và Kho (kho/quy-trinh): có ít nhất 3 thẻ bước. Bấm thẻ đầu thì URL đổi ──
-        for idx, (path, ten) in enumerate([('tien/quy-trinh', 'Quy trình Thu chi'), ('kho/quy-trinh', 'Quy trình Kho')]):
+        # ── Bước 3: Bấm phân hệ Thu chi và Kho từ tab Nghiệp vụ: vào thẳng danh sách chứng từ; mở đường dẫn quy-trinh cũ cũng tự chuyển sang danh sách ──
+        pg.goto(f'{URL}?goi=PL#/app/nghiep-vu')
+        pg.wait_for_selector('.m-nghiep-vu')
+        pg.wait_for_timeout(300)
+
+        # Bấm Thu chi -> vào thẳng danh sách thu chi (2-1-1)
+        o_tien = pg.locator('a.m-nv-o[href*="tien"]')
+        if o_tien.count() == 0:
+            loi.append('Nghiệp vụ: không tìm thấy phân hệ Thu chi')
+        else:
+            o_tien.first.click()
+            pg.wait_for_timeout(400)
+            if 'tien/2-1-1' not in pg.url:
+                loi.append(f'Nghiệp vụ Thu chi: bấm phân hệ không vào thẳng danh sách chứng từ ({pg.url})')
+            pg.wait_for_selector('.m-ds-khung', timeout=6000)
+            kiem_man('Danh sách Thu chi từ Nghiệp vụ')
+
+        for idx, (path, ten, dich_url) in enumerate([('tien/quy-trinh', 'Thu chi', 'tien/2-1-1'), ('kho/quy-trinh', 'Kho', 'kho/5-1-2')]):
             pg.goto(f'{URL}?goi=PL#/app/{path}')
             pg.wait_for_selector('.m-app')
             pg.wait_for_timeout(300)
             kiem_man(ten)
-
-            the_ds = pg.locator('.m-qt2-the, .m-qt-the')
-            count = the_ds.count()
-            if count < 3:
-                loi.append(f'{ten}: cần ít nhất 3 thẻ bước, nhưng chỉ thấy {count} thẻ (.m-qt2-the)')
+            if dich_url not in pg.url:
+                loi.append(f'{ten}: mở {path} cũ không chuyển hướng sang danh sách {dich_url} (đang ở {pg.url})')
             else:
-                url_truoc = pg.url
-                o_bam = the_ds.first.locator('.m-qt2-o, a').first
-                if o_bam.count() > 0:
-                    o_bam.click()
-                else:
-                    the_ds.first.click()
-                pg.wait_for_timeout(300)
-                url_sau = pg.url
-                if url_sau == url_truoc:
-                    loi.append(f'{ten}: bấm thẻ đầu tiên nhưng URL không đổi ({url_truoc})')
-                else:
-                    print(f'  - Bước 3.{idx+1}: {ten} có {count} thẻ bước, bấm thẻ đầu đổi URL ({url_truoc} -> {url_sau})')
-
-            pg.screenshot(path=str(SHOTS / f'm-11b-0{idx+6}-quytrinh-{path.split("/")[0]}.png'))
+                pg.wait_for_selector('.m-ds-khung', timeout=6000)
+                the_ds = pg.locator('.m-the-ct, .m-the-phieu')
+                count = the_ds.count()
+                print(f'  - Bước 3.{idx+1}: {ten} ({path}) tự chuyển hướng sang {dich_url}, có {count} thẻ chứng từ')
+            pg.screenshot(path=str(SHOTS / f'm-11b-0{idx+6}-ds-{path.split("/")[0]}.png'))
 
         # ── Bước 4: Duyệt mọi màn kind: 'tool' và quytrinh qua địa chỉ: không màn nào còn hiện thẻ "chưa có trên điện thoại" của MChiMayTinh ──
         dia_chi_kiem = [
@@ -4503,7 +4507,8 @@ def kiem_tra_dot_22_b():
     print('Kiểm tra đợt 22B (T267): Sơ đồ quy trình điện thoại cho kho, ccdc, thue (390x844):')
     SHOTS.mkdir(parents=True, exist_ok=True)
 
-    mods = [('kho', 'Kiểm kê'), ('ccdc', 'Chi phí phân bổ'), ('thue', 'Kê khai thuế')]
+    # Thuế gói Free chỉ có Danh sách tờ khai, chưa có trên điện thoại: bỏ sơ đồ thì tab Nghiệp vụ ẩn phân hệ này (T281)
+    mods = [('kho', 'Kiểm kê'), ('ccdc', 'Chi phí phân bổ')]
 
     with sync_playwright() as p:
         b = p.chromium.launch(channel='chrome')
@@ -4519,17 +4524,18 @@ def kiem_tra_dot_22_b():
         for mod, ten_ph in mods:
             path_qt = f'/app/{mod}/quy-trinh'
             pg.goto(f"{URL}?goi=F&p=m22-{mod}#{path_qt}")
-            pg.wait_for_selector('.m-quytrinh', timeout=8000)
+            pg.wait_for_selector('.m-app', timeout=8000)
             pg.wait_for_timeout(350)
 
-            # 1. Mở được, có ít nhất 1 thẻ bước
-            the_ds = pg.locator('.m-qt2-the')
-            count = the_ds.count()
-            if count == 0:
-                loi.append(f'T267 mobile ({mod}): Không tìm thấy thẻ bước (.m-qt2-the)')
+            # 1. Mở được, chuyển hướng sang danh sách
+            if 'quy-trinh' in pg.url:
+                loi.append(f'T267 mobile ({mod}): mở {path_qt} cũ không chuyển hướng ({pg.url})')
+            the_ds = pg.locator('.m-the-ct, .m-ds-khung, .m-so-khung, table')
+            if the_ds.count() == 0:
+                loi.append(f'T267 mobile ({mod}): Không tìm thấy danh sách')
 
             # 2. Không cuộn ngang trang
-            tran = pg.evaluate("['.main', '.m-than', '.m-quytrinh'].filter(q => { const e = document.querySelector(q); return e && e.scrollWidth > e.clientWidth + 2 })")
+            tran = pg.evaluate("['.main', '.m-than', '.m-ds-khung'].filter(q => { const e = document.querySelector(q); return e && e.scrollWidth > e.clientWidth + 2 })")
             if tran:
                 loi.append(f'T267 mobile ({mod}): Tràn ngang tại {tran}')
 

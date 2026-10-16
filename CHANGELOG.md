@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 16/10/2026
 
+- T281: Điện thoại, mọi gói: bỏ sơ đồ quy trình, bấm phân hệ vào thẳng danh sách chứng từ, các loại phiếu là tab trên đầu. Danh sách chứng từ dạng thẻ gọn, có hàng lọc ngày, trạng thái, nút Thêm mới nổi. Nút quay lại to hơn. Mọi báo cáo có nút lọc mở tấm chọn kỳ, chi nhánh. Phân hệ Chi phí phân bổ làm lại cho điện thoại: thẻ chi phí gọn, chọn chi nhánh bằng tấm kéo lên.
 - T289: Báo cáo đang gom nhóm có nút Tổng hợp, Chi tiết. Tổng hợp hiện mỗi nhóm một dòng đã cộng số; Chi tiết hiện đủ dòng như trước.
 - T288: Bấm mở một báo cáo ở phân hệ Báo cáo thì hiện hộp chọn điều kiện lọc trước, bấm Xem báo cáo mới hiện số liệu.
 - T284: Gõ số tiền, số lượng, đơn giá ở bảng chi tiết phiếu và ở thẻ chi phí có chấm ngăn hàng nghìn ngay khi gõ (kiểu Việt Nam, phẩy thập phân), tổng tiền đổi ngay. Thẻ chi phí đánh số TPB{YY}{MM}-{0000}, thẻ dư đầu kỳ TPBDK{YY}{MM}-{0000} theo ngày ghi tăng, ghi ở Cấu hình kế toán. Menu thêm ghi Ghi tăng đầu kỳ; Thông tin mua của thẻ dạng chỉ xem, số chứng từ bấm mở chứng từ gốc; thẻ dư đầu kỳ đổi chỗ cột Số tháng phân bổ. Danh sách có 3 thẻ dư đầu kỳ mẫu.

@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { dsChiNhanh, useSession } from '../../app/session'
 import { CHI_NHANH } from '../../data/mock'
@@ -7,8 +7,8 @@ import { ghiGanDay } from '../../app/CommandPalette'
 import { OnboardFabi } from '../../modules/onboarding/OnboardFabi'
 import { Icon } from '../Icon'
 import { Dropdown, MenuHead, MenuItem, MenuSep } from '../Dropdown'
-import { Logo } from '../Logo'
-import { ThanhDuoi, tabDangChon } from './ThanhDuoi'
+import { ThanhDuoi } from './ThanhDuoi'
+import { MBaoCaoLoc } from './MBaoCaoLoc'
 
 function laManGoc(pathname: string, search = ''): boolean {
   if (pathname === '/app/nghiep-vu' && search.includes('m=')) return false
@@ -39,6 +39,8 @@ function layTieuDe(pathname: string, search = ''): string {
   const modKey = parts[1]
   const slug = parts[2]
   if (!modKey) return 'Trang chủ'
+  if (modKey === 'kho' && (slug === '5-1-1' || slug === '5-1-2-4')) return 'Nhập xuất khác'
+  if (modKey === 'ccdc' && slug === '8-1-1') return 'Danh sách thẻ chi phí'
   const { mod, sc } = timMan(modKey, slug)
   if (sc) return nhanTab(sc)
   if (mod) return mod.ten
@@ -50,7 +52,7 @@ function laBaoCao(pathname: string): boolean {
   const [, modKey, slug] = pathname.split('/').filter(Boolean)
   if (modKey === 'bao-cao') return Boolean(slug) && slug !== 'tat-ca' && !slug.startsWith('nhom-')
   const { sc } = timMan(modKey, slug)
-  return sc?.kind === 'report' || sc?.kind === 'baocao'
+  return sc?.kind === 'report' || sc?.kind === 'baocao' || sc?.kind === 'custom'
 }
 
 function laXemPhieu(pathname: string): boolean {
@@ -74,6 +76,7 @@ export function MobileShell() {
   const { s, set } = useSession()
   const loc = useLocation()
   const nav = useNavigate()
+  const [moLocBc, setMoLocBc] = useState(false)
 
   // Ghi lịch sử màn vừa mở cho hộp tìm Ctrl K (T80)
   useEffect(() => {
@@ -94,6 +97,8 @@ export function MobileShell() {
     loc.pathname === '/app/trang-chu/ban-lam-viec'
   const tieuDe = layTieuDe(loc.pathname, loc.search)
   const capHai = laXemPhieu(loc.pathname) || laBaoCao(loc.pathname)
+  const parts = loc.pathname.split('/').filter(Boolean)
+  const currentSc = timMan(parts[1], parts[2])?.sc
 
   const quayLai = () => {
     if (loc.pathname === '/app/nghiep-vu' && loc.search.includes('m=')) {
@@ -118,8 +123,11 @@ export function MobileShell() {
                 className="m-nut-back"
                 onClick={quayLai}
                 title="Quay lại"
+                aria-label="Quay lại"
               >
-                <Icon n="chevl" className="ic sm" />
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
               </button>
             )}
           </div>
@@ -127,34 +135,51 @@ export function MobileShell() {
             {tieuDe}
           </h1>
           <div className="m-thanh-tren-phai">
-            {coChipCn(loc.pathname) && <Dropdown
-              btnClass="m-cn-btn"
-              align="end"
-              width={280}
-              title="Chọn chi nhánh làm việc"
-              label={
-                <>
-                  <Icon n="store" className="ic sm" />
-                  <span className="m-cn-nhan">{layNhanCn(cn)}</span>
-                  <Icon n="chevd" className="ic sm" />
-                </>
-              }
-            >
-              {dong => (
-                <>
-                  <MenuHead right={<small className="mh-n">{dsCn.length} chi nhánh</small>}>Chi nhánh làm việc</MenuHead>
-                  <MenuItem on={!cn} icon="layers" desc="Chỉ xem gộp, chưa lập chứng từ" onClick={() => { set({ chiNhanh: 'all' }); dong() }}>
-                    Tất cả chi nhánh
-                  </MenuItem>
-                  <MenuSep />
-                  {dsCn.map(c => (
-                    <MenuItem key={c.id} on={c.id === s.chiNhanh} icon="store" onClick={() => { set({ chiNhanh: c.id }); dong() }}>
-                      {c.ten}
+            {laBaoCao(loc.pathname) ? (
+              <button
+                type="button"
+                className="m-thanh-tren-nut-loc"
+                onClick={() => setMoLocBc(true)}
+                title="Bộ lọc báo cáo"
+                aria-label="Bộ lọc báo cáo"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="4" y1="21" x2="4" y2="14" /><line x1="4" y1="10" x2="4" y2="3" />
+                  <line x1="12" y1="21" x2="12" y2="12" /><line x1="12" y1="8" x2="12" y2="3" />
+                  <line x1="20" y1="21" x2="20" y2="16" /><line x1="20" y1="12" x2="20" y2="3" />
+                  <line x1="1" y1="14" x2="7" y2="14" /><line x1="9" y1="8" x2="15" y2="8" /><line x1="17" y1="16" x2="23" y2="16" />
+                </svg>
+              </button>
+            ) : coChipCn(loc.pathname) ? (
+              <Dropdown
+                btnClass="m-cn-btn"
+                align="end"
+                width={280}
+                title="Chọn chi nhánh làm việc"
+                label={
+                  <>
+                    <Icon n="store" className="ic sm" />
+                    <span className="m-cn-nhan">{layNhanCn(cn)}</span>
+                    <Icon n="chevd" className="ic sm" />
+                  </>
+                }
+              >
+                {dong => (
+                  <>
+                    <MenuHead right={<small className="mh-n">{dsCn.length} chi nhánh</small>}>Chi nhánh làm việc</MenuHead>
+                    <MenuItem on={!cn} icon="layers" desc="Chỉ xem gộp, chưa lập chứng từ" onClick={() => { set({ chiNhanh: 'all' }); dong() }}>
+                      Tất cả chi nhánh
                     </MenuItem>
-                  ))}
-                </>
-              )}
-            </Dropdown>}
+                    <MenuSep />
+                    {dsCn.map(c => (
+                      <MenuItem key={c.id} on={c.id === s.chiNhanh} icon="store" onClick={() => { set({ chiNhanh: c.id }); dong() }}>
+                        {c.ten}
+                      </MenuItem>
+                    ))}
+                  </>
+                )}
+              </Dropdown>
+            ) : null}
           </div>
         </header>
       )}
@@ -165,6 +190,15 @@ export function MobileShell() {
 
       {!capHai && <ThanhDuoi />}
       <OnboardFabi />
+
+      {moLocBc && (
+        <MBaoCaoLoc
+          mo={moLocBc}
+          onDong={() => setMoLocBc(false)}
+          path={loc.pathname}
+          sc={currentSc}
+        />
+      )}
     </div>
   )
 }

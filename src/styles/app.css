@@ -20346,3 +20346,609 @@ input.bat-tat:disabled { opacity: .5; cursor: not-allowed; }
 /* ── Xem báo cáo gom nhóm dạng Tổng hợp, Chi tiết (T289) ── */
 .bc-xem-nhom { flex: none; align-self: center; }
 .bc-xem-nhom button { padding: 5px 12px; font-size: 13px; }
+
+/* ── Điện thoại: danh sách gọn, nút quay lại, lọc báo cáo, chi phí phân bổ (T281) ── */
+.m-thanh-tren .m-nut-back {
+  width: 44px !important;
+  height: 44px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: none !important;
+  background: transparent !important;
+  color: var(--ink, #1f2225) !important;
+  cursor: pointer !important;
+  padding: 0 !important;
+  flex: none !important;
+}
+.m-thanh-tren .m-nut-back svg {
+  width: 24px !important;
+  height: 24px !important;
+  stroke-width: 2.5px !important;
+}
+.m-thanh-tren-tieu-de {
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  color: var(--ink, #1f2225) !important;
+}
+.m-thanh-tren-nut-loc {
+  width: 44px !important;
+  height: 44px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: none !important;
+  background: transparent !important;
+  cursor: pointer !important;
+  border-radius: 8px !important;
+  color: var(--ink, #1f2225) !important;
+  flex: none !important;
+}
+
+/* Danh sách chứng từ / thẻ CCDC: thanh tab nằm ngang */
+.m-ds-hang-tabs {
+  flex: none !important;
+  display: flex !important;
+  gap: 18px !important;
+  overflow-x: auto !important;
+  padding: 0 16px !important;
+  height: 44px !important;
+  border-bottom: 1px solid var(--line, #e5e7eb) !important;
+  background: #fff !important;
+  scrollbar-width: none !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+.m-ds-hang-tabs::-webkit-scrollbar {
+  display: none !important;
+}
+.m-tab-chu {
+  display: inline-flex !important;
+  align-items: center !important;
+  height: 44px !important;
+  padding: 0 4px !important;
+  box-sizing: border-box !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: var(--muted, #64748b) !important;
+  border: none !important;
+  border-bottom: 2px solid transparent !important;
+  white-space: nowrap !important;
+  cursor: pointer !important;
+  text-decoration: none !important;
+  background: transparent !important;
+}
+.m-tab-chu.on {
+  color: var(--blue, #0560a6) !important;
+  font-weight: 700 !important;
+  border-bottom-color: var(--blue, #0560a6) !important;
+}
+.m-tab-chu.m-tab-theodoi {
+  color: #0284c7 !important;
+}
+
+/* Thanh lọc 3 nút: ô vuông bộ lọc, khoảng ngày, trạng thái */
+.m-ds-hang-loc {
+  flex: none !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 10px 16px !important;
+  background: #fff !important;
+  border-bottom: 1px solid #f1f3f5 !important;
+}
+.m-ds-nut-loc-vuong {
+  width: 38px !important;
+  height: 38px !important;
+  border: 1px solid var(--line, #e2e8f0) !important;
+  border-radius: 8px !important;
+  background: #fff !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  flex: none !important;
+  color: var(--ink, #1e293b) !important;
+}
+.m-ds-nut-loc-vuong.on {
+  border-color: var(--blue, #0560a6) !important;
+  color: var(--blue, #0560a6) !important;
+  background: #eff6ff !important;
+}
+.m-ds-o-ngay {
+  height: 38px !important;
+  padding: 0 12px !important;
+  border: 1px solid var(--line, #e2e8f0) !important;
+  border-radius: 8px !important;
+  background: #fff !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 6px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: var(--ink, #1e293b) !important;
+  flex: 1 !important;
+  min-width: 0 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  cursor: pointer !important;
+}
+.m-ds-nut-trang-thai {
+  height: 38px !important;
+  padding: 0 14px !important;
+  border: none !important;
+  border-radius: 8px !important;
+  background: var(--blue, #0560a6) !important;
+  color: #fff !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  font-size: 13.5px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  flex: none !important;
+  white-space: nowrap !important;
+}
+
+/* Dòng tóm tắt số lượng · tổng tiền + nút tìm & sắp xếp */
+.m-ds-dong-tom-tat {
+  flex: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 8px 16px !important;
+  background: #f8fafc !important;
+  font-size: 12.5px !important;
+  color: var(--muted, #64748b) !important;
+  border-bottom: 1px solid var(--line, #e2e8f0) !important;
+}
+.m-ds-tt-chu {
+  font-weight: 500 !important;
+}
+.m-ds-tt-nut {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+.m-ds-btn-ic {
+  width: 32px !important;
+  height: 32px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: none !important;
+  background: #f1f5f9 !important;
+  cursor: pointer !important;
+  border-radius: 6px !important;
+  color: var(--muted, #64748b) !important;
+}
+.m-ds-btn-ic.on {
+  color: var(--blue, #0560a6) !important;
+  background: #eff6ff !important;
+}
+
+/* Thẻ chứng từ / thẻ CCDC (trắng, góc bo, viền nhẹ trên nền xám) */
+.m-ds-danh-sach,
+.m-ds-danh-sach-the {
+  padding: 10px 16px calc(76px + env(safe-area-inset-bottom, 0px)) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  background: #f5f6f8 !important;
+  min-height: 200px !important;
+}
+.m-the-ct {
+  background: #fff !important;
+  border-radius: 12px !important;
+  padding: 12px 14px !important;
+  border: 1px solid #eef0f3 !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+  cursor: pointer !important;
+  text-decoration: none !important;
+}
+.m-the-ct:active {
+  background: #f8fafc !important;
+}
+.m-the-ct-hang1 {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 8px !important;
+}
+.m-the-ct-so {
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  color: var(--ink, #0f172a) !important;
+}
+.m-the-ct-tag {
+  font-size: 11.5px !important;
+  font-weight: 600 !important;
+  padding: 2px 8px !important;
+  border-radius: 6px !important;
+  white-space: nowrap !important;
+}
+.m-the-ct-tag.xanh,
+.m-the-ct-tag.ok {
+  background: #dcfce7 !important;
+  color: #15803d !important;
+}
+.m-the-ct-tag.xam,
+.m-the-ct-tag.dim {
+  background: #f1f5f9 !important;
+  color: #475569 !important;
+}
+.m-the-ct-tag.do,
+.m-the-ct-tag.err {
+  background: #fee2e2 !important;
+  color: #b91c1c !important;
+}
+.m-the-ct-tag.cam,
+.m-the-ct-tag.cho {
+  background: #ffedd5 !important;
+  color: #c2410c !important;
+}
+.m-the-ct-hang2 {
+  font-size: 13px !important;
+  color: var(--muted, #64748b) !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+.m-the-ct-dt {
+  font-weight: 500 !important;
+  color: var(--ink, #1e293b) !important;
+}
+.m-the-ct-vach {
+  height: 1px !important;
+  background: #f1f3f5 !important;
+  margin: 2px 0 !important;
+}
+.m-the-ct-hang3 {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 8px !important;
+  font-size: 13px !important;
+}
+.m-the-ct-ngay-hang {
+  color: var(--muted, #64748b) !important;
+  flex: 1 !important;
+  min-width: 0 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+.m-the-ct-tien {
+  flex: none !important;
+  white-space: nowrap !important;
+  font-size: 14.5px !important;
+  font-weight: 700 !important;
+  color: var(--ink, #0f172a) !important;
+}
+
+/* Nút Thêm mới nổi (+ Thêm mới FAB) */
+.m-nut-them-fab {
+  position: fixed !important;
+  right: 16px !important;
+  bottom: calc(92px + env(safe-area-inset-bottom, 0px)) !important;
+  z-index: 110 !important;
+  height: 44px !important;
+  padding: 0 18px !important;
+  border-radius: 22px !important;
+  background: var(--blue, #0560a6) !important;
+  color: #fff !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  border: none !important;
+  box-shadow: 0 4px 14px rgba(5,96,166,0.35) !important;
+  cursor: pointer !important;
+}
+.m-nut-them-fab:active {
+  transform: scale(0.97) !important;
+}
+
+/* Bottom sheets: Báo cáo theo dõi & Lọc báo cáo & Chọn chi nhánh CCDC */
+.m-loc-overlay,
+.m-bctd-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  background: rgba(0,0,0,0.45) !important;
+  z-index: 200 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-end !important;
+}
+.m-loc-tam,
+.m-bctd-sheet {
+  background: #fff !important;
+  border-radius: 16px 16px 0 0 !important;
+  max-height: 85vh !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  animation: m-truot-len 0.2s ease-out !important;
+  position: relative !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+@keyframes m-truot-len {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+.m-loc-dau,
+.m-bctd-dau {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 14px 16px !important;
+  border-bottom: 1px solid var(--line, #e2e8f0) !important;
+}
+.m-loc-tieu-de,
+.m-bctd-tieu-de {
+  font-size: 16.5px !important;
+  font-weight: 700 !important;
+  color: var(--ink, #1e293b) !important;
+  margin: 0 !important;
+}
+.m-loc-btn-dong,
+.m-bctd-nut-dong {
+  width: 36px !important;
+  height: 36px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: none !important;
+  background: transparent !important;
+  cursor: pointer !important;
+  color: var(--muted, #64748b) !important;
+  border-radius: 6px !important;
+  padding: 0 !important;
+}
+.m-loc-than,
+.m-bctd-than {
+  padding: 14px 16px !important;
+  overflow-y: auto !important;
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+}
+
+/* Các hàng trong tấm lọc báo cáo */
+.m-loc-dong {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 12px 14px !important;
+  background: #f8fafc !important;
+  border-radius: 10px !important;
+  border: 1px solid #eef2f6 !important;
+  cursor: pointer !important;
+}
+.m-loc-dong:active {
+  background: #f1f5f9 !important;
+}
+.m-loc-dong-trai {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+}
+.m-loc-dong-nhan {
+  font-size: 12px !important;
+  color: var(--muted, #64748b) !important;
+}
+.m-loc-dong-tri {
+  font-size: 14.5px !important;
+  font-weight: 600 !important;
+  color: var(--ink, #0f172a) !important;
+}
+.m-loc-dong-ic {
+  color: #94a3b8 !important;
+}
+
+/* Trang con của tấm lọc */
+.m-loc-trang-con {
+  position: absolute !important;
+  inset: 0 !important;
+  background: #fff !important;
+  z-index: 105 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  animation: m-truot-phai 0.2s ease-out !important;
+}
+@keyframes m-truot-phai {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+/* Danh sách mục chọn trong trang con / chọn chi nhánh */
+.m-loc-ds-muc {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+  overflow-y: auto !important;
+  flex: 1 !important;
+}
+.m-loc-muc-dong {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 12px 14px !important;
+  border-radius: 8px !important;
+  background: #f8fafc !important;
+  font-size: 14.5px !important;
+  color: var(--ink, #1e293b) !important;
+  cursor: pointer !important;
+  border: 1px solid transparent !important;
+}
+.m-loc-muc-dong:active {
+  background: #f1f5f9 !important;
+}
+.m-loc-muc-dong.on {
+  background: #eff6ff !important;
+  color: var(--blue, #0560a6) !important;
+  font-weight: 600 !important;
+  border-color: #bfdbfe !important;
+}
+.m-loc-muc-ten {
+  flex: 1 !important;
+}
+.m-loc-checkbox {
+  width: 20px !important;
+  height: 20px !important;
+  border: 1.5px solid #cbd5e1 !important;
+  border-radius: 4px !important;
+  margin-right: 12px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex: none !important;
+}
+.m-loc-checkbox.on {
+  background: var(--blue, #0560a6) !important;
+  border-color: var(--blue, #0560a6) !important;
+  color: #fff !important;
+}
+.m-loc-muc-trong {
+  padding: 24px 0 !important;
+  text-align: center !important;
+  color: var(--muted, #64748b) !important;
+  font-size: 14px !important;
+}
+
+/* Báo cáo theo dõi */
+.m-bctd-nhom {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+}
+.m-bctd-nhom-ten,
+.m-bctd-nhom-tieu {
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  color: var(--muted, #64748b) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+}
+.m-bctd-item,
+.m-bctd-muc {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 12px 14px !important;
+  border-radius: 8px !important;
+  background: #f8fafc !important;
+  font-size: 14.5px !important;
+  color: var(--ink, #1e293b) !important;
+  text-decoration: none !important;
+  cursor: pointer !important;
+  border: 1px solid #eef2f6 !important;
+}
+.m-bctd-item:active,
+.m-bctd-muc:active {
+  background: #f1f5f9 !important;
+}
+.m-bctd-item-trai {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+.m-bctd-item-ten {
+  font-size: 14px !important;
+  font-weight: 500 !important;
+}
+.m-bctd-ic {
+  color: var(--blue, #0560a6) !important;
+}
+.m-bctd-arr {
+  color: #94a3b8 !important;
+}
+
+/* Đáy các tấm lọc / bottom sheets */
+.m-loc-day,
+.m-bctd-chan {
+  display: flex !important;
+  gap: 10px !important;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px)) !important;
+  border-top: 1px solid var(--line, #e2e8f0) !important;
+  background: #fff !important;
+}
+.m-loc-btn-reset,
+.m-bctd-btn-huy {
+  flex: 1 !important;
+  height: 44px !important;
+  border: 1px solid var(--line, #e2e8f0) !important;
+  border-radius: 10px !important;
+  background: #fff !important;
+  color: var(--ink, #1e293b) !important;
+  font-size: 14.5px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+}
+.m-loc-btn-apply,
+.m-bctd-btn-luu,
+.m-loc-con-btn-xong {
+  flex: 1 !important;
+  height: 44px !important;
+  border: none !important;
+  border-radius: 10px !important;
+  background: var(--blue, #0560a6) !important;
+  color: #fff !important;
+  font-size: 14.5px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+}
+
+/* Màn toàn màn hình & chi tiết CCDC trên mobile */
+.m-man-toan-man {
+  position: fixed !important;
+  inset: 0 !important;
+  background: #fff !important;
+  z-index: 200 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow-y: auto !important;
+}
+.m-than-form {
+  padding: 16px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 14px !important;
+  flex: 1 !important;
+}
+.m-form-nhom {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+}
+.m-form-nhan {
+  font-size: 13.5px !important;
+  font-weight: 600 !important;
+  color: var(--ink, #1e293b) !important;
+}
+.m-form-inp {
+  height: 42px !important;
+  border: 1px solid var(--line, #cbd5e1) !important;
+  border-radius: 8px !important;
+  padding: 0 12px !important;
+  font-size: 14px !important;
+  color: var(--ink, #1e293b) !important;
+  background: #fff !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+.m-form-day {
+  display: flex !important;
+  gap: 10px !important;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px)) !important;
+  border-top: 1px solid var(--line, #e2e8f0) !important;
+  background: #fff !important;
+}
+.m-form-chon { display: flex; align-items: center; justify-content: space-between; text-align: left; cursor: pointer; }

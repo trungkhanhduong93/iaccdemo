@@ -1,6 +1,7 @@
 import type { ComponentType } from 'react'
 import type { ModuleDef, ScreenDef, ScreenProps } from '../../modules/types'
-import { vaoBaoCao } from '../../app/registry'
+import { hienMan, manDau, moDuoc, vaoBaoCao } from '../../app/registry'
+import type { Goi } from '../../app/plan'
 import { MChiMayTinh } from './MChiMayTinh'
 import { MTrangChu } from './MTrangChu'
 import { MChungTu } from './MChungTu'
@@ -24,6 +25,7 @@ import { MDoiSoat } from './MDoiSoat'
 import { CongThucScreen } from '../../modules/kho/CongThuc'
 import { MChiPhiThang } from './MChiPhiThang'
 import { MLichSuQuy } from './MLichSuQuy'
+import { MCcdc } from './MCcdc'
 
 // Bảng riêng theo mod.key + '/' + sc.slug
 const BANG_RIENG: Record<string, ComponentType<ScreenProps>> = {
@@ -99,6 +101,11 @@ export function manMobile(sc: ScreenDef, mod: ModuleDef): ComponentType<ScreenPr
     if (sc.slug === 'lich-su-quy') return MLichSuQuy
   }
 
+  // T281: Chi phí phân bổ (8.1.1 hoặc ccdc/8-1-1 / the-chi-phi)
+  if (mod.key === 'ccdc' && (sc.code === '8.1.1' || sc.slug === '8-1-1' || sc.slug === 'the-chi-phi')) {
+    return MCcdc
+  }
+
   // T190: Màn tác vụ kind: 'tool', Kiểm tra cuối kỳ 10.1.4, Khoá sổ 10.1.6
   if (
     sc.kind === 'tool' ||
@@ -135,3 +142,13 @@ export function manMobile(sc: ScreenDef, mod: ModuleDef): ComponentType<ScreenPr
 
   return MChiMayTinh
 }
+
+/** Màn mở khi bấm phân hệ trên điện thoại (T281): màn đầu trong gói có giao diện điện thoại, ưu tiên nhóm Chứng từ.
+ *  Không có màn nào thì về manDau như web */
+export function manDauMobile(mod: ModuleDef, goi: Goi): ScreenDef {
+  const mo = mod.screens.filter(sc => sc.kind !== 'quytrinh' && moDuoc(sc, goi) && hienMan(sc, goi) && manMobile(sc, mod) !== MChiMayTinh)
+  return mo.find(sc => sc.nhom === 'Chứng từ') ?? mo[0] ?? manDau(mod, goi)
+}
+
+/** Phân hệ có ít nhất một màn trong gói có giao diện điện thoại; không có thì tab Nghiệp vụ ẩn phân hệ (T281) */
+export const coManMobile = (mod: ModuleDef, goi: Goi) => manMobile(manDauMobile(mod, goi), mod) !== MChiMayTinh

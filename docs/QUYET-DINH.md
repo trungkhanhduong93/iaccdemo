@@ -698,4 +698,13 @@ Lý do: Trum chốt việc T275 ngày 15/10/2026.
 
 Lý do: Trum chốt việc T280 ngày 16/10/2026.
 
-## QD65. Điện thoại bỏ sơ đồ quy trình, phiếu nhập liệu 1 màn (đang soạn)
+## QD65. Điện thoại bỏ sơ đồ quy trình, phiếu nhập liệu 1 màn
+
+- Điện thoại, mọi gói: không còn sơ đồ quy trình. Bấm phân hệ ở tab Nghiệp vụ vào thẳng danh sách chứng từ chính (`manDauMobile` trong `src/ui/mobile/manMobile.ts`). Các loại phiếu của phân hệ là tab chữ trên đầu danh sách.
+- Danh mục, báo cáo trước chỉ có trong sơ đồ nằm ở tab "Báo cáo theo dõi" của danh sách.
+- Đường dẫn `…/quy-trinh` cũ tự chuyển sang danh sách.
+- Phân hệ không có màn nào chạy trên điện thoại thì tab Nghiệp vụ ẩn đi. Vd Kê khai thuế gói Free chỉ có Danh sách tờ khai.
+- Web vẫn giữ sơ đồ quy trình.
+- Phiếu nhập liệu 1 màn: ghi ở việc T282.
+
+Lý do: Trum chốt việc T281, T282 ngày 16/10/2026.
