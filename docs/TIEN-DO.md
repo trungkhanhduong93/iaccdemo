@@ -44,6 +44,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | T242 | Điện thoại: màn Chi phí NVL (`trang-chu/chi-phi-nvl`, T232) chưa có bản điện thoại, cùng lỗi với T234 | | Chờ | Phát hiện khi làm T232 ngày 14/10/2026. Bản máy tính ở `src/modules/home/ChiPhiNvl.tsx`, số liệu ở `chi-phi-nvl.ts` |
 | T243 | `tools/kiem_tra.py` (bước T238) lưu ảnh chụp vào đường dẫn cố định `C:/Users/trung.duong/.gemini/...`, máy khác chạy `--nhanh` báo PermissionError, dừng giữa chừng. Đổi sang thư mục tạm hoặc bỏ chụp | | Chờ | Phát hiện khi PhuongXT kiểm T232 ngày 14/10/2026; đã kiểm bằng bản sao tạm đổi đường dẫn, không lỗi |
 | T249 | Báo cáo bán hàng (`src/modules/ban-hang/bao-cao.ts`, hàm `dongBan`) còn đọc chứng từ Xuất bán POS theo kênh (`theoKenh`), số chứng từ trên báo cáo khác số hoá đơn ở danh sách từ T247; đổi sang `theoDon` để bấm số mở đúng phiếu | | Chờ | Phát hiện khi làm T247 ngày 15/10/2026. Tổng doanh thu không đổi |
+| T290 | Trang chủ gói Free máy tính: Thao tác nhanh lên hàng tab Tổng quan, Cần theo dõi, gồm Thu tiền, Chi tiền, Mua hàng, Kiểm kê, Kê khai thuế; bỏ khối Thao tác nhanh ở cột Quản lý kho | PhuongXT | Đang làm | Sửa `BaBaiToanFree.tsx`, `app.css` (mục cuối T290) |
 
 ## Đã xong
 
