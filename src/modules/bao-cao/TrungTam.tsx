@@ -236,7 +236,7 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
                   return (
                     <Link
                       key={x.slug}
-                      to={`/app/bao-cao/${x.slug}`}
+                      to={`/app/bao-cao/${x.slug}`} state={{ hoiLoc: true }}
                       className="bc-quick-item bc-quick-pinned"
                       title={ten}
                     >
@@ -266,7 +266,7 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
                   return (
                     <Link
                       key={x.slug}
-                      to={`/app/bao-cao/${x.slug}`}
+                      to={`/app/bao-cao/${x.slug}`} state={{ hoiLoc: true }}
                       className="bc-quick-item"
                       title={ten}
                     >
@@ -305,7 +305,7 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
                     return (
                       <Link
                         key={x.slug}
-                        to={`/app/bao-cao/${x.slug}`}
+                        to={`/app/bao-cao/${x.slug}`} state={{ hoiLoc: true }}
                         className={`rpt-row rpt-card${ok ? '' : ' lock'}`}
                         title={ten}
                       >

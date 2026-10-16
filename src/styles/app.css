@@ -20333,3 +20333,12 @@ input.bat-tat:disabled { opacity: .5; cursor: not-allowed; }
 .dmcn-ct > div:last-child { border-bottom: 0; }
 .dmcn-ct dt { color: var(--muted); }
 .dmcn-ct dd { margin: 0; color: var(--ink); }
+
+/* ── Popup điều kiện lọc trước khi xem báo cáo (T288) ── */
+.bc-hoi-loc { width: 520px; overflow: visible; }
+.bc-hoi-loc-ten { padding: 0 16px 8px; color: var(--muted); font-size: 13px; }
+.bc-hoi-loc-than { padding: 4px 16px 14px; display: flex; flex-direction: column; gap: 10px; overflow: auto; }
+.bc-hoi-loc-o { display: grid; grid-template-columns: 170px minmax(0, 1fr); align-items: center; gap: 12px; font-size: 13px; }
+.bc-hoi-loc-o > span { color: var(--body); }
+.bc-hoi-loc-o > .ds-o { width: auto; }
+.bc-cho-loc { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 240px; color: var(--muted); font-size: 14px; }

@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 16/10/2026
 
+- T288: Bấm mở một báo cáo ở phân hệ Báo cáo thì hiện hộp chọn điều kiện lọc trước, bấm Xem báo cáo mới hiện số liệu.
 - T284: Gõ số tiền, số lượng, đơn giá ở bảng chi tiết phiếu và ở thẻ chi phí có chấm ngăn hàng nghìn ngay khi gõ (kiểu Việt Nam, phẩy thập phân), tổng tiền đổi ngay. Thẻ chi phí đánh số TPB{YY}{MM}-{0000}, thẻ dư đầu kỳ TPBDK{YY}{MM}-{0000} theo ngày ghi tăng, ghi ở Cấu hình kế toán. Menu thêm ghi Ghi tăng đầu kỳ; Thông tin mua của thẻ dạng chỉ xem, số chứng từ bấm mở chứng từ gốc; thẻ dư đầu kỳ đổi chỗ cột Số tháng phân bổ. Danh sách có 3 thẻ dư đầu kỳ mẫu.
 - T286: Danh sách chứng từ mua hàng, bán hàng, Xuất bán POS: cột Diễn giải liệt kê tên hàng trong phiếu (nhiều quá thì vài tên rồi "..."), cột diễn giải cũ đổi tên Ghi chú. Tìm kiếm được theo tên hàng.
 - T285: Danh mục chi nhánh có cột Công ty, ghi tên và mã số thuế công ty. Bấm tên chi nhánh mở hộp chi tiết.

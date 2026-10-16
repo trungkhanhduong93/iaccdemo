@@ -1,7 +1,7 @@
 // Sổ, báo cáo chung: thanh lọc kỳ, trang báo cáo kiểu mẫu in, ô ký. Chi nhánh lấy trên thanh trên
 import { useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
-import { useLocation, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import type { Col, ReportCfg, Row, ScreenProps } from '../../modules/types'
 import { tenMan } from '../../app/registry'
 import { kieuGhiSo } from '../../app/plan'
@@ -19,7 +19,7 @@ import { chungTu, soChiTiet } from './gen'
 import { ganMoPhieu } from './SoChungTu'
 import { Dropdown, MenuHead, MenuItem, MenuSep, Popover, Select } from '../Dropdown'
 import { ChonKhoangNgay, dmy, khoangThang, type KhoangNgay } from '../ChonNgay'
-import { BoLoc, useCauHinhLoc, type OLocDef } from '../LocNangCao'
+import { BoLoc, useCauHinhLoc, useDongEsc, type OLocDef } from '../LocNangCao'
 import { SoTrangCtx, ToGiay, NgatTrang, tachKhoi, type Kho } from '../bao-cao/ToGiay'
 import { datNguonXuat, layNguonXuat, taoTenFile, xuatFile, type NguonXuat } from '../bao-cao/xuat'
 import {
@@ -71,6 +71,18 @@ function useTim(path: string) {
   return useSyncExternalStore(f => { ngheTim.add(f); return () => { ngheTim.delete(f) } }, () => khoTim.get(path) ?? '')
 }
 
+/** Báo cáo mở từ Trung tâm báo cáo (state hoiLoc) chờ chọn điều kiện ở popup, bấm Xem báo cáo mới hiện tờ báo cáo (T288) */
+const khoHoiLoc = new Set<string>()
+const ngheHoiLoc = new Set<() => void>()
+function datHoiLoc(path: string, bat: boolean) {
+  if (khoHoiLoc.has(path) === bat) return
+  if (bat) khoHoiLoc.add(path); else khoHoiLoc.delete(path)
+  ngheHoiLoc.forEach(f => f())
+}
+function useHoiLoc(path: string) {
+  return useSyncExternalStore(f => { ngheHoiLoc.add(f); return () => { ngheHoiLoc.delete(f) } }, () => khoHoiLoc.has(path))
+}
+
 function useBoLoc(path: string) {
   return useSyncExternalStore(
     f => { ngheBoLoc.add(f); return () => { ngheBoLoc.delete(f) } },
@@ -83,9 +95,18 @@ export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: 
   const [khoang, setKhoang] = useState(() => khoangThang(Number(ky), 2026))
   const [moTuyChinh, setMoTuyChinh] = useState(false)
   const { s, toast } = useSession()
-  const path = useLocation().pathname
+  const viTri = useLocation()
+  const path = viTri.pathname
+  const nav = useNavigate()
   const slug = useParams().slug?.replace(/-/g, '.')
   const cfgBC = cauHinhBC(slug)
+  // Mở từ Trung tâm báo cáo: bật popup lọc trước khi hiện báo cáo; mở thẳng đường dẫn, tải lại trang thì hiện ngay (T288)
+  const hoiLoc = useHoiLoc(path)
+  useLayoutEffect(() => {
+    if (!(viTri.state as { hoiLoc?: boolean } | null)?.hoiLoc) return
+    datHoiLoc(path, true)
+    return () => datHoiLoc(path, false)
+  }, [viTri.key])   // eslint-disable-line react-hooks/exhaustive-deps
   const loaiBC = cfgBC?.loai ?? 'baocao'
   const tt = useTrangThaiLoc(path)
   const boLoc = useBoLoc(path)
@@ -337,9 +358,17 @@ export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: 
     </div>
   )
 
+  // Bấm Xem báo cáo: áp dụng lọc, bỏ cờ trên lịch sử để quay lại, tải lại trang không hỏi lại (T288)
+  const xemTuPopup = () => {
+    apDungXem()
+    datHoiLoc(path, false)
+    nav(path + viTri.search, { replace: true, state: { ...(viTri.state as object | null), hoiLoc: false } })
+  }
+
   return (
     <>
       {thanh}
+      {hoiLoc && <HopHoiLoc ten={(slug && tenBC(slug, s.cheDo)) || ''} ds={oLoc} onXem={xemTuPopup} onHuy={() => nav(-1)} />}
       <TuyChinhBC
         open={moTuyChinh}
         onClose={() => setMoTuyChinh(false)}
@@ -349,6 +378,28 @@ export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: 
         dsKyMacDinh={tt.dsKyMacDinh}
       />
     </>
+  )
+}
+
+/** Popup điều kiện lọc trước khi xem báo cáo (T288): đủ các ô lọc của báo cáo, không chia ngoài thanh, nâng cao */
+function HopHoiLoc({ ten, ds, onXem, onHuy }: { ten: string; ds: OLocDef[]; onXem: () => void; onHuy: () => void }) {
+  useDongEsc(onHuy)
+  return createPortal(
+    <div className="overlay ds-hop-nen">
+      <div className="ds-hop bc-hoi-loc" role="dialog" aria-modal="true" aria-label="Điều kiện xem báo cáo">
+        <div className="ds-hop-dau"><b>Điều kiện xem báo cáo</b><span className="grow" />
+          <button type="button" className="btn ghost sm" title="Đóng" onClick={onHuy}><Icon n="x" className="ic sm" /></button></div>
+        {ten && <div className="bc-hoi-loc-ten">{ten}</div>}
+        <div className="bc-hoi-loc-than">
+          {ds.map(o => <div key={o.k} className="bc-hoi-loc-o"><span>{o.ten}</span><div className="ds-o">{o.o}</div></div>)}
+        </div>
+        <div className="ds-chan">
+          <button type="button" className="btn" onClick={onHuy}>Huỷ</button>
+          <button type="button" className="btn pri" onClick={onXem}>Xem báo cáo</button>
+        </div>
+      </div>
+    </div>,
+    document.body,
   )
 }
 
@@ -662,6 +713,7 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
 
   const tc = useTuyChinhBC(s.donVi, slug)
   const tt = useTrangThaiLoc(path)
+  const hoiLoc = useHoiLoc(path)
 
   const khongTuSinh = (slug && LOAI_TRU_TU_SINH.has(slug)) || loai === 'tokhai' || (slug && slug.startsWith('6.2.'))
 
@@ -877,6 +929,9 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
   useLayoutEffect(() => {
     datBoLoc(path, { ds: dsLocCot, anKhongPS: !!cfg?.anKhongPS })
   }, [path, dsLocCot, cfg?.anKhongPS])
+
+  // Đang chờ chọn điều kiện ở popup: chưa vẽ tờ báo cáo; bộ lọc vẫn dựng ở trên để popup có lựa chọn (T288)
+  if (hoiLoc) return <div className="bc-xem bc-cho-loc"><Icon n="filter" className="ic" /><span>Chọn điều kiện lọc rồi bấm Xem báo cáo</span></div>
 
   return (
     <div className="bc-xem">
