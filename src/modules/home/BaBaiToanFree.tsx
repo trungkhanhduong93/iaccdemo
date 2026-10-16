@@ -156,7 +156,7 @@ const MAU_QUY = ['var(--blue, #0560a6)', 'var(--teal, #0f766e)', 'var(--amber, #
 /** Biểu đồ tròn tồn quỹ theo quỹ (T291): giữa vòng là tổng; bấm lát hoặc dòng chú thích mở biểu đồ thu chi của quỹ */
 function VongQuy({ ds, tong, onChon }: { ds: { quy: string; tienMat: boolean; cuoi: number }[]; tong: number; onChon: (quy: string) => void }) {
   const [tro, setTro] = useState<string | null>(null)
-  const co = 176, rr = 70, day = 32, C = 2 * Math.PI * rr
+  const co = 260, rr = 104, day = 44, C = 2 * Math.PI * rr   // T293: cột thu chi rộng gấp rưỡi, vòng to theo
   const duong = ds.map(r => Math.max(0, r.cuoi))
   const tongDuong = duong.reduce((a, v) => a + v, 0) || 1
   let off = 0
@@ -177,8 +177,8 @@ function VongQuy({ ds, tong, onChon }: { ds: { quy: string; tienMat: boolean; cu
           off += len
           return el
         })}
-        <text x={co / 2} y={co / 2 - 6} textAnchor="middle" className="bbt-vq-nhan">{dangTro ? pct(tong ? dangTro.cuoi / tong : 0) : 'Tổng tồn'}</text>
-        <text x={co / 2} y={co / 2 + 14} textAnchor="middle" className="bbt-vq-so">{short(dangTro ? dangTro.cuoi : tong)}</text>
+        <text x={co / 2} y={co / 2 - 10} textAnchor="middle" className="bbt-vq-nhan">{dangTro ? pct(tong ? dangTro.cuoi / tong : 0) : 'Tổng tồn'}</text>
+        <text x={co / 2} y={co / 2 + 20} textAnchor="middle" className="bbt-vq-so">{short(dangTro ? dangTro.cuoi : tong)}</text>
       </svg>
       <ul className="bbt-vq-ct">
         {ds.map((r, i) => (

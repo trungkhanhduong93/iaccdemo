@@ -20996,3 +20996,10 @@ input.bat-tat:disabled { opacity: .5; cursor: not-allowed; }
 .bbt-kho-the { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
 .bbt-kho-the > .t { margin: 0; }
 @media (max-width: 900px) { .bbt-e-luoi.bbt-e-luoi-2, .bbt-kho-the { grid-template-columns: minmax(0, 1fr); } }
+/* Vòng tồn quỹ vừa khung cột thu chi rộng hơn (T293) */
+.bbt-e-luoi-2 .bbt-vq { flex: 1; gap: 16px 36px; padding: 8px 4px; }
+.bbt-e-luoi-2 .bbt-vq-nhan { font-size: 14px; }
+.bbt-e-luoi-2 .bbt-vq-so { font-size: 26px; }
+.bbt-e-luoi-2 .bbt-vq-ct { flex: 0 1 340px; gap: 4px; }
+.bbt-e-luoi-2 .bbt-vq-ct button { padding: 8px 10px; }
+.bbt-e-luoi-2 .bbt-vq-ten > span, .bbt-e-luoi-2 .bbt-vq-ten > b { font-size: 14px; }
