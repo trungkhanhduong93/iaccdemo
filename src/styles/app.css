@@ -21003,3 +21003,7 @@ input.bat-tat:disabled { opacity: .5; cursor: not-allowed; }
 .bbt-e-luoi-2 .bbt-vq-ct { flex: 0 1 340px; gap: 4px; }
 .bbt-e-luoi-2 .bbt-vq-ct button { padding: 8px 10px; }
 .bbt-e-luoi-2 .bbt-vq-ten > span, .bbt-e-luoi-2 .bbt-vq-ten > b { font-size: 14px; }
+
+/* ── Thanh nút Lập phiếu sát đáy ở màn cấp hai điện thoại, không có thanh dưới (T292) ── */
+.m-cap-2 .m-free-day-nut { bottom: 0; padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px)); }
+.m-cap-2 .m-than:has(.m-free-day-nut) { padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px)); }
