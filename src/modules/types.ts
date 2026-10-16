@@ -20,6 +20,7 @@ export interface Col {
   an?: boolean           // cột mặc định ẩn, người dùng bật ở Tuỳ chỉnh cột (T92)
   nhom?: string          // tên nhóm cột cho tiêu đề 2 tầng (TT58, T108)
   kyHieu?: string        // ký hiệu cột in sẵn (A, B, C, 1, 2... theo biểu mẫu TT58)
+  chiManHinh?: boolean   // cột chỉ hiện trên màn hình (vd nút Thanh toán ngay), bỏ khi xem trước, in, xuất Excel (T304)
 }
 
 /** Danh mục: bảng có tìm kiếm, nút thêm */

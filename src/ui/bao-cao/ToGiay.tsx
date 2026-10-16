@@ -261,7 +261,12 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
     }
   })
 
-  const khoi = useMemo(() => tachKhoi(than), [than])
+  const khoiGoc = useMemo(() => tachKhoi(than), [than])
+  // Xem trước, in, mẫu in: bỏ cột chỉ dành cho màn hình (vd nút Thanh toán ngay, T304)
+  const boCotManHinh = moXemTruoc || dangIn || !!giay
+  const khoi = useMemo(() => boCotManHinh
+    ? khoiGoc.map(k => k.loai === 'bang' && k.cols.some(c => c.chiManHinh) ? { ...k, cols: k.cols.filter(c => !c.chiManHinh) } : k)
+    : khoiGoc, [khoiGoc, boCotManHinh])
   const bangDau = useMemo(() => khoi.find((k): k is Extract<Khoi, { loai: 'bang' }> => k.loai === 'bang'), [khoi])
   const laBang = !giay && !!bangDau          // màn chính vẽ bảng dữ liệu; mẫu in (giay) hoặc báo cáo không có bảng vẫn vẽ tờ
   const cheXem: CheXem = laBang && !moXemTruoc ? 'bang-du-lieu' : 'to-in'

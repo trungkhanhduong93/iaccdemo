@@ -852,9 +852,9 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
         tinhLaiTong,
         khoa,
       })
-      // Nguồn xuất:
+      // Nguồn xuất: bỏ cột chỉ dành cho màn hình (T304)
       if (tt.cotNhuDangXem) {
-        bx.push({ cols: res.cols, rows: res.rows, kyHieuCot })
+        bx.push({ cols: res.cols.filter(c => !c.chiManHinh), rows: res.rows, kyHieuCot })
       } else {
         // Tắt "Cột như đang xem": xuất đủ cột (vẫn áp lọc và nhóm)
         const resDuCot = bienDoiBang(kh.cols, kh.rows, {
@@ -866,7 +866,7 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
           tinhLaiTong,
           khoa,
         })
-        bx.push({ cols: resDuCot.cols, rows: resDuCot.rows, kyHieuCot })
+        bx.push({ cols: resDuCot.cols.filter(c => !c.chiManHinh), rows: resDuCot.rows, kyHieuCot })
       }
       return <RptTable key={i} cols={ganMoPhieu(res.cols)} rows={res.rows} onRow={kh.onRow} kyHieuCot={kyHieuCot} />   // số chứng từ bấm mở phiếu (T201)
     })

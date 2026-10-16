@@ -2,6 +2,7 @@
 // Tiền thanh toán (IV), Nợ cuối kỳ (V = I+II-III-IV). Bấm tên đối tượng mở popup Lịch sử công nợ; số liệu dòng tổng hợp cộng từ chính các phiếu trong lịch sử
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
+import { Link } from 'react-router-dom'
 import type { Col, Row } from '../types'
 import { CUA_HANG, KHACH, NCC } from '../../data/mock'
 import { between, k, pad, rng } from '../../ui/format'
@@ -79,6 +80,7 @@ function LichSuCongNo({ loai, ma, ten, thang, cnTen, onDong }: { loai: Loai; ma:
     <div className="overlay ds-hop-nen" onMouseDown={e => { if (e.target === e.currentTarget) onDong() }} onKeyDown={e => { if (e.key === 'Escape') onDong() }}>
       <div className="ds-hop cn-hop" role="dialog" aria-modal="true" aria-label={`Lịch sử công nợ - ${ten}`}>
         <div className="ds-hop-dau"><b>Lịch sử công nợ - {ten}</b><span className="grow" />
+          {loai === 'ncc' && no > 0 && <Link to={linkThanhToan(ten)} className="btn pri sm" onClick={onDong}>Thanh toán ngay</Link>}
           <button type="button" className="btn ghost sm" title="Đóng" onClick={onDong} autoFocus><Icon n="x" className="ic sm" /></button></div>
         <div className="cn-hop-than"><Table cols={ganMoPhieu(cols)} rows={rows} motDong keDoc /></div>
       </div>
@@ -86,6 +88,9 @@ function LichSuCongNo({ loai, ma, ten, thang, cnTen, onDong }: { loai: Loai; ma:
     document.body,
   )
 }
+
+/** Lập phiếu chi trả nợ nhà cung cấp: lý do CHI02 Thanh toán công nợ nhà cung cấp, điền sẵn nhà cung cấp (T304) */
+const linkThanhToan = (ten: string) => `/app/tien/2-1-1/moi?loai=chi&ly=CHI02&dt=${encodeURIComponent(ten)}`
 
 /** Cột số tiền: tiêu đề hai dòng tên cột, ký hiệu công thức như iFaster; độ rộng cột tính theo t nên t chỉ ghi tên */
 const cotSo = (k: string, ten: string, kh: string): Col =>
@@ -101,6 +106,9 @@ export function colsCongNo(loai: Loai): Col[] {
     cotSo('tra', 'Tiền trả hàng', 'III'),
     cotSo('tt', 'Tiền thanh toán', 'IV'),
     cotSo('cuoi', 'Nợ cuối kỳ', 'V = I+II-III-IV'),
+    // Công nợ nhà cung cấp: nút Thanh toán ngay ở dòng còn nợ (T304)
+    ...(loai === 'ncc' ? [{ k: '_thanhToan', t: 'Thanh toán', c: true, w: 140, chiManHinh: true,
+      r: (x: Row) => !x._t && Number(x.cuoi) > 0 ? <Link to={linkThanhToan(String(x.ten))} className="btn sm cn-thanh-toan">Thanh toán ngay</Link> : null } as Col] : []),
   ]
 }
 

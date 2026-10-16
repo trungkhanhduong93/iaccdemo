@@ -21635,3 +21635,41 @@ input.bat-tat:disabled { opacity: .5; cursor: not-allowed; }
 .bbt-e-luoi-2 .bbt-gon .bbt-vq-ten { gap: 0; }
 /* Tiêu đề ba khối Quản lý lãi lỗ, Quỹ tiền, Quản lý kho in hoa, không đánh số; web và điện thoại */
 .bbt-e-ten, .m-free-the .m-tc-the-tieu { text-transform: uppercase; letter-spacing: .03em; }
+
+/* ── Trang chủ Free: Quản lý kho chia 3 khối Mua hàng, Công nợ phải trả NCC, Hao hụt kiểm kê (T304) ── */
+.bbt-kho-luoi { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 900px) { .bbt-kho-luoi { grid-template-columns: minmax(0, 1fr); } }
+.bbt-kho-khoi { padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--white); min-width: 0; }
+.bbt-kho-dau { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.bbt-kho-dau > b { font-size: 14px; color: var(--ink); }
+.bbt-kho-mo { font-size: 12.5px; font-weight: 600; color: var(--blue); text-decoration: none; white-space: nowrap; }
+.bbt-kho-mo:hover { text-decoration: underline; }
+.bbt-kho-tang { color: var(--orange-d); font-weight: 600; }
+.bbt-kho-giam { color: var(--green); font-weight: 600; }
+.bbt-e-luoi-2 .bbt-kho-khoi > .t .l b { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bbt-e-luoi-2 .bbt-kho-khoi > .t.bbt-kho-canh .l b, .bbt-e-luoi-2 .bbt-kho-khoi > .t.bbt-kho-canh .r b, .bbt-kho-thieu { color: var(--red); }
+.bbt-kho-tra { flex: none; padding: 1px 8px; border: 1px solid var(--line); border-radius: 6px; font-size: 12px; font-weight: 600; color: var(--blue); text-decoration: none; }
+.bbt-kho-tra:hover { border-color: var(--blue); background: var(--tint); }
+.bbt-cot-nho text { font-size: 11px; fill: var(--muted); }
+.bbt-cot-nho text.bbt-cot-nho-so { fill: var(--ink); font-weight: 600; }
+/* Khối kho hẹp: tên trên, ghi chú nhỏ dưới, không cắt chữ tên khoản */
+.bbt-e-luoi-2 .bbt-kho-khoi > .t .l { flex-direction: column; align-items: flex-start; gap: 0; }
+.bbt-e-luoi-2 .bbt-kho-khoi > .t .l span { max-width: 100%; font-size: 12px; }
+.bbt-e-luoi-2 .bbt-kho-khoi > .t .l b { max-width: 100%; }
+/* Câu giải thích, tiêu đề danh sách, dòng gọn một hàng trong khối kho */
+.bbt-kho-cau { list-style: none; margin: 2px 0 4px; padding: 0; display: flex; flex-direction: column; gap: 2px; font-size: 13px; color: var(--body); }
+.bbt-kho-cau b { color: var(--ink); }
+.bbt-kho-nhom { margin-top: 6px; font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .03em; }
+.bbt-e-luoi-2 .bbt-kho-khoi > .t.bbt-kho-dong-gon .l { flex-direction: row; align-items: baseline; gap: 8px; }
+.bbt-e-luoi-2 .bbt-kho-khoi > .t.bbt-kho-dong-gon .l span { flex: none; }
+/* Tiêu đề ba khối kho to, rõ: chữ 16px đậm có vạch màu bên trái, gạch chân tách khỏi phần chi tiết */
+.bbt-kho-mua { --kho-mau: var(--bd-dt, #2f80ed); }
+.bbt-kho-no { --kho-mau: var(--bd-cp, #f5a03a); }
+.bbt-kho-hh { --kho-mau: var(--bd-chi, #ef6b5b); }
+.bbt-kho-khoi > .bbt-kho-dau { align-items: center; padding-bottom: 8px; margin-bottom: 4px; border-bottom: 1px solid var(--line); }
+.bbt-kho-dau > b { display: inline-flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 700; }
+.bbt-kho-dau > b::before { content: ''; width: 4px; height: 18px; border-radius: 2px; background: var(--kho-mau, var(--blue)); }
+/* Mã hàng đứng trước tên hàng trong danh sách khối kho (T304) */
+.bbt-e-luoi-2 .bbt-kho-khoi > .t .l b .bbt-kho-ma { display: inline; margin-right: 6px; font-size: 12px; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
+/* Nút tiện ích cuối khối kho (Tạo phiếu mua hàng, Kiểm kê ngay), dồn xuống đáy cho thẳng hàng (T304) */
+.bbt-kho-chan { margin-top: auto; padding-top: 10px; display: flex; gap: 8px; }

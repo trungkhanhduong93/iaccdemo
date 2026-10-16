@@ -123,7 +123,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   const cnChon = cuaHangHienTai(s)
   const cuaHang = row?.cn ? String(row.cn) : cnChon?.ten ?? ''
   const canChonCn = moi && !cnChon
-  const [doiTuong, setDoiTuong] = useState(row?.doiTuong ? String(row.doiTuong) : (cfg.doiTuong === 'ncc' ? NCC[0].ten : cfg.doiTuong === 'kh' ? KHACH[0].ten : ''))
+  // Thêm mới có ?dt=tên đối tượng (vd Thanh toán ngay ở báo cáo công nợ, T304) thì điền sẵn đối tượng đó
+  const [doiTuong, setDoiTuong] = useState(row?.doiTuong ? String(row.doiTuong) : (moi && sp.get('dt')) || (cfg.doiTuong === 'ncc' ? NCC[0].ten : cfg.doiTuong === 'kh' ? KHACH[0].ten : ''))
   const [dienGiai, setDienGiai] = useState(row?.dienGiai ? String(row.dienGiai) : cfg.dienGiai[0])
   const [nguoiGiao, setNguoiGiao] = useState(luuCu('nguoiGiao') ?? nv?.nguoi ?? NHAN_VIEN[0].ten)
   const [nhanVien, setNhanVien] = useState(luuCu('nhanVien') ?? NHAN_VIEN[0].ten)

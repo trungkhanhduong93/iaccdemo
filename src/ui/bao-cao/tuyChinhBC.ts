@@ -388,13 +388,16 @@ export function bienDoiBang(
     }
     const tongSo = (ds: Row[]) => Object.fromEntries(cotSo.map(c => [c.k, ds.reduce((a, r) => a + soO(r[c.k]), 0)]))
     const [k1, k2] = nhom
+    // Gom một cấp: giữ thêm cột chữ có cùng giá trị trong mọi nhóm (vd gom theo Mã hàng thì giữ Tên hàng, ĐVT) (T304)
+    const nhom1 = nhomTheo(conLai, k1)
+    const cotKem = k2 ? [] : colsMoi.filter(c => !c.num && !c.chiManHinh && c.k !== k1 && [...nhom1.values()].every(ds => ds.every(r => String(r[c.k] ?? '') === String(ds[0][c.k] ?? ''))))
     const dong: Row[] = []
-    for (const [v1, ds1] of nhomTheo(conLai, k1)) {
-      dong.push({ [k1]: v1 || '(Trống)', ...tongSo(ds1), ...(k2 ? { _b: 1 } : {}) })
+    for (const [v1, ds1] of nhom1) {
+      dong.push({ [k1]: v1 || '(Trống)', ...Object.fromEntries(cotKem.map(c => [c.k, ds1[0][c.k]])), ...tongSo(ds1), ...(k2 ? { _b: 1 } : {}) })
       if (k2) for (const [v2, ds2] of nhomTheo(ds1, k2)) dong.push({ [k2]: v2 || '(Trống)', ...tongSo(ds2), _i: 1 })
     }
     dong.push({ [cotNhom[0]?.k ?? k1]: 'Tổng cộng', ...tongSo(conLai), _t: 1 })
-    return { cols: [...cotNhom, ...cotSo], rows: dong }
+    return { cols: [...cotNhom, ...cotKem, ...cotSo], rows: dong }
   }
 
   // 4. Gom nhóm
