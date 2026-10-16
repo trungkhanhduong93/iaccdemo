@@ -26,18 +26,11 @@ import { ModalQuy } from './quyThuChi'
 import {
   layDuLieuCanTheoDoi,
   layLaiLoChiNhanh,
-  layTop5ChiPhi,
-  layTop5ChiTien,
-  layTop5DoanhThu,
-  layTop5GiaVon,
-  layTop5NhaCungCap,
   type LaiLoCnItem,
 } from './soLieuBieuDoFree'
 import {
   BieuDoChiNhanhModal,
   LuoiCanTheoDoi,
-  TheLaiLoChiNhanh,
-  TheTop5Hbar,
 } from './BieuDoFree'
 
 // Hệ số mùa vụ quán ăn uống tháng 10/2025 đến 6/2026 so với trung bình tháng 7–9/2026: Tết (tháng 1) cao, sau Tết (tháng 2) thấp (T255)
@@ -211,7 +204,7 @@ const TT_NHANH_FREE = [
   { ten: 'Kê khai thuế', icon: 'percent', to: '/app/thue/to-khai', goiY: 'Mở danh sách tờ khai thuế' },
 ]
 
-/** Trang chủ Free theo ba bài toán mẫu E (T272, T274): 2 tab Tổng quan | Cần theo dõi, lọc chi nhánh, 6 biểu đồ */
+/** Trang chủ Free theo ba bài toán mẫu E (T272, T274): 2 tab Tổng quan | Cần theo dõi, lọc chi nhánh; 6 thẻ biểu đồ bỏ ở T293 */
 export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQuanSoLieu; thang: number; selCns: string[]; chonKy?: ReactNode }) {
   const { s, set } = useSession()
   const moTuTrangChu = useMoTuTrangChu()
@@ -274,11 +267,6 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
   }, [cnsHien, tenCn, thang, thangXem])
 
   // Số liệu 5 biểu đồ top 5 + Lãi lỗ chi nhánh + Cần theo dõi (T274)
-  const top5Dt = useMemo(() => layTop5DoanhThu(thangXem, cnsHien, dHien.dtThuan), [thangXem, cnsHien, dHien.dtThuan])
-  const top5Cp = useMemo(() => layTop5ChiPhi(thangXem, cnsHien, cpThang, dHien.coCauCp), [thangXem, cnsHien, cpThang, dHien.coCauCp])
-  const top5Gv = useMemo(() => layTop5GiaVon(thangXem, cnsHien, nvl.tien), [thangXem, cnsHien, nvl.tien])
-  const top5Ncc = useMemo(() => layTop5NhaCungCap(thangXem, cnsHien, kho.nhapMua), [thangXem, cnsHien, kho.nhapMua])
-  const top5Chi = useMemo(() => layTop5ChiTien(thangXem, cnsHien, tongQuy.chi), [thangXem, cnsHien, tongQuy.chi])
   const laiLoCn = useMemo(() => layLaiLoChiNhanh(thangXem, cnsHien, s), [thangXem, cnsHien, s])
   const ctdData = useMemo(() => layDuLieuCanTheoDoi(thangXem, cnsHien, dHien.dtThuan), [thangXem, cnsHien, dHien.dtThuan])
 
@@ -325,7 +313,7 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
         <LuoiCanTheoDoi data={ctdData} thang={thangXem} />
       ) : (
         <>
-          <div className="bbt-e-luoi">
+          <div className="bbt-e-luoi bbt-e-luoi-2">   {/* hàng trên 2 cột lãi lỗ, thu chi; Quản lý kho kéo hết hàng dưới (T293) */}
         {/* Cột 1: Quản lý lãi lỗ */}
         <section className="bbt-cot col">
           <h2 className="ten bbt-e-ten">
@@ -449,8 +437,8 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
           </button>
         </section>
 
-        {/* Cột 3: Quản lý kho */}
-        <section className="bbt-cot col">
+        {/* Quản lý kho: hàng dưới, 3 thẻ xếp ngang (T293) */}
+        <section className="bbt-cot col bbt-kho-ngang">
           <h2 className="ten bbt-e-ten">
             <Icon n="khohang" className="ic sm" /> 3. Quản lý kho
           </h2>
@@ -464,6 +452,7 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
             Mua {kho.soDon} đơn · Công nợ {short(kho.congNo)}
           </div>
 
+          <div className="bbt-kho-the">
           <Link to="/app/mua-hang/4-1-1" className="t qy bbt-e-the-link" title="Xem nhập mua">
             <div className="l">
               <b>Nhập mua</b>
@@ -506,6 +495,7 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
             </div>
             <Icon n="chevr" className="ic sm muted" />
           </Link>
+          </div>
 
           <Link
             to="/app/bao-cao/5-2-15"
@@ -517,15 +507,6 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
         </section>
       </div>
 
-      {/* Lưới 6 thẻ biểu đồ cân đối 3 cột (T274) */}
-      <div className="bbt-luoi-bieu-do">
-        <TheTop5Hbar data={top5Dt} loai="doanhThu" />
-        <TheTop5Hbar data={top5Cp} loai="chiPhi" />
-        <TheTop5Hbar data={top5Gv} loai="giaVon" />
-        <TheTop5Hbar data={top5Ncc} loai="nhaCungCap" />
-        <TheTop5Hbar data={top5Chi} loai="chiTien" />
-        <TheLaiLoChiNhanh ds={laiLoCn} thang={thangXem} />
-      </div>
     </>
   )}
 

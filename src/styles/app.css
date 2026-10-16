@@ -20989,3 +20989,10 @@ input.bat-tat:disabled { opacity: .5; cursor: not-allowed; }
 .bbt-vq-ten > span { font-size: 13px; color: var(--body); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .bbt-vq-ten > b { font-size: 13px; font-weight: 700; color: var(--ink); }
 .bbt-vq-ten > b small { margin-left: 6px; font-size: 12px; font-weight: 500; color: var(--muted); }
+
+/* ── Trang chủ Free: 2 cột trên, Quản lý kho hàng dưới, bỏ 6 thẻ biểu đồ (T293) ── */
+.bbt-e-luoi.bbt-e-luoi-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.bbt-e-luoi-2 .bbt-kho-ngang { grid-column: 1 / -1; }
+.bbt-kho-the { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.bbt-kho-the > .t { margin: 0; }
+@media (max-width: 900px) { .bbt-e-luoi.bbt-e-luoi-2, .bbt-kho-the { grid-template-columns: minmax(0, 1fr); } }

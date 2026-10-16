@@ -4944,52 +4944,13 @@ def kiem_tra_t274_web():
         if huy_hieu.count() == 0:
             loi.append('T274 web: tab Cần theo dõi thiếu huy hiệu số cảnh báo')
 
-        # 3. Tab Tổng quan có đủ 5 thẻ top + thẻ lãi lỗ chi nhánh
-        the_top = [
-            'Mặt hàng doanh thu cao',
-            'Chi phí trong tháng cao',
-            'Mặt hàng giá vốn cao',
-            'Nhà cung cấp mua hàng nhiều',
-            'Khoản chi tiền trong tháng cao',
-            'Lãi lỗ theo chi nhánh',
-        ]
-        for t in the_top:
-            if pg.locator(f'.bbt-the-bd-tieu:has-text("{t}")').count() == 0:
-                loi.append(f'T274 web: tab Tổng quan thiếu thẻ biểu đồ "{t}"')
-
-        # 4. Tổng thẻ "Mặt hàng doanh thu cao" <= doanh thu trang chủ
-        txt_dt_el = pg.locator('.bbt-the-bd:has-text("Mặt hàng doanh thu cao") .bbt-the-bd-tong-so').first
-        txt_dt = txt_dt_el.inner_text().strip() if txt_dt_el.count() > 0 else '0'
-        so_dt = int(re.sub(r'[^\d]', '', txt_dt) or 0)
-
-        the_bars = pg.locator('.bbt-the-bd:has-text("Mặt hàng doanh thu cao") .bbt-hbar-so')
-        tong_top5_dt = 0
-        for i in range(the_bars.count()):
-            st = the_bars.nth(i).inner_text().strip()
-            tong_top5_dt += int(re.sub(r'[^\d]', '', st) or 0)
-
-        if tong_top5_dt > so_dt:
-            loi.append(f'T274 web: tổng 5 mặt hàng doanh thu cao ({tong_top5_dt}) > doanh thu trang chủ ({so_dt})')
-
-        # 4b. Tổng lãi các chi nhánh = lãi trang chủ (T274 vòng 1)
-        txt_lai_tc = pg.locator('.bbt-cot:has-text("Quản lý lãi lỗ") .bbt-tra').inner_text().strip()
-        is_lo_tc = 'Lỗ' in txt_lai_tc
-        so_lai_tc = int(re.sub(r'[^\d]', '', txt_lai_tc) or 0)
-        if is_lo_tc:
-            so_lai_tc = -so_lai_tc
-
-        the_lai_cns = pg.locator('.bbt-the-bd--cn .bbt-cn-lai-dong')
-        tong_lai_cn = 0
-        for i in range(the_lai_cns.count()):
-            t = the_lai_cns.nth(i).inner_text().strip()
-            is_lo_cn = 'Lỗ' in t
-            v = int(re.sub(r'[^\d]', '', t) or 0)
-            tong_lai_cn += -v if is_lo_cn else v
-
-        if the_lai_cns.count() == 0:
-            loi.append('T274 web: không tìm thấy dòng lãi lỗ chi nhánh trong thẻ Lãi lỗ theo chi nhánh')
-        elif tong_lai_cn != so_lai_tc:
-            loi.append(f'T274 web: tổng lãi các chi nhánh ({tong_lai_cn}) != lãi trang chủ ({so_lai_tc})')
+        # 3. T293: tab Tổng quan bỏ 6 thẻ biểu đồ; hàng trên 2 cột lãi lỗ, thu chi; Quản lý kho kéo hết hàng dưới
+        if pg.locator('.bbt-the-bd').count() > 0:
+            loi.append('T293 web: tab Tổng quan còn thẻ biểu đồ top 5, lãi lỗ chi nhánh (đã bỏ)')
+        if pg.locator('.bbt-e-luoi-2').count() == 0:
+            loi.append('T293 web: lưới tab Tổng quan không phải 2 cột')
+        if pg.locator('.bbt-kho-ngang:has-text("Quản lý kho")').count() == 0:
+            loi.append('T293 web: không thấy hàng Quản lý kho dưới 2 cột')
 
         # 5. Modal lãi lỗ khi Tất cả có 2 nút kiểu xem, bấm "Theo chi nhánh" ra biểu đồ chi nhánh
         nut_xem_13 = pg.locator('.bbt-e-nut:has-text("Xem biểu đồ lãi lỗ 13 tháng"), .bbt-nut:has-text("Xem biểu đồ lãi lỗ 13 tháng")').first
@@ -5011,8 +4972,9 @@ def kiem_tra_t274_web():
             pg.wait_for_timeout(250)
 
         # 6. Đổi chi nhánh làm đổi số ít nhất 1 thẻ (dùng ô chi nhánh có sẵn ở header .cn-btn)
-        first_bar_truoc = pg.locator('.bbt-the-bd:has-text("Mặt hàng doanh thu cao") .bbt-hbar-so').first
-        so_truoc = first_bar_truoc.inner_text().strip() if first_bar_truoc.count() > 0 else ''
+        # T293: thẻ biểu đồ đã bỏ, so số lãi ở cột Quản lý lãi lỗ
+        o_lai = pg.locator('.bbt-cot:has-text("Quản lý lãi lỗ") .bbt-tra').first
+        so_truoc = o_lai.inner_text().strip() if o_lai.count() > 0 else ''
 
         btn_cn_hdr = pg.locator('.cn-btn')
         if btn_cn_hdr.count() == 0:
@@ -5026,10 +4988,9 @@ def kiem_tra_t274_web():
             else:
                 opt_cn1.click()
                 pg.wait_for_timeout(400)
-                first_bar_sau = pg.locator('.bbt-the-bd:has-text("Mặt hàng doanh thu cao") .bbt-hbar-so').first
-                so_sau = first_bar_sau.inner_text().strip() if first_bar_sau.count() > 0 else ''
+                so_sau = o_lai.inner_text().strip() if o_lai.count() > 0 else ''
                 if so_sau and so_sau == so_truoc:
-                    loi.append(f'T274 web: đổi chi nhánh sang CN1 nhưng số thẻ không đổi ({so_truoc} -> {so_sau})')
+                    loi.append(f'T274 web: đổi chi nhánh sang CN1 nhưng số lãi không đổi ({so_truoc} -> {so_sau})')
 
                 # Đổi lại Tất cả chi nhánh
                 btn_cn_hdr.click()
