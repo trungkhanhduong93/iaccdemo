@@ -5,6 +5,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 ## 16/10/2026
 
 - T284: Gõ số tiền, số lượng, đơn giá ở bảng chi tiết phiếu và ở thẻ chi phí có chấm ngăn hàng nghìn ngay khi gõ (kiểu Việt Nam, phẩy thập phân), tổng tiền đổi ngay. Thẻ chi phí đánh số TPB{YY}{MM}-{0000}, thẻ dư đầu kỳ TPBDK{YY}{MM}-{0000} theo ngày ghi tăng, ghi ở Cấu hình kế toán. Menu thêm ghi Ghi tăng đầu kỳ; Thông tin mua của thẻ dạng chỉ xem, số chứng từ bấm mở chứng từ gốc; thẻ dư đầu kỳ đổi chỗ cột Số tháng phân bổ. Danh sách có 3 thẻ dư đầu kỳ mẫu.
+- T286: Danh sách chứng từ mua hàng, bán hàng, Xuất bán POS: cột Diễn giải liệt kê tên hàng trong phiếu (nhiều quá thì vài tên rồi "..."), cột diễn giải cũ đổi tên Ghi chú. Tìm kiếm được theo tên hàng.
 - T285: Danh mục chi nhánh có cột Công ty, ghi tên và mã số thuế công ty. Bấm tên chi nhánh mở hộp chi tiết.
 - T283: Danh sách Thu, chi tiền có ô lọc Thu, chi: xem riêng khoản thu, khoản chi hoặc chuyển quỹ. Phiếu thu, chi đồng bộ từ FABi chỉ xem, không sửa, không xoá.
 - T280: Bấm Tuỳ chỉnh ở Thao tác nhanh mở hộp tìm kiểu Ctrl K. Gõ tên để tìm mọi màn hoặc lệnh lập chứng từ, tích để thêm, tối đa 8 mục, kéo thẻ để đổi thứ tự. Gói Free không hiện màn ngoài gói, gói khác hiện kèm ổ khoá. Điện thoại có tấm toàn màn, đổi thứ tự bằng nút lên xuống. Tab Xuất điều chỉnh, Nhập điều chỉnh bỏ số đếm. Ô tích bật tắt tuỳ chọn trên toàn app thành nút bật tắt.

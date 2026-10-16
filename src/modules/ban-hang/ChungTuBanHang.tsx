@@ -22,7 +22,7 @@ import {
   BoLoc, NutTuyChinhCot, useCauHinhLoc, useCotDs, useLocNhap, type OLocDef,
 } from '../../ui/LocNangCao'
 import { HopInChungTu, type PhieuIn } from '../../ui/bao-cao/InChungTu'
-import { TT_CT } from '../../ui/generic/gen'
+import { TT_CT, tomTatTenHang } from '../../ui/generic/gen'
 import { DaiTong } from '../../ui/generic/ChungTuForm'
 import { HopCotPhieu } from '../../ui/generic/BangSua'
 import { DS_PTTT } from '../danh-muc/data'
@@ -178,6 +178,7 @@ export function ChungTuBanHang({ sc, mod }: ScreenProps) {
       id: String(i), so: soFabi(`fabi-${x.seed}`), ngay: `${dmy(x.date)} ${x.gio}`, thang: x.date.getMonth() + 1, cn: cnTen(x.cn), x, kenh: x.kenh,
       dienGiai: x.loai === 'don' ? `Hoá đơn FABi ${x.kenh.toLowerCase()} ${x.gio} ngày ${dmy(x.date).slice(0, 5)}` : `Doanh thu ${x.kenh.toLowerCase()} ${x.don} đơn POS ngày ${dmy(x.date).slice(0, 5)}`,
       doiTuong: 'Khách lẻ POS',
+      tenHang: tomTatTenHang(monCua(x).map(m => m.ten)), _tenHangDu: [...new Set(monCua(x).map(m => m.ten))].join(', '),   // cột Diễn giải là tên món trong phiếu (T286)
       // hộ kinh doanh: không tiền thuế, tổng tiền = doanh thu − giảm thuế GTGT (T163)
       tien: x.dt, thue: hkd ? 0 : x.vat, giamThue: hkd ? giamThueHkd(x.dt) : 0, tong: hkd ? x.dt - giamThueHkd(x.dt) : x.dt + x.vat, nguon: 'FABi', tt: i < 3 ? 'nhap' : 'ghi',
       ngayTao: `${dmy(x.date)} 23:30`, nguoiTao: 'Hệ thống',   // tạo khi đồng bộ FABi cuối ngày (T132)
@@ -197,10 +198,10 @@ const COT_CHON = new Set(['cn', 'nguon', 'kenh'])
 interface GtLoc { thoiGian: KhoangNgay; tim: string; cn: string; nguon: string; kh: string; kenh: string; pttt: string; hang: string; tonKho: string }
 const locMacDinh = (): GtLoc => ({ thoiGian: thangNay(), tim: '', cn: '', nguon: '', kh: '', kenh: '', pttt: '', hang: '', tonKho: '' })
 /** Món của chứng từ để lọc theo hàng hoá, theo dõi tồn kho; nhớ lại để không tính lại mỗi lần lọc */
-const MON_CUA = new WeakMap<object, { ma: string; tonKho: boolean }[]>()
+const MON_CUA = new WeakMap<object, { ma: string; ten: string; tonKho: boolean }[]>()
 function monCua(x: NgayPOS) {
   let ds = MON_CUA.get(x)
-  if (!ds) { ds = dongCuaPhieu(x).map(d => ({ ma: d.ma, tonKho: Boolean(d.tonKho) })); MON_CUA.set(x, ds) }
+  if (!ds) { ds = dongCuaPhieu(x).map(d => ({ ma: d.ma, ten: d.ten, tonKho: Boolean(d.tonKho) })); MON_CUA.set(x, ds) }
   return ds
 }
 /** Phương thức thanh toán của chứng từ theo số tiền thu được (T116, T137) */
@@ -277,7 +278,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
     if (ap.hang && !monCua(r.x).some(m => m.ma === ap.hang)) return false
     if (ap.tonKho && !monCua(r.x).some(m => m.tonKho === (ap.tonKho === 'co'))) return false
     if (ap.pttt && !ptttCua(r.x).includes(ap.pttt)) return false
-    if (ap.tim.trim() && !fold(`${r.so} ${r.dienGiai}`).includes(fold(ap.tim.trim()))) return false
+    if (ap.tim.trim() && !fold(`${r.so} ${r.dienGiai} ${r._tenHangDu}`).includes(fold(ap.tim.trim()))) return false
     for (const [k, g] of Object.entries(locCot)) {
       if (dangLoc(g) && !khopLoc(kieuCot(k), g, chuCot(k, r), typeof r[k] === 'number' ? r[k] : undefined, k === 'ngay' ? d : undefined)) return false
     }
@@ -302,7 +303,9 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
     { k: 'stt', t: 'STT', w: 46, c: true, dinh: 'trai' },
     { k: 'ngay', t: 'Ngày', w: 100, dinh: 'trai' },
     { k: 'so', t: 'Số chứng từ', cls: 'code', w: 150, dinh: 'trai' },
-    { k: 'dienGiai', t: 'Diễn giải' },
+    // T286: Diễn giải là tên món trong phiếu, diễn giải cũ đổi tên Ghi chú
+    { k: 'tenHang', t: 'Diễn giải', w: 260, r: r => <span title={String(r._tenHangDu ?? '')}>{r.tenHang}</span> },
+    { k: 'dienGiai', t: 'Ghi chú' },
     { k: 'kenh', t: 'Kênh bán', w: 140 },   // T113
     ...(cnChon ? [] : [{ k: 'cn', t: 'Chi nhánh', cls: 'dim' } as Col]),
     { k: 'tien', t: 'Doanh thu trước thuế', num: true, w: 160 },

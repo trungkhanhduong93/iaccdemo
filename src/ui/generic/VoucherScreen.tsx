@@ -24,7 +24,7 @@ import { ctTtCon, dsDcCon, dsTtCon, soDaTra, ttTienTheoTra, useDaXoa, xoaPhieu }
 import { MAN_DC, MAN_KK, TEN_DC } from '../../modules/kho/dieu-chinh'
 
 import { CHI_NHANH, HANG, NHAN_VIEN, NVL } from '../../data/mock'
-import { NGUON, TT_CT, chungTu, dongCua, gioPhieu, ttNghiepVu, type Dong } from './gen'
+import { NGUON, TT_CT, chungTu, dongCua, gioPhieu, tomTatTenHang, ttNghiepVu, type Dong } from './gen'
 import { boO, nhomCua, theoLoai, TT_HD, TT_TIEN } from './nhom'
 import { BangKiemKe } from './BangKiemKe'
 import { BangSua } from './BangSua'
@@ -289,6 +289,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
       kyHieuHd: coHd ? String(r._kyHieuHd ?? nv.kyHieuHd) : '', soHd: coHd ? String(r._soHd ?? nv.soHd) : '', ngayHd: coHd ? String(r._ngayHd ?? nv.ngayHd) : '',
       hanTt: String(r._hanTt ?? nv.hanTt), daTra, conNo: Math.max(0, (Number(r.tong) || 0) - daTra),
       kho: coKhoDs && !khoDong ? khoDau : '', _khoDs, _maHang: dsDong.map(d => d.ma).filter(Boolean),
+      tenHang: tomTatTenHang(dsDong.map(d => d.ten)), _tenHangDu: [...new Set(dsDong.map(d => d.ten).filter(Boolean))].join(', '),   // T286
     }
   }), [rowsGoc, nhom, cfg, sc, coKhoDs, khoDong, mod.key])
   // Cột Tham chiếu (T127): chữ để lọc, tìm theo cột
@@ -362,7 +363,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
   const truocLoai = rows.filter(r => {
     if (!trongKhoang(docNgay(String(r.ngay).split(' ')[0]), ap.thoiGian)) return false
     if (cnChon && r.cn !== cnChon.ten) return false
-    if (ap.tim.trim() && !fold(`${r.so} ${r.doiTuong ?? ''} ${r.dienGiai ?? ''}`).includes(fold(ap.tim.trim()))) return false
+    if (ap.tim.trim() && !fold(`${r.so} ${r.doiTuong ?? ''} ${r.dienGiai ?? ''} ${r._tenHangDu ?? ''}`).includes(fold(ap.tim.trim()))) return false
     if (ap.doiTuong && r.doiTuong !== ap.doiTuong) return false
     if (ap.nguon && String(r.nguon ?? 'tay') !== ap.nguon) return false
     if (ap.loai && r.loai !== ap.loai) return false
@@ -456,7 +457,9 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
       ),
     },
     ...(cfg.loai && !cfg.dieuChinh ? [{ k: 'tenLoai', t: 'Loại', w: 130 } as Col] : []),   // điều chỉnh kho: loại đã là tab (T126)
-    { k: 'dienGiai', t: cfg.kiemKe || cfg.dieuChinh ? 'Ghi chú' : 'Diễn giải' },   // phiếu kiểm kê ghi Ghi chú như đầu phiếu (T124)
+    // Mua, bán (T286): Diễn giải là tên hàng trong phiếu, diễn giải đầu phiếu đổi tên Ghi chú
+    ...(muaBan ? [{ k: 'tenHang', t: 'Diễn giải', w: 260, r: (r: Row) => <span title={String(r._tenHangDu ?? '')}>{r.tenHang}</span> } as Col] : []),
+    { k: 'dienGiai', t: cfg.kiemKe || cfg.dieuChinh || muaBan ? 'Ghi chú' : 'Diễn giải' },   // phiếu kiểm kê ghi Ghi chú như đầu phiếu (T124)
     ...(mod.key === 'tien' ? [{ k: 'lyDo', t: 'Lý do', w: 170 } as Col] : []),   // T96; tên cột ngắn Lý do (T168)
     ...(cfg.doiTuong !== 'none' ? [{ k: 'doiTuong', t: cfg.nhan ?? 'Đối tượng' } as Col] : []),
     // Đang chọn một chi nhánh trên thanh trên thì cột chi nhánh thừa
@@ -527,7 +530,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
   const [expandMap, setExpandMap] = useState<Map<string, boolean>>(() => new Map())
 
   const dsCotGomNhom = useMemo(() => {
-    const bo = new Set(['chk', 'stt', 'so', 'dienGiai', 'thue', 'tong', 'action'])
+    const bo = new Set(['chk', 'stt', 'so', 'dienGiai', 'tenHang', 'thue', 'tong', 'action'])
     return cot.colsHien.filter(c => !bo.has(c.k))
   }, [cot.colsHien])
 

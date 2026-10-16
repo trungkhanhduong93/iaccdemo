@@ -20,6 +20,12 @@ export const NHOM_HHDV = [
   'HHDV không tổng hợp trên tờ khai 01/GTGT',
 ]
 
+/** Cột Diễn giải ở danh sách mua, bán (T286): tên hàng trong phiếu, bỏ trùng; nhiều hơn toiDa tên thì cắt rồi thêm "..." */
+export function tomTatTenHang(ds: string[], toiDa = 3) {
+  const ten = [...new Set(ds.filter(Boolean))]
+  return ten.length > toiDa ? `${ten.slice(0, toiDa).join(', ')}...` : ten.join(', ')
+}
+
 export interface Dong {
   nhomHhdv?: string            // nhóm HHDV mua vào (T162), thiếu là nhóm đầu
   ma: string
