@@ -4,13 +4,14 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T279.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T284.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T284 | Ô gõ tiền, số lượng, đơn giá ở bảng chi tiết phiếu: chấm ngăn nghìn kiểu Việt Nam ngay khi gõ (phẩy thập phân), Tổng tiền cập nhật ngay khi gõ | dinhlanphuongipacc | Đang làm | Sửa `ui/generic/BangSua.tsx` (ô `OSo`), có thể `ui/format.ts`, `kho/BangSanXuat.tsx` |
 | T283 | Danh sách Thu, chi tiền máy tính: thêm bộ lọc Thu, chi (Khoản thu, Khoản chi); phiếu thu, chi nguồn FABi không sửa, không xoá (form, hàng loạt) | PhuongXT | Đang làm | Sửa `VoucherScreen.tsx`, `ChungTuForm.tsx`, `LocNangCao.tsx` |
 | T281 | Điện thoại đợt A, mọi gói: bỏ màn quy trình, vào thẳng danh sách; danh sách chứng từ kiểu thẻ gọn; nút quay lại to; nút lọc ở báo cáo; làm lại phân hệ Chi phí phân bổ | Trum | Đang làm | Giao Anti. Sửa `src/ui/mobile/*`, `app.css` (mục cuối T281), `tools/kiem_tra.py` (bài kiểm quy trình điện thoại) |
 | T282 | Điện thoại đợt B, mọi gói: phiếu nhập liệu 1 màn cho mọi nghiệp vụ, bỏ luồng 5 bước; gói Plus, Pro có khối Hạch toán thu gọn; phiếu chi lý do chờ phân bổ hỏi tạo thẻ như web | Trum | Chờ | Làm sau T281. Sửa `MLapPhieu.tsx`, `MLapPhieuKho.tsx`, `app.css` (mục cuối T282), `tools/kiem_tra.py` (bài kiểm lập phiếu điện thoại) |
