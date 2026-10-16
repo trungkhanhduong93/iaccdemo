@@ -55,3 +55,10 @@ Lỗi đã từng làm mất thời gian, kèm cách tránh. Đọc trước khi
 - Nguyên nhân: trang báo cáo khởi tạo kỳ mặc định '9' (`useState('9')`), `ReportToolbar` gọi `datKyMacDinh` ghi đè kỳ đã xem về 9, đoạn đồng bộ lại đặt kỳ theo kỳ đã xem là 10. Hai bên giành kỳ 9 ↔ 10 mãi.
 - Cách tránh: `datLocDaXem` đánh dấu `kyDatSan`, `datKyMacDinh` bỏ qua khi có dấu này (`src/ui/bao-cao/tuyChinhBC.ts`). Thử liên kết mở báo cáo với cả kỳ khác tháng 9.
 - Lưu ý khi thử bằng console: sau khi sửa file, ứng dụng dùng bản nạp nóng `?t=...`, còn `import('/src/...')` trong console nạp bản khác, hai bên không chung kho trạng thái. Lấy đúng URL có `?t=` trong `performance.getEntriesByType('resource')` rồi mới thử.
+
+## Icon Solar Line Duotone bị cam lấn thân (T301)
+
+- Hiện tượng: sau khi đổi bộ nét sang Solar Line Duotone, khoảng một nửa icon gần như toàn cam (ví, kho, thuế, giá thành).
+- Nguyên nhân: Solar đặt nét phụ (opacity .5) không cố định là chi tiết; nhiều icon có viền ngoài ở lớp phụ. Script đổi opacity thành `class="l2"` rồi tô cam nên viền thành cam. So độ dài chuỗi `d` để đoán lớp chính cũng sai vì số lẻ làm chuỗi dài.
+- Cách tránh: `tools/xuat_bieu_tuong.py` so diện tích hộp bao toạ độ của 2 lớp, lớp lớn hơn là thân. Icon đo sai thì thêm tên vào `DAO_TAY` để lấy ngược kết quả. Sinh lại xong phải xem ảnh phóng to (device_scale_factor 3): ảnh 390px thường làm tưởng nhầm icon đúng là sai.
+

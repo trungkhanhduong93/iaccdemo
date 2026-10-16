@@ -720,3 +720,14 @@ Trum đồng ý, dinhlanphuongipacc làm (T294). Thay phần "chi nhánh" của 
 - Giữ "chi nhánh" khi nói về chi nhánh ngân hàng (vd Vietcombank, chi nhánh Sài Gòn; ô Chi nhánh ngân hàng ở danh mục ngân hàng). Chỗ thuế, pháp lý cần đúng chữ chi nhánh thì giữ.
 - Tên trong code đổi theo: `CHI_NHANH` thành `CUA_HANG`, `chiNhanh` thành `cuaHang`, `DanhMucChiNhanh` thành `DanhMucCuaHang`, slug `danh-muc/chi-nhanh` thành `danh-muc/cua-hang`. Giữ tên biểu tượng `chinhanh` (sinh bởi `tools/xuat_bieu_tuong.py`) và trường `chiNhanhNh` (chi nhánh ngân hàng).
 - Code mới viết sau QD66 dùng "cửa hàng", `cuaHang`. Script `tools/doi_cua_hang.py` đổi lại được nếu còn sót.
+
+## QD67. Icon màu thương hiệu iPOS, cỡ chuẩn, sidebar xanh đậm (17/10/2026)
+
+Trum chốt trên trang xem trước https://claude.ai/artifact/8bD189Sn5BhvJQXtfUsDLa (T301, T302). Thay phần tô 8 màu nhóm của T275.
+
+- Icon đồ vật, phân hệ vẽ nét 2 màu, không ô nền: thân xanh `--blue` #0560A6, nét nhấn cam `--orange` #F28020. Bộ nét lấy Solar Line Duotone, nét phụ của Solar là nét nhấn.
+- Icon thao tác (nút, menu, ô nhập) một màu theo chữ. Màu xanh lá, đỏ chỉ dùng cho số tiền, trạng thái, không dùng cho icon.
+- Cỡ icon nét: 16, 20 (mặc định), 24, biến `--ic-sm`, `--ic`, `--ic-lg`. Icon trần thay ô nền: 24, 28, 32. Nét cố định 1.5px ở mọi cỡ. Điện thoại không icon nào dưới 20px.
+- Sidebar web nền xanh thương hiệu đậm `#074477` sang `#06365E` (biến `--sb-nen`). Mục đang chọn nền trắng mờ, icon thân trắng nét cam. Không dùng lại navy `#2A3042` cho sidebar.
+- Thanh dưới điện thoại dùng icon Solar như phần còn lại, bỏ bộ icon IVT.
+

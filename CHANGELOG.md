@@ -2,6 +2,10 @@
 
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
+## 17/10/2026
+
+- T301, T302: Web và điện thoại: icon đổi sang nét 2 màu iPOS, thân xanh, nét nhấn cam, bỏ ô nền màu. Icon còn 3 cỡ 16, 20, 24, nét đều 1.5px; điện thoại không còn icon dưới 20px. Sidebar web nền xanh iPOS đậm, mục đang chọn rõ hơn. Thanh dưới điện thoại dùng icon mới, tab Nghiệp vụ có icon riêng.
+
 ## 16/10/2026
 
 - T304: Trang chủ gói Free, Quản lý kho chia 3 khối: Mua hàng (tổng nhập trong tháng, so cùng kỳ tháng trước, tỷ lệ trên doanh thu, mặt hàng nhập nhiều tiền nhất, nút Tạo phiếu mua hàng, link Bảng kê theo hàng hoá gom theo mã hàng dạng Tổng hợp), Công nợ phải trả NCC (nợ cuối kỳ, nợ cũ chưa trả, nhà cung cấp nợ nhiều nhất có nút Trả nợ), Hao hụt kiểm kê theo số lượng (thiếu, thừa, đã kiểm n/n mặt hàng, nút Kiểm kê ngay). Báo cáo Công nợ nhà cung cấp có nút Thanh toán ngay mở phiếu chi điền sẵn nhà cung cấp; cột này không in, không xuất Excel. Báo cáo xem Tổng hợp gom một cấp giữ cả cột chữ giống nhau trong nhóm (vd gom theo mã hàng thì hiện tên hàng, ĐVT).
