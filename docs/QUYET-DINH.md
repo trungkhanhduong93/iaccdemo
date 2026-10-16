@@ -708,3 +708,5 @@ Lý do: Trum chốt việc T280 ngày 16/10/2026.
 - Phiếu nhập liệu 1 màn: ghi ở việc T282.
 
 Lý do: Trum chốt việc T281, T282 ngày 16/10/2026.
+
+## QD66. Đổi khái niệm chi nhánh thành Cửa hàng (đang soạn)
