@@ -4,13 +4,14 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T296.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T297.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T297 | Form chứng từ (thu, chi, mua, bán, kho): nút Tuỳ chỉnh giao diện thành nút vuông nhỏ chỉ biểu tượng như danh sách, đặt ở góc trên phải đầu form | dinhlanphuongipacc | Đang làm | Sửa `ChungTuForm.tsx`, có thể `ban-hang/ChungTuBanHang.tsx` |
 | T296 | Thẻ CCDC tạo từ phiếu chi: số tiền theo phiếu chỉ đọc, đơn giá = số tiền / số lượng hiện sẵn, gõ lại số lượng thì tính lại đơn giá | dinhlanphuongipacc | Đang làm | Sửa `ccdc/the-phan-bo.tsx` |
 | T295 | `python tools/kiem_tra.py --dien-thoai` dừng: không bấm được `.m-thanh-duoi a` nth(1), có lẽ thanh dưới điện thoại đổi ở T281 mà bài kiểm chưa theo | | Chờ | Phát hiện ở T294, bản trước T294 cũng hỏng. Sửa `tools/kiem_tra.py` |
 | T282 | Điện thoại đợt B, mọi gói: phiếu nhập liệu 1 màn cho mọi nghiệp vụ, bỏ luồng 5 bước; gói Plus, Pro có khối Hạch toán thu gọn; phiếu chi lý do chờ phân bổ hỏi tạo thẻ như web | Trum | Đang làm | Giao Anti. Sửa `MLapPhieu.tsx`, `MLapPhieuKho.tsx`, `app.css` (mục cuối T282), `tools/kiem_tra.py` (bài kiểm lập phiếu điện thoại) |
