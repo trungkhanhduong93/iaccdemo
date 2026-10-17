@@ -72,7 +72,17 @@ export function KhoaSoFree({ sc, mod }: ScreenProps) {
         <button className="btn" onClick={() => setMoKhoa(v => !v)}><Icon n="lock" className="ic sm" />Mở khoá tháng {daKhoa.thang}/{daKhoa.nam}</button>
         {khoaDuoc && <button className="btn acc" onClick={khoa}><Icon n="lock" className="ic sm" />Khoá sổ tháng {nhan}</button>}
       </PageHead>
-      {/* Hai cột bằng nhau (T315): trái là trạng thái, kiểm tra, mở khoá; phải là lịch sử đủ rộng không phải cuộn ngang */}
+      {/* Khung lý do mở khoá hiện ngay dưới nút Mở khoá, không nằm cuối cột trái (T327) */}
+      {moKhoa && (
+        <Card title={`Mở khoá tháng ${daKhoa.thang}/${daKhoa.nam}`}>
+          <textarea className="inp ks-ly-do" rows={3} autoFocus placeholder="Lý do mở khoá, vd bổ sung hoá đơn điện tháng 8" value={lyDo} onChange={e => setLyDo(e.target.value)} />
+          <div className="ks-nut">
+            <button className="btn" onClick={() => { setMoKhoa(false); setLyDo('') }}>Huỷ</button>
+            <button className="btn pri" onClick={xacNhanMo}>Mở khoá</button>
+          </div>
+        </Card>
+      )}
+      {/* Hai cột bằng nhau (T315): trái là trạng thái, kiểm tra; phải là lịch sử đủ rộng không phải cuộn ngang */}
       <div className="ks-luoi">
         <div className="stack">
           <Note kind="ok" icon="lock">Đã khoá sổ đến hết tháng {daKhoa.thang}/{daKhoa.nam}. Phiếu trong các tháng này chỉ xem, không sửa, không xoá; ô Tháng hạch toán lãi lỗ không chọn được các tháng này.</Note>
@@ -86,15 +96,6 @@ export function KhoaSoFree({ sc, mod }: ScreenProps) {
             )) : <p className="muted">Tháng {nhan} chưa hết nên chưa khoá được. Hết tháng, làm đủ các bước rồi khoá để chốt số liệu.</p>}
           </Card>
           {khoaDuoc && soXong < buoc.length && <Note kind="warn" icon="alert">Còn bước chưa xong, khoá lúc này thì số liệu tháng {nhan} có thể chưa đủ. Vẫn khoá được, hệ thống ghi lại người khoá và thời điểm.</Note>}
-          {moKhoa && (
-            <Card title={`Mở khoá tháng ${daKhoa.thang}/${daKhoa.nam}`}>
-              <textarea className="inp ks-ly-do" rows={3} placeholder="Lý do mở khoá, vd bổ sung hoá đơn điện tháng 8" value={lyDo} onChange={e => setLyDo(e.target.value)} />
-              <div className="ks-nut">
-                <button className="btn" onClick={() => { setMoKhoa(false); setLyDo('') }}>Huỷ</button>
-                <button className="btn pri" onClick={xacNhanMo}>Mở khoá</button>
-              </div>
-            </Card>
-          )}
         </div>
         <Card title="Lịch sử khoá sổ" pad={false}>
           <Table cols={[{ k: 'ky', t: 'Tháng', w: 90 }, { k: 'viec', t: 'Thao tác' }, { k: 'ai', t: 'Người làm', w: 140 }, { k: 'luc', t: 'Lúc', w: 170 }]} rows={LICH_SU_KHOA_SO.map(x => ({ ...x }))} />

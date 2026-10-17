@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T327 | Khoá sổ gói Free: khung điền lý do mở khoá hiện ngay dưới nút Mở khoá, Khoá sổ ở đầu trang, không nằm cuối cột trái | dinhlanphuongipacc | Đang làm | Sửa `src/modules/tong-hop/KhoaSoFree.tsx` |
 | T325 | Trang chủ Free máy tính, khối Quỹ tiền: nút Tạo quỹ xuống dưới vòng tồn quỹ; góc trên phải 2 link Sổ quỹ tiền mặt, Sổ ngân hàng như khối Mua hàng | dinhlanphuongipacc | Đang làm | Sửa `home/BaBaiToanFree.tsx`; Trum đang làm T324 bản điện thoại, không đụng file này |
 | T324 | Điện thoại, trang chủ gói Free: làm lại theo trang chủ Free bản web (Quản lý lãi lỗ, Quỹ tiền, Mua hàng & công nợ NCC, Hao hụt kiểm kê, biểu đồ 13 tháng), giữ thanh thao tác nhanh trên cùng; bản web giữ nguyên | Trum | Đang làm | 2 anti làm. Sửa `src/ui/mobile/MTrangChu.tsx`, file mới `MTrangChuFree.tsx`, `MKhoFree.tsx`, mục cuối `app.css` (T324). Không đụng `home/BaBaiToanFree.tsx` (T316 đang sửa); T316 xong thì chép chữ mới sang app |
 | T323 | `tools/kiem_tra.py --dien-thoai` dừng ở bước chờ `.m-nv-luoi`: màn Nghiệp vụ điện thoại làm lại ở T311 không còn lớp này, cập nhật bộ kiểm theo bố cục mới | | Chờ | Phát hiện 17/10/2026 khi kiểm T322 |
@@ -52,6 +51,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T327 | Khoá sổ gói Free: khung điền lý do mở khoá hiện ngay dưới nút Mở khoá, Khoá sổ ở đầu trang, không nằm cuối cột trái | dinhlanphuongipacc | 17/10/2026 | [2026-10-17-dinhlanphuongipacc-mo-khoa-so-len-tren](nhat-ky/2026-10-17-dinhlanphuongipacc-mo-khoa-so-len-tren.md) |
 | T320 | Web và điện thoại: đổi bộ icon sang Solar khối 3D (Bold Duotone, chuyển màu, đổ bóng), đổi 9 icon sai nghĩa, icon khối không dưới 20px, giữ bộ nét dự phòng | Trum | 17/10/2026 | [2026-10-17-trum-icon-solar-khoi](nhat-ky/2026-10-17-trum-icon-solar-khoi.md) |
 | T326 | Form chứng từ (thu chi, mua hàng, thanh toán): ô chọn quỹ bỏ nút Thêm quỹ mới, quỹ chỉ khai ở danh mục Quỹ tiền | dinhlanphuongipacc | 17/10/2026 | [2026-10-17-dinhlanphuongipacc-bo-them-quy-tai-chung-tu](nhat-ky/2026-10-17-dinhlanphuongipacc-bo-them-quy-tai-chung-tu.md) |
 | T316 | Trang chủ Free máy tính: chữ theo thuật ngữ chuẩn kèm giải thích (Kết quả kinh doanh, Quỹ tiền, Mua hàng và công nợ nhà cung cấp, Hao hụt kiểm kê), tiêu đề phụ, chú thích dòng, nút Xem kết quả kinh doanh | dinhlanphuongipacc | 17/10/2026 | [2026-10-17-dinhlanphuongipacc-chu-trang-chu-free](nhat-ky/2026-10-17-dinhlanphuongipacc-chu-trang-chu-free.md) |

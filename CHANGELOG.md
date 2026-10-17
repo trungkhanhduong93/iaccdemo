@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 17/10/2026
 
+- T327: Khoá sổ gói Free: bấm Mở khoá thì khung điền lý do hiện ngay dưới nút ở đầu trang, không phải kéo xuống cuối.
 - T320: Web và điện thoại đổi icon sang kiểu khối 3D: thân xanh, chi tiết cam, chuyển màu, đổ bóng nhẹ, nhìn sắc hơn trên màn FullHD. Icon khối nhỏ nhất 20px, Thao tác nhanh và Lập nhanh 32px. Đổi icon sai nghĩa: Mua hàng thành túi, Giá thành thành thẻ giá, Chi phí phân bổ thành hình tròn tách miếng, Tiện ích thành lưới có dấu cộng. Nhập kho, Xuất kho thành hộp mũi tên, Kiểm kê thành bảng có dấu tích.
 - T326: Form chứng từ thu chi, mua hàng, thanh toán: ô chọn quỹ không còn nút Thêm quỹ mới. Quỹ mới khai ở Danh mục › Quỹ tiền.
 - T316: Trang chủ gói Free máy tính đổi chữ theo thuật ngữ kế toán kèm lời giải thích: Kết quả kinh doanh (lợi nhuận, biên lợi nhuận, giá vốn, chi phí hoạt động), Quỹ tiền, Mua hàng và công nợ nhà cung cấp, Hao hụt kiểm kê; mỗi khối có tiêu đề phụ; nút Xem kết quả kinh doanh mở báo cáo đúng tháng.
