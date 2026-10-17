@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 17/10/2026
 
+- T341: Điện thoại, trang chủ gói Free: Kết quả kinh doanh hiện dạng bảng gọn như bản web. Nhắc tháng chưa khoá sổ nằm ngay dưới Thao tác nhanh. Hộp Lãi lỗ theo cửa hàng bỏ nút X, bảng chi tiết vuốt ngang để xem đủ cột.
 - T338: Trang chủ gói Free máy tính: màn đặt tỉ lệ 150% (hoặc màn thấp) vẫn thấy trọn khối Kết quả kinh doanh và Quỹ tiền kể cả biểu đồ 13 tháng ngay màn đầu; biểu đồ tự thấp xuống cho vừa, màn 100% giữ như cũ.
 - T337: Điện thoại, trang chủ gói Free dùng chữ giống bản web: Kết quả kinh doanh, Giá vốn nguyên vật liệu, Chi phí hoạt động, Công nợ phải trả, kèm lời giải thích ngắn. Khối Quỹ tiền có link Sổ quỹ tiền mặt, Sổ ngân hàng, nút Tạo quỹ dưới vòng tồn quỹ.
 - T336: Form chứng từ: khối thông tin chung thấp thêm (ô 32px, khoảng cách nhỏ hơn), bảng chi tiết có thêm chỗ, hợp màn đặt tỉ lệ 150%.

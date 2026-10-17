@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T341 | Điện thoại, trang chủ gói Free: khối Kết quả kinh doanh dạng bảng gọn như bản web (mỗi khoản một dòng kẻ mảnh, bỏ thẻ màu); nhắc tháng chưa khoá sổ lên ngay dưới thanh thao tác nhanh | Trum | Đang làm | Anti làm. Sửa `src/ui/mobile/MTrangChuFree.tsx`, mục cuối `app.css` (T341) |
 | T340 | Web và điện thoại: bộ icon Khối đồng màu (Solar Bold Duotone, mặt khối xanh nhạt, cam chỉ ở chi tiết nhỏ), icon thao tác đổi sang Solar Linear, thanh bên thân đậm 50% | Trum | Đang làm | Anti làm, nối tiếp T320, T332. Sửa `tools/xuat_bieu_tuong.py`, `src/ui/icon-dac.ts`, `src/ui/Icon.tsx`, `index.html`, mục cuối `app.css`. Mẫu duyệt: https://claude.ai/artifact/H59WiEziF4UvzqSo5nNQAe |
 | T339 | Trang chủ Free máy tính, Tiến độ kiểm kê theo cửa hàng: hiện tối đa 4 cửa hàng cần chú ý (chưa kiểm, lệch nhiều trước), dòng Đã kiểm x/y cửa hàng, dòng Xem tất cả mở hộp danh sách đủ | dinhlanphuongipacc | Đang làm | Sửa `home/BaBaiToanFree.tsx`, `app.css` (mục cuối T339) |
 | T333 | Đổi chữ "map" thành "gán" khi nói về phương thức thanh toán và quỹ (Khoá sổ, Danh mục Quỹ tiền, Danh mục cửa hàng) | dinhlanphuongipacc | Dở dang | Đã đổi ở Khoá sổ, Quỹ tiền. Còn `DanhMucCuaHang.tsx` chờ PhuongXT xong T321. Xem [nhật ký](nhat-ky/2026-10-17-dinhlanphuongipacc-doi-map-thanh-gan.md) |
@@ -54,6 +53,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T341 | Điện thoại, trang chủ gói Free: khối Kết quả kinh doanh dạng bảng gọn như web, nhắc khoá sổ dưới thanh thao tác nhanh; hộp Lãi lỗ theo cửa hàng bỏ nút X, bảng vuốt ngang xem đủ cột | Trum | 17/10/2026 | [2026-10-17-trum-bang-kqkd-khoa-so-dien-thoai](nhat-ky/2026-10-17-trum-bang-kqkd-khoa-so-dien-thoai.md) |
 | T338 | Trang chủ Free máy tính, màn đặt tỉ lệ 150%: màn đầu thấy trọn khối Kết quả kinh doanh, Quỹ tiền kể cả biểu đồ 13 tháng (biểu đồ tự thấp xuống, màn thấp gọn hơn) | dinhlanphuongipacc | 17/10/2026 | [2026-10-17-dinhlanphuongipacc-trang-chu-man-150](nhat-ky/2026-10-17-dinhlanphuongipacc-trang-chu-man-150.md) |
 | T337 | Điện thoại, trang chủ gói Free nhận thay đổi bản web của T316 (chữ thuật ngữ chuẩn, tiêu đề phụ, link Xem kết quả kinh doanh) và T325 (link Sổ quỹ tiền mặt, Sổ ngân hàng, Tạo quỹ dưới vòng tồn quỹ) | Trum | 17/10/2026 | [2026-10-17-trum-dong-bo-chu-trang-chu-free-dien-thoai](nhat-ky/2026-10-17-trum-dong-bo-chu-trang-chu-free-dien-thoai.md) |
 | T336 | Form chứng từ: ép thêm chiều cao khối thông tin chung (ô 32px, khoảng cách nhỏ hơn) cho bảng chi tiết nhiều chỗ hơn ở màn đặt tỉ lệ 150% | dinhlanphuongipacc | 17/10/2026 | [2026-10-17-dinhlanphuongipacc-ep-them-thong-tin-chung](nhat-ky/2026-10-17-dinhlanphuongipacc-ep-them-thong-tin-chung.md) |

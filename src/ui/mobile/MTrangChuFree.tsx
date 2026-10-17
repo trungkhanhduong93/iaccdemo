@@ -537,6 +537,26 @@ export function MTrangChuFree(_props?: Partial<ScreenProps>) {
           </div>
         )}
 
+        {/* Nhắc khoá sổ tháng chưa khoá (T341) */}
+        {(KHOA_SO_DEN.nam < KY_MO.nam ||
+          (KHOA_SO_DEN.nam === KY_MO.nam && KHOA_SO_DEN.thang < KY_MO.thang - 1)) && (
+          <div className="m-tcf-nhac-khoa-wrap">
+            <Link
+              to="/app/he-thong/khoa-so"
+              className="bbt-nhac-khoa m-tcf-nhac-khoa"
+              title="Khoá sổ để chốt số liệu, phiếu trong tháng không bị sửa nhầm"
+            >
+              <Icon n="lock" className="ic sm" />
+              <span>
+                Tháng{' '}
+                {KHOA_SO_DEN.thang === 12 ? 1 : KHOA_SO_DEN.thang + 1}/
+                {KHOA_SO_DEN.thang === 12 ? KHOA_SO_DEN.nam + 1 : KHOA_SO_DEN.nam} chưa khoá sổ
+              </span>
+              <b>Khoá sổ ›</b>
+            </Link>
+          </div>
+        )}
+
         {/* 3. Chọn tháng như web (tháng 7 đến 10) */}
         <div className="m-tcf-chon-thang">
           <Select
@@ -593,39 +613,39 @@ export function MTrangChuFree(_props?: Partial<ScreenProps>) {
             Biên lợi nhuận {pct(bien)} <span className="bbt-e-giai">· {bien < 0 ? 'lỗ' : 'lãi'} {Math.abs(bien * 100).toLocaleString('vi-VN', { maximumFractionDigits: 1 })} đ trên mỗi 100 đ doanh thu</span>
           </div>
 
-          <div className="tll" style={{ marginTop: 14 }}>
-            <div className="tll-the dt">
-              <div className="tll-trai">
+          <div className="m-tcf-kqkd-bang">
+            <div className="m-tcf-kqkd-dong m-tcf-kqkd-dt">
+              <div className="m-tcf-kqkd-l">
                 <b>Doanh thu</b>
                 <span>Tiền bán hàng trong tháng</span>
               </div>
-              <div className="tll-phai">
-                <b style={{ fontSize: '17px' }}>{moneyD(d.dtThuan)}</b>
+              <div className="m-tcf-kqkd-r">
+                <b>{moneyD(d.dtThuan)}</b>
               </div>
             </div>
 
             <Link
               to={`/app/trang-chu/chi-phi-nvl?thang=${thangF}`}
-              className="tll-the cp tll-link"
+              className="m-tcf-kqkd-dong m-tcf-kqkd-link"
               title="Xem giá vốn nguyên vật liệu"
             >
-              <div className="tll-trai">
+              <div className="m-tcf-kqkd-l">
                 <b>Giá vốn nguyên vật liệu</b>
                 <span>{moTaCach(nvl.ds)}</span>
               </div>
-              <div className="tll-phai">
+              <div className="m-tcf-kqkd-r">
                 <b>{moneyD(nvl.tien)}</b>
                 <span>{pct(d.dtThuan > 0 ? nvl.tien / d.dtThuan : 0)}</span>
+                <Icon n="chevr" className="ic sm m-tcf-kqkd-mui" />
               </div>
-              <Icon n="chevr" className="ic sm tll-mui" />
             </Link>
 
             <Link
               to={`/app/trang-chu/chi-phi-thang?thang=${thangF}`}
-              className="tll-the cp tll-link"
+              className="m-tcf-kqkd-dong m-tcf-kqkd-link"
               title="Xem chi phí hoạt động"
             >
-              <div className="tll-trai">
+              <div className="m-tcf-kqkd-l">
                 <b>Chi phí hoạt động</b>
                 <span>
                   {chiLon
@@ -633,35 +653,35 @@ export function MTrangChuFree(_props?: Partial<ScreenProps>) {
                     : 'Lương, mặt bằng, điện nước, chi khác'}
                 </span>
               </div>
-              <div className="tll-phai">
+              <div className="m-tcf-kqkd-r">
                 <b>{moneyD(cpThang)}</b>
                 <span>{pct(d.dtThuan > 0 ? cpThang / d.dtThuan : 0)}</span>
+                <Icon n="chevr" className="ic sm m-tcf-kqkd-mui" />
               </div>
-              <Icon n="chevr" className="ic sm tll-mui" />
             </Link>
 
             <Link
               to="/app/ccdc/8-1-1"
-              className="tll-the cp tll-link"
+              className="m-tcf-kqkd-dong m-tcf-kqkd-link"
               title="Xem chi phí phân bổ, khấu hao"
             >
-              <div className="tll-trai">
+              <div className="m-tcf-kqkd-l">
                 <b>Chi phí phân bổ, khấu hao</b>
                 <span>Công cụ, tài sản mua một lần, ghi nhận dần theo tháng</span>
               </div>
-              <div className="tll-phai">
+              <div className="m-tcf-kqkd-r">
                 <b>{moneyD(d.cpPhanBo)}</b>
                 <span>{pct(d.dtThuan > 0 ? d.cpPhanBo / d.dtThuan : 0)}</span>
+                <Icon n="chevr" className="ic sm m-tcf-kqkd-mui" />
               </div>
-              <Icon n="chevr" className="ic sm tll-mui" />
             </Link>
 
-            <div className={`tll-the ${loiNhuan >= 0 ? 'lai' : 'lo'}`}>
-              <div className="tll-trai">
+            <div className={`m-tcf-kqkd-dong m-tcf-kqkd-ln ${loiNhuan >= 0 ? 'lai' : 'lo'}`}>
+              <div className="m-tcf-kqkd-l">
                 <b>Lợi nhuận</b>
               </div>
-              <div className="tll-phai">
-                <b style={{ fontSize: '17px' }}>
+              <div className="m-tcf-kqkd-r">
+                <b>
                   {loiNhuan < 0 ? `Lỗ ${moneyD(Math.abs(loiNhuan))}` : moneyD(loiNhuan)}
                 </b>
                 <span>{pct(bien)}</span>
@@ -759,26 +779,6 @@ export function MTrangChuFree(_props?: Partial<ScreenProps>) {
 
         {/* 6. Khối Mua hàng & công nợ NCC, Hao hụt kiểm kê */}
         <MKhoFree selCns={selCns} thang={thangF} />
-
-        {/* 7. Nhắc khoá sổ tháng chưa khoá, nếu web Free đang có */}
-        {(KHOA_SO_DEN.nam < KY_MO.nam ||
-          (KHOA_SO_DEN.nam === KY_MO.nam && KHOA_SO_DEN.thang < KY_MO.thang - 1)) && (
-          <div className="m-tcf-nhac-khoa-wrap">
-            <Link
-              to="/app/he-thong/khoa-so"
-              className="bbt-nhac-khoa m-tcf-nhac-khoa"
-              title="Khoá sổ để chốt số liệu, phiếu trong tháng không bị sửa nhầm"
-            >
-              <Icon n="lock" className="ic sm" />
-              <span>
-                Tháng{' '}
-                {KHOA_SO_DEN.thang === 12 ? 1 : KHOA_SO_DEN.thang + 1}/
-                {KHOA_SO_DEN.thang === 12 ? KHOA_SO_DEN.nam + 1 : KHOA_SO_DEN.nam} chưa khoá sổ
-              </span>
-              <b>Khoá sổ ›</b>
-            </Link>
-          </div>
-        )}
       </div>
 
       {/* Popups & Modals */}
