@@ -233,6 +233,7 @@ const danhMuc: ModuleDef = {
         .map(([ma, ten, ts, gc]) => ({ ma, ten, ts, gc })) } },
     // Gói Free khai số dư ban đầu quỹ ngay ở danh mục (cột, ô trong form), không còn màn Số dư ban đầu riêng; lưu cùng chỗ soDuQuy (T245)
     '1.12': { catalog: { them: 'Thêm quỹ', nhomLoc: 'loai', nhanLoc: 'Loại',
+      tich: { nhan: 'Chưa map phương thức thanh toán', macDinh: false, loc: r => !r._pttt?.length },   // Khoá sổ gói Free mở với ?tich=1 (T317)
       cols: goi => [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên quỹ' }, { k: 'loai', t: 'Loại' }, { k: 'stk', t: 'Số tài khoản' }, { k: 'cn', t: 'Cửa hàng', cls: 'dim' },
         { k: 'pttt', t: 'PTTT từ FABi', cls: 'dim', w: 260 },   // phương thức thanh toán map về quỹ (T264)
         ...(goi === 'F' ? [{ k: 'soDu', t: 'Số dư ban đầu', num: true, w: 150 }] : [])],

@@ -75,7 +75,8 @@ export function CatalogScreen({ sc }: ScreenProps) {
 
   // Danh sách, cột và bảng ghi nhớ lại: mở panel hay gõ trong panel không vẽ lại cả bảng danh sách phía sau (T81)
   const nhoms = useMemo(() => cfg.nhomLoc ? [...new Set(all.map(r => r[cfg.nhomLoc!]))] : [], [all])
-  const [tichLoc, setTichLoc] = useState(cfg.tich?.macDinh ?? false)
+  const [thamDau] = useSearchParams()   // ?tich=1 mở màn với ô tích lọc nhanh đã bật, vd Khoá sổ mở Quỹ tiền chưa map PTTT (T317)
+  const [tichLoc, setTichLoc] = useState(thamDau.get('tich') === '1' || (cfg.tich?.macDinh ?? false))
   const [moHangLoat, setMoHangLoat] = useState(false)
   const khoaXoa = (r: Row) => String(cfg.dsChungTu?.cotSo ? r[cfg.dsChungTu.cotSo] : khoaDong(r))
   const rows = useMemo(() => all.filter(r => !daXoaDm.has(khoaXoa(r)) && (!nhom || r[cfg.nhomLoc!] === nhom) && (!q || fold(Object.values(r).join(' ')).includes(fold(q))) && (!tichLoc || !cfg.tich || cfg.tich.loc(r))), [all, nhom, q, tichLoc, daXoaDm])
@@ -254,6 +255,13 @@ export function CatalogScreen({ sc }: ScreenProps) {
             onLamMoi={() => setNhom('')}
             phai={
               <div className="row" style={{ gap: 8 }}>
+                {/* Ô tích lọc nhanh ở danh mục thường, vd Quỹ tiền chưa map PTTT (T317) */}
+                {cfg.tich && (
+                  <label className="row ky-so-lieu">
+                    <input type="checkbox" className="bat-tat" checked={tichLoc} onChange={e => setTichLoc(e.target.checked)} />
+                    <span>{cfg.tich.nhan}</span>
+                  </label>
+                )}
                 <span className="muted" style={{ fontSize: 12, marginRight: 4 }}>{rows.length}/{all.length} dòng</span>
                 <NutTuyChinhCot cols={cot.colsDu} an={cot.an} coDinh={COT_CO_DINH} macDinh={cot.macDinh} dongBang={cot.dongBang}
                   onLuu={cot.luu} onDoRongTuDong={cot.datDoRongTuDong} />

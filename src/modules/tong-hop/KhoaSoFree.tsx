@@ -50,7 +50,7 @@ export function KhoaSoFree({ sc, mod }: ScreenProps) {
     { xong: true, ten: 'Phân bổ chi phí trong tháng', phu: `Đã phân bổ ${moneyD(pbThang)}`, to: '/app/ccdc/8-1-1' },
     { xong: cho.so === 0, ten: 'Chi phí chờ phân bổ chưa ghi tăng thẻ', phu: cho.so ? `Còn ${cho.so} khoản · ${moneyD(cho.tong)}` : 'Không còn khoản nào', to: '/app/ccdc/8-1-1' },
     { xong: true, ten: 'Đối chiếu tồn quỹ cuối tháng', phu: `Tồn quỹ ${moneyD(tonQuy)}`, to: `/app/trang-chu/lich-su-quy?quy=tat-ca&thang=${canKhoa.thang}` },
-    { xong: phieuCho === 0, ten: 'Phiếu thu, chi FABi chờ xử lý', phu: phieuCho ? `Còn ${phieuCho} phiếu chờ map phương thức thanh toán` : 'Không còn phiếu chờ map phương thức thanh toán', to: '/app/tien/2-1-1' },
+    { xong: phieuCho === 0, ten: 'Phiếu thu, chi FABi chờ xử lý', phu: phieuCho ? `Còn ${phieuCho} phiếu chờ map phương thức thanh toán` : 'Không còn phiếu chờ map phương thức thanh toán', to: '/app/danh-muc/1-12?tich=1' },   // mở Quỹ tiền lọc quỹ chưa map PTTT
   ]
   const soXong = buoc.filter(b => b.xong).length
 
