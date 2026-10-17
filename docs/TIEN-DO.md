@@ -4,14 +4,14 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T322.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T323.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T322 | Điện thoại: bảng lịch chọn khoảng ngày ở báo cáo, chạm ngày A rồi ngày B là áp dụng và đóng bảng; chip chọn nhanh cũng áp dụng luôn; bỏ nút Xong, giữ Huỷ | Trum | Đang làm | Sửa `src/ui/ChonNgay.tsx` (`MLichSheetKhoangNgay`) |
+| T323 | `tools/kiem_tra.py --dien-thoai` dừng ở bước chờ `.m-nv-luoi`: màn Nghiệp vụ điện thoại làm lại ở T311 không còn lớp này, cập nhật bộ kiểm theo bố cục mới | | Chờ | Phát hiện 17/10/2026 khi kiểm T322 |
 | T321 | Danh mục cửa hàng: hộp Chi tiết cửa hàng cho sửa Cách tính chi phí NVL (gói Free) và Đồng bộ thu chi FABi ngay trong hộp | PhuongXT | Đang làm | Sửa `danh-muc/DanhMucCuaHang.tsx`, có thể `app.css` (mục cuối T321) |
 | T320 | Web và điện thoại: đổi bộ icon sang Solar khối 3D (Bold Duotone, chuyển màu, đổ bóng), đổi 9 icon sai nghĩa, icon khối không dưới 20px | Trum | Đang làm | Anti làm. Sửa `tools/xuat_bieu_tuong.py`, `src/ui/icon-dac.ts`, `src/ui/Icon.tsx`, mục mới cuối `app.css`, `index.html`, khoá icon ở `src/modules/*` và `thaoTacNhanh.ts`. Mẫu duyệt: https://claude.ai/artifact/H59WiEziF4UvzqSo5nNQAe |
 | T316 | Trang chủ Free máy tính: chữ theo hướng thuật ngữ chuẩn kèm giải thích (Kết quả kinh doanh, Quỹ tiền, Mua hàng và công nợ nhà cung cấp, Hao hụt kiểm kê), tiêu đề phụ, chú thích dòng | dinhlanphuongipacc | Đang làm | Sửa `home/BaBaiToanFree.tsx`, có thể `app.css` (mục cuối T316) |
@@ -51,6 +51,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T322 | Điện thoại: bảng lịch chọn khoảng ngày chạm ngày A rồi ngày B là áp dụng và đóng bảng; bộ lọc báo cáo bỏ 2 ô ngày của trình duyệt, dùng bảng lịch này | Trum | 17/10/2026 | [2026-10-17-trum-chon-khoang-ngay-dien-thoai](nhat-ky/2026-10-17-trum-chon-khoang-ngay-dien-thoai.md) |
 | T318 | Báo cáo kết quả kinh doanh gói Free (10.2.3) dạng chi tiết: doanh thu mỗi kênh bán một dòng, chi phí trong tháng mỗi lý do chi một dòng, chi phí phân bổ chia Chi phí trả trước, Công cụ dụng cụ, Tài sản cố định; dòng không phát sinh thì ẩn | PhuongXT | 17/10/2026 | [2026-10-17-phuongxt-kqkd-free-chi-tiet](nhat-ky/2026-10-17-phuongxt-kqkd-free-chi-tiet.md) |
 | T313 | Điện thoại: bộ lọc báo cáo, ô chọn ngày mở bảng chọn ngày thay cho danh sách kỳ dạng sheet | Trum | 17/10/2026 | [2026-10-17-trum-nghiep-vu-loc-bao-cao-icon](nhat-ky/2026-10-17-trum-nghiep-vu-loc-bao-cao-icon.md) |
 | T312 | Điện thoại: hàng chip trên báo cáo (Thời gian, Kho/CN) chỉ hiện điều kiện đang lọc, bấm không mở bộ lọc; chọn điều kiện lọc chỉ qua nút lọc góc phải | Trum | 17/10/2026 | [2026-10-17-trum-nghiep-vu-loc-bao-cao-icon](nhat-ky/2026-10-17-trum-nghiep-vu-loc-bao-cao-icon.md) |

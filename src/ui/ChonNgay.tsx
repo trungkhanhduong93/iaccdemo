@@ -93,18 +93,15 @@ function MLichSheetKhoangNgay({ value, onChange, onDong }: MLichSheetKhoangNgayP
 
   const dsNgay = useMemo(() => taoLich(thang, nam), [thang, nam])
 
+  // Chạm ngày thứ hai là chốt khoảng và đóng bảng (T322)
+  const apDung = (k: KhoangNgay) => {
+    onChange(k)
+    onDong()
+  }
+
   const chonNgay = (d: Date) => {
     if (dangChon) {
-      let tu = draftTu
-      let den = d
-      if (den.getTime() < tu.getTime()) {
-        const tmp = tu
-        tu = den
-        den = tmp
-      }
-      setDraftTu(tu)
-      setDraftDen(den)
-      setDangChon(false)
+      apDung(d.getTime() < draftTu.getTime() ? { tu: d, den: draftTu } : { tu: draftTu, den: d })
     } else {
       setDraftTu(d)
       setDraftDen(null)
@@ -130,19 +127,7 @@ function MLichSheetKhoangNgay({ value, onChange, onDong }: MLichSheetKhoangNgayP
       const y = HOM_NAY.getFullYear()
       k = m === 0 ? khoangThang(12, y - 1) : khoangThang(m, y)
     }
-    setDraftTu(k.tu)
-    setDraftDen(k.den)
-    setDangChon(false)
-    setThang(k.tu.getMonth() + 1)
-    setNam(k.tu.getFullYear())
-  }
-
-  const handleXong = () => {
-    const tu = draftTu
-    const den = draftDen ?? draftTu
-    const k = tu.getTime() <= den.getTime() ? { tu, den } : { tu: den, den: tu }
-    onChange(k)
-    onDong()
+    apDung(k)
   }
 
   const tTu = layMoc(draftTu)
@@ -218,9 +203,6 @@ function MLichSheetKhoangNgay({ value, onChange, onDong }: MLichSheetKhoangNgayP
         <div className="m-lich-day-nut">
           <button type="button" className="m-lich-btn-huy" onClick={onDong}>
             Huỷ
-          </button>
-          <button type="button" className="m-lich-btn-xong" onClick={handleXong}>
-            Xong
           </button>
         </div>
       </div>

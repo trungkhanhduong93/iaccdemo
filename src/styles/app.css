@@ -22443,11 +22443,9 @@ button[class*="btn-"] .ic .l2 {
 .m-loc-the-nhan.m-loc-cach-tren {
   margin-top: 16px;
 }
-.m-loc-date-o {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
 
 /* ── Báo cáo kết quả kinh doanh gói Free dạng chi tiết (T318) ── */
 .kqkd-con { display: block; padding-left: 20px; color: var(--muted); }
+
+/* ── Bộ lọc điện thoại: ô khoảng ngày mở bảng lịch chạm A rồi B (T322) ── */
+.m-loc-kn-picker .kn-nut { width: 100%; height: 44px; font-size: 15px; }

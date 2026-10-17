@@ -10,6 +10,7 @@ import {
   xemBaoCao,
   xoaLoc,
 } from '../bao-cao/tuyChinhBC'
+import { ChonKhoangNgay, type KhoangNgay } from '../ChonNgay'
 import { Icon } from '../Icon'
 import {
   datKhoangNgayMobile,
@@ -86,31 +87,25 @@ export const MBaoCaoLoc: FC<MBaoCaoLocProps> = ({ mo, onDong, path, sc }) => {
   const isThangNay = draftTuNgay === '2026-10-01' && (draftDenNgay === '2026-10-31' || draftDenNgay === '2026-10-07')
   const isThangTruoc = draftTuNgay === '2026-09-01' && draftDenNgay === '2026-09-30'
 
-  const handleDoiTuNgay = (val: string) => {
-    if (!val) return
-    setDraftTuNgay(val)
-    const [y, m] = val.split('-').map(Number)
-    if (y && m) {
-      const last = ngayCuoiThang(y, m)
-      const maxD = `${y}-${String(m).padStart(2, '0')}-${String(last).padStart(2, '0')}`
-      if (draftDenNgay < val || draftDenNgay > maxD) {
-        setDraftDenNgay(maxD)
-      }
+  // Bảng lịch chạm Từ ngày rồi Đến ngày (T322); số liệu tính theo tháng của Từ ngày nên Đến ngày không vượt cuối tháng đó
+  const khoangLich = useMemo<KhoangNgay>(() => {
+    const doc = (v: string) => {
+      const [y, m, d] = v.split('-').map(Number)
+      return new Date(y, m - 1, d)
     }
-  }
+    return { tu: doc(draftTuNgay), den: doc(draftDenNgay) }
+  }, [draftTuNgay, draftDenNgay])
 
-  const handleDoiDenNgay = (val: string) => {
-    if (!val) return
-    setDraftDenNgay(val)
+  const handleChonKhoang = (k: KhoangNgay) => {
+    const iso = (y: number, m: number, d: number) => `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`
+    const y = k.tu.getFullYear()
+    const m = k.tu.getMonth() + 1
+    const tu = iso(y, m, k.tu.getDate())
+    const den = iso(k.den.getFullYear(), k.den.getMonth() + 1, k.den.getDate())
+    const maxD = iso(y, m, ngayCuoiThang(y, m))
+    setDraftTuNgay(tu)
+    setDraftDenNgay(den > maxD ? maxD : den)
   }
-
-  const minDenNgay = draftTuNgay
-  const maxDenNgay = useMemo(() => {
-    const [y, m] = draftTuNgay.split('-').map(Number)
-    if (!y || !m) return draftTuNgay
-    const last = ngayCuoiThang(y, m)
-    return `${y}-${String(m).padStart(2, '0')}-${String(last).padStart(2, '0')}`
-  }, [draftTuNgay])
 
   const handleReset = () => {
     setDraftTuNgay('2026-09-01')
@@ -241,28 +236,8 @@ export const MBaoCaoLoc: FC<MBaoCaoLocProps> = ({ mo, onDong, path, sc }) => {
             </div>
 
             <div className="m-loc-the-nhan m-loc-cach-tren">Khoảng ngày trong kỳ</div>
-            <div className="m-loc-ds-muc">
-              <div className="m-loc-date-o">
-                <label className="m-loc-dong-nhan">Từ ngày</label>
-                <input
-                  type="date"
-                  className="m-form-inp"
-                  value={draftTuNgay}
-                  onChange={e => handleDoiTuNgay(e.target.value)}
-                />
-              </div>
-
-              <div className="m-loc-date-o">
-                <label className="m-loc-dong-nhan">Đến ngày</label>
-                <input
-                  type="date"
-                  className="m-form-inp"
-                  value={draftDenNgay}
-                  min={minDenNgay}
-                  max={maxDenNgay}
-                  onChange={e => handleDoiDenNgay(e.target.value)}
-                />
-              </div>
+            <div className="m-loc-kn-picker">
+              <ChonKhoangNgay value={khoangLich} onChange={handleChonKhoang} />
             </div>
           </div>
 
