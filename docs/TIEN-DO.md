@@ -4,19 +4,18 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T313.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T314.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T314 | Điện thoại: `kiem_tra.py --dien-thoai` báo "Bấm Chứng từ chưa ghi sổ: danh sách không bật sẵn chip Chưa ghi sổ" | | Chờ | Phát hiện 17/10/2026 khi chạy bộ kiểm điện thoại cho T308, T309 (không đụng phần này). Có thể liên quan bộ lọc nổi T299 (`MLoc.tsx`, `MDanhSach.tsx`) |
 | T311 | Điện thoại: màn Nghiệp vụ đang đơn điệu (5 ô trắng, nửa dưới trống), làm lại bố cục cho dễ dùng hơn | Trum | Đang làm | Anti làm. Sửa `src/ui/mobile/MNghiepVu.tsx`, mục mới cuối `app.css` |
 | T312 | Điện thoại: hàng chip trên báo cáo (Thời gian, Kho/CN) chỉ hiện điều kiện đang lọc, bấm không mở bộ lọc; chọn điều kiện lọc chỉ qua nút lọc góc phải | Trum | Đang làm | Anti làm cùng T313. Sửa `src/ui/mobile/MSoBaoCao.tsx`, `MBaoCaoLoc.tsx`, `MLoc.tsx` |
 | T313 | Điện thoại: bộ lọc báo cáo, ô chọn ngày mở bảng chọn ngày thay cho danh sách kỳ dạng sheet | Trum | Đang làm | Anti làm cùng T312, cùng file |
 | T310 | Web và điện thoại: rà các chỗ icon còn nhỏ quá so với cỡ chuẩn QD67, nâng lên | Trum | Đang làm | Làm sau T311, T312 vì cùng đụng `app.css`. Sửa `app.css`, `src/ui/` |
-| T309 | Báo cáo 5.2.3 Xuất nhập tồn hiện dạng tờ in ở màn chính thay vì dạng bảng như báo cáo khác: đổi bảng HTML tự vẽ sang `RptTable` (tiêu đề 2 tầng Đầu kỳ, Nhập, Xuất, Cuối kỳ) | dinhlanphuongipacc | Đang làm | Sửa `kho/XuatNhapTon.tsx`. Làm ở máy HAN-IPOS381 |
-| T308 | Báo cáo 4.2.3 Công nợ nhà cung cấp thêm cấp nhóm: xem tất cả cửa hàng thì mỗi nhà cung cấp một dòng tổng, dưới là từng cửa hàng có phát sinh (bấm tên cửa hàng xem lịch sử công nợ cửa hàng đó) | dinhlanphuongipacc | Đang làm | Sửa `bao-cao/cong-no.tsx`, `mua-hang/index.ts` (dòng 4.2.3). Hàm cũ `rowsCongNo` giữ nguyên cho trang chủ, điện thoại. Làm ở máy HAN-IPOS381 |
 | T265 | Phiếu thu, chi đồng bộ từ FABi (T264) chưa vào Sổ quỹ tiền mặt, Sổ ngân hàng, Lịch sử thu chi, tồn quỹ trang chủ; đưa vào thì đổi số dư | | Chờ | Phát hiện khi làm T264, chờ PhuongXT quyết |
 | T229 | Báo cáo kết quả kinh doanh (10.2.3, B02-DNN) ở chế độ TT133 mở ra "Báo cáo chưa có mẫu" ở cả bản máy tính và điện thoại, gói Pro và Free | | Chờ | Phát hiện ở T222 ngày 14/10/2026, mở từ Tất cả báo cáo. Có thể liên quan T220 |
 | T169 | Form chứng từ: gõ đổi địa chỉ từ phiếu này sang phiếu khác (vd `#/app/tien/2-1-1/chi-3` sang `chi-6`) thì form giữ số phiếu, đối tượng của phiếu cũ; mở từ danh sách, Trước, Sau thì đúng | | Chờ | Phát hiện ở T168. Sửa `ChungTuForm.tsx`, có thể `VoucherScreen.tsx` (key của form) |
@@ -52,6 +51,8 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T309 | Báo cáo 5.2.3 Xuất nhập tồn hiện dạng bảng (đổi bảng HTML tự vẽ sang `RptTable`, tiêu đề 2 tầng); bấm logo thanh bên về trang chủ, nhãn gói mở Gói thuê bao; trang chủ Free bản web bỏ tab Cần theo dõi; khối Quỹ tiền ghi tên quỹ như Danh mục Quỹ tiền, không kèm số tài khoản | dinhlanphuongipacc | 17/10/2026 | [2026-10-17-dinhlanphuongipacc-xnt-dang-bang](nhat-ky/2026-10-17-dinhlanphuongipacc-xnt-dang-bang.md) |
+| T308 | Báo cáo 4.2.3 Công nợ nhà cung cấp nhóm theo nhà cung cấp: xem tất cả cửa hàng thì mỗi NCC một dòng tổng in đậm, dưới là từng cửa hàng (bấm xem lịch sử phần cửa hàng); Thanh toán ngay ở cả dòng cửa hàng, lập phiếu chi đúng cửa hàng (`?cn=`) | dinhlanphuongipacc | 17/10/2026 | [2026-10-17-dinhlanphuongipacc-cong-no-ncc-nhom-cua-hang](nhat-ky/2026-10-17-dinhlanphuongipacc-cong-no-ncc-nhom-cua-hang.md) |
 | T307 | Trang chủ gói Free máy tính: Quản lý kho gộp còn 2 khối thẳng cột với hàng trên, ít chữ: Mua hàng & công nợ NCC (Tổng nhập tháng, Còn nợ NCC, dòng Nợ đầu kỳ + Mua nợ − Đã trả = Nợ cuối kỳ, Nhập nhiều nhất, Nợ nhiều nhất, nút Tạo phiếu mua hàng, Thanh toán NCC), Hao hụt kiểm kê (mặt hàng lệch, tiến độ kiểm kê từng cửa hàng, thiếu nhiều, thừa nhiều, nút Kiểm kê ngay); báo cáo 4.2.3 tiền mua hàng NCC lấy từ phiếu mua 4.1.1 nên mua nợ khớp tổng nhập | dinhlanphuongipacc | 17/10/2026 | [2026-10-17-dinhlanphuongipacc-quan-ly-kho-2-khoi](nhat-ky/2026-10-17-dinhlanphuongipacc-quan-ly-kho-2-khoi.md) |
 | T306 | Tooltip tự vẽ khi rê chuột 2 biểu đồ cột trang chủ (Hiệu quả kinh doanh, Dòng tiền 13 tháng) thay `<title>` hộp đen của trình duyệt, theo mẫu https://claude.ai/artifact/1iRkGuzeSp3ozpaP6CrZfF | Trum | 17/10/2026 | [2026-10-17-trum-tooltip-bieu-do](nhat-ky/2026-10-17-trum-tooltip-bieu-do.md) |
 | T305 | Gỡ 13 skill thiết kế `Leonxlnx/taste-skill` khỏi `.claude/skills`, `.agents/skills` và `skills-lock.json` (thêm ở T16). Bộ này viết cho landing page, chồng với skill `iacc-ui-ux` toàn máy; 6 luật hợp app kế toán đã gộp vào `iacc-ui-ux` | Trum | 17/10/2026 | [2026-10-17-trum-go-skill-taste](nhat-ky/2026-10-17-trum-go-skill-taste.md) |

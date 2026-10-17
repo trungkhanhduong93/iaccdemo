@@ -1,5 +1,5 @@
 import { Fragment, useEffect, useRef, useState } from 'react'
-import { Link, Navigate, Outlet, useLocation } from 'react-router-dom'
+import { Link, Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useSession } from './session'
 import { MODULES, duongDan, hienPhanHe, manDau, phanHeKhoa, tenPhanHe } from './registry'
 import { GOI, GOIS, type Goi } from './plan'
@@ -143,13 +143,17 @@ function Sidebar({ mod, onSearch }: { mod: ModuleDef; onSearch: () => void }) {
 
   // Menu phụ khi rê chuột vào phân hệ tạm tắt, PhuongXT chốt 14/10/2026 (T227); bật lại thì đổi thành true
   const coMenuPhu = false
+  const navGoi = useNavigate()
 
   return (
     <nav ref={sbRef} className="sidebar" aria-label="Phân hệ">
-      <Link to="/app/he-thong/goi-thue-bao" className="sb-brand" title={`Đang dùng gói ${GOI[s.goi].ten}. Bấm để xem gói thuê bao`}>
+      {/* Bấm logo về trang chủ; bấm nhãn gói mới mở Gói thuê bao (T309) */}
+      <Link to={s.role === 'owner' || s.goi === 'F' ? '/app/trang-chu/tong-quan' : '/app/trang-chu/ban-lam-viec'} className="sb-brand" title="Về trang chủ">
         <span className="sb-brand-wrap">
           <Logo nen="toi" cao={30} />
-          <span className={`pk-ivt ${s.goi === 'PR' ? 'pro' : GOI[s.goi].cls}`}>{GOI[s.goi].ten}</span>
+          <span className={`pk-ivt ${s.goi === 'PR' ? 'pro' : GOI[s.goi].cls}`} role="link" tabIndex={0} title={`Đang dùng gói ${GOI[s.goi].ten}. Bấm để xem gói thuê bao`}
+            onClick={e => { e.preventDefault(); e.stopPropagation(); navGoi('/app/he-thong/goi-thue-bao') }}
+            onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); navGoi('/app/he-thong/goi-thue-bao') } }}>{GOI[s.goi].ten}</span>
         </span>
         <DauLogo size={32} />
       </Link>

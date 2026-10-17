@@ -35,11 +35,13 @@ function phieuMuaNcc(ma: string, thang: number, cnTen: string): PhieuCn[] | null
 function soLieu(loai: Loai, ma: string, thang: number, cnTen?: string) {
   const dsCn = CUA_HANG.filter(c => !cnTen || c.ten === cnTen)
   let dau = 0
+  const dauTheoCn: Record<string, number> = {}   // T308: nợ đầu kỳ từng cửa hàng, để tách dòng cửa hàng dưới nhà cung cấp
   const phieu: PhieuCn[] = []
   for (const c of dsCn) {
     const r = rng(`cn-${loai}-${ma}-${c.id}-${thang}`)
     const dauCn = k(between(r, 0, loai === 'ncc' ? 60e6 : 25e6) / dsCn.length)
     dau += dauCn
+    dauTheoCn[c.ten] = dauCn
     // NCC (T307): mua hàng lấy từ phiếu mua thật; phiếu mẫu chỉ còn trả hàng, thanh toán, tổng không vượt số đang nợ
     const muaThat = loai === 'ncc' ? phieuMuaNcc(ma, thang, c.ten) : null
     const ngayToiDa = muaThat ? Math.max(2, ...muaThat.map(x => Number(x.ngay.slice(0, 2)) || 2)) : 27
@@ -77,7 +79,13 @@ function soLieu(loai: Loai, ma: string, thang: number, cnTen?: string) {
   const dem: Record<string, number> = {}
   const goc = Number(ma.replace(/\D/g, '')) * 7
   for (const p of phieu) { if (p.so.includes('-')) continue; dem[p.so] = (dem[p.so] ?? goc) + 1; p.so = `${p.so}26${pad(thang)}-${pad(dem[p.so], 4)}` }
-  return { dau, phieu }
+  return { dau, phieu, dauTheoCn }
+}
+
+/** Phần của một cửa hàng trong số liệu tất cả cửa hàng (T308): cộng các cửa hàng ra đúng dòng nhà cung cấp */
+function soLieuCuaHang(loai: Loai, ma: string, thang: number, cn: string) {
+  const all = soLieu(loai, ma, thang)
+  return { dau: all.dauTheoCn[cn] ?? 0, phieu: all.phieu.filter(p => p.kho === cn) }
 }
 
 /** Tên đối tượng bấm được, mở popup Lịch sử công nợ cùng kỳ, cùng cửa hàng */
@@ -90,8 +98,17 @@ function TenDoiTuong({ x }: { x: Row }) {
   </>
 }
 
-function LichSuCongNo({ loai, ma, ten, thang, cnTen, onDong }: { loai: Loai; ma: string; ten: string; thang: number; cnTen?: string; onDong: () => void }) {
-  const { dau, phieu } = soLieu(loai, ma, thang, cnTen)
+/** Dòng cửa hàng dưới nhà cung cấp (T308): bấm tên cửa hàng mở Lịch sử công nợ phần cửa hàng đó */
+function TenCuaHang({ x }: { x: Row }) {
+  const [mo, setMo] = useState(false)
+  return <>
+    <button type="button" className="bc-mo-so cn-ten cn-cua-hang" onClick={() => setMo(true)}>{x.cuaHang}</button>
+    {mo && <LichSuCongNo loai={x._loai} ma={x.ma} ten={x.ten} thang={x._thang} chiCn={x.cuaHang} onDong={() => setMo(false)} />}
+  </>
+}
+
+function LichSuCongNo({ loai, ma, ten, thang, cnTen, chiCn, onDong }: { loai: Loai; ma: string; ten: string; thang: number; cnTen?: string; chiCn?: string; onDong: () => void }) {
+  const { dau, phieu } = chiCn ? soLieuCuaHang(loai, ma, thang, chiCn) : soLieu(loai, ma, thang, cnTen)
   let no = dau
   const cuoiThang = new Date(2026, thang, 0).getDate()
   const rows: Row[] = [
@@ -108,8 +125,8 @@ function LichSuCongNo({ loai, ma, ten, thang, cnTen, onDong }: { loai: Loai; ma:
   return createPortal(
     <div className="overlay ds-hop-nen" onMouseDown={e => { if (e.target === e.currentTarget) onDong() }} onKeyDown={e => { if (e.key === 'Escape') onDong() }}>
       <div className="ds-hop cn-hop" role="dialog" aria-modal="true" aria-label={`Lịch sử công nợ - ${ten}`}>
-        <div className="ds-hop-dau"><b>Lịch sử công nợ - {ten}</b><span className="grow" />
-          {loai === 'ncc' && no > 0 && <Link to={linkThanhToan(ten)} className="btn pri sm" onClick={onDong}>Thanh toán ngay</Link>}
+        <div className="ds-hop-dau"><b>Lịch sử công nợ - {ten}{chiCn ? ` · ${chiCn}` : ''}</b><span className="grow" />
+          {loai === 'ncc' && no > 0 && <Link to={linkThanhToan(ten, chiCn)} className="btn pri sm" onClick={onDong}>Thanh toán ngay</Link>}
           <button type="button" className="btn ghost sm" title="Đóng" onClick={onDong} autoFocus><Icon n="x" className="ic sm" /></button></div>
         <div className="cn-hop-than"><Table cols={ganMoPhieu(cols)} rows={rows} motDong keDoc /></div>
       </div>
@@ -119,7 +136,10 @@ function LichSuCongNo({ loai, ma, ten, thang, cnTen, onDong }: { loai: Loai; ma:
 }
 
 /** Lập phiếu chi trả nợ nhà cung cấp: lý do CHI02 Thanh toán công nợ nhà cung cấp, điền sẵn nhà cung cấp (T304) */
-const linkThanhToan = (ten: string) => `/app/tien/2-1-1/moi?loai=chi&ly=CHI02&dt=${encodeURIComponent(ten)}`
+const linkThanhToan = (ten: string, cn?: string) => {
+  const id = cn ? CUA_HANG.find(c => c.ten === cn)?.id : undefined   // dòng cửa hàng: lập phiếu chi cho đúng cửa hàng (T308)
+  return `/app/tien/2-1-1/moi?loai=chi&ly=CHI02&dt=${encodeURIComponent(ten)}${id ? `&cn=${id}` : ''}`
+}
 
 /** Cột số tiền: tiêu đề hai dòng tên cột, ký hiệu công thức như iFaster; độ rộng cột tính theo t nên t chỉ ghi tên */
 const cotSo = (k: string, ten: string, kh: string): Col =>
@@ -128,7 +148,8 @@ const cotSo = (k: string, ten: string, kh: string): Col =>
 export function colsCongNo(loai: Loai): Col[] {
   return [
     { k: 'stt', t: '#', c: true, w: 48 },
-    { k: 'ten', t: NHAN[loai].doiTuong, r: x => x._t ? x.ten : <TenDoiTuong x={x} /> },
+    // T308: dòng con (cửa hàng) thụt vào dưới tên nhà cung cấp, cùng cột, để các cột số (nhất là Nợ cuối kỳ) vẫn vừa màn
+    { k: 'ten', t: NHAN[loai].doiTuong, r: x => x._t ? x.ten : x._con ? <TenCuaHang x={x} /> : <TenDoiTuong x={x} /> },
     { k: 'soDon', t: 'Số đơn phát sinh', num: true, w: 130 },
     cotSo('dau', 'Nợ đầu kỳ', 'I'),
     cotSo('ps', NHAN[loai].tienPs, 'II'),
@@ -137,7 +158,7 @@ export function colsCongNo(loai: Loai): Col[] {
     cotSo('cuoi', 'Nợ cuối kỳ', 'V = I+II-III-IV'),
     // Công nợ nhà cung cấp: nút Thanh toán ngay ở dòng còn nợ (T304)
     ...(loai === 'ncc' ? [{ k: '_thanhToan', t: 'Thanh toán', c: true, w: 140, chiManHinh: true,
-      r: (x: Row) => !x._t && Number(x.cuoi) > 0 ? <Link to={linkThanhToan(String(x.ten))} className="btn sm cn-thanh-toan">Thanh toán ngay</Link> : null } as Col] : []),
+      r: (x: Row) => !x._t && Number(x.cuoi) > 0 ? <Link to={linkThanhToan(String(x.ten), x._con ? String(x.cuaHang) : undefined)} className="btn sm cn-thanh-toan">Thanh toán ngay</Link> : null } as Col] : []),
   ]
 }
 
@@ -149,4 +170,24 @@ export function rowsCongNo(loai: Loai, thang: number, cnTen?: string): Row[] {
   })
   const cong = (f: string) => ds.reduce((a, x) => a + (x[f] as number), 0)
   return [...ds, { ten: 'Tổng cộng', soDon: cong('soDon'), dau: cong('dau'), ps: cong('ps'), tra: cong('tra'), tt: cong('tt'), cuoi: cong('cuoi'), _t: 1 }]
+}
+
+/** Báo cáo 4.2.3 Công nợ nhà cung cấp có cấp nhóm (T308): xem tất cả cửa hàng thì dưới mỗi nhà cung cấp là từng cửa hàng có phát sinh
+ *  (dòng con _con thụt vào cùng cột tên, giữ tên NCC ở trường ten để lọc Nhà cung cấp). Xem một cửa hàng thì như cũ.
+ *  Trang chủ, điện thoại vẫn dùng rowsCongNo (không có dòng con) */
+export function rowsCongNoNhom(loai: Loai, thang: number, cnTen?: string): Row[] {
+  const goc = rowsCongNo(loai, thang, cnTen)
+  if (cnTen) return goc
+  const out: Row[] = []
+  for (const r of goc) {
+    if (r._t) { out.push(r); continue }
+    const con = CUA_HANG.map(c => {
+      const { dau, phieu } = soLieuCuaHang(loai, String(r.ma), thang, c.ten)
+      const ps = phieu.reduce((a, p) => a + p.ps, 0), tra = phieu.reduce((a, p) => a + p.tra, 0), tt = phieu.reduce((a, p) => a + p.tt, 0)
+      return { ma: r.ma, ten: r.ten, cuaHang: c.ten, soDon: phieu.filter(p => p.ps).length, dau, ps, tra, tt, cuoi: dau + ps - tra - tt, _loai: loai, _thang: thang, _con: 1, _i: 1 } as Row
+    }).filter(x => [x.dau, x.ps, x.tra, x.tt].some(v => Number(v) !== 0))
+    // Dòng nhà cung cấp in đậm (_nhom) là tổng; dưới là từng cửa hàng có phát sinh, kể cả khi chỉ có 1 cửa hàng
+    out.push(con.length ? { ...r, _nhom: 1 } : r, ...con)
+  }
+  return out
 }

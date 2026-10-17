@@ -22224,3 +22224,6 @@ button[class*="btn-"] .ic .l2 {
 .bbt-kho2-so { text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
 .bbt-kho2-cn > span:last-child { font-size: 12.5px; font-weight: 600; text-align: right; }
 @media (max-width: 1280px) { .bbt-kho2-ds { grid-template-columns: minmax(0, 1fr); } }
+
+/* ── Trang chủ Free bỏ tab Cần theo dõi, Thao tác nhanh vẫn nằm bên phải thanh đầu (T309) ── */
+.bbt-thanh-dau > .bbt-tt-nhanh { margin-left: auto; }

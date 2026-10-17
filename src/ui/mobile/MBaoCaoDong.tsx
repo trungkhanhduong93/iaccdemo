@@ -293,7 +293,7 @@ const Khuon1ChiTietNgay: FC<{ rows: Row[]; q?: string; xemTatCaCn?: boolean }> =
 // ── KHUÔN 2: TỔNG HỢP THEO ĐỐI TƯỢNG ──
 const Khuon2TongHopDoiTuong: FC<{ rows: Row[]; q?: string }> = ({ rows, q = '' }) => {
   const rTong = rows.find(r => r._t === 1)
-  const dsDoiTuong = useMemo(() => rows.filter(r => !r._t && !r._b), [rows])
+  const dsDoiTuong = useMemo(() => rows.filter(r => !r._t && !r._b && !r._con), [rows])   // bỏ dòng cửa hàng con của 4.2.3 (T308)
 
   return (
     <div className="m-bcd-khuon2">

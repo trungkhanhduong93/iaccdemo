@@ -120,7 +120,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   const [ngayCt, setNgayCt] = useState(row?.ngay ? String(row.ngay) : laSx || laDcn ? bayGio() : '07/10/2026')   // phiếu sản xuất ghi cả giờ xuất, nhập như IVT (T152)
   const [soCt, setSoCt] = useState(row?.so ? String(row.so) : soKeTiep(`${mod.key}/${sc.slug}`, `${cfg.prefix}2610-`))
   // Cửa hàng không sửa trên form: phiếu cũ giữ cửa hàng đã lập, phiếu mới theo cửa hàng chọn trên thanh trên
-  const cnChon = cuaHangHienTai(s)
+  // Thêm mới có ?cn=mã cửa hàng (vd Thanh toán ngay ở dòng cửa hàng của báo cáo công nợ NCC, T308) thì lập cho cửa hàng đó, không hỏi chọn
+  const cnChon = (moi && CUA_HANG.find(c => c.id === sp.get('cn'))) || cuaHangHienTai(s)
   const cuaHang = row?.cn ? String(row.cn) : cnChon?.ten ?? ''
   const canChonCn = moi && !cnChon
   // Thêm mới có ?dt=tên đối tượng (vd Thanh toán ngay ở báo cáo công nợ, T304) thì điền sẵn đối tượng đó

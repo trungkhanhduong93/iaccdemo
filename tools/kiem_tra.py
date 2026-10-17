@@ -4743,7 +4743,7 @@ def kiem_tra_dot_22_a():
 
 
 def kiem_tra_t274_web():
-    """Kiểm tra T274: Trang chủ Free 2 tab Tổng quan | Cần theo dõi, bộ lọc cửa hàng, biểu đồ và modal lãi lỗ."""
+    """Kiểm tra T274: Trang chủ Free (T309 bỏ tab Cần theo dõi ở web), bộ lọc cửa hàng, biểu đồ."""
     loi = []
     print('Kiểm tra T274 web (1440x900): Trang chủ Free 2 tab, biểu đồ, lọc cửa hàng, modal lãi lỗ:')
     with sync_playwright() as p:
@@ -4761,16 +4761,9 @@ def kiem_tra_t274_web():
         pg.wait_for_selector('.bbt', timeout=8000)
         pg.wait_for_timeout(300)
 
-        # 2. Kiểm tra 2 tab: "Tổng quan" và "Cần theo dõi"
-        tab_tq = pg.locator('.bbt-tab-btn:has-text("Tổng quan")')
-        tab_ctd = pg.locator('.bbt-tab-btn:has-text("Cần theo dõi")')
-        if tab_tq.count() == 0:
-            loi.append('T274 web: không tìm thấy tab Tổng quan')
-        if tab_ctd.count() == 0:
-            loi.append('T274 web: không tìm thấy tab Cần theo dõi')
-        huy_hieu = pg.locator('.bbt-tab-badge')
-        if huy_hieu.count() == 0:
-            loi.append('T274 web: tab Cần theo dõi thiếu huy hiệu số cảnh báo')
+        # 2. T309: trang chủ Free bản web bỏ tab Cần theo dõi, chỉ còn Tổng quan
+        if pg.locator('.bbt-tab-btn:has-text("Cần theo dõi")').count() > 0:
+            loi.append('T309 web: trang chủ Free vẫn còn tab Cần theo dõi')
 
         # 3. T293: tab Tổng quan bỏ 6 thẻ biểu đồ; hàng trên 2 cột lãi lỗ, thu chi; Quản lý kho kéo hết hàng dưới
         if pg.locator('.bbt-the-bd').count() > 0:
@@ -4816,23 +4809,7 @@ def kiem_tra_t274_web():
                     opt_all.click()
                     pg.wait_for_timeout(300)
 
-        # 7. Tab Cần theo dõi có đủ 5 thẻ cảnh báo
-        tab_ctd.click()
-        pg.wait_for_timeout(350)
-        cur_hash = pg.evaluate('location.hash')
-        if 'tab=theo-doi' not in cur_hash:
-            loi.append(f'T274 web: bấm tab Cần theo dõi URL không có tab=theo-doi ({cur_hash})')
-
-        the_ctd = [
-            'Công nợ quá hạn',
-            'Hàng hoá âm kho',
-            'Hàng hoá huỷ cao',
-            'Doanh thu lệch',
-            'Tháng chưa khoá sổ',
-        ]
-        for c in the_ctd:
-            if pg.locator(f'.bbt-ctd-title:has-text("{c}")').count() == 0:
-                loi.append(f'T274 web: tab Cần theo dõi thiếu thẻ cảnh báo "{c}"')
+        # 7. T309: bản web bỏ tab Cần theo dõi nên không kiểm thẻ cảnh báo ở web (điện thoại vẫn kiểm ở T274 dt)
 
         if con:
             loi.append(f'T274 web: lỗi console {con[:2]}')

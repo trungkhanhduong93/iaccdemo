@@ -3,7 +3,7 @@
 // Lãi lỗ tách chi phí như Báo cáo kết quả kinh doanh bản Free (T220): bỏ thu nhập, chi phí khác khỏi lợi nhuận
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { LenThanhTab } from '../../app/ModuleTabs'
 import { CUA_HANG } from '../../data/mock'
 import { Icon, ONen } from '../../ui/Icon'
@@ -19,14 +19,9 @@ import { moTaCach, nvlKy } from './chi-phi-nvl'
 import { useMoTuTrangChu } from '../../app/tuTrangChu'
 import { useDongEsc } from '../../ui/LocNangCao'
 import { ModalQuy } from './quyThuChi'
-import {
-  layDuLieuCanTheoDoi,
-  type LaiLoCnItem,
-} from './soLieuBieuDoFree'
-import {
-  BieuDoCuaHangModal,
-  LuoiCanTheoDoi,
-} from './BieuDoFree'
+import { type LaiLoCnItem } from './soLieuBieuDoFree'
+import { BieuDoCuaHangModal } from './BieuDoFree'
+import { DS_QUY_TIEN_112 } from '../danh-muc/data'
 
 // Hệ số mùa vụ quán ăn uống tháng 10/2025 đến 6/2026 so với trung bình tháng 7–9/2026: Tết (tháng 1) cao, sau Tết (tháng 2) thấp (T255)
 const MUA_VU: [number, number, number][] = [   // [tháng, năm, hệ số doanh thu]
@@ -272,9 +267,16 @@ const QUY_MAU_THEM = [
   { quy: 'Quỹ tiền mặt Hai Bà Trưng', tienMat: true, cuoi: 8_400_000 },
   { quy: 'Quỹ tiền mặt Phú Nhuận', tienMat: true, cuoi: 16_250_000 },
   { quy: 'Quỹ tiền mặt Thủ Đức', tienMat: true, cuoi: 12_700_000 },
-  { quy: 'MB Bank 0901 2345 678', tienMat: false, cuoi: 41_300_000 },
-  { quy: 'VPBank 1122 3344 55', tienMat: false, cuoi: 33_600_000 },
+  { quy: 'MB Bank, chi nhánh Phú Nhuận', tienMat: false, cuoi: 41_300_000 },
+  { quy: 'VPBank, chi nhánh Thủ Đức', tienMat: false, cuoi: 33_600_000 },
 ].map(q => ({ ...q, mo: q.cuoi, thu: 0, chi: 0 }))
+
+/** Tên hiển thị của quỹ theo Danh mục Quỹ tiền 1.12: quỹ ngân hàng tìm theo tên ngân hàng (chữ đầu), không thấy thì bỏ số tài khoản ở đuôi (T309) */
+function tenQuyDanhMuc(quy: string, tienMat: boolean) {
+  if (tienMat) return quy
+  const nh = quy.split(/[ ,]/)[0]
+  return DS_QUY_TIEN_112.find(x => x.loai === 'Ngân hàng' && x.ten.split(/[ ,]/)[0] === nh)?.ten ?? quy.replace(/(\s+[\d.\- ]+)+$/, '')
+}
 
 /** Quá 5 quỹ thì vòng, chú thích chỉ giữ 4 quỹ nhiều tiền nhất, còn lại gom một dòng "N quỹ khác"; bấm dòng đó mở bảng nổi liệt kê đủ mọi quỹ, khối không dài ra (T303) */
 const QUY_HIEN = 4, QUY_KHAC = 'tat-ca'
@@ -289,7 +291,8 @@ function VongQuy({ ds: dsGoc, tong, onChon }: { ds: { quy: string; tienMat: bool
     return () => document.removeEventListener('keydown', dong)
   }, [moDs])
   const chon = (quy: string) => { if (quy === QUY_KHAC) setMoDs(true); else onChon(quy) }
-  const coMau = dsGoc.map((r, i) => ({ ...r, mau: MAU_QUY[i % MAU_QUY.length], ten: r.quy }))
+  // Tên quỹ hiện như Danh mục Quỹ tiền 1.12 (vd "Vietcombank, chi nhánh Sài Gòn"), không kèm số tài khoản (T309); khoá quy vẫn là tên sổ để mở đúng quỹ
+  const coMau = dsGoc.map((r, i) => ({ ...r, mau: MAU_QUY[i % MAU_QUY.length], ten: tenQuyDanhMuc(r.quy, r.tienMat) }))
   const ds = coMau.length <= QUY_HIEN + 1 ? coMau : (() => {
     const xep = [...coMau].sort((a, b) => b.cuoi - a.cuoi)
     const con = xep.slice(QUY_HIEN)
@@ -327,7 +330,7 @@ function VongQuy({ ds: dsGoc, tong, onChon }: { ds: { quy: string; tienMat: bool
             <button type="button" className={tro === r.quy ? 'on' : ''} title={r.quy === QUY_KHAC ? 'Xem danh sách tất cả quỹ' : `Xem biểu đồ thu chi ${r.quy}`} onClick={() => chon(r.quy)}
               onMouseEnter={() => setTro(r.quy)} onMouseLeave={() => setTro(null)}>
               <i style={{ background: r.mau }} />
-              <span className="bbt-vq-ten"><span>{r.ten}</span><b>{moneyD(r.cuoi)}<small>{pct(tong ? r.cuoi / tong : 0)}</small></b></span>
+              <span className="bbt-vq-ten"><span title={r.quy === QUY_KHAC ? undefined : r.quy}>{r.ten}</span><b>{moneyD(r.cuoi)}<small>{pct(tong ? r.cuoi / tong : 0)}</small></b></span>
               <Icon n="chevr" className="ic sm muted bbt-vq-mui" />
             </button>
           </li>
@@ -346,7 +349,7 @@ function VongQuy({ ds: dsGoc, tong, onChon }: { ds: { quy: string; tienMat: bool
                 <li key={r.quy}>
                   <button type="button" title={`Xem biểu đồ thu chi ${r.quy}`} onClick={() => { setMoDs(false); onChon(r.quy) }}>
                     <i style={{ background: r.mau }} />
-                    <span className="bbt-vq-ten"><span>{r.quy}</span><b>{moneyD(r.cuoi)}<small>{pct(tong ? r.cuoi / tong : 0)}</small></b></span>
+                    <span className="bbt-vq-ten"><span title={r.quy}>{r.ten}</span><b>{moneyD(r.cuoi)}<small>{pct(tong ? r.cuoi / tong : 0)}</small></b></span>
                     <Icon n="chevr" className="ic sm muted bbt-vq-mui" />
                   </button>
                 </li>
@@ -369,22 +372,10 @@ const TT_NHANH_FREE = [
   { ten: 'Kê khai thuế', icon: 'percent', to: '/app/thue/to-khai', goiY: 'Mở danh sách tờ khai thuế' },
 ]
 
-/** Trang chủ Free theo ba bài toán mẫu E (T272, T274): 2 tab Tổng quan | Cần theo dõi, lọc cửa hàng; 6 thẻ biểu đồ bỏ ở T293 */
+/** Trang chủ Free theo ba bài toán mẫu E (T272, T274): lọc cửa hàng; 6 thẻ biểu đồ bỏ ở T293; tab Cần theo dõi bỏ ở T309 */
 export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQuanSoLieu; thang: number; selCns: string[]; chonKy?: ReactNode }) {
   const { s, set } = useSession()
   const moTuTrangChu = useMoTuTrangChu()
-  const [searchParams, setSearchParams] = useSearchParams()
-  const tabParam = searchParams.get('tab')
-  const tabHien = tabParam === 'theo-doi' ? 'theo-doi' : 'tong-quan'
-
-  const chuyenTab = (t: 'tong-quan' | 'theo-doi') => {
-    setSearchParams(prev => {
-      const n = new URLSearchParams(prev)
-      if (t === 'theo-doi') n.set('tab', 'theo-doi')
-      else n.delete('tab')
-      return n
-    }, { replace: true })
-  }
 
   // Cửa hàng chọn từ thanh trên / session (T274)
   const cnChon = s.cuaHang || 'all'
@@ -424,8 +415,6 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
   const no = useMemo(() => soLieuCongNo(thangXem, motCnKho), [thangXem, motCnKho])
   const kk = useMemo(() => soLieuKiemKe(thangXem, tenCn), [thangXem, tenCn])
 
-  // Số liệu 5 biểu đồ top 5 + Lãi lỗ cửa hàng + Cần theo dõi (T274)
-  const ctdData = useMemo(() => layDuLieuCanTheoDoi(thangXem, cnsHien, dHien.dtThuan), [thangXem, cnsHien, dHien.dtThuan])
 
   return (
     <div className="bbt bbt-e" onClickCapture={moTuTrangChu}>
@@ -434,29 +423,8 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
         {chonKy}
       </LenThanhTab>
 
-      {/* Thanh 2 tab: Tổng quan | Cần theo dõi (T274) */}
+      {/* T309: bỏ tab Cần theo dõi, trang chủ Free chỉ còn Tổng quan; thanh đầu còn Thao tác nhanh (T290) */}
       <div className="bbt-thanh-dau">
-        <div className="bbt-tabs" role="tablist" aria-label="Chuyển tab trang chủ">
-          <button
-            type="button"
-            role="tab"
-            aria-selected={tabHien === 'tong-quan'}
-            className={`bbt-tab-btn ${tabHien === 'tong-quan' ? 'on' : ''}`}
-            onClick={() => chuyenTab('tong-quan')}
-          >
-            Tổng quan
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={tabHien === 'theo-doi'}
-            className={`bbt-tab-btn ${tabHien === 'theo-doi' ? 'on' : ''}`}
-            onClick={() => chuyenTab('theo-doi')}
-          >
-            Cần theo dõi
-            {ctdData.soCanhBao > 0 && <span className="bbt-tab-badge">{ctdData.soCanhBao}</span>}
-          </button>
-        </div>
         {/* Thao tác nhanh cố định trên hàng tab, cả 2 tab (T290) */}
         <nav className="bbt-tt-nhanh" aria-label="Thao tác nhanh">
           {/* Nhãn cùng tên, cùng biểu tượng với mục Thao tác nhanh ở thanh bên để khách nhận ra */}
@@ -467,9 +435,6 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
         </nav>
       </div>
 
-      {tabHien === 'theo-doi' ? (
-        <LuoiCanTheoDoi data={ctdData} thang={thangXem} />
-      ) : (
         <>
           <div className="bbt-e-luoi bbt-e-luoi-2">   {/* hàng trên 2 cột lãi lỗ, thu chi; Quản lý kho kéo hết hàng dưới (T293) */}
         {/* Cột 1: Quản lý lãi lỗ; T303: phần số gọn lại, biểu đồ 13 tháng nằm ngay dưới */}
@@ -717,7 +682,6 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
       </div>
 
     </>
-  )}
 
   {modalQuy && <ModalQuy quyKey={modalQuy} thang={thangXem} selCns={cnsHien} onDong={() => setModalQuy(null)} />}
 </div>
