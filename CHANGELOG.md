@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 17/10/2026
 
+- T326: Form chứng từ thu chi, mua hàng, thanh toán: ô chọn quỹ không còn nút Thêm quỹ mới. Quỹ mới khai ở Danh mục › Quỹ tiền.
 - T316: Trang chủ gói Free máy tính đổi chữ theo thuật ngữ kế toán kèm lời giải thích: Kết quả kinh doanh (lợi nhuận, biên lợi nhuận, giá vốn, chi phí hoạt động), Quỹ tiền, Mua hàng và công nợ nhà cung cấp, Hao hụt kiểm kê; mỗi khối có tiêu đề phụ; nút Xem kết quả kinh doanh mở báo cáo đúng tháng.
 - T322: Điện thoại, chọn khoảng ngày: chạm ngày bắt đầu rồi ngày kết thúc là xong, bảng lịch tự đóng, không cần bấm Xong. Chip Hôm nay, Tuần này, Tháng này, Tháng trước cũng áp dụng ngay. Bộ lọc báo cáo dùng bảng lịch này thay cho 2 ô ngày của máy.
 - T317: Khoá sổ gói Free bỏ bước kiểm tra Đồng bộ đủ doanh thu FABi, còn 5 bước. Nút Xem ở bước Phiếu thu, chi FABi chờ xử lý mở Danh mục Quỹ tiền, lọc sẵn quỹ chưa map phương thức thanh toán. Danh mục Quỹ tiền có ô tích lọc Chưa map phương thức thanh toán.

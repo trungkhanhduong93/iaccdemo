@@ -25,7 +25,7 @@ export function useMucDaThem(dm: string): MucDm[] {
   return daThem.get(dm) ?? []
 }
 
-export function ChonDanhMuc({ dm, nhan, value, onChange, ds, className = 'inp', style, coMa, chiMa, trong }: {
+export function ChonDanhMuc({ dm, nhan, value, onChange, ds, className = 'inp', style, coMa, chiMa, trong, khongThem }: {
   dm: string                         // khoá danh mục, vd ncc, kh, nhanVien, kho, hang
   nhan: string                       // tên danh mục hiện trên nút thêm mới, vd "nhà cung cấp"
   value: string
@@ -36,6 +36,7 @@ export function ChonDanhMuc({ dm, nhan, value, onChange, ds, className = 'inp', 
   coMa?: boolean                     // hộp thêm mới có ô Mã (mục dạng mã - tên, vd hàng hoá)
   trong?: string                     // nhãn khi chưa chọn, vd "—"
   chiMa?: boolean                    // ô đã chọn chỉ hiện mã, danh sách vẫn hiện mã - tên; dùng ở cột Mã hàng vì tên đã có cột riêng (T124)
+  khongThem?: boolean                // không cho thêm mới tại form, vd quỹ tiền chỉ khai ở danh mục Quỹ tiền
 }) {
   const them = useMucDaThem(dm)
   const tatCa: MucDm[] = [...ds.map(x => typeof x === 'string' ? { v: x, t: x } : x), ...them]
@@ -62,7 +63,7 @@ export function ChonDanhMuc({ dm, nhan, value, onChange, ds, className = 'inp', 
         <div className="dm-tim">
           <Icon n="search" className="ic sm" />
           <input ref={oTim} value={tim} placeholder={`Tìm ${nhan}`} onChange={e => setTim(e.target.value)}
-            onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); if (loc[0]) chon(loc[0].v); else if (tim.trim()) { setMo(false); setHop(true) } } }} />
+            onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); if (loc[0]) chon(loc[0].v); else if (tim.trim() && !khongThem) { setMo(false); setHop(true) } } }} />
         </div>
         <div className="dm-ds">
           {loc.map(o => (
@@ -72,11 +73,13 @@ export function ChonDanhMuc({ dm, nhan, value, onChange, ds, className = 'inp', 
           ))}
           {!loc.length && <div className="dm-trong">Chưa có {nhan} «{tim.trim()}»</div>}
         </div>
-        <button type="button" className="dm-them" onClick={() => { setMo(false); setHop(true) }}>
-          <Icon n="plus" className="ic sm" />{tim.trim() ? <>Thêm {nhan} «{tim.trim()}»</> : <>Thêm {nhan} mới</>}
-        </button>
+        {!khongThem && (
+          <button type="button" className="dm-them" onClick={() => { setMo(false); setHop(true) }}>
+            <Icon n="plus" className="ic sm" />{tim.trim() ? <>Thêm {nhan} «{tim.trim()}»</> : <>Thêm {nhan} mới</>}
+          </button>
+        )}
       </Popover>
-      {hop && (
+      {hop && !khongThem && (
         <HopThem nhan={nhan} coMa={coMa} tenGoc={tim.trim()} onDong={() => setHop(false)}
           onLuu={(ma, ten) => {
             const muc = coMa ? { v: ma, t: `${ma} - ${ten}` } : { v: ten, t: ten }

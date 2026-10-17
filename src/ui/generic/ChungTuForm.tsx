@@ -569,7 +569,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   const oQuyCq = (nhan: string, v: string, setV: (v: string) => void) => (
     <div className="f">
       <label>{nhan} <em>*</em></label>
-      {dangSua ? <ChonDanhMuc dm="quy" nhan="quỹ" value={v} onChange={setV} ds={QUY_TIEN} /> : <input className="inp" readOnly value={v} />}
+      {dangSua ? <ChonDanhMuc dm="quy" nhan="quỹ" value={v} onChange={setV} ds={QUY_TIEN} khongThem /> : <input className="inp" readOnly value={v} />}
     </div>
   )
   const oNguoiTh = hienDau('nguoi') && (
@@ -859,7 +859,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
                   <span style={{ fontSize: 12.5, color: 'var(--muted)', whiteSpace: 'nowrap' }}>{hinhThucTt === 'tienmat' ? 'Quỹ tiền mặt' : 'Quỹ ngân hàng'}:</span>
                   {dangSua ? (
                     <ChonDanhMuc dm={hinhThucTt === 'tienmat' ? 'quyTm' : 'tkNh'} nhan={hinhThucTt === 'tienmat' ? 'quỹ tiền mặt' : 'quỹ ngân hàng'}
-                      className="inp sm" style={O_TT} value={quy} onChange={setQuy} ds={dsQuy} />
+                      className="inp sm" style={O_TT} value={quy} onChange={setQuy} ds={dsQuy} khongThem />
                   ) : <input className="inp sm" style={O_TT} readOnly value={quy} />}
                 </div>
               )}
@@ -942,7 +942,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
                   <label>{nhom === 'thu' || nhom === 'chi' ? 'Quỹ tiền mặt' : 'Quỹ ngân hàng'} <em>*</em></label>   {/* thu, chi ngân hàng ghi Quỹ ngân hàng (T77, T78) */}
                   {dangSua ? (
                     <ChonDanhMuc dm={nhom === 'thu' || nhom === 'chi' ? 'quyTm' : 'tkNh'} nhan={nhom === 'thu' || nhom === 'chi' ? 'quỹ tiền mặt' : 'quỹ ngân hàng'}
-                      value={quy} onChange={setQuy} ds={dsQuy} />
+                      value={quy} onChange={setQuy} ds={dsQuy} khongThem />
                   ) : (
                     <input className="inp" readOnly value={quy} />
                   )}
@@ -1378,7 +1378,7 @@ function HopThanhToan({ tieuDe, chiTt, conLai, quyTm, ngay0, dg0, onDong, onLuu 
           </div>
           <div className="f">
             <label>{ht === 'tienmat' ? 'Quỹ tiền mặt' : 'Quỹ ngân hàng'} <em>*</em></label>
-            <ChonDanhMuc dm={ht === 'tienmat' ? 'quyTm' : 'tkNh'} nhan={ht === 'tienmat' ? 'quỹ tiền mặt' : 'quỹ ngân hàng'} value={quy} onChange={setQuy} ds={dsQ} />
+            <ChonDanhMuc dm={ht === 'tienmat' ? 'quyTm' : 'tkNh'} nhan={ht === 'tienmat' ? 'quỹ tiền mặt' : 'quỹ ngân hàng'} value={quy} onChange={setQuy} ds={dsQ} khongThem />
           </div>
           <div className="row" style={{ gap: 10 }}>
             <div className="f" style={{ flex: 1 }}>

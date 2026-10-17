@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T326 | Form chứng từ (thu chi, mua hàng, thanh toán): ô chọn quỹ bỏ nút Thêm quỹ mới, quỹ chỉ khai ở danh mục Quỹ tiền | dinhlanphuongipacc | Đang làm | Sửa `src/ui/ChonDanhMuc.tsx` (thêm tuỳ chọn `khongThem`), `src/ui/generic/ChungTuForm.tsx` (4 ô chọn quỹ) |
 | T325 | Trang chủ Free máy tính, khối Quỹ tiền: nút Tạo quỹ xuống dưới vòng tồn quỹ; góc trên phải 2 link Sổ quỹ tiền mặt, Sổ ngân hàng như khối Mua hàng | dinhlanphuongipacc | Đang làm | Sửa `home/BaBaiToanFree.tsx`; Trum đang làm T324 bản điện thoại, không đụng file này |
 | T324 | Điện thoại, trang chủ gói Free: làm lại theo trang chủ Free bản web (Quản lý lãi lỗ, Quỹ tiền, Mua hàng & công nợ NCC, Hao hụt kiểm kê, biểu đồ 13 tháng), giữ thanh thao tác nhanh trên cùng; bản web giữ nguyên | Trum | Đang làm | 2 anti làm. Sửa `src/ui/mobile/MTrangChu.tsx`, file mới `MTrangChuFree.tsx`, `MKhoFree.tsx`, mục cuối `app.css` (T324). Không đụng `home/BaBaiToanFree.tsx` (T316 đang sửa); T316 xong thì chép chữ mới sang app |
 | T323 | `tools/kiem_tra.py --dien-thoai` dừng ở bước chờ `.m-nv-luoi`: màn Nghiệp vụ điện thoại làm lại ở T311 không còn lớp này, cập nhật bộ kiểm theo bố cục mới | | Chờ | Phát hiện 17/10/2026 khi kiểm T322 |
@@ -53,6 +52,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T326 | Form chứng từ (thu chi, mua hàng, thanh toán): ô chọn quỹ bỏ nút Thêm quỹ mới, quỹ chỉ khai ở danh mục Quỹ tiền | dinhlanphuongipacc | 17/10/2026 | [2026-10-17-dinhlanphuongipacc-bo-them-quy-tai-chung-tu](nhat-ky/2026-10-17-dinhlanphuongipacc-bo-them-quy-tai-chung-tu.md) |
 | T316 | Trang chủ Free máy tính: chữ theo thuật ngữ chuẩn kèm giải thích (Kết quả kinh doanh, Quỹ tiền, Mua hàng và công nợ nhà cung cấp, Hao hụt kiểm kê), tiêu đề phụ, chú thích dòng, nút Xem kết quả kinh doanh | dinhlanphuongipacc | 17/10/2026 | [2026-10-17-dinhlanphuongipacc-chu-trang-chu-free](nhat-ky/2026-10-17-dinhlanphuongipacc-chu-trang-chu-free.md) |
 | T322 | Điện thoại: bảng lịch chọn khoảng ngày chạm ngày A rồi ngày B là áp dụng và đóng bảng; bộ lọc báo cáo bỏ 2 ô ngày của trình duyệt, dùng bảng lịch này | Trum | 17/10/2026 | [2026-10-17-trum-chon-khoang-ngay-dien-thoai](nhat-ky/2026-10-17-trum-chon-khoang-ngay-dien-thoai.md) |
 | T318 | Báo cáo kết quả kinh doanh gói Free (10.2.3) dạng chi tiết: doanh thu mỗi kênh bán một dòng, chi phí trong tháng mỗi lý do chi một dòng, chi phí phân bổ chia Chi phí trả trước, Công cụ dụng cụ, Tài sản cố định; dòng không phát sinh thì ẩn | PhuongXT | 17/10/2026 | [2026-10-17-phuongxt-kqkd-free-chi-tiet](nhat-ky/2026-10-17-phuongxt-kqkd-free-chi-tiet.md) |
