@@ -11,6 +11,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 - T334: Danh mục Lý do nghiệp vụ: mở lý do có sẵn chỉ tích được Là chi phí; Mã, Tên, Dùng cho, Đang sử dụng tạm khoá.
 - T333: Khoá sổ gói Free, Danh mục Quỹ tiền: đổi chữ "map" thành "gán" (Phiếu chờ gán phương thức thanh toán, Chưa gán phương thức thanh toán).
 - T330: Phiếu thu, chi (web và điện thoại): ô Đối tượng chỉ bắt buộc khi lý do là Thu nợ, Đi vay, Thanh toán công nợ nhà cung cấp, Cho vay; lý do khác để trống được.
+- T331: Trang chủ gói Free máy tính: các danh sách Top mua hàng, Top công nợ, Top kiểm kê thiếu, Top kiểm kê thừa nằm trong ô riêng, hai khối thẳng hàng. Danh sách quỹ ghi tên bên trái, số tiền bên phải, nút Tạo quỹ ở cuối danh sách. Biểu đồ 13 tháng: trục chia mốc sát số liệu, đường 0 hai biểu đồ thẳng hàng, nhãn tháng chỉ ghi năm ở đầu, cuối và tháng 1, đường lợi nhuận xanh lá, dòng tiền thuần vàng, bỏ chấm tròn từng tháng.
 - T329: Báo cáo Công nợ nhà cung cấp: bấm Thanh toán ngay chọn Tiền mặt (mở phiếu chi tiền mặt) hoặc Ngân hàng (mở uỷ nhiệm chi), điền sẵn nhà cung cấp và cửa hàng như trước.
 - T328: Danh mục phương thức thanh toán gói Free, Standard: mở một phương thức chỉ xem chi tiết, không sửa, không xoá; phương thức lấy từ FABi.
 - T327: Khoá sổ gói Free: bấm Mở khoá thì khung điền lý do hiện ngay dưới nút ở đầu trang, không phải kéo xuống cuối.

@@ -22665,9 +22665,6 @@ button[class*="btn-"] .ic .l2 {
 
 
 /* ── Trang chủ Free, khối Quỹ tiền: nút Tạo quỹ dưới vòng tồn quỹ (T325) ── */
-.bbt-quy-tao { display: flex; gap: 8px; margin: 2px 0 6px; }
-/* Màn rộng: vòng thấp hơn danh sách quỹ nên dưới vòng còn trống, kéo nút lên nằm vào chỗ đó; chỉ rộng bằng nút để không che danh sách quỹ */
-@media (min-width: 901px) { .bbt-e-luoi-2 .bbt-vq + .bbt-quy-tao { position: relative; width: max-content; margin: -22px 0 6px 4px; } }
 /* Dòng tổng (Lợi nhuận, = Nợ cuối kỳ) đã có kẻ trên: bỏ kẻ dưới của dòng ngay trước, tránh hai đường song song */
 .bbt-gon > .t:has(+ .t.lai), .bbt-gon > .t:has(+ .t.lo), .bbt-gon > .t:has(+ .bbt-kho2-tong) { border-bottom: 0; }
 /* ── Trang chủ gói Free điện thoại theo bản web (T324) ── */
@@ -23110,3 +23107,30 @@ button[class*="btn-"] .ic .l2 {
 .m-tck-dong-t:has(+ .m-tck-tong) {
   border-bottom: 0;
 }
+
+
+/* ── Trang chủ Free: vùng xếp hạng tách riêng, thẳng hàng hai khối; danh sách quỹ tên trái, tiền phải (T331) ── */
+.bbt-kho2 > .bbt-kho2-gian { flex: 1 0 14px; }
+.bbt-kho2 > .bbt-kho2-ds { margin-top: 0; padding: 8px 12px 4px; background: var(--hdb-chan); border: 1px solid var(--line-2); border-radius: 10px; }
+.bbt-kho2 > .bbt-kho2-ds > div { min-height: 112px; }
+.bbt-kho2 > .bbt-kho2-ds .bbt-kho2-dong:last-child { border-bottom: 0; }
+.bbt-kho2 > .bbt-kho-chan { margin-top: 0; }
+@media (min-width: 901px) { .bbt-e-luoi-2 .bbt-gon .bbt-vq { gap: 12px 20px; } .bbt-e-luoi-2 .bbt-gon .bbt-vq-ct { max-width: none; } }
+.bbt-e-luoi-2 .bbt-gon .bbt-vq-ct button { align-items: center; }
+.bbt-e-luoi-2 .bbt-gon .bbt-vq-ct i { margin-top: 0; }
+.bbt-e-luoi-2 .bbt-gon .bbt-vq-ten { flex-direction: row; align-items: baseline; gap: 10px; }
+.bbt-e-luoi-2 .bbt-gon .bbt-vq-ten > span { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bbt-e-luoi-2 .bbt-gon .bbt-vq-ten > b { flex: none; font-variant-numeric: tabular-nums; }
+/* Bỏ tỷ trọng ở danh sách: vòng đã thể hiện, rê chuột vào dòng thì giữa vòng hiện % */
+.bbt-e-luoi-2 .bbt-gon .bbt-vq-ten > b small { display: none; }
+.bbt-vq-ct > li.bbt-vq-cuoi { padding: 6px 0 0 8px; }
+/* Trục tháng biểu đồ 13 tháng: vạch đứt tách năm, tháng cuối in đậm */
+.lai-lo-nam { stroke: var(--line); stroke-dasharray: 3 3; pointer-events: none; }
+.chart text.lai-lo-nay, text.lai-lo-nay { font-weight: 700; fill: var(--blue); }
+/* Đường trên biểu đồ 13 tháng: lợi nhuận xanh lá, dòng tiền thuần vàng hổ phách, hợp tông cột; chú thích vẽ đoạn thẳng thay chấm tròn */
+:root { --bd-ln: #1f9d6b; --bd-thuan: #e29a2e; }
+.bbt-13t-chu i.duong { width: 16px; height: 3px; border-radius: 2px; }
+.bbt-13t-chu i.ln { background: var(--bd-ln); }
+.bbt-13t-chu i.thuan.duong { background: var(--bd-thuan); }
+.bbt-13t-chu i.ton.duong { background: repeating-linear-gradient(90deg, var(--bd-ton) 0 5px, transparent 5px 8px); }
+.bbt-kho2 > .bbt-kho2-ds .bbt-kho-nhom { margin-bottom: 6px; }

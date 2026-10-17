@@ -14,7 +14,7 @@ import { soLieuCongNo, soLieuKiemKe, soLieuMua, type CotThang } from './khoFree'
 import { datLocDaXem, docTuyChinh, luuTuyChinh } from '../../ui/bao-cao/tuyChinhBC'
 import { tinhToanTongQuan, type TongQuanSoLieu } from './chiSo'
 import { useSession, type Session } from '../../app/session'
-import { LaiLoChart } from '../../ui/Charts'
+import { LaiLoChart, trucLaiLo } from '../../ui/Charts'
 import { moTaCach, nvlKy } from './chi-phi-nvl'
 import { useMoTuTrangChu } from '../../app/tuTrangChu'
 import { useDongEsc } from '../../ui/LocNangCao'
@@ -163,12 +163,12 @@ export function HopThuChi13({ ds, onDong }: { ds: ReturnType<typeof thuChi13Than
         <div className="ds-hop-dau">
           <Icon n="wallet" className="ic sm" /><b>Dòng tiền 13 tháng</b>
           <span className="grow" />
-          <span className="bbt-13t-chu"><i className="thu2" />Thu<i className="chi2" />Chi<i className="thuan tron" /><span title="Thu trừ chi trong tháng">Dòng tiền thuần</span><i className="ton tron" />Tồn quỹ</span>
+          <span className="bbt-13t-chu"><i className="thu2" />Thu<i className="chi2" />Chi<i className="thuan duong" /><span title="Thu trừ chi trong tháng">Dòng tiền thuần</span><i className="ton duong" />Tồn quỹ</span>
           <button type="button" className="pheu-dong" title="Đóng" aria-label="Đóng" onClick={onDong}><Icon n="x" className="ic sm" /></button>
         </div>
         <div className="hop-13t-than">
           <div className="bbt-13t-bd">
-            <LaiLoChart data={ds} ten={['Thu', 'Chi']} mau={['var(--bd-thu, #0f8f84)', 'var(--bd-chi, #c2362b)']} duong={{ ten: 'Dòng tiền thuần' }} duong2={{ ten: 'Tồn quỹ', mau: 'var(--bd-ton, #0560a6)' }} />
+            <LaiLoChart data={ds} ten={['Thu', 'Chi']} mau={['var(--bd-thu, #0f8f84)', 'var(--bd-chi, #c2362b)']} duong={{ ten: 'Dòng tiền thuần', mau: 'var(--bd-thuan, #e29a2e)' }} duong2={{ ten: 'Tồn quỹ', mau: 'var(--bd-ton, #0560a6)' }} />
             <div className="hop-13t-goiy">Rê chuột vào từng tháng để xem thu, chi, tồn quỹ cuối tháng. Thu, chi gồm cả tiền chuyển giữa các quỹ</div>
           </div>
           <TomTatThuChi13 ds={ds} />
@@ -248,7 +248,7 @@ export function HopLaiLo13({
             </div>
           )}
           <span className="grow" />
-          <span className="bbt-13t-chu"><i className="dt" />Doanh thu<i className="cp" />Chi phí<i className="lai tron" />Lãi<i className="lo tron" />Lỗ</span>
+          <span className="bbt-13t-chu"><i className="dt" />Doanh thu<i className="cp" />Chi phí<i className="ln duong" />Lợi nhuận</span>
           <button type="button" className="pheu-dong" title="Đóng" aria-label="Đóng" onClick={onDong}><Icon n="x" className="ic sm" /></button>
         </div>
         <div className="hop-13t-than">
@@ -296,7 +296,7 @@ function tenQuyDanhMuc(quy: string, tienMat: boolean) {
 /** Quá 5 quỹ thì vòng, chú thích chỉ giữ 4 quỹ nhiều tiền nhất, còn lại gom một dòng "N quỹ khác"; bấm dòng đó mở bảng nổi liệt kê đủ mọi quỹ, khối không dài ra (T303) */
 const QUY_HIEN = 4, QUY_KHAC = 'tat-ca'
 
-function VongQuy({ ds: dsGoc, tong, onChon }: { ds: { quy: string; tienMat: boolean; cuoi: number }[]; tong: number; onChon: (quy: string) => void }) {
+function VongQuy({ ds: dsGoc, tong, onChon, cuoi }: { ds: { quy: string; tienMat: boolean; cuoi: number }[]; tong: number; onChon: (quy: string) => void; cuoi?: ReactNode }) {
   const [tro, setTro] = useState<string | null>(null)
   const [moDs, setMoDs] = useState(false)
   useEffect(() => {
@@ -350,6 +350,8 @@ function VongQuy({ ds: dsGoc, tong, onChon }: { ds: { quy: string; tienMat: bool
             </button>
           </li>
         ))}
+        {/* T331: nút Tạo quỹ nằm cuối danh sách quỹ, thẳng cột tên quỹ, không chạm vòng */}
+        {cuoi && <li className="bbt-vq-cuoi">{cuoi}</li>}
       </ul>
       {moDs && (
         <>
@@ -421,6 +423,8 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
   const chiLon = [...dHien.coCauCp].sort((a, b) => b.v - a.v)[0]
   const [modalQuy, setModalQuy] = useState<string | null>(null)
   const thuChi13 = useMemo(() => thuChi13Thang(cnsHien), [cnsHien])
+  // T331: hai biểu đồ 13 tháng chừa cùng phần dưới 0 để đường 0 thẳng hàng hai bên
+  const duoi0 = Math.max(trucLaiLo(laiLo13).duoi0, trucLaiLo(thuChi13, true).duoi0)
 
   // 3. Kho
 
@@ -552,9 +556,9 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
           <div className="bbt-13t-trong">
             <div className="bbt-13t-trong-dau">
               <div className="bbt-13t-trong-ten"><b>Hiệu quả kinh doanh 13 tháng</b><small>Doanh thu, chi phí, lợi nhuận từng tháng và so với cùng kỳ năm trước</small></div>
-              <span className="bbt-13t-chu"><i className="dt" />Doanh thu<i className="cp" />Chi phí<i className="lai tron" />Lãi<i className="lo tron" />Lỗ</span>
+              <span className="bbt-13t-chu"><i className="dt" />Doanh thu<i className="cp" />Chi phí<i className="ln duong" />Lợi nhuận</span>
             </div>
-            <KhungVua cao={210} toiThieu={120} ve={(r, h) => <LaiLoChart data={laiLo13} h={h} rong={r} />} />
+            <KhungVua cao={210} toiThieu={120} ve={(r, h) => <LaiLoChart data={laiLo13} h={h} rong={r} duoi0={duoi0} />} />
           </div>
         </section>
 
@@ -588,11 +592,10 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
           </div>
 
           {quy.length > 0 ? <>
-            <VongQuy ds={quy} tong={tongQuy.cuoi} onChon={setModalQuy} />
-            {/* T303, T325: nút Tạo quỹ luôn có, nằm dưới vòng tồn quỹ */}
-            <div className="bbt-quy-tao">
+            {/* T303, T325, T331: nút Tạo quỹ luôn có, nằm cuối danh sách quỹ */}
+            <VongQuy ds={quy} tong={tongQuy.cuoi} onChon={setModalQuy} cuoi={
               <Link to="/app/danh-muc/1-12?moi=1&goiY=thuchi" className="btn sm" title="Tạo quỹ tiền mặt hoặc tài khoản ngân hàng"><Icon n="plus" className="ic sm" />Tạo quỹ</Link>
-            </div>
+            } />
           </> : (
             <div className="bbt-quy-trong">
               <Icon n="wallet" className="ic" />
@@ -606,9 +609,9 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
           <div className="bbt-13t-trong">
             <div className="bbt-13t-trong-dau">
               <div className="bbt-13t-trong-ten"><b>Dòng tiền 13 tháng</b><small>Tiền thu vào, chi ra mỗi tháng và số dư quỹ cuối tháng</small></div>
-              <span className="bbt-13t-chu"><i className="thu2" />Thu<i className="chi2" />Chi<i className="thuan tron" /><span title="Thu trừ chi trong tháng">Dòng tiền thuần</span><i className="ton tron" />Tồn quỹ</span>
+              <span className="bbt-13t-chu"><i className="thu2" />Thu<i className="chi2" />Chi<i className="thuan duong" /><span title="Thu trừ chi trong tháng">Dòng tiền thuần</span><i className="ton duong" />Tồn quỹ</span>
             </div>
-            <KhungVua cao={210} toiThieu={120} ve={(r, h) => <LaiLoChart data={thuChi13} h={h} rong={r} ten={['Thu', 'Chi']} mau={['var(--bd-thu, #0f8f84)', 'var(--bd-chi, #c2362b)']} duong={{ ten: 'Dòng tiền thuần' }} duong2={{ ten: 'Tồn quỹ', mau: 'var(--bd-ton, #0560a6)' }} />} />
+            <KhungVua cao={210} toiThieu={120} ve={(r, h) => <LaiLoChart data={thuChi13} h={h} rong={r} duoi0={duoi0} ten={['Thu', 'Chi']} mau={['var(--bd-thu, #0f8f84)', 'var(--bd-chi, #c2362b)']} duong={{ ten: 'Dòng tiền thuần', mau: 'var(--bd-thuan, #e29a2e)' }} duong2={{ ten: 'Tồn quỹ', mau: 'var(--bd-ton, #0560a6)' }} />} />
           </div>
         </section>
 
@@ -646,9 +649,11 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
           <div className="t"><div className="l"><b>+ Phát sinh mua nợ</b><span>Mua chưa thanh toán</span></div><div className="r"><b>{moneyD(no.phatSinh)}</b></div></div>
           <div className="t"><div className="l"><b>− Đã thanh toán</b></div><div className="r"><b>{moneyD(no.traHang + no.thanhToan)}</b></div></div>
           <div className="t bbt-kho2-tong"><div className="l"><b>= Nợ cuối kỳ</b><span>Còn phải trả đến hôm nay</span></div><div className="r"><b>{moneyD(no.cuoiRong)}</b></div></div>
+          {/* T331: khoảng trống co giãn đẩy vùng xếp hạng xuống đáy, hai khối thẳng hàng */}
+          <div className="bbt-kho2-gian" />
           <div className="bbt-kho2-ds">
             <div>
-              <div className="bbt-kho-nhom">Mặt hàng mua nhiều nhất</div>
+              <div className="bbt-kho-nhom">Top mua hàng</div>
               {mua.topMh.map(x => (
                 <div className="bbt-kho2-dong" key={x.ma}>
                   <span className="bbt-kho2-ten"><span className="bbt-kho-ma">{x.ma}</span>{x.ten}</span>
@@ -657,7 +662,7 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
               ))}
             </div>
             <div>
-              <div className="bbt-kho-nhom">Nhà cung cấp nợ nhiều nhất</div>
+              <div className="bbt-kho-nhom">Top công nợ</div>
               {no.top.map(x => (
                 <div className="bbt-kho2-dong" key={x.ten}>
                   <span className="bbt-kho2-ten" title={x.ten}>{x.ten}</span>
@@ -697,9 +702,11 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
               </div>
             ))}
           </div>
+          {/* T331: khoảng trống co giãn đẩy vùng xếp hạng xuống đáy, hai khối thẳng hàng */}
+          <div className="bbt-kho2-gian" />
           <div className="bbt-kho2-ds">
             <div>
-              <div className="bbt-kho-nhom">Thiếu nhiều nhất</div>
+              <div className="bbt-kho-nhom">Top kiểm kê thiếu</div>
               {kk.topThieu.length ? kk.topThieu.map(x => (
                 <div className="bbt-kho2-dong" key={x.cn + x.ma}>
                   <span className="bbt-kho2-ten" title={x.cn}><span className="bbt-kho-ma">{x.ma}</span>{x.ten}</span>
@@ -708,7 +715,7 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
               )) : <div className="bbt-kho2-trong">Không có mặt hàng thiếu</div>}
             </div>
             <div>
-              <div className="bbt-kho-nhom">Thừa nhiều nhất</div>
+              <div className="bbt-kho-nhom">Top kiểm kê thừa</div>
               {kk.topThua.length ? kk.topThua.map(x => (
                 <div className="bbt-kho2-dong" key={x.cn + x.ma}>
                   <span className="bbt-kho2-ten" title={x.cn}><span className="bbt-kho-ma">{x.ma}</span>{x.ten}</span>

@@ -408,10 +408,23 @@ export function CostStructureChart({
 }
 
 
+type DongLaiLo = { l: string; dt: number; cp: number; v: number; v2?: number; ghiChu?: string; do?: boolean }
+
+/** Trục biểu đồ lãi lỗ, dòng tiền: bước "số đẹp" (1, 2, 2,5, 5 nhân 10 mũ n) cho khoảng 5 vạch, trục lên tới bội số đầu tiên vượt số lớn nhất,
+ *  không cộng thêm phần đệm để trục khỏi nhảy thêm một bước (T331). Phần dưới 0 chỉ vừa đủ cho tháng âm */
+export function trucLaiLo(data: DongLaiLo[], coV2 = false) {
+  const v2 = (d: DongLaiLo) => (coV2 ? d.v2 ?? 0 : 0)
+  const lon = Math.max(0, ...data.flatMap(d => [d.dt, d.cp, d.v, v2(d)])), nho = Math.min(0, ...data.flatMap(d => [d.v, v2(d)]))
+  const tho = (lon - nho) / 5 || 1, mu = 10 ** Math.floor(Math.log10(tho))
+  const buoc = [1, 2, 2.5, 5, 10].map(x => x * mu).find(x => x >= tho) ?? 10 * mu
+  const max = Math.max(buoc, Math.ceil(lon / buoc) * buoc), min = nho < 0 ? nho - (max - nho) * 0.06 : 0
+  return { buoc, max, min, duoi0: -min / (max - min || 1) }
+}
+
 /** Lãi lỗ theo tháng: cột doanh thu (xanh dương), cột chi phí (cam), đường lãi lỗ có điểm xanh khi lãi, đỏ khi lỗ.
  *  Không ghi số trên biểu đồ cho gọn; rê chuột vào tháng hiện doanh thu, chi phí, lãi lỗ. Tháng chưa hết (do) cột viền nét đứt (T255) */
-export function LaiLoChart({ data, h = 260, rong = 640, ten = ['Doanh thu', 'Chi phí'], mau = ['var(--bd-dt, #0560a6)', 'var(--bd-cp, #f28020)'], duong, duong2 }: {
-  data: { l: string; dt: number; cp: number; v: number; v2?: number; ghiChu?: string; do?: boolean }[]
+export function LaiLoChart({ data, h = 260, rong = 640, ten = ['Doanh thu', 'Chi phí'], mau = ['var(--bd-dt, #0560a6)', 'var(--bd-cp, #f28020)'], duong, duong2, duoi0 = 0 }: {
+  data: DongLaiLo[]
   h?: number
   /** Bề rộng khung vẽ; truyền đúng bề rộng thật (px) để chữ trục không bị co giãn (T303) */
   rong?: number
@@ -421,15 +434,13 @@ export function LaiLoChart({ data, h = 260, rong = 640, ten = ['Doanh thu', 'Chi
   duong?: { ten: string; mau?: string }
   /** Đường thứ hai lấy số ở v2 (vd Dòng tiền thuần = thu − chi), có thể âm (T303) */
   duong2?: { ten: string; mau: string }
+  /** Phần chiều cao tối thiểu dành cho dưới 0 (0 đến 1); hai biểu đồ đặt cạnh nhau truyền cùng số để đường 0 thẳng hàng (T331) */
+  duoi0?: number
 }) {
   const W = rong, pl = 44, pr = 6, pb = 24, pt = 10
-  // Bước vạch tròn (1, 2, 2,5, 5 nhân 10 mũ n) để trục đọc dễ
-  const v2 = (d: typeof data[number]) => (duong2 ? d.v2 ?? 0 : 0)
-  const lon = Math.max(0, ...data.flatMap(d => [d.dt, d.cp, d.v, v2(d)])), nho = Math.min(0, ...data.flatMap(d => [d.v, v2(d)]))
-  const tho = (lon - nho) / 4 || 1, mu = 10 ** Math.floor(Math.log10(tho))
-  const buoc = [1, 2, 2.5, 5, 10].map(x => x * mu).find(x => x >= tho) ?? 10 * mu
-  // Phần dưới 0 chỉ vừa đủ cho tháng lỗ, không kéo thêm cả một bước vạch
-  const max = Math.ceil((lon * 1.04) / buoc) * buoc, min = nho < 0 ? nho - (max - nho) * 0.06 : 0
+  const v2 = (d: DongLaiLo) => (duong2 ? d.v2 ?? 0 : 0)
+  const truc = trucLaiLo(data, !!duong2), { buoc, max } = truc
+  const min = duoi0 > truc.duoi0 && duoi0 < 1 ? -max * duoi0 / (1 - duoi0) : truc.min
   const span = max - min || 1
   const y = (v: number) => pt + (h - pt - pb) * ((max - v) / span)
   const bw = (W - pl - pr) / (data.length || 1)
@@ -447,6 +458,9 @@ export function LaiLoChart({ data, h = 260, rong = 640, ten = ['Doanh thu', 'Chi
     return () => document.removeEventListener('pointerdown', ngoai)
   }, [chon])
   const tenThang = (l: string) => { const m = /^T(\d{1,2})\/(\d{2})$/.exec(l); return m ? `Tháng ${m[1]}/20${m[2]}` : l }
+  // T331: nhãn trục chỉ ghi năm ở tháng đầu, tháng cuối và tháng 1 (đổi năm), còn lại chỉ ghi tháng; vạch đứt mờ tách hai năm
+  const thangSo = (l: string) => /^T(\d{1,2})\/\d{2}$/.exec(l)?.[1]
+  const nhanTruc = (l: string, i: number) => { const m = thangSo(l); return !m || i === 0 || i === data.length - 1 || m === '1' ? l : `T${m}` }
   const dc = chon === null ? null : data[chon]
   const tip = dc && (() => {
     const kq = dc.v, lai = kq >= 0
@@ -466,7 +480,7 @@ export function LaiLoChart({ data, h = 260, rong = 640, ten = ['Doanh thu', 'Chi
         <div className="ll-tip-dong"><i className="ll-tip-mk" style={{ background: mau[1] }} /><span>{ten[1]}</span><b>{tien(dc.cp)}</b></div>
         <div className="ll-tip-ke" />
         <div className={`ll-tip-dong kq ${lai ? 'll-tip-xanh' : 'll-tip-do'}`}>
-          <i className="ll-tip-mk tron" style={{ background: lai ? 'var(--green)' : 'var(--red)' }} />
+          <i className="ll-tip-mk tron" style={{ background: duong?.mau ?? (lai ? 'var(--green)' : 'var(--red)') }} />
           <span>{duong ? duong.ten : lai ? 'Lãi' : 'Lỗ'}</span><b>{tien(Math.abs(kq))}</b>
         </div>
         {duong2 && <div className="ll-tip-dong"><i className="ll-tip-mk net" style={{ borderColor: duong2.mau }} /><span>{duong2.ten} cuối tháng</span><b>{tien(v2(dc))}</b></div>}
@@ -496,17 +510,17 @@ export function LaiLoChart({ data, h = 260, rong = 640, ten = ['Doanh thu', 'Chi
             <rect x={pl + i * bw} y={pt} width={bw} height={h - pt - pb} rx={4} fill="transparent" />
             {cot(x, d.dt, mau[0])}
             {cot(x + w + 2, d.cp, mau[1])}
-            <text x={cx(i)} y={h - 7} textAnchor="middle">{d.l}</text>
+            {i > 0 && thangSo(d.l) === '1' && <line className="lai-lo-nam" x1={pl + i * bw} x2={pl + i * bw} y1={pt} y2={h - pb} />}
+            <text x={cx(i)} y={h - 7} textAnchor="middle" className={i === data.length - 1 ? 'lai-lo-nay' : undefined}>{nhanTruc(d.l, i)}</text>
           </g>
         )
       })}
-      <polyline points={data.map((d, i) => `${cx(i)},${y(d.v)}`).join(' ')} fill="none" stroke={duong?.mau ?? 'var(--navy, #2a3042)'} strokeWidth={2} strokeLinejoin="round" pointerEvents="none" />
-      {data.map((d, i) => (
-        <circle key={i} cx={cx(i)} cy={y(d.v)} r={4.5} fill={duong?.mau ?? (d.v >= 0 ? 'var(--green)' : 'var(--red)')} stroke="#fff" strokeWidth={1.5} pointerEvents="none" />
-      ))}
-      {duong2 && <>
-        <polyline points={data.map((d, i) => `${cx(i)},${y(v2(d))}`).join(' ')} fill="none" stroke={duong2.mau} strokeWidth={2} strokeDasharray="5 3" strokeLinejoin="round" pointerEvents="none" />
-        {data.map((d, i) => <circle key={i} cx={cx(i)} cy={y(v2(d))} r={3.5} fill={duong2.mau} stroke="#fff" strokeWidth={1.5} pointerEvents="none" />)}
+      {/* T331: đường màu theo tông biểu đồ, không chấm tròn ở từng tháng; chỉ tháng đang rê chuột mới có chấm để dóng số */}
+      <polyline points={data.map((d, i) => `${cx(i)},${y(d.v)}`).join(' ')} fill="none" stroke={duong?.mau ?? 'var(--bd-ln, #1f9d6b)'} strokeWidth={2.25} strokeLinejoin="round" strokeLinecap="round" pointerEvents="none" />
+      {duong2 && <polyline points={data.map((d, i) => `${cx(i)},${y(v2(d))}`).join(' ')} fill="none" stroke={duong2.mau} strokeWidth={2} strokeDasharray="5 3" strokeLinejoin="round" pointerEvents="none" />}
+      {chon !== null && data[chon] && <>
+        <circle cx={cx(chon)} cy={y(data[chon].v)} r={4} fill={duong?.mau ?? 'var(--bd-ln, #1f9d6b)'} stroke="#fff" strokeWidth={1.5} pointerEvents="none" />
+        {duong2 && <circle cx={cx(chon)} cy={y(v2(data[chon]))} r={3.5} fill={duong2.mau} stroke="#fff" strokeWidth={1.5} pointerEvents="none" />}
       </>}
     </svg>
     {tip}
