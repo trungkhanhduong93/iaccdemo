@@ -326,7 +326,7 @@ export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: 
             title="Tuỳ chỉnh"
             onClick={() => setMoTuyChinh(true)}
           >
-            <Icon n="layers" kieu="net" className="ic sm" />
+            <Icon n="cog" kieu="net" className="ic sm" />
             <span className="rpt-btn-txt">Tuỳ chỉnh</span>
           </button>
           <Dropdown

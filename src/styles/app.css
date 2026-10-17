@@ -23766,3 +23766,5 @@ button[class*="btn-"] .ic .l2 {
 
 /* Đường kẻ ngăn hàng bộ lọc với hàng trạng thái (T349) */
 .voucher-top .ds-thanh-h2 { border-top: 1px solid var(--line-2); padding-top: 10px; }
+/* Thanh báo cáo web: lề trên 18px cho nhãn ô lọc nằm trọn trong khung (T349) */
+@media (min-width: 768px) { .bc-thanh-cong-cu { padding-top: 18px; } }
