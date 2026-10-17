@@ -7,6 +7,7 @@
 ## Đã làm
 
 - `src/modules/tong-hop/KhoaSoFree.tsx`: thêm dữ liệu mẫu `thieuNgay` (hai ngày cuối tháng FABi chưa đẩy doanh thu) và `phieuCho` (3 phiếu thu, chi FABi chưa map phương thức thanh toán). Bước Đồng bộ đủ doanh thu FABi và Phiếu thu, chi FABi chờ xử lý tính xong theo hai biến này thay vì luôn xong. Mặc định 4/6 bước xong, hiện cảnh báo vàng.
+- Sửa thêm cùng ngày: PhuongXT bảo bỏ hẳn bước Đồng bộ đủ doanh thu FABi ở `tong-hop/KhoaSoFree.tsx`, còn 5 bước, mặc định 4/5 xong (còn Phiếu thu, chi FABi chờ xử lý). Đã xem trên máy gói Free; typecheck, build, `kiem_tra.py --nhanh` qua.
 
 ## Đã kiểm
 
