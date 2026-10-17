@@ -23229,6 +23229,7 @@ button[class*="btn-"] .ic .l2 {
   .bbt-modal-cn-bang th, .bbt-modal-cn-bang td { white-space: nowrap; }
   .bbt-modal-cn-bang th:first-child, .bbt-modal-cn-bang td:first-child { position: sticky; left: 0; z-index: 1; background: #fff; }
   .bbt-modal-cn-bang th:first-child { background: var(--tint); }
+}
 
 /* ── Icon Solar nét dự phòng sắc hơn (T332, T340) ── */
 /* Chỉ chạy khi BO_ICON = 'net'. Nét 1.6px: 1.5px mờ trên màn FullHD, 2px dính chi tiết */
