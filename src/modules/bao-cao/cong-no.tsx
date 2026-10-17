@@ -9,6 +9,8 @@ import { between, k, pad, rng } from '../../ui/format'
 import { Icon } from '../../ui/Icon'
 import { Table } from '../../ui/Table'
 import { ganMoPhieu } from '../../ui/generic/SoChungTu'
+import { chungTu } from '../../ui/generic/gen'
+import { PHIEU_MUA } from '../mua-hang/bao-cao'
 
 type Loai = 'ncc' | 'kh'
 interface PhieuCn { ngay: string; kho: string; so: string; ghiChu: string; dienGiai: string; ps: number; tra: number; tt: number }
@@ -19,6 +21,16 @@ const NHAN: Record<Loai, { doiTuong: string; ps: string; tienPs: string }> = {
 }
 const dsDoiTuong = (loai: Loai) => (loai === 'ncc' ? NCC : KHACH.filter(x => x.ma !== 'KL'))
 
+/** Phiếu mua hàng 4.1.1 của nhà cung cấp trong tháng, theo cửa hàng (T307): tiền mua hàng của công nợ NCC lấy đúng tổng tiền phiếu (gồm thuế GTGT),
+ *  để mua nợ không vượt tổng nhập và khớp trang chủ, danh sách mua. Tháng chưa có phiếu mẫu thì trả về null, công nợ sinh số mẫu như cũ */
+function phieuMuaNcc(ma: string, thang: number, cnTen: string): PhieuCn[] | null {
+  const tatCa = chungTu(PHIEU_MUA, '4.1.1')
+  if (!tatCa.some(x => Number(x.thang) === thang)) return null
+  return tatCa.filter(x => Number(x.thang) === thang && x.cn === cnTen && x.maDt === ma).map(x => ({
+    ngay: String(x.ngay), kho: cnTen, so: String(x.so), ghiChu: '', dienGiai: String(x.dienGiai || `Mua hàng ${cnTen}`), ps: Number(x.tong) || 0, tra: 0, tt: 0,
+  }))
+}
+
 /** Nợ đầu kỳ và các phiếu phát sinh trong tháng của một đối tượng, theo cửa hàng chọn trên thanh trên (tên cửa hàng, thiếu là tất cả) */
 function soLieu(loai: Loai, ma: string, thang: number, cnTen?: string) {
   const dsCn = CUA_HANG.filter(c => !cnTen || c.ten === cnTen)
@@ -26,12 +38,29 @@ function soLieu(loai: Loai, ma: string, thang: number, cnTen?: string) {
   const phieu: PhieuCn[] = []
   for (const c of dsCn) {
     const r = rng(`cn-${loai}-${ma}-${c.id}-${thang}`)
-    dau += k(between(r, 0, loai === 'ncc' ? 60e6 : 25e6) / dsCn.length)
+    const dauCn = k(between(r, 0, loai === 'ncc' ? 60e6 : 25e6) / dsCn.length)
+    dau += dauCn
+    // NCC (T307): mua hàng lấy từ phiếu mua thật; phiếu mẫu chỉ còn trả hàng, thanh toán, tổng không vượt số đang nợ
+    const muaThat = loai === 'ncc' ? phieuMuaNcc(ma, thang, c.ten) : null
+    const ngayToiDa = muaThat ? Math.max(2, ...muaThat.map(x => Number(x.ngay.slice(0, 2)) || 2)) : 27
+    if (muaThat) phieu.push(...muaThat)
+    let conNo = dauCn + (muaThat ?? []).reduce((a, x) => a + x.ps, 0)
     const soPhieu = Math.floor(between(r, 0, 4))
     for (let i = 0; i < soPhieu; i++) {
-      const ngay = 2 + Math.floor(between(r, 0, 26))
-      const kieu = r()
+      const ngay = 2 + Math.floor(between(r, 0, ngayToiDa - 1))
+      const kieu = muaThat ? 0.55 + r() * 0.45 : r()
       const tien = k(between(r, 1.5e6, loai === 'ncc' ? 38e6 : 18e6))
+      if (muaThat) {
+        const tra = kieu < 0.65 ? Math.min(k(tien * 0.2), conNo) : 0
+        const tt = kieu >= 0.65 ? Math.min(tien, k(conNo * 0.8)) : 0
+        if (tra + tt <= 0) continue
+        conNo -= tra + tt
+        phieu.push({
+          ngay: `${pad(ngay)}/${pad(thang)}/2026`, kho: c.ten, so: tra ? 'TLN' : 'PC', ghiChu: '',
+          dienGiai: tra ? 'Trả lại hàng' : 'Thanh toán nhà cung cấp', ps: 0, tra, tt,
+        })
+        continue
+      }
       const ps = kieu < 0.55 ? tien : 0
       const tra = kieu >= 0.55 && kieu < 0.65 ? k(tien * 0.2) : 0
       const tt = kieu >= 0.65 ? tien : 0
@@ -47,7 +76,7 @@ function soLieu(loai: Loai, ma: string, thang: number, cnTen?: string) {
   // Số chứng từ đánh theo thứ tự ngày, riêng từng loại phiếu, mã đối tượng làm hạt để hai đối tượng không trùng số
   const dem: Record<string, number> = {}
   const goc = Number(ma.replace(/\D/g, '')) * 7
-  for (const p of phieu) { dem[p.so] = (dem[p.so] ?? goc) + 1; p.so = `${p.so}26${pad(thang)}-${pad(dem[p.so], 4)}` }
+  for (const p of phieu) { if (p.so.includes('-')) continue; dem[p.so] = (dem[p.so] ?? goc) + 1; p.so = `${p.so}26${pad(thang)}-${pad(dem[p.so], 4)}` }
   return { dau, phieu }
 }
 

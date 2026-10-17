@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 17/10/2026
 
+- T307: Trang chủ gói Free, Quản lý kho gộp còn 2 khối thẳng cột với Quản lý lãi lỗ, Quỹ tiền, ít chữ hơn: Mua hàng & công nợ NCC (tổng nhập, còn nợ NCC, dòng nợ đầu kỳ + mua nợ − đã trả = nợ cuối kỳ, nhập nhiều nhất, nợ nhiều nhất, nút Tạo phiếu mua hàng, Thanh toán NCC) và Hao hụt kiểm kê (mặt hàng lệch, tiến độ kiểm kê từng cửa hàng, thiếu nhiều, thừa nhiều, nút Kiểm kê ngay). Báo cáo Công nợ nhà cung cấp lấy tiền mua hàng từ phiếu mua, lịch sử công nợ hiện số phiếu mua thật, mua nợ không còn lớn hơn tổng nhập.
 - T306: Trang chủ, biểu đồ Hiệu quả kinh doanh và Dòng tiền 13 tháng: rê chuột hoặc chạm vào tháng hiện thẻ chi tiết trắng đặt cạnh cột: tháng, biên lãi hoặc thu chi bên nào nhiều hơn, từng khoản có dấu màu, dòng lãi, lỗ hoặc dòng tiền thuần tô màu, tồn quỹ cuối tháng.
 - T301, T302: Web và điện thoại: icon đổi sang nét 2 màu iPOS, thân xanh, nét nhấn cam, bỏ ô nền màu. Icon còn 3 cỡ 16, 20, 24, nét đều 1.5px; điện thoại không còn icon dưới 20px. Sidebar web nền xanh iPOS đậm, mục đang chọn rõ hơn. Thanh dưới điện thoại dùng icon mới, tab Nghiệp vụ có icon riêng.
 

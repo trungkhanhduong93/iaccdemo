@@ -61,9 +61,13 @@ export function soLieuCongNo(thang: number, motCn?: string) {
   const daTra = (r: Record<string, unknown>) => so(r, 'tra') + so(r, 'tt')
   const conNo = ds.filter(r => so(r, 'cuoi') > 0)
   const noCu = ds.map(r => ({ ten: String(r.ten), v: Math.max(0, so(r, 'dau') - daTra(r)) })).filter(x => x.v > 0)
+  const tong = (k: string) => ds.reduce((a, r) => a + so(r, k), 0)
   return {
     cuoi: conNo.reduce((a, r) => a + so(r, 'cuoi'), 0),
     soNcc: conNo.length,
+    // T307: dòng chảy công nợ khớp dòng Tổng cộng báo cáo 4.2.3: Nợ đầu kỳ + Mua nợ − Trả hàng − Thanh toán = Nợ cuối kỳ (cộng cả NCC trả trước)
+    dau: tong('dau'), traHang: tong('tra'), thanhToan: tong('tt'), cuoiRong: tong('cuoi'),
+    soNccTraTruoc: ds.filter(r => so(r, 'cuoi') < 0).length,
     phatSinh: ds.reduce((a, r) => a + so(r, 'ps'), 0),
     daTra: ds.reduce((a, r) => a + daTra(r), 0),
     noCu: noCu.reduce((a, x) => a + x.v, 0), soNccNoCu: noCu.length,
@@ -89,12 +93,17 @@ export function soLieuKiemKe(thang: number, tenCn: Set<string>) {
   }
   const ds = [...dong.values()]
   const thieu = ds.filter(x => x.lech < 0), thua = ds.filter(x => x.lech > 0)
-  const theoCn = [...tenCn].map(cn => ({ cn, lech: ds.filter(x => x.cn === cn && x.lech !== 0).length, daKiem: phieu.some(p => p.cn === cn) }))
+  const theoCn = [...tenCn].map(cn => ({
+    cn, lech: ds.filter(x => x.cn === cn && x.lech !== 0).length, daKiem: phieu.some(p => p.cn === cn),
+    soKiem: ds.filter(x => x.cn === cn).length, tong: NVL.length,   // T307: tiến độ kiểm kê từng cửa hàng
+  }))
   return {
     soKiem: ds.length, thieu: thieu.length, thua: thua.length,
     tongMh: NVL.length * tenCn.size,   // mặt hàng cần kiểm: mỗi cửa hàng đang xem đủ danh mục nguyên vật liệu
     tyLe: ds.length ? (thieu.length + thua.length) / ds.length : 0,
     topThieu: thieu.sort((a, b) => a.lech - b.lech).slice(0, 3),
+    topThua: thua.sort((a, b) => b.lech - a.lech).slice(0, 3),
+    theoCn,
     chuaKiem: theoCn.filter(x => !x.daKiem).map(x => x.cn),
     bieuDo: theoCn.map((x): CotThang => ({ l: x.cn.replace(/^Phố Mây /, ''), v: x.lech })),
   }

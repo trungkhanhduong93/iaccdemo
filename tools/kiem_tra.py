@@ -4777,8 +4777,9 @@ def kiem_tra_t274_web():
             loi.append('T293 web: tab Tổng quan còn thẻ biểu đồ top 5, lãi lỗ cửa hàng (đã bỏ)')
         if pg.locator('.bbt-e-luoi-2').count() == 0:
             loi.append('T293 web: lưới tab Tổng quan không phải 2 cột')
-        if pg.locator('.bbt-kho-ngang:has-text("Quản lý kho")').count() == 0:
-            loi.append('T293 web: không thấy hàng Quản lý kho dưới 2 cột')
+        # T307: Quản lý kho gộp còn 2 khối ở hàng dưới
+        if pg.locator('.bbt-kho2:has-text("Mua hàng & công nợ NCC")').count() == 0 or pg.locator('.bbt-kho2:has-text("Hao hụt kiểm kê")').count() == 0:
+            loi.append('T307 web: không thấy 2 khối Mua hàng & công nợ NCC, Hao hụt kiểm kê dưới 2 cột')
 
         # 5. T303: web bỏ hộp lãi lỗ 13 tháng, biểu đồ hiện thẳng trong cột (hộp, kiểu xem Theo cửa hàng còn ở bản điện thoại)
         if pg.locator('.bbt-13t-trong:has-text("Hiệu quả kinh doanh") svg').count() == 0:

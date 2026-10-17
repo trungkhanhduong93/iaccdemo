@@ -607,98 +607,111 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
           </div>
         </section>
 
-        {/* Quản lý kho: hàng dưới, 3 khối Mua hàng, Công nợ phải trả NCC, Hao hụt kiểm kê (T304) */}
-        <section className="bbt-cot col bbt-kho-ngang">
-          <h2 className="ten bbt-e-ten">
-            <Icon n="khohang" className="ic sm" /> Quản lý kho
-          </h2>
-
-          <div className="bbt-kho-luoi">
-            {/* 1. Mua hàng: câu chữ đọc được ngay, danh sách có tiêu đề, biểu đồ có ghi chú (T304) */}
-            <div className="bbt-kho-khoi bbt-gon bbt-kho-mua">
-              <div className="bbt-kho-dau">
-                <b>Mua hàng</b>
-                {/* Mở Bảng kê mua hàng theo hàng hoá 4.2.7 gom nhóm theo mã hàng (kèm tên hàng, ĐVT), xem dạng tổng hợp, đúng tháng đang xem (T304) */}
-                <Link to="/app/bao-cao/4-2-7" className="bbt-kho-mo" onClick={() => {
-                  luuTuyChinh(s.donVi, '4.2.7', { ...(docTuyChinh(s.donVi, '4.2.7') ?? {}), nhom: ['ma'], xemNhom: 'tongHop' })
-                  datLocDaXem('/app/bao-cao/4-2-7', {}, String(thangXem))
-                }}>Bảng kê theo hàng hoá ›</Link>
-              </div>
-              <div className="hoi bbt-e-hoi">Tổng nhập trong {thangXem === 10 ? 'tháng' : `tháng ${thangXem}`}</div>
+        {/* Quản lý kho gộp còn 2 khối thẳng cột với hàng trên (T307): Mua hàng & công nợ NCC, Hao hụt kiểm kê */}
+        <section className="bbt-cot col bbt-gon bbt-kho2">
+          <div className="bbt-e-ten-hang">
+            <h2 className="ten bbt-e-ten"><Icon n="khohang" className="ic sm" /> Mua hàng &amp; công nợ NCC</h2>
+            <span className="bbt-kho2-link">
+              {/* Bảng kê mua hàng theo hàng hoá 4.2.7 gom theo mã hàng, dạng tổng hợp, đúng tháng đang xem (T304) */}
+              <Link to="/app/bao-cao/4-2-7" className="bbt-kho-mo" onClick={() => {
+                luuTuyChinh(s.donVi, '4.2.7', { ...(docTuyChinh(s.donVi, '4.2.7') ?? {}), nhom: ['ma'], xemNhom: 'tongHop' })
+                datLocDaXem('/app/bao-cao/4-2-7', {}, String(thangXem))
+              }}>Bảng kê ›</Link>
+              <Link to="/app/bao-cao/4-2-3" className="bbt-kho-mo" onClick={() => datLocDaXem('/app/bao-cao/4-2-3', {}, String(thangXem))}>Công nợ ›</Link>
+            </span>
+          </div>
+          <div className="bbt-kho2-hai">
+            <div>
+              <div className="hoi bbt-e-hoi">Tổng nhập {thangXem === 10 ? 'tháng' : `tháng ${thangXem}`}</div>
               <div className="tra bbt-tra" style={{ color: 'var(--blue, #0560a6)' }}>{moneyD(mua.nhap)}</div>
-              <div className="phu bbt-phu bbt-e-phu">{mua.soDon} phiếu nhập từ {mua.soNcc} nhà cung cấp</div>
-              <ul className="bbt-kho-cau">
-                {mua.soSanh && (
-                  <li>
-                    <span className={mua.soSanh.pct > 0 ? 'bbt-kho-tang' : 'bbt-kho-giam'}>{mua.soSanh.pct > 0 ? '▲ Tăng' : '▼ Giảm'} {pct(Math.abs(mua.soSanh.pct))}</span>
-                    {' '}so với {mua.soSanh.nhan} ({short(mua.soSanh.truoc)})
-                  </li>
-                )}
-                <li>Bằng <b>{pct(mua.tyLeDt)}</b> doanh thu {thangXem === 10 ? 'tháng này' : `tháng ${thangXem}`}</li>
-              </ul>
-              <div className="bbt-kho-nhom">Nhập nhiều tiền nhất</div>
-              {mua.topMh.map(x => (
-                <div className="t bbt-kho-dong-gon" key={x.ma}>
-                  <div className="l"><b><span className="bbt-kho-ma">{x.ma}</span>{x.ten}</b><span>{x.sl.toLocaleString('vi-VN')} {x.dvt}</span></div>
-                  <div className="r"><b>{moneyD(x.tien)}</b></div>
-                </div>
-              ))}
-              <div className="bbt-kho-chan">
-                <Link to="/app/mua-hang/4-1-1/moi" className="btn sm"><Icon n="plus" className="ic sm" />Tạo phiếu mua hàng</Link>
+              <div className="phu bbt-phu bbt-e-phu">
+                {mua.soDon} phiếu
+                {mua.soSanh && <> · <span className={mua.soSanh.pct > 0 ? 'bbt-kho-tang' : 'bbt-kho-giam'} title={`So với ${mua.soSanh.nhan} (${short(mua.soSanh.truoc)})`}>{mua.soSanh.pct > 0 ? '▲' : '▼'} {pct(Math.abs(mua.soSanh.pct))} cùng kỳ</span></>}
               </div>
             </div>
-
-            {/* 2. Công nợ phải trả NCC: gói Free không có hạn thanh toán, nợ cũ tính theo tháng phát sinh */}
-            <div className="bbt-kho-khoi bbt-gon bbt-kho-no">
-              <div className="bbt-kho-dau">
-                <b>Công nợ phải trả NCC</b>
-                <Link to="/app/bao-cao/4-2-3" className="bbt-kho-mo" onClick={() => datLocDaXem('/app/bao-cao/4-2-3', {}, String(thangXem))}>Báo cáo công nợ ›</Link>
-              </div>
-              <div className="hoi bbt-e-hoi">Còn nợ nhà cung cấp bao nhiêu?</div>
-              <div className="tra bbt-tra" style={{ color: 'var(--orange-d, #d0650a)' }}>{moneyD(no.cuoi)}</div>
-              <div className="phu bbt-phu bbt-e-phu">{no.soNcc} nhà cung cấp còn nợ · mua chịu thêm {short(no.phatSinh)} · đã trả {short(no.daTra)}</div>
-              <div className={`t${no.noCu > 0 ? ' bbt-kho-canh' : ''}`}>
-                <div className="l"><b>Nợ cũ chưa trả</b><span>{no.soNccNoCu} nhà cung cấp còn nợ từ tháng trước</span></div>
-                <div className="r"><b>{moneyD(no.noCu)}</b></div>
-              </div>
+            <div>
+              <div className="hoi bbt-e-hoi">Còn nợ NCC</div>
+              <div className="tra bbt-tra" style={{ color: 'var(--orange-d, #d0650a)' }}>{moneyD(no.cuoiRong)}</div>
+              <div className="phu bbt-phu bbt-e-phu">{no.soNcc} nhà cung cấp</div>
+            </div>
+          </div>
+          {/* Dòng chảy công nợ: khớp dòng Tổng cộng báo cáo 4.2.3 */}
+          <div className="t"><div className="l"><b>Nợ đầu kỳ</b></div><div className="r"><b>{moneyD(no.dau)}</b></div></div>
+          <div className="t"><div className="l"><b>+ Mua nợ</b></div><div className="r"><b>{moneyD(no.phatSinh)}</b></div></div>
+          <div className="t"><div className="l"><b>− Đã trả</b></div><div className="r"><b>{moneyD(no.traHang + no.thanhToan)}</b></div></div>
+          <div className="t bbt-kho2-tong"><div className="l"><b>= Nợ cuối kỳ</b></div><div className="r"><b>{moneyD(no.cuoiRong)}</b></div></div>
+          <div className="bbt-kho2-ds">
+            <div>
+              <div className="bbt-kho-nhom">Nhập nhiều nhất</div>
+              {mua.topMh.map(x => (
+                <div className="bbt-kho2-dong" key={x.ma}>
+                  <span className="bbt-kho2-ten"><span className="bbt-kho-ma">{x.ma}</span>{x.ten}</span>
+                  <b>{short(x.tien)}</b>
+                </div>
+              ))}
+            </div>
+            <div>
               <div className="bbt-kho-nhom">Nợ nhiều nhất</div>
               {no.top.map(x => (
-                <div className="t bbt-kho-dong-gon" key={x.ten}>
-                  <div className="l"><b title={x.ten}>{x.ten}</b></div>
-                  <div className="r">
-                    <b>{moneyD(x.v)}</b>
-                    <Link to={`/app/tien/2-1-1/moi?loai=chi&ly=CHI02&dt=${encodeURIComponent(x.ten)}`} className="bbt-kho-tra" title={`Lập phiếu chi trả nợ ${x.ten}`}>Trả nợ</Link>
-                  </div>
+                <div className="bbt-kho2-dong" key={x.ten}>
+                  <span className="bbt-kho2-ten" title={x.ten}>{x.ten}</span>
+                  <b>{short(x.v)}</b>
                 </div>
               ))}
             </div>
+          </div>
+          <div className="bbt-kho-chan">
+            <Link to="/app/mua-hang/4-1-1/moi" className="btn sm"><Icon n="plus" className="ic sm" />Tạo phiếu mua hàng</Link>
+            <Link to="/app/tien/2-1-1/moi?loai=chi&ly=CHI02" className="btn sm"><Icon n="plus" className="ic sm" />Thanh toán NCC</Link>
+          </div>
+        </section>
 
-            {/* 3. Hao hụt kiểm kê: gói Free chỉ theo dõi số lượng */}
-            <div className="bbt-kho-khoi bbt-gon bbt-kho-hh">
-              <div className="bbt-kho-dau">
-                <b>Hao hụt kiểm kê</b>
-                <Link to="/app/bao-cao/5-2-15" className="bbt-kho-mo" onClick={() => datLocDaXem('/app/bao-cao/5-2-15', {}, String(thangXem))}>Báo cáo kiểm kê ›</Link>
+        <section className="bbt-cot col bbt-gon bbt-kho2">
+          <div className="bbt-e-ten-hang">
+            <h2 className="ten bbt-e-ten"><Icon n="khohang" className="ic sm" /> Hao hụt kiểm kê</h2>
+            <span className="bbt-kho2-link">
+              <Link to="/app/bao-cao/5-2-15" className="bbt-kho-mo" onClick={() => datLocDaXem('/app/bao-cao/5-2-15', {}, String(thangXem))}>Báo cáo ›</Link>
+            </span>
+          </div>
+          {/* Gói Free chỉ theo dõi số lượng, không có số tiền thừa, thiếu */}
+          <div className="hoi bbt-e-hoi">Mặt hàng lệch {thangXem === 10 ? 'tháng này' : `tháng ${thangXem}`}</div>
+          <div className="tra bbt-tra" style={{ color: kk.thieu + kk.thua > 0 ? 'var(--red, #c2362b)' : 'var(--green, #138a52)' }}>{kk.thieu + kk.thua}</div>
+          <div className="phu bbt-phu bbt-e-phu">Thiếu {kk.thieu} · thừa {kk.thua} · đã kiểm {kk.soKiem}/{kk.tongMh}</div>
+          <div className="bbt-kho-nhom">Tiến độ kiểm kê</div>
+          <div className="bbt-kho2-tien-do">
+            {kk.theoCn.map(x => (
+              <div className="bbt-kho2-cn" key={x.cn}>
+                <span className="bbt-kho2-ten">{x.cn.replace(/^Phố Mây /, '')}</span>
+                <span className="bbt-kho2-thanh"><i style={{ width: `${x.tong ? Math.min(100, (x.soKiem / x.tong) * 100) : 0}%` }} /></span>
+                <span className="bbt-kho2-so">{x.soKiem}/{x.tong}</span>
+                {x.daKiem
+                  ? <span className={x.lech ? 'bbt-kho-thieu' : 'bbt-kho-giam'}>{x.lech ? `lệch ${x.lech}` : 'khớp'}</span>
+                  : <span className="bbt-kho-thieu">chưa kiểm</span>}
               </div>
-              <div className="hoi bbt-e-hoi">Kiểm kê {thangXem === 10 ? 'tháng này' : `tháng ${thangXem}`} lệch bao nhiêu?</div>
-              <div className="tra bbt-tra" style={{ color: kk.thieu + kk.thua > 0 ? 'var(--red, #c2362b)' : 'var(--green, #138a52)' }}>{kk.thieu + kk.thua} mặt hàng</div>
-              <div className="phu bbt-phu bbt-e-phu">
-                Thiếu {kk.thieu} · thừa {kk.thua} · đã kiểm {kk.soKiem}/{kk.tongMh} mặt hàng
-              </div>
-              <div className="bbt-kho-nhom">Thiếu nhiều nhất</div>
-              {kk.topThieu.map(x => (
-                <div className="t bbt-kho-dong-gon" key={x.cn + x.ma}>
-                  <div className="l"><b><span className="bbt-kho-ma">{x.ma}</span>{x.ten}</b><span>{x.cn}</span></div>
-                  <div className="r"><b className="bbt-kho-thieu">Thiếu {Math.abs(x.lech).toLocaleString('vi-VN')} {x.dvt}</b></div>
+            ))}
+          </div>
+          <div className="bbt-kho2-ds">
+            <div>
+              <div className="bbt-kho-nhom">Thiếu nhiều</div>
+              {kk.topThieu.length ? kk.topThieu.map(x => (
+                <div className="bbt-kho2-dong" key={x.cn + x.ma}>
+                  <span className="bbt-kho2-ten" title={x.cn}><span className="bbt-kho-ma">{x.ma}</span>{x.ten}</span>
+                  <b className="bbt-kho-thieu">−{Math.abs(x.lech).toLocaleString('vi-VN')} {x.dvt}</b>
                 </div>
-              ))}
-              <div className={`t${kk.chuaKiem.length ? ' bbt-kho-canh' : ''}`}>
-                <div className="l"><b>Chưa kiểm kê tháng này</b><span>{kk.chuaKiem.length ? kk.chuaKiem.join(', ') : 'Mọi cửa hàng đã kiểm kê'}</span></div>
-                <div className="r"><b>{kk.chuaKiem.length} cửa hàng</b></div>
-              </div>
-              <div className="bbt-kho-chan">
-                <Link to="/app/kho/5-1-10/moi" className="btn sm"><Icon n="plus" className="ic sm" />Kiểm kê ngay</Link>
-              </div>
+              )) : <div className="bbt-kho2-trong">Không có mặt hàng thiếu</div>}
             </div>
+            <div>
+              <div className="bbt-kho-nhom">Thừa nhiều</div>
+              {kk.topThua.length ? kk.topThua.map(x => (
+                <div className="bbt-kho2-dong" key={x.cn + x.ma}>
+                  <span className="bbt-kho2-ten" title={x.cn}><span className="bbt-kho-ma">{x.ma}</span>{x.ten}</span>
+                  <b className="bbt-kho2-thua">+{x.lech.toLocaleString('vi-VN')} {x.dvt}</b>
+                </div>
+              )) : <div className="bbt-kho2-trong">Không có mặt hàng thừa</div>}
+            </div>
+          </div>
+          <div className="bbt-kho-chan">
+            <Link to="/app/kho/5-1-10/moi" className="btn sm"><Icon n="plus" className="ic sm" />Kiểm kê ngay</Link>
           </div>
         </section>
       </div>

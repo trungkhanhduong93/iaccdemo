@@ -22203,3 +22203,24 @@ button[class*="btn-"] .ic .l2 {
 .ll-tip-xanh, .ll-tip-dong.kq.ll-tip-xanh > b { color: var(--green); }
 .ll-tip-do, .ll-tip-dong.kq.ll-tip-do > b { color: var(--red); }
 .ll-tip-ghi { margin-top: 7px; font-size: 11.5px; color: var(--amber); background: var(--amber-t); border-radius: 6px; padding: 3px 8px; }
+
+/* ── Trang chủ Free: Quản lý kho gộp 2 khối thẳng cột với hàng trên, Mua hàng & công nợ NCC, Hao hụt kiểm kê (T307) ── */
+.bbt-kho2-link { display: inline-flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px 14px; }
+.bbt-kho2-hai { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.bbt-e-luoi-2 .bbt-kho2 > .t.bbt-kho2-tong { border-top: 2px solid var(--line); }
+.bbt-e-luoi-2 .bbt-kho2 > .t.bbt-kho2-tong b { color: var(--ink); font-weight: 700; }
+.bbt-kho2-ds { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 20px; margin-top: 4px; }
+.bbt-kho2-dong { display: flex; align-items: baseline; gap: 8px; padding: 5px 2px; border-bottom: 1px solid var(--line-2); font-size: 13.5px; color: var(--ink); }
+.bbt-kho2-dong > b { flex: none; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.bbt-kho2-ten { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bbt-kho2-ten small { margin-left: 6px; font-size: 12px; color: var(--muted); }
+.bbt-kho2-ten .bbt-kho-ma { margin-right: 6px; font-size: 12px; font-weight: 600; color: var(--muted); }
+.bbt-kho2-thua { color: var(--green); }
+.bbt-kho2-trong { padding: 6px 2px; font-size: 12.5px; color: var(--muted); }
+.bbt-kho2-tien-do { display: flex; flex-direction: column; gap: 2px; }
+.bbt-kho2-cn { display: grid; grid-template-columns: minmax(120px, 1.1fr) minmax(80px, 2fr) 48px minmax(84px, auto); align-items: center; gap: 10px; padding: 5px 2px; font-size: 13.5px; color: var(--ink); border-bottom: 1px solid var(--line-2); }
+.bbt-kho2-thanh { height: 8px; border-radius: 4px; background: var(--line-2); overflow: hidden; }
+.bbt-kho2-thanh > i { display: block; height: 100%; border-radius: 4px; background: var(--st, #0f8f84); }
+.bbt-kho2-so { text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
+.bbt-kho2-cn > span:last-child { font-size: 12.5px; font-weight: 600; text-align: right; }
+@media (max-width: 1280px) { .bbt-kho2-ds { grid-template-columns: minmax(0, 1fr); } }
