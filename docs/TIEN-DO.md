@@ -4,14 +4,15 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T353.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T356.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T353 | Điện thoại: 11 chỉnh sửa giao diện (thẻ Kết quả kinh doanh, Mua hàng & công nợ trang chủ Free; báo cáo KQKD giống web; bỏ nút In ở báo cáo; icon thu chi tiền mặt, ngân hàng; nút back lặp vòng; ô tìm kiếm trượt ra cùng hàng kính lúp; icon cửa hàng đồng bộ web; form phiếu mua hàng gọn; xem phiếu chỉ giữ dòng Tổng thanh toán; sổ quỹ bỏ nền trắng) | Trum | Đang làm | Sửa `src/ui/mobile/*`, `app.css` (mục cuối T353). Thẻ trang chủ Free dùng chung `BaBaiToanFree.tsx` với T339: chỉ sửa CSS nếu được |
+| T355 | Điện thoại: báo cáo Thẻ kho (5.2.1) ô tóm tắt Tồn đầu, Tiền hàng / Nhập, Tổng tiền và tổng từng ngày đều bằng 0 dù có phiếu nhập, xuất | | Chờ | Phát hiện 17/10/2026 khi soát T354, bản online cũng bị, không do T354. `src/ui/mobile/MBaoCaoDong.tsx` |
+| T356 | Xuất bán POS hộ kinh doanh (TT152): bút toán thu tiền vẫn ghi Có `5111, 33311` dù hộ kinh doanh không có VAT | | Chờ | Phát hiện khi sửa lỗi cộng VAT ở T354. `ban-hang/ChungTuBanHang.tsx` dòng Thu tiền mặt, chuyển khoản, app; `ui/mobile/MXuatBanPos.tsx` |
 | T339 | Trang chủ Free máy tính, Tiến độ kiểm kê theo cửa hàng: hiện tối đa 4 cửa hàng cần chú ý (chưa kiểm, lệch nhiều trước), dòng Đã kiểm x/y cửa hàng, dòng Xem tất cả mở hộp danh sách đủ | dinhlanphuongipacc | Đang làm | Sửa `home/BaBaiToanFree.tsx`, `app.css` (mục cuối T339) |
 | T333 | Đổi chữ "map" thành "gán" khi nói về phương thức thanh toán và quỹ (Khoá sổ, Danh mục Quỹ tiền, Danh mục cửa hàng) | dinhlanphuongipacc | Dở dang | Đã đổi ở Khoá sổ, Quỹ tiền. Còn `DanhMucCuaHang.tsx` chờ PhuongXT xong T321. Xem [nhật ký](nhat-ky/2026-10-17-dinhlanphuongipacc-doi-map-thanh-gan.md) |
 | T323 | `tools/kiem_tra.py --dien-thoai` dừng ở bước chờ `.m-nv-luoi`: màn Nghiệp vụ điện thoại làm lại ở T311 không còn lớp này, cập nhật bộ kiểm theo bố cục mới | | Chờ | Phát hiện 17/10/2026 khi kiểm T322 |
@@ -52,6 +53,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T354 | Điện thoại, 29 điểm Trum gửi 17/10/2026: icon tiền mặt, ngân hàng; nút back hết lặp; Nghiệp vụ danh sách gọn; thanh tab kính mờ có pill, tự ẩn khi cuộn; form chứng từ gọn, chọn quỹ, thanh toán ngay; báo cáo bảng có Excel, xoay; KQKD như web; xem phiếu, kiểm kê gọn; chi tiết POS, cửa hàng; danh mục chỉ xem; Khoá sổ. Sửa lỗi POS hộ kinh doanh cộng VAT vào tiền thanh toán (web, điện thoại) | Trum | 17/10/2026 | [2026-10-17-trum-dien-thoai-29-diem](nhat-ky/2026-10-17-trum-dien-thoai-29-diem.md) |
 | T353 | Danh sách chứng từ: làm kín khe hở 1px giữa các cột đóng băng khi cuộn ngang | Trum | 17/10/2026 | [2026-10-17-trum-lam-kin-khe-ho-cot-dong-bang](nhat-ky/2026-10-17-trum-lam-kin-khe-ho-cot-dong-bang.md) |
 | T352 | Bảng chọn ngày và bộ lọc nâng cao khi thả xuống căn theo lề trái để tràn sang phải, tránh che thanh bên | Trum | 17/10/2026 | [2026-10-17-trum-bang-chon-ngay-bo-loc-can-le-trai](nhat-ky/2026-10-17-trum-bang-chon-ngay-bo-loc-can-le-trai.md) |
 | T351 | Web: Xuất bán POS lọc bên trái; TSCĐ, mọi danh mục gom Nhập, Xuất Excel vào 1 nút icon Excel; Chi phí phân bổ Ẩn thẻ hết phân bổ cùng hàng bộ lọc; mọi báo cáo lọc và Lọc bên trái, Tuỳ chỉnh, Excel, In bên phải | Trum | 17/10/2026 | [2026-10-17-trum-thanh-cong-cu-pos-tscd-danh-muc-bao-cao](nhat-ky/2026-10-17-trum-thanh-cong-cu-pos-tscd-danh-muc-bao-cao.md) |
