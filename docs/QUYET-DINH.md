@@ -733,3 +733,5 @@ Trum chốt trên trang xem trước https://claude.ai/artifact/8bD189Sn5BhvJQXt
 
 
 ## QD68. Màn Nghiệp vụ và bộ lọc báo cáo trên điện thoại (đang soạn)
+
+## QD69. Gói Free có chức năng Khoá sổ (đang soạn)
