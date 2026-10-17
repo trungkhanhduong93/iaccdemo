@@ -4,13 +4,14 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T336.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T337.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T337 | Điện thoại, trang chủ gói Free: đưa thay đổi bản web của T316 (chữ thuật ngữ chuẩn, tiêu đề phụ, nút Xem kết quả kinh doanh) và T325 (khối Quỹ tiền: link Sổ quỹ tiền mặt, Sổ ngân hàng, Tạo quỹ dưới vòng tồn quỹ) sang app | Trum | Đang làm | Anti làm. Sửa `src/ui/mobile/MTrangChuFree.tsx`, `MKhoFree.tsx`, mục cuối `app.css` (T337). T331 xong thì đồng bộ thêm |
 | T333 | Đổi chữ "map" thành "gán" khi nói về phương thức thanh toán và quỹ (Khoá sổ, Danh mục Quỹ tiền, Danh mục cửa hàng) | dinhlanphuongipacc | Dở dang | Đã đổi ở Khoá sổ, Quỹ tiền. Còn `DanhMucCuaHang.tsx` chờ PhuongXT xong T321. Xem [nhật ký](nhat-ky/2026-10-17-dinhlanphuongipacc-doi-map-thanh-gan.md) |
 | T332 | Web và điện thoại: quay về bộ icon Solar nét (`BO_ICON = 'net'`), làm nét icon sắc hơn trên màn FullHD (độ dày nét theo cỡ icon, màu icon thanh bên) | Trum | Đang làm | Clau làm. Sửa `src/ui/Icon.tsx`, mục mới cuối `app.css`, `docs/QUYET-DINH.md` (bổ sung QD71) |
 | T331 | Trang chủ Free máy tính: tách riêng vùng xếp hạng (Mặt hàng mua nhiều nhất, Nhà cung cấp nợ nhiều nhất, Thiếu, Thừa nhiều nhất) cho thoáng, hai khối thẳng hàng; danh sách quỹ tên bên trái, tiền và tỷ trọng bên phải | dinhlanphuongipacc | Đang làm | Sửa `home/BaBaiToanFree.tsx`, `app.css` (mục cuối T331) |
