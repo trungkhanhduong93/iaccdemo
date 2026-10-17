@@ -11,8 +11,8 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T355 | Điện thoại: báo cáo Thẻ kho (5.2.1) ô tóm tắt Tồn đầu, Tiền hàng / Nhập, Tổng tiền và tổng từng ngày đều bằng 0 dù có phiếu nhập, xuất | | Chờ | Phát hiện 17/10/2026 khi soát T354, bản online cũng bị, không do T354. `src/ui/mobile/MBaoCaoDong.tsx` |
-| T356 | Xuất bán POS hộ kinh doanh (TT152): bút toán thu tiền vẫn ghi Có `5111, 33311` dù hộ kinh doanh không có VAT | | Chờ | Phát hiện khi sửa lỗi cộng VAT ở T354. `ban-hang/ChungTuBanHang.tsx` dòng Thu tiền mặt, chuyển khoản, app; `ui/mobile/MXuatBanPos.tsx` |
+| T355 | Điện thoại: báo cáo Thẻ kho (5.2.1) ô tóm tắt Tồn đầu, Tiền hàng / Nhập, Tổng tiền và tổng từng ngày đều bằng 0 dù có phiếu nhập, xuất | Trum | Đang làm
+| T356 | Xuất bán POS hộ kinh doanh (TT152): bút toán thu tiền vẫn ghi Có `5111, 33311` dù hộ kinh doanh không có VAT | Trum | Đang làm
 | T339 | Trang chủ Free máy tính, Tiến độ kiểm kê theo cửa hàng: hiện tối đa 4 cửa hàng cần chú ý (chưa kiểm, lệch nhiều trước), dòng Đã kiểm x/y cửa hàng, dòng Xem tất cả mở hộp danh sách đủ | dinhlanphuongipacc | Đang làm | Sửa `home/BaBaiToanFree.tsx`, `app.css` (mục cuối T339) |
 | T333 | Đổi chữ "map" thành "gán" khi nói về phương thức thanh toán và quỹ (Khoá sổ, Danh mục Quỹ tiền, Danh mục cửa hàng) | dinhlanphuongipacc | Dở dang | Đã đổi ở Khoá sổ, Quỹ tiền. Còn `DanhMucCuaHang.tsx` chờ PhuongXT xong T321. Xem [nhật ký](nhat-ky/2026-10-17-dinhlanphuongipacc-doi-map-thanh-gan.md) |
 | T323 | `tools/kiem_tra.py --dien-thoai` dừng ở bước chờ `.m-nv-luoi`: màn Nghiệp vụ điện thoại làm lại ở T311 không còn lớp này, cập nhật bộ kiểm theo bố cục mới | | Chờ | Phát hiện 17/10/2026 khi kiểm T322 |
