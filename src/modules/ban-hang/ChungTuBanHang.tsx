@@ -94,6 +94,12 @@ function dongMonDon(x: XPos) {
  *  Tỷ lệ lấy theo ngành Dịch vụ ăn uống của danh mục ngành nghề */
 const TL_GTGT_HKD = timNganhNghe('301-5')?.gtgt ?? 3
 export const giamThueHkd = (dt: number) => Math.round(dt * TL_GTGT_HKD * 0.2 / 100)
+/** Hộ kinh doanh không có VAT: chia lại tiền các phương thức thanh toán theo tổng = doanh thu − giảm thuế GTGT (T353) */
+export function ttHkd<T extends { dt: number; tm: number; ck: number; the: number; app: number }>(x: T): T {
+  const cu = x.tm + x.ck + x.the + x.app || 1
+  const [tm, ck, the, app] = chiaTheo(x.dt - giamThueHkd(x.dt), [x.tm / cu, x.ck / cu, x.the / cu, x.app / cu], 1)
+  return { ...x, tm, ck, the, app }
+}
 
 /** Cột theo loại hình đơn vị (T163): hộ kinh doanh bỏ Thuế suất, Tiền thuế, luôn hiện Giảm thuế GTGT; doanh nghiệp luôn hiện Thuế suất, Tiền thuế */
 const anTheoLoai = (an: string[], hkd: boolean) => hkd ? [...an.filter(k => k !== 'giamThue'), 'ts', 'thue'] : an.filter(k => k !== 'ts' && k !== 'thue')
@@ -609,7 +615,7 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
     setAnCot(an)
     try { localStorage.setItem(khoaCot, JSON.stringify(an)) } catch { /* trình duyệt chặn lưu thì chỉ giữ trong phiên */ }
   }
-  const x = row.x
+  const x = hkd ? ttHkd(row.x) : row.x
   const kieu = kieuGhiSo(s.cheDo)
   // phiếu giảm giá áp cho cả đơn nên ở dải đáy; chiết khấu đã thành cột trên dòng; dữ liệu mẫu bằng 0 (T106)
   const phieuGiam = 0

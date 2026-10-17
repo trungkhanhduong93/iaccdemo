@@ -14,6 +14,7 @@ import {
   dongCuaPhieu,
   giamThueHkd,
   soFabi,
+  ttHkd,
   theoDon,
   type XPos,
 } from '../../modules/ban-hang/ChungTuBanHang'
@@ -143,7 +144,7 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
 
   const dsPttt = useMemo(() => {
     if (!donDangXem?.x) return []
-    const x = donDangXem.x
+    const x = hkd ? ttHkd(donDangXem.x) : donDangXem.x
     const ds = [
       { ht: 'Tiền mặt', tien: Number(x.tm || 0) },
       { ht: 'Chuyển khoản, QR', tien: Number(x.ck || 0) },
@@ -152,29 +153,29 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
     ]
     const coTien = ds.filter(p => p.tien > 0)
     return coTien.length ? coTien : [{ ht: ptttTen || 'Tiền mặt', tien: Number(donDangXem.tong || 0) }]
-  }, [donDangXem, ptttTen])
+  }, [donDangXem, ptttTen, hkd])
 
   const htButToan = useMemo(() => {
     if (!donDangXem?.x) return []
-    const x = donDangXem.x
+    const x = hkd ? ttHkd(donDangXem.x) : donDangXem.x
     return [
       { dg: 'Thu tiền mặt', no: '1111', co: '5111, 33311', tien: Number(x.tm || 0) },
       { dg: 'Thu chuyển khoản, QR, thẻ', no: '1121', co: '5111, 33311', tien: Number(x.ck || 0) + Number(x.the || 0) },
       { dg: 'Phải thu app giao đồ ăn', no: '131', co: '5111, 33311', tien: Number(x.app || 0) },
       { dg: 'Giá vốn xuất bán theo định lượng', no: '632', co: '152', tien: Number(x.gv || 0) },
     ].filter(b => b.tien > 0)
-  }, [donDangXem])
+  }, [donDangXem, hkd])
 
   const soRows = useMemo(() => {
     if (!donDangXem?.x) return []
-    const x = donDangXem.x
+    const x = hkd ? ttHkd(donDangXem.x) : donDangXem.x
     return [
       { so: 'Sổ doanh thu bán hàng hoá, dịch vụ', tien: Number(x.dt || 0) },
       { so: 'Sổ theo dõi thuế GTGT', tien: Number(x.vat || 0) },
       { so: 'Sổ tiền mặt', tien: Number(x.tm || 0) },
       { so: 'Sổ tiền gửi ngân hàng', tien: Number(x.ck || 0) + Number(x.the || 0) },
     ].filter(s => s.tien > 0)
-  }, [donDangXem])
+  }, [donDangXem, hkd])
 
   return (
     <div className="m-pos-khung">
