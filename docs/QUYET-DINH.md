@@ -773,3 +773,13 @@ Trum chốt trên trang xem trước https://claude.ai/artifact/H59WiEziF4UvzqSo
 - Thẻ chi phí phân bổ thành bảng kê. Nhập kho, Xuất kho thành hộp có mũi tên vào, ra. Kiểm kê thành bảng có dấu tích, Bảng giá thành thẻ trơn.
 - Phiếu điều chuyển giữ xe đẩy, Ghi tăng CCDC giữ búa.
 - Bộ Solar nét giữ làm dự phòng. Đổi `BO_ICON` trong `src/ui/Icon.tsx` thành `'net'` là quay về, luật CSS của T320 chỉ chạy khi `<html data-ic="khoi">`.
+
+Cập nhật cùng ngày (T332, T340). Trum xem bản online, thấy khối T320 tối trên web, bộ nét 2px dính. Chốt lại trên trang xem trước (bản 8 đến 10):
+
+- Web và điện thoại cùng dùng bộ "Khối đồng màu". Thân chuyển màu xanh `#6cb8f0` xuống `#1673bd`, chuyển màu ở mọi cỡ.
+- Lớp phụ của Solar Bold Duotone đo theo diện tích thật. Lớp phụ chiếm dưới 27% là chi tiết, tô cam `#ffc78a` xuống `#f58a2c`.
+- Lớp phụ chiếm từ 27% trở lên là mặt khối (xe đẩy, hộp, toà nhà, sổ, thẻ thu chi), tô xanh nhạt `#c2e1fa` xuống `#7fbcee`. Cam chỉ còn ở chi tiết nhỏ.
+- Bỏ bóng đổ, chỉ giữ ở Thao tác nhanh trang chủ, Lập nhanh và thẻ phân hệ điện thoại.
+- Icon thao tác và giao diện chung (thêm, sửa, xoá, xem, in, tìm, lọc, mũi tên, chuông, đăng xuất, chữ i, trợ giúp, người dùng...) dùng Solar Linear một màu, nét 1.5px. Danh sách ở `THAO_TAC` của `tools/xuat_bieu_tuong.py`.
+- Thanh bên một màu: thân đậm 50%, mặt khối 75%, chi tiết 100%.
+- Bộ nét dự phòng (`BO_ICON = 'net'`) dày 1.6px, icon 16px giữ 1.5px.
