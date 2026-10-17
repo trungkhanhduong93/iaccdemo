@@ -784,4 +784,9 @@ Cập nhật cùng ngày (T332, T340). Trum xem bản online, thấy khối T320
 - Thanh bên một màu: thân đậm 50%, mặt khối 75%, chi tiết 100%.
 - Bộ nét dự phòng (`BO_ICON = 'net'`) dày 1.6px, icon 16px giữ 1.5px.
 
-## QD72. Bảng chọn ngày và bộ lọc nâng cao căn theo lề trái (đang soạn)
+## QD72. Bảng chọn ngày và bộ lọc nâng cao căn theo lề trái (17/10/2026)
+
+Trum chốt 17/10/2026 khi làm T352.
+
+- Bảng chọn ngày (`ChonKhoangNgay`) và hộp Bộ lọc nâng cao (`LocNangCao`) khi mở thả xuống từ thanh công cụ phải căn theo lề trái (`align="start"`), bung tràn sang phía bên phải.
+- Lý do: từ T349 và T351, thanh công cụ đưa bộ lọc và ô thời gian về phía bên trái. Nếu giữ `align="end"`, bảng chọn ngày (600px) và hộp lọc nâng cao (720px) sẽ tràn sang phía bên trái, che mất thanh bên (sidebar) và các ô lọc khác. Căn lề trái giúp hộp thả xuống nằm trọn trong vùng nội dung bảng dữ liệu.

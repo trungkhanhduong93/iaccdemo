@@ -219,7 +219,7 @@ export function BoLoc({ ds, cauHinh, datCauHinh, dangLoc, khacNhap, onLoc, onXoa
       </button>
 
       {!anNangCao && (
-        <Popover anchor={nut} open={mo} onClose={dong} align="end" width={720} role="dialog" className="ds-nc-pop">
+        <Popover anchor={nut} open={mo} onClose={dong} align="start" width={720} role="dialog" className="ds-nc-pop">
           <div className="ds-nc-dau">
             <Icon n="filter" className="ic sm" />
             <b>Bộ lọc nâng cao</b>

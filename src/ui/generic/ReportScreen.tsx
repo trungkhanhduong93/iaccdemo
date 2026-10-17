@@ -173,7 +173,7 @@ export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: 
       {
         k: 'khoangNgay',
         ten: 'Khoảng ngày',
-        o: <ChonKhoangNgay align="end" value={khoang} onChange={doiKhoang} />,
+        o: <ChonKhoangNgay value={khoang} onChange={doiKhoang} />,
       },
     ]
 

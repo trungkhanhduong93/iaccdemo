@@ -81,7 +81,7 @@ function DsCongThuc({ sc, mod, loai, ds }: ScreenProps & { loai: LoaiCt; ds: Row
   )
   const apLoc = () => { loc0.loc(); setTrang(1) }
   const oLoc: OLocDef[] = [
-    { k: 'ngay', ten: 'Ngày áp dụng', o: <ChonKhoangNgay align="end" value={nhap.ngay} onChange={k => dat('ngay', k)} /> },
+    { k: 'ngay', ten: 'Ngày áp dụng', o: <ChonKhoangNgay value={nhap.ngay} onChange={k => dat('ngay', k)} /> },
     { k: 'sp', ten: nhanSp, o: chonO('sp', nhanSp, dsSp) },
     { k: 'nvl', ten: nhanNvl, o: chonO('nvl', nhanNvl, dsNvl) },
     { k: 'kho', ten: 'Kho áp dụng', o: chonO('kho', 'Kho áp dụng', KHO_BEP.map(k => ({ v: k, t: k }))) },

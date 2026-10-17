@@ -120,7 +120,7 @@ export function DsPhieuTc({ sc, mod, kieu: t, rows: rowsGoc }: ScreenProps & { k
 
   const apLoc = () => { loc0.loc(); setTrang(1) }
   const oLoc: OLocDef[] = [
-    { k: 'thoiGian', ten: 'Thời gian', o: <ChonKhoangNgay align="end" value={nhap.thoiGian} onChange={k => dat('thoiGian', k)} /> },
+    { k: 'thoiGian', ten: 'Thời gian', o: <ChonKhoangNgay value={nhap.thoiGian} onChange={k => dat('thoiGian', k)} /> },
     { k: 'tim', ten: 'Tìm kiếm', o: <input className="ds-o-inp" value={nhap.tim} placeholder="Nhập mã phiếu" aria-label="Tìm kiếm"
       onChange={e => dat('tim', e.target.value)} onKeyDown={e => { if (e.key === 'Enter') apLoc() }} /> },
     { k: 'kho', ten: nhanKho, o: (

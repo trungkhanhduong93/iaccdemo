@@ -336,7 +336,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
   const dsLyDo = useMemo(() => mod.key === 'tien' ? [...new Set(rows.map(r => String(r.lyDo ?? '')).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'vi')) : [], [rows, mod.key])
   const coLyDo = dsLyDo.length > 0
   const oLoc: OLocDef[] = [
-    { k: 'thoiGian', ten: 'Thời gian', o: <ChonKhoangNgay align="end" value={nhap.thoiGian} onChange={k => dat('thoiGian', k)} /> },
+    { k: 'thoiGian', ten: 'Thời gian', o: <ChonKhoangNgay value={nhap.thoiGian} onChange={k => dat('thoiGian', k)} /> },
     {
       k: 'tim', ten: 'Tìm kiếm', o: <input className="ds-o-inp" value={nhap.tim} placeholder="Số, tên, diễn giải" title="Tìm theo số chứng từ, đối tượng, diễn giải" aria-label="Tìm kiếm"
         onChange={e => dat('tim', e.target.value)} onKeyDown={e => { if (e.key === 'Enter') apLoc() }} />,
