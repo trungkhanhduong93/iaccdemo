@@ -8,7 +8,7 @@ import { kieuGhiSo } from '../../app/plan'
 import { CUA_HANG } from '../../data/mock'
 import { soQuyCn } from '../../modules/tien/SoQuy'
 import { dsTkTheoCheDo } from '../../modules/tong-hop/so-cai'
-import { tenQuyTm } from '../../modules/bao-cao/danh-sach'
+import { CAU_HINH_BC, tenQuyTm } from '../../modules/bao-cao/danh-sach'
 import { fold, money, rutGonSo } from '../format'
 import { Icon } from '../Icon'
 import { duongPhieu } from '../generic/SoChungTu'
@@ -43,7 +43,7 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
   const khuon = layKhuonDong(sc)
   const isSoApDung = isSoCu || Boolean(khuon)
 
-  const [kieuXem, setKieuXem] = useState<'dong' | 'bang'>(() => (isSoApDung ? 'dong' : 'bang'))
+  const kieuXem = isSoApDung ? 'dong' : 'bang'   // điện thoại chỉ xem dạng dòng, báo cáo chưa có dạng dòng thì hiện bảng (T343)
 
   const cfg: ReportCfg = sc.report ?? (isSoQuy ? { kieu: 'so', theoCn: true } : { kieu: 'tonghop', doiTuong: 'tk' })
 
@@ -222,9 +222,48 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
   const nhanCuoi = isSoCongNo ? 'Dư cuối' : 'Tồn cuối'
   const xemTatCaCn = !cn || s.cuaHang === 'all' || s.cuaHang === ''
 
+  // Lấy các cấu hình lọc riêng để hiển thị nhãn chip (T343)
+  const code = sc.code ?? (sc.slug?.includes('-') ? sc.slug.replace(/-/g, '.') : undefined)
+  const cfgBc = code ? CAU_HINH_BC[code] : undefined
+
+  const nhanDieuKien = useMemo(() => {
+    const map: Record<string, string> = {
+      locDt: 'Đối tượng',
+      locHang: 'Hàng hoá',
+      locKho: 'Kho',
+      locNhomHang: 'Nhóm hàng hoá',
+      locQuy: 'Quỹ tiền',
+      doiTuong: 'Đối tượng',
+      hang: 'Hàng hoá',
+      kho: 'Kho',
+      nhomHang: 'Nhóm hàng hoá',
+      ten: 'Mặt hàng',
+      ncc: 'Nhà cung cấp',
+      kh: 'Khách hàng',
+      tk: 'Tài khoản',
+      quy: 'Quỹ',
+      kenh: 'Kênh bán',
+      nhom: 'Nhóm',
+    }
+    for (const l of cfgBc?.loc ?? []) map[l.k] = l.nhan
+    return map
+  }, [cfgBc])
+
+  const chipDieuKienKhac = useMemo(() => {
+    const res: { k: string; nhan: string; giaTri: string }[] = []
+    Object.entries(loc).forEach(([k, vals]) => {
+      if (!vals || !Array.isArray(vals) || vals.length === 0) return
+      if (k === 'ky' || k === 'cuaHang') return
+      const nhan = nhanDieuKien[k] || k
+      const giaTri = vals.join(', ')
+      res.push({ k, nhan, giaTri })
+    })
+    return res
+  }, [loc, nhanDieuKien])
+
   return (
     <div className="m-so-bc">
-      {/* Hàng chip lọc: chip kỳ, chip cửa hàng chỉ hiển thị, chip chuyển kiểu xem */}
+      {/* Hàng chip lọc: chip kỳ, chip cửa hàng và các điều kiện lọc riêng (T343) */}
       <div className="m-sbc-loc-hang">
         <span className="m-sbc-chip m-sbc-chip-tinh">
           <span className="m-sbc-chip-nhan">Thời gian: {tenKy}</span>
@@ -236,24 +275,13 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
           </span>
         )}
 
-        {isSoApDung && (
-          <div className="m-so-dong-kieu-wrap">
-            <button
-              type="button"
-              className={`m-so-dong-chip ${kieuXem === 'dong' ? 'm-so-dong-chip-on' : ''}`}
-              onClick={() => setKieuXem('dong')}
-            >
-              Dạng dòng
-            </button>
-            <button
-              type="button"
-              className={`m-so-dong-chip ${kieuXem === 'bang' ? 'm-so-dong-chip-on' : ''}`}
-              onClick={() => setKieuXem('bang')}
-            >
-              Bảng
-            </button>
-          </div>
-        )}
+        {chipDieuKienKhac.map(c => (
+          <span key={c.k} className="m-sbc-chip m-sbc-chip-tinh">
+            <span className="m-sbc-chip-nhan">
+              {c.nhan}: {c.giaTri}
+            </span>
+          </span>
+        ))}
       </div>
 
       {/* Ô tìm kiếm dòng: "Nhập mã, tên" */}

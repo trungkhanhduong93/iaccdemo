@@ -148,16 +148,18 @@ const Khuon1ChiTietNgay: FC<{ rows: Row[]; q?: string; xemTatCaCn?: boolean }> =
     return rows.filter(r => !r._b && !r._t)
   }, [rows])
 
-  // Gom theo ngày
+  // Gom theo ngày kèm tính tổng tiền của ngày (T343)
   const dsNhomNgay = useMemo(() => {
-    const map = new Map<string, { ngay: string; ds: Row[] }>()
+    const map = new Map<string, { ngay: string; ds: Row[]; tongTien: number }>()
     for (const r of dsPhatSinh) {
       const ngay = String(r.ngay || r.date || r.ngayCt || '') || 'Giao dịch trong kỳ'
+      const tienDong = Number(r.tien ?? r.thanhTien ?? r.dtThuan ?? r.tong ?? r.tienHang ?? ((Number(r.no) || 0) + (Number(r.co) || 0)))   // cùng thứ tự cột tiền của dòng bên dưới
       const nhom = map.get(ngay)
       if (nhom) {
         nhom.ds.push(r)
+        nhom.tongTien += tienDong
       } else {
-        map.set(ngay, { ngay, ds: [r] })
+        map.set(ngay, { ngay, ds: [r], tongTien: tienDong })
       }
     }
     return Array.from(map.values())
@@ -220,6 +222,7 @@ const Khuon1ChiTietNgay: FC<{ rows: Row[]; q?: string; xemTatCaCn?: boolean }> =
           <div key={nhom.ngay} className="m-bcd-ngay-khoi">
             <div className="m-so-dong-ngay">
               <span className="m-so-dong-ngay-chu">{nhom.ngay}</span>
+              <span className="m-so-dong-ngay-ton m-so-dong-num">{money(nhom.tongTien)}</span>
             </div>
             <div className="m-so-dong-the">
               {nhom.ds.map((r, i) => {

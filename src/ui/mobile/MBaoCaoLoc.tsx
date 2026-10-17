@@ -38,6 +38,11 @@ export const MBaoCaoLoc: FC<MBaoCaoLocProps> = ({ mo, onDong, path, sc }) => {
   const [trangCon, setTrangCon] = useState<string | null>(null)
   const [timKiem, setTimKiem] = useState('')
 
+  // Trạng thái tạm để Huỷ quay về giá trị trước khi mở bảng con (T343)
+  const [tamKy, setTamKy] = useState<{ tu: string; den: string }>({ tu: '', den: '' })
+  const [tamCn, setTamCn] = useState<string>('all')
+  const [tamLocRieng, setTamLocRieng] = useState<Record<string, string[]>>({})
+
   useEffect(() => {
     if (mo) {
       const kn = layKhoangNgayMobile(path, daXem?.ky)
@@ -158,7 +163,13 @@ export const MBaoCaoLoc: FC<MBaoCaoLocProps> = ({ mo, onDong, path, sc }) => {
         {/* Thân lọc */}
         <div className="m-loc-than">
           {/* Dòng Kỳ báo cáo */}
-          <div className="m-loc-dong" onClick={() => setTrangCon('ky')}>
+          <div
+            className="m-loc-dong"
+            onClick={() => {
+              setTamKy({ tu: draftTuNgay, den: draftDenNgay })
+              setTrangCon('ky')
+            }}
+          >
             <div className="m-loc-dong-trai">
               <span className="m-loc-dong-nhan">Kỳ báo cáo</span>
               <span className="m-loc-dong-tri">{tenKy}</span>
@@ -167,7 +178,13 @@ export const MBaoCaoLoc: FC<MBaoCaoLocProps> = ({ mo, onDong, path, sc }) => {
           </div>
 
           {/* Dòng Cửa hàng */}
-          <div className="m-loc-dong" onClick={() => setTrangCon('cn')}>
+          <div
+            className="m-loc-dong"
+            onClick={() => {
+              setTamCn(draftCn)
+              setTrangCon('cn')
+            }}
+          >
             <div className="m-loc-dong-trai">
               <span className="m-loc-dong-nhan">Cửa hàng</span>
               <span className="m-loc-dong-tri">{tenCn}</span>
@@ -177,7 +194,14 @@ export const MBaoCaoLoc: FC<MBaoCaoLocProps> = ({ mo, onDong, path, sc }) => {
 
           {/* Các dòng lọc riêng của báo cáo */}
           {dsLocRieng.map(l => (
-            <div key={l.k} className="m-loc-dong" onClick={() => setTrangCon(`rieng-${l.k}`)}>
+            <div
+              key={l.k}
+              className="m-loc-dong"
+              onClick={() => {
+                setTamLocRieng({ ...draftLoc })
+                setTrangCon(`rieng-${l.k}`)
+              }}
+            >
               <div className="m-loc-dong-trai">
                 <span className="m-loc-dong-nhan">{l.nhan}</span>
                 <span className="m-loc-dong-tri">{moTaLocRieng(l.k, l.nhan)}</span>
@@ -198,23 +222,43 @@ export const MBaoCaoLoc: FC<MBaoCaoLocProps> = ({ mo, onDong, path, sc }) => {
         </div>
       </div>
 
-      {/* Trang con chọn kỳ */}
+      {/* Lớp nền mờ khi bảng con bật lên đè lên bảng chính */}
+      {trangCon && (
+        <div
+          className="m-loc-con-overlay"
+          onClick={e => {
+            e.stopPropagation()
+            if (trangCon === 'ky') {
+              setDraftTuNgay(tamKy.tu)
+              setDraftDenNgay(tamKy.den)
+            } else if (trangCon === 'cn') {
+              setDraftCn(tamCn)
+            } else if (trangCon.startsWith('rieng-')) {
+              setDraftLoc(tamLocRieng)
+              setTimKiem('')
+            }
+            setTrangCon(null)
+          }}
+        />
+      )}
+
+      {/* Trang con chọn kỳ (cao 50% màn hình, đè lên bảng chính) */}
       {trangCon === 'ky' && (
         <div className="m-loc-trang-con" onClick={e => e.stopPropagation()}>
-          <div className="m-thanh-tren">
-            <div className="m-thanh-tren-trai">
-              <button
-                type="button"
-                className="m-nut-back"
-                onClick={() => setTrangCon(null)}
-                aria-label="Quay lại"
-              >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M19 12H5M12 19l-7-7 7-7" vectorEffect="non-scaling-stroke" />
-                </svg>
-              </button>
-            </div>
-            <h1 className="m-thanh-tren-tieu-de">Chọn kỳ báo cáo</h1>
+          <div className="m-loc-dau">
+            <h2 className="m-loc-tieu-de">Chọn kỳ báo cáo</h2>
+            <button
+              type="button"
+              className="m-loc-btn-dong"
+              onClick={() => {
+                setDraftTuNgay(tamKy.tu)
+                setDraftDenNgay(tamKy.den)
+                setTrangCon(null)
+              }}
+              aria-label="Đóng"
+            >
+              <Icon n="x" className="ic sm" />
+            </button>
           </div>
           <div className="m-loc-con-than">
             <div className="m-loc-the-nhan">Chọn nhanh</div>
@@ -244,7 +288,18 @@ export const MBaoCaoLoc: FC<MBaoCaoLocProps> = ({ mo, onDong, path, sc }) => {
           <div className="m-loc-day">
             <button
               type="button"
-              className="m-loc-btn-apply"
+              className="m-loc-btn-reset"
+              onClick={() => {
+                setDraftTuNgay(tamKy.tu)
+                setDraftDenNgay(tamKy.den)
+                setTrangCon(null)
+              }}
+            >
+              Huỷ
+            </button>
+            <button
+              type="button"
+              className="m-loc-btn-apply m-loc-con-btn-xong"
               onClick={() => setTrangCon(null)}
             >
               Xong
@@ -253,31 +308,27 @@ export const MBaoCaoLoc: FC<MBaoCaoLocProps> = ({ mo, onDong, path, sc }) => {
         </div>
       )}
 
-      {/* Trang con chọn cửa hàng */}
+      {/* Trang con chọn cửa hàng (cao 50% màn hình, đè lên bảng chính) */}
       {trangCon === 'cn' && (
         <div className="m-loc-trang-con" onClick={e => e.stopPropagation()}>
-          <div className="m-thanh-tren">
-            <div className="m-thanh-tren-trai">
-              <button
-                type="button"
-                className="m-nut-back"
-                onClick={() => setTrangCon(null)}
-                aria-label="Quay lại"
-              >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M19 12H5M12 19l-7-7 7-7" vectorEffect="non-scaling-stroke" />
-                </svg>
-              </button>
-            </div>
-            <h1 className="m-thanh-tren-tieu-de">Chọn cửa hàng</h1>
+          <div className="m-loc-dau">
+            <h2 className="m-loc-tieu-de">Chọn cửa hàng</h2>
+            <button
+              type="button"
+              className="m-loc-btn-dong"
+              onClick={() => {
+                setDraftCn(tamCn)
+                setTrangCon(null)
+              }}
+              aria-label="Đóng"
+            >
+              <Icon n="x" className="ic sm" />
+            </button>
           </div>
           <div className="m-loc-ds-muc" style={{ padding: '8px 16px' }}>
             <div
               className={`m-loc-muc-dong ${draftCn === 'all' ? 'on' : ''}`}
-              onClick={() => {
-                setDraftCn('all')
-                setTrangCon(null)
-              }}
+              onClick={() => setDraftCn('all')}
             >
               <span className="m-loc-muc-ten">Tất cả cửa hàng</span>
               {draftCn === 'all' && <Icon n="check" className="ic sm" />}
@@ -288,10 +339,7 @@ export const MBaoCaoLoc: FC<MBaoCaoLocProps> = ({ mo, onDong, path, sc }) => {
                 <div
                   key={c.id}
                   className={`m-loc-muc-dong ${chon ? 'on' : ''}`}
-                  onClick={() => {
-                    setDraftCn(c.id)
-                    setTrangCon(null)
-                  }}
+                  onClick={() => setDraftCn(c.id)}
                 >
                   <span className="m-loc-muc-ten">{c.ten}</span>
                   {chon && <Icon n="check" className="ic sm" />}
@@ -299,10 +347,30 @@ export const MBaoCaoLoc: FC<MBaoCaoLocProps> = ({ mo, onDong, path, sc }) => {
               )
             })}
           </div>
+
+          <div className="m-loc-day">
+            <button
+              type="button"
+              className="m-loc-btn-reset"
+              onClick={() => {
+                setDraftCn(tamCn)
+                setTrangCon(null)
+              }}
+            >
+              Huỷ
+            </button>
+            <button
+              type="button"
+              className="m-loc-btn-apply m-loc-con-btn-xong"
+              onClick={() => setTrangCon(null)}
+            >
+              Xong
+            </button>
+          </div>
         </div>
       )}
 
-      {/* Trang con lọc riêng */}
+      {/* Trang con lọc riêng (cao 50% màn hình, đè lên bảng chính) */}
       {trangCon?.startsWith('rieng-') && (() => {
         const k = trangCon.replace('rieng-', '')
         const item = dsLocRieng.find(x => x.k === k)
@@ -314,32 +382,29 @@ export const MBaoCaoLoc: FC<MBaoCaoLocProps> = ({ mo, onDong, path, sc }) => {
 
         return (
           <div className="m-loc-trang-con" onClick={e => e.stopPropagation()}>
-            <div className="m-thanh-tren">
-              <div className="m-thanh-tren-trai">
-                <button
-                  type="button"
-                  className="m-nut-back"
-                  onClick={() => {
-                    setTrangCon(null)
-                    setTimKiem('')
-                  }}
-                  aria-label="Quay lại"
-                >
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M19 12H5M12 19l-7-7 7-7" vectorEffect="non-scaling-stroke" />
-                  </svg>
-                </button>
-              </div>
-              <h1 className="m-thanh-tren-tieu-de">{item.nhan}</h1>
+            <div className="m-loc-dau">
+              <h2 className="m-loc-tieu-de">{item.nhan}</h2>
+              <button
+                type="button"
+                className="m-loc-btn-dong"
+                onClick={() => {
+                  setDraftLoc(tamLocRieng)
+                  setTrangCon(null)
+                  setTimKiem('')
+                }}
+                aria-label="Đóng"
+              >
+                <Icon n="x" className="ic sm" />
+              </button>
             </div>
 
             {dsMuc.length > 5 && (
-              <div style={{ padding: '8px 16px' }}>
+              <div style={{ padding: '8px 16px', flex: 'none' }}>
                 <div className="m-ds-tim">
                   <Icon n="search" className="m-ds-tim-ic ic sm" />
                   <input
                     type="text"
-                    className="m-ds-tim-inp"
+                    className="m-ds-tim-inp m-loc-tim-inp"
                     placeholder={`Tìm ${item.nhan.toLowerCase()}...`}
                     value={timKiem}
                     onChange={e => setTimKiem(e.target.value)}
@@ -371,6 +436,17 @@ export const MBaoCaoLoc: FC<MBaoCaoLocProps> = ({ mo, onDong, path, sc }) => {
             </div>
 
             <div className="m-loc-day">
+              <button
+                type="button"
+                className="m-loc-btn-reset"
+                onClick={() => {
+                  setDraftLoc(tamLocRieng)
+                  setTrangCon(null)
+                  setTimKiem('')
+                }}
+              >
+                Huỷ
+              </button>
               <button
                 type="button"
                 className="m-loc-btn-apply m-loc-con-btn-xong"

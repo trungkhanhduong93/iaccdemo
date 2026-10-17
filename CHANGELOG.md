@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 17/10/2026
 
+- T343: Điện thoại, báo cáo: bộ lọc bật lên cao 80% màn hình, chọn điều kiện bên trong thì bảng con cao 50% đè lên. Báo cáo chỉ còn dạng dòng. Ngày và số tổng của ngày to, đậm hơn. Bảng kê ghi tổng tiền từng ngày. Hàng chip dưới tiêu đề hiện thêm mọi điều kiện đang lọc.
 - T348: Icon trong khung báo, menu thả xuống, ô chọn cửa hàng, nút Mở khoá, Khoá sổ đổi sang dạng nét cho rõ.
 - T345: Báo cáo kiểm kê có thêm cột Tồn đầu, Nhập trong kỳ, Xuất trong kỳ, Tồn cuối hệ thống, Tồn cuối thực tế trước hai cột Thừa, Thiếu.
 - T342: Điện thoại, trang chủ gói Free: ô chọn năm bấm được, nút Tuỳ chỉnh thao tác nhanh mở được bảng chọn.

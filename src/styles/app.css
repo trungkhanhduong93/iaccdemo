@@ -23239,3 +23239,118 @@ button[class*="btn-"] .ic .l2 {
 .sel.m-tcf-sel-nam {
   width: 112px;
 }
+
+/* ── Báo cáo điện thoại: bộ lọc 80%, bảng con 50%, ngày đậm, chip điều kiện (T343) ── */
+
+/* 1. Bộ lọc báo cáo */
+.m-loc-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  background: rgba(0, 0, 0, 0.45) !important;
+  z-index: 200 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-end !important;
+}
+
+.m-loc-tam {
+  background: #fff !important;
+  border-radius: 16px 16px 0 0 !important;
+  height: 80vh !important;
+  max-height: 80vh !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  position: relative !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.m-loc-than {
+  flex: 1 !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+
+.m-loc-day {
+  flex: none !important;
+  display: flex !important;
+  gap: 10px !important;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px)) !important;
+  border-top: 1px solid var(--line, #e2e8f0) !important;
+  background: #fff !important;
+}
+
+/* Bảng lọc con: cao 50% màn hình, đè lên bảng chính */
+.m-loc-con-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  background: rgba(0, 0, 0, 0.25) !important;
+  z-index: 215 !important;
+}
+
+.m-loc-trang-con {
+  position: fixed !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  top: auto !important;
+  height: 50vh !important;
+  max-height: 50vh !important;
+  background: #fff !important;
+  border-radius: 16px 16px 0 0 !important;
+  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.25) !important;
+  z-index: 220 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  animation: m-truot-len 0.2s ease-out !important;
+  box-sizing: border-box !important;
+}
+
+.m-loc-con-than,
+.m-loc-ds-muc {
+  flex: 1 !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+
+/* 2. Ẩn nút Dạng dòng / Bảng ở mọi báo cáo điện thoại */
+.m-so-dong-kieu-wrap {
+  display: none !important;
+}
+
+/* 3. Dòng tiêu đề ngày to hơn (16px) và đậm (700), màu ink */
+.m-so-dong-ngay {
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  color: var(--ink, #1e293b) !important;
+}
+
+.m-so-dong-ngay-chu {
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  color: var(--ink, #1e293b) !important;
+}
+
+.m-so-dong-ngay-ton {
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  color: var(--ink, #1e293b) !important;
+}
+
+/* 5. Hàng chip cuộn ngang được khi nhiều chip */
+.m-sbc-loc-hang {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  overflow-x: auto !important;
+  white-space: nowrap !important;
+  flex-wrap: nowrap !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+
+.m-sbc-chip {
+  flex: none !important;
+  white-space: nowrap !important;
+}
