@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-"""Báo lên group Telegram. Robot .github/workflows/bao-telegram.yml gọi file này.
+"""Báo lên group Telegram. Robot .github/workflows/bao-telegram.yml và release.yml gọi file này.
 
 Push lên main: báo người push và các commit vừa đẩy.
+Phát hành tag: báo phát hành thành công hoặc hỏng kèm link.
 Robot deploy hỏng: báo commit nào làm hỏng và link xem lỗi.
 
 Dùng:
@@ -54,6 +55,36 @@ def tin_deploy_hong(su_kien):
     ])
 
 
+def tin_phat_hanh(su_kien):
+    ref = su_kien.get('ref', '')
+    phien_ban = ref.split('refs/tags/', 1)[1] if ref.startswith('refs/tags/') else ref
+    head_commit = su_kien.get('head_commit') or {}
+    sha = (head_commit.get('id') or su_kien.get('after') or '')[:7]
+    msg = dong_dau(head_commit.get('message', ''))
+    dong_commit = f'Commit <code>{escape(sha)}</code>' + (f' {escape(msg)}' if msg else '')
+    pusher = escape((su_kien.get('pusher') or {}).get('name') or '')
+    ket_qua = os.environ.get('KET_QUA', '')
+    link_chay = os.environ.get('LINK_CHAY', '')
+
+    if ket_qua == 'success':
+        dong = [
+            f'<b>Đã phát hành {escape(phien_ban)}</b> lên i-accounting.',
+            dong_commit,
+            f'Người phát hành: {pusher}',
+            '',
+            '<a href="https://i-accounting.pages.dev">Mở bản phát hành</a>',
+        ]
+    else:
+        dong = [
+            f'<b>Phát hành {escape(phien_ban)} hỏng.</b> Bản i-accounting vẫn là bản trước.',
+            dong_commit,
+            f'Người phát hành: {pusher}',
+            '',
+            f'<a href="{escape(link_chay)}">Xem lỗi</a>',
+        ]
+    return '\n'.join(dong)
+
+
 def gui(tin):
     token = os.environ.get('TELEGRAM_BOT_TOKEN', '')
     chat_id = os.environ.get('TELEGRAM_CHAT_ID', '')
@@ -92,7 +123,13 @@ def main():
         return 2
     with open(sys.argv[1], encoding='utf-8') as f:
         su_kien = json.load(f)
-    tin = tin_deploy_hong(su_kien) if 'workflow_run' in su_kien else tin_push(su_kien)
+    ref = su_kien.get('ref', '')
+    if 'workflow_run' in su_kien:
+        tin = tin_deploy_hong(su_kien)
+    elif ref.startswith('refs/tags/'):
+        tin = tin_phat_hanh(su_kien)
+    else:
+        tin = tin_push(su_kien)
     if not tin:
         print('Không có gì để báo.')
         return 0

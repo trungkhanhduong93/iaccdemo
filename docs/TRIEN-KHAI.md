@@ -29,6 +29,16 @@ Robot nằm ở `.github/workflows/deploy.yml`. Nó kiểm code rồi đưa bả
 
 Robot chỉ kiểm kiểu TypeScript và build. Nó không mở thử từng màn, nên lỗi trắng trang vẫn lọt lên online được. Vì vậy `AGENTS.md` bắt chạy `tools/kiem_tra.py --nhanh` trên máy trước khi push.
 
+## Bản phát hành i-accounting
+
+Robot nằm ở `.github/workflows/release.yml`. Nó chạy khi có tag mới dạng `v*` được push lên GitHub, đưa bản phát hành lên https://i-accounting.pages.dev.
+
+- Các bước: `npm ci`, `npm run typecheck`, `npm run build`, rồi `npx --yes wrangler@4 pages deploy dist --project-name i-accounting --branch main`.
+- Project Cloudflare `i-accounting` tạo ngày 17/10/2026 theo kiểu tải thẳng (direct upload), dùng chung token `CLOUDFLARE_API_TOKEN` và `CLOUDFLARE_ACCOUNT_ID` với iaccdemo.
+- Bước cuối luôn báo kết quả lên group Telegram kèm số phiên bản, cả khi thành công lẫn khi hỏng.
+- Quay bản cũ: làm giống mục "Quay bản online về bản trước" bên dưới, nhưng ở bước 1 chọn project **i-accounting** thay vì **iaccdemo**.
+- Cách phát hành phiên bản mới xem trong `AGENTS.md`, mục Release.
+
 ## Quay bản online về bản trước
 
 Chỉ Trum làm được, vì cần đăng nhập Cloudflare.
@@ -97,7 +107,11 @@ Deploy tay xong phải push đúng code đó lên `main`. Nếu không, lần pu
 
 ## Cloudflare và GitHub
 
-- Cloudflare Pages: project `iaccdemo`, kiểu tải thẳng (direct upload), không nối Git. Trang gắn `X-Robots-Tag: noindex` qua `public/_headers` để Google không lập chỉ mục. Ai có link vẫn xem được.
+- Cloudflare Pages: hai project kiểu tải thẳng (direct upload), không nối Git:
+  - `iaccdemo`: bản dev, cập nhật mỗi lần push lên `main`.
+  - `i-accounting`: bản phát hành, cập nhật khi push tag `v*`.
+- Cả hai trang gắn `X-Robots-Tag: noindex` qua `public/_headers` (dùng chung bản build) để Google không lập chỉ mục. Ai có link vẫn xem được.
+- Bẫy tạo project Cloudflare Pages mới: wrangler 4.151 khi tạo project Pages sẽ tự chuyển sang Workers, báo `No access`, rồi tự sửa `package.json`, `vite.config.ts`, `.gitignore` và thêm `wrangler.jsonc`. Muốn tạo project Pages mới phải chạy `wrangler pages project create <tên> --production-branch main --force` ở thư mục ngoài repo.
 - Không đụng các project khác cùng tài khoản: `iacccloud-present`, `iacc-present`, `iposivt-present`.
 - GitHub: repo riêng tư `trungkhanhduong93/iaccdemo`, gói Free. Gói này không khoá được nhánh `main`, nên ai có quyền ghi cũng push thẳng được, kể cả `push --force`. Luật cấm nằm trong `AGENTS.md`.
 

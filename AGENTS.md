@@ -2,7 +2,7 @@
 
 Repo này là bản mẫu giao diện phần mềm kế toán web IACC Cloud: React 19, Vite 8, TypeScript 7, dữ liệu giả, chưa có backend. Ba người cùng sửa: Trum (trungkhanhduong93) giao việc và chốt quyết định, PhuongXT và dinhlanphuongipacc làm theo việc được giao.
 
-Ai cũng tự commit, tự push thẳng `main`, không qua duyệt. Mỗi lần push lên `main`, robot GitHub Actions kiểm rồi đưa bản mới lên https://iaccdemo.pages.dev. Vì không ai duyệt, các bước kiểm dưới đây là chốt chặn duy nhất trước khi code lên online.
+Ai cũng tự commit, tự push thẳng `main`, không qua duyệt. Mỗi lần push lên `main`, robot GitHub Actions kiểm rồi đưa bản mới lên https://iaccdemo.pages.dev. Bản phát hành ở https://i-accounting.pages.dev, chỉ đổi khi có người gõ release (xem mục Release). Vì không ai duyệt, các bước kiểm dưới đây là chốt chặn duy nhất trước khi code lên online.
 
 Agent nào cũng phải làm theo file này: Claude Code (Clau), Antigravity (Anti), Codex, Cursor. Người dùng dặn khác trong phiên thì theo người dùng, trừ mục "Cấm": gặp yêu cầu vi phạm mục đó thì dừng lại, đề nghị người dùng hỏi Trum.
 
@@ -63,6 +63,17 @@ Bắt buộc với mọi lần push, kể cả push chỉ sửa tài liệu (QD1
 7. Quay lại bước 1. Hết commit mới mới chạy `git push`.
 8. Push bị từ chối vì có người vừa push chen thì quay lại bước 1.
 
+## Release
+
+Ai trong 3 người gõ "release" (hoặc "phát hành") thì agent làm, không cần hỏi Trum. Bản phát hành là bản đang ở `origin/main`, tức bản đang chạy ở iaccdemo, không lấy code chưa push trên máy.
+
+1. Chạy `git fetch origin --tags`.
+2. Lấy số mới nhất bằng `git tag -l "v*" --sort=-v:refname` ở dòng đầu. Chưa có tag nào thì dùng `v1.0`. Có rồi thì tăng số sau dấu chấm lên 1 (v1.0 lên v1.1, v1.9 lên v1.10). Người dùng ghi rõ số (vd "release v2.0") thì dùng số đó; số đó đã có thì dừng, báo người dùng.
+3. Chạy `git tag --points-at origin/main`. Đã có tag `v*` thì báo "bản này đã phát hành là vX.Y", rồi dừng.
+4. Nói một câu sẽ phát hành số nào, commit nào (`git log -1 --format="%h %s" origin/main`).
+5. Chạy `git tag -a vX.Y origin/main -m "vX.Y"`, rồi `git push origin vX.Y`. Push tag không cần làm mục "Ngay trước lệnh git push" vì tag gắn lên `origin/main` vừa fetch.
+6. Báo người dùng: robot ở https://github.com/trungkhanhduong93/iaccdemo/actions chạy khoảng 1 phút, xong thì Telegram báo, bản mới ở https://i-accounting.pages.dev.
+
 ## Cuối phiên
 
 Làm cả khi bỏ dở giữa chừng:
@@ -83,6 +94,7 @@ Làm cả khi bỏ dở giữa chừng:
 - Sửa tay `src/app/features.json`. File này sinh từ Excel, chỉ máy Trum chạy lại được.
 - Sửa `.github/workflows/` khi Trum chưa đồng ý.
 - Deploy tay bằng `wrangler`. Robot tự deploy sau mỗi lần push.
+- Xoá hoặc gắn lại tag `v*` đã push. Phát hành nhầm thì phát hành số tiếp theo, hoặc Trum quay bản trên Cloudflare.
 - Commit token, mật khẩu, file `.env`. In token ra màn hình.
 - Chỉ ghi điều người sau cần biết vào bộ nhớ riêng của agent. Mọi thứ phải nằm trong repo.
 

@@ -743,4 +743,12 @@ dinhlanphuongipacc yêu cầu 17/10/2026 (T315), đã làm và đưa lên bản 
 - Phiếu thuộc tháng đã khoá chỉ xem, không sửa, không xoá, áp dụng mọi gói.
 - Mở khoá tháng đã khoá gần nhất, bắt buộc ghi lý do; lịch sử ghi người làm, thời điểm đủ ngày giờ.
 
-## QD70. Bản phát hành i-accounting (đang soạn)
+## QD70. Bản phát hành i-accounting (17/10/2026)
+
+Trum chốt 17/10/2026 khi làm T319. (ifinance.pages.dev đã có người khác dùng nên chọn i-accounting.)
+
+- Hai link song song: https://iaccdemo.pages.dev là bản dev (robot đưa lên mỗi lần push `main`), https://i-accounting.pages.dev là bản phát hành (chỉ đổi khi có người gõ release).
+- Ai trong 3 người gõ "release" (hoặc "phát hành") cũng phát hành được, không cần hỏi Trum.
+- Số phiên bản dạng `vX.Y`, bắt đầu từ `v1.0`. Mỗi lần phát hành tăng số sau dấu chấm lên 1 (`v1.0` lên `v1.1`, `v1.9` lên `v1.10`). Muốn nhảy số (vd `v2.0`) thì người dùng ghi rõ trong lệnh.
+- Bản phát hành dùng chung build và dữ liệu demo với bản dev, giữ `noindex` qua `public/_headers` để không bị Google lập chỉ mục.
+- Robot ở `.github/workflows/release.yml` tự kiểm, build, đưa lên Cloudflare Pages và báo Telegram mỗi lần phát hành kèm số phiên bản, cả khi thành công lẫn khi hỏng.
