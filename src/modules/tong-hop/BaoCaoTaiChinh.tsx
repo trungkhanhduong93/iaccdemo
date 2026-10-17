@@ -7,7 +7,7 @@ import { tenMan } from '../../app/registry'
 import { useSession } from '../../app/session'
 import { kieuGhiSo, type Goi } from '../../app/plan'
 import type { CheDo } from '../../app/che-do'
-import { CUA_HANG, chiPhiThang, kqkd, tongKy } from '../../data/mock'
+import { CUA_HANG, chiPhiTheoLyDo, chiPhiThang, daysOf, kqkd, phanBoTheoLoai, tongKy } from '../../data/mock'
 import { Note, PageHead } from '../../ui/Page'
 import { KY_CHON, ReportPaper, ReportToolbar, RptTable } from '../../ui/generic/ReportScreen'
 import { pct } from '../../ui/format'
@@ -15,6 +15,7 @@ import { TEN_TK, du, soCai, tkTheoCheDo } from './so-cai'
 import { dongB01, dongB02 } from '../bao-cao/tt58'
 import type { Session } from '../../app/session'
 import { nvlKy } from '../home/chi-phi-nvl'
+import { chiaTheo, theoDon } from '../ban-hang/ChungTuBanHang'
 
 const kyTen = (ky: string) => KY_CHON.find(x => x[0] === ky)![1]
 const truoc = (ky: string) => String(Math.max(8, Number(ky) - 1))
@@ -31,6 +32,17 @@ function Khung({ sc, mod, children, note }: ScreenProps & { children: (ky: strin
 }
 
 // ── Báo cáo kết quả kinh doanh ──
+/** Doanh thu thuần theo kênh bán của hoá đơn FABi (Xuất bán POS) trong tháng; chia giảm trừ theo tỷ trọng kênh để cộng lại đúng doanh thu thuần (T318) */
+function dtTheoKenh(thang: number, dtThuan: number): [string, number][] {
+  const m = new Map<string, number>()
+  for (const x of daysOf(thang, 2026).flatMap(theoDon)) m.set(x.kenh, (m.get(x.kenh) ?? 0) + x.dt)
+  const ds = [...m].sort((a, b) => b[1] - a[1])
+  const v = chiaTheo(dtThuan, ds.map(x => x[1]))
+  return ds.map(([ten], i) => [ten, v[i]])
+}
+/** Dòng con của báo cáo gói Free: thụt vào dưới dòng tổng, khoá _k riêng để ghép cột kỳ trước (T318) */
+const dongCon = (cha: string, ds: [string, number][], drill: string) => ds.map(([ct, v]) => ({ ct, v, _con: 1, _k: `${cha}/${ct}`, _drill: drill }))
+
 function dongKqkd(cd: CheDo, thang: number, goi?: Goi, s?: Session) {
   const q = kqkd(thang, 2026)
   // Gói Free (T220): Giá vốn ghi Chi phí NVL; chi phí phân bổ hàng tháng (phân bổ CCDC, khấu hao) tách khỏi chi phí trong tháng;
@@ -38,12 +50,17 @@ function dongKqkd(cd: CheDo, thang: number, goi?: Goi, s?: Session) {
   if (goi === 'F' && cd === 'TT152') {
     const pb = q.cp.ccdc + q.cp.khauHao
     const cpThang = q.cpQlkd + q.cpTc - q.dtTc - pb
+    // T318: dạng chi tiết, mỗi kênh bán, lý do chi, loại phân bổ một dòng con; dòng con không phát sinh ẩn ở KetQuaKinhDoanh
     // Chi phí NVL cộng từng cửa hàng theo cách tính của cửa hàng (T232); chưa có phiên thì theo giá vốn
     const nvl = s ? nvlKy(s, [], thang).tien : q.gv
     const lnGop = q.dtThuan - nvl
     return [
-      { ct: 'Doanh thu bán hàng', v: q.dtThuan, _b: 1, _drill: '/app/ban-hang/3-2-5' }, { ct: 'Chi phí NVL', v: nvl, _drill: `/app/trang-chu/chi-phi-nvl?thang=${thang}` },
-      { ct: 'Lãi gộp', v: lnGop, _b: 1 }, { ct: 'Chi phí trong tháng', v: cpThang }, { ct: 'Chi phí phân bổ hàng tháng', v: pb },
+      { ct: 'Doanh thu bán hàng', v: q.dtThuan, _b: 1, _drill: '/app/ban-hang/3-2-5' },
+      ...dongCon('dt', dtTheoKenh(thang, q.dtThuan), '/app/ban-hang/3-1-1'),
+      { ct: 'Chi phí NVL', v: nvl, _b: 1, _drill: `/app/trang-chu/chi-phi-nvl?thang=${thang}` },
+      { ct: 'Lãi gộp', v: lnGop, _b: 1 },
+      { ct: 'Chi phí trong tháng', v: cpThang, _b: 1 }, ...dongCon('cp', chiPhiTheoLyDo(thang, 2026), '/app/tien/2-1-1'),
+      { ct: 'Chi phí phân bổ hàng tháng', v: pb, _b: 1 }, ...dongCon('pb', phanBoTheoLoai(thang, 2026), '/app/ccdc/8-1-1'),
       { ct: 'Lợi nhuận trước thuế', v: lnGop - cpThang - pb, _t: 1 },
     ]
   }
@@ -74,7 +91,7 @@ export function KetQuaKinhDoanh(p: ScreenProps) {
   const nav = useNavigate()
   return (
     <Khung {...p} note={<Note icon="info">{s.goi === 'F' && s.cheDo === 'TT152'
-      ? 'Bấm dòng doanh thu hoặc chi phí NVL để xem số chi tiết. Lợi nhuận chưa tính thu nhập, chi phí khác.'
+      ? 'Doanh thu chia theo kênh bán, chi phí trong tháng theo lý do chi, chi phí phân bổ theo loại; khoản không phát sinh thì không hiện. Bấm từng dòng để xem chứng từ. Lợi nhuận chưa tính thu nhập, chi phí khác.'
       : 'Bấm dòng doanh thu hoặc giá vốn để xem số chi tiết. Số khớp Tổng quan, báo cáo doanh thu, bảng cân đối số phát sinh.'}</Note>}>
       {ky => {
         if (s.cheDo === 'TT58') {
@@ -91,12 +108,16 @@ export function KetQuaKinhDoanh(p: ScreenProps) {
             </ReportPaper>
           )
         }
-        const nay = dongKqkd(s.cheDo, Number(ky), s.goi, s), cu = dongKqkd(s.cheDo, Number(truoc(ky)), s.goi, s)
+        const nay: Row[] = dongKqkd(s.cheDo, Number(ky), s.goi, s), cu: Row[] = dongKqkd(s.cheDo, Number(truoc(ky)), s.goi, s)
         const ma = kieuGhiSo(s.cheDo) === 'noco'
-        const cols: Col[] = [{ k: 'ct', t: 'Chỉ tiêu' }, ...(ma ? [{ k: 'ma', t: 'Mã số', c: true, w: 70 } as Col] : []), { k: 'v', t: kyTen(ky).replace(' (đến 07/10)', ''), num: true }, { k: 'cu', t: kyTen(truoc(ky)), num: true }]
+        // Ghép cột kỳ trước theo khoá dòng (T318: dòng con mỗi kỳ có thể khác nhau); dòng con cả hai kỳ không phát sinh thì ẩn
+        const khoa = (x: Row) => x._k ?? x.ct
+        const cuTheo = new Map(cu.map(x => [khoa(x), x.v]))
+        const rows = nay.map((x): Row => ({ ...x, cu: cuTheo.get(khoa(x)) })).filter(x => !x._con || x.v || x.cu)
+        const cols: Col[] = [{ k: 'ct', t: 'Chỉ tiêu', r: x => x._con ? <span className="kqkd-con">{x.ct}</span> : x.ct }, ...(ma ? [{ k: 'ma', t: 'Mã số', c: true, w: 70 } as Col] : []), { k: 'v', t: kyTen(ky).replace(' (đến 07/10)', ''), num: true }, { k: 'cu', t: kyTen(truoc(ky)), num: true }]
         return (
           <ReportPaper title="Báo cáo kết quả hoạt động kinh doanh" sub={`${kyTen(ky)}${s.cheDo === 'TT152' ? ' · Bản đơn giản, chưa theo chế độ kế toán' : ''}`}>
-            <RptTable cols={cols} rows={nay.map((x, i) => ({ ...x, cu: cu[i]?.v }))} onRow={x => nav(x._drill)} />
+            <RptTable cols={cols} rows={rows} onRow={x => nav(x._drill)} />
           </ReportPaper>
         )
       }}

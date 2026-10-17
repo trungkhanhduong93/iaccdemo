@@ -301,6 +301,29 @@ export function kqkd(thang: number, nam: number) {
     lnThuan, tnKhac, cpKhac, lnKhac: tnKhac - cpKhac, lnTruocThue, thue, lnSauThue: lnTruocThue - thue, cp, t }
 }
 
+/** Chi phí trong tháng gói Free theo lý do chi (T318): cộng lại đúng chi phí hoạt động trừ phân bổ của kqkd().
+ *  Điện nước chia tiền điện, tiền nước; chi khác chia theo tỷ lệ mẫu; Chi phí khác nhận phần còn lại (gas, chi lẻ, trừ thu lãi tiền gửi) */
+export function chiPhiTheoLyDo(thang: number, nam: number): [string, number][] {
+  const q = kqkd(thang, nam), cp = q.cp
+  const tong = q.cpQlkd + q.cpTc - q.dtTc - cp.ccdc - cp.khauHao
+  const khac = (ty: number) => k(cp.khac * ty)
+  const ds: [string, number][] = [
+    ['Thanh toán tiền lương', cp.luong], ['Chi tiền thuê nhà', cp.matBang],
+    ['Thanh toán tiền điện', k(cp.dienNuoc * 0.55)], ['Thanh toán tiền nước', k(cp.dienNuoc * 0.15)],
+    ['Chi tiền quảng cáo, marketing', khac(0.28)], ['Chi phí sửa chữa', khac(0.14)], ['Chi phí vận chuyển', khac(0.09)], ['Chi phí giặt là', khac(0.07)],
+    ['Thanh toán tiền internet', khac(0.05)], ['Chi tiền tiếp khách', khac(0.05)], ['Thanh toán tiền điện thoại', khac(0.04)], ['Phí an ninh', khac(0.04)],
+    ['Chi phí đồng phục nhân viên', khac(0.03)], ['Phí ngân hàng', khac(0.02)], ['Chi mua đồ thắp hương', khac(0.01)], ['Trả lãi vay', q.cpTc],
+  ]
+  return [...ds, ['Chi phí khác', tong - ds.reduce((a, x) => a + x[1], 0)]]
+}
+
+/** Chi phí phân bổ hàng tháng gói Free theo loại thẻ (T318): cộng lại đúng phân bổ CCDC cộng khấu hao của chiPhiThang() */
+export function phanBoTheoLoai(thang: number, nam: number): [string, number][] {
+  const cp = chiPhiThang(thang, nam)
+  const traTruoc = k(cp.ccdc * 0.6)
+  return [['Chi phí trả trước', traTruoc], ['Công cụ dụng cụ', cp.ccdc - traTruoc], ['Tài sản cố định', cp.khauHao]]
+}
+
 /** Số chứng từ Xuất bán POS lấy số hoá đơn FABi (T104): 12 ký tự chữ, số viết hoa, cố định theo cửa hàng và ngày, vd K7QX2PM9WZ4D */
 export const soBH = (x: Ngay) => {
   const r = rng(`fabi-${x.cn}-${x.date.getFullYear()}-${x.date.getMonth()}-${x.date.getDate()}`)

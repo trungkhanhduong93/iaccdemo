@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 17/10/2026
 
+- T318: Báo cáo kết quả kinh doanh gói Free dạng chi tiết: Doanh thu bán hàng chia từng kênh bán (Tại quán, Mang về, App giao đồ ăn), Chi phí trong tháng chia từng lý do chi, Chi phí phân bổ hàng tháng chia Chi phí trả trước, Công cụ dụng cụ, Tài sản cố định. Khoản không phát sinh thì không hiện. Bấm từng dòng mở chứng từ. Tổng không đổi.
 - T311: Điện thoại, màn Nghiệp vụ làm lại: khối Lập nhanh (Phiếu thu, Phiếu chi, Bán hàng, Mua hàng), mỗi phân hệ một thẻ kèm chip mở thẳng màn hay dùng.
 - T312, T313: Điện thoại, báo cáo: chip Thời gian, Kho/CN chỉ hiện điều kiện đang lọc, đổi điều kiện qua nút lọc góc phải. Bộ lọc chọn Tháng này, Tháng trước hoặc Từ ngày, Đến ngày bằng bảng chọn ngày của máy.
 - T310: Web và điện thoại: nâng các icon còn nhỏ lên cỡ chuẩn, web tối thiểu 16px, điện thoại tối thiểu 20px.

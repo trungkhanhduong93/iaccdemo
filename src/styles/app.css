@@ -22448,3 +22448,6 @@ button[class*="btn-"] .ic .l2 {
   flex-direction: column;
   gap: 4px;
 }
+
+/* ── Báo cáo kết quả kinh doanh gói Free dạng chi tiết (T318) ── */
+.kqkd-con { display: block; padding-left: 20px; color: var(--muted); }
