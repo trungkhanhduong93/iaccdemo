@@ -8,7 +8,8 @@ import { kieuGhiSo } from '../../app/plan'
 import { CUA_HANG } from '../../data/mock'
 import { soQuyCn } from '../../modules/tien/SoQuy'
 import { dsTkTheoCheDo } from '../../modules/tong-hop/so-cai'
-import { CAU_HINH_BC, tenQuyTm } from '../../modules/bao-cao/danh-sach'
+import { CAU_HINH_BC, kyHieuBC, tenBC, tenQuyTm } from '../../modules/bao-cao/danh-sach'
+import { layNguonXuat, xuatFile, type NguonXuat } from '../bao-cao/xuat'
 import { fold, money, rutGonSo } from '../format'
 import { Icon } from '../Icon'
 import { duongPhieu } from '../generic/SoChungTu'
@@ -43,7 +44,20 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
   const khuon = layKhuonDong(sc)
   const isSoApDung = isSoCu || Boolean(khuon)
 
-  const kieuXem = isSoApDung ? 'dong' : 'bang'   // điện thoại chỉ xem dạng dòng, báo cáo chưa có dạng dòng thì hiện bảng (T343)
+  // Điểm 18: Các báo cáo ưu tiên dạng BẢNG trên điện thoại:
+  // (a) Báo cáo thuộc nhóm kinh doanh: 3.2.1, 3.2.2, 3.2.3, 3.2.4, 3.2.5
+  // (b) Mọi sổ, báo cáo TT152 (-HKD): 3.2.5, 10.4.1, 5.2.8, 2.2.7
+  // (c) Báo cáo nhiều cột số: 3.2.7, 4.2.2, 4.2.7
+  const maBcStr = String(sc.code ?? sc.slug ?? '').replace(/-/g, '.')
+  const kyHieuStr = kyHieuBC(sc.code, s.cheDo, s) ?? ''
+  const isHkdMau = s.cheDo === 'TT152' && kyHieuStr.endsWith('-HKD')
+  const isBcKd = maBcStr.startsWith('3.2.1') || maBcStr.startsWith('3.2.2') || maBcStr.startsWith('3.2.3') || maBcStr.startsWith('3.2.4') || maBcStr.startsWith('3.2.5')
+  const isNhieuCotSo = maBcStr === '3.2.7' || maBcStr === '4.2.2' || maBcStr === '4.2.7'
+  const isUuTienBang = isHkdMau || isBcKd || isNhieuCotSo
+
+  const [kieuXemState, setKieuXemState] = useState<'dong' | 'bang' | null>(null)
+  const kieuXem = kieuXemState ?? (isUuTienBang ? 'bang' : (isSoApDung ? 'dong' : 'bang'))
+  const [xoayNgang, setXoayNgang] = useState(false)
 
   const cfg: ReportCfg = sc.report ?? (isSoQuy ? { kieu: 'so', theoCn: true } : { kieu: 'tonghop', doiTuong: 'tk' })
 
@@ -261,8 +275,50 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
     return res
   }, [loc, nhanDieuKien])
 
+  const xuatExcel = async () => {
+    try {
+      const n: NguonXuat = layNguonXuat() ?? {
+        ma: sc.code,
+        tieuDe: tenBC(sc.code, s.cheDo, s) || sc.ten || 'Báo cáo',
+        phu: tenKy,
+        cheDo: s.cheDo,
+        dv: { ten: 'Đơn vị', diaChi: '', mst: '' },
+        kho: 'doc',
+        bang: [{ cols: rawCols, rows: rawRows }],
+        ky: [],
+        ngayLap: '',
+        layHtml: () => '',
+      }
+      await xuatFile('xlsx', n)
+    } catch {
+      // ignore
+    }
+  }
+
+  const toggleXoay = async () => {
+    const moi = !xoayNgang
+    setXoayNgang(moi)
+    try {
+      if (moi) {
+        if (document.documentElement.requestFullscreen && screen.orientation && 'lock' in screen.orientation) {
+          await document.documentElement.requestFullscreen()
+          await (screen.orientation as any).lock('landscape')
+        }
+      } else {
+        if (document.exitFullscreen) {
+          await document.exitFullscreen()
+        }
+        if (screen.orientation && 'unlock' in screen.orientation) {
+          (screen.orientation as any).unlock()
+        }
+      }
+    } catch {
+      // CSS xoay-ngang will handle it
+    }
+  }
+
   return (
-    <div className="m-so-bc">
+    <div className={`m-so-bc ${xoayNgang ? 'xoay-ngang' : ''}`}>
       {/* Hàng chip lọc: chip kỳ, chip cửa hàng và các điều kiện lọc riêng (T343) */}
       <div className="m-sbc-loc-hang">
         <span className="m-sbc-chip m-sbc-chip-tinh">
@@ -284,14 +340,14 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
         ))}
       </div>
 
-      {/* Ô tìm kiếm dòng: "Nhập mã, tên" */}
+      {/* Ô tìm kiếm dòng & nút Excel, Xoay (Điểm 18) */}
       <div className="m-sbc-tim-hang">
         <div className="m-ds-tim">
           <Icon n="search" className="m-ds-tim-ic ic sm" />
           <input
             type="text"
             className="m-ds-tim-inp"
-            placeholder="Nhập mã, tên"
+            placeholder={kieuXem === 'bang' ? 'Nhập từ khoá' : 'Nhập mã, tên'}
             value={q}
             onChange={e => setQ(e.target.value)}
             aria-label="Tìm kiếm trong bảng"
@@ -307,6 +363,35 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
             </button>
           )}
         </div>
+        {kieuXem === 'bang' && (
+          <div className="m-sbc-tac-vu">
+            <button
+              type="button"
+              className="m-sbc-btn-icon m-sbc-btn-excel"
+              onClick={xuatExcel}
+              title="Tải file Excel"
+              aria-label="Tải file Excel"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <rect x="2" y="2" width="20" height="20" rx="3.5" fill="#107C41" />
+                <path d="M7.5 7.5L16.5 16.5M16.5 7.5L7.5 16.5" stroke="white" strokeWidth="2.2" strokeLinecap="round" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              className="m-sbc-btn-icon m-sbc-btn-xoay"
+              onClick={toggleXoay}
+              title={xoayNgang ? 'Xem dọc' : 'Xoay ngang'}
+              aria-label="Xoay màn hình"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="5.5" y="4" width="13" height="16" rx="2" transform="rotate(-15 12 12)" />
+                <path d="M8 2.5C10 1.5 13 1.5 15.5 2.5" />
+                <path d="M15 1.5L16.5 2.5L15 4" />
+              </svg>
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Nội dung báo cáo: Dạng dòng hoặc Bảng cuộn ngang */}

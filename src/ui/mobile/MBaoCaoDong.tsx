@@ -74,27 +74,30 @@ export const BANG_TONG_KHUON_3: Record<string, [ChiTieuTongKhuon3, ChiTieuTongKh
       },
     },
   ],
-  // 10.2.3: Doanh thu thuần, Lợi nhuận gộp, Lợi nhuận trước thuế
+  // 10.2.3: Doanh thu thuần, Lợi nhuận gộp, Lợi nhuận trước thuế (Điểm 3)
   '10.2.3': [
     {
       nhan: 'Doanh thu thuần',
       khop: r => {
+        const ma = String(r.ma || '')
         const t = String(r.ct || r.chiTieu || r.ten || r.dg || '')
-        return t.includes('Doanh thu')
+        return ma === '10' || t.includes('Doanh thu thuần')
       },
     },
     {
       nhan: 'LN gộp',
       khop: r => {
+        const ma = String(r.ma || '')
         const t = String(r.ct || r.chiTieu || r.ten || r.dg || '')
-        return t.includes('Lãi gộp') || t.includes('Lợi nhuận gộp')
+        return ma === '20' || t.includes('Lợi nhuận gộp') || t.includes('Lãi gộp')
       },
     },
     {
       nhan: 'LN trước thuế',
       khop: r => {
+        const ma = String(r.ma || '')
         const t = String(r.ct || r.chiTieu || r.ten || r.dg || '')
-        return t.includes('trước thuế')
+        return ma === '50' || t.includes('trước thuế')
       },
     },
   ],
@@ -298,41 +301,73 @@ const Khuon2TongHopDoiTuong: FC<{ rows: Row[]; q?: string }> = ({ rows, q = '' }
   const rTong = rows.find(r => r._t === 1)
   const dsDoiTuong = useMemo(() => rows.filter(r => !r._t && !r._b && !r._con), [rows])   // bỏ dòng cửa hàng con của 4.2.3 (T308)
 
+
+  // Tính các ô tóm tắt đầu danh sách (Điểm 19: tách thành 4 ô khi có cả phát sinh tăng và giảm)
+  const cacOTong = useMemo(() => {
+    if (!rTong) return []
+    // 1. Trường hợp Xuất Nhập Tồn: Đầu kỳ, Nhập, Xuất, Cuối kỳ
+    if (rTong.gtn !== undefined || rTong.gtx !== undefined) {
+      return [
+        { nhan: 'Đầu kỳ', val: Number(rTong.gt0 ?? rTong.dau ?? 0) },
+        { nhan: 'Nhập', val: Number(rTong.gtn ?? 0) },
+        { nhan: 'Xuất', val: Number(rTong.gtx ?? 0) },
+        { nhan: 'Cuối kỳ', val: Number(rTong.gt1 ?? rTong.cuoi ?? 0) },
+      ]
+    }
+    // 2. Trường hợp Tiền / Thu Chi: Đầu kỳ, Thu, Chi, Cuối kỳ
+    if (rTong.thu !== undefined && rTong.chi !== undefined) {
+      return [
+        { nhan: 'Đầu kỳ', val: Number(rTong.dau ?? 0) },
+        { nhan: 'Thu', val: Number(rTong.thu ?? 0) },
+        { nhan: 'Chi', val: Number(rTong.chi ?? 0) },
+        { nhan: 'Cuối kỳ', val: Number(rTong.cuoi ?? 0) },
+      ]
+    }
+    // 3. Trường hợp Công nợ / CCDC / TSCĐ có cả nợ và có / phát sinh và thanh toán
+    const coTangGiam = (rTong.psNo !== undefined && rTong.psCo !== undefined) ||
+      ((rTong.ps !== undefined || rTong.tienHang !== undefined) && (rTong.tra !== undefined || rTong.tt !== undefined))
+    if (coTangGiam) {
+      const vTang = Number(rTong.psNo ?? rTong.ps ?? rTong.tienHang ?? 0)
+      const vGiam = Number(rTong.psCo ?? rTong.tra ?? rTong.tt ?? 0)
+      return [
+        { nhan: 'Đầu kỳ', val: Number(rTong.dau ?? 0) },
+        { nhan: rTong.psNo !== undefined ? 'Phát sinh Nợ' : 'Mua nợ/Tăng', val: vTang },
+        { nhan: rTong.psCo !== undefined ? 'Phát sinh Có' : 'Đã trả/Giảm', val: vGiam },
+        { nhan: 'Cuối kỳ', val: Number(rTong.cuoi ?? 0) },
+      ]
+    }
+
+    // Mặc định 3 ô nếu không có tăng/giảm tách biệt
+    return [
+      {
+        nhan: rTong.dau !== undefined || rTong.gt0 !== undefined ? 'Đầu kỳ' : 'Số đối tượng',
+        val: rTong.dau !== undefined || rTong.gt0 !== undefined ? Number(rTong.dau ?? rTong.gt0 ?? 0) : dsDoiTuong.length,
+        laSoDem: rTong.dau === undefined && rTong.gt0 === undefined,
+      },
+      {
+        nhan: rTong.thu !== undefined || rTong.gtn !== undefined || rTong.psNo !== undefined ? 'Tăng / Nhập' : 'Tiền hàng / PS',
+        val: Number(rTong.thu ?? rTong.gtn ?? rTong.psNo ?? rTong.tienHang ?? rTong.ps ?? 0),
+      },
+      {
+        nhan: rTong.cuoi !== undefined || rTong.gt1 !== undefined ? 'Cuối kỳ' : 'Tổng cộng',
+        val: Number(rTong.cuoi ?? rTong.gt1 ?? rTong.tong ?? rTong.tien ?? rTong.dtThuan ?? 0),
+      },
+    ]
+  }, [rTong, dsDoiTuong.length])
+
   return (
     <div className="m-bcd-khuon2">
-      {/* Dòng tổng 3 ô đầu danh sách */}
+      {/* Dòng tổng đầu danh sách (Điểm 19) */}
       {rTong && (
-        <div className="m-so-dong-tong">
-          <div className="m-so-dong-tong-o">
-            <span className="m-so-dong-tong-nhan">
-              {rTong.dau !== undefined || rTong.gt0 !== undefined ? 'Đầu kỳ' : 'Số đối tượng'}
-            </span>
-            <b className="m-so-dong-tong-so m-so-dong-num">
-              {rTong.dau !== undefined || rTong.gt0 !== undefined
-                ? rutGonSo(Number(rTong.dau ?? rTong.gt0 ?? 0))
-                : `${dsDoiTuong.length}`}
-            </b>
-          </div>
-          <div className="m-so-dong-tong-o">
-            <span className="m-so-dong-tong-nhan">
-              {rTong.thu !== undefined || rTong.gtn !== undefined || rTong.psNo !== undefined
-                ? 'Tăng / Nhập'
-                : 'Tiền hàng / PS'}
-            </span>
-            <b className="m-so-dong-tong-so m-so-dong-num">
-              {rutGonSo(Number(rTong.thu ?? rTong.gtn ?? rTong.psNo ?? rTong.tienHang ?? rTong.ps ?? 0))}
-            </b>
-          </div>
-          <div className="m-so-dong-tong-o">
-            <span className="m-so-dong-tong-nhan">
-              {rTong.cuoi !== undefined || rTong.gt1 !== undefined
-                ? 'Cuối kỳ'
-                : 'Tổng cộng'}
-            </span>
-            <b className="m-so-dong-tong-so m-so-dong-num">
-              {rutGonSo(Number(rTong.cuoi ?? rTong.gt1 ?? rTong.tong ?? rTong.tien ?? rTong.dtThuan ?? 0))}
-            </b>
-          </div>
+        <div className={`m-so-dong-tong ${cacOTong.length === 4 ? 'bon-o' : ''}`}>
+          {cacOTong.map((o, idx) => (
+            <div key={idx} className="m-so-dong-tong-o">
+              <span className="m-so-dong-tong-nhan">{o.nhan}</span>
+              <b className="m-so-dong-tong-so m-so-dong-num">
+                {o.laSoDem ? `${o.val}` : rutGonSo(o.val)}
+              </b>
+            </div>
+          ))}
         </div>
       )}
 
@@ -460,6 +495,39 @@ const Khuon3ChiTieuPhanCap: FC<{ maBc?: string; rows: Row[]; q?: string }> = ({ 
     return rows.filter(r => layTen(r).toLowerCase().includes(qFold))
   }, [rows, q])
 
+  const is1023 = Boolean(
+    maBc === '10.2.3' ||
+    maBc === '10-2-3' ||
+    maBc?.includes('10.2.3') ||
+    maBc?.includes('10-2-3')
+  )
+
+  const cacNhom = useMemo(() => {
+    if (!is1023) {
+      return [{ tieuDe: '', rows: dsHienThi }]
+    }
+    const dinhNghia = [
+      { tieuDe: 'Doanh thu & Lợi nhuận gộp', mas: ['01', '02', '03', '10', '11', '20'] },
+      { tieuDe: 'Hoạt động kinh doanh', mas: ['21', '22', '23', '24', '25', '26', '30'] },
+      { tieuDe: 'Hoạt động khác', mas: ['31', '32', '40'] },
+      { tieuDe: 'Kết quả kinh doanh & Thuế', mas: ['50', '51', '52', '60'] },
+    ]
+    const ketQua: { tieuDe: string; rows: Row[] }[] = []
+    const daChon = new Set<Row>()
+    for (const d of dinhNghia) {
+      const rs = dsHienThi.filter(r => d.mas.includes(String(r.ma || '')))
+      if (rs.length > 0) {
+        rs.forEach(r => daChon.add(r))
+        ketQua.push({ tieuDe: d.tieuDe, rows: rs })
+      }
+    }
+    const conLai = dsHienThi.filter(r => !daChon.has(r))
+    if (conLai.length > 0) {
+      ketQua.push({ tieuDe: ketQua.length ? 'Chỉ tiêu khác' : '', rows: conLai })
+    }
+    return ketQua.length > 0 ? ketQua : [{ tieuDe: '', rows: dsHienThi }]
+  }, [dsHienThi, is1023])
+
   return (
     <div className="m-bcd-khuon3">
       {/* Dòng tổng 3 ô đầu danh sách */}
@@ -486,37 +554,51 @@ const Khuon3ChiTieuPhanCap: FC<{ maBc?: string; rows: Row[]; q?: string }> = ({ 
           {q.trim() ? 'Không tìm thấy chỉ tiêu phù hợp' : 'Không có dữ liệu trong kỳ'}
         </div>
       ) : (
-        <div className="m-bcd-ct-ds">
-          {dsHienThi.map((r, i) => {
-            const ten = layTen(r)
-            const ma = String(r.ma || '')
-            const isDam = Boolean(r._b || r._t)
-            const isNghieng = Boolean(r._i)
-            const vNay = laySoNay(r)
-            const vTruoc = laySoTruoc(r)
+        <div className="m-bcd-ct-danh-sach">
+          {cacNhom.map((nhom, idxNhom) => (
+            <div key={idxNhom} className="m-bcd-ct-the">
+              {nhom.tieuDe && (
+                <div className="m-bcd-ct-nhom-tieu">{nhom.tieuDe}</div>
+              )}
+              {nhom.rows.map((r, i) => {
+                const ten = layTen(r)
+                const ma = String(r.ma || '')
+                const isDam = Boolean(r._b || r._t)
+                const isNghieng = Boolean(r._i)
+                const vNay = laySoNay(r)
+                const vTruoc = laySoTruoc(r)
 
-            return (
-              <div
-                key={i}
-                className={`m-bcd-ct-dong m-bcd-item ${isDam ? 'dam' : ''} ${isNghieng ? 'thut' : ''}`}
-              >
-                <div className="m-bcd-ct-trai">
-                  {ma && <span className="m-bcd-ct-ma">{ma}</span>}
-                  <span className="m-bcd-ct-ten">{ten}</span>
-                </div>
-                <div className="m-bcd-ct-phai">
-                  <div className={`m-bcd-ct-so ${vNay < 0 ? 'm-so-dong-am' : ''}`}>
-                    {money(vNay)}
-                  </div>
-                  {vTruoc !== undefined && (
-                    <div className="m-bcd-ct-truoc">
-                      Kỳ trước: {money(vTruoc)}
+                const isLoiNhuan = isDam && (ten.includes('Lợi nhuận') || ten.includes('Lãi') || ten.includes('Doanh thu'))
+                const lopMau = vNay < 0
+                  ? 'm-so-dong-am'
+                  : isLoiNhuan && vNay > 0
+                  ? 'm-so-dong-duong'
+                  : ''
+
+                return (
+                  <div
+                    key={i}
+                    className={`m-bcd-ct-dong m-bcd-item ${isDam ? 'dam' : ''} ${isNghieng ? 'thut' : ''}`}
+                  >
+                    <div className="m-bcd-ct-trai">
+                      {ma && <span className="m-bcd-ct-ma">{ma}</span>}
+                      <span className="m-bcd-ct-ten">{ten}</span>
                     </div>
-                  )}
-                </div>
-              </div>
-            )
-          })}
+                    <div className="m-bcd-ct-phai">
+                      <div className={`m-bcd-ct-so ${lopMau}`}>
+                        {money(vNay)}
+                      </div>
+                      {vTruoc !== undefined && (
+                        <div className="m-bcd-ct-truoc">
+                          Kỳ trước: {money(vTruoc)}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          ))}
         </div>
       )}
     </div>

@@ -18,7 +18,7 @@ import { nvlKy } from '../home/chi-phi-nvl'
 import { chiaTheo, theoDon } from '../ban-hang/ChungTuBanHang'
 
 const kyTen = (ky: string) => KY_CHON.find(x => x[0] === ky)![1]
-const truoc = (ky: string) => String(Math.max(8, Number(ky) - 1))
+export const truoc = (ky: string) => String(Math.max(8, Number(ky) - 1))
 
 function Khung({ sc, mod, children, note }: ScreenProps & { children: (ky: string) => ReactNode; note?: ReactNode }) {
   const [ky, setKy] = useState('9')
@@ -43,7 +43,7 @@ function dtTheoKenh(thang: number, dtThuan: number): [string, number][] {
 /** Dòng con của báo cáo gói Free: thụt vào dưới dòng tổng, khoá _k riêng để ghép cột kỳ trước (T318) */
 const dongCon = (cha: string, ds: [string, number][], drill: string) => ds.map(([ct, v]) => ({ ct, v, _con: 1, _k: `${cha}/${ct}`, _drill: drill }))
 
-function dongKqkd(cd: CheDo, thang: number, goi?: Goi, s?: Session) {
+export function dongKqkd(cd: CheDo, thang: number, goi?: Goi, s?: Session) {
   const q = kqkd(thang, 2026)
   // Gói Free (T220): Giá vốn ghi Chi phí NVL; chi phí phân bổ hàng tháng (phân bổ CCDC, khấu hao) tách khỏi chi phí trong tháng;
   // bỏ thu nhập, chi phí khác khỏi bảng và lợi nhuận, nên lợi nhuận lệch Tổng quan đúng bằng khoản khác (PhuongXT chốt 14/10/2026)

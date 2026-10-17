@@ -9,6 +9,8 @@ import { RptTable } from '../generic/ReportScreen'
 import { layKhuonDong, MBaoCaoDong, type LoaiKhuonDong } from './MBaoCaoDong'
 import { cotMobile, useBangMauA } from './bangMauA'
 import { tinhPhanTrang, ThanhPhanTrangM } from './phanTrangM'
+import { dongKqkd, truoc } from '../../modules/tong-hop/BaoCaoTaiChinh'
+import { dongB02, type DongB02 } from '../../modules/bao-cao/tt58'
 
 const RONG_MAY_TINH = 900
 
@@ -57,8 +59,8 @@ export const MToGiay: FC<ScreenProps> = ({ sc, mod }) => {
   const is521 = code === '5.2.1' || slug === '5.2.1'
   const is523 = code === '5.2.3' || slug === '5.2.3'
   const is1023 = code === '10.2.3' || slug === '10.2.3'
-  // 10.2.3 ở gói PR đang khoá chờ mẫu TT99, giữ nguyên; chỉ áp dụng dạng dòng ở gói F (T241)
-  const isDong1023 = is1023 && s.goi === 'F'
+  // 10.2.3 trên điện thoại: áp dụng dạng dòng đồng bộ với bản web (T353)
+  const isDong1023 = is1023
   const isApDungDong = is521 || is523 || isDong1023
 
   const khuon: LoaiKhuonDong | undefined = useMemo(() => {
@@ -96,17 +98,22 @@ export const MToGiay: FC<ScreenProps> = ({ sc, mod }) => {
     }
 
     if (isDong1023) {
-      const q = kqkd(kyNum, 2026)
-      const pb = q.cp.ccdc + q.cp.khauHao
-      const cpThang = q.cpQlkd + q.cpTc - q.dtTc - pb
-      const rows: Row[] = [
-        { ct: 'Doanh thu bán hàng', v: q.dtThuan, _b: 1, _drill: '/app/ban-hang/3-2-5' },
-        { ct: 'Chi phí NVL', v: q.gv, _drill: '/app/kho/5-2-3' },
-        { ct: 'Lãi gộp', v: q.lnGop, _b: 1 },
-        { ct: 'Chi phí trong tháng', v: cpThang },
-        { ct: 'Chi phí phân bổ hàng tháng', v: pb },
-        { ct: 'Lợi nhuận trước thuế', v: q.lnGop - cpThang - pb, _t: 1 },
-      ]
+      if (s.cheDo === 'TT58') {
+        const rows = dongB02(kyNum).map((r: DongB02) => ({
+          ...r,
+          v: r.nay,
+          cu: r.truoc,
+          _b: r._t || r.ct.startsWith('I') || r.ct.startsWith('II') || r.ct.startsWith('III'),
+        }))
+        return { rowsDong: rows, colsDong: [] }
+      }
+      const nay: Row[] = dongKqkd(s.cheDo, kyNum, s.goi, s)
+      const cu: Row[] = dongKqkd(s.cheDo, Number(truoc(String(kyNum))), s.goi, s)
+      const khoa = (x: Row) => x._k ?? x.ct
+      const cuTheo = new Map(cu.map(x => [khoa(x), x.v]))
+      const rows = nay
+        .map((x): Row => ({ ...x, cu: cuTheo.get(khoa(x)) }))
+        .filter(x => !x._con || x.v || x.cu)
       return { rowsDong: rows, colsDong: [] }
     }
 
@@ -206,15 +213,6 @@ export const MToGiay: FC<ScreenProps> = ({ sc, mod }) => {
               Bảng
             </button>
           </div>
-          <button
-            type="button"
-            className="m-bcd-nut-mau-in"
-            onClick={() => setKieuXem(k => (k === 'in' ? 'dong' : 'in'))}
-            style={{ marginLeft: 'auto' }}
-          >
-            <Icon n={kieuXem === 'in' ? 'list' : 'printer'} className="ic sm" />
-            <span>{kieuXem === 'in' ? 'Xem dạng dòng' : 'Xem mẫu in'}</span>
-          </button>
         </div>
 
         {kieuXem === 'in' ? (

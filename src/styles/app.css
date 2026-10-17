@@ -24435,3 +24435,314 @@ button[class*="btn-"] .ic .l2 {
 
 
 
+/* ── Điện thoại: phần C (T353) ── */
+
+@media (max-width: 767px) {
+  /* Điểm 1: Thẻ KQKD trang chủ Free: số tiền + % xuống hàng dưới tên mục, tên và mô tả hiện đủ không bị "…" */
+  .m-tcf-kqkd-dong {
+    display: grid !important;
+    grid-template-columns: 1fr auto !important;
+    align-items: center !important;
+    row-gap: 3px !important;
+    padding: 10px 0 !important;
+    min-height: auto !important;
+  }
+  .m-tcf-kqkd-l {
+    display: contents !important;
+  }
+  .m-tcf-kqkd-l b {
+    grid-column: 1 / -1 !important;
+    font-size: 13.5px !important;
+    font-weight: 600 !important;
+    line-height: 1.35 !important;
+    white-space: normal !important;
+    order: 1 !important;
+  }
+  .m-tcf-kqkd-r {
+    grid-column: 1 / -1 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    justify-content: flex-start !important;
+    margin-left: 0 !important;
+    order: 2 !important;
+  }
+  .m-tcf-kqkd-r b {
+    font-size: 14.5px !important;
+    text-align: left !important;
+  }
+  .m-tcf-kqkd-r span {
+    text-align: left !important;
+    min-width: auto !important;
+  }
+  .m-tcf-kqkd-r .m-tcf-kqkd-mui {
+    margin-left: auto !important;
+  }
+  .m-tcf-kqkd-l span {
+    grid-column: 1 / -1 !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: unset !important;
+    line-height: 1.35 !important;
+    font-size: 12px !important;
+    color: var(--muted, #64748b) !important;
+    order: 3 !important;
+  }
+  .m-tcf-kqkd-dt {
+    padding-right: 0 !important;
+  }
+  .m-tcf-kqkd-dt .m-tcf-kqkd-r::after {
+    display: none !important;
+  }
+  .m-tcf-kqkd-ln {
+    padding-right: 0 !important;
+  }
+
+  /* Điểm 2: Thẻ Mua hàng & công nợ NCC: số tiền ngang nhau, dòng phụ ngang nhau */
+  .m-tck-hai {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    grid-template-rows: auto auto auto !important;
+    gap: 8px 12px !important;
+    align-items: start !important;
+  }
+  .m-tck-kpi {
+    display: grid !important;
+    grid-template-rows: subgrid !important;
+    grid-row: span 3 !important;
+    gap: 2px !important;
+  }
+  .m-tck-hoi {
+    min-height: 2.7em !important;
+    line-height: 1.35 !important;
+  }
+  .m-tck-tra {
+    line-height: 1.25 !important;
+  }
+
+  /* Điểm 3: Màn Báo cáo kết quả kinh doanh (10.2.3) mobile thẻ chỉ tiêu phân cấp */
+  .m-bcd-ct-danh-sach {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 0 12px 24px;
+  }
+  .m-bcd-ct-the {
+    background: var(--card, #fff);
+    border-radius: 12px;
+    border: 1px solid var(--line-2, #e5e7eb);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    overflow: hidden;
+  }
+  .m-bcd-ct-nhom-tieu {
+    padding: 10px 14px 6px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--muted, #64748b);
+    border-bottom: 1px solid var(--line-2, #e5e7eb);
+    background: var(--bg, #f8fafc);
+  }
+  .m-bcd-ct-dong.dam {
+    background: var(--tint, #f1f5f9) !important;
+  }
+  .m-bcd-ct-dong.dam .m-bcd-ct-ten {
+    font-weight: 700 !important;
+    color: var(--ink, #0f172a) !important;
+  }
+  .m-bcd-ct-dong.dam .m-bcd-ct-so {
+    font-weight: 700 !important;
+    font-size: 14.5px !important;
+  }
+
+  /* Điểm 4: Ẩn nút In / "Xem mẫu in" trên mobile view của mọi báo cáo */
+  .m-bcd-nut-mau-in,
+  .m-to-giay-wrap .m-bcd-nut-mau-in {
+    display: none !important;
+  }
+
+  /* Điểm 10: Xem phiếu MXemPhieu bỏ số tiền to ở header và chữ Tổng ở đáy */
+  .m-xp-tien-lon,
+  .m-xp-day-trai {
+    display: none !important;
+  }
+  .m-xp-day {
+    justify-content: flex-end !important;
+  }
+
+  /* Điểm 11: Báo cáo dạng dòng bỏ nền trắng toàn trang, nền xám tách thẻ theo nhóm ngày */
+  .m-so-bc {
+    background: var(--bg-app, #f4f6f8) !important;
+  }
+  .m-so-bc .m-so-dong {
+    background: transparent !important;
+  }
+  .m-to-giay-wrap .m-so-dong {
+    background: transparent !important;
+  }
+  .m-to-giay-wrap {
+    background: var(--bg-app, #f4f6f8) !important;
+  }
+
+  /* Điểm 18: Thanh tìm kiếm & nút Excel, Xoay trên báo cáo sổ */
+  .m-sbc-tim-hang {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 0 12px 10px !important;
+  }
+  .m-sbc-tim-hang .m-ds-tim {
+    flex: 1 !important;
+    margin-bottom: 0 !important;
+    padding: 0 !important;
+  }
+  .m-sbc-tac-vu {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    flex-shrink: 0 !important;
+  }
+  .m-sbc-btn-icon {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 36px !important;
+    height: 36px !important;
+    border: 1px solid var(--line, #e2e8f0) !important;
+    border-radius: 8px !important;
+    background: #fff !important;
+    color: var(--ink-2, #475569) !important;
+    cursor: pointer !important;
+    padding: 0 !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+  }
+  .m-sbc-btn-icon:active {
+    background: var(--tint, #f1f5f9) !important;
+  }
+  .m-so-bc.xoay-ngang {
+    transform: rotate(90deg);
+    transform-origin: top left;
+    position: fixed;
+    top: 0;
+    left: 100vw;
+    width: 100vh;
+    height: 100vw;
+    overflow-y: auto;
+    z-index: 9999;
+    background: var(--bg-app, #f4f6f8);
+  }
+
+  /* Điểm 19: Dòng tổng 4 ô trên báo cáo dòng (MBaoCaoDong Khuon 2) */
+  .m-so-dong-tong.bon-o {
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 4px !important;
+    padding: 8px 6px !important;
+  }
+  .m-so-dong-tong.bon-o .m-so-dong-tong-o {
+    padding: 4px 2px !important;
+    text-align: center !important;
+  }
+  .m-so-dong-tong.bon-o .m-so-dong-tong-nhan {
+    font-size: 10.5px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+  .m-so-dong-tong.bon-o .m-so-dong-tong-so {
+    font-size: 12.5px !important;
+    letter-spacing: -0.3px !important;
+  }
+
+  /* Điểm 24c: Danh sách kiểm kê gọn, dạng thẻ nhãn-giá trị / lưới 3 cột */
+  .m-xp-dong-kk {
+    padding: 10px 12px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    border-bottom: 1px solid var(--line-2, #e5e7eb) !important;
+  }
+  .m-xp-dong-kk:last-child {
+    border-bottom: none !important;
+  }
+  .m-xp-kk-hang1 {
+    display: flex !important;
+    align-items: flex-start !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+  }
+  .m-xp-kk-ten-khoi {
+    display: flex !important;
+    align-items: baseline !important;
+    gap: 6px !important;
+    flex-wrap: wrap !important;
+    flex: 1 !important;
+  }
+  .m-xp-kk-chip {
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    padding: 2px 8px !important;
+    border-radius: 999px !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+  }
+  .m-xp-kk-chip.nhap {
+    background: #eff6ff !important;
+    color: #1d4ed8 !important;
+    border: 1px solid #bfdbfe !important;
+  }
+  .m-xp-kk-chip.xuat {
+    background: #fef2f2 !important;
+    color: #b91c1c !important;
+    border: 1px solid #fecaca !important;
+  }
+  .m-xp-kk-chip.khop {
+    background: #f8fafc !important;
+    color: #475569 !important;
+    border: 1px solid #e2e8f0 !important;
+  }
+  .m-xp-kk-luoi {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 6px !important;
+    background: var(--bg, #f8fafc) !important;
+    padding: 6px 10px !important;
+    border-radius: 8px !important;
+    border: 1px solid var(--line-2, #e5e7eb) !important;
+  }
+  .m-xp-kk-o {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2px !important;
+  }
+  .m-xp-kk-nhan {
+    font-size: 10.5px !important;
+    color: var(--muted, #64748b) !important;
+  }
+  .m-xp-kk-so {
+    font-size: 12.5px !important;
+    font-weight: 600 !important;
+    color: var(--ink, #0f172a) !important;
+  }
+  .m-xp-kk-so.m-xp-sl-am,
+  .m-xp-kk-so.m-so-dong-am {
+    color: #b91c1c !important;
+  }
+  .m-xp-kk-so.m-xp-sl-duong,
+  .m-xp-kk-so.m-so-dong-duong {
+    color: #1d4ed8 !important;
+  }
+  .m-xp-kk-ghichu {
+    font-size: 11.5px !important;
+    color: var(--ink-2, #475569) !important;
+    background: #fff !important;
+    padding: 4px 8px !important;
+    border-radius: 6px !important;
+    border-left: 3px solid var(--line, #cbd5e1) !important;
+  }
+  .m-xp-kk-gc-nhan {
+    color: var(--muted, #64748b) !important;
+    font-weight: 500 !important;
+  }
+}
+
