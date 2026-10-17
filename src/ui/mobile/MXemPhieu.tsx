@@ -1,5 +1,5 @@
-import { useMemo, useState, type FC } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useEffect, useMemo, useState, type FC } from 'react'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import type { Row, ScreenProps } from '../../modules/types'
 import { duongDan, tenMan } from '../../app/registry'
 import { useSession } from '../../app/session'
@@ -14,8 +14,8 @@ import { SX, TT_SX } from '../../modules/kho/san-xuat'
 import { DCN } from '../../modules/kho/dieu-chuyen'
 import { MAN_DC } from '../../modules/kho/dieu-chinh'
 import { CUA_HANG, KHOAN_MUC, TK_NGAN_HANG, daKhoaSo } from '../../data/mock'
-import { ctTtCon, dsDcCon, dsTtCon, suaPhieu, ttThamChieu, ttTienTheoTra, xoaPhieu } from '../generic/daXoa'
-import { LichSu } from '../generic/ChungTuForm'
+import { ctTtCon, dsDcCon, dsTtCon, ghiNhatKy, soDaTra, soKeTiep, suaPhieu, themPhieu, ttThamChieu, ttTienTheoTra, xoaPhieu, type PhieuTt } from '../generic/daXoa'
+import { LichSu, MAN_THU_CHI, QUY_TIEN, TEN_CT_TT, TIEN_TO_CT_TT } from '../generic/ChungTuForm'
 import { loaiXuLy } from '../generic/BangKiemKe'
 import { HopXacNhan } from '../LocNangCao'
 import { HopInChungTu, type PhieuIn } from '../bao-cao/InChungTu'
@@ -67,9 +67,11 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
   const path = duongDan(mod, sc)
   const cfgMan = sc.voucher ?? { prefix: 'CT', doiTuong: 'none', dienGiai: [tenMan(sc)], tien: [0, 0] }
 
+  const [sp] = useSearchParams()
   const [timKiem, setTimKiem] = useState('')
   const [moLs, setMoLs] = useState(false)
   const [moMenu, setMoMenu] = useState(false)
+  const [moThanhToan, setMoThanhToan] = useState(() => sp.get('thanhtoan') === '1')
   const [hoiXoa, setHoiXoa] = useState(false)
   const [hoiBoGhi, setHoiBoGhi] = useState(false)
   const [phieuIn, setPhieuIn] = useState<PhieuIn[] | null>(null)
@@ -211,6 +213,49 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
     )
   }, [cfg, dsDong, tongTien, tongCk, tongThue, row, nv, s.cheDo, nhom])
 
+  // T353 điểm 25(b): Thanh toán sau cho phiếu mua hàng còn nợ
+  const hinhThucTt = (row._httt as 'congno' | 'tienmat' | 'chuyenkhoan' | undefined) ?? (nv?.ttTien === 'da' ? 'tienmat' : 'congno')
+  const tongGoc = Number(row.tong) || 0
+  const daTra = soDaTra(row)
+  const conLai = Math.max(0, tongGoc - daTra)
+  const dsTt = dsTtCon(row)
+  const coThanhToanSau = nhomMb === 'mua' && hinhThucTt === 'congno' && conLai > 0
+
+  function lapThanhToan(ht: 'tienmat' | 'chuyenkhoan', quyTt: string, ngay: string, tien: number, dg: string) {
+    const loai = ht === 'tienmat' ? 'chi' : 'unc'
+    const so = soKeTiep(MAN_THU_CHI, `${TIEN_TO_CT_TT[loai]}2610-`)
+    const idMoi = `moi-${Date.now()}-tt`
+    const ly = 'Thanh toán tiền cho nhà cung cấp'
+    themPhieu(MAN_THU_CHI, {
+      id: idMoi,
+      so,
+      cn: cuaHangTen,
+      nguon: 'tay',
+      tt: kieu === 'khong' ? 'ghi' : 'nhap',
+      loai,
+      tenLoai: TEN_CT_TT[loai],
+      ngay,
+      thang: Number(ngay.split('/')[1]) || 10,
+      doiTuong: String(row.doiTuong ?? ''),
+      dienGiai: dg,
+      tien,
+      thue: 0,
+      tong: tien,
+      _quy: quyTt,
+      _lyDo: ly,
+      _ghiChu: dg,
+      _thamChieu: soCt,
+      _thamChieuDi: `${path}/${row.id}`,
+      _dong: [{ ma: '', ten: dg, dvt: '', sl: 1, gia: tien, tien, ts: 0, thue: 0, ly, dt: String(row.doiTuong ?? ''), km: '', cv: '' }],
+    }, s.ten)
+    ghiNhatKy(MAN_THU_CHI, idMoi, so, s.ten, `Thêm mới chứng từ, thanh toán cho ${soCt}`)
+    const man = `${mod.key}/${sc.slug}`
+    suaPhieu(man, String(row.id), { _dsTt: [...dsTt, { id: idMoi, so, loai, tien }] })
+    ghiNhatKy(man, String(row.id), soCt, s.ten, `Thanh toán ngay ${money(tien)} bằng ${so}`)
+    toast(`Đã lập ${so}, trả ${money(tien)} đ`)
+    setMoThanhToan(false)
+  }
+
   // Tên loại phiếu
   const tenLoai = loai?.ten ?? (row.tenLoai ? String(row.tenLoai) : tenMan(sc))
   const soCt = String(row.so)
@@ -230,7 +275,6 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
 
   // Tham chiếu
   const ctTtCu = ctTtCon(row)
-  const dsTt = dsTtCon(row)
   const dsDc = dsDcCon(row)
 
   const thucHienIn = () => {
@@ -278,6 +322,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
   // Menu ba chấm
   const dsMenu = [
     ...(!laDc ? [{ k: 'sua', ten: 'Sửa chứng từ' }] : []),
+    ...(coThanhToanSau ? [{ k: 'thanhtoan', ten: 'Thanh toán ngay' }] : []),
     { k: 'in', ten: 'In chứng từ' },
     ...(!laDc ? [{ k: 'copy', ten: 'Sao chép chứng từ' }] : []),
     ...(!laDc ? [{ k: 'xoa', ten: 'Xoá chứng từ' }] : []),
@@ -286,6 +331,8 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
   const handleMenuChon = (k: string) => {
     if (k === 'sua') {
       nav(`${path}/${row.id}?sua=1`)
+    } else if (k === 'thanhtoan') {
+      setMoThanhToan(true)
     } else if (k === 'in') {
       setPhieuIn([
         {
@@ -494,6 +541,24 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
           <div className="m-xp-dong-tt">
             <span className="m-xp-nhan">Tình trạng thanh toán:</span>
             <span className="m-xp-tri dam">{ttTienText}</span>
+          </div>
+        )}
+        {nhomMb === 'mua' && hinhThucTt === 'congno' && (
+          <div className="m-xp-dong-tt m-xp-tt-no" style={{ alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
+            <span className="m-xp-tri" style={{ fontSize: 13, color: 'var(--muted)' }}>
+              Đã trả: <b style={{ color: 'var(--ink)' }}>{money(daTra)}</b> / {money(tongGoc)} đ
+            </span>
+            {coThanhToanSau && (
+              <button
+                type="button"
+                className="m-btn-tt-ngay"
+                id="m-xp-btn-tt-ngay"
+                onClick={() => setMoThanhToan(true)}
+              >
+                <Icon n="wallet" className="ic sm" kieu="net" />
+                <span>Thanh toán ngay</span>
+              </button>
+            )}
           </div>
         )}
         {mst && (
@@ -862,6 +927,224 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
 
       {/* Hộp in chứng từ */}
       {phieuIn && <HopInChungTu ds={phieuIn} onDong={() => setPhieuIn(null)} />}
+
+      {/* T353 điểm 25(b): Bottom sheet Thanh toán ngay */}
+      <MThanhToanSheet
+        mo={moThanhToan}
+        onDong={() => setMoThanhToan(false)}
+        tieuDe={`Thanh toán ngay cho ${soCt}`}
+        conLai={conLai}
+        quyTm={quyTm}
+        ngay0={String(row.ngay ?? '')}
+        dg0={`Chi tiền mua hàng theo ${soCt}`}
+        onLuu={lapThanhToan}
+      />
+    </div>
+  )
+}
+
+/** T353 điểm 25(b): Bottom sheet Thanh toán ngay cho phiếu mua hàng còn nợ trên điện thoại */
+function MThanhToanSheet({
+  mo,
+  onDong,
+  tieuDe,
+  conLai,
+  quyTm,
+  ngay0,
+  dg0,
+  onLuu,
+}: {
+  mo: boolean
+  onDong: () => void
+  tieuDe: string
+  conLai: number
+  quyTm: string
+  ngay0: string
+  dg0: string
+  onLuu: (ht: 'tienmat' | 'chuyenkhoan', quy: string, ngay: string, tien: number, dg: string) => void
+}) {
+  const [ht, setHt] = useState<'tienmat' | 'chuyenkhoan'>('tienmat')
+  const dsQ = useMemo(() => {
+    return ht === 'tienmat' ? [quyTm] : QUY_TIEN.slice(CUA_HANG.length)
+  }, [ht, quyTm])
+  const [quy, setQuy] = useState(quyTm)
+  const [ngay, setNgay] = useState(ngay0)
+  const [tien, setTien] = useState(conLai)
+  const [dg, setDg] = useState(dg0)
+  const [moChonQuy, setMoChonQuy] = useState(false)
+
+  // Cập nhật giá trị khi mở sheet hoặc đổi hình thức
+  useEffect(() => {
+    if (mo) {
+      setTien(conLai)
+      setNgay(ngay0)
+      setDg(dg0)
+      setHt('tienmat')
+      setQuy(quyTm)
+    }
+  }, [mo, conLai, ngay0, dg0, quyTm])
+
+  useEffect(() => {
+    setQuy(dsQ[0] ?? '')
+  }, [ht, dsQ])
+
+  if (!mo) return null
+
+  const loai = ht === 'tienmat' ? 'chi' : 'unc'
+  const loi =
+    tien <= 0
+      ? 'Số tiền phải lớn hơn 0'
+      : tien > conLai
+      ? `Không vượt số còn phải trả ${money(conLai)} đ`
+      : !quy
+      ? (ht === 'tienmat' ? 'Vui lòng chọn quỹ tiền mặt' : 'Vui lòng chọn tài khoản ngân hàng')
+      : ''
+
+  return (
+    <div className="m-tam-overlay" onClick={onDong}>
+      <div className="m-tam-hop m-tam-hop-apdung" onClick={e => e.stopPropagation()}>
+        <div className="m-tam-keo" />
+        <div className="m-tam-dau m-tam-dau-apdung">
+          <h2 className="m-tam-tieu">{tieuDe}</h2>
+          <button type="button" className="m-tam-dong-btn" onClick={onDong} aria-label="Đóng">
+            <Icon n="x" className="ic sm" kieu="net" />
+          </button>
+        </div>
+
+        <div className="m-tt-sheet-than" style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+          {/* Hình thức thanh toán */}
+          <div>
+            <label style={{ fontSize: 13, fontWeight: 500, color: 'var(--muted)', display: 'block', marginBottom: 8 }}>
+              Hình thức thanh toán <b style={{ color: 'var(--cam, #ff8c00)' }}>*</b>
+            </label>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+              <button
+                type="button"
+                className={`m-tt-ht-btn ${ht === 'tienmat' ? 'active' : ''}`}
+                onClick={() => setHt('tienmat')}
+              >
+                <Icon n="wallet" className="ic sm" kieu="net" />
+                <span>Tiền mặt</span>
+              </button>
+              <button
+                type="button"
+                className={`m-tt-ht-btn ${ht === 'chuyenkhoan' ? 'active' : ''}`}
+                onClick={() => setHt('chuyenkhoan')}
+              >
+                <Icon n="bank" className="ic sm" kieu="net" />
+                <span>Chuyển khoản</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Quỹ tiền mặt / Tài khoản ngân hàng */}
+          <div>
+            <label style={{ fontSize: 13, fontWeight: 500, color: 'var(--muted)', display: 'block', marginBottom: 6 }}>
+              {ht === 'tienmat' ? 'Quỹ tiền mặt' : 'Tài khoản ngân hàng'} <b style={{ color: 'var(--cam, #ff8c00)' }}>*</b>
+            </label>
+            <div
+              className="m-tt-o-chon"
+              onClick={() => setMoChonQuy(true)}
+            >
+              <span style={{ fontSize: 14, color: quy ? 'var(--ink)' : 'var(--muted)' }}>
+                {quy || (ht === 'tienmat' ? 'Chọn quỹ tiền mặt' : 'Chọn tài khoản ngân hàng')}
+              </span>
+              <Icon n="chevr" className="ic sm" kieu="net" />
+            </div>
+          </div>
+
+          {/* Ngày và Số tiền */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+            <div>
+              <label style={{ fontSize: 13, fontWeight: 500, color: 'var(--muted)', display: 'block', marginBottom: 6 }}>
+                Ngày chứng từ <b style={{ color: 'var(--cam, #ff8c00)' }}>*</b>
+              </label>
+              <input
+                type="text"
+                className="inp"
+                style={{ width: '100%', height: 42, borderRadius: 8, fontSize: 14 }}
+                value={ngay}
+                onChange={e => setNgay(e.target.value)}
+                placeholder="DD/MM/YYYY"
+              />
+            </div>
+            <div>
+              <label style={{ fontSize: 13, fontWeight: 500, color: 'var(--muted)', display: 'block', marginBottom: 6 }}>
+                Số tiền <b style={{ color: 'var(--cam, #ff8c00)' }}>*</b>
+              </label>
+              <input
+                type="text"
+                className="inp"
+                style={{ width: '100%', height: 42, borderRadius: 8, fontSize: 14, fontWeight: 600, textAlign: 'right' }}
+                value={money(tien)}
+                onChange={e => setTien(Number(e.target.value.replace(/\D/g, '')) || 0)}
+              />
+            </div>
+          </div>
+
+          {/* Diễn giải */}
+          <div>
+            <label style={{ fontSize: 13, fontWeight: 500, color: 'var(--muted)', display: 'block', marginBottom: 6 }}>
+              Diễn giải
+            </label>
+            <input
+              type="text"
+              className="inp"
+              style={{ width: '100%', height: 42, borderRadius: 8, fontSize: 14 }}
+              value={dg}
+              onChange={e => setDg(e.target.value)}
+              placeholder="Diễn giải chứng từ thanh toán"
+            />
+          </div>
+
+          {/* Ghi chú còn nợ & lỗi */}
+          <div style={{ fontSize: 12.5, color: 'var(--muted)' }}>
+            Còn phải trả: <b style={{ color: 'var(--ink)' }}>{money(conLai)} đ</b>. Lưu sẽ sinh phiếu {loai === 'chi' ? 'chi tiền mặt' : 'chi ngân hàng (UNC)'} bên Thu chi.
+          </div>
+          {loi && (
+            <div style={{ fontSize: 12.5, color: 'var(--red, #e53935)' }}>
+              {loi}
+            </div>
+          )}
+        </div>
+
+        {/* Nút hành động */}
+        <div className="m-tam-day-nut" style={{ padding: '12px 20px 24px', display: 'flex', gap: 10 }}>
+          <button
+            type="button"
+            className="btn"
+            style={{ flex: 1, height: 44, borderRadius: 10, fontSize: 14, fontWeight: 500 }}
+            onClick={onDong}
+          >
+            Huỷ
+          </button>
+          <button
+            type="button"
+            className="btn pri"
+            id="m-tt-sheet-btn-luu"
+            style={{ flex: 1.5, height: 44, borderRadius: 10, fontSize: 14, fontWeight: 600 }}
+            disabled={Boolean(loi)}
+            onClick={() => onLuu(ht, quy, ngay, tien, dg)}
+          >
+            Lập phiếu {loai === 'chi' ? 'chi tiền' : 'UNC'}
+          </button>
+        </div>
+
+        {/* Sub-sheet chọn Quỹ / Tài khoản */}
+        <MChon
+          mo={moChonQuy}
+          onDong={() => setMoChonQuy(false)}
+          tieuDe={ht === 'tienmat' ? 'Chọn quỹ tiền mặt' : 'Chọn tài khoản ngân hàng'}
+          ds={dsQ.map(q => ({ k: q, ten: q }))}
+          chon={quy}
+          onChon={v => {
+            setQuy(v)
+            setMoChonQuy(false)
+          }}
+          apDung
+          tim
+        />
+      </div>
     </div>
   )
 }

@@ -30,7 +30,16 @@ if (typeof document !== 'undefined') {
   document.documentElement.dataset.ic = BO_ICON
 }
 
-export function Icon({ n, className = 'ic', title, kieu }: IconProps) {
+// Bí danh icon thao tác / chứng từ điện thoại (T353)
+const ALIAS: Record<string, string> = {
+  card: 'bank',    // Thẻ thanh toán (Solar card trong NET.bank)
+  file: 'doc',     // Trang giấy có dòng chữ (Solar document-text)
+  bill: 'receipt', // Hoá đơn / hạch toán (Solar bill-list)
+  note: 'doc',
+}
+
+export function Icon({ n: tenGoc, className = 'ic', title, kieu }: IconProps) {
+  const n = ALIAS[tenGoc] || tenGoc
   const mode = kieu || (THAO_TAC_SET.has(n) ? 'net' : (DAC[n] ? 'khoi' : 'net'))
 
   if (mode === 'hai') {
@@ -104,10 +113,10 @@ export function Icon({ n, className = 'ic', title, kieu }: IconProps) {
     )
   }
 
-  const def = NET.doc || DAC.doc
+  const def = (mode === 'net' ? NET.doc : undefined) || NET.doc || DAC.doc
   return (
     <svg
-      className={`${className} ic-2m`}
+      className={mode === 'net' ? className : `${className} ic-2m`}
       viewBox={def.vb}
       aria-hidden={title ? undefined : true}
       dangerouslySetInnerHTML={{
