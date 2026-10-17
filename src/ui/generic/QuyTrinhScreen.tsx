@@ -457,7 +457,7 @@ function HangDuoi({ qt, modKey, goi, cheDo, session }: { qt: QuyTrinhDef; modKey
       {/* Cột 2: Tiện ích & Tự động hoá */}
       {coTienIch && <div className="card qt-hub-col">
         <div className="qt-hub-h">
-          <span className="qt-hub-ic orange"><Icon n="grid" className="ic sm" /></span>
+          <span className="qt-hub-ic orange"><Icon n="tienich" className="ic sm" /></span>
           <div className="qt-hub-t-wrap">
             <h2 className="qt-hub-title">Tiện ích liên quan</h2>
             <span className="qt-hub-sub">Đồng bộ, đối soát & công cụ</span>

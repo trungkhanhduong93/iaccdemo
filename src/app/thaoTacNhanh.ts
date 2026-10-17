@@ -32,8 +32,8 @@ export interface ThaoTacMuc extends ThaoTacUngVien {
 export const THAO_TAC_UNG_VIEN: ThaoTacUngVien[] = [
   { id: 'thu', ten: 'Thu tiền', icon: 'cashin', to: '/app/tien/2-1-1/moi?loai=thu', modKey: 'tien', slug: '2-1-1' },
   { id: 'chi', ten: 'Chi tiền', icon: 'cashout', to: '/app/tien/2-1-1/moi?loai=chi', modKey: 'tien', slug: '2-1-1' },
-  { id: 'nhap-kho', ten: 'Nhập kho', icon: 'filein', to: '/app/kho/5-1-1/moi', modKey: 'kho', slug: '5-1-1' },
-  { id: 'xuat-kho', ten: 'Xuất kho', icon: 'pos', to: '/app/kho/5-1-2/moi', modKey: 'kho', slug: '5-1-2' },
+  { id: 'nhap-kho', ten: 'Nhập kho', icon: 'nhapkho', to: '/app/kho/5-1-1/moi', modKey: 'kho', slug: '5-1-1' },
+  { id: 'xuat-kho', ten: 'Xuất kho', icon: 'xuatkho', to: '/app/kho/5-1-2/moi', modKey: 'kho', slug: '5-1-2' },
   { id: 'so-quy', ten: 'Sổ quỹ', icon: 'wallet', to: '/app/tien/2-2-1', modKey: 'tien', slug: '2-2-1' },
   { id: 'nhap-mua', ten: 'Nhập mua', icon: 'truck', to: '/app/mua-hang/4-1-1/moi', modKey: 'mua-hang', slug: '4-1-1' },
   { id: 'kiem-ke', ten: 'Kiểm kê', icon: 'clipboard', to: '/app/kho/5-1-10/moi', modKey: 'kho', slug: '5-1-10' },

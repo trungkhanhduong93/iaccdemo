@@ -30,7 +30,7 @@ SOLAR = {
     'folder': 'folder-with-files',
     'wallet': 'wallet',
     'cart': 'cart-large-2',
-    'truck': 'delivery',
+    'truck': 'bag-4',
     'box': 'box',
     'percent': 'sale',
     'book': 'notebook-bookmark',
@@ -39,7 +39,7 @@ SOLAR = {
     'building': 'buildings-2',
     'tool': 'sledgehammer',
     'flask': 'test-tube',
-    'grid': 'magic-stick-3',
+    'grid': 'bill-list',
     'nghiepvu': 'widget-5',
     'bell': 'bell',
     'lock': 'lock-keyhole-minimalistic',
@@ -76,7 +76,7 @@ SOLAR = {
     'cashout': 'card-send',
     'chef': 'chef-hat',
     'calc': 'calculator',
-    'clipboard': 'clipboard-list',
+    'clipboard': 'clipboard-check',
     'send': 'plain',
     'help': 'question-circle',
     'tag': 'tag',
@@ -93,11 +93,18 @@ SOLAR = {
     'tygia': 'graph-up',
     'loaithue': 'sale',
     'quytien': 'safe-square',
-    'banggia': 'tag-price',
+    'banggia': 'tag',
     'buttoan': 'refresh-circle',
     'lydo': 'notes',
     'chinhanh': 'shop-2',
     'more': 'menu-dots',
+    # Mới theo spec T320
+    'dieuchuyen': 'delivery',
+    'giathanh': 'tag-price',
+    'phanbo': 'pie-chart-2',
+    'tienich': 'widget-add',
+    'nhapkho': 'archive-down-minimlistic',
+    'xuatkho': 'archive-up-minimlistic',
 }
 
 # 2. Bảng NET tải bản -linear cho: 9 phân hệ và 19 thao tác
@@ -107,7 +114,7 @@ NET_DEF = {
     'folder': 'folder-with-files',
     'wallet': 'wallet',
     'cart': 'cart-large-2',
-    'truck': 'delivery',
+    'truck': 'bag-4',
     'box': 'box',
     'percent': 'sale',
     'book': 'notebook-bookmark',
@@ -141,13 +148,13 @@ NHOM_MAP = {
     'nh': {'bank', 'tygia', 'cart', 'pos', 'store'},
     'thue': {'percent', 'loaithue'},
     'bc': {'book', 'chart', 'scale', 'doc', 'pulse'},
-    'ct': {'receipt', 'sotk', 'buttoan', 'calc', 'clipboard', 'filein', 'congviec', 'lydo'},
-    'kho': {'box', 'truck', 'hanghoa', 'dvt', 'quydoi', 'banggia', 'khohang', 'tag', 'chef'},
+    'ct': {'receipt', 'sotk', 'buttoan', 'calc', 'clipboard', 'filein', 'congviec', 'lydo', 'giathanh', 'grid'},
+    'kho': {'box', 'truck', 'hanghoa', 'dvt', 'quydoi', 'banggia', 'khohang', 'tag', 'chef', 'dieuchuyen', 'nhapkho', 'xuatkho'},
     'ht': {
         'home', 'folder', 'cog', 'building', 'chinhanh', 'users', 'history', 'printer', 'shield', 'bell',
-        'tool', 'flask', 'grid', 'lock', 'eye', 'edit', 'trash', 'logout', 'user', 'alert', 'info',
+        'tool', 'flask', 'lock', 'eye', 'edit', 'trash', 'logout', 'user', 'alert', 'info',
         'clock', 'keyboard', 'sparkle', 'layers', 'db', 'mail', 'key', 'play', 'phone', 'flag', 'send',
-        'help', 'flow',
+        'help', 'flow', 'phanbo', 'tienich',
     },
 }
 
@@ -216,8 +223,10 @@ def escape_nhay_don(s):
 
 
 # Bảng sửa tay: icon có trong bảng lấy ngược kết quả đo hộp bao (đo đảo thì giữ, đo giữ thì đảo)
-# tool: đo hộp bao ra đảo nhầm, đầu búa thành cam (T301)
+# tool: đo hộp bao ra đảo nhầm, đầu búa thành cam (T301), chỉ bộ nét
 DAO_TAY = {'tool'}
+# Bộ khối (Bold Duotone) đo hộp bao đã đúng, chưa cần sửa tay (T320)
+DAO_TAY_DAC = set()
 
 _CMD_RE = re.compile(r'([a-zA-Z])([^a-zA-Z]*)')
 _NUM_RE = re.compile(r'[-+]?(?:\d*\.\d+|\d+)')
@@ -395,6 +404,7 @@ def main():
 
     # 3. Trích xuất DAC
     dac = {}
+    dac_da_dao = []
     for local_name, full_duo in duotone_targets.items():
         info = None
         if full_duo not in duotone_res['not_found']:
@@ -413,6 +423,28 @@ def main():
         body = info['body']
         # Đổi thuộc tính opacity=".5" (lớp phụ) thành class="l2"
         body = re.sub(r'\s+opacity=[\'"]0?\.\d+[\'"]', ' class="l2"', body)
+
+        # Tính hộp bao diện tích của lớp l2 vs lớp không class trong các d (T320)
+        pts_l2 = []
+        pts_non = []
+        for t in re.findall(r'<path\b[^>]*>', body):
+            dm = re.search(r'\bd=([\'"])(.*?)\1', t)
+            if not dm:
+                continue
+            d_val = dm.group(2)
+            is_l2 = 'class="l2"' in t or "class='l2'" in t
+            if is_l2:
+                pts_l2.extend(trich_toa_do_d(d_val))
+            else:
+                pts_non.extend(trich_toa_do_d(d_val))
+
+        dt_l2 = dien_tich_hop_bao(pts_l2)
+        dt_non = dien_tich_hop_bao(pts_non)
+
+        if (local_name in DAO_TAY_DAC) != (dt_l2 > dt_non):
+            body = dao_class_l2(body)
+            dac_da_dao.append(local_name)
+
         dac[local_name] = {'vb': info['vb'], 'body': body}
 
     # 4. Trích xuất NET (Line Duotone, nét phụ class="l2", bỏ stroke-width="1.5")
@@ -474,7 +506,9 @@ def main():
     for k, v in dac.items():
         vb_esc = escape_nhay_don(v['vb'])
         body_esc = escape_nhay_don(v['body'])
-        lines.append(f"  {k}: {{ vb: '{vb_esc}', body: '{body_esc}' }},")
+        solar_name = SOLAR.get(k, '')
+        comment = f' // {solar_name}' if solar_name else ''
+        lines.append(f"  {k}: {{ vb: '{vb_esc}', body: '{body_esc}' }},{comment}")
 
     lines.append('}\n')
 
@@ -482,7 +516,9 @@ def main():
     for k, v in net.items():
         vb_esc = escape_nhay_don(v['vb'])
         body_esc = escape_nhay_don(v['body'])
-        lines.append(f"  {k}: {{ vb: '{vb_esc}', body: '{body_esc}' }},")
+        solar_name = all_net_items.get(k, '')
+        comment = f' // {solar_name}' if solar_name else ''
+        lines.append(f"  {k}: {{ vb: '{vb_esc}', body: '{body_esc}' }},{comment}")
     lines.append('}\n')
 
     lines.append('export const NHOM: Record<string, string> = {')
@@ -492,6 +528,9 @@ def main():
 
     DICH.write_text('\n'.join(lines), encoding='utf-8')
     print(f'Đã sinh {DICH.relative_to(WEB)} với {len(dac)} icon khối, {len(net)} icon nét.')
+    if dac_da_dao:
+        print(f'Đã đảo {len(dac_da_dao)} icon DAC (lớp l2 có hộp bao lớn hơn -> đảo để thân xanh, cam chi tiết):')
+        print('  ' + ', '.join(sorted(dac_da_dao)))
     if icon_da_dao:
         print(f'Đã đảo {len(icon_da_dao)} icon NET (lớp l2 có hộp bao lớn hơn -> đảo để thân xanh, cam chi tiết):')
         print('  ' + ', '.join(sorted(icon_da_dao)))

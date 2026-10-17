@@ -60,7 +60,7 @@ const kyTruoc = (ky: number) => ky % 100 === 1 ? ky - 89 : ky - 1
 const NGAN: Record<string, string> = { '8.1.1': 'Danh sách thẻ chi phí', '8.1.2': 'Tăng, giảm CCDC', '8.1.3': 'Kiểm kê CCDC' }
 
 const ccdc: ModuleDef = {
-  key: 'ccdc', ten: 'Chi phí phân bổ', ngan: 'Chi phí phân bổ', icon: 'tool', mod: 7,
+  key: 'ccdc', ten: 'Chi phí phân bổ', ngan: 'Chi phí phân bổ', icon: 'phanbo', mod: 7,
   mota: 'Công cụ dụng cụ, chi phí trả trước, phân bổ theo kỳ',
   quyTrinh,
   screens: [...tuExcel(7, {

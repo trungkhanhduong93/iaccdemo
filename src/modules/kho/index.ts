@@ -99,7 +99,7 @@ const kho: ModuleDef = {
     '5.1.2-3': phieu('XH', 'Thêm phiếu xuất huỷ', ['Huỷ rau héo cuối ngày', 'Huỷ thịt quá hạn bảo quản', 'Huỷ bánh phở hỏng'], [['632', '152', 'Hao hụt, huỷ hàng hỏng']]),
     '5.1.2-4': phieu('XK', 'Thêm phiếu xuất khác', ['Xuất dùng cho bữa ăn nhân viên', 'Xuất làm món thử cho thực đơn mới'], [['6421', '152', 'Xuất dùng nội bộ']], 'nv', 'Người nhận'),
     '5.1.1': phieu('NK', 'Thêm phiếu nhập khác', ['Nhập thừa khi kiểm kê', 'Nhập bán thành phẩm nước dùng'], [['152', '154', 'Nhập kho bán thành phẩm']]),
-    '5.1.4': phieuDcn('xdc', 'truck'),
+    '5.1.4': phieuDcn('xdc', 'dieuchuyen'),
     '9.1.3': { kind: 'custom', comp: CongThucScreen, icon: 'book' },
     '5.1.3': phieuSx('xcb', 'Xuất chế biến', 'flask'),
     '5.1.5': { kind: 'custom', comp: CongThucScreen, icon: 'book' },

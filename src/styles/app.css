@@ -22453,3 +22453,213 @@ button[class*="btn-"] .ic .l2 {
 /* ── Trang chủ Free: tiêu đề phụ dưới tiêu đề khối, lời giải nghĩa (T316) ── */
 .bbt-e-mota { font-size: 12px; color: var(--muted); margin: -4px 0 8px; line-height: 1.4; }
 .bbt-e-giai { color: var(--faint); }
+
+/* ── Icon Solar khối 3D (T320) ── */
+
+/* 1. Icon khối 3D: thân gradient xanh (#2a8ad8 -> #03457a), nhấn gradient cam (#ffb468 -> #e86f0c), đổ bóng nhẹ */
+:root[data-ic="khoi"] .ic.ic-2m,
+:root[data-ic="khoi"] .o-nen .ic {
+  fill: url(#ic-g-xanh);
+  stroke: none;
+  filter: drop-shadow(0 1.2px .6px rgb(4 60 110 / .35));
+}
+:root[data-ic="khoi"] .ic.ic-2m path,
+:root[data-ic="khoi"] .ic.ic-2m circle,
+:root[data-ic="khoi"] .ic.ic-2m rect,
+:root[data-ic="khoi"] .ic.ic-2m ellipse,
+:root[data-ic="khoi"] .o-nen .ic path,
+:root[data-ic="khoi"] .o-nen .ic circle,
+:root[data-ic="khoi"] .o-nen .ic rect,
+:root[data-ic="khoi"] .o-nen .ic ellipse {
+  fill: url(#ic-g-xanh);
+  stroke: none;
+}
+:root[data-ic="khoi"] .ic.ic-2m .l2,
+:root[data-ic="khoi"] .ic.ic-2m .l2 path,
+:root[data-ic="khoi"] .ic.ic-2m path.l2,
+:root[data-ic="khoi"] .ic.ic-2m .l2 circle,
+:root[data-ic="khoi"] .ic.ic-2m circle.l2,
+:root[data-ic="khoi"] .ic.ic-2m .l2 rect,
+:root[data-ic="khoi"] .ic.ic-2m rect.l2,
+:root[data-ic="khoi"] .ic.ic-2m .l2 *,
+:root[data-ic="khoi"] .o-nen .ic .l2,
+:root[data-ic="khoi"] .o-nen .ic .l2 path,
+:root[data-ic="khoi"] .o-nen .ic path.l2,
+:root[data-ic="khoi"] .o-nen .ic .l2 circle,
+:root[data-ic="khoi"] .o-nen .ic circle.l2,
+:root[data-ic="khoi"] .o-nen .ic .l2 rect,
+:root[data-ic="khoi"] .o-nen .ic rect.l2,
+:root[data-ic="khoi"] .o-nen .ic .l2 * {
+  fill: url(#ic-g-cam) !important;
+  stroke: none !important;
+}
+
+/* 2. Chế độ hai (sidebar, 1 màu): thân DAC, thân opacity .42, lớp l2 opacity 1 */
+:root[data-ic="khoi"] .sb-nav a .ic-thuong,
+:root[data-ic="khoi"] .sb-nav button.sb-item-btn .ic-thuong,
+:root[data-ic="khoi"] .sb-flyout-ttn .sb-flyout-item .ic-thuong {
+  color: #b9cad8;
+  fill: currentColor;
+  stroke: none;
+}
+:root[data-ic="khoi"] .sb-nav a .ic-chon,
+:root[data-ic="khoi"] .sb-nav button.sb-item-btn .ic-chon,
+:root[data-ic="khoi"] .sb-flyout-ttn .sb-flyout-item .ic-chon {
+  color: #fff;
+  fill: currentColor;
+  stroke: none;
+}
+:root[data-ic="khoi"] .sb-nav a:hover .ic-chon,
+:root[data-ic="khoi"] .sb-nav button.sb-item-btn:hover .ic-chon,
+:root[data-ic="khoi"] .sb-flyout-ttn .sb-flyout-item:hover .ic-chon,
+:root[data-ic="khoi"] .sb-nav a.on .ic-chon,
+:root[data-ic="khoi"] .sb-nav button.sb-item-btn.on .ic-chon {
+  color: #fff;
+  fill: currentColor;
+  stroke: none;
+}
+:root[data-ic="khoi"] .sb-nav a:hover .ic-chon .l2,
+:root[data-ic="khoi"] .sb-nav button.sb-item-btn:hover .ic-chon .l2,
+:root[data-ic="khoi"] .sb-flyout-ttn .sb-flyout-item:hover .ic-chon .l2,
+:root[data-ic="khoi"] .sb-nav a.on .ic-chon .l2,
+:root[data-ic="khoi"] .sb-nav button.sb-item-btn.on .ic-chon .l2 {
+  color: #fff !important;
+  fill: currentColor !important;
+  stroke: none !important;
+}
+
+:root[data-ic="khoi"] .ic-hai,
+:root[data-ic="khoi"] .sb-nav .ic-thuong,
+:root[data-ic="khoi"] .sb-nav .ic-chon,
+:root[data-ic="khoi"] .sb-flyout-ttn .ic-thuong,
+:root[data-ic="khoi"] .sb-flyout-ttn .ic-chon {
+  fill: currentColor;
+  stroke: none;
+}
+:root[data-ic="khoi"] .ic-hai path,
+:root[data-ic="khoi"] .ic-hai circle,
+:root[data-ic="khoi"] .ic-hai rect,
+:root[data-ic="khoi"] .ic-hai ellipse,
+:root[data-ic="khoi"] .sb-nav .ic-thuong path,
+:root[data-ic="khoi"] .sb-nav .ic-thuong circle,
+:root[data-ic="khoi"] .sb-nav .ic-thuong rect,
+:root[data-ic="khoi"] .sb-nav .ic-thuong ellipse,
+:root[data-ic="khoi"] .sb-nav .ic-chon path,
+:root[data-ic="khoi"] .sb-nav .ic-chon circle,
+:root[data-ic="khoi"] .sb-nav .ic-chon rect,
+:root[data-ic="khoi"] .sb-nav .ic-chon ellipse,
+:root[data-ic="khoi"] .sb-flyout-ttn .ic-thuong path,
+:root[data-ic="khoi"] .sb-flyout-ttn .ic-thuong circle,
+:root[data-ic="khoi"] .sb-flyout-ttn .ic-thuong rect,
+:root[data-ic="khoi"] .sb-flyout-ttn .ic-thuong ellipse,
+:root[data-ic="khoi"] .sb-flyout-ttn .ic-chon path,
+:root[data-ic="khoi"] .sb-flyout-ttn .ic-chon circle,
+:root[data-ic="khoi"] .sb-flyout-ttn .ic-chon rect,
+:root[data-ic="khoi"] .sb-flyout-ttn .ic-chon ellipse {
+  fill: currentColor;
+  stroke: none;
+  opacity: .42;
+}
+:root[data-ic="khoi"] .ic-hai .l2,
+:root[data-ic="khoi"] .ic-hai .l2 path,
+:root[data-ic="khoi"] .ic-hai path.l2,
+:root[data-ic="khoi"] .ic-hai .l2 circle,
+:root[data-ic="khoi"] .ic-hai circle.l2,
+:root[data-ic="khoi"] .ic-hai .l2 rect,
+:root[data-ic="khoi"] .ic-hai rect.l2,
+:root[data-ic="khoi"] .ic-hai .l2 *,
+:root[data-ic="khoi"] .sb-nav .ic-thuong .l2,
+:root[data-ic="khoi"] .sb-nav .ic-thuong .l2 path,
+:root[data-ic="khoi"] .sb-nav .ic-thuong path.l2,
+:root[data-ic="khoi"] .sb-nav .ic-thuong .l2 circle,
+:root[data-ic="khoi"] .sb-nav .ic-thuong circle.l2,
+:root[data-ic="khoi"] .sb-nav .ic-thuong .l2 rect,
+:root[data-ic="khoi"] .sb-nav .ic-thuong rect.l2,
+:root[data-ic="khoi"] .sb-nav .ic-thuong .l2 *,
+:root[data-ic="khoi"] .sb-nav .ic-chon .l2,
+:root[data-ic="khoi"] .sb-nav .ic-chon .l2 path,
+:root[data-ic="khoi"] .sb-nav .ic-chon path.l2,
+:root[data-ic="khoi"] .sb-nav .ic-chon .l2 circle,
+:root[data-ic="khoi"] .sb-nav .ic-chon circle.l2,
+:root[data-ic="khoi"] .sb-nav .ic-chon .l2 rect,
+:root[data-ic="khoi"] .sb-nav .ic-chon rect.l2,
+:root[data-ic="khoi"] .sb-nav .ic-chon .l2 *,
+:root[data-ic="khoi"] .sb-flyout-ttn .ic-thuong .l2,
+:root[data-ic="khoi"] .sb-flyout-ttn .ic-thuong .l2 path,
+:root[data-ic="khoi"] .sb-flyout-ttn .ic-thuong path.l2,
+:root[data-ic="khoi"] .sb-flyout-ttn .ic-thuong .l2 circle,
+:root[data-ic="khoi"] .sb-flyout-ttn .ic-thuong circle.l2,
+:root[data-ic="khoi"] .sb-flyout-ttn .ic-thuong .l2 rect,
+:root[data-ic="khoi"] .sb-flyout-ttn .ic-thuong rect.l2,
+:root[data-ic="khoi"] .sb-flyout-ttn .ic-thuong .l2 *,
+:root[data-ic="khoi"] .sb-flyout-ttn .ic-chon .l2,
+:root[data-ic="khoi"] .sb-flyout-ttn .ic-chon .l2 path,
+:root[data-ic="khoi"] .sb-flyout-ttn .ic-chon path.l2,
+:root[data-ic="khoi"] .sb-flyout-ttn .ic-chon .l2 circle,
+:root[data-ic="khoi"] .sb-flyout-ttn .ic-chon circle.l2,
+:root[data-ic="khoi"] .sb-flyout-ttn .ic-chon .l2 rect,
+:root[data-ic="khoi"] .sb-flyout-ttn .ic-chon rect.l2,
+:root[data-ic="khoi"] .sb-flyout-ttn .ic-chon .l2 * {
+  opacity: 1 !important;
+  fill: currentColor !important;
+  stroke: none !important;
+}
+
+/* 3. Cỡ icon khối và các màn hình */
+/* Icon khối nhỏ nhất 20px */
+:root[data-ic="khoi"] .ic.ic-2m.sm,
+:root[data-ic="khoi"] .ic.ic-2m[class*="sm"],
+:root[data-ic="khoi"] .o-nen.o-sm .ic.sm {
+  width: var(--ic);
+  height: var(--ic);
+}
+
+/* Thao tác nhanh trang chủ web: icon 32px */
+:root[data-ic="khoi"] .bbt-tt-nhanh-nut .o-nen,
+:root[data-ic="khoi"] .bbt-tt-nhanh-nut .o-nen .ic,
+:root[data-ic="khoi"] .bbt-tt-nhanh-nut .ic,
+:root[data-ic="khoi"] .ttn-luoi .ttn-o .o-nen,
+:root[data-ic="khoi"] .ttn-luoi .ttn-o .o-nen .ic,
+:root[data-ic="khoi"] .ttn-luoi .ttn-o .ic,
+:root[data-ic="khoi"] .ttn-ic-tron .o-nen,
+:root[data-ic="khoi"] .ttn-ic-tron .o-nen .ic,
+:root[data-ic="khoi"] .ttn-ic-tron .ic,
+:root[data-ic="khoi"] .ttn-dong-ic .o-nen,
+:root[data-ic="khoi"] .ttn-dong-ic .o-nen .ic,
+:root[data-ic="khoi"] .ttn-dong-ic .ic {
+  width: 32px !important;
+  height: 32px !important;
+}
+
+/* Lập nhanh điện thoại: icon 32px */
+:root[data-ic="khoi"] .mnv-ln-ic,
+:root[data-ic="khoi"] .mnv-ln-ic .ic,
+:root[data-ic="khoi"] .mnv-ln-ic .o-nen,
+:root[data-ic="khoi"] .mnv-ln-ic .o-nen .ic {
+  width: 32px !important;
+  height: 32px !important;
+}
+
+/* Lưới Nghiệp vụ điện thoại: icon 32px */
+:root[data-ic="khoi"] .mnv-the-ic .o-nen,
+:root[data-ic="khoi"] .mnv-the-ic .o-nen .ic,
+:root[data-ic="khoi"] .mnv-the-ic .ic {
+  width: 32px !important;
+  height: 32px !important;
+}
+
+/* Thao tác nhanh trang chủ điện thoại */
+:root[data-ic="khoi"] .m-tc-nhanh-ic-tron .o-nen,
+:root[data-ic="khoi"] .m-tc-nhanh-ic-tron .o-nen .ic,
+:root[data-ic="khoi"] .m-tc-nhanh-ic-tron .ic {
+  width: 32px !important;
+  height: 32px !important;
+}
+
+/* Dòng danh sách điện thoại: lên 20px */
+:root[data-ic="khoi"] .m-lp-dong-ic,
+:root[data-ic="khoi"] .ic.m-lp-dong-ic {
+  width: var(--ic) !important;
+  height: var(--ic) !important;
+}
+

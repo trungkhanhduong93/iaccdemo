@@ -760,4 +760,16 @@ Trum chốt 17/10/2026 khi làm T319. (ifinance.pages.dev đã có người khá
 - Bản phát hành dùng chung build và dữ liệu demo với bản dev, giữ `noindex` qua `public/_headers` để không bị Google lập chỉ mục.
 - Robot ở `.github/workflows/release.yml` tự kiểm, build, đưa lên Cloudflare Pages và báo Telegram mỗi lần phát hành kèm số phiên bản, cả khi thành công lẫn khi hỏng.
 
-## QD71. Bộ icon Solar khối 3D (đang soạn)
+## QD71. Bộ icon Solar khối 3D (17/10/2026)
+
+Trum chốt trên trang xem trước https://claude.ai/artifact/H59WiEziF4UvzqSo5nNQAe (bản 4), giao T320. Thay phần kiểu nét 2 màu của QD67, giữ màu thân xanh, nhấn cam.
+
+- Lý do đổi: nét Solar 1.5px nằm lệch nửa điểm ảnh, trên màn FullHD nhìn mờ, răng cưa, rõ nhất ở 16px.
+- Icon đồ vật, phân hệ vẽ khối Solar Bold Duotone. Thân chuyển màu xanh `#2a8ad8` xuống `#03457a`, chi tiết chuyển màu cam `#ffb468` xuống `#e86f0c`, đổ bóng nhẹ.
+- Icon khối nhỏ nhất 20px. Thao tác nhanh trang chủ, Lập nhanh và thẻ phân hệ trên điện thoại 32px. Dòng danh sách điện thoại 20px.
+- Icon thao tác (kính lúp, mũi tên, chevron, nút Thêm mới, In, Lọc, Làm mới) giữ nét Solar 16px.
+- Thanh bên dùng khối một màu: thân đậm 42%, chi tiết đậm 100%. Mục chưa chọn màu `#b9cad8`, mục chọn màu trắng.
+- Đổi 9 icon sai nghĩa. Mua hàng thành túi mua hàng, Giá thành thành thẻ giá, Chi phí phân bổ thành hình tròn tách miếng, Tiện ích thành lưới có dấu cộng.
+- Thẻ chi phí phân bổ thành bảng kê. Nhập kho, Xuất kho thành hộp có mũi tên vào, ra. Kiểm kê thành bảng có dấu tích, Bảng giá thành thẻ trơn.
+- Phiếu điều chuyển giữ xe đẩy, Ghi tăng CCDC giữ búa.
+- Bộ Solar nét giữ làm dự phòng. Đổi `BO_ICON` trong `src/ui/Icon.tsx` thành `'net'` là quay về, luật CSS của T320 chỉ chạy khi `<html data-ic="khoi">`.

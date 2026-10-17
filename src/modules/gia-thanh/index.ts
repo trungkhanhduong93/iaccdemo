@@ -37,7 +37,7 @@ const giaThanhMon = {
 const NGAN: Record<string, string> = { '9.1.1': 'Phân bổ chi phí', '9.1.2': 'Tính giá thành' }
 
 const giaThanh: ModuleDef = {
-  key: 'gia-thanh', ten: 'Chi phí, giá thành', ngan: 'Giá thành', icon: 'flask', mod: 8,
+  key: 'gia-thanh', ten: 'Chi phí, giá thành', ngan: 'Giá thành', icon: 'giathanh', mod: 8,
   mota: 'Tập hợp chi phí, phân bổ, giá thành nhiều cấp cho món và bán thành phẩm',
   quyTrinh,
   screens: tuExcel(8, {

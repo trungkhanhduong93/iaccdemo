@@ -9,7 +9,7 @@ export const quyTrinh: QuyTrinhDef = {
     { chinh: { ten: 'Tính giá vốn nguyên vật liệu', icon: 'calc', di: 'kho/5-1-7' } },
     { chinh: { ten: 'Tập hợp chi phí', icon: 'layers', di: 'gia-thanh/9-2-1' } },
     { chinh: { ten: 'Phân bổ chi phí chung', icon: 'scale', di: 'gia-thanh/9-1-1' } },
-    { chinh: { ten: 'Tính giá thành nhiều cấp', icon: 'flask', di: 'gia-thanh/9-1-2' } },
+    { chinh: { ten: 'Tính giá thành nhiều cấp', icon: 'giathanh', di: 'gia-thanh/9-1-2' } },
     { chinh: { ten: 'Báo cáo giá thành', icon: 'chart', di: 'gia-thanh/9-2-2' } },
   ],
   baoCao: ['9-2-1', '9-2-2', 'kho/5-2-6', 'kho/5-2-7', 'kho/5-2-5'],

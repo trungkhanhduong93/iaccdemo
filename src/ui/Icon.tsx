@@ -17,27 +17,35 @@ export interface IconProps {
   kieu?: 'khoi' | 'net' | 'hai'
 }
 
+// Đổi thành 'net' để quay về bộ Solar nét T301
+export const BO_ICON: 'khoi' | 'net' = 'khoi'
+if (typeof document !== 'undefined') {
+  document.documentElement.dataset.ic = BO_ICON
+}
+
 export function Icon({ n, className = 'ic', title, kieu }: IconProps) {
   const mode = kieu || (DAC[n] ? 'khoi' : 'net')
 
   if (mode === 'hai') {
-    const net = NET[n] || NET.doc || DAC[n] || DAC.doc
+    const iconData = BO_ICON === 'khoi'
+      ? (DAC[n] || NET[n] || DAC.doc)
+      : (NET[n] || DAC[n] || NET.doc)
     return (
       <>
         <svg
-          className={`${className} ic-thuong`}
-          viewBox={net.vb}
+          className={`${className} ic-thuong ic-hai`}
+          viewBox={iconData.vb}
           aria-hidden={title ? undefined : true}
           dangerouslySetInnerHTML={{
-            __html: (title ? `<title>${title}</title>` : '') + net.body
+            __html: (title ? `<title>${title}</title>` : '') + iconData.body
           }}
         />
         <svg
-          className={`${className} ic-chon`}
-          viewBox={net.vb}
+          className={`${className} ic-chon ic-hai`}
+          viewBox={iconData.vb}
           aria-hidden={title ? undefined : true}
           dangerouslySetInnerHTML={{
-            __html: (title ? `<title>${title}</title>` : '') + net.body
+            __html: (title ? `<title>${title}</title>` : '') + iconData.body
           }}
         />
       </>
@@ -45,14 +53,16 @@ export function Icon({ n, className = 'ic', title, kieu }: IconProps) {
   }
 
   if (mode === 'khoi') {
-    const net = NET[n] || NET.doc || DAC[n] || DAC.doc
+    const iconData = BO_ICON === 'khoi'
+      ? (DAC[n] || NET[n] || DAC.doc)
+      : (NET[n] || DAC[n] || NET.doc)
     return (
       <svg
         className={`${className} ic-2m`}
-        viewBox={net.vb}
+        viewBox={iconData.vb}
         aria-hidden={title ? undefined : true}
         dangerouslySetInnerHTML={{
-          __html: (title ? `<title>${title}</title>` : '') + net.body
+          __html: (title ? `<title>${title}</title>` : '') + iconData.body
         }}
       />
     )

@@ -11,7 +11,7 @@ import { ThietKeMauIn } from './ThietKeMauIn'
 const NGAN: Record<string, string> = { '11.1': 'Đồng bộ bán hàng', '11.2': 'Xuất kho định lượng', '11.3': 'Đồng bộ kho', '11.4': 'Hoá đơn đầu vào', '11.5': 'Duyệt chứng từ', '11.6': 'Cảnh báo', '11.7': 'Đối soát', '11.8': 'Ngân hàng', '11.9': 'Cơ quan thuế', '11.10': 'AI nhập liệu', '11.11': 'Thiết kế mẫu in', '11.12': 'Báo cáo tự khai báo', '11.13': 'Nhiều bộ dữ liệu', '11.14': 'Dữ liệu lớn', '11.15': 'Nhiều kho một điểm bán', '11.16': 'Dashboard', 'X1': 'Truy cập web', 'X2': 'Nhật ký thao tác', 'X3': 'App điện thoại' }
 
 const tienIch: ModuleDef = {
-  key: 'tien-ich', ten: 'Tiện ích bổ sung', ngan: 'Tiện ích', icon: 'grid', mod: 10,
+  key: 'tien-ich', ten: 'Tiện ích bổ sung', ngan: 'Tiện ích', icon: 'tienich', mod: 10,
   mota: 'Đồng bộ, đối soát, kết nối thuế và ngân hàng, AI',
   quyTrinh,
   screens: tuExcel(10, {
