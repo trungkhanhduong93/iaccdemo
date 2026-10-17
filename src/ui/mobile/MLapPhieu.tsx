@@ -1,4 +1,4 @@
-import { useMemo, useState, type FC } from 'react'
+import { useEffect, useMemo, useState, type FC } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import type { Row, ScreenProps } from '../../modules/types'
 import { dongCua, tkTheoLyDo, type Dong } from '../generic/gen'
@@ -9,7 +9,7 @@ import { CUA_HANG, HANG, KHACH, KHO, LY_CAN_DOI_TUONG, LY_DO, NCC, NHAN_VIEN, NV
 import { boO, nhomCua, theoLoai } from '../generic/nhom'
 import { DS_DOI_TUONG } from '../generic/BangSua'
 import { ghiNhatKy, soKeTiep, suaPhieu, themPhieu } from '../generic/daXoa'
-import { QUY_TIEN } from '../generic/ChungTuForm'
+import { MAN_THU_CHI, QUY_TIEN, TEN_CT_TT, TIEN_TO_CT_TT } from '../generic/ChungTuForm'
 import { useDongChungTu } from '../generic/VoucherScreen'
 import { fold, money } from '../format'
 import { Icon } from '../Icon'
@@ -525,13 +525,18 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
     ? 'Kho xuất'
     : 'Kho'
 
+  // Hình thức thanh toán (phiếu bán hàng, mua hàng)
+  const [httt, setHttt] = useState<'congno' | 'tienmat' | 'chuyenkhoan'>(() => {
+    return (gocData?._httt as 'congno' | 'tienmat' | 'chuyenkhoan') ?? 'congno'
+  })
+
   // Quỹ
   const quyTm = `Quỹ tiền mặt ${CUA_HANG.find(c => c.ten === cuaHang)?.ngan ?? CUA_HANG[0].ngan}`
   const dsQuy = useMemo(() => {
-    if (nhom === 'thu' || nhom === 'chi') return [quyTm]
-    if (nhom === 'nhthu' || nhom === 'nhchi') return QUY_TIEN.slice(CUA_HANG.length)
+    if (nhom === 'thu' || nhom === 'chi' || (nhom === 'mua' && httt === 'tienmat')) return [quyTm]
+    if (nhom === 'nhthu' || nhom === 'nhchi' || (nhom === 'mua' && httt === 'chuyenkhoan')) return QUY_TIEN.slice(CUA_HANG.length)
     return QUY_TIEN
-  }, [nhom, quyTm])
+  }, [nhom, httt, quyTm])
 
   // Lý do thu chi
   const dsLyDo = useMemo(() => {
@@ -569,8 +574,23 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
   // Quỹ
   const [quy, setQuy] = useState(() => {
     if (gocData?._quy) return String(gocData._quy)
+    if (nhom === 'mua') {
+      return httt === 'tienmat' ? quyTm : httt === 'chuyenkhoan' ? (QUY_TIEN.slice(CUA_HANG.length)[0] ?? '') : ''
+    }
     return dsQuy[0] ?? quyTm
   })
+
+  // Đổi quỹ khi hình thức thanh toán mua hàng đổi (T353 điểm 25a)
+  useEffect(() => {
+    if (nhom === 'mua') {
+      if (httt === 'tienmat') {
+        setQuy(quyTm)
+      } else if (httt === 'chuyenkhoan') {
+        const dsNh = QUY_TIEN.slice(CUA_HANG.length)
+        if (!dsNh.includes(quy)) setQuy(dsNh[0] ?? '')
+      }
+    }
+  }, [httt, nhom, quyTm])
 
   // Quỹ nhận (Chuyển quỹ)
   const [denQuy, setDenQuy] = useState(() => {
@@ -587,11 +607,6 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
   // Hoá đơn
   const [soHd, setSoHd] = useState(() => String(gocData?._soHd ?? ''))
   const [kyHieuHd, setKyHieuHd] = useState(() => String(gocData?._kyHieuHd ?? ''))
-
-  // Hình thức thanh toán (phiếu bán hàng, mua hàng)
-  const [httt, setHttt] = useState<'congno' | 'tienmat' | 'chuyenkhoan'>(() => {
-    return (gocData?._httt as 'congno' | 'tienmat' | 'chuyenkhoan') ?? 'congno'
-  })
 
   // Khối Hạch toán thu gọn mặc định
   const [moHt, setMoHt] = useState(false)
@@ -909,6 +924,9 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
       if (cfg.doiTuong !== 'none' && !doiTuong.trim()) {
         loiMoi.doiTuong = `Vui lòng chọn ${nhanDoiTuong.toLowerCase()}`
       }
+      if (nhom === 'mua' && httt !== 'congno' && !quy.trim()) {
+        loiMoi.quy = httt === 'tienmat' ? 'Vui lòng chọn quỹ tiền mặt' : 'Vui lòng chọn tài khoản ngân hàng'
+      }
       if (dsDong.length === 0) {
         loiMoi.hang = 'Vui lòng chọn ít nhất một mặt hàng'
       }
@@ -942,6 +960,39 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
     const idLuu = dangSua ? String(row!.id) : `moi-${Date.now()}`
     const soCt = dangSua ? String(row!.so) : soKeTiep(man, `${cfg.prefix}2610-`)
 
+    let ctTt = undefined
+    if (nhom === 'mua' && httt !== 'congno') {
+      const loaiTt = httt === 'tienmat' ? 'chi' : 'unc'
+      const soTt = soKeTiep(MAN_THU_CHI, `${TIEN_TO_CT_TT[loaiTt]}2610-`)
+      const idTt = `moi-${Date.now()}-tt`
+      const dgTt = `Chi tiền mua hàng theo ${soCt}`
+      const lyTt = 'Thanh toán tiền cho nhà cung cấp'
+      themPhieu(MAN_THU_CHI, {
+        id: idTt,
+        so: soTt,
+        cn: cuaHang,
+        nguon: 'tay',
+        tt: ttLuu,
+        loai: loaiTt,
+        tenLoai: TEN_CT_TT[loaiTt],
+        ngay: ngayChiTiet,
+        thang: Number(ngayChiTiet.split('/')[1]) || 10,
+        doiTuong,
+        dienGiai: dgTt,
+        tien: tongThanhToan,
+        thue: 0,
+        tong: tongThanhToan,
+        _quy: quy,
+        _lyDo: lyTt,
+        _ghiChu: dgTt,
+        _thamChieu: soCt,
+        _thamChieuDi: `${path}/${idLuu}`,
+        _dong: [{ ma: '', ten: dgTt, dvt: '', sl: 1, gia: tongThanhToan, tien: tongThanhToan, ts: 0, thue: 0, ly: lyTt, dt: doiTuong, km: '', cv: '' }],
+      }, s.ten)
+      ghiNhatKy(MAN_THU_CHI, idTt, soTt, s.ten, `Thêm mới chứng từ, sinh từ ${soCt}`)
+      ctTt = { id: idTt, so: soTt, loai: loaiTt }
+    }
+
     const noiDung = {
       ngay: ngayChiTiet,
       gio: thoiGian.split(' ')[1] || '10:00',
@@ -954,12 +1005,13 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
       _dong: dsDong,
       _lyDo: laTien ? (dsDong[0]?.ly || dsLyDo[0] || 'Chi tiền') : undefined,
       _ghiChu: ghiChu,
-      _quy: quy,
+      _quy: (nhom === 'mua' && httt === 'congno') ? undefined : quy,
       _denQuy: laCq ? denQuy : undefined,
       _kho: kho,
       _soHd: soHd,
       _kyHieuHd: kyHieuHd,
       _httt: httt,
+      ...(ctTt ? { _ctTt: ctTt } : {}),
     }
 
     if (dangSua) {
@@ -1070,6 +1122,17 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
               >
                 Xem phiếu
               </button>
+              {nhom === 'mua' && httt === 'congno' && (
+                <button
+                  type="button"
+                  className="m-lp-btn-tt-ngay"
+                  id="m-lp-btn-tt-ngay"
+                  onClick={() => nav(`${path}/${idPhieuMoi}?thanhtoan=1`)}
+                >
+                  <Icon n="wallet" className="ic sm" kieu="net" />
+                  <span>Thanh toán ngay</span>
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -1341,6 +1404,29 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                 <Icon n="chevr" className="ic sm m-lp-dong-mui-ten" kieu="net" />
               </div>
 
+              {/* T353 điểm 25(a): Quỹ tiền cho Phiếu mua hàng khi chọn Tiền mặt hoặc Chuyển khoản */}
+              {nhom === 'mua' && httt !== 'congno' && (
+                <>
+                  <div
+                    className="m-lp-dong-o"
+                    id="m-lp-o-quy"
+                    onClick={() => setMoChonQuy(true)}
+                  >
+                    <div className="m-lp-dong-trai">
+                      <Icon n={httt === 'tienmat' ? 'wallet' : 'bank'} className="ic sm m-lp-dong-ic" kieu="net" />
+                      <div className="m-lp-dong-nd">
+                        <span className="m-lp-dong-nhan">
+                          {httt === 'tienmat' ? 'Quỹ tiền mặt' : 'Tài khoản ngân hàng'} <b className="m-lp-sao">*</b>
+                        </span>
+                        <span className="m-lp-dong-tri">{quy || (httt === 'tienmat' ? 'Chọn quỹ tiền mặt' : 'Chọn tài khoản ngân hàng')}</span>
+                      </div>
+                    </div>
+                    <Icon n="chevr" className="ic sm m-lp-dong-mui-ten" kieu="net" />
+                  </div>
+                  {loiO.quy && <div className="m-lp-loi-o">{loiO.quy}</div>}
+                </>
+              )}
+
               {/* Ngày */}
               <div
                 className="m-lp-dong-o m-lp-the-truong"
@@ -1558,11 +1644,11 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
         tim
       />
 
-      {/* ── SHEET CHỌN QUÝ ── */}
+      {/* ── SHEET CHỌN QUỸ ── */}
       <MChon
         mo={moChonQuy}
         onDong={() => setMoChonQuy(false)}
-        tieuDe="Chọn quỹ / tài khoản"
+        tieuDe={nhom === 'mua' ? (httt === 'tienmat' ? 'Chọn quỹ tiền mặt' : 'Chọn tài khoản ngân hàng') : 'Chọn quỹ / tài khoản'}
         ds={dsQuy.map(q => ({ k: q, ten: q }))}
         chon={quy}
         onChon={v => {

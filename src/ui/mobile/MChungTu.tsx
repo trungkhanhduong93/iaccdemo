@@ -1,5 +1,5 @@
 import { useMemo, useState, type FC, type ReactNode } from 'react'
-import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { Navigate, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import type { ScreenProps } from '../../modules/types'
 import { duongDan } from '../../app/registry'
 import { cuaHangHienTai, useSession } from '../../app/session'
@@ -27,6 +27,12 @@ export const MChungTu: FC<ScreenProps> = ({ sc, mod }) => {
   const { id } = useParams()
   const [sp] = useSearchParams()
   const sua = sp.get('sua') === '1'
+  const { cfg } = useDongChungTu(sc, mod)
+
+  // T353 điểm 13b: Điều chỉnh kho trên điện thoại chỉ xem, chặn lối lập phiếu mới
+  if (cfg.dieuChinh && id === 'moi') {
+    return <Navigate to={duongDan(mod, sc)} replace />
+  }
 
   if (id === 'moi' || sua) {
     if (sp.get('full') === '1' || sp.get('form') === 'full') {
@@ -174,8 +180,8 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
     return { tongThu: thu, tongChi: chi, chenhLech: thu - chi }
   }, [list, dsChieu])
 
-  // Thêm mới (T299: gói Free ở tab Chuyển quỹ mở thẳng, tab Tiền mặt/Ngân hàng mở 2 loại)
-  const khongThem = cfg.khongThem && !cfg.dieuChinh
+  // Thêm mới (T299: gói Free ở tab Chuyển quỹ mở thẳng, tab Tiền mặt/Ngân hàng mở 2 loại; T353 điểm 13b: Điều chỉnh kho trên điện thoại chỉ xem)
+  const khongThem = Boolean(cfg.khongThem || cfg.dieuChinh)
   const handleThem = khongThem
     ? undefined
     : () => {

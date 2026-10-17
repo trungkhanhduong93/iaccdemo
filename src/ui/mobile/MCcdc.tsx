@@ -11,6 +11,7 @@ import { MChon } from './MChon'
 import {
   daPhanBoToiKy,
   LOAI_THE,
+  soTheKeTiep,
   type DongPb,
 } from '../../modules/ccdc/the-phan-bo'
 
@@ -163,32 +164,38 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
     setMoGhiTang(true)
   }
 
+  const valGt = Number(ftGt) || 0
+  const valKy = Number(ftKy) || 12
+  const moiThang = valKy > 0 ? Math.round(valGt / valKy) : 0
+
   const handleLuuGhiTang = () => {
     if (!ftTen.trim()) {
-      toast('Vui lòng nhập tên thẻ chi phí')
+      toast('Vui lòng nhập tên mục chi phí / CCDC')
       return
     }
-    const valGt = Number(ftGt) || 0
-    const valKy = Number(ftKy) || 12
     if (valGt <= 0) {
       toast('Số tiền phải lớn hơn 0')
       return
     }
+    if (valKy <= 0) {
+      toast('Số tháng phân bổ phải lớn hơn 0')
+      return
+    }
     const sttMoi = theList.length + 1
-    const soTheMoi = `TPB2610-${String(sttMoi).padStart(4, '0')}`
+    const soTheMoi = soTheKeTiep(theList.map(t => t.soThe), 'the', ftNgay) || `TPB2610-${String(sttMoi).padStart(4, '0')}`
     const theMoi = {
       soThe: soTheMoi,
       loai: ftLoai,
       ngay: ftNgay,
-      ten: ftTen,
+      ten: ftTen.trim(),
       cn: cnGhiTang || 'Phố Mây Lê Lợi',
       gt: valGt,
       ky: valKy,
       soCt: tuPhieu?.soCt || `PC2610-${String(sttMoi + 200).padStart(4, '0')}`,
       ngayCt: tuPhieu?.ngayCt || ftNgay,
-      ghiChuCt: tuPhieu?.ghiChuCt || ftTen,
+      ghiChuCt: tuPhieu?.ghiChuCt || ftTen.trim(),
       _goc: tuPhieu?._goc || '',
-      dong: [{ ma: `CPTT.${String(sttMoi).padStart(4, '0')}`, ten: ftTen, gt: valGt, ky: valKy, sl: 1, dg: valGt, ngayPb: ftNgayPb }],
+      dong: [{ ma: `CPTT.${String(sttMoi).padStart(4, '0')}`, ten: ftTen.trim(), gt: valGt, ky: valKy, sl: 1, dg: valGt, ngayPb: ftNgayPb }],
     }
     setTheList(prev => [theMoi, ...prev])
     toast(`Đã ghi tăng thẻ ${soTheMoi}`)
@@ -298,7 +305,7 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
         </div>
       )}
 
-      {/* ── MÀN GHI TĂNG THẺ (DÙNG LỚP m-*, KHÔNG TRÀN NGANG Ở 390PX) ── */}
+      {/* ── MÀN GHI TĂNG THẺ (DẠNG FORM CHỨNG TỪ THẺ TRẮNG - T353 ĐIỂM 14) ── */}
       {moGhiTang && (
         <div className="m-man-toan-man">
           <header className="m-thanh-tren">
@@ -308,6 +315,7 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
                 className="m-nut-back"
                 onClick={() => setMoGhiTang(false)}
                 aria-label="Quay lại"
+                title="Quay lại"
               >
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M19 12H5M12 19l-7-7 7-7" vectorEffect="non-scaling-stroke" />
@@ -315,82 +323,145 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
               </button>
             </div>
             <h1 className="m-thanh-tren-tieu-de">Ghi tăng thẻ chi phí</h1>
+            <div className="m-thanh-tren-phai" />
           </header>
 
-          <div className="m-than-form">
-            <div className="m-form-nhom">
-              <div className="m-form-dong-nhan">Cửa hàng</div>
-              <div className="m-form-gia-tri-tinh">{cnGhiTang || 'Phố Mây Lê Lợi'}</div>
+          <div className="m-than-form" style={{ background: 'var(--bg, #f8fafc)', padding: 16 }}>
+            <div className="m-the-trang m-gt-the-nhom">
+              {/* Cửa hàng */}
+              <div className="m-gt-dong">
+                <span className="m-gt-nhan">
+                  <Icon n="store" className="ic sm m-lp-dong-ic" kieu="net" />
+                  Cửa hàng
+                </span>
+                <span className="m-gt-tri">{cnGhiTang || 'Phố Mây Lê Lợi'}</span>
+              </div>
+
+              {/* Loại thẻ */}
+              <div
+                className="m-gt-dong m-gt-bam"
+                onClick={() => setMoChonLoai(true)}
+                role="button"
+                tabIndex={0}
+              >
+                <span className="m-gt-nhan">
+                  <Icon n="layers" className="ic sm m-lp-dong-ic" kieu="net" />
+                  Loại thẻ
+                </span>
+                <span className="m-gt-tri">
+                  <span>{ftLoai}</span>
+                  <Icon n="chevr" className="ic sm" kieu="net" />
+                </span>
+              </div>
+
+              {/* Tên mục chi phí / CCDC */}
+              <div className="m-gt-dong">
+                <span className="m-gt-nhan">
+                  <Icon n="tool" className="ic sm m-lp-dong-ic" kieu="net" />
+                  Tên mục chi phí / CCDC <b className="m-gt-sao">*</b>
+                </span>
+                <div className="m-gt-tri">
+                  <input
+                    type="text"
+                    className="m-gt-inp"
+                    placeholder="Vd: Bộ nồi inox 50 lít"
+                    value={ftTen}
+                    onChange={e => setFtTen(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              {/* Số tiền */}
+              <div className="m-gt-dong">
+                <span className="m-gt-nhan">
+                  <Icon n="wallet" className="ic sm m-lp-dong-ic" kieu="net" />
+                  Số tiền <b className="m-gt-sao">*</b>
+                </span>
+                <div className="m-gt-tri">
+                  <input
+                    type="text"
+                    className="m-gt-inp num"
+                    placeholder="0"
+                    value={ftGt ? money(Number(ftGt) || 0) : ''}
+                    onChange={e => setFtGt(e.target.value.replace(/\D/g, ''))}
+                  />
+                  <span className="m-gt-donvi">đ</span>
+                </div>
+              </div>
+
+              {/* Số tháng phân bổ */}
+              <div className="m-gt-dong">
+                <span className="m-gt-nhan">
+                  <Icon n="clock" className="ic sm m-lp-dong-ic" kieu="net" />
+                  Số tháng phân bổ <b className="m-gt-sao">*</b>
+                </span>
+                <div className="m-gt-tri">
+                  <input
+                    type="text"
+                    className="m-gt-inp num"
+                    placeholder="12"
+                    value={ftKy}
+                    onChange={e => setFtKy(e.target.value.replace(/\D/g, ''))}
+                    style={{ maxWidth: 60 }}
+                  />
+                  <span className="m-gt-donvi">tháng</span>
+                </div>
+              </div>
+
+              {/* Mỗi tháng phân bổ (tính sẵn) */}
+              <div className="m-gt-dong">
+                <span className="m-gt-nhan">
+                  <Icon n="phanbo" className="ic sm m-lp-dong-ic" kieu="net" />
+                  Mỗi tháng phân bổ
+                </span>
+                <span className="m-gt-tri m-gt-tinh">
+                  {money(moiThang)} đ
+                </span>
+              </div>
+
+              {/* Ngày bắt đầu phân bổ */}
+              <div className="m-gt-dong">
+                <span className="m-gt-nhan">
+                  <Icon n="calendar" className="ic sm m-lp-dong-ic" kieu="net" />
+                  Ngày bắt đầu phân bổ
+                </span>
+                <div className="m-gt-tri">
+                  <input
+                    type="text"
+                    className="m-gt-inp"
+                    placeholder="dd/mm/yyyy"
+                    value={ftNgayPb}
+                    onChange={e => setFtNgayPb(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              {/* Ngày ghi tăng */}
+              <div className="m-gt-dong">
+                <span className="m-gt-nhan">
+                  <Icon n="clock" className="ic sm m-lp-dong-ic" kieu="net" />
+                  Ngày ghi tăng
+                </span>
+                <div className="m-gt-tri">
+                  <input
+                    type="text"
+                    className="m-gt-inp"
+                    placeholder="dd/mm/yyyy"
+                    value={ftNgay}
+                    onChange={e => setFtNgay(e.target.value)}
+                  />
+                </div>
+              </div>
             </div>
 
-            <div className="m-form-nhom">
-              <label className="m-form-dong-nhan">Loại thẻ</label>
-              <button type="button" className="m-form-inp m-form-chon" onClick={() => setMoChonLoai(true)}>
-                <span>{ftLoai}</span>
-                <Icon n="chevd" className="ic sm" />
-              </button>
-              <MChon
-                mo={moChonLoai}
-                onDong={() => setMoChonLoai(false)}
-                tieuDe="Loại thẻ"
-                ds={Object.keys(LOAI_THE).map(k => ({ k, ten: k }))}
-                chon={ftLoai}
-                onChon={k => { setFtLoai(k); setMoChonLoai(false) }}
-              />
-            </div>
-
-            <div className="m-form-nhom">
-              <label className="m-form-dong-nhan">Tên mục chi phí / CCDC *</label>
-              <input
-                type="text"
-                className="m-form-inp"
-                placeholder="Vd: Bộ nồi inox 50 lít"
-                value={ftTen}
-                onChange={e => setFtTen(e.target.value)}
-              />
-            </div>
-
-            <div className="m-form-nhom">
-              <label className="m-form-dong-nhan">Số tiền (VNĐ) *</label>
-              <input
-                type="number"
-                className="m-form-inp"
-                value={ftGt}
-                onChange={e => setFtGt(e.target.value)}
-              />
-            </div>
-
-            <div className="m-form-nhom">
-              <label className="m-form-dong-nhan">Số tháng phân bổ *</label>
-              <input
-                type="number"
-                className="m-form-inp"
-                value={ftKy}
-                onChange={e => setFtKy(e.target.value)}
-              />
-            </div>
-
-            <div className="m-form-nhom">
-              <label className="m-form-dong-nhan">Ngày bắt đầu phân bổ</label>
-              <input
-                type="text"
-                className="m-form-inp"
-                value={ftNgayPb}
-                placeholder="dd/mm/yyyy"
-                onChange={e => setFtNgayPb(e.target.value)}
-              />
-            </div>
-
-            <div className="m-form-nhom">
-              <label className="m-form-dong-nhan">Ngày ghi tăng</label>
-              <input
-                type="text"
-                className="m-form-inp"
-                value={ftNgay}
-                placeholder="dd/mm/yyyy"
-                onChange={e => setFtNgay(e.target.value)}
-              />
-            </div>
+            <MChon
+              mo={moChonLoai}
+              onDong={() => setMoChonLoai(false)}
+              tieuDe="Loại thẻ"
+              ds={Object.keys(LOAI_THE).map(k => ({ k, ten: k }))}
+              chon={ftLoai}
+              onChon={k => { setFtLoai(k); setMoChonLoai(false) }}
+            />
           </div>
 
           <div className="m-form-day">
