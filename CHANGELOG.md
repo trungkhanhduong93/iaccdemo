@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 17/10/2026
 
+- T330: Phiếu thu, chi (web và điện thoại): ô Đối tượng chỉ bắt buộc khi lý do là Thu nợ, Đi vay, Thanh toán công nợ nhà cung cấp, Cho vay; lý do khác để trống được.
 - T329: Báo cáo Công nợ nhà cung cấp: bấm Thanh toán ngay chọn Tiền mặt (mở phiếu chi tiền mặt) hoặc Ngân hàng (mở uỷ nhiệm chi), điền sẵn nhà cung cấp và cửa hàng như trước.
 - T328: Danh mục phương thức thanh toán gói Free, Standard: mở một phương thức chỉ xem chi tiết, không sửa, không xoá; phương thức lấy từ FABi.
 - T327: Khoá sổ gói Free: bấm Mở khoá thì khung điền lý do hiện ngay dưới nút ở đầu trang, không phải kéo xuống cuối.

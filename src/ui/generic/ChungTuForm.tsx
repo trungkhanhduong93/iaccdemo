@@ -7,7 +7,7 @@ import { cuaHangHienTai, useSession, cheDoHienTai, ngayDauNam, truocDauNam, donV
 import { kieuGhiSo, type Goi } from '../../app/plan'
 import { CHE_DO, type CheDo } from '../../app/che-do'
 import { tkTheoCheDo } from '../../modules/tong-hop/so-cai'
-import { CUA_HANG, KHACH, KHO, KHOA_SO_DEN, LY_CHI_PHI, LY_DO, NCC, NHAN_VIEN, TK_NGAN_HANG, daKhoaSo } from '../../data/mock'
+import { CUA_HANG, KHACH, KHO, KHOA_SO_DEN, LY_CAN_DOI_TUONG, LY_CHI_PHI, LY_DO, NCC, NHAN_VIEN, TK_NGAN_HANG, daKhoaSo } from '../../data/mock'
 import { DS_PTTT } from '../../modules/danh-muc/data'
 import { HopXacNhan } from '../LocNangCao'
 import { bayGio, ctTtCon, dsDcCon, dsTtCon, ghiNhatKy, soDaTra, soKeTiep, suaPhieu, themPhieu, ttThamChieu, useNhatKy, xoaPhieu, type CtTt, type PhieuTt } from './daXoa'
@@ -146,6 +146,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   const [goiYVe] = useState(() => Boolean((loc.state as { goiYVeTrangChu?: boolean } | null)?.goiYVeTrangChu))
   const [hoiVe, setHoiVe] = useState<{ moMoi: boolean; idMoi: string } | null>(null)
   const [lyDo, setLyDo] = useState(() => row?._lyDo ? String(row._lyDo) : lyGoc(dienGiai))
+  const canDt = LY_CAN_DOI_TUONG.includes(lyDo)   // lý do bắt buộc chọn đối tượng (T330)
   // Phiếu chuyển quỹ: quỹ đi và quỹ đến. Rút tiền ngân hàng thì đi từ tài khoản về quỹ tiền mặt
   const quyTm = `Quỹ tiền mặt ${CUA_HANG.find(c => c.ten === cuaHang)?.ngan ?? CUA_HANG[0].ngan}`
   const rut = fold(dienGiai).includes('rut tien')
@@ -359,6 +360,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
       toast(`Ngày chứng từ phải từ ngày đầu năm ${ngayDauNam(s)} trở đi`)
       return
     }
+    // Phiếu thu, chi chỉ bắt buộc đối tượng khi lý do là thu nợ, đi vay, chi công nợ, cho vay (T330)
+    if (laTien && canDt && !doiTuong.trim()) { toast(`Chọn đối tượng cho lý do ${lyDo}`); return }
     // Phiếu sản xuất (T152): bắt buộc kho, phiếu nhập bắt buộc tham chiếu, phải có dòng
     if (laSx) {
       const thieu = sxNhap && !thamChieuSx.id ? 'Chọn phiếu tham chiếu' : !kho ? `Chọn ${sxNhap ? 'Kho nhập' : 'Kho xuất'}` : !dsDong.length ? 'Phiếu chưa có dòng hàng nào' : ''
@@ -949,7 +952,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
                 </div>
               )}
               <div className="f">
-                <label>{laTien ? 'Đối tượng' : cfg.nhan ?? 'Đối tượng'} <em>*</em></label>
+                <label>{laTien ? 'Đối tượng' : cfg.nhan ?? 'Đối tượng'} {(!laTien || canDt) && <em>*</em>}</label>
                 {dangSua ? (
                   <ChonDanhMuc dm={dmDt} nhan={(laTien ? 'đối tượng' : cfg.nhan ?? 'đối tượng').toLowerCase()} value={doiTuong} onChange={chonDoiTuong}
                     ds={dsDt.includes(doiTuong) || !doiTuong ? dsDt : [doiTuong, ...dsDt]} />

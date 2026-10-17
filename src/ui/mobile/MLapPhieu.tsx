@@ -5,7 +5,7 @@ import { dongCua, tkTheoLyDo, type Dong } from '../generic/gen'
 import { duongDan, tenMan } from '../../app/registry'
 import { cuaHangHienTai, ngayDauNam, truocDauNam, useSession } from '../../app/session'
 import { anNgoaiGoi, kieuGhiSo, type Goi } from '../../app/plan'
-import { CUA_HANG, HANG, KHACH, KHO, LY_DO, NCC, NHAN_VIEN, NVL, MA_LY_CHO_PHAN_BO } from '../../data/mock'
+import { CUA_HANG, HANG, KHACH, KHO, LY_CAN_DOI_TUONG, LY_DO, NCC, NHAN_VIEN, NVL, MA_LY_CHO_PHAN_BO } from '../../data/mock'
 import { boO, nhomCua, theoLoai } from '../generic/nhom'
 import { DS_DOI_TUONG } from '../generic/BangSua'
 import { ghiNhatKy, soKeTiep, suaPhieu, themPhieu } from '../generic/daXoa'
@@ -614,6 +614,8 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
     }
     return []
   })
+  // Phiếu thu, chi chỉ bắt buộc đối tượng khi có dòng lý do thu nợ, đi vay, chi công nợ, cho vay (T330)
+  const canDt = laTien && dsDong.some(d => LY_CAN_DOI_TUONG.includes(d.ly ?? ''))
 
   // Sheets chọn
   const [moChonLyDo, setMoChonLyDo] = useState(false)
@@ -872,7 +874,8 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
       if (laCq && (!denQuy.trim() || denQuy === quy)) {
         loiMoi.denQuy = 'Vui lòng chọn quỹ nhận khác quỹ xuất'
       }
-      if (!laCq && cfg.doiTuong !== 'none' && !doiTuong.trim()) {
+      // chỉ bắt buộc đối tượng khi lý do là thu nợ, đi vay, chi công nợ, cho vay (T330)
+      if (!laCq && cfg.doiTuong !== 'none' && canDt && !doiTuong.trim()) {
         loiMoi.doiTuong = `Vui lòng chọn ${nhanDoiTuong.toLowerCase()}`
       }
     } else {
@@ -1176,7 +1179,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                     <div className="m-lp-dong-trai">
                       <Icon n="user" className="ic sm m-lp-dong-ic" />
                       <div className="m-lp-dong-nd">
-                        <span className="m-lp-dong-nhan">{nhanDoiTuong} <b className="m-lp-sao">*</b></span>
+                        <span className="m-lp-dong-nhan">{nhanDoiTuong} {canDt && <b className="m-lp-sao">*</b>}</span>
                         <span className={`m-lp-dong-tri ${!doiTuong ? 'mo' : ''}`}>
                           {doiTuong || `Chọn ${nhanDoiTuong.toLowerCase()}`}
                         </span>
