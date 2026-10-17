@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 17/10/2026
 
+- T353: Danh sách chứng từ: làm kín khe hở 1px giữa các cột đóng băng (Ngày và Số chứng từ) khi cuộn ngang, không còn bị lộ chữ của các cột trượt bên dưới.
 - T352: Bảng chọn ngày và hộp Bộ lọc nâng cao khi thả xuống căn theo lề trái để bung tràn sang phải, không còn che thanh bên (sidebar) và các ô lọc khác.
 - T351: Báo cáo: ô lọc và nút Lọc dồn sang trái; bên phải còn Tuỳ chỉnh, nút Excel (bấm ra các định dạng xuất), In. Danh mục, Tài sản cố định: 2 nút Nhập, Xuất Excel gom vào 1 nút Excel. Xuất bán POS, Chi phí phân bổ sắp lại thanh công cụ cho cân.
 - T349: Danh sách chứng từ (thu chi, bán hàng, mua hàng, kho...) có thanh công cụ 2 hàng: hàng trên là bộ lọc và nút Thêm mới, hàng dưới là trạng thái ghi sổ cùng nút Excel, Tuỳ chỉnh cột. Không còn nút bị đẩy ra ngoài màn hình.

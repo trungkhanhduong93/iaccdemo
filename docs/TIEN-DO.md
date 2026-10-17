@@ -4,7 +4,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T352.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T353.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
@@ -51,6 +51,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T353 | Danh sách chứng từ: làm kín khe hở 1px giữa các cột đóng băng khi cuộn ngang | Trum | 17/10/2026 | [2026-10-17-trum-lam-kin-khe-ho-cot-dong-bang](nhat-ky/2026-10-17-trum-lam-kin-khe-ho-cot-dong-bang.md) |
 | T352 | Bảng chọn ngày và bộ lọc nâng cao khi thả xuống căn theo lề trái để tràn sang phải, tránh che thanh bên | Trum | 17/10/2026 | [2026-10-17-trum-bang-chon-ngay-bo-loc-can-le-trai](nhat-ky/2026-10-17-trum-bang-chon-ngay-bo-loc-can-le-trai.md) |
 | T351 | Web: Xuất bán POS lọc bên trái; TSCĐ, mọi danh mục gom Nhập, Xuất Excel vào 1 nút icon Excel; Chi phí phân bổ Ẩn thẻ hết phân bổ cùng hàng bộ lọc; mọi báo cáo lọc và Lọc bên trái, Tuỳ chỉnh, Excel, In bên phải | Trum | 17/10/2026 | [2026-10-17-trum-thanh-cong-cu-pos-tscd-danh-muc-bao-cao](nhat-ky/2026-10-17-trum-thanh-cong-cu-pos-tscd-danh-muc-bao-cao.md) |
 | T349 | Web, mọi màn danh sách chứng từ, cả 3 gói: thanh công cụ tách 2 hàng, hàng 1 bộ lọc và Thêm mới, hàng 2 chip trạng thái, Excel, Tuỳ chỉnh cột, Hàng loạt | Trum | 17/10/2026 | [2026-10-17-trum-thanh-cong-cu-2-hang](nhat-ky/2026-10-17-trum-thanh-cong-cu-2-hang.md) |

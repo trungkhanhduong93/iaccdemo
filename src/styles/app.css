@@ -23775,3 +23775,18 @@ button[class*="btn-"] .ic .l2 {
 .voucher-top .ds-thanh-h1-phai {
   gap: 8px;
 }
+
+/* ── Làm kín khe hở 1px giữa các cột cố định bảng danh sách (T353) ── */
+.tbl thead th.dinh:not(.dinh-phai):not(:first-child)::before,
+.tbl tbody td.dinh:not(.dinh-phai):not(:first-child)::before,
+.tbl tfoot td.dinh:not(.dinh-phai):not(:first-child)::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -1px;
+  width: 1px;
+  background: inherit;
+  pointer-events: none;
+}
+
