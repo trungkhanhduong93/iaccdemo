@@ -4,13 +4,14 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T348.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T349.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T349 | Web, mọi màn danh sách chứng từ, cả 3 gói: thanh công cụ tách 2 hàng. Hàng 1 ô lọc, nút Lọc, Thêm mới bên phải; hàng 2 chip trạng thái (hoặc tab Kiểm kê) bên trái, Excel, Tuỳ chỉnh cột, Hàng loạt bên phải | Trum | Đang làm | Anti làm. Sửa `src/ui/generic/VoucherScreen.tsx` (khối `ds-thanh`), mục mới cuối `app.css` |
 | T347 | Form chứng từ web và điện thoại: bấm Thêm ở ô chọn danh mục (đối tượng, quỹ, lý do, mặt hàng, kho...) mở đủ form tạo mới như ở danh mục; trùng mã báo lỗi, mã trống tự sinh; lưu xong chọn luôn vào ô | Trum | Đang làm | Anti làm. Sửa `src/ui/ChonDanhMuc.tsx`, `src/ui/mobile/MChon.tsx`, có thể tách form từ `CatalogScreen.tsx` |
 | T346 | Form chứng từ web: thanh dưới cao bằng nhau lúc xem và lúc sửa; gói Free, phiếu thu chi tiền mặt và ngân hàng: Lý do, Đối tượng chỉ điền ở phần trên, dòng chi tiết chỉ xem và lấy theo phần trên | Trum | Đang làm | Anti làm. Sửa `src/ui/generic/ChungTuForm.tsx`, mục cuối `app.css` (T346) |
 | T344 | Điện thoại, phiếu: icon trong màn lập phiếu, xem phiếu (thu chi, kho) dùng dạng nét thay dạng khối; nút Áp dụng, Huỷ trong các bảng chọn luôn nằm ở đáy | Trum | Đang làm | Anti làm. Sửa `src/ui/mobile/MLapPhieu.tsx`, `MLapPhieuKho.tsx`, `MXemPhieu.tsx`, `MChon.tsx`, `MLoc.tsx`, mục cuối `app.css` (T344) |
