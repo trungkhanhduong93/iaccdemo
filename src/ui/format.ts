@@ -5,6 +5,8 @@ export const money = (n: number) => {
   return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')
 }
 export const moneyD = (n: number) => money(n) + ' đ'
+/** Số lượng: có lẻ thì tối đa 2 số thập phân (9,5; 1,25), số nguyên giữ nguyên (T359) */
+export const soLuong = (n: number) => (isNaN(n) || !isFinite(n) ? '' : n.toLocaleString('vi-VN', { maximumFractionDigits: 2 }))
 /** 1.284.560.000 -> "1,28 tỷ"; 45.600.000 -> "45,6 tr" */
 export function short(n: number): string {
   const a = Math.abs(n)

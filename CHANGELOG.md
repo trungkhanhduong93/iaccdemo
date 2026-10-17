@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 17/10/2026
 
+- T355–T359: Điện thoại: Thẻ kho hiện số lượng tồn đầu, nhập, xuất, tồn cuối thay vì toàn số 0. Đang xem Tất cả cửa hàng thì lập phiếu phải chọn cửa hàng. Kiểm kê tự lấy giờ (hôm nay là giờ lập, ngày trước là 23:59), chênh lệch hiện số lẻ như 0,5. Thanh tab dưới nền trắng.
 - T354: Điện thoại: màn Nghiệp vụ dạng danh sách gọn, bỏ Lập nhanh; thanh tab dưới nền kính mờ, có pill trượt, tự ẩn khi cuộn xuống. Nút back không còn quay vòng. Báo cáo bỏ nút In; báo cáo dạng bảng có nút Excel và nút xoay ngang; Kết quả kinh doanh đủ chỉ tiêu như web; Xuất nhập tồn tách Nhập, Xuất. Form chứng từ gọn hơn, phiếu mua chọn quỹ theo hình thức thanh toán và có Thanh toán ngay. Phiếu kiểm kê, điều chỉnh kho chỉ hiện số lượng. Thêm chi tiết cửa hàng, màn Khoá sổ; Lý do nghiệp vụ, Phương thức thanh toán chỉ xem. Icon thu chi tiền mặt, ngân hàng mới, dễ phân biệt (cả web).
 - T354: Đơn Xuất bán POS của hộ kinh doanh: tiền mặt, chuyển khoản, thẻ, app khớp Tổng thanh toán, không còn cộng thêm VAT (web và điện thoại).
 - T353: Danh sách chứng từ: làm kín khe hở 1px giữa các cột đóng băng (Ngày và Số chứng từ) khi cuộn ngang, không còn bị lộ chữ của các cột trượt bên dưới.

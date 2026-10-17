@@ -11,11 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T357 | Điện thoại: đang xem Tất cả cửa hàng mà lập phiếu (kiểm kê, phiếu kho, thu chi, mua bán) không bắt chọn cửa hàng, tự lấy Phố Mây Lê Lợi. Bắt chọn cửa hàng, rà mọi form | Trum | Đang làm | Sửa `ui/mobile/MLapPhieu.tsx`, `ui/mobile/MLapPhieuKho.tsx` |
-| T358 | Điện thoại: phiếu kiểm kê chỉ chọn ngày, không chọn giờ; ngày hiện tại lấy giờ lúc tạo phiếu, ngày quá khứ lấy 23:59 | Trum | Đang làm | Sửa `ui/mobile/MLapPhieuKho.tsx` |
-| T359 | Điện thoại: chênh lệch kiểm kê mất số thập phân (thực tế 9.5, sổ 10 ra 0 kg); số lượng có lẻ hiện 2 số thập phân, số nguyên giữ nguyên | Trum | Đang làm | Sửa `ui/mobile/MLapPhieuKho.tsx` |
-| T355 | Điện thoại: báo cáo Thẻ kho (5.2.1) ô tóm tắt Tồn đầu, Tiền hàng / Nhập, Tổng tiền và tổng từng ngày đều bằng 0 dù có phiếu nhập, xuất | Trum | Đang làm
-| T356 | Xuất bán POS hộ kinh doanh (TT152): bút toán thu tiền vẫn ghi Có `5111, 33311` dù hộ kinh doanh không có VAT | Trum | Đang làm
 | T339 | Trang chủ Free máy tính, Tiến độ kiểm kê theo cửa hàng: hiện tối đa 4 cửa hàng cần chú ý (chưa kiểm, lệch nhiều trước), dòng Đã kiểm x/y cửa hàng, dòng Xem tất cả mở hộp danh sách đủ | dinhlanphuongipacc | Đang làm | Sửa `home/BaBaiToanFree.tsx`, `app.css` (mục cuối T339) |
 | T333 | Đổi chữ "map" thành "gán" khi nói về phương thức thanh toán và quỹ (Khoá sổ, Danh mục Quỹ tiền, Danh mục cửa hàng) | dinhlanphuongipacc | Dở dang | Đã đổi ở Khoá sổ, Quỹ tiền. Còn `DanhMucCuaHang.tsx` chờ PhuongXT xong T321. Xem [nhật ký](nhat-ky/2026-10-17-dinhlanphuongipacc-doi-map-thanh-gan.md) |
 | T323 | `tools/kiem_tra.py --dien-thoai` dừng ở bước chờ `.m-nv-luoi`: màn Nghiệp vụ điện thoại làm lại ở T311 không còn lớp này, cập nhật bộ kiểm theo bố cục mới | | Chờ | Phát hiện 17/10/2026 khi kiểm T322 |
@@ -56,6 +51,11 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T359 | Điện thoại: chênh lệch kiểm kê mất số thập phân (thực tế 9.5, sổ 10 ra 0 kg); số lượng có lẻ hiện 2 số thập phân, số nguyên giữ nguyên | Trum | 17/10/2026 | [2026-10-17-trum-dien-thoai-29-diem](nhat-ky/2026-10-17-trum-dien-thoai-29-diem.md) |
+| T358 | Điện thoại: phiếu kiểm kê chỉ chọn ngày, không chọn giờ; ngày hiện tại lấy giờ lúc tạo phiếu, ngày quá khứ lấy 23:59 | Trum | 17/10/2026 | [2026-10-17-trum-dien-thoai-29-diem](nhat-ky/2026-10-17-trum-dien-thoai-29-diem.md) |
+| T357 | Điện thoại: đang xem Tất cả cửa hàng mà lập phiếu (kiểm kê, phiếu kho, thu chi, mua bán) không bắt chọn cửa hàng, tự lấy Phố Mây Lê Lợi. Bắt chọn cửa hàng, rà mọi form | Trum | 17/10/2026 | [2026-10-17-trum-dien-thoai-29-diem](nhat-ky/2026-10-17-trum-dien-thoai-29-diem.md) |
+| T356 | Xuất bán POS hộ kinh doanh (TT152): bút toán thu tiền vẫn ghi Có `5111, 33311` dù hộ kinh doanh không có VAT | Trum | 17/10/2026 | [2026-10-17-trum-dien-thoai-29-diem](nhat-ky/2026-10-17-trum-dien-thoai-29-diem.md) |
+| T355 | Điện thoại: báo cáo Thẻ kho (5.2.1) ô tóm tắt Tồn đầu, Tiền hàng / Nhập, Tổng tiền và tổng từng ngày đều bằng 0 dù có phiếu nhập, xuất | Trum | 17/10/2026 | [2026-10-17-trum-dien-thoai-29-diem](nhat-ky/2026-10-17-trum-dien-thoai-29-diem.md) |
 | T354 | Điện thoại, 29 điểm Trum gửi 17/10/2026: icon tiền mặt, ngân hàng; nút back hết lặp; Nghiệp vụ danh sách gọn; thanh tab kính mờ có pill, tự ẩn khi cuộn; form chứng từ gọn, chọn quỹ, thanh toán ngay; báo cáo bảng có Excel, xoay; KQKD như web; xem phiếu, kiểm kê gọn; chi tiết POS, cửa hàng; danh mục chỉ xem; Khoá sổ. Sửa lỗi POS hộ kinh doanh cộng VAT vào tiền thanh toán (web, điện thoại) | Trum | 17/10/2026 | [2026-10-17-trum-dien-thoai-29-diem](nhat-ky/2026-10-17-trum-dien-thoai-29-diem.md) |
 | T353 | Danh sách chứng từ: làm kín khe hở 1px giữa các cột đóng băng khi cuộn ngang | Trum | 17/10/2026 | [2026-10-17-trum-lam-kin-khe-ho-cot-dong-bang](nhat-ky/2026-10-17-trum-lam-kin-khe-ho-cot-dong-bang.md) |
 | T352 | Bảng chọn ngày và bộ lọc nâng cao khi thả xuống căn theo lề trái để tràn sang phải, tránh che thanh bên | Trum | 17/10/2026 | [2026-10-17-trum-bang-chon-ngay-bo-loc-can-le-trai](nhat-ky/2026-10-17-trum-bang-chon-ngay-bo-loc-can-le-trai.md) |

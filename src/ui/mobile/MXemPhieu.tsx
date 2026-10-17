@@ -4,7 +4,7 @@ import type { Row, ScreenProps } from '../../modules/types'
 import { duongDan, tenMan } from '../../app/registry'
 import { useSession } from '../../app/session'
 import { kieuGhiSo } from '../../app/plan'
-import { money } from '../format'
+import { money, soLuong } from '../format'
 import { NGUON, TT_CT, dongCua, doanLyDoThuChi, ttNghiepVu, type Dong } from '../generic/gen'
 import { boO, nhomCua, theoLoai, TT_TIEN } from '../generic/nhom'
 import { useDongChungTu } from '../generic/VoucherScreen'
@@ -713,9 +713,9 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
           ) : (
             dsDongLoc.map((d, i) => {
               if (laKk) {
-                const chenh = (d.tonTt ?? 0) - (d.tonHt ?? 0)
+                const chenh = Math.round(((d.tonTt ?? 0) - (d.tonHt ?? 0)) * 100) / 100
                 const loaiKk = loaiXuLy(d) || 'Khớp'
-                const chenhTxt = chenh > 0 ? `+${money(chenh)}` : money(chenh)
+                const chenhTxt = chenh > 0 ? `+${soLuong(chenh)}` : soLuong(chenh)
                 const chenhLop = chenh > 0 ? 'm-so-dong-duong' : chenh < 0 ? 'm-so-dong-am' : ''
                 const dvtTxt = d.dvt ? ` ${d.dvt}` : ''
 
@@ -734,11 +734,11 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
                     <div className="m-xp-kk-luoi">
                       <div className="m-xp-kk-o">
                         <span className="m-xp-kk-nhan">Tồn hệ thống</span>
-                        <span className="m-xp-kk-so">{money(d.tonHt ?? 0)}{dvtTxt}</span>
+                        <span className="m-xp-kk-so">{soLuong(d.tonHt ?? 0)}{dvtTxt}</span>
                       </div>
                       <div className="m-xp-kk-o">
                         <span className="m-xp-kk-nhan">Tồn thực tế</span>
-                        <span className="m-xp-kk-so">{money(d.tonTt ?? 0)}{dvtTxt}</span>
+                        <span className="m-xp-kk-so">{soLuong(d.tonTt ?? 0)}{dvtTxt}</span>
                       </div>
                       <div className="m-xp-kk-o">
                         <span className="m-xp-kk-nhan">SL điều chỉnh</span>

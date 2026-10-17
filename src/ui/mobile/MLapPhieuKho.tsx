@@ -104,7 +104,7 @@ const TheHangKho: FC<TheHangKhoProps> = ({
   if (laKk) {
     const tonHt = Number(d.tonHt ?? 0)
     const tonTt = Number(d.tonTt ?? tonHt)
-    const chenh = tonTt - tonHt
+    const chenh = Math.round((tonTt - tonHt) * 100) / 100   // làm tròn 2 số lẻ, tránh 9.5 - 10 thành số dài (T359)
     return (
       <div className="m-th-the">
         <div className="m-th-dau">
@@ -164,7 +164,7 @@ const TheHangKho: FC<TheHangKhoProps> = ({
           <span className="m-th-nhan">Tồn sổ sách:</span>
           <div className="m-th-o-nhap khong-khung">
             <span className="m-th-so-tien" style={{ color: 'var(--ink)' }}>
-              {money(tonHt)} {d.dvt || 'Cái'}
+              {soLuong(tonHt)} {d.dvt || 'Cái'}
             </span>
           </div>
         </div>
@@ -174,7 +174,7 @@ const TheHangKho: FC<TheHangKhoProps> = ({
           <span className="m-th-nhan dam">Chênh lệch:</span>
           <div className="m-th-o-nhap khong-khung" style={{ gap: 6 }}>
             <span className={`dam ${chenh < 0 ? 'do' : chenh > 0 ? 'xanh' : ''}`}>
-              {chenh > 0 ? `+${money(chenh)}` : money(chenh)} {d.dvt}
+              {chenh > 0 ? `+${soLuong(chenh)}` : soLuong(chenh)} {d.dvt}
             </span>
             {chenh < 0 && <span className="m-ct-chip err">Thiếu</span>}
             {chenh > 0 && <span className="m-ct-chip ok">Thừa</span>}
@@ -397,7 +397,9 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
   }, [laKk, laDc, loaiKey, laSx, sx, laDcn, dcn, sc])
 
   const cnChon = cuaHangHienTai(s)
-  const cuaHang = gocData?.cn ? String(gocData.cn) : cnChon?.ten ?? 'Phố Mây Lê Lợi'
+  // đang xem Tất cả cửa hàng thì phiếu mới bắt chọn cửa hàng, không tự lấy cửa hàng đầu (T357)
+  const [cuaHang, setCuaHang] = useState(() => (gocData?.cn ? String(gocData.cn) : cnChon?.ten ?? ''))
+  const [moChonCn, setMoChonCn] = useState(false)
 
   const addedKho = useAddedCatalogRows('1.8')
   const addedHang = useAddedCatalogRows('1.2')
@@ -427,7 +429,7 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
   // Kho chính
   const [kho, setKho] = useState(() => {
     if (gocData?._kho || gocData?.kho) return String(gocData._kho ?? gocData.kho)
-    return dsKhoCn[0] ?? 'Kho bếp Lê Lợi'
+    return cuaHang ? (dsKhoCn[0] ?? 'Kho bếp Lê Lợi') : ''
   })
 
   // Kho nhận
@@ -725,6 +727,10 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
   const thucHienLuu = (moMoi = false) => {
     const loiMoi: Record<string, string> = {}
 
+    if (!cuaHang) {
+      loiMoi.cuaHang = 'Vui lòng chọn cửa hàng'
+    }
+
     if (!kho.trim()) {
       loiMoi.kho = 'Vui lòng chọn kho'
     }
@@ -944,11 +950,32 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
       <div className="m-lp-than m-lp-than-cuon">
         {/* ════ THÔNG TIN CHUNG: KHO, KHO NHẬN, THỜI GIAN, GHI CHÚ (T300) ════ */}
         <div className="m-the-trang m-lp-nhom-dong">
+          {/* Cửa hàng: chỉ hiện khi đang xem Tất cả cửa hàng (T357) */}
+          {!cnChon && (
+            <>
+              <div
+                className="m-lp-dong-o"
+                id="m-lp-o-cuaHang"
+                onClick={() => { if (!gocData?.cn) setMoChonCn(true) }}
+              >
+                <div className="m-lp-dong-trai">
+                  <Icon n="cuahang" className="ic sm m-lp-dong-ic" kieu="net" />
+                  <div className="m-lp-dong-nd">
+                    <span className="m-lp-dong-nhan">Cửa hàng <b className="m-lp-sao">*</b></span>
+                    <span className={`m-lp-dong-tri ${!cuaHang ? 'mo' : ''}`}>{cuaHang || 'Chọn cửa hàng'}</span>
+                  </div>
+                </div>
+                {!gocData?.cn && <Icon n="chevr" className="ic sm m-lp-dong-mui-ten" kieu="net" />}
+              </div>
+              {loiO.cuaHang && <div className="m-lp-loi-o">{loiO.cuaHang}</div>}
+            </>
+          )}
+
           {/* Kho chính */}
           <div
             className="m-lp-dong-o"
             id="m-lp-o-kho"
-            onClick={() => setMoChonKho(true)}
+            onClick={() => (cuaHang ? setMoChonKho(true) : setMoChonCn(true))}
           >
             <div className="m-lp-dong-trai">
               <Icon n="cuahang" className="ic sm m-lp-dong-ic" kieu="net" />
@@ -1350,11 +1377,34 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
         tim
       />
 
+      {/* ── SHEET CHỌN CỬA HÀNG (T357) ── */}
+      <MChon
+        mo={moChonCn}
+        onDong={() => setMoChonCn(false)}
+        tieuDe="Chọn cửa hàng"
+        ds={CUA_HANG.map(c => ({ k: c.ten, ten: c.ten }))}
+        chon={cuaHang}
+        onChon={v => {
+          setCuaHang(v)
+          setKho(khoCuaCn(v)[0] ?? '')
+          setLoiO(l => { const n = { ...l }; delete n.cuaHang; delete n.kho; return n })
+        }}
+        apDung
+        tim
+      />
+
       {/* ── LỊCH ĐƠN ── */}
       {moLich && (
         <LichDon
           value={thoiGian.slice(0, 10)}
-          onChange={v => setThoiGian(v + thoiGian.slice(10))}
+          onChange={v => {
+            if (!laKk) { setThoiGian(v + thoiGian.slice(10)); return }
+            // kiểm kê chỉ chọn ngày: hôm nay lấy giờ lúc chọn, ngày trước lấy 23:59 (T358)
+            const now = new Date()
+            const homNay = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`
+            const gio = v === homNay ? `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}` : '23:59'
+            setThoiGian(`${v} ${gio}`)
+          }}
           onDong={() => setMoLich(false)}
         />
       )}

@@ -463,7 +463,8 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
   const laTien = mod.key === 'tien' || cfg.dong === 'tien'
   const laCq = nhom === 'cq' || loai?.k === 'cq'
   const cnChon = cuaHangHienTai(s)
-  const [cuaHang, setCuaHang] = useState(() => (gocData?.cn ? String(gocData.cn) : cnChon?.ten ?? 'Phố Mây Lê Lợi'))
+  // đang xem Tất cả cửa hàng thì phiếu mới bắt chọn cửa hàng, không tự lấy cửa hàng đầu (T357)
+  const [cuaHang, setCuaHang] = useState(() => (gocData?.cn ? String(gocData.cn) : cnChon?.ten ?? ''))
   const tenLoai = loai?.ten ?? (gocData?.tenLoai ? String(gocData.tenLoai) : tenMan(sc))
 
   const addedDt = useAddedCatalogRows('1.5')
@@ -562,7 +563,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
   // Kho
   const [kho, setKho] = useState(() => {
     if (gocData?._kho || gocData?.kho) return String(gocData._kho ?? gocData.kho)
-    return dsKho[0] ?? 'Kho tổng'
+    return cuaHang ? (dsKho[0] ?? 'Kho tổng') : ''
   })
 
   // Đối tượng
@@ -902,6 +903,10 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
   const thucHienLuu = (moMoi = false) => {
     const loiMoi: Record<string, string> = {}
 
+    if (!cuaHang) {
+      loiMoi.cuaHang = 'Vui lòng chọn cửa hàng'
+    }
+
     if (laTien) {
       const tienHienTai = dsDong[0]?.tien ?? 0
       if (tienHienTai <= 0) {
@@ -1212,12 +1217,13 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                 <div className="m-lp-dong-trai">
                   <Icon n="cuahang" className="ic sm m-lp-dong-ic" kieu="net" />
                   <div className="m-lp-dong-nd">
-                    <span className="m-lp-dong-nhan">Cửa hàng</span>
-                    <span className="m-lp-dong-tri">{cuaHang}</span>
+                    <span className="m-lp-dong-nhan">Cửa hàng <b className="m-lp-sao">*</b></span>
+                    <span className={`m-lp-dong-tri ${!cuaHang ? 'mo' : ''}`}>{cuaHang || 'Chọn cửa hàng'}</span>
                   </div>
                 </div>
                 <Icon n="chevr" className="ic sm m-lp-dong-mui-ten" kieu="net" />
               </div>
+              {loiO.cuaHang && <div className="m-lp-loi-o">{loiO.cuaHang}</div>}
 
               {/* Quỹ / Tài khoản */}
               <div
@@ -1358,12 +1364,13 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                 <div className="m-lp-dong-trai">
                   <Icon n="cuahang" className="ic sm m-lp-dong-ic" kieu="net" />
                   <div className="m-lp-dong-nd">
-                    <span className="m-lp-dong-nhan">Cửa hàng</span>
-                    <span className="m-lp-dong-tri">{cuaHang}</span>
+                    <span className="m-lp-dong-nhan">Cửa hàng <b className="m-lp-sao">*</b></span>
+                    <span className={`m-lp-dong-tri ${!cuaHang ? 'mo' : ''}`}>{cuaHang || 'Chọn cửa hàng'}</span>
                   </div>
                 </div>
                 <Icon n="chevr" className="ic sm m-lp-dong-mui-ten" kieu="net" />
               </div>
+              {loiO.cuaHang && <div className="m-lp-loi-o">{loiO.cuaHang}</div>}
 
               {/* Kho */}
               {bo.kho && (
@@ -1637,6 +1644,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
         chon={cuaHang}
         onChon={v => {
           setCuaHang(v)
+          setLoiO(l => { const n = { ...l }; delete n.cuaHang; return n })
           const khoMoi = CUA_HANG.find(c => c.ten === v)?.kho?.[0] || 'Kho tổng'
           setKho(khoMoi)
         }}

@@ -56,9 +56,22 @@ Mọi thay đổi chỉ áp cho điện thoại, trừ những chỗ ghi "web".
 
 ## Dở dang, việc tiếp theo
 
-- Không với T354.
-- T355: thẻ kho điện thoại toàn số 0, có sẵn từ trước.
-- T356: bút toán POS hộ kinh doanh vẫn Có 33311.
+- Không. T355–T359 làm tiếp ngay trong phiên, ghi ở mục dưới.
+
+## Làm thêm sau push đầu (T355–T359)
+
+- T355: thẻ kho trả về số lượng `nhap`, `xuat`, `ton`, không có cột tiền, nên điện thoại đọc ra 0. Khuôn ngày trong `MBaoCaoDong.tsx` giờ nhận ra thẻ kho, hiện 4 ô số lượng, tồn cuối từng ngày, +nhập xanh, −xuất đỏ.
+- T356: bút toán Xuất bán POS của hộ kinh doanh chỉ ghi Có 5111 (`ChungTuBanHang.tsx`, `MXuatBanPos.tsx`).
+- Thanh tab dưới bỏ kính mờ, nền trắng đặc (Trum yêu cầu).
+- T357: đang xem Tất cả cửa hàng thì phiếu mới để trống Cửa hàng, Kho và bắt chọn, không tự lấy Phố Mây Lê Lợi (`MLapPhieu.tsx`, `MLapPhieuKho.tsx`). Kiểm kê, phiếu kho trước đây không có ô Cửa hàng, nay có, chỉ hiện khi xem Tất cả.
+- T358: kiểm kê chọn ngày hôm nay lấy giờ lúc chọn, ngày trước lấy 23:59.
+- T359: chênh lệch −0,5 qua `money()` bị làm tròn thành 0. Kiểm kê dùng `soLuong` ở `kho/san-xuat.ts`, xem phiếu dùng `soLuong` mới ở `ui/format.ts` (tối đa 2 số lẻ).
+- Đã kiểm:
+  - `npm run typecheck`, `npm run build`, `kiem_tra.py --nhanh`: không lỗi.
+  - Chụp thẻ kho: 22 + 103 − 84 = 41.
+  - Đơn POS hộ kinh doanh: tiền mặt bằng tổng thanh toán, kiểm 3 đơn.
+  - Form kiểm kê khi xem Tất cả: báo lỗi chọn cửa hàng.
+  - T359 chưa nhập thử số lẻ trên màn.
 
 ## Bẫy, quyết định mới
 
