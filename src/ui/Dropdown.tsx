@@ -122,7 +122,7 @@ export function MenuItem({ to, onClick, icon, desc, right, on, lock, danger, chi
   const cls = `mi${on ? ' on' : ''}${lock ? ' lock' : ''}${danger ? ' danger' : ''}`
   const body = (
     <>
-      {icon !== undefined && <span className="mi-ic">{typeof icon === 'string' ? <Icon n={icon} className="ic sm" /> : icon}</span>}
+      {icon !== undefined && <span className="mi-ic">{typeof icon === 'string' ? <Icon n={icon} kieu="net" className="ic sm" /> : icon}</span>}
       <span className="mi-t"><b>{children}</b>{desc && <small>{desc}</small>}</span>
       {right}
       {on && <Icon n="check" className="ic sm mi-ok" />}

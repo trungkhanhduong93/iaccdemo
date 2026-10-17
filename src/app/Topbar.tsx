@@ -57,7 +57,7 @@ export function Topbar({ onSearch }: { onSearch?: () => void }) {
       )}
 
       <Dropdown btnClass="cn-btn" align="end" width={300} title="Chọn cửa hàng làm việc. Chứng từ thêm mới lập cho cửa hàng này"
-        label={<><Icon n="store" className="ic sm" /><span className="cn-t"><small>Cửa hàng</small><b>{cn ? cn.ten : 'Tất cả cửa hàng'}</b></span><Icon n="chevd" className="ic sm" /></>}>
+        label={<><Icon n="store" kieu="net" className="ic sm" /><span className="cn-t"><small>Cửa hàng</small><b>{cn ? cn.ten : 'Tất cả cửa hàng'}</b></span><Icon n="chevd" className="ic sm" /></>}>
         {dong => <>
           <MenuHead right={<small className="mh-n">{dsCn.length} cửa hàng</small>}>Cửa hàng làm việc</MenuHead>
           <MenuItem on={!cn} icon="layers" desc="Chỉ xem gộp, chưa lập chứng từ" onClick={() => { set({ cuaHang: 'all' }); dong() }}>Tất cả cửa hàng</MenuItem>

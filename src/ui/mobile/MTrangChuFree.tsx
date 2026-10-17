@@ -277,10 +277,12 @@ export function MTrangChuFree(_props?: Partial<ScreenProps>) {
     ]
   }, [dsCn])
 
-  // Chọn tháng
+  // Chọn tháng, năm
   const [searchParams, setSearchParams] = useSearchParams()
   const thangUrl = Number(searchParams.get('thang'))
   const [thangF, setThangFState] = useState(thangUrl >= 7 && thangUrl <= 10 ? thangUrl : 10)
+  const namUrl = Number(searchParams.get('nam'))
+  const [namF, setNamFState] = useState(namUrl === 2026 ? namUrl : 2026)
 
   const setThangF = (t: number) => {
     setThangFState(t)
@@ -294,10 +296,24 @@ export function MTrangChuFree(_props?: Partial<ScreenProps>) {
     )
   }
 
+  const setNamF = (n: number) => {
+    setNamFState(n)
+    setSearchParams(
+      prev => {
+        const p = new URLSearchParams(prev)
+        p.set('nam', String(n))
+        return p
+      },
+      { replace: true }
+    )
+  }
+
   useEffect(() => {
     const t = Number(searchParams.get('thang'))
     if (t >= 7 && t <= 10 && t !== thangF) setThangFState(t)
-  }, [searchParams, thangF])
+    const n = Number(searchParams.get('nam'))
+    if (n === 2026 && n !== namF) setNamFState(n)
+  }, [searchParams, thangF, namF])
 
   // Modals
   const [moTimKiem, setMoTimKiem] = useState(false)
@@ -561,9 +577,9 @@ export function MTrangChuFree(_props?: Partial<ScreenProps>) {
         <div className="m-tcf-chon-thang">
           <Select
             className="sel-mini m-tcf-sel-nam"
-            value="2026"
+            value={String(namF)}
             aria-label="Năm"
-            disabled
+            onChange={e => setNamF(Number(e.target.value))}
           >
             <option value="2026">Năm 2026</option>
           </Select>
@@ -823,15 +839,12 @@ export function MTrangChuFree(_props?: Partial<ScreenProps>) {
 
       <MTimKiem mo={moTimKiem} onDong={() => setMoTimKiem(false)} />
 
-      {/* Modal Tuỳ chỉnh thao tác nhanh */}
+      {/* Tấm trượt tuỳ chỉnh thao tác nhanh (T266, T280, T342) */}
       {moTuyChinhThaoTac && (
-        <div className="m-tam-nen" onClick={() => setMoTuyChinhThaoTac(false)}>
-          <div className="m-tam-hop ttn-m-hop" onClick={e => e.stopPropagation()}>
-            <div className="m-tam-dau">
-              <div className="m-tam-tieu-hop">
-                <b className="m-tam-tieu">Tuỳ chỉnh thao tác nhanh</b>
-                <span className="m-tam-phu">Chọn tối đa {TOI_DA_THAO_TAC} thao tác hiển thị ở đầu trang chủ</span>
-              </div>
+        <div className="m-tam-overlay" onClick={() => setMoTuyChinhThaoTac(false)}>
+          <div className="m-tam-hop m-tam-hop-apdung" style={{ height: '94vh', maxHeight: '94vh' }} onClick={e => e.stopPropagation()}>
+            <div className="m-tam-dau m-tam-dau-apdung">
+              <h2 className="m-tam-tieu">Tuỳ chỉnh thao tác nhanh</h2>
               <button
                 type="button"
                 className="m-tam-dong-btn"

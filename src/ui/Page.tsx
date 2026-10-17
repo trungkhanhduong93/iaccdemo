@@ -51,7 +51,7 @@ export function Kpi({ l, v, unit, d, icon }: { l: string; v: ReactNode; unit?: s
 }
 
 export function Note({ kind = '', icon = 'info', children }: { kind?: string; icon?: string; children: ReactNode }) {
-  return <div className={`note ${kind}`}><Icon n={icon} className="ic sm" /><div>{children}</div></div>
+  return <div className={`note ${kind}`}><Icon n={icon} kieu="net" className="ic sm" /><div>{children}</div></div>
 }
 
 export function Empty({ title, sub, children }: { title: string; sub?: string; children?: ReactNode }) {

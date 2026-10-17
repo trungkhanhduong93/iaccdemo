@@ -8,6 +8,7 @@ import { chungTu, dongCua, type Dong } from '../../ui/generic/gen'
 import { KHOA_LOC_NGUON, docLocNguon, quaLocDong } from '../bao-cao/loc-nguon'
 import { datLocDaXem } from '../../ui/bao-cao/tuyChinhBC'
 import { mauDieuChinh } from './dieu-chinh'
+import { xnt } from './data'
 
 /** Một loại phiếu nguồn: cấu hình chứng từ, hạt giống (mã màn) và đường dẫn màn chứng từ sau /app/.
  *  ds: phiếu mẫu riêng có sẵn dòng hàng ở _dong, thay phiếu sinh theo hạt giống (điều chuyển, T155) */
@@ -79,10 +80,14 @@ export const tongHopKho = (nguon: () => NguonPhieu[], dsLoai: string[], chiTiet:
 }
 
 /** Báo cáo kiểm kê (T244): mỗi mặt hàng, kho một dòng; số lượng thừa, thiếu cộng từ phiếu kiểm kê trong tháng
- *  (thừa là phiếu nhập điều chỉnh, thiếu là phiếu xuất điều chỉnh sinh từ kiểm kê). Không có dòng tổng vì các mặt hàng khác đơn vị tính */
+ *  (thừa là phiếu nhập điều chỉnh, thiếu là phiếu xuất điều chỉnh sinh từ kiểm kê). Không có dòng tổng vì các mặt hàng khác đơn vị tính.
+ *  Tồn đầu, nhập, xuất, tồn cuối hệ thống lấy từ xuất nhập tồn cùng kỳ, cùng kho; tồn thực tế = tồn hệ thống + thừa − thiếu (T345) */
 export const baoCaoKiemKe = (cfgKk: () => VoucherCfg) => ({
-  cols: [{ k: 'ma', t: 'Mã hàng', cls: 'code', w: 80 }, { k: 'ten', t: 'Tên hàng' }, { k: 'dvt', t: 'ĐVT', c: true, w: 55 }, { k: 'kho', t: 'Kho', w: 160 },
-    { k: 'thua', t: 'Thừa', num: true, w: 110, nhom: 'Số lượng' }, { k: 'thieu', t: 'Thiếu', num: true, w: 110, nhom: 'Số lượng' }] as Col[],
+  cols: [{ k: 'ma', t: 'Mã hàng', cls: 'code', w: 80 }, { k: 'ten', t: 'Tên hàng' }, { k: 'dvt', t: 'ĐVT', c: true, w: 55 }, { k: 'kho', t: 'Kho', w: 150 },
+    { k: 'ton0', t: 'Tồn đầu', num: true, w: 80, wCung: true, nhom: 'Số lượng' }, { k: 'nhap', t: 'Nhập trong kỳ', num: true, w: 90, wCung: true, nhom: 'Số lượng' },
+    { k: 'xuat', t: 'Xuất trong kỳ', num: true, w: 90, wCung: true, nhom: 'Số lượng' }, { k: 'tonHt', t: 'Tồn cuối hệ thống', num: true, w: 100, wCung: true, nhom: 'Số lượng' },
+    { k: 'tonTt', t: 'Tồn cuối thực tế', num: true, w: 100, wCung: true, nhom: 'Số lượng' },
+    { k: 'thua', t: 'Thừa', num: true, w: 70, wCung: true, nhom: 'Số lượng' }, { k: 'thieu', t: 'Thiếu', num: true, w: 70, wCung: true, nhom: 'Số lượng' }] as Col[],
   rows: (thang: number, cn?: string, loc?: Record<string, string[]>): Row[] => {
     const f = docLocNguon(loc)
     const nhom = new Map<string, Row>()
@@ -97,7 +102,10 @@ export const baoCaoKiemKe = (cfgKk: () => VoucherCfg) => ({
         nhom.set(key, g)
       }
     }
-    return [...nhom.values()].sort((a, b) => a.ma.localeCompare(b.ma) || a.kho.localeCompare(b.kho))
+    return [...nhom.values()].map(g => {
+      const x = xnt(thang, g.kho).find(h => h.ma === g.ma)
+      return x ? { ...g, ton0: x.sl0, nhap: x.sln, xuat: x.slx, tonHt: x.sl1, tonTt: x.sl1 + g.thua - g.thieu } : g
+    }).sort((a, b) => a.ma.localeCompare(b.ma) || a.kho.localeCompare(b.kho))
   },
 })
 

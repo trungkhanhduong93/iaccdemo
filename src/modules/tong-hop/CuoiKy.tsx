@@ -56,8 +56,8 @@ export function KhoaSo({ sc, mod }: ScreenProps) {
   return (
     <div className="page">
       <PageHead crumb={[mod.ten, sc.nhom ?? '']} title={tenMan(sc)} code={sc.code}>
-        {khoa ? <button className="btn" onClick={() => { setKhoa(false); toast('Đã mở khoá kỳ 9/2026') }}><Icon n="lock" className="ic sm" />Mở khoá kỳ</button>
-          : <button className="btn acc" onClick={() => { setKhoa(true); toast('Đã khoá sổ kỳ 9/2026') }}><Icon n="lock" className="ic sm" />Khoá sổ kỳ 9/2026</button>}
+        {khoa ? <button className="btn" onClick={() => { setKhoa(false); toast('Đã mở khoá kỳ 9/2026') }}><Icon n="lock" kieu="net" className="ic sm" />Mở khoá kỳ</button>
+          : <button className="btn acc" onClick={() => { setKhoa(true); toast('Đã khoá sổ kỳ 9/2026') }}><Icon n="lock" kieu="net" className="ic sm" />Khoá sổ kỳ 9/2026</button>}
       </PageHead>
       <div className="grid g-21" style={{ alignItems: 'start' }}>
         <Card title={`Các bước khoá sổ tháng ${KY_KHOA_SO.thang}/${KY_KHOA_SO.nam}`}>

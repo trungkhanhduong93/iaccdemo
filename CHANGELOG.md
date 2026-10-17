@@ -4,6 +4,9 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 17/10/2026
 
+- T348: Icon trong khung báo, menu thả xuống, ô chọn cửa hàng, nút Mở khoá, Khoá sổ đổi sang dạng nét cho rõ.
+- T345: Báo cáo kiểm kê có thêm cột Tồn đầu, Nhập trong kỳ, Xuất trong kỳ, Tồn cuối hệ thống, Tồn cuối thực tế trước hai cột Thừa, Thiếu.
+- T342: Điện thoại, trang chủ gói Free: ô chọn năm bấm được, nút Tuỳ chỉnh thao tác nhanh mở được bảng chọn.
 - T341: Điện thoại, trang chủ gói Free: Kết quả kinh doanh hiện dạng bảng gọn như bản web. Nhắc tháng chưa khoá sổ nằm ngay dưới Thao tác nhanh. Hộp Lãi lỗ theo cửa hàng bỏ nút X, bảng chi tiết vuốt ngang để xem đủ cột.
 - T338: Trang chủ gói Free máy tính: màn đặt tỉ lệ 150% (hoặc màn thấp) vẫn thấy trọn khối Kết quả kinh doanh và Quỹ tiền kể cả biểu đồ 13 tháng ngay màn đầu; biểu đồ tự thấp xuống cho vừa, màn 100% giữ như cũ.
 - T337: Điện thoại, trang chủ gói Free dùng chữ giống bản web: Kết quả kinh doanh, Giá vốn nguyên vật liệu, Chi phí hoạt động, Công nợ phải trả, kèm lời giải thích ngắn. Khối Quỹ tiền có link Sổ quỹ tiền mặt, Sổ ngân hàng, nút Tạo quỹ dưới vòng tồn quỹ.

@@ -69,8 +69,8 @@ export function KhoaSoFree({ sc, mod }: ScreenProps) {
   return (
     <div className="page">
       <PageHead crumb={[mod.ten, sc.nhom ?? '']} title={tenMan(sc)} code={sc.code}>
-        <button className="btn" onClick={() => setMoKhoa(v => !v)}><Icon n="lock" className="ic sm" />Mở khoá tháng {daKhoa.thang}/{daKhoa.nam}</button>
-        {khoaDuoc && <button className="btn acc" onClick={khoa}><Icon n="lock" className="ic sm" />Khoá sổ tháng {nhan}</button>}
+        <button className="btn" onClick={() => setMoKhoa(v => !v)}><Icon n="lock" kieu="net" className="ic sm" />Mở khoá tháng {daKhoa.thang}/{daKhoa.nam}</button>
+        {khoaDuoc && <button className="btn acc" onClick={khoa}><Icon n="lock" kieu="net" className="ic sm" />Khoá sổ tháng {nhan}</button>}
       </PageHead>
       {/* Khung lý do mở khoá hiện ngay dưới nút Mở khoá, không nằm cuối cột trái (T327) */}
       {moKhoa && (
