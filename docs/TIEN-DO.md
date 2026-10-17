@@ -4,7 +4,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T333.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T334.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
@@ -52,6 +52,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T334 | Danh mục Lý do nghiệp vụ: tạm thời lý do có sẵn không sửa, không xoá, chỉ tích Là chi phí hay không | dinhlanphuongipacc | 17/10/2026 | [2026-10-17-dinhlanphuongipacc-ly-do-chi-tich-chi-phi](nhat-ky/2026-10-17-dinhlanphuongipacc-ly-do-chi-tich-chi-phi.md) |
 | T330 | Phiếu thu, chi: ô Đối tượng chỉ bắt buộc khi lý do là Thu nợ, Đi vay, Thanh toán công nợ nhà cung cấp, Cho vay; lý do khác để trống được (web và điện thoại) | dinhlanphuongipacc | 17/10/2026 | [2026-10-17-dinhlanphuongipacc-doi-tuong-theo-ly-do](nhat-ky/2026-10-17-dinhlanphuongipacc-doi-tuong-theo-ly-do.md) |
 | T329 | Báo cáo công nợ nhà cung cấp: nút Thanh toán ngay cho chọn Tiền mặt (phiếu chi) hoặc Ngân hàng (uỷ nhiệm chi), không mặc định chi tiền mặt | dinhlanphuongipacc | 17/10/2026 | [2026-10-17-dinhlanphuongipacc-thanh-toan-ngay-chon-quy](nhat-ky/2026-10-17-dinhlanphuongipacc-thanh-toan-ngay-chon-quy.md) |
 | T328 | Danh mục phương thức thanh toán gói Free, Standard: mở chi tiết chỉ xem, không sửa, không xoá (phương thức lấy từ FABi) | dinhlanphuongipacc | 17/10/2026 | [2026-10-17-dinhlanphuongipacc-pttt-chi-xem](nhat-ky/2026-10-17-dinhlanphuongipacc-pttt-chi-xem.md) |

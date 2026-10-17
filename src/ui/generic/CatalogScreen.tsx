@@ -657,6 +657,9 @@ export function CatalogPanel({
   const tabTm = tab || dsKhoi.find(kh => kh.bang)?.ten || 'Lịch sử'
 
   // Một khối của panel: ô nhập theo lưới, hoặc lưới tự tính (kh.bang)
+  // Dòng có sẵn chỉ sửa được các ô trong chiSua, ô khác khoá (vd Lý do nghiệp vụ chỉ tích Là chi phí, T334)
+  const khoaO = (tr: { k: string }, el: React.ReactNode) =>
+    dangSua && cauHinh?.chiSua && !cauHinh.chiSua.includes(tr.k) ? <fieldset key={tr.k} className="pn-fs" disabled>{el}</fieldset> : el
   const veKhoi = (kh: KhoiDM) => {
     const mo = kh.anDau || isMo(kh.ten)
     return (
@@ -679,7 +682,7 @@ export function CatalogPanel({
         {mo && !kh.bang && !kh.ve && (
           <div className="pn-khoi-than">
             <div className={`pn-luoi${cauHinh?.haiCot ? ' pn-luoi-2' : ''}`}>
-              {kh.truong.filter(hienO).map(tr => {
+              {kh.truong.filter(hienO).map(tr => khoaO(tr, (() => {
                 if (tr.kieu === 'tich') {
                   // Ô tích mặc định chiếm cả hàng; caHang: false thì nằm cùng hàng với ô khác
                   return (
@@ -771,7 +774,7 @@ export function CatalogPanel({
                     {errors[tr.k] && <span className="muted pn-loi">{errors[tr.k]}</span>}
                   </div>
                 )
-              })}
+              })()))}
             </div>
           </div>
         )}

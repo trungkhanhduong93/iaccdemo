@@ -103,6 +103,7 @@ export interface CauHinhDM {
   soQuocTe?: boolean                                 // ô số, ô tiền gõ có ngăn nghìn ngay khi gõ, lưu dạng chuẩn; hiện kiểu Việt Nam 1.234.567,89 (T284)
   toanMan?: { icon: string }                         // mở toàn màn hình như form chứng từ, khối lưới thành tab cạnh tab Lịch sử
   haiCot?: boolean                                   // lưới ô nhập luôn 2 cột như form iFaster (T154)
+  chiSua?: string[]                                  // mở dòng có sẵn chỉ sửa được các ô này, ô khác khoá (T334)
   // Nhiều kiểu thêm mới trên cùng màn, mỗi kiểu một nút; kiểu lưu ở form._kieu, mở thẳng bằng ?moi=<k>
   // Menu Tiện ích ở chân form toàn màn khi xem (T297): xoá dòng, sao chép thành dòng mới; hàm trả false thì ẩn mục
   tienIch?: { xoa?: (v: Record<string, any>) => boolean; saoChep?: (v: Record<string, any>) => Record<string, any> | null }
@@ -676,6 +677,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
 
   // 1.16 Lý do (chưa có bảng DM_ trong schema, chờ đối chiếu)
   '1.16': {
+    chiSua: ['chiPhi'],   // tạm thời lý do có sẵn không sửa, chỉ tích Là chi phí hay không (T334)
     khoi: [
       {
         ten: 'Thông tin chung',
