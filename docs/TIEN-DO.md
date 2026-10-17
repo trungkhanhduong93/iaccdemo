@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T353 | Điện thoại: 11 chỉnh sửa giao diện (thẻ Kết quả kinh doanh, Mua hàng & công nợ trang chủ Free; báo cáo KQKD giống web; bỏ nút In ở báo cáo; icon thu chi tiền mặt, ngân hàng; nút back lặp vòng; ô tìm kiếm trượt ra cùng hàng kính lúp; icon cửa hàng đồng bộ web; form phiếu mua hàng gọn; xem phiếu chỉ giữ dòng Tổng thanh toán; sổ quỹ bỏ nền trắng) | Trum | Đang làm | Sửa `src/ui/mobile/*`, `app.css` (mục cuối T353). Thẻ trang chủ Free dùng chung `BaBaiToanFree.tsx` với T339: chỉ sửa CSS nếu được |
 | T339 | Trang chủ Free máy tính, Tiến độ kiểm kê theo cửa hàng: hiện tối đa 4 cửa hàng cần chú ý (chưa kiểm, lệch nhiều trước), dòng Đã kiểm x/y cửa hàng, dòng Xem tất cả mở hộp danh sách đủ | dinhlanphuongipacc | Đang làm | Sửa `home/BaBaiToanFree.tsx`, `app.css` (mục cuối T339) |
 | T333 | Đổi chữ "map" thành "gán" khi nói về phương thức thanh toán và quỹ (Khoá sổ, Danh mục Quỹ tiền, Danh mục cửa hàng) | dinhlanphuongipacc | Dở dang | Đã đổi ở Khoá sổ, Quỹ tiền. Còn `DanhMucCuaHang.tsx` chờ PhuongXT xong T321. Xem [nhật ký](nhat-ky/2026-10-17-dinhlanphuongipacc-doi-map-thanh-gan.md) |
 | T323 | `tools/kiem_tra.py --dien-thoai` dừng ở bước chờ `.m-nv-luoi`: màn Nghiệp vụ điện thoại làm lại ở T311 không còn lớp này, cập nhật bộ kiểm theo bố cục mới | | Chờ | Phát hiện 17/10/2026 khi kiểm T322 |
