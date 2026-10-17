@@ -51,6 +51,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T351 | Web: Xuất bán POS lọc bên trái; TSCĐ, mọi danh mục gom Nhập, Xuất Excel vào 1 nút icon Excel; Chi phí phân bổ Ẩn thẻ hết phân bổ cùng hàng bộ lọc; mọi báo cáo lọc và Lọc bên trái, Tuỳ chỉnh, Excel, In bên phải | Trum | 17/10/2026 | [2026-10-17-trum-thanh-cong-cu-pos-tscd-danh-muc-bao-cao](nhat-ky/2026-10-17-trum-thanh-cong-cu-pos-tscd-danh-muc-bao-cao.md) |
 | T349 | Web, mọi màn danh sách chứng từ, cả 3 gói: thanh công cụ tách 2 hàng, hàng 1 bộ lọc và Thêm mới, hàng 2 chip trạng thái, Excel, Tuỳ chỉnh cột, Hàng loạt | Trum | 17/10/2026 | [2026-10-17-trum-thanh-cong-cu-2-hang](nhat-ky/2026-10-17-trum-thanh-cong-cu-2-hang.md) |
 | T340 | Web và điện thoại: bộ icon Khối đồng màu (mặt khối xanh nhạt, cam chỉ ở chi tiết nhỏ), icon thao tác Solar Linear, thanh bên thân đậm 50% | Trum | 17/10/2026 | [2026-10-17-trum-icon-khoi-dong-mau](nhat-ky/2026-10-17-trum-icon-khoi-dong-mau.md) |
 | T332 | Quay về bộ icon Solar nét: không push, thay bằng T340; phần nét dự phòng 1.6px gộp vào T340 | Trum | 17/10/2026 | [2026-10-17-trum-icon-khoi-dong-mau](nhat-ky/2026-10-17-trum-icon-khoi-dong-mau.md) |
