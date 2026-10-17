@@ -599,7 +599,7 @@ export function MTrangChuFree(_props?: Partial<ScreenProps>) {
 
         {/* 4. Khối Kết quả kinh doanh */}
         <div className="m-tc-the-ivt m-free-the">
-          <div className="m-tc-the-head">
+          <div className="m-tc-the-head m-tcf-head-1hang">
             <div className="m-tc-the-tieu-hop">
               <h2 className="m-tc-the-tieu">
                 <Icon n="chart" className="ic sm" /> Kết quả kinh doanh
@@ -609,9 +609,10 @@ export function MTrangChuFree(_props?: Partial<ScreenProps>) {
               <Link
                 to="/app/bao-cao/10-2-3"
                 className="m-tcf-link"
+                aria-label="Xem báo cáo kết quả kinh doanh"
                 onClick={() => datLocDaXem('/app/bao-cao/10-2-3', {}, String(thangF))}
               >
-                Xem kết quả kinh doanh ›
+                Xem BC ›
               </Link>
             </div>
           </div>

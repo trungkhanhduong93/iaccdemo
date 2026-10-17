@@ -24738,3 +24738,12 @@ button[class*="btn-"] .ic .l2 {
   }
 }
 
+
+/* ── Điện thoại: khối Mua hàng & Công nợ, nút Bảng kê, Công nợ dưới từng số tiền (T360) ── */
+@media (max-width: 767px) {
+  .m-tck-hai { grid-template-rows: auto auto auto auto !important; }
+  .m-tck-kpi { grid-row: span 4 !important; }
+}
+.m-tck-link-duoi { align-self: start; justify-self: start; margin-top: 4px; }
+/* Khối Kết quả kinh doanh: nút Xem BC gọn, cùng hàng tên khối (T360) */
+.m-free-the .m-tc-the-head.m-tcf-head-1hang { flex-wrap: nowrap; }

@@ -72,6 +72,8 @@ Mọi thay đổi chỉ áp cho điện thoại, trừ những chỗ ghi "web".
   - Đơn POS hộ kinh doanh: tiền mặt bằng tổng thanh toán, kiểm 3 đơn.
   - Form kiểm kê khi xem Tất cả: báo lỗi chọn cửa hàng.
   - T359 chưa nhập thử số lẻ trên màn.
+- T360: trang chủ Free điện thoại, khối đổi tên "Mua hàng & Công nợ". Nút Bảng kê nằm dưới Giá trị mua hàng, nút Công nợ dưới Công nợ phải trả, hai nút ngang nhau. Lưới phần C đổi từ 3 hàng sang 4 hàng (`MKhoFree.tsx`, `app.css`). Khối Kết quả kinh doanh rút link thành "Xem BC ›", cùng hàng tên khối (`MTrangChuFree.tsx`).
+- T361: web, Chi phí phân bổ. Điều kiện lọc chỉ áp khi bấm Lọc, ô tích Ẩn thẻ hết phân bổ ra đầu hàng 2 (`CatalogScreen.tsx`, mọi danh sách kiểu chứng từ dùng màn này). Đã kiểm: gõ "inox" chưa lọc vẫn 13 dòng, bấm Lọc còn 3.
 
 ## Bẫy, quyết định mới
 

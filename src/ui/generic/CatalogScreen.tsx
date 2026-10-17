@@ -76,6 +76,10 @@ export function CatalogScreen({ sc }: ScreenProps) {
   const choThem = !cfg.khongThem?.includes(s.goi)
   const [q, setQ] = useState('')
   const [nhom, setNhom] = useState('')
+  // danh sách kiểu chứng từ: giá trị đang gõ trên thanh lọc, bấm Lọc mới áp (T361)
+  const [nhapLoc, setNhapLoc] = useState(() => ({ ky, q: '', nhom: '' }))
+  const khacNhap = nhapLoc.ky !== ky || nhapLoc.q !== q || nhapLoc.nhom !== nhom
+  const apLoc = () => { setKy(nhapLoc.ky); setQ(nhapLoc.q); setNhom(nhapLoc.nhom) }
   const [edit, setEdit] = useState<Row | null>(null)
 
   // Danh sách, cột và bảng ghi nhớ lại: mở panel hay gõ trong panel không vẽ lại cả bảng danh sách phía sau (T81)
@@ -208,27 +212,26 @@ export function CatalogScreen({ sc }: ScreenProps) {
           <div className="ds-thanh">
             <div className="ds-thanh-h1">
               <div className="ds-thanh-h1-trai">
+                {/* điều kiện lọc chỉ áp khi bấm Lọc, như các danh sách chứng từ khác (T361) */}
                 {cfg.kySoLieu && (
                   <ONhanVien nhan="Kỳ số liệu">
-                    <Select className="inp" value={String(ky)} aria-label="Kỳ số liệu" onChange={e => setKy(Number(e.target.value))}
+                    <Select className="inp" value={String(nhapLoc.ky)} aria-label="Kỳ số liệu" onChange={e => setNhapLoc(n => ({ ...n, ky: Number(e.target.value) }))}
                       ds={dsKyNam(s).map(k => ({ v: String(k.so), t: k.nhan }))} />
                   </ONhanVien>
                 )}
                 <ONhanVien nhan="Tìm kiếm">
-                  <input className="inp" value={q} placeholder="Số thẻ, mã, tên" onChange={e => setQ(e.target.value)} />
+                  <input className="inp" value={nhapLoc.q} placeholder="Số thẻ, mã, tên" onChange={e => setNhapLoc(n => ({ ...n, q: e.target.value }))}
+                    onKeyDown={e => { if (e.key === 'Enter') apLoc() }} />
                 </ONhanVien>
                 {nhoms.length > 1 && (
                   <ONhanVien nhan={cfg.nhanLoc ?? 'Nhóm'}>
-                    <Select className="inp" value={nhom} aria-label={cfg.nhanLoc ?? 'Nhóm'} onChange={e => setNhom(e.target.value)}
+                    <Select className="inp" value={nhapLoc.nhom} aria-label={cfg.nhanLoc ?? 'Nhóm'} onChange={e => setNhapLoc(n => ({ ...n, nhom: e.target.value }))}
                       ds={[{ v: '', t: 'Tất cả' }, ...nhoms.map(n => ({ v: String(n), t: String(n) }))]} />
                   </ONhanVien>
                 )}
-                {cfg.tich && (
-                  <label className="row ky-so-lieu">
-                    <input type="checkbox" className="bat-tat" checked={tichLoc} onChange={e => setTichLoc(e.target.checked)} />
-                    <span>{cfg.tich.nhan}</span>
-                  </label>
-                )}
+                <button type="button" className="btn pri ds-nut-loc" title={khacNhap ? 'Có điều kiện mới chưa lọc' : undefined} onClick={apLoc}>
+                  Lọc{khacNhap && <span className="ds-cham-nhap" />}
+                </button>
               </div>
               {nutThem.length > 0 && (
                 <div className="ds-thanh-h1-phai">
@@ -240,7 +243,15 @@ export function CatalogScreen({ sc }: ScreenProps) {
             </div>
 
             <div className="ds-thanh-h2">
-              <div className="ds-thanh-h2-trai" />
+              <div className="ds-thanh-h2-trai">
+                {/* ô tích lọc nhanh đứng đầu hàng 2, áp ngay (T361) */}
+                {cfg.tich && (
+                  <label className="row ky-so-lieu">
+                    <input type="checkbox" className="bat-tat" checked={tichLoc} onChange={e => setTichLoc(e.target.checked)} />
+                    <span>{cfg.tich.nhan}</span>
+                  </label>
+                )}
+              </div>
               <div className="ds-thanh-h2-phai">
                 <NutTuyChinhCot cols={cot.colsDu} an={cot.an} coDinh={COT_CO_DINH} macDinh={cot.macDinh} dongBang={cot.dongBang}
                   onLuu={cot.luu} onDoRongTuDong={cot.datDoRongTuDong} />
@@ -317,7 +328,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
           all.length ? (
             <div className="empty">
               <b>Không có dòng khớp bộ lọc</b>
-              <button type="button" className="btn sm empty-btn" onClick={() => { setQ(''); setNhom('') }}>Xoá bộ lọc</button>
+              <button type="button" className="btn sm empty-btn" onClick={() => { setQ(''); setNhom(''); setNhapLoc(n => ({ ...n, q: '', nhom: '' })) }}>Xoá bộ lọc</button>
             </div>
           ) : (
             <div className="empty">

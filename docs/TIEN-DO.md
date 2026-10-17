@@ -4,14 +4,13 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T360.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T361.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T360 | Điện thoại trang chủ Free: khối Mua hàng & công nợ đổi tên thành "Mua hàng & Công nợ"; nút Bảng kê nằm dưới Giá trị mua hàng, nút Công nợ dưới Công nợ phải trả, hai nút ngang nhau | Trum | Đang làm | Sửa `ui/mobile/MKhoFree.tsx`, `app.css` (mục cuối T360) |
 | T339 | Trang chủ Free máy tính, Tiến độ kiểm kê theo cửa hàng: hiện tối đa 4 cửa hàng cần chú ý (chưa kiểm, lệch nhiều trước), dòng Đã kiểm x/y cửa hàng, dòng Xem tất cả mở hộp danh sách đủ | dinhlanphuongipacc | Đang làm | Sửa `home/BaBaiToanFree.tsx`, `app.css` (mục cuối T339) |
 | T333 | Đổi chữ "map" thành "gán" khi nói về phương thức thanh toán và quỹ (Khoá sổ, Danh mục Quỹ tiền, Danh mục cửa hàng) | dinhlanphuongipacc | Dở dang | Đã đổi ở Khoá sổ, Quỹ tiền. Còn `DanhMucCuaHang.tsx` chờ PhuongXT xong T321. Xem [nhật ký](nhat-ky/2026-10-17-dinhlanphuongipacc-doi-map-thanh-gan.md) |
 | T323 | `tools/kiem_tra.py --dien-thoai` dừng ở bước chờ `.m-nv-luoi`: màn Nghiệp vụ điện thoại làm lại ở T311 không còn lớp này, cập nhật bộ kiểm theo bố cục mới | | Chờ | Phát hiện 17/10/2026 khi kiểm T322 |
@@ -52,6 +51,8 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T361 | Web, Chi phí phân bổ (và danh sách kiểu chứng từ dùng `CatalogScreen`): nút Lọc cạnh các ô lọc, bấm Lọc mới áp; ô tích Ẩn thẻ hết phân bổ ra đầu hàng 2 | Trum | 17/10/2026 | [2026-10-17-trum-dien-thoai-29-diem](nhat-ky/2026-10-17-trum-dien-thoai-29-diem.md) |
+| T360 | Điện thoại trang chủ Free: khối Mua hàng & công nợ đổi tên thành "Mua hàng & Công nợ"; nút Bảng kê nằm dưới Giá trị mua hàng, nút Công nợ dưới Công nợ phải trả, hai nút ngang nhau | Trum | 17/10/2026 | [2026-10-17-trum-dien-thoai-29-diem](nhat-ky/2026-10-17-trum-dien-thoai-29-diem.md) |
 | T359 | Điện thoại: chênh lệch kiểm kê mất số thập phân (thực tế 9.5, sổ 10 ra 0 kg); số lượng có lẻ hiện 2 số thập phân, số nguyên giữ nguyên | Trum | 17/10/2026 | [2026-10-17-trum-dien-thoai-29-diem](nhat-ky/2026-10-17-trum-dien-thoai-29-diem.md) |
 | T358 | Điện thoại: phiếu kiểm kê chỉ chọn ngày, không chọn giờ; ngày hiện tại lấy giờ lúc tạo phiếu, ngày quá khứ lấy 23:59 | Trum | 17/10/2026 | [2026-10-17-trum-dien-thoai-29-diem](nhat-ky/2026-10-17-trum-dien-thoai-29-diem.md) |
 | T357 | Điện thoại: đang xem Tất cả cửa hàng mà lập phiếu (kiểm kê, phiếu kho, thu chi, mua bán) không bắt chọn cửa hàng, tự lấy Phố Mây Lê Lợi. Bắt chọn cửa hàng, rà mọi form | Trum | 17/10/2026 | [2026-10-17-trum-dien-thoai-29-diem](nhat-ky/2026-10-17-trum-dien-thoai-29-diem.md) |

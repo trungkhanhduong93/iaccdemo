@@ -31,27 +31,8 @@ export function MKhoFree({ selCns, thang }: { selCns: string[]; thang: number })
         <div className="m-tc-the-head">
           <div className="m-tc-the-tieu-hop">
             <h3 className="m-tc-the-tieu">
-              <Icon n="khohang" className="ic sm" /> Mua hàng &amp; công nợ nhà cung cấp
+              <Icon n="khohang" className="ic sm" /> Mua hàng &amp; Công nợ
             </h3>
-          </div>
-          <div className="m-tck-links">
-            <Link
-              to="/app/bao-cao/4-2-7"
-              className="m-tck-link"
-              onClick={() => {
-                luuTuyChinh(s.donVi, '4.2.7', { ...(docTuyChinh(s.donVi, '4.2.7') ?? {}), nhom: ['ma'], xemNhom: 'tongHop' })
-                datLocDaXem('/app/bao-cao/4-2-7', {}, String(thang))
-              }}
-            >
-              Bảng kê ›
-            </Link>
-            <Link
-              to="/app/bao-cao/4-2-3"
-              className="m-tck-link"
-              onClick={() => datLocDaXem('/app/bao-cao/4-2-3', {}, String(thang))}
-            >
-              Công nợ ›
-            </Link>
           </div>
         </div>
         <div className="bbt-e-mota">Giá trị hàng mua trong tháng và số tiền còn phải trả</div>
@@ -68,11 +49,28 @@ export function MKhoFree({ selCns, thang }: { selCns: string[]; thang: number })
                 </span></>
               )}
             </div>
+            <Link
+              to="/app/bao-cao/4-2-7"
+              className="m-tck-link m-tck-link-duoi"
+              onClick={() => {
+                luuTuyChinh(s.donVi, '4.2.7', { ...(docTuyChinh(s.donVi, '4.2.7') ?? {}), nhom: ['ma'], xemNhom: 'tongHop' })
+                datLocDaXem('/app/bao-cao/4-2-7', {}, String(thang))
+              }}
+            >
+              Bảng kê ›
+            </Link>
           </div>
           <div className="m-tck-kpi">
             <div className="m-tck-hoi">Công nợ phải trả</div>
             <div className="m-tck-tra" style={{ color: 'var(--orange-d, #d0650a)' }}>{moneyD(no.cuoiRong)}</div>
             <div className="m-tck-phu">{no.soNcc} nhà cung cấp</div>
+            <Link
+              to="/app/bao-cao/4-2-3"
+              className="m-tck-link m-tck-link-duoi"
+              onClick={() => datLocDaXem('/app/bao-cao/4-2-3', {}, String(thang))}
+            >
+              Công nợ ›
+            </Link>
           </div>
         </div>
 
