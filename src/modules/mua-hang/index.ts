@@ -12,7 +12,7 @@ const NGAN: Record<string, string> = { '4.1.2': 'Hoá đơn mua hàng', '4.1.3':
 
 const muaHang: ModuleDef = {
   key: 'mua-hang', ten: 'Kế toán mua hàng', ngan: 'Mua hàng', icon: 'truck', mod: 3,
-  mota: 'Phiếu mua từ iPOS Inventory, hoá đơn đầu vào, công nợ phải trả',
+  mota: 'Phiếu mua hàng, hoá đơn đầu vào, công nợ phải trả',
   quyTrinh,
   screens: tuExcel(3, {
     '4.1.1': { voucher: PHIEU_MUA },

@@ -156,10 +156,10 @@ export function MDanhSach<T>({
         )}
       </div>
 
-      {/* Dòng tìm kiếm nếu mở */}
-      {timMo && (
-        <div className="m-ds-tim-hang-mo">
-          <div className="m-ds-tim">
+      {/* Dòng tóm tắt: bình thường hiển thị "n chứng từ", khi bấm tìm kiếm thì input thế chỗ trực tiếp trên dòng này (T353) */}
+      <div className={`m-ds-dong-tom-tat${timMo ? ' dang-tim' : ''}`}>
+        {timMo ? (
+          <div className="m-ds-tim m-ds-tim-the-cho">
             <Icon n="search" className="m-ds-tim-ic ic sm" />
             <input
               type="text"
@@ -180,37 +180,45 @@ export function MDanhSach<T>({
                 <Icon n="x" className="ic sm" />
               </button>
             ) : null}
+            <button
+              type="button"
+              className="m-ds-btn-dong-tim"
+              onClick={() => { setTimMo(false); setQ(''); }}
+              title="Đóng tìm kiếm"
+              aria-label="Đóng tìm kiếm"
+            >
+              Đóng
+            </button>
           </div>
-        </div>
-      )}
-
-      {/* Dòng tóm tắt: "n chứng từ · tổng tiền" chữ mờ, bên phải có nút sắp xếp và nút tìm */}
-      <div className="m-ds-dong-tom-tat">
-        <div className="m-ds-tt-chu">
-          {tomTat ?? `${filteredRows.length} chứng từ`}
-        </div>
-        <div className="m-ds-tt-nut">
-          <button
-            type="button"
-            className={`m-ds-btn-ic${sortTang ? ' on' : ''}`}
-            onClick={() => setSortTang(s => !s)}
-            title="Sắp xếp"
-            aria-label="Sắp xếp"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M3 6h18M6 12h12m-9 6h6" vectorEffect="non-scaling-stroke" />
-            </svg>
-          </button>
-          <button
-            type="button"
-            className={`m-ds-btn-ic${timMo ? ' on' : ''}`}
-            onClick={() => setTimMo(t => !t)}
-            title="Tìm kiếm"
-            aria-label="Tìm kiếm"
-          >
-            <Icon n="search" className="ic sm" />
-          </button>
-        </div>
+        ) : (
+          <>
+            <div className="m-ds-tt-chu">
+              {tomTat ?? `${filteredRows.length} chứng từ`}
+            </div>
+            <div className="m-ds-tt-nut">
+              <button
+                type="button"
+                className={`m-ds-btn-ic${sortTang ? ' on' : ''}`}
+                onClick={() => setSortTang(s => !s)}
+                title="Sắp xếp"
+                aria-label="Sắp xếp"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M3 6h18M6 12h12m-9 6h6" vectorEffect="non-scaling-stroke" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                className="m-ds-btn-ic"
+                onClick={() => setTimMo(true)}
+                title="Tìm kiếm"
+                aria-label="Tìm kiếm"
+              >
+                <Icon n="search" className="ic sm" />
+              </button>
+            </div>
+          </>
+        )}
       </div>
 
       {/* Danh sách thẻ */}

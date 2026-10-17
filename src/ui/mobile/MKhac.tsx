@@ -5,6 +5,14 @@ import { GOI, GOIS, anNgoaiGoi, minGoi } from '../../app/plan'
 import { MODULES, duongDan, hienMan, maKhoa, moDuoc, tabCua, tenMan } from '../../app/registry'
 import { Icon } from '../Icon'
 import { Pk } from '../Page'
+import type { ScreenDef } from '../../modules/types'
+
+/** Tên ngắn ở nhóm Danh mục: bỏ chữ "Danh mục" đầu tên, 1.2 và 1.5 gọi gọn như web (T353) */
+const TEN_GON_DM: Record<string, string> = { '1.2': 'Hàng hoá', '1.5': 'Đối tượng' }
+const tenDm = (sc: ScreenDef) => {
+  const t = TEN_GON_DM[sc.code ?? sc.slug.replace(/-/g, '.')] || tenMan(sc).replace(/^Danh mục\s+/i, '')
+  return t.charAt(0).toUpperCase() + t.slice(1)
+}
 
 export function MKhac() {
   const { s, set } = useSession()
@@ -55,7 +63,7 @@ export function MKhac() {
                         <Icon n={sc.icon ?? modDm.icon} className="ic sm" />
                       </span>
                       <div className="m-khac-dong-nd">
-                        <span className="m-khac-dong-ten">{tenMan(sc)}</span>
+                        <span className="m-khac-dong-ten">{tenDm(sc)}</span>
                       </div>
                     </div>
                     <div className="m-khac-dong-phai">

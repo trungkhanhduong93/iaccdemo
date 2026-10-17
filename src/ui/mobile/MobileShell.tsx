@@ -105,14 +105,16 @@ export function MobileShell() {
   const currentSc = timMan(parts[1], parts[2])?.sc
 
   const quayLai = () => {
-    if (loc.pathname === '/app/nghiep-vu' && loc.search.includes('m=')) {
-      nav('/app/nghiep-vu')
+    if (window.history.state && window.history.state.idx > 0) {
+      nav(-1)
+    } else if (loc.pathname === '/app/nghiep-vu' && loc.search.includes('m=')) {
+      nav('/app/nghiep-vu', { replace: true })
     } else if (loc.pathname.startsWith('/app/trang-chu/')) {
       const sp = new URLSearchParams(loc.search)
       const th = sp.get('thang')
-      nav(th ? `/app/trang-chu/tong-quan?thang=${th}` : '/app/trang-chu/tong-quan')
+      nav(th ? `/app/trang-chu/tong-quan?thang=${th}` : '/app/trang-chu/tong-quan', { replace: true })
     } else {
-      nav(-1)
+      nav('/app/trang-chu/tong-quan', { replace: true })
     }
   }
 
@@ -162,7 +164,7 @@ export function MobileShell() {
                 title="Chọn cửa hàng làm việc"
                 label={
                   <>
-                    <Icon n="store" className="ic sm" />
+                    <Icon n="cuahang" className="ic sm" />
                     <span className="m-cn-nhan">{layNhanCn(cn)}</span>
                     <Icon n="chevd" className="ic sm" />
                   </>
@@ -176,7 +178,7 @@ export function MobileShell() {
                     </MenuItem>
                     <MenuSep />
                     {dsCn.map(c => (
-                      <MenuItem key={c.id} on={c.id === s.cuaHang} icon="store" onClick={() => { set({ cuaHang: c.id }); dong() }}>
+                      <MenuItem key={c.id} on={c.id === s.cuaHang} icon="cuahang" onClick={() => { set({ cuaHang: c.id }); dong() }}>
                         {c.ten}
                       </MenuItem>
                     ))}

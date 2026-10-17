@@ -1030,10 +1030,12 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
   }
 
   const handleQuayLai = () => {
-    if (dangSua) {
-      nav(`${path}/${id}`)
+    if (window.history.state && window.history.state.idx > 0) {
+      nav(-1)
+    } else if (dangSua) {
+      nav(`${path}/${id}`, { replace: true })
     } else {
-      nav(path)
+      nav(path, { replace: true })
     }
   }
 
@@ -1145,7 +1147,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                 onClick={() => setMoChonCn(true)}
               >
                 <div className="m-lp-dong-trai">
-                  <Icon n="store" className="ic sm m-lp-dong-ic" kieu="net" />
+                  <Icon n="cuahang" className="ic sm m-lp-dong-ic" kieu="net" />
                   <div className="m-lp-dong-nd">
                     <span className="m-lp-dong-nhan">Cửa hàng</span>
                     <span className="m-lp-dong-tri">{cuaHang}</span>
@@ -1291,7 +1293,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                 onClick={() => setMoChonCn(true)}
               >
                 <div className="m-lp-dong-trai">
-                  <Icon n="store" className="ic sm m-lp-dong-ic" kieu="net" />
+                  <Icon n="cuahang" className="ic sm m-lp-dong-ic" kieu="net" />
                   <div className="m-lp-dong-nd">
                     <span className="m-lp-dong-nhan">Cửa hàng</span>
                     <span className="m-lp-dong-tri">{cuaHang}</span>
@@ -1309,7 +1311,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                     onClick={() => setMoChonKho(true)}
                   >
                     <div className="m-lp-dong-trai">
-                      <Icon n="store" className="ic sm m-lp-dong-ic" kieu="net" />
+                      <Icon n="cuahang" className="ic sm m-lp-dong-ic" kieu="net" />
                       <div className="m-lp-dong-nd">
                         <span className="m-lp-dong-nhan">{nhanKho} <b className="m-lp-sao">*</b></span>
                         <span className={`m-lp-dong-tri ${!kho ? 'mo' : ''}`}>{kho || 'Chọn kho'}</span>
@@ -1449,13 +1451,6 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                       onSuaTienThue={val => suaTienThue(i, val)}
                     />
                   ))}
-                  <button
-                    type="button"
-                    className="m-th-btn-them-duoi m-lp-btn-them-nhanh"
-                    onClick={() => setMoChonHang(true)}
-                  >
-                    <Icon n="plus" className="ic sm" kieu="net" /> Thêm hàng
-                  </button>
                 </div>
               )}
               {loiO.hang && <div className="m-lp-loi-o">{loiO.hang}</div>}

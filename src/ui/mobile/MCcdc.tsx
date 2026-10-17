@@ -275,7 +275,7 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
                     onClick={() => handleChonCnDeThem(c.ten)}
                   >
                     <span style={{ marginRight: 10, color: '#0066cc', display: 'inline-flex' }}>
-                      <Icon n="store" className="ic sm" />
+                      <Icon n="cuahang" className="ic sm" />
                     </span>
                     <span className="m-loc-muc-ten">{c.ten}</span>
                     <span style={{ color: '#bbb', display: 'inline-flex' }}>

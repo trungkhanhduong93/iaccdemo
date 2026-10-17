@@ -23790,3 +23790,104 @@ button[class*="btn-"] .ic .l2 {
   pointer-events: none;
 }
 
+/* ── Điện thoại: Tìm kiếm thế chỗ dòng tóm tắt và thu gọn dòng hàng (T353) ── */
+.m-ds-dong-tom-tat.dang-tim {
+  padding: 6px 12px !important;
+}
+.m-ds-tim-the-cho {
+  width: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+.m-ds-tim-the-cho .m-ds-tim-inp {
+  height: 32px !important;
+  font-size: 13px !important;
+  padding: 0 30px 0 32px !important;
+  border-radius: 8px !important;
+}
+.m-ds-tim-the-cho .m-ds-tim-ic {
+  left: 8px !important;
+}
+.m-ds-tim-the-cho .m-ds-tim-x {
+  right: 60px !important;
+  width: 20px !important;
+  height: 20px !important;
+}
+.m-ds-btn-dong-tim {
+  background: none !important;
+  border: none !important;
+  color: var(--blue, #0560a6) !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  padding: 4px 6px !important;
+  cursor: pointer !important;
+  flex: none !important;
+  white-space: nowrap !important;
+}
+
+/* Thu gọn dòng hàng chứng từ mobile (T353 điểm 9) */
+.m-th-the {
+  padding: 10px 12px !important;
+  gap: 6px !important;
+  border-radius: 10px !important;
+  margin-bottom: 8px !important;
+}
+.m-th-dau {
+  padding-bottom: 6px !important;
+  margin-bottom: 0 !important;
+}
+.m-th-ten-hang {
+  font-size: 13.5px !important;
+}
+.m-th-hang {
+  min-height: 32px !important;
+  gap: 6px !important;
+}
+.m-th-nhan {
+  font-size: 12.5px !important;
+}
+.m-th-o-nhap {
+  height: 32px !important;
+  border-radius: 6px !important;
+  padding: 0 6px !important;
+}
+.m-th-inp {
+  font-size: 13px !important;
+}
+.m-th-vat-wrap {
+  gap: 4px !important;
+}
+.m-th-vat-pt-hop {
+  height: 32px !important;
+  border-radius: 6px !important;
+}
+.m-th-vat-pt-inp {
+  font-size: 12.5px !important;
+}
+.m-th-ghi-chu {
+  min-height: 32px !important;
+  height: 32px !important;
+  padding: 6px 8px !important;
+  font-size: 12.5px !important;
+  line-height: 18px !important;
+  border-radius: 6px !important;
+  margin-top: 2px !important;
+}
+.m-th-btn-nhan-ban,
+.m-th-btn-xoa {
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 6px !important;
+}
+.m-th-btn-nhan-ban svg,
+.m-th-btn-xoa svg {
+  width: 16px !important;
+  height: 16px !important;
+}
+.m-th-btn-them-duoi,
+.m-th-btn-them-hang-duoi {
+  display: none !important;
+}
+
+

@@ -90,7 +90,7 @@ const sauKiemKe = (ds: ScreenDef[]) => { const i = ds.findIndex(x => x.slug === 
 
 const kho: ModuleDef = {
   key: 'kho', ten: 'Kho hàng', ngan: 'Kho', icon: 'box', mod: 4,
-  mota: 'Phiếu kho lấy từ iPOS Inventory; giá vốn, thẻ kho, tồn kho IACC Cloud tự tính',
+  mota: 'Nhập, xuất, điều chuyển, kiểm kê kho; giá vốn, thẻ kho, tồn kho',
   quyTrinh,
   // Màn Điều chỉnh kho đứng ngay sau Kiểm kê (T126); nhóm sản xuất xếp theo IVT (T152); ba tab điều chuyển liền nhau (T155)
   screens: [...sauKiemKe(xepSanXuat(sauDieuChuyen(tuExcel(4, {
