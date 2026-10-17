@@ -24747,3 +24747,23 @@ button[class*="btn-"] .ic .l2 {
 .m-tck-link-duoi { align-self: start; justify-self: start; margin-top: 4px; }
 /* Khối Kết quả kinh doanh: nút Xem BC gọn, cùng hàng tên khối (T360) */
 .m-free-the .m-tc-the-head.m-tcf-head-1hang { flex-wrap: nowrap; }
+
+/* ── Điện thoại: nút nổi hạ xuống khi thanh tab ẩn (T362) ── */
+.m-nut-them-fab {
+  transition: transform 200ms ease;
+  will-change: transform;
+}
+
+.m-app:has(.m-thanh-duoi.an) .m-nut-them-fab {
+  transform: translateY(calc(var(--m-thanh-duoi, 85px) + 18px)) !important;
+}
+
+.m-app:has(.m-thanh-duoi.an) .m-nut-them-fab:active {
+  transform: translateY(calc(var(--m-thanh-duoi, 85px) + 18px)) scale(0.97) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .m-nut-them-fab {
+    transition: none !important;
+  }
+}

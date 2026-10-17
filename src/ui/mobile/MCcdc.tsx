@@ -2,6 +2,8 @@ import { useMemo, useState, type FC } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import type { Row, ScreenProps } from '../../modules/types'
 import { cuaHangHienTai, useSession } from '../../app/session'
+import { hienMan, laBaoCao } from '../../app/registry'
+import { anNgoaiGoi } from '../../app/plan'
 import { CUA_HANG } from '../../data/mock'
 import { money, fold } from '../format'
 import { Icon } from '../Icon'
@@ -113,41 +115,48 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
 
   const tongTien = useMemo(() => listLoc.reduce((s, r) => s + r.gt, 0), [listLoc])
 
-  // Tabs ngang trên đầu danh sách
-  const hangTabs = (
+  // Tabs ngang trên đầu danh sách (T363: ẩn tab ngoài gói theo hienMan / moDuoc / anNgoaiGoi; còn <= 1 tab thì ẩn luôn hàng tab)
+  const tabs = useMemo(() => {
+    const ds: { k: string; ten: string; on?: boolean; onClick?: () => void }[] = []
+
+    const sc811 = mod?.screens.find(x => x.slug === '8-1-1' || x.code === '8.1.1')
+    if (!sc811 || hienMan(sc811, s.goi, s.cheDo, s)) {
+      ds.push({ k: '8-1-1', ten: 'Thẻ chi phí', on: true })
+    }
+
+    const sc812 = mod?.screens.find(x => x.slug === '8-1-2' || x.code === '8.1.2')
+    if (sc812 && hienMan(sc812, s.goi, s.cheDo, s)) {
+      ds.push({ k: '8-1-2', ten: 'Tăng, giảm CCDC', onClick: () => nav('/app/ccdc/8-1-2') })
+    }
+
+    const sc813 = mod?.screens.find(x => x.slug === '8-1-3' || x.code === '8.1.3')
+    if (sc813 && hienMan(sc813, s.goi, s.cheDo, s)) {
+      ds.push({ k: '8-1-3', ten: 'Kiểm kê CCDC', onClick: () => nav('/app/ccdc/8-1-3') })
+    }
+
+    if (!anNgoaiGoi(s.goi)) {
+      ds.push({ k: 'bctd', ten: 'Báo cáo theo dõi', onClick: () => setMoTheoDoi(true) })
+    }
+
+    return ds
+  }, [mod, s.goi, s.cheDo, s, nav])
+
+  const hangTabs = tabs.length > 1 ? (
     <div className="m-ds-hang-tabs" role="tablist">
-      <button type="button" role="tab" aria-selected={true} className="m-tab-chu on">
-        Thẻ chi phí
-      </button>
-      <button
-        type="button"
-        role="tab"
-        aria-selected={false}
-        className="m-tab-chu"
-        onClick={() => nav('/app/ccdc/8-1-2')}
-      >
-        Tăng, giảm CCDC
-      </button>
-      <button
-        type="button"
-        role="tab"
-        aria-selected={false}
-        className="m-tab-chu"
-        onClick={() => nav('/app/ccdc/8-1-3')}
-      >
-        Kiểm kê CCDC
-      </button>
-      <button
-        type="button"
-        role="tab"
-        aria-selected={false}
-        className="m-tab-chu"
-        onClick={() => setMoTheoDoi(true)}
-      >
-        Báo cáo theo dõi
-      </button>
+      {tabs.map(t => (
+        <button
+          key={t.k}
+          type="button"
+          role="tab"
+          aria-selected={Boolean(t.on)}
+          className={`m-tab-chu${t.on ? ' on' : ''}`}
+          onClick={t.onClick}
+        >
+          {t.ten}
+        </button>
+      ))}
     </div>
-  )
+  ) : undefined
 
   const handleBatDauThem = () => {
     if (!cnChon) {
