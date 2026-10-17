@@ -14,6 +14,7 @@ export interface MFormDmProps {
   nhoms?: string[]
   ten?: string
   tenNgan?: string
+  chiXem?: boolean
   onDong: () => void
   onLuu?: (formVal: Record<string, any>, themTiep: boolean) => void
 }
@@ -29,6 +30,7 @@ export const MFormDm: FC<MFormDmProps> = ({
   nhoms,
   ten,
   tenNgan,
+  chiXem,
   onDong,
   onLuu,
 }) => {
@@ -48,6 +50,7 @@ export const MFormDm: FC<MFormDmProps> = ({
         ten={ten}
         tenNgan={tenNgan ?? sc.ngan ?? ten}
         scSlug={sc.slug}
+        chiXem={chiXem}
         onDong={onDong}
         onLuu={onLuu}
       />

@@ -87,7 +87,7 @@ export function MKhac() {
                   >
                     <div className="m-khac-dong-trai">
                       <span className="m-khac-dong-ic ht">
-                        <Icon n={sc.icon ?? modHt.icon} className="ic sm" />
+                        <Icon n={sc.slug === 'khoa-so' ? 'lock' : (sc.icon ?? modHt.icon)} className="ic sm" />
                       </span>
                       <div className="m-khac-dong-nd">
                         <span className="m-khac-dong-ten">{tenMan(sc)}</span>
@@ -100,6 +100,24 @@ export function MKhac() {
                   </Link>
                 )
               })}
+              {!dsHt.some(sc => sc.slug === 'khoa-so') && (
+                <Link
+                  to="/app/tong-hop/10-1-6"
+                  className="m-khac-dong"
+                >
+                  <div className="m-khac-dong-trai">
+                    <span className="m-khac-dong-ic ht">
+                      <Icon n="lock" className="ic sm" />
+                    </span>
+                    <div className="m-khac-dong-nd">
+                      <span className="m-khac-dong-ten">Khoá sổ</span>
+                    </div>
+                  </div>
+                  <div className="m-khac-dong-phai">
+                    <Icon n="chevr" className="ic sm m-khac-mui-ten" />
+                  </div>
+                </Link>
+              )}
             </div>
           </div>
         </section>
