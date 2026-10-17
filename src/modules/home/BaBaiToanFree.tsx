@@ -148,7 +148,7 @@ export function HopThuChi13({ ds, onDong }: { ds: ReturnType<typeof thuChi13Than
         <div className="ds-hop-dau">
           <Icon n="wallet" className="ic sm" /><b>Dòng tiền 13 tháng</b>
           <span className="grow" />
-          <span className="bbt-13t-chu"><i className="thu2" />Thu<i className="chi2" />Chi<i className="thuan tron" />Dòng tiền thuần<i className="ton tron" />Tồn quỹ</span>
+          <span className="bbt-13t-chu"><i className="thu2" />Thu<i className="chi2" />Chi<i className="thuan tron" /><span title="Thu trừ chi trong tháng">Dòng tiền thuần</span><i className="ton tron" />Tồn quỹ</span>
           <button type="button" className="pheu-dong" title="Đóng" aria-label="Đóng" onClick={onDong}><Icon n="x" className="ic sm" /></button>
         </div>
         <div className="hop-13t-than">
@@ -321,7 +321,7 @@ function VongQuy({ ds: dsGoc, tong, onChon }: { ds: { quy: string; tienMat: bool
           off += len
           return el
         })}
-        <text x={co / 2} y={co / 2 - 10} textAnchor="middle" className="bbt-vq-nhan">{dangTro ? pct(tong ? dangTro.cuoi / tong : 0) : 'Tổng tồn'}</text>
+        <text x={co / 2} y={co / 2 - 10} textAnchor="middle" className="bbt-vq-nhan">{dangTro ? pct(tong ? dangTro.cuoi / tong : 0) : 'Tổng tồn quỹ'}</text>
         <text x={co / 2} y={co / 2 + 20} textAnchor="middle" className="bbt-vq-so">{short(dangTro ? dangTro.cuoi : tong)}</text>
       </svg>
       <ul className="bbt-vq-ct">
@@ -445,11 +445,19 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
           <div className="bbt-e-luoi bbt-e-luoi-2">   {/* hàng trên 2 cột lãi lỗ, thu chi; Quản lý kho kéo hết hàng dưới (T293) */}
         {/* Cột 1: Quản lý lãi lỗ; T303: phần số gọn lại, biểu đồ 13 tháng nằm ngay dưới */}
         <section className="bbt-cot col bbt-gon">
-          <h2 className="ten bbt-e-ten">
-            <Icon n="chart" className="ic sm" /> Quản lý lãi lỗ
-          </h2>
+          <div className="bbt-e-ten-hang">
+            <h2 className="ten bbt-e-ten">
+              <Icon n="chart" className="ic sm" /> Kết quả kinh doanh
+            </h2>
+            {/* T316: mở Báo cáo kết quả kinh doanh 10.2.3 đúng tháng đang xem, như link Báo cáo ở các khối khác */}
+            <span className="bbt-kho2-link">
+              <Link to="/app/bao-cao/10-2-3" className="bbt-kho-mo" onClick={() => datLocDaXem('/app/bao-cao/10-2-3', {}, String(thangXem))}>Xem kết quả kinh doanh ›</Link>
+            </span>
+          </div>
+          {/* T316: tiêu đề dùng thuật ngữ chuẩn, tiêu đề phụ giải nghĩa cho chủ chưa quen nghiệp vụ */}
+          <div className="bbt-e-mota">Doanh thu trừ các khoản chi phí trong tháng</div>
           <div className="hoi bbt-e-hoi">
-            {thangXem === 10 ? 'Tháng này' : `Tháng ${thangXem}`} lãi bao nhiêu?
+            Lợi nhuận {thangXem === 10 ? 'tháng này' : `tháng ${thangXem}`}
           </div>
           <div
             className={`tra bbt-tra ${loiNhuan >= 0 ? 'lai' : 'lo'}`}
@@ -457,22 +465,23 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
           >
             {loiNhuan < 0 ? `Lỗ ${moneyD(Math.abs(loiNhuan))}` : moneyD(loiNhuan)}
           </div>
+          {/* Giải nghĩa biên lợi nhuận: lãi (lỗ) bao nhiêu đồng trên mỗi 100 đồng doanh thu, một chữ số lẻ (T316) */}
           <div className="phu bbt-phu bbt-e-phu">
-            Biên lãi {pct(bien)} trên doanh thu
+            Biên lợi nhuận {pct(bien)} <span className="bbt-e-giai">· {bien < 0 ? 'lỗ' : 'lãi'} {Math.abs(bien * 100).toLocaleString('vi-VN', { maximumFractionDigits: 1 })} đ trên mỗi 100 đ doanh thu</span>
           </div>
 
           <div className="t dt">
-            <div className="l"><b>Doanh thu</b></div>
+            <div className="l"><b>Doanh thu</b><span>Tiền bán hàng trong tháng</span></div>
             <div className="r"><b style={{ fontSize: '17px' }}>{moneyD(d.dtThuan)}</b></div>
           </div>
 
           <Link
             to={`/app/trang-chu/chi-phi-nvl?thang=${thangXem}`}
             className="t cp bbt-e-the-link"
-            title="Xem chi phí nguyên vật liệu"
+            title="Xem giá vốn nguyên vật liệu"
           >
             <div className="l">
-              <b>Chi phí nguyên vật liệu</b>
+              <b>Giá vốn nguyên vật liệu</b>
               <span>{moTaCach(nvl.ds)}</span>
             </div>
             <div className="r">
@@ -485,11 +494,11 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
           <Link
             to={`/app/trang-chu/chi-phi-thang?thang=${thangXem}`}
             className="t cp bbt-e-the-link"
-            title="Xem chi phí trong tháng"
+            title="Xem chi phí hoạt động"
           >
             <div className="l">
-              <b>Chi phí trong tháng</b>
-              <span>{chiLon ? `Nhiều nhất: ${chiLon.l} ${short(chiLon.v)}` : 'Lương, mặt bằng, điện nước, chi khác'}</span>
+              <b>Chi phí hoạt động</b>
+              <span>{chiLon ? `Lương, mặt bằng, điện nước… Lớn nhất: ${chiLon.l} ${short(chiLon.v)}` : 'Lương, mặt bằng, điện nước, chi khác'}</span>
             </div>
             <div className="r">
               <b>{moneyD(cpThang)}</b>
@@ -501,11 +510,11 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
           <Link
             to="/app/ccdc/8-1-1"
             className="t cp bbt-e-the-link"
-            title="Xem chi phí phân bổ hàng tháng"
+            title="Xem chi phí phân bổ, khấu hao"
           >
             <div className="l">
-              <b>Chi phí phân bổ hàng tháng</b>
-              <span>Phân bổ công cụ dụng cụ, khấu hao</span>
+              <b>Chi phí phân bổ, khấu hao</b>
+              <span>Công cụ, tài sản mua một lần, ghi nhận dần theo tháng</span>
             </div>
             <div className="r">
               <b>{moneyD(d.cpPhanBo)}</b>
@@ -527,7 +536,7 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
           {/* T303: biểu đồ lãi lỗ 13 tháng hiện thẳng trong cột, không cần bấm mở hộp */}
           <div className="bbt-13t-trong">
             <div className="bbt-13t-trong-dau">
-              <div className="bbt-13t-trong-ten"><b>Hiệu quả kinh doanh</b><small>Xu hướng doanh thu &amp; tăng trưởng so với cùng kỳ (YoY)</small></div>
+              <div className="bbt-13t-trong-ten"><b>Hiệu quả kinh doanh 13 tháng</b><small>Doanh thu, chi phí, lợi nhuận từng tháng và so với cùng kỳ năm trước</small></div>
               <span className="bbt-13t-chu"><i className="dt" />Doanh thu<i className="cp" />Chi phí<i className="lai tron" />Lãi<i className="lo tron" />Lỗ</span>
             </div>
             <KhungVua cao={210} ve={r => <LaiLoChart data={laiLo13} h={210} rong={r} />} />
@@ -543,6 +552,7 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
             {/* T303: nút Tạo quỹ luôn có ở khối Quỹ tiền */}
             <Link to="/app/danh-muc/1-12?moi=1&goiY=thuchi" className="bbt-tao-quy" title="Tạo quỹ tiền mặt hoặc tài khoản ngân hàng"><Icon n="plus" className="ic sm" />Tạo quỹ</Link>
           </div>
+          <div className="bbt-e-mota">Tiền mặt tại cửa hàng và tiền gửi ngân hàng</div>
           <div className="hoi bbt-e-hoi">
             {thangXem === 10 ? 'Tồn quỹ hiện tại' : `Tồn quỹ cuối tháng ${thangXem}/2026`}
           </div>
@@ -556,7 +566,7 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
             {moneyD(tongQuy.cuoi)} ›
           </button>
           <div className="phu bbt-phu bbt-e-phu">
-            Thu <span style={{ color: 'var(--green, #138a52)' }}>{short(tongQuy.thu)}</span> · Chi <span style={{ color: 'var(--red, #c2362b)' }}>{short(tongQuy.chi)}</span>
+            {thangXem === 10 ? 'Tháng này thu' : `Tháng ${thangXem} thu`} <span style={{ color: 'var(--green, #138a52)' }}>{short(tongQuy.thu)}</span> · chi <span style={{ color: 'var(--red, #c2362b)' }}>{short(tongQuy.chi)}</span>
           </div>
 
           {quy.length > 0 ? <VongQuy ds={quy} tong={tongQuy.cuoi} onChon={setModalQuy} /> : (
@@ -571,8 +581,8 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
           {/* T303: dòng tiền 13 tháng hiện thẳng trong cột; số tồn quỹ ở trên vẫn mở modal gộp các quỹ */}
           <div className="bbt-13t-trong">
             <div className="bbt-13t-trong-dau">
-              <div className="bbt-13t-trong-ten"><b>Dòng tiền 13 tháng</b><small>Thu, chi, dòng tiền thuần và tồn quỹ cuối tháng</small></div>
-              <span className="bbt-13t-chu"><i className="thu2" />Thu<i className="chi2" />Chi<i className="thuan tron" />Dòng tiền thuần<i className="ton tron" />Tồn quỹ</span>
+              <div className="bbt-13t-trong-ten"><b>Dòng tiền 13 tháng</b><small>Tiền thu vào, chi ra mỗi tháng và số dư quỹ cuối tháng</small></div>
+              <span className="bbt-13t-chu"><i className="thu2" />Thu<i className="chi2" />Chi<i className="thuan tron" /><span title="Thu trừ chi trong tháng">Dòng tiền thuần</span><i className="ton tron" />Tồn quỹ</span>
             </div>
             <KhungVua cao={210} ve={r => <LaiLoChart data={thuChi13} h={210} rong={r} ten={['Thu', 'Chi']} mau={['var(--bd-thu, #0f8f84)', 'var(--bd-chi, #c2362b)']} duong={{ ten: 'Dòng tiền thuần' }} duong2={{ ten: 'Tồn quỹ', mau: 'var(--bd-ton, #0560a6)' }} />} />
           </div>
@@ -581,7 +591,7 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
         {/* Quản lý kho gộp còn 2 khối thẳng cột với hàng trên (T307): Mua hàng & công nợ NCC, Hao hụt kiểm kê */}
         <section className="bbt-cot col bbt-gon bbt-kho2">
           <div className="bbt-e-ten-hang">
-            <h2 className="ten bbt-e-ten"><Icon n="khohang" className="ic sm" /> Mua hàng &amp; công nợ NCC</h2>
+            <h2 className="ten bbt-e-ten"><Icon n="khohang" className="ic sm" /> Mua hàng &amp; công nợ nhà cung cấp</h2>
             <span className="bbt-kho2-link">
               {/* Bảng kê mua hàng theo hàng hoá 4.2.7 gom theo mã hàng, dạng tổng hợp, đúng tháng đang xem (T304) */}
               <Link to="/app/bao-cao/4-2-7" className="bbt-kho-mo" onClick={() => {
@@ -591,29 +601,30 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
               <Link to="/app/bao-cao/4-2-3" className="bbt-kho-mo" onClick={() => datLocDaXem('/app/bao-cao/4-2-3', {}, String(thangXem))}>Công nợ ›</Link>
             </span>
           </div>
+          <div className="bbt-e-mota">Giá trị hàng mua trong tháng và số tiền còn phải trả</div>
           <div className="bbt-kho2-hai">
             <div>
-              <div className="hoi bbt-e-hoi">Tổng nhập {thangXem === 10 ? 'tháng' : `tháng ${thangXem}`}</div>
+              <div className="hoi bbt-e-hoi">Giá trị mua hàng {thangXem === 10 ? 'tháng này' : `tháng ${thangXem}`}</div>
               <div className="tra bbt-tra" style={{ color: 'var(--blue, #0560a6)' }}>{moneyD(mua.nhap)}</div>
               <div className="phu bbt-phu bbt-e-phu">
                 {mua.soDon} phiếu
-                {mua.soSanh && <> · <span className={mua.soSanh.pct > 0 ? 'bbt-kho-tang' : 'bbt-kho-giam'} title={`So với ${mua.soSanh.nhan} (${short(mua.soSanh.truoc)})`}>{mua.soSanh.pct > 0 ? '▲' : '▼'} {pct(Math.abs(mua.soSanh.pct))} cùng kỳ</span></>}
+                {mua.soSanh && <> · <span className={mua.soSanh.pct > 0 ? 'bbt-kho-tang' : 'bbt-kho-giam'} title={`So với ${mua.soSanh.nhan} (${short(mua.soSanh.truoc)})`}>{mua.soSanh.pct > 0 ? '▲' : '▼'} {pct(Math.abs(mua.soSanh.pct))} so với cùng kỳ</span></>}
               </div>
             </div>
             <div>
-              <div className="hoi bbt-e-hoi">Còn nợ NCC</div>
+              <div className="hoi bbt-e-hoi">Công nợ phải trả</div>
               <div className="tra bbt-tra" style={{ color: 'var(--orange-d, #d0650a)' }}>{moneyD(no.cuoiRong)}</div>
               <div className="phu bbt-phu bbt-e-phu">{no.soNcc} nhà cung cấp</div>
             </div>
           </div>
           {/* Dòng chảy công nợ: khớp dòng Tổng cộng báo cáo 4.2.3 */}
-          <div className="t"><div className="l"><b>Nợ đầu kỳ</b></div><div className="r"><b>{moneyD(no.dau)}</b></div></div>
-          <div className="t"><div className="l"><b>+ Mua nợ</b></div><div className="r"><b>{moneyD(no.phatSinh)}</b></div></div>
-          <div className="t"><div className="l"><b>− Đã trả</b></div><div className="r"><b>{moneyD(no.traHang + no.thanhToan)}</b></div></div>
-          <div className="t bbt-kho2-tong"><div className="l"><b>= Nợ cuối kỳ</b></div><div className="r"><b>{moneyD(no.cuoiRong)}</b></div></div>
+          <div className="t"><div className="l"><b>Nợ đầu kỳ</b><span>Còn nợ từ đầu tháng</span></div><div className="r"><b>{moneyD(no.dau)}</b></div></div>
+          <div className="t"><div className="l"><b>+ Phát sinh mua nợ</b><span>Mua chưa thanh toán</span></div><div className="r"><b>{moneyD(no.phatSinh)}</b></div></div>
+          <div className="t"><div className="l"><b>− Đã thanh toán</b></div><div className="r"><b>{moneyD(no.traHang + no.thanhToan)}</b></div></div>
+          <div className="t bbt-kho2-tong"><div className="l"><b>= Nợ cuối kỳ</b><span>Còn phải trả đến hôm nay</span></div><div className="r"><b>{moneyD(no.cuoiRong)}</b></div></div>
           <div className="bbt-kho2-ds">
             <div>
-              <div className="bbt-kho-nhom">Nhập nhiều nhất</div>
+              <div className="bbt-kho-nhom">Mặt hàng mua nhiều nhất</div>
               {mua.topMh.map(x => (
                 <div className="bbt-kho2-dong" key={x.ma}>
                   <span className="bbt-kho2-ten"><span className="bbt-kho-ma">{x.ma}</span>{x.ten}</span>
@@ -622,7 +633,7 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
               ))}
             </div>
             <div>
-              <div className="bbt-kho-nhom">Nợ nhiều nhất</div>
+              <div className="bbt-kho-nhom">Nhà cung cấp nợ nhiều nhất</div>
               {no.top.map(x => (
                 <div className="bbt-kho2-dong" key={x.ten}>
                   <span className="bbt-kho2-ten" title={x.ten}>{x.ten}</span>
@@ -633,7 +644,7 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
           </div>
           <div className="bbt-kho-chan">
             <Link to="/app/mua-hang/4-1-1/moi" className="btn sm"><Icon n="plus" className="ic sm" />Tạo phiếu mua hàng</Link>
-            <Link to="/app/tien/2-1-1/moi?loai=chi&ly=CHI02" className="btn sm"><Icon n="plus" className="ic sm" />Thanh toán NCC</Link>
+            <Link to="/app/tien/2-1-1/moi?loai=chi&ly=CHI02" className="btn sm"><Icon n="plus" className="ic sm" />Thanh toán nhà cung cấp</Link>
           </div>
         </section>
 
@@ -641,14 +652,15 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
           <div className="bbt-e-ten-hang">
             <h2 className="ten bbt-e-ten"><Icon n="khohang" className="ic sm" /> Hao hụt kiểm kê</h2>
             <span className="bbt-kho2-link">
-              <Link to="/app/bao-cao/5-2-15" className="bbt-kho-mo" onClick={() => datLocDaXem('/app/bao-cao/5-2-15', {}, String(thangXem))}>Báo cáo ›</Link>
+              <Link to="/app/bao-cao/5-2-15" className="bbt-kho-mo" onClick={() => datLocDaXem('/app/bao-cao/5-2-15', {}, String(thangXem))}>Báo cáo hao hụt ›</Link>
             </span>
           </div>
+          <div className="bbt-e-mota">Chênh lệch giữa tồn thực tế và tồn trên sổ sách</div>
           {/* Gói Free chỉ theo dõi số lượng, không có số tiền thừa, thiếu */}
-          <div className="hoi bbt-e-hoi">Mặt hàng lệch {thangXem === 10 ? 'tháng này' : `tháng ${thangXem}`}</div>
+          <div className="hoi bbt-e-hoi">Mặt hàng chênh lệch {thangXem === 10 ? 'tháng này' : `tháng ${thangXem}`}</div>
           <div className="tra bbt-tra" style={{ color: kk.thieu + kk.thua > 0 ? 'var(--red, #c2362b)' : 'var(--green, #138a52)' }}>{kk.thieu + kk.thua}</div>
           <div className="phu bbt-phu bbt-e-phu">Thiếu {kk.thieu} · thừa {kk.thua} · đã kiểm {kk.soKiem}/{kk.tongMh}</div>
-          <div className="bbt-kho-nhom">Tiến độ kiểm kê</div>
+          <div className="bbt-kho-nhom">Tiến độ kiểm kê theo cửa hàng</div>
           <div className="bbt-kho2-tien-do">
             {kk.theoCn.map(x => (
               <div className="bbt-kho2-cn" key={x.cn}>
@@ -663,7 +675,7 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
           </div>
           <div className="bbt-kho2-ds">
             <div>
-              <div className="bbt-kho-nhom">Thiếu nhiều</div>
+              <div className="bbt-kho-nhom">Thiếu nhiều nhất</div>
               {kk.topThieu.length ? kk.topThieu.map(x => (
                 <div className="bbt-kho2-dong" key={x.cn + x.ma}>
                   <span className="bbt-kho2-ten" title={x.cn}><span className="bbt-kho-ma">{x.ma}</span>{x.ten}</span>
@@ -672,7 +684,7 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
               )) : <div className="bbt-kho2-trong">Không có mặt hàng thiếu</div>}
             </div>
             <div>
-              <div className="bbt-kho-nhom">Thừa nhiều</div>
+              <div className="bbt-kho-nhom">Thừa nhiều nhất</div>
               {kk.topThua.length ? kk.topThua.map(x => (
                 <div className="bbt-kho2-dong" key={x.cn + x.ma}>
                   <span className="bbt-kho2-ten" title={x.cn}><span className="bbt-kho-ma">{x.ma}</span>{x.ten}</span>

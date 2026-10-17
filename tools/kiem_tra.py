@@ -3694,7 +3694,7 @@ def kiem_tra_dot_19_b():
         pg_web.wait_for_timeout(300)
 
         # Lấy số lãi lỗ ở bài toán 1 trên web
-        loc_lai_lo_web = pg_web.locator('.bbt-cot:has-text("Quản lý lãi lỗ") .bbt-tra')
+        loc_lai_lo_web = pg_web.locator('.bbt-cot:has-text("Kết quả kinh doanh") .bbt-tra')
         lai_lo_web = loc_lai_lo_web.inner_text().strip() if loc_lai_lo_web.count() > 0 else ''
         if not lai_lo_web:
             loi.append('19B: không tìm thấy số lãi lỗ trên bản web 1440x900 gói Free')
@@ -4771,18 +4771,18 @@ def kiem_tra_t274_web():
         if pg.locator('.bbt-e-luoi-2').count() == 0:
             loi.append('T293 web: lưới tab Tổng quan không phải 2 cột')
         # T307: Quản lý kho gộp còn 2 khối ở hàng dưới
-        if pg.locator('.bbt-kho2:has-text("Mua hàng & công nợ NCC")').count() == 0 or pg.locator('.bbt-kho2:has-text("Hao hụt kiểm kê")').count() == 0:
-            loi.append('T307 web: không thấy 2 khối Mua hàng & công nợ NCC, Hao hụt kiểm kê dưới 2 cột')
+        if pg.locator('.bbt-kho2:has-text("Mua hàng & công nợ nhà cung cấp")').count() == 0 or pg.locator('.bbt-kho2:has-text("Hao hụt kiểm kê")').count() == 0:
+            loi.append('T307 web: không thấy 2 khối Mua hàng & công nợ nhà cung cấp, Hao hụt kiểm kê dưới 2 cột')
 
         # 5. T303: web bỏ hộp lãi lỗ 13 tháng, biểu đồ hiện thẳng trong cột (hộp, kiểu xem Theo cửa hàng còn ở bản điện thoại)
         if pg.locator('.bbt-13t-trong:has-text("Hiệu quả kinh doanh") svg').count() == 0:
-            loi.append('T303 web: không thấy biểu đồ Hiệu quả kinh doanh trong cột Quản lý lãi lỗ')
+            loi.append('T303 web: không thấy biểu đồ Hiệu quả kinh doanh trong cột Kết quả kinh doanh')
         if pg.locator('.bbt-13t-trong:has-text("Dòng tiền 13 tháng") svg').count() == 0:
             loi.append('T303 web: không thấy biểu đồ Dòng tiền 13 tháng trong cột Quỹ tiền')
 
         # 6. Đổi cửa hàng làm đổi số ít nhất 1 thẻ (dùng ô cửa hàng có sẵn ở header .cn-btn)
-        # T293: thẻ biểu đồ đã bỏ, so số lãi ở cột Quản lý lãi lỗ
-        o_lai = pg.locator('.bbt-cot:has-text("Quản lý lãi lỗ") .bbt-tra').first
+        # T293: thẻ biểu đồ đã bỏ, so số lãi ở cột Kết quả kinh doanh
+        o_lai = pg.locator('.bbt-cot:has-text("Kết quả kinh doanh") .bbt-tra').first
         so_truoc = o_lai.inner_text().strip() if o_lai.count() > 0 else ''
 
         btn_cn_hdr = pg.locator('.cn-btn')

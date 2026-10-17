@@ -32,9 +32,9 @@ export function ChiPhiThang(_: ScreenProps) {
     <div className="page cpt-trang" onClickCapture={moTuTrangChu}>   {/* phần đầu, thẻ tổng cố định; danh sách cuộn riêng (T263) */}
       <div className="cpt-dau">
         <Link to="/app/trang-chu/tong-quan" className="cpt-ve" title="Về Tổng quan" aria-label="Về Tổng quan"><Icon n="chevl" /></Link>
-        <h1>Chi phí trong tháng {thang}/2026</h1>
+        <h1>Chi phí hoạt động {thang}/2026</h1>
         <span className="grow" />
-        <NutXuatExcel onXuat={() => xuatBangExcel(`Chi phí trong tháng ${thang}/2026`, cn ? cn.ten : 'Tất cả cửa hàng',
+        <NutXuatExcel onXuat={() => xuatBangExcel(`Chi phí hoạt động ${thang}/2026`, cn ? cn.ten : 'Tất cả cửa hàng',
           [{ t: 'Lý do chi', rong: 24 }, { t: 'Nội dung', rong: 44 }, { t: 'Số tiền', so: true }, { t: 'Tỷ lệ chi phí tháng', rong: 18 }],
           ds.map(x => [x.ly, x.phu, x.v, pct(cpThang ? x.v / cpThang : 0)]), ['Tổng chi phí trong tháng', '', cpThang, '']).catch(() => toast('Không xuất được file Excel'))} />
         <Link to="/app/tien/2-1-1/moi?loai=chi" className="btn primary"><Icon n="plus" className="ic sm" />Lập phiếu chi</Link>
