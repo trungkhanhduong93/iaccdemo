@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 17/10/2026
 
+- T336: Form chứng từ: khối thông tin chung thấp thêm (ô 32px, khoảng cách nhỏ hơn), bảng chi tiết có thêm chỗ, hợp màn đặt tỉ lệ 150%.
 - T335: Form chứng từ (phiếu mua hàng, thu chi, bán hàng, kho): khối thông tin chung thấp xuống (nhãn nằm bên trái ô), bảng chi tiết bên dưới có nhiều chỗ hơn.
 - T334: Danh mục Lý do nghiệp vụ: mở lý do có sẵn chỉ tích được Là chi phí; Mã, Tên, Dùng cho, Đang sử dụng tạm khoá.
 - T333: Khoá sổ gói Free, Danh mục Quỹ tiền: đổi chữ "map" thành "gán" (Phiếu chờ gán phương thức thanh toán, Chưa gán phương thức thanh toán).

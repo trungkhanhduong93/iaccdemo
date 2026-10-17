@@ -23026,7 +23026,8 @@ button[class*="btn-"] .ic .l2 {
 }
 
 /* ── Form chứng từ: khối thông tin chung thấp xuống, nhãn bên trái ô, nhường chỗ cho bảng chi tiết (T335) ── */
-.ct-ttc .stack { gap: 8px !important; }
+.ct-ttc .stack { gap: 6px !important; }
+.ct-ttc .inp { height: 32px; }   /* ô thấp hơn 4px, giữ cỡ chữ (T336) */
 .ct-ttc .f { display: grid; grid-template-columns: 112px minmax(0, 1fr); align-items: center; column-gap: 8px; row-gap: 2px; }
 .ct-ttc .f > label { line-height: 1.25; }   /* nhãn dài (Tháng hạch toán lãi lỗ) xuống 2 dòng, không cắt */
 .ct-ttc .f > :not(label) { grid-column: 2; }

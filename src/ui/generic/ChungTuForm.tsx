@@ -817,7 +817,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
       {modalPhim && <HopPhimTat onDong={() => setModalPhim(false)} />}
 
       {/* Phần trên: Thông tin chung kiểu AMIS. Đầu phiếu đứng yên, chỉ vùng bảng chi tiết cuộn (T105) */}
-      <div className="stack ct-co-dinh" style={{ gap: 14 }}>
+      <div className="stack ct-co-dinh" style={{ gap: 10 }}>   {/* khối cách nhau 10px cho bảng chi tiết nhiều chỗ (T336) */}
         {/* Hàng chọn hình thức thanh toán & hoá đơn cho nhóm mua/bán */}
         {bo.tt && (
           <section className="card" style={{ padding: '10px 16px' }}>
@@ -921,7 +921,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
         )}
 
         {/* Khối thông tin chung 3 cột: Đối tượng / Thông tin phụ / Chứng từ; ct-ttc nhãn bên trái ô cho khối thấp xuống (T335) */}
-        <section className="card ct-ttc" style={{ padding: '12px 16px' }}>
+        <section className="card ct-ttc" style={{ padding: '8px 16px' }}>
           <div
             className="grid"
             style={{
