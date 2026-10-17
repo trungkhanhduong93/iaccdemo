@@ -4,13 +4,14 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T316.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T317.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T317 | Khoá sổ gói Free: bước kiểm tra trước khi khoá mặc định có vài bước chưa xong (đồng bộ doanh thu FABi thiếu ngày, phiếu thu chi FABi chờ xử lý), kèm link đi xử lý | PhuongXT | Đang làm | Sửa `tong-hop/KhoaSoFree.tsx` |
 | T316 | Trang chủ Free máy tính: chữ theo hướng thuật ngữ chuẩn kèm giải thích (Kết quả kinh doanh, Quỹ tiền, Mua hàng và công nợ nhà cung cấp, Hao hụt kiểm kê), tiêu đề phụ, chú thích dòng | dinhlanphuongipacc | Đang làm | Sửa `home/BaBaiToanFree.tsx`, có thể `app.css` (mục cuối T316) |
 | T314 | Điện thoại: `kiem_tra.py --dien-thoai` báo "Bấm Chứng từ chưa ghi sổ: danh sách không bật sẵn chip Chưa ghi sổ" | | Chờ | Phát hiện 17/10/2026 khi chạy bộ kiểm điện thoại cho T308, T309 (không đụng phần này). Có thể liên quan bộ lọc nổi T299 (`MLoc.tsx`, `MDanhSach.tsx`) |
 | T311 | Điện thoại: màn Nghiệp vụ đang đơn điệu (5 ô trắng, nửa dưới trống), làm lại bố cục cho dễ dùng hơn | Trum | Đang làm | Anti làm. Sửa `src/ui/mobile/MNghiepVu.tsx`, mục mới cuối `app.css` |
