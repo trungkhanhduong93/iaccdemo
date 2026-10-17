@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 17/10/2026
 
+- T348: Thanh công cụ báo cáo: nút Tuỳ chỉnh, Xuất, In dùng icon nét; icon máy in gọn hơn. Menu Xuất mỗi định dạng một icon riêng (Excel, CSV, PDF, HTML, XML).
 - T346: Form chứng từ: thanh nút dưới cùng cao bằng nhau lúc xem và lúc sửa. Gói Free, phiếu thu chi tiền mặt và ngân hàng: Lý do, Đối tượng chỉ chọn ở phần trên, cột Lý do, Đối tượng ở dòng chi tiết chỉ xem và luôn theo phần trên.
 - T343: Điện thoại, báo cáo: bộ lọc bật lên cao 80% màn hình, chọn điều kiện bên trong thì bảng con cao 50% đè lên. Báo cáo chỉ còn dạng dòng. Ngày và số tổng của ngày to, đậm hơn. Bảng kê ghi tổng tiền từng ngày. Hàng chip dưới tiêu đề hiện thêm mọi điều kiện đang lọc.
 - T348: Icon trong khung báo, menu thả xuống, ô chọn cửa hàng, nút Mở khoá, Khoá sổ đổi sang dạng nét cho rõ.

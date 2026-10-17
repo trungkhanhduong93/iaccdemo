@@ -583,7 +583,7 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
                 <button type="button" className="icon-btn sm" title="Phóng to" aria-label="Phóng to" disabled={pct >= MUC_ZOOM[MUC_ZOOM.length - 1]} onClick={to}><Icon n="plus" className="ic sm" /></button>
                 <button type="button" className={`btn sm${xem.zoom === 'vua' ? ' on' : ''}`} onClick={() => doiXem({ zoom: 'vua' })}>Vừa khung</button>
               </div>
-              <button type="button" className="btn sm pri" onClick={() => setDangIn(true)}><Icon n="printer" className="ic sm" />In</button>
+              <button type="button" className="btn sm pri" onClick={() => setDangIn(true)}><Icon n="in-gon" className="ic sm" />In</button>
               <button type="button" className="icon-btn sm" title="Đóng" aria-label="Đóng xem trước" onClick={() => setMoXemTruoc(false)}><Icon n="x" className="ic sm" /></button>
             </div>
             <div className={`bc-giay bc-xem-truoc-than`} style={{ '--bc-co-chu': `${coChuTinh}px`, '--bc-pad-o': padO } as CSSProperties}>

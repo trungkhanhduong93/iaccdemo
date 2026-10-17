@@ -11,6 +11,8 @@
 - T345 `app.css`: cột `wCung` nằm dưới hàng tiêu đề nhóm bị luật `.tbl thead tr.tbl-nhom + tr.tbl-cot th { white-space: nowrap }` đè luật xuống dòng của T287; thêm luật riêng cho trường hợp này.
 - T348: icon dạng nét ở `Note` (`src/ui/Page.tsx`, mọi khung báo), `MenuItem` (`src/ui/Dropdown.tsx`, mọi menu thả xuống), ô Cửa hàng trên thanh trên (`src/app/Topbar.tsx`), nút Mở khoá, Khoá sổ (`KhoaSoFree.tsx`, `CuoiKy.tsx`). Dùng tham số `kieu="net"`, không sửa `Icon.tsx`, `icon-dac.ts` của T340.
 
+- T348 thêm: thanh công cụ báo cáo (`ReportScreen.tsx`) nút Tuỳ chỉnh, Xuất dùng dạng nét. Thêm 4 icon nét vẽ tay vào bảng `P` của `src/ui/Icon.tsx`: `in-gon` (máy in gọn, thay `printer` của Solar nhiều nét nhìn rối ở 16px) cho nút In ở thanh công cụ và bản xem trước (`ToGiay.tsx`); `tep-bang` (Excel), `tep-chu` (CSV), `tep-ma` (HTML, XML) cho menu Xuất; PDF dùng `in-gon`. Không sửa `icon-dac.ts` vì file sinh từ `tools/xuat_bieu_tuong.py`.
+
 ## Đã kiểm
 
 - `npm run typecheck`, `npm run build`: không lỗi. `python tools/kiem_tra.py --nhanh`: Không có lỗi.

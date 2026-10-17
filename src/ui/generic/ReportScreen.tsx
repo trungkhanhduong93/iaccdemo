@@ -325,13 +325,13 @@ export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: 
             title="Tuỳ chỉnh"
             onClick={() => setMoTuyChinh(true)}
           >
-            <Icon n="layers" className="ic sm" />
+            <Icon n="layers" kieu="net" className="ic sm" />
             <span className="rpt-btn-txt">Tuỳ chỉnh</span>
           </button>
           <Dropdown
             label={
               <>
-                <Icon n="download" className="ic sm" />
+                <Icon n="download" kieu="net" className="ic sm" />
                 <span className="rpt-btn-txt">Xuất</span>
                 <Icon n="chevd" className="ic sm" />
               </>
@@ -349,11 +349,11 @@ export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: 
                 </MenuItem>
                 <MenuSep />
                 <MenuHead>Xuất báo cáo</MenuHead>
-                <MenuItem icon="doc" onClick={() => { dong(); xuat('xlsx') }}>Excel (.xlsx)</MenuItem>
-                <MenuItem icon="doc" onClick={() => { dong(); xuat('csv') }}>CSV (.csv)</MenuItem>
-                <MenuItem icon="printer" onClick={() => { dong(); inPdf() }}>PDF (hộp in)</MenuItem>
-                <MenuItem icon="doc" onClick={() => { dong(); xuat('html') }}>HTML (.html)</MenuItem>
-                <MenuItem icon="doc" onClick={() => { dong(); xuat('xml') }}>XML (.xml)</MenuItem>
+                <MenuItem icon="tep-bang" onClick={() => { dong(); xuat('xlsx') }}>Excel (.xlsx)</MenuItem>
+                <MenuItem icon="tep-chu" onClick={() => { dong(); xuat('csv') }}>CSV (.csv)</MenuItem>
+                <MenuItem icon="in-gon" onClick={() => { dong(); inPdf() }}>PDF (hộp in)</MenuItem>
+                <MenuItem icon="tep-ma" onClick={() => { dong(); xuat('html') }}>HTML (.html)</MenuItem>
+                <MenuItem icon="tep-ma" onClick={() => { dong(); xuat('xml') }}>XML (.xml)</MenuItem>
               </>
             )}
           </Dropdown>
@@ -363,7 +363,7 @@ export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: 
             title="Xem trước khi in"
             onClick={xemTruocIn}
           >
-            <Icon n="printer" className="ic sm" />
+            <Icon n="in-gon" className="ic sm" />
             In
           </button>
         </div>

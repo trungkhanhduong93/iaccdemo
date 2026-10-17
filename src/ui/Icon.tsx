@@ -6,6 +6,11 @@ const P: Record<string, string> = {
   plus: '<path d="M12 5v14M5 12h14"/>',
   x: '<path d="M7 7l10 10M17 7L7 17"/>',
   check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  // Nét gọn cho nút In, menu Xuất báo cáo: printer của Solar nhiều nét, nhìn rối ở 16px (T348)
+  'in-gon': '<path d="M7 9V3h10v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M7 14h10v7H7z"/>',
+  'tep-bang': '<path d="M14 3H6.5A1.5 1.5 0 0 0 5 4.5v15A1.5 1.5 0 0 0 6.5 21h11a1.5 1.5 0 0 0 1.5-1.5V8z"/><path d="M14 3v5h5"/><path d="M8.5 12.5h7v5h-7zM12 12.5v5M8.5 15h7"/>',
+  'tep-chu': '<path d="M14 3H6.5A1.5 1.5 0 0 0 5 4.5v15A1.5 1.5 0 0 0 6.5 21h11a1.5 1.5 0 0 0 1.5-1.5V8z"/><path d="M14 3v5h5"/><path d="M8.5 13h7M8.5 16.5h4.5"/>',
+  'tep-ma': '<path d="M14 3H6.5A1.5 1.5 0 0 0 5 4.5v15A1.5 1.5 0 0 0 6.5 21h11a1.5 1.5 0 0 0 1.5-1.5V8z"/><path d="M14 3v5h5"/><path d="M10 12.5L7.8 15l2.2 2.5M14 12.5l2.2 2.5-2.2 2.5"/>',
 }
 
 export type IconName = keyof typeof P | keyof typeof NET | keyof typeof DAC
