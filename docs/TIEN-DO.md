@@ -4,7 +4,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T365.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T369.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
@@ -12,6 +12,10 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
 | T362 | Điện thoại: thanh tab dưới tự ẩn khi cuộn thì nút nổi Thêm mới, Ghi tăng hạ xuống sát đáy màn, thanh hiện lại thì nút về chỗ cũ | Trum | Đang làm | Anti làm. Sửa `app.css` (mục cuối T362) |
+| T366 | Sơ đồ Quy trình gói Free làm lại theo mẫu C (bước theo kỳ: Khởi tạo, Ghi nhận hằng ngày, Đối chiếu, Báo cáo), icon to, phủ kín tab, giải thích lời thường. Phần chung: khuôn `buocKyFree`, component vẽ, CSS, bộ kiểm; mẫu Thu chi | Trum | Đang làm | Anti làm. `ui/generic/QuyTrinhScreen.tsx`, `modules/types.ts`, `app.css` (mục cuối T366), `tools/kiem_tra.py`, `tien/quy-trinh.ts` |
+| T367 | Sơ đồ mẫu C gói Free: Bán hàng, Mua hàng | Trum | Đang làm | Anti làm. `ban-hang/quy-trinh.ts`, `mua-hang/quy-trinh.ts` |
+| T368 | Sơ đồ mẫu C gói Free: Kho, Chi phí phân bổ | Trum | Đang làm | Anti làm. `kho/quy-trinh.ts`, `ccdc/quy-trinh.ts` |
+| T369 | Sơ đồ mẫu C gói Free: Thuế | Trum | Đang làm | Anti làm. `thue/quy-trinh.ts` |
 | T365 | Điện thoại: chi tiết thẻ chi phí phân bổ làm lại theo mẫu A (thẻ tổng quan có tiến độ, 3 tab Chi tiết, Lịch phân bổ, Lịch sử, nút Sửa thẻ) | Trum | Đang làm | Anti làm. Sửa `ui/mobile/MCcdc.tsx`, `app.css` (mục cuối T365) |
 | T364 | Web: icon đầu form Thẻ chi phí phân bổ không thuộc bộ icon chung; chip cửa hàng dùng icon nhiều màu, đổi sang `cuahang` nét. Rà mọi form, màn khác | Trum | Đang làm | Anti làm. Không sửa `icon-dac.ts`, `BaBaiToanFree.tsx`, `DanhMucCuaHang.tsx` |
 | T363 | Điện thoại gói Free: Danh sách thẻ chi phí ẩn tab Tăng giảm CCDC, Kiểm kê CCDC... như web | Trum | Đang làm | Anti làm. Sửa `ui/mobile/MCcdc.tsx` hoặc file tạo hàng tab |
