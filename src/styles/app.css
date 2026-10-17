@@ -24354,5 +24354,84 @@ button[class*="btn-"] .ic .l2 {
   cursor: pointer;
 }
 
+/* ── Điện thoại: danh mục chỉ xem, chi tiết cửa hàng (T353) ── */
+.m-cn-the {
+  cursor: pointer;
+}
+.m-cn-the:active {
+  background: var(--soft);
+}
+.m-cn-the-ct,
+.m-dm-the-ct {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 14px;
+}
+.m-cn-the-ct .m-xp-dong-tt,
+.m-dm-the-ct .m-xp-dong-tt {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 13px;
+  min-height: 24px;
+}
+.m-cn-the-ct .m-xp-dong-tt:not(:last-child),
+.m-dm-the-ct .m-xp-dong-tt:not(:last-child) {
+  border-bottom: 1px solid var(--line-2, #f1f5f9);
+  padding-bottom: 8px;
+}
+.m-cn-the-ct .m-xp-nhan,
+.m-dm-the-ct .m-xp-nhan {
+  color: var(--muted);
+  flex-shrink: 0;
+  min-width: 90px;
+  font-size: 13px;
+}
+.m-cn-the-ct .m-xp-tri,
+.m-dm-the-ct .m-xp-tri {
+  color: var(--body);
+  text-align: right;
+  word-break: break-word;
+  flex: 1;
+  font-size: 13px;
+}
+.m-cn-the-ct .m-xp-tri.code,
+.m-dm-the-ct .m-xp-tri.code {
+  font-family: var(--font-mono, monospace);
+  font-size: 12px;
+}
+.m-cn-the-ct .m-xp-tri.dam,
+.m-dm-the-ct .m-xp-tri.dam {
+  font-weight: 600;
+  color: var(--ink);
+}
+.m-cn-dong-nvl .dmcn-nvl {
+  max-width: 200px;
+  font-size: 13px;
+  height: 32px;
+}
+.m-cn-dong-db .dmcn-db {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.m-dm-tich-cp {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--ink);
+  cursor: pointer;
+  user-select: none;
+}
+.m-dm-tich-cp input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
 
 

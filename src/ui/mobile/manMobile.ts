@@ -26,6 +26,7 @@ import { CongThucScreen } from '../../modules/kho/CongThuc'
 import { MChiPhiThang } from './MChiPhiThang'
 import { MLichSuQuy } from './MLichSuQuy'
 import { MCcdc } from './MCcdc'
+import { MKhoaSo } from './MKhoaSo'
 
 // Bảng riêng theo mod.key + '/' + sc.slug
 const BANG_RIENG: Record<string, ComponentType<ScreenProps>> = {
@@ -63,6 +64,7 @@ export function manMobile(sc: ScreenDef, mod: ModuleDef): ComponentType<ScreenPr
     if (sc.slug === 'goi-thue-bao') return MGoiThueBao
     if (sc.slug === 'thong-tin') return MThongTinDonVi
     if (sc.slug === 'cau-hinh') return MCauHinh
+    if (sc.slug === 'khoa-so') return MKhoaSo
   }
   if (mod.key === 'tien-ich' && (sc.slug === 'x2' || sc.code === 'X2')) {
     return MNhatKyThaoTac
@@ -106,14 +108,17 @@ export function manMobile(sc: ScreenDef, mod: ModuleDef): ComponentType<ScreenPr
     return MCcdc
   }
 
-  // T190: Màn tác vụ kind: 'tool', Kiểm tra cuối kỳ 10.1.4, Khoá sổ 10.1.6
+  // T353: Khoá sổ kỳ kế toán trên điện thoại
+  if (sc.code === '10.1.6' || sc.slug === '10-1-6') {
+    return MKhoaSo
+  }
+
+  // T190: Màn tác vụ kind: 'tool', Kiểm tra cuối kỳ 10.1.4
   if (
     sc.kind === 'tool' ||
     Boolean(sc.tool) ||
     sc.code === '10.1.4' ||
-    sc.code === '10.1.6' ||
-    sc.slug === '10-1-4' ||
-    sc.slug === '10-1-6'
+    sc.slug === '10-1-4'
   ) {
     return MTacVu
   }

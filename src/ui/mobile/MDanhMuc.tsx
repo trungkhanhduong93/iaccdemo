@@ -4,8 +4,10 @@ import { kyMacDinh, useSession } from '../../app/session'
 import { fold, money } from '../format'
 import { tenMan } from '../../app/registry'
 import { TRUONG_DM } from '../../modules/danh-muc/truong-dm'
+import { LY_DO } from '../../data/mock'
 import { MDanhSach } from './MDanhSach'
 import { MFormDm } from './MFormDm'
+import { Icon } from '../Icon'
 import { useSearchParams } from 'react-router-dom'
 import { GoiYLapPhieu } from '../generic/GoiYLapPhieu'
 import type { KieuMTrong } from './MTrong'
@@ -20,6 +22,10 @@ export const MDanhMuc: FC<ScreenProps> = ({ sc }) => {
     rows: () => [],
   }
 
+  const laLyDo = sc.code === '1.16' || sc.slug === '1-16'
+  const laPttt = sc.slug === 'phuong-thuc-thanh-toan'
+  const laChiXem = laLyDo || laPttt
+
   const [ky] = useState(() => kyMacDinh(s))
   const cols0 = useMemo(
     () => (typeof cfg.cols === 'function' ? cfg.cols(s.goi, s.cheDo) : cfg.cols),
@@ -28,8 +34,11 @@ export const MDanhMuc: FC<ScreenProps> = ({ sc }) => {
 
   // Ghi đè trạng thái bật/tắt theo dòng khi người dùng đổi trong form (T181, T183)
   const [ttGhiDe, setTtGhiDe] = useState<Record<string, number>>({})
+  // Ghi đè Là chi phí của Lý do nghiệp vụ (T353)
+  const [chiPhiGhiDe, setChiPhiGhiDe] = useState<Record<string, boolean>>({})
   useEffect(() => {
     setTtGhiDe({})
+    setChiPhiGhiDe({})
   }, [sc, s.cheDo])
 
   const khoaDong = useCallback(
@@ -64,11 +73,12 @@ export const MDanhMuc: FC<ScreenProps> = ({ sc }) => {
       )
       const _k = r._k ?? k
       const tt = ttGhiDe[_k] !== undefined ? ttGhiDe[_k] : r._tt
-      return { ...r, _k, _tt: tt }
+      const chiPhi = chiPhiGhiDe[_k] !== undefined ? chiPhiGhiDe[_k] : r.chiPhi
+      return { ...r, _k, _tt: tt, chiPhi }
     })
-  }, [allGoc, ttGhiDe, cols0])
+  }, [allGoc, ttGhiDe, chiPhiGhiDe, cols0])
 
-  const choThem = !cfg.khongThem?.includes(s.goi)
+  const choThem = !laChiXem && !cfg.khongThem?.includes(s.goi)
 
   const nhoms = useMemo(
     () =>
@@ -110,8 +120,21 @@ export const MDanhMuc: FC<ScreenProps> = ({ sc }) => {
 
   const [edit, setEdit] = useState<Row | null>(null)
   const [dienSan, setDienSan] = useState<Row | undefined>(undefined)
+  const [xemLyDo, setXemLyDo] = useState<Row | null>(null)
+  const [xemPttt, setXemPttt] = useState<Row | null>(null)
 
   const ten = tenMan(sc)
+
+  const doiChiPhi = useCallback(
+    (r: Row, checked: boolean) => {
+      const k = khoaDong(r)
+      if (k) setChiPhiGhiDe(prev => ({ ...prev, [k]: checked }))
+      const item = LY_DO.find(x => x.ma === r.ma)
+      if (item) item.chiPhi = checked
+      toast('Đã lưu')
+    },
+    [khoaDong, toast],
+  )
 
   // Tạo quỹ từ trang chủ (?moi=1&goiY=thuchi): mở thẳng form thêm, lưu quỹ mới xong gợi ý lập phiếu thu, chi (T250)
   const [thamSo, setThamSo] = useSearchParams()
@@ -119,17 +142,25 @@ export const MDanhMuc: FC<ScreenProps> = ({ sc }) => {
   const [quyVuaTao, setQuyVuaTao] = useState<Row | null>(null)
   useEffect(() => {
     if (thamSo.get('moi') === null) return
+    if (laChiXem) { setThamSo({}, { replace: true }); return }
     setGoiYThuChi(thamSo.get('goiY') === 'thuchi')
     setEdit({})
     setDienSan(undefined)
     setThamSo({}, { replace: true })
-  }, [thamSo])   // eslint-disable-line react-hooks/exhaustive-deps
+  }, [thamSo, laChiXem])   // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleLuu = useCallback(
     (val: Record<string, any>, themTiep: boolean) => {
-      if (val && val._tt !== undefined) {
+      if (val) {
         const k = khoaDong(val)
-        if (k) setTtGhiDe(prev => ({ ...prev, [k]: Number(val._tt) }))
+        if (val._tt !== undefined && k) {
+          setTtGhiDe(prev => ({ ...prev, [k]: Number(val._tt) }))
+        }
+        if (val.chiPhi !== undefined && k) {
+          setChiPhiGhiDe(prev => ({ ...prev, [k]: Boolean(val.chiPhi) }))
+          const item = LY_DO.find(x => x.ma === val.ma)
+          if (item) item.chiPhi = Boolean(val.chiPhi)
+        }
       }
       toast('Đã lưu')
       if (goiYThuChi && val && !edit?.ma && !themTiep) { setQuyVuaTao(val); setGoiYThuChi(false) }
@@ -167,7 +198,11 @@ export const MDanhMuc: FC<ScreenProps> = ({ sc }) => {
             <div
               key={`${String(r.id ?? r.ma ?? r.ten ?? '')}_${i}`}
               className="m-the-dm"
-              onClick={() => { setEdit(r); setDienSan(undefined) }}
+              onClick={() => {
+                if (laLyDo) setXemLyDo(r)
+                else if (laPttt) setXemPttt(r)
+                else { setEdit(r); setDienSan(undefined) }
+              }}
               role="button"
               tabIndex={0}
             >
@@ -183,10 +218,28 @@ export const MDanhMuc: FC<ScreenProps> = ({ sc }) => {
                       : String(giaTriSo)}
                   </span>
                 )}
-                {!cfg.dsChungTu && (
-                  <span className={`m-ct-chip ${r._tt === 0 ? 'dim' : 'ok'}`}>
-                    {r._tt === 0 ? 'Ngừng dùng' : 'Đang dùng'}
-                  </span>
+                {laLyDo && r.dung === 'Chi tiền' ? (
+                  <label
+                    className="m-dm-tich-cp"
+                    onClick={e => e.stopPropagation()}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={Boolean(r.chiPhi)}
+                      aria-label={`Là chi phí ${r.ten}`}
+                      onChange={e => {
+                        e.stopPropagation()
+                        doiChiPhi(r, e.target.checked)
+                      }}
+                    />
+                    <span>Là chi phí</span>
+                  </label>
+                ) : (
+                  !cfg.dsChungTu && (
+                    <span className={`m-ct-chip ${r._tt === 0 ? 'dim' : 'ok'}`}>
+                      {r._tt === 0 ? 'Ngừng dùng' : 'Đang dùng'}
+                    </span>
+                  )
                 )}
               </div>
             </div>
@@ -205,12 +258,136 @@ export const MDanhMuc: FC<ScreenProps> = ({ sc }) => {
           nhoms={nhoms}
           ten={ten}
           tenNgan={sc.ngan ?? ten}
+          chiXem={laChiXem}
           onDong={() => setEdit(null)}
           onLuu={handleLuu}
         />
+      )}
+      {xemLyDo && (
+        <div className="m-form-dm m-dm-ct-hop">
+          <div className="overlay" onClick={() => setXemLyDo(null)} />
+          <aside className="pn-hop" role="dialog" aria-modal="true" aria-label={`Chi tiết ${xemLyDo.ten || xemLyDo.ma}`}>
+            <div className="pn-dau">
+              <div>
+                <h3>Chi tiết lý do nghiệp vụ</h3>
+                <small className="muted">{xemLyDo.ten || xemLyDo.ma}</small>
+              </div>
+              <button
+                type="button"
+                className="btn ghost sm"
+                title="Đóng"
+                onClick={() => setXemLyDo(null)}
+              >
+                <Icon n="x" className="ic sm" />
+              </button>
+            </div>
+            <div className="pn-than">
+              <div className="m-the-trang m-dm-the-ct">
+                <div className="m-xp-dong-tt">
+                  <span className="m-xp-nhan">Mã lý do:</span>
+                  <span className="m-xp-tri code">{xemLyDo.ma}</span>
+                </div>
+                <div className="m-xp-dong-tt">
+                  <span className="m-xp-nhan">Lý do nghiệp vụ:</span>
+                  <span className="m-xp-tri dam">{xemLyDo.ten}</span>
+                </div>
+                <div className="m-xp-dong-tt">
+                  <span className="m-xp-nhan">Dùng cho:</span>
+                  <span className="m-xp-tri">{xemLyDo.dung}</span>
+                </div>
+                {xemLyDo.dung === 'Chi tiền' && (
+                  <div className="m-xp-dong-tt">
+                    <span className="m-xp-nhan">Là chi phí:</span>
+                    <span className="m-xp-tri">
+                      <label className="m-dm-tich-cp">
+                        <input
+                          type="checkbox"
+                          checked={Boolean(xemLyDo.chiPhi)}
+                          aria-label={`Là chi phí ${xemLyDo.ten}`}
+                          onChange={e => {
+                            const moi = e.target.checked
+                            doiChiPhi(xemLyDo, moi)
+                            setXemLyDo(prev => (prev ? { ...prev, chiPhi: moi } : null))
+                          }}
+                        />
+                        <span>Là chi phí</span>
+                      </label>
+                    </span>
+                  </div>
+                )}
+                <div className="m-xp-dong-tt">
+                  <span className="m-xp-nhan">Trạng thái:</span>
+                  <span className="m-xp-tri">
+                    <span className={`m-ct-chip ${xemLyDo._tt === 0 ? 'dim' : 'ok'}`}>
+                      {xemLyDo._tt === 0 ? 'Ngừng dùng' : 'Đang dùng'}
+                    </span>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div className="pn-chan">
+              <span className="grow" />
+              <button type="button" className="btn" onClick={() => setXemLyDo(null)}>
+                Đóng
+              </button>
+            </div>
+          </aside>
+        </div>
+      )}
+      {xemPttt && (
+        <div className="m-form-dm m-dm-ct-hop">
+          <div className="overlay" onClick={() => setXemPttt(null)} />
+          <aside className="pn-hop" role="dialog" aria-modal="true" aria-label={`Chi tiết ${xemPttt.ten || xemPttt.ma}`}>
+            <div className="pn-dau">
+              <div>
+                <h3>Chi tiết phương thức thanh toán</h3>
+                <small className="muted">{xemPttt.ten || xemPttt.ma}</small>
+              </div>
+              <button
+                type="button"
+                className="btn ghost sm"
+                title="Đóng"
+                onClick={() => setXemPttt(null)}
+              >
+                <Icon n="x" className="ic sm" />
+              </button>
+            </div>
+            <div className="pn-than">
+              <div className="m-the-trang m-dm-the-ct">
+                {cols0.map(c => {
+                  const val = xemPttt[c.k]
+                  if (val === undefined || val === '') return null
+                  return (
+                    <div key={c.k} className="m-xp-dong-tt">
+                      <span className="m-xp-nhan">{c.t}:</span>
+                      <span className={`m-xp-tri${c.cls === 'code' ? ' code' : ''}${c.k === 'ten' ? ' dam' : ''}`}>
+                        {String(val)}
+                      </span>
+                    </div>
+                  )
+                })}
+                <div className="m-xp-dong-tt">
+                  <span className="m-xp-nhan">Trạng thái:</span>
+                  <span className="m-xp-tri">
+                    <span className={`m-ct-chip ${xemPttt._tt === 0 ? 'dim' : 'ok'}`}>
+                      {xemPttt._tt === 0 ? 'Ngừng dùng' : 'Đang dùng'}
+                    </span>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div className="pn-chan">
+              <span className="grow" />
+              <button type="button" className="btn" onClick={() => setXemPttt(null)}>
+                Đóng
+              </button>
+            </div>
+          </aside>
+        </div>
       )}
       {quyVuaTao && <GoiYLapPhieu quy={quyVuaTao} onDong={() => setQuyVuaTao(null)} />}
     </>
   )
 }
+
 
