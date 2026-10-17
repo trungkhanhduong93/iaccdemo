@@ -759,3 +759,5 @@ Trum chốt 17/10/2026 khi làm T319. (ifinance.pages.dev đã có người khá
 - Số phiên bản dạng `vX.Y`, bắt đầu từ `v1.0`. Mỗi lần phát hành tăng số sau dấu chấm lên 1 (`v1.0` lên `v1.1`, `v1.9` lên `v1.10`). Muốn nhảy số (vd `v2.0`) thì người dùng ghi rõ trong lệnh.
 - Bản phát hành dùng chung build và dữ liệu demo với bản dev, giữ `noindex` qua `public/_headers` để không bị Google lập chỉ mục.
 - Robot ở `.github/workflows/release.yml` tự kiểm, build, đưa lên Cloudflare Pages và báo Telegram mỗi lần phát hành kèm số phiên bản, cả khi thành công lẫn khi hỏng.
+
+## QD71. Bộ icon Solar khối 3D (đang soạn)
