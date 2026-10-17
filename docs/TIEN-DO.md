@@ -4,13 +4,14 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T350.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T351.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T351 | Web, thanh công cụ: Xuất bán POS bộ lọc sang trái; Tài sản cố định gom Nhập, Xuất Excel vào nút Excel; Chi phí phân bổ nút Ẩn thẻ hết phân bổ cùng hàng bộ lọc, Thêm mới phải, Tuỳ chỉnh cột và Excel hàng dưới; mọi màn danh mục dùng 1 nút icon Excel chứa Nhập, Xuất | Trum | Đang làm | Anti làm. Sửa màn Xuất bán POS, Tài sản cố định, `ccdc/the-phan-bo.tsx`, `CatalogScreen.tsx`, mục mới cuối `app.css`. Không đụng `DanhMucCuaHang.tsx` (T321) |
 | T349 | Web, mọi màn danh sách chứng từ, cả 3 gói: thanh công cụ tách 2 hàng. Hàng 1 ô lọc, nút Lọc, Thêm mới bên phải; hàng 2 chip trạng thái (hoặc tab Kiểm kê) bên trái, Excel, Tuỳ chỉnh cột, Hàng loạt bên phải | Trum | Đang làm | Anti làm. Sửa `src/ui/generic/VoucherScreen.tsx` (khối `ds-thanh`), mục mới cuối `app.css` |
 | T340 | Web và điện thoại: bộ icon Khối đồng màu (Solar Bold Duotone, mặt khối xanh nhạt, cam chỉ ở chi tiết nhỏ), icon thao tác đổi sang Solar Linear, thanh bên thân đậm 50% | Trum | Đang làm | Anti làm, nối tiếp T320, T332. Sửa `tools/xuat_bieu_tuong.py`, `src/ui/icon-dac.ts`, `src/ui/Icon.tsx`, `index.html`, mục cuối `app.css`. Mẫu duyệt: https://claude.ai/artifact/H59WiEziF4UvzqSo5nNQAe |
 | T339 | Trang chủ Free máy tính, Tiến độ kiểm kê theo cửa hàng: hiện tối đa 4 cửa hàng cần chú ý (chưa kiểm, lệch nhiều trước), dòng Đã kiểm x/y cửa hàng, dòng Xem tất cả mở hộp danh sách đủ | dinhlanphuongipacc | Đang làm | Sửa `home/BaBaiToanFree.tsx`, `app.css` (mục cuối T339) |
