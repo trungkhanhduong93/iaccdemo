@@ -113,7 +113,7 @@ export function DanhMucCuaHang({ sc, mod }: ScreenProps) {
           onTrang={setTrang} onCoTrang={ct => { setCoTrang(ct); setTrang(1) }} />
       </section>
       {mo && <HopThemCuaHang onDong={() => setMo(false)} onLenSo={lenSo} />}
-      {xem && <HopChiTietCn r={xem} onDong={() => setXem(null)} />}
+      {xem && <HopChiTietCn r={xem} onDong={() => setXem(null)} onDoiNvl={(cn, ten, cach) => setDoiNvl({ cn, ten, cach })} />}
       {doiNvl && (
         <HopXacNhan tieuDe="Đổi cách tính chi phí NVL" nut="Đồng ý" onDong={() => setDoiNvl(null)} onDongY={() => {
           set(datCachNvl(s, doiNvl.cn, doiNvl.cach))
@@ -129,11 +129,15 @@ export function DanhMucCuaHang({ sc, mod }: ScreenProps) {
   )
 }
 
-/** Hộp chi tiết một cửa hàng, gồm công ty (tên, MST) của đơn vị đang mở (T285) */
-function HopChiTietCn({ r, onDong }: { r: Row; onDong: () => void }) {
-  const { s } = useSession()
+/** Hộp chi tiết một cửa hàng, gồm công ty (tên, MST) của đơn vị đang mở (T285).
+ *  Cách tính chi phí NVL, đồng bộ thu chi FABi sửa ngay trong hộp như cột của bảng; đổi cách tính NVL vẫn qua hộp xác nhận (T321) */
+function HopChiTietCn({ r, onDong, onDoiNvl }: { r: Row; onDong: () => void; onDoiNvl: (cn: string, ten: string, cach: CachNvl) => void }) {
+  const { s, set, toast } = useSession()
   const dv = donViHienTai(s)
   useDongEsc(onDong)
+  const id = String(r.id)
+  const cachHt = cachNvlHienTai(s, id)
+  const bat = batDongBoThuChi(s, id)
   const dong: [string, React.ReactNode][] = [
     ['Mã', <span className="code">{r.ma}</span>],
     ['POS ID', <span className="code">{r.posId}</span>],
@@ -143,8 +147,17 @@ function HopChiTietCn({ r, onDong }: { r: Row; onDong: () => void }) {
     ['Khu vực', r.kv],
     ['Kho', r.kho],
     ['Nguồn', r.nguon],
-    ...(s.goi === 'F' ? [['Cách tính chi phí NVL', DS_CACH_NVL.find(x => x.v === cachNvlHienTai(s, String(r.id)))?.t ?? '']] as [string, string][] : []),
-    ['Đồng bộ thu chi FABi', batDongBoThuChi(s, String(r.id)) ? 'Tự động' : 'Không đồng bộ'],
+    ...(s.goi === 'F' ? [['Cách tính chi phí NVL', (
+      <Select className="inp dmcn-nvl" value={cachHt} ds={DS_CACH_NVL} aria-label={`Cách tính chi phí NVL ${r.ten}`}
+        onChange={e => { const cach = e.target.value as CachNvl; if (cach !== cachHt) onDoiNvl(id, String(r.ten), cach) }} />
+    )]] as [string, React.ReactNode][] : []),
+    ['Đồng bộ thu chi FABi', (
+      <span className="dmcn-db">
+        <button type="button" role="switch" aria-checked={bat} aria-label={`Tự động đồng bộ thu chi FABi ${r.ten}`} className={`ds-ct${bat ? ' on' : ''}`}
+          onClick={() => { set(datDongBoThuChi(s, id, !bat)); toast(`${bat ? 'Đã tắt' : 'Đã bật'} đồng bộ thu chi từ FABi cho ${r.ten}`) }}><i /></button>
+        <small>{bat ? 'Tự động' : 'Không đồng bộ'}</small>
+      </span>
+    )],
   ]
   return createPortal(
     <div className="overlay ds-hop-nen" onMouseDown={e => { if (e.target === e.currentTarget) onDong() }}>

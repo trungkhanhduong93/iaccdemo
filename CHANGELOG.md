@@ -52,6 +52,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 17/10/2026
 
+- T321: Danh mục cửa hàng, hộp Chi tiết cửa hàng sửa được Cách tính chi phí NVL (gói Free, có hỏi xác nhận) và bật, tắt Đồng bộ thu chi FABi ngay trong hộp.
 - T383: Form chứng từ (thêm mới, sửa, xem; cả phiếu kiểm kê và Xuất bán POS): phễu lọc ngay sau tab Lịch sử; bấm phễu mới hiện hàng lọc theo từng cột giống danh sách chứng từ (ô gõ, phễu chọn điều kiện).
 - T360, T361: Điện thoại, trang chủ Free: khối Mua hàng & Công nợ có nút Bảng kê, Công nợ ngay dưới từng số tiền; khối Kết quả kinh doanh có nút Xem BC cùng hàng tên khối. Web, Chi phí phân bổ: có nút Lọc cạnh ô lọc, ô Ẩn thẻ hết phân bổ ra đầu hàng dưới.
 - T355–T359: Điện thoại: Thẻ kho hiện số lượng tồn đầu, nhập, xuất, tồn cuối thay vì toàn số 0. Đang xem Tất cả cửa hàng thì lập phiếu phải chọn cửa hàng. Kiểm kê tự lấy giờ (hôm nay là giờ lập, ngày trước là 23:59), chênh lệch hiện số lẻ như 0,5. Thanh tab dưới nền trắng.
