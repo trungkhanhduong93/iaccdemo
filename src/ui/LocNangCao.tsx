@@ -180,11 +180,12 @@ function CongTac({ on, khoa, onDoi, nhan }: { on: boolean; khoa?: boolean; onDoi
 
 // ── Ô lọc ngoài, nút phễu mở Bộ lọc nâng cao, nút Lọc ──
 
-export function BoLoc({ ds, cauHinh, datCauHinh, dangLoc, khacNhap, onLoc, onXoaHet, anNangCao = false, nhanXoa }: {
+export function BoLoc({ ds, cauHinh, datCauHinh, dangLoc, khacNhap, onLoc, onXoaHet, anNangCao = false, nhanXoa, truocNutLoc }: {
   ds: OLocDef[]; cauHinh: CauHinhLoc; datCauHinh: (c: CauHinhLoc) => void
   dangLoc: boolean; khacNhap: boolean; onLoc: () => void; onXoaHet: () => void
   anNangCao?: boolean
   nhanXoa?: string
+  truocNutLoc?: ReactNode
 }) {
   const { toast } = useSession()
   const [mo, setMo] = useState(false)
@@ -212,6 +213,7 @@ export function BoLoc({ ds, cauHinh, datCauHinh, dangLoc, khacNhap, onLoc, onXoa
           {dangLoc && <span className="nut-vuong-dot" />}
         </button>
       )}
+      {truocNutLoc}
       <button type="button" className="btn pri ds-nut-loc" title={khacNhap ? 'Có điều kiện mới chưa lọc' : undefined} onClick={onLoc}>
         Lọc{khacNhap && <span className="ds-cham-nhap" />}
       </button>

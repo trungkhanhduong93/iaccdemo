@@ -23770,3 +23770,8 @@ button[class*="btn-"] .ic .l2 {
 @media (min-width: 768px) { .bc-thanh-cong-cu { padding-top: 24px; } }
 /* Thêm mới cao 34px bằng nút Lọc và ô lọc (T349) */
 .voucher-top .ds-split-them .ds-them-trai, .voucher-top .ds-split-them .ds-them-phai { height: 34px; }
+
+/* ── Thanh công cụ POS, TSCĐ, phân bổ, danh mục (T351) ── */
+.voucher-top .ds-thanh-h1-phai {
+  gap: 8px;
+}

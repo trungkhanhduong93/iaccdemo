@@ -323,25 +323,28 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
       <h1 className="sr-only">{tenMan(sc)}</h1>
       <div className={`voucher-split${panelMo ? '' : ' gon-ct'}`}>
         <section className="card voucher-top">
-          {/* Thanh công cụ: ô lọc, phễu, Lọc, Tuỳ chỉnh cột, Excel (T43). Bỏ nhãn cách đồng bộ, dải đối soát, nút Đồng bộ POS (T247) */}
+          {/* Thanh công cụ: ô lọc bên trái, Tuỳ chỉnh cột và Excel bên phải (T351) */}
           <div className="ds-thanh">
-            <div className="ds-chips-wrap" />
-            <div className="ds-thanh-phai">
-              <BoLoc ds={oLoc} cauHinh={cauHinhLoc} datCauHinh={datCauHinhLoc} dangLoc={loc0.dangLoc} khacNhap={loc0.khacNhap}
-                onLoc={apLoc} onXoaHet={loc0.xoaNhap} />
-              <NutTuyChinhCot
-                cols={cot.colsDu}
-                an={cot.an}
-                coDinh={COT_CO_DINH}
-                macDinh={cot.macDinh}
-                dongBang={cot.dongBang}
-                onLuu={cot.luu}
-                onDoRongTuDong={cot.datDoRongTuDong}
-              />
-              <NutExcel
-                onNhap={() => toast('Nhập chứng từ bán hàng từ file Excel')}
-                onXuat={() => toast(`Đã xuất ${list.length} chứng từ ra Excel`)}
-              />
+            <div className="ds-thanh-h1">
+              <div className="ds-thanh-h1-trai">
+                <BoLoc ds={oLoc} cauHinh={cauHinhLoc} datCauHinh={datCauHinhLoc} dangLoc={loc0.dangLoc} khacNhap={loc0.khacNhap}
+                  onLoc={apLoc} onXoaHet={loc0.xoaNhap} />
+              </div>
+              <div className="ds-thanh-h1-phai">
+                <NutTuyChinhCot
+                  cols={cot.colsDu}
+                  an={cot.an}
+                  coDinh={COT_CO_DINH}
+                  macDinh={cot.macDinh}
+                  dongBang={cot.dongBang}
+                  onLuu={cot.luu}
+                  onDoRongTuDong={cot.datDoRongTuDong}
+                />
+                <NutExcel
+                  onNhap={() => toast('Nhập chứng từ bán hàng từ file Excel')}
+                  onXuat={() => toast(`Đã xuất ${list.length} chứng từ ra Excel`)}
+                />
+              </div>
             </div>
           </div>
           {list.length ? (

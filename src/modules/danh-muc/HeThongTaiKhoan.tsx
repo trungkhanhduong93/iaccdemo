@@ -11,6 +11,7 @@ import { Table } from '../../ui/Table'
 import { fold } from '../../ui/format'
 import { ThanhLoc } from '../../ui/ThanhLoc'
 import { NutTuyChinhCot, useCotDs } from '../../ui/LocNangCao'
+import { NutExcel } from '../../ui/CongCuDs'
 import { heThongTk, type TaiKhoanDef, type TinhChatTk } from './he-thong-tk'
 
 /** Cột luôn hiện, không ẩn được ở Tuỳ chỉnh cột (T148) */
@@ -436,9 +437,10 @@ export function HeThongTaiKhoan({ sc, mod }: ScreenProps) {
               <button type="button" className="btn sm" onClick={thuGonHet}>Thu gọn hết</button>
               <NutTuyChinhCot cols={cot.colsDu} an={cot.an} coDinh={COT_CO_DINH} macDinh={cot.macDinh} dongBang={cot.dongBang}
                 onLuu={cot.luu} onDoRongTuDong={cot.datDoRongTuDong} />
-              <button type="button" className="btn" onClick={() => toast(`Đã xuất ${all.length} tài khoản ra Excel`)}>
-                <Icon n="download" className="ic sm" />Xuất
-              </button>
+              <NutExcel
+                onNhap={() => toast('Nhập tài khoản từ Excel')}
+                onXuat={() => toast(`Đã xuất ${all.length} tài khoản ra Excel`)}
+              />
               <button type="button" className="btn pri" onClick={moThem}>
                 <Icon n="plus" className="ic sm" />Thêm tài khoản
               </button>

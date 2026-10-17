@@ -206,37 +206,46 @@ export function CatalogScreen({ sc }: ScreenProps) {
         {/* Danh sách kiểu chứng từ: thanh công cụ như danh sách thu chi (ô lọc nhãn trên viền, Tuỳ chỉnh cột, Excel, nút thêm có danh sách loại) */}
         {dsct ? (
           <div className="ds-thanh">
-            {/* Bên trái thanh: lọc theo trạng thái, đúng chỗ chip trạng thái của danh sách thu chi */}
-            {cfg.tich && (
-              <label className="row ky-so-lieu">
-                <input type="checkbox" className="bat-tat" checked={tichLoc} onChange={e => setTichLoc(e.target.checked)} />
-                <span>{cfg.tich.nhan}</span>
-              </label>
-            )}
-            <div className="ds-thanh-phai">
-              {cfg.kySoLieu && (
-                <ONhanVien nhan="Kỳ số liệu">
-                  <Select className="inp" value={String(ky)} aria-label="Kỳ số liệu" onChange={e => setKy(Number(e.target.value))}
-                    ds={dsKyNam(s).map(k => ({ v: String(k.so), t: k.nhan }))} />
+            <div className="ds-thanh-h1">
+              <div className="ds-thanh-h1-trai">
+                {cfg.kySoLieu && (
+                  <ONhanVien nhan="Kỳ số liệu">
+                    <Select className="inp" value={String(ky)} aria-label="Kỳ số liệu" onChange={e => setKy(Number(e.target.value))}
+                      ds={dsKyNam(s).map(k => ({ v: String(k.so), t: k.nhan }))} />
+                  </ONhanVien>
+                )}
+                <ONhanVien nhan="Tìm kiếm">
+                  <input className="inp" value={q} placeholder="Số thẻ, mã, tên" onChange={e => setQ(e.target.value)} />
                 </ONhanVien>
-              )}
-              <ONhanVien nhan="Tìm kiếm">
-                <input className="inp" value={q} placeholder="Số thẻ, mã, tên" onChange={e => setQ(e.target.value)} />
-              </ONhanVien>
-              {nhoms.length > 1 && (
-                <ONhanVien nhan={cfg.nhanLoc ?? 'Nhóm'}>
-                  <Select className="inp" value={nhom} aria-label={cfg.nhanLoc ?? 'Nhóm'} onChange={e => setNhom(e.target.value)}
-                    ds={[{ v: '', t: 'Tất cả' }, ...nhoms.map(n => ({ v: String(n), t: String(n) }))]} />
-                </ONhanVien>
-              )}
-              <NutTuyChinhCot cols={cot.colsDu} an={cot.an} coDinh={COT_CO_DINH} macDinh={cot.macDinh} dongBang={cot.dongBang}
-                onLuu={cot.luu} onDoRongTuDong={cot.datDoRongTuDong} />
-              <NutExcel onNhap={() => toast('Nhập danh sách từ Excel')} onXuat={() => toast(`Đã xuất ${rows.length} dòng ra Excel`)} />
+                {nhoms.length > 1 && (
+                  <ONhanVien nhan={cfg.nhanLoc ?? 'Nhóm'}>
+                    <Select className="inp" value={nhom} aria-label={cfg.nhanLoc ?? 'Nhóm'} onChange={e => setNhom(e.target.value)}
+                      ds={[{ v: '', t: 'Tất cả' }, ...nhoms.map(n => ({ v: String(n), t: String(n) }))]} />
+                  </ONhanVien>
+                )}
+                {cfg.tich && (
+                  <label className="row ky-so-lieu">
+                    <input type="checkbox" className="bat-tat" checked={tichLoc} onChange={e => setTichLoc(e.target.checked)} />
+                    <span>{cfg.tich.nhan}</span>
+                  </label>
+                )}
+              </div>
               {nutThem.length > 0 && (
-                <NutThemMoiSplit nhan={nutThem[0].nut} toMoi={`${viTri.pathname}?moi=${nutThem[0].k}`}
-                  so={nutThem[0].k === HANG_LOAT && canhBao?.so ? canhBao.so : undefined}
-                  loai={nutThem.length > 1 ? nutThem.map(b => ({ k: b.k, ten: b.ten, icon: b.icon })) : undefined} />
+                <div className="ds-thanh-h1-phai">
+                  <NutThemMoiSplit nhan={nutThem[0].nut} toMoi={`${viTri.pathname}?moi=${nutThem[0].k}`}
+                    so={nutThem[0].k === HANG_LOAT && canhBao?.so ? canhBao.so : undefined}
+                    loai={nutThem.length > 1 ? nutThem.map(b => ({ k: b.k, ten: b.ten, icon: b.icon })) : undefined} />
+                </div>
               )}
+            </div>
+
+            <div className="ds-thanh-h2">
+              <div className="ds-thanh-h2-trai" />
+              <div className="ds-thanh-h2-phai">
+                <NutTuyChinhCot cols={cot.colsDu} an={cot.an} coDinh={COT_CO_DINH} macDinh={cot.macDinh} dongBang={cot.dongBang}
+                  onLuu={cot.luu} onDoRongTuDong={cot.datDoRongTuDong} />
+                <NutExcel onNhap={() => toast('Nhập danh sách từ Excel')} onXuat={() => toast(`Đã xuất ${rows.length} dòng ra Excel`)} />
+              </div>
             </div>
           </div>
         ) : (
@@ -270,10 +279,12 @@ export function CatalogScreen({ sc }: ScreenProps) {
                 <span className="muted" style={{ fontSize: 12, marginRight: 4 }}>{rows.length}/{all.length} dòng</span>
                 <NutTuyChinhCot cols={cot.colsDu} an={cot.an} coDinh={COT_CO_DINH} macDinh={cot.macDinh} dongBang={cot.dongBang}
                   onLuu={cot.luu} onDoRongTuDong={cot.datDoRongTuDong} />
-                {!cfg.khongExcel?.includes(s.goi) && <>
-                  <button type="button" className="btn" onClick={() => toast('Nhập danh mục từ Excel')}><Icon n="upload" className="ic sm" />Nhập Excel</button>
-                  <button type="button" className="btn" onClick={() => toast(`Đã xuất ${rows.length} dòng ra Excel`)}><Icon n="download" className="ic sm" />Xuất Excel</button>
-                </>}
+                {!cfg.khongExcel?.includes(s.goi) && (
+                  <NutExcel
+                    onNhap={() => toast('Nhập danh mục từ Excel')}
+                    onXuat={() => toast(`Đã xuất ${rows.length} dòng ra Excel`)}
+                  />
+                )}
                 {cfg.nutPhu && (
                   cfg.nutPhu.chiIcon ? (
                     <button

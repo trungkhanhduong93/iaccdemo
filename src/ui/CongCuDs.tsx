@@ -1,5 +1,5 @@
 // Nút biểu tượng Excel và nút Thêm mới dạng split button gom nhóm thao tác (T42)
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { Dropdown, MenuHead, MenuItem, MenuSep } from './Dropdown'
 import { Icon } from './Icon'
@@ -7,7 +7,7 @@ import { useSession } from '../app/session'
 import { HopXacNhan } from './LocNangCao'
 
 /** Logo Excel màu xanh lá: tờ bảng tính phía sau, khối chữ X phía trước */
-function LogoExcel() {
+export function LogoExcel() {
   return (
     <svg className="ic sm logo-excel" viewBox="0 0 24 24" aria-hidden>
       <rect x="8" y="3" width="13" height="18" rx="1.6" fill="#fff" stroke="#1f7a46" strokeWidth="1.4" />
@@ -18,14 +18,28 @@ function LogoExcel() {
   )
 }
 
-export function NutExcel({ onNhap, onXuat }: { onNhap: () => void; onXuat: () => void }) {
+export function NutExcel({
+  onNhap,
+  onXuat,
+  title = 'Excel: nhập, xuất danh sách',
+  align = 'end',
+  width = 190,
+  children,
+}: {
+  onNhap?: () => void
+  onXuat?: () => void
+  title?: string
+  align?: 'start' | 'end'
+  width?: number
+  children?: (dong: () => void) => ReactNode
+}) {
   return (
-    <Dropdown btnClass="nut-vuong ds-nut-excel" align="end" width={190} title="Excel: nhập, xuất danh sách" label={<LogoExcel />}>
-      {dong => <>
+    <Dropdown btnClass="nut-vuong ds-nut-excel" align={align} width={width} title={title} label={<LogoExcel />}>
+      {dong => (children ? children(dong) : <>
         <MenuHead>Excel</MenuHead>
-        <MenuItem icon="upload" onClick={() => { onNhap(); dong() }}>Nhập Excel</MenuItem>
-        <MenuItem icon="download" onClick={() => { onXuat(); dong() }}>Xuất Excel</MenuItem>
-      </>}
+        {onNhap && <MenuItem icon="upload" onClick={() => { onNhap(); dong() }}>Nhập Excel</MenuItem>}
+        {onXuat && <MenuItem icon="download" onClick={() => { onXuat(); dong() }}>Xuất Excel</MenuItem>}
+      </>)}
     </Dropdown>
   )
 }

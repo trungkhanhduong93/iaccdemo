@@ -20,6 +20,7 @@ import { ganMoPhieu } from './SoChungTu'
 import { Dropdown, MenuHead, MenuItem, MenuSep, Popover, Select } from '../Dropdown'
 import { ChonKhoangNgay, dmy, khoangThang, type KhoangNgay } from '../ChonNgay'
 import { BoLoc, useCauHinhLoc, useDongEsc, type OLocDef } from '../LocNangCao'
+import { NutExcel } from '../CongCuDs'
 import { SoTrangCtx, ToGiay, NgatTrang, tachKhoi, type Kho } from '../bao-cao/ToGiay'
 import { datNguonXuat, layNguonXuat, taoTenFile, xuatFile, type NguonXuat } from '../bao-cao/xuat'
 import {
@@ -305,69 +306,54 @@ export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: 
           ))}
         </div>
       )}
-      <span className="grow" />
-      <div className="ds-thanh-phai">
-        <BoLoc
-          ds={oLoc}
-          cauHinh={cauHinhLoc}
-          datCauHinh={datCauHinhLoc}
-          dangLoc={dangLoc}
-          khacNhap={khacNhap}
-          onLoc={apDungXem}
-          onXoaHet={xoaNhap}
-          anNangCao={khongCoLocDong}
-          nhanXoa="Xoá lọc"
-        />
-        {children}
-        <div className="thanh-loc-phai">
-          <button
-            type="button"
-            className="btn sm"
-            title="Tuỳ chỉnh"
-            onClick={() => setMoTuyChinh(true)}
-          >
-            <Icon n="cog" kieu="net" className="ic sm" />
-            <span className="rpt-btn-txt">Tuỳ chỉnh</span>
-          </button>
-          <Dropdown
-            label={
-              <>
-                <Icon n="download" kieu="net" className="ic sm" />
-                <span className="rpt-btn-txt">Xuất</span>
-                <Icon n="chevd" className="ic sm" />
-              </>
-            }
-            btnClass="btn sm"
-            title="Xuất báo cáo"
-            align="end"
-            width={180}
-          >
-            {dong => (
-              <>
-                <MenuHead>Tuỳ chọn cột</MenuHead>
-                <MenuItem on={tt.cotNhuDangXem} onClick={() => datCotNhuDangXem(path, !tt.cotNhuDangXem)}>
-                  Cột như đang xem
-                </MenuItem>
-                <MenuSep />
-                <MenuHead>Xuất báo cáo</MenuHead>
-                <MenuItem icon="tep-bang" onClick={() => { dong(); xuat('xlsx') }}>Excel (.xlsx)</MenuItem>
-                <MenuItem icon="tep-chu" onClick={() => { dong(); xuat('csv') }}>CSV (.csv)</MenuItem>
-                <MenuItem icon="in-gon" onClick={() => { dong(); inPdf() }}>PDF (hộp in)</MenuItem>
-                <MenuItem icon="tep-ma" onClick={() => { dong(); xuat('html') }}>HTML (.html)</MenuItem>
-                <MenuItem icon="tep-ma" onClick={() => { dong(); xuat('xml') }}>XML (.xml)</MenuItem>
-              </>
-            )}
-          </Dropdown>
-          <button
-            type="button"
-            className="btn sm"
-            title="Xem trước khi in"
-            onClick={xemTruocIn}
-          >
-            <Icon n="in-gon" className="ic sm" />
-            In
-          </button>
-        </div>
+      <BoLoc
+        ds={oLoc}
+        cauHinh={cauHinhLoc}
+        datCauHinh={datCauHinhLoc}
+        dangLoc={dangLoc}
+        khacNhap={khacNhap}
+        onLoc={apDungXem}
+        onXoaHet={xoaNhap}
+        anNangCao={khongCoLocDong}
+        nhanXoa="Xoá lọc"
+        truocNutLoc={children}
+      />
+      <div className="ds-thanh-phai thanh-loc-phai">
+        <button
+          type="button"
+          className="btn sm"
+          title="Tuỳ chỉnh"
+          onClick={() => setMoTuyChinh(true)}
+        >
+          <Icon n="cog" kieu="net" className="ic sm" />
+          <span className="rpt-btn-txt">Tuỳ chỉnh</span>
+        </button>
+        <NutExcel title="Xuất báo cáo" align="end" width={180}>
+          {dong => (
+            <>
+              <MenuHead>Tuỳ chọn cột</MenuHead>
+              <MenuItem on={tt.cotNhuDangXem} onClick={() => datCotNhuDangXem(path, !tt.cotNhuDangXem)}>
+                Cột như đang xem
+              </MenuItem>
+              <MenuSep />
+              <MenuHead>Xuất báo cáo</MenuHead>
+              <MenuItem icon="tep-bang" onClick={() => { dong(); xuat('xlsx') }}>Excel (.xlsx)</MenuItem>
+              <MenuItem icon="tep-chu" onClick={() => { dong(); xuat('csv') }}>CSV (.csv)</MenuItem>
+              <MenuItem icon="in-gon" onClick={() => { dong(); inPdf() }}>PDF (hộp in)</MenuItem>
+              <MenuItem icon="tep-ma" onClick={() => { dong(); xuat('html') }}>HTML (.html)</MenuItem>
+              <MenuItem icon="tep-ma" onClick={() => { dong(); xuat('xml') }}>XML (.xml)</MenuItem>
+            </>
+          )}
+        </NutExcel>
+        <button
+          type="button"
+          className="btn sm"
+          title="Xem trước khi in"
+          onClick={xemTruocIn}
+        >
+          <Icon n="in-gon" className="ic sm" />
+          In
+        </button>
       </div>
     </div>
   )
