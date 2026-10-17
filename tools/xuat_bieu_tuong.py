@@ -60,7 +60,7 @@ SOLAR = {
     'receipt': 'bill-list',
     'filein': 'file-download',
     'doc': 'document-text',
-    'bank': 'buildings-2',
+    'bank': 'card-transfer',
     'scale': 'scale',
     'sparkle': 'stars',
     'layers': 'layers',
