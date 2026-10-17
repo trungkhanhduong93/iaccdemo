@@ -23719,8 +23719,8 @@ button[class*="btn-"] .ic .l2 {
   flex-wrap: nowrap;
   align-items: stretch;
   justify-content: flex-start;
-  gap: 8px;
-  padding: 10px 12px;
+  gap: 10px;
+  padding: 18px 12px 10px;
   min-height: auto;
 }
 
@@ -23763,3 +23763,6 @@ button[class*="btn-"] .ic .l2 {
   gap: 8px;
   flex-shrink: 0;
 }
+
+/* Đường kẻ ngăn hàng bộ lọc với hàng trạng thái (T349) */
+.voucher-top .ds-thanh-h2 { border-top: 1px solid var(--line-2); padding-top: 10px; }
