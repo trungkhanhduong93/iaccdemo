@@ -778,7 +778,7 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
               title="Chọn cửa hàng hiển thị"
             >
               <span className="m-tc-chip-cn-nhan m-tc-chip-kho-nhan">CN: {nhanCn}</span>
-              <Icon n="chevd" className="ic xs" />
+              <Icon n="chevd" className="ic sm" />
             </button>
           </div>
         </div>
@@ -812,7 +812,7 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
               title="Chọn cửa hàng hiển thị"
             >
               <span className="m-tc-chip-cn-nhan m-tc-chip-kho-nhan">CN: {nhanCn}</span>
-              <Icon n="chevd" className="ic xs" />
+              <Icon n="chevd" className="ic sm" />
             </button>
           </div>
         </div>
@@ -829,7 +829,7 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
                 <div className="m-tc-the-tieu-hop">
                   <h3 className="m-tc-the-tieu">Thao tác nhanh</h3>
                   <span className="m-tc-the-info" title="Các thao tác nhanh thường dùng">
-                    <Icon n="info" className="ic xs" />
+                    <Icon n="info" className="ic sm" />
                   </span>
                 </div>
                 <button
@@ -871,7 +871,7 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
                     <div className="m-tc-the-tieu-hop">
                       <h3 className="m-tc-the-tieu">Thao tác nhanh</h3>
                       <span className="m-tc-the-info" title="Các thao tác nhanh thường dùng">
-                        <Icon n="info" className="ic xs" />
+                        <Icon n="info" className="ic sm" />
                       </span>
                     </div>
                     <button
@@ -1159,7 +1159,7 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
               <div className="m-tc-the-tieu-hop">
                 <h3 className="m-tc-the-tieu">Tổng quan tài chính</h3>
                 <span className="m-tc-the-info" title="Doanh thu, lợi nhuận và tiền">
-                  <Icon n="info" className="ic xs" />
+                  <Icon n="info" className="ic sm" />
                 </span>
               </div>
               {isFree ? (
@@ -1225,7 +1225,7 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
                   <div className="m-tc-the-tieu-hop">
                     <h3 className="m-tc-the-tieu">Thác nước lợi nhuận</h3>
                     <span className="m-tc-the-info" title="Doanh thu thuần → Giá vốn → Chi phí → Lợi nhuận trước thuế">
-                      <Icon n="info" className="ic xs" />
+                      <Icon n="info" className="ic sm" />
                     </span>
                   </div>
                   {linkKQ && (
@@ -1250,7 +1250,7 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
                   <div className="m-tc-the-tieu-hop">
                     <h3 className="m-tc-the-tieu">Xu hướng kinh doanh 4 tháng</h3>
                     <span className="m-tc-the-info" title="Doanh thu (cột), lợi nhuận trước thuế và biên lãi (%) qua các tháng">
-                      <Icon n="info" className="ic xs" />
+                      <Icon n="info" className="ic sm" />
                     </span>
                   </div>
                 </div>
@@ -1268,7 +1268,7 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
                   <div className="m-tc-the-tieu-hop">
                     <h3 className="m-tc-the-tieu">Dòng tiền kỳ</h3>
                     <span className="m-tc-the-info" title={d.ghiChuDongTien ?? "Số dư đầu kỳ, dòng tiền thu, chi và tiền cuối kỳ khớp sổ cái"}>
-                      <Icon n="info" className="ic xs" />
+                      <Icon n="info" className="ic sm" />
                     </span>
                   </div>
                   {linkDTien && (
@@ -1305,7 +1305,7 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
                   <div className="m-tc-the-tieu-hop">
                     <h3 className="m-tc-the-tieu">Hiệu quả theo cửa hàng</h3>
                     <span className="m-tc-the-info" title={`Doanh thu và biên lãi gộp từng điểm bán · ${d.kyLabel}`}>
-                      <Icon n="info" className="ic xs" />
+                      <Icon n="info" className="ic sm" />
                     </span>
                   </div>
                 </div>
@@ -1328,7 +1328,7 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
                   <div className="m-tc-the-tieu-hop">
                     <h3 className="m-tc-the-tieu">Cơ cấu chi phí</h3>
                     <span className="m-tc-the-info" title={d.isLocCn ? 'Chi phí phân bổ theo doanh thu' : `Chi phí hoạt động · ${d.kyLabel}`}>
-                      <Icon n="info" className="ic xs" />
+                      <Icon n="info" className="ic sm" />
                     </span>
                   </div>
                   {linkCP && (
@@ -1346,7 +1346,7 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
                   <div className="m-tc-the-tieu-hop">
                     <h3 className="m-tc-the-tieu">Món bán chạy</h3>
                     <span className="m-tc-the-info" title={d.kyLabel}>
-                      <Icon n="info" className="ic xs" />
+                      <Icon n="info" className="ic sm" />
                     </span>
                   </div>
                 </div>
@@ -1371,7 +1371,7 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
               <div className="m-tc-the-tieu-hop">
                 <h3 className="m-tc-the-tieu">Tổng tồn kho</h3>
                 <span className="m-tc-the-info" title="Tổng giá trị tồn kho và tình trạng định mức">
-                  <Icon n="info" className="ic xs" />
+                  <Icon n="info" className="ic sm" />
                 </span>
               </div>
               <Link to="/app/kho/5-1-13" className="m-tc-the-link">
@@ -1402,7 +1402,7 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
               <div className="m-tc-the-tieu-hop">
                 <h3 className="m-tc-the-tieu">Chi phí nguyên vật liệu T10/2026</h3>
                 <span className="m-tc-the-info" title="Chi phí giá vốn nguyên vật liệu trong tháng">
-                  <Icon n="info" className="ic xs" />
+                  <Icon n="info" className="ic sm" />
                 </span>
               </div>
               <Link to="/app/bao-cao/nhom-kho" className="m-tc-the-link">
@@ -1436,11 +1436,11 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
               <div className="m-tc-the-tieu-hop">
                 <h3 className="m-tc-the-tieu">Tỷ lệ chi phí nguyên vật liệu</h3>
                 <span className="m-tc-the-info" title="Diễn biến chi phí và tỷ lệ nguyên vật liệu qua các tháng">
-                  <Icon n="info" className="ic xs" />
+                  <Icon n="info" className="ic sm" />
                 </span>
               </div>
               <div className="m-tc-bd-head-chon">
-                Năm 2026 <Icon n="chevd" className="ic xs" />
+                Năm 2026 <Icon n="chevd" className="ic sm" />
               </div>
             </div>
             <div className="m-tc-bd-wrap">
@@ -1454,7 +1454,7 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
               <div className="m-tc-the-tieu-hop">
                 <h3 className="m-tc-the-tieu">Hao hụt nguyên vật liệu</h3>
                 <span className="m-tc-the-info" title="Hao hụt nguyên vật liệu trong tháng">
-                  <Icon n="info" className="ic xs" />
+                  <Icon n="info" className="ic sm" />
                 </span>
               </div>
               <Link to="/app/kho/5-1-2-3" className="m-tc-the-link">
@@ -1488,7 +1488,7 @@ export function MTrangChu(_props?: Partial<ScreenProps>) {
               <div className="m-tc-the-tieu-hop">
                 <h3 className="m-tc-the-tieu">Tỷ lệ tồn tại các kho</h3>
                 <span className="m-tc-the-info" title="Phân bổ trạng thái tồn định mức của từng kho">
-                  <Icon n="info" className="ic xs" />
+                  <Icon n="info" className="ic sm" />
                 </span>
               </div>
               <Link to="/app/kho/5-1-13" className="m-tc-the-link">

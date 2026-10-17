@@ -461,8 +461,8 @@ textarea.inp { height: auto; padding: 8px 11px; resize: vertical; }
 .qt-ht-dau { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 14px; font-weight: 700; color: var(--ink); }
 .qt-ht-dau .qt-ht-ic { width: 32px; height: 32px; border-radius: 9px; background: var(--blue); color: #fff; }
 .qt-ht .qt-ht-dong { gap: 10px; height: 36px; padding: 0 8px; border-radius: 8px; font-size: 13.5px; }
-.qt-ht-dong .qt-ht-ic { width: 18px; height: 18px; background: none; }
-.qt-ht-dong .qt-ht-ic .ic { width: 20px; height: 20px; }
+.qt-ht-dong .qt-ht-ic { width: var(--ic); height: var(--ic); background: none; }
+.qt-ht-dong .qt-ht-ic .ic { width: var(--ic); height: var(--ic); }
 .qt-ht-dong:hover { background: var(--tint); }
 .qt-bc { display: flex; flex-direction: column; overflow: hidden; }
 .qt-bc h2 { font-size: 13px; font-weight: 800; letter-spacing: .6px; text-transform: uppercase; color: var(--ink); padding: 16px 16px 10px; }
@@ -2897,8 +2897,8 @@ body.tkmi-dang-keo, body.tkmi-dang-keo * {
   color: var(--faint);
 }
 .tkmi-khoa .ic {
-  width: 16px;
-  height: 16px;
+  width: var(--ic-sm);
+  height: var(--ic-sm);
 }
 .tkmi-o-ten.inp {
   flex: 1;
@@ -3743,8 +3743,8 @@ body.tkmi-dang-keo, body.tkmi-dang-keo * {
   flex: none;
 }
 .rpt-ic .ic {
-  width: 16px;
-  height: 16px;
+  width: var(--ic-sm);
+  height: var(--ic-sm);
 }
 .rpt-ic-so {
   background: var(--tint);
@@ -17188,8 +17188,8 @@ a.lsq-dong:hover { background: var(--tint); }
   flex: none;
 }
 .bc-quick-item .rpt-ic .ic {
-  width: 16px;
-  height: 16px;
+  width: var(--ic-sm);
+  height: var(--ic-sm);
 }
 .bc-quick-name {
   flex: 1;
@@ -19555,17 +19555,17 @@ label:has(> input.bat-tat), label:has(input.bat-tat) { display: inline-flex; ali
 .ds-groupzone-nhan { gap: 6px; padding-right: 10px; margin-right: 2px; border-right: 1px solid var(--line); font-size: 12px; }
 .ds-groupzone-nhan .ic { color: var(--blue); }
 .ds-gz-goi { color: var(--faint); font-style: italic; }
-.ds-gz-sep { width: 13px; height: 13px; color: var(--faint); }
+.ds-gz-sep { width: var(--ic-sm); height: var(--ic-sm); color: var(--faint); }
 .ds-gchip { height: 26px; padding: 0 4px 0 4px; gap: 6px; border-radius: 8px; background: #fff; color: var(--ink); font-size: 12px;
   border: 1px solid #c9dbee; box-shadow: 0 1px 2px rgba(14, 26, 43, .05); }
 .ds-gchip b { display: grid; place-items: center; width: 18px; height: 18px; border-radius: 5px; background: var(--blue); color: #fff; font-size: 10.5px; }
 .ds-gchip button { width: 18px; height: 18px; margin: 0; border-radius: 5px; color: var(--muted); }
 .ds-gchip button:hover { background: var(--red-t); color: var(--red); }
-.ds-gchip button .ic { width: 16px; height: 16px; }
+.ds-gchip button .ic { width: var(--ic-sm); height: var(--ic-sm); }
 .ds-gz-them { display: inline-flex; align-items: center; gap: 5px; height: 26px; padding: 0 10px 0 8px; border: 1px dashed #b7c6d8;
   border-radius: 8px; background: transparent; color: var(--blue); font-size: 12px; font-weight: 600; }
 .ds-gz-them:hover, .ds-gz-them.open { border-style: solid; border-color: var(--blue); background: var(--tint); }
-.ds-gz-them .ic { width: 16px; height: 16px; }
+.ds-gz-them .ic { width: var(--ic-sm); height: var(--ic-sm); }
 .ds-gz-xoa { margin-left: auto; height: 26px; padding: 0 8px; border-radius: 6px; color: var(--muted); font-size: 12px; }
 .ds-gz-xoa:hover { background: var(--red-t); color: var(--red); }
 .ds-gchip button:focus-visible, .ds-gz-them:focus-visible, .ds-gz-xoa:focus-visible { outline: 2px solid var(--blue); outline-offset: 1px; }
@@ -20280,8 +20280,8 @@ input.bat-tat:disabled { opacity: .5; cursor: not-allowed; }
 /* Tấm tuỳ chỉnh thao tác nhanh trên điện thoại (T280) */
 .m-tam-tim-wrap .m-tam-tim-ic,
 .m-tam-tim-ic {
-  width: 18px !important;
-  height: 18px !important;
+  width: var(--ic-sm) !important;
+  height: var(--ic-sm) !important;
   position: absolute;
   left: 28px;
   top: 50%;
@@ -20290,7 +20290,7 @@ input.bat-tat:disabled { opacity: .5; cursor: not-allowed; }
   pointer-events: none;
 }
 .m-tam-tim-inp {
-  padding-left: 36px !important;
+  padding-left: 38px !important;
 }
 .ttn-m-day {
   display: flex !important;
@@ -21560,7 +21560,7 @@ input.bat-tat:disabled { opacity: .5; cursor: not-allowed; }
 .bbt-vq-ct button:hover .bbt-vq-mui, .bbt-vq-ct button.on .bbt-vq-mui { color: var(--blue); }
 @media (max-width: 900px) { .bbt-e-luoi-2 .bbt-vq { flex-wrap: wrap; } }
 /* Lịch sử thu chi máy tính trở lại kiểu app ngân hàng; dòng không mở được giữ chỗ bằng ô trống cho số tiền thẳng hàng */
-.lsq-mui-trong { width: 14px; flex: none; }
+.lsq-mui-trong { width: var(--ic-sm); flex: none; }
 .cpt-trang > .lsq-l1-ghi-chu-hop { margin-bottom: 12px; }   /* 4 ô tổng và ghi chú cố định trên vùng cuộn */
 .lsq-l1-ghi-chu-hop .lsq-l1-ghi-chu { margin-top: 8px; }
 /* Trang chủ Free: hai cột Quản lý lãi lỗ, Quỹ tiền gọn lại, biểu đồ 13 tháng nằm ngay dưới từng cột, hai biểu đồ thẳng hàng */

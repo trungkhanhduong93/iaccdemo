@@ -370,7 +370,7 @@ export const MNhatKyThaoTac: FC<ScreenProps> = () => {
               <div className="m-nk-trai">
                 <span className="m-nk-viec">{item.viec}</span>
                 <span className="m-nk-nguoi">
-                  <Icon n="user" className="ic xs" /> {item.ai}
+                  <Icon n="user" className="ic sm" /> {item.ai}
                 </span>
               </div>
               <div className="m-nk-phai">
