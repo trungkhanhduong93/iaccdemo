@@ -4,13 +4,14 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T323.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T324.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T324 | Điện thoại, trang chủ gói Free: làm lại theo trang chủ Free bản web (Quản lý lãi lỗ, Quỹ tiền, Mua hàng & công nợ NCC, Hao hụt kiểm kê, biểu đồ 13 tháng), giữ thanh thao tác nhanh trên cùng; bản web giữ nguyên | Trum | Đang làm | 2 anti làm. Sửa `src/ui/mobile/MTrangChu.tsx`, file mới `MTrangChuFree.tsx`, `MKhoFree.tsx`, mục cuối `app.css` (T324). Không đụng `home/BaBaiToanFree.tsx` (T316 đang sửa); T316 xong thì chép chữ mới sang app |
 | T323 | `tools/kiem_tra.py --dien-thoai` dừng ở bước chờ `.m-nv-luoi`: màn Nghiệp vụ điện thoại làm lại ở T311 không còn lớp này, cập nhật bộ kiểm theo bố cục mới | | Chờ | Phát hiện 17/10/2026 khi kiểm T322 |
 | T321 | Danh mục cửa hàng: hộp Chi tiết cửa hàng cho sửa Cách tính chi phí NVL (gói Free) và Đồng bộ thu chi FABi ngay trong hộp | PhuongXT | Đang làm | Sửa `danh-muc/DanhMucCuaHang.tsx`, có thể `app.css` (mục cuối T321) |
 | T320 | Web và điện thoại: đổi bộ icon sang Solar khối 3D (Bold Duotone, chuyển màu, đổ bóng), đổi 9 icon sai nghĩa, icon khối không dưới 20px | Trum | Đang làm | Anti làm. Sửa `tools/xuat_bieu_tuong.py`, `src/ui/icon-dac.ts`, `src/ui/Icon.tsx`, mục mới cuối `app.css`, `index.html`, khoá icon ở `src/modules/*` và `thaoTacNhanh.ts`. Mẫu duyệt: https://claude.ai/artifact/H59WiEziF4UvzqSo5nNQAe |
