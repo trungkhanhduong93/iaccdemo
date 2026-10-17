@@ -732,7 +732,14 @@ Trum chốt trên trang xem trước https://claude.ai/artifact/8bD189Sn5BhvJQXt
 - Thanh dưới điện thoại dùng icon Solar như phần còn lại, bỏ bộ icon IVT.
 
 
-## QD68. Màn Nghiệp vụ và bộ lọc báo cáo trên điện thoại (đang soạn)
+## QD68. Màn Nghiệp vụ và bộ lọc báo cáo trên điện thoại (17/10/2026)
+
+Trum giao T311, T312, T313.
+
+- Màn Nghiệp vụ điện thoại: đầu màn là khối Lập nhanh 4 nút (Phiếu thu, Phiếu chi, Bán hàng, Mua hàng). Gói không mở được màn nào thì ẩn nút đó, không thay nút khác.
+- Dưới Lập nhanh, mỗi phân hệ một thẻ ngang: icon, tên, mũi tên, hàng chip tối đa 3 màn mở được trên điện thoại. Bấm thẻ mở màn đầu của phân hệ, bấm chip mở thẳng màn đó.
+- Báo cáo điện thoại: chọn điều kiện lọc chỉ qua nút lọc góc phải. Hàng chip Thời gian, Kho/CN bên ngoài chỉ hiển thị điều kiện đang lọc, bấm không mở gì. Nút Dạng dòng, Bảng vẫn bấm được vì không phải điều kiện lọc.
+- Bộ lọc báo cáo điện thoại chọn kỳ bằng Tháng này, Tháng trước hoặc hai ô Từ ngày, Đến ngày mở bảng chọn ngày của máy. Đến ngày chỉ chọn trong cùng tháng với Từ ngày, vì dữ liệu mẫu tính theo tháng như bản máy tính.
 
 ## QD69. Gói Free có chức năng Khoá sổ (đang soạn)
 

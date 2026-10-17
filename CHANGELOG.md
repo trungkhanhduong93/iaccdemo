@@ -4,6 +4,9 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 17/10/2026
 
+- T311: Điện thoại, màn Nghiệp vụ làm lại: khối Lập nhanh (Phiếu thu, Phiếu chi, Bán hàng, Mua hàng), mỗi phân hệ một thẻ kèm chip mở thẳng màn hay dùng.
+- T312, T313: Điện thoại, báo cáo: chip Thời gian, Kho/CN chỉ hiện điều kiện đang lọc, đổi điều kiện qua nút lọc góc phải. Bộ lọc chọn Tháng này, Tháng trước hoặc Từ ngày, Đến ngày bằng bảng chọn ngày của máy.
+- T310: Web và điện thoại: nâng các icon còn nhỏ lên cỡ chuẩn, web tối thiểu 16px, điện thoại tối thiểu 20px.
 - T317: Khoá sổ gói Free, phần kiểm tra trước khi khoá mặc định có 2 bước chưa xong: đồng bộ doanh thu FABi thiếu 2 ngày cuối tháng, còn 3 phiếu thu chi FABi chờ xử lý. Có cảnh báo và nút Xem đi xử lý.
 - T315: Gói Free có Khoá sổ ở Hệ thống › Khoá sổ: kiểm tra trước khi khoá (đồng bộ FABi, kiểm kê, phân bổ chi phí, chi phí chờ phân bổ chưa ghi tăng thẻ, tồn quỹ, phiếu FABi chờ) theo cửa hàng đang chọn; khoá sổ, mở khoá phải ghi lý do, lịch sử đủ ngày giờ. Phiếu thuộc tháng đã khoá chỉ xem, không sửa, không xoá (mọi gói). Trang chủ gói Free nhắc tháng chưa khoá sổ.
 - T309: Báo cáo Xuất nhập tồn hiện dạng bảng như các báo cáo khác (không còn dạng tờ in ở màn chính). Bấm logo thanh bên về trang chủ; bấm nhãn gói mới mở Gói thuê bao. Trang chủ gói Free bản web bỏ tab Cần theo dõi. Khối Quỹ tiền ghi tên quỹ như Danh mục Quỹ tiền (vd Vietcombank, chi nhánh Sài Gòn), không kèm số tài khoản.

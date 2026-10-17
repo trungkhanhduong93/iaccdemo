@@ -4,7 +4,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T318.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T319.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
@@ -14,10 +14,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | T318 | Báo cáo kết quả kinh doanh gói Free (10.2.3) dạng chi tiết: doanh thu mỗi kênh bán một dòng, chi phí trong tháng mỗi lý do chi một dòng, chi phí phân bổ chia Chi phí trả trước, Công cụ dụng cụ, Tài sản cố định; dòng không phát sinh thì ẩn | PhuongXT | Đang làm | Sửa `tong-hop/BaoCaoTaiChinh.tsx`, `data/mock.ts` (hàm mới), `app.css` (mục cuối T318). Tổng giữ như cũ |
 | T316 | Trang chủ Free máy tính: chữ theo hướng thuật ngữ chuẩn kèm giải thích (Kết quả kinh doanh, Quỹ tiền, Mua hàng và công nợ nhà cung cấp, Hao hụt kiểm kê), tiêu đề phụ, chú thích dòng | dinhlanphuongipacc | Đang làm | Sửa `home/BaBaiToanFree.tsx`, có thể `app.css` (mục cuối T316) |
 | T314 | Điện thoại: `kiem_tra.py --dien-thoai` báo "Bấm Chứng từ chưa ghi sổ: danh sách không bật sẵn chip Chưa ghi sổ" | | Chờ | Phát hiện 17/10/2026 khi chạy bộ kiểm điện thoại cho T308, T309 (không đụng phần này). Có thể liên quan bộ lọc nổi T299 (`MLoc.tsx`, `MDanhSach.tsx`) |
-| T311 | Điện thoại: màn Nghiệp vụ đang đơn điệu (5 ô trắng, nửa dưới trống), làm lại bố cục cho dễ dùng hơn | Trum | Đang làm | Anti làm. Sửa `src/ui/mobile/MNghiepVu.tsx`, mục mới cuối `app.css` |
-| T312 | Điện thoại: hàng chip trên báo cáo (Thời gian, Kho/CN) chỉ hiện điều kiện đang lọc, bấm không mở bộ lọc; chọn điều kiện lọc chỉ qua nút lọc góc phải | Trum | Đang làm | Anti làm cùng T313. Sửa `src/ui/mobile/MSoBaoCao.tsx`, `MBaoCaoLoc.tsx`, `MLoc.tsx` |
-| T313 | Điện thoại: bộ lọc báo cáo, ô chọn ngày mở bảng chọn ngày thay cho danh sách kỳ dạng sheet | Trum | Đang làm | Anti làm cùng T312, cùng file |
-| T310 | Web và điện thoại: rà các chỗ icon còn nhỏ quá so với cỡ chuẩn QD67, nâng lên | Trum | Đang làm | Làm sau T311, T312 vì cùng đụng `app.css`. Sửa `app.css`, `src/ui/` |
 | T265 | Phiếu thu, chi đồng bộ từ FABi (T264) chưa vào Sổ quỹ tiền mặt, Sổ ngân hàng, Lịch sử thu chi, tồn quỹ trang chủ; đưa vào thì đổi số dư | | Chờ | Phát hiện khi làm T264, chờ PhuongXT quyết |
 | T229 | Báo cáo kết quả kinh doanh (10.2.3, B02-DNN) ở chế độ TT133 mở ra "Báo cáo chưa có mẫu" ở cả bản máy tính và điện thoại, gói Pro và Free | | Chờ | Phát hiện ở T222 ngày 14/10/2026, mở từ Tất cả báo cáo. Có thể liên quan T220 |
 | T169 | Form chứng từ: gõ đổi địa chỉ từ phiếu này sang phiếu khác (vd `#/app/tien/2-1-1/chi-3` sang `chi-6`) thì form giữ số phiếu, đối tượng của phiếu cũ; mở từ danh sách, Trước, Sau thì đúng | | Chờ | Phát hiện ở T168. Sửa `ChungTuForm.tsx`, có thể `VoucherScreen.tsx` (key của form) |
@@ -53,6 +49,10 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T313 | Điện thoại: bộ lọc báo cáo, ô chọn ngày mở bảng chọn ngày thay cho danh sách kỳ dạng sheet | Trum | 17/10/2026 | [2026-10-17-trum-nghiep-vu-loc-bao-cao-icon](nhat-ky/2026-10-17-trum-nghiep-vu-loc-bao-cao-icon.md) |
+| T312 | Điện thoại: hàng chip trên báo cáo (Thời gian, Kho/CN) chỉ hiện điều kiện đang lọc, bấm không mở bộ lọc; chọn điều kiện lọc chỉ qua nút lọc góc phải | Trum | 17/10/2026 | [2026-10-17-trum-nghiep-vu-loc-bao-cao-icon](nhat-ky/2026-10-17-trum-nghiep-vu-loc-bao-cao-icon.md) |
+| T311 | Điện thoại: màn Nghiệp vụ đang đơn điệu (5 ô trắng, nửa dưới trống), làm lại bố cục cho dễ dùng hơn | Trum | 17/10/2026 | [2026-10-17-trum-nghiep-vu-loc-bao-cao-icon](nhat-ky/2026-10-17-trum-nghiep-vu-loc-bao-cao-icon.md) |
+| T310 | Web và điện thoại: rà các chỗ icon còn nhỏ quá so với cỡ chuẩn QD67, nâng lên | Trum | 17/10/2026 | [2026-10-17-trum-nghiep-vu-loc-bao-cao-icon](nhat-ky/2026-10-17-trum-nghiep-vu-loc-bao-cao-icon.md) |
 | T319 | Thêm bản phát hành (release) lên https://i-accounting.pages.dev: ai gõ "release" thì agent gắn tag `vX.Y` lên `origin/main`, robot kiểm, build, đưa lên project Cloudflare `i-accounting`, báo Telegram kèm số phiên bản | Trum | 17/10/2026 | [2026-10-17-trum-ban-phat-hanh](nhat-ky/2026-10-17-trum-ban-phat-hanh.md) |
 | T317 | Khoá sổ gói Free: bước kiểm tra trước khi khoá mặc định có 2 bước chưa xong (đồng bộ doanh thu FABi thiếu ngày 29, 30; còn 3 phiếu thu chi FABi chờ xử lý), hiện cảnh báo | PhuongXT | 17/10/2026 | [2026-10-17-phuongxt-khoa-so-buoc-chua-xong](nhat-ky/2026-10-17-phuongxt-khoa-so-buoc-chua-xong.md) |
 | T315 | Gói Free có Khoá sổ: tab Hệ thống › Khoá sổ (chỉ gói Free) với 6 bước kiểm tra theo cửa hàng đang chọn (đồng bộ FABi, kiểm kê, phân bổ trong tháng, chờ phân bổ chưa ghi tăng thẻ, tồn quỹ, phiếu FABi chờ), khoá, mở khoá bắt buộc lý do, lịch sử đủ ngày giờ; khoá thật: phiếu tháng đã khoá chỉ xem ở mọi gói; trang chủ Free nhắc tháng chưa khoá | dinhlanphuongipacc | 17/10/2026 | [2026-10-17-dinhlanphuongipacc-khoa-so-free](nhat-ky/2026-10-17-dinhlanphuongipacc-khoa-so-free.md) |
