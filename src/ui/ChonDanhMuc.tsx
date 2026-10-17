@@ -5,6 +5,8 @@ import { createPortal } from 'react-dom'
 import { Popover } from './Dropdown'
 import { Icon } from './Icon'
 import { fold } from './format'
+import { CatalogPanel } from './generic/CatalogScreen'
+import { getDmMeta, addCatalogRow, useAddedCatalogRows } from './generic/danhMucStore'
 
 export interface MucDm { v: string; t: string }
 
@@ -79,15 +81,52 @@ export function ChonDanhMuc({ dm, nhan, value, onChange, ds, className = 'inp', 
           </button>
         )}
       </Popover>
-      {hop && !khongThem && (
-        <HopThem nhan={nhan} coMa={coMa} tenGoc={tim.trim()} onDong={() => setHop(false)}
-          onLuu={(ma, ten) => {
-            const muc = coMa ? { v: ma, t: `${ma} - ${ten}` } : { v: ten, t: ten }
-            themMucDanhMuc(dm, muc)
-            onChange(muc.v, muc)
-            setHop(false)
-          }} />
-      )}
+      {hop && !khongThem && (() => {
+        const meta = getDmMeta(dm, nhan, tim.trim())
+        if (meta.cauHinh) {
+          return createPortal(
+            <CatalogPanel
+              cauHinh={meta.cauHinh}
+              edit={{}}
+              dienSan={meta.dienSan}
+              all={meta.all}
+              ten={meta.ten}
+              tenNgan={meta.tenNgan}
+              scSlug={meta.scSlug}
+              onDong={() => setHop(false)}
+              onLuu={(val, themTiep) => {
+                addCatalogRow(meta.catKey, val)
+                const ma = String(val.ma ?? '').trim()
+                const ten = String(val.ten ?? '').trim()
+                const muc = coMa ? { v: ma, t: `${ma} - ${ten}` } : { v: ten, t: ten }
+                themMucDanhMuc(dm, muc)
+                if (meta.catKey === '1.5') {
+                  themMucDanhMuc('doiTuong', muc)
+                  themMucDanhMuc('kh', muc)
+                  themMucDanhMuc('ncc', muc)
+                  themMucDanhMuc('nv', muc)
+                } else if (meta.catKey === '1.2') {
+                  themMucDanhMuc('hang', muc)
+                  themMucDanhMuc('nvl', muc)
+                  themMucDanhMuc('ccdc', muc)
+                }
+                onChange(muc.v, muc)
+                if (!themTiep) setHop(false)
+              }}
+            />,
+            document.body,
+          )
+        }
+        return (
+          <HopThem nhan={nhan} coMa={coMa} tenGoc={tim.trim()} onDong={() => setHop(false)}
+            onLuu={(ma, ten) => {
+              const muc = coMa ? { v: ma, t: `${ma} - ${ten}` } : { v: ten, t: ten }
+              themMucDanhMuc(dm, muc)
+              onChange(muc.v, muc)
+              setHop(false)
+            }} />
+        )
+      })()}
     </>
   )
 }

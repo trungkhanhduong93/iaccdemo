@@ -23386,3 +23386,126 @@ button[class*="btn-"] .ic .l2 {
   padding: 6px 10px;
   white-space: nowrap;
 }
+
+/* ── Bảng chọn MChon, MLoc nút dính đáy bảng (T344) ── */
+/* MChon có nút Áp dụng và Huỷ */
+.m-tam-hop-apdung,
+.m-tam-hop:has(.m-tam-day) {
+  height: 85vh;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.m-tam-hop-apdung .m-tam-ds,
+.m-tam-hop:has(.m-tam-day) .m-tam-ds {
+  flex: 1;
+  min-height: 0;
+  max-height: none;
+  overflow-y: auto;
+}
+
+.m-tam-hop-apdung .m-tam-day,
+.m-tam-hop:has(.m-tam-day) .m-tam-day {
+  margin-top: auto;
+  flex: none;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+  box-sizing: border-box;
+}
+
+/* Bảng chọn hàng hoá trong MLapPhieu, MLapPhieuKho */
+.m-lp-sheet-hang {
+  height: 85vh;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.m-lp-sheet-hang .m-lp-ds-hang {
+  flex: 1;
+  min-height: 0;
+  max-height: none !important;
+  overflow-y: auto;
+}
+
+.m-lp-sheet-hang .m-tam-day {
+  margin-top: auto;
+  flex: none;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+  box-sizing: border-box;
+}
+
+/* Bộ lọc MLoc */
+.m-loc-tam {
+  height: 85vh;
+  max-height: 85vh !important;
+  display: flex;
+  flex-direction: column;
+}
+
+.m-loc-tam .m-loc-than {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.m-loc-tam .m-loc-day {
+  margin-top: auto;
+  flex: none;
+  padding: 12px var(--m-le-man, 16px) calc(12px + env(safe-area-inset-bottom, 0px)) !important;
+  box-sizing: border-box;
+}
+
+/* Trang con trong MLoc */
+.m-loc-trang-con {
+  display: flex;
+  flex-direction: column;
+}
+
+.m-loc-trang-con .m-loc-con-than {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.m-loc-trang-con .m-loc-day {
+  margin-top: auto;
+  flex: none;
+  padding: 12px var(--m-le-man, 16px) calc(12px + env(safe-area-inset-bottom, 0px)) !important;
+  box-sizing: border-box;
+}
+
+/* ── Hộp thêm danh mục đầy đủ và nút thêm trên mobile (T347) ── */
+.m-tam-them-wrap {
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg-card, #fff);
+  flex: none;
+}
+.m-tam-btn-them {
+  width: 100%;
+  min-height: 44px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* ── Báo cáo: kéo giãn cột trên bảng (T350) ── */
+/* ── Kéo giãn cột bảng báo cáo (T350) ── */
+.ds-keo-rong {
+  cursor: col-resize;
+  z-index: 5;
+}
+.tbl thead tr.tbl-cot th.tbl-le > span.ds-keo-rong {
+  position: absolute;
+  top: -36px;
+  height: 72px;
+  right: 0;
+  width: 6px;
+  z-index: 5;
+  cursor: col-resize;
+}

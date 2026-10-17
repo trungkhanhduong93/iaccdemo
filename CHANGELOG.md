@@ -4,6 +4,9 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 17/10/2026
 
+- T350: Báo cáo: kéo mép tiêu đề cột để giãn hoặc thu cột, độ rộng được nhớ cho lần mở sau; Về mặc định trong Tuỳ chỉnh báo cáo trả lại như cũ. Hộp Tuỳ chỉnh báo cáo dùng icon nét, bỏ ô Rộng (px).
+- T347: Form chứng từ (web và điện thoại): ô chọn danh mục (đối tượng, lý do, hàng hoá, kho) có nút Thêm mở đủ form tạo mới như ở danh mục; mã trống tự sinh theo tiền tố, mã trùng báo lỗi ngay; lưu xong chọn luôn mục mới vào ô và lưu vào danh mục trong phiên.
+- T344: Điện thoại: icon trong màn lập phiếu và xem phiếu (thu chi, kho) chuyển sang dạng nét. Bảng chọn MChon, danh sách hàng hoá và bộ lọc MLoc có nút Huỷ, Áp dụng, Xong cố định ở đáy bảng.
 - T348: Thanh công cụ báo cáo: nút Tuỳ chỉnh, Xuất, In dùng icon nét; icon máy in gọn hơn. Menu Xuất mỗi định dạng một icon riêng (Excel, CSV, PDF, HTML, XML).
 - T346: Form chứng từ: thanh nút dưới cùng cao bằng nhau lúc xem và lúc sửa. Gói Free, phiếu thu chi tiền mặt và ngân hàng: Lý do, Đối tượng chỉ chọn ở phần trên, cột Lý do, Đối tượng ở dòng chi tiết chỉ xem và luôn theo phần trên.
 - T343: Điện thoại, báo cáo: bộ lọc bật lên cao 80% màn hình, chọn điều kiện bên trong thì bảng con cao 50% đè lên. Báo cáo chỉ còn dạng dòng. Ngày và số tổng của ngày to, đậm hơn. Bảng kê ghi tổng tiền từng ngày. Hàng chip dưới tiêu đề hiện thêm mọi điều kiện đang lọc.

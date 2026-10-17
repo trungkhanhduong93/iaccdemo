@@ -34,9 +34,12 @@ import { TEN_DVT } from '../../modules/danh-muc/data'
 import { GoiYLapPhieu } from './GoiYLapPhieu'
 import { HOM_NAY } from '../../data/mock'
 import { dmy } from '../format'
+import { addCatalogRow, useAddedCatalogRows, sinhMaKeTiep } from './danhMucStore'
 
 export function CatalogScreen({ sc }: ScreenProps) {
   const { s, set, toast } = useSession()
+  const catKey = sc.code ?? sc.slug ?? ''
+  const addedRows = useAddedCatalogRows(catKey)
   const cfg = sc.catalog ?? { cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên' }], rows: () => [] }
   // Kỳ số liệu (yyyymm): màn có kySoLieu tính số liệu tới hết kỳ đang chọn
   const [ky, setKy] = useState(() => kyMacDinh(s))
@@ -58,8 +61,10 @@ export function CatalogScreen({ sc }: ScreenProps) {
     setTtGhiDe(prev => ({ ...prev, [k]: ttMoi }))
   }, [khoaDong])
 
-  const allGoc = useMemo(() => cfg.rows(s.cheDo, ky).filter(r => !cfg.locGoi || cfg.locGoi(s.goi, r)).map(r => cfg.phien ? cfg.phien.gan(r, s) : r),
-    [sc, s.cheDo, ky, s.goi, cfg.phien ? s : null])   // eslint-disable-line react-hooks/exhaustive-deps
+  const allGoc = useMemo(() => {
+    const goc = cfg.rows(s.cheDo, ky).filter(r => !cfg.locGoi || cfg.locGoi(s.goi, r)).map(r => cfg.phien ? cfg.phien.gan(r, s) : r)
+    return [...goc, ...addedRows]
+  }, [sc, s.cheDo, ky, s.goi, cfg.phien ? s : null, addedRows])
   const all = useMemo((): Row[] => {
     return allGoc.map((r, i) => {
       const k = String(r.ma ?? r.so ?? r.username ?? r.id ?? (cols0[0]?.k ? r[cols0[0].k] : undefined) ?? r.ten ?? `_r_${i}`)
@@ -367,6 +372,9 @@ export function CatalogScreen({ sc }: ScreenProps) {
           onXoa={val => { setDaXoaDm(x => new Set(x).add(khoaXoa(val))); setEdit(null); toast(`Đã xoá ${val.soThe ?? val.ma ?? ''}`) }}
           onSaoChep={(kieu, d) => { setEdit(null); setTimeout(() => moSua({}, kieu, d), 0) }}
           onLuu={(val, themTiep) => {
+            if (val && !val._sua) {
+              addCatalogRow(catKey, val)
+            }
             if (val && val._tt !== undefined) {
               const k = khoaDong(val)
               if (k) setTtGhiDe(prev => ({ ...prev, [k]: Number(val._tt) }))
@@ -570,6 +578,25 @@ export function CatalogPanel({
 
   const handleLuu = (themTiep: boolean) => {
     const errs: Record<string, string> = {}
+    const cKey = scSlug ?? cauHinh?.ten ?? ''
+    const coTruongMa = dsKhoi.some(kh => kh.truong.some(tr => tr.k === 'ma'))
+
+    // T347: Tự sinh mã kế tiếp nếu để trống ô Mã khi thêm mới
+    let curMa = formVal.ma !== undefined && formVal.ma !== null ? String(formVal.ma).trim() : ''
+    if (coTruongMa && !dangSua && !curMa) {
+      curMa = sinhMaKeTiep(cKey, formVal, all)
+      formVal.ma = curMa
+      setFormVal(prev => ({ ...prev, ma: curMa }))
+    }
+
+    // T347: Báo lỗi ngay ở ô Mã nếu mã đã tồn tại
+    if (curMa) {
+      const daTrung = all.some(r => r.ma && String(r.ma).trim().toUpperCase() === curMa.toUpperCase() && (dangSua ? (r.ma !== edit?.ma && r._k !== formVal._k) : true))
+      if (daTrung) {
+        errs.ma = `Mã ${curMa} đã có`
+      }
+    }
+
     for (const kh of dsKhoi) {
       for (const tr of kh.truong) {
         if (!hienO(tr)) continue

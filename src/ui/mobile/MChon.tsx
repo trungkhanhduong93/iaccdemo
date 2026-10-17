@@ -17,9 +17,11 @@ export interface MChonProps {
   onChon: (k: string) => void
   apDung?: boolean
   tim?: boolean
+  onThem?: () => void
+  nhanThem?: string
 }
 
-export const MChon: FC<MChonProps> = ({ mo, onDong, tieuDe, ds, chon, onChon, apDung, tim }) => {
+export const MChon: FC<MChonProps> = ({ mo, onDong, tieuDe, ds, chon, onChon, apDung, tim, onThem, nhanThem }) => {
   const [tamChon, setTamChon] = useState(chon ?? '')
   const [tuKhoa, setTuKhoa] = useState('')
 
@@ -63,6 +65,18 @@ export const MChon: FC<MChonProps> = ({ mo, onDong, tieuDe, ds, chon, onChon, ap
                 <Icon n="x" className="ic sm" />
               </button>
             )}
+          </div>
+        )}
+        {onThem && (
+          <div className="m-tam-them-wrap">
+            <button
+              type="button"
+              className="btn pri m-tam-btn-them"
+              onClick={onThem}
+            >
+              <Icon n="plus" className="ic sm" />
+              <span>{nhanThem ?? `Thêm ${tieuDe.replace(/^Chọn\s+/i, '').toLowerCase()}`}</span>
+            </button>
           </div>
         )}
         <div className="m-tam-ds">

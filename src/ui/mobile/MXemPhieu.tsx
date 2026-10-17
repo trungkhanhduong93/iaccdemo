@@ -627,7 +627,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
 
         {dsDong.length > 3 && (
           <div className="m-xp-tim-wrap">
-            <Icon n="search" className="ic sm m-xp-tim-ic" />
+            <Icon n="search" className="ic sm m-xp-tim-ic" kieu="net" />
             <input
               type="text"
               className="m-xp-tim-inp"
@@ -637,7 +637,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
             />
             {timKiem && (
               <button type="button" className="m-xp-tim-x" onClick={() => setTimKiem('')}>
-                <Icon n="x" className="ic sm" />
+                <Icon n="x" className="ic sm" kieu="net" />
               </button>
             )}
           </div>
@@ -779,10 +779,10 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
           aria-expanded={moLs}
         >
           <div className="m-xp-acc-tieu">
-            <Icon n="history" className="ic sm" />
+            <Icon n="history" className="ic sm" kieu="net" />
             <span>Lịch sử thao tác</span>
           </div>
-          <Icon n={moLs ? 'chevu' : 'chevd'} className="ic sm" />
+          <Icon n={moLs ? 'chevu' : 'chevd'} className="ic sm" kieu="net" />
         </button>
         {moLs && (
           <div className="m-xp-acc-nd">
@@ -818,7 +818,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
             onClick={() => setMoMenu(true)}
             aria-label="Thao tác khác"
           >
-            <Icon n="more" className="ic" />
+            <Icon n="more" className="ic" kieu="net" />
           </button>
         </div>
       </div>

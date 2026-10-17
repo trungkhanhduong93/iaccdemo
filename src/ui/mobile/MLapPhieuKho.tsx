@@ -23,6 +23,8 @@ import { DCN, khoCuaCn, type LoaiDcn } from '../../modules/kho/dieu-chuyen'
 import type { Dong } from '../generic/gen'
 import { quyDoiTuDanhMuc } from '../../modules/danh-muc/QuyDoiDvt'
 import { goSoVN, docSoVN } from '../OSoGo'
+import { MFormDm } from './MFormDm'
+import { addCatalogRow, getDmMeta, useAddedCatalogRows } from '../generic/danhMucStore'
 
 export interface MLapPhieuKhoProps extends ScreenProps {
   id?: string
@@ -118,7 +120,7 @@ const TheHangKho: FC<TheHangKhoProps> = ({
               title="Nhân bản dòng"
               aria-label="Nhân bản dòng"
             >
-              <Icon n="copy" className="ic sm" />
+              <Icon n="copy" className="ic sm" kieu="net" />
             </button>
             <button
               type="button"
@@ -127,7 +129,7 @@ const TheHangKho: FC<TheHangKhoProps> = ({
               title="Xoá dòng"
               aria-label="Xoá dòng"
             >
-              <Icon n="x" className="ic sm" />
+              <Icon n="x" className="ic sm" kieu="net" />
             </button>
           </div>
         </div>
@@ -208,7 +210,7 @@ const TheHangKho: FC<TheHangKhoProps> = ({
             title="Nhân bản dòng"
             aria-label="Nhân bản dòng"
           >
-            <Icon n="copy" className="ic sm" />
+            <Icon n="copy" className="ic sm" kieu="net" />
           </button>
           <button
             type="button"
@@ -217,7 +219,7 @@ const TheHangKho: FC<TheHangKhoProps> = ({
             title="Xoá dòng"
             aria-label="Xoá dòng"
           >
-            <Icon n="x" className="ic sm" />
+            <Icon n="x" className="ic sm" kieu="net" />
           </button>
         </div>
       </div>
@@ -264,7 +266,7 @@ const TheHangKho: FC<TheHangKhoProps> = ({
               title="Đổi đơn vị tính"
             >
               <span>{d.dvt || 'Cái'}</span>
-              <Icon n="chevd" className="ic sm" />
+              <Icon n="chevd" className="ic sm" kieu="net" />
             </button>
           ) : (
             <span className="m-th-don-vi">{d.dvt || 'Cái'}</span>
@@ -337,7 +339,7 @@ const TheHangKho: FC<TheHangKhoProps> = ({
                   title="Sửa tổng tiền"
                   aria-label="Sửa tổng tiền"
                 >
-                  <Icon n="edit" className="ic sm" />
+                  <Icon n="edit" className="ic sm" kieu="net" />
                 </button>
               </>
             )}
@@ -397,11 +399,17 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
   const cnChon = cuaHangHienTai(s)
   const cuaHang = gocData?.cn ? String(gocData.cn) : cnChon?.ten ?? 'Phố Mây Lê Lợi'
 
+  const addedKho = useAddedCatalogRows('1.8')
+  const addedHang = useAddedCatalogRows('1.2')
+  const [moThemDm, setMoThemDm] = useState<string | null>(null)
+
   // Danh sách kho theo cửa hàng
   const dsKhoCn = useMemo(() => {
     const k = khoCuaCn(cuaHang)
-    return k.length ? k : KHO
-  }, [cuaHang])
+    const base = k.length ? k : KHO
+    const added = addedKho.map(x => String(x.ten ?? '')).filter(Boolean)
+    return [...base, ...added]
+  }, [cuaHang, addedKho])
 
   // Thời gian
   const [moLich, setMoLich] = useState(false)
@@ -458,7 +466,17 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
   const [tpSoLuong, setTpSoLuong] = useState<number>(10)
 
   // Nguồn hàng hoá
-  const danhMucHang = useMemo(() => NVL, [])
+  const danhMucHang = useMemo(() => {
+    const added = addedHang.map(h => ({
+      ma: String(h.ma ?? ''),
+      ten: String(h.ten ?? ''),
+      nhom: String(h.nhom ?? ''),
+      dvt: String(h.dvt ?? 'Cái'),
+      gia: Number(h.gia) || Number(h.giaMua) || 0,
+      ts: Number(h.ts) || 0,
+    }))
+    return [...NVL, ...added]
+  }, [addedHang])
 
   const dsNhomHang = useMemo(() => {
     const set = new Set<string>()
@@ -871,13 +889,13 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
         <div className="m-lp-buoc m-lp-buoc-thanh-cong">
           <div className="m-lp-dau-thanh-cong">
             <button type="button" className="m-lp-btn-home" onClick={() => nav(path)} aria-label="Về trang danh sách">
-              <Icon n="home" className="ic sm" />
+              <Icon n="home" className="ic sm" kieu="net" />
             </button>
           </div>
 
           <div className="m-lp-thanh-cong-than">
             <div className="m-lp-thanh-cong-vong">
-              <Icon n="check" className="ic lg m-lp-thanh-cong-tich" />
+              <Icon n="check" className="ic lg m-lp-thanh-cong-tich" kieu="net" />
             </div>
             <h2 className="m-lp-thanh-cong-tieu">Tạo chứng từ thành công</h2>
             <p className="m-lp-thanh-cong-mota">
@@ -928,7 +946,7 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
             onClick={() => setMoChonKho(true)}
           >
             <div className="m-lp-dong-trai">
-              <Icon n="store" className="ic sm m-lp-dong-ic" />
+              <Icon n="store" className="ic sm m-lp-dong-ic" kieu="net" />
               <div className="m-lp-dong-nd">
                 <span className="m-lp-dong-nhan">
                   {laKk
@@ -942,7 +960,7 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
                 <span className={`m-lp-dong-tri ${!kho ? 'mo' : ''}`}>{kho || 'Chọn kho'}</span>
               </div>
             </div>
-            <Icon n="chevr" className="ic sm m-lp-dong-mui-ten" />
+            <Icon n="chevr" className="ic sm m-lp-dong-mui-ten" kieu="net" />
           </div>
           {loiO.kho && <div className="m-lp-loi-o">{loiO.kho}</div>}
 
@@ -955,13 +973,13 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
                 onClick={() => setMoChonCnNhan(true)}
               >
                 <div className="m-lp-dong-trai">
-                  <Icon n="store" className="ic sm m-lp-dong-ic" />
+                  <Icon n="store" className="ic sm m-lp-dong-ic" kieu="net" />
                   <div className="m-lp-dong-nd">
                     <span className="m-lp-dong-nhan">Cửa hàng nhận <b className="m-lp-sao">*</b></span>
                     <span className={`m-lp-dong-tri ${!cnNhan ? 'mo' : ''}`}>{cnNhan || 'Chọn cửa hàng nhận'}</span>
                   </div>
                 </div>
-                <Icon n="chevr" className="ic sm m-lp-dong-mui-ten" />
+                <Icon n="chevr" className="ic sm m-lp-dong-mui-ten" kieu="net" />
               </div>
               {loiO.cnNhan && <div className="m-lp-loi-o">{loiO.cnNhan}</div>}
             </>
@@ -976,13 +994,13 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
                 onClick={() => setMoChonKhoNhan(true)}
               >
                 <div className="m-lp-dong-trai">
-                  <Icon n="store" className="ic sm m-lp-dong-ic" />
+                  <Icon n="store" className="ic sm m-lp-dong-ic" kieu="net" />
                   <div className="m-lp-dong-nd">
                     <span className="m-lp-dong-nhan">Kho nhận <b className="m-lp-sao">*</b></span>
                     <span className={`m-lp-dong-tri ${!khoNhan ? 'mo' : ''}`}>{khoNhan || 'Chọn kho nhận'}</span>
                   </div>
                 </div>
-                <Icon n="chevr" className="ic sm m-lp-dong-mui-ten" />
+                <Icon n="chevr" className="ic sm m-lp-dong-mui-ten" kieu="net" />
               </div>
               {loiO.khoNhan && <div className="m-lp-loi-o">{loiO.khoNhan}</div>}
             </>
@@ -995,7 +1013,7 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
             onClick={() => setMoLich(true)}
           >
             <div className="m-lp-dong-trai">
-              <Icon n="clock" className="ic sm m-lp-dong-ic" />
+              <Icon n="clock" className="ic sm m-lp-dong-ic" kieu="net" />
               <div className="m-lp-dong-nd">
                 <span className="m-lp-dong-nhan">Thời gian <b className="m-lp-sao">*</b></span>
                 <span className="m-lp-dong-tri m-lp-tri-xanh">{thoiGian}</span>
@@ -1008,13 +1026,13 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
                 />
               </div>
             </div>
-            <Icon n="chevr" className="ic sm m-lp-dong-mui-ten" />
+            <Icon n="chevr" className="ic sm m-lp-dong-mui-ten" kieu="net" />
           </div>
 
           {/* Ghi chú / Diễn giải */}
           <div className="m-lp-dong-o m-lp-dong-nhap">
             <div className="m-lp-dong-trai" style={{ width: '100%' }}>
-              <Icon n="file" className="ic sm m-lp-dong-ic" />
+              <Icon n="file" className="ic sm m-lp-dong-ic" kieu="net" />
               <input
                 type="text"
                 className="m-lp-dong-inp"
@@ -1050,7 +1068,7 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
                       </div>
                     </div>
                     <div className={`m-lp-cb-hang ${dangChon ? 'on' : ''}`}>
-                      {dangChon && <Icon n="check" className="ic sm" />}
+                      {dangChon && <Icon n="check" className="ic sm" kieu="net" />}
                     </div>
                   </div>
                 )
@@ -1086,7 +1104,7 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
                 className="m-lp-btn-them-nhanh"
                 onClick={() => setMoChonHang(true)}
               >
-                <Icon n="plus" className="ic sm" /> Thêm hàng
+                <Icon n="plus" className="ic sm" kieu="net" /> Thêm hàng
               </button>
             )}
           </div>
@@ -1098,7 +1116,7 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
                 if (!laSx || sx !== 'xcb') setMoChonHang(true)
               }}
             >
-              <div style={{ color: 'var(--muted)', marginBottom: 6 }}><Icon n="box" className="ic md" /></div>
+              <div style={{ color: 'var(--muted)', marginBottom: 6 }}><Icon n="box" className="ic md" kieu="net" /></div>
               <span style={{ fontSize: 13, color: 'var(--muted)' }}>Chưa có mặt hàng nào</span>
               {(!laSx || sx !== 'xcb') && (
                 <span className="m-lp-btn-them-chu">+ Chọn mặt hàng</span>
@@ -1128,7 +1146,7 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
                   className="m-th-btn-them-hang-duoi"
                   onClick={() => setMoChonHang(true)}
                 >
-                  <Icon n="plus" className="ic sm" />
+                  <Icon n="plus" className="ic sm" kieu="net" />
                   <span>Thêm hàng</span>
                 </button>
               )}
@@ -1174,6 +1192,11 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
           if (loiO.kho) setLoiO(l => { const n = { ...l }; delete n.kho; return n })
           if (laDcn && dcn === 'ck' && v === khoNhan) setKhoNhan('')
         }}
+        onThem={() => {
+          setMoChonKho(false)
+          setMoThemDm('kho')
+        }}
+        nhanThem="Thêm kho"
         apDung
         tim
       />
@@ -1230,7 +1253,21 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
                 onClick={() => setMoChonHang(false)}
                 aria-label="Đóng"
               >
-                <Icon n="x" className="ic sm" />
+                <Icon n="x" className="ic sm" kieu="net" />
+              </button>
+            </div>
+
+            <div className="m-tam-them-wrap">
+              <button
+                type="button"
+                className="btn pri m-tam-btn-them"
+                onClick={() => {
+                  setMoChonHang(false)
+                  setMoThemDm('hang')
+                }}
+              >
+                <Icon n="plus" className="ic sm" />
+                <span>Thêm hàng hoá</span>
               </button>
             </div>
 
@@ -1241,10 +1278,10 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
                 onClick={() => setMoChonNhomHang(true)}
               >
                 <span>{nhomHangChon}</span>
-                <Icon n="chevd" className="ic sm" />
+                <Icon n="chevd" className="ic sm" kieu="net" />
               </button>
               <div className="m-lp-tim-hang-wrap">
-                <Icon n="search" className="ic sm m-lp-tim-ic" />
+                <Icon n="search" className="ic sm m-lp-tim-ic" kieu="net" />
                 <input
                   type="text"
                   className="m-lp-tim-hang-inp"
@@ -1254,7 +1291,7 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
                 />
                 {timHang && (
                   <button type="button" className="m-lp-tim-hang-x" onClick={() => setTimHang('')}>
-                    <Icon n="x" className="ic sm" />
+                    <Icon n="x" className="ic sm" kieu="net" />
                   </button>
                 )}
               </div>
@@ -1264,11 +1301,11 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
                 onClick={toggleTatCa}
                 title="Chọn tất cả"
               >
-                {tatCaDaChon && <Icon n="check" className="ic sm" />}
+                {tatCaDaChon && <Icon n="check" className="ic sm" kieu="net" />}
               </button>
             </div>
 
-            <div className="m-lp-than m-lp-ds-hang" style={{ maxHeight: '55vh', overflowY: 'auto' }}>
+            <div className="m-lp-than m-lp-ds-hang" style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
               {dsHangHienThi.map(h => {
                 const daChon = dsDong.some(d => d.ma === h.ma)
                 return (
@@ -1284,7 +1321,7 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
                       </div>
                     </div>
                     <div className={`m-lp-cb-hang ${daChon ? 'on' : ''}`}>
-                      {daChon && <Icon n="check" className="ic sm" />}
+                      {daChon && <Icon n="check" className="ic sm" kieu="net" />}
                     </div>
                   </div>
                 )
@@ -1343,6 +1380,49 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
           apDung
         />
       )}
+
+      {/* ── FORM THÊM MỚI DANH MỤC TRÊN ĐIỆN THOẠI (T347) ── */}
+      {moThemDm && (() => {
+        const meta = getDmMeta(moThemDm, undefined)
+        return (
+          <MFormDm
+            sc={meta.sc}
+            cauHinh={meta.cauHinh}
+            edit={{}}
+            dienSan={meta.dienSan}
+            all={meta.all}
+            ten={meta.ten}
+            tenNgan={meta.tenNgan}
+            onDong={() => setMoThemDm(null)}
+            onLuu={(val) => {
+              addCatalogRow(meta.catKey, val)
+              const ma = String(val.ma ?? '').trim()
+              const ten = String(val.ten ?? '').trim()
+              if (meta.catKey === '1.8') {
+                setKho(ten)
+                if (loiO.kho) setLoiO(l => { const n = { ...l }; delete n.kho; return n })
+              } else if (meta.catKey === '1.2') {
+                const gia = Number(val.gia) || Number(val.giaMua) || 0
+                setDsDong(ds => [...ds, {
+                  ma,
+                  ten,
+                  dvt: String(val.dvt ?? 'Cái'),
+                  dvtChinh: String(val.dvt ?? 'Cái'),
+                  giaGoc: gia,
+                  sl: 1,
+                  gia,
+                  tien: gia,
+                  ts: 0,
+                  thue: 0,
+                  kho,
+                  ghiChu: '',
+                }])
+              }
+              setMoThemDm(null)
+            }}
+          />
+        )
+      })()}
     </div>
   )
 }

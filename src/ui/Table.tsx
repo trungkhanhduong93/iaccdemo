@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, type CSSProperties, type PointerEvent as PE, type ReactNode } from 'react'
+import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useRef, type CSSProperties, type PointerEvent as PE, type ReactNode } from 'react'
 import type { Col, Row } from '../modules/types'
 import { money } from './format'
 import { OLoc, type LocCot } from './LocCot'
@@ -41,11 +41,17 @@ function viTri(cols: Col[]): { cls: string; style?: CSSProperties }[] {
 }
 
 /** Độ rộng cột người dùng đã kéo, theo khoá cột (T41) */
-export interface DoRong { gt: Record<string, number>; dat: (k: string, w: number) => void }
+export interface DoRong {
+  gt: Record<string, number>
+  dat: (k: string, w: number) => void
+  xong?: (k: string, w: number) => void
+}
+
+export const BaoCaoDoRongCtx = createContext<DoRong | undefined>(undefined)
 
 /** Kéo tay nắm ở mép phải ô tiêu đề để đổi độ rộng cột, tối thiểu 60px.
  * Dùng tỉ lệ offsetWidth / getBoundingClientRect().width để quy đổi delta chuột đúng cả khi html có zoom (T42) */
-function keoRong(e: PE<HTMLSpanElement>, k: string, dat: DoRong['dat']) {
+function keoRong(e: PE<HTMLSpanElement>, k: string, dat: DoRong['dat'], xong?: DoRong['xong']) {
   e.preventDefault()
   e.stopPropagation()
   const el = e.currentTarget
@@ -55,14 +61,17 @@ function keoRong(e: PE<HTMLSpanElement>, k: string, dat: DoRong['dat']) {
   const w0 = th.offsetWidth
   const scale = rect.width > 0 ? th.offsetWidth / rect.width : 1
   el.setPointerCapture(e.pointerId)
+  let curW = w0
   const di = (ev: PointerEvent) => {
     const delta = (ev.clientX - x0) * scale
-    dat(k, Math.max(60, Math.round(w0 + delta)))
+    curW = Math.max(60, Math.round(w0 + delta))
+    dat(k, curW)
   }
   const tha = () => {
     el.removeEventListener('pointermove', di)
     el.removeEventListener('pointerup', tha)
     el.removeEventListener('pointercancel', tha)
+    xong?.(k, curW)
   }
   el.addEventListener('pointermove', di)
   el.addEventListener('pointerup', tha)
@@ -100,7 +109,7 @@ export function Table({
   maxH,
   motDong,
   loc,
-  doRong,
+  doRong: doRongProp,
   keDoc,
   virtual,
   onToggleGroup,
@@ -120,6 +129,8 @@ export function Table({
   virtual?: boolean                     // bật cuộn ảo cho danh sách lớn
   onToggleGroup?: (id: string) => void  // đóng mở nhóm
 }) {
+  const doRongCtx = useContext(BaoCaoDoRongCtx)
+  const doRong = doRongProp ?? doRongCtx
   // Cột đã kéo giãn thì lấy độ rộng mới (tối thiểu 60px), kể cả để tính vị trí cột đứng yên (T41, T42)
   const cols = doRong ? cols0.map(c => doRong.gt[c.k] ? { ...c, w: Math.max(60, doRong.gt[c.k]) } : c) : cols0
   const keo = (c: Col) => Boolean(doRong?.gt[c.k])
@@ -318,7 +329,7 @@ export function Table({
               <th key={c.k} data-k={c.k} className={[lop(c, i), keo(c) ? 'da-keo' : '', coNhomCot && !c.nhom ? 'tbl-le' : ''].join(' ')}
                 style={thStyle}>
                 {coNhomCot && !c.nhom ? <span>{c.hd ?? c.t}</span> : c.hd ?? c.t}
-                {doRong && c.k !== 'chk' && <span className="ds-keo-rong" aria-hidden onPointerDown={e => keoRong(e, c.k, doRong.dat)} />}
+                {doRong && c.k !== 'chk' && <span className="ds-keo-rong" aria-hidden onPointerDown={e => keoRong(e, c.k, doRong.dat, doRong.xong)} />}
               </th>
             )
           })}</tr>

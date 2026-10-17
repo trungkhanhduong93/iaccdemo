@@ -250,6 +250,44 @@ export function xoaTuyChinh(donVi: string, ma: string) {
   phatSong()
 }
 
+/** Lưu độ rộng một cột khi người dùng kéo giãn trên bảng báo cáo web (T350) */
+export function luuRongCotBC(donVi: string, ma: string, k: string, w: number, colsGoc?: Col[]) {
+  if (!donVi || !ma) return
+  const wChuan = Math.max(60, Math.round(w))
+  const tc = docTuyChinh(donVi, ma) ?? {}
+  let dsCot = tc.cot ? [...tc.cot] : []
+
+  if (dsCot.length === 0 && colsGoc && colsGoc.length > 0) {
+    dsCot = colsGoc.map(cg => ({
+      k: cg.k,
+      ten: cg.t,
+      rong: cg.k === k ? wChuan : cg.w,
+    }))
+  } else {
+    const idx = dsCot.findIndex(c => c.k === k)
+    if (idx >= 0) {
+      dsCot[idx] = { ...dsCot[idx], rong: wChuan }
+    } else if (colsGoc && colsGoc.length > 0) {
+      const mapCot = new Map(dsCot.map(c => [c.k, c]))
+      const moi: TuyChinhCot[] = []
+      for (const cg of colsGoc) {
+        if (cg.k === k) {
+          moi.push({ k, ten: cg.t, rong: wChuan })
+        } else if (mapCot.has(cg.k)) {
+          moi.push(mapCot.get(cg.k)!)
+        } else {
+          moi.push({ k: cg.k, ten: cg.t, rong: cg.w })
+        }
+      }
+      dsCot = moi
+    } else {
+      dsCot.push({ k, rong: wChuan })
+    }
+  }
+  tc.cot = dsCot
+  luuTuyChinh(donVi, ma, tc)
+}
+
 export function useTuyChinhBC(donVi: string, ma?: string): TuyChinhLuu | null {
   return useSyncExternalStore(subscribe, () => docTuyChinh(donVi, ma))
 }

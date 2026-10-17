@@ -13,7 +13,7 @@ import { dsTkTheoCheDo } from '../../modules/tong-hop/so-cai'
 import { CUA_HANG, HANG, HOM_NAY, KHACH, NCC, NVL, TK_NGAN_HANG } from '../../data/mock'
 import { Icon } from '../Icon'
 import { PageHead } from '../Page'
-import { Table } from '../Table'
+import { BaoCaoDoRongCtx, Table, type DoRong } from '../Table'
 import { between, k, money, pad, pick, rng } from '../format'
 import { chungTu, soChiTiet } from './gen'
 import { ganMoPhieu } from './SoChungTu'
@@ -24,7 +24,8 @@ import { SoTrangCtx, ToGiay, NgatTrang, tachKhoi, type Kho } from '../bao-cao/To
 import { datNguonXuat, layNguonXuat, taoTenFile, xuatFile, type NguonXuat } from '../bao-cao/xuat'
 import {
   useTrangThaiLoc, datLoc, datAnKhongPS, datCotNhuDangXem, datTuyChon, xoaLoc,
-  datColsGoc, datDsKyMacDinh, datKyNhap, datKyMacDinh, xemBaoCao, useTuyChinhBC, bienDoiBang, luuTuyChinh
+  datColsGoc, datDsKyMacDinh, datKyNhap, datKyMacDinh, xemBaoCao, useTuyChinhBC, bienDoiBang, luuTuyChinh,
+  luuRongCotBC
 } from '../bao-cao/tuyChinhBC'
 import { layNguoiKy } from '../bao-cao/khoMauIn'
 // @ts-ignore
@@ -728,6 +729,43 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
   const tt = useTrangThaiLoc(path)
   const hoiLoc = useHoiLoc(path)
 
+  const [tamRong, setTamRong] = useState<Record<string, number>>({})
+
+  useEffect(() => {
+    setTamRong({})
+  }, [slug])
+
+  const doRongLuu = useMemo(() => {
+    const res: Record<string, number> = {}
+    if (tc?.cot) {
+      for (const c of tc.cot) {
+        if (typeof c.rong === 'number') res[c.k] = c.rong
+      }
+    }
+    return res
+  }, [tc?.cot])
+
+  const doRongGt = useMemo(() => ({ ...doRongLuu, ...tamRong }), [doRongLuu, tamRong])
+
+  const doRongBC: DoRong = useMemo(() => ({
+    gt: doRongGt,
+    dat: (k: string, w: number) => {
+      setTamRong(prev => ({ ...prev, [k]: w }))
+    },
+    xong: (k: string, w: number) => {
+      setTamRong(prev => {
+        const moi = { ...prev }
+        delete moi[k]
+        return moi
+      })
+      if (slug) {
+        const khoi = tachKhoi(children)
+        const bang1 = khoi.find((x): x is Extract<typeof x, { loai: 'bang' }> => x.loai === 'bang')
+        luuRongCotBC(s.donVi, slug, k, w, bang1?.cols)
+      }
+    },
+  }), [doRongGt, slug, s.donVi, children])
+
   const khongTuSinh = (slug && LOAI_TRU_TU_SINH.has(slug)) || loai === 'tokhai' || (slug && slug.startsWith('6.2.'))
 
   // Danh sách bộ lọc cho cột lọc bên trái: bộ lọc khai tay trong cfg.loc đứng trước, sau đó tự sinh theo danh mục
@@ -949,11 +987,13 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
   if (hoiLoc) return <div className="bc-xem bc-cho-loc"><Icon n="filter" className="ic" /><span>Chọn điều kiện lọc rồi bấm Xem báo cáo</span></div>
 
   return (
-    <div className="bc-xem">
-      <ToGiay dau={dau} than={thanBienDoi} cuoi={cuoi} khoMacDinh={khoMacDinh} dieuKienLoc={dongLoc || undefined} dauBang={dauBang} tim={timBang}
-        kyHieuCot={kyHieuCot} congChuyen={loai === 'so' ? cfg?.congCot : undefined}
-        onKho={setKhoHienTai} layHtmlRef={layHtmlRef} coChu={tc?.coChu} xemTrang={cfg?.phanTrang} />
-    </div>
+    <BaoCaoDoRongCtx.Provider value={doRongBC}>
+      <div className="bc-xem">
+        <ToGiay dau={dau} than={thanBienDoi} cuoi={cuoi} khoMacDinh={khoMacDinh} dieuKienLoc={dongLoc || undefined} dauBang={dauBang} tim={timBang}
+          kyHieuCot={kyHieuCot} congChuyen={loai === 'so' ? cfg?.congCot : undefined}
+          onKho={setKhoHienTai} layHtmlRef={layHtmlRef} coChu={tc?.coChu} xemTrang={cfg?.phanTrang} />
+      </div>
+    </BaoCaoDoRongCtx.Provider>
   )
 }
 

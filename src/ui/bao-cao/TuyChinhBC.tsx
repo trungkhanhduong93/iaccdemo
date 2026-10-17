@@ -87,7 +87,7 @@ export function TuyChinhBC({
             <div>
               <h3>Tuỳ chỉnh báo cáo</h3>
             </div>
-            <button type="button" className="icon-btn" onClick={onClose} aria-label="Đóng"><Icon n="x" /></button>
+            <button type="button" className="icon-btn" onClick={onClose} aria-label="Đóng"><Icon n="x" kieu="net" /></button>
           </div>
           <div className="pn-than">
             <p className="bc-tc-thong-bao">Màn này chưa hỗ trợ tuỳ chỉnh</p>
@@ -223,31 +223,28 @@ export function TuyChinhBC({
             <h3>Tuỳ chỉnh báo cáo</h3>
           </div>
           <button type="button" className="icon-btn" onClick={onHuy} aria-label="Đóng">
-            <Icon n="x" />
+            <Icon n="x" kieu="net" />
           </button>
         </div>
 
         {/* Hai cột: mục dọc bên trái, nội dung mục bên phải (T81) */}
         <div className="pn-hai-cot">
         <nav className="pn-muc-doc" aria-label="Mục tuỳ chỉnh">
-          <button type="button" className={`pn-muc${tab === 'cot' ? ' on' : ''}`} onClick={() => setTab('cot')}><Icon n="layers" className="ic sm" />Cột hiển thị</button>
-          <button type="button" className={`pn-muc${tab === 'nhom' ? ' on' : ''}`} onClick={() => setTab('nhom')}><Icon n="grid" className="ic sm" />Gom nhóm</button>
-          <button type="button" className={`pn-muc${tab === 'ky' ? ' on' : ''}`} onClick={() => setTab('ky')}><Icon n="edit" className="ic sm" />Người ký</button>
-          <button type="button" className={`pn-muc${tab === 'trang' ? ' on' : ''}`} onClick={() => setTab('trang')}><Icon n="doc" className="ic sm" />Trang và cỡ chữ</button>
+          <button type="button" className={`pn-muc${tab === 'cot' ? ' on' : ''}`} onClick={() => setTab('cot')}><Icon n="layers" className="ic sm" kieu="net" />Cột hiển thị</button>
+          <button type="button" className={`pn-muc${tab === 'nhom' ? ' on' : ''}`} onClick={() => setTab('nhom')}><Icon n="grid" className="ic sm" kieu="net" />Gom nhóm</button>
+          <button type="button" className={`pn-muc${tab === 'ky' ? ' on' : ''}`} onClick={() => setTab('ky')}><Icon n="edit" className="ic sm" kieu="net" />Người ký</button>
+          <button type="button" className={`pn-muc${tab === 'trang' ? ' on' : ''}`} onClick={() => setTab('trang')}><Icon n="doc" className="ic sm" kieu="net" />Trang và cỡ chữ</button>
         </nav>
 
         {/* Thân mục */}
         <div className="pn-than">
           {tab === 'cot' && (
             khoa ? (
-              <div className="pn-khoa"><Icon n="lock" className="ic" /><div><b>Mẫu theo thông tư</b><span>Mẫu pháp định giữ nguyên bố cục, chỉ sửa được người ký và cỡ chữ.</span></div></div>
+              <div className="pn-khoa"><Icon n="lock" className="ic" kieu="net" /><div><b>Mẫu theo thông tư</b><span>Mẫu pháp định giữ nguyên bố cục, chỉ sửa được người ký và cỡ chữ.</span></div></div>
             ) : (
               <DsCot
                 items={dsCotItem}
                 onChange={onDoiCot}
-                coRong
-                nhanRong="Rộng (px)"
-                rongTrong
                 suaTen
               />
             )
