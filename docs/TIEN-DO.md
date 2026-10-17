@@ -4,13 +4,14 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T331.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T332.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T332 | Web và điện thoại: quay về bộ icon Solar nét (`BO_ICON = 'net'`), làm nét icon sắc hơn trên màn FullHD (độ dày nét theo cỡ icon, màu icon thanh bên) | Trum | Đang làm | Clau làm. Sửa `src/ui/Icon.tsx`, mục mới cuối `app.css`, `docs/QUYET-DINH.md` (bổ sung QD71) |
 | T331 | Trang chủ Free máy tính: tách riêng vùng xếp hạng (Mặt hàng mua nhiều nhất, Nhà cung cấp nợ nhiều nhất, Thiếu, Thừa nhiều nhất) cho thoáng, hai khối thẳng hàng; danh sách quỹ tên bên trái, tiền và tỷ trọng bên phải | dinhlanphuongipacc | Đang làm | Sửa `home/BaBaiToanFree.tsx`, `app.css` (mục cuối T331) |
 | T330 | Phiếu thu, chi: ô Đối tượng chỉ bắt buộc khi lý do là Thu nợ, Đi vay, Thanh toán công nợ nhà cung cấp, Cho vay; lý do khác để trống được (web và điện thoại) | dinhlanphuongipacc | Đang làm | Sửa `src/data/mock.ts`, `src/ui/generic/ChungTuForm.tsx`, `src/ui/mobile/MLapPhieu.tsx` |
 | T324 | Điện thoại, trang chủ gói Free: làm lại theo trang chủ Free bản web (Quản lý lãi lỗ, Quỹ tiền, Mua hàng & công nợ NCC, Hao hụt kiểm kê, biểu đồ 13 tháng), giữ thanh thao tác nhanh trên cùng; bản web giữ nguyên | Trum | Đang làm | 2 anti làm. Sửa `src/ui/mobile/MTrangChu.tsx`, file mới `MTrangChuFree.tsx`, `MKhoFree.tsx`, mục cuối `app.css` (T324). Không đụng `home/BaBaiToanFree.tsx` (T316 đang sửa); T316 xong thì chép chữ mới sang app |
