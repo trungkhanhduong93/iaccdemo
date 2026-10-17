@@ -43,14 +43,17 @@ export function KhoaSoFree({ sc, mod }: ScreenProps) {
   // Chi phí phân bổ trong tháng (khấu hao, CCDC, chi phí trả trước) như dòng Chi phí phân bổ hàng tháng ở trang chủ
   const pbThang = tinhToanTongQuan(canKhoa.thang === KY_MO.thang ? 'thang-nay' : 'thang-truoc', cns.map(c => c.id), s.cheDo, canKhoa.thang).cpPhanBo
   const soNgay = new Date(canKhoa.nam, canKhoa.thang, 0).getDate()
+  // Dữ liệu mẫu (T317): mặc định còn vài bước chưa xong để thấy cảnh báo, link đi xử lý
+  const thieuNgay = [soNgay - 1, soNgay]   // hai ngày cuối tháng FABi chưa đẩy doanh thu
+  const phieuCho: number = 3               // phiếu thu, chi FABi chưa map phương thức thanh toán
   const buoc: { xong: boolean; ten: string; phu: string; to: string }[] = [
-    { xong: true, ten: 'Đồng bộ đủ doanh thu FABi', phu: `${soNgay}/${soNgay} ngày đã có doanh thu`, to: '/app/ban-hang/3-1-1' },
+    { xong: thieuNgay.length === 0, ten: 'Đồng bộ đủ doanh thu FABi', phu: thieuNgay.length ? `${soNgay - thieuNgay.length}/${soNgay} ngày đã có doanh thu, thiếu ngày ${thieuNgay.join(', ')}` : `${soNgay}/${soNgay} ngày đã có doanh thu`, to: '/app/ban-hang/3-1-1' },
     { xong: kk.chuaKiem.length === 0, ten: 'Kiểm kê cuối tháng', phu: kk.chuaKiem.length ? `Chưa kiểm kê: ${kk.chuaKiem.join(', ')}` : cns.length > 1 ? `Đủ ${cns.length} cửa hàng, lệch ${kk.thieu + kk.thua} mặt hàng` : `${cns[0]?.ten} đã kiểm kê, lệch ${kk.thieu + kk.thua} mặt hàng`, to: '/app/kho/5-1-10' },
     // Chi phí chờ phân bổ: hai chỉ tiêu, đã phân bổ trong tháng và khoản chờ chưa ghi tăng thẻ
     { xong: true, ten: 'Phân bổ chi phí trong tháng', phu: `Đã phân bổ ${moneyD(pbThang)}`, to: '/app/ccdc/8-1-1' },
     { xong: cho.so === 0, ten: 'Chi phí chờ phân bổ chưa ghi tăng thẻ', phu: cho.so ? `Còn ${cho.so} khoản · ${moneyD(cho.tong)}` : 'Không còn khoản nào', to: '/app/ccdc/8-1-1' },
     { xong: true, ten: 'Đối chiếu tồn quỹ cuối tháng', phu: `Tồn quỹ ${moneyD(tonQuy)}`, to: `/app/trang-chu/lich-su-quy?quy=tat-ca&thang=${canKhoa.thang}` },
-    { xong: true, ten: 'Phiếu thu, chi FABi chờ xử lý', phu: 'Không còn phiếu chờ map phương thức thanh toán', to: '/app/tien/2-1-1' },
+    { xong: phieuCho === 0, ten: 'Phiếu thu, chi FABi chờ xử lý', phu: phieuCho ? `Còn ${phieuCho} phiếu chờ map phương thức thanh toán` : 'Không còn phiếu chờ map phương thức thanh toán', to: '/app/tien/2-1-1' },
   ]
   const soXong = buoc.filter(b => b.xong).length
 

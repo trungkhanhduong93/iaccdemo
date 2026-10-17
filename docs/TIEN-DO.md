@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T317 | Khoá sổ gói Free: bước kiểm tra trước khi khoá mặc định có vài bước chưa xong (đồng bộ doanh thu FABi thiếu ngày, phiếu thu chi FABi chờ xử lý), kèm link đi xử lý | PhuongXT | Đang làm | Sửa `tong-hop/KhoaSoFree.tsx` |
 | T316 | Trang chủ Free máy tính: chữ theo hướng thuật ngữ chuẩn kèm giải thích (Kết quả kinh doanh, Quỹ tiền, Mua hàng và công nợ nhà cung cấp, Hao hụt kiểm kê), tiêu đề phụ, chú thích dòng | dinhlanphuongipacc | Đang làm | Sửa `home/BaBaiToanFree.tsx`, có thể `app.css` (mục cuối T316) |
 | T314 | Điện thoại: `kiem_tra.py --dien-thoai` báo "Bấm Chứng từ chưa ghi sổ: danh sách không bật sẵn chip Chưa ghi sổ" | | Chờ | Phát hiện 17/10/2026 khi chạy bộ kiểm điện thoại cho T308, T309 (không đụng phần này). Có thể liên quan bộ lọc nổi T299 (`MLoc.tsx`, `MDanhSach.tsx`) |
 | T311 | Điện thoại: màn Nghiệp vụ đang đơn điệu (5 ô trắng, nửa dưới trống), làm lại bố cục cho dễ dùng hơn | Trum | Đang làm | Anti làm. Sửa `src/ui/mobile/MNghiepVu.tsx`, mục mới cuối `app.css` |
@@ -53,6 +52,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T317 | Khoá sổ gói Free: bước kiểm tra trước khi khoá mặc định có 2 bước chưa xong (đồng bộ doanh thu FABi thiếu ngày 29, 30; còn 3 phiếu thu chi FABi chờ xử lý), hiện cảnh báo | PhuongXT | 17/10/2026 | [2026-10-17-phuongxt-khoa-so-buoc-chua-xong](nhat-ky/2026-10-17-phuongxt-khoa-so-buoc-chua-xong.md) |
 | T315 | Gói Free có Khoá sổ: tab Hệ thống › Khoá sổ (chỉ gói Free) với 6 bước kiểm tra theo cửa hàng đang chọn (đồng bộ FABi, kiểm kê, phân bổ trong tháng, chờ phân bổ chưa ghi tăng thẻ, tồn quỹ, phiếu FABi chờ), khoá, mở khoá bắt buộc lý do, lịch sử đủ ngày giờ; khoá thật: phiếu tháng đã khoá chỉ xem ở mọi gói; trang chủ Free nhắc tháng chưa khoá | dinhlanphuongipacc | 17/10/2026 | [2026-10-17-dinhlanphuongipacc-khoa-so-free](nhat-ky/2026-10-17-dinhlanphuongipacc-khoa-so-free.md) |
 | T309 | Báo cáo 5.2.3 Xuất nhập tồn hiện dạng bảng (đổi bảng HTML tự vẽ sang `RptTable`, tiêu đề 2 tầng); bấm logo thanh bên về trang chủ, nhãn gói mở Gói thuê bao; trang chủ Free bản web bỏ tab Cần theo dõi; khối Quỹ tiền ghi tên quỹ như Danh mục Quỹ tiền, không kèm số tài khoản | dinhlanphuongipacc | 17/10/2026 | [2026-10-17-dinhlanphuongipacc-xnt-dang-bang](nhat-ky/2026-10-17-dinhlanphuongipacc-xnt-dang-bang.md) |
 | T308 | Báo cáo 4.2.3 Công nợ nhà cung cấp nhóm theo nhà cung cấp: xem tất cả cửa hàng thì mỗi NCC một dòng tổng in đậm, dưới là từng cửa hàng (bấm xem lịch sử phần cửa hàng); Thanh toán ngay ở cả dòng cửa hàng, lập phiếu chi đúng cửa hàng (`?cn=`) | dinhlanphuongipacc | 17/10/2026 | [2026-10-17-dinhlanphuongipacc-cong-no-ncc-nhom-cua-hang](nhat-ky/2026-10-17-dinhlanphuongipacc-cong-no-ncc-nhom-cua-hang.md) |
