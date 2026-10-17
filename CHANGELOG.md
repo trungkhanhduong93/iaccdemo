@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 17/10/2026
 
+- T315: Gói Free có Khoá sổ ở Hệ thống › Khoá sổ: kiểm tra trước khi khoá (đồng bộ FABi, kiểm kê, phân bổ chi phí, chi phí chờ phân bổ chưa ghi tăng thẻ, tồn quỹ, phiếu FABi chờ) theo cửa hàng đang chọn; khoá sổ, mở khoá phải ghi lý do, lịch sử đủ ngày giờ. Phiếu thuộc tháng đã khoá chỉ xem, không sửa, không xoá (mọi gói). Trang chủ gói Free nhắc tháng chưa khoá sổ.
 - T309: Báo cáo Xuất nhập tồn hiện dạng bảng như các báo cáo khác (không còn dạng tờ in ở màn chính). Bấm logo thanh bên về trang chủ; bấm nhãn gói mới mở Gói thuê bao. Trang chủ gói Free bản web bỏ tab Cần theo dõi. Khối Quỹ tiền ghi tên quỹ như Danh mục Quỹ tiền (vd Vietcombank, chi nhánh Sài Gòn), không kèm số tài khoản.
 - T308: Báo cáo Công nợ nhà cung cấp xem tất cả cửa hàng thì nhóm theo nhà cung cấp: dòng tổng in đậm, dưới là từng cửa hàng nợ bao nhiêu; bấm tên cửa hàng xem lịch sử công nợ cửa hàng đó; nút Thanh toán ngay ở cả dòng cửa hàng, mở phiếu chi đúng cửa hàng.
 - T307: Trang chủ gói Free, Quản lý kho gộp còn 2 khối thẳng cột với Quản lý lãi lỗ, Quỹ tiền, ít chữ hơn: Mua hàng & công nợ NCC (tổng nhập, còn nợ NCC, dòng nợ đầu kỳ + mua nợ − đã trả = nợ cuối kỳ, nhập nhiều nhất, nợ nhiều nhất, nút Tạo phiếu mua hàng, Thanh toán NCC) và Hao hụt kiểm kê (mặt hàng lệch, tiến độ kiểm kê từng cửa hàng, thiếu nhiều, thừa nhiều, nút Kiểm kê ngay). Báo cáo Công nợ nhà cung cấp lấy tiền mua hàng từ phiếu mua, lịch sử công nợ hiện số phiếu mua thật, mua nợ không còn lớn hơn tổng nhập.

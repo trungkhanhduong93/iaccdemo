@@ -7,6 +7,30 @@ export const HOM_NAY = new Date(2026, 9, 7)          // 07/10/2026
 export const KY_MO = { thang: 10, nam: 2026 }        // kỳ đang mở
 export const KY_KHOA_SO = { thang: 9, nam: 2026 }    // kỳ đang làm khoá sổ
 export const KHOA_SO_DEN = { thang: 8, nam: 2026 }   // đã khoá sổ đến hết tháng này
+/** Khoá sổ thật trên máy (T315): tháng đã khoá và lịch sử khoá, mở khoá lưu ở trình duyệt, bản mẫu chưa có backend */
+export interface LichSuKhoaSo { ky: string; viec: string; ai: string; luc: string }
+const KHOA_LUU = 'iacc-khoa-so'
+const LICH_SU_MAU: LichSuKhoaSo[] = [
+  { ky: '8/2026', viec: 'Khoá sổ', ai: 'Trần Thu Hà', luc: '05/09/2026 17:42:15' },
+  { ky: '7/2026', viec: 'Mở khoá, lý do: bổ sung hoá đơn điện', ai: 'Trần Thu Hà', luc: '12/08/2026 09:05:48' },
+  { ky: '7/2026', viec: 'Khoá sổ', ai: 'Trần Thu Hà', luc: '06/08/2026 16:20:03' },
+]
+export const LICH_SU_KHOA_SO: LichSuKhoaSo[] = [...LICH_SU_MAU]
+try {
+  const v = JSON.parse(localStorage.getItem(KHOA_LUU) ?? 'null') as { den?: { thang: number; nam: number }; ls?: LichSuKhoaSo[] } | null
+  if (v?.den?.thang) Object.assign(KHOA_SO_DEN, v.den)
+  if (v?.ls?.length) LICH_SU_KHOA_SO.splice(0, LICH_SU_KHOA_SO.length, ...v.ls)
+} catch { /* trình duyệt chặn thì dùng số mẫu */ }
+/** Đặt tháng đã khoá sổ đến (khoá thêm một tháng hoặc mở khoá lùi một tháng), ghi lịch sử, báo các màn vẽ lại */
+export function datKhoaSoDen(thang: number, nam: number, viec: string, ai: string) {
+  Object.assign(KHOA_SO_DEN, { thang, nam })
+  const ky = viec.startsWith('Mở') ? `${thang === 12 ? 1 : thang + 1}/${thang === 12 ? nam + 1 : nam}` : `${thang}/${nam}`
+  // Lúc khoá, mở khoá: ngày làm việc của bản mẫu (07/10/2026), giờ phút giây theo đồng hồ máy
+  const d = new Date(), p = (n: number) => String(n).padStart(2, '0')
+  LICH_SU_KHOA_SO.unshift({ ky, viec, ai, luc: `07/10/2026 ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}` })
+  try { localStorage.setItem(KHOA_LUU, JSON.stringify({ den: KHOA_SO_DEN, ls: LICH_SU_KHOA_SO })) } catch { /* bỏ qua */ }
+  window.dispatchEvent(new Event('iacc-khoa-so'))
+}
 /** Ngày dd/mm/yyyy thuộc kỳ đã khoá sổ: chứng từ không được xoá (T48) */
 export const daKhoaSo = (ngay: unknown) => {
   const [, m, y] = String(ngay).split('/').map(Number)

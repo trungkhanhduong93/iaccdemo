@@ -66,6 +66,12 @@ const CACH_LAM = (
   </div>
 )
 
+/** Khoản chờ phân bổ chưa ghi tăng thẻ tới hết kỳ yyyymm (gồm kỳ trước), dùng ở bước kiểm tra Khoá sổ gói Free (T315) */
+export function useChoGhiTang(ky: number) {
+  const ds = useDongCho().filter(d => Math.floor(ngaySo(d.ngayCt) / 100) <= ky)
+  return { so: ds.length, tong: ds.reduce((s, d) => s + d.gt, 0) }
+}
+
 /** Dải trên danh sách thẻ (T287): còn khoản chờ phân bổ chưa tạo thẻ (ngày chứng từ tới hết kỳ số liệu yyyymm, gồm khoản tồn kỳ trước)
  *  thì cảnh báo vàng; hết thì gợi ý xám cách lập thẻ. Cả hai có link Cách làm */
 export function useCanhBaoCho(ky: number) {

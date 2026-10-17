@@ -735,3 +735,10 @@ Trum chốt trên trang xem trước https://claude.ai/artifact/8bD189Sn5BhvJQXt
 ## QD68. Màn Nghiệp vụ và bộ lọc báo cáo trên điện thoại (đang soạn)
 
 ## QD69. Gói Free có chức năng Khoá sổ (đang soạn)
+
+dinhlanphuongipacc yêu cầu 17/10/2026 (T315), đã làm và đưa lên bản online. Chờ Trum duyệt, Trum chốt thì bỏ chữ "đang soạn".
+
+- Gói Free có Khoá sổ bản đơn giản ở Hệ thống › Khoá sổ (tab riêng, chỉ gói Free). Gói khác giữ Khoá sổ 10.1.6 ở Tổng hợp.
+- Khoá theo tháng, lần lượt từng tháng; tháng đang mở chưa khoá được. Trước khi khoá có các bước kiểm tra kiểu gói Free, chưa xong vẫn khoá được, có cảnh báo.
+- Phiếu thuộc tháng đã khoá chỉ xem, không sửa, không xoá, áp dụng mọi gói.
+- Mở khoá tháng đã khoá gần nhất, bắt buộc ghi lý do; lịch sử ghi người làm, thời điểm đủ ngày giờ.

@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { Link } from 'react-router-dom'
 import { LenThanhTab } from '../../app/ModuleTabs'
-import { CUA_HANG } from '../../data/mock'
+import { CUA_HANG, KHOA_SO_DEN, KY_MO } from '../../data/mock'
 import { Icon, ONen } from '../../ui/Icon'
 import { Select } from '../../ui/Dropdown'
 import { moneyD, pad, pct, short } from '../../ui/format'
@@ -425,6 +425,12 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
 
       {/* T309: bỏ tab Cần theo dõi, trang chủ Free chỉ còn Tổng quan; thanh đầu còn Thao tác nhanh (T290) */}
       <div className="bbt-thanh-dau">
+        {/* T315: nhắc khoá sổ tháng trước khi chưa khoá */}
+        {(KHOA_SO_DEN.nam < KY_MO.nam || (KHOA_SO_DEN.nam === KY_MO.nam && KHOA_SO_DEN.thang < KY_MO.thang - 1)) && (
+          <Link to="/app/he-thong/khoa-so" className="bbt-nhac-khoa" title="Khoá sổ để chốt số liệu, phiếu trong tháng không bị sửa nhầm">
+            <Icon n="lock" className="ic sm" />Tháng {KHOA_SO_DEN.thang === 12 ? 1 : KHOA_SO_DEN.thang + 1}/{KHOA_SO_DEN.thang === 12 ? KHOA_SO_DEN.nam + 1 : KHOA_SO_DEN.nam} chưa khoá sổ<b>Khoá sổ ›</b>
+          </Link>
+        )}
         {/* Thao tác nhanh cố định trên hàng tab, cả 2 tab (T290) */}
         <nav className="bbt-tt-nhanh" aria-label="Thao tác nhanh">
           {/* Nhãn cùng tên, cùng biểu tượng với mục Thao tác nhanh ở thanh bên để khách nhận ra */}

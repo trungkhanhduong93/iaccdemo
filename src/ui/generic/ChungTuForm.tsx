@@ -49,7 +49,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   const moi = !row
   // Phiếu thu, chi đồng bộ từ FABi chỉ xem: sửa, xoá ở FABi (T283)
   const tuFabi = mod.key === 'tien' && row?.nguon === 'FABi'
-  const [dangSua, setDangSua] = useState(moi || (sp.get('sua') === '1' && !tuFabi))
+  const khoaKy = !moi && !!row && daKhoaSo(row.ngay)   // phiếu thuộc tháng đã khoá sổ: chỉ xem, không sửa, không xoá (T315)
+  const [dangSua, setDangSua] = useState(moi || (sp.get('sua') === '1' && !tuFabi && !khoaKy))
   const [tab, setTab] = useState('ct')
   const [hienTk, setHienTk] = useState(false)
   const [modalPhim, setModalPhim] = useState(false)
@@ -63,7 +64,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   const bo = boO(nhom, cfg)
   const laKk = Boolean(cfg.kiemKe)   // phiếu kiểm kê: bỏ đối tượng, kho ở đầu phiếu, bảng tồn hệ thống, tồn thực tế (T124)
   const laDc = Boolean(cfg.dieuChinh)   // phiếu xuất, nhập điều chỉnh sinh từ kiểm kê (T126)
-  const khoaSua = laDc || tuFabi   // không sửa, không xoá (T129, T283)
+  const khoaSua = laDc || tuFabi || khoaKy   // không sửa, không xoá (T129, T283, T315)
   // Phiếu sản xuất theo iPOS Inventory (T152): đầu phiếu gọn như kiểm kê, bảng dòng riêng; phiếu nhập bắt buộc tham chiếu phiếu xuất
   const sx = cfg.sanXuat
   const laSx = Boolean(sx)
@@ -660,6 +661,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               {NGUON[row.nguon]?.[1] ?? 'Thủ công'}
             </span>
             {cuaHang && <span className="chip info" title="Cửa hàng lập chứng từ, không sửa được"><Icon n="store" className="ic sm" />{cuaHang}</span>}
+            {khoaKy && <span className="chip warn" title="Phiếu thuộc tháng đã khoá sổ: chỉ xem, không sửa, không xoá. Mở khoá ở màn Khoá sổ"><Icon n="lock" className="ic sm" />Đã khoá sổ</span>}
           </>
         ) : (
           <>
