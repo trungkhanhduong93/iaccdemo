@@ -1,13 +1,33 @@
 import { Link, Navigate, useSearchParams } from 'react-router-dom'
 import { useSession } from '../../app/session'
-import { MODULES, duongDan, hienMan, hienPhanHe, moDuoc, phanHeKhoa, tabCua, tenPhanHe } from '../../app/registry'
+import { MODULES, duongDan, hienMan, hienPhanHe, moDuoc, nhanTab, phanHeKhoa, tabCua, tenPhanHe, timMan } from '../../app/registry'
 import { GOIS, anNgoaiGoi, minGoi, type Goi } from '../../app/plan'
 import type { ModuleDef, ScreenDef } from '../../modules/types'
-import { ONen } from '../Icon'
+import { Icon, ONen } from '../Icon'
 import { Pk } from '../Page'
-import { coManMobile, manDauMobile } from './manMobile'
+import { coManMobile, manDauMobile, manMobile } from './manMobile'
+import { MChiMayTinh } from './MChiMayTinh'
 
 const minGoiPhanHe = (m: ModuleDef): Goi => GOIS.find(g => !phanHeKhoa(m, g)) ?? 'PR'
+
+// ── Lập nhanh: 4 nút tạo chứng từ hay dùng ──
+
+interface NutLapNhanh {
+  id: string
+  ten: string
+  icon: string
+  modKey: string
+  slug: string
+  to: string
+  loai?: string
+}
+
+const DS_LAP_NHANH: NutLapNhanh[] = [
+  { id: 'thu', ten: 'Phiếu thu', icon: 'cashin', modKey: 'tien', slug: '2-1-1', to: '/app/tien/2-1-1/moi?loai=thu', loai: 'thu' },
+  { id: 'chi', ten: 'Phiếu chi', icon: 'cashout', modKey: 'tien', slug: '2-1-1', to: '/app/tien/2-1-1/moi?loai=chi', loai: 'chi' },
+  { id: 'ban', ten: 'Bán hàng', icon: 'cart', modKey: 'ban-hang', slug: '3-1-7', to: '/app/ban-hang/3-1-7/moi' },
+  { id: 'mua', ten: 'Mua hàng', icon: 'truck', modKey: 'mua-hang', slug: '4-1-1', to: '/app/mua-hang/4-1-1/moi' },
+]
 
 export function MNghiepVu() {
   const { s } = useSession()
@@ -38,27 +58,82 @@ export function MNghiepVu() {
     return <Navigate to={duongDan(modHienTai, manDauMobile(modHienTai, s.goi))} replace />
   }
 
+  // Lọc nút Lập nhanh: ẩn nút mà gói không mở được màn đó
+  const dsLapNhanh = DS_LAP_NHANH.filter(n => {
+    const { sc } = timMan(n.modKey, n.slug)
+    return sc && moDuoc(sc, s.goi) && hienMan(sc, s.goi, s.cheDo, s)
+  })
+
+  // Lấy tối đa 3 màn điện thoại của mỗi phân hệ để hiện chip
+  const layManChinh = (m: ModuleDef): ScreenDef[] =>
+    tabCua(m)
+      .filter(
+        sc =>
+          sc.kind !== 'quytrinh' &&
+          manMoTrenMobile(sc) &&
+          (!anNgoaiGoi(s.goi) || moDuoc(sc, s.goi)) &&
+          manMobile(sc, m) !== MChiMayTinh
+      )
+      .slice(0, 3)
+
   return (
-    <div className="m-nghiep-vu">
-      <div className="m-nv-luoi">
+    <div className="m-nghiep-vu mnv-the">
+      {/* ── Lập nhanh ── */}
+      {dsLapNhanh.length > 0 && (
+        <div className="mnv-lap-nhanh">
+          <div className="mnv-ln-tieu">Lập nhanh</div>
+          <div className="mnv-ln-luoi">
+            {dsLapNhanh.map(n => (
+              <Link key={n.id} to={n.to} className="mnv-ln-nut">
+                <span className="mnv-ln-ic">
+                  <Icon n={n.icon} kieu="khoi" className="ic" />
+                </span>
+                <span className="mnv-ln-ten">{n.ten}</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── Danh sách phân hệ dạng thẻ ── */}
+      <div className="mnv-ds">
         {dsPhanHe.filter(m => !anNgoaiGoi(s.goi) || !phanHeKhoa(m, s.goi)).map(m => {
           const khoa = !anNgoaiGoi(s.goi) && phanHeKhoa(m, s.goi)
+          const manChinh = layManChinh(m)
           return (
-            <Link
-              key={m.key}
-              to={duongDan(m, manDauMobile(m, s.goi))}
-              className={`m-nv-o${khoa ? ' khoa' : ''}`}
-            >
-              <div className="m-nv-o-ic">
-                <ONen n={m.icon} kieu="nhat" co="md" />
+            <div key={m.key} className={`mnv-the-ph${khoa ? ' khoa' : ''}`}>
+              <Link
+                to={duongDan(m, manDauMobile(m, s.goi))}
+                className="mnv-the-lk"
+              >
+                <span className="mnv-the-ic">
+                  <ONen n={m.icon} kieu="nhat" co="lg" />
+                </span>
+                <span className="mnv-the-nd">
+                  <span className="mnv-the-ten">{tenPhanHe(m, s.goi).ten}</span>
+                </span>
                 {khoa && (
-                  <span className="m-nv-o-lk" title="Ngoài gói">
+                  <span className="mnv-the-kh">
                     <Pk g={minGoiPhanHe(m)} o />
                   </span>
                 )}
-              </div>
-              <span className="m-nv-o-ten">{tenPhanHe(m, s.goi).ten}</span>
-            </Link>
+                <Icon n="chevr" className="ic sm mnv-the-mui" />
+              </Link>
+              {/* Chip bấm thẳng tới màn hay dùng */}
+              {manChinh.length > 0 && (
+                <div className="mnv-chip-hang">
+                  {manChinh.map(sc => (
+                    <Link
+                      key={sc.slug}
+                      to={duongDan(m, sc)}
+                      className="mnv-chip"
+                    >
+                      {nhanTab(sc)}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
           )
         })}
       </div>

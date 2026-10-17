@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState, type FC } from 'react'
 import type { ScreenDef } from '../../modules/types'
 import { cuaHangHienTai, dsCuaHang, useSession } from '../../app/session'
 import { CUA_HANG } from '../../data/mock'
-import { KY_CHON } from '../generic/ReportScreen'
 import { CAU_HINH_BC } from '../../modules/bao-cao/danh-sach'
 import {
   datKyNhap,
@@ -12,6 +11,12 @@ import {
   xoaLoc,
 } from '../bao-cao/tuyChinhBC'
 import { Icon } from '../Icon'
+import {
+  datKhoangNgayMobile,
+  dinhDangKyMobile,
+  layKhoangNgayMobile,
+  ngayCuoiThang,
+} from './kyBaoCaoMobile'
 
 export interface MBaoCaoLocProps {
   mo: boolean
@@ -24,7 +29,8 @@ export const MBaoCaoLoc: FC<MBaoCaoLocProps> = ({ mo, onDong, path, sc }) => {
   const { s, set } = useSession()
   const { loc, daXem } = useTrangThaiLoc(path)
 
-  const [draftKy, setDraftKy] = useState<string>(() => daXem?.ky || '9')
+  const [draftTuNgay, setDraftTuNgay] = useState<string>(() => layKhoangNgayMobile(path, daXem?.ky).tu)
+  const [draftDenNgay, setDraftDenNgay] = useState<string>(() => layKhoangNgayMobile(path, daXem?.ky).den)
   const [draftCn, setDraftCn] = useState<string>(() => s.cuaHang || 'all')
   const [draftLoc, setDraftLoc] = useState<Record<string, string[]>>(() => ({ ...(daXem?.loc || {}) }))
 
@@ -33,13 +39,15 @@ export const MBaoCaoLoc: FC<MBaoCaoLocProps> = ({ mo, onDong, path, sc }) => {
 
   useEffect(() => {
     if (mo) {
-      setDraftKy(daXem?.ky || '9')
+      const kn = layKhoangNgayMobile(path, daXem?.ky)
+      setDraftTuNgay(kn.tu)
+      setDraftDenNgay(kn.den)
       setDraftCn(s.cuaHang || 'all')
       setDraftLoc({ ...(daXem?.loc || {}) })
       setTrangCon(null)
       setTimKiem('')
     }
-  }, [mo, daXem, s.cuaHang])
+  }, [mo, daXem, s.cuaHang, path])
 
   if (!mo) return null
 
@@ -47,10 +55,7 @@ export const MBaoCaoLoc: FC<MBaoCaoLocProps> = ({ mo, onDong, path, sc }) => {
   const cnObj = dsCn.find(c => c.id === draftCn)
   const tenCn = draftCn === 'all' || !cnObj ? 'Tất cả cửa hàng' : ((cnObj as { ngan?: string; ten: string }).ngan ?? cnObj.ten)
 
-  const tenKy = useMemo(() => {
-    const found = KY_CHON.find(k => k[0] === draftKy)
-    return found ? found[1].replace(' (đến 07/10)', '') : `Tháng ${draftKy}/2026`
-  }, [draftKy])
+  const tenKy = dinhDangKyMobile(draftTuNgay, draftDenNgay, daXem?.ky)
 
   // Lấy các bộ lọc riêng khai trong CAU_HINH_BC hoặc sc.report
   const code = sc?.code ?? (sc?.slug?.includes('-') ? sc.slug.replace(/-/g, '.') : undefined)
@@ -68,14 +73,56 @@ export const MBaoCaoLoc: FC<MBaoCaoLocProps> = ({ mo, onDong, path, sc }) => {
     return res
   }, [cfgBc, s])
 
+  const chonThangNay = () => {
+    setDraftTuNgay('2026-10-01')
+    setDraftDenNgay('2026-10-31')
+  }
+
+  const chonThangTruoc = () => {
+    setDraftTuNgay('2026-09-01')
+    setDraftDenNgay('2026-09-30')
+  }
+
+  const isThangNay = draftTuNgay === '2026-10-01' && (draftDenNgay === '2026-10-31' || draftDenNgay === '2026-10-07')
+  const isThangTruoc = draftTuNgay === '2026-09-01' && draftDenNgay === '2026-09-30'
+
+  const handleDoiTuNgay = (val: string) => {
+    if (!val) return
+    setDraftTuNgay(val)
+    const [y, m] = val.split('-').map(Number)
+    if (y && m) {
+      const last = ngayCuoiThang(y, m)
+      const maxD = `${y}-${String(m).padStart(2, '0')}-${String(last).padStart(2, '0')}`
+      if (draftDenNgay < val || draftDenNgay > maxD) {
+        setDraftDenNgay(maxD)
+      }
+    }
+  }
+
+  const handleDoiDenNgay = (val: string) => {
+    if (!val) return
+    setDraftDenNgay(val)
+  }
+
+  const minDenNgay = draftTuNgay
+  const maxDenNgay = useMemo(() => {
+    const [y, m] = draftTuNgay.split('-').map(Number)
+    if (!y || !m) return draftTuNgay
+    const last = ngayCuoiThang(y, m)
+    return `${y}-${String(m).padStart(2, '0')}-${String(last).padStart(2, '0')}`
+  }, [draftTuNgay])
+
   const handleReset = () => {
-    setDraftKy('9')
+    setDraftTuNgay('2026-09-01')
+    setDraftDenNgay('2026-09-30')
     setDraftCn('all')
     setDraftLoc({})
   }
 
   const handleApply = () => {
-    datKyNhap(path, draftKy)
+    const thang = String(Number(draftTuNgay.split('-')[1]) || 9)
+    datKyNhap(path, thang)
+    datKhoangNgayMobile(path, { tu: draftTuNgay, den: draftDenNgay })
     if (draftCn !== s.cuaHang) {
       set({ cuaHang: draftCn })
     }
@@ -174,23 +221,59 @@ export const MBaoCaoLoc: FC<MBaoCaoLocProps> = ({ mo, onDong, path, sc }) => {
             </div>
             <h1 className="m-thanh-tren-tieu-de">Chọn kỳ báo cáo</h1>
           </div>
-          <div className="m-loc-ds-muc" style={{ padding: '8px 16px' }}>
-            {KY_CHON.map(([k, t]) => {
-              const chon = draftKy === k
-              return (
-                <div
-                  key={k}
-                  className={`m-loc-muc-dong ${chon ? 'on' : ''}`}
-                  onClick={() => {
-                    setDraftKy(k)
-                    setTrangCon(null)
-                  }}
-                >
-                  <span className="m-loc-muc-ten">{t.replace(' (đến 07/10)', '')}</span>
-                  {chon && <Icon n="check" className="ic sm" />}
-                </div>
-              )
-            })}
+          <div className="m-loc-con-than">
+            <div className="m-loc-the-nhan">Chọn nhanh</div>
+            <div className="m-loc-ky-ds">
+              <button
+                type="button"
+                className={`m-loc-ky-btn ${isThangNay ? 'on' : ''}`}
+                onClick={chonThangNay}
+              >
+                Tháng này
+              </button>
+              <button
+                type="button"
+                className={`m-loc-ky-btn ${isThangTruoc ? 'on' : ''}`}
+                onClick={chonThangTruoc}
+              >
+                Tháng trước
+              </button>
+            </div>
+
+            <div className="m-loc-the-nhan m-loc-cach-tren">Khoảng ngày trong kỳ</div>
+            <div className="m-loc-ds-muc">
+              <div className="m-loc-date-o">
+                <label className="m-loc-dong-nhan">Từ ngày</label>
+                <input
+                  type="date"
+                  className="m-form-inp"
+                  value={draftTuNgay}
+                  onChange={e => handleDoiTuNgay(e.target.value)}
+                />
+              </div>
+
+              <div className="m-loc-date-o">
+                <label className="m-loc-dong-nhan">Đến ngày</label>
+                <input
+                  type="date"
+                  className="m-form-inp"
+                  value={draftDenNgay}
+                  min={minDenNgay}
+                  max={maxDenNgay}
+                  onChange={e => handleDoiDenNgay(e.target.value)}
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="m-loc-day">
+            <button
+              type="button"
+              className="m-loc-btn-apply"
+              onClick={() => setTrangCon(null)}
+            >
+              Xong
+            </button>
           </div>
         </div>
       )}
