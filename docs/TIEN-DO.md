@@ -4,13 +4,16 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T356.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T359.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T357 | Điện thoại: đang xem Tất cả cửa hàng mà lập phiếu (kiểm kê, phiếu kho, thu chi, mua bán) không bắt chọn cửa hàng, tự lấy Phố Mây Lê Lợi. Bắt chọn cửa hàng, rà mọi form | Trum | Đang làm | Sửa `ui/mobile/MLapPhieu.tsx`, `ui/mobile/MLapPhieuKho.tsx` |
+| T358 | Điện thoại: phiếu kiểm kê chỉ chọn ngày, không chọn giờ; ngày hiện tại lấy giờ lúc tạo phiếu, ngày quá khứ lấy 23:59 | Trum | Đang làm | Sửa `ui/mobile/MLapPhieuKho.tsx` |
+| T359 | Điện thoại: chênh lệch kiểm kê mất số thập phân (thực tế 9.5, sổ 10 ra 0 kg); số lượng có lẻ hiện 2 số thập phân, số nguyên giữ nguyên | Trum | Đang làm | Sửa `ui/mobile/MLapPhieuKho.tsx` |
 | T355 | Điện thoại: báo cáo Thẻ kho (5.2.1) ô tóm tắt Tồn đầu, Tiền hàng / Nhập, Tổng tiền và tổng từng ngày đều bằng 0 dù có phiếu nhập, xuất | Trum | Đang làm
 | T356 | Xuất bán POS hộ kinh doanh (TT152): bút toán thu tiền vẫn ghi Có `5111, 33311` dù hộ kinh doanh không có VAT | Trum | Đang làm
 | T339 | Trang chủ Free máy tính, Tiến độ kiểm kê theo cửa hàng: hiện tối đa 4 cửa hàng cần chú ý (chưa kiểm, lệch nhiều trước), dòng Đã kiểm x/y cửa hàng, dòng Xem tất cả mở hộp danh sách đủ | dinhlanphuongipacc | Đang làm | Sửa `home/BaBaiToanFree.tsx`, `app.css` (mục cuối T339) |
