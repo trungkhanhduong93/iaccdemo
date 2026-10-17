@@ -62,3 +62,9 @@ Lỗi đã từng làm mất thời gian, kèm cách tránh. Đọc trước khi
 - Nguyên nhân: Solar đặt nét phụ (opacity .5) không cố định là chi tiết; nhiều icon có viền ngoài ở lớp phụ. Script đổi opacity thành `class="l2"` rồi tô cam nên viền thành cam. So độ dài chuỗi `d` để đoán lớp chính cũng sai vì số lẻ làm chuỗi dài.
 - Cách tránh: `tools/xuat_bieu_tuong.py` so diện tích hộp bao toạ độ của 2 lớp, lớp lớn hơn là thân. Icon đo sai thì thêm tên vào `DAO_TAY` để lấy ngược kết quả. Sinh lại xong phải xem ảnh phóng to (device_scale_factor 3): ảnh 390px thường làm tưởng nhầm icon đúng là sai.
 
+## Đo bố cục khi khung trình duyệt của agent bị ẩn (T338)
+
+- Hiện tượng: sửa code cho biểu đồ trang chủ tự đổi chiều cao theo `ResizeObserver`, tải lại trang rồi đo bằng script thì chiều cao vẫn như cũ, ghi dấu trong hàm cũng không thấy chạy. Bắn sự kiện `resize` thì lại đúng.
+- Nguyên nhân: khung trình duyệt của agent đang ẩn nên trang chạy như tab nền, không vẽ khung hình, `ResizeObserver` không gọi tới khi trang được vẽ lại. Biến gán vào `window` cũng không đọc được từ công cụ chạy JavaScript (chạy ở môi trường tách riêng).
+- Cách tránh: chụp màn hình một lần cho trang vẽ rồi mới đo. Cần ghi dấu tạm thì ghi vào thuộc tính DOM (`data-*`), không ghi vào `window`.
+

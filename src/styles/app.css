@@ -23031,3 +23031,11 @@ button[class*="btn-"] .ic .l2 {
 .ct-ttc .f { display: grid; grid-template-columns: 112px minmax(0, 1fr); align-items: center; column-gap: 8px; row-gap: 2px; }
 .ct-ttc .f > label { line-height: 1.25; }   /* nhãn dài (Tháng hạch toán lãi lỗ) xuống 2 dòng, không cắt */
 .ct-ttc .f > :not(label) { grid-column: 2; }
+
+/* ── Trang chủ Free máy tính, màn thấp (đặt tỉ lệ 150%): màn đầu thấy trọn khối Kết quả kinh doanh, Quỹ tiền kể cả biểu đồ 13 tháng (T338) ── */
+@media (min-width: 901px) and (max-height: 820px) {
+  .bbt-e-luoi-2 .bbt-gon .bbt-vq-vong { flex-basis: clamp(120px, calc(100% - 280px), 150px); }
+  .bbt-e-luoi-2 .bbt-vq { padding: 0 4px; }
+  .bbt-13t-trong { padding-top: 8px; }
+  .bbt-13t-trong-ten > small { display: none; }
+}

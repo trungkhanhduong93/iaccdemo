@@ -81,17 +81,32 @@ export function thuChi13Thang(selCns: string[]) {
 }
 
 /** Khung đo bề rộng thật để vẽ biểu đồ 13 tháng trong cột trang chủ: cao cố định, chữ trục giữ cỡ ở mọi màn (T303) */
-function KhungVua({ cao, ve }: { cao: number; ve: (rong: number) => ReactNode }) {
+/** Khung đo bề rộng cho biểu đồ. Có toiThieu: biểu đồ tự thấp xuống (không dưới toiThieu, không quá cao) cho đáy khối nằm trong màn,
+ *  màn đặt tỉ lệ 150% vẫn thấy trọn hai khối đầu kể cả biểu đồ 13 tháng (T338) */
+function KhungVua({ cao, ve, toiThieu }: { cao: number; ve: (rong: number, cao: number) => ReactNode; toiThieu?: number }) {
   const ref = useRef<HTMLDivElement>(null)
   const [rong, setRong] = useState(0)
+  const [caoVua, setCaoVua] = useState(cao)
   useEffect(() => {
     const e = ref.current
     if (!e) return
-    const ro = new ResizeObserver(() => setRong(Math.round(e.clientWidth)))
+    const tinh = () => {
+      setRong(Math.round(e.clientWidth))
+      const khoi = e.closest<HTMLElement>('.bbt-cot'), cuon = e.closest<HTMLElement>('.main')
+      if (!toiThieu || !khoi || !cuon || !window.matchMedia('(min-width: 901px)').matches) return
+      // đo theo offsetTop (không lệch khi khối đang chạy hiệu ứng trượt vào, không theo vị trí cuộn)
+      const dinh = (x: HTMLElement | null) => { let y = 0; for (; x; x = x.offsetParent as HTMLElement | null) y += x.offsetTop; return y }
+      const tran = dinh(khoi) - dinh(cuon) + khoi.offsetHeight + 12 - cuon.clientHeight
+      setCaoVua(Math.round(Math.min(cao, Math.max(toiThieu, e.offsetHeight - tran))))
+    }
+    const ro = new ResizeObserver(tinh)
     ro.observe(e)
-    return () => ro.disconnect()
-  }, [])
-  return <div ref={ref} style={{ height: cao }}>{rong > 0 && ve(rong)}</div>
+    const khoi = toiThieu ? e.closest('.bbt-cot') : null
+    if (khoi) ro.observe(khoi)   // khối cao lên khi số liệu, khối bên cạnh hiện đủ thì tính lại
+    window.addEventListener('resize', tinh)
+    return () => { ro.disconnect(); window.removeEventListener('resize', tinh) }
+  }, [cao, toiThieu])
+  return <div ref={ref} style={{ height: caoVua }}>{rong > 0 && ve(rong, caoVua)}</div>
 }
 
 /** Biểu đồ cột nhỏ 6 tháng hoặc theo cửa hàng ở ba khối kho (T304): cột cuối đậm hơn, cột số mẫu nhạt, rê chuột xem số.
@@ -539,7 +554,7 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
               <div className="bbt-13t-trong-ten"><b>Hiệu quả kinh doanh 13 tháng</b><small>Doanh thu, chi phí, lợi nhuận từng tháng và so với cùng kỳ năm trước</small></div>
               <span className="bbt-13t-chu"><i className="dt" />Doanh thu<i className="cp" />Chi phí<i className="lai tron" />Lãi<i className="lo tron" />Lỗ</span>
             </div>
-            <KhungVua cao={210} ve={r => <LaiLoChart data={laiLo13} h={210} rong={r} />} />
+            <KhungVua cao={210} toiThieu={120} ve={(r, h) => <LaiLoChart data={laiLo13} h={h} rong={r} />} />
           </div>
         </section>
 
@@ -593,7 +608,7 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
               <div className="bbt-13t-trong-ten"><b>Dòng tiền 13 tháng</b><small>Tiền thu vào, chi ra mỗi tháng và số dư quỹ cuối tháng</small></div>
               <span className="bbt-13t-chu"><i className="thu2" />Thu<i className="chi2" />Chi<i className="thuan tron" /><span title="Thu trừ chi trong tháng">Dòng tiền thuần</span><i className="ton tron" />Tồn quỹ</span>
             </div>
-            <KhungVua cao={210} ve={r => <LaiLoChart data={thuChi13} h={210} rong={r} ten={['Thu', 'Chi']} mau={['var(--bd-thu, #0f8f84)', 'var(--bd-chi, #c2362b)']} duong={{ ten: 'Dòng tiền thuần' }} duong2={{ ten: 'Tồn quỹ', mau: 'var(--bd-ton, #0560a6)' }} />} />
+            <KhungVua cao={210} toiThieu={120} ve={(r, h) => <LaiLoChart data={thuChi13} h={h} rong={r} ten={['Thu', 'Chi']} mau={['var(--bd-thu, #0f8f84)', 'var(--bd-chi, #c2362b)']} duong={{ ten: 'Dòng tiền thuần' }} duong2={{ ten: 'Tồn quỹ', mau: 'var(--bd-ton, #0560a6)' }} />} />
           </div>
         </section>
 

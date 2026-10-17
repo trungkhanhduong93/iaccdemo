@@ -4,7 +4,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T337.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T338.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
@@ -53,6 +53,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T338 | Trang chủ Free máy tính, màn đặt tỉ lệ 150%: màn đầu thấy trọn khối Kết quả kinh doanh, Quỹ tiền kể cả biểu đồ 13 tháng (biểu đồ tự thấp xuống, màn thấp gọn hơn) | dinhlanphuongipacc | 17/10/2026 | [2026-10-17-dinhlanphuongipacc-trang-chu-man-150](nhat-ky/2026-10-17-dinhlanphuongipacc-trang-chu-man-150.md) |
 | T336 | Form chứng từ: ép thêm chiều cao khối thông tin chung (ô 32px, khoảng cách nhỏ hơn) cho bảng chi tiết nhiều chỗ hơn ở màn đặt tỉ lệ 150% | dinhlanphuongipacc | 17/10/2026 | [2026-10-17-dinhlanphuongipacc-ep-them-thong-tin-chung](nhat-ky/2026-10-17-dinhlanphuongipacc-ep-them-thong-tin-chung.md) |
 | T335 | Form chứng từ (phiếu mua hàng và các phiếu khác): khối thông tin chung thấp xuống, nhãn bên trái ô, nhường chỗ cho bảng chi tiết | dinhlanphuongipacc | 17/10/2026 | [2026-10-17-dinhlanphuongipacc-thu-gon-thong-tin-chung](nhat-ky/2026-10-17-dinhlanphuongipacc-thu-gon-thong-tin-chung.md) |
 | T334 | Danh mục Lý do nghiệp vụ: tạm thời lý do có sẵn không sửa, không xoá, chỉ tích Là chi phí hay không | dinhlanphuongipacc | 17/10/2026 | [2026-10-17-dinhlanphuongipacc-ly-do-chi-tich-chi-phi](nhat-ky/2026-10-17-dinhlanphuongipacc-ly-do-chi-tich-chi-phi.md) |
