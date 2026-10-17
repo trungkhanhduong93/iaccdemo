@@ -22663,3 +22663,10 @@ button[class*="btn-"] .ic .l2 {
   height: var(--ic) !important;
 }
 
+
+/* ── Trang chủ Free, khối Quỹ tiền: nút Tạo quỹ dưới vòng tồn quỹ (T325) ── */
+.bbt-quy-tao { display: flex; gap: 8px; margin: 2px 0 6px; }
+/* Màn rộng: vòng thấp hơn danh sách quỹ nên dưới vòng còn trống, kéo nút lên nằm vào chỗ đó; chỉ rộng bằng nút để không che danh sách quỹ */
+@media (min-width: 901px) { .bbt-e-luoi-2 .bbt-vq + .bbt-quy-tao { position: relative; width: max-content; margin: -22px 0 6px 4px; } }
+/* Dòng tổng (Lợi nhuận, = Nợ cuối kỳ) đã có kẻ trên: bỏ kẻ dưới của dòng ngay trước, tránh hai đường song song */
+.bbt-gon > .t:has(+ .t.lai), .bbt-gon > .t:has(+ .t.lo), .bbt-gon > .t:has(+ .bbt-kho2-tong) { border-bottom: 0; }

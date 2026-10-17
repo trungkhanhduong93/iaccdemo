@@ -549,8 +549,11 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
             <h2 className="ten bbt-e-ten">
               <Icon n="wallet" className="ic sm" /> Quỹ tiền
             </h2>
-            {/* T303: nút Tạo quỹ luôn có ở khối Quỹ tiền */}
-            <Link to="/app/danh-muc/1-12?moi=1&goiY=thuchi" className="bbt-tao-quy" title="Tạo quỹ tiền mặt hoặc tài khoản ngân hàng"><Icon n="plus" className="ic sm" />Tạo quỹ</Link>
+            {/* T325: góc trên phải 2 link sổ như khối Mua hàng; nút Tạo quỹ xuống dưới vòng tồn quỹ */}
+            <span className="bbt-kho2-link">
+              <Link to="/app/bao-cao/2-2-1" className="bbt-kho-mo" title="Xem Sổ quỹ tiền mặt" onClick={() => datLocDaXem('/app/bao-cao/2-2-1', {}, String(thangXem))}>Sổ quỹ tiền mặt ›</Link>
+              <Link to="/app/bao-cao/2-2-3" className="bbt-kho-mo" title="Xem Sổ tiền gửi ngân hàng" onClick={() => datLocDaXem('/app/bao-cao/2-2-3', {}, String(thangXem))}>Sổ ngân hàng ›</Link>
+            </span>
           </div>
           <div className="bbt-e-mota">Tiền mặt tại cửa hàng và tiền gửi ngân hàng</div>
           <div className="hoi bbt-e-hoi">
@@ -569,7 +572,13 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
             {thangXem === 10 ? 'Tháng này thu' : `Tháng ${thangXem} thu`} <span style={{ color: 'var(--green, #138a52)' }}>{short(tongQuy.thu)}</span> · chi <span style={{ color: 'var(--red, #c2362b)' }}>{short(tongQuy.chi)}</span>
           </div>
 
-          {quy.length > 0 ? <VongQuy ds={quy} tong={tongQuy.cuoi} onChon={setModalQuy} /> : (
+          {quy.length > 0 ? <>
+            <VongQuy ds={quy} tong={tongQuy.cuoi} onChon={setModalQuy} />
+            {/* T303, T325: nút Tạo quỹ luôn có, nằm dưới vòng tồn quỹ */}
+            <div className="bbt-quy-tao">
+              <Link to="/app/danh-muc/1-12?moi=1&goiY=thuchi" className="btn sm" title="Tạo quỹ tiền mặt hoặc tài khoản ngân hàng"><Icon n="plus" className="ic sm" />Tạo quỹ</Link>
+            </div>
+          </> : (
             <div className="bbt-quy-trong">
               <Icon n="wallet" className="ic" />
               <b>Chưa có quỹ tiền nào</b>
