@@ -362,6 +362,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
           ten={ten}
           tenNgan={sc.ngan ?? ten}
           scSlug={sc.slug}
+          chiXem={Boolean(edit.ma || edit.ten) && Boolean(cfg.chiXem?.includes(s.goi))}
           onDong={() => setEdit(null)}
           onXoa={val => { setDaXoaDm(x => new Set(x).add(khoaXoa(val))); setEdit(null); toast(`Đã xoá ${val.soThe ?? val.ma ?? ''}`) }}
           onSaoChep={(kieu, d) => { setEdit(null); setTimeout(() => moSua({}, kieu, d), 0) }}
@@ -400,6 +401,7 @@ export interface CatalogPanelProps {
   onLuu?: (formVal: Record<string, any>, themTiep: boolean) => void
   onXoa?: (formVal: Record<string, any>) => void            // Tiện ích Xoá (T297)
   onSaoChep?: (kieu: string | undefined, dienSan: Record<string, any>) => void   // Tiện ích Sao chép: mở form thêm mới điền sẵn
+  chiXem?: boolean                                           // chỉ xem: khoá mọi ô, không có nút Sửa, Lưu, Xoá (T328)
 }
 
 export function CatalogPanel({
@@ -419,6 +421,7 @@ export function CatalogPanel({
   onLuu,
   onXoa,
   onSaoChep,
+  chiXem = false,
 }: CatalogPanelProps) {
   const { s, set, toast } = useSession()
   const cnChon = cuaHangHienTai(s)
@@ -459,11 +462,12 @@ export function CatalogPanel({
   // Cột luôn hiện: cột hệ thống (_stt, _xoa), Mã, Tên
   const cotKhoa = (k: string) => k.startsWith('_') || k === 'ma' || k === 'ten'
   // Form toàn màn hình mở dòng có sẵn: chỉ xem như phiếu chi, bấm Sửa (Ctrl+E) mới sửa; Huỷ khi đang sửa thì về xem, bỏ thay đổi
-  const [xem, setXem] = useState(Boolean(cauHinh?.toanMan && dangSua))
+  const [xem, setXem] = useState(Boolean(cauHinh?.toanMan && dangSua) || chiXem)
   const goc = useRef(formVal)
   useEffect(() => {
     if (!xem) return
     const onKey = (e: KeyboardEvent) => {
+      if (chiXem) return
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'e') { e.preventDefault(); setXem(false) }
       // Ctrl+O sao chép như Tiện ích Sao chép (T297)
       else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'o') { e.preventDefault(); saoChepRef.current() }
@@ -836,7 +840,7 @@ export function CatalogPanel({
               {nutPhu}
               <span className="grow" />
               {/* Tiện ích như phiếu thu chi: Sao chép, Xoá (T297) */}
-              {(cauHinh?.tienIch?.saoChep?.(formVal) || cauHinh?.tienIch?.xoa?.(formVal)) && (
+              {!chiXem && (cauHinh?.tienIch?.saoChep?.(formVal) || cauHinh?.tienIch?.xoa?.(formVal)) && (
                 <Dropdown btnClass="btn sm" align="end" width={180} label={<><Icon n="more" className="ic sm" />Tiện ích</>}>
                   {dongMenu => <>
                     {cauHinh?.tienIch?.saoChep?.(formVal) && (
@@ -848,7 +852,7 @@ export function CatalogPanel({
                   </>}
                 </Dropdown>
               )}
-              <button type="button" className="btn sm pri" onClick={() => setXem(false)}><Icon n="edit" className="ic sm" />Sửa (Ctrl+E)</button>
+              {!chiXem && <button type="button" className="btn sm pri" onClick={() => setXem(false)}><Icon n="edit" className="ic sm" />Sửa (Ctrl+E)</button>}
               <button type="button" className="btn sm" onClick={onDong}>Đóng (Esc)</button>
             </>
           ) : (
@@ -902,7 +906,7 @@ export function CatalogPanel({
           <aside className="pn-hop">
             <div className="pn-dau">
               <div>
-                <h3>{dangSua ? `Sửa ${tenNganHien}` : `Thêm ${tenNganHien}`}</h3>
+                <h3>{chiXem ? `Chi tiết ${tenNganHien}` : dangSua ? `Sửa ${tenNganHien}` : `Thêm ${tenNganHien}`}</h3>
                 <small className="muted">
                   {dangSua
                     ? ([formVal.ma ?? formVal.username, formVal.ten].filter(Boolean).join(' - ') || tenNganHien)
@@ -915,15 +919,21 @@ export function CatalogPanel({
             </div>
 
             <div className="pn-than">
-              {editThan && dsKhoi.map(veKhoi)}
+              {/* Chỉ xem (T328): fieldset disabled khoá mọi ô */}
+              {editThan && <fieldset className="pn-fs" disabled={chiXem}>{dsKhoi.map(veKhoi)}</fieldset>}
             </div>
 
             <div className="pn-chan">
-              {nutPhu}
-              {nutPhu && <span className="grow" />}
-              <button type="button" className="btn" onClick={onDong}>Huỷ</button>
-              {!anNutThemTiep && <button type="button" className="btn" onClick={() => handleLuu(true)}>Lưu và thêm</button>}
-              <button type="button" className="btn pri" onClick={() => handleLuu(false)}>Lưu</button>
+              {chiXem ? <>
+                <span className="grow" />
+                <button type="button" className="btn" onClick={onDong}>Đóng</button>
+              </> : <>
+                {nutPhu}
+                {nutPhu && <span className="grow" />}
+                <button type="button" className="btn" onClick={onDong}>Huỷ</button>
+                {!anNutThemTiep && <button type="button" className="btn" onClick={() => handleLuu(true)}>Lưu và thêm</button>}
+                <button type="button" className="btn pri" onClick={() => handleLuu(false)}>Lưu</button>
+              </>}
             </div>
           </aside>
         </>

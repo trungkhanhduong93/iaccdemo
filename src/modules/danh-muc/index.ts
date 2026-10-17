@@ -121,6 +121,7 @@ const phuongThucThanhToan: ScreenDef = {
     them: 'Thêm phương thức',
     khongThem: ['F', 'S'],   // gói Free, Standard lấy phương thức từ FABi, không thêm mới (T144)
     khongExcel: ['F', 'S'],  // cũng không nhập, xuất Excel (T268)
+    chiXem: ['F', 'S'],      // chi tiết chỉ xem, không sửa, không xoá (T328)
     nutPhu: { nhan: 'Đồng bộ theo POS', icon: 'refresh', chiIcon: true, bao: `Đã đồng bộ ${DS_PTTT.length} phương thức thanh toán theo POS` },
     cols: (goi, cheDo) => [
       { k: 'ma', t: 'Mã', cls: 'code' },
