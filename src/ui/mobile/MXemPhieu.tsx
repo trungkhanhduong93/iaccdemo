@@ -354,11 +354,8 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
             {ttSxInfo && <span className={`m-ct-chip ${ttSxInfo[0]}`}>{ttSxInfo[1]}</span>}
           </div>
         </div>
-        {!laKk && (
-          <div className={`m-xp-tien-lon m-num ${lop}`.trim()}>
-            {dau}{money(tongThanhToan)} đ
-          </div>
-        )}
+        {/* Điểm 10: chỉ giữ dòng cam Tổng thanh toán, bỏ số tiền lớn ở đầu thẻ header */}
+
         <div className="m-xp-dong-tt">
           <span className="m-xp-nhan">Thời gian:</span>
           <span className="m-xp-tri">{[row.ngay, row.gio].filter(Boolean).join(' ')}</span>
@@ -514,14 +511,16 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
             <span className="m-xp-tri">{String(row.dienGiai || row._ghiChu)}</span>
           </div>
         )}
-        <div className="m-xp-dong-tt">
-          <span className="m-xp-nhan">Nguồn:</span>
-          <span className="m-xp-tri">
-            <span className={`src ${NGUON[row.nguon]?.[0] ?? 'tay'}`}>
-              {NGUON[row.nguon]?.[1] ?? 'Thủ công'}
+        {!laKk && !laDc && (
+          <div className="m-xp-dong-tt">
+            <span className="m-xp-nhan">Nguồn:</span>
+            <span className="m-xp-tri">
+              <span className={`src ${NGUON[row.nguon]?.[0] ?? 'tay'}`}>
+                {NGUON[row.nguon]?.[1] ?? 'Thủ công'}
+              </span>
             </span>
-          </span>
-        </div>
+          </div>
+        )}
         {/* Tham chiếu thẻ chi phí phân bổ (2.1.1) */}
         {Array.isArray(row._theCp) && (row._theCp as string[]).length > 0 && (
           <div className="m-xp-dong-tt m-xp-tc">
@@ -604,12 +603,12 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
             </span>
           </div>
         )}
-        {row._thamChieuDi && !coTcNhap && (
+        {row._thamChieuDi && !coTcNhap && !(laDc && String(row._phieuGoc || row.phieuGoc || row._thamChieu || '') === String(row._thamChieu || '')) && (
           <div className="m-xp-dong-tt m-xp-tc">
             <span className="m-xp-nhan">Phiếu gốc:</span>
             <span className="m-xp-tri">
               <Link className="m-xp-link-tc" to={String(row._thamChieuDi)}>
-                {String(row._thamChieu || 'Xem phiếu gốc')}
+                {String(row._phieuGoc || row.phieuGoc || row._thamChieu || 'Xem phiếu gốc')}
               </Link>
             </span>
           </div>
@@ -650,26 +649,43 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
             dsDongLoc.map((d, i) => {
               if (laKk) {
                 const chenh = (d.tonTt ?? 0) - (d.tonHt ?? 0)
-                const loaiKk = loaiXuLy(d)
+                const loaiKk = loaiXuLy(d) || 'Khớp'
                 const chenhTxt = chenh > 0 ? `+${money(chenh)}` : money(chenh)
-                const chenhLop = chenh > 0 ? 'm-tien-vao' : chenh < 0 ? 'm-tien-ra' : ''
+                const chenhLop = chenh > 0 ? 'm-so-dong-duong' : chenh < 0 ? 'm-so-dong-am' : ''
                 const dvtTxt = d.dvt ? ` ${d.dvt}` : ''
-                const dong2 = [
-                  `Sổ ${money(d.tonHt ?? 0)}${dvtTxt}`,
-                  `Thực tế ${money(d.tonTt ?? 0)}${dvtTxt}`,
-                  loaiKk || 'Khớp',
-                  d.ghiChu,
-                ].filter(Boolean).join(' · ')
 
                 return (
-                  <div key={i} className="m-xp-dong">
-                    <div className="m-xp-dong-hang1">
-                      <span className="m-xp-dong-ten">{d.ten || 'Mặt hàng'}</span>
-                      <span className={`m-xp-dong-tien m-num ${chenhLop}`.trim()}>
-                        {chenhTxt}{dvtTxt}
+                  <div key={i} className="m-xp-dong m-xp-dong-kk">
+                    <div className="m-xp-kk-hang1">
+                      <div className="m-xp-kk-ten-khoi">
+                        {d.ma && <span className="m-bcd-ct-ma">{d.ma}</span>}
+                        <b className="m-xp-dong-ten">{d.ten || 'Mặt hàng'}</b>
+                      </div>
+                      <span className={`m-xp-kk-chip ${chenh > 0 ? 'nhap' : chenh < 0 ? 'xuat' : 'khop'}`}>
+                        {loaiKk}
                       </span>
                     </div>
-                    <div className="m-xp-dong-phu">{dong2}</div>
+
+                    <div className="m-xp-kk-luoi">
+                      <div className="m-xp-kk-o">
+                        <span className="m-xp-kk-nhan">Tồn hệ thống</span>
+                        <span className="m-xp-kk-so">{money(d.tonHt ?? 0)}{dvtTxt}</span>
+                      </div>
+                      <div className="m-xp-kk-o">
+                        <span className="m-xp-kk-nhan">Tồn thực tế</span>
+                        <span className="m-xp-kk-so">{money(d.tonTt ?? 0)}{dvtTxt}</span>
+                      </div>
+                      <div className="m-xp-kk-o">
+                        <span className="m-xp-kk-nhan">SL điều chỉnh</span>
+                        <b className={`m-xp-kk-so ${chenhLop}`}>{chenhTxt}{dvtTxt}</b>
+                      </div>
+                    </div>
+
+                    {d.ghiChu && (
+                      <div className="m-xp-kk-ghichu">
+                        <span className="m-xp-kk-gc-nhan">Ghi chú:</span> {d.ghiChu}
+                      </div>
+                    )}
                   </div>
                 )
               }
@@ -721,9 +737,11 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
               }
 
               // Dòng hàng, nvl
-              const slGia = `${d.sl ?? 0}${d.dvt ? ` ${d.dvt}` : ''} × ${money(d.gia ?? 0)}`
-              const ckTxt = d.ck ? `Giảm ${money(d.ck)}` : ''
-              const vatTxt = d.ts ? `VAT ${d.ts}%` : d.thue ? `VAT ${money(d.thue)}` : ''
+              const slGia = laDc
+                ? `Số lượng: ${money(d.sl ?? 0)}${d.dvt ? ` ${d.dvt}` : ''}`
+                : `${d.sl ?? 0}${d.dvt ? ` ${d.dvt}` : ''} × ${money(d.gia ?? 0)}`
+              const ckTxt = !laDc && d.ck ? `Giảm ${money(d.ck)}` : ''
+              const vatTxt = !laDc && (d.ts ? `VAT ${d.ts}%` : d.thue ? `VAT ${money(d.thue)}` : '')
               const khoTxt = d.kho ? `Kho: ${d.kho}` : ''
               const dong2Parts = [slGia, ckTxt, vatTxt, khoTxt, d.ghiChu].filter(Boolean)
               const dong2 = dong2Parts.join(' · ')
@@ -732,7 +750,8 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
                 <div key={i} className="m-xp-dong">
                   <div className="m-xp-dong-hang1">
                     <span className="m-xp-dong-ten">{d.ten || 'Mặt hàng'}</span>
-                    <span className="m-xp-dong-tien m-num">{money(d.tien || 0)} đ</span>
+                    {!laDc && <span className="m-xp-dong-tien m-num">{money(d.tien || 0)} đ</span>}
+                    {laDc && <span className="m-xp-dong-tien m-num">{money(d.sl ?? 0)} {d.dvt || ''}</span>}
                   </div>
                   <div className="m-xp-dong-phu">{dong2}</div>
                 </div>
@@ -743,7 +762,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
       </div>
 
       {/* 4. Khối tổng kết: khớp số với DaiTong, thu chi bỏ Thành tiền mặt hàng */}
-      {!laKk && (
+      {!laKk && !laDc && (
         <div className="m-the-trang m-xp-the-tong">
           {!laTien && (
             <div className="m-xp-dong-tt">
@@ -792,11 +811,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
       </div>
 
       {/* 6. Thanh thao tác dính đáy (nằm trên thanh dưới nổi, không bị che) */}
-      <div className="m-xp-day">
-        <div className="m-xp-day-trai">
-          <span className="m-xp-day-nhan">Tổng:</span>
-          <span className="m-xp-day-tong">{money(tongThanhToan)} đ</span>
-        </div>
+      <div className="m-xp-day" style={{ justifyContent: 'flex-end' }}>
         <div className="m-xp-day-phai">
           {coNutGhiSo && row.tt === 'ghi' && (
             <button

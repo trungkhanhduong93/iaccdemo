@@ -9,6 +9,8 @@ import { Icon } from '../Icon'
 import { Dropdown, MenuHead, MenuItem, MenuSep } from '../Dropdown'
 import { ThanhDuoi } from './ThanhDuoi'
 import { MBaoCaoLoc } from './MBaoCaoLoc'
+import { kyHieuBC } from '../../modules/bao-cao/danh-sach'
+import type { Session } from '../../app/session'
 
 function laManGoc(pathname: string, search = ''): boolean {
   if (pathname === '/app/nghiep-vu' && search.includes('m=')) return false
@@ -23,7 +25,7 @@ function laManGoc(pathname: string, search = ''): boolean {
   )
 }
 
-function layTieuDe(pathname: string, search = ''): string {
+function layTieuDe(pathname: string, search = '', s?: Session): string {
   if (pathname === '/app' || pathname === '/app/') return 'Trang chủ'
   if (pathname.startsWith('/app/nghiep-vu')) {
     if (search.includes('m=')) {
@@ -42,7 +44,13 @@ function layTieuDe(pathname: string, search = ''): string {
   if (modKey === 'kho' && (slug === '5-1-1' || slug === '5-1-2-4')) return 'Nhập xuất khác'
   if (modKey === 'ccdc' && slug === '8-1-1') return 'Danh sách thẻ chi phí'
   const { mod, sc } = timMan(modKey, slug)
-  if (sc) return nhanTab(sc)
+  if (sc) {
+    if (s && s.cheDo === 'TT152' && sc.code) {
+      const kh = kyHieuBC(sc.code, s.cheDo, s)
+      if (kh && kh.endsWith('-HKD')) return `Báo cáo ${kh}`
+    }
+    return nhanTab(sc)
+  }
   if (mod) return mod.ten
   return 'IACC Cloud'
 }
@@ -99,7 +107,7 @@ export function MobileShell() {
     loc.pathname === '/app/' ||
     loc.pathname === '/app/trang-chu/tong-quan' ||
     loc.pathname === '/app/trang-chu/ban-lam-viec'
-  const tieuDe = layTieuDe(loc.pathname, loc.search)
+  const tieuDe = layTieuDe(loc.pathname, loc.search, s)
   const capHai = laXemPhieu(loc.pathname) || laBaoCao(loc.pathname) || CAP_HAI_CO_NUT.includes(loc.pathname)
   const parts = loc.pathname.split('/').filter(Boolean)
   const currentSc = timMan(parts[1], parts[2])?.sc
