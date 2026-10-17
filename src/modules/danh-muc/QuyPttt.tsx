@@ -18,7 +18,7 @@ export function KhoiPtttQuy({ v, doi }: { v: Record<string, any>; doi: (k: strin
   const dat = (ds: string[]) => doi('_pttt', ds)
   const doiMot = (k: string) => dat(chon.includes(k) ? chon.filter(x => x !== k) : [...chon, k])
 
-  if (!dsCn.length) return <div className="qp-trong">Chọn cửa hàng áp dụng để map phương thức thanh toán.</div>
+  if (!dsCn.length) return <div className="qp-trong">Chọn cửa hàng áp dụng để gán phương thức thanh toán.</div>
   return (
     <div className="qp">
       <p className="qp-goi-y">Phiếu thu, chi lập trên FABi trả bằng phương thức đã tick sẽ vào quỹ này khi bật đồng bộ ở Cấu hình kế toán.</p>
@@ -39,7 +39,7 @@ export function KhoiPtttQuy({ v, doi }: { v: Record<string, any>; doi: (k: strin
                 const k = khoaMap(c.id, p.ma)
                 const khac = quyKhac(k)
                 return (
-                  <label key={k} className={`qp-pt${khac ? ' khoa' : ''}`} title={khac ? `Đã map vào ${tenQuy(khac)}` : undefined}>
+                  <label key={k} className={`qp-pt${khac ? ' khoa' : ''}`} title={khac ? `Đã gán vào ${tenQuy(khac)}` : undefined}>
                     <input type="checkbox" checked={!khac && chon.includes(k)} disabled={Boolean(khac)} onChange={() => doiMot(k)} />
                     <span>{p.ten}</span>
                     {khac && <small>{tenQuy(khac)}</small>}
