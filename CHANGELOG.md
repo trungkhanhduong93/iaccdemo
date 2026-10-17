@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 17/10/2026
 
+- T329: Báo cáo Công nợ nhà cung cấp: bấm Thanh toán ngay chọn Tiền mặt (mở phiếu chi tiền mặt) hoặc Ngân hàng (mở uỷ nhiệm chi), điền sẵn nhà cung cấp và cửa hàng như trước.
 - T328: Danh mục phương thức thanh toán gói Free, Standard: mở một phương thức chỉ xem chi tiết, không sửa, không xoá; phương thức lấy từ FABi.
 - T327: Khoá sổ gói Free: bấm Mở khoá thì khung điền lý do hiện ngay dưới nút ở đầu trang, không phải kéo xuống cuối.
 - T320: Web và điện thoại đổi icon sang kiểu khối 3D: thân xanh, chi tiết cam, chuyển màu, đổ bóng nhẹ, nhìn sắc hơn trên màn FullHD. Icon khối nhỏ nhất 20px, Thao tác nhanh và Lập nhanh 32px. Đổi icon sai nghĩa: Mua hàng thành túi, Giá thành thành thẻ giá, Chi phí phân bổ thành hình tròn tách miếng, Tiện ích thành lưới có dấu cộng. Nhập kho, Xuất kho thành hộp mũi tên, Kiểm kê thành bảng có dấu tích.
