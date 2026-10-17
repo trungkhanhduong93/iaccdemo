@@ -155,6 +155,17 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   useEffect(() => {
     setLyDo(row?._lyDo ? String(row._lyDo) : lyGoc(row?.dienGiai ? String(row.dienGiai) : cfg.dienGiai[0]))
   }, [loai?.k, row?.id])
+  // Thu chi tiền mặt và ngân hàng (T346)
+  const laThuChiTien = laTien && (loai?.k === 'thu' || loai?.k === 'chi' || loai?.k === 'bc' || loai?.k === 'unc')
+  const khoaLyDtFree = s.goi === 'F' && laThuChiTien
+
+  // Gói Free phiếu thu, chi (T346): khi mở xem vẫn hiện đúng dữ liệu đã lưu; khi bấm Sửa hoặc thêm mới thì các dòng lấy theo giá trị phía trên; đổi ô phía trên thì các dòng đổi theo ngay
+  useEffect(() => {
+    if (khoaLyDtFree && (dangSua || moi)) {
+      setDsDong(ds => ds.map(d => ({ ...d, ly: lyDo, dt: doiTuong })))
+    }
+  }, [khoaLyDtFree, dangSua, moi, lyDo, doiTuong])
+
   // Phiếu thu, chi (T49): dòng chi tiết có cột lý do theo lý do đầu phiếu; gán thêm tài khoản theo lý do (T233)
   const coTkTheoLy = Boolean(oLy) && loai?.k !== 'cq'
   const loaiPhieuTien = (loai?.k || nhom) as string
@@ -194,6 +205,9 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
     setLyDo(v)
     setDienGiai(v)
     setGhiChu(v)
+    if (khoaLyDtFree) {
+      setDsDong(ds => ds.map(d => ({ ...d, ly: v })))
+    }
   }
   // Ô đối tượng chọn từ danh mục theo loại phiếu, thêm mới được ngay tại form (T65)
   const dmDt = laTien ? 'doiTuong' : cfg.doiTuong ?? 'doiTuong'
@@ -204,6 +218,9 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
     setDoiTuong(v)
     const dt = [...KHACH, ...NCC].find(x => x.ten === v)
     if (dt) setMst(dt.mst)
+    if (khoaLyDtFree) {
+      setDsDong(ds => ds.map(d => ({ ...d, dt: v })))
+    }
   }
   // Gói Free: tháng hạch toán lãi lỗ, mặc định tháng của ngày chứng từ, chọn được các tháng trước chưa khoá sổ (T49)
   // Quỹ của phiếu (T51): phiếu tiền mặt chỉ chọn quỹ tiền mặt của cửa hàng lập phiếu, phiếu ngân hàng chọn tài khoản ngân hàng
@@ -378,9 +395,12 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
     const ctTt = dongBoCtTt(moi ? idMoi : String(row?.id))
     const dsDc = laKk ? dongBoDc(moi ? idMoi : String(row?.id)) : undefined
     // Bản mẫu chưa có backend: phiếu mới lên đầu danh sách, phiếu sửa hiện nội dung mới, tới khi tải lại trang (T49)
+    const dongLuu = khoaLyDtFree
+      ? dsDong.map(d => ({ ...d, ly: lyDo, dt: doiTuong }))
+      : dsDong
     const noiDung = {
       ngay: ngayCt, thang: Number(ngayCt.split('/')[1]) || 10, doiTuong, dienGiai,
-      tien: tongTien - tongCk, thue: tongThue, tong: tongThanhToan, _dong: dsDong, _lyDo: lyDo, _ghiChu: ghiChu, _quy: quy, _kho: kho,
+      tien: tongTien - tongCk, thue: tongThue, tong: tongThanhToan, _dong: dongLuu, _lyDo: lyDo, _ghiChu: ghiChu, _quy: quy, _kho: kho,
       _nguoiGiao: nguoiGiao, _nhanVien: nhanVien, _diaChi: diaChi, _mst: mst, _hanTt: hanTt,
       _nhanKemHd: nhanKemHd, _soHd: soHd, _ngayHd: ngayHd, _kyHieuHd: kyHieuHd, _httt: hinhThucTt, _ctTt: ctTt,
       ...(nhom === 'ban' && hinhThucTt !== 'congno' ? { _pttt: pttt } : {}),
@@ -678,7 +698,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
             <button
               type="button"
               className="btn"
-              onClick={() => (moi ? setHoiDong(true) : setDangSua(false))}
+              onClick={() => { if (moi) setHoiDong(true); else { setDangSua(false); if (khoaLyDtFree) setDsDong(dongGoc); } }}
             >
               Huỷ
             </button>
@@ -686,7 +706,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
             {coTkGoi && dcn !== 'ck' && (   // chuyển kho không hạch toán (T155)
               <button
                 type="button"
-                className={`btn sm btn-tk-toggle ${hienTk ? 'on' : ''}`}
+                className={`btn btn-tk-toggle ${hienTk ? 'on' : ''}`}
                 onClick={() => setHienTk(!hienTk)}
                 title={hienTk ? 'Bấm để ẩn cột tài khoản Nợ/Có trên dòng' : 'Bấm để hiển thị cột tài khoản Nợ/Có trên dòng'}
               >
@@ -712,7 +732,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
             <div className="btn-group">
               <button
                 type="button"
-                className="btn sm"
+                className="btn"
                 disabled={!coTruoc}
                 onClick={veTruoc}
                 title="Chứng từ trước"
@@ -721,7 +741,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               </button>
               <button
                 type="button"
-                className="btn sm"
+                className="btn"
                 disabled={!coSau}
                 onClick={veSau}
                 title="Chứng từ sau"
@@ -732,7 +752,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
             {coTkGoi && !laKk && dcn !== 'ck' && (   // phiếu kiểm kê, chuyển kho không hạch toán nên không có nút Cột tài khoản (T124, T155)
               <button
                 type="button"
-                className={`btn sm btn-tk-toggle ${hienTk ? 'on' : ''}`}
+                className={`btn btn-tk-toggle ${hienTk ? 'on' : ''}`}
                 onClick={() => setHienTk(!hienTk)}
                 title={hienTk ? 'Bấm để ẩn cột tài khoản Nợ/Có trên dòng' : 'Bấm để hiển thị cột tài khoản Nợ/Có trên dòng'}
               >
@@ -742,11 +762,11 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               </button>
             )}
             <span className="grow" />
-            <button type="button" className="btn sm" onClick={moIn}>
+            <button type="button" className="btn" onClick={moIn}>
               <Icon n="printer" className="ic sm" />In
             </button>
             <Dropdown
-              btnClass="btn sm"
+              btnClass="btn"
               align="end"
               width={180}
               label={<><Icon n="more" className="ic sm" />Tiện ích</>}
@@ -790,7 +810,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
             {kieu !== 'khong' && row && (
               <button
                 type="button"
-                className="btn sm"
+                className="btn"
                 onClick={() => toast(row.tt === 'ghi' ? 'Đã bỏ ghi sổ' : 'Đã ghi sổ')}
               >
                 {row.tt === 'ghi' ? 'Bỏ ghi sổ' : 'Ghi sổ'}
@@ -799,13 +819,13 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
             {!khoaSua && (
               <button
                 type="button"
-                className="btn sm pri"
+                className="btn pri"
                 onClick={() => setDangSua(true)}
               >
                 <Icon n="edit" className="ic sm" />Sửa (Ctrl+E)
               </button>
             )}
-            <button type="button" className="btn sm" onClick={dongForm}>
+            <button type="button" className="btn" onClick={dongForm}>
               Đóng (Esc)
             </button>
           </>
@@ -1184,6 +1204,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               dtMacDinh={laTien ? doiTuong : ''}
               an={[...anCot, ...anDc]}
               khongTong={(laTien && chiTien) || !hienChan('dongTong')}
+              chiXemLy={khoaLyDtFree}
+              chiXemDt={khoaLyDtFree}
             />
           )}
 

@@ -23354,3 +23354,35 @@ button[class*="btn-"] .ic .l2 {
   flex: none !important;
   white-space: nowrap !important;
 }
+
+/* ── Form chứng từ: thanh nút dưới cùng bằng nhau lúc xem và lúc sửa (T346) ── */
+.fsf-f .btn-group {
+  border: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  height: 34px;
+}
+.fsf-f .btn-group > .btn {
+  height: 34px;
+  font-size: 14px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-color: var(--line) !important;
+}
+.fsf-f .btn-group > .btn:first-child {
+  border-top-left-radius: 8px !important;
+  border-bottom-left-radius: 8px !important;
+}
+.fsf-f .btn-group > .btn:last-child {
+  border-top-right-radius: 8px !important;
+  border-bottom-right-radius: 8px !important;
+  border-left: 0;
+}
+
+/* Ô chỉ xem trong bảng chi tiết khi gói Free (T346) */
+.bang-sua td.o-chi-xem {
+  color: var(--ink);
+  font-size: 13px;
+  padding: 6px 10px;
+  white-space: nowrap;
+}

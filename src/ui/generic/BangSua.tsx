@@ -36,6 +36,8 @@ export interface BangSuaProps {
   coNhapKho?: boolean          // phiếu mua: Tiền trước thuế trước cột thuế; Tổng tiền, Giá trị nhập kho cuối dòng (T84)
   gtnkCoThue?: boolean         // hộ kinh doanh: Giá trị nhập kho gồm cả tiền thuế GTGT (T164)
   coNhomHhdv?: boolean         // phiếu mua có hoá đơn, gói Plus, Pro: cột Nhóm HHDV mua vào sau Tiền thuế (T162)
+  chiXemLy?: boolean           // cột lý do chỉ xem, không cho chọn
+  chiXemDt?: boolean           // cột đối tượng chỉ xem, không cho chọn
 }
 
 /** Các cột ẩn hiện được của bảng chi tiết, theo loại phiếu (T49). Mỗi cột trên bảng là một mục, theo thứ tự trên bảng (T86) */
@@ -88,6 +90,8 @@ export function BangSua({
   coNhapKho = false,
   coNhomHhdv = false,
   gtnkCoThue = false,
+  chiXemLy = false,
+  chiXemDt = false,
 }: BangSuaProps) {
   const hang = cfg.dong === 'hang' || cfg.dong === 'nvl'
   const tienDong = cfg.dong === 'tien'
@@ -455,12 +459,24 @@ export function BangSua({
                 )}
                 {tienDong && (
                   <>
-                    {lyDong && <td>
-                      <ChonDanhMuc dm={`ly:${lyDo!.nhan}`} nhan={lyDo!.nhan.toLowerCase()} className="inp sm" value={d.ly ?? ''} onChange={v => capNhat(i, { ly: v })} ds={lyDo!.ds} />
-                    </td>}
-                    {dtDong && <td>
-                      <ChonDanhMuc dm="doiTuong" nhan="đối tượng" className="inp sm" trong="—" value={d.dt ?? ''} onChange={v => capNhat(i, { dt: v })} ds={DS_DOI_TUONG} />
-                    </td>}
+                    {lyDong && (
+                      chiXemLy ? (
+                        <td className="o-chi-xem">{d.ly || '—'}</td>
+                      ) : (
+                        <td>
+                          <ChonDanhMuc dm={`ly:${lyDo!.nhan}`} nhan={lyDo!.nhan.toLowerCase()} className="inp sm" value={d.ly ?? ''} onChange={v => capNhat(i, { ly: v })} ds={lyDo!.ds} />
+                        </td>
+                      )
+                    )}
+                    {dtDong && (
+                      chiXemDt ? (
+                        <td className="o-chi-xem">{d.dt || '—'}</td>
+                      ) : (
+                        <td>
+                          <ChonDanhMuc dm="doiTuong" nhan="đối tượng" className="inp sm" trong="—" value={d.dt ?? ''} onChange={v => capNhat(i, { dt: v })} ds={DS_DOI_TUONG} />
+                        </td>
+                      )
+                    )}
                     {kmDong && <td>
                       <ChonDanhMuc dm="khoanMuc" nhan="khoản mục" coMa className="inp sm" trong="—" value={d.km ?? ''} onChange={v => capNhat(i, { km: v })}
                         ds={KHOAN_MUC.map(km => ({ v: km.ma, t: `${km.ma} · ${km.ten}` }))} />
