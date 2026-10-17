@@ -11,6 +11,7 @@ import { tonQuyTheoSo } from '../../modules/home/LichSuQuy'
 import { moTaCach, nvlKy } from '../../modules/home/chi-phi-nvl'
 import { useMoTuTrangChu } from '../../app/tuTrangChu'
 import { Select } from '../Dropdown'
+import { datLocDaXem } from '../bao-cao/tuyChinhBC'
 import { MKhoFree } from './MKhoFree'
 import { HopLaiLo13, HopThuChi13, laiLo13Thang, thuChi13Thang } from '../../modules/home/BaBaiToanFree'
 import { ModalQuy } from '../../modules/home/quyThuChi'
@@ -159,7 +160,7 @@ function VongQuy({
           return el
         })}
         <text x={co / 2} y={co / 2 - 8} textAnchor="middle" className="bbt-vq-nhan">
-          {dangTro ? pct(tong ? dangTro.cuoi / tong : 0) : 'Tổng tồn'}
+          {dangTro ? pct(tong ? dangTro.cuoi / tong : 0) : 'Tổng tồn quỹ'}
         </text>
         <text x={co / 2} y={co / 2 + 18} textAnchor="middle" className="bbt-vq-so">
           {short(dangTro ? dangTro.cuoi : tong)}
@@ -560,17 +561,27 @@ export function MTrangChuFree(_props?: Partial<ScreenProps>) {
           </Select>
         </div>
 
-        {/* 4. Khối Quản lý lãi lỗ */}
+        {/* 4. Khối Kết quả kinh doanh */}
         <div className="m-tc-the-ivt m-free-the">
           <div className="m-tc-the-head">
             <div className="m-tc-the-tieu-hop">
               <h2 className="m-tc-the-tieu">
-                <Icon n="chart" className="ic sm" /> Quản lý lãi lỗ
+                <Icon n="chart" className="ic sm" /> Kết quả kinh doanh
               </h2>
             </div>
+            <div className="m-tcf-links">
+              <Link
+                to="/app/bao-cao/10-2-3"
+                className="m-tcf-link"
+                onClick={() => datLocDaXem('/app/bao-cao/10-2-3', {}, String(thangF))}
+              >
+                Xem kết quả kinh doanh ›
+              </Link>
+            </div>
           </div>
+          <div className="bbt-e-mota">Doanh thu trừ các khoản chi phí trong tháng</div>
           <div className="m-free-hoi">
-            {thangF === 10 ? 'Tháng này' : `Tháng ${thangF}`} lãi bao nhiêu?
+            Lợi nhuận {thangF === 10 ? 'tháng này' : `tháng ${thangF}`}
           </div>
           <div
             className={`m-tc-so-lon m-free-tra ${loiNhuan >= 0 ? 'lai' : 'lo'}`}
@@ -578,12 +589,15 @@ export function MTrangChuFree(_props?: Partial<ScreenProps>) {
           >
             {loiNhuan < 0 ? `Lỗ ${moneyD(Math.abs(loiNhuan))}` : moneyD(loiNhuan)}
           </div>
-          <div className="m-free-phu">Biên lãi {pct(bien)} trên doanh thu</div>
+          <div className="m-free-phu">
+            Biên lợi nhuận {pct(bien)} <span className="bbt-e-giai">· {bien < 0 ? 'lỗ' : 'lãi'} {Math.abs(bien * 100).toLocaleString('vi-VN', { maximumFractionDigits: 1 })} đ trên mỗi 100 đ doanh thu</span>
+          </div>
 
           <div className="tll" style={{ marginTop: 14 }}>
             <div className="tll-the dt">
               <div className="tll-trai">
                 <b>Doanh thu</b>
+                <span>Tiền bán hàng trong tháng</span>
               </div>
               <div className="tll-phai">
                 <b style={{ fontSize: '17px' }}>{moneyD(d.dtThuan)}</b>
@@ -593,10 +607,10 @@ export function MTrangChuFree(_props?: Partial<ScreenProps>) {
             <Link
               to={`/app/trang-chu/chi-phi-nvl?thang=${thangF}`}
               className="tll-the cp tll-link"
-              title="Xem chi phí nguyên vật liệu"
+              title="Xem giá vốn nguyên vật liệu"
             >
               <div className="tll-trai">
-                <b>Chi phí nguyên vật liệu</b>
+                <b>Giá vốn nguyên vật liệu</b>
                 <span>{moTaCach(nvl.ds)}</span>
               </div>
               <div className="tll-phai">
@@ -609,13 +623,13 @@ export function MTrangChuFree(_props?: Partial<ScreenProps>) {
             <Link
               to={`/app/trang-chu/chi-phi-thang?thang=${thangF}`}
               className="tll-the cp tll-link"
-              title="Xem chi phí trong tháng"
+              title="Xem chi phí hoạt động"
             >
               <div className="tll-trai">
-                <b>Chi phí trong tháng</b>
+                <b>Chi phí hoạt động</b>
                 <span>
                   {chiLon
-                    ? `Nhiều nhất: ${chiLon.l} ${short(chiLon.v)}`
+                    ? `Lương, mặt bằng, điện nước… Lớn nhất: ${chiLon.l} ${short(chiLon.v)}`
                     : 'Lương, mặt bằng, điện nước, chi khác'}
                 </span>
               </div>
@@ -629,11 +643,11 @@ export function MTrangChuFree(_props?: Partial<ScreenProps>) {
             <Link
               to="/app/ccdc/8-1-1"
               className="tll-the cp tll-link"
-              title="Xem chi phí phân bổ hàng tháng"
+              title="Xem chi phí phân bổ, khấu hao"
             >
               <div className="tll-trai">
-                <b>Chi phí phân bổ hàng tháng</b>
-                <span>Phân bổ công cụ dụng cụ, khấu hao</span>
+                <b>Chi phí phân bổ, khấu hao</b>
+                <span>Công cụ, tài sản mua một lần, ghi nhận dần theo tháng</span>
               </div>
               <div className="tll-phai">
                 <b>{moneyD(d.cpPhanBo)}</b>
@@ -671,14 +685,26 @@ export function MTrangChuFree(_props?: Partial<ScreenProps>) {
                 <Icon n="wallet" className="ic sm" /> Quỹ tiền
               </h2>
             </div>
-            <Link
-              to="/app/danh-muc/1-12?moi=1&goiY=thuchi"
-              className="bbt-tao-quy"
-              title="Tạo quỹ tiền mặt hoặc tài khoản ngân hàng"
-            >
-              <Icon n="plus" className="ic sm" />Tạo quỹ
-            </Link>
+            <div className="m-tcf-links">
+              <Link
+                to="/app/bao-cao/2-2-1"
+                className="m-tcf-link"
+                title="Xem Sổ quỹ tiền mặt"
+                onClick={() => datLocDaXem('/app/bao-cao/2-2-1', {}, String(thangF))}
+              >
+                Sổ quỹ tiền mặt ›
+              </Link>
+              <Link
+                to="/app/bao-cao/2-2-3"
+                className="m-tcf-link"
+                title="Xem Sổ tiền gửi ngân hàng"
+                onClick={() => datLocDaXem('/app/bao-cao/2-2-3', {}, String(thangF))}
+              >
+                Sổ ngân hàng ›
+              </Link>
+            </div>
           </div>
+          <div className="bbt-e-mota">Tiền mặt tại cửa hàng và tiền gửi ngân hàng</div>
           <div className="m-free-hoi">
             {thangF === 10 ? 'Tồn quỹ hiện tại' : `Tồn quỹ cuối tháng ${thangF}/2026`}
           </div>
@@ -692,12 +718,23 @@ export function MTrangChuFree(_props?: Partial<ScreenProps>) {
             {moneyD(tongQuy.cuoi)} ›
           </button>
           <div className="m-free-phu">
-            Thu <span style={{ color: 'var(--green, #138a52)' }}>{short(tongQuy.thu)}</span> · Chi{' '}
+            {thangF === 10 ? 'Tháng này thu' : `Tháng ${thangF} thu`} <span style={{ color: 'var(--green, #138a52)' }}>{short(tongQuy.thu)}</span> · chi{' '}
             <span style={{ color: 'var(--red, #c2362b)' }}>{short(tongQuy.chi)}</span>
           </div>
 
           {quy.length > 0 ? (
-            <VongQuy ds={quy} tong={tongQuy.cuoi} onChon={setModalQuy} />
+            <>
+              <VongQuy ds={quy} tong={tongQuy.cuoi} onChon={setModalQuy} />
+              <div className="bbt-quy-tao m-tcf-quy-tao">
+                <Link
+                  to="/app/danh-muc/1-12?moi=1&goiY=thuchi"
+                  className="btn sm m-tcf-btn-tao-quy"
+                  title="Tạo quỹ tiền mặt hoặc tài khoản ngân hàng"
+                >
+                  <Icon n="plus" className="ic sm" />Tạo quỹ
+                </Link>
+              </div>
+            </>
           ) : (
             <div className="bbt-quy-trong">
               <Icon n="wallet" className="ic" />

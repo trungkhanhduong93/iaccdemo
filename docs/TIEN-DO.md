@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T337 | Điện thoại, trang chủ gói Free: đưa thay đổi bản web của T316 (chữ thuật ngữ chuẩn, tiêu đề phụ, nút Xem kết quả kinh doanh) và T325 (khối Quỹ tiền: link Sổ quỹ tiền mặt, Sổ ngân hàng, Tạo quỹ dưới vòng tồn quỹ) sang app | Trum | Đang làm | Anti làm. Sửa `src/ui/mobile/MTrangChuFree.tsx`, `MKhoFree.tsx`, mục cuối `app.css` (T337). T331 xong thì đồng bộ thêm |
 | T333 | Đổi chữ "map" thành "gán" khi nói về phương thức thanh toán và quỹ (Khoá sổ, Danh mục Quỹ tiền, Danh mục cửa hàng) | dinhlanphuongipacc | Dở dang | Đã đổi ở Khoá sổ, Quỹ tiền. Còn `DanhMucCuaHang.tsx` chờ PhuongXT xong T321. Xem [nhật ký](nhat-ky/2026-10-17-dinhlanphuongipacc-doi-map-thanh-gan.md) |
 | T332 | Web và điện thoại: quay về bộ icon Solar nét (`BO_ICON = 'net'`), làm nét icon sắc hơn trên màn FullHD (độ dày nét theo cỡ icon, màu icon thanh bên) | Trum | Đang làm | Clau làm. Sửa `src/ui/Icon.tsx`, mục mới cuối `app.css`, `docs/QUYET-DINH.md` (bổ sung QD71) |
 | T331 | Trang chủ Free máy tính: tách riêng vùng xếp hạng (Mặt hàng mua nhiều nhất, Nhà cung cấp nợ nhiều nhất, Thiếu, Thừa nhiều nhất) cho thoáng, hai khối thẳng hàng; danh sách quỹ tên bên trái, tiền và tỷ trọng bên phải | dinhlanphuongipacc | Đang làm | Sửa `home/BaBaiToanFree.tsx`, `app.css` (mục cuối T331) |
@@ -54,6 +53,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
 | T338 | Trang chủ Free máy tính, màn đặt tỉ lệ 150%: màn đầu thấy trọn khối Kết quả kinh doanh, Quỹ tiền kể cả biểu đồ 13 tháng (biểu đồ tự thấp xuống, màn thấp gọn hơn) | dinhlanphuongipacc | 17/10/2026 | [2026-10-17-dinhlanphuongipacc-trang-chu-man-150](nhat-ky/2026-10-17-dinhlanphuongipacc-trang-chu-man-150.md) |
+| T337 | Điện thoại, trang chủ gói Free nhận thay đổi bản web của T316 (chữ thuật ngữ chuẩn, tiêu đề phụ, link Xem kết quả kinh doanh) và T325 (link Sổ quỹ tiền mặt, Sổ ngân hàng, Tạo quỹ dưới vòng tồn quỹ) | Trum | 17/10/2026 | [2026-10-17-trum-dong-bo-chu-trang-chu-free-dien-thoai](nhat-ky/2026-10-17-trum-dong-bo-chu-trang-chu-free-dien-thoai.md) |
 | T336 | Form chứng từ: ép thêm chiều cao khối thông tin chung (ô 32px, khoảng cách nhỏ hơn) cho bảng chi tiết nhiều chỗ hơn ở màn đặt tỉ lệ 150% | dinhlanphuongipacc | 17/10/2026 | [2026-10-17-dinhlanphuongipacc-ep-them-thong-tin-chung](nhat-ky/2026-10-17-dinhlanphuongipacc-ep-them-thong-tin-chung.md) |
 | T335 | Form chứng từ (phiếu mua hàng và các phiếu khác): khối thông tin chung thấp xuống, nhãn bên trái ô, nhường chỗ cho bảng chi tiết | dinhlanphuongipacc | 17/10/2026 | [2026-10-17-dinhlanphuongipacc-thu-gon-thong-tin-chung](nhat-ky/2026-10-17-dinhlanphuongipacc-thu-gon-thong-tin-chung.md) |
 | T334 | Danh mục Lý do nghiệp vụ: tạm thời lý do có sẵn không sửa, không xoá, chỉ tích Là chi phí hay không | dinhlanphuongipacc | 17/10/2026 | [2026-10-17-dinhlanphuongipacc-ly-do-chi-tich-chi-phi](nhat-ky/2026-10-17-dinhlanphuongipacc-ly-do-chi-tich-chi-phi.md) |

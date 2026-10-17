@@ -26,12 +26,12 @@ export function MKhoFree({ selCns, thang }: { selCns: string[]; thang: number })
 
   return (
     <>
-      {/* Khối Mua hàng & công nợ NCC */}
+      {/* Khối Mua hàng & công nợ nhà cung cấp */}
       <div className="m-tc-the-ivt m-free-the m-tck-khoi">
         <div className="m-tc-the-head">
           <div className="m-tc-the-tieu-hop">
             <h3 className="m-tc-the-tieu">
-              <Icon n="khohang" className="ic sm" /> Mua hàng &amp; công nợ NCC
+              <Icon n="khohang" className="ic sm" /> Mua hàng &amp; công nợ nhà cung cấp
             </h3>
           </div>
           <div className="m-tck-links">
@@ -54,22 +54,23 @@ export function MKhoFree({ selCns, thang }: { selCns: string[]; thang: number })
             </Link>
           </div>
         </div>
+        <div className="bbt-e-mota">Giá trị hàng mua trong tháng và số tiền còn phải trả</div>
 
         <div className="m-tck-hai">
           <div className="m-tck-kpi">
-            <div className="m-tck-hoi">Tổng nhập {thang === 10 ? 'tháng' : `tháng ${thang}`}</div>
+            <div className="m-tck-hoi">Giá trị mua hàng {thang === 10 ? 'tháng này' : `tháng ${thang}`}</div>
             <div className="m-tck-tra" style={{ color: 'var(--blue, #0560a6)' }}>{moneyD(mua.nhap)}</div>
             <div className="m-tck-phu">
               {mua.soDon} phiếu
               {mua.soSanh && (
                 <> · <span className={mua.soSanh.pct > 0 ? 'm-tck-tang' : 'm-tck-giam'} title={`So với ${mua.soSanh.nhan} (${short(mua.soSanh.truoc)})`}>
-                  {mua.soSanh.pct > 0 ? '▲' : '▼'} {pct(Math.abs(mua.soSanh.pct))} cùng kỳ
+                  {mua.soSanh.pct > 0 ? '▲' : '▼'} {pct(Math.abs(mua.soSanh.pct))} so với cùng kỳ
                 </span></>
               )}
             </div>
           </div>
           <div className="m-tck-kpi">
-            <div className="m-tck-hoi">Còn nợ NCC</div>
+            <div className="m-tck-hoi">Công nợ phải trả</div>
             <div className="m-tck-tra" style={{ color: 'var(--orange-d, #d0650a)' }}>{moneyD(no.cuoiRong)}</div>
             <div className="m-tck-phu">{no.soNcc} nhà cung cấp</div>
           </div>
@@ -78,26 +79,26 @@ export function MKhoFree({ selCns, thang }: { selCns: string[]; thang: number })
         {/* Dòng chảy công nợ: khớp dòng Tổng cộng báo cáo 4.2.3 */}
         <div className="m-tck-dong-chay">
           <div className="m-tck-dong-t">
-            <div className="m-tck-dong-l"><b>Nợ đầu kỳ</b></div>
+            <div className="m-tck-dong-l"><b>Nợ đầu kỳ</b><span>Còn nợ từ đầu tháng</span></div>
             <div className="m-tck-dong-r"><b>{moneyD(no.dau)}</b></div>
           </div>
           <div className="m-tck-dong-t">
-            <div className="m-tck-dong-l"><b>+ Mua nợ</b></div>
+            <div className="m-tck-dong-l"><b>+ Phát sinh mua nợ</b><span>Mua chưa thanh toán</span></div>
             <div className="m-tck-dong-r"><b>{moneyD(no.phatSinh)}</b></div>
           </div>
           <div className="m-tck-dong-t">
-            <div className="m-tck-dong-l"><b>− Đã trả</b></div>
+            <div className="m-tck-dong-l"><b>− Đã thanh toán</b></div>
             <div className="m-tck-dong-r"><b>{moneyD(no.traHang + no.thanhToan)}</b></div>
           </div>
           <div className="m-tck-dong-t m-tck-tong">
-            <div className="m-tck-dong-l"><b>= Nợ cuối kỳ</b></div>
+            <div className="m-tck-dong-l"><b>= Nợ cuối kỳ</b><span>Còn phải trả đến hôm nay</span></div>
             <div className="m-tck-dong-r"><b>{moneyD(no.cuoiRong)}</b></div>
           </div>
         </div>
 
         <div className="m-tck-ds">
           <div className="m-tck-nhom-wrap">
-            <div className="m-tck-nhom">Nhập nhiều nhất</div>
+            <div className="m-tck-nhom">Mặt hàng mua nhiều nhất</div>
             {mua.topMh.map(x => (
               <div className="m-tck-dong" key={x.ma}>
                 <span className="m-tck-ten"><span className="m-tck-ma">{x.ma}</span>{x.ten}</span>
@@ -106,7 +107,7 @@ export function MKhoFree({ selCns, thang }: { selCns: string[]; thang: number })
             ))}
           </div>
           <div className="m-tck-nhom-wrap">
-            <div className="m-tck-nhom">Nợ nhiều nhất</div>
+            <div className="m-tck-nhom">Nhà cung cấp nợ nhiều nhất</div>
             {no.top.map(x => (
               <div className="m-tck-dong" key={x.ten}>
                 <span className="m-tck-ten" title={x.ten}>{x.ten}</span>
@@ -121,7 +122,7 @@ export function MKhoFree({ selCns, thang }: { selCns: string[]; thang: number })
             <Icon n="plus" className="ic sm" />Tạo phiếu mua hàng
           </Link>
           <Link to="/app/tien/2-1-1/moi?loai=chi&ly=CHI02" className="m-tck-btn">
-            <Icon n="plus" className="ic sm" />Thanh toán NCC
+            <Icon n="plus" className="ic sm" />Thanh toán nhà cung cấp
           </Link>
         </div>
       </div>
@@ -140,13 +141,14 @@ export function MKhoFree({ selCns, thang }: { selCns: string[]; thang: number })
               className="m-tck-link"
               onClick={() => datLocDaXem('/app/bao-cao/5-2-15', {}, String(thang))}
             >
-              Báo cáo ›
+              Báo cáo hao hụt ›
             </Link>
           </div>
         </div>
+        <div className="bbt-e-mota">Chênh lệch giữa tồn thực tế và tồn trên sổ sách</div>
 
         {/* Gói Free chỉ theo dõi số lượng, không có số tiền thừa, thiếu */}
-        <div className="m-tck-hoi">Mặt hàng lệch {thang === 10 ? 'tháng này' : `tháng ${thang}`}</div>
+        <div className="m-tck-hoi">Mặt hàng chênh lệch {thang === 10 ? 'tháng này' : `tháng ${thang}`}</div>
         <div className="m-tck-tra m-tck-tra-lon" style={{ color: kk.thieu + kk.thua > 0 ? 'var(--red, #c2362b)' : 'var(--green, #138a52)' }}>
           {kk.thieu + kk.thua}
         </div>
@@ -154,7 +156,7 @@ export function MKhoFree({ selCns, thang }: { selCns: string[]; thang: number })
           Thiếu {kk.thieu} · thừa {kk.thua} · đã kiểm {kk.soKiem}/{kk.tongMh}
         </div>
 
-        <div className="m-tck-nhom">Tiến độ kiểm kê</div>
+        <div className="m-tck-nhom">Tiến độ kiểm kê theo cửa hàng</div>
         <div className="m-tck-tien-do">
           {kk.theoCn.map(x => (
             <div className="m-tck-cn" key={x.cn}>
@@ -170,7 +172,7 @@ export function MKhoFree({ selCns, thang }: { selCns: string[]; thang: number })
 
         <div className="m-tck-ds">
           <div className="m-tck-nhom-wrap">
-            <div className="m-tck-nhom">Thiếu nhiều</div>
+            <div className="m-tck-nhom">Thiếu nhiều nhất</div>
             {kk.topThieu.length ? kk.topThieu.map(x => (
               <div className="m-tck-dong" key={x.cn + x.ma}>
                 <span className="m-tck-ten" title={x.cn}><span className="m-tck-ma">{x.ma}</span>{x.ten}</span>
@@ -179,7 +181,7 @@ export function MKhoFree({ selCns, thang }: { selCns: string[]; thang: number })
             )) : <div className="m-tck-trong">Không có mặt hàng thiếu</div>}
           </div>
           <div className="m-tck-nhom-wrap">
-            <div className="m-tck-nhom">Thừa nhiều</div>
+            <div className="m-tck-nhom">Thừa nhiều nhất</div>
             {kk.topThua.length ? kk.topThua.map(x => (
               <div className="m-tck-dong" key={x.cn + x.ma}>
                 <span className="m-tck-ten" title={x.cn}><span className="m-tck-ma">{x.ma}</span>{x.ten}</span>
