@@ -10,6 +10,7 @@
 - Cột kỳ trước ghép theo khoá dòng (`_k`), không theo thứ tự dòng. Dòng con ẩn khi cả kỳ đang xem lẫn kỳ trước đều không phát sinh, để hai cột vẫn cộng khớp dòng tổng.
 - `src/data/mock.ts`: hàm mới `chiPhiTheoLyDo` (chia chi phí hoạt động trừ phân bổ của `kqkd()` theo lý do chi trong danh mục 1.16, Chi phí khác nhận phần còn lại) và `phanBoTheoLoai` (CCDC chia 60% trả trước, 40% công cụ dụng cụ; khấu hao là TSCĐ).
 - `src/styles/app.css`: mục cuối T318, class `.kqkd-con` thụt lề dòng con.
+- Sau khi push, PhuongXT bảo bỏ dòng ghi chú xanh đầu báo cáo ở gói Free: `KetQuaKinhDoanh` không truyền `note` khi gói Free, TT152. Gói khác giữ ghi chú cũ.
 - Dòng tổng giữ công thức cũ, nên số trên trang chủ (thẻ lãi lỗ, Chi phí trong tháng) và Khoá sổ không đổi.
 
 ## Đã kiểm

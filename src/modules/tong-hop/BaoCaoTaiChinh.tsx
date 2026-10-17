@@ -90,9 +90,9 @@ export function KetQuaKinhDoanh(p: ScreenProps) {
   const { s } = useSession()
   const nav = useNavigate()
   return (
-    <Khung {...p} note={<Note icon="info">{s.goi === 'F' && s.cheDo === 'TT152'
-      ? 'Doanh thu chia theo kênh bán, chi phí trong tháng theo lý do chi, chi phí phân bổ theo loại; khoản không phát sinh thì không hiện. Bấm từng dòng để xem chứng từ. Lợi nhuận chưa tính thu nhập, chi phí khác.'
-      : 'Bấm dòng doanh thu hoặc giá vốn để xem số chi tiết. Số khớp Tổng quan, báo cáo doanh thu, bảng cân đối số phát sinh.'}</Note>}>
+    // Gói Free không hiện dòng ghi chú trên báo cáo (T318, PhuongXT chốt 17/10/2026)
+    <Khung {...p} note={s.goi === 'F' && s.cheDo === 'TT152' ? undefined
+      : <Note icon="info">Bấm dòng doanh thu hoặc giá vốn để xem số chi tiết. Số khớp Tổng quan, báo cáo doanh thu, bảng cân đối số phát sinh.</Note>}>
       {ky => {
         if (s.cheDo === 'TT58') {
           const rows = dongB02(Number(ky))
