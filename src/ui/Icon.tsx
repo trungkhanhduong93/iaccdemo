@@ -1,6 +1,8 @@
-// Biểu tượng Solar nâng cao: nét 2 màu thương hiệu iPOS cho phân hệ và đồ vật, nét đơn cho thao tác (T301, T302)
+// Biểu tượng Solar nâng cao: nét 2 màu thương hiệu iPOS cho phân hệ và đồ vật, nét đơn cho thao tác (T301, T302, T340)
 
-import { DAC, NET, NHOM } from './icon-dac'
+import { DAC, NET, NHOM, THAO_TAC } from './icon-dac'
+
+const THAO_TAC_SET = new Set<string>(THAO_TAC)
 
 const P: Record<string, string> = {
   plus: '<path d="M12 5v14M5 12h14"/>',
@@ -29,7 +31,7 @@ if (typeof document !== 'undefined') {
 }
 
 export function Icon({ n, className = 'ic', title, kieu }: IconProps) {
-  const mode = kieu || (DAC[n] ? 'khoi' : 'net')
+  const mode = kieu || (THAO_TAC_SET.has(n) ? 'net' : (DAC[n] ? 'khoi' : 'net'))
 
   if (mode === 'hai') {
     const iconData = BO_ICON === 'khoi'

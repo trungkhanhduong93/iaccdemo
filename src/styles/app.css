@@ -22432,7 +22432,7 @@ button[class*="btn-"] .ic .l2 {
 :root[data-ic="khoi"] .o-nen .ic {
   fill: url(#ic-g-xanh);
   stroke: none;
-  filter: drop-shadow(0 1.2px .6px rgb(4 60 110 / .35));
+  filter: none;
 }
 :root[data-ic="khoi"] .ic.ic-2m path,
 :root[data-ic="khoi"] .ic.ic-2m circle,
@@ -23229,6 +23229,207 @@ button[class*="btn-"] .ic .l2 {
   .bbt-modal-cn-bang th, .bbt-modal-cn-bang td { white-space: nowrap; }
   .bbt-modal-cn-bang th:first-child, .bbt-modal-cn-bang td:first-child { position: sticky; left: 0; z-index: 1; background: #fff; }
   .bbt-modal-cn-bang th:first-child { background: var(--tint); }
+
+/* ── Icon Solar nét dự phòng sắc hơn (T332, T340) ── */
+/* Chỉ chạy khi BO_ICON = 'net'. Nét 1.6px: 1.5px mờ trên màn FullHD, 2px dính chi tiết */
+:root[data-ic="net"] .ic:not(.dac) *,
+:root[data-ic="net"] .ic-thuong * { stroke-width: 1.6; }
+:root[data-ic="net"] .ic.sm:not(.dac) * { stroke-width: 1.5; }
+/* Icon thanh bên chưa chọn: màu đặc thay trắng trong 62%, chỗ nét chồng không loang */
+:root[data-ic="net"] .sb-nav a .ic-thuong,
+:root[data-ic="net"] .sb-nav button.sb-item-btn .ic-thuong,
+:root[data-ic="net"] .sb-flyout-ttn .sb-flyout-item .ic-thuong,
+:root[data-ic="net"] .sb-nav a .ic-thuong .l2,
+:root[data-ic="net"] .sb-nav button.sb-item-btn .ic-thuong .l2,
+:root[data-ic="net"] .sb-flyout-ttn .sb-flyout-item .ic-thuong .l2 { color: #b9cad8; stroke: #b9cad8; }
+
+/* ── Icon Khối đồng màu, icon thao tác Linear (T340) ── */
+
+/* 1. Icon khối: thân gradient xanh, l3 mặt khối xanh nhạt, l2 chi tiết cam */
+:root[data-ic="khoi"] .ic.ic-2m,
+:root[data-ic="khoi"] .o-nen .ic {
+  fill: url(#ic-g-xanh);
+  stroke: none;
+  filter: none;
+}
+:root[data-ic="khoi"] .ic.ic-2m path,
+:root[data-ic="khoi"] .ic.ic-2m circle,
+:root[data-ic="khoi"] .ic.ic-2m rect,
+:root[data-ic="khoi"] .ic.ic-2m ellipse,
+:root[data-ic="khoi"] .ic.ic-2m polygon,
+:root[data-ic="khoi"] .ic.ic-2m polyline,
+:root[data-ic="khoi"] .ic.ic-2m line,
+:root[data-ic="khoi"] .o-nen .ic path,
+:root[data-ic="khoi"] .o-nen .ic circle,
+:root[data-ic="khoi"] .o-nen .ic rect,
+:root[data-ic="khoi"] .o-nen .ic ellipse {
+  fill: url(#ic-g-xanh);
+  stroke: none;
+}
+
+/* Lớp l3: mặt khối xanh nhạt (#c2e1fa -> #7fbcee) */
+:root[data-ic="khoi"] .ic.ic-2m .l3,
+:root[data-ic="khoi"] .ic.ic-2m .l3 path,
+:root[data-ic="khoi"] .ic.ic-2m path.l3,
+:root[data-ic="khoi"] .ic.ic-2m .l3 circle,
+:root[data-ic="khoi"] .ic.ic-2m circle.l3,
+:root[data-ic="khoi"] .ic.ic-2m .l3 rect,
+:root[data-ic="khoi"] .ic.ic-2m rect.l3,
+:root[data-ic="khoi"] .ic.ic-2m .l3 polygon,
+:root[data-ic="khoi"] .ic.ic-2m .l3 polyline,
+:root[data-ic="khoi"] .ic.ic-2m .l3 line,
+:root[data-ic="khoi"] .ic.ic-2m .l3 *,
+:root[data-ic="khoi"] .o-nen .ic .l3,
+:root[data-ic="khoi"] .o-nen .ic .l3 path,
+:root[data-ic="khoi"] .o-nen .ic path.l3,
+:root[data-ic="khoi"] .o-nen .ic .l3 circle,
+:root[data-ic="khoi"] .o-nen .ic circle.l3,
+:root[data-ic="khoi"] .o-nen .ic .l3 rect,
+:root[data-ic="khoi"] .o-nen .ic rect.l3,
+:root[data-ic="khoi"] .o-nen .ic .l3 * {
+  fill: url(#ic-g-xanh-nhat) !important;
+  stroke: none !important;
+}
+
+/* Lớp l2: chi tiết cam (#ffc78a -> #f58a2c) */
+:root[data-ic="khoi"] .ic.ic-2m .l2,
+:root[data-ic="khoi"] .ic.ic-2m .l2 path,
+:root[data-ic="khoi"] .ic.ic-2m path.l2,
+:root[data-ic="khoi"] .ic.ic-2m .l2 circle,
+:root[data-ic="khoi"] .ic.ic-2m circle.l2,
+:root[data-ic="khoi"] .ic.ic-2m .l2 rect,
+:root[data-ic="khoi"] .ic.ic-2m rect.l2,
+:root[data-ic="khoi"] .ic.ic-2m .l2 polygon,
+:root[data-ic="khoi"] .ic.ic-2m .l2 polyline,
+:root[data-ic="khoi"] .ic.ic-2m .l2 line,
+:root[data-ic="khoi"] .ic.ic-2m .l2 *,
+:root[data-ic="khoi"] .o-nen .ic .l2,
+:root[data-ic="khoi"] .o-nen .ic .l2 path,
+:root[data-ic="khoi"] .o-nen .ic path.l2,
+:root[data-ic="khoi"] .o-nen .ic .l2 circle,
+:root[data-ic="khoi"] .o-nen .ic circle.l2,
+:root[data-ic="khoi"] .o-nen .ic .l2 rect,
+:root[data-ic="khoi"] .o-nen .ic rect.l2,
+:root[data-ic="khoi"] .o-nen .ic .l2 * {
+  fill: url(#ic-g-cam) !important;
+  stroke: none !important;
+}
+
+/* 2. Bóng đổ: chỉ giữ ở Thao tác nhanh trang chủ, Lập nhanh và thẻ phân hệ điện thoại */
+:root[data-ic="khoi"] .bbt-tt-nhanh-nut .ic,
+:root[data-ic="khoi"] .bbt-tt-nhanh-nut .o-nen .ic,
+:root[data-ic="khoi"] .ttn-luoi .ttn-o .ic,
+:root[data-ic="khoi"] .ttn-luoi .ttn-o .o-nen .ic,
+:root[data-ic="khoi"] .ttn-ic-tron .ic,
+:root[data-ic="khoi"] .ttn-ic-tron .o-nen .ic,
+:root[data-ic="khoi"] .ttn-dong-ic .ic,
+:root[data-ic="khoi"] .ttn-dong-ic .o-nen .ic,
+:root[data-ic="khoi"] .mnv-ln-ic .ic,
+:root[data-ic="khoi"] .mnv-ln-ic .o-nen .ic,
+:root[data-ic="khoi"] .mnv-the-ic .ic,
+:root[data-ic="khoi"] .mnv-the-ic .o-nen .ic,
+:root[data-ic="khoi"] .m-tc-nhanh-ic-tron .ic,
+:root[data-ic="khoi"] .m-tc-nhanh-ic-tron .o-nen .ic {
+  filter: drop-shadow(0 1px .5px rgb(4 60 110 / .15)) !important;
+}
+
+/* 3. Thanh bên một màu: thân opacity .5, l3 .75, l2 1. Màu chưa chọn #b9cad8, chọn #fff */
+:root[data-ic="khoi"] .sb-nav a .ic-thuong,
+:root[data-ic="khoi"] .sb-nav button.sb-item-btn .ic-thuong,
+:root[data-ic="khoi"] .sb-flyout-ttn .sb-flyout-item .ic-thuong {
+  color: #b9cad8;
+  fill: currentColor;
+  stroke: none;
+}
+:root[data-ic="khoi"] .sb-nav a .ic-chon,
+:root[data-ic="khoi"] .sb-nav button.sb-item-btn .ic-chon,
+:root[data-ic="khoi"] .sb-flyout-ttn .sb-flyout-item .ic-chon,
+:root[data-ic="khoi"] .sb-nav a:hover .ic-chon,
+:root[data-ic="khoi"] .sb-nav button.sb-item-btn:hover .ic-chon,
+:root[data-ic="khoi"] .sb-flyout-ttn .sb-flyout-item:hover .ic-chon,
+:root[data-ic="khoi"] .sb-nav a.on .ic-chon,
+:root[data-ic="khoi"] .sb-nav button.sb-item-btn.on .ic-chon {
+  color: #fff;
+  fill: currentColor;
+  stroke: none;
+}
+:root[data-ic="khoi"] .ic-hai,
+:root[data-ic="khoi"] .sb-nav .ic-thuong,
+:root[data-ic="khoi"] .sb-nav .ic-chon,
+:root[data-ic="khoi"] .sb-flyout-ttn .ic-thuong,
+:root[data-ic="khoi"] .sb-flyout-ttn .ic-chon {
+  fill: currentColor;
+  stroke: none;
+}
+:root[data-ic="khoi"] .ic-hai path,
+:root[data-ic="khoi"] .ic-hai circle,
+:root[data-ic="khoi"] .ic-hai rect,
+:root[data-ic="khoi"] .ic-hai ellipse,
+:root[data-ic="khoi"] .sb-nav .ic-thuong path,
+:root[data-ic="khoi"] .sb-nav .ic-thuong circle,
+:root[data-ic="khoi"] .sb-nav .ic-thuong rect,
+:root[data-ic="khoi"] .sb-nav .ic-thuong ellipse,
+:root[data-ic="khoi"] .sb-nav .ic-chon path,
+:root[data-ic="khoi"] .sb-nav .ic-chon circle,
+:root[data-ic="khoi"] .sb-nav .ic-chon rect,
+:root[data-ic="khoi"] .sb-nav .ic-chon ellipse,
+:root[data-ic="khoi"] .sb-flyout-ttn .ic-thuong path,
+:root[data-ic="khoi"] .sb-flyout-ttn .ic-thuong circle,
+:root[data-ic="khoi"] .sb-flyout-ttn .ic-thuong rect,
+:root[data-ic="khoi"] .sb-flyout-ttn .ic-thuong ellipse,
+:root[data-ic="khoi"] .sb-flyout-ttn .ic-chon path,
+:root[data-ic="khoi"] .sb-flyout-ttn .ic-chon circle,
+:root[data-ic="khoi"] .sb-flyout-ttn .ic-chon rect,
+:root[data-ic="khoi"] .sb-flyout-ttn .ic-chon ellipse {
+  fill: currentColor;
+  stroke: none;
+  opacity: .5;
+}
+:root[data-ic="khoi"] .ic-hai .l3,
+:root[data-ic="khoi"] .ic-hai .l3 path,
+:root[data-ic="khoi"] .ic-hai path.l3,
+:root[data-ic="khoi"] .ic-hai .l3 circle,
+:root[data-ic="khoi"] .ic-hai circle.l3,
+:root[data-ic="khoi"] .ic-hai .l3 rect,
+:root[data-ic="khoi"] .ic-hai rect.l3,
+:root[data-ic="khoi"] .ic-hai .l3 *,
+:root[data-ic="khoi"] .sb-nav .ic-thuong .l3,
+:root[data-ic="khoi"] .sb-nav .ic-thuong .l3 *,
+:root[data-ic="khoi"] .sb-nav .ic-chon .l3,
+:root[data-ic="khoi"] .sb-nav .ic-chon .l3 *,
+:root[data-ic="khoi"] .sb-flyout-ttn .ic-thuong .l3,
+:root[data-ic="khoi"] .sb-flyout-ttn .ic-thuong .l3 *,
+:root[data-ic="khoi"] .sb-flyout-ttn .ic-chon .l3,
+:root[data-ic="khoi"] .sb-flyout-ttn .ic-chon .l3 * {
+  opacity: .75 !important;
+  fill: currentColor !important;
+  stroke: none !important;
+}
+:root[data-ic="khoi"] .ic-hai .l2,
+:root[data-ic="khoi"] .ic-hai .l2 path,
+:root[data-ic="khoi"] .ic-hai path.l2,
+:root[data-ic="khoi"] .ic-hai .l2 circle,
+:root[data-ic="khoi"] .ic-hai circle.l2,
+:root[data-ic="khoi"] .ic-hai .l2 rect,
+:root[data-ic="khoi"] .ic-hai rect.l2,
+:root[data-ic="khoi"] .ic-hai .l2 *,
+:root[data-ic="khoi"] .sb-nav .ic-thuong .l2,
+:root[data-ic="khoi"] .sb-nav .ic-thuong .l2 *,
+:root[data-ic="khoi"] .sb-nav .ic-chon .l2,
+:root[data-ic="khoi"] .sb-nav .ic-chon .l2 *,
+:root[data-ic="khoi"] .sb-flyout-ttn .ic-thuong .l2,
+:root[data-ic="khoi"] .sb-flyout-ttn .ic-thuong .l2 *,
+:root[data-ic="khoi"] .sb-flyout-ttn .ic-chon .l2,
+:root[data-ic="khoi"] .sb-flyout-ttn .ic-chon .l2 * {
+  opacity: 1 !important;
+  fill: currentColor !important;
+  stroke: none !important;
+}
+
+/* 4. Icon thao tác Linear: một màu theo currentColor, nét 1.5px */
+:root[data-ic="khoi"] .ic:not(.ic-2m):not(.ic-hai):not(.dac) {
+  fill: none;
+  stroke: currentColor;
 }
 
 /* ── Cột wCung dưới hàng tiêu đề nhóm cũng xuống dòng, vd Báo cáo kiểm kê (T345) ── */

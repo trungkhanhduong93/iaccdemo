@@ -15,7 +15,9 @@ import json
 import re
 import sys
 import urllib.request
+import xml.etree.ElementTree as ET
 from pathlib import Path
+from playwright.sync_api import sync_playwright
 
 if hasattr(sys.stdout, 'reconfigure'):
     sys.stdout.reconfigure(encoding='utf-8')
@@ -107,29 +109,21 @@ SOLAR = {
     'xuatkho': 'archive-up-minimlistic',
 }
 
-# 2. Bảng NET tải bản -linear cho: 9 phân hệ và 19 thao tác
-NET_DEF = {
-    # 9 phân hệ
-    'home': 'home-2',
-    'folder': 'folder-with-files',
-    'wallet': 'wallet',
-    'cart': 'cart-large-2',
-    'truck': 'bag-4',
-    'box': 'box',
-    'percent': 'sale',
-    'book': 'notebook-bookmark',
-    'cog': 'settings',
-    # 19 thao tác
+# 2. Bảng icon thao tác (THAO_TAC_DEF tải bản -linear) và 9 phân hệ (NET_PHAN_HE)
+THAO_TAC_DEF = {
+    # Điều khiển / thao tác
+    'plus': 'add-circle',
+    'x': 'close-circle',
+    'close': 'close-circle',
+    'check': 'check-read',
+    'arrow': 'arrow-right',
     'chevd': 'alt-arrow-down',
     'chevr': 'alt-arrow-right',
     'chevl': 'alt-arrow-left',
-    'plus': 'add-circle',
-    'x': 'close-circle',
-    'check': 'check-read',
-    'arrow': 'arrow-right',
+    'chevu': 'alt-arrow-up',
     'back': 'undo-left',
     'more': 'menu-dots',
-    'search': 'magnifer',
+    'search': 'magnifier',
     'refresh': 'refresh',
     'filter': 'filter',
     'download': 'download-minimalistic',
@@ -139,7 +133,44 @@ NET_DEF = {
     'copy': 'copy',
     'calendar': 'calendar',
     'chinh': 'tuning-2',
+    'edit': 'pen',
+    'trash': 'trash-bin-trash',
+    'eye': 'eye',
+    'printer': 'printer',
+    'logout': 'logout-2',
+    'lock': 'lock-keyhole-minimalistic',
+    'help': 'question-circle',
+    'info': 'info-circle',
+    'info-circle': 'info-circle',
+    'alert': 'danger-triangle',
+    'bell': 'bell',
+    'clock': 'clock-circle',
+    'send': 'plain',
+    'play': 'play',
+    # Giao diện chung theo chỉ đạo coordinator
+    'user': 'user',
+    'key': 'key',
+    'mail': 'letter',
+    'phone': 'phone',
+    'keyboard': 'keyboard',
+    'history': 'history',
+    'flag': 'flag',
 }
+
+NET_PHAN_HE = {
+    'home': 'home-2',
+    'folder': 'folder-with-files',
+    'wallet': 'wallet',
+    'cart': 'cart-large-2',
+    'truck': 'bag-4',
+    'box': 'box',
+    'percent': 'sale',
+    'book': 'notebook-bookmark',
+    'cog': 'settings',
+}
+
+NET_DEF = {**NET_PHAN_HE, **THAO_TAC_DEF}
+THAO_TAC = sorted(THAO_TAC_DEF.keys())
 
 # 3. Phân nhóm màu (8 nhóm nghiệp vụ)
 NHOM_MAP = {
@@ -225,8 +256,6 @@ def escape_nhay_don(s):
 # Bảng sửa tay: icon có trong bảng lấy ngược kết quả đo hộp bao (đo đảo thì giữ, đo giữ thì đảo)
 # tool: đo hộp bao ra đảo nhầm, đầu búa thành cam (T301), chỉ bộ nét
 DAO_TAY = {'tool'}
-# Bộ khối (Bold Duotone) đo hộp bao đã đúng, chưa cần sửa tay (T320)
-DAO_TAY_DAC = set()
 
 _CMD_RE = re.compile(r'([a-zA-Z])([^a-zA-Z]*)')
 _NUM_RE = re.compile(r'[-+]?(?:\d*\.\d+|\d+)')
@@ -331,6 +360,76 @@ def dao_class_l2(body):
     return re.sub(r'<(path|circle|ellipse|rect)\b([^>]*?)(/?>)', swap_tag, body)
 
 
+def tach_hai_lop(raw_body, vb='0 0 24 24'):
+    """Tách 2 lớp SVG: lớp có opacity và lớp không có opacity."""
+    root = ET.fromstring(f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="{vb}">{raw_body}</svg>')
+    op_elements = []
+    non_elements = []
+
+    def process(elem, parent_has_op):
+        has_op = parent_has_op or ('opacity' in elem.attrib)
+        tag = elem.tag.split('}')[-1]
+        if tag in ('path', 'circle', 'rect', 'ellipse', 'polygon', 'polyline', 'line'):
+            elem_copy = ET.Element(tag, {k: v for k, v in elem.attrib.items() if k != 'opacity'})
+            if has_op:
+                op_elements.append(elem_copy)
+            else:
+                non_elements.append(elem_copy)
+        else:
+            for child in elem:
+                process(child, has_op)
+
+    for child in root:
+        process(child, False)
+
+    def to_svg(elems):
+        if not elems:
+            return None
+        s = f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="{vb}" width="96" height="96" fill="#000">'
+        for el in elems:
+            s += ET.tostring(el, encoding='unicode')
+        s += '</svg>'
+        return s
+
+    return to_svg(op_elements), to_svg(non_elements)
+
+
+def gan_lop_dac(raw_body, lop, dao):
+    """Gán class l2 hoặc l3 cho lớp phụ và xoá opacity."""
+    if not lop:
+        return re.sub(r'\s+opacity=[\'"]0?\.\d+[\'"]', '', raw_body)
+
+    ET.register_namespace('', 'http://www.w3.org/2000/svg')
+    root = ET.fromstring(f'<svg xmlns="http://www.w3.org/2000/svg">{raw_body}</svg>')
+    elem_op = {}
+
+    def mark_op(el, parent_has_op):
+        has_op = parent_has_op or ('opacity' in el.attrib)
+        elem_op[el] = has_op
+        for ch in el:
+            mark_op(ch, has_op)
+
+    mark_op(root, False)
+
+    for el in root.iter():
+        tag = el.tag.split('}')[-1]
+        has_op = elem_op.get(el, False)
+        if 'opacity' in el.attrib:
+            del el.attrib['opacity']
+        if tag in ('path', 'circle', 'rect', 'ellipse', 'polygon', 'polyline', 'line'):
+            is_phu = (not has_op) if dao else has_op
+            if is_phu and lop:
+                el.attrib['class'] = lop
+            else:
+                el.attrib.pop('class', None)
+        elif tag == 'g':
+            el.attrib.pop('class', None)
+
+    res = ''.join(ET.tostring(ch, encoding='unicode') for ch in root)
+    res = re.sub(r'\s+xmlns=[\'"][^\'"]*[\'"]', '', res)
+    return res
+
+
 def main():
     kiem_tra_chi_dinh = '--kiem' in sys.argv
     canh_bao = []
@@ -360,33 +459,40 @@ def main():
             if full_bld in bold_res['not_found']:
                 dac_not_found.append(f'DAC: {local_name} ({full_duo} / {full_bld})')
 
-    # 2. Tải bản Line Duotone cho NET (nếu không có thì thử Linear) (T301)
+    # 2. Tải bản icon cho NET: THAO_TAC ưu tiên -linear, các icon khác ưu tiên -line-duotone
     all_net_items = {**SOLAR, **NET_DEF}
-    duotone_net_targets = {k: f'{v}-line-duotone' for k, v in all_net_items.items()}
-    net_names = list(set(duotone_net_targets.values()))
+    net_targets = {}
+    for k, v in all_net_items.items():
+        if k in THAO_TAC_DEF:
+            net_targets[k] = f'{v}-linear'
+        else:
+            net_targets[k] = f'{v}-line-duotone'
+
+    net_names = list(set(net_targets.values()))
     net_res = tai_iconify(net_names)
 
-    # Các icon thiếu line-duotone sẽ thử sang -linear
-    linear_needed = {}
-    for local_name, full_ld in duotone_net_targets.items():
-        if full_ld in net_res['not_found']:
+    # Các icon thiếu bản ưu tiên sẽ thử fallback
+    fallback_needed = {}
+    for local_name, full_target in net_targets.items():
+        if full_target in net_res['not_found']:
             base = all_net_items[local_name]
-            linear_needed[local_name] = f'{base}-linear'
+            if local_name in THAO_TAC_DEF:
+                fallback_needed[local_name] = f'{base}-line-duotone'
+            else:
+                fallback_needed[local_name] = f'{base}-linear'
 
-    linear_res = {'icons': {}, 'aliases': {}, 'not_found': []}
-    if linear_needed:
-        linear_res = tai_iconify(list(set(linear_needed.values())))
+    fallback_res = {'icons': {}, 'aliases': {}, 'not_found': []}
+    if fallback_needed:
+        fallback_res = tai_iconify(list(set(fallback_needed.values())))
 
     net_not_found = []
-    linear_fallback = []
-    for local_name in all_net_items:
-        full_ld = duotone_net_targets[local_name]
-        if full_ld in net_res['not_found']:
-            full_lin = linear_needed[local_name]
-            if full_lin in linear_res['not_found']:
-                net_not_found.append(f'NET: {local_name} ({full_ld} / {full_lin})')
+    for local_name, full_target in net_targets.items():
+        if full_target in net_res['not_found']:
+            full_fb = fallback_needed[local_name]
+            if full_fb in fallback_res['not_found']:
+                net_not_found.append(f'NET: {local_name} ({full_target} / {full_fb})')
             else:
-                linear_fallback.append(f'{local_name} (dùng {full_lin})')
+                canh_bao.append(f'NET {local_name}: dùng {full_fb} thay vì {full_target}')
 
     if kiem_tra_chi_dinh:
         if dac_not_found or net_not_found:
@@ -402,95 +508,134 @@ def main():
             print(' ', nf)
         sys.exit(1)
 
-    # 3. Trích xuất DAC
+    # 3. Trích xuất DAC bằng Playwright đo diện tích điểm ảnh thực tế (canvas 96x96)
+    print('Đang đo diện tích các lớp icon khối bằng Playwright...')
     dac = {}
-    dac_da_dao = []
-    for local_name, full_duo in duotone_targets.items():
-        info = None
-        if full_duo not in duotone_res['not_found']:
-            info = lay_thong_tin_icon(
-                duotone_res['icons'], duotone_res['aliases'],
-                duotone_res['width'], duotone_res['height'], full_duo
-            )
-        if not info:
-            full_bld = bold_needed[local_name]
-            info = lay_thong_tin_icon(
-                bold_res['icons'], bold_res['aliases'],
-                bold_res['width'], bold_res['height'], full_bld
-            )
-            canh_bao.append(f'{local_name}: dùng {full_bld} thay vì bold-duotone')
+    bang_ti_le = []
 
-        body = info['body']
-        # Đổi thuộc tính opacity=".5" (lớp phụ) thành class="l2"
-        body = re.sub(r'\s+opacity=[\'"]0?\.\d+[\'"]', ' class="l2"', body)
+    with sync_playwright() as p:
+        try:
+            browser = p.chromium.launch(channel='chrome')
+        except Exception:
+            browser = p.chromium.launch(channel='msedge')
+        page = browser.new_page(viewport={'width': 200, 'height': 200})
+        page.set_content('<canvas id="c" width="96" height="96"></canvas>')
 
-        # Tính hộp bao diện tích của lớp l2 vs lớp không class trong các d (T320)
-        pts_l2 = []
-        pts_non = []
-        for t in re.findall(r'<path\b[^>]*>', body):
-            dm = re.search(r'\bd=([\'"])(.*?)\1', t)
-            if not dm:
-                continue
-            d_val = dm.group(2)
-            is_l2 = 'class="l2"' in t or "class='l2'" in t
-            if is_l2:
-                pts_l2.extend(trich_toa_do_d(d_val))
+        def do_diem_anh(svg_str):
+            if not svg_str:
+                return 0
+            return page.evaluate('''s => new Promise(r => {
+                const c = document.getElementById('c'), ctx = c.getContext('2d');
+                ctx.clearRect(0, 0, 96, 96);
+                const img = new Image();
+                img.onload = () => {
+                    ctx.drawImage(img, 0, 0, 96, 96);
+                    const d = ctx.getImageData(0, 0, 96, 96).data;
+                    let n = 0;
+                    for (let i = 3; i < d.length; i += 4) {
+                        if (d[i] > 0) n++;
+                    }
+                    r(n);
+                };
+                img.onerror = () => r(0);
+                img.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(s);
+            })''', svg_str)
+
+        for local_name, full_duo in duotone_targets.items():
+            info = None
+            if full_duo not in duotone_res['not_found']:
+                info = lay_thong_tin_icon(
+                    duotone_res['icons'], duotone_res['aliases'],
+                    duotone_res['width'], duotone_res['height'], full_duo
+                )
+            if not info:
+                full_bld = bold_needed[local_name]
+                info = lay_thong_tin_icon(
+                    bold_res['icons'], bold_res['aliases'],
+                    bold_res['width'], bold_res['height'], full_bld
+                )
+                canh_bao.append(f'{local_name}: dùng {full_bld} thay vì bold-duotone')
+
+            raw_body = info['body']
+            vb = info['vb']
+
+            s_op, s_non = tach_hai_lop(raw_body, vb)
+            cnt_op = do_diem_anh(s_op)
+            cnt_non = do_diem_anh(s_non)
+
+            if cnt_op == 0 or cnt_non == 0:
+                ratio = 0.0
+                lop = ''
+                dao = False
             else:
-                pts_non.extend(trich_toa_do_d(d_val))
+                phu = min(cnt_op, cnt_non)
+                chinh = max(cnt_op, cnt_non)
+                ratio = phu / (phu + chinh)
+                lop = 'l2' if ratio < 0.27 else 'l3'
+                dao = (cnt_op > cnt_non)
 
-        dt_l2 = dien_tich_hop_bao(pts_l2)
-        dt_non = dien_tich_hop_bao(pts_non)
+            final_body = gan_lop_dac(raw_body, lop, dao)
+            dac[local_name] = {'vb': vb, 'body': final_body}
+            solar_name = SOLAR.get(local_name, '')
+            bang_ti_le.append((local_name, solar_name, ratio, lop or 'than'))
 
-        if (local_name in DAO_TAY_DAC) != (dt_l2 > dt_non):
-            body = dao_class_l2(body)
-            dac_da_dao.append(local_name)
+        browser.close()
 
-        dac[local_name] = {'vb': info['vb'], 'body': body}
+    print('\nBảng tỉ lệ diện tích lớp phụ (Playwright 96x96):')
+    print(f"  {'Icon':15s} {'Solar Name':26s} {'Tỉ lệ':7s} {'Lớp phụ'}")
+    print('  ' + '-' * 56)
+    for loc, sol, r, lop in sorted(bang_ti_le):
+        print(f"  {loc:15s} {sol:26s} {r:6.2f}  {lop}")
+    print()
 
-    # 4. Trích xuất NET (Line Duotone, nét phụ class="l2", bỏ stroke-width="1.5")
+    # 4. Trích xuất NET
     net = {}
     icon_da_dao = []
-    for local_name, full_ld in duotone_net_targets.items():
+    for local_name, full_target in net_targets.items():
         info = None
-        if full_ld not in net_res['not_found']:
+        if full_target not in net_res['not_found']:
             info = lay_thong_tin_icon(
                 net_res['icons'], net_res['aliases'],
-                net_res['width'], net_res['height'], full_ld
+                net_res['width'], net_res['height'], full_target
             )
-        if not info and local_name in linear_needed:
-            full_lin = linear_needed[local_name]
+        if not info and local_name in fallback_needed:
+            full_fb = fallback_needed[local_name]
             info = lay_thong_tin_icon(
-                linear_res['icons'], linear_res['aliases'],
-                linear_res['width'], linear_res['height'], full_lin
+                fallback_res['icons'], fallback_res['aliases'],
+                fallback_res['width'], fallback_res['height'], full_fb
             )
-            canh_bao.append(f'{local_name}: dùng {full_lin} thay vì line-duotone')
+            canh_bao.append(f'NET {local_name}: dùng {full_fb} thay vì {full_target}')
 
         body = info['body']
-        # Đổi thuộc tính opacity=".5" / ".4" thành class="l2" (bỏ opacity để CSS tô màu nhấn)
-        body = re.sub(r'\s+opacity=[\'"]0?\.\d+[\'"]', ' class="l2"', body)
-        # Body nét: bỏ stroke-width="1.5" để CSS quyết định nét
-        body = re.sub(r'\s+stroke-width=[\'"]1\.5[\'"]', '', body)
+        if local_name in THAO_TAC_DEF:
+            # Icon thao tác: một màu, bỏ stroke-width="1.5" (CSS .ic định nét 1.5px)
+            body = re.sub(r'\s+stroke-width=[\'"]1\.5[\'"]', '', body)
+            body = re.sub(r'\s+opacity=[\'"]0?\.\d+[\'"]', '', body)
+        else:
+            # Icon phân hệ nét: line-duotone, lớp phụ class="l2", bỏ stroke-width="1.5"
+            body = re.sub(r'\s+opacity=[\'"]0?\.\d+[\'"]', ' class="l2"', body)
+            body = re.sub(r'\s+stroke-width=[\'"]1\.5[\'"]', '', body)
 
-        # Tính hộp bao diện tích của lớp l2 vs lớp không class trong các d
-        pts_l2 = []
-        pts_non = []
-        for t in re.findall(r'<path\b[^>]*>', body):
-            dm = re.search(r'\bd=([\'"])(.*?)\1', t)
-            if not dm:
-                continue
-            d_val = dm.group(2)
-            is_l2 = 'class="l2"' in t or "class='l2'" in t
-            if is_l2:
-                pts_l2.extend(trich_toa_do_d(d_val))
-            else:
-                pts_non.extend(trich_toa_do_d(d_val))
+            # Tính hộp bao diện tích của lớp l2 vs lớp không class trong các d
+            pts_l2 = []
+            pts_non = []
+            for t in re.findall(r'<path\b[^>]*>', body):
+                dm = re.search(r'\bd=([\'"])(.*?)\1', t)
+                if not dm:
+                    continue
+                d_val = dm.group(2)
+                is_l2 = 'class="l2"' in t or "class='l2'" in t
+                if is_l2:
+                    pts_l2.extend(trich_toa_do_d(d_val))
+                else:
+                    pts_non.extend(trich_toa_do_d(d_val))
 
-        dt_l2 = dien_tich_hop_bao(pts_l2)
-        dt_non = dien_tich_hop_bao(pts_non)
+            dt_l2 = dien_tich_hop_bao(pts_l2)
+            dt_non = dien_tich_hop_bao(pts_non)
 
-        if (local_name in DAO_TAY) != (dt_l2 > dt_non):
-            body = dao_class_l2(body)
-            icon_da_dao.append(local_name)
+            if (local_name in DAO_TAY) != (dt_l2 > dt_non):
+                body = dao_class_l2(body)
+                icon_da_dao.append(local_name)
 
         net[local_name] = {'vb': info['vb'], 'body': body}
 
@@ -508,7 +653,7 @@ def main():
         body_esc = escape_nhay_don(v['body'])
         solar_name = SOLAR.get(k, '')
         comment = f' // {solar_name}' if solar_name else ''
-        lines.append(f"  {k}: {{ vb: '{vb_esc}', body: '{body_esc}' }},{comment}")
+        lines.append(f"  '{k}': {{ vb: '{vb_esc}', body: '{body_esc}' }},{comment}")
 
     lines.append('}\n')
 
@@ -518,19 +663,21 @@ def main():
         body_esc = escape_nhay_don(v['body'])
         solar_name = all_net_items.get(k, '')
         comment = f' // {solar_name}' if solar_name else ''
-        lines.append(f"  {k}: {{ vb: '{vb_esc}', body: '{body_esc}' }},{comment}")
+        lines.append(f"  '{k}': {{ vb: '{vb_esc}', body: '{body_esc}' }},{comment}")
     lines.append('}\n')
 
     lines.append('export const NHOM: Record<string, string> = {')
     for k, v in NHOM.items():
-        lines.append(f"  {k}: '{v}',")
+        lines.append(f"  '{k}': '{v}',")
     lines.append('}\n')
 
+    lines.append('export const THAO_TAC: string[] = [')
+    for k in THAO_TAC:
+        lines.append(f"  '{k}',")
+    lines.append(']\n')
+
     DICH.write_text('\n'.join(lines), encoding='utf-8')
-    print(f'Đã sinh {DICH.relative_to(WEB)} với {len(dac)} icon khối, {len(net)} icon nét.')
-    if dac_da_dao:
-        print(f'Đã đảo {len(dac_da_dao)} icon DAC (lớp l2 có hộp bao lớn hơn -> đảo để thân xanh, cam chi tiết):')
-        print('  ' + ', '.join(sorted(dac_da_dao)))
+    print(f'Đã sinh {DICH.relative_to(WEB)} với {len(dac)} icon khối, {len(net)} icon nét, {len(THAO_TAC)} icon thao tác.')
     if icon_da_dao:
         print(f'Đã đảo {len(icon_da_dao)} icon NET (lớp l2 có hộp bao lớn hơn -> đảo để thân xanh, cam chi tiết):')
         print('  ' + ', '.join(sorted(icon_da_dao)))
