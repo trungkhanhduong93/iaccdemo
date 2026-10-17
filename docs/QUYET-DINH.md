@@ -742,3 +742,5 @@ dinhlanphuongipacc yêu cầu 17/10/2026 (T315), đã làm và đưa lên bản 
 - Khoá theo tháng, lần lượt từng tháng; tháng đang mở chưa khoá được. Trước khi khoá có các bước kiểm tra kiểu gói Free, chưa xong vẫn khoá được, có cảnh báo.
 - Phiếu thuộc tháng đã khoá chỉ xem, không sửa, không xoá, áp dụng mọi gói.
 - Mở khoá tháng đã khoá gần nhất, bắt buộc ghi lý do; lịch sử ghi người làm, thời điểm đủ ngày giờ.
+
+## QD70. Bản phát hành i-accounting (đang soạn)
