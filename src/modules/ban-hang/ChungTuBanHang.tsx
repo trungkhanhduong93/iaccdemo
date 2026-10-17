@@ -498,9 +498,9 @@ function NoiDungTab({ x, tab, kieu, an: an0 = AN_POS_MAC_DINH, hkd = false }: { 
   const giam = hkd ? chiaTheo(giamThueHkd(x.dt), dong0.map(d => d.dtTruocThue), 1) : []
   const dong = hkd ? dong0.map((d, i) => ({ ...d, giamThue: giam[i] })) : dong0
   const ht = [
-    { dg: 'Thu tiền mặt', no: '1111', co: '5111, 33311', tien: x.tm },
-    { dg: 'Thu chuyển khoản, QR, thẻ', no: '1121', co: '5111, 33311', tien: x.ck + x.the },
-    { dg: 'Phải thu app giao đồ ăn', no: '131', co: '5111, 33311', tien: x.app },
+    { dg: 'Thu tiền mặt', no: '1111', co: hkd ? '5111' : '5111, 33311', tien: x.tm },
+    { dg: 'Thu chuyển khoản, QR, thẻ', no: '1121', co: hkd ? '5111' : '5111, 33311', tien: x.ck + x.the },
+    { dg: 'Phải thu app giao đồ ăn', no: '131', co: hkd ? '5111' : '5111, 33311', tien: x.app },
     { dg: 'Giá vốn xuất bán theo định lượng', no: '632', co: '152', tien: x.gv },
   ]
   const rowsSo = [

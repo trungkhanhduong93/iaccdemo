@@ -24238,20 +24238,12 @@ button[class*="btn-"] .ic .l2 {
   flex-shrink: 0;
 }
 
-/* ── Thanh tab dưới đáy: kính mờ iOS & pill trượt (điểm 17) ── */
+/* ── Thanh tab dưới đáy: nền trắng đặc (Trum bỏ trong suốt) & pill trượt (điểm 17) ── */
 .m-thanh-duoi {
-  background: rgba(255, 255, 255, 0.72) !important;
-  backdrop-filter: blur(20px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.6) !important;
+  background: var(--white) !important;
+  border: 1px solid var(--line) !important;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
   overflow: hidden;
-}
-
-@supports not ((backdrop-filter: blur(20px)) or (-webkit-backdrop-filter: blur(20px))) {
-  .m-thanh-duoi {
-    background: rgba(255, 255, 255, 0.95) !important;
-  }
 }
 
 .m-thanh-duoi-pill {

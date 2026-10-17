@@ -159,9 +159,9 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
     if (!donDangXem?.x) return []
     const x = hkd ? ttHkd(donDangXem.x) : donDangXem.x
     return [
-      { dg: 'Thu tiền mặt', no: '1111', co: '5111, 33311', tien: Number(x.tm || 0) },
-      { dg: 'Thu chuyển khoản, QR, thẻ', no: '1121', co: '5111, 33311', tien: Number(x.ck || 0) + Number(x.the || 0) },
-      { dg: 'Phải thu app giao đồ ăn', no: '131', co: '5111, 33311', tien: Number(x.app || 0) },
+      { dg: 'Thu tiền mặt', no: '1111', co: hkd ? '5111' : '5111, 33311', tien: Number(x.tm || 0) },
+      { dg: 'Thu chuyển khoản, QR, thẻ', no: '1121', co: hkd ? '5111' : '5111, 33311', tien: Number(x.ck || 0) + Number(x.the || 0) },
+      { dg: 'Phải thu app giao đồ ăn', no: '131', co: hkd ? '5111' : '5111, 33311', tien: Number(x.app || 0) },
       { dg: 'Giá vốn xuất bán theo định lượng', no: '632', co: '152', tien: Number(x.gv || 0) },
     ].filter(b => b.tien > 0)
   }, [donDangXem, hkd])

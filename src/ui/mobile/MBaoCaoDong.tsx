@@ -145,6 +145,9 @@ const Khuon1ChiTietNgay: FC<{ rows: Row[]; q?: string; xemTatCaCn?: boolean }> =
   // Tìm dòng tổng nếu có
   const rDau = rows.find(r => r._b === 1 || String(r.dg || r.dienGiai || '').toLowerCase().includes('đầu kỳ'))
   const rTong = rows.find(r => r._t === 1)
+  // thẻ kho (5.2.1) ghi số lượng nhập, xuất, tồn, không có cột tiền (T355)
+  const laTheKho = rows.some(r => r.nhap !== undefined || r.xuat !== undefined)
+  const rCuoi = rows.find(r => r._t === 1 && r.ton !== undefined)
 
   // Gom các dòng phát sinh
   const dsPhatSinh = useMemo(() => {
@@ -160,18 +163,31 @@ const Khuon1ChiTietNgay: FC<{ rows: Row[]; q?: string; xemTatCaCn?: boolean }> =
       const nhom = map.get(ngay)
       if (nhom) {
         nhom.ds.push(r)
-        nhom.tongTien += tienDong
+        nhom.tongTien = laTheKho ? Number(r.ton ?? 0) : nhom.tongTien + tienDong
       } else {
-        map.set(ngay, { ngay, ds: [r], tongTien: tienDong })
+        map.set(ngay, { ngay, ds: [r], tongTien: laTheKho ? Number(r.ton ?? 0) : tienDong })
       }
     }
     return Array.from(map.values())
-  }, [dsPhatSinh])
+  }, [dsPhatSinh, laTheKho])
 
   return (
     <div className="m-bcd-khuon1">
+      {/* Thẻ kho: 4 ô số lượng Tồn đầu, Nhập, Xuất, Tồn cuối (T355) */}
+      {laTheKho && rTong && (
+        <div className="m-so-dong-tong bon-o">
+          {[
+            ['Tồn đầu', rDau?.ton], ['Nhập', rTong.nhap], ['Xuất', rTong.xuat], ['Tồn cuối', rCuoi?.ton],
+          ].map(([nhan, v]) => (
+            <div key={String(nhan)} className="m-so-dong-tong-o">
+              <span className="m-so-dong-tong-nhan">{String(nhan)}</span>
+              <b className="m-so-dong-tong-so m-so-dong-num">{money(Number(v ?? 0))}</b>
+            </div>
+          ))}
+        </div>
+      )}
       {/* Dòng tổng 3 ô đầu danh sách */}
-      {rTong && (
+      {!laTheKho && rTong && (
         <div className="m-so-dong-tong">
           <div className="m-so-dong-tong-o">
             <span className="m-so-dong-tong-nhan">
@@ -225,7 +241,7 @@ const Khuon1ChiTietNgay: FC<{ rows: Row[]; q?: string; xemTatCaCn?: boolean }> =
           <div key={nhom.ngay} className="m-bcd-ngay-khoi">
             <div className="m-so-dong-ngay">
               <span className="m-so-dong-ngay-chu">{nhom.ngay}</span>
-              <span className="m-so-dong-ngay-ton m-so-dong-num">{money(nhom.tongTien)}</span>
+              <span className="m-so-dong-ngay-ton m-so-dong-num">{laTheKho ? `Tồn ${money(nhom.tongTien)}` : money(nhom.tongTien)}</span>
             </div>
             <div className="m-so-dong-the">
               {nhom.ds.map((r, i) => {
@@ -270,6 +286,15 @@ const Khuon1ChiTietNgay: FC<{ rows: Row[]; q?: string; xemTatCaCn?: boolean }> =
                         <div className="m-so-dong-tien m-so-dong-num">
                           {money(tienChinh)}
                         </div>
+                      )}
+                      {laTheKho && r.nhap !== undefined && (
+                        <div className="m-so-dong-tien m-so-dong-duong m-so-dong-num">+{money(Number(r.nhap))}</div>
+                      )}
+                      {laTheKho && r.xuat !== undefined && (
+                        <div className="m-so-dong-tien m-so-dong-am m-so-dong-num">−{money(Number(r.xuat))}</div>
+                      )}
+                      {laTheKho && r.ton !== undefined && (
+                        <div className="m-so-dong-phu" style={{ fontSize: 11 }}>Tồn {money(Number(r.ton))}</div>
                       )}
                       {r.du !== undefined && (
                         <div className="m-so-dong-phu" style={{ fontSize: 11 }}>
