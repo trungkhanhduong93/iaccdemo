@@ -11,8 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T351 | Web, thanh công cụ: Xuất bán POS bộ lọc sang trái; Tài sản cố định gom Nhập, Xuất Excel vào nút Excel; Chi phí phân bổ nút Ẩn thẻ hết phân bổ cùng hàng bộ lọc, Thêm mới phải, Tuỳ chỉnh cột và Excel hàng dưới; mọi màn danh mục dùng 1 nút icon Excel chứa Nhập, Xuất | Trum | Đang làm | Anti làm. Sửa màn Xuất bán POS, Tài sản cố định, `ccdc/the-phan-bo.tsx`, `CatalogScreen.tsx`, mục mới cuối `app.css`. Không đụng `DanhMucCuaHang.tsx` (T321) |
-| T349 | Web, mọi màn danh sách chứng từ, cả 3 gói: thanh công cụ tách 2 hàng. Hàng 1 ô lọc, nút Lọc, Thêm mới bên phải; hàng 2 chip trạng thái (hoặc tab Kiểm kê) bên trái, Excel, Tuỳ chỉnh cột, Hàng loạt bên phải | Trum | Đang làm | Anti làm. Sửa `src/ui/generic/VoucherScreen.tsx` (khối `ds-thanh`), mục mới cuối `app.css` |
 | T339 | Trang chủ Free máy tính, Tiến độ kiểm kê theo cửa hàng: hiện tối đa 4 cửa hàng cần chú ý (chưa kiểm, lệch nhiều trước), dòng Đã kiểm x/y cửa hàng, dòng Xem tất cả mở hộp danh sách đủ | dinhlanphuongipacc | Đang làm | Sửa `home/BaBaiToanFree.tsx`, `app.css` (mục cuối T339) |
 | T333 | Đổi chữ "map" thành "gán" khi nói về phương thức thanh toán và quỹ (Khoá sổ, Danh mục Quỹ tiền, Danh mục cửa hàng) | dinhlanphuongipacc | Dở dang | Đã đổi ở Khoá sổ, Quỹ tiền. Còn `DanhMucCuaHang.tsx` chờ PhuongXT xong T321. Xem [nhật ký](nhat-ky/2026-10-17-dinhlanphuongipacc-doi-map-thanh-gan.md) |
 | T323 | `tools/kiem_tra.py --dien-thoai` dừng ở bước chờ `.m-nv-luoi`: màn Nghiệp vụ điện thoại làm lại ở T311 không còn lớp này, cập nhật bộ kiểm theo bố cục mới | | Chờ | Phát hiện 17/10/2026 khi kiểm T322 |
@@ -53,6 +51,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T349 | Web, mọi màn danh sách chứng từ, cả 3 gói: thanh công cụ tách 2 hàng, hàng 1 bộ lọc và Thêm mới, hàng 2 chip trạng thái, Excel, Tuỳ chỉnh cột, Hàng loạt | Trum | 17/10/2026 | [2026-10-17-trum-thanh-cong-cu-2-hang](nhat-ky/2026-10-17-trum-thanh-cong-cu-2-hang.md) |
 | T340 | Web và điện thoại: bộ icon Khối đồng màu (mặt khối xanh nhạt, cam chỉ ở chi tiết nhỏ), icon thao tác Solar Linear, thanh bên thân đậm 50% | Trum | 17/10/2026 | [2026-10-17-trum-icon-khoi-dong-mau](nhat-ky/2026-10-17-trum-icon-khoi-dong-mau.md) |
 | T332 | Quay về bộ icon Solar nét: không push, thay bằng T340; phần nét dự phòng 1.6px gộp vào T340 | Trum | 17/10/2026 | [2026-10-17-trum-icon-khoi-dong-mau](nhat-ky/2026-10-17-trum-icon-khoi-dong-mau.md) |
 | T350 | Báo cáo: hộp Tuỳ chỉnh báo cáo icon nét; bỏ ô Rộng (px), thay bằng kéo giãn cột ngay trên bảng báo cáo, lưu theo báo cáo | Trum | 17/10/2026 | [2026-10-17-trum-keo-gian-cot-bao-cao](nhat-ky/2026-10-17-trum-keo-gian-cot-bao-cao.md) |

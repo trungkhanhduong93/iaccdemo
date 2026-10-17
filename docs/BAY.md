@@ -68,3 +68,15 @@ Lỗi đã từng làm mất thời gian, kèm cách tránh. Đọc trước khi
 - Nguyên nhân: khung trình duyệt của agent đang ẩn nên trang chạy như tab nền, không vẽ khung hình, `ResizeObserver` không gọi tới khi trang được vẽ lại. Biến gán vào `window` cũng không đọc được từ công cụ chạy JavaScript (chạy ở môi trường tách riêng).
 - Cách tránh: chụp màn hình một lần cho trang vẽ rồi mới đo. Cần ghi dấu tạm thì ghi vào thuộc tính DOM (`data-*`), không ghi vào `window`.
 
+## Gộp xung đột cuối app.css làm mất dấu đóng khối (T340, T349)
+
+- Hiện tượng: 2 việc cùng thêm mục mới cuối `app.css`, gộp bằng cách giữ cả hai bên thì `npm run build` báo `CssSyntaxError: Unclosed block`.
+- Nguyên nhân: cả 2 mục đều kết thúc bằng dòng `}`, git coi dòng đó là phần chung và đặt sau khối xung đột. Ghép 2 phần lại thì phần trên thiếu dấu đóng.
+- Cách tránh: sau khi gộp, đếm `{` và `}` của từng phần, phần nào thiếu thì bù. Chạy `npm run build` ngay sau khi gộp, trước khi commit.
+
+## Bộ khối Solar Bold Duotone: lớp phụ có khi là cả mặt khối (T340)
+
+- Hiện tượng: tô lớp phụ màu cam thì xe đẩy, hộp, toà nhà, sổ, thẻ thu chi thành mảng cam lớn.
+- Nguyên nhân: lớp phụ của Bold Duotone khi là chi tiết nhỏ, khi là một mặt của khối. Đo hộp bao không phân biệt được.
+- Cách tránh: `tools/xuat_bieu_tuong.py` vẽ từng lớp bằng Playwright, đo diện tích thật. Lớp phụ dưới 27% là chi tiết (`l2`, cam), từ 27% là mặt khối (`l3`, xanh nhạt).
+

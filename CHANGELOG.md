@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 17/10/2026
 
+- T349: Danh sách chứng từ (thu chi, bán hàng, mua hàng, kho...) có thanh công cụ 2 hàng: hàng trên là bộ lọc và nút Thêm mới, hàng dưới là trạng thái ghi sổ cùng nút Excel, Tuỳ chỉnh cột. Không còn nút bị đẩy ra ngoài màn hình.
 - T340: Icon web và điện thoại sáng hơn, đồng màu: thân xanh, mặt khối xanh nhạt, cam chỉ ở chi tiết nhỏ, hết các mảng cam lớn và phần tối. Nút, ô tìm, chuông, đăng xuất, chữ i đổi sang icon nét mảnh một màu. Icon thanh bên rõ hơn.
 - T350: Báo cáo: kéo mép tiêu đề cột để giãn hoặc thu cột, độ rộng được nhớ cho lần mở sau; Về mặc định trong Tuỳ chỉnh báo cáo trả lại như cũ. Hộp Tuỳ chỉnh báo cáo dùng icon nét, bỏ ô Rộng (px).
 - T347: Form chứng từ (web và điện thoại): ô chọn danh mục (đối tượng, lý do, hàng hoá, kho) có nút Thêm mở đủ form tạo mới như ở danh mục; mã trống tự sinh theo tiền tố, mã trùng báo lỗi ngay; lưu xong chọn luôn mục mới vào ô và lưu vào danh mục trong phiên.
