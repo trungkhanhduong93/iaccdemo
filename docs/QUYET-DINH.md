@@ -731,3 +731,5 @@ Trum chốt trên trang xem trước https://claude.ai/artifact/8bD189Sn5BhvJQXt
 - Sidebar web nền xanh thương hiệu đậm `#074477` sang `#06365E` (biến `--sb-nen`). Mục đang chọn nền trắng mờ, icon thân trắng nét cam. Không dùng lại navy `#2A3042` cho sidebar.
 - Thanh dưới điện thoại dùng icon Solar như phần còn lại, bỏ bộ icon IVT.
 
+
+## QD68. Màn Nghiệp vụ và bộ lọc báo cáo trên điện thoại (đang soạn)
