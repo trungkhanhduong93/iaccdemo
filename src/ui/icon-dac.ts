@@ -179,6 +179,7 @@ export const NET: Record<string, { vb: string; body: string }> = {
   'calendar': { vb: '0 0 24 24', body: '<g fill="none" stroke="currentColor" stroke-linecap="round"><path d="M2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H14C17.7712 4 19.6569 4 20.8284 5.17157C22 6.34315 22 8.22876 22 12V14C22 17.7712 22 19.6569 20.8284 20.8284C19.6569 22 17.7712 22 14 22H10C6.22876 22 4.34315 22 3.17157 20.8284C2 19.6569 2 17.7712 2 14V12Z"/><path d="M7 4V2.5"/><path d="M17 4V2.5"/><path d="M2.5 9H21.5"/><path stroke-linejoin="round" d="M17 13H17.0001"/><path stroke-linejoin="round" d="M12 13H12.0001"/><path stroke-linejoin="round" d="M7 13H7.0001"/><path stroke-linejoin="round" d="M17 17.0234H17.0001"/><path stroke-linejoin="round" d="M12 17.0234H12.0001"/><path stroke-linejoin="round" d="M7 17.0234H7.0001"/></g>' }, // calendar
   'chinh': { vb: '0 0 24 24', body: '<g fill="none" stroke="currentColor" stroke-linecap="round"><path d="M9.5 14C11.1569 14 12.5 15.3431 12.5 17C12.5 18.6568 11.1569 20 9.5 20C7.84315 20 6.5 18.6568 6.5 17C6.5 15.3431 7.84315 14 9.5 14Z"/><path d="M14.5 3.99998C12.8431 3.99998 11.5 5.34312 11.5 6.99998C11.5 8.65683 12.8431 9.99998 14.5 9.99998C16.1569 9.99998 17.5 8.65683 17.5 6.99998C17.5 5.34312 16.1569 3.99998 14.5 3.99998Z"/><path d="M15 16.9585L22 16.9585"/><path d="M9 6.9585L2 6.9585"/><path d="M2 16.9585L4 16.9585"/><path d="M22 6.9585L20 6.9585"/></g>' }, // tuning-2
   'info-circle': { vb: '0 0 24 24', body: '<g fill="none" stroke="currentColor" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 17V11"/><path stroke-linejoin="round" d="M12 8H12.0001"/></g>' }, // info-circle
+  'cuahang': { vb: '0 0 24 24', body: '<g fill="none" stroke="currentColor" stroke-linecap="round"><path d="M2.36407 12.9579C1.98463 10.3208 1.79491 9.00229 2.33537 7.87495C2.87583 6.7476 4.02619 6.06234 6.32691 4.69181L7.71175 3.86687C9.80104 2.62229 10.8457 2 12 2C13.1543 2 14.199 2.62229 16.2882 3.86687L17.6731 4.69181C19.9738 6.06234 21.1242 6.7476 21.6646 7.87495C22.2051 9.00229 22.0154 10.3208 21.6359 12.9579L21.3572 14.8952C20.8697 18.2827 20.626 19.9764 19.451 20.9882C18.2759 22 16.5526 22 13.1061 22H10.8939C7.44737 22 5.72409 22 4.54903 20.9882C3.37396 19.9764 3.13025 18.2827 2.64284 14.8952L2.36407 12.9579Z"/><path d="M15 18H9"/></g>' }, // home-angle
 }
 
 export const NHOM: Record<string, string> = {
@@ -275,6 +276,7 @@ export const THAO_TAC: string[] = [
   'clock',
   'close',
   'copy',
+  'cuahang',
   'download',
   'edit',
   'eye',

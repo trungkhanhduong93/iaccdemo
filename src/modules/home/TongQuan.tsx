@@ -546,7 +546,7 @@ export function TongQuan({ sc }: ScreenProps) {
               className="tq-cn-btn"
               onClick={() => setMoCnPop(!moCnPop)}
             >
-              <Icon n="store" className="ic sm" />
+              <Icon n="cuahang" className="ic sm" />
               <span>{nhanCnBtn}</span>
               <span style={{ transform: moCnPop ? 'rotate(180deg)' : 'none', display: 'inline-flex', transition: 'transform .15s' }}>
                 <Icon n="chevr" className="ic sm" />
@@ -585,7 +585,7 @@ export function TongQuan({ sc }: ScreenProps) {
               style={{ height: 34, gap: 6 }}
               onClick={() => setMoTuyChinh(true)}
             >
-              <Icon n="tool" className="ic sm" />
+              <Icon n="cog" kieu="net" className="ic sm" />
               <span>Tuỳ chỉnh</span>
             </button>
           )}

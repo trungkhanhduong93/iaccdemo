@@ -155,6 +155,7 @@ THAO_TAC_DEF = {
     'keyboard': 'keyboard',
     'history': 'history',
     'flag': 'flag',
+    'cuahang': 'home-angle',  # cửa hàng: hình nhà dễ nhận hơn gian hàng (T349)
 }
 
 NET_PHAN_HE = {
