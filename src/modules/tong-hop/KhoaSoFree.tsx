@@ -2,6 +2,7 @@
 // Khoá xong thì phiếu trong tháng chỉ xem (không sửa, không xoá), ô Tháng ghi nhận chi phí không chọn được tháng đã khoá.
 // Mở khoá bắt buộc ghi lý do. Tháng đã khoá, lịch sử lưu ở trình duyệt (datKhoaSoDen, data/mock.ts)
 import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { Link } from 'react-router-dom'
 import type { ScreenProps } from '../types'
 import { tenMan } from '../../app/registry'
@@ -65,23 +66,14 @@ export function KhoaSoFree({ sc, mod }: ScreenProps) {
     toast(`Đã mở khoá tháng ${daKhoa.thang}/${daKhoa.nam}`)
     setMoKhoa(false); setLyDo('')
   }
+  const dongMo = () => { setMoKhoa(false); setLyDo('') }
 
   return (
     <div className="page">
       <PageHead crumb={[mod.ten, sc.nhom ?? '']} title={tenMan(sc)} code={sc.code}>
-        <button className="btn" onClick={() => setMoKhoa(v => !v)}><Icon n="lock" kieu="net" className="ic sm" />Mở khoá tháng {daKhoa.thang}/{daKhoa.nam}</button>
+        <button className="btn" onClick={() => setMoKhoa(true)}><Icon n="lock" kieu="net" className="ic sm" />Mở khoá tháng {daKhoa.thang}/{daKhoa.nam}</button>
         {khoaDuoc && <button className="btn acc" onClick={khoa}><Icon n="lock" kieu="net" className="ic sm" />Khoá sổ tháng {nhan}</button>}
       </PageHead>
-      {/* Khung lý do mở khoá hiện ngay dưới nút Mở khoá, không nằm cuối cột trái (T327) */}
-      {moKhoa && (
-        <Card title={`Mở khoá tháng ${daKhoa.thang}/${daKhoa.nam}`}>
-          <textarea className="inp ks-ly-do" rows={3} autoFocus placeholder="Lý do mở khoá, vd bổ sung hoá đơn điện tháng 8" value={lyDo} onChange={e => setLyDo(e.target.value)} />
-          <div className="ks-nut">
-            <button className="btn" onClick={() => { setMoKhoa(false); setLyDo('') }}>Huỷ</button>
-            <button className="btn pri" onClick={xacNhanMo}>Mở khoá</button>
-          </div>
-        </Card>
-      )}
       {/* Hai cột bằng nhau (T315): trái là trạng thái, kiểm tra; phải là lịch sử đủ rộng không phải cuộn ngang */}
       <div className="ks-luoi">
         <div className="stack">
@@ -97,6 +89,24 @@ export function KhoaSoFree({ sc, mod }: ScreenProps) {
           </Card>
           {khoaDuoc && soXong < buoc.length && <Note kind="warn" icon="alert">Còn bước chưa xong, khoá lúc này thì số liệu tháng {nhan} có thể chưa đủ. Vẫn khoá được, hệ thống ghi lại người khoá và thời điểm.</Note>}
         </div>
+        {/* Mở khoá là hộp thoại giữa màn, không còn thẻ nằm cuối cột trái phải cuộn xuống tìm (T317) */}
+        {moKhoa && createPortal(
+          <div className="overlay ds-hop-nen" onMouseDown={e => { if (e.target === e.currentTarget) dongMo() }} onKeyDown={e => { if (e.key === 'Escape') dongMo() }}>
+            <div className="ds-hop" role="dialog" aria-modal="true" aria-label={`Mở khoá tháng ${daKhoa.thang}/${daKhoa.nam}`}>
+              <div className="ds-hop-dau">
+                <Icon n="lock" kieu="net" className="ic sm" /><b>Mở khoá tháng {daKhoa.thang}/{daKhoa.nam}</b>
+                <span className="grow" />
+                <button type="button" className="icon-btn sm" onClick={dongMo} aria-label="Đóng"><Icon n="x" className="ic sm" /></button>
+              </div>
+              <div className="ds-hop-than">
+                <textarea className="inp ks-ly-do" rows={3} autoFocus placeholder="Lý do mở khoá, vd bổ sung hoá đơn điện tháng 8" value={lyDo} onChange={e => setLyDo(e.target.value)} />
+                <div className="ks-nut">
+                  <button className="btn" onClick={dongMo}>Huỷ</button>
+                  <button className="btn pri" onClick={xacNhanMo}>Mở khoá</button>
+                </div>
+              </div>
+            </div>
+          </div>, document.body)}
         <Card title="Lịch sử khoá sổ" pad={false}>
           <Table cols={[{ k: 'ky', t: 'Tháng', w: 90 }, { k: 'viec', t: 'Thao tác' }, { k: 'ai', t: 'Người làm', w: 140 }, { k: 'luc', t: 'Lúc', w: 170 }]} rows={LICH_SU_KHOA_SO.map(x => ({ ...x }))} />
         </Card>
