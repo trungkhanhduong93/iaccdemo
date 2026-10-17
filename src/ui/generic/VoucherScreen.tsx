@@ -573,68 +573,81 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
       <div className={`voucher-split${panelMo ? '' : ' gon-ct'}`}>
         {/* Nửa trên: 50% danh sách các phiếu */}
         <section className="card voucher-top">
-          {/* Thanh công cụ: chip trạng thái bên trái; ô lọc, phễu, Lọc, Tuỳ chỉnh cột, Excel, Hàng loạt, Thêm mới | ⌄ (T43) */}
+          {/* Thanh công cụ 2 hàng (T349) */}
           <div className="ds-thanh">
-            {/* Tab Kiểm kê có 3 tab con Kiểm kê, Xuất điều chỉnh, Nhập điều chỉnh cùng hàng bộ lọc (T126, T167) */}
-            {cfg.kiemKe && (
-              <div className="seg dc-tabs" role="tablist" aria-label="Kiểm kê, điều chỉnh kho">
-                <button type="button" role="tab" aria-selected className="on">Kiểm kê</button>
-                {(Object.keys(TEN_DC) as (keyof typeof TEN_DC)[]).map(k => (
-                  <button key={k} type="button" role="tab" aria-selected={false} onClick={() => nav(`/app/${MAN_DC}?loai=${k}`)}>{TEN_DC[k]}</button>
-                ))}
+            <div className="ds-thanh-h1">
+              <div className="ds-thanh-h1-trai">
+                <BoLoc ds={oLoc} cauHinh={cauHinhLoc} datCauHinh={datCauHinhLoc} dangLoc={loc0.dangLoc} khacNhap={loc0.khacNhap}
+                  onLoc={apLoc} onXoaHet={loc0.xoaNhap} />
               </div>
-            )}
-            {cfg.dieuChinh && cfg.loai && (
-              <div className="seg dc-tabs" role="tablist" aria-label="Kiểm kê, điều chỉnh kho">
-                <button type="button" role="tab" aria-selected={false} onClick={() => nav(`/app/${MAN_KK}`)}>Kiểm kê</button>
-                {cfg.loai.map(l => (
-                  <button key={l.k} type="button" role="tab" aria-selected={tabLoai === l.k} className={tabLoai === l.k ? 'on' : ''}
-                    onClick={() => { setTabLoai(l.k); setTrang(1); setActiveId(String(rows.find(r => r.loai === l.k)?.id ?? '')) }}>
-                    {l.ten}
-                  </button>
-                ))}
+              {!cfg.khongThem && (
+                <div className="ds-thanh-h1-phai">
+                  <NutThemMoiSplit
+                    toMoi={cfg.loai ? `${path}/moi?loai=${cfg.loai[0].k}` : `${path}/moi`}
+                    loai={cfg.loai}
+                    taiNguon={cfg.nguon && cfg.nguon !== 'tay' && cfg.nguon !== 'excel' ? {   // nhập Excel đã có ở nút Excel (T64)
+                      ten: NGUON[cfg.nguon][1],
+                      onTai: () => toast(`Đã tải 14 chứng từ mới từ ${NGUON[cfg.nguon!][1]}`),
+                    } : undefined}
+                  />
+                </div>
+              )}
+            </div>
+
+            <div className="ds-thanh-h2">
+              <div className="ds-thanh-h2-trai">
+                {/* Tab Kiểm kê có 3 tab con Kiểm kê, Xuất điều chỉnh, Nhập điều chỉnh cùng hàng bộ lọc (T126, T167) */}
+                {cfg.kiemKe && (
+                  <div className="seg dc-tabs" role="tablist" aria-label="Kiểm kê, điều chỉnh kho">
+                    <button type="button" role="tab" aria-selected className="on">Kiểm kê</button>
+                    {(Object.keys(TEN_DC) as (keyof typeof TEN_DC)[]).map(k => (
+                      <button key={k} type="button" role="tab" aria-selected={false} onClick={() => nav(`/app/${MAN_DC}?loai=${k}`)}>{TEN_DC[k]}</button>
+                    ))}
+                  </div>
+                )}
+                {cfg.dieuChinh && cfg.loai && (
+                  <div className="seg dc-tabs" role="tablist" aria-label="Kiểm kê, điều chỉnh kho">
+                    <button type="button" role="tab" aria-selected={false} onClick={() => nav(`/app/${MAN_KK}`)}>Kiểm kê</button>
+                    {cfg.loai.map(l => (
+                      <button key={l.k} type="button" role="tab" aria-selected={tabLoai === l.k} className={tabLoai === l.k ? 'on' : ''}
+                        onClick={() => { setTabLoai(l.k); setTrang(1); setActiveId(String(rows.find(r => r.loai === l.k)?.id ?? '')) }}>
+                        {l.ten}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {ghi && !cfg.dieuChinh && <ChipTrangThai ds={chips} chon={chipTT} onChon={k => { setChipTT(k); setTrang(1) }} />}   {/* điều chỉnh kho không có chip trạng thái ghi sổ (T126) */}
               </div>
-            )}
-            {ghi && !cfg.dieuChinh && <ChipTrangThai ds={chips} chon={chipTT} onChon={k => { setChipTT(k); setTrang(1) }} />}   {/* điều chỉnh kho không có chip trạng thái ghi sổ (T126) */}
-            <div className="ds-thanh-phai">
-              <BoLoc ds={oLoc} cauHinh={cauHinhLoc} datCauHinh={datCauHinhLoc} dangLoc={loc0.dangLoc} khacNhap={loc0.khacNhap}
-                onLoc={apLoc} onXoaHet={loc0.xoaNhap} />
-              <NutTuyChinhCot
-                cols={cot.colsDu}
-                an={cot.an}
-                coDinh={COT_CO_DINH}
-                macDinh={cot.macDinh}
-                dongBang={cot.dongBang}
-                onLuu={cot.luu}
-                onDoRongTuDong={cot.datDoRongTuDong}
-              />
-              <NutExcel
-                onNhap={() => toast('Nhập chứng từ từ file Excel')}
-                onXuat={() => toast(`Đã xuất ${list.length} chứng từ ra Excel`)}
-              />
-              <NutHangLoat
-                selectedRows={selectedRows}
-                ghi={ghi}
-                onBoChon={() => setSelectedIds(new Set())}
-                onXoa={ids => {
-                  xoaPhieu(`${mod.key}/${sc.slug}`, ids.map(id => ({ id, so: String(rows.find(r => String(r.id) === id)?.so ?? '') })), s.ten)
-                  // Xoá phiếu kiểm kê thì xoá luôn phiếu xuất, nhập điều chỉnh sinh từ nó (T129)
-                  if (cfg.kiemKe) xoaPhieu(MAN_DC, ids.flatMap(id => dsDcCon(rows.find(r => String(r.id) === id)).map(c => ({ id: c.id, so: c.so }))), s.ten)
-                }}
-                open={moHangLoat}
-                onOpenChange={setMoHangLoat}
-                onIn={() => setPhieuIn(selectedRows.map(phieuCua))}
-                khongXoa={cfg.dieuChinh}   // phiếu điều chỉnh chỉ xem (T129)
-                khoaXoa={mod.key === 'tien' ? { la: r => r.nguon === 'FABi', ly: 'đồng bộ từ FABi' } : undefined}   // xoá trên FABi (T283)
-              />
-              {!cfg.khongThem && <NutThemMoiSplit
-                toMoi={cfg.loai ? `${path}/moi?loai=${cfg.loai[0].k}` : `${path}/moi`}
-                loai={cfg.loai}
-                taiNguon={cfg.nguon && cfg.nguon !== 'tay' && cfg.nguon !== 'excel' ? {   // nhập Excel đã có ở nút Excel (T64)
-                  ten: NGUON[cfg.nguon][1],
-                  onTai: () => toast(`Đã tải 14 chứng từ mới từ ${NGUON[cfg.nguon!][1]}`),
-                } : undefined}
-              />}
+              <div className="ds-thanh-h2-phai">
+                <NutExcel
+                  onNhap={() => toast('Nhập chứng từ từ file Excel')}
+                  onXuat={() => toast(`Đã xuất ${list.length} chứng từ ra Excel`)}
+                />
+                <NutTuyChinhCot
+                  cols={cot.colsDu}
+                  an={cot.an}
+                  coDinh={COT_CO_DINH}
+                  macDinh={cot.macDinh}
+                  dongBang={cot.dongBang}
+                  onLuu={cot.luu}
+                  onDoRongTuDong={cot.datDoRongTuDong}
+                />
+                <NutHangLoat
+                  selectedRows={selectedRows}
+                  ghi={ghi}
+                  onBoChon={() => setSelectedIds(new Set())}
+                  onXoa={ids => {
+                    xoaPhieu(`${mod.key}/${sc.slug}`, ids.map(id => ({ id, so: String(rows.find(r => String(r.id) === id)?.so ?? '') })), s.ten)
+                    // Xoá phiếu kiểm kê thì xoá luôn phiếu xuất, nhập điều chỉnh sinh từ nó (T129)
+                    if (cfg.kiemKe) xoaPhieu(MAN_DC, ids.flatMap(id => dsDcCon(rows.find(r => String(r.id) === id)).map(c => ({ id: c.id, so: c.so }))), s.ten)
+                  }}
+                  open={moHangLoat}
+                  onOpenChange={setMoHangLoat}
+                  onIn={() => setPhieuIn(selectedRows.map(phieuCua))}
+                  khongXoa={cfg.dieuChinh}   // phiếu điều chỉnh chỉ xem (T129)
+                  khoaXoa={mod.key === 'tien' ? { la: r => r.nguon === 'FABi', ly: 'đồng bộ từ FABi' } : undefined}   // xoá trên FABi (T283)
+                />
+              </div>
             </div>
           </div>
 

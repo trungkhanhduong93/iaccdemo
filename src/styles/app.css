@@ -23711,3 +23711,55 @@ button[class*="btn-"] .ic .l2 {
   z-index: 5;
   cursor: col-resize;
 }
+
+/* ── Thanh công cụ danh sách chứng từ 2 hàng (T349) ── */
+.voucher-top .ds-thanh {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 8px;
+  padding: 10px 12px;
+  min-height: auto;
+}
+
+.voucher-top .ds-thanh-h1,
+.voucher-top .ds-thanh-h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.voucher-top .ds-thanh-h1-trai {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.voucher-top .ds-thanh-h1-phai {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.voucher-top .ds-thanh-h2-trai {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.voucher-top .ds-thanh-h2-phai {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
