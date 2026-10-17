@@ -920,12 +920,12 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
           </section>
         )}
 
-        {/* Khối thông tin chung 3 cột: Đối tượng / Thông tin phụ / Chứng từ */}
-        <section className="card" style={{ padding: '14px 16px' }}>
+        {/* Khối thông tin chung 3 cột: Đối tượng / Thông tin phụ / Chứng từ; ct-ttc nhãn bên trái ô cho khối thấp xuống (T335) */}
+        <section className="card ct-ttc" style={{ padding: '12px 16px' }}>
           <div
             className="grid"
             style={{
-              gridTemplateColumns: gonDau ? 'minmax(0, 1fr) 280px' : coHdDau ? 'minmax(0, 1.4fr) minmax(0, 1.2fr) 260px 280px' : 'minmax(0, 1.4fr) minmax(0, 1.2fr) 280px',
+              gridTemplateColumns: gonDau ? 'minmax(0, 1fr) 300px' : coHdDau ? 'minmax(0, 1.4fr) minmax(0, 1.2fr) 260px 300px' : 'minmax(0, 1.4fr) minmax(0, 1.2fr) 300px',   // cột ngày, số phiếu 300px vì nhãn nằm bên trái ô (T335)
               gap: 16,
               alignItems: 'start',
             }}
