@@ -1,5 +1,5 @@
 // Chứng từ bán hàng: mỗi cửa hàng một chứng từ mỗi ngày, gom từ đơn POS trên FABi. Số khớp KQKD, Tổng quan.
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import type { Col, Row, ScreenProps, VoucherCfg } from '../types'
 import { duongDan, tenMan } from '../../app/registry'
@@ -18,7 +18,7 @@ import { PhanTrang } from '../../ui/PhanTrang'
 import { useDaXoa } from '../../ui/generic/daXoa'
 import { ChonKhoangNgay, docNgay, thangNay, trongKhoang, type KhoangNgay } from '../../ui/ChonNgay'
 import { NutExcel } from '../../ui/CongCuDs'
-import { dangLoc, khopLoc, type GiaTriLoc, type KieuLoc } from '../../ui/LocCot'
+import { dangLoc, khopLoc, type GiaTriLoc, type KieuLoc, type LocCot } from '../../ui/LocCot'
 import {
   BoLoc, NutTuyChinhCot, useCauHinhLoc, useCotDs, useLocNhap, type OLocDef,
 } from '../../ui/LocNangCao'
@@ -491,7 +491,7 @@ const COT_POS: [string, string][] = [
 ]
 const AN_POS_MAC_DINH = ['giamThue', 'phiVc']
 
-function NoiDungTab({ x, tab, kieu, an: an0 = AN_POS_MAC_DINH, hkd = false }: { x: (typeof DAILY)[number]; tab: string; kieu: ReturnType<typeof kieuGhiSo>; an?: string[]; hkd?: boolean }) {
+function NoiDungTab({ x, tab, kieu, an: an0 = AN_POS_MAC_DINH, hkd = false, hienLoc = false }: { x: (typeof DAILY)[number]; tab: string; kieu: ReturnType<typeof kieuGhiSo>; an?: string[]; hkd?: boolean; hienLoc?: boolean }) {
   const an = anTheoLoai(an0, hkd)
   const dong0 = dongCuaPhieu(x)
   // hộ kinh doanh: giảm thuế GTGT của phiếu chia cho các món theo doanh thu trước thuế (T163)
@@ -509,11 +509,7 @@ function NoiDungTab({ x, tab, kieu, an: an0 = AN_POS_MAC_DINH, hkd = false }: { 
     { so: 'Sổ tiền mặt', tien: x.tm },
     { so: 'Sổ tiền gửi ngân hàng', tien: x.ck + x.the },
   ]
-  return (
-    <>
-      {tab === 'ct' && (
-        <Table
-          cols={([
+  const colsCt = ([
             // Thông tin hàng hoá đứng yên bên trái khi cuộn ngang (T106)
             { k: 'stt', t: '#', w: 40, cls: 'dim', dinh: 'trai' },
             { k: 'ma', t: 'Mã hàng', cls: 'code', w: 90, dinh: 'trai' },
@@ -536,8 +532,22 @@ function NoiDungTab({ x, tab, kieu, an: an0 = AN_POS_MAC_DINH, hkd = false }: { 
             { k: 'thue', t: 'Tiền thuế', num: true, w: 110 },
             // Theo danh mục hàng hoá: tích là mặt hàng theo dõi tồn kho, chỉ xem; cột cuối, cố định phải (T114)
             { k: 'tonKho', t: 'Theo dõi tồn kho', c: true, w: 120, dinh: 'phai', r: r => <input type="checkbox" className="o-tich-xem" checked={Boolean(r.tonKho)} readOnly tabIndex={-1} aria-label="Theo dõi tồn kho" /> },
-          ] as Col[]).filter(c => !an.includes(c.k))}
-          rows={dong}
+          ] as Col[]).filter(c => !an.includes(c.k))
+  // Lọc hàng bán (T383): bấm phễu sau tab mới hiện hàng lọc như danh sách; tổng cộng vẫn cộng mọi dòng
+  const [gtLoc, setGtLoc] = useState<Record<string, GiaTriLoc>>({})
+  useEffect(() => { if (!hienLoc) setGtLoc({}) }, [hienLoc])
+  const kieuCt = (c: Col): KieuLoc => c.num ? 'so' : 'chu'
+  const locCt: LocCot | undefined = hienLoc ? { gt: gtLoc, dat: (k, g) => setGtLoc(t => ({ ...t, [k]: g })), bo: new Set(['stt', 'tonKho']), kieu: kieuCt } : undefined
+  const giaTri = (r: (typeof dong)[number], k: string) => (r as unknown as Record<string, unknown>)[k]
+  const dongLoc = !hienLoc ? dong : dong.filter(r => colsCt.every(c => !dangLoc(gtLoc[c.k])
+    || khopLoc(kieuCt(c), gtLoc[c.k], String(giaTri(r, c.k) ?? ''), typeof giaTri(r, c.k) === 'number' ? giaTri(r, c.k) as number : undefined)))
+  return (
+    <>
+      {tab === 'ct' && (
+        <Table
+          cols={colsCt}
+          loc={locCt}
+          rows={dongLoc}
           sum={{
             ten: `Tổng cộng (${dong.length} dòng)`,   // nhãn ở cột Hàng hoá để cột # cố định không giãn (T106)
             ...Object.fromEntries((['sl', 'thanh', 'giam', 'ck', 'phiDv', 'giamThue', 'phiVc', 'dtTruocThue', 'thue'] as const)
@@ -601,6 +611,7 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
   const { s, toast } = useSession()
   const dong0 = useDong(duongDan(mod, sc))
   const [tab, setTab] = useState('ct')
+  const [moLoc, setMoLoc] = useState(false)   // hàng lọc của bảng Hàng bán (T383)
   const [phieuIn, setPhieuIn] = useState<PhieuIn[] | null>(null)
   // Cột ẩn của bảng Hàng bán, nhớ trên máy người dùng; chưa chỉnh thì ẩn Giảm thuế GTGT, Phí vận chuyển (T106)
   const khoaCot = 'iacc-cot-phieu:ban-hang/3-1-1'
@@ -668,8 +679,11 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
         <section className="card ct-than-card">
           <div className="tabs">
             {[['ct', 'Hàng bán'], ['ht', kieu === 'noco' ? 'Hạch toán' : 'Ghi sổ']].filter(([k]) => k !== 'ht' || kieu !== 'khong').map(([k, l]) => <button key={k} type="button" className={tab === k ? 'on' : ''} onClick={() => setTab(k)}>{l}</button>)}
+            {/* Phễu lọc ngay sau tab cuối như phiếu chung (T383) */}
+            <button type="button" className={`ct-nut-loc${moLoc ? ' on' : ''}`} aria-pressed={moLoc} title={moLoc ? 'Ẩn bộ lọc hàng bán' : 'Lọc hàng bán'} aria-label="Lọc hàng bán"
+              onClick={() => { if (!moLoc) setTab('ct'); setMoLoc(v => !v) }}><Icon n="filter" className="ic sm" /></button>
           </div>
-          <div className="ct-than"><NoiDungTab x={x} tab={tab} kieu={kieu} an={anCot} hkd={hkd} /></div>
+          <div className="ct-than"><NoiDungTab x={x} tab={tab} kieu={kieu} an={anCot} hkd={hkd} hienLoc={moLoc} /></div>
         </section>
       </div>
       {phieuIn && <HopInChungTu ds={phieuIn} onDong={() => setPhieuIn(null)} />}

@@ -52,6 +52,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   const khoaKy = !moi && !!row && daKhoaSo(row.ngay)   // phiếu thuộc tháng đã khoá sổ: chỉ xem, không sửa, không xoá (T315)
   const [dangSua, setDangSua] = useState(moi || (sp.get('sua') === '1' && !tuFabi && !khoaKy))
   const [tab, setTab] = useState('ct')
+  const [moLoc, setMoLoc] = useState(false)   // hàng lọc của bảng chi tiết, bấm nút Lọc mới hiện (T383)
   const [hienTk, setHienTk] = useState(false)
   const [modalPhim, setModalPhim] = useState(false)
   const [phieuIn, setPhieuIn] = useState<PhieuIn[] | null>(null)
@@ -1170,11 +1171,19 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
                 {l}
               </button>
             ))}
+            {/* Phễu lọc ngay sau tab cuối (T383): bấm mới hiện hàng lọc như danh sách chứng từ, bật thì về tab Chi tiết */}
+            {!laSx && !laDcn && (
+              <button type="button" className={`ct-nut-loc${moLoc ? ' on' : ''}`} aria-pressed={moLoc}
+                title={moLoc ? 'Ẩn bộ lọc dòng chi tiết' : 'Lọc dòng chi tiết'} aria-label="Lọc dòng chi tiết"
+                onClick={() => { if (!moLoc) setTab('ct'); setMoLoc(v => !v) }}>
+                <Icon n="filter" className="ic sm" />
+              </button>
+            )}
           </div>
 
           <div className="ct-than">
           {/* Tab 1: Chi tiết / Hàng tiền */}
-          {tab === 'ct' && laKk && <BangKiemKe dong={dsDong} onChange={setDsDong} cheDo={dangSua ? 'sua' : 'xem'} an={anCot} khongTong={!hienChan('dongTong')} />}
+          {tab === 'ct' && laKk && <BangKiemKe dong={dsDong} onChange={setDsDong} cheDo={dangSua ? 'sua' : 'xem'} an={anCot} khongTong={!hienChan('dongTong')} hienLoc={moLoc} />}
           {tab === 'ct' && laSx && (
             <BangSanXuat loai={sx!} dong={dsDong as DongSx[]} onChange={setDsDong} cheDo={dangSua ? 'sua' : 'xem'} coTk={hienTk} an={anCot}
               khongTong={!hienChan('dongTong')} kho={kho} coThamChieu={Boolean(thamChieuSx.id)} />
@@ -1206,6 +1215,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               khongTong={(laTien && chiTien) || !hienChan('dongTong')}
               chiXemLy={khoaLyDtFree}
               chiXemDt={khoaLyDtFree}
+              hienLoc={moLoc}
             />
           )}
 

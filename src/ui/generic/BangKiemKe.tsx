@@ -5,6 +5,7 @@ import { NVL } from '../../data/mock'
 import { ChonDanhMuc } from '../ChonDanhMuc'
 import { Icon } from '../Icon'
 import { money } from '../format'
+import { OLoc, dangLoc, khopLoc, type GiaTriLoc, type KieuLoc, type LocCot } from '../LocCot'
 import type { Dong } from './gen'
 
 /** Các cột ẩn hiện được qua Tuỳ chỉnh giao diện phiếu */
@@ -30,8 +31,9 @@ function OSl({ val, onChange }: { val: number; onChange: (v: number) => void }) 
   )
 }
 
-export function BangKiemKe({ dong, onChange, cheDo, an = [], khongTong = false }: {
+export function BangKiemKe({ dong, onChange, cheDo, an = [], khongTong = false, hienLoc = false }: {
   dong: Dong[]; onChange?: (ds: Dong[]) => void; cheDo: 'xem' | 'sua'; an?: string[]; khongTong?: boolean
+  hienLoc?: boolean   // hàng lọc như danh sách chứng từ, bấm phễu sau tab mới hiện (T383)
 }) {
   const hien = (k: string) => !an.includes(k)
   const sua = cheDo === 'sua' && Boolean(onChange)
@@ -46,6 +48,19 @@ export function BangKiemKe({ dong, onChange, cheDo, an = [], khongTong = false }
   }
   const tong = (f: (d: Dong) => number) => dong.reduce((a, d) => a + f(d), 0)
   const soCotDau = 2 + Number(hien('ma')) + Number(hien('dvt'))
+  // Lọc dòng (T383): [khoá, tên cột, có hiện, chữ của dòng, số của dòng (cột số)]
+  const [gtLoc, setGtLoc] = useState<Record<string, GiaTriLoc>>({})
+  useEffect(() => { if (!hienLoc) setGtLoc({}) }, [hienLoc])
+  const cotLoc: [string, string, boolean, (d: Dong) => string, ((d: Dong) => number)?][] = [
+    ['ma', 'Mã hàng', hien('ma'), d => d.ma ?? ''], ['ten', 'Tên hàng hoá', true, d => d.ten ?? ''], ['dvt', 'ĐVT', hien('dvt'), d => d.dvt ?? ''],
+    ['tonHt', 'Tồn hệ thống', hien('tonHt'), d => money(d.tonHt ?? 0), d => d.tonHt ?? 0],
+    ['tonTt', 'Tồn thực tế', hien('tonTt'), d => money(d.tonTt ?? 0), d => d.tonTt ?? 0],
+    ['chenh', 'Chênh lệch', hien('chenh'), d => money(chenhCua(d)), chenhCua],
+    ['loaiXl', 'Loại', hien('loaiXl'), d => loaiXuLy(d) || 'Khớp'], ['ghiChu', 'Ghi chú', hien('ghiChu'), d => d.ghiChu ?? ''],
+  ]
+  const kieuLoc = (k: string): KieuLoc => cotLoc.find(c => c[0] === k)?.[4] ? 'so' : 'chu'
+  const loc: LocCot = { gt: gtLoc, dat: (k, g) => setGtLoc(t => ({ ...t, [k]: g })), kieu: c => kieuLoc(c.k) }
+  const khop = (d: Dong) => !hienLoc || cotLoc.every(([k, , co, lay, so]) => !co || !dangLoc(gtLoc[k]) || khopLoc(kieuLoc(k), gtLoc[k], lay(d), so?.(d)))
 
   return (
     <div className="bang-sua-wrap">
@@ -64,9 +79,17 @@ export function BangKiemKe({ dong, onChange, cheDo, an = [], khongTong = false }
               {hien('ghiChu') && <th style={{ minWidth: 180 }}>Ghi chú</th>}
               {sua && <th style={{ width: 44 }} />}
             </tr>
+            {hienLoc && (
+              <tr className="loc-hang">
+                <th />
+                {cotLoc.filter(c => c[2]).map(([k, t]) => <th key={k}><OLoc c={{ k, t }} loc={loc} /></th>)}
+                {sua && <th />}
+              </tr>
+            )}
           </thead>
           <tbody>
             {dong.map((d, i) => {
+              if (!khop(d)) return null
               const c = chenhCua(d), loai = loaiXuLy(d)
               return (
                 <tr key={i}>

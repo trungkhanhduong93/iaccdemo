@@ -7,6 +7,7 @@ import { Select } from '../Dropdown'
 import { ChonDanhMuc, useMucDaThem } from '../ChonDanhMuc'
 import { Icon } from '../Icon'
 import { money } from '../format'
+import { OLoc, dangLoc, khopLoc, type GiaTriLoc, type KieuLoc, type LocCot } from '../LocCot'
 import { OSoGo } from '../OSoGo'
 import { NHOM_HHDV, type Dong } from './gen'
 
@@ -35,6 +36,7 @@ export interface BangSuaProps {
   khongTong?: boolean          // bỏ dòng Tổng cộng khi tổng đã hiện ở đáy form (phiếu thu chi)
   coNhapKho?: boolean          // phiếu mua: Tiền trước thuế trước cột thuế; Tổng tiền, Giá trị nhập kho cuối dòng (T84)
   gtnkCoThue?: boolean         // hộ kinh doanh: Giá trị nhập kho gồm cả tiền thuế GTGT (T164)
+  hienLoc?: boolean            // hiện hàng ô lọc dưới tiêu đề cột, bấm nút Lọc trên thanh tab mới hiện (T383)
   coNhomHhdv?: boolean         // phiếu mua có hoá đơn, gói Plus, Pro: cột Nhóm HHDV mua vào sau Tiền thuế (T162)
   chiXemLy?: boolean           // cột lý do chỉ xem, không cho chọn
   chiXemDt?: boolean           // cột đối tượng chỉ xem, không cho chọn
@@ -92,6 +94,7 @@ export function BangSua({
   gtnkCoThue = false,
   chiXemLy = false,
   chiXemDt = false,
+  hienLoc = false,
 }: BangSuaProps) {
   const hang = cfg.dong === 'hang' || cfg.dong === 'nvl'
   const tienDong = cfg.dong === 'tien'
@@ -232,6 +235,38 @@ export function BangSua({
     onChange([])
   }
 
+  // Lọc dòng chi tiết (T383): hàng lọc như danh sách chứng từ (ô gõ + phễu chọn điều kiện, OLoc); cột số lọc theo =, >, trong khoảng…
+  const [gtLoc, setGtLoc] = useState<Record<string, GiaTriLoc>>({})
+  useEffect(() => { if (!hienLoc) setGtLoc({}) }, [hienLoc])
+  const tienSauCk = (d: Dong) => (d.tien || 0) - (d.ck || 0)
+  // [khoá, tên cột, có hiện, chữ của dòng, số của dòng (cột số)]
+  const cotLoc: [string, string, boolean, (d: Dong) => string, ((d: Dong) => number)?][] = [
+    ['ma', 'Mã hàng', maCot, d => d.ma ?? ''], ['ten', hang ? 'Tên hàng hoá, dịch vụ' : 'Diễn giải', true, d => d.ten ?? ''],
+    ['kho', 'Kho', coKho, d => d.kho || khoMacDinh], ['dvt', 'ĐVT', dvtCot, d => d.dvt ?? ''],
+    ['lo', 'Số lô', loCot, d => d.lo ?? ''], ['hsd', 'Hạn dùng', hsdCot, d => d.hsd ?? ''],
+    ['tkNo', nhanTk[0], coTk, d => d.tkNo ?? ''], ['tkCo', nhanTk[1], coTk, d => d.tkCo ?? ''],
+    ['ly', lyDo?.nhan ?? 'Lý do', tienDong && lyDong, d => d.ly ?? ''], ['dt', 'Đối tượng', tienDong && dtDong, d => d.dt ?? ''],
+    ['km', 'Khoản mục', tienDong && kmDong, d => d.km ? (KHOAN_MUC.find(x => x.ma === d.km)?.ten ?? d.km) : ''],
+    ['cv', 'Công việc', tienDong && cvDong, d => d.cv ? (CONG_VIEC.find(x => x.ma === d.cv)?.ten ?? d.cv) : ''],
+    ['sl', 'Số lượng', slCot, d => money(d.sl), d => d.sl || 0], ['gia', 'Đơn giá', giaCot, d => money(d.gia), d => d.gia || 0],
+    ['tien', 'Thành tiền', tienCot, d => money(d.tien), d => d.tien || 0], ['ptCk', '% CK', ptCkCot, d => String(d.ptCk ?? 0), d => d.ptCk || 0],
+    ['ck', 'Tiền CK', ckCot, d => money(d.ck || 0), d => d.ck || 0], ['truocThue', 'Tiền trước thuế', truocThueCot, d => money(tienSauCk(d)), tienSauCk],
+    ['ts', 'Thuế suất', tsCot, d => d.ts ? String(d.ts) : 'KCT'], ['thue', 'Tiền thuế', thueCot, d => money(d.thue), d => d.thue || 0],
+    ['nhomHhdv', 'Nhóm HHDV mua vào', nhomCot, d => d.nhomHhdv || NHOM_HHDV[0]],
+    ['gtnk', 'Giá trị nhập kho', gtnkCot, d => money(tienSauCk(d) + (gtnkCoThue ? d.thue || 0 : 0)), d => tienSauCk(d) + (gtnkCoThue ? d.thue || 0 : 0)],
+    ['tongTien', 'Tổng tiền', tongTienCot, d => money(tienSauCk(d) + (d.thue || 0)), d => tienSauCk(d) + (d.thue || 0)],
+  ]
+  const kieuLoc = (k: string): KieuLoc => cotLoc.find(c => c[0] === k)?.[4] ? 'so' : 'chu'
+  const loc: LocCot = { gt: gtLoc, dat: (k, g) => setGtLoc(t => ({ ...t, [k]: g })), kieu: c => kieuLoc(c.k) }
+  const khop = (d: Dong) => !hienLoc || cotLoc.every(([k, , co, lay, so]) => !co || !dangLoc(gtLoc[k]) || khopLoc(kieuLoc(k), gtLoc[k], lay(d), so?.(d)))
+  const hangLoc = (cuoi: boolean) => hienLoc && (
+    <tr className="loc-hang">
+      <th />
+      {cotLoc.filter(c => c[2]).map(([k, t]) => <th key={k}><OLoc c={{ k, t }} loc={loc} /></th>)}
+      {cuoi && <th />}
+    </tr>
+  )
+
   const tongSl = dong.reduce((a, d) => a + (d.sl || 0), 0)
   const tongTien = dong.reduce((a, d) => a + (d.tien || 0), 0)
   const tongCk = dong.reduce((a, d) => a + (d.ck || 0), 0)
@@ -276,9 +311,10 @@ export function BangSua({
               {gtnkCot && <th className="num" style={{ width: 130 }}>Giá trị nhập kho</th>}
               {tongTienCot && <th className="num" style={{ width: 120 }}>Tổng tiền</th>}
             </tr>
+            {hangLoc(false)}
           </thead>
           <tbody>
-            {dong.map((d, i) => (
+            {dong.map((d, i) => khop(d) && (
               <tr key={i}>
                 <td className="dim c">{i + 1}</td>
                 {maCot && <td className="code">{d.ma}</td>}
@@ -377,9 +413,10 @@ export function BangSua({
               {tongTienCot && <th className="num" style={{ width: 120 }}>Tổng tiền</th>}
               <th style={{ width: 44 }} />
             </tr>
+            {hangLoc(true)}
           </thead>
           <tbody>
-            {dong.map((d, i) => (
+            {dong.map((d, i) => khop(d) && (
               <tr key={i}>
                 <td className="dim c">{i + 1}</td>
                 {maCot && (
