@@ -783,3 +783,5 @@ Cập nhật cùng ngày (T332, T340). Trum xem bản online, thấy khối T320
 - Icon thao tác và giao diện chung (thêm, sửa, xoá, xem, in, tìm, lọc, mũi tên, chuông, đăng xuất, chữ i, trợ giúp, người dùng...) dùng Solar Linear một màu, nét 1.5px. Danh sách ở `THAO_TAC` của `tools/xuat_bieu_tuong.py`.
 - Thanh bên một màu: thân đậm 50%, mặt khối 75%, chi tiết 100%.
 - Bộ nét dự phòng (`BO_ICON = 'net'`) dày 1.6px, icon 16px giữ 1.5px.
+
+## QD72. Bảng chọn ngày và bộ lọc nâng cao căn theo lề trái (đang soạn)
