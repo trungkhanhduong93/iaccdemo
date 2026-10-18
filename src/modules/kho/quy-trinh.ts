@@ -34,17 +34,17 @@ export const quyTrinh: QuyTrinhDef = {
       { ten: 'Kiểm kê', tone: 'info', nut: [
         { ten: 'Tồn hệ thống', icon: 'box', di: '', tone: 'kq' },
         { ten: 'Kiểm kê kho', icon: 'clipboard', di: 'kho/5-1-10', noi: 'so sánh' },
-        { ten: 'Xuất điều chỉnh', icon: 'cashout', di: 'kho/dieu-chinh?loai=xdc' },
-        { ten: 'Nhập điều chỉnh', icon: 'filein', di: 'kho/dieu-chinh?loai=ndc' },
+        { ten: 'Xuất điều chỉnh', icon: 'xuatkho', di: 'kho/dieu-chinh?loai=xdc' },
+        { ten: 'Nhập điều chỉnh', icon: 'nhapkho', di: 'kho/dieu-chinh?loai=ndc' },
       ] },
     ],
     ra: { ten: 'Sổ sách, báo cáo', nut: [
       { ten: 'Báo cáo xuất nhập tồn', icon: 'box', di: 'kho/5-2-3' },
       { ten: 'Báo cáo kiểm kê', icon: 'clipboard', di: 'kho/5-2-15' },
-      { ten: 'Tổng hợp xuất kho', icon: 'cashout', di: 'kho/5-2-11' },
-      { ten: 'Chi tiết xuất kho', icon: 'cashout', di: 'kho/5-2-12' },
-      { ten: 'Tổng hợp nhập kho', icon: 'filein', di: 'kho/5-2-9' },
-      { ten: 'Chi tiết nhập kho', icon: 'filein', di: 'kho/5-2-10' },
+      { ten: 'Tổng hợp xuất kho', icon: 'xuatkho', di: 'kho/5-2-11' },
+      { ten: 'Chi tiết xuất kho', icon: 'xuatkho', di: 'kho/5-2-12' },
+      { ten: 'Tổng hợp nhập kho', icon: 'nhapkho', di: 'kho/5-2-9' },
+      { ten: 'Chi tiết nhập kho', icon: 'nhapkho', di: 'kho/5-2-10' },
     ] },
   },
   // Gói Free (T368): sơ đồ bước theo kỳ (mẫu C), ưu tiên trên hoiTuFree
@@ -65,8 +65,8 @@ export const quyTrinh: QuyTrinhDef = {
       nut: [
         { ten: 'Tồn hệ thống', icon: 'box', di: '', tone: 'kq', moTa: 'Số lượng máy tính đang tính' },
         { ten: 'Kiểm kê kho', icon: 'clipboard', di: 'kho/5-1-10', noi: 'so sánh', taoMoi: 'kho/5-1-10/moi', moTa: 'Đếm số lượng thực tế tại kho' },
-        { ten: 'Xuất điều chỉnh', icon: 'cashout', di: 'kho/dieu-chinh?loai=xdc', chieu: 'noi', moTa: 'Ghi giảm khi hàng thực tế thiếu' },
-        { ten: 'Nhập điều chỉnh', icon: 'filein', di: 'kho/dieu-chinh?loai=ndc', chieu: 'noi', moTa: 'Ghi tăng khi hàng thực tế thừa' },
+        { ten: 'Xuất điều chỉnh', icon: 'xuatkho', di: 'kho/dieu-chinh?loai=xdc', chieu: 'noi', moTa: 'Ghi giảm khi hàng thực tế thiếu' },
+        { ten: 'Nhập điều chỉnh', icon: 'nhapkho', di: 'kho/dieu-chinh?loai=ndc', chieu: 'noi', moTa: 'Ghi tăng khi hàng thực tế thừa' },
       ],
     },
     {
@@ -74,10 +74,10 @@ export const quyTrinh: QuyTrinhDef = {
       moTa: 'Xem chi tiết và tổng hợp hàng hoá luân chuyển trong kỳ.',
       ghiChu: 'Đối chiếu số lượng và tiền hàng vào ra của từng mặt hàng.',
       nut: [
-        { ten: 'Tổng hợp nhập kho', icon: 'filein', di: 'kho/5-2-9', chieu: 'vao', moTa: 'Tổng số lượng và tiền hàng nhập' },
-        { ten: 'Chi tiết nhập kho', icon: 'filein', di: 'kho/5-2-10', chieu: 'vao', moTa: 'Từng lần nhập hàng theo phiếu' },
-        { ten: 'Tổng hợp xuất kho', icon: 'cashout', di: 'kho/5-2-11', chieu: 'ra', moTa: 'Tổng số lượng và tiền hàng xuất' },
-        { ten: 'Chi tiết xuất kho', icon: 'cashout', di: 'kho/5-2-12', chieu: 'ra', moTa: 'Từng lần xuất hàng theo phiếu' },
+        { ten: 'Tổng hợp nhập kho', icon: 'nhapkho', di: 'kho/5-2-9', chieu: 'vao', moTa: 'Tổng số lượng và tiền hàng nhập' },
+        { ten: 'Chi tiết nhập kho', icon: 'nhapkho', di: 'kho/5-2-10', chieu: 'vao', moTa: 'Từng lần nhập hàng theo phiếu' },
+        { ten: 'Tổng hợp xuất kho', icon: 'xuatkho', di: 'kho/5-2-11', chieu: 'ra', moTa: 'Tổng số lượng và tiền hàng xuất' },
+        { ten: 'Chi tiết xuất kho', icon: 'xuatkho', di: 'kho/5-2-12', chieu: 'ra', moTa: 'Từng lần xuất hàng theo phiếu' },
       ],
     },
     {

@@ -24,7 +24,7 @@ export const quyTrinh: QuyTrinhDef = {
         { ten: 'Chi ngân hàng', icon: 'bank', di: `tien/2-1-1/moi?loai=unc&ly=${MA_LY_CHO_PHAN_BO}` },
       ] },
       { ten: 'Thẻ chi phí phân bổ', tone: 'info', nut: [
-        { ten: 'Thẻ chi phí phân bổ', icon: 'grid', di: 'ccdc/8-1-1' },
+        { ten: 'Thẻ chi phí phân bổ', icon: 'phanbo', di: 'ccdc/8-1-1' },
         { ten: 'Thẻ CPPB dư đầu kỳ', icon: 'clock', di: 'ccdc/8-1-1' },
       ] },
     ],
@@ -56,7 +56,7 @@ export const quyTrinh: QuyTrinhDef = {
       moTa: 'Ghi nhận và chia đều chi phí vào từng tháng.',
       ghiChu: 'Mỗi khoản chi trả trước tạo một thẻ để hệ thống tự chia theo số kỳ.',
       nut: [
-        { ten: 'Thẻ chi phí phân bổ', icon: 'grid', di: 'ccdc/8-1-1', moTa: 'Chia đều chi phí vào từng tháng' },
+        { ten: 'Thẻ chi phí phân bổ', icon: 'phanbo', di: 'ccdc/8-1-1', moTa: 'Chia đều chi phí vào từng tháng' },
       ],
     },
     {
