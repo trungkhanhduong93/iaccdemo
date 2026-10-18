@@ -37,21 +37,23 @@ export function MKhoFree({ selCns, thang }: { selCns: string[]; thang: number })
         </div>
         <div className="bbt-e-mota">Giá trị hàng mua trong tháng và số tiền còn phải trả</div>
 
-        <div className="m-tck-hai">
-          <div className="m-tck-kpi">
-            <div className="m-tck-hoi">Giá trị mua hàng {thang === 10 ? 'tháng này' : `tháng ${thang}`}</div>
-            <div className="m-tck-tra" style={{ color: 'var(--blue, #0560a6)' }}>{moneyD(mua.nhap)}</div>
-            <div className="m-tck-phu">
+        <div className="m-tck-khoi-kpi">
+          <div className="m-tck-kpi-h1">
+            <span>Giá trị mua hàng {thang === 10 ? 'tháng này' : `tháng ${thang}`}</span>
+            <b className="m-tck-kpi-so mua">{moneyD(mua.nhap)}</b>
+          </div>
+          <div className="m-tck-kpi-h2">
+            <small>
               {mua.soDon} phiếu
               {mua.soSanh && (
                 <> · <span className={mua.soSanh.pct > 0 ? 'm-tck-tang' : 'm-tck-giam'} title={`So với ${mua.soSanh.nhan} (${short(mua.soSanh.truoc)})`}>
                   {mua.soSanh.pct > 0 ? '▲' : '▼'} {pct(Math.abs(mua.soSanh.pct))} so với cùng kỳ
                 </span></>
               )}
-            </div>
+            </small>
             <Link
               to="/app/bao-cao/4-2-7"
-              className="m-tck-link m-tck-link-duoi"
+              className="m-tck-kpi-nut"
               onClick={() => {
                 luuTuyChinh(s.donVi, '4.2.7', { ...(docTuyChinh(s.donVi, '4.2.7') ?? {}), nhom: ['ma'], xemNhom: 'tongHop' })
                 datLocDaXem('/app/bao-cao/4-2-7', {}, String(thang))
@@ -60,13 +62,18 @@ export function MKhoFree({ selCns, thang }: { selCns: string[]; thang: number })
               Bảng kê ›
             </Link>
           </div>
-          <div className="m-tck-kpi">
-            <div className="m-tck-hoi">Công nợ phải trả</div>
-            <div className="m-tck-tra" style={{ color: 'var(--orange-d, #d0650a)' }}>{moneyD(no.cuoiRong)}</div>
-            <div className="m-tck-phu">{no.soNcc} nhà cung cấp</div>
+        </div>
+
+        <div className="m-tck-khoi-kpi m-tck-khoi-kpi-ngan">
+          <div className="m-tck-kpi-h1">
+            <span>Công nợ phải trả</span>
+            <b className="m-tck-kpi-so no">{moneyD(no.cuoiRong)}</b>
+          </div>
+          <div className="m-tck-kpi-h2">
+            <small>{no.soNcc} nhà cung cấp</small>
             <Link
               to="/app/bao-cao/4-2-3"
-              className="m-tck-link m-tck-link-duoi"
+              className="m-tck-kpi-nut"
               onClick={() => datLocDaXem('/app/bao-cao/4-2-3', {}, String(thang))}
             >
               Công nợ ›

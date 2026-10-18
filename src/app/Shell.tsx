@@ -14,12 +14,53 @@ import { SidebarFlyout, ThaoTacNhanhFlyout } from './SidebarFlyout'
 import { heSoZoom } from '../ui/zoom'
 import { OnboardFabi } from '../modules/onboarding/OnboardFabi'
 
+import { ChonCuaHangTruoc, laDuongDanTaoPhieu } from '../ui/ChonCuaHangTruoc'
+
 const minGoiPhanHe = (m: ModuleDef): Goi => GOIS.find(g => !phanHeKhoa(m, g)) ?? 'PR'
 
 export function Shell() {
-  const { s } = useSession()
+  const { s, set } = useSession()
   const loc = useLocation()
+  const nav = useNavigate()
   const [palette, setPalette] = useState(false)
+
+  // T418: Chặn tạo mới chứng từ/phiếu khi đang ở Tất cả cửa hàng
+  const [dichDen, setDichDen] = useState<string | null>(null)
+
+  const moChonCuaHang = Boolean(dichDen)
+
+  useEffect(() => {
+    if (s.cuaHang !== 'all') return
+    const handleClick = (e: MouseEvent) => {
+      const target = (e.target as HTMLElement)?.closest?.('a')
+      if (!target) return
+      if (target.classList.contains('qt-n') || target.closest('.qt-n, .quy-trinh-so-do')) return
+      const href = target.getAttribute('href')
+      if (!href) return
+      const pathWithSearch = href.replace(/^#/, '')
+      const [p, q = ''] = pathWithSearch.split('?')
+      if (laDuongDanTaoPhieu(p, q ? `?${q}` : '')) {
+        e.preventDefault()
+        e.stopPropagation()
+        setDichDen(pathWithSearch)
+      }
+    }
+    document.addEventListener('click', handleClick, true)
+    return () => document.removeEventListener('click', handleClick, true)
+  }, [s.cuaHang])
+
+  const handleChonCuaHang = (idCuaHang: string) => {
+    set({ cuaHang: idCuaHang })
+    if (dichDen) {
+      const target = dichDen
+      setDichDen(null)
+      nav(target)
+    }
+  }
+
+  const handleDongChon = () => {
+    setDichDen(null)
+  }
 
   useEffect(() => {
     const on = (e: KeyboardEvent) => {
@@ -45,6 +86,12 @@ export function Shell() {
       <main className="main"><Outlet /></main>
       {palette && <CommandPalette onClose={() => setPalette(false)} />}
       <OnboardFabi />
+      <ChonCuaHangTruoc
+        mo={moChonCuaHang}
+        laMobile={false}
+        onDong={handleDongChon}
+        onChon={handleChonCuaHang}
+      />
     </div>
   )
 }

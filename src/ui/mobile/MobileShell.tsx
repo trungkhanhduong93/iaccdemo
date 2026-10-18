@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { dsCuaHang, useSession } from '../../app/session'
 import { CUA_HANG } from '../../data/mock'
@@ -11,6 +11,7 @@ import { ThanhDuoi } from './ThanhDuoi'
 import { MBaoCaoLoc } from './MBaoCaoLoc'
 import { kyHieuBC } from '../../modules/bao-cao/danh-sach'
 import type { Session } from '../../app/session'
+import { ChonCuaHangTruoc, laDuongDanTaoPhieu } from '../ChonCuaHangTruoc'
 
 function laManGoc(pathname: string, search = ''): boolean {
   if (pathname === '/app/nghiep-vu' && search.includes('m=')) return false
@@ -98,6 +99,57 @@ export function MobileShell() {
   const loc = useLocation()
   const nav = useNavigate()
   const [moLocBc, setMoLocBc] = useState(false)
+
+  // T418: Chặn tạo mới chứng từ/phiếu khi đang ở Tất cả cửa hàng
+  const [dichDen, setDichDen] = useState<string | null>(null)
+  const trangTruocRef = useRef<string>('/app/trang-chu/tong-quan')
+
+  useEffect(() => {
+    if (!laDuongDanTaoPhieu(loc.pathname, loc.search)) {
+      trangTruocRef.current = loc.pathname + loc.search
+    }
+  }, [loc.pathname, loc.search])
+
+  const dangTaoPhieuTrenUrl = laDuongDanTaoPhieu(loc.pathname, loc.search) && s.cuaHang === 'all'
+  const moChonCuaHang = Boolean(dichDen) || dangTaoPhieuTrenUrl
+
+  useEffect(() => {
+    if (s.cuaHang !== 'all') return
+    const handleClick = (e: MouseEvent) => {
+      const target = (e.target as HTMLElement)?.closest?.('a')
+      if (!target) return
+      const href = target.getAttribute('href')
+      if (!href) return
+      const pathWithSearch = href.replace(/^#/, '')
+      const [p, q = ''] = pathWithSearch.split('?')
+      if (laDuongDanTaoPhieu(p, q ? `?${q}` : '')) {
+        e.preventDefault()
+        e.stopPropagation()
+        setDichDen(pathWithSearch)
+      }
+    }
+    document.addEventListener('click', handleClick, true)
+    return () => document.removeEventListener('click', handleClick, true)
+  }, [s.cuaHang])
+
+  const handleChonCuaHang = (idCuaHang: string) => {
+    set({ cuaHang: idCuaHang })
+    if (dichDen) {
+      const target = dichDen
+      setDichDen(null)
+      nav(target)
+    }
+  }
+
+  const handleDongChon = () => {
+    setDichDen(null)
+    if (dangTaoPhieuTrenUrl) {
+      const luiVe = trangTruocRef.current && !laDuongDanTaoPhieu(trangTruocRef.current)
+        ? trangTruocRef.current
+        : loc.pathname.replace(/\/moi(\/.*)?$/, '') || '/app/trang-chu/tong-quan'
+      nav(luiVe, { replace: true })
+    }
+  }
 
   // Ghi lịch sử màn vừa mở cho hộp tìm Ctrl K (T80)
   useEffect(() => {
@@ -223,6 +275,13 @@ export function MobileShell() {
           sc={currentSc}
         />
       )}
+
+      <ChonCuaHangTruoc
+        mo={moChonCuaHang}
+        laMobile={true}
+        onDong={handleDongChon}
+        onChon={handleChonCuaHang}
+      />
     </div>
   )
 }

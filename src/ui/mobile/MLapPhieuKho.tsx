@@ -63,7 +63,15 @@ export const MLapPhieuKho: FC<MLapPhieuKhoProps> = ({ sc, mod, id }) => {
 }
 
 // ── Thẻ mặt hàng phiếu kho điện thoại (T300) ──
-type DongM = Dong & { giaGoc?: number; dvtChinh?: string }
+type DongM = Dong & { giaGoc?: number; dvtChinh?: string; strTonTt?: string; tonHtGoc?: number }
+
+const HANG_KK_MAC_DINH: DongM[] = [
+  { ma: 'NVL002', ten: 'Xương ống bò', dvt: 'kg', dvtChinh: 'kg', tonHt: 31, tonTt: undefined, sl: 31, gia: 65000, tien: 0, ts: 0, thue: 0 },
+  { ma: 'NVL008', ten: 'Cà phê hạt Robusta', dvt: 'kg', dvtChinh: 'kg', tonHt: 10, tonTt: undefined, sl: 10, gia: 210000, tien: 0, ts: 0, thue: 0 },
+  { ma: 'NVL005', ten: 'Gạo tấm thơm', dvt: 'kg', dvtChinh: 'kg', tonHt: 50, tonTt: undefined, sl: 50, gia: 19000, tien: 0, ts: 0, thue: 0 },
+  { ma: 'NVL004', ten: 'Sườn heo', dvt: 'kg', dvtChinh: 'kg', tonHt: 12, tonTt: undefined, sl: 12, gia: 145000, tien: 0, ts: 0, thue: 0 },
+  { ma: 'NVL012', ten: 'Dầu ăn', dvt: 'Lít', dvtChinh: 'Lít', tonHt: 20, tonTt: undefined, sl: 20, gia: 48000, tien: 0, ts: 0, thue: 0 },
+]
 
 interface TheHangKhoProps {
   idx: number
@@ -397,8 +405,12 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
   }, [laKk, laDc, loaiKey, laSx, sx, laDcn, dcn, sc])
 
   const cnChon = cuaHangHienTai(s)
-  // đang xem Tất cả cửa hàng thì phiếu mới bắt chọn cửa hàng, không tự lấy cửa hàng đầu (T357)
-  const [cuaHang, setCuaHang] = useState(() => (gocData?.cn ? String(gocData.cn) : cnChon?.ten ?? ''))
+  const [cuaHang, setCuaHang] = useState(() => {
+    if (gocData?.cn) return String(gocData.cn)
+    if (cnChon?.ten) return cnChon.ten
+    if (laKk) return 'Phố Mây Lê Lợi'
+    return ''
+  })
   const [moChonCn, setMoChonCn] = useState(false)
 
   const addedKho = useAddedCatalogRows('1.8')
@@ -451,14 +463,23 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
 
   const dsKhoNhanXdc = useMemo(() => khoCuaCn(cnNhan), [cnNhan])
 
-  // Ghi chú
+  // Người kiểm kê
+  const [nguoiKiem, setNguoiKiem] = useState(() => {
+    return String(gocData?._nguoiKiem ?? gocData?.nguoiKiem ?? s.ten ?? 'Trần Thu Hà')
+  })
+
+  // Tìm kiếm hàng trong kho (Kiểm kê)
+  const [timKiemKho, setTimKiemKho] = useState('')
+
+  // Ghi chú / Diễn giải
   const [ghiChu, setGhiChu] = useState(() => {
-    return String(gocData?._ghiChu ?? gocData?.dienGiai ?? cfgMan.dienGiai?.[0] ?? '')
+    return String(gocData?._ghiChu ?? gocData?.dienGiai ?? (laKk ? 'Kiểm kê cuối tháng' : cfgMan.dienGiai?.[0] ?? ''))
   })
 
   // Danh sách dòng
   const [dsDong, setDsDong] = useState<DongM[]>(() => {
-    if (gocData?._dong && Array.isArray(gocData._dong)) return gocData._dong as DongM[]
+    if (gocData?._dong && Array.isArray(gocData._dong) && gocData._dong.length > 0) return gocData._dong as DongM[]
+    if (laKk) return HANG_KK_MAC_DINH
     return []
   })
 
@@ -513,6 +534,69 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
     return dsDong.reduce((a, d) => a + (Number(d.tien) || 0), 0)
   }, [dsDong, laKk])
 
+  // Thừa, thiếu và tiến độ đếm cho kiểm kê
+  const { tongThua, tongThieu, soDaDem, dvtThua, dvtThieu } = useMemo(() => {
+    let thua = 0
+    let thieu = 0
+    let dem = 0
+    let lastDvtThua = ''
+    let lastDvtThieu = ''
+
+    for (const d of dsDong) {
+      const daDem = d.tonTt !== undefined && d.tonTt !== null && (d.tonTt as unknown) !== '' && !isNaN(Number(d.tonTt))
+      if (daDem) {
+        dem++
+        const tonHt = Number(d.tonHt ?? 0)
+        const tonTt = Number(d.tonTt)
+        const chenh = Math.round((tonTt - tonHt) * 100) / 100
+        if (chenh > 0) {
+          thua += chenh
+          lastDvtThua = d.dvt || 'kg'
+        } else if (chenh < 0) {
+          thieu += Math.abs(chenh)
+          lastDvtThieu = d.dvt || 'kg'
+        }
+      }
+    }
+
+    return {
+      tongThua: Math.round(thua * 100) / 100,
+      tongThieu: Math.round(thieu * 100) / 100,
+      soDaDem: dem,
+      dvtThua: lastDvtThua || 'kg',
+      dvtThieu: lastDvtThieu || 'kg',
+    }
+  }, [dsDong])
+
+  const tongThuaTxt = tongThua > 0 ? `+${soLuong(tongThua)} ${dvtThua}` : `0 ${dvtThua}`
+  const tongThieuTxt = tongThieu > 0 ? `-${soLuong(tongThieu)} ${dvtThieu}` : `0 ${dvtThieu}`
+
+  const dsChuaDem = useMemo(() => {
+    return dsDong.filter(d => d.tonTt === undefined || d.tonTt === null || (d.tonTt as unknown) === '' || isNaN(Number(d.tonTt)))
+  }, [dsDong])
+  const soChuaDem = dsChuaDem.length
+  const dsTenChuaDem = dsChuaDem.length > 0 ? dsChuaDem.map(d => d.ten).slice(0, 3).join(', ') : ''
+
+  const dsDongKkHienThi = useMemo(() => {
+    if (!timKiemKho.trim()) return dsDong.map((d, idx) => ({ d, originalIndex: idx }))
+    const q = fold(timKiemKho.trim())
+    return dsDong
+      .map((d, idx) => ({ d, originalIndex: idx }))
+      .filter(({ d }) => fold(d.ten).includes(q) || (d.ma && fold(d.ma).includes(q)))
+  }, [dsDong, timKiemKho])
+
+  const handleTonTtChange = (idx: number, val: string) => {
+    const raw = goSoVN(val, true)
+    setDsDong(ds => ds.map((item, i) => {
+      if (i !== idx) return item
+      if (!raw) {
+        return { ...item, tonTt: undefined, strTonTt: '' }
+      }
+      const num = docSoVN(raw)
+      return { ...item, tonTt: num, strTonTt: raw }
+    }))
+  }
+
   // Cập nhật dòng (T300)
   const [dvtSheet, setDvtSheet] = useState<{ idx: number; ten: string; ds: { k: string; ten: string }[] } | null>(null)
 
@@ -522,8 +606,9 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
       const hopNhat = { ...d, ...patch }
       if (laKk) {
         const tonHt = hopNhat.tonHt !== undefined ? Number(hopNhat.tonHt) : 0
-        const tonTt = hopNhat.tonTt !== undefined ? Number(hopNhat.tonTt) : 0
-        return { ...hopNhat, tonHt, tonTt, sl: tonTt }
+        const daDem = hopNhat.tonTt !== undefined && hopNhat.tonTt !== null && (hopNhat.tonTt as unknown) !== '' && !isNaN(Number(hopNhat.tonTt))
+        const tonTt = daDem ? Number(hopNhat.tonTt) : undefined
+        return { ...hopNhat, tonHt, tonTt, sl: tonTt ?? tonHt }
       }
       const sl = hopNhat.sl !== undefined ? Number(hopNhat.sl) : 0
       const gia = hopNhat.gia !== undefined ? Number(hopNhat.gia) : 0
@@ -546,11 +631,51 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
     })
   }
 
-  // Đổi đơn vị tính theo quy đổi (T300)
+  // Đổi đơn vị tính theo quy đổi (T300, T414)
   const doiDvt = (idx: number, dvMoi: string) => {
     const d = dsDong[idx]
     if (!d) return
-    const dvtChinh = d.dvtChinh || NVL.find(n => n.ma === d.ma || n.ten === d.ten)?.dvt || HANG.find(h => h.ma === d.ma || h.ten === d.ten)?.dvt || d.dvt
+    const dvtChinh = d.dvtChinh || NVL.find(n => n.ma === d.ma || n.ten === d.ten)?.dvt || HANG.find(h => h.ma === d.ma || h.ten === d.ten)?.dvt || d.dvt || 'kg'
+
+    if (laKk) {
+      const dsQd = quyDoiTuDanhMuc(d.ten, dvtChinh)
+      const tonHtGoc = d.tonHtGoc !== undefined ? d.tonHtGoc : Number(d.tonHt ?? 0)
+
+      let tonHtMoi = tonHtGoc
+      if (dvMoi !== dvtChinh) {
+        const q = dsQd.find(x => x.dv === dvMoi)
+        if (q) {
+          tonHtMoi = q.nguoc ? Math.round((tonHtGoc / q.tl) * 10000) / 10000 : Math.round(tonHtGoc * q.tl * 10000) / 10000
+        }
+      }
+
+      let tonTtMoi = d.tonTt
+      let strTonTtMoi = d.strTonTt
+      const daDem = d.tonTt !== undefined && d.tonTt !== null && (d.tonTt as unknown) !== '' && !isNaN(Number(d.tonTt))
+      if (daDem) {
+        let tonTtChinh = Number(d.tonTt)
+        const dvHienTai = d.dvt || dvtChinh
+        if (dvHienTai !== dvtChinh) {
+          const qCu = dsQd.find(x => x.dv === dvHienTai)
+          if (qCu) {
+            tonTtChinh = qCu.nguoc ? tonTtChinh * qCu.tl : tonTtChinh / qCu.tl
+          }
+        }
+        if (dvMoi === dvtChinh) {
+          tonTtMoi = Math.round(tonTtChinh * 10000) / 10000
+        } else {
+          const qMoi = dsQd.find(x => x.dv === dvMoi)
+          if (qMoi) {
+            tonTtMoi = qMoi.nguoc ? Math.round((tonTtChinh / qMoi.tl) * 10000) / 10000 : Math.round(tonTtChinh * qMoi.tl * 10000) / 10000
+          }
+        }
+        strTonTtMoi = String(tonTtMoi)
+      }
+
+      doiDong(idx, { dvt: dvMoi, dvtChinh, tonHt: tonHtMoi, tonHtGoc, tonTt: tonTtMoi, strTonTt: strTonTtMoi, sl: tonTtMoi })
+      return
+    }
+
     const giaGoc = d.giaGoc ?? (NVL.find(n => n.ma === d.ma || n.ten === d.ten)?.gia || d.gia || 0)
     let giaMoi = giaGoc
     if (dvMoi !== dvtChinh) {
@@ -631,13 +756,13 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
             dvt: h.dvt,
             dvtChinh: h.dvt,
             giaGoc: 0,
-            sl: 10,
+            sl: 0,
             gia: 0,
             tien: 0,
             ts: 0,
             thue: 0,
-            tonHt: 10,
-            tonTt: 10,
+            tonHt: 0,
+            tonTt: undefined,
             kho,
             ghiChu: '',
           },
@@ -683,13 +808,13 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
               dvt: h.dvt,
               dvtChinh: h.dvt,
               giaGoc: 0,
-              sl: 10,
+              sl: 0,
               gia: 0,
               tien: 0,
               ts: 0,
               thue: 0,
-              tonHt: 10,
-              tonTt: 10,
+              tonHt: 0,
+              tonTt: undefined,
               kho,
               ghiChu: '',
             })
@@ -727,8 +852,14 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
   const thucHienLuu = (moMoi = false) => {
     const loiMoi: Record<string, string> = {}
 
-    if (!cuaHang) {
-      loiMoi.cuaHang = 'Vui lòng chọn cửa hàng'
+    let cnLuu = cuaHang
+    if (!cnLuu) {
+      if (laKk) {
+        cnLuu = CUA_HANG.find(c => khoCuaCn(c.ten).includes(kho))?.ten || CUA_HANG[0]?.ten || 'Phố Mây Lê Lợi'
+        setCuaHang(cnLuu)
+      } else {
+        loiMoi.cuaHang = 'Vui lòng chọn cửa hàng'
+      }
     }
 
     if (!kho.trim()) {
@@ -800,6 +931,40 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
       }
     }
 
+    // Chuẩn hoá dòng cho kiểm kê: hàng chưa đếm giữ nguyên tồn sổ (tonTt = tonHt), quy về ĐVT chính nếu đang chọn ĐVT quy đổi (T414)
+    const dsDongLuu = laKk
+      ? dsDong.map(d => {
+          const dvtChinh = d.dvtChinh || NVL.find(n => n.ma === d.ma || n.ten === d.ten)?.dvt || HANG.find(h => h.ma === d.ma || h.ten === d.ten)?.dvt || d.dvt || 'kg'
+          const dsQd = quyDoiTuDanhMuc(d.ten, dvtChinh)
+          const q = (d.dvt && d.dvt !== dvtChinh) ? dsQd.find(x => x.dv === d.dvt) : undefined
+
+          const tonHtLuu = d.tonHtGoc !== undefined
+            ? d.tonHtGoc
+            : (q ? (q.nguoc ? Math.round(Number(d.tonHt ?? 0) * q.tl * 10000) / 10000 : Math.round((Number(d.tonHt ?? 0) / q.tl) * 10000) / 10000) : Number(d.tonHt ?? 0))
+
+          let tonTtLuu: number
+          const daDem = d.tonTt !== undefined && d.tonTt !== null && (d.tonTt as unknown) !== '' && !isNaN(Number(d.tonTt))
+          if (daDem) {
+            let num = Number(d.tonTt)
+            if (q) {
+              num = q.nguoc ? num * q.tl : num / q.tl
+            }
+            tonTtLuu = Math.round(num * 10000) / 10000
+          } else {
+            tonTtLuu = tonHtLuu
+          }
+
+          return {
+            ...d,
+            dvt: dvtChinh,
+            dvtChinh,
+            tonHt: tonHtLuu,
+            tonTt: tonTtLuu,
+            sl: tonTtLuu,
+          }
+        })
+      : dsDong
+
     // Đồng bộ phiếu điều chỉnh cho Kiểm kê
     let dsDc: CtTt[] | undefined = undefined
     if (laKk) {
@@ -808,7 +973,7 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
       const ra: CtTt[] = []
       for (const l of ['xdc', 'ndc'] as LoaiDc[]) {
         const c = cu.find(x => x.loai === l)
-        const p = phieuDieuChinh(kk, dsDong, l, c?.id ?? `moi-${Date.now()}-${l}`)
+        const p = phieuDieuChinh(kk, dsDongLuu, l, c?.id ?? `moi-${Date.now()}-${l}`)
         if (!p) {
           if (c) xoaPhieu(MAN_DC, [{ id: c.id, so: c.so }], s.ten)
           continue
@@ -828,13 +993,14 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
       gio: thoiGian.split(' ')[1] || '10:00',
       thang: Number(ngayChiTiet.split('/')[1]) || 10,
       doiTuong: laDcn && dcn === 'xdc' ? cnNhan : '',
-      dienGiai: ghiChu || (laKk ? 'Kiểm kê kho' : laDc ? (loaiKey === 'ndc' ? 'Nhập điều chỉnh' : 'Xuất điều chỉnh') : tenLoai),
+      dienGiai: ghiChu || (laKk ? 'Kiểm kê cuối tháng' : laDc ? (loaiKey === 'ndc' ? 'Nhập điều chỉnh' : 'Xuất điều chỉnh') : tenLoai),
       tien: tongTien,
       thue: 0,
       tong: tongTien,
-      _dong: dsDong,
+      _dong: dsDongLuu,
       _kho: kho,
       _ghiChu: ghiChu,
+      ...(laKk ? { _nguoiKiem: nguoiKiem, nguoiKiem } : {}),
       ...(dsDc ? { _dsDc: dsDc } : {}),
       ...(laSx ? {
         ttSx: row?.ttSx ?? (SX[sx!].nhap ? 'da' : 'cho'),
@@ -861,7 +1027,7 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
     themPhieu(man, {
       id: idLuu,
       so: soCt,
-      cn: cuaHang,
+      cn: cnLuu || cuaHang,
       nguon: 'tay',
       loai: laDc ? loaiKey : loai?.k,
       tenLoai,
@@ -870,6 +1036,11 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
     }, s.ten)
     ghiNhatKy(man, idLuu, soCt, s.ten, 'Thêm mới chứng từ')
     toast(`Đã lưu ${soCt}`)
+
+    if (laKk) {
+      nav(`${path}/${idLuu}`)
+      return
+    }
 
     if (moMoi) {
       setGhiChu('')
@@ -933,6 +1104,502 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
 
   const tenThuong = tenLoai.toLowerCase().startsWith('phiếu ') ? tenLoai.slice(6).toLowerCase() : tenLoai.toLowerCase()
   const tieuDe = dangSua ? `${tenLoai} ${row?.so ?? ''}`.trim() : `Phiếu ${tenThuong} mới`
+
+  const renderCacBangChon = () => (
+    <>
+      {/* ── SHEET CHỌN KHO ── */}
+      <MChon
+        mo={moChonKho}
+        onDong={() => setMoChonKho(false)}
+        tieuDe={laKk ? 'Chọn kho kiểm kê' : 'Chọn kho'}
+        ds={dsKhoCn.map(k => ({ k, ten: k }))}
+        chon={kho}
+        onChon={v => {
+          setKho(v)
+          if (loiO.kho) setLoiO(l => { const n = { ...l }; delete n.kho; return n })
+          if (laDcn && dcn === 'ck' && v === khoNhan) setKhoNhan('')
+          if (laKk) {
+            const cn = CUA_HANG.find(c => khoCuaCn(c.ten).includes(v))?.ten
+            if (cn) setCuaHang(cn)
+          }
+        }}
+        onThem={() => {
+          setMoChonKho(false)
+          setMoThemDm('kho')
+        }}
+        nhanThem="Thêm kho"
+        apDung
+        tim
+      />
+
+      {/* ── SHEET CHỌN CỬA HÀNG NHẬN (XDC) ── */}
+      {laDcn && dcn === 'xdc' && (
+        <MChon
+          mo={moChonCnNhan}
+          onDong={() => setMoChonCnNhan(false)}
+          tieuDe="Chọn cửa hàng nhận"
+          ds={dsCnNhan.map(c => ({ k: c.ten, ten: c.ten }))}
+          chon={cnNhan}
+          onChon={v => {
+            setCnNhan(v)
+            if (loiO.cnNhan) setLoiO(l => { const n = { ...l }; delete n.cnNhan; return n })
+            const k = khoCuaCn(v)
+            setKhoNhan(k.length === 1 ? k[0] : '')
+          }}
+          apDung
+          tim
+        />
+      )}
+
+      {/* ── SHEET CHỌN KHO NHẬN ── */}
+      {laDcn && (dcn === 'ck' || dcn === 'xdc') && (
+        <MChon
+          mo={moChonKhoNhan}
+          onDong={() => setMoChonKhoNhan(false)}
+          tieuDe="Chọn kho nhận"
+          ds={(dcn === 'xdc' ? dsKhoNhanXdc : dsKhoCn).map(k => ({ k, ten: k }))}
+          chon={khoNhan}
+          onChon={v => {
+            if (v === kho) {
+              toast('Kho nhận phải khác kho xuất')
+              return
+            }
+            setKhoNhan(v)
+            if (loiO.khoNhan) setLoiO(l => { const n = { ...l }; delete n.khoNhan; return n })
+          }}
+          apDung
+          tim
+        />
+      )}
+
+      {/* ── SHEET TẤM CHỌN HÀNG HOÁ ── */}
+      {moChonHang && (
+        <div className="m-tam-overlay" onClick={() => setMoChonHang(false)}>
+          <div className="m-tam-hop m-tam-hop-apdung m-lp-sheet-hang" onClick={e => e.stopPropagation()}>
+            <div className="m-tam-dau m-tam-dau-apdung">
+              <h2 className="m-tam-tieu">Chọn hàng hoá</h2>
+              <button
+                type="button"
+                className="m-tam-dong-btn"
+                onClick={() => setMoChonHang(false)}
+                aria-label="Đóng"
+              >
+                <Icon n="x" className="ic sm" kieu="net" />
+              </button>
+            </div>
+
+            <div className="m-tam-them-wrap">
+              <button
+                type="button"
+                className="btn pri m-tam-btn-them"
+                onClick={() => {
+                  setMoChonHang(false)
+                  setMoThemDm('hang')
+                }}
+              >
+                <Icon n="plus" className="ic sm" />
+                <span>Thêm hàng hoá</span>
+              </button>
+            </div>
+
+            <div className="m-lp-loc-hang">
+              <button
+                type="button"
+                className="m-lp-btn-nhom"
+                onClick={() => setMoChonNhomHang(true)}
+              >
+                <span>{nhomHangChon}</span>
+                <Icon n="chevd" className="ic sm" kieu="net" />
+              </button>
+              <div className="m-lp-tim-hang-wrap">
+                <Icon n="search" className="ic sm m-lp-tim-ic" kieu="net" />
+                <input
+                  type="text"
+                  className="m-lp-tim-hang-inp"
+                  placeholder="Tìm tên, mã hàng..."
+                  value={timHang}
+                  onChange={e => setTimHang(e.target.value)}
+                />
+                {timHang && (
+                  <button type="button" className="m-lp-tim-hang-x" onClick={() => setTimHang('')}>
+                    <Icon n="x" className="ic sm" kieu="net" />
+                  </button>
+                )}
+              </div>
+              <button
+                type="button"
+                className={`m-lp-cb-tat-ca ${tatCaDaChon ? 'on' : ''}`}
+                onClick={toggleTatCa}
+                title="Chọn tất cả"
+              >
+                {tatCaDaChon && <Icon n="check" className="ic sm" kieu="net" />}
+              </button>
+            </div>
+
+            <div className="m-lp-than m-lp-ds-hang" style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
+              {dsHangHienThi.map(h => {
+                const daChon = dsDong.some(d => d.ma === h.ma)
+                return (
+                  <div
+                    key={h.ma}
+                    className={`m-the-trang m-lp-the-hang ${daChon ? 'on' : ''}`}
+                    onClick={() => toggleHang(h)}
+                  >
+                    <div className="m-lp-hang-trai">
+                      <div className="m-lp-hang-ten">{h.ten}</div>
+                      <div className="m-lp-hang-phu">
+                        Mã: {h.ma} · {h.dvt} {!laKk && `· ${money(h.gia)} đ`}
+                      </div>
+                    </div>
+                    <div className={`m-lp-cb-hang ${daChon ? 'on' : ''}`}>
+                      {daChon && <Icon n="check" className="ic sm" kieu="net" />}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+
+            <div className="m-tam-day">
+              <div className="m-lp-day-trai">
+                <span className="m-lp-day-dem">Đã chọn: <b>{dsDong.length}</b></span>
+              </div>
+              <button
+                type="button"
+                className="m-tam-btn-apdung"
+                onClick={() => setMoChonHang(false)}
+              >
+                Xong
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── SHEET CHỌN NHÓM HÀNG ── */}
+      <MChon
+        mo={moChonNhomHang}
+        onDong={() => setMoChonNhomHang(false)}
+        tieuDe="Chọn nhóm hàng"
+        ds={dsNhomHang.map(nh => ({ k: nh, ten: nh }))}
+        chon={nhomHangChon}
+        onChon={setNhomHangChon}
+        apDung
+        tim
+      />
+
+      {/* ── SHEET CHỌN CỬA HÀNG (T357) ── */}
+      <MChon
+        mo={moChonCn}
+        onDong={() => setMoChonCn(false)}
+        tieuDe="Chọn cửa hàng"
+        ds={CUA_HANG.map(c => ({ k: c.ten, ten: c.ten }))}
+        chon={cuaHang}
+        onChon={v => {
+          setCuaHang(v)
+          setKho(khoCuaCn(v)[0] ?? '')
+          setLoiO(l => { const n = { ...l }; delete n.cuaHang; delete n.kho; return n })
+        }}
+        apDung
+        tim
+      />
+
+      {/* ── LỊCH ĐƠN ── */}
+      {moLich && (
+        <LichDon
+          value={thoiGian.slice(0, 10)}
+          onChange={v => {
+            if (!laKk) { setThoiGian(v + thoiGian.slice(10)); return }
+            // kiểm kê chỉ chọn ngày: hôm nay lấy giờ lúc chọn, ngày trước lấy 23:59 (T358)
+            const now = new Date()
+            const homNay = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`
+            const gio = v === homNay ? `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}` : '23:59'
+            setThoiGian(`${v} ${gio}`)
+          }}
+          onDong={() => setMoLich(false)}
+        />
+      )}
+
+      {/* ── SHEET CHỌN ĐƠN VỊ TÍNH (T300) ── */}
+      {dvtSheet && (
+        <MChon
+          mo={Boolean(dvtSheet)}
+          onDong={() => setDvtSheet(null)}
+          tieuDe={`Chọn đơn vị: ${dvtSheet.ten}`}
+          ds={dvtSheet.ds}
+          chon={dsDong[dvtSheet.idx]?.dvt || ''}
+          onChon={v => {
+            doiDvt(dvtSheet.idx, v)
+            setDvtSheet(null)
+          }}
+          apDung
+        />
+      )}
+
+      {/* ── FORM THÊM MỚI DANH MỤC TRÊN ĐIỆN THOẠI (T347) ── */}
+      {moThemDm && (() => {
+        const meta = getDmMeta(moThemDm, undefined)
+        return (
+          <MFormDm
+            sc={meta.sc}
+            cauHinh={meta.cauHinh}
+            edit={{}}
+            dienSan={meta.dienSan}
+            all={meta.all}
+            ten={meta.ten}
+            tenNgan={meta.tenNgan}
+            onDong={() => setMoThemDm(null)}
+            onLuu={(val) => {
+              addCatalogRow(meta.catKey, val)
+              const ma = String(val.ma ?? '').trim()
+              const ten = String(val.ten ?? '').trim()
+              if (meta.catKey === '1.8') {
+                setKho(ten)
+                if (loiO.kho) setLoiO(l => { const n = { ...l }; delete n.kho; return n })
+              } else if (meta.catKey === '1.2') {
+                const gia = Number(val.gia) || Number(val.giaMua) || 0
+                setDsDong(ds => [...ds, {
+                  ma,
+                  ten,
+                  dvt: String(val.dvt ?? 'Cái'),
+                  dvtChinh: String(val.dvt ?? 'Cái'),
+                  giaGoc: gia,
+                  sl: laKk ? 0 : 1,
+                  gia: laKk ? 0 : gia,
+                  tien: laKk ? 0 : gia,
+                  ts: 0,
+                  thue: 0,
+                  tonHt: 0,
+                  tonTt: undefined,
+                  kho,
+                  ghiChu: '',
+                }])
+              }
+              setMoThemDm(null)
+            }}
+          />
+        )
+      })()}
+    </>
+  )
+
+  if (laKk) {
+    return (
+      <div className="m-kk-form-man">
+        {/* Thanh đầu */}
+        <header className="m-pb-thanh-dau">
+          <button type="button" className="m-pb-btn-back" onClick={handleQuayLai} aria-label="Quay lại">
+            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none">
+              <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <h2 className="m-pb-tieu-de">{dangSua ? `Sửa ${row?.so ?? ''}` : 'Lập phiếu kiểm kê'}</h2>
+          <span className="m-pb-thanh-dau-phai" />
+        </header>
+
+        {/* Thân cuộn */}
+        <div className="m-pb-noi-dung">
+          {/* Thẻ tổng quan */}
+          <div className="m-pb-the m-pb-the-tong-quan">
+            <div className="m-pb-hang-chip">
+              <span className="m-pb-chip-loai">Kiểm kê định kỳ</span>
+              <span className={`m-pb-chip-tt ${soDaDem === dsDong.length && dsDong.length > 0 ? 'dang' : 'cho'}`}>
+                Đã đếm {soDaDem}/{dsDong.length}
+              </span>
+            </div>
+            <label className="f-nhan">Kho kiểm kê <i>*</i></label>
+            <span
+              className="f-o-lon f-chon-lon"
+              id="m-lp-o-kho"
+              onClick={() => (cuaHang ? setMoChonKho(true) : setMoChonCn(true))}
+            >
+              <span>{kho || 'Chọn kho'}</span>
+              <b>›</b>
+            </span>
+            {loiO.kho && <div className="m-lp-loi-o" style={{ color: 'var(--red)' }}>{loiO.kho}</div>}
+
+            <div className="m-pb-dong-cn" onClick={() => setMoLich(true)} style={{ cursor: 'pointer' }}>
+              <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="1.8" fill="none">
+                <circle cx="12" cy="12" r="9" />
+                <path d="M12 7v5l3 2" />
+              </svg>
+              <span>Giờ kiểm tự lấy: {thoiGian}</span>
+            </div>
+
+            <div className="m-pb-luoi-stat">
+              <div className="m-pb-o-stat xanh">
+                <div className="m-pb-o-stat-nhan">Thừa</div>
+                <div className="m-pb-o-stat-so xanh">{tongThuaTxt}</div>
+              </div>
+              <div className="m-pb-o-stat do">
+                <div className="m-pb-o-stat-nhan">Thiếu</div>
+                <div className="m-pb-o-stat-so do">{tongThieuTxt}</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Nhóm Thông tin kiểm kê */}
+          <div className="m-pb-nhom">THÔNG TIN KIỂM KÊ</div>
+          <div className="m-pb-the m-pb-the-gon">
+            <div className="m-pb-dong">
+              <span className="n">Người kiểm</span>
+              <input
+                className="f-gt f-input"
+                value={nguoiKiem}
+                onChange={e => setNguoiKiem(e.target.value)}
+                placeholder="Nhập người kiểm"
+              />
+            </div>
+            <div className="m-pb-dong">
+              <span className="n">Diễn giải</span>
+              <input
+                className="f-gt f-input"
+                value={ghiChu}
+                onChange={e => setGhiChu(e.target.value)}
+                placeholder="Nhập diễn giải"
+              />
+            </div>
+          </div>
+
+          {/* Nhóm Đếm thực tế */}
+          <div className="m-pb-nhom">ĐẾM THỰC TẾ ({dsDong.length})</div>
+          <div className="f-tim">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="11" cy="11" r="7" />
+              <path d="M20 20l-4-4" />
+            </svg>
+            <input
+              type="text"
+              placeholder="Tìm hàng trong kho…"
+              value={timKiemKho}
+              onChange={e => setTimKiemKho(e.target.value)}
+            />
+            {timKiemKho && (
+              <button type="button" className="f-tim-x" onClick={() => setTimKiemKho('')} aria-label="Xoá tìm kiếm">
+                ✕
+              </button>
+            )}
+          </div>
+
+          {dsDongKkHienThi.map(({ d, originalIndex }) => {
+            const tonHt = Number(d.tonHt ?? 0)
+            const chuaDem = d.tonTt === undefined || d.tonTt === null || (d.tonTt as unknown) === ''
+            let chipClass = 'khop'
+            let chipTxt = 'Chưa đếm'
+            let chenhClass = ''
+            let chenhTxt = '–'
+
+            const dvtChinh = d.dvtChinh || NVL.find(n => n.ma === d.ma || n.ten === d.ten)?.dvt || HANG.find(h => h.ma === d.ma || h.ten === d.ten)?.dvt || d.dvt || 'kg'
+            const dsQd = quyDoiTuDanhMuc(d.ten, dvtChinh)
+            const coQd = s.goi !== 'F' && dsQd.length > 0
+            const dvtHienThi = d.dvt || dvtChinh
+
+            if (!chuaDem) {
+              const tonTt = Number(d.tonTt)
+              const chenh = Math.round((tonTt - tonHt) * 100) / 100
+              if (chenh < 0) {
+                chipClass = 'xuat'
+                chipTxt = `${chenh} ${dvtHienThi}`
+                chenhClass = 'do'
+                chenhTxt = `${chenh}`
+              } else if (chenh > 0) {
+                chipClass = 'nhap'
+                chipTxt = `+${chenh} ${dvtHienThi}`
+                chenhClass = 'xanh'
+                chenhTxt = `+${chenh}`
+              } else {
+                chipClass = 'khop'
+                chipTxt = 'Khớp'
+                chenhClass = ''
+                chenhTxt = '0'
+              }
+            }
+
+            const strVal = d.strTonTt !== undefined ? d.strTonTt : (chuaDem ? '' : String(d.tonTt))
+
+            return (
+              <div
+                key={d.ma || originalIndex}
+                className={`m-pb-the m-pb-muc-dong ${chuaDem ? 'f-chua-dem' : ''}`}
+              >
+                <div className="m-pb-muc-hang1">
+                  <span className="m-pb-muc-ten kk-ten">
+                    <b>{d.ten}</b>
+                    {d.ma && <small>{d.ma}</small>}
+                  </span>
+                  <span className={`chip-kk ${chipClass}`}>{chipTxt}</span>
+                </div>
+                <div className="m-kk-o3 kk4">
+                  <div className="m-kk-o3-item kk-o-dvt">
+                    <span className="m-kk-o3-nhan">ĐVT</span>
+                    {coQd ? (
+                      <button
+                        type="button"
+                        className="kk-dvt-btn chon"
+                        onClick={() => moChonDvt(originalIndex)}
+                      >
+                        {dvtHienThi} ▾
+                      </button>
+                    ) : (
+                      <span className="kk-dvt-btn">{dvtHienThi}</span>
+                    )}
+                  </div>
+                  <div className="m-kk-o3-item">
+                    <span className="m-kk-o3-nhan">Tồn sổ</span>
+                    <span className="m-kk-o3-so">{soLuong(tonHt)}</span>
+                  </div>
+                  <div className="m-kk-o3-item">
+                    <span className="m-kk-o3-nhan">Thực tế *</span>
+                    <input
+                      className="f-o-dem"
+                      value={strVal}
+                      placeholder="Nhập"
+                      inputMode="decimal"
+                      onChange={e => handleTonTtChange(originalIndex, e.target.value)}
+                    />
+                  </div>
+                  <div className="m-kk-o3-item">
+                    <span className="m-kk-o3-nhan">Chênh lệch</span>
+                    <span className={`m-kk-o3-so ${chenhClass}`}>{chenhTxt}</span>
+                  </div>
+                </div>
+              </div>
+            )
+          })}
+
+          <button
+            type="button"
+            className="f-them"
+            onClick={() => setMoChonHang(true)}
+          >
+            + Thêm hàng kiểm kê
+          </button>
+
+          <p className="f-goi-y">
+            Danh sách lấy sẵn hàng có tồn trong kho. Thêm hàng: chọn hàng chưa có trong danh sách (tồn sổ 0), nhập số đếm thực tế.
+            {soChuaDem > 0
+              ? ` Còn ${soChuaDem} mặt hàng chưa đếm${dsTenChuaDem ? ` (${dsTenChuaDem})` : ''}, lưu vẫn được, hàng chưa đếm giữ nguyên tồn sổ.`
+              : ' Đã đếm xong tất cả mặt hàng trong danh sách.'}
+          </p>
+        </div>
+
+        {/* Chân ghim đáy */}
+        <div className="m-pb-day">
+          <button type="button" className="m-pb-btn-phu" onClick={handleQuayLai}>
+            Huỷ
+          </button>
+          <button
+            type="button"
+            className="m-pb-btn-sua"
+            onClick={() => thucHienLuu(false)}
+          >
+            Lưu phiếu kiểm kê
+          </button>
+        </div>
+
+        {renderCacBangChon()}
+      </div>
+    )
+  }
 
   return (
     <div className="m-lp m-lp-mot-man">
@@ -1201,272 +1868,10 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
         </button>
       </div>
 
-      {/* ── SHEET CHỌN KHO ── */}
-      <MChon
-        mo={moChonKho}
-        onDong={() => setMoChonKho(false)}
-        tieuDe={laKk ? 'Chọn kho kiểm kê' : 'Chọn kho'}
-        ds={dsKhoCn.map(k => ({ k, ten: k }))}
-        chon={kho}
-        onChon={v => {
-          setKho(v)
-          if (loiO.kho) setLoiO(l => { const n = { ...l }; delete n.kho; return n })
-          if (laDcn && dcn === 'ck' && v === khoNhan) setKhoNhan('')
-        }}
-        onThem={() => {
-          setMoChonKho(false)
-          setMoThemDm('kho')
-        }}
-        nhanThem="Thêm kho"
-        apDung
-        tim
-      />
+      {/* ── BẢNG CHỌN ── */}
+      {renderCacBangChon()}
 
-      {/* ── SHEET CHỌN CỬA HÀNG NHẬN (XDC) ── */}
-      {laDcn && dcn === 'xdc' && (
-        <MChon
-          mo={moChonCnNhan}
-          onDong={() => setMoChonCnNhan(false)}
-          tieuDe="Chọn cửa hàng nhận"
-          ds={dsCnNhan.map(c => ({ k: c.ten, ten: c.ten }))}
-          chon={cnNhan}
-          onChon={v => {
-            setCnNhan(v)
-            if (loiO.cnNhan) setLoiO(l => { const n = { ...l }; delete n.cnNhan; return n })
-            const k = khoCuaCn(v)
-            setKhoNhan(k.length === 1 ? k[0] : '')
-          }}
-          apDung
-          tim
-        />
-      )}
 
-      {/* ── SHEET CHỌN KHO NHẬN ── */}
-      {laDcn && (dcn === 'ck' || dcn === 'xdc') && (
-        <MChon
-          mo={moChonKhoNhan}
-          onDong={() => setMoChonKhoNhan(false)}
-          tieuDe="Chọn kho nhận"
-          ds={(dcn === 'xdc' ? dsKhoNhanXdc : dsKhoCn).map(k => ({ k, ten: k }))}
-          chon={khoNhan}
-          onChon={v => {
-            if (v === kho) {
-              toast('Kho nhận phải khác kho xuất')
-              return
-            }
-            setKhoNhan(v)
-            if (loiO.khoNhan) setLoiO(l => { const n = { ...l }; delete n.khoNhan; return n })
-          }}
-          apDung
-          tim
-        />
-      )}
-
-      {/* ── SHEET TẤM CHỌN HÀNG HOÁ ── */}
-      {moChonHang && (
-        <div className="m-tam-overlay" onClick={() => setMoChonHang(false)}>
-          <div className="m-tam-hop m-tam-hop-apdung m-lp-sheet-hang" onClick={e => e.stopPropagation()}>
-            <div className="m-tam-dau m-tam-dau-apdung">
-              <h2 className="m-tam-tieu">Chọn hàng hoá</h2>
-              <button
-                type="button"
-                className="m-tam-dong-btn"
-                onClick={() => setMoChonHang(false)}
-                aria-label="Đóng"
-              >
-                <Icon n="x" className="ic sm" kieu="net" />
-              </button>
-            </div>
-
-            <div className="m-tam-them-wrap">
-              <button
-                type="button"
-                className="btn pri m-tam-btn-them"
-                onClick={() => {
-                  setMoChonHang(false)
-                  setMoThemDm('hang')
-                }}
-              >
-                <Icon n="plus" className="ic sm" />
-                <span>Thêm hàng hoá</span>
-              </button>
-            </div>
-
-            <div className="m-lp-loc-hang">
-              <button
-                type="button"
-                className="m-lp-btn-nhom"
-                onClick={() => setMoChonNhomHang(true)}
-              >
-                <span>{nhomHangChon}</span>
-                <Icon n="chevd" className="ic sm" kieu="net" />
-              </button>
-              <div className="m-lp-tim-hang-wrap">
-                <Icon n="search" className="ic sm m-lp-tim-ic" kieu="net" />
-                <input
-                  type="text"
-                  className="m-lp-tim-hang-inp"
-                  placeholder="Tìm tên, mã hàng..."
-                  value={timHang}
-                  onChange={e => setTimHang(e.target.value)}
-                />
-                {timHang && (
-                  <button type="button" className="m-lp-tim-hang-x" onClick={() => setTimHang('')}>
-                    <Icon n="x" className="ic sm" kieu="net" />
-                  </button>
-                )}
-              </div>
-              <button
-                type="button"
-                className={`m-lp-cb-tat-ca ${tatCaDaChon ? 'on' : ''}`}
-                onClick={toggleTatCa}
-                title="Chọn tất cả"
-              >
-                {tatCaDaChon && <Icon n="check" className="ic sm" kieu="net" />}
-              </button>
-            </div>
-
-            <div className="m-lp-than m-lp-ds-hang" style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
-              {dsHangHienThi.map(h => {
-                const daChon = dsDong.some(d => d.ma === h.ma)
-                return (
-                  <div
-                    key={h.ma}
-                    className={`m-the-trang m-lp-the-hang ${daChon ? 'on' : ''}`}
-                    onClick={() => toggleHang(h)}
-                  >
-                    <div className="m-lp-hang-trai">
-                      <div className="m-lp-hang-ten">{h.ten}</div>
-                      <div className="m-lp-hang-phu">
-                        Mã: {h.ma} · {h.dvt} {!laKk && `· ${money(h.gia)} đ`}
-                      </div>
-                    </div>
-                    <div className={`m-lp-cb-hang ${daChon ? 'on' : ''}`}>
-                      {daChon && <Icon n="check" className="ic sm" kieu="net" />}
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-
-            <div className="m-tam-day">
-              <div className="m-lp-day-trai">
-                <span className="m-lp-day-dem">Đã chọn: <b>{dsDong.length}</b></span>
-              </div>
-              <button
-                type="button"
-                className="m-tam-btn-apdung"
-                onClick={() => setMoChonHang(false)}
-              >
-                Xong
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ── SHEET CHỌN NHÓM HÀNG ── */}
-      <MChon
-        mo={moChonNhomHang}
-        onDong={() => setMoChonNhomHang(false)}
-        tieuDe="Chọn nhóm hàng"
-        ds={dsNhomHang.map(nh => ({ k: nh, ten: nh }))}
-        chon={nhomHangChon}
-        onChon={setNhomHangChon}
-        apDung
-        tim
-      />
-
-      {/* ── SHEET CHỌN CỬA HÀNG (T357) ── */}
-      <MChon
-        mo={moChonCn}
-        onDong={() => setMoChonCn(false)}
-        tieuDe="Chọn cửa hàng"
-        ds={CUA_HANG.map(c => ({ k: c.ten, ten: c.ten }))}
-        chon={cuaHang}
-        onChon={v => {
-          setCuaHang(v)
-          setKho(khoCuaCn(v)[0] ?? '')
-          setLoiO(l => { const n = { ...l }; delete n.cuaHang; delete n.kho; return n })
-        }}
-        apDung
-        tim
-      />
-
-      {/* ── LỊCH ĐƠN ── */}
-      {moLich && (
-        <LichDon
-          value={thoiGian.slice(0, 10)}
-          onChange={v => {
-            if (!laKk) { setThoiGian(v + thoiGian.slice(10)); return }
-            // kiểm kê chỉ chọn ngày: hôm nay lấy giờ lúc chọn, ngày trước lấy 23:59 (T358)
-            const now = new Date()
-            const homNay = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`
-            const gio = v === homNay ? `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}` : '23:59'
-            setThoiGian(`${v} ${gio}`)
-          }}
-          onDong={() => setMoLich(false)}
-        />
-      )}
-
-      {/* ── SHEET CHỌN ĐƠN VỊ TÍNH (T300) ── */}
-      {dvtSheet && (
-        <MChon
-          mo={Boolean(dvtSheet)}
-          onDong={() => setDvtSheet(null)}
-          tieuDe={`Chọn đơn vị: ${dvtSheet.ten}`}
-          ds={dvtSheet.ds}
-          chon={dsDong[dvtSheet.idx]?.dvt || ''}
-          onChon={v => {
-            doiDvt(dvtSheet.idx, v)
-            setDvtSheet(null)
-          }}
-          apDung
-        />
-      )}
-
-      {/* ── FORM THÊM MỚI DANH MỤC TRÊN ĐIỆN THOẠI (T347) ── */}
-      {moThemDm && (() => {
-        const meta = getDmMeta(moThemDm, undefined)
-        return (
-          <MFormDm
-            sc={meta.sc}
-            cauHinh={meta.cauHinh}
-            edit={{}}
-            dienSan={meta.dienSan}
-            all={meta.all}
-            ten={meta.ten}
-            tenNgan={meta.tenNgan}
-            onDong={() => setMoThemDm(null)}
-            onLuu={(val) => {
-              addCatalogRow(meta.catKey, val)
-              const ma = String(val.ma ?? '').trim()
-              const ten = String(val.ten ?? '').trim()
-              if (meta.catKey === '1.8') {
-                setKho(ten)
-                if (loiO.kho) setLoiO(l => { const n = { ...l }; delete n.kho; return n })
-              } else if (meta.catKey === '1.2') {
-                const gia = Number(val.gia) || Number(val.giaMua) || 0
-                setDsDong(ds => [...ds, {
-                  ma,
-                  ten,
-                  dvt: String(val.dvt ?? 'Cái'),
-                  dvtChinh: String(val.dvt ?? 'Cái'),
-                  giaGoc: gia,
-                  sl: 1,
-                  gia,
-                  tien: gia,
-                  ts: 0,
-                  thue: 0,
-                  kho,
-                  ghiChu: '',
-                }])
-              }
-              setMoThemDm(null)
-            }}
-          />
-        )
-      })()}
     </div>
   )
 }
