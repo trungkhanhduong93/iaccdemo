@@ -1,11 +1,11 @@
 // Hệ thống: người dùng, phân quyền, gói thuê bao, cấu hình, thông tin đơn vị
-import { useState } from 'react'
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import type { Row, ScreenProps } from '../types'
-import { MODULES, duongDan } from '../../app/registry'
+import type { Row, ScreenDef, ScreenProps } from '../types'
+import { MODULES, duongDan, hienMan, laBaoCao } from '../../app/registry'
 import { donViHienTai, dsCuaHang, dsDonVi, loaiHinhDv, useSession, cheDoHienTai, namTaiChinh, ngayDauNam, type PpGtgt, type PpTndn } from '../../app/session'
 import { ChonKenh, KENH_ONLINE, KENH_SAN, NHOM_HKD, type LoaiHinh, type PpHkd } from '../onboarding/OnboardFabi'
-import { FEATURES, GOI, GOIS, MODS, demTheoGoi, kieuGhiSo, type Goi } from '../../app/plan'
+import { FEATURE, FEATURES, GOI, GOIS, MODS, demTheoGoi, kieuGhiSo, type Goi } from '../../app/plan'
 import { CHE_DO, CHE_DO_HOP_LE, cheDoCuaGoi, type CheDo } from '../../app/che-do'
 import { CUA_HANG, KHO, NGUOI_DUNG } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
@@ -107,9 +107,140 @@ export const MAC_DINH: Record<string, string[]> = {
   'Chủ doanh nghiệp': ['Xem'], 'Kế toán trưởng': QUYEN, 'Kế toán viên': ['Xem', 'Thêm', 'Sửa', 'Ghi sổ'], 'Quản lý cửa hàng': ['Xem', 'Thêm'], 'Thủ kho': ['Xem', 'Thêm', 'Sửa'],
 }
 
+const MOD_KEYS: Record<string, string> = {
+  'Danh mục': 'danh-muc',
+  'Kế toán tiền': 'tien',
+  'Kế toán bán hàng': 'ban-hang',
+  'Kế toán mua hàng': 'mua-hang',
+  'Kho hàng': 'kho',
+  'Thuế GTGT': 'thue',
+  'Tài sản cố định': 'tscd',
+  'Công cụ dụng cụ': 'ccdc',
+  'Chi phí, giá thành': 'gia-thanh',
+  'Kế toán tổng hợp': 'tong-hop',
+  'Tiện ích bổ sung': 'tien-ich',
+}
+
+function laManKhoaSo(sc: ScreenDef): boolean {
+  return sc.slug === 'khoa-so' || sc.slug === '10-1-6' || /khoá sổ/i.test(sc.ten ?? '') || /khoá sổ/i.test(sc.slug)
+}
+
+function laBaoCaoHoacSo(sc: ScreenDef): boolean {
+  return sc.kind === 'report' || sc.kind === 'baocao' || sc.kind === 'quytrinh' || laBaoCao(sc) || /báo cáo|sổ/i.test(sc.nhom ?? '')
+}
+
+function laDanhMuc(sc: ScreenDef): boolean {
+  return sc.kind === 'catalog' || /danh mục/i.test(sc.nhom ?? '')
+}
+
+export function apDungQuyen(sc: ScreenDef, q: string): boolean {
+  if (laBaoCaoHoacSo(sc)) {
+    return q === 'Xem'
+  }
+  if (laDanhMuc(sc)) {
+    return q !== 'Ghi sổ' && q !== 'Khoá sổ'
+  }
+  if (laManKhoaSo(sc)) {
+    return true
+  }
+  if (sc.kind === 'voucher' || /chứng từ/i.test(sc.nhom ?? '')) {
+    return q !== 'Khoá sổ'
+  }
+  return true
+}
+
+function tenHienThiMan(sc: ScreenDef): string {
+  return sc.ten ?? sc.ngan ?? (sc.code ? FEATURE[sc.code]?.n : undefined) ?? sc.slug
+}
+
+function CongTacCha({
+  checked,
+  mixed,
+  disabled,
+  onChange,
+  label,
+}: {
+  checked: boolean
+  mixed: boolean
+  disabled?: boolean
+  onChange: () => void
+  label: string
+}) {
+  const ref = useRef<HTMLInputElement>(null)
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.indeterminate = mixed
+    }
+  }, [mixed])
+
+  return (
+    <input
+      ref={ref}
+      type="checkbox"
+      className={`bat-tat${mixed ? ' bat-tat-nua' : ''}`}
+      checked={checked}
+      disabled={disabled}
+      aria-label={label}
+      aria-checked={mixed ? 'mixed' : checked}
+      onChange={onChange}
+    />
+  )
+}
+
 export function PhanQuyen({ sc }: ScreenProps) {
-  const { toast } = useSession()
+  const { s, toast } = useSession()
   const [vt, setVt] = useState('Kế toán viên')
+  const [moMods, setMoMods] = useState<Record<string, boolean>>({})
+  const [quyenMap, setQuyenMap] = useState<Record<string, Record<string, boolean>>>({})
+
+  const layDanhSachMan = useMemo(() => {
+    const res: Record<string, ScreenDef[]> = {}
+    for (const mName of MODS) {
+      const key = MOD_KEYS[mName]
+      const mod = MODULES.find(m => m.key === key) || MODULES.find(m => m.ten === mName || m.ngan === mName)
+      res[mName] = mod ? mod.screens.filter(item => hienMan(item, s.goi, s.cheDo, s)) : []
+    }
+    return res
+  }, [s.goi, s.cheDo, s])
+
+  const toggleMod = (mName: string) => {
+    setMoMods(prev => ({ ...prev, [mName]: !prev[mName] }))
+  }
+
+  const layQuyen = (mName: string, slug: string, q: string): boolean => {
+    const k = `${mName}/${slug}/${q}`
+    const r = quyenMap[vt]
+    if (r && k in r) return r[k]
+    return MAC_DINH[vt]?.includes(q) ?? false
+  }
+
+  const datQuyen = (mName: string, slug: string, q: string, val: boolean) => {
+    const k = `${mName}/${slug}/${q}`
+    setQuyenMap(prev => ({
+      ...prev,
+      [vt]: {
+        ...(prev[vt] ?? {}),
+        [k]: val,
+      },
+    }))
+  }
+
+  const toggleCha = (mName: string, q: string) => {
+    const scs = layDanhSachMan[mName] ?? []
+    const scsApDung = scs.filter(item => apDungQuyen(item, q))
+    if (scsApDung.length === 0) return
+    const batCount = scsApDung.filter(item => layQuyen(mName, item.slug, q)).length
+    const isMixed = batCount > 0 && batCount < scsApDung.length
+    const batMoi = isMixed ? true : (batCount === scsApDung.length ? false : true)
+    setQuyenMap(prev => {
+      const cur = { ...(prev[vt] ?? {}) }
+      for (const item of scsApDung) {
+        cur[`${mName}/${item.slug}/${q}`] = batMoi
+      }
+      return { ...prev, [vt]: cur }
+    })
+  }
+
   return (
     <div className="page">
       <PageHead crumb={['Hệ thống']} title={sc.ten!}>
@@ -127,9 +258,86 @@ export function PhanQuyen({ sc }: ScreenProps) {
           <table className="tbl matrix">
             <thead><tr><th>Phân hệ</th>{QUYEN.map(q => <th key={q} className="c">{q}</th>)}</tr></thead>
             <tbody>
-              {MODS.map(m => (
-                <tr key={m}><td>{m}</td>{QUYEN.map(q => <td key={q} className="c"><input type="checkbox" className="bat-tat" defaultChecked={MAC_DINH[vt].includes(q)} key={vt + q} /></td>)}</tr>
-              ))}
+              {MODS.map(mName => {
+                const scs = layDanhSachMan[mName] ?? []
+                const isOpen = Boolean(moMods[mName])
+                return (
+                  <Fragment key={mName}>
+                    <tr className="tr-pq-cha">
+                      <td
+                        className="td-pq-cha-ten"
+                        onClick={() => toggleMod(mName)}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        <div
+                          role="button"
+                          tabIndex={0}
+                          aria-expanded={isOpen}
+                          className="pq-mod-btn"
+                          onKeyDown={e => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault()
+                              toggleMod(mName)
+                            }
+                          }}
+                        >
+                          <Icon n={isOpen ? 'chevd' : 'chevr'} className="ic sm pq-chevron" />
+                          <span className="pq-mod-title">{mName}</span>
+                        </div>
+                      </td>
+                      {QUYEN.map(q => {
+                        const scsApDung = scs.filter(item => apDungQuyen(item, q))
+                        const batCount = scsApDung.filter(item => layQuyen(mName, item.slug, q)).length
+                        const isAllChecked = scsApDung.length > 0 && batCount === scsApDung.length
+                        const isMixed = scsApDung.length > 0 && batCount > 0 && batCount < scsApDung.length
+                        return (
+                          <td key={q} className="c">
+                            <CongTacCha
+                              checked={isAllChecked}
+                              mixed={isMixed}
+                              disabled={scsApDung.length === 0}
+                              label={`${mName} - ${q}`}
+                              onChange={() => toggleCha(mName, q)}
+                            />
+                          </td>
+                        )
+                      })}
+                    </tr>
+                    {isOpen && scs.map(item => {
+                      const tenMan = tenHienThiMan(item)
+                      return (
+                        <tr key={`${mName}-${item.slug}`} className="tr-pq-con">
+                          <td className="td-pq-con-ten">
+                            <span className="pq-con-ten">{tenMan}</span>
+                          </td>
+                          {QUYEN.map(q => {
+                            const apDung = apDungQuyen(item, q)
+                            if (!apDung) {
+                              return (
+                                <td key={q} className="c">
+                                  <span className="pq-khong-ap" aria-hidden="true">—</span>
+                                </td>
+                              )
+                            }
+                            const isChecked = layQuyen(mName, item.slug, q)
+                            return (
+                              <td key={q} className="c">
+                                <input
+                                  type="checkbox"
+                                  className="bat-tat"
+                                  checked={isChecked}
+                                  aria-label={`${tenMan} - ${q}`}
+                                  onChange={() => datQuyen(mName, item.slug, q, !isChecked)}
+                                />
+                              </td>
+                            )
+                          })}
+                        </tr>
+                      )
+                    })}
+                  </Fragment>
+                )
+              })}
             </tbody>
           </table>
         </section>

@@ -11,6 +11,7 @@ import { CUA_HANG, DAILY, HOM_NAY, type DonVi } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
 import { Note, Pk } from '../../ui/Page'
 import { Dropdown, MenuItem, Select } from '../../ui/Dropdown'
+import { ChonHaiCot } from '../../ui/ChonHaiCot'
 
 export const BUOC = ['Loại hình và gói', 'Đơn vị', 'Cửa hàng']   // bỏ Đồng bộ bán hàng; FABi luôn kéo chi tiết theo hoá đơn (T158, T247)
 const XONG = BUOC.length   // bước hoàn tất
@@ -120,15 +121,21 @@ export function DsCuaHang({ ds, chon, chinh, doi, coChinh }: { ds: CnFabi[]; cho
   )
 }
 
-/** Ô thả xuống chọn nhiều kênh bán; kênh đã chọn hiện gọn trong ô */
+/** Ô chọn nhiều kênh bán hai cột (T381) */
 export function ChonKenh({ ds, chon, doi, trong }: { ds: string[]; chon: string[]; doi: (k: string) => void; trong: string }) {
   return (
-    <Dropdown btnClass="inp ktf-kenh-o" width={260} label={<>
-      <span className="ktf-kenh-chon">{chon.length ? chon.join(', ') : <span className="muted">{trong}</span>}</span>
-      <Icon n="chevd" className="ic sm" />
-    </>}>
-      {ds.map(k => <MenuItem key={k} on={chon.includes(k)} onClick={() => doi(k)}>{k}</MenuItem>)}
-    </Dropdown>
+    <ChonHaiCot
+      ds={ds}
+      value={chon}
+      onChange={moi => {
+        const them = moi.filter(x => !chon.includes(x))
+        const bot = chon.filter(x => !moi.includes(x))
+        for (const k of [...them, ...bot]) doi(k)
+      }}
+      nhan={trong}
+      goiY={trong}
+      btnClass="ktf-kenh-o"
+    />
   )
 }
 

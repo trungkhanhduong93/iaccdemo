@@ -334,7 +334,7 @@ export const MKhoaSo: FC<ScreenProps> = () => {
       </div>
 
       {/* 5. Nút thao tác dưới chân */}
-      <div className="m-tacvu-day">
+      <div className="m-tacvu-day" style={{ gap: 10 }}>
         {laFree ? (
           <>
             <button

@@ -46,6 +46,8 @@ export interface ChiTieuTongKhuon3 {
   nhan: string
   /** Khớp dòng trong dữ liệu */
   khop: (r: Row) => boolean
+  /** Tính giá trị trực tiếp từ danh sách dòng (ghi đè khop nếu có) */
+  tinh?: (rows: Row[]) => { val: number; tonTai: boolean }
 }
 
 /** Cấu hình 3 chỉ tiêu dòng tổng cho các màn khuôn 3 (T241) */
@@ -74,30 +76,63 @@ export const BANG_TONG_KHUON_3: Record<string, [ChiTieuTongKhuon3, ChiTieuTongKh
       },
     },
   ],
-  // 10.2.3: Doanh thu thuần, Lợi nhuận gộp, Lợi nhuận trước thuế (Điểm 3)
+  // 10.2.3: Tổng doanh thu, Tổng chi phí, Lợi nhuận (T378)
   '10.2.3': [
     {
-      nhan: 'Doanh thu thuần',
+      nhan: 'Tổng doanh thu',
       khop: r => {
         const ma = String(r.ma || '')
-        const t = String(r.ct || r.chiTieu || r.ten || r.dg || '')
-        return ma === '10' || t.includes('Doanh thu thuần')
+        const t = String(r.ct || r.chiTieu || r.ten || r.dg || '').toLowerCase()
+        return t.includes('doanh thu bán hàng') || ma === '01' || ma === '10' || t.includes('doanh thu và thu nhập thuần') || t.includes('doanh thu thuần')
+      },
+      tinh: rows => {
+        const row = rows.find(r => {
+          const ma = String(r.ma || '')
+          const t = String(r.ct || r.chiTieu || r.ten || r.dg || '').toLowerCase()
+          return t.includes('doanh thu bán hàng') || ma === '01' || ma === '10' || t.includes('doanh thu và thu nhập thuần') || t.includes('doanh thu thuần')
+        })
+        const val = Number(row?.v ?? row?.nay ?? row?.tongNay ?? row?.tien ?? 0)
+        return { val, tonTai: Boolean(row) }
       },
     },
     {
-      nhan: 'LN gộp',
+      nhan: 'Tổng chi phí',
       khop: r => {
+        if (r._con || r._t) return false
+        const t = String(r.ct || r.chiTieu || r.ten || r.dg || '').toLowerCase()
+        if (t.includes('doanh thu') || t.includes('lãi') || t.includes('lợi nhuận')) return false
         const ma = String(r.ma || '')
-        const t = String(r.ct || r.chiTieu || r.ten || r.dg || '')
-        return ma === '20' || t.includes('Lợi nhuận gộp') || t.includes('Lãi gộp')
+        return t.includes('chi phí') || ma === '02' || ma === '11' || ma === '22' || ma === '24' || ma === '25' || ma === '26' || ma === '32' || ma === '51' || t.includes('giá vốn')
+      },
+      tinh: rows => {
+        // Tổng mọi dòng chi phí cấp 1 của báo cáo (!r._con, !r._t, tên có 'chi phí' hoặc nhóm chi phí cấp 1)
+        const dsCp = rows.filter(r => {
+          if (r._con || r._t) return false
+          const t = String(r.ct || r.chiTieu || r.ten || r.dg || '').toLowerCase()
+          if (t.includes('doanh thu') || t.includes('lãi') || t.includes('lợi nhuận')) return false
+          const ma = String(r.ma || '')
+          return t.includes('chi phí') || ma === '02' || ma === '11' || ma === '22' || ma === '24' || ma === '25' || ma === '26' || ma === '32' || ma === '51' || t.includes('giá vốn')
+        })
+        const val = dsCp.reduce((tong, r) => tong + Number(r.v ?? r.nay ?? r.tongNay ?? r.tien ?? 0), 0)
+        return { val, tonTai: dsCp.length > 0 }
       },
     },
     {
-      nhan: 'LN trước thuế',
+      nhan: 'Lợi nhuận',
       khop: r => {
-        const ma = String(r.ma || '')
-        const t = String(r.ct || r.chiTieu || r.ten || r.dg || '')
-        return ma === '50' || t.includes('trước thuế')
+        if (r._con) return false
+        const t = String(r.ct || r.chiTieu || r.ten || r.dg || '').toLowerCase()
+        return Boolean(r._t) || t.includes('lợi nhuận sau thuế') || t.includes('lợi nhuận trước thuế') || t.includes('lợi nhuận')
+      },
+      tinh: rows => {
+        // Dòng lợi nhuận cuối cùng của chính báo cáo này
+        const row = [...rows].reverse().find(r => {
+          if (r._con) return false
+          const t = String(r.ct || r.chiTieu || r.ten || r.dg || '').toLowerCase()
+          return Boolean(r._t) || t.includes('lợi nhuận sau thuế') || t.includes('lợi nhuận trước thuế') || t.includes('lợi nhuận')
+        }) || rows.find(r => r._t === 1) || rows.at(-1)
+        const val = Number(row?.v ?? row?.nay ?? row?.tongNay ?? row?.tien ?? 0)
+        return { val, tonTai: Boolean(row) }
       },
     },
   ],
@@ -462,6 +497,31 @@ const Khuon2TongHopDoiTuong: FC<{ rows: Row[]; q?: string }> = ({ rows, q = '' }
   )
 }
 
+/** Tô màu số tiền dòng tổng cho KQKD (T378): Doanh thu bán hàng xanh dương, tổng chi phí cam, lợi nhuận xanh lá/đỏ; dòng con không tô */
+function layMauSoKqkd(r: Row, vNay: number): string | undefined {
+  const isDam = Boolean(r._b || r._t)
+  if (!isDam || r._con) return undefined
+  const t = String(r.ct || r.chiTieu || r.ten || r.dg || '').toLowerCase()
+  const ma = String(r.ma || '')
+
+  // 1. Dòng tổng doanh thu: xanh dương
+  if (t.includes('doanh thu bán hàng') || ma === '01' || ma === '10' || t.includes('doanh thu và thu nhập thuần') || t.includes('doanh thu thuần')) {
+    return 'var(--blue)'
+  }
+
+  // 2. Dòng lợi nhuận (Lãi gộp, lợi nhuận trước/sau thuế): xanh lá nếu >= 0, đỏ nếu < 0
+  if (t.includes('lãi') || t.includes('lợi nhuận') || Boolean(r._t) || ma === '20' || ma === '50' || ma === '60') {
+    return vNay < 0 ? 'var(--red)' : 'var(--green)'
+  }
+
+  // 3. Dòng tổng chi phí cấp 1 (Chi phí NVL, Chi phí trong tháng, Chi phí phân bổ hàng tháng...): cam
+  if (t.includes('chi phí') || ma === '02' || ma === '11' || ma === '22' || ma === '24' || ma === '25' || ma === '26' || ma === '32' || ma === '51' || t.includes('giá vốn')) {
+    return 'var(--orange)'
+  }
+
+  return undefined
+}
+
 // ── KHUÔN 3: CHỈ TIÊU PHÂN CẤP ──
 const Khuon3ChiTieuPhanCap: FC<{ maBc?: string; rows: Row[]; q?: string }> = ({ maBc, rows, q = '' }) => {
   // Tìm các chỉ tiêu nổi bật cho dòng tổng 3 ô
@@ -477,6 +537,14 @@ const Khuon3ChiTieuPhanCap: FC<{ maBc?: string; rows: Row[]; q?: string }> = ({ 
   const cacOTong = useMemo(() => {
     if (cfgTong) {
       return cfgTong.map(item => {
+        if (item.tinh) {
+          const res = item.tinh(rows)
+          return {
+            nhan: item.nhan,
+            val: res.val,
+            tonTai: res.tonTai,
+          }
+        }
         const row = rows.find(item.khop)
         const val = laySoNay(row)
         return {
@@ -561,10 +629,23 @@ const Khuon3ChiTieuPhanCap: FC<{ maBc?: string; rows: Row[]; q?: string }> = ({ 
           {cacOTong.map((o, idx) => {
             const isAm = o.val < 0
             const soHienThi = isAm ? `−${rutGonSo(o.val)}` : rutGonSo(o.val)
+            let mauO: string | undefined = undefined
+            if (is1023) {
+              if (idx === 0 || o.nhan.includes('doanh thu')) {
+                mauO = 'var(--blue)'
+              } else if (idx === 1 || o.nhan.includes('chi phí')) {
+                mauO = 'var(--orange)'
+              } else if (idx === 2 || o.nhan.includes('nhuận')) {
+                mauO = isAm ? 'var(--red)' : 'var(--green)'
+              }
+            }
             return (
               <div key={idx} className="m-so-dong-tong-o">
                 <span className="m-so-dong-tong-nhan">{o.nhan}</span>
-                <b className={`m-so-dong-tong-so m-so-dong-num ${isAm ? 'm-so-dong-am' : ''}`}>
+                <b
+                  className={`m-so-dong-tong-so m-so-dong-num ${!mauO && isAm ? 'm-so-dong-am' : ''}`}
+                  style={mauO ? { color: mauO } : undefined}
+                >
                   {soHienThi}
                 </b>
               </div>
@@ -593,8 +674,11 @@ const Khuon3ChiTieuPhanCap: FC<{ maBc?: string; rows: Row[]; q?: string }> = ({ 
                 const vNay = laySoNay(r)
                 const vTruoc = laySoTruoc(r)
 
+                const mauKqkd = is1023 ? layMauSoKqkd(r, vNay) : undefined
                 const isLoiNhuan = isDam && (ten.includes('Lợi nhuận') || ten.includes('Lãi') || ten.includes('Doanh thu'))
-                const lopMau = vNay < 0
+                const lopMau = mauKqkd
+                  ? ''
+                  : vNay < 0
                   ? 'm-so-dong-am'
                   : isLoiNhuan && vNay > 0
                   ? 'm-so-dong-duong'
@@ -610,7 +694,10 @@ const Khuon3ChiTieuPhanCap: FC<{ maBc?: string; rows: Row[]; q?: string }> = ({ 
                       <span className="m-bcd-ct-ten">{ten}</span>
                     </div>
                     <div className="m-bcd-ct-phai">
-                      <div className={`m-bcd-ct-so ${lopMau}`}>
+                      <div
+                        className={`m-bcd-ct-so ${lopMau}`}
+                        style={mauKqkd ? { color: mauKqkd } : undefined}
+                      >
                         {money(vNay)}
                       </div>
                       {vTruoc !== undefined && (

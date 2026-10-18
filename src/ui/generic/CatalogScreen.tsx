@@ -24,6 +24,7 @@ import { NutExcel, NutThemMoiSplit } from '../CongCuDs'
 import { sinhCotBoSung } from './TuyChonCotDM'
 import { ChonKhoangNgay, ONgay, docNgay } from '../ChonNgay'
 import { ChonCoTim, ChonNhieu as ChonNhieuIf } from '../../modules/danh-muc/QuyDoiDvt'
+import { ChonHaiCot } from '../ChonHaiCot'
 
 /** Mã mở form thêm hàng loạt trên đường dẫn: ?moi=hang-loat */
 const HANG_LOAT = 'hang-loat'
@@ -470,8 +471,12 @@ export function CatalogPanel({
     if (!dangSua && dienSan) {
       for (const [k, val] of Object.entries(dienSan)) {
         v[k] = val
-        if (cauHinh?.doi) v = { ...v, ...cauHinh.doi(k, v, all) }
+        if (cauHinh?.doi) v = { ...v, ...cauHinh.doi(k, v, all, s) }
       }
+    }
+    // Gói Free (T380): theo dõi kho cố định theo Loại hàng (Thành phẩm = TẮT, loại khác = BẬT)
+    if (s.goi === 'F' && (scSlug === '1-2' || scSlug === '1.2' || cauHinh?.khoi?.some(kh => kh.truong?.some(tr => tr.k === 'tonKho' && tr.cot === 'IS_INVENTORY')))) {
+      v.tonKho = v.loai === 'Thành phẩm' ? 0 : 1
     }
     return v
   })
@@ -585,7 +590,12 @@ export function CatalogPanel({
   // Gõ một ô: ghi giá trị rồi cho cấu hình tự tính các ô phụ thuộc
   const doiO = (k: string, val: unknown) => {
     let m = { ...formVal, [k]: val }
-    if (cauHinh?.doi) m = { ...m, ...cauHinh.doi(k, m, all) }
+    if (s.goi === 'F' && (scSlug === '1-2' || scSlug === '1.2' || cauHinh?.khoi?.some(kh => kh.truong?.some(tr => tr.k === 'tonKho' && tr.cot === 'IS_INVENTORY')))) {
+      if (k === 'loai') {
+        m.tonKho = val === 'Thành phẩm' ? 0 : 1
+      }
+    }
+    if (cauHinh?.doi) m = { ...m, ...cauHinh.doi(k, m, all, s) }
     if (cauHinh?.hoiDoi && (!cauHinh.goiHoiDoi || cauHinh.goiHoiDoi.includes(s.goi))) {
       const hd = cauHinh.hoiDoi(k, m, all)
       if (hd) {
@@ -599,6 +609,9 @@ export function CatalogPanel({
   }
 
   const handleLuu = (themTiep: boolean) => {
+    if (s.goi === 'F' && (scSlug === '1-2' || scSlug === '1.2' || cauHinh?.khoi?.some(kh => kh.truong?.some(tr => tr.k === 'tonKho' && tr.cot === 'IS_INVENTORY')))) {
+      formVal.tonKho = formVal.loai === 'Thành phẩm' ? 0 : 1
+    }
     const errs: Record<string, string> = {}
     const cKey = scSlug ?? cauHinh?.ten ?? ''
     const coTruongMa = dsKhoi.some(kh => kh.truong.some(tr => tr.k === 'ma'))
@@ -710,6 +723,8 @@ export function CatalogPanel({
   const khoaO = (tr: { k: string }, el: React.ReactNode) =>
     dangSua && cauHinh?.chiSua && !cauHinh.chiSua.includes(tr.k) ? <fieldset key={tr.k} className="pn-fs" disabled>{el}</fieldset> : el
   const veKhoi = (kh: KhoiDM) => {
+    const truongHien = kh.truong.filter(hienO)
+    if (!kh.bang && !kh.ve && truongHien.length === 0) return null
     const mo = kh.anDau || isMo(kh.ten)
     return (
       <div key={kh.ten} className={`pn-khoi${mo ? ' mo' : ''}${kh.anDau ? ' pn-an-dau' : ''}`}>
@@ -731,7 +746,9 @@ export function CatalogPanel({
         {mo && !kh.bang && !kh.ve && (
           <div className="pn-khoi-than">
             <div className={`pn-luoi${cauHinh?.haiCot ? ' pn-luoi-2' : ''}`}>
-              {kh.truong.filter(hienO).map(tr => khoaO(tr, (() => {
+              {truongHien.map(tr => khoaO(tr, (() => {
+                const isChiDoc = typeof tr.chiDoc === 'function' ? tr.chiDoc(formVal, s) : Boolean(tr.chiDoc)
+                const chuThich = typeof tr.chuThich === 'function' ? tr.chuThich(formVal, s) : tr.chuThich
                 if (tr.kieu === 'tich') {
                   // Ô tích mặc định chiếm cả hàng; caHang: false thì nằm cùng hàng với ô khác
                   return (
@@ -740,14 +757,17 @@ export function CatalogPanel({
                         <input
                           type="checkbox"
                           className="bat-tat"
+                          disabled={isChiDoc}
                           checked={formVal[tr.k] !== 0 && formVal[tr.k] !== false}
                           onChange={e => {
+                            if (isChiDoc) return
                             doiO(tr.k, e.target.checked ? 1 : 0)
                             setErrors(err => ({ ...err, [tr.k]: '' }))
                           }}
                         />
                         <span>{tr.nhan}{tr.batBuoc && <em>*</em>}</span>
                       </label>
+                      {chuThich && <small className="muted pn-chu-thich">{chuThich}</small>}
                       {errors[tr.k] && <span className="pn-loi pn-tich-loi">{errors[tr.k]}</span>}
                     </div>
                   )
@@ -768,8 +788,11 @@ export function CatalogPanel({
                       <textarea
                         className="inp"
                         rows={2}
+                        disabled={isChiDoc}
+                        readOnly={isChiDoc}
                         value={formVal[tr.k] ?? ''}
                         onChange={e => {
+                          if (isChiDoc) return
                           doiO(tr.k, e.target.value)
                           setErrors(err => ({ ...err, [tr.k]: '' }))
                         }}
@@ -793,7 +816,9 @@ export function CatalogPanel({
                         value={String(formVal[tr.k] ?? '')}
                         ds={opts}
                         aria-label={tr.nhan}
+                        disabled={isChiDoc}
                         onChange={e => {
+                          if (isChiDoc) return
                           doiO(tr.k, e.target.value)
                           setErrors(err => ({ ...err, [tr.k]: '' }))
                         }}
@@ -801,10 +826,11 @@ export function CatalogPanel({
                     ) : tr.kieu === 'ngay' ? (
                       <ONgay
                         value={String(formVal[tr.k] ?? '')}
-                        readOnly={typeof tr.chiDoc === 'function' ? tr.chiDoc(formVal) : tr.chiDoc}
+                        readOnly={isChiDoc}
                         placeholder="dd/mm/yyyy"
                         ariaLabel={tr.nhan}
                         onChange={v => {
+                          if (isChiDoc) return
                           doiO(tr.k, v)
                           setErrors(err => ({ ...err, [tr.k]: '' }))
                         }}
@@ -812,9 +838,11 @@ export function CatalogPanel({
                     ) : (
                       <input
                         className={`inp${tr.kieu === 'tien' ? ' pn-tien' : tr.kieu === 'so' ? ' pn-so' : ''}`}
-                        readOnly={typeof tr.chiDoc === 'function' ? tr.chiDoc(formVal) : tr.chiDoc}
+                        readOnly={isChiDoc}
+                        disabled={isChiDoc}
                         value={formatGiaTri(tr, formVal[tr.k])}
                         onChange={e => {
+                          if (isChiDoc) return
                           doiO(tr.k, cauHinh?.soQuocTe && laSo(tr) ? nhapSoQT(e.target.value) : e.target.value)
                           setErrors(err => ({ ...err, [tr.k]: '' }))
                         }}
@@ -1020,8 +1048,13 @@ function docKhoang(v: string) {
 function ChonNhieu({ ds, maDs, giaTri, nhan, goiY, onDoi }: { ds: string[]; maDs?: (v: string) => string; giaTri: string; nhan: string; goiY?: string; onDoi: (v: string) => void }) {
   const chon = !giaTri || giaTri === 'Tất cả' ? [] : giaTri.split(', ').filter(x => ds.includes(x))
   return (
-    <ChonNhieuIf nhan={nhan} goiY={goiY ?? 'Tất cả'} value={chon}
-      ds={ds.map(v => ({ v, t: v, phu: maDs?.(v) ? `Mã: ${maDs(v)}` : undefined }))}
-      onChange={moi => onDoi(moi.length === 0 ? (goiY ? '' : 'Tất cả') : moi.join(', '))} />
+    <ChonHaiCot
+      ds={ds}
+      maDs={maDs}
+      value={chon}
+      nhan={nhan}
+      goiY={goiY ?? 'Tất cả'}
+      onChange={moi => onDoi(moi.length === 0 ? (goiY ? '' : 'Tất cả') : moi.join(', '))}
+    />
   )
 }

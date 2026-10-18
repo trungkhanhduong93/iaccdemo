@@ -23,6 +23,7 @@ import { BoLoc, useCauHinhLoc, useDongEsc, type OLocDef } from '../LocNangCao'
 import { NutExcel } from '../CongCuDs'
 import { SoTrangCtx, ToGiay, NgatTrang, tachKhoi, type Kho } from '../bao-cao/ToGiay'
 import { datNguonXuat, layNguonXuat, taoTenFile, xuatFile, type NguonXuat } from '../bao-cao/xuat'
+import { ChonHaiCot } from '../ChonHaiCot'
 import {
   useTrangThaiLoc, datLoc, datAnKhongPS, datCotNhuDangXem, datTuyChon, xoaLoc,
   datColsGoc, datDsKyMacDinh, datKyNhap, datKyMacDinh, xemBaoCao, useTuyChinhBC, bienDoiBang, luuTuyChinh,
@@ -425,6 +426,7 @@ interface BoLocMuc {
 }
 
 function DropdownChonNhieu({
+  nhan,
   opts,
   daChon,
   onDoi,
@@ -434,69 +436,15 @@ function DropdownChonNhieu({
   daChon: string[]
   onDoi: (vals: string[]) => void
 }) {
-  const [tim, setTim] = useState('')
-  const nhanNut = daChon.length === 0 ? 'Tất cả' : (daChon.length === 1 ? daChon[0] : `${daChon.length} đã chọn`)
-  const canTim = opts.length > 8
-  const optsLoc = useMemo(() => {
-    if (!canTim || !tim.trim()) return opts
-    const q = tim.toLowerCase().trim()
-    return opts.filter(x => x.toLowerCase().includes(q))
-  }, [opts, tim, canTim])
-
   return (
-    <Dropdown
-      label={
-        <>
-          <span className="sel-v" title={daChon.length === 1 ? daChon[0] : nhanNut}>
-            {nhanNut}
-          </span>
-          <Icon n="chevd" className="ic sm sel-arr" />
-        </>
-      }
-      btnClass="sel ds-o-sel"   // lớp sel như ô chọn danh sách chứng từ: chữ căn trái, mũi tên cuối ô (T244)
-      width={224}
-    >
-      {() => (
-        <>
-          {canTim && (
-            <div className="bc-loc-tim-o">
-              <Icon n="search" className="ic sm" />
-              <input
-                type="text"
-                className="inp sm"
-                placeholder="Tìm..."
-                value={tim}
-                onChange={e => setTim(e.target.value)}
-                onClick={e => e.stopPropagation()}
-                onKeyDown={e => e.stopPropagation()}
-              />
-            </div>
-          )}
-          <MenuItem on={daChon.length === 0} onClick={() => onDoi([])}>
-            Tất cả
-          </MenuItem>
-          <MenuSep />
-          <div className="bc-loc-menu-ds">
-            {optsLoc.map(v => {
-              const on = daChon.includes(v)
-              return (
-                <MenuItem
-                  key={v}
-                  on={on}
-                  onClick={() => {
-                    const moi = on ? daChon.filter(x => x !== v) : [...daChon, v]
-                    onDoi(moi)
-                  }}
-                >
-                  {v}
-                </MenuItem>
-              )
-            })}
-            {optsLoc.length === 0 && <div className="bc-loc-trong">Không tìm thấy</div>}
-          </div>
-        </>
-      )}
-    </Dropdown>
+    <ChonHaiCot
+      ds={opts}
+      value={daChon}
+      onChange={onDoi}
+      nhan={nhan ?? 'Bộ lọc'}
+      goiY="Tất cả"
+      btnClass="sel ds-o-sel bc-chc-btn"
+    />
   )
 }
 

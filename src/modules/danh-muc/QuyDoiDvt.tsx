@@ -7,6 +7,7 @@ import { fold } from '../../ui/format'
 import { useSession } from '../../app/session'
 import { DON_VI_TINH, QUY_DOI_DVT, TEN_DVT } from './data'
 import { ChamTrangThai } from '../../ui/ChamTrangThai'
+import { ChonHaiCot } from '../../ui/ChonHaiCot'
 
 /** Một dòng quy đổi của hàng hoá. nguoc: false là 1 ĐVT chính = tl dv, true là 1 dv = tl ĐVT chính */
 export interface QuyDoi { dv: string; tl: number; nguoc: boolean; apTatCa: boolean; bat: boolean }
@@ -250,9 +251,8 @@ export function ChonCoTim({ ds, value, onChange, nhan, hienChon, dau, chan, clas
   )
 }
 
-/** Ô chọn nhiều kiểu iFaster dùng chung (T154): mục đã chọn hiện thành thẻ có dấu ×, danh sách có ô tìm, mỗi dòng tên và "Mã: X" mờ;
- *  chân danh sách có ô tích Tất cả, nút thêm mới, làm mới. Mảng rỗng là tất cả, ô hiện chữ gợi ý mờ */
-export function ChonNhieu({ ds, value, onChange, nhan, goiY, tenDm = nhan.toLowerCase() }: {
+/** Ô chọn nhiều hai cột dùng chung (T154, T380, T381): bảng hai cột Chưa chọn | Đã chọn */
+export function ChonNhieu({ ds, value, onChange, nhan, goiY }: {
   ds: MucTim[]
   value: string[]
   onChange: (v: string[]) => void
@@ -260,70 +260,13 @@ export function ChonNhieu({ ds, value, onChange, nhan, goiY, tenDm = nhan.toLowe
   goiY: string                               // chữ mờ khi để trống
   tenDm?: string                             // tên mục trong nút thêm mới, vd "kho", mặc định theo tên ô
 }) {
-  const { toast } = useSession()
-  const [mo, setMo] = useState(false)
-  const [tim, setTim] = useState('')
-  const o = useRef<HTMLDivElement>(null)
-  const q = fold(tim.trim())
-  const loc = q ? ds.filter(x => fold(`${x.v} ${x.t} ${x.phu ?? ''}`).includes(q)) : ds
-  const chon = value.filter(v => ds.some(x => x.v === v))
-  const tatCa = chon.length === 0
-
-  useEffect(() => { if (mo) setTim('') }, [mo])
-  // Bật tắt một mục, giữ thứ tự danh sách; chọn đủ thì về rỗng, tức tất cả
-  const bat = (v: string) => {
-    const moi = chon.includes(v) ? chon.filter(x => x !== v) : ds.map(x => x.v).filter(x => x === v || chon.includes(x))
-    onChange(moi.length === ds.length ? [] : moi)
-  }
-
   return (
-    <>
-      <div ref={o} role="combobox" tabIndex={0} className={`inp cn-o${mo ? ' open' : ''}`} aria-label={nhan} aria-expanded={mo} aria-haspopup="listbox"
-        onClick={() => setMo(m => !m)}
-        onKeyDown={e => { if (e.target === e.currentTarget && (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); setMo(true) } }}>
-        <span className="cn-the-ds">
-          {tatCa ? <span className="cn-goi-y">{goiY}</span> : chon.map(v => (
-            <span key={v} className="cn-the">
-              {ds.find(x => x.v === v)?.t ?? v}
-              <button type="button" aria-label={`Bỏ ${ds.find(x => x.v === v)?.t ?? v}`} onClick={e => { e.stopPropagation(); bat(v) }}>
-                <Icon n="x" className="ic sm" />
-              </button>
-            </span>
-          ))}
-        </span>
-        <Icon n="chevd" className="ic sm sel-c" />
-      </div>
-      <Popover anchor={o} open={mo} onClose={() => setMo(false)} role="listbox" className="pop-sel pop-dm pop-tim pop-cn">
-        <div className="dm-tim">
-          <Icon n="search" className="ic sm" />
-          <input value={tim} placeholder={`Tìm ${nhan.toLowerCase()}`} onChange={e => setTim(e.target.value)}
-            onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); if (loc[0]) bat(loc[0].v) } }} />
-        </div>
-        <div className="dm-ds">
-          {loc.map(x => (
-            <button key={x.v} data-mi type="button" role="option" aria-selected={chon.includes(x.v)} className={`mi${chon.includes(x.v) ? ' on' : ''}`} onClick={() => bat(x.v)}>
-              <span className="mi-t"><b>{x.t}</b>{x.phu && <small>{x.phu}</small>}</span>
-              {chon.includes(x.v) && <Icon n="check" className="ic sm mi-ok" />}
-            </button>
-          ))}
-          {!loc.length && <div className="dm-trong">Không có {nhan.toLowerCase()} khớp «{tim.trim()}»</div>}
-        </div>
-        <div className="cn-chan">
-          <label className="row cn-tat-ca">
-            <input type="checkbox" checked={tatCa} onChange={() => onChange([])} />
-            <span>Tất cả</span>
-          </label>
-          <span className="grow" />
-          <button type="button" className="icon-btn sm" title={`Thêm ${tenDm} mới`} aria-label={`Thêm ${tenDm} mới`}
-            onClick={() => toast(`Thêm ${tenDm} mới ở danh mục ${tenDm}`)}>
-            <Icon n="plus" className="ic sm" />
-          </button>
-          <button type="button" className="icon-btn sm" title="Làm mới danh sách" aria-label="Làm mới danh sách"
-            onClick={() => toast(`Đã làm mới danh sách ${nhan.toLowerCase()}`)}>
-            <Icon n="refresh" className="ic sm" />
-          </button>
-        </div>
-      </Popover>
-    </>
+    <ChonHaiCot
+      ds={ds.map(d => ({ v: d.v, t: d.t, ma: d.phu ? d.phu.replace(/^Mã:\s*/, '') : undefined }))}
+      value={value}
+      onChange={onChange}
+      nhan={nhan}
+      goiY={goiY}
+    />
   )
 }

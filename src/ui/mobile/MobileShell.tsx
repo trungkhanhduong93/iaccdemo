@@ -71,6 +71,15 @@ function laXemPhieu(pathname: string): boolean {
 // Màn có thanh nút Lập phiếu riêng ở đáy: ẩn thanh dưới như màn cấp 2 (T292)
 const CAP_HAI_CO_NUT = ['/app/trang-chu/lich-su-quy', '/app/trang-chu/chi-phi-thang']
 
+// Màn con của Khác (Danh mục, Thiết lập) ẩn thanh dưới trên điện thoại (T377)
+function laManConKhac(pathname: string): boolean {
+  const [, modKey, slug] = pathname.split('/').filter(Boolean)
+  if (modKey === 'danh-muc' && slug) return true
+  if (modKey === 'he-thong' && slug) return true
+  if (modKey === 'tong-hop' && (slug === '10-1-6' || slug === 'khoa-so')) return true
+  return false
+}
+
 // Chip cửa hàng chỉ có nghĩa ở danh sách, báo cáo; trang chủ có chip riêng (T223)
 function coChipCn(pathname: string): boolean {
   if (laXemPhieu(pathname)) return false
@@ -108,7 +117,11 @@ export function MobileShell() {
     loc.pathname === '/app/trang-chu/tong-quan' ||
     loc.pathname === '/app/trang-chu/ban-lam-viec'
   const tieuDe = layTieuDe(loc.pathname, loc.search, s)
-  const capHai = laXemPhieu(loc.pathname) || laBaoCao(loc.pathname) || CAP_HAI_CO_NUT.includes(loc.pathname)
+  const capHai =
+    laXemPhieu(loc.pathname) ||
+    laBaoCao(loc.pathname) ||
+    CAP_HAI_CO_NUT.includes(loc.pathname) ||
+    laManConKhac(loc.pathname)
   const parts = loc.pathname.split('/').filter(Boolean)
   const currentSc = timMan(parts[1], parts[2])?.sc
 
@@ -121,6 +134,8 @@ export function MobileShell() {
       const sp = new URLSearchParams(loc.search)
       const th = sp.get('thang')
       nav(th ? `/app/trang-chu/tong-quan?thang=${th}` : '/app/trang-chu/tong-quan', { replace: true })
+    } else if (laManConKhac(loc.pathname)) {
+      nav('/app/khac', { replace: true })
     } else {
       nav('/app/trang-chu/tong-quan', { replace: true })
     }

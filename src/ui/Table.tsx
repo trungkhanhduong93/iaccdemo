@@ -195,13 +195,14 @@ export function Table({
     phIdx0++
   })
 
-  // Đo bề rộng thật của các ô tiêu đề cột cố định bằng offsetWidth (không dùng getBoundingClientRect vì html có zoom) (T74)
+  // Đo bề rộng thật của các ô tiêu đề cột cố định bằng getBoundingClientRect / heSoZoom (T74, T372)
   const doCot = useCallback(() => {
     const tbl = tblRef.current
     if (!tbl) return
     const ths = tbl.querySelectorAll<HTMLTableCellElement>('thead tr.tbl-cot > th')
     if (!ths.length) return
 
+    const z = heSoZoom()
     let accL = 0
     let trIdx = 0
     const phaiColsList: { colIdx: number; el: HTMLTableCellElement }[] = []
@@ -211,7 +212,7 @@ export function Table({
       if (!th) return
       if (c.dinh === 'trai') {
         tbl.style.setProperty(`--tr-${trIdx}`, `${accL}px`)
-        accL += th.offsetWidth
+        accL += th.getBoundingClientRect().width / z
         trIdx++
       } else if (c.dinh === 'phai') {
         phaiColsList.push({ colIdx: i, el: th })
@@ -222,7 +223,7 @@ export function Table({
     let phIdx = 0
     phaiColsList.reverse().forEach(item => {
       tbl.style.setProperty(`--ph-${phIdx}`, `${accR}px`)
-      accR += item.el.offsetWidth
+      accR += item.el.getBoundingClientRect().width / z
       phIdx++
     })
   }, [cols])
@@ -242,7 +243,11 @@ export function Table({
         ro.observe(ths[i])
       }
     })
-    return () => ro.disconnect()
+    window.addEventListener('resize', doCot)
+    return () => {
+      ro.disconnect()
+      window.removeEventListener('resize', doCot)
+    }
   }, [cols, rows, doCot, doRong])
 
   // Gắn lớp cuon-trai, cuon-phai trên .tbl-wrap để bật bóng nhẹ cho cột cố định biên khi cuộn ngang (T74)
@@ -360,16 +365,53 @@ export function Table({
             const i = vs.isVirtual ? vs.startIndex + idx : idx
             if ((item as any).isGroup) {
               const grp = item as GroupNode
+              const hasSum = (c: Col) => grp.sums && typeof grp.sums[c.k] === 'number'
+              const firstSumIdx = cols.findIndex(hasSum)
+              const cuoiTraiIdx = cols.map(c => c.dinh).lastIndexOf('trai')
+              const span0 = cuoiTraiIdx >= 0 && (firstSumIdx === -1 || cuoiTraiIdx < firstSumIdx)
+                ? cuoiTraiIdx + 1
+                : (firstSumIdx > 0 ? firstSumIdx : (firstSumIdx === -1 ? cols.length : 1))
+              const isDinh0 = cuoiTraiIdx >= 0 && span0 <= cuoiTraiIdx + 1
+
               return (
                 <tr key={grp.id} className="ds-grp-row" onClick={() => onToggleGroup?.(grp.id)}>
-                  <td colSpan={cols.length} style={{ paddingLeft: `${14 + (grp.level || 0) * 22}px` }}>
-                    <span className="ds-grp-icon">{grp.expanded ? '▼' : '▶'}</span>
-                    <span className="ds-grp-title">{grp.colTen}: <b>{grp.name}</b></span>
-                    <span className="ds-grp-count">({grp.count} chứng từ)</span>
-                    {grp.sums?.tong !== undefined && (
-                      <span className="ds-grp-sum">Tổng: <b>{money(grp.sums.tong)} đ</b></span>
-                    )}
-                  </td>
+                  {cols.map((c, j) => {
+                    if (j === 0) {
+                      const cls = [
+                        isDinh0 ? 'dinh dinh-cuoi' : '',
+                        'ds-grp-cell',
+                      ].filter(Boolean).join(' ')
+                      return (
+                        <td
+                          key={c.k}
+                          colSpan={span0 > 1 ? span0 : undefined}
+                          className={cls}
+                          style={{
+                            ...(isDinh0 ? { left: 0 } : {}),
+                            paddingLeft: `${14 + (grp.level || 0) * 22}px`,
+                          }}
+                        >
+                          <span className="ds-grp-icon">{grp.expanded ? '▼' : '▶'}</span>
+                          <span className="ds-grp-title">{grp.colTen}: <b>{grp.name}</b></span>
+                          <span className="ds-grp-count">({grp.count} chứng từ)</span>
+                        </td>
+                      )
+                    }
+                    if (j < span0) return null
+
+                    const val = grp.sums?.[c.k]
+                    const txt = typeof val === 'number' ? money(val) : ''
+                    return (
+                      <td
+                        key={c.k}
+                        className={[lop(c, j), 'ds-grp-cell', c.num ? 'num' : ''].join(' ')}
+                        style={tdStyle(c, j)}
+                        title={motDong && txt ? txt : undefined}
+                      >
+                        {txt}
+                      </td>
+                    )
+                  })}
                 </tr>
               )
             }

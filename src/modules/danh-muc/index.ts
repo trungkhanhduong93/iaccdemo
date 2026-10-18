@@ -151,17 +151,18 @@ const danhMuc: ModuleDef = {
       cols: (goi, cheDo) => [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên hàng hoá' }, { k: 'nhom', t: 'Nhóm' }, { k: 'dvt', t: 'ĐVT' },
         { k: 'thuongHieu', t: 'Thương hiệu' },
         // TT152, TT58 tính thuế theo tỷ lệ % trên doanh thu của ngành nghề; TT133, TT99 theo thuế suất GTGT (T151)
-        { k: 'gia', t: 'Giá bán', num: true }, cheDo === 'TT152' || cheDo === 'TT58'
-          ? { k: 'thueGtgt', t: 'Thuế suất', num: true, r: r => r.thueGtgt === undefined || r.thueGtgt === '' ? '—' : `${String(r.thueGtgt).replace('.', ',')}%` }
-          : { k: 'ts', t: 'Thuế suất', num: true, r: r => r.ts ? `${r.ts}%` : 'KCT' },
-        { k: 'tonKho', t: 'Theo dõi tồn', c: true, w: 110, r: r => createElement('input', { type: 'checkbox', className: 'o-tich-xem', checked: Boolean(r.tonKho), readOnly: true, tabIndex: -1, 'aria-label': 'Theo dõi tồn kho' }) },   // T114
+        ...(goi === 'F' ? [] : [{ k: 'gia', t: 'Giá bán', num: true }]),
+        cheDo === 'TT152' || cheDo === 'TT58'
+          ? { k: 'thueGtgt', t: 'Thuế suất', num: true, r: (r: Row) => r.thueGtgt === undefined || r.thueGtgt === '' ? '—' : `${String(r.thueGtgt).replace('.', ',')}%` }
+          : { k: 'ts', t: 'Thuế suất', num: true, r: (r: Row) => r.ts ? `${r.ts}%` : 'KCT' },
+        { k: 'tonKho', t: 'Theo dõi tồn', c: true, w: 110, r: (r: Row) => createElement('input', { type: 'checkbox', className: 'o-tich-xem', checked: Boolean(r.tonKho), readOnly: true, tabIndex: -1, 'aria-label': 'Theo dõi tồn kho' }) },   // T114
         ...(kieuGhiSo(cheDo) === 'noco' ? [tkCot('tkDt', 'TK doanh thu'), tkCot('tkGv', 'TK giá vốn'), tkCot('tkKho', 'TK kho')] : [])],
       rows: () => [
-        ...HANG.map(h => ({ ...h, tkDt: '5111', tkGv: '632', tkKho: '156', ...nganhNghe(BAN_THANG.has(h.ma) ? '101-1' : '301-5'),
+        ...HANG.map(h => ({ ...h, loai: BAN_THANG.has(h.ma) ? 'Hàng bán thẳng' : 'Thành phẩm', tkDt: '5111', tkGv: '632', tkKho: '156', ...nganhNghe(BAN_THANG.has(h.ma) ? '101-1' : '301-5'),
           thuongHieu: PHA_CHE.has(h.ma) ? 'Mây Cà Phê' : 'Phố Mây', ...(BAN_THANG.has(h.ma) ? { ncc: 'Công ty TNHH Nước giải khát Nam Bộ' } : {}) })),
-        { ma: 'BUN02', ten: 'Bún bò Huế', nhom: 'Món mới tháng 10', dvt: 'Tô', gia: 69000, ts: 8, tkDt: '', tkGv: '', tkKho: '', tonKho: false, ...nganhNghe('301-5'), thuongHieu: 'Phố Mây' },
-        { ma: 'MI01', ten: 'Mì Quảng tôm thịt', nhom: 'Món mới tháng 10', dvt: 'Tô', gia: 65000, ts: 8, tkDt: '', tkGv: '', tkKho: '', tonKho: false, ...nganhNghe('301-5'), thuongHieu: 'Phố Mây Express' },
-        ...NVL.map(h => ({ ...h, gia: 0, tkDt: '', tkGv: '632', tkKho: '152', tonKho: true })),   // nguyên vật liệu luôn theo dõi tồn (T114)
+        { ma: 'BUN02', ten: 'Bún bò Huế', loai: 'Thành phẩm', nhom: 'Món mới tháng 10', dvt: 'Tô', gia: 69000, ts: 8, tkDt: '', tkGv: '', tkKho: '', tonKho: false, ...nganhNghe('301-5'), thuongHieu: 'Phố Mây' },
+        { ma: 'MI01', ten: 'Mì Quảng tôm thịt', loai: 'Thành phẩm', nhom: 'Món mới tháng 10', dvt: 'Tô', gia: 65000, ts: 8, tkDt: '', tkGv: '', tkKho: '', tonKho: false, ...nganhNghe('301-5'), thuongHieu: 'Phố Mây Express' },
+        ...NVL.map(h => ({ ...h, loai: 'Nguyên vật liệu', gia: 0, tkDt: '', tkGv: '632', tkKho: '152', tonKho: true })),   // nguyên vật liệu luôn theo dõi tồn (T114)
         ...CCDC_HANG.map(h => ({ ...h, loai: 'Khác (Công cụ dụng cụ)', gia: 0, ts: 10, tkDt: '', tkGv: '', tkKho: '153', tonKho: false })),   // CCDC: thẻ chi phí phân bổ chọn mã từ đây
       ],
     } },

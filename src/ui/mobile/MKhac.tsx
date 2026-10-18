@@ -95,7 +95,7 @@ export function MKhac() {
                   >
                     <div className="m-khac-dong-trai">
                       <span className="m-khac-dong-ic ht">
-                        <Icon n={sc.slug === 'khoa-so' ? 'lock' : (sc.icon ?? modHt.icon)} className="ic sm" />
+                        <Icon n={sc.slug === 'khoa-so' ? 'lock' : (sc.icon ?? modHt.icon)} kieu="khoi" className="ic sm" />
                       </span>
                       <div className="m-khac-dong-nd">
                         <span className="m-khac-dong-ten">{tenMan(sc)}</span>
@@ -115,7 +115,7 @@ export function MKhac() {
                 >
                   <div className="m-khac-dong-trai">
                     <span className="m-khac-dong-ic ht">
-                      <Icon n="lock" className="ic sm" />
+                      <Icon n="lock" kieu="khoi" className="ic sm" />
                     </span>
                     <div className="m-khac-dong-nd">
                       <span className="m-khac-dong-ten">Khoá sổ</span>
