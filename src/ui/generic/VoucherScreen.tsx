@@ -200,8 +200,8 @@ const COT_CHON = new Set(['tenLoai', 'nguon', 'ttTien', 'ttHd', 'kho', 'lyDo'])
 export { ChungTuForm, VoucherDetail, HachToan, LichSu }
 
 /** Giá trị các ô lọc ngoài và trong Bộ lọc nâng cao. Chuỗi rỗng là tất cả */
-export interface GtLoc { thoiGian: KhoangNgay; tim: string; doiTuong: string; nguon: string; loai: string; lyDo: string; ttTien: string; ttHd: string; kho: string; hang: string }
-export const locMacDinh = (): GtLoc => ({ thoiGian: thangNay(), tim: '', doiTuong: '', nguon: '', loai: '', lyDo: '', ttTien: '', ttHd: '', kho: '', hang: '' })
+export interface GtLoc { thoiGian: KhoangNgay; tim: string; doiTuong: string; nguon: string; loai: string; lyDo: string; ttTien: string; ttHd: string; kho: string; hang: string; nhomHang: string }
+export const locMacDinh = (): GtLoc => ({ thoiGian: thangNay(), tim: '', doiTuong: '', nguon: '', loai: '', lyDo: '', ttTien: '', ttHd: '', kho: '', hang: '', nhomHang: '' })
 
 const MAC_DINH: VoucherCfg ={ prefix: 'CT', doiTuong: 'none', dienGiai: ['Chứng từ'], tien: [1_000_000, 20_000_000] }
 
@@ -269,9 +269,11 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
   const khoDong = s.goi === 'PR'
   // Thu chi (T96): lý do thu, chi của phiếu; phiếu chưa lưu lý do thì đoán theo diễn giải như form, chuyển quỹ không có
   // Phiếu kiểm kê (T124): kho kiểm kê và số mặt hàng của phiếu
-  const rows0 = useMemo(() => cfg.dieuChinh ? rowsGoc.map((r): Row => ({ ...r, kho: String(r._kho ?? ''), _khoDs: r._kho ? [String(r._kho)] : [] })) : cfg.kiemKe ? rowsGoc.map((r): Row => ({
-    ...r, kho: String(r._kho ?? ''), _khoDs: r._kho ? [String(r._kho)] : [], soMat: ((r._dong as Dong[] | undefined) ?? dongCua(cfg, `${sc.code ?? sc.slug}-${r.id}`)).length,
-  })) : mod.key === 'tien' ? rowsGoc.map((r): Row => {
+  // Kiểm kê, điều chỉnh kho (T387): mã hàng trên dòng để lọc Hàng hoá, Nhóm hàng hoá
+  const rows0 = useMemo(() => cfg.dieuChinh || cfg.kiemKe ? rowsGoc.map((r): Row => {
+    const dsDong = (r._dong as Dong[] | undefined) ?? dongCua(cfg, `${sc.code ?? sc.slug}-${r.id}`)
+    return { ...r, kho: String(r._kho ?? ''), _khoDs: r._kho ? [String(r._kho)] : [], _maHang: dsDong.map(d => d.ma).filter(Boolean), ...(cfg.kiemKe ? { soMat: dsDong.length } : {}) }
+  }) : mod.key === 'tien' ? rowsGoc.map((r): Row => {
     const loaiK = cfg.loai?.find(x => x.k === r.loai)?.k ?? cfg.loai?.[0]?.k
     const cfgDong = theoLoai(cfg, loaiK)
     const oLy = boO(nhomCua(mod.key, cfgDong, loaiK), cfgDong).a.find(o => o.k === 'ly')
@@ -329,6 +331,9 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
     const ten = new Map([...HANG, ...NVL].map(h => [h.ma, h.ten]))
     return [...new Set(rows.flatMap(r => (r._maHang as string[] | undefined) ?? []))].sort().map((m): [string, string] => [m, `${m} - ${ten.get(m) ?? m}`])
   }, [rows])
+  // Nhóm hàng hoá theo danh mục hàng hoá, nguyên vật liệu, chỉ các nhóm có trên phiếu (T387)
+  const nhomCuaMa = useMemo(() => new Map<string, string>([...HANG, ...NVL].map(h => [h.ma, h.nhom])), [])
+  const dsNhomHangLoc = useMemo(() => [...new Set(dsHangLoc.map(([m]) => nhomCuaMa.get(m)).filter((x): x is string => Boolean(x)))].sort(), [dsHangLoc, nhomCuaMa])
   const apLoc = () => { loc0.loc(); setTrang(1) }
   const chonO = (k: keyof GtLoc, ten: string, ds: [string, string][]) => (
     <Select className="ds-o-sel" value={nhap[k] as string} aria-label={ten} onChange={e => dat(k, e.target.value)}>
@@ -349,6 +354,9 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
     { k: 'nguon', ten: 'Nguồn', o: chonO('nguon', 'Nguồn', dsNguon.map(v => [v, (NGUON[v] ?? NGUON.tay)[1]])) },
     // Kiểm kê, điều chỉnh kho lọc theo kho của phiếu (T130)
     ...((cfg.kiemKe || cfg.dieuChinh) && dsKhoLoc.length ? [{ k: 'kho', ten: 'Kho', o: chonO('kho', 'Kho', dsKhoLoc.map(v => [v, v])) }] : []),
+    // Kiểm kê, điều chỉnh kho lọc theo hàng hoá, nhóm hàng hoá trên dòng phiếu (T387)
+    ...((cfg.kiemKe || cfg.dieuChinh) && dsHangLoc.length ? [{ k: 'hang', ten: 'Hàng hoá', o: chonO('hang', 'Hàng hoá', dsHangLoc) }] : []),
+    ...((cfg.kiemKe || cfg.dieuChinh) && dsNhomHangLoc.length ? [{ k: 'nhomHang', ten: 'Nhóm hàng hoá', o: chonO('nhomHang', 'Nhóm hàng hoá', dsNhomHangLoc.map(v => [v, v])) }] : []),
     ...(coLyDo ? [{ k: 'lyDo', ten: 'Lý do nghiệp vụ', o: chonO('lyDo', 'Lý do nghiệp vụ', dsLyDo.map(v => [v, v])) }] : []),
     ...(cfg.loai && !cfg.dieuChinh ? [{ k: 'loai', ten: 'Loại phiếu', o: chonO('loai', 'Loại phiếu', (loaiNhom ?? cfg.loai).map(v => [v.k, v.ten])) }] : []),
     ...(muaBan ? [
@@ -359,7 +367,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
       ...(dsHangLoc.length ? [{ k: 'hang', ten: 'Hàng hoá', o: chonO('hang', 'Hàng hoá', dsHangLoc) }] : []),
     ] : []),
   ]
-  const [cauHinhLoc, datCauHinhLoc] = useCauHinhLoc(path, oLoc.map(o => o.k), ['thoiGian', 'tim', ...(coLyDo ? ['lyDo'] : []), 'doiTuong', ...(cfg.kiemKe || cfg.dieuChinh ? ['kho'] : [])])
+  const [cauHinhLoc, datCauHinhLoc] = useCauHinhLoc(path, oLoc.map(o => o.k), ['thoiGian', 'tim', ...(coLyDo ? ['lyDo'] : []), 'doiTuong', ...(cfg.kiemKe || cfg.dieuChinh ? ['kho', 'hang', 'nhomHang'] : [])])
 
   // Lọc theo các ô đã áp dụng, cửa hàng trên thanh trên, hàng lọc từng cột; chip trạng thái lọc sau cùng để đếm số trên chip
   const ap = loc0.ap
@@ -378,6 +386,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
     }
     if (ap.kho && !((r._khoDs as string[] | undefined) ?? []).includes(ap.kho)) return false
     if (ap.hang && !((r._maHang as string[] | undefined) ?? []).includes(ap.hang)) return false
+    if (ap.nhomHang && !((r._maHang as string[] | undefined) ?? []).some(m => nhomCuaMa.get(m) === ap.nhomHang)) return false   // T387
     for (const [k, g] of Object.entries(locCot)) {
       if (dangLoc(g) && !khopLoc(kieuCot(k), g, chuCot(k, r), typeof r[k] === 'number' ? r[k] : undefined, k === 'ngay' ? docNgay(String(r.ngay).split(' ')[0]) : undefined)) return false
     }

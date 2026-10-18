@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 18/10/2026
 
+- T387: Kho, tab Kiểm kê, Xuất điều chỉnh, Nhập điều chỉnh: thêm bộ lọc Hàng hoá và Nhóm hàng hoá (Nhóm hàng hoá trong Bộ lọc nâng cao).
 - T386: Thu chi, tab Thu, chi tiền tách thành 3 tab trên thanh tab phân hệ: Tiền mặt, Ngân hàng, Chuyển quỹ. Tab Tiền mặt và Ngân hàng có 2 nút Thu tiền, Chi tiền thay nút Thêm mới; tab Chuyển quỹ có nút Thêm chuyển quỹ.
 - T385: Tab Báo cáo của từng phân hệ có đủ các báo cáo mà sơ đồ Quy trình của phân hệ đó nhắc tới, vd Mua hàng gói Free có thêm Công nợ nhà cung cấp, Báo cáo xuất nhập tồn, Tổng hợp nhập kho, Chi tiết nhập kho; mở ngay trong phân hệ.
 - T384: Máy tính: tab Báo cáo trong từng phân hệ (Mua hàng, Kho...) hiện danh sách báo cáo của phân hệ ngay tại chỗ; bấm báo cáo mở trong phân hệ, giữ thanh tab; tắt báo cáo hoặc bấm "Báo cáo <phân hệ>" về lại tab Báo cáo của phân hệ đó.
