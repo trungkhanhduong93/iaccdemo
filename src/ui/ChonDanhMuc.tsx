@@ -178,10 +178,9 @@ function HopThem({ nhan, coMa, tenGoc, onDong, onLuu }: { nhan: string; coMa?: b
 }
 
 /** Hộp nhỏ thêm hàng hoá ngay tại form chứng từ (T388): Mã (tự sinh theo loại), Tên, Đơn vị tính, Loại hàng hoá;
- *  các giá trị khác lấy theo giá trị sẵn của ô (loại mặc định, theo dõi tồn kho) */
+ *  loại khoá theo màn (Mua hàng, Kiểm kê: Nguyên vật liệu; Chi phí trả trước: Khác (Công cụ dụng cụ)), các giá trị khác lấy theo giá trị sẵn (theo dõi tồn kho) */
 function HopThemHang({ meta, nhan, onDong, onLuu }: { meta: DmMeta; nhan: string; onDong: () => void; onLuu: (v: Record<string, any>) => void }) {
   const { s } = useSession()
-  const oLoai = meta.cauHinh?.khoi.flatMap(k => k.truong).find(t => t.k === 'loai' && (!t.goi || t.goi.includes(s.goi)))
   const [v, setV] = useState<Row>(() => ({ ...meta.dienSan, ten: meta.dienSan.ten ?? '' }))
   const [maTay, setMaTay] = useState('')
   const ma = maTay || sinhMaKeTiep(meta.catKey, v, meta.all)
@@ -214,8 +213,7 @@ function HopThemHang({ meta, nhan, onDong, onLuu }: { meta: DmMeta; nhan: string
           </div>
           <div className="f">
             <label>Loại hàng hoá</label>
-            <Select className="inp" value={v.loai ?? ''} aria-label="Loại hàng hoá" onChange={e => doi('loai', e.target.value)}
-              ds={(oLoai?.ds ?? [String(v.loai ?? '')]).map(x => ({ v: x, t: x }))} />
+            <input className="inp" value={v.loai ?? ''} aria-label="Loại hàng hoá" readOnly disabled />
           </div>
         </div>
         <div className="ds-chan">
