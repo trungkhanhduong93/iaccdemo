@@ -98,7 +98,10 @@ function loaiVaIconBC(sc: ScreenDef, ten: string): { loai: 'so' | 'bangke' | 'to
   return { loai: 'chart', icon: 'chart' }
 }
 
-export function TrungTamBaoCao({ sc }: ScreenProps) {
+export function TrungTamBaoCao({ sc, mod }: ScreenProps) {
+  // Mở ở tab Báo cáo của một phân hệ (T384): chỉ báo cáo phân hệ đó, bấm báo cáo mở ngay trong phân hệ, không có cột nhóm bên trái
+  const trongPhanHe = Boolean(mod && mod.key !== 'bao-cao')
+  const duongBC = (slug: string) => `/app/${trongPhanHe ? mod.key : 'bao-cao'}/${slug}`
   const { s } = useSession()
   const [q, setQ] = useState('')
   const [ghim, setGhim] = useState<string[]>(() => docGhim())
@@ -197,8 +200,8 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
       <PageHead title={title} meta={meta}>
         <ThanhLoc tim={{ value: q, onChange: setQ, placeholder: 'Tìm báo cáo' }} />
       </PageHead>
-      <div className="bc-tt">
-        <div className="bc-trai">
+      <div className={`bc-tt${trongPhanHe ? ' bc-tt-phan-he' : ''}`}>
+        {!trongPhanHe && <div className="bc-trai">
           <nav className="bc-rail">
             <Link to="/app/bao-cao/tat-ca" className={sc.slug === 'tat-ca' && !chiSoTT ? 'on' : ''}>
               <Icon n="chart" />
@@ -236,7 +239,7 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
                   return (
                     <Link
                       key={x.slug}
-                      to={`/app/bao-cao/${x.slug}`} state={{ hoiLoc: true }}
+                      to={duongBC(x.slug)} state={{ hoiLoc: true }}
                       className="bc-quick-item bc-quick-pinned"
                       title={ten}
                     >
@@ -266,7 +269,7 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
                   return (
                     <Link
                       key={x.slug}
-                      to={`/app/bao-cao/${x.slug}`} state={{ hoiLoc: true }}
+                      to={duongBC(x.slug)} state={{ hoiLoc: true }}
                       className="bc-quick-item"
                       title={ten}
                     >
@@ -279,7 +282,7 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
               </div>
             </div>
           )}
-        </div>
+        </div>}
         <div className="bc-ds">
           {nhomKetQua.length === 0 ? (
             <div className="card">
@@ -305,7 +308,7 @@ export function TrungTamBaoCao({ sc }: ScreenProps) {
                     return (
                       <Link
                         key={x.slug}
-                        to={`/app/bao-cao/${x.slug}`} state={{ hoiLoc: true }}
+                        to={duongBC(x.slug)} state={{ hoiLoc: true }}
                         className={`rpt-row rpt-card${ok ? '' : ' lock'}`}
                         title={ten}
                       >

@@ -1,7 +1,7 @@
 // Thanh chọn đổi nhanh báo cáo cùng phân hệ khi đang xem báo cáo trong phân hệ Báo cáo
 import { useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import type { ScreenDef } from '../types'
+import type { ModuleDef, ScreenDef } from '../types'
 import { MODULES, hienMan, maKhoa, moDuoc, tenMan } from '../../app/registry'
 import { useSession } from '../../app/session'
 import { GOI, minGoi } from '../../app/plan'
@@ -10,7 +10,8 @@ import { Select } from '../../ui/Dropdown'
 import { kyHieuBC } from './danh-sach'
 import { laTuTrangChu } from '../../app/tuTrangChu'
 
-export function ThanhChonBaoCao({ sc }: { sc: ScreenDef }) {
+/** trongPhanHe: báo cáo mở ngay trong phân hệ gốc (T384): nút quay lại về tab Báo cáo của phân hệ, đổi báo cáo vẫn ở phân hệ */
+export function ThanhChonBaoCao({ sc, trongPhanHe }: { sc: ScreenDef; trongPhanHe?: ModuleDef }) {
   const { s } = useSession()
   const nav = useNavigate()
   const tuTrangChu = laTuTrangChu(useLocation().state)   // mở từ trang chủ gói Free thì có nút về Trang chủ (T232)
@@ -30,10 +31,12 @@ export function ThanhChonBaoCao({ sc }: { sc: ScreenDef }) {
   }, [sc.slug])
 
   return (
-    <div className="bc-chon">
+    <div className={`bc-chon${trongPhanHe ? ' bc-chon-phan-he' : ''}`}>
       {tuTrangChu && <Link className="btn sm ghost bc-ve-tc" to="/app/trang-chu/tong-quan"><Icon n="chevl" className="ic sm" />Trang chủ</Link>}
-      <Link className="btn sm ghost" to="/app/bao-cao/tat-ca"><Icon n="chevl" className="ic sm" />Tất cả báo cáo</Link>
-      <Select value={sc.slug} onChange={e => nav(`/app/bao-cao/${e.target.value}`)} aria-label="Đổi báo cáo">
+      {trongPhanHe
+        ? <Link className="btn sm ghost" to={`/app/${trongPhanHe.key}/bao-cao`}><Icon n="chevl" className="ic sm" />Báo cáo {trongPhanHe.ngan ?? trongPhanHe.ten}</Link>
+        : <Link className="btn sm ghost" to="/app/bao-cao/tat-ca"><Icon n="chevl" className="ic sm" />Tất cả báo cáo</Link>}
+      <Select value={sc.slug} onChange={e => nav(`/app/${trongPhanHe ? trongPhanHe.key : 'bao-cao'}/${e.target.value}`)} aria-label="Đổi báo cáo">
         {cungGoc.map(x => {
           const ok = moDuoc(x, s.goi)
           const code = maKhoa(x)

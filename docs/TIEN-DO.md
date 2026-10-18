@@ -4,7 +4,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T383.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T384.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
@@ -51,6 +51,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T384 | Máy tính: tab Báo cáo của từng phân hệ hiện danh sách báo cáo ngay trong phân hệ, báo cáo mở trong phân hệ (không chuyển sang phân hệ Báo cáo), tắt báo cáo về tab Báo cáo của phân hệ | dinhlanphuongipacc | 18/10/2026 | [2026-10-18-dinhlanphuongipacc-bao-cao-trong-phan-he](nhat-ky/2026-10-18-dinhlanphuongipacc-bao-cao-trong-phan-he.md) |
 | T383 | Bảng chi tiết chứng từ (thêm mới, sửa, xem; cả kiểm kê, Xuất bán POS): phễu lọc sau tab Lịch sử, bấm mới hiện hàng lọc như danh sách chứng từ | dinhlanphuongipacc | 17/10/2026 | [2026-10-17-dinhlanphuongipacc-loc-bang-chi-tiet](nhat-ky/2026-10-17-dinhlanphuongipacc-loc-bang-chi-tiet.md) |
 | T382 | Điện thoại, phiếu mua hàng: nút Thêm hàng ở cuối danh sách, icon sửa thẳng hàng, sửa Tổng tiền thì đơn giá tự chia lại | Trum | 18/10/2026 | [2026-10-17-trum-dien-thoai-29-diem](nhat-ky/2026-10-17-trum-dien-thoai-29-diem.md) |
 | T381 | Web: rà các ô chọn nhiều dạng danh sách tích (vd kênh bán GrabFood, ShopeeFood...), làm lại thành bảng chọn hai cột Chưa chọn, Đã chọn dùng chung với T380 | Trum | 18/10/2026 | [2026-10-17-trum-dien-thoai-29-diem](nhat-ky/2026-10-17-trum-dien-thoai-29-diem.md) |

@@ -26226,3 +26226,10 @@ input.bat-tat[aria-checked="mixed"]::after,
 .tabs > .ct-nut-loc { align-self: center; display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; margin-left: 6px; padding: 0; border: 1px solid transparent; border-radius: 6px; background: none; color: var(--muted); cursor: pointer; }
 .tabs > .ct-nut-loc:hover { color: var(--ink); background: var(--soft); }
 .tabs > .ct-nut-loc.on { color: var(--blue); border-color: var(--blue); background: var(--blue-soft, #eaf3fb); }
+
+/* ── Tab Báo cáo trong phân hệ: chỉ danh sách báo cáo của phân hệ, không có cột nhóm bên trái (T384) ── */
+.bc-tt.bc-tt-phan-he { grid-template-columns: minmax(0, 1fr); }
+/* Báo cáo trong phân hệ vẫn giữ thanh tab của phân hệ (tab Báo cáo đang chọn); quy tắc ẩn thanh tab ở trên chỉ dành cho phân hệ Báo cáo */
+.shell:has(.bc-tt-phan-he) .mtabs, .shell:has(.bc-chon-phan-he) .mtabs { display: block; }
+.shell:has(.bc-tt-phan-he) .mtabs.co-ve, .shell:has(.bc-chon-phan-he) .mtabs.co-ve { display: flex; }
+.shell:has(.bc-tt-phan-he) .main, .shell:has(.bc-chon-phan-he) .main { grid-row: 3; }

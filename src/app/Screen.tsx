@@ -33,9 +33,14 @@ export function ScreenRoute() {
   if (!sc) return <Navigate to={duongDan(mod, manDau(mod, s.goi))} replace />
   // Màn chỉ có ở một số gói (sc.goi) thì gói khác ẩn hẳn: về màn đầu phân hệ, không hiện màn khoá (vd Bàn làm việc gói Free, T230)
   if (sc.goi && !sc.goi.includes(s.goi)) return <Navigate to={duongDan(mod, manDau(mod, s.goi))} replace />
+  // Máy tính: tab Báo cáo của phân hệ và báo cáo mở ngay trong phân hệ, đóng báo cáo về tab Báo cáo của phân hệ đó (T384).
+  // Điện thoại giữ như cũ: chuyển sang phân hệ Báo cáo
   if (mod.key !== 'bao-cao') {
-    if (sc.kind === 'baocao') return <Navigate to={`/app/bao-cao/nhom-${mod.key}`} replace />
-    if (laBaoCao(sc)) return <Navigate to={`/app/bao-cao/${sc.slug}`} replace />
+    if (sc.kind === 'baocao') {
+      if (laMobile) return <Navigate to={`/app/bao-cao/nhom-${mod.key}`} replace />
+      return <TrungTamBaoCao key={mk + '/' + slug} sc={{ ...sc, slug: `nhom-${mod.key}` }} mod={mod} />
+    }
+    if (laBaoCao(sc) && laMobile) return <Navigate to={`/app/bao-cao/${sc.slug}`} replace />
   }
   const code = sc.code ?? (sc.slug.includes('-') ? sc.slug.replace(/-/g, '.') : undefined)
   const cfg = code ? CAU_HINH_BC[code] : undefined
@@ -72,6 +77,14 @@ export function ScreenRoute() {
       <>
         {!laMobile && <ThanhChonBaoCao sc={sc} />}
         <C key={mk + '/' + slug} sc={sc} mod={modGoc} />
+      </>
+    )
+  }
+  if (mod.key !== 'bao-cao' && laBaoCao(sc)) {
+    return (
+      <>
+        <ThanhChonBaoCao sc={{ ...sc, goc: mod.key }} trongPhanHe={mod} />
+        <C key={mk + '/' + slug} sc={sc} mod={mod} />
       </>
     )
   }
