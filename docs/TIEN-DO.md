@@ -11,6 +11,11 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T434 | Điện thoại, các màn danh mục: điều kiện lọc hiện ở ngoài như danh sách chứng từ, nút lọc icon phễu, bấm lọc thì bảng trượt từ dưới lên; nút Đồng bộ FABi màu cam, nổi góc dưới bên trái đối xứng nút Thêm mới | Trum | Chờ | `MDanhMuc.tsx`, `MCuaHang.tsx`, cuối `app.css`. Làm sau T426 |
+| T433 | Điện thoại, Sổ quỹ tiền mặt, Sổ tiền gửi ngân hàng: mỗi ngày có Tồn đầu ngày ở trên, Tồn cuối ngày ở dưới các dòng thu chi | Trum | Chờ | Màn sổ điện thoại (`MSoBaoCao.tsx` hoặc `MBaoCaoTheoDoi.tsx`), cuối `app.css`. Làm sau T426 |
+| T432 | Điện thoại, báo cáo S1a-HKD: làm lại bố cục chỉn chu như các báo cáo điện thoại đã duyệt | Trum | Chờ | `MSoTT152.tsx`, cuối `app.css`. Làm sau T426 |
+| T431 | Điện thoại: bấm quay lại bị lặp qua lại giữa 2 màn; back phải lùi đúng lịch sử, tới màn gốc thì dừng | Trum | Chờ | `src/ui/mobile/`, có thể `MobileShell.tsx`. Làm sau T426 |
+| T430 | Điện thoại, chi tiết Xuất bán POS: nút Đóng màu xanh chính, Thời gian xuất căn trái như các ô khác | Trum | Chờ | `MXuatBanPos.tsx` (trùng T425, làm sau khi T425 push), cuối `app.css` |
 | T429 | Danh sách thẻ chi phí: dải cảnh báo khoản chờ tạo thẻ gọn vào hàng 2 thanh công cụ (nhãn vàng, nút Ghi tăng bổ sung, nút ⓘ cách làm); hết khoản chờ thì bỏ dòng gợi ý, hướng dẫn vào nút ⓘ cạnh nút Ghi tăng; menu Ghi tăng bổ sung có số đếm | dinhlanphuongipacc | Đang làm | `DaiCanhBao.tsx`, `CatalogScreen.tsx` (chỉ chỗ đặt dải, cùng file với T427 của Trum, dinhlanphuongipacc chốt làm luôn), `ccdc/GhiTangHangLoat.tsx`, cuối `app.css` |
 | T428 | Hộp Cột hiển thị: thêm dòng tiêu đề ngắn trên các cột nút (Gom nhóm, Đóng băng, Hiện) để biết nút làm gì | Trum | Chờ | `LocNangCao.tsx`, cuối `app.css`. Làm sau T426 vì cùng sửa `app.css` |
 | T427 | Web, các màn danh mục: chip trạng thái (Tất cả, Đã phân loại...) không dính sát viền trái; số dòng, nút tuỳ chỉnh cột, Excel xuống hàng dưới cùng hàng chip như danh sách chứng từ | Trum | Đang làm | `CatalogScreen.tsx`, có thể `HeThongTaiKhoan.tsx`. Không sửa `DanhMucCuaHang.tsx` (T321) |
