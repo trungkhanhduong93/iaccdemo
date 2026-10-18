@@ -4,13 +4,14 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T385.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T419.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T419 | Phiếu chi lý do Chi phí chờ phân bổ: chọn lý do thì nhắc dưới ô "Lưu phiếu xong sẽ tạo Thẻ chi phí phân bổ"; lưu xong hiện thông báo một nút rồi mở màn Tạo thẻ, bỏ hộp hỏi Đồng ý / Không | dinhlanphuongipacc | Đang làm | Web: `ChungTuForm.tsx`, cuối `app.css`. Bản điện thoại (`MLapPhieu.tsx`) chờ hỏi Trum vì T414 đang sửa form phiếu điện thoại |
 | T418 | Web và điện thoại: đang xem Tất cả cửa hàng mà bấm tạo mới bất kỳ phiếu nào hoặc Thao tác nhanh thì bật bảng chọn cửa hàng trước; lựa chọn lưu làm cửa hàng hiện tại cho trang chủ, danh sách, phiếu tạo sau | Trum | Đang làm | Chặn chung theo đường dẫn tạo mới: `session.tsx`, `Shell.tsx`, `MobileShell.tsx`, thành phần bảng chọn mới |
 | T417 | Điện thoại, trang chủ Free: số % ở thẻ Kết quả kinh doanh bỏ nền, bỏ viền; khối Mua hàng & Công nợ bỏ chia đôi, mỗi chỉ tiêu 2 dòng (tên và số tiền cùng hàng; thông tin phụ và nút báo cáo cùng hàng) | Trum | Đang làm | `MTrangChuFree.tsx`, `MKhoFree.tsx`, cuối `app.css` |
 | T416 | Điện thoại: một số màn (vd Nhóm báo cáo Kho) không cuộn hết, dòng cuối bị thanh tab nổi che; thêm khoảng đệm dưới cho mọi vùng cuộn có thanh tab | Trum | Đang làm | Cuối `app.css`, có thể `MobileShell.tsx` |
