@@ -30498,5 +30498,39 @@ a.tx-item:hover {
   justify-content: center !important;
 }
 
+/* ── Bảng kê mua hàng điện thoại: ghim khối tổng tiền sát đáy màn hình (T444) ── */
+.m-app.m-cap-2:has(.m-bkm) .m-than {
+  padding-bottom: 0 !important;
+}
+
+.m-bkm {
+  padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px)) !important;
+}
+
+.m-app:not(.m-cap-2) .m-bkm {
+  padding-bottom: calc(56px + var(--m-thanh-duoi, 85px) + env(safe-area-inset-bottom, 0px)) !important;
+}
+
+.m-bkm .chan {
+  position: fixed !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  z-index: 50 !important;
+  background: #fff !important;
+  border-top: 1px solid var(--line, #e5e7eb) !important;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.06) !important;
+  padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0px)) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  box-sizing: border-box !important;
+}
+
+.m-app:not(.m-cap-2) .m-bkm .chan {
+  bottom: calc(var(--m-thanh-duoi, 85px) + env(safe-area-inset-bottom, 0px)) !important;
+  padding: 10px 14px !important;
+}
+
 
 
