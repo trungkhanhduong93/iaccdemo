@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T409 | Danh mục (web, điện thoại): tab trạng thái dùng chung kiểu với danh sách chứng từ; bỏ dòng Lọc nâng cao, chỉ hiện số điều kiện lọc trên icon lọc; nút Thêm mới, Đồng bộ FABi dùng màu chung hệ thống; bỏ logo FABi khỏi nút | Trum | Đang làm | `CatalogScreen.tsx`, `MDanhMuc.tsx`, cuối `app.css` |
 | T407 | Điện thoại: nút bộ lọc ở thanh trên các báo cáo đổi sang icon phễu lọc | Trum | Đang làm | `MobileShell.tsx` |
 | T408 | Điện thoại, vòng tồn quỹ khối Quỹ tiền trang chủ Free: bỏ nhãn chú thích quanh vòng, hiện lại danh sách quỹ bên phải vòng | Trum | Đang làm | `BaBaiToanFree.tsx` (VongQuy), `MTrangChuFree.tsx`, cuối `app.css` |
 | T406 | Điện thoại: sổ TT152 (S1a, S2a, S2b, S2c, S2d, S2e) dạng bảng dữ liệu theo mẫu Trum chốt: 3 ô tóm tắt, đầu cột và dòng cộng ghim, cột Chứng từ gộp số hiệu, ngày, diễn giải | Trum | Đang làm | File mới `src/ui/mobile/MSoTT152.tsx`, cuối `app.css`; T403 gắn vào `MBaoCaoDong.tsx` |
