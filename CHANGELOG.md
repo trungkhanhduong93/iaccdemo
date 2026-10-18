@@ -4,6 +4,8 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 18/10/2026
 
+- T434 (điện thoại): Màn danh mục làm lại theo mẫu AMIS/FABi: bỏ thuế suất ngoài card hàng hoá; nút Đồng bộ FABi chuyển thành nút nổi góc dưới bên trái màu cam; nút lọc icon phễu trên thanh tiêu đề góc phải; hàng tab Đang hoạt động / Ngừng hoạt động (danh mục thường) và tab phân loại Tất cả / Đã phân loại / Chưa phân loại kèm chip trạng thái (Hàng hoá); ô tìm kiếm cố định chiếm trọn chiều ngang; nút Thêm mới dạng tròn FAB ở góc dưới phải.
+
 - T428: Hộp Cột hiển thị: thêm dòng tiêu đề ngắn cố định phía trên các cột nút (Gom nhóm, Đóng băng, Hiện), chữ canh thẳng cột với nút bên dưới.
 
 - T426, T427: App điện thoại toàn bộ hạ cỡ chữ theo thang chuẩn thiết kế 360px (QD73), co giãn đẹp ở 390–430px, 0 màn tràn ngang. Danh mục web: thanh công cụ thành 2 hàng chuẩn như danh sách chứng từ, chip trạng thái thẳng lề ô tìm kiếm, số dòng và nút tuỳ chỉnh cột, Excel xuống hàng dưới cùng chip.

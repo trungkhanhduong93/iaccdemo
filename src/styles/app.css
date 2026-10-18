@@ -27505,16 +27505,6 @@ a.tx-item:hover {
   --chip-o: #fff1e3;
   --chip-g: #e3f4ea;
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --chip-o: #431d05;
-    --chip-g: #052e16;
-  }
-}
-:root[data-theme="dark"] {
-  --chip-o: #431d05;
-  --chip-g: #052e16;
-}
 
 .m-tcf-kqkd-phu {
   font-size: 12.5px !important;
@@ -29033,48 +29023,6 @@ a.tx-item:hover {
   color: var(--red, #c2362b);
 }
 
-:root[data-theme="dark"] .m-kk-form-man .m-pb-btn-phu {
-  background: var(--the, #1e293b);
-  color: var(--ink, #f8fafc);
-  border-color: var(--line, #334155);
-}
-
-:root[data-theme="dark"] .m-kk-form-man .m-pb-day {
-  background: var(--the, #1e293b);
-  border-color: var(--line, #334155);
-}
-
-:root[data-theme="dark"] .m-pb-o-stat.xanh {
-  background: #092f1b;
-}
-
-:root[data-theme="dark"] .m-pb-o-stat.do {
-  background: #361012;
-}
-
-:root[data-theme="dark"] .m-pb-o-stat-so.xanh {
-  color: #4ade80;
-}
-
-:root[data-theme="dark"] .m-pb-o-stat-so.do {
-  color: #f87171;
-}
-
-:root[data-theme="dark"] .chip-kk.xuat {
-  color: #f87171;
-  background: #450a0a;
-}
-
-:root[data-theme="dark"] .chip-kk.nhap {
-  color: #4ade80;
-  background: #052e16;
-}
-
-:root[data-theme="dark"] .chip-kk.khop {
-  color: #94a3b8;
-  background: #141e30;
-}
-
 @media (max-width: 365px) {
   .m-kk-form-man .m-pb-noi-dung {
     padding: 10px 10px 110px;
@@ -29381,24 +29329,6 @@ a.tx-item:hover {
   padding: 0;
 }
 
-:root[data-theme="dark"] .m-pb-chip-tt.cho {
-  color: var(--amber, #fbbf24);
-  background: var(--amber-t, #451a03);
-}
-
-:root[data-theme="dark"] .m-ht-dong + .m-ht-dong {
-  border-top-color: var(--line-2, #243044);
-}
-
-:root[data-theme="dark"] .tt-tong {
-  background: var(--orange-t, #431d05);
-}
-
-:root[data-theme="dark"] .tt-toast {
-  background: var(--green-t, #052e16);
-  color: var(--green, #4ade80);
-}
-
 /* ── Vùng cuộn điện thoại không bị thanh tab che (T416) ── */
 .m-app:not(.m-cap-2) .m-bc {
   min-height: auto !important;
@@ -29561,98 +29491,6 @@ a.tx-item:hover {
   gap: 2px;
   white-space: nowrap;
   text-decoration: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .m-free-the {
-    background: #1e293b !important;
-    border-color: #334155 !important;
-    color: #cbd5e1 !important;
-  }
-  :root:not([data-theme="light"]) .m-free-the .m-tc-the-tieu,
-  :root:not([data-theme="light"]) .m-free-the .m-tcf-kqkd-ln-t,
-  :root:not([data-theme="light"]) .m-free-the .m-tcf-kqkd-ten,
-  :root:not([data-theme="light"]) .m-free-the .m-tcf-kqkd-tien,
-  :root:not([data-theme="light"]) .m-free-the .m-tck-kpi-h1 span,
-  :root:not([data-theme="light"]) .m-free-the .m-tck-dong-l b,
-  :root:not([data-theme="light"]) .m-free-the .m-tck-dong-r b,
-  :root:not([data-theme="light"]) .m-free-the .m-tck-dong-t.m-tck-tong b,
-  :root:not([data-theme="light"]) .m-free-the .m-tck-dong b,
-  :root:not([data-theme="light"]) .m-free-the .m-tck-ten {
-    color: #f8fafc !important;
-  }
-  :root:not([data-theme="light"]) .m-tcf-kqkd-dong .m-tcf-kqkd-pt {
-    color: var(--orange, #fb923c) !important;
-  }
-  :root:not([data-theme="light"]) .m-tcf-kqkd-dong.m-tcf-kqkd-ln2 .m-tcf-kqkd-pt {
-    color: var(--green, #4ade80) !important;
-  }
-  :root:not([data-theme="light"]) .m-tcf-kqkd-dong.m-tcf-kqkd-ln2.lo .m-tcf-kqkd-pt {
-    color: var(--red, #f87171) !important;
-  }
-  :root:not([data-theme="light"]) .m-tck-khoi-kpi {
-    border-top-color: var(--line, #334155);
-  }
-  :root:not([data-theme="light"]) .m-tck-kpi-h1 span {
-    color: #f8fafc !important;
-  }
-  :root:not([data-theme="light"]) .m-tck-kpi-so.mua {
-    color: var(--blue, #60a5fa);
-  }
-  :root:not([data-theme="light"]) .m-tck-kpi-so.no {
-    color: var(--orange, #fb923c);
-  }
-  :root:not([data-theme="light"]) .m-tck-kpi-h2 small {
-    color: var(--muted, #94a3b8);
-  }
-  :root:not([data-theme="light"]) .m-tck-kpi-nut {
-    color: var(--blue, #60a5fa);
-  }
-}
-
-:root[data-theme="dark"] .m-free-the {
-  background: #1e293b !important;
-  border-color: #334155 !important;
-  color: #cbd5e1 !important;
-}
-:root[data-theme="dark"] .m-free-the .m-tc-the-tieu,
-:root[data-theme="dark"] .m-free-the .m-tcf-kqkd-ln-t,
-:root[data-theme="dark"] .m-free-the .m-tcf-kqkd-ten,
-:root[data-theme="dark"] .m-free-the .m-tcf-kqkd-tien,
-:root[data-theme="dark"] .m-free-the .m-tck-kpi-h1 span,
-:root[data-theme="dark"] .m-free-the .m-tck-dong-l b,
-:root[data-theme="dark"] .m-free-the .m-tck-dong-r b,
-:root[data-theme="dark"] .m-free-the .m-tck-dong-t.m-tck-tong b,
-:root[data-theme="dark"] .m-free-the .m-tck-dong b,
-:root[data-theme="dark"] .m-free-the .m-tck-ten {
-  color: #f8fafc !important;
-}
-:root[data-theme="dark"] .m-tcf-kqkd-dong .m-tcf-kqkd-pt {
-  color: var(--orange, #fb923c) !important;
-}
-:root[data-theme="dark"] .m-tcf-kqkd-dong.m-tcf-kqkd-ln2 .m-tcf-kqkd-pt {
-  color: var(--green, #4ade80) !important;
-}
-:root[data-theme="dark"] .m-tcf-kqkd-dong.m-tcf-kqkd-ln2.lo .m-tcf-kqkd-pt {
-  color: var(--red, #f87171) !important;
-}
-:root[data-theme="dark"] .m-tck-khoi-kpi {
-  border-top-color: var(--line, #334155);
-}
-:root[data-theme="dark"] .m-tck-kpi-h1 span {
-  color: #f8fafc !important;
-}
-:root[data-theme="dark"] .m-tck-kpi-so.mua {
-  color: var(--blue, #60a5fa);
-}
-:root[data-theme="dark"] .m-tck-kpi-so.no {
-  color: var(--orange, #fb923c);
-}
-:root[data-theme="dark"] .m-tck-kpi-h2 small {
-  color: var(--muted, #94a3b8);
-}
-:root[data-theme="dark"] .m-tck-kpi-nut {
-  color: var(--blue, #60a5fa);
 }
 
 
@@ -30255,4 +30093,308 @@ a.tx-item:hover {
 }
 
 
+/* ── Quỹ tiền: Tất cả quỹ trên Xem dòng tiền, cao bằng Tạo quỹ (T423) ── */
+.m-tcf-trang .bbt-vq-chan {
+  display: none !important;
+}
+
+.m-tcf-quy-chan {
+  display: flex !important;
+  align-items: stretch !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  min-height: 52px !important;
+}
+
+.m-tcf-quy-chan .m-tcf-btn-tao-quy {
+  flex: none !important;
+  align-self: stretch !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: auto !important;
+  min-height: 52px !important;
+  padding: 8px 16px !important;
+  box-sizing: border-box !important;
+}
+
+.m-tcf-quy-phai {
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  align-items: flex-end !important;
+  gap: 2px !important;
+}
+
+.m-tcf-quy-link {
+  flex: 1 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  text-align: right !important;
+  background: none !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  font-family: inherit !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: var(--blue, #0560a6) !important;
+  cursor: pointer !important;
+  text-decoration: none !important;
+  white-space: nowrap !important;
+}
+
+.m-tcf-quy-link:active {
+  opacity: 0.75 !important;
+}
+
+/* ── Xem phiếu điện thoại: Nguồn chứng từ, lề theo thẻ phân bổ (T424, T425) ── */
+.m-xp.m-pb-man {
+  padding: 0 !important;
+  gap: 0 !important;
+}
+
+.m-pos-ct-man.m-pb-man {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: var(--bg, #f5f5f5);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: var(--font, 'Be Vietnam Pro', -apple-system, 'Segoe UI', sans-serif);
+  color: var(--ink, #1f2225);
+}
+
+.m-pb-thanh-dau.m-pos-ct-dau {
+  display: grid !important;
+  grid-template-columns: 32px 1fr 32px !important;
+  align-items: center !important;
+  padding: 6px 14px !important;
+  background: #fff !important;
+  border-bottom: 1px solid var(--line, #e5e7eb) !important;
+  height: auto !important;
+  min-height: 52px !important;
+  flex: none !important;
+  box-sizing: border-box !important;
+}
+
+.m-pb-noi-dung.m-pos-ct-than {
+  flex: 1 !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  padding: 12px 14px 20px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  background: var(--bg, #f5f5f5) !important;
+  box-sizing: border-box !important;
+}
+
+.m-pos-ct-man .m-pos-ct-the {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: none !important;
+  padding: 0 !important;
+  gap: 0 !important;
+}
+
+.m-pos-ct-man .m-pos-ct-chan {
+  padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0px)) !important;
+  background: var(--white) !important;
+  border-top: 1px solid var(--line) !important;
+  display: flex !important;
+  gap: 8px !important;
+  flex: none !important;
+  box-sizing: border-box !important;
+}
+
+/* ── Điện thoại: giao diện danh mục mới theo AMIS/FABi (T434) ── */
+.m-dm-dau-khung {
+  background: #fff;
+  border-bottom: 1px solid var(--line, #e2e8f0);
+}
+
+.m-dm-chip-tt-wrap {
+  padding: 8px 14px 4px;
+  display: flex;
+  align-items: center;
+}
+
+.m-dm-chip-tt {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 12px;
+  color: #475569;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all .15s ease;
+}
+
+.m-dm-chip-tt:active {
+  background: #e2e8f0;
+}
+
+.m-dm-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--line, #e2e8f0);
+  padding: 0 6px;
+  background: #fff;
+}
+
+.m-dm-tab {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 4px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #64748b;
+  background: none;
+  border: none;
+  border-bottom: 2.5px solid transparent;
+  cursor: pointer;
+  margin-bottom: -1px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all .15s ease;
+}
+
+.m-dm-tab.active {
+  color: var(--blue, #0560a6) !important;
+  font-weight: 600 !important;
+  border-bottom-color: var(--blue, #0560a6) !important;
+}
+
+.m-dm-tab-dem {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1px 7px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  background: #e2e8f0;
+  color: #475569;
+}
+
+.m-dm-tab.active .m-dm-tab-dem {
+  background: #e0f2fe;
+  color: var(--blue, #0560a6);
+}
+
+.m-dm-o-tim {
+  padding: 8px 14px 10px;
+  background: #fff;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.m-dm-tim-inp {
+  width: 100%;
+  height: 38px;
+  background: #f1f5f9;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 0 32px 0 36px;
+  font-size: 13.5px;
+  color: var(--ink, #1f2225);
+  outline: none;
+  box-sizing: border-box;
+  font-family: inherit;
+  transition: border-color .15s ease, background-color .15s ease;
+}
+
+.m-dm-tim-inp:focus {
+  background: #fff;
+  border-color: var(--blue, #0560a6);
+}
+
+.m-dm-tim-ic {
+  position: absolute;
+  left: 24px;
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+.m-dm-tim-x {
+  position: absolute;
+  right: 22px;
+  background: none;
+  border: none;
+  padding: 4px;
+  color: #94a3b8;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Nút Đồng bộ FABi nổi lơ lửng góc dưới bên trái (T434) */
+.m-nut-fabi-fab {
+  position: fixed !important;
+  left: 16px !important;
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px)) !important;
+  z-index: 110 !important;
+  height: 44px !important;
+  padding: 0 16px !important;
+  border-radius: 22px !important;
+  background: #ea580c !important;
+  color: #fff !important;
+  font-size: 13.5px !important;
+  font-weight: 600 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  border: none !important;
+  box-shadow: 0 4px 14px rgba(234, 88, 12, 0.35) !important;
+  cursor: pointer !important;
+  transition: transform 200ms ease;
+  will-change: transform;
+}
+
+.m-nut-fabi-fab:active {
+  transform: scale(0.97) !important;
+}
+
+.m-app:not(.m-cap-2) .m-nut-fabi-fab {
+  bottom: calc(var(--m-thanh-duoi, 85px) + 22px + 12px + env(safe-area-inset-bottom, 0px)) !important;
+}
+
+.m-app:has(.m-thanh-duoi.an) .m-nut-fabi-fab {
+  transform: translateY(calc(var(--m-thanh-duoi, 85px) + 18px)) !important;
+}
+
+.m-nut-them-fab.m-nut-fab-tron {
+  width: 48px !important;
+  min-width: 48px !important;
+  height: 48px !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  justify-content: center !important;
+}
+
+.m-thanh-tren-nut-loc.m-dm-nut-loc-pheu {
+  position: relative;
+  background: none;
+  border: none;
+  padding: 6px;
+  color: var(--ink, #1f2225);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
 

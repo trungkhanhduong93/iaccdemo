@@ -215,7 +215,7 @@ export function MobileShell() {
           <h1 className="m-thanh-tren-tieu-de">
             {tieuDe}
           </h1>
-          <div className="m-thanh-tren-phai">
+          <div className="m-thanh-tren-phai" id="m-thanh-tren-phai-slot">
             {laBaoCao(loc.pathname) ? (
               <button
                 type="button"

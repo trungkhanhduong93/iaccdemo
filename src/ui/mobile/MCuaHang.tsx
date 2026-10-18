@@ -65,28 +65,24 @@ export const MCuaHang: FC<ScreenProps> = () => {
   return (
     <>
       <MDanhSach
+        kieuDanhMuc={true}
         rows={rows}
-        timPlaceholder="Tìm tên, mã cửa hàng, POS ID..."
+        timPlaceholder="Nhập từ khóa"
         timTheo={(r, q) => {
           const text = `${r.ten} ${r.ma} ${r.posId} ${r.kho}`
           return fold(text).includes(fold(q))
         }}
-        hangPhu={
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
-            <button
-              type="button"
-              className="btn sm"
-              onClick={() => toast(`Đã đồng bộ ${rows.length} cửa hàng từ FABi`)}
-            >
-              <Icon n="refresh" className="ic sm" />
-              <span>Đồng bộ FABi</span>
-            </button>
-          </div>
-        }
-        tomTat={
-          <span>
-            Tổng <b>{rows.length}</b> cửa hàng
-          </span>
+        nutTrai={
+          <button
+            type="button"
+            className="m-nut-fabi-fab"
+            onClick={() => toast(`Đã đồng bộ ${rows.length} cửa hàng từ FABi`)}
+            aria-label="Đồng bộ FABi"
+            title="Đồng bộ FABi"
+          >
+            <Icon n="refresh" className="ic sm" />
+            <span>Đồng bộ FABi</span>
+          </button>
         }
         onThem={() => setMoThem(true)}
         nhanThem="Thêm từ FABi"
