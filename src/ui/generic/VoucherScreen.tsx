@@ -1,7 +1,7 @@
 // Màn chứng từ chung: danh sách theo bố cục AMIS với cột đứng yên, bộ lọc kỳ nhanh, khung chi tiết bên dưới, thao tác hàng loạt.
 import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import type { Col, ModuleDef, Row, ScreenDef, ScreenProps, VoucherCfg } from '../../modules/types'
 import { duongDan, tenMan } from '../../app/registry'
 import { cuaHangHienTai, donViHienTai, loaiHinhDv, useSession } from '../../app/session'
@@ -245,6 +245,10 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
   // Điều chỉnh kho (T126): hai tab nhỏ Xuất điều chỉnh, Nhập điều chỉnh, mỗi tab một loại phiếu
   const [thamSo] = useSearchParams()
   const [tabLoai, setTabLoai] = useState(() => cfg.loai?.find(l => l.k === thamSo.get('loai'))?.k ?? cfg.loai?.[0]?.k ?? '')   // ?loai= mở đúng tab con, vd từ sơ đồ (T128)
+  // Thu, chi tiền (T386): tab con Tiền mặt, Ngân hàng, Chuyển quỹ gom loại phiếu; ?loai= mở tab chứa loại đó
+  const [tabNhom, setTabNhom] = useState(() => cfg.nhomLoai?.find(n => n.loai.includes(thamSo.get('loai') ?? ''))?.k ?? cfg.nhomLoai?.[0]?.k ?? '')
+  const nhomChon = cfg.nhomLoai?.find(n => n.k === tabNhom)
+  const loaiNhom = nhomChon ? cfg.loai?.filter(l => nhomChon.loai.includes(l.k)) : cfg.loai
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [moHangLoat, setMoHangLoat] = useState(false)
   const [phieuIn, setPhieuIn] = useState<PhieuIn[] | null>(null)
@@ -346,7 +350,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
     // Kiểm kê, điều chỉnh kho lọc theo kho của phiếu (T130)
     ...((cfg.kiemKe || cfg.dieuChinh) && dsKhoLoc.length ? [{ k: 'kho', ten: 'Kho', o: chonO('kho', 'Kho', dsKhoLoc.map(v => [v, v])) }] : []),
     ...(coLyDo ? [{ k: 'lyDo', ten: 'Lý do nghiệp vụ', o: chonO('lyDo', 'Lý do nghiệp vụ', dsLyDo.map(v => [v, v])) }] : []),
-    ...(cfg.loai && !cfg.dieuChinh ? [{ k: 'loai', ten: 'Loại phiếu', o: chonO('loai', 'Loại phiếu', cfg.loai.map(v => [v.k, v.ten])) }] : []),
+    ...(cfg.loai && !cfg.dieuChinh ? [{ k: 'loai', ten: 'Loại phiếu', o: chonO('loai', 'Loại phiếu', (loaiNhom ?? cfg.loai).map(v => [v.k, v.ten])) }] : []),
     ...(muaBan ? [
       { k: 'ttTien', ten: nhom === 'mua' ? 'TT thanh toán' : 'TT thu tiền', o: chonO('ttTien', 'Trạng thái thanh toán', Object.entries(TT_TIEN[nhom as 'mua' | 'ban']).map(([v, x]) => [v, x[1]])) },
       // danh sách mua bỏ trạng thái nhận hoá đơn, bán giữ xuất hoá đơn (T162)
@@ -365,7 +369,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
     if (ap.tim.trim() && !fold(`${r.so} ${r.doiTuong ?? ''} ${r.dienGiai ?? ''} ${r._tenHangDu ?? ''}`).includes(fold(ap.tim.trim()))) return false
     if (ap.doiTuong && r.doiTuong !== ap.doiTuong) return false
     if (ap.nguon && String(r.nguon ?? 'tay') !== ap.nguon) return false
-    if (ap.loai && r.loai !== ap.loai) return false
+    if (ap.loai && r.loai !== ap.loai && (!nhomChon || nhomChon.loai.includes(ap.loai))) return false   // loại đã lọc không thuộc tab đang mở thì bỏ qua (T386)
     if (ap.lyDo && r.lyDo !== ap.lyDo) return false
     if (muaBan && (ap.ttTien || ap.ttHd)) {
       const nv = ttNghiepVu(r)
@@ -380,7 +384,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
     return true
   })
   // Điều chỉnh kho: tab con lọc theo loại sau các bộ lọc khác, số trên tab đếm theo danh sách đang lọc (T126)
-  const truocTT = cfg.dieuChinh ? truocLoai.filter(r => r.loai === tabLoai) : truocLoai
+  const truocTT = cfg.dieuChinh ? truocLoai.filter(r => r.loai === tabLoai) : nhomChon ? truocLoai.filter(r => nhomChon.loai.includes(r.loai)) : truocLoai
   const chips = dsChipTT(truocTT, ghi)
   const list = truocTT.filter(r => khopChipTT(chipTT, r.tt, ghi))
   const selectedRows = useMemo(() => list.filter(r => selectedIds.has(r.id)), [list, selectedIds])
@@ -582,14 +586,25 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
               </div>
               {!cfg.khongThem && (
                 <div className="ds-thanh-h1-phai">
-                  <NutThemMoiSplit
+                  {/* Tab có nhiều loại phiếu: mỗi loại một nút, vd Thu tiền, Chi tiền (T386) */}
+                  {nhomChon && loaiNhom && loaiNhom.length > 1 ? loaiNhom.map(l => (
+                    <Link key={l.k} className="btn pri ds-nut-them" to={`${path}/moi?loai=${l.k}`} title={l.ten}>
+                      <Icon n={l.icon ?? 'plus'} className="ic sm" />
+                      <span>{l.nut ?? l.ten}</span>
+                    </Link>
+                  )) : nhomChon && loaiNhom?.[0] ? (
+                    <Link className="btn pri ds-nut-them" to={`${path}/moi?loai=${loaiNhom[0].k}`}>
+                      <Icon n="plus" className="ic sm" />
+                      <span>{`Thêm ${loaiNhom[0].ten.toLowerCase()}`}</span>
+                    </Link>
+                  ) : <NutThemMoiSplit
                     toMoi={cfg.loai ? `${path}/moi?loai=${cfg.loai[0].k}` : `${path}/moi`}
                     loai={cfg.loai}
                     taiNguon={cfg.nguon && cfg.nguon !== 'tay' && cfg.nguon !== 'excel' ? {   // nhập Excel đã có ở nút Excel (T64)
                       ten: NGUON[cfg.nguon][1],
                       onTai: () => toast(`Đã tải 14 chứng từ mới từ ${NGUON[cfg.nguon!][1]}`),
                     } : undefined}
-                  />
+                  />}
                 </div>
               )}
             </div>
@@ -612,6 +627,16 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
                       <button key={l.k} type="button" role="tab" aria-selected={tabLoai === l.k} className={tabLoai === l.k ? 'on' : ''}
                         onClick={() => { setTabLoai(l.k); setTrang(1); setActiveId(String(rows.find(r => r.loai === l.k)?.id ?? '')) }}>
                         {l.ten}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {cfg.nhomLoai && (
+                  <div className="seg dc-tabs" role="tablist" aria-label="Loại quỹ">
+                    {cfg.nhomLoai.map(n => (
+                      <button key={n.k} type="button" role="tab" aria-selected={tabNhom === n.k} className={tabNhom === n.k ? 'on' : ''}
+                        onClick={() => { setTabNhom(n.k); setTrang(1); setActiveId(String(rows.find(r => n.loai.includes(r.loai))?.id ?? '')) }}>
+                        {n.ten}
                       </button>
                     ))}
                   </div>

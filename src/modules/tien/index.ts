@@ -30,18 +30,21 @@ const tien: ModuleDef = {
       dienGiai: ['Chi mua rau, củ tại chợ', 'Chi tiền gas tháng 10', 'Chi tạm ứng mua nguyên liệu', 'Chi tiền điện tháng 9', 'Thu tiền đặt tiệc khách công ty', 'Nộp tiền bán hàng vào ngân hàng'],
       noCo: [['6421', '1111', 'Chi phí bán hàng'], ['1331', '1111', 'Thuế GTGT được khấu trừ']],
       loai: [
-        { k: 'thu', ten: 'Thu tiền mặt', icon: 'cashin', prefix: 'PT', doiTuong: 'kh', nhan: 'Người nộp', soTT58: 'Sổ quỹ tiền mặt',
+        { k: 'thu', ten: 'Thu tiền mặt', nut: 'Thu tiền', icon: 'cashin', prefix: 'PT', doiTuong: 'kh', nhan: 'Người nộp', soTT58: 'Sổ quỹ tiền mặt',
           dienGiai: ['Thu tiền đặt tiệc khách công ty', 'Thu nợ khách hàng', 'Thu tiền bán phế liệu'], noCo: [['1111', '131', 'Thu tiền khách hàng']] },
-        { k: 'chi', ten: 'Chi tiền mặt', icon: 'cashout', prefix: 'PC', doiTuong: 'ncc', nhan: 'Người nhận',
+        { k: 'chi', ten: 'Chi tiền mặt', nut: 'Chi tiền', icon: 'cashout', prefix: 'PC', doiTuong: 'ncc', nhan: 'Người nhận',
           dienGiai: ['Chi mua rau, củ tại chợ', 'Chi tiền gas tháng 10', 'Chi tạm ứng mua nguyên liệu', 'Chi tiền điện tháng 9'] },
-        { k: 'bc', ten: 'Thu ngân hàng', icon: 'bank', prefix: 'BC', doiTuong: 'kh', nhan: 'Người chuyển', soTT58: 'Sổ tiền gửi ngân hàng',
+        { k: 'bc', ten: 'Thu ngân hàng', nut: 'Thu tiền', icon: 'bank', prefix: 'BC', doiTuong: 'kh', nhan: 'Người chuyển', soTT58: 'Sổ tiền gửi ngân hàng',
           dienGiai: ['Khách công ty chuyển khoản trả nợ', 'GrabFood thanh toán tiền đơn tuần trước'], noCo: [['1121', '131', 'Thu tiền qua ngân hàng']] },
-        { k: 'unc', ten: 'Chi ngân hàng', icon: 'bank', prefix: 'UNC', doiTuong: 'ncc', nhan: 'Người nhận', soTT58: 'Sổ tiền gửi ngân hàng',
+        { k: 'unc', ten: 'Chi ngân hàng', nut: 'Chi tiền', icon: 'bank', prefix: 'UNC', doiTuong: 'ncc', nhan: 'Người nhận', soTT58: 'Sổ tiền gửi ngân hàng',
           dienGiai: ['Trả tiền nhà cung cấp thịt bò', 'Trả tiền thuê mặt bằng tháng 10', 'Nộp thuế GTGT tháng 9'], noCo: [['331', '1121', 'Trả tiền qua ngân hàng']] },
         { k: 'cq', ten: 'Chuyển quỹ', icon: 'swap', prefix: 'CQ', doiTuong: 'none', soTT58: 'Sổ chi tiết tiền',
           dienGiai: ['Nộp tiền bán hàng trong ngày vào Vietcombank', 'Rút tiền gửi ngân hàng về quỹ tiền mặt', 'Chuyển tiền quỹ cửa hàng về tài khoản công ty'],
           noCo: [['1121', '1111', 'Chuyển tiền giữa các quỹ']] },
-      ], phieuThem: s => [PHIEU_CHO_PB, ...(s ? phieuThuChiFabi(s).da : [])] } },   // phiếu thu, chi đồng bộ từ FABi, cửa hàng đang bật (T264)
+      ],
+      // Ba tab con, tab Tiền mặt và Ngân hàng có hai nút Thu tiền, Chi tiền (T386)
+      nhomLoai: [{ k: 'tm', ten: 'Tiền mặt', loai: ['thu', 'chi'] }, { k: 'nh', ten: 'Ngân hàng', loai: ['bc', 'unc'] }, { k: 'cq', ten: 'Chuyển quỹ', loai: ['cq'] }],
+      phieuThem: s => [PHIEU_CHO_PB, ...(s ? phieuThuChiFabi(s).da : [])] } },   // phiếu thu, chi đồng bộ từ FABi, cửa hàng đang bật (T264)
     '2.1.2': { voucher: { prefix: 'DCCN', doiTuong: 'kh', nhan: 'Khách hàng, nhà cung cấp', them: 'Lập biên bản', dong: 'tien', tien: [5_000_000, 120_000_000],
       dienGiai: ['Đối chiếu công nợ đến 30/09/2026', 'Đối chiếu công nợ quý 3/2026'], noCo: [['131', '131', 'Số dư đối chiếu, không sinh bút toán']] } },
     '2.1.3': { tool: { nut: 'Phân bổ kỳ 9/2026', mota: 'Phân bổ chi phí chung của văn phòng cho từng cửa hàng: lương quản lý, marketing, thuê kho tổng. Tiêu thức là doanh thu, số đơn hoặc tỷ lệ cố định. Sinh bút toán phân bổ cho từng cửa hàng.',

@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T386 | Thu chi, màn Thu, chi tiền: chia 3 tab con Tiền mặt, Ngân hàng, Chuyển quỹ; tab Tiền mặt và Ngân hàng tách nút thêm mới thành 2 nút Thu tiền, Chi tiền | dinhlanphuongipacc | Đang làm | Sửa `VoucherScreen.tsx`, `modules/types.ts`, `tien/index.ts` |
 | T339 | Trang chủ Free máy tính, Tiến độ kiểm kê theo cửa hàng: hiện tối đa 4 cửa hàng cần chú ý (chưa kiểm, lệch nhiều trước), dòng Đã kiểm x/y cửa hàng, dòng Xem tất cả mở hộp danh sách đủ | dinhlanphuongipacc | Đang làm | Sửa `home/BaBaiToanFree.tsx`, `app.css` (mục cuối T339) |
 | T333 | Đổi chữ "map" thành "gán" khi nói về phương thức thanh toán và quỹ (Khoá sổ, Danh mục Quỹ tiền, Danh mục cửa hàng) | dinhlanphuongipacc | Dở dang | Đã đổi ở Khoá sổ, Quỹ tiền. Còn `DanhMucCuaHang.tsx` chờ PhuongXT xong T321. Xem [nhật ký](nhat-ky/2026-10-17-dinhlanphuongipacc-doi-map-thanh-gan.md) |
 | T323 | `tools/kiem_tra.py --dien-thoai` dừng ở bước chờ `.m-nv-luoi`: màn Nghiệp vụ điện thoại làm lại ở T311 không còn lớp này, cập nhật bộ kiểm theo bố cục mới | | Chờ | Phát hiện 17/10/2026 khi kiểm T322 |
@@ -52,6 +51,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T386 | Thu chi, màn Thu, chi tiền: chia 3 tab con Tiền mặt, Ngân hàng, Chuyển quỹ; tab Tiền mặt và Ngân hàng tách nút thêm mới thành 2 nút Thu tiền, Chi tiền | dinhlanphuongipacc | 18/10/2026 | [2026-10-18-dinhlanphuongipacc-tab-thu-chi-tien](nhat-ky/2026-10-18-dinhlanphuongipacc-tab-thu-chi-tien.md) |
 | T385 | Tab Báo cáo của phân hệ có đủ báo cáo mà sơ đồ Quy trình của phân hệ nhắc tới (kể cả của phân hệ khác, sổ, công nợ), mở ngay trong phân hệ | dinhlanphuongipacc | 18/10/2026 | [2026-10-18-dinhlanphuongipacc-bao-cao-theo-quy-trinh](nhat-ky/2026-10-18-dinhlanphuongipacc-bao-cao-theo-quy-trinh.md) |
 | T384 | Máy tính: tab Báo cáo của từng phân hệ hiện danh sách báo cáo ngay trong phân hệ, báo cáo mở trong phân hệ (không chuyển sang phân hệ Báo cáo), tắt báo cáo về tab Báo cáo của phân hệ | dinhlanphuongipacc | 18/10/2026 | [2026-10-18-dinhlanphuongipacc-bao-cao-trong-phan-he](nhat-ky/2026-10-18-dinhlanphuongipacc-bao-cao-trong-phan-he.md) |
 | T383 | Bảng chi tiết chứng từ (thêm mới, sửa, xem; cả kiểm kê, Xuất bán POS): phễu lọc sau tab Lịch sử, bấm mới hiện hàng lọc như danh sách chứng từ | dinhlanphuongipacc | 17/10/2026 | [2026-10-17-dinhlanphuongipacc-loc-bang-chi-tiet](nhat-ky/2026-10-17-dinhlanphuongipacc-loc-bang-chi-tiet.md) |

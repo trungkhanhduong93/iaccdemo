@@ -65,6 +65,7 @@ export interface VoucherCfg {
   them?: string                          // nhãn nút thêm
   thue?: number                          // thuế suất GTGT mặc định
   loai?: LoaiCT[]                        // một màn nhiều loại phiếu, vd 2.1.1 có phiếu thu, phiếu chi
+  nhomLoai?: { k: string; ten: string; loai: string[] }[]   // tab con gom loại phiếu, mỗi loại trong tab một nút thêm, vd Tiền mặt (thu, chi), Ngân hàng, Chuyển quỹ (T386)
   soPhieu?: number                       // số phiếu mẫu, mặc định 26
   kiemKe?: boolean                       // phiếu kiểm kê: đầu phiếu chọn kho, bảng tồn hệ thống, tồn thực tế, chênh lệch (T124)
   dieuChinh?: boolean                    // phiếu xuất, nhập điều chỉnh sinh từ kiểm kê: đầu phiếu như kiểm kê, có tham chiếu về phiếu kiểm kê (T126)
@@ -87,6 +88,7 @@ export interface LoaiCT {
   soTT58?: string
   thue?: number
   icon?: string
+  nut?: string                           // chữ trên nút thêm khi tab có nhiều loại, vd Thu tiền, Chi tiền (T386)
 }
 
 /** Sổ, báo cáo dạng bảng */
