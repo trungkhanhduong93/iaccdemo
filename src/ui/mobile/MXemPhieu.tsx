@@ -96,7 +96,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
   const coTtXn = laSx || dcn === 'xdc' || dcn === 'ndc'
   const laTien = mod.key === 'tien'
   const kieu = kieuGhiSo(s.cheDo)
-  const ghi = kieuGhiSo(s.goi) !== 'khong'
+  const ghi = kieuGhiSo(s.goi) !== 'khong' && s.goi !== 'F'
 
   // Nghiệp vụ (đối tượng, địa chỉ, mst, hoá đơn, hạn tt)
   const nv = useMemo(() => (row ? ttNghiepVu(row) : null), [row])
@@ -301,7 +301,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
   }
 
   // Nút hành động chính: phiếu đã ghi sổ thì nút chính là In (chống bỏ ghi sổ nhầm)
-  const coNutGhiSo = kieu !== 'khong' && !laDc
+  const coNutGhiSo = kieu !== 'khong' && s.goi !== 'F' && !laDc
   const nutChinh = coNutGhiSo
     ? (row.tt === 'ghi'
         ? {
@@ -828,23 +828,23 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
 
       {/* 4. Khối tổng kết: khớp số với DaiTong, thu chi bỏ Thành tiền mặt hàng */}
       {!laKk && !laDc && (
-        <div className="m-the-trang m-xp-the-tong">
+        <div className={`m-the-trang m-xp-the-tong${nhom === 'mua' ? ' m-xp-tong-mua' : ''}`}>
           {!laTien && (
             <div className="m-xp-dong-tt">
               <span className="m-xp-nhan">{laDongDienGiai ? 'Thành tiền' : 'Thành tiền mặt hàng'}:</span>
-              <span className="m-xp-tri">{money(tongTien)} đ</span>
+              <span className={`m-xp-tri${nhom === 'mua' ? ' dam' : ''}`}>{money(tongTien)} đ</span>
             </div>
           )}
           {!laTien && Boolean(bo.ck || tongCk) && (
             <div className="m-xp-dong-tt">
               <span className="m-xp-nhan">Tổng tiền giảm giá:</span>
-              <span className="m-xp-tri">{tongCk ? `-${money(tongCk)}` : '0'} đ</span>
+              <span className={`m-xp-tri${nhom === 'mua' ? ' dam' : ''}`}>{tongCk ? `-${money(tongCk)}` : '0'} đ</span>
             </div>
           )}
           {!laTien && Boolean(tongThue > 0) && (
             <div className="m-xp-dong-tt">
               <span className="m-xp-nhan">Tổng tiền thuế:</span>
-              <span className="m-xp-tri">{money(tongThue)} đ</span>
+              <span className={`m-xp-tri${nhom === 'mua' ? ' dam' : ''}`}>{money(tongThue)} đ</span>
             </div>
           )}
           <div className="m-xp-dong-tt m-xp-dong-tong-cong">

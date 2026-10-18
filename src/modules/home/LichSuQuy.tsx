@@ -27,6 +27,59 @@ export interface GiaoDich {
   du: number
   quy?: string
   duGop?: number
+  gio?: string
+  doiTuong?: string
+}
+
+/** Phân loại nhóm lý do theo Phương án A (T395): bán hàng, nguyên vật liệu, ngân hàng, công nợ, vận hành */
+export function phanLoaiGiaoDich(dg: string): { nhom: 'sales' | 'food' | 'utility' | 'bank' | 'adv'; icon: string; cls: string } {
+  const d = dg.toLowerCase()
+  if (/bán hàng|pos|fabi|doanh thu/i.test(d)) {
+    return { nhom: 'sales', icon: 'cart', cls: 'ic-sales' }
+  }
+  if (/rau|củ|hải sản|nguyên vật liệu|nvl|thực phẩm|thịt|chợ|hàng hoá/i.test(d)) {
+    return { nhom: 'food', icon: 'box', cls: 'ic-food' }
+  }
+  if (/ngân hàng|vietcombank|techcombank|tài khoản|nộp tiền|rút tiền|chuyển khoản/i.test(d)) {
+    return { nhom: 'bank', icon: 'bank', cls: 'ic-bank' }
+  }
+  if (/tạm ứng|hoàn ứng|công ty|khách|đối tác|công nợ|đặt cọc|nhân viên/i.test(d)) {
+    return { nhom: 'adv', icon: 'users', cls: 'ic-adv' }
+  }
+  if (/điện|nước|gas|vận chuyển|ahamove|grab|sửa|máy|chi phí|vận hành|thuê|internet/i.test(d)) {
+    return { nhom: 'utility', icon: 'truck', cls: 'ic-utility' }
+  }
+  return { nhom: 'utility', icon: 'doc', cls: 'ic-utility' }
+}
+
+/** Sinh giờ giao dịch cố định và đối tượng cụ thể từ nội dung và số phiếu (T395) */
+export function layGioVaDoiTuong(so: string, dg: string, ngay: string): { gio: string; doiTuong?: string } {
+  const str = so + ngay
+  let hash = 0
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash * 31 + str.charCodeAt(i)) | 0
+  }
+  const abs = Math.abs(hash)
+  const h = 8 + (abs % 12)
+  const m = (Math.floor(abs / 12) % 12) * 5
+  const gio = `${pad(h)}:${pad(m)}`
+
+  const d = dg.toLowerCase()
+  let doiTuong: string | undefined
+  if (/rau|củ/i.test(d)) doiTuong = 'NCC Rau sạch Đà Lạt'
+  else if (/hải sản/i.test(d)) doiTuong = 'Vựa hải sản Phát Đạt'
+  else if (/nguyên vật liệu|nvl/i.test(d)) doiTuong = 'NCC Thực phẩm Á Châu'
+  else if (/điện/i.test(d)) doiTuong = 'Cty Điện lực Chợ Lớn'
+  else if (/nước/i.test(d)) doiTuong = 'Cty Cấp nước Gia Định'
+  else if (/gas/i.test(d)) doiTuong = 'Gas Petrolimex Sài Gòn'
+  else if (/vận chuyển|giao hàng/i.test(d)) doiTuong = 'Ahamove Delivery'
+  else if (/sửa/i.test(d)) doiTuong = 'Cty Cơ điện Lạnh Tân Phát'
+  else if (/khách công ty/i.test(d)) doiTuong = 'Cty CP Truyền thông Sao Mai'
+  else if (/tạm ứng/i.test(d)) doiTuong = 'Nhân viên bếp'
+  else if (/hoàn ứng/i.test(d)) doiTuong = 'Nhân viên thu mua'
+  else if (/đặt cọc/i.test(d)) doiTuong = 'Chị Mai Hương'
+
+  return { gio, doiTuong }
 }
 
 /** Giao dịch gộp tất cả quỹ trong tháng (T272) */
@@ -68,7 +121,24 @@ export function giaoDich(quy: string, thang: number, cnIds?: string[]): { mo: nu
   if (cn) {
     const so = soQuyCn(cn.id, thang)
     const doiSo = (s: unknown) => { const m = /^([A-Z]+)\d+-(\d+)$/.exec(String(s ?? '')); return m ? `${m[1]}26${pad(thang)}-${pad(Number(m[2]), 4)}` : '' }
-    return { mo: so.mo, cuoi: so.cuoi, ds: so.rows.map((r: Row) => ({ ngay: String(r.ngay), so: doiSo(r.thu ?? r.chi), dg: String(r.dg), thu: Number(r.no) || 0, chi: Number(r.co) || 0, du: Number(r.du) || 0 })) }
+    const ds = so.rows.map((r: Row) => {
+      const s = doiSo(r.thu ?? r.chi)
+      const dg = String(r.dg)
+      const ngay = String(r.ngay)
+      const { gio, doiTuong } = layGioVaDoiTuong(s, dg, ngay)
+      return {
+        ngay,
+        so: s,
+        dg,
+        thu: Number(r.no) || 0,
+        chi: Number(r.co) || 0,
+        du: Number(r.du) || 0,
+        quy,
+        gio,
+        doiTuong,
+      }
+    })
+    return { mo: so.mo, cuoi: so.cuoi, ds }
   }
   const iTk = TK_NGAN_HANG.findIndex(t => tenTkNh(t) === quy)
   if (iTk < 0) return undefined
@@ -77,7 +147,24 @@ export function giaoDich(quy: string, thang: number, cnIds?: string[]): { mo: nu
   const soMot = (hat: string) => soChiTiet(hat, k(between(rng(hat + thang), 80e6, 260e6) / chia), ['Thu tiền bán hàng ngày', 'Chi mua nguyên vật liệu', 'Chi tiền điện tháng', 'Thu tiền khách công ty',
     'Chi tạm ứng nhân viên', 'Nộp tiền vào tài khoản ngân hàng', 'Chi phí vận chuyển', 'Thu hoàn ứng'], ['5111', '331', '6422', '131', '141', '1121', '6421'], [1.5e6, 38e6], thang)
   const so = gopSo(CUA_HANG.map(c => ({ cn: c.ngan, ...soMot('2.2.3' + c.id + (iTk || '')) })))
-  return { mo: so.mo, cuoi: so.cuoi, ds: so.rows.map(r => ({ ngay: String(r.ngay), so: String(r.so), dg: String(r.dienGiai), thu: Number(r.no) || 0, chi: Number(r.co) || 0, du: Number(r.du) || 0 })) }
+  const ds = so.rows.map(r => {
+    const s = String(r.so)
+    const dg = String(r.dienGiai)
+    const ngay = String(r.ngay)
+    const { gio, doiTuong } = layGioVaDoiTuong(s, dg, ngay)
+    return {
+      ngay,
+      so: s,
+      dg,
+      thu: Number(r.no) || 0,
+      chi: Number(r.co) || 0,
+      du: Number(r.du) || 0,
+      quy,
+      gio,
+      doiTuong,
+    }
+  })
+  return { mo: so.mo, cuoi: so.cuoi, ds }
 }
 
 /** Tồn quỹ từng quỹ trong tháng theo Sổ quỹ tiền mặt, Sổ ngân hàng (cùng nguồn với Lịch sử thu chi, T230):
@@ -94,7 +181,7 @@ export function tonQuyTheoSo(thang: number, cnIds: string[]) {
 const nguonGd = (dg: string) => NGUON[/bán hàng/i.test(dg) ? 'FABi' : 'tay']
 
 const THU = ['Chủ nhật', 'Thứ hai', 'Thứ ba', 'Thứ tư', 'Thứ năm', 'Thứ sáu', 'Thứ bảy']
-const tenNgay = (ngay: string) => { const [d, m, y] = ngay.split('/').map(Number); return `${THU[new Date(y, m - 1, d).getDay()]}, ${ngay}` }
+export const tenNgay = (ngay: string) => { const [d, m, y] = ngay.split('/').map(Number); return `${THU[new Date(y, m - 1, d).getDay()]}, ${ngay}` }
 
 export function LichSuQuy(_: ScreenProps) {
   const moTuTrangChu = useMoTuTrangChu()   // liên kết trong màn mở kèm nút về Trang chủ (T232)
@@ -118,7 +205,18 @@ export function LichSuQuy(_: ScreenProps) {
   for (const x of [...dsLoc].reverse()) nhom.set(x.ngay, [...(nhom.get(x.ngay) ?? []), x])
   const tn = (gd?.ds ?? []).reduce((a, x) => a + x.thu, 0)
   const tc = (gd?.ds ?? []).reduce((a, x) => a + x.chi, 0)
+  const soKhoanThu = (gd?.ds ?? []).filter(x => x.thu > 0).length
+  const soKhoanChi = (gd?.ds ?? []).filter(x => x.chi > 0).length
 
+  // Thống kê từng ngày từ giao dịch gốc chưa lọc
+  const thongKeNgay = new Map<string, { thu: number; chi: number; cuoi: number }>()
+  for (const x of gd?.ds ?? []) {
+    const cu = thongKeNgay.get(x.ngay)
+    const thu = (cu?.thu ?? 0) + x.thu
+    const chi = (cu?.chi ?? 0) + x.chi
+    const cuoi = isTatCa ? (x.duGop ?? x.du) : x.du
+    thongKeNgay.set(x.ngay, { thu, chi, cuoi })
+  }
 
   const dongPhu = isTatCa
     ? `Tất cả quỹ · Tháng ${pad(thang)}/2026`
@@ -169,7 +267,7 @@ export function LichSuQuy(_: ScreenProps) {
 
   return (
     <div className="page cpt-trang" onClickCapture={moTuTrangChu}>
-      {/* 1. Phần đầu: nút về, tiêu đề, dòng phụ, bộ lọc, Excel, lập phiếu thu, lập phiếu chi (T272) */}
+      {/* 1. Phần đầu: nút về, tiêu đề, dòng phụ, bộ lọc, Excel, lập phiếu thu, lập phiếu chi (giữ nguyên theo Trum chốt) */}
       <div className="cpt-dau">
         <Link to="/app/trang-chu/tong-quan" className="cpt-ve" title="Về Tổng quan" aria-label="Về Tổng quan">
           <Icon n="chevl" />
@@ -200,37 +298,31 @@ export function LichSuQuy(_: ScreenProps) {
         </Link>
       </div>
 
-      {/* 2. Bốn ô màu ngang theo mẫu L1 (T272), cố định trên vùng cuộn cùng ghi chú (T303) */}
-      <div className="lsq-l1-ghi-chu-hop">
-        <div className="lsq-l1-the">
-          <div className="lsq-l1-st st-dau">
-            <span>Tồn đầu kỳ</span>
-            <b>{moneyD(gd?.mo ?? 0)}</b>
-            <small>Ngày 01/{pad(thang)}/2026</small>
-          </div>
-          <div className="lsq-l1-st st-thu">
-            <span>Tiền thu vào</span>
-            <b>{moneyD(tn)}</b>
-            <small>Phiếu thu trong kỳ</small>
-          </div>
-          <div className="lsq-l1-st st-chi">
-            <span>Tiền chi ra</span>
-            <b>{moneyD(tc)}</b>
-            <small>Phiếu chi trong kỳ</small>
-          </div>
-          <div className="lsq-l1-st st-cuoi">
-            <span>Tồn cuối kỳ</span>
-            <b>{moneyD(gd?.cuoi ?? 0)}</b>
-            <small>Số dư hiện tại</small>
-          </div>
+      {/* 2. Bốn ô tóm tắt nền thẻ trắng nhẹ (không khối màu đặc) theo Phương án A (T395) */}
+      <div className="lsq-stat-grid-4">
+        <div className="lsq-stat-card">
+          <span className="lbl">Tồn đầu kỳ</span>
+          <span className="val">{moneyD(gd?.mo ?? 0)}</span>
+          <span className="note">01/{pad(thang)}/2026</span>
         </div>
-        <div className="lsq-l1-ghi-chu">
-          Bấm vào một giao dịch để mở chứng từ gốc ở tab mới.{isTatCa ? ' Thu, chi gồm tiền chuyển giữa các quỹ.' : ''}
+        <div className="lsq-stat-card c-thu">
+          <span className="lbl">Tiền thu vào (+)</span>
+          <span className="val">+{moneyD(tn)}</span>
+          <span className="note">{soKhoanThu} khoản thu trong tháng</span>
+        </div>
+        <div className="lsq-stat-card c-chi">
+          <span className="lbl">Tiền chi ra (-)</span>
+          <span className="val">-{moneyD(tc)}</span>
+          <span className="note">{soKhoanChi} khoản chi trong tháng</span>
+        </div>
+        <div className="lsq-stat-card c-cuoi lsq-l1-st st-cuoi">
+          <span className="lbl">Tồn cuối kỳ</span>
+          <span className="val"><b>{moneyD(gd?.cuoi ?? 0)}</b></span>
+          <span className="note">Số dư hiện tại</span>
         </div>
       </div>
 
-      <div className="cpt-cuon" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-        {/* 3. Danh sách kiểu app ngân hàng (như T230, T303): gom theo ngày, mới nhất trên cùng; bấm dòng mở chứng từ gốc ở tab mới (T272) */}
+      <div className="cpt-cuon">
         {!gd || nhom.size === 0 ? (
           <div className="note muted">
             {loai
@@ -238,40 +330,78 @@ export function LichSuQuy(_: ScreenProps) {
               : `Quỹ chưa có giao dịch trong tháng ${thang}/2026.`}
           </div>
         ) : (
-          <div className="lsq-ds">
-            {[...nhom].map(([ngay, ds]) => (
-              <section key={ngay}>
-                <div className="lsq-ngay">{tenNgay(ngay)}</div>
-                <div className="lsq-khoi">
-                  {ds.map((x, i) => {
-                    const p = phieuTheoSo(x.so)
-                    const [nguonCls, nguonTen] = nguonGd(x.dg)
-                    const noiDung = <>
-                      <span className={`lsq-ic ${x.thu ? 'thu' : 'chi'}`}><Icon n={x.thu ? 'cashin' : 'cashout'} /></span>
-                      <span className="lsq-chu">
-                        <b>{x.dg}</b>
-                        <small>{p?.so ?? x.so}{isTatCa && x.quy ? ` · ${x.quy}` : ''}<span className={`src ${nguonCls} lsq-nguon`}>{nguonTen}</span></small>
-                      </span>
-                      {/* Số tiền chỉ tô màu, không dấu + − (T273); xem tất cả quỹ thì số dư là tổng các quỹ sau giao dịch */}
-                      <span className="lsq-so"><b className={x.thu ? 'thu' : 'chi'}>{moneyD(x.thu || x.chi)}</b><small>Số dư {moneyD(isTatCa ? (x.duGop ?? x.du) : x.du)}</small></span>
-                    </>
-                    return p
-                      ? (
-                        <a key={i} href={`#${p.to}`} target="_blank" rel="noopener" className="lsq-dong" title="Mở chứng từ gốc ở tab mới">
-                          {noiDung}
-                          <svg className="lsq-mui" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                            <path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" />
-                          </svg>
-                        </a>
+          <div className="tx-stream lsq-ds">
+            {[...nhom].map(([ngay, ds]) => {
+              const tk = thongKeNgay.get(ngay)
+              return (
+                <div key={ngay} className="day-group">
+                  <div className="day-header">
+                    <span className="day-header-left">{tenNgay(ngay)}</span>
+                    <div className="day-header-right">
+                      {tk && tk.thu > 0 && <span className="day-in">Thu: +{moneyD(tk.thu)}</span>}
+                      {tk && tk.chi > 0 && <span className="day-out">Chi: -{moneyD(tk.chi)}</span>}
+                      <span className="day-balance">Cuối ngày: {moneyD(tk?.cuoi ?? 0)}</span>
+                    </div>
+                  </div>
+
+                  <div className="day-items">
+                    {ds.map((x, i) => {
+                      const p = phieuTheoSo(x.so)
+                      const isFabi = /bán hàng/i.test(x.dg)
+                      const loaiInfo = phanLoaiGiaoDich(x.dg)
+                      const laThu = x.thu > 0
+                      const soDu = isTatCa ? (x.duGop ?? x.du) : x.du
+                      const noiDung = (
+                        <>
+                          <div className="tx-left">
+                            <div className={`tx-icon ${loaiInfo.cls}`}>
+                              <Icon n={loaiInfo.icon} className="ic sm" />
+                            </div>
+                            <div className="tx-meta">
+                              <div className="tx-title">{x.dg}</div>
+                              <div className="tx-sub">
+                                <span className="code">{p?.so ?? x.so}</span>
+                                {x.gio && <span>· {x.gio}</span>}
+                                {x.doiTuong && <span>· Đối tượng: {x.doiTuong}</span>}
+                                {x.quy && <span className="badge-fund">· {x.quy}</span>}
+                                <span>· <span className={isFabi ? 'badge-fabi' : 'badge-manual'}>{isFabi ? 'FABi POS' : 'Thủ công'}</span></span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="tx-right">
+                            <div className={`tx-amount ${laThu ? 'in' : 'out'}`}>
+                              {laThu ? `+${moneyD(x.thu)}` : `-${moneyD(x.chi)}`}
+                            </div>
+                            <div className="tx-running-balance lsq-so">
+                              <small>Số dư {moneyD(soDu)}</small>
+                            </div>
+                          </div>
+                        </>
                       )
-                      : <div key={i} className="lsq-dong">{noiDung}<span className="lsq-mui-trong" /></div>
-                  })}
+
+                      return p ? (
+                        <a
+                          key={i}
+                          href={`#${p.to}`}
+                          target="_blank"
+                          rel="noopener"
+                          className="tx-item lsq-dong"
+                          title="Mở chứng từ gốc ở tab mới"
+                        >
+                          {noiDung}
+                        </a>
+                      ) : (
+                        <div key={i} className="tx-item lsq-dong">
+                          {noiDung}
+                        </div>
+                      )
+                    })}
+                  </div>
                 </div>
-              </section>
-            ))}
+              )
+            })}
           </div>
         )}
-
       </div>
     </div>
   )

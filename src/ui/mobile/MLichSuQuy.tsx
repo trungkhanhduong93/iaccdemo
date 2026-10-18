@@ -1,23 +1,14 @@
-// Lịch sử thu chi một quỹ kiểu app trên điện thoại (T240, T272): mở từ khối Tồn quỹ trang chủ gói Free.
-// Cùng số liệu với bản web, gom theo ngày, mới nhất trên cùng, 4 ô màu lưới 2x2
+// Lịch sử thu chi một quỹ kiểu app trên điện thoại theo Phương án A (T395): mở từ khối Quỹ tiền trang chủ gói Free.
+// Cùng số liệu với bản web, gom theo ngày, mới nhất trên cùng, 4 ô tóm tắt nền thẻ trắng lưới 2x2
 import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import type { ScreenProps } from '../../modules/types'
 import { CUA_HANG } from '../../data/mock'
 import { Icon } from '../Icon'
-import { money, moneyD, pad } from '../format'
+import { moneyD, pad } from '../format'
 import { phieuTheoSo } from '../generic/SoChungTu'
-import { NGUON } from '../generic/gen'
 import { tenQuyTm } from '../../modules/bao-cao/danh-sach'
-import { giaoDich, type GiaoDich } from '../../modules/home/LichSuQuy'
-
-const nguonGd = (dg: string) => NGUON[/bán hàng/i.test(dg) ? 'FABi' : 'tay']
-
-const THU = ['Chủ nhật', 'Thứ hai', 'Thứ ba', 'Thứ tư', 'Thứ năm', 'Thứ sáu', 'Thứ bảy']
-const tenNgay = (ngay: string) => {
-  const [d, m, y] = ngay.split('/').map(Number)
-  return `${THU[new Date(y, m - 1, d).getDay()]}, ${ngay}`
-}
+import { giaoDich, phanLoaiGiaoDich, tenNgay, type GiaoDich } from '../../modules/home/LichSuQuy'
 
 export function MLichSuQuy(_: ScreenProps) {
   const [tham] = useSearchParams()
@@ -28,7 +19,7 @@ export function MLichSuQuy(_: ScreenProps) {
   const tienMat = isTatCa ? true : CUA_HANG.some(c => tenQuyTm(c.ngan) === quy)
   const tenHien = isTatCa ? 'Tất cả quỹ' : quy
 
-  // Lọc loại giao dịch: tất cả, chỉ khoản thu, chỉ khoản chi (T246); danh sách theo bộ lọc, số dư đầu, cuối kỳ giữ nguyên
+  // Lọc loại giao dịch: tất cả, chỉ khoản thu, chỉ khoản chi (giữ nguyên theo Trum chốt)
   const [loai, setLoai] = useState<'' | 'thu' | 'chi'>('')
   const dsLoc = (gd?.ds ?? []).filter(x => !loai || (loai === 'thu' ? x.thu > 0 : x.chi > 0))
 
@@ -40,7 +31,7 @@ export function MLichSuQuy(_: ScreenProps) {
   const tn = (gd?.ds ?? []).reduce((a, x) => a + x.thu, 0)
   const tc = (gd?.ds ?? []).reduce((a, x) => a + x.chi, 0)
 
-  // Thống kê từng ngày từ giao dịch gốc chưa lọc (gd.ds) (T272-sửa 1):
+  // Thống kê từng ngày từ giao dịch gốc chưa lọc
   const thongKeNgay = new Map<string, { thu: number; chi: number; cuoi: number }>()
   for (const x of gd?.ds ?? []) {
     const cu = thongKeNgay.get(x.ngay)
@@ -52,7 +43,7 @@ export function MLichSuQuy(_: ScreenProps) {
 
   return (
     <div className="m-free-lsq">
-      {/* 1. Tiêu đề quỹ & 4 ô màu lưới 2x2 theo mẫu L1 (T272) */}
+      {/* 1. Tiêu đề quỹ & 4 ô màu lưới 2x2 nền thẻ trắng nhẹ theo mẫu Phương án A (T395) */}
       <div className="m-free-lsq-the-hop">
         <div className="m-free-lsq-quy-dau">
           <div className="m-free-lsq-quy">
@@ -62,22 +53,22 @@ export function MLichSuQuy(_: ScreenProps) {
           <small className="m-free-lsq-thang">Tháng {pad(thang)}/2026</small>
         </div>
 
-        <div className="m-free-lsq-luoi-2x2">
-          <div className="m-free-lsq-o-st st-dau">
-            <span>Tồn đầu kỳ</span>
-            <b>{moneyD(gd?.mo ?? 0)}</b>
+        <div className="mobile-stat-slider">
+          <div className="m-stat-pill">
+            <span className="lbl">Tồn đầu kỳ</span>
+            <b className="val">{moneyD(gd?.mo ?? 0)}</b>
           </div>
-          <div className="m-free-lsq-o-st st-thu">
-            <span>Tiền thu vào</span>
-            <b>{moneyD(tn)}</b>
+          <div className="m-stat-pill">
+            <span className="lbl">Tồn cuối kỳ</span>
+            <b className="val" style={{ color: 'var(--blue)' }}>{moneyD(gd?.cuoi ?? 0)}</b>
           </div>
-          <div className="m-free-lsq-o-st st-chi">
-            <span>Tiền chi ra</span>
-            <b>{moneyD(tc)}</b>
+          <div className="m-stat-pill">
+            <span className="lbl">Thu vào (+)</span>
+            <b className="val" style={{ color: 'var(--green)' }}>+{moneyD(tn)}</b>
           </div>
-          <div className="m-free-lsq-o-st st-cuoi">
-            <span>Tồn cuối kỳ</span>
-            <b>{moneyD(gd?.cuoi ?? 0)}</b>
+          <div className="m-stat-pill">
+            <span className="lbl">Chi ra (-)</span>
+            <b className="val" style={{ color: 'var(--red)' }}>-{moneyD(tc)}</b>
           </div>
         </div>
 
@@ -86,7 +77,7 @@ export function MLichSuQuy(_: ScreenProps) {
         )}
       </div>
 
-      {/* 2. Bộ lọc thu chi dạng chip (T246) */}
+      {/* 2. Bộ lọc thu chi hiện có (giữ nguyên theo Trum chốt) */}
       <div className="m-free-lsq-loc">
         <button
           type="button"
@@ -116,103 +107,90 @@ export function MLichSuQuy(_: ScreenProps) {
           {loai ? `Quỹ không có khoản ${loai} nào trong tháng ${thang}/2026.` : `Quỹ chưa có giao dịch trong tháng ${thang}/2026.`}
         </div>
       ) : (
-        <div className="m-free-lsq-ds">
+        <div className="mobile-tx-stream">
           {[...nhom].map(([ngay, ds]) => {
             const tk = thongKeNgay.get(ngay)
-            const tongThuNgay = tk?.thu ?? 0
-            const tongChiNgay = tk?.chi ?? 0
             const cuoiNgay = tk?.cuoi ?? 0
 
             return (
-              <section key={ngay} className="m-free-lsq-ngay-nhom">
-                {/* Dòng tổng ngày có thu, chi, cuối ngày (T272) */}
-                <div className="m-free-lsq-ngay-dau">
-                  <b>{tenNgay(ngay)}</b>
-                  <div className="m-free-lsq-ngay-tong">
-                    {tongThuNgay > 0 && <span className="m-tien-vao">{money(tongThuNgay)}</span>}
-                    {tongChiNgay > 0 && <span className="m-tien-ra">{money(tongChiNgay)}</span>}
-                    <span className="m-tien-cuoi">Cuối {money(cuoiNgay)}</span>
-                  </div>
+              <div key={ngay} className="mobile-day-block">
+                <div className="mobile-day-title">
+                  <span>{tenNgay(ngay)}</span>
+                  <span style={{ color: 'var(--muted)', fontSize: '11px', fontWeight: 500 }}>Dư {moneyD(cuoiNgay)}</span>
                 </div>
 
-                <div className="m-free-lsq-khoi">
-                  {ds.map((x, i) => {
-                    const p = phieuTheoSo(x.so)
-                    const laThu = x.thu > 0
-                    const nInfo = nguonGd(x.dg)
+                {ds.map((x, i) => {
+                  const p = phieuTheoSo(x.so)
+                  const laThu = x.thu > 0
+                  const isFabi = /bán hàng/i.test(x.dg)
+                  const loaiInfo = phanLoaiGiaoDich(x.dg)
+                  const soDu = isTatCa ? (x.duGop ?? x.du) : x.du
+                  const phuDs = [
+                    p?.so ?? x.so,
+                    x.gio,
+                    x.doiTuong,
+                    isTatCa && x.quy ? x.quy : undefined,
+                    isFabi ? 'FABi' : 'Thủ công',
+                  ].filter(Boolean).join(' · ')
 
-                    return (
-                      <div key={i} className="m-free-lsq-dong">
-                        <span className={`m-free-lsq-ic ${laThu ? 'vao' : 'ra'}`}>
-                          <Icon n={laThu ? 'cashin' : 'cashout'} className="ic sm" />
-                        </span>
-                        <div className="m-free-lsq-chu">
-                          <div className="m-free-lsq-dg">{x.dg}</div>
-                          {isTatCa && x.quy && (
-                            <div className="m-free-lsq-ten-quy">{x.quy}</div>
-                          )}
-                          <div className="m-free-lsq-phu-dong">
-                            {p ? (
-                              <a
-                                href={`#${p.to}`}
-                                target="_blank"
-                                rel="noopener"
-                                className="m-free-lsq-so-link"
-                                title="Mở chứng từ gốc ở tab mới"
-                              >
-                                <span>{p.so}</span>
-                                <svg
-                                  width="20"
-                                  height="20"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeWidth="1.5"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  aria-hidden="true"
-                                >
-                                  <path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" vectorEffect="non-scaling-stroke" />
-                                </svg>
-                              </a>
-                            ) : (
-                              <span className="m-free-lsq-soct">{x.so}</span>
-                            )}
-                            <span className={`src ${nInfo[0]} lsq-nguon`}>
-                              {nInfo[1]}
-                            </span>
-                          </div>
+                  const noiDung = (
+                    <>
+                      <div className="l">
+                        <div className={`ic ${loaiInfo.cls} m-free-lsq-ic ${laThu ? 'vao' : 'ra'}`}>
+                          <Icon n={loaiInfo.icon} className="ic sm" />
                         </div>
-                        <div className="m-free-lsq-so">
-                          <div className={`m-free-lsq-tien ${laThu ? 'm-tien-vao' : 'm-tien-ra'}`}>
-                            {laThu ? moneyD(x.thu) : moneyD(x.chi)}
-                          </div>
-                          <small className="m-free-lsq-sodu">Số dư {moneyD(x.du)}</small>
+                        <div className="meta">
+                          <span className="t">{x.dg}</span>
+                          <span className="d">{phuDs}</span>
                         </div>
                       </div>
-                    )
-                  })}
-                </div>
-              </section>
+                      <div className="r">
+                        <div className={`amt ${laThu ? 'in' : 'out'}`} style={{ color: laThu ? 'var(--green)' : 'var(--red)' }}>
+                          {laThu ? `+${moneyD(x.thu)}` : `-${moneyD(x.chi)}`}
+                        </div>
+                        <div className="bal">Dư {moneyD(soDu)}</div>
+                      </div>
+                    </>
+                  )
+
+                  return p ? (
+                    <a
+                      key={i}
+                      href={`#${p.to}`}
+                      target="_blank"
+                      rel="noopener"
+                      className="mobile-tx-row m-free-lsq-dong"
+                      title="Mở chứng từ gốc ở tab mới"
+                    >
+                      {noiDung}
+                    </a>
+                  ) : (
+                    <div key={i} className="mobile-tx-row m-free-lsq-dong">
+                      {noiDung}
+                    </div>
+                  )
+                })}
+              </div>
             )
           })}
         </div>
       )}
 
-      <div className="m-free-day-nut">
+      {/* 3. Hai nút Thu tiền, Chi tiền ghim đáy (T292) */}
+      <div className="m-free-day-nut mobile-bottom-bar">
         <Link
           to={`/app/tien/2-1-1/moi?loai=${tienMat ? 'thu' : 'bc'}`}
-          className="m-free-nut-phu"
+          className="m-free-nut-phu btn-sec"
         >
           <Icon n="plus" className="ic sm" />
-          <span>Lập phiếu thu</span>
+          <span>Thu tiền</span>
         </Link>
         <Link
           to={`/app/tien/2-1-1/moi?loai=${tienMat ? 'chi' : 'unc'}`}
-          className="m-free-nut-chinh"
+          className="m-free-nut-chinh btn-pri"
         >
           <Icon n="plus" className="ic sm" />
-          <span>Lập phiếu chi</span>
+          <span>Chi tiền</span>
         </Link>
       </div>
     </div>

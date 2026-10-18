@@ -26,7 +26,7 @@ const BIEU_TUONG: Record<string, string> = {
 
 /** 5 màn danh mục nhóm ngoài Excel (T136) */
 const nhomHangHoa: ScreenDef = {
-  slug: 'nhom-hang-hoa', ten: 'Danh mục nhóm hàng hoá', ngan: 'Nhóm hàng hoá', nhom: 'Danh mục', kind: 'catalog', icon: 'hanghoa',
+  slug: 'nhom-hang-hoa', ten: 'Danh mục nhóm hàng hoá', ngan: 'Nhóm hàng hoá', nhom: 'Danh mục', kind: 'catalog', icon: 'nhomhang',
   catalog: {
     them: 'Thêm nhóm hàng hoá',
     cols: (goi, cheDo) => [
@@ -116,13 +116,13 @@ const phuongThucThanhToan: ScreenDef = {
   ngan: 'Phương thức thanh toán',
   nhom: 'Danh mục',
   kind: 'catalog',
-  icon: 'quytien',
+  icon: 'wallet',
   catalog: {
     them: 'Thêm phương thức',
     khongThem: ['F', 'S'],   // gói Free, Standard lấy phương thức từ FABi, không thêm mới (T144)
     khongExcel: ['F', 'S'],  // cũng không nhập, xuất Excel (T268)
     chiXem: ['F', 'S'],      // chi tiết chỉ xem, không sửa, không xoá (T328)
-    nutPhu: { nhan: 'Đồng bộ theo POS', icon: 'refresh', chiIcon: true, bao: `Đã đồng bộ ${DS_PTTT.length} phương thức thanh toán theo POS` },
+    nutPhu: { nhan: 'Đồng bộ FABi', logo: '/logo-fabi.png', bao: `Đã đồng bộ ${DS_PTTT.length} phương thức thanh toán từ FABi` },
     cols: (goi, cheDo) => [
       { k: 'ma', t: 'Mã', cls: 'code' },
       { k: 'ten', t: 'Tên phương thức' },
@@ -146,7 +146,7 @@ const danhMuc: ModuleDef = {
     '1.1': { kind: 'custom', comp: HeThongTaiKhoan, cheDo: ['TT133', 'TT99'] },
     '1.2': { catalog: {
       them: 'Thêm hàng hoá', nhomLoc: 'nhom',
-      nutPhu: { nhan: 'Đồng bộ theo POS', icon: 'refresh', chiIcon: true, bao: `Đã đồng bộ ${DS_HANG_HOA_12.length} hàng hoá theo POS` },
+      nutPhu: { nhan: 'Đồng bộ FABi', logo: '/logo-fabi.png', bao: `Đã đồng bộ ${DS_HANG_HOA_12.length} hàng hoá từ FABi` },
       chucNang: r => r.tkKho === '152' ? [{ nhan: 'Xem thẻ kho', di: 'kho/5-2-1' }] : r.tkKho === '153' ? [{ nhan: 'Xem thẻ chi phí', di: 'ccdc/8-1-1' }] : [{ nhan: 'Xem doanh thu', di: 'ban-hang/3-2-5' }],
       cols: (goi, cheDo) => [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên hàng hoá' }, { k: 'nhom', t: 'Nhóm' }, { k: 'dvt', t: 'ĐVT' },
         { k: 'thuongHieu', t: 'Thương hiệu' },
@@ -162,12 +162,16 @@ const danhMuc: ModuleDef = {
           thuongHieu: PHA_CHE.has(h.ma) ? 'Mây Cà Phê' : 'Phố Mây', ...(BAN_THANG.has(h.ma) ? { ncc: 'Công ty TNHH Nước giải khát Nam Bộ' } : {}) })),
         { ma: 'BUN02', ten: 'Bún bò Huế', loai: 'Thành phẩm', nhom: 'Món mới tháng 10', dvt: 'Tô', gia: 69000, ts: 8, tkDt: '', tkGv: '', tkKho: '', tonKho: false, ...nganhNghe('301-5'), thuongHieu: 'Phố Mây' },
         { ma: 'MI01', ten: 'Mì Quảng tôm thịt', loai: 'Thành phẩm', nhom: 'Món mới tháng 10', dvt: 'Tô', gia: 65000, ts: 8, tkDt: '', tkGv: '', tkKho: '', tonKho: false, ...nganhNghe('301-5'), thuongHieu: 'Phố Mây Express' },
+        { ma: 'BXP01', ten: 'Bánh xíu páo', loai: '', nhom: 'Món mới tháng 10', dvt: 'Cái', gia: 15000, ts: 8, tkDt: '', tkGv: '', tkKho: '', tonKho: false, thuongHieu: 'Phố Mây', _tt: 1 },
+        { ma: 'HB01', ten: 'Hàng bán không có mô tả', loai: '', nhom: 'Đồ ăn vặt', dvt: 'Gói', gia: 20000, ts: 8, tkDt: '', tkGv: '', tkKho: '', tonKho: false, thuongHieu: 'Phố Mây', _tt: 1 },
+        { ma: 'HB02', ten: 'Hàng bán đơn vị tính 1', loai: '', nhom: 'Đồ ăn vặt', dvt: 'Cái', gia: 10000, ts: 8, tkDt: '', tkGv: '', tkKho: '', tonKho: false, thuongHieu: 'Phố Mây', _tt: 1 },
+        { ma: 'NGUNG01', ten: 'Trà sữa trân châu đường đen', loai: 'Thành phẩm', nhom: 'Đồ uống', dvt: 'Ly', gia: 45000, ts: 8, tkDt: '', tkGv: '', tkKho: '', tonKho: false, thuongHieu: 'Mây Cà Phê', _tt: 0 },
         ...NVL.map(h => ({ ...h, loai: 'Nguyên vật liệu', gia: 0, tkDt: '', tkGv: '632', tkKho: '152', tonKho: true })),   // nguyên vật liệu luôn theo dõi tồn (T114)
         ...CCDC_HANG.map(h => ({ ...h, loai: 'Khác (Công cụ dụng cụ)', gia: 0, ts: 10, tkDt: '', tkGv: '', tkKho: '153', tonKho: false })),   // CCDC: thẻ chi phí phân bổ chọn mã từ đây
       ],
     } },
     '1.3': { catalog: { them: 'Thêm đơn vị tính',
-      nutPhu: { nhan: 'Đồng bộ theo POS', icon: 'refresh', chiIcon: true, bao: `Đã đồng bộ ${DON_VI_TINH.length} đơn vị tính theo POS` },
+      nutPhu: { nhan: 'Đồng bộ FABi', logo: '/logo-fabi.png', bao: `Đã đồng bộ ${DON_VI_TINH.length} đơn vị tính từ FABi` },
       cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên đơn vị tính' }, { k: 'mota', t: 'Mô tả', cls: 'dim' }],
       rows: () => DON_VI_TINH.map(([ma, ten, mota]) => ({ ma, ten, mota })) } },
     // T154: 1 Từ ĐVT = tỷ lệ Đến ĐVT; hàng hoá áp dụng để trống là mọi hàng hoá
@@ -186,8 +190,8 @@ const danhMuc: ModuleDef = {
         ...(goi !== 'F' && goi !== 'S' ? [{ k: 'dktt', t: 'Điều khoản thanh toán' } as Col] : []),
         ...(goi !== 'F' && goi !== 'S' && kieuGhiSo(cheDo) === 'noco' ? [tkCot('tkCn', 'TK công nợ')] : [])],
       rows: () => [
-        ...KHACH.map(x => ({ ...x, loai: 'Khách hàng', dktt: x.ma === 'KL' ? 'Thanh toán ngay' : 'Công nợ 30 ngày', tkCn: '131', dongY: true })),
-        ...NCC.map(x => ({ ...x, loai: 'Nhà cung cấp', dktt: 'Công nợ 15 ngày', tkCn: '331', dongY: true })),
+        ...KHACH.map(x => ({ ...x, loai: 'Khách hàng', dktt: x.ma === 'KL' ? 'Thanh toán ngay' : 'Công nợ 30 ngày', tkCn: '131', dongY: true, _tt: x.ma === 'KH004' ? 0 : 1 })),
+        ...NCC.map(x => ({ ...x, loai: 'Nhà cung cấp', dktt: 'Công nợ 15 ngày', tkCn: '331', dongY: true, _tt: x.ma === 'NCC007' ? 0 : 1 })),
         ...NHAN_VIEN.map(x => ({ ...x, mst: '', nhom: x.bp, loai: 'Nhân viên', dktt: '—', tkCn: '141', dongY: true })),
       ] } },
     '1.6': { catalog: { them: 'Thêm mục chi phí', nhomLoc: 'nhom', cols: (goi, cheDo) => [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Mục chi phí' }, { k: 'nhom', t: 'Nhóm' }, ...(kieuGhiSo(cheDo) === 'noco' ? [{ k: 'tk', t: 'TK chi phí', cls: 'code' } as Col] : [])],
@@ -196,7 +200,7 @@ const danhMuc: ModuleDef = {
     '1.7': { catalog: { them: 'Thêm công việc', cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên công việc' }, { k: 'moTa', t: 'Mô tả', cls: 'dim' }],
       rows: () => DS_CONG_VIEC_17 } },
     '1.8': { catalog: { them: 'Thêm kho', khongThem: ['F'],
-      nutPhu: { nhan: 'Đồng bộ theo POS', icon: 'refresh', chiIcon: true, bao: `Đã đồng bộ ${KHO.length} kho theo POS` },
+      nutPhu: { nhan: 'Đồng bộ FABi', logo: '/logo-fabi.png', bao: `Đã đồng bộ ${KHO.length} kho từ FABi` },
       // gói Free: mỗi cửa hàng một kho mặc định theo iPOS Inventory (kho đầu của cửa hàng), không thêm kho mới (T143)
       locGoi: (goi, r) => (goi !== 'F' && goi !== 'S') || CUA_HANG.some(c => c.kho[0] === r.ten),   // gói Free, Standard: dữ liệu mẫu một kho mỗi cửa hàng
       chucNang: () => [{ nhan: 'Xem tồn kho', di: 'kho/5-2-4' }, { nhan: 'Chuyển kho', di: 'kho/5-1-4-3/moi' }, { nhan: 'Xuất điều chuyển', di: 'kho/5-1-4/moi' }],
@@ -208,6 +212,7 @@ const danhMuc: ModuleDef = {
         return {
           ma: `K${String(i + 1).padStart(2, '0')}`,
           ten,
+          _tt: i === KHO.length - 1 ? 0 : 1,
           cn: CUA_HANG.find(c => c.kho.includes(ten))?.ten ?? 'Văn phòng',
           loai: ten.includes('bar') ? 'Kho pha chế' : isTong ? 'Kho tổng' : 'Kho bếp',
           tk: 'Võ Thanh Tùng',

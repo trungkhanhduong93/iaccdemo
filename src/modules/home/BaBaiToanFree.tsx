@@ -293,86 +293,344 @@ function tenQuyDanhMuc(quy: string, tienMat: boolean) {
   return DS_QUY_TIEN_112.find(x => x.loai === 'Ngân hàng' && x.ten.split(/[ ,]/)[0] === nh)?.ten ?? quy.replace(/(\s+[\d.\- ]+)+$/, '')
 }
 
-/** Quá 5 quỹ thì vòng, chú thích chỉ giữ 4 quỹ nhiều tiền nhất, còn lại gom một dòng "N quỹ khác"; bấm dòng đó mở bảng nổi liệt kê đủ mọi quỹ, khối không dài ra (T303) */
-const QUY_HIEN = 4, QUY_KHAC = 'tat-ca'
+/** Màu biểu đồ tròn tồn quỹ tươi theo thứ tự lát lớn tới nhỏ (T402) */
+const MAU_QUY_T402 = [
+  'var(--qt-1, #FFB347)',
+  'var(--qt-2, #64B5F6)',
+  'var(--qt-3, #4DD0A8)',
+  'var(--qt-4, #FF8A65)',
+  'var(--qt-5, #B39DDB)',
+]
+const MAU_CON_LAI = 'var(--qt-6, #CFD8DC)'
 
-function VongQuy({ ds: dsGoc, tong, onChon, cuoi }: { ds: { quy: string; tienMat: boolean; cuoi: number }[]; tong: number; onChon: (quy: string) => void; cuoi?: ReactNode }) {
+export interface QuyVongItem {
+  quy: string
+  tienMat: boolean
+  cuoi: number
+  ten: string
+  mau: string
+  tyLe: number
+  startAngle: number
+  endAngle: number
+  midAngle: number
+}
+
+/** Biểu đồ tròn tồn quỹ theo mẫu app ví (T402, T303): vòng dày 28%, khe nhỏ, nhãn ngoài vòng nối đường xám */
+export function VongQuy({
+  ds: dsGoc,
+  tong,
+  onChon,
+  cuoi,
+}: {
+  ds: { quy: string; tienMat: boolean; cuoi: number }[]
+  tong: number
+  onChon: (quy: string) => void
+  cuoi?: ReactNode
+}) {
   const [tro, setTro] = useState<string | null>(null)
   const [moDs, setMoDs] = useState(false)
+
   useEffect(() => {
     if (!moDs) return
-    const dong = (e: KeyboardEvent) => { if (e.key === 'Escape') setMoDs(false) }
+    const dong = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMoDs(false)
+    }
     document.addEventListener('keydown', dong)
     return () => document.removeEventListener('keydown', dong)
   }, [moDs])
-  const chon = (quy: string) => { if (quy === QUY_KHAC) setMoDs(true); else onChon(quy) }
-  // Tên quỹ hiện như Danh mục Quỹ tiền 1.12 (vd "Vietcombank, chi nhánh Sài Gòn"), không kèm số tài khoản (T309); khoá quy vẫn là tên sổ để mở đúng quỹ
-  const coMau = dsGoc.map((r, i) => ({ ...r, mau: MAU_QUY[i % MAU_QUY.length], ten: tenQuyDanhMuc(r.quy, r.tienMat) }))
-  const ds = coMau.length <= QUY_HIEN + 1 ? coMau : (() => {
-    const xep = [...coMau].sort((a, b) => b.cuoi - a.cuoi)
-    const con = xep.slice(QUY_HIEN)
-    const giu = new Set(xep.slice(0, QUY_HIEN).map(r => r.quy))
-    return [...coMau.filter(r => giu.has(r.quy)),
-      { quy: QUY_KHAC, tienMat: false, cuoi: con.reduce((a, r) => a + r.cuoi, 0), mau: 'var(--faint, #9ca3af)', ten: `${con.length} quỹ khác` }]
+
+  const chon = (quy: string) => {
+    if (quy === 'tat-ca') onChon('tat-ca')
+    else onChon(quy)
+  }
+
+  // Chuẩn hoá và lọc các quỹ dương
+  const dsDuong = dsGoc.filter(r => r.cuoi > 0)
+  const tongDuong = dsDuong.reduce((a, r) => a + r.cuoi, 0) || 1
+
+  // Sắp xếp từ lớn tới nhỏ
+  const xep = [...dsDuong]
+    .map(r => ({
+      ...r,
+      ten: tenQuyDanhMuc(r.quy, r.tienMat),
+      tyLe: r.cuoi / tongDuong,
+    }))
+    .sort((a, b) => b.cuoi - a.cuoi)
+
+  // Quy tắc gộp lát "Còn lại": Quỹ có tỷ trọng dưới 5% gộp thành lát "Còn lại" khi có từ 6 quỹ trở lên
+  const dsGop = (() => {
+    if (xep.length >= 6) {
+      const lon = xep.filter(r => r.tyLe >= 0.05)
+      const giu = lon.slice(0, 5)
+      const giuSet = new Set(giu.map(r => r.quy))
+      const con = xep.filter(r => !giuSet.has(r.quy))
+      const out = giu.map((r, i) => ({ ...r, mau: MAU_QUY_T402[i % MAU_QUY_T402.length] }))
+      if (con.length > 0) {
+        const cuoiCon = con.reduce((a, r) => a + r.cuoi, 0)
+        out.push({
+          quy: 'tat-ca',
+          tienMat: false,
+          cuoi: cuoiCon,
+          ten: 'Còn lại',
+          mau: MAU_CON_LAI,
+          tyLe: cuoiCon / tongDuong,
+        })
+      }
+      return out
+    }
+    return xep.map((r, i) => ({ ...r, mau: MAU_QUY_T402[i % MAU_QUY_T402.length] }))
   })()
-  const co = 260, rr = 104, day = 44, C = 2 * Math.PI * rr   // T293: cột thu chi rộng gấp rưỡi, vòng to theo
-  const duong = ds.map(r => Math.max(0, r.cuoi))
-  const tongDuong = duong.reduce((a, v) => a + v, 0) || 1
-  let off = 0
-  const dangTro = ds.find(r => r.quy === tro)
+
+  // Tính góc các lát
+  let start = -Math.PI / 2
+  const dsLats: QuyVongItem[] = dsGop.map(r => {
+    const sliceAngle = r.tyLe * 2 * Math.PI
+    const end = start + sliceAngle
+    const mid = start + sliceAngle / 2
+    const item: QuyVongItem = {
+      ...r,
+      startAngle: start,
+      endAngle: end,
+      midAngle: mid,
+    }
+    start = end
+    return item
+  })
+
+  // Kích thước SVG
+  const W = 380
+  const H = 210
+  const cx = 190
+  const cy = 105
+  const R = 64
+  const day = Math.round(R * 0.28) // Độ dày 28% bán kính (18px)
+  const rIn = R - day // 46px
+
+  const dangTro = dsLats.find(r => r.quy === tro)
+
+  // Phân chia nhãn trái / phải
+  const nhanPhai = dsLats
+    .filter(r => Math.cos(r.midAngle) >= 0)
+    .sort((a, b) => Math.sin(a.midAngle) - Math.sin(b.midAngle))
+
+  const nhanTrai = dsLats
+    .filter(r => Math.cos(r.midAngle) < 0)
+    .sort((a, b) => Math.sin(a.midAngle) - Math.sin(b.midAngle))
+
+  const layYs = (n: number) => {
+    if (n <= 0) return []
+    if (n === 1) return [cy]
+    const step = Math.min(42, 140 / (n - 1))
+    const startY = cy - (step * (n - 1)) / 2
+    return Array.from({ length: n }, (_, i) => startY + i * step)
+  }
+
+  const ysPhai = layYs(nhanPhai.length)
+  const ysTrai = layYs(nhanTrai.length)
+
+  const mapY = new Map<string, { y: number; isRight: boolean }>()
+  nhanPhai.forEach((r, i) => mapY.set(r.quy, { y: ysPhai[i], isRight: true }))
+  nhanTrai.forEach((r, i) => mapY.set(r.quy, { y: ysTrai[i], isRight: false }))
+
   return (
-    <div className="bbt-vq">
-      <svg className="bbt-vq-vong" viewBox={`0 0 ${co} ${co}`} width={co} height={co} role="img" aria-label="Biểu đồ tròn tồn quỹ theo quỹ">
-        <circle cx={co / 2} cy={co / 2} r={rr} fill="none" stroke="var(--line-2, #eee)" strokeWidth={day} />
-        {ds.map((r, i) => {
-          const len = (duong[i] / tongDuong) * C
-          const el = (
-            <circle key={r.quy} cx={co / 2} cy={co / 2} r={rr} fill="none" stroke={r.mau} strokeWidth={day}
-              strokeDasharray={`${len} ${C - len}`} strokeDashoffset={-off} transform={`rotate(-90 ${co / 2} ${co / 2})`}
-              className={`bbt-vq-lat${tro && tro !== r.quy ? ' mo' : ''}`} onClick={() => chon(r.quy)} onMouseEnter={() => setTro(r.quy)} onMouseLeave={() => setTro(null)}>
-              <title>{`${r.ten}: ${moneyD(r.cuoi)}`}</title>
-            </circle>
+    <div className="bbt-vq-t402">
+      <svg
+        className="bbt-vq-svg"
+        viewBox={`0 0 ${W} ${H}`}
+        width="100%"
+        height="100%"
+        role="img"
+        aria-label="Biểu đồ tròn tồn quỹ theo quỹ"
+      >
+        {/* Nền vòng xám */}
+        <circle cx={cx} cy={cy} r={(R + rIn) / 2} fill="none" stroke="var(--line-2, #eee)" strokeWidth={day} />
+
+        {/* Các lát biểu đồ tròn */}
+        {dsLats.map(r => {
+          const sliceAngle = r.endAngle - r.startAngle
+          const gap = dsLats.length > 1 ? 0.035 : 0
+          const a1 = r.startAngle + gap / 2
+          const a2 = r.endAngle - gap / 2
+          const actA1 = a2 > a1 ? a1 : r.startAngle
+          const actA2 = a2 > a1 ? a2 : r.endAngle
+
+          const x1Out = cx + R * Math.cos(actA1)
+          const y1Out = cy + R * Math.sin(actA1)
+          const x2Out = cx + R * Math.cos(actA2)
+          const y2Out = cy + R * Math.sin(actA2)
+          const x1In = cx + rIn * Math.cos(actA1)
+          const y1In = cy + rIn * Math.sin(actA1)
+          const x2In = cx + rIn * Math.cos(actA2)
+          const y2In = cy + rIn * Math.sin(actA2)
+          const large = sliceAngle > Math.PI ? 1 : 0
+
+          const pathD = `M ${x1In} ${y1In} L ${x1Out} ${y1Out} A ${R} ${R} 0 ${large} 1 ${x2Out} ${y2Out} L ${x2In} ${y2In} A ${rIn} ${rIn} 0 ${large} 0 ${x1In} ${y1In} Z`
+
+          return (
+            <path
+              key={r.quy}
+              d={pathD}
+              fill={r.mau}
+              className={`bbt-vq-lat${tro && tro !== r.quy ? ' mo' : ''}${tro === r.quy ? ' on' : ''}`}
+              onClick={() => chon(r.quy)}
+              onMouseEnter={() => setTro(r.quy)}
+              onMouseLeave={() => setTro(null)}
+            >
+              <title>{`${r.ten}: ${moneyD(r.cuoi)} (${pct(r.tyLe)})`}</title>
+            </path>
           )
-          off += len
-          return el
         })}
-        <text x={co / 2} y={co / 2 - 10} textAnchor="middle" className="bbt-vq-nhan">{dangTro ? pct(tong ? dangTro.cuoi / tong : 0) : 'Tổng tồn quỹ'}</text>
-        <text x={co / 2} y={co / 2 + 20} textAnchor="middle" className="bbt-vq-so">{short(dangTro ? dangTro.cuoi : tong)}</text>
+
+        {/* Chữ giữa vòng: Tổng tồn quỹ và số tiền */}
+        <text x={cx} y={cy - 6} textAnchor="middle" className="bbt-vq-center-lbl">
+          {dangTro ? pct(dangTro.tyLe) : 'Tổng tồn quỹ'}
+        </text>
+        <text x={cx} y={cy + 16} textAnchor="middle" className="bbt-vq-center-val">
+          {dangTro ? moneyD(dangTro.cuoi) : short(tong)}
+        </text>
+
+        {/* Đường nối và Nhãn ngoài vòng */}
+        {dsLats.map(r => {
+          const pos = mapY.get(r.quy)
+          if (!pos) return null
+          const { y: targetY, isRight } = pos
+
+          const x0 = cx + (R + 3) * Math.cos(r.midAngle)
+          const y0 = cy + (R + 3) * Math.sin(r.midAngle)
+
+          let lineD = ''
+          if (isRight) {
+            const x1 = cx + R + 18
+            const x2 = 292
+            lineD = `M ${x0} ${y0} L ${Math.max(x0 + 6, x1)} ${targetY} L ${x2} ${targetY}`
+          } else {
+            const x1 = cx - R - 18
+            const x2 = 88
+            lineD = `M ${x0} ${y0} L ${Math.min(x0 - 6, x1)} ${targetY} L ${x2} ${targetY}`
+          }
+
+          const labelX = isRight ? 298 : 14
+          const tenHienThi = r.ten.length > 13 ? r.ten.slice(0, 12) + '…' : r.ten
+
+          return (
+            <g
+              key={`lbl-${r.quy}`}
+              className={`bbt-vq-nhan-g${tro && tro !== r.quy ? ' mo' : ''}${tro === r.quy ? ' on' : ''}`}
+              onClick={() => chon(r.quy)}
+              onMouseEnter={() => setTro(r.quy)}
+              onMouseLeave={() => setTro(null)}
+            >
+              <title>{`${r.ten}: ${moneyD(r.cuoi)} (${pct(r.tyLe)})`}</title>
+              {/* Đường nối */}
+              <path d={lineD} fill="none" className="bbt-vq-line" />
+
+              {/* Icon quỹ (tiền mặt / ngân hàng / còn lại) */}
+              <g transform={`translate(${labelX + 6}, ${targetY - 5})`}>
+                {r.tienMat ? (
+                  <g>
+                    <rect x="-6" y="-4" width="12" height="8" rx="1.5" fill="none" stroke={r.mau} strokeWidth="1.3" />
+                    <circle cx="0" cy="0" r="1.8" fill="none" stroke={r.mau} strokeWidth="1.3" />
+                  </g>
+                ) : r.quy === 'tat-ca' ? (
+                  <g fill={r.mau}>
+                    <circle cx="-3.5" cy="0" r="1.5" />
+                    <circle cx="0" cy="0" r="1.5" />
+                    <circle cx="3.5" cy="0" r="1.5" />
+                  </g>
+                ) : (
+                  <g fill={r.mau}>
+                    <path d="M-6 -2 L0 -5.5 L6 -2 Z" />
+                    <rect x="-4.8" y="-1.2" width="1.6" height="4.5" />
+                    <rect x="-0.8" y="-1.2" width="1.6" height="4.5" />
+                    <rect x="3.2" y="-1.2" width="1.6" height="4.5" />
+                    <rect x="-6.5" y="3.5" width="13" height="1.5" rx="0.4" />
+                  </g>
+                )}
+              </g>
+
+              {/* Dòng 1: % đậm cùng màu lát */}
+              <text x={labelX + 18} y={targetY - 1} fill={r.mau} className="bbt-vq-nhan-pct">
+                {pct(r.tyLe)}
+              </text>
+
+              {/* Dòng 2: Tên quỹ chữ xám */}
+              <text x={labelX} y={targetY + 12} className="bbt-vq-nhan-ten">
+                {tenHienThi}
+              </text>
+            </g>
+          )
+        })}
       </svg>
-      <ul className="bbt-vq-ct">
-        {ds.map(r => (
-          <li key={r.quy}>
-            <button type="button" className={tro === r.quy ? 'on' : ''} title={r.quy === QUY_KHAC ? 'Xem danh sách tất cả quỹ' : `Xem biểu đồ thu chi ${r.quy}`} onClick={() => chon(r.quy)}
-              onMouseEnter={() => setTro(r.quy)} onMouseLeave={() => setTro(null)}>
-              <i style={{ background: r.mau }} />
-              <span className="bbt-vq-ten"><span title={r.quy === QUY_KHAC ? undefined : r.quy}>{r.ten}</span><b>{moneyD(r.cuoi)}<small>{pct(tong ? r.cuoi / tong : 0)}</small></b></span>
-              <Icon n="chevr" className="ic sm muted bbt-vq-mui" />
-            </button>
-          </li>
-        ))}
-        {/* T331: nút Tạo quỹ nằm cuối danh sách quỹ, thẳng cột tên quỹ, không chạm vòng */}
-        {cuoi && <li className="bbt-vq-cuoi">{cuoi}</li>}
-      </ul>
+
+      {/* Nút Tạo quỹ và Nút xem tất cả quỹ */}
+      <div className="bbt-vq-chan">
+        {cuoi}
+        {dsGoc.length > 5 && (
+          <button
+            type="button"
+            className="btn sm ghost"
+            style={{ fontSize: 12, padding: '3px 8px' }}
+            onClick={() => setMoDs(true)}
+            title="Xem danh sách tất cả quỹ"
+          >
+            Tất cả quỹ ({dsGoc.length}) ›
+          </button>
+        )}
+      </div>
+
+      {/* Popup tất cả quỹ */}
       {moDs && (
         <>
           <div className="bbt-vq-ds-nen" onClick={() => setMoDs(false)} />
           <div className="bbt-vq-ds" role="dialog" aria-label="Tất cả quỹ">
             <div className="bbt-vq-ds-dau">
-              <b>Tất cả quỹ ({coMau.length})</b>
-              <button type="button" className="pheu-dong" title="Đóng" aria-label="Đóng" onClick={() => setMoDs(false)}><Icon n="x" className="ic sm" /></button>
+              <b>Tất cả quỹ ({dsGoc.length})</b>
+              <button
+                type="button"
+                className="pheu-dong"
+                title="Đóng"
+                aria-label="Đóng"
+                onClick={() => setMoDs(false)}
+              >
+                <Icon n="x" className="ic sm" />
+              </button>
             </div>
-            <ul className="bbt-vq-ct">
-              {[...coMau].sort((x, y) => y.cuoi - x.cuoi).map(r => (
-                <li key={r.quy}>
-                  <button type="button" title={`Xem biểu đồ thu chi ${r.quy}`} onClick={() => { setMoDs(false); onChon(r.quy) }}>
-                    <i style={{ background: r.mau }} />
-                    <span className="bbt-vq-ten"><span title={r.quy}>{r.ten}</span><b>{moneyD(r.cuoi)}<small>{pct(tong ? r.cuoi / tong : 0)}</small></b></span>
-                    <Icon n="chevr" className="ic sm muted bbt-vq-mui" />
-                  </button>
-                </li>
-              ))}
+            <ul className="bbt-vq-ct" style={{ maxHeight: 240, overflowY: 'auto' }}>
+              {[...dsGoc]
+                .sort((x, y) => y.cuoi - x.cuoi)
+                .map((r, i) => (
+                  <li key={r.quy}>
+                    <button
+                      type="button"
+                      title={`Xem biểu đồ thu chi ${r.quy}`}
+                      onClick={() => {
+                        setMoDs(false)
+                        onChon(r.quy)
+                      }}
+                    >
+                      <i style={{ background: MAU_QUY_T402[i % MAU_QUY_T402.length] }} />
+                      <span className="bbt-vq-ten">
+                        <span title={r.quy}>{tenQuyDanhMuc(r.quy, r.tienMat)}</span>
+                        <b>
+                          {moneyD(r.cuoi)}
+                          <small>{pct(tong ? r.cuoi / tong : 0)}</small>
+                        </b>
+                      </span>
+                      <Icon n="chevr" className="ic sm muted bbt-vq-mui" />
+                    </button>
+                  </li>
+                ))}
             </ul>
-            <button type="button" className="nut bbt-e-nut" onClick={() => { setMoDs(false); onChon(QUY_KHAC) }}>Biểu đồ thu chi tất cả quỹ ›</button>
+            <button
+              type="button"
+              className="nut bbt-e-nut"
+              onClick={() => {
+                setMoDs(false)
+                onChon('tat-ca')
+              }}
+            >
+              Biểu đồ thu chi tất cả quỹ ›
+            </button>
           </div>
         </>
       )}

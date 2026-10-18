@@ -1,5 +1,5 @@
 // Màn chứng từ chung: danh sách theo bố cục AMIS với cột đứng yên, bộ lọc kỳ nhanh, khung chi tiết bên dưới, thao tác hàng loạt.
-import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { Fragment, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import type { Col, ModuleDef, Row, ScreenDef, ScreenProps, VoucherCfg } from '../../modules/types'
@@ -12,7 +12,7 @@ import { Dropdown, MenuItem, Select } from '../Dropdown'
 import { St, Table } from '../Table'
 import { PhanTrang } from '../PhanTrang'
 import { buildGroupedData } from '../virtual'
-import { ChonKhoangNgay, docNgay, thangNay, trongKhoang, type KhoangNgay } from '../ChonNgay'
+import { ChonKhoangNgay, docNgay, khoangThang, thangNay, trongKhoang, type KhoangNgay } from '../ChonNgay'
 import { NutExcel, NutThemMoiSplit } from '../CongCuDs'
 import { fold, money, pad, rng } from '../format'
 import { heSoZoom } from '../zoom'
@@ -240,10 +240,27 @@ export function gopLoai(cfg: VoucherCfg, seed: string): Row[] {
 export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: ScreenProps & { cfg: VoucherCfg; rows: Row[]; extra?: React.ReactNode; title?: string }) {
   const { s, toast } = useSession()
   const nav = useNavigate()
-  const loc0 = useLocNhap(locMacDinh)
+  const [thamSo] = useSearchParams()
+  const locKhoiTao = useCallback(() => {
+    const md = locMacDinh()
+    const thangUrl = thamSo.get('thang')
+    if (thangUrl) {
+      const [namStr, thangStr] = thangUrl.split('-')
+      const nam = Number(namStr)
+      const th = Number(thangStr)
+      if (nam && th >= 1 && th <= 12) {
+        md.thoiGian = khoangThang(th, nam)
+      }
+    }
+    const lyDoUrl = thamSo.get('lyDo')
+    if (lyDoUrl) {
+      md.lyDo = lyDoUrl
+    }
+    return md
+  }, [thamSo])
+  const loc0 = useLocNhap(locKhoiTao)
   const [chipTT, setChipTT] = useState('all')
   // Điều chỉnh kho (T126): hai tab nhỏ Xuất điều chỉnh, Nhập điều chỉnh, mỗi tab một loại phiếu
-  const [thamSo] = useSearchParams()
   const [tabLoai, setTabLoai] = useState(() => cfg.loai?.find(l => l.k === thamSo.get('loai'))?.k ?? cfg.loai?.[0]?.k ?? '')   // ?loai= mở đúng tab con, vd từ sơ đồ (T128)
   // Thu chi (T386): tab Tiền mặt, Ngân hàng, Chuyển quỹ trên thanh tab phân hệ, cùng màn, nhóm loại phiếu theo ?nhom=
   const nhomChon = nhomDangMo(sc, thamSo)
@@ -255,7 +272,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
   const [panelMo, setPanelMo] = useState(false)
   const [tabChon, setTabPanel] = useState<'ct' | 'ht' | 'khac'>('ct')
 
-  const ghi = kieuGhiSo(s.goi) !== 'khong'
+  const ghi = kieuGhiSo(s.goi) !== 'khong' && s.goi !== 'F'
   // Chế độ không ghi sổ (gói Free) thì khung chi tiết bỏ tab Ghi sổ, như form (T62, T82)
   const coTabHt = kieuGhiSo(s.cheDo) !== 'khong' && !cfg.kiemKe   // phiếu kiểm kê không có tab Hạch toán (T124)
   const tabPanel = tabChon === 'ht' && !coTabHt ? 'ct' : tabChon
@@ -854,7 +871,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
                     <div><b>Nguồn dữ liệu:</b> {activeRow.nguon}</div>
                     <div><b>Tổng tiền:</b> {money(activeRow.tong)} đ</div>
                     <div><b>Thuế GTGT:</b> {money(activeRow.thue || 0)} đ</div>
-                    <div><b>Trạng thái:</b> {TT_CT[activeRow.tt]?.[1] ?? activeRow.tt}</div>
+                    {ghi && <div><b>Trạng thái:</b> {TT_CT[activeRow.tt]?.[1] ?? activeRow.tt}</div>}
                   </div>
                 )}
                 </div>

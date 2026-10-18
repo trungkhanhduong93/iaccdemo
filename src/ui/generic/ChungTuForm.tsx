@@ -1159,7 +1159,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
         </section>
 
         {/* Khối Tabs chi tiết: vùng duy nhất cuộn trong form (T105) */}
-        <section className="card ct-than-card">
+        <section className={`card ct-than-card${nhom === 'mua' ? ' ct-mua-hang' : ''}`}>
           <div className="tabs">
             {tabs.map(([k, l]) => (
               <button

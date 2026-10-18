@@ -124,6 +124,8 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
     return dong0.map((d, i) => ({ ...d, giamThue: giam[i] }))
   }, [donDangXem, hkd])
 
+  const tongGiamGia = useMemo(() => dsMon.reduce((a, m) => a + (m.giam || 0), 0), [dsMon])
+
   // Thông tin bổ trợ cho đơn đang xem
   const tenKhoDon = useMemo(() => {
     if (!donDangXem) return ''
@@ -410,30 +412,29 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
                     ))}
                   </div>
 
-                  {/* Thẻ các dòng tổng */}
+                  {/* Thẻ các dòng tổng (T392) */}
                   <div className="m-pos-ct-the m-pos-ct-tong-the">
                     <div className="m-pos-ct-dong-tt">
-                      <span className="m-pos-ct-nhan">Tiền hàng</span>
-                      <span className="m-pos-ct-tri">{money(donDangXem.tien)} đ</span>
+                      <span className="m-pos-ct-nhan">Tổng thành tiền</span>
+                      <span className="m-pos-ct-tri">{money(Number(donDangXem.tien || 0) + tongGiamGia)} đ</span>
                     </div>
-                    {hkd && (donDangXem.giamThue ?? 0) > 0 && (
+                    <div className="m-pos-ct-dong-tt">
+                      <span className="m-pos-ct-nhan">Tổng giảm giá chiết khấu</span>
+                      <span className="m-pos-ct-tri">{tongGiamGia > 0 ? `-${money(tongGiamGia)} đ` : '0 đ'}</span>
+                    </div>
+                    {hkd ? (
                       <div className="m-pos-ct-dong-tt">
                         <span className="m-pos-ct-nhan">Giảm thuế GTGT</span>
                         <span className="m-pos-ct-tri text-green">-{money(donDangXem.giamThue)} đ</span>
                       </div>
-                    )}
-                    {!hkd && (donDangXem.thue ?? 0) > 0 && (
+                    ) : (
                       <div className="m-pos-ct-dong-tt">
-                        <span className="m-pos-ct-nhan">Tiền thuế GTGT</span>
-                        <span className="m-pos-ct-tri">{money(donDangXem.thue)} đ</span>
+                        <span className="m-pos-ct-nhan">Tổng VAT</span>
+                        <span className="m-pos-ct-tri">{money(donDangXem.thue || 0)} đ</span>
                       </div>
                     )}
-                    <div className="m-pos-ct-dong-tt">
-                      <span className="m-pos-ct-nhan">Phiếu giảm giá</span>
-                      <span className="m-pos-ct-tri">0 đ</span>
-                    </div>
                     <div className="m-pos-ct-dong-tt m-pos-ct-dong-tong">
-                      <span className="m-pos-ct-nhan dam">Tổng thanh toán</span>
+                      <span className="m-pos-ct-nhan dam">Tổng tiền thanh toán</span>
                       <span className="m-pos-ct-tri dam m-pos-tien-to">{money(donDangXem.tong)} đ</span>
                     </div>
                   </div>

@@ -10,6 +10,7 @@ import { MFormDm } from './MFormDm'
 import { Icon } from '../Icon'
 import { useSearchParams } from 'react-router-dom'
 import { GoiYLapPhieu } from '../generic/GoiYLapPhieu'
+import { MChon } from './MChon'
 import type { KieuMTrong } from './MTrong'
 
 export const MDanhMuc: FC<ScreenProps> = ({ sc }) => {
@@ -80,33 +81,56 @@ export const MDanhMuc: FC<ScreenProps> = ({ sc }) => {
 
   const choThem = !laChiXem && !cfg.khongThem?.includes(s.goi)
 
-  const nhoms = useMemo(
-    () =>
-      cfg.nhomLoc
-        ? [...new Set(all.map(r => String(r[cfg.nhomLoc!] ?? '')).filter(Boolean))].sort()
-        : [],
-    [all, cfg.nhomLoc],
-  )
-  const [nhomChon, setNhomChon] = useState('')
+  const nhoms = useMemo(() => {
+    if (!cfg.nhomLoc) return []
+    return Array.from(new Set(all.map(r => String(r[cfg.nhomLoc!] ?? '')).filter(Boolean))).sort()
+  }, [all, cfg.nhomLoc])
 
-  const chips = useMemo(() => {
-    if (nhoms.length === 0) return []
-    return [
-      { k: '', ten: 'Tất cả', dem: all.length },
-      ...nhoms.map(n => ({
-        k: n,
-        ten: n,
-        dem: all.filter(r => String(r[cfg.nhomLoc!] ?? '') === n).length,
-      })),
-    ]
-  }, [nhoms, all, cfg.nhomLoc])
+  const laHangHoa = sc.code === '1.2' || sc.slug === 'hang-hoa' || sc.slug === '1-2'
+  const [locTrangThai, setLocTrangThai] = useState<'hd' | 'ngung' | ''>('hd')
+  const [tabPhanLoai, setTabPhanLoai] = useState<'tat-ca' | 'da-phan-loai' | 'chua-phan-loai'>('tat-ca')
+  const [moChonTrangThai, setMoChonTrangThai] = useState(false)
+  const [q, setQ] = useState('')
+
+  useEffect(() => {
+    setLocTrangThai('hd')
+    setTabPhanLoai('tat-ca')
+    setQ('')
+  }, [sc])
+
+  const allSauTrangThai = useMemo(() => {
+    if (!locTrangThai) return all
+    if (locTrangThai === 'hd') return all.filter(r => r._tt !== 0)
+    if (locTrangThai === 'ngung') return all.filter(r => r._tt === 0)
+    return all
+  }, [all, locTrangThai])
+
+  const demTatCa = allSauTrangThai.length
+  const demDaPhanLoai = useMemo(() => allSauTrangThai.filter(r => Boolean(r.loai)).length, [allSauTrangThai])
+  const demChuaPhanLoai = useMemo(() => allSauTrangThai.filter(r => !r.loai).length, [allSauTrangThai])
+
+  const demDangHd = useMemo(() => all.filter(r => r._tt !== 0).length, [all])
+  const demKhongHd = useMemo(() => all.filter(r => r._tt === 0).length, [all])
 
   const rows = useMemo(() => {
     return all.filter(r => {
-      if (nhomChon && String(r[cfg.nhomLoc!] ?? '') !== nhomChon) return false
+      if (q.trim()) {
+        const text = Object.values(r)
+          .map(v => (v && typeof v === 'object' ? '' : String(v ?? '')))
+          .join(' ')
+        if (!fold(text).includes(fold(q.trim()))) return false
+      }
+      if (locTrangThai) {
+        if (locTrangThai === 'hd' && r._tt === 0) return false
+        if (locTrangThai === 'ngung' && r._tt !== 0) return false
+      }
+      if (laHangHoa) {
+        if (tabPhanLoai === 'da-phan-loai' && !r.loai) return false
+        if (tabPhanLoai === 'chua-phan-loai' && Boolean(r.loai)) return false
+      }
       return true
     })
-  }, [all, nhomChon, cfg.nhomLoc])
+  }, [all, q, locTrangThai, laHangHoa, tabPhanLoai])
 
   const cotSo = useMemo(() => cols0.find(c => c.num || c.k === 'gia'), [cols0])
 
@@ -171,81 +195,182 @@ export const MDanhMuc: FC<ScreenProps> = ({ sc }) => {
 
   return (
     <>
-      <MDanhSach
-        rows={rows}
-        timTheo={(r, q) => {
-          const text = Object.values(r)
-            .map(v => (v && typeof v === 'object' ? '' : String(v ?? '')))
-            .join(' ')
-          return fold(text).includes(fold(q))
-        }}
-        timPlaceholder="Tìm theo mã, tên..."
-        chips={chips}
-        chipChon={nhomChon}
-        onChipChon={setNhomChon}
-        onThem={choThem ? () => { setEdit({}); setDienSan(undefined) } : undefined}
-        nhanThem={cfg.them ?? '+ Thêm mới'}
-        kieuTrong={kieuTrong}
-        tomTat={
-          <span>
-            Tổng <b>{rows.length}</b> bản ghi
-          </span>
-        }
-        the={(r, i) => {
-          const giaTriSo =
-            cotSo && r[cotSo.k] !== undefined && r[cotSo.k] !== '' ? r[cotSo.k] : undefined
-          return (
-            <div
-              key={`${String(r.id ?? r.ma ?? r.ten ?? '')}_${i}`}
-              className="m-the-dm"
-              onClick={() => {
-                if (laLyDo) setXemLyDo(r)
-                else if (laPttt) setXemPttt(r)
-                else { setEdit(r); setDienSan(undefined) }
-              }}
-              role="button"
-              tabIndex={0}
+      <div className="m-dm-khung-v2">
+        {/* Hàng chip lọc Trạng thái */}
+        <div className="m-dm-hang-chip-loc">
+          <button
+            type="button"
+            className="m-dm-chip-loc"
+            onClick={() => setMoChonTrangThai(true)}
+          >
+            <span>Trạng thái: {locTrangThai === 'hd' ? 'Đang hoạt động' : locTrangThai === 'ngung' ? 'Không hoạt động' : 'Tất cả'}</span>
+            <Icon n="chevd" className="ic sm" />
+          </button>
+        </div>
+
+        {/* Tab gạch chân cuộn ngang với viên thuốc số */}
+        <div className="m-dm-tab-cuon">
+          {laHangHoa ? (
+            <>
+              <button
+                type="button"
+                className={`m-dm-tab-item${tabPhanLoai === 'tat-ca' ? ' on' : ''}`}
+                onClick={() => setTabPhanLoai('tat-ca')}
+              >
+                <span>Tất cả</span>
+                <span className="m-tab-pill">{demTatCa}</span>
+              </button>
+              <button
+                type="button"
+                className={`m-dm-tab-item${tabPhanLoai === 'da-phan-loai' ? ' on' : ''}`}
+                onClick={() => setTabPhanLoai('da-phan-loai')}
+              >
+                <span>Đã phân loại</span>
+                <span className="m-tab-pill">{demDaPhanLoai}</span>
+              </button>
+              <button
+                type="button"
+                className={`m-dm-tab-item${tabPhanLoai === 'chua-phan-loai' ? ' on' : ''}`}
+                onClick={() => setTabPhanLoai('chua-phan-loai')}
+              >
+                <span>Chưa phân loại</span>
+                <span className="m-tab-pill">{demChuaPhanLoai}</span>
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                type="button"
+                className={`m-dm-tab-item${locTrangThai === '' ? ' on' : ''}`}
+                onClick={() => setLocTrangThai('')}
+              >
+                <span>Tất cả</span>
+                <span className="m-tab-pill">{all.length}</span>
+              </button>
+              <button
+                type="button"
+                className={`m-dm-tab-item${locTrangThai === 'hd' ? ' on' : ''}`}
+                onClick={() => setLocTrangThai('hd')}
+              >
+                <span>Đang hoạt động</span>
+                <span className="m-tab-pill">{demDangHd}</span>
+              </button>
+              <button
+                type="button"
+                className={`m-dm-tab-item${locTrangThai === 'ngung' ? ' on' : ''}`}
+                onClick={() => setLocTrangThai('ngung')}
+              >
+                <span>Không hoạt động</span>
+                <span className="m-tab-pill">{demKhongHd}</span>
+              </button>
+            </>
+          )}
+        </div>
+
+        {/* Ô tìm kiếm: Nhập từ khoá */}
+        <div className="m-dm-o-tim-v2">
+          <Icon n="search" className="ic sm m-dm-tim-ic" />
+          <input
+            type="text"
+            className="m-dm-tim-inp-v2"
+            placeholder="Nhập từ khoá"
+            value={q}
+            onChange={e => setQ(e.target.value)}
+            aria-label="Nhập từ khoá"
+          />
+          {q && (
+            <button
+              type="button"
+              className="m-dm-tim-x-v2"
+              onClick={() => setQ('')}
+              aria-label="Xoá tìm kiếm"
             >
-              <div className="m-the-dm-trai">
-                <span className="m-the-dm-ten">{r.ten || r.ma}</span>
-                {r.ma && <span className="m-the-dm-ma">Mã: {r.ma}</span>}
-              </div>
-              <div className="m-the-dm-phai">
-                {giaTriSo !== undefined && (
-                  <span className="m-the-dm-so">
-                    {typeof giaTriSo === 'number'
-                      ? `${money(giaTriSo)} đ`
-                      : String(giaTriSo)}
-                  </span>
-                )}
-                {laLyDo && r.dung === 'Chi tiền' ? (
-                  <label
-                    className="m-dm-tich-cp"
-                    onClick={e => e.stopPropagation()}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={Boolean(r.chiPhi)}
-                      aria-label={`Là chi phí ${r.ten}`}
-                      onChange={e => {
-                        e.stopPropagation()
-                        doiChiPhi(r, e.target.checked)
-                      }}
-                    />
-                    <span>Là chi phí</span>
-                  </label>
-                ) : (
-                  !cfg.dsChungTu && (
-                    <span className={`m-ct-chip ${r._tt === 0 ? 'dim' : 'ok'}`}>
-                      {r._tt === 0 ? 'Ngừng dùng' : 'Đang dùng'}
-                    </span>
-                  )
-                )}
-              </div>
+              <Icon n="x" className="ic sm" />
+            </button>
+          )}
+        </div>
+
+        {/* Danh sách thẻ trắng */}
+        <div className="m-dm-ds-v2">
+          {rows.length === 0 ? (
+            <div className="m-the-trang m-ch-trong" style={{ textAlign: 'center', padding: '32px 16px' }}>
+              <p className="muted">Không có bản ghi phù hợp</p>
             </div>
-          )
-        }}
-      />
+          ) : (
+            rows.map((r, i) => (
+              <div
+                key={`${String(r.id ?? r.ma ?? r.ten ?? '')}_${i}`}
+                className="m-the-trang m-the-dm-v2"
+                onClick={() => {
+                  if (laLyDo) setXemLyDo(r)
+                  else if (laPttt) setXemPttt(r)
+                  else { setEdit(r); setDienSan(undefined) }
+                }}
+                role="button"
+                tabIndex={0}
+              >
+                <div className="m-the-dm-v2-trai">
+                  <div className="m-the-dm-v2-dong-chinh">
+                    <span className="m-the-dm-v2-stt">{i + 1}. </span>
+                    <b className="m-the-dm-v2-ten">{r.ten || r.ma}</b>
+                    {r.ma && <span className="m-the-dm-v2-ma"> - {r.ma}</span>}
+                  </div>
+                  <div className="m-the-dm-v2-dong-phu">
+                    {laHangHoa
+                      ? `Đơn vị tính chính: ${r.dvt || 'Cái'}`
+                      : (r.nhom ? `Nhóm: ${r.nhom}` : r.dvt ? `ĐVT: ${r.dvt}` : (r.mst ? `MST: ${r.mst}` : ''))}
+                  </div>
+                </div>
+                <div className="m-the-dm-v2-phai">
+                  <Icon n="chevr" className="ic sm m-the-dm-v2-chevron" />
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Nút nổi góc dưới: Đồng bộ FABi (trái) và + (phải) */}
+        <div className="m-dm-noi-day">
+          <button
+            type="button"
+            className="m-btn-fabi-float"
+            onClick={() => toast(cfg.nutPhu?.bao ?? 'Đã đồng bộ từ FABi')}
+          >
+            <img src="/logo-fabi.png" alt="FABi" className="logo-fabi-btn" />
+            <span>Đồng bộ FABi</span>
+          </button>
+
+          {choThem && (
+            <button
+              type="button"
+              className="m-btn-plus-float"
+              onClick={() => { setEdit({}); setDienSan(undefined) }}
+              aria-label={cfg.them ?? 'Thêm mới'}
+            >
+              <Icon n="plus" className="ic" />
+            </button>
+          )}
+        </div>
+
+        {/* Sheet chọn trạng thái */}
+        {moChonTrangThai && (
+          <MChon
+            mo={moChonTrangThai}
+            onDong={() => setMoChonTrangThai(false)}
+            tieuDe="Chọn trạng thái"
+            ds={[
+              { k: 'hd', ten: 'Đang hoạt động' },
+              { k: 'ngung', ten: 'Không hoạt động' },
+              { k: '', ten: 'Tất cả' },
+            ]}
+            chon={locTrangThai}
+            onChon={k => {
+              setLocTrangThai(k as 'hd' | 'ngung' | '')
+              setMoChonTrangThai(false)
+            }}
+          />
+        )}
+      </div>
       {edit && (
         <MFormDm
           sc={sc}

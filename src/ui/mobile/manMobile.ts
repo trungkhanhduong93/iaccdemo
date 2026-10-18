@@ -27,12 +27,14 @@ import { MChiPhiThang } from './MChiPhiThang'
 import { MLichSuQuy } from './MLichSuQuy'
 import { MCcdc } from './MCcdc'
 import { MKhoaSo } from './MKhoaSo'
+import { MChiPhiNvl } from './MChiPhiNvl'
 
 // Bảng riêng theo mod.key + '/' + sc.slug
 const BANG_RIENG: Record<string, ComponentType<ScreenProps>> = {
   'trang-chu/tong-quan': MTrangChu,
   'trang-chu/ban-lam-viec': MTrangChu,
   'trang-chu/chi-phi-thang': MChiPhiThang,
+  'trang-chu/chi-phi-nvl': MChiPhiNvl,
   'trang-chu/lich-su-quy': MLichSuQuy,
 }
 
@@ -100,6 +102,7 @@ export function manMobile(sc: ScreenDef, mod: ModuleDef): ComponentType<ScreenPr
   // T240: Hai màn cho gói Free (Chi phí trong tháng, Lịch sử thu chi)
   if (mod.key === 'trang-chu') {
     if (sc.slug === 'chi-phi-thang') return MChiPhiThang
+    if (sc.slug === 'chi-phi-nvl') return MChiPhiNvl
     if (sc.slug === 'lich-su-quy') return MLichSuQuy
   }
 

@@ -1,17 +1,17 @@
 import { useMemo, useState, type FC, type ReactNode } from 'react'
 import { Navigate, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
-import type { ScreenProps } from '../../modules/types'
+import type { Row, ScreenProps } from '../../modules/types'
 import { duongDan } from '../../app/registry'
 import { cuaHangHienTai, useSession } from '../../app/session'
 import { anNgoaiGoi, kieuGhiSo } from '../../app/plan'
-import { docNgay, trongKhoang } from '../ChonNgay'
+import { docNgay, khoangThang, trongKhoang } from '../ChonNgay'
 import { money, rutGonSo } from '../format'
 import { dsChipTT, khopChipTT } from '../LocNangCao'
 import { chieuTien, dauTien, lopChieu } from './chieuTien'
 import { TT_CT, dongCua } from '../generic/gen'
 import { ttTienTheoTra } from '../generic/daXoa'
-import { TT_TIEN, theoLoai } from '../generic/nhom'
-import { ChungTuForm } from '../generic/ChungTuForm'
+import { boO, nhomCua, theoLoai, TT_TIEN } from '../generic/nhom'
+import { ChungTuForm, lyMacDinh } from '../generic/ChungTuForm'
 import { useDongChungTu } from '../generic/VoucherScreen'
 import { useDsPhieuDcn } from '../../modules/kho/BangDieuChuyen'
 import { useDsPhieuSx } from '../../modules/kho/BangSanXuat'
@@ -72,27 +72,53 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
   const { cfg, rows: rowsGoc } = useDongChungTu(sc, mod)
   const rowsDcn = useDsPhieuDcn(cfg.dieuChuyen ?? 'xdc')
   const rowsSx = useDsPhieuSx(cfg.sanXuat ?? 'xsc')
-  const rows = cfg.dieuChuyen ? rowsDcn : cfg.sanXuat ? rowsSx : rowsGoc
+  const rowsGocChung = cfg.dieuChuyen ? rowsDcn : cfg.sanXuat ? rowsSx : rowsGoc
+  const rows = useMemo(() => {
+    if (mod.key !== 'tien') return rowsGocChung
+    return rowsGocChung.map((r): Row => {
+      const loaiK = cfg.loai?.find(x => x.k === r.loai)?.k ?? cfg.loai?.[0]?.k
+      const cfgDong = theoLoai(cfg, loaiK)
+      const oLy = boO(nhomCua(mod.key, cfgDong, loaiK), cfgDong).a.find(o => o.k === 'ly')
+      return { ...r, lyDo: !oLy ? '' : r._lyDo ? String(r._lyDo) : lyMacDinh(oLy.ds ?? [], String(r.dienGiai ?? '')) }
+    })
+  }, [rowsGocChung, mod.key, cfg])
 
-  const ghi = kieuGhiSo(s.goi) !== 'khong'
+  const ghi = kieuGhiSo(s.goi) !== 'khong' && s.goi !== 'F'
   const cnChon = cuaHangHienTai(s)
-
-  // Bộ lọc nâng cao
-  const [locMo, setLocMo] = useState(false)
-  const [locVal, setLocVal] = useState<GtLocMobile>(MAC_DINH_LOC_MOBILE)
-
-  // Loại chứng từ (với màn nhiều loại)
-  const [loaiChon, setLoaiChon] = useState<string>(() => (cfg.dieuChinh ? (cfg.loai?.[0]?.k ?? '') : ''))
 
   // Chip trạng thái
   // ?tt=nhap từ mục Chứng từ chưa ghi sổ ở trang chủ thì bật sẵn chip đó
   const [sp] = useSearchParams()
   const [chipTT, setChipTT] = useState(() => sp.get('tt') ?? 'all')
 
+  // Bộ lọc nâng cao (T394: đọc tham số ?lyDo= và ?thang=)
+  const [locMo, setLocMo] = useState(false)
+  const [locVal, setLocVal] = useState<GtLocMobile>(() => {
+    const khoiTao: GtLocMobile = { ...MAC_DINH_LOC_MOBILE }
+    const thangUrl = sp.get('thang')
+    if (thangUrl) {
+      const [namStr, thangStr] = thangUrl.split('-')
+      const nam = Number(namStr)
+      const th = Number(thangStr)
+      if (nam && th >= 1 && th <= 12) {
+        khoiTao.thoiGian = 'tuy-chon'
+        khoiTao.khoangNgay = khoangThang(th, nam)
+      }
+    }
+    const lyDoUrl = sp.get('lyDo')
+    if (lyDoUrl) {
+      khoiTao.lyDo = [lyDoUrl]
+    }
+    return khoiTao
+  })
+
+  // Loại chứng từ (với màn nhiều loại)
+  const [loaiChon, setLoaiChon] = useState<string>(() => (cfg.dieuChinh ? (cfg.loai?.[0]?.k ?? '') : ''))
+
   // Chọn loại khi bấm thêm mới
   const [moChonLoai, setMoChonLoai] = useState(false)
 
-  // Danh sách đối tượng, nguồn, kho cho bộ lọc
+  // Danh sách đối tượng, nguồn, kho, lý do cho bộ lọc
   const dsDoiTuong = useMemo(
     () => [...new Set(rows.map(r => String(r.doiTuong ?? '')).filter(Boolean))].sort(),
     [rows],
@@ -105,6 +131,10 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
     const raw = [...new Set(rows.flatMap(r => ((r._khoDs as string[] | undefined) ?? (r.kho ? [String(r.kho)] : []))))]
     return raw.filter(Boolean).sort()
   }, [rows])
+  const dsLyDo = useMemo(
+    () => mod.key === 'tien' ? [...new Set(rows.map(r => String(r.lyDo ?? '')).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'vi')) : [],
+    [rows, mod.key],
+  )
 
   // Lọc sơ bộ (thời gian, cửa hàng, loại, bộ lọc nâng cao)
   const kn = tinhKhoangNgay(locVal.thoiGian, locVal.khoangNgay)
@@ -143,6 +173,10 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
       if (locVal.kho && locVal.kho.length > 0) {
         const khoDs = (r._khoDs as string[] | undefined) ?? (r.kho ? [String(r.kho)] : [])
         if (!khoDs.some(k => locVal.kho.includes(k))) return false
+      }
+      // 7. Lý do nghiệp vụ từ bộ lọc (T394)
+      if (locVal.lyDo && locVal.lyDo.length > 0) {
+        if (!locVal.lyDo.includes(String(r.lyDo ?? ''))) return false
       }
       return true
     })
@@ -524,7 +558,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
           return text.includes(q.toLowerCase())
         }}
         timPlaceholder="Số chứng từ, đối tượng, diễn giải..."
-        chips={chips}
+        chips={ghi ? chips : []}
         chipChon={chipTT}
         onChipChon={setChipTT}
         onMoLoc={() => setLocMo(true)}
@@ -577,7 +611,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
             >
               <div className="m-the-ct-hang1">
                 <span className="m-the-ct-so">{r.so}</span>
-                <span className={`m-the-ct-tag ${ttCls}`}>{ttNhan}</span>
+                {ghi && <span className={`m-the-ct-tag ${ttCls}`}>{ttNhan}</span>}
               </div>
               <div className="m-the-ct-hang2">
                 <span className="m-the-ct-dt">{doiTuongOrCn}</span>
@@ -604,6 +638,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
         nhanDoiTuong={cfg.nhan ?? 'Đối tượng'}
         dsNguon={dsNguon}
         dsKho={dsKho}
+        dsLyDo={dsLyDo}
       />
 
       {/* Tấm trượt chọn loại phiếu khi thêm mới */}

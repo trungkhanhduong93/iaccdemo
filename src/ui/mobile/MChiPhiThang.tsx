@@ -18,10 +18,11 @@ export function MChiPhiThang(_: ScreenProps) {
   const cp = (ten: string) => d.coCauCp.find(x => x.l === ten)?.v ?? 0
   const luong = cp('Lương nhân sự')
   const matBang = cp('Thuê mặt bằng')
+  const thangStr = `2026-${String(thang).padStart(2, '0')}`
   const ds = [
-    { ly: 'Thanh toán tiền lương', phu: 'Lương nhân viên bếp, phục vụ, quản lý', v: luong, icon: 'users' },
-    { ly: 'Chi tiền thuê nhà', phu: 'Thuê mặt bằng các cửa hàng', v: matBang, icon: 'cuahang' },
-    { ly: 'Chi phí khác', phu: 'Điện, nước, gas, chi khác, chi phí tài chính', v: cpThang - luong - matBang, icon: 'cashout' },
+    { ma: 'CHI27', ly: 'Thanh toán tiền lương', phu: 'Lương nhân viên bếp, phục vụ, quản lý', v: luong, icon: 'users' },
+    { ma: 'CHI14', ly: 'Chi tiền thuê nhà', phu: 'Thuê mặt bằng các cửa hàng', v: matBang, icon: 'cuahang' },
+    { ma: 'CHI08', ly: 'Chi phí khác', phu: 'Điện, nước, gas, chi khác, chi phí tài chính', v: cpThang - luong - matBang, icon: 'cashout' },
   ].filter(x => x.v !== 0 && LY_CHI_PHI.includes(x.ly)).sort((a, b) => b.v - a.v)
 
   return (
@@ -38,7 +39,7 @@ export function MChiPhiThang(_: ScreenProps) {
         {ds.map(x => (
           <Link
             key={x.ly}
-            to="/app/tien/2-1-1"
+            to={`/app/tien/2-1-1?lyDo=${encodeURIComponent(x.ly)}&thang=${encodeURIComponent(thangStr)}`}
             className="m-free-cpt-dong"
             title={`Xem phiếu chi ${x.ly.toLowerCase()}`}
           >

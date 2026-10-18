@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import type { Row, ScreenProps } from '../../modules/types'
 import { donViHienTai, useSession, type CnThem, type Session } from '../../app/session'
 import { CUA_HANG, DON_VI } from '../../data/mock'
-import { HopThemCuaHang } from '../../modules/danh-muc/DanhMucCuaHang'
+import { MThemCuaHangFabi } from './MThemCuaHangFabi'
 import { MDanhSach } from './MDanhSach'
 import { Icon } from '../Icon'
 import { Select } from '../Dropdown'
@@ -112,7 +112,7 @@ export const MCuaHang: FC<ScreenProps> = () => {
         )}
       />
 
-      {moThem && <HopThemCuaHang onDong={() => setMoThem(false)} onLenSo={lenSo} />}
+      {moThem && <MThemCuaHangFabi onDong={() => setMoThem(false)} onLenSo={lenSo} />}
 
       {xem && (
         <div className="m-form-dm m-cn-ct-hop">

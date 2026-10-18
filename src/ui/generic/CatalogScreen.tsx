@@ -85,11 +85,55 @@ export function CatalogScreen({ sc }: ScreenProps) {
 
   // Danh sách, cột và bảng ghi nhớ lại: mở panel hay gõ trong panel không vẽ lại cả bảng danh sách phía sau (T81)
   const nhoms = useMemo(() => cfg.nhomLoc ? [...new Set(all.map(r => r[cfg.nhomLoc!]))] : [], [all])
+  const laHangHoa = sc.code === '1.2' || sc.slug === 'hang-hoa' || sc.slug === '1-2'
+  const coTrangThai = !cfg.dsChungTu
+
+  const [locTrangThai, setLocTrangThai] = useState<'hd' | 'ngung' | ''>('hd')
+  const [tabPhanLoai, setTabPhanLoai] = useState<'tat-ca' | 'da-phan-loai' | 'chua-phan-loai'>('tat-ca')
+  const [chuaDongBo, setChuaDongBo] = useState(laHangHoa ? 3 : 0)
+
+  useEffect(() => {
+    setLocTrangThai('hd')
+    setTabPhanLoai('tat-ca')
+    setChuaDongBo(laHangHoa ? 3 : 0)
+  }, [sc, laHangHoa])
+
+  // Lọc theo trạng thái trước để tính số đếm tab
+  const allSauTrangThai = useMemo(() => {
+    if (!coTrangThai || !locTrangThai) return all
+    if (locTrangThai === 'hd') return all.filter(r => r._tt !== 0)
+    if (locTrangThai === 'ngung') return all.filter(r => r._tt === 0)
+    return all
+  }, [all, coTrangThai, locTrangThai])
+
+  const demTatCa = allSauTrangThai.length
+  const demDaPhanLoai = useMemo(() => allSauTrangThai.filter(r => Boolean(r.loai)).length, [allSauTrangThai])
+  const demChuaPhanLoai = useMemo(() => allSauTrangThai.filter(r => !r.loai).length, [allSauTrangThai])
+
+  const demDangHd = useMemo(() => all.filter(r => r._tt !== 0).length, [all])
+  const demKhongHd = useMemo(() => all.filter(r => r._tt === 0).length, [all])
+
   const [thamDau] = useSearchParams()   // ?tich=1 mở màn với ô tích lọc nhanh đã bật, vd Khoá sổ mở Quỹ tiền chưa map PTTT (T317)
   const [tichLoc, setTichLoc] = useState(thamDau.get('tich') === '1' || (cfg.tich?.macDinh ?? false))
   const [moHangLoat, setMoHangLoat] = useState(false)
   const khoaXoa = (r: Row) => String(cfg.dsChungTu?.cotSo ? r[cfg.dsChungTu.cotSo] : khoaDong(r))
-  const rows = useMemo(() => all.filter(r => !daXoaDm.has(khoaXoa(r)) && (!nhom || r[cfg.nhomLoc!] === nhom) && (!q || fold(Object.values(r).join(' ')).includes(fold(q))) && (!tichLoc || !cfg.tich || cfg.tich.loc(r))), [all, nhom, q, tichLoc, daXoaDm])
+  const rows = useMemo(() => {
+    return all.filter(r => {
+      if (daXoaDm.has(khoaXoa(r))) return false
+      if (nhom && r[cfg.nhomLoc!] !== nhom) return false
+      if (q && !fold(Object.values(r).join(' ')).includes(fold(q))) return false
+      if (tichLoc && cfg.tich && !cfg.tich.loc(r)) return false
+      if (coTrangThai && locTrangThai) {
+        if (locTrangThai === 'hd' && r._tt === 0) return false
+        if (locTrangThai === 'ngung' && r._tt !== 0) return false
+      }
+      if (laHangHoa) {
+        if (tabPhanLoai === 'da-phan-loai' && !r.loai) return false
+        if (tabPhanLoai === 'chua-phan-loai' && Boolean(r.loai)) return false
+      }
+      return true
+    })
+  }, [all, nhom, q, tichLoc, daXoaDm, coTrangThai, locTrangThai, laHangHoa, tabPhanLoai])
   const cols: Col[] = useMemo(() => [
     ...(cfg.stt ? [{ k: '_stt', t: 'STT', w: 60, c: true }] : []),
     ...cols0.map(c => {
@@ -162,7 +206,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
   const trangHt = Math.min(trang, Math.max(1, Math.ceil(rowsHien.length / coTrang)))
   const rowsTrang = useMemo(() => rowsHien.slice((trangHt - 1) * coTrang, trangHt * coTrang), [rowsHien, trangHt, coTrang])
   // Đổi danh mục, tìm, lọc thì về trang 1 (T153)
-  useEffect(() => { setTrang(1) }, [sc, q, nhom, tichLoc])
+  useEffect(() => { setTrang(1) }, [sc, q, nhom, tichLoc, locTrangThai, tabPhanLoai])
   const cong = (ds: Row[]) => Object.fromEntries((dsct?.cotCong ?? []).map(k => [k, ds.reduce((a, r) => a + (Number(r[k]) || 0), 0)]))
   // Dòng đang xem ở khung dưới: dòng đã chọn nếu còn trong danh sách, không thì dòng đầu
   const dangChon = (chon && rowsHien.find(r => r[cols0[0].k] === chon[cols0[0].k])) ?? rowsHien[0]
@@ -298,7 +342,19 @@ export function CatalogScreen({ sc }: ScreenProps) {
                   />
                 )}
                 {cfg.nutPhu && (
-                  cfg.nutPhu.chiIcon ? (
+                  cfg.nutPhu.logo ? (
+                    <button
+                      type="button"
+                      className="btn btn-fabi-dong-bo"
+                      onClick={() => {
+                        toast(cfg.nutPhu!.bao)
+                        if (laHangHoa) setChuaDongBo(0)
+                      }}
+                    >
+                      <img src={cfg.nutPhu.logo} alt="FABi" className="logo-fabi-btn" />
+                      <span>{cfg.nutPhu.nhan}</span>
+                    </button>
+                  ) : cfg.nutPhu.chiIcon ? (
                     <button
                       type="button"
                       className="nut-vuong"
@@ -306,7 +362,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
                       aria-label={cfg.nutPhu.nhan}
                       onClick={() => toast(cfg.nutPhu!.bao)}
                     >
-                      <Icon n={cfg.nutPhu.icon} className="ic sm" />
+                      <Icon n={cfg.nutPhu.icon ?? 'refresh'} className="ic sm" />
                     </button>
                   ) : (
                     <button
@@ -314,7 +370,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
                       className={`btn${choThem ? '' : ' pri'}`}
                       onClick={() => toast(cfg.nutPhu!.bao)}
                     >
-                      <Icon n={cfg.nutPhu.icon} className="ic sm" />{cfg.nutPhu.nhan}
+                      <Icon n={cfg.nutPhu.icon ?? 'refresh'} className="ic sm" />{cfg.nutPhu.nhan}
                     </button>
                   )
                 )}
@@ -322,6 +378,88 @@ export function CatalogScreen({ sc }: ScreenProps) {
               </div>
             }
           />
+        )}
+        {!dsct && coTrangThai && (
+          <div className="dm-thanh-trang-thai">
+            {locTrangThai !== '' && (
+              <div className="dm-hang-loc-nang-cao">
+                <span className="dm-loc-nc-nhan">Lọc nâng cao</span>
+                <span className="chip-loc-nc">
+                  Trạng thái: {locTrangThai === 'hd' ? 'Đang hoạt động' : 'Không hoạt động'}
+                  <button type="button" className="chip-x" onClick={() => setLocTrangThai('')} aria-label="Bỏ lọc trạng thái">×</button>
+                </span>
+                <button type="button" className="btn-xoa-loc-nc" onClick={() => setLocTrangThai('')}>Xoá lọc nâng cao</button>
+              </div>
+            )}
+            {laHangHoa ? (
+              <div className="dm-cum-tabs">
+                <button
+                  type="button"
+                  className={`dm-tab-nut${tabPhanLoai === 'tat-ca' ? ' on' : ''}`}
+                  onClick={() => setTabPhanLoai('tat-ca')}
+                >
+                  <span className="dm-tab-cham cham-xanh-duong" />
+                  <span>Tất cả</span>
+                  <span className="dm-tab-so">{demTatCa}</span>
+                </button>
+                <button
+                  type="button"
+                  className={`dm-tab-nut${tabPhanLoai === 'da-phan-loai' ? ' on' : ''}`}
+                  onClick={() => setTabPhanLoai('da-phan-loai')}
+                >
+                  <span className="dm-tab-cham cham-xanh-la" />
+                  <span>Đã phân loại</span>
+                  <span className="dm-tab-so">{demDaPhanLoai}</span>
+                </button>
+                <button
+                  type="button"
+                  className={`dm-tab-nut${tabPhanLoai === 'chua-phan-loai' ? ' on' : ''}`}
+                  onClick={() => setTabPhanLoai('chua-phan-loai')}
+                >
+                  <span className="dm-tab-cham cham-cam" />
+                  <span>Chưa phân loại</span>
+                  <span className="dm-tab-so">{demChuaPhanLoai}</span>
+                </button>
+              </div>
+            ) : (
+              <div className="dm-cum-tabs">
+                <button
+                  type="button"
+                  className={`dm-tab-nut${locTrangThai === 'hd' ? ' on' : ''}`}
+                  onClick={() => setLocTrangThai('hd')}
+                >
+                  <span className="dm-tab-cham cham-xanh-la" />
+                  <span>Đang hoạt động</span>
+                  <span className="dm-tab-so">{demDangHd}</span>
+                </button>
+                <button
+                  type="button"
+                  className={`dm-tab-nut${locTrangThai === 'ngung' ? ' on' : ''}`}
+                  onClick={() => setLocTrangThai('ngung')}
+                >
+                  <span className="dm-tab-cham cham-do" />
+                  <span>Không hoạt động</span>
+                  <span className="dm-tab-so">{demKhongHd}</span>
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+        {laHangHoa && chuaDongBo > 0 && (
+          <div className="dm-nhac-fabi-cam">
+            <Icon n="alert" className="ic sm" />
+            <span>Có {chuaDongBo} hàng hoá chưa đồng bộ từ FABi về.</span>
+            <button
+              type="button"
+              className="dm-link-dong-bo-fabi"
+              onClick={() => {
+                toast(cfg.nutPhu?.bao ?? `Đã đồng bộ ${chuaDongBo} hàng hoá từ FABi`)
+                setChuaDongBo(0)
+              }}
+            >
+              Bấm vào đây để đồng bộ
+            </button>
+          </div>
         )}
         {/* Dải cảnh báo trên bảng; không có nút riêng, chỉ sang nút thêm hàng loạt đang có số đếm ngay phía trên (T287) */}
         {canhBao && <DaiCanhBao cb={canhBao} />}
