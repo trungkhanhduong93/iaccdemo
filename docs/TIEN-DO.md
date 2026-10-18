@@ -4,13 +4,14 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T419.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T421.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T421 | Danh sách thẻ chi phí phân bổ: nút Ghi tăng mở thẳng form tạo thẻ mới như ban đầu, bỏ màn Ghi tăng từ các khoản chờ và dải cảnh báo khoản chờ (phiếu chi chờ phân bổ đã tự mở tạo thẻ từ T419) | dinhlanphuongipacc | Đang làm | `ccdc/index.ts`, `ccdc/the-phan-bo.tsx` |
 | T420 | Hộp Cột hiển thị (màn danh sách chứng từ): bỏ đoạn giải thích; gom nhóm chuyển vào hộp, mỗi dòng cột gom được có nút gom hiện số cấp, tối đa 5 cấp, áp khi bấm Xong; bỏ thanh Gom nhóm trên bảng, đang gom thì nút tuỳ chỉnh cột sáng | Trum | Đang làm | `LocNangCao.tsx`, `VoucherScreen.tsx`, cuối `app.css` (mục T420) |
 | T339 | Trang chủ Free máy tính, Tiến độ kiểm kê theo cửa hàng: hiện tối đa 4 cửa hàng cần chú ý (chưa kiểm, lệch nhiều trước), dòng Đã kiểm x/y cửa hàng, dòng Xem tất cả mở hộp danh sách đủ | dinhlanphuongipacc | Đang làm | Sửa `home/BaBaiToanFree.tsx`, `app.css` (mục cuối T339) |
 | T333 | Đổi chữ "map" thành "gán" khi nói về phương thức thanh toán và quỹ (Khoá sổ, Danh mục Quỹ tiền, Danh mục cửa hàng) | dinhlanphuongipacc | Dở dang | Đã đổi ở Khoá sổ, Quỹ tiền. Còn `DanhMucCuaHang.tsx` chờ PhuongXT xong T321. Xem [nhật ký](nhat-ky/2026-10-17-dinhlanphuongipacc-doi-map-thanh-gan.md) |
