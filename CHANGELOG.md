@@ -4,6 +4,11 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 18/10/2026
 
+- T391–T415 (điện thoại là chính): gói Free ẩn trạng thái ghi sổ ở danh sách chứng từ. Chi tiết đơn Xuất bán POS gọn lại, tổng tiền ở chân màn bấm bung, không còn che món. Phiếu mua in đậm số tổng.
+- Trang chủ Free: bấm lý do trong Chi phí hoạt động mở danh sách phiếu chi của lý do đó; vòng tồn quỹ màu tươi có nhãn; điện thoại nút Tạo quỹ cùng hàng Xem dòng tiền 13 tháng; thẻ Kết quả kinh doanh số tiền canh phải. Lịch sử thu chi làm lại kiểu app ngân hàng.
+- Danh mục: tab Tất cả, Đã phân loại, Chưa phân loại (Hàng hoá) hoặc Đang hoạt động, Không hoạt động; số điều kiện lọc trên icon phễu; bộ lọc nâng cao theo từng trường; nút Đồng bộ FABi chỉ ở Hàng hoá, Nhóm hàng hoá, Cửa hàng, Phương thức thanh toán; icon Hàng hoá, Nhóm hàng hoá, Phương thức thanh toán mới. Điện thoại có màn Thêm cửa hàng từ FABi.
+- Báo cáo điện thoại: icon phễu lọc; báo cáo dạng thẻ nền trắng; báo cáo Kho có mã báo cáo; Kết quả kinh doanh bấm dòng tổng thả dòng con; Bảng kê mua hàng gom theo nhà cung cấp, mặt hàng, phiếu; sổ TT152 dạng bảng dữ liệu. Nhập xuất tồn (web, điện thoại) lọc theo kho, bấm mã hàng mở Thẻ kho.
+- Điện thoại: Thiết lập gọn, nút Lưu sát đáy; Ghi tăng thẻ chi phí có ô tên rộng, chọn được ngày, màn tạo, sửa cùng giao diện màn xem thẻ.
 - T390: Trang chủ Free (máy tính), thẻ Kết quả kinh doanh gọn hơn: bỏ mô tả dưới Doanh thu, dòng mô tả Giá vốn, Chi phí hoạt động, Chi phí phân bổ ngắn lại, không còn bị cắt. Thêm nguyên vật liệu mới tại phiếu không còn hiện trùng mã.
 - T389: Kê khai thuế, Danh sách tờ khai dùng thanh lọc như các phân hệ khác, thêm lọc Trạng thái, Loại tờ khai.
 - T388: Thêm nguyên vật liệu mới ngay tại phiếu Mua hàng, Kiểm kê, thẻ Chi phí trả trước: hộp nhỏ chỉ có Mã hàng, Tên hàng, Đơn vị tính, Loại hàng hoá; loại cố định Nguyên vật liệu (mua hàng, kiểm kê) hoặc Khác (Công cụ dụng cụ) (chi phí trả trước), đều theo dõi tồn kho.
