@@ -4,6 +4,8 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 18/10/2026
 
+- T422 (điện thoại): Gỡ hoàn toàn chế độ tối (dark mode) khỏi thẻ Kết quả kinh doanh và các thẻ trang chủ, ép cố định theme sáng đồng bộ toàn hệ thống kể cả khi máy bật chế độ tối.
+
 - T434 (điện thoại): Màn danh mục làm lại theo mẫu AMIS/FABi: bỏ thuế suất ngoài card hàng hoá; nút Đồng bộ FABi chuyển thành nút nổi góc dưới bên trái màu cam; nút lọc icon phễu trên thanh tiêu đề góc phải; hàng tab Đang hoạt động / Ngừng hoạt động (danh mục thường) và tab phân loại Tất cả / Đã phân loại / Chưa phân loại kèm chip trạng thái (Hàng hoá); ô tìm kiếm cố định chiếm trọn chiều ngang; nút Thêm mới dạng tròn FAB ở góc dưới phải.
 
 - T428: Hộp Cột hiển thị: thêm dòng tiêu đề ngắn cố định phía trên các cột nút (Gom nhóm, Đóng băng, Hiện), chữ canh thẳng cột với nút bên dưới.
