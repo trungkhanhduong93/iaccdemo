@@ -636,7 +636,7 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
       // các khoản theo món đã lên bảng chi tiết; dải đáy còn khoản của cả đơn và Tổng tiền (T106)
       day={<DaiTong tong={tong} muc={[]} tren={[...(hkd ? [['Giảm thuế GTGT', -giamThue] as [string, number]] : []), ['Phiếu giảm giá', phieuGiam ? -phieuGiam : 0]]} />}   // Phiếu giảm giá thành hàng ngay trên Tổng tiền
       giua={<span className="fsf-tt xem">Chi tiết phiếu <b>{row.so}</b></span>}
-      meta={<><St k={cTt}>{tTt}</St><span className="src">FABi</span><span className="chip info"><Icon n="store" className="ic sm" />{row.cn}</span></>}
+      meta={<><St k={cTt}>{tTt}</St><span className="src">FABi</span><span className="chip info"><Icon n="cuahang" className="ic sm" />{row.cn}</span></>}
       // Tuỳ chỉnh giao diện: nút vuông nhỏ ở góc trên phải như form chứng từ khác (T297)
       phai={<>
         <button type="button" className={`nut-vuong ds-nut-cot${hopCot ? ' on' : ''}`} onClick={() => setHopCot(true)}

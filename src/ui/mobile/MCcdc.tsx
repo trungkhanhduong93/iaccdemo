@@ -1,5 +1,5 @@
 import { useMemo, useState, type FC } from 'react'
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import type { Row, ScreenProps } from '../../modules/types'
 import { cuaHangHienTai, useSession } from '../../app/session'
 import { hienMan, laBaoCao } from '../../app/registry'
@@ -35,6 +35,8 @@ const THE_MAU_BASE = [
 type TheItem = (typeof THE_MAU_BASE)[0] & {
   da?: number
   con?: number
+  het?: boolean
+  ngayPb?: string
   ttCls?: string
   ttNhan?: string
 }
@@ -64,6 +66,9 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
 
   const [theList, setTheList] = useState(THE_MAU_BASE)
   const [theXem, setTheXem] = useState<TheItem | null>(null)
+  const [tabThe, setTabThe] = useState<'chitiet' | 'lichpb' | 'lichsu'>('chitiet')
+  const [theSuaId, setTheSuaId] = useState<string | null>(null)
+  const [moMenuMore, setMoMenuMore] = useState(false)
   const [moChonCn, setMoChonCn] = useState(false)
   const [moGhiTang, setMoGhiTang] = useState(() => Boolean(tuPhieu || sp.get('moi') === 'the'))
   const [cnGhiTang, setCnGhiTang] = useState<string>(() => tuPhieu?.cn || cnChon?.ten || 'Phố Mây Lê Lợi')
@@ -190,6 +195,24 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
       toast('Số tháng phân bổ phải lớn hơn 0')
       return
     }
+    if (theSuaId) {
+      setTheList(prev => prev.map(t => t.soThe === theSuaId ? {
+        ...t,
+        loai: ftLoai,
+        ten: ftTen.trim(),
+        gt: valGt,
+        ky: valKy,
+        ngay: ftNgay,
+        ngayPb: ftNgayPb,
+        cn: cnGhiTang || t.cn,
+        dong: t.dong?.length ? t.dong.map((d, i) => i === 0 ? { ...d, ten: ftTen.trim(), gt: valGt, ky: valKy, dg: valGt, ngayPb: ftNgayPb } : d) : [{ ma: 'CPTT.0001', ten: ftTen.trim(), gt: valGt, ky: valKy, sl: 1, dg: valGt, ngayPb: ftNgayPb }],
+      } : t))
+      toast(`Đã cập nhật thẻ ${theSuaId}`)
+      setTheSuaId(null)
+      setMoGhiTang(false)
+      setFtTen('')
+      return
+    }
     const sttMoi = theList.length + 1
     const soTheMoi = soTheKeTiep(theList.map(t => t.soThe), 'the', ftNgay) || `TPB2610-${String(sttMoi).padStart(4, '0')}`
     const theMoi = {
@@ -238,7 +261,7 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
             <div
               key={`${r.soThe}_${i}`}
               className="m-the-ct"
-              onClick={() => setTheXem(r)}
+              onClick={() => { setTheXem(r); setTabThe('chitiet') }}
               role="button"
               tabIndex={0}
             >
@@ -322,7 +345,7 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
               <button
                 type="button"
                 className="m-nut-back"
-                onClick={() => setMoGhiTang(false)}
+                onClick={() => { setMoGhiTang(false); setTheSuaId(null) }}
                 aria-label="Quay lại"
                 title="Quay lại"
               >
@@ -331,7 +354,7 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
                 </svg>
               </button>
             </div>
-            <h1 className="m-thanh-tren-tieu-de">Ghi tăng thẻ chi phí</h1>
+            <h1 className="m-thanh-tren-tieu-de">{theSuaId ? `Sửa thẻ ${theSuaId}` : 'Ghi tăng thẻ chi phí'}</h1>
             <div className="m-thanh-tren-phai" />
           </header>
 
@@ -340,7 +363,7 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
               {/* Cửa hàng */}
               <div className="m-gt-dong">
                 <span className="m-gt-nhan">
-                  <Icon n="store" className="ic sm m-lp-dong-ic" kieu="net" />
+                  <Icon n="cuahang" className="ic sm m-lp-dong-ic" />
                   Cửa hàng
                 </span>
                 <span className="m-gt-tri">{cnGhiTang || 'Phố Mây Lê Lợi'}</span>
@@ -477,7 +500,7 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
             <button
               type="button"
               className="m-loc-btn-reset"
-              onClick={() => setMoGhiTang(false)}
+              onClick={() => { setMoGhiTang(false); setTheSuaId(null) }}
             >
               Huỷ
             </button>
@@ -486,109 +509,339 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
               className="m-loc-btn-apply"
               onClick={handleLuuGhiTang}
             >
-              Tạo thẻ
+              {theSuaId ? 'Lưu thay đổi' : 'Tạo thẻ'}
             </button>
           </div>
         </div>
       )}
 
-      {/* ── MÀN CHI TIẾT THẺ (DÙNG LỚP m-*, KHÔNG TRÀN NGANG Ở 390PX) ── */}
-      {theXem && (
-        <div className="m-man-toan-man">
-          <header className="m-thanh-tren">
-            <div className="m-thanh-tren-trai">
+      {/* ── MÀN CHI TIẾT THẺ PHÂN BỔ MẪU A (T365) ── */}
+      {theXem && (() => {
+        const tongKy = theXem.ky || theXem.dong?.[0]?.ky || 12
+        const gtTong = theXem.gt || 0
+        const daTong = theXem.da !== undefined ? theXem.da : 0
+        const conTong = theXem.con !== undefined ? theXem.con : Math.max(0, gtTong - daTong)
+        const moiKy = tongKy > 0 ? Math.round(gtTong / tongKy) : 0
+        const daKy = moiKy > 0 ? Math.min(tongKy, Math.round(daTong / moiKy)) : 0
+        const phanTram = gtTong > 0 ? Math.min(100, Math.round((daTong / gtTong) * 100)) : 0
+        const laHet = conTong <= 0 || theXem.het || theXem.ttNhan === 'Hết phân bổ'
+        const ngayBdThe = theXem.ngayPb || theXem.dong?.[0]?.ngayPb || theXem.ngay || '01/01/2026'
+
+        const mMatch = ngayBdThe.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/)
+        const dsKy = mMatch && tongKy > 0 ? Array.from({ length: tongKy }, (_, i) => {
+          const cuoi = new Date(+mMatch[3], +mMatch[2] - 1 + i + 1, 0)
+          const dStr = `${String(cuoi.getDate()).padStart(2, '0')}/${String(cuoi.getMonth() + 1).padStart(2, '0')}/${cuoi.getFullYear()}`
+          const kySo = cuoi.getFullYear() * 100 + (cuoi.getMonth() + 1)
+          const tien = i < tongKy - 1 ? moiKy : gtTong - moiKy * (tongKy - 1)
+          const daPb = kySo <= 202610
+          return { kyIdx: i + 1, ngay: dStr, tien, daPb }
+        }) : []
+
+        const handleBatDauSua = () => {
+          setTheSuaId(theXem.soThe)
+          setFtLoai(theXem.loai)
+          setFtTen(theXem.ten)
+          setFtGt(String(theXem.gt))
+          setFtKy(String(tongKy))
+          setFtNgay(theXem.ngay)
+          setFtNgayPb(ngayBdThe)
+          setCnGhiTang(theXem.cn)
+          setTheXem(null)
+          setMoGhiTang(true)
+        }
+
+        const handleSaoChepThe = () => {
+          const sttMoi = theList.length + 1
+          const soTheMoi = soTheKeTiep(theList.map(t => t.soThe), 'the', theXem.ngay) || `TPB2610-${String(sttMoi).padStart(4, '0')}`
+          const theMoi = {
+            ...theXem,
+            soThe: soTheMoi,
+            ten: `${theXem.ten} (Sao chép)`,
+            da: 0,
+            con: theXem.gt,
+            het: false,
+            ttNhan: 'Đang phân bổ',
+            ttCls: 'm-the-tag-dang',
+            dong: (theXem.dong || []).map(d => ({ ...d, da: 0, kyDa: 0 })),
+          }
+          setTheList(prev => [theMoi, ...prev])
+          toast(`Đã sao chép thẻ ${soTheMoi}`)
+          setMoMenuMore(false)
+          setTheXem(theMoi)
+        }
+
+        const handleXoaThe = () => {
+          setTheList(prev => prev.filter(t => t.soThe !== theXem.soThe))
+          toast(`Đã xoá thẻ ${theXem.soThe}`)
+          setMoMenuMore(false)
+          setTheXem(null)
+        }
+
+        return (
+          <div className="m-pb-man">
+            {/* Thanh đầu: nút back, tiêu đề là số thẻ */}
+            <header className="m-pb-thanh-dau">
               <button
                 type="button"
-                className="m-nut-back"
+                className="m-pb-btn-back"
                 onClick={() => setTheXem(null)}
                 aria-label="Quay lại"
               >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M19 12H5M12 19l-7-7 7-7" vectorEffect="non-scaling-stroke" />
-                </svg>
+                <Icon n="back" className="ic" />
+              </button>
+              <h1 className="m-pb-tieu-de">{theXem.soThe}</h1>
+              <span className="m-pb-thanh-dau-phai" />
+            </header>
+
+            <div className="m-pb-noi-dung">
+              {/* Thẻ tổng quan */}
+              <div className="m-pb-the m-pb-the-tong-quan">
+                <div className="m-pb-hang-chip">
+                  <span className="m-pb-chip-loai">{theXem.loai}</span>
+                  <span className={`m-pb-chip-tt ${laHet ? 'het' : 'dang'}`}>
+                    {laHet ? 'Hết phân bổ' : 'Đang phân bổ'}
+                  </span>
+                </div>
+                <div className="m-pb-ten-the">{theXem.ten}</div>
+                <div className="m-pb-dong-cn">
+                  <Icon n="cuahang" className="ic sm" />
+                  <span>{theXem.cn}</span>
+                </div>
+                <div>
+                  <div className="m-pb-nhan-gt">Giá trị thẻ</div>
+                  <div className="m-pb-so-gt">{money(gtTong)} đ</div>
+                </div>
+                <div>
+                  <div className="m-pb-thanh-tien-do-khung">
+                    <div className="m-pb-thanh-tien-do-ruot" style={{ width: `${phanTram}%` }} />
+                  </div>
+                  <div className="m-pb-tien-do-chu">
+                    <span>Đã phân bổ {daKy}/{tongKy} kỳ</span>
+                    <span>{phanTram}%</span>
+                  </div>
+                </div>
+                <div className="m-pb-luoi-stat">
+                  <div className="m-pb-o-stat da">
+                    <div className="m-pb-o-stat-nhan">Đã phân bổ</div>
+                    <div className="m-pb-o-stat-so da">{money(daTong)} đ</div>
+                  </div>
+                  <div className="m-pb-o-stat con">
+                    <div className="m-pb-o-stat-nhan">Còn lại</div>
+                    <div className="m-pb-o-stat-so con">{money(conTong)} đ</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Tab 3 nút dạng segmented */}
+              <div className="m-pb-tabs" role="tablist">
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={tabThe === 'chitiet'}
+                  className={`m-pb-tab-btn${tabThe === 'chitiet' ? ' on' : ''}`}
+                  onClick={() => setTabThe('chitiet')}
+                >
+                  Chi tiết
+                </button>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={tabThe === 'lichpb'}
+                  className={`m-pb-tab-btn${tabThe === 'lichpb' ? ' on' : ''}`}
+                  onClick={() => setTabThe('lichpb')}
+                >
+                  Lịch phân bổ
+                </button>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={tabThe === 'lichsu'}
+                  className={`m-pb-tab-btn${tabThe === 'lichsu' ? ' on' : ''}`}
+                  onClick={() => setTabThe('lichsu')}
+                >
+                  Lịch sử
+                </button>
+              </div>
+
+              {/* Tab 1: Chi tiết */}
+              {tabThe === 'chitiet' && (
+                <>
+                  <div className="m-pb-nhom">THÔNG TIN THẺ</div>
+                  <div className="m-pb-the m-pb-the-gon">
+                    <div className="m-pb-dong">
+                      <span className="n">Ngày ghi tăng</span>
+                      <span className="g">{theXem.ngay}</span>
+                    </div>
+                    <div className="m-pb-dong">
+                      <span className="n">Bắt đầu phân bổ</span>
+                      <span className="g">{ngayBdThe}</span>
+                    </div>
+                    <div className="m-pb-dong">
+                      <span className="n">Số tháng phân bổ</span>
+                      <span className="g">{tongKy} tháng</span>
+                    </div>
+                    <div className="m-pb-dong">
+                      <span className="n">Phân bổ mỗi kỳ</span>
+                      <span className="g">{money(moiKy)} đ</span>
+                    </div>
+                  </div>
+
+                  <div className="m-pb-nhom">MỤC PHÂN BỔ ({theXem.dong?.length || 1})</div>
+                  {(theXem.dong && theXem.dong.length > 0 ? theXem.dong : [{ ma: theXem.soThe, ten: theXem.ten, gt: theXem.gt, sl: 1, dg: theXem.gt, dvt: 'Bộ' }]).map((d: DongPb, idx: number) => (
+                    <div key={idx} className="m-pb-the m-pb-muc-dong">
+                      <div className="m-pb-muc-hang1">
+                        <span className="m-pb-muc-ten">
+                          {d.ma && <span className="m-pb-muc-ma">{d.ma}</span>}
+                          {d.ten || theXem.ten}
+                        </span>
+                      </div>
+                      <div className="m-pb-muc-hang2">
+                        <span>{Number(d.sl) || 1} {d.dvt || 'Bộ'} × {money(Number(d.dg) || Number(d.gt) || 0)}</span>
+                        <b className="m-pb-muc-tong">{money(Number(d.gt) || 0)} đ</b>
+                      </div>
+                    </div>
+                  ))}
+
+                  <div className="m-pb-nhom">THÔNG TIN MUA</div>
+                  <div className="m-pb-the m-pb-the-gon">
+                    <div className="m-pb-dong">
+                      <span className="n">Số chứng từ</span>
+                      {theXem._goc ? (
+                        <Link to={theXem._goc} className="m-pb-link-so">
+                          {theXem.soCt}
+                        </Link>
+                      ) : (
+                        <span className="g">{theXem.soCt || '—'}</span>
+                      )}
+                    </div>
+                    <div className="m-pb-dong">
+                      <span className="n">Ngày chứng từ</span>
+                      <span className="g">{theXem.ngayCt || theXem.ngay}</span>
+                    </div>
+                    <div className="m-pb-dong">
+                      <span className="n">Ghi chú</span>
+                      <span className="g" style={{ fontWeight: 500 }}>
+                        {theXem.ghiChuCt || theXem.ten}
+                      </span>
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {/* Tab 2: Lịch phân bổ */}
+              {tabThe === 'lichpb' && (
+                <>
+                  <div className="m-pb-nhom">CÁC KỲ PHÂN BỔ ({dsKy.length})</div>
+                  <div className="m-pb-the m-pb-the-gon">
+                    {dsKy.map(k => (
+                      <div key={k.kyIdx} className="m-pb-ky-dong">
+                        <div>
+                          <div className="m-pb-ky-ten">Kỳ {k.kyIdx}</div>
+                          <div className="m-pb-ky-ngay">{k.ngay}</div>
+                        </div>
+                        <div className="m-pb-ky-phai">
+                          <div className="m-pb-ky-tien">{money(k.tien)} đ</div>
+                          <span className={`m-pb-ky-tag ${k.daPb ? 'da' : 'chua'}`}>
+                            {k.daPb ? 'Đã phân bổ' : 'Chưa phân bổ'}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+
+              {/* Tab 3: Lịch sử */}
+              {tabThe === 'lichsu' && (
+                <>
+                  <div className="m-pb-nhom">NHẬT KÝ THAO TÁC</div>
+                  <div className="m-pb-the m-pb-the-gon">
+                    <div className="m-pb-ls-dong">
+                      <div className="m-pb-ls-tren">{theXem.ngay} 08:30 · Trần Thu Hà</div>
+                      <div className="m-pb-ls-viec">Ghi tăng thẻ chi phí</div>
+                    </div>
+                    {daKy > 0 && (
+                      <div className="m-pb-ls-dong">
+                        <div className="m-pb-ls-tren">30/09/2026 17:00 · Hệ thống</div>
+                        <div className="m-pb-ls-viec">Phân bổ chi phí tự động kỳ 09/2026</div>
+                      </div>
+                    )}
+                    {theXem.soCt && (
+                      <div className="m-pb-ls-dong">
+                        <div className="m-pb-ls-tren">{theXem.ngayCt || theXem.ngay} 10:15 · Trần Thu Hà</div>
+                        <div className="m-pb-ls-viec">Tạo từ chứng từ {theXem.soCt}</div>
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Thanh dưới: nút "..." và nút cam "Sửa thẻ" */}
+            <div className="m-pb-day">
+              <button
+                type="button"
+                className="m-pb-btn-more"
+                aria-label="Thao tác khác"
+                onClick={() => setMoMenuMore(true)}
+              >
+                <Icon n="more" className="ic sm" />
+              </button>
+              <button
+                type="button"
+                className="m-pb-btn-sua"
+                onClick={handleBatDauSua}
+              >
+                Sửa thẻ
               </button>
             </div>
-            <h1 className="m-thanh-tren-tieu-de">Chi tiết {theXem.soThe}</h1>
-          </header>
 
-          <div className="m-than-form" style={{ paddingBottom: 80 }}>
-            {/* Thẻ tổng quan */}
-            <div className="m-the-ct" style={{ margin: '0 0 16px' }}>
-              <div className="m-the-ct-hang1">
-                <span className="m-the-ct-so">{theXem.soThe}</span>
-                <span className={`m-the-ct-tag ${theXem.ttCls}`}>{theXem.ttNhan}</span>
-              </div>
-              <div className="m-the-ct-hang2">
-                <span className="m-the-ct-dt" style={{ fontWeight: 600, fontSize: 16 }}>{theXem.ten}</span>
-              </div>
-              <div style={{ fontSize: 14, color: '#666', marginTop: 4 }}>
-                {theXem.loai} · {theXem.cn} · Ngày: {theXem.ngay}
-              </div>
-              <div className="m-the-ct-vach" />
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, textAlign: 'center' }}>
-                <div>
-                  <div style={{ fontSize: 12, color: '#888' }}>Giá trị</div>
-                  <b style={{ fontSize: 14, color: '#1a1a1a' }}>{money(theXem.gt)} đ</b>
-                </div>
-                <div>
-                  <div style={{ fontSize: 12, color: '#888' }}>Đã PB</div>
-                  <b style={{ fontSize: 14, color: '#0066cc' }}>{money(theXem.da ?? 0)} đ</b>
-                </div>
-                <div>
-                  <div style={{ fontSize: 12, color: '#888' }}>Còn lại</div>
-                  <b style={{ fontSize: 14, color: '#e65100' }}>{money(theXem.con ?? 0)} đ</b>
-                </div>
-              </div>
-            </div>
-
-            {/* Chi tiết phân bổ */}
-            <div style={{ marginBottom: 16 }}>
-              <h3 style={{ fontSize: 15, fontWeight: 700, margin: '0 0 8px', color: '#1a1a1a' }}>
-                Chi tiết các mục phân bổ ({theXem.dong?.length ?? 1})
-              </h3>
-              {theXem.dong?.map((d: DongPb, idx: number) => (
-                <div key={idx} className="m-the-ct" style={{ margin: '0 0 10px', padding: 12 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                    <b style={{ fontSize: 14, color: '#0066cc' }}>{d.ma || `Mục ${idx + 1}`}</b>
-                    <b style={{ fontSize: 14 }}>{money(d.gt as number)} đ</b>
+            {/* Menu thao tác khác */}
+            {moMenuMore && (
+              <div className="m-loc-overlay" onClick={() => setMoMenuMore(false)}>
+                <div className="m-loc-tam" onClick={e => e.stopPropagation()}>
+                  <div className="m-loc-dau">
+                    <h2 className="m-loc-tieu-de">Thao tác thẻ {theXem.soThe}</h2>
+                    <button
+                      type="button"
+                      className="m-loc-btn-dong"
+                      onClick={() => setMoMenuMore(false)}
+                      aria-label="Đóng"
+                    >
+                      <Icon n="x" className="ic sm" />
+                    </button>
                   </div>
-                  <div style={{ fontSize: 14, fontWeight: 500, color: '#333', marginBottom: 4 }}>
-                    {d.ten}
+                  <div className="m-loc-than">
+                    <div className="m-loc-ds-muc">
+                      <div className="m-loc-muc-dong" onClick={handleSaoChepThe}>
+                        <span style={{ marginRight: 10, color: '#0066cc', display: 'inline-flex' }}>
+                          <Icon n="copy" className="ic sm" />
+                        </span>
+                        <span className="m-loc-muc-ten">Sao chép thẻ này</span>
+                      </div>
+                      <div className="m-loc-muc-dong" onClick={handleXoaThe}>
+                        <span style={{ marginRight: 10, color: '#d0650a', display: 'inline-flex' }}>
+                          <Icon n="trash" className="ic sm" />
+                        </span>
+                        <span className="m-loc-muc-ten" style={{ color: '#d0650a' }}>Xoá thẻ này</span>
+                      </div>
+                    </div>
                   </div>
-                  <div style={{ fontSize: 13, color: '#777' }}>
-                    Phân bổ {d.ky as number} tháng · Bắt đầu: {String(d.ngayPb || theXem.ngay)}
+                  <div className="m-loc-day">
+                    <button
+                      type="button"
+                      className="m-loc-btn-reset"
+                      onClick={() => setMoMenuMore(false)}
+                    >
+                      Đóng
+                    </button>
                   </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Thông tin mua */}
-            {theXem.soCt && (
-              <div className="m-the-ct" style={{ margin: '0 0 16px', padding: 14 }}>
-                <h3 style={{ fontSize: 15, fontWeight: 700, margin: '0 0 8px', color: '#1a1a1a' }}>
-                  Thông tin mua gốc
-                </h3>
-                <div style={{ fontSize: 14, color: '#444', lineHeight: 1.6 }}>
-                  <div>Số chứng từ: <b>{theXem.soCt}</b></div>
-                  <div>Ngày chứng từ: {theXem.ngayCt}</div>
-                  <div>Ghi chú: {theXem.ghiChuCt}</div>
                 </div>
               </div>
             )}
           </div>
-
-          <div className="m-form-day">
-            <button
-              type="button"
-              className="m-loc-btn-apply"
-              style={{ width: '100%' }}
-              onClick={() => setTheXem(null)}
-            >
-              Đóng
-            </button>
-          </div>
-        </div>
-      )}
+        )
+      })()}
 
       {/* Sheet Báo cáo theo dõi */}
       <MBaoCaoTheoDoi

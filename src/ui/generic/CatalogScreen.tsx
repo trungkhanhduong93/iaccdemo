@@ -847,7 +847,7 @@ export function CatalogPanel({
             <div className="chon-cn-ds">
               {CUA_HANG.map(c => (
                 <button key={c.id} type="button" className="btn" onClick={() => set({ cuaHang: c.id })}>
-                  <Icon n="store" className="ic sm" />{c.ten}
+                  <Icon n="cuahang" className="ic sm" />{c.ten}
                 </button>
               ))}
             </div>
@@ -879,7 +879,7 @@ export function CatalogPanel({
             <>
               {(edit.cn ?? cnChon?.ten) && (
                 <span className="chip info" title={dangSua ? 'Cửa hàng lập thẻ, không sửa được' : 'Theo cửa hàng chọn trên thanh trên, không sửa được'}>
-                  <Icon n="store" className="ic sm" />{edit.cn ?? cnChon?.ten}
+                  <Icon n="cuahang" className="ic sm" />{edit.cn ?? cnChon?.ten}
                 </span>
               )}
             </>

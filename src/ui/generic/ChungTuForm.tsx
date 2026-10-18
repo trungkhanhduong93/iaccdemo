@@ -531,7 +531,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
           <div className="chon-cn-ds">
             {CUA_HANG.map(c => (
               <button key={c.id} type="button" className="btn" onClick={() => set({ cuaHang: c.id })}>
-                <Icon n="store" className="ic sm" />{c.ten}
+                <Icon n="cuahang" className="ic sm" />{c.ten}
               </button>
             ))}
           </div>
@@ -683,12 +683,12 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
             <span className={`src ${NGUON[row.nguon]?.[0] ?? 'tay'}`}>
               {NGUON[row.nguon]?.[1] ?? 'Thủ công'}
             </span>
-            {cuaHang && <span className="chip info" title="Cửa hàng lập chứng từ, không sửa được"><Icon n="store" className="ic sm" />{cuaHang}</span>}
+            {cuaHang && <span className="chip info" title="Cửa hàng lập chứng từ, không sửa được"><Icon n="cuahang" className="ic sm" />{cuaHang}</span>}
             {khoaKy && <span className="chip warn" title="Phiếu thuộc tháng đã khoá sổ: chỉ xem, không sửa, không xoá. Mở khoá ở màn Khoá sổ"><Icon n="lock" className="ic sm" />Đã khoá sổ</span>}
           </>
         ) : (
           <>
-            <span className="chip info" title="Theo cửa hàng chọn trên thanh trên, không sửa được"><Icon n="store" className="ic sm" />{cuaHang}</span>
+            <span className="chip info" title="Theo cửa hàng chọn trên thanh trên, không sửa được"><Icon n="cuahang" className="ic sm" />{cuaHang}</span>
           </>
         )
       }

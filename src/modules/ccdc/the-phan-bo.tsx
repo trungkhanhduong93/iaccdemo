@@ -221,7 +221,7 @@ function OThang({ v, ten, onDoi }: { v: unknown; ten: string; onDoi: (s: string)
 export const THE_PHAN_BO: CauHinhDM = {
   ten: 'thẻ chi phí phân bổ',
   moTa: 'Dùng cho các khoản chi phí cần phân bổ: Tài sản cố định, Công cụ dụng cụ, chi phí trả trước',
-  toanMan: { icon: 'tool' },
+  toanMan: { icon: 'phanbo' },
   // Tiện ích (T297): thẻ ghi tăng, thẻ dư đầu kỳ đều xoá được; chỉ thẻ dư đầu kỳ sao chép (giữ dòng, bỏ ngừng phân bổ, số thẻ đánh mới)
   tienIch: {
     xoa: () => true,
