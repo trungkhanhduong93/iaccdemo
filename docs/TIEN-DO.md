@@ -21,7 +21,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | T432 | Điện thoại, báo cáo S1a-HKD: làm lại bố cục chỉn chu như các báo cáo điện thoại đã duyệt | Trum | Chờ | `MSoTT152.tsx`, cuối `app.css`. Làm sau T426 |
 | T431 | Điện thoại: bấm quay lại bị lặp qua lại giữa 2 màn; back phải lùi đúng lịch sử, tới màn gốc thì dừng | Trum | Chờ | `src/ui/mobile/`, có thể `MobileShell.tsx`. Làm sau T426 |
 | T430 | Điện thoại, chi tiết Xuất bán POS: nút Đóng màu xanh chính, Thời gian xuất căn trái như các ô khác | Trum | Chờ | `MXuatBanPos.tsx` (trùng T425, làm sau khi T425 push), cuối `app.css` |
-| T428 | Hộp Cột hiển thị: thêm dòng tiêu đề ngắn trên các cột nút (Gom nhóm, Đóng băng, Hiện) để biết nút làm gì | Trum | Chờ | `LocNangCao.tsx`, cuối `app.css`. Làm sau T426 vì cùng sửa `app.css` |
+| T428 | Hộp Cột hiển thị: thêm dòng tiêu đề ngắn trên các cột nút (Gom nhóm, Đóng băng, Hiện) để biết nút làm gì | Trum | Đang làm | `LocNangCao.tsx`, cuối `app.css` |
 | T425 | Điện thoại, màn xem phiếu thu chi, mua hàng, kiểm kê, Xuất bán POS: thanh số phiếu sát mép trên, bỏ lề trái phải thừa; khoảng cách theo đúng màn xem thẻ chi phí phân bổ | Trum | Đang làm | `MXemPhieu.tsx`, `MXuatBanPos.tsx`, cuối `app.css` |
 | T424 | Điện thoại, màn xem phiếu thu, chi: ô Nguồn chứng từ (Thủ công, FABi) đưa từ thẻ tổng quan xuống thành dòng trong nhóm Thông tin phiếu; ô Quỹ ở thẻ tổng quan rộng hết hàng | Trum | Đang làm | `MXemPhieu.tsx`, cuối `app.css` |
 | T423 | Điện thoại, trang chủ Free khối Quỹ tiền: "Tất cả quỹ" nằm trên "Xem dòng tiền 13 tháng" ở cột phải, hai dòng cao bằng nút Tạo quỹ bên trái | Trum | Đang làm | `MTrangChuFree.tsx`, cuối `app.css` |
