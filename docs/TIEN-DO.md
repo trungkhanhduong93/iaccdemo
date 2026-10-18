@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T424 | Điện thoại, màn xem phiếu thu, chi: ô Nguồn chứng từ (Thủ công, FABi) đưa từ thẻ tổng quan xuống thành dòng trong nhóm Thông tin phiếu; ô Quỹ ở thẻ tổng quan rộng hết hàng | Trum | Đang làm | `MXemPhieu.tsx`, cuối `app.css` |
 | T423 | Điện thoại, trang chủ Free khối Quỹ tiền: "Tất cả quỹ" nằm trên "Xem dòng tiền 13 tháng" ở cột phải, hai dòng cao bằng nút Tạo quỹ bên trái | Trum | Đang làm | `MTrangChuFree.tsx`, cuối `app.css` |
 | T422 | Điện thoại thật bật giao diện tối thì thẻ trang chủ thành nền tối, lệch màu (luật dark mode thêm ở T404, T417). App chỉ dùng giao diện sáng: gỡ các khối `prefers-color-scheme: dark`, `[data-theme="dark"]` | Trum | Đang làm | `app.css` (gỡ khối T404, T417) |
 | T421 | Danh sách thẻ chi phí phân bổ: nút Ghi tăng mở thẳng form tạo thẻ mới như ban đầu, bỏ màn Ghi tăng từ các khoản chờ và dải cảnh báo khoản chờ (phiếu chi chờ phân bổ đã tự mở tạo thẻ từ T419) | dinhlanphuongipacc | Đang làm | `ccdc/index.ts`, `ccdc/the-phan-bo.tsx` |
