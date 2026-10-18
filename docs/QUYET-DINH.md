@@ -790,3 +790,5 @@ Trum chốt 17/10/2026 khi làm T352.
 
 - Bảng chọn ngày (`ChonKhoangNgay`) và hộp Bộ lọc nâng cao (`LocNangCao`) khi mở thả xuống từ thanh công cụ phải căn theo lề trái (`align="start"`), bung tràn sang phía bên phải.
 - Lý do: từ T349 và T351, thanh công cụ đưa bộ lọc và ô thời gian về phía bên trái. Nếu giữ `align="end"`, bảng chọn ngày (600px) và hộp lọc nâng cao (720px) sẽ tràn sang phía bên trái, che mất thanh bên (sidebar) và các ô lọc khác. Căn lề trái giúp hộp thả xuống nằm trọn trong vùng nội dung bảng dữ liệu.
+
+## QD73. Điện thoại thiết kế ở bề rộng 360px, thang cỡ chữ chung (đang soạn)

@@ -11,6 +11,8 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T427 | Web, các màn danh mục: chip trạng thái (Tất cả, Đã phân loại...) không dính sát viền trái; số dòng, nút tuỳ chỉnh cột, Excel xuống hàng dưới cùng hàng chip như danh sách chứng từ | Trum | Đang làm | `CatalogScreen.tsx`, có thể `HeThongTaiKhoan.tsx`. Không sửa `DanhMucCuaHang.tsx` (T321) |
+| T426 | Điện thoại, toàn app: hạ cỡ chữ theo thang chung (tiêu đề màn 17, tiêu đề khối 15, chữ chính 14, chữ phụ 12, tiền trong dòng 14 đậm, chip 10.5), thiết kế ở bề rộng 360px | Trum | Đang làm | Biến `--m-*`, mục cuối `app.css` (T426), có thể các file `src/ui/mobile/` trừ `MXemPhieu.tsx`, `MTrangChuFree.tsx`, `MXuatBanPos.tsx` (T422–T425) |
 | T425 | Điện thoại, màn xem phiếu thu chi, mua hàng, kiểm kê, Xuất bán POS: thanh số phiếu sát mép trên, bỏ lề trái phải thừa; khoảng cách theo đúng màn xem thẻ chi phí phân bổ | Trum | Đang làm | `MXemPhieu.tsx`, `MXuatBanPos.tsx`, cuối `app.css` |
 | T424 | Điện thoại, màn xem phiếu thu, chi: ô Nguồn chứng từ (Thủ công, FABi) đưa từ thẻ tổng quan xuống thành dòng trong nhóm Thông tin phiếu; ô Quỹ ở thẻ tổng quan rộng hết hàng | Trum | Đang làm | `MXemPhieu.tsx`, cuối `app.css` |
 | T423 | Điện thoại, trang chủ Free khối Quỹ tiền: "Tất cả quỹ" nằm trên "Xem dòng tiền 13 tháng" ở cột phải, hai dòng cao bằng nút Tạo quỹ bên trái | Trum | Đang làm | `MTrangChuFree.tsx`, cuối `app.css` |
