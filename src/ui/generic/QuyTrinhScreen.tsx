@@ -2,7 +2,7 @@
 // Bấm ô trên sơ đồ mở thẳng form chứng từ mới (đích có /moi) hoặc màn tương ứng. Ô ngoài gói hiện mờ, có khoá và nhãn gói.
 import { Fragment, useLayoutEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import type { CotQT, LanQT, NutQT, QuyTrinhDef, ScreenProps } from '../../modules/types'
+import type { BuocKyQT, CotQT, LanQT, NutKyQT, NutQT, QuyTrinhDef, ScreenProps } from '../../modules/types'
 import { MODULES, anPhanHeGoi, dich, hienMan, laBaoCao, maKhoa, moDuoc, nhanTab, phanHeKhoa, tenMan } from '../../app/registry'
 import { useSession, type Session } from '../../app/session'
 import { GOI, GOIS, anNgoaiGoi, minGoi, type Goi } from '../../app/plan'
@@ -33,6 +33,11 @@ export function QuyTrinhScreen({ mod }: ScreenProps) {
   const goc: QuyTrinhDef = s.goi === 'F' && goc0.raFree && goc1.hoiTu ? { ...goc1, hoiTu: { ...goc1.hoiTu, ra: goc0.raFree } } : goc1
   // Gói Free có sơ đồ luồng theo cột thì thay sơ đồ chung (T123)
   const luong = s.goi === 'F' && goc0.luongFree ? goc0.luongFree.map(c => ({ ...c, nut: c.nut.filter(hien) })).filter(c => c.nut.length) : null
+  // Gói Free có sơ đồ bước theo kỳ (mẫu C, T366): ưu tiên trên hoiTuFree, luongFree
+  const buocKy = s.goi === 'F' && goc0.buocKyFree ? goc0.buocKyFree.map(b => ({
+    ...b,
+    nut: b.nut.filter(hien)
+  })).filter(b => b.nut.length > 0) : null
   const qt: QuyTrinhDef = {
     ...goc,
     buoc: goc.buoc.filter(b => hien(b.chinh)).map(b => ({ ...b, tren: b.tren?.filter(hien), duoi: b.duoi?.filter(hien) })),
@@ -41,23 +46,42 @@ export function QuyTrinhScreen({ mod }: ScreenProps) {
       ra: { ...goc.hoiTu.ra, nut: goc.hoiTu.ra.nut.filter(hien) },
     },
   }
-  const nut = [...(luong ? luong.flatMap(c => c.nut) : qt.buoc.flatMap(b => [b.chinh, ...(b.tren ?? []), ...(b.duoi ?? [])])),
-    ...(qt.hoiTu ? [...qt.hoiTu.lan, qt.hoiTu.ra].flatMap(l => l.nut) : [])]
+  const nut = [
+    ...(buocKy ? buocKy.flatMap(b => b.nut) : luong ? luong.flatMap(c => c.nut) : qt.buoc.flatMap(b => [b.chinh, ...(b.tren ?? []), ...(b.duoi ?? [])])),
+    ...(!buocKy && qt.hoiTu ? [...qt.hoiTu.lan, qt.hoiTu.ra].flatMap(l => l.nut) : []),
+  ]
   const mo = nut.filter(n => moNut(n, s.goi).ok).length
   // cả phân hệ ngoài gói thì mời xem thử gói thấp nhất có phân hệ này
   const khoa = phanHeKhoa(mod, s.goi)
   const thapNhat = mod.screens.filter(sc => sc.code || sc.can).map(sc => minGoi(maKhoa(sc)!))
   const can = GOIS.find(g => thapNhat.includes(g))
-  const coForm = nut.some(n => n.di.includes('/moi'))
+  const coForm = nut.some(n => n.di.includes('/moi') || Boolean((n as NutKyQT).taoMoi))
+  const coCham = Boolean(buocKy && buocKy.some(b => b.nut.some(n => Boolean(n.chieu))))
+  const chuThich = coCham
+    ? (goc0.chuThichFree ?? (
+        ['kho', 'ban-hang'].includes(mod.key)
+          ? ['Hàng vào', 'Hàng ra', 'Điều chỉnh']
+          : ['tien', 'mua-hang'].includes(mod.key)
+            ? ['Tiền vào', 'Tiền ra', 'Nội bộ']
+            : null
+      ))
+    : null
 
   return (
     <div className="page wide qt">
-      <div className={`qt-top ${qt.hoiTu ? 'mot-cot' : ''}`}>
+      <div className={`qt-top ${(qt.hoiTu || buocKy) ? 'mot-cot' : ''}`}>
         <section className="card qt-card">
           <div className="qt-h">
             <h1>{s.goi === 'F' && goc0.tenFree ? goc0.tenFree : qt.ten}</h1>
             <span className="sub">{coForm ? 'Bấm vào ô để mở chứng từ' : 'Bấm vào ô để mở màn hình'}</span>
             <span className="grow" />
+            {chuThich && (
+              <div className="qt-ky-chu-giai-top" aria-label="Chú thích màu sắc">
+                <span className="qt-ky-cg-item"><i className="qt-ky-cham cham-vao" />{chuThich[0]}</span>
+                <span className="qt-ky-cg-item"><i className="qt-ky-cham cham-ra" />{chuThich[1]}</span>
+                {chuThich[2] && <span className="qt-ky-cg-item"><i className="qt-ky-cham cham-noi" />{chuThich[2]}</span>}
+              </div>
+            )}
             {!an && <span className="qt-dem">Gói {GOI[s.goi].ten} mở {mo}/{nut.length} nghiệp vụ</span>}
           </div>
           {s.goi === 'F' && goc0.moTaFree && <p className="qt-mo-ta">{goc0.moTaFree}</p>}
@@ -67,11 +91,12 @@ export function QuyTrinhScreen({ mod }: ScreenProps) {
               <button className="btn sm" onClick={() => set({ goi: can })}>Xem thử gói {GOI[can].ten}</button>
             </Note>
           )}
-          {qt.hoiTu ? <SoDoHoiTu lan={qt.hoiTu.lan} ra={qt.hoiTu.ra} goi={s.goi} modKey={mod.key} danhSo={qt.danhSo} hienLinkBaoCao={!qt.khongBaoCao && Boolean(qt.baoCao && qt.baoCao.length > 0)} />
+          {buocKy ? <SoDoKyFree buoc={buocKy} modKey={mod.key} goi={s.goi} hienLinkBaoCao={!qt.khongBaoCao && Boolean(qt.baoCao && qt.baoCao.length > 0)} />
+            : qt.hoiTu ? <SoDoHoiTu lan={qt.hoiTu.lan} ra={qt.hoiTu.ra} goi={s.goi} modKey={mod.key} danhSo={qt.danhSo} hienLinkBaoCao={!qt.khongBaoCao && Boolean(qt.baoCao && qt.baoCao.length > 0)} />
             : luong ? <SoDoLuong cot={luong} goi={s.goi} /> : <SoDo qt={qt} goi={s.goi} />}
         </section>
-        {/* Sơ đồ hội tụ đã có khối sổ sách, báo cáo ở cuối nên bỏ khung Báo cáo bên phải để khỏi trùng */}
-        {!qt.hoiTu && <BenPhai qt={qt} modKey={mod.key} goi={s.goi} cheDo={s.cheDo} session={s} />}
+        {/* Sơ đồ hội tụ hoặc bước theo kỳ đã có khối sổ sách, báo cáo ở cuối nên bỏ khung Báo cáo bên phải để khỏi trùng */}
+        {!(qt.hoiTu || buocKy) && <BenPhai qt={qt} modKey={mod.key} goi={s.goi} cheDo={s.cheDo} session={s} />}
       </div>
       {!(s.goi === 'F' && goc0.anDuoiFree) && <HangDuoi qt={qt} modKey={mod.key} goi={s.goi} cheDo={s.cheDo} session={s} />}
     </div>
@@ -515,3 +540,105 @@ function HangDuoi({ qt, modKey, goi, cheDo, session }: { qt: QuyTrinhDef; modKey
     </section>
   )
 }
+
+/** Sơ đồ quy trình bước theo kỳ (mẫu C gói Free, T366): 3-5 bước theo trục ngang, ô icon to, nút + lập nhanh */
+function SoDoKyFree({ buoc, modKey, goi, hienLinkBaoCao }: { buoc: BuocKyQT[]; modKey: string; goi: Goi; hienLinkBaoCao?: boolean }) {
+  const luoiCols = buoc.map(b => (b.rong ? '1.5fr' : '1fr')).join(' ')
+
+  return (
+    <div className="qt-ky">
+      <div className="qt-ky-luoi" style={{ gridTemplateColumns: luoiCols }}>
+        {buoc.map((b, idx) => {
+          const laCuoi = idx === buoc.length - 1
+          return (
+            <div key={b.ten} className={`qt-ky-cot ${b.rong ? 'rong' : ''}`}>
+              <div className="qt-ky-head">
+                <div className="qt-ky-head-top">
+                  <span className={`qt-ky-so ${b.rong ? 'active' : ''}`}>{idx + 1}</span>
+                  {!laCuoi && <div className="qt-ky-line-seg" aria-hidden />}
+                </div>
+                <div className="qt-ky-info">
+                  <div className="qt-ky-ten">{b.ten}</div>
+                  <div className="qt-ky-mo">{b.moTa}</div>
+                </div>
+              </div>
+              <div className={`qt-ky-ds-o ${b.rong ? 'luoi-hai-cot' : ''}`}>
+                {b.nut.map((n, nIdx) => (
+                  <ONutKy key={`${n.di || ''}-${n.ten}-${nIdx}`} n={n} goi={goi} />
+                ))}
+                {laCuoi && hienLinkBaoCao && !b.nut.some(n => n.di.includes('bao-cao')) && (
+                  <Link to={`/app/${modKey}/bao-cao`} className="qt-n qt-ky-all-bc">
+                    <span>Tất cả báo cáo</span>
+                    <Icon n="arrow" className="ic sm" />
+                  </Link>
+                )}
+              </div>
+              {b.ghiChu && <div className="qt-ky-ghi-chu">{b.ghiChu}</div>}
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+function ONutKy({ n, goi }: { n: NutKyQT; goi: Goi }) {
+  const x = moNut(n, goi)
+  const xTaoMoi = n.taoMoi ? moNut({ ...n, di: n.taoMoi }, goi) : null
+
+  if (!n.di) {
+    return (
+      <div className={`qt-ky-o-wrap ${n.rong ? 'rong' : ''}`}>
+        <span className={`qt-n tinh qt-ky-o ${n.tone ?? ''}`}>
+          <span className="qt-ky-o-t">
+            <span className="qt-ky-ic-wrap">
+              <Icon n={n.icon} className="ic" />
+            </span>
+            <span className="qt-ky-o-info">
+              <span className="qt-ky-o-ten">
+                {n.chieu && <i className={`qt-ky-cham cham-${n.chieu}`} aria-hidden />}
+                <span>{n.ten}</span>
+                {n.moTa && <span className="qt-ky-o-mo"> · {n.moTa}</span>}
+              </span>
+            </span>
+          </span>
+        </span>
+      </div>
+    )
+  }
+
+  return (
+    <div className={`qt-ky-o-wrap ${n.rong ? 'rong' : ''}`}>
+      <Link
+        to={x.path}
+        className={`qt-n qt-ky-o ${n.tone ?? ''} ${x.ok ? '' : 'lock'}`}
+        title={x.ok ? `Mở ${n.ten.toLowerCase()}` : `${n.ten}: có ở gói ${GOI[minGoi(x.ma!)].ten}`}
+      >
+        <span className="qt-ky-o-t">
+          <span className="qt-ky-ic-wrap">
+            <Icon n={n.icon} className="ic" />
+          </span>
+          <span className="qt-ky-o-info">
+            <span className="qt-ky-o-ten">
+              {n.chieu && <i className={`qt-ky-cham cham-${n.chieu}`} aria-hidden />}
+              <span>{n.ten}</span>
+              {n.moTa && <span className="qt-ky-o-mo"> · {n.moTa}</span>}
+            </span>
+          </span>
+        </span>
+        {!x.ok && x.ma && <Pk g={minGoi(x.ma)} o />}
+        {!n.taoMoi && !n.chieu && <Icon n="chevr" className="ic sm qt-ky-arr" />}
+      </Link>
+      {n.taoMoi && xTaoMoi && (
+        <Link
+          to={xTaoMoi.path}
+          className={`qt-ky-plus ${xTaoMoi.ok ? '' : 'lock'}`}
+          title={xTaoMoi.ok ? `Lập nhanh ${n.ten.toLowerCase()}` : `${n.ten}: có ở gói ${GOI[minGoi(xTaoMoi.ma!)].ten}`}
+        >
+          <Icon n="plus" className="ic sm" />
+        </Link>
+      )}
+    </div>
+  )
+}
+

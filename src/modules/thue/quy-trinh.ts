@@ -19,6 +19,61 @@ export const quyTrinh: QuyTrinhDef = {
   tenFree: 'Quy trình lập tờ khai thuế',
   moTaFree: 'Tờ khai lấy doanh thu từ FABi, tính GTGT, TNCN theo tỷ lệ của ngành nghề.',
   anDuoiFree: true,   // bỏ Danh mục liên quan, PhuongXT chốt 15/10/2026
+  // Gói Free (T369): sơ đồ bước theo kỳ (mẫu C), ưu tiên trên hoiTuFree
+  buocKyFree: [
+    {
+      ten: 'Khởi tạo thông tin',
+      moTa: 'Khai báo thông tin hộ kinh doanh, người đại diện và danh sách điểm bán hàng.',
+      nut: [
+        {
+          ten: 'Thông tin hộ kinh doanh',
+          icon: 'user',
+          di: 'thue/to-khai?buoc=1',
+          moTa: 'Mã số thuế, chủ hộ và địa chỉ điểm bán',
+        },
+      ],
+      ghiChu: 'Kiểm tra thông tin trước khi lập tờ khai.',
+    },
+    {
+      ten: 'Kê khai doanh thu',
+      moTa: 'Hệ thống tự lấy doanh thu bán hàng từ FABi để tính thuế theo ngành nghề.',
+      nut: [
+        {
+          ten: 'Kê khai doanh thu',
+          icon: 'cashin',
+          di: 'thue/to-khai?buoc=2',
+          moTa: 'Doanh thu tính thuế GTGT và thuế TNCN',
+        },
+      ],
+      ghiChu: 'Doanh thu được tổng hợp theo ngành nghề kinh doanh để tính thuế.',
+    },
+    {
+      ten: 'Khai phụ lục',
+      moTa: 'Khai báo các tài khoản ngân hàng của quán dùng để nhận tiền và thanh toán.',
+      nut: [
+        {
+          ten: 'Khai phụ lục',
+          icon: 'doc',
+          di: 'thue/to-khai?buoc=3',
+          moTa: 'Bảng kê tài khoản ngân hàng kinh doanh',
+        },
+      ],
+      ghiChu: 'Mẫu 01/BK-STK gửi kèm tờ khai.',
+    },
+    {
+      ten: 'Xem và nộp tờ khai',
+      moTa: 'Kiểm tra toàn bộ tờ khai hoàn chỉnh rồi ký gửi lên cơ quan thuế.',
+      nut: [
+        {
+          ten: 'Xem và nộp tờ khai',
+          icon: 'send',
+          di: 'thue/to-khai?buoc=4',
+          moTa: 'Kiểm tra tờ khai và gửi điện tử',
+        },
+      ],
+      ghiChu: 'Nộp tờ khai định kỳ theo từng kỳ tính thuế.',
+    },
+  ],
   // Gói Free (T267): sơ đồ hội tụ như Thu chi, Mua hàng; các làn nghiệp vụ đổ về Sổ sách, báo cáo
   hoiTuFree: {
     lan: [

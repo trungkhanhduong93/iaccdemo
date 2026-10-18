@@ -22,7 +22,7 @@ export const quyTrinh: QuyTrinhDef = {
       duoi: [{ ten: 'Giá thành đơn giản', icon: 'flask', di: 'kho/5-1-8' }] },
   ],
   // Gói Free (T267): sơ đồ hội tụ như Thu chi, Mua hàng; các làn nghiệp vụ đổ về Sổ sách, báo cáo
-  moTaFree: 'Gói Free theo dõi tồn kho với hàng bán thẳng: mua về bán ra nguyên đơn vị, không qua chế biến.',
+  moTaFree: 'Theo dõi nhập xuất tồn nguyên vật liệu, hàng hoá và kiểm kê thực tế theo kỳ.',
   hoiTuFree: {
     lan: [
       { ten: 'Nhập hàng', tone: 'ok', nut: [
@@ -47,6 +47,49 @@ export const quyTrinh: QuyTrinhDef = {
       { ten: 'Chi tiết nhập kho', icon: 'filein', di: 'kho/5-2-10' },
     ] },
   },
+  // Gói Free (T368): sơ đồ bước theo kỳ (mẫu C), ưu tiên trên hoiTuFree
+  buocKyFree: [
+    {
+      ten: 'Nhập xuất hằng ngày',
+      moTa: 'Ghi nhận hàng mua vào và hàng bán ra mỗi ngày.',
+      ghiChu: 'Hàng nhập theo hoá đơn và xuất bán tự động qua máy thu ngân POS.',
+      nut: [
+        { ten: 'Mua hàng', icon: 'truck', di: 'mua-hang/4-1-1', taoMoi: 'mua-hang/4-1-1/moi', chieu: 'vao', moTa: 'Nhập hàng từ nhà cung cấp' },
+        { ten: 'Bán hàng', icon: 'pos', di: 'ban-hang/3-1-1', chieu: 'ra', moTa: 'Xuất kho theo đơn bán POS' },
+      ],
+    },
+    {
+      ten: 'Kiểm kê kho',
+      moTa: 'So sánh tồn trên máy với hàng thực tế để xử lý thừa thiếu.',
+      ghiChu: 'Định kỳ kiểm đếm để bù trừ chênh lệch và chống thất thoát.',
+      nut: [
+        { ten: 'Tồn hệ thống', icon: 'box', di: '', tone: 'kq', moTa: 'Số lượng máy tính đang tính' },
+        { ten: 'Kiểm kê kho', icon: 'clipboard', di: 'kho/5-1-10', noi: 'so sánh', taoMoi: 'kho/5-1-10/moi', moTa: 'Đếm số lượng thực tế tại kho' },
+        { ten: 'Xuất điều chỉnh', icon: 'cashout', di: 'kho/dieu-chinh?loai=xdc', chieu: 'noi', moTa: 'Ghi giảm khi hàng thực tế thiếu' },
+        { ten: 'Nhập điều chỉnh', icon: 'filein', di: 'kho/dieu-chinh?loai=ndc', chieu: 'noi', moTa: 'Ghi tăng khi hàng thực tế thừa' },
+      ],
+    },
+    {
+      ten: 'Theo dõi nhập xuất',
+      moTa: 'Xem chi tiết và tổng hợp hàng hoá luân chuyển trong kỳ.',
+      ghiChu: 'Đối chiếu số lượng và tiền hàng vào ra của từng mặt hàng.',
+      nut: [
+        { ten: 'Tổng hợp nhập kho', icon: 'filein', di: 'kho/5-2-9', chieu: 'vao', moTa: 'Tổng số lượng và tiền hàng nhập' },
+        { ten: 'Chi tiết nhập kho', icon: 'filein', di: 'kho/5-2-10', chieu: 'vao', moTa: 'Từng lần nhập hàng theo phiếu' },
+        { ten: 'Tổng hợp xuất kho', icon: 'cashout', di: 'kho/5-2-11', chieu: 'ra', moTa: 'Tổng số lượng và tiền hàng xuất' },
+        { ten: 'Chi tiết xuất kho', icon: 'cashout', di: 'kho/5-2-12', chieu: 'ra', moTa: 'Từng lần xuất hàng theo phiếu' },
+      ],
+    },
+    {
+      ten: 'Báo cáo tồn kho',
+      moTa: 'Xem tồn kho tổng thể và kết quả sau khi kiểm đếm.',
+      ghiChu: 'Nắm lượng tồn để chủ động đặt hàng và quản lý hao hụt.',
+      nut: [
+        { ten: 'Báo cáo xuất nhập tồn', icon: 'box', di: 'kho/5-2-3', moTa: 'Tồn đầu, nhập xuất và tồn cuối kỳ' },
+        { ten: 'Báo cáo kiểm kê', icon: 'clipboard', di: 'kho/5-2-15', moTa: 'Chi tiết chênh lệch thừa thiếu' },
+      ],
+    },
+  ],
   baoCao: ['5-2-3', '5-2-4', '5-2-1', '5-2-2', '5-2-5'],
   danhMuc: ['danh-muc/1-8', 'danh-muc/1-2', 'danh-muc/1-3', 'danh-muc/1-4', 'kho/5-1-5', 'kho/9-1-3'],
   tienIch: ['tien-ich/11-3', 'tien-ich/11-15'],   // bỏ 11.2 (T100)

@@ -43,6 +43,45 @@ export const quyTrinh: QuyTrinhDef = {
     { ten: 'Sổ ngân hàng', icon: 'bank', di: 'tien/2-2-3' },
     { ten: 'Công nợ nhà cung cấp', icon: 'users', di: 'mua-hang/4-2-3' },
   ] },
+  // Gói Free mẫu C bước theo kỳ (T366)
+  moTaFree: 'Đi từ trái sang phải theo một kỳ kế toán: khai số đầu, ghi phiếu hằng ngày, đối chiếu sổ, xem báo cáo.',
+  buocKyFree: [
+    {
+      ten: 'Khởi tạo',
+      moTa: 'Làm một lần khi bắt đầu dùng phần mềm.',
+      nut: [
+        { ten: 'Số dư ban đầu', icon: 'db', di: 'tien/so-du-ban-dau' },
+      ],
+      ghiChu: 'Tồn quỹ tiền mặt, số dư tài khoản ngân hàng và công nợ nhà cung cấp đầu kỳ.',
+    },
+    {
+      ten: 'Ghi nhận hằng ngày',
+      moTa: 'Mỗi khoản tiền vào, ra là một phiếu. Bấm + để lập nhanh.',
+      rong: true,
+      nut: [
+        { ten: 'Thu tiền mặt', icon: 'cashin', di: 'tien/2-1-1/moi?loai=thu', chieu: 'vao', taoMoi: 'tien/2-1-1/moi?loai=thu' },
+        { ten: 'Thu ngân hàng', icon: 'bank', di: 'tien/2-1-1/moi?loai=bc', chieu: 'vao', taoMoi: 'tien/2-1-1/moi?loai=bc' },
+        { ten: 'Chi tiền mặt', icon: 'cashout', di: 'tien/2-1-1/moi?loai=chi', chieu: 'ra', taoMoi: 'tien/2-1-1/moi?loai=chi' },
+        { ten: 'Chi ngân hàng', icon: 'bank', di: 'tien/2-1-1/moi?loai=unc', chieu: 'ra', taoMoi: 'tien/2-1-1/moi?loai=unc' },
+        { ten: 'Chuyển quỹ nội bộ', moTa: 'Nộp, rút tiền mặt', icon: 'swap', di: 'tien/2-1-1/moi?loai=cq', chieu: 'noi', taoMoi: 'tien/2-1-1/moi?loai=cq', rong: true },
+      ],
+    },
+    {
+      ten: 'Đối chiếu sổ',
+      moTa: 'Cuối ngày, cuối tháng so tồn sổ với tiền thực tế, sao kê.',
+      nut: [
+        { ten: 'Sổ quỹ tiền mặt', icon: 'wallet', di: 'tien/2-2-1' },
+        { ten: 'Sổ tiền gửi ngân hàng', icon: 'bank', di: 'tien/2-2-3' },
+      ],
+    },
+    {
+      ten: 'Công nợ, báo cáo',
+      moTa: 'Xem còn nợ ai bao nhiêu và các báo cáo của kỳ.',
+      nut: [
+        { ten: 'Công nợ nhà cung cấp', icon: 'users', di: 'mua-hang/4-2-3' },
+      ],
+    },
+  ],
   baoCao: ['2-2-1', '2-2-3', '2-2-5', '2-2-2', '2-2-4'],
   danhMuc: ['danh-muc/1-12', 'danh-muc/1-5', 'danh-muc/1-16'],
   tienIch: ['tien-ich/11-8', 'tien-ich/11-10', 'tien-ich/11-11'],

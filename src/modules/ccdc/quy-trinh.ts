@@ -32,6 +32,42 @@ export const quyTrinh: QuyTrinhDef = {
       { ten: 'Bảng chi tiết phân bổ chi phí', icon: 'calendar', di: 'ccdc/bang-phan-bo' },
     ] },
   },
+  // Gói Free (T368): sơ đồ bước theo kỳ (mẫu C), ưu tiên trên hoiTuFree
+  buocKyFree: [
+    {
+      ten: 'Khởi tạo đầu kỳ',
+      moTa: 'Khai báo các khoản mua từ trước còn phân bổ.',
+      ghiChu: 'Công cụ dụng cụ hoặc tiền nhà, phí dịch vụ trả trước khi dùng phần mềm.',
+      nut: [
+        { ten: 'Thẻ CPPB dư đầu kỳ', icon: 'clock', di: 'ccdc/8-1-1', moTa: 'Khoản chi từ trước khi dùng phần mềm' },
+      ],
+    },
+    {
+      ten: 'Chi tiền trả trước',
+      moTa: 'Lập phiếu chi cho các khoản dùng nhiều tháng.',
+      ghiChu: 'Tiền thuê mặt bằng, mua sắm công cụ dụng cụ trả một lần dùng dài hạn.',
+      nut: [
+        { ten: 'Chi tiền mặt', icon: 'cashout', di: `tien/2-1-1/moi?loai=chi&ly=${MA_LY_CHO_PHAN_BO}`, taoMoi: `tien/2-1-1/moi?loai=chi&ly=${MA_LY_CHO_PHAN_BO}`, moTa: 'Chi tiền mặt khoản trả trước' },
+        { ten: 'Chi ngân hàng', icon: 'bank', di: `tien/2-1-1/moi?loai=unc&ly=${MA_LY_CHO_PHAN_BO}`, taoMoi: `tien/2-1-1/moi?loai=unc&ly=${MA_LY_CHO_PHAN_BO}`, moTa: 'Chuyển khoản khoản trả trước' },
+      ],
+    },
+    {
+      ten: 'Theo dõi thẻ chi phí',
+      moTa: 'Ghi nhận và chia đều chi phí vào từng tháng.',
+      ghiChu: 'Mỗi khoản chi trả trước tạo một thẻ để hệ thống tự chia theo số kỳ.',
+      nut: [
+        { ten: 'Thẻ chi phí phân bổ', icon: 'grid', di: 'ccdc/8-1-1', moTa: 'Chia đều chi phí vào từng tháng' },
+      ],
+    },
+    {
+      ten: 'Báo cáo phân bổ',
+      moTa: 'Xem chi phí tính vào mỗi kỳ và giá trị còn lại.',
+      ghiChu: 'Theo dõi số tiền đã tính vào chi phí hằng tháng để nắm lãi lỗ thực tế.',
+      nut: [
+        { ten: 'Bảng chi tiết phân bổ chi phí', icon: 'calendar', di: 'ccdc/bang-phan-bo', moTa: 'Chi tiết số tiền phân bổ theo tháng' },
+      ],
+    },
+  ],
   baoCao: ['bang-phan-bo', '8-2-1', '8-2-2', '8-2-3', '8-2-4'],
   danhMuc: ['danh-muc/1-2', 'danh-muc/1-6', 'danh-muc/1-8'],
 }
