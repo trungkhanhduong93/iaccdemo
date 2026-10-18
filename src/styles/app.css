@@ -30428,4 +30428,69 @@ a.tx-item:hover {
   line-height: 1.2 !important;
 }
 
+/* ── Ô tìm kiếm báo cáo điện thoại cách đều và cùng kiểu danh sách (T443) ── */
+.m-sbc-tim-hang {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 8px 12px !important;
+  background: #fff !important;
+}
+
+.m-sbc-tim-hang .m-ds-tim {
+  flex: 1 !important;
+  margin-bottom: 0 !important;
+  padding: 0 !important;
+  position: relative !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.m-sbc-tim-hang .m-ds-tim-inp {
+  width: 100% !important;
+  height: 38px !important;
+  background: #f1f5f9 !important;
+  border: 1px solid transparent !important;
+  border-radius: 8px !important;
+  padding: 0 32px 0 36px !important;
+  font-size: 13.5px !important;
+  color: var(--ink, #1f2225) !important;
+  outline: none !important;
+  box-sizing: border-box !important;
+  font-family: inherit !important;
+  transition: border-color .15s ease, background-color .15s ease !important;
+}
+
+.m-sbc-tim-hang .m-ds-tim-inp:focus {
+  background: #fff !important;
+  border-color: var(--blue, #0560a6) !important;
+}
+
+.m-sbc-tim-hang .m-ds-tim-ic {
+  position: absolute !important;
+  left: 12px !important;
+  color: #94a3b8 !important;
+  pointer-events: none !important;
+}
+
+.m-sbc-tim-hang .m-ds-tim-x {
+  position: absolute !important;
+  right: 10px !important;
+  background: none !important;
+  border: none !important;
+  padding: 4px !important;
+  color: #94a3b8 !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.m-sbc-tim-hang .m-sbc-btn-icon {
+  width: 38px !important;
+  height: 38px !important;
+  border-radius: 8px !important;
+}
+
+
 

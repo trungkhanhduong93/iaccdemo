@@ -41,13 +41,14 @@ export const MToGiay: FC<ScreenProps> = ({ sc, mod }) => {
 
   const [phongTo, setPhongTo] = useState(false)
   const [kieuXem, setKieuXem] = useState<'dong' | 'bang' | 'in'>('dong')
+  const [q, setQ] = useState('')
   const [trangBang, setTrangBang] = useState(1)
   const bangWrapRef = useRef<HTMLDivElement>(null)
 
   // Về trang 1 khi đổi tham số hoặc kiểu xem (T273)
   useEffect(() => {
     setTrangBang(1)
-  }, [params, sc.slug, kieuXem])
+  }, [params, sc.slug, kieuXem, q])
 
   const khungRef = useRef<HTMLDivElement>(null)
   const noiDungRef = useRef<HTMLDivElement>(null)
@@ -173,10 +174,19 @@ export const MToGiay: FC<ScreenProps> = ({ sc, mod }) => {
     return cotMobile(raw)
   }, [is523, isDong1023, colsDong])
 
+  const rowsDongLoc = useMemo(() => {
+    if (!q.trim()) return rowsDong
+    const qFold = q.trim().toLowerCase()
+    return rowsDong.filter(r => {
+      const ten = String(r.ten || r.tenHang || r.doiTuong || r.ma || r.code || r.ct || '')
+      return ten.toLowerCase().includes(qFold)
+    })
+  }, [rowsDong, q])
+
   // Phân trang 100 dòng cho bảng (T273)
   const pt = useMemo(() => {
-    return tinhPhanTrang(rowsDong, trangBang, 100)
-  }, [rowsDong, trangBang])
+    return tinhPhanTrang(rowsDongLoc, trangBang, 100)
+  }, [rowsDongLoc, trangBang])
 
   const doiTrangBang = (trangMoi: number) => {
     setTrangBang(trangMoi)
@@ -245,6 +255,32 @@ export const MToGiay: FC<ScreenProps> = ({ sc, mod }) => {
           </div>
         </div>
 
+        {kieuXem !== 'in' && (
+          <div className="m-sbc-tim-hang">
+            <div className="m-ds-tim">
+              <Icon n="search" className="m-ds-tim-ic ic sm" />
+              <input
+                type="text"
+                className="m-ds-tim-inp"
+                placeholder={kieuXem === 'bang' ? 'Nhập từ khoá' : 'Nhập mã, tên'}
+                value={q}
+                onChange={e => setQ(e.target.value)}
+                aria-label="Tìm kiếm trong bảng"
+              />
+              {q && (
+                <button
+                  type="button"
+                  className="m-ds-tim-x"
+                  onClick={() => setQ('')}
+                  aria-label="Xoá tìm kiếm"
+                >
+                  <Icon n="x" className="ic sm" />
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
         {kieuXem === 'in' ? (
           <div
             ref={khungRef}
@@ -300,6 +336,7 @@ export const MToGiay: FC<ScreenProps> = ({ sc, mod }) => {
               khuon={khuon}
               cols={colsDong}
               rows={rowsDong}
+              q={q}
             />
           </div>
         )}
