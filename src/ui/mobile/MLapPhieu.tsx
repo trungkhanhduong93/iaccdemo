@@ -1071,7 +1071,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
     ghiNhatKy(man, idLuu, soCt, s.ten, 'Thêm mới chứng từ')
     toast(`Đã lưu ${soCt}`)
 
-    // Phiếu chi có lý do Chi phí chờ phân bổ: hỏi tạo thẻ chi phí phân bổ (Mục 4 spec)
+    // Phiếu chi có lý do Chi phí chờ phân bổ: báo rồi mở tạo thẻ chi phí phân bổ (Mục 4 spec; T419: thông báo, không hỏi)
     const laLyChoPb = laTien && (
       (dsDong[0]?.ly === TEN_LY_CHO_PHAN_BO) ||
       (dsDong[0]?.ly === MA_LY_CHO_PHAN_BO)
@@ -2129,7 +2129,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
         />
       )}
 
-      {/* ── HỘP HỎI TẠO THẺ CHI PHÍ PHÂN BỔ ── */}
+      {/* ── HỘP THÔNG BÁO TẠO THẺ CHI PHÍ PHÂN BỔ (T419: một nút Tiếp tục) ── */}
       {hoiThe && (
         <div className="m-tam-overlay" style={{ zIndex: 1200 }}>
           <div className="m-tam-hop m-lp-hop-hoi-the">
@@ -2137,21 +2137,9 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
               <h3 className="m-tam-tieu" style={{ fontSize: 16 }}>Tạo thẻ chi phí phân bổ</h3>
             </div>
             <div className="m-lp-hop-nd" style={{ padding: '14px 16px', fontSize: 14, color: 'var(--ink)' }}>
-              Bạn có muốn tạo Thẻ chi phí phân bổ ngay không? Tên mục chi phí, số tiền, ngày và chứng từ gốc lấy sẵn từ <b>{hoiThe.soCt}</b>, bạn vẫn sửa lại được.
+              <b>{hoiThe.soCt}</b> có khoản Chi phí chờ phân bổ. Phần mềm mở màn Tạo thẻ chi phí phân bổ, điền sẵn tên, số tiền, ngày, chứng từ gốc từ phiếu. Bạn vẫn sửa lại được.
             </div>
             <div className="m-tam-day" style={{ padding: '10px 16px' }}>
-              <button
-                type="button"
-                className="m-tam-btn-huy"
-                onClick={() => {
-                  setHoiThe(null)
-                  setSoPhieuMoi(hoiThe.soCt)
-                  setIdPhieuMoi(hoiThe.idMoi)
-                  setDaLuu(true)
-                }}
-              >
-                Không
-              </button>
               <button
                 type="button"
                 className="m-tam-btn-apdung"
@@ -2181,7 +2169,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                   })
                 }}
               >
-                Đồng ý
+                Tiếp tục
               </button>
             </div>
           </div>

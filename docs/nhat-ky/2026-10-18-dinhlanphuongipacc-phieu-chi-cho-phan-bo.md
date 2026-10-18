@@ -2,7 +2,7 @@
 
 - Ngày: 18/10/2026
 - Người: dinhlanphuongipacc, agent: Claude Code
-- Trạng thái cuối phiên: Dở dang (phần web xong, còn bản điện thoại)
+- Trạng thái cuối phiên: Xong
 
 ## Đã làm
 
@@ -25,6 +25,10 @@ Thêm hàng nhanh tại form:
 - `ChonDanhMuc.tsx`: `MucDm` có `dvt`, hộp thêm hàng trả kèm ĐVT đã chọn.
 - Thẻ chi phí, Ghi tăng, phiếu mua dùng ĐVT này; trước đây để trống, hoặc luôn ghi "cái".
 
+Bản điện thoại (T414 của Trum đã xong nên sửa được `MLapPhieu.tsx`):
+- `MLapPhieu.tsx`: hộp hỏi Đồng ý / Không thành thông báo một nút Tiếp tục. Màn đã có sẵn câu nhắc lý do Chi phí chờ phân bổ của T414 nên không thêm dòng nhắc.
+- `MCcdc.tsx`: thẻ tạo từ phiếu chi lưu xong thì `suaPhieu` ghi `_theCp` vào phiếu gốc rồi về lại phiếu; bấm Huỷ hoặc quay lại cũng về phiếu.
+
 Mã CCDC:
 - `danhMucStore.ts`: mã CCDC gợi ý CCDC + 4 chữ số.
 - Mã mẫu CC001…CC008 đổi thành CCDC0001…CCDC0008 ở `mock.ts`, `so-bo-sung.ts`, `ccdc/index.ts`, `ReportScreen.tsx`, `MCcdc.tsx`.
@@ -39,11 +43,11 @@ Mã CCDC:
   - lưu thẻ thì về lại phiếu, phiếu hiện "Thẻ chi phí: TPB2610-0012".
 - Thử tay, thẻ dư đầu kỳ loại CCDC: thêm CCDC mới chọn ĐVT Bộ, dòng hiện ĐVT Bộ. Mã gợi ý CCDC0009.
 - Thử tay, phiếu thu: không có ô Tháng ghi nhận chi phí.
+- Thử tay điện thoại 375x812: lưu phiếu chi chờ phân bổ thì hiện hộp một nút; Tiếp tục mở Ghi tăng thẻ; Lưu thì về PC2610-0261, phiếu hiện "Tham chiếu: Thẻ chi phí TPB2610-0012".
 - `xuat_bao_cao_he_thong.py` không chạy được trên máy này (thiếu `Present/tools`).
 
 ## Dở dang, việc tiếp theo
 
-- Bản điện thoại: hộp "Tạo thẻ chi phí phân bổ" ở `MLapPhieu.tsx` (khoảng dòng 962 và 1747) chưa đổi thành thông báo một nút. Chờ Trum đồng ý, vì T414 đang sửa form phiếu điện thoại.
 - Thẻ tạo bằng nút Ghi tăng ở danh sách thẻ (`GhiTangHangLoat.tsx`) chưa ghi `_theCp` vào phiếu gốc. Chờ dinhlanphuongipacc chốt có làm không.
 - T339 (tiến độ kiểm kê nhiều cửa hàng) đang cất ở `git stash` "T339 tien do kiem ke nhieu cua hang (cat tam)".
 

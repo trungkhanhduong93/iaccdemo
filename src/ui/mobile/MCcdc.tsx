@@ -7,6 +7,7 @@ import { anNgoaiGoi } from '../../app/plan'
 import { CUA_HANG } from '../../data/mock'
 import { money, fold } from '../format'
 import { Icon } from '../Icon'
+import { suaPhieu } from '../generic/daXoa'
 import { MDanhSach } from './MDanhSach'
 import { MBaoCaoTheoDoi } from './MBaoCaoTheoDoi'
 import { MChon } from './MChon'
@@ -248,6 +249,12 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
     setMoGhiTang(false)
     setFtTen('')
     setDaChonNgayPb(false)
+    // T419: thẻ tạo từ phiếu chi thì ghi số thẻ vào phiếu gốc (phiếu hiện Thẻ chi phí) rồi về lại phiếu
+    if (tuPhieu?._goc) {
+      const m = tuPhieu._goc.match(/^\/app\/(.+)\/([^/]+)$/)
+      if (m) suaPhieu(m[1], m[2], { _theCp: [soTheMoi] })
+      nav(tuPhieu._goc)
+    }
   }
 
   return (
@@ -365,7 +372,7 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
               <button
                 type="button"
                 className="m-pb-btn-back"
-                onClick={() => { setMoGhiTang(false); setTheSuaId(null); setDaChonNgayPb(false) }}
+                onClick={() => { setMoGhiTang(false); setTheSuaId(null); setDaChonNgayPb(false); if (tuPhieu?._goc && !theSuaId) nav(tuPhieu._goc) }}
                 aria-label="Quay lại"
               >
                 <Icon n="back" className="ic" />
@@ -572,7 +579,7 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
               <button
                 type="button"
                 className="m-pb-btn-huy"
-                onClick={() => { setMoGhiTang(false); setTheSuaId(null); setDaChonNgayPb(false) }}
+                onClick={() => { setMoGhiTang(false); setTheSuaId(null); setDaChonNgayPb(false); if (tuPhieu?._goc && !theSuaId) nav(tuPhieu._goc) }}
               >
                 Huỷ
               </button>
