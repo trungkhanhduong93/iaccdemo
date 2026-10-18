@@ -189,6 +189,7 @@ export const MLoc: FC<MLocProps> = ({
     <div className="m-loc-overlay" onClick={onDong}>
       {/* ── TẤM LỌC NỔI TỪ ĐÁY (T299) ── */}
       <div className="m-loc-tam" onClick={e => e.stopPropagation()}>
+        <div className="m-tam-keo" />
         <div className="m-loc-dau">
           <h2 className="m-loc-tieu-de">Bộ lọc</h2>
           <button type="button" className="m-loc-btn-dong" onClick={onDong} aria-label="Đóng">

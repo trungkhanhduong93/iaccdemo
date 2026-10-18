@@ -4,6 +4,8 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 19/10/2026
 
+- T440 (điện thoại): Bộ lọc danh mục làm lại theo dạng bảng trượt từ đáy lên (`m-loc-tam`) đồng bộ với danh sách chứng từ: có tay kéo, nút Đặt lại và Áp dụng; các ô điều kiện Trạng thái và trường danh mục bấm vào mở trang con chọn giá trị kèm ô tìm kiếm.
+
 - T423, T435 (điện thoại): Trang chủ Free khối Quỹ tiền: nút "Tất cả quỹ (n) ›" hiện lại ở cột phải phía trên nút "Xem dòng tiền 13 tháng ›", độ cao hai nút căn bằng nút "Tạo quỹ" bên trái. Số tồn quỹ hiện tại chuyển sang bên phải cùng hàng với nhãn "Tồn quỹ hiện tại", cỡ chữ số lớn 19px đậm theo thang T426, không bị xuống dòng trên màn 360px.
 
 ## 18/10/2026
