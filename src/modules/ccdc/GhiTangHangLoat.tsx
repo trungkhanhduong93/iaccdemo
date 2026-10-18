@@ -7,7 +7,7 @@ import { useSession } from '../../app/session'
 import { FormToanMan } from '../../ui/FormToanMan'
 import { Table } from '../../ui/Table'
 import { Select } from '../../ui/Dropdown'
-import { docSoQT, money, soQT } from '../../ui/format'
+import { docSoQT, money, short, soQT } from '../../ui/format'
 import { suaPhieu, useDaXoa } from '../../ui/generic/daXoa'
 import { LOAI_THE, ONhap, soTheKeTiep } from './the-phan-bo'
 import { ChonDanhMuc } from '../../ui/ChonDanhMuc'
@@ -86,6 +86,7 @@ export function useCanhBaoCho(ky: number) {
       {truoc > 0 && <> · trong đó {truoc} khoản từ kỳ trước</>}.
     </>,
     hanhDong: { nhan: 'Ghi tăng bổ sung', to: '?moi=hang-loat' },
+    gon: <><b>{ds.length} khoản chờ tạo thẻ</b> · {short(ds.reduce((s, d) => s + d.gt, 0))}</>,   // chữ ngắn trong thanh công cụ (T429)
   }
 }
 

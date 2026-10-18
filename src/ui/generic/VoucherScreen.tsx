@@ -28,7 +28,7 @@ import { NGUON, TT_CT, chungTu, dongCua, gioPhieu, tomTatTenHang, ttNghiepVu, ty
 import { boO, nhomCua, theoLoai, TT_HD, TT_TIEN } from './nhom'
 import { BangKiemKe } from './BangKiemKe'
 import { BangSua } from './BangSua'
-import { ChungTuForm, HachToan, LichSu, VoucherDetail, lyMacDinh } from './ChungTuForm'
+import { ChungTuForm, HachToan, LichSu, VoucherDetail, lyMacDinh, xoaTheCuaPhieu } from './ChungTuForm'
 import { HopInChungTu, type PhieuIn } from '../bao-cao/InChungTu'
 
 /** Ngày tạo, người tạo (T132): phiếu lưu trong phiên có sẵn; phiếu mẫu đồng bộ từ phần mềm khác do Hệ thống tạo lúc đồng bộ,
@@ -680,6 +680,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
                   onBoChon={() => setSelectedIds(new Set())}
                   onXoa={ids => {
                     xoaPhieu(`${mod.key}/${sc.slug}`, ids.map(id => ({ id, so: String(rows.find(r => String(r.id) === id)?.so ?? '') })), s.ten)
+                    xoaTheCuaPhieu(ids.map(id => rows.find(r => String(r.id) === id)), s.ten)   // phiếu chi đã tạo thẻ chi phí: xoá luôn thẻ (T436)
                     // Xoá phiếu kiểm kê thì xoá luôn phiếu xuất, nhập điều chỉnh sinh từ nó (T129)
                     if (cfg.kiemKe) xoaPhieu(MAN_DC, ids.flatMap(id => dsDcCon(rows.find(r => String(r.id) === id)).map(c => ({ id: c.id, so: c.so }))), s.ten)
                   }}

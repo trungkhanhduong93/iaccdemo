@@ -6,7 +6,7 @@ import { tenMan } from '../../app/registry'
 import { cuaHangHienTai, dsKyNam, kyMacDinh, ngayDauNam, truocDauNam, useSession } from '../../app/session'
 import { CUA_HANG } from '../../data/mock'
 import { Icon } from '../Icon'
-import { DaiCanhBao } from '../DaiCanhBao'
+import { CanhBaoGon, DaiCanhBao, NutCachLam } from '../DaiCanhBao'
 import { Table } from '../Table'
 import { ChamTrangThai } from '../ChamTrangThai'
 import { CO_TRANG_DM, PhanTrang } from '../PhanTrang'
@@ -36,7 +36,7 @@ import { GoiYLapPhieu } from './GoiYLapPhieu'
 import { HOM_NAY } from '../../data/mock'
 import { dmy } from '../format'
 import { addCatalogRow, useAddedCatalogRows, sinhMaKeTiep } from './danhMucStore'
-import { suaPhieu } from './daXoa'
+import { suaPhieu, useDaXoa } from './daXoa'
 
 export function CatalogScreen({ sc }: ScreenProps) {
   const { s, set, toast } = useSession()
@@ -52,6 +52,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
   const [ttGhiDe, setTtGhiDe] = useState<Record<string, number>>({})
   // Dòng xoá qua Tiện ích ở form toàn màn (T297): ẩn trong phiên, theo số chứng từ (vd số thẻ) hoặc khoá dòng
   const [daXoaDm, setDaXoaDm] = useState<Set<string>>(new Set())
+  const xoaTheoPhieu = useDaXoa(`dm/${sc.slug}`)   // dòng xoá theo chứng từ gốc, vd thẻ chi phí khi xoá phiếu chi (T436)
   useEffect(() => {
     setTtGhiDe({})
   }, [sc, s.cheDo])
@@ -145,7 +146,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
 
   const rows = useMemo(() => {
     return all.filter(r => {
-      if (daXoaDm.has(khoaXoa(r))) return false
+      if (daXoaDm.has(khoaXoa(r)) || xoaTheoPhieu.laDaXoa(khoaXoa(r))) return false
       if (nhom && r[cfg.nhomLoc!] !== nhom) return false
       if (q && !fold(Object.values(r).join(' ')).includes(fold(q))) return false
       if (tichLoc && cfg.tich && !cfg.tich.loc(r)) return false
@@ -169,7 +170,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
       }
       return true
     })
-  }, [all, nhom, q, tichLoc, daXoaDm, coTrangThai, locTrangThai, laHangHoa, tabPhanLoai, boLocNangCao, cfg])
+  }, [all, nhom, q, tichLoc, daXoaDm, xoaTheoPhieu.ban, coTrangThai, locTrangThai, laHangHoa, tabPhanLoai, boLocNangCao, cfg])
   const cols: Col[] = useMemo(() => [
     ...(cfg.stt ? [{ k: '_stt', t: 'STT', w: 60, c: true }] : []),
     ...cols0.map(c => {
@@ -232,7 +233,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
   // Kiểu thêm mới hiện theo gói đang dùng
   const bienHien = cauHinh?.bien?.filter(b => !b.goi || b.goi.includes(s.goi)) ?? []
   // Nút thêm: kiểu thêm từng dòng đầu tiên (nếu gói có), rồi Thêm hàng loạt, rồi các kiểu còn lại; gói không có kiểu đầu tiên thì Thêm hàng loạt là nút chính
-  const hl = cfg.hangLoat ? [{ k: HANG_LOAT, ten: cfg.hangLoat.nhan, nut: cfg.hangLoat.nhan, icon: 'layers' }] : []
+  const hl = cfg.hangLoat ? [{ k: HANG_LOAT, ten: cfg.hangLoat.nhan, nut: cfg.hangLoat.nhanChinh ?? cfg.hangLoat.nhan, icon: 'layers' }] : []
   const tung = bienHien.map(b => ({ k: b.k, ten: b.menu ?? b.ten.charAt(0).toUpperCase() + b.ten.slice(1), nut: b.nut, icon: b.icon }))
   const nutThem = bienHien[0] === cauHinh?.bien?.[0] ? [tung[0], ...hl, ...tung.slice(1)] : [...hl, ...tung]
   const [trang, setTrang] = useState(1)
@@ -322,9 +323,11 @@ export function CatalogScreen({ sc }: ScreenProps) {
               </div>
               {nutThem.length > 0 && (
                 <div className="ds-thanh-h1-phai">
+                  {/* T429: hướng dẫn Cách làm vào nút ⓘ cạnh nút thêm, menu thêm hàng loạt kèm số khoản chờ */}
+                  {canhBao?.cachLam && <NutCachLam cachLam={canhBao.cachLam} />}
                   <NutThemMoiSplit nhan={nutThem[0].nut} toMoi={`${viTri.pathname}?moi=${nutThem[0].k}`}
                     so={nutThem[0].k === HANG_LOAT && canhBao?.so ? canhBao.so : undefined}
-                    loai={nutThem.length > 1 ? nutThem.map(b => ({ k: b.k, ten: b.ten, icon: b.icon })) : undefined} />
+                    loai={nutThem.length > 1 ? nutThem.map(b => ({ k: b.k, ten: b.k === HANG_LOAT && canhBao?.so ? `${b.ten} (${canhBao.so})` : b.ten, icon: b.icon })) : undefined} />
                 </div>
               )}
             </div>
@@ -338,6 +341,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
                     <span>{cfg.tich.nhan}</span>
                   </label>
                 )}
+                {canhBao && <CanhBaoGon cb={canhBao} />}
               </div>
               <div className="ds-thanh-h2-phai">
                 <NutTuyChinhCot cols={cot.colsDu} an={cot.an} coDinh={COT_CO_DINH} macDinh={cot.macDinh} dongBang={cot.dongBang}
@@ -487,7 +491,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
           </div>
         )}
         {/* Dải cảnh báo trên bảng; không có nút riêng, chỉ sang nút thêm hàng loạt đang có số đếm ngay phía trên (T287) */}
-        {canhBao && <DaiCanhBao cb={canhBao} />}
+        {canhBao && !dsct && <DaiCanhBao cb={canhBao} />}   {/* danh sách kiểu chứng từ: cảnh báo gọn trong thanh công cụ (T429) */}
         {rows.length ? bang : (
           all.length ? (
             <div className="empty">

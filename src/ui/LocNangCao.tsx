@@ -758,7 +758,7 @@ export function NutHangLoat({
             lam(`Đã xoá ${nXoa} phiếu`)
           }}
         >
-          Phiếu đã xoá không lấy lại được.{ghi && ' Phiếu đã ghi sổ không xoá được.'}{nKhoa > 0 && ` ${nKhoa} phiếu thuộc kỳ đã khoá sổ, giữ nguyên.`}{nThamChieu > 0 && ` ${nThamChieu} phiếu còn phiếu thu, chi tham chiếu, giữ nguyên; xoá phiếu thu, chi trước.`}{nKhoaRieng > 0 && ` ${nKhoaRieng} phiếu ${khoaXoa!.ly}, giữ nguyên.`}
+          {dsXoa.some(r => Array.isArray(r._theCp) && r._theCp.length > 0) && 'Xoá phiếu chi đã tạo thẻ sẽ xoá thẻ chi phí đã tạo. Bạn có muốn thực hiện không? '}Phiếu đã xoá không lấy lại được.{ghi && ' Phiếu đã ghi sổ không xoá được.'}{nKhoa > 0 && ` ${nKhoa} phiếu thuộc kỳ đã khoá sổ, giữ nguyên.`}{nThamChieu > 0 && ` ${nThamChieu} phiếu còn phiếu thu, chi tham chiếu, giữ nguyên; xoá phiếu thu, chi trước.`}{nKhoaRieng > 0 && ` ${nKhoaRieng} phiếu ${khoaXoa!.ly}, giữ nguyên.`}
         </HopXacNhan>
       )}
     </>

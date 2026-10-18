@@ -233,8 +233,9 @@ export const THE_PHAN_BO: CauHinhDM = {
   soQuocTe: true,
   // Hai kiểu thẻ: thẻ ghi tăng trong kỳ, thẻ dư đầu kỳ (khai phần đã phân bổ trước khi dùng phần mềm)
   bien: [
-    // Nút Ghi tăng mở form tạo thẻ mới như ban đầu (T421); thẻ từ phiếu chi chờ phân bổ vẫn tự mở khi lưu phiếu (T419)
-    { k: 'the', ten: 'thẻ chi phí phân bổ', nut: 'Ghi tăng', icon: 'grid' },
+    // Gói Free: nút Ghi tăng mở form tạo thẻ mới (T421); gói trên: Ghi tăng mở danh sách khoản chờ ghi tăng (T436).
+    // Thẻ từ phiếu chi chờ phân bổ vẫn tự mở khi lưu phiếu ở mọi gói (T419)
+    { k: 'the', ten: 'thẻ chi phí phân bổ', nut: 'Ghi tăng', icon: 'grid', goi: ['F'] },
     { k: 'dau', ten: 'thẻ chi phí phân bổ dư đầu kỳ', nut: 'Ghi tăng dư đầu kỳ', icon: 'clock', menu: 'Ghi tăng đầu kỳ' },
   ],
   khoi: [{

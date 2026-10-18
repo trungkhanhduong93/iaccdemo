@@ -29975,3 +29975,10 @@ a.tx-item:hover {
 
 /* ── Danh sách thẻ chi phí: nút Ghi tăng bổ sung trên dải cảnh báo khoản chờ (T421) ── */
 .ds-canh-bao-nut { margin-left: 10px; vertical-align: middle; }
+
+/* ── Cảnh báo khoản chờ gọn trong thanh công cụ, nút ⓘ Cách làm (T429) ── */
+.ds-canh-bao-gon { display: inline-flex; align-items: center; gap: 6px; margin-left: 12px; padding: 3px 10px; border-radius: 999px;
+  background: var(--amber-t); color: #7a4e08; font-size: 12.5px; white-space: nowrap; }
+.ds-canh-bao-gon .ic { color: var(--amber); }
+.ds-canh-bao-gon-nut { margin-left: 4px; font-weight: 600; color: var(--blue); }
+.ds-cach-lam-i { margin-right: 6px; color: var(--muted); }

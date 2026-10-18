@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 18/10/2026
 
+- T429, T436: Danh sách thẻ chi phí: cảnh báo khoản chờ tạo thẻ thành nhãn vàng nhỏ trong thanh công cụ, có nút Ghi tăng bổ sung; hướng dẫn Cách làm vào nút ⓘ cạnh nút Ghi tăng. Gói Free nút Ghi tăng mở form thẻ mới; gói Standard trở lên Ghi tăng mở danh sách khoản chờ ghi tăng. Xoá phiếu chi đã tạo thẻ (kỳ chưa khoá sổ) hỏi lại, đồng ý thì xoá cả thẻ. Phiếu chi hiện dòng Thẻ chi phí cả với thẻ mẫu.
 - T420: Danh sách chứng từ: gom nhóm chuyển vào hộp Cột hiển thị. Bấm nút gom trên dòng cột để thêm cấp, tối đa 5 cấp. Thanh Gom nhóm trên bảng bỏ đi, đang gom thì nút tuỳ chỉnh cột sáng xanh. Hộp không còn đoạn giải thích.
 - T421: Danh sách thẻ chi phí phân bổ: nút Ghi tăng mở thẳng form tạo thẻ mới. Dải cảnh báo khoản chi phí chờ phân bổ chưa tạo thẻ có nút Ghi tăng bổ sung để điền thông số từng khoản rồi tạo; phiếu đã tạo thẻ khi lưu không còn tính là khoản chờ. Điện thoại: bấm Thẻ chi phí trên phiếu chi mở chi tiết thẻ, quay lại về phiếu.
 - T414, T416–T418 (điện thoại, T418 cả web): màn xem, tạo mới, sửa phiếu thu chi, phiếu mua, phiếu kiểm kê theo kiểu thẻ chi phí phân bổ, nút chính màu xanh; gói Free ẩn hạch toán. Phiếu mua: dòng hàng có số lượng, ĐVT, đơn giá, giảm giá % hoặc tiền, VAT, tổng tiền (nhập tổng tiền thì đơn giá tự chia), ô tìm hàng, ngày hoá đơn; bấm Thanh toán ở phiếu mua chọn quỹ để lập phiếu chi. Kiểm kê: ô ĐVT đứng đầu dải số, nút thêm hàng.

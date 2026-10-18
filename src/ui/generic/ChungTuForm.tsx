@@ -32,6 +32,7 @@ import { DCN, dongNhapDc, type DongDcn } from '../../modules/kho/dieu-chuyen'
 import { BangSua, DS_DOI_TUONG, HopCotPhieu, cotTuyChon } from './BangSua'
 import { HopInChungTu, type PhieuIn } from '../bao-cao/InChungTu'
 import { createPortal } from 'react-dom'
+import { theMauTheoGoc } from '../../modules/ccdc'
 
 export interface ChungTuFormProps extends ScreenProps {
   cfg: VoucherCfg
@@ -804,8 +805,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
             )}
             {hoiXoa && row && (
               <HopXacNhan tieuDe={`Xoá ${row.so}?`} nut="Xoá phiếu" onDong={() => setHoiXoa(false)}
-                onDongY={() => { setHoiXoa(false); xoaPhieu(`${mod.key}/${sc.slug}`, [{ id: String(row.id), so: soCt }], s.ten); if (coTcNhap && row._thamChieuId) suaPhieu(manDoi, String(row._thamChieuId), { ttSx: 'cho', _phieuNhap: undefined }); if (laKk) xoaPhieu(MAN_DC, dsDcCon(row).map(c => ({ id: c.id, so: c.so })), s.ten); toast(`Đã xoá ${row.so}`); dongForm() }}>
-                Phiếu đã xoá không lấy lại được.{laKk && dsDcCon(row).length > 0 && <> Phiếu điều chỉnh {dsDcCon(row).map(c => c.so).join(', ')} cũng bị xoá theo.</>}
+                onDongY={() => { setHoiXoa(false); xoaPhieu(`${mod.key}/${sc.slug}`, [{ id: String(row.id), so: soCt }], s.ten); xoaTheCuaPhieu([row], s.ten); if (coTcNhap && row._thamChieuId) suaPhieu(manDoi, String(row._thamChieuId), { ttSx: 'cho', _phieuNhap: undefined }); if (laKk) xoaPhieu(MAN_DC, dsDcCon(row).map(c => ({ id: c.id, so: c.so })), s.ten); toast(`Đã xoá ${row.so}`); dongForm() }}>
+                {theCuaPhieu(row).length > 0 ? 'Xoá phiếu chi này sẽ xoá thẻ chi phí đã tạo. Bạn có muốn thực hiện không? ' : ''}Phiếu đã xoá không lấy lại được.{laKk && dsDcCon(row).length > 0 && <> Phiếu điều chỉnh {dsDcCon(row).map(c => c.so).join(', ')} cũng bị xoá theo.</>}
               </HopXacNhan>
             )}
             {kieu !== 'khong' && row && (
@@ -1146,10 +1147,11 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
           </div>
           {/* Chứng từ tham chiếu ở dòng dưới đầu phiếu; thêm loại tham chiếu mới thì nối vào đây.
               Phiếu chi có dòng Chi phí chờ phân bổ đã tạo thẻ: Thẻ chi phí, số thẻ bấm mở thẻ (T168) */}
-          {oLy && Array.isArray(row?._theCp) && dsDong.some(d => (d.ly ?? lyDo) === LY_CHO_PHAN_BO) && (
+          {/* T436: hiện cả thẻ mẫu trỏ về phiếu, không bắt buộc dòng lý do Chi phí chờ phân bổ */}
+          {oLy && theCuaPhieu(row).length > 0 && (
             <div className="row ct-tham-chieu">
               <span className="dim">Thẻ chi phí:</span>
-              {(row._theCp as string[]).map(so => <Link key={so} className="ds-link-so" to={`/app/ccdc/8-1-1?mo=${so}`} title="Mở thẻ chi phí phân bổ">{so}</Link>)}
+              {theCuaPhieu(row).map(so => <Link key={so} className="ds-link-so" to={`/app/ccdc/8-1-1?mo=${so}`} title="Mở thẻ chi phí phân bổ">{so}</Link>)}
             </div>
           )}
           {/* Tham chiếu kiểm kê và phiếu điều chỉnh (T126) */}
@@ -1319,6 +1321,17 @@ export const QUY_TIEN = [
 ]
 
 /** Đoán lý do thu, chi từ diễn giải; không khớp thì lấy lý do cuối danh sách (Thu khác, Chi phí khác) */
+/** Thẻ chi phí phân bổ của phiếu chi: thẻ tạo khi lưu phiếu (_theCp, T168) và thẻ mẫu trỏ về phiếu (_goc, T436) */
+export const theCuaPhieu = (r: Row | undefined): string[] => !r ? [] : [...new Set([
+  ...(Array.isArray(r._theCp) ? (r._theCp as string[]) : []),
+  ...theMauTheoGoc(`/app/tien/2-1-1/${r.id}`),
+])]
+/** Xoá phiếu chi đã tạo thẻ thì xoá luôn các thẻ đó (T436); danh sách thẻ ẩn dòng có số thẻ trong dm/8-1-1 */
+export function xoaTheCuaPhieu(ds: (Row | undefined)[], ai: string) {
+  const so = ds.flatMap(theCuaPhieu)
+  if (so.length) xoaPhieu('dm/8-1-1', so.map(x => ({ id: x, so: x })), ai)
+}
+
 /** Lý do chi đưa vào chi phí chờ phân bổ (MA_LY_CHO_PHAN_BO): lưu phiếu xong báo rồi mở màn tạo thẻ chi phí phân bổ (T419) */
 export const LY_CHO_PHAN_BO = 'Chi phí chờ phân bổ'
 

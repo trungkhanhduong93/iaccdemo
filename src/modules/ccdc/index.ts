@@ -52,6 +52,9 @@ const THE_MAU = ([
   }
 })
 
+/** Số thẻ mẫu trỏ về phiếu chi gốc (_goc), để phiếu hiện dòng Thẻ chi phí và xoá phiếu thì xoá thẻ (T436) */
+export const theMauTheoGoc = (goc: string): string[] => THE_MAU.filter(t => '_goc' in t && t._goc === goc).map(t => t.soThe)
+
 /** dd/mm/yyyy -> yyyymm; kỳ liền trước của yyyymm */
 const thangCua = (d: string) => { const [, m, y] = d.split('/').map(Number); return y * 100 + m }
 const kyTruoc = (ky: number) => ky % 100 === 1 ? ky - 89 : ky - 1
@@ -67,7 +70,7 @@ const ccdc: ModuleDef = {
     '8.1.1': { kind: 'catalog', catalog: { them: 'Ghi tăng', nhomLoc: 'loai', nhanLoc: 'Loại thẻ', truong: THE_PHAN_BO, stt: true, kySoLieu: true,
       // Như danh sách chứng từ: phân trang, dòng Tổng, xem nhanh các dòng của thẻ ở khung dưới
       // Ghi tăng bổ sung: tạo thẻ cho các dòng phiếu chi chờ phân bổ còn sót (T159); nút chính Ghi tăng mở form thẻ mới (T421)
-      hangLoat: { nhan: 'Ghi tăng bổ sung', Form: GhiTangHangLoat },
+      hangLoat: { nhan: 'Ghi tăng bổ sung', nhanChinh: 'Ghi tăng', Form: GhiTangHangLoat },   // nhanChinh: chữ khi là nút chính (gói trên Free, T436)
       useCanhBao: useCanhBaoCho,   // dải cảnh báo khoản chờ phân bổ chưa tạo thẻ, có nút Ghi tăng bổ sung (T287, T421)
       dsChungTu: { cotCong: ['gt', 'kyNay', 'da', 'con'], cotSo: 'soThe', so: r => r.soThe, moTa: r => `(${r.ngay}) — ${r.ten}`, chiTiet: veChiTietThe }, cols: [{ k: 'soThe', t: 'Số thẻ', cls: 'code' }, { k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên' }, { k: 'loai', t: 'Loại' }, { k: 'ngay', t: 'Ngày ghi tăng' },
       // Phân bổ trong kỳ: số phân bổ đúng tháng đang lọc ở tab Đã phân bổ, thẻ nhiều dòng cộng các dòng (T296)
