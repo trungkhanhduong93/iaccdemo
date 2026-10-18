@@ -11,6 +11,8 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T423 | Điện thoại, trang chủ Free khối Quỹ tiền: "Tất cả quỹ" nằm trên "Xem dòng tiền 13 tháng" ở cột phải, hai dòng cao bằng nút Tạo quỹ bên trái | Trum | Đang làm | `MTrangChuFree.tsx`, cuối `app.css` |
+| T422 | Điện thoại thật bật giao diện tối thì thẻ trang chủ thành nền tối, lệch màu (luật dark mode thêm ở T404, T417). App chỉ dùng giao diện sáng: gỡ các khối `prefers-color-scheme: dark`, `[data-theme="dark"]` | Trum | Đang làm | `app.css` (gỡ khối T404, T417) |
 | T421 | Danh sách thẻ chi phí phân bổ: nút Ghi tăng mở thẳng form tạo thẻ mới như ban đầu, bỏ màn Ghi tăng từ các khoản chờ và dải cảnh báo khoản chờ (phiếu chi chờ phân bổ đã tự mở tạo thẻ từ T419) | dinhlanphuongipacc | Đang làm | `ccdc/index.ts`, `ccdc/the-phan-bo.tsx` |
 | T420 | Hộp Cột hiển thị (màn danh sách chứng từ): bỏ đoạn giải thích; gom nhóm chuyển vào hộp, mỗi dòng cột gom được có nút gom hiện số cấp, tối đa 5 cấp, áp khi bấm Xong; bỏ thanh Gom nhóm trên bảng, đang gom thì nút tuỳ chỉnh cột sáng | Trum | Đang làm | `LocNangCao.tsx`, `VoucherScreen.tsx`, cuối `app.css` (mục T420) |
 | T339 | Trang chủ Free máy tính, Tiến độ kiểm kê theo cửa hàng: hiện tối đa 4 cửa hàng cần chú ý (chưa kiểm, lệch nhiều trước), dòng Đã kiểm x/y cửa hàng, dòng Xem tất cả mở hộp danh sách đủ | dinhlanphuongipacc | Đang làm | Sửa `home/BaBaiToanFree.tsx`, `app.css` (mục cuối T339) |
