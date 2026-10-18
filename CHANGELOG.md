@@ -4,6 +4,8 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 19/10/2026
 
+- T441 (điện thoại): Danh mục Lý do nghiệp vụ: bỏ ô tích "Là chi phí" ở ngoài thẻ danh mục, đồng nhất icon chevron; trong màn chi tiết lý do, "Là chi phí" hiển thị dạng chữ (Có / Không) thay cho ô tích; nút Đóng mở rộng trọn chiều ngang chân màn cân đối.
+
 - T443 (điện thoại): Ô tìm kiếm trên mọi báo cáo điện thoại căn khoảng cách trên dưới đều (8px), không còn dính sát đường kẻ ngăn với thanh kỳ/chip lọc; kiểu dáng ô tìm kiếm đổi sang nền xám nhạt `#f1f5f9`, bo góc 8px, cao 38px đồng bộ với thanh tìm kiếm danh sách điện thoại (T434); báo cáo dạng tờ giấy (Nhập xuất tồn, Thẻ kho, Kết quả kinh doanh) bổ sung ô tìm kiếm đồng bộ.
 
 - T440 (điện thoại): Bộ lọc danh mục làm lại theo dạng bảng trượt từ đáy lên (`m-loc-tam`) đồng bộ với danh sách chứng từ: có tay kéo, nút Đặt lại và Áp dụng; các ô điều kiện Trạng thái và trường danh mục bấm vào mở trang con chọn giá trị kèm ô tìm kiếm.

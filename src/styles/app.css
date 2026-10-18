@@ -30492,5 +30492,11 @@ a.tx-item:hover {
   border-radius: 8px !important;
 }
 
+/* ── Danh mục Lý do nghiệp vụ điện thoại (T441) ── */
+.m-dm-nut-dong-chan {
+  width: 100% !important;
+  justify-content: center !important;
+}
+
 
 

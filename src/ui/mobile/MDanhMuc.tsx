@@ -195,17 +195,6 @@ export const MDanhMuc: FC<ScreenProps> = ({ sc }) => {
 
   const ten = tenMan(sc)
 
-  const doiChiPhi = useCallback(
-    (r: Row, checked: boolean) => {
-      const k = khoaDong(r)
-      if (k) setChiPhiGhiDe(prev => ({ ...prev, [k]: checked }))
-      const item = LY_DO.find(x => x.ma === r.ma)
-      if (item) item.chiPhi = checked
-      toast('Đã lưu')
-    },
-    [khoaDong, toast],
-  )
-
   // Tạo quỹ từ trang chủ (?moi=1&goiY=thuchi): mở thẳng form thêm, lưu quỹ mới xong gợi ý lập phiếu thu, chi (T250)
   const [thamSo, setThamSo] = useSearchParams()
   const [goiYThuChi, setGoiYThuChi] = useState(false)
@@ -382,25 +371,7 @@ export const MDanhMuc: FC<ScreenProps> = ({ sc }) => {
                   {typeof r[cotSo.k] === 'number' ? `${money(r[cotSo.k])} đ` : String(r[cotSo.k])}
                 </span>
               )}
-              {laLyDo && r.dung === 'Chi tiền' ? (
-                <label
-                  className="m-dm-tich-cp"
-                  onClick={e => e.stopPropagation()}
-                >
-                  <input
-                    type="checkbox"
-                    checked={Boolean(r.chiPhi)}
-                    aria-label={`Là chi phí ${r.ten}`}
-                    onChange={e => {
-                      e.stopPropagation()
-                      doiChiPhi(r, e.target.checked)
-                    }}
-                  />
-                  <span>Là chi phí</span>
-                </label>
-              ) : (
-                <Icon n="chevr" className="ic sm m-the-dm-v2-chevron" />
-              )}
+              <Icon n="chevr" className="ic sm m-the-dm-v2-chevron" />
             </div>
           </div>
         )}
@@ -648,7 +619,7 @@ export const MDanhMuc: FC<ScreenProps> = ({ sc }) => {
           nhoms={nhoms}
           ten={ten}
           tenNgan={sc.ngan ?? ten}
-          chiXem={laChiXem}
+          chiXem={sc.slug === 'phuong-thuc-thanh-toan'}
           onDong={() => setEdit(null)}
           onLuu={handleLuu}
         />
@@ -688,20 +659,8 @@ export const MDanhMuc: FC<ScreenProps> = ({ sc }) => {
                 {xemLyDo.dung === 'Chi tiền' && (
                   <div className="m-xp-dong-tt">
                     <span className="m-xp-nhan">Là chi phí:</span>
-                    <span className="m-xp-tri">
-                      <label className="m-dm-tich-cp">
-                        <input
-                          type="checkbox"
-                          checked={Boolean(xemLyDo.chiPhi)}
-                          aria-label={`Là chi phí ${xemLyDo.ten}`}
-                          onChange={e => {
-                            const moi = e.target.checked
-                            doiChiPhi(xemLyDo, moi)
-                            setXemLyDo(prev => (prev ? { ...prev, chiPhi: moi } : null))
-                          }}
-                        />
-                        <span>Là chi phí</span>
-                      </label>
+                    <span className="m-xp-tri dam">
+                      {xemLyDo.chiPhi ? 'Có' : 'Không'}
                     </span>
                   </div>
                 )}
@@ -716,8 +675,11 @@ export const MDanhMuc: FC<ScreenProps> = ({ sc }) => {
               </div>
             </div>
             <div className="pn-chan">
-              <span className="grow" />
-              <button type="button" className="btn" onClick={() => setXemLyDo(null)}>
+              <button
+                type="button"
+                className="btn m-dm-nut-dong-chan"
+                onClick={() => setXemLyDo(null)}
+              >
                 Đóng
               </button>
             </div>
@@ -767,8 +729,11 @@ export const MDanhMuc: FC<ScreenProps> = ({ sc }) => {
               </div>
             </div>
             <div className="pn-chan">
-              <span className="grow" />
-              <button type="button" className="btn" onClick={() => setXemPttt(null)}>
+              <button
+                type="button"
+                className="btn m-dm-nut-dong-chan"
+                onClick={() => setXemPttt(null)}
+              >
                 Đóng
               </button>
             </div>
