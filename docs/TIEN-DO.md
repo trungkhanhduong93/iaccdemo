@@ -4,7 +4,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T378.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T379.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
@@ -12,6 +12,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
 | T371 | Sơ đồ quy trình: sửa icon Xuất/Nhập điều chỉnh, Tổng hợp và Chi tiết xuất kho (Kho); ô Thẻ chi phí phân bổ dùng icon phân hệ Chi phí phân bổ | Trum | Đang làm | Sửa `kho/quy-trinh.ts`, `ccdc/quy-trinh.ts` (giao anti) |
+| T379 | Điện thoại, Trang chủ: màn xem biểu đồ kinh doanh và biểu đồ thu chi, nút Đóng và Xem báo cáo nằm sát đáy | Trum | Đang làm | Giao anti cùng T377 |
 | T378 | Điện thoại, Báo cáo kết quả kinh doanh: ô tóm tắt đầu báo cáo đổi thành Tổng doanh thu, Tổng chi phí, Lợi nhuận (đang hiện Doanh thu thuần 0) | Trum | Đang làm | Sửa báo cáo KQKD điện thoại (giao anti) |
 | T377 | Điện thoại: ẩn thanh menu dưới trong màn chi tiết Danh mục và Thiết lập để nút thao tác nằm sát đáy; giãn cách nút Mở khoá, Khoá sổ | Trum | Đang làm | Sửa khung điện thoại, màn Khoá sổ điện thoại, `app.css` mục cuối T377 (giao anti) |
 | T376 | Điện thoại, Khác > Thiết lập: icon Khoá sổ đổi sang dạng khối như các dòng khác | Trum | Đang làm | Sửa `mobile/MKhac.tsx` (giao anti) |
