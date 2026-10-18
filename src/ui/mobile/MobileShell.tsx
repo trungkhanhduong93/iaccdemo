@@ -7,14 +7,29 @@ import { ghiGanDay } from '../../app/CommandPalette'
 import { OnboardFabi } from '../../modules/onboarding/OnboardFabi'
 import { Icon } from '../Icon'
 import { Dropdown, MenuHead, MenuItem, MenuSep } from '../Dropdown'
-import { ThanhDuoi } from './ThanhDuoi'
+import { tabDangChon, ThanhDuoi } from './ThanhDuoi'
 import { MBaoCaoLoc } from './MBaoCaoLoc'
 import { kyHieuBC } from '../../modules/bao-cao/danh-sach'
 import type { Session } from '../../app/session'
 import { ChonCuaHangTruoc, laDuongDanTaoPhieu } from '../ChonCuaHangTruoc'
 
+function manGocCuaTab(pathname: string): string {
+  const tab = tabDangChon(pathname)
+  switch (tab) {
+    case 'trang-chu':
+      return '/app/trang-chu/tong-quan'
+    case 'nghiep-vu':
+      return '/app/nghiep-vu'
+    case 'bao-cao':
+      return '/app/bao-cao/tat-ca'
+    case 'khac':
+      return '/app/khac'
+  }
+}
+
 function laManGoc(pathname: string, search = ''): boolean {
   if (pathname === '/app/nghiep-vu' && search.includes('m=')) return false
+  if (pathname === '/app/bao-cao/tat-ca' && search.includes('nhom=')) return false
   const p = pathname.replace(/\/+$/, '')
   return (
     p === '/app' ||
@@ -182,14 +197,14 @@ export function MobileShell() {
       nav(-1)
     } else if (loc.pathname === '/app/nghiep-vu' && loc.search.includes('m=')) {
       nav('/app/nghiep-vu', { replace: true })
+    } else if (loc.pathname === '/app/bao-cao/tat-ca' && loc.search.includes('nhom=')) {
+      nav('/app/bao-cao/tat-ca', { replace: true })
     } else if (loc.pathname.startsWith('/app/trang-chu/')) {
       const sp = new URLSearchParams(loc.search)
       const th = sp.get('thang')
       nav(th ? `/app/trang-chu/tong-quan?thang=${th}` : '/app/trang-chu/tong-quan', { replace: true })
-    } else if (laManConKhac(loc.pathname)) {
-      nav('/app/khac', { replace: true })
     } else {
-      nav('/app/trang-chu/tong-quan', { replace: true })
+      nav(manGocCuaTab(loc.pathname), { replace: true })
     }
   }
 

@@ -71,7 +71,7 @@ export const MXemPhieu: FC<MXemPhieuProps> = ({ sc, mod, id }) => {
       <div className="m-xp-trong">
         <MTrong tieuDe="Không tìm thấy chứng từ" moTa="Chứng từ không tồn tại hoặc đã bị xoá" />
         <div className="m-xp-trong-nut">
-          <button type="button" className="btn pri" onClick={() => nav(path)}>
+          <button type="button" className="btn pri" onClick={() => nav(path, { replace: true })}>
             Về danh sách
           </button>
         </div>
@@ -428,7 +428,15 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
       )
     }
     toast(`Đã xoá ${soCt}`)
-    nav(path)
+    nav(path, { replace: true })
+  }
+
+  const quayLai = () => {
+    if (window.history.state && window.history.state.idx > 0) {
+      nav(-1)
+    } else {
+      nav(path, { replace: true })
+    }
   }
 
   // Tên chính hiển thị trên thẻ tổng quan
@@ -462,7 +470,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
     <div className="m-pb-man">
       {/* ── THANH ĐẦU MÀN HÌNH ── */}
       <header className="m-pb-thanh-dau">
-        <button type="button" className="m-pb-btn-back" onClick={() => nav(path)} aria-label="Quay lại">
+        <button type="button" className="m-pb-btn-back" onClick={quayLai} aria-label="Quay lại">
           <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none">
             <path d="M19 12H5M12 19l-7-7 7-7" />
           </svg>

@@ -158,7 +158,13 @@ export const MBaoCao: FC<ScreenProps> = ({ sc, mod }) => {
               <button
                 type="button"
                 className="m-bc-nhom-back"
-                onClick={() => nav('/app/bao-cao/tat-ca')}
+                onClick={() => {
+                  if (window.history.state && window.history.state.idx > 0) {
+                    nav(-1)
+                  } else {
+                    nav('/app/bao-cao/tat-ca', { replace: true })
+                  }
+                }}
               >
                 <Icon n="chevl" className="ic sm" />
                 <span>Tất cả nhóm</span>

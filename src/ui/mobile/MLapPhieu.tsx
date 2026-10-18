@@ -58,7 +58,7 @@ export const MLapPhieu: FC<MLapPhieuProps> = ({ sc, mod, id }) => {
       <div className="m-xp-trong">
         <MTrong tieuDe="Không tìm thấy chứng từ" moTa="Chứng từ không tồn tại hoặc đã bị xoá" />
         <div className="m-xp-trong-nut">
-          <button type="button" className="btn pri" onClick={() => nav(path)}>
+          <button type="button" className="btn pri" onClick={() => nav(path, { replace: true })}>
             Về danh sách
           </button>
         </div>
@@ -1054,7 +1054,11 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
       suaPhieu(man, String(row!.id), noiDung)
       ghiNhatKy(man, String(row!.id), soCt, s.ten, 'Sửa chứng từ')
       toast(`Đã lưu thay đổi ${soCt}`)
-      nav(`${path}/${row!.id}`)
+      if (window.history.state && window.history.state.idx > 0) {
+        nav(-1)
+      } else {
+        nav(`${path}/${row!.id}`, { replace: true })
+      }
       return
     }
 
@@ -1134,7 +1138,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
       <div className="m-pb-man">
         <div className="m-lp-buoc m-lp-buoc-thanh-cong">
           <div className="m-lp-dau-thanh-cong">
-            <button type="button" className="m-lp-btn-home" onClick={() => nav(path)} aria-label="Về trang danh sách">
+            <button type="button" className="m-lp-btn-home" onClick={() => nav(path, { replace: true })} aria-label="Về trang danh sách">
               <Icon n="home" className="ic sm" kieu="net" />
             </button>
           </div>
@@ -1149,13 +1153,13 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
             </p>
 
             <div className="m-lp-thanh-cong-nut-hang">
-              <button type="button" className="m-pb-btn-phu" onClick={() => nav(path)}>
+              <button type="button" className="m-pb-btn-phu" onClick={() => nav(path, { replace: true })}>
                 Đóng
               </button>
               <button
                 type="button"
                 className="m-pb-btn-sua"
-                onClick={() => nav(`${path}/${idPhieuMoi}`)}
+                onClick={() => nav(`${path}/${idPhieuMoi}`, { replace: true })}
               >
                 Xem phiếu
               </button>

@@ -266,7 +266,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
   const nav = useNavigate()
   // T419: thẻ mở từ phiếu chi (state.tuPhieu có _goc): đóng form thẻ thì về lại phiếu chi gốc
   const [veGoc, setVeGoc] = useState<string | null>(null)
-  const dongForm = () => { setEdit(null); if (veGoc) { const g = veGoc; setVeGoc(null); nav(g) } }
+  const dongForm = () => { setEdit(null); if (veGoc) { const g = veGoc; setVeGoc(null); nav(g, { replace: true }) } }
   // ?goiY=thuchi: tạo quỹ từ trang chủ, lưu quỹ mới xong gợi ý lập phiếu thu, chi (T250)
   const [goiYThuChi, setGoiYThuChi] = useState(false)
   const [quyVuaTao, setQuyVuaTao] = useState<Row | null>(null)
