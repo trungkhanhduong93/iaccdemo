@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T415 | Điện thoại: màn tạo mới và sửa thẻ chi phí phân bổ dùng cùng giao diện với màn Xem thẻ chi phí phân bổ (mẫu A T365) | Trum | Đang làm | `src/ui/mobile/MCcdc.tsx`, cuối `app.css` |
 | T413 | Điện thoại, trang chủ Free khối Quỹ tiền: giữ vòng tồn quỹ có nhãn như cũ (bỏ T408), nút Tạo quỹ và Xem dòng tiền 13 tháng cùng một hàng | Trum | Đang làm | `MTrangChuFree.tsx`, cuối `app.css` |
 | T414 | Điện thoại: bản mẫu màn chi tiết phiếu thu chi, phiếu mua hàng, phiếu kiểm kê theo kiểu chi tiết thẻ chi phí phân bổ (mẫu A T365), chờ Trum duyệt | Trum | Đang làm | Bản mẫu `backup/mock-T414.html` (không vào repo) |
 | T412 | Báo cáo Nhập xuất tồn (web, điện thoại): thêm điều kiện lọc Kho; bấm mã hàng mở báo cáo Thẻ kho của hàng đó, cùng kỳ, cùng kho | Trum | Đang làm | Cấu hình báo cáo kho, màn báo cáo web, `MSoBaoCao.tsx`/`MBaoCaoDong.tsx` |
