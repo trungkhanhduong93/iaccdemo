@@ -16,6 +16,7 @@ import { ToolScreen } from '../ui/generic/ToolScreen'
 import { QuyTrinhScreen } from '../ui/generic/QuyTrinhScreen'
 import { BaoCaoScreen } from '../ui/generic/BaoCaoScreen'
 import { ThanhChonBaoCao } from '../modules/bao-cao/ThanhChon'
+import { baoCaoCuaPhanHe } from '../modules/bao-cao/cuaPhanHe'
 import { CAU_HINH_BC } from '../modules/bao-cao/danh-sach'
 import { useLaMobile } from '../ui/mobile/useLaMobile'
 import { manMobile } from '../ui/mobile/manMobile'
@@ -30,7 +31,22 @@ export function ScreenRoute() {
   const { mod: mk, slug } = useParams()
   const { mod, sc } = timMan(mk, slug)
   if (!mod) return <Navigate to="/app" replace />
-  if (!sc) return <Navigate to={duongDan(mod, manDau(mod, s.goi))} replace />
+  if (!sc) {
+    // Báo cáo của phân hệ khác mà sơ đồ Quy trình nhắc tới, mở ngay trong phân hệ đang đứng (T385), vd mua-hang/5-2-3
+    const ngoai = !laMobile && mod.key !== 'bao-cao' ? baoCaoCuaPhanHe(mod, s).find(x => x.slug === slug && x.goc !== mod.key) : undefined
+    const modGoc = ngoai && MODULES.find(m => m.key === ngoai.goc)
+    const scGoc = modGoc && modGoc.screens.find(x => x.slug === ngoai.slug)
+    if (modGoc && scGoc && hienMan(scGoc, s.goi, s.cheDo, s, true) && moDuoc(scGoc, s.goi)) {
+      const CN = scGoc.comp ?? GENERIC[scGoc.kind]
+      return (
+        <>
+          <ThanhChonBaoCao sc={{ ...scGoc, goc: mod.key }} trongPhanHe={mod} />
+          <CN key={mk + '/' + slug} sc={scGoc} mod={modGoc} />
+        </>
+      )
+    }
+    return <Navigate to={duongDan(mod, manDau(mod, s.goi))} replace />
+  }
   // Màn chỉ có ở một số gói (sc.goi) thì gói khác ẩn hẳn: về màn đầu phân hệ, không hiện màn khoá (vd Bàn làm việc gói Free, T230)
   if (sc.goi && !sc.goi.includes(s.goi)) return <Navigate to={duongDan(mod, manDau(mod, s.goi))} replace />
   // Máy tính: tab Báo cáo của phân hệ và báo cáo mở ngay trong phân hệ, đóng báo cáo về tab Báo cáo của phân hệ đó (T384).

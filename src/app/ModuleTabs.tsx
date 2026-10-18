@@ -10,6 +10,7 @@ import { Icon, ONen } from '../ui/Icon'
 import { Pk } from '../ui/Page'
 import { Dropdown, MenuItem } from '../ui/Dropdown'
 import { laTuTrangChu } from './tuTrangChu'
+import { baoCaoCuaPhanHe } from '../modules/bao-cao/cuaPhanHe'
 
 const KHAC = 110  // chỗ cho nút "Khác" kèm số tab bên trong
 
@@ -21,7 +22,8 @@ export function ModuleTabs({ mod }: { mod: ModuleDef }) {
   const bc = tabs.find(t => t.kind === 'baocao')
   const slug = loc.pathname.split('/')[3]
   const cur = mod.screens.find(sc => sc.slug === slug)
-  const active = mod.key === 'bao-cao' ? 'tat-ca' : (cur && laBaoCao(cur) ? 'bao-cao' : cur?.tabCha ?? slug)
+  const ngoai = !cur && mod.key !== 'bao-cao' && baoCaoCuaPhanHe(mod, s).some(x => x.slug === slug)   // báo cáo phân hệ khác mở trong phân hệ (T385)
+  const active = mod.key === 'bao-cao' ? 'tat-ca' : ((cur && laBaoCao(cur)) || ngoai ? 'bao-cao' : cur?.tabCha ?? slug)
 
   const wrap = useRef<HTMLDivElement>(null)
   const meas = useRef<HTMLDivElement>(null)

@@ -11,6 +11,7 @@ import { PageHead, Pk } from '../../ui/Page'
 import { fold } from '../../ui/format'
 import { ThanhLoc } from '../../ui/ThanhLoc'
 import { AN_NHOM_BC, CHI_MO_TU_BC, DAU_NHOM_BC, NHOM_CONG_NO, cauHinhBC, kyHieuBC } from './danh-sach'
+import { baoCaoCuaPhanHe } from './cuaPhanHe'
 
 export interface NhomBaoCaoItem {
   mod: ModuleDef
@@ -131,7 +132,9 @@ export function TrungTamBaoCao({ sc, mod }: ScreenProps) {
   const keyHienTai = sc.slug.startsWith('nhom-') ? sc.slug.slice(5) : null
   // Tất cả: nhóm sổ theo thông tư đứng đầu, rồi các nhóm phân hệ (đã bỏ sổ theo thông tư)
   const modSoTT = { key: 'so-sach', ten: tenSoTT } as ModuleDef
-  const nhomHienThi = keyHienTai
+  const nhomHienThi = trongPhanHe
+    ? [{ mod, screens: baoCaoCuaPhanHe(mod, s) }]   // tab Báo cáo của phân hệ: thêm báo cáo sơ đồ Quy trình nhắc tới (T385)
+    : keyHienTai
     ? nhomGoc.filter(g => g.mod.key === keyHienTai)
     : chiSoTT
     ? [{ mod: modSoTT, screens: soTT }]

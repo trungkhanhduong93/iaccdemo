@@ -8,6 +8,7 @@ import { GOI, minGoi } from '../../app/plan'
 import { Icon } from '../../ui/Icon'
 import { Select } from '../../ui/Dropdown'
 import { kyHieuBC } from './danh-sach'
+import { baoCaoCuaPhanHe } from './cuaPhanHe'
 import { laTuTrangChu } from '../../app/tuTrangChu'
 
 /** trongPhanHe: báo cáo mở ngay trong phân hệ gốc (T384): nút quay lại về tab Báo cáo của phân hệ, đổi báo cáo vẫn ở phân hệ */
@@ -16,7 +17,8 @@ export function ThanhChonBaoCao({ sc, trongPhanHe }: { sc: ScreenDef; trongPhanH
   const nav = useNavigate()
   const tuTrangChu = laTuTrangChu(useLocation().state)   // mở từ trang chủ gói Free thì có nút về Trang chủ (T232)
   const bcMod = MODULES.find(m => m.key === 'bao-cao')
-  const cungGoc = bcMod?.screens.filter(x => x.goc === sc.goc && (x.slug === sc.slug || hienMan(x, s.goi, s.cheDo, s))) ?? []   // báo cáo đang xem luôn có trong ô chọn, kể cả báo cáo chỉ mở từ báo cáo khác (T200)
+  const cungGoc = (trongPhanHe ? baoCaoCuaPhanHe(trongPhanHe, s) : bcMod?.screens.filter(x => x.goc === sc.goc) ?? [])
+    .filter(x => x.slug === sc.slug || hienMan(x, s.goi, s.cheDo, s))   // báo cáo đang xem luôn có trong ô chọn, kể cả báo cáo chỉ mở từ báo cáo khác (T200)
 
   // Ghi nhận báo cáo vừa mở vào danh sách mở gần đây (tối đa 8, mới nhất trước, T58)
   useEffect(() => {
