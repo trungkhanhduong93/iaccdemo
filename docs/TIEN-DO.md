@@ -11,12 +11,14 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T413 | Điện thoại, trang chủ Free khối Quỹ tiền: giữ vòng tồn quỹ có nhãn như cũ (bỏ T408), nút Tạo quỹ và Xem dòng tiền 13 tháng cùng một hàng | Trum | Đang làm | `MTrangChuFree.tsx`, cuối `app.css` |
+| T414 | Điện thoại: bản mẫu màn chi tiết phiếu thu chi, phiếu mua hàng, phiếu kiểm kê theo kiểu chi tiết thẻ chi phí phân bổ (mẫu A T365), chờ Trum duyệt | Trum | Đang làm | Bản mẫu `backup/mock-T414.html` (không vào repo) |
 | T412 | Báo cáo Nhập xuất tồn (web, điện thoại): thêm điều kiện lọc Kho; bấm mã hàng mở báo cáo Thẻ kho của hàng đó, cùng kỳ, cùng kho | Trum | Đang làm | Cấu hình báo cáo kho, màn báo cáo web, `MSoBaoCao.tsx`/`MBaoCaoDong.tsx` |
 | T411 | Điện thoại, chi tiết đơn Xuất bán POS theo mẫu B Trum chọn: thông tin đơn lưới hai cột, tab không bị che, khối tổng ở chân ngoài vùng cuộn bấm bung, chỉ nút Đóng | Trum | Đang làm | `src/ui/mobile/MXuatBanPos.tsx`, cuối `app.css` (thay phần ghim T392) |
 | T410 | Điện thoại, Ghi tăng thẻ chi phí: ô Tên mục chi phí / CCDC xuống hàng riêng dưới nhãn, rộng hết thẻ; Ngày bắt đầu phân bổ, Ngày ghi tăng bấm chọn được ngày | Trum | Đang làm | `src/ui/mobile/MCcdc.tsx`, cuối `app.css` |
 | T409 | Danh mục (web, điện thoại): tab trạng thái dùng chung kiểu với danh sách chứng từ; bỏ dòng Lọc nâng cao, chỉ hiện số điều kiện lọc trên icon lọc; nút Thêm mới, Đồng bộ FABi dùng màu chung hệ thống; bỏ logo FABi khỏi nút | Trum | Đang làm | `CatalogScreen.tsx`, `MDanhMuc.tsx`, cuối `app.css` |
 | T407 | Điện thoại: nút bộ lọc ở thanh trên các báo cáo đổi sang icon phễu lọc | Trum | Đang làm | `MobileShell.tsx` |
-| T408 | Điện thoại, vòng tồn quỹ khối Quỹ tiền trang chủ Free: bỏ nhãn chú thích quanh vòng, hiện lại danh sách quỹ bên phải vòng | Trum | Đang làm | `BaBaiToanFree.tsx` (VongQuy), `MTrangChuFree.tsx`, cuối `app.css` |
+| T408 | Điện thoại, vòng tồn quỹ khối Quỹ tiền trang chủ Free: bỏ nhãn chú thích quanh vòng, hiện lại danh sách quỹ bên phải vòng | Trum | Kẹt | Trum đổi ý, giữ nhãn như cũ, xem T413. `BaBaiToanFree.tsx` (VongQuy), `MTrangChuFree.tsx`, cuối `app.css` |
 | T406 | Điện thoại: sổ TT152 (S1a, S2a, S2b, S2c, S2d, S2e) dạng bảng dữ liệu theo mẫu Trum chốt: 3 ô tóm tắt, đầu cột và dòng cộng ghim, cột Chứng từ gộp số hiệu, ngày, diễn giải | Trum | Đang làm | File mới `src/ui/mobile/MSoTT152.tsx`, cuối `app.css`; T403 gắn vào `MBaoCaoDong.tsx` |
 | T405 | Điện thoại, báo cáo Kết quả kinh doanh: dòng tổng (Doanh thu bán hàng, Chi phí NVL, Chi phí trong tháng…) bấm vào thả xuống dòng con, mặc định thu gọn; dòng con thụt vào để phân biệt | Trum | Đang làm | `src/ui/mobile/MBaoCaoDong.tsx`, cuối `app.css` |
 | T403 | Điện thoại: báo cáo dạng bảng (bảng kê) đổi kiểu trình bày đẹp hơn; Trum chốt mẫu gom theo nhà cung cấp, chi tiết dòng hàng dạng dòng nhãn và số; áp cho Bảng kê mua hàng theo hàng hoá 4.2.7 | Trum | Đang làm | Bản mẫu `backup/mock-T403.html` (không vào repo) |
