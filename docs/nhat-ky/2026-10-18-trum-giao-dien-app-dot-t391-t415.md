@@ -2,7 +2,7 @@
 
 - Ngày: 18/10/2026
 - Người: Trum, agent: Claude Code điều phối, Antigravity (Windows, WSL) code và review
-- Trạng thái cuối phiên: Xong (T414 dở dang: bản mẫu đã duyệt, chưa code)
+- Trạng thái cuối phiên: Xong
 
 ## Đã làm
 
@@ -24,6 +24,11 @@
 - T410, T415: Ghi tăng thẻ chi phí: ô tên hàng riêng, chọn được ngày (LichDon); form tạo, sửa cùng giao diện màn Xem (`MCcdc.tsx`).
 - T412: Nhập xuất tồn lọc Kho, bấm mã hàng mở Thẻ kho cùng kỳ, kho; Thẻ kho đọc tham số (`XuatNhapTon.tsx`, `TheKho.tsx`, `MToGiay.tsx`).
 
+- T414: màn xem, tạo mới, sửa phiếu thu chi, mua hàng, kiểm kê điện thoại theo khuôn thẻ phân bổ (`MXemPhieu.tsx`, `MLapPhieu.tsx`, `MLapPhieuKho.tsx`): gói Free ẩn hạch toán, ghi sổ; nút chính xanh; phiếu mua dòng hàng 6 ô, sửa Tổng tiền chia ngược đơn giá, Ngày hoá đơn, Thanh toán ngay chọn quỹ (Free số tiền trả chỉ đọc); màn xem phiếu mua có nút Thanh toán mở bảng chọn quỹ, lập phiếu chi bằng `themPhieu(MAN_THU_CHI)` như form chứng từ, lưu vào `_dsTt`; chip thanh toán hiện mọi gói; kiểm kê ô ĐVT đầu dải [ĐVT | Tồn sổ | Thực tế | Chênh lệch], gói Standard chọn ĐVT quy đổi, nút Thêm hàng kiểm kê.
+- T416: CSS chung cho khung cuộn báo cáo, danh sách, Xuất bán POS khi có thanh tab (`.m-app:not(.m-cap-2)`), đo 22 màn.
+- T417: % thẻ KQKD điện thoại bỏ nền, viền; khối Mua hàng & Công nợ 2 dòng (`MKhoFree.tsx`).
+- T418: đang xem Tất cả mà mở đường dẫn tạo phiếu (`/moi`, `?moi=1`) thì bật bảng chọn cửa hàng (`src/ui/ChonCuaHangTruoc.tsx`, chặn ở `Shell.tsx`, `MobileShell.tsx`); chọn xong lưu làm cửa hàng hiện tại; danh mục không chặn.
+
 ## Đã kiểm
 
 - `npm run typecheck`: không lỗi. `npm run build`: chạy xong, không lỗi.
@@ -33,7 +38,7 @@
 
 ## Dở dang, việc tiếp theo
 
-- T414: Trum đã duyệt bản mẫu màn xem chi tiết và màn tạo mới, sửa của phiếu thu chi, phiếu mua hàng, phiếu kiểm kê điện thoại (file mẫu `backup/mock-T414.html` và artifact claude.ai "Form phiếu điện thoại"). Gói Free ẩn hạch toán. Phiếu mua: dòng hàng 6 ô (SL, ĐVT khoá ở ĐVT chính với gói Free, Đơn giá, Giảm giá % hoặc đ, VAT, Tổng tiền; sửa Tổng tiền thì đơn giá tự chia), ô tìm hàng trong phiếu, Thanh toán ngay có bảng chọn quỹ. Kiểm kê có nút Thêm hàng kiểm kê. Phiếu mua thêm Ngày hoá đơn dưới Ký hiệu; gói Free Thanh toán ngay trả hết tổng phiếu, không sửa số tiền trả. Bản mẫu cuối: `backup/mock-T414-form.html`. Bước kế: giao code.
+- Không còn việc dở trong đợt này (T414 đã code xong).
 - T399: chờ PhuongXT xong T321 để nối lọc vào màn Thêm cửa hàng từ FABi.
 
 ## Bẫy, quyết định mới

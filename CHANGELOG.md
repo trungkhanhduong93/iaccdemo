@@ -4,6 +4,8 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 18/10/2026
 
+- T414, T416–T418 (điện thoại, T418 cả web): màn xem, tạo mới, sửa phiếu thu chi, phiếu mua, phiếu kiểm kê theo kiểu thẻ chi phí phân bổ, nút chính màu xanh; gói Free ẩn hạch toán. Phiếu mua: dòng hàng có số lượng, ĐVT, đơn giá, giảm giá % hoặc tiền, VAT, tổng tiền (nhập tổng tiền thì đơn giá tự chia), ô tìm hàng, ngày hoá đơn; bấm Thanh toán ở phiếu mua chọn quỹ để lập phiếu chi. Kiểm kê: ô ĐVT đứng đầu dải số, nút thêm hàng.
+- Điện thoại: dòng cuối các màn không còn bị thanh tab che; số % ở thẻ Kết quả kinh doanh bỏ nền; khối Mua hàng & Công nợ xếp 2 dòng. Đang xem Tất cả cửa hàng mà tạo phiếu thì chọn cửa hàng trước, lựa chọn áp cho trang chủ và các màn sau (web, điện thoại).
 - T391–T415 (điện thoại là chính): gói Free ẩn trạng thái ghi sổ ở danh sách chứng từ. Chi tiết đơn Xuất bán POS gọn lại, tổng tiền ở chân màn bấm bung, không còn che món. Phiếu mua in đậm số tổng.
 - Trang chủ Free: bấm lý do trong Chi phí hoạt động mở danh sách phiếu chi của lý do đó; vòng tồn quỹ màu tươi có nhãn; điện thoại nút Tạo quỹ cùng hàng Xem dòng tiền 13 tháng; thẻ Kết quả kinh doanh số tiền canh phải. Lịch sử thu chi làm lại kiểu app ngân hàng.
 - Danh mục: tab Tất cả, Đã phân loại, Chưa phân loại (Hàng hoá) hoặc Đang hoạt động, Không hoạt động; số điều kiện lọc trên icon phễu; bộ lọc nâng cao theo từng trường; nút Đồng bộ FABi chỉ ở Hàng hoá, Nhóm hàng hoá, Cửa hàng, Phương thức thanh toán; icon Hàng hoá, Nhóm hàng hoá, Phương thức thanh toán mới. Điện thoại có màn Thêm cửa hàng từ FABi.
