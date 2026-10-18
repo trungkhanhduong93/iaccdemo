@@ -11,6 +11,18 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T391 | Gói Free: các danh sách chứng từ ẩn trạng thái Đã ghi sổ, Chưa ghi sổ (cột, chip lọc), web và điện thoại | Trum | Đang làm | Anti B. Có thể sửa `VoucherScreen.tsx`, danh sách điện thoại, `app.css` (mục cuối T391) |
+| T392 | Điện thoại, chi tiết Xuất bán POS: thông tin đơn không bị che; khối tổng ghim đáy theo thứ tự Tổng thành tiền, Tổng giảm giá chiết khấu, Tổng VAT, Tổng tiền thanh toán | Trum | Đang làm | Anti B. Màn xem đơn POS điện thoại |
+| T393 | Chi tiết Mua hàng: dòng tổng cuối bảng (Tổng thành tiền, Giảm giá, VAT) in đậm, web và điện thoại | Trum | Đang làm | Anti B. Có thể sửa `ChungTuForm.tsx` |
+| T394 | Trang chủ Free, 3 thẻ chi phí: vào trong bấm tiếp ra danh sách phiếu chi theo lý do đang bấm; 2 thẻ Giá vốn NVL, Chi phí phân bổ bấm tiếp theo logic web, điện thoại thiết kế cho hợp; danh sách Thu, chi tiền điện thoại thêm lọc Lý do | Trum | Đang làm | Anti Windows. `ChiPhiThang.tsx`, `MChiPhiThang.tsx`, có thể `BaBaiToanFree.tsx` (T339 đang sửa khối kiểm kê cùng file) |
+| T395 | Thiết kế lại màn Lịch sử thu chi mở từ trang chủ, web và điện thoại; dựng phương án cho Trum chọn trước | Trum | Đang làm | Anti Windows dựng bản mẫu, Trum chọn rồi mới sửa code |
+| T396 | Báo cáo điện thoại dạng thẻ (Công nợ nhà cung cấp, Công nợ khách hàng, Thẻ kho, Sổ chi tiết hàng hoá): thẻ nền trắng trên nền trang xám | Trum | Đang làm | Anti B. `MBaoCaoDong.tsx` |
+| T397 | Báo cáo nhóm Kho hiện mã báo cáo dưới tên báo cáo như Nhập xuất tồn, web và điện thoại | Trum | Đang làm | Anti B |
+| T398 | Danh mục có tab trạng thái: Hàng hoá chia Tất cả, Đã phân loại, Chưa phân loại (theo Loại hàng), mặc định lọc Đang hoạt động; danh mục khác tab Đang hoạt động, Không hoạt động. Nút Đồng bộ POS đổi thành Đồng bộ FABi có logo, web và điện thoại | Trum | Đang làm | Anti Windows. Danh mục cửa hàng làm sau T321 (PhuongXT đang sửa `DanhMucCuaHang.tsx`) |
+| T399 | Điện thoại: màn Thêm cửa hàng từ FABi trong Danh mục cửa hàng | Trum | Đang làm | Anti Windows. Dựng giao diện điện thoại trước, bổ sung điều kiện lọc theo T321 sau |
+| T400 | Icon Hàng hoá, Nhóm hàng hoá, Phương thức thanh toán trong danh mục rõ nghĩa hơn, không trùng icon Kho | Trum | Đang làm | Anti Windows. `icon-dac.ts`, `danh-muc/index.ts` |
+| T401 | Điện thoại, các màn trong Thiết lập: bố cục gọn, nút Lưu sát đáy, ô không tràn viền trái phải | Trum | Đang làm | Anti Windows |
+| T402 | Vòng tồn quỹ khối Quỹ tiền trang chủ Free: màu tươi, nhãn ngoài vòng có icon như mẫu Trum gửi, web và điện thoại | Trum | Đang làm | Anti Windows. `BaBaiToanFree.tsx` (T339 đang sửa khối kiểm kê cùng file), trang chủ điện thoại |
 | T339 | Trang chủ Free máy tính, Tiến độ kiểm kê theo cửa hàng: hiện tối đa 4 cửa hàng cần chú ý (chưa kiểm, lệch nhiều trước), dòng Đã kiểm x/y cửa hàng, dòng Xem tất cả mở hộp danh sách đủ | dinhlanphuongipacc | Đang làm | Sửa `home/BaBaiToanFree.tsx`, `app.css` (mục cuối T339) |
 | T333 | Đổi chữ "map" thành "gán" khi nói về phương thức thanh toán và quỹ (Khoá sổ, Danh mục Quỹ tiền, Danh mục cửa hàng) | dinhlanphuongipacc | Dở dang | Đã đổi ở Khoá sổ, Quỹ tiền. Còn `DanhMucCuaHang.tsx` chờ PhuongXT xong T321. Xem [nhật ký](nhat-ky/2026-10-17-dinhlanphuongipacc-doi-map-thanh-gan.md) |
 | T323 | `tools/kiem_tra.py --dien-thoai` dừng ở bước chờ `.m-nv-luoi`: màn Nghiệp vụ điện thoại làm lại ở T311 không còn lớp này, cập nhật bộ kiểm theo bố cục mới | | Chờ | Phát hiện 17/10/2026 khi kiểm T322 |
