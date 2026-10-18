@@ -11,18 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T371 | Sơ đồ quy trình: sửa icon Xuất/Nhập điều chỉnh, Tổng hợp và Chi tiết xuất kho (Kho); ô Thẻ chi phí phân bổ dùng icon phân hệ Chi phí phân bổ | Trum | Đang làm | Sửa `kho/quy-trinh.ts`, `ccdc/quy-trinh.ts` (giao anti) |
-| T382 | Điện thoại, phiếu mua hàng: nút Thêm hàng ở cuối danh sách, icon sửa thẳng hàng, sửa Tổng tiền thì đơn giá tự chia lại | Trum | Đang làm | Sửa form lập phiếu điện thoại (giao anti) |
-| T381 | Web: rà các ô chọn nhiều dạng danh sách tích (vd kênh bán GrabFood, ShopeeFood...), làm lại thành bảng chọn hai cột Chưa chọn, Đã chọn dùng chung với T380 | Trum | Đang làm | Giao anti cùng T380 |
-| T380 | Danh mục Hàng hoá gói Free (web + điện thoại): theo dõi kho cố định theo loại hàng (thành phẩm tắt, loại khác bật) chỉ xem; ẩn mã vạch, giá mua, giá bán, nhà cung cấp cung ứng; thương hiệu chỉ xem. Gói Pro: chọn nhà cung cấp cung ứng dạng hai cột Chưa chọn, Đã chọn | Trum | Đang làm | Sửa form Hàng hoá web và điện thoại, `app.css` mục cuối T380 (giao anti) |
-| T379 | Điện thoại, Trang chủ: màn xem biểu đồ kinh doanh và biểu đồ thu chi, nút Đóng và Xem báo cáo nằm sát đáy | Trum | Đang làm | Giao anti cùng T377 |
-| T378 | Điện thoại, Báo cáo kết quả kinh doanh: ô tóm tắt đầu báo cáo đổi thành Tổng doanh thu, Tổng chi phí, Lợi nhuận (đang hiện Doanh thu thuần 0) | Trum | Đang làm | Sửa báo cáo KQKD điện thoại (giao anti) |
-| T377 | Điện thoại: ẩn thanh menu dưới trong màn chi tiết Danh mục và Thiết lập để nút thao tác nằm sát đáy; giãn cách nút Mở khoá, Khoá sổ | Trum | Đang làm | Sửa khung điện thoại, màn Khoá sổ điện thoại, `app.css` mục cuối T377 (giao anti) |
-| T376 | Điện thoại, Khác > Thiết lập: icon Khoá sổ đổi sang dạng khối như các dòng khác | Trum | Đang làm | Sửa `mobile/MKhac.tsx` (giao anti) |
-| T375 | Vai trò và phân quyền: bấm dòng phân hệ thả xuống danh sách màn con, phân quyền tới từng màn | Trum | Đang làm | Sửa màn phân quyền, `app.css` mục cuối T375 (giao anti) |
-| T374 | Danh sách chứng từ web: hàng bộ lọc quá cao, nhãn ô lọc sát viền trên và đè chữ; hạ xuống giống hàng lọc Danh mục, Báo cáo | Trum | Đang làm | Sửa thanh lọc màn chứng từ, `app.css` mục cuối T374 (giao anti) |
-| T373 | Danh sách chứng từ gom nhóm: số Tổng trên dòng nhóm thẳng cột Tổng tiền | Trum | Đang làm | Cùng file với T372 (giao anti) |
-| T372 | Danh sách chứng từ: khe hở nhỏ giữa các cột đóng băng lộ cột khác khi cuộn ngang | Trum | Đang làm | Sửa bảng danh sách dùng chung, `app.css` mục cuối T372 (giao anti) |
 | T339 | Trang chủ Free máy tính, Tiến độ kiểm kê theo cửa hàng: hiện tối đa 4 cửa hàng cần chú ý (chưa kiểm, lệch nhiều trước), dòng Đã kiểm x/y cửa hàng, dòng Xem tất cả mở hộp danh sách đủ | dinhlanphuongipacc | Đang làm | Sửa `home/BaBaiToanFree.tsx`, `app.css` (mục cuối T339) |
 | T333 | Đổi chữ "map" thành "gán" khi nói về phương thức thanh toán và quỹ (Khoá sổ, Danh mục Quỹ tiền, Danh mục cửa hàng) | dinhlanphuongipacc | Dở dang | Đã đổi ở Khoá sổ, Quỹ tiền. Còn `DanhMucCuaHang.tsx` chờ PhuongXT xong T321. Xem [nhật ký](nhat-ky/2026-10-17-dinhlanphuongipacc-doi-map-thanh-gan.md) |
 | T323 | `tools/kiem_tra.py --dien-thoai` dừng ở bước chờ `.m-nv-luoi`: màn Nghiệp vụ điện thoại làm lại ở T311 không còn lớp này, cập nhật bộ kiểm theo bố cục mới | | Chờ | Phát hiện 17/10/2026 khi kiểm T322 |
@@ -63,6 +51,18 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T382 | Điện thoại, phiếu mua hàng: nút Thêm hàng ở cuối danh sách, icon sửa thẳng hàng, sửa Tổng tiền thì đơn giá tự chia lại | Trum | 18/10/2026 | [2026-10-17-trum-dien-thoai-29-diem](nhat-ky/2026-10-17-trum-dien-thoai-29-diem.md) |
+| T381 | Web: rà các ô chọn nhiều dạng danh sách tích (vd kênh bán GrabFood, ShopeeFood...), làm lại thành bảng chọn hai cột Chưa chọn, Đã chọn dùng chung với T380 | Trum | 18/10/2026 | [2026-10-17-trum-dien-thoai-29-diem](nhat-ky/2026-10-17-trum-dien-thoai-29-diem.md) |
+| T380 | Danh mục Hàng hoá gói Free (web + điện thoại): theo dõi kho cố định theo loại hàng (thành phẩm tắt, loại khác bật) chỉ xem; ẩn mã vạch, giá mua, giá bán, nhà cung cấp cung ứng; thương hiệu chỉ xem. Gói Pro: chọn nhà cung cấp cung ứng dạng hai cột Chưa chọn, Đã chọn | Trum | 18/10/2026 | [2026-10-17-trum-dien-thoai-29-diem](nhat-ky/2026-10-17-trum-dien-thoai-29-diem.md) |
+| T379 | Điện thoại, Trang chủ: màn xem biểu đồ kinh doanh và biểu đồ thu chi, nút Đóng và Xem báo cáo nằm sát đáy | Trum | 18/10/2026 | [2026-10-17-trum-dien-thoai-29-diem](nhat-ky/2026-10-17-trum-dien-thoai-29-diem.md) |
+| T378 | Điện thoại, Báo cáo kết quả kinh doanh: ô tóm tắt đầu báo cáo đổi thành Tổng doanh thu, Tổng chi phí, Lợi nhuận (đang hiện Doanh thu thuần 0) | Trum | 18/10/2026 | [2026-10-17-trum-dien-thoai-29-diem](nhat-ky/2026-10-17-trum-dien-thoai-29-diem.md) |
+| T377 | Điện thoại: ẩn thanh menu dưới trong màn chi tiết Danh mục và Thiết lập để nút thao tác nằm sát đáy; giãn cách nút Mở khoá, Khoá sổ | Trum | 18/10/2026 | [2026-10-17-trum-dien-thoai-29-diem](nhat-ky/2026-10-17-trum-dien-thoai-29-diem.md) |
+| T376 | Điện thoại, Khác > Thiết lập: icon Khoá sổ đổi sang dạng khối như các dòng khác | Trum | 18/10/2026 | [2026-10-17-trum-dien-thoai-29-diem](nhat-ky/2026-10-17-trum-dien-thoai-29-diem.md) |
+| T375 | Vai trò và phân quyền: bấm dòng phân hệ thả xuống danh sách màn con, phân quyền tới từng màn | Trum | 18/10/2026 | [2026-10-17-trum-dien-thoai-29-diem](nhat-ky/2026-10-17-trum-dien-thoai-29-diem.md) |
+| T374 | Danh sách chứng từ web: hàng bộ lọc quá cao, nhãn ô lọc sát viền trên và đè chữ; hạ xuống giống hàng lọc Danh mục, Báo cáo | Trum | 18/10/2026 | [2026-10-17-trum-dien-thoai-29-diem](nhat-ky/2026-10-17-trum-dien-thoai-29-diem.md) |
+| T373 | Danh sách chứng từ gom nhóm: số Tổng trên dòng nhóm thẳng cột Tổng tiền | Trum | 18/10/2026 | [2026-10-17-trum-dien-thoai-29-diem](nhat-ky/2026-10-17-trum-dien-thoai-29-diem.md) |
+| T372 | Danh sách chứng từ: khe hở nhỏ giữa các cột đóng băng lộ cột khác khi cuộn ngang | Trum | 18/10/2026 | [2026-10-17-trum-dien-thoai-29-diem](nhat-ky/2026-10-17-trum-dien-thoai-29-diem.md) |
+| T371 | Sơ đồ quy trình: sửa icon Xuất/Nhập điều chỉnh, Tổng hợp và Chi tiết xuất kho (Kho); ô Thẻ chi phí phân bổ dùng icon phân hệ Chi phí phân bổ | Trum | 18/10/2026 | [2026-10-17-trum-dien-thoai-29-diem](nhat-ky/2026-10-17-trum-dien-thoai-29-diem.md) |
 | T370 | Sơ đồ quy trình mẫu C: vòng số bước chỉ tô xanh khi rê chuột hoặc Tab vào ô trong bước đó, thống nhất mọi phân hệ | Trum | 18/10/2026 | [2026-10-17-trum-dien-thoai-29-diem](nhat-ky/2026-10-17-trum-dien-thoai-29-diem.md) |
 | T369 | Sơ đồ mẫu C gói Free: Thuế | Trum | 18/10/2026 | [2026-10-17-trum-dien-thoai-29-diem](nhat-ky/2026-10-17-trum-dien-thoai-29-diem.md) |
 | T368 | Sơ đồ mẫu C gói Free: Kho, Chi phí phân bổ | Trum | 18/10/2026 | [2026-10-17-trum-dien-thoai-29-diem](nhat-ky/2026-10-17-trum-dien-thoai-29-diem.md) |

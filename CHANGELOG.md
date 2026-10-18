@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 18/10/2026
 
+- T371–T382: Web: các cột ghim bên trái danh sách chứng từ không còn khe hở khi cuộn ngang; khi gom nhóm, số tổng nằm đúng cột Tổng tiền; hàng bộ lọc danh sách chứng từ thấp xuống, nhãn không đè chữ; Vai trò và phân quyền bấm phân hệ ra danh sách màn con, phân quyền tới từng màn; ô chọn nhiều đổi thành bảng hai cột Chưa chọn, Đã chọn. Sơ đồ Kho dùng icon nhập kho, xuất kho đúng nghĩa. Danh mục Hàng hoá gói Free: theo dõi kho tự đặt theo loại hàng, ẩn mã vạch, giá mua, giá bán, nhà cung cấp; thương hiệu chỉ xem. Điện thoại: màn con của Danh mục, Thiết lập và màn biểu đồ không còn thanh menu dưới, nút thao tác nằm sát đáy; Khoá sổ dùng icon khối; báo cáo kết quả kinh doanh có 3 ô Tổng doanh thu, Tổng chi phí, Lợi nhuận kèm màu; phiếu mua hàng có nút Thêm hàng cuối danh sách, sửa Tổng tiền thì đơn giá tự tính lại.
 - T366–T369: Gói Free, tab Quy trình của Thu chi, Bán hàng, Mua hàng, Kho, Chi phí phân bổ, Thuế làm lại theo các bước của một kỳ (khởi tạo, ghi hằng ngày, đối chiếu, báo cáo), icon lớn, mỗi bước có câu giải thích dễ hiểu.
 - T362–T365: Điện thoại: nút nổi hạ xuống khi thanh dưới ẩn; gói Free ẩn tab CCDC không dùng; chi tiết thẻ phân bổ có tiến độ và 3 tab. Web: icon đầu form và chip cửa hàng đồng bộ bộ icon. Icon thu chi ngân hàng đổi sang thẻ chuyển khoản.
 

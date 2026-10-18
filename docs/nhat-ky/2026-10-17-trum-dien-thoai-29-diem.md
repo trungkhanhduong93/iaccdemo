@@ -90,6 +90,19 @@ Mọi thay đổi chỉ áp cho điện thoại, trừ những chỗ ghi "web".
   - `npm run typecheck`, `npm run build`, `kiem_tra.py --nhanh`: không lỗi.
   - Xem ảnh sơ đồ Kho bản v2.
 
+## Làm thêm ngày 18/10/2026, đợt 2 (T370–T382, anti làm, Claude điều phối)
+
+- T370: vòng số bước sơ đồ mẫu C tô xanh khi rê chuột hoặc Tab vào ô trong bước.
+- T371: sơ đồ Kho Free, ô điều chỉnh và báo cáo nhập xuất dùng `nhapkho`, `xuatkho` (trước dùng `cashout`, `filein`); ô Thẻ CPPB dùng icon phân hệ `phanbo`.
+- T372, T373 (`src/ui/Table.tsx`): `left` cột ghim đo bằng `getBoundingClientRect().width / heSoZoom()` thay `offsetWidth` (làm tròn số nguyên lệch 0,1–0,3px); dòng nhóm tách thành từng ô theo cột để số tổng thẳng cột tiền.
+- T374: hàng lọc danh sách chứng từ cùng nhịp với Danh mục, Báo cáo. T376: Khoá sổ điện thoại dùng icon khối.
+- T375 (`he-thong/HeThong.tsx`): phân quyền mở phân hệ ra màn con, công tắc cha có trạng thái nửa; báo cáo chỉ Xem, danh mục không Ghi sổ, Khoá sổ chỉ ở màn Khoá sổ.
+- T377, T379 (`MobileShell.tsx`): ẩn thanh menu dưới với đường dẫn `danh-muc/*`, `he-thong/*`, `tong-hop/10-1-6` và sheet biểu đồ; nút đáy chừa safe-area.
+- T378 (`MBaoCaoDong.tsx`): KQKD Free trước tìm dòng có chữ "thuần" hoặc mã 10 nên Doanh thu ra 0; nay 3 ô Tổng doanh thu, Tổng chi phí, Lợi nhuận, DT − CP = LN (2.776.634.000 − 2.514.192.569 = 262.441.431).
+- T380, T381: `src/ui/ChonHaiCot.tsx` dùng chung; web bảng hai cột, điện thoại một danh sách có Chọn tất cả, ô ngoài hiện mục đầu + "+N". Đã đổi: NCC (Hàng hoá), Hàng áp dụng (Quy đổi ĐVT), Kênh bán (Onboard), bộ lọc chọn nhiều (ReportScreen). Gói Free Hàng hoá theo `truong-dm.ts`.
+- T382 (`MLapPhieu.tsx`): sửa Tổng tiền lưu `tongNhap`, đơn giá chia ngược theo giảm giá và VAT; sửa SL hoặc ĐG thì bỏ `tongNhap`. Lưu ý: tổng phiếu lấy `tongNhap`, tiền hàng, CK, thuế làm tròn từng phần nên có thể lệch tổng nhập vài đồng.
+- Kiểm: typecheck, build, `kiem_tra.py --nhanh` "Không có lỗi." trên bản gộp.
+
 ## Bẫy, quyết định mới
 
 - Không ghi vào `docs/BAY.md`, `docs/QUYET-DINH.md`.
