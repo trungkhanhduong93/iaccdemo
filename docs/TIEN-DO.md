@@ -4,13 +4,14 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T429.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T436.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T436 | Thẻ chi phí: nút Ghi tăng mở form thẻ mới chỉ ở gói Free, gói trên mở danh sách khoản chờ ghi tăng như Ghi tăng bổ sung; xoá phiếu chi đã tạo thẻ (kỳ chưa khoá sổ) hỏi "Xóa phiếu chi này sẽ xóa thẻ chi phí đã tạo…", đồng ý thì xoá cả thẻ | dinhlanphuongipacc | Đang làm | `ccdc/the-phan-bo.tsx`, `ccdc/index.ts`, `ChungTuForm.tsx`, `VoucherScreen.tsx` (xoá ở danh sách), `CatalogScreen.tsx` (ẩn thẻ đã xoá, cùng file T427). Điện thoại (`MXemPhieu.tsx`, `MCcdc.tsx`) chờ Trum xong T424, T425 |
 | T435 | Điện thoại, trang chủ Free khối Quỹ tiền: số tồn quỹ hiện tại nằm bên phải, cùng hàng nhãn "Tồn quỹ hiện tại" | Trum | Chờ | `MTrangChuFree.tsx` (trùng T423, làm sau khi T423 push), cuối `app.css` |
 | T434 | Điện thoại, các màn danh mục: điều kiện lọc hiện ở ngoài như danh sách chứng từ, nút lọc icon phễu, bấm lọc thì bảng trượt từ dưới lên; nút Đồng bộ FABi màu cam, nổi góc dưới bên trái đối xứng nút Thêm mới | Trum | Chờ | `MDanhMuc.tsx`, `MCuaHang.tsx`, cuối `app.css`. Làm sau T426 |
 | T433 | Điện thoại, Sổ quỹ tiền mặt, Sổ tiền gửi ngân hàng: mỗi ngày có Tồn đầu ngày ở trên, Tồn cuối ngày ở dưới các dòng thu chi | Trum | Chờ | Màn sổ điện thoại (`MSoBaoCao.tsx` hoặc `MBaoCaoTheoDoi.tsx`), cuối `app.css`. Làm sau T426 |
