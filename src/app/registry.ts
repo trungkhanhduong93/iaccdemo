@@ -200,6 +200,13 @@ export const hienPhanHe = (m: ModuleDef, goi: Goi) =>
 export const tabCua = (m: ModuleDef) => m.screens.filter(sc => !laBaoCao(sc))
 export const nhanTab = (sc: ScreenDef) => sc.ngan ?? tenMan(sc)
 
+/** Màn chứng từ chia tab theo nhóm loại phiếu (T386): nhóm đang mở lấy theo ?nhom=, không có thì theo nhóm chứa ?loai=, không có nữa thì nhóm đầu */
+export function nhomDangMo(sc: ScreenDef | undefined, q: URLSearchParams) {
+  const ds = sc?.voucher?.nhomLoai
+  if (!ds?.length) return undefined
+  return ds.find(n => n.k === q.get('nhom')) ?? ds.find(n => n.loai.includes(q.get('loai') ?? '')) ?? ds[0]
+}
+
 /** Đọc đích dạng 'slug' (trong phân hệ đang mở) hoặc 'phân hệ/slug[/id][?query]' */
 export function dich(di: string, modKey?: string) {
   const [p] = di.split('?')

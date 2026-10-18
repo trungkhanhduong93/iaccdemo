@@ -3,7 +3,7 @@ import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState } from 
 import { createPortal } from 'react-dom'
 import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import type { Col, ModuleDef, Row, ScreenDef, ScreenProps, VoucherCfg } from '../../modules/types'
-import { duongDan, tenMan } from '../../app/registry'
+import { duongDan, nhomDangMo, tenMan } from '../../app/registry'
 import { cuaHangHienTai, donViHienTai, loaiHinhDv, useSession } from '../../app/session'
 import { kieuGhiSo } from '../../app/plan'
 import { Icon } from '../Icon'
@@ -245,9 +245,8 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
   // Điều chỉnh kho (T126): hai tab nhỏ Xuất điều chỉnh, Nhập điều chỉnh, mỗi tab một loại phiếu
   const [thamSo] = useSearchParams()
   const [tabLoai, setTabLoai] = useState(() => cfg.loai?.find(l => l.k === thamSo.get('loai'))?.k ?? cfg.loai?.[0]?.k ?? '')   // ?loai= mở đúng tab con, vd từ sơ đồ (T128)
-  // Thu, chi tiền (T386): tab con Tiền mặt, Ngân hàng, Chuyển quỹ gom loại phiếu; ?loai= mở tab chứa loại đó
-  const [tabNhom, setTabNhom] = useState(() => cfg.nhomLoai?.find(n => n.loai.includes(thamSo.get('loai') ?? ''))?.k ?? cfg.nhomLoai?.[0]?.k ?? '')
-  const nhomChon = cfg.nhomLoai?.find(n => n.k === tabNhom)
+  // Thu chi (T386): tab Tiền mặt, Ngân hàng, Chuyển quỹ trên thanh tab phân hệ, cùng màn, nhóm loại phiếu theo ?nhom=
+  const nhomChon = nhomDangMo(sc, thamSo)
   const loaiNhom = nhomChon ? cfg.loai?.filter(l => nhomChon.loai.includes(l.k)) : cfg.loai
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [moHangLoat, setMoHangLoat] = useState(false)
@@ -299,6 +298,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
 
   const [trang, setTrang] = useState(1)
   const [coTrang, setCoTrang] = useState(20)
+  useEffect(() => { setTrang(1) }, [nhomChon?.k])   // đổi tab Tiền mặt, Ngân hàng, Chuyển quỹ thì về trang 1 (T386)
 
   // Lọc từng cột trên hàng lọc dưới tiêu đề bảng: phễu điều kiện theo kiểu cột, so theo chữ hiện trong ô
   const [locCot, setLocCot] = useState<Record<string, GiaTriLoc>>({})
@@ -627,16 +627,6 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
                       <button key={l.k} type="button" role="tab" aria-selected={tabLoai === l.k} className={tabLoai === l.k ? 'on' : ''}
                         onClick={() => { setTabLoai(l.k); setTrang(1); setActiveId(String(rows.find(r => r.loai === l.k)?.id ?? '')) }}>
                         {l.ten}
-                      </button>
-                    ))}
-                  </div>
-                )}
-                {cfg.nhomLoai && (
-                  <div className="seg dc-tabs" role="tablist" aria-label="Loại quỹ">
-                    {cfg.nhomLoai.map(n => (
-                      <button key={n.k} type="button" role="tab" aria-selected={tabNhom === n.k} className={tabNhom === n.k ? 'on' : ''}
-                        onClick={() => { setTabNhom(n.k); setTrang(1); setActiveId(String(rows.find(r => n.loai.includes(r.loai))?.id ?? '')) }}>
-                        {n.ten}
                       </button>
                     ))}
                   </div>

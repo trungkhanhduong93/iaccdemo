@@ -51,7 +51,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
-| T386 | Thu chi, màn Thu, chi tiền: chia 3 tab con Tiền mặt, Ngân hàng, Chuyển quỹ; tab Tiền mặt và Ngân hàng tách nút thêm mới thành 2 nút Thu tiền, Chi tiền | dinhlanphuongipacc | 18/10/2026 | [2026-10-18-dinhlanphuongipacc-tab-thu-chi-tien](nhat-ky/2026-10-18-dinhlanphuongipacc-tab-thu-chi-tien.md) |
+| T386 | Thu chi: tab Thu, chi tiền tách thành 3 tab trên thanh tab phân hệ Tiền mặt, Ngân hàng, Chuyển quỹ; tab Tiền mặt và Ngân hàng tách nút thêm mới thành 2 nút Thu tiền, Chi tiền | dinhlanphuongipacc | 18/10/2026 | [2026-10-18-dinhlanphuongipacc-tab-thu-chi-tien](nhat-ky/2026-10-18-dinhlanphuongipacc-tab-thu-chi-tien.md) |
 | T385 | Tab Báo cáo của phân hệ có đủ báo cáo mà sơ đồ Quy trình của phân hệ nhắc tới (kể cả của phân hệ khác, sổ, công nợ), mở ngay trong phân hệ | dinhlanphuongipacc | 18/10/2026 | [2026-10-18-dinhlanphuongipacc-bao-cao-theo-quy-trinh](nhat-ky/2026-10-18-dinhlanphuongipacc-bao-cao-theo-quy-trinh.md) |
 | T384 | Máy tính: tab Báo cáo của từng phân hệ hiện danh sách báo cáo ngay trong phân hệ, báo cáo mở trong phân hệ (không chuyển sang phân hệ Báo cáo), tắt báo cáo về tab Báo cáo của phân hệ | dinhlanphuongipacc | 18/10/2026 | [2026-10-18-dinhlanphuongipacc-bao-cao-trong-phan-he](nhat-ky/2026-10-18-dinhlanphuongipacc-bao-cao-trong-phan-he.md) |
 | T383 | Bảng chi tiết chứng từ (thêm mới, sửa, xem; cả kiểm kê, Xuất bán POS): phễu lọc sau tab Lịch sử, bấm mới hiện hàng lọc như danh sách chứng từ | dinhlanphuongipacc | 17/10/2026 | [2026-10-17-dinhlanphuongipacc-loc-bang-chi-tiet](nhat-ky/2026-10-17-dinhlanphuongipacc-loc-bang-chi-tiet.md) |

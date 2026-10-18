@@ -18,7 +18,7 @@ const PHIEU_CHO_PB = {
   _theCp: ['TPB2610-0011'],
 }
 
-/** Nhãn ngắn trên thanh tab */
+/** Nhãn ngắn trên thanh tab; 2.1.1 chia 3 tab theo nhomLoai nên nhãn chỉ dùng ở chỗ khác (T386) */
 const NGAN: Record<string, string> = { '2.1.1': 'Thu, chi tiền', '2.1.2': 'Đối chiếu công nợ', '2.1.3': 'Phân bổ chi phí chuỗi' }
 
 const tien: ModuleDef = {
@@ -42,7 +42,7 @@ const tien: ModuleDef = {
           dienGiai: ['Nộp tiền bán hàng trong ngày vào Vietcombank', 'Rút tiền gửi ngân hàng về quỹ tiền mặt', 'Chuyển tiền quỹ cửa hàng về tài khoản công ty'],
           noCo: [['1121', '1111', 'Chuyển tiền giữa các quỹ']] },
       ],
-      // Ba tab con, tab Tiền mặt và Ngân hàng có hai nút Thu tiền, Chi tiền (T386)
+      // Ba tab trên thanh tab phân hệ, tab Tiền mặt và Ngân hàng có hai nút Thu tiền, Chi tiền (T386)
       nhomLoai: [{ k: 'tm', ten: 'Tiền mặt', loai: ['thu', 'chi'] }, { k: 'nh', ten: 'Ngân hàng', loai: ['bc', 'unc'] }, { k: 'cq', ten: 'Chuyển quỹ', loai: ['cq'] }],
       phieuThem: s => [PHIEU_CHO_PB, ...(s ? phieuThuChiFabi(s).da : [])] } },   // phiếu thu, chi đồng bộ từ FABi, cửa hàng đang bật (T264)
     '2.1.2': { voucher: { prefix: 'DCCN', doiTuong: 'kh', nhan: 'Khách hàng, nhà cung cấp', them: 'Lập biên bản', dong: 'tien', tien: [5_000_000, 120_000_000],

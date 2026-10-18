@@ -1,9 +1,9 @@
 // Thanh tab ngang của phân hệ: Quy trình, các màn chứng từ, danh mục, chức năng, Báo cáo. Tab không đủ chỗ dồn vào "Khác".
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useSearchParams } from 'react-router-dom'
 import { useSession } from './session'
-import { duongDan, hienMan, laBaoCao, maKhoa, moDuoc, nhanTab, tabCua } from './registry'
+import { duongDan, hienMan, laBaoCao, maKhoa, moDuoc, nhanTab, nhomDangMo, tabCua } from './registry'
 import { GOI, minGoi } from './plan'
 import type { ModuleDef, ScreenDef } from '../modules/types'
 import { Icon, ONen } from '../ui/Icon'
@@ -17,13 +17,17 @@ const KHAC = 110  // chỗ cho nút "Khác" kèm số tab bên trong
 export function ModuleTabs({ mod }: { mod: ModuleDef }) {
   const { s } = useSession()
   const loc = useLocation()
+  const [thamSo] = useSearchParams()
   const tabs = useMemo(() => tabCua(mod).filter(sc => !sc.tabCha && hienMan(sc, s.goi, s.cheDo, s)), [mod, s.goi, s.cheDo, s.ppGtgt, s.ppTndn])
-  const giua = tabs.filter(t => t.kind !== 'baocao')
+  // Màn chia nhóm loại phiếu (Thu chi: Tiền mặt, Ngân hàng, Chuyển quỹ, T386) thành mỗi nhóm một tab, cùng màn, khác ?nhom=
+  const tachNhom = (ds: ScreenDef[]) => ds.flatMap(sc => sc.voucher?.nhomLoai?.map(n => ({ ...sc, slug: `${sc.slug}?nhom=${n.k}`, ngan: n.ten, ten: n.ten })) ?? [sc])
+  const giua = tachNhom(tabs.filter(t => t.kind !== 'baocao'))
   const bc = tabs.find(t => t.kind === 'baocao')
   const slug = loc.pathname.split('/')[3]
   const cur = mod.screens.find(sc => sc.slug === slug)
   const ngoai = !cur && mod.key !== 'bao-cao' && baoCaoCuaPhanHe(mod, s).some(x => x.slug === slug)   // báo cáo phân hệ khác mở trong phân hệ (T385)
-  const active = mod.key === 'bao-cao' ? 'tat-ca' : ((cur && laBaoCao(cur)) || ngoai ? 'bao-cao' : cur?.tabCha ?? slug)
+  const nhom = nhomDangMo(cur, thamSo)
+  const active = mod.key === 'bao-cao' ? 'tat-ca' : ((cur && laBaoCao(cur)) || ngoai ? 'bao-cao' : cur?.tabCha ?? (nhom ? `${slug}?nhom=${nhom.k}` : slug))
 
   const wrap = useRef<HTMLDivElement>(null)
   const meas = useRef<HTMLDivElement>(null)
