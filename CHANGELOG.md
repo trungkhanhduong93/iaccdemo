@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 18/10/2026
 
+- T390: Trang chủ Free (máy tính), thẻ Kết quả kinh doanh gọn hơn: bỏ mô tả dưới Doanh thu, dòng mô tả Giá vốn, Chi phí hoạt động, Chi phí phân bổ ngắn lại, không còn bị cắt. Thêm nguyên vật liệu mới tại phiếu không còn hiện trùng mã.
 - T389: Kê khai thuế, Danh sách tờ khai dùng thanh lọc như các phân hệ khác, thêm lọc Trạng thái, Loại tờ khai.
 - T388: Thêm nguyên vật liệu mới ngay tại phiếu Mua hàng, Kiểm kê, thẻ Chi phí trả trước: hộp nhỏ chỉ có Mã hàng, Tên hàng, Đơn vị tính, Loại hàng hoá; loại cố định Nguyên vật liệu (mua hàng, kiểm kê) hoặc Khác (Công cụ dụng cụ) (chi phí trả trước), đều theo dõi tồn kho.
 - T387: Kho, tab Kiểm kê, Xuất điều chỉnh, Nhập điều chỉnh: thêm bộ lọc Hàng hoá và Nhóm hàng hoá (Nhóm hàng hoá trong Bộ lọc nâng cao).

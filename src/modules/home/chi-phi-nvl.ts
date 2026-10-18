@@ -134,3 +134,9 @@ export function moTaCach(ds: NvlCn[]) {
   if (dem.size === 1) { const t = CACH_NVL[ds[0].cach].theo; return t[0].toUpperCase() + t.slice(1) }
   return [...dem].map(([c, n]) => `${n} cửa hàng ${CACH_NVL[c].theo}`).join(', ')
 }
+
+/** Mô tả ngắn một dòng ở thẻ Kết quả kinh doanh trang chủ (T390): một cách tính thì ghi cách đó, nhiều cách thì đếm */
+export function moTaCachNgan(ds: NvlCn[]) {
+  const dem = new Set(ds.map(x => x.cach))
+  return dem.size === 1 ? moTaCach(ds) : `${ds.length} cửa hàng, ${dem.size} cách tính`
+}

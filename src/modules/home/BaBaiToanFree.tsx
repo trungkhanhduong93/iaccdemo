@@ -15,7 +15,7 @@ import { datLocDaXem, docTuyChinh, luuTuyChinh } from '../../ui/bao-cao/tuyChinh
 import { tinhToanTongQuan, type TongQuanSoLieu } from './chiSo'
 import { useSession, type Session } from '../../app/session'
 import { LaiLoChart, trucLaiLo } from '../../ui/Charts'
-import { moTaCach, nvlKy } from './chi-phi-nvl'
+import { moTaCachNgan, nvlKy } from './chi-phi-nvl'
 import { useMoTuTrangChu } from '../../app/tuTrangChu'
 import { useDongEsc } from '../../ui/LocNangCao'
 import { ModalQuy } from './quyThuChi'
@@ -490,7 +490,7 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
           </div>
 
           <div className="t dt">
-            <div className="l"><b>Doanh thu</b><span>Tiền bán hàng trong tháng</span></div>
+            <div className="l"><b>Doanh thu</b></div>
             <div className="r"><b style={{ fontSize: '17px' }}>{moneyD(d.dtThuan)}</b></div>
           </div>
 
@@ -501,7 +501,7 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
           >
             <div className="l">
               <b>Giá vốn nguyên vật liệu</b>
-              <span>{moTaCach(nvl.ds)}</span>
+              <span>{moTaCachNgan(nvl.ds)}</span>
             </div>
             <div className="r">
               <b>{moneyD(nvl.tien)}</b>
@@ -517,7 +517,7 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
           >
             <div className="l">
               <b>Chi phí hoạt động</b>
-              <span>{chiLon ? `Lương, mặt bằng, điện nước… Lớn nhất: ${chiLon.l} ${short(chiLon.v)}` : 'Lương, mặt bằng, điện nước, chi khác'}</span>
+              <span>{chiLon ? `Lớn nhất: ${chiLon.l} ${short(chiLon.v)}` : 'Lương, mặt bằng, điện nước'}</span>   {/* rút gọn (T390) */}
             </div>
             <div className="r">
               <b>{moneyD(cpThang)}</b>
@@ -533,7 +533,7 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
           >
             <div className="l">
               <b>Chi phí phân bổ, khấu hao</b>
-              <span>Công cụ, tài sản mua một lần, ghi nhận dần theo tháng</span>
+              <span>Công cụ, tài sản chia dần</span>
             </div>
             <div className="r">
               <b>{moneyD(d.cpPhanBo)}</b>

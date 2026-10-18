@@ -19,6 +19,7 @@ let banSo = 0
 
 /** Thêm một mục vào danh mục trong phiên */
 export function themMucDanhMuc(dm: string, muc: MucDm) {
+  if ((daThem.get(dm) ?? []).some(x => x.v === muc.v)) return   // đã có (vd ô NVL vừa thêm, rồi thêm lại vào nhóm hàng hoá) thì bỏ qua, khỏi trùng mã (T388)
   daThem.set(dm, [...(daThem.get(dm) ?? []), muc])
   banSo++
   nghe.forEach(f => f())

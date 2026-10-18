@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T390 | Trang chủ Free máy tính, thẻ Kết quả kinh doanh: rút gọn dòng mô tả dưới Giá vốn nguyên vật liệu, Chi phí hoạt động, Chi phí phân bổ, khấu hao | dinhlanphuongipacc | Đang làm | Sửa `home/BaBaiToanFree.tsx` (cùng file T339), `home/chi-phi-nvl.ts` |
 | T339 | Trang chủ Free máy tính, Tiến độ kiểm kê theo cửa hàng: hiện tối đa 4 cửa hàng cần chú ý (chưa kiểm, lệch nhiều trước), dòng Đã kiểm x/y cửa hàng, dòng Xem tất cả mở hộp danh sách đủ | dinhlanphuongipacc | Đang làm | Sửa `home/BaBaiToanFree.tsx`, `app.css` (mục cuối T339) |
 | T333 | Đổi chữ "map" thành "gán" khi nói về phương thức thanh toán và quỹ (Khoá sổ, Danh mục Quỹ tiền, Danh mục cửa hàng) | dinhlanphuongipacc | Dở dang | Đã đổi ở Khoá sổ, Quỹ tiền. Còn `DanhMucCuaHang.tsx` chờ PhuongXT xong T321. Xem [nhật ký](nhat-ky/2026-10-17-dinhlanphuongipacc-doi-map-thanh-gan.md) |
 | T323 | `tools/kiem_tra.py --dien-thoai` dừng ở bước chờ `.m-nv-luoi`: màn Nghiệp vụ điện thoại làm lại ở T311 không còn lớp này, cập nhật bộ kiểm theo bố cục mới | | Chờ | Phát hiện 17/10/2026 khi kiểm T322 |
@@ -52,6 +51,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T390 | Trang chủ Free máy tính, thẻ Kết quả kinh doanh: bỏ mô tả Doanh thu, rút gọn mô tả Giá vốn nguyên vật liệu, Chi phí hoạt động, Chi phí phân bổ, khấu hao; kèm sửa trùng mã khi thêm NVL nhanh (T388) | dinhlanphuongipacc | 18/10/2026 | [2026-10-18-dinhlanphuongipacc-rut-gon-kqkd](nhat-ky/2026-10-18-dinhlanphuongipacc-rut-gon-kqkd.md) |
 | T389 | Danh sách tờ khai thuế: bộ lọc như các phân hệ (BoLoc), thêm lọc Trạng thái, Loại tờ khai | dinhlanphuongipacc | 18/10/2026 | [2026-10-18-dinhlanphuongipacc-loc-to-khai](nhat-ky/2026-10-18-dinhlanphuongipacc-loc-to-khai.md) |
 | T388 | Thêm nguyên vật liệu mới ngay tại form Mua hàng, Kiểm kê, Chi phí trả trước: hộp chỉ có Mã hàng, Tên hàng, Đơn vị tính, Loại hàng hoá; Mua hàng, Kiểm kê mặc định Nguyên vật liệu, Chi phí trả trước mặc định Khác (Công cụ dụng cụ), đều theo dõi tồn kho | dinhlanphuongipacc | 18/10/2026 | [2026-10-18-dinhlanphuongipacc-them-nvl-nhanh](nhat-ky/2026-10-18-dinhlanphuongipacc-them-nvl-nhanh.md) |
 | T387 | Kho, tab Kiểm kê (cả Xuất, Nhập điều chỉnh): danh sách phiếu thêm bộ lọc Hàng hoá, Nhóm hàng hoá | dinhlanphuongipacc | 18/10/2026 | [2026-10-18-dinhlanphuongipacc-loc-hang-kiem-ke](nhat-ky/2026-10-18-dinhlanphuongipacc-loc-hang-kiem-ke.md) |
