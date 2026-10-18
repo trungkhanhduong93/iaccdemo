@@ -29971,3 +29971,7 @@ a.tx-item:hover {
 .ds-btn-gom-trong + .ds-nhom-dong-bang {
   margin-left: 0;
 }
+
+
+/* ── Danh sách thẻ chi phí: nút Ghi tăng bổ sung trên dải cảnh báo khoản chờ (T421) ── */
+.ds-canh-bao-nut { margin-left: 10px; vertical-align: middle; }

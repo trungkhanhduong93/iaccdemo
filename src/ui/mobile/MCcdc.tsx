@@ -43,6 +43,9 @@ type TheItem = (typeof THE_MAU_BASE)[0] & {
   ttNhan?: string
 }
 
+/** Thẻ tạo trong phiên, giữ lại khi rời màn rồi quay lại (vd mở từ link Thẻ chi phí trên phiếu chi) (T421) */
+const theTaoPhien: TheItem[] = []
+
 export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
   const { s, toast } = useSession()
   const nav = useNavigate()
@@ -66,8 +69,10 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
   }
   const tuPhieu = (loc.state as { tuPhieu?: TuPhieuData } | null)?.tuPhieu
 
-  const [theList, setTheList] = useState<TheItem[]>(THE_MAU_BASE)
-  const [theXem, setTheXem] = useState<TheItem | null>(null)
+  const [theList, setTheList] = useState<TheItem[]>(() => [...theTaoPhien, ...THE_MAU_BASE])
+  // ?mo=<số thẻ>: mở thẳng chi tiết thẻ, vd bấm Thẻ chi phí trên phiếu chi; quay lại thì về màn trước (T421)
+  const [theXem, setTheXem] = useState<TheItem | null>(() => { const mo = sp.get('mo'); return mo ? [...theTaoPhien, ...THE_MAU_BASE].find(t => t.soThe === mo) ?? null : null })
+  const [tuLink] = useState(() => Boolean(sp.get('mo')))
   const [tabThe, setTabThe] = useState<'chitiet' | 'lichpb' | 'lichsu'>('chitiet')
   const [theSuaId, setTheSuaId] = useState<string | null>(null)
   const [moMenuMore, setMoMenuMore] = useState(false)
@@ -245,6 +250,7 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
       dong: [{ ma: `CPTT.${String(sttMoi).padStart(4, '0')}`, ten: ftTen.trim(), gt: valGt, ky: valKy, sl: 1, dg: valGt, ngayPb: ftNgayPb }],
     }
     setTheList(prev => [theMoi, ...prev])
+    theTaoPhien.unshift(theMoi)
     toast(`Đã ghi tăng thẻ ${soTheMoi}`)
     setMoGhiTang(false)
     setFtTen('')
@@ -665,7 +671,7 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
               <button
                 type="button"
                 className="m-pb-btn-back"
-                onClick={() => setTheXem(null)}
+                onClick={() => { setTheXem(null); if (tuLink) nav(-1) }}
                 aria-label="Quay lại"
               >
                 <Icon n="back" className="ic" />

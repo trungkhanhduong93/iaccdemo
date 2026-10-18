@@ -2,8 +2,8 @@
 import type { ModuleDef } from '../types'
 import { tuExcel } from '../types'
 import { quyTrinh } from './quy-trinh'
-import { THE_PHAN_BO, bangPhanBo, daPhanBoToiKy, veChiTietThe } from './the-phan-bo'
 import { GhiTangHangLoat, useCanhBaoCho } from './GhiTangHangLoat'
+import { THE_PHAN_BO, bangPhanBo, daPhanBoToiKy, veChiTietThe } from './the-phan-bo'
 import { CCDC_HANG, CUA_HANG } from '../../data/mock'
 
 /** Chứng từ gốc của thẻ mẫu theo thứ tự thẻ: phiếu chi, uỷ nhiệm chi mẫu có sẵn ở Thu, chi tiền (T159) */
@@ -66,8 +66,9 @@ const ccdc: ModuleDef = {
   screens: [...tuExcel(7, {
     '8.1.1': { kind: 'catalog', catalog: { them: 'Ghi tăng', nhomLoc: 'loai', nhanLoc: 'Loại thẻ', truong: THE_PHAN_BO, stt: true, kySoLieu: true,
       // Như danh sách chứng từ: phân trang, dòng Tổng, xem nhanh các dòng của thẻ ở khung dưới
-      hangLoat: { nhan: 'Ghi tăng', Form: GhiTangHangLoat },   // ghi tăng thẻ từ các dòng phiếu chi chờ phân bổ, mọi gói (T159)
-      useCanhBao: useCanhBaoCho,   // dải cảnh báo khoản chờ phân bổ chưa tạo thẻ, số trên nút Ghi tăng (T287)
+      // Ghi tăng bổ sung: tạo thẻ cho các dòng phiếu chi chờ phân bổ còn sót (T159); nút chính Ghi tăng mở form thẻ mới (T421)
+      hangLoat: { nhan: 'Ghi tăng bổ sung', Form: GhiTangHangLoat },
+      useCanhBao: useCanhBaoCho,   // dải cảnh báo khoản chờ phân bổ chưa tạo thẻ, có nút Ghi tăng bổ sung (T287, T421)
       dsChungTu: { cotCong: ['gt', 'kyNay', 'da', 'con'], cotSo: 'soThe', so: r => r.soThe, moTa: r => `(${r.ngay}) — ${r.ten}`, chiTiet: veChiTietThe }, cols: [{ k: 'soThe', t: 'Số thẻ', cls: 'code' }, { k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên' }, { k: 'loai', t: 'Loại' }, { k: 'ngay', t: 'Ngày ghi tăng' },
       // Phân bổ trong kỳ: số phân bổ đúng tháng đang lọc ở tab Đã phân bổ, thẻ nhiều dòng cộng các dòng (T296)
       { k: 'gt', t: 'Giá trị', num: true }, { k: 'kyNay', t: 'Phân bổ trong kỳ', num: true }, { k: 'da', t: 'Đã phân bổ', num: true }, { k: 'con', t: 'Còn lại', num: true }],
