@@ -11,6 +11,8 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T444 | Điện thoại, báo cáo Bảng kê mua hàng: khối tổng tiền mua hàng ghim sát đáy màn | Trum | Chờ | `MBangKeMua.tsx`, cuối `app.css` |
+| T443 | Điện thoại, mọi báo cáo: ô tìm kiếm không dính vào đường kẻ ngăn với phần trên | Trum | Chờ | Thành phần báo cáo điện thoại dùng chung, cuối `app.css`. `MBaoCao.tsx` chờ T431 push |
 | T442 | Điện thoại, danh mục dạng thẻ (vd Nhà cung cấp): tên dài xuống dòng thẳng lề tên, không chui dưới số thứ tự | Trum | Chờ | `MDanhMuc.tsx`, `MDanhSach.tsx`, cuối `app.css` |
 | T441 | Điện thoại, Lý do nghiệp vụ: chỉ còn nút Đóng thì cân đối; ô Là chi phí tích được ở màn thêm, sửa và không hiện sai chỗ ở ngoài danh sách | Trum | Chờ | `MDanhMuc.tsx` hoặc `MFormDm.tsx`, cuối `app.css` |
 | T440 | Điện thoại, các màn danh mục: bấm lọc bật bảng trượt từ đáy lên, các ô điều kiện bấm giống bộ lọc danh sách chứng từ | Trum | Chờ | `MDanhMuc.tsx`, `MDanhSach.tsx`, `MLoc.tsx`, cuối `app.css` |
