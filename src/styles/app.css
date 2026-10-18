@@ -30398,3 +30398,34 @@ a.tx-item:hover {
   justify-content: center;
 }
 
+/* ── Quỹ tiền trang chủ Free: số tồn quỹ cùng hàng nhãn (T435) ── */
+.m-free-ton-quy-hang {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 8px !important;
+  margin-top: 6px !important;
+  margin-bottom: 2px !important;
+}
+
+.m-free-ton-quy-hang .m-free-hoi {
+  margin-top: 0 !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  font-size: 13.5px !important;
+  color: var(--muted) !important;
+  line-height: 1.3 !important;
+}
+
+.m-free-ton-quy-hang button.m-free-ton-quy-lon {
+  margin-top: 0 !important;
+  flex: none !important;
+  white-space: nowrap !important;
+  text-align: right !important;
+  justify-content: flex-end !important;
+  font-size: 19px !important;
+  font-weight: 700 !important;
+  line-height: 1.2 !important;
+}
+
+

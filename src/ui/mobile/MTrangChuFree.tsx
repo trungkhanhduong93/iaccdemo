@@ -515,18 +515,20 @@ export function MTrangChuFree(_props?: Partial<ScreenProps>) {
             </div>
           </div>
           <div className="bbt-e-mota">Tiền mặt tại cửa hàng và tiền gửi ngân hàng</div>
-          <div className="m-free-hoi">
-            {thangF === 10 ? 'Tồn quỹ hiện tại' : `Tồn quỹ cuối tháng ${thangF}/2026`}
+          <div className="m-free-ton-quy-hang">
+            <div className="m-free-hoi">
+              {thangF === 10 ? 'Tồn quỹ hiện tại' : `Tồn quỹ cuối tháng ${thangF}/2026`}
+            </div>
+            <button
+              type="button"
+              className="m-tc-so-lon m-free-tra m-btn-so-lon m-free-ton-quy-lon"
+              style={{ color: 'var(--blue, #0560a6)' }}
+              onClick={() => setModalQuy('tat-ca')}
+              title="Xem biểu đồ thu chi tất cả quỹ"
+            >
+              {moneyD(tongQuy.cuoi)} ›
+            </button>
           </div>
-          <button
-            type="button"
-            className="m-tc-so-lon m-free-tra m-btn-so-lon m-free-ton-quy-lon"
-            style={{ color: 'var(--blue, #0560a6)' }}
-            onClick={() => setModalQuy('tat-ca')}
-            title="Xem biểu đồ thu chi tất cả quỹ"
-          >
-            {moneyD(tongQuy.cuoi)} ›
-          </button>
           <div className="m-free-phu">
             {thangF === 10 ? 'Tháng này thu' : `Tháng ${thangF} thu`} <span style={{ color: 'var(--green, #138a52)' }}>{short(tongQuy.thu)}</span> · chi{' '}
             <span style={{ color: 'var(--red, #c2362b)' }}>{short(tongQuy.chi)}</span>
@@ -550,7 +552,7 @@ export function MTrangChuFree(_props?: Partial<ScreenProps>) {
             </div>
           )}
 
-          {/* Tạo quỹ và Xem dòng tiền cùng một hàng (T413) */}
+          {/* Quỹ tiền: Tất cả quỹ trên Xem dòng tiền, cao bằng Tạo quỹ (T423) */}
           <div className="bbt-chan m-tcf-quy-chan" style={{ marginTop: 10 }}>
             {quy.length > 0 && (
               <Link
@@ -561,10 +563,30 @@ export function MTrangChuFree(_props?: Partial<ScreenProps>) {
                 <Icon n="plus" className="ic sm" />Tạo quỹ
               </Link>
             )}
-            <button type="button" className="bbt-nut" onClick={() => setMoThuChi13(true)}>
-              Xem dòng tiền 13 tháng
-              <Icon n="chevr" className="ic sm" />
-            </button>
+            <div className="m-tcf-quy-phai">
+              {quy.length > 0 && (
+                <button
+                  type="button"
+                  className="m-tcf-quy-link"
+                  onClick={() => {
+                    const btn = document.querySelector<HTMLButtonElement>('.m-tcf-trang .bbt-vq-chan button')
+                    if (btn) btn.click()
+                    else setModalQuy('tat-ca')
+                  }}
+                  title="Xem danh sách tất cả quỹ"
+                >
+                  Tất cả quỹ ({quy.length}) ›
+                </button>
+              )}
+              <button
+                type="button"
+                className="m-tcf-quy-link"
+                onClick={() => setMoThuChi13(true)}
+                title="Xem dòng tiền 13 tháng"
+              >
+                Xem dòng tiền 13 tháng ›
+              </button>
+            </div>
           </div>
         </div>
 
