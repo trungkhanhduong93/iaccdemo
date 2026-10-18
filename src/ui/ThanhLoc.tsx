@@ -38,11 +38,12 @@ export function NutVuong({ icon, title, onClick, on, dot, className = '' }: {
   )
 }
 
-export function ThanhLoc({ tim, ngay, boLoc, dangLoc, onLamMoi, onTaiLai, phai }: {
+export function ThanhLoc({ tim, ngay, boLoc, dangLoc, soLoc, onLamMoi, onTaiLai, phai }: {
   tim?: { value: string; onChange: (v: string) => void; placeholder?: string }
   ngay?: { value: KhoangNgay; onChange: (k: KhoangNgay) => void }
   boLoc?: ReactNode
   dangLoc?: boolean
+  soLoc?: number
   onLamMoi?: () => void
   onTaiLai?: () => void
   phai?: ReactNode
@@ -85,7 +86,11 @@ export function ThanhLoc({ tim, ngay, boLoc, dangLoc, onLamMoi, onTaiLai, phai }
             onClick={() => setMoPheu(o => !o)}
           >
             <Icon n="filter" className="ic sm" />
-            {dangLoc && <span className="nut-vuong-dot" />}
+            {soLoc !== undefined && soLoc > 0 ? (
+              <span className="ds-nut-badge">{soLoc}</span>
+            ) : (
+              dangLoc && <span className="nut-vuong-dot" />
+            )}
           </button>
 
           <Popover

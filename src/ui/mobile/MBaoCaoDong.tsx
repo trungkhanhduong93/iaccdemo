@@ -7,6 +7,9 @@ import { Link } from 'react-router-dom'
 import type { Col, Row } from '../../modules/types'
 import { money, rutGonSo } from '../format'
 import { duongPhieu } from '../generic/SoChungTu'
+import { useSession } from '../../app/session'
+import { MBangKeMua } from './MBangKeMua'
+import { MSoTT152, laSoTT152 } from './MSoTT152'
 
 export type LoaiKhuonDong = 'chi-tiet-ngay' | 'tong-hop-doi-tuong' | 'chi-tieu-phan-cap'
 
@@ -457,13 +460,37 @@ const Khuon2TongHopDoiTuong: FC<{ rows: Row[]; q?: string }> = ({ rows, q = '' }
             const o3Nhan = r.chi !== undefined ? 'Chi' : r.gtx !== undefined ? 'Xuất' : r.psCo !== undefined ? 'Giảm/Có' : 'Giảm giá'
             const o3Val = Number(r.chi ?? r.gtx ?? r.psCo ?? r.co ?? r.tra ?? r.giamGia ?? 0)
 
+            const isXnt = Boolean(r.gt0 !== undefined || r.gtn !== undefined || r.gtx !== undefined)
+            const khoThe = r._kho ? (Array.isArray(r._kho) ? r._kho[0] : String(r._kho)) : 'Kho bếp Lê Lợi'
+            const kyThe = r._ky ? String(r._ky) : '9'
+            const linkTheKho = isXnt && ma ? `/app/bao-cao/5-2-1?ma=${ma}&kho=${encodeURIComponent(khoThe)}&ky=${kyThe}` : undefined
+
             return (
               <div key={r.ma || i} className="m-bcd-the m-bcd-item">
                 {/* Tầng 1: Tên đối tượng và số cuối */}
                 <div className="m-bcd-the-t1">
                   <div className="m-bcd-the-trai">
-                    <div className="m-bcd-the-ten">{ten}</div>
-                    {ma && <div className="m-bcd-the-ma">{ma}{r.dvt ? ` · ${r.dvt}` : ''}</div>}
+                    <div className="m-bcd-the-ten">
+                      {linkTheKho ? (
+                        <Link to={linkTheKho} className="m-bcd-the-ten-link" title="Xem thẻ kho">
+                          {ten}
+                        </Link>
+                      ) : (
+                        ten
+                      )}
+                    </div>
+                    {ma && (
+                      <div className="m-bcd-the-ma">
+                        {linkTheKho ? (
+                          <Link to={linkTheKho} className="m-bcd-the-ma-link" title="Xem thẻ kho">
+                            {ma}
+                          </Link>
+                        ) : (
+                          ma
+                        )}
+                        {r.dvt ? ` · ${r.dvt}` : ''}
+                      </div>
+                    )}
                   </div>
                   <div className="m-bcd-the-phai">
                     <div className="m-bcd-the-so-cuoi">{money(soCuoi)}</div>
@@ -826,6 +853,18 @@ const Khuon3ChiTieuPhanCap: FC<{ maBc?: string; rows: Row[]; q?: string }> = ({ 
 
 // ── COMPONENT ĐIỀU HƯỚNG 3 KHUÔN CHUNG ──
 export const MBaoCaoDong: FC<Props> = ({ maBc, khuon, cols, rows, q = '', xemTatCaCn }) => {
+  const { s } = useSession()
+  const maNorm = (maBc || '').replace(/-/g, '.')
+  const la427 = maNorm === '4.2.7' || maNorm.endsWith('.4.2.7') || maNorm.endsWith('/4.2.7')
+
+  if (la427) {
+    return <MBangKeMua rows={rows} q={q} />
+  }
+
+  if (s.cheDo === 'TT152' && laSoTT152(maBc)) {
+    return <MSoTT152 maBc={maBc} rows={rows} q={q} />
+  }
+
   switch (khuon) {
     case 'chi-tiet-ngay':
       return <Khuon1ChiTietNgay rows={rows} q={q} xemTatCaCn={xemTatCaCn} />

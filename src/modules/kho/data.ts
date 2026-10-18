@@ -1,7 +1,7 @@
 // Dữ liệu giả phân hệ Kho (công thức, phiếu sản xuất ở san-xuat.ts, T152): tồn đầu, định mức tồn, thẻ kho, nhập xuất, tồn tức thời, xuất nhập tồn
 import { createElement } from 'react'
 import type { CatalogCfg, Col, Row } from '../types'
-import { HANG, KHO, NVL } from '../../data/mock'
+import { CUA_HANG, HANG, KHO, NVL } from '../../data/mock'
 import { between, pad, rng } from '../../ui/format'
 
 const g = (r: () => number, a: number, b: number) => Math.round(between(r, a, b))
@@ -84,12 +84,50 @@ export const tonTucThoi = {
 /** Hàng có trên báo cáo xuất nhập tồn, thẻ kho: nguyên vật liệu và bia (T157) */
 export const HANG_XNT = [...NVL, ...HANG.filter(h => h.nhom === 'Bia, rượu').map(h => ({ ...h, gia: 14800 }))]
 
-/** Xuất nhập tồn theo kỳ: số lượng và giá trị */
-export function xnt(thang: number, kho: string) {
-  const r = rng('xnt' + thang + kho)
-  return HANG_XNT.map(n => {
-    const sl0 = g(r, 8, 60), n1 = g(r, 40, 260), x1 = Math.min(sl0 + n1 - 2, g(r, 35, 250))
+/** Xuất nhập tồn theo kỳ: số lượng và giá trị (hỗ trợ một kho, nhiều kho, hoặc tất cả kho, T412) */
+export function xnt(thang: number, kho?: string | string[], dsKhoTatCa?: string[]) {
+  if (typeof kho === 'string' && kho && kho !== 'all' && kho !== 'tat-ca') {
+    const r = rng('xnt' + thang + kho)
+    return HANG_XNT.map(n => {
+      const sl0 = g(r, 8, 60), n1 = g(r, 40, 260), x1 = Math.min(sl0 + n1 - 2, g(r, 35, 250))
+      const gia = n.gia
+      return { ma: n.ma, ten: n.ten, dvt: n.dvt, sl0, gt0: sl0 * gia, sln: n1, gtn: n1 * gia, slx: x1, gtx: x1 * gia, sl1: sl0 + n1 - x1, gt1: (sl0 + n1 - x1) * gia }
+    })
+  }
+
+  const dsKho = Array.isArray(kho) && kho.length > 0
+    ? kho
+    : (dsKhoTatCa && dsKhoTatCa.length > 0 ? dsKhoTatCa : CUA_HANG.flatMap(c => c.kho))
+
+  if (dsKho.length === 1) {
+    return xnt(thang, dsKho[0])
+  }
+
+  const dsBanGhi = dsKho.map(k => xnt(thang, k))
+  return HANG_XNT.map((n, idx) => {
+    let sl0 = 0, sln = 0, slx = 0, sl1 = 0
+    for (const bang of dsBanGhi) {
+      const item = bang[idx]
+      if (item) {
+        sl0 += item.sl0
+        sln += item.sln
+        slx += item.slx
+        sl1 += item.sl1
+      }
+    }
     const gia = n.gia
-    return { ma: n.ma, ten: n.ten, dvt: n.dvt, sl0, gt0: sl0 * gia, sln: n1, gtn: n1 * gia, slx: x1, gtx: x1 * gia, sl1: sl0 + n1 - x1, gt1: (sl0 + n1 - x1) * gia }
+    return {
+      ma: n.ma,
+      ten: n.ten,
+      dvt: n.dvt,
+      sl0,
+      gt0: sl0 * gia,
+      sln,
+      gtn: sln * gia,
+      slx,
+      gtx: slx * gia,
+      sl1,
+      gt1: sl1 * gia,
+    }
   })
 }

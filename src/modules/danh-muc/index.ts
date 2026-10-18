@@ -29,6 +29,7 @@ const nhomHangHoa: ScreenDef = {
   slug: 'nhom-hang-hoa', ten: 'Danh mục nhóm hàng hoá', ngan: 'Nhóm hàng hoá', nhom: 'Danh mục', kind: 'catalog', icon: 'nhomhang',
   catalog: {
     them: 'Thêm nhóm hàng hoá',
+    nutPhu: { nhan: 'Đồng bộ FABi', bao: `Đã đồng bộ ${NHOM_HANG.length} nhóm hàng hoá từ FABi` },
     cols: (goi, cheDo) => [
       { k: 'ma', t: 'Mã', cls: 'code' },
       { k: 'ten', t: 'Tên nhóm' },
@@ -122,7 +123,7 @@ const phuongThucThanhToan: ScreenDef = {
     khongThem: ['F', 'S'],   // gói Free, Standard lấy phương thức từ FABi, không thêm mới (T144)
     khongExcel: ['F', 'S'],  // cũng không nhập, xuất Excel (T268)
     chiXem: ['F', 'S'],      // chi tiết chỉ xem, không sửa, không xoá (T328)
-    nutPhu: { nhan: 'Đồng bộ FABi', logo: '/logo-fabi.png', bao: `Đã đồng bộ ${DS_PTTT.length} phương thức thanh toán từ FABi` },
+    nutPhu: { nhan: 'Đồng bộ FABi', bao: `Đã đồng bộ ${DS_PTTT.length} phương thức thanh toán từ FABi` },
     cols: (goi, cheDo) => [
       { k: 'ma', t: 'Mã', cls: 'code' },
       { k: 'ten', t: 'Tên phương thức' },
@@ -146,7 +147,7 @@ const danhMuc: ModuleDef = {
     '1.1': { kind: 'custom', comp: HeThongTaiKhoan, cheDo: ['TT133', 'TT99'] },
     '1.2': { catalog: {
       them: 'Thêm hàng hoá', nhomLoc: 'nhom',
-      nutPhu: { nhan: 'Đồng bộ FABi', logo: '/logo-fabi.png', bao: `Đã đồng bộ ${DS_HANG_HOA_12.length} hàng hoá từ FABi` },
+      nutPhu: { nhan: 'Đồng bộ FABi', bao: `Đã đồng bộ ${DS_HANG_HOA_12.length} hàng hoá từ FABi` },
       chucNang: r => r.tkKho === '152' ? [{ nhan: 'Xem thẻ kho', di: 'kho/5-2-1' }] : r.tkKho === '153' ? [{ nhan: 'Xem thẻ chi phí', di: 'ccdc/8-1-1' }] : [{ nhan: 'Xem doanh thu', di: 'ban-hang/3-2-5' }],
       cols: (goi, cheDo) => [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên hàng hoá' }, { k: 'nhom', t: 'Nhóm' }, { k: 'dvt', t: 'ĐVT' },
         { k: 'thuongHieu', t: 'Thương hiệu' },
@@ -171,7 +172,6 @@ const danhMuc: ModuleDef = {
       ],
     } },
     '1.3': { catalog: { them: 'Thêm đơn vị tính',
-      nutPhu: { nhan: 'Đồng bộ FABi', logo: '/logo-fabi.png', bao: `Đã đồng bộ ${DON_VI_TINH.length} đơn vị tính từ FABi` },
       cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên đơn vị tính' }, { k: 'mota', t: 'Mô tả', cls: 'dim' }],
       rows: () => DON_VI_TINH.map(([ma, ten, mota]) => ({ ma, ten, mota })) } },
     // T154: 1 Từ ĐVT = tỷ lệ Đến ĐVT; hàng hoá áp dụng để trống là mọi hàng hoá
@@ -200,7 +200,6 @@ const danhMuc: ModuleDef = {
     '1.7': { catalog: { them: 'Thêm công việc', cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên công việc' }, { k: 'moTa', t: 'Mô tả', cls: 'dim' }],
       rows: () => DS_CONG_VIEC_17 } },
     '1.8': { catalog: { them: 'Thêm kho', khongThem: ['F'],
-      nutPhu: { nhan: 'Đồng bộ FABi', logo: '/logo-fabi.png', bao: `Đã đồng bộ ${KHO.length} kho từ FABi` },
       // gói Free: mỗi cửa hàng một kho mặc định theo iPOS Inventory (kho đầu của cửa hàng), không thêm kho mới (T143)
       locGoi: (goi, r) => (goi !== 'F' && goi !== 'S') || CUA_HANG.some(c => c.kho[0] === r.ten),   // gói Free, Standard: dữ liệu mẫu một kho mỗi cửa hàng
       chucNang: () => [{ nhan: 'Xem tồn kho', di: 'kho/5-2-4' }, { nhan: 'Chuyển kho', di: 'kho/5-1-4-3/moi' }, { nhan: 'Xuất điều chuyển', di: 'kho/5-1-4/moi' }],

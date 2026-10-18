@@ -14,6 +14,7 @@ import { fold, money, rutGonSo } from '../format'
 import { Icon } from '../Icon'
 import { duongPhieu } from '../generic/SoChungTu'
 import { layKhuonDong, MBaoCaoDong } from './MBaoCaoDong'
+import { laSoTT152 } from './MSoTT152'
 import { cotMobile, useBangMauA } from './bangMauA'
 import { tinhPhanTrang, ThanhPhanTrangM } from './phanTrangM'
 import { dinhDangKyMobile, useKhoangNgayMobile } from './kyBaoCaoMobile'
@@ -41,19 +42,22 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
   const isSoTienGui = sc.code === '2.2.3' || sc.slug === '2-2-3'
   const isSoCongNo = sc.code === '2.2.5' || sc.slug === '2-2-5'
   const isSoCu = isSoQuy || isSoTienGui || isSoCongNo
+  const maBcStr = String(sc.code ?? sc.slug ?? '').replace(/-/g, '.')
+  const la427 = maBcStr === '4.2.7'
+  const laTT152Hook = s.cheDo === 'TT152' && laSoTT152(maBcStr)
+
   const khuon = layKhuonDong(sc)
-  const isSoApDung = isSoCu || Boolean(khuon)
+  const isSoApDung = isSoCu || Boolean(khuon) || la427 || laTT152Hook
 
   // Điểm 18: Các báo cáo ưu tiên dạng BẢNG trên điện thoại:
   // (a) Báo cáo thuộc nhóm kinh doanh: 3.2.1, 3.2.2, 3.2.3, 3.2.4, 3.2.5
-  // (b) Mọi sổ, báo cáo TT152 (-HKD): 3.2.5, 10.4.1, 5.2.8, 2.2.7
-  // (c) Báo cáo nhiều cột số: 3.2.7, 4.2.2, 4.2.7
-  const maBcStr = String(sc.code ?? sc.slug ?? '').replace(/-/g, '.')
+  // (b) Mọi sổ, báo cáo TT152 (-HKD): 3.2.5, 10.4.1, 5.2.8, 2.2.7 (nếu không có hook TT152)
+  // (c) Báo cáo nhiều cột số: 3.2.7, 4.2.2 (bỏ 4.2.7 để vào MBangKeMua T403)
   const kyHieuStr = kyHieuBC(sc.code, s.cheDo, s) ?? ''
-  const isHkdMau = s.cheDo === 'TT152' && kyHieuStr.endsWith('-HKD')
-  const isBcKd = maBcStr.startsWith('3.2.1') || maBcStr.startsWith('3.2.2') || maBcStr.startsWith('3.2.3') || maBcStr.startsWith('3.2.4') || maBcStr.startsWith('3.2.5')
-  const isNhieuCotSo = maBcStr === '3.2.7' || maBcStr === '4.2.2' || maBcStr === '4.2.7'
-  const isUuTienBang = isHkdMau || isBcKd || isNhieuCotSo
+  const isHkdMau = !laTT152Hook && s.cheDo === 'TT152' && kyHieuStr.endsWith('-HKD')
+  const isBcKd = !laTT152Hook && (maBcStr.startsWith('3.2.1') || maBcStr.startsWith('3.2.2') || maBcStr.startsWith('3.2.3') || maBcStr.startsWith('3.2.4') || maBcStr.startsWith('3.2.5'))
+  const isNhieuCotSo = maBcStr === '3.2.7' || maBcStr === '4.2.2'
+  const isUuTienBang = !la427 && !laTT152Hook && (isHkdMau || isBcKd || isNhieuCotSo)
 
   const [kieuXemState, setKieuXemState] = useState<'dong' | 'bang' | null>(null)
   const kieuXem = kieuXemState ?? (isUuTienBang ? 'bang' : (isSoApDung ? 'dong' : 'bang'))
@@ -396,11 +400,11 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
 
       {/* Nội dung báo cáo: Dạng dòng hoặc Bảng cuộn ngang */}
       {kieuXem === 'dong' && isSoApDung ? (
-        !isSoCu && khuon ? (
+        !isSoCu && (khuon || la427 || laTT152Hook) ? (
           <div className="m-so-dong">
             <MBaoCaoDong
               maBc={sc.code ?? sc.slug}
-              khuon={khuon}
+              khuon={khuon ?? 'chi-tiet-ngay'}
               cols={rawCols}
               rows={rowsLoc}
               q={q}

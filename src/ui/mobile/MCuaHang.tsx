@@ -76,10 +76,10 @@ export const MCuaHang: FC<ScreenProps> = () => {
             <button
               type="button"
               className="btn sm"
-              onClick={() => toast(`Đã đồng bộ ${rows.length} cửa hàng theo POS`)}
+              onClick={() => toast(`Đã đồng bộ ${rows.length} cửa hàng từ FABi`)}
             >
               <Icon n="refresh" className="ic sm" />
-              <span>Đồng bộ theo POS</span>
+              <span>Đồng bộ FABi</span>
             </button>
           </div>
         }

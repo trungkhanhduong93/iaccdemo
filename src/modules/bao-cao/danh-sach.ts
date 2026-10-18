@@ -103,7 +103,7 @@ export const CAU_HINH_BC: Record<string, CauHinhBC> = {
   '4.2.6': baoCao('ngang', { loc: LOC_MUA, nhomDuoc: ['ngay'], anKhongPS: true }),
   '5.2.1': baoCao('doc', { anKhongPS: true }),   // thẻ kho, xuất nhập tồn là báo cáo quản trị kho kiểu iPOS Inventory, mọi thông tư, không ký hiệu mẫu, Trum chốt 11/10/2026 (T157)
   '5.2.2': baoCao('ngang', { loc: [{ k: 'kho', nhan: 'Kho', kieu: 'chon' }, { k: 'loai', nhan: 'Loại phiếu', kieu: 'chon' }], nhomDuoc: ['kho', 'loai', 'ngay'], anKhongPS: true }),
-  '5.2.3': baoCao('ngang', { loc: LOC_KHO_BC.filter(l => l.k !== KHOA_LOC_NGUON.kho), anKhongPS: true }),   // kho chọn trên thanh công cụ của màn (T207)
+  '5.2.3': baoCao('ngang', { loc: LOC_KHO_BC, anKhongPS: true }),   // lọc kho chọn nhiều, mặc định tất cả (T412)
   '5.2.4': baoCao('doc', { loc: [{ k: 'kho', nhan: 'Kho', kieu: 'chon' }], nhomDuoc: ['kho'], anKhongPS: true }),
   '5.2.5': baoCao('ngang', { anKhongPS: true }),
   '5.2.6': baoCao('ngang', { anKhongPS: true }),

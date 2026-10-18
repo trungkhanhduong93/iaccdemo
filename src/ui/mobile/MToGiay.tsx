@@ -1,11 +1,12 @@
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState, type FC } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useLocation, useSearchParams } from 'react-router-dom'
 import type { Col, Row, ScreenProps } from '../../modules/types'
-import { useSession } from '../../app/session'
-import { KHO, kqkd } from '../../data/mock'
+import { cuaHangHienTai, useSession } from '../../app/session'
+import { CUA_HANG, KHO, kqkd } from '../../data/mock'
 import { HANG_XNT, theKho, xnt } from '../../modules/kho/data'
 import { Icon } from '../Icon'
 import { RptTable } from '../generic/ReportScreen'
+import { useTrangThaiLoc } from '../bao-cao/tuyChinhBC'
 import { layKhuonDong, MBaoCaoDong, type LoaiKhuonDong } from './MBaoCaoDong'
 import { cotMobile, useBangMauA } from './bangMauA'
 import { tinhPhanTrang, ThanhPhanTrangM } from './phanTrangM'
@@ -70,28 +71,37 @@ export const MToGiay: FC<ScreenProps> = ({ sc, mod }) => {
     return layKhuonDong(sc)
   }, [is521, is523, isDong1023, sc])
 
+  const path = useLocation().pathname
+  const { loc: locStore, daXem } = useTrangThaiLoc(path)
+  const cn = cuaHangHienTai(s)
+  // Gói Free mỗi cửa hàng một kho: lọc Kho đi theo cửa hàng đang chọn (T412)
+  const dsKhoCuaHang = useMemo(() => cn ? cn.kho : CUA_HANG.flatMap(c => c.kho), [cn])
+
   // Dữ liệu dạng dòng cho 3 màn đặc biệt
   const { rowsDong, colsDong } = useMemo(() => {
     if (!isApDungDong) return { rowsDong: [] as Row[], colsDong: [] as Col[] }
 
-    const kyStr = params.get('ky') || '9'
+    const kyStr = params.get('ky') || daXem?.ky || '9'
     const kyNum = Number(kyStr) || 9
-    const khoStr = params.get('kho') || KHO[1]
+    const locKho = locStore?.locKho ?? []
 
     if (is521) {
+      const khoStr = params.get('kho') || (locKho.length === 1 ? locKho[0] : (dsKhoCuaHang[0] || KHO[1]))
       const maStr = params.get('ma') || HANG_XNT[0].ma
       const the = theKho(kyNum, khoStr, maStr)
       return { rowsDong: the.rows, colsDong: the.cols }
     }
 
     if (is523) {
-      const rawXnt = xnt(kyNum, khoStr)
+      const dsKho = params.get('kho') ? [params.get('kho')!] : (locKho.length > 0 ? locKho : dsKhoCuaHang)
+      const rawXnt = xnt(kyNum, dsKho, dsKhoCuaHang)
       const sumGt0 = rawXnt.reduce((a, x) => a + (Number(x.gt0) || 0), 0)
       const sumGtn = rawXnt.reduce((a, x) => a + (Number(x.gtn) || 0), 0)
       const sumGtx = rawXnt.reduce((a, x) => a + (Number(x.gtx) || 0), 0)
       const sumGt1 = rawXnt.reduce((a, x) => a + (Number(x.gt1) || 0), 0)
+      const khoGui = params.get('kho') || (locKho.length === 1 ? locKho[0] : (dsKhoCuaHang[0] || 'Kho bếp Lê Lợi'))
       const rows: Row[] = [
-        ...rawXnt,
+        ...rawXnt.map(x => ({ ...x, _kho: khoGui, _ky: kyStr })),
         { ten: 'Tổng cộng', gt0: sumGt0, gtn: sumGtn, gtx: sumGtx, gt1: sumGt1, _t: 1 },
       ]
       return { rowsDong: rows, colsDong: [] }
@@ -118,7 +128,7 @@ export const MToGiay: FC<ScreenProps> = ({ sc, mod }) => {
     }
 
     return { rowsDong: [], colsDong: [] }
-  }, [isApDungDong, is521, is523, isDong1023, params])
+  }, [isApDungDong, is521, is523, isDong1023, params, daXem, locStore, dsKhoCuaHang, s.cheDo, s.goi, s])
 
   useLayoutEffect(() => {
     if (phongTo) {
@@ -197,6 +207,26 @@ export const MToGiay: FC<ScreenProps> = ({ sc, mod }) => {
     return (
       <div className="m-to-giay-wrap">
         <div className="m-sbc-loc-hang">
+          {is523 && (
+            <>
+              <span className="m-sbc-chip m-sbc-chip-tinh">
+                <span className="m-sbc-chip-nhan">Thời gian: Tháng {params.get('ky') || daXem?.ky || '9'}/2026</span>
+              </span>
+              <span className="m-sbc-chip m-sbc-chip-tinh">
+                <span className="m-sbc-chip-nhan">Kho: {params.get('kho') || (locStore?.locKho?.length ? locStore.locKho.join(', ') : (cn ? cn.ngan ?? cn.ten : 'Tất cả'))}</span>
+              </span>
+            </>
+          )}
+          {is521 && (
+            <>
+              <span className="m-sbc-chip m-sbc-chip-tinh">
+                <span className="m-sbc-chip-nhan">Thời gian: Tháng {params.get('ky') || daXem?.ky || '9'}/2026</span>
+              </span>
+              <span className="m-sbc-chip m-sbc-chip-tinh">
+                <span className="m-sbc-chip-nhan">Kho: {params.get('kho') || (locStore?.locKho?.length === 1 ? locStore.locKho[0] : (dsKhoCuaHang[0] || KHO[1]))}</span>
+              </span>
+            </>
+          )}
           <div className="m-so-dong-kieu-wrap">
             <button
               type="button"

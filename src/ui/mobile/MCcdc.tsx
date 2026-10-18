@@ -10,6 +10,7 @@ import { Icon } from '../Icon'
 import { MDanhSach } from './MDanhSach'
 import { MBaoCaoTheoDoi } from './MBaoCaoTheoDoi'
 import { MChon } from './MChon'
+import { LichDon } from '../ChonNgay'
 import {
   daPhanBoToiKy,
   LOAI_THE,
@@ -64,7 +65,7 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
   }
   const tuPhieu = (loc.state as { tuPhieu?: TuPhieuData } | null)?.tuPhieu
 
-  const [theList, setTheList] = useState(THE_MAU_BASE)
+  const [theList, setTheList] = useState<TheItem[]>(THE_MAU_BASE)
   const [theXem, setTheXem] = useState<TheItem | null>(null)
   const [tabThe, setTabThe] = useState<'chitiet' | 'lichpb' | 'lichsu'>('chitiet')
   const [theSuaId, setTheSuaId] = useState<string | null>(null)
@@ -82,6 +83,9 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
   const [ftKy, setFtKy] = useState('12')
   const [ftNgayPb, setFtNgayPb] = useState(() => tuPhieu?.ngayPb || tuPhieu?.ngay || tuPhieu?.ngayCt || '01/10/2026')
   const [ftNgay, setFtNgay] = useState(() => tuPhieu?.ngay || tuPhieu?.ngayCt || '01/10/2026')
+  const [daChonNgayPb, setDaChonNgayPb] = useState(() => Boolean(tuPhieu?.ngayPb))
+  const [moLichGt, setMoLichGt] = useState(false)
+  const [moLichPb, setMoLichPb] = useState(false)
 
   const kyHienTai = 202610
 
@@ -164,6 +168,14 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
   ) : undefined
 
   const handleBatDauThem = () => {
+    setTheSuaId(null)
+    setFtLoai('Chi phí trả trước')
+    setFtTen('')
+    setFtGt('24000000')
+    setFtKy('12')
+    setFtNgay('01/10/2026')
+    setFtNgayPb('01/10/2026')
+    setDaChonNgayPb(false)
     if (!cnChon) {
       setMoChonCn(true)
     } else {
@@ -211,14 +223,16 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
       setTheSuaId(null)
       setMoGhiTang(false)
       setFtTen('')
+      setDaChonNgayPb(false)
       return
     }
     const sttMoi = theList.length + 1
     const soTheMoi = soTheKeTiep(theList.map(t => t.soThe), 'the', ftNgay) || `TPB2610-${String(sttMoi).padStart(4, '0')}`
-    const theMoi = {
+    const theMoi: TheItem = {
       soThe: soTheMoi,
       loai: ftLoai,
       ngay: ftNgay,
+      ngayPb: ftNgayPb,
       ten: ftTen.trim(),
       cn: cnGhiTang || 'Phố Mây Lê Lợi',
       gt: valGt,
@@ -233,6 +247,7 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
     toast(`Đã ghi tăng thẻ ${soTheMoi}`)
     setMoGhiTang(false)
     setFtTen('')
+    setDaChonNgayPb(false)
   }
 
   return (
@@ -337,183 +352,241 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
         </div>
       )}
 
-      {/* ── MÀN GHI TĂNG THẺ (DẠNG FORM CHỨNG TỪ THẺ TRẮNG - T353 ĐIỂM 14) ── */}
-      {moGhiTang && (
-        <div className="m-man-toan-man">
-          <header className="m-thanh-tren">
-            <div className="m-thanh-tren-trai">
+      {/* ── MÀN GHI TĂNG / SỬA THẺ THEO MẪU MÀN XEM (T415) ── */}
+      {moGhiTang && (() => {
+        const theSuaCard = theSuaId ? theList.find(t => t.soThe === theSuaId) : null
+        const soCtHien = theSuaCard?.soCt || tuPhieu?.soCt
+        const ngayCtHien = theSuaCard?.ngayCt || tuPhieu?.ngayCt || ftNgay
+        const ghiChuCtHien = theSuaCard?.ghiChuCt || tuPhieu?.ghiChuCt || ftTen
+
+        return (
+          <div className="m-pb-man">
+            <header className="m-pb-thanh-dau">
               <button
                 type="button"
-                className="m-nut-back"
-                onClick={() => { setMoGhiTang(false); setTheSuaId(null) }}
+                className="m-pb-btn-back"
+                onClick={() => { setMoGhiTang(false); setTheSuaId(null); setDaChonNgayPb(false) }}
                 aria-label="Quay lại"
-                title="Quay lại"
               >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M19 12H5M12 19l-7-7 7-7" vectorEffect="non-scaling-stroke" />
-                </svg>
+                <Icon n="back" className="ic" />
               </button>
-            </div>
-            <h1 className="m-thanh-tren-tieu-de">{theSuaId ? `Sửa thẻ ${theSuaId}` : 'Ghi tăng thẻ chi phí'}</h1>
-            <div className="m-thanh-tren-phai" />
-          </header>
+              <h1 className="m-pb-tieu-de">{theSuaId ? `Sửa thẻ ${theSuaId}` : 'Ghi tăng thẻ chi phí'}</h1>
+              <span className="m-pb-thanh-dau-phai" />
+            </header>
 
-          <div className="m-than-form" style={{ background: 'var(--bg, #f8fafc)', padding: 16 }}>
-            <div className="m-the-trang m-gt-the-nhom">
-              {/* Cửa hàng */}
-              <div className="m-gt-dong">
-                <span className="m-gt-nhan">
-                  <Icon n="cuahang" className="ic sm m-lp-dong-ic" />
-                  Cửa hàng
-                </span>
-                <span className="m-gt-tri">{cnGhiTang || 'Phố Mây Lê Lợi'}</span>
-              </div>
+            <div className="m-pb-noi-dung">
+              {/* Thẻ 1: Thông tin chung */}
+              <div className="m-pb-the m-pb-the-gon">
+                {/* Cửa hàng */}
+                <div className="m-pb-dong">
+                  <span className="m-gt-nhan">
+                    <Icon n="cuahang" className="ic sm m-lp-dong-ic" />
+                    Cửa hàng
+                  </span>
+                  <span className="m-gt-tri">{cnGhiTang || 'Phố Mây Lê Lợi'}</span>
+                </div>
 
-              {/* Loại thẻ */}
-              <div
-                className="m-gt-dong m-gt-bam"
-                onClick={() => setMoChonLoai(true)}
-                role="button"
-                tabIndex={0}
-              >
-                <span className="m-gt-nhan">
-                  <Icon n="layers" className="ic sm m-lp-dong-ic" kieu="net" />
-                  Loại thẻ
-                </span>
-                <span className="m-gt-tri">
-                  <span>{ftLoai}</span>
-                  <Icon n="chevr" className="ic sm" kieu="net" />
-                </span>
-              </div>
+                {/* Loại thẻ */}
+                <div
+                  className="m-pb-dong m-gt-bam"
+                  onClick={() => setMoChonLoai(true)}
+                  role="button"
+                  tabIndex={0}
+                >
+                  <span className="m-gt-nhan">
+                    <Icon n="layers" className="ic sm m-lp-dong-ic" kieu="net" />
+                    Loại thẻ
+                  </span>
+                  <span className="m-gt-tri">
+                    <span>{ftLoai}</span>
+                    <Icon n="chevr" className="ic sm" kieu="net" />
+                  </span>
+                </div>
 
-              {/* Tên mục chi phí / CCDC */}
-              <div className="m-gt-dong">
-                <span className="m-gt-nhan">
-                  <Icon n="tool" className="ic sm m-lp-dong-ic" kieu="net" />
-                  Tên mục chi phí / CCDC <b className="m-gt-sao">*</b>
-                </span>
-                <div className="m-gt-tri">
+                {/* Tên mục chi phí / CCDC */}
+                <div className="m-pb-dong m-gt-dong-ten">
+                  <span className="m-gt-nhan">
+                    <Icon n="tool" className="ic sm m-lp-dong-ic" kieu="net" />
+                    Tên mục chi phí / CCDC <b className="m-gt-sao">*</b>
+                  </span>
                   <input
                     type="text"
-                    className="m-gt-inp"
-                    placeholder="Vd: Bộ nồi inox 50 lít"
+                    className="m-gt-inp-ten"
+                    placeholder="Vd: Bộ nồi inox 5 món"
                     value={ftTen}
                     onChange={e => setFtTen(e.target.value)}
                   />
                 </div>
-              </div>
 
-              {/* Số tiền */}
-              <div className="m-gt-dong">
-                <span className="m-gt-nhan">
-                  <Icon n="wallet" className="ic sm m-lp-dong-ic" kieu="net" />
-                  Số tiền <b className="m-gt-sao">*</b>
-                </span>
-                <div className="m-gt-tri">
-                  <input
-                    type="text"
-                    className="m-gt-inp num"
-                    placeholder="0"
-                    value={ftGt ? money(Number(ftGt) || 0) : ''}
-                    onChange={e => setFtGt(e.target.value.replace(/\D/g, ''))}
-                  />
-                  <span className="m-gt-donvi">đ</span>
+                {/* Số tiền */}
+                <div className="m-pb-dong">
+                  <span className="m-gt-nhan">
+                    <Icon n="wallet" className="ic sm m-lp-dong-ic" kieu="net" />
+                    Số tiền <b className="m-gt-sao">*</b>
+                  </span>
+                  <div className="m-gt-tri">
+                    <input
+                      type="text"
+                      className="m-gt-inp num"
+                      placeholder="0"
+                      value={ftGt ? money(Number(ftGt) || 0) : ''}
+                      onChange={e => setFtGt(e.target.value.replace(/\D/g, ''))}
+                    />
+                    <span className="m-gt-donvi">đ</span>
+                  </div>
                 </div>
               </div>
 
-              {/* Số tháng phân bổ */}
-              <div className="m-gt-dong">
-                <span className="m-gt-nhan">
-                  <Icon n="clock" className="ic sm m-lp-dong-ic" kieu="net" />
-                  Số tháng phân bổ <b className="m-gt-sao">*</b>
-                </span>
-                <div className="m-gt-tri">
-                  <input
-                    type="text"
-                    className="m-gt-inp num"
-                    placeholder="12"
-                    value={ftKy}
-                    onChange={e => setFtKy(e.target.value.replace(/\D/g, ''))}
-                    style={{ maxWidth: 60 }}
-                  />
-                  <span className="m-gt-donvi">tháng</span>
+              {/* Thẻ 2: THÔNG TIN THẺ */}
+              <div className="m-pb-nhom">THÔNG TIN THẺ</div>
+              <div className="m-pb-the m-pb-the-gon">
+                {/* Ngày ghi tăng */}
+                <div
+                  className="m-pb-dong m-gt-bam"
+                  onClick={() => setMoLichGt(true)}
+                  role="button"
+                  tabIndex={0}
+                >
+                  <span className="m-gt-nhan">
+                    <Icon n="clock" className="ic sm m-lp-dong-ic" kieu="net" />
+                    Ngày ghi tăng
+                  </span>
+                  <span className="m-gt-tri">
+                    <span>{ftNgay}</span>
+                    <Icon n="chevr" className="ic sm" kieu="net" />
+                  </span>
+                </div>
+
+                {/* Bắt đầu phân bổ */}
+                <div
+                  className="m-pb-dong m-gt-bam"
+                  onClick={() => setMoLichPb(true)}
+                  role="button"
+                  tabIndex={0}
+                >
+                  <span className="m-gt-nhan">
+                    <Icon n="calendar" className="ic sm m-lp-dong-ic" kieu="net" />
+                    Bắt đầu phân bổ
+                  </span>
+                  <span className="m-gt-tri">
+                    <span>{ftNgayPb}</span>
+                    <Icon n="chevr" className="ic sm" kieu="net" />
+                  </span>
+                </div>
+
+                {/* Số tháng phân bổ */}
+                <div className="m-pb-dong">
+                  <span className="m-gt-nhan">
+                    <Icon n="clock" className="ic sm m-lp-dong-ic" kieu="net" />
+                    Số tháng phân bổ <b className="m-gt-sao">*</b>
+                  </span>
+                  <div className="m-gt-tri">
+                    <input
+                      type="text"
+                      className="m-gt-inp num"
+                      placeholder="12"
+                      value={ftKy}
+                      onChange={e => setFtKy(e.target.value.replace(/\D/g, ''))}
+                      style={{ maxWidth: 60 }}
+                    />
+                    <span className="m-gt-donvi">tháng</span>
+                  </div>
+                </div>
+
+                {/* Mỗi tháng phân bổ (tính sẵn) */}
+                <div className="m-pb-dong">
+                  <span className="m-gt-nhan">
+                    <Icon n="phanbo" className="ic sm m-lp-dong-ic" kieu="net" />
+                    Mỗi tháng phân bổ
+                  </span>
+                  <span className="m-gt-tri m-gt-tinh">
+                    {money(moiThang)} đ
+                  </span>
                 </div>
               </div>
 
-              {/* Mỗi tháng phân bổ (tính sẵn) */}
-              <div className="m-gt-dong">
-                <span className="m-gt-nhan">
-                  <Icon n="phanbo" className="ic sm m-lp-dong-ic" kieu="net" />
-                  Mỗi tháng phân bổ
-                </span>
-                <span className="m-gt-tri m-gt-tinh">
-                  {money(moiThang)} đ
-                </span>
-              </div>
+              {/* Thẻ 3: THÔNG TIN MUA (nếu có chứng từ gốc) */}
+              {soCtHien && (
+                <>
+                  <div className="m-pb-nhom">THÔNG TIN MUA</div>
+                  <div className="m-pb-the m-pb-the-gon">
+                    <div className="m-pb-dong">
+                      <span className="n">Số chứng từ</span>
+                      {theSuaCard?._goc ? (
+                        <Link to={theSuaCard._goc} className="m-pb-link-so">
+                          {soCtHien}
+                        </Link>
+                      ) : (
+                        <span className="g">{soCtHien}</span>
+                      )}
+                    </div>
+                    <div className="m-pb-dong">
+                      <span className="n">Ngày chứng từ</span>
+                      <span className="g">{ngayCtHien}</span>
+                    </div>
+                    <div className="m-pb-dong">
+                      <span className="n">Ghi chú</span>
+                      <span className="g" style={{ fontWeight: 500 }}>
+                        {ghiChuCtHien}
+                      </span>
+                    </div>
+                  </div>
+                </>
+              )}
 
-              {/* Ngày bắt đầu phân bổ */}
-              <div className="m-gt-dong">
-                <span className="m-gt-nhan">
-                  <Icon n="calendar" className="ic sm m-lp-dong-ic" kieu="net" />
-                  Ngày bắt đầu phân bổ
-                </span>
-                <div className="m-gt-tri">
-                  <input
-                    type="text"
-                    className="m-gt-inp"
-                    placeholder="dd/mm/yyyy"
-                    value={ftNgayPb}
-                    onChange={e => setFtNgayPb(e.target.value)}
-                  />
-                </div>
-              </div>
+              <MChon
+                mo={moChonLoai}
+                onDong={() => setMoChonLoai(false)}
+                tieuDe="Loại thẻ"
+                ds={Object.keys(LOAI_THE).map(k => ({ k, ten: k }))}
+                chon={ftLoai}
+                onChon={k => { setFtLoai(k); setMoChonLoai(false) }}
+              />
 
-              {/* Ngày ghi tăng */}
-              <div className="m-gt-dong">
-                <span className="m-gt-nhan">
-                  <Icon n="clock" className="ic sm m-lp-dong-ic" kieu="net" />
-                  Ngày ghi tăng
-                </span>
-                <div className="m-gt-tri">
-                  <input
-                    type="text"
-                    className="m-gt-inp"
-                    placeholder="dd/mm/yyyy"
-                    value={ftNgay}
-                    onChange={e => setFtNgay(e.target.value)}
-                  />
-                </div>
-              </div>
+              {moLichPb && (
+                <LichDon
+                  value={ftNgayPb}
+                  onChange={v => {
+                    setFtNgayPb(v)
+                    setDaChonNgayPb(true)
+                  }}
+                  onDong={() => setMoLichPb(false)}
+                />
+              )}
+
+              {moLichGt && (
+                <LichDon
+                  value={ftNgay}
+                  onChange={v => {
+                    setFtNgay(v)
+                    if (!daChonNgayPb) {
+                      setFtNgayPb(v)
+                    }
+                  }}
+                  onDong={() => setMoLichGt(false)}
+                />
+              )}
             </div>
 
-            <MChon
-              mo={moChonLoai}
-              onDong={() => setMoChonLoai(false)}
-              tieuDe="Loại thẻ"
-              ds={Object.keys(LOAI_THE).map(k => ({ k, ten: k }))}
-              chon={ftLoai}
-              onChon={k => { setFtLoai(k); setMoChonLoai(false) }}
-            />
+            <div className="m-pb-day">
+              <button
+                type="button"
+                className="m-pb-btn-huy"
+                onClick={() => { setMoGhiTang(false); setTheSuaId(null); setDaChonNgayPb(false) }}
+              >
+                Huỷ
+              </button>
+              <button
+                type="button"
+                className="m-pb-btn-luu"
+                onClick={handleLuuGhiTang}
+              >
+                Lưu
+              </button>
+            </div>
           </div>
-
-          <div className="m-form-day">
-            <button
-              type="button"
-              className="m-loc-btn-reset"
-              onClick={() => { setMoGhiTang(false); setTheSuaId(null) }}
-            >
-              Huỷ
-            </button>
-            <button
-              type="button"
-              className="m-loc-btn-apply"
-              onClick={handleLuuGhiTang}
-            >
-              {theSuaId ? 'Lưu thay đổi' : 'Tạo thẻ'}
-            </button>
-          </div>
-        </div>
-      )}
+        )
+      })()}
 
       {/* ── MÀN CHI TIẾT THẺ PHÂN BỔ MẪU A (T365) ── */}
       {theXem && (() => {
@@ -545,6 +618,7 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
           setFtKy(String(tongKy))
           setFtNgay(theXem.ngay)
           setFtNgayPb(ngayBdThe)
+          setDaChonNgayPb(true)
           setCnGhiTang(theXem.cn)
           setTheXem(null)
           setMoGhiTang(true)

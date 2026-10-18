@@ -535,15 +535,6 @@ export function MTrangChuFree(_props?: Partial<ScreenProps>) {
           {quy.length > 0 ? (
             <>
               <VongQuy ds={quy} tong={tongQuy.cuoi} onChon={setModalQuy} />
-              <div className="bbt-quy-tao m-tcf-quy-tao">
-                <Link
-                  to="/app/danh-muc/1-12?moi=1&goiY=thuchi"
-                  className="btn sm m-tcf-btn-tao-quy"
-                  title="Tạo quỹ tiền mặt hoặc tài khoản ngân hàng"
-                >
-                  <Icon n="plus" className="ic sm" />Tạo quỹ
-                </Link>
-              </div>
             </>
           ) : (
             <div className="bbt-quy-trong">
@@ -559,7 +550,17 @@ export function MTrangChuFree(_props?: Partial<ScreenProps>) {
             </div>
           )}
 
-          <div className="bbt-chan" style={{ marginTop: 10 }}>
+          {/* Tạo quỹ và Xem dòng tiền cùng một hàng (T413) */}
+          <div className="bbt-chan m-tcf-quy-chan" style={{ marginTop: 10 }}>
+            {quy.length > 0 && (
+              <Link
+                to="/app/danh-muc/1-12?moi=1&goiY=thuchi"
+                className="btn sm m-tcf-btn-tao-quy"
+                title="Tạo quỹ tiền mặt hoặc tài khoản ngân hàng"
+              >
+                <Icon n="plus" className="ic sm" />Tạo quỹ
+              </Link>
+            )}
             <button type="button" className="bbt-nut" onClick={() => setMoThuChi13(true)}>
               Xem dòng tiền 13 tháng
               <Icon n="chevr" className="ic sm" />

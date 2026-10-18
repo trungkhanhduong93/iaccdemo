@@ -39,6 +39,7 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
   // Tấm chi tiết đơn
   const [donDangXem, setDonDangXem] = useState<Row | null>(null)
   const [tabCt, setTabCt] = useState<'hang' | 'tt' | 'ht'>('hang')
+  const [moTong, setMoTong] = useState(true)
 
   // Danh sách chứng từ theo cách đồng bộ FABi
   const tatCa = useMemo(() => {
@@ -112,6 +113,7 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
   const xemDon = (r: Row) => {
     setDonDangXem(r)
     setTabCt('hang')
+    setMoTong(true)
   }
 
   // Dòng món của đơn đang xem
@@ -281,78 +283,68 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
         <div className="m-form-dm m-pos-ct-hop">
           <div className="overlay" onClick={() => setDonDangXem(null)} />
           <aside className="pn-hop m-pos-ct-hop-than">
+            <div className="m-pos-ct-keo" />
             <div className="pn-dau m-pos-ct-dau">
-              <div className="m-pos-ct-dau-trai">
-                <div className="m-pos-ct-tieu-de-hang">
-                  <h3>Đơn #{donDangXem.so}</h3>
-                  {ghi && (
-                    <span className={`m-pos-tt ${donDangXem.tt === 'nhap' ? 'chua-ghi' : 'da-ghi'}`}>
-                      {donDangXem.tt === 'nhap' ? 'Chưa ghi sổ' : 'Đã ghi sổ'}
-                    </span>
-                  )}
-                </div>
-                <div className="m-pos-ct-phu">
-                  {donDangXem.ngay} · {donDangXem.kenh} ({donDangXem.cn})
-                </div>
-              </div>
               <button
                 type="button"
-                className="icon-btn"
+                className="m-pos-ct-x"
                 onClick={() => setDonDangXem(null)}
                 aria-label="Đóng"
               >
                 <Icon n="x" />
               </button>
+              <div className="m-pos-ct-td">
+                <b>
+                  Đơn #{donDangXem.so}
+                  {ghi && (
+                    <span className={`m-pos-tt ${donDangXem.tt === 'nhap' ? 'chua-ghi' : 'da-ghi'}`}>
+                      {donDangXem.tt === 'nhap' ? 'Chưa ghi sổ' : 'Đã ghi sổ'}
+                    </span>
+                  )}
+                </b>
+                <span>{donDangXem.ngay} · {donDangXem.kenh} · {donDangXem.cn}</span>
+              </div>
+              <span className="m-pos-ct-x-placeholder" />
             </div>
 
             <div className="pn-than m-pos-ct-than">
               {/* Thẻ thông tin đơn */}
               <div className="m-pos-ct-the">
-                <div className="m-pos-ct-the-tieu-de">Thông tin đơn</div>
-                <div className="m-pos-ct-dong-tt">
-                  <span className="m-pos-ct-nhan">Kho xuất</span>
-                  <span className="m-pos-ct-tri dam">{tenKhoDon}</span>
-                </div>
-                <div className="m-pos-ct-dong-tt">
-                  <span className="m-pos-ct-nhan">Khách hàng</span>
-                  <span className="m-pos-ct-tri">Khách lẻ POS</span>
-                </div>
-                <div className="m-pos-ct-dong-tt">
-                  <span className="m-pos-ct-nhan">Phương thức thanh toán</span>
-                  <span className="m-pos-ct-tri dam">{ptttTen}</span>
-                </div>
-                <div className="m-pos-ct-dong-tt">
-                  <span className="m-pos-ct-nhan">Ngày chứng từ</span>
-                  <span className="m-pos-ct-tri">{dmy(ngayDate)}</span>
-                </div>
-                <div className="m-pos-ct-dong-tt">
-                  <span className="m-pos-ct-nhan">Thời gian xuất</span>
-                  <span className="m-pos-ct-tri">{donDangXem.ngay}</span>
-                </div>
-                <div className="m-pos-ct-dong-tt">
-                  <span className="m-pos-ct-nhan">Kênh bán hàng</span>
-                  <span className="m-pos-ct-tri">{donDangXem.kenh}</span>
-                </div>
-                <div className="m-pos-ct-dong-tt">
-                  <span className="m-pos-ct-nhan">Cửa hàng</span>
-                  <span className="m-pos-ct-tri">{donDangXem.cn}</span>
-                </div>
-                {donDangXem.dienGiai && (
-                  <div className="m-pos-ct-dong-tt">
-                    <span className="m-pos-ct-nhan">Ghi chú</span>
-                    <span className="m-pos-ct-tri">{donDangXem.dienGiai}</span>
+                <div className="m-pos-ct-nhom-t">Thông tin đơn</div>
+                <div className="m-pos-ct-ttin">
+                  <div>
+                    <small>Kho xuất</small>
+                    <b>{tenKhoDon}</b>
                   </div>
-                )}
+                  <div>
+                    <small>Khách hàng</small>
+                    <b>{donDangXem.doiTuong || 'Khách lẻ POS'}</b>
+                  </div>
+                  <div>
+                    <small>Thanh toán</small>
+                    <b>{ptttTen}</b>
+                  </div>
+                  <div>
+                    <small>Thời gian xuất</small>
+                    <b className="num">{donDangXem.ngay}</b>
+                  </div>
+                  {donDangXem.dienGiai && (
+                    <div className="full">
+                      <small>Ghi chú</small>
+                      <b>{donDangXem.dienGiai}</b>
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Tabs */}
-              <div className="tabs m-pos-ct-tabs">
+              <div className="m-pos-ct-tab-the">
                 <button
                   type="button"
                   className={tabCt === 'hang' ? 'on' : ''}
                   onClick={() => setTabCt('hang')}
                 >
-                  Dòng hàng ({dsMon.length})
+                  Mặt hàng ({dsMon.length})
                 </button>
                 <button
                   type="button"
@@ -372,88 +364,40 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
                 )}
               </div>
 
-              {/* Tab Dòng hàng */}
+              {/* Tab Mặt hàng */}
               {tabCt === 'hang' && (
-                <div className="m-pos-ct-khoi-hang">
-                  <div className="m-pos-ct-mon-ds">
-                    {dsMon.map((m, idx) => (
-                      <div key={idx} className="m-pos-mon-the">
-                        <div className="m-pos-mon-hang1">
-                          <span className="m-pos-mon-ten">{m.ten}</span>
-                          <span className="m-pos-mon-tien-chinh">{money(m.tien)} đ</span>
-                        </div>
-                        <div className="m-pos-mon-hang2">
-                          <span className="m-pos-mon-ma-dvt">{m.ma} · {m.dvt}</span>
-                          <span className="m-pos-mon-sl-gia">{m.sl} × {money(m.gia)} đ</span>
-                        </div>
-                        {(m.giam > 0 || (hkd && (m.giamThue ?? 0) > 0) || (!hkd && (m.thue ?? 0) > 0)) && (
-                          <div className="m-pos-mon-hang3">
-                            {m.giam > 0 && (
-                              <div className="m-pos-mon-phu-dong">
-                                <span>Giảm giá ({m.pt}%)</span>
-                                <span>-{money(m.giam)} đ</span>
-                              </div>
-                            )}
-                            {hkd && (m.giamThue ?? 0) > 0 && (
-                              <div className="m-pos-mon-phu-dong">
-                                <span>Giảm thuế GTGT</span>
-                                <span>-{money(m.giamThue)} đ</span>
-                              </div>
-                            )}
-                            {!hkd && (m.thue ?? 0) > 0 && (
-                              <div className="m-pos-mon-phu-dong">
-                                <span>Thuế GTGT ({m.ts}%)</span>
-                                <span>{money(m.thue)} đ</span>
-                              </div>
-                            )}
-                          </div>
-                        )}
+                <div className="m-pos-ct-the m-pos-ct-mon-the">
+                  {dsMon.map((m, idx) => {
+                    const phuRight = (() => {
+                      const parts: string[] = []
+                      if (m.giam > 0) parts.push(`giảm -${money(m.giam)}`)
+                      if (hkd && (m.giamThue ?? 0) > 0) parts.push(`giảm thuế -${money(m.giamThue)}`)
+                      else if (!hkd && (m.thue ?? 0) > 0) parts.push(`VAT ${money(m.thue)}`)
+                      return parts.join(' · ')
+                    })()
+                    return (
+                      <div key={idx} className="m-pos-mon-dong-b">
+                        <b>{m.ten}</b>
+                        <span className="m-pos-mon-tien-b num">{money(m.tien)}</span>
+                        <span className="m-pos-mon-ct-b num">{m.ma} · {m.sl} {m.dvt} × {money(m.gia)}</span>
+                        <span className="m-pos-mon-ct2-b num">{phuRight}</span>
                       </div>
-                    ))}
-                  </div>
-
-                  {/* Thẻ các dòng tổng (T392) */}
-                  <div className="m-pos-ct-the m-pos-ct-tong-the">
-                    <div className="m-pos-ct-dong-tt">
-                      <span className="m-pos-ct-nhan">Tổng thành tiền</span>
-                      <span className="m-pos-ct-tri">{money(Number(donDangXem.tien || 0) + tongGiamGia)} đ</span>
-                    </div>
-                    <div className="m-pos-ct-dong-tt">
-                      <span className="m-pos-ct-nhan">Tổng giảm giá chiết khấu</span>
-                      <span className="m-pos-ct-tri">{tongGiamGia > 0 ? `-${money(tongGiamGia)} đ` : '0 đ'}</span>
-                    </div>
-                    {hkd ? (
-                      <div className="m-pos-ct-dong-tt">
-                        <span className="m-pos-ct-nhan">Giảm thuế GTGT</span>
-                        <span className="m-pos-ct-tri text-green">-{money(donDangXem.giamThue)} đ</span>
-                      </div>
-                    ) : (
-                      <div className="m-pos-ct-dong-tt">
-                        <span className="m-pos-ct-nhan">Tổng VAT</span>
-                        <span className="m-pos-ct-tri">{money(donDangXem.thue || 0)} đ</span>
-                      </div>
-                    )}
-                    <div className="m-pos-ct-dong-tt m-pos-ct-dong-tong">
-                      <span className="m-pos-ct-nhan dam">Tổng tiền thanh toán</span>
-                      <span className="m-pos-ct-tri dam m-pos-tien-to">{money(donDangXem.tong)} đ</span>
-                    </div>
-                  </div>
+                    )
+                  })}
                 </div>
               )}
 
               {/* Tab Thanh toán */}
               {tabCt === 'tt' && (
                 <div className="m-pos-ct-the">
-                  <div className="m-pos-ct-the-tieu-de">Hình thức thanh toán</div>
-                  {dsPttt.map((p, idx) => (
-                    <div key={idx} className="m-pos-ct-dong-tt">
-                      <span className="m-pos-ct-nhan">{p.ht}</span>
-                      <span className="m-pos-ct-tri dam">{money(p.tien)} đ</span>
-                    </div>
-                  ))}
-                  <div className="m-pos-ct-dong-tt m-pos-ct-dong-tong">
-                    <span className="m-pos-ct-nhan dam">Tổng thanh toán</span>
-                    <span className="m-pos-ct-tri dam m-pos-tien-to">{money(donDangXem.tong)} đ</span>
+                  <div className="m-pos-ct-nhom-t">Hình thức thanh toán</div>
+                  <div className="m-pos-ct-ttin">
+                    {dsPttt.map((p, idx) => (
+                      <div key={idx} className="full" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ fontSize: '13px', color: 'var(--ink)' }}>{p.ht}</span>
+                        <b className="num" style={{ fontSize: '13px' }}>{money(p.tien)} đ</b>
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}
@@ -463,41 +407,91 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
                 <div className="m-pos-ct-the">
                   {kieu === 'noco' && (
                     <>
-                      <div className="m-pos-ct-the-tieu-de">Bút toán hạch toán</div>
-                      {htButToan.map((b, idx) => (
-                        <div key={idx} className="m-pos-ht-muc">
-                          <div className="m-pos-ht-dong-dau">
-                            <span className="m-pos-ht-dg">{b.dg}</span>
-                            <span className="m-pos-ht-tien dam">{money(b.tien)} đ</span>
+                      <div className="m-pos-ct-nhom-t">Bút toán hạch toán</div>
+                      <div style={{ padding: '4px 14px 10px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        {htButToan.map((b, idx) => (
+                          <div key={idx} className="m-pos-ht-muc">
+                            <div className="m-pos-ht-dong-dau">
+                              <span className="m-pos-ht-dg">{b.dg}</span>
+                              <span className="m-pos-ht-tien dam">{money(b.tien)} đ</span>
+                            </div>
+                            <div className="m-pos-ht-tk">
+                              <span>Nợ <code className="code">{b.no}</code></span>
+                              <span>Có <code className="code">{b.co}</code></span>
+                            </div>
                           </div>
-                          <div className="m-pos-ht-tk">
-                            <span>Nợ <code className="code">{b.no}</code></span>
-                            <span>Có <code className="code">{b.co}</code></span>
-                          </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </>
                   )}
                   {kieu === 'so' && (
                     <>
-                      <div className="m-pos-ct-the-tieu-de">Ghi vào sổ</div>
-                      {soRows.map((sRow, idx) => (
-                        <div key={idx} className="m-pos-ct-dong-tt">
-                          <span className="m-pos-ct-nhan">{sRow.so}</span>
-                          <span className="m-pos-ct-tri dam">{money(sRow.tien)} đ</span>
-                        </div>
-                      ))}
+                      <div className="m-pos-ct-nhom-t">Ghi vào sổ</div>
+                      <div className="m-pos-ct-ttin">
+                        {soRows.map((sRow, idx) => (
+                          <div key={idx} className="full" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <span style={{ fontSize: '13px', color: 'var(--ink)' }}>{sRow.so}</span>
+                            <b className="num" style={{ fontSize: '13px' }}>{money(sRow.tien)} đ</b>
+                          </div>
+                        ))}
+                      </div>
                     </>
                   )}
                 </div>
               )}
             </div>
 
-            <div className="pn-chan">
+            {/* Khối tổng: nằm NGOÀI vùng cuộn, ở chân màn, phía trên nút */}
+            <details
+              className="m-pos-ct-bung"
+              open={moTong}
+              onToggle={(e) => setMoTong(e.currentTarget.open)}
+            >
+              <summary>
+                <div className="m-pos-ct-bung-t">
+                  <small>Tổng tiền thanh toán · {moTong ? 'bấm để thu gọn' : 'bấm để bung'}</small>
+                  <b className="num">{money(donDangXem.tong)} đ</b>
+                </div>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M6 15l6-6 6 6" />
+                </svg>
+              </summary>
+              <div className="m-pos-ct-tong">
+                <div className="d">
+                  <span>Tổng thành tiền</span>
+                  <span className="num">{money(Number(donDangXem.tien || 0) + tongGiamGia)}</span>
+                </div>
+                <div className="d">
+                  <span>Tổng giảm giá, chiết khấu</span>
+                  {tongGiamGia > 0 ? (
+                    <span className="num am">({money(tongGiamGia)})</span>
+                  ) : (
+                    <span className="num">0</span>
+                  )}
+                </div>
+                {hkd ? (
+                  <div className="d">
+                    <span>Giảm thuế GTGT</span>
+                    {Number(donDangXem.giamThue || 0) > 0 ? (
+                      <span className="num am">({money(donDangXem.giamThue)})</span>
+                    ) : (
+                      <span className="num">0</span>
+                    )}
+                  </div>
+                ) : (
+                  <div className="d">
+                    <span>Tổng VAT</span>
+                    <span className="num">{money(donDangXem.thue || 0)}</span>
+                  </div>
+                )}
+              </div>
+            </details>
+
+            {/* Chân: chỉ một nút "Đóng" rộng hết. KHÔNG có nút Xem hạch toán */}
+            <div className="pn-chan m-pos-ct-chan">
               <button
                 type="button"
-                className="btn"
-                style={{ width: '100%' }}
+                className="btn m-pos-ct-nut-dong"
                 onClick={() => setDonDangXem(null)}
               >
                 Đóng

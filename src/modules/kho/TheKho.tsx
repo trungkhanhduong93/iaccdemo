@@ -1,8 +1,9 @@
-// Thẻ kho một mặt hàng, một kho (T157). Mở từ mã hàng trên báo cáo xuất nhập tồn: đường dẫn mang ?ma=&kho=&ky= nên thẻ lọc sẵn đúng hàng, kho, kỳ
+// Thẻ kho một mặt hàng, một kho (T157, T412). Mở từ mã hàng trên báo cáo xuất nhập tồn: đường dẫn mang ?ma=&kho=&ky= nên thẻ lọc sẵn đúng hàng, kho, kỳ
 import { useLayoutEffect, useMemo, useState } from 'react'
 import { useLocation, useSearchParams } from 'react-router-dom'
 import type { ScreenProps } from '../types'
 import { tenMan } from '../../app/registry'
+import { cuaHangHienTai, useSession } from '../../app/session'
 import { KHO } from '../../data/mock'
 import { PageHead } from '../../ui/Page'
 import { ReportPaper, ReportToolbar, RptTable } from '../../ui/generic/ReportScreen'
@@ -15,15 +16,30 @@ export function TheKho({ sc, mod }: ScreenProps) {
   const [q] = useSearchParams()
   const path = useLocation().pathname
   const tt = useTrangThaiLoc(path)
+  const { s } = useSession()
+  const cn = cuaHangHienTai(s)
+  // Gói Free mỗi cửa hàng một kho: lọc Kho đi theo cửa hàng đang chọn (T412)
+  const dsKho = useMemo(() => cn ? cn.kho : KHO, [cn])
+
   const [ky, setKy] = useState(() => q.get('ky') ?? tt.daXem.ky ?? '9')
-  const [kho, setKho] = useState(() => KHO.find(k => k === q.get('kho')) ?? KHO[1])
+  const [kho, setKho] = useState(() => {
+    const qKho = q.get('kho')
+    if (qKho && KHO.includes(qKho)) return qKho
+    return dsKho[0] || KHO[1]
+  })
   const [ma, setMa] = useState(() => HANG_XNT.find(h => h.ma === q.get('ma'))?.ma ?? HANG_XNT[0].ma)
+
   // Kỳ trên đường dẫn ghi vào bộ lọc đã xem trước khi thanh lọc chạy, nếu không thanh lọc kéo kỳ về kỳ xem lần trước
   const [san, setSan] = useState(!q.get('ky'))
   useLayoutEffect(() => {
     const k = q.get('ky')
-    if (k) { datKyNhap(path, k); xemBaoCao(path); setSan(true) }
-  }, [])
+    const kKho = q.get('kho')
+    const kMa = q.get('ma')
+    if (kKho && KHO.includes(kKho)) setKho(kKho)
+    if (kMa && HANG_XNT.some(h => h.ma === kMa)) setMa(kMa)
+    if (k) { datKyNhap(path, k); xemBaoCao(path); setKy(k); setSan(true) }
+  }, [q, path])
+
   const the = useMemo(() => theKho(Number(ky), kho, ma), [ky, kho, ma])
   const ten = tenMan(sc)
   return (
@@ -32,7 +48,7 @@ export function TheKho({ sc, mod }: ScreenProps) {
       <section className="report">
         {san && (
           <ReportToolbar ky={ky} setKy={setKy}>
-            <LocO nhan="Kho"><Select className="inp" value={kho} onChange={e => setKho(e.target.value)}>{KHO.map(k => <option key={k}>{k}</option>)}</Select></LocO>
+            <LocO nhan="Kho"><Select className="inp" value={kho} onChange={e => setKho(e.target.value)}>{dsKho.map(k => <option key={k}>{k}</option>)}</Select></LocO>
             <LocO nhan="Mặt hàng"><Select className="inp" value={ma} onChange={e => setMa(e.target.value)}>{HANG_XNT.map(h => <option key={h.ma} value={h.ma}>{h.ten}</option>)}</Select></LocO>
           </ReportToolbar>
         )}

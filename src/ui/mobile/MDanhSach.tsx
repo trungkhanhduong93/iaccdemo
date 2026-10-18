@@ -22,7 +22,8 @@ export interface MDanhSachProps<T> {
   onChipChon?: (k: string) => void
   onMoLoc?: () => void
   coLoc?: boolean
-  khoangNgayHienThi?: string
+  soLoc?: number
+  khoangNgayHienThi?: string | null
   onMoChonNgay?: () => void
   onThem?: () => void
   nhanThem?: string
@@ -49,6 +50,7 @@ export function MDanhSach<T>({
   onChipChon,
   onMoLoc,
   coLoc,
+  soLoc,
   khoangNgayHienThi = '16/09/2026 - 15/11/2026',
   onMoChonNgay,
   onThem,
@@ -124,7 +126,7 @@ export function MDanhSach<T>({
       <div className="m-ds-hang-loc">
         <button
           type="button"
-          className={`m-ds-nut-loc-vuong${coLoc ? ' co-loc' : ''}`}
+          className={`m-ds-nut-loc-vuong${coLoc || (soLoc !== undefined && soLoc > 0) ? ' co-loc' : ''}`}
           onClick={onMoLoc}
           aria-label="Bộ lọc"
         >
@@ -134,13 +136,19 @@ export function MDanhSach<T>({
             <line x1="20" y1="21" x2="20" y2="16" vectorEffect="non-scaling-stroke" /><line x1="20" y1="12" x2="20" y2="3" vectorEffect="non-scaling-stroke" />
             <line x1="1" y1="14" x2="7" y2="14" vectorEffect="non-scaling-stroke" /><line x1="9" y1="8" x2="15" y2="8" vectorEffect="non-scaling-stroke" /><line x1="17" y1="16" x2="23" y2="16" vectorEffect="non-scaling-stroke" />
           </svg>
-          {coLoc && <span className="m-ds-loc-cham" />}
+          {soLoc !== undefined && soLoc > 0 ? (
+            <span className="ds-nut-badge">{soLoc}</span>
+          ) : (
+            coLoc && <span className="m-ds-loc-cham" />
+          )}
         </button>
 
         {/* Ô ngày tháng chỉ để hiển thị: bấm không mở gì, không mũi tên (T299) */}
-        <div className="m-ds-o-ngay" aria-label="Khoảng ngày hiển thị">
-          <span className="m-ds-o-ngay-chu">{khoangNgayHienThi}</span>
-        </div>
+        {khoangNgayHienThi && (
+          <div className="m-ds-o-ngay" aria-label="Khoảng ngày hiển thị">
+            <span className="m-ds-o-ngay-chu">{khoangNgayHienThi}</span>
+          </div>
+        )}
 
         {chips && chips.length > 0 ? (
           <button
