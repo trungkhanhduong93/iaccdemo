@@ -4,6 +4,8 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 18/10/2026
 
+- T389: Kê khai thuế, Danh sách tờ khai dùng thanh lọc như các phân hệ khác, thêm lọc Trạng thái, Loại tờ khai.
+- T388: Thêm nguyên vật liệu mới ngay tại phiếu Mua hàng, Kiểm kê, thẻ Chi phí trả trước: hộp chỉ có Mã hàng, Tên hàng, Đơn vị tính, Loại hàng hoá; mặc định Nguyên vật liệu (mua hàng, kiểm kê) hoặc Khác (Công cụ dụng cụ) (chi phí trả trước), đều theo dõi tồn kho.
 - T387: Kho, tab Kiểm kê, Xuất điều chỉnh, Nhập điều chỉnh: thêm bộ lọc Hàng hoá và Nhóm hàng hoá (Nhóm hàng hoá trong Bộ lọc nâng cao).
 - T386: Thu chi, tab Thu, chi tiền tách thành 3 tab trên thanh tab phân hệ: Tiền mặt, Ngân hàng, Chuyển quỹ. Tab Tiền mặt và Ngân hàng có 2 nút Thu tiền, Chi tiền thay nút Thêm mới; tab Chuyển quỹ có nút Thêm chuyển quỹ.
 - T385: Tab Báo cáo của từng phân hệ có đủ các báo cáo mà sơ đồ Quy trình của phân hệ đó nhắc tới, vd Mua hàng gói Free có thêm Công nợ nhà cung cấp, Báo cáo xuất nhập tồn, Tổng hợp nhập kho, Chi tiết nhập kho; mở ngay trong phân hệ.

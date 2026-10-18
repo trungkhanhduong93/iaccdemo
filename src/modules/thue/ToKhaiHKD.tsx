@@ -12,7 +12,7 @@ import { NGANH_NGHE_CON, NHOM_NGANH_NGHE } from '../danh-muc/nganh-nghe'
 import { Icon } from '../../ui/Icon'
 import { Table } from '../../ui/Table'
 import { Select } from '../../ui/Dropdown'
-import { useDongEsc } from '../../ui/LocNangCao'
+import { BoLoc, useCauHinhLoc, useDongEsc, useLocNhap, type OLocDef } from '../../ui/LocNangCao'
 import { fold, money } from '../../ui/format'
 
 type TrangThai = 'Chưa nộp' | 'Đã nộp' | 'Bị từ chối' | 'Đã huỷ'
@@ -60,11 +60,16 @@ function soLieu(tk: Pick<ToKhai, 'dau' | 'nam'>) {
   return { dt, giam, gtgt, tncn, tong: gtgt + tncn }
 }
 
-export function ToKhaiHKD(_: ScreenProps) {
+// Bộ lọc như danh sách chứng từ các phân hệ (T389): Năm, Tìm kiếm, Loại tờ khai, Trạng thái; bấm Lọc mới áp dụng
+interface GtLoc { nam: string; tim: string; loai: string; tt: string }
+const locMacDinh = (): GtLoc => ({ nam: '2026', tim: '', loai: '', tt: '' })
+const DS_TT: TrangThai[] = ['Chưa nộp', 'Đã nộp', 'Bị từ chối', 'Đã huỷ']
+
+export function ToKhaiHKD({ sc, mod }: ScreenProps) {
   const { toast } = useSession()
   const [, setLan] = useState(0)   // vẽ lại sau khi đổi danh sách
-  const [q, setQ] = useState('')
-  const [nam, setNam] = useState('2026')
+  const loc0 = useLocNhap(locMacDinh)
+  const { nhap, dat, ap } = loc0
   // ?buoc=n từ sơ đồ quy trình: mở tờ khai chưa nộp mới nhất ở bước n; chưa có thì mở hộp Lập tờ khai
   const [thamSo, setThamSo] = useSearchParams()
   const buocMo = Math.min(4, Math.max(1, Number(thamSo.get('buoc')) || 1)) - 1
@@ -73,7 +78,20 @@ export function ToKhaiHKD(_: ScreenProps) {
   const [mo, setMo] = useState<ToKhai | null>(dangLam ?? null)
   const [buocDau, setBuocDau] = useState(dangLam ? buocMo : 0)
   useEffect(() => { if (thamSo.get('buoc')) setThamSo({}, { replace: true }) }, [])   // eslint-disable-line react-hooks/exhaustive-deps
-  const rows = DS.filter(x => (nam === 'tat-ca' || String(x.nam) === nam) && (!q || fold(`${x.ma} ${tenKy(x)} ${TEN_TO_KHAI}`).includes(fold(q))))
+  const dsLoai = [...new Set(DS.map(x => tenLoai(x.lan)))].sort((a, b) => a.localeCompare(b, 'vi', { numeric: true }))
+  const chon = (k: keyof GtLoc, ten: string, ds: { v: string; t: string }[], tatCa = true) => (
+    <Select className="ds-o-sel" value={nhap[k]} aria-label={ten} onChange={e => dat(k, e.target.value)} ds={[...(tatCa ? [{ v: '', t: 'Tất cả' }] : []), ...ds]} />
+  )
+  const oLoc: OLocDef[] = [
+    { k: 'nam', ten: 'Năm', o: chon('nam', 'Năm', [{ v: '2026', t: '2026' }, { v: '2025', t: '2025' }, { v: '2024', t: '2024' }, { v: 'tat-ca', t: 'Tất cả các năm' }], false) },
+    { k: 'tim', ten: 'Tìm kiếm', o: <input className="ds-o-inp" value={nhap.tim} placeholder="Mã, kỳ, tên tờ khai" aria-label="Tìm kiếm"
+      onChange={e => dat('tim', e.target.value)} onKeyDown={e => { if (e.key === 'Enter') loc0.loc() }} /> },
+    { k: 'loai', ten: 'Loại tờ khai', o: chon('loai', 'Loại tờ khai', dsLoai.map(v => ({ v, t: v }))) },
+    { k: 'tt', ten: 'Trạng thái', o: chon('tt', 'Trạng thái', DS_TT.map(v => ({ v, t: v }))) },
+  ]
+  const [cauHinhLoc, datCauHinhLoc] = useCauHinhLoc(`/app/${mod.key}/${sc.slug}`, oLoc.map(o => o.k), ['nam', 'tim', 'loai', 'tt'])
+  const rows = DS.filter(x => (ap.nam === 'tat-ca' || String(x.nam) === ap.nam) && (!ap.tim.trim() || fold(`${x.ma} ${tenKy(x)} ${TEN_TO_KHAI}`).includes(fold(ap.tim.trim())))
+    && (!ap.loai || tenLoai(x.lan) === ap.loai) && (!ap.tt || x.tt === ap.tt))
     .map((x, i) => ({ ...x, stt: i + 1, ky: tenKy(x), loai: tenLoai(x.lan) }) as Row)
   const cols: Col[] = [
     { k: 'stt', t: '#', c: true, w: 50 },
@@ -97,11 +115,14 @@ export function ToKhaiHKD(_: ScreenProps) {
       <h1 className="sr-only">Danh sách tờ khai</h1>
       <section className="card voucher-top">
         <div className="ds-thanh">
-          <label className="tk-tim"><Icon n="search" className="ic sm" /><input value={q} onChange={e => setQ(e.target.value)} placeholder="Tìm kiếm theo tên tờ khai" aria-label="Tìm tờ khai" /></label>
-          <Select className="sel-mini" style={{ height: 34, minWidth: 120 }} value={nam} aria-label="Năm" onChange={e => setNam(e.target.value)}
-            ds={[{ v: '2026', t: 'Năm 2026' }, { v: '2025', t: 'Năm 2025' }, { v: '2024', t: 'Năm 2024' }, { v: 'tat-ca', t: 'Tất cả các năm' }]} />
-          <div className="ds-thanh-phai">
-            <button type="button" className="btn pri" onClick={() => setLap(true)}><Icon n="plus" className="ic sm" />Lập tờ khai</button>
+          <div className="ds-thanh-h1">
+            <div className="ds-thanh-h1-trai">
+              <BoLoc ds={oLoc} cauHinh={cauHinhLoc} datCauHinh={datCauHinhLoc} dangLoc={loc0.dangLoc} khacNhap={loc0.khacNhap}
+                onLoc={loc0.loc} onXoaHet={loc0.xoaNhap} />
+            </div>
+            <div className="ds-thanh-h1-phai">
+              <button type="button" className="btn pri" onClick={() => setLap(true)}><Icon n="plus" className="ic sm" />Lập tờ khai</button>
+            </div>
           </div>
         </div>
         <Table cols={cols} rows={rows} onRow={r => { setBuocDau(0); setMo(DS.find(x => x.id === r.id) ?? null) }} sum={{ stt: '', ma: `Tổng: ${rows.length}` }} />
