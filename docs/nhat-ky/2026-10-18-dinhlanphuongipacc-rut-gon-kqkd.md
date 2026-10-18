@@ -10,7 +10,7 @@
   - Doanh thu: bỏ dòng mô tả "Tiền bán hàng trong tháng".
   - Giá vốn nguyên vật liệu: dùng `moTaCachNgan` mới trong `home/chi-phi-nvl.ts`. Một cách tính thì ghi cách đó (vd Theo giá thành iPOS Inventory), nhiều cách thì ghi "n cửa hàng, m cách tính".
   - Chi phí hoạt động: chỉ còn "Lớn nhất: <khoản> <số tiền>", chưa có số liệu thì "Lương, mặt bằng, điện nước".
-  - Chi phí phân bổ, khấu hao: "Công cụ, tài sản chia dần".
+  - Chi phí phân bổ, khấu hao: "Chi phí phân bổ nhiều tháng".
 - Bản điện thoại (`ui/mobile/MTrangChuFree.tsx`) chưa đổi.
 - Kèm sửa lỗi của T388 (`ui/ChonDanhMuc.tsx`): thêm hàng mới từ ô NVL thì mục bị ghi 2 lần vào danh sách `nvl`, React báo trùng khoá. `themMucDanhMuc` giờ bỏ qua mục đã có.
 

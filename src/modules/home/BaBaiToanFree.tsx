@@ -533,7 +533,7 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
           >
             <div className="l">
               <b>Chi phí phân bổ, khấu hao</b>
-              <span>Công cụ, tài sản chia dần</span>
+              <span>Chi phí phân bổ nhiều tháng</span>
             </div>
             <div className="r">
               <b>{moneyD(d.cpPhanBo)}</b>
