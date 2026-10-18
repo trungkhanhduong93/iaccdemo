@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T410 | Điện thoại, Ghi tăng thẻ chi phí: ô Tên mục chi phí / CCDC xuống hàng riêng dưới nhãn, rộng hết thẻ; Ngày bắt đầu phân bổ, Ngày ghi tăng bấm chọn được ngày | Trum | Đang làm | `src/ui/mobile/MCcdc.tsx`, cuối `app.css` |
 | T409 | Danh mục (web, điện thoại): tab trạng thái dùng chung kiểu với danh sách chứng từ; bỏ dòng Lọc nâng cao, chỉ hiện số điều kiện lọc trên icon lọc; nút Thêm mới, Đồng bộ FABi dùng màu chung hệ thống; bỏ logo FABi khỏi nút | Trum | Đang làm | `CatalogScreen.tsx`, `MDanhMuc.tsx`, cuối `app.css` |
 | T407 | Điện thoại: nút bộ lọc ở thanh trên các báo cáo đổi sang icon phễu lọc | Trum | Đang làm | `MobileShell.tsx` |
 | T408 | Điện thoại, vòng tồn quỹ khối Quỹ tiền trang chủ Free: bỏ nhãn chú thích quanh vòng, hiện lại danh sách quỹ bên phải vòng | Trum | Đang làm | `BaBaiToanFree.tsx` (VongQuy), `MTrangChuFree.tsx`, cuối `app.css` |
