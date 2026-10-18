@@ -12,7 +12,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
 | T445 | Điện thoại, Bảng kê mua hàng làm lại theo mẫu D Trum chốt: gom theo ngày, mỗi phiếu số phiếu, tổng tiền, tên NCC đủ ở hàng dưới; bấm phiếu bung chi tiết hàng hoá, bấm số phiếu mở phiếu mua gốc; tổng ghim đáy | Trum | Chờ | `MBangKeMua.tsx`, cuối `app.css`. Làm sau T444 (cùng worker) |
-| T444 | Điện thoại, báo cáo Bảng kê mua hàng: khối tổng tiền mua hàng ghim sát đáy màn | Trum | Chờ | `MBangKeMua.tsx`, cuối `app.css` |
+| T444 | Điện thoại, báo cáo Bảng kê mua hàng: khối tổng tiền mua hàng ghim sát đáy màn | Trum | Đang làm | `MBangKeMua.tsx`, cuối `app.css` |
 | T442 | Điện thoại, danh mục dạng thẻ (vd Nhà cung cấp): tên dài xuống dòng thẳng lề tên, không chui dưới số thứ tự | Trum | Chờ | `MDanhMuc.tsx`, `MDanhSach.tsx`, cuối `app.css` |
 | T441 | Điện thoại, Lý do nghiệp vụ: chỉ còn nút Đóng thì cân đối; ô Là chi phí tích được ở màn thêm, sửa và không hiện sai chỗ ở ngoài danh sách | Trum | Đang làm | `MDanhMuc.tsx` hoặc `MFormDm.tsx`, cuối `app.css` |
 | T439 | Phiếu chi đã có thẻ chi phí phân bổ: không cho sửa, báo xoá thẻ trước; xoá thẻ (và xoá phiếu kéo theo thẻ) chỉ khi kỳ khoá sổ trước tháng bắt đầu phân bổ đầu tiên của thẻ | dinhlanphuongipacc | Đang làm | `ChungTuForm.tsx`, `CatalogScreen.tsx` (Tiện ích Xoá, cùng file T427), `ccdc/the-phan-bo.tsx`, `ccdc/index.ts`, `danh-muc/truong-dm.ts`, `daXoa.ts` |
