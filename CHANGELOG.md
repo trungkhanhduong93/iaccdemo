@@ -6,6 +6,8 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 - T444 (điện thoại): Báo cáo Bảng kê mua hàng: khối Tổng tiền mua hàng ghim cố định sát đáy màn hình. Danh sách ngắn hay dài đều sát đáy, không che dòng dữ liệu cuối, căn chuẩn vùng an toàn thiết bị.
 
+- T442 (điện thoại): Các danh mục dạng thẻ (Nhà cung cấp, Đối tượng, Hàng hoá...): số thứ tự là cột riêng, tên dài xuống dòng thẳng lề tên (thụt treo) không chui dưới số; tên tối đa 2 dòng, quá thì cắt "…", mã giữ cùng khối với tên.
+
 - T441 (điện thoại): Danh mục Lý do nghiệp vụ: bỏ ô tích "Là chi phí" ở ngoài thẻ danh mục, đồng nhất icon chevron; trong màn chi tiết lý do, "Là chi phí" hiển thị dạng chữ (Có / Không) thay cho ô tích; nút Đóng mở rộng trọn chiều ngang chân màn cân đối.
 
 - T443 (điện thoại): Ô tìm kiếm trên mọi báo cáo điện thoại căn khoảng cách trên dưới đều (8px), không còn dính sát đường kẻ ngăn với thanh kỳ/chip lọc; kiểu dáng ô tìm kiếm đổi sang nền xám nhạt `#f1f5f9`, bo góc 8px, cao 38px đồng bộ với thanh tìm kiếm danh sách điện thoại (T434); báo cáo dạng tờ giấy (Nhập xuất tồn, Thẻ kho, Kết quả kinh doanh) bổ sung ô tìm kiếm đồng bộ.

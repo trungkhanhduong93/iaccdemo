@@ -355,9 +355,11 @@ export const MDanhMuc: FC<ScreenProps> = ({ sc }) => {
           >
             <div className="m-the-dm-v2-trai m-the-dm-trai">
               <div className="m-the-dm-v2-dong-chinh">
-                <span className="m-the-dm-v2-stt">{i + 1}. </span>
-                <b className="m-the-dm-v2-ten m-the-dm-ten">{r.ten || r.ma}</b>
-                {r.ma && <span className="m-the-dm-v2-ma m-the-dm-ma"> - {r.ma}</span>}
+                <span className="m-the-dm-v2-stt">{i + 1}.</span>
+                <div className="m-the-dm-v2-khoi-ten">
+                  <b className="m-the-dm-v2-ten m-the-dm-ten">{r.ten || r.ma}</b>
+                  {r.ma && <span className="m-the-dm-v2-ma m-the-dm-ma"> - {r.ma}</span>}
+                </div>
               </div>
               <div className="m-the-dm-v2-dong-phu m-the-dm-phu">
                 {laHangHoa

@@ -30532,5 +30532,55 @@ a.tx-item:hover {
   padding: 10px 14px !important;
 }
 
+/* ── Danh mục điện thoại: tên dài xuống dòng thụt treo (T442) ── */
+.m-the-dm-v2-dong-chinh {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 5px !important;
+  min-width: 0 !important;
+  width: 100% !important;
+}
+
+.m-the-dm-v2-stt {
+  flex: none !important;
+  min-width: 18px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: var(--muted, #64748b) !important;
+  line-height: 1.35 !important;
+  padding-top: 1px !important;
+}
+
+.m-the-dm-v2-khoi-ten {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+  word-break: break-word !important;
+  line-height: 1.35 !important;
+}
+
+.m-the-dm-v2-khoi-ten .m-the-dm-v2-ten,
+.m-the-dm-v2-khoi-ten .m-the-dm-ten {
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  color: var(--ink, #0f172a) !important;
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  display: inline !important;
+}
+
+.m-the-dm-v2-khoi-ten .m-the-dm-v2-ma,
+.m-the-dm-v2-khoi-ten .m-the-dm-ma {
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  color: var(--muted, #64748b) !important;
+  white-space: normal !important;
+  display: inline !important;
+}
+
 
 
