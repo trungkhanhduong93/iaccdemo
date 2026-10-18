@@ -31,6 +31,43 @@ export const quyTrinh: QuyTrinhDef = {
       { ten: 'Chi tiết xuất kho', icon: 'cashout', di: 'kho/5-2-12' },
     ] },
   },
+  // Gói Free dùng sơ đồ bước theo kỳ (mẫu C, T367): đơn POS -> thu tiền -> doanh thu -> trừ kho nguyên liệu
+  buocKyFree: [
+    {
+      ten: 'Bán hàng qua POS',
+      moTa: 'Đơn bán từ máy thu ngân FABi tự động chuyển thành chứng từ.',
+      ghiChu: 'Đơn bán từ máy tính tiền FABi tự động về phần mềm, không cần gõ lại.',
+      nut: [
+        { ten: 'Đơn POS từ FABi', icon: 'pos', di: '', tone: 'fabi', moTa: 'Đơn bán từ máy thu ngân FABi' },
+        { ten: 'Xuất bán POS', icon: 'cart', di: 'ban-hang/3-1-1', chieu: 'ra', moTa: 'Chứng từ bán hàng tự động đồng bộ' },
+      ],
+    },
+    {
+      ten: 'Thu tiền bán hàng',
+      moTa: 'Ghi nhận tiền khách trả tại quán bằng tiền mặt hoặc chuyển khoản.',
+      nut: [
+        { ten: 'Thu tiền mặt', icon: 'cashin', di: 'tien/2-1-1/moi?loai=thu', taoMoi: 'tien/2-1-1/moi?loai=thu', moTa: 'Tiền mặt khách trả tại quầy' },
+        { ten: 'Thu ngân hàng', icon: 'bank', di: 'tien/2-1-1/moi?loai=bc', taoMoi: 'tien/2-1-1/moi?loai=bc', moTa: 'Khách chuyển khoản hoặc quét mã QR' },
+      ],
+    },
+    {
+      ten: 'Doanh thu bán hàng',
+      moTa: 'Theo dõi tổng doanh thu bán món theo ngày, tháng.',
+      ghiChu: 'Doanh thu tổng hợp tự động từ các hoá đơn bán thành công.',
+      nut: [
+        { ten: 'Sổ doanh thu bán hàng', icon: 'book', di: 'ban-hang/3-2-5', moTa: 'Doanh thu bán món theo từng ngày' },
+      ],
+    },
+    {
+      ten: 'Xuất kho nguyên liệu',
+      moTa: 'Xem lượng nguyên liệu đã trừ theo món và số lượng còn tồn.',
+      nut: [
+        { ten: 'Báo cáo xuất nhập tồn', icon: 'box', di: 'kho/5-2-3', moTa: 'Tồn kho nguyên vật liệu hiện tại' },
+        { ten: 'Tổng hợp xuất kho', icon: 'cashout', di: 'kho/5-2-11', chieu: 'ra', moTa: 'Tổng nguyên liệu xuất theo món bán' },
+        { ten: 'Chi tiết xuất kho', icon: 'cashout', di: 'kho/5-2-12', chieu: 'ra', moTa: 'Từng lần trừ nguyên liệu theo đơn' },
+      ],
+    },
+  ],
   baoCao: ['3-2-5', '3-2-2', '3-2-4', 'thue/6-2-2'],
   danhMuc: ['danh-muc/1-2', 'danh-muc/1-5', 'danh-muc/1-14'],
   tienIch: ['tien-ich/11-7'],   // bỏ 11.1, 11.2 (T100)

@@ -25199,3 +25199,344 @@ button[class*="btn-"] .ic .l2 {
 .m-pb-btn-sua:active {
   opacity: 0.9;
 }
+
+
+/* ── Sơ đồ quy trình mẫu C gói Free (T366) ── */
+.qt-ky {
+  width: 100%;
+  padding: 8px 0 16px;
+}
+
+.qt-ky-luoi {
+  position: relative;
+  display: grid;
+  gap: 20px;
+  width: 100%;
+  align-items: start;
+}
+
+.qt-ky-cot {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.qt-ky-head {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.qt-ky-head-top {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.qt-ky-so {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  background: var(--white, #fff);
+  border: 2px solid var(--blue, #0560a6);
+  color: var(--blue, #0560a6);
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+}
+
+.qt-ky-so.active {
+  background: var(--blue, #0560a6);
+  color: #fff;
+}
+
+.qt-ky-line-seg {
+  position: absolute;
+  left: 17px;
+  right: -37px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 2.5px;
+  background: #5c99ce;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.qt-ky-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.qt-ky-ten {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink, #1f2225);
+  line-height: 1.3;
+}
+
+.qt-ky-mo {
+  font-size: 12.5px;
+  color: var(--muted, #6b7280);
+  line-height: 1.45;
+}
+
+.qt-ky-ds-o {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.qt-ky-ds-o.luoi-hai-cot {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.qt-ky .qt-n {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  text-align: left;
+}
+
+.qt-ky .qt-n .pk {
+  margin: 0 0 0 6px;
+}
+
+.qt-ky-o-wrap {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+}
+
+.qt-ky-o-wrap.rong {
+  grid-column: span 2;
+}
+
+.qt-ky-o {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 54px;
+  padding: 6px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--line, #e5e7eb);
+  background: var(--white, #fff);
+  text-decoration: none;
+  color: var(--ink, #1f2225);
+  font-size: 14px;
+  font-weight: 500;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.15s, box-shadow 0.15s, background-color 0.15s;
+}
+
+.qt-ky-o:hover {
+  border-color: var(--blue, #0560a6);
+  box-shadow: 0 2px 8px rgba(5, 96, 166, 0.08);
+}
+
+.qt-ky-o.lock {
+  opacity: 0.65;
+}
+
+.qt-ky-o-wrap:has(.qt-ky-plus) .qt-ky-o {
+  padding-right: 44px;
+}
+
+.qt-ky-o-t {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
+.qt-ky-ic-wrap {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f1f5f9;
+  color: var(--blue, #0560a6);
+  flex-shrink: 0;
+}
+
+.qt-ky-ic-wrap .ic {
+  width: 24px;
+  height: 24px;
+}
+
+.qt-ky-o-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.qt-ky-o-ten {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink, #1f2225);
+  line-height: 1.35;
+}
+
+.qt-ky-o-mo {
+  font-size: 12px;
+  color: var(--muted, #6b7280);
+  font-weight: 400;
+}
+
+.qt-ky-cham {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+.qt-ky-cham.cham-vao { background: var(--green, #138a52); }
+.qt-ky-cham.cham-ra { background: var(--red, #c2362b); }
+.qt-ky-cham.cham-noi { background: var(--blue, #0560a6); }
+
+.qt-ky-plus {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: #f1f5f9;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  z-index: 2;
+  transition: background 0.15s, color 0.15s;
+}
+
+.qt-ky-plus:hover {
+  background: var(--blue, #0560a6);
+  color: #fff;
+}
+
+.qt-ky-arr {
+  color: var(--faint, #9ca3af);
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.qt-ky-all-bc {
+  position: relative;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px;
+  width: 100%;
+  min-height: 54px;
+  padding: 6px 14px;
+  border-radius: 12px;
+  background: var(--blue, #0560a6);
+  border: 1px solid var(--blue, #0560a6);
+  color: #fff !important;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  box-sizing: border-box;
+  transition: opacity 0.15s;
+}
+
+.qt-ky-all-bc:hover {
+  opacity: 0.92;
+  color: #fff !important;
+}
+
+.qt-ky-ghi-chu {
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #f8fafc;
+  font-size: 12px;
+  color: var(--muted, #6b7280);
+  line-height: 1.45;
+  border: 1px solid #eef2f6;
+}
+
+.qt-ky-chu-giai-top {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 12.5px;
+  color: var(--muted, #6b7280);
+  background: #f8fafc;
+  border: 1px solid var(--line, #e5e7eb);
+  border-radius: 999px;
+  padding: 4px 14px;
+}
+
+.qt-ky-chu-giai-top .qt-ky-cg-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+}
+
+.qt-ky-chu-giai {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 11.5px;
+  color: var(--muted, #6b7280);
+  padding: 2px 0;
+  flex-wrap: wrap;
+}
+
+.qt-ky-cg-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Responsive: dưới 1280px các bước xuống 2 cột (T366) */
+@media (max-width: 1279px) {
+  .qt-ky-luoi {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+  .qt-ky-line-seg {
+    display: none !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .qt-ky-luoi {
+    grid-template-columns: 1fr !important;
+  }
+  .qt-ky-ds-o.luoi-hai-cot {
+    grid-template-columns: 1fr !important;
+  }
+  .qt-ky-o-wrap.rong {
+    grid-column: span 1 !important;
+  }
+}

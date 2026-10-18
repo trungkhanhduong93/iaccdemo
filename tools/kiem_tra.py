@@ -4691,7 +4691,7 @@ def kiem_tra_dot_22_a():
 
         # Chụp ảnh tien gói F để so sánh (spec item 5)
         pg.goto(f"{URL}?goi=F&p=tien-so-sanh#/app/tien/quy-trinh")
-        pg.wait_for_selector('.qt-ht')
+        pg.wait_for_selector('.qt-ht, .qt-ky')
         pg.wait_for_timeout(300)
         pg.screenshot(path=str(SHOTS / 'qt-22-tien.png'))
 
@@ -4701,13 +4701,20 @@ def kiem_tra_dot_22_a():
             pg.wait_for_selector('.qt-card', timeout=8000)
             pg.wait_for_timeout(350)
 
-            # 1. Có sơ đồ hội tụ: lớp .qt-ht, có .qt-ht-lan, .qt-ht-ra, .qt-ht-gom
-            if pg.locator('.qt-ht').count() == 0:
-                loi.append(f'T267 ({mod}): Không thấy sơ đồ hội tụ (.qt-ht)')
-            if pg.locator('.qt-ht-lan').count() == 0:
-                loi.append(f'T267 ({mod}): Thiếu vùng làn nghiệp vụ (.qt-ht-lan)')
-            if pg.locator('.qt-ht-ra').count() == 0:
-                loi.append(f'T267 ({mod}): Thiếu khối Sổ sách, báo cáo (.qt-ht-ra)')
+            # 1. Có sơ đồ hội tụ hoặc sơ đồ bước theo kỳ mẫu C (T366)
+            co_ky = pg.locator('.qt-ky').count() > 0
+            if co_ky:
+                if pg.locator('.qt-ky-cot').count() == 0:
+                    loi.append(f'T267 ({mod}): Thiếu các cột bước (.qt-ky-cot)')
+                if pg.locator('.qt-ky-so').count() == 0:
+                    loi.append(f'T267 ({mod}): Thiếu số bước (.qt-ky-so)')
+            else:
+                if pg.locator('.qt-ht').count() == 0:
+                    loi.append(f'T267 ({mod}): Không thấy sơ đồ hội tụ (.qt-ht)')
+                if pg.locator('.qt-ht-lan').count() == 0:
+                    loi.append(f'T267 ({mod}): Thiếu vùng làn nghiệp vụ (.qt-ht-lan)')
+                if pg.locator('.qt-ht-ra').count() == 0:
+                    loi.append(f'T267 ({mod}): Thiếu khối Sổ sách, báo cáo (.qt-ht-ra)')
 
             # 2. Không có khung Báo cáo bên phải (.qt-bc)
             if pg.locator('.qt-bc').count() > 0:
@@ -4730,7 +4737,7 @@ def kiem_tra_dot_22_a():
                             loi.append(f'T267 ({mod}): Ô "{ten_o}" có href "{href}", không khớp "{di}"')
 
             # 4. Kiểm tra tràn ngang và chụp ảnh
-            tran = pg.evaluate("['.main', '.page', '.qt-ht'].filter(q => { const e = document.querySelector(q); return e && e.scrollWidth > e.clientWidth + 2 })")
+            tran = pg.evaluate("['.main', '.page', '.qt-ht', '.qt-ky'].filter(q => { const e = document.querySelector(q); return e && e.scrollWidth > e.clientWidth + 2 })")
             if tran:
                 loi.append(f'T267 ({mod}): Tràn ngang tại {tran}')
 
