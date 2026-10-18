@@ -156,11 +156,11 @@ export function BangSua({
     onChange(moi)
   }
 
-  function chonMaHang(idx: number, ma: string, muc?: { v: string; t: string }) {
+  function chonMaHang(idx: number, ma: string, muc?: { v: string; t: string; dvt?: string }) {
     const item = danhMucHang.find(x => x.ma === ma)
     if (!item) {
       const moi = muc ?? hangThem.find(x => x.v === ma)
-      capNhat(idx, moi ? { ma, ten: moi.t.split(' - ').slice(1).join(' - '), dvt: dong[idx]?.dvt || 'cái' } : { ma })
+      capNhat(idx, moi ? { ma, ten: moi.t.split(' - ').slice(1).join(' - '), dvt: moi.dvt || dong[idx]?.dvt || 'cái' } : { ma })   // hàng vừa thêm tại form lấy ĐVT đã chọn trong hộp thêm (T419)
       return
     }
     const sl = dong[idx]?.sl || 1
@@ -303,7 +303,7 @@ export function BangSua({
               )}
               {slCot && <th className="num" style={{ width: 80 }}>Số lượng</th>}
               {giaCot && <th className="num" style={{ width: 110 }}>Đơn giá</th>}
-              {tienCot && <th className="num" style={{ width: 120 }}>Thành tiền</th>}
+              {tienCot && <th className="num" style={{ width: tienDong ? '25%' : 120 }}>Thành tiền</th>}
               {ptCkCot && <th className="num" style={{ width: 65 }}>% CK</th>}
               {ckCot && <th className="num" style={{ width: 100 }}>Tiền CK</th>}
               {truocThueCot && <th className="num" style={{ width: 120 }}>Tiền trước thuế</th>}
@@ -404,7 +404,8 @@ export function BangSua({
               )}
               {slCot && <th className="num" style={{ width: 85 }}>Số lượng</th>}
               {giaCot && <th className="num" style={{ width: 110 }}>Đơn giá</th>}
-              {tienCot && <th className="num" style={{ width: 120 }}>Thành tiền</th>}
+              {/* T419: phiếu thu chi cột Thành tiền rộng 1/4 bảng */}
+              {tienCot && <th className="num" style={{ width: tienDong ? '25%' : 120 }}>Thành tiền</th>}
               {ptCkCot && <th className="num" style={{ width: 65 }}>% CK</th>}
               {ckCot && <th className="num" style={{ width: 100 }}>Tiền CK</th>}
               {truocThueCot && <th className="num" style={{ width: 120 }}>Tiền trước thuế</th>}

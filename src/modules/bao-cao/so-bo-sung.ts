@@ -383,17 +383,17 @@ const cols724: Col[] = [
 ]
 
 const DS_CCDC = [
-  { ma: 'CC001', ten: 'Bộ nồi inox 50 lít', dvt: 'Bộ', sl: 2, donGia: 12_300_000, ngay: '05/01/2026' },
-  { ma: 'CC002', ten: 'Bàn ghế gỗ khu ngoài trời', dvt: 'Bộ', sl: 10, donGia: 8_640_000, ngay: '20/06/2026' },
-  { ma: 'CC003', ten: 'Máy POS cầm tay', dvt: 'Cái', sl: 4, donGia: 7_950_000, ngay: '01/08/2026' },
-  { ma: 'CC004', ten: 'Máy xay sinh tố công nghiệp', dvt: 'Cái', sl: 3, donGia: 6_300_000, ngay: '15/03/2026' },
-  { ma: 'CC005', ten: 'Dao thớt bếp trọn bộ', dvt: 'Bộ', sl: 5, donGia: 2_400_000, ngay: '10/02/2026' },
+  { ma: 'CCDC0001', ten: 'Bộ nồi inox 50 lít', dvt: 'Bộ', sl: 2, donGia: 12_300_000, ngay: '05/01/2026' },
+  { ma: 'CCDC0002', ten: 'Bàn ghế gỗ khu ngoài trời', dvt: 'Bộ', sl: 10, donGia: 8_640_000, ngay: '20/06/2026' },
+  { ma: 'CCDC0003', ten: 'Máy POS cầm tay', dvt: 'Cái', sl: 4, donGia: 7_950_000, ngay: '01/08/2026' },
+  { ma: 'CCDC0004', ten: 'Máy xay sinh tố công nghiệp', dvt: 'Cái', sl: 3, donGia: 6_300_000, ngay: '15/03/2026' },
+  { ma: 'CCDC0005', ten: 'Dao thớt bếp trọn bộ', dvt: 'Bộ', sl: 5, donGia: 2_400_000, ngay: '10/02/2026' },
 ]
 
 const PHAN_BO_TS: Record<string, { tscd: string[]; ccdc: string[] }> = {
-  q1: { tscd: ['TS001', 'TS002'], ccdc: ['CC001', 'CC005'] },
-  q5: { tscd: ['TS003'], ccdc: ['CC003', 'CC004'] },
-  td: { tscd: ['TS004', 'TS005'], ccdc: ['CC002'] },
+  q1: { tscd: ['TS001', 'TS002'], ccdc: ['CCDC0001', 'CCDC0005'] },
+  q5: { tscd: ['TS003'], ccdc: ['CCDC0003', 'CCDC0004'] },
+  td: { tscd: ['TS004', 'TS005'], ccdc: ['CCDC0002'] },
 }
 
 function rows724(): Row[] {

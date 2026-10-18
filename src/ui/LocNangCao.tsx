@@ -724,7 +724,7 @@ export function NutHangLoat({
   )
 }
 
-export function HopXacNhan({ tieuDe, nut, nutHuy = 'Huỷ', nutDo = true, children, onDong, onDongY }: { tieuDe: string; nut: string; nutHuy?: string; nutDo?: boolean; children: ReactNode; onDong: () => void; onDongY: () => void }) {
+export function HopXacNhan({ tieuDe, nut, nutHuy = 'Huỷ', nutDo = true, children, onDong, onDongY }: { tieuDe: string; nut: string; nutHuy?: string | null; nutDo?: boolean; children: ReactNode; onDong: () => void; onDongY: () => void }) {
   useDongEsc(onDong)
   return createPortal(
     <div className="overlay ds-hop-nen" onMouseDown={e => { if (e.target === e.currentTarget) onDong() }}>
@@ -733,7 +733,8 @@ export function HopXacNhan({ tieuDe, nut, nutHuy = 'Huỷ', nutDo = true, childr
         <p className="ds-hop-than">{children}</p>
         <div className="ds-chan">
           <span className="grow" />
-          <button type="button" className="btn" onClick={onDong}>{nutHuy}</button>
+          {/* nutHuy=null: hộp thông báo một nút, Esc hoặc bấm ra ngoài vẫn đóng (T419) */}
+          {nutHuy !== null && <button type="button" className="btn" onClick={onDong}>{nutHuy}</button>}
           <button type="button" className={`btn pri${nutDo ? ' ds-nut-xoa' : ''}`} autoFocus onClick={onDongY}>{nut}</button>   {/* nutDo=false: nút xanh cho câu hỏi không xoá (T250) */}
         </div>
       </div>

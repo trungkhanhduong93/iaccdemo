@@ -159,7 +159,7 @@ export function GhiTangHangLoat({ rows: daCo, onDong }: { soDong: number; rows: 
                 { k: 'ma', t: 'Mã CCDC', w: 110, r: (r: Row) => r.key === undefined || r.loai !== CCDC ? null
                   : <ChonDanhMuc dm="ccdc" nhan="công cụ dụng cụ" coMa chiMa className="inp sm" trong="Chọn" value={r.ma ?? ''} gon
                     ds={CCDC_HANG.map(h => ({ v: h.ma, t: `${h.ma} - ${h.ten}` }))}
-                    onChange={(ma, m) => { const h = CCDC_HANG.find(x => x.ma === ma); sua(r.key, { ma, tenCc: h?.ten ?? m?.t.split(' - ').slice(1).join(' - '), dvt: h?.dvt ?? '' }) }} /> },
+                    onChange={(ma, m) => { const h = CCDC_HANG.find(x => x.ma === ma); sua(r.key, { ma, tenCc: h?.ten ?? m?.t.split(' - ').slice(1).join(' - '), dvt: h?.dvt ?? m?.dvt ?? '' }) }} /> },
                 { k: 'tenCc', t: 'Tên CCDC', w: 180, r: (r: Row) => r.key === undefined || r.loai !== CCDC ? null
                   : <ONhap v={r.tenCc} ten={`Tên CCDC ${r.ten}`} onDoi={t => sua(r.key, { tenCc: t })} /> },
                 { k: 'dvt', t: 'ĐVT', w: 60, r: (r: Row) => r.key === undefined || r.loai !== CCDC ? null : <ONhap v={r.dvt} ten={`ĐVT ${r.ten}`} chiDoc /> },

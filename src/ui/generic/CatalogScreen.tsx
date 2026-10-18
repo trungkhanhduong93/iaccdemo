@@ -1,6 +1,6 @@
 // Màn danh mục chung: bảng có tìm kiếm, lọc nhóm, ngăn kéo thêm và sửa (T70)
 import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react'
-import { Link, useLocation, useSearchParams } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import type { Col, Row, ScreenProps } from '../../modules/types'
 import { tenMan } from '../../app/registry'
 import { cuaHangHienTai, dsKyNam, kyMacDinh, ngayDauNam, truocDauNam, useSession } from '../../app/session'
@@ -36,6 +36,7 @@ import { GoiYLapPhieu } from './GoiYLapPhieu'
 import { HOM_NAY } from '../../data/mock'
 import { dmy } from '../format'
 import { addCatalogRow, useAddedCatalogRows, sinhMaKeTiep } from './danhMucStore'
+import { suaPhieu } from './daXoa'
 
 export function CatalogScreen({ sc }: ScreenProps) {
   const { s, set, toast } = useSession()
@@ -258,6 +259,10 @@ export function CatalogScreen({ sc }: ScreenProps) {
   // Mở thẳng form thêm mới từ sơ đồ Quy trình: ?moi=<kiểu>, mở xong bỏ tham số khỏi đường dẫn
   const [thamSo, setThamSo] = useSearchParams()
   const viTri = useLocation()
+  const nav = useNavigate()
+  // T419: thẻ mở từ phiếu chi (state.tuPhieu có _goc): đóng form thẻ thì về lại phiếu chi gốc
+  const [veGoc, setVeGoc] = useState<string | null>(null)
+  const dongForm = () => { setEdit(null); if (veGoc) { const g = veGoc; setVeGoc(null); nav(g) } }
   // ?goiY=thuchi: tạo quỹ từ trang chủ, lưu quỹ mới xong gợi ý lập phiếu thu, chi (T250)
   const [goiYThuChi, setGoiYThuChi] = useState(false)
   const [quyVuaTao, setQuyVuaTao] = useState<Row | null>(null)
@@ -274,7 +279,9 @@ export function CatalogScreen({ sc }: ScreenProps) {
     if (k === null) return
     setGoiYThuChi(thamSo.get('goiY') === 'thuchi')
     if (k === HANG_LOAT) { setMoHangLoat(true); setThamSo({}, { replace: true }); return }
-    moSua({}, cauHinh?.bien?.some(b => b.k === k) ? k : undefined, (viTri.state as { tuPhieu?: Row } | null)?.tuPhieu)
+    const tuPhieu = (viTri.state as { tuPhieu?: Row } | null)?.tuPhieu
+    setVeGoc(tuPhieu?._goc ? String(tuPhieu._goc) : null)
+    moSua({}, cauHinh?.bien?.some(b => b.k === k) ? k : undefined, tuPhieu)
     setThamSo({}, { replace: true })
   }, [thamSo])
 
@@ -547,7 +554,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
           tenNgan={sc.ngan ?? ten}
           scSlug={sc.slug}
           chiXem={Boolean(edit.ma || edit.ten) && Boolean(cfg.chiXem?.includes(s.goi))}
-          onDong={() => setEdit(null)}
+          onDong={dongForm}
           onXoa={val => { setDaXoaDm(x => new Set(x).add(khoaXoa(val))); setEdit(null); toast(`Đã xoá ${val.soThe ?? val.ma ?? ''}`) }}
           onSaoChep={(kieu, d) => { setEdit(null); setTimeout(() => moSua({}, kieu, d), 0) }}
           onLuu={(val, themTiep) => {
@@ -561,7 +568,12 @@ export function CatalogScreen({ sc }: ScreenProps) {
             if (val && cfg.phien) set(cfg.phien.luu(val, s))   // T245
             toast('Đã lưu')
             if (goiYThuChi && val && !edit.ma && !themTiep) { setQuyVuaTao(val); setGoiYThuChi(false) }
-            if (!themTiep) setEdit(null)
+            // T419: thẻ tạo từ phiếu chi thì ghi số thẻ vào phiếu gốc, phiếu hiện dòng Thẻ chi phí liên quan (T168)
+            if (veGoc && val?.soThe) {
+              const m = veGoc.match(/^\/app\/(.+)\/([^/]+)$/)
+              if (m) suaPhieu(m[1], m[2], { _theCp: [String(val.soThe)] })
+            }
+            if (!themTiep) dongForm()
           }}
         />
       )}

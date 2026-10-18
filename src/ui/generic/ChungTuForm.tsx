@@ -443,7 +443,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
       suaPhieu(manXuat, thamChieuSx.id, { ttSx: 'da', _phieuNhap: { id: moi ? idMoi : String(row?.id), so: soCt } })
     }
     toast(moi ? `Đã lưu ${soCt}` : `Đã lưu thay đổi ${soCt}`)
-    // Phiếu chi mới lý do Chi phí chờ phân bổ: hỏi tạo luôn thẻ chi phí phân bổ, điền sẵn từ phiếu
+    // Phiếu chi mới lý do Chi phí chờ phân bổ: báo rồi mở màn tạo thẻ chi phí phân bổ, điền sẵn từ phiếu (T419: thông báo, không hỏi)
     // Mỗi dòng phiếu có lý do Chi phí chờ phân bổ thành một dòng chi tiết của thẻ (tên = diễn giải, số tiền = thành tiền)
     const dongCho = oLy ? dsDong.filter(d => (d.ly ?? lyDo) === LY_CHO_PHAN_BO) : []
     if (moi && dongCho.length) {
@@ -991,11 +991,19 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               {oLy && (
                 <div className="f">
                   {/* Lý do chi được tích Là chi phí (danh mục Lý do nghiệp vụ) thì hiện nhãn Chi phí cạnh tên ô (T246) */}
-                  <label className="ly-nhan">{oLy.nhan}{LY_CHI_PHI.includes(lyDo) && <span className="chip ok ly-cp" title="Lý do nghiệp vụ được tích Là chi phí: khoản chi tính vào Chi phí trong tháng">Chi phí</span>}</label>
-                  {dangSua ? (
-                    <ChonDanhMuc dm={`ly:${oLy.nhan}`} nhan={oLy.nhan.toLowerCase()} value={lyDo} onChange={chonLyDo} ds={oLy.ds!} />
-                  ) : (
-                    <input className="inp" readOnly value={lyDo} />
+                  <label>{oLy.nhan}</label>
+                  {/* Lý do được tích Là chi phí: nhãn Chi phí nằm cuối ô lý do (T246, T419) */}
+                  <div className={`ly-o${LY_CHI_PHI.includes(lyDo) ? ' co-cp' : ''}${dangSua ? ' sua' : ''}`}>
+                    {dangSua ? (
+                      <ChonDanhMuc dm={`ly:${oLy.nhan}`} nhan={oLy.nhan.toLowerCase()} value={lyDo} onChange={chonLyDo} ds={oLy.ds!} />
+                    ) : (
+                      <input className="inp" readOnly value={lyDo} />
+                    )}
+                    {LY_CHI_PHI.includes(lyDo) && <span className="chip ok ly-cp" title="Lý do nghiệp vụ được tích Là chi phí: khoản chi tính vào Chi phí trong tháng">Chi phí</span>}
+                  </div>
+                  {/* T419: phiếu mới có khoản chờ phân bổ thì nhắc trước, lưu xong sẽ mở màn tạo thẻ */}
+                  {moi && dangSua && dsDong.some(d => (d.ly ?? lyDo) === LY_CHO_PHAN_BO) && (
+                    <div className="ly-nhac-the"><Icon n="info" className="ic sm" />Lưu phiếu xong sẽ tạo Thẻ chi phí phân bổ</div>
                   )}
                 </div>
               )}
@@ -1120,9 +1128,10 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
                 <label>{laSx || laDcn ? 'Mã phiếu' : bo.so ?? 'Số chứng từ'}</label>
                 <input className="inp code" readOnly value={soCt} />
               </div>
-              {coThangLl && (
+              {/* T419: chỉ hiện khi phiếu có lý do được tích Là chi phí */}
+              {coThangLl && dsDong.some(d => LY_CHI_PHI.includes(d.ly ?? lyDo)) && (
                 <div className="f">
-                  <label>Tháng hạch toán lãi lỗ</label>
+                  <label>Tháng ghi nhận chi phí</label>
                   {dangSua ? (
                     <Select className="inp" value={thangLl} onChange={e => setThangLl(e.target.value)}>
                       {dsThangLl.map(x => <option key={x} value={x}>Tháng {x}</option>)}
@@ -1286,10 +1295,10 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
         </HopXacNhan>
       )}
       {hoiThe && (
-        <HopXacNhan tieuDe="Tạo thẻ chi phí phân bổ" nut="Đồng ý" nutHuy="Không"
+        <HopXacNhan tieuDe="Tạo thẻ chi phí phân bổ" nut="Tiếp tục" nutHuy={null} nutDo={false}
           onDong={() => { const h = hoiThe; setHoiThe(null); sauLuu(h.moMoi, h.idMoi) }}
           onDongY={() => { const h = hoiThe; setHoiThe(null); nav('/app/ccdc/8-1-1?moi=the', { state: { tuPhieu: h.tu } }) }}>
-          Bạn có muốn tạo Thẻ chi phí phân bổ ngay không? Tên mục chi phí, số tiền, ngày và chứng từ gốc lấy sẵn từ {soCt}, bạn vẫn sửa lại được.
+          {soCt} có khoản Chi phí chờ phân bổ. Phần mềm mở màn Tạo thẻ chi phí phân bổ, điền sẵn tên, số tiền, ngày, chứng từ gốc từ phiếu. Bạn vẫn sửa lại được.
         </HopXacNhan>
       )}
       {hoiVe && (
@@ -1310,7 +1319,7 @@ export const QUY_TIEN = [
 ]
 
 /** Đoán lý do thu, chi từ diễn giải; không khớp thì lấy lý do cuối danh sách (Thu khác, Chi phí khác) */
-/** Lý do chi đưa vào chi phí chờ phân bổ (MA_LY_CHO_PHAN_BO): lưu phiếu xong hỏi tạo thẻ chi phí phân bổ */
+/** Lý do chi đưa vào chi phí chờ phân bổ (MA_LY_CHO_PHAN_BO): lưu phiếu xong báo rồi mở màn tạo thẻ chi phí phân bổ (T419) */
 export const LY_CHO_PHAN_BO = 'Chi phí chờ phân bổ'
 
 export const LY_THEO_DG: [string, string][] = [
@@ -1371,7 +1380,7 @@ function TongDay({ tong, soDong }: { tong: number; soDong: number }) {
   )
 }
 
-/** Tháng hạch toán lãi lỗ chọn được: tháng của ngày chứng từ rồi lùi về các tháng trước, dừng ở tháng đã khoá sổ */
+/** Tháng ghi nhận chi phí chọn được: tháng của ngày chứng từ rồi lùi về các tháng trước, dừng ở tháng đã khoá sổ */
 export function thangLaiLo(ngay: string): string[] {
   const [, m0, y0] = ngay.split('/').map(Number)
   if (!m0 || !y0) return []

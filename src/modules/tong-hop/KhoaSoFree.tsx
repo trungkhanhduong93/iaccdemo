@@ -1,5 +1,5 @@
 // Khoá sổ bản gói Free (T315): không ghi sổ, không kết chuyển, chỉ chốt số liệu theo tháng.
-// Khoá xong thì phiếu trong tháng chỉ xem (không sửa, không xoá), ô Tháng hạch toán lãi lỗ không chọn được tháng đã khoá.
+// Khoá xong thì phiếu trong tháng chỉ xem (không sửa, không xoá), ô Tháng ghi nhận chi phí không chọn được tháng đã khoá.
 // Mở khoá bắt buộc ghi lý do. Tháng đã khoá, lịch sử lưu ở trình duyệt (datKhoaSoDen, data/mock.ts)
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -85,7 +85,7 @@ export function KhoaSoFree({ sc, mod }: ScreenProps) {
       {/* Hai cột bằng nhau (T315): trái là trạng thái, kiểm tra; phải là lịch sử đủ rộng không phải cuộn ngang */}
       <div className="ks-luoi">
         <div className="stack">
-          <Note kind="ok" icon="lock">Đã khoá sổ đến hết tháng {daKhoa.thang}/{daKhoa.nam}. Phiếu trong các tháng này chỉ xem, không sửa, không xoá; ô Tháng hạch toán lãi lỗ không chọn được các tháng này.</Note>
+          <Note kind="ok" icon="lock">Đã khoá sổ đến hết tháng {daKhoa.thang}/{daKhoa.nam}. Phiếu trong các tháng này chỉ xem, không sửa, không xoá; ô Tháng ghi nhận chi phí không chọn được các tháng này.</Note>
           <Card title={khoaDuoc ? `Kiểm tra trước khi khoá sổ tháng ${nhan}` : `Tháng ${nhan} đang mở`} sub={khoaDuoc ? `${soXong}/${buoc.length} bước đã xong` : undefined}>
             {khoaDuoc ? buoc.map(b => (
               <div className={`check ${b.xong ? 'done' : 'now'}`} key={b.ten}>

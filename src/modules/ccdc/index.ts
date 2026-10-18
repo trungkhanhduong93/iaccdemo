@@ -18,18 +18,18 @@ const GOC_MAU = ([
 
 /** Thẻ chi phí phân bổ mẫu: [số thẻ, loại, ngày ghi tăng, các dòng [mã, tên, số tiền, số tháng, thêm?]]; thêm: số lượng (CCDC), số hiệu, mô tả (TSCĐ) */
 const THE_MAU = ([
-  ['TPB2601-0001', 'Công cụ dụng cụ', '05/01/2026', [['CC001', 'Bộ nồi inox 50 lít', 24_600_000, 12]]],
-  ['TPB2606-0002', 'Công cụ dụng cụ', '20/06/2026', [['CC002', 'Bàn ghế gỗ khu ngoài trời', 86_400_000, 24]]],
-  ['TPB2608-0003', 'Công cụ dụng cụ', '01/08/2026', [['CC003', 'Máy POS cầm tay', 31_800_000, 18], ['CC004', 'Máy xay sinh tố công nghiệp', 18_900_000, 12]]],
+  ['TPB2601-0001', 'Công cụ dụng cụ', '05/01/2026', [['CCDC0001', 'Bộ nồi inox 50 lít', 24_600_000, 12]]],
+  ['TPB2606-0002', 'Công cụ dụng cụ', '20/06/2026', [['CCDC0002', 'Bàn ghế gỗ khu ngoài trời', 86_400_000, 24]]],
+  ['TPB2608-0003', 'Công cụ dụng cụ', '01/08/2026', [['CCDC0003', 'Máy POS cầm tay', 31_800_000, 18], ['CCDC0004', 'Máy xay sinh tố công nghiệp', 18_900_000, 12]]],
   ['TPB2607-0004', 'Chi phí trả trước', '01/07/2026', [['TT001', 'Tiền thuê mặt bằng trả trước 6 tháng', 594_000_000, 6]]],
   ['TPB2601-0005', 'Chi phí trả trước', '01/01/2026', [['TT002', 'Phí bản quyền phần mềm năm 2026', 18_000_000, 12]]],
   ['TPB2602-0006', 'Chi phí trả trước', '01/02/2026', [['TT003', 'Bảo hiểm cháy nổ 6 tháng', 12_000_000, 6]]],
-  ['TPB2611-0007', 'Công cụ dụng cụ', '05/11/2026', [['CC005', 'Dao thớt bếp trọn bộ', 9_600_000, 12]]],
+  ['TPB2611-0007', 'Công cụ dụng cụ', '05/11/2026', [['CCDC0005', 'Dao thớt bếp trọn bộ', 9_600_000, 12]]],
   // Thẻ nhiều dòng chi tiết phân bổ, mỗi loại một thẻ
   ['TPB2609-0008', 'Chi phí trả trước', '01/09/2026', [['CPTT.0001', 'Tiền thuê kho lạnh 6 tháng', 54_000_000, 6], ['CPTT.0002', 'Bảo hiểm cháy nổ cửa hàng 12 tháng', 24_000_000, 12],
     ['CPTT.0003', 'Phí phần mềm bán hàng 12 tháng', 14_400_000, 12]]],
-  ['TPB2609-0009', 'Công cụ dụng cụ', '15/09/2026', [['CC006', 'Ly thuỷ tinh 300ml', 7_200_000, 12, { sl: 240 }], ['CC008', 'Khay inox chữ nhật', 4_800_000, 6, { sl: 40 }],
-    ['CC007', 'Tủ mát 2 cánh', 28_500_000, 24, { sl: 1 }]]],
+  ['TPB2609-0009', 'Công cụ dụng cụ', '15/09/2026', [['CCDC0006', 'Ly thuỷ tinh 300ml', 7_200_000, 12, { sl: 240 }], ['CCDC0008', 'Khay inox chữ nhật', 4_800_000, 6, { sl: 40 }],
+    ['CCDC0007', 'Tủ mát 2 cánh', 28_500_000, 24, { sl: 1 }]]],
   ['TPB2610-0010', 'Tài sản cố định', '01/10/2026', [
     ['TSCD.0001', 'Máy rửa chén công nghiệp', 186_000_000, 60, { soHieu: 'MRC-2026-01', moTa: 'Máy rửa chén băng chuyền, 1.000 đĩa mỗi giờ, đặt tại bếp Lê Lợi' }],
     ['TSCD.0002', 'Hệ thống hút khói bếp', 124_000_000, 60, { soHieu: 'HK-LL-02', moTa: 'Chụp hút inox 6m, quạt ly tâm, ống dẫn ra mái' }]]],
@@ -38,8 +38,8 @@ const THE_MAU = ([
   // Thông tin mua gõ tay (không có chứng từ gốc trong phần mềm)
   ['TPBDK2512-0001', 'Chi phí trả trước', '31/12/2025', [['CPTT.0005', 'Tiền thuê kho tổng 24 tháng', 120_000_000, 24, { da: 60_000_000, kyDa: 12 }]],
     { soCt: 'PC2501-0035', ngayCt: '02/01/2025', ghiChuCt: 'Trả trước tiền thuê kho tổng 2 năm' }],
-  ['TPBDK2512-0002', 'Công cụ dụng cụ', '31/12/2025', [['CC001', 'Bộ nồi inox 50 lít', 36_000_000, 24, { sl: 2, da: 9_000_000, kyDa: 6 }],
-    ['CC004', 'Máy xay sinh tố công nghiệp', 14_400_000, 12, { sl: 1, da: 7_200_000, kyDa: 6 }]],
+  ['TPBDK2512-0002', 'Công cụ dụng cụ', '31/12/2025', [['CCDC0001', 'Bộ nồi inox 50 lít', 36_000_000, 24, { sl: 2, da: 9_000_000, kyDa: 6 }],
+    ['CCDC0004', 'Máy xay sinh tố công nghiệp', 14_400_000, 12, { sl: 1, da: 7_200_000, kyDa: 6 }]],
     { soCt: 'MH2506-0042', ngayCt: '28/06/2025', ghiChuCt: 'Mua dụng cụ bếp mở cửa hàng Thảo Điền' }],
   ['TPBDK2512-0003', 'Tài sản cố định', '31/12/2025', [['TSCD.0003', 'Lò nướng đối lưu', 96_000_000, 36, { da: 32_000_000, kyDa: 12, soHieu: 'LN-TD-01', moTa: 'Lò nướng đối lưu 10 khay, đặt tại bếp Thảo Điền' }]],
     { soCt: 'MH2501-0008', ngayCt: '06/01/2025', ghiChuCt: 'Mua lò nướng cho bếp bánh' }],

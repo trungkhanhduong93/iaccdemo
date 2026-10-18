@@ -143,6 +143,7 @@ export function sinhMaKeTiep(dm: string, formVal: Row, allRows: Row[]): string {
     else if (prefix === 'NCC') padLen = 2
     else if (prefix === 'NV') padLen = 2
     else if (prefix === 'K') padLen = 2
+    else if (prefix === 'CCDC') padLen = 4   // CCDC0001: 4 chữ số cho đủ dài (T419)
     else padLen = 2
   }
 

@@ -208,7 +208,7 @@ export const MKhoaSo: FC<ScreenProps> = () => {
 
         <div className={`m-tacvu-ks-note ${laFree ? 'ok' : khoaPro ? 'ok' : 'warn'}`}>
           {laFree
-            ? `Đã khoá sổ đến hết tháng ${daKhoa.thang}/${daKhoa.nam}. Phiếu trong các tháng này chỉ xem, không sửa, không xoá; ô Tháng hạch toán lãi lỗ không chọn được các tháng này.`
+            ? `Đã khoá sổ đến hết tháng ${daKhoa.thang}/${daKhoa.nam}. Phiếu trong các tháng này chỉ xem, không sửa, không xoá; ô Tháng ghi nhận chi phí không chọn được các tháng này.`
             : khoaPro
               ? 'Kỳ 9/2026 đã khoá lúc 07/10/2026. Chứng từ trong kỳ không sửa được. Sai sót phát hiện sau thì lập bút toán điều chỉnh ở kỳ đang mở.'
               : 'Khoá sổ khi chưa làm đủ các bước thì báo cáo tài chính kỳ 9 có thể sai. Vẫn khoá được, hệ thống ghi lại người khoá và thời điểm.'}

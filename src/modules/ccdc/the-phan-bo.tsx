@@ -294,7 +294,7 @@ export const THE_PHAN_BO: CauHinhDM = {
               ds={CCDC_HANG.map(h => ({ v: h.ma, t: `${h.ma} - ${h.ten}` }))}
               onChange={(ma, m) => {
                 const h = CCDC_HANG.find(x => x.ma === ma)
-                sua(r._i, { ma, ten: h?.ten ?? m?.t.split(' - ').slice(1).join(' - ') ?? r.ten, dvt: h?.dvt ?? '', _maTay: Boolean(ma) }, true)
+                sua(r._i, { ma, ten: h?.ten ?? m?.t.split(' - ').slice(1).join(' - ') ?? r.ten, dvt: h?.dvt ?? m?.dvt ?? '', _maTay: Boolean(ma) }, true)
               }} />
             : o('ma', 'Mã', false, true) },
           { k: 'ten', t: `Tên ${muc(v)}`, w: 180, r: o('ten', 'Tên', false, true) },   // cột tên nhận phần rộng còn dư (T287)

@@ -979,7 +979,7 @@ const dsTongHop: Record<string, { ma: string; ten: string }[]> = {
     ['156', 'Hàng hoá'], ['211', 'Tài sản cố định'], ['242', 'Chi phí trả trước'], ['331', 'Phải trả cho người bán'], ['33311', 'Thuế GTGT đầu ra'],
     ['334', 'Phải trả người lao động'], ['411', 'Vốn đầu tư của chủ sở hữu'], ['421', 'Lợi nhuận chưa phân phối'], ['511', 'Doanh thu bán hàng'], ['632', 'Giá vốn hàng bán'], ['642', 'Chi phí quản lý kinh doanh']].map(([ma, ten]) => ({ ma, ten })),
   ts: [['TS001', 'Hệ thống bếp công nghiệp Lê Lợi'], ['TS002', 'Tủ đông 1.500 lít'], ['TS003', 'Máy pha cà phê La Marzocco'], ['TS004', 'Hệ thống điều hoà Thảo Điền'], ['TS005', 'Xe tải giao hàng 1,5 tấn']].map(([ma, ten]) => ({ ma, ten })),
-  ccdc: [['CC001', 'Bộ nồi inox 50 lít'], ['CC002', 'Bàn ghế gỗ khu ngoài trời'], ['CC003', 'Máy POS cầm tay'], ['CC004', 'Máy xay sinh tố công nghiệp'], ['CC005', 'Dao thớt bếp trọn bộ']].map(([ma, ten]) => ({ ma, ten })),
+  ccdc: [['CCDC0001', 'Bộ nồi inox 50 lít'], ['CCDC0002', 'Bàn ghế gỗ khu ngoài trời'], ['CCDC0003', 'Máy POS cầm tay'], ['CCDC0004', 'Máy xay sinh tố công nghiệp'], ['CCDC0005', 'Dao thớt bếp trọn bộ']].map(([ma, ten]) => ({ ma, ten })),
 }
 
 export function ReportScreen({ sc, mod }: ScreenProps) {

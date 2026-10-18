@@ -11,7 +11,7 @@ import { DON_VI_TINH } from '../modules/danh-muc/data'
 import { useSession } from '../app/session'
 import type { Row } from '../modules/types'
 
-export interface MucDm { v: string; t: string }
+export interface MucDm { v: string; t: string; dvt?: string }   // dvt: đơn vị tính của hàng vừa thêm tại form, để ô cha điền luôn (T419)
 
 const daThem = new Map<string, MucDm[]>()
 const nghe = new Set<() => void>()
@@ -93,7 +93,7 @@ export function ChonDanhMuc({ dm, nhan, value, onChange, ds, className = 'inp', 
           addCatalogRow(meta.catKey, val)
           const ma = String(val.ma ?? '').trim()
           const ten = String(val.ten ?? '').trim()
-          const muc = coMa ? { v: ma, t: `${ma} - ${ten}` } : { v: ten, t: ten }
+          const muc: MucDm = { ...(coMa ? { v: ma, t: `${ma} - ${ten}` } : { v: ten, t: ten }), ...(val.dvt ? { dvt: String(val.dvt) } : {}) }
           themMucDanhMuc(dm, muc)
           if (meta.catKey === '1.5') {
             themMucDanhMuc('doiTuong', muc)
