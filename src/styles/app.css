@@ -6834,20 +6834,20 @@ button.chip.sx-kenh.info { border-color: var(--blue); }
 
 :root {
   --m-thanh-tren: 48px;
-  --m-thanh-tren-chu: 18px;
+  --m-thanh-tren-chu: 17px;
   --m-thanh-duoi: 85px;
   --m-thanh-duoi-ic: 24px;
-  --m-thanh-duoi-chu: 11px;
+  --m-thanh-duoi-chu: 10.5px;
   --m-chu-than: 14px;
   --m-chu-phu: 12px;
-  --m-chu-tien: 16px;
+  --m-chu-tien: 14px;
   --m-le-man: 13.3px;
   --m-the-pad: 10.6px 13.3px;
   --m-the-r: 16px;
   --m-the-gap: 12px;
   --m-chip-h: 22px;
   --m-chip-r: 5.3px;
-  --m-chip-chu: 11px;
+  --m-chip-chu: 10.5px;
   --m-nut-h: 46px;
   --m-nut-r: 13.3px;
   --m-inp-h: 40px;
@@ -29982,3 +29982,237 @@ a.tx-item:hover {
 .ds-canh-bao-gon .ic { color: var(--amber); }
 .ds-canh-bao-gon-nut { margin-left: 4px; font-weight: 600; color: var(--blue); }
 .ds-cach-lam-i { margin-right: 6px; color: var(--muted); }
+
+/* ── Cỡ chữ điện thoại theo thang chung 360px (T426) ── */
+@media (max-width: 767px) {
+  /* 1. Tiêu đề màn (thanh trên): 17px */
+  .m-app .m-thanh-tren-tieu-de,
+  .m-thanh-tren-tieu-de,
+  .m-app .m-lp-tieu-de,
+  .m-app .m-tam-tieu,
+  .m-app .m-loc-tieu-de,
+  .m-loc-tieu-de,
+  .m-app .m-bctd-tieu-de,
+  .m-bctd-tieu-de,
+  .m-app .m-form-dm .pn-dau h3,
+  .m-app .m-pb-tieu-de,
+  .m-app .m-them-ch-fabi .m-tieu-de-chu,
+  .m-app .m-lich-tieu-de,
+  .m-app .m-pos-ct-bung-t b,
+  .m-app .m-tt-tieu-de {
+    font-size: var(--m-thanh-tren-chu, 17px) !important;
+  }
+
+  /* 2. Tiêu đề khối, thẻ, nhóm: 15px đậm */
+  .m-app .m-tc-the-tieu,
+  .m-app .m-tc-muc-tieu,
+  .m-app .m-nv-ds-tieu,
+  .m-app .m-khac-nhom-tieu,
+  .m-app .m-khac-nhom-tieu-de,
+  .m-app .m-the-ct-so,
+  .m-the-ct-so,
+  .m-app .m-the-dm-ten,
+  .m-app .m-the-dm-v2-ten,
+  .m-app .m-trong-tieu,
+  .m-app .m-form-the-tieu,
+  .m-app .m-tacvu-the-tieu,
+  .m-app .m-pq-mod-ten,
+  .m-app .m-xp-tieu-khoi,
+  .m-app .m-xp-acc-tieu,
+  .m-app .m-bctd-nhom-tieu,
+  .m-app .m-bctd-nhom-ten,
+  .m-bctd-nhom-tieu,
+  .m-bctd-nhom-ten,
+  .m-app .m-pos-ct-tieu-de-hang h3,
+  .m-app .m-gtb-hero-ten,
+  .m-app .m-tam-dong-ten,
+  .m-app .m-khoi-tieu,
+  .m-app .m-bc-nhom-tieu-de-nhom {
+    font-size: 15px !important;
+    font-weight: 700 !important;
+  }
+
+  /* 3. Chữ chính (tên dòng, số phiếu, đối tượng, nhãn ô): 14px */
+  .m-app .m-the-ct-dt,
+  .m-app .m-the-dm-so,
+  .m-app .m-the-dm-v2-dong-chinh,
+  .m-app .m-nv-dong-ten,
+  .m-app .m-khac-dong-ten,
+  .m-app .m-khac-logout-btn,
+  .m-app .m-ds-tim-inp,
+  .m-app .m-chi-may-tinh p,
+  .m-app .m-chi-may-tinh .btn,
+  .m-app .m-lp-truong-nhan,
+  .m-app .m-lp-truong-tri,
+  .m-app .m-lp-inp-tri,
+  .m-app .m-lp-nhan,
+  .m-app .m-lp-hang-ten,
+  .m-app .m-lp-sua-nhan,
+  .m-app .m-lp-sua-tri-chon,
+  .m-app .m-bctd-item-ten,
+  .m-app .m-bctd-item,
+  .m-app .m-bctd-muc,
+  .m-bctd-item-ten,
+  .m-bctd-item,
+  .m-bctd-muc,
+  .m-app .m-loc-dong-tri,
+  .m-app .m-loc-muc-dong,
+  .m-loc-dong-tri,
+  .m-loc-muc-dong,
+  .m-app .m-form-nhan,
+  .m-form-nhan,
+  .m-app .m-tacvu-kt-ten,
+  .m-app .m-tacvu-cd-nhan,
+  .m-app .m-tacvu-cd-tri,
+  .m-app .m-tacvu-bc-ten,
+  .m-app .m-ct-tab-loai,
+  .m-app .m-loc-sel,
+  .m-app .m-dmtk-so,
+  .m-app .m-dmtk-ten,
+  .m-app .m-nk-viec,
+  .m-app .m-loc-muc-ten,
+  .m-app .m-tc-tab,
+  .m-app .m-tc-ctd-ten,
+  .m-app .m-lp-hang-item-ten,
+  .m-app .m-lp-dong-tri,
+  .m-app .m-xp-dong-tieu,
+  .m-app .m-bc-the-bc-ten,
+  .m-app .m-tam-tim-inp,
+  .m-app .m-tam-btn-them,
+  .m-app .m-loc-than > div > div:first-child {
+    font-size: var(--m-chu-than, 14px) !important;
+  }
+
+  /* 4. Chữ phụ (ngày, diễn giải, ghi chú, mô tả): 12px */
+  .m-app .m-the-ct-hang3,
+  .m-the-ct-hang3,
+  .m-app .m-the-ct-hang2,
+  .m-the-ct-hang2,
+  .m-app .m-the-dm-ma,
+  .m-app .m-the-dm-v2-stt,
+  .m-app .m-the-dm-v2-ma,
+  .m-app .m-the-dm-v2-dong-phu,
+  .m-app .m-ds-tom-tat,
+  .m-app .m-ds-dong-tom-tat,
+  .m-ds-dong-tom-tat,
+  .m-app .m-nv-o-ten,
+  .m-app .m-nv-ds-mota,
+  .m-app .m-tc-dv-vai-tro,
+  .m-app .m-tc-nhanh-ten,
+  .m-app .m-tc-ctd-sub,
+  .m-app .m-tc-kpi-nhan,
+  .m-app .m-tc-cot-nhan,
+  .m-app .m-tc-ss,
+  .m-app .m-khac-user-email,
+  .m-app .m-khac-dong-phu,
+  .m-app .m-khac-dong-sub,
+  .m-app .m-trong-mo-ta,
+  .m-app .m-tam-dong-mota,
+  .m-app .m-bc-nhom-mota,
+  .m-app .m-bc-the-bc-ma,
+  .m-app .m-tacvu-kt-link,
+  .m-app .m-tacvu-ks-note,
+  .m-app .m-cb-meta,
+  .m-app .m-cb-mota,
+  .m-app .m-ds-so-lieu,
+  .m-app .m-ds-nghi,
+  .m-app .m-th-nhan,
+  .m-th-nhan,
+  .m-app .m-th-ghi-chu,
+  .m-th-ghi-chu,
+  .m-app .m-ht-user-phu,
+  .m-app .m-nk-luc,
+  .m-app .m-tacvu-nk-luc,
+  .m-app .m-xp-kk-ghichu,
+  .m-xp-kk-ghichu,
+  .m-app .m-so-dong-phu,
+  .m-app .m-ct-ma,
+  .m-app .m-lp-hang-phu,
+  .m-app .m-lp-hang-item-ma,
+  .m-app .m-lp-hang-item-dvt,
+  .m-app .m-lp-hang-item-nhan,
+  .m-app .m-xp-dong-phu,
+  .m-app .m-xp-ht-ten,
+  .m-app .m-loc-dong-nhan,
+  .m-loc-dong-nhan,
+  .m-app .m-the-ct-ngay-hang {
+    font-size: var(--m-chu-phu, 12px) !important;
+  }
+
+  /* 5. Số tiền trong dòng danh sách: 14px đậm */
+  .m-app .m-the-ct-tien,
+  .m-the-ct-tien,
+  .m-app .m-the-tien,
+  .m-the-tien,
+  .m-app .m-pos-mon-tien,
+  .m-app .m-th-phai .m-th-so-tien,
+  .m-th-phai .m-th-so-tien,
+  .m-app .m-dct-tien,
+  .m-app .m-so-dong-tien,
+  .m-app .m-bkm-tien,
+  .m-app .m-lp-hang-item-tien,
+  .m-app .m-the-ct-tien-wrap .m-the-ct-tien {
+    font-size: var(--m-chu-tien, 14px) !important;
+    font-weight: 700 !important;
+  }
+
+  /* 6. Số tổng lớn (KPI, tổng phiếu, tồn quỹ): 18–20 đậm, giữ thứ bậc hiện có */
+  .m-app .m-tc-so-to,
+  .m-app .m-ds-kpi-so,
+  .m-app .m-tck-kpi-so {
+    font-weight: 700 !important;
+  }
+
+  /* 7. Chip, nhãn trạng thái, badge: 10.5px */
+  .m-app .m-chip,
+  .m-app .m-chip-dem,
+  .m-app .m-ct-chip,
+  .m-app .m-ct-tt-chip,
+  .m-app .m-tacvu-badge,
+  .m-app .m-dmtk-chip-tc,
+  .m-app .m-hddv-chip-so,
+  .m-app .m-bc-chip-goi,
+  .m-app .m-sbc-chip,
+  .m-app .m-the-ct-tag,
+  .m-the-ct-tag,
+  .m-app .m-xp-kk-chip,
+  .m-xp-kk-chip,
+  .m-app .m-ds-ngay-chips .m-ct-chip,
+  .m-app .m-tc-tab-dem,
+  .m-app .m-tc-goi-badge,
+  .m-app .m-tc-badge-so,
+  .m-app .m-pos-tt,
+  .m-app .m-ds-nut-trang-thai,
+  .m-ds-nut-trang-thai,
+  .m-app .m-xp-kk-nhan,
+  .m-xp-kk-nhan {
+    font-size: var(--m-chip-chu, 10.5px) !important;
+  }
+
+  /* 8. Nhãn thanh tab dưới: 10.5px */
+  .m-app .m-thanh-duoi > a,
+  .m-app .m-thanh-duoi .m-tab,
+  .m-app .m-tab-nhan,
+  .m-app .m-tab-chu,
+  .m-tab-chu {
+    font-size: var(--m-thanh-duoi-chu, 10.5px) !important;
+  }
+
+  /* 9. Bề rộng 360px: đảm bảo dòng thẻ không bị đè, số tiền dài không đè chữ khác */
+  .m-app .m-the-ct-hang1,
+  .m-app .m-the-ct-hang3 {
+    gap: 8px !important;
+  }
+  .m-app .m-the-ct-tien {
+    flex: none !important;
+    white-space: nowrap !important;
+  }
+  .m-app .m-the-ct-ngay-hang {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+}
+

@@ -11,8 +11,8 @@ import { Table } from '../Table'
 import { ChamTrangThai } from '../ChamTrangThai'
 import { CO_TRANG_DM, PhanTrang } from '../PhanTrang'
 import { fold, nhapSoQT, soQT } from '../format'
-import { Dropdown, MenuItem, Select } from '../Dropdown'
-import { LocO, ThanhLoc } from '../ThanhLoc'
+import { Dropdown, MenuItem, Popover, Select } from '../Dropdown'
+import { LocO } from '../ThanhLoc'
 import { TRUONG_DM, type CauHinhDM, type KhoiDM, type TruongDM, type KieuTruong } from '../../modules/danh-muc/truong-dm'
 import { heThongTk } from '../../modules/danh-muc/he-thong-tk'
 import { FormToanMan } from '../FormToanMan'
@@ -94,11 +94,14 @@ export function CatalogScreen({ sc }: ScreenProps) {
   const [locTrangThai, setLocTrangThai] = useState<'hd' | 'ngung' | ''>('hd')
   const [tabPhanLoai, setTabPhanLoai] = useState<'tat-ca' | 'da-phan-loai' | 'chua-phan-loai'>('tat-ca')
   const [boLocNangCao, setBoLocNangCao] = useState<Record<string, string>>({})
+  const [moPheu, setMoPheu] = useState(false)
+  const btnPheu = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
     setLocTrangThai('hd')
     setTabPhanLoai('tat-ca')
     setBoLocNangCao({})
+    setMoPheu(false)
   }, [sc])
 
   // Lọc theo trạng thái trước để tính số đếm tab
@@ -351,143 +354,208 @@ export function CatalogScreen({ sc }: ScreenProps) {
             </div>
           </div>
         ) : (
-        <ThanhLoc
-            tim={{
-              value: q,
-              onChange: setQ,
-              placeholder: 'Tìm theo mã, tên',
-            }}
-            boLoc={
-              <>
-                {coTrangThai && (
-                  <LocO nhan="Trạng thái">
-                    <Select
-                      className="inp"
-                      value={locTrangThai}
+          <div className="voucher-top" style={{ border: 0, borderRadius: 0, boxShadow: 'none' }}>
+            <div className="ds-thanh">
+              <div className="ds-thanh-h1">
+                <div className="ds-thanh-h1-trai">
+                  <div className="thanh-loc-tim">
+                    <Icon n="search" className="ic sm thanh-loc-tim-ic" />
+                    <input
+                      type="text"
+                      value={q}
                       onChange={e => {
-                        setLocTrangThai(e.target.value as 'hd' | 'ngung' | '')
+                        setQ(e.target.value)
                         setTrang(1)
                       }}
-                    >
-                      <option value="hd">Đang hoạt động</option>
-                      <option value="ngung">Không hoạt động</option>
-                      <option value="">Tất cả</option>
-                    </Select>
-                  </LocO>
-                )}
-                {nhoms.length > 1 && (
-                  <LocO nhan={cfg.nhanLoc ?? 'Nhóm'}>
-                    <Select
-                      className="inp"
-                      value={nhom}
-                      onChange={e => {
-                        setNhom(e.target.value)
-                        setTrang(1)
-                      }}
-                    >
-                      <option value="">Tất cả</option>
-                      {nhoms.map(n => <option key={n} value={String(n)}>{String(n)}</option>)}
-                    </Select>
-                  </LocO>
-                )}
-                {cacCotLoc.map(c => {
-                  if (c.k === cfg.nhomLoc) return null
-                  const laBool = c.k === 'tonKho' || c.k === 'chiPhi' || c.k === 'dongY' || all.some(r => typeof r[c.k] === 'boolean')
-                  const dsGiaTri = [...new Set(all.map(r => r[c.k]).filter(v => v !== undefined && v !== '' && typeof v !== 'object'))].sort()
-                  if (!laBool && dsGiaTri.length === 0) return null
-                  return (
-                    <LocO key={c.k} nhan={c.t}>
-                      {laBool ? (
-                        <Select
-                          className="inp"
-                          value={boLocNangCao[c.k] ?? ''}
-                          onChange={e => {
-                            setBoLocNangCao(prev => ({ ...prev, [c.k]: e.target.value }))
-                            setTrang(1)
-                          }}
-                        >
-                          <option value="">Tất cả</option>
-                          <option value="__co">Có</option>
-                          <option value="__khong">Không</option>
-                        </Select>
-                      ) : (
-                        <Select
-                          className="inp"
-                          value={boLocNangCao[c.k] ?? ''}
-                          onChange={e => {
-                            setBoLocNangCao(prev => ({ ...prev, [c.k]: e.target.value }))
-                            setTrang(1)
-                          }}
-                        >
-                          <option value="">Tất cả</option>
-                          {dsGiaTri.map(v => (
-                            <option key={String(v)} value={String(v)}>{String(v)}</option>
-                          ))}
-                        </Select>
-                      )}
-                    </LocO>
-                  )
-                })}
-              </>
-            }
-            soLoc={soLoc}
-            dangLoc={soLoc > 0}
-            onLamMoi={() => {
-              setNhom('')
-              setLocTrangThai('hd')
-              setBoLocNangCao({})
-              setQ('')
-              setTrang(1)
-            }}
-            phai={
-              <div className="row" style={{ gap: 8 }}>
-                {/* Ô tích lọc nhanh ở danh mục thường, vd Quỹ tiền chưa map PTTT (T317) */}
-                {cfg.tich && (
-                  <label className="row ky-so-lieu">
-                    <input type="checkbox" className="bat-tat" checked={tichLoc} onChange={e => setTichLoc(e.target.checked)} />
-                    <span>{cfg.tich.nhan}</span>
-                  </label>
-                )}
-                <span className="muted" style={{ fontSize: 12, marginRight: 4 }}>{rows.length}/{all.length} dòng</span>
-                <NutTuyChinhCot cols={cot.colsDu} an={cot.an} coDinh={COT_CO_DINH} macDinh={cot.macDinh} dongBang={cot.dongBang}
-                  onLuu={cot.luu} onDoRongTuDong={cot.datDoRongTuDong} />
-                {!cfg.khongExcel?.includes(s.goi) && (
-                  <NutExcel
-                    onNhap={() => toast('Nhập danh mục từ Excel')}
-                    onXuat={() => toast(`Đã xuất ${rows.length} dòng ra Excel`)}
-                  />
-                )}
-                {laDongBoFabi && cfg.nutPhu && (
+                      placeholder="Tìm theo mã, tên"
+                      className="thanh-loc-tim-inp"
+                    />
+                  </div>
                   <button
+                    ref={btnPheu}
                     type="button"
-                    className="btn"
-                    onClick={() => toast(cfg.nutPhu!.bao)}
+                    className={`nut-vuong${moPheu || soLoc > 0 ? ' on' : ''}`}
+                    title="Bộ lọc"
+                    aria-label="Bộ lọc"
+                    onClick={() => setMoPheu(o => !o)}
                   >
-                    <Icon n={cfg.nutPhu.icon ?? 'refresh'} className="ic sm" />
-                    <span>{cfg.nutPhu.nhan}</span>
+                    <Icon n="filter" className="ic sm" />
+                    {soLoc > 0 ? (
+                      <span className="ds-nut-badge">{soLoc}</span>
+                    ) : null}
                   </button>
-                )}
-                {choThem && (
-                  <button type="button" className="btn pri" onClick={() => moSua({})}>
-                    <Icon n="plus" className="ic sm" />
-                    <span>{cfg.them ?? 'Thêm mới'}</span>
-                  </button>
-                )}
+
+                  <Popover
+                    anchor={btnPheu}
+                    open={moPheu}
+                    onClose={() => setMoPheu(false)}
+                    align="start"
+                    width={600}
+                    role="dialog"
+                    className="pheu-pop"
+                  >
+                    <div className="pheu-khung">
+                      <div className="pheu-dau">
+                        <span className="pheu-tieu-de">Bộ lọc</span>
+                        <button
+                          type="button"
+                          className="pheu-dong"
+                          onClick={() => setMoPheu(false)}
+                          title="Đóng bộ lọc"
+                          aria-label="Đóng"
+                        >
+                          <Icon n="x" className="ic sm" />
+                        </button>
+                      </div>
+
+                      <div className="pheu-than">
+                        {coTrangThai && (
+                          <LocO nhan="Trạng thái">
+                            <Select
+                              className="inp"
+                              value={locTrangThai}
+                              onChange={e => {
+                                setLocTrangThai(e.target.value as 'hd' | 'ngung' | '')
+                                setTrang(1)
+                              }}
+                            >
+                              <option value="hd">Đang hoạt động</option>
+                              <option value="ngung">Không hoạt động</option>
+                              <option value="">Tất cả</option>
+                            </Select>
+                          </LocO>
+                        )}
+                        {nhoms.length > 1 && (
+                          <LocO nhan={cfg.nhanLoc ?? 'Nhóm'}>
+                            <Select
+                              className="inp"
+                              value={nhom}
+                              onChange={e => {
+                                setNhom(e.target.value)
+                                setTrang(1)
+                              }}
+                            >
+                              <option value="">Tất cả</option>
+                              {nhoms.map(n => <option key={n} value={String(n)}>{String(n)}</option>)}
+                            </Select>
+                          </LocO>
+                        )}
+                        {cacCotLoc.map(c => {
+                          if (c.k === cfg.nhomLoc) return null
+                          const laBool = c.k === 'tonKho' || c.k === 'chiPhi' || c.k === 'dongY' || all.some(r => typeof r[c.k] === 'boolean')
+                          const dsGiaTri = [...new Set(all.map(r => r[c.k]).filter(v => v !== undefined && v !== '' && typeof v !== 'object'))].sort()
+                          if (!laBool && dsGiaTri.length === 0) return null
+                          return (
+                            <LocO key={c.k} nhan={c.t}>
+                              {laBool ? (
+                                <Select
+                                  className="inp"
+                                  value={boLocNangCao[c.k] ?? ''}
+                                  onChange={e => {
+                                    setBoLocNangCao(prev => ({ ...prev, [c.k]: e.target.value }))
+                                    setTrang(1)
+                                  }}
+                                >
+                                  <option value="">Tất cả</option>
+                                  <option value="__co">Có</option>
+                                  <option value="__khong">Không</option>
+                                </Select>
+                              ) : (
+                                <Select
+                                  className="inp"
+                                  value={boLocNangCao[c.k] ?? ''}
+                                  onChange={e => {
+                                    setBoLocNangCao(prev => ({ ...prev, [c.k]: e.target.value }))
+                                    setTrang(1)
+                                  }}
+                                >
+                                  <option value="">Tất cả</option>
+                                  {dsGiaTri.map(v => (
+                                    <option key={String(v)} value={String(v)}>{String(v)}</option>
+                                  ))}
+                                </Select>
+                              )}
+                            </LocO>
+                          )
+                        })}
+                      </div>
+
+                      <div className="pheu-chan">
+                        <button
+                          type="button"
+                          className="btn sm"
+                          onClick={() => {
+                            setNhom('')
+                            setLocTrangThai('hd')
+                            setBoLocNangCao({})
+                            setQ('')
+                            setTrang(1)
+                          }}
+                        >
+                          Làm mới
+                        </button>
+                        <button type="button" className="btn pri sm" onClick={() => setMoPheu(false)}>
+                          Áp dụng
+                        </button>
+                      </div>
+                    </div>
+                  </Popover>
+                </div>
+
+                <div className="ds-thanh-h1-phai">
+                  {laDongBoFabi && cfg.nutPhu && (
+                    <button
+                      type="button"
+                      className="btn"
+                      onClick={() => toast(cfg.nutPhu!.bao)}
+                    >
+                      <Icon n={cfg.nutPhu.icon ?? 'refresh'} className="ic sm" />
+                      <span>{cfg.nutPhu.nhan}</span>
+                    </button>
+                  )}
+                  {choThem && (
+                    <button type="button" className="btn pri" onClick={() => moSua({})}>
+                      <Icon n="plus" className="ic sm" />
+                      <span>{cfg.them ?? 'Thêm mới'}</span>
+                    </button>
+                  )}
+                </div>
               </div>
-            }
-          />
-        )}
-        {!dsct && coTrangThai && (
-          <div className="dm-thanh-trang-thai">
-            <ChipTrangThai
-              ds={chips}
-              chon={laHangHoa ? tabPhanLoai : (locTrangThai || 'hd')}
-              onChon={k => {
-                if (laHangHoa) setTabPhanLoai(k as 'tat-ca' | 'da-phan-loai' | 'chua-phan-loai')
-                else setLocTrangThai(k as 'hd' | 'ngung')
-                setTrang(1)
-              }}
-            />
+
+              <div className="ds-thanh-h2">
+                <div className="ds-thanh-h2-trai">
+                  {/* Ô tích lọc nhanh ở danh mục thường, vd Quỹ tiền chưa map PTTT (T317) */}
+                  {cfg.tich && (
+                    <label className="row ky-so-lieu">
+                      <input type="checkbox" className="bat-tat" checked={tichLoc} onChange={e => setTichLoc(e.target.checked)} />
+                      <span>{cfg.tich.nhan}</span>
+                    </label>
+                  )}
+                  {coTrangThai && (
+                    <ChipTrangThai
+                      ds={chips}
+                      chon={laHangHoa ? tabPhanLoai : (locTrangThai || 'hd')}
+                      onChon={k => {
+                        if (laHangHoa) setTabPhanLoai(k as 'tat-ca' | 'da-phan-loai' | 'chua-phan-loai')
+                        else setLocTrangThai(k as 'hd' | 'ngung')
+                        setTrang(1)
+                      }}
+                    />
+                  )}
+                </div>
+                <div className="ds-thanh-h2-phai">
+                  <span className="muted" style={{ fontSize: 12, marginRight: 4 }}>{rows.length}/{all.length} dòng</span>
+                  <NutTuyChinhCot cols={cot.colsDu} an={cot.an} coDinh={COT_CO_DINH} macDinh={cot.macDinh} dongBang={cot.dongBang}
+                    onLuu={cot.luu} onDoRongTuDong={cot.datDoRongTuDong} />
+                  {!cfg.khongExcel?.includes(s.goi) && (
+                    <NutExcel
+                      onNhap={() => toast('Nhập danh mục từ Excel')}
+                      onXuat={() => toast(`Đã xuất ${rows.length} dòng ra Excel`)}
+                    />
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
         )}
         {/* Dải cảnh báo trên bảng; không có nút riêng, chỉ sang nút thêm hàng loạt đang có số đếm ngay phía trên (T287) */}

@@ -791,4 +791,19 @@ Trum chốt 17/10/2026 khi làm T352.
 - Bảng chọn ngày (`ChonKhoangNgay`) và hộp Bộ lọc nâng cao (`LocNangCao`) khi mở thả xuống từ thanh công cụ phải căn theo lề trái (`align="start"`), bung tràn sang phía bên phải.
 - Lý do: từ T349 và T351, thanh công cụ đưa bộ lọc và ô thời gian về phía bên trái. Nếu giữ `align="end"`, bảng chọn ngày (600px) và hộp lọc nâng cao (720px) sẽ tràn sang phía bên trái, che mất thanh bên (sidebar) và các ô lọc khác. Căn lề trái giúp hộp thả xuống nằm trọn trong vùng nội dung bảng dữ liệu.
 
-## QD73. Điện thoại thiết kế ở bề rộng 360px, thang cỡ chữ chung (đang soạn)
+## QD73. Điện thoại thiết kế ở bề rộng 360px, thang cỡ chữ chung (18/10/2026)
+
+Trum chốt 18/10/2026 khi làm T426. Thay mốc thiết kế 390pt của QD54.
+
+- Mọi màn hình app điện thoại lấy bề rộng thiết kế cơ sở là 360px (chuẩn phổ biến máy Android phổ thông và iPhone mini), co giãn tốt tới 390–430px, đảm bảo 0 màn bị cuộn ngang ở 360px.
+- Thống nhất thang cỡ chữ chung toàn bộ app điện thoại (px):
+  - Tiêu đề màn (thanh trên): 17
+  - Tiêu đề khối, thẻ, nhóm: 15 đậm
+  - Chữ chính (tên dòng, số phiếu, đối tượng, nhãn ô): 14
+  - Chữ phụ (ngày, diễn giải, ghi chú, mô tả): 12
+  - Số tiền trong dòng danh sách: 14 đậm
+  - Số tổng lớn (KPI, tổng phiếu, tồn quỹ): 18–20 đậm
+  - Chip, nhãn trạng thái, badge: 10.5
+  - Nhãn thanh tab dưới: 10.5
+  - Ô nhập, select, textarea: giữ 16 để tránh trình duyệt iOS tự động phóng to.
+
