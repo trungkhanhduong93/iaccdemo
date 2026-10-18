@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T418 | Web và điện thoại: đang xem Tất cả cửa hàng mà bấm tạo mới bất kỳ phiếu nào hoặc Thao tác nhanh thì bật bảng chọn cửa hàng trước; lựa chọn lưu làm cửa hàng hiện tại cho trang chủ, danh sách, phiếu tạo sau | Trum | Đang làm | Chặn chung theo đường dẫn tạo mới: `session.tsx`, `Shell.tsx`, `MobileShell.tsx`, thành phần bảng chọn mới |
 | T417 | Điện thoại, trang chủ Free: số % ở thẻ Kết quả kinh doanh bỏ nền, bỏ viền; khối Mua hàng & Công nợ bỏ chia đôi, mỗi chỉ tiêu 2 dòng (tên và số tiền cùng hàng; thông tin phụ và nút báo cáo cùng hàng) | Trum | Đang làm | `MTrangChuFree.tsx`, `MKhoFree.tsx`, cuối `app.css` |
 | T416 | Điện thoại: một số màn (vd Nhóm báo cáo Kho) không cuộn hết, dòng cuối bị thanh tab nổi che; thêm khoảng đệm dưới cho mọi vùng cuộn có thanh tab | Trum | Đang làm | Cuối `app.css`, có thể `MobileShell.tsx` |
 | T414 | Điện thoại: bản mẫu màn chi tiết phiếu thu chi, phiếu mua hàng, phiếu kiểm kê theo kiểu chi tiết thẻ chi phí phân bổ (mẫu A T365), chờ Trum duyệt | Trum | Đang làm | Code theo bản mẫu đã duyệt `backup/mock-T414-xem.html`, `backup/mock-T414-form.html`; thêm Ngày hoá đơn ở màn xem phiếu mua. `MXemPhieu.tsx`, form phiếu điện thoại, cuối `app.css` |
