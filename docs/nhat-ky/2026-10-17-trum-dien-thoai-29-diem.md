@@ -75,7 +75,23 @@ Mọi thay đổi chỉ áp cho điện thoại, trừ những chỗ ghi "web".
 - T360: trang chủ Free điện thoại, khối đổi tên "Mua hàng & Công nợ". Nút Bảng kê nằm dưới Giá trị mua hàng, nút Công nợ dưới Công nợ phải trả, hai nút ngang nhau. Lưới phần C đổi từ 3 hàng sang 4 hàng (`MKhoFree.tsx`, `app.css`). Khối Kết quả kinh doanh rút link thành "Xem BC ›", cùng hàng tên khối (`MTrangChuFree.tsx`).
 - T361: web, Chi phí phân bổ. Điều kiện lọc chỉ áp khi bấm Lọc, ô tích Ẩn thẻ hết phân bổ ra đầu hàng 2 (`CatalogScreen.tsx`, mọi danh sách kiểu chứng từ dùng màn này). Đã kiểm: gõ "inox" chưa lọc vẫn 13 dòng, bấm Lọc còn 3.
 
+## Làm thêm ngày 18/10/2026 (T362–T369, anti làm, Claude điều phối)
+
+- T362: điện thoại, thanh tab ẩn thì nút nổi Thêm mới, Ghi tăng hạ xuống đáy (`app.css`).
+- T363: gói Free ẩn tab CCDC không mở được ở danh sách thẻ chi phí (`MCcdc.tsx`).
+- T364: web, icon đầu form và chip cửa hàng dùng icon bộ chung (`ChungTuForm.tsx`, `CatalogScreen.tsx`, `ccdc/*`, `ChungTuBanHang.tsx`, `ChiPhiThang.tsx`).
+- T365: điện thoại, chi tiết thẻ phân bổ theo mẫu A. Trum chọn mẫu trên canvas, gồm thẻ tổng quan có tiến độ, 3 tab, nút Sửa thẻ.
+- Icon thu chi ngân hàng đổi sang `card-transfer`, vì `buildings-2` trùng với TSCĐ.
+- T366–T369: sơ đồ Quy trình gói Free làm lại theo mẫu C (bước theo kỳ) cho Thu chi, Bán hàng, Mua hàng, Kho, Chi phí phân bổ, Thuế.
+  - Khuôn `buocKyFree`, `BuocKyQT` ở `modules/types.ts`. Vẽ trong `QuyTrinhScreen.tsx`.
+  - Chú thích chấm màu đặt 1 lần ở đầu sơ đồ, nhãn theo phân hệ.
+  - `kiem_tra.py` đã đổi selector theo bố cục mới.
+- Đã kiểm sau khi gộp:
+  - `npm run typecheck`, `npm run build`, `kiem_tra.py --nhanh`: không lỗi.
+  - Xem ảnh sơ đồ Kho bản v2.
+
 ## Bẫy, quyết định mới
 
 - Không ghi vào `docs/BAY.md`, `docs/QUYET-DINH.md`.
+- Ghi vào `docs/BAY.md`: gộp nhánh cùng thêm CSS cuối `app.css`.
 - Gộp nhiều nhánh cùng thêm mục CSS cuối `app.css`: git có thể để dấu `}` cuối chung ra ngoài vùng xung đột. Gộp xong phải đếm `{` `}`, rồi chạy build để bắt lỗi "Unclosed block".

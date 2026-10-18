@@ -80,3 +80,9 @@ Lỗi đã từng làm mất thời gian, kèm cách tránh. Đọc trước khi
 - Nguyên nhân: lớp phụ của Bold Duotone khi là chi tiết nhỏ, khi là một mặt của khối. Đo hộp bao không phân biệt được.
 - Cách tránh: `tools/xuat_bieu_tuong.py` vẽ từng lớp bằng Playwright, đo diện tích thật. Lớp phụ dưới 27% là chi tiết (`l2`, cam), từ 27% là mặt khối (`l3`, xanh nhạt).
 
+## Gộp nhánh cùng thêm CSS cuối app.css làm hỏng khối (T354, T366)
+
+- Hiện tượng: gộp nhánh xong, build báo `CssSyntaxError ... Unclosed block`, hoặc một mục CSS bị chèn vào giữa mục khác.
+- Nguyên nhân: các nhánh cùng thêm vào cuối `src/styles/app.css`. Git coi dấu `}` cuối là phần chung, giữ lại một chỗ, nên vùng xung đột cắt ngang một khối.
+- Cách tránh: khi `app.css` xung đột, không ghép tay vùng xung đột. Lấy bản `HEAD` rồi nối nguyên phần nhánh kia thêm vào sau base (`git show <merge-base>:src/styles/app.css` so với `git show MERGE_HEAD:...`). Sau đó đếm `{` và `}`, rồi chạy `npm run build`.
+

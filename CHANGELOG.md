@@ -2,6 +2,11 @@
 
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
+## 18/10/2026
+
+- T366–T369: Gói Free, tab Quy trình của Thu chi, Bán hàng, Mua hàng, Kho, Chi phí phân bổ, Thuế làm lại theo các bước của một kỳ (khởi tạo, ghi hằng ngày, đối chiếu, báo cáo), icon lớn, mỗi bước có câu giải thích dễ hiểu.
+- T362–T365: Điện thoại: nút nổi hạ xuống khi thanh dưới ẩn; gói Free ẩn tab CCDC không dùng; chi tiết thẻ phân bổ có tiến độ và 3 tab. Web: icon đầu form và chip cửa hàng đồng bộ bộ icon. Icon thu chi ngân hàng đổi sang thẻ chuyển khoản.
+
 ## 17/10/2026
 
 - T360, T361: Điện thoại, trang chủ Free: khối Mua hàng & Công nợ có nút Bảng kê, Công nợ ngay dưới từng số tiền; khối Kết quả kinh doanh có nút Xem BC cùng hàng tên khối. Web, Chi phí phân bổ: có nút Lọc cạnh ô lọc, ô Ẩn thẻ hết phân bổ ra đầu hàng dưới.

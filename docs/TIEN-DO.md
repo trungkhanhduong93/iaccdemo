@@ -11,14 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T362 | Điện thoại: thanh tab dưới tự ẩn khi cuộn thì nút nổi Thêm mới, Ghi tăng hạ xuống sát đáy màn, thanh hiện lại thì nút về chỗ cũ | Trum | Đang làm | Anti làm. Sửa `app.css` (mục cuối T362) |
-| T366 | Sơ đồ Quy trình gói Free làm lại theo mẫu C (bước theo kỳ: Khởi tạo, Ghi nhận hằng ngày, Đối chiếu, Báo cáo), icon to, phủ kín tab, giải thích lời thường. Phần chung: khuôn `buocKyFree`, component vẽ, CSS, bộ kiểm; mẫu Thu chi | Trum | Đang làm | Anti làm. `ui/generic/QuyTrinhScreen.tsx`, `modules/types.ts`, `app.css` (mục cuối T366), `tools/kiem_tra.py`, `tien/quy-trinh.ts` |
-| T367 | Sơ đồ mẫu C gói Free: Bán hàng, Mua hàng | Trum | Đang làm | Anti làm. `ban-hang/quy-trinh.ts`, `mua-hang/quy-trinh.ts` |
-| T368 | Sơ đồ mẫu C gói Free: Kho, Chi phí phân bổ | Trum | Đang làm | Anti làm. `kho/quy-trinh.ts`, `ccdc/quy-trinh.ts` |
-| T369 | Sơ đồ mẫu C gói Free: Thuế | Trum | Đang làm | Anti làm. `thue/quy-trinh.ts` |
-| T365 | Điện thoại: chi tiết thẻ chi phí phân bổ làm lại theo mẫu A (thẻ tổng quan có tiến độ, 3 tab Chi tiết, Lịch phân bổ, Lịch sử, nút Sửa thẻ) | Trum | Đang làm | Anti làm. Sửa `ui/mobile/MCcdc.tsx`, `app.css` (mục cuối T365) |
-| T364 | Web: icon đầu form Thẻ chi phí phân bổ không thuộc bộ icon chung; chip cửa hàng dùng icon nhiều màu, đổi sang `cuahang` nét. Rà mọi form, màn khác | Trum | Đang làm | Anti làm. Không sửa `icon-dac.ts`, `BaBaiToanFree.tsx`, `DanhMucCuaHang.tsx` |
-| T363 | Điện thoại gói Free: Danh sách thẻ chi phí ẩn tab Tăng giảm CCDC, Kiểm kê CCDC... như web | Trum | Đang làm | Anti làm. Sửa `ui/mobile/MCcdc.tsx` hoặc file tạo hàng tab |
 | T339 | Trang chủ Free máy tính, Tiến độ kiểm kê theo cửa hàng: hiện tối đa 4 cửa hàng cần chú ý (chưa kiểm, lệch nhiều trước), dòng Đã kiểm x/y cửa hàng, dòng Xem tất cả mở hộp danh sách đủ | dinhlanphuongipacc | Đang làm | Sửa `home/BaBaiToanFree.tsx`, `app.css` (mục cuối T339) |
 | T333 | Đổi chữ "map" thành "gán" khi nói về phương thức thanh toán và quỹ (Khoá sổ, Danh mục Quỹ tiền, Danh mục cửa hàng) | dinhlanphuongipacc | Dở dang | Đã đổi ở Khoá sổ, Quỹ tiền. Còn `DanhMucCuaHang.tsx` chờ PhuongXT xong T321. Xem [nhật ký](nhat-ky/2026-10-17-dinhlanphuongipacc-doi-map-thanh-gan.md) |
 | T323 | `tools/kiem_tra.py --dien-thoai` dừng ở bước chờ `.m-nv-luoi`: màn Nghiệp vụ điện thoại làm lại ở T311 không còn lớp này, cập nhật bộ kiểm theo bố cục mới | | Chờ | Phát hiện 17/10/2026 khi kiểm T322 |
@@ -59,6 +51,14 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T369 | Sơ đồ mẫu C gói Free: Thuế | Trum | 18/10/2026 | [2026-10-17-trum-dien-thoai-29-diem](nhat-ky/2026-10-17-trum-dien-thoai-29-diem.md) |
+| T368 | Sơ đồ mẫu C gói Free: Kho, Chi phí phân bổ | Trum | 18/10/2026 | [2026-10-17-trum-dien-thoai-29-diem](nhat-ky/2026-10-17-trum-dien-thoai-29-diem.md) |
+| T367 | Sơ đồ mẫu C gói Free: Bán hàng, Mua hàng | Trum | 18/10/2026 | [2026-10-17-trum-dien-thoai-29-diem](nhat-ky/2026-10-17-trum-dien-thoai-29-diem.md) |
+| T366 | Sơ đồ Quy trình gói Free làm lại theo mẫu C (bước theo kỳ: Khởi tạo, Ghi nhận hằng ngày, Đối chiếu, Báo cáo), icon to, phủ kín tab, giải thích lời thường. Phần chung: khuôn `buocKyFree`, component vẽ, CSS, bộ kiểm; mẫu Thu chi | Trum | 18/10/2026 | [2026-10-17-trum-dien-thoai-29-diem](nhat-ky/2026-10-17-trum-dien-thoai-29-diem.md) |
+| T365 | Điện thoại: chi tiết thẻ chi phí phân bổ làm lại theo mẫu A (thẻ tổng quan có tiến độ, 3 tab Chi tiết, Lịch phân bổ, Lịch sử, nút Sửa thẻ) | Trum | 18/10/2026 | [2026-10-17-trum-dien-thoai-29-diem](nhat-ky/2026-10-17-trum-dien-thoai-29-diem.md) |
+| T364 | Web: icon đầu form Thẻ chi phí phân bổ không thuộc bộ icon chung; chip cửa hàng dùng icon nhiều màu, đổi sang `cuahang` nét. Rà mọi form, màn khác | Trum | 18/10/2026 | [2026-10-17-trum-dien-thoai-29-diem](nhat-ky/2026-10-17-trum-dien-thoai-29-diem.md) |
+| T363 | Điện thoại gói Free: Danh sách thẻ chi phí ẩn tab Tăng giảm CCDC, Kiểm kê CCDC... như web | Trum | 18/10/2026 | [2026-10-17-trum-dien-thoai-29-diem](nhat-ky/2026-10-17-trum-dien-thoai-29-diem.md) |
+| T362 | Điện thoại: thanh tab dưới tự ẩn khi cuộn thì nút nổi Thêm mới, Ghi tăng hạ xuống sát đáy màn, thanh hiện lại thì nút về chỗ cũ | Trum | 18/10/2026 | [2026-10-17-trum-dien-thoai-29-diem](nhat-ky/2026-10-17-trum-dien-thoai-29-diem.md) |
 | T361 | Web, Chi phí phân bổ (và danh sách kiểu chứng từ dùng `CatalogScreen`): nút Lọc cạnh các ô lọc, bấm Lọc mới áp; ô tích Ẩn thẻ hết phân bổ ra đầu hàng 2 | Trum | 17/10/2026 | [2026-10-17-trum-dien-thoai-29-diem](nhat-ky/2026-10-17-trum-dien-thoai-29-diem.md) |
 | T360 | Điện thoại trang chủ Free: khối Mua hàng & công nợ đổi tên thành "Mua hàng & Công nợ"; nút Bảng kê nằm dưới Giá trị mua hàng, nút Công nợ dưới Công nợ phải trả, hai nút ngang nhau | Trum | 17/10/2026 | [2026-10-17-trum-dien-thoai-29-diem](nhat-ky/2026-10-17-trum-dien-thoai-29-diem.md) |
 | T359 | Điện thoại: chênh lệch kiểm kê mất số thập phân (thực tế 9.5, sổ 10 ra 0 kg); số lượng có lẻ hiện 2 số thập phân, số nguyên giữ nguyên | Trum | 17/10/2026 | [2026-10-17-trum-dien-thoai-29-diem](nhat-ky/2026-10-17-trum-dien-thoai-29-diem.md) |
