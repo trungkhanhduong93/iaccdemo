@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T405 | Điện thoại, báo cáo Kết quả kinh doanh: dòng tổng (Doanh thu bán hàng, Chi phí NVL, Chi phí trong tháng…) bấm vào thả xuống dòng con, mặc định thu gọn; dòng con thụt vào để phân biệt | Trum | Đang làm | `src/ui/mobile/MBaoCaoDong.tsx`, cuối `app.css` |
 | T403 | Điện thoại: báo cáo dạng bảng (bảng kê) đổi kiểu trình bày đẹp hơn; đã dựng 3 mẫu (thẻ dòng, bảng cột tên đứng yên, gom nhóm), chờ Trum chọn | Trum | Đang làm | Bản mẫu `backup/mock-T403.html` (không vào repo) |
 | T404 | Điện thoại, trang chủ Free, thẻ Kết quả kinh doanh: số tiền canh lề phải ngang tên khoản, % trên doanh thu trong viên màu dưới số tiền (mẫu 2 Trum chọn) | Trum | Đang làm | Trang chủ điện thoại, cuối `app.css` |
 | T391 | Gói Free: các danh sách chứng từ ẩn trạng thái Đã ghi sổ, Chưa ghi sổ (cột, chip lọc), web và điện thoại | Trum | Đang làm | Anti B. Có thể sửa `VoucherScreen.tsx`, danh sách điện thoại, `app.css` (mục cuối T391) |
