@@ -4,7 +4,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T381.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T382.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
@@ -12,6 +12,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
 | T371 | Sơ đồ quy trình: sửa icon Xuất/Nhập điều chỉnh, Tổng hợp và Chi tiết xuất kho (Kho); ô Thẻ chi phí phân bổ dùng icon phân hệ Chi phí phân bổ | Trum | Đang làm | Sửa `kho/quy-trinh.ts`, `ccdc/quy-trinh.ts` (giao anti) |
+| T382 | Điện thoại, phiếu mua hàng: nút Thêm hàng ở cuối danh sách, icon sửa thẳng hàng, sửa Tổng tiền thì đơn giá tự chia lại | Trum | Đang làm | Sửa form lập phiếu điện thoại (giao anti) |
 | T381 | Web: rà các ô chọn nhiều dạng danh sách tích (vd kênh bán GrabFood, ShopeeFood...), làm lại thành bảng chọn hai cột Chưa chọn, Đã chọn dùng chung với T380 | Trum | Đang làm | Giao anti cùng T380 |
 | T380 | Danh mục Hàng hoá gói Free (web + điện thoại): theo dõi kho cố định theo loại hàng (thành phẩm tắt, loại khác bật) chỉ xem; ẩn mã vạch, giá mua, giá bán, nhà cung cấp cung ứng; thương hiệu chỉ xem. Gói Pro: chọn nhà cung cấp cung ứng dạng hai cột Chưa chọn, Đã chọn | Trum | Đang làm | Sửa form Hàng hoá web và điện thoại, `app.css` mục cuối T380 (giao anti) |
 | T379 | Điện thoại, Trang chủ: màn xem biểu đồ kinh doanh và biểu đồ thu chi, nút Đóng và Xem báo cáo nằm sát đáy | Trum | Đang làm | Giao anti cùng T377 |
