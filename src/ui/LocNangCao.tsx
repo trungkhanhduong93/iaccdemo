@@ -396,16 +396,21 @@ export function useCotDs(path: string, cols: Col[], coDinh: Set<string>) {
 const tenCot = (c: Col) => c.t || 'Ô chọn'
 
 /** Nút thanh trượt mở hộp Tuỳ chỉnh cột hiển thị. cols: mọi cột theo thứ tự đang dùng, kể cả cột đang ẩn */
-export function NutTuyChinhCot({ cols, an, coDinh, macDinh, dongBang = {}, onLuu, onDoRongTuDong }: {
+export function NutTuyChinhCot({ cols, an, coDinh, macDinh, dongBang = {}, gom, onLuu, onDoRongTuDong }: {
   cols: Col[]; an: Set<string>; coDinh: Set<string>; macDinh: string[]
   dongBang?: Record<string, 'trai' | 'phai'>
+  gom?: { duoc: Set<string>; ds: string[]; dat: (ds: string[]) => void }
   onLuu: (thuTu: string[], an: string[], dongBang: Record<string, 'trai' | 'phai'>, veMacDinh: boolean) => void
   onDoRongTuDong?: () => void
 }) {
   const [mo, setMo] = useState(false)
+  const dangGom = Boolean(gom && gom.ds.length > 0)
+  const title = dangGom
+    ? `Tuỳ chỉnh cột hiển thị (đang gom ${gom!.ds.length} cấp)`
+    : 'Tuỳ chỉnh cột hiển thị'
   return (
     <>
-      <button type="button" className={`nut-vuong ds-nut-cot${mo ? ' on' : ''}`} title="Tuỳ chỉnh cột hiển thị" aria-label="Tuỳ chỉnh cột hiển thị" onClick={() => setMo(true)}>
+      <button type="button" className={`nut-vuong ds-nut-cot${mo || dangGom ? ' on' : ''}`} title={title} aria-label={title} onClick={() => setMo(true)}>
         <Icon n="chinh" className="ic sm" />
       </button>
       {mo && (
@@ -415,6 +420,7 @@ export function NutTuyChinhCot({ cols, an, coDinh, macDinh, dongBang = {}, onLuu
           coDinh={coDinh}
           macDinh={macDinh}
           dongBang={dongBang}
+          gom={gom}
           onLuu={onLuu}
           onDoRongTuDong={onDoRongTuDong}
           onDong={() => setMo(false)}
@@ -424,12 +430,13 @@ export function NutTuyChinhCot({ cols, an, coDinh, macDinh, dongBang = {}, onLuu
   )
 }
 
-function HopCot({ cols, an, coDinh, macDinh, dongBang = {}, onLuu, onDoRongTuDong, onDong }: {
+function HopCot({ cols, an, coDinh, macDinh, dongBang = {}, gom, onLuu, onDoRongTuDong, onDong }: {
   cols: Col[]
   an: Set<string>
   coDinh: Set<string>
   macDinh: string[]
   dongBang?: Record<string, 'trai' | 'phai'>
+  gom?: { duoc: Set<string>; ds: string[]; dat: (ds: string[]) => void }
   onLuu: (thuTu: string[], an: string[], dongBang: Record<string, 'trai' | 'phai'>, veMacDinh: boolean) => void
   onDoRongTuDong?: () => void
   onDong: () => void
@@ -438,13 +445,23 @@ function HopCot({ cols, an, coDinh, macDinh, dongBang = {}, onLuu, onDoRongTuDon
   const [thuTu, setThuTu] = useState(() => cols.map(c => c.k))
   const [anNhap, setAnNhap] = useState(() => new Set(an))
   const [dongBangNhap, setDongBangNhap] = useState<Record<string, 'trai' | 'phai'>>(() => ({ ...dongBang }))
+  const [nhomNhap, setNhomNhap] = useState<string[]>(() => (gom ? [...gom.ds] : []))
   const [veMacDinh, setVeMacDinh] = useState(false)
   const theoK = new Map(cols.map(c => [c.k, c]))
   const keo = useKeoTha(thuTu, setThuTu, k => coDinh.has(k))
   useDongEsc(onDong)
 
   const soHien = thuTu.filter(k => coDinh.has(k) || !anNhap.has(k)).length
-  const doiAn = (k: string) => setAnNhap(x => { const moi = new Set(x); if (moi.has(k)) moi.delete(k); else moi.add(k); return moi })
+  const doiAn = (k: string) => setAnNhap(x => {
+    const moi = new Set(x)
+    if (moi.has(k)) {
+      moi.delete(k)
+    } else {
+      moi.add(k)
+      setNhomNhap(ds => ds.filter(item => item !== k))
+    }
+    return moi
+  })
 
   const doiDongBang = (k: string, huong: 'trai' | 'phai') => {
     setDongBangNhap(prev => {
@@ -458,6 +475,12 @@ function HopCot({ cols, an, coDinh, macDinh, dongBang = {}, onLuu, onDoRongTuDon
     })
   }
 
+  const doiGom = (k: string) => {
+    if (nhomNhap.includes(k)) setNhomNhap(nhomNhap.filter(x => x !== k))
+    else if (nhomNhap.length >= 5) toast('Gom nhóm tối đa 5 cấp')
+    else setNhomNhap([...nhomNhap, k])
+  }
+
   const hienTatCa = () => {
     setAnNhap(new Set())
   }
@@ -466,6 +489,7 @@ function HopCot({ cols, an, coDinh, macDinh, dongBang = {}, onLuu, onDoRongTuDon
     setThuTu(macDinh.filter(k => theoK.has(k)))
     setAnNhap(new Set(cols.filter(c => c.an).map(c => c.k)))   // cột mặc định ẩn về ẩn (T92)
     setDongBangNhap({})
+    setNhomNhap([])
     setVeMacDinh(true)
     toast('Đã khôi phục cài đặt cột mặc định')
   }
@@ -476,6 +500,7 @@ function HopCot({ cols, an, coDinh, macDinh, dongBang = {}, onLuu, onDoRongTuDon
   }
 
   const handleXong = () => {
+    gom?.dat(nhomNhap)
     onLuu(thuTu, [...anNhap].filter(k => !coDinh.has(k)), dongBangNhap, veMacDinh)
     onDong()
   }
@@ -498,10 +523,6 @@ function HopCot({ cols, an, coDinh, macDinh, dongBang = {}, onLuu, onDoRongTuDon
           </button>
         </div>
 
-        <div className="ds-hop-huong-dan">
-          Bật để hiện cột, kéo để đổi thứ tự, bấm <span className="ds-freeze-demo"><IconDongBangTrai on /></span> / <span className="ds-freeze-demo"><IconDongBangPhai on /></span> để đóng băng cột bên trái / bên phải (cuộn ngang vẫn đứng yên). Đổi độ rộng: kéo mép phải tiêu đề cột trên bảng, bấm đúp mép để về tự động.
-        </div>
-
         <div className="ds-ds-keo ds-hop-ds">
           {thuTu.map(k => {
             const c = theoK.get(k)
@@ -510,6 +531,10 @@ function HopCot({ cols, an, coDinh, macDinh, dongBang = {}, onLuu, onDoRongTuDon
             const dangDinhTrai = dongBangNhap[k] === 'trai' || (!dongBangNhap[k] && c.dinh === 'trai')
             const dangDinhPhai = dongBangNhap[k] === 'phai' || (!dongBangNhap[k] && c.dinh === 'phai')
             const dangBat = khoa || !anNhap.has(k)
+            const duocGom = Boolean(gom && gom.duoc.has(k))
+            const viTriGom = nhomNhap.indexOf(k)
+            const dangGom = viTriGom >= 0
+            const capGom = viTriGom + 1
             return (
               <div
                 key={k}
@@ -518,6 +543,22 @@ function HopCot({ cols, an, coDinh, macDinh, dongBang = {}, onLuu, onDoRongTuDon
               >
                 <TayKeo />
                 <span className="grow ds-ten-cot">{tenCot(c)}</span>
+                {gom && (
+                  duocGom ? (
+                    <button
+                      type="button"
+                      className={`ds-btn-freeze ds-btn-gom${dangGom ? ' on' : ''}`}
+                      disabled={!dangBat}
+                      title={dangGom ? `Bỏ gom nhóm cấp ${capGom}` : `Gom nhóm theo cột ${tenCot(c)}`}
+                      aria-label={dangGom ? `Bỏ gom nhóm cấp ${capGom}` : `Gom nhóm theo cột ${tenCot(c)}`}
+                      onClick={() => doiGom(k)}
+                    >
+                      {dangGom ? <b>{capGom}</b> : <Icon n="layers" className="ic sm" kieu="net" />}
+                    </button>
+                  ) : (
+                    <span className="ds-btn-gom-trong" aria-hidden />
+                  )
+                )}
                 <div className="ds-nhom-dong-bang">
                   <button
                     type="button"

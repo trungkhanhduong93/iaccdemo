@@ -1,5 +1,5 @@
 // Màn chứng từ chung: danh sách theo bố cục AMIS với cột đứng yên, bộ lọc kỳ nhanh, khung chi tiết bên dưới, thao tác hàng loạt.
-import { Fragment, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import type { Col, ModuleDef, Row, ScreenDef, ScreenProps, VoucherCfg } from '../../modules/types'
@@ -8,7 +8,7 @@ import { cuaHangHienTai, donViHienTai, loaiHinhDv, useSession } from '../../app/
 import { kieuGhiSo } from '../../app/plan'
 import { Icon } from '../Icon'
 import { PageHead } from '../Page'
-import { Dropdown, MenuItem, Select } from '../Dropdown'
+import { Select } from '../Dropdown'
 import { St, Table } from '../Table'
 import { PhanTrang } from '../PhanTrang'
 import { buildGroupedData } from '../virtual'
@@ -560,8 +560,8 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
 
   const dsCotGomNhom = useMemo(() => {
     const bo = new Set(['chk', 'stt', 'so', 'dienGiai', 'tenHang', 'thue', 'tong', 'action'])
-    return cot.colsHien.filter(c => !bo.has(c.k))
-  }, [cot.colsHien])
+    return new Set(cot.colsDu.filter(c => !bo.has(c.k)).map(c => c.k))
+  }, [cot.colsDu])
 
   const tenCotMap = useMemo(() => {
     return Object.fromEntries(cot.colsDu.map(c => [c.k, c.t || c.k]))
@@ -670,6 +670,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
                   coDinh={COT_CO_DINH}
                   macDinh={cot.macDinh}
                   dongBang={cot.dongBang}
+                  gom={{ duoc: dsCotGomNhom, ds: nhomCols, dat: setNhomCols }}
                   onLuu={cot.luu}
                   onDoRongTuDong={cot.datDoRongTuDong}
                 />
@@ -690,44 +691,6 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
                 />
               </div>
             </div>
-          </div>
-
-          {/* Thanh gom nhóm kéo thả theo LedgerStudio (T50) */}
-          <div className="ds-groupzone">
-            <div className="ds-groupzone-nhan">
-              <Icon n="layers" className="ic sm" />
-              <span>Gom nhóm</span>
-            </div>
-            {nhomCols.length === 0 ? (
-              <span className="ds-gz-goi">Chọn cột để gom dòng và xem tổng theo từng nhóm</span>
-            ) : (
-              nhomCols.map((k, i) => (
-                <Fragment key={k}>
-                  {i > 0 && <Icon n="chevr" className="ic sm ds-gz-sep" />}
-                  <span className="ds-gchip">
-                    <b>{i + 1}</b>
-                    {tenCotMap[k] || k}
-                    <button type="button" onClick={() => setNhomCols(nhomCols.filter(x => x !== k))} title="Bỏ gom nhóm cột này">
-                      <Icon n="x" className="ic sm" />
-                    </button>
-                  </span>
-                </Fragment>
-              ))
-            )}
-            {dsCotGomNhom.filter(c => !nhomCols.includes(c.k)).length > 0 && (
-              <Dropdown label={<><Icon n="plus" className="ic sm" />{nhomCols.length ? 'Thêm cấp' : 'Thêm cột gom'}</>} btnClass="ds-gz-them" title="Thêm cột gom nhóm">
-                {dong => dsCotGomNhom
-                  .filter(c => !nhomCols.includes(c.k))
-                  .map(c => (
-                    <MenuItem key={c.k} onClick={() => { setNhomCols([...nhomCols, c.k]); dong() }}>{c.t || c.k}</MenuItem>
-                  ))}
-              </Dropdown>
-            )}
-            {nhomCols.length > 0 && (
-              <button type="button" className="ds-gz-xoa" onClick={() => setNhomCols([])}>
-                Xoá gom nhóm
-              </button>
-            )}
           </div>
 
           {/* Bảng danh sách chứng từ */}
