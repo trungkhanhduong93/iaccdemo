@@ -554,7 +554,7 @@ function SoDoKyFree({ buoc, modKey, goi, hienLinkBaoCao }: { buoc: BuocKyQT[]; m
             <div key={b.ten} className={`qt-ky-cot ${b.rong ? 'rong' : ''}`}>
               <div className="qt-ky-head">
                 <div className="qt-ky-head-top">
-                  <span className={`qt-ky-so ${b.rong ? 'active' : ''}`}>{idx + 1}</span>
+                  <span className="qt-ky-so">{idx + 1}</span>
                   {!laCuoi && <div className="qt-ky-line-seg" aria-hidden />}
                 </div>
                 <div className="qt-ky-info">

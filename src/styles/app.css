@@ -25254,7 +25254,9 @@ button[class*="btn-"] .ic .l2 {
   flex-shrink: 0;
 }
 
-.qt-ky-so.active {
+/* rê chuột hoặc Tab vào ô nào thì vòng số của bước đó tô xanh (T370) */
+.qt-ky-so { transition: background .15s, color .15s; }
+.qt-ky-cot:has(a:hover, a:focus-visible, button:hover, button:focus-visible) .qt-ky-so {
   background: var(--blue, #0560a6);
   color: #fff;
 }

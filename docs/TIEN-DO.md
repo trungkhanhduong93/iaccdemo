@@ -4,7 +4,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T369.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T370.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
@@ -51,6 +51,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T370 | Sơ đồ quy trình mẫu C: vòng số bước chỉ tô xanh khi rê chuột hoặc Tab vào ô trong bước đó, thống nhất mọi phân hệ | Trum | 18/10/2026 | [2026-10-17-trum-dien-thoai-29-diem](nhat-ky/2026-10-17-trum-dien-thoai-29-diem.md) |
 | T369 | Sơ đồ mẫu C gói Free: Thuế | Trum | 18/10/2026 | [2026-10-17-trum-dien-thoai-29-diem](nhat-ky/2026-10-17-trum-dien-thoai-29-diem.md) |
 | T368 | Sơ đồ mẫu C gói Free: Kho, Chi phí phân bổ | Trum | 18/10/2026 | [2026-10-17-trum-dien-thoai-29-diem](nhat-ky/2026-10-17-trum-dien-thoai-29-diem.md) |
 | T367 | Sơ đồ mẫu C gói Free: Bán hàng, Mua hàng | Trum | 18/10/2026 | [2026-10-17-trum-dien-thoai-29-diem](nhat-ky/2026-10-17-trum-dien-thoai-29-diem.md) |
