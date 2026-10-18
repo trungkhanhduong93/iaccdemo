@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T416 | Điện thoại: một số màn (vd Nhóm báo cáo Kho) không cuộn hết, dòng cuối bị thanh tab nổi che; thêm khoảng đệm dưới cho mọi vùng cuộn có thanh tab | Trum | Đang làm | Cuối `app.css`, có thể `MobileShell.tsx` |
 | T414 | Điện thoại: bản mẫu màn chi tiết phiếu thu chi, phiếu mua hàng, phiếu kiểm kê theo kiểu chi tiết thẻ chi phí phân bổ (mẫu A T365), chờ Trum duyệt | Trum | Đang làm | Code theo bản mẫu đã duyệt `backup/mock-T414-xem.html`, `backup/mock-T414-form.html`; thêm Ngày hoá đơn ở màn xem phiếu mua. `MXemPhieu.tsx`, form phiếu điện thoại, cuối `app.css` |
 | T339 | Trang chủ Free máy tính, Tiến độ kiểm kê theo cửa hàng: hiện tối đa 4 cửa hàng cần chú ý (chưa kiểm, lệch nhiều trước), dòng Đã kiểm x/y cửa hàng, dòng Xem tất cả mở hộp danh sách đủ | dinhlanphuongipacc | Đang làm | Sửa `home/BaBaiToanFree.tsx`, `app.css` (mục cuối T339) |
 | T333 | Đổi chữ "map" thành "gán" khi nói về phương thức thanh toán và quỹ (Khoá sổ, Danh mục Quỹ tiền, Danh mục cửa hàng) | dinhlanphuongipacc | Dở dang | Đã đổi ở Khoá sổ, Quỹ tiền. Còn `DanhMucCuaHang.tsx` chờ PhuongXT xong T321. Xem [nhật ký](nhat-ky/2026-10-17-dinhlanphuongipacc-doi-map-thanh-gan.md) |
