@@ -4,13 +4,14 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T437.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T438.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T438 | Thẻ chi phí: tab Đã phân bổ đổi tên Lịch phân bổ; gói Plus, Pro: lịch có trạng thái Chưa phân bổ, nút Phân bổ ở danh sách thẻ kích hoạt các khoản tháng đang xem (đã hạch toán sẵn) thành Đã phân bổ; cột Phân bổ trong kỳ và Đã PB tới hiện tại chỉ tính kỳ Đã phân bổ | dinhlanphuongipacc | Đang làm | `ccdc/the-phan-bo.tsx`, `ccdc/index.ts`, `CatalogScreen.tsx` (nút phụ trên thanh công cụ, cùng file T427), `types.ts` |
 | T437 | Thẻ chi phí phân bổ, tab Chi tiết phân bổ: thêm cột Đã PB tới hiện tại (cộng các kỳ tới tháng hiện tại theo ngày máy) và Còn lại hiện tại (số tiền trừ đã PB tới hiện tại) | dinhlanphuongipacc | Đang làm | `ccdc/the-phan-bo.tsx` |
 | T436 | Thẻ chi phí: nút Ghi tăng mở form thẻ mới chỉ ở gói Free, gói trên mở danh sách khoản chờ ghi tăng như Ghi tăng bổ sung; xoá phiếu chi đã tạo thẻ (kỳ chưa khoá sổ) hỏi "Xóa phiếu chi này sẽ xóa thẻ chi phí đã tạo…", đồng ý thì xoá cả thẻ | dinhlanphuongipacc | Dở dang | Web xong. Còn điện thoại `MXemPhieu.tsx`, `MCcdc.tsx` chờ Trum xong T424, T425. Xem [2026-10-18-dinhlanphuongipacc-canh-bao-gon-ghi-tang-goi](nhat-ky/2026-10-18-dinhlanphuongipacc-canh-bao-gon-ghi-tang-goi.md) |
 | T435 | Điện thoại, trang chủ Free khối Quỹ tiền: số tồn quỹ hiện tại nằm bên phải, cùng hàng nhãn "Tồn quỹ hiện tại" | Trum | Chờ | `MTrangChuFree.tsx` (trùng T423, làm sau khi T423 push), cuối `app.css` |
