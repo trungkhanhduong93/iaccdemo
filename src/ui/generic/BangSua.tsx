@@ -37,6 +37,7 @@ export interface BangSuaProps {
   coNhapKho?: boolean          // phiếu mua: Tiền trước thuế trước cột thuế; Tổng tiền, Giá trị nhập kho cuối dòng (T84)
   gtnkCoThue?: boolean         // hộ kinh doanh: Giá trị nhập kho gồm cả tiền thuế GTGT (T164)
   hienLoc?: boolean            // hiện hàng ô lọc dưới tiêu đề cột, bấm nút Lọc trên thanh tab mới hiện (T383)
+  themGon?: boolean            // thêm hàng mới tại form chỉ có Mã, Tên, ĐVT, Loại hàng hoá, vd phiếu mua hàng (T388)
   coNhomHhdv?: boolean         // phiếu mua có hoá đơn, gói Plus, Pro: cột Nhóm HHDV mua vào sau Tiền thuế (T162)
   chiXemLy?: boolean           // cột lý do chỉ xem, không cho chọn
   chiXemDt?: boolean           // cột đối tượng chỉ xem, không cho chọn
@@ -95,6 +96,7 @@ export function BangSua({
   chiXemLy = false,
   chiXemDt = false,
   hienLoc = false,
+  themGon = false,
 }: BangSuaProps) {
   const hang = cfg.dong === 'hang' || cfg.dong === 'nvl'
   const tienDong = cfg.dong === 'tien'
@@ -421,7 +423,7 @@ export function BangSua({
                 <td className="dim c">{i + 1}</td>
                 {maCot && (
                   <td>
-                    <ChonDanhMuc dm={dmHang} nhan={cfg.dong === 'nvl' ? 'nguyên vật liệu' : 'hàng hoá'} coMa chiMa className="inp sm" trong="Chọn" value={d.ma}
+                    <ChonDanhMuc dm={dmHang} nhan={cfg.dong === 'nvl' ? 'nguyên vật liệu' : 'hàng hoá'} coMa chiMa className="inp sm" trong="Chọn" value={d.ma} gon={themGon}
                       onChange={(v, muc) => chonMaHang(i, v, muc)} ds={danhMucHang.map(x => ({ v: x.ma, t: `${x.ma} - ${x.ten}` }))} />
                   </td>
                 )}

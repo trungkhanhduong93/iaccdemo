@@ -290,7 +290,7 @@ export const THE_PHAN_BO: CauHinhDM = {
           // Thẻ CCDC: chọn mã như chọn hàng hoá ở phiếu mua (ô có tìm, thêm mới tại form) từ danh mục hàng hoá loại Công cụ dụng cụ;
           // tên, ĐVT lấy theo danh mục, tên vẫn sửa được như phiếu mua
           { k: 'ma', t: `Mã ${muc(v)}`, w: 96, wCung: true, r: laCcdc(v) ? (r: Row) => r._i === undefined ? null
-            : xem ? r.ma : <ChonDanhMuc dm="ccdc" nhan="công cụ dụng cụ" coMa chiMa className="inp sm" trong="Chọn" value={r.ma ?? ''}
+            : xem ? r.ma : <ChonDanhMuc dm="ccdc" nhan="công cụ dụng cụ" coMa chiMa className="inp sm" trong="Chọn" value={r.ma ?? ''} gon
               ds={CCDC_HANG.map(h => ({ v: h.ma, t: `${h.ma} - ${h.ten}` }))}
               onChange={(ma, m) => {
                 const h = CCDC_HANG.find(x => x.ma === ma)

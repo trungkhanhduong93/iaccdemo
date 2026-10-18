@@ -1204,6 +1204,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               coKho={Boolean(bo.kho) && !khoDau && !laDc}   // phiếu điều chỉnh: kho ở đầu phiếu (T126)
               khoMacDinh={khoMotCn || 'Kho tổng'}
               coNhapKho={nhom === 'mua' && Boolean(bo.tongNhap)}
+              themGon={nhom === 'mua'}
               gtnkCoThue={hkd}
               coNhomHhdv={nhom === 'mua' && nhanKemHd && (s.goi === 'PL' || s.goi === 'PR')}   // T162
               coCk={Boolean(bo.ck)}

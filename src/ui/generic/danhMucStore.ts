@@ -183,7 +183,7 @@ export function getDmMeta(dm: string, nhan?: string, tenGoc?: string): DmMeta {
     tenNgan = 'hàng hoá'
     scSlug = '1-2'
     const loai = dm === 'nvl' ? 'Nguyên vật liệu' : dm === 'ccdc' ? 'Khác (Công cụ dụng cụ)' : 'Hàng bán thẳng'
-    dienSan = { loai, tonKho: dm === 'ccdc' ? 0 : 1, ...dienSan }
+    dienSan = { loai, tonKho: 1, ...dienSan }   // công cụ dụng cụ cũng theo dõi tồn kho (T388)
   } else if (normKey === '1.8') {
     ten = 'kho'
     tenNgan = 'kho'
