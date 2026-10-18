@@ -2,7 +2,7 @@
 // Khuôn 1: Chi tiết theo ngày (nhóm ngày, mã phiếu, diễn giải, số tiền xanh/đỏ, SL/ĐVT)
 // Khuôn 2: Tổng hợp theo đối tượng (thẻ 2 tầng: tên + số cuối; tầng 2: 3 ô Đầu kỳ | Tăng | Giảm)
 // Khuôn 3: Chỉ tiêu phân cấp (danh sách dọc thụt lề theo cấp, đậm chỉ tiêu tổng, số kỳ này và kỳ trước)
-import React, { useMemo, type FC } from 'react'
+import React, { useMemo, useState, type FC } from 'react'
 import { Link } from 'react-router-dom'
 import type { Col, Row } from '../../modules/types'
 import { money, rutGonSo } from '../format'
@@ -595,6 +595,19 @@ const Khuon3ChiTieuPhanCap: FC<{ maBc?: string; rows: Row[]; q?: string }> = ({ 
     maBc?.includes('10-2-3')
   )
 
+  const [daMo, setDaMo] = useState<Set<string>>(() => new Set())
+  const toggleMo = (khoa: string) => {
+    setDaMo(prev => {
+      const next = new Set(prev)
+      if (next.has(khoa)) {
+        next.delete(khoa)
+      } else {
+        next.add(khoa)
+      }
+      return next
+    })
+  }
+
   const cacNhom = useMemo(() => {
     if (!is1023) {
       return [{ tieuDe: '', rows: dsHienThi }]
@@ -666,49 +679,143 @@ const Khuon3ChiTieuPhanCap: FC<{ maBc?: string; rows: Row[]; q?: string }> = ({ 
               {nhom.tieuDe && (
                 <div className="m-bcd-ct-nhom-tieu">{nhom.tieuDe}</div>
               )}
-              {nhom.rows.map((r, i) => {
-                const ten = layTen(r)
-                const ma = String(r.ma || '')
-                const isDam = Boolean(r._b || r._t)
-                const isNghieng = Boolean(r._i)
-                const vNay = laySoNay(r)
-                const vTruoc = laySoTruoc(r)
+              {!is1023 ? (
+                nhom.rows.map((r, i) => {
+                  const ten = layTen(r)
+                  const ma = String(r.ma || '')
+                  const isDam = Boolean(r._b || r._t)
+                  const isNghieng = Boolean(r._i)
+                  const vNay = laySoNay(r)
+                  const vTruoc = laySoTruoc(r)
+                  const isLoiNhuan = isDam && (ten.includes('Lợi nhuận') || ten.includes('Lãi') || ten.includes('Doanh thu'))
+                  const lopMau = vNay < 0
+                    ? 'm-so-dong-am'
+                    : isLoiNhuan && vNay > 0
+                    ? 'm-so-dong-duong'
+                    : ''
 
-                const mauKqkd = is1023 ? layMauSoKqkd(r, vNay) : undefined
-                const isLoiNhuan = isDam && (ten.includes('Lợi nhuận') || ten.includes('Lãi') || ten.includes('Doanh thu'))
-                const lopMau = mauKqkd
-                  ? ''
-                  : vNay < 0
-                  ? 'm-so-dong-am'
-                  : isLoiNhuan && vNay > 0
-                  ? 'm-so-dong-duong'
-                  : ''
-
-                return (
-                  <div
-                    key={i}
-                    className={`m-bcd-ct-dong m-bcd-item ${isDam ? 'dam' : ''} ${isNghieng ? 'thut' : ''}`}
-                  >
-                    <div className="m-bcd-ct-trai">
-                      {ma && <span className="m-bcd-ct-ma">{ma}</span>}
-                      <span className="m-bcd-ct-ten">{ten}</span>
-                    </div>
-                    <div className="m-bcd-ct-phai">
-                      <div
-                        className={`m-bcd-ct-so ${lopMau}`}
-                        style={mauKqkd ? { color: mauKqkd } : undefined}
-                      >
-                        {money(vNay)}
+                  return (
+                    <div
+                      key={i}
+                      className={`m-bcd-ct-dong m-bcd-item ${isDam ? 'dam' : ''} ${isNghieng ? 'thut' : ''}`}
+                    >
+                      <div className="m-bcd-ct-trai">
+                        {ma && <span className="m-bcd-ct-ma">{ma}</span>}
+                        <span className="m-bcd-ct-ten">{ten}</span>
                       </div>
-                      {vTruoc !== undefined && (
-                        <div className="m-bcd-ct-truoc">
-                          Kỳ trước: {money(vTruoc)}
+                      <div className="m-bcd-ct-phai">
+                        <div className={`m-bcd-ct-so ${lopMau}`}>
+                          {money(vNay)}
                         </div>
-                      )}
+                        {vTruoc !== undefined && (
+                          <div className="m-bcd-ct-truoc">
+                            Kỳ trước: {money(vTruoc)}
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                )
-              })}
+                  )
+                })
+              ) : (
+                (() => {
+                  const cacMuc: { cha: Row; con: Row[]; khoa: string }[] = []
+                  let mucHienTai: { cha: Row; con: Row[]; khoa: string } | null = null
+                  for (const r of nhom.rows) {
+                    if (r._con) {
+                      if (mucHienTai) {
+                        mucHienTai.con.push(r)
+                      } else {
+                        cacMuc.push({ cha: r, con: [], khoa: layTen(r) })
+                      }
+                    } else {
+                      mucHienTai = { cha: r, con: [], khoa: layTen(r) }
+                      cacMuc.push(mucHienTai)
+                    }
+                  }
+
+                  return cacMuc.map((muc, i) => {
+                    const { cha, con, khoa } = muc
+                    const coCon = con.length > 0
+                    const daBung = daMo.has(khoa) || Boolean(q.trim())
+
+                    const ten = layTen(cha)
+                    const ma = String(cha.ma || '')
+                    const isDam = Boolean(cha._b || cha._t)
+                    const isNghieng = Boolean(cha._i)
+                    const vNay = laySoNay(cha)
+                    const vTruoc = laySoTruoc(cha)
+
+                    const mauKqkd = layMauSoKqkd(cha, vNay)
+                    const isLoiNhuan = isDam && (ten.includes('Lợi nhuận') || ten.includes('Lãi') || ten.includes('Doanh thu'))
+                    const lopMau = mauKqkd
+                      ? ''
+                      : vNay < 0
+                      ? 'm-so-dong-am'
+                      : isLoiNhuan && vNay > 0
+                      ? 'm-so-dong-duong'
+                      : ''
+
+                    return (
+                      <React.Fragment key={khoa || i}>
+                        <div
+                          className={`m-bcd-ct-dong m-bcd-item ${isDam ? 'dam' : ''} ${isNghieng ? 'thut' : ''} ${coCon ? 'm-bcd-ct-cha' : ''}`}
+                          onClick={coCon ? () => toggleMo(khoa) : undefined}
+                        >
+                          <div className="m-bcd-ct-trai">
+                            {coCon && (
+                              <span className={`m-bcd-ct-mui-ten ${daBung ? 'bung' : ''}`}>›</span>
+                            )}
+                            {ma && <span className="m-bcd-ct-ma">{ma}</span>}
+                            <span className="m-bcd-ct-ten">{ten}</span>
+                          </div>
+                          <div className="m-bcd-ct-phai">
+                            <div
+                              className={`m-bcd-ct-so ${lopMau}`}
+                              style={mauKqkd ? { color: mauKqkd } : undefined}
+                            >
+                              {money(vNay)}
+                            </div>
+                            {vTruoc !== undefined && (
+                              <div className="m-bcd-ct-truoc">
+                                Kỳ trước: {money(vTruoc)}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {coCon && daBung && con.map((c, cIdx) => {
+                          const cTen = layTen(c)
+                          const cMa = String(c.ma || '')
+                          const cVNay = laySoNay(c)
+                          const cVTruoc = laySoTruoc(c)
+                          const cLopMau = cVNay < 0 ? 'm-so-dong-am' : ''
+                          return (
+                            <div
+                              key={`${khoa}-con-${cIdx}`}
+                              className="m-bcd-ct-dong m-bcd-item m-bcd-ct-con"
+                            >
+                              <div className="m-bcd-ct-trai">
+                                {cMa && <span className="m-bcd-ct-ma">{cMa}</span>}
+                                <span className="m-bcd-ct-ten">{cTen}</span>
+                              </div>
+                              <div className="m-bcd-ct-phai">
+                                <div className={`m-bcd-ct-so ${cLopMau}`}>
+                                  {money(cVNay)}
+                                </div>
+                                {cVTruoc !== undefined && (
+                                  <div className="m-bcd-ct-truoc">
+                                    Kỳ trước: {money(cVTruoc)}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          )
+                        })}
+                      </React.Fragment>
+                    )
+                  })
+                })()
+              )}
             </div>
           ))}
         </div>

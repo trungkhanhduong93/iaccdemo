@@ -398,29 +398,26 @@ export function MTrangChuFree(_props?: Partial<ScreenProps>) {
               </Link>
             </div>
           </div>
-          <div className="bbt-e-mota">Doanh thu trừ các khoản chi phí trong tháng</div>
-          <div className="m-free-hoi">
-            Lợi nhuận {thangF === 10 ? 'tháng này' : `tháng ${thangF}`}
+          <div className="bbt-e-mota m-tcf-kqkd-phu">Doanh thu trừ các khoản chi phí trong tháng</div>
+          <div className="m-tcf-kqkd-ln">
+            <span className="m-tcf-kqkd-ln-t">
+              Lợi nhuận {thangF === 10 ? 'tháng này' : `tháng ${thangF}`}
+            </span>
+            <span
+              className={`m-tcf-kqkd-ln-so ${loiNhuan >= 0 ? 'lai' : 'lo'}`}
+              style={{ color: loiNhuan >= 0 ? 'var(--green, #138a52)' : 'var(--red, #c2362b)' }}
+            >
+              {loiNhuan < 0 ? `Lỗ ${moneyD(Math.abs(loiNhuan))}` : moneyD(loiNhuan)}
+            </span>
           </div>
-          <div
-            className={`m-tc-so-lon m-free-tra ${loiNhuan >= 0 ? 'lai' : 'lo'}`}
-            style={{ color: loiNhuan >= 0 ? 'var(--green, #138a52)' : 'var(--red, #c2362b)' }}
-          >
-            {loiNhuan < 0 ? `Lỗ ${moneyD(Math.abs(loiNhuan))}` : moneyD(loiNhuan)}
-          </div>
-          <div className="m-free-phu">
-            Biên lợi nhuận {pct(bien)} <span className="bbt-e-giai">· {bien < 0 ? 'lỗ' : 'lãi'} {Math.abs(bien * 100).toLocaleString('vi-VN', { maximumFractionDigits: 1 })} đ trên mỗi 100 đ doanh thu</span>
-          </div>
+          <div className="m-tcf-kqkd-bien">Biên lợi nhuận {pct(bien)}</div>
 
-          <div className="m-tcf-kqkd-bang">
+          <div className="m-tcf-kqkd-ds">
             <div className="m-tcf-kqkd-dong m-tcf-kqkd-dt">
-              <div className="m-tcf-kqkd-l">
-                <b>Doanh thu</b>
-                <span>Tiền bán hàng trong tháng</span>
-              </div>
-              <div className="m-tcf-kqkd-r">
-                <b>{moneyD(d.dtThuan)}</b>
-              </div>
+              <span className="m-tcf-kqkd-ten">Doanh thu</span>
+              <span className="m-tcf-kqkd-tien">{moneyD(d.dtThuan)}</span>
+              <span className="m-tcf-kqkd-mui-trong" />
+              <span className="m-tcf-kqkd-mt">Tiền bán hàng trong tháng</span>
             </div>
 
             <Link
@@ -428,15 +425,13 @@ export function MTrangChuFree(_props?: Partial<ScreenProps>) {
               className="m-tcf-kqkd-dong m-tcf-kqkd-link"
               title="Xem giá vốn nguyên vật liệu"
             >
-              <div className="m-tcf-kqkd-l">
-                <b>Giá vốn nguyên vật liệu</b>
-                <span>{moTaCach(nvl.ds)}</span>
-              </div>
-              <div className="m-tcf-kqkd-r">
-                <b>{moneyD(nvl.tien)}</b>
-                <span>{pct(d.dtThuan > 0 ? nvl.tien / d.dtThuan : 0)}</span>
-                <Icon n="chevr" className="ic sm m-tcf-kqkd-mui" />
-              </div>
+              <span className="m-tcf-kqkd-ten">Giá vốn nguyên vật liệu</span>
+              <span className="m-tcf-kqkd-tien">{moneyD(nvl.tien)}</span>
+              <Icon n="chevr" className="ic sm m-tcf-kqkd-mui" />
+              <span className="m-tcf-kqkd-mt">{moTaCach(nvl.ds)}</span>
+              <span className="m-tcf-kqkd-pt">
+                <span className="m-tcf-kqkd-pill">{pct(d.dtThuan > 0 ? nvl.tien / d.dtThuan : 0)}</span>
+              </span>
             </Link>
 
             <Link
@@ -444,19 +439,17 @@ export function MTrangChuFree(_props?: Partial<ScreenProps>) {
               className="m-tcf-kqkd-dong m-tcf-kqkd-link"
               title="Xem chi phí hoạt động"
             >
-              <div className="m-tcf-kqkd-l">
-                <b>Chi phí hoạt động</b>
-                <span>
-                  {chiLon
-                    ? `Lương, mặt bằng, điện nước… Lớn nhất: ${chiLon.l} ${short(chiLon.v)}`
-                    : 'Lương, mặt bằng, điện nước, chi khác'}
-                </span>
-              </div>
-              <div className="m-tcf-kqkd-r">
-                <b>{moneyD(cpThang)}</b>
-                <span>{pct(d.dtThuan > 0 ? cpThang / d.dtThuan : 0)}</span>
-                <Icon n="chevr" className="ic sm m-tcf-kqkd-mui" />
-              </div>
+              <span className="m-tcf-kqkd-ten">Chi phí hoạt động</span>
+              <span className="m-tcf-kqkd-tien">{moneyD(cpThang)}</span>
+              <Icon n="chevr" className="ic sm m-tcf-kqkd-mui" />
+              <span className="m-tcf-kqkd-mt">
+                {chiLon
+                  ? `Lương, mặt bằng, điện nước… Lớn nhất: ${chiLon.l} ${short(chiLon.v)}`
+                  : 'Lương, mặt bằng, điện nước, chi khác'}
+              </span>
+              <span className="m-tcf-kqkd-pt">
+                <span className="m-tcf-kqkd-pill">{pct(d.dtThuan > 0 ? cpThang / d.dtThuan : 0)}</span>
+              </span>
             </Link>
 
             <Link
@@ -464,27 +457,25 @@ export function MTrangChuFree(_props?: Partial<ScreenProps>) {
               className="m-tcf-kqkd-dong m-tcf-kqkd-link"
               title="Xem chi phí phân bổ, khấu hao"
             >
-              <div className="m-tcf-kqkd-l">
-                <b>Chi phí phân bổ, khấu hao</b>
-                <span>Công cụ, tài sản mua một lần, ghi nhận dần theo tháng</span>
-              </div>
-              <div className="m-tcf-kqkd-r">
-                <b>{moneyD(d.cpPhanBo)}</b>
-                <span>{pct(d.dtThuan > 0 ? d.cpPhanBo / d.dtThuan : 0)}</span>
-                <Icon n="chevr" className="ic sm m-tcf-kqkd-mui" />
-              </div>
+              <span className="m-tcf-kqkd-ten">Chi phí phân bổ nhiều tháng</span>
+              <span className="m-tcf-kqkd-tien">{moneyD(d.cpPhanBo)}</span>
+              <Icon n="chevr" className="ic sm m-tcf-kqkd-mui" />
+              <span className="m-tcf-kqkd-mt">Công cụ, tài sản mua một lần, ghi nhận dần theo tháng</span>
+              <span className="m-tcf-kqkd-pt">
+                <span className="m-tcf-kqkd-pill">{pct(d.dtThuan > 0 ? d.cpPhanBo / d.dtThuan : 0)}</span>
+              </span>
             </Link>
 
-            <div className={`m-tcf-kqkd-dong m-tcf-kqkd-ln ${loiNhuan >= 0 ? 'lai' : 'lo'}`}>
-              <div className="m-tcf-kqkd-l">
-                <b>Lợi nhuận</b>
-              </div>
-              <div className="m-tcf-kqkd-r">
-                <b>
-                  {loiNhuan < 0 ? `Lỗ ${moneyD(Math.abs(loiNhuan))}` : moneyD(loiNhuan)}
-                </b>
-                <span>{pct(bien)}</span>
-              </div>
+            <div className={`m-tcf-kqkd-dong m-tcf-kqkd-ln2 ${loiNhuan >= 0 ? 'lai' : 'lo'}`}>
+              <span className="m-tcf-kqkd-ten">Lợi nhuận</span>
+              <span className="m-tcf-kqkd-tien">
+                {loiNhuan < 0 ? `Lỗ ${moneyD(Math.abs(loiNhuan))}` : moneyD(loiNhuan)}
+              </span>
+              <span className="m-tcf-kqkd-mui-trong" />
+              <span className="m-tcf-kqkd-mt" />
+              <span className="m-tcf-kqkd-pt">
+                <span className="m-tcf-kqkd-pill">{pct(bien)}</span>
+              </span>
             </div>
           </div>
 
