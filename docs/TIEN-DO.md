@@ -21,7 +21,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | T432 | Điện thoại, báo cáo S1a-HKD: làm lại bố cục chỉn chu như các báo cáo điện thoại đã duyệt | Trum | Chờ | `MSoTT152.tsx`, cuối `app.css`. Làm sau T426 |
 | T431 | Điện thoại: bấm quay lại bị lặp qua lại giữa 2 màn; back phải lùi đúng lịch sử, tới màn gốc thì dừng | Trum | Chờ | `src/ui/mobile/`, có thể `MobileShell.tsx`. Làm sau T426 |
 | T430 | Điện thoại, chi tiết Xuất bán POS: nút Đóng màu xanh chính, Thời gian xuất căn trái như các ô khác | Trum | Chờ | `MXuatBanPos.tsx` (trùng T425, làm sau khi T425 push), cuối `app.css` |
-| T428 | Hộp Cột hiển thị: thêm dòng tiêu đề ngắn trên các cột nút (Gom nhóm, Đóng băng, Hiện) để biết nút làm gì | Trum | Đang làm | `LocNangCao.tsx`, cuối `app.css` |
 | T425 | Điện thoại, màn xem phiếu thu chi, mua hàng, kiểm kê, Xuất bán POS: thanh số phiếu sát mép trên, bỏ lề trái phải thừa; khoảng cách theo đúng màn xem thẻ chi phí phân bổ | Trum | Đang làm | `MXemPhieu.tsx`, `MXuatBanPos.tsx`, cuối `app.css` |
 | T424 | Điện thoại, màn xem phiếu thu, chi: ô Nguồn chứng từ (Thủ công, FABi) đưa từ thẻ tổng quan xuống thành dòng trong nhóm Thông tin phiếu; ô Quỹ ở thẻ tổng quan rộng hết hàng | Trum | Đang làm | `MXemPhieu.tsx`, cuối `app.css` |
 | T423 | Điện thoại, trang chủ Free khối Quỹ tiền: "Tất cả quỹ" nằm trên "Xem dòng tiền 13 tháng" ở cột phải, hai dòng cao bằng nút Tạo quỹ bên trái | Trum | Đang làm | `MTrangChuFree.tsx`, cuối `app.css` |
@@ -66,6 +65,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T428 | Hộp Cột hiển thị: thêm dòng tiêu đề ngắn trên các cột nút (Gom nhóm, Đóng băng, Hiện) để biết nút làm gì | Trum | 18/10/2026 | [2026-10-18-trum-tieu-de-cot-hop-cot-hien-thi](nhat-ky/2026-10-18-trum-tieu-de-cot-hop-cot-hien-thi.md) |
 | T427 | Web, các màn danh mục: chip trạng thái thẳng lề ô tìm; số dòng, nút tuỳ chỉnh cột, Excel xuống hàng dưới cùng hàng chip như danh sách chứng từ | Trum | 18/10/2026 | [2026-10-18-trum-co-chu-dien-thoai-thanh-cong-cu-danh-muc](nhat-ky/2026-10-18-trum-co-chu-dien-thoai-thanh-cong-cu-danh-muc.md) |
 | T426 | App điện thoại toàn bộ: hạ cỡ chữ theo thang chung (tiêu đề 17, khối 15, thân 14, phụ 12, tiền 14 đậm, chip 10.5), thiết kế ở bề rộng 360px theo QD73 (thay QD54); 0 màn cuộn ngang 360px | Trum | 18/10/2026 | [2026-10-18-trum-co-chu-dien-thoai-thanh-cong-cu-danh-muc](nhat-ky/2026-10-18-trum-co-chu-dien-thoai-thanh-cong-cu-danh-muc.md) |
 | T429 | Danh sách thẻ chi phí: dải cảnh báo khoản chờ tạo thẻ gọn vào hàng 2 thanh công cụ (nhãn vàng, nút Ghi tăng bổ sung, nút ⓘ cách làm); hết khoản chờ thì bỏ dòng gợi ý, hướng dẫn vào nút ⓘ cạnh nút Ghi tăng; menu Ghi tăng bổ sung có số đếm | dinhlanphuongipacc | 18/10/2026 | [2026-10-18-dinhlanphuongipacc-canh-bao-gon-ghi-tang-goi](nhat-ky/2026-10-18-dinhlanphuongipacc-canh-bao-gon-ghi-tang-goi.md) |

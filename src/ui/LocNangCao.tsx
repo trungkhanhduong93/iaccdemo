@@ -523,6 +523,14 @@ function HopCot({ cols, an, coDinh, macDinh, dongBang = {}, gom, onLuu, onDoRong
           </button>
         </div>
 
+        {/* Dòng tiêu đề cột nút (T428) */}
+        <div className="ds-hop-cot-tieu-de">
+          <span className="grow" />
+          {gom && <span className="ds-cot-td-gom">Gom nhóm</span>}
+          <span className="ds-cot-td-dong-bang">Đóng băng</span>
+          <span className="ds-cot-td-hien">Hiện</span>
+        </div>
+
         <div className="ds-ds-keo ds-hop-ds">
           {thuTu.map(k => {
             const c = theoK.get(k)
@@ -549,7 +557,7 @@ function HopCot({ cols, an, coDinh, macDinh, dongBang = {}, gom, onLuu, onDoRong
                       type="button"
                       className={`ds-btn-freeze ds-btn-gom${dangGom ? ' on' : ''}`}
                       disabled={!dangBat}
-                      title={dangGom ? `Bỏ gom nhóm cấp ${capGom}` : `Gom nhóm theo cột ${tenCot(c)}`}
+                      title={dangGom ? `Bỏ gom nhóm cấp ${capGom}` : 'Gom nhóm theo cột này'}
                       aria-label={dangGom ? `Bỏ gom nhóm cấp ${capGom}` : `Gom nhóm theo cột ${tenCot(c)}`}
                       onClick={() => doiGom(k)}
                     >

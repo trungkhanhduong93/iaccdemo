@@ -30216,3 +30216,38 @@ a.tx-item:hover {
   }
 }
 
+/* ── Tiêu đề cột nút trong hộp Cột hiển thị (T428) ── */
+.ds-hop-cot-tieu-de {
+  display: flex;
+  align-items: center;
+  height: 24px;
+  min-height: 24px;
+  padding: 0 17.6px 0 16px;
+  border-bottom: 1px solid var(--line-2);
+  font-size: 10px;
+  color: var(--muted);
+  user-select: none;
+  box-sizing: border-box;
+}
+.ds-cot-td-gom {
+  width: 46px;
+  text-align: center;
+  flex: none;
+  margin-right: 4px;
+  white-space: nowrap;
+}
+.ds-cot-td-dong-bang {
+  width: 48px;
+  text-align: center;
+  flex: none;
+  margin-right: 21.4px;
+  white-space: nowrap;
+}
+.ds-cot-td-hien {
+  width: 36px;
+  text-align: center;
+  flex: none;
+  white-space: nowrap;
+}
+
+
