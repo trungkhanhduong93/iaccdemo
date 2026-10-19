@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T480 | Điện thoại, Lịch sử thu chi: mỗi ngày thấy Dư đầu ngày và Dư cuối ngày | Trum | Đang làm | `MLichSuQuy.tsx`, cuối `app.css` |
 | T477 | Điện thoại, Bảng kê mua hàng: dòng phụ dưới tiêu đề đổi thành các ô điều kiện lọc (Thời gian, Kho/CN) như Sổ quỹ tiền mặt | Trum | Đang làm | `MBangKeMua.tsx`, cuối `app.css` |
 | T476 | Điện thoại, các bảng kê bán hàng: thẻ tổng đổi thành 4 ô Số đơn, SL bán, Doanh thu, TB/đơn | Trum | Đang làm | `MBaoCaoDong.tsx`, cuối `app.css` |
 | T451 | Điện thoại, phiếu bán hàng ngoài Xuất bán POS (Hàng bán trả lại, hoá đơn bán hàng...) màn xem, lập phiếu: GTGT theo % doanh thu thì dòng hàng bỏ Thuế x%, VAT, hiện Giảm thuế GTGT như máy tính (T450) | | Chờ | `MXemPhieu.tsx`, `MLapPhieu.tsx`, làm sau khi T449 (Trum) push. Dùng `gtgtTyLe` (`session.tsx`), `giamGtgtCua` (`VoucherScreen.tsx`), `giamThueHkd` (`ban-hang/giam-thue.ts`) |
