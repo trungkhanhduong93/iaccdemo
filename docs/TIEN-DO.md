@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T446 | Trang chủ Free máy tính: thẻ Mua hàng & công nợ NCC bỏ dòng % so với cùng kỳ; thẻ Hao hụt kiểm kê, Tiến độ kiểm kê theo cửa hàng thay "lệch n" bằng ngày kiểm kê cuối | PhuongXT | Đang làm | `home/BaBaiToanFree.tsx` (cùng file T339 của dinhlanphuongipacc, chỉ đổi chữ cột cuối) |
 | T445 | Điện thoại, Bảng kê mua hàng làm lại theo mẫu D Trum chốt: gom theo ngày, mỗi phiếu số phiếu, tổng tiền, tên NCC đủ ở hàng dưới; bấm phiếu bung chi tiết hàng hoá, bấm số phiếu mở phiếu mua gốc; tổng ghim đáy | Trum | Đang làm | `MBangKeMua.tsx`, cuối `app.css` |
 | T439 | Phiếu chi đã có thẻ chi phí phân bổ: không cho sửa, báo xoá thẻ trước; xoá thẻ (và xoá phiếu kéo theo thẻ) chỉ khi kỳ khoá sổ trước tháng bắt đầu phân bổ đầu tiên của thẻ | dinhlanphuongipacc | Đang làm | `ChungTuForm.tsx`, `CatalogScreen.tsx` (Tiện ích Xoá, cùng file T427), `ccdc/the-phan-bo.tsx`, `ccdc/index.ts`, `danh-muc/truong-dm.ts`, `daXoa.ts` |
 | T438 | Thẻ chi phí: tab Đã phân bổ đổi tên Lịch phân bổ; gói Plus, Pro: lịch có trạng thái Chưa phân bổ, nút Phân bổ ở danh sách thẻ kích hoạt các khoản tháng đang xem (đã hạch toán sẵn) thành Đã phân bổ; cột Phân bổ trong kỳ và Đã PB tới hiện tại chỉ tính kỳ Đã phân bổ | dinhlanphuongipacc | Đang làm | `ccdc/the-phan-bo.tsx`, `ccdc/index.ts`, `CatalogScreen.tsx` (nút phụ trên thanh công cụ, cùng file T427), `types.ts` |
