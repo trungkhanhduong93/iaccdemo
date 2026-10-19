@@ -7,7 +7,7 @@ import { Icon } from '../../ui/Icon'
 import { moneyD, pad, short } from '../../ui/format'
 import { useDongEsc } from '../../ui/LocNangCao'
 import { phieuTheoSo } from '../../ui/generic/SoChungTu'
-import { giaoDich, tonQuyTheoSo, type GiaoDich } from './LichSuQuy'
+import { giaoDich, NutLapPhieuQuy, tonQuyTheoSo, type GiaoDich } from './LichSuQuy'
 import { CUA_HANG } from '../../data/mock'
 
 export interface DiemSoDu {
@@ -231,7 +231,7 @@ export function ModalQuy({
   const chi = gd?.chi ?? (gd?.ds ?? []).reduce((a, x) => a + x.chi, 0)
   const cuoi = gd?.cuoi ?? 0
 
-  const tienMat = isTatCa ? true : quyKey.startsWith('Quỹ tiền mặt')
+  const tienMat = !isTatCa && quyKey.startsWith('Quỹ tiền mặt')
   const tenHien = isTatCa ? 'Tất cả quỹ' : quyKey
   const dongPhu = isTatCa
     ? `Tháng ${pad(thang)}/2026 · Tất cả quỹ`
@@ -243,8 +243,6 @@ export function ModalQuy({
     return [...list].slice(-3).reverse()
   }, [gd?.ds])
 
-  const linkThu = `/app/tien/2-1-1/moi?loai=${tienMat ? 'thu' : 'bc'}`
-  const linkChi = `/app/tien/2-1-1/moi?loai=${tienMat ? 'chi' : 'unc'}`
   const linkChiTiet = `/app/trang-chu/lich-su-quy?quy=${encodeURIComponent(quyKey)}&thang=${thang}`
 
   const noiDung = (
@@ -345,14 +343,14 @@ export function ModalQuy({
       {isMobile ? (
         <div className="m-quy-chan">
           <div className="m-quy-chan-hang1">
-            <Link to={linkThu} className="m-quy-btn-phieu" onClick={onDong}>
+            <NutLapPhieuQuy chieu="thu" tatCa={isTatCa} tienMat={tienMat} className="m-quy-btn-phieu" onDi={onDong}>
               <Icon n="plus" className="ic sm" />
               <span>Lập phiếu thu</span>
-            </Link>
-            <Link to={linkChi} className="m-quy-btn-phieu" onClick={onDong}>
+            </NutLapPhieuQuy>
+            <NutLapPhieuQuy chieu="chi" tatCa={isTatCa} tienMat={tienMat} className="m-quy-btn-phieu" onDi={onDong}>
               <Icon n="plus" className="ic sm" />
               <span>Lập phiếu chi</span>
-            </Link>
+            </NutLapPhieuQuy>
           </div>
           <Link to={linkChiTiet} className="m-quy-btn-chinh" onClick={onDong}>
             Xem chi tiết lịch sử thu chi ›
@@ -366,12 +364,8 @@ export function ModalQuy({
                 + Tạo quỹ
               </Link>
             )}
-            <Link to={linkThu} className="mq-btn" onClick={onDong}>
-              Lập phiếu thu
-            </Link>
-            <Link to={linkChi} className="mq-btn" onClick={onDong}>
-              Lập phiếu chi
-            </Link>
+            <NutLapPhieuQuy chieu="thu" tatCa={isTatCa} tienMat={tienMat} className="mq-btn" onDi={onDong}>Lập phiếu thu</NutLapPhieuQuy>
+            <NutLapPhieuQuy chieu="chi" tatCa={isTatCa} tienMat={tienMat} className="mq-btn" onDi={onDong}>Lập phiếu chi</NutLapPhieuQuy>
           </div>
           <Link to={linkChiTiet} className="mq-btn pri" onClick={onDong}>
             Xem chi tiết lịch sử thu chi ›

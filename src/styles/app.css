@@ -30591,3 +30591,7 @@ a.tx-item:hover {
 .bbt-e-luoi-2 .bbt-gon .bbt-vq-t402 { margin-top: -22px; }
 /* Vòng tồn quỹ giãn rộng hơn cho đầy khối Quỹ tiền */
 .bbt-e-luoi-2 .bbt-gon .bbt-vq-t402 .bbt-vq-svg { max-width: 480px; }
+
+/* ── Lập phiếu thu, chi ở Tất cả quỹ chọn Tiền mặt hay Ngân hàng (T447) ── */
+/* Menu nổi trên hộp quỹ (.mq-nen z-index 1000) và bảng quỹ điện thoại */
+.pop.pop-lap-phieu { z-index: 3000; }

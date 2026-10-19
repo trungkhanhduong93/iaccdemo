@@ -59,6 +59,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T447 | Trang chủ (máy tính, điện thoại) hộp Tất cả quỹ và Lịch sử thu chi xem tất cả quỹ: Lập phiếu thu, chi luôn mở phiếu tiền mặt; đổi thành menu chọn Tiền mặt hay Ngân hàng | PhuongXT | 19/10/2026 | [2026-10-19-phuongxt-lap-phieu-tat-ca-quy](nhat-ky/2026-10-19-phuongxt-lap-phieu-tat-ca-quy.md) |
 | T446 | Trang chủ Free máy tính: thẻ Mua hàng & công nợ NCC bỏ dòng % so với cùng kỳ; thẻ Hao hụt kiểm kê, Tiến độ kiểm kê theo cửa hàng thay "lệch n" bằng ngày kiểm kê cuối | PhuongXT | 19/10/2026 | [2026-10-19-phuongxt-ngay-kiem-ke-cuoi](nhat-ky/2026-10-19-phuongxt-ngay-kiem-ke-cuoi.md) |
 | T425 | Điện thoại, màn xem phiếu thu chi, mua hàng, kiểm kê, Xuất bán POS: thanh số phiếu sát mép trên, bỏ lề trái phải thừa; khoảng cách theo đúng màn xem thẻ chi phí phân bổ | Trum | 19/10/2026 | [2026-10-19-trum-xem-phieu-dien-thoai-sat-mep](nhat-ky/2026-10-19-trum-xem-phieu-dien-thoai-sat-mep.md) |
 | T424 | Điện thoại, màn xem phiếu thu, chi: ô Nguồn chứng từ (Thủ công, FABi) đưa từ thẻ tổng quan xuống thành dòng trong nhóm Thông tin phiếu; ô Quỹ ở thẻ tổng quan rộng hết hàng | Trum | 19/10/2026 | [2026-10-19-trum-xem-phieu-dien-thoai-sat-mep](nhat-ky/2026-10-19-trum-xem-phieu-dien-thoai-sat-mep.md) |

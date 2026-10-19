@@ -1,7 +1,7 @@
 // Lịch sử thu chi một quỹ kiểu app ngân hàng (T230): mở khi bấm quỹ ở khối Tồn quỹ trang chủ gói Free.
 // Giao dịch lấy từ Sổ quỹ tiền mặt (quỹ tiền mặt cửa hàng) hoặc Sổ ngân hàng (tài khoản), gom theo ngày, mới nhất trên cùng;
 // bấm giao dịch mở chứng từ chi tiết theo số phiếu (cách dò phiếu thật của T201)
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import type { Row, ScreenProps } from '../types'
 import { CUA_HANG, TK_NGAN_HANG } from '../../data/mock'
@@ -14,7 +14,7 @@ import { useMoTuTrangChu } from '../../app/tuTrangChu'
 import { NutXuatExcel } from '../../ui/CongCuDs'
 import { xuatBangExcel } from '../../ui/xuatBangExcel'
 import { useSession } from '../../app/session'
-import { Select } from '../../ui/Dropdown'
+import { Dropdown, MenuItem, Select } from '../../ui/Dropdown'
 import { soQuyCn } from '../tien/SoQuy'
 import { tenQuyTm, tenTkNh } from '../bao-cao/danh-sach'
 
@@ -290,12 +290,8 @@ export function LichSuQuy(_: ScreenProps) {
           ]}
         />
         <NutXuatExcel onXuat={xuatExcel} />
-        <Link to={`/app/tien/2-1-1/moi?loai=${tienMat ? 'thu' : 'bc'}`} className="btn">
-          <Icon n="plus" className="ic sm" />Lập phiếu thu
-        </Link>
-        <Link to={`/app/tien/2-1-1/moi?loai=${tienMat ? 'chi' : 'unc'}`} className="btn primary">
-          <Icon n="plus" className="ic sm" />Lập phiếu chi
-        </Link>
+        <NutLapPhieuQuy chieu="thu" tatCa={isTatCa} tienMat={tienMat} className="btn"><Icon n="plus" className="ic sm" />Lập phiếu thu</NutLapPhieuQuy>
+        <NutLapPhieuQuy chieu="chi" tatCa={isTatCa} tienMat={tienMat} className="btn primary"><Icon n="plus" className="ic sm" />Lập phiếu chi</NutLapPhieuQuy>
       </div>
 
       {/* 2. Bốn ô tóm tắt nền thẻ trắng nhẹ (không khối màu đặc) theo Phương án A (T395) */}
@@ -404,5 +400,20 @@ export function LichSuQuy(_: ScreenProps) {
         )}
       </div>
     </div>
+  )
+}
+
+/** Nút Lập phiếu thu, chi theo quỹ (T447): một quỹ thì mở thẳng phiếu tiền mặt hoặc ngân hàng của quỹ đó;
+ *  Tất cả quỹ thì bấm ra menu chọn Tiền mặt hay Ngân hàng, không mặc định tiền mặt */
+export function NutLapPhieuQuy({ chieu, tatCa, tienMat, className, onDi, children }: {
+  chieu: 'thu' | 'chi'; tatCa: boolean; tienMat: boolean; className: string; onDi?: () => void; children: ReactNode
+}) {
+  const di = (tm: boolean) => `/app/tien/2-1-1/moi?loai=${chieu === 'thu' ? (tm ? 'thu' : 'bc') : (tm ? 'chi' : 'unc')}`
+  if (!tatCa) return <Link to={di(tienMat)} className={className} onClick={onDi}>{children}</Link>
+  return (
+    <Dropdown btnClass={className} popClass="pop-lap-phieu" label={children} width={220} title={chieu === 'thu' ? 'Chọn thu tiền mặt hay thu ngân hàng' : 'Chọn chi tiền mặt hay chi ngân hàng'}>
+      <MenuItem to={di(true)} icon={chieu === 'thu' ? 'cashin' : 'cashout'} onClick={onDi}>{chieu === 'thu' ? 'Thu tiền mặt' : 'Chi tiền mặt'}</MenuItem>
+      <MenuItem to={di(false)} icon="bank" onClick={onDi}>{chieu === 'thu' ? 'Thu ngân hàng' : 'Chi ngân hàng'}</MenuItem>
+    </Dropdown>
   )
 }
