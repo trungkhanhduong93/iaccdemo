@@ -31252,3 +31252,23 @@ a.tx-item:hover {
 .m-t449-cur-pointer {
   cursor: pointer;
 }
+
+/* ── Hộp Thêm hàng loạt ở phiếu mua hàng, kiểm kê (T465) ── */
+.ds-hop.thl-hop { width: min(1100px, 94vw); height: min(720px, 90vh); max-height: 90vh; }
+.thl-tieu-de { font-size: 18px; }
+.thl-than { flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 0 16px; }
+.thl-bang { flex: 1; min-height: 0; overflow: auto; border: 1px solid var(--line); border-radius: 8px 8px 0 0; }
+.thl-bang .tbl { width: 100%; }
+.thl-bang thead th { position: sticky; top: 0; z-index: 1; }
+.thl-bang thead tr.loc-hang th { top: 37px; }
+.thl-bang tbody tr { cursor: pointer; }
+.thl-bang tbody tr.thl-on td { background: var(--soft); }
+.thl-bang tbody tr.thl-co { cursor: default; color: var(--muted); }
+.thl-nhan { margin-left: 8px; padding: 1px 6px; border-radius: 6px; background: var(--soft); color: var(--muted); font-size: 11px; }
+.thl-trong { text-align: center; padding: 24px; }
+.thl-trang { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid var(--line); border-top: 0; border-radius: 0 0 8px 8px; font-size: 13px; }
+.thl-co-trang { width: 76px; }
+.thl-chan { display: flex; justify-content: center; gap: 12px; padding: 14px 16px; border-top: 1px solid var(--line-2); margin-top: 14px; }
+.thl-chan .btn { min-width: 180px; justify-content: center; }
+.thl-trang .icon-btn { display: inline-flex; align-items: center; justify-content: center; }
+.thl-trang .icon-btn .ic + .ic { margin-left: -8px; }

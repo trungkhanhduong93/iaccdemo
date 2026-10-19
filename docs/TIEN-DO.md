@@ -57,6 +57,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T465 | Phiếu mua hàng, phiếu kiểm kê (máy tính, thêm mới và sửa): nút Thêm hàng loạt mở hộp chọn nhiều hàng hoá theo mẫu iFaster (ô tích, Hàng hoá, ĐVT, Nhóm, Loại, lọc từng cột, phân trang), Xác nhận đổ thành dòng chi tiết | PhuongXT | 19/10/2026 | [2026-10-19-phuongxt-them-hang-loat](nhat-ky/2026-10-19-phuongxt-them-hang-loat.md) |
 | T464 | Form chứng từ máy tính: Ngày chứng từ mọi màn chọn bằng lịch (trước chỉ thu chi, màn khác gõ chữ), phiếu có giờ giữ giờ khi chọn ngày; Ngày hoá đơn không còn bị cắt năm (cột hoá đơn 280px); điện thoại Ngày áp dụng công thức chọn bằng lịch | PhuongXT | 19/10/2026 | [2026-10-19-phuongxt-o-ky-hieu-hoa-don](nhat-ky/2026-10-19-phuongxt-o-ky-hieu-hoa-don.md) |
 | T463 | Form chứng từ mua, bán (máy tính) phần hoá đơn: Số hoá đơn lên đầu, gộp Mẫu số HĐ và Ký hiệu HĐ thành một ô Ký hiệu (vd 1C26TMM); cả tab Hoá đơn | PhuongXT | 19/10/2026 | [2026-10-19-phuongxt-o-ky-hieu-hoa-don](nhat-ky/2026-10-19-phuongxt-o-ky-hieu-hoa-don.md) |
 | T462 | Gói Free, Quy trình Mua hàng: đổi chỗ bước 3, 4 (Sổ sách, báo cáo trước Theo dõi công nợ); Chi tiền mặt, Chi ngân hàng mở phiếu điền sẵn lý do Thanh toán công nợ nhà cung cấp | PhuongXT | 19/10/2026 | [2026-10-19-phuongxt-mo-bao-cao-ban-hang-free](nhat-ky/2026-10-19-phuongxt-mo-bao-cao-ban-hang-free.md) |

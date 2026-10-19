@@ -10,6 +10,7 @@ import { money } from '../format'
 import { OLoc, dangLoc, khopLoc, type GiaTriLoc, type KieuLoc, type LocCot } from '../LocCot'
 import { OSoGo } from '../OSoGo'
 import { NHOM_HHDV, type Dong } from './gen'
+import { ThemHangLoat, type HangChon } from './ThemHangLoat'
 
 export const DS_DOI_TUONG = Array.from(new Set([
   ...KHACH.map(x => x.ten),
@@ -42,6 +43,7 @@ export interface BangSuaProps {
   chiXemLy?: boolean           // cột lý do chỉ xem, không cho chọn
   chiXemDt?: boolean           // cột đối tượng chỉ xem, không cho chọn
   giamThue?: (tien: number) => number   // GTGT theo % doanh thu (T450): cột Giảm thuế GTGT tính từ tiền sau CK thay Thuế suất, Tiền thuế
+  coThemHangLoat?: boolean     // nút Thêm hàng loạt chọn nhiều hàng một lần, phiếu mua hàng (T465)
 }
 
 /** Các cột ẩn hiện được của bảng chi tiết, theo loại phiếu (T49). Mỗi cột trên bảng là một mục, theo thứ tự trên bảng (T86) */
@@ -99,6 +101,7 @@ export function BangSua({
   hienLoc = false,
   themGon = false,
   giamThue,
+  coThemHangLoat = false,
 }: BangSuaProps) {
   const hang = cfg.dong === 'hang' || cfg.dong === 'nvl'
   const tienDong = cfg.dong === 'tien'
@@ -131,6 +134,13 @@ export function BangSua({
   // Hàng hoá thêm mới ngay tại form (T65): đơn vị tính tạm "cái", giá 0, sửa trên dòng
   const dmHang = cfg.dong === 'nvl' ? 'nvl' : 'hang'
   const hangThem = useMucDaThem(dmHang)
+  // Thêm hàng loạt (T465): danh mục hàng cùng hàng vừa thêm tại form
+  const [moHangLoat, setMoHangLoat] = useState(false)
+  const loaiHang = cfg.dong === 'nvl' ? 'Nguyên vật liệu' : 'Hàng hoá'
+  const dsHangLoat: HangChon[] = [
+    ...danhMucHang.map(h => ({ ma: h.ma, ten: h.ten, dvt: h.dvt, nhom: h.nhom, loai: loaiHang })),
+    ...hangThem.filter(m => !danhMucHang.some(h => h.ma === m.v)).map(m => ({ ma: m.v, ten: m.t.split(' - ').slice(1).join(' - '), dvt: m.dvt || 'cái', loai: loaiHang })),
+  ]
 
   const colSpanDau = hang
     ? 2 + (maCot ? 1 : 0) + (dvtCot ? 1 : 0) + (coKho ? 1 : 0) + (loCot ? 1 : 0) + (hsdCot ? 1 : 0) + (coTk ? 2 : 0)
@@ -228,6 +238,17 @@ export function BangSua({
       ...(tkMoi?.tkCo ? { tkCo: tkMoi.tkCo } : {}),
     }
     onChange([...dong, dongMoi])
+  }
+
+  /** Mỗi hàng đã tích thành một dòng số lượng 1, giá, thuế suất theo danh mục như Thêm dòng (T465) */
+  function themHangLoat(ds: HangChon[]) {
+    if (!onChange || ds.length === 0) return
+    onChange([...dong, ...ds.map((h): Dong => {
+      const item = danhMucHang.find(x => x.ma === h.ma)
+      const gia = item?.gia ?? 0
+      const ts = cfg.thue === 0 ? 0 : item?.ts ?? 0
+      return { ma: h.ma, ten: h.ten, dvt: h.dvt, sl: 1, gia, tien: gia, ts, thue: Math.round(gia * ts / 100), ptCk: 0, ck: 0, kho: khoMacDinh, dt: '', km: '', cv: '', lo: '', hsd: '' }
+    })])
   }
 
   function xoaDong(idx: number) {
@@ -628,6 +649,12 @@ export function BangSua({
         <button type="button" className="btn sm ghost" onClick={themDong}>
           <Icon n="plus" className="ic sm" />Thêm dòng
         </button>
+        {coThemHangLoat && hang && (
+          <button type="button" className="btn sm ghost" onClick={() => setMoHangLoat(true)}>
+            <Icon n="plus" className="ic sm" />Thêm hàng loạt
+          </button>
+        )}
+        {moHangLoat && <ThemHangLoat ds={dsHangLoat} daCo={dong.map(d => d.ma ?? '')} onDong={() => setMoHangLoat(false)} onXacNhan={themHangLoat} />}
         {dong.length > 0 && (
           <button type="button" className="btn sm ghost" onClick={xoaHet} style={{ color: 'var(--red)' }}>
             <Icon n="trash" className="ic sm" />Xoá hết

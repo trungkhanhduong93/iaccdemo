@@ -1227,6 +1227,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               khoMacDinh={khoMotCn || 'Kho tổng'}
               coNhapKho={nhom === 'mua' && Boolean(bo.tongNhap)}
               themGon={nhom === 'mua'}
+              coThemHangLoat={nhom === 'mua'}   // Thêm hàng loạt ở phiếu mua hàng (T465)
               gtnkCoThue={hkd}
               giamThue={giamGtgt ? giamThueHkd : undefined}
               coNhomHhdv={nhom === 'mua' && nhanKemHd && (s.goi === 'PL' || s.goi === 'PR')}   // T162

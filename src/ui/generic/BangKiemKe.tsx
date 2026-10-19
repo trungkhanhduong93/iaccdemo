@@ -7,6 +7,7 @@ import { Icon } from '../Icon'
 import { money } from '../format'
 import { OLoc, dangLoc, khopLoc, type GiaTriLoc, type KieuLoc, type LocCot } from '../LocCot'
 import type { Dong } from './gen'
+import { ThemHangLoat } from './ThemHangLoat'
 
 /** Các cột ẩn hiện được qua Tuỳ chỉnh giao diện phiếu */
 export const COT_KK: [string, string][] = [
@@ -46,6 +47,8 @@ export function BangKiemKe({ dong, onChange, cheDo, an = [], khongTong = false, 
     const h = NVL[0]
     onChange?.([...dong, { ma: h.ma, ten: h.ten, dvt: h.dvt, sl: 0, gia: 0, tien: 0, ts: 0, thue: 0, tonHt: 0, tonTt: 0, ghiChu: '' }])
   }
+  // Thêm hàng loạt (T465): mỗi nguyên vật liệu đã tích thành một dòng như Thêm dòng
+  const [moHangLoat, setMoHangLoat] = useState(false)
   const tong = (f: (d: Dong) => number) => dong.reduce((a, d) => a + f(d), 0)
   const soCotDau = 2 + Number(hien('ma')) + Number(hien('dvt'))
   // Lọc dòng (T383): [khoá, tên cột, có hiện, chữ của dòng, số của dòng (cột số)]
@@ -141,6 +144,15 @@ export function BangKiemKe({ dong, onChange, cheDo, an = [], khongTong = false, 
       {sua && (
         <div className="row" style={{ padding: '8px 12px', gap: 10 }}>
           <button type="button" className="btn sm ghost" onClick={themDong}><Icon n="plus" className="ic sm" />Thêm dòng</button>
+          <button type="button" className="btn sm ghost" onClick={() => setMoHangLoat(true)}><Icon n="plus" className="ic sm" />Thêm hàng loạt</button>
+          {moHangLoat && (
+            <ThemHangLoat
+              ds={NVL.map(h => ({ ma: h.ma, ten: h.ten, dvt: h.dvt, nhom: h.nhom, loai: 'Nguyên vật liệu' }))}
+              daCo={dong.map(d => d.ma ?? '')}
+              onDong={() => setMoHangLoat(false)}
+              onXacNhan={ds => onChange?.([...dong, ...ds.map(h => ({ ma: h.ma, ten: h.ten, dvt: h.dvt, sl: 0, gia: 0, tien: 0, ts: 0, thue: 0, tonHt: 0, tonTt: 0, ghiChu: '' }))])}
+            />
+          )}
           {dong.length > 0 && (
             <button type="button" className="btn sm ghost" onClick={() => onChange?.([])} style={{ color: 'var(--red)' }}>
               <Icon n="trash" className="ic sm" />Xoá hết
