@@ -31883,3 +31883,10 @@ a.tx-item:hover {
   white-space: nowrap;
   flex-shrink: 0;
 }
+
+/* ── Chi phí hoạt động cộng từ phiếu chi: lý do có phiếu tiền mặt và ngân hàng hiện hai liên kết (T483) ── */
+.cpt-dong.cpt-dong-hai:hover { border-color: var(--line); background: var(--white); }
+.cpt-tach { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 4px; font-size: 12.5px; }
+.cpt-tach a { color: var(--blue-d); text-decoration: none; font-variant-numeric: tabular-nums; }
+.cpt-tach a:hover { text-decoration: underline; }
+.cpt-trong { padding: 16px 4px; }

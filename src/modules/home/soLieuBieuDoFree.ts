@@ -5,6 +5,7 @@ import { PHIEU_MUA } from '../mua-hang/bao-cao'
 import { nvlKy } from './chi-phi-nvl'
 import { tinhToanTongQuan } from './chiSo'
 import type { Session } from '../../app/session'
+import { chiPhiThangTuPhieu, phieuChiPhi, type PhieuChiPhi } from './chiPhiPhieu'
 
 export interface ItemTop5 {
   ten: string
@@ -335,18 +336,19 @@ export function layTop5ChiTien(
 export function layLaiLoCuaHang(
   thang: number,
   selCns: string[],
-  s: Session
+  s: Session,
+  pcp: PhieuChiPhi[] = phieuChiPhi(s),   // chi phí hoạt động cộng từ phiếu chi như thẻ trang chủ (T483)
 ): LaiLoCnItem[] {
   const allIds = CUA_HANG.map(c => c.id)
   const tqAll = tinhToanTongQuan(thang === 10 ? 'thang-nay' : 'thang-truoc', allIds, s.cheDo, thang)
   const nvlAll = nvlKy(s, allIds, thang).tien
   const dtTongAll = tqAll.dtThuan
-  const cpTongAll = nvlAll + tqAll.cpHoatDong
+  const cpTongAll = nvlAll + chiPhiThangTuPhieu(pcp, thang, allIds).tong + tqAll.cpPhanBo
 
   const dsRaw = CUA_HANG.map(cn => {
     const nvl = nvlKy(s, [cn.id], thang).tien
     const tq = tinhToanTongQuan(thang === 10 ? 'thang-nay' : 'thang-truoc', [cn.id], s.cheDo, thang)
-    const cp = nvl + tq.cpHoatDong
+    const cp = nvl + chiPhiThangTuPhieu(pcp, thang, [cn.id]).tong + tq.cpPhanBo
     const dt = tq.dtThuan
     const dangChon = selCns.length === 1 && selCns[0] === cn.id
 

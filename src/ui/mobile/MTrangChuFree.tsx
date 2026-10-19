@@ -23,6 +23,7 @@ import { anNgoaiGoi, minGoi } from '../../app/plan'
 import { Pk } from '../Page'
 import { DS_QUY_TIEN_112 } from '../../modules/danh-muc/data'
 import { layLaiLoCuaHang } from '../../modules/home/soLieuBieuDoFree'
+import { chiPhiThangTuPhieu, usePhieuChiPhi } from '../../modules/home/chiPhiPhieu'
 
 /** 5 quỹ mẫu chỉ có số dư, đồng bộ với BaBaiToanFree (T303) */
 const QUY_MAU_THEM = [
@@ -232,12 +233,15 @@ export function MTrangChuFree(_props?: Partial<ScreenProps>) {
 
   // Lãi lỗ
   const nvl = useMemo(() => nvlKy(s, selCns, thangF), [s, selCns, thangF])
-  const cpThang = d.cpHoatDong - d.cpPhanBo
+  // Chi phí hoạt động cộng từ phiếu chi có lý do là chi phí, như bản web (T483)
+  const pcp = usePhieuChiPhi(s)
+  const cpPhieu = useMemo(() => chiPhiThangTuPhieu(pcp, thangF, selCns), [pcp, thangF, selCns])
+  const cpThang = cpPhieu.tong
   const loiNhuan = d.dtThuan - nvl.tien - cpThang - d.cpPhanBo
   const bien = d.dtThuan > 0 ? loiNhuan / d.dtThuan : 0
-  const chiLon = useMemo(() => [...d.coCauCp].sort((a, b) => b.v - a.v)[0], [d.coCauCp])
-  const laiLo13 = useMemo(() => laiLo13Thang(s, selCns), [s, selCns])
-  const laiLoCn = useMemo(() => layLaiLoCuaHang(thangF, selCns, s), [thangF, selCns, s])
+  const chiLon = cpPhieu.ds[0]   // lý do chi phí lớn nhất trong tháng
+  const laiLo13 = useMemo(() => laiLo13Thang(s, selCns, pcp), [s, selCns, pcp])
+  const laiLoCn = useMemo(() => layLaiLoCuaHang(thangF, selCns, s, pcp), [thangF, selCns, s, pcp])
 
   // Quỹ tiền
   const quy = useMemo(() => [...tonQuyTheoSo(thangF, selCns), ...QUY_MAU_THEM], [thangF, selCns])
@@ -444,7 +448,7 @@ export function MTrangChuFree(_props?: Partial<ScreenProps>) {
               <Icon n="chevr" className="ic sm m-tcf-kqkd-mui" />
               <span className="m-tcf-kqkd-mt">
                 {chiLon
-                  ? `Lương, mặt bằng, điện nước… Lớn nhất: ${chiLon.l} ${short(chiLon.v)}`
+                  ? `Lương, mặt bằng, điện nước… Lớn nhất: ${chiLon.ly} ${short(chiLon.v)}`
                   : 'Lương, mặt bằng, điện nước, chi khác'}
               </span>
               <span className="m-tcf-kqkd-pt">

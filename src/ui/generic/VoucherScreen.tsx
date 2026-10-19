@@ -232,7 +232,18 @@ export function VoucherScreen({ sc, mod }: ScreenProps) {
     return <ChungTuForm key={loc.key + loc.search} sc={sc} mod={mod} cfg={cfg} row={row} rows={rows} />
   }
 
-  return <VoucherList sc={sc} mod={mod} cfg={cfg} rows={rows} />
+  // Lọc mở từ đường dẫn (?lyDo=, ?thang=) đọc lúc dựng danh sách: đổi hai tham số này khi đang ở danh sách thì dựng lại để lọc đúng (T483)
+  const q = new URLSearchParams(loc.search)
+  return <VoucherList key={`${q.get('lyDo') ?? ''}|${q.get('thang') ?? ''}`} sc={sc} mod={mod} cfg={cfg} rows={rows} />
+}
+
+/** Lý do thu, chi của phiếu: phiếu đã lưu lý do thì lấy, chưa thì đoán theo diễn giải như form; chuyển quỹ không có (T96).
+ *  Danh sách Thu chi và Chi phí hoạt động trang chủ dùng chung để lọc theo lý do khớp nhau (T483) */
+export function lyDoThuChi(cfg: VoucherCfg, r: Row): string {
+  const loaiK = cfg.loai?.find(x => x.k === r.loai)?.k ?? cfg.loai?.[0]?.k
+  const cfgDong = theoLoai(cfg, loaiK)
+  const oLy = boO(nhomCua('tien', cfgDong, loaiK), cfgDong).a.find(o => o.k === 'ly')
+  return !oLy ? '' : r._lyDo ? String(r._lyDo) : lyMacDinh(oLy.ds ?? [], String(r.dienGiai ?? ''))
 }
 
 /** Màn nhiều loại phiếu: mỗi loại lấy 9 phiếu gần nhất rồi xếp chung theo ngày */
@@ -297,12 +308,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
   const rows0 = useMemo(() => cfg.dieuChinh || cfg.kiemKe ? rowsGoc.map((r): Row => {
     const dsDong = (r._dong as Dong[] | undefined) ?? dongCua(cfg, `${sc.code ?? sc.slug}-${r.id}`)
     return { ...r, kho: String(r._kho ?? ''), _khoDs: r._kho ? [String(r._kho)] : [], _maHang: dsDong.map(d => d.ma).filter(Boolean), ...(cfg.kiemKe ? { soMat: dsDong.length } : {}) }
-  }) : mod.key === 'tien' ? rowsGoc.map((r): Row => {
-    const loaiK = cfg.loai?.find(x => x.k === r.loai)?.k ?? cfg.loai?.[0]?.k
-    const cfgDong = theoLoai(cfg, loaiK)
-    const oLy = boO(nhomCua(mod.key, cfgDong, loaiK), cfgDong).a.find(o => o.k === 'ly')
-    return { ...r, lyDo: !oLy ? '' : r._lyDo ? String(r._lyDo) : lyMacDinh(oLy.ds ?? [], String(r.dienGiai ?? '')) }
-  }) : nhom !== 'mua' && nhom !== 'ban' ? rowsGoc : rowsGoc.map((r): Row => {
+  }) : mod.key === 'tien' ? rowsGoc.map((r): Row => ({ ...r, lyDo: lyDoThuChi(cfg, r) })) : nhom !== 'mua' && nhom !== 'ban' ? rowsGoc : rowsGoc.map((r): Row => {
     const dsDong = (r._dong as Dong[] | undefined) ?? dongCua(theoLoai(cfg, r.loai), `${sc.code ?? sc.slug}-${r.id}`)
     const dsKhoCn = CUA_HANG.find(c => c.ten === r.cn)?.kho ?? []
     const khoDau = String(r._kho ?? dsKhoCn[0] ?? '')

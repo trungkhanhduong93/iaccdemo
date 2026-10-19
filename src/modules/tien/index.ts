@@ -5,6 +5,7 @@ import { quyTrinh } from './quy-trinh'
 import { SoQuy } from './SoQuy'
 import { nhatKyChung } from './data'
 import { phieuThuChiFabi } from './dong-bo-fabi'
+import { phieuLuongThueNha } from './phieu-dinh-ky'
 import { SO_BO_SUNG } from '../bao-cao/so-bo-sung'
 import { createElement } from 'react'
 import { Navigate } from 'react-router-dom'
@@ -44,7 +45,7 @@ const tien: ModuleDef = {
       ],
       // Ba tab trên thanh tab phân hệ, tab Tiền mặt và Ngân hàng có hai nút Thu tiền, Chi tiền (T386)
       nhomLoai: [{ k: 'tm', ten: 'Tiền mặt', loai: ['thu', 'chi'] }, { k: 'nh', ten: 'Ngân hàng', loai: ['bc', 'unc'] }, { k: 'cq', ten: 'Chuyển quỹ', loai: ['cq'] }],
-      phieuThem: s => [PHIEU_CHO_PB, ...(s ? phieuThuChiFabi(s).da : [])] } },   // phiếu thu, chi đồng bộ từ FABi, cửa hàng đang bật (T264)
+      phieuThem: s => [PHIEU_CHO_PB, ...phieuLuongThueNha(), ...(s ? phieuThuChiFabi(s).da : [])] } },   // phiếu thu, chi đồng bộ từ FABi, cửa hàng đang bật (T264); lương, thuê mặt bằng hằng tháng (T483)
     '2.1.2': { voucher: { prefix: 'DCCN', doiTuong: 'kh', nhan: 'Khách hàng, nhà cung cấp', them: 'Lập biên bản', dong: 'tien', tien: [5_000_000, 120_000_000],
       dienGiai: ['Đối chiếu công nợ đến 30/09/2026', 'Đối chiếu công nợ quý 3/2026'], noCo: [['131', '131', 'Số dư đối chiếu, không sinh bút toán']] } },
     '2.1.3': { tool: { nut: 'Phân bổ kỳ 9/2026', mota: 'Phân bổ chi phí chung của văn phòng cho từng cửa hàng: lương quản lý, marketing, thuê kho tổng. Tiêu thức là doanh thu, số đơn hoặc tỷ lệ cố định. Sinh bút toán phân bổ cho từng cửa hàng.',

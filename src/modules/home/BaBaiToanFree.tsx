@@ -22,6 +22,7 @@ import { ModalQuy } from './quyThuChi'
 import { type LaiLoCnItem } from './soLieuBieuDoFree'
 import { BieuDoCuaHangModal } from './BieuDoFree'
 import { DS_QUY_TIEN_112 } from '../danh-muc/data'
+import { chiPhiThangTuPhieu, phieuChiPhi, usePhieuChiPhi, type PhieuChiPhi } from './chiPhiPhieu'
 
 // Hệ số mùa vụ quán ăn uống tháng 10/2025 đến 6/2026 so với trung bình tháng 7–9/2026: Tết (tháng 1) cao, sau Tết (tháng 2) thấp (T255)
 const MUA_VU: [number, number, number][] = [   // [tháng, năm, hệ số doanh thu]
@@ -30,12 +31,13 @@ const MUA_VU: [number, number, number][] = [   // [tháng, năm, hệ số doanh
 ]
 
 /** Lãi lỗ 13 tháng 10/2025–10/2026, cùng công thức thẻ Lãi lỗ: doanh thu thuần trừ chi phí NVL, chi phí hoạt động.
+ *  Chi phí hoạt động tháng 7–10 cộng từ phiếu chi có lý do là chi phí cộng chi phí phân bổ, như thẻ trang chủ (T483).
  *  Dữ liệu mẫu chỉ có từ 01/07/2026: tháng 7–10 tính thật; 9 tháng trước sinh từ trung bình tháng 7–9 theo hệ số mùa vụ,
  *  NVL theo tỷ lệ doanh thu, chi phí hoạt động gần như cố định (T255) */
-export function laiLo13Thang(s: Session, selCns: string[]) {
+export function laiLo13Thang(s: Session, selCns: string[], pcp: PhieuChiPhi[] = phieuChiPhi(s)) {
   const that = [7, 8, 9, 10].map(t => {
     const d = tinhToanTongQuan(t === 10 ? 'thang-nay' : 'thang-truoc', selCns, s.cheDo, t)
-    return { t, dt: d.dtThuan, nvl: nvlKy(s, selCns, t).tien, cp: d.cpHoatDong }
+    return { t, dt: d.dtThuan, nvl: nvlKy(s, selCns, t).tien, cp: chiPhiThangTuPhieu(pcp, t, selCns).tong + d.cpPhanBo }
   })
   const du = that.slice(0, 3)
   const tb = (f: (x: typeof du[number]) => number) => du.reduce((a, x) => a + f(x), 0) / du.length
@@ -670,15 +672,18 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
 
   // 1. Lãi lỗ
   const nvl = nvlKy(s, cnsHien, thangXem)
-  const cpThang = dHien.cpHoatDong - dHien.cpPhanBo
+  // Chi phí hoạt động cộng từ phiếu chi có lý do là chi phí, khớp màn Chi phí hoạt động và danh sách Thu chi (T483)
+  const pcp = usePhieuChiPhi(s)
+  const cpPhieu = chiPhiThangTuPhieu(pcp, thangXem, cnsHien)
+  const cpThang = cpPhieu.tong
   const loiNhuan = dHien.dtThuan - nvl.tien - cpThang - dHien.cpPhanBo
   const bien = dHien.dtThuan > 0 ? loiNhuan / dHien.dtThuan : 0
-  const laiLo13 = useMemo(() => laiLo13Thang(s, cnsHien), [s, cnsHien])
+  const laiLo13 = useMemo(() => laiLo13Thang(s, cnsHien, pcp), [s, cnsHien, pcp])
 
   // 2. Thu chi: số dư, thu, chi cộng từ Sổ quỹ tiền mặt, Sổ ngân hàng
   const quy = useMemo(() => [...tonQuyTheoSo(thangXem, cnsHien), ...QUY_MAU_THEM], [thangXem, cnsHien])   // T303: thêm 5 quỹ mẫu
   const tongQuy = { cuoi: quy.reduce((a, r) => a + r.cuoi, 0), thu: quy.reduce((a, r) => a + r.thu, 0), chi: quy.reduce((a, r) => a + r.chi, 0) }
-  const chiLon = [...dHien.coCauCp].sort((a, b) => b.v - a.v)[0]
+  const chiLon = cpPhieu.ds[0]   // lý do chi phí lớn nhất trong tháng
   const [modalQuy, setModalQuy] = useState<string | null>(null)
   const thuChi13 = useMemo(() => thuChi13Thang(cnsHien), [cnsHien])
   // T331: hai biểu đồ 13 tháng chừa cùng phần dưới 0 để đường 0 thẳng hàng hai bên
@@ -775,7 +780,7 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
           >
             <div className="l">
               <b>Chi phí hoạt động</b>
-              <span>{chiLon ? `Lớn nhất: ${chiLon.l} ${short(chiLon.v)}` : 'Lương, mặt bằng, điện nước'}</span>   {/* rút gọn (T390) */}
+              <span>{chiLon ? `Lớn nhất: ${chiLon.ly} ${short(chiLon.v)}` : 'Lương, mặt bằng, điện nước'}</span>   {/* rút gọn (T390) */}
             </div>
             <div className="r">
               <b>{moneyD(cpThang)}</b>

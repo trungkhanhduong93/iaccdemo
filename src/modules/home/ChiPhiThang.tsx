@@ -1,16 +1,17 @@
-// Chi phí trong tháng theo lý do chi (T230): mở từ thẻ Chi phí trong tháng ở trang chủ gói Free.
-// Chia chi phí trong tháng theo cơ cấu chi phí, gọi tên theo danh mục Lý do chi, nên cộng lại đúng bằng số trên thẻ:
-// Thanh toán tiền lương (lương nhân sự), Chi tiền thuê nhà (thuê mặt bằng), Chi phí khác (điện nước gas, chi khác, chi phí tài chính)
+// Chi phí trong tháng theo lý do chi (T230): mở từ thẻ Chi phí hoạt động ở trang chủ gói Free.
+// Cộng từ phiếu chi thật (T483): phiếu chi tiền mặt, chi ngân hàng có lý do là chi phí, theo tháng, cửa hàng (chiPhiPhieu.ts),
+// mỗi lý do một dòng; bấm dòng mở danh sách Thu chi lọc đúng lý do, tháng nên tổng danh sách bằng số trên dòng.
+// Lý do có phiếu ở cả tiền mặt và ngân hàng thì dòng có hai liên kết Tiền mặt, Ngân hàng
 import { Link, useSearchParams } from 'react-router-dom'
 import type { ScreenProps } from '../types'
 import { cuaHangHienTai, useSession } from '../../app/session'
-import { CUA_HANG, LY_CHI_PHI } from '../../data/mock'
+import { CUA_HANG } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
 import { moneyD, pct } from '../../ui/format'
 import { useMoTuTrangChu } from '../../app/tuTrangChu'
 import { NutXuatExcel } from '../../ui/CongCuDs'
 import { xuatBangExcel } from '../../ui/xuatBangExcel'
-import { tinhToanTongQuan } from './chiSo'
+import { chiPhiThangTuPhieu, linkChiPhi, moTaChiPhi, usePhieuChiPhi } from './chiPhiPhieu'
 
 export function ChiPhiThang(_: ScreenProps) {
   const moTuTrangChu = useMoTuTrangChu()   // liên kết trong màn mở kèm nút về Trang chủ (T232)
@@ -18,16 +19,8 @@ export function ChiPhiThang(_: ScreenProps) {
   const [tham] = useSearchParams()
   const thang = Math.min(10, Math.max(7, Number(tham.get('thang')) || 10))
   const cn = cuaHangHienTai(s)
-  const d = tinhToanTongQuan(thang === 10 ? 'thang-nay' : 'thang-truoc', cn ? [cn.id] : CUA_HANG.map(c => c.id), s.cheDo, thang)
-  const cpThang = d.cpHoatDong - d.cpPhanBo
-  const cp = (ten: string) => d.coCauCp.find(x => x.l === ten)?.v ?? 0
-  const luong = cp('Lương nhân sự'), matBang = cp('Thuê mặt bằng')
-  const thangStr = `2026-${String(thang).padStart(2, '0')}`
-  const ds = [
-    { ma: 'CHI27', ly: 'Thanh toán tiền lương', phu: 'Lương nhân viên bếp, phục vụ, quản lý', v: luong, icon: 'users' },
-    { ma: 'CHI14', ly: 'Chi tiền thuê nhà', phu: 'Thuê mặt bằng các cửa hàng', v: matBang, icon: 'cuahang' },
-    { ma: 'CHI08', ly: 'Chi phí khác', phu: 'Điện, nước, gas, chi khác, chi phí tài chính', v: cpThang - luong - matBang, icon: 'cashout' },
-  ].filter(x => x.v !== 0 && LY_CHI_PHI.includes(x.ly)).sort((a, b) => b.v - a.v)   // chỉ lý do được tích là chi phí (T231)
+  const phieu = usePhieuChiPhi(s)
+  const { tong: cpThang, ds } = chiPhiThangTuPhieu(phieu, thang, cn ? [cn.id] : CUA_HANG.map(c => c.id))
 
   return (
     <div className="page cpt-trang" onClickCapture={moTuTrangChu}>   {/* phần đầu, thẻ tổng cố định; danh sách cuộn riêng (T263) */}
@@ -36,23 +29,35 @@ export function ChiPhiThang(_: ScreenProps) {
         <h1>Chi phí hoạt động {thang}/2026</h1>
         <span className="grow" />
         <NutXuatExcel onXuat={() => xuatBangExcel(`Chi phí hoạt động ${thang}/2026`, cn ? cn.ten : 'Tất cả cửa hàng',
-          [{ t: 'Lý do chi', rong: 24 }, { t: 'Nội dung', rong: 44 }, { t: 'Số tiền', so: true }, { t: 'Tỷ lệ chi phí tháng', rong: 18 }],
-          ds.map(x => [x.ly, x.phu, x.v, pct(cpThang ? x.v / cpThang : 0)]), ['Tổng chi phí trong tháng', '', cpThang, '']).catch(() => toast('Không xuất được file Excel'))} />
+          [{ t: 'Lý do chi', rong: 32 }, { t: 'Số phiếu', so: true }, { t: 'Tiền mặt', so: true }, { t: 'Ngân hàng', so: true }, { t: 'Số tiền', so: true }, { t: 'Tỷ lệ chi phí tháng', rong: 18 }],
+          ds.map(x => [x.ly, x.so, x.tm, x.nh, x.v, pct(cpThang ? x.v / cpThang : 0)]), ['Tổng chi phí trong tháng', ds.reduce((a, x) => a + x.so, 0), '', '', cpThang, '']).catch(() => toast('Không xuất được file Excel'))} />
         <Link to="/app/tien/2-1-1/moi?loai=chi" className="btn primary"><Icon n="plus" className="ic sm" />Lập phiếu chi</Link>
       </div>
       <div className="cpt-tong">
-        <span>Tổng chi phí trong tháng{cn ? ` · ${cn.ten}` : ''}<small className="nvl-phu">Các khoản chi tiền có lý do nghiệp vụ là chi phí</small></span>
+        <span>Tổng chi phí trong tháng{cn ? ` · ${cn.ten}` : ''}<small className="nvl-phu">Cộng các phiếu chi tiền mặt, ngân hàng có lý do nghiệp vụ là chi phí</small></span>
         <b>{moneyD(cpThang)}</b>
       </div>
       <div className="cpt-cuon"><div className="cpt-ds">
-        {ds.map(x => (
-          <Link key={x.ly} to={`/app/tien/2-1-1?lyDo=${encodeURIComponent(x.ly)}&thang=${encodeURIComponent(thangStr)}`} className="cpt-dong" title={`Xem phiếu chi ${x.ly.toLowerCase()}`}>
-            <span className="cpt-ic"><Icon n={x.icon} /></span>
-            <span className="cpt-ten"><b>{x.ly}</b><small>{x.phu}</small></span>
+        {ds.map(x => {
+          const { icon, phu } = moTaChiPhi(x)
+          const hai = x.tm > 0 && x.nh > 0
+          const than = <>
+            <span className="cpt-ic"><Icon n={icon} /></span>
+            <span className="cpt-ten"><b>{x.ly}</b><small>{phu}</small>
+              {hai && <span className="cpt-tach">
+                <Link to={linkChiPhi(x.ly, thang, 'tm')}>Tiền mặt {moneyD(x.tm)} ›</Link>
+                <Link to={linkChiPhi(x.ly, thang, 'nh')}>Ngân hàng {moneyD(x.nh)} ›</Link>
+              </span>}
+            </span>
             <span className="cpt-so"><b>{moneyD(x.v)}</b><small>{pct(cpThang ? x.v / cpThang : 0)} chi phí tháng</small></span>
-            <Icon n="chevr" className="ic sm cpt-mui" />
-          </Link>
-        ))}
+          </>
+          return hai
+            ? <div key={x.ly} className="cpt-dong cpt-dong-hai">{than}</div>
+            : <Link key={x.ly} to={linkChiPhi(x.ly, thang, x.nh > 0 ? 'nh' : 'tm')} className="cpt-dong" title={`Xem phiếu chi ${x.ly.toLowerCase()}`}>
+                {than}<Icon n="chevr" className="ic sm cpt-mui" />
+              </Link>
+        })}
+        {!ds.length && <p className="muted cpt-trong">Tháng {thang}/2026 chưa có phiếu chi nào có lý do là chi phí.</p>}
       </div></div>
     </div>
   )

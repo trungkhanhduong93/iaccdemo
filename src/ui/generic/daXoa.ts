@@ -103,6 +103,14 @@ export function useDaXoa(man: string) {
   }
 }
 
+/** Phiếu của một màn đúng như danh sách đang thấy, đọc được ngoài React: phiếu lập thêm, phiếu gốc, bỏ phiếu đã xoá, áp phần đã sửa (T483) */
+export function apKhoPhieu(man: string, goc: Row[]): Row[] {
+  return [...(phieuMoi.get(man) ?? []), ...goc].filter(r => !daXoa.has(`${man}|${r.id}`))
+    .map(r => { const s = daSua.get(`${man}|${r.id}`); return s ? { ...r, ...s } : r })
+}
+/** Số lần kho phiếu đổi: màn tính từ phiếu (vd chi phí trang chủ) dùng để tính lại khi lập, sửa, xoá phiếu (T483) */
+export const useBanPhieu = () => useSyncExternalStore(f => { nghe.add(f); return () => { nghe.delete(f) } }, () => banSo)
+
 /** Nhật ký trong phiên: của một phiếu (man, id), hoặc tất cả khi không truyền */
 export function useNhatKy(man?: string, id?: string) {
   useSyncExternalStore(f => { nghe.add(f); return () => { nghe.delete(f) } }, () => banSo)
