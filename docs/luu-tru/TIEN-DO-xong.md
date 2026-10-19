@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T486 | Tách mục Release của `AGENTS.md` ra `docs/RELEASE.md`, agent chỉ đọc khi có người gõ release | Trum | 19/10/2026 | [2026-10-19-trum-tach-release](../nhat-ky/2026-10-19-trum-tach-release.md) |
 | T485 | Công cụ bản đồ repo `tools/ban_do.py` cho agent đỡ tốn token: đầu phiên một lệnh, tra file:dòng, dàn ý file lớn, mục CSS, QD, BAY, nhánh; bảng Đã xong chuyển sang file này; hook chặn Claude đọc nguyên file lớn | Trum | 19/10/2026 | [2026-10-19-trum-ban-do-repo](../nhat-ky/2026-10-19-trum-ban-do-repo.md) |
 | T480 | Điện thoại, Lịch sử thu chi: mỗi ngày thấy Dư đầu ngày và Dư cuối ngày | Trum | 19/10/2026 | [2026-10-19-trum-lich-su-thu-chi-du-dau-cuoi-ngay](../nhat-ky/2026-10-19-trum-lich-su-thu-chi-du-dau-cuoi-ngay.md) |
 | T481 | Điện thoại, xem phiếu mua hàng: khối tổng gộp vào chung khung chân trắng với các nút như Xuất bán POS | Trum | 19/10/2026 | [2026-10-19-trum-chan-xem-phieu-mua-gop-tong](../nhat-ky/2026-10-19-trum-chan-xem-phieu-mua-gop-tong.md) |
