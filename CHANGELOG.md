@@ -4,6 +4,8 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 19/10/2026
 
+- T463: Phiếu mua hàng, chứng từ bán hàng có hoá đơn (máy tính): Số hoá đơn đứng đầu, Mẫu số HĐ và Ký hiệu HĐ gộp thành một ô Ký hiệu (vd 1C26TMM, ký tự đầu là mẫu số), rồi Ngày hoá đơn; tab Hoá đơn cũng vậy.
+
 - T462: Gói Free, Quy trình Mua hàng: bước Sổ sách, báo cáo đứng trước bước Theo dõi công nợ; bấm Chi tiền mặt, Chi ngân hàng ở bước Trả tiền nhà cung cấp mở phiếu chi điền sẵn lý do Thanh toán công nợ nhà cung cấp.
 - T449 (điện thoại): 4 màn phiếu mua làm lại theo mẫu phương án D. Màn xem phiếu có thẻ tổng quan, 4 tab và danh sách hàng dạng thẻ có nút sửa. Màn lập và sửa có thông tin hoá đơn, danh sách hàng dạng thẻ. Bảng trượt Sửa mặt hàng cho phép sửa chiết khấu, VAT, tổng tiền bằng nút bút và ghi chú. Bảng trượt Thanh toán hiển thị số dư từng quỹ và lập phiếu chi.
 

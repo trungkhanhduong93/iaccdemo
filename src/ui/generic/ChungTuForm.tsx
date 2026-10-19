@@ -1105,19 +1105,14 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
             {/* Mua tích Nhận kèm hoá đơn, bán tích Lập kèm hoá đơn: thông tin hoá đơn thành một cột trước cột ngày, số phiếu, ba hàng đều với hai cột trái (T62, T68, T83) */}
             {coHdDau && (
               <div className="stack ct-hd-dau" style={{ gap: 10, gridRow: keoGc ? 'span 2' : undefined }}>
-                <div className="row" style={{ gap: 10 }}>
-                  <div className="f" style={{ flex: 1 }}>
-                    <label>Mẫu số HĐ <em>*</em></label>
-                    <input className="inp" defaultValue="1" readOnly={!dangSua} />
-                  </div>
-                  <div className="f" style={{ flex: 1 }}>
-                    <label>Ký hiệu HĐ <em>*</em></label>
-                    <input className="inp code" value={kyHieuHd} onChange={e => setKyHieuHd(e.target.value)} readOnly={!dangSua} />
-                  </div>
-                </div>
+                {/* Số hoá đơn lên đầu; Mẫu số gộp vào Ký hiệu, vd 1C26TMM (ký tự đầu là mẫu số) (T463) */}
                 <div className="f">
                   <label>Số hoá đơn <em>*</em></label>
                   <input className="inp code" value={soHd} onChange={e => setSoHd(e.target.value)} readOnly={!dangSua} />
+                </div>
+                <div className="f">
+                  <label>Ký hiệu <em>*</em></label>
+                  <input className="inp code" value={kyHieuHd} onChange={e => setKyHieuHd(e.target.value)} readOnly={!dangSua} title="Gồm mẫu số và ký hiệu hoá đơn, vd 1C26TMM" />
                 </div>
                 <div className="f">
                   <label>Ngày hoá đơn <em>*</em></label>
@@ -1254,16 +1249,12 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
             <div style={{ padding: 16 }}>
               <div className="form-grid" style={{ maxWidth: 720 }}>
                 <div className="f">
-                  <label>Mẫu số hoá đơn</label>
-                  <input className="inp" defaultValue="1" disabled={!dangSua} />
-                </div>
-                <div className="f">
-                  <label>Ký hiệu hoá đơn</label>
-                  <input className="inp code" value={kyHieuHd} onChange={e => setKyHieuHd(e.target.value)} disabled={!dangSua} />
-                </div>
-                <div className="f">
                   <label>Số hoá đơn</label>
                   <input className="inp code" value={soHd} onChange={e => setSoHd(e.target.value)} disabled={!dangSua} />
+                </div>
+                <div className="f">
+                  <label>Ký hiệu</label>
+                  <input className="inp code" value={kyHieuHd} onChange={e => setKyHieuHd(e.target.value)} disabled={!dangSua} title="Gồm mẫu số và ký hiệu hoá đơn, vd 1C26TMM" />
                 </div>
                 <div className="f">
                   <label>Ngày hoá đơn</label>
