@@ -18,7 +18,6 @@ import { ctTtCon, dsDcCon, dsTtCon, ghiNhatKy, soDaTra, soKeTiep, suaPhieu, them
 import { LichSu, MAN_THU_CHI, TEN_CT_TT, TIEN_TO_CT_TT, lyDoKhongXoaTheCuaPhieu, theCuaPhieu, xoaTheCuaPhieu } from '../generic/ChungTuForm'
 import { loaiXuLy } from '../generic/BangKiemKe'
 import { HopXacNhan } from '../LocNangCao'
-import { HopInChungTu, type PhieuIn } from '../bao-cao/InChungTu'
 import { LichDon } from '../ChonNgay'
 import { Icon } from '../Icon'
 import { MChon } from './MChon'
@@ -98,7 +97,6 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
   const [hoiXoa, setHoiXoa] = useState(false)
   const [hoiKhongSua, setHoiKhongSua] = useState(false)   // phiếu chi còn thẻ chi phí (T475)
   const [hoiBoGhi, setHoiBoGhi] = useState(false)
-  const [phieuIn, setPhieuIn] = useState<PhieuIn[] | null>(null)
   const [phieuChiVuaLap, setPhieuChiVuaLap] = useState<{ so: string; id: string } | null>(null)
 
   const loai = cfgMan.loai?.find(x => x.k === row.loai) ?? cfgMan.loai?.[0]
@@ -271,29 +269,6 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
   const ctTtCu = ctTtCon(row)
   const dsDc = dsDcCon(row)
 
-  const thucHienIn = () => {
-    setPhieuIn([
-      {
-        sc,
-        cfg,
-        loai,
-        row: {
-          ...row,
-          id: row.id,
-          so: soCt,
-          ngay: row.ngay,
-          cn: row.cn,
-          doiTuong: row.doiTuong,
-          dienGiai: row.dienGiai,
-          loai: loai?.k,
-          tien: tongTien,
-          thue: tongThue,
-          tong: tongThanhToan,
-        },
-      },
-    ])
-  }
-
   // Danh sách các tab hiển thị theo từng phân hệ
   const dsTab = useMemo(() => {
     if (laTien) {
@@ -378,10 +353,6 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
         nhan: 'Bỏ ghi sổ',
         action: () => setHoiBoGhi(true),
       }
-      nutChinh = {
-        nhan: 'In phiếu',
-        action: thucHienIn,
-      }
     } else {
       nutChinh = {
         nhan: 'Ghi sổ',
@@ -398,7 +369,6 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
   // Menu ba chấm
   const dsMenu = [
     ...(!laDc && nhomMb !== 'mua' ? [{ k: 'sua', ten: 'Sửa chứng từ' }] : []),
-    { k: 'in', ten: 'In chứng từ' },
     ...(!laDc ? [{ k: 'copy', ten: 'Sao chép chứng từ' }] : []),
     ...(!laDc ? [{ k: 'xoa', ten: 'Xoá chứng từ' }] : []),
   ]
@@ -408,8 +378,6 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
       moSua()
     } else if (k === 'thanhtoan') {
       setMoThanhToan(true)
-    } else if (k === 'in') {
-      thucHienIn()
     } else if (k === 'copy') {
       toast('Đã sao chép chứng từ')
       nav(`${path}/moi${row.loai ? `?loai=${row.loai}` : ''}`, { state: { saoChep: row } })
@@ -1224,9 +1192,6 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
           {laKk && dsDc.length > 0 && <> Phiếu điều chỉnh {dsDc.map(c => c.so).join(', ')} cũng bị xoá theo.</>}
         </HopXacNhan>
       )}
-
-      {/* Hộp in chứng từ */}
-      {phieuIn && <HopInChungTu ds={phieuIn} onDong={() => setPhieuIn(null)} />}
 
       {/* Sheet thanh toán phiếu mua */}
       <MThanhToanSheet

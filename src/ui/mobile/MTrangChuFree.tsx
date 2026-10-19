@@ -481,7 +481,7 @@ export function MTrangChuFree(_props?: Partial<ScreenProps>) {
 
           <div className="bbt-chan" style={{ marginTop: 10 }}>
             <button type="button" className="bbt-nut" onClick={() => setMoBieuDo(true)}>
-              Xem biểu đồ lãi lỗ 13 tháng
+              Xem hiệu quả kinh doanh 13 tháng
               <Icon n="chevr" className="ic sm" />
             </button>
           </div>

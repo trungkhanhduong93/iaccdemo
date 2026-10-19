@@ -4,6 +4,8 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 19/10/2026
 
+- T488: điện thoại bỏ in chứng từ (web vẫn in được); trang chủ điện thoại gói Free nút và hộp biểu đồ đổi tên thành Hiệu quả kinh doanh 13 tháng.
+
 - T480 (điện thoại): Lịch sử thu chi, mỗi ngày có Dư cuối ngày ở đầu nhóm và Dư đầu ngày ở cuối nhóm; lọc Khoản thu, Khoản chi không đổi hai số dư.
 
 - T481 (điện thoại): Màn xem phiếu mua gộp 3 dòng tổng tiền vào chung khung chân trắng với hàng nút thao tác như chi tiết Xuất bán POS. Danh sách cuộn trọn vẹn phía trên khung chân, không bị che dòng hàng cuối.

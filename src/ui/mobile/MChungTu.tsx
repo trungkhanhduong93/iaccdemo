@@ -50,7 +50,7 @@ const ChungTuMoiForm: FC<{ sc: ScreenProps['sc']; mod: ScreenProps['mod']; id?: 
   const loc = useLocation()
   const { cfg, rows } = useDongChungTu(sc, mod)
   const row = id === 'moi' ? undefined : rows.find(r => String(r.id) === String(id))
-  return <ChungTuForm key={loc.key + loc.search} sc={sc} mod={mod} cfg={cfg} row={row} rows={rows} />
+  return <ChungTuForm key={loc.key + loc.search} sc={sc} mod={mod} cfg={cfg} row={row} rows={rows} anIn />
 }
 
 const CAC_THU = ['Chủ nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy']

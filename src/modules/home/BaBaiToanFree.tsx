@@ -222,9 +222,9 @@ export function HopLaiLo13({
 
   return createPortal(
     <div className="overlay ds-hop-nen" onMouseDown={e => { if (e.target === e.currentTarget) onDong() }}>
-      <div className={`ds-hop hop-13t ${kieuXem === 'cn' ? 'hop-13t--cn' : ''}`} role="dialog" aria-modal="true" aria-label="Biểu đồ lãi lỗ 13 tháng">
+      <div className={`ds-hop hop-13t ${kieuXem === 'cn' ? 'hop-13t--cn' : ''}`} role="dialog" aria-modal="true" aria-label="Biểu đồ hiệu quả kinh doanh 13 tháng">
         <div className="ds-hop-dau">
-          <Icon n="chart" className="ic sm" /><b>{kieuXem === 'cn' ? `Lãi lỗ theo cửa hàng tháng ${thangXem ?? 10}/2026` : 'Lãi lỗ 13 tháng'}</b>
+          <Icon n="chart" className="ic sm" /><b>{kieuXem === 'cn' ? `Lãi lỗ theo cửa hàng tháng ${thangXem ?? 10}/2026` : 'Hiệu quả kinh doanh 13 tháng'}</b>
           {isTatCa && (
             <div className="bbt-modal-segmented" role="tablist" aria-label="Kiểu xem lãi lỗ">
               <button

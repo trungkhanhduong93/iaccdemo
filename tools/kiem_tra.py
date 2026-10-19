@@ -4870,9 +4870,9 @@ def kiem_tra_t274_dien_thoai():
                 loi.append(f'T274 dt: trang 1 thiếu thẻ biểu đồ "{t}"')
 
         # 3. Modal lãi lỗ trên điện thoại có 2 nút kiểu xem khi Tất cả
-        nut_xem_13 = pg.locator('.bbt-nut:has-text("Xem biểu đồ lãi lỗ 13 tháng")').first
+        nut_xem_13 = pg.locator('.bbt-nut:has-text("Xem hiệu quả kinh doanh 13 tháng")').first
         if nut_xem_13.count() == 0:
-            loi.append('T274 dt: không tìm thấy nút Xem biểu đồ lãi lỗ 13 tháng trên điện thoại')
+            loi.append('T274 dt: không tìm thấy nút Xem hiệu quả kinh doanh 13 tháng trên điện thoại')
         else:
             nut_xem_13.click()
             pg.wait_for_timeout(350)

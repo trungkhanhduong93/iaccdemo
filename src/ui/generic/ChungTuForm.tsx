@@ -41,9 +41,10 @@ export interface ChungTuFormProps extends ScreenProps {
   row?: Row
   rows?: Row[]
   children?: React.ReactNode
+  anIn?: boolean
 }
 
-export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: ChungTuFormProps) {
+export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }: ChungTuFormProps) {
   const { s, set, toast } = useSession()
   const nav = useNavigate()
   const loc = useLocation()
@@ -781,9 +782,11 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               </button>
             )}
             <span className="grow" />
-            <button type="button" className="btn" onClick={moIn}>
-              <Icon n="printer" className="ic sm" />In
-            </button>
+            {!anIn && (
+              <button type="button" className="btn" onClick={moIn}>
+                <Icon n="printer" className="ic sm" />In
+              </button>
+            )}
             <Dropdown
               btnClass="btn"
               align="end"
