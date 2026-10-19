@@ -24,6 +24,7 @@ Làm đủ các bước, theo thứ tự:
 2. Chạy `python tools/ban_do.py dau-phien <tên GitHub>`. Lệnh in việc của người dùng, việc người khác đang giữ kèm file, mã việc kế tiếp, mục "Dở dang" của 3 nhật ký mới nhất. Không đọc nguyên `docs/TIEN-DO.md`.
 3. Phiên trước dở dang thì mở đúng nhật ký đó, làm tiếp từ mục "Dở dang, việc tiếp theo".
 4. Báo người dùng: việc được giao, việc nên làm trước, phiên trước dừng ở đâu. Chờ người dùng chọn rồi mới sửa.
+   - Lệnh `dau-phien` in dòng "Skill bản đồ repo trên máy này" thì hỏi thêm một câu: có muốn cài skill bản đồ repo cho máy mình không, để agent đỡ tốn token ở mọi repo git khác. Đồng ý thì chạy `python tools/cai_skill_ban_do.py`, rồi nhắc mở phiên mới. Không muốn thì chạy `python tools/cai_skill_ban_do.py --khong`, lần sau không hỏi lại.
 5. Đổi trạng thái việc đó trong `docs/TIEN-DO.md` thành `Đang làm`, commit riêng file này, push ngay (làm mục "Ngay trước lệnh git push" trước). Người dùng muốn làm việc chưa có trong bảng thì thêm dòng mới với mã kế tiếp, ghi tên người dùng, rồi mới làm (QD21):
    - Lấy mã kế tiếp từ lệnh `dau-phien`. Lệnh tự `git fetch origin` và đọc bản trên `origin/main`.
    - Ghi vào cột Ghi chú các file dùng chung sẽ sửa, nhất là `VoucherScreen.tsx`, `ChungTuForm.tsx`, `app.css`. Thấy việc khác đang ghi cùng file thì hỏi người đó trước.

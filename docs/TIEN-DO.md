@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T487 | Gói cài skill bản đồ repo cho máy từng người: `tools/skill-ban-do-repo/`, `tools/cai_skill_ban_do.py`; đầu phiên agent hỏi một lần có cài không | Trum | Đang làm | Sửa `AGENTS.md`, `tools/ban_do.py` (dòng nhắc cài trong `dau-phien`). Không đụng `src/` |
 | T484 | Dữ liệu giả sổ quỹ, lịch sử thu chi: khoản chi mang dấu cộng như khoản thu (vd "Chi mua nguyên vật liệu +21.975.000") vì `soChiTiet` trong `src/ui/generic/gen.ts` chọn diễn giải ngẫu nhiên không theo loại thu chi | | Chờ | Phát hiện khi làm T480 |
 | T482 | Trang chủ gói Free (máy tính, điện thoại): chữ "Giá vốn nguyên vật liệu" đổi thành "Chi phí nguyên vật liệu" | PhuongXT | Đang làm | `home/BaBaiToanFree.tsx` (chỉ 2 dòng chữ, T339 của dinhlanphuongipacc cũng sửa file này), `mobile/MTrangChuFree.tsx` |
 | T451 | Điện thoại, phiếu bán hàng ngoài Xuất bán POS (Hàng bán trả lại, hoá đơn bán hàng...) màn xem, lập phiếu: GTGT theo % doanh thu thì dòng hàng bỏ Thuế x%, VAT, hiện Giảm thuế GTGT như máy tính (T450) | | Chờ | `MXemPhieu.tsx`, `MLapPhieu.tsx`, làm sau khi T449 (Trum) push. Dùng `gtgtTyLe` (`session.tsx`), `giamGtgtCua` (`VoucherScreen.tsx`), `giamThueHkd` (`ban-hang/giam-thue.ts`) |

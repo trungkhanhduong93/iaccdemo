@@ -2,6 +2,7 @@
 import argparse
 import os
 import re
+import runpy
 import subprocess
 import sys
 import unicodedata
@@ -209,6 +210,11 @@ def lenh_dau_phien(args):
             print(f"- {fn}:")
             for ld in lines_dd[:8]:
                 print(f"    {ld}")
+
+    # Skill bản đồ repo trên máy người dùng (T487)
+    tt = runpy.run_path(str(ROOT / 'tools' / 'cai_skill_ban_do.py'), run_name='kiem')['trang_thai']()
+    if tt in ('chua-cai', 'cu-hon'):
+        print(f"\nSkill bản đồ repo trên máy này: {'chưa cài' if tt == 'chua-cai' else 'có bản mới'}. Hỏi người dùng theo AGENTS.md, Đầu phiên bước 4.")
 
 
 def lenh_tim(args):

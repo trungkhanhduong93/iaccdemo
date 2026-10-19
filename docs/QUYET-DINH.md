@@ -816,3 +816,4 @@ Trum chốt 19/10/2026 (T485). Đầu phiên agent từng đọc nguyên `docs/T
 - Bảng việc đã xong chuyển sang `docs/luu-tru/TIEN-DO-xong.md`. `docs/TIEN-DO.md` chỉ còn việc chưa xong.
 - Không commit file bản đồ sinh sẵn. Ba người cùng push thì file sinh sẵn xung đột mỗi lần. Script chạy dưới 2 giây, luôn khớp code.
 - Claude Code có hook `.claude/hooks/chan_doc_lon.py` chặn đọc file trên 20 KB khi không có giới hạn dòng. Hook áp cho mọi người dùng Claude trong repo.
+- Skill bản đồ repo dùng cho máy từng người (T487): bản gốc ở `tools/skill-ban-do-repo/`, cài bằng `python tools/cai_skill_ban_do.py`. Đầu phiên agent hỏi một lần, người dùng tự quyết. Sửa skill thì sửa bản gốc trong repo, tăng số `VERSION`.
