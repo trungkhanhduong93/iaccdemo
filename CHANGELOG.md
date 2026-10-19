@@ -4,6 +4,14 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 19/10/2026
 
+- T432 (điện thoại): Báo cáo S1a-HKD chỉ còn một dòng Tổng cộng, ghim ở đáy bảng, không che dòng cuối; bảng kéo hết chiều cao màn, không còn khoảng trống bên dưới.
+
+- T468 (điện thoại): Xem phiếu kiểm kê đổi khối thẻ tổng thành 3 thẻ Thiếu, Thừa, Khớp trên một hàng kèm số lượng mặt hàng. Xem phiếu mua ghim khối tổng tiền ở đáy màn tab Chi tiết trên hàng nút chân. Bảng thanh toán nhà cung cấp đổi phần trả từ quỹ thành 1 ô chọn, bấm mở bảng trượt chọn quỹ kèm số dư. Chi tiết đơn Xuất bán POS bỏ dòng ngày giờ, kênh bán, cửa hàng dưới mã đơn.
+
+- T445 (điện thoại): Bảng kê mua hàng làm lại theo mẫu D. Danh sách phiếu gom theo ngày, mỗi ngày có tiêu đề ngày và tổng tiền. Từng phiếu hiện số phiếu bấm mở phiếu gốc, tổng tiền và tên nhà cung cấp. Bấm thẻ bung chi tiết từng mặt hàng và trạng thái thanh toán. Khối tổng tiền mua hàng ghim cố định ở đáy màn hình.
+
+- T433 (điện thoại): Sổ quỹ tiền mặt và Sổ tiền gửi ngân hàng tách thẻ tổng thành 4 ô Tồn đầu, Thu, Chi, Tồn cuối trên một hàng. Danh sách theo ngày hiển thị Tồn đầu ngày ở đầu nhóm và Tồn cuối ngày ở cuối nhóm dưới các dòng thu chi.
+
 - T475 (điện thoại): Phiếu chi đã có thẻ chi phí phân bổ bấm Sửa thì báo Không sửa được, có nút Mở thẻ; xoá phiếu hoặc xoá thẻ thuộc kỳ đã khoá sổ thì báo không xoá được như bản máy tính; xoá phiếu xoá luôn thẻ; thẻ mở từ phiếu xoá xong về phiếu để sửa. Hộp xác nhận (Không sửa được, Xoá phiếu) không còn bị màn xem phiếu che.
 
 - T474: Ô chọn có lựa chọn dài (vd Nhóm lý do trong Bộ lọc) không còn giãn hết bề ngang màn: danh sách rộng theo ô, chữ dài xuống dòng, các lựa chọn có khoảng cách, đường kẻ ngăn.

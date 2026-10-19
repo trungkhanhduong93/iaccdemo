@@ -42,6 +42,7 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
   const isSoTienGui = sc.code === '2.2.3' || sc.slug === '2-2-3'
   const isSoCongNo = sc.code === '2.2.5' || sc.slug === '2-2-5'
   const isSoCu = isSoQuy || isSoTienGui || isSoCongNo
+  const isSoTien = isSoQuy || isSoTienGui
   const maBcStr = String(sc.code ?? sc.slug ?? '').replace(/-/g, '.')
   const la427 = maBcStr === '4.2.7'
   const laTT152Hook = s.cheDo === 'TT152' && laSoTT152(maBcStr)
@@ -211,29 +212,79 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
     const tuKhoa = q.trim()
     const qFold = tuKhoa ? fold(tuKhoa) : ''
 
-    const phatSinh = rawRows.filter(r => {
-      if (r._b || r._t) return false
-      if (!qFold) return true
-      const text = Object.values(r)
-        .map(v => (v && typeof v === 'object' ? '' : String(v ?? '')))
-        .join(' ')
-      return fold(text).includes(qFold)
-    })
+    if (!isSoTien) {
+      const phatSinh = rawRows.filter(r => {
+        if (r._b || r._t) return false
+        if (!qFold) return true
+        const text = Object.values(r)
+          .map(v => (v && typeof v === 'object' ? '' : String(v ?? '')))
+          .join(' ')
+        return fold(text).includes(qFold)
+      })
 
-    const map = new Map<string, { ngay: string; tonCuoiNgay: number; ds: Row[] }>()
-    for (const r of phatSinh) {
+      const map = new Map<string, { ngay: string; tonDauNgay: number; tonCuoiNgay: number; ds: Row[] }>()
+      for (const r of phatSinh) {
+        const ngay = String(r.ngay ?? '') || 'Chưa rõ ngày'
+        const ton = Number(r.du ?? r.cuoi ?? r.no ?? 0)
+        const nhom = map.get(ngay)
+        if (nhom) {
+          nhom.ds.push(r)
+          nhom.tonCuoiNgay = ton
+        } else {
+          map.set(ngay, { ngay, tonDauNgay: 0, tonCuoiNgay: ton, ds: [r] })
+        }
+      }
+      return Array.from(map.values())
+    }
+
+    // Sổ quỹ tiền mặt và Sổ tiền gửi ngân hàng (T433):
+    // Tồn đầu ngày = tồn cuối ngày trước (ngày đầu kỳ = Tồn đầu kỳ).
+    // Tồn cuối ngày = tồn đầu ngày + thu − chi trong ngày.
+    const map = new Map<string, { ngay: string; thu: number; chi: number; ds: Row[] }>()
+    for (const r of rawRows) {
+      if (r._b || r._t) continue
       const ngay = String(r.ngay ?? '') || 'Chưa rõ ngày'
-      const ton = Number(r.du ?? r.cuoi ?? r.no ?? 0)
+      const tienThu = Number(r.no ?? (r.thu ? r.no : r.ps) ?? 0)
+      const tienChi = Number(r.co ?? (r.chi ? r.co : r.tra || r.tt) ?? 0)
       const nhom = map.get(ngay)
       if (nhom) {
+        nhom.thu += tienThu
+        nhom.chi += tienChi
         nhom.ds.push(r)
-        nhom.tonCuoiNgay = ton
       } else {
-        map.set(ngay, { ngay, tonCuoiNgay: ton, ds: [r] })
+        map.set(ngay, { ngay, thu: tienThu, chi: tienChi, ds: [r] })
       }
     }
-    return Array.from(map.values())
-  }, [rawRows, q])
+
+    let tonHienTai = soDau
+    const ketQua: { ngay: string; tonDauNgay: number; tonCuoiNgay: number; ds: Row[] }[] = []
+
+    for (const nhom of map.values()) {
+      const tonDauNgay = tonHienTai
+      const tonCuoiNgay = tonDauNgay + nhom.thu - nhom.chi
+      tonHienTai = tonCuoiNgay
+
+      const dsHienThi = qFold
+        ? nhom.ds.filter(r => {
+            const text = Object.values(r)
+              .map(v => (v && typeof v === 'object' ? '' : String(v ?? '')))
+              .join(' ')
+            return fold(text).includes(qFold)
+          })
+        : nhom.ds
+
+      if (dsHienThi.length > 0) {
+        ketQua.push({
+          ngay: nhom.ngay,
+          tonDauNgay,
+          tonCuoiNgay,
+          ds: dsHienThi,
+        })
+      }
+    }
+
+    return ketQua
+  }, [rawRows, q, isSoTien, soDau])
 
   const nhanDau = isSoCongNo ? 'Tồn đầu' : 'Tồn đầu'
   const nhanGiua = isSoCongNo ? 'Phát sinh Nợ / Có' : 'Thu / Chi'
@@ -413,24 +464,45 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
           </div>
         ) : (
           <div className="m-so-dong">
-            {/* Thẻ tổng ở đầu: 3 ô */}
-          <div className="m-so-dong-tong">
-            <div className="m-so-dong-tong-o">
-              <span className="m-so-dong-tong-nhan">{nhanDau}</span>
-              <b className="m-so-dong-tong-so m-so-dong-num">{rutGonSo(soDau)}</b>
+            {/* Thẻ tổng ở đầu: 4 ô cho Sổ quỹ / Sổ ngân hàng (T433), 3 ô cho sổ khác */}
+          {isSoTien ? (
+            <div className="m-so-dong-tong m-t433-tong-4o">
+              <div className="m-so-dong-tong-o">
+                <span className="m-so-dong-tong-nhan">Tồn đầu</span>
+                <b className="m-so-dong-tong-so m-so-dong-num">{rutGonSo(soDau)}</b>
+              </div>
+              <div className="m-so-dong-tong-o">
+                <span className="m-so-dong-tong-nhan">Thu</span>
+                <b className="m-so-dong-tong-so m-so-dong-duong m-so-dong-num">{rutGonSo(tongThu)}</b>
+              </div>
+              <div className="m-so-dong-tong-o">
+                <span className="m-so-dong-tong-nhan">Chi</span>
+                <b className="m-so-dong-tong-so m-so-dong-am m-so-dong-num">{rutGonSo(tongChi)}</b>
+              </div>
+              <div className="m-so-dong-tong-o">
+                <span className="m-so-dong-tong-nhan">Tồn cuối</span>
+                <b className="m-so-dong-tong-so m-so-dong-num">{rutGonSo(soCuoi)}</b>
+              </div>
             </div>
-            <div className="m-so-dong-tong-o">
-              <span className="m-so-dong-tong-nhan">{nhanGiua}</span>
-              <b className="m-so-dong-tong-so m-so-dong-num">
-                <span className="m-so-dong-duong">{rutGonSo(tongThu)}</span>{' '}
-                <span className="m-so-dong-am">{rutGonSo(tongChi)}</span>
-              </b>
+          ) : (
+            <div className="m-so-dong-tong">
+              <div className="m-so-dong-tong-o">
+                <span className="m-so-dong-tong-nhan">{nhanDau}</span>
+                <b className="m-so-dong-tong-so m-so-dong-num">{rutGonSo(soDau)}</b>
+              </div>
+              <div className="m-so-dong-tong-o">
+                <span className="m-so-dong-tong-nhan">{nhanGiua}</span>
+                <b className="m-so-dong-tong-so m-so-dong-num">
+                  <span className="m-so-dong-duong">{rutGonSo(tongThu)}</span>{' '}
+                  <span className="m-so-dong-am">{rutGonSo(tongChi)}</span>
+                </b>
+              </div>
+              <div className="m-so-dong-tong-o">
+                <span className="m-so-dong-tong-nhan">{nhanCuoi}</span>
+                <b className="m-so-dong-tong-so m-so-dong-num">{rutGonSo(soCuoi)}</b>
+              </div>
             </div>
-            <div className="m-so-dong-tong-o">
-              <span className="m-so-dong-tong-nhan">{nhanCuoi}</span>
-              <b className="m-so-dong-tong-so m-so-dong-num">{rutGonSo(soCuoi)}</b>
-            </div>
-          </div>
+          )}
 
           {/* Danh sách nhóm theo ngày */}
           {dsNhomNgay.length === 0 ? (
@@ -440,12 +512,21 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
           ) : (
             dsNhomNgay.map(nhom => (
               <div key={nhom.ngay}>
-                <div className="m-so-dong-ngay">
-                  <span className="m-so-dong-ngay-chu">{nhom.ngay}</span>
-                  <span className="m-so-dong-ngay-ton m-so-dong-num">
-                    {isSoCongNo ? 'Dư ' : 'Tồn '}{money(nhom.tonCuoiNgay)}
-                  </span>
-                </div>
+                {isSoTien ? (
+                  <div className="m-so-dong-ngay m-t433-nhom-dau">
+                    <span className="m-so-dong-ngay-chu">{nhom.ngay}</span>
+                    <span className="m-so-dong-ngay-ton m-so-dong-num">
+                      Tồn đầu ngày <span className="m-t433-dau-so">{money(nhom.tonDauNgay)}</span>
+                    </span>
+                  </div>
+                ) : (
+                  <div className="m-so-dong-ngay">
+                    <span className="m-so-dong-ngay-chu">{nhom.ngay}</span>
+                    <span className="m-so-dong-ngay-ton m-so-dong-num">
+                      {isSoCongNo ? 'Dư ' : 'Tồn '}{money(nhom.tonCuoiNgay)}
+                    </span>
+                  </div>
+                )}
                 <div className="m-so-dong-the">
                   {nhom.ds.map((r, i) => {
                     const dg = String(r.dg || r.dienGiai || r.ten || 'Chứng từ')
@@ -496,6 +577,12 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
                       </div>
                     )
                   })}
+                  {isSoTien && (
+                    <div className="m-t433-cuoi-ngay">
+                      <span className="m-t433-cuoi-nhan">Tồn cuối ngày</span>
+                      <b className="m-t433-cuoi-so m-so-dong-num">{money(nhom.tonCuoiNgay)}</b>
+                    </div>
+                  )}
                 </div>
               </div>
             ))

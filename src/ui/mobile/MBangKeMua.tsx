@@ -1,13 +1,14 @@
-// Báo cáo Bảng kê mua hàng theo hàng hoá trên điện thoại gom nhóm (T403)
-// Theo phần 1 của backup/mock-chot-T403-T406.html (Trum đã chốt)
-import React, { useMemo, useState, type FC } from 'react'
-import { Link } from 'react-router-dom'
+// Báo cáo Bảng kê mua hàng điện thoại mẫu D (T445)
+import React, { useEffect, useMemo, useState, type FC } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 import type { Row } from '../../modules/types'
 import { money, soLuong } from '../format'
-import { CUA_HANG, NCC, NVL } from '../../data/mock'
+import { CUA_HANG } from '../../data/mock'
 import { PHIEU_MUA } from '../../modules/mua-hang/bao-cao'
 import { chungTu, ttNghiepVu } from '../generic/gen'
 import { duongPhieu } from '../generic/SoChungTu'
+import { cuaHangHienTai, useSession } from '../../app/session'
+import { useTrangThaiLoc } from '../bao-cao/tuyChinhBC'
 
 export interface MBangKeMuaProps {
   rows: Row[]
@@ -26,6 +27,31 @@ function layDuongDanPhieu(so: unknown): string | undefined {
   return to
 }
 
+const CAC_THU = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy']
+
+function dinhDangThuNgay(chuoiNgay: string): string {
+  const parts = chuoiNgay.split('/')
+  if (parts.length !== 3) return chuoiNgay
+  const d = Number(parts[0])
+  const m = Number(parts[1]) - 1
+  const y = Number(parts[2])
+  const dt = new Date(y, m, d)
+  if (isNaN(dt.getTime())) return chuoiNgay
+  const thu = CAC_THU[dt.getDay()]
+  const ngay = String(d).padStart(2, '0')
+  const thang = String(m + 1).padStart(2, '0')
+  return `${thu}, ${ngay}/${thang}/${y}`
+}
+
+function parseNgayTs(chuoiNgay: string): number {
+  const parts = chuoiNgay.split('/')
+  if (parts.length !== 3) return 0
+  const d = Number(parts[0])
+  const m = Number(parts[1]) - 1
+  const y = Number(parts[2])
+  return new Date(y, m, d).getTime()
+}
+
 interface DongHangChuan {
   so: string
   ngay: string
@@ -40,69 +66,46 @@ interface DongHangChuan {
   truocThue: number
   thue: number
   tong: number
-  ts?: number
-  thueNhan: string
-  soHd?: string
-  kyHieuHd?: string
-  kho?: string
 }
 
 interface PhieuMuaGroup {
   so: string
   ngay: string
   doiTuong: string
-  soHd?: string
-  kyHieuHd?: string
-  kho?: string
   tongTienHang: number
   tongGiamGia: number
   tongThue: number
   tongGomThue: number
+  ttThanhToan: string
   dong: DongHangChuan[]
 }
 
-interface NccGroup {
-  ten: string
-  mst: string
-  tongTienHang: number
-  tongGiamGia: number
-  tongThue: number
-  tongGomThue: number
-  soDong: number
+interface NhomNgay {
+  ngay: string
+  ngayThu: string
+  ngayTs: number
+  tongTien: number
   phieuList: PhieuMuaGroup[]
 }
 
-interface MatHangGroup {
-  ma: string
-  ten: string
-  dvt: string
-  tongSl: number
-  tongTienHang: number
-  tongGiamGia: number
-  tongThue: number
-  tongGomThue: number
-  giaTb: number
-  dongList: DongHangChuan[]
-}
-
 export const MBangKeMua: FC<MBangKeMuaProps> = ({ rows }) => {
-  const [tab, setTab] = useState<'ncc' | 'hang' | 'phieu'>('ncc')
+  const path = useLocation().pathname
+  const { daXem } = useTrangThaiLoc(path)
+  const { s } = useSession()
+
   const [phieuMo, setPhieuMo] = useState<Record<string, boolean>>({})
 
-  // Bảng tra cứu bổ sung thông tin phiếu (kho, hoá đơn, ký hiệu)
+  // Bảng tra cứu bổ sung thông tin phiếu
   const mapPhieuExtra = useMemo(() => {
-    const map = new Map<string, { kho: string; soHd: string; kyHieuHd: string }>()
+    const map = new Map<string, { ttTien: 'chua' | 'mot' | 'da'; cn: string }>()
     try {
       const dsPhieu = chungTu(PHIEU_MUA, '4.1.1')
       for (const p of dsPhieu) {
         const so = String(p.so || '')
         const nv = ttNghiepVu(p)
-        const ch = CUA_HANG.find(c => c.ten === p.cn)
-        const khoTen = String(p._kho || ch?.kho[0] || (p.cn ? `Kho ${p.cn}` : ''))
         map.set(so, {
-          kho: khoTen ? (khoTen.startsWith('Kho') ? khoTen : `Kho ${khoTen}`) : '',
-          soHd: nv.soHd,
-          kyHieuHd: nv.kyHieuHd,
+          ttTien: nv.ttTien,
+          cn: String(p.cn || ''),
         })
       }
     } catch {
@@ -130,22 +133,6 @@ export const MBangKeMua: FC<MBangKeMuaProps> = ({ rows }) => {
         const thue = Number(r.thue) || 0
         const tong = Number(r.tong ?? (truocThue + thue)) || 0
 
-        // Xác định thuế suất
-        let ts = typeof r.ts === 'number' ? r.ts : undefined
-        if (ts === undefined && thue > 0 && truocThue > 0) {
-          ts = Math.round((thue / truocThue) * 100)
-        }
-        if (ts === undefined) {
-          const nvl = NVL.find(x => x.ma === ma)
-          if (nvl) ts = nvl.ts
-        }
-        const thueNhan = thue > 0 ? (ts ? `Thuế GTGT ${ts}%` : 'Thuế GTGT') : 'Thuế GTGT không chịu thuế'
-
-        const extra = mapPhieuExtra.get(so)
-        const soHd = String(r.soHd || r._soHd || extra?.soHd || '')
-        const kyHieuHd = String(r.kyHieuHd || r._kyHieuHd || extra?.kyHieuHd || '')
-        const kho = String(r.kho || r._kho || extra?.kho || '')
-
         return {
           so,
           ngay,
@@ -160,118 +147,9 @@ export const MBangKeMua: FC<MBangKeMuaProps> = ({ rows }) => {
           truocThue,
           thue,
           tong,
-          ts,
-          thueNhan,
-          soHd,
-          kyHieuHd,
-          kho,
         }
       })
-  }, [rows, mapPhieuExtra])
-
-  // Khối tổng chung
-  const tongTienHang = useMemo(() => dsDongChuan.reduce((sum, d) => sum + d.thanhTien, 0), [dsDongChuan])
-  const tongGiamGia = useMemo(() => dsDongChuan.reduce((sum, d) => sum + d.ck, 0), [dsDongChuan])
-  const tongThue = useMemo(() => dsDongChuan.reduce((sum, d) => sum + d.thue, 0), [dsDongChuan])
-  const tongGomThue = useMemo(() => tongTienHang - tongGiamGia + tongThue, [tongTienHang, tongGiamGia, tongThue])
-
-  const soLuongPhieu = useMemo(() => new Set(dsDongChuan.map(d => d.so)).size, [dsDongChuan])
-  const soLuongNcc = useMemo(() => new Set(dsDongChuan.map(d => d.doiTuong)).size, [dsDongChuan])
-  const soLuongDong = dsDongChuan.length
-
-  // Gom theo Nhà cung cấp
-  const dsNccGroup = useMemo<NccGroup[]>(() => {
-    const nccMap = new Map<string, { dong: DongHangChuan[]; phieuMap: Map<string, DongHangChuan[]> }>()
-    for (const d of dsDongChuan) {
-      let g = nccMap.get(d.doiTuong)
-      if (!g) {
-        g = { dong: [], phieuMap: new Map() }
-        nccMap.set(d.doiTuong, g)
-      }
-      g.dong.push(d)
-      let pList = g.phieuMap.get(d.so)
-      if (!pList) {
-        pList = []
-        g.phieuMap.set(d.so, pList)
-      }
-      pList.push(d)
-    }
-
-    return Array.from(nccMap.entries()).map(([ten, g]) => {
-      const nccItem = NCC.find(n => n.ten === ten)
-      const mst = nccItem?.mst || ''
-      const tongTien = g.dong.reduce((s, x) => s + x.thanhTien, 0)
-      const tongGiam = g.dong.reduce((s, x) => s + x.ck, 0)
-      const tongVat = g.dong.reduce((s, x) => s + x.thue, 0)
-      const tongGom = tongTien - tongGiam + tongVat
-
-      const phieuList: PhieuMuaGroup[] = Array.from(g.phieuMap.entries()).map(([so, pDong]) => {
-        const d0 = pDong[0]
-        const pTien = pDong.reduce((s, x) => s + x.thanhTien, 0)
-        const pGiam = pDong.reduce((s, x) => s + x.ck, 0)
-        const pVat = pDong.reduce((s, x) => s + x.thue, 0)
-        const pGom = pTien - pGiam + pVat
-        return {
-          so,
-          ngay: d0.ngay,
-          doiTuong: d0.doiTuong,
-          soHd: d0.soHd,
-          kyHieuHd: d0.kyHieuHd,
-          kho: d0.kho,
-          tongTienHang: pTien,
-          tongGiamGia: pGiam,
-          tongThue: pVat,
-          tongGomThue: pGom,
-          dong: pDong,
-        }
-      })
-
-      return {
-        ten,
-        mst,
-        tongTienHang: tongTien,
-        tongGiamGia: tongGiam,
-        tongThue: tongVat,
-        tongGomThue: tongGom,
-        soDong: g.dong.length,
-        phieuList,
-      }
-    })
-  }, [dsDongChuan])
-
-  // Gom theo Mặt hàng
-  const dsMatHangGroup = useMemo<MatHangGroup[]>(() => {
-    const mhMap = new Map<string, DongHangChuan[]>()
-    for (const d of dsDongChuan) {
-      const khoa = d.ma || d.ten
-      const list = mhMap.get(khoa) ?? []
-      list.push(d)
-      mhMap.set(khoa, list)
-    }
-
-    return Array.from(mhMap.values()).map(dongList => {
-      const d0 = dongList[0]
-      const tongSl = dongList.reduce((s, x) => s + x.sl, 0)
-      const tongTien = dongList.reduce((s, x) => s + x.thanhTien, 0)
-      const tongGiam = dongList.reduce((s, x) => s + x.ck, 0)
-      const tongVat = dongList.reduce((s, x) => s + x.thue, 0)
-      const tongGom = tongTien - tongGiam + tongVat
-      const giaTb = tongSl > 0 ? Math.round(tongTien / tongSl) : 0
-
-      return {
-        ma: d0.ma,
-        ten: d0.ten,
-        dvt: d0.dvt,
-        tongSl,
-        tongTienHang: tongTien,
-        tongGiamGia: tongGiam,
-        tongThue: tongVat,
-        tongGomThue: tongGom,
-        giaTb,
-        dongList,
-      }
-    })
-  }, [dsDongChuan])
+  }, [rows])
 
   // Gom theo Phiếu
   const dsPhieuGroup = useMemo<PhieuMuaGroup[]>(() => {
@@ -288,274 +166,205 @@ export const MBangKeMua: FC<MBangKeMuaProps> = ({ rows }) => {
       const pGiam = pDong.reduce((s, x) => s + x.ck, 0)
       const pVat = pDong.reduce((s, x) => s + x.thue, 0)
       const pGom = pTien - pGiam + pVat
+      const extra = mapPhieuExtra.get(so)
+      const ttThanhToan = extra?.ttTien === 'da' ? 'Đã thanh toán' : 'Còn nợ'
+
       return {
         so,
         ngay: d0.ngay,
         doiTuong: d0.doiTuong,
-        soHd: d0.soHd,
-        kyHieuHd: d0.kyHieuHd,
-        kho: d0.kho,
         tongTienHang: pTien,
         tongGiamGia: pGiam,
         tongThue: pVat,
         tongGomThue: pGom,
+        ttThanhToan,
         dong: pDong,
       }
     })
-  }, [dsDongChuan])
+  }, [dsDongChuan, mapPhieuExtra])
 
-  const togglePhieu = (so: string) => {
-    setPhieuMo(prev => ({ ...prev, [so]: !prev[so] }))
+  // Gom theo Ngày, ngày mới trước
+  const dsNhomNgay = useMemo<NhomNgay[]>(() => {
+    const map = new Map<string, PhieuMuaGroup[]>()
+    for (const p of dsPhieuGroup) {
+      const list = map.get(p.ngay) ?? []
+      list.push(p)
+      map.set(p.ngay, list)
+    }
+
+    const nhomList: NhomNgay[] = Array.from(map.entries()).map(([ngay, pList]) => {
+      const tongTien = pList.reduce((s, x) => s + x.tongGomThue, 0)
+      return {
+        ngay,
+        ngayThu: dinhDangThuNgay(ngay),
+        ngayTs: parseNgayTs(ngay),
+        tongTien,
+        phieuList: pList,
+      }
+    })
+
+    nhomList.sort((a, b) => b.ngayTs - a.ngayTs)
+    return nhomList
+  }, [dsPhieuGroup])
+
+  // Tổng tiền mọi phiếu
+  const tongGomThue = useMemo(() => dsPhieuGroup.reduce((s, x) => s + x.tongGomThue, 0), [dsPhieuGroup])
+  const soLuongPhieu = dsPhieuGroup.length
+
+  // Xác định nhãn tháng kỳ
+  const tenThang = useMemo(() => {
+    if (daXem?.ky) return `Tháng ${daXem.ky}/2026`
+    if (dsDongChuan.length > 0) {
+      const parts = dsDongChuan[0].ngay.split('/')
+      if (parts.length === 3) return `Tháng ${Number(parts[1])}/${parts[2]}`
+    }
+    return 'Tháng 9/2026'
+  }, [daXem?.ky, dsDongChuan])
+
+  // Xác định nhãn cửa hàng
+  const tenCn = useMemo(() => {
+    const cn = cuaHangHienTai(s)
+    if (cn) return cn.ten
+    if (dsDongChuan.length > 0) {
+      const cns = new Set<string>()
+      for (const d of dsDongChuan) {
+        const ex = mapPhieuExtra.get(d.so)
+        if (ex?.cn) cns.add(ex.cn)
+      }
+      if (cns.size === 1) {
+        return Array.from(cns)[0]
+      }
+    }
+    return 'Tất cả cửa hàng'
+  }, [s.cuaHang, dsDongChuan, mapPhieuExtra])
+
+  // Cập nhật tiêu đề và dòng phụ lên thanh trên
+  const dongPhu = `${tenThang} · ${tenCn} · ${soLuongPhieu} phiếu`
+
+  useEffect(() => {
+    const el = document.querySelector<HTMLElement>('.m-thanh-tren-tieu-de')
+    if (!el) return
+    const textGoc = el.textContent
+    el.innerHTML = `
+      <div class="m-bkm-head-title">
+        <span class="m-bkm-head-ten">Bảng kê mua hàng</span>
+        <span class="m-bkm-head-phu">${dongPhu}</span>
+      </div>
+    `
+    return () => {
+      if (el && textGoc) el.textContent = textGoc
+    }
+  }, [dongPhu])
+
+  const togglePhieu = (so: string, macDinhMo: boolean) => {
+    setPhieuMo(prev => {
+      const hienTai = prev[so] !== undefined ? prev[so] : macDinhMo
+      return { ...prev, [so]: !hienTai }
+    })
   }
 
-  // Khối vẽ chi tiết một phiếu
-  const renderChiTietPhieu = (p: PhieuMuaGroup) => (
-    <div key={p.so} className="ph">
-      <div className="ph-dau" onClick={() => togglePhieu(p.so)} style={{ cursor: 'pointer' }}>
-        <Link
-          to={layDuongDanPhieu(p.so) || '/app/mua-hang/4-1-1'}
-          className="ma"
-          onClick={e => e.stopPropagation()}
-        >
-          Phiếu {p.so} ›
-        </Link>
-        <span className="ph-ngay num">{p.ngay}</span>
-        <span className="ph-hd">
-          {p.soHd ? `Hoá đơn ${p.soHd}${p.kyHieuHd ? ` · ký hiệu ${p.kyHieuHd}` : ''}` : ''}
-        </span>
-        <span className="ph-hd2">{p.kho || ''}</span>
-      </div>
-
-      {p.dong.map((d, dIdx) => (
-        <div key={`${p.so}-${d.ma || dIdx}`} className="mh m-bcd-item">
-          <div className="mh-ten">
-            <b>
-              <i>{dIdx + 1}.</i>
-              {d.ten}
-            </b>
-            <strong className="num">{money(d.tong)}</strong>
-            <span className="mh-ma">
-              {d.ma}
-              {d.dvt ? ` · ${d.dvt}` : ''}
+  return (
+    <div className="m-bkm-d">
+      {/* Danh sách gom theo ngày */}
+      {dsNhomNgay.map((nhom, nIdx) => (
+        <div key={nhom.ngay} className="m-bkm-nhom-ngay">
+          {/* Đầu nhóm: Thứ, ngày tháng bên trái; n phiếu · tổng tiền ngày bên phải */}
+          <div className="m-bkm-ngay-head">
+            <span className="m-bkm-ngay-ten">{nhom.ngayThu}</span>
+            <span className="m-bkm-ngay-phai">
+              {nhom.phieuList.length} phiếu · <b className="m-bkm-ngay-tong num">{money(nhom.tongTien)}</b>
             </span>
           </div>
-          <div className="kv">
-            <div>
-              <span>Số lượng × Đơn giá</span>
-              <b className="num">{soLuong(d.sl)} × {money(d.gia)}</b>
-            </div>
-            <div>
-              <span>Tiền hàng</span>
-              <b className="num">{money(d.thanhTien)}</b>
-            </div>
-            <div className={d.ck > 0 ? 'am' : 'khong'}>
-              <span>Giảm giá</span>
-              <b className="num">{d.ck > 0 ? `(${money(d.ck)})` : '–'}</b>
-            </div>
-            <div className={d.thue > 0 ? '' : 'khong'}>
-              <span>{d.thueNhan}</span>
-              <b className="num">{d.thue > 0 ? money(d.thue) : '–'}</b>
-            </div>
+
+          {/* Các thẻ phiếu trong ngày */}
+          <div className="m-bkm-ds-phieu">
+            {nhom.phieuList.map((p, pIdx) => {
+              const laMacDinhBung = nIdx === 0 && pIdx === 0
+              const isBung = phieuMo[p.so] !== undefined ? phieuMo[p.so] : laMacDinhBung
+
+              return (
+                <div
+                  key={p.so}
+                  className="m-bkm-card"
+                  onClick={() => togglePhieu(p.so, laMacDinhBung)}
+                >
+                  {/* Hàng 1: Số phiếu bên trái, Tổng tiền + Mũi tên bên phải */}
+                  <div className="m-bkm-card-h1">
+                    <Link
+                      to={layDuongDanPhieu(p.so) || '/app/mua-hang/4-1-1'}
+                      className="m-bkm-so-phieu"
+                      onClick={e => e.stopPropagation()}
+                    >
+                      {p.so}
+                    </Link>
+                    <div className="m-bkm-card-h1-phai">
+                      <span className="m-bkm-card-tong num">{money(p.tongGomThue)}</span>
+                      <span className="m-bkm-card-chev">
+                        {isBung ? (
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="18 15 12 9 6 15" />
+                          </svg>
+                        ) : (
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="6 9 12 15 18 9" />
+                          </svg>
+                        )}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Hàng 2: Tên nhà cung cấp hiện đủ, cho xuống dòng, không cắt "..." */}
+                  <div className="m-bkm-ncc-ten">
+                    {p.doiTuong}
+                  </div>
+
+                  {/* Chi tiết từng mặt hàng khi bung */}
+                  {isBung && (
+                    <div className="m-bkm-chi-tiet">
+                      <div className="m-bkm-ds-hang">
+                        {p.dong.map((d, dIdx) => (
+                          <div key={`${p.so}-${d.ma || dIdx}`} className="m-bkm-hang-item">
+                            <div className="m-bkm-hang-top">
+                              <span className="m-bkm-hang-ten">{d.ten}</span>
+                              <span className="m-bkm-hang-tien num">{money(d.thanhTien)}</span>
+                            </div>
+                            <div className="m-bkm-hang-sub">
+                              {soLuong(d.sl)} {d.dvt} × {money(d.gia)}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Cuối phần bung: Hàng ... VAT ... bên trái, Trạng thái thanh toán bên phải */}
+                      <div className="m-bkm-ct-chan">
+                        <div className="m-bkm-ct-chan-trai">
+                          <span>Hàng <b className="num">{money(p.tongTienHang)}</b></span>
+                          <span>VAT <b className="num">{money(p.tongThue)}</b></span>
+                        </div>
+                        <div className="m-bkm-ct-chan-phai">
+                          <span className={`m-bkm-tt-badge ${p.ttThanhToan === 'Còn nợ' ? 'no' : 'da'}`}>
+                            {p.ttThanhToan}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )
+            })}
           </div>
         </div>
       ))}
 
-      <div className="ph-chan">
-        <div className="tk-dong">
-          <span>Cộng tiền hàng</span>
-          <span className="num">{money(p.tongTienHang)}</span>
+      {/* Tổng ghim đáy màn */}
+      <div className="m-bkm-chan">
+        <div className="m-bkm-chan-trai">
+          <div className="m-bkm-chan-nhan">Tổng tiền mua hàng</div>
+          <div className="m-bkm-chan-phu">gồm thuế GTGT</div>
         </div>
-        <div className="tk-dong">
-          <span>Giảm giá</span>
-          <span className={`num ${p.tongGiamGia > 0 ? 'am' : ''}`}>
-            {p.tongGiamGia > 0 ? `(${money(p.tongGiamGia)})` : '–'}
-          </span>
+        <div className="m-bkm-chan-phai">
+          <span className="m-bkm-chan-tien num">{money(tongGomThue)} đ</span>
         </div>
-        <div className="tk-dong">
-          <span>Thuế GTGT</span>
-          <span className="num">{p.tongThue > 0 ? money(p.tongThue) : '–'}</span>
-        </div>
-        <div className="tk-tong">
-          <span>Tổng thanh toán phiếu</span>
-          <b className="num">{money(p.tongGomThue)}</b>
-        </div>
-      </div>
-    </div>
-  )
-
-  return (
-    <div className="m-bkm">
-      {/* Khối tổng hợp đầu trang */}
-      <div className="tk">
-        <div className="tk-dong">
-          <span>Tiền hàng</span>
-          <span className="num">{money(tongTienHang)}</span>
-        </div>
-        <div className="tk-dong">
-          <span>Giảm giá</span>
-          <span className={`num ${tongGiamGia > 0 ? 'am' : ''}`}>
-            {tongGiamGia > 0 ? `(${money(tongGiamGia)})` : '–'}
-          </span>
-        </div>
-        <div className="tk-dong">
-          <span>Thuế GTGT</span>
-          <span className="num">{money(tongThue)}</span>
-        </div>
-        <div className="tk-tong">
-          <span>Tổng tiền mua hàng (gồm thuế)</span>
-          <b className="num">{money(tongGomThue)}</b>
-        </div>
-        <div className="tk-phu">
-          {soLuongPhieu} phiếu mua · {soLuongNcc} nhà cung cấp · {soLuongDong} dòng hàng · đơn vị: đồng
-        </div>
-      </div>
-
-      {/* Thanh tab gom nhóm */}
-      <div className="tab">
-        <span className={tab === 'ncc' ? 'on' : ''} onClick={() => setTab('ncc')}>
-          Nhà cung cấp
-        </span>
-        <span className={tab === 'hang' ? 'on' : ''} onClick={() => setTab('hang')}>
-          Mặt hàng
-        </span>
-        <span className={tab === 'phieu' ? 'on' : ''} onClick={() => setTab('phieu')}>
-          Phiếu
-        </span>
-      </div>
-
-      {/* Danh sách dữ liệu theo tab */}
-      <div className="ds">
-        {/* Tab 1: Gom Nhà cung cấp */}
-        {tab === 'ncc' &&
-          dsNccGroup.map((ncc, nccIdx) => (
-            <details key={ncc.ten} className="ncc m-bcd-item" open={nccIdx === 0}>
-              <summary>
-                <span className="ncc-ten">{ncc.ten}</span>
-                <span className="ncc-tien num">{money(ncc.tongGomThue)}</span>
-                <span className="ncc-meta">
-                  {ncc.mst ? `MST ${ncc.mst} · ` : ''}
-                  {ncc.phieuList.length} phiếu · {ncc.soDong} dòng
-                </span>
-                <span className="ncc-meta2 num">
-                  {ncc.tongThue > 0
-                    ? `VAT ${money(ncc.tongThue)}`
-                    : ncc.tongGiamGia > 0
-                    ? `Giảm (${money(ncc.tongGiamGia)})`
-                    : 'không VAT'}
-                </span>
-              </summary>
-
-              {ncc.phieuList.map((p, pIdx) => {
-                const laMacDinhBung = nccIdx === 0 && pIdx === 0
-                const isBung = phieuMo[p.so] !== undefined ? phieuMo[p.so] : laMacDinhBung
-
-                if (isBung) {
-                  return renderChiTietPhieu(p)
-                }
-
-                return (
-                  <div key={p.so} className="ph-gon" onClick={() => togglePhieu(p.so)}>
-                    <Link
-                      to={layDuongDanPhieu(p.so) || '/app/mua-hang/4-1-1'}
-                      className="ma"
-                      onClick={e => e.stopPropagation()}
-                    >
-                      Phiếu {p.so} ›
-                    </Link>
-                    <b className="num">{money(p.tongGomThue)}</b>
-                    <span className="ph-hd">
-                      {p.ngay} · {p.dong.length} dòng · {p.tongThue > 0 ? `VAT ${money(p.tongThue)}` : 'không VAT'}
-                    </span>
-                    <span></span>
-                  </div>
-                )
-              })}
-            </details>
-          ))}
-
-        {/* Tab 2: Gom Mặt hàng */}
-        {tab === 'hang' &&
-          dsMatHangGroup.map((mh, mhIdx) => (
-            <details key={mh.ma || mh.ten} className="ncc m-bcd-item" open={mhIdx === 0}>
-              <summary>
-                <span className="ncc-ten">{mh.ten}</span>
-                <span className="ncc-tien num">{money(mh.tongGomThue)}</span>
-                <span className="ncc-meta">
-                  {mh.ma}
-                  {mh.dvt ? ` · ${mh.dvt}` : ''} · Tổng SL: {soLuong(mh.tongSl)}
-                </span>
-                <span className="ncc-meta2 num">Giá TB {money(mh.giaTb)}</span>
-              </summary>
-
-              {mh.dongList.map((d, dIdx) => (
-                <div key={`${d.so}-${dIdx}`} className="ph">
-                  <div className="ph-dau">
-                    <Link to={layDuongDanPhieu(d.so) || '/app/mua-hang/4-1-1'} className="ma">
-                      Phiếu {d.so} ›
-                    </Link>
-                    <span className="ph-ngay num">{d.ngay}</span>
-                    <span className="ph-hd">{d.doiTuong}</span>
-                    <span className="ph-hd2">{d.kho || ''}</span>
-                  </div>
-                  <div className="mh m-bcd-item">
-                    <div className="mh-ten">
-                      <b>
-                        <i>{dIdx + 1}.</i>
-                        {d.ten}
-                      </b>
-                      <strong className="num">{money(d.tong)}</strong>
-                      <span className="mh-ma">
-                        {d.ma}
-                        {d.dvt ? ` · ${d.dvt}` : ''}
-                      </span>
-                    </div>
-                    <div className="kv">
-                      <div>
-                        <span>Số lượng × Đơn giá</span>
-                        <b className="num">{soLuong(d.sl)} × {money(d.gia)}</b>
-                      </div>
-                      <div>
-                        <span>Tiền hàng</span>
-                        <b className="num">{money(d.thanhTien)}</b>
-                      </div>
-                      <div className={d.ck > 0 ? 'am' : 'khong'}>
-                        <span>Giảm giá</span>
-                        <b className="num">{d.ck > 0 ? `(${money(d.ck)})` : '–'}</b>
-                      </div>
-                      <div className={d.thue > 0 ? '' : 'khong'}>
-                        <span>{d.thueNhan}</span>
-                        <b className="num">{d.thue > 0 ? money(d.thue) : '–'}</b>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </details>
-          ))}
-
-        {/* Tab 3: Gom Phiếu */}
-        {tab === 'phieu' &&
-          dsPhieuGroup.map((p, pIdx) => (
-            <details key={p.so} className="ncc m-bcd-item" open={pIdx === 0}>
-              <summary>
-                <span className="ncc-ten">Phiếu {p.so}</span>
-                <span className="ncc-tien num">{money(p.tongGomThue)}</span>
-                <span className="ncc-meta">
-                  {p.ngay} · {p.doiTuong} · {p.dong.length} dòng
-                </span>
-                <span className="ncc-meta2 num">
-                  {p.tongThue > 0 ? `VAT ${money(p.tongThue)}` : 'không VAT'}
-                </span>
-              </summary>
-              {renderChiTietPhieu(p)}
-            </details>
-          ))}
-      </div>
-
-      {/* Thanh ghim chân màn hình */}
-      <div className="chan">
-        <span>Tổng tiền mua hàng (gồm thuế)</span>
-        <b className="num">{money(tongGomThue)} đ</b>
       </div>
     </div>
   )

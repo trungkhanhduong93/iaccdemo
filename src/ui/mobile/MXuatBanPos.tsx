@@ -299,7 +299,6 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
                   </span>
                 )}
               </b>
-              <span>{donDangXem.ngay} · {donDangXem.kenh} · {donDangXem.cn}</span>
             </div>
             <span className="m-pos-ct-x-placeholder" />
           </header>

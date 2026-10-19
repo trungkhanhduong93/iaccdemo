@@ -302,6 +302,8 @@ function BangS2e({ rows, qStr }: { rows: Row[]; qStr: string }) {
   )
 }
 
+const laDongTongCong = (dg?: unknown) => typeof dg === 'string' && /^tổng cộng[:\s]*$/i.test(dg.trim())
+
 // ── SỔ DOANH THU & CHI PHÍ: S1a, S2a, S2b, S2c ──
 function BangDoanhThu({ loaiSo, rows, qStr }: { loaiSo: LoaiSoTT152; rows: Row[]; qStr: string }) {
   // Lọc dòng theo q
@@ -324,7 +326,7 @@ function BangDoanhThu({ loaiSo, rows, qStr }: { loaiSo: LoaiSoTT152; rows: Row[]
     let dongCount = 0
 
     for (const r of rowsLoc) {
-      if (r._nhom || r._b || r._t) continue
+      if (r._nhom || r._b || r._t || laDongTongCong(r.dienGiai)) continue
       if (r.tien) t += Number(r.tien)
       if (r.ngay) ngSet.add(r.ngay)
       dongCount++
@@ -332,11 +334,11 @@ function BangDoanhThu({ loaiSo, rows, qStr }: { loaiSo: LoaiSoTT152; rows: Row[]
 
     // Nếu là S1a mà không có dòng thường riêng thì lấy tổng cộng
     if (t === 0) {
-      const rTong = rowsLoc.find(r => r._t || (typeof r.dienGiai === 'string' && r.dienGiai.includes('Tổng cộng')))
+      const rTong = rowsLoc.find(r => r._t || laDongTongCong(r.dienGiai))
       if (rTong?.tien) t = Number(rTong.tien)
     }
 
-    const cuoi = rowsLoc.filter(r => Boolean(r._t))
+    const cuoi = rowsLoc.filter(r => Boolean(r._t) && !laDongTongCong(r.dienGiai))
     return {
       tongTien: t,
       soNgay: ngSet.size || 30,
@@ -346,7 +348,7 @@ function BangDoanhThu({ loaiSo, rows, qStr }: { loaiSo: LoaiSoTT152; rows: Row[]
   }, [rowsLoc])
 
   return (
-    <div className="m-so-tt152">
+    <div className={`m-so-tt152 ${loaiSo === 's1a' ? 'm-so-s1a' : ''}`}>
       <div className="tom">
         <div>
           <small>{loaiSo === 's2c' ? 'Tổng doanh thu' : 'Tổng doanh thu'}</small>
@@ -373,7 +375,7 @@ function BangDoanhThu({ loaiSo, rows, qStr }: { loaiSo: LoaiSoTT152; rows: Row[]
           </thead>
           <tbody>
             {rowsLoc.map((r, i) => {
-              if (r._t) return null // Đưa xuống tfoot
+              if (r._t || laDongTongCong(r.dienGiai)) return null // Đưa xuống tfoot / bỏ khỏi thân bảng
 
               if (r._nhom) {
                 return (

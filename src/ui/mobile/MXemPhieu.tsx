@@ -543,23 +543,6 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
           )
         })}
 
-        {/* Thẻ tổng */}
-        <div className="m-t449-the-tong">
-          <div className="m-t449-tong-dong">
-            <span>Thành tiền mặt hàng:</span>
-            <span className="bold">{money(tongTien)} đ</span>
-          </div>
-          <div className="m-t449-gach" />
-          <div className="m-t449-tong-dong">
-            <span>Tổng tiền giảm giá:</span>
-            <span className="bold">{money(tongCk)} đ</span>
-          </div>
-          <div className="m-t449-gach" />
-          <div className="m-t449-tong-dong">
-            <span>Tổng tiền thuế:</span>
-            <span className="bold">{money(tongThue)} đ</span>
-          </div>
-        </div>
       </div>
     </div>
   )
@@ -578,7 +561,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
       </header>
 
       {/* ── NỘI DUNG CUỘN ── */}
-      <div className="m-pb-noi-dung">
+      <div className={`m-pb-noi-dung${nhomMb === 'mua' && tab === 'chitiet' ? ' m-pb-noi-dung-co-tong' : ''}`}>
         {/* Thông báo vừa lập phiếu chi thanh toán */}
         {phieuChiVuaLap && (
           <div className="tt-toast">
@@ -658,17 +641,23 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
               </div>
             </div>
           ) : laKk ? (
-            <div className="m-pb-luoi-stat">
-              <div className="m-pb-o-stat xanh">
-                <div className="m-pb-o-stat-nhan">Thừa thực tế</div>
-                <div className="m-pb-o-stat-so xanh">
-                  +{hangThua.length} hàng{slThua > 0 ? ` (+${soLuong(slThua)} ${dvtChinhKho})` : ''}
+            <div className="m-pb-luoi-stat m-t468-luoi-kk">
+              <div className="m-pb-o-stat do">
+                <div className="m-pb-o-stat-nhan">Thiếu</div>
+                <div className="m-pb-o-stat-so do">
+                  {hangThieu.length} mặt hàng
                 </div>
               </div>
-              <div className="m-pb-o-stat do">
-                <div className="m-pb-o-stat-nhan">Thiếu thực tế</div>
-                <div className="m-pb-o-stat-so do">
-                  -{hangThieu.length} hàng{slThieu > 0 ? ` (-${soLuong(slThieu)} ${dvtChinhKho})` : ''}
+              <div className="m-pb-o-stat xanh">
+                <div className="m-pb-o-stat-nhan">Thừa</div>
+                <div className="m-pb-o-stat-so xanh">
+                  {hangThua.length} mặt hàng
+                </div>
+              </div>
+              <div className="m-pb-o-stat khop">
+                <div className="m-pb-o-stat-nhan">Khớp</div>
+                <div className="m-pb-o-stat-so khop">
+                  {hangKhop.length} mặt hàng
                 </div>
               </div>
             </div>
@@ -1133,6 +1122,26 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
         )}
       </div>
 
+      {/* Khối tổng ghim ở đáy màn (chỉ ở tab Chi tiết của phiếu mua) (T468) */}
+      {nhomMb === 'mua' && tab === 'chitiet' && (
+        <div className="m-t449-the-tong m-t468-tong-ghim">
+          <div className="m-t449-tong-dong">
+            <span>Thành tiền mặt hàng:</span>
+            <span className="bold">{money(tongTien)} đ</span>
+          </div>
+          <div className="m-t449-gach" />
+          <div className="m-t449-tong-dong">
+            <span>Tổng tiền giảm giá:</span>
+            <span className="bold">{money(tongCk)} đ</span>
+          </div>
+          <div className="m-t449-gach" />
+          <div className="m-t449-tong-dong">
+            <span>Tổng tiền thuế:</span>
+            <span className="bold">{money(tongThue)} đ</span>
+          </div>
+        </div>
+      )}
+
       {/* ── CHÂN GHIM ĐÁY ── */}
       <div className="m-pb-day">
         <button
@@ -1273,6 +1282,7 @@ function MThanhToanSheet({
   ], [cuaHangNgan])
 
   const [quyChon, setQuyChon] = useState(dsQuy[0].ma)
+  const [moChonQuy, setMoChonQuy] = useState(false)
 
   useEffect(() => {
     if (mo) {
@@ -1282,13 +1292,21 @@ function MThanhToanSheet({
       setNgayChi('18/10/2026')
       setDienGiai(`Chi tiền mua hàng theo ${soCt}`)
       setQuyChon(dsQuy[0].ma)
+      setMoChonQuy(false)
     }
   }, [mo, conLai, soCt, dsQuy])
 
-  if (!mo) return null
-
   const dsLocTheoHt = dsQuy.filter(q => q.ht === hinhThuc)
-  const qHienTai = dsQuy.find(q => q.ma === quyChon) ?? dsLocTheoHt[0] ?? dsQuy[0]
+  const qHienTai = dsLocTheoHt.find(q => q.ma === quyChon) ?? dsLocTheoHt[0] ?? dsQuy[0]
+  const conLaiQuy = qHienTai.soDu - soTien
+
+  const dsQuyChon = useMemo(() => dsLocTheoHt.map(q => ({
+    k: q.ma,
+    ten: q.ten,
+    moTa: `Số dư ${money(q.soDu)} đ`,
+  })), [dsLocTheoHt])
+
+  if (!mo) return null
 
   const doiHinhThuc = (ht: 'tienmat' | 'chuyenkhoan') => {
     setHinhThuc(ht)
@@ -1366,29 +1384,22 @@ function MThanhToanSheet({
             </div>
           </div>
 
-          {/* Chọn quỹ */}
+          {/* Chọn quỹ (T468: 1 ô chọn, bấm trượt mở bottom sheet) */}
           <div>
             <div className="m-t449-tt-nhom">TRẢ TỪ QUỸ</div>
-            <div className="m-t449-tt-ds-quy">
-              {dsLocTheoHt.map(q => {
-                const laChon = q.ma === quyChon
-                const conLaiQuy = q.soDu - soTien
-                return (
-                  <div
-                    key={q.ma}
-                    className={`m-t449-tt-the-quy${laChon ? ' on' : ''}`}
-                    onClick={() => setQuyChon(q.ma)}
-                  >
-                    <div>
-                      <div className="ten">{q.ten}</div>
-                      <div className="phu">
-                        {laChon ? `Số dư ${money(q.soDu)} đ → còn ${money(conLaiQuy)} đ` : `Số dư ${money(q.soDu)} đ`}
-                      </div>
-                    </div>
-                    <div className={`m-t449-tt-radio${laChon ? ' on' : ''}`} />
-                  </div>
-                )
-              })}
+            <div
+              className="m-t449-tt-the-quy m-t468-o-chon-quy on"
+              onClick={() => setMoChonQuy(true)}
+            >
+              <div>
+                <div className="ten">{qHienTai.ten}</div>
+                <div className="phu">
+                  Số dư {money(qHienTai.soDu)} đ → còn {money(conLaiQuy)} đ
+                </div>
+              </div>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true" className="m-t468-mui-ten">
+                <path d="M9 18l6-6-6-6" />
+              </svg>
             </div>
           </div>
 
@@ -1451,6 +1462,16 @@ function MThanhToanSheet({
             onDong={() => setMoLich(false)}
           />
         )}
+
+        {/* Tấm trượt chọn quỹ (T468) */}
+        <MChon
+          mo={moChonQuy}
+          onDong={() => setMoChonQuy(false)}
+          tieuDe="Chọn quỹ chi"
+          ds={dsQuyChon}
+          chon={qHienTai.ma}
+          onChon={setQuyChon}
+        />
       </div>
     </div>
   )
