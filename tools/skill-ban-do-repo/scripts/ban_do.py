@@ -343,8 +343,10 @@ def lenh_tim(args):
 
     in_nhom("Bẫy", ket_qua_bay)
 
-    # 5. Chữ thường: đếm số lần khớp theo file trong src/, tools/, docs/ (không nhật ký)
-    file_counts = defaultdict(int)
+    # 5. Chữ thường: file:dòng trong src/, tools/, docs/ (xếp src/ lên đầu, tối đa 10 file)
+    file_matches = {}
+    tu_norm = [bo_dau(w) for w in tu_khoa]
+    cum = ' '.join(tu_norm)
     scan_dirs = [ROOT / 'src', ROOT / 'tools', ROOT / 'docs']
     for sdir in scan_dirs:
         for root, dirs, files in os.walk(sdir):
@@ -365,14 +367,35 @@ def lenh_tim(args):
                 except Exception:
                     continue
                 # Bỏ dấu cả file một lần, nhanh hơn bỏ dấu từng dòng
-                tu_norm = [bo_dau(w) for w in tu_khoa]
-                dem = sum(1 for line in bo_dau(txt).splitlines() if all(w in line for w in tu_norm))
-                if dem > 0:
-                    file_counts[rel_f] = dem
+                lines_goc = txt.splitlines()
+                lines_nodau = bo_dau(txt).splitlines()
+                use_lines = lines_goc if len(lines_goc) == len(lines_nodau) else lines_nodau
+                matches = []
+                for i, line in enumerate(lines_nodau):
+                    if all(w in line for w in tu_norm):
+                        # Dòng chứa nguyên cụm từ khoá xếp trước
+                        matches.append((cum not in line, i + 1, use_lines[i].strip()[:80]))
+                if matches:
+                    file_matches[rel_f] = sorted(matches)
 
-    top_files = sorted(file_counts.items(), key=lambda x: x[1], reverse=True)[:10]
-    dong_chu_thuong = [f"{fn} ({cnt} lần)" for fn, cnt in top_files]
-    in_nhom("Chữ thường", dong_chu_thuong)
+    def uu_tien_nhom(rel: str):
+        if rel.startswith('src/'):
+            return 0
+        if rel.startswith('tools/'):
+            return 1
+        if rel.startswith('docs/'):
+            return 2
+        return 3
+
+    top_files = sorted(file_matches.items(), key=lambda x: (uu_tien_nhom(x[0]), -sum(not m[0] for m in x[1]), -len(x[1])))[:10]
+    dong_chu_thuong = []
+    for fn, matches in top_files:
+        for _, lineno, snippet in matches[:3]:
+            dong_chu_thuong.append(f"{fn}:{lineno} {snippet}")
+        if len(matches) > 3:
+            con = len(matches) - 3
+            dong_chu_thuong.append(f"{fn}: còn {con} dòng nữa")
+    in_nhom("Chữ thường", dong_chu_thuong, max_dong=30)
 
 
 RE_KHAI_BAO = re.compile(
