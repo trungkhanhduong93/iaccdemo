@@ -12,6 +12,7 @@ import { useMoTuTrangChu } from '../../app/tuTrangChu'
 import { NutXuatExcel } from '../../ui/CongCuDs'
 import { xuatBangExcel } from '../../ui/xuatBangExcel'
 import { chiPhiThangTuPhieu, moTaChiPhi, usePhieuChiPhi } from './chiPhiPhieu'
+import { NutLapPhieuQuy } from './LichSuQuy'
 
 export function ChiPhiThang(_: ScreenProps) {
   const moTuTrangChu = useMoTuTrangChu()   // liên kết trong màn mở kèm nút về Trang chủ (T232)
@@ -32,7 +33,8 @@ export function ChiPhiThang(_: ScreenProps) {
         <NutXuatExcel onXuat={() => xuatBangExcel(`Chi phí hoạt động ${thang}/2026`, cn ? cn.ten : 'Tất cả cửa hàng',
           [{ t: 'Lý do chi', rong: 32 }, { t: 'Số phiếu', so: true }, { t: 'Tiền mặt', so: true }, { t: 'Ngân hàng', so: true }, { t: 'Số tiền', so: true }, { t: 'Tỷ lệ chi phí tháng', rong: 18 }],
           ds.map(x => [x.ly, x.so, x.tm, x.nh, x.v, pct(cpThang ? x.v / cpThang : 0)]), ['Tổng chi phí trong tháng', ds.reduce((a, x) => a + x.so, 0), '', '', cpThang, '']).catch(() => toast('Không xuất được file Excel'))} />
-        <Link to="/app/tien/2-1-1/moi?loai=chi" className="btn primary"><Icon n="plus" className="ic sm" />Lập phiếu chi</Link>
+        {/* Chọn chi tiền mặt hay chi ngân hàng như Lịch sử quỹ (T447), không mặc định tiền mặt (T483) */}
+        <NutLapPhieuQuy chieu="chi" tatCa tienMat className="btn primary"><Icon n="plus" className="ic sm" />Lập phiếu chi</NutLapPhieuQuy>
       </div>
       <div className="cpt-tong">
         <span>Tổng chi phí trong tháng{cn ? ` · ${cn.ten}` : ''}<small className="nvl-phu">Cộng các phiếu chi tiền mặt, ngân hàng có lý do nghiệp vụ là chi phí</small></span>

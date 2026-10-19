@@ -2,13 +2,14 @@
 // Cùng số liệu với bản web, dạng dòng kiểu app: cộng từ phiếu chi thật có lý do là chi phí (T483).
 // Bấm một dòng mở ngay bên dưới các phiếu chi tiền mặt, ngân hàng của lý do đó, không sang phân hệ Thu chi
 import { useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import type { ScreenProps } from '../../modules/types'
 import { cuaHangHienTai, useSession } from '../../app/session'
 import { CUA_HANG } from '../../data/mock'
 import { Icon } from '../Icon'
 import { moneyD, pct } from '../format'
 import { chiPhiThangTuPhieu, moTaChiPhi, usePhieuChiPhi } from '../../modules/home/chiPhiPhieu'
+import { MChon } from './MChon'
 
 export function MChiPhiThang(_: ScreenProps) {
   const { s } = useSession()
@@ -19,6 +20,8 @@ export function MChiPhiThang(_: ScreenProps) {
   const { tong: cpThang, ds: dsCp } = chiPhiThangTuPhieu(phieu, thang, cn ? [cn.id] : CUA_HANG.map(c => c.id))
   const ds = dsCp.map(x => ({ ...x, ...moTaChiPhi(x) }))
   const [mo, setMo] = useState<string | null>(null)   // lý do đang mở danh sách phiếu
+  const [chonLoai, setChonLoai] = useState(false)   // tấm chọn chi tiền mặt hay chi ngân hàng
+  const nav = useNavigate()
 
   return (
     <div className="m-free-cpt">
@@ -71,11 +74,14 @@ export function MChiPhiThang(_: ScreenProps) {
       </div>
 
       <div className="m-free-day-nut">
-        <Link to="/app/tien/2-1-1/moi?loai=chi" className="m-free-nut-chinh">
+        <button type="button" className="m-free-nut-chinh" onClick={() => setChonLoai(true)}>
           <Icon n="plus" className="ic sm" />
           <span>Lập phiếu chi</span>
-        </Link>
+        </button>
       </div>
+      {/* Chọn chi tiền mặt hay chi ngân hàng, không mặc định tiền mặt (T483) */}
+      <MChon mo={chonLoai} onDong={() => setChonLoai(false)} tieuDe="Lập phiếu chi" ds={[{ k: 'chi', ten: 'Chi tiền mặt' }, { k: 'unc', ten: 'Chi ngân hàng' }]}
+        onChon={k => nav(`/app/tien/2-1-1/moi?loai=${k}`)} />
     </div>
   )
 }
