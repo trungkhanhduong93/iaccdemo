@@ -807,3 +807,4 @@ Trum chốt 18/10/2026 khi làm T426. Thay mốc thiết kế 390pt của QD54.
   - Nhãn thanh tab dưới: 10.5
   - Ô nhập, select, textarea: giữ 16 để tránh trình duyệt iOS tự động phóng to.
 
+## QD74. Agent tra repo bằng tools/ban_do.py (đang soạn)
