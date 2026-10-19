@@ -4,6 +4,8 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 19/10/2026
 
+- T452: Gói Free hiện lại nhóm báo cáo Kế toán bán hàng (Bán hàng theo ngày, Tổng hợp bán hàng, Chi tiết bán hàng) ở màn Báo cáo và tab Báo cáo của phân hệ Bán hàng.
+
 - T450: Doanh nghiệp gói Free, Standard chọn thuế GTGT theo % doanh thu ở Thông tin đơn vị: chứng từ bán hàng (Xuất bán POS, Hàng bán trả lại...) khi thêm mới, sửa, xem và danh sách hiện cột Giảm thuế GTGT, ẩn Thuế suất, Tiền thuế; báo cáo Bán hàng theo ngày, Chi tiết bán hàng, Doanh thu theo ngày cũng đổi cột Thuế GTGT thành Giảm thuế GTGT, Tổng tiền trừ phần giảm. Chọn khấu trừ (và gói Plus, Pro) thì ngược lại. Điện thoại: Xuất bán POS và báo cáo theo cùng quy tắc.
 
 - T448: Gói Free, phiếu thu, chi tiền mặt và ngân hàng (máy tính): bảng chi tiết khi thêm mới, sửa, xem bỏ cột Lý do và Đối tượng; hai ô này chỉ chọn ở phần trên phiếu.

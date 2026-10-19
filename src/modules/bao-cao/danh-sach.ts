@@ -165,8 +165,8 @@ export const MO_IFASTER = ['2.2.8', '2.2.9', '4.2.3', '3.2.9', '4.2.7', '10.2.3'
   '5.2.1', '5.2.15']   // Thẻ kho mở lại mọi gói để bấm hàng hoá ở Xuất nhập tồn mở thẻ kho, PhuongXT chốt 14/10/2026 (T211); Báo cáo kiểm kê mọi gói (T244)
 /** Nhóm báo cáo Công nợ riêng, đứng sau nhóm Mua hàng: công nợ nhà cung cấp, khách hàng rời nhóm phân hệ, PhuongXT chốt 14/10/2026 (T217) */
 export const NHOM_CONG_NO = { key: 'cong-no', ten: 'Công nợ', ngan: 'Công nợ', icon: 'users', mota: 'Công nợ nhà cung cấp, công nợ khách hàng', sau: 'mua-hang', ma: ['4.2.3', '3.2.9'] }
-/** Nhóm báo cáo (khoá phân hệ) ẩn hẳn theo gói ở màn Báo cáo và tab Báo cáo của phân hệ: gói Free ẩn Bán hàng, Kê khai thuế, PhuongXT chốt 14/10/2026 (T218) */
-export const AN_NHOM_BC: Partial<Record<Goi, string[]>> = { F: ['ban-hang', 'thue'] }
+/** Nhóm báo cáo (khoá phân hệ) ẩn hẳn theo gói ở màn Báo cáo và tab Báo cáo của phân hệ: gói Free ẩn Kê khai thuế (T218); nhóm Bán hàng mở lại 19/10/2026 (T452) */
+export const AN_NHOM_BC: Partial<Record<Goi, string[]>> = { F: ['thue'] }
 /** Báo cáo đứng đầu nhóm phân hệ ở màn Báo cáo, theo thứ tự khai; báo cáo khác giữ thứ tự màn: Kho đưa Xuất nhập tồn lên trước Thẻ kho, PhuongXT chốt 14/10/2026 (T219) */
 export const DAU_NHOM_BC: Record<string, string[]> = { kho: ['5.2.3'] }
 /** Báo cáo chỉ mở từ báo cáo khác, không hiện ở danh sách báo cáo, menu, tìm kiếm: Chi tiết mua hàng 4.2.1 mở khi bấm nhà cung cấp ở Tổng hợp mua hàng, PhuongXT 13/10/2026 (T200) */
