@@ -26,6 +26,8 @@ export function Popover({ anchor, open, onClose, align = 'start', className = ''
       const z = heSoZoom()
       const aLeft = a.left / z, aRight = a.right / z, aTop = a.top / z, aBottom = a.bottom / z, aWidth = a.width / z
       p.style.minWidth = `${Math.round(aWidth)}px`
+      // Ô chọn (listbox): không giãn theo chữ dài, rộng tối đa bằng ô (ít nhất 320px), chữ dài xuống dòng (T474)
+      if (role === 'listbox') p.style.maxWidth = `${Math.round(Math.max(aWidth, 320))}px`
       const h = p.offsetHeight, w = p.offsetWidth
       const winH = window.innerHeight / z, winW = window.innerWidth / z
       const duoi = winH - aBottom, tren = aTop

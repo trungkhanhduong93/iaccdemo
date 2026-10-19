@@ -181,14 +181,14 @@ export const CONG_VIEC = [
 // lý do kho XK01.., NK01... Giữ thêm Chi phí chờ phân bổ (phiếu chi sinh thẻ chi phí phân bổ) và 3 lý do kho.
 // Lý do chi tính là chi phí (Sổ chi phí, Chi phí trong tháng) theo đề xuất PhuongXT duyệt; trả nợ, nhà cung cấp, tạm ứng, vay, nộp thuế, TSCĐ, đầu tư không tính
 const LY_LA_CHI_PHI = ['CHI01', 'CHI03', 'CHI04', 'CHI06', 'CHI07', 'CHI08', 'CHI09', 'CHI12', 'CHI13', 'CHI14', 'CHI15', 'CHI18', 'CHI19', 'CHI20', 'CHI21', 'CHI22', 'CHI24', 'CHI25', 'CHI26', 'CHI27', 'CHI29', 'CHI30', 'CHI31', 'CHI35']
-/** Nhóm lý do nghiệp vụ (T473): 6 nhóm chi phí hợp lý của Sổ S2c-HKD (TT152, mục a đến f), mã tự đặt NLD01 đến NLD06; lý do là chi phí lưu tên nhóm */
+/** Nhóm lý do nghiệp vụ (T473): 6 nhóm chi phí hợp lý của Sổ S2c-HKD (TT152, mục a đến f), mã tự đặt NLD01 đến NLD06; dung: nhóm dành cho thu hay chi như Dùng cho của lý do, 6 nhóm này là chi; lý do là chi phí lưu tên nhóm */
 export const NHOM_LY_DO = [
-  { ma: 'NLD01', ten: 'Chi phí nguyên liệu, vật liệu, nhiên liệu, năng lượng, hàng hoá sử dụng vào sản xuất, kinh doanh' },
-  { ma: 'NLD02', ten: 'Chi phí tiền lương, tiền công, các khoản phụ cấp, bảo hiểm bắt buộc và các khoản chi trả cho người lao động có đóng bảo hiểm bắt buộc theo quy định; chi phí tiền lương, tiền công, các khoản phụ cấp và các khoản chi trả cho người lao động dưới 01 tháng' },
-  { ma: 'NLD03', ten: 'Chi phí khấu hao tài sản cố định phục vụ cho hoạt động sản xuất, kinh doanh theo chế độ quản lý, sử dụng và trích khấu hao tài sản cố định (nếu có)' },
-  { ma: 'NLD04', ten: 'Chi phí dịch vụ mua ngoài như điện, nước, điện thoại, internet, vận chuyển, thuê tài sản, sửa chữa, bảo dưỡng' },
-  { ma: 'NLD05', ten: 'Chi phí trả lãi tiền vay vốn sản xuất, kinh doanh của tổ chức tín dụng theo lãi suất thực tế. Chi phí trả lãi tiền vay vốn sản xuất, kinh doanh của đối tượng không phải là tổ chức tín dụng không vượt quá mức quy định tại Bộ luật Dân sự' },
-  { ma: 'NLD06', ten: 'Các khoản chi khác phục vụ trực tiếp hoạt động sản xuất, kinh doanh' },
+  { ma: 'NLD01', dung: 'Chi tiền', ten: 'Chi phí nguyên liệu, vật liệu, nhiên liệu, năng lượng, hàng hoá sử dụng vào sản xuất, kinh doanh' },
+  { ma: 'NLD02', dung: 'Chi tiền', ten: 'Chi phí tiền lương, tiền công, các khoản phụ cấp, bảo hiểm bắt buộc và các khoản chi trả cho người lao động có đóng bảo hiểm bắt buộc theo quy định; chi phí tiền lương, tiền công, các khoản phụ cấp và các khoản chi trả cho người lao động dưới 01 tháng' },
+  { ma: 'NLD03', dung: 'Chi tiền', ten: 'Chi phí khấu hao tài sản cố định phục vụ cho hoạt động sản xuất, kinh doanh theo chế độ quản lý, sử dụng và trích khấu hao tài sản cố định (nếu có)' },
+  { ma: 'NLD04', dung: 'Chi tiền', ten: 'Chi phí dịch vụ mua ngoài như điện, nước, điện thoại, internet, vận chuyển, thuê tài sản, sửa chữa, bảo dưỡng' },
+  { ma: 'NLD05', dung: 'Chi tiền', ten: 'Chi phí trả lãi tiền vay vốn sản xuất, kinh doanh của tổ chức tín dụng theo lãi suất thực tế. Chi phí trả lãi tiền vay vốn sản xuất, kinh doanh của đối tượng không phải là tổ chức tín dụng không vượt quá mức quy định tại Bộ luật Dân sự' },
+  { ma: 'NLD06', dung: 'Chi tiền', ten: 'Các khoản chi khác phục vụ trực tiếp hoạt động sản xuất, kinh doanh' },
 ]
 /** Tự xếp lý do là chi phí vào nhóm theo tên lý do, trả tên nhóm (T473); không khớp nhóm nào thì vào Các khoản chi khác (NLD06) */
 export function nhomLyTuDong(ten: string): string {

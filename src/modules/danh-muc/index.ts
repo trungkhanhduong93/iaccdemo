@@ -61,9 +61,11 @@ const nhomLyDo: ScreenDef = {   // lý do lưu tên nhóm nên cột, bộ lọc
     them: 'Thêm nhóm lý do nghiệp vụ',
     khongThem: ['F', 'S', 'PL', 'PR'],
     chiXem: ['F', 'S', 'PL', 'PR'],
+    nhomLoc: 'dung', nhanLoc: 'Dùng cho',
     cols: [
-      { k: 'ma', t: 'Mã', cls: 'code', w: 70 },
+      { k: 'ma', t: 'Mã', cls: 'code', w: 80 },
       { k: 'ten', t: 'Tên nhóm' },
+      { k: 'dung', t: 'Dùng cho', w: 110 },   // nhóm dành cho thu hay chi (T473)
       { k: 'soLy', t: 'Số lý do', num: true, w: 100 },
     ],
     rows: () => NHOM_LY_DO.map(n => ({ ...n, soLy: LY_DO.filter(l => l.chiPhi && l.nhomCp === n.ten).length })),

@@ -4,7 +4,9 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 19/10/2026
 
-- T473: Danh mục có thêm Nhóm lý do nghiệp vụ, gồm 6 nhóm chi phí hợp lý như Sổ S2c-HKD (mã NLD01 đến NLD06), kèm số lý do mỗi nhóm. Danh mục Lý do nghiệp vụ có cột Nhóm lý do: lý do là chi phí tự xếp vào nhóm theo tên (vd tiền điện vào Chi phí dịch vụ mua ngoài, tiền lương vào Chi phí tiền lương), tích Là chi phí thì tự chọn nhóm, đổi được; Bộ lọc có ô Nhóm lý do chọn theo tên nhóm.
+- T474: Ô chọn có lựa chọn dài (vd Nhóm lý do trong Bộ lọc) không còn giãn hết bề ngang màn: danh sách rộng theo ô, chữ dài xuống dòng, các lựa chọn có khoảng cách, đường kẻ ngăn.
+
+- T473: Danh mục có thêm Nhóm lý do nghiệp vụ, gồm 6 nhóm chi phí hợp lý như Sổ S2c-HKD (mã NLD01 đến NLD06), cột Dùng cho (thu hay chi) và số lý do mỗi nhóm; nhóm không sửa, không xoá. Danh mục Lý do nghiệp vụ có cột Nhóm lý do: lý do là chi phí tự xếp vào nhóm theo tên (vd tiền điện vào Chi phí dịch vụ mua ngoài, tiền lương vào Chi phí tiền lương), tích Là chi phí thì tự chọn nhóm, chọn lại được; Bộ lọc có ô Nhóm lý do chọn theo tên nhóm.
 
 - T472: Hệ thống: gói Free không còn tab Người dùng, Vai trò và phân quyền (menu tài khoản cũng bỏ mục Người dùng); tab Gói thuê bao nằm cuối thanh tab ở mọi gói.
 

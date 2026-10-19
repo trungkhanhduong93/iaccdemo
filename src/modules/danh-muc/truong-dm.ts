@@ -701,7 +701,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
 
   // 1.16 Lý do (chưa có bảng DM_ trong schema, chờ đối chiếu)
   '1.16': {
-    chiSua: ['chiPhi', 'nhomCp'],   // tạm thời lý do có sẵn không sửa, chỉ tích Là chi phí hay không (T334) và đổi nhóm lý do (T473)
+    chiSua: ['chiPhi', 'nhomCp'],   // tạm thời lý do có sẵn không sửa, chỉ tích Là chi phí hay không (T334) và chọn lại nhóm lý do (T473)
     khoi: [
       {
         ten: 'Thông tin chung',
@@ -713,8 +713,9 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
           { k: 'dung', nhan: 'Dùng cho nghiệp vụ', kieu: 'chon', ds: ['Thu tiền', 'Chi tiền', 'Nhập kho', 'Xuất kho'], batBuoc: true, goi: ['S', 'PL', 'PR'] },
           // Lý do chi tiền là chi phí thì báo cáo chi phí lấy lên (T231)
           { k: 'chiPhi', nhan: 'Là chi phí', kieu: 'tich', caHang: true, hien: v => v.dung === 'Chi tiền' },
-          // Lý do là chi phí thuộc một nhóm lý do (T473): tích Là chi phí thì tự xếp theo tên lý do, đổi được
-          { k: 'nhomCp', nhan: 'Nhóm lý do nghiệp vụ', kieu: 'chon', batBuoc: true, caHang: true, ds: NHOM_LY_DO.map(n => n.ten), hien: v => v.dung === 'Chi tiền' && laTich(v.chiPhi) },
+          // Lý do là chi phí thuộc một nhóm lý do (T473): tích Là chi phí thì tự xếp theo tên lý do, chọn lại được nhóm dành cho chi
+          { k: 'nhomCp', nhan: 'Nhóm lý do nghiệp vụ', kieu: 'chon', batBuoc: true, caHang: true, ds: NHOM_LY_DO.filter(n => n.dung === 'Chi tiền').map(n => n.ten), hien: v => v.dung === 'Chi tiền' && laTich(v.chiPhi),
+            chuThich: 'Tự xếp theo tên lý do, chọn lại được' },
         ],
       },
       {

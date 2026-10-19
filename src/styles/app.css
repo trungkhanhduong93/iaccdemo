@@ -31303,3 +31303,9 @@ a.tx-item:hover {
 
 /* ── Cột Nhóm lý do ở danh mục Lý do nghiệp vụ, tên nhóm dài cắt "..." (T473) ── */
 .o-cat { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ── Ô chọn có lựa chọn dài (vd Nhóm lý do trong Bộ lọc) xuống dòng trong khung, không giãn hết màn (T474) ── */
+.pop.pop-sel .mi-t, .pop.pop-sel .mi-t b { white-space: normal; overflow-wrap: anywhere; line-height: 1.35; }
+.pop.pop-sel .mi { align-items: flex-start; padding-top: 7px; padding-bottom: 7px; }
+.pop.pop-sel .mi + .mi { border-top: 1px solid var(--line-2); }
+.pop.pop-sel .mi .mi-ok { margin-top: 2px; }
