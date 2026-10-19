@@ -55,18 +55,12 @@ export const quyTrinh: QuyTrinhDef = {
       ten: 'Trả tiền nhà cung cấp',
       moTa: 'Thanh toán tiền hàng bằng tiền mặt hoặc chuyển khoản.',
       nut: [
-        { ten: 'Chi tiền mặt', icon: 'cashout', di: 'tien/2-1-1/moi?loai=chi', taoMoi: 'tien/2-1-1/moi?loai=chi', chieu: 'ra', moTa: 'Trả tiền mặt cho người giao hàng' },
-        { ten: 'Chi ngân hàng', icon: 'bank', di: 'tien/2-1-1/moi?loai=unc', taoMoi: 'tien/2-1-1/moi?loai=unc', chieu: 'ra', moTa: 'Chuyển khoản qua tài khoản ngân hàng' },
+        // Phiếu chi điền sẵn lý do CHI02 Thanh toán công nợ nhà cung cấp (T462)
+        { ten: 'Chi tiền mặt', icon: 'cashout', di: 'tien/2-1-1/moi?loai=chi&ly=CHI02', taoMoi: 'tien/2-1-1/moi?loai=chi&ly=CHI02', chieu: 'ra', moTa: 'Trả tiền mặt cho người giao hàng' },
+        { ten: 'Chi ngân hàng', icon: 'bank', di: 'tien/2-1-1/moi?loai=unc&ly=CHI02', taoMoi: 'tien/2-1-1/moi?loai=unc&ly=CHI02', chieu: 'ra', moTa: 'Chuyển khoản qua tài khoản ngân hàng' },
       ],
     },
-    {
-      ten: 'Theo dõi công nợ',
-      moTa: 'Kiểm tra số tiền còn nợ từng nhà cung cấp.',
-      ghiChu: 'Xem chi tiết số tiền đã mua, số tiền đã trả và số còn nợ của từng bên.',
-      nut: [
-        { ten: 'Công nợ nhà cung cấp', icon: 'users', di: 'mua-hang/4-2-3', moTa: 'Số tiền còn nợ từng nhà cung cấp' },
-      ],
-    },
+    // Sổ sách, báo cáo đứng trước Theo dõi công nợ (T462)
     {
       ten: 'Sổ sách, báo cáo',
       moTa: 'Xem chi tiết hàng đã mua và tình hình nhập tồn kho.',
@@ -75,6 +69,14 @@ export const quyTrinh: QuyTrinhDef = {
         { ten: 'Báo cáo xuất nhập tồn', icon: 'box', di: 'kho/5-2-3', moTa: 'Tồn kho nguyên vật liệu hiện tại' },
         { ten: 'Tổng hợp nhập kho', icon: 'filein', di: 'kho/5-2-9', moTa: 'Tổng lượng nhập theo từng mặt hàng' },
         { ten: 'Chi tiết nhập kho', icon: 'filein', di: 'kho/5-2-10', moTa: 'Chi tiết từng lần nhập hàng vào kho' },
+      ],
+    },
+    {
+      ten: 'Theo dõi công nợ',
+      moTa: 'Kiểm tra số tiền còn nợ từng nhà cung cấp.',
+      ghiChu: 'Xem chi tiết số tiền đã mua, số tiền đã trả và số còn nợ của từng bên.',
+      nut: [
+        { ten: 'Công nợ nhà cung cấp', icon: 'users', di: 'mua-hang/4-2-3', moTa: 'Số tiền còn nợ từng nhà cung cấp' },
       ],
     },
   ],
