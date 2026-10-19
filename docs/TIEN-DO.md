@@ -4,7 +4,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T476.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T479.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
@@ -45,7 +45,8 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | T12 | Giao diện cho màn hẹp hơn 1280px | | Chờ | Khung có min-width 1180px. Ở 1280px ô tìm kiếm trên thanh trên co còn khoảng 160px |
 | T13 | Tách gói JS khi build | | Chờ | `npm run build` cảnh báo gói JS hơn 500 kB |
 | T14 | Thay biểu tượng chìa khoá ở nút "Đăng nhập bằng tài khoản iPOS" bằng logo iPOS | | Chờ | Chưa có file logo iPOS |
-| T476 | Khoá sổ gói trên (Tổng hợp › Khoá sổ 10.1.6, web và điện thoại) khoá thật theo từng cửa hàng như gói Free (T19) | | Chờ | Màn 10.1.6 (`CuoiKy.tsx`, phần gói khác của `MKhoaSo.tsx`) đang là màn giả. Dùng `khoaSoCuaHang`, `khoaSoDenCua` trong `data/mock.ts` |
+| T479 | Điện thoại, Khoá sổ gói Free làm theo bố cục mới của web (T19): danh sách tháng theo năm, mỗi tháng trạng thái từng cửa hàng, Khoá ở tháng kế tiếp mở bước kiểm tra, Mở khoá ở tháng khoá gần nhất, Khoá sổ hàng loạt, lịch sử có lọc | PhuongXT | Chờ | `MKhoaSo.tsx`, cuối `app.css`. Dùng `ttThang`, `NHAN_TT`, `thangCuaNam` trong `KhoaSoFree.tsx` |
+| T478 | Khoá sổ gói trên (Tổng hợp › Khoá sổ 10.1.6, web và điện thoại) khoá thật theo từng cửa hàng như gói Free (T19) | | Chờ | Màn 10.1.6 (`CuoiKy.tsx`, phần gói khác của `MKhoaSo.tsx`) đang là màn giả. Dùng `khoaSoCuaHang`, `khoaSoDenCua` trong `data/mock.ts` |
 | T20 | Cột trạng thái duyệt trong danh sách chứng từ, tách khỏi ghi sổ | | Chờ | DB iPOS có `REVIEW_STATUS` CHECKED/UNCHECKED riêng với `STATUS` DRAFT/POSTED |
 | T242 | Điện thoại: màn Chi phí NVL (`trang-chu/chi-phi-nvl`, T232) chưa có bản điện thoại, cùng lỗi với T234 | | Chờ | Phát hiện khi làm T232 ngày 14/10/2026. Bản máy tính ở `src/modules/home/ChiPhiNvl.tsx`, số liệu ở `chi-phi-nvl.ts` |
 | T243 | `tools/kiem_tra.py` (bước T238) lưu ảnh chụp vào đường dẫn cố định `C:/Users/trung.duong/.gemini/...`, máy khác chạy `--nhanh` báo PermissionError, dừng giữa chừng. Đổi sang thư mục tạm hoặc bỏ chụp | | Chờ | Phát hiện khi PhuongXT kiểm T232 ngày 14/10/2026; đã kiểm bằng bản sao tạm đổi đường dẫn, không lỗi |
@@ -59,7 +60,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | T468 | Điện thoại chỉnh tiếp sau T467: kiểm kê thẻ số mặt hàng thiếu, thừa, khớp; xem phiếu mua ghim tổng tiền trên nút chân; thanh toán chọn quỹ một ô, bấm mở bảng chọn; chi tiết Xuất bán POS bỏ dòng phụ dưới mã đơn | Trum | 19/10/2026 | [2026-10-19-trum-dien-thoai-chinh-tiep-sau-t467](nhat-ky/2026-10-19-trum-dien-thoai-chinh-tiep-sau-t467.md) |
 | T445 | Điện thoại, Bảng kê mua hàng làm lại theo mẫu D Trum chốt: gom theo ngày, mỗi phiếu số phiếu, tổng tiền, tên NCC đủ ở hàng dưới; bấm phiếu bung chi tiết hàng hoá, bấm số phiếu mở phiếu mua gốc; tổng ghim đáy | Trum | 19/10/2026 | [2026-10-19-trum-bang-ke-mua-hang-mau-d](nhat-ky/2026-10-19-trum-bang-ke-mua-hang-mau-d.md) |
 | T433 | Điện thoại, Sổ quỹ tiền mặt, Sổ tiền gửi ngân hàng: tách thẻ tổng thành 4 ô Tồn đầu, Thu, Chi, Tồn cuối; mỗi ngày có Tồn đầu ngày ở trên, Tồn cuối ngày ở dưới các dòng thu chi | Trum | 19/10/2026 | [2026-10-19-trum-so-quy-ton-dau-cuoi-ngay](nhat-ky/2026-10-19-trum-so-quy-ton-dau-cuoi-ngay.md) |
-| T19 | Khoá sổ gói Free theo từng cửa hàng hoặc tất cả (web, điện thoại): mốc khoá riêng từng cửa hàng, bảng Khoá sổ từng cửa hàng bấm để chọn, Tất cả thì mỗi cửa hàng khoá tiếp tháng kế của nó; phiếu chỉ xem, không xoá theo mốc của cửa hàng trên phiếu; lịch sử có cột Cửa hàng | PhuongXT | 19/10/2026 | [2026-10-19-phuongxt-khoa-so-tung-cua-hang](nhat-ky/2026-10-19-phuongxt-khoa-so-tung-cua-hang.md) |
+| T19 | Khoá sổ gói Free theo từng cửa hàng hoặc tất cả: mốc khoá riêng từng cửa hàng; web là bảng tháng × cửa hàng, nút Khoá, Mở khoá theo ô, Khoá sổ hàng loạt, lịch sử có lọc (điện thoại theo bố cục mới ở T479); phiếu chỉ xem, không xoá theo mốc của cửa hàng trên phiếu; lịch sử có cột Cửa hàng | PhuongXT | 19/10/2026 | [2026-10-19-phuongxt-khoa-so-tung-cua-hang](nhat-ky/2026-10-19-phuongxt-khoa-so-tung-cua-hang.md) |
 | T475 | Điện thoại, phần còn lại của T439: phiếu chi có thẻ chi phí không sửa (hộp Không sửa được, nút Mở thẻ), xoá phiếu kiểm khoá sổ của thẻ và xoá kèm thẻ; xoá thẻ kiểm khoá sổ, ghi để phiếu gốc biết, mở từ phiếu thì về phiếu ở chế độ sửa; hộp xác nhận nổi trên màn xem phiếu | PhuongXT | 19/10/2026 | [2026-10-19-phuongxt-dien-thoai-the-chi-phi](nhat-ky/2026-10-19-phuongxt-dien-thoai-the-chi-phi.md) |
 | T474 | Ô chọn dùng chung (Select) có lựa chọn dài: khung thả xuống không giãn hết màn, rộng tối đa bằng ô (ít nhất 320px), chữ xuống dòng, có khoảng cách giữa lựa chọn | PhuongXT | 19/10/2026 | [2026-10-19-phuongxt-nhom-ly-do](nhat-ky/2026-10-19-phuongxt-nhom-ly-do.md) |
 | T473 | Danh mục thêm tab Nhóm lý do nghiệp vụ: 6 nhóm chi phí theo Sổ S2c-HKD, mã NLD01 đến NLD06, cột Dùng cho (chỉ xem, không sửa xoá, đếm số lý do); Lý do nghiệp vụ là chi phí tự xếp nhóm theo tên, cột, ô (chọn lại được), bộ lọc Nhóm lý do hiện tên nhóm | PhuongXT | 19/10/2026 | [2026-10-19-phuongxt-nhom-ly-do](nhat-ky/2026-10-19-phuongxt-nhom-ly-do.md) |

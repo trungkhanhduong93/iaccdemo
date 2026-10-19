@@ -31764,3 +31764,27 @@ a.tx-item:hover {
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: contain;
 }
+/* ── Khoá sổ gói Free: bảng tháng × cửa hàng, hộp thoại khoá, mở khoá, khoá đến hết tháng (T19) ── */
+.ks-bang-cuon { overflow-x: auto; }
+.ks-bang { width: 100%; }
+.ks-bang th, .ks-bang td { vertical-align: middle; }
+.ks-bang .ks-cot-thang { width: 110px; white-space: nowrap; }
+.ks-bang tr.ks-dong-mo td { background: var(--tint); }
+.ks-ten-ch { color: var(--blue-d); cursor: pointer; }
+.ks-ten-ch:hover { text-decoration: underline; }
+.ks-o { display: flex; align-items: center; gap: 8px; min-height: 28px; }
+.ks-o .chip .ic { width: 12px; height: 12px; }
+.ks-nam { min-width: 120px; }
+.ds-hop.ks-hop-rong { width: 640px; max-width: calc(100vw - 32px); }
+.ds-hop.ks-hop-ls { width: 900px; }
+.ks-pham { margin: 0 0 8px; color: var(--muted); }
+.ks-hop-rong .check small { margin-left: auto; text-align: right; }
+.ks-hop-rong .check .ks-xem { margin-left: 8px; }
+.ks-den-thang { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.ks-ds-ch { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
+.ks-ds-ch label { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; cursor: pointer; }
+.ks-ds-ch label.muted { cursor: default; }
+.ks-ds-ch small { color: var(--muted); }
+.ks-loc-ls { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.ks-loc-ls > * { min-width: 150px; }
+.ks-loc-ls > .grow, .ks-loc-ls > small { min-width: 0; }
