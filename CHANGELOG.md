@@ -4,6 +4,8 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 19/10/2026
 
+- T450: Doanh nghiệp gói Free, Standard chọn thuế GTGT theo % doanh thu ở Thông tin đơn vị: chứng từ bán hàng (Xuất bán POS, Hàng bán trả lại...) khi thêm mới, sửa, xem và danh sách hiện cột Giảm thuế GTGT, ẩn Thuế suất, Tiền thuế; báo cáo Bán hàng theo ngày, Chi tiết bán hàng, Doanh thu theo ngày cũng đổi cột Thuế GTGT thành Giảm thuế GTGT, Tổng tiền trừ phần giảm. Chọn khấu trừ (và gói Plus, Pro) thì ngược lại. Điện thoại: Xuất bán POS và báo cáo theo cùng quy tắc.
+
 - T448: Gói Free, phiếu thu, chi tiền mặt và ngân hàng (máy tính): bảng chi tiết khi thêm mới, sửa, xem bỏ cột Lý do và Đối tượng; hai ô này chỉ chọn ở phần trên phiếu.
 
 - T447: Trang chủ (máy tính và điện thoại), hộp Tất cả quỹ và màn Lịch sử thu chi khi xem tất cả quỹ: bấm Lập phiếu thu, Lập phiếu chi ra menu chọn Tiền mặt hoặc Ngân hàng, không còn chỉ mở phiếu tiền mặt. Mở từ một quỹ thì vẫn vào thẳng phiếu đúng loại quỹ.

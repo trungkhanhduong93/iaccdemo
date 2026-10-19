@@ -5,7 +5,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import type { Col, ReportCfg, Row, ScreenProps } from '../../modules/types'
 import { tenMan } from '../../app/registry'
 import { kieuGhiSo } from '../../app/plan'
-import { cuaHangHienTai, donViHienTai, dsCuaHang, useSession, cheDoHienTai } from '../../app/session'
+import { cuaHangHienTai, donViHienTai, dsCuaHang, useSession, cheDoHienTai, gtgtTyLe } from '../../app/session'
 import { canCu, type CheDo } from '../../app/che-do'
 import { cachHkd, cauHinhBC, kyHieuBC, laHkd, tenBC, tenTkNh, type LoaiBC } from '../../modules/bao-cao/danh-sach'
 import * as HKD from '../../modules/bao-cao/tt152'
@@ -1094,7 +1094,12 @@ export function renderReport(cfg: ReportCfg, seed: string, thang: number, cd: Ch
       { k: 'pct', t: 'Tỷ lệ', num: true }, { k: 'gt', t: 'Giá trị chênh lệch', num: true }]} rows={rows} />
   }
   if (cfg.kieu === 'bangke') {
-    if (cfg.cols && cfg.rows) return <RptTable cols={cfg.cols} rows={ganLocNguon(cfg.rows(thang, CUA_HANG.find(c => c.id === cn)?.ten, loc), loc)} />
+    if (cfg.cols && cfg.rows) {
+      // Báo cáo bán hàng (T450): GTGT theo % doanh thu bỏ cột thuế GTGT, hiện Giảm thuế GTGT; khấu trừ thì ngược lại
+      const tyLe = Boolean(cfg.theoGtgt && session && gtgtTyLe(session))
+      const cols = cfg.theoGtgt ? cfg.cols.filter(c => tyLe ? c.k !== 'thue' && c.k !== 'vat' : c.k !== 'giamThue') : cfg.cols
+      return <RptTable cols={cols} rows={ganLocNguon(cfg.rows(thang, CUA_HANG.find(c => c.id === cn)?.ten, loc, tyLe), loc)} />
+    }
     const rows = chungTu({ prefix: 'HD', doiTuong: 'ncc', dienGiai: ['Mua hàng'], tien: [2e6, 40e6], dong: 'nvl' }, seed).filter(x => x.thang === thang || thang === 8)
     return <RptTable cols={[{ k: 'stt', t: 'STT', c: true, w: 50 }, { k: 'so', t: 'Số hoá đơn', cls: 'code' }, { k: 'ngay', t: 'Ngày' }, { k: 'doiTuong', t: 'Tên người bán' },
       { k: 'tien', t: 'Giá trị chưa thuế', num: true }, { k: 'thue', t: 'Thuế GTGT', num: true }]}

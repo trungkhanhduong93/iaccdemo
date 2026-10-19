@@ -145,6 +145,9 @@ export function dungThuDv(s: Pick<Session, 'dungThu' | 'donVi'>): { con: number;
 }
 export const donViHienTai = (s: Session) => dsDonVi(s).find(d => d.id === s.donVi) ?? DON_VI[0]
 export const cheDoHienTai = (s: Session) => CHE_DO[s.cheDo]
+/** Thuế GTGT tính theo % doanh thu (T450): hộ kinh doanh luôn vậy; doanh nghiệp gói Plus, Pro cố định khấu trừ; còn lại theo Thông tin đơn vị.
+ *  Chứng từ, báo cáo bán hàng: theo % doanh thu thì hiện Giảm thuế GTGT, ẩn Thuế suất, Tiền thuế; khấu trừ thì ngược lại */
+export const gtgtTyLe = (s: Session) => loaiHinhDv(s, donViHienTai(s)) === 'hkd' || (s.goi !== 'PL' && s.goi !== 'PR' && s.ppGtgt === 'tyLe')
 /** Cửa hàng đang chọn trên thanh trên; undefined khi đang xem tất cả cửa hàng */
 export const cuaHangHienTai = (s: Session) => CUA_HANG.find(c => c.id === s.cuaHang)
 /** Cửa hàng của đơn vị đang làm việc: đơn vị mẫu có 3 cửa hàng mẫu; đơn vị mới từ FABi chỉ có cửa hàng đã chọn; cộng cửa hàng lên sổ thêm (T142) */

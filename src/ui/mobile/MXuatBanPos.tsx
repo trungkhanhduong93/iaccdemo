@@ -1,6 +1,6 @@
 import { useMemo, useState, type FC } from 'react'
 import type { Row, ScreenProps } from '../../modules/types'
-import { cuaHangHienTai, donViHienTai, loaiHinhDv, useSession } from '../../app/session'
+import { cuaHangHienTai, gtgtTyLe, useSession } from '../../app/session'
 import { kieuGhiSo } from '../../app/plan'
 import { CUA_HANG, DAILY, cnTen } from '../../data/mock'
 import { ChonKhoangNgay, docNgay, thangNay, trongKhoang, type KhoangNgay } from '../ChonNgay'
@@ -23,7 +23,7 @@ import { useDaXoa } from '../generic/daXoa'
 export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
   const { s } = useSession()
   const { ban, laDaXoa } = useDaXoa(`${mod.key}/${sc.slug}`)
-  const hkd = loaiHinhDv(s, donViHienTai(s)) === 'hkd'
+  const tyLe = gtgtTyLe(s)   // GTGT theo % doanh thu: Giảm thuế GTGT thay VAT (T163, T450)
   const kieu = kieuGhiSo(s.cheDo)
   const ghi = kieu !== 'khong' && s.goi !== 'F'
   const cnChon = cuaHangHienTai(s)
@@ -61,15 +61,15 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
             : `Doanh thu ${x.kenh.toLowerCase()} ${x.don} đơn POS ngày ${dmy(x.date).slice(0, 5)}`,
         doiTuong: 'Khách lẻ POS',
         tien: x.dt,
-        thue: hkd ? 0 : x.vat,
-        giamThue: hkd ? giamThueHkd(x.dt) : 0,
-        tong: hkd ? x.dt - giamThueHkd(x.dt) : x.dt + x.vat,
+        thue: tyLe ? 0 : x.vat,
+        giamThue: tyLe ? giamThueHkd(x.dt) : 0,
+        tong: tyLe ? x.dt - giamThueHkd(x.dt) : x.dt + x.vat,
         nguon: 'FABi',
         tt: i < 3 ? 'nhap' : 'ghi',
         ngayTao: `${dmy(x.date)} 23:30`,
         nguoiTao: 'Hệ thống',
       }))
-  }, [hkd])
+  }, [tyLe])
 
   const rows = useMemo(() => tatCa.filter(r => !laDaXoa(r.id)), [tatCa, ban, laDaXoa])
 
@@ -121,10 +121,10 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
     if (!donDangXem?.x) return []
     const x = donDangXem.x as XPos
     const dong0 = dongCuaPhieu(x)
-    if (!hkd) return dong0
+    if (!tyLe) return dong0
     const giam = chiaTheo(giamThueHkd(x.dt), dong0.map(d => d.dtTruocThue), 1)
     return dong0.map((d, i) => ({ ...d, giamThue: giam[i] }))
-  }, [donDangXem, hkd])
+  }, [donDangXem, tyLe])
 
   const tongGiamGia = useMemo(() => dsMon.reduce((a, m) => a + (m.giam || 0), 0), [dsMon])
 
@@ -148,7 +148,7 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
 
   const dsPttt = useMemo(() => {
     if (!donDangXem?.x) return []
-    const x = hkd ? ttHkd(donDangXem.x) : donDangXem.x
+    const x = tyLe ? ttHkd(donDangXem.x) : donDangXem.x
     const ds = [
       { ht: 'Tiền mặt', tien: Number(x.tm || 0) },
       { ht: 'Chuyển khoản, QR', tien: Number(x.ck || 0) },
@@ -157,29 +157,29 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
     ]
     const coTien = ds.filter(p => p.tien > 0)
     return coTien.length ? coTien : [{ ht: ptttTen || 'Tiền mặt', tien: Number(donDangXem.tong || 0) }]
-  }, [donDangXem, ptttTen, hkd])
+  }, [donDangXem, ptttTen, tyLe])
 
   const htButToan = useMemo(() => {
     if (!donDangXem?.x) return []
-    const x = hkd ? ttHkd(donDangXem.x) : donDangXem.x
+    const x = tyLe ? ttHkd(donDangXem.x) : donDangXem.x
     return [
-      { dg: 'Thu tiền mặt', no: '1111', co: hkd ? '5111' : '5111, 33311', tien: Number(x.tm || 0) },
-      { dg: 'Thu chuyển khoản, QR, thẻ', no: '1121', co: hkd ? '5111' : '5111, 33311', tien: Number(x.ck || 0) + Number(x.the || 0) },
-      { dg: 'Phải thu app giao đồ ăn', no: '131', co: hkd ? '5111' : '5111, 33311', tien: Number(x.app || 0) },
+      { dg: 'Thu tiền mặt', no: '1111', co: tyLe ? '5111' : '5111, 33311', tien: Number(x.tm || 0) },
+      { dg: 'Thu chuyển khoản, QR, thẻ', no: '1121', co: tyLe ? '5111' : '5111, 33311', tien: Number(x.ck || 0) + Number(x.the || 0) },
+      { dg: 'Phải thu app giao đồ ăn', no: '131', co: tyLe ? '5111' : '5111, 33311', tien: Number(x.app || 0) },
       { dg: 'Giá vốn xuất bán theo định lượng', no: '632', co: '152', tien: Number(x.gv || 0) },
     ].filter(b => b.tien > 0)
-  }, [donDangXem, hkd])
+  }, [donDangXem, tyLe])
 
   const soRows = useMemo(() => {
     if (!donDangXem?.x) return []
-    const x = hkd ? ttHkd(donDangXem.x) : donDangXem.x
+    const x = tyLe ? ttHkd(donDangXem.x) : donDangXem.x
     return [
       { so: 'Sổ doanh thu bán hàng hoá, dịch vụ', tien: Number(x.dt || 0) },
       { so: 'Sổ theo dõi thuế GTGT', tien: Number(x.vat || 0) },
       { so: 'Sổ tiền mặt', tien: Number(x.tm || 0) },
       { so: 'Sổ tiền gửi ngân hàng', tien: Number(x.ck || 0) + Number(x.the || 0) },
     ].filter(s => s.tien > 0)
-  }, [donDangXem, hkd])
+  }, [donDangXem, tyLe])
 
   return (
     <div className="m-pos-khung">
@@ -368,8 +368,8 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
                     const phuRight = (() => {
                       const parts: string[] = []
                       if (m.giam > 0) parts.push(`giảm -${money(m.giam)}`)
-                      if (hkd && (m.giamThue ?? 0) > 0) parts.push(`giảm thuế -${money(m.giamThue)}`)
-                      else if (!hkd && (m.thue ?? 0) > 0) parts.push(`VAT ${money(m.thue)}`)
+                      if (tyLe && (m.giamThue ?? 0) > 0) parts.push(`giảm thuế -${money(m.giamThue)}`)
+                      else if (!tyLe && (m.thue ?? 0) > 0) parts.push(`VAT ${money(m.thue)}`)
                       return parts.join(' · ')
                     })()
                     return (
@@ -466,7 +466,7 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
                     <span className="num">0</span>
                   )}
                 </div>
-                {hkd ? (
+                {tyLe ? (
                   <div className="d">
                     <span>Giảm thuế GTGT</span>
                     {Number(donDangXem.giamThue || 0) > 0 ? (

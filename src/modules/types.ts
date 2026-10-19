@@ -101,7 +101,8 @@ export interface ReportCfg {
   kieu: 'so' | 'tonghop' | 'bangke' | 'dinhmuc'
   doiTuong?: 'kh' | 'ncc' | 'hang' | 'nvl' | 'tk' | 'ts' | 'ccdc' | 'cn'
   cols?: Col[]                           // bảng kê tự khai cột
-  rows?: (thang: number, cn?: string, loc?: Record<string, string[]>) => Row[]   // cn: tên cửa hàng chọn trên thanh trên (T63); loc: bộ lọc đang xem, lọc trên phiếu trước khi cộng (T207)
+  rows?: (thang: number, cn?: string, loc?: Record<string, string[]>, tyLe?: boolean) => Row[]   // cn: tên cửa hàng chọn trên thanh trên (T63); loc: bộ lọc đang xem, lọc trên phiếu trước khi cộng (T207); tyLe: GTGT theo % doanh thu (T450)
+  theoGtgt?: boolean                     // báo cáo bán hàng (T450): GTGT theo % doanh thu bỏ cột thue, vat, hiện giamThue; khấu trừ thì ngược lại
   taiKhoan?: string                      // sổ theo tài khoản
   theoCn?: boolean                       // số liệu theo cửa hàng chọn trên thanh trên
   theoTk?: boolean                       // sổ tách theo tài khoản ngân hàng, lọc được theo quỹ tiền (T54)

@@ -2,6 +2,7 @@
 import type { Col, Row } from '../types'
 import { CUA_HANG, HANG, daysOf, tongKy } from '../../data/mock'
 import { dm } from '../../ui/format'
+import { giamThueHkd } from './giam-thue'
 
 const TY_LE = [0.21, 0.09, 0.12, 0.14, 0.07, 0.15, 0.1, 0.09, 0.03]
 
@@ -30,17 +31,17 @@ export const baoCaoBanHang = {
 
 export const baoCaoDoanhThu = {
   cols: [{ k: 'ngay', t: 'Ngày', w: 70 }, ...CUA_HANG.map(c => ({ k: c.id, t: c.ngan, num: true })), { k: 'dt', t: 'Doanh thu chưa thuế', num: true },
-    { k: 'vat', t: 'Thuế GTGT', num: true }, { k: 'don', t: 'Số đơn', num: true }] as Col[],
-  rows: (thang: number): Row[] => {
+    { k: 'vat', t: 'Thuế GTGT', num: true }, { k: 'giamThue', t: 'Giảm thuế GTGT', num: true }, { k: 'don', t: 'Số đơn', num: true }] as Col[],
+  rows: (thang: number, _cn?: string, _loc?: Record<string, string[]>, tyLe?: boolean): Row[] => {
     const ds = daysOf(thang, 2026)
     const ngay = [...new Set(ds.map(x => +x.date))]
     const rows: Row[] = ngay.map(d => {
       const n = ds.filter(x => +x.date === d)
-      const r: Row = { ngay: dm(new Date(d)), dt: 0, vat: 0, don: 0 }
-      for (const x of n) { r[x.cn] = x.dt; r.dt += x.dt; r.vat += x.vat; r.don += x.don }
+      const r: Row = { ngay: dm(new Date(d)), dt: 0, vat: 0, giamThue: 0, don: 0 }
+      for (const x of n) { r[x.cn] = x.dt; r.dt += x.dt; r.vat += tyLe ? 0 : x.vat; r.giamThue += tyLe ? giamThueHkd(x.dt) : 0; r.don += x.don }   // T450
       return r
     })
     const s = (k: string) => rows.reduce((a, r) => a + (r[k] ?? 0), 0)
-    return [...rows, { ngay: 'Cộng', ...Object.fromEntries(CUA_HANG.map(c => [c.id, s(c.id)])), dt: s('dt'), vat: s('vat'), don: s('don'), _t: 1 }]
+    return [...rows, { ngay: 'Cộng', ...Object.fromEntries(CUA_HANG.map(c => [c.id, s(c.id)])), dt: s('dt'), vat: s('vat'), giamThue: s('giamThue'), don: s('don'), _t: 1 }]
   },
 }

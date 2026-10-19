@@ -13,7 +13,7 @@ import { colsCongNo, rowsCongNo } from '../bao-cao/cong-no'
  *  Mã trên đường dẫn 3-2-6, 3-2-7, 3-2-8 là khoá cấu hình mẫu trong bao-cao/danh-sach.ts */
 // Gói Free tạm ẩn các báo cáo bán hàng, PhuongXT chốt 14/10/2026 (T216); mở lại thì bỏ goi
 const baoCaoMoi = (slug: string, ten: string, report: Omit<ReportCfg, 'kieu'>): ScreenDef =>
-  ({ slug, ten, nhom: 'Sổ sách, báo cáo', kind: 'report', goi: ['S', 'PL', 'PR'], report: { kieu: 'bangke', theoCn: true, ...report } })
+  ({ slug, ten, nhom: 'Sổ sách, báo cáo', kind: 'report', goi: ['S', 'PL', 'PR'], report: { kieu: 'bangke', theoCn: true, theoGtgt: true, ...report } })
 const BAO_CAO_MOI = [baoCaoMoi('3-2-6', 'Bán hàng theo ngày', banHangTheoNgay), baoCaoMoi('3-2-7', 'Tổng hợp bán hàng', tongHopBanHang), baoCaoMoi('3-2-8', 'Chi tiết bán hàng', chiTietBanHang),
   baoCaoMoi('3-2-9', 'Công nợ khách hàng', { cols: colsCongNo('kh'), rows: (t, cn) => rowsCongNo('kh', t, cn) })]   // theo mẫu iFaster, bấm tên mở lịch sử công nợ (T185)
 
@@ -41,7 +41,7 @@ const banHang: ModuleDef = {
       dienGiai: ['Điều chỉnh giảm đơn giá', 'Thay thế hoá đơn sai mã số thuế người mua'], noCo: [['5111', '131', 'Điều chỉnh giảm doanh thu'], ['33311', '131', 'Điều chỉnh giảm thuế']] } },
     '3.2.1': { report: { kieu: 'bangke', ...baoCaoBanHang } },
     '3.2.2': { kind: 'custom', comp: DoiSoat },
-    '3.2.3': { report: { kieu: 'bangke', ...baoCaoDoanhThu } },
+    '3.2.3': { report: { kieu: 'bangke', theoGtgt: true, ...baoCaoDoanhThu } },
     '3.2.4': { report: { kieu: 'bangke' } },
     '3.2.5': { report: SO_BO_SUNG['3.2.5'] },
   }, NGAN), ...BAO_CAO_MOI],

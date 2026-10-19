@@ -4,6 +4,7 @@ import type { Col, Row } from '../types'
 import { CUA_HANG, DAILY, HANG, trongThang } from '../../data/mock'
 import { dmy } from '../../ui/format'
 import { chiaTheo, dongCuaPhieu, soFabi, theoKenh } from './ChungTuBanHang'
+import { giamThueHkd } from './giam-thue'
 import { docLocNguon, quaLocDong, quaLocDt } from '../bao-cao/loc-nguon'
 
 /** Hệ số giá vốn theo nhóm món, như báo cáo bán hàng cũ: đồ uống rẻ vốn, bia rượu vốn cao */
@@ -31,24 +32,31 @@ function dongBan(thang: number, cn?: string, loc?: Record<string, string[]>): Do
   })).filter(d => quaLocDong(f, d) && quaLocDt(f, d.kh))
 }
 const cong = (ds: Row[], k: string) => ds.reduce((a, x) => a + (Number(x[k]) || 0), 0)
+/** Thuế của dòng món theo phương pháp GTGT (T450): % doanh thu thì không tiền thuế, có Giảm thuế GTGT; khấu trừ thì ngược lại */
+const thueDong = (d: DongBan, tyLe?: boolean) => {
+  const giamThue = tyLe ? giamThueHkd(d.tien) : 0
+  const thue = tyLe ? 0 : d.thue
+  return { thue, giamThue, tong: d.tien + thue - giamThue }
+}
 
 /** Bán hàng theo ngày: mỗi ngày một dòng */
 export const banHangTheoNgay = {
   cols: [{ k: 'ngay', t: 'Ngày', w: 92 }, { k: 'don', t: 'Số hoá đơn', num: true, w: 90 }, { k: 'thanh', t: 'Doanh thu hàng', num: true }, { k: 'giam', t: 'Giảm giá', num: true },
-    { k: 'tien', t: 'Doanh thu thuần', num: true }, { k: 'thue', t: 'Thuế GTGT', num: true }, { k: 'tong', t: 'Tổng thanh toán', num: true }] as Col[],
-  rows: (thang: number, cn?: string, loc?: Record<string, string[]>): Row[] => {
+    { k: 'tien', t: 'Doanh thu thuần', num: true }, { k: 'thue', t: 'Thuế GTGT', num: true }, { k: 'giamThue', t: 'Giảm thuế GTGT', num: true }, { k: 'tong', t: 'Tổng thanh toán', num: true }] as Col[],
+  rows: (thang: number, cn?: string, loc?: Record<string, string[]>, tyLe?: boolean): Row[] => {
     const id = CUA_HANG.find(c => c.ten === cn)?.id
     // Số hoá đơn là số đơn POS FABi gửi về trong ngày
     const don = new Map<string, number>()
     for (const x of DAILY) if (trongThang(x.date, thang, 2026) && (!id || x.cn === id)) don.set(dmy(x.date), (don.get(dmy(x.date)) ?? 0) + x.don)
     const nhom = new Map<string, Row>()
     for (const d of dongBan(thang, cn, loc)) {
-      const g = nhom.get(d.ngay) ?? { ngay: d.ngay, don: don.get(d.ngay) ?? 0, thanh: 0, giam: 0, tien: 0, thue: 0, tong: 0 }
-      g.thanh += d.thanh; g.giam += d.giam; g.tien += d.tien; g.thue += d.thue; g.tong += d.tien + d.thue
+      const g = nhom.get(d.ngay) ?? { ngay: d.ngay, don: don.get(d.ngay) ?? 0, thanh: 0, giam: 0, tien: 0, thue: 0, giamThue: 0, tong: 0 }
+      const t = thueDong(d, tyLe)
+      g.thanh += d.thanh; g.giam += d.giam; g.tien += d.tien; g.thue += t.thue; g.giamThue += t.giamThue; g.tong += t.tong
       nhom.set(d.ngay, g)
     }
     const ds = [...nhom.values()]
-    return [...ds, { ngay: 'Tổng cộng', don: cong(ds, 'don'), thanh: cong(ds, 'thanh'), giam: cong(ds, 'giam'), tien: cong(ds, 'tien'), thue: cong(ds, 'thue'), tong: cong(ds, 'tong'), _t: 1 }]
+    return [...ds, { ngay: 'Tổng cộng', don: cong(ds, 'don'), thanh: cong(ds, 'thanh'), giam: cong(ds, 'giam'), tien: cong(ds, 'tien'), thue: cong(ds, 'thue'), giamThue: cong(ds, 'giamThue'), tong: cong(ds, 'tong'), _t: 1 }]
   },
 }
 
@@ -74,9 +82,9 @@ export const tongHopBanHang = {
 export const chiTietBanHang = {
   cols: [{ k: 'ngay', t: 'Ngày', w: 88 }, { k: 'so', t: 'Số hoá đơn', cls: 'code', w: 120 }, { k: 'kh', t: 'Khách hàng' }, { k: 'ma', t: 'Mã hàng', cls: 'code', w: 70 },
     { k: 'ten', t: 'Tên hàng' }, { k: 'dvt', t: 'ĐVT', c: true, w: 50 }, { k: 'sl', t: 'Số lượng', num: true }, { k: 'gia', t: 'Đơn giá', num: true },
-    { k: 'thanh', t: 'Thành tiền', num: true }, { k: 'giam', t: 'Giảm giá', num: true }, { k: 'thue', t: 'Thuế GTGT', num: true }, { k: 'tong', t: 'Tổng tiền', num: true }] as Col[],
-  rows: (thang: number, cn?: string, loc?: Record<string, string[]>): Row[] => {
-    const ds: Row[] = dongBan(thang, cn, loc).map(d => ({ ngay: d.ngay, so: d.so, kh: d.kh, ma: d.ma, ten: d.ten, dvt: d.dvt, sl: d.sl, gia: d.gia, thanh: d.thanh, giam: d.giam, thue: d.thue, tong: d.tien + d.thue }))
-    return [...ds, { ten: 'Tổng cộng', thanh: cong(ds, 'thanh'), giam: cong(ds, 'giam'), thue: cong(ds, 'thue'), tong: cong(ds, 'tong'), _t: 1 }]
+    { k: 'thanh', t: 'Thành tiền', num: true }, { k: 'giam', t: 'Giảm giá', num: true }, { k: 'thue', t: 'Thuế GTGT', num: true }, { k: 'giamThue', t: 'Giảm thuế GTGT', num: true }, { k: 'tong', t: 'Tổng tiền', num: true }] as Col[],
+  rows: (thang: number, cn?: string, loc?: Record<string, string[]>, tyLe?: boolean): Row[] => {
+    const ds: Row[] = dongBan(thang, cn, loc).map(d => ({ ngay: d.ngay, so: d.so, kh: d.kh, ma: d.ma, ten: d.ten, dvt: d.dvt, sl: d.sl, gia: d.gia, thanh: d.thanh, giam: d.giam, ...thueDong(d, tyLe) }))
+    return [...ds, { ten: 'Tổng cộng', thanh: cong(ds, 'thanh'), giam: cong(ds, 'giam'), thue: cong(ds, 'thue'), giamThue: cong(ds, 'giamThue'), tong: cong(ds, 'tong'), _t: 1 }]
   },
 }

@@ -4,7 +4,8 @@ import { createPortal } from 'react-dom'
 import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import type { Col, ModuleDef, Row, ScreenDef, ScreenProps, VoucherCfg } from '../../modules/types'
 import { duongDan, nhomDangMo, tenMan } from '../../app/registry'
-import { cuaHangHienTai, donViHienTai, loaiHinhDv, useSession } from '../../app/session'
+import { cuaHangHienTai, donViHienTai, gtgtTyLe, loaiHinhDv, useSession } from '../../app/session'
+import { giamThueHkd } from '../../modules/ban-hang/giam-thue'
 import { kieuGhiSo } from '../../app/plan'
 import { Icon } from '../Icon'
 import { PageHead } from '../Page'
@@ -205,13 +206,19 @@ export const locMacDinh = (): GtLoc => ({ thoiGian: thangNay(), tim: '', doiTuon
 
 const MAC_DINH: VoucherCfg ={ prefix: 'CT', doiTuong: 'none', dienGiai: ['Chứng từ'], tien: [1_000_000, 20_000_000] }
 
+/** Chứng từ bán hàng có thuế khi GTGT theo % doanh thu: hiện Giảm thuế GTGT thay Thuế suất, Tiền thuế (T450) */
+export const giamGtgtCua = (mod: ModuleDef, cfg: VoucherCfg, s: Parameters<typeof gtgtTyLe>[0]) => nhomCua(mod.key, cfg) === 'ban' && cfg.thue !== 0 && gtgtTyLe(s)
+
 export function useDongChungTu(sc: ScreenDef, mod: ModuleDef): { cfg: VoucherCfg; rows: Row[] } {
   const cfg = sc.voucher ?? { ...MAC_DINH, dienGiai: [tenMan(sc)] }
   const { s } = useSession()
   // phieuThem đọc phiên (vd phiếu thu chi đồng bộ từ FABi theo công tắc, map PTTT, T264) nên tính lại khi các trường đó đổi
   const tatCa = useMemo(() => [...(cfg.phieuThem?.(s) ?? []), ...(cfg.rowsMau ? cfg.rowsMau() : cfg.loai ? gopLoai(cfg, sc.code ?? sc.slug) : chungTu(cfg, sc.code ?? sc.slug))], [sc, s.donVi, s.dongBoThuChi, s.mapPttt])   // eslint-disable-line react-hooks/exhaustive-deps   // rowsMau: phiếu mẫu riêng (T126); phieuThem: phiếu mẫu cố định (T168)
   const { ban, laDaXoa, phieuMoi, apSua } = useDaXoa(`${mod.key}/${sc.slug}`)
-  const rows = useMemo(() => [...phieuMoi, ...tatCa].filter(r => !laDaXoa(r.id)).map(apSua), [tatCa, ban])
+  // Chứng từ bán hàng khi GTGT theo % doanh thu (T450): không tiền thuế, tổng tiền = tiền hàng − Giảm thuế GTGT
+  const giam = giamGtgtCua(mod, cfg, s)
+  const rows = useMemo(() => [...phieuMoi, ...tatCa].filter(r => !laDaXoa(r.id)).map(apSua)
+    .map(r => giam ? { ...r, thue: 0, giamThue: giamThueHkd(r.tien || 0), tong: (r.tien || 0) - giamThueHkd(r.tien || 0) } : r), [tatCa, ban, giam])
   return { cfg, rows }
 }
 
@@ -322,7 +329,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
   // Lọc từng cột trên hàng lọc dưới tiêu đề bảng: phễu điều kiện theo kiểu cột, so theo chữ hiện trong ô
   const [locCot, setLocCot] = useState<Record<string, GiaTriLoc>>({})
   const kieuCot = (k: string): KieuLoc =>
-    k === 'ngay' ? 'ngay' : COT_CHON.has(k) ? 'chon' : k === 'tong' || k === 'thue' || k === 'daTra' || k === 'conNo' ? 'so' : 'chu'
+    k === 'ngay' ? 'ngay' : COT_CHON.has(k) ? 'chon' : k === 'tong' || k === 'thue' || k === 'giamThue' || k === 'daTra' || k === 'conNo' ? 'so' : 'chu'
   const chuCot = (k: string, r: Row): string => {
     if (k === 'nguon') return (NGUON[r.nguon] ?? NGUON.tay)[1]
     if (k === 'tt') return ghi ? (TT_CT[r.tt]?.[1] ?? 'Chưa ghi') : 'Đã ghi sổ'
@@ -417,7 +424,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
 
   const tong = list.reduce((a, r) => a + r.tong, 0)
   // Cột số được cộng ở dòng tổng; mua, bán thêm Đã trả, Còn phải trả (T93)
-  const cotCong = cfg.kiemKe ? ['soMat'] : cfg.dieuChinh && s.goi === 'F' ? [] : nhom === 'mua' || nhom === 'ban' ? ['tong', 'thue', 'daTra', 'conNo'] : ['tong', 'thue']
+  const cotCong = cfg.kiemKe ? ['soMat'] : cfg.dieuChinh && s.goi === 'F' ? [] : nhom === 'mua' || nhom === 'ban' ? ['tong', 'thue', 'giamThue', 'daTra', 'conNo'] : ['tong', 'thue']
   const congCot = (ds: Row[]) => Object.fromEntries(cotCong.map(k => [k, ds.reduce((a, r) => a + (Number(r[k]) || 0), 0)]))
   // Phiếu đem in: màn nhiều loại phiếu thì lấy loại và cấu hình theo loại của dòng
   const phieuCua = (r: Row): PhieuIn => ({ sc, row: r, cfg: theoLoai(cfg, r.loai), loai: cfg.loai?.find(x => x.k === r.loai) })
@@ -529,7 +536,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
     // Phiếu kiểm kê không có tiền: thay Tiền thuế, Tổng tiền bằng Kho, Số mặt hàng (T124)
     ...(cfg.kiemKe ? [{ k: 'kho', t: 'Kho', w: 180 } as Col, { k: 'soMat', t: 'Số mặt hàng', num: true, w: 120 } as Col] : []),
     ...(cfg.dieuChinh ? [{ k: 'kho', t: 'Kho', w: 180 } as Col] : []),   // T126
-    ...(!cfg.kiemKe && !cfg.dieuChinh && (cfg.thue !== undefined || cfg.dong === 'hang') ? [{ k: 'thue', t: 'Tiền thuế', num: true, w: 120 } as Col] : []),
+    ...(!cfg.kiemKe && !cfg.dieuChinh && (cfg.thue !== undefined || cfg.dong === 'hang') ? [giamGtgtCua(mod, cfg, s) ? { k: 'giamThue', t: 'Giảm thuế GTGT', num: true, w: 130 } as Col : { k: 'thue', t: 'Tiền thuế', num: true, w: 120 } as Col] : []),
     // Tham chiếu (T127, T270): các phiếu liên quan, một dòng, mở tab mới hoặc mở popup chọn mã
     {
       k: 'thamChieu', t: 'Tham chiếu', w: 150,
@@ -559,7 +566,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
   const [expandMap, setExpandMap] = useState<Map<string, boolean>>(() => new Map())
 
   const dsCotGomNhom = useMemo(() => {
-    const bo = new Set(['chk', 'stt', 'so', 'dienGiai', 'tenHang', 'thue', 'tong', 'action'])
+    const bo = new Set(['chk', 'stt', 'so', 'dienGiai', 'tenHang', 'thue', 'giamThue', 'tong', 'action'])
     return new Set(cot.colsDu.filter(c => !bo.has(c.k)).map(c => c.k))
   }, [cot.colsDu])
 
@@ -811,6 +818,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
                       coKm={ghi}
                       coNhapKho={nhom === 'mua' && Boolean(boO(nhom, cfgDong).tongNhap)}
                       gtnkCoThue={loaiHinhDv(s, donViHienTai(s)) === 'hkd'}   // T164
+                      giamThue={giamGtgtCua(mod, cfg, s) ? giamThueHkd : undefined}   // T450
                       lyDo={oLy ? { nhan: oLy.nhan, ds: oLy.ds ?? [], macDinh: '' } : undefined}
                       an={cfg.dieuChinh ? ['ts', 'thue', ...(s.goi === 'F' ? ['gia', 'tien'] : [])] : undefined}   // phiếu điều chỉnh không thuế; Free không giá trị (T131)
                     />
@@ -834,7 +842,8 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
                     <div><b>Cửa hàng:</b> {activeRow.cn || '—'}</div>
                     <div><b>Nguồn dữ liệu:</b> {activeRow.nguon}</div>
                     <div><b>Tổng tiền:</b> {money(activeRow.tong)} đ</div>
-                    <div><b>Thuế GTGT:</b> {money(activeRow.thue || 0)} đ</div>
+                    {giamGtgtCua(mod, cfg, s) ? <div><b>Giảm thuế GTGT:</b> {money(activeRow.giamThue || 0)} đ</div>
+                      : <div><b>Thuế GTGT:</b> {money(activeRow.thue || 0)} đ</div>}
                     {ghi && <div><b>Trạng thái:</b> {TT_CT[activeRow.tt]?.[1] ?? activeRow.tt}</div>}
                   </div>
                 )}
