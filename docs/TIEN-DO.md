@@ -57,6 +57,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T458 | Gói Free nhóm báo cáo bán hàng chỉ có Tổng hợp bán hàng, Bảng kê chi tiết bán hàng; ẩn Bán hàng theo ngày | PhuongXT | 19/10/2026 | [2026-10-19-phuongxt-mo-bao-cao-ban-hang-free](nhat-ky/2026-10-19-phuongxt-mo-bao-cao-ban-hang-free.md) |
 | T457 | Báo cáo bán hàng (Bán hàng theo ngày, Tổng hợp bán hàng, Bảng kê chi tiết bán hàng) thêm bộ lọc Kênh bán | PhuongXT | 19/10/2026 | [2026-10-19-phuongxt-cot-tien-bao-cao-ban-hang](nhat-ky/2026-10-19-phuongxt-cot-tien-bao-cao-ban-hang.md) |
 | T456 | Đổi tên báo cáo: Bảng kê mua hàng theo hàng hoá thành Bảng kê chi tiết mua hàng; Chi tiết bán hàng thành Bảng kê chi tiết bán hàng | PhuongXT | 19/10/2026 | [2026-10-19-phuongxt-cot-tien-bao-cao-ban-hang](nhat-ky/2026-10-19-phuongxt-cot-tien-bao-cao-ban-hang.md) |
 | T455 | Báo cáo Chi tiết bán hàng: thêm cột Kênh bán, mặc định gom nhóm theo kênh bán, xem Chi tiết; nút Tổng hợp mỗi kênh một dòng | PhuongXT | 19/10/2026 | [2026-10-19-phuongxt-cot-tien-bao-cao-ban-hang](nhat-ky/2026-10-19-phuongxt-cot-tien-bao-cao-ban-hang.md) |

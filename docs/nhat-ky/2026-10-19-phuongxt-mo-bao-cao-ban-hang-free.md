@@ -1,4 +1,4 @@
-# Gói Free hiện lại nhóm báo cáo bán hàng (T452)
+# Gói Free hiện lại nhóm báo cáo bán hàng (T452, T458)
 
 - Ngày: 19/10/2026
 - Người: PhuongXT, agent: Claude Code
@@ -8,11 +8,12 @@
 
 - `ban-hang/index.ts`: bỏ `goi: ['S', 'PL', 'PR']` ở `baoCaoMoi` (đặt từ T216), các báo cáo 3-2-6 đến 3-2-9 mở cho mọi gói.
 - `bao-cao/danh-sach.ts`: `AN_NHOM_BC` gói Free chỉ còn ẩn `thue`, bỏ `ban-hang` (đặt từ T218).
+- T458: PhuongXT chốt gói Free chỉ hiện Tổng hợp bán hàng (3-2-7), Bảng kê chi tiết bán hàng (3-2-8). `baoCaoMoi` nhận thêm `goi`; 3-2-6 Bán hàng theo ngày đặt `['S', 'PL', 'PR']`.
 
 ## Đã kiểm
 
 - `npm run typecheck`, `npm run build`, `python tools/kiem_tra.py --nhanh`: không lỗi.
-- Trình duyệt gói Free: màn Báo cáo có tab Bán hàng 3 báo cáo (Bán hàng theo ngày, Tổng hợp bán hàng, Chi tiết bán hàng); mở Tổng hợp bán hàng ra bảng có dữ liệu.
+- Trình duyệt gói Free: màn Báo cáo có tab Bán hàng 3 báo cáo (Bán hàng theo ngày, Tổng hợp bán hàng, Chi tiết bán hàng); mở Tổng hợp bán hàng ra bảng có dữ liệu. Sau T458: gói Free nhóm Kế toán bán hàng 2 báo cáo, không còn Bán hàng theo ngày; gói Plus vẫn đủ 3.
 
 ## Dở dang, việc tiếp theo
 

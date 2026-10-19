@@ -4,6 +4,8 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 19/10/2026
 
+- T458: Gói Free, nhóm báo cáo bán hàng chỉ còn Tổng hợp bán hàng và Bảng kê chi tiết bán hàng; Bán hàng theo ngày từ gói Standard trở lên.
+
 - T457: Báo cáo Bán hàng theo ngày, Tổng hợp bán hàng, Bảng kê chi tiết bán hàng có bộ lọc Kênh bán (Tại quán, Mang về, App giao đồ ăn); Số hoá đơn theo ngày cũng đếm theo kênh đang lọc.
 
 - T456: Đổi tên báo cáo Bảng kê mua hàng theo hàng hoá thành Bảng kê chi tiết mua hàng, Chi tiết bán hàng thành Bảng kê chi tiết bán hàng.
