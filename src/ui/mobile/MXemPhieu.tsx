@@ -15,7 +15,7 @@ import { DCN } from '../../modules/kho/dieu-chuyen'
 import { MAN_DC } from '../../modules/kho/dieu-chinh'
 import { CUA_HANG, KHOAN_MUC, TK_NGAN_HANG, daKhoaSo } from '../../data/mock'
 import { ctTtCon, dsDcCon, dsTtCon, ghiNhatKy, soDaTra, soKeTiep, suaPhieu, themPhieu, ttThamChieu, xoaPhieu } from '../generic/daXoa'
-import { LichSu, MAN_THU_CHI, TEN_CT_TT, TIEN_TO_CT_TT } from '../generic/ChungTuForm'
+import { LichSu, MAN_THU_CHI, TEN_CT_TT, TIEN_TO_CT_TT, lyDoKhongXoaTheCuaPhieu, theCuaPhieu, xoaTheCuaPhieu } from '../generic/ChungTuForm'
 import { loaiXuLy } from '../generic/BangKiemKe'
 import { HopXacNhan } from '../LocNangCao'
 import { HopInChungTu, type PhieuIn } from '../bao-cao/InChungTu'
@@ -96,6 +96,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
   const [moThanhToan, setMoThanhToan] = useState(() => sp.get('thanhtoan') === '1')
   const [timHangHoa, setTimHangHoa] = useState('')
   const [hoiXoa, setHoiXoa] = useState(false)
+  const [hoiKhongSua, setHoiKhongSua] = useState(false)   // phiếu chi còn thẻ chi phí (T475)
   const [hoiBoGhi, setHoiBoGhi] = useState(false)
   const [phieuIn, setPhieuIn] = useState<PhieuIn[] | null>(null)
   const [phieuChiVuaLap, setPhieuChiVuaLap] = useState<{ so: string; id: string } | null>(null)
@@ -337,6 +338,9 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
     ]
   }, [laTien, nhomMb, laKk, s.goi, dsButToan.length, dsDong.length, dsTt.length])
 
+  // Sửa phiếu: phiếu chi đã có thẻ chi phí phân bổ thì không sửa, báo xoá thẻ trước như bản máy tính (T475, theo T439)
+  const moSua = () => { if (theCuaPhieu(row).length) setHoiKhongSua(true); else nav(`${path}/${row.id}?sua=1`) }
+
   // Nút hành động chính và phụ ở chân màn hình
   const coNutGhiSo = kieu !== 'khong' && s.goi !== 'F' && !laDc
   const coTheSua = !laDc && (s.goi === 'F' || !coNutGhiSo || row.tt !== 'ghi')
@@ -347,7 +351,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
     if (coTheSua) {
       nutPhu = {
         nhan: 'Sửa phiếu',
-        action: () => nav(`${path}/${row.id}?sua=1`),
+        action: moSua,
       }
     }
     if (conLai > 0) {
@@ -359,14 +363,14 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
     } else if (coTheSua) {
       nutChinh = {
         nhan: 'Sửa phiếu',
-        action: () => nav(`${path}/${row.id}?sua=1`),
+        action: moSua,
       }
       nutPhu = null
     }
   } else if (s.goi === 'F') {
     nutChinh = {
       nhan: 'Sửa phiếu',
-      action: () => nav(`${path}/${row.id}?sua=1`),
+      action: moSua,
     }
   } else if (coNutGhiSo) {
     if (row.tt === 'ghi') {
@@ -387,7 +391,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
   } else if (!laDc) {
     nutChinh = {
       nhan: 'Sửa phiếu',
-      action: () => nav(`${path}/${row.id}?sua=1`),
+      action: moSua,
     }
   }
 
@@ -401,7 +405,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
 
   const handleMenuChon = (k: string) => {
     if (k === 'sua') {
-      nav(`${path}/${row.id}?sua=1`)
+      moSua()
     } else if (k === 'thanhtoan') {
       setMoThanhToan(true)
     } else if (k === 'in') {
@@ -414,6 +418,8 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
         toast(`${row.so} thuộc kỳ đã khoá sổ, không xoá được`)
       } else if (kieu !== 'khong' && row.tt !== 'nhap') {
         toast(`${row.so} đã ghi sổ, bỏ ghi sổ rồi mới xoá`)
+      } else if (lyDoKhongXoaTheCuaPhieu(row)) {
+        toast(lyDoKhongXoaTheCuaPhieu(row)!)   // thẻ chi phí của phiếu thuộc kỳ đã khoá sổ (T475, theo T439)
       } else if (ttThamChieu(row)) {
         toast(`${row.so} có phiếu ${ttThamChieu(row)!.so} tham chiếu, xoá ${ttThamChieu(row)!.so} trước`)
       } else if (((laSx && !sxNhap) || dcn === 'xdc') && row._phieuNhap) {
@@ -427,6 +433,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
   const thucHienXoa = () => {
     setHoiXoa(false)
     xoaPhieu(`${mod.key}/${sc.slug}`, [{ id: String(row.id), so: soCt }], s.ten)
+    xoaTheCuaPhieu([row], s.ten)   // phiếu chi đã tạo thẻ chi phí: xoá luôn thẻ như bản máy tính (T475, theo T436)
     if (coTcNhap && row._thamChieuId) {
       suaPhieu(manDoi, String(row._thamChieuId), { ttSx: 'cho', _phieuNhap: undefined })
     }
@@ -1185,6 +1192,15 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
           }}
         >
           Bỏ ghi sổ sẽ huỷ các bút toán và cập nhật lại số dư sổ sách liên quan.
+        </HopXacNhan>
+      )}
+
+      {/* Phiếu chi còn thẻ chi phí phân bổ: không sửa, mở thẻ để xoá; xoá thẻ xong về phiếu ở chế độ sửa (T475, theo T439) */}
+      {hoiKhongSua && (
+        <HopXacNhan tieuDe={`Không sửa được ${soCt}`} nut="Mở thẻ" nutHuy="Đóng" nutDo={false}
+          onDong={() => setHoiKhongSua(false)}
+          onDongY={() => { setHoiKhongSua(false); nav(`/app/ccdc/8-1-1?mo=${theCuaPhieu(row)[0]}`, { state: { veGoc: `${path}/${row.id}` } }) }}>
+          Phiếu đã có thẻ chi phí phân bổ {theCuaPhieu(row).join(', ')}. Xoá thẻ trước rồi mới sửa được phiếu. Thẻ chỉ xoá được khi kỳ khoá sổ còn trước tháng bắt đầu phân bổ của thẻ.
         </HopXacNhan>
       )}
 

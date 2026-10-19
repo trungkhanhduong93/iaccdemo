@@ -7,7 +7,8 @@ import { anNgoaiGoi } from '../../app/plan'
 import { CUA_HANG } from '../../data/mock'
 import { money, fold } from '../format'
 import { Icon } from '../Icon'
-import { suaPhieu } from '../generic/daXoa'
+import { laDaXoa, suaPhieu, xoaPhieu } from '../generic/daXoa'
+import { lyDoKhongXoaThe } from '../../modules/ccdc/the-phan-bo'
 import { MDanhSach } from './MDanhSach'
 import { MBaoCaoTheoDoi } from './MBaoCaoTheoDoi'
 import { MChon } from './MChon'
@@ -69,7 +70,8 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
   }
   const tuPhieu = (loc.state as { tuPhieu?: TuPhieuData } | null)?.tuPhieu
 
-  const [theList, setTheList] = useState<TheItem[]>(() => [...theTaoPhien, ...THE_MAU_BASE])
+  // Thẻ đã xoá (dm/8-1-1, cả từ máy tính) không hiện lại (T475)
+  const [theList, setTheList] = useState<TheItem[]>(() => [...theTaoPhien, ...THE_MAU_BASE].filter(t => !laDaXoa('dm/8-1-1', t.soThe)))
   // ?mo=<số thẻ>: mở thẳng chi tiết thẻ, vd bấm Thẻ chi phí trên phiếu chi; quay lại thì về màn trước (T421)
   const [theXem, setTheXem] = useState<TheItem | null>(() => { const mo = sp.get('mo'); return mo ? [...theTaoPhien, ...THE_MAU_BASE].find(t => t.soThe === mo) ?? null : null })
   const [tuLink] = useState(() => Boolean(sp.get('mo')))
@@ -657,11 +659,18 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
           setTheXem(theMoi)
         }
 
+        // Xoá thẻ như bản máy tính (T475, theo T439): kỳ khoá sổ chứa tháng bắt đầu phân bổ thì không xoá; xoá ghi dm/8-1-1 để phiếu chi gốc biết;
+        // thẻ mở từ phiếu (state.veGoc) xoá xong về phiếu ở chế độ sửa
         const handleXoaThe = () => {
+          const ly = lyDoKhongXoaThe(theXem as unknown as Row)
+          if (ly) { toast(ly); setMoMenuMore(false); return }
           setTheList(prev => prev.filter(t => t.soThe !== theXem.soThe))
+          xoaPhieu('dm/8-1-1', [{ id: theXem.soThe, so: theXem.soThe }], s.ten)
           toast(`Đã xoá thẻ ${theXem.soThe}`)
           setMoMenuMore(false)
           setTheXem(null)
+          const veGoc = (loc.state as { veGoc?: string } | null)?.veGoc
+          if (veGoc) nav(`${veGoc}?sua=1`, { replace: true })
         }
 
         return (

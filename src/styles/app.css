@@ -31309,3 +31309,8 @@ a.tx-item:hover {
 .pop.pop-sel .mi { align-items: flex-start; padding-top: 7px; padding-bottom: 7px; }
 .pop.pop-sel .mi + .mi { border-top: 1px solid var(--line-2); }
 .pop.pop-sel .mi .mi-ok { margin-top: 2px; }
+
+/* ── Điện thoại: hộp xác nhận (ds-hop) nổi trên màn xem phiếu, thẻ (m-pb-man z-index 1000), vd Không sửa được, Xoá phiếu (T475) ── */
+@media (max-width: 767px) {
+  .overlay:has(> .ds-hop) { z-index: 1100 !important; }
+}
