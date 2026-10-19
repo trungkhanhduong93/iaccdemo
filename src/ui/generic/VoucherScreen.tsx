@@ -28,7 +28,7 @@ import { NGUON, TT_CT, chungTu, dongCua, gioPhieu, tomTatTenHang, ttNghiepVu, ty
 import { boO, nhomCua, theoLoai, TT_HD, TT_TIEN } from './nhom'
 import { BangKiemKe } from './BangKiemKe'
 import { BangSua } from './BangSua'
-import { ChungTuForm, HachToan, LichSu, VoucherDetail, lyMacDinh, xoaTheCuaPhieu } from './ChungTuForm'
+import { ChungTuForm, HachToan, LichSu, VoucherDetail, lyDoKhongXoaTheCuaPhieu, lyMacDinh, xoaTheCuaPhieu } from './ChungTuForm'
 import { HopInChungTu, type PhieuIn } from '../bao-cao/InChungTu'
 
 /** Ngày tạo, người tạo (T132): phiếu lưu trong phiên có sẵn; phiếu mẫu đồng bộ từ phần mềm khác do Hệ thống tạo lúc đồng bộ,
@@ -688,7 +688,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
                   onOpenChange={setMoHangLoat}
                   onIn={() => setPhieuIn(selectedRows.map(phieuCua))}
                   khongXoa={cfg.dieuChinh}   // phiếu điều chỉnh chỉ xem (T129)
-                  khoaXoa={mod.key === 'tien' ? { la: r => r.nguon === 'FABi', ly: 'đồng bộ từ FABi' } : undefined}   // xoá trên FABi (T283)
+                  khoaXoa={mod.key === 'tien' ? { la: r => r.nguon === 'FABi' || Boolean(lyDoKhongXoaTheCuaPhieu(r)), ly: 'đồng bộ từ FABi hoặc có thẻ chi phí thuộc kỳ đã khoá sổ' } : undefined}   // xoá trên FABi (T283); thẻ đã khoá sổ (T439)
                 />
               </div>
             </div>

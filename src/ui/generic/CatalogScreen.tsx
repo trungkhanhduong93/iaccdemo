@@ -36,7 +36,7 @@ import { GoiYLapPhieu } from './GoiYLapPhieu'
 import { HOM_NAY } from '../../data/mock'
 import { dmy } from '../format'
 import { addCatalogRow, useAddedCatalogRows, sinhMaKeTiep } from './danhMucStore'
-import { suaPhieu, useDaXoa } from './daXoa'
+import { suaPhieu, useDaXoa, xoaPhieu } from './daXoa'
 
 export function CatalogScreen({ sc }: ScreenProps) {
   const { s, set, toast } = useSession()
@@ -64,10 +64,20 @@ export function CatalogScreen({ sc }: ScreenProps) {
     setTtGhiDe(prev => ({ ...prev, [k]: ttMoi }))
   }, [khoaDong])
 
+  const hauXuLy = cfg.useHauXuLy?.(ky, s.goi)   // T438
+  const [hoiNut, setHoiNut] = useState<{ n: NonNullable<typeof cfg.nutKichHoat>[number]; cau: string; k: number } | null>(null)   // hỏi lại nút phụ, vd Xoá phân bổ
+  // Nút phụ chạy theo kỳ đang chọn ở ô Kỳ số liệu, kể cả khi chưa bấm Lọc: áp luôn bộ lọc, lấy dòng của kỳ đó (T438)
+  const bamNutPhu = (n: NonNullable<typeof cfg.nutKichHoat>[number]) => {
+    const k = nhapLoc.ky
+    if (k !== ky) apLoc()
+    const ds = cfg.rows(s.cheDo, k).filter(r => !cfg.locGoi || cfg.locGoi(s.goi, r)).map(r => cfg.phien ? cfg.phien.gan(r, s) : r).map(r => hauXuLy ? hauXuLy(r) : r)
+    const h = n.hoi?.(ds, k)
+    if (h) setHoiNut({ n, cau: h, k }); else toast(n.lam(ds, k))
+  }
   const allGoc = useMemo(() => {
-    const goc = cfg.rows(s.cheDo, ky).filter(r => !cfg.locGoi || cfg.locGoi(s.goi, r)).map(r => cfg.phien ? cfg.phien.gan(r, s) : r)
+    const goc = cfg.rows(s.cheDo, ky).filter(r => !cfg.locGoi || cfg.locGoi(s.goi, r)).map(r => cfg.phien ? cfg.phien.gan(r, s) : r).map(r => hauXuLy ? hauXuLy(r) : r)
     return [...goc, ...addedRows]
-  }, [sc, s.cheDo, ky, s.goi, cfg.phien ? s : null, addedRows])
+  }, [sc, s.cheDo, ky, s.goi, cfg.phien ? s : null, addedRows, hauXuLy])
   const all = useMemo((): Row[] => {
     return allGoc.map((r, i) => {
       const k = String(r.ma ?? r.so ?? r.username ?? r.id ?? (cols0[0]?.k ? r[cols0[0].k] : undefined) ?? r.ten ?? `_r_${i}`)
@@ -276,6 +286,8 @@ export function CatalogScreen({ sc }: ScreenProps) {
     if (mo !== null) {
       const r = all.find(x => String(x[dsct?.cotSo ?? cols0[0].k]) === mo)
       if (r) moSua(r)
+      // Mở từ phiếu chi gốc (state.veGoc): đóng thẻ thì về phiếu, xoá thẻ thì về phiếu ở chế độ sửa (T439)
+      setVeGoc((viTri.state as { veGoc?: string } | null)?.veGoc ?? null)
       setThamSo({}, { replace: true })
       return
     }
@@ -328,6 +340,11 @@ export function CatalogScreen({ sc }: ScreenProps) {
                 <div className="ds-thanh-h1-phai">
                   {/* T429: hướng dẫn Cách làm vào nút ⓘ cạnh nút thêm, menu thêm hàng loạt kèm số khoản chờ */}
                   {canhBao?.cachLam && <NutCachLam cachLam={canhBao.cachLam} />}
+                  {cfg.nutKichHoat?.filter(n => n.goi.includes(s.goi)).map(n => (
+                    <button key={n.nhan} type="button" className="btn ds-nut-phu" onClick={() => bamNutPhu(n)}>
+                      <Icon n={n.icon} className="ic sm" />{n.nhan}
+                    </button>
+                  ))}
                   <NutThemMoiSplit nhan={nutThem[0].nut} toMoi={`${viTri.pathname}?moi=${nutThem[0].k}`}
                     so={nutThem[0].k === HANG_LOAT && canhBao?.so ? canhBao.so : undefined}
                     loai={nutThem.length > 1 ? nutThem.map(b => ({ k: b.k, ten: b.k === HANG_LOAT && canhBao?.so ? `${b.ten} (${canhBao.so})` : b.ten, icon: b.icon })) : undefined} />
@@ -627,7 +644,10 @@ export function CatalogScreen({ sc }: ScreenProps) {
           scSlug={sc.slug}
           chiXem={Boolean(edit.ma || edit.ten) && Boolean(cfg.chiXem?.includes(s.goi))}
           onDong={dongForm}
-          onXoa={val => { setDaXoaDm(x => new Set(x).add(khoaXoa(val))); setEdit(null); toast(`Đã xoá ${val.soThe ?? val.ma ?? ''}`) }}
+          onXoa={val => {
+            setDaXoaDm(x => new Set(x).add(khoaXoa(val))); xoaPhieu(`dm/${sc.slug}`, [{ id: khoaXoa(val), so: String(val.soThe ?? val.ma ?? '') }], s.ten); setEdit(null); toast(`Đã xoá ${val.soThe ?? val.ma ?? ''}`)
+            if (veGoc) { const g = veGoc; setVeGoc(null); nav(`${g}?sua=1`) }
+          }}
           onSaoChep={(kieu, d) => { setEdit(null); setTimeout(() => moSua({}, kieu, d), 0) }}
           onLuu={(val, themTiep) => {
             if (val && !val._sua) {
@@ -648,6 +668,12 @@ export function CatalogScreen({ sc }: ScreenProps) {
             if (!themTiep) dongForm()
           }}
         />
+      )}
+      {hoiNut && (
+        <HopXacNhan tieuDe={`${hoiNut.n.nhan}?`} nut={hoiNut.n.nhan} onDong={() => setHoiNut(null)}
+          onDongY={() => { const h = hoiNut; setHoiNut(null); toast(h.n.lam(cfg.rows(s.cheDo, h.k).map(r => hauXuLy ? hauXuLy(r) : r), h.k)) }}>
+          {hoiNut.cau}
+        </HopXacNhan>
       )}
       {quyVuaTao && <GoiYLapPhieu quy={quyVuaTao} onDong={() => setQuyVuaTao(null)} />}
       {moHangLoat && cfg.hangLoat && <cfg.hangLoat.Form soDong={all.length} rows={all} onDong={() => setMoHangLoat(false)} />}
@@ -747,7 +773,7 @@ export function CatalogPanel({
       // Ctrl+O sao chép như Tiện ích Sao chép (T297)
       else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'o') { e.preventDefault(); saoChepRef.current() }
       // Ctrl+Delete xoá như Tiện ích Xoá, hỏi lại trước (T297)
-      else if ((e.ctrlKey || e.metaKey) && e.key === 'Delete' && cauHinhRef.current?.tienIch?.xoa?.(formValRef.current)) { e.preventDefault(); setHoiXoa(true) }
+      else if ((e.ctrlKey || e.metaKey) && e.key === 'Delete' && cauHinhRef.current?.tienIch?.xoa?.(formValRef.current)) { e.preventDefault(); thuXoaRef.current() }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
@@ -756,6 +782,10 @@ export function CatalogPanel({
   // Tiện ích (T297): sao chép mở form thêm mới điền sẵn; xoá hỏi lại trước
   const [hoiXoa, setHoiXoa] = useState(false)
   const saoChep = () => { const d = cauHinh?.tienIch?.saoChep?.(formVal); if (d) onSaoChep?.(formVal._kieu, d) }
+  // Xoá: có lý do chặn (vd thẻ thuộc kỳ đã khoá sổ, T439) thì báo, không hỏi xoá
+  const thuXoa = () => { const ly = cauHinh?.tienIch?.chanXoa?.(formVal); if (ly) toast(ly); else setHoiXoa(true) }
+  const thuXoaRef = useRef(thuXoa)
+  thuXoaRef.current = thuXoa
   const saoChepRef = useRef(saoChep)
   saoChepRef.current = saoChep
   const cauHinhRef = useRef(cauHinh)
@@ -1167,7 +1197,7 @@ export function CatalogPanel({
                       <MenuItem icon="copy" onClick={() => { dongMenu(); saoChep() }}>Sao chép</MenuItem>
                     )}
                     {cauHinh?.tienIch?.xoa?.(formVal) && (
-                      <MenuItem icon="trash" onClick={() => { dongMenu(); setHoiXoa(true) }}>Xoá</MenuItem>
+                      <MenuItem icon="trash" onClick={() => { dongMenu(); thuXoa() }}>Xoá</MenuItem>
                     )}
                   </>}
                 </Dropdown>

@@ -23,6 +23,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 - T440 (điện thoại): Bộ lọc danh mục làm lại theo dạng bảng trượt từ đáy lên (`m-loc-tam`) đồng bộ với danh sách chứng từ: có tay kéo, nút Đặt lại và Áp dụng; các ô điều kiện Trạng thái và trường danh mục bấm vào mở trang con chọn giá trị kèm ô tìm kiếm.
 
 - T423, T435 (điện thoại): Trang chủ Free khối Quỹ tiền: nút "Tất cả quỹ (n) ›" hiện lại ở cột phải phía trên nút "Xem dòng tiền 13 tháng ›", độ cao hai nút căn bằng nút "Tạo quỹ" bên trái. Số tồn quỹ hiện tại chuyển sang bên phải cùng hàng với nhãn "Tồn quỹ hiện tại", cỡ chữ số lớn 19px đậm theo thang T426, không bị xuống dòng trên màn 360px.
+- T437, T438, T439: Thẻ chi phí phân bổ: tab Chi tiết phân bổ thêm cột Đã PB tới hiện tại, Còn lại hiện tại. Tab Đã phân bổ đổi tên Lịch phân bổ, trạng thái Đã phân bổ, Chờ phân bổ, Ngừng phân bổ. Gói Plus, Pro: danh sách thẻ có nút Phân bổ, Xoá phân bổ cho tháng đang chọn (tháng đã khoá sổ thì không làm được); Phân bổ trong kỳ, Đã phân bổ, Còn lại chỉ tính tháng đã phân bổ. Phiếu chi đã có thẻ không sửa được, phải xoá thẻ trước; thẻ chỉ xoá được khi kỳ khoá sổ còn trước tháng bắt đầu phân bổ; xoá thẻ mở từ phiếu thì về lại phiếu để sửa, lưu xong báo tạo thẻ mới.
 
 ## 18/10/2026
 

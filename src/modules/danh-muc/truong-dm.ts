@@ -107,7 +107,7 @@ export interface CauHinhDM {
   chiSua?: string[]                                  // mở dòng có sẵn chỉ sửa được các ô này, ô khác khoá (T334)
   // Nhiều kiểu thêm mới trên cùng màn, mỗi kiểu một nút; kiểu lưu ở form._kieu, mở thẳng bằng ?moi=<k>
   // Menu Tiện ích ở chân form toàn màn khi xem (T297): xoá dòng, sao chép thành dòng mới; hàm trả false thì ẩn mục
-  tienIch?: { xoa?: (v: Record<string, any>) => boolean; saoChep?: (v: Record<string, any>) => Record<string, any> | null }
+  tienIch?: { xoa?: (v: Record<string, any>) => boolean; chanXoa?: (v: Record<string, any>) => string | null; saoChep?: (v: Record<string, any>) => Record<string, any> | null }
   bien?: { k: string; ten: string; nut: string; icon?: string; goi?: Goi[]; menu?: string }[]   // goi: chỉ hiện ở các gói này; menu: nhãn ở menu Thêm theo loại, thiếu thì lấy ten (T284)
   moi?: (rows: Row[], ctx: { kieu?: string; ngayDauNam: string }) => Record<string, any>   // giá trị sẵn khi thêm mới theo kiểu thêm mới, ngày đầu năm của đơn vị
   doi?: (k: string, v: Record<string, any>, rows: Row[], s?: { goi: Goi; cheDo: CheDo }) => Record<string, any>   // ô tự tính khi ô k đổi

@@ -10,7 +10,7 @@ import { tkTheoCheDo } from '../../modules/tong-hop/so-cai'
 import { CUA_HANG, KHACH, KHO, KHOA_SO_DEN, LY_CAN_DOI_TUONG, LY_CHI_PHI, LY_DO, NCC, NHAN_VIEN, TK_NGAN_HANG, daKhoaSo } from '../../data/mock'
 import { DS_PTTT } from '../../modules/danh-muc/data'
 import { HopXacNhan } from '../LocNangCao'
-import { bayGio, ctTtCon, dsDcCon, dsTtCon, ghiNhatKy, soDaTra, soKeTiep, suaPhieu, themPhieu, ttThamChieu, useNhatKy, xoaPhieu, type CtTt, type PhieuTt } from './daXoa'
+import { bayGio, ctTtCon, dsDcCon, dsTtCon, ghiNhatKy, laDaXoa, soDaTra, soKeTiep, suaPhieu, themPhieu, ttThamChieu, useNhatKy, xoaPhieu, type CtTt, type PhieuTt } from './daXoa'
 import { Icon } from '../Icon'
 import { HopPhimTat, phimDong } from '../BangPhimTat'
 import { Card, Note } from '../Page'
@@ -32,7 +32,8 @@ import { DCN, dongNhapDc, type DongDcn } from '../../modules/kho/dieu-chuyen'
 import { BangSua, DS_DOI_TUONG, HopCotPhieu, cotTuyChon } from './BangSua'
 import { HopInChungTu, type PhieuIn } from '../bao-cao/InChungTu'
 import { createPortal } from 'react-dom'
-import { theMauTheoGoc } from '../../modules/ccdc'
+import { theMauTheoGoc, theMauTheoSo } from '../../modules/ccdc'
+import { lyDoKhongXoaThe } from '../../modules/ccdc/the-phan-bo'
 
 export interface ChungTuFormProps extends ScreenProps {
   cfg: VoucherCfg
@@ -58,6 +59,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   const [modalPhim, setModalPhim] = useState(false)
   const [phieuIn, setPhieuIn] = useState<PhieuIn[] | null>(null)
   const [hoiXoa, setHoiXoa] = useState(false)
+  const [hoiKhongSua, setHoiKhongSua] = useState(false)   // phiếu đã có thẻ chi phí phân bổ: không sửa, xoá thẻ trước (T439)
   const [hoiDong, setHoiDong] = useState(false)   // phiếu đang thêm mới: hỏi lại trước khi Huỷ, đóng (T125)
 
   const loai = cfgMan.loai?.find(x => x.k === (row?.loai ?? sp.get('loai'))) ?? cfgMan.loai?.[0]
@@ -446,11 +448,13 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
     toast(moi ? `Đã lưu ${soCt}` : `Đã lưu thay đổi ${soCt}`)
     // Phiếu chi mới lý do Chi phí chờ phân bổ: báo rồi mở màn tạo thẻ chi phí phân bổ, điền sẵn từ phiếu (T419: thông báo, không hỏi)
     // Mỗi dòng phiếu có lý do Chi phí chờ phân bổ thành một dòng chi tiết của thẻ (tên = diễn giải, số tiền = thành tiền)
+    // Sửa phiếu (vd đã xoá thẻ cũ để sửa, T439): phiếu chưa còn thẻ nào thì cũng báo tạo thẻ như phiếu mới
     const dongCho = oLy ? dsDong.filter(d => (d.ly ?? lyDo) === LY_CHO_PHAN_BO) : []
-    if (moi && dongCho.length) {
-      setHoiThe({ moMoi, idMoi, tu: {
+    const idPhieu = moi ? idMoi : String(row!.id)
+    if (dongCho.length && (moi || !theCuaPhieu(row).length)) {
+      setHoiThe({ moMoi, idMoi: idPhieu, tu: {
         dong: dongCho.map(d => ({ ten: d.ten, gt: String(d.tien), sl: 1 })),
-        soCt, ngayCt, ghiChuCt: ghiChu, ngay: ngayCt, ngayPb: ngayCt, _goc: `${path}/${idMoi}`,
+        soCt, ngayCt, ghiChuCt: ghiChu, ngay: ngayCt, ngayPb: ngayCt, _goc: `${path}/${idPhieu}`,
       } })
       return
     }
@@ -474,10 +478,19 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
     if (!row || khoaSua) return
     if (daKhoaSo(row.ngay)) toast(`${row.so} thuộc kỳ đã khoá sổ, không xoá được`)
     else if (kieu !== 'khong' && row.tt !== 'nhap') toast(`${row.so} đã ghi sổ, bỏ ghi sổ rồi mới xoá`)
+    else if (lyDoKhongXoaTheCuaPhieu(row)) toast(lyDoKhongXoaTheCuaPhieu(row)!)   // thẻ chi phí của phiếu thuộc kỳ đã khoá sổ (T439)
     else if (ttThamChieu(row)) toast(`${row.so} có phiếu ${ttThamChieu(row)!.so} tham chiếu, xoá ${ttThamChieu(row)!.so} trước`)   // T85, T91
     else if (((laSx && !sxNhap) || dcn === 'xdc') && row._phieuNhap) toast(`${row.so} đã có phiếu nhập ${(row._phieuNhap as { so: string }).so}, xoá phiếu nhập trước`)   // T152
     else setHoiXoa(true)
   }
+
+  // Sửa phiếu: phiếu chi đã có thẻ chi phí phân bổ thì không sửa, báo xoá thẻ trước (T439)
+  function batSua() {
+    if (row && theCuaPhieu(row).length) setHoiKhongSua(true)
+    else setDangSua(true)
+  }
+  const batSuaRef = useRef(batSua)
+  batSuaRef.current = batSua
 
   // In: lấy dữ liệu đang có trên form, phiếu mới chưa lưu cũng in được
   function moIn() {
@@ -496,7 +509,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
         else luu(false)
       } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'e') {
         e.preventDefault()
-        if (!khoaSua) setDangSua(true)   // phiếu điều chỉnh, phiếu FABi chỉ xem (T129, T283)
+        if (!khoaSua) batSuaRef.current()   // phiếu điều chỉnh, phiếu FABi chỉ xem (T129, T283); phiếu có thẻ chi phí thì báo (T439)
       } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'q') {
         // Huỷ thay đổi như nút Huỷ (T297)
         e.preventDefault()
@@ -822,7 +835,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               <button
                 type="button"
                 className="btn pri"
-                onClick={() => setDangSua(true)}
+                onClick={batSua}
               >
                 <Icon n="edit" className="ic sm" />Sửa (Ctrl+E)
               </button>
@@ -1003,7 +1016,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
                     {LY_CHI_PHI.includes(lyDo) && <span className="chip ok ly-cp" title="Lý do nghiệp vụ được tích Là chi phí: khoản chi tính vào Chi phí trong tháng">Chi phí</span>}
                   </div>
                   {/* T419: phiếu mới có khoản chờ phân bổ thì nhắc trước, lưu xong sẽ mở màn tạo thẻ */}
-                  {moi && dangSua && dsDong.some(d => (d.ly ?? lyDo) === LY_CHO_PHAN_BO) && (
+                  {dangSua && (moi || !theCuaPhieu(row).length) && dsDong.some(d => (d.ly ?? lyDo) === LY_CHO_PHAN_BO) && (
                     <div className="ly-nhac-the"><Icon n="info" className="ic sm" />Lưu phiếu xong sẽ tạo Thẻ chi phí phân bổ</div>
                   )}
                 </div>
@@ -1151,7 +1164,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
           {oLy && theCuaPhieu(row).length > 0 && (
             <div className="row ct-tham-chieu">
               <span className="dim">Thẻ chi phí:</span>
-              {theCuaPhieu(row).map(so => <Link key={so} className="ds-link-so" to={`/app/ccdc/8-1-1?mo=${so}`} title="Mở thẻ chi phí phân bổ">{so}</Link>)}
+              {theCuaPhieu(row).map(so => <Link key={so} className="ds-link-so" to={`/app/ccdc/8-1-1?mo=${so}`} state={{ veGoc: `${path}/${row!.id}` }} title="Mở thẻ chi phí phân bổ">{so}</Link>)}
             </div>
           )}
           {/* Tham chiếu kiểm kê và phiếu điều chỉnh (T126) */}
@@ -1303,6 +1316,13 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
           {soCt} có khoản Chi phí chờ phân bổ. Phần mềm mở màn Tạo thẻ chi phí phân bổ, điền sẵn tên, số tiền, ngày, chứng từ gốc từ phiếu. Bạn vẫn sửa lại được.
         </HopXacNhan>
       )}
+      {hoiKhongSua && row && (
+        <HopXacNhan tieuDe={`Không sửa được ${row.so}`} nut="Mở thẻ" nutHuy="Đóng" nutDo={false}
+          onDong={() => setHoiKhongSua(false)}
+          onDongY={() => { setHoiKhongSua(false); nav(`/app/ccdc/8-1-1?mo=${theCuaPhieu(row)[0]}`, { state: { veGoc: `${path}/${row.id}` } }) }}>   {/* xoá thẻ xong về lại phiếu ở chế độ sửa (T439) */}
+          Phiếu đã có thẻ chi phí phân bổ {theCuaPhieu(row).join(', ')}. Xoá thẻ trước rồi mới sửa được phiếu. Thẻ chỉ xoá được khi kỳ khoá sổ còn trước tháng bắt đầu phân bổ của thẻ.
+        </HopXacNhan>
+      )}
       {hoiVe && (
         <HopXacNhan tieuDe={`Đã lưu ${soCt}`} nut="Về trang chủ" nutHuy="Ở lại phiếu" nutDo={false}
           onDong={() => { const h = hoiVe; setHoiVe(null); sauLuu(h.moMoi, h.idMoi) }}
@@ -1325,7 +1345,10 @@ export const QUY_TIEN = [
 export const theCuaPhieu = (r: Row | undefined): string[] => !r ? [] : [...new Set([
   ...(Array.isArray(r._theCp) ? (r._theCp as string[]) : []),
   ...theMauTheoGoc(`/app/tien/2-1-1/${r.id}`),
-])]
+])].filter(so => !laDaXoa('dm/8-1-1', so))   // thẻ đã xoá thì phiếu không còn tham chiếu, sửa được (T439)
+/** Thẻ của phiếu không xoá được vì kỳ phân bổ đã khoá sổ: câu báo đầu tiên (T439) */
+export const lyDoKhongXoaTheCuaPhieu = (r: Row | undefined): string | null =>
+  theCuaPhieu(r).map(so => { const t = theMauTheoSo(so); return t ? lyDoKhongXoaThe(t) : null }).find(Boolean) ?? null
 /** Xoá phiếu chi đã tạo thẻ thì xoá luôn các thẻ đó (T436); danh sách thẻ ẩn dòng có số thẻ trong dm/8-1-1 */
 export function xoaTheCuaPhieu(ds: (Row | undefined)[], ai: string) {
   const so = ds.flatMap(theCuaPhieu)

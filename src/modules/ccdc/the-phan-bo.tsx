@@ -1,14 +1,14 @@
 // Thẻ chi phí phân bổ 8.1.1: một thẻ dùng chung cho chi phí trả trước, CCDC, TSCĐ; hai kiểu thẻ: ghi tăng trong kỳ và dư đầu kỳ.
 // Một thẻ có nhiều dòng (tab Chi tiết phân bổ), mỗi dòng phân bổ riêng ra các kỳ (tab Đã phân bổ).
 // Mã từng dòng tự sinh theo loại thẻ (CPTT.0001, CCDC.0001, TSCD.0001), người dùng gõ lại được. Số trên thẻ theo kiểu quốc tế.
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { Link } from 'react-router-dom'
 import type { CauHinhDM } from '../danh-muc/truong-dm'
 import type { Row } from '../types'
 import type { Goi } from '../../app/plan'
 import { St, Table } from '../../ui/Table'
 import { ChonDanhMuc } from '../../ui/ChonDanhMuc'
-import { CCDC_HANG } from '../../data/mock'
+import { CCDC_HANG, KHOA_SO_DEN, daKhoaSo } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
 import { docSoQT, nhapSoQT, soQT } from '../../ui/format'
 import { ONgay } from '../../ui/ChonNgay'
@@ -91,9 +91,67 @@ function lichDong(v: V, d: DongPb) {
 }
 
 /** Đã phân bổ tới hết kỳ (yyyymm): phần đã phân bổ trước (thẻ dư đầu kỳ) cộng các kỳ còn hiệu lực tới kỳ đó */
-export function daPhanBoToiKy(the: V, ky: number): number {
+export function daPhanBoToiKy(the: V, ky: number, goi?: Goi): number {
   return (the.dong as DongPb[] ?? []).reduce((tong, d) => tong + (laDau(the) ? so(d.da) : 0)
-    + lichDong(the, d).filter(k => !k.ngung && Math.floor(ngaySo(k.ngay) / 100) <= ky).reduce((s, k) => s + k.tien, 0), 0)
+    + lichDong(the, d).filter(k => { const t = Math.floor(ngaySo(k.ngay) / 100); return !k.ngung && t <= ky && kyTinh(the, goi, t) }).reduce((s, k) => s + k.tien, 0), 0)
+}
+
+// ── Kích hoạt phân bổ gói Plus, Pro (T438): bút toán từng kỳ của lịch phân bổ đã hạch toán sẵn, nút Phân bổ ở danh sách thẻ
+// chỉ bật trạng thái Đã phân bổ cho kỳ đang xem (khoá soThe|yyyymm), giữ trong phiên. Gói Free, Standard: kỳ tới đâu tính tới đó như cũ
+const daKichHoat = new Set<string>()
+let banPb = 0
+const ngePb = new Set<() => void>()
+/** Gói có bước kích hoạt phân bổ (Plus, Pro) */
+export const canKichHoat = (goi: Goi) => goi === 'PL' || goi === 'PR'
+/** Kỳ yyyymm của thẻ đã kích hoạt phân bổ */
+export const daPhanBoKy = (soThe: unknown, ky: number) => daKichHoat.has(`${soThe}|${ky}`)
+/** Kích hoạt phân bổ kỳ yyyymm cho các thẻ; trả số thẻ mới kích hoạt */
+export function kichHoatPhanBo(soThe: string[], ky: number): number {
+  const moi = soThe.filter(x => !daPhanBoKy(x, ky))
+  moi.forEach(x => daKichHoat.add(`${x}|${ky}`))
+  if (moi.length) { banPb++; ngePb.forEach(f => f()) }
+  return moi.length
+}
+/** Xoá phân bổ kỳ yyyymm của các thẻ: trạng thái kỳ đó về Chờ phân bổ; trả số thẻ đã bỏ kích hoạt */
+export function boKichHoatPhanBo(soThe: string[], ky: number): number {
+  const bo = soThe.filter(x => daPhanBoKy(x, ky))
+  bo.forEach(x => daKichHoat.delete(`${x}|${ky}`))
+  if (bo.length) { banPb++; ngePb.forEach(f => f()) }
+  return bo.length
+}
+/** Số phiên bản trạng thái kích hoạt, để màn vẽ lại khi bấm Phân bổ */
+export function useBanPhanBo() {
+  return useSyncExternalStore(f => { ngePb.add(f); return () => { ngePb.delete(f) } }, () => banPb)
+}
+/** Kỳ tính vào đã phân bổ: gói Plus, Pro chỉ kỳ đã kích hoạt */
+const kyTinh = (v: V, goi: Goi | undefined, ky: number) => !goi || !canKichHoat(goi) || daPhanBoKy(v.soThe, ky)
+
+/** Đã phân bổ tới tháng hiện tại theo ngày máy và còn lại hiện tại của một dòng (T437); gói Plus, Pro chỉ cộng kỳ Đã phân bổ (T438) */
+export function hienTaiDong(v: V, d: DongPb, goi?: Goi) {
+  const n = new Date(), kyHt = n.getFullYear() * 100 + n.getMonth() + 1
+  const daHt = (laDau(v) ? so(d.da) : 0) + lichDong(v, d).filter(k => { const t = Math.floor(ngaySo(k.ngay) / 100); return !k.ngung && t <= kyHt && kyTinh(v, goi, t) }).reduce((s, k) => s + k.tien, 0)
+  return { daHt, conHt: so(d.gt) - daHt }
+}
+
+/** Thẻ xoá được khi kỳ khoá sổ còn trước tháng bắt đầu phân bổ đầu tiên của thẻ (T439); trả câu báo nếu không xoá được */
+export function lyDoKhongXoaThe(v: V): string | null {
+  const ngay = [...(v.dong as DongPb[] ?? []).map(d => ngayBd(v, d)), String(v.ngay ?? '')].filter(x => /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(x))
+  if (!ngay.length) return null
+  const dau = ngay.reduce((a, b) => ngaySo(a) <= ngaySo(b) ? a : b)
+  if (!daKhoaSo(dau)) return null
+  const t = dau.slice(3)
+  return `Thẻ ${v.soThe} phân bổ từ tháng ${t}, thuộc kỳ đã khoá sổ (đến hết tháng ${KHOA_SO_DEN.thang}/${KHOA_SO_DEN.nam}). Mở khoá sổ về trước tháng ${t} rồi mới xoá được.`
+}
+
+/** Hậu xử lý dòng danh sách thẻ theo gói (T438): gói Plus, Pro cột Phân bổ trong kỳ chỉ có giá trị khi kỳ đang xem Đã phân bổ */
+export function useKyNayTheoGoi(_ky: number, goi: Goi) {
+  const ban = useBanPhanBo()
+  // Đã phân bổ, Còn lại cũng chỉ cộng các kỳ đã kích hoạt tới kỳ đang xem, bấm Phân bổ xong thì tính lại
+  return useCallback((r: Row): Row => {
+    if (!canKichHoat(goi)) return r
+    const ky = Number(r._ky), da = daPhanBoToiKy(r as V, ky, goi)
+    return { ...r, _kyNayGoc: r.kyNay, kyNay: daPhanBoKy(r.soThe, ky) ? r.kyNay : 0, da, con: Number(r.gt) - da, _ban: ban }
+  }, [goi, ban])
 }
 
 /** Bảng chi tiết phân bổ chi phí: mỗi dòng của thẻ một hàng, phân bổ trong kỳ (yyyymm), luỹ kế tới hết kỳ, còn lại */
@@ -225,6 +283,7 @@ export const THE_PHAN_BO: CauHinhDM = {
   // Tiện ích (T297): thẻ ghi tăng, thẻ dư đầu kỳ đều xoá được; chỉ thẻ dư đầu kỳ sao chép (giữ dòng, bỏ ngừng phân bổ, số thẻ đánh mới)
   tienIch: {
     xoa: () => true,
+    chanXoa: v => lyDoKhongXoaThe(v),   // kỳ đã khoá sổ chứa kỳ phân bổ của thẻ thì không xoá (T439)
     saoChep: v => !laDau(v) ? null : {
       loai: v.loai, ngayPb: v.ngayPb, soCt: v.soCt, ngayCt: v.ngayCt, ghiChuCt: v.ghiChuCt,
       dong: (v.dong as DongPb[] ?? []).map(d => ({ ...d, ngung: undefined, ngayNgung: undefined, _pbSua: undefined })),
@@ -256,7 +315,7 @@ export const THE_PHAN_BO: CauHinhDM = {
       const dong: DongPb[] = v.dong ?? []
       const thang = theoThang(goi)
       // Đang xem: ô hiện chữ trơn như bảng chi tiết phiếu chi, bấm Sửa mới hiện ô nhập (T287)
-      const SO = new Set(['sl', 'dg', 'gt', 'da', 'kyDa', 'ky', 'kyCon', 'can', 'tienKy'])
+      const SO = new Set(['sl', 'dg', 'gt', 'da', 'kyDa', 'ky', 'kyCon', 'can', 'tienKy', 'daHt', 'conHt'])
       const chu = (k: string, r: Row) => SO.has(k) ? soQT(r[k]) : String(r[k] ?? '')
       // Sửa thẻ ghi tăng có sẵn: số tiền chỉ đọc theo chứng từ gốc; CCDC sửa số lượng thì đơn giá = số tiền / số lượng (T165)
       // Thẻ tạo từ phiếu chi (_goc) cũng khoá số tiền theo chứng từ gốc (T296)
@@ -264,7 +323,7 @@ export const THE_PHAN_BO: CauHinhDM = {
       const sua = (i: number, p: Partial<DongPb>, giuLich = false) =>
         doi('dong', dong.map((d, j) => j === i ? { ...d, ...p, ...(giuLich ? {} : { _pbSua: undefined }) } : d))
       // CCDC khoá số tiền chưa có đơn giá (vd vừa tạo từ phiếu chi, số lượng 1): đơn giá = số tiền / số lượng (T296)
-      const rows: Row[] = dong.map((d, i) => ({ ...d, ...(laCcdc(v) && khoaTien && (d.dg === undefined || d.dg === '') && so(d.sl) > 0 ? { dg: Math.round(so(d.gt) / so(d.sl)) } : {}), ...tinhDong(v, d), _i: i }))
+      const rows: Row[] = dong.map((d, i) => ({ ...d, ...(laCcdc(v) && khoaTien && (d.dg === undefined || d.dg === '') && so(d.sl) > 0 ? { dg: Math.round(so(d.gt) / so(d.sl)) } : {}), ...tinhDong(v, d), ...hienTaiDong(v, d, goi), _i: i }))
       // Dòng Cộng (không có _i) chỉ hiện chữ, không vẽ ô nhập
       const o = (k: keyof DongPb, ten: string, laSo = true, giuLich = false) => (r: Row) => r._i === undefined ? <b>{r[k]}</b> : xem ? chu(k, r) :
         <ONhap v={r[k]} so={laSo} ten={`${ten} dòng ${r._i + 1}`} onDoi={s => {
@@ -308,6 +367,9 @@ export const THE_PHAN_BO: CauHinhDM = {
           ...(laDau(v) ? [{ k: 'kyDa', t: 'Số tháng đã PB', num: true, w: 92, wCung: true, r: o('kyDa', 'Số tháng đã phân bổ') }] : []),
           ...(laDau(v) ? [{ k: 'kyCon', t: 'Số tháng còn PB', num: true, w: 92, wCung: true, r: ro('kyCon') }, { k: 'can', t: 'Giá trị cần PB', num: true, w: 112, wCung: true, r: ro('can') }] : []),
           { k: 'tienKy', t: 'Số tiền PB hằng kỳ', num: true, w: 112, wCung: true, r: ro('tienKy') },
+          // Tới tháng hiện tại theo ngày máy: đã phân bổ, còn lại = số tiền trừ đã phân bổ (T437)
+          { k: 'daHt', t: 'Đã PB tới hiện tại', num: true, w: 120, wCung: true, r: ro('daHt') },
+          { k: 'conHt', t: 'Còn lại hiện tại', num: true, w: 120, wCung: true, r: ro('conHt') },
           // Tiêu đề cột viết tắt phân bổ thành PB cho lưới gọn (T287). Mỗi dòng một ngày bắt đầu phân bổ; đổi ngày thì lịch tính lại, bỏ số đã gõ lại ở các kỳ (T159)
           { k: 'ngayPb', t: 'Ngày bắt đầu PB', w: 132, wCung: true, r: (r: Row) => r._i === undefined ? null
             : xem ? ngayBd(v, r as DongPb) : <ONhap v={ngayBd(v, r as DongPb)} ten={`Ngày bắt đầu phân bổ dòng ${r._i + 1}`} onDoi={s => sua(r._i, { ngayPb: khongTruoc(s, String(v.ngay ?? '')) })} /> },
@@ -328,7 +390,7 @@ export const THE_PHAN_BO: CauHinhDM = {
           ) }] : []),
         ],
         rows,
-        sum: { ten: 'Cộng', gt: tong('gt'), ...(laDau(v) ? { da: tong('da'), can: tong('can') } : {}), tienKy: tong('tienKy') },
+        sum: { ten: 'Cộng', gt: tong('gt'), ...(laDau(v) ? { da: tong('da'), can: tong('can') } : {}), tienKy: tong('tienKy'), daHt: tong('daHt'), conHt: tong('conHt') },
         // Nút dưới lưới như bảng chi tiết phiếu chi: Thêm dòng, Xoá hết; chỉ thẻ dư đầu kỳ (T165)
         chan: laDau(v) && (
           <div className="row pb-chan">
@@ -346,9 +408,11 @@ export const THE_PHAN_BO: CauHinhDM = {
       }
     },
   }, {
-    ten: 'Đã phân bổ',
+    ten: 'Lịch phân bổ',   // trước là Đã phân bổ (T438)
     truong: [],
-    bang: (v, doi, _goi, xem) => {
+    bang: (v, doi, goi, xem) => {
+      const kh = canKichHoat(goi)
+      const thangK = (k: { ngay: string }) => Math.floor(ngaySo(k.ngay) / 100)
       const dong: DongPb[] = v.dong ?? []
       // Hết các kỳ của dòng 1 rồi tới dòng 2; sau mỗi dòng là dòng cộng của dòng đó
       let stt = 0
@@ -372,7 +436,13 @@ export const THE_PHAN_BO: CauHinhDM = {
             : <ONhap v={r.nhap ?? r.tien} so ten={`Số tiền phân bổ ${r.ten} kỳ ${r._j + 1}`} onDoi={s =>
               doi('dong', dong.map((d, j) => j === r._i ? { ...d, _pbSua: { ...d._pbSua, [r._j]: s } } : d))} /> },
           // Kỳ trước tháng ngừng nhận phần còn lại, chỉ xem (T296)
-          { k: 'tt', t: 'Trạng thái', w: 160, r: r => r._cong ? null : <St k={r.ngung ? 'dim' : r.don ? 'warn' : 'ok'}>{r.ngung ? 'Ngừng phân bổ' : r.don ? 'Phân bổ hết còn lại' : 'Phân bổ'}</St> },
+          // Trạng thái (T438): kỳ ngừng là Ngừng phân bổ. Gói Free, Standard luôn Đã phân bổ;
+          // gói Plus, Pro: kỳ đã bấm Phân bổ ở danh sách thẻ là Đã phân bổ, chưa bấm là Chờ phân bổ
+          { k: 'tt', t: 'Trạng thái', w: 160, r: r => {
+            if (r._cong) return null
+            if (r.ngung) return <St k="dim">Ngừng phân bổ</St>
+            return !kh || daPhanBoKy(v.soThe, thangK(r as { ngay: string })) ? <St k="ok">Đã phân bổ</St> : <St k="warn">Chờ phân bổ</St>
+          } },
         ],
         rows,
         rowCls: r => r._cong ? 'pb-cong' : r.ngung ? 'pb-ngung' : '',

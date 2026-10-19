@@ -24,6 +24,9 @@ export function ghiNhatKy(man: string, id: string, so: string, ai: string, viec:
 const nghe = new Set<() => void>()
 let banSo = 0
 
+/** Đã xoá trong phiên chưa, dùng ngoài React (T439) */
+export const laDaXoa = (man: string, id: unknown) => daXoa.has(`${man}|${id}`)
+
 export function xoaPhieu(man: string, ds: { id: string; so: string }[], ai: string) {
   for (const x of ds) {
     daXoa.add(`${man}|${x.id}`)

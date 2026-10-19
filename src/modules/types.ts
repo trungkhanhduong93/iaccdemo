@@ -41,6 +41,11 @@ export interface CatalogCfg {
   tich?: { nhan: string; macDinh: boolean; loc: (r: Row) => boolean }   // ô tích lọc nhanh trên thanh công cụ, tích thì chỉ hiện dòng loc đúng
   // Hook dải cảnh báo trên bảng (T287): so > 0 thì dải vàng và số trên nút thêm hàng loạt, so = 0 thì gợi ý xám; cachLam: các bước mở từ link Cách làm; null thì ẩn; ky: kỳ số liệu yyyymm
   useCanhBao?: (ky: number) => { so: number; noiDung: ReactNode; cachLam?: ReactNode } | null
+  // Hook trả hàm sửa từng dòng theo kỳ, gói (vd Phân bổ trong kỳ chỉ có khi kỳ đã kích hoạt, T438)
+  useHauXuLy?: (ky: number, goi: Goi) => (r: Row) => Row
+  // Nút phụ ở thanh công cụ, cạnh nút thêm; lam trả câu báo (vd Phân bổ ở danh sách thẻ chi phí gói Plus, Pro, T438)
+  // hoi: câu hỏi lại trước khi làm (null thì làm luôn); lam trả câu báo
+  nutKichHoat?: { nhan: string; icon: string; goi: Goi[]; hoi?: (rows: Row[], ky: number) => string | null; lam: (rows: Row[], ky: number) => string }[]
   hangLoat?: { nhan: string; nhanChinh?: string; Form: ComponentType<{ soDong: number; rows: Row[]; onDong: () => void }> }   // nút thêm hàng loạt mở form riêng, soDong: số dòng đang có, rows: các dòng đang có (T284)
   // Danh sách kiểu danh sách chứng từ: phân trang, dòng Tổng, cộng các cột cotCong; bấm dòng chọn và xem nhanh chi tiết ở khung dưới, đúp chuột mở form;
   // cotSo: cột số chứng từ hiện link xanh, bấm mở form như danh sách thu chi

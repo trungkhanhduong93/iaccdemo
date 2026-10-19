@@ -3,8 +3,8 @@ import type { ModuleDef } from '../types'
 import { tuExcel } from '../types'
 import { quyTrinh } from './quy-trinh'
 import { GhiTangHangLoat, useCanhBaoCho } from './GhiTangHangLoat'
-import { THE_PHAN_BO, bangPhanBo, daPhanBoToiKy, veChiTietThe } from './the-phan-bo'
-import { CCDC_HANG, CUA_HANG } from '../../data/mock'
+import { THE_PHAN_BO, bangPhanBo, boKichHoatPhanBo, daPhanBoKy, daPhanBoToiKy, kichHoatPhanBo, useKyNayTheoGoi, veChiTietThe } from './the-phan-bo'
+import { CCDC_HANG, CUA_HANG, daKhoaSo } from '../../data/mock'
 
 /** Chứng từ gốc của thẻ mẫu theo thứ tự thẻ: phiếu chi, uỷ nhiệm chi mẫu có sẵn ở Thu, chi tiền (T159) */
 const GOC_MAU = ([
@@ -54,6 +54,13 @@ const THE_MAU = ([
 
 /** Số thẻ mẫu trỏ về phiếu chi gốc (_goc), để phiếu hiện dòng Thẻ chi phí và xoá phiếu thì xoá thẻ (T436) */
 export const theMauTheoGoc = (goc: string): string[] => THE_MAU.filter(t => '_goc' in t && t._goc === goc).map(t => t.soThe)
+/** Thẻ mẫu theo số thẻ (T439) */
+export const theMauTheoSo = (so: string) => THE_MAU.find(t => t.soThe === so)
+
+/** Tên kỳ yyyymm: tháng 10/2026 */
+const tenKy = (ky: number) => `tháng ${ky % 100}/${Math.floor(ky / 100)}`
+/** Kỳ yyyymm đã khoá sổ chưa: Phân bổ và Xoá phân bổ cùng một điều kiện (T438) */
+const kyKhoa = (ky: number) => daKhoaSo(`01/${ky % 100}/${Math.floor(ky / 100)}`)
 
 /** dd/mm/yyyy -> yyyymm; kỳ liền trước của yyyymm */
 const thangCua = (d: string) => { const [, m, y] = d.split('/').map(Number); return y * 100 + m }
@@ -71,7 +78,27 @@ const ccdc: ModuleDef = {
       // Như danh sách chứng từ: phân trang, dòng Tổng, xem nhanh các dòng của thẻ ở khung dưới
       // Ghi tăng bổ sung: tạo thẻ cho các dòng phiếu chi chờ phân bổ còn sót (T159); nút chính Ghi tăng mở form thẻ mới (T421)
       hangLoat: { nhan: 'Ghi tăng bổ sung', nhanChinh: 'Ghi tăng', Form: GhiTangHangLoat },   // nhanChinh: chữ khi là nút chính (gói trên Free, T436)
-      useCanhBao: useCanhBaoCho,   // dải cảnh báo khoản chờ phân bổ chưa tạo thẻ, có nút Ghi tăng bổ sung (T287, T421)
+      useCanhBao: useCanhBaoCho,
+      // Gói Plus, Pro: nút Phân bổ kích hoạt bút toán phân bổ đã hạch toán sẵn của kỳ đang xem; Phân bổ trong kỳ chỉ có khi đã kích hoạt (T438)
+      useHauXuLy: useKyNayTheoGoi,
+      nutKichHoat: [{ nhan: 'Phân bổ', icon: 'phanbo', goi: ['PL', 'PR'], lam: (rows, ky) => {
+        if (kyKhoa(ky)) return `Tháng ${ky % 100}/${Math.floor(ky / 100)} thuộc kỳ đã khoá sổ, không phân bổ được`
+        const co = rows.filter(r => Number(r._kyNayGoc ?? r.kyNay) > 0)
+        const moi = kichHoatPhanBo(co.map(r => String(r.soThe)), ky)
+        return !co.length ? `Không có khoản phân bổ nào trong ${tenKy(ky)}` : moi ? `Đã phân bổ ${tenKy(ky)}: ${moi} thẻ` : `Các khoản phân bổ ${tenKy(ky)} đã phân bổ trước đó`
+      } }, {
+        // Xoá phân bổ kỳ đang xem: trạng thái kỳ đó trong Lịch phân bổ về Chờ phân bổ; kỳ đã khoá sổ thì không xoá (T438)
+        nhan: 'Xoá phân bổ', icon: 'trash', goi: ['PL', 'PR'],
+        hoi: (rows, ky) => {
+          const da = rows.filter(r => daPhanBoKy(r.soThe, ky)).length
+          return da && !kyKhoa(ky) ? `Xoá phân bổ ${tenKy(ky)} của ${da} thẻ? Các khoản phân bổ tháng này trong Lịch phân bổ về trạng thái Chờ phân bổ.` : null
+        },
+        lam: (rows, ky) => {
+          if (kyKhoa(ky)) return `Tháng ${ky % 100}/${Math.floor(ky / 100)} thuộc kỳ đã khoá sổ, không xoá phân bổ được`
+          const bo = boKichHoatPhanBo(rows.map(r => String(r.soThe)), ky)
+          return bo ? `Đã xoá phân bổ ${tenKy(ky)}: ${bo} thẻ` : `Tháng ${ky % 100}/${Math.floor(ky / 100)} chưa có khoản nào đã phân bổ`
+        },
+      }],
       dsChungTu: { cotCong: ['gt', 'kyNay', 'da', 'con'], cotSo: 'soThe', so: r => r.soThe, moTa: r => `(${r.ngay}) — ${r.ten}`, chiTiet: veChiTietThe }, cols: [{ k: 'soThe', t: 'Số thẻ', cls: 'code' }, { k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên' }, { k: 'loai', t: 'Loại' }, { k: 'ngay', t: 'Ngày ghi tăng' },
       // Phân bổ trong kỳ: số phân bổ đúng tháng đang lọc ở tab Đã phân bổ, thẻ nhiều dòng cộng các dòng (T296)
       { k: 'gt', t: 'Giá trị', num: true }, { k: 'kyNay', t: 'Phân bổ trong kỳ', num: true }, { k: 'da', t: 'Đã phân bổ', num: true }, { k: 'con', t: 'Còn lại', num: true }],
@@ -81,7 +108,7 @@ const ccdc: ModuleDef = {
       rows: (_cd, ky) => THE_MAU.filter(t => thangCua(t.ngay) <= ky).map(t => {
         // Mỗi thẻ một hàng: mã, tên dòng đầu; giá trị cộng các dòng
         const gt = t.dong.reduce((s, d) => s + d.gt, 0), da = daPhanBoToiKy(t, ky)
-        return { ...t, ma: t.dong[0].ma, ten: t.dong[0].ten + (t.dong.length > 1 ? ` và ${t.dong.length - 1} mục khác` : ''), gt, da, con: gt - da,
+        return { ...t, _ky: ky, ma: t.dong[0].ma, ten: t.dong[0].ten + (t.dong.length > 1 ? ` và ${t.dong.length - 1} mục khác` : ''), gt, da, con: gt - da,
           kyNay: da - daPhanBoToiKy(t, kyTruoc(ky)) }
       }) } },
     '8.1.2': { voucher: { prefix: 'DCCC', doiTuong: 'cn', nhan: 'Cửa hàng nhận', them: 'Thêm chứng từ CCDC', dong: 'tien', tien: [2_000_000, 40_000_000],
