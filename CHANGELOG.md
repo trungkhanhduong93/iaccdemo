@@ -4,6 +4,8 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 19/10/2026
 
+- T449 (điện thoại): 4 màn phiếu mua làm lại theo mẫu phương án D. Màn xem phiếu có thẻ tổng quan, 4 tab và danh sách hàng dạng thẻ có nút sửa. Màn lập và sửa có thông tin hoá đơn, danh sách hàng dạng thẻ. Bảng trượt Sửa mặt hàng cho phép sửa chiết khấu, VAT, tổng tiền bằng nút bút và ghi chú. Bảng trượt Thanh toán hiển thị số dư từng quỹ và lập phiếu chi.
+
 - T461: Gói Free, tab Quy trình các phân hệ bỏ chú thích màu (Hàng vào, Hàng ra, Điều chỉnh; Tiền vào, Tiền ra, Nội bộ) ở góc phải và chấm màu trước tên ô.
 
 - T460: Gói Free, tab Quy trình các phân hệ: dòng mô tả của từng ô luôn nằm dưới tên ô. Quy trình Bán hàng bỏ ô Đơn POS từ FABi, bước 1 chỉ còn Xuất bán POS.
