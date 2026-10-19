@@ -1,6 +1,7 @@
 // Chi phí trong tháng theo lý do chi trên điện thoại (T240): mở từ thẻ Chi phí trong tháng ở trang chủ Free.
 // Cùng số liệu với bản web, dạng dòng kiểu app: cộng từ phiếu chi thật có lý do là chi phí (T483).
-// Danh sách thu chi điện thoại không chia tab Tiền mặt, Ngân hàng nên mỗi dòng mở danh sách lọc lý do, tháng là đủ phiếu
+// Bấm một dòng mở ngay bên dưới các phiếu chi tiền mặt, ngân hàng của lý do đó, không sang phân hệ Thu chi
+import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import type { ScreenProps } from '../../modules/types'
 import { cuaHangHienTai, useSession } from '../../app/session'
@@ -16,8 +17,8 @@ export function MChiPhiThang(_: ScreenProps) {
   const cn = cuaHangHienTai(s)
   const phieu = usePhieuChiPhi(s)
   const { tong: cpThang, ds: dsCp } = chiPhiThangTuPhieu(phieu, thang, cn ? [cn.id] : CUA_HANG.map(c => c.id))
-  const thangStr = `2026-${String(thang).padStart(2, '0')}`
   const ds = dsCp.map(x => ({ ...x, ...moTaChiPhi(x) }))
+  const [mo, setMo] = useState<string | null>(null)   // lý do đang mở danh sách phiếu
 
   return (
     <div className="m-free-cpt">
@@ -30,27 +31,42 @@ export function MChiPhiThang(_: ScreenProps) {
       </div>
 
       <div className="m-free-cpt-ds">
-        {ds.map(x => (
-          <Link
-            key={x.ly}
-            to={`/app/tien/2-1-1?lyDo=${encodeURIComponent(x.ly)}&thang=${encodeURIComponent(thangStr)}`}
-            className="m-free-cpt-dong"
-            title={`Xem phiếu chi ${x.ly.toLowerCase()}`}
-          >
-            <div className="m-free-cpt-ic">
-              <Icon n={x.icon} className="ic sm" />
+        {ds.map(x => {
+          const dangMo = mo === x.ly
+          return (
+            <div key={x.ly} className={`m-free-cpt-nhom${dangMo ? ' mo' : ''}`}>
+              <button type="button" className="m-free-cpt-dong" aria-expanded={dangMo} onClick={() => setMo(dangMo ? null : x.ly)}>
+                <div className="m-free-cpt-ic">
+                  <Icon n={x.icon} className="ic sm" />
+                </div>
+                <div className="m-free-cpt-info">
+                  <div className="m-free-cpt-ten">{x.ly}</div>
+                  <div className="m-free-cpt-phu">{x.phu}</div>
+                </div>
+                <div className="m-free-cpt-so">
+                  <div className="m-free-cpt-tien">{moneyD(x.v)}</div>
+                  <div className="m-free-cpt-phantram">{pct(cpThang ? x.v / cpThang : 0)} chi phí</div>
+                </div>
+                <Icon n={dangMo ? 'chevd' : 'chevr'} className="ic sm m-free-cpt-mui" />
+              </button>
+              {dangMo && (
+                <div className="m-free-cpt-phieu">
+                  {x.phieu.map(p => (
+                    <div key={p.id} className="m-free-cpt-phieu-dong">
+                      <div className="m-free-cpt-phieu-trai">
+                        <b>{p.so}</b>
+                        <span>{p.ngay} · {p.nhom === 'nh' ? 'Ngân hàng' : 'Tiền mặt'}{cn ? '' : ` · ${p.cn}`}</span>
+                        <span>{p.dienGiai}</span>
+                      </div>
+                      <b className="m-free-cpt-phieu-tien">{moneyD(p.tien)}</b>
+                    </div>
+                  ))}
+                  <div className="m-free-cpt-phieu-dong tong"><span>Cộng {x.so} phiếu</span><b className="m-free-cpt-phieu-tien">{moneyD(x.v)}</b></div>
+                </div>
+              )}
             </div>
-            <div className="m-free-cpt-info">
-              <div className="m-free-cpt-ten">{x.ly}</div>
-              <div className="m-free-cpt-phu">{x.phu}</div>
-            </div>
-            <div className="m-free-cpt-so">
-              <div className="m-free-cpt-tien">{moneyD(x.v)}</div>
-              <div className="m-free-cpt-phantram">{pct(cpThang ? x.v / cpThang : 0)} chi phí</div>
-            </div>
-            <Icon n="chevr" className="ic sm m-free-cpt-mui" />
-          </Link>
-        ))}
+          )
+        })}
         {!ds.length && <p className="m-free-cpt-phu">Tháng {thang}/2026 chưa có phiếu chi nào có lý do là chi phí.</p>}
       </div>
 
