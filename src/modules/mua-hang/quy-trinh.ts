@@ -35,7 +35,7 @@ export const quyTrinh: QuyTrinhDef = {
   },
   // Gói Free (T262): bảng kê theo hàng hoá, tồn kho, nhập kho, công nợ nhà cung cấp
   raFree: { ten: 'Sổ sách, báo cáo', nut: [
-    { ten: 'Bảng kê mua hàng theo hàng hoá', icon: 'doc', di: 'mua-hang/4-2-7' },
+    { ten: 'Bảng kê chi tiết mua hàng', icon: 'doc', di: 'mua-hang/4-2-7' },
     { ten: 'Báo cáo xuất nhập tồn', icon: 'box', di: 'kho/5-2-3' },
     { ten: 'Tổng hợp nhập kho', icon: 'filein', di: 'kho/5-2-9' },
     { ten: 'Chi tiết nhập kho', icon: 'filein', di: 'kho/5-2-10' },
@@ -71,7 +71,7 @@ export const quyTrinh: QuyTrinhDef = {
       ten: 'Sổ sách, báo cáo',
       moTa: 'Xem chi tiết hàng đã mua và tình hình nhập tồn kho.',
       nut: [
-        { ten: 'Bảng kê mua hàng theo hàng hoá', icon: 'doc', di: 'mua-hang/4-2-7', moTa: 'Chi tiết từng mặt hàng đã mua' },
+        { ten: 'Bảng kê chi tiết mua hàng', icon: 'doc', di: 'mua-hang/4-2-7', moTa: 'Chi tiết từng mặt hàng đã mua' },
         { ten: 'Báo cáo xuất nhập tồn', icon: 'box', di: 'kho/5-2-3', moTa: 'Tồn kho nguyên vật liệu hiện tại' },
         { ten: 'Tổng hợp nhập kho', icon: 'filein', di: 'kho/5-2-9', moTa: 'Tổng lượng nhập theo từng mặt hàng' },
         { ten: 'Chi tiết nhập kho', icon: 'filein', di: 'kho/5-2-10', moTa: 'Chi tiết từng lần nhập hàng vào kho' },

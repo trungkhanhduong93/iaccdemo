@@ -3,13 +3,14 @@
 // File dữ liệu: chỉ import mock, không import index.ts nào
 import { CUA_HANG, HANG, HANG_SX, KHACH, NCC, NVL } from '../../data/mock'
 
-export interface LocNguon { kho: string[]; hang: string[]; nhom: string[]; dt: string[] }
+export interface LocNguon { kho: string[]; hang: string[]; nhom: string[]; dt: string[]; kenh: string[] }
 
 /** Khoá bộ lọc trong store báo cáo; khung lọc chung giữ dòng nhờ dòng mang sẵn giá trị đang lọc (ganLocNguon) */
-export const KHOA_LOC_NGUON = { kho: 'locKho', hang: 'locHang', nhom: 'locNhomHang', dt: 'locDt' } as const
+export const KHOA_LOC_NGUON = { kho: 'locKho', hang: 'locHang', nhom: 'locNhomHang', dt: 'locDt', kenh: 'locKenh' } as const
 
 export const docLocNguon = (loc: Record<string, string[]> = {}): LocNguon => ({
   kho: loc[KHOA_LOC_NGUON.kho] ?? [], hang: loc[KHOA_LOC_NGUON.hang] ?? [], nhom: loc[KHOA_LOC_NGUON.nhom] ?? [], dt: loc[KHOA_LOC_NGUON.dt] ?? [],
+  kenh: loc[KHOA_LOC_NGUON.kenh] ?? [],
 })
 
 const DM_HANG = [...NVL, ...HANG, ...HANG_SX]
@@ -21,6 +22,7 @@ const khop = (ds: string[], v: string) => ds.length === 0 || ds.includes(v)
 export const quaLocDong = (f: LocNguon, d: { kho?: string; ten: string; ma: string }) =>
   khop(f.kho, d.kho ?? '') && khop(f.hang, d.ten) && khop(f.nhom, nhomCuaMa(d.ma))
 export const quaLocDt = (f: LocNguon, dt: string) => khop(f.dt, dt)
+export const quaLocKenh = (f: LocNguon, kenh: string) => khop(f.kenh, kenh)
 
 /** Dòng chi tiết mang giá trị đang lọc để khung lọc chung (bienDoiBang) không bỏ dòng */
 export function ganLocNguon(rows: Record<string, any>[], loc: Record<string, string[]> = {}) {
@@ -41,7 +43,9 @@ const locNhom = (ds: string[]): Loc => ({ k: KHOA_LOC_NGUON.nhom, nhan: 'Nhóm h
 
 /** Mua hàng: kho, hàng hoá, nhóm hàng hoá, đối tượng (nhà cung cấp); nhãn Đối tượng trùng bộ lọc tự sinh từ cột nên chỉ hiện một */
 export const LOC_MUA: Loc[] = [LOC_KHO, locHang(MUA.ten), locNhom(MUA.nhom), { k: KHOA_LOC_NGUON.dt, nhan: 'Đối tượng', kieu: 'chonNhieu', ds: () => NCC.map(n => n.ten) }]
-/** Bán hàng: không lọc kho vì dòng món của đơn POS không ghi kho xuất (PhuongXT chốt 14/10/2026) */
-export const LOC_BAN: Loc[] = [locHang(BAN.ten), locNhom(BAN.nhom), { k: KHOA_LOC_NGUON.dt, nhan: 'Đối tượng', kieu: 'chonNhieu', ds: () => KHACH.map(n => n.ten) }]
+/** Kênh bán của chứng từ Xuất bán POS, như KENH ở ban-hang/ChungTuBanHang.tsx (file này không import phân hệ) */
+const LOC_KENH: Loc = { k: KHOA_LOC_NGUON.kenh, nhan: 'Kênh bán', kieu: 'chonNhieu', ds: () => ['Tại quán', 'Mang về', 'App giao đồ ăn'] }
+/** Bán hàng: kênh bán (T457), hàng hoá, nhóm hàng hoá, đối tượng; không lọc kho vì dòng món của đơn POS không ghi kho xuất (PhuongXT chốt 14/10/2026) */
+export const LOC_BAN: Loc[] = [LOC_KENH, locHang(BAN.ten), locNhom(BAN.nhom), { k: KHOA_LOC_NGUON.dt, nhan: 'Đối tượng', kieu: 'chonNhieu', ds: () => KHACH.map(n => n.ten) }]
 /** Kho: kho, hàng hoá, nhóm hàng hoá; hàng gồm nguyên vật liệu, hàng sơ chế và hàng bán theo dõi tồn kho */
 export const LOC_KHO_BC: Loc[] = [LOC_KHO, locHang(KHO_HANG.ten), locNhom(KHO_HANG.nhom)]

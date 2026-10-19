@@ -5,7 +5,7 @@ import { CUA_HANG, DAILY, HANG, trongThang } from '../../data/mock'
 import { dmy } from '../../ui/format'
 import { dongCuaPhieu, soFabi, theoKenh } from './ChungTuBanHang'
 import { giamThueHkd } from './giam-thue'
-import { docLocNguon, quaLocDong, quaLocDt } from '../bao-cao/loc-nguon'
+import { docLocNguon, quaLocDong, quaLocDt, quaLocKenh } from '../bao-cao/loc-nguon'
 
 interface DongBan {
   ngay: string; so: string; kenh: string; kh: string; cn: string; ma: string; ten: string; nhom: string; dvt: string
@@ -14,7 +14,7 @@ interface DongBan {
 }
 
 /** Dòng món của các chứng từ Xuất bán POS trong tháng; cn là tên cửa hàng chọn trên thanh trên.
- *  Bộ lọc hàng hoá, nhóm hàng hoá, khách hàng lọc dòng món; không lọc kho vì đơn POS không ghi kho xuất (T207) */
+ *  Bộ lọc kênh bán (T457), hàng hoá, nhóm hàng hoá, khách hàng lọc dòng món; không lọc kho vì đơn POS không ghi kho xuất (T207) */
 function dongBan(thang: number, cn?: string, loc?: Record<string, string[]>): DongBan[] {
   const f = docLocNguon(loc)
   const id = CUA_HANG.find(c => c.ten === cn)?.id
@@ -26,7 +26,7 @@ function dongBan(thang: number, cn?: string, loc?: Record<string, string[]>): Do
       sl: d.sl, gia: d.gia, thanh: d.thanh, giam: d.giam, tien: d.tien, thue: d.thue,
       ck: d.ck, phiDv: d.phiDv, phiVc: d.phiVc, phieuGg: 0,   // dữ liệu mẫu FABi chưa có phiếu giảm giá
     }))
-  })).filter(d => quaLocDong(f, d) && quaLocDt(f, d.kh))
+  })).filter(d => quaLocDong(f, d) && quaLocDt(f, d.kh) && quaLocKenh(f, d.kenh))
 }
 const cong = (ds: Row[], k: string) => ds.reduce((a, x) => a + (Number(x[k]) || 0), 0)
 /** Các cột tiền của dòng món theo mẫu báo cáo bán hàng iFaster (T453); thuế theo phương pháp GTGT (T450):
@@ -53,9 +53,11 @@ export const banHangTheoNgay = {
   cols: [{ k: 'ngay', t: 'Ngày', w: 92 }, { k: 'don', t: 'Số hoá đơn', num: true, w: 90 }, ...COT_TIEN] as Col[],
   rows: (thang: number, cn?: string, loc?: Record<string, string[]>, tyLe?: boolean): Row[] => {
     const id = CUA_HANG.find(c => c.ten === cn)?.id
-    // Số hoá đơn là số đơn POS FABi gửi về trong ngày
+    // Số hoá đơn là số đơn POS FABi gửi về trong ngày, của các kênh bán đang lọc (T457)
+    const f = docLocNguon(loc)
     const don = new Map<string, number>()
-    for (const x of DAILY) if (trongThang(x.date, thang, 2026) && (!id || x.cn === id)) don.set(dmy(x.date), (don.get(dmy(x.date)) ?? 0) + x.don)
+    for (const x of DAILY) if (trongThang(x.date, thang, 2026) && (!id || x.cn === id))
+      for (const p of theoKenh(x)) if (quaLocKenh(f, p.kenh)) don.set(dmy(x.date), (don.get(dmy(x.date)) ?? 0) + p.don)
     const nhom = new Map<string, Row>()
     for (const d of dongBan(thang, cn, loc)) {
       const g = nhom.get(d.ngay) ?? { ngay: d.ngay, don: don.get(d.ngay) ?? 0 }

@@ -14,7 +14,7 @@ import { colsCongNo, rowsCongNo } from '../bao-cao/cong-no'
 // Gói Free tạm ẩn các báo cáo bán hàng (T216), PhuongXT mở lại cho mọi gói 19/10/2026 (T452)
 const baoCaoMoi = (slug: string, ten: string, report: Omit<ReportCfg, 'kieu'>): ScreenDef =>
   ({ slug, ten, nhom: 'Sổ sách, báo cáo', kind: 'report', report: { kieu: 'bangke', theoCn: true, theoGtgt: true, ...report } })
-const BAO_CAO_MOI = [baoCaoMoi('3-2-6', 'Bán hàng theo ngày', banHangTheoNgay), baoCaoMoi('3-2-7', 'Tổng hợp bán hàng', tongHopBanHang), baoCaoMoi('3-2-8', 'Chi tiết bán hàng', chiTietBanHang),
+const BAO_CAO_MOI = [baoCaoMoi('3-2-6', 'Bán hàng theo ngày', banHangTheoNgay), baoCaoMoi('3-2-7', 'Tổng hợp bán hàng', tongHopBanHang), baoCaoMoi('3-2-8', 'Bảng kê chi tiết bán hàng', chiTietBanHang),
   baoCaoMoi('3-2-9', 'Công nợ khách hàng', { cols: colsCongNo('kh'), rows: (t, cn) => rowsCongNo('kh', t, cn) })]   // theo mẫu iFaster, bấm tên mở lịch sử công nợ (T185)
 
 /** Nhãn ngắn trên thanh tab */

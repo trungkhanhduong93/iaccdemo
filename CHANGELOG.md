@@ -4,6 +4,10 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 19/10/2026
 
+- T457: Báo cáo Bán hàng theo ngày, Tổng hợp bán hàng, Bảng kê chi tiết bán hàng có bộ lọc Kênh bán (Tại quán, Mang về, App giao đồ ăn); Số hoá đơn theo ngày cũng đếm theo kênh đang lọc.
+
+- T456: Đổi tên báo cáo Bảng kê mua hàng theo hàng hoá thành Bảng kê chi tiết mua hàng, Chi tiết bán hàng thành Bảng kê chi tiết bán hàng.
+
 - T455: Báo cáo Chi tiết bán hàng có cột Kênh bán (Tại quán, Mang về, App giao đồ ăn), mở ra đã gom nhóm theo kênh bán ở dạng Chi tiết; bấm Tổng hợp xem mỗi kênh một dòng.
 
 - T454: Báo cáo Tổng hợp bán hàng bỏ cột Giá vốn, Lãi gộp.

@@ -3903,10 +3903,10 @@ def kiem_tra_dot_19_b():
 DS_MAN_20_B = [
     # Khuôn 1: Chi tiết theo ngày (8 màn mới + 3 màn cũ)
     ('3.2.6', 'ban-hang/3-2-6', 'Bán hàng theo ngày', 'chi-tiet-ngay', 'PR'),
-    ('3.2.8', 'ban-hang/3-2-8', 'Chi tiết bán hàng', 'chi-tiet-ngay', 'PR'),
+    ('3.2.8', 'ban-hang/3-2-8', 'Bảng kê chi tiết bán hàng', 'chi-tiet-ngay', 'PR'),
     ('4.2.1', 'mua-hang/4-2-1', 'Chi tiết mua hàng', 'chi-tiet-ngay', 'PR'),
     ('4.2.6', 'mua-hang/4-2-6', 'Mua hàng theo ngày', 'chi-tiet-ngay', 'PR'),
-    ('4.2.7', 'mua-hang/4-2-7', 'Bảng kê mua hàng theo hàng hoá', 'chi-tiet-ngay', 'PR'),
+    ('4.2.7', 'mua-hang/4-2-7', 'Bảng kê chi tiết mua hàng', 'chi-tiet-ngay', 'PR'),
     ('5.2.1', 'kho/5-2-1', 'Thẻ kho', 'chi-tiet-ngay', 'PR'),
     ('5.2.10', 'kho/5-2-10', 'Chi tiết nhập kho', 'chi-tiet-ngay', 'PR'),
     ('5.2.12', 'kho/5-2-12', 'Chi tiết xuất kho', 'chi-tiet-ngay', 'PR'),
@@ -4032,7 +4032,7 @@ def kiem_tra_dot_20_b():
             return val
 
         ds_so_sanh = [
-            ('3.2.8', 'ban-hang/3-2-8', 'Chi tiết bán hàng (Khuôn 1)'),
+            ('3.2.8', 'ban-hang/3-2-8', 'Bảng kê chi tiết bán hàng (Khuôn 1)'),
             ('3.2.9', 'ban-hang/3-2-9', 'Công nợ khách hàng (Khuôn 2)'),
             ('2.2.9', 'tien/2-2-9', 'Báo cáo dòng tiền (Khuôn 3)'),
         ]
@@ -4147,7 +4147,7 @@ def kiem_tra_dot_21_b():
     SHOTS.mkdir(parents=True, exist_ok=True)
 
     ds_man_21_b = [
-        ('3.2.8', 'ban-hang/3-2-8', 'Chi tiết bán hàng'),
+        ('3.2.8', 'ban-hang/3-2-8', 'Bảng kê chi tiết bán hàng'),
         ('3.2.9', 'ban-hang/3-2-9', 'Công nợ khách hàng'),
         ('5.2.3', 'kho/5-2-3', 'Báo cáo xuất nhập tồn (tiêu đề nhiều tầng)'),
         ('2.2.9', 'tien/2-2-9', 'Báo cáo dòng tiền'),

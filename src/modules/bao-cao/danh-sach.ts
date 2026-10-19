@@ -88,7 +88,7 @@ export const CAU_HINH_BC: Record<string, CauHinhBC> = {
   // Bộ lọc hàng hoá, nhóm hàng hoá, khách hàng lọc dòng món trước khi cộng (T207)
   '3.2.6': baoCao('doc', { loc: LOC_BAN, anKhongPS: true }),
   '3.2.7': baoCao('ngang', { loc: LOC_BAN, nhomDuoc: ['nhom'], anKhongPS: true }),
-  '3.2.8': baoCao('ngang', { loc: LOC_BAN, nhomDuoc: ['ngay', 'so', 'ten'], anKhongPS: true, phanTrang: 100 }),
+  '3.2.8': baoCao('ngang', { loc: LOC_BAN, nhomDuoc: ['kenh', 'ngay', 'so', 'ten'], anKhongPS: true, phanTrang: 100 }),
   '3.2.9': baoCao('ngang', { loc: [{ k: 'ten', nhan: 'Khách hàng', kieu: 'chonNhieu' }], anKhongPS: true }),   // Công nợ khách hàng theo iFaster (T185)
   // Bộ lọc kho, hàng hoá, nhóm hàng hoá, nhà cung cấp lọc phiếu, dòng hàng trước khi cộng (T207)
   '4.2.1': baoCao('ngang', { loc: [...LOC_MUA, { k: 'nguon', nhan: 'Nguồn', kieu: 'chon' }], nhomDuoc: ['doiTuong', 'ngay'], anKhongPS: true }),

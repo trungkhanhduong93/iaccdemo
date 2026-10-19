@@ -34,8 +34,8 @@ const muaHang: ModuleDef = {
     '4.2.3': { ten: 'Công nợ nhà cung cấp', report: { kieu: 'bangke', theoCn: true, cols: colsCongNo('ncc'), rows: (t, cn) => rowsCongNoNhom('ncc', t, cn) } },   // theo mẫu iFaster, bấm tên mở lịch sử công nợ (T185); nhóm NCC, dưới là cửa hàng (T308)
     '4.2.6': { ten: 'Mua hàng theo ngày', report: { kieu: 'bangke', theoCn: true, ...muaHangTheoNgay } },
   }, NGAN).concat([
-    // Bảng kê mua hàng theo hàng hoá, ngoài Excel; mã 4.2.7 lấy theo slug, khoá cấu hình ở bao-cao/danh-sach.ts (T200)
-    { slug: '4-2-7', ten: 'Bảng kê mua hàng theo hàng hoá', nhom: 'Sổ sách, báo cáo', kind: 'report', report: { kieu: 'bangke', theoCn: true, ...bangKeMuaTheoHang } },
+    // Bảng kê chi tiết mua hàng (trước là Bảng kê mua hàng theo hàng hoá, đổi tên T456), ngoài Excel; mã 4.2.7 lấy theo slug, khoá cấu hình ở bao-cao/danh-sach.ts (T200)
+    { slug: '4-2-7', ten: 'Bảng kê chi tiết mua hàng', nhom: 'Sổ sách, báo cáo', kind: 'report', report: { kieu: 'bangke', theoCn: true, ...bangKeMuaTheoHang } },
   ]),
 }
 export default muaHang
