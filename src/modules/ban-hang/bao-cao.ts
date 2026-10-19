@@ -3,32 +3,27 @@
 import type { Col, Row } from '../types'
 import { CUA_HANG, DAILY, HANG, trongThang } from '../../data/mock'
 import { dmy } from '../../ui/format'
-import { chiaTheo, dongCuaPhieu, soFabi, theoKenh } from './ChungTuBanHang'
+import { dongCuaPhieu, soFabi, theoKenh } from './ChungTuBanHang'
 import { giamThueHkd } from './giam-thue'
 import { docLocNguon, quaLocDong, quaLocDt } from '../bao-cao/loc-nguon'
 
-/** Hệ số giá vốn theo nhóm món, như báo cáo bán hàng cũ: đồ uống rẻ vốn, bia rượu vốn cao */
-const heSoGv = (nhom: string) => nhom === 'Đồ uống' ? 0.24 : nhom === 'Bia, rượu' ? 0.62 : 0.38
-
 interface DongBan {
   ngay: string; so: string; kh: string; cn: string; ma: string; ten: string; nhom: string; dvt: string
-  sl: number; gia: number; thanh: number; giam: number; tien: number; thue: number; gv: number
+  sl: number; gia: number; thanh: number; giam: number; tien: number; thue: number
   ck: number; phiDv: number; phiVc: number; phieuGg: number   // các khoản của đơn POS theo món (T106, T453)
 }
 
 /** Dòng món của các chứng từ Xuất bán POS trong tháng; cn là tên cửa hàng chọn trên thanh trên.
- *  Giá vốn của chứng từ chia cho món theo doanh thu nhân hệ số nhóm, cộng lại bằng giá vốn ngày.
  *  Bộ lọc hàng hoá, nhóm hàng hoá, khách hàng lọc dòng món; không lọc kho vì đơn POS không ghi kho xuất (T207) */
 function dongBan(thang: number, cn?: string, loc?: Record<string, string[]>): DongBan[] {
   const f = docLocNguon(loc)
   const id = CUA_HANG.find(c => c.ten === cn)?.id
   return DAILY.filter(x => trongThang(x.date, thang, 2026) && (!id || x.cn === id)).flatMap(x => theoKenh(x).flatMap(p => {
     const ds = dongCuaPhieu(p)
-    const gv = chiaTheo(p.gv, ds.map(d => d.tien * heSoGv(d.nhom)), 1)
     const so = soFabi(`fabi-${p.seed}`)
-    return ds.map((d, i): DongBan => ({
+    return ds.map((d): DongBan => ({
       ngay: dmy(p.date), so, kh: 'Khách lẻ POS', cn: CUA_HANG.find(c => c.id === p.cn)?.ten ?? p.cn, ma: d.ma, ten: d.ten, nhom: d.nhom, dvt: d.dvt,
-      sl: d.sl, gia: d.gia, thanh: d.thanh, giam: d.giam, tien: d.tien, thue: d.thue, gv: gv[i],
+      sl: d.sl, gia: d.gia, thanh: d.thanh, giam: d.giam, tien: d.tien, thue: d.thue,
       ck: d.ck, phiDv: d.phiDv, phiVc: d.phiVc, phieuGg: 0,   // dữ liệu mẫu FABi chưa có phiếu giảm giá
     }))
   })).filter(d => quaLocDong(f, d) && quaLocDt(f, d.kh))
@@ -75,19 +70,18 @@ export const banHangTheoNgay = {
 /** Tổng hợp bán hàng: gom theo mặt hàng, xếp theo nhóm hàng như danh mục */
 export const tongHopBanHang = {
   cols: [{ k: 'nhom', t: 'Nhóm hàng', w: 110 }, { k: 'ma', t: 'Mã hàng', cls: 'code', w: 80 }, { k: 'ten', t: 'Tên hàng' }, { k: 'dvt', t: 'ĐVT', c: true, w: 60 },
-    { k: 'sl', t: 'Số lượng', num: true }, ...COT_TIEN, { k: 'gv', t: 'Giá vốn', num: true }, { k: 'lg', t: 'Lãi gộp', num: true }] as Col[],
+    { k: 'sl', t: 'Số lượng', num: true }, ...COT_TIEN] as Col[],   // bỏ Giá vốn, Lãi gộp (T454)
   rows: (thang: number, cn?: string, loc?: Record<string, string[]>, tyLe?: boolean): Row[] => {
     const nhom = new Map<string, Row>()
     for (const d of dongBan(thang, cn, loc)) {
-      const g = nhom.get(d.ma) ?? { nhom: d.nhom, ma: d.ma, ten: d.ten, dvt: d.dvt, sl: 0, gv: 0, lg: 0 }
-      const t = tienDong(d, tyLe)
-      congTien(g, t)
-      g.sl = Number(g.sl) + d.sl; g.gv = Number(g.gv) + d.gv; g.lg = Number(g.lg) + t.dtTt - d.gv
+      const g = nhom.get(d.ma) ?? { nhom: d.nhom, ma: d.ma, ten: d.ten, dvt: d.dvt, sl: 0 }
+      congTien(g, tienDong(d, tyLe))
+      g.sl = Number(g.sl) + d.sl
       nhom.set(d.ma, g)
     }
     const thuTu = HANG.map(h => h.ma)
     const ds = [...nhom.values()].sort((a, b) => thuTu.indexOf(a.ma) - thuTu.indexOf(b.ma))
-    return [...ds, { ten: 'Tổng cộng', ...tongTien(ds), gv: cong(ds, 'gv'), lg: cong(ds, 'lg'), _t: 1 }]
+    return [...ds, { ten: 'Tổng cộng', ...tongTien(ds), _t: 1 }]
   },
 }
 

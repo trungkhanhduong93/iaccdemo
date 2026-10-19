@@ -1,4 +1,4 @@
-# Báo cáo bán hàng đủ cột tiền theo mẫu iFaster (T453)
+# Báo cáo bán hàng đủ cột tiền theo mẫu iFaster (T453, T454)
 
 - Ngày: 19/10/2026
 - Người: PhuongXT, agent: Claude Code
@@ -6,9 +6,10 @@
 
 ## Đã làm
 
-- `ban-hang/bao-cao.ts`: ba báo cáo 3-2-6 Bán hàng theo ngày, 3-2-7 Tổng hợp bán hàng, 3-2-8 Chi tiết bán hàng dùng chung bộ cột tiền `COT_TIEN`: Thành tiền, Giảm giá, Chiết khấu, Phí dịch vụ, Doanh thu tính thuế, Thuế GTGT, Giảm thuế GTGT, Phiếu giảm giá, Phí vận chuyển, Tổng tiền. Tổng hợp giữ thêm Giá vốn, Lãi gộp (lãi gộp tính trên doanh thu tính thuế).
+- `ban-hang/bao-cao.ts`: ba báo cáo 3-2-6 Bán hàng theo ngày, 3-2-7 Tổng hợp bán hàng, 3-2-8 Chi tiết bán hàng dùng chung bộ cột tiền `COT_TIEN`: Thành tiền, Giảm giá, Chiết khấu, Phí dịch vụ, Doanh thu tính thuế, Thuế GTGT, Giảm thuế GTGT, Phiếu giảm giá, Phí vận chuyển, Tổng tiền.
 - Công thức theo mẫu iFaster PhuongXT gửi: Doanh thu tính thuế = Thành tiền − Giảm giá − Chiết khấu + Phí dịch vụ; Tổng tiền = Doanh thu tính thuế + Thuế GTGT − Giảm thuế GTGT − Phiếu giảm giá + Phí vận chuyển.
 - Chiết khấu, Phí dịch vụ, Phí vận chuyển lấy từ dòng món của đơn POS (T106), dữ liệu mẫu đang bằng 0; Phiếu giảm giá chưa có trong dữ liệu FABi mẫu, để 0.
+- T454: Tổng hợp bán hàng bỏ cột Giá vốn, Lãi gộp theo PhuongXT; bỏ luôn phần chia giá vốn cho món (`heSoGv`) trong `bao-cao.ts` vì không báo cáo nào dùng.
 - Đổi tên theo từ đang dùng trong app: Giảm giá VAT thành Giảm thuế GTGT, Phiếu GG thành Phiếu giảm giá, Phí ship thành Phí vận chuyển. Thuế GTGT, Giảm thuế GTGT vẫn ẩn hiện theo phương pháp GTGT (T450).
 
 ## Đã kiểm
