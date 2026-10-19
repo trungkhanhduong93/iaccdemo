@@ -179,6 +179,7 @@ const danhMuc: ModuleDef = {
       { k: 'dienGiai', t: 'Diễn giải' }, { k: 'hangAd', t: 'Hàng hoá áp dụng', r: (r: Row) => r.hangAd || 'Tất cả hàng hoá' }],
       rows: () => QUY_DOI_DVT } },
     '1.5': { catalog: { them: 'Thêm đối tượng', nhomLoc: 'loai', nhanLoc: 'Loại',
+      locGoi: (goi, r) => goi !== 'F' || r.loai !== 'Khách hàng',   // gói Free chỉ Nhà cung cấp, Nhân viên (T470)
       chucNang: r => {
         if (r.loai === 'Khách hàng') return [{ nhan: 'Lập hoá đơn', di: 'ban-hang/3-1-2/moi' }, { nhan: 'Thu tiền', di: 'tien/2-1-1/moi?loai=thu' }, { nhan: 'Xem công nợ', di: 'tien/2-2-5' }]
         if (r.loai === 'Nhà cung cấp') return [{ nhan: 'Lập phiếu mua', di: 'mua-hang/4-1-1/moi' }, { nhan: 'Trả tiền', di: 'tien/2-1-1/moi?loai=chi' }, { nhan: 'Xem công nợ', di: 'mua-hang/4-2-2' }]

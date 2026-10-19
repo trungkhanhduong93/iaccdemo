@@ -8,7 +8,7 @@ import { fold } from './format'
 import { CatalogPanel } from './generic/CatalogScreen'
 import { getDmMeta, addCatalogRow, useAddedCatalogRows, sinhMaKeTiep, type DmMeta } from './generic/danhMucStore'
 import { DON_VI_TINH } from '../modules/danh-muc/data'
-import { useSession } from '../app/session'
+import { ngayDauNam, useSession } from '../app/session'
 import type { Row } from '../modules/types'
 
 export interface MucDm { v: string; t: string; dvt?: string }   // dvt: đơn vị tính của hàng vừa thêm tại form, để ô cha điền luôn (T419)
@@ -182,7 +182,8 @@ function HopThem({ nhan, coMa, tenGoc, onDong, onLuu }: { nhan: string; coMa?: b
  *  loại khoá theo màn (Mua hàng, Kiểm kê: Nguyên vật liệu; Chi phí trả trước: Khác (Công cụ dụng cụ)), các giá trị khác lấy theo giá trị sẵn (theo dõi tồn kho) */
 function HopThemHang({ meta, nhan, onDong, onLuu }: { meta: DmMeta; nhan: string; onDong: () => void; onLuu: (v: Record<string, any>) => void }) {
   const { s } = useSession()
-  const [v, setV] = useState<Row>(() => ({ ...meta.dienSan, ten: meta.dienSan.ten ?? '' }))
+  // Giá trị sẵn khi thêm mới của danh mục, vd ngành nghề 301-5 của hàng hoá (T469), rồi tới giá trị điền từ phiếu
+  const [v, setV] = useState<Row>(() => ({ ...meta.cauHinh?.moi?.(meta.all, { ngayDauNam: ngayDauNam(s) }), ...meta.dienSan, ten: meta.dienSan.ten ?? '' }))
   const [maTay, setMaTay] = useState('')
   const ma = maTay || sinhMaKeTiep(meta.catKey, v, meta.all)
   const duoc = String(v.ten).trim() && ma.trim()

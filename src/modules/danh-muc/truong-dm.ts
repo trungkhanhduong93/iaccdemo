@@ -208,6 +208,8 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
         ],
       },
     ],
+    // Thêm mới hàng hoá ở mọi màn (danh mục, nút Thêm trong phiếu, điện thoại): ngành nghề mặc định Dịch vụ ăn uống 301-5 (T469)
+    moi: () => ({ nganhNghe: '301-5', ...dienNganhNghe('301-5') }),
     doi: (k, v, rows, s) => {
       const boSung: Record<string, any> = {}
       if (s?.goi === 'F') {
@@ -324,7 +326,8 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
         truong: [
           { k: 'ma', nhan: 'Mã đối tượng', kieu: 'chu', batBuoc: true, cot: 'PR_DETAIL_ID' },
           { k: 'ten', nhan: 'Tên đối tượng', kieu: 'chu', batBuoc: true, caHang: true, cot: 'PR_DETAIL_NAME' },
-          { k: 'loai', nhan: 'Loại đối tượng', kieu: 'chon', ds: ['Khách hàng', 'Nhà cung cấp', 'Nhân viên'], batBuoc: true, cot: 'PR_DETAIL_TYPE_ID' },
+          { k: 'loai', nhan: 'Loại đối tượng', kieu: 'chon', ds: ['Khách hàng', 'Nhà cung cấp', 'Nhân viên'], batBuoc: true, goi: ['S', 'PL', 'PR'], cot: 'PR_DETAIL_TYPE_ID' },
+          { k: 'loai', nhan: 'Loại đối tượng', kieu: 'chon', ds: ['Nhà cung cấp', 'Nhân viên'], batBuoc: true, goi: ['F'], cot: 'PR_DETAIL_TYPE_ID' },   // gói Free không có khách hàng (T470)
           { k: 'nhom', nhan: 'Nhóm đối tượng', kieu: 'chon', ds: TEN_NHOM_DOI_TUONG, cot: 'PR_DETAIL_CLASS_ID' },
           { k: 'mst', nhan: 'Mã số thuế', kieu: 'chu', cot: 'TAX_FILE_NUMBER' },
         ],
