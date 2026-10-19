@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T481 | Điện thoại, xem phiếu mua: khối tổng (thành tiền, giảm giá, thuế) gộp vào chung khung chân với các nút như chân Xuất bán POS, không nổi tách rời đè nội dung | Trum | Đang làm | `MXemPhieu.tsx`, cuối `app.css` |
 | T480 | Điện thoại, Lịch sử thu chi: mỗi ngày thấy Dư đầu ngày và Dư cuối ngày | Trum | Đang làm | `MLichSuQuy.tsx`, cuối `app.css` |
 | T477 | Điện thoại, Bảng kê mua hàng: dòng phụ dưới tiêu đề đổi thành các ô điều kiện lọc (Thời gian, Kho/CN) như Sổ quỹ tiền mặt | Trum | Đang làm | `MBangKeMua.tsx`, cuối `app.css` |
 | T476 | Điện thoại, các bảng kê bán hàng: thẻ tổng đổi thành 4 ô Số đơn, SL bán, Doanh thu, TB/đơn | Trum | Đang làm | `MBaoCaoDong.tsx`, cuối `app.css` |
