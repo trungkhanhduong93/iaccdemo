@@ -423,9 +423,9 @@ export function MTrangChuFree(_props?: Partial<ScreenProps>) {
             <Link
               to={`/app/trang-chu/chi-phi-nvl?thang=${thangF}`}
               className="m-tcf-kqkd-dong m-tcf-kqkd-link"
-              title="Xem giá vốn nguyên vật liệu"
+              title="Xem chi phí nguyên vật liệu"
             >
-              <span className="m-tcf-kqkd-ten">Giá vốn nguyên vật liệu</span>
+              <span className="m-tcf-kqkd-ten">Chi phí nguyên vật liệu</span>
               <span className="m-tcf-kqkd-tien">{moneyD(nvl.tien)}</span>
               <Icon n="chevr" className="ic sm m-tcf-kqkd-mui" />
               <span className="m-tcf-kqkd-mt">{moTaCach(nvl.ds)}</span>

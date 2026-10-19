@@ -755,10 +755,10 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
           <Link
             to={`/app/trang-chu/chi-phi-nvl?thang=${thangXem}`}
             className="t cp bbt-e-the-link"
-            title="Xem giá vốn nguyên vật liệu"
+            title="Xem chi phí nguyên vật liệu"
           >
             <div className="l">
-              <b>Giá vốn nguyên vật liệu</b>
+              <b>Chi phí nguyên vật liệu</b>
               <span>{moTaCachNgan(nvl.ds)}</span>
             </div>
             <div className="r">

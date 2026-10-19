@@ -1,4 +1,4 @@
-// Chi phí NVL trong tháng gói Free trên điện thoại (T394): mở từ thẻ Giá vốn nguyên vật liệu ở trang chủ.
+// Chi phí NVL trong tháng gói Free trên điện thoại (T394): mở từ thẻ Chi phí nguyên vật liệu ở trang chủ.
 // Xem mọi cửa hàng: danh sách từng cửa hàng với cách tính riêng, bấm dòng xem cửa hàng đó.
 // Xem một cửa hàng: chi tiết theo cách tính; cách nhập mua có liên kết mở danh sách phiếu mua hàng.
 import { useState } from 'react'
