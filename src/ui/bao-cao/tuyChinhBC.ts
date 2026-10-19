@@ -203,6 +203,9 @@ export function useTrangThaiLoc(path: string): TrangThaiLoc {
 // ── Lưu trữ localStorage: bc-tuy-chinh:<donVi>:<mã> ──
 
 const khoaLuu = (donVi: string, ma: string) => `bc-tuy-chinh:${donVi}:${ma}`
+/** Tuỳ chỉnh sẵn của báo cáo khi người dùng chưa lưu gì, Về mặc định cũng quay lại đây.
+ *  Chi tiết bán hàng gom theo kênh bán, mở vào Chi tiết (T455) */
+const TC_MAC_DINH: Record<string, TuyChinhLuu> = { '3.2.8': { nhom: ['kenh'], xemNhom: 'chiTiet' } }
 const boNhoTuyChinh = new Map<string, { raw: string | null; val: TuyChinhLuu | null }>()
 
 export function docTuyChinh(donVi: string, ma?: string): TuyChinhLuu | null {
@@ -213,8 +216,9 @@ export function docTuyChinh(donVi: string, ma?: string): TuyChinhLuu | null {
     const cu = boNhoTuyChinh.get(k)
     if (cu && cu.raw === raw) return cu.val
     if (!raw) {
-      boNhoTuyChinh.set(k, { raw: null, val: null })
-      return null
+      const md = TC_MAC_DINH[ma] ? { ...TC_MAC_DINH[ma], nhom: [...(TC_MAC_DINH[ma].nhom ?? [])] } : null   // bản sao, nơi gọi có thể sửa trước khi lưu
+      boNhoTuyChinh.set(k, { raw: null, val: md })
+      return md
     }
     const v = JSON.parse(raw) as TuyChinhLuu
     const val = typeof v === 'object' && v !== null ? v : null

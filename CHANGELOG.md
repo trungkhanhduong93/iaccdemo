@@ -4,6 +4,8 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 19/10/2026
 
+- T455: Báo cáo Chi tiết bán hàng có cột Kênh bán (Tại quán, Mang về, App giao đồ ăn), mở ra đã gom nhóm theo kênh bán ở dạng Chi tiết; bấm Tổng hợp xem mỗi kênh một dòng.
+
 - T454: Báo cáo Tổng hợp bán hàng bỏ cột Giá vốn, Lãi gộp.
 
 - T453: Báo cáo Bán hàng theo ngày, Tổng hợp bán hàng, Chi tiết bán hàng có đủ cột tiền như báo cáo bán hàng iFaster: Thành tiền, Giảm giá, Chiết khấu, Phí dịch vụ, Doanh thu tính thuế, Giảm thuế GTGT (GTGT theo % doanh thu) hoặc Thuế GTGT (khấu trừ), Phiếu giảm giá, Phí vận chuyển, Tổng tiền.

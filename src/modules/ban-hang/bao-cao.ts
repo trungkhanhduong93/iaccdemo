@@ -8,7 +8,7 @@ import { giamThueHkd } from './giam-thue'
 import { docLocNguon, quaLocDong, quaLocDt } from '../bao-cao/loc-nguon'
 
 interface DongBan {
-  ngay: string; so: string; kh: string; cn: string; ma: string; ten: string; nhom: string; dvt: string
+  ngay: string; so: string; kenh: string; kh: string; cn: string; ma: string; ten: string; nhom: string; dvt: string
   sl: number; gia: number; thanh: number; giam: number; tien: number; thue: number
   ck: number; phiDv: number; phiVc: number; phieuGg: number   // các khoản của đơn POS theo món (T106, T453)
 }
@@ -22,7 +22,7 @@ function dongBan(thang: number, cn?: string, loc?: Record<string, string[]>): Do
     const ds = dongCuaPhieu(p)
     const so = soFabi(`fabi-${p.seed}`)
     return ds.map((d): DongBan => ({
-      ngay: dmy(p.date), so, kh: 'Khách lẻ POS', cn: CUA_HANG.find(c => c.id === p.cn)?.ten ?? p.cn, ma: d.ma, ten: d.ten, nhom: d.nhom, dvt: d.dvt,
+      ngay: dmy(p.date), so, kenh: p.kenh, kh: 'Khách lẻ POS', cn: CUA_HANG.find(c => c.id === p.cn)?.ten ?? p.cn, ma: d.ma, ten: d.ten, nhom: d.nhom, dvt: d.dvt,
       sl: d.sl, gia: d.gia, thanh: d.thanh, giam: d.giam, tien: d.tien, thue: d.thue,
       ck: d.ck, phiDv: d.phiDv, phiVc: d.phiVc, phieuGg: 0,   // dữ liệu mẫu FABi chưa có phiếu giảm giá
     }))
@@ -85,13 +85,13 @@ export const tongHopBanHang = {
   },
 }
 
-/** Chi tiết bán hàng: mỗi dòng món của chứng từ một dòng */
+/** Chi tiết bán hàng: mỗi dòng món của chứng từ một dòng; mặc định gom theo kênh bán, xem Chi tiết (T455, TC_MAC_DINH ở tuyChinhBC.ts) */
 export const chiTietBanHang = {
-  cols: [{ k: 'ngay', t: 'Ngày', w: 88 }, { k: 'so', t: 'Số hoá đơn', cls: 'code', w: 120 }, { k: 'kh', t: 'Khách hàng' }, { k: 'ma', t: 'Mã hàng', cls: 'code', w: 70 },
+  cols: [{ k: 'ngay', t: 'Ngày', w: 88 }, { k: 'so', t: 'Số hoá đơn', cls: 'code', w: 120 }, { k: 'kenh', t: 'Kênh bán', w: 120 }, { k: 'kh', t: 'Khách hàng' }, { k: 'ma', t: 'Mã hàng', cls: 'code', w: 70 },
     { k: 'ten', t: 'Tên hàng' }, { k: 'dvt', t: 'ĐVT', c: true, w: 50 }, { k: 'sl', t: 'Số lượng', num: true }, { k: 'gia', t: 'Đơn giá', num: true },
     ...COT_TIEN] as Col[],
   rows: (thang: number, cn?: string, loc?: Record<string, string[]>, tyLe?: boolean): Row[] => {
-    const ds: Row[] = dongBan(thang, cn, loc).map(d => ({ ngay: d.ngay, so: d.so, kh: d.kh, ma: d.ma, ten: d.ten, dvt: d.dvt, sl: d.sl, gia: d.gia, ...tienDong(d, tyLe) }))
+    const ds: Row[] = dongBan(thang, cn, loc).map(d => ({ ngay: d.ngay, so: d.so, kenh: d.kenh, kh: d.kh, ma: d.ma, ten: d.ten, dvt: d.dvt, sl: d.sl, gia: d.gia, ...tienDong(d, tyLe) }))
     return [...ds, { ten: 'Tổng cộng', ...tongTien(ds), _t: 1 }]
   },
 }
