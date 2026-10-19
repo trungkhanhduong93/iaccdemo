@@ -4,6 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 19/10/2026
 
+- T446: Trang chủ gói Free máy tính: thẻ Mua hàng & công nợ nhà cung cấp bỏ dòng % so với cùng kỳ. Tiến độ kiểm kê theo cửa hàng bỏ số mặt hàng đã kiểm (8/12) và số lệch, cột cuối có tiêu đề Kiểm kê lần cuối, ghi ngày (rê chuột xem số lệch). Vòng tồn quỹ ở khối Quỹ tiền to hơn, đẩy lên thẳng hàng bảng Kết quả kinh doanh bên trái.
 - T446: Trang chủ gói Free máy tính: thẻ Mua hàng & công nợ nhà cung cấp bỏ dòng % so với cùng kỳ. Tiến độ kiểm kê theo cửa hàng ghi ngày kiểm kê cuối thay cho số mặt hàng lệch (đỏ khi có lệch, rê chuột xem số lệch).
 - T424, T425 (điện thoại): Màn xem phiếu thu, chi, mua hàng, kiểm kê bỏ lề trái phải thừa, thanh số phiếu sát mép trên. Phiếu thu, chi: ô Quỹ rộng hết hàng, Nguồn chứng từ chuyển thành dòng trong nhóm Thông tin phiếu. Chi tiết đơn Xuất bán POS mở toàn màn, thanh đầu sát mép trên như màn xem thẻ chi phí phân bổ.
 

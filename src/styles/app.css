@@ -30582,5 +30582,12 @@ a.tx-item:hover {
   display: inline !important;
 }
 
-
-
+/* ── Tiến độ kiểm kê theo cửa hàng ghi ngày kiểm kê cuối (T446) ── */
+.bbt-kho2-tien-do .bbt-kho2-cn { grid-template-columns: minmax(120px, 1.1fr) minmax(80px, 2fr) minmax(96px, auto); }
+.bbt-kho2-cn > span.bbt-kho2-ngay { font-weight: 500; color: var(--muted); white-space: nowrap; }
+.bbt-kho2-cn.bbt-kho2-dau { padding-top: 0; padding-bottom: 2px; }
+.bbt-kho2-cn.bbt-kho2-dau > span:last-child { font-size: 11.5px; font-weight: 600; color: var(--muted); white-space: nowrap; }
+/* Vòng tồn quỹ: SVG có ~28px trống phía trên, kéo lên cho nhãn trên cùng thẳng hàng dòng Doanh thu bên Kết quả kinh doanh */
+.bbt-e-luoi-2 .bbt-gon .bbt-vq-t402 { margin-top: -22px; }
+/* Vòng tồn quỹ giãn rộng hơn cho đầy khối Quỹ tiền */
+.bbt-e-luoi-2 .bbt-gon .bbt-vq-t402 .bbt-vq-svg { max-width: 480px; }

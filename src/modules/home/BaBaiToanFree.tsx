@@ -948,13 +948,13 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
           <div className="phu bbt-phu bbt-e-phu">Thiếu {kk.thieu} · thừa {kk.thua} · đã kiểm {kk.soKiem}/{kk.tongMh}</div>
           <div className="bbt-kho-nhom">Tiến độ kiểm kê theo cửa hàng</div>
           <div className="bbt-kho2-tien-do">
+            <div className="bbt-kho2-cn bbt-kho2-dau"><span /><span /><span>Kiểm kê lần cuối</span></div>
             {kk.theoCn.map(x => (
               <div className="bbt-kho2-cn" key={x.cn}>
                 <span className="bbt-kho2-ten">{x.cn.replace(/^Phố Mây /, '')}</span>
                 <span className="bbt-kho2-thanh"><i style={{ width: `${x.tong ? Math.min(100, (x.soKiem / x.tong) * 100) : 0}%` }} /></span>
-                <span className="bbt-kho2-so">{x.soKiem}/{x.tong}</span>
                 {x.daKiem
-                  ? <span className={x.lech ? 'bbt-kho-thieu' : 'bbt-kho-giam'} title={`Ngày kiểm kê cuối ${x.ngayCuoi}${x.lech ? `, lệch ${x.lech} mặt hàng` : ', khớp sổ sách'}`}>{x.ngayCuoi.slice(0, 5)}</span>
+                  ? <span className="bbt-kho2-ngay" title={`Lần kiểm kê cuối ngày ${x.ngayCuoi}${x.lech ? `, lệch ${x.lech} mặt hàng` : ', khớp sổ sách'}`}>{x.ngayCuoi.slice(0, 5)}</span>
                   : <span className="bbt-kho-thieu">chưa kiểm</span>}
               </div>
             ))}
