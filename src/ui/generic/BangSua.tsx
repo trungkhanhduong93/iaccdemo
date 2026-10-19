@@ -7,7 +7,7 @@ import { Select } from '../Dropdown'
 import { ChonDanhMuc, useMucDaThem } from '../ChonDanhMuc'
 import { Icon } from '../Icon'
 import { money } from '../format'
-import { OLoc, dangLoc, khopLoc, type GiaTriLoc, type KieuLoc, type LocCot } from '../LocCot'
+import { OLoc, dangLoc, dsGiaTri, khopLoc, type GiaTriLoc, type KieuLoc, type LocCot } from '../LocCot'
 import { OSoGo } from '../OSoGo'
 import { NHOM_HHDV, type Dong } from './gen'
 import { ThemHangLoat, type HangChon } from './ThemHangLoat'
@@ -284,8 +284,9 @@ export function BangSua({
     ['gtnk', 'Giá trị nhập kho', gtnkCot, d => money(tienSauCk(d) + (gtnkCoThue ? d.thue || 0 : 0)), d => tienSauCk(d) + (gtnkCoThue ? d.thue || 0 : 0)],
     ['tongTien', 'Tổng tiền', tongTienCot, d => money(tienSauCk(d) + (d.thue || 0)), d => tienSauCk(d) + (d.thue || 0)],
   ]
-  const kieuLoc = (k: string): KieuLoc => cotLoc.find(c => c[0] === k)?.[4] ? 'so' : 'chu'
-  const loc: LocCot = { gt: gtLoc, dat: (k, g) => setGtLoc(t => ({ ...t, [k]: g })), kieu: c => kieuLoc(c.k) }
+  const kieuLoc = (k: string): KieuLoc => cotLoc.find(c => c[0] === k)?.[4] ? 'so' : 'chon'   // cột chữ lọc kiểu chọn (T466)
+  const loc: LocCot = { gt: gtLoc, dat: (k, g) => setGtLoc(t => ({ ...t, [k]: g })), kieu: c => kieuLoc(c.k),
+    layLuaChon: k => { const lay = cotLoc.find(c => c[0] === k)?.[3]; return lay ? dsGiaTri(dong, lay) : [] } }
   const khop = (d: Dong) => !hienLoc || cotLoc.every(([k, , co, lay, so]) => !co || !dangLoc(gtLoc[k]) || khopLoc(kieuLoc(k), gtLoc[k], lay(d), so?.(d)))
   const hangLoc = (cuoi: boolean) => hienLoc && (
     <tr className="loc-hang">

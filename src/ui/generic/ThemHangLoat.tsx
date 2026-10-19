@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { Icon } from '../Icon'
 import { Select } from '../Dropdown'
-import { OLoc, dangLoc, khopLoc, type GiaTriLoc, type LocCot } from '../LocCot'
+import { OLoc, dangLoc, dsGiaTri, khopLoc, type GiaTriLoc, type LocCot } from '../LocCot'
 
 export interface HangChon { ma: string; ten: string; dvt: string; nhom?: string; loai: string }
 
@@ -25,7 +25,9 @@ export function ThemHangLoat({ ds, daCo, onDong, onXacNhan }: {
   const [gtLoc, setGtLoc] = useState<Record<string, GiaTriLoc>>({})
   const [coTrang, setCoTrang] = useState(100)
   const [trang, setTrang] = useState(1)
-  const loc: LocCot = { gt: gtLoc, dat: (k, g) => { setGtLoc(t => ({ ...t, [k]: g })); setTrang(1) }, kieu: () => 'chu' }
+  // Lọc kiểu chọn: điều kiện chữ, ô Tìm kiếm, (Chọn tất cả), (Trống) và từng giá trị như iFaster (T466)
+  const loc: LocCot = { gt: gtLoc, dat: (k, g) => { setGtLoc(t => ({ ...t, [k]: g })); setTrang(1) }, kieu: () => 'chon',
+    layLuaChon: k => { const lay = COT.find(c => c[0] === k)?.[2]; return lay ? dsGiaTri(ds, lay) : [] } }
 
   useEffect(() => {
     const esc = (e: KeyboardEvent) => { if (e.key === 'Escape') onDong() }
@@ -33,7 +35,7 @@ export function ThemHangLoat({ ds, daCo, onDong, onXacNhan }: {
     return () => document.removeEventListener('keydown', esc)
   }, [onDong])
 
-  const dsLoc = useMemo(() => ds.filter(h => COT.every(([k, , lay]) => !dangLoc(gtLoc[k]) || khopLoc('chu', gtLoc[k], lay(h)))), [ds, gtLoc])
+  const dsLoc = useMemo(() => ds.filter(h => COT.every(([k, , lay]) => !dangLoc(gtLoc[k]) || khopLoc('chon', gtLoc[k], lay(h)))), [ds, gtLoc])
   const soTrang = Math.max(1, Math.ceil(dsLoc.length / coTrang))
   const trangHien = Math.min(trang, soTrang)
   const dau = (trangHien - 1) * coTrang

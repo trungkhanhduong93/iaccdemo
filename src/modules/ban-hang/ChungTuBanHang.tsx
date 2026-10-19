@@ -18,7 +18,7 @@ import { PhanTrang } from '../../ui/PhanTrang'
 import { useDaXoa } from '../../ui/generic/daXoa'
 import { ChonKhoangNgay, docNgay, thangNay, trongKhoang, type KhoangNgay } from '../../ui/ChonNgay'
 import { NutExcel } from '../../ui/CongCuDs'
-import { dangLoc, khopLoc, type GiaTriLoc, type KieuLoc, type LocCot } from '../../ui/LocCot'
+import { dangLoc, dsGiaTri, khopLoc, type GiaTriLoc, type KieuLoc, type LocCot } from '../../ui/LocCot'
 import {
   BoLoc, NutTuyChinhCot, useCauHinhLoc, useCotDs, useLocNhap, type OLocDef,
 } from '../../ui/LocNangCao'
@@ -235,14 +235,18 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
   const cnChon = cuaHangHienTai(s)
 
   const tenTT = (r: Row) => r.tt === 'nhap' && ghi ? 'Chưa ghi sổ' : 'Đã ghi sổ'
+  const cotSo = useMemo(() => {
+    const m = new Map<string, boolean>()
+    return (k: string) => { if (!m.has(k)) m.set(k, typeof rows.find(r => r[k] !== undefined && r[k] !== '' && r[k] !== null)?.[k] === 'number'); return m.get(k)! }
+  }, [rows])
   const kieuCot = (k: string): KieuLoc =>
-    k === 'ngay' ? 'ngay' : COT_CHON.has(k) ? 'chon' : k === 'tien' || k === 'thue' || k === 'tong' ? 'so' : 'chu'
+    k === 'ngay' ? 'ngay' : COT_CHON.has(k) ? 'chon' : k === 'tien' || k === 'thue' || k === 'tong' || cotSo(k) ? 'so' : 'chon'   // cột chữ lọc kiểu chọn (T466)
   const chuCot = (k: string, r: Row): string => {
     if (k === 'tt') return tenTT(r)
     const v = r[k]
     return typeof v === 'number' ? `${money(v)} ${v}` : String(v ?? '')
   }
-  const luaChon = useMemo(() => Object.fromEntries([...COT_CHON].map(k => [k, [...new Set(rows.map(r => chuCot(k, r)).filter(Boolean))]])), [rows, ghi])
+  const layLuaChon = (k: string) => dsGiaTri(rows, r => chuCot(k, r))   // chỉ tính khi mở ô lọc (T466)
 
   // Ô lọc: giá trị nháp, bấm Lọc mới áp dụng (T41)
   const apLoc = () => { loc0.loc(); setTrang(1) }
@@ -359,7 +363,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
                 keDoc
                 doRong={cot.doRong}
                 loc={{ gt: locCot, dat: (k, g) => { setLocCot(x => ({ ...x, [k]: g })); setTrang(1) }, bo: new Set(['stt']),
-                  kieu: c => kieuCot(c.k), luaChon }}
+                  kieu: c => kieuCot(c.k), layLuaChon }}
                 onRow={r => setActiveId(r.id)}
                 onDbl={r => nav(`${path}/${r.id}`)}
                 rowCls={r => [
@@ -533,9 +537,10 @@ function NoiDungTab({ x, tab, kieu, an: an0 = AN_POS_MAC_DINH, tyLe = false, hie
   // Lọc hàng bán (T383): bấm phễu sau tab mới hiện hàng lọc như danh sách; tổng cộng vẫn cộng mọi dòng
   const [gtLoc, setGtLoc] = useState<Record<string, GiaTriLoc>>({})
   useEffect(() => { if (!hienLoc) setGtLoc({}) }, [hienLoc])
-  const kieuCt = (c: Col): KieuLoc => c.num ? 'so' : 'chu'
-  const locCt: LocCot | undefined = hienLoc ? { gt: gtLoc, dat: (k, g) => setGtLoc(t => ({ ...t, [k]: g })), bo: new Set(['stt', 'tonKho']), kieu: kieuCt } : undefined
+  const kieuCt = (c: Col): KieuLoc => c.num ? 'so' : 'chon'   // cột chữ lọc kiểu chọn (T466)
   const giaTri = (r: (typeof dong)[number], k: string) => (r as unknown as Record<string, unknown>)[k]
+  const locCt: LocCot | undefined = hienLoc ? { gt: gtLoc, dat: (k, g) => setGtLoc(t => ({ ...t, [k]: g })), bo: new Set(['stt', 'tonKho']), kieu: kieuCt,
+    layLuaChon: k => dsGiaTri(dong, r => String(giaTri(r, k) ?? '')) } : undefined
   const dongLoc = !hienLoc ? dong : dong.filter(r => colsCt.every(c => !dangLoc(gtLoc[c.k])
     || khopLoc(kieuCt(c), gtLoc[c.k], String(giaTri(r, c.k) ?? ''), typeof giaTri(r, c.k) === 'number' ? giaTri(r, c.k) as number : undefined)))
   return (

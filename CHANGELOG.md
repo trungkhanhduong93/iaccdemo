@@ -4,6 +4,8 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 19/10/2026
 
+- T466: Hàng lọc dưới tiêu đề cột (máy tính): mọi cột chữ (Nhà cung cấp, Cửa hàng, Diễn giải, Kênh bán, Nhóm hàng hoá...) bấm phễu có Bộ lọc văn bản, ô Tìm kiếm và danh sách giá trị để tích, gồm (Chọn tất cả) và (Trống); áp cho danh sách chứng từ, Xuất bán POS, phiếu sản xuất, điều chuyển, bảng chi tiết trong phiếu và hộp Thêm hàng loạt. Cột số, cột ngày giữ kiểu lọc cũ.
+
 - T465: Phiếu mua hàng, phiếu kiểm kê (máy tính): khi thêm mới, sửa có nút Thêm hàng loạt cạnh Thêm dòng. Hộp chọn hiện bảng hàng hoá (Hàng hoá, Đơn vị tính, Nhóm hàng hoá, Loại) có ô lọc từng cột, phân trang, tích nhiều hàng hoặc chọn tất cả rồi Xác nhận để thêm vào phiếu; hàng đã có trong phiếu không chọn lại.
 
 - T464: Form chứng từ (máy tính): Ngày chứng từ ở mọi màn (mua hàng, bán hàng, kho...) có lịch để chọn ngày như phiếu thu chi; phiếu điều chuyển, sản xuất có giờ thì chọn ngày vẫn giữ giờ. Ngày hoá đơn hiện đủ năm. Điện thoại: Ngày áp dụng công thức chọn bằng lịch.

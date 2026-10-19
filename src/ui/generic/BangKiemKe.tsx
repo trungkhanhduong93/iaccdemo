@@ -5,7 +5,7 @@ import { NVL } from '../../data/mock'
 import { ChonDanhMuc } from '../ChonDanhMuc'
 import { Icon } from '../Icon'
 import { money } from '../format'
-import { OLoc, dangLoc, khopLoc, type GiaTriLoc, type KieuLoc, type LocCot } from '../LocCot'
+import { OLoc, dangLoc, dsGiaTri, khopLoc, type GiaTriLoc, type KieuLoc, type LocCot } from '../LocCot'
 import type { Dong } from './gen'
 import { ThemHangLoat } from './ThemHangLoat'
 
@@ -61,8 +61,9 @@ export function BangKiemKe({ dong, onChange, cheDo, an = [], khongTong = false, 
     ['chenh', 'Chênh lệch', hien('chenh'), d => money(chenhCua(d)), chenhCua],
     ['loaiXl', 'Loại', hien('loaiXl'), d => loaiXuLy(d) || 'Khớp'], ['ghiChu', 'Ghi chú', hien('ghiChu'), d => d.ghiChu ?? ''],
   ]
-  const kieuLoc = (k: string): KieuLoc => cotLoc.find(c => c[0] === k)?.[4] ? 'so' : 'chu'
-  const loc: LocCot = { gt: gtLoc, dat: (k, g) => setGtLoc(t => ({ ...t, [k]: g })), kieu: c => kieuLoc(c.k) }
+  const kieuLoc = (k: string): KieuLoc => cotLoc.find(c => c[0] === k)?.[4] ? 'so' : 'chon'   // cột chữ lọc kiểu chọn (T466)
+  const loc: LocCot = { gt: gtLoc, dat: (k, g) => setGtLoc(t => ({ ...t, [k]: g })), kieu: c => kieuLoc(c.k),
+    layLuaChon: k => { const lay = cotLoc.find(c => c[0] === k)?.[3]; return lay ? dsGiaTri(dong, lay) : [] } }
   const khop = (d: Dong) => !hienLoc || cotLoc.every(([k, , co, lay, so]) => !co || !dangLoc(gtLoc[k]) || khopLoc(kieuLoc(k), gtLoc[k], lay(d), so?.(d)))
 
   return (

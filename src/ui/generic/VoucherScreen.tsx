@@ -17,7 +17,7 @@ import { ChonKhoangNgay, docNgay, khoangThang, thangNay, trongKhoang, type Khoan
 import { NutExcel, NutThemMoiSplit } from '../CongCuDs'
 import { fold, money, pad, rng } from '../format'
 import { heSoZoom } from '../zoom'
-import { dangLoc, khopLoc, type GiaTriLoc, type KieuLoc } from '../LocCot'
+import { dangLoc, dsGiaTri, khopLoc, type GiaTriLoc, type KieuLoc } from '../LocCot'
 import {
   BoLoc, ChipTrangThai, NutHangLoat, NutTuyChinhCot, cotChon, dsChipTT, khopChipTT, useCauHinhLoc, useCotDs, useLocNhap, type OLocDef,
 } from '../LocNangCao'
@@ -328,8 +328,13 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
 
   // Lọc từng cột trên hàng lọc dưới tiêu đề bảng: phễu điều kiện theo kiểu cột, so theo chữ hiện trong ô
   const [locCot, setLocCot] = useState<Record<string, GiaTriLoc>>({})
+  // Cột chữ lọc kiểu chọn có danh sách giá trị như iFaster (T466); cột có giá trị số lọc kiểu số
+  const cotSo = useMemo(() => {
+    const m = new Map<string, boolean>()
+    return (k: string) => { if (!m.has(k)) m.set(k, typeof rows.find(r => r[k] !== undefined && r[k] !== '' && r[k] !== null)?.[k] === 'number'); return m.get(k)! }
+  }, [rows])
   const kieuCot = (k: string): KieuLoc =>
-    k === 'ngay' ? 'ngay' : COT_CHON.has(k) ? 'chon' : k === 'tong' || k === 'thue' || k === 'giamThue' || k === 'daTra' || k === 'conNo' ? 'so' : 'chu'
+    k === 'ngay' ? 'ngay' : COT_CHON.has(k) ? 'chon' : k === 'tong' || k === 'thue' || k === 'giamThue' || k === 'daTra' || k === 'conNo' || cotSo(k) ? 'so' : 'chon'
   const chuCot = (k: string, r: Row): string => {
     if (k === 'nguon') return (NGUON[r.nguon] ?? NGUON.tay)[1]
     if (k === 'tt') return ghi ? (TT_CT[r.tt]?.[1] ?? 'Chưa ghi') : 'Đã ghi sổ'
@@ -341,8 +346,8 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
     return typeof v === 'number' ? `${money(v)} ${v}` : String(v ?? '')
   }
 
-  // Giá trị để chọn cho các cột kiểu chọn, lấy từ chính các phiếu của màn
-  const luaChon = useMemo(() => Object.fromEntries([...COT_CHON].map(k => [k, [...new Set(rows.map(r => chuCot(k, r)).filter(Boolean))]])), [rows, ghi])
+  // Giá trị để chọn cho các cột kiểu chọn, lấy từ chính các phiếu của màn, chỉ tính khi mở ô lọc (T466)
+  const layLuaChon = (k: string) => dsGiaTri(rows, r => chuCot(k, r))
 
   // Ô lọc ngoài và trong Bộ lọc nâng cao: giá trị nháp, bấm Lọc mới áp dụng (T41)
   const { nhap, dat } = loc0
@@ -712,7 +717,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
                 doRong={cot.doRong}
                 onToggleGroup={handleToggleGroup}
                 loc={{ gt: locCot, dat: (k, g) => { setLocCot(x => ({ ...x, [k]: g })); setTrang(1) }, bo: new Set(['chk', 'stt', 'action']),
-                  kieu: c => kieuCot(c.k), luaChon }}
+                  kieu: c => kieuCot(c.k), layLuaChon }}
                 onRow={r => setActiveId(r.id)}
                 rowCls={r => [
                   r.id === activeId ? 'dang-chon' : '',

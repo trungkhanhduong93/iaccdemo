@@ -57,6 +57,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T466 | Hàng lọc từng cột (máy tính) mọi màn: cột chữ lọc kiểu chọn như iFaster (điều kiện chữ, Tìm kiếm, Chọn tất cả, Trống, tích từng giá trị) ở danh sách chứng từ, Xuất bán POS, phiếu sản xuất, bảng chi tiết form, hộp Thêm hàng loạt | PhuongXT | 19/10/2026 | [2026-10-19-phuongxt-them-hang-loat](nhat-ky/2026-10-19-phuongxt-them-hang-loat.md) |
 | T465 | Phiếu mua hàng, phiếu kiểm kê (máy tính, thêm mới và sửa): nút Thêm hàng loạt mở hộp chọn nhiều hàng hoá theo mẫu iFaster (ô tích, Hàng hoá, ĐVT, Nhóm, Loại, lọc từng cột, phân trang), Xác nhận đổ thành dòng chi tiết | PhuongXT | 19/10/2026 | [2026-10-19-phuongxt-them-hang-loat](nhat-ky/2026-10-19-phuongxt-them-hang-loat.md) |
 | T464 | Form chứng từ máy tính: Ngày chứng từ mọi màn chọn bằng lịch (trước chỉ thu chi, màn khác gõ chữ), phiếu có giờ giữ giờ khi chọn ngày; Ngày hoá đơn không còn bị cắt năm (cột hoá đơn 280px); điện thoại Ngày áp dụng công thức chọn bằng lịch | PhuongXT | 19/10/2026 | [2026-10-19-phuongxt-o-ky-hieu-hoa-don](nhat-ky/2026-10-19-phuongxt-o-ky-hieu-hoa-don.md) |
 | T463 | Form chứng từ mua, bán (máy tính) phần hoá đơn: Số hoá đơn lên đầu, gộp Mẫu số HĐ và Ký hiệu HĐ thành một ô Ký hiệu (vd 1C26TMM); cả tab Hoá đơn | PhuongXT | 19/10/2026 | [2026-10-19-phuongxt-o-ky-hieu-hoa-don](nhat-ky/2026-10-19-phuongxt-o-ky-hieu-hoa-don.md) |

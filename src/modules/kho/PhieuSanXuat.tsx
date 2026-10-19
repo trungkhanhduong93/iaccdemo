@@ -13,7 +13,7 @@ import { PhanTrang } from '../../ui/PhanTrang'
 import { ChonKhoangNgay, docNgay, thangNay, trongKhoang, type KhoangNgay } from '../../ui/ChonNgay'
 import { NutExcel, NutThemMoiSplit } from '../../ui/CongCuDs'
 import { fold, money } from '../../ui/format'
-import { dangLoc, khopLoc, type GiaTriLoc, type KieuLoc } from '../../ui/LocCot'
+import { dangLoc, dsGiaTri, khopLoc, type GiaTriLoc, type KieuLoc } from '../../ui/LocCot'
 import { BoLoc, ChipTrangThai, NutTuyChinhCot, useCauHinhLoc, useCotDs, useLocNhap, type Chip, type OLocDef } from '../../ui/LocNangCao'
 import { ChungTuForm } from '../../ui/generic/ChungTuForm'
 import { useDsPhieuSx } from './BangSanXuat'
@@ -90,7 +90,6 @@ const locMacDinh = (): GtLoc => ({ thoiGian: thangNay(), tim: '', kho: '' })
 const COT_CO_DINH = new Set(['stt', 'so'])
 const MAU_TT: Record<string, [string, string]> = { cho: ['Chờ nhập', 'var(--amber)'], da: ['Đã nhập', 'var(--green)'], huy: ['Đã huỷ', 'var(--red)'] }
 
-const COT_CHON = new Set(['kho', 'khoNhan', 'khoXuat', 'cnNhan', 'cnXuat'])
 
 export function DsPhieuTc({ sc, mod, kieu: t, rows: rowsGoc }: ScreenProps & { kieu: KieuDs; rows: Row[] }) {
   const { s, toast } = useSession()
@@ -116,7 +115,7 @@ export function DsPhieuTc({ sc, mod, kieu: t, rows: rowsGoc }: ScreenProps & { k
     }
   })
   const dsKho = [...new Set(rows.map(r => r.kho).filter(Boolean))].sort()
-  const kieuCot = (k: string): KieuLoc => (k === 'ngay' ? 'ngay' : COT_CHON.has(k) ? 'chon' : k === 'tong' ? 'so' : 'chu')
+  const kieuCot = (k: string): KieuLoc => (k === 'ngay' ? 'ngay' : k === 'tong' ? 'so' : 'chon')   // cột chữ lọc kiểu chọn (T466)
 
   const apLoc = () => { loc0.loc(); setTrang(1) }
   const oLoc: OLocDef[] = [
@@ -165,7 +164,7 @@ export function DsPhieuTc({ sc, mod, kieu: t, rows: rowsGoc }: ScreenProps & { k
     ...(t.coTien ? [{ k: 'tong', t: 'Tổng tiền', num: true, w: 130, dinh: 'phai' as const }] : []),   // cố định bên phải (T239)
   ]
   const cot = useCotDs(path, cols, COT_CO_DINH)
-  const luaChon = Object.fromEntries([...COT_CHON].map(k => [k, [...new Set(rows.map(r => String(r[k])).filter(Boolean))].sort()]))
+  const layLuaChon = (k: string) => dsGiaTri(rows, r => String(r[k] ?? ''))   // chỉ tính khi mở ô lọc (T466)
 
   return (
     <div className="page page-voucher page-dm">
@@ -186,7 +185,7 @@ export function DsPhieuTc({ sc, mod, kieu: t, rows: rowsGoc }: ScreenProps & { k
           </div>
           {list.length ? <>
             <Table cols={cot.colsHien} doRong={cot.doRong} rows={rowsTrang} motDong keDoc
-              loc={{ gt: locCot, dat: (k, g) => { setLocCot(x => ({ ...x, [k]: g })); setTrang(1) }, bo: new Set(['stt']), kieu: c => kieuCot(c.k), luaChon }}
+              loc={{ gt: locCot, dat: (k, g) => { setLocCot(x => ({ ...x, [k]: g })); setTrang(1) }, bo: new Set(['stt']), kieu: c => kieuCot(c.k), layLuaChon }}
               onRow={r => setActiveId(String(r.id))} onDbl={moPhieu}
               rowCls={r => [r.id === activeId ? 'dang-chon' : '', r.ttSx === 'huy' ? 'sx-huy' : ''].filter(Boolean).join(' ')}
               sum={{ stt: `Tổng: ${rowsTrang.length}`, ...(t.coTien ? { tong: tongTien(rowsTrang) } : {}) }} />

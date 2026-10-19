@@ -26,6 +26,12 @@ export interface LocCot {
   bo?: Set<string>
   kieu: (c: Col) => KieuLoc
   luaChon?: Record<string, string[]>
+  layLuaChon?: (k: string) => string[]   // giá trị để tích của cột kiểu chọn, chỉ tính khi cần (mở ô lọc, đang lọc) (T466)
+}
+
+/** Giá trị khác nhau của một cột để tích ở bộ lọc kiểu chọn, xếp theo chữ; ô trống là chuỗi rỗng, hiện "(Trống)" (T466) */
+export function dsGiaTri<T>(rows: T[], lay: (r: T) => string): string[] {
+  return [...new Set(rows.map(r => lay(r) ?? ''))].sort((a, b) => (a === '' ? -1 : b === '' ? 1 : a.localeCompare(b, 'vi', { numeric: true })))
 }
 
 /** Danh sách điều kiện cột chữ */
@@ -186,9 +192,9 @@ export function khopLoc(kieu: KieuLoc, g: GiaTriLoc, chu: string, so?: number, n
 export function OLoc({ c, loc }: { c: Col; loc: LocCot }) {
   const kieu = loc.kieu(c)
   const g = loc.gt[c.k] ?? { op: kieu === 'chu' ? 'chua' : kieu === 'so' ? '=' : kieu === 'ngay' ? '=' : '', v: '' }
-  const tatCaChon = loc.luaChon?.[c.k] ?? []
-  const dang = dangLoc(g, kieu === 'chon' ? tatCaChon.length : undefined)
   const [mo, setMo] = useState(false)
+  const tatCaChon = loc.luaChon?.[c.k] ?? (kieu === 'chon' && (mo || g.ds !== undefined) ? loc.layLuaChon?.(c.k) : undefined) ?? []
+  const dang = dangLoc(g, kieu === 'chon' ? tatCaChon.length : undefined)
   const [moLich, setMoLich] = useState(false)
   const btnRef = useRef<HTMLButtonElement>(null)
   const cellRef = useRef<HTMLDivElement>(null)
@@ -515,16 +521,18 @@ function KhungLoc({ c, kieu, g, loc, tatCaChon, onDong }: {
                     />
                     <b>(Chọn Tất Cả)</b>
                   </label>
-                  {dsHien.map(x => (
+                  {/* Vẽ tối đa 300 giá trị, cột nhiều giá trị (số phiếu POS) gõ Tìm kiếm để thu hẹp (T466) */}
+                  {dsHien.slice(0, 300).map(x => (
                     <label key={x} className="loc-pop-item">
                       <input
                         type="checkbox"
                         checked={curSelected.includes(x)}
                         onChange={() => toggleMot(x)}
                       />
-                      <span>{x}</span>
+                      <span>{x === '' ? '(Trống)' : x}</span>
                     </label>
                   ))}
+                  {dsHien.length > 300 && <div className="loc-pop-trong">Còn {dsHien.length - 300} giá trị, gõ Tìm kiếm để thu hẹp</div>}
                   {dsHien.length === 0 && (
                     <div className="loc-pop-trong">Không có mục khớp</div>
                   )}
