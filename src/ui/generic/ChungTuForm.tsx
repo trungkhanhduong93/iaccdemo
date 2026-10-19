@@ -8,7 +8,7 @@ import { giamThueHkd } from '../../modules/ban-hang/giam-thue'
 import { kieuGhiSo, type Goi } from '../../app/plan'
 import { CHE_DO, type CheDo } from '../../app/che-do'
 import { tkTheoCheDo } from '../../modules/tong-hop/so-cai'
-import { CUA_HANG, KHACH, KHO, KHOA_SO_DEN, LY_CAN_DOI_TUONG, LY_CHI_PHI, LY_DO, NCC, NHAN_VIEN, TK_NGAN_HANG, daKhoaSo } from '../../data/mock'
+import { CUA_HANG, KHACH, KHO, LY_CAN_DOI_TUONG, LY_CHI_PHI, LY_DO, NCC, NHAN_VIEN, TK_NGAN_HANG, daKhoaSo, khoaSoDenCua } from '../../data/mock'
 import { DS_PTTT } from '../../modules/danh-muc/data'
 import { HopXacNhan } from '../LocNangCao'
 import { bayGio, ctTtCon, dsDcCon, dsTtCon, ghiNhatKy, laDaXoa, soDaTra, soKeTiep, suaPhieu, themPhieu, ttThamChieu, useNhatKy, xoaPhieu, type CtTt, type PhieuTt } from './daXoa'
@@ -52,7 +52,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   const moi = !row
   // Phiếu thu, chi đồng bộ từ FABi chỉ xem: sửa, xoá ở FABi (T283)
   const tuFabi = mod.key === 'tien' && row?.nguon === 'FABi'
-  const khoaKy = !moi && !!row && daKhoaSo(row.ngay)   // phiếu thuộc tháng đã khoá sổ: chỉ xem, không sửa, không xoá (T315)
+  const khoaKy = !moi && !!row && daKhoaSo(row.ngay, row.cn)   // phiếu thuộc tháng đã khoá sổ của cửa hàng (T19): chỉ xem, không sửa, không xoá (T315)
   const [dangSua, setDangSua] = useState(moi || (sp.get('sua') === '1' && !tuFabi && !khoaKy))
   const [tab, setTab] = useState('ct')
   const [moLoc, setMoLoc] = useState(false)   // hàng lọc của bảng chi tiết, bấm nút Lọc mới hiện (T383)
@@ -264,7 +264,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   const truocThue = nhom === 'mua' && Boolean(bo.tongNhap)   // phiếu mua: các số tiền ở dòng, khối tổng chỉ Tổng tiền (T84)
   const coHdDau = (nhom === 'mua' || nhom === 'ban') && Boolean(bo.hd) && nhanKemHd
   const coThangLl = laTien && s.goi === 'F' && nhom !== 'cq'   // chuyển quỹ không ảnh hưởng lãi lỗ
-  const dsThangLl = useMemo(() => thangLaiLo(ngayCt), [ngayCt])
+  const dsThangLl = useMemo(() => thangLaiLo(ngayCt, cuaHang), [ngayCt, cuaHang])
   const [thangLl, setThangLl] = useState(dsThangLl[0])
   useEffect(() => { setThangLl(dsThangLl[0]) }, [dsThangLl])
 
@@ -480,7 +480,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
   // Xoá chứng từ (Tiện ích, Ctrl+Delete): cùng luật xoá với danh sách (QD32): kỳ đã khoá sổ không xoá, gói có ghi sổ chỉ xoá phiếu chưa ghi
   function thuXoa() {
     if (!row || khoaSua) return
-    if (daKhoaSo(row.ngay)) toast(`${row.so} thuộc kỳ đã khoá sổ, không xoá được`)
+    if (daKhoaSo(row.ngay, row.cn)) toast(`${row.so} thuộc kỳ đã khoá sổ, không xoá được`)
     else if (kieu !== 'khong' && row.tt !== 'nhap') toast(`${row.so} đã ghi sổ, bỏ ghi sổ rồi mới xoá`)
     else if (lyDoKhongXoaTheCuaPhieu(row)) toast(lyDoKhongXoaTheCuaPhieu(row)!)   // thẻ chi phí của phiếu thuộc kỳ đã khoá sổ (T439)
     else if (ttThamChieu(row)) toast(`${row.so} có phiếu ${ttThamChieu(row)!.so} tham chiếu, xoá ${ttThamChieu(row)!.so} trước`)   // T85, T91
@@ -1413,13 +1413,14 @@ function TongDay({ tong, soDong }: { tong: number; soDong: number }) {
 }
 
 /** Tháng ghi nhận chi phí chọn được: tháng của ngày chứng từ rồi lùi về các tháng trước, dừng ở tháng đã khoá sổ */
-export function thangLaiLo(ngay: string): string[] {
+export function thangLaiLo(ngay: string, ch?: string): string[] {
+  const k = khoaSoDenCua(ch)   // mốc khoá của cửa hàng trên phiếu (T19)
   const [, m0, y0] = ngay.split('/').map(Number)
   if (!m0 || !y0) return []
   const ds: string[] = []
   for (let m = m0, y = y0; ds.length < 24; m--) {
     if (m === 0) { m = 12; y-- }
-    if (ds.length && (y < KHOA_SO_DEN.nam || (y === KHOA_SO_DEN.nam && m <= KHOA_SO_DEN.thang))) break
+    if (ds.length && (y < k.nam || (y === k.nam && m <= k.thang))) break
     ds.push(`${String(m).padStart(2, '0')}/${y}`)
   }
   return ds

@@ -414,7 +414,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
       toast('Đã sao chép chứng từ')
       nav(`${path}/moi${row.loai ? `?loai=${row.loai}` : ''}`, { state: { saoChep: row } })
     } else if (k === 'xoa') {
-      if (daKhoaSo(String(row.ngay))) {
+      if (daKhoaSo(String(row.ngay), row.cn)) {
         toast(`${row.so} thuộc kỳ đã khoá sổ, không xoá được`)
       } else if (kieu !== 'khong' && row.tt !== 'nhap') {
         toast(`${row.so} đã ghi sổ, bỏ ghi sổ rồi mới xoá`)

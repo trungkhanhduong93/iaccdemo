@@ -12,6 +12,8 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 - T433 (điện thoại): Sổ quỹ tiền mặt và Sổ tiền gửi ngân hàng tách thẻ tổng thành 4 ô Tồn đầu, Thu, Chi, Tồn cuối trên một hàng. Danh sách theo ngày hiển thị Tồn đầu ngày ở đầu nhóm và Tồn cuối ngày ở cuối nhóm dưới các dòng thu chi.
 
+- T19: Khoá sổ gói Free (web, điện thoại) khoá được riêng từng cửa hàng hoặc tất cả. Thẻ Khoá sổ từng cửa hàng cho biết mỗi cửa hàng đã khoá đến tháng nào, bấm một cửa hàng để khoá, mở khoá riêng cửa hàng đó. Chọn Tất cả cửa hàng thì mỗi cửa hàng khoá tiếp tháng kế của nó. Phiếu chỉ xem, không xoá theo tháng khoá của cửa hàng trên phiếu. Lịch sử khoá sổ có cột Cửa hàng.
+
 - T475 (điện thoại): Phiếu chi đã có thẻ chi phí phân bổ bấm Sửa thì báo Không sửa được, có nút Mở thẻ; xoá phiếu hoặc xoá thẻ thuộc kỳ đã khoá sổ thì báo không xoá được như bản máy tính; xoá phiếu xoá luôn thẻ; thẻ mở từ phiếu xoá xong về phiếu để sửa. Hộp xác nhận (Không sửa được, Xoá phiếu) không còn bị màn xem phiếu che.
 
 - T474: Ô chọn có lựa chọn dài (vd Nhóm lý do trong Bộ lọc) không còn giãn hết bề ngang màn: danh sách rộng theo ô, chữ dài xuống dòng, các lựa chọn có khoảng cách, đường kẻ ngăn.

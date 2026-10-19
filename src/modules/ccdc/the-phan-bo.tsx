@@ -8,7 +8,7 @@ import type { Row } from '../types'
 import type { Goi } from '../../app/plan'
 import { St, Table } from '../../ui/Table'
 import { ChonDanhMuc } from '../../ui/ChonDanhMuc'
-import { CCDC_HANG, KHOA_SO_DEN, daKhoaSo } from '../../data/mock'
+import { CCDC_HANG, daKhoaSo, khoaSoDenCua } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
 import { docSoQT, nhapSoQT, soQT } from '../../ui/format'
 import { ONgay } from '../../ui/ChonNgay'
@@ -138,9 +138,10 @@ export function lyDoKhongXoaThe(v: V): string | null {
   const ngay = [...(v.dong as DongPb[] ?? []).map(d => ngayBd(v, d)), String(v.ngay ?? '')].filter(x => /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(x))
   if (!ngay.length) return null
   const dau = ngay.reduce((a, b) => ngaySo(a) <= ngaySo(b) ? a : b)
-  if (!daKhoaSo(dau)) return null
+  if (!daKhoaSo(dau, v.cn)) return null
+  const k = khoaSoDenCua(v.cn)   // mốc khoá của cửa hàng trên thẻ (T19)
   const t = dau.slice(3)
-  return `Thẻ ${v.soThe} phân bổ từ tháng ${t}, thuộc kỳ đã khoá sổ (đến hết tháng ${KHOA_SO_DEN.thang}/${KHOA_SO_DEN.nam}). Mở khoá sổ về trước tháng ${t} rồi mới xoá được.`
+  return `Thẻ ${v.soThe} phân bổ từ tháng ${t}, thuộc kỳ đã khoá sổ (đến hết tháng ${k.thang}/${k.nam}). Mở khoá sổ về trước tháng ${t} rồi mới xoá được.`
 }
 
 /** Hậu xử lý dòng danh sách thẻ theo gói (T438): gói Plus, Pro cột Phân bổ trong kỳ chỉ có giá trị khi kỳ đang xem Đã phân bổ */

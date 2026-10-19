@@ -677,11 +677,11 @@ export function NutHangLoat({
   const nGhi = ghiRows.length
   const nLoi = loiRows.length
   // Xoá: gói có ghi sổ chỉ xoá phiếu chưa ghi, gói Free xoá mọi phiếu; phiếu thuộc kỳ đã khoá sổ không xoá (T48)
-  const nKhoa = selectedRows.filter(r => daKhoaSo(r.ngay)).length
+  const nKhoa = selectedRows.filter(r => daKhoaSo(r.ngay, r.cn)).length
   // Phiếu mua, bán còn phiếu thu, chi sinh kèm thì xoá phiếu thu, chi trước (T85)
   const nThamChieu = selectedRows.filter(r => ttThamChieu(r)).length
   const nKhoaRieng = khoaXoa ? selectedRows.filter(khoaXoa.la).length : 0
-  const dsXoa = selectedRows.filter(r => !daKhoaSo(r.ngay) && (!ghi || r.tt === 'nhap') && !ttThamChieu(r) && !khoaXoa?.la(r))
+  const dsXoa = selectedRows.filter(r => !daKhoaSo(r.ngay, r.cn) && (!ghi || r.tt === 'nhap') && !ttThamChieu(r) && !khoaXoa?.la(r))
   const nXoa = dsXoa.length
   const tenXoa = `Xoá ${nXoa} phiếu${ghi ? ' chưa ghi' : ''}`
 

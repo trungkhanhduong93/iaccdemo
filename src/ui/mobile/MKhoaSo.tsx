@@ -5,12 +5,13 @@ import { donViHienTai, useSession } from '../../app/session'
 import { anNgoaiGoi, coTrongGoi } from '../../app/plan'
 import {
   CUA_HANG,
-  KHOA_SO_DEN,
-  KY_MO,
   KY_KHOA_SO,
+  KY_MO,
   LICH_SU_KHOA_SO,
-  datKhoaSoDen,
+  khoaSoCuaHang,
+  khoaSoDenCua,
 } from '../../data/mock'
+import { mocKhoaSo, nhanKy } from '../../modules/tong-hop/KhoaSoFree'
 import { Icon } from '../Icon'
 import { moneyD } from '../format'
 import { MChon, type MChonMuc } from './MChon'
@@ -19,10 +20,8 @@ import { tonQuyTheoSo } from '../../modules/home/LichSuQuy'
 import { useChoGhiTang } from '../../modules/ccdc/GhiTangHangLoat'
 import { tinhToanTongQuan } from '../../modules/home/chiSo'
 
-const sau = (t: number, n: number) => (t === 12 ? { thang: 1, nam: n + 1 } : { thang: t + 1, nam: n })
-
 export const MKhoaSo: FC<ScreenProps> = () => {
-  const { s, toast } = useSession()
+  const { s, set, toast } = useSession()
   const dv = donViHienTai(s)
   const laFree = s.goi === 'F'
 
@@ -38,18 +37,18 @@ export const MKhoaSo: FC<ScreenProps> = () => {
   const [moKhoaFree, setMoKhoaFree] = useState(false)
   const [lyDoFree, setLyDoFree] = useState('')
 
-  const daKhoa = { ...KHOA_SO_DEN }
-  const canKhoa = sau(daKhoa.thang, daKhoa.nam)
-  const khoaDuocFree = canKhoa.nam < KY_MO.nam || (canKhoa.nam === KY_MO.nam && canKhoa.thang < KY_MO.thang)
-  const nhanFree = `${canKhoa.thang}/${canKhoa.nam}`
-
-  const cns = CUA_HANG.filter(c => !s.cuaHang || s.cuaHang === 'all' || c.id === s.cuaHang)
-  const kk = soLieuKiemKe(canKhoa.thang, new Set(cns.map(c => c.ten)))
-  const tonQuy = tonQuyTheoSo(canKhoa.thang, cns.map(c => c.id)).reduce((a, r) => a + r.cuoi, 0)
+  // Khoá theo cửa hàng đang chọn (T19): tất cả thì mỗi cửa hàng khoá tiếp tháng kế của nó
+  const { cns, ds, cungMoc, daKhoa, canKhoa, khoaTiep, cnKiem, pham } = mocKhoaSo(s.cuaHang)
+  const khoaDuocFree = khoaTiep.length > 0
+  const nhanFree = nhanKy(canKhoa)
+  const nutMo = cungMoc ? `Mở khoá ${nhanKy(daKhoa)}` : 'Mở khoá tháng gần nhất'
+  const nutKhoa = cungMoc ? `Khoá sổ ${nhanFree}` : `Khoá tháng kế (${khoaTiep.length})`
+  const kk = soLieuKiemKe(canKhoa.thang, new Set(cnKiem.map(c => c.ten)))
+  const tonQuy = tonQuyTheoSo(canKhoa.thang, cnKiem.map(c => c.id)).reduce((a, r) => a + r.cuoi, 0)
   const cho = useChoGhiTang(canKhoa.nam * 100 + canKhoa.thang)
   const pbThang = tinhToanTongQuan(
     canKhoa.thang === KY_MO.thang ? 'thang-nay' : 'thang-truoc',
-    cns.map(c => c.id),
+    cnKiem.map(c => c.id),
     s.cheDo,
     canKhoa.thang
   ).cpPhanBo
@@ -61,9 +60,9 @@ export const MKhoaSo: FC<ScreenProps> = () => {
       ten: 'Kiểm kê cuối tháng',
       phu: kk.chuaKiem.length
         ? `Chưa kiểm kê: ${kk.chuaKiem.join(', ')}`
-        : cns.length > 1
-          ? `Đủ ${cns.length} cửa hàng, lệch ${kk.thieu + kk.thua} mặt hàng`
-          : `${cns[0]?.ten} đã kiểm kê, lệch ${kk.thieu + kk.thua} mặt hàng`,
+        : cnKiem.length > 1
+          ? `Đủ ${cnKiem.length} cửa hàng, lệch ${kk.thieu + kk.thua} mặt hàng`
+          : `${cnKiem[0]?.ten} đã kiểm kê, lệch ${kk.thieu + kk.thua} mặt hàng`,
       to: '/app/kho/5-1-10',
     },
     {
@@ -94,8 +93,8 @@ export const MKhoaSo: FC<ScreenProps> = () => {
   const soXongFree = buocFree.filter(b => b.xong).length
 
   const khoaFree = () => {
-    datKhoaSoDen(canKhoa.thang, canKhoa.nam, 'Khoá sổ', s.ten)
-    toast(`Đã khoá sổ tháng ${nhanFree}. Phiếu trong tháng chỉ xem, không sửa, không xoá được`)
+    khoaSoCuaHang(khoaTiep, false, 'Khoá sổ', s.ten)
+    toast(`Đã khoá sổ ${cungMoc ? `tháng ${nhanFree}, ${pham}` : `tháng kế tiếp của ${khoaTiep.length} cửa hàng`}. Phiếu trong tháng chỉ xem, không sửa, không xoá được`)
   }
 
   const xacNhanMoFree = () => {
@@ -103,9 +102,8 @@ export const MKhoaSo: FC<ScreenProps> = () => {
       toast('Nhập lý do mở khoá')
       return
     }
-    const truoc = daKhoa.thang === 1 ? { thang: 12, nam: daKhoa.nam - 1 } : { thang: daKhoa.thang - 1, nam: daKhoa.nam }
-    datKhoaSoDen(truoc.thang, truoc.nam, `Mở khoá, lý do: ${lyDoFree.trim()}`, s.ten)
-    toast(`Đã mở khoá tháng ${daKhoa.thang}/${daKhoa.nam}`)
+    khoaSoCuaHang(cns.map(c => c.id), true, `Mở khoá, lý do: ${lyDoFree.trim()}`, s.ten)
+    toast(cungMoc ? `Đã mở khoá tháng ${nhanKy(daKhoa)}, ${pham}` : `Đã mở khoá tháng gần nhất của ${cns.length} cửa hàng`)
     setMoKhoaFree(false)
     setLyDoFree('')
   }
@@ -168,7 +166,7 @@ export const MKhoaSo: FC<ScreenProps> = () => {
           <div className="m-tacvu-cd-dong">
             <span className="m-tacvu-cd-nhan">Cửa hàng</span>
             <div className="m-tacvu-cd-tri">
-              <span>{!s.cuaHang || s.cuaHang === 'all' ? 'Tất cả cửa hàng' : (cns[0]?.ten ?? 'Tất cả')}</span>
+              <span>{pham}</span>
             </div>
           </div>
 
@@ -177,7 +175,7 @@ export const MKhoaSo: FC<ScreenProps> = () => {
               <div className="m-tacvu-cd-dong">
                 <span className="m-tacvu-cd-nhan">Đã khoá đến hết</span>
                 <div className="m-tacvu-cd-tri">
-                  <span>Tháng {daKhoa.thang}/{daKhoa.nam}</span>
+                  <span>{cungMoc ? `Tháng ${nhanKy(daKhoa)}` : 'Khác nhau từng cửa hàng'}</span>
                 </div>
               </div>
               <div className="m-tacvu-cd-dong">
@@ -208,19 +206,42 @@ export const MKhoaSo: FC<ScreenProps> = () => {
 
         <div className={`m-tacvu-ks-note ${laFree ? 'ok' : khoaPro ? 'ok' : 'warn'}`}>
           {laFree
-            ? `Đã khoá sổ đến hết tháng ${daKhoa.thang}/${daKhoa.nam}. Phiếu trong các tháng này chỉ xem, không sửa, không xoá; ô Tháng ghi nhận chi phí không chọn được các tháng này.`
+            ? `${cungMoc ? `${pham} đã khoá sổ đến hết tháng ${nhanKy(daKhoa)}` : `${pham} khoá sổ đến tháng khác nhau, xem từng cửa hàng dưới`}. Phiếu trong các tháng đã khoá chỉ xem, không sửa, không xoá; ô Tháng ghi nhận chi phí không chọn được các tháng này.`
             : khoaPro
               ? 'Kỳ 9/2026 đã khoá lúc 07/10/2026. Chứng từ trong kỳ không sửa được. Sai sót phát hiện sau thì lập bút toán điều chỉnh ở kỳ đang mở.'
               : 'Khoá sổ khi chưa làm đủ các bước thì báo cáo tài chính kỳ 9 có thể sai. Vẫn khoá được, hệ thống ghi lại người khoá và thời điểm.'}
         </div>
       </div>
 
+      {/* Mốc khoá từng cửa hàng (T19): bấm để chọn cửa hàng đó, khoá, mở khoá riêng */}
+      {laFree && CUA_HANG.length > 1 && (
+        <div className="m-tacvu-the">
+          <div className="m-tacvu-the-tieu">Khoá sổ từng cửa hàng</div>
+          <div className="m-tacvu-cd-ds">
+            <div className="m-tacvu-cd-dong" onClick={() => set({ cuaHang: 'all' })}>
+              <span className="m-tacvu-cd-nhan">{cns.length > 1 ? <b>Tất cả cửa hàng</b> : 'Tất cả cửa hàng'}</span>
+              <div className="m-tacvu-cd-tri"><span>Khoá cùng lúc</span><Icon n="chevr" className="ic sm" /></div>
+            </div>
+            {CUA_HANG.map(c => {
+              const den = khoaSoDenCua(c.id)
+              const chon = ds.length === 1 && ds[0].c.id === c.id
+              return (
+                <div key={c.id} className="m-tacvu-cd-dong" onClick={() => set({ cuaHang: c.id })}>
+                  <span className="m-tacvu-cd-nhan">{chon ? <b>{c.ngan}</b> : c.ngan}</span>
+                  <div className="m-tacvu-cd-tri"><span>Khoá đến {nhanKy(den)}</span><Icon n="chevr" className="ic sm" /></div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
+
       {/* 2. Khung nhập lý do mở khoá (gói Free) */}
       {laFree && moKhoaFree && (
         <div className="m-tacvu-the" style={{ borderColor: 'var(--blue, #0560a6)' }}>
-          <div className="m-tacvu-the-tieu">Mở khoá tháng {daKhoa.thang}/{daKhoa.nam}</div>
+          <div className="m-tacvu-the-tieu">{nutMo}, {pham}</div>
           <p style={{ margin: 0, fontSize: 13, color: 'var(--muted)' }}>
-            Mở khoá sẽ cho phép sửa, xoá chứng từ tháng {daKhoa.thang}/{daKhoa.nam}. Bắt buộc nhập lý do mở khoá.
+            Mở khoá sẽ cho phép sửa, xoá chứng từ {cungMoc ? `tháng ${nhanKy(daKhoa)}` : 'tháng khoá gần nhất của từng cửa hàng'}. Bắt buộc nhập lý do mở khoá.
           </p>
           <textarea
             className="inp ks-ly-do"
@@ -323,7 +344,7 @@ export const MKhoaSo: FC<ScreenProps> = () => {
             <div key={idx} className="m-tacvu-nk-dong">
               <div className="m-tacvu-nk-trai">
                 <span className="m-tacvu-nk-nd">{ls.viec} kỳ {ls.ky}</span>
-                <span className="m-tacvu-nk-luc">{ls.ai} · {ls.luc}</span>
+                <span className="m-tacvu-nk-luc">{'ch' in ls && ls.ch ? `${ls.ch} · ` : ''}{ls.ai} · {ls.luc}</span>
               </div>
               <span className={`m-tacvu-badge ${ls.viec === 'Khoá sổ' ? 'err' : 'ok'}`}>
                 {ls.viec.startsWith('Khoá') ? 'Khoá sổ' : 'Mở khoá'}
@@ -353,7 +374,7 @@ export const MKhoaSo: FC<ScreenProps> = () => {
               onClick={() => setMoKhoaFree(v => !v)}
             >
               <Icon n="lock" className="ic sm" />
-              <span>Mở khoá {daKhoa.thang}/{daKhoa.nam}</span>
+              <span>{nutMo}</span>
             </button>
             {khoaDuocFree && (
               <button
@@ -372,7 +393,7 @@ export const MKhoaSo: FC<ScreenProps> = () => {
                 onClick={khoaFree}
               >
                 <Icon n="lock" className="ic sm" />
-                <span>Khoá sổ {nhanFree}</span>
+                <span>{nutKhoa}</span>
               </button>
             )}
           </>

@@ -6,35 +6,58 @@ import { k, rng, between, pad } from '../ui/format'
 export const HOM_NAY = new Date(2026, 9, 7)          // 07/10/2026
 export const KY_MO = { thang: 10, nam: 2026 }        // kỳ đang mở
 export const KY_KHOA_SO = { thang: 9, nam: 2026 }    // kỳ đang làm khoá sổ
-export const KHOA_SO_DEN = { thang: 8, nam: 2026 }   // đã khoá sổ đến hết tháng này
+/** Mốc khoá chung: tháng mà mọi cửa hàng đều đã khoá (cửa hàng khoá chậm nhất). Mốc từng cửa hàng ở KHOA_SO_CH (T19) */
+export const KHOA_SO_DEN = { thang: 8, nam: 2026 }
 /** Khoá sổ thật trên máy (T315): tháng đã khoá và lịch sử khoá, mở khoá lưu ở trình duyệt, bản mẫu chưa có backend */
-export interface LichSuKhoaSo { ky: string; viec: string; ai: string; luc: string }
+export interface LichSuKhoaSo { ky: string; ch?: string; viec: string; ai: string; luc: string }
+export interface KyKhoa { thang: number; nam: number }
 const KHOA_LUU = 'iacc-khoa-so'
 const LICH_SU_MAU: LichSuKhoaSo[] = [
-  { ky: '8/2026', viec: 'Khoá sổ', ai: 'Trần Thu Hà', luc: '05/09/2026 17:42:15' },
-  { ky: '7/2026', viec: 'Mở khoá, lý do: bổ sung hoá đơn điện', ai: 'Trần Thu Hà', luc: '12/08/2026 09:05:48' },
-  { ky: '7/2026', viec: 'Khoá sổ', ai: 'Trần Thu Hà', luc: '06/08/2026 16:20:03' },
+  { ky: '8/2026', ch: 'Tất cả cửa hàng', viec: 'Khoá sổ', ai: 'Trần Thu Hà', luc: '05/09/2026 17:42:15' },
+  { ky: '7/2026', ch: 'Tất cả cửa hàng', viec: 'Mở khoá, lý do: bổ sung hoá đơn điện', ai: 'Trần Thu Hà', luc: '12/08/2026 09:05:48' },
+  { ky: '7/2026', ch: 'Tất cả cửa hàng', viec: 'Khoá sổ', ai: 'Trần Thu Hà', luc: '06/08/2026 16:20:03' },
 ]
 export const LICH_SU_KHOA_SO: LichSuKhoaSo[] = [...LICH_SU_MAU]
-try {
-  const v = JSON.parse(localStorage.getItem(KHOA_LUU) ?? 'null') as { den?: { thang: number; nam: number }; ls?: LichSuKhoaSo[] } | null
-  if (v?.den?.thang) Object.assign(KHOA_SO_DEN, v.den)
-  if (v?.ls?.length) LICH_SU_KHOA_SO.splice(0, LICH_SU_KHOA_SO.length, ...v.ls)
-} catch { /* trình duyệt chặn thì dùng số mẫu */ }
-/** Đặt tháng đã khoá sổ đến (khoá thêm một tháng hoặc mở khoá lùi một tháng), ghi lịch sử, báo các màn vẽ lại */
-export function datKhoaSoDen(thang: number, nam: number, viec: string, ai: string) {
-  Object.assign(KHOA_SO_DEN, { thang, nam })
-  const ky = viec.startsWith('Mở') ? `${thang === 12 ? 1 : thang + 1}/${thang === 12 ? nam + 1 : nam}` : `${thang}/${nam}`
+/** Tháng đã khoá sổ đến của từng cửa hàng theo id (T19). Nạp ở dưới, sau CUA_HANG */
+export const KHOA_SO_CH: Record<string, KyKhoa> = {}
+const soKy = (k: KyKhoa) => k.nam * 100 + k.thang
+export const kySau = (k: KyKhoa): KyKhoa => (k.thang === 12 ? { thang: 1, nam: k.nam + 1 } : { thang: k.thang + 1, nam: k.nam })
+export const kyTruoc = (k: KyKhoa): KyKhoa => (k.thang === 1 ? { thang: 12, nam: k.nam - 1 } : { thang: k.thang - 1, nam: k.nam })
+/** Mốc khoá của một cửa hàng (id hoặc tên); không rõ cửa hàng thì dùng mốc chung */
+export function khoaSoDenCua(ch?: unknown): KyKhoa {
+  const c = CUA_HANG.find(x => x.id === ch || x.ten === ch)
+  return { ...(c && KHOA_SO_CH[c.id] ? KHOA_SO_CH[c.id] : KHOA_SO_DEN) }
+}
+/** Khoá thêm một tháng (mo = false) hoặc mở khoá lùi một tháng (mo = true) cho các cửa hàng, mỗi cửa hàng tính theo mốc của nó.
+ *  Lịch sử gộp cửa hàng cùng tháng thành một dòng; báo các màn vẽ lại */
+export function khoaSoCuaHang(ids: string[], mo: boolean, viec: string, ai: string) {
+  const theoKy = new Map<string, string[]>()
+  for (const id of ids) {
+    const cu = khoaSoDenCua(id)
+    const ky = mo ? `${cu.thang}/${cu.nam}` : `${kySau(cu).thang}/${kySau(cu).nam}`
+    KHOA_SO_CH[id] = mo ? kyTruoc(cu) : kySau(cu)
+    theoKy.set(ky, [...(theoKy.get(ky) ?? []), id])
+  }
+  capNhatMocChung()
   // Lúc khoá, mở khoá: ngày làm việc của bản mẫu (07/10/2026), giờ phút giây theo đồng hồ máy
   const d = new Date(), p = (n: number) => String(n).padStart(2, '0')
-  LICH_SU_KHOA_SO.unshift({ ky, viec, ai, luc: `07/10/2026 ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}` })
-  try { localStorage.setItem(KHOA_LUU, JSON.stringify({ den: KHOA_SO_DEN, ls: LICH_SU_KHOA_SO })) } catch { /* bỏ qua */ }
+  const luc = `07/10/2026 ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`
+  for (const [ky, dsId] of theoKy) {
+    const ch = dsId.length === CUA_HANG.length ? 'Tất cả cửa hàng' : dsId.length === 1 ? CUA_HANG.find(c => c.id === dsId[0])?.ten ?? '' : CUA_HANG.filter(c => dsId.includes(c.id)).map(c => c.ngan).join(', ')
+    LICH_SU_KHOA_SO.unshift({ ky, ch, viec, ai, luc })
+  }
+  try { localStorage.setItem(KHOA_LUU, JSON.stringify({ ch: KHOA_SO_CH, ls: LICH_SU_KHOA_SO })) } catch { /* bỏ qua */ }
   window.dispatchEvent(new Event('iacc-khoa-so'))
 }
-/** Ngày dd/mm/yyyy thuộc kỳ đã khoá sổ: chứng từ không được xoá (T48) */
-export const daKhoaSo = (ngay: unknown) => {
+function capNhatMocChung() {
+  const ds = CUA_HANG.map(c => KHOA_SO_CH[c.id]).filter(Boolean)
+  if (ds.length) Object.assign(KHOA_SO_DEN, ds.reduce((a, b) => (soKy(b) < soKy(a) ? b : a)))
+}
+/** Ngày dd/mm/yyyy thuộc kỳ đã khoá sổ của cửa hàng (id hoặc tên; bỏ trống thì mốc chung): chứng từ không sửa, không xoá (T48, T19) */
+export const daKhoaSo = (ngay: unknown, ch?: unknown) => {
   const [, m, y] = String(ngay).split('/').map(Number)
-  return y < KHOA_SO_DEN.nam || (y === KHOA_SO_DEN.nam && m <= KHOA_SO_DEN.thang)
+  const k = khoaSoDenCua(ch)
+  return y < k.nam || (y === k.nam && m <= k.thang)
 }
 
 export interface DonVi { id: string; ten: string; viettat: string; mst: string; goi: Goi; diaChi: string; diem: number; nguoiDaiDien: string }
@@ -51,6 +74,17 @@ export const CUA_HANG: CuaHang[] = [
   { id: 'td', posId: '10003', ten: 'Phố Mây Thảo Điền', ngan: 'Thảo Điền', base: 28_600_000, kho: ['Kho bếp Thảo Điền', 'Kho bar Thảo Điền'] },
 ]
 export const KHO = ['Kho tổng', ...CUA_HANG.flatMap(c => c.kho)]
+// Mốc khoá từng cửa hàng (T19): mặc định theo mốc chung; bản lưu cũ chỉ có mốc chung (den) thì áp cho mọi cửa hàng
+for (const c of CUA_HANG) KHOA_SO_CH[c.id] = { ...KHOA_SO_DEN }
+try {
+  const v = JSON.parse(localStorage.getItem(KHOA_LUU) ?? 'null') as { den?: KyKhoa; ch?: Record<string, KyKhoa>; ls?: LichSuKhoaSo[] } | null
+  for (const c of CUA_HANG) {
+    const k = v?.ch?.[c.id] ?? v?.den
+    if (k?.thang) KHOA_SO_CH[c.id] = { thang: k.thang, nam: k.nam }
+  }
+  if (v?.ls?.length) LICH_SU_KHOA_SO.splice(0, LICH_SU_KHOA_SO.length, ...v.ls)
+} catch { /* trình duyệt chặn thì dùng số mẫu */ }
+capNhatMocChung()
 
 export type Role = 'owner' | 'ktt' | 'ktv'
 export const ROLE: Record<Role, string> = { owner: 'Chủ doanh nghiệp', ktt: 'Kế toán trưởng', ktv: 'Kế toán viên' }
