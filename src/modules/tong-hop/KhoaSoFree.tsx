@@ -1,19 +1,22 @@
 // Khoá sổ bản gói Free (T315): không ghi sổ, không kết chuyển, chỉ chốt số liệu theo tháng.
 // Khoá xong thì phiếu trong tháng chỉ xem (không sửa, không xoá), ô Tháng ghi nhận chi phí không chọn được tháng đã khoá.
 // Mở khoá bắt buộc ghi lý do. Tháng đã khoá, lịch sử lưu ở trình duyệt (khoaSoCuaHang, data/mock.ts).
-// Khoá riêng từng cửa hàng (T19): bảng tháng × cửa hàng theo năm, mỗi cửa hàng khoá lần lượt từng tháng,
-// nút Khoá chỉ ở tháng kế tiếp đã hết, nút Mở khoá chỉ ở tháng khoá gần nhất; Khoá sổ hàng loạt khoá nhiều cửa hàng, dồn nhiều tháng
+// Khoá riêng từng cửa hàng (T19): bảng các tháng của một cửa hàng chọn trên màn, lọc theo năm, trạng thái.
+// Khoá một tháng thì khoá luôn các tháng trước còn thiếu; Mở khoá chỉ ở tháng khoá gần nhất. Nhiều cửa hàng dùng Khoá sổ hàng loạt
 import { useEffect, useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { Link } from 'react-router-dom'
 import type { ScreenProps } from '../types'
 import { tenMan } from '../../app/registry'
 import { useSession } from '../../app/session'
-import { CUA_HANG, KY_MO, LICH_SU_KHOA_SO, khoaSoCuaHang, khoaSoDenCua, kySau, type CuaHang, type KyKhoa, type LichSuKhoaSo } from '../../data/mock'
+import { CUA_HANG, KY_MO, LICH_SU_KHOA_SO, khoaSoCuaHang, khoaSoDenCua, kySau, kyTruoc, type CuaHang, type KyKhoa, type LichSuKhoaSo } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
 import { Card, Note, PageHead } from '../../ui/Page'
 import { Table } from '../../ui/Table'
 import { Select } from '../../ui/Dropdown'
+import { ChipTrangThai, type Chip } from '../../ui/LocNangCao'
+import { dangLoc, dsGiaTri, khopLoc, type GiaTriLoc, type KieuLoc } from '../../ui/LocCot'
+import { docNgay } from '../../ui/ChonNgay'
 import { moneyD } from '../../ui/format'
 import { soLieuKiemKe } from '../home/khoFree'
 import { tonQuyTheoSo } from '../home/LichSuQuy'
@@ -58,12 +61,15 @@ function lanKhoa(c: CuaHang, k: KyKhoa) {
   return LICH_SU_KHOA_SO.find(x => x.ky === nhanKy(k) && x.viec === 'Khoá sổ' && coCh(x, c))
 }
 
-type Hop = { loai: 'khoa' | 'mo'; ids: string[]; ky: KyKhoa } | { loai: 'den' } | { loai: 'lichSu' }
+type Hop = { loai: 'khoa' | 'mo'; id: string; ky: KyKhoa } | { loai: 'den' } | { loai: 'moDen' } | { loai: 'lichSu' }
 
 export function KhoaSoFree({ sc, mod }: ScreenProps) {
-  const { s, set } = useSession()
+  const { s } = useSession()
   const [, veLai] = useState(0)
   const [nam, setNam] = useState(KY_MO.nam)
+  // Xem một cửa hàng: mặc định cửa hàng đang chọn trên thanh trên, đang xem Tất cả thì cửa hàng đầu
+  const [ch, setCh] = useState(() => (CUA_HANG.find(c => c.id === s.cuaHang) ?? CUA_HANG[0]).id)
+  const [loc, setLoc] = useState('all')
   const [hop, setHop] = useState<Hop | null>(null)
   useEffect(() => {
     const on = () => veLai(x => x + 1)
@@ -71,69 +77,66 @@ export function KhoaSoFree({ sc, mod }: ScreenProps) {
     return () => window.removeEventListener('iacc-khoa-so', on)
   }, [])
 
-  const { cns, ds, pham } = mocKhoaSo(s.cuaHang)
-  const thang = thangCuaNam(nam)
-  const motCh = ds.length === 1
-  const coKhoaDuoc = ds.some(x => sanSang(x.den))
+  const c = CUA_HANG.find(x => x.id === ch) ?? CUA_HANG[0]
+  const den = khoaSoDenCua(c.id)
+  const dong = thangCuaNam(nam).map(k => ({ k, tt: ttThang(den, k) }))
+  const laChua = (tt: TtKhoa) => tt === 'duoc' || tt === 'chua'
+  const chips: Chip[] = [
+    { k: 'all', ten: 'Tất cả', mau: 'var(--blue)', so: dong.length },
+    { k: 'chua', ten: 'Chưa khoá sổ', mau: 'var(--amber)', so: dong.filter(d => laChua(d.tt)).length },
+    { k: 'khoa', ten: 'Đã khoá sổ', mau: 'var(--green)', so: dong.filter(d => d.tt === 'khoa').length },
+  ]
+  const hien = dong.filter(d => loc === 'all' || (loc === 'chua' ? laChua(d.tt) : d.tt === 'khoa'))
+  const coKhoaDuoc = CUA_HANG.some(x => sanSang(khoaSoDenCua(x.id)))
   const dongHop = () => setHop(null)
-
-  // Ô một cửa hàng một tháng: nhãn trạng thái, nút Khoá ở tháng khoá được, Mở khoá ở tháng khoá gần nhất
-  const o = (c: CuaHang, den: KyKhoa, k: KyKhoa) => {
-    const tt = ttThang(den, k)
-    return (
-      <div className="ks-o">
-        {tt === 'toi' ? <span className="muted">—</span> : <span className={`chip ${NHAN_TT[tt].cls}`}>{tt === 'khoa' && <Icon n="lock" kieu="net" className="ic sm" />}{NHAN_TT[tt].t}</span>}
-        {tt === 'duoc' && <button className="btn sm acc" onClick={() => setHop({ loai: 'khoa', ids: [c.id], ky: k })}>Khoá</button>}
-        {tt === 'khoa' && soKy(k) === soKy(den) && <button className="btn sm" onClick={() => setHop({ loai: 'mo', ids: [c.id], ky: k })}>Mở khoá</button>}
-      </div>
-    )
-  }
 
   return (
     <div className="page">
       <PageHead crumb={[mod.ten, sc.nhom ?? '']} title={tenMan(sc)} code={sc.code}>
         <button className="btn" onClick={() => setHop({ loai: 'lichSu' })}><Icon n="clock" kieu="net" className="ic sm" />Lịch sử khoá sổ</button>
+        <button className="btn" onClick={() => setHop({ loai: 'moDen' })}><Icon n="lock" kieu="net" className="ic sm" />Mở khoá hàng loạt</button>
         {coKhoaDuoc && <button className="btn acc" onClick={() => setHop({ loai: 'den' })}><Icon n="lock" kieu="net" className="ic sm" />Khoá sổ hàng loạt</button>}
       </PageHead>
       <div className="stack">
-        <Note kind="ok" icon="lock">Khoá sổ là chốt số liệu của tháng: phiếu trong tháng đã khoá chỉ xem được, không sửa, không xoá. Khoá xong tháng trước mới khoá được tháng sau. Cần sửa thì bấm Mở khoá và ghi lý do.</Note>
-        <Card
-          title={motCh ? `Khoá sổ ${pham}` : 'Khoá sổ theo tháng, từng cửa hàng'}
-          sub={motCh ? 'Chọn Tất cả cửa hàng ở thanh trên để xem mọi cửa hàng' : 'Bấm tên cửa hàng để xem riêng cửa hàng đó'}
-          act={<Select aria-label="Năm" className="ks-nam" value={String(nam)} onChange={e => setNam(Number(e.target.value))} ds={[KY_MO.nam, KY_MO.nam - 1].map(n => ({ v: String(n), t: `Năm ${n}` }))} />}
-          pad={false}>
-          <div className="ks-bang-cuon">
-            <table className="tbl ks-bang">
-              <thead>
-                <tr>
-                  <th className="ks-cot-thang">Tháng</th>
-                  {motCh
-                    ? <><th>Trạng thái</th><th>Người khoá</th><th>Lúc khoá</th></>
-                    : ds.map(({ c }) => <th key={c.id}><a className="ks-ten-ch" onClick={() => set({ cuaHang: c.id })}>{c.ten}</a></th>)}
-                </tr>
-              </thead>
-              <tbody>
-                {thang.map(k => {
-                  const l = motCh ? lanKhoa(ds[0].c, k) : undefined
-                  return (
-                    <tr key={soKy(k)} className={soKy(k) === soKy(KY_MO) ? 'ks-dong-mo' : undefined}>
-                      <td className="ks-cot-thang"><b>Tháng {k.thang}</b></td>
-                      {motCh
-                        ? <><td>{o(ds[0].c, ds[0].den, k)}</td>
-                            <td>{ttThang(ds[0].den, k) === 'khoa' ? l?.ai ?? '—' : ''}</td>
-                            <td className="dim">{ttThang(ds[0].den, k) === 'khoa' ? l?.luc ?? '—' : ''}</td></>
-                        : ds.map(({ c, den }) => <td key={c.id}>{o(c, den, k)}</td>)}
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
+        <Note kind="ok" icon="lock">Khoá sổ là chốt số liệu của tháng: phiếu trong tháng đã khoá chỉ xem được, không sửa, không xoá. Khoá một cửa hàng thì chọn cửa hàng đó; khoá, mở khoá nhiều cửa hàng cùng lúc thì dùng Khoá sổ hàng loạt, Mở khoá hàng loạt. Cần sửa thì bấm Mở khoá và ghi lý do.</Note>
+        <Card pad={false}>
+          <div className="ks-thanh-loc">
+            <ChipTrangThai ds={chips} chon={loc} onChon={setLoc} />
+            <span className="grow" />
+            <Select aria-label="Năm" className="ks-nam" value={String(nam)} onChange={e => setNam(Number(e.target.value))} ds={[KY_MO.nam, KY_MO.nam - 1].map(n => ({ v: String(n), t: `Năm ${n}` }))} />
+            <Select aria-label="Cửa hàng" className="ks-ch" value={c.id} onChange={e => setCh(e.target.value)} ds={CUA_HANG.map(x => ({ v: x.id, t: x.ten }))} />
           </div>
+          <table className="tbl ks-bang">
+            <thead>
+              <tr><th className="ks-cot-stt">#</th><th>Tháng</th><th>Trạng thái</th><th>Người khoá</th><th>Lúc khoá</th><th className="ks-cot-hd">Hành động</th></tr>
+            </thead>
+            <tbody>
+              {hien.map(({ k, tt }, i) => {
+                const l = tt === 'khoa' ? lanKhoa(c, k) : undefined
+                return (
+                  <tr key={soKy(k)} className={tt === 'mo' ? 'ks-dong-mo' : undefined}>
+                    <td className="ks-cot-stt dim">{i + 1}</td>
+                    <td><b>Tháng {k.thang}</b></td>
+                    <td><span className={`chip ${NHAN_TT[tt].cls}`}>{tt === 'khoa' && <Icon n="lock" kieu="net" className="ic sm" />}{NHAN_TT[tt].t}</span></td>
+                    <td>{tt === 'khoa' ? l?.ai ?? '—' : ''}</td>
+                    <td className="dim">{tt === 'khoa' ? l?.luc ?? '—' : ''}</td>
+                    <td className="ks-cot-hd">
+                      {laChua(tt) && <button className="btn sm acc" onClick={() => setHop({ loai: 'khoa', id: c.id, ky: k })}>Khoá sổ</button>}
+                      {tt === 'khoa' && soKy(k) === soKy(den) && <button className="btn sm" onClick={() => setHop({ loai: 'mo', id: c.id, ky: k })}>Mở khoá</button>}
+                      {tt === 'mo' && <small className="muted">Chưa hết tháng</small>}
+                    </td>
+                  </tr>
+                )
+              })}
+              {!hien.length && <tr><td colSpan={6} className="dim ks-trong">Không có tháng nào</td></tr>}
+            </tbody>
+          </table>
         </Card>
       </div>
-      {hop?.loai === 'khoa' && <HopKhoa ids={hop.ids} ky={hop.ky} onDong={dongHop} />}
-      {hop?.loai === 'mo' && <HopMo ids={hop.ids} ky={hop.ky} onDong={dongHop} />}
-      {hop?.loai === 'den' && <HopKhoaDen cns={cns} onDong={dongHop} />}
+      {hop?.loai === 'khoa' && <HopKhoa id={hop.id} ky={hop.ky} onDong={dongHop} />}
+      {hop?.loai === 'mo' && <HopMo ids={[hop.id]} ky={hop.ky} onDong={dongHop} />}
+      {hop?.loai === 'den' && <HopKhoaDen onDong={dongHop} />}
+      {hop?.loai === 'moDen' && <HopMoDen onDong={dongHop} />}
       {hop?.loai === 'lichSu' && <HopLichSu onDong={dongHop} />}
     </div>
   )
@@ -156,10 +159,14 @@ function KhungHop({ tieuDe, rong, onDong, children }: { tieuDe: string; rong?: b
 
 const tenCh = (ids: string[]) => ids.length === CUA_HANG.length ? 'tất cả cửa hàng' : CUA_HANG.filter(c => ids.includes(c.id)).map(c => c.ten).join(', ')
 
-/** Khoá một tháng cho một hoặc vài cửa hàng: các bước kiểm tra của tháng đó, còn bước chưa xong vẫn khoá được */
-function HopKhoa({ ids, ky, onDong }: { ids: string[]; ky: KyKhoa; onDong: () => void }) {
+/** Khoá sổ một tháng của một cửa hàng: các bước kiểm tra của tháng đó, còn bước chưa xong vẫn khoá được.
+ *  Tháng trước còn chưa khoá thì khoá luôn, vì phải khoá lần lượt */
+function HopKhoa({ id, ky, onDong }: { id: string; ky: KyKhoa; onDong: () => void }) {
   const { s, toast } = useSession()
-  const cns = CUA_HANG.filter(c => ids.includes(c.id))
+  const ids = [id]
+  const cns = CUA_HANG.filter(c => c.id === id)
+  const truoc: KyKhoa[] = []
+  for (let k = kySau(khoaSoDenCua(id)); soKy(k) < soKy(ky); k = kySau(k)) truoc.push(k)
   const kk = soLieuKiemKe(ky.thang, new Set(cns.map(c => c.ten)))
   const tonQuy = tonQuyTheoSo(ky.thang, ids).reduce((a, r) => a + r.cuoi, 0)
   const cho = useChoGhiTang(soKy(ky))   // khoản chờ phân bổ chưa ghi tăng thẻ tới hết tháng cần khoá
@@ -176,13 +183,14 @@ function HopKhoa({ ids, ky, onDong }: { ids: string[]; ky: KyKhoa; onDong: () =>
   ]
   const soXong = buoc.filter(b => b.xong).length
   const khoa = () => {
-    khoaSoCuaHang(ids, false, 'Khoá sổ', s.ten)
-    toast(`Đã khoá sổ tháng ${nhanKy(ky)}, ${tenCh(ids)}. Phiếu trong tháng chỉ xem, không sửa, không xoá được`)
+    while (soKy(khoaSoDenCua(id)) < soKy(ky)) khoaSoCuaHang(ids, false, 'Khoá sổ', s.ten)
+    toast(`Đã khoá sổ ${truoc.length ? `đến hết tháng ${nhanKy(ky)}` : `tháng ${nhanKy(ky)}`}, ${tenCh(ids)}. Phiếu trong tháng chỉ xem, không sửa, không xoá được`)
     onDong()
   }
   return (
     <KhungHop tieuDe={`Khoá sổ tháng ${nhanKy(ky)}`} rong onDong={onDong}>
-      <p className="ks-pham">{cns.length > 1 ? `${cns.length} cửa hàng: ${tenCh(ids)}` : cns[0].ten} · {soXong}/{buoc.length} bước đã xong</p>
+      <p className="ks-pham">{cns[0].ten} · {soXong}/{buoc.length} bước đã xong</p>
+      {truoc.length > 0 && <Note kind="warn" icon="alert">Tháng {truoc.map(nhanKy).join(', ')} chưa khoá sổ. Khoá tháng {nhanKy(ky)} thì khoá luôn các tháng này.</Note>}
       {buoc.map(b => (
         <div className={`check ${b.xong ? 'done' : 'now'}`} key={b.ten}>
           <span className="box">{b.xong && <Icon n="check" className="ic sm" />}</span>
@@ -221,19 +229,32 @@ function HopMo({ ids, ky, onDong }: { ids: string[]; ky: KyKhoa; onDong: () => v
   )
 }
 
-/** Khoá sổ hàng loạt: chọn nhiều cửa hàng, khoá tới hết một tháng, mỗi cửa hàng khoá lần lượt từng tháng còn thiếu */
-function HopKhoaDen({ cns, onDong }: { cns: CuaHang[]; onDong: () => void }) {
+/** Khoá sổ hàng loạt: chọn tháng, tìm, lọc rồi tích nhiều cửa hàng; mỗi cửa hàng khoá lần lượt từng tháng còn thiếu tới hết tháng chọn */
+function HopKhoaDen({ onDong }: { onDong: () => void }) {
   const { s, toast } = useSession()
   const den = (id: string) => khoaSoDenCua(id)
-  const thapNhat = cns.map(c => den(c.id)).reduce((a, b) => (soKy(b) < soKy(a) ? b : a))
+  const thapNhat = CUA_HANG.map(c => den(c.id)).reduce((a, b) => (soKy(b) < soKy(a) ? b : a))
   // Tháng chọn được: từ tháng kế của cửa hàng khoá chậm nhất tới tháng trước tháng đang mở
   const dsKy: KyKhoa[] = []
   for (let k = kySau(thapNhat); soKy(k) < soKy(KY_MO); k = kySau(k)) dsKy.unshift(k)
   const [dich, setDich] = useState(soKy(dsKy[0]))
-  const [chon, setChon] = useState<string[]>(cns.map(c => c.id))
+  const [tim, setTim] = useState('')
+  const [loc, setLoc] = useState('can')
   const kyDich = dsKy.find(k => soKy(k) === dich) ?? dsKy[0]
   const soThang = (id: string) => { let n = 0; for (let k = kySau(den(id)); soKy(k) <= dich; k = kySau(k)) n++; return n }
+  const [chon, setChon] = useState<string[]>(() => CUA_HANG.filter(c => soThang(c.id) > 0).map(c => c.id))
+  const can = CUA_HANG.filter(c => soThang(c.id) > 0)
+  const chips: Chip[] = [
+    { k: 'all', ten: 'Tất cả', mau: 'var(--blue)', so: CUA_HANG.length },
+    { k: 'can', ten: 'Cần khoá', mau: 'var(--amber)', so: can.length },
+    { k: 'du', ten: 'Đã khoá đủ', mau: 'var(--green)', so: CUA_HANG.length - can.length },
+  ]
+  const boDau = (x: string) => x.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase()
+  const hien = CUA_HANG.filter(c => (loc === 'all' || (loc === 'can') === soThang(c.id) > 0) && boDau(c.ten).includes(boDau(tim.trim())))
+  const chonDuoc = hien.filter(c => soThang(c.id) > 0).map(c => c.id)
   const seKhoa = chon.filter(id => soThang(id) > 0)
+  const tatCaHien = chonDuoc.length > 0 && chonDuoc.every(id => chon.includes(id))
+  const chonHet = (on: boolean) => setChon(x => on ? [...new Set([...x, ...chonDuoc])] : x.filter(id => !chonDuoc.includes(id)))
   const khoa = () => {
     for (;;) {
       const con = seKhoa.filter(id => soKy(den(id)) < dich)
@@ -244,13 +265,23 @@ function HopKhoaDen({ cns, onDong }: { cns: CuaHang[]; onDong: () => void }) {
     onDong()
   }
   return (
-    <KhungHop tieuDe="Khoá sổ hàng loạt" onDong={onDong}>
+    <KhungHop tieuDe="Khoá sổ hàng loạt" rong onDong={onDong}>
       <div className="ks-den-thang">
         <span>Khoá đến hết</span>
         <Select aria-label="Tháng khoá đến" value={String(dich)} onChange={e => setDich(Number(e.target.value))} ds={dsKy.map(k => ({ v: String(soKy(k)), t: `Tháng ${nhanKy(k)}` }))} />
       </div>
+      <div className="ks-thanh-loc ks-loc-hop">
+        <ChipTrangThai ds={chips} chon={loc} onChon={setLoc} />
+        <span className="grow" />
+        <input className="inp ks-tim" placeholder="Tìm cửa hàng" value={tim} onChange={e => setTim(e.target.value)} aria-label="Tìm cửa hàng" />
+      </div>
+      <label className="ks-chon-het">
+        <input type="checkbox" disabled={!chonDuoc.length} checked={tatCaHien} onChange={e => chonHet(e.target.checked)} />
+        <span className="grow">Chọn tất cả {chonDuoc.length} cửa hàng đang hiện cần khoá</span>
+        <small className="muted">Đã chọn {seKhoa.length}</small>
+      </label>
       <div className="ks-ds-ch">
-        {cns.map(c => {
+        {hien.map(c => {
           const n = soThang(c.id)
           return (
             <label key={c.id} className={n ? undefined : 'muted'}>
@@ -260,8 +291,9 @@ function HopKhoaDen({ cns, onDong }: { cns: CuaHang[]; onDong: () => void }) {
             </label>
           )
         })}
+        {!hien.length && <p className="muted">Không có cửa hàng nào</p>}
       </div>
-      <Note kind="warn" icon="alert">Khoá hàng loạt không hiện bước kiểm tra từng tháng. Muốn xem bước kiểm tra thì bấm Khoá ở từng tháng trong bảng.</Note>
+      <Note kind="warn" icon="alert">Khoá hàng loạt không hiện bước kiểm tra từng tháng. Muốn xem bước kiểm tra thì chọn cửa hàng trên màn Khoá sổ rồi bấm Khoá sổ ở từng tháng.</Note>
       <div className="ks-nut">
         <button className="btn" onClick={onDong}>Huỷ</button>
         <button className="btn acc" disabled={!seKhoa.length} onClick={khoa}><Icon n="lock" kieu="net" className="ic sm" />Khoá {seKhoa.length} cửa hàng</button>
@@ -270,27 +302,97 @@ function HopKhoaDen({ cns, onDong }: { cns: CuaHang[]; onDong: () => void }) {
   )
 }
 
-/** Lịch sử khoá sổ có bộ lọc cửa hàng, thao tác, tháng (T19) */
+/** Mở khoá hàng loạt: chọn tháng mở từ, tìm, lọc rồi tích nhiều cửa hàng; mỗi cửa hàng mở lùi lần lượt từng tháng tới trước tháng chọn, bắt buộc lý do */
+function HopMoDen({ onDong }: { onDong: () => void }) {
+  const { s, toast } = useSession()
+  const den = (id: string) => khoaSoDenCua(id)
+  const caoNhat = CUA_HANG.map(c => den(c.id)).reduce((a, b) => (soKy(b) > soKy(a) ? b : a))
+  // Tháng chọn được: từ tháng khoá muộn nhất lùi 12 tháng
+  const dsKy: KyKhoa[] = []
+  for (let k = caoNhat; dsKy.length < 12; k = kyTruoc(k)) dsKy.push(k)
+  const [tu, setTu] = useState(soKy(dsKy[0]))
+  const [tim, setTim] = useState('')
+  const [loc, setLoc] = useState('mo')
+  const [lyDo, setLyDo] = useState('')
+  const kyTu = dsKy.find(k => soKy(k) === tu) ?? dsKy[0]
+  const soThang = (id: string) => { let n = 0; for (let k = den(id); soKy(k) >= tu; k = kyTruoc(k)) n++; return n }
+  const [chon, setChon] = useState<string[]>([])
+  const coMo = CUA_HANG.filter(c => soThang(c.id) > 0)
+  const chips: Chip[] = [
+    { k: 'all', ten: 'Tất cả', mau: 'var(--blue)', so: CUA_HANG.length },
+    { k: 'mo', ten: 'Mở khoá được', mau: 'var(--amber)', so: coMo.length },
+    { k: 'chua', ten: 'Chưa khoá tới tháng này', mau: 'var(--muted)', so: CUA_HANG.length - coMo.length },
+  ]
+  const boDau = (x: string) => x.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase()
+  const hien = CUA_HANG.filter(c => (loc === 'all' || (loc === 'mo') === soThang(c.id) > 0) && boDau(c.ten).includes(boDau(tim.trim())))
+  const chonDuoc = hien.filter(c => soThang(c.id) > 0).map(c => c.id)
+  const seMo = chon.filter(id => soThang(id) > 0)
+  const tatCaHien = chonDuoc.length > 0 && chonDuoc.every(id => chon.includes(id))
+  const chonHet = (on: boolean) => setChon(x => on ? [...new Set([...x, ...chonDuoc])] : x.filter(id => !chonDuoc.includes(id)))
+  const mo = () => {
+    if (!lyDo.trim()) { toast('Nhập lý do mở khoá'); return }
+    for (;;) {
+      const con = seMo.filter(id => soKy(den(id)) >= tu)
+      if (!con.length) break
+      khoaSoCuaHang(con, true, `Mở khoá, lý do: ${lyDo.trim()}`, s.ten)
+    }
+    toast(`Đã mở khoá từ tháng ${nhanKy(kyTu)}, ${tenCh(seMo)}`)
+    onDong()
+  }
+  return (
+    <KhungHop tieuDe="Mở khoá hàng loạt" rong onDong={onDong}>
+      <div className="ks-den-thang">
+        <span>Mở khoá từ</span>
+        <Select aria-label="Tháng mở khoá từ" value={String(tu)} onChange={e => setTu(Number(e.target.value))} ds={dsKy.map(k => ({ v: String(soKy(k)), t: `Tháng ${nhanKy(k)}` }))} />
+        <small className="muted">các tháng từ tháng này trở về sau sẽ sửa, xoá phiếu được lại</small>
+      </div>
+      <div className="ks-thanh-loc ks-loc-hop">
+        <ChipTrangThai ds={chips} chon={loc} onChon={setLoc} />
+        <span className="grow" />
+        <input className="inp ks-tim" placeholder="Tìm cửa hàng" value={tim} onChange={e => setTim(e.target.value)} aria-label="Tìm cửa hàng" />
+      </div>
+      <label className="ks-chon-het">
+        <input type="checkbox" disabled={!chonDuoc.length} checked={tatCaHien} onChange={e => chonHet(e.target.checked)} />
+        <span className="grow">Chọn tất cả {chonDuoc.length} cửa hàng đang hiện mở khoá được</span>
+        <small className="muted">Đã chọn {seMo.length}</small>
+      </label>
+      <div className="ks-ds-ch">
+        {hien.map(c => {
+          const n = soThang(c.id)
+          return (
+            <label key={c.id} className={n ? undefined : 'muted'}>
+              <input type="checkbox" disabled={!n} checked={!!n && chon.includes(c.id)} onChange={e => setChon(x => e.target.checked ? [...x, c.id] : x.filter(i => i !== c.id))} />
+              <span className="grow">{c.ten}</span>
+              <small>{n > 1 ? `mở khoá ${n} tháng, ${nhanKy(kyTu)} đến ${nhanKy(den(c.id))}` : n ? `mở khoá tháng ${nhanKy(kyTu)}` : `mới khoá đến ${nhanKy(den(c.id))}`}</small>
+            </label>
+          )
+        })}
+        {!hien.length && <p className="muted">Không có cửa hàng nào</p>}
+      </div>
+      <textarea className="inp ks-ly-do" rows={2} placeholder={`Lý do mở khoá, vd bổ sung hoá đơn điện tháng ${kyTu.thang}`} value={lyDo} onChange={e => setLyDo(e.target.value)} />
+      <div className="ks-nut">
+        <button className="btn" onClick={onDong}>Huỷ</button>
+        <button className="btn pri" disabled={!seMo.length} onClick={mo}><Icon n="lock" kieu="net" className="ic sm" />Mở khoá {seMo.length} cửa hàng</button>
+      </div>
+    </KhungHop>
+  )
+}
+
+/** Lịch sử khoá sổ, lọc ở từng cột dưới tiêu đề như danh sách chứng từ (T19) */
 function HopLichSu({ onDong }: { onDong: () => void }) {
-  const [ch, setCh] = useState('')
-  const [viec, setViec] = useState('')
-  const [ky, setKy] = useState('')
-  const dsKy = [...new Set(LICH_SU_KHOA_SO.map(x => x.ky))]
-  const cuaHang = CUA_HANG.find(c => c.id === ch)
-  const rows = LICH_SU_KHOA_SO
-    .filter(x => (!cuaHang || coCh(x, cuaHang)) && (!viec || (viec === 'khoa' ? x.viec === 'Khoá sổ' : x.viec.startsWith('Mở'))) && (!ky || x.ky === ky))
-    .map(x => ({ ...x, ch: x.ch ?? 'Tất cả cửa hàng' }))
+  const [locCot, setLocCot] = useState<Record<string, GiaTriLoc>>({})
+  const tatCa = LICH_SU_KHOA_SO.map(x => ({ ...x, ch: x.ch ?? 'Tất cả cửa hàng' }))
+  const kieuCot = (k: string): KieuLoc => (k === 'luc' ? 'ngay' : k === 'viec' ? 'chu' : 'chon')
+  const rows = tatCa.filter(r => Object.entries(locCot).every(([k, g]) => {
+    const v = String((r as Record<string, unknown>)[k] ?? '')
+    return !dangLoc(g) || khopLoc(kieuCot(k), g, v, undefined, k === 'luc' ? docNgay(v.split(' ')[0]) : undefined)
+  }))
   return (
     <KhungHop tieuDe="Lịch sử khoá sổ" rong="lich-su" onDong={onDong}>
-      <div className="ks-loc-ls">
-        <Select aria-label="Cửa hàng" value={ch} onChange={e => setCh(e.target.value)} ds={[{ v: '', t: 'Tất cả cửa hàng' }, ...CUA_HANG.map(c => ({ v: c.id, t: c.ten }))]} />
-        <Select aria-label="Thao tác" value={viec} onChange={e => setViec(e.target.value)} ds={[{ v: '', t: 'Mọi thao tác' }, { v: 'khoa', t: 'Khoá sổ' }, { v: 'mo', t: 'Mở khoá' }]} />
-        <Select aria-label="Tháng" value={ky} onChange={e => setKy(e.target.value)} ds={[{ v: '', t: 'Mọi tháng' }, ...dsKy.map(k => ({ v: k, t: `Tháng ${k}` }))]} />
-        <span className="grow" />
-        <small className="muted">{rows.length}/{LICH_SU_KHOA_SO.length} dòng</small>
-      </div>
-      <Table cols={[{ k: 'ky', t: 'Tháng', w: 80 }, { k: 'ch', t: 'Cửa hàng', w: 160 }, { k: 'viec', t: 'Thao tác' }, { k: 'ai', t: 'Người làm', w: 120 }, { k: 'luc', t: 'Lúc', w: 150 }]}
-        rows={rows} maxH={420} />
+      <Table cols={[{ k: 'ky', t: 'Tháng', w: 90 }, { k: 'ch', t: 'Cửa hàng', w: 170 }, { k: 'viec', t: 'Thao tác' }, { k: 'ai', t: 'Người làm', w: 130 }, { k: 'luc', t: 'Lúc', w: 170 }]}
+        rows={rows} maxH={420}
+        loc={{ gt: locCot, dat: (k, g) => setLocCot(x => ({ ...x, [k]: g })), kieu: c => kieuCot(c.k), layLuaChon: k => dsGiaTri(tatCa, r => String((r as Record<string, unknown>)[k] ?? '')) }} />
+      <small className="muted ks-dem-ls">{rows.length}/{tatCa.length} dòng</small>
     </KhungHop>
   )
 }

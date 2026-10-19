@@ -31764,16 +31764,10 @@ a.tx-item:hover {
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: contain;
 }
-/* ── Khoá sổ gói Free: bảng tháng × cửa hàng, hộp thoại khoá, mở khoá, khoá đến hết tháng (T19) ── */
-.ks-bang-cuon { overflow-x: auto; }
+/* ── Khoá sổ gói Free: bảng các tháng của một cửa hàng, hộp thoại khoá, mở khoá, khoá sổ hàng loạt, lịch sử (T19) ── */
 .ks-bang { width: 100%; }
 .ks-bang th, .ks-bang td { vertical-align: middle; }
-.ks-bang .ks-cot-thang { width: 110px; white-space: nowrap; }
 .ks-bang tr.ks-dong-mo td { background: var(--tint); }
-.ks-ten-ch { color: var(--blue-d); cursor: pointer; }
-.ks-ten-ch:hover { text-decoration: underline; }
-.ks-o { display: flex; align-items: center; gap: 8px; min-height: 28px; }
-.ks-o .chip .ic { width: 12px; height: 12px; }
 .ks-nam { min-width: 120px; }
 .ds-hop.ks-hop-rong { width: 640px; max-width: calc(100vw - 32px); }
 .ds-hop.ks-hop-ls { width: 900px; }
@@ -31781,10 +31775,18 @@ a.tx-item:hover {
 .ks-hop-rong .check small { margin-left: auto; text-align: right; }
 .ks-hop-rong .check .ks-xem { margin-left: 8px; }
 .ks-den-thang { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-.ks-ds-ch { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
 .ks-ds-ch label { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; cursor: pointer; }
 .ks-ds-ch label.muted { cursor: default; }
 .ks-ds-ch small { color: var(--muted); }
-.ks-loc-ls { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
-.ks-loc-ls > * { min-width: 150px; }
-.ks-loc-ls > .grow, .ks-loc-ls > small { min-width: 0; }
+.ks-thanh-loc { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+.ks-thanh-loc .ds-chips { margin: 0; }
+.ks-ch { min-width: 200px; }
+.ks-bang .chip .ic { width: 12px; height: 12px; }
+.ks-bang .ks-cot-stt { width: 48px; text-align: center; }
+.ks-bang .ks-cot-hd { width: 140px; text-align: center; white-space: nowrap; }
+.ks-bang .ks-trong { text-align: center; padding: 20px; }
+.ks-loc-hop { padding: 0 0 8px; border-bottom: 0; }
+.ks-tim { width: 200px; }
+.ks-chon-het { display: flex; align-items: center; gap: 8px; padding: 8px 10px; margin-bottom: 6px; background: var(--soft); border-radius: 8px; cursor: pointer; }
+.ks-ds-ch { display: flex; flex-direction: column; gap: 4px; max-height: 300px; overflow-y: auto; margin-bottom: 12px; }
+.ks-dem-ls { display: block; margin-top: 8px; text-align: right; }
