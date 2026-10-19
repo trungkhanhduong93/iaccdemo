@@ -4,6 +4,10 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 19/10/2026
 
+- T460: Gói Free, tab Quy trình các phân hệ: dòng mô tả của từng ô luôn nằm dưới tên ô. Quy trình Bán hàng bỏ ô Đơn POS từ FABi, bước 1 chỉ còn Xuất bán POS.
+
+- T459: Gói Free, tab Quy trình của Bán hàng còn 3 bước: bước Doanh thu bán hàng mở Tổng hợp bán hàng, Bảng kê chi tiết bán hàng; bỏ bước Xuất kho nguyên liệu (xem ở phân hệ Kho).
+
 - T458: Gói Free, nhóm báo cáo bán hàng chỉ còn Tổng hợp bán hàng và Bảng kê chi tiết bán hàng; Bán hàng theo ngày từ gói Standard trở lên.
 
 - T457: Báo cáo Bán hàng theo ngày, Tổng hợp bán hàng, Bảng kê chi tiết bán hàng có bộ lọc Kênh bán (Tại quán, Mang về, App giao đồ ăn); Số hoá đơn theo ngày cũng đếm theo kênh đang lọc.

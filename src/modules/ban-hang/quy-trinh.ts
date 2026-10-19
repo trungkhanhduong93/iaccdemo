@@ -31,14 +31,14 @@ export const quyTrinh: QuyTrinhDef = {
       { ten: 'Chi tiết xuất kho', icon: 'cashout', di: 'kho/5-2-12' },
     ] },
   },
-  // Gói Free dùng sơ đồ bước theo kỳ (mẫu C, T367): đơn POS -> thu tiền -> doanh thu -> trừ kho nguyên liệu
+  // Gói Free dùng sơ đồ bước theo kỳ (mẫu C, T367): đơn POS -> thu tiền -> doanh thu (T459 bỏ bước trừ kho nguyên liệu)
   buocKyFree: [
     {
       ten: 'Bán hàng qua POS',
       moTa: 'Đơn bán từ máy thu ngân FABi tự động chuyển thành chứng từ.',
       ghiChu: 'Đơn bán từ máy tính tiền FABi tự động về phần mềm, không cần gõ lại.',
       nut: [
-        { ten: 'Đơn POS từ FABi', icon: 'pos', di: '', tone: 'fabi', moTa: 'Đơn bán từ máy thu ngân FABi' },
+        // bỏ ô Đơn POS từ FABi, chỉ còn Xuất bán POS (T460)
         { ten: 'Xuất bán POS', icon: 'cart', di: 'ban-hang/3-1-1', chieu: 'ra', moTa: 'Chứng từ bán hàng tự động đồng bộ' },
       ],
     },
@@ -54,17 +54,10 @@ export const quyTrinh: QuyTrinhDef = {
       ten: 'Doanh thu bán hàng',
       moTa: 'Theo dõi tổng doanh thu bán món theo ngày, tháng.',
       ghiChu: 'Doanh thu tổng hợp tự động từ các hoá đơn bán thành công.',
+      // Hai báo cáo bán hàng của gói Free (T458); bỏ bước Xuất kho nguyên liệu, xem ở phân hệ Kho (T459)
       nut: [
-        { ten: 'Sổ doanh thu bán hàng', icon: 'book', di: 'ban-hang/3-2-5', moTa: 'Doanh thu bán món theo từng ngày' },
-      ],
-    },
-    {
-      ten: 'Xuất kho nguyên liệu',
-      moTa: 'Xem lượng nguyên liệu đã trừ theo món và số lượng còn tồn.',
-      nut: [
-        { ten: 'Báo cáo xuất nhập tồn', icon: 'box', di: 'kho/5-2-3', moTa: 'Tồn kho nguyên vật liệu hiện tại' },
-        { ten: 'Tổng hợp xuất kho', icon: 'cashout', di: 'kho/5-2-11', chieu: 'ra', moTa: 'Tổng nguyên liệu xuất theo món bán' },
-        { ten: 'Chi tiết xuất kho', icon: 'cashout', di: 'kho/5-2-12', chieu: 'ra', moTa: 'Từng lần trừ nguyên liệu theo đơn' },
+        { ten: 'Tổng hợp bán hàng', icon: 'book', di: 'ban-hang/3-2-7', moTa: 'Doanh thu từng mặt hàng trong kỳ' },
+        { ten: 'Bảng kê chi tiết bán hàng', icon: 'doc', di: 'ban-hang/3-2-8', moTa: 'Từng món bán theo hoá đơn, kênh bán' },
       ],
     },
   ],

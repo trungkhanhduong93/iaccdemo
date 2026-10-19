@@ -30595,3 +30595,6 @@ a.tx-item:hover {
 /* ── Lập phiếu thu, chi ở Tất cả quỹ chọn Tiền mặt hay Ngân hàng (T447) ── */
 /* Menu nổi trên hộp quỹ (.mq-nen z-index 1000) và bảng quỹ điện thoại */
 .pop.pop-lap-phieu { z-index: 3000; }
+
+/* ── Ô trên sơ đồ Quy trình gói Free: mô tả luôn nằm dưới tên (T460) ── */
+.qt-ky-o-ten > .qt-ky-o-mo { flex-basis: 100%; }
