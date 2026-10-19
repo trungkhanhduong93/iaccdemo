@@ -4,7 +4,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T482.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T483.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
@@ -19,6 +19,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | T451 | Điện thoại, phiếu bán hàng ngoài Xuất bán POS (Hàng bán trả lại, hoá đơn bán hàng...) màn xem, lập phiếu: GTGT theo % doanh thu thì dòng hàng bỏ Thuế x%, VAT, hiện Giảm thuế GTGT như máy tính (T450) | | Chờ | `MXemPhieu.tsx`, `MLapPhieu.tsx`, làm sau khi T449 (Trum) push. Dùng `gtgtTyLe` (`session.tsx`), `giamGtgtCua` (`VoucherScreen.tsx`), `giamThueHkd` (`ban-hang/giam-thue.ts`) |
 | T439 | Phiếu chi đã có thẻ chi phí phân bổ: không cho sửa, báo xoá thẻ trước; xoá thẻ (và xoá phiếu kéo theo thẻ) chỉ khi kỳ khoá sổ trước tháng bắt đầu phân bổ đầu tiên của thẻ | dinhlanphuongipacc | Dở dang | Web xong. Phần điện thoại PhuongXT làm ở T475 (19/10/2026, chặn sửa phiếu có thẻ, xoá phiếu, thẻ kiểm khoá sổ). Còn lại của T439 xem nhật ký. Xem [2026-10-19-dinhlanphuongipacc-lich-phan-bo-khoa-so-the](nhat-ky/2026-10-19-dinhlanphuongipacc-lich-phan-bo-khoa-so-the.md) |
 | T436 | Thẻ chi phí: nút Ghi tăng mở form thẻ mới chỉ ở gói Free, gói trên mở danh sách khoản chờ ghi tăng như Ghi tăng bổ sung; xoá phiếu chi đã tạo thẻ (kỳ chưa khoá sổ) hỏi "Xóa phiếu chi này sẽ xóa thẻ chi phí đã tạo…", đồng ý thì xoá cả thẻ | dinhlanphuongipacc | Dở dang | Web xong. Còn điện thoại `MXemPhieu.tsx`, `MCcdc.tsx` chờ Trum xong T424, T425. Xem [2026-10-18-dinhlanphuongipacc-canh-bao-gon-ghi-tang-goi](nhat-ky/2026-10-18-dinhlanphuongipacc-canh-bao-gon-ghi-tang-goi.md) |
+| T483 | Trang chủ gói Free, Chi phí hoạt động: số cộng từ phiếu chi thật (tiền mặt, ngân hàng) có lý do là chi phí, theo tháng, cửa hàng; bấm từng dòng mở danh sách thu chi lọc đúng lý do gồm cả ngân hàng; thẻ Chi phí hoạt động trang chủ đổi theo; sinh phiếu chi mẫu lương, thuê nhà hằng tháng | PhuongXT | Đang làm | `home/ChiPhiThang.tsx`, `home/chiSo.ts`, `mobile/MChiPhiThang.tsx`, `generic/VoucherScreen.tsx` (đọc lọc từ đường dẫn), dữ liệu mẫu thu chi; có thể chạm `home/BaBaiToanFree.tsx` (T339 dinhlanphuongipacc cũng sửa) |
 | T339 | Trang chủ Free máy tính, Tiến độ kiểm kê theo cửa hàng: hiện tối đa 4 cửa hàng cần chú ý (chưa kiểm, lệch nhiều trước), dòng Đã kiểm x/y cửa hàng, dòng Xem tất cả mở hộp danh sách đủ | dinhlanphuongipacc | Đang làm | Sửa `home/BaBaiToanFree.tsx`, `app.css` (mục cuối T339) |
 | T333 | Đổi chữ "map" thành "gán" khi nói về phương thức thanh toán và quỹ (Khoá sổ, Danh mục Quỹ tiền, Danh mục cửa hàng) | dinhlanphuongipacc | Dở dang | Đã đổi ở Khoá sổ, Quỹ tiền. Còn `DanhMucCuaHang.tsx` chờ PhuongXT xong T321. Xem [nhật ký](nhat-ky/2026-10-17-dinhlanphuongipacc-doi-map-thanh-gan.md) |
 | T323 | `tools/kiem_tra.py --dien-thoai` dừng ở bước chờ `.m-nv-luoi`: màn Nghiệp vụ điện thoại làm lại ở T311 không còn lớp này, cập nhật bộ kiểm theo bố cục mới | | Chờ | Phát hiện 17/10/2026 khi kiểm T322 |
