@@ -1223,7 +1223,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
               coKm={kieu !== 'khong'}
               lyDo={oLy ? { nhan: oLy.nhan, ds: oLy.ds!, macDinh: lyDo } : undefined}
               dtMacDinh={laTien ? doiTuong : ''}
-              an={[...anCot, ...anDc]}
+              an={[...anCot, ...anDc, ...(khoaLyDtFree ? ['ly', 'dt'] : [])]}   // gói Free phiếu thu, chi: lý do, đối tượng chỉ ở phần trên, bảng chi tiết bỏ hai cột này (T448)
               khongTong={(laTien && chiTien) || !hienChan('dongTong')}
               chiXemLy={khoaLyDtFree}
               chiXemDt={khoaLyDtFree}
