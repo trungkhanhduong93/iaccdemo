@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T468 | Điện thoại chỉnh tiếp sau T467: kiểm kê thẻ số mặt hàng thiếu, thừa, khớp; xem phiếu mua ghim tổng tiền trên nút chân; thanh toán chọn quỹ một ô, bấm mở bảng chọn; chi tiết Xuất bán POS bỏ dòng phụ dưới mã đơn | Trum | Đang làm | `MXemPhieu.tsx`, `MXuatBanPos.tsx`, cuối `app.css` |
 | T451 | Điện thoại, phiếu bán hàng ngoài Xuất bán POS (Hàng bán trả lại, hoá đơn bán hàng...) màn xem, lập phiếu: GTGT theo % doanh thu thì dòng hàng bỏ Thuế x%, VAT, hiện Giảm thuế GTGT như máy tính (T450) | | Chờ | `MXemPhieu.tsx`, `MLapPhieu.tsx`, làm sau khi T449 (Trum) push. Dùng `gtgtTyLe` (`session.tsx`), `giamGtgtCua` (`VoucherScreen.tsx`), `giamThueHkd` (`ban-hang/giam-thue.ts`) |
 | T445 | Điện thoại, Bảng kê mua hàng làm lại theo mẫu D Trum chốt: gom theo ngày, mỗi phiếu số phiếu, tổng tiền, tên NCC đủ ở hàng dưới; bấm phiếu bung chi tiết hàng hoá, bấm số phiếu mở phiếu mua gốc; tổng ghim đáy | Trum | Đang làm | `MBangKeMua.tsx`, cuối `app.css` |
 | T439 | Phiếu chi đã có thẻ chi phí phân bổ: không cho sửa, báo xoá thẻ trước; xoá thẻ (và xoá phiếu kéo theo thẻ) chỉ khi kỳ khoá sổ trước tháng bắt đầu phân bổ đầu tiên của thẻ | dinhlanphuongipacc | Dở dang | Web xong. Còn điện thoại `MXemPhieu.tsx` chờ Trum xong T424, T425. Xem [2026-10-19-dinhlanphuongipacc-lich-phan-bo-khoa-so-the](nhat-ky/2026-10-19-dinhlanphuongipacc-lich-phan-bo-khoa-so-the.md) |
