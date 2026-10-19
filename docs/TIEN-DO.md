@@ -4,13 +4,14 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 - Trạng thái dùng một trong năm chữ: `Chờ`, `Đang làm`, `Dở dang`, `Kẹt`, `Xong`. `Kẹt` thì ghi lý do ở cột Ghi chú.
 - Thứ tự dòng là thứ tự ưu tiên. Trum đổi thứ tự khi cần.
-- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T479.
+- Mã việc không đổi, không dùng lại. Việc mới lấy mã kế tiếp, mã lớn nhất hiện là T482.
 - Mỗi dòng một việc. Sửa đúng dòng của mình để khỏi xung đột git với người khác.
 
 ## Đang làm và chờ làm
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T482 | Trang chủ gói Free (máy tính, điện thoại): chữ "Giá vốn nguyên vật liệu" đổi thành "Chi phí nguyên vật liệu" | PhuongXT | Đang làm | `home/BaBaiToanFree.tsx` (chỉ 2 dòng chữ, T339 của dinhlanphuongipacc cũng sửa file này), `mobile/MTrangChuFree.tsx` |
 | T481 | Điện thoại, xem phiếu mua: khối tổng (thành tiền, giảm giá, thuế) gộp vào chung khung chân với các nút như chân Xuất bán POS, không nổi tách rời đè nội dung | Trum | Đang làm | `MXemPhieu.tsx`, cuối `app.css` |
 | T480 | Điện thoại, Lịch sử thu chi: mỗi ngày thấy Dư đầu ngày và Dư cuối ngày | Trum | Đang làm | `MLichSuQuy.tsx`, cuối `app.css` |
 | T477 | Điện thoại, Bảng kê mua hàng: dòng phụ dưới tiêu đề đổi thành các ô điều kiện lọc (Thời gian, Kho/CN) như Sổ quỹ tiền mặt | Trum | Đang làm | `MBangKeMua.tsx`, cuối `app.css` |
