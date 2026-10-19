@@ -31316,7 +31316,6 @@ a.tx-item:hover {
 }
 
 /* ── Bảng kê mua hàng điện thoại mẫu D (T445) ── */
-.m-so-bc:has(.m-bkm-d) .m-sbc-loc-hang,
 .m-so-bc:has(.m-bkm-d) .m-sbc-tim-hang {
   display: none !important;
 }
@@ -31330,30 +31329,6 @@ a.tx-item:hover {
 .m-app.m-cap-2:has(.m-bkm-d) .m-than {
   padding-bottom: 0 !important;
   background: var(--bg, #f5f6f8) !important;
-}
-
-.m-bkm-head-title {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  width: 100%;
-}
-
-.m-bkm-head-ten {
-  font-size: 17px;
-  font-weight: 700;
-  color: var(--ink, #1f2225);
-  line-height: 1.25;
-}
-
-.m-bkm-head-phu {
-  font-size: 12px;
-  font-weight: 400;
-  color: var(--muted, #64748b);
-  line-height: 1.25;
-  margin-top: 2px;
 }
 
 .m-bkm-d {
@@ -31701,20 +31676,6 @@ a.tx-item:hover {
   color: var(--blue, #0560a6);
 }
 
-.m-t468-tong-ghim {
-  position: absolute;
-  left: 14px;
-  right: 14px;
-  bottom: calc(70px + env(safe-area-inset-bottom, 0px) + 8px);
-  z-index: 15;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-  border: 1px solid var(--line, #e5e7eb);
-}
-
-.m-pb-noi-dung-co-tong {
-  padding-bottom: 210px !important;
-}
-
 .m-t468-o-chon-quy {
   margin-bottom: 0;
   min-height: 44px;
@@ -31790,3 +31751,135 @@ a.tx-item:hover {
 .ks-chon-het { display: flex; align-items: center; gap: 8px; padding: 8px 10px; margin-bottom: 6px; background: var(--soft); border-radius: 8px; cursor: pointer; }
 .ks-ds-ch { display: flex; flex-direction: column; gap: 4px; max-height: 300px; overflow-y: auto; margin-bottom: 12px; }
 .ks-dem-ls { display: block; margin-top: 8px; text-align: right; }
+
+/* ── Thẻ tổng bảng kê bán hàng điện thoại (T476) ── */
+.m-so-dong-tong.m-t476-tong-ban-hang {
+  box-sizing: border-box;
+}
+
+.m-so-dong-tong.bon-o.m-t476-tong-ban-hang {
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 4px !important;
+  padding: 8px 6px !important;
+}
+
+.m-so-dong-tong.bon-o.m-t476-tong-ban-hang .m-so-dong-tong-o {
+  padding: 4px 2px !important;
+  text-align: center !important;
+  min-width: 0 !important;
+}
+
+.m-so-dong-tong.bon-o.m-t476-tong-ban-hang .m-so-dong-tong-nhan {
+  font-size: 11px !important;
+  color: var(--muted, #6b7280) !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.m-so-dong-tong.bon-o.m-t476-tong-ban-hang .m-so-dong-tong-so {
+  font-size: 13px !important;
+  letter-spacing: -0.3px !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.m-so-dong-tong .m-t476-doanh-thu {
+  color: var(--blue, #0560a6) !important;
+  font-weight: 700 !important;
+}
+
+
+/* ── Chân xem phiếu mua gộp tổng và nút (T481) ── */
+.m-xp-mua .m-pb-noi-dung {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 12px 14px 20px !important;
+}
+
+.m-xp-mua .m-pb-day {
+  position: relative !important;
+  flex: none !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  padding: 10px 14px calc(12px + env(safe-area-inset-bottom, 0px)) !important;
+  background: var(--the, #fff) !important;
+  border-top: 1px solid var(--line, #e5e7eb) !important;
+  box-shadow: none !important;
+  z-index: 20;
+}
+
+.m-xp-mua .m-t481-tong {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 2px 0 2px;
+}
+
+.m-xp-mua .m-t481-tong-dong {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--muted, #6b7280);
+}
+
+.m-xp-mua .m-t481-tong-dong .bold {
+  font-weight: 600;
+  color: var(--ink, #1f2225);
+}
+
+.m-pb-day .m-pb-day-nut {
+  display: contents;
+}
+
+.m-xp-mua .m-pb-day .m-pb-day-nut {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  align-items: center;
+}
+
+/* ── Lịch sử thu chi điện thoại dư đầu, cuối ngày (T480) ── */
+.mobile-day-title {
+  gap: 8px;
+}
+
+.m-lsq-du-cuoi {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.m-lsq-du-dau-hang {
+  padding: 8px 12px;
+  background: var(--soft, #f8fafc);
+  border-top: 1px solid var(--line);
+  margin-top: -1px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.m-lsq-du-dau-nhan {
+  font-weight: 500;
+}
+
+.m-lsq-du-dau-so {
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  flex-shrink: 0;
+}

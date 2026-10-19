@@ -4,6 +4,14 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 19/10/2026
 
+- T480 (điện thoại): Lịch sử thu chi, mỗi ngày có Dư cuối ngày ở đầu nhóm và Dư đầu ngày ở cuối nhóm; lọc Khoản thu, Khoản chi không đổi hai số dư.
+
+- T481 (điện thoại): Màn xem phiếu mua gộp 3 dòng tổng tiền vào chung khung chân trắng với hàng nút thao tác như chi tiết Xuất bán POS. Danh sách cuộn trọn vẹn phía trên khung chân, không bị che dòng hàng cuối.
+
+- T477 (điện thoại): Bảng kê mua hàng bỏ dòng phụ dưới tiêu đề. Hiện lại hàng ô điều kiện lọc Thời gian và Kho/CN ở đầu danh sách giống màn Sổ quỹ tiền mặt.
+
+- T476 (điện thoại): Bảng kê chi tiết bán hàng đổi thẻ tổng thành 4 ô gồm Số đơn, SL bán, Doanh thu, TB/đơn. Báo cáo Bán hàng theo ngày đổi thẻ tổng thành 3 ô Số đơn, Doanh thu, TB/đơn.
+
 - T432 (điện thoại): Báo cáo S1a-HKD chỉ còn một dòng Tổng cộng, ghim ở đáy bảng, không che dòng cuối; bảng kéo hết chiều cao màn, không còn khoảng trống bên dưới.
 
 - T468 (điện thoại): Xem phiếu kiểm kê đổi khối thẻ tổng thành 3 thẻ Thiếu, Thừa, Khớp trên một hàng kèm số lượng mặt hàng. Xem phiếu mua ghim khối tổng tiền ở đáy màn tab Chi tiết trên hàng nút chân. Bảng thanh toán nhà cung cấp đổi phần trả từ quỹ thành 1 ô chọn, bấm mở bảng trượt chọn quỹ kèm số dư. Chi tiết đơn Xuất bán POS bỏ dòng ngày giờ, kênh bán, cửa hàng dưới mã đơn.

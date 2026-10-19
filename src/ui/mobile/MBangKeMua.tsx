@@ -1,14 +1,12 @@
-// Báo cáo Bảng kê mua hàng điện thoại mẫu D (T445)
+// Báo cáo Bảng kê mua hàng điện thoại mẫu D (T445, T477)
 import React, { useEffect, useMemo, useState, type FC } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import type { Row } from '../../modules/types'
 import { money, soLuong } from '../format'
 import { CUA_HANG } from '../../data/mock'
 import { PHIEU_MUA } from '../../modules/mua-hang/bao-cao'
 import { chungTu, ttNghiepVu } from '../generic/gen'
 import { duongPhieu } from '../generic/SoChungTu'
-import { cuaHangHienTai, useSession } from '../../app/session'
-import { useTrangThaiLoc } from '../bao-cao/tuyChinhBC'
 
 export interface MBangKeMuaProps {
   rows: Row[]
@@ -89,10 +87,6 @@ interface NhomNgay {
 }
 
 export const MBangKeMua: FC<MBangKeMuaProps> = ({ rows }) => {
-  const path = useLocation().pathname
-  const { daXem } = useTrangThaiLoc(path)
-  const { s } = useSession()
-
   const [phieuMo, setPhieuMo] = useState<Record<string, boolean>>({})
 
   // Bảng tra cứu bổ sung thông tin phiếu
@@ -209,52 +203,17 @@ export const MBangKeMua: FC<MBangKeMuaProps> = ({ rows }) => {
 
   // Tổng tiền mọi phiếu
   const tongGomThue = useMemo(() => dsPhieuGroup.reduce((s, x) => s + x.tongGomThue, 0), [dsPhieuGroup])
-  const soLuongPhieu = dsPhieuGroup.length
 
-  // Xác định nhãn tháng kỳ
-  const tenThang = useMemo(() => {
-    if (daXem?.ky) return `Tháng ${daXem.ky}/2026`
-    if (dsDongChuan.length > 0) {
-      const parts = dsDongChuan[0].ngay.split('/')
-      if (parts.length === 3) return `Tháng ${Number(parts[1])}/${parts[2]}`
-    }
-    return 'Tháng 9/2026'
-  }, [daXem?.ky, dsDongChuan])
-
-  // Xác định nhãn cửa hàng
-  const tenCn = useMemo(() => {
-    const cn = cuaHangHienTai(s)
-    if (cn) return cn.ten
-    if (dsDongChuan.length > 0) {
-      const cns = new Set<string>()
-      for (const d of dsDongChuan) {
-        const ex = mapPhieuExtra.get(d.so)
-        if (ex?.cn) cns.add(ex.cn)
-      }
-      if (cns.size === 1) {
-        return Array.from(cns)[0]
-      }
-    }
-    return 'Tất cả cửa hàng'
-  }, [s.cuaHang, dsDongChuan, mapPhieuExtra])
-
-  // Cập nhật tiêu đề và dòng phụ lên thanh trên
-  const dongPhu = `${tenThang} · ${tenCn} · ${soLuongPhieu} phiếu`
-
+  // Đặt tiêu đề thanh trên thành Bảng kê mua hàng (T477)
   useEffect(() => {
     const el = document.querySelector<HTMLElement>('.m-thanh-tren-tieu-de')
     if (!el) return
     const textGoc = el.textContent
-    el.innerHTML = `
-      <div class="m-bkm-head-title">
-        <span class="m-bkm-head-ten">Bảng kê mua hàng</span>
-        <span class="m-bkm-head-phu">${dongPhu}</span>
-      </div>
-    `
+    el.textContent = 'Bảng kê mua hàng'
     return () => {
       if (el && textGoc) el.textContent = textGoc
     }
-  }, [dongPhu])
+  }, [])
 
   const togglePhieu = (so: string, macDinhMo: boolean) => {
     setPhieuMo(prev => {

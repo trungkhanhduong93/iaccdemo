@@ -11,11 +11,8 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T484 | Dữ liệu giả sổ quỹ, lịch sử thu chi: khoản chi mang dấu cộng như khoản thu (vd "Chi mua nguyên vật liệu +21.975.000") vì `soChiTiet` trong `src/ui/generic/gen.ts` chọn diễn giải ngẫu nhiên không theo loại thu chi | | Chờ | Phát hiện khi làm T480 |
 | T482 | Trang chủ gói Free (máy tính, điện thoại): chữ "Giá vốn nguyên vật liệu" đổi thành "Chi phí nguyên vật liệu" | PhuongXT | Đang làm | `home/BaBaiToanFree.tsx` (chỉ 2 dòng chữ, T339 của dinhlanphuongipacc cũng sửa file này), `mobile/MTrangChuFree.tsx` |
-| T481 | Điện thoại, xem phiếu mua: khối tổng (thành tiền, giảm giá, thuế) gộp vào chung khung chân với các nút như chân Xuất bán POS, không nổi tách rời đè nội dung | Trum | Đang làm | `MXemPhieu.tsx`, cuối `app.css` |
-| T480 | Điện thoại, Lịch sử thu chi: mỗi ngày thấy Dư đầu ngày và Dư cuối ngày | Trum | Đang làm | `MLichSuQuy.tsx`, cuối `app.css` |
-| T477 | Điện thoại, Bảng kê mua hàng: dòng phụ dưới tiêu đề đổi thành các ô điều kiện lọc (Thời gian, Kho/CN) như Sổ quỹ tiền mặt | Trum | Đang làm | `MBangKeMua.tsx`, cuối `app.css` |
-| T476 | Điện thoại, các bảng kê bán hàng: thẻ tổng đổi thành 4 ô Số đơn, SL bán, Doanh thu, TB/đơn | Trum | Đang làm | `MBaoCaoDong.tsx`, cuối `app.css` |
 | T451 | Điện thoại, phiếu bán hàng ngoài Xuất bán POS (Hàng bán trả lại, hoá đơn bán hàng...) màn xem, lập phiếu: GTGT theo % doanh thu thì dòng hàng bỏ Thuế x%, VAT, hiện Giảm thuế GTGT như máy tính (T450) | | Chờ | `MXemPhieu.tsx`, `MLapPhieu.tsx`, làm sau khi T449 (Trum) push. Dùng `gtgtTyLe` (`session.tsx`), `giamGtgtCua` (`VoucherScreen.tsx`), `giamThueHkd` (`ban-hang/giam-thue.ts`) |
 | T439 | Phiếu chi đã có thẻ chi phí phân bổ: không cho sửa, báo xoá thẻ trước; xoá thẻ (và xoá phiếu kéo theo thẻ) chỉ khi kỳ khoá sổ trước tháng bắt đầu phân bổ đầu tiên của thẻ | dinhlanphuongipacc | Dở dang | Web xong. Phần điện thoại PhuongXT làm ở T475 (19/10/2026, chặn sửa phiếu có thẻ, xoá phiếu, thẻ kiểm khoá sổ). Còn lại của T439 xem nhật ký. Xem [2026-10-19-dinhlanphuongipacc-lich-phan-bo-khoa-so-the](nhat-ky/2026-10-19-dinhlanphuongipacc-lich-phan-bo-khoa-so-the.md) |
 | T436 | Thẻ chi phí: nút Ghi tăng mở form thẻ mới chỉ ở gói Free, gói trên mở danh sách khoản chờ ghi tăng như Ghi tăng bổ sung; xoá phiếu chi đã tạo thẻ (kỳ chưa khoá sổ) hỏi "Xóa phiếu chi này sẽ xóa thẻ chi phí đã tạo…", đồng ý thì xoá cả thẻ | dinhlanphuongipacc | Dở dang | Web xong. Còn điện thoại `MXemPhieu.tsx`, `MCcdc.tsx` chờ Trum xong T424, T425. Xem [2026-10-18-dinhlanphuongipacc-canh-bao-gon-ghi-tang-goi](nhat-ky/2026-10-18-dinhlanphuongipacc-canh-bao-gon-ghi-tang-goi.md) |
@@ -60,6 +57,10 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T480 | Điện thoại, Lịch sử thu chi: mỗi ngày thấy Dư đầu ngày và Dư cuối ngày | Trum | 19/10/2026 | [2026-10-19-trum-lich-su-thu-chi-du-dau-cuoi-ngay](nhat-ky/2026-10-19-trum-lich-su-thu-chi-du-dau-cuoi-ngay.md) |
+| T481 | Điện thoại, xem phiếu mua hàng: khối tổng gộp vào chung khung chân trắng với các nút như Xuất bán POS | Trum | 19/10/2026 | [2026-10-19-trum-chan-xem-phieu-mua-gop-tong](nhat-ky/2026-10-19-trum-chan-xem-phieu-mua-gop-tong.md) |
+| T477 | Điện thoại, Bảng kê mua hàng: dòng phụ dưới tiêu đề đổi thành các ô điều kiện lọc (Thời gian, Kho/CN) như Sổ quỹ tiền mặt | Trum | 19/10/2026 | [2026-10-19-trum-dong-loc-bang-ke-mua-hang](nhat-ky/2026-10-19-trum-dong-loc-bang-ke-mua-hang.md) |
+| T476 | Điện thoại, các bảng kê bán hàng: thẻ tổng đổi thành 4 ô Số đơn, SL bán, Doanh thu, TB/đơn | Trum | 19/10/2026 | [2026-10-19-trum-the-tong-bang-ke-ban-hang](nhat-ky/2026-10-19-trum-the-tong-bang-ke-ban-hang.md) |
 | T432 | Điện thoại, báo cáo S1a-HKD: làm lại bố cục chỉn chu như các báo cáo điện thoại đã duyệt | Trum | 19/10/2026 | [2026-10-19-trum-s1a-hkd-dien-thoai](nhat-ky/2026-10-19-trum-s1a-hkd-dien-thoai.md) |
 | T468 | Điện thoại chỉnh tiếp sau T467: kiểm kê thẻ số mặt hàng thiếu, thừa, khớp; xem phiếu mua ghim tổng tiền trên nút chân; thanh toán chọn quỹ một ô, bấm mở bảng chọn; chi tiết Xuất bán POS bỏ dòng phụ dưới mã đơn | Trum | 19/10/2026 | [2026-10-19-trum-dien-thoai-chinh-tiep-sau-t467](nhat-ky/2026-10-19-trum-dien-thoai-chinh-tiep-sau-t467.md) |
 | T445 | Điện thoại, Bảng kê mua hàng làm lại theo mẫu D Trum chốt: gom theo ngày, mỗi phiếu số phiếu, tổng tiền, tên NCC đủ ở hàng dưới; bấm phiếu bung chi tiết hàng hoá, bấm số phiếu mở phiếu mua gốc; tổng ghim đáy | Trum | 19/10/2026 | [2026-10-19-trum-bang-ke-mua-hang-mau-d](nhat-ky/2026-10-19-trum-bang-ke-mua-hang-mau-d.md) |

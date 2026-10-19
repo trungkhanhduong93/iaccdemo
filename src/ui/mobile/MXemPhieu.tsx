@@ -548,7 +548,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
   )
 
   return (
-    <div className="m-pb-man">
+    <div className={`m-pb-man${nhomMb === 'mua' ? ' m-xp-mua' : ''}`}>
       {/* ── THANH ĐẦU MÀN HÌNH ── */}
       <header className="m-pb-thanh-dau">
         <button type="button" className="m-pb-btn-back" onClick={quayLai} aria-label="Quay lại">
@@ -561,7 +561,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
       </header>
 
       {/* ── NỘI DUNG CUỘN ── */}
-      <div className={`m-pb-noi-dung${nhomMb === 'mua' && tab === 'chitiet' ? ' m-pb-noi-dung-co-tong' : ''}`}>
+      <div className="m-pb-noi-dung">
         {/* Thông báo vừa lập phiếu chi thanh toán */}
         {phieuChiVuaLap && (
           <div className="tt-toast">
@@ -1122,62 +1122,61 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
         )}
       </div>
 
-      {/* Khối tổng ghim ở đáy màn (chỉ ở tab Chi tiết của phiếu mua) (T468) */}
-      {nhomMb === 'mua' && tab === 'chitiet' && (
-        <div className="m-t449-the-tong m-t468-tong-ghim">
-          <div className="m-t449-tong-dong">
-            <span>Thành tiền mặt hàng:</span>
-            <span className="bold">{money(tongTien)} đ</span>
+      {/* ── CHÂN GHIM ĐÁY (T481: gộp khối tổng và hàng nút trong một khung chân trắng duy nhất) ── */}
+      <div className={`m-pb-day${nhomMb === 'mua' && tab === 'chitiet' ? ' m-t481-chan-co-tong' : ''}`}>
+        {nhomMb === 'mua' && tab === 'chitiet' && (
+          <div className="m-t481-tong">
+            <div className="m-t481-tong-dong">
+              <span>Thành tiền mặt hàng:</span>
+              <span className="bold">{money(tongTien)} đ</span>
+            </div>
+            <div className="m-t481-tong-dong">
+              <span>Tổng tiền giảm giá:</span>
+              <span className="bold">{money(tongCk)} đ</span>
+            </div>
+            <div className="m-t481-tong-dong">
+              <span>Tổng tiền thuế:</span>
+              <span className="bold">{money(tongThue)} đ</span>
+            </div>
           </div>
-          <div className="m-t449-gach" />
-          <div className="m-t449-tong-dong">
-            <span>Tổng tiền giảm giá:</span>
-            <span className="bold">{money(tongCk)} đ</span>
-          </div>
-          <div className="m-t449-gach" />
-          <div className="m-t449-tong-dong">
-            <span>Tổng tiền thuế:</span>
-            <span className="bold">{money(tongThue)} đ</span>
-          </div>
-        </div>
-      )}
-
-      {/* ── CHÂN GHIM ĐÁY ── */}
-      <div className="m-pb-day">
-        <button
-          type="button"
-          className="m-pb-btn-more"
-          onClick={() => setMoMenu(true)}
-          aria-label="Thao tác khác"
-        >
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-            <circle cx="5" cy="12" r="2" />
-            <circle cx="12" cy="12" r="2" />
-            <circle cx="19" cy="12" r="2" />
-          </svg>
-        </button>
-
-        {nutPhu && (
-          <button type="button" className="m-pb-btn-phu" onClick={nutPhu.action}>
-            {nutPhu.nhan}
-          </button>
         )}
 
-        {nutChinh && (
+        <div className="m-pb-day-nut">
           <button
             type="button"
-            className={`m-pb-btn-sua${nutChinh.laThanhToan ? ' tt-nut' : ''}`}
-            onClick={nutChinh.action}
+            className="m-pb-btn-more"
+            onClick={() => setMoMenu(true)}
+            aria-label="Thao tác khác"
           >
-            {nutChinh.laThanhToan && (
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <rect x="2" y="6" width="20" height="13" rx="2" />
-                <path d="M2 10h20" />
-              </svg>
-            )}
-            <span>{nutChinh.nhan}</span>
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+              <circle cx="5" cy="12" r="2" />
+              <circle cx="12" cy="12" r="2" />
+              <circle cx="19" cy="12" r="2" />
+            </svg>
           </button>
-        )}
+
+          {nutPhu && (
+            <button type="button" className="m-pb-btn-phu" onClick={nutPhu.action}>
+              {nutPhu.nhan}
+            </button>
+          )}
+
+          {nutChinh && (
+            <button
+              type="button"
+              className={`m-pb-btn-sua${nutChinh.laThanhToan ? ' tt-nut' : ''}`}
+              onClick={nutChinh.action}
+            >
+              {nutChinh.laThanhToan && (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="2" y="6" width="20" height="13" rx="2" />
+                  <path d="M2 10h20" />
+                </svg>
+              )}
+              <span>{nutChinh.nhan}</span>
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Tấm trượt menu ba chấm */}

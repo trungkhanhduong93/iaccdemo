@@ -179,7 +179,7 @@ interface Props {
 }
 
 // ── KHUÔN 1: CHI TIẾT THEO NGÀY ──
-const Khuon1ChiTietNgay: FC<{ rows: Row[]; q?: string; xemTatCaCn?: boolean }> = ({ rows, q = '', xemTatCaCn }) => {
+const Khuon1ChiTietNgay: FC<{ maBc?: string; rows: Row[]; q?: string; xemTatCaCn?: boolean }> = ({ maBc, rows, q = '', xemTatCaCn }) => {
   // Tìm dòng tổng nếu có
   const rDau = rows.find(r => r._b === 1 || String(r.dg || r.dienGiai || '').toLowerCase().includes('đầu kỳ'))
   const rTong = rows.find(r => r._t === 1)
@@ -191,6 +191,36 @@ const Khuon1ChiTietNgay: FC<{ rows: Row[]; q?: string; xemTatCaCn?: boolean }> =
   const dsPhatSinh = useMemo(() => {
     return rows.filter(r => !r._b && !r._t)
   }, [rows])
+
+  // Phân loại báo cáo bán hàng (T476)
+  const maNorm = (maBc || '').replace(/-/g, '.').split('/').pop() || ''
+  const coDongHang = useMemo(() => {
+    return dsPhatSinh.some(r => r.sl !== undefined && (r.so !== undefined || r.soCt !== undefined || r.soHieu !== undefined))
+  }, [dsPhatSinh])
+  const laBanHangChiTiet = (maNorm === '3.2.8' || (maNorm.startsWith('3.2.') && coDongHang)) && !laTheKho
+  const laBanHangTheoNgay = maNorm === '3.2.6' && !laTheKho
+
+  // Thẻ tổng cho Bảng kê chi tiết bán hàng (4 ô: Số đơn, SL bán, Doanh thu, TB/đơn)
+  const soDon328 = useMemo(() => {
+    const set = new Set(dsPhatSinh.map(r => String(r.so || r.soCt || r.soHieu || '')).filter(Boolean))
+    return set.size
+  }, [dsPhatSinh])
+  const tongSl328 = useMemo(() => {
+    return dsPhatSinh.reduce((acc, r) => acc + (Number(r.sl) || 0), 0)
+  }, [dsPhatSinh])
+  const doanhThu328 = useMemo(() => {
+    return dsPhatSinh.reduce((acc, r) => acc + Number(r.tien ?? r.thanhTien ?? r.dtThuan ?? r.tong ?? r.tienHang ?? 0), 0)
+  }, [dsPhatSinh])
+  const tbDon328 = soDon328 > 0 ? Math.round(doanhThu328 / soDon328) : 0
+
+  // Thẻ tổng cho Bán hàng theo ngày (3 ô: Số đơn, Doanh thu, TB/đơn)
+  const soDon326 = useMemo(() => {
+    return dsPhatSinh.reduce((acc, r) => acc + (Number(r.don) || 0), 0)
+  }, [dsPhatSinh])
+  const doanhThu326 = useMemo(() => {
+    return dsPhatSinh.reduce((acc, r) => acc + Number(r.tien ?? r.thanhTien ?? r.dtThuan ?? r.tong ?? r.tienHang ?? 0), 0)
+  }, [dsPhatSinh])
+  const tbDon326 = soDon326 > 0 ? Math.round(doanhThu326 / soDon326) : 0
 
   // Gom theo ngày kèm tính tổng tiền của ngày (T343)
   const dsNhomNgay = useMemo(() => {
@@ -224,8 +254,46 @@ const Khuon1ChiTietNgay: FC<{ rows: Row[]; q?: string; xemTatCaCn?: boolean }> =
           ))}
         </div>
       )}
-      {/* Dòng tổng 3 ô đầu danh sách */}
-      {!laTheKho && rTong && (
+      {/* Thẻ tổng 4 ô cho Bảng kê chi tiết bán hàng (T476) */}
+      {!laTheKho && rTong && laBanHangChiTiet && (
+        <div className="m-so-dong-tong bon-o m-t476-tong-ban-hang">
+          <div className="m-so-dong-tong-o">
+            <span className="m-so-dong-tong-nhan">Số đơn</span>
+            <b className="m-so-dong-tong-so m-so-dong-num">{soDon328} đơn</b>
+          </div>
+          <div className="m-so-dong-tong-o">
+            <span className="m-so-dong-tong-nhan">SL bán</span>
+            <b className="m-so-dong-tong-so m-so-dong-num">{rutGonSo(tongSl328)}</b>
+          </div>
+          <div className="m-so-dong-tong-o">
+            <span className="m-so-dong-tong-nhan">Doanh thu</span>
+            <b className="m-so-dong-tong-so m-so-dong-num m-t476-doanh-thu">{rutGonSo(doanhThu328)}</b>
+          </div>
+          <div className="m-so-dong-tong-o">
+            <span className="m-so-dong-tong-nhan">TB/đơn</span>
+            <b className="m-so-dong-tong-so m-so-dong-num">{soDon328 > 0 ? rutGonSo(tbDon328) : '0'}</b>
+          </div>
+        </div>
+      )}
+      {/* Thẻ tổng 3 ô cho Bán hàng theo ngày (T476) */}
+      {!laTheKho && rTong && laBanHangTheoNgay && (
+        <div className="m-so-dong-tong m-t476-tong-ban-hang">
+          <div className="m-so-dong-tong-o">
+            <span className="m-so-dong-tong-nhan">Số đơn</span>
+            <b className="m-so-dong-tong-so m-so-dong-num">{money(soDon326)} đơn</b>
+          </div>
+          <div className="m-so-dong-tong-o">
+            <span className="m-so-dong-tong-nhan">Doanh thu</span>
+            <b className="m-so-dong-tong-so m-so-dong-num m-t476-doanh-thu">{rutGonSo(doanhThu326)}</b>
+          </div>
+          <div className="m-so-dong-tong-o">
+            <span className="m-so-dong-tong-nhan">TB/đơn</span>
+            <b className="m-so-dong-tong-so m-so-dong-num">{soDon326 > 0 ? rutGonSo(tbDon326) : '0'}</b>
+          </div>
+        </div>
+      )}
+      {/* Dòng tổng 3 ô đầu danh sách cho các báo cáo khác */}
+      {!laTheKho && rTong && !laBanHangChiTiet && !laBanHangTheoNgay && (
         <div className="m-so-dong-tong">
           <div className="m-so-dong-tong-o">
             <span className="m-so-dong-tong-nhan">
@@ -867,7 +935,7 @@ export const MBaoCaoDong: FC<Props> = ({ maBc, khuon, cols, rows, q = '', xemTat
 
   switch (khuon) {
     case 'chi-tiet-ngay':
-      return <Khuon1ChiTietNgay rows={rows} q={q} xemTatCaCn={xemTatCaCn} />
+      return <Khuon1ChiTietNgay maBc={maBc} rows={rows} q={q} xemTatCaCn={xemTatCaCn} />
     case 'tong-hop-doi-tuong':
       return <Khuon2TongHopDoiTuong rows={rows} q={q} />
     case 'chi-tieu-phan-cap':

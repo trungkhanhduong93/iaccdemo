@@ -31,14 +31,15 @@ export function MLichSuQuy(_: ScreenProps) {
   const tn = (gd?.ds ?? []).reduce((a, x) => a + x.thu, 0)
   const tc = (gd?.ds ?? []).reduce((a, x) => a + x.chi, 0)
 
-  // Thống kê từng ngày từ giao dịch gốc chưa lọc
-  const thongKeNgay = new Map<string, { thu: number; chi: number; cuoi: number }>()
+  // Thống kê từng ngày từ giao dịch gốc chưa lọc: Dư cuối ngày sau giao dịch cuối, Dư đầu ngày = Dư cuối − thu + chi (T480)
+  const thongKeNgay = new Map<string, { thu: number; chi: number; cuoi: number; dau: number }>()
   for (const x of gd?.ds ?? []) {
     const cu = thongKeNgay.get(x.ngay)
     const thu = (cu?.thu ?? 0) + x.thu
     const chi = (cu?.chi ?? 0) + x.chi
     const cuoi = isTatCa ? (x.duGop ?? x.du) : x.du
-    thongKeNgay.set(x.ngay, { thu, chi, cuoi })
+    const dau = cuoi - thu + chi
+    thongKeNgay.set(x.ngay, { thu, chi, cuoi, dau })
   }
 
   return (
@@ -111,12 +112,13 @@ export function MLichSuQuy(_: ScreenProps) {
           {[...nhom].map(([ngay, ds]) => {
             const tk = thongKeNgay.get(ngay)
             const cuoiNgay = tk?.cuoi ?? 0
+            const dauNgay = tk?.dau ?? 0
 
             return (
               <div key={ngay} className="mobile-day-block">
                 <div className="mobile-day-title">
                   <span>{tenNgay(ngay)}</span>
-                  <span style={{ color: 'var(--muted)', fontSize: '11px', fontWeight: 500 }}>Dư {moneyD(cuoiNgay)}</span>
+                  <span className="m-lsq-du-cuoi">Dư cuối ngày {moneyD(cuoiNgay)}</span>
                 </div>
 
                 {ds.map((x, i) => {
@@ -170,6 +172,11 @@ export function MLichSuQuy(_: ScreenProps) {
                     </div>
                   )
                 })}
+
+                <div className="m-lsq-du-dau-hang">
+                  <span className="m-lsq-du-dau-nhan">Dư đầu ngày</span>
+                  <span className="m-lsq-du-dau-so">{moneyD(dauNgay)}</span>
+                </div>
               </div>
             )
           })}
