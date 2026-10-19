@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Read",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python -c \"import os,runpy;f=os.path.join(os.environ.get('CLAUDE_PROJECT_DIR','.'),'.claude','hooks','chan_doc_lon.py');os.path.isfile(f) and runpy.run_path(f,run_name='__main__')\""
+          }
+        ]
+      }
+    ]
+  }
+}

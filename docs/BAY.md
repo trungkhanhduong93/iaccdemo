@@ -86,3 +86,9 @@ Lỗi đã từng làm mất thời gian, kèm cách tránh. Đọc trước khi
 - Nguyên nhân: các nhánh cùng thêm vào cuối `src/styles/app.css`. Git coi dấu `}` cuối là phần chung, giữ lại một chỗ, nên vùng xung đột cắt ngang một khối.
 - Cách tránh: khi `app.css` xung đột, không ghép tay vùng xung đột. Lấy bản `HEAD` rồi nối nguyên phần nhánh kia thêm vào sau base (`git show <merge-base>:src/styles/app.css` so với `git show MERGE_HEAD:...`). Sau đó đếm `{` và `}`, rồi chạy `npm run build`.
 
+## Hook Claude Code gọi script Python không thấy file thì chặn mọi lệnh Read (T485)
+
+- Hiện tượng: hook PreToolUse viết `python .claude/hooks/x.py`. Phiên Claude mở ở thư mục con thì đường dẫn tương đối hỏng.
+- Nguyên nhân: Python không thấy file thì thoát mã 2. Mã 2 là mã hook dùng để chặn công cụ.
+- Cách tránh: lệnh hook gọi `python -c` dùng `runpy`, lấy đường dẫn từ `CLAUDE_PROJECT_DIR`, file không có thì thoát 0. Mẫu ở `.claude/settings.json`.
+- Test hook bằng JSON sinh từ Python. `printf` của Git Bash nuốt một dấu `\` trong đường dẫn Windows, JSON hỏng, hook thoát 0 nên tưởng hook sai.

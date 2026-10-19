@@ -21,15 +21,26 @@ Mỗi phiên agent làm trong một bản clone riêng của repo, không dùng 
 Làm đủ các bước, theo thứ tự:
 
 1. Chạy `git pull --rebase`. Có xung đột thì dừng, báo người dùng. `package-lock.json` vừa đổi thì chạy thêm `npm ci`.
-2. Đọc `docs/TIEN-DO.md`: việc nào giao cho người dùng này, việc nào người khác đang làm.
-3. Đọc 3 file mới nhất trong `docs/nhat-ky/` (bỏ qua `MAU.md`) và mọi nhật ký của việc sắp làm. Phiên trước dở dang thì làm tiếp từ mục "Dở dang, việc tiếp theo" của nhật ký đó.
+2. Chạy `python tools/ban_do.py dau-phien <tên GitHub>`. Lệnh in việc của người dùng, việc người khác đang giữ kèm file, mã việc kế tiếp, mục "Dở dang" của 3 nhật ký mới nhất. Không đọc nguyên `docs/TIEN-DO.md`.
+3. Phiên trước dở dang thì mở đúng nhật ký đó, làm tiếp từ mục "Dở dang, việc tiếp theo".
 4. Báo người dùng: việc được giao, việc nên làm trước, phiên trước dừng ở đâu. Chờ người dùng chọn rồi mới sửa.
 5. Đổi trạng thái việc đó trong `docs/TIEN-DO.md` thành `Đang làm`, commit riêng file này, push ngay (làm mục "Ngay trước lệnh git push" trước). Người dùng muốn làm việc chưa có trong bảng thì thêm dòng mới với mã kế tiếp, ghi tên người dùng, rồi mới làm (QD21):
-   - Lấy mã kế tiếp sau `git fetch origin` và đọc `docs/TIEN-DO.md` trên `origin/main`, không đọc bản trên máy.
+   - Lấy mã kế tiếp từ lệnh `dau-phien`. Lệnh tự `git fetch origin` và đọc bản trên `origin/main`.
    - Ghi vào cột Ghi chú các file dùng chung sẽ sửa, nhất là `VoucherScreen.tsx`, `ChungTuForm.tsx`, `app.css`. Thấy việc khác đang ghi cùng file thì hỏi người đó trước.
    - Việc có thể sinh quyết định mới thì giữ chỗ ngay trong commit này: thêm dòng `## QDxx. <tên> (đang soạn)` cuối `docs/QUYET-DINH.md`.
    - Commit nhận việc chỉ sửa `docs/TIEN-DO.md`, `docs/QUYET-DINH.md`. Push ngay kể cả khi người dùng dặn chỉ push khi được bảo.
-6. Sắp sửa phần nào thì đọc mục tương ứng trong `docs/KIEN-TRUC.md` và `docs/BAY.md`. Định đổi bố cục, nghiệp vụ hay thư viện thì đọc thêm `docs/QUYET-DINH.md`.
+6. Sắp sửa phần nào thì đọc mục tương ứng trong `docs/KIEN-TRUC.md`, tra bẫy bằng `python tools/ban_do.py bay <từ>`. Định đổi bố cục, nghiệp vụ hay thư viện thì tra `python tools/ban_do.py qd <từ>` rồi đọc đúng QD đó.
+
+## Tìm code (QD74)
+
+Không đọc nguyên file lớn. `tools/ban_do.py` đọc thay và in kết quả dạng `file:dòng`.
+
+- Chưa biết sửa ở đâu: `python tools/ban_do.py tim <từ khoá>`. Lệnh tìm màn hình, hàm, class CSS, QD, bẫy. Gõ không dấu cũng được.
+- File trên 20 KB: chạy `python tools/ban_do.py file <đường dẫn>` lấy dàn ý, rồi chỉ đọc khúc cần sửa, mỗi lần tối đa 400 dòng.
+- `src/styles/app.css` dài hơn 31.000 dòng. Tra mục bằng `python tools/ban_do.py css <class hoặc mã việc>`.
+- Không đọc `src/ui/icon-dac.ts`, `src/app/features.json`, `dist/`.
+- Xem nhánh nào đang có việc chưa vào `main`: `python tools/ban_do.py nhanh`.
+- Claude Code có hook trong `.claude/settings.json` chặn đọc file lớn khi không giới hạn số dòng. Agent khác tự giữ luật này.
 
 ## Trong phiên
 
@@ -79,7 +90,7 @@ Ai trong 3 người gõ "release" (hoặc "phát hành") thì agent làm, không
 Làm cả khi bỏ dở giữa chừng:
 
 1. Tạo nhật ký mới trong `docs/nhat-ky/`, chép khung từ `docs/nhat-ky/MAU.md`. Tên file `YYYY-MM-DD-<tên GitHub viết thường>-<việc ngắn>.md`, vd `2026-10-08-phuongxt-noi-so-quy.md`. Không sửa nhật ký của người khác.
-2. Cập nhật dòng của việc trong `docs/TIEN-DO.md`: `Xong`, `Dở dang` hoặc `Kẹt`, kèm một câu ghi chú. Việc xong thì chuyển dòng xuống bảng "Đã xong".
+2. Cập nhật dòng của việc trong `docs/TIEN-DO.md`: `Xong`, `Dở dang` hoặc `Kẹt`, kèm một câu ghi chú. Việc xong thì chuyển dòng lên đầu bảng trong `docs/luu-tru/TIEN-DO-xong.md`.
 3. Chạy `python tools/xuat_bao_cao_he_thong.py` để tự động làm mới `docs/IACC-Cloud-Chi-Tiet-He-Thong.xlsx` trên repo. File này ghi nhận đầy đủ tính năng, đặc tả màn hình, mẫu in và tiến độ việc. Khi repo hoàn thiện hoặc khi ai trong 3 người cần lấy report tải về, agent xuất bản mới nhất cho người đó.
 4. Thay đổi người dùng nhìn thấy trên bản online thì thêm dòng vào `CHANGELOG.md`.
 5. `git add` đúng các file đã sửa, bao gồm `docs/IACC-Cloud-Chi-Tiet-He-Thong.xlsx`, không dùng `git add -A`. `package-lock.json` chỉ commit khi có thêm hoặc đổi thư viện.
@@ -103,7 +114,9 @@ Làm cả khi bỏ dở giữa chừng:
 | File | Khi nào đọc |
 |---|---|
 | `BAT-DAU.md` | Người dùng mới cần cài máy, hoặc hỏi quy trình làm việc |
-| `docs/TIEN-DO.md` | Đầu mỗi phiên |
+| `tools/ban_do.py --help` | Trước khi tìm code |
+| `docs/TIEN-DO.md` | Đầu mỗi phiên, qua lệnh `ban_do.py dau-phien` |
+| `docs/luu-tru/TIEN-DO-xong.md` | Tra việc đã xong, bằng `ban_do.py tim` |
 | `docs/nhat-ky/` | Đầu mỗi phiên, 3 file mới nhất |
 | `docs/KIEN-TRUC.md` | Trước khi sửa code |
 | `docs/BAY.md` | Trước khi sửa code |

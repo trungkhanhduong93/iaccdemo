@@ -94,36 +94,43 @@ def autofit_and_freeze(ws, freeze_cell='A2', max_len_cap=60):
 
 def load_all_tasks():
     tien_do_path = ROOT / 'docs' / 'TIEN-DO.md'
+    luu_tru_path = ROOT / 'docs' / 'luu-tru' / 'TIEN-DO-xong.md'
     if not tien_do_path.exists():
         return []
-    lines = tien_do_path.read_text(encoding='utf-8').splitlines()
     tasks = []
-    section = ''
-    for line in lines:
-        line_s = line.strip()
-        if '## Đang làm và chờ làm' in line_s:
-            section = 'dang_lam'
-            continue
-        elif '## Đã xong' in line_s:
-            section = 'da_xong'
-            continue
-        if line_s.startswith('| T') or (line_s.startswith('|') and 'T' in line_s[:6] and not line_s.startswith('| Mã')):
-            parts = [p.strip() for p in line_s.split('|')[1:-1]]
-            if len(parts) >= 5:
-                ma = parts[0]
-                viec = parts[1]
-                nguoi = parts[2]
-                if section == 'dang_lam':
-                    trang_thai = parts[3]
-                    ghi_chu = parts[4]
-                    xong_ngay = ''
-                    nhat_ky = ''
-                else:
-                    trang_thai = 'Xong'
-                    xong_ngay = parts[3]
-                    nhat_ky = parts[4]
-                    ghi_chu = ''
-                tasks.append(dict(ma=ma, viec=viec, nguoi=nguoi, trang_thai=trang_thai, xong_ngay=xong_ngay, nhat_ky=nhat_ky, ghi_chu=ghi_chu))
+
+    def parse_lines(lines, default_section=''):
+        section = default_section
+        for line in lines:
+            line_s = line.strip()
+            if '## Đang làm và chờ làm' in line_s:
+                section = 'dang_lam'
+                continue
+            elif '## Đã xong' in line_s:
+                section = 'da_xong'
+                continue
+            if line_s.startswith('| T') or (line_s.startswith('|') and 'T' in line_s[:6] and not line_s.startswith('| Mã')):
+                parts = [p.strip() for p in line_s.split('|')[1:-1]]
+                if len(parts) >= 5:
+                    ma = parts[0]
+                    viec = parts[1]
+                    nguoi = parts[2]
+                    if section == 'dang_lam':
+                        trang_thai = parts[3]
+                        ghi_chu = parts[4]
+                        xong_ngay = ''
+                        nhat_ky = ''
+                    else:
+                        trang_thai = 'Xong'
+                        xong_ngay = parts[3]
+                        nhat_ky = parts[4]
+                        ghi_chu = ''
+                    tasks.append(dict(ma=ma, viec=viec, nguoi=nguoi, trang_thai=trang_thai, xong_ngay=xong_ngay, nhat_ky=nhat_ky, ghi_chu=ghi_chu))
+
+    parse_lines(tien_do_path.read_text(encoding='utf-8').splitlines())
+    if luu_tru_path.exists():
+        parse_lines(luu_tru_path.read_text(encoding='utf-8').splitlines(), default_section='da_xong')
+
     return tasks
 
 

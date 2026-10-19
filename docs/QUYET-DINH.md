@@ -807,4 +807,12 @@ Trum chốt 18/10/2026 khi làm T426. Thay mốc thiết kế 390pt của QD54.
   - Nhãn thanh tab dưới: 10.5
   - Ô nhập, select, textarea: giữ 16 để tránh trình duyệt iOS tự động phóng to.
 
-## QD74. Agent tra repo bằng tools/ban_do.py (đang soạn)
+## QD74. Agent tra repo bằng tools/ban_do.py
+
+Trum chốt 19/10/2026 (T485). Đầu phiên agent từng đọc nguyên `docs/TIEN-DO.md` (160 KB) và hay mở cả `docs/QUYET-DINH.md` (92 KB), mất khoảng 90 nghìn token trước khi sửa dòng đầu tiên. File code lớn như `MLapPhieu.tsx` (106 KB) hay `app.css` (837 KB) cũng bị đọc nguyên file.
+
+- Đầu phiên chạy `python tools/ban_do.py dau-phien <tên>` thay cho đọc TIEN-DO và nhật ký.
+- Tìm code bằng `ban_do.py tim`, `file`, `css`, rồi chỉ đọc khúc cần sửa. Luật chi tiết ở mục "Tìm code" của `AGENTS.md`.
+- Bảng việc đã xong chuyển sang `docs/luu-tru/TIEN-DO-xong.md`. `docs/TIEN-DO.md` chỉ còn việc chưa xong.
+- Không commit file bản đồ sinh sẵn. Ba người cùng push thì file sinh sẵn xung đột mỗi lần. Script chạy dưới 2 giây, luôn khớp code.
+- Claude Code có hook `.claude/hooks/chan_doc_lon.py` chặn đọc file trên 20 KB khi không có giới hạn dòng. Hook áp cho mọi người dùng Claude trong repo.
