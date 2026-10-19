@@ -459,7 +459,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
   }
 
   return (
-    <div className="m-xp m-pb-man">
+    <div className="m-pb-man">
       {/* ── THANH ĐẦU MÀN HÌNH ── */}
       <header className="m-pb-thanh-dau">
         <button type="button" className="m-pb-btn-back" onClick={() => nav(path)} aria-label="Quay lại">
@@ -534,17 +534,11 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
             </div>
           )}
 
-          {/* 2 ô thống kê */}
+          {/* Ô thống kê quỹ thu/chi rộng hết hàng (T424) */}
           {laTien ? (
-            <div className="m-pb-luoi-stat">
-              <div className="m-pb-o-stat da">
-                <div className="m-pb-o-stat-nhan">{chieu === 'vao' ? 'Quỹ thu tiền' : 'Quỹ chi tiền'}</div>
-                <div className="m-pb-o-stat-so da">{triQuy}</div>
-              </div>
-              <div className="m-pb-o-stat con">
-                <div className="m-pb-o-stat-nhan">Nguồn chứng từ</div>
-                <div className="m-pb-o-stat-so con">{NGUON[row.nguon]?.[1] ?? 'Thủ công'}</div>
-              </div>
+            <div className="m-pb-o-stat da">
+              <div className="m-pb-o-stat-nhan">{chieu === 'vao' ? 'Quỹ thu tiền' : 'Quỹ chi tiền'}</div>
+              <div className="m-pb-o-stat-so da">{triQuy}</div>
             </div>
           ) : nhomMb === 'mua' ? (
             <div className="m-pb-luoi-stat">
@@ -653,6 +647,10 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
                       </span>
                     </div>
                   )}
+                  <div className="m-pb-dong">
+                    <span className="n">Nguồn chứng từ</span>
+                    <span className="g">{NGUON[row.nguon]?.[1] ?? 'Thủ công'}</span>
+                  </div>
                 </div>
 
                 {/* Hạch toán mở sẵn ở tab chi tiết nếu có */}

@@ -20,8 +20,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | T432 | Điện thoại, báo cáo S1a-HKD: làm lại bố cục chỉn chu như các báo cáo điện thoại đã duyệt | Trum | Đang làm | `MSoTT152.tsx`, cuối `app.css`. Làm sau T426 |
 | T431 | Điện thoại: bấm quay lại bị lặp qua lại giữa 2 màn; back phải lùi đúng lịch sử, tới màn gốc thì dừng | Trum | Đang làm | `src/ui/mobile/`, có thể `MobileShell.tsx` |
 | T430 | Điện thoại, chi tiết Xuất bán POS: nút Đóng màu xanh chính, Thời gian xuất căn trái như các ô khác | Trum | Chờ | `MXuatBanPos.tsx` (trùng T425, làm sau khi T425 push), cuối `app.css` |
-| T425 | Điện thoại, màn xem phiếu thu chi, mua hàng, kiểm kê, Xuất bán POS: thanh số phiếu sát mép trên, bỏ lề trái phải thừa; khoảng cách theo đúng màn xem thẻ chi phí phân bổ | Trum | Đang làm | `MXemPhieu.tsx`, `MXuatBanPos.tsx`, cuối `app.css` |
-| T424 | Điện thoại, màn xem phiếu thu, chi: ô Nguồn chứng từ (Thủ công, FABi) đưa từ thẻ tổng quan xuống thành dòng trong nhóm Thông tin phiếu; ô Quỹ ở thẻ tổng quan rộng hết hàng | Trum | Đang làm | `MXemPhieu.tsx`, cuối `app.css` |
 | T339 | Trang chủ Free máy tính, Tiến độ kiểm kê theo cửa hàng: hiện tối đa 4 cửa hàng cần chú ý (chưa kiểm, lệch nhiều trước), dòng Đã kiểm x/y cửa hàng, dòng Xem tất cả mở hộp danh sách đủ | dinhlanphuongipacc | Đang làm | Sửa `home/BaBaiToanFree.tsx`, `app.css` (mục cuối T339) |
 | T333 | Đổi chữ "map" thành "gán" khi nói về phương thức thanh toán và quỹ (Khoá sổ, Danh mục Quỹ tiền, Danh mục cửa hàng) | dinhlanphuongipacc | Dở dang | Đã đổi ở Khoá sổ, Quỹ tiền. Còn `DanhMucCuaHang.tsx` chờ PhuongXT xong T321. Xem [nhật ký](nhat-ky/2026-10-17-dinhlanphuongipacc-doi-map-thanh-gan.md) |
 | T323 | `tools/kiem_tra.py --dien-thoai` dừng ở bước chờ `.m-nv-luoi`: màn Nghiệp vụ điện thoại làm lại ở T311 không còn lớp này, cập nhật bộ kiểm theo bố cục mới | | Chờ | Phát hiện 17/10/2026 khi kiểm T322 |
@@ -62,6 +60,8 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T425 | Điện thoại, màn xem phiếu thu chi, mua hàng, kiểm kê, Xuất bán POS: thanh số phiếu sát mép trên, bỏ lề trái phải thừa; khoảng cách theo đúng màn xem thẻ chi phí phân bổ | Trum | 19/10/2026 | [2026-10-19-trum-xem-phieu-dien-thoai-sat-mep](nhat-ky/2026-10-19-trum-xem-phieu-dien-thoai-sat-mep.md) |
+| T424 | Điện thoại, màn xem phiếu thu, chi: ô Nguồn chứng từ (Thủ công, FABi) đưa từ thẻ tổng quan xuống thành dòng trong nhóm Thông tin phiếu; ô Quỹ ở thẻ tổng quan rộng hết hàng | Trum | 19/10/2026 | [2026-10-19-trum-xem-phieu-dien-thoai-sat-mep](nhat-ky/2026-10-19-trum-xem-phieu-dien-thoai-sat-mep.md) |
 | T444 | Điện thoại, báo cáo Bảng kê mua hàng: khối tổng tiền mua hàng ghim sát đáy màn | Trum | 19/10/2026 | [2026-10-19-trum-tong-bang-ke-mua-hang-dien-thoai](nhat-ky/2026-10-19-trum-tong-bang-ke-mua-hang-dien-thoai.md) |
 | T442 | Điện thoại, danh mục dạng thẻ (vd Nhà cung cấp): tên dài xuống dòng thẳng lề tên, không chui dưới số thứ tự | Trum | 19/10/2026 | [2026-10-19-trum-ten-danh-muc-dien-thoai-thut-treo](nhat-ky/2026-10-19-trum-ten-danh-muc-dien-thoai-thut-treo.md) |
 | T443 | Điện thoại, mọi báo cáo: ô tìm kiếm không dính vào đường kẻ ngăn với phần trên, cách đều trên dưới và cùng kiểu danh sách | Trum | 19/10/2026 | [2026-10-19-trum-o-tim-bao-cao-dien-thoai](nhat-ky/2026-10-19-trum-o-tim-bao-cao-dien-thoai.md) |

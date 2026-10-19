@@ -4,6 +4,8 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 19/10/2026
 
+- T424, T425 (điện thoại): Màn xem phiếu thu, chi, mua hàng, kiểm kê bỏ lề trái phải thừa, thanh số phiếu sát mép trên. Phiếu thu, chi: ô Quỹ rộng hết hàng, Nguồn chứng từ chuyển thành dòng trong nhóm Thông tin phiếu. Chi tiết đơn Xuất bán POS mở toàn màn, thanh đầu sát mép trên như màn xem thẻ chi phí phân bổ.
+
 - T444 (điện thoại): Báo cáo Bảng kê mua hàng: khối Tổng tiền mua hàng ghim cố định sát đáy màn hình. Danh sách ngắn hay dài đều sát đáy, không che dòng dữ liệu cuối, căn chuẩn vùng an toàn thiết bị.
 
 - T442 (điện thoại): Các danh mục dạng thẻ (Nhà cung cấp, Đối tượng, Hàng hoá...): số thứ tự là cột riêng, tên dài xuống dòng thẳng lề tên (thụt treo) không chui dưới số; tên tối đa 2 dòng, quá thì cắt "…", mã giữ cùng khối với tên.

@@ -278,36 +278,33 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
         onChon={setKenh}
       />
 
-      {/* Tấm nổi từ đáy: Chi tiết đơn hàng */}
+      {/* Chi tiết đơn hàng (T425: theo khuôn thẻ phân bổ, thanh đầu sát mép trên full-width) */}
       {donDangXem && (
-        <div className="m-form-dm m-pos-ct-hop">
-          <div className="overlay" onClick={() => setDonDangXem(null)} />
-          <aside className="pn-hop m-pos-ct-hop-than">
-            <div className="m-pos-ct-keo" />
-            <div className="pn-dau m-pos-ct-dau">
-              <button
-                type="button"
-                className="m-pos-ct-x"
-                onClick={() => setDonDangXem(null)}
-                aria-label="Đóng"
-              >
-                <Icon n="x" />
-              </button>
-              <div className="m-pos-ct-td">
-                <b>
-                  Đơn #{donDangXem.so}
-                  {ghi && (
-                    <span className={`m-pos-tt ${donDangXem.tt === 'nhap' ? 'chua-ghi' : 'da-ghi'}`}>
-                      {donDangXem.tt === 'nhap' ? 'Chưa ghi sổ' : 'Đã ghi sổ'}
-                    </span>
-                  )}
-                </b>
-                <span>{donDangXem.ngay} · {donDangXem.kenh} · {donDangXem.cn}</span>
-              </div>
-              <span className="m-pos-ct-x-placeholder" />
+        <div className="m-pb-man m-pos-ct-man">
+          <header className="m-pb-thanh-dau m-pos-ct-dau">
+            <button
+              type="button"
+              className="m-pos-ct-x"
+              onClick={() => setDonDangXem(null)}
+              aria-label="Đóng"
+            >
+              <Icon n="x" />
+            </button>
+            <div className="m-pos-ct-td">
+              <b>
+                Đơn #{donDangXem.so}
+                {ghi && (
+                  <span className={`m-pos-tt ${donDangXem.tt === 'nhap' ? 'chua-ghi' : 'da-ghi'}`}>
+                    {donDangXem.tt === 'nhap' ? 'Chưa ghi sổ' : 'Đã ghi sổ'}
+                  </span>
+                )}
+              </b>
+              <span>{donDangXem.ngay} · {donDangXem.kenh} · {donDangXem.cn}</span>
             </div>
+            <span className="m-pos-ct-x-placeholder" />
+          </header>
 
-            <div className="pn-than m-pos-ct-than">
+          <div className="m-pb-noi-dung m-pos-ct-than">
               {/* Thẻ thông tin đơn */}
               <div className="m-pos-ct-the">
                 <div className="m-pos-ct-nhom-t">Thông tin đơn</div>
@@ -487,17 +484,16 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
               </div>
             </details>
 
-            {/* Chân: chỉ một nút "Đóng" rộng hết. KHÔNG có nút Xem hạch toán */}
-            <div className="pn-chan m-pos-ct-chan">
-              <button
-                type="button"
-                className="btn m-pos-ct-nut-dong"
-                onClick={() => setDonDangXem(null)}
-              >
-                Đóng
-              </button>
-            </div>
-          </aside>
+          {/* Chân: chỉ một nút "Đóng" rộng hết. KHÔNG có nút Xem hạch toán */}
+          <div className="m-pos-ct-chan">
+            <button
+              type="button"
+              className="btn m-pos-ct-nut-dong"
+              onClick={() => setDonDangXem(null)}
+            >
+              Đóng
+            </button>
+          </div>
         </div>
       )}
 
