@@ -4,11 +4,13 @@ Chép tools/skill-ban-do-repo/ vào ~/.claude/skills/ban-do-repo/, thêm một m
 vào ~/.claude/CLAUDE.md và ~/.gemini/GEMINI.md (nếu máy có Antigravity). Sao lưu file luật trước khi sửa.
 
     python tools/cai_skill_ban_do.py          cài hoặc cập nhật
+    python tools/cai_skill_ban_do.py --cap-nhat lấy bản mới từ GitHub rồi cài/cập nhật
     python tools/cai_skill_ban_do.py --kiem   in trạng thái: chua-cai, da-cai, cu-hon, tu-choi, ban-rieng
     python tools/cai_skill_ban_do.py --khong  ghi nhớ người dùng không muốn cài, không hỏi lại
     python tools/cai_skill_ban_do.py --go     gỡ skill và mục luật đã thêm
 """
 import shutil
+import subprocess
 import sys
 import time
 from pathlib import Path
@@ -83,12 +85,34 @@ def cai(ep: bool):
     DICH.mkdir(parents=True, exist_ok=True)
     shutil.copytree(GOI, DICH, dirs_exist_ok=True)
     k = DICH / 'SKILL.md'
-    k.write_text(k.read_text(encoding='utf-8').replace('{{SKILL_DIR}}', DICH.as_posix()), encoding='utf-8')
+    k.write_text(k.read_text(encoding='utf-8').replace('{{SKILL_DIR}}', DICH.as_posix()).replace('{{NGUON}}', ROOT.as_posix()), encoding='utf-8')
     (DICH / 'VERSION').unlink(missing_ok=True)
     DAU_CAI.write_text(str(phien_ban_goi()), encoding='utf-8')
     TU_CHOI.unlink(missing_ok=True)
     sua_luat(them=True)
     print(f'Đã cài bản {phien_ban_goi()} vào {DICH}. Mở phiên agent mới để luật có hiệu lực.')
+
+
+def git(*lenh) -> subprocess.CompletedProcess:
+    return subprocess.run(['git', '-C', str(ROOT), *lenh], capture_output=True, text=True, encoding='utf-8')
+
+
+def cap_nhat():
+    """Gọi từ skill ở repo bất kỳ: lấy bản gói mới trên GitHub nếu có, rồi cài lại khi máy đang cũ hơn (T490)."""
+    if git('fetch', '-q', 'origin').returncode != 0:
+        print('Không fetch được GitHub, dùng bản trên máy')
+    gh = git('show', 'origin/main:tools/skill-ban-do-repo/VERSION')
+    m = phien_ban_goi()
+    if gh.returncode == 0 and int(gh.stdout.strip()) > m:
+        dang_main = git('rev-parse', '--abbrev-ref', 'HEAD').stdout.strip() == 'main'
+        if not dang_main or git('pull', '--ff-only', '-q').returncode != 0:
+            print(f'GitHub có bản {gh.stdout.strip()}, máy đang {m}. Vào {ROOT} chạy git pull --rebase rồi gọi lại.')
+    if trang_thai() == 'da-cai':
+        print(f'Skill bản đồ đang là bản mới nhất ({phien_ban_goi()}).')
+        return
+    cai(ep=False)
+    if trang_thai() == 'da-cai':
+        print(f'Vừa cập nhật skill lên bản {phien_ban_goi()}. Đọc lại {DICH}/SKILL.md rồi làm theo bản mới.')
 
 
 def go():
@@ -103,6 +127,8 @@ def go():
 if __name__ == '__main__':
     if '--kiem' in sys.argv:
         print(trang_thai())
+    elif '--cap-nhat' in sys.argv:
+        cap_nhat()
     elif '--khong' in sys.argv:
         TU_CHOI.parent.mkdir(parents=True, exist_ok=True)
         TU_CHOI.write_text(time.strftime('%d/%m/%Y'), encoding='utf-8')

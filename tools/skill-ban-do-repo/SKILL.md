@@ -1,6 +1,6 @@
 ---
 name: ban-do-repo
-description: Dựng bản đồ repo cho một project để agent tra code bằng script thay vì đọc nguyên file, tốn ít token nhất. Dùng khi người dùng nói "bản đồ repo", "tạo bản đồ repo", "map repo", "agent đọc code tốn token quá", "đầu phiên tốn token", "dọn rác repo", hoặc sang project mới chưa có tools/ban_do.py. Project đã có tools/ban_do.py thì không dựng lại, chỉ dùng lệnh của nó.
+description: Dựng bản đồ repo cho một project để agent tra code bằng script thay vì đọc nguyên file, tốn ít token nhất. Dùng khi người dùng nói "bản đồ repo", "tạo bản đồ repo", "map repo", "agent đọc code tốn token quá", "đầu phiên tốn token", "dọn rác repo", hoặc sang project mới chưa có tools/ban_do.py. Project đã có tools/ban_do.py thì so phiên bản với bản mẫu, cũ hơn thì cập nhật, bằng thì chỉ dùng lệnh của nó.
 ---
 
 # Bản đồ repo
@@ -9,8 +9,12 @@ Script đọc thay agent, agent chỉ nhận vài trăm token kết quả dạng
 
 ## 1. Kiểm trước
 
-- Repo đã có `tools/ban_do.py`: chạy `python tools/ban_do.py --help`, dùng luôn. Dừng skill.
-- Chưa có: làm tiếp mục 2. Không đọc code để "hiểu trước", việc đó là thứ skill này thay.
+1. Lên bản skill mới nhất: chạy `python "{{NGUON}}/tools/cai_skill_ban_do.py" --cap-nhat`. Lệnh lấy bản mới từ GitHub của iaccdemo nếu có, rồi cài lại skill. Lệnh báo vừa cập nhật thì đọc lại `{{SKILL_DIR}}/SKILL.md` và làm theo bản mới. Đường dẫn không còn (clone iaccdemo đã xoá, đổi chỗ) thì bỏ bước này, báo người dùng một dòng.
+2. Repo chưa có `tools/ban_do.py`: làm tiếp mục 2. Không đọc code để "hiểu trước", việc đó là thứ skill này thay.
+3. Repo đã có `tools/ban_do.py`: chạy `grep -n BAN_DO_VERSION tools/ban_do.py "{{SKILL_DIR}}/scripts/ban_do.py"`.
+   - Hai số bằng nhau: chạy `python tools/ban_do.py --help`, dùng luôn. Dừng skill.
+   - Số của repo nhỏ hơn, hoặc repo không có dòng đó: làm mục 3b.
+   - Repo là iaccdemo (có `tools/skill-ban-do-repo/`): bản gốc ở đây, không làm mục 3b.
 
 ## 2. Khảo sát rẻ (chỉ lệnh, không Read)
 
@@ -32,6 +36,16 @@ Chỉ cần khi repo có nhiều người cùng làm. Repo một mình thì mụ
    - `lenh_tim`, `lenh_css`: thư mục CSS `src/styles`. Không có CSS thì bỏ lệnh `css`.
 3. Lệnh riêng của iaccdemo: `dau-phien` đọc `docs/TIEN-DO.md`, `docs/luu-tru/TIEN-DO-xong.md`, `docs/nhat-ky/`; `qd` đọc `docs/QUYET-DINH.md`; `bay` đọc `docs/BAY.md`. Repo có tài liệu tương đương thì sửa đường dẫn và định dạng bảng cho khớp. Không có thì xoá lệnh đó cùng nhóm "Quyết định", "Bẫy" trong `lenh_tim`.
 4. Hook cho Claude: chép `{{SKILL_DIR}}/scripts/chan_doc_lon.py` vào `<repo>/.claude/hooks/`, sửa danh sách file cấm đọc trong biến `cam_doc`. Ghép khối PreToolUse trong `scripts/settings-mau.json` vào `<repo>/.claude/settings.json`. File đã có thì ghép thêm, không ghi đè. Giữ nguyên lệnh `python -c … runpy`: gọi thẳng `python .claude/hooks/x.py` mà sai cwd thì Python thoát mã 2 và chặn mọi lệnh Read.
+
+## 3b. Cập nhật script đã có
+
+Repo khác đã chép `ban_do.py` từ bản cũ rồi chỉnh riêng. Chép đè sẽ mất phần chỉnh đó.
+
+1. Chạy `python "{{SKILL_DIR}}/scripts/soi_repo.py" tong-quan` để biết thư mục code của repo, rồi `diff tools/ban_do.py "{{SKILL_DIR}}/scripts/ban_do.py"` để xem khác nhau ở đâu.
+2. Lấy từ bản mẫu phần chung: các hàm phụ đầu file, lệnh `tim` (chỉ phần cách quét và cách in), `file`, `css`, `nhanh`, `main`.
+3. Giữ phần repo đã chỉnh ở mục 3: `BO_QUA_TAP_TIN`, `BO_QUA_THU_MUC`, thư mục quét, nhóm đã bỏ, các lệnh `dau-phien`, `qd`, `bay` nếu repo còn giữ.
+4. Ghi `BAN_DO_VERSION` bằng số của bản mẫu.
+5. Nghiệm thu như mục 5 (phần hook chỉ kiểm khi có đổi hook). Commit theo luật của repo đó, ghi rõ lên từ bản nào lên bản nào.
 
 ## 4. Ghi luật cho mọi agent
 
@@ -78,4 +92,6 @@ Không xoá đợt này: rule có `:hover`, `:focus`, `:active`, `::before`, `::
 
 ## 8. Cập nhật skill
 
-Bản gốc nằm ở `tools/skill-ban-do-repo/` của iaccdemo. Sửa skill thì sửa ở đó, tăng số trong `VERSION`, commit, rồi chạy `python tools/cai_skill_ban_do.py` để cài lại máy mình. Máy khác thấy bản mới khi chạy `python tools/ban_do.py dau-phien <tên>`.
+Bản gốc nằm ở `tools/skill-ban-do-repo/` của iaccdemo. Sửa skill thì sửa ở đó, tăng số trong `VERSION`, commit, push, rồi chạy `python tools/cai_skill_ban_do.py` để cài lại máy mình. Có đổi `scripts/ban_do.py` thì tăng `BAN_DO_VERSION` trong file đó và trong `tools/ban_do.py` của iaccdemo, bằng số `VERSION`.
+
+Máy khác thấy bản mới theo hai đường: chạy `python tools/ban_do.py dau-phien <tên>` trong iaccdemo, hoặc gọi skill này ở repo bất kỳ (mục 1 bước 1 tự lấy bản mới). Antigravity dùng bản chép riêng: cài xong thì chạy thêm `python ~/.claude/scripts/dong_bo_skill_gemini.py` nếu máy có script đó.

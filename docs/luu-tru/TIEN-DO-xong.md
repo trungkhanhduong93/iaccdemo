@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T490 | Skill bản đồ tự lên bản mới nhất khi gọi ở repo bất kỳ: `cai_skill_ban_do.py --cap-nhat`, `BAN_DO_VERSION` trong `ban_do.py`, mục 3b cập nhật script đã có; skill lên bản 3 | Trum | 20/10/2026 | [2026-10-20-trum-skill-ban-do-tu-cap-nhat](../nhat-ky/2026-10-20-trum-skill-ban-do-tu-cap-nhat.md) |
 | T489 | `tools/ban_do.py tim`, nhóm Chữ thường in `file:dòng` kèm đoạn chữ, xếp `src/` và dòng đúng nguyên cụm lên đầu; skill bản đồ lên `VERSION` 2 | Trum | 20/10/2026 | [2026-10-20-trum-tim-file-dong](../nhat-ky/2026-10-20-trum-tim-file-dong.md) |
 | T488 | Điện thoại bỏ in chứng từ (xem phiếu, form chứng từ; web vẫn in); trang chủ Free nút và hộp biểu đồ đổi tên thành Hiệu quả kinh doanh 13 tháng | Trum | 19/10/2026 | [2026-10-19-trum-bo-in-dien-thoai](../nhat-ky/2026-10-19-trum-bo-in-dien-thoai.md) |
 | T487 | Gói cài skill bản đồ repo cho máy từng người: `tools/skill-ban-do-repo/`, `tools/cai_skill_ban_do.py`; đầu phiên agent hỏi một lần có cài không | Trum | 19/10/2026 | [2026-10-19-trum-goi-cai-skill-ban-do](../nhat-ky/2026-10-19-trum-goi-cai-skill-ban-do.md) |

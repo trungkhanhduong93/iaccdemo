@@ -9,6 +9,9 @@ from functools import lru_cache
 from collections import defaultdict
 from pathlib import Path
 
+BAN_DO_VERSION = 3  # bằng tools/skill-ban-do-repo/VERSION của iaccdemo; repo khác so số này để biết cần cập nhật (T490)
+
+
 # Cấu hình encoding cho Windows console
 if sys.platform == 'win32':
     sys.stdout.reconfigure(encoding='utf-8')
