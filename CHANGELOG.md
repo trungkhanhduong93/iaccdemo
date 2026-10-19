@@ -4,6 +4,8 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 19/10/2026
 
+- T473: Danh mục có thêm Nhóm lý do nghiệp vụ, gồm 6 nhóm chi phí hợp lý a đến f như Sổ S2c-HKD, kèm số lý do mỗi nhóm. Danh mục Lý do nghiệp vụ có cột Nhóm lý do: lý do là chi phí tự xếp vào nhóm theo tên (vd tiền điện vào nhóm d, tiền lương vào nhóm b), tích Là chi phí thì tự chọn nhóm, đổi được.
+
 - T472: Hệ thống: gói Free không còn tab Người dùng, Vai trò và phân quyền (menu tài khoản cũng bỏ mục Người dùng); tab Gói thuê bao nằm cuối thanh tab ở mọi gói.
 
 - T471: Thêm, sửa đối tượng: chọn Tổ chức hoặc Cá nhân bằng nút chọn tròn ngay cạnh tên khối Thông tin chung. Tổ chức nhập MST/CCCD chủ hộ (bắt buộc), Cá nhân nhập CCCD; sau đó Mã, Tên, Loại, Nhóm đối tượng như cũ. Câu báo thiếu ô giữ nguyên chữ viết tắt (MST, CCCD).

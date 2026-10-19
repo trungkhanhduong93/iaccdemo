@@ -31300,3 +31300,6 @@ a.tx-item:hover {
 .pn-chon-dau { display: inline-flex; align-items: center; gap: 18px; margin-left: 20px; font-weight: 400; color: var(--ink); }
 .pn-chon-dau label { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; text-transform: none; letter-spacing: 0; }
 .pn-chon-dau input[type=radio] { width: 16px; height: 16px; margin: 0; accent-color: var(--blue); cursor: pointer; }
+
+/* ── Cột Nhóm lý do ở danh mục Lý do nghiệp vụ, tên nhóm dài cắt "..." (T473) ── */
+.o-cat { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

@@ -2,7 +2,7 @@
 // Lấy theo bảng DM_ tương ứng trong CSDL kế toán iPOS (schema-dm.md)
 import { DON_VI_TINH, TEN_DVT, TEN_NHOM_HANG, TEN_NHOM_DOI_TUONG, TEN_NHOM_MUC_CP, TEN_NHOM_KHO, TEN_MUC_CHI_PHI, TEN_CONG_VIEC_17, NHOM_HANG, TEN_THUONG_HIEU, DS_THUONG_HIEU,
   DS_HANG_HOA_12, dienGiaiQd, maDvt, maHang, maKho, DS_CHUNG_TU_TIEN, DS_MUC_CHI_PHI_16, DS_CONG_VIEC_17, DS_QUY_TIEN_112 } from './data'
-import { CUA_HANG, HOM_NAY, KHACH, KHO, NCC, NHAN_VIEN } from '../../data/mock'
+import { CUA_HANG, HOM_NAY, KHACH, KHO, NCC, NHAN_VIEN, NHOM_LY_DO, nhomLyTuDong } from '../../data/mock'
 import { dmy } from '../../ui/format'
 import { NGANH_NGHE_CON, timNganhNghe } from './nganh-nghe'
 import { KhoiQuyDoi } from './QuyDoiDvt'
@@ -56,6 +56,8 @@ const dienNganhNghe = (ma: string) => {
   const n = timNganhNghe(ma)
   return { nhomNganh: n?.tenNhom ?? '', thueGtgt: n ? soPhay(n.gtgt) : '', thueTn: n ? soPhay(n.tncn) : '' }
 }
+/** Ô tích đang bật: 1, true, '1' (T473) */
+const laTich = (x: unknown) => x === 1 || x === true || x === '1'
 /** Thông tư tính thuế hộ kinh doanh theo tỷ lệ % trên doanh thu ngành nghề */
 const THEO_NGANH_NGHE: CheDo[] = ['TT152', 'TT58']
 /** Ô Theo dõi tồn kho đang tích: chưa đặt cũng hiểu là tích, như ô tích của form */
@@ -699,7 +701,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
 
   // 1.16 Lý do (chưa có bảng DM_ trong schema, chờ đối chiếu)
   '1.16': {
-    chiSua: ['chiPhi'],   // tạm thời lý do có sẵn không sửa, chỉ tích Là chi phí hay không (T334)
+    chiSua: ['chiPhi', 'nhomCp'],   // tạm thời lý do có sẵn không sửa, chỉ tích Là chi phí hay không (T334) và đổi nhóm lý do (T473)
     khoi: [
       {
         ten: 'Thông tin chung',
@@ -711,6 +713,9 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
           { k: 'dung', nhan: 'Dùng cho nghiệp vụ', kieu: 'chon', ds: ['Thu tiền', 'Chi tiền', 'Nhập kho', 'Xuất kho'], batBuoc: true, goi: ['S', 'PL', 'PR'] },
           // Lý do chi tiền là chi phí thì báo cáo chi phí lấy lên (T231)
           { k: 'chiPhi', nhan: 'Là chi phí', kieu: 'tich', caHang: true, hien: v => v.dung === 'Chi tiền' },
+          // Lý do là chi phí thuộc một nhóm lý do (T473): tích Là chi phí thì tự xếp theo tên lý do, đổi được
+          { k: 'nhomCp', nhan: 'Nhóm lý do nghiệp vụ', kieu: 'chon', batBuoc: true, caHang: true, ds: NHOM_LY_DO.map(n => n.ma),
+            nhanDs: ma => { const n = NHOM_LY_DO.find(x => x.ma === ma); return n ? `${n.ma}. ${n.ten}` : ma }, hien: v => v.dung === 'Chi tiền' && laTich(v.chiPhi) },
         ],
       },
       {
@@ -720,6 +725,12 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
         ],
       },
     ],
+    // Tích Là chi phí, đổi tên, đổi Dùng cho: lý do chi phí chưa có nhóm thì tự xếp nhóm; bỏ tích thì bỏ nhóm (T473)
+    doi: (k, v) => {
+      if (k !== 'chiPhi' && k !== 'ten' && k !== 'dung') return {}
+      if (v.dung !== 'Chi tiền' || !laTich(v.chiPhi)) return { nhomCp: '' }
+      return v.nhomCp ? {} : { nhomCp: nhomLyTuDong(String(v.ten ?? '')) }
+    },
   },
 
   // Nhóm hàng hoá (chưa đối chiếu bảng DM_)

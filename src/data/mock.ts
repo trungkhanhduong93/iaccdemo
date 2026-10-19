@@ -181,6 +181,25 @@ export const CONG_VIEC = [
 // lý do kho XK01.., NK01... Giữ thêm Chi phí chờ phân bổ (phiếu chi sinh thẻ chi phí phân bổ) và 3 lý do kho.
 // Lý do chi tính là chi phí (Sổ chi phí, Chi phí trong tháng) theo đề xuất PhuongXT duyệt; trả nợ, nhà cung cấp, tạm ứng, vay, nộp thuế, TSCĐ, đầu tư không tính
 const LY_LA_CHI_PHI = ['CHI01', 'CHI03', 'CHI04', 'CHI06', 'CHI07', 'CHI08', 'CHI09', 'CHI12', 'CHI13', 'CHI14', 'CHI15', 'CHI18', 'CHI19', 'CHI20', 'CHI21', 'CHI22', 'CHI24', 'CHI25', 'CHI26', 'CHI27', 'CHI29', 'CHI30', 'CHI31', 'CHI35']
+/** Nhóm lý do nghiệp vụ (T473): 6 nhóm chi phí hợp lý của Sổ S2c-HKD (TT152), lý do là chi phí thuộc một nhóm */
+export const NHOM_LY_DO = [
+  { ma: 'a', ten: 'Chi phí nguyên liệu, vật liệu, nhiên liệu, năng lượng, hàng hoá sử dụng vào sản xuất, kinh doanh' },
+  { ma: 'b', ten: 'Chi phí tiền lương, tiền công, các khoản phụ cấp, bảo hiểm bắt buộc và các khoản chi trả cho người lao động có đóng bảo hiểm bắt buộc theo quy định; chi phí tiền lương, tiền công, các khoản phụ cấp và các khoản chi trả cho người lao động dưới 01 tháng' },
+  { ma: 'c', ten: 'Chi phí khấu hao tài sản cố định phục vụ cho hoạt động sản xuất, kinh doanh theo chế độ quản lý, sử dụng và trích khấu hao tài sản cố định (nếu có)' },
+  { ma: 'd', ten: 'Chi phí dịch vụ mua ngoài như điện, nước, điện thoại, internet, vận chuyển, thuê tài sản, sửa chữa, bảo dưỡng' },
+  { ma: 'e', ten: 'Chi phí trả lãi tiền vay vốn sản xuất, kinh doanh của tổ chức tín dụng theo lãi suất thực tế. Chi phí trả lãi tiền vay vốn sản xuất, kinh doanh của đối tượng không phải là tổ chức tín dụng không vượt quá mức quy định tại Bộ luật Dân sự' },
+  { ma: 'f', ten: 'Các khoản chi khác phục vụ trực tiếp hoạt động sản xuất, kinh doanh' },
+]
+/** Tự xếp lý do là chi phí vào nhóm theo tên lý do (T473); không khớp nhóm nào thì vào f Các khoản chi khác */
+export function nhomLyTuDong(ten: string): string {
+  const t = ten.toLowerCase()
+  if (/lãi vay/.test(t)) return 'e'
+  if (/lương|tiền công|bảo hiểm/.test(t)) return 'b'
+  if (/tài sản cố định|khấu hao|chờ phân bổ/.test(t)) return 'c'
+  if (/điện|nước|internet|vận chuyển|thuê|sửa chữa|bảo dưỡng|giặt|an ninh|tư vấn|in ấn/.test(t)) return 'd'
+  if (/nguyên liệu|vật liệu|nhiên liệu|năng lượng|công cụ|hàng hoá|hàng hóa/.test(t)) return 'a'
+  return 'f'
+}
 /** Mã lý do Chi phí chờ phân bổ: phiếu chi lý do này sinh thẻ chi phí phân bổ; sơ đồ Chi phí phân bổ mở phiếu chi với ?ly=mã này */
 export const MA_LY_CHO_PHAN_BO = 'CHI35'
 export const LY_DO = [
@@ -232,7 +251,7 @@ export const LY_DO = [
   ['XK01', 'Xuất huỷ hàng hỏng', 'Xuất kho'],
   ['XK02', 'Xuất dùng nội bộ', 'Xuất kho'],
   ['NK01', 'Nhập hàng khách trả lại', 'Nhập kho'],
-].map(([ma, ten, dung]) => ({ ma, ten, dung, chiPhi: LY_LA_CHI_PHI.includes(ma) }))
+].map(([ma, ten, dung]) => ({ ma, ten, dung, chiPhi: LY_LA_CHI_PHI.includes(ma), nhomCp: LY_LA_CHI_PHI.includes(ma) ? nhomLyTuDong(ten) : '' }))
 /** Tên lý do thu, chi bắt buộc chọn đối tượng: Thu nợ, Đi vay, Thanh toán công nợ nhà cung cấp, Cho vay; lý do khác để trống được (T330) */
 export const LY_CAN_DOI_TUONG = LY_DO.filter(x => ['THU02', 'THU10', 'CHI02', 'CHI34'].includes(x.ma)).map(x => x.ten)
 /** Tên lý do chi tiền được tích là chi phí: báo cáo chi phí (Sổ chi phí, Chi phí trong tháng) chỉ lấy các lý do này (T231) */

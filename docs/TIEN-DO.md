@@ -57,6 +57,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T473 | Danh mục thêm tab Nhóm lý do nghiệp vụ: 6 nhóm chi phí a đến f theo Sổ S2c-HKD (chỉ xem, đếm số lý do); Lý do nghiệp vụ là chi phí tự xếp nhóm theo tên, có cột, ô Nhóm lý do đổi được | PhuongXT | 19/10/2026 | [2026-10-19-phuongxt-nhom-ly-do](nhat-ky/2026-10-19-phuongxt-nhom-ly-do.md) |
 | T472 | Hệ thống: gói Free ẩn tab Người dùng, Vai trò và phân quyền (cả mục Người dùng ở menu tài khoản); tab Gói thuê bao xuống cuối ở mọi gói | PhuongXT | 19/10/2026 | [2026-10-19-phuongxt-nganh-nghe-mac-dinh](nhat-ky/2026-10-19-phuongxt-nganh-nghe-mac-dinh.md) |
 | T471 | Form đối tượng: nút chọn Tổ chức / Cá nhân cạnh tên khối Thông tin chung; tổ chức điền MST/CCCD chủ hộ (bắt buộc), cá nhân điền CCCD; rồi Mã, Tên, Loại, Nhóm như cũ | PhuongXT | 19/10/2026 | [2026-10-19-phuongxt-nganh-nghe-mac-dinh](nhat-ky/2026-10-19-phuongxt-nganh-nghe-mac-dinh.md) |
 | T470 | Gói Free, Danh mục đối tượng chỉ có 2 loại Nhà cung cấp, Nhân viên: danh sách ẩn Khách hàng, ô Loại đối tượng khi thêm, sửa chỉ 2 loại | PhuongXT | 19/10/2026 | [2026-10-19-phuongxt-nganh-nghe-mac-dinh](nhat-ky/2026-10-19-phuongxt-nganh-nghe-mac-dinh.md) |

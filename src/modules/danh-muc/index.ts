@@ -4,7 +4,7 @@ import type { Col, ModuleDef, Row, ScreenDef } from '../types'
 import { tuExcel } from '../types'
 // Tạm ẩn tab Quy trình của Danh mục, PhuongXT chốt 14/10/2026 (T225); mở lại thì khai lại quyTrinh từ './quy-trinh'
 import { kieuGhiSo } from '../../app/plan'
-import { CCDC_HANG, CUA_HANG, HANG, KHACH, KHO, LY_DO, NCC, NHAN_VIEN, NVL } from '../../data/mock'
+import { CCDC_HANG, CUA_HANG, HANG, KHACH, KHO, LY_DO, NCC, NHAN_VIEN, NHOM_LY_DO, NVL } from '../../data/mock'
 import { DON_VI_TINH, tkCot, taiKhoan, NHOM_HANG, NHOM_DOI_TUONG, NHOM_MUC_CP, NHOM_CONG_VIEC, NHOM_KHO, DS_PTTT, QUY_DOI_DVT, DS_MUC_CHI_PHI_16, DS_CONG_VIEC_17, DS_QUY_TIEN_112, DS_HANG_HOA_12 } from './data'
 import { timNganhNghe } from './nganh-nghe'
 import { HeThongTaiKhoan } from './HeThongTaiKhoan'
@@ -51,6 +51,22 @@ const nhomDoiTuong: ScreenDef = {
       ...(kieuGhiSo(cheDo) === 'noco' ? [tkCot('tkThu', 'TK phải thu'), tkCot('tkTra', 'TK phải trả')] : []),
     ],
     rows: () => NHOM_DOI_TUONG,
+  },
+}
+
+/** Nhóm lý do nghiệp vụ (T473): 6 nhóm chi phí hợp lý theo Sổ S2c-HKD, cố định theo TT152 nên chỉ xem; cột Số lý do đếm lý do là chi phí thuộc nhóm */
+const nhomLyDo: ScreenDef = {
+  slug: 'nhom-ly-do', ten: 'Danh mục nhóm lý do nghiệp vụ', ngan: 'Nhóm lý do nghiệp vụ', nhom: 'Danh mục', kind: 'catalog', icon: 'receipt',
+  catalog: {
+    them: 'Thêm nhóm lý do nghiệp vụ',
+    khongThem: ['F', 'S', 'PL', 'PR'],
+    chiXem: ['F', 'S', 'PL', 'PR'],
+    cols: [
+      { k: 'ma', t: 'Mã', cls: 'code', w: 70 },
+      { k: 'ten', t: 'Tên nhóm' },
+      { k: 'soLy', t: 'Số lý do', num: true, w: 100 },
+    ],
+    rows: () => NHOM_LY_DO.map(n => ({ ...n, soLy: LY_DO.filter(l => l.chiPhi && l.nhomCp === n.ma).length })),
   },
 }
 
@@ -286,12 +302,15 @@ const danhMuc: ModuleDef = {
     '1.16': { catalog: { them: 'Thêm lý do nghiệp vụ', locGoi: (goi, r) => goi !== 'F' || r.dung === 'Thu tiền' || r.dung === 'Chi tiền',   // gói Free chỉ lý do thu, chi (T144)
       nhomLoc: 'dung', nhanLoc: 'Dùng cho', cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Lý do nghiệp vụ' }, { k: 'dung', t: 'Dùng cho' },
         // Là chi phí: chỉ lý do chi tiền có ô này (T231)
-        { k: 'chiPhi', t: 'Là chi phí', c: true, w: 100, r: r => r.dung !== 'Chi tiền' ? '' : createElement('input', { type: 'checkbox', className: 'o-tich-xem', checked: Boolean(r.chiPhi), readOnly: true, tabIndex: -1, 'aria-label': 'Là chi phí' }) }],
+        { k: 'chiPhi', t: 'Là chi phí', c: true, w: 100, r: r => r.dung !== 'Chi tiền' ? '' : createElement('input', { type: 'checkbox', className: 'o-tich-xem', checked: Boolean(r.chiPhi), readOnly: true, tabIndex: -1, 'aria-label': 'Là chi phí' }) },
+        // Nhóm của lý do là chi phí (T473), tên nhóm dài nên cắt "..." trong ô, rê chuột xem đủ
+        { k: 'nhomCp', t: 'Nhóm lý do', w: 320, r: r => { if (!r.chiPhi || !r.nhomCp) return ''; const n = NHOM_LY_DO.find(x => x.ma === r.nhomCp); return n ? createElement('span', { className: 'o-cat', title: `${n.ma}. ${n.ten}` }, `${n.ma}. ${n.ten}`) : r.nhomCp } }],
       rows: () => LY_DO } },
   }, NGAN).filter(sc => sc.code !== '1.13').map(sc => ({ ...sc, icon: BIEU_TUONG[sc.code ?? ''] ?? sc.icon })).flatMap(sc => {
     if (sc.code === '1.2') return [sc, nhomHangHoa]
     if (sc.code === '1.5') return [sc, nhomDoiTuong]
     if (sc.code === '1.6') return [sc, nhomMucChiPhi]
+    if (sc.code === '1.16') return [sc, nhomLyDo]   // Nhóm lý do nghiệp vụ ngay sau Lý do nghiệp vụ (T473)
     if (sc.code === '1.7') return [sc, nhomCongViec]
     if (sc.code === '1.8') return [sc, nhomKho, cuaHang]   // bỏ danh mục Thương hiệu (T166)
     if (sc.code === '1.12') return [sc, phuongThucThanhToan]
