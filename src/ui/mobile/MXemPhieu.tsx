@@ -313,21 +313,20 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
       if (s.goi === 'F') {
         return [
           { k: 'chitiet' as TabKey, ten: 'Chi tiết' },
-          { k: 'hanghoa' as TabKey, ten: `Hàng hoá (${dsDong.length})` },
           { k: 'thanhtoan' as TabKey, ten: dsTt.length ? `Thanh toán (${dsTt.length})` : 'Thanh toán' },
+          { k: 'lichsu' as TabKey, ten: 'Lịch sử' },
         ]
       }
       return [
         { k: 'chitiet' as TabKey, ten: 'Chi tiết' },
-        { k: 'hanghoa' as TabKey, ten: `Hàng hoá (${dsDong.length})` },
-        { k: 'buttoan' as TabKey, ten: `Hạch toán (${soBt})` },
         { k: 'thanhtoan' as TabKey, ten: dsTt.length ? `Thanh toán (${dsTt.length})` : 'Thanh toán' },
+        { k: 'buttoan' as TabKey, ten: `Hạch toán (${soBt})` },
+        { k: 'lichsu' as TabKey, ten: 'Lịch sử' },
       ]
     }
     if (laKk) {
       return [
         { k: 'chitiet' as TabKey, ten: 'Chi tiết' },
-        { k: 'hanghoa' as TabKey, ten: `Mặt hàng (${dsDong.length})` },
         { k: 'lichsu' as TabKey, ten: 'Lịch sử' },
       ]
     }
@@ -394,8 +393,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
 
   // Menu ba chấm
   const dsMenu = [
-    ...(!laDc ? [{ k: 'sua', ten: 'Sửa chứng từ' }] : []),
-    ...(nhomMb === 'mua' && conLai > 0 ? [{ k: 'thanhtoan', ten: 'Thanh toán ngay' }] : []),
+    ...(!laDc && nhomMb !== 'mua' ? [{ k: 'sua', ten: 'Sửa chứng từ' }] : []),
     { k: 'in', ten: 'In chứng từ' },
     ...(!laDc ? [{ k: 'copy', ten: 'Sao chép chứng từ' }] : []),
     ...(!laDc ? [{ k: 'xoa', ten: 'Xoá chứng từ' }] : []),
@@ -511,16 +509,6 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
                   {idx + 1}. {d.ten || 'Mặt hàng'}
                   {d.ma ? <span className="m-t449-hang-ma">-{d.ma}</span> : null}
                 </div>
-                {coTheSua && (
-                  <button
-                    type="button"
-                    aria-label={`Sửa mặt hàng ${idx + 1}`}
-                    className="m-t449-btn-sua-hang"
-                    onClick={() => nav(`${path}/${row.id}?sua=1`)}
-                  >
-                    Sửa
-                  </button>
-                )}
               </div>
               <div className="m-t449-hang-than">
                 <div className="m-t449-hang-dong">

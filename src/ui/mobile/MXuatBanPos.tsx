@@ -230,7 +230,11 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
               >
                 <div className="m-pos-the-dau">
                   <span className="m-pos-so">#{r.so}</span>
-                  <span className="m-pos-gio">{r.x?.gio ?? ''}</span>
+                  {ghi && (
+                    <span className={`m-pos-tt ${laChuaGhi ? 'chua-ghi' : 'da-ghi'}`}>
+                      {ttNhan}
+                    </span>
+                  )}
                 </div>
 
                 <div className="m-pos-the-than">
@@ -239,12 +243,8 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
                 </div>
 
                 <div className="m-pos-the-chan">
+                  <span className="m-pos-ngay">{r.ngay}</span>
                   <span className="m-pos-tien">{money(r.tong)} đ</span>
-                  {ghi && (
-                    <span className={`m-pos-tt ${laChuaGhi ? 'chua-ghi' : 'da-ghi'}`}>
-                      {ttNhan}
-                    </span>
-                  )}
                 </div>
               </div>
             )
@@ -323,7 +323,7 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
                   </div>
                   <div>
                     <small>Thời gian xuất</small>
-                    <b className="num">{donDangXem.ngay}</b>
+                    <b>{donDangXem.ngay}</b>
                   </div>
                   {donDangXem.dienGiai && (
                     <div className="full">
@@ -488,7 +488,7 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
           <div className="m-pos-ct-chan">
             <button
               type="button"
-              className="btn m-pos-ct-nut-dong"
+              className="btn pri m-pos-ct-nut-dong"
               onClick={() => setDonDangXem(null)}
             >
               Đóng

@@ -163,12 +163,7 @@ export function MDanhSach<T>({
               onClick={onMoLoc}
               aria-label="Bộ lọc"
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="4" y1="21" x2="4" y2="14" vectorEffect="non-scaling-stroke" /><line x1="4" y1="10" x2="4" y2="3" vectorEffect="non-scaling-stroke" />
-                <line x1="12" y1="21" x2="12" y2="12" vectorEffect="non-scaling-stroke" /><line x1="12" y1="8" x2="12" y2="3" vectorEffect="non-scaling-stroke" />
-                <line x1="20" y1="21" x2="20" y2="16" vectorEffect="non-scaling-stroke" /><line x1="20" y1="12" x2="20" y2="3" vectorEffect="non-scaling-stroke" />
-                <line x1="1" y1="14" x2="7" y2="14" vectorEffect="non-scaling-stroke" /><line x1="9" y1="8" x2="15" y2="8" vectorEffect="non-scaling-stroke" /><line x1="17" y1="16" x2="23" y2="16" vectorEffect="non-scaling-stroke" />
-              </svg>
+              <Icon n="filter" className="ic sm" />
               {soLoc !== undefined && soLoc > 0 ? (
                 <span className="ds-nut-badge">{soLoc}</span>
               ) : (

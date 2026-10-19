@@ -4,6 +4,8 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 19/10/2026
 
+- T467, T430 (điện thoại): Màn xem phiếu mua gom danh sách hàng vào tab Chi tiết, bỏ tab Hàng hoá, xếp lại các tab Chi tiết, Thanh toán, Lịch sử (gói có hạch toán thêm Hạch toán); menu ⋯ bỏ mục Sửa chứng từ và Thanh toán ngay; nút Sửa mặt hàng chỉ hiện khi vào form sửa phiếu. Xem kiểm kê chỉ còn tab Chi tiết và Lịch sử. Danh sách Xuất bán POS đưa trạng thái ghi sổ lên dòng đầu, dòng cuối hiện ngày xuất bên trái và tiền bên phải. Chi tiết đơn Xuất bán POS căn trái ô Thời gian xuất, nút Đóng màu xanh chính. Đổi biểu tượng lọc danh sách chứng từ đồng bộ với bản máy tính.
+
 - T466: Hàng lọc dưới tiêu đề cột (máy tính): mọi cột chữ (Nhà cung cấp, Cửa hàng, Diễn giải, Kênh bán, Nhóm hàng hoá...) bấm phễu có Bộ lọc văn bản, ô Tìm kiếm và danh sách giá trị để tích, gồm (Chọn tất cả) và (Trống); áp cho danh sách chứng từ, Xuất bán POS, phiếu sản xuất, điều chuyển, bảng chi tiết trong phiếu và hộp Thêm hàng loạt. Cột số, cột ngày giữ kiểu lọc cũ.
 
 - T465: Phiếu mua hàng, phiếu kiểm kê (máy tính): khi thêm mới, sửa có nút Thêm hàng loạt cạnh Thêm dòng. Hộp chọn hiện bảng hàng hoá (Hàng hoá, Đơn vị tính, Nhóm hàng hoá, Loại) có ô lọc từng cột, phân trang, tích nhiều hàng hoặc chọn tất cả rồi Xác nhận để thêm vào phiếu; hàng đã có trong phiếu không chọn lại.
