@@ -57,6 +57,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T471 | Form đối tượng: ô Tổ chức / Cá nhân lên đầu; tổ chức điền MST/CCCD chủ hộ (bắt buộc), cá nhân điền CCCD; rồi Mã, Tên, Loại, Nhóm như cũ | PhuongXT | 19/10/2026 | [2026-10-19-phuongxt-nganh-nghe-mac-dinh](nhat-ky/2026-10-19-phuongxt-nganh-nghe-mac-dinh.md) |
 | T470 | Gói Free, Danh mục đối tượng chỉ có 2 loại Nhà cung cấp, Nhân viên: danh sách ẩn Khách hàng, ô Loại đối tượng khi thêm, sửa chỉ 2 loại | PhuongXT | 19/10/2026 | [2026-10-19-phuongxt-nganh-nghe-mac-dinh](nhat-ky/2026-10-19-phuongxt-nganh-nghe-mac-dinh.md) |
 | T469 | Thêm mới hàng hoá ở mọi màn (danh mục, nút Thêm trong phiếu, hộp thêm nhanh, điện thoại): Nhóm ngành nghề con mặc định 301-5 Dịch vụ ăn uống, tự điền nhóm ngành và tỷ lệ thuế | PhuongXT | 19/10/2026 | [2026-10-19-phuongxt-nganh-nghe-mac-dinh](nhat-ky/2026-10-19-phuongxt-nganh-nghe-mac-dinh.md) |
 | T467 | Điện thoại, chỉnh sau T449 (mọi gói): xem phiếu mua bỏ tab Hàng hoá, tab Chi tiết / Thanh toán / Lịch sử (gói có hạch toán thêm Hạch toán trước Lịch sử); nút Sửa từng mặt hàng chỉ hiện sau khi bấm Sửa phiếu; menu ⋯ bỏ Sửa, Thanh toán; xem kiểm kê bỏ tab Hàng hoá, còn Chi tiết, Lịch sử; danh sách Xuất bán POS hiện thời gian xuất bên trái, tiền bên phải; icon lọc danh sách chứng từ giống bản máy tính | Trum | 19/10/2026 | [2026-10-19-trum-chinh-dien-thoai-sau-phuong-an-d](nhat-ky/2026-10-19-trum-chinh-dien-thoai-sau-phuong-an-d.md) |

@@ -324,12 +324,15 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
       {
         ten: 'Thông tin chung',
         truong: [
+          // Tổ chức hay cá nhân đứng đầu (T471): tổ chức bắt buộc MST/CCCD chủ hộ, cá nhân điền CCCD
+          { k: 'kieuDt', nhan: 'Tổ chức / Cá nhân', kieu: 'chon', ds: ['Tổ chức', 'Cá nhân'], batBuoc: true },
+          { k: 'mst', nhan: 'MST/CCCD chủ hộ', kieu: 'chu', batBuoc: true, hien: v => v.kieuDt !== 'Cá nhân', cot: 'TAX_FILE_NUMBER' },
+          { k: 'cccd', nhan: 'CCCD', kieu: 'chu', hien: v => v.kieuDt === 'Cá nhân' },
           { k: 'ma', nhan: 'Mã đối tượng', kieu: 'chu', batBuoc: true, cot: 'PR_DETAIL_ID' },
           { k: 'ten', nhan: 'Tên đối tượng', kieu: 'chu', batBuoc: true, caHang: true, cot: 'PR_DETAIL_NAME' },
           { k: 'loai', nhan: 'Loại đối tượng', kieu: 'chon', ds: ['Khách hàng', 'Nhà cung cấp', 'Nhân viên'], batBuoc: true, goi: ['S', 'PL', 'PR'], cot: 'PR_DETAIL_TYPE_ID' },
           { k: 'loai', nhan: 'Loại đối tượng', kieu: 'chon', ds: ['Nhà cung cấp', 'Nhân viên'], batBuoc: true, goi: ['F'], cot: 'PR_DETAIL_TYPE_ID' },   // gói Free không có khách hàng (T470)
           { k: 'nhom', nhan: 'Nhóm đối tượng', kieu: 'chon', ds: TEN_NHOM_DOI_TUONG, cot: 'PR_DETAIL_CLASS_ID' },
-          { k: 'mst', nhan: 'Mã số thuế', kieu: 'chu', cot: 'TAX_FILE_NUMBER' },
         ],
       },
       {
@@ -369,7 +372,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
         ],
       },
     ],
-    moi: () => ({ dongY: false }),
+    moi: () => ({ dongY: false, kieuDt: 'Tổ chức' }),
   },
 
   // 1.6 Mục chi phí (DM_EXPENSE)

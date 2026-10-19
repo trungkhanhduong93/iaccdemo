@@ -191,9 +191,10 @@ const danhMuc: ModuleDef = {
         ...(goi !== 'F' && goi !== 'S' ? [{ k: 'dktt', t: 'Điều khoản thanh toán' } as Col] : []),
         ...(goi !== 'F' && goi !== 'S' && kieuGhiSo(cheDo) === 'noco' ? [tkCot('tkCn', 'TK công nợ')] : [])],
       rows: () => [
-        ...KHACH.map(x => ({ ...x, loai: 'Khách hàng', dktt: x.ma === 'KL' ? 'Thanh toán ngay' : 'Công nợ 30 ngày', tkCn: '131', dongY: true, _tt: x.ma === 'KH004' ? 0 : 1 })),
-        ...NCC.map(x => ({ ...x, loai: 'Nhà cung cấp', dktt: 'Công nợ 15 ngày', tkCn: '331', dongY: true, _tt: x.ma === 'NCC007' ? 0 : 1 })),
-        ...NHAN_VIEN.map(x => ({ ...x, mst: '', nhom: x.bp, loai: 'Nhân viên', dktt: '—', tkCn: '141', dongY: true })),
+        // Đối tượng có sẵn: có MST là tổ chức, chưa có (khách lẻ, nhân viên) là cá nhân (T471)
+        ...KHACH.map(x => ({ ...x, kieuDt: x.mst ? 'Tổ chức' : 'Cá nhân', loai: 'Khách hàng', dktt: x.ma === 'KL' ? 'Thanh toán ngay' : 'Công nợ 30 ngày', tkCn: '131', dongY: true, _tt: x.ma === 'KH004' ? 0 : 1 })),
+        ...NCC.map(x => ({ ...x, kieuDt: x.mst ? 'Tổ chức' : 'Cá nhân', loai: 'Nhà cung cấp', dktt: 'Công nợ 15 ngày', tkCn: '331', dongY: true, _tt: x.ma === 'NCC007' ? 0 : 1 })),
+        ...NHAN_VIEN.map(x => ({ ...x, mst: '', kieuDt: 'Cá nhân', nhom: x.bp, loai: 'Nhân viên', dktt: '—', tkCn: '141', dongY: true })),
       ] } },
     '1.6': { catalog: { them: 'Thêm mục chi phí', nhomLoc: 'nhom', cols: (goi, cheDo) => [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Mục chi phí' }, { k: 'nhom', t: 'Nhóm' }, ...(kieuGhiSo(cheDo) === 'noco' ? [{ k: 'tk', t: 'TK chi phí', cls: 'code' } as Col] : [])],
       rows: () => DS_MUC_CHI_PHI_16 } },

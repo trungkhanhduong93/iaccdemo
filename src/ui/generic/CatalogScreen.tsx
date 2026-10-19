@@ -701,6 +701,9 @@ export interface CatalogPanelProps {
   chiXem?: boolean                                           // chỉ xem: khoá mọi ô, không có nút Sửa, Lưu, Xoá (T328)
 }
 
+/** Nhãn trong câu báo, ô chọn: hạ chữ đầu, giữ chữ viết tắt như MST, CCCD, GTGT (T471) */
+const thuongDau = (t: string) => /^[A-ZĐ]{2,}/.test(t) ? t : t.charAt(0).toLowerCase() + t.slice(1)
+
 export function CatalogPanel({
   cauHinh,
   edit,
@@ -829,7 +832,7 @@ export function CatalogPanel({
   const getOptions = (tr: TruongDM): { v: string; t: string }[] => {
     const daCo = boNho.get(tr.k)
     if (daCo) return daCo
-    const dau = { v: '', t: `(Chọn ${tr.nhan.toLowerCase()})` }
+    const dau = { v: '', t: `(Chọn ${thuongDau(tr.nhan)})` }
     let ds: { v: string; t: string }[] = []
     // ô Nhóm lấy nhóm có trong dữ liệu trước, để dòng đang sửa luôn có nhóm của nó trong danh sách (T87)
     if (tr.k === 'nhom' && nhomLoc === 'nhom' && nhoms.length > 0) ds = nhoms.map(d => ({ v: d, t: d }))
@@ -918,11 +921,11 @@ export function CatalogPanel({
             if (val === 0 || val === '0' || val === false || val === 'false') {
               errs[tr.k] = tr.k === 'dongY'
                 ? 'Cần tích xác nhận đã đồng ý chia sẻ thông tin cá nhân'
-                : `Cần tích ${tr.nhan.toLowerCase()}`
+                : `Cần tích ${thuongDau(tr.nhan)}`
             }
           } else {
             if (val === undefined || val === null || String(val).trim() === '') {
-              errs[tr.k] = `Vui lòng nhập ${tr.nhan.toLowerCase()}`
+              errs[tr.k] = `Vui lòng nhập ${thuongDau(tr.nhan)}`
             }
           }
         }

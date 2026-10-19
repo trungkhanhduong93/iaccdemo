@@ -4,6 +4,8 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 19/10/2026
 
+- T471: Thêm, sửa đối tượng: ô đầu tiên chọn Tổ chức hoặc Cá nhân. Tổ chức nhập MST/CCCD chủ hộ (bắt buộc), Cá nhân nhập CCCD; sau đó Mã, Tên, Loại, Nhóm đối tượng như cũ. Câu báo thiếu ô giữ nguyên chữ viết tắt (MST, CCCD).
+
 - T470: Gói Free, Danh mục đối tượng chỉ còn 2 loại Nhà cung cấp và Nhân viên (máy tính, điện thoại); thêm mới chỉ chọn được 2 loại này.
 
 - T469: Thêm mới hàng hoá ở danh mục, ngay trong phiếu (máy tính, điện thoại) hay hộp thêm nhanh: Nhóm ngành nghề con chọn sẵn 301-5 Dịch vụ ăn uống, tự điền Thuế GTGT 3%, Thuế TNCN 1,5% (hộ kinh doanh TT152, TT58); đổi được.
