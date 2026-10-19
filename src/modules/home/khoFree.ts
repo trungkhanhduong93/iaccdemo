@@ -96,6 +96,8 @@ export function soLieuKiemKe(thang: number, tenCn: Set<string>) {
   const theoCn = [...tenCn].map(cn => ({
     cn, lech: ds.filter(x => x.cn === cn && x.lech !== 0).length, daKiem: phieu.some(p => p.cn === cn),
     soKiem: ds.filter(x => x.cn === cn).length, tong: NVL.length,   // T307: tiến độ kiểm kê từng cửa hàng
+    // T446: ngày phiếu kiểm kê gần nhất trong tháng (dd/mm/yyyy), so theo yyyymmdd
+    ngayCuoi: phieu.filter(p => p.cn === cn).map(p => String(p.ngay)).sort((a, b) => a.split('/').reverse().join('').localeCompare(b.split('/').reverse().join(''))).pop() ?? '',
   }))
   return {
     soKiem: ds.length, thieu: thieu.length, thua: thua.length,

@@ -893,7 +893,6 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
               <div className="tra bbt-tra" style={{ color: 'var(--blue, #0560a6)' }}>{moneyD(mua.nhap)}</div>
               <div className="phu bbt-phu bbt-e-phu">
                 {mua.soDon} phiếu
-                {mua.soSanh && <> · <span className={mua.soSanh.pct > 0 ? 'bbt-kho-tang' : 'bbt-kho-giam'} title={`So với ${mua.soSanh.nhan} (${short(mua.soSanh.truoc)})`}>{mua.soSanh.pct > 0 ? '▲' : '▼'} {pct(Math.abs(mua.soSanh.pct))} so với cùng kỳ</span></>}
               </div>
             </div>
             <div>
@@ -955,7 +954,7 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
                 <span className="bbt-kho2-thanh"><i style={{ width: `${x.tong ? Math.min(100, (x.soKiem / x.tong) * 100) : 0}%` }} /></span>
                 <span className="bbt-kho2-so">{x.soKiem}/{x.tong}</span>
                 {x.daKiem
-                  ? <span className={x.lech ? 'bbt-kho-thieu' : 'bbt-kho-giam'}>{x.lech ? `lệch ${x.lech}` : 'khớp'}</span>
+                  ? <span className={x.lech ? 'bbt-kho-thieu' : 'bbt-kho-giam'} title={`Ngày kiểm kê cuối ${x.ngayCuoi}${x.lech ? `, lệch ${x.lech} mặt hàng` : ', khớp sổ sách'}`}>{x.ngayCuoi.slice(0, 5)}</span>
                   : <span className="bbt-kho-thieu">chưa kiểm</span>}
               </div>
             ))}
