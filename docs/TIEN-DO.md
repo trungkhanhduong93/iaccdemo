@@ -57,6 +57,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T453 | Báo cáo bán hàng theo ngày, tổng hợp, chi tiết: đủ cột tiền theo mẫu iFaster (Thành tiền, Giảm giá, Chiết khấu, Phí dịch vụ, Doanh thu tính thuế, Giảm thuế GTGT hoặc Thuế GTGT, Phiếu giảm giá, Phí vận chuyển, Tổng tiền) | PhuongXT | 19/10/2026 | [2026-10-19-phuongxt-cot-tien-bao-cao-ban-hang](nhat-ky/2026-10-19-phuongxt-cot-tien-bao-cao-ban-hang.md) |
 | T452 | Gói Free hiện lại nhóm báo cáo bán hàng (Bán hàng theo ngày, Tổng hợp bán hàng, Chi tiết bán hàng) ở Trung tâm báo cáo và tab Báo cáo phân hệ Bán hàng; bỏ ẩn của T216, T218 (Kê khai thuế vẫn ẩn) | PhuongXT | 19/10/2026 | [2026-10-19-phuongxt-mo-bao-cao-ban-hang-free](nhat-ky/2026-10-19-phuongxt-mo-bao-cao-ban-hang-free.md) |
 | T450 | Thông tin đơn vị chọn GTGT theo % doanh thu: chứng từ bán hàng (thêm, sửa, xem; cả Xuất bán POS) và báo cáo bán hàng hiện Giảm thuế GTGT, ẩn Thuế suất, Tiền thuế; chọn khấu trừ thì ngược lại. Máy tính, điện thoại có trường này thì áp cùng quy tắc | PhuongXT | 19/10/2026 | [2026-10-19-phuongxt-thue-ban-hang-theo-pp-gtgt](nhat-ky/2026-10-19-phuongxt-thue-ban-hang-theo-pp-gtgt.md) |
 | T449 | Điện thoại, phiếu mua theo phương án D trên canvas Mẫu phiếu mua và bảng kê điện thoại: màn Xem phiếu mua, Lập/sửa phiếu mua, Sửa một mặt hàng, Thanh toán phiếu mua | Trum | Đang làm | `MXemPhieu.tsx`, `MLapPhieu.tsx`, cuối `app.css`. T436 (dinhlanphuongipacc) phần điện thoại `MXemPhieu.tsx` chờ T449 push |
