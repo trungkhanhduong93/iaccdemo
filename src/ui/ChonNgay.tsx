@@ -1092,7 +1092,7 @@ export function ONgay({
         )}
         {mo && (
           <MLichSheetDon
-            value={value}
+            value={value.split(' ')[0]}   // ô có kèm giờ (phiếu sản xuất, điều chuyển): lịch chỉ đọc phần ngày (T464)
             onChange={v => {
               onChange(v)
               setMo(false)
@@ -1131,7 +1131,7 @@ export function ONgay({
       )}
       <Popover anchor={o} open={mo} onClose={() => setMo(false)} align="start" width={272} className="dp-pop">
         <LichDon
-          value={value}
+          value={value.split(' ')[0]}   // ô có kèm giờ: lịch chỉ đọc phần ngày (T464)
           onChange={v => {
             onChange(v)
             setMo(false)

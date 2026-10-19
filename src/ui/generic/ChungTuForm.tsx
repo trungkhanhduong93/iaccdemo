@@ -964,7 +964,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
           <div
             className="grid"
             style={{
-              gridTemplateColumns: gonDau ? 'minmax(0, 1fr) 300px' : coHdDau ? 'minmax(0, 1.4fr) minmax(0, 1.2fr) 260px 300px' : 'minmax(0, 1.4fr) minmax(0, 1.2fr) 300px',   // cột ngày, số phiếu 300px vì nhãn nằm bên trái ô (T335)
+              gridTemplateColumns: gonDau ? 'minmax(0, 1fr) 300px' : coHdDau ? 'minmax(0, 1.4fr) minmax(0, 1.2fr) 280px 300px' : 'minmax(0, 1.4fr) minmax(0, 1.2fr) 300px',   // cột ngày, số phiếu 300px vì nhãn nằm bên trái ô (T335); cột hoá đơn 280px cho ô Ngày hoá đơn đủ năm (T464)
               gap: 16,
               alignItems: 'start',
             }}
@@ -1125,13 +1125,12 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children }: Chung
             <div className="stack" style={{ gap: 10, gridRow: keoGc ? 'span 2' : undefined }}>
               <div className="f">
                 <label>{laSx ? (sxNhap ? 'Thời gian nhập' : 'Thời gian xuất') : laDcn ? 'Thời gian' : 'Ngày chứng từ'} <em>*</em></label>
-                {dangSua && laTien ? (
-                  <ONgay value={ngayCt} onChange={setNgayCt} />
-                ) : dangSua ? (
-                  <input
-                    className="inp"
+                {/* Mọi màn chọn ngày bằng lịch (T464); phiếu sản xuất, điều chuyển kèm giờ: chọn ngày trên lịch thì giữ giờ đang có, giờ gõ ngay trong ô */}
+                {dangSua ? (
+                  <ONgay
                     value={ngayCt}
-                    onChange={e => setNgayCt(e.target.value)}
+                    placeholder={laSx || laDcn ? 'dd/mm/yyyy hh:mm' : undefined}
+                    onChange={v => setNgayCt(c => (laSx || laDcn) && /^\d{2}\/\d{2}\/\d{4}$/.test(v) && c.includes(' ') ? `${v} ${c.split(' ')[1]}` : v)}
                   />
                 ) : (
                   <input className="inp" readOnly value={ngayCt} />

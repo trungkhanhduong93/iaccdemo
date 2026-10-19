@@ -3,6 +3,7 @@ import type { Row, ScreenProps } from '../../modules/types'
 import { useSession } from '../../app/session'
 import { Icon } from '../Icon'
 import { Select } from '../Dropdown'
+import { ONgay } from '../ChonNgay'
 import { fold, money } from '../format'
 import { MTrong } from './MTrong'
 import { suaPhieu, themPhieu } from '../generic/daXoa'
@@ -398,13 +399,7 @@ export const MCongThuc: FC<ScreenProps> = ({ sc }) => {
 
                 <div className="f">
                   <label>Ngày áp dụng <em>*</em></label>
-                  <input
-                    type="text"
-                    className="inp"
-                    value={formNgay}
-                    onChange={e => setFormNgay(e.target.value)}
-                    placeholder="dd/mm/yyyy"
-                  />
+                  <ONgay value={formNgay} onChange={setFormNgay} />   {/* chọn ngày bằng lịch (T464) */}
                 </div>
 
                 <div className="f">
