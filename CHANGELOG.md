@@ -4,6 +4,8 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 19/10/2026
 
+- T461: Gói Free, tab Quy trình các phân hệ bỏ chú thích màu (Hàng vào, Hàng ra, Điều chỉnh; Tiền vào, Tiền ra, Nội bộ) ở góc phải và chấm màu trước tên ô.
+
 - T460: Gói Free, tab Quy trình các phân hệ: dòng mô tả của từng ô luôn nằm dưới tên ô. Quy trình Bán hàng bỏ ô Đơn POS từ FABi, bước 1 chỉ còn Xuất bán POS.
 
 - T459: Gói Free, tab Quy trình của Bán hàng còn 3 bước: bước Doanh thu bán hàng mở Tổng hợp bán hàng, Bảng kê chi tiết bán hàng; bỏ bước Xuất kho nguyên liệu (xem ở phân hệ Kho).

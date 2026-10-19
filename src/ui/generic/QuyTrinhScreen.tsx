@@ -56,16 +56,7 @@ export function QuyTrinhScreen({ mod }: ScreenProps) {
   const thapNhat = mod.screens.filter(sc => sc.code || sc.can).map(sc => minGoi(maKhoa(sc)!))
   const can = GOIS.find(g => thapNhat.includes(g))
   const coForm = nut.some(n => n.di.includes('/moi') || Boolean((n as NutKyQT).taoMoi))
-  const coCham = Boolean(buocKy && buocKy.some(b => b.nut.some(n => Boolean(n.chieu))))
-  const chuThich = coCham
-    ? (goc0.chuThichFree ?? (
-        ['kho', 'ban-hang'].includes(mod.key)
-          ? ['Hàng vào', 'Hàng ra', 'Điều chỉnh']
-          : ['tien', 'mua-hang'].includes(mod.key)
-            ? ['Tiền vào', 'Tiền ra', 'Nội bộ']
-            : null
-      ))
-    : null
+  // Bỏ chú thích chấm màu Hàng vào, Hàng ra, Điều chỉnh (Tiền vào, Tiền ra, Nội bộ) và chấm màu trên ô ở mọi quy trình (T461)
 
   return (
     <div className="page wide qt">
@@ -75,13 +66,6 @@ export function QuyTrinhScreen({ mod }: ScreenProps) {
             <h1>{s.goi === 'F' && goc0.tenFree ? goc0.tenFree : qt.ten}</h1>
             <span className="sub">{coForm ? 'Bấm vào ô để mở chứng từ' : 'Bấm vào ô để mở màn hình'}</span>
             <span className="grow" />
-            {chuThich && (
-              <div className="qt-ky-chu-giai-top" aria-label="Chú thích màu sắc">
-                <span className="qt-ky-cg-item"><i className="qt-ky-cham cham-vao" />{chuThich[0]}</span>
-                <span className="qt-ky-cg-item"><i className="qt-ky-cham cham-ra" />{chuThich[1]}</span>
-                {chuThich[2] && <span className="qt-ky-cg-item"><i className="qt-ky-cham cham-noi" />{chuThich[2]}</span>}
-              </div>
-            )}
             {!an && <span className="qt-dem">Gói {GOI[s.goi].ten} mở {mo}/{nut.length} nghiệp vụ</span>}
           </div>
           {s.goi === 'F' && goc0.moTaFree && <p className="qt-mo-ta">{goc0.moTaFree}</p>}
@@ -596,7 +580,6 @@ function ONutKy({ n, goi }: { n: NutKyQT; goi: Goi }) {
             </span>
             <span className="qt-ky-o-info">
               <span className="qt-ky-o-ten">
-                {n.chieu && <i className={`qt-ky-cham cham-${n.chieu}`} aria-hidden />}
                 <span>{n.ten}</span>
                 {n.moTa && <span className="qt-ky-o-mo"> · {n.moTa}</span>}
               </span>
@@ -620,7 +603,6 @@ function ONutKy({ n, goi }: { n: NutKyQT; goi: Goi }) {
           </span>
           <span className="qt-ky-o-info">
             <span className="qt-ky-o-ten">
-              {n.chieu && <i className={`qt-ky-cham cham-${n.chieu}`} aria-hidden />}
               <span>{n.ten}</span>
               {n.moTa && <span className="qt-ky-o-mo"> · {n.moTa}</span>}
             </span>

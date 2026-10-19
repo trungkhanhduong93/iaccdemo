@@ -57,6 +57,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T461 | Sơ đồ Quy trình gói Free mọi phân hệ: bỏ chú thích Hàng vào, Hàng ra, Điều chỉnh (Tiền vào, Tiền ra, Nội bộ) và chấm màu trên ô | PhuongXT | 19/10/2026 | [2026-10-19-phuongxt-mo-bao-cao-ban-hang-free](nhat-ky/2026-10-19-phuongxt-mo-bao-cao-ban-hang-free.md) |
 | T460 | Gói Free, sơ đồ Quy trình: mô tả của ô luôn xuống dòng dưới tên; Quy trình Bán hàng bỏ ô Đơn POS từ FABi | PhuongXT | 19/10/2026 | [2026-10-19-phuongxt-mo-bao-cao-ban-hang-free](nhat-ky/2026-10-19-phuongxt-mo-bao-cao-ban-hang-free.md) |
 | T459 | Gói Free, Quy trình Bán hàng: bước Doanh thu bán hàng hiện Tổng hợp bán hàng, Bảng kê chi tiết bán hàng thay Sổ doanh thu bán hàng; bỏ bước Xuất kho nguyên liệu | PhuongXT | 19/10/2026 | [2026-10-19-phuongxt-mo-bao-cao-ban-hang-free](nhat-ky/2026-10-19-phuongxt-mo-bao-cao-ban-hang-free.md) |
 | T458 | Gói Free nhóm báo cáo bán hàng chỉ có Tổng hợp bán hàng, Bảng kê chi tiết bán hàng; ẩn Bán hàng theo ngày | PhuongXT | 19/10/2026 | [2026-10-19-phuongxt-mo-bao-cao-ban-hang-free](nhat-ky/2026-10-19-phuongxt-mo-bao-cao-ban-hang-free.md) |

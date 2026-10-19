@@ -182,7 +182,6 @@ export interface QuyTrinhDef {
   baoCaoFree?: string[]                  // gói Free dùng danh sách báo cáo riêng ở khung Báo cáo, vd sổ TT152 của Kê khai thuế (T261)
   raFree?: LanQT                         // gói Free thay khối báo cáo của sơ đồ hội tụ, các làn giữ nguyên (T262)
   buocKyFree?: BuocKyQT[]                // gói Free dùng sơ đồ bước theo kỳ (mẫu C), ưu tiên trên hoiTuFree, luongFree (T366)
-  chuThichFree?: [string, string, string?] // nhãn chú thích chấm màu gói Free ở đầu sơ đồ: [vao, ra, noi] (T366)
   luongFree?: CotQT[]                     // gói Free dùng sơ đồ luồng theo cột thay sơ đồ chung: ô cột trước nối tới mọi ô cột sau, gộp và tách nhánh (T123)
   danhSo?: boolean                       // đánh số bước, kiểu màn Giá thành của AMIS
   baoCao?: string[]                      // khung Báo cáo bên phải: slug trong phân hệ hoặc 'phân hệ/slug'
