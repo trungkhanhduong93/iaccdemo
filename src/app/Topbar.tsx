@@ -98,7 +98,7 @@ export function Topbar({ onSearch }: { onSearch?: () => void }) {
           <MenuSep />
           <MenuItem icon="layers" to="/app/he-thong/goi-thue-bao">Gói thuê bao</MenuItem>
           <MenuItem icon="swap" to="/chon-don-vi">Đổi đơn vị kế toán</MenuItem>
-          <MenuItem icon="users" to="/app/he-thong/nguoi-dung">Người dùng</MenuItem>
+          {s.goi !== 'F' && <MenuItem icon="users" to="/app/he-thong/nguoi-dung">Người dùng</MenuItem>}   {/* gói Free không có Người dùng (T472) */}
           <MenuItem icon="cog" to="/app/he-thong/cau-hinh">Cấu hình kế toán</MenuItem>
           <MenuSep />
           <MenuItem icon="logout" danger onClick={() => { dong(); set({ loggedIn: false }); nav('/dang-nhap') }}>Đăng xuất</MenuItem>

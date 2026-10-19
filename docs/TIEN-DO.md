@@ -57,6 +57,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T472 | Hệ thống: gói Free ẩn tab Người dùng, Vai trò và phân quyền (cả mục Người dùng ở menu tài khoản); tab Gói thuê bao xuống cuối ở mọi gói | PhuongXT | 19/10/2026 | [2026-10-19-phuongxt-nganh-nghe-mac-dinh](nhat-ky/2026-10-19-phuongxt-nganh-nghe-mac-dinh.md) |
 | T471 | Form đối tượng: nút chọn Tổ chức / Cá nhân cạnh tên khối Thông tin chung; tổ chức điền MST/CCCD chủ hộ (bắt buộc), cá nhân điền CCCD; rồi Mã, Tên, Loại, Nhóm như cũ | PhuongXT | 19/10/2026 | [2026-10-19-phuongxt-nganh-nghe-mac-dinh](nhat-ky/2026-10-19-phuongxt-nganh-nghe-mac-dinh.md) |
 | T470 | Gói Free, Danh mục đối tượng chỉ có 2 loại Nhà cung cấp, Nhân viên: danh sách ẩn Khách hàng, ô Loại đối tượng khi thêm, sửa chỉ 2 loại | PhuongXT | 19/10/2026 | [2026-10-19-phuongxt-nganh-nghe-mac-dinh](nhat-ky/2026-10-19-phuongxt-nganh-nghe-mac-dinh.md) |
 | T469 | Thêm mới hàng hoá ở mọi màn (danh mục, nút Thêm trong phiếu, hộp thêm nhanh, điện thoại): Nhóm ngành nghề con mặc định 301-5 Dịch vụ ăn uống, tự điền nhóm ngành và tỷ lệ thuế | PhuongXT | 19/10/2026 | [2026-10-19-phuongxt-nganh-nghe-mac-dinh](nhat-ky/2026-10-19-phuongxt-nganh-nghe-mac-dinh.md) |

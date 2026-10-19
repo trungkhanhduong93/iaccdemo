@@ -4,6 +4,8 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 19/10/2026
 
+- T472: Hệ thống: gói Free không còn tab Người dùng, Vai trò và phân quyền (menu tài khoản cũng bỏ mục Người dùng); tab Gói thuê bao nằm cuối thanh tab ở mọi gói.
+
 - T471: Thêm, sửa đối tượng: chọn Tổ chức hoặc Cá nhân bằng nút chọn tròn ngay cạnh tên khối Thông tin chung. Tổ chức nhập MST/CCCD chủ hộ (bắt buộc), Cá nhân nhập CCCD; sau đó Mã, Tên, Loại, Nhóm đối tượng như cũ. Câu báo thiếu ô giữ nguyên chữ viết tắt (MST, CCCD).
 
 - T470: Gói Free, Danh mục đối tượng chỉ còn 2 loại Nhà cung cấp và Nhân viên (máy tính, điện thoại); thêm mới chỉ chọn được 2 loại này.
