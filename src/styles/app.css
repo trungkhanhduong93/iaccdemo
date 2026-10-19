@@ -31295,3 +31295,8 @@ a.tx-item:hover {
 .m-pos-ct-chan .m-pos-ct-nut-dong.pri:active {
   background: var(--blue-d, #044a80) !important;
 }
+
+/* ── Nút chọn Tổ chức / Cá nhân cạnh tên khối Thông tin chung của đối tượng (T471) ── */
+.pn-chon-dau { display: inline-flex; align-items: center; gap: 18px; margin-left: 20px; font-weight: 400; color: var(--ink); }
+.pn-chon-dau label { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; text-transform: none; letter-spacing: 0; }
+.pn-chon-dau input[type=radio] { width: 16px; height: 16px; margin: 0; accent-color: var(--blue); cursor: pointer; }

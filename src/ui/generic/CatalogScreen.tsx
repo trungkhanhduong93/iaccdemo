@@ -1004,6 +1004,18 @@ export function CatalogPanel({
         {!kh.anDau && <div className="pn-khoi-dau" onClick={() => toggleKhoi(kh.ten)}>
           {/* Form toàn màn hình: mô tả nằm cạnh tên khối đầu, đầu form chỉ có nhãn cửa hàng như phiếu chi */}
           <span>{kh.ten}{cauHinh?.toanMan && cauHinh.moTa && kh === dsKhoi[0] && <small className="muted"> · {cauHinh.moTa}</small>}</span>
+          {kh.chonDau && (
+            // Nút chọn tròn cạnh tên khối, vd Tổ chức / Cá nhân (T471); bấm không gập khối
+            <span className="pn-chon-dau" role="radiogroup" aria-label={kh.chonDau.ds.join(' / ')} onClick={e => e.stopPropagation()}>
+              {kh.chonDau.ds.map(x => (
+                <label key={x}>
+                  <input type="radio" name={`chon-dau-${kh.chonDau!.k}`} checked={formVal[kh.chonDau!.k] === x} disabled={xem} onChange={() => doiO(kh.chonDau!.k, x)} />
+                  {x}
+                </label>
+              ))}
+            </span>
+          )}
+          <span className="grow" />
           {kh.congTac && (() => {
             // Trạng thái dạng công tắc ở đầu khối như iFaster (T154)
             const bat = formVal[kh.congTac] !== 0 && formVal[kh.congTac] !== false

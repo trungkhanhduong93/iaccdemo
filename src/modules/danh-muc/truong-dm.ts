@@ -95,6 +95,7 @@ export interface KhoiDM {
   ve?: (v: Record<string, any>, doi: (k: string, val: unknown) => void, xem: boolean) => ReactNode   // khối vẽ riêng (vd Thông tin mua: ô nhập, hoặc chỉ xem khi lấy từ phiếu gốc); xem: form đang ở chế độ xem (T284)
   anDau?: boolean    // không vẽ thanh tiêu đề khối, khối luôn mở, nhường chỗ cho lưới bên dưới (T165)
   congTac?: string   // khoá ô tích hiện thành công tắc ở đầu khối, vd '_tt' trạng thái (T154)
+  chonDau?: { k: string; ds: string[] }   // nhóm nút chọn tròn ngay cạnh tên khối, vd Tổ chức / Cá nhân của đối tượng (T471)
 }
 
 export interface CauHinhDM {
@@ -323,9 +324,9 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
     khoi: [
       {
         ten: 'Thông tin chung',
+        // Tổ chức hay cá nhân là nút chọn cạnh tên khối (T471): tổ chức bắt buộc MST/CCCD chủ hộ, cá nhân điền CCCD
+        chonDau: { k: 'kieuDt', ds: ['Tổ chức', 'Cá nhân'] },
         truong: [
-          // Tổ chức hay cá nhân đứng đầu (T471): tổ chức bắt buộc MST/CCCD chủ hộ, cá nhân điền CCCD
-          { k: 'kieuDt', nhan: 'Tổ chức / Cá nhân', kieu: 'chon', ds: ['Tổ chức', 'Cá nhân'], batBuoc: true },
           { k: 'mst', nhan: 'MST/CCCD chủ hộ', kieu: 'chu', batBuoc: true, hien: v => v.kieuDt !== 'Cá nhân', cot: 'TAX_FILE_NUMBER' },
           { k: 'cccd', nhan: 'CCCD', kieu: 'chu', hien: v => v.kieuDt === 'Cá nhân' },
           { k: 'ma', nhan: 'Mã đối tượng', kieu: 'chu', batBuoc: true, cot: 'PR_DETAIL_ID' },
