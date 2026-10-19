@@ -714,8 +714,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
           // Lý do chi tiền là chi phí thì báo cáo chi phí lấy lên (T231)
           { k: 'chiPhi', nhan: 'Là chi phí', kieu: 'tich', caHang: true, hien: v => v.dung === 'Chi tiền' },
           // Lý do là chi phí thuộc một nhóm lý do (T473): tích Là chi phí thì tự xếp theo tên lý do, đổi được
-          { k: 'nhomCp', nhan: 'Nhóm lý do nghiệp vụ', kieu: 'chon', batBuoc: true, caHang: true, ds: NHOM_LY_DO.map(n => n.ma),
-            nhanDs: ma => { const n = NHOM_LY_DO.find(x => x.ma === ma); return n ? `${n.ma}. ${n.ten}` : ma }, hien: v => v.dung === 'Chi tiền' && laTich(v.chiPhi) },
+          { k: 'nhomCp', nhan: 'Nhóm lý do nghiệp vụ', kieu: 'chon', batBuoc: true, caHang: true, ds: NHOM_LY_DO.map(n => n.ten), hien: v => v.dung === 'Chi tiền' && laTich(v.chiPhi) },
         ],
       },
       {

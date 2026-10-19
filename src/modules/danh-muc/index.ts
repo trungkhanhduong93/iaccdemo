@@ -55,7 +55,7 @@ const nhomDoiTuong: ScreenDef = {
 }
 
 /** Nhóm lý do nghiệp vụ (T473): 6 nhóm chi phí hợp lý theo Sổ S2c-HKD, cố định theo TT152 nên chỉ xem; cột Số lý do đếm lý do là chi phí thuộc nhóm */
-const nhomLyDo: ScreenDef = {
+const nhomLyDo: ScreenDef = {   // lý do lưu tên nhóm nên cột, bộ lọc ở Lý do nghiệp vụ hiện tên nhóm
   slug: 'nhom-ly-do', ten: 'Danh mục nhóm lý do nghiệp vụ', ngan: 'Nhóm lý do nghiệp vụ', nhom: 'Danh mục', kind: 'catalog', icon: 'receipt',
   catalog: {
     them: 'Thêm nhóm lý do nghiệp vụ',
@@ -66,7 +66,7 @@ const nhomLyDo: ScreenDef = {
       { k: 'ten', t: 'Tên nhóm' },
       { k: 'soLy', t: 'Số lý do', num: true, w: 100 },
     ],
-    rows: () => NHOM_LY_DO.map(n => ({ ...n, soLy: LY_DO.filter(l => l.chiPhi && l.nhomCp === n.ma).length })),
+    rows: () => NHOM_LY_DO.map(n => ({ ...n, soLy: LY_DO.filter(l => l.chiPhi && l.nhomCp === n.ten).length })),
   },
 }
 
@@ -304,7 +304,7 @@ const danhMuc: ModuleDef = {
         // Là chi phí: chỉ lý do chi tiền có ô này (T231)
         { k: 'chiPhi', t: 'Là chi phí', c: true, w: 100, r: r => r.dung !== 'Chi tiền' ? '' : createElement('input', { type: 'checkbox', className: 'o-tich-xem', checked: Boolean(r.chiPhi), readOnly: true, tabIndex: -1, 'aria-label': 'Là chi phí' }) },
         // Nhóm của lý do là chi phí (T473), tên nhóm dài nên cắt "..." trong ô, rê chuột xem đủ
-        { k: 'nhomCp', t: 'Nhóm lý do', w: 320, r: r => { if (!r.chiPhi || !r.nhomCp) return ''; const n = NHOM_LY_DO.find(x => x.ma === r.nhomCp); return n ? createElement('span', { className: 'o-cat', title: `${n.ma}. ${n.ten}` }, `${n.ma}. ${n.ten}`) : r.nhomCp } }],
+        { k: 'nhomCp', t: 'Nhóm lý do', w: 320, r: r => !r.chiPhi || !r.nhomCp ? '' : createElement('span', { className: 'o-cat', title: String(r.nhomCp) }, String(r.nhomCp)) }],
       rows: () => LY_DO } },
   }, NGAN).filter(sc => sc.code !== '1.13').map(sc => ({ ...sc, icon: BIEU_TUONG[sc.code ?? ''] ?? sc.icon })).flatMap(sc => {
     if (sc.code === '1.2') return [sc, nhomHangHoa]
