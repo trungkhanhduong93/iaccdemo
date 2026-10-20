@@ -4,6 +4,8 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T483 | Trang chủ gói Free, Chi phí hoạt động cộng từ phiếu chi thật (tiền mặt, ngân hàng) có lý do là chi phí, trừ chi phí chờ phân bổ; bấm từng lý do mở ngay trong màn danh sách phiếu chi tiền mặt, ngân hàng của lý do đó; nút Lập phiếu chi chọn tiền mặt hay ngân hàng; thẻ trang chủ, lợi nhuận, lãi lỗ 13 tháng, lãi lỗ theo cửa hàng đổi theo; phiếu chi mẫu thuê mặt bằng ngày 05, lương cuối tháng | PhuongXT | 20/10/2026 | [2026-10-19-phuongxt-chi-phi-hoat-dong-tu-phieu](../nhat-ky/2026-10-19-phuongxt-chi-phi-hoat-dong-tu-phieu.md) |
+| T482 | Trang chủ gói Free (máy tính, điện thoại): chữ "Giá vốn nguyên vật liệu" đổi thành "Chi phí nguyên vật liệu" | PhuongXT | 19/10/2026 | [2026-10-19-phuongxt-chi-phi-nvl-trang-chu](../nhat-ky/2026-10-19-phuongxt-chi-phi-nvl-trang-chu.md) |
 | T490 | Skill bản đồ tự lên bản mới nhất khi gọi ở repo bất kỳ: `cai_skill_ban_do.py --cap-nhat`, `BAN_DO_VERSION` trong `ban_do.py`, mục 3b cập nhật script đã có; skill lên bản 3 | Trum | 20/10/2026 | [2026-10-20-trum-skill-ban-do-tu-cap-nhat](../nhat-ky/2026-10-20-trum-skill-ban-do-tu-cap-nhat.md) |
 | T489 | `tools/ban_do.py tim`, nhóm Chữ thường in `file:dòng` kèm đoạn chữ, xếp `src/` và dòng đúng nguyên cụm lên đầu; skill bản đồ lên `VERSION` 2 | Trum | 20/10/2026 | [2026-10-20-trum-tim-file-dong](../nhat-ky/2026-10-20-trum-tim-file-dong.md) |
 | T488 | Điện thoại bỏ in chứng từ (xem phiếu, form chứng từ; web vẫn in); trang chủ Free nút và hộp biểu đồ đổi tên thành Hiệu quả kinh doanh 13 tháng | Trum | 19/10/2026 | [2026-10-19-trum-bo-in-dien-thoai](../nhat-ky/2026-10-19-trum-bo-in-dien-thoai.md) |

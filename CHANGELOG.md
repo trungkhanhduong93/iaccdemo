@@ -2,6 +2,12 @@
 
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
+## 20/10/2026
+
+- T483: Trang chủ gói Free, Chi phí hoạt động cộng từ phiếu chi thật (tiền mặt, ngân hàng) có lý do là chi phí; bấm từng lý do mở ngay trong màn danh sách phiếu chi tiền mặt, ngân hàng của lý do đó, tổng đúng bằng số trên dòng. Thẻ Chi phí hoạt động, lợi nhuận, lãi lỗ 13 tháng, lãi lỗ theo cửa hàng ở trang chủ đổi theo. Nút Lập phiếu chi ở màn này cho chọn chi tiền mặt hay chi ngân hàng. Thu chi có thêm phiếu chi mẫu trả thuê mặt bằng ngày 05 và lương cuối tháng cho từng cửa hàng.
+
+- T482: Trang chủ gói Free (máy tính, điện thoại): dòng "Giá vốn nguyên vật liệu" đổi tên thành "Chi phí nguyên vật liệu".
+
 ## 19/10/2026
 
 - T488: điện thoại bỏ in chứng từ (web vẫn in được); trang chủ điện thoại gói Free nút và hộp biểu đồ đổi tên thành Hiệu quả kinh doanh 13 tháng.
