@@ -4,6 +4,8 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 20/10/2026
 
+- T505: Điện thoại, màn Nghiệp vụ và màn Khác có đầu trang nền xanh như danh sách Báo cáo; màn Khác thêm ô tìm danh mục, thiết lập. Bảng Kết quả kinh doanh trang chủ điện thoại thẳng cột số tiền. Máy tính: khối Mua hàng và Hao hụt kiểm kê có nút Xem sổ; 2 nút dưới biểu đồ Quỹ tiền căn giữa; cột số thứ tự danh sách chứng từ đổi thành # và gọn hơn; bấm ô ở thanh lọc ngang chỉ để gõ, bấm phễu mới mở bảng chọn; lưới chi tiết phiếu nằm gọn trong khung.
+
 - T506, T509: Gói Free ẩn báo cáo Thẻ kho (bấm hàng ở Xuất nhập tồn vẫn mở được), Tổng hợp xuất kho, Chi tiết xuất kho. Quy trình kho gói Free bỏ bước Theo dõi nhập xuất. Thẻ Mặt hàng giá vốn cao ở trang chủ Free dẫn sang Xuất nhập tồn.
 
 - T508: Bộ lọc báo cáo trên máy tính bỏ ô Tìm trong báo cáo và bộ lọc Đơn vị tính; mở báo cáo mặc định ẩn dòng không phát sinh.

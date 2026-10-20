@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link, Navigate, useSearchParams } from 'react-router-dom'
 import { useSession } from '../../app/session'
 import { MODULES, duongDan, hienMan, hienPhanHe, moDuoc, nhanTab, phanHeKhoa, tabCua, tenPhanHe } from '../../app/registry'
-import { anNgoaiGoi, minGoi, type Goi } from '../../app/plan'
+import { GOI, anNgoaiGoi, minGoi, type Goi } from '../../app/plan'
 import type { ModuleDef, ScreenDef } from '../../modules/types'
 import { Icon } from '../Icon'
 import { Pk } from '../Page'
@@ -129,43 +129,66 @@ export function MNghiepVu() {
     return tenGoc.toUpperCase()
   }
 
+  // Danh sách phân hệ và chức năng đã lọc theo gói, chưa lọc từ khoá
+  const dsNhomDayDu = dsPhanHe
+    .filter(m => !anNgoaiGoi(s.goi) || !phanHeKhoa(m, s.goi))
+    .map(m => ({ mod: m, items: layCacChucNang(m) }))
+    .filter(g => g.items.length > 0)
+
+  const tongSoNv = dsNhomDayDu.reduce((acc, g) => acc + g.items.length, 0)
+  const tongSoNhom = dsNhomDayDu.length
+
   const q = tuKhoa.trim().toLowerCase()
 
-  const dsHien = dsPhanHe
-    .filter(m => !anNgoaiGoi(s.goi) || !phanHeKhoa(m, s.goi))
-    .map(m => {
-      const all = layCacChucNang(m)
-      const loc = q ? all.filter(cn => cn.ten.toLowerCase().includes(q) || (cn.code && cn.code.includes(q))) : all
-      return { mod: m, items: loc }
-    })
-    .filter(g => g.items.length > 0)
+  const dsHien = q
+    ? dsNhomDayDu
+        .map(g => ({
+          ...g,
+          items: g.items.filter(cn => cn.ten.toLowerCase().includes(q) || (cn.code && cn.code.includes(q))),
+        }))
+        .filter(g => g.items.length > 0)
+    : dsNhomDayDu
 
   return (
     <div className="m-t498-nv-trang">
-      {/* ── Header nền sáng theo Figma MB02 (T498) ── */}
-      <div className="m-t498-nv-header">
-        <h1 className="m-t498-nv-tieu-de">Nghiệp vụ</h1>
-        <div className="m-t498-nv-tim-hop">
-          <Icon n="search" className="ic sm m-t498-nv-tim-ic" />
-          <input
-            type="text"
-            className="m-t498-nv-tim-inp"
-            placeholder="Tìm nghiệp vụ, chứng từ…"
-            value={tuKhoa}
-            onChange={e => setTuKhoa(e.target.value)}
-          />
-          {tuKhoa && (
-            <button
-              type="button"
-              className="m-t498-nv-tim-xoa"
-              onClick={() => setTuKhoa('')}
-              aria-label="Xoá tìm kiếm"
-            >
-              <Icon n="x" className="ic sm" />
-            </button>
-          )}
+      {/* ── Header gradient xanh theo MBaoCao (T505) ── */}
+      <header className="m-bc-hdr-gradient">
+        <div className="m-bc-hdr-top">
+          <div className="m-bc-hdr-tieu-de-hang">
+            <h1 className="m-bc-hdr-tieu-de">Nghiệp vụ</h1>
+            <span className="m-bc-hdr-chip-goi">
+              {s.goi === 'F' ? 'FREE' : GOI[s.goi]?.ten?.toUpperCase() ?? 'FREE'}
+            </span>
+          </div>
+          <div className="m-bc-hdr-phu">
+            {`${tongSoNv} nghiệp vụ · ${tongSoNhom} nhóm`}
+          </div>
         </div>
-      </div>
+
+        <div className="m-bc-hdr-tim-wrap">
+          <div className="m-bc-hdr-tim">
+            <Icon n="search" className="m-bc-hdr-tim-ic ic sm" />
+            <input
+              type="text"
+              className="m-bc-hdr-tim-inp"
+              placeholder="Tìm nghiệp vụ, chứng từ…"
+              value={tuKhoa}
+              onChange={e => setTuKhoa(e.target.value)}
+              aria-label="Tìm kiếm nghiệp vụ"
+            />
+            {tuKhoa && (
+              <button
+                type="button"
+                className="m-bc-hdr-tim-x"
+                onClick={() => setTuKhoa('')}
+                aria-label="Xoá tìm kiếm"
+              >
+                <Icon n="x" className="ic sm" />
+              </button>
+            )}
+          </div>
+        </div>
+      </header>
 
       {/* ── Danh sách phân hệ dạng thẻ theo Figma MB02 ── */}
       <div className="m-t498-nv-ds">

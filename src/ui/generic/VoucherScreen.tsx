@@ -449,7 +449,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
   // Định nghĩa các cột (Cột Ngày, Số chứng từ đứng yên bên trái; Cột Chức năng đứng yên bên phải)
   const cols: Col[] = [
     cotChon(list, selectedIds, setSelectedIds, () => setMoHangLoat(true)),
-    { k: 'stt', t: 'STT', w: 60, c: true, dinh: 'trai' },
+    { k: 'stt', t: '#', w: 44, c: true, dinh: 'trai' },   // cột số thứ tự gọn, tiêu đề "#" (T505)
     {
       k: 'ngay',
       t: 'Ngày',
@@ -923,7 +923,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
                   r.tt === 'loi' && ghi ? 'bad' : '',
                 ].filter(Boolean).join(' ')}
                 sum={{
-                  stt: nhomCols.length > 0 ? `Tổng: ${list.length}` : `Tổng: ${pagedRows.length}`,
+                  stt: String(nhomCols.length > 0 ? list.length : pagedRows.length),   // cột # hẹp, chỉ ghi số dòng (T505)
                   ...congCot(nhomCols.length > 0 ? list : pagedRows),
                 }}
               />

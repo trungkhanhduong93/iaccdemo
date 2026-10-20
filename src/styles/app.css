@@ -22176,7 +22176,6 @@ button[class*="btn-"] .ic .l2 {
 .ll-tip-ghi { margin-top: 7px; font-size: 11.5px; color: var(--amber); background: var(--amber-t); border-radius: 6px; padding: 3px 8px; }
 
 /* ── Trang chủ Free: Quản lý kho gộp 2 khối thẳng cột với hàng trên, Mua hàng & công nợ NCC, Hao hụt kiểm kê (T307) ── */
-.bbt-kho2-link { display: inline-flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px 14px; }
 .bbt-kho2-hai { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 .bbt-e-luoi-2 .bbt-kho2 > .t.bbt-kho2-tong { border-top: 2px solid var(--line); }
 .bbt-e-luoi-2 .bbt-kho2 > .t.bbt-kho2-tong b { color: var(--ink); font-weight: 700; }
@@ -34812,66 +34811,9 @@ a.tx-item:hover {
   width: 100%;
   min-height: 100vh;
   padding: 0 16px 96px;
-  background: linear-gradient(180deg, #edf3f9 0%, #f4f6f8 240px, #f4f6f8 100%);
+  background: var(--bg);
 }
 
-.m-t498-nv-header {
-  padding: 16px 0 12px;
-}
-
-.m-t498-nv-tieu-de {
-  font-size: 26px;
-  font-weight: 700;
-  color: var(--ink, #1f2225);
-  margin: 0 0 12px;
-  line-height: 1.2;
-}
-
-.m-t498-nv-tim-hop {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  height: 42px;
-  background: #ffffff;
-  border: 1px solid var(--line, #e5e7eb);
-  border-radius: 12px;
-  padding: 0 14px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-  box-sizing: border-box;
-}
-
-.m-t498-nv-tim-ic {
-  color: var(--faint, #9ca3af);
-  flex: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.m-t498-nv-tim-inp {
-  border: none;
-  background: transparent;
-  outline: none;
-  font-size: 14px;
-  color: var(--ink, #1f2225);
-  width: 100%;
-  padding: 0;
-}
-
-.m-t498-nv-tim-inp::placeholder {
-  color: var(--faint, #9ca3af);
-}
-
-.m-t498-nv-tim-xoa {
-  border: none;
-  background: transparent;
-  color: var(--faint, #9ca3af);
-  cursor: pointer;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
 
 /* Nhóm & Thẻ nghiệp vụ */
 .m-t498-nv-ds {
@@ -35032,3 +34974,34 @@ a.tx-item:hover {
 .ds-toolbar-figma .ds-o { display: flex; align-items: center; gap: 6px; width: auto; min-width: 200px; height: 36px; padding-left: 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--white); box-sizing: border-box; }
 .ds-toolbar-figma .ds-o-nhan { position: static; padding: 0; background: none; color: var(--muted); font-size: 12.5px; }
 .ds-toolbar-figma .ds-o .kn-nut, .ds-toolbar-figma .ds-o .ds-o-sel, .ds-toolbar-figma .ds-o .ds-o-inp { flex: 1; min-width: 0; height: 34px; border: 0; background: none; }
+
+/* ── Bảng Kết quả kinh doanh trang chủ điện thoại thẳng cột (T505) ── */
+/* Dòng Doanh thu, Lợi nhuận không bấm được: mũi tên ẩn giữ chỗ để số tiền thẳng cột với 3 dòng chi phí */
+.m-tcf-mui-an { visibility: hidden; }
+
+/* ── Đầu trang xanh cho Nghiệp vụ và Khác trên điện thoại (T505) ── */
+.m-app:has(.m-khac) .m-thanh-tren {
+  display: none !important;
+}
+
+.m-app:has(.m-khac) .m-than {
+  padding-top: 0 !important;
+}
+
+.m-khac > .m-bc-hdr-gradient {
+  margin: -14px calc(-1 * var(--m-le-man)) 0;
+}
+
+.m-t498-nv-trang > .m-bc-hdr-gradient {
+  margin: 0 -16px 14px;
+}
+
+/* ── Hàng nút Quỹ tiền trang chủ Free căn giữa (T505) ── */
+.bbt-vq-hang-nut {
+  justify-content: center;
+}
+
+/* ── Lưới chi tiết form phiếu nằm gọn trong khung, thẳng hàng tab Chi tiết (T505) ── */
+.ct-than-card > .ct-than {
+  padding: 0 12px;
+}

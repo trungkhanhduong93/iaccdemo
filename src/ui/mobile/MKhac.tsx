@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { dsDonVi, useSession } from '../../app/session'
 import { ROLE } from '../../data/mock'
@@ -5,6 +6,7 @@ import { GOI, GOIS, anNgoaiGoi, minGoi } from '../../app/plan'
 import { MODULES, duongDan, hienMan, maKhoa, moDuoc, tabCua, tenMan } from '../../app/registry'
 import { Icon } from '../Icon'
 import { Pk } from '../Page'
+import { fold } from '../format'
 import type { ScreenDef } from '../../modules/types'
 
 /** Tên ngắn ở nhóm Danh mục: bỏ chữ "Danh mục" đầu tên, 1.2 và 1.5 gọi gọn như web (T353) */
@@ -17,6 +19,7 @@ const tenDm = (sc: ScreenDef) => {
 export function MKhac() {
   const { s, set } = useSession()
   const nav = useNavigate()
+  const [q, setQ] = useState('')
 
   const ten = s.ten.split(' ').slice(-2).map(x => x[0]).join('')
 
@@ -26,8 +29,56 @@ export function MKhac() {
   const dsDm = modDm ? tabCua(modDm).filter(sc => hienMan(sc, s.goi, s.cheDo, s) && (!anNgoaiGoi(s.goi) || moDuoc(sc, s.goi))) : []
   const dsHt = modHt ? tabCua(modHt).filter(sc => hienMan(sc, s.goi, s.cheDo, s) && (!anNgoaiGoi(s.goi) || moDuoc(sc, s.goi))) : []
 
+  const coKhoaSoDuPhong = !dsHt.some(sc => sc.slug === 'khoa-so')
+  const tongSoDm = dsDm.length
+  const tongSoHt = dsHt.length + (coKhoaSoDuPhong ? 1 : 0)
+
+  const tuKhoa = fold(q.trim())
+  const dsDmLoc = tuKhoa ? dsDm.filter(sc => fold(tenDm(sc)).includes(tuKhoa)) : dsDm
+  const dsHtLoc = tuKhoa ? dsHt.filter(sc => fold(tenMan(sc)).includes(tuKhoa)) : dsHt
+  const hienKhoaSo = coKhoaSoDuPhong && (!tuKhoa || fold('Khoá sổ').includes(tuKhoa))
+
   return (
     <div className="m-khac">
+      {/* ── Header gradient xanh theo MBaoCao (T505) ── */}
+      <header className="m-bc-hdr-gradient">
+        <div className="m-bc-hdr-top">
+          <div className="m-bc-hdr-tieu-de-hang">
+            <h1 className="m-bc-hdr-tieu-de">Khác</h1>
+            <span className="m-bc-hdr-chip-goi">
+              {s.goi === 'F' ? 'FREE' : GOI[s.goi]?.ten?.toUpperCase() ?? 'FREE'}
+            </span>
+          </div>
+          <div className="m-bc-hdr-phu">
+            {`${tongSoDm} danh mục · ${tongSoHt} thiết lập`}
+          </div>
+        </div>
+
+        <div className="m-bc-hdr-tim-wrap">
+          <div className="m-bc-hdr-tim">
+            <Icon n="search" className="m-bc-hdr-tim-ic ic sm" />
+            <input
+              type="text"
+              className="m-bc-hdr-tim-inp"
+              placeholder="Tìm danh mục, thiết lập…"
+              value={q}
+              onChange={e => setQ(e.target.value)}
+              aria-label="Tìm kiếm danh mục, thiết lập"
+            />
+            {q && (
+              <button
+                type="button"
+                className="m-bc-hdr-tim-x"
+                onClick={() => setQ('')}
+                aria-label="Xoá tìm kiếm"
+              >
+                <Icon n="x" className="ic sm" />
+              </button>
+            )}
+          </div>
+        </div>
+      </header>
+
       {/* 1. Thẻ người dùng */}
       <section className="m-khac-nhom-wrap">
         <div className="m-khac-the m-khac-the-user">
@@ -44,12 +95,12 @@ export function MKhac() {
       </section>
 
       {/* 2. Nhóm Danh mục */}
-      {modDm && dsDm.length > 0 && (
+      {modDm && dsDmLoc.length > 0 && (
         <section className="m-khac-nhom-wrap">
           <h3 className="m-khac-nhom-tieu">DANH MỤC</h3>
           <div className="m-khac-the">
             <div className="m-khac-ds">
-              {dsDm.map(sc => {
+              {dsDmLoc.map(sc => {
                 const khoa = !moDuoc(sc, s.goi)
                 const ma = maKhoa(sc)
                 return (
@@ -79,12 +130,12 @@ export function MKhac() {
       )}
 
       {/* 3. Nhóm Thiết lập */}
-      {modHt && dsHt.length > 0 && (
+      {modHt && (dsHtLoc.length > 0 || hienKhoaSo) && (
         <section className="m-khac-nhom-wrap">
           <h3 className="m-khac-nhom-tieu">THIẾT LẬP</h3>
           <div className="m-khac-the">
             <div className="m-khac-ds">
-              {dsHt.map(sc => {
+              {dsHtLoc.map(sc => {
                 const khoa = !moDuoc(sc, s.goi)
                 const ma = maKhoa(sc)
                 return (
@@ -108,7 +159,7 @@ export function MKhac() {
                   </Link>
                 )
               })}
-              {!dsHt.some(sc => sc.slug === 'khoa-so') && (
+              {hienKhoaSo && (
                 <Link
                   to="/app/tong-hop/10-1-6"
                   className="m-khac-dong"
