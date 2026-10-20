@@ -12,7 +12,7 @@ Script đọc thay agent, agent chỉ nhận vài trăm token kết quả dạng
 1. Lên bản skill mới nhất: chạy `python "{{NGUON}}/tools/cai_skill_ban_do.py" --cap-nhat`. Lệnh lấy bản mới từ GitHub của iaccdemo nếu có, rồi cài lại skill. Lệnh báo vừa cập nhật thì đọc lại `{{SKILL_DIR}}/SKILL.md` và làm theo bản mới. Đường dẫn không còn (clone iaccdemo đã xoá, đổi chỗ) thì bỏ bước này, báo người dùng một dòng.
 2. Repo chưa có `tools/ban_do.py`: làm tiếp mục 2. Không đọc code để "hiểu trước", việc đó là thứ skill này thay.
 3. Repo đã có `tools/ban_do.py`: chạy `grep -n BAN_DO_VERSION tools/ban_do.py "{{SKILL_DIR}}/scripts/ban_do.py"`.
-   - Hai số bằng nhau: chạy `python tools/ban_do.py --help`, dùng luôn. Dừng skill.
+   - Hai số bằng nhau: file luật chưa có mục "Tiết kiệm token" thì thêm theo mục 4. Chạy `python tools/ban_do.py --help`, dùng luôn. Dừng skill.
    - Số của repo nhỏ hơn, hoặc repo không có dòng đó: làm mục 3b.
    - Repo là iaccdemo (có `tools/skill-ban-do-repo/`): bản gốc ở đây, không làm mục 3b.
 
@@ -50,6 +50,8 @@ Repo khác đã chép `ban_do.py` từ bản cũ rồi chỉnh riêng. Chép đ�
 ## 4. Ghi luật cho mọi agent
 
 Thêm mục "Tìm code" vào file luật mà mọi agent cùng đọc. Có `AGENTS.md` thì ghi vào đó, chỉ có `CLAUDE.md` thì ghi vào `CLAUDE.md`. Tối đa 8 dòng, chép từ `{{SKILL_DIR}}/scripts/muc-tim-code.md` rồi sửa đường dẫn. Agent khác Claude không đọc `.claude/`, nên luật phải nằm ở đây.
+
+Thêm cả mục "Tiết kiệm token" ngay sau mục "Tìm code", chép từ `{{SKILL_DIR}}/scripts/muc-tiet-kiem-token.md`, điền lệnh kiểm của repo. Bản đồ chỉ giảm token khâu tìm và đọc code. Phần tốn nhất là phiên dài và ảnh chụp, mục này chặn phần đó (T493).
 
 ## 5. Nghiệm thu
 

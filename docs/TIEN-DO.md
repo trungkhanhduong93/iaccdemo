@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T493 | Luật tiết kiệm token cho mọi agent: mục mới trong `AGENTS.md`, thêm vào skill bản đồ repo để repo khác cũng có | Trum | Đang làm | `AGENTS.md`, `tools/skill-ban-do-repo/` |
 | T492 | Phiếu mua hàng: trên đầu bảng chi tiết thêm ô Thuế GTGT (chọn thuế suất áp cho mọi dòng) và Chiết khấu (chọn % hoặc số tiền; % áp cho mọi dòng, số tiền phân bổ theo thành tiền) | PhuongXT | Đang làm | `ChungTuForm.tsx` (thanh tab), file mới `ApDauBang.tsx`, cuối `app.css` |
 | T484 | Dữ liệu giả sổ quỹ, lịch sử thu chi: khoản chi mang dấu cộng như khoản thu (vd "Chi mua nguyên vật liệu +21.975.000") vì `soChiTiet` trong `src/ui/generic/gen.ts` chọn diễn giải ngẫu nhiên không theo loại thu chi | | Chờ | Phát hiện khi làm T480 |
 | T451 | Điện thoại, phiếu bán hàng ngoài Xuất bán POS (Hàng bán trả lại, hoá đơn bán hàng...) màn xem, lập phiếu: GTGT theo % doanh thu thì dòng hàng bỏ Thuế x%, VAT, hiện Giảm thuế GTGT như máy tính (T450) | | Chờ | `MXemPhieu.tsx`, `MLapPhieu.tsx`, làm sau khi T449 (Trum) push. Dùng `gtgtTyLe` (`session.tsx`), `giamGtgtCua` (`VoucherScreen.tsx`), `giamThueHkd` (`ban-hang/giam-thue.ts`) |

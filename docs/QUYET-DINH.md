@@ -819,4 +819,9 @@ Trum chốt 19/10/2026 (T485). Đầu phiên agent từng đọc nguyên `docs/T
 - Skill bản đồ repo dùng cho máy từng người (T487): bản gốc ở `tools/skill-ban-do-repo/`, cài bằng `python tools/cai_skill_ban_do.py`. Đầu phiên agent hỏi một lần, người dùng tự quyết. Sửa skill thì sửa bản gốc trong repo, tăng số `VERSION`.
 - Gọi skill bản đồ ở repo nào cũng lên bản mới nhất (T490, Trum chốt 20/10/2026). Bước đầu của skill chạy `cai_skill_ban_do.py --cap-nhat`: GitHub có `VERSION` mới hơn thì pull iaccdemo (chỉ khi đang ở `main`, `--ff-only`) rồi cài lại. Repo đã có `tools/ban_do.py` thì so `BAN_DO_VERSION` với bản mẫu, cũ hơn thì cập nhật phần chung, giữ phần repo chỉnh riêng. Đổi `scripts/ban_do.py` thì tăng `BAN_DO_VERSION` ở cả hai bản, bằng số `VERSION`.
 
-## QD75. Tiết kiệm token trong phiên agent (đang soạn)
+## QD75. Tiết kiệm token trong phiên agent
+
+Trum chốt 20/10/2026 (T493). Phiên của PhuongXT đã có bản đồ repo mà vẫn tốn nhiều token. Lý do: phiên dài khoảng 100 lần gọi, mỗi lỗi đều mở trình duyệt chụp hình, góp ý gửi rải rác nên phải chạy kiểm nhiều lần. Bản đồ chỉ giảm token khâu tìm và đọc code.
+
+- Luật nằm ở mục "Tiết kiệm token" trong `AGENTS.md`: mỗi việc một phiên, kiểm bằng `kiem_tra.py` thay vì chụp hình, gom góp ý rồi kiểm một lần, dò code qua subagent, quá 60 lần gọi thì chia phiên.
+- Skill bản đồ repo (bản 4) chép mục này vào file luật của repo khác, mẫu ở `tools/skill-ban-do-repo/scripts/muc-tiet-kiem-token.md`.

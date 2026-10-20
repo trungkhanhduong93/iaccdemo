@@ -43,6 +43,16 @@ Không đọc nguyên file lớn. `tools/ban_do.py` đọc thay và in kết qu�
 - Xem nhánh nào đang có việc chưa vào `main`: `python tools/ban_do.py nhanh`.
 - Claude Code có hook trong `.claude/settings.json` chặn đọc file lớn khi không giới hạn số dòng. Agent khác tự giữ luật này.
 
+## Tiết kiệm token (QD75)
+
+Mỗi lần agent gọi công cụ, cả cuộc trò chuyện được gửi lại từ đầu. Phiên càng dài, càng nhiều ảnh chụp thì mỗi lần gọi càng tốn.
+
+- Mỗi việc một phiên. Push xong thì nhắc người dùng mở phiên mới cho việc sau.
+- Kiểm giao diện bằng `python tools/kiem_tra.py`. Chỉ mở trình duyệt, chụp màn hình khi người dùng nhờ hoặc khi lỗi chỉ thấy bằng mắt. Mỗi lỗi chụp tối đa 1 tấm.
+- Người dùng góp ý giữa chừng thì gom vào danh sách, sửa hết rồi mới chạy typecheck, build, kiem_tra một lần.
+- Dò code qua nhiều file thì giao subagent, chỉ lấy kết quả `file:dòng` về phiên chính.
+- Phiên quá 60 lần gọi công cụ mà việc chưa xong thì ghi nhật ký dở dang, push, đề nghị người dùng mở phiên mới.
+
 ## Trong phiên
 
 - Sửa đúng chỗ cần sửa. Không viết lại cả file, không sửa thứ ngoài việc đang làm. Thấy lỗi khác thì ghi vào `docs/TIEN-DO.md` thành việc mới.
