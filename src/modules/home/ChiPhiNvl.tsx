@@ -14,6 +14,7 @@ import { money, moneyD, pct } from '../../ui/format'
 import { useMoTuTrangChu } from '../../app/tuTrangChu'
 import { NutExcel, NutXuatExcel } from '../../ui/CongCuDs'
 import { xuatBangExcel } from '../../ui/xuatBangExcel'
+import { ganMoPhieu } from '../../ui/generic/SoChungTu'   // số phiếu bấm mở chứng từ (T491)
 import { docGiaThanh, xuatGiaThanh } from './excel-gia-thanh'
 import { CACH_NVL, daKhoaThang, datGiaThanhTay, giaThanhIvt, giaThanhTayCua, moTaCach, monBanKy, nvlKy, phieuMuaKy, tieuHaoKy } from './chi-phi-nvl'
 
@@ -109,7 +110,8 @@ export function ChiPhiNvl(_: ScreenProps) {
       {cn ? <ChiTietCn cn={cn.id} thang={thang} khoa={khoa} tab={tab} setTab={setTab} locLoai={locLoai} setLocLoai={setLocLoai} /> : (
         <section className="card nvl-bang">
           <Table cols={[
-            { k: 'ten', t: 'Cửa hàng', r: r => <>{r.ten}{Number(r.thieu) > 0 && <span className="chip warn nvl-chip">Còn {r.thieu} món chưa có giá thành</span>}</> },
+            // tên cửa hàng màu liên kết cho biết bấm được; bấm lan lên dòng mở chi tiết (T491)
+            { k: 'ten', t: 'Cửa hàng', r: r => <>{r.id ? <button type="button" className="ds-link-so nvl-ten-cn" title={`Xem chi phí NVL ${r.ten}`}>{r.ten}</button> : r.ten}{Number(r.thieu) > 0 && <span className="chip warn nvl-chip">Còn {r.thieu} món chưa có giá thành</span>}</> },
             { k: 'cach', t: 'Cách tính' },
             { k: 'dt', t: 'Doanh thu', num: true },
             { k: 'tien', t: 'Chi phí NVL', num: true },
@@ -168,7 +170,7 @@ function ChiTietCn({ cn, thang, khoa, tab, setTab, locLoai, setLocLoai }: {
           <div className="nvl-cach"><span>Cách tính: <b>Xuất huỷ + Xuất điều chỉnh − Nhập điều chỉnh</b> · {moneyD(th.huy)} + {moneyD(th.xdc)} − {moneyD(th.ndc)}</span>
             <Select className="inp nvl-loc" value={locLoai} aria-label="Loại phiếu" onChange={e => setLocLoai(e.target.value)}
               ds={[{ v: '', t: 'Tất cả loại phiếu' }, ...['Xuất huỷ', 'Xuất điều chỉnh', 'Nhập điều chỉnh'].map(t => ({ v: t, t }))]} /></div>
-          <Table cols={colsTh} rows={dsTh} sum={{ so: `${dsTh.length} phiếu`, gt: dsTh.reduce((a, r) => a + r.gt, 0) }} />
+          <Table cols={ganMoPhieu(colsTh)} rows={dsTh} sum={{ so: `${dsTh.length} phiếu`, gt: dsTh.reduce((a, r) => a + r.gt, 0) }} />
         </>}
       </section>
     )
@@ -180,7 +182,7 @@ function ChiTietCn({ cn, thang, khoa, tab, setTab, locLoai, setLocLoai }: {
     return (
       <section className="card nvl-bang">
         {dau}
-        <Table cols={cols} rows={ds} sum={{ so: `${ds.length} phiếu`, tien: ds.reduce((a, r) => a + Number(r.tien), 0), thue: ds.reduce((a, r) => a + Number(r.thue), 0), tong: x.tien }} />
+        <Table cols={ganMoPhieu(cols)} rows={ds} sum={{ so: `${ds.length} phiếu`, tien: ds.reduce((a, r) => a + Number(r.tien), 0), thue: ds.reduce((a, r) => a + Number(r.thue), 0), tong: x.tien }} />
         <div className="nvl-chan"><Link to="/app/mua-hang/4-1-1">Xem danh sách phiếu mua hàng</Link></div>
       </section>
     )

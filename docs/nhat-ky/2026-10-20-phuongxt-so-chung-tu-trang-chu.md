@@ -11,10 +11,13 @@
 - `src/ui/generic/SoChungTu.tsx`: `phieuTheoSo` hiểu số ngắn của sổ quỹ (PT09-001 → loại PT, tháng 2609, thứ tự 1), như điện thoại đang làm trong `MSoBaoCao.tsx`.
 - Chi phí hoạt động (`src/modules/home/ChiPhiThang.tsx`): từ T483 danh sách phiếu hiện ngay trong màn nhưng số phiếu là chữ thường, nên mất đường mở phiếu (trước T483 bấm lý do sang danh sách Thu chi, bấm được phiếu). Số phiếu nay là liên kết `/app/tien/2-1-1/<id>`.
 - KQKD gói Free (`src/modules/tong-hop/BaoCaoTaiChinh.tsx`): dòng Doanh thu bán hàng dẫn tới Sổ doanh thu 3.2.5, gói Free không có nên hiện "Báo cáo không dùng". Đổi sang Tổng hợp bán hàng `/app/bao-cao/3-2-7`.
+- Chi phí NVL (`src/modules/home/ChiPhiNvl.tsx`): tên cửa hàng ở bảng tổng là nút màu liên kết (`ds-link-so nvl-ten-cn`, dòng Cộng giữ chữ thường) cho biết bấm được; bấm lan lên dòng mở chi tiết như cũ. CSS mục T491 cuối `app.css`.
+- Chi tiết cửa hàng ở Chi phí NVL: bảng phiếu nhập mua và bảng phiếu tiêu hao (xuất huỷ, điều chỉnh) dùng `ganMoPhieu`, số phiếu bấm mở chứng từ.
 
 ## Đã kiểm
 
-- Trên trình duyệt (gói Free): Sổ quỹ tiền mặt 275 số có liên kết, bấm mở phiếu thu; Chi phí hoạt động bấm lý do, bấm số UNC2610-095 mở phiếu chi ngân hàng; KQKD bấm Doanh thu mở Tổng hợp bán hàng.
+- Trên trình duyệt (gói Free): Sổ quỹ tiền mặt 275 số có liên kết, bấm mở phiếu thu; Chi phí hoạt động bấm lý do, bấm số UNC2610-095 mở phiếu chi ngân hàng; KQKD bấm Doanh thu mở Tổng hợp bán hàng. Chi phí NVL: tên cửa hàng màu xanh, bấm mở chi tiết; phiếu tiêu hao 4/4 có liên kết; cửa hàng đặt tạm cách "phiếu nhập mua" bấm MH2610-0022 mở phiếu mua hàng (đã trả phiên về như cũ).
+- `python tools/xuat_bao_cao_he_thong.py` không chạy được trên máy này: thiếu `Dự kiến tính năng IACC Cloud.xlsx` (file của máy Trum), nên chưa làm mới `docs/IACC-Cloud-Chi-Tiet-He-Thong.xlsx`.
 - `npm run typecheck`: không lỗi. `npm run build`: xong, không lỗi. `python tools/kiem_tra.py --nhanh`: "Không có lỗi."
 - Chưa kiểm gói Standard, Plus (sổ quỹ dùng chung `SoQuy.tsx` nên cũng có liên kết).
 
