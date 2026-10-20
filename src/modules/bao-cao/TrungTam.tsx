@@ -10,7 +10,7 @@ import { Icon, ONen } from '../../ui/Icon'
 import { PageHead, Pk } from '../../ui/Page'
 import { fold } from '../../ui/format'
 import { ThanhLoc } from '../../ui/ThanhLoc'
-import { AN_NHOM_BC, CHI_MO_TU_BC, DAU_NHOM_BC, NHOM_CONG_NO, cauHinhBC, kyHieuBC } from './danh-sach'
+import { AN_BC_GOI, AN_NHOM_BC, CHI_MO_TU_BC, CHI_MO_TU_BC_GOI, DAU_NHOM_BC, NHOM_CONG_NO, cauHinhBC, kyHieuBC } from './danh-sach'
 import { baoCaoCuaPhanHe } from './cuaPhanHe'
 
 export interface NhomBaoCaoItem {
@@ -143,7 +143,7 @@ export function TrungTamBaoCao({ sc, mod }: ScreenProps) {
   const modHienTai = keyHienTai ? nhomHienThi[0]?.mod : null
   const title = modHienTai ? `Báo cáo ${modHienTai.ten}` : chiSoTT ? tenSoTT : 'Báo cáo'
 
-  const manTrongNhom = nhomHienThi.flatMap(g => g.screens).filter(x => apDung(x, s.cheDo, s) && !CHI_MO_TU_BC.includes(x.code ?? ''))   // không đếm báo cáo đã bỏ (T171), báo cáo chỉ mở từ báo cáo khác (T200)
+  const manTrongNhom = nhomHienThi.flatMap(g => g.screens).filter(x => apDung(x, s.cheDo, s) && !CHI_MO_TU_BC.includes(x.code ?? '') && !CHI_MO_TU_BC_GOI[s.goi]?.includes(x.code ?? '') && !AN_BC_GOI[s.goi]?.includes(x.code ?? ''))   // không đếm báo cáo đã bỏ (T171), báo cáo chỉ mở từ báo cáo khác (T200)
   const co = manTrongNhom.filter(x => moDuoc(x, s.goi)).length
   const meta = anNgoaiGoi(s.goi) ? undefined : (
     <span className="chip">Gói đang dùng mở {co}/{manTrongNhom.length} báo cáo</span>

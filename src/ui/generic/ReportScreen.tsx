@@ -177,24 +177,8 @@ export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: 
       },
     ]
 
+    // Bỏ ô Tìm trong báo cáo (T508)
     if (khongCoLocDong) return res
-
-    res.push({
-      k: 'tim',
-      ten: 'Tìm trong báo cáo',
-      o: (
-        <input
-          className="ds-o-inp"
-          value={timNhap}
-          placeholder="Tìm trong báo cáo"
-          aria-label="Tìm trong báo cáo"
-          onChange={e => setTimNhap(e.target.value)}
-          onKeyDown={e => {
-            if (e.key === 'Enter') apDungXem()
-          }}
-        />
-      ),
-    })
 
     for (const l of boLoc?.ds ?? []) {
       const opts = (tt.tuyChon[l.k] && tt.tuyChon[l.k].length > 0) ? tt.tuyChon[l.k] : (l.ds ?? [])
@@ -254,7 +238,7 @@ export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: 
   const oDauTienKhaiTay = cfgBC?.loc?.find(l => !l.cheDo || l.cheDo.includes(s.cheDo))
   const macDinhNgoai = useMemo(() => {
     if (khongCoLocDong) return ['khoangNgay']
-    return ['khoangNgay', 'tim', ...(oDauTienKhaiTay ? [oDauTienKhaiTay.k] : [])]
+    return ['khoangNgay', ...(oDauTienKhaiTay ? [oDauTienKhaiTay.k] : [])]
   }, [khongCoLocDong, oDauTienKhaiTay])
 
   const dsKhoa = useMemo(() => oLoc.map(o => o.k), [oLoc])
@@ -554,14 +538,7 @@ const BANG_ANH_XA_DANH_MUC: AnhXaDanhMuc[] = [
     khopTieuDe: ['Hàng hoá', 'Nguyên vật liệu', 'Món', 'Mặt hàng', 'Tên hàng', 'Tên nguyên vật liệu', 'Tên món', 'Tên mặt hàng', 'Tên hàng hoá'],
   },
 
-  // 1.3: Đơn vị tính
-  {
-    nhom: 'dvt',
-    ten: 'Đơn vị tính',
-    laMa: false,
-    khopKhoa: ['dvt', 'donvitinh'],
-    khopTieuDe: ['ĐVT', 'Đơn vị tính'],
-  },
+  // 1.3 Đơn vị tính không tự sinh bộ lọc (T508)
 
   // 1.13: Tài sản cố định
   {
@@ -822,7 +799,7 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
       // Bảng đang xem: áp lọc, nhóm, cột
       const res = bienDoiBang(kh.cols, kh.rows, {
         loc: tt.loc,
-        anKhongPS: tt.anKhongPS,
+        anKhongPS: !!cfg?.anKhongPS && tt.anKhongPS,   // mặc định ẩn, chỉ áp cho báo cáo có tuỳ chọn này (T508)
         nhom: tc?.nhom,
         tongHop: tc?.xemNhom === 'tongHop',
         cot: tc?.cot,
@@ -836,7 +813,7 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
         // Tắt "Cột như đang xem": xuất đủ cột (vẫn áp lọc và nhóm)
         const resDuCot = bienDoiBang(kh.cols, kh.rows, {
           loc: tt.loc,
-          anKhongPS: tt.anKhongPS,
+          anKhongPS: !!cfg?.anKhongPS && tt.anKhongPS,
           nhom: tc?.nhom,
           tongHop: tc?.xemNhom === 'tongHop',
           cot: undefined,

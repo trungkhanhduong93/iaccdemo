@@ -10,7 +10,7 @@ import {
   demTheoGoi,
   type Goi,
 } from '../../app/plan'
-import { cheDoCuaGoi } from '../../app/che-do'
+import { cheDoCuaGoi, CHE_DO, CHE_DO_HOP_LE } from '../../app/che-do'
 import { GoiLogo } from '../GoiLogo'
 import { Icon } from '../Icon'
 
@@ -113,7 +113,7 @@ export const MGoiThueBao: FC<ScreenProps> = () => {
 
               <div className="m-gtb-the-specs">
                 <div>✓ Mở {n.co}/{n.tong} tính năng</div>
-                <div>✓ Chế độ áp dụng: {cd.soHieu} ({cd.ten})</div>
+                <div>✓ Chế độ áp dụng: {CHE_DO_HOP_LE[g].map(m => CHE_DO[m].soHieu).join(', ')}</div>
               </div>
 
               <div className="m-gtb-the-cta">
