@@ -25,6 +25,7 @@
   + Giao T528 làn Windows: prompt chỉ trỏ tới `backup/spec-T528-A.md`, khối LUẬT CẤM ghi thẳng trong prompt.
   + Giao T527 làn WSL: mở tab Anti B, prompt trỏ tới `/mnt/d/IACC-CLOUD/Web-dt/backup/spec-T527-B.md`.
   + T528 xong và đã nghiệm thu thì giao T529.
+  + T530 (phiên khác, `backup/plan-T530.md`) chung file với T527 (`MDtThuChiXem.tsx`, `MXemPhieu.tsx`) và chung `app.css` với T528, T529. Làm T527 trước, T530 giao sau khi T527 đã commit và không có T528, T529 đang chạy.
 - Lần này Anti mất khoảng 13 phút chỉ để nghĩ. Lần sau dặn trong prompt: đọc đúng các dòng spec đã ghi, không dò lại cả file, mỗi ý sửa xong báo một dòng.
 - Lệnh dừng đi qua `orchestration send` hay `terminal send` đều nằm hàng chờ tới khi Anti hết lượt nghĩ. Muốn dừng nhanh thì `worker-stop` luôn.
 - Lúc điều phối có thêm một phiên Claude khác mở trong `D:/IACC-CLOUD/Web-dt`. Trước khi giao, kiểm tra phiên đó không sửa các file trong spec.
