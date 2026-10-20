@@ -68,13 +68,6 @@ export function ApDauBang({ dong, onChange, an, coThue, coCk }: {
 
   return (
     <div className="ct-ap-dau" hidden={an}>
-      {coThue && (
-        <div className="ct-ap-o">
-          <span>Thuế GTGT</span>
-          <Select className="inp sm ct-ap-ts" value={tsChung} aria-label="Thuế GTGT áp cho mọi dòng" onChange={e => apThue(e.target.value)}
-            ds={[...(tsChung === '' ? [{ v: '', t: 'Nhiều mức' }] : []), { v: '0', t: '0%' }, { v: '5', t: '5%' }, { v: '8', t: '8%' }, { v: '10', t: '10%' }]} />
-        </div>
-      )}
       {coCk && (
         <div className="ct-ap-o">
           <span>Chiết khấu</span>
@@ -85,6 +78,13 @@ export function ApDauBang({ dong, onChange, an, coThue, coCk }: {
           <OSoGo key={kieu} val={gt} onChange={v => doiCk(kieu, v)} hien={kieu === 'pt' ? v => String(v).replace('.', ',') : money}
             thapPhan={kieu === 'pt'} max={kieu === 'pt' ? 100 : undefined} className={`inp sm num ${kieu === 'pt' ? 'ct-ap-pt' : 'ct-ap-tien'}`} />
           <span className="ct-ap-dv">{kieu === 'pt' ? '%' : 'đ'}</span>
+        </div>
+      )}
+      {coThue && (
+        <div className="ct-ap-o">
+          <span>Thuế GTGT</span>
+          <Select className="inp sm ct-ap-ts" value={tsChung} aria-label="Thuế GTGT áp cho mọi dòng" onChange={e => apThue(e.target.value)}
+            ds={[...(tsChung === '' ? [{ v: '', t: 'Nhiều mức' }] : []), { v: '0', t: '0%' }, { v: '5', t: '5%' }, { v: '8', t: '8%' }, { v: '10', t: '10%' }]} />
         </div>
       )}
     </div>
