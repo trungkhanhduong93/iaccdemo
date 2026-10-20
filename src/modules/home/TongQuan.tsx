@@ -483,7 +483,7 @@ export function TongQuan({ sc }: ScreenProps) {
   // Gói Free: chọn năm rồi tháng (T230)
   const chonThangFree = (
     <div className="bbt-chon">
-      <Select className="sel-mini" style={{ height: 34, minWidth: 96 }} value={String(namF)} aria-label="Năm"
+      <Select className="sel-mini" style={{ height: 34, minWidth: 124 }} value={String(namF)} aria-label="Năm"
         onChange={e => setNamF(Number(e.target.value))}>
         <option value="2026">Năm 2026</option>
       </Select>

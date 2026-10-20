@@ -447,6 +447,7 @@ export function MTrangChuFree(_props?: Partial<ScreenProps>) {
               </div>
               <div className="m-tcf-kqkd-cot-phai">
                 <span className="m-tcf-kqkd-so-tien dt-blue">{moneyD(d.dtThuan)}</span>
+                <Icon n="chevr" className="ic sm m-tcf-mui-an" />
               </div>
             </div>
 
@@ -523,6 +524,7 @@ export function MTrangChuFree(_props?: Partial<ScreenProps>) {
                   </div>
                   <div className="m-tcf-kqkd-pt-xanh">{pct(bien)}</div>
                 </div>
+                <Icon n="chevr" className="ic sm m-tcf-mui-an" />
               </div>
             </div>
           </div>

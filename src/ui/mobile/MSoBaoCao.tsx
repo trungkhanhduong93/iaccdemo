@@ -443,6 +443,8 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
 
   return (
     <div className={`m-so-bc ${isSoTien ? 'm-so-bc-figma' : ''} ${xoayNgang ? 'xoay-ngang' : ''}`}>
+      {/* Đầu trang, ô tìm, hàng chip dính chung một khối, cuộn không lọt chip xuống dưới đầu trang */}
+      <div className={isSoTien ? 'm-t500-dau-dinh' : undefined}>
       {/* Header riêng theo Figma T500 cho Sổ quỹ tiền mặt và Sổ ngân hàng */}
       {isSoTien && (
         <header className="m-sq-header">
@@ -573,6 +575,7 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
           ))}
         </div>
       )}
+      </div>
 
       {/* Ô tìm kiếm dòng & nút Excel, Xoay cho báo cáo bảng hoặc sổ khác */}
       {!isSoTien && (

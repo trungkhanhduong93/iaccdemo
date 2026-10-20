@@ -976,6 +976,33 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
     return () => document.removeEventListener('mousedown', dong)
   }, [moXemSo])
 
+  // Xem sổ Mua hàng & công nợ NCC, Hao hụt kiểm kê (T505)
+  const [moXemMua, setMoXemMua] = useState(false)
+  const xemMuaRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (!moXemMua) return
+    const dong = (e: MouseEvent) => {
+      if (xemMuaRef.current && !xemMuaRef.current.contains(e.target as Node)) {
+        setMoXemMua(false)
+      }
+    }
+    document.addEventListener('mousedown', dong)
+    return () => document.removeEventListener('mousedown', dong)
+  }, [moXemMua])
+
+  const [moXemKk, setMoXemKk] = useState(false)
+  const xemKkRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (!moXemKk) return
+    const dong = (e: MouseEvent) => {
+      if (xemKkRef.current && !xemKkRef.current.contains(e.target as Node)) {
+        setMoXemKk(false)
+      }
+    }
+    document.addEventListener('mousedown', dong)
+    return () => document.removeEventListener('mousedown', dong)
+  }, [moXemKk])
+
   const [modalQuy, setModalQuy] = useState<string | null>(null)
   const thuChi13 = useMemo(() => thuChi13Thang(cnsHien), [cnsHien])
   // T331: hai biểu đồ 13 tháng chừa cùng phần dưới 0 để đường 0 thẳng hàng hai bên
@@ -1227,14 +1254,41 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
         <section className="bbt-cot col bbt-gon bbt-kho2">
           <div className="bbt-e-ten-hang">
             <h2 className="ten bbt-e-ten"><Icon n="khohang" className="ic sm" /> Mua hàng &amp; công nợ nhà cung cấp</h2>
-            <span className="bbt-kho2-link">
-              {/* Bảng kê mua hàng theo hàng hoá 4.2.7 gom theo mã hàng, dạng tổng hợp, đúng tháng đang xem (T304) */}
-              <Link to="/app/bao-cao/4-2-7" className="bbt-kho-mo" onClick={() => {
-                luuTuyChinh(s.donVi, '4.2.7', { ...(docTuyChinh(s.donVi, '4.2.7') ?? {}), nhom: ['ma'], xemNhom: 'tongHop' })
-                datLocDaXem('/app/bao-cao/4-2-7', {}, String(thangXem))
-              }}>Bảng kê ›</Link>
-              <Link to="/app/bao-cao/4-2-3" className="bbt-kho-mo" onClick={() => datLocDaXem('/app/bao-cao/4-2-3', {}, String(thangXem))}>Công nợ ›</Link>
-            </span>
+            <div className="bbt-dropdown-wrap" ref={xemMuaRef}>
+              <button
+                type="button"
+                className={`bbt-btn-xem${moXemMua ? ' on' : ''}`}
+                onClick={() => setMoXemMua(!moXemMua)}
+              >
+                <span>Xem sổ</span>
+                <Icon n="chevd" className={`ic sm bbt-chev-xem${moXemMua ? ' xoay' : ''}`} />
+              </button>
+              {moXemMua && (
+                <div className="bbt-menu-xem">
+                  <Link
+                    to="/app/bao-cao/4-2-7"
+                    className="bbt-menu-item"
+                    onClick={() => {
+                      setMoXemMua(false)
+                      luuTuyChinh(s.donVi, '4.2.7', { ...(docTuyChinh(s.donVi, '4.2.7') ?? {}), nhom: ['ma'], xemNhom: 'tongHop' })
+                      datLocDaXem('/app/bao-cao/4-2-7', {}, String(thangXem))
+                    }}
+                  >
+                    Bảng kê mua hàng
+                  </Link>
+                  <Link
+                    to="/app/bao-cao/4-2-3"
+                    className="bbt-menu-item"
+                    onClick={() => {
+                      setMoXemMua(false)
+                      datLocDaXem('/app/bao-cao/4-2-3', {}, String(thangXem))
+                    }}
+                  >
+                    Công nợ nhà cung cấp
+                  </Link>
+                </div>
+              )}
+            </div>
           </div>
           <div className="bbt-e-mota">Giá trị hàng mua trong tháng và số tiền còn phải trả</div>
           <div className="bbt-kho2-hai">
@@ -1287,9 +1341,30 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
         <section className="bbt-cot col bbt-gon bbt-kho2">
           <div className="bbt-e-ten-hang">
             <h2 className="ten bbt-e-ten"><Icon n="khohang" className="ic sm" /> Hao hụt kiểm kê</h2>
-            <span className="bbt-kho2-link">
-              <Link to="/app/bao-cao/5-2-15" className="bbt-kho-mo" onClick={() => datLocDaXem('/app/bao-cao/5-2-15', {}, String(thangXem))}>Báo cáo hao hụt ›</Link>
-            </span>
+            <div className="bbt-dropdown-wrap" ref={xemKkRef}>
+              <button
+                type="button"
+                className={`bbt-btn-xem${moXemKk ? ' on' : ''}`}
+                onClick={() => setMoXemKk(!moXemKk)}
+              >
+                <span>Xem sổ</span>
+                <Icon n="chevd" className={`ic sm bbt-chev-xem${moXemKk ? ' xoay' : ''}`} />
+              </button>
+              {moXemKk && (
+                <div className="bbt-menu-xem">
+                  <Link
+                    to="/app/bao-cao/5-2-15"
+                    className="bbt-menu-item"
+                    onClick={() => {
+                      setMoXemKk(false)
+                      datLocDaXem('/app/bao-cao/5-2-15', {}, String(thangXem))
+                    }}
+                  >
+                    Báo cáo hao hụt
+                  </Link>
+                </div>
+              )}
+            </div>
           </div>
           <div className="bbt-e-mota">Chênh lệch giữa tồn thực tế và tồn trên sổ sách</div>
           {/* Gói Free chỉ theo dõi số lượng, không có số tiền thừa, thiếu */}

@@ -320,7 +320,6 @@ export function OLoc({ c, loc }: { c: Col; loc: LocCot }) {
         value={g.vText ?? ''}
         aria-label={`Lọc phân loại cột ${c.t}`}
         onChange={e => loc.dat(c.k, { ...g, vText: e.target.value, opText: 'chua' })}
-        onClick={() => setMo(true)}
       />
       <button
         ref={btnRef}
