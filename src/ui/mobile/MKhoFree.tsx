@@ -1,4 +1,4 @@
-// Trang chủ gói Free điện thoại: khối Mua hàng & công nợ NCC, Hao hụt kiểm kê (T324)
+// Trang chủ gói Free điện thoại: khối Mua hàng & công nợ NCC, Hao hụt kiểm kê (T324, T498 Figma)
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { useSession } from '../../app/session'
@@ -8,6 +8,7 @@ import { soLieuCongNo, soLieuKiemKe, soLieuMua } from '../../modules/home/khoFre
 import { datLocDaXem, docTuyChinh, luuTuyChinh } from '../bao-cao/tuyChinhBC'
 import { moneyD, pct, short } from '../format'
 import { Icon } from '../Icon'
+import { FigmaGradientIcon } from '../FigmaIcon'
 
 export function MKhoFree({ selCns, thang }: { selCns: string[]; thang: number }) {
   const { s } = useSession()
@@ -26,34 +27,32 @@ export function MKhoFree({ selCns, thang }: { selCns: string[]; thang: number })
 
   return (
     <>
-      {/* Khối Mua hàng & công nợ nhà cung cấp */}
-      <div className="m-tc-the-ivt m-free-the m-tck-khoi">
-        <div className="m-tc-the-head">
-          <div className="m-tc-the-tieu-hop">
-            <h3 className="m-tc-the-tieu">
-              <Icon n="khohang" className="ic sm" /> Mua hàng &amp; Công nợ
-            </h3>
+      {/* 4. Khối Mua hàng & công nợ nhà cung cấp theo Figma */}
+      <div className="m-tcf-figma-card">
+        <div className="m-tcf-figma-card-head">
+          <div className="m-tcf-figma-head-trai">
+            <FigmaGradientIcon name="mua-hang" size={22} />
+            <h3 className="m-tcf-figma-card-tieu">Mua hàng &amp; công nợ</h3>
           </div>
         </div>
-        <div className="bbt-e-mota">Giá trị hàng mua trong tháng và số tiền còn phải trả</div>
+        <div className="m-tcf-figma-card-mota">Giá trị hàng mua trong tháng và số tiền còn phải trả</div>
 
-        <div className="m-tck-khoi-kpi">
-          <div className="m-tck-kpi-h1">
-            <span>Giá trị mua hàng {thang === 10 ? 'tháng này' : `tháng ${thang}`}</span>
-            <b className="m-tck-kpi-so mua">{moneyD(mua.nhap)}</b>
-          </div>
-          <div className="m-tck-kpi-h2">
-            <small>
+        {/* Tile 1: Giá trị mua hàng */}
+        <div className="m-tcf-kpi-tile">
+          <div className="m-tcf-kpi-tile-lbl">Giá trị mua hàng {thang === 10 ? 'tháng này' : `tháng ${thang}`}</div>
+          <div className="m-tcf-kpi-tile-tien tien-blue">{moneyD(mua.nhap)}</div>
+          <div className="m-tcf-kpi-tile-bot">
+            <span>
               {mua.soDon} phiếu
               {mua.soSanh && (
-                <> · <span className={mua.soSanh.pct > 0 ? 'm-tck-tang' : 'm-tck-giam'} title={`So với ${mua.soSanh.nhan} (${short(mua.soSanh.truoc)})`}>
+                <> · <span style={{ color: mua.soSanh.pct > 0 ? 'var(--green, #138a52)' : 'var(--red, #c2362b)' }}>
                   {mua.soSanh.pct > 0 ? '▲' : '▼'} {pct(Math.abs(mua.soSanh.pct))} so với cùng kỳ
                 </span></>
               )}
-            </small>
+            </span>
             <Link
               to="/app/bao-cao/4-2-7"
-              className="m-tck-kpi-nut"
+              className="m-tcf-kpi-link"
               onClick={() => {
                 luuTuyChinh(s.donVi, '4.2.7', { ...(docTuyChinh(s.donVi, '4.2.7') ?? {}), nhom: ['ma'], xemNhom: 'tongHop' })
                 datLocDaXem('/app/bao-cao/4-2-7', {}, String(thang))
@@ -64,16 +63,15 @@ export function MKhoFree({ selCns, thang }: { selCns: string[]; thang: number })
           </div>
         </div>
 
-        <div className="m-tck-khoi-kpi m-tck-khoi-kpi-ngan">
-          <div className="m-tck-kpi-h1">
-            <span>Công nợ phải trả</span>
-            <b className="m-tck-kpi-so no">{moneyD(no.cuoiRong)}</b>
-          </div>
-          <div className="m-tck-kpi-h2">
-            <small>{no.soNcc} nhà cung cấp</small>
+        {/* Tile 2: Công nợ phải trả */}
+        <div className="m-tcf-kpi-tile">
+          <div className="m-tcf-kpi-tile-lbl">Công nợ phải trả</div>
+          <div className="m-tcf-kpi-tile-tien tien-orange">{moneyD(no.cuoiRong)}</div>
+          <div className="m-tcf-kpi-tile-bot">
+            <span>{no.soNcc} nhà cung cấp</span>
             <Link
               to="/app/bao-cao/4-2-3"
-              className="m-tck-kpi-nut"
+              className="m-tcf-kpi-link"
               onClick={() => datLocDaXem('/app/bao-cao/4-2-3', {}, String(thang))}
             >
               Công nợ ›
@@ -81,126 +79,191 @@ export function MKhoFree({ selCns, thang }: { selCns: string[]; thang: number })
           </div>
         </div>
 
-        {/* Dòng chảy công nợ: khớp dòng Tổng cộng báo cáo 4.2.3 */}
-        <div className="m-tck-dong-chay">
-          <div className="m-tck-dong-t">
-            <div className="m-tck-dong-l"><b>Nợ đầu kỳ</b><span>Còn nợ từ đầu tháng</span></div>
-            <div className="m-tck-dong-r"><b>{moneyD(no.dau)}</b></div>
+        {/* Dòng đối chiếu công nợ */}
+        <div className="m-tcf-kqkd-bang">
+          <div className="m-tcf-kqkd-hang">
+            <div className="m-tcf-kqkd-cot-trai">
+              <div className="m-tcf-kqkd-ten-hang">Nợ đầu kỳ</div>
+              <div className="m-tcf-kqkd-sub-hang">Còn nợ từ đầu tháng</div>
+            </div>
+            <div className="m-tcf-kqkd-cot-phai">
+              <span className="m-tcf-kqkd-so-tien">{moneyD(no.dau)}</span>
+            </div>
           </div>
-          <div className="m-tck-dong-t">
-            <div className="m-tck-dong-l"><b>+ Phát sinh mua nợ</b><span>Mua chưa thanh toán</span></div>
-            <div className="m-tck-dong-r"><b>{moneyD(no.phatSinh)}</b></div>
+          <div className="m-tcf-kqkd-hang">
+            <div className="m-tcf-kqkd-cot-trai">
+              <div className="m-tcf-kqkd-ten-hang">+ Phát sinh mua nợ</div>
+              <div className="m-tcf-kqkd-sub-hang">Mua chưa thanh toán</div>
+            </div>
+            <div className="m-tcf-kqkd-cot-phai">
+              <span className="m-tcf-kqkd-so-tien">{moneyD(no.phatSinh)}</span>
+            </div>
           </div>
-          <div className="m-tck-dong-t">
-            <div className="m-tck-dong-l"><b>− Đã thanh toán</b></div>
-            <div className="m-tck-dong-r"><b>{moneyD(no.traHang + no.thanhToan)}</b></div>
+          <div className="m-tcf-kqkd-hang">
+            <div className="m-tcf-kqkd-cot-trai">
+              <div className="m-tcf-kqkd-ten-hang">− Đã thanh toán</div>
+            </div>
+            <div className="m-tcf-kqkd-cot-phai">
+              <span className="m-tcf-kqkd-so-tien">{moneyD(no.traHang + no.thanhToan)}</span>
+            </div>
           </div>
-          <div className="m-tck-dong-t m-tck-tong">
-            <div className="m-tck-dong-l"><b>= Nợ cuối kỳ</b><span>Còn phải trả đến hôm nay</span></div>
-            <div className="m-tck-dong-r"><b>{moneyD(no.cuoiRong)}</b></div>
-          </div>
-        </div>
-
-        <div className="m-tck-ds">
-          <div className="m-tck-nhom-wrap">
-            <div className="m-tck-nhom">Mặt hàng mua nhiều nhất</div>
-            {mua.topMh.map(x => (
-              <div className="m-tck-dong" key={x.ma}>
-                <span className="m-tck-ten"><span className="m-tck-ma">{x.ma}</span>{x.ten}</span>
-                <b>{short(x.tien)}</b>
-              </div>
-            ))}
-          </div>
-          <div className="m-tck-nhom-wrap">
-            <div className="m-tck-nhom">Nhà cung cấp nợ nhiều nhất</div>
-            {no.top.map(x => (
-              <div className="m-tck-dong" key={x.ten}>
-                <span className="m-tck-ten" title={x.ten}>{x.ten}</span>
-                <b>{short(x.v)}</b>
-              </div>
-            ))}
+          <div className="m-tcf-kqkd-hang">
+            <div className="m-tcf-kqkd-cot-trai">
+              <div className="m-tcf-kqkd-ten-hang">= Nợ cuối kỳ</div>
+              <div className="m-tcf-kqkd-sub-hang">Còn phải trả đến hôm nay</div>
+            </div>
+            <div className="m-tcf-kqkd-cot-phai">
+              <span className="m-tcf-kqkd-so-tien" style={{ color: 'var(--orange, #f28020)' }}>{moneyD(no.cuoiRong)}</span>
+            </div>
           </div>
         </div>
 
-        <div className="m-tck-chan">
-          <Link to="/app/mua-hang/4-1-1/moi" className="m-tck-btn">
-            <Icon n="plus" className="ic sm" />Tạo phiếu mua hàng
-          </Link>
-          <Link to="/app/tien/2-1-1/moi?loai=chi&ly=CHI02" className="m-tck-btn">
-            <Icon n="plus" className="ic sm" />Thanh toán nhà cung cấp
-          </Link>
-        </div>
+        {/* Danh sách mặt hàng mua nhiều nhất */}
+        <div className="m-tcf-ds-tieu">MẶT HÀNG MUA NHIỀU NHẤT</div>
+        {mua.topMh.map(x => (
+          <div className="m-tcf-ds-dong" key={x.ma}>
+            <div className="m-tcf-ds-trai">
+              <span className="m-tcf-ma-chip">{x.ma}</span>
+              <span className="m-tcf-ds-ten">{x.ten}</span>
+            </div>
+            <span className="m-tcf-ds-phai">{short(x.tien)}</span>
+          </div>
+        ))}
+
+        {/* Danh sách nhà cung cấp nợ nhiều nhất */}
+        <div className="m-tcf-ds-tieu">NHÀ CUNG CẤP NỢ NHIỀU NHẤT</div>
+        {no.top.map(x => (
+          <div className="m-tcf-ds-dong" key={x.ten}>
+            <div className="m-tcf-ds-trai">
+              <span className="m-tcf-ds-ten" title={x.ten}>{x.ten}</span>
+            </div>
+            <span className="m-tcf-ds-phai cam">{short(x.v)}</span>
+          </div>
+        ))}
+
+        {/* Nút hành động Mua hàng */}
+        <Link
+          to="/app/mua-hang/4-1-1/moi"
+          className="m-tcf-nut-vien"
+          style={{ marginTop: 14 }}
+        >
+          <Icon n="plus" className="ic sm" />
+          <span>Tạo phiếu mua hàng</span>
+        </Link>
+        <Link
+          to="/app/tien/2-1-1/moi?loai=chi&ly=CHI02"
+          className="m-tcf-nut-vien"
+          style={{ marginTop: 8 }}
+        >
+          <Icon n="plus" className="ic sm" />
+          <span>Thanh toán nhà cung cấp</span>
+        </Link>
       </div>
 
-      {/* Khối Hao hụt kiểm kê */}
-      <div className="m-tc-the-ivt m-free-the m-tck-khoi">
-        <div className="m-tc-the-head">
-          <div className="m-tc-the-tieu-hop">
-            <h3 className="m-tc-the-tieu">
-              <Icon n="khohang" className="ic sm" /> Hao hụt kiểm kê
-            </h3>
+      {/* 5. Khối Hao hụt kiểm kê theo Figma */}
+      <div className="m-tcf-figma-card">
+        <div className="m-tcf-figma-card-head">
+          <div className="m-tcf-figma-head-trai">
+            <FigmaGradientIcon name="nhap-kho" size={22} />
+            <h3 className="m-tcf-figma-card-tieu">Hao hụt kiểm kê</h3>
           </div>
-          <div className="m-tck-links">
-            <Link
-              to="/app/bao-cao/5-2-15"
-              className="m-tck-link"
-              onClick={() => datLocDaXem('/app/bao-cao/5-2-15', {}, String(thang))}
+          <Link
+            to="/app/bao-cao/5-2-15"
+            className="m-tcf-figma-link-bc"
+            onClick={() => datLocDaXem('/app/bao-cao/5-2-15', {}, String(thang))}
+          >
+            Báo cáo hao hụt ›
+          </Link>
+        </div>
+        <div className="m-tcf-figma-card-mota">Chênh lệch giữa tồn thực tế và tồn trên sổ sách</div>
+
+        {/* Hero: Mặt hàng chênh lệch */}
+        <div className="m-tcf-hero-box">
+          <div className="m-tcf-hero-lbl">Mặt hàng chênh lệch {thang === 10 ? 'tháng này' : `tháng ${thang}`}</div>
+          <div className="m-tcf-kk-hero-row">
+            <div
+              className="m-tcf-kk-so-lon"
+              style={{ color: kk.thieu + kk.thua > 0 ? 'var(--red, #c2362b)' : 'var(--green, #138a52)' }}
             >
-              Báo cáo hao hụt ›
-            </Link>
+              {kk.thieu + kk.thua}
+            </div>
+            <div className="m-tcf-kk-pills">
+              <span className="m-tcf-pill do">Thiếu {kk.thieu}</span>
+              <span className="m-tcf-pill xanh">Thừa {kk.thua}</span>
+              <span className="m-tcf-pill lam">Đã kiểm {kk.soKiem}/{kk.tongMh}</span>
+            </div>
           </div>
         </div>
-        <div className="bbt-e-mota">Chênh lệch giữa tồn thực tế và tồn trên sổ sách</div>
 
-        {/* Gói Free chỉ theo dõi số lượng, không có số tiền thừa, thiếu */}
-        <div className="m-tck-hoi">Mặt hàng chênh lệch {thang === 10 ? 'tháng này' : `tháng ${thang}`}</div>
-        <div className="m-tck-tra m-tck-tra-lon" style={{ color: kk.thieu + kk.thua > 0 ? 'var(--red, #c2362b)' : 'var(--green, #138a52)' }}>
-          {kk.thieu + kk.thua}
-        </div>
-        <div className="m-tck-phu">
-          Thiếu {kk.thieu} · thừa {kk.thua} · đã kiểm {kk.soKiem}/{kk.tongMh}
-        </div>
-
-        <div className="m-tck-nhom">Tiến độ kiểm kê theo cửa hàng</div>
-        <div className="m-tck-tien-do">
+        {/* Tiến độ kiểm kê theo cửa hàng */}
+        <div className="m-tcf-ds-tieu">TIẾN ĐỘ KIỂM KÊ THEO CỬA HÀNG</div>
+        <div style={{ marginTop: 4 }}>
           {kk.theoCn.map(x => (
-            <div className="m-tck-cn" key={x.cn}>
-              <span className="m-tck-ten">{x.cn.replace(/^Phố Mây /, '')}</span>
-              <span className="m-tck-thanh"><i style={{ width: `${x.tong ? Math.min(100, (x.soKiem / x.tong) * 100) : 0}%` }} /></span>
-              <span className="m-tck-so">{x.soKiem}/{x.tong}</span>
-              {x.daKiem
-                ? <span className={x.lech ? 'm-tck-thieu' : 'm-tck-giam'}>{x.lech ? `lệch ${x.lech}` : 'khớp'}</span>
-                : <span className="m-tck-thieu">chưa kiểm</span>}
+            <div className="m-tcf-tiendo-dong" key={x.cn}>
+              <span className="m-tcf-tiendo-ten">{x.cn.replace(/^Phố Mây /, '')}</span>
+              <div className="m-tcf-tiendo-thanh">
+                <div
+                  className="m-tcf-tiendo-ruot"
+                  style={{ width: `${x.tong ? Math.min(100, (x.soKiem / x.tong) * 100) : 0}%` }}
+                />
+              </div>
+              <span className="m-tcf-tiendo-so">{x.soKiem}/{x.tong}</span>
+              {x.daKiem ? (
+                <span className={x.lech ? 'm-tcf-tiendo-lech' : 'm-tcf-tiendo-khop'}>
+                  {x.lech ? `lệch ${x.lech}` : 'khớp'}
+                </span>
+              ) : (
+                <span className="m-tcf-tiendo-lech">chưa kiểm</span>
+              )}
             </div>
           ))}
         </div>
 
-        <div className="m-tck-ds">
-          <div className="m-tck-nhom-wrap">
-            <div className="m-tck-nhom">Thiếu nhiều nhất</div>
-            {kk.topThieu.length ? kk.topThieu.map(x => (
-              <div className="m-tck-dong" key={x.cn + x.ma}>
-                <span className="m-tck-ten" title={x.cn}><span className="m-tck-ma">{x.ma}</span>{x.ten}</span>
-                <b className="m-tck-thieu">−{Math.abs(x.lech).toLocaleString('vi-VN')} {x.dvt}</b>
+        {/* Thiếu nhiều nhất */}
+        <div className="m-tcf-ds-tieu">THIẾU NHIỀU NHẤT</div>
+        {kk.topThieu.length ? (
+          kk.topThieu.map(x => (
+            <div className="m-tcf-ds-dong" key={x.cn + x.ma}>
+              <div className="m-tcf-ds-trai">
+                <span className="m-tcf-ma-chip">{x.ma}</span>
+                <span className="m-tcf-ds-ten" title={x.cn}>{x.ten}</span>
               </div>
-            )) : <div className="m-tck-trong">Không có mặt hàng thiếu</div>}
+              <span className="m-tcf-ds-phai do">−{Math.abs(x.lech).toLocaleString('vi-VN')} {x.dvt}</span>
+            </div>
+          ))
+        ) : (
+          <div style={{ padding: '8px 0', fontSize: 13, color: 'var(--muted, #6b7280)' }}>
+            Không có mặt hàng thiếu
           </div>
-          <div className="m-tck-nhom-wrap">
-            <div className="m-tck-nhom">Thừa nhiều nhất</div>
-            {kk.topThua.length ? kk.topThua.map(x => (
-              <div className="m-tck-dong" key={x.cn + x.ma}>
-                <span className="m-tck-ten" title={x.cn}><span className="m-tck-ma">{x.ma}</span>{x.ten}</span>
-                <b className="m-tck-thua">+{x.lech.toLocaleString('vi-VN')} {x.dvt}</b>
-              </div>
-            )) : <div className="m-tck-trong">Không có mặt hàng thừa</div>}
-          </div>
-        </div>
+        )}
 
-        <div className="m-tck-chan m-tck-chan-1">
-          <Link to="/app/kho/5-1-10/moi" className="m-tck-btn m-tck-btn-full">
-            <Icon n="plus" className="ic sm" />Kiểm kê ngay
-          </Link>
-        </div>
+        {/* Thừa nhiều nhất */}
+        <div className="m-tcf-ds-tieu">THỪA NHIỀU NHẤT</div>
+        {kk.topThua.length ? (
+          kk.topThua.map(x => (
+            <div className="m-tcf-ds-dong" key={x.cn + x.ma}>
+              <div className="m-tcf-ds-trai">
+                <span className="m-tcf-ma-chip">{x.ma}</span>
+                <span className="m-tcf-ds-ten" title={x.cn}>{x.ten}</span>
+              </div>
+              <span className="m-tcf-ds-phai xanh">+{x.lech.toLocaleString('vi-VN')} {x.dvt}</span>
+            </div>
+          ))
+        ) : (
+          <div style={{ padding: '8px 0', fontSize: 13, color: 'var(--muted, #6b7280)' }}>
+            Không có mặt hàng thừa
+          </div>
+        )}
+
+        {/* Nút Kiểm kê ngay */}
+        <Link
+          to="/app/kho/5-1-10/moi"
+          className="m-tcf-nut-vien"
+          style={{ marginTop: 14 }}
+        >
+          <Icon n="plus" className="ic sm" />
+          <span>Kiểm kê ngay</span>
+        </Link>
       </div>
     </>
   )
