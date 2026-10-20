@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T504 | Danh sách chứng từ (sửa tiếp T496): bộ lọc nâng cao có lại mục Cấu hình tham số lọc như IVT. Thời gian, Tìm kiếm nằm trong danh sách bật/tắt, mặc định bật, tối đa 4 ô ra ngoài. Ô tìm, ô ngày giữ kiểu Figma; Đối tượng, Nguồn, Lý do, Loại phiếu bật ra ngoài thì xếp sau nút phễu theo thứ tự đã kéo | Trum | Đang làm | Sửa `src/ui/LocNangCao.tsx`, `VoucherScreen.tsx`, `app.css` (mục cuối T504) |
 | T500 | Giao diện điện thoại theo Figma: danh sách Báo cáo (Truy cập nhanh gần đây, đã ghim, nhóm báo cáo); Sổ quỹ tiền mặt, Sổ ngân hàng (chip lọc, nút lọc chỉ icon, 4 thẻ tổng, chi tiết theo ngày), không làm thanh In, Xuất báo cáo ở đáy | Trum | Đang làm | Chỉ điện thoại |
 | T498 | Giao diện điện thoại theo Figma: Trang chủ (Doanh thu xanh dương, % chi phí cam, thanh tab giữ nguyên), Nghiệp vụ, Thu chi (danh sách, xem, tạo, sửa phiếu, sheet thao tác, sheet chọn đối tượng, bộ lọc) | Trum | Đang làm | Chỉ điện thoại. Sửa phần điện thoại của `MXemPhieu.tsx` (T436 làm phần web, đồng bộ sau) |
 | T499 | Màn Báo cáo trên web: nút xuất báo cáo đổi icon Excel sang icon tải xuống | Trum | Đang làm | Chỉ đổi icon |
