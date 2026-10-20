@@ -2,6 +2,9 @@
 
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
+## 21/10/2026
+- T531: Danh sách Chi phí phân bổ và các danh mục kiểu chứng từ: bảng nằm sát hàng lọc, không còn khoảng trống lớn ở giữa.
+
 ## 20/10/2026
 - T526: Điện thoại, lập phiếu: ở Tất cả chi nhánh bấm thêm mới thì chọn chi nhánh trước, phiếu sau trong phiên dùng lại chi nhánh đó. Ô quỹ chỉ hiện quỹ đúng loại tiền và chi nhánh. Ô nhập nền trắng, ô chỉ đọc nền xám. Phiếu mới để trống, phiếu lưu giữ trong phiên, F5 về dữ liệu mẫu. Chip loại thu chi có màu. Gói Free chỉ có Diễn giải và Thành tiền.
 

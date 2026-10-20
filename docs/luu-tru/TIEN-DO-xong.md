@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T531 | Chi phí phân bổ (8.1.1): bảng tụt xuống quá thấp so với hàng lọc. Lớp bọc thanh lọc trong `CatalogScreen.tsx` ăn luật `.voucher-split .voucher-top { flex: 1 }`, thêm `flex: none` | Trum | 21/10/2026 | |
 | T526 | Điện thoại, lập phiếu chứng từ theo logic web: ở Tất cả chi nhánh bấm thêm mới thì trượt bảng chọn chi nhánh và nhớ cho phiếu sau; ô chọn quỹ lọc đúng loại tiền và chi nhánh; ô nhập nền trắng, ô chỉ đọc nền xám; phiếu mới để trống, lưu trong phiên, F5 về dữ liệu demo; chip loại thu chi có màu; bản Free phiếu thu chi chỉ Diễn giải và Thành tiền | Trum | Xong | Chỉ điện thoại. Anti làm, Claude nghiệm thu. Không sửa `MXemPhieu.tsx` (T436 giữ), `Shell.tsx` (T138) |
 | T524 | Web, form toàn màn hình thẻ chi phí phân bổ (`CatalogScreen`): nút lúc xem bỏ cỡ nhỏ, chân form cao bằng lúc sửa; phiếu `ChungTuForm` đo đã bằng nhau | Trum | 20/10/2026 | [2026-10-20-trum-chan-form-xem-bang-sua](../nhat-ky/2026-10-20-trum-chan-form-xem-bang-sua.md) |
 | T511 | Web, danh mục và báo cáo: hàng lọc cùng kiểu T510, có nút Lọc chấm cam, icon đồng bộ, Excel và Tuỳ chỉnh cột lên hàng trên; Danh mục cửa hàng bỏ tiêu đề, thay bằng hàng lọc và nút Lọc | Trum | 20/10/2026 | 2026-10-20-trum-hang-loc-xong.md |

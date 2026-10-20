@@ -387,7 +387,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
       <section className={dsct ? 'card voucher-top' : 'card dm-bang'}>
         {/* Danh sách kiểu chứng từ: thanh công cụ như danh sách thu chi (T511: 1 hàng lọc như VoucherScreen; Tuỳ chỉnh cột, Excel xuống hàng 2 phải) */}
         {dsct ? (
-          <div className="voucher-top" style={{ border: 0, borderRadius: 0, boxShadow: 'none' }}>
+          <div className="voucher-top" style={{ flex: 'none', border: 0, borderRadius: 0, boxShadow: 'none' }}>
             <div className="ds-toolbar-figma">
               <BoLoc
                 ds={oLocDsct}
@@ -455,7 +455,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
             </div>
           </div>
         ) : (
-          <div className="voucher-top" style={{ border: 0, borderRadius: 0, boxShadow: 'none' }}>
+          <div className="voucher-top" style={{ flex: 'none', border: 0, borderRadius: 0, boxShadow: 'none' }}>
             <div className="ds-toolbar-figma">
               <BoLoc
                 ds={oLocDm}

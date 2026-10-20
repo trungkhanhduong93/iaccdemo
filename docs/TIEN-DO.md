@@ -11,8 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T530 | Danh sách chứng từ web: bỏ khung xem chi tiết phiếu ở dưới bảng (dòng "Chi tiết …", nút Xem chi tiết, Thu gọn), xem phiếu bằng đúp chuột | Trum | Đang làm | Đợt 1, giao Anti Windows chung T531, T533, T534. Sửa `CatalogScreen.tsx`, `ChungTuBanHang.tsx`, `app.css` (mục cuối T530) |
-| T531 | Chi phí phân bổ (8.1.1): bảng danh sách tụt xuống quá thấp so với hàng lọc | Trum | Đang làm | Đợt 1, cùng worker T530. Sửa `CatalogScreen.tsx`, `app.css` (mục cuối T530) |
+| T530 | Danh sách chứng từ web: bỏ khung xem chi tiết phiếu ở dưới bảng (dòng "Chi tiết …", nút Xem chi tiết, Thu gọn), xem phiếu bằng đúp chuột | Trum | Đang làm | Đợt 1, giao Anti Windows chung T533, T534. Sửa `CatalogScreen.tsx`, `ChungTuBanHang.tsx`, `app.css` (mục cuối T530) |
 | T532 | Icon nét Linear: báo cáo con trong danh sách Báo cáo (nhóm giữ icon khối), các mục trong menu nút Thêm mới | Trum | Đang làm | Đợt 1, giao Anti WSL. Sửa `bao-cao/TrungTam.tsx`, `CongCuDs.tsx`; không sửa `app.css` |
 | T533 | Web: icon khối đang xanh cam đổi sang xanh đậm nhạt như điện thoại (T520) | Trum | Đang làm | Đợt 1, cùng worker T530. Sửa `app.css` (mục cuối T530) |
 | T534 | Hàng lọc: ô ngày tháng có icon lịch dính sát chữ ngày | Trum | Đang làm | Đợt 1, cùng worker T530. Sửa `ChonNgay.tsx` hoặc `app.css` (mục cuối T530) |
