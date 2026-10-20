@@ -1178,7 +1178,7 @@ export function CatalogPanel({
               <span className="grow" />
               {/* Tiện ích như phiếu thu chi: Sao chép, Xoá (T297) */}
               {!chiXem && (cauHinh?.tienIch?.saoChep?.(formVal) || cauHinh?.tienIch?.xoa?.(formVal)) && (
-                <Dropdown btnClass="btn sm" align="end" width={180} label={<><Icon n="more" className="ic sm" />Tiện ích</>}>
+                <Dropdown btnClass="btn" align="end" width={180} label={<><Icon n="more" className="ic sm" />Tiện ích</>}>
                   {dongMenu => <>
                     {cauHinh?.tienIch?.saoChep?.(formVal) && (
                       <MenuItem icon="copy" onClick={() => { dongMenu(); saoChep() }}>Sao chép</MenuItem>
@@ -1189,8 +1189,8 @@ export function CatalogPanel({
                   </>}
                 </Dropdown>
               )}
-              {!chiXem && <button type="button" className="btn sm pri" onClick={() => setXem(false)}><Icon n="edit" className="ic sm" />Sửa (Ctrl+E)</button>}
-              <button type="button" className="btn sm" onClick={onDong}>Đóng (Esc)</button>
+              {!chiXem && <button type="button" className="btn pri" onClick={() => setXem(false)}><Icon n="edit" className="ic sm" />Sửa (Ctrl+E)</button>}
+              <button type="button" className="btn" onClick={onDong}>Đóng (Esc)</button>
             </>
           ) : (
             <>
