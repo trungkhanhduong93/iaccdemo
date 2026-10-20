@@ -11,6 +11,8 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T500 | Giao diện điện thoại theo Figma: danh sách Báo cáo (Truy cập nhanh gần đây, đã ghim, nhóm báo cáo); Sổ quỹ tiền mặt, Sổ ngân hàng (chip lọc, nút lọc chỉ icon, 4 thẻ tổng, chi tiết theo ngày), không làm thanh In, Xuất báo cáo ở đáy | Trum | Đang làm | Chỉ điện thoại |
+| T498 | Giao diện điện thoại theo Figma: Trang chủ (Doanh thu xanh dương, % chi phí cam, thanh tab giữ nguyên), Nghiệp vụ, Thu chi (danh sách, xem, tạo, sửa phiếu, sheet thao tác, sheet chọn đối tượng, bộ lọc) | Trum | Đang làm | Chỉ điện thoại. Sửa phần điện thoại của `MXemPhieu.tsx` (T436 làm phần web, đồng bộ sau) |
 | T499 | Màn Báo cáo trên web: nút xuất báo cáo đổi icon Excel sang icon tải xuống | Trum | Đang làm | Chỉ đổi icon |
 | T497 | Phiếu máy tính theo Figma: ô chọn mã hàng bỏ dòng "+ Thêm … mới" ở đáy, thay bằng hàng nút icon (+) thêm mới, ↻ tải lại ở đầu danh sách; màn xem chi tiết phiếu chỉ đổi thanh nút đáy (Tiện ích, Bỏ ghi sổ, In phiếu, Sửa) và icon theo Figma, còn lại giữ như cũ | Trum | Đang làm | Giao chung đợt với T496. Không sửa `MXemPhieu.tsx` (T436) |
 | T496 | Màn danh sách chứng từ (thành phần chung, cả Free lẫn Pro) theo Figma Thu chi: thanh công cụ theo frame 46:177, nút phễu chỉ còn icon đặt mép trái (giữ số đếm, rê chuột hiện "Bộ lọc"); popover lọc cột theo 40:265; menu thao tác hàng loạt theo 42:577; bỏ thanh "Chi tiết … Mở chi tiết" dưới lưới. Giữ như iaccdemo: hàng trạng thái ghi sổ, thành phần trong bộ lọc nâng cao, lưới danh sách. Điện thoại giữ nguyên | Trum | Đang làm | Làm sau T495 vì cùng sửa `app.css`. Sửa `VoucherScreen.tsx`, `app.css` |
