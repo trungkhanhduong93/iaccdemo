@@ -463,7 +463,7 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
           <div className="m-sq-tac-vu">
             <button
               type="button"
-              className={`m-sq-btn-ic${hienTim ? ' active' : ''}`}
+              className={`m-sq-btn-ic${hienTim ? ' on' : ''}`}
               onClick={() => setHienTim(v => !v)}
               aria-label="Tìm kiếm"
             >
@@ -509,68 +509,46 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
         </div>
       )}
 
-      {/* Hàng chip cuộn ngang: Sổ quỹ / Sổ ngân hàng theo Figma T500, các sổ khác giữ cũ */}
+      {/* Hàng chip cuộn ngang: Sổ quỹ / Sổ ngân hàng theo Figma T500, các sổ khác đồng bộ thiết kế (T521) */}
       {isSoTien ? (
-        <div className="m-t500-chip-hang">
-          {/* Nút bộ lọc: CHỈ ICON phễu + huy hiệu số đếm, KHÔNG chữ "Bộ lọc" (Trum chốt) */}
+        <div className="m-tc-loc-bar m-t500-chip-hang">
+          {/* Nút bộ lọc: icon phễu đồng bộ Thu chi (T521) */}
           <button
             type="button"
-            className="m-t500-chip-filter"
+            className={`m-tc-btn-loc-vuong m-ds-nut-loc-vuong m-ds-nut-loc${soLuongLoc > 0 ? ' co-loc' : ''}`}
             onClick={() => setMoLoc(true)}
             aria-label="Bộ lọc"
           >
             <Icon n="filter" className="ic sm" />
-            {soLuongLoc > 0 && <span className="m-t500-filter-badge">{soLuongLoc}</span>}
+            {soLuongLoc > 0 && <span className="m-tc-loc-cham" />}
           </button>
 
-          {/* Chip kỳ: Tháng 9/2026 ˅ nền xanh nhạt, viền xanh */}
-          <button
-            type="button"
-            className="m-t500-chip m-t500-chip-ky"
-            onClick={() => setMoLoc(true)}
-          >
-            <span>{tenKy}</span>
-            <Icon n="chevd" className="ic xs" />
-          </button>
-
-          {/* Chip Quỹ hoặc TK */}
-          <button
-            type="button"
-            className="m-t500-chip"
-            onClick={() => setMoLoc(true)}
-          >
-            <span>{isSoQuy ? `Quỹ: ${chonQuy ?? 'Tất cả'}` : `TK: ${chonTk ?? 'Tất cả'}`}</span>
-            <Icon n="chevd" className="ic xs" />
-          </button>
-
-          {/* Chip CN */}
-          <button
-            type="button"
-            className="m-t500-chip"
-            onClick={() => setMoLoc(true)}
-          >
-            <span>CN: {tenCn}</span>
-            <Icon n="chevd" className="ic xs" />
-          </button>
+          <span className="m-chip-xem">{tenKy}</span>
+          <span className="m-chip-xem">{isSoQuy ? `Quỹ: ${chonQuy ?? 'Tất cả'}` : `TK: ${chonTk ?? 'Tất cả'}`}</span>
+          <span className="m-chip-xem">CN: {tenCn}</span>
         </div>
       ) : (
-        /* Hàng chip lọc cũ cho các báo cáo khác */
-        <div className="m-sbc-loc-hang">
-          <span className="m-sbc-chip m-sbc-chip-tinh">
-            <span className="m-sbc-chip-nhan">Thời gian: {tenKy}</span>
-          </span>
+        /* Hàng chip lọc cho các báo cáo khác (T521) */
+        <div className="m-tc-loc-bar m-sbc-loc-hang">
+          <button
+            type="button"
+            className={`m-tc-btn-loc-vuong m-ds-nut-loc-vuong m-ds-nut-loc${soLuongLoc > 0 ? ' co-loc' : ''}`}
+            onClick={() => setMoLoc(true)}
+            aria-label="Bộ lọc"
+          >
+            <Icon n="filter" className="ic sm" />
+            {soLuongLoc > 0 && <span className="m-tc-loc-cham" />}
+          </button>
+
+          <span className="m-chip-xem">Thời gian: {tenKy}</span>
 
           {cfg.theoCn && (
-            <span className="m-sbc-chip m-sbc-chip-tinh">
-              <span className="m-sbc-chip-nhan">Kho/CN: {tenCn}</span>
-            </span>
+            <span className="m-chip-xem">Kho/CN: {tenCn}</span>
           )}
 
           {chipDieuKienKhac.map(c => (
-            <span key={c.k} className="m-sbc-chip m-sbc-chip-tinh">
-              <span className="m-sbc-chip-nhan">
-                {c.nhan}: {c.giaTri}
-              </span>
+            <span key={c.k} className="m-chip-xem">
+              {c.nhan}: {c.giaTri}
             </span>
           ))}
         </div>

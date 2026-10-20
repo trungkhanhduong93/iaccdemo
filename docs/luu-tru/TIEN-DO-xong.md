@@ -4,6 +4,10 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T522 | Điện thoại, màn xem, sửa, tạo phiếu: thẻ trắng sát mép, chữ cách mép 16px, footer đáy không che nội dung cuối; đã soát mọi loại chứng từ | Trum | 20/10/2026 | [2026-10-20-trum-sua-giao-dien-dien-thoai](../nhat-ky/2026-10-20-trum-sua-giao-dien-dien-thoai.md) |
+| T521 | Điện thoại, danh sách Thu chi, chứng từ và Báo cáo: chỉ nút phễu mở bộ lọc, chip bên phải xám chỉ xem; bộ lọc thêm Chi nhánh, Trạng thái; báo cáo khác có nút phễu; kính lúp báo cáo bỏ nền vàng | Trum | 20/10/2026 | [2026-10-20-trum-sua-giao-dien-dien-thoai](../nhat-ky/2026-10-20-trum-sua-giao-dien-dien-thoai.md) |
+| T520 | Điện thoại: icon khối bỏ chi tiết cam, đổi xanh đậm nhạt; hộp Lãi lỗ theo cửa hàng cột 3 cửa hàng thẳng hàng (web và điện thoại) | Trum | 20/10/2026 | [2026-10-20-trum-sua-giao-dien-dien-thoai](../nhat-ky/2026-10-20-trum-sua-giao-dien-dien-thoai.md) |
+| T519 | Điện thoại, trang chủ Free: chip Năm, Tháng mở bảng trượt; Quỹ tiền biểu đồ tròn nhãn kéo ra quanh vòng, nút Tất cả quỹ mở bảng nhỏ; 3 nút mua hàng, thanh toán, kiểm kê chữ xanh, icon như web | Trum | 20/10/2026 | [2026-10-20-trum-sua-giao-dien-dien-thoai](../nhat-ky/2026-10-20-trum-sua-giao-dien-dien-thoai.md) |
 | T523 | Web, màn chi tiết phiếu: lưới cách hàng tab 12px; thẻ chi phí phân bổ bỏ will-change và hiệu ứng trượt cho chữ hết mờ (commit 279c28b) | Trum | 20/10/2026 | [2026-10-20-trum-luoi-cach-tab-the-phan-bo-net](../nhat-ky/2026-10-20-trum-luoi-cach-tab-the-phan-bo-net.md) |
 | T518 | Web, form toàn màn hình: lúc xem ô nhập nền trắng chữ đậm; thẻ chi phí phân bổ chân form trắng, icon nét mảnh (commit 21da5fb) | Trum | 20/10/2026 | [2026-10-20-trum-luoi-chi-tiet-phieu](../nhat-ky/2026-10-20-trum-luoi-chi-tiet-phieu.md) |
 | T517 | Web, form phiếu: icon góc trái mọi phiếu chứng từ đổi sang bộ icon nét mảnh như phiếu thu chi (commit c43d1e3) | Trum | 20/10/2026 | [2026-10-20-trum-luoi-chi-tiet-phieu](../nhat-ky/2026-10-20-trum-luoi-chi-tiet-phieu.md) |

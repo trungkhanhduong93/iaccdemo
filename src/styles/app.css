@@ -36661,3 +36661,178 @@ a.tx-item:hover {
 .fsf .pn-trong .sel.inp {
   font-size: 14px;
 }
+
+/* ── Icon khối xanh đậm nhạt điện thoại, cột Lãi lỗ theo cửa hàng (T520) ── */
+
+/* 1. L02: Icon khối điện thoại xanh đậm nhạt (thay kiểu xanh cam iPOS) */
+body:has(.m-app) {
+  --ic-than: #1673BD;
+  --ic-nhan: #7FBCEE;
+}
+
+body:has(.m-app) .ic.ic-2m,
+body:has(.m-app) .o-nen .ic,
+:root[data-ic] body:has(.m-app) .ic.ic-2m,
+:root[data-ic] body:has(.m-app) .o-nen .ic,
+body:has(.m-app) .m-thanh-duoi .m-tab.on .m-tab-ic .ic,
+:root[data-ic] body:has(.m-app) .m-thanh-duoi .m-tab.on .m-tab-ic .ic {
+  color: #1673BD;
+  stroke: #1673BD;
+}
+
+:root[data-ic] body:has(.m-app) .ic.ic-2m path,
+:root[data-ic] body:has(.m-app) .ic.ic-2m circle,
+:root[data-ic] body:has(.m-app) .ic.ic-2m rect,
+:root[data-ic] body:has(.m-app) .ic.ic-2m ellipse,
+:root[data-ic] body:has(.m-app) .ic.ic-2m polygon,
+:root[data-ic] body:has(.m-app) .ic.ic-2m polyline,
+:root[data-ic] body:has(.m-app) .ic.ic-2m line,
+:root[data-ic] body:has(.m-app) .o-nen .ic path,
+:root[data-ic] body:has(.m-app) .o-nen .ic circle,
+:root[data-ic] body:has(.m-app) .o-nen .ic rect,
+:root[data-ic] body:has(.m-app) .o-nen .ic ellipse,
+:root[data-ic] body:has(.m-app) .m-thanh-duoi .m-tab.on .m-tab-ic .ic path,
+:root[data-ic] body:has(.m-app) .m-thanh-duoi .m-tab.on .m-tab-ic .ic circle,
+:root[data-ic] body:has(.m-app) .m-thanh-duoi .m-tab.on .m-tab-ic .ic rect,
+:root[data-ic] body:has(.m-app) .m-thanh-duoi .m-tab.on .m-tab-ic .ic ellipse {
+  fill: url(#ic-g-xanh);
+  stroke: none;
+}
+
+body:has(.m-app) .ic.ic-2m .l2,
+body:has(.m-app) .o-nen .ic .l2,
+body:has(.m-app) .m-thanh-duoi .m-tab.on .m-tab-ic .ic .l2 {
+  color: #7FBCEE;
+  stroke: #7FBCEE;
+  fill: none;
+}
+
+:root[data-ic] body:has(.m-app) .ic.ic-2m .l2,
+:root[data-ic] body:has(.m-app) .ic.ic-2m .l2 path,
+:root[data-ic] body:has(.m-app) .ic.ic-2m path.l2,
+:root[data-ic] body:has(.m-app) .ic.ic-2m .l2 circle,
+:root[data-ic] body:has(.m-app) .ic.ic-2m circle.l2,
+:root[data-ic] body:has(.m-app) .ic.ic-2m .l2 rect,
+:root[data-ic] body:has(.m-app) .ic.ic-2m rect.l2,
+:root[data-ic] body:has(.m-app) .ic.ic-2m .l2 polygon,
+:root[data-ic] body:has(.m-app) .ic.ic-2m .l2 polyline,
+:root[data-ic] body:has(.m-app) .ic.ic-2m .l2 line,
+:root[data-ic] body:has(.m-app) .ic.ic-2m .l2 *,
+:root[data-ic] body:has(.m-app) .o-nen .ic .l2,
+:root[data-ic] body:has(.m-app) .o-nen .ic .l2 path,
+:root[data-ic] body:has(.m-app) .o-nen .ic path.l2,
+:root[data-ic] body:has(.m-app) .o-nen .ic .l2 circle,
+:root[data-ic] body:has(.m-app) .o-nen .ic circle.l2,
+:root[data-ic] body:has(.m-app) .o-nen .ic .l2 rect,
+:root[data-ic] body:has(.m-app) .o-nen .ic rect.l2,
+:root[data-ic] body:has(.m-app) .o-nen .ic .l2 *,
+:root[data-ic] body:has(.m-app) .m-thanh-duoi .m-tab.on .m-tab-ic .ic .l2,
+:root[data-ic] body:has(.m-app) .m-thanh-duoi .m-tab.on .m-tab-ic .ic .l2 * {
+  fill: url(#ic-g-xanh-nhat) !important;
+  stroke: none !important;
+}
+
+/* 2. L03: Biểu đồ Lãi lỗ theo cửa hàng thẳng hàng */
+.bbt-modal-cn-luoi {
+  align-items: start;
+}
+.bbt-modal-cn-ten {
+  text-align: center;
+  min-height: 2.8em;
+  line-height: 1.35;
+}
+
+/* ── Hàng lọc điện thoại: chỉ phễu mở bộ lọc, chip xám chỉ xem (T521) ── */
+.m-chip-xem {
+  display: inline-flex;
+  align-items: center;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 8px;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  color: #374151;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  cursor: default;
+  user-select: none;
+  pointer-events: none;
+}
+
+.m-sbc-loc-hang.m-tc-loc-bar,
+.m-t500-chip-hang.m-tc-loc-bar {
+  border-bottom: 1px solid var(--line);
+  padding: 8px 16px;
+  background: #fff;
+}
+
+/* Kính lúp báo cáo: nút bật tìm kiếm không có nền vàng, icon xanh đồng bộ Thu chi */
+.m-sq-btn-ic.on {
+  color: #0560a6 !important;
+  background: transparent !important;
+}
+
+/* Danh sách chứng từ khác (MChungTu): nút trạng thái biến thành chip xám chỉ xem */
+.m-ds-hang-loc .m-ds-nut-trang-thai {
+  background: #f3f4f6 !important;
+  border: 1px solid #e5e7eb !important;
+  color: #374151 !important;
+  cursor: default !important;
+  pointer-events: none !important;
+}
+
+/* ── Màn xem, sửa, tạo chứng từ điện thoại: lề và đáy (T522) ── */
+.m-app:has(.m-tc-xem-man) .m-than,
+.m-app:has(.m-tc-lap-man) .m-than {
+  padding-bottom: 0 !important;
+}
+
+.m-tc-xem-man.m-xp,
+.m-tc-lap-man.m-lp {
+  padding: 0 !important;
+}
+
+.m-tc-xem-content,
+.m-tc-lap-content {
+  padding-bottom: calc(68px + 16px + env(safe-area-inset-bottom, 0px)) !important;
+}
+
+.m-tc-xem-footer,
+.m-tc-lap-footer {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  height: calc(68px + env(safe-area-inset-bottom, 0px));
+}
+
+.m-tc-xem-the-tom-tat,
+.m-tc-card-thong-tin,
+.m-tc-card-chi-tiet,
+.m-xp-the-ht,
+.m-tc-card-so-tien,
+.m-tc-lap-card {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  border-radius: 0 !important;
+  border-left: 0 !important;
+  border-right: 0 !important;
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+  box-sizing: border-box !important;
+}
+
+.m-tc-nhom-chu {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+  box-sizing: border-box !important;
+}
+
+.m-tc-segmented {
+  margin-left: 16px !important;
+  margin-right: 16px !important;
+}
+
+

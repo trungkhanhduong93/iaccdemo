@@ -144,18 +144,18 @@ export function MKhoFree({ selCns, thang }: { selCns: string[]; thang: number })
         {/* Nút hành động Mua hàng */}
         <Link
           to="/app/mua-hang/4-1-1/moi"
-          className="m-tcf-nut-vien"
+          className="m-tcf-nut-vien chu-xanh"
           style={{ marginTop: 14 }}
         >
-          <Icon n="plus" className="ic sm" />
+          <Icon n="plus" className="ic sm" kieu="net" />
           <span>Tạo phiếu mua hàng</span>
         </Link>
         <Link
           to="/app/tien/2-1-1/moi?loai=chi&ly=CHI02"
-          className="m-tcf-nut-vien"
+          className="m-tcf-nut-vien chu-xanh"
           style={{ marginTop: 8 }}
         >
-          <Icon n="plus" className="ic sm" />
+          <Icon n="card" className="ic sm" kieu="net" />
           <span>Thanh toán nhà cung cấp</span>
         </Link>
       </div>
@@ -258,10 +258,10 @@ export function MKhoFree({ selCns, thang }: { selCns: string[]; thang: number })
         {/* Nút Kiểm kê ngay */}
         <Link
           to="/app/kho/5-1-10/moi"
-          className="m-tcf-nut-vien"
+          className="m-tcf-nut-vien chu-xanh"
           style={{ marginTop: 14 }}
         >
-          <Icon n="plus" className="ic sm" />
+          <Icon n="clipboard" className="ic sm" kieu="net" />
           <span>Kiểm kê ngay</span>
         </Link>
       </div>

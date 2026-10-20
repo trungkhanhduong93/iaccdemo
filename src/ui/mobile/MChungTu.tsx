@@ -1,4 +1,4 @@
-import { useMemo, useState, type FC, type ReactNode } from 'react'
+import { useEffect, useMemo, useState, type FC, type ReactNode } from 'react'
 import { Navigate, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import type { Row, ScreenProps } from '../../modules/types'
 import { duongDan } from '../../app/registry'
@@ -23,6 +23,7 @@ import { MDtThuChiLap } from './MDtThuChiLap'
 import { coLocKhacMacDinh, MAC_DINH_LOC_MOBILE, MLoc, tinhKhoangNgay, type GtLocMobile } from './MLoc'
 import { MXemPhieu } from './MXemPhieu'
 import { MBaoCaoTheoDoi } from './MBaoCaoTheoDoi'
+import { CUA_HANG } from '../../data/mock'
 
 // Tách lớp ngoài để danh sách luôn gọi đủ hook, không trả sớm theo id
 export const MChungTu: FC<ScreenProps> = ({ sc, mod }) => {
@@ -74,7 +75,7 @@ function dinhDangThuNgay(chuoiNgay: string): string {
 }
 
 const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
-  const { s } = useSession()
+  const { s, set } = useSession()
   const nav = useNavigate()
   const path = duongDan(mod, sc)
   const { cfg, rows: rowsGoc } = useDongChungTu(sc, mod)
@@ -96,13 +97,17 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
 
   // Chip trạng thái
   // ?tt=nhap từ mục Chứng từ chưa ghi sổ ở trang chủ thì bật sẵn chip đó
-  const [sp] = useSearchParams()
+  const [sp, setSearchParams] = useSearchParams()
   const [chipTT, setChipTT] = useState(() => sp.get('tt') ?? 'all')
 
   // Bộ lọc nâng cao (T394: đọc tham số ?lyDo= và ?thang=)
   const [locMo, setLocMo] = useState(false)
   const [locVal, setLocVal] = useState<GtLocMobile>(() => {
-    const khoiTao: GtLocMobile = { ...MAC_DINH_LOC_MOBILE }
+    const khoiTao: GtLocMobile = {
+      ...MAC_DINH_LOC_MOBILE,
+      chiNhanh: s.cuaHang || 'all',
+      trangThai: sp.get('tt') ?? 'all',
+    }
     const thangUrl = sp.get('thang')
     if (thangUrl) {
       const [namStr, thangStr] = thangUrl.split('-')
@@ -119,6 +124,21 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
     }
     return khoiTao
   })
+
+  const dsChiNhanh = useMemo(
+    () => [{ k: 'all', ten: 'Tất cả chi nhánh' }, ...CUA_HANG.map(c => ({ k: c.id, ten: c.ten }))],
+    [],
+  )
+
+  useEffect(() => {
+    setLocVal(prev => ({ ...prev, chiNhanh: s.cuaHang || 'all' }))
+  }, [s.cuaHang])
+
+  useEffect(() => {
+    const ttUrl = sp.get('tt') ?? 'all'
+    setChipTT(ttUrl)
+    setLocVal(prev => ({ ...prev, trangThai: ttUrl }))
+  }, [sp])
 
   // Loại chứng từ (với màn nhiều loại)
   const [loaiChon, setLoaiChon] = useState<string>(() => (cfg.dieuChinh ? (cfg.loai?.[0]?.k ?? '') : ''))
@@ -636,17 +656,39 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
         }}
       />
 
-      {/* Màn lọc toàn màn */}
+      {/* Màn lọc toàn màn (T521) */}
       <MLoc
         mo={locMo}
         onDong={() => setLocMo(false)}
         giaTri={locVal}
-        onApDung={setLocVal}
+        onApDung={val => {
+          setLocVal(val)
+          if (val.chiNhanh !== undefined) {
+            const ch = CUA_HANG.find(c => c.id === val.chiNhanh || c.ten === val.chiNhanh)
+            const chId = ch ? ch.id : (val.chiNhanh === 'all' || !val.chiNhanh ? 'all' : val.chiNhanh)
+            set({ cuaHang: chId })
+          }
+          if (val.trangThai !== undefined) {
+            const nextTT = val.trangThai || 'all'
+            setChipTT(nextTT)
+            setSearchParams(prev => {
+              const next = new URLSearchParams(prev)
+              if (nextTT && nextTT !== 'all') {
+                next.set('tt', nextTT)
+              } else {
+                next.delete('tt')
+              }
+              return next
+            }, { replace: true })
+          }
+        }}
         dsDoiTuong={dsDoiTuong}
         nhanDoiTuong={cfg.nhan ?? 'Đối tượng'}
         dsNguon={dsNguon}
         dsKho={dsKho}
         dsLyDo={dsLyDo}
+        dsChiNhanh={dsChiNhanh}
+        dsTrangThai={ghi ? chips : undefined}
       />
 
       {/* Tấm trượt chọn loại phiếu khi thêm mới */}

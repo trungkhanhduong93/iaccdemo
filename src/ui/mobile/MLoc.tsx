@@ -13,6 +13,8 @@ export interface GtLocMobile {
   nguon: string[]
   kho: string[]
   lyDo?: string[]
+  chiNhanh?: string
+  trangThai?: string
 }
 
 export const MAC_DINH_LOC_MOBILE: GtLocMobile = {
@@ -22,6 +24,8 @@ export const MAC_DINH_LOC_MOBILE: GtLocMobile = {
   nguon: [],
   kho: [],
   lyDo: [],
+  chiNhanh: 'all',
+  trangThai: 'all',
 }
 
 export function coLocKhacMacDinh(gt: GtLocMobile): boolean {
@@ -30,6 +34,8 @@ export function coLocKhacMacDinh(gt: GtLocMobile): boolean {
   if (gt.nguon && gt.nguon.length > 0) return true
   if (gt.kho && gt.kho.length > 0) return true
   if (gt.lyDo && gt.lyDo.length > 0) return true
+  if (gt.chiNhanh && gt.chiNhanh !== 'all' && gt.chiNhanh !== '') return true
+  if (gt.trangThai && gt.trangThai !== 'all' && gt.trangThai !== '') return true
   return false
 }
 
@@ -70,6 +76,8 @@ export interface MLocProps {
   dsNguon?: { k: string; ten: string }[]
   dsKho?: string[]
   dsLyDo?: string[]
+  dsChiNhanh?: { k: string; ten: string }[]
+  dsTrangThai?: { k: string; ten: string; dem?: number }[]
 }
 
 const CAC_KY: { k: KyThoiGian; ten: string }[] = [
@@ -90,9 +98,11 @@ export const MLoc: FC<MLocProps> = ({
   dsNguon,
   dsKho,
   dsLyDo,
+  dsChiNhanh,
+  dsTrangThai,
 }) => {
   const [draft, setDraft] = useState<GtLocMobile>(giaTri)
-  const [trangCon, setTrangCon] = useState<'thoiGian' | 'doiTuong' | 'nguon' | 'kho' | 'lyDo' | null>(null)
+  const [trangCon, setTrangCon] = useState<'thoiGian' | 'doiTuong' | 'nguon' | 'kho' | 'lyDo' | 'chiNhanh' | 'trangThai' | null>(null)
   const [timKiem, setTimKiem] = useState('')
 
   useEffect(() => {
@@ -123,6 +133,18 @@ export const MLoc: FC<MLocProps> = ({
   }
 
   // Tóm tắt hiển thị trên từng dòng của tấm chính
+  const moTaChiNhanh = () => {
+    if (!draft.chiNhanh || draft.chiNhanh === 'all' || draft.chiNhanh === '') return 'Tất cả'
+    const found = dsChiNhanh?.find(c => c.k === draft.chiNhanh)
+    return found ? found.ten : 'Tất cả'
+  }
+
+  const moTaTrangThai = () => {
+    if (!draft.trangThai || draft.trangThai === 'all' || draft.trangThai === '') return 'Tất cả'
+    const found = dsTrangThai?.find(t => t.k === draft.trangThai)
+    return found ? (found.dem !== undefined ? `${found.ten} (${found.dem})` : found.ten) : 'Tất cả'
+  }
+
   const moTaThoiGian = () => {
     if (draft.thoiGian === 'tuy-chon') {
       if (draft.khoangNgay) {
@@ -207,6 +229,28 @@ export const MLoc: FC<MLocProps> = ({
             <Icon n="chevr" className="ic sm m-loc-dong-ic" />
           </div>
 
+          {/* Dòng Chi nhánh (T521) */}
+          {dsChiNhanh && dsChiNhanh.length > 0 && (
+            <div className="m-loc-dong" onClick={() => setTrangCon('chiNhanh')}>
+              <div className="m-loc-dong-trai">
+                <span className="m-loc-dong-nhan">Chi nhánh</span>
+                <span className="m-loc-dong-tri">{moTaChiNhanh()}</span>
+              </div>
+              <Icon n="chevr" className="ic sm m-loc-dong-ic" />
+            </div>
+          )}
+
+          {/* Dòng Trạng thái (T521) */}
+          {dsTrangThai && dsTrangThai.length > 0 && (
+            <div className="m-loc-dong" onClick={() => setTrangCon('trangThai')}>
+              <div className="m-loc-dong-trai">
+                <span className="m-loc-dong-nhan">Trạng thái</span>
+                <span className="m-loc-dong-tri">{moTaTrangThai()}</span>
+              </div>
+              <Icon n="chevr" className="ic sm m-loc-dong-ic" />
+            </div>
+          )}
+
           {/* Dòng Đối tượng */}
           {dsDoiTuong && dsDoiTuong.length > 0 && (
             <div className="m-loc-dong" onClick={() => setTrangCon('doiTuong')}>
@@ -282,13 +326,17 @@ export const MLoc: FC<MLocProps> = ({
             <h1 className="m-thanh-tren-tieu-de">
               {trangCon === 'thoiGian'
                 ? 'Thời gian'
-                : trangCon === 'doiTuong'
-                  ? nhanDoiTuong
-                  : trangCon === 'nguon'
-                    ? 'Nguồn dữ liệu'
-                    : trangCon === 'kho'
-                      ? 'Kho'
-                      : 'Lý do nghiệp vụ'}
+                : trangCon === 'chiNhanh'
+                  ? 'Chi nhánh'
+                  : trangCon === 'trangThai'
+                    ? 'Trạng thái'
+                    : trangCon === 'doiTuong'
+                      ? nhanDoiTuong
+                      : trangCon === 'nguon'
+                        ? 'Nguồn dữ liệu'
+                        : trangCon === 'kho'
+                          ? 'Kho'
+                          : 'Lý do nghiệp vụ'}
             </h1>
             <div className="m-thanh-tren-phai" style={{ width: 36 }} />
           </div>
@@ -327,6 +375,39 @@ export const MLoc: FC<MLocProps> = ({
                     />
                   </div>
                 </div>
+              </div>
+            ) : trangCon === 'chiNhanh' ? (
+              <div className="m-loc-ky-ds-doc">
+                {dsChiNhanh?.map(c => {
+                  const chon = (draft.chiNhanh ?? 'all') === c.k || (!draft.chiNhanh && (c.k === 'all' || c.k === ''))
+                  return (
+                    <div
+                      key={c.k}
+                      className={`m-loc-muc-dong ${chon ? 'on' : ''}`}
+                      onClick={() => setDraft(prev => ({ ...prev, chiNhanh: c.k }))}
+                    >
+                      <span className="m-loc-muc-ten">{c.ten}</span>
+                      {chon && <Icon n="check" className="ic sm m-loc-muc-tick" />}
+                    </div>
+                  )
+                })}
+              </div>
+            ) : trangCon === 'trangThai' ? (
+              <div className="m-loc-ky-ds-doc">
+                {dsTrangThai?.map(t => {
+                  const chon = (draft.trangThai ?? 'all') === t.k || (!draft.trangThai && (t.k === 'all' || t.k === ''))
+                  const nhan = t.dem !== undefined ? `${t.ten} (${t.dem})` : t.ten
+                  return (
+                    <div
+                      key={t.k}
+                      className={`m-loc-muc-dong ${chon ? 'on' : ''}`}
+                      onClick={() => setDraft(prev => ({ ...prev, trangThai: t.k }))}
+                    >
+                      <span className="m-loc-muc-ten">{nhan}</span>
+                      {chon && <Icon n="check" className="ic sm m-loc-muc-tick" />}
+                    </div>
+                  )
+                })}
               </div>
             ) : (
               <>

@@ -336,16 +336,6 @@ function tenQuyDanhMuc(quy: string, tienMat: boolean) {
   return DS_QUY_TIEN_112.find(x => x.loai === 'Ngân hàng' && x.ten.split(/[ ,]/)[0] === nh)?.ten ?? quy.replace(/(\s+[\d.\- ]+)+$/, '')
 }
 
-/** Màu biểu đồ tròn tồn quỹ tươi theo thứ tự lát lớn tới nhỏ (T402) */
-const MAU_QUY_T402 = [
-  'var(--qt-1, #FFB347)',
-  'var(--qt-2, #64B5F6)',
-  'var(--qt-3, #4DD0A8)',
-  'var(--qt-4, #FF8A65)',
-  'var(--qt-5, #B39DDB)',
-]
-const MAU_CON_LAI = 'var(--qt-6, #CFD8DC)'
-
 export interface QuyVongItem {
   quy: string
   tienMat: boolean
@@ -374,15 +364,24 @@ export function VongQuy({
   onChon,
   cuoi,
   kieu = 'mobile',
+  moDs: moDsProp,
+  onMoDsThayDoi,
 }: {
   ds: { quy: string; tienMat: boolean; cuoi: number }[]
   tong: number
   onChon: (quy: string) => void
   cuoi?: ReactNode
   kieu?: 'desktop' | 'mobile' | 'figma-mobile'
+  moDs?: boolean
+  onMoDsThayDoi?: (mo: boolean) => void
 }) {
   const [tro, setTro] = useState<string | null>(null)
-  const [moDs, setMoDs] = useState(false)
+  const [moDsNoi, setMoDsNoi] = useState(false)
+  const moDs = moDsProp !== undefined ? moDsProp : moDsNoi
+  const setMoDs = (mo: boolean) => {
+    setMoDsNoi(mo)
+    onMoDsThayDoi?.(mo)
+  }
 
   useEffect(() => {
     if (!moDs) return
@@ -413,8 +412,8 @@ export function VongQuy({
 
   const laDesktop = kieu === 'desktop'
   const laFigma = laDesktop || kieu === 'figma-mobile'
-  const mauQuy = laFigma ? MAU_QUY_FIGMA : MAU_QUY_T402
-  const mauConLai = laFigma ? MAU_CON_LAI_FIGMA : MAU_CON_LAI
+  const mauQuy = MAU_QUY_FIGMA
+  const mauConLai = MAU_CON_LAI_FIGMA
 
   // Quy tắc gộp lát "Còn lại":
   // - Desktop (Figma T495): Quỹ thứ 5 trở đi gộp thành Còn lại

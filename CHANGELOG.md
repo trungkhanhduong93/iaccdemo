@@ -4,6 +4,14 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 20/10/2026
 
+- T519: Điện thoại, trang chủ gói Free: chip Năm, Tháng mở bảng chọn trượt từ dưới lên như chip cửa hàng. Khối Quỹ tiền có vòng tròn ở giữa, mỗi quỹ có nhãn tên và % kéo ra quanh vòng. Nút Tất cả quỹ mở bảng nhỏ ghi số tồn từng quỹ. Nút Tạo phiếu mua hàng, Thanh toán nhà cung cấp, Kiểm kê ngay đổi chữ xanh, icon như bản web.
+
+- T520: Điện thoại: icon khối bỏ chi tiết màu cam, đổi sang xanh đậm, xanh nhạt như icon màn Báo cáo. Hộp Lãi lỗ theo cửa hàng: cột 3 cửa hàng thẳng hàng.
+
+- T521: Điện thoại, danh sách Thu chi, chứng từ và Báo cáo: chỉ nút phễu mở bộ lọc, các ô bên phải tô xám, chỉ để xem điều kiện đang lọc. Bộ lọc có thêm Chi nhánh, Trạng thái. Báo cáo nào cũng có nút phễu. Bấm kính lúp ở báo cáo không còn nền vàng.
+
+- T522: Điện thoại, màn xem, sửa, tạo phiếu: hết dải trống hai bên, kéo xuống cuối thấy đủ nội dung, không bị thanh nút đáy che.
+
 - T523: Form chi tiết phiếu thêm khoảng cách 12px giữa hàng tab và lưới chi tiết. Thẻ chi phí phân bổ toàn màn hình bỏ hiệu ứng trượt và will-change để chữ rõ nét ngang phiếu thu chi; nhãn ô màu xám, cỡ chữ ô nhập 14px.
 
 - T518: Form toàn màn hình lúc xem đổi các ô nhập sang nền trắng chữ đậm thay vì nền xám; lúc sửa giữ nền xám. Thẻ chi phí phân bổ đổi chân form sang nền trắng và dùng icon nét mảnh.

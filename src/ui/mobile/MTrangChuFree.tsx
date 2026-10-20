@@ -92,6 +92,21 @@ export function MTrangChuFree(_props?: Partial<ScreenProps>) {
     )
   }
 
+  const dsChonNam = useMemo(
+    () => [{ k: '2026', ten: 'Năm 2026' }],
+    []
+  )
+
+  const dsChonThang = useMemo(
+    () => [
+      { k: '10', ten: 'Tháng 10' },
+      { k: '9', ten: 'Tháng 9' },
+      { k: '8', ten: 'Tháng 8' },
+      { k: '7', ten: 'Tháng 7' },
+    ],
+    []
+  )
+
   useEffect(() => {
     const t = Number(searchParams.get('thang'))
     if (t >= 7 && t <= 10 && t !== thangF) setThangFState(t)
@@ -103,6 +118,9 @@ export function MTrangChuFree(_props?: Partial<ScreenProps>) {
   const [moTimKiem, setMoTimKiem] = useState(false)
   const [moDropdownXemSo, setMoDropdownXemSo] = useState(false)
   const [moChonCn, setMoChonCn] = useState(false)
+  const [moChonNam, setMoChonNam] = useState(false)
+  const [moChonThang, setMoChonThang] = useState(false)
+  const [moDsQuy, setMoDsQuy] = useState(false)
   const [moBieuDo, setMoBieuDo] = useState(false)
   const [moThuChi13, setMoThuChi13] = useState(false)
   const [modalQuy, setModalQuy] = useState<string | null>(null)
@@ -318,35 +336,25 @@ export function MTrangChuFree(_props?: Partial<ScreenProps>) {
             <Icon n="chevd" className="ic sm" />
           </button>
 
-          <div className="m-tc-figma-chip" title="Chọn năm">
+          <button
+            type="button"
+            className="m-tc-figma-chip"
+            onClick={() => setMoChonNam(true)}
+            title="Chọn năm"
+          >
             <span>Năm {namF}</span>
             <Icon n="chevd" className="ic sm" />
-            <select
-              aria-label="Chọn năm"
-              value={String(namF)}
-              onChange={e => setNamF(Number(e.target.value))}
-              className="m-tc-chip-select-an"
-            >
-              <option value="2026">Năm 2026</option>
-            </select>
-          </div>
+          </button>
 
-          <div className="m-tc-figma-chip" title="Chọn tháng">
+          <button
+            type="button"
+            className="m-tc-figma-chip"
+            onClick={() => setMoChonThang(true)}
+            title="Chọn tháng"
+          >
             <span>Tháng {thangF}</span>
             <Icon n="chevd" className="ic sm" />
-            <select
-              aria-label="Chọn tháng"
-              value={String(thangF)}
-              onChange={e => setThangF(Number(e.target.value))}
-              className="m-tc-chip-select-an"
-            >
-              {[10, 9, 8, 7].map(t => (
-                <option key={t} value={t}>
-                  Tháng {t}
-                </option>
-              ))}
-            </select>
-          </div>
+          </button>
         </div>
       </section>
 
@@ -607,7 +615,7 @@ export function MTrangChuFree(_props?: Partial<ScreenProps>) {
           </div>
 
           {quy.length > 0 ? (
-            <VongQuy ds={quy} tong={tongQuy.cuoi} onChon={setModalQuy} kieu="figma-mobile" />
+            <VongQuy ds={quy} tong={tongQuy.cuoi} onChon={setModalQuy} kieu="mobile" moDs={moDsQuy} onMoDsThayDoi={setMoDsQuy} />
           ) : (
             <div className="bbt-quy-trong" style={{ padding: 20, textAlign: 'center' }}>
               <Icon n="wallet" className="ic" />
@@ -627,7 +635,7 @@ export function MTrangChuFree(_props?: Partial<ScreenProps>) {
             <button
               type="button"
               className="m-tcf-nut-vien"
-              onClick={() => setModalQuy('tat-ca')}
+              onClick={() => setMoDsQuy(true)}
               title="Xem danh sách tất cả quỹ"
             >
               <span>Tất cả quỹ ({quy.length}) ›</span>
@@ -689,6 +697,30 @@ export function MTrangChuFree(_props?: Partial<ScreenProps>) {
           setMoChonCn(false)
         }}
         onDong={() => setMoChonCn(false)}
+      />
+
+      <MChon
+        mo={moChonNam}
+        tieuDe="Chọn năm"
+        ds={dsChonNam}
+        chon={String(namF)}
+        onChon={k => {
+          setNamF(Number(k))
+          setMoChonNam(false)
+        }}
+        onDong={() => setMoChonNam(false)}
+      />
+
+      <MChon
+        mo={moChonThang}
+        tieuDe="Chọn tháng"
+        ds={dsChonThang}
+        chon={String(thangF)}
+        onChon={k => {
+          setThangF(Number(k))
+          setMoChonThang(false)
+        }}
+        onDong={() => setMoChonThang(false)}
       />
 
       <MTimKiem mo={moTimKiem} onDong={() => setMoTimKiem(false)} />

@@ -1,4 +1,4 @@
-import { useMemo, useState, type FC, type ReactNode } from 'react'
+import { useEffect, useMemo, useState, type FC, type ReactNode } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import type { Row, ScreenProps } from '../../modules/types'
 import { duongDan } from '../../app/registry'
@@ -51,7 +51,7 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
   const ghi = kieuGhiSo(s.goi) !== 'khong' && s.goi !== 'F'
   const cnChon = cuaHangHienTai(s)
 
-  const [sp] = useSearchParams()
+  const [sp, setSearchParams] = useSearchParams()
   const [chipTT, setChipTT] = useState(() => sp.get('tt') ?? 'all')
   const [loaiChon, setLoaiChon] = useState<string>('')
   const [timMo, setTimMo] = useState(false)
@@ -61,13 +61,50 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
   // Sheets
   const [locMo, setLocMo] = useState(false)
   const [moChonLoaiThem, setMoChonLoaiThem] = useState(false)
-  const [moChonCn, setMoChonCn] = useState(false)
-  const [moChonTT, setMoChonTT] = useState(false)
   const [moTheoDoi, setMoTheoDoi] = useState(false)
 
   const [locVal, setLocVal] = useState<GtLocMobile>(() => ({
     ...MAC_DINH_LOC_MOBILE,
+    chiNhanh: s.cuaHang || 'all',
+    trangThai: sp.get('tt') ?? 'all',
   }))
+
+  useEffect(() => {
+    setLocVal(prev => ({ ...prev, chiNhanh: s.cuaHang || 'all' }))
+  }, [s.cuaHang])
+
+  useEffect(() => {
+    const ttUrl = sp.get('tt') ?? 'all'
+    setChipTT(ttUrl)
+    setLocVal(prev => ({ ...prev, trangThai: ttUrl }))
+  }, [sp])
+
+  const dsChiNhanh = useMemo(
+    () => [{ k: 'all', ten: 'Tất cả chi nhánh' }, ...CUA_HANG.map(c => ({ k: c.id, ten: c.ten }))],
+    [],
+  )
+
+  const handleApDungLoc = (val: GtLocMobile) => {
+    setLocVal(val)
+    if (val.chiNhanh !== undefined) {
+      const ch = CUA_HANG.find(c => c.id === val.chiNhanh || c.ten === val.chiNhanh)
+      const chId = ch ? ch.id : (val.chiNhanh === 'all' || !val.chiNhanh ? 'all' : val.chiNhanh)
+      set({ cuaHang: chId })
+    }
+    if (val.trangThai !== undefined) {
+      const nextTT = val.trangThai || 'all'
+      setChipTT(nextTT)
+      setSearchParams(prev => {
+        const next = new URLSearchParams(prev)
+        if (nextTT && nextTT !== 'all') {
+          next.set('tt', nextTT)
+        } else {
+          next.delete('tt')
+        }
+        return next
+      }, { replace: true })
+    }
+  }
 
   const dsDoiTuong = useMemo(
     () => [...new Set(rows.map(r => String(r.doiTuong ?? '')).filter(Boolean))].sort(),
@@ -311,41 +348,9 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
             {coLocKhacMacDinh(locVal) && <span className="m-tc-loc-cham" />}
           </button>
 
-          <button
-            type="button"
-            className="m-tc-chip-loc blue"
-            onClick={() => setLocMo(true)}
-            aria-label="Khoảng thời gian"
-          >
-            <span>{chuoiKhoangNgay}</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M6 9l6 6 6-6" />
-            </svg>
-          </button>
-
-          <button
-            type="button"
-            className="m-tc-chip-loc"
-            onClick={() => setMoChonCn(true)}
-            aria-label="Chi nhánh"
-          >
-            <span>{nhanCn}</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M6 9l6 6 6-6" />
-            </svg>
-          </button>
-
-          <button
-            type="button"
-            className="m-tc-chip-loc"
-            onClick={() => setMoChonTT(true)}
-            aria-label="Trạng thái"
-          >
-            <span>{nhanTrangThai}</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M6 9l6 6 6-6" />
-            </svg>
-          </button>
+          <span className="m-chip-xem">{chuoiKhoangNgay}</span>
+          <span className="m-chip-xem">{nhanCn}</span>
+          <span className="m-chip-xem">{nhanTrangThai}</span>
         </div>
 
         {/* Card Tổng hợp kỳ */}
@@ -491,43 +496,18 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
         }}
       />
 
-      {/* Tấm chọn cửa hàng */}
-      <MChon
-        mo={moChonCn}
-        onDong={() => setMoChonCn(false)}
-        tieuDe="Chọn cửa hàng"
-        ds={[{ k: '', ten: 'Tất cả cửa hàng' }, ...CUA_HANG.map(c => ({ k: c.ten, ten: c.ten }))]}
-        onChon={() => setMoChonCn(false)}
-      />
-
-      {/* Tấm chọn trạng thái */}
-      {chips.length > 0 && (
-        <MChon
-          mo={moChonTT}
-          onDong={() => setMoChonTT(false)}
-          tieuDe="Chọn trạng thái"
-          ds={chips.map(c => ({
-            k: c.k,
-            ten: `${c.ten}${c.dem !== undefined ? ` (${c.dem})` : ''}`,
-          }))}
-          chon={chipTT}
-          onChon={k => {
-            setChipTT(k)
-            setMoChonTT(false)
-          }}
-        />
-      )}
-
       {/* Bộ lọc toàn màn */}
       <MLoc
         mo={locMo}
         onDong={() => setLocMo(false)}
         giaTri={locVal}
-        onApDung={setLocVal}
+        onApDung={handleApDungLoc}
         dsDoiTuong={dsDoiTuong}
         nhanDoiTuong="Đối tượng"
         dsNguon={dsNguon}
         dsLyDo={dsLyDo}
+        dsChiNhanh={dsChiNhanh}
+        dsTrangThai={chips}
       />
 
       {/* Báo cáo theo dõi & Danh mục */}
