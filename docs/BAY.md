@@ -98,3 +98,10 @@ Lỗi đã từng làm mất thời gian, kèm cách tránh. Đọc trước khi
 - Hiện tượng: chạy script Playwright từ Git Bash với tham số dạng `/app/kho/5-1-1` thì trang bật về `#/dang-nhap` mà không báo lỗi.
 - Nguyên nhân: MSYS tự đổi tham số dạng `/app/...` thành đường dẫn Windows (như `C:/Program Files/Git/app/...`), app không nhận ra đường dẫn nên chuyển hướng về trang đăng nhập.
 - Cách tránh: đặt `MSYS_NO_PATHCONV=1` trước lệnh khi chạy từ Git Bash, hoặc chạy script từ PowerShell.
+
+## Chữ trong form bị nhoè khi có will-change transform kết hợp zoom lẻ (T523)
+
+- Hiện tượng: chữ trên form như thẻ chi phí phân bổ mờ hơn các form phiếu khác khi xem ở zoom lẻ 0.9.
+- Nguyên nhân: phần tử có `will-change: transform` hoặc animation transform khiến trình duyệt tách riêng một lớp hiển thị. Tỉ lệ `zoom` lẻ làm mép chữ bị nhoè, độ nét giảm từ 14.82 xuống 11.64.
+- Cách tránh: form tĩnh bỏ `will-change`, chuyển về `will-change: auto` và tắt animation; chỉ bật `will-change` khi đang chạy hiệu ứng.
+

@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T523 | Web, màn chi tiết phiếu: lưới cách hàng tab 12px; thẻ chi phí phân bổ bỏ will-change và hiệu ứng trượt cho chữ hết mờ (commit 279c28b) | Trum | 20/10/2026 | [2026-10-20-trum-luoi-cach-tab-the-phan-bo-net](../nhat-ky/2026-10-20-trum-luoi-cach-tab-the-phan-bo-net.md) |
 | T518 | Web, form toàn màn hình: lúc xem ô nhập nền trắng chữ đậm; thẻ chi phí phân bổ chân form trắng, icon nét mảnh (commit 21da5fb) | Trum | 20/10/2026 | [2026-10-20-trum-luoi-chi-tiet-phieu](../nhat-ky/2026-10-20-trum-luoi-chi-tiet-phieu.md) |
 | T517 | Web, form phiếu: icon góc trái mọi phiếu chứng từ đổi sang bộ icon nét mảnh như phiếu thu chi (commit c43d1e3) | Trum | 20/10/2026 | [2026-10-20-trum-luoi-chi-tiet-phieu](../nhat-ky/2026-10-20-trum-luoi-chi-tiet-phieu.md) |
 | T516 | Web, lưới chi tiết mọi phiếu theo bản mẫu B: khung ôm số dòng, kẻ dọc mờ đồng bộ, tiêu đề cột số căn phải, nền xám nhạt, chữ và đường kẻ đậm hơn 1 bậc (commit a5988a6) | Trum | 20/10/2026 | [2026-10-20-trum-luoi-chi-tiet-phieu](../nhat-ky/2026-10-20-trum-luoi-chi-tiet-phieu.md) |

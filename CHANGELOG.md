@@ -4,6 +4,8 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 20/10/2026
 
+- T523: Form chi tiết phiếu thêm khoảng cách 12px giữa hàng tab và lưới chi tiết. Thẻ chi phí phân bổ toàn màn hình bỏ hiệu ứng trượt và will-change để chữ rõ nét ngang phiếu thu chi; nhãn ô màu xám, cỡ chữ ô nhập 14px.
+
 - T518: Form toàn màn hình lúc xem đổi các ô nhập sang nền trắng chữ đậm thay vì nền xám; lúc sửa giữ nền xám. Thẻ chi phí phân bổ đổi chân form sang nền trắng và dùng icon nét mảnh.
 
 - T517: Biểu tượng góc trái form phiếu chứng từ (ChungTuForm, Xuất bán POS, Ghi tăng hàng loạt) đổi sang bộ icon nét mảnh như phiếu thu chi.
