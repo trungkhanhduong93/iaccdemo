@@ -12,10 +12,11 @@ export function useDong(ve: string) {
 }
 
 /** trai: nút đứng trước tiêu đề (vd lịch sử); phai: nút đứng trước tổng tiền (vd phím tắt); tinh: bỏ hiệu ứng mở khi chuyển Trước/Sau */
-export function FormToanMan({ icon, title, meta, loai, giua, day, tong, trai, phai, tinh, onClose, foot, children }: {
-  icon: string; title: ReactNode; meta?: ReactNode; loai?: ReactNode; tong?: number; trai?: ReactNode; phai?: ReactNode; tinh?: boolean
+export function FormToanMan({ icon, iconNode, title, meta, loai, giua, day, tong, trai, phai, tinh, onClose, foot, footClass, children }: {
+  icon?: string; iconNode?: ReactNode; title: ReactNode; meta?: ReactNode; loai?: ReactNode; tong?: number; trai?: ReactNode; phai?: ReactNode; tinh?: boolean
   giua?: ReactNode   // trạng thái phiếu ở chính giữa đầu form (T49)
   day?: ReactNode    // dải cố định ngay trên thanh nút, vd Tổng tiền (T49)
+  footClass?: string
   onClose: () => void; foot: ReactNode; children: ReactNode
 }) {
   useEffect(() => {
@@ -27,7 +28,11 @@ export function FormToanMan({ icon, title, meta, loai, giua, day, tong, trai, ph
   return (
     <div className={`fsf${tinh ? ' fsf-tinh' : ''}`} role="dialog" aria-modal="true">
       <header className="fsf-h">
-        <span className="fsf-ic"><Icon n={icon} /></span>
+        {iconNode ? (
+          iconNode
+        ) : (
+          <span className="fsf-ic">{icon && <Icon n={icon} />}</span>
+        )}
         {trai}
         <div style={{ minWidth: 0 }}>
           <h1>{title}</h1>
@@ -38,11 +43,15 @@ export function FormToanMan({ icon, title, meta, loai, giua, day, tong, trai, ph
         <span className="grow" />
         {phai}
         {tong !== undefined && <div className="fsf-tong"><small>Tổng tiền</small><b>{moneyD(tong)}</b></div>}
-        <button className="icon-btn" title="Đóng (Esc)" onClick={onClose}><Icon n="x" /></button>
+        <button className="icon-btn" title="Đóng (Esc)" onClick={onClose}>
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M13.5 4.5L9 9M9 9L4.5 13.5M9 9L4.5 4.5M9 9L13.5 13.5" />
+          </svg>
+        </button>
       </header>
       <div className="fsf-b">{children}</div>
       {day && <div className="fsf-day">{day}</div>}
-      <footer className="fsf-f">{foot}</footer>
+      <footer className={`fsf-f${footClass ? ` ${footClass}` : ''}`}>{foot}</footer>
     </div>
   )
 }

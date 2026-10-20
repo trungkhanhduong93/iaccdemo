@@ -644,9 +644,22 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
     </div>
   )
 
+  const laPhieuChi = laTien && (loai?.k === 'chi' || loai?.k === 'unc')
+  const laPhieuThu = laTien && (loai?.k === 'thu' || loai?.k === 'bc')
+  const iconDau = (laPhieuChi || laPhieuThu) ? (
+    <span className={`fsf-ic-xp ${laPhieuChi ? 'chi' : 'thu'}`}>
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M15.8333 5.83333V3.33333C15.8333 3.11232 15.7455 2.90036 15.5893 2.74408C15.433 2.5878 15.221 2.5 15 2.5H4.16667C3.72464 2.5 3.30072 2.67559 2.98816 2.98816C2.67559 3.30072 2.5 3.72464 2.5 4.16667C2.5 4.60869 2.67559 5.03262 2.98816 5.34518C3.30072 5.65774 3.72464 5.83333 4.16667 5.83333H15.8333ZM15.8333 5.83333H16.6667C16.8877 5.83333 17.0996 5.92113 17.2559 6.07741C17.4122 6.23369 17.5 6.44565 17.5 6.66667V10M17.5 10H15C14.558 10 14.134 10.1756 13.8215 10.4882C13.5089 10.8007 13.3333 11.2246 13.3333 11.6667C13.3333 12.1087 13.5089 12.5326 13.8215 12.8452C14.134 13.1577 14.558 13.3333 15 13.3333H17.5C17.721 13.3333 17.933 13.2455 18.0893 13.0893C18.2455 12.933 18.3333 12.721 18.3333 12.5V10.8333C18.3333 10.6123 18.2455 10.4004 18.0893 10.2441C17.933 10.0878 17.721 10 17.5 10Z" />
+        <path d="M2.5 4.16667V15.8333C2.5 16.2754 2.67559 16.6993 2.98816 17.0118C3.30072 17.3244 3.72464 17.5 4.16667 17.5H16.6667C16.8877 17.5 17.0996 17.4122 17.2559 17.2559C17.4122 17.0996 17.5 16.8877 17.5 16.6667V13.3333" />
+      </svg>
+    </span>
+  ) : undefined
+
   return (
     <FormToanMan
       icon={mod.icon}
+      iconNode={iconDau}
+      footClass={dangSua ? undefined : 'fsf-f-xem'}
       tinh={Boolean((loc.state as { chuyenPhieu?: boolean } | null)?.chuyenPhieu)}
       onClose={dongMoi}
       day={laKk || dcn === 'ck' || (laDc && s.goi === 'F') || !hienChan('tongTien') ? undefined
@@ -750,72 +763,93 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
           </>
         ) : (
           <>
-            <div className="btn-group">
-              <button
-                type="button"
-                className="btn"
-                disabled={!coTruoc}
-                onClick={veTruoc}
-                title="Chứng từ trước"
+            <div className="xp-footer-trai">
+              <Dropdown
+                btnClass="xp-btn-outline"
+                align="start"
+                width={220}
+                label={
+                  <>
+                    <span>Tiện ích</span>
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M3.5 5.5L7 9L10.5 5.5" />
+                    </svg>
+                  </>
+                }
               >
-                <Icon n="chevl" className="ic sm" />Trước
-              </button>
-              <button
-                type="button"
-                className="btn"
-                disabled={!coSau}
-                onClick={veSau}
-                title="Chứng từ sau"
-              >
-                Sau<Icon n="chevr" className="ic sm" />
-              </button>
+                {dong => (
+                  <>
+                    {coTruoc && (
+                      <MenuItem icon="chevl" onClick={veTruoc}>
+                        Chứng từ trước
+                      </MenuItem>
+                    )}
+                    {coSau && (
+                      <MenuItem icon="chevr" onClick={veSau}>
+                        Chứng từ sau
+                      </MenuItem>
+                    )}
+                    {!laDc && (
+                      <MenuItem icon="copy" onClick={() => toast('Đã sao chép chứng từ')}>
+                        Sao chép
+                      </MenuItem>
+                    )}
+                    {coThanhToanSau && (
+                      <MenuItem icon="wallet" onClick={() => { dong(); setHopTt(true) }}>
+                        {tenThanhToan}
+                      </MenuItem>
+                    )}
+                    <MenuItem icon="doc" onClick={() => toast('Đã xuất mẫu Excel')}>
+                      Xuất Excel
+                    </MenuItem>
+                    {coTkGoi && !laKk && dcn !== 'ck' && (
+                      <MenuItem icon="book" onClick={() => setHienTk(!hienTk)}>
+                        {hienTk ? 'Cột tài khoản: Đang hiện' : 'Cột tài khoản: Đang ẩn'}
+                      </MenuItem>
+                    )}
+                    {row && !khoaSua && (
+                      <MenuItem icon="trash" danger onClick={thuXoa}>
+                        Xoá chứng từ
+                      </MenuItem>
+                    )}
+                  </>
+                )}
+              </Dropdown>
+              {kieu !== 'khong' && row && (
+                <button
+                  type="button"
+                  className="xp-btn-outline"
+                  onClick={() => toast(row.tt === 'ghi' ? 'Đã bỏ ghi sổ' : 'Đã ghi sổ')}
+                >
+                  {row.tt === 'ghi' ? 'Bỏ ghi sổ' : 'Ghi sổ'}
+                </button>
+              )}
+              {!anIn && (
+                <button type="button" className="xp-btn-in" onClick={moIn}>
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M4 12H2.66667C2.31304 12 1.97391 11.8595 1.72386 11.6095C1.47381 11.3594 1.33333 11.0203 1.33333 10.6667V7.33333C1.33333 6.97971 1.47381 6.64057 1.72386 6.39052C1.97391 6.14048 2.31304 6 2.66667 6H13.3333C13.687 6 14.0261 6.14048 14.2761 6.39052C14.5262 6.64057 14.6667 6.97971 14.6667 7.33333V10.6667C14.6667 11.0203 14.5262 11.3594 14.2761 11.6095C14.0261 11.8595 13.687 12 13.3333 12H12" />
+                    <path d="M4 6V2C4 1.82319 4.07024 1.65362 4.19526 1.5286C4.32029 1.40357 4.48986 1.33333 4.66667 1.33333H11.3333C11.5101 1.33333 11.6797 1.40357 11.8047 1.5286C11.9298 1.65362 12 1.82319 12 2V6" />
+                    <path d="M4.66667 9.33333H11.3333C11.7015 9.33333 12 9.63181 12 10V14C12 14.3682 11.7015 14.6667 11.3333 14.6667H4.66667C4.29848 14.6667 4 14.3682 4 14V10C4 9.63181 4.29848 9.33333 4.66667 9.33333Z" />
+                  </svg>
+                  <span>In phiếu</span>
+                </button>
+              )}
             </div>
-            {coTkGoi && !laKk && dcn !== 'ck' && (   // phiếu kiểm kê, chuyển kho không hạch toán nên không có nút Cột tài khoản (T124, T155)
-              <button
-                type="button"
-                className={`btn btn-tk-toggle ${hienTk ? 'on' : ''}`}
-                onClick={() => setHienTk(!hienTk)}
-                title={hienTk ? 'Bấm để ẩn cột tài khoản Nợ/Có trên dòng' : 'Bấm để hiển thị cột tài khoản Nợ/Có trên dòng'}
-              >
-                <Icon n="book" className="ic sm" />
-                <span>Cột tài khoản</span>
-                <span className={`tk-badge ${hienTk ? 'on' : ''}`}>{hienTk ? 'Đang hiện' : 'Đang ẩn'}</span>
-              </button>
-            )}
-            <span className="grow" />
-            {!anIn && (
-              <button type="button" className="btn" onClick={moIn}>
-                <Icon n="printer" className="ic sm" />In
-              </button>
-            )}
-            <Dropdown
-              btnClass="btn"
-              align="end"
-              width={180}
-              label={<><Icon n="more" className="ic sm" />Tiện ích</>}
-            >
-              {dong => <>
-              {/* Phiếu điều chỉnh sinh từ kiểm kê chỉ xem: không sao chép, sửa, xoá (T129) */}
-              {!laDc && (
-                <MenuItem icon="copy" onClick={() => toast('Đã sao chép chứng từ')}>
-                  Sao chép
-                </MenuItem>
+            <div className="xp-footer-phai">
+              {!khoaSua && (
+                <button
+                  type="button"
+                  className="xp-btn-sua"
+                  onClick={batSua}
+                >
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M2.66667 13.3333H5.33333L12.3333 6.33333C12.5084 6.15824 12.6473 5.95037 12.7421 5.72159C12.8368 5.49282 12.8856 5.24762 12.8856 5C12.8856 4.75238 12.8368 4.50718 12.7421 4.27841C12.6473 4.04963 12.5084 3.84176 12.3333 3.66667C12.1582 3.49157 11.9504 3.35268 11.7216 3.25792C11.4928 3.16315 11.2476 3.11438 11 3.11438C10.7524 3.11438 10.5072 3.16315 10.2784 3.25792C10.0496 3.35268 9.84176 3.49157 9.66667 3.66667L2.66667 10.6667V13.3333Z" />
+                    <path d="M9 4.33333L11.6667 7" />
+                  </svg>
+                  <span>Sửa (Ctrl+E)</span>
+                </button>
               )}
-              {coThanhToanSau && (
-                <MenuItem icon="wallet" onClick={() => { dong(); setHopTt(true) }}>
-                  {tenThanhToan}
-                </MenuItem>
-              )}
-              <MenuItem icon="doc" onClick={() => toast('Đã xuất mẫu Excel')}>
-                Xuất Excel
-              </MenuItem>
-              {row && !khoaSua && (
-                <MenuItem icon="trash" danger onClick={thuXoa}>
-                  Xoá chứng từ
-                </MenuItem>
-              )}
-              </>}
-            </Dropdown>
+            </div>
             {hopCot && (
               <HopCotPhieu dsDau={dsDau} dsChan={dsChan} ds={laKk ? COT_KK : laSx ? cotSx(sx!) : laDcn ? cotDcn(dcn!) : cotTuyChon(cfg, { coNhomHhdv: nhom === 'mua' && nhanKemHd && (s.goi === 'PL' || s.goi === 'PR'), coKho: Boolean(bo.kho) && !khoDau && !laDc, coLo: nhom === 'mua' && s.goi === 'PR', coCk: Boolean(bo.ck), coKm: kieu !== 'khong', coLy: Boolean(oLy), coNhapKho: truocThue, coGiamThue: giamGtgt }).filter(([k]) => !anDc.includes(k))}
                 an={anCot} onDoi={doiAnCot} onDong={() => setHopCot(false)} />
@@ -830,27 +864,6 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
                 {theCuaPhieu(row).length > 0 ? 'Xoá phiếu chi này sẽ xoá thẻ chi phí đã tạo. Bạn có muốn thực hiện không? ' : ''}Phiếu đã xoá không lấy lại được.{laKk && dsDcCon(row).length > 0 && <> Phiếu điều chỉnh {dsDcCon(row).map(c => c.so).join(', ')} cũng bị xoá theo.</>}
               </HopXacNhan>
             )}
-            {kieu !== 'khong' && row && (
-              <button
-                type="button"
-                className="btn"
-                onClick={() => toast(row.tt === 'ghi' ? 'Đã bỏ ghi sổ' : 'Đã ghi sổ')}
-              >
-                {row.tt === 'ghi' ? 'Bỏ ghi sổ' : 'Ghi sổ'}
-              </button>
-            )}
-            {!khoaSua && (
-              <button
-                type="button"
-                className="btn pri"
-                onClick={batSua}
-              >
-                <Icon n="edit" className="ic sm" />Sửa (Ctrl+E)
-              </button>
-            )}
-            <button type="button" className="btn" onClick={dongForm}>
-              Đóng (Esc)
-            </button>
           </>
         )
       }

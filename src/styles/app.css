@@ -1,6 +1,6 @@
 /* IACC Cloud web — ngôn ngữ thiết kế theo iFaster (QD15): xanh #0560a6, sidebar xám đen, cam iPOS, màu 4 gói */
 :root {
-  --navy: #2a3042; --navy-d: #1d2231; --navy-2: #353c52; --sb-on: #0560a6; --blue: #0560a6; --blue-d: #044a80; --tint: #e6eff7;
+  --navy: #2a3042; --navy-d: #1d2231; --navy-2: #353c52; --sb-on: #0560a6; --blue: #0560a6; --blue-d: #044a80; --tint: #e6eff7; --bluet: #e6eff7; --redt: #fcebea;
   --sb-nen: linear-gradient(180deg, #074477, #06365e); --sb-nen-d: #06365e;
   --orange: #f28020; --orange-d: #d0650a; --orange-t: #fff5ea; --orange-b: #f9d6ad;
   --ic-sm: 16px; --ic: 20px; --ic-lg: 24px;
@@ -32656,4 +32656,127 @@ a.tx-item:hover {
 
 .bbt-kho2 .bbt-kho-chan {
   min-height: 38px;
+}
+
+
+/* ── Ô chọn mã hàng và xem chi tiết phiếu theo Figma Thu chi (T497) ── */
+.dm-dau {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--line);
+  flex: none;
+}
+.dm-btn-ic {
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  border-radius: 4px;
+  color: var(--blue);
+  cursor: pointer;
+  padding: 0;
+}
+.dm-btn-ic:hover {
+  background: var(--bg);
+}
+.dm-dang-tai {
+  padding: 28px 16px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+}
+.fsf-f.fsf-f-xem {
+  background: #fff;
+  border-top: 1px solid var(--line);
+  box-shadow: 0 -6px 20px rgba(23, 33, 51, .08);
+  padding: 14px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.xp-footer-trai {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.xp-footer-phai {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.xp-btn-outline {
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: #fff;
+  padding: 0 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all .15s ease;
+}
+.xp-btn-outline:hover {
+  background: var(--bg);
+}
+.xp-btn-in {
+  height: 36px;
+  border-radius: 8px;
+  border: 0;
+  background: var(--orange);
+  color: #fff;
+  padding: 0 12px;
+  font-size: 13px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all .15s ease;
+}
+.xp-btn-in:hover {
+  filter: brightness(0.95);
+}
+.xp-btn-sua {
+  height: 36px;
+  border-radius: 8px;
+  border: 0;
+  background: var(--blue);
+  color: #fff;
+  padding: 0 16px 0 14px;
+  font-size: 13px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all .15s ease;
+}
+.xp-btn-sua:hover {
+  filter: brightness(0.95);
+}
+.fsf-ic-xp {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+.fsf-ic-xp.chi {
+  background: var(--redt);
+  color: var(--red);
+}
+.fsf-ic-xp.thu {
+  background: var(--bluet);
+  color: var(--blue);
 }

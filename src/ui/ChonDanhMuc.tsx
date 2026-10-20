@@ -51,14 +51,29 @@ export function ChonDanhMuc({ dm, nhan, value, onChange, ds, className = 'inp', 
   const [mo, setMo] = useState(false)
   const [tim, setTim] = useState('')
   const [hop, setHop] = useState(false)
+  const [dangTai, setDangTai] = useState(false)
   const btn = useRef<HTMLButtonElement>(null)
   const oTim = useRef<HTMLInputElement>(null)
   const q = fold(tim.trim())
   const loc = q ? tatCa.filter(x => fold(x.t).includes(q)) : tatCa
 
-  useEffect(() => { if (mo) { setTim(''); setTimeout(() => oTim.current?.focus(), 0) } }, [mo])
+  useEffect(() => {
+    if (mo) {
+      setTim('')
+      setDangTai(false)
+      setTimeout(() => oTim.current?.focus(), 0)
+    }
+  }, [mo])
 
   const chon = (v: string) => { onChange(v, tatCa.find(x => x.v === v)); setMo(false); btn.current?.focus() }
+
+  const taiLai = () => {
+    setDangTai(true)
+    setTimeout(() => {
+      setDangTai(false)
+      setTimeout(() => oTim.current?.focus(), 0)
+    }, 400)
+  }
 
   return (
     <>
@@ -67,23 +82,50 @@ export function ChonDanhMuc({ dm, nhan, value, onChange, ds, className = 'inp', 
         <span className="sel-v">{(chiMa && value) || (cur?.t ?? (value || trong || `Chọn ${nhan}`))}</span><Icon n="chevd" className="ic sm sel-c" />
       </button>
       <Popover anchor={btn} open={mo} onClose={() => setMo(false)} role="listbox" className="pop-sel pop-dm" width={Math.max(260, btn.current?.offsetWidth ?? 0)}>
-        <div className="dm-tim">
-          <Icon n="search" className="ic sm" />
-          <input ref={oTim} value={tim} placeholder={`Tìm ${nhan}`} onChange={e => setTim(e.target.value)}
-            onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); if (loc[0]) chon(loc[0].v); else if (tim.trim() && !khongThem) { setMo(false); setHop(true) } } }} />
-        </div>
-        <div className="dm-ds">
-          {loc.map(o => (
-            <button key={o.v} data-mi type="button" role="option" aria-selected={o.v === value} className={`mi${o.v === value ? ' on' : ''}`} onClick={() => chon(o.v)}>
-              <span className="mi-t"><b>{o.t}</b></span>{o.v === value && <Icon n="check" className="ic sm mi-ok" />}
+        <div className="dm-dau">
+          {!khongThem && (
+            <button
+              type="button"
+              className="dm-btn-ic"
+              title={tim.trim() ? `Thêm ${nhan} «${tim.trim()}»` : `Thêm ${nhan} mới`}
+              onClick={() => { setMo(false); setHop(true) }}
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="8" cy="8" r="6" />
+                <path d="M8 5.2v5.6M5.2 8h5.6" />
+              </svg>
             </button>
-          ))}
-          {!loc.length && <div className="dm-trong">Chưa có {nhan} «{tim.trim()}»</div>}
-        </div>
-        {!khongThem && (
-          <button type="button" className="dm-them" onClick={() => { setMo(false); setHop(true) }}>
-            <Icon n="plus" className="ic sm" />{tim.trim() ? <>Thêm {nhan} «{tim.trim()}»</> : <>Thêm {nhan} mới</>}
+          )}
+          <button
+            type="button"
+            className="dm-btn-ic"
+            title="Tải lại danh sách"
+            onClick={taiLai}
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M13.3 7.5A5.5 5.5 0 1 1 11.7 3.6L13.5 5.5" />
+              <path d="M13.5 2v3.5H10" />
+            </svg>
           </button>
+        </div>
+        {dangTai ? (
+          <div className="dm-dang-tai">Đang tải dữ liệu</div>
+        ) : (
+          <>
+            <div className="dm-tim">
+              <Icon n="search" className="ic sm" />
+              <input ref={oTim} value={tim} placeholder={`Tìm ${nhan}`} onChange={e => setTim(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); if (loc[0]) chon(loc[0].v); else if (tim.trim() && !khongThem) { setMo(false); setHop(true) } } }} />
+            </div>
+            <div className="dm-ds">
+              {loc.map(o => (
+                <button key={o.v} data-mi type="button" role="option" aria-selected={o.v === value} className={`mi${o.v === value ? ' on' : ''}`} onClick={() => chon(o.v)}>
+                  <span className="mi-t"><b>{o.t}</b></span>{o.v === value && <Icon n="check" className="ic sm mi-ok" />}
+                </button>
+              ))}
+              {!loc.length && <div className="dm-trong">Chưa có {nhan} «{tim.trim()}»</div>}
+            </div>
+          </>
         )}
       </Popover>
       {hop && !khongThem && (() => {
