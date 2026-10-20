@@ -18,6 +18,8 @@ import { useDsPhieuSx } from '../../modules/kho/BangSanXuat'
 import { MChon } from './MChon'
 import { MDanhSach } from './MDanhSach'
 import { MLapPhieu } from './MLapPhieu'
+import { MDtThuChiDs } from './MDtThuChiDs'
+import { MDtThuChiLap } from './MDtThuChiLap'
 import { coLocKhacMacDinh, MAC_DINH_LOC_MOBILE, MLoc, tinhKhoangNgay, type GtLocMobile } from './MLoc'
 import { MXemPhieu } from './MXemPhieu'
 import { MBaoCaoTheoDoi } from './MBaoCaoTheoDoi'
@@ -38,10 +40,16 @@ export const MChungTu: FC<ScreenProps> = ({ sc, mod }) => {
     if (sp.get('full') === '1' || sp.get('form') === 'full') {
       return <ChungTuMoiForm sc={sc} mod={mod} id={id} />
     }
+    if (mod.key === 'tien') {
+      return <MDtThuChiLap key={id ?? 'moi'} sc={sc} mod={mod} id={id} />
+    }
     return <MLapPhieu sc={sc} mod={mod} id={id} />
   }
   if (id !== undefined) {
     return <MXemPhieu sc={sc} mod={mod} id={id} />
+  }
+  if (mod.key === 'tien') {
+    return <MDtThuChiDs sc={sc} mod={mod} />
   }
   return <DsChungTu sc={sc} mod={mod} />
 }

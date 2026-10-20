@@ -210,7 +210,7 @@ export function MobileShell() {
 
   return (
     <div className={`m-app${capHai ? ' m-cap-2' : ''}`}>
-      {!laTrangChu && (
+      {!laTrangChu && !loc.pathname.startsWith('/app/tien/2-1-1') && (
         <header className="m-thanh-tren">
           <div className="m-thanh-tren-trai">
             {!laGoc && (

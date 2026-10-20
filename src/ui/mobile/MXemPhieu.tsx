@@ -24,6 +24,7 @@ import { MChon } from './MChon'
 import { MTrong } from './MTrong'
 import { chieuTien } from './chieuTien'
 import { tinhButToan } from './butToan'
+import { MDtThuChiXem } from './MDtThuChiXem'
 
 export interface MXemPhieuProps extends ScreenProps {
   id?: string
@@ -514,6 +515,31 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
       </div>
     </div>
   )
+
+  if (laTien) {
+    return (
+      <MDtThuChiXem
+        sc={sc}
+        mod={mod}
+        row={row}
+        moSua={moSua}
+        thucHienXoa={thucHienXoa}
+        hoiBoGhi={hoiBoGhi}
+        setHoiBoGhi={setHoiBoGhi}
+        hoiKhongSua={hoiKhongSua}
+        setHoiKhongSua={setHoiKhongSua}
+        hoiXoa={hoiXoa}
+        setHoiXoa={setHoiXoa}
+        handleMenuChon={handleMenuChon}
+        quayLai={quayLai}
+        dsDong={dsDong}
+        triQuy={triQuy}
+        triLyDo={triLyDo}
+        triNguoiGiaoDich={triNguoiGiaoDich}
+        cuaHangTen={cuaHangTen}
+      />
+    )
+  }
 
   return (
     <div className={`m-pb-man${nhomMb === 'mua' ? ' m-xp-mua' : ''}`}>
