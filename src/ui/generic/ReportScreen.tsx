@@ -20,7 +20,6 @@ import { ganMoPhieu } from './SoChungTu'
 import { Dropdown, MenuHead, MenuItem, MenuSep, Popover, Select } from '../Dropdown'
 import { ChonKhoangNgay, dmy, khoangThang, type KhoangNgay } from '../ChonNgay'
 import { BoLoc, useCauHinhLoc, useDongEsc, type OLocDef } from '../LocNangCao'
-import { NutExcel } from '../CongCuDs'
 import { SoTrangCtx, ToGiay, NgatTrang, tachKhoi, type Kho } from '../bao-cao/ToGiay'
 import { datNguonXuat, layNguonXuat, taoTenFile, xuatFile, type NguonXuat } from '../bao-cao/xuat'
 import { ChonHaiCot } from '../ChonHaiCot'
@@ -329,7 +328,13 @@ export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: 
           <Icon n="cog" kieu="net" className="ic sm" />
           <span className="rpt-btn-txt">Tuỳ chỉnh</span>
         </button>
-        <NutExcel title="Xuất báo cáo" align="end" width={180}>
+        <Dropdown
+          btnClass="nut-vuong ds-nut-excel"
+          align="end"
+          width={180}
+          title="Xuất báo cáo"
+          label={<Icon n="download" className="ic sm" />}
+        >
           {dong => (
             <>
               <MenuHead>Tuỳ chọn cột</MenuHead>
@@ -345,7 +350,7 @@ export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: 
               <MenuItem icon="tep-ma" onClick={() => { dong(); xuat('xml') }}>XML (.xml)</MenuItem>
             </>
           )}
-        </NutExcel>
+        </Dropdown>
         <button
           type="button"
           className="btn sm"
