@@ -1132,7 +1132,7 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
               <div className="bbt-13t-trong-ten"><b>Hiệu quả kinh doanh 13 tháng</b><small>Doanh thu, chi phí, lợi nhuận từng tháng và so với cùng kỳ năm trước</small></div>
               <span className="bbt-13t-chu"><i className="dt" />Doanh thu<i className="cp" />Chi phí<i className="ln duong" />Lợi nhuận</span>
             </div>
-            <KhungVua cao={210} toiThieu={120} ve={(r, h) => <LaiLoChart data={laiLo13} h={h} rong={r} duoi0={duoi0} />} />
+            <KhungVua cao={260} toiThieu={220} ve={(r, h) => <LaiLoChart data={laiLo13} h={h} rong={r} duoi0={duoi0} />} />
           </div>
         </section>
 
@@ -1219,7 +1219,7 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
               <div className="bbt-13t-trong-ten"><b>Dòng tiền 13 tháng</b><small>Tiền thu vào, chi ra mỗi tháng và số dư quỹ cuối tháng</small></div>
               <span className="bbt-13t-chu"><i className="thu2" />Thu<i className="chi2" />Chi<i className="thuan duong" /><span title="Thu trừ chi trong tháng">Dòng tiền thuần</span><i className="ton duong" />Tồn quỹ</span>
             </div>
-            <KhungVua cao={210} toiThieu={120} ve={(r, h) => <LaiLoChart data={thuChi13} h={h} rong={r} duoi0={duoi0} ten={['Thu', 'Chi']} mau={['var(--bd-thu, #0f8f84)', 'var(--bd-chi, #c2362b)']} duong={{ ten: 'Dòng tiền thuần', mau: 'var(--bd-thuan, #e29a2e)' }} duong2={{ ten: 'Tồn quỹ', mau: 'var(--bd-ton, #0560a6)' }} />} />
+            <KhungVua cao={260} toiThieu={220} ve={(r, h) => <LaiLoChart data={thuChi13} h={h} rong={r} duoi0={duoi0} ten={['Thu', 'Chi']} mau={['var(--bd-thu, #0f8f84)', 'var(--bd-chi, #c2362b)']} duong={{ ten: 'Dòng tiền thuần', mau: 'var(--bd-thuan, #e29a2e)' }} duong2={{ ten: 'Tồn quỹ', mau: 'var(--bd-ton, #0560a6)' }} />} />
           </div>
         </section>
 
