@@ -31,6 +31,7 @@ import { SX, TT_SX, dongNhapTuXuat, type DongSx } from '../../modules/kho/san-xu
 import { BangDieuChuyen, DauDieuChuyen, cotDcn } from '../../modules/kho/BangDieuChuyen'
 import { DCN, dongNhapDc, type DongDcn } from '../../modules/kho/dieu-chuyen'
 import { BangSua, DS_DOI_TUONG, HopCotPhieu, cotTuyChon } from './BangSua'
+import { ApDauBang } from './ApDauBang'
 import { HopInChungTu, type PhieuIn } from '../bao-cao/InChungTu'
 import { createPortal } from 'react-dom'
 import { theMauTheoGoc, theMauTheoSo } from '../../modules/ccdc'
@@ -1203,6 +1204,10 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
                 onClick={() => { if (!moLoc) setTab('ct'); setMoLoc(v => !v) }}>
                 <Icon n="filter" className="ic sm" />
               </button>
+            )}
+            {/* Phiếu mua hàng: Thuế GTGT, Chiết khấu áp xuống mọi dòng (T492) */}
+            {nhom === 'mua' && dangSua && !laKk && !laSx && !laDcn && (   // giữ ô khi sang tab khác để nhớ mức đã chọn
+              <ApDauBang dong={dsDong} onChange={setDsDong} an={tab !== 'ct'} coThue={cfg.thue !== 0 && !anCot.includes('ts')} coCk={Boolean(bo.ck)} />
             )}
           </div>
 

@@ -14,7 +14,7 @@ export const docSoVN = (s: string) => Number(s.replace(/\./g, '').replace(',', '
 /** Số -> chuỗi để bắt đầu gõ (không làm tròn, giữ phần thập phân) */
 const raChuoi = (v: number) => v ? goSoVN(String(v).replace('.', ',')) : ''
 
-export function OSoGo({ val, onChange, hien, thapPhan = true, className = 'inp sm num', placeholder = '0', disabled }: {
+export function OSoGo({ val, onChange, hien, thapPhan = true, className = 'inp sm num', placeholder = '0', disabled, max }: {
   val: number
   onChange?: (v: number) => void
   hien: (v: number) => string          // cách hiện khi không gõ
@@ -22,6 +22,7 @@ export function OSoGo({ val, onChange, hien, thapPhan = true, className = 'inp s
   className?: string
   placeholder?: string
   disabled?: boolean
+  max?: number                          // gõ quá số này thì bỏ phím vừa gõ, vd % chiết khấu tối đa 100 (T492)
 }) {
   const [focus, setFocus] = useState(false)
   const [str, setStr] = useState(raChuoi(val))
@@ -42,6 +43,7 @@ export function OSoGo({ val, onChange, hien, thapPhan = true, className = 'inp s
       onFocus={() => { setFocus(true); setStr(raChuoi(val)) }}
       onChange={e => {
         const t = e.target.value, c = e.target.selectionStart ?? t.length
+        if (max !== undefined && docSoVN(goSoVN(t, thapPhan)) > max) return
         troSau.current = t.slice(0, c).replace(/[^\d,]/g, '').length
         const moi = goSoVN(t, thapPhan)
         setStr(moi)

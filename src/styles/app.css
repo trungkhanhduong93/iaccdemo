@@ -31907,3 +31907,21 @@ a.tx-item:hover {
 
 /* ── Chi phí NVL: tên cửa hàng màu liên kết, cỡ chữ theo bảng (T491) ── */
 .nvl-ten-cn { font-size: inherit; margin-right: 8px; }
+
+/* ── Phiếu mua hàng: ô Thuế GTGT, Chiết khấu trên thanh tab áp xuống mọi dòng (T492) ── */
+.tabs > .ct-ap-dau { margin-left: auto; align-self: center; display: flex; align-items: center; gap: 20px; padding-right: 4px; }
+.ct-ap-o { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--body); white-space: nowrap; }
+.ct-ap-o > span { font-weight: 600; }
+.ct-ap-ts { width: 110px; }
+.ct-ap-kieu { display: inline-flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.ct-ap-kieu > button { display: inline-flex; align-items: center; justify-content: center; height: 30px; width: 32px; padding: 0; border: 0; background: var(--white); color: var(--muted); font: inherit; font-size: 13px; cursor: pointer; }
+.ct-ap-kieu > button + button { border-left: 1px solid var(--line); }
+.ct-ap-kieu > button.on { background: var(--blue); color: #fff; }
+.ct-ap-pt { width: 70px; height: 30px; }
+.ct-ap-tien { width: 130px; height: 30px; }
+.tabs > .ct-ap-dau button { margin-bottom: 0; font-weight: 400; }
+.tabs > .ct-ap-dau .sel.inp { height: 30px; padding: 0 10px; border: 1px solid var(--line); }
+.tabs > .ct-ap-dau .sel.inp.open, .tabs > .ct-ap-dau .sel.inp:focus-visible { border-color: var(--blue); }
+.ct-ap-o > .ct-ap-dv { margin-left: -4px; font-weight: 400; color: var(--muted); }
+.tabs > .ct-ap-dau[hidden] { display: none; }
+.ct-ap-o > * { flex: none; }
