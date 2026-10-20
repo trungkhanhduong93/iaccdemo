@@ -473,7 +473,7 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
               onClick={toggleGhim}
               aria-label="Ghim báo cáo"
             >
-              <Icon n="star" className="ic sm" />
+              <Icon n={daGhim ? 'star-fill' : 'star'} className="ic sm" />
             </button>
           </div>
         </header>
@@ -509,22 +509,22 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
 
       {/* Hàng chip cuộn ngang: Sổ quỹ / Sổ ngân hàng theo Figma T500, các sổ khác giữ cũ */}
       {isSoTien ? (
-        <div className="m-sq-chip-hang">
+        <div className="m-t500-chip-hang">
           {/* Nút bộ lọc: CHỈ ICON phễu + huy hiệu số đếm, KHÔNG chữ "Bộ lọc" (Trum chốt) */}
           <button
             type="button"
-            className="m-sq-chip-filter"
+            className="m-t500-chip-filter"
             onClick={() => setMoLoc(true)}
             aria-label="Bộ lọc"
           >
             <Icon n="filter" className="ic sm" />
-            {soLuongLoc > 0 && <span className="m-sq-filter-badge">{soLuongLoc}</span>}
+            {soLuongLoc > 0 && <span className="m-t500-filter-badge">{soLuongLoc}</span>}
           </button>
 
           {/* Chip kỳ: Tháng 9/2026 ˅ nền xanh nhạt, viền xanh */}
           <button
             type="button"
-            className="m-sq-chip m-sq-chip-ky"
+            className="m-t500-chip m-t500-chip-ky"
             onClick={() => setMoLoc(true)}
           >
             <span>{tenKy}</span>
@@ -534,7 +534,7 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
           {/* Chip Quỹ hoặc TK */}
           <button
             type="button"
-            className="m-sq-chip"
+            className="m-t500-chip"
             onClick={() => setMoLoc(true)}
           >
             <span>{isSoQuy ? `Quỹ: ${chonQuy ?? 'Tất cả'}` : `TK: ${chonTk ?? 'Tất cả'}`}</span>
@@ -544,7 +544,7 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
           {/* Chip CN */}
           <button
             type="button"
-            className="m-sq-chip"
+            className="m-t500-chip"
             onClick={() => setMoLoc(true)}
           >
             <span>CN: {tenCn}</span>
@@ -644,10 +644,10 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
             />
           </div>
         ) : (
-          <div className="m-so-dong">
+          <div className={isSoTien ? 'm-t500-so-dong' : 'm-so-dong'}>
             {/* Lưới 2x2 thẻ cho Sổ quỹ / Sổ ngân hàng theo Figma T500, 3 ô cho sổ khác */}
             {isSoTien ? (
-              <div className="m-sq-grid-cards">
+              <div className="m-t500-grid-cards">
                 <div className="m-sq-card m-sq-card-dau">
                   <div className="m-sq-card-label">Tồn đầu kỳ</div>
                   <div className="m-sq-card-val m-so-dong-num">{money(soDau)}</div>
@@ -689,7 +689,7 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
               </div>
             )}
 
-            {isSoTien && <div className="m-sq-sec-title">Chi tiết phát sinh</div>}
+            {isSoTien && <div className="m-t500-sec-title">Chi tiết phát sinh</div>}
 
             {/* Danh sách nhóm theo ngày */}
             {dsNhomNgay.length === 0 ? (
@@ -698,12 +698,12 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
               </div>
             ) : (
               dsNhomNgay.map(nhom => (
-                <div key={nhom.ngay} className={isSoTien ? 'm-sq-nhom-ngay-wrap' : undefined}>
+                <div key={nhom.ngay} className={isSoTien ? 'm-t500-nhom-ngay-wrap' : undefined}>
                   {isSoTien ? (
-                    <div className="m-sq-dong-ngay">
-                      <span className="m-sq-ngay-chu">{dinhDangThuNgay(nhom.ngay)}</span>
-                      <span className="m-sq-ngay-ton m-so-dong-num">
-                        Tồn đầu ngày <span className="m-sq-dau-so">{money(nhom.tonDauNgay)}</span>
+                    <div className="m-t500-dong-ngay">
+                      <span className="m-t500-ngay-chu">{dinhDangThuNgay(nhom.ngay)}</span>
+                      <span className="m-t500-ngay-ton m-so-dong-num">
+                        Tồn đầu ngày <span className="m-t500-dau-so">{money(nhom.tonDauNgay)}</span>
                       </span>
                     </div>
                   ) : (
@@ -715,7 +715,7 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
                     </div>
                   )}
 
-                  <div className={`m-so-dong-the ${isSoTien ? 'm-sq-the-trang' : ''}`}>
+                  <div className={isSoTien ? 'm-t500-the-trang' : 'm-so-dong-the'}>
                     {nhom.ds.map((r, i) => {
                       const dg = String(r.dg || r.dienGiai || r.ten || 'Chứng từ')
                       const soCt = String(r.thu || r.chi || r.so || r.soCt || r.soHieu || '')
@@ -732,25 +732,27 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
                       const to = layDuongDan(soCt)
 
                       const noiDungItem = isSoTien ? (
-                        <>
-                          <div className="m-so-dong-trai">
-                            <div className="m-sq-row-dg" title={dg}>{dg}</div>
-                            <div className="m-sq-row-phu">
-                              <span className="m-sq-row-so-ct">{soCt}</span>
-                              {tenCnRow && <span className="m-sq-row-cn"> · {tenCnRow}</span>}
+                        <div className="m-t500-sq-row-content">
+                          <div className="m-t500-sq-row-trai">
+                            <div className="m-t500-sq-row-dg" title={dg}>{dg}</div>
+                            <div className="m-t500-sq-row-phu">
+                              <span className="m-t500-sq-row-so-ct">{soCt}</span>
+                              {tenCnRow && <span className="m-t500-sq-row-cn"> · {tenCnRow}</span>}
                             </div>
                           </div>
-                          {tienThu > 0 && (
-                            <span className="m-so-dong-tien m-so-dong-duong m-sq-tien-thu m-so-dong-num">
-                              +{money(tienThu)}
-                            </span>
-                          )}
-                          {tienChi > 0 && (
-                            <span className="m-so-dong-tien m-so-dong-am m-sq-tien-chi m-so-dong-num">
-                              −{money(tienChi)}
-                            </span>
-                          )}
-                        </>
+                          <div className="m-t500-sq-row-phai">
+                            {tienThu > 0 && (
+                              <span className="m-t500-sq-tien-thu m-so-dong-num">
+                                +{money(tienThu)}
+                              </span>
+                            )}
+                            {tienChi > 0 && (
+                              <span className="m-t500-sq-tien-chi m-so-dong-num">
+                                −{money(tienChi)}
+                              </span>
+                            )}
+                          </div>
+                        </div>
                       ) : (
                         <>
                           <div className="m-so-dong-trai">
@@ -774,22 +776,22 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
                         <Link
                           key={i}
                           to={to}
-                          className={`m-so-dong-item m-so-dong-item-bam ${isSoTien ? 'm-sq-row-item' : ''}`}
+                          className={isSoTien ? 'm-t500-sq-row-item' : 'm-so-dong-item m-so-dong-item-bam'}
                           title="Mở chứng từ gốc"
                         >
                           {noiDungItem}
                         </Link>
                       ) : (
-                        <div key={i} className={`m-so-dong-item ${isSoTien ? 'm-sq-row-item' : ''}`}>
+                        <div key={i} className={isSoTien ? 'm-t500-sq-row-item' : 'm-so-dong-item'}>
                           {noiDungItem}
                         </div>
                       )
                     })}
 
                     {isSoTien && (
-                      <div className="m-sq-cuoi-ngay">
-                        <span className="m-sq-cuoi-nhan">Tồn cuối ngày</span>
-                        <b className="m-sq-cuoi-so m-so-dong-num">{money(nhom.tonCuoiNgay)}</b>
+                      <div className="m-t500-cuoi-ngay">
+                        <span className="m-t500-cuoi-nhan">Tồn cuối ngày</span>
+                        <b className="m-t500-cuoi-so m-so-dong-num">{money(nhom.tonCuoiNgay)}</b>
                       </div>
                     )}
                   </div>
@@ -798,7 +800,7 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
             )}
 
             {isSoTien && (
-              <div className="m-sq-keo-tiep">Kéo xuống để xem các ngày tiếp theo</div>
+              <div className="m-t500-keo-tiep">Kéo xuống để xem các ngày tiếp theo</div>
             )}
           </div>
         )
