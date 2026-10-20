@@ -23,6 +23,7 @@ import { BoLoc, useCauHinhLoc, useDongEsc, type OLocDef } from '../LocNangCao'
 import { SoTrangCtx, ToGiay, NgatTrang, tachKhoi, type Kho } from '../bao-cao/ToGiay'
 import { datNguonXuat, layNguonXuat, taoTenFile, xuatFile, type NguonXuat } from '../bao-cao/xuat'
 import { ChonHaiCot } from '../ChonHaiCot'
+import { OChonMot } from '../OChonMot'
 import {
   useTrangThaiLoc, datLoc, datAnKhongPS, datCotNhuDangXem, datTuyChon, xoaLoc,
   datColsGoc, datDsKyMacDinh, datKyNhap, datKyMacDinh, xemBaoCao, useTuyChinhBC, bienDoiBang, luuTuyChinh,
@@ -172,7 +173,7 @@ export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: 
     const res: OLocDef[] = [
       {
         k: 'khoangNgay',
-        ten: 'Khoảng ngày',
+        ten: 'Thời gian',
         o: <ChonKhoangNgay value={khoang} onChange={doiKhoang} />,
       },
     ]
@@ -186,28 +187,28 @@ export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: 
         res.push({
           k: l.k,
           ten: l.nhan,
+          coGiaTri: Boolean(tt.nhap.loc[l.k]?.[0]),
           o: (
-            <Select
-              className="ds-o-sel"
+            <OChonMot
+              ds={opts.map(v => ({ v, t: v }))}
               value={tt.nhap.loc[l.k]?.[0] ?? ''}
-              aria-label={l.nhan}
-              onChange={e => datLoc(path, l.k, e.target.value ? [e.target.value] : [])}
-            >
-              <option value="">Tất cả</option>
-              {opts.map(v => <option key={v} value={v}>{v}</option>)}
-            </Select>
+              onChange={(v: string) => datLoc(path, l.k, v ? [v] : [])}
+              nhan={l.nhan}
+            />
           ),
         })
       } else {
         res.push({
           k: l.k,
           ten: l.nhan,
+          coGiaTri: Boolean(tt.nhap.loc[l.k]?.length),
           o: (
-            <DropdownChonNhieu
+            <ChonHaiCot
+              ds={opts.map(v => ({ v, t: v }))}
+              value={tt.nhap.loc[l.k] ?? []}
+              onChange={(vals: string[]) => datLoc(path, l.k, vals)}
               nhan={l.nhan}
-              opts={opts}
-              daChon={tt.nhap.loc[l.k] ?? []}
-              onDoi={vals => datLoc(path, l.k, vals)}
+              chip
             />
           ),
         })
@@ -218,6 +219,7 @@ export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: 
       res.push({
         k: 'anKhongPS',
         ten: 'Ẩn dòng không phát sinh',
+        coGiaTri: Boolean(tt.nhap.anKhongPS),
         o: (
           <Select
             className="ds-o-sel"
@@ -279,71 +281,76 @@ export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: 
     toast('Chọn máy in "Lưu dưới dạng PDF" để lưu file')
   }
 
-  // Thanh lọc báo cáo kiểu danh sách chứng từ (T237)
+  // Thanh lọc báo cáo kiểu danh sách chứng từ (T237, T511: hàng 1 BoLoc chiNutPheu, hàng 2 Tuỳ chỉnh, xuất Excel phải)
   const thanh = (
-    <div className="thanh-loc bc-thanh-cong-cu">
-      {coNhom && (
-        <div className="seg bc-xem-nhom" role="tablist" aria-label="Kiểu xem nhóm">
-          {([['tongHop', 'Tổng hợp'], ['chiTiet', 'Chi tiết']] as const).map(([k, ten]) => (
-            <button key={k} type="button" role="tab" aria-selected={xemNhom === k} className={xemNhom === k ? 'on' : ''}
-              title={k === 'tongHop' ? 'Mỗi nhóm một dòng, cộng các cột số' : 'Đủ dòng chi tiết trong từng nhóm'} onClick={() => doiXemNhom(k)}>{ten}</button>
-          ))}
+    <div className="thanh-loc bc-thanh-cong-cu" style={{ padding: 0, border: 0, background: 'transparent' }}>
+      <div className="ds-toolbar-figma">
+        <BoLoc
+          ds={oLoc}
+          cauHinh={cauHinhLoc}
+          datCauHinh={datCauHinhLoc}
+          dangLoc={dangLoc}
+          khacNhap={khacNhap}
+          onLoc={apDungXem}
+          onXoaHet={xoaNhap}
+          anNangCao={khongCoLocDong}
+          nhanXoa="Xoá lọc"
+          chiNutPheu
+          truocNutLoc={children}
+        />
+      </div>
+      <div className="ds-hang-trang-thai">
+        {coNhom && (
+          <div className="seg bc-xem-nhom" role="tablist" aria-label="Kiểu xem nhóm">
+            {([['tongHop', 'Tổng hợp'], ['chiTiet', 'Chi tiết']] as const).map(([k, ten]) => (
+              <button key={k} type="button" role="tab" aria-selected={xemNhom === k} className={xemNhom === k ? 'on' : ''}
+                title={k === 'tongHop' ? 'Mỗi nhóm một dòng, cộng các cột số' : 'Đủ dòng chi tiết trong từng nhóm'} onClick={() => doiXemNhom(k)}>{ten}</button>
+            ))}
+          </div>
+        )}
+        <div className="ds-toolbar-phai ds-cong-cu-h2">
+          <Dropdown
+            btnClass="nut-vuong ds-nut-excel"
+            align="end"
+            width={180}
+            title="Xuất báo cáo"
+            label={<Icon n="download" className="ic sm" />}
+          >
+            {dong => (
+              <>
+                <MenuHead>Tuỳ chọn cột</MenuHead>
+                <MenuItem on={tt.cotNhuDangXem} onClick={() => datCotNhuDangXem(path, !tt.cotNhuDangXem)}>
+                  Cột như đang xem
+                </MenuItem>
+                <MenuSep />
+                <MenuHead>Xuất báo cáo</MenuHead>
+                <MenuItem icon="tep-bang" onClick={() => { dong(); xuat('xlsx') }}>Excel (.xlsx)</MenuItem>
+                <MenuItem icon="tep-chu" onClick={() => { dong(); xuat('csv') }}>CSV (.csv)</MenuItem>
+                <MenuItem icon="in-gon" onClick={() => { dong(); inPdf() }}>PDF (hộp in)</MenuItem>
+                <MenuItem icon="tep-ma" onClick={() => { dong(); xuat('html') }}>HTML (.html)</MenuItem>
+                <MenuItem icon="tep-ma" onClick={() => { dong(); xuat('xml') }}>XML (.xml)</MenuItem>
+              </>
+            )}
+          </Dropdown>
+          <button
+            type="button"
+            className="btn sm"
+            title="Tuỳ chỉnh"
+            onClick={() => setMoTuyChinh(true)}
+          >
+            <Icon n="cog" kieu="net" className="ic sm" />
+            <span className="rpt-btn-txt">Tuỳ chỉnh</span>
+          </button>
+          <button
+            type="button"
+            className="btn sm"
+            title="Xem trước khi in"
+            onClick={xemTruocIn}
+          >
+            <Icon n="in-gon" className="ic sm" />
+            In
+          </button>
         </div>
-      )}
-      <BoLoc
-        ds={oLoc}
-        cauHinh={cauHinhLoc}
-        datCauHinh={datCauHinhLoc}
-        dangLoc={dangLoc}
-        khacNhap={khacNhap}
-        onLoc={apDungXem}
-        onXoaHet={xoaNhap}
-        anNangCao={khongCoLocDong}
-        nhanXoa="Xoá lọc"
-        truocNutLoc={children}
-      />
-      <div className="ds-thanh-phai thanh-loc-phai">
-        <button
-          type="button"
-          className="btn sm"
-          title="Tuỳ chỉnh"
-          onClick={() => setMoTuyChinh(true)}
-        >
-          <Icon n="cog" kieu="net" className="ic sm" />
-          <span className="rpt-btn-txt">Tuỳ chỉnh</span>
-        </button>
-        <Dropdown
-          btnClass="nut-vuong ds-nut-excel"
-          align="end"
-          width={180}
-          title="Xuất báo cáo"
-          label={<Icon n="download" className="ic sm" />}
-        >
-          {dong => (
-            <>
-              <MenuHead>Tuỳ chọn cột</MenuHead>
-              <MenuItem on={tt.cotNhuDangXem} onClick={() => datCotNhuDangXem(path, !tt.cotNhuDangXem)}>
-                Cột như đang xem
-              </MenuItem>
-              <MenuSep />
-              <MenuHead>Xuất báo cáo</MenuHead>
-              <MenuItem icon="tep-bang" onClick={() => { dong(); xuat('xlsx') }}>Excel (.xlsx)</MenuItem>
-              <MenuItem icon="tep-chu" onClick={() => { dong(); xuat('csv') }}>CSV (.csv)</MenuItem>
-              <MenuItem icon="in-gon" onClick={() => { dong(); inPdf() }}>PDF (hộp in)</MenuItem>
-              <MenuItem icon="tep-ma" onClick={() => { dong(); xuat('html') }}>HTML (.html)</MenuItem>
-              <MenuItem icon="tep-ma" onClick={() => { dong(); xuat('xml') }}>XML (.xml)</MenuItem>
-            </>
-          )}
-        </Dropdown>
-        <button
-          type="button"
-          className="btn sm"
-          title="Xem trước khi in"
-          onClick={xemTruocIn}
-        >
-          <Icon n="in-gon" className="ic sm" />
-          In
-        </button>
       </div>
     </div>
   )

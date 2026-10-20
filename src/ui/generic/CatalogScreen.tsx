@@ -19,8 +19,9 @@ import { FormToanMan } from '../FormToanMan'
 import { LichSu } from './ChungTuForm'
 import { HopCotPhieu } from './BangSua'
 import { NutPhimTat, phimDong } from '../BangPhimTat'
-import { ChipTrangThai, HopXacNhan, NutTuyChinhCot, ONhanVien, useCotDs, type Chip } from '../LocNangCao'
+import { ChipTrangThai, HopXacNhan, NutTuyChinhCot, ONhanVien, useCotDs, BoLoc, useLocNhap, useCauHinhLoc, type Chip, type OLocDef } from '../LocNangCao'
 import { NutExcel, NutThemMoiSplit } from '../CongCuDs'
+import { IconFigmaSearch } from '../IconFigma'
 import { sinhCotBoSung } from './TuyChonCotDM'
 import { ChonKhoangNgay, ONgay, docNgay } from '../ChonNgay'
 import { ChonCoTim, ChonNhieu as ChonNhieuIf } from '../../modules/danh-muc/QuyDoiDvt'
@@ -43,6 +44,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
   const catKey = sc.code ?? sc.slug ?? ''
   const addedRows = useAddedCatalogRows(catKey)
   const cfg = sc.catalog ?? { cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Tên' }], rows: () => [] }
+  const dsct = cfg.dsChungTu
   // Kỳ số liệu (yyyymm): màn có kySoLieu tính số liệu tới hết kỳ đang chọn
   const [ky, setKy] = useState(() => kyMacDinh(s))
   // Cảnh báo trên bảng theo kỳ số liệu, vd khoản chờ phân bổ chưa tạo thẻ (T287); màn đổi thì CatalogScreen vẽ lại từ đầu nên gọi hook có điều kiện vẫn đúng thứ tự
@@ -101,26 +103,27 @@ export function CatalogScreen({ sc }: ScreenProps) {
   const laDongBoFabi = laHangHoa || sc.slug === 'nhom-hang-hoa' || sc.slug === 'phuong-thuc-thanh-toan' || sc.code === '1.17'
   const coTrangThai = !cfg.dsChungTu
 
-  const [locTrangThai, setLocTrangThai] = useState<'hd' | 'ngung' | ''>('hd')
   const [tabPhanLoai, setTabPhanLoai] = useState<'tat-ca' | 'da-phan-loai' | 'chua-phan-loai'>('tat-ca')
-  const [boLocNangCao, setBoLocNangCao] = useState<Record<string, string>>({})
-  const [moPheu, setMoPheu] = useState(false)
-  const btnPheu = useRef<HTMLButtonElement>(null)
+  // Danh mục thường: dùng useLocNhap để đổi điều kiện chỉ ghi nháp, bấm Lọc mới lọc (T511)
+  const locDm = useLocNhap(() => ({
+    q: '',
+    nhom: '',
+    trangThai: 'hd' as 'hd' | 'ngung' | '',
+    nangCao: {} as Record<string, string>,
+  }))
 
   useEffect(() => {
-    setLocTrangThai('hd')
+    locDm.xoaHet()
     setTabPhanLoai('tat-ca')
-    setBoLocNangCao({})
-    setMoPheu(false)
   }, [sc])
 
   // Lọc theo trạng thái trước để tính số đếm tab
   const allSauTrangThai = useMemo(() => {
-    if (!coTrangThai || !locTrangThai) return all
-    if (locTrangThai === 'hd') return all.filter(r => r._tt !== 0)
-    if (locTrangThai === 'ngung') return all.filter(r => r._tt === 0)
+    if (!coTrangThai || !locDm.ap.trangThai) return all
+    if (locDm.ap.trangThai === 'hd') return all.filter(r => r._tt !== 0)
+    if (locDm.ap.trangThai === 'ngung') return all.filter(r => r._tt === 0)
     return all
-  }, [all, coTrangThai, locTrangThai])
+  }, [all, coTrangThai, locDm.ap.trangThai])
 
   const demTatCa = allSauTrangThai.length
   const demDaPhanLoai = useMemo(() => allSauTrangThai.filter(r => Boolean(r.loai)).length, [allSauTrangThai])
@@ -154,36 +157,38 @@ export function CatalogScreen({ sc }: ScreenProps) {
     return cols0.filter(c => c.k && !bo.has(c.k) && c.k !== 'stk' && c.k !== 'mst')
   }, [cols0])
 
-  // Số lượng điều kiện lọc đang bật: lọc trạng thái (mặc định Đang hoạt động được đếm), nhóm, ô tích, và các trường nâng cao
-  const soLoc = (coTrangThai && locTrangThai ? 1 : 0) + (cfg.tich && tichLoc ? 1 : 0) + (nhom ? 1 : 0) + Object.values(boLocNangCao).filter(Boolean).length
-
   const rows = useMemo(() => {
     return all.filter(r => {
       if (daXoaDm.has(khoaXoa(r)) || xoaTheoPhieu.laDaXoa(khoaXoa(r))) return false
-      if (nhom && r[cfg.nhomLoc!] !== nhom) return false
-      if (q && !fold(Object.values(r).join(' ')).includes(fold(q))) return false
-      if (tichLoc && cfg.tich && !cfg.tich.loc(r)) return false
-      if (coTrangThai && locTrangThai) {
-        if (locTrangThai === 'hd' && r._tt === 0) return false
-        if (locTrangThai === 'ngung' && r._tt !== 0) return false
+      if (dsct) {
+        if (nhom && r[cfg.nhomLoc!] !== nhom) return false
+        if (q && !fold(Object.values(r).join(' ')).includes(fold(q))) return false
+      } else {
+        if (locDm.ap.nhom && r[cfg.nhomLoc!] !== locDm.ap.nhom) return false
+        if (locDm.ap.q && !fold(Object.values(r).join(' ')).includes(fold(locDm.ap.q))) return false
+        if (coTrangThai && locDm.ap.trangThai) {
+          if (locDm.ap.trangThai === 'hd' && r._tt === 0) return false
+          if (locDm.ap.trangThai === 'ngung' && r._tt !== 0) return false
+        }
+        for (const [k, v] of Object.entries(locDm.ap.nangCao)) {
+          if (!v) continue
+          if (v === '__co') {
+            if (!r[k]) return false
+          } else if (v === '__khong') {
+            if (Boolean(r[k])) return false
+          } else {
+            if (String(r[k] ?? '') !== v) return false
+          }
+        }
       }
+      if (tichLoc && cfg.tich && !cfg.tich.loc(r)) return false
       if (laHangHoa) {
         if (tabPhanLoai === 'da-phan-loai' && !r.loai) return false
         if (tabPhanLoai === 'chua-phan-loai' && Boolean(r.loai)) return false
       }
-      for (const [k, v] of Object.entries(boLocNangCao)) {
-        if (!v) continue
-        if (v === '__co') {
-          if (!r[k]) return false
-        } else if (v === '__khong') {
-          if (Boolean(r[k])) return false
-        } else {
-          if (String(r[k] ?? '') !== v) return false
-        }
-      }
       return true
     })
-  }, [all, nhom, q, tichLoc, daXoaDm, xoaTheoPhieu.ban, coTrangThai, locTrangThai, laHangHoa, tabPhanLoai, boLocNangCao, cfg])
+  }, [all, dsct, nhom, q, locDm.ap, tichLoc, daXoaDm, xoaTheoPhieu.ban, coTrangThai, laHangHoa, tabPhanLoai, cfg])
   const cols: Col[] = useMemo(() => [
     ...(cfg.stt ? [{ k: '_stt', t: 'STT', w: 60, c: true }] : []),
     ...cols0.map(c => {
@@ -242,7 +247,6 @@ export function CatalogScreen({ sc }: ScreenProps) {
   // STT đánh lại theo dòng đang hiện sau tìm, lọc
   const rowsHien = useMemo((): Row[] => cfg.stt ? rows.map((r, i) => ({ ...r, _stt: i + 1 })) : rows, [rows, cfg.stt])
   // Kiểu danh sách chứng từ (dsChungTu): phân trang, dòng Tổng, chọn dòng xem chi tiết ở khung dưới như danh sách thu chi
-  const dsct = cfg.dsChungTu
   // Kiểu thêm mới hiện theo gói đang dùng
   const bienHien = cauHinh?.bien?.filter(b => !b.goi || b.goi.includes(s.goi)) ?? []
   // Nút thêm: kiểu thêm từng dòng đầu tiên (nếu gói có), rồi Thêm hàng loạt, rồi các kiểu còn lại; gói không có kiểu đầu tiên thì Thêm hàng loạt là nút chính
@@ -256,7 +260,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
   const trangHt = Math.min(trang, Math.max(1, Math.ceil(rowsHien.length / coTrang)))
   const rowsTrang = useMemo(() => rowsHien.slice((trangHt - 1) * coTrang, trangHt * coTrang), [rowsHien, trangHt, coTrang])
   // Đổi danh mục, tìm, lọc thì về trang 1 (T153)
-  useEffect(() => { setTrang(1) }, [sc, q, nhom, tichLoc, locTrangThai, tabPhanLoai])
+  useEffect(() => { setTrang(1) }, [sc, q, nhom, tichLoc, locDm.ap, tabPhanLoai])
   const cong = (ds: Row[]) => Object.fromEntries((dsct?.cotCong ?? []).map(k => [k, ds.reduce((a, r) => a + (Number(r[k]) || 0), 0)]))
   // Dòng đang xem ở khung dưới: dòng đã chọn nếu còn trong danh sách, không thì dòng đầu
   const dangChon = (chon && rowsHien.find(r => r[cols0[0].k] === chon[cols0[0].k])) ?? rowsHien[0]
@@ -304,62 +308,137 @@ export function CatalogScreen({ sc }: ScreenProps) {
 
 
 
+  const pathDsct = viTri.pathname
+  const oLocDsct: OLocDef[] = useMemo(() => [
+    {
+      k: 'tim', ten: 'Tìm kiếm', coGiaTri: Boolean(nhapLoc.q.trim()),
+      o: <input className="ds-o-inp" value={nhapLoc.q} placeholder="Số thẻ, mã, tên" onChange={e => setNhapLoc(n => ({ ...n, q: e.target.value }))}
+        onKeyDown={e => { if (e.key === 'Enter') apLoc() }} />,
+    },
+    ...(cfg.kySoLieu ? [{
+      k: 'ky', ten: 'Kỳ số liệu', coGiaTri: nhapLoc.ky !== kyMacDinh(s),
+      o: (
+        <Select className="ds-o-sel" value={String(nhapLoc.ky)} aria-label="Kỳ số liệu" onChange={e => setNhapLoc(n => ({ ...n, ky: Number(e.target.value) }))}
+          ds={dsKyNam(s).map(k => ({ v: String(k.so), t: k.nhan }))} />
+      ),
+    }] : []),
+    ...(nhoms.length > 1 ? [{
+      k: cfg.nhomLoc ?? 'nhom', ten: cfg.nhanLoc ?? 'Nhóm', coGiaTri: Boolean(nhapLoc.nhom),
+      o: (
+        <Select className="ds-o-sel" value={nhapLoc.nhom} aria-label={cfg.nhanLoc ?? 'Nhóm'} onChange={e => setNhapLoc(n => ({ ...n, nhom: e.target.value }))}
+          ds={[{ v: '', t: 'Tất cả' }, ...nhoms.map(n => ({ v: String(n), t: String(n) }))]} />
+      ),
+    }] : []),
+  ], [nhapLoc, cfg.kySoLieu, s, nhoms, cfg.nhanLoc])
+  const [cauHinhLocDsct, datCauHinhLocDsct] = useCauHinhLoc(pathDsct, oLocDsct.map(o => o.k), [cfg.kySoLieu ? 'ky' : '', 'tim'].filter(Boolean))
+
+  const pathDm = `/danh-muc/${sc.slug ?? sc.code ?? 'chung'}`
+  const khoaNhomLoc = cfg.nhomLoc ?? 'nhom'
+  const keysDaCo = useMemo(() => new Set(['tim', ...(nhoms.length > 1 ? [khoaNhomLoc] : []), ...(coTrangThai ? ['trangThai'] : [])]), [nhoms, khoaNhomLoc, coTrangThai])
+  const oLocDm: OLocDef[] = useMemo(() => [
+    {
+      k: 'tim', ten: 'Tìm kiếm', coGiaTri: Boolean(locDm.nhap.q.trim()),
+      o: <input className="ds-o-inp" value={locDm.nhap.q} placeholder="Tìm theo mã, tên" onChange={e => locDm.dat('q', e.target.value)}
+        onKeyDown={e => { if (e.key === 'Enter') { locDm.loc(); setTrang(1) } }} />,
+    },
+    ...(nhoms.length > 1 ? [{
+      k: khoaNhomLoc, ten: cfg.nhanLoc ?? 'Nhóm', coGiaTri: Boolean(locDm.nhap.nhom),
+      o: (
+        <Select className="ds-o-sel" value={locDm.nhap.nhom} aria-label={cfg.nhanLoc ?? 'Nhóm'} onChange={e => locDm.dat('nhom', e.target.value)}
+          ds={[{ v: '', t: 'Tất cả' }, ...nhoms.map(n => ({ v: String(n), t: String(n) }))]} />
+      ),
+    }] : []),
+    ...(coTrangThai ? [{
+      k: 'trangThai', ten: 'Trạng thái', coGiaTri: Boolean(locDm.nhap.trangThai),
+      o: (
+        <Select className="ds-o-sel" value={locDm.nhap.trangThai} aria-label="Trạng thái" onChange={e => locDm.dat('trangThai', e.target.value as 'hd' | 'ngung' | '')}
+          ds={[{ v: 'hd', t: 'Đang hoạt động' }, { v: 'ngung', t: 'Không hoạt động' }, { v: '', t: 'Tất cả' }]} />
+      ),
+    }] : []),
+    ...cacCotLoc.filter(c => !keysDaCo.has(c.k)).map(c => {
+      const laBool = c.k === 'tonKho' || c.k === 'chiPhi' || c.k === 'dongY' || all.some(r => typeof r[c.k] === 'boolean')
+      const dsGiaTri = [...new Set(all.map(r => r[c.k]).filter(v => v !== undefined && v !== '' && typeof v !== 'object'))].sort()
+      return {
+        k: c.k, ten: c.t, coGiaTri: Boolean(locDm.nhap.nangCao[c.k]),
+        o: (
+          <Select className="ds-o-sel" value={locDm.nhap.nangCao[c.k] ?? ''} aria-label={c.t}
+            onChange={e => locDm.dat('nangCao', { ...locDm.nhap.nangCao, [c.k]: e.target.value })}>
+            <option value="">Tất cả</option>
+            {laBool ? (
+              <>
+                <option value="__co">Có</option>
+                <option value="__khong">Không</option>
+              </>
+            ) : dsGiaTri.map(v => (
+              <option key={String(v)} value={String(v)}>{String(v)}</option>
+            ))}
+          </Select>
+        ),
+      }
+    }),
+  ], [locDm.nhap, nhoms, cfg.nhanLoc, coTrangThai, cacCotLoc, all])
+  const [cauHinhLocDm, datCauHinhLocDm] = useCauHinhLoc(pathDm, oLocDm.map(o => o.k), ['tim', ...(nhoms.length > 1 ? [khoaNhomLoc] : [])])
+
   return (
     <div className={dsct ? 'page page-voucher' : 'page page-voucher page-dm'}>
       <h1 className="sr-only" style={{ position: 'absolute', width: 1, height: 1, padding: 0, margin: -1, overflow: 'hidden', clip: 'rect(0, 0, 0, 0)', whiteSpace: 'nowrap', border: 0 }}>{ten}</h1>
       {cfg.note && <div style={{ marginBottom: 12 }}>{cfg.note(s.goi)}</div>}
       <div className={dsct ? `voucher-split${moCt ? '' : ' gon-ct'}` : 'dm-khung'}>
       <section className={dsct ? 'card voucher-top' : 'card dm-bang'}>
-        {/* Danh sách kiểu chứng từ: thanh công cụ như danh sách thu chi (ô lọc nhãn trên viền, Tuỳ chỉnh cột, Excel, nút thêm có danh sách loại) */}
+        {/* Danh sách kiểu chứng từ: thanh công cụ như danh sách thu chi (T511: 1 hàng lọc như VoucherScreen; Tuỳ chỉnh cột, Excel xuống hàng 2 phải) */}
         {dsct ? (
-          <div className="ds-thanh">
-            <div className="ds-thanh-h1">
-              <div className="ds-thanh-h1-trai">
-                {/* điều kiện lọc chỉ áp khi bấm Lọc, như các danh sách chứng từ khác (T361) */}
-                {cfg.kySoLieu && (
-                  <ONhanVien nhan="Kỳ số liệu">
-                    <Select className="inp" value={String(nhapLoc.ky)} aria-label="Kỳ số liệu" onChange={e => setNhapLoc(n => ({ ...n, ky: Number(e.target.value) }))}
-                      ds={dsKyNam(s).map(k => ({ v: String(k.so), t: k.nhan }))} />
-                  </ONhanVien>
-                )}
-                <ONhanVien nhan="Tìm kiếm">
-                  <input className="inp" value={nhapLoc.q} placeholder="Số thẻ, mã, tên" onChange={e => setNhapLoc(n => ({ ...n, q: e.target.value }))}
-                    onKeyDown={e => { if (e.key === 'Enter') apLoc() }} />
-                </ONhanVien>
-                {nhoms.length > 1 && (
-                  <ONhanVien nhan={cfg.nhanLoc ?? 'Nhóm'}>
-                    <Select className="inp" value={nhapLoc.nhom} aria-label={cfg.nhanLoc ?? 'Nhóm'} onChange={e => setNhapLoc(n => ({ ...n, nhom: e.target.value }))}
-                      ds={[{ v: '', t: 'Tất cả' }, ...nhoms.map(n => ({ v: String(n), t: String(n) }))]} />
-                  </ONhanVien>
-                )}
-                <button type="button" className="btn pri ds-nut-loc" title={khacNhap ? 'Có điều kiện mới chưa lọc' : undefined} onClick={apLoc}>
-                  Lọc{khacNhap && <span className="ds-cham-nhap" />}
-                </button>
+          <div className="voucher-top" style={{ border: 0, borderRadius: 0, boxShadow: 'none' }}>
+            <div className="ds-toolbar-figma">
+              <BoLoc
+                ds={oLocDsct}
+                cauHinh={cauHinhLocDsct}
+                datCauHinh={datCauHinhLocDsct}
+                dangLoc={nhapLoc.ky !== kyMacDinh(s) || Boolean(nhapLoc.q) || Boolean(nhapLoc.nhom)}
+                khacNhap={khacNhap}
+                onLoc={apLoc}
+                onXoaHet={() => {
+                  const md = { ky: kyMacDinh(s), q: '', nhom: '' }
+                  setNhapLoc(md)
+                  setKy(md.ky); setQ(md.q); setNhom(md.nhom)
+                }}
+                chiNutPheu
+                ngoaiRieng={{
+                  tim: (
+                    <div key="tim" className="ds-tim-figma">
+                      <IconFigmaSearch size={16} />
+                      <input
+                        value={nhapLoc.q}
+                        placeholder="Số thẻ, mã, tên"
+                        title="Tìm theo số thẻ, mã, tên"
+                        aria-label="Tìm kiếm"
+                        onChange={e => setNhapLoc(n => ({ ...n, q: e.target.value }))}
+                        onKeyDown={e => {
+                          if (e.key === 'Enter') apLoc()
+                        }}
+                      />
+                    </div>
+                  ),
+                }}
+              />
+              <div className="ds-toolbar-phai">
+                {canhBao?.cachLam && <NutCachLam cachLam={canhBao.cachLam} />}
+                {cfg.nutKichHoat?.filter(n => n.goi.includes(s.goi)).map(n => (
+                  <button key={n.nhan} type="button" className="btn ds-nut-phu" onClick={() => bamNutPhu(n)}>
+                    <Icon n={n.icon} className="ic sm" />{n.nhan}
+                  </button>
+                ))}
+                {nutThem.length > 0 && (() => {
+                  const ds = cfg.hangLoat ? nutThem.filter((b, i) => i === 0 || b.k !== HANG_LOAT) : nutThem
+                  return (
+                    <NutThemMoiSplit toMoi={`${viTri.pathname}?moi=${ds[0].k}`} thamSo="moi"
+                      loai={ds.length > 1 ? ds.map(b => ({ k: b.k, ten: b.ten, icon: b.icon })) : undefined} />
+                  )
+                })()}
               </div>
-              {nutThem.length > 0 && (
-                <div className="ds-thanh-h1-phai">
-                  {/* T429: hướng dẫn Cách làm vào nút ⓘ cạnh nút thêm, menu thêm hàng loạt kèm số khoản chờ */}
-                  {canhBao?.cachLam && <NutCachLam cachLam={canhBao.cachLam} />}
-                  {cfg.nutKichHoat?.filter(n => n.goi.includes(s.goi)).map(n => (
-                    <button key={n.nhan} type="button" className="btn ds-nut-phu" onClick={() => bamNutPhu(n)}>
-                      <Icon n={n.icon} className="ic sm" />{n.nhan}
-                    </button>
-                  ))}
-                  {/* Mọi màn chung 1 nút "Thêm mới", nhiều kiểu thêm thì thả menu chọn; Ghi tăng bổ sung vào từ dải cảnh báo (T510, T512) */}
-                  {(() => {
-                    const ds = cfg.hangLoat ? nutThem.filter((b, i) => i === 0 || b.k !== HANG_LOAT) : nutThem
-                    return (
-                      <NutThemMoiSplit toMoi={`${viTri.pathname}?moi=${ds[0].k}`} thamSo="moi"
-                        loai={ds.length > 1 ? ds.map(b => ({ k: b.k, ten: b.ten, icon: b.icon })) : undefined} />
-                    )
-                  })()}
-                </div>
-              )}
             </div>
 
-            <div className="ds-thanh-h2">
+            <div className="ds-hang-trang-thai">
               <div className="ds-thanh-h2-trai">
-                {/* ô tích lọc nhanh đứng đầu hàng 2, áp ngay (T361) */}
                 {cfg.tich && (
                   <label className="row ky-so-lieu">
                     <input type="checkbox" className="bat-tat" checked={tichLoc} onChange={e => setTichLoc(e.target.checked)} />
@@ -368,214 +447,99 @@ export function CatalogScreen({ sc }: ScreenProps) {
                 )}
                 {canhBao && <CanhBaoGon cb={canhBao} />}
               </div>
-              <div className="ds-thanh-h2-phai">
+              <div className="ds-toolbar-phai ds-cong-cu-h2">
+                <NutExcel onNhap={() => toast('Nhập danh sách từ Excel')} onXuat={() => toast(`Đã xuất ${rows.length} dòng ra Excel`)} />
                 <NutTuyChinhCot cols={cot.colsDu} an={cot.an} coDinh={COT_CO_DINH} macDinh={cot.macDinh} dongBang={cot.dongBang}
                   onLuu={cot.luu} onDoRongTuDong={cot.datDoRongTuDong} />
-                <NutExcel onNhap={() => toast('Nhập danh sách từ Excel')} onXuat={() => toast(`Đã xuất ${rows.length} dòng ra Excel`)} />
               </div>
             </div>
           </div>
         ) : (
           <div className="voucher-top" style={{ border: 0, borderRadius: 0, boxShadow: 'none' }}>
-            <div className="ds-thanh">
-              <div className="ds-thanh-h1">
-                <div className="ds-thanh-h1-trai">
-                  <div className="thanh-loc-tim">
-                    <Icon n="search" className="ic sm thanh-loc-tim-ic" />
-                    <input
-                      type="text"
-                      value={q}
-                      onChange={e => {
-                        setQ(e.target.value)
-                        setTrang(1)
-                      }}
-                      placeholder="Tìm theo mã, tên"
-                      className="thanh-loc-tim-inp"
-                    />
-                  </div>
-                  <button
-                    ref={btnPheu}
-                    type="button"
-                    className={`nut-vuong${moPheu || soLoc > 0 ? ' on' : ''}`}
-                    title="Bộ lọc"
-                    aria-label="Bộ lọc"
-                    onClick={() => setMoPheu(o => !o)}
-                  >
-                    <Icon n="filter" className="ic sm" />
-                    {soLoc > 0 ? (
-                      <span className="ds-nut-badge">{soLoc}</span>
-                    ) : null}
-                  </button>
-
-                  <Popover
-                    anchor={btnPheu}
-                    open={moPheu}
-                    onClose={() => setMoPheu(false)}
-                    align="start"
-                    width={600}
-                    role="dialog"
-                    className="pheu-pop"
-                  >
-                    <div className="pheu-khung">
-                      <div className="pheu-dau">
-                        <span className="pheu-tieu-de">Bộ lọc</span>
-                        <button
-                          type="button"
-                          className="pheu-dong"
-                          onClick={() => setMoPheu(false)}
-                          title="Đóng bộ lọc"
-                          aria-label="Đóng"
-                        >
-                          <Icon n="x" className="ic sm" />
-                        </button>
-                      </div>
-
-                      <div className="pheu-than">
-                        {coTrangThai && (
-                          <LocO nhan="Trạng thái">
-                            <Select
-                              className="inp"
-                              value={locTrangThai}
-                              onChange={e => {
-                                setLocTrangThai(e.target.value as 'hd' | 'ngung' | '')
-                                setTrang(1)
-                              }}
-                            >
-                              <option value="hd">Đang hoạt động</option>
-                              <option value="ngung">Không hoạt động</option>
-                              <option value="">Tất cả</option>
-                            </Select>
-                          </LocO>
-                        )}
-                        {nhoms.length > 1 && (
-                          <LocO nhan={cfg.nhanLoc ?? 'Nhóm'}>
-                            <Select
-                              className="inp"
-                              value={nhom}
-                              onChange={e => {
-                                setNhom(e.target.value)
-                                setTrang(1)
-                              }}
-                            >
-                              <option value="">Tất cả</option>
-                              {nhoms.map(n => <option key={n} value={String(n)}>{String(n)}</option>)}
-                            </Select>
-                          </LocO>
-                        )}
-                        {cacCotLoc.map(c => {
-                          if (c.k === cfg.nhomLoc) return null
-                          const laBool = c.k === 'tonKho' || c.k === 'chiPhi' || c.k === 'dongY' || all.some(r => typeof r[c.k] === 'boolean')
-                          const dsGiaTri = [...new Set(all.map(r => r[c.k]).filter(v => v !== undefined && v !== '' && typeof v !== 'object'))].sort()
-                          if (!laBool && dsGiaTri.length === 0) return null
-                          return (
-                            <LocO key={c.k} nhan={c.t}>
-                              {laBool ? (
-                                <Select
-                                  className="inp"
-                                  value={boLocNangCao[c.k] ?? ''}
-                                  onChange={e => {
-                                    setBoLocNangCao(prev => ({ ...prev, [c.k]: e.target.value }))
-                                    setTrang(1)
-                                  }}
-                                >
-                                  <option value="">Tất cả</option>
-                                  <option value="__co">Có</option>
-                                  <option value="__khong">Không</option>
-                                </Select>
-                              ) : (
-                                <Select
-                                  className="inp"
-                                  value={boLocNangCao[c.k] ?? ''}
-                                  onChange={e => {
-                                    setBoLocNangCao(prev => ({ ...prev, [c.k]: e.target.value }))
-                                    setTrang(1)
-                                  }}
-                                >
-                                  <option value="">Tất cả</option>
-                                  {dsGiaTri.map(v => (
-                                    <option key={String(v)} value={String(v)}>{String(v)}</option>
-                                  ))}
-                                </Select>
-                              )}
-                            </LocO>
-                          )
-                        })}
-                      </div>
-
-                      <div className="pheu-chan">
-                        <button
-                          type="button"
-                          className="btn sm"
-                          onClick={() => {
-                            setNhom('')
-                            setLocTrangThai('hd')
-                            setBoLocNangCao({})
-                            setQ('')
+            <div className="ds-toolbar-figma">
+              <BoLoc
+                ds={oLocDm}
+                cauHinh={cauHinhLocDm}
+                datCauHinh={datCauHinhLocDm}
+                dangLoc={locDm.dangLoc}
+                khacNhap={locDm.khacNhap}
+                onLoc={() => { locDm.loc(); setTrang(1) }}
+                onXoaHet={() => { locDm.xoaHet(); setTrang(1) }}
+                chiNutPheu
+                ngoaiRieng={{
+                  tim: (
+                    <div key="tim" className="ds-tim-figma">
+                      <IconFigmaSearch size={16} />
+                      <input
+                        value={locDm.nhap.q}
+                        placeholder="Tìm theo mã, tên"
+                        title="Tìm theo mã, tên"
+                        aria-label="Tìm kiếm"
+                        onChange={e => locDm.dat('q', e.target.value)}
+                        onKeyDown={e => {
+                          if (e.key === 'Enter') {
+                            locDm.loc()
                             setTrang(1)
-                          }}
-                        >
-                          Làm mới
-                        </button>
-                        <button type="button" className="btn pri sm" onClick={() => setMoPheu(false)}>
-                          Áp dụng
-                        </button>
-                      </div>
+                          }
+                        }}
+                      />
                     </div>
-                  </Popover>
-                </div>
+                  ),
+                }}
+              />
 
-                <div className="ds-thanh-h1-phai">
-                  {laDongBoFabi && cfg.nutPhu && (
-                    <button
-                      type="button"
-                      className="btn"
-                      onClick={() => toast(cfg.nutPhu!.bao)}
-                    >
-                      <Icon n={cfg.nutPhu.icon ?? 'refresh'} className="ic sm" />
-                      <span>{cfg.nutPhu.nhan}</span>
-                    </button>
-                  )}
-                  {choThem && (
-                    <button type="button" className="btn pri" onClick={() => moSua({})}>
-                      <Icon n="plus" className="ic sm" />
-                      <span>Thêm mới</span>
-                    </button>
-                  )}
-                </div>
+              <div className="ds-toolbar-phai">
+                {laDongBoFabi && cfg.nutPhu && (
+                  <button
+                    type="button"
+                    className="btn"
+                    onClick={() => toast(cfg.nutPhu!.bao)}
+                  >
+                    <Icon n={cfg.nutPhu.icon ?? 'refresh'} className="ic sm" />
+                    <span>{cfg.nutPhu.nhan}</span>
+                  </button>
+                )}
+                {choThem && (
+                  <button type="button" className="btn pri" onClick={() => moSua({})}>
+                    <Icon n="plus" className="ic sm" />
+                    <span>Thêm mới</span>
+                  </button>
+                )}
               </div>
+            </div>
 
-              <div className="ds-thanh-h2">
-                <div className="ds-thanh-h2-trai">
-                  {/* Ô tích lọc nhanh ở danh mục thường, vd Quỹ tiền chưa map PTTT (T317) */}
-                  {cfg.tich && (
-                    <label className="row ky-so-lieu">
-                      <input type="checkbox" className="bat-tat" checked={tichLoc} onChange={e => setTichLoc(e.target.checked)} />
-                      <span>{cfg.tich.nhan}</span>
-                    </label>
-                  )}
-                  {coTrangThai && (
-                    <ChipTrangThai
-                      ds={chips}
-                      chon={laHangHoa ? tabPhanLoai : (locTrangThai || 'hd')}
-                      onChon={k => {
-                        if (laHangHoa) setTabPhanLoai(k as 'tat-ca' | 'da-phan-loai' | 'chua-phan-loai')
-                        else setLocTrangThai(k as 'hd' | 'ngung')
+            <div className="ds-hang-trang-thai">
+              <div className="ds-thanh-h2-trai">
+                {cfg.tich && (
+                  <label className="row ky-so-lieu">
+                    <input type="checkbox" className="bat-tat" checked={tichLoc} onChange={e => setTichLoc(e.target.checked)} />
+                    <span>{cfg.tich.nhan}</span>
+                  </label>
+                )}
+                {coTrangThai && (
+                  <ChipTrangThai
+                    ds={chips}
+                    chon={laHangHoa ? tabPhanLoai : (locDm.ap.trangThai || 'hd')}
+                    onChon={k => {
+                      if (laHangHoa) setTabPhanLoai(k as 'tat-ca' | 'da-phan-loai' | 'chua-phan-loai')
+                      else {
+                        locDm.datVaAp('trangThai', k as 'hd' | 'ngung')
                         setTrang(1)
-                      }}
-                    />
-                  )}
-                </div>
-                <div className="ds-thanh-h2-phai">
-                  <span className="muted" style={{ fontSize: 12, marginRight: 4 }}>{rows.length}/{all.length} dòng</span>
-                  <NutTuyChinhCot cols={cot.colsDu} an={cot.an} coDinh={COT_CO_DINH} macDinh={cot.macDinh} dongBang={cot.dongBang}
-                    onLuu={cot.luu} onDoRongTuDong={cot.datDoRongTuDong} />
-                  {!cfg.khongExcel?.includes(s.goi) && (
-                    <NutExcel
-                      onNhap={() => toast('Nhập danh mục từ Excel')}
-                      onXuat={() => toast(`Đã xuất ${rows.length} dòng ra Excel`)}
-                    />
-                  )}
-                </div>
+                      }
+                    }}
+                  />
+                )}
+              </div>
+              <div className="ds-toolbar-phai ds-cong-cu-h2">
+                <span className="muted" style={{ fontSize: 12, marginRight: 4 }}>{rows.length}/{all.length} dòng</span>
+                {!cfg.khongExcel?.includes(s.goi) && (
+                  <NutExcel
+                    onNhap={() => toast('Nhập danh mục từ Excel')}
+                    onXuat={() => toast(`Đã xuất ${rows.length} dòng ra Excel`)}
+                  />
+                )}
+                <NutTuyChinhCot cols={cot.colsDu} an={cot.an} coDinh={COT_CO_DINH} macDinh={cot.macDinh} dongBang={cot.dongBang}
+                  onLuu={cot.luu} onDoRongTuDong={cot.datDoRongTuDong} />
               </div>
             </div>
           </div>
@@ -586,7 +550,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
           all.length ? (
             <div className="empty">
               <b>Không có dòng khớp bộ lọc</b>
-              <button type="button" className="btn sm empty-btn" onClick={() => { setQ(''); setNhom(''); setNhapLoc(n => ({ ...n, q: '', nhom: '' })) }}>Xoá bộ lọc</button>
+              <button type="button" className="btn sm empty-btn" onClick={() => { setQ(''); setNhom(''); setNhapLoc(n => ({ ...n, q: '', nhom: '' })); locDm.xoaHet(); setTrang(1) }}>Xoá bộ lọc</button>
             </div>
           ) : (
             <div className="empty">

@@ -7,6 +7,7 @@ import type { Col, Row, ScreenProps } from '../types'
 import { duongDan, tenMan } from '../../app/registry'
 import { cuaHangHienTai, useSession } from '../../app/session'
 import { Icon } from '../../ui/Icon'
+import { IconFigmaSearch } from '../../ui/IconFigma'
 import { Select } from '../../ui/Dropdown'
 import { Table } from '../../ui/Table'
 import { PhanTrang } from '../../ui/PhanTrang'
@@ -119,10 +120,11 @@ export function DsPhieuTc({ sc, mod, kieu: t, rows: rowsGoc }: ScreenProps & { k
 
   const apLoc = () => { loc0.loc(); setTrang(1) }
   const oLoc: OLocDef[] = [
-    { k: 'thoiGian', ten: 'Thời gian', o: <ChonKhoangNgay value={nhap.thoiGian} onChange={k => dat('thoiGian', k)} /> },
-    { k: 'tim', ten: 'Tìm kiếm', o: <input className="ds-o-inp" value={nhap.tim} placeholder="Nhập mã phiếu" aria-label="Tìm kiếm"
-      onChange={e => dat('tim', e.target.value)} onKeyDown={e => { if (e.key === 'Enter') apLoc() }} /> },
-    { k: 'kho', ten: nhanKho, o: (
+    { k: 'thoiGian', ten: 'Thời gian', coGiaTri: true, o: <ChonKhoangNgay value={nhap.thoiGian} onChange={k => dat('thoiGian', k)} /> },
+    { k: 'tim', ten: 'Tìm kiếm', coGiaTri: Boolean(nhap.tim.trim()), o: <input className="ds-o-inp" value={nhap.tim} placeholder="Nhập mã phiếu" aria-label="Tìm kiếm"
+      onChange={e => dat('tim', e.target.value)} onKeyDown={e => { if (e.key === 'Enter') apLoc() }} />,
+    },
+    { k: 'kho', ten: nhanKho, coGiaTri: Boolean(nhap.kho), o: (
       <Select className="ds-o-sel" value={nhap.kho} aria-label={nhanKho} onChange={e => dat('kho', e.target.value)}>
         <option value="">Tất cả</option>
         {dsKho.map(k => <option key={k} value={k}>{k}</option>)}
@@ -172,15 +174,44 @@ export function DsPhieuTc({ sc, mod, kieu: t, rows: rowsGoc }: ScreenProps & { k
       {t.dai}
       <div className="dm-khung">
         <section className="card dm-bang">
-          <div className="ds-thanh">
+          <div className="ds-toolbar-figma">
+            <BoLoc
+              ds={oLoc}
+              cauHinh={cauHinhLoc}
+              datCauHinh={datCauHinhLoc}
+              dangLoc={loc0.dangLoc}
+              khacNhap={loc0.khacNhap}
+              onLoc={apLoc}
+              onXoaHet={loc0.xoaNhap}
+              chiNutPheu
+              ngoaiRieng={{
+                tim: (
+                  <div key="tim" className="ds-tim-figma">
+                    <IconFigmaSearch size={16} />
+                    <input
+                      value={nhap.tim}
+                      placeholder="Nhập mã phiếu"
+                      title="Tìm theo mã phiếu"
+                      aria-label="Tìm kiếm"
+                      onChange={e => dat('tim', e.target.value)}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter') apLoc()
+                      }}
+                    />
+                  </div>
+                ),
+              }}
+            />
+            <div className="ds-toolbar-phai">
+              <NutThemMoiSplit toMoi={`${path}/moi`} />
+            </div>
+          </div>
+          <div className="ds-hang-trang-thai">
             {t.chips && <ChipTrangThai ds={chips} chon={chip} onChon={k => { setChip(c => (c === k ? '' : k)); setTrang(1) }} />}
-            <div className="ds-thanh-phai">
-              <BoLoc ds={oLoc} cauHinh={cauHinhLoc} datCauHinh={datCauHinhLoc} dangLoc={loc0.dangLoc} khacNhap={loc0.khacNhap}
-                onLoc={apLoc} onXoaHet={loc0.xoaNhap} />
+            <div className="ds-toolbar-phai ds-cong-cu-h2">
+              <NutExcel onNhap={() => toast(`Nhập phiếu ${t.ten.toLowerCase()} từ Excel`)} onXuat={() => toast(`Đã xuất ${list.length} phiếu ra Excel`)} />
               <NutTuyChinhCot cols={cot.colsDu} an={cot.an} coDinh={COT_CO_DINH} macDinh={cot.macDinh} dongBang={cot.dongBang}
                 onLuu={cot.luu} onDoRongTuDong={cot.datDoRongTuDong} />
-              <NutExcel onNhap={() => toast(`Nhập phiếu ${t.ten.toLowerCase()} từ Excel`)} onXuat={() => toast(`Đã xuất ${list.length} phiếu ra Excel`)} />
-              <NutThemMoiSplit toMoi={`${path}/moi`} />
             </div>
           </div>
           {list.length ? <>

@@ -81,10 +81,10 @@ function DsCongThuc({ sc, mod, loai, ds }: ScreenProps & { loai: LoaiCt; ds: Row
   )
   const apLoc = () => { loc0.loc(); setTrang(1) }
   const oLoc: OLocDef[] = [
-    { k: 'ngay', ten: 'Ngày áp dụng', o: <ChonKhoangNgay value={nhap.ngay} onChange={k => dat('ngay', k)} /> },
-    { k: 'sp', ten: nhanSp, o: chonO('sp', nhanSp, dsSp) },
-    { k: 'nvl', ten: nhanNvl, o: chonO('nvl', nhanNvl, dsNvl) },
-    { k: 'kho', ten: 'Kho áp dụng', o: chonO('kho', 'Kho áp dụng', KHO_BEP.map(k => ({ v: k, t: k }))) },
+    { k: 'ngay', ten: 'Ngày áp dụng', coGiaTri: true, o: <ChonKhoangNgay value={nhap.ngay} onChange={k => dat('ngay', k)} /> },
+    { k: 'sp', ten: nhanSp, coGiaTri: Boolean(nhap.sp), o: chonO('sp', nhanSp, dsSp) },
+    { k: 'nvl', ten: nhanNvl, coGiaTri: Boolean(nhap.nvl), o: chonO('nvl', nhanNvl, dsNvl) },
+    { k: 'kho', ten: 'Kho áp dụng', coGiaTri: Boolean(nhap.kho), o: chonO('kho', 'Kho áp dụng', KHO_BEP.map(k => ({ v: k, t: k }))) },
   ]
   const [cauHinhLoc, datCauHinhLoc] = useCauHinhLoc(path, oLoc.map(o => o.k), ['sp', 'nvl', 'kho'])   // Ngày áp dụng nằm trong Bộ lọc nâng cao cho vừa thanh công cụ
 
@@ -138,15 +138,27 @@ function DsCongThuc({ sc, mod, loai, ds }: ScreenProps & { loai: LoaiCt; ds: Row
       <DaiGiaiThich soChe={!cb} />
       <div className="dm-khung">
         <section className="card dm-bang">
-          <div className="ds-thanh">
+          <div className="ds-toolbar-figma">
+            <BoLoc
+              ds={oLoc}
+              cauHinh={cauHinhLoc}
+              datCauHinh={datCauHinhLoc}
+              dangLoc={loc0.dangLoc}
+              khacNhap={loc0.khacNhap}
+              onLoc={apLoc}
+              onXoaHet={loc0.xoaNhap}
+              chiNutPheu
+            />
+            <div className="ds-toolbar-phai">
+              <NutThemMoiSplit toMoi={`${path}/moi`} />
+            </div>
+          </div>
+          <div className="ds-hang-trang-thai">
             <ChipTrangThai ds={chips} chon={chip} onChon={k => { setChip(c => (c === k ? '' : k)); setTrang(1) }} />
-            <div className="ds-thanh-phai">
-              <BoLoc ds={oLoc} cauHinh={cauHinhLoc} datCauHinh={datCauHinhLoc} dangLoc={loc0.dangLoc} khacNhap={loc0.khacNhap}
-                onLoc={apLoc} onXoaHet={loc0.xoaNhap} />
+            <div className="ds-toolbar-phai ds-cong-cu-h2">
+              <NutExcel onNhap={() => toast('Nhập công thức từ Excel')} onXuat={() => toast(`Đã xuất ${list.length} công thức ra Excel`)} />
               <NutTuyChinhCot cols={cot.colsDu} an={cot.an} coDinh={COT_CO_DINH} macDinh={cot.macDinh} dongBang={cot.dongBang}
                 onLuu={cot.luu} onDoRongTuDong={cot.datDoRongTuDong} />
-              <NutExcel onNhap={() => toast('Nhập công thức từ Excel')} onXuat={() => toast(`Đã xuất ${list.length} công thức ra Excel`)} />
-              <NutThemMoiSplit toMoi={`${path}/moi`} />
             </div>
           </div>
           {list.length ? <>

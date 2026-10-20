@@ -11,7 +11,10 @@ import { Icon } from '../../ui/Icon'
 import { Note, PageHead } from '../../ui/Page'
 import { Table } from '../../ui/Table'
 import { CO_TRANG_DM, PhanTrang } from '../../ui/PhanTrang'
-import { NutTuyChinhCot, useCotDs } from '../../ui/LocNangCao'
+import { NutTuyChinhCot, useCotDs, BoLoc, useLocNhap, useCauHinhLoc, type OLocDef } from '../../ui/LocNangCao'
+import { NutDongBo } from '../../ui/CongCuDs'
+import { IconFigmaSearch } from '../../ui/IconFigma'
+import { fold } from '../../ui/format'
 import { cuaHangChuaDung } from '../onboarding/cua-hang-fabi'
 import { DsCuaHang } from '../onboarding/OnboardFabi'
 import { Select } from '../../ui/Dropdown'
@@ -74,11 +77,61 @@ export function DanhMucCuaHang({ sc, mod }: ScreenProps) {
   const cho = phieuThuChiFabi(s).cho
 
   const cot = useCotDs('/danh-muc/cua-hang', colsGoc, COT_CO_DINH)
+
+  // Hàng lọc danh mục cửa hàng (T511): Tìm kiếm + ô dữ liệu lặp ít (Khu vực, Nguồn)
+  const loc0 = useLocNhap(() => ({
+    tim: '',
+    kv: '',
+    nguon: '',
+  }))
+  const { nhap, ap, dat } = loc0
+  const apLoc = () => { loc0.loc(); setTrang(1) }
+
+  const dsKv = useMemo(() => [...new Set(rows.map(r => String(r.kv ?? '')).filter(Boolean))].sort(), [rows])
+  const dsNguon = useMemo(() => [...new Set(rows.map(r => String(r.nguon ?? '')).filter(Boolean))].sort(), [rows])
+
+  const oLoc: OLocDef[] = useMemo(() => [
+    {
+      k: 'tim', ten: 'Tìm kiếm', coGiaTri: Boolean(nhap.tim.trim()),
+      o: <input className="ds-o-inp" value={nhap.tim} placeholder="Tìm theo mã, tên, POS ID" onChange={e => dat('tim', e.target.value)}
+        onKeyDown={e => { if (e.key === 'Enter') apLoc() }} />,
+    },
+    ...(dsKv.length > 0 ? [{
+      k: 'kv', ten: 'Khu vực', coGiaTri: Boolean(nhap.kv),
+      o: (
+        <Select className="ds-o-sel" value={nhap.kv} aria-label="Khu vực" onChange={e => dat('kv', e.target.value)}>
+          <option value="">Tất cả</option>
+          {dsKv.map(v => <option key={v} value={v}>{v}</option>)}
+        </Select>
+      ),
+    }] : []),
+    ...(dsNguon.length > 0 ? [{
+      k: 'nguon', ten: 'Nguồn', coGiaTri: Boolean(nhap.nguon),
+      o: (
+        <Select className="ds-o-sel" value={nhap.nguon} aria-label="Nguồn" onChange={e => dat('nguon', e.target.value)}>
+          <option value="">Tất cả</option>
+          {dsNguon.map(v => <option key={v} value={v}>{v}</option>)}
+        </Select>
+      ),
+    }] : []),
+  ], [nhap, dsKv, dsNguon, dat])
+
+  const [cauHinhLoc, datCauHinhLoc] = useCauHinhLoc('/danh-muc/cua-hang', oLoc.map(o => o.k), ['tim', ...(dsKv.length > 0 ? ['kv'] : [])])
+
+  const rowsLoc = useMemo(() => {
+    return rows.filter(r => {
+      if (ap.tim.trim() && !fold(`${r.ma} ${r.posId} ${r.ten} ${r.kho} ${r.kv}`).includes(fold(ap.tim.trim()))) return false
+      if (ap.kv && r.kv !== ap.kv) return false
+      if (ap.nguon && r.nguon !== ap.nguon) return false
+      return true
+    })
+  }, [rows, ap])
+
   // Phân trang như danh mục khác: mặc định 50 dòng/trang (T153)
   const [trang, setTrang] = useState(1)
   const [coTrang, setCoTrang] = useState(50)
-  const trangHt = Math.min(trang, Math.max(1, Math.ceil(rows.length / coTrang)))
-  const rowsTrang = rows.slice((trangHt - 1) * coTrang, trangHt * coTrang)
+  const trangHt = Math.min(trang, Math.max(1, Math.ceil(rowsLoc.length / coTrang)))
+  const rowsTrang = rowsLoc.slice((trangHt - 1) * coTrang, trangHt * coTrang)
 
   const lenSo = (ds: CnThem[], khaiSoDu: boolean, caiDat: Partial<Session>) => {
     set({ cnThem: { ...s.cnThem, [s.donVi]: [...them, ...ds] }, ...caiDat })   // cấu hình đồng bộ thu chi, cách tính NVL chọn lúc thêm (T264)
@@ -89,27 +142,53 @@ export function DanhMucCuaHang({ sc, mod }: ScreenProps) {
 
   return (
     <div className="page page-voucher page-dm">
-      <PageHead crumb={[mod.ten]} title={tenMan(sc)}>
-        <NutTuyChinhCot cols={cot.colsDu} an={cot.an} coDinh={COT_CO_DINH} macDinh={cot.macDinh} dongBang={cot.dongBang}
-          onLuu={cot.luu} onDoRongTuDong={cot.datDoRongTuDong} />
-        <button
-          type="button"
-          className="nut-vuong"
-          title="Đồng bộ theo POS"
-          aria-label="Đồng bộ theo POS"
-          onClick={() => toast(`Đã đồng bộ ${rows.length} cửa hàng theo POS`)}
-        >
-          <Icon n="refresh" className="ic sm" />
-        </button>
-        <button type="button" className="btn pri" onClick={() => setMo(true)}><Icon n="plus" className="ic sm" />Thêm cửa hàng từ FABi</button>
+      <PageHead
+        crumb={[mod.ten]}
+        title={
+          <BoLoc
+            ds={oLoc}
+            cauHinh={cauHinhLoc}
+            datCauHinh={datCauHinhLoc}
+            dangLoc={loc0.dangLoc}
+            khacNhap={loc0.khacNhap}
+            onLoc={apLoc}
+            onXoaHet={loc0.xoaNhap}
+            chiNutPheu
+            ngoaiRieng={{
+              tim: (
+                <div key="tim" className="ds-tim-figma">
+                  <IconFigmaSearch size={16} />
+                  <input
+                    value={nhap.tim}
+                    placeholder="Tìm theo mã, tên, POS ID"
+                    title="Tìm theo mã, tên, POS ID"
+                    aria-label="Tìm kiếm"
+                    onChange={e => dat('tim', e.target.value)}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter') apLoc()
+                    }}
+                  />
+                </div>
+              ),
+            }}
+          />
+        }
+      >
+        <NutDongBo ten="FABi" onDongBo={() => setMo(true)} />
       </PageHead>
+      <div className="ds-hang-trang-thai">
+        <div className="ds-toolbar-phai ds-cong-cu-h2">
+          <NutTuyChinhCot cols={cot.colsDu} an={cot.an} coDinh={COT_CO_DINH} macDinh={cot.macDinh} dongBang={cot.dongBang}
+            onLuu={cot.luu} onDoRongTuDong={cot.datDoRongTuDong} />
+        </div>
+      </div>
       {s.goi === 'F' && <Note icon="info">Gói Free: mỗi cửa hàng tự có một kho mặc định theo iPOS Inventory, không cần khai báo kho.
         Cột Cách tính chi phí NVL quyết định số Chi phí NVL trên trang chủ và Báo cáo kết quả kinh doanh của cửa hàng.</Note>}
       {cho.length > 0 && <Note kind="warn" icon="alert">{cho.length} phiếu thu, chi từ FABi đang chờ vì phương thức thanh toán chưa map quỹ
         ({[...new Set(cho.map(x => `${x.pttt} · ${x.cn}`))].join('; ')}). <Link to="/app/danh-muc/1-12">Map ở Danh mục Quỹ tiền</Link></Note>}
       <section className="card dm-bang">
         <Table cols={cot.colsHien} doRong={cot.doRong} rows={rowsTrang} />
-        <PhanTrang tong={rows.length} trang={trangHt} coTrang={coTrang} dsCoTrang={CO_TRANG_DM}
+        <PhanTrang tong={rowsLoc.length} trang={trangHt} coTrang={coTrang} dsCoTrang={CO_TRANG_DM}
           onTrang={setTrang} onCoTrang={ct => { setCoTrang(ct); setTrang(1) }} />
       </section>
       {mo && <HopThemCuaHang onDong={() => setMo(false)} onLenSo={lenSo} />}

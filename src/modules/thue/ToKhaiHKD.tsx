@@ -10,6 +10,7 @@ import { CUA_HANG, DON_VI, tongKy } from '../../data/mock'
 import { DS_QUY_TIEN_112 } from '../danh-muc/data'
 import { NGANH_NGHE_CON, NHOM_NGANH_NGHE } from '../danh-muc/nganh-nghe'
 import { Icon } from '../../ui/Icon'
+import { IconFigmaSearch } from '../../ui/IconFigma'
 import { Table } from '../../ui/Table'
 import { Select } from '../../ui/Dropdown'
 import { BoLoc, useCauHinhLoc, useDongEsc, useLocNhap, type OLocDef } from '../../ui/LocNangCao'
@@ -83,11 +84,11 @@ export function ToKhaiHKD({ sc, mod }: ScreenProps) {
     <Select className="ds-o-sel" value={nhap[k]} aria-label={ten} onChange={e => dat(k, e.target.value)} ds={[...(tatCa ? [{ v: '', t: 'Tất cả' }] : []), ...ds]} />
   )
   const oLoc: OLocDef[] = [
-    { k: 'nam', ten: 'Năm', o: chon('nam', 'Năm', [{ v: '2026', t: '2026' }, { v: '2025', t: '2025' }, { v: '2024', t: '2024' }, { v: 'tat-ca', t: 'Tất cả các năm' }], false) },
-    { k: 'tim', ten: 'Tìm kiếm', o: <input className="ds-o-inp" value={nhap.tim} placeholder="Mã, kỳ, tên tờ khai" aria-label="Tìm kiếm"
+    { k: 'nam', ten: 'Năm', coGiaTri: nhap.nam !== '2026', o: chon('nam', 'Năm', [{ v: '2026', t: '2026' }, { v: '2025', t: '2025' }, { v: '2024', t: '2024' }, { v: 'tat-ca', t: 'Tất cả các năm' }], false) },
+    { k: 'tim', ten: 'Tìm kiếm', coGiaTri: Boolean(nhap.tim.trim()), o: <input className="ds-o-inp" value={nhap.tim} placeholder="Mã, kỳ, tên tờ khai" aria-label="Tìm kiếm"
       onChange={e => dat('tim', e.target.value)} onKeyDown={e => { if (e.key === 'Enter') loc0.loc() }} /> },
-    { k: 'loai', ten: 'Loại tờ khai', o: chon('loai', 'Loại tờ khai', dsLoai.map(v => ({ v, t: v }))) },
-    { k: 'tt', ten: 'Trạng thái', o: chon('tt', 'Trạng thái', DS_TT.map(v => ({ v, t: v }))) },
+    { k: 'loai', ten: 'Loại tờ khai', coGiaTri: Boolean(nhap.loai), o: chon('loai', 'Loại tờ khai', dsLoai.map(v => ({ v, t: v }))) },
+    { k: 'tt', ten: 'Trạng thái', coGiaTri: Boolean(nhap.tt), o: chon('tt', 'Trạng thái', DS_TT.map(v => ({ v, t: v }))) },
   ]
   const [cauHinhLoc, datCauHinhLoc] = useCauHinhLoc(`/app/${mod.key}/${sc.slug}`, oLoc.map(o => o.k), ['nam', 'tim', 'loai', 'tt'])
   const rows = DS.filter(x => (ap.nam === 'tat-ca' || String(x.nam) === ap.nam) && (!ap.tim.trim() || fold(`${x.ma} ${tenKy(x)} ${TEN_TO_KHAI}`).includes(fold(ap.tim.trim())))
@@ -114,15 +115,39 @@ export function ToKhaiHKD({ sc, mod }: ScreenProps) {
     <div className="page page-voucher">
       <h1 className="sr-only">Danh sách tờ khai</h1>
       <section className="card voucher-top">
-        <div className="ds-thanh">
-          <div className="ds-thanh-h1">
-            <div className="ds-thanh-h1-trai">
-              <BoLoc ds={oLoc} cauHinh={cauHinhLoc} datCauHinh={datCauHinhLoc} dangLoc={loc0.dangLoc} khacNhap={loc0.khacNhap}
-                onLoc={loc0.loc} onXoaHet={loc0.xoaNhap} />
-            </div>
-            <div className="ds-thanh-h1-phai">
-              <button type="button" className="btn pri" onClick={() => setLap(true)}><Icon n="plus" className="ic sm" />Thêm mới</button>
-            </div>
+        <div className="ds-toolbar-figma">
+          <BoLoc
+            ds={oLoc}
+            cauHinh={cauHinhLoc}
+            datCauHinh={datCauHinhLoc}
+            dangLoc={loc0.dangLoc}
+            khacNhap={loc0.khacNhap}
+            onLoc={loc0.loc}
+            onXoaHet={loc0.xoaNhap}
+            chiNutPheu
+            ngoaiRieng={{
+              tim: (
+                <div key="tim" className="ds-tim-figma">
+                  <IconFigmaSearch size={16} />
+                  <input
+                    value={nhap.tim}
+                    placeholder="Mã, kỳ, tên tờ khai"
+                    title="Tìm theo mã, kỳ, tên tờ khai"
+                    aria-label="Tìm kiếm"
+                    onChange={e => dat('tim', e.target.value)}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter') loc0.loc()
+                    }}
+                  />
+                </div>
+              ),
+            }}
+          />
+          <div className="ds-toolbar-phai">
+            <button type="button" className="btn pri" onClick={() => setLap(true)}>
+              <Icon n="plus" className="ic sm" />
+              Thêm mới
+            </button>
           </div>
         </div>
         <Table cols={cols} rows={rows} onRow={r => { setBuocDau(0); setMo(DS.find(x => x.id === r.id) ?? null) }} sum={{ stt: '', ma: `Tổng: ${rows.length}` }} />

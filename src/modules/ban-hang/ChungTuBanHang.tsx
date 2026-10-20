@@ -18,6 +18,7 @@ import { PhanTrang } from '../../ui/PhanTrang'
 import { useDaXoa } from '../../ui/generic/daXoa'
 import { ChonKhoangNgay, docNgay, thangNay, trongKhoang, type KhoangNgay } from '../../ui/ChonNgay'
 import { NutExcel } from '../../ui/CongCuDs'
+import { IconFigmaSearch } from '../../ui/IconFigma'
 import { dangLoc, dsGiaTri, khopLoc, type GiaTriLoc, type KieuLoc, type LocCot } from '../../ui/LocCot'
 import {
   BoLoc, NutTuyChinhCot, useCauHinhLoc, useCotDs, useLocNhap, type OLocDef,
@@ -259,18 +260,18 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
   const oLoc: OLocDef[] = [
     { k: 'thoiGian', ten: 'Thời gian', o: <ChonKhoangNgay value={nhap.thoiGian} onChange={k => dat('thoiGian', k)} /> },
     {
-      k: 'tim', ten: 'Tìm kiếm', o: <input className="ds-o-inp" value={nhap.tim} placeholder="Số, diễn giải" title="Tìm theo số chứng từ, diễn giải" aria-label="Tìm kiếm"
+      k: 'tim', ten: 'Tìm kiếm', coGiaTri: Boolean(nhap.tim.trim()), o: <input className="ds-o-inp" value={nhap.tim} placeholder="Số, diễn giải" title="Tìm theo số chứng từ, diễn giải" aria-label="Tìm kiếm"
         onChange={e => dat('tim', e.target.value)} onKeyDown={e => { if (e.key === 'Enter') apLoc() }} />,
     },
-    ...(cnChon ? [] : [{ k: 'cn', ten: 'Cửa hàng', o: chonO('cn', 'Cửa hàng', CUA_HANG.map(c => [c.id, c.ten])) }]),
+    ...(cnChon ? [] : [{ k: 'cn', ten: 'Cửa hàng', coGiaTri: Boolean(nhap.cn), o: chonO('cn', 'Cửa hàng', CUA_HANG.map(c => [c.id, c.ten])) }]),
     // Khách hàng, kênh bán, phương thức thanh toán; lựa chọn lấy từ chính các chứng từ (T116)
-    { k: 'kh', ten: 'Khách hàng', o: chonO('kh', 'Khách hàng', [...new Set(rows.map(r => String(r.doiTuong ?? '')).filter(Boolean))].map(v => [v, v])) },
-    { k: 'kenh', ten: 'Kênh bán', o: chonO('kenh', 'Kênh bán', [...new Set(rows.map(r => String(r.kenh ?? '')).filter(Boolean))].map(v => [v, v])) },
+    { k: 'kh', ten: 'Khách hàng', coGiaTri: Boolean(nhap.kh), o: chonO('kh', 'Khách hàng', [...new Set(rows.map(r => String(r.doiTuong ?? '')).filter(Boolean))].map(v => [v, v])) },
+    { k: 'kenh', ten: 'Kênh bán', coGiaTri: Boolean(nhap.kenh), o: chonO('kenh', 'Kênh bán', [...new Set(rows.map(r => String(r.kenh ?? '')).filter(Boolean))].map(v => [v, v])) },
     // Lọc theo phương thức thanh toán: mỗi chứng từ là một hoá đơn FABi (T116, T247)
-    { k: 'pttt', ten: 'Phương thức thanh toán', o: chonO('pttt', 'Phương thức thanh toán', PTTT.map(([, t]) => [t, t])) },
+    { k: 'pttt', ten: 'Phương thức thanh toán', coGiaTri: Boolean(nhap.pttt), o: chonO('pttt', 'Phương thức thanh toán', PTTT.map(([, t]) => [t, t])) },
     // Hàng hoá có trong chứng từ; Theo dõi tồn kho: chứng từ có món theo dõi hoặc có món không theo dõi tồn kho (T118)
-    { k: 'hang', ten: 'Hàng hoá', o: chonO('hang', 'Hàng hoá', HANG.map(h => [h.ma, `${h.ma} - ${h.ten}`])) },
-    { k: 'tonKho', ten: 'Theo dõi tồn kho', o: chonO('tonKho', 'Theo dõi tồn kho', [['co', 'Có theo dõi tồn kho'], ['khong', 'Không theo dõi tồn kho']]) },
+    { k: 'hang', ten: 'Hàng hoá', coGiaTri: Boolean(nhap.hang), o: chonO('hang', 'Hàng hoá', HANG.map(h => [h.ma, `${h.ma} - ${h.ten}`])) },
+    { k: 'tonKho', ten: 'Theo dõi tồn kho', coGiaTri: Boolean(nhap.tonKho), o: chonO('tonKho', 'Theo dõi tồn kho', [['co', 'Có theo dõi tồn kho'], ['khong', 'Không theo dõi tồn kho']]) },
   ]
   const [cauHinhLoc, datCauHinhLoc] = useCauHinhLoc(path, oLoc.map(o => o.k), ['thoiGian', 'tim', 'cn'])
 
@@ -330,28 +331,51 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
       <h1 className="sr-only">{tenMan(sc)}</h1>
       <div className={`voucher-split${panelMo ? '' : ' gon-ct'}`}>
         <section className="card voucher-top">
-          {/* Thanh công cụ: ô lọc bên trái, Tuỳ chỉnh cột và Excel bên phải (T351) */}
-          <div className="ds-thanh">
-            <div className="ds-thanh-h1">
-              <div className="ds-thanh-h1-trai">
-                <BoLoc ds={oLoc} cauHinh={cauHinhLoc} datCauHinh={datCauHinhLoc} dangLoc={loc0.dangLoc} khacNhap={loc0.khacNhap}
-                  onLoc={apLoc} onXoaHet={loc0.xoaNhap} />
-              </div>
-              <div className="ds-thanh-h1-phai">
-                <NutTuyChinhCot
-                  cols={cot.colsDu}
-                  an={cot.an}
-                  coDinh={COT_CO_DINH}
-                  macDinh={cot.macDinh}
-                  dongBang={cot.dongBang}
-                  onLuu={cot.luu}
-                  onDoRongTuDong={cot.datDoRongTuDong}
-                />
-                <NutExcel
-                  onNhap={() => toast('Nhập chứng từ bán hàng từ file Excel')}
-                  onXuat={() => toast(`Đã xuất ${list.length} chứng từ ra Excel`)}
-                />
-              </div>
+          {/* Thanh công cụ: hàng 1 BoLoc chiNutPheu, hàng 2 Tuỳ chỉnh cột và Excel bên phải (T351, T511) */}
+          <div className="ds-toolbar-figma">
+            <BoLoc
+              ds={oLoc}
+              cauHinh={cauHinhLoc}
+              datCauHinh={datCauHinhLoc}
+              dangLoc={loc0.dangLoc}
+              khacNhap={loc0.khacNhap}
+              onLoc={apLoc}
+              onXoaHet={loc0.xoaNhap}
+              chiNutPheu
+              ngoaiRieng={{
+                tim: (
+                  <div key="tim" className="ds-tim-figma">
+                    <IconFigmaSearch size={16} />
+                    <input
+                      value={nhap.tim}
+                      placeholder="Số, diễn giải"
+                      title="Tìm theo số chứng từ, diễn giải"
+                      aria-label="Tìm kiếm"
+                      onChange={e => dat('tim', e.target.value)}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter') apLoc()
+                      }}
+                    />
+                  </div>
+                ),
+              }}
+            />
+          </div>
+          <div className="ds-hang-trang-thai">
+            <div className="ds-toolbar-phai ds-cong-cu-h2">
+              <NutExcel
+                onNhap={() => toast('Nhập chứng từ bán hàng từ file Excel')}
+                onXuat={() => toast(`Đã xuất ${list.length} chứng từ ra Excel`)}
+              />
+              <NutTuyChinhCot
+                cols={cot.colsDu}
+                an={cot.an}
+                coDinh={COT_CO_DINH}
+                macDinh={cot.macDinh}
+                dongBang={cot.dongBang}
+                onLuu={cot.luu}
+                onDoRongTuDong={cot.datDoRongTuDong}
+              />
             </div>
           </div>
           {list.length ? (

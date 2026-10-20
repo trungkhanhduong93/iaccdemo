@@ -36900,3 +36900,35 @@ body:has(.m-app) .m-thanh-duoi .m-tab.on .m-tab-ic .ic .l2 {
 .ds-split-them .ds-them-mot:hover .ds-them-phai { background: transparent; }
 .voucher-top .ds-split-them .ds-them-mot { height: 34px; }
 .ds-nut-dong-bo { height: 32px; width: 32px; }
+/* ── Hàng lọc danh mục, báo cáo (T511) ── */
+.ph h1:has(.ds-btn-pheu-figma) {
+  font-size: 13px;
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+.page-voucher .ph:has(.ds-btn-pheu-figma) {
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+  padding: 12px 16px;
+  min-height: 62px;
+  box-sizing: border-box;
+  align-items: center;
+}
+.page-voucher .ph:has(.ds-btn-pheu-figma) > div:first-child {
+  flex: 1 1 auto;
+}
+.bc-thanh-cong-cu .ds-toolbar-figma {
+  width: 100%;
+  border-radius: 0;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+}
+.bc-thanh-cong-cu .ds-hang-trang-thai {
+  width: 100%;
+}
+.dm-bang > .ds-toolbar-figma {
+  border-radius: 0;
+}
