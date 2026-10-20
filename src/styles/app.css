@@ -35005,8 +35005,9 @@ a.tx-item:hover {
 /* Viền đặt ở vùng cuộn .ct-than vì bảng bên trong đã bỏ viền; tiêu đề cột dính vẫn nằm trong khung */
 .ct-than-card > .ct-than {
   margin: 0 12px 12px;
-  border: 1px solid var(--luoi-vien);
-  border-radius: 8px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  flex: 0 1 auto;   /* khung ôm số dòng, phần trống bên dưới là nền thẻ (T516) */
 }
 /* Chân phiếu thêm mới, sửa nền trắng như lúc xem (T513): nút .btn còn lại (Hiện cột tài khoản) cần viền mới thấy */
 .fsf-f.fsf-f-xem .btn { border-color: var(--line); }
@@ -36585,4 +36586,53 @@ a.tx-item:hover {
 }
 .qt-ky-nhom .qt-ky-ds-o {
   margin-top: 8px;
+}
+
+/* ── Lưới chi tiết mọi phiếu theo bản mẫu B (T516) ── */
+/* Áp cho mọi bảng trong form toàn màn hình (.fsf): phiếu chứng từ, Xuất bán POS, thẻ chi phí phân bổ. Giữ zoom 0.9 (QD28) nên kẻ và chữ đậm hơn 1 bậc cho đỡ mờ */
+.fsf .tbl-wrap:not(.ct-than .tbl-wrap) {
+  border-color: var(--line);
+  border-radius: 10px;
+}
+.fsf .tbl thead {
+  box-shadow: 0 -2px 0 var(--hdb-chan);
+}
+.fsf .tbl thead tr:first-child th {
+  background: var(--hdb-chan);
+  color: var(--giay-phu);
+  font-weight: 600;
+  border-bottom: 1px solid #d6dce6;
+  border-right: 1px solid #e6eaf0;
+}
+/* Tiêu đề cột số căn như số bên dưới: rule th:first-child ở trên ghi đè .tbl th.num */
+.fsf .tbl thead th.num { text-align: right; }
+.fsf .tbl thead th.c { text-align: center; }
+.fsf .tbl tbody tr:not(.tbl-spacer):not(.ds-grp-row) td {
+  color: var(--ink);
+  border-bottom: 1px solid #d6dce6;
+  border-right: 1px solid #e6eaf0;
+}
+.fsf .tbl tbody td.num {
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+.fsf .tbl tbody td .inp {
+  color: var(--ink);
+}
+.fsf .tbl tbody tr:hover td {
+  background: #f3f7fc;
+}
+.fsf .tbl tfoot tr.sum td,
+.fsf .tbl tr.sum td {
+  background: var(--hdb-chan);
+  color: var(--ink);
+  border-top: 1px solid var(--giay-nhat);
+  border-bottom: 0;
+  border-right: 1px solid #e6eaf0;
+}
+/* Cột cuối không kẻ dọc: lặp đủ chuỗi lớp để thắng các rule kẻ dọc ở trên */
+.fsf .tbl thead tr:first-child th:last-child,
+.fsf .tbl tbody tr:not(.tbl-spacer):not(.ds-grp-row) td:last-child,
+.fsf .tbl tr.sum td:last-child {
+  border-right: 0;
 }
