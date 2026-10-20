@@ -846,7 +846,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
                     title={l.ten}
                   >
                     {l.k === 'thu' ? <IconFigmaPlus /> : l.k === 'chi' ? <IconFigmaMinus /> : <Icon n={l.icon ?? 'plus'} className="ic sm" />}
-                    <span>{l.k === 'thu' ? '+ Thu tiền' : l.k === 'chi' ? '− Chi tiền' : (l.nut ?? l.ten)}</span>
+                    <span>{l.k === 'thu' ? 'Thu tiền' : l.k === 'chi' ? 'Chi tiền' : (l.nut ?? l.ten).replace(/^[+\-−]\s*/, '')}</span>
                   </Link>
                 )) : nhomChon && loaiNhom?.[0] ? (
                   <Link
@@ -854,12 +854,13 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
                     to={`${path}/moi?loai=${loaiNhom[0].k}`}
                   >
                     <IconFigmaPlus />
-                    <span>{`Thêm ${loaiNhom[0].ten.toLowerCase()}`}</span>
+                    <span>{`Thêm ${loaiNhom[0].ten.toLowerCase()}`.replace(/^[+\-−]\s*/, '')}</span>
                   </Link>
                 ) : (
                   <NutThemMoiSplit
                     toMoi={cfg.loai ? `${path}/moi?loai=${cfg.loai[0].k}` : `${path}/moi`}
                     loai={cfg.loai}
+                    nhan={cfg.them ? cfg.them.replace(/^[+\-−]\s*/, '') : undefined}
                     taiNguon={cfg.nguon && cfg.nguon !== 'tay' && cfg.nguon !== 'excel' ? {
                       ten: NGUON[cfg.nguon][1],
                       onTai: () => toast(`Đã tải 14 chứng từ mới từ ${NGUON[cfg.nguon!][1]}`),
