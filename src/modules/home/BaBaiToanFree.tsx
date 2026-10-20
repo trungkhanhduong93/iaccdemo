@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom'
 import { LenThanhTab } from '../../app/ModuleTabs'
 import { CUA_HANG, KHOA_SO_DEN, KY_MO } from '../../data/mock'
 import { Icon, ONen } from '../../ui/Icon'
+import { FigmaGradientIcon } from '../../ui/FigmaIcon'
 import { Select } from '../../ui/Dropdown'
 import { moneyD, pad, pct, short } from '../../ui/format'
 import { tonQuyTheoSo } from './LichSuQuy'
@@ -317,17 +318,28 @@ export interface QuyVongItem {
   midAngle: number
 }
 
-/** Biểu đồ tròn tồn quỹ theo mẫu app ví (T402, T303): vòng dày 28%, khe nhỏ, nhãn ngoài vòng nối đường xám */
+/** Biểu đồ tròn tồn quỹ theo Figma T495: vòng 120px + chú thích bên phải + hàng nút đáy */
+const MAU_QUY_FIGMA = [
+  'var(--blue, #0560a6)',
+  'var(--blue2, #4f8cc4)',
+  'var(--blue3, #93b8dc)',
+  'var(--slate, #94a3b8)',
+  'var(--cneutral, #c7d2de)',
+]
+const MAU_CON_LAI_FIGMA = 'var(--cneutral, #c7d2de)'
+
 export function VongQuy({
   ds: dsGoc,
   tong,
   onChon,
   cuoi,
+  kieu = 'mobile',
 }: {
   ds: { quy: string; tienMat: boolean; cuoi: number }[]
   tong: number
   onChon: (quy: string) => void
   cuoi?: ReactNode
+  kieu?: 'desktop' | 'mobile'
 }) {
   const [tro, setTro] = useState<string | null>(null)
   const [moDs, setMoDs] = useState(false)
@@ -342,7 +354,7 @@ export function VongQuy({
   }, [moDs])
 
   const chon = (quy: string) => {
-    if (quy === 'tat-ca') onChon('tat-ca')
+    if (quy === 'tat-ca') setMoDs(true)
     else onChon(quy)
   }
 
@@ -359,14 +371,39 @@ export function VongQuy({
     }))
     .sort((a, b) => b.cuoi - a.cuoi)
 
-  // Quy tắc gộp lát "Còn lại": Quỹ có tỷ trọng dưới 5% gộp thành lát "Còn lại" khi có từ 6 quỹ trở lên
+  const laDesktop = kieu === 'desktop'
+  const mauQuy = laDesktop ? MAU_QUY_FIGMA : MAU_QUY_T402
+  const mauConLai = laDesktop ? MAU_CON_LAI_FIGMA : MAU_CON_LAI
+
+  // Quy tắc gộp lát "Còn lại":
+  // - Desktop (Figma T495): Quỹ thứ 5 trở đi gộp thành Còn lại
+  // - Mobile (T402, T303): Quỹ có tỷ trọng dưới 5% gộp thành lát "Còn lại" khi có từ 6 quỹ trở lên
   const dsGop = (() => {
+    if (laDesktop) {
+      if (xep.length > 5) {
+        const top4 = xep.slice(0, 4)
+        const rest = xep.slice(4)
+        const cuoiCon = rest.reduce((a, r) => a + r.cuoi, 0)
+        const out = top4.map((r, i) => ({ ...r, mau: mauQuy[i % mauQuy.length] }))
+        out.push({
+          quy: 'tat-ca',
+          tienMat: false,
+          cuoi: cuoiCon,
+          ten: 'Còn lại',
+          mau: mauConLai,
+          tyLe: cuoiCon / tongDuong,
+        })
+        return out
+      }
+      return xep.map((r, i) => ({ ...r, mau: mauQuy[i % mauQuy.length] }))
+    }
+
     if (xep.length >= 6) {
       const lon = xep.filter(r => r.tyLe >= 0.05)
       const giu = lon.slice(0, 5)
       const giuSet = new Set(giu.map(r => r.quy))
       const con = xep.filter(r => !giuSet.has(r.quy))
-      const out = giu.map((r, i) => ({ ...r, mau: MAU_QUY_T402[i % MAU_QUY_T402.length] }))
+      const out = giu.map((r, i) => ({ ...r, mau: mauQuy[i % mauQuy.length] }))
       if (con.length > 0) {
         const cuoiCon = con.reduce((a, r) => a + r.cuoi, 0)
         out.push({
@@ -374,13 +411,13 @@ export function VongQuy({
           tienMat: false,
           cuoi: cuoiCon,
           ten: 'Còn lại',
-          mau: MAU_CON_LAI,
+          mau: mauConLai,
           tyLe: cuoiCon / tongDuong,
         })
       }
       return out
     }
-    return xep.map((r, i) => ({ ...r, mau: MAU_QUY_T402[i % MAU_QUY_T402.length] }))
+    return xep.map((r, i) => ({ ...r, mau: mauQuy[i % mauQuy.length] }))
   })()
 
   // Tính góc các lát
@@ -399,7 +436,177 @@ export function VongQuy({
     return item
   })
 
-  // Kích thước SVG
+  const dangTro = dsLats.find(r => r.quy === tro)
+
+  // Khung popup danh sách tất cả quỹ
+  const popupDanhSach = moDs && (
+    <>
+      <div className="bbt-vq-ds-nen" onClick={() => setMoDs(false)} />
+      <div className="bbt-vq-ds" role="dialog" aria-label="Tất cả quỹ">
+        <div className="bbt-vq-ds-dau">
+          <b>Tất cả quỹ ({dsGoc.length})</b>
+          <button
+            type="button"
+            className="pheu-dong"
+            title="Đóng"
+            aria-label="Đóng"
+            onClick={() => setMoDs(false)}
+          >
+            <Icon n="x" className="ic sm" />
+          </button>
+        </div>
+        <ul className="bbt-vq-ct" style={{ maxHeight: 240, overflowY: 'auto' }}>
+          {[...dsGoc]
+            .sort((x, y) => y.cuoi - x.cuoi)
+            .map((r, i) => (
+              <li key={r.quy}>
+                <button
+                  type="button"
+                  title={`Xem biểu đồ thu chi ${r.quy}`}
+                  onClick={() => {
+                    setMoDs(false)
+                    onChon(r.quy)
+                  }}
+                >
+                  <i style={{ background: mauQuy[i % mauQuy.length] }} />
+                  <span className="bbt-vq-ten">
+                    <span title={r.quy}>{tenQuyDanhMuc(r.quy, r.tienMat)}</span>
+                    <b>
+                      {moneyD(r.cuoi)}
+                      <small>{pct(tong ? r.cuoi / tong : 0)}</small>
+                    </b>
+                  </span>
+                  <Icon n="chevr" className="ic sm muted bbt-vq-mui" />
+                </button>
+              </li>
+            ))}
+        </ul>
+        <button
+          type="button"
+          className="nut bbt-e-nut"
+          onClick={() => {
+            setMoDs(false)
+            onChon('tat-ca')
+          }}
+        >
+          Biểu đồ thu chi tất cả quỹ ›
+        </button>
+      </div>
+    </>
+  )
+
+  if (laDesktop) {
+    // Đường kính 120, cx=60, cy=60, R=54, rIn=36 theo Figma
+    const W = 120
+    const H = 120
+    const cx = 60
+    const cy = 60
+    const R = 54
+    const day = 16
+    const rIn = R - day
+
+    return (
+      <div className="bbt-cum-vong-quy">
+        <div className="bbt-vq-hang">
+          <div className="bbt-vq-svg-wrap">
+            <svg
+              className="bbt-vq-svg-120"
+              viewBox={`0 0 ${W} ${H}`}
+              width={W}
+              height={H}
+              role="img"
+              aria-label="Biểu đồ tròn tồn quỹ theo quỹ"
+            >
+              {/* Nền vòng xám */}
+              <circle cx={cx} cy={cy} r={(R + rIn) / 2} fill="none" stroke="var(--line-2, #eeeeee)" strokeWidth={day} />
+
+              {/* Các lát biểu đồ tròn */}
+              {dsLats.map(r => {
+                const sliceAngle = r.endAngle - r.startAngle
+                const gap = dsLats.length > 1 ? 0.04 : 0
+                const a1 = r.startAngle + gap / 2
+                const a2 = r.endAngle - gap / 2
+                const actA1 = a2 > a1 ? a1 : r.startAngle
+                const actA2 = a2 > a1 ? a2 : r.endAngle
+
+                const x1Out = cx + R * Math.cos(actA1)
+                const y1Out = cy + R * Math.sin(actA1)
+                const x2Out = cx + R * Math.cos(actA2)
+                const y2Out = cy + R * Math.sin(actA2)
+                const x1In = cx + rIn * Math.cos(actA1)
+                const y1In = cy + rIn * Math.sin(actA1)
+                const x2In = cx + rIn * Math.cos(actA2)
+                const y2In = cy + rIn * Math.sin(actA2)
+                const large = sliceAngle > Math.PI ? 1 : 0
+
+                const pathD = `M ${x1In} ${y1In} L ${x1Out} ${y1Out} A ${R} ${R} 0 ${large} 1 ${x2Out} ${y2Out} L ${x2In} ${y2In} A ${rIn} ${rIn} 0 ${large} 0 ${x1In} ${y1In} Z`
+
+                return (
+                  <path
+                    key={r.quy}
+                    d={pathD}
+                    fill={r.mau}
+                    className={`bbt-vq-lat${tro && tro !== r.quy ? ' mo' : ''}${tro === r.quy ? ' on' : ''}`}
+                    onClick={() => chon(r.quy)}
+                    onMouseEnter={() => setTro(r.quy)}
+                    onMouseLeave={() => setTro(null)}
+                  >
+                    <title>{`${r.ten}: ${moneyD(r.cuoi)}`}</title>
+                  </path>
+                )
+              })}
+
+              {/* Chữ giữa vòng: Tổng tồn quỹ và số tiền rút gọn, bấm mở popup danh sách quỹ */}
+              <g
+                onClick={() => setMoDs(true)}
+                style={{ cursor: 'pointer' }}
+              >
+                <title>Bấm để xem danh sách tất cả quỹ</title>
+                <text x={cx} y={cy - 5} textAnchor="middle" className="bbt-vq-c-lbl">
+                  {dangTro ? 'Tỷ trọng' : 'Tổng tồn quỹ'}
+                </text>
+                <text x={cx} y={cy + 13} textAnchor="middle" className="bbt-vq-c-val">
+                  {dangTro ? pct(dangTro.tyLe) : short(tong)}
+                </text>
+              </g>
+            </svg>
+          </div>
+
+          {/* Chú thích bên phải */}
+          <div className="bbt-vq-chuthich">
+            {dsLats.map(r => (
+              <div
+                key={r.quy}
+                className={`bbt-vq-ct-row${tro === r.quy ? ' on' : ''}`}
+                onMouseEnter={() => setTro(r.quy)}
+                onMouseLeave={() => setTro(null)}
+                onClick={() => chon(r.quy)}
+                title={`${r.ten}: ${moneyD(r.cuoi)}`}
+              >
+                <span className="bbt-vq-ct-dot" style={{ background: r.mau }} />
+                <span className="bbt-vq-ct-name">{r.ten}</span>
+                <span className="bbt-vq-ct-val">{short(r.cuoi)}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Hàng nút dưới biểu đồ tròn */}
+        <div className="bbt-vq-hang-nut">
+          <Link to="/app/danh-muc/1-12?moi=1&goiY=thuchi" className="bbt-btn-quy bbt-btn-tao-quy" title="Tạo quỹ tiền mặt hoặc tài khoản ngân hàng">
+            <Icon n="plus" className="ic sm" /> Tạo quỹ
+          </Link>
+          <button type="button" className="bbt-btn-quy" onClick={() => setMoDs(true)}>
+            Tất cả quỹ ({dsGoc.length}) ›
+          </button>
+        </div>
+
+        {popupDanhSach}
+      </div>
+    )
+  }
+
+  // Kích thước SVG điện thoại theo mẫu app ví (T402, T303): vòng dày 28%, khe nhỏ, nhãn ngoài vòng nối đường xám
   const W = 380
   const H = 210
   const cx = 190
@@ -407,8 +614,6 @@ export function VongQuy({
   const R = 64
   const day = Math.round(R * 0.28) // Độ dày 28% bán kính (18px)
   const rIn = R - day // 46px
-
-  const dangTro = dsLats.find(r => r.quy === tro)
 
   // Phân chia nhãn trái / phải
   const nhanPhai = dsLats
@@ -483,13 +688,19 @@ export function VongQuy({
           )
         })}
 
-        {/* Chữ giữa vòng: Tổng tồn quỹ và số tiền */}
-        <text x={cx} y={cy - 6} textAnchor="middle" className="bbt-vq-center-lbl">
-          {dangTro ? pct(dangTro.tyLe) : 'Tổng tồn quỹ'}
-        </text>
-        <text x={cx} y={cy + 16} textAnchor="middle" className="bbt-vq-center-val">
-          {dangTro ? moneyD(dangTro.cuoi) : short(tong)}
-        </text>
+        {/* Chữ giữa vòng: Tổng tồn quỹ và số tiền, bấm mở popup danh sách quỹ */}
+        <g
+          onClick={() => setMoDs(true)}
+          style={{ cursor: 'pointer' }}
+        >
+          <title>Bấm để xem danh sách tất cả quỹ</title>
+          <text x={cx} y={cy - 6} textAnchor="middle" className="bbt-vq-center-lbl">
+            {dangTro ? pct(dangTro.tyLe) : 'Tổng tồn quỹ'}
+          </text>
+          <text x={cx} y={cy + 16} textAnchor="middle" className="bbt-vq-center-val">
+            {dangTro ? moneyD(dangTro.cuoi) : short(tong)}
+          </text>
+        </g>
 
         {/* Đường nối và Nhãn ngoài vòng */}
         {dsLats.map(r => {
@@ -580,67 +791,11 @@ export function VongQuy({
         )}
       </div>
 
-      {/* Popup tất cả quỹ */}
-      {moDs && (
-        <>
-          <div className="bbt-vq-ds-nen" onClick={() => setMoDs(false)} />
-          <div className="bbt-vq-ds" role="dialog" aria-label="Tất cả quỹ">
-            <div className="bbt-vq-ds-dau">
-              <b>Tất cả quỹ ({dsGoc.length})</b>
-              <button
-                type="button"
-                className="pheu-dong"
-                title="Đóng"
-                aria-label="Đóng"
-                onClick={() => setMoDs(false)}
-              >
-                <Icon n="x" className="ic sm" />
-              </button>
-            </div>
-            <ul className="bbt-vq-ct" style={{ maxHeight: 240, overflowY: 'auto' }}>
-              {[...dsGoc]
-                .sort((x, y) => y.cuoi - x.cuoi)
-                .map((r, i) => (
-                  <li key={r.quy}>
-                    <button
-                      type="button"
-                      title={`Xem biểu đồ thu chi ${r.quy}`}
-                      onClick={() => {
-                        setMoDs(false)
-                        onChon(r.quy)
-                      }}
-                    >
-                      <i style={{ background: MAU_QUY_T402[i % MAU_QUY_T402.length] }} />
-                      <span className="bbt-vq-ten">
-                        <span title={r.quy}>{tenQuyDanhMuc(r.quy, r.tienMat)}</span>
-                        <b>
-                          {moneyD(r.cuoi)}
-                          <small>{pct(tong ? r.cuoi / tong : 0)}</small>
-                        </b>
-                      </span>
-                      <Icon n="chevr" className="ic sm muted bbt-vq-mui" />
-                    </button>
-                  </li>
-                ))}
-            </ul>
-            <button
-              type="button"
-              className="nut bbt-e-nut"
-              onClick={() => {
-                setMoDs(false)
-                onChon('tat-ca')
-              }}
-            >
-              Biểu đồ thu chi tất cả quỹ ›
-            </button>
-          </div>
-        </>
-      )}
+      {popupDanhSach}
     </div>
   )
 }
 
-/** Thao tác nhanh đầu trang chủ Free (T290): cố định 5 nút, không theo danh sách tuỳ chỉnh ở thanh bên */
 const TT_NHANH_FREE = [
   { ten: 'Thu tiền', icon: 'cashin', to: '/app/tien/2-1-1/moi?loai=thu', goiY: 'Lập phiếu thu tiền' },
   { ten: 'Chi tiền', icon: 'cashout', to: '/app/tien/2-1-1/moi?loai=chi', goiY: 'Lập phiếu chi tiền' },
@@ -684,6 +839,20 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
   const quy = useMemo(() => [...tonQuyTheoSo(thangXem, cnsHien), ...QUY_MAU_THEM], [thangXem, cnsHien])   // T303: thêm 5 quỹ mẫu
   const tongQuy = { cuoi: quy.reduce((a, r) => a + r.cuoi, 0), thu: quy.reduce((a, r) => a + r.thu, 0), chi: quy.reduce((a, r) => a + r.chi, 0) }
   const chiLon = cpPhieu.ds[0]   // lý do chi phí lớn nhất trong tháng
+  const [moXemSo, setMoXemSo] = useState(false)
+  const xemSoRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!moXemSo) return
+    const dong = (e: MouseEvent) => {
+      if (xemSoRef.current && !xemSoRef.current.contains(e.target as Node)) {
+        setMoXemSo(false)
+      }
+    }
+    document.addEventListener('mousedown', dong)
+    return () => document.removeEventListener('mousedown', dong)
+  }, [moXemSo])
+
   const [modalQuy, setModalQuy] = useState<string | null>(null)
   const thuChi13 = useMemo(() => thuChi13Thang(cnsHien), [cnsHien])
   // T331: hai biểu đồ 13 tháng chừa cùng phần dưới 0 để đường 0 thẳng hàng hai bên
@@ -717,105 +886,120 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
         <nav className="bbt-tt-nhanh" aria-label="Thao tác nhanh">
           {/* Nhãn cùng tên, cùng biểu tượng với mục Thao tác nhanh ở thanh bên để khách nhận ra */}
           <span className="bbt-tt-nhanh-nhan"><Icon n="sparkle" className="ic sm" />Thao tác nhanh</span>
-          {TT_NHANH_FREE.map(m => (
-            <Link key={m.ten} to={m.to} title={m.goiY} className="bbt-tt-nhanh-nut"><ONen n={m.icon} kieu="nhat" co="sm" />{m.ten}</Link>
-          ))}
+          {TT_NHANH_FREE.map(m => {
+            const gradName = m.icon === 'cashin' ? 'thu-tien' : m.icon === 'cashout' ? 'chi-tien' : m.icon === 'truck' ? 'mua-hang' : m.icon === 'percent' ? 'ke-khai-thue' : 'nhap-kho'
+            return (
+              <Link key={m.ten} to={m.to} title={m.goiY} className="bbt-tt-nhanh-nut">
+                <FigmaGradientIcon name={gradName} size={20} />
+                <span>{m.ten}</span>
+              </Link>
+            )
+          })}
         </nav>
       </div>
 
         <>
           <div className="bbt-e-luoi bbt-e-luoi-2">   {/* hàng trên 2 cột lãi lỗ, thu chi; Quản lý kho kéo hết hàng dưới (T293) */}
-        {/* Cột 1: Quản lý lãi lỗ; T303: phần số gọn lại, biểu đồ 13 tháng nằm ngay dưới */}
+        {/* Cột 1: Quản lý lãi lỗ (Kết quả kinh doanh theo Figma T495) */}
         <section className="bbt-cot col bbt-gon">
           <div className="bbt-e-ten-hang">
-            <h2 className="ten bbt-e-ten">
-              <Icon n="chart" className="ic sm" /> Kết quả kinh doanh
-            </h2>
-            {/* T316: mở Báo cáo kết quả kinh doanh 10.2.3 đúng tháng đang xem, như link Báo cáo ở các khối khác */}
-            <span className="bbt-kho2-link">
-              <Link to="/app/bao-cao/10-2-3" className="bbt-kho-mo" onClick={() => datLocDaXem('/app/bao-cao/10-2-3', {}, String(thangXem))}>Xem kết quả kinh doanh ›</Link>
-            </span>
-          </div>
-          {/* T316: tiêu đề dùng thuật ngữ chuẩn, tiêu đề phụ giải nghĩa cho chủ chưa quen nghiệp vụ */}
-          <div className="bbt-e-mota">Doanh thu trừ các khoản chi phí trong tháng</div>
-          <div className="hoi bbt-e-hoi">
-            Lợi nhuận {thangXem === 10 ? 'tháng này' : `tháng ${thangXem}`}
-          </div>
-          <div
-            className={`tra bbt-tra ${loiNhuan >= 0 ? 'lai' : 'lo'}`}
-            style={{ color: loiNhuan >= 0 ? 'var(--green, #138a52)' : 'var(--red, #c2362b)' }}
-          >
-            {loiNhuan < 0 ? `Lỗ ${moneyD(Math.abs(loiNhuan))}` : moneyD(loiNhuan)}
-          </div>
-          {/* Giải nghĩa biên lợi nhuận: lãi (lỗ) bao nhiêu đồng trên mỗi 100 đồng doanh thu, một chữ số lẻ (T316) */}
-          <div className="phu bbt-phu bbt-e-phu">
-            Biên lợi nhuận {pct(bien)} <span className="bbt-e-giai">· {bien < 0 ? 'lỗ' : 'lãi'} {Math.abs(bien * 100).toLocaleString('vi-VN', { maximumFractionDigits: 1 })} đ trên mỗi 100 đ doanh thu</span>
+            <div className="bbt-tieu-de-khoi">
+              <FigmaGradientIcon name="bao-cao" size={24} />
+              <div>
+                <h2 className="ten bbt-e-ten">Kết quả kinh doanh</h2>
+                <div className="bbt-e-mota">Doanh thu trừ các khoản chi phí trong tháng</div>
+              </div>
+            </div>
+            <Link
+              to="/app/bao-cao/10-2-3"
+              className="bbt-btn-xem"
+              onClick={() => datLocDaXem('/app/bao-cao/10-2-3', {}, String(thangXem))}
+            >
+              Xem Kết quả kinh doanh
+            </Link>
           </div>
 
-          <div className="t dt">
-            <div className="l"><b>Doanh thu</b></div>
-            <div className="r"><b style={{ fontSize: '17px' }}>{moneyD(d.dtThuan)}</b></div>
-          </div>
-
-          <Link
-            to={`/app/trang-chu/chi-phi-nvl?thang=${thangXem}`}
-            className="t cp bbt-e-the-link"
-            title="Xem chi phí nguyên vật liệu"
-          >
-            <div className="l">
-              <b>Chi phí nguyên vật liệu</b>
-              <span>{moTaCachNgan(nvl.ds)}</span>
+          <div className="bbt-o-loi-nhuan">
+            <div className="hoi bbt-e-hoi">
+              Lợi nhuận {thangXem === 10 ? 'tháng này' : `tháng ${thangXem}`}
             </div>
-            <div className="r">
-              <b>{moneyD(nvl.tien)}</b>
-              <span>{pct(d.dtThuan > 0 ? nvl.tien / d.dtThuan : 0)}</span>
+            <div
+              className={`tra bbt-tra ${loiNhuan >= 0 ? 'lai' : 'lo'}`}
+              style={{ color: loiNhuan >= 0 ? 'var(--green, #138a52)' : 'var(--red, #c2362b)' }}
+            >
+              {loiNhuan < 0 ? `Lỗ ${moneyD(Math.abs(loiNhuan))}` : moneyD(loiNhuan)}
             </div>
-            <Icon n="chevr" className="ic sm muted" />
-          </Link>
-
-          <Link
-            to={`/app/trang-chu/chi-phi-thang?thang=${thangXem}`}
-            className="t cp bbt-e-the-link"
-            title="Xem chi phí hoạt động"
-          >
-            <div className="l">
-              <b>Chi phí hoạt động</b>
-              <span>{chiLon ? `Lớn nhất: ${chiLon.ly} ${short(chiLon.v)}` : 'Lương, mặt bằng, điện nước'}</span>   {/* rút gọn (T390) */}
-            </div>
-            <div className="r">
-              <b>{moneyD(cpThang)}</b>
-              <span>{pct(d.dtThuan > 0 ? cpThang / d.dtThuan : 0)}</span>
-            </div>
-            <Icon n="chevr" className="ic sm muted" />
-          </Link>
-
-          <Link
-            to="/app/ccdc/8-1-1"
-            className="t cp bbt-e-the-link"
-            title="Xem chi phí phân bổ, khấu hao"
-          >
-            <div className="l">
-              <b>Chi phí phân bổ, khấu hao</b>
-              <span>Chi phí phân bổ nhiều tháng</span>
-            </div>
-            <div className="r">
-              <b>{moneyD(d.cpPhanBo)}</b>
-              <span>{pct(d.dtThuan > 0 ? d.cpPhanBo / d.dtThuan : 0)}</span>
-            </div>
-            <Icon n="chevr" className="ic sm muted" />
-          </Link>
-
-          <div className={`t ${loiNhuan >= 0 ? 'lai' : 'lo'}`}>
-            <div className="l"><b>Lợi nhuận</b></div>
-            <div className="r">
-              <b style={{ fontSize: '17px' }}>
-                {loiNhuan < 0 ? `Lỗ ${moneyD(Math.abs(loiNhuan))}` : moneyD(loiNhuan)}
-              </b>
-              <span>{pct(bien)}</span>
+            <div className="phu bbt-phu bbt-e-phu">
+              Biên lợi nhuận {pct(bien)} <span className="bbt-e-giai">· {bien < 0 ? 'lỗ' : 'lãi'} {Math.abs(bien * 100).toLocaleString('vi-VN', { maximumFractionDigits: 1 })} đ trên mỗi 100 đ doanh thu</span>
             </div>
           </div>
 
-          {/* T303: biểu đồ lãi lỗ 13 tháng hiện thẳng trong cột, không cần bấm mở hộp */}
+          <div className="bbt-bang-kqkd">
+            <div className="t dt bbt-kqkd-row">
+              <div className="l"><b>Doanh thu</b></div>
+              <div className="r"><b style={{ color: 'var(--blue, #0560a6)' }}>{moneyD(d.dtThuan)}</b></div>
+            </div>
+
+            <Link
+              to={`/app/trang-chu/chi-phi-nvl?thang=${thangXem}`}
+              className="t cp bbt-e-the-link bbt-kqkd-row"
+              title="Xem chi phí nguyên vật liệu"
+            >
+              <div className="l">
+                <b>Giá vốn nguyên vật liệu</b>
+                <span>{moTaCachNgan(nvl.ds)}</span>
+              </div>
+              <div className="r">
+                <b>{moneyD(nvl.tien)}</b>
+                <span className="bbt-kqkd-pct" style={{ color: 'var(--orange, #f28020)' }}>{pct(d.dtThuan > 0 ? nvl.tien / d.dtThuan : 0)}</span>
+              </div>
+              <Icon n="chevr" className="ic sm muted" />
+            </Link>
+
+            <Link
+              to={`/app/trang-chu/chi-phi-thang?thang=${thangXem}`}
+              className="t cp bbt-e-the-link bbt-kqkd-row"
+              title="Xem chi phí hoạt động"
+            >
+              <div className="l">
+                <b>Chi phí hoạt động</b>
+                <span>{chiLon ? `Lớn nhất: ${chiLon.ly} ${short(chiLon.v)}` : 'Lương, mặt bằng, điện nước'}</span>
+              </div>
+              <div className="r">
+                <b>{moneyD(cpThang)}</b>
+                <span className="bbt-kqkd-pct" style={{ color: 'var(--orange, #f28020)' }}>{pct(d.dtThuan > 0 ? cpThang / d.dtThuan : 0)}</span>
+              </div>
+              <Icon n="chevr" className="ic sm muted" />
+            </Link>
+
+            <Link
+              to="/app/ccdc/8-1-1"
+              className="t cp bbt-e-the-link bbt-kqkd-row"
+              title="Xem chi phí phân bổ, khấu hao"
+            >
+              <div className="l">
+                <b>Chi phí phân bổ, khấu hao</b>
+                <span>Chi phí phân bổ nhiều tháng</span>
+              </div>
+              <div className="r">
+                <b>{moneyD(d.cpPhanBo)}</b>
+                <span className="bbt-kqkd-pct" style={{ color: 'var(--orange, #f28020)' }}>{pct(d.dtThuan > 0 ? d.cpPhanBo / d.dtThuan : 0)}</span>
+              </div>
+              <Icon n="chevr" className="ic sm muted" />
+            </Link>
+
+            <div className={`t bbt-kqkd-row bbt-kqkd-ln ${loiNhuan >= 0 ? 'lai' : 'lo'}`}>
+              <div className="l"><b>Lợi nhuận</b></div>
+              <div className="r">
+                <b>
+                  {loiNhuan < 0 ? `Lỗ ${moneyD(Math.abs(loiNhuan))}` : moneyD(loiNhuan)}
+                </b>
+                <span className="bbt-kqkd-pct">{pct(bien)}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Biểu đồ lãi lỗ 13 tháng giữ nguyên */}
           <div className="bbt-13t-trong">
             <div className="bbt-13t-trong-dau">
               <div className="bbt-13t-trong-ten"><b>Hiệu quả kinh doanh 13 tháng</b><small>Doanh thu, chi phí, lợi nhuận từng tháng và so với cùng kỳ năm trước</small></div>
@@ -825,41 +1009,75 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
           </div>
         </section>
 
-        {/* Cột 2: Quỹ tiền; T303: vòng tồn quỹ nhỏ lại, biểu đồ thu chi 13 tháng nằm ngay dưới */}
+        {/* Cột 2: Quỹ tiền theo Figma T495 */}
         <section className="bbt-cot col bbt-gon">
           <div className="bbt-e-ten-hang">
-            <h2 className="ten bbt-e-ten">
-              <Icon n="wallet" className="ic sm" /> Quỹ tiền
-            </h2>
-            {/* T325: góc trên phải 2 link sổ như khối Mua hàng; nút Tạo quỹ xuống dưới vòng tồn quỹ */}
-            <span className="bbt-kho2-link">
-              <Link to="/app/bao-cao/2-2-1" className="bbt-kho-mo" title="Xem Sổ quỹ tiền mặt" onClick={() => datLocDaXem('/app/bao-cao/2-2-1', {}, String(thangXem))}>Sổ quỹ tiền mặt ›</Link>
-              <Link to="/app/bao-cao/2-2-3" className="bbt-kho-mo" title="Xem Sổ tiền gửi ngân hàng" onClick={() => datLocDaXem('/app/bao-cao/2-2-3', {}, String(thangXem))}>Sổ ngân hàng ›</Link>
-            </span>
-          </div>
-          <div className="bbt-e-mota">Tiền mặt tại cửa hàng và tiền gửi ngân hàng</div>
-          <div className="hoi bbt-e-hoi">
-            {thangXem === 10 ? 'Tồn quỹ hiện tại' : `Tồn quỹ cuối tháng ${thangXem}/2026`}
-          </div>
-          <button
-            type="button"
-            className="tra bbt-tra bbt-tra-btn"
-            style={{ color: 'var(--blue, #0560a6)' }}
-            onClick={() => setModalQuy('tat-ca')}
-            title="Xem biểu đồ thu chi tất cả quỹ"
-          >
-            {moneyD(tongQuy.cuoi)} ›
-          </button>
-          <div className="phu bbt-phu bbt-e-phu">
-            {thangXem === 10 ? 'Tháng này thu' : `Tháng ${thangXem} thu`} <span style={{ color: 'var(--green, #138a52)' }}>{short(tongQuy.thu)}</span> · chi <span style={{ color: 'var(--red, #c2362b)' }}>{short(tongQuy.chi)}</span>
+            <div className="bbt-tieu-de-khoi">
+              <FigmaGradientIcon name="thu-tien" size={24} />
+              <div>
+                <h2 className="ten bbt-e-ten">Quỹ tiền</h2>
+                <div className="bbt-e-mota">Tiền mặt tại cửa hàng và tiền gửi ngân hàng</div>
+              </div>
+            </div>
+            <div className="bbt-dropdown-wrap" ref={xemSoRef}>
+              <button
+                type="button"
+                className={`bbt-btn-xem${moXemSo ? ' on' : ''}`}
+                onClick={() => setMoXemSo(!moXemSo)}
+              >
+                <span>Xem sổ</span>
+                <Icon n="chevd" className={`ic sm bbt-chev-xem${moXemSo ? ' xoay' : ''}`} />
+              </button>
+              {moXemSo && (
+                <div className="bbt-menu-xem">
+                  <Link
+                    to="/app/bao-cao/2-2-1"
+                    className="bbt-menu-item"
+                    onClick={() => {
+                      setMoXemSo(false)
+                      datLocDaXem('/app/bao-cao/2-2-1', {}, String(thangXem))
+                    }}
+                  >
+                    Sổ quỹ tiền mặt
+                  </Link>
+                  <Link
+                    to="/app/bao-cao/2-2-3"
+                    className="bbt-menu-item"
+                    onClick={() => {
+                      setMoXemSo(false)
+                      datLocDaXem('/app/bao-cao/2-2-3', {}, String(thangXem))
+                    }}
+                  >
+                    Sổ ngân hàng
+                  </Link>
+                </div>
+              )}
+            </div>
           </div>
 
-          {quy.length > 0 ? <>
-            {/* T303, T325, T331: nút Tạo quỹ luôn có, nằm cuối danh sách quỹ */}
-            <VongQuy ds={quy} tong={tongQuy.cuoi} onChon={setModalQuy} cuoi={
-              <Link to="/app/danh-muc/1-12?moi=1&goiY=thuchi" className="btn sm" title="Tạo quỹ tiền mặt hoặc tài khoản ngân hàng"><Icon n="plus" className="ic sm" />Tạo quỹ</Link>
-            } />
-          </> : (
+          <div className="bbt-o-ton-quy">
+            <div className="hoi bbt-e-hoi">
+              {thangXem === 10 ? 'Tồn quỹ hiện tại' : `Tồn quỹ cuối tháng ${thangXem}/2026`}
+            </div>
+            <button
+              type="button"
+              className="bbt-o-ton-btn"
+              onClick={() => setModalQuy('tat-ca')}
+              title="Xem biểu đồ thu chi tất cả quỹ"
+            >
+              <span>{moneyD(tongQuy.cuoi)}</span>
+              <Icon n="chevr" className="ic sm" />
+            </button>
+            <div className="phu bbt-phu bbt-e-phu">
+              {thangXem === 10 ? 'Tháng này thu' : `Tháng ${thangXem} thu`}{' '}
+              <span style={{ color: 'var(--green, #138a52)' }}>{short(tongQuy.thu)}</span> · chi{' '}
+              <span style={{ color: 'var(--red, #c2362b)' }}>{short(tongQuy.chi)}</span>
+            </div>
+          </div>
+
+          {quy.length > 0 ? (
+            <VongQuy ds={quy} tong={tongQuy.cuoi} onChon={setModalQuy} kieu="desktop" />
+          ) : (
             <div className="bbt-quy-trong">
               <Icon n="wallet" className="ic" />
               <b>Chưa có quỹ tiền nào</b>
@@ -868,7 +1086,7 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
             </div>
           )}
 
-          {/* T303: dòng tiền 13 tháng hiện thẳng trong cột; số tồn quỹ ở trên vẫn mở modal gộp các quỹ */}
+          {/* Biểu đồ dòng tiền 13 tháng giữ nguyên */}
           <div className="bbt-13t-trong">
             <div className="bbt-13t-trong-dau">
               <div className="bbt-13t-trong-ten"><b>Dòng tiền 13 tháng</b><small>Tiền thu vào, chi ra mỗi tháng và số dư quỹ cuối tháng</small></div>

@@ -5,6 +5,7 @@ import { MODULES, duongDan, hienPhanHe, manDau, phanHeKhoa, tenPhanHe } from './
 import { GOI, GOIS, type Goi } from './plan'
 import type { ModuleDef } from '../modules/types'
 import { Icon } from '../ui/Icon'
+import { FigmaChevThuGonIcon, FigmaDuotoneIcon, FigmaLogoAccounting, FigmaSearchIcon } from '../ui/FigmaIcon'
 import { Logo, DauLogo } from '../ui/Logo'
 import { Pk } from '../ui/Page'
 import { Topbar } from './Topbar'
@@ -197,7 +198,7 @@ function Sidebar({ mod, onSearch }: { mod: ModuleDef; onSearch: () => void }) {
       {/* Bấm logo về trang chủ; bấm nhãn gói mới mở Gói thuê bao (T309) */}
       <Link to={s.role === 'owner' || s.goi === 'F' ? '/app/trang-chu/tong-quan' : '/app/trang-chu/ban-lam-viec'} className="sb-brand" title="Về trang chủ">
         <span className="sb-brand-wrap">
-          <Logo nen="toi" cao={30} />
+          <FigmaLogoAccounting />
           <span className={`pk-ivt ${s.goi === 'PR' ? 'pro' : GOI[s.goi].cls}`} role="link" tabIndex={0} title={`Đang dùng gói ${GOI[s.goi].ten}. Bấm để xem gói thuê bao`}
             onClick={e => { e.preventDefault(); e.stopPropagation(); navGoi('/app/he-thong/goi-thue-bao') }}
             onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); navGoi('/app/he-thong/goi-thue-bao') } }}>{GOI[s.goi].ten}</span>
@@ -207,7 +208,7 @@ function Sidebar({ mod, onSearch }: { mod: ModuleDef; onSearch: () => void }) {
       {/* Tìm màn hình, chứng từ, báo cáo nằm đầu thanh bên, trên Trang chủ */}
       <div className="sb-tim">
         <button type="button" className="sb-tim-btn" onClick={onSearch} title="Tìm màn hình, chứng từ, báo cáo (Ctrl K)" aria-label="Tìm kiếm">
-          <Icon n="search" className="ic sm" />
+          <FigmaSearchIcon size={16} />
           <span>Tìm kiếm…</span>
           <span className="kbd">Ctrl K</span>
         </button>
@@ -233,7 +234,7 @@ function Sidebar({ mod, onSearch }: { mod: ModuleDef; onSearch: () => void }) {
                   onMouseEnter={e => onEnterTtn(e.currentTarget)}
                   onMouseLeave={onLeaveTtn}
                 >
-                  <Icon n={m.icon} kieu="hai" /><span>{tenPhanHe(m, s.goi).ngan}</span>
+                  <FigmaDuotoneIcon name={m.key} size={18} /><span>{tenPhanHe(m, s.goi).ngan}</span>
                 </button>
               ) : (
                 <Link to={duongDan(m, manDau(m, s.goi))}
@@ -242,7 +243,7 @@ function Sidebar({ mod, onSearch }: { mod: ModuleDef; onSearch: () => void }) {
                   onMouseEnter={coMenuPhu ? e => onEnterItem(m, e.currentTarget) : undefined}
                   onMouseLeave={coMenuPhu ? onLeaveItem : undefined}
                 >
-                  <Icon n={m.icon} kieu="hai" /><span>{tenPhanHe(m, s.goi).ngan}</span>{khoa && <Pk g={minGoiPhanHe(m)} />}
+                  <FigmaDuotoneIcon name={m.key} size={18} /><span>{tenPhanHe(m, s.goi).ngan}</span>{khoa && <Pk g={minGoiPhanHe(m)} />}
                 </Link>
               )}
             </Fragment>
@@ -251,7 +252,7 @@ function Sidebar({ mod, onSearch }: { mod: ModuleDef; onSearch: () => void }) {
       </div>
       <div className="sb-foot">
         <button onClick={() => set({ thuGon: !s.thuGon })} title={s.thuGon ? 'Mở rộng sidebar' : 'Thu gọn sidebar'}>
-          <Icon n={s.thuGon ? 'chevr' : 'chevl'} /><span>Thu gọn</span>
+          <FigmaChevThuGonIcon size={18} className={`sb-chev-ic${s.thuGon ? ' rev' : ''}`} /><span>Thu gọn</span>
         </button>
       </div>
       {coMenuPhu && hovered && (
