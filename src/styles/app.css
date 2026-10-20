@@ -35015,6 +35015,10 @@ a.tx-item:hover {
 .bbt-bang-kqkd .bbt-kqkd-row .r b { grid-column: 2; text-align: right; white-space: nowrap; }
 .bbt-bang-kqkd .bbt-kqkd-row .bbt-kqkd-pct { grid-column: 3; }
 .bbt-bang-kqkd .bbt-kqkd-row > .ic { grid-column: 4; }
+/* Dòng trong bảng không bo góc riêng (góc khuyết lộ trên nền màu), 3 dòng chi phí nền trắng */
+.bbt-bang-kqkd .bbt-kqkd-row { border-radius: 0; }
+.bbt-bang-kqkd .bbt-kqkd-row:not(:last-child) { border-bottom: 1px solid var(--line); }
+.bbt-bang-kqkd .bbt-kqkd-row.cp { background: var(--white, #fff); }
 
 /* ── Danh sách chứng từ: ô lọc bật ra ngoài thanh Figma, nhãn nằm trong ô như IVT (T504) ── */
 .ds-toolbar-figma .ds-o { display: flex; align-items: center; gap: 6px; width: auto; min-width: 200px; height: 36px; padding-left: 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--white); box-sizing: border-box; }

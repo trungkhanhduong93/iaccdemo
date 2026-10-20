@@ -6,7 +6,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 - T504: Danh sách chứng từ, bộ lọc nâng cao có lại mục Cấu hình tham số lọc. Bật ô nào thì ô đó hiện trên thanh công cụ, tối đa 4 ô, kéo để đổi thứ tự. Thời gian, Tìm kiếm cũng tắt được.
 
-- T503: Trang chủ gói Free trên máy tính: bảng Kết quả kinh doanh thẳng cột số tiền, % và mũi tên ở mọi dòng. Vòng tròn Quỹ tiền to hơn, 2 biểu đồ cột 13 tháng cao hơn.
+- T503: Trang chủ gói Free trên máy tính: bảng Kết quả kinh doanh thẳng cột số tiền, % và mũi tên ở mọi dòng. Vòng tròn Quỹ tiền to hơn, 2 biểu đồ cột 13 tháng cao hơn. Ba dòng chi phí nền trắng, các dòng có đường kẻ ngăn, góc nền không còn khuyết.
 
 - T339: Trang chủ gói Free trên máy tính, Tiến độ kiểm kê theo cửa hàng xếp cửa hàng chưa kiểm, lệch nhiều lên đầu. Có hơn 4 cửa hàng thì chỉ hiện 4, thêm dòng Đã kiểm x/y cửa hàng và nút Xem tất cả mở hộp đủ danh sách.
 
