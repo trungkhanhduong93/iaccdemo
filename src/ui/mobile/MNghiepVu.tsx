@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link, Navigate, useSearchParams } from 'react-router-dom'
 import { useSession } from '../../app/session'
 import { MODULES, duongDan, hienMan, hienPhanHe, moDuoc, nhanTab, phanHeKhoa, tabCua, tenPhanHe } from '../../app/registry'
@@ -51,6 +52,7 @@ function layIconMobile(cn: ChucNang) {
 export function MNghiepVu() {
   const { s } = useSession()
   const [params] = useSearchParams()
+  const [tuKhoa, setTuKhoa] = useState('')
   const modKey = params.get('m')
 
   // Chỉ hiện màn mà gói Free hoặc Standard mở được trên điện thoại, áp cho mọi gói (Trum chốt 13/10/2026, T194; gói Free ẩn màn ngoài gói, T299)
@@ -147,38 +149,91 @@ export function MNghiepVu() {
     ]
   }
 
-  return (
-    <div className="m-nghiep-vu mnv-the">
-      {/* ── Danh sách phân hệ dạng thẻ danh sách gọn kiểu iOS Settings (T353 điểm 13) ── */}
-      <div className="mnv-ds">
-        {dsPhanHe
-          .filter(m => !anNgoaiGoi(s.goi) || !phanHeKhoa(m, s.goi))
-          .map(m => {
-            const chucNangs = layCacChucNang(m)
-            if (chucNangs.length === 0) return null
+  // Tên nhóm theo chuẩn Figma MB02
+  const layTenNhom = (key: string, tenGoc: string) => {
+    if (key === 'tien') return 'THU CHI'
+    if (key === 'ban-hang') return 'KẾ TOÁN BÁN HÀNG'
+    if (key === 'mua-hang') return 'KẾ TOÁN MUA HÀNG'
+    if (key === 'kho') return 'KIỂM KÊ'
+    if (key === 'ccdc') return 'CHI PHÍ PHÂN BỔ'
+    return tenGoc.toUpperCase()
+  }
 
-            return (
-              <div key={m.key} className="mnv-nhom">
-                <div className="mnv-nhom-tieu-de">{tenPhanHe(m, s.goi).ten.toUpperCase()}</div>
-                <div className="mnv-nhom-the">
-                  {chucNangs.map(cn => (
-                    <Link key={cn.to} to={cn.to} className="mnv-dong">
-                      <span className="mnv-dong-ic">
+  const q = tuKhoa.trim().toLowerCase()
+
+  const dsHien = dsPhanHe
+    .filter(m => !anNgoaiGoi(s.goi) || !phanHeKhoa(m, s.goi))
+    .map(m => {
+      const all = layCacChucNang(m)
+      const loc = q ? all.filter(cn => cn.ten.toLowerCase().includes(q) || (cn.code && cn.code.includes(q))) : all
+      return { mod: m, items: loc }
+    })
+    .filter(g => g.items.length > 0)
+
+  return (
+    <div className="m-t498-nv-trang">
+      {/* ── Header nền sáng theo Figma MB02 (T498) ── */}
+      <div className="m-t498-nv-header">
+        <h1 className="m-t498-nv-tieu-de">Nghiệp vụ</h1>
+        <div className="m-t498-nv-tim-hop">
+          <Icon n="search" className="ic sm m-t498-nv-tim-ic" />
+          <input
+            type="text"
+            className="m-t498-nv-tim-inp"
+            placeholder="Tìm nghiệp vụ, chứng từ…"
+            value={tuKhoa}
+            onChange={e => setTuKhoa(e.target.value)}
+          />
+          {tuKhoa && (
+            <button
+              type="button"
+              className="m-t498-nv-tim-xoa"
+              onClick={() => setTuKhoa('')}
+              aria-label="Xoá tìm kiếm"
+            >
+              <Icon n="x" className="ic sm" />
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* ── Danh sách phân hệ dạng thẻ theo Figma MB02 ── */}
+      <div className="m-t498-nv-ds">
+        {dsHien.length === 0 ? (
+          <div className="m-t498-nv-trong">
+            Không tìm thấy nghiệp vụ phù hợp
+          </div>
+        ) : (
+          dsHien.map(({ mod, items }) => (
+            <div key={mod.key} className="m-t498-nv-nhom">
+              <div className="m-t498-nv-nhom-tieu">
+                {layTenNhom(mod.key, tenPhanHe(mod, s.goi).ten)}
+              </div>
+              <div className="m-t498-nv-card">
+                {items.map((cn, idx) => (
+                  <div key={cn.to} className="m-t498-nv-item-wrap">
+                    <Link to={cn.to} className="m-t498-nv-item">
+                      <div className="m-t498-nv-item-ic">
                         {layIconMobile(cn)}
-                      </span>
-                      <span className="mnv-dong-ten">{cn.ten}</span>
+                      </div>
+                      <span className="m-t498-nv-item-ten">{cn.ten}</span>
+                      {cn.ten === 'Mua hàng' && (
+                        <span className="m-t498-nv-badge-no">Nợ 138,2 tr</span>
+                      )}
                       {cn.khoa && cn.goiMin && (
-                        <span className="mnv-dong-kh">
+                        <span className="m-t498-nv-khoa">
                           <Pk g={cn.goiMin} o />
                         </span>
                       )}
-                      <Icon n="chevr" className="ic sm mnv-dong-mui" />
+                      <Icon n="chevr" className="ic sm m-t498-nv-mui" />
                     </Link>
-                  ))}
-                </div>
+                    {idx < items.length - 1 && <div className="m-t498-nv-divider" />}
+                  </div>
+                ))}
               </div>
-            )
-          })}
+            </div>
+          ))
+        )}
       </div>
     </div>
   )

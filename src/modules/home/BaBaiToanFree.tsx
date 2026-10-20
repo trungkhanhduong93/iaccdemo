@@ -339,7 +339,7 @@ export function VongQuy({
   tong: number
   onChon: (quy: string) => void
   cuoi?: ReactNode
-  kieu?: 'desktop' | 'mobile'
+  kieu?: 'desktop' | 'mobile' | 'figma-mobile'
 }) {
   const [tro, setTro] = useState<string | null>(null)
   const [moDs, setMoDs] = useState(false)
@@ -372,14 +372,15 @@ export function VongQuy({
     .sort((a, b) => b.cuoi - a.cuoi)
 
   const laDesktop = kieu === 'desktop'
-  const mauQuy = laDesktop ? MAU_QUY_FIGMA : MAU_QUY_T402
-  const mauConLai = laDesktop ? MAU_CON_LAI_FIGMA : MAU_CON_LAI
+  const laFigma = laDesktop || kieu === 'figma-mobile'
+  const mauQuy = laFigma ? MAU_QUY_FIGMA : MAU_QUY_T402
+  const mauConLai = laFigma ? MAU_CON_LAI_FIGMA : MAU_CON_LAI
 
   // Quy tắc gộp lát "Còn lại":
   // - Desktop (Figma T495): Quỹ thứ 5 trở đi gộp thành Còn lại
   // - Mobile (T402, T303): Quỹ có tỷ trọng dưới 5% gộp thành lát "Còn lại" khi có từ 6 quỹ trở lên
   const dsGop = (() => {
-    if (laDesktop) {
+    if (laFigma) {
       if (xep.length > 5) {
         const top4 = xep.slice(0, 4)
         const rest = xep.slice(4)
@@ -494,6 +495,88 @@ export function VongQuy({
       </div>
     </>
   )
+
+  if (kieu === 'figma-mobile') {
+    const W = 116
+    const H = 116
+    const cx = 58
+    const cy = 58
+    const R = 52
+    const day = 15
+    const rIn = R - day
+
+    return (
+      <div className="m-figma-co-cau-quy">
+        <div className="m-figma-vq-svg-wrap">
+          <svg
+            viewBox={`0 0 ${W} ${H}`}
+            width={W}
+            height={H}
+            role="img"
+            aria-label="Cơ cấu quỹ tiền"
+          >
+            <circle cx={cx} cy={cy} r={(R + rIn) / 2} fill="none" stroke="var(--line-2, #eeeeee)" strokeWidth={day} />
+            {dsLats.map(r => {
+              const sliceAngle = r.endAngle - r.startAngle
+              const gap = dsLats.length > 1 ? 0.04 : 0
+              const a1 = r.startAngle + gap / 2
+              const a2 = r.endAngle - gap / 2
+              const actA1 = a2 > a1 ? a1 : r.startAngle
+              const actA2 = a2 > a1 ? a2 : r.endAngle
+
+              const x1Out = cx + R * Math.cos(actA1)
+              const y1Out = cy + R * Math.sin(actA1)
+              const x2Out = cx + R * Math.cos(actA2)
+              const y2Out = cy + R * Math.sin(actA2)
+              const x1In = cx + rIn * Math.cos(actA1)
+              const y1In = cy + rIn * Math.sin(actA1)
+              const x2In = cx + rIn * Math.cos(actA2)
+              const y2In = cy + rIn * Math.sin(actA2)
+              const large = sliceAngle > Math.PI ? 1 : 0
+
+              const pathD = `M ${x1In} ${y1In} L ${x1Out} ${y1Out} A ${R} ${R} 0 ${large} 1 ${x2Out} ${y2Out} L ${x2In} ${y2In} A ${rIn} ${rIn} 0 ${large} 0 ${x1In} ${y1In} Z`
+
+              return (
+                <path
+                  key={r.quy}
+                  d={pathD}
+                  fill={r.mau}
+                  onClick={() => chon(r.quy)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <title>{`${r.ten}: ${moneyD(r.cuoi)} (${pct(r.tyLe)})`}</title>
+                </path>
+              )
+            })}
+            <g onClick={() => setMoDs(true)} style={{ cursor: 'pointer' }}>
+              <text x={cx} y={cy - 5} textAnchor="middle" style={{ fontSize: 10, fill: 'var(--muted, #6b7280)' }}>
+                Tổng tồn quỹ
+              </text>
+              <text x={cx} y={cy + 13} textAnchor="middle" style={{ fontSize: 13.5, fontWeight: 700, fill: 'var(--ink, #1f2225)' }}>
+                {short(tong)}
+              </text>
+            </g>
+          </svg>
+        </div>
+        <div className="m-figma-vq-chuthich">
+          {dsLats.map(r => (
+            <div
+              key={r.quy}
+              className="m-figma-vq-row"
+              onClick={() => chon(r.quy)}
+            >
+              <div className="m-figma-vq-trai">
+                <span className="m-figma-vq-dot" style={{ background: r.mau }} />
+                <span className="m-figma-vq-ten">{r.ten}</span>
+              </div>
+              <span className="m-figma-vq-pt">{pct(r.tyLe)}</span>
+            </div>
+          ))}
+        </div>
+        {popupDanhSach}
+      </div>
+    )
+  }
 
   if (laDesktop) {
     // Đường kính 120, cx=60, cy=60, R=54, rIn=36 theo Figma
