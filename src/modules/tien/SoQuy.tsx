@@ -10,6 +10,7 @@ import { dsTkTheoCheDo } from '../tong-hop/so-cai'
 import { PageHead } from '../../ui/Page'
 import { gopSo, ReportPaper, ReportToolbar, RptTable } from '../../ui/generic/ReportScreen'
 import { useTrangThaiLoc } from '../../ui/bao-cao/tuyChinhBC'
+import { SoChungTu } from '../../ui/generic/SoChungTu'
 import { tenQuyTm } from '../bao-cao/danh-sach'
 import { between, dmy, k, pad, pick, rng } from '../../ui/format'
 
@@ -54,7 +55,9 @@ export function SoQuy({ sc, mod }: ScreenProps) {
   }, [dsCn.map(c => c.id).join(), chonQuy, thang, s.cheDo])
 
   const cols: Col[] = [
-    { k: 'ngay', t: 'Ngày chứng từ', w: 100 }, { k: 'thu', t: 'Số phiếu thu', cls: 'code' }, { k: 'chi', t: 'Số phiếu chi', cls: 'code' },
+    // số phiếu bấm mở chứng từ chi tiết như các báo cáo khác (T201, T491)
+    { k: 'ngay', t: 'Ngày chứng từ', w: 100 }, { k: 'thu', t: 'Số phiếu thu', cls: 'code', r: x => <SoChungTu so={x.thu} /> },
+    { k: 'chi', t: 'Số phiếu chi', cls: 'code', r: x => <SoChungTu so={x.chi} /> },
     ...(dsCn.length > 1 ? [{ k: 'cn', t: 'Cửa hàng' } as Col] : []), { k: 'dg', t: 'Diễn giải' },
     ...(noco ? [{ k: 'tk', t: 'TK đối ứng', c: true } as Col] : []),
     { k: 'no', t: 'Thu', num: true }, { k: 'co', t: 'Chi', num: true }, { k: 'du', t: 'Tồn', num: true },

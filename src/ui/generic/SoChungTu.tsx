@@ -64,7 +64,9 @@ export function phieuTheoSo(so: unknown): { so: string; to: string } | undefined
   if (to) return { so, to }
   // bộ sổ hộ kinh doanh TT152 ghi số dạng PT000001/9/2026: đổi về tiền tố, tháng YYMM, thứ tự
   const hkd = /^([A-Z]+)(\d+)\/(\d{1,2})\/\d{2}(\d{2})$/.exec(so)
-  const m = hkd ? [so, hkd[1], hkd[4] + hkd[3].padStart(2, '0'), hkd[2]] : MAU_SO.exec(so)
+  // Sổ quỹ tiền mặt ghi số ngắn dạng PT09-001 (tháng, thứ tự): coi là năm 2026 (T491)
+  const ngan = /^([A-Z]+)(\d{2})-(\d+)$/.exec(so)
+  const m = hkd ? [so, hkd[1], hkd[4] + hkd[3].padStart(2, '0'), hkd[2]] : ngan ? [so, ngan[1], '26' + ngan[2], ngan[3]] : MAU_SO.exec(so)
   // mã hoá đơn FABi 12 ký tự tự sinh (sổ doanh thu hộ kinh doanh): lấy một phiếu Xuất bán POS theo mã ký tự
   if (!m && /^[A-Z0-9]{12}$/.test(so) && POS.length) return POS[[...so].reduce((a, c) => (a * 31 + c.charCodeAt(0)) % 100003, 7) % POS.length]
   if (!m) return undefined

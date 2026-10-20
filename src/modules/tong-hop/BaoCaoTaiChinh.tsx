@@ -55,7 +55,8 @@ export function dongKqkd(cd: CheDo, thang: number, goi?: Goi, s?: Session) {
     const nvl = s ? nvlKy(s, [], thang).tien : q.gv
     const lnGop = q.dtThuan - nvl
     return [
-      { ct: 'Doanh thu bán hàng', v: q.dtThuan, _b: 1, _drill: '/app/ban-hang/3-2-5' },
+      // gói Free không có Sổ doanh thu 3.2.5, mở Tổng hợp bán hàng (T491)
+      { ct: 'Doanh thu bán hàng', v: q.dtThuan, _b: 1, _drill: '/app/bao-cao/3-2-7' },
       ...dongCon('dt', dtTheoKenh(thang, q.dtThuan), '/app/ban-hang/3-1-1'),
       { ct: 'Chi phí NVL', v: nvl, _b: 1, _drill: `/app/trang-chu/chi-phi-nvl?thang=${thang}` },
       { ct: 'Lãi gộp', v: lnGop, _b: 1 },
