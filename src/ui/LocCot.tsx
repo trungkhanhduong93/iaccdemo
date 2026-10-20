@@ -4,6 +4,7 @@ import { useState, useRef, type ReactNode } from 'react'
 import type { Col } from '../modules/types'
 import { Popover, Select } from './Dropdown'
 import { Icon } from './Icon'
+import { IconFigmaSearch, IconFigmaCheck } from './IconFigma'
 import { fold } from './format'
 import { LichDon } from './ChonNgay'
 
@@ -332,9 +333,134 @@ export function OLoc({ c, loc }: { c: Col; loc: LocCot }) {
         <Icon n="filter" className="ic sm" />
         {dang && <span className="loc-pheu-dot" />}
       </button>
-      <Popover anchor={btnRef} open={mo} onClose={dong} align="end" width={240} className="loc-cot-pop">
-        <KhungLoc c={c} kieu={kieu} g={g} loc={loc} tatCaChon={tatCaChon} onDong={dong} />
+      <Popover anchor={btnRef} open={mo} onClose={dong} align="end" width={280} className="loc-cot-figma-pop">
+        <KhungLocChon c={c} g={g} loc={loc} tatCaChon={tatCaChon} onDong={dong} />
       </Popover>
+    </div>
+  )
+}
+
+/** Khung lọc danh sách chọn theo Figma T496 (popover-loc-cot.png) */
+function KhungLocChon({ c, g, loc, tatCaChon, onDong }: {
+  c: Col
+  g: GiaTriLoc
+  loc: LocCot
+  tatCaChon: string[]
+  onDong: () => void
+}) {
+  const [timKiem, setTimKiem] = useState('')
+  const [draftSelected, setDraftSelected] = useState<string[]>(() => g.ds ?? tatCaChon)
+
+  const dsHien = tatCaChon.filter(x => fold(x).includes(fold(timKiem.trim())))
+  const curSelected = draftSelected
+  const soKhopChon = dsHien.filter(x => curSelected.includes(x)).length
+  const tatCaDaChon = dsHien.length > 0 && soKhopChon === dsHien.length
+  const motPhanDaChon = soKhopChon > 0 && soKhopChon < dsHien.length
+
+  const toggleTatCa = () => {
+    if (tatCaDaChon) {
+      setDraftSelected(prev => prev.filter(x => !dsHien.includes(x)))
+    } else {
+      setDraftSelected(prev => [...new Set([...prev, ...dsHien])])
+    }
+  }
+
+  const toggleMot = (x: string) => {
+    setDraftSelected(prev =>
+      prev.includes(x) ? prev.filter(y => y !== x) : [...prev, x]
+    )
+  }
+
+  const handleXoaLoc = () => {
+    loc.dat(c.k, { op: '', v: '', ds: undefined, opText: 'chua', vText: '' })
+    setTimKiem('')
+    onDong()
+  }
+
+  const handleApDung = () => {
+    const moiDs = draftSelected.length === tatCaChon.length ? undefined : draftSelected
+    loc.dat(c.k, { ...g, ds: moiDs })
+    onDong()
+  }
+
+  const soLuong = draftSelected.length
+
+  return (
+    <div className="loc-cot-chon-wrap">
+      <div className="loc-cot-tim-box">
+        <IconFigmaSearch size={14} />
+        <input
+          value={timKiem}
+          placeholder={`Tìm ${c.t.toLowerCase()}...`}
+          aria-label={`Tìm ${c.t.toLowerCase()}`}
+          onChange={e => setTimKiem(e.target.value)}
+        />
+      </div>
+
+      <div className="loc-cot-ds">
+        {dsHien.length > 0 && (
+          <div
+            className={`loc-cot-muc${tatCaDaChon || motPhanDaChon ? ' chon' : ''}`}
+            onClick={toggleTatCa}
+            role="checkbox"
+            aria-checked={tatCaDaChon ? true : motPhanDaChon ? 'mixed' : false}
+          >
+            <div className={`loc-cot-chk${tatCaDaChon ? ' chon' : motPhanDaChon ? ' nua' : ''}`}>
+              {tatCaDaChon && <IconFigmaCheck />}
+              {motPhanDaChon && (
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                  <path d="M2 5H8" />
+                </svg>
+              )}
+            </div>
+            <span className={`loc-cot-txt${tatCaDaChon || motPhanDaChon ? ' chon' : ''}`} style={{ fontWeight: 600 }}>
+              (Chọn tất cả)
+            </span>
+          </div>
+        )}
+
+        {/* Vẽ tối đa 300 giá trị, cột nhiều giá trị (số phiếu POS) gõ Tìm kiếm để thu hẹp (T466) */}
+        {dsHien.slice(0, 300).map(x => {
+          const chon = curSelected.includes(x)
+          return (
+            <div
+              key={x}
+              className={`loc-cot-muc${chon ? ' chon' : ''}`}
+              onClick={() => toggleMot(x)}
+              role="checkbox"
+              aria-checked={chon}
+            >
+              <div className={`loc-cot-chk${chon ? ' chon' : ''}`}>
+                {chon && <IconFigmaCheck />}
+              </div>
+              <span className={`loc-cot-txt${chon ? ' chon' : ''}`}>
+                {x === '' ? '(Trống)' : x}
+              </span>
+            </div>
+          )
+        })}
+
+        {dsHien.length > 300 && (
+          <div className="loc-cot-nhac-gioi-han">
+            Còn {dsHien.length - 300} giá trị, gõ Tìm kiếm để thu hẹp
+          </div>
+        )}
+
+        {dsHien.length === 0 && (
+          <div style={{ padding: '12px 8px', color: 'var(--muted)', fontSize: '12px', textAlign: 'center' }}>
+            Không có mục khớp
+          </div>
+        )}
+      </div>
+
+      <div className="loc-cot-day">
+        <button type="button" className="loc-cot-btn-xoa" onClick={handleXoaLoc}>
+          Xoá lọc
+        </button>
+        <button type="button" className="loc-cot-btn-ap-dung" onClick={handleApDung}>
+          Áp dụng ({soLuong})
+        </button>
+      </div>
     </div>
   )
 }
@@ -348,8 +474,9 @@ function KhungLoc({ c, kieu, g, loc, tatCaChon, onDong }: {
   tatCaChon: string[]
   onDong: () => void
 }) {
-  const [moText, setMoText] = useState(Boolean(g.vText || g.opText))
-  const [timKiem, setTimKiem] = useState('')
+  if (kieu === 'chon') {
+    return <KhungLocChon c={c} g={g} loc={loc} tatCaChon={tatCaChon} onDong={onDong} />
+  }
 
   return (
     <div className="loc-pop-body">
@@ -441,120 +568,6 @@ function KhungLoc({ c, kieu, g, loc, tatCaChon, onDong }: {
 
       {kieu === 'ngay' && (
         <KhungLocNgay c={c} g={g} loc={loc} onDong={onDong} />
-      )}
-
-      {kieu === 'chon' && (
-        <div className="loc-pop-form loc-pop-chon">
-          {/* Bộ lọc văn bản thu gọn được */}
-          <div className="loc-pop-nhom-text">
-            <button
-              type="button"
-              className="loc-pop-expand-btn"
-              onClick={() => setMoText(o => !o)}
-              aria-expanded={moText}
-            >
-              <Icon n={moText ? 'chevd' : 'chevr'} className="ic sm" />
-              <span>Bộ lọc văn bản</span>
-            </button>
-            {moText && (
-              <div className="loc-pop-text-box">
-                <Select
-                  className="loc-pop-sel"
-                  value={g.opText || 'chua'}
-                  onChange={e => loc.dat(c.k, { ...g, opText: e.target.value })}
-                  aria-label="Điều kiện văn bản"
-                >
-                  {PHEP_CHU.map(([op, nhan]) => (
-                    <option key={op} value={op}>{nhan}</option>
-                  ))}
-                </Select>
-                {g.opText !== 'trong' && g.opText !== 'khongtrong' && (
-                  <input
-                    className="loc-pop-inp"
-                    value={g.vText || ''}
-                    placeholder="Giá trị lọc..."
-                    aria-label="Giá trị lọc văn bản"
-                    onChange={e => loc.dat(c.k, { ...g, vText: e.target.value })}
-                  />
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* Ô Tìm kiếm danh sách tick */}
-          <input
-            className="loc-pop-inp loc-pop-tim"
-            value={timKiem}
-            placeholder="Tìm kiếm..."
-            aria-label="Tìm kiếm giá trị"
-            onChange={e => setTimKiem(e.target.value)}
-          />
-
-          {/* Danh sách tick chọn */}
-          <div className="loc-pop-ds-tick">
-            {(() => {
-              const dsHien = tatCaChon.filter(x => fold(x).includes(fold(timKiem.trim())))
-              const curSelected = g.ds ?? tatCaChon
-              const tatCaDaChon = dsHien.length > 0 && dsHien.every(x => curSelected.includes(x))
-              const toggleTatCa = () => {
-                if (tatCaDaChon) {
-                  const moi = curSelected.filter(x => !dsHien.includes(x))
-                  loc.dat(c.k, { ...g, ds: moi })
-                } else {
-                  const moi = [...new Set([...curSelected, ...dsHien])]
-                  loc.dat(c.k, { ...g, ds: moi })
-                }
-              }
-              const toggleMot = (x: string) => {
-                const moi = curSelected.includes(x)
-                  ? curSelected.filter(y => y !== x)
-                  : [...curSelected, x]
-                loc.dat(c.k, { ...g, ds: moi })
-              }
-              return (
-                <>
-                  <label className="loc-pop-item">
-                    <input
-                      type="checkbox"
-                      checked={tatCaDaChon}
-                      onChange={toggleTatCa}
-                    />
-                    <b>(Chọn Tất Cả)</b>
-                  </label>
-                  {/* Vẽ tối đa 300 giá trị, cột nhiều giá trị (số phiếu POS) gõ Tìm kiếm để thu hẹp (T466) */}
-                  {dsHien.slice(0, 300).map(x => (
-                    <label key={x} className="loc-pop-item">
-                      <input
-                        type="checkbox"
-                        checked={curSelected.includes(x)}
-                        onChange={() => toggleMot(x)}
-                      />
-                      <span>{x === '' ? '(Trống)' : x}</span>
-                    </label>
-                  ))}
-                  {dsHien.length > 300 && <div className="loc-pop-trong">Còn {dsHien.length - 300} giá trị, gõ Tìm kiếm để thu hẹp</div>}
-                  {dsHien.length === 0 && (
-                    <div className="loc-pop-trong">Không có mục khớp</div>
-                  )}
-                </>
-              )
-            })()}
-          </div>
-
-          <div className="loc-pop-chan">
-            <button
-              type="button"
-              className="loc-pop-reset"
-              onClick={() => {
-                loc.dat(c.k, { op: '', v: '', ds: undefined, opText: 'chua', vText: '' })
-                setTimKiem('')
-                onDong()
-              }}
-            >
-              Thiết lập lại
-            </button>
-          </div>
-        </div>
       )}
     </div>
   )

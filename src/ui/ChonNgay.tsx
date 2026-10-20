@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { HOM_NAY } from '../data/mock'
 import { Popover } from './Dropdown'
 import { Icon } from './Icon'
+import { IconFigmaCalendar } from './IconFigma'
 import { dmy } from './format'
 import { useLaMobile } from './mobile/useLaMobile'
 
@@ -352,7 +353,7 @@ function MLichSheetDon({ value, onChange, onDong }: MLichSheetDonProps) {
 }
 
 /** align 'end': mép phải khung lịch thẳng mép phải ô ngày, dùng khi ô nằm sát bên phải màn (T41) */
-export function ChonKhoangNgay({ value, onChange, align = 'start' }: { value: KhoangNgay; onChange: (k: KhoangNgay) => void; align?: 'start' | 'end' }) {
+export function ChonKhoangNgay({ value, onChange, align = 'start', kieu = 'nut' }: { value: KhoangNgay; onChange: (k: KhoangNgay) => void; align?: 'start' | 'end'; kieu?: 'nut' | 'chip' }) {
   const laMobile = useLaMobile()
   const [open, setOpen] = useState(false)
   const btnRef = useRef<HTMLButtonElement>(null)
@@ -608,15 +609,29 @@ export function ChonKhoangNgay({ value, onChange, align = 'start' }: { value: Kh
 
   return (
     <>
-      <button
-        ref={btnRef}
-        type="button"
-        className={`kn-nut${open ? ' open' : ''}`}
-        onClick={() => setOpen(o => !o)}
-      >
-        <span className="kn-nut-txt">{dmy(value.tu)} <span className="kn-nut-arr">→</span> {dmy(value.den)}</span>
-        <Icon n="calendar" className="ic sm kn-nut-ic" />
-      </button>
+      {kieu === 'chip' ? (
+        <button
+          ref={btnRef}
+          type="button"
+          className={`ds-chip-ky-figma${open ? ' open' : ''}`}
+          onClick={() => setOpen(o => !o)}
+          title="Chọn khoảng thời gian"
+          aria-label="Chọn khoảng thời gian"
+        >
+          <IconFigmaCalendar />
+          <span>{dmy(value.tu)} – {dmy(value.den)}</span>
+        </button>
+      ) : (
+        <button
+          ref={btnRef}
+          type="button"
+          className={`kn-nut${open ? ' open' : ''}`}
+          onClick={() => setOpen(o => !o)}
+        >
+          <span className="kn-nut-txt">{dmy(value.tu)} <span className="kn-nut-arr">→</span> {dmy(value.den)}</span>
+          <Icon n="calendar" className="ic sm kn-nut-ic" />
+        </button>
+      )}
 
       <Popover
         anchor={btnRef}

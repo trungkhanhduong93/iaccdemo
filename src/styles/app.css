@@ -32780,3 +32780,487 @@ a.tx-item:hover {
   background: var(--bluet);
   color: var(--blue);
 }
+
+
+
+/* ── Màn danh sách chứng từ theo Figma Thu chi (T496) ── */
+.voucher-split {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  gap: 8px;
+}
+.voucher-split .voucher-top {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+/* Thanh công cụ theo anh/toolbar.png */
+.ds-toolbar-figma {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 62px;
+  box-sizing: border-box;
+  flex-wrap: wrap;
+}
+
+/* Nút Bộ lọc: chỉ còn icon phễu 16, mép trái thanh, huy hiệu số đếm, chevD 14 */
+.ds-btn-pheu-figma {
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ink);
+  cursor: pointer;
+  flex: none;
+  transition: border-color .15s ease;
+}
+.ds-btn-pheu-figma:hover,
+.ds-btn-pheu-figma.on {
+  border-color: var(--blue);
+}
+.ds-btn-pheu-figma .ds-badge-so {
+  background: var(--blue);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  height: 18px;
+  min-width: 18px;
+  border-radius: 9px;
+  padding: 0 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+/* Ô tìm: rộng 204, viền --line, icon search 16, chữ gợi ý 13 --faint */
+.ds-tim-figma {
+  width: 204px;
+  height: 36px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  box-sizing: border-box;
+  flex: none;
+  transition: border-color .15s ease;
+}
+.ds-tim-figma:focus-within {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 2px rgba(5, 96, 166, .08);
+}
+.ds-tim-figma input {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 13px;
+  color: var(--ink);
+  width: 100%;
+  min-width: 0;
+}
+.ds-tim-figma input::placeholder {
+  color: var(--faint);
+}
+
+/* Chip kỳ: nền --bg, cao 30 bo 16, icon calendar 14, chữ 12.5 semibold --ink */
+.ds-chip-ky-figma {
+  height: 30px;
+  border-radius: 16px;
+  background: var(--bg);
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+  flex: none;
+  transition: background .15s ease;
+}
+.ds-chip-ky-figma:hover,
+.ds-chip-ky-figma.open {
+  background: var(--tint);
+  color: var(--blue);
+}
+
+/* Chip điều kiện lọc: nền --bluet, cao 30 bo 16, nhãn 12.5 --muted + giá trị 12.5 semibold --blue + nút x 12 */
+.ds-chip-loc-figma {
+  height: 30px;
+  border-radius: 16px;
+  background: var(--bluet, #e6eff7);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 10px;
+  font-size: 12.5px;
+  flex: none;
+}
+.ds-chip-loc-nhan {
+  color: var(--muted);
+  font-weight: 400;
+}
+.ds-chip-loc-tri {
+  color: var(--blue);
+  font-weight: 600;
+}
+.ds-chip-loc-x {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin-left: 2px;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  padding: 0;
+  color: var(--blue);
+  border-radius: 50%;
+}
+.ds-chip-loc-x:hover {
+  background: rgba(5, 96, 166, .12);
+}
+
+/* Chữ "Xoá lọc" 12.5 semibold --muted */
+.ds-link-xoa-loc {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+  flex: none;
+  transition: color .15s ease;
+}
+.ds-link-xoa-loc:hover {
+  color: var(--ink);
+}
+
+/* Bên phải: 3 nút vuông 36 viền --line -> vạch dọc 1x24 -> nút chính */
+.ds-toolbar-phai {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+}
+.ds-toolbar-phai .nut-vuong,
+.ds-toolbar-phai .ds-nut-vuong-36 {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  color: var(--ink);
+  transition: border-color .15s ease;
+  padding: 0;
+}
+.ds-toolbar-phai .nut-vuong:hover,
+.ds-toolbar-phai .ds-nut-vuong-36:hover,
+.ds-toolbar-phai .nut-vuong.open,
+.ds-toolbar-phai .ds-nut-vuong-36.on {
+  border-color: var(--blue);
+}
+.ds-toolbar-phai .nut-vuong:disabled,
+.ds-toolbar-phai .ds-nut-vuong-36:disabled {
+  opacity: .5;
+  cursor: default;
+  border-color: var(--line);
+}
+.ds-vach-doc {
+  width: 1px;
+  height: 24px;
+  background: var(--line);
+  flex: none;
+  margin: 0 2px;
+}
+
+/* Nút chính của màn: viền/chữ --green (Thu), --red (Chi), --blue (khác) */
+.ds-btn-chinh {
+  height: 36px;
+  border-radius: 8px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  background: #fff;
+  text-decoration: none;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: background .15s ease;
+}
+.ds-btn-chinh.ds-btn-thu {
+  border: 1px solid var(--green);
+  color: var(--green);
+}
+.ds-btn-chinh.ds-btn-thu:hover {
+  background: var(--green-t);
+}
+.ds-btn-chinh.ds-btn-chi {
+  border: 1px solid var(--red);
+  color: var(--red);
+}
+.ds-btn-chinh.ds-btn-chi:hover {
+  background: var(--red-t);
+}
+.ds-btn-chinh.ds-btn-outline {
+  border: 1px solid var(--blue);
+  color: var(--blue);
+}
+.ds-btn-chinh.ds-btn-outline:hover {
+  background: var(--tint);
+}
+.ds-toolbar-phai .ds-split-them .btn.pri {
+  background: #fff;
+  color: var(--blue);
+  border: 1px solid var(--blue);
+  height: 36px;
+  border-radius: 8px;
+}
+.ds-toolbar-phai .ds-split-them .btn.pri:hover {
+  background: var(--tint);
+}
+
+/* Hàng trạng thái (Đã ghi sổ, Chưa ghi sổ...) dưới thanh công cụ */
+.ds-hang-trang-thai {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px 6px;
+  background: #fff;
+  border-bottom: 1px solid var(--line-2);
+  flex: none;
+}
+
+/* Popover lọc cột theo anh/popover-loc-cot.png */
+.loc-cot-figma-pop {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  box-shadow: 0 8px 24px rgba(15, 23, 41, .12);
+  width: 280px;
+  box-sizing: border-box;
+}
+.loc-cot-chon-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.loc-cot-tim-box {
+  height: 32px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-sizing: border-box;
+  background: #fff;
+}
+.loc-cot-tim-box:focus-within {
+  border-color: var(--blue);
+}
+.loc-cot-tim-box input {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 12.5px;
+  color: var(--ink);
+  width: 100%;
+}
+.loc-cot-tim-box input::placeholder {
+  color: var(--faint);
+}
+.loc-cot-ds {
+  max-height: 224px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 2px 0;
+}
+.loc-cot-muc {
+  height: 32px;
+  padding: 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  user-select: none;
+  transition: background .12s ease;
+}
+.loc-cot-muc:hover {
+  background: var(--soft);
+}
+.loc-cot-chk {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  border: 1.3px solid var(--faint);
+  background: #fff;
+  box-sizing: border-box;
+  transition: background .12s, border-color .12s;
+}
+.loc-cot-chk.chon,
+.loc-cot-chk.nua {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: #fff;
+}
+.loc-cot-txt {
+  font-size: 12.5px;
+  color: var(--body);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.loc-cot-txt.chon,
+.loc-cot-txt.nua {
+  color: var(--ink);
+  font-weight: 500;
+}
+.loc-cot-nhac-gioi-han {
+  font-size: 12px;
+  color: var(--muted);
+  padding: 6px 8px;
+  font-style: italic;
+  text-align: center;
+}
+.loc-cot-day {
+  border-top: 1px solid var(--line);
+  padding-top: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+.loc-cot-btn-xoa {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+  transition: color .15s ease;
+}
+.loc-cot-btn-xoa:hover {
+  color: var(--ink);
+}
+.loc-cot-btn-ap-dung {
+  height: 30px;
+  border-radius: 8px;
+  background: var(--blue);
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 600;
+  border: none;
+  padding: 0 14px;
+  cursor: pointer;
+  transition: opacity .15s ease;
+}
+.loc-cot-btn-ap-dung:hover {
+  opacity: .9;
+}
+
+/* Menu thao tác hàng loạt theo anh/menu-hang-loat.png */
+.menu-hang-loat-pop {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 8px 6px 6px;
+  box-shadow: 0 10px 28px rgba(15, 23, 41, .14);
+  width: 260px;
+  box-sizing: border-box;
+}
+.hl-tieu-de {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  padding: 4px 10px 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.hl-muc {
+  width: 100%;
+  height: 36px;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  transition: background .12s ease;
+  box-sizing: border-box;
+}
+.hl-muc:hover {
+  background: var(--soft);
+}
+.hl-o-ic {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: var(--bg);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+.hl-txt {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.hl-muc.hl-xoa .hl-o-ic {
+  background: var(--redt, #fcebea);
+}
+.hl-muc.hl-xoa .hl-txt {
+  color: var(--red);
+}
+.hl-ke-ngang {
+  height: 1px;
+  background: var(--line);
+  margin: 4px 6px;
+}
