@@ -36636,3 +36636,12 @@ a.tx-item:hover {
 .fsf .tbl tr.sum td:last-child {
   border-right: 0;
 }
+/* ── Ô nhập lúc xem nền trắng, thẻ chi phí phân bổ chân trắng (T518) ── */
+.fsf-xem .inp[readonly],
+.fsf-xem .sel.inp:disabled,
+.fsf-xem .pn-fs:disabled .inp,
+.fsf-xem .pn-fs:disabled .sel.inp {
+  background: #fff;
+  color: var(--ink);
+  border-color: var(--line);
+}

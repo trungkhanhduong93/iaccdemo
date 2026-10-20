@@ -660,6 +660,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
       icon={mod.icon}
       iconNet
       iconNode={iconDau}
+      xem={!dangSua}
       footClass="fsf-f-xem"   // thêm mới, sửa cũng chân trắng như lúc xem (T513)
       tinh={Boolean((loc.state as { chuyenPhieu?: boolean } | null)?.chuyenPhieu)}
       onClose={dongMoi}

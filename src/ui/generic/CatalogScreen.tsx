@@ -1180,6 +1180,9 @@ export function CatalogPanel({
       {cauHinh?.toanMan && (dangSua || cnChon) && (
         <FormToanMan
           icon={cauHinh.toanMan.icon}
+          iconNet
+          xem={xem}
+          footClass="fsf-f-xem"
           onClose={onDong}
           title={tenNganHien.charAt(0).toUpperCase() + tenNganHien.slice(1)}
           // Tuỳ chỉnh giao diện: nút vuông nhỏ ở góc trên phải như form chứng từ (T297); chỉ form có lưới
