@@ -4,6 +4,8 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 20/10/2026
 
+- T339: Trang chủ gói Free trên máy tính, Tiến độ kiểm kê theo cửa hàng xếp cửa hàng chưa kiểm, lệch nhiều lên đầu. Có hơn 4 cửa hàng thì chỉ hiện 4, thêm dòng Đã kiểm x/y cửa hàng và nút Xem tất cả mở hộp đủ danh sách.
+
 - T502: Gói Free, Báo cáo kiểm kê trên máy tính và điện thoại bỏ các cột Tồn đầu, Nhập trong kỳ, Xuất trong kỳ, Tồn cuối hệ thống, Tồn cuối thực tế, chỉ còn số lượng Thừa, Thiếu.
 
 - T501: Gói Free, Danh mục đối tượng lại có loại Khách hàng: danh sách hiện các khách hàng có sẵn, thêm mới ở danh mục hoặc ở nút thêm đối tượng trong chứng từ chọn được loại Khách hàng.

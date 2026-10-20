@@ -157,6 +157,46 @@ function TomTatThuChi13({ ds }: { ds: ReturnType<typeof thuChi13Thang> }) {
   )
 }
 
+/** Trang chủ hiện tối đa 4 cửa hàng ở Tiến độ kiểm kê, còn lại xem trong hộp (T339) */
+const KK_TOI_DA = 4
+type KkCn = ReturnType<typeof soLieuKiemKe>['theoCn'][number]
+
+/** Một dòng tiến độ kiểm kê của cửa hàng; du = thêm cột số mặt hàng đã kiểm, số lệch (hộp xem tất cả) */
+function DongKkCn({ x, du }: { x: KkCn; du?: boolean }) {
+  return (
+    <div className="bbt-kho2-cn">
+      <span className="bbt-kho2-ten">{x.cn.replace(/^Phố Mây /, '')}</span>
+      <span className="bbt-kho2-thanh"><i style={{ width: `${x.tong ? Math.min(100, (x.soKiem / x.tong) * 100) : 0}%` }} /></span>
+      {du && <span className="bbt-kho2-so">{x.soKiem}/{x.tong}</span>}
+      {du && <span className={x.lech ? 'bbt-kho-thieu' : 'bbt-kho2-so'}>{x.lech || '—'}</span>}
+      {x.daKiem
+        ? <span className="bbt-kho2-ngay" title={`Lần kiểm kê cuối ngày ${x.ngayCuoi}${x.lech ? `, lệch ${x.lech} mặt hàng` : ', khớp sổ sách'}`}>{x.ngayCuoi.slice(0, 5)}</span>
+        : <span className="bbt-kho-thieu">chưa kiểm</span>}
+    </div>
+  )
+}
+
+/** Hộp đủ danh sách tiến độ kiểm kê theo cửa hàng, mở từ dòng Xem tất cả (T339) */
+function HopTienDoKk({ ds, onDong }: { ds: KkCn[]; onDong: () => void }) {
+  useDongEsc(onDong)
+  return createPortal(
+    <div className="overlay ds-hop-nen" onMouseDown={e => { if (e.target === e.currentTarget) onDong() }}>
+      <div className="ds-hop hop-kk-cn" role="dialog" aria-modal="true" aria-label="Tiến độ kiểm kê theo cửa hàng">
+        <div className="ds-hop-dau">
+          <Icon n="khohang" className="ic sm" /><b>Tiến độ kiểm kê theo cửa hàng</b>
+          <span className="grow" />
+          <button type="button" className="pheu-dong" title="Đóng" aria-label="Đóng" onClick={onDong}><Icon n="x" className="ic sm" /></button>
+        </div>
+        <div className="bbt-kho2-tien-do hop-kk-cn-than">
+          <div className="bbt-kho2-cn bbt-kho2-dau"><span>Cửa hàng</span><span>Tiến độ</span><span>Đã kiểm</span><span>Mặt hàng lệch</span><span>Kiểm kê lần cuối</span></div>
+          {ds.map(x => <DongKkCn key={x.cn} x={x} du />)}
+        </div>
+      </div>
+    </div>,
+    document.body,
+  )
+}
+
 /** Hộp biểu đồ thu chi 13 tháng, mở từ nút ở khối Quỹ tiền, bố cục như hộp lãi lỗ 13 tháng (T303) */
 export function HopThuChi13({ ds, onDong }: { ds: ReturnType<typeof thuChi13Thang>; onDong: () => void }) {
   useDongEsc(onDong)
@@ -865,6 +905,10 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
   const mua = useMemo(() => soLieuMua(thangXem, tenCn, dHien.dtThuan), [thangXem, tenCn, dHien.dtThuan])
   const no = useMemo(() => soLieuCongNo(thangXem, motCnKho), [thangXem, motCnKho])
   const kk = useMemo(() => soLieuKiemKe(thangXem, tenCn), [thangXem, tenCn])
+  // T339: cửa hàng cần chú ý lên đầu: chưa kiểm, lệch nhiều, tiến độ thấp
+  const kkCn = useMemo(() => [...kk.theoCn].sort((a, b) =>
+    Number(a.daKiem) - Number(b.daKiem) || b.lech - a.lech || a.soKiem / (a.tong || 1) - b.soKiem / (b.tong || 1)), [kk])
+  const [moHopKk, setMoHopKk] = useState(false)
 
 
   return (
@@ -1172,16 +1216,16 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
           <div className="bbt-kho-nhom">Tiến độ kiểm kê theo cửa hàng</div>
           <div className="bbt-kho2-tien-do">
             <div className="bbt-kho2-cn bbt-kho2-dau"><span /><span /><span>Kiểm kê lần cuối</span></div>
-            {kk.theoCn.map(x => (
-              <div className="bbt-kho2-cn" key={x.cn}>
-                <span className="bbt-kho2-ten">{x.cn.replace(/^Phố Mây /, '')}</span>
-                <span className="bbt-kho2-thanh"><i style={{ width: `${x.tong ? Math.min(100, (x.soKiem / x.tong) * 100) : 0}%` }} /></span>
-                {x.daKiem
-                  ? <span className="bbt-kho2-ngay" title={`Lần kiểm kê cuối ngày ${x.ngayCuoi}${x.lech ? `, lệch ${x.lech} mặt hàng` : ', khớp sổ sách'}`}>{x.ngayCuoi.slice(0, 5)}</span>
-                  : <span className="bbt-kho-thieu">chưa kiểm</span>}
+            {kkCn.slice(0, KK_TOI_DA).map(x => <DongKkCn key={x.cn} x={x} />)}
+            {kkCn.length > KK_TOI_DA && (
+              <div className="bbt-kho2-cn bbt-kho2-tom">
+                <span>Đã kiểm {kkCn.filter(x => x.daKiem).length}/{kkCn.length} cửa hàng</span>
+                <span />
+                <button type="button" className="bbt-kho-mo" onClick={() => setMoHopKk(true)}>Xem tất cả ›</button>
               </div>
-            ))}
+            )}
           </div>
+          {moHopKk && <HopTienDoKk ds={kkCn} onDong={() => setMoHopKk(false)} />}
           {/* T331: khoảng trống co giãn đẩy vùng xếp hạng xuống đáy, hai khối thẳng hàng */}
           <div className="bbt-kho2-gian" />
           <div className="bbt-kho2-ds">

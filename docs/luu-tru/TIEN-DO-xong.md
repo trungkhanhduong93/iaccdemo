@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T339 | Trang chủ Free máy tính, Tiến độ kiểm kê theo cửa hàng: hiện tối đa 4 cửa hàng cần chú ý (chưa kiểm, lệch nhiều trước), dòng Đã kiểm x/y cửa hàng, dòng Xem tất cả mở hộp danh sách đủ | Trum | 20/10/2026 | 2026-10-20-trum-tien-do-kiem-ke-nhieu-cua-hang.md |
 | T502 | Gói Free, Báo cáo kiểm kê (5.2.15) web và điện thoại bỏ cột Tồn đầu, Nhập trong kỳ, Xuất trong kỳ, Tồn cuối hệ thống, Tồn cuối thực tế; còn Thừa, Thiếu | PhuongXT | 20/10/2026 | [2026-10-20-phuongxt-kiem-ke-free-bo-cot](../nhat-ky/2026-10-20-phuongxt-kiem-ke-free-bo-cot.md) |
 | T501 | Gói Free, Danh mục đối tượng mở lại loại Khách hàng (bỏ T470): tạo được ở danh mục và ở nút thêm mới trong chứng từ | PhuongXT | 20/10/2026 | [2026-10-20-phuongxt-mo-lai-khach-hang-free](../nhat-ky/2026-10-20-phuongxt-mo-lai-khach-hang-free.md) |
 | T494 | Mọi báo cáo (màn xem bảng dữ liệu trên web): dòng tổng cộng cuối bảng ghim đáy khung, dòng tồn, số dư đầu kỳ ghim dưới tiêu đề cột, không mất khi cuộn | PhuongXT | 20/10/2026 | [2026-10-20-phuongxt-ghim-dong-tong-bao-cao](../nhat-ky/2026-10-20-phuongxt-ghim-dong-tong-bao-cao.md) |
