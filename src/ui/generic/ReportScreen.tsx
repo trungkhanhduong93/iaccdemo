@@ -1102,7 +1102,8 @@ export function renderReport(cfg: ReportCfg, seed: string, thang: number, cd: Ch
     if (cfg.cols && cfg.rows) {
       // Báo cáo bán hàng (T450): GTGT theo % doanh thu bỏ cột thuế GTGT, hiện Giảm thuế GTGT; khấu trừ thì ngược lại
       const tyLe = Boolean(cfg.theoGtgt && session && gtgtTyLe(session))
-      const cols = cfg.theoGtgt ? cfg.cols.filter(c => tyLe ? c.k !== 'thue' && c.k !== 'vat' : c.k !== 'giamThue') : cfg.cols
+      const cols = (cfg.theoGtgt ? cfg.cols.filter(c => tyLe ? c.k !== 'thue' && c.k !== 'vat' : c.k !== 'giamThue') : cfg.cols)
+        .filter(c => !c.goi || !session || c.goi.includes(session.goi))   // cột theo gói (T502)
       return <RptTable cols={cols} rows={ganLocNguon(cfg.rows(thang, CUA_HANG.find(c => c.id === cn)?.ten, loc, tyLe), loc)} />
     }
     const rows = chungTu({ prefix: 'HD', doiTuong: 'ncc', dienGiai: ['Mua hàng'], tien: [2e6, 40e6], dong: 'nvl' }, seed).filter(x => x.thang === thang || thang === 8)
