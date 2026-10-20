@@ -35001,10 +35001,15 @@ a.tx-item:hover {
   justify-content: center;
 }
 
-/* ── Lưới chi tiết form phiếu nằm gọn trong khung, thẳng hàng tab Chi tiết (T505) ── */
+/* ── Lưới chi tiết phiếu nằm gọn trong khung, thẳng lề tab Chi tiết (T505), viền đủ 4 cạnh, bo góc (T513) ── */
+/* Viền đặt ở vùng cuộn .ct-than vì bảng bên trong đã bỏ viền; tiêu đề cột dính vẫn nằm trong khung */
 .ct-than-card > .ct-than {
-  padding: 0 12px;
+  margin: 0 12px 12px;
+  border: 1px solid var(--luoi-vien);
+  border-radius: 8px;
 }
+/* Chân phiếu thêm mới, sửa nền trắng như lúc xem (T513): nút .btn còn lại (Hiện cột tài khoản) cần viền mới thấy */
+.fsf-f.fsf-f-xem .btn { border-color: var(--line); }
 
 
 /* ── dt-thu-chi theo Figma (T498) ── */

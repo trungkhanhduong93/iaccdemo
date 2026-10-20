@@ -544,8 +544,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
   // Đang xem tất cả cửa hàng thì phải chọn một cửa hàng trước khi lập chứng từ mới
   if (canChonCn) {
     return (
-      <FormToanMan icon={mod.icon} onClose={dongForm} title={tenPhieu}
-        foot={<button type="button" className="btn" onClick={dongForm}>Huỷ</button>}>
+      <FormToanMan icon={mod.icon} onClose={dongForm} title={tenPhieu} footClass="fsf-f-xem"
+        foot={<button type="button" className="xp-btn-outline" onClick={dongForm}>Huỷ</button>}>
         <section className="card chon-cn">
           <b>Chọn cửa hàng lập chứng từ</b>
           <p className="muted">Bạn đang xem tất cả cửa hàng. Chứng từ mới lập cho một cửa hàng và không đổi được sau khi lập.</p>
@@ -659,7 +659,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
     <FormToanMan
       icon={mod.icon}
       iconNode={iconDau}
-      footClass={dangSua ? undefined : 'fsf-f-xem'}
+      footClass="fsf-f-xem"   // thêm mới, sửa cũng chân trắng như lúc xem (T513)
       tinh={Boolean((loc.state as { chuyenPhieu?: boolean } | null)?.chuyenPhieu)}
       onClose={dongMoi}
       day={laKk || dcn === 'ck' || (laDc && s.goi === 'F') || !hienChan('tongTien') ? undefined
@@ -731,7 +731,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
           <>
             <button
               type="button"
-              className="btn"
+              className="xp-btn-outline"
               onClick={() => { if (moi) setHoiDong(true); else { setDangSua(false); if (khoaLyDtFree) setDsDong(dongGoc); } }}
             >
               Huỷ
@@ -754,10 +754,10 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
               <HopCotPhieu dsDau={dsDau} dsChan={dsChan} ds={laKk ? COT_KK : laSx ? cotSx(sx!) : laDcn ? cotDcn(dcn!) : cotTuyChon(cfg, { coNhomHhdv: nhom === 'mua' && nhanKemHd && (s.goi === 'PL' || s.goi === 'PR'), coKho: Boolean(bo.kho) && !khoDau && !laDc, coLo: nhom === 'mua' && s.goi === 'PR', coCk: Boolean(bo.ck), coKm: kieu !== 'khong', coLy: Boolean(oLy), coNhapKho: truocThue, coGiamThue: giamGtgt }).filter(([k]) => !anDc.includes(k))}
                 an={anCot} onDoi={doiAnCot} onDong={() => setHopCot(false)} />
             )}
-            <button type="button" className="btn" onClick={() => luu(false)}>
+            <button type="button" className="xp-btn-outline" onClick={() => luu(false)}>
               Lưu (Ctrl+S)
             </button>
-            <button type="button" className="btn pri" onClick={() => luu(true)}>
+            <button type="button" className="xp-btn-sua" onClick={() => luu(true)}>
               Lưu và thêm (Ctrl+Shift+S)
             </button>
           </>

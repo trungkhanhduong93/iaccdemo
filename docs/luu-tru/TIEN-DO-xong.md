@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T513 | Web, form phiếu: lưới chi tiết có khung viền đủ 4 cạnh, bo góc; chân phiếu thêm mới, sửa, màn chọn cửa hàng nền trắng như lúc xem | Trum | 20/10/2026 | [2026-10-20-trum-khung-luoi-chan-phieu](../nhat-ky/2026-10-20-trum-khung-luoi-chan-phieu.md) |
 | T505 | Điện thoại: màn Nghiệp vụ, màn Khác có đầu trang nền xanh như danh sách Báo cáo (màn Khác có ô tìm danh mục, thiết lập); bảng Kết quả kinh doanh trang chủ thẳng cột. Web: ô chọn năm trang chủ rộng bằng menu, cột # danh sách chứng từ gọn, ô lọc ngang chỉ mở bảng chọn khi bấm phễu, nút Xem sổ ở khối Mua hàng và Hao hụt kiểm kê, 2 nút Quỹ tiền căn giữa, lưới chi tiết phiếu thẳng lề tab | Trum | 20/10/2026 | [2026-10-20-trum-dau-trang-xanh-va-sua-nho](../nhat-ky/2026-10-20-trum-dau-trang-xanh-va-sua-nho.md) |
 | T509 | Quy trình kho gói Free bỏ bước Theo dõi nhập xuất (Tổng hợp, Chi tiết nhập, xuất kho) | PhuongXT | 20/10/2026 | [2026-10-20-phuongxt-an-bao-cao-kho-loc-bao-cao](../nhat-ky/2026-10-20-phuongxt-an-bao-cao-kho-loc-bao-cao.md) |
 | T508 | Bộ lọc màn xem báo cáo bỏ ô Tìm trong báo cáo, bỏ lọc Đơn vị tính; Ẩn dòng không phát sinh mặc định bật | PhuongXT | 20/10/2026 | [2026-10-20-phuongxt-an-bao-cao-kho-loc-bao-cao](../nhat-ky/2026-10-20-phuongxt-an-bao-cao-kho-loc-bao-cao.md) |
