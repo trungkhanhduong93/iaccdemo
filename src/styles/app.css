@@ -32649,13 +32649,45 @@ a.tx-item:hover {
   color: var(--blue, #0560a6) !important;
 }
 
-/* Đảm bảo 2 thẻ Mua hàng & Hao hụt đáy ngang hàng */
-.bbt-e-luoi-2:last-of-type {
+/* Đảm bảo 2 thẻ Mua hàng & Hao hụt đáy ngang hàng, hàng nút ghim đáy (T498) */
+.bbt-e-luoi-2 {
   align-items: stretch;
 }
 
+.bbt-kho2 > .bbt-kho-chan,
 .bbt-kho2 .bbt-kho-chan {
+  margin-top: auto !important;
   min-height: 38px;
+}
+
+/* Nút tiện ích thẻ Mua hàng & Hao hụt: nền trắng, viền --line, bo 8, cao 36, chữ & icon màu --blue semibold 13 (T498) */
+.bbt-kho2 .bbt-kho-chan .btn {
+  height: 36px !important;
+  padding: 0 14px !important;
+  border-radius: 8px !important;
+  background: #ffffff !important;
+  border: 1px solid var(--line) !important;
+  color: var(--blue, #0560a6) !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  text-decoration: none !important;
+  box-sizing: border-box !important;
+  transition: all 0.15s ease;
+}
+
+.bbt-kho2 .bbt-kho-chan .btn:hover {
+  background: #f8fafc !important;
+  border-color: var(--blue, #0560a6) !important;
+}
+
+.bbt-kho2 .bbt-kho-chan .btn .ic {
+  width: 16px !important;
+  height: 16px !important;
+  color: var(--blue, #0560a6) !important;
+  stroke: var(--blue, #0560a6) !important;
 }
 
 
