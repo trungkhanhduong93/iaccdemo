@@ -4,6 +4,8 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 20/10/2026
 
+- T494: Mọi báo cáo trên máy tính, cuộn bảng dài thì dòng tổng cộng cuối bảng (Cộng phát sinh, Tồn cuối kỳ...) luôn hiện ở đáy, dòng Tồn đầu kỳ, Số dư đầu kỳ luôn hiện ngay dưới tiêu đề cột.
+
 - T492: Phiếu mua hàng, góc phải thanh tab có ô Thuế GTGT và Chiết khấu. Chọn thuế suất thì áp cho mọi dòng, dòng thêm sau tự lấy mức đó (vẫn chọn lại được trên dòng). Chiết khấu chọn theo % (tối đa 100%) thì áp cho mọi dòng, chọn theo số tiền thì tự chia cho các dòng theo thành tiền.
 
 - T491: Sổ quỹ tiền mặt và danh sách phiếu ở màn Chi phí hoạt động (trang chủ gói Free) bấm số phiếu mở chứng từ chi tiết. Báo cáo kết quả kinh doanh gói Free bấm dòng Doanh thu mở Tổng hợp bán hàng. Màn Chi phí NVL: tên cửa hàng hiện màu liên kết, số phiếu nhập mua, phiếu xuất huỷ, điều chỉnh bấm mở chứng từ. Gói Free ẩn báo cáo Công nợ khách hàng. Bấm từ báo cáo này sang báo cáo khác (vd Xuất nhập tồn sang Thẻ kho) có nút quay lại đúng báo cáo vừa xem.

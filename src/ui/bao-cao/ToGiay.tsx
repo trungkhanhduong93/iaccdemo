@@ -327,6 +327,31 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
     const batDau = (trangBangHt - 1) * coTrangBang
     return [...dongBangDuLieu.slice(batDau, batDau + coTrangBang), ...dongTongBang]
   }, [hienPhanTrangBang, dongBang, dongBangDuLieu, dongTongBang, trangBangHt, coTrangBang])
+  // Dòng tổng cuối bảng ghim đáy khung cuộn (T494): đo cao từng dòng từ dưới lên để nhiều dòng tổng xếp chồng, không đè nhau.
+  // Dòng số dư, tồn đầu kỳ ở đầu bảng ghim ngay dưới tiêu đề cột
+  const dongGhim = useMemo(() => new Set(dongTongBang), [dongTongBang])
+  const dongGhimTren = useMemo(() => {
+    const res = new Set<Row>()
+    for (const r of dongBang) {
+      if (!r._b || r._nhom || !Object.values(r).some(v => typeof v === 'string' && /đầu kỳ/i.test(v))) break
+      res.add(r)
+    }
+    return res
+  }, [dongBang])
+  useLayoutEffect(() => {
+    const bang = banDuLieuRef.current
+    if (!bang) return
+    let duoi = 0
+    for (const tr of [...bang.querySelectorAll<HTMLElement>('tr.bc-dong-ghim')].reverse()) {
+      tr.style.setProperty('--ghim-duoi', `${duoi}px`)
+      duoi += tr.offsetHeight
+    }
+    let tren = bang.querySelector<HTMLElement>('.tbl thead')?.offsetHeight ?? 0
+    for (const tr of bang.querySelectorAll<HTMLElement>('tr.bc-dong-ghim-tren')) {
+      tr.style.setProperty('--ghim-tren', `${tren}px`)
+      tren += tr.offsetHeight
+    }
+  }, [dongBangHienThi, coChu, kho])
   // Chia trang khi xem (T157): chỉ bảng đầu, dòng tổng cuối bảng hiện ở mọi trang và là tổng mọi trang
   const dongXem = bangDau ? bangDau.rows.filter(r => !r._t).length : 0
   const chiaXem = !!xemTrang && dongXem > coTrangXem
@@ -507,7 +532,7 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
             {dieuKienLoc && <div className="bc-bang-dk-loc"><Icon n="filter" className="ic sm" />Điều kiện lọc: {dieuKienLoc}</div>}
             {/* Dòng nhóm, dòng cộng, dòng tổng in đậm như ở Tờ in (T179) */}
             <Table cols={bangDau.cols} rows={dongBangHienThi} onRow={bangDau.onRow} motDong keDoc virtual={false}
-              rowCls={r => r._t ? 'bc-dong-tong' : r._b || r._nhom ? 'bc-dong-dam' : ''} />
+              rowCls={r => r._t ? (dongGhim.has(r) ? 'bc-dong-tong bc-dong-ghim' : 'bc-dong-tong') : dongGhimTren.has(r) ? 'bc-dong-dam bc-dong-ghim-tren' : r._b || r._nhom ? 'bc-dong-dam' : ''} />
           </div>
         ) : !moXemTruoc && (
           <div className="bc-ban" ref={ban}>

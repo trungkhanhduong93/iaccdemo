@@ -31925,3 +31925,9 @@ a.tx-item:hover {
 .ct-ap-o > .ct-ap-dv { margin-left: -4px; font-weight: 400; color: var(--muted); }
 .tabs > .ct-ap-dau[hidden] { display: none; }
 .ct-ap-o > * { flex: none; }
+
+/* ── Dòng tổng cộng cuối bảng báo cáo ghim đáy khung cuộn, nhiều dòng xếp chồng theo --ghim-duoi; dòng số dư, tồn đầu kỳ ghim dưới tiêu đề cột (T494) ── */
+.bc-ban-du-lieu .tbl tr.bc-dong-ghim td { position: sticky; bottom: var(--ghim-duoi, 0px); z-index: 4; background: var(--giay-tong); box-shadow: inset 0 1px 0 var(--giay-nhat); }
+.bc-ban-du-lieu .tbl tr.bc-dong-ghim td.dinh { z-index: 6; }
+.bc-ban-du-lieu .tbl tr.bc-dong-ghim-tren td { position: sticky; top: var(--ghim-tren, 0px); z-index: 4; background: var(--giay-tong); box-shadow: inset 0 -1px 0 var(--giay-nhat); }
+.bc-ban-du-lieu .tbl tr.bc-dong-ghim-tren td.dinh { z-index: 6; }
