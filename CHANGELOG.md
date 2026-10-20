@@ -4,7 +4,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 20/10/2026
 
-- T491: Sổ quỹ tiền mặt và danh sách phiếu ở màn Chi phí hoạt động (trang chủ gói Free) bấm số phiếu mở chứng từ chi tiết. Báo cáo kết quả kinh doanh gói Free bấm dòng Doanh thu mở Tổng hợp bán hàng. Màn Chi phí NVL: tên cửa hàng hiện màu liên kết, số phiếu nhập mua, phiếu xuất huỷ, điều chỉnh bấm mở chứng từ.
+- T491: Sổ quỹ tiền mặt và danh sách phiếu ở màn Chi phí hoạt động (trang chủ gói Free) bấm số phiếu mở chứng từ chi tiết. Báo cáo kết quả kinh doanh gói Free bấm dòng Doanh thu mở Tổng hợp bán hàng. Màn Chi phí NVL: tên cửa hàng hiện màu liên kết, số phiếu nhập mua, phiếu xuất huỷ, điều chỉnh bấm mở chứng từ. Gói Free ẩn báo cáo Công nợ khách hàng. Bấm từ báo cáo này sang báo cáo khác (vd Xuất nhập tồn sang Thẻ kho) có nút quay lại đúng báo cáo vừa xem.
 
 - T483: Trang chủ gói Free, Chi phí hoạt động cộng từ phiếu chi thật (tiền mặt, ngân hàng) có lý do là chi phí; bấm từng lý do mở ngay trong màn danh sách phiếu chi tiền mặt, ngân hàng của lý do đó, tổng đúng bằng số trên dòng. Thẻ Chi phí hoạt động, lợi nhuận, lãi lỗ 13 tháng, lãi lỗ theo cửa hàng ở trang chủ đổi theo. Nút Lập phiếu chi ở màn này cho chọn chi tiền mặt hay chi ngân hàng. Thu chi có thêm phiếu chi mẫu trả thuê mặt bằng ngày 05 và lương cuối tháng cho từng cửa hàng.
 

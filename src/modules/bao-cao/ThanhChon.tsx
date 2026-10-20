@@ -1,5 +1,5 @@
 // Thanh chọn đổi nhanh báo cáo cùng phân hệ khi đang xem báo cáo trong phân hệ Báo cáo
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import type { ModuleDef, ScreenDef } from '../types'
 import { MODULES, hienMan, maKhoa, moDuoc, tenMan } from '../../app/registry'
@@ -11,11 +11,26 @@ import { kyHieuBC } from './danh-sach'
 import { baoCaoCuaPhanHe } from './cuaPhanHe'
 import { laTuTrangChu } from '../../app/tuTrangChu'
 
+// Báo cáo vừa xem ngay trước (T491): bấm từ báo cáo tổng hợp sang báo cáo chi tiết thì có nút về đúng báo cáo đó.
+// Gắn theo khoá lịch sử của trang nên mở phiếu rồi quay lại vẫn còn nút; đổi báo cáo bằng ô chọn thì không tính
+type BcTruoc = { slug: string; ten: string }
+let bcVuaXem: BcTruoc | undefined
+const BC_TRUOC = new Map<string, BcTruoc | undefined>()
+
 /** trongPhanHe: báo cáo mở ngay trong phân hệ gốc (T384): nút quay lại về tab Báo cáo của phân hệ, đổi báo cáo vẫn ở phân hệ */
 export function ThanhChonBaoCao({ sc, trongPhanHe }: { sc: ScreenDef; trongPhanHe?: ModuleDef }) {
   const { s } = useSession()
   const nav = useNavigate()
-  const tuTrangChu = laTuTrangChu(useLocation().state)   // mở từ trang chủ gói Free thì có nút về Trang chủ (T232)
+  const loc = useLocation()
+  const tuTrangChu = laTuTrangChu(loc.state)   // mở từ trang chủ gói Free thì có nút về Trang chủ (T232)
+  const doiBc = (loc.state as { doiBc?: boolean } | null)?.doiBc
+  const truoc = useMemo(() => BC_TRUOC.has(loc.key) ? BC_TRUOC.get(loc.key)
+    : bcVuaXem && bcVuaXem.slug !== sc.slug && !doiBc ? bcVuaXem : undefined, [loc.key])   // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    BC_TRUOC.set(loc.key, truoc)
+    bcVuaXem = { slug: sc.slug, ten: tenMan(sc) }
+    return () => { bcVuaXem = undefined }   // rời sang màn không phải báo cáo thì báo cáo sau không tính là bấm từ báo cáo này
+  }, [loc.key, sc.slug])   // eslint-disable-line react-hooks/exhaustive-deps
   const bcMod = MODULES.find(m => m.key === 'bao-cao')
   const cungGoc = (trongPhanHe ? baoCaoCuaPhanHe(trongPhanHe, s) : bcMod?.screens.filter(x => x.goc === sc.goc) ?? [])
     .filter(x => x.slug === sc.slug || hienMan(x, s.goi, s.cheDo, s))   // báo cáo đang xem luôn có trong ô chọn, kể cả báo cáo chỉ mở từ báo cáo khác (T200)
@@ -38,7 +53,8 @@ export function ThanhChonBaoCao({ sc, trongPhanHe }: { sc: ScreenDef; trongPhanH
       {trongPhanHe
         ? <Link className="btn sm ghost" to={`/app/${trongPhanHe.key}/bao-cao`}><Icon n="chevl" className="ic sm" />Báo cáo {trongPhanHe.ngan ?? trongPhanHe.ten}</Link>
         : <Link className="btn sm ghost" to="/app/bao-cao/tat-ca"><Icon n="chevl" className="ic sm" />Tất cả báo cáo</Link>}
-      <Select value={sc.slug} onChange={e => nav(`/app/${trongPhanHe ? trongPhanHe.key : 'bao-cao'}/${e.target.value}`)} aria-label="Đổi báo cáo">
+      {truoc && <button type="button" className="btn sm ghost bc-ve-truoc" onClick={() => nav(-1)} title={`Quay lại ${truoc.ten}`}><Icon n="chevl" className="ic sm" />{truoc.ten}</button>}
+      <Select value={sc.slug} onChange={e => nav(`/app/${trongPhanHe ? trongPhanHe.key : 'bao-cao'}/${e.target.value}`, { state: { doiBc: true } })} aria-label="Đổi báo cáo">
         {cungGoc.map(x => {
           const ok = moDuoc(x, s.goi)
           const code = maKhoa(x)

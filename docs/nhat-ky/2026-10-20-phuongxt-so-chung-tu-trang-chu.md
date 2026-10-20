@@ -13,10 +13,12 @@
 - KQKD gói Free (`src/modules/tong-hop/BaoCaoTaiChinh.tsx`): dòng Doanh thu bán hàng dẫn tới Sổ doanh thu 3.2.5, gói Free không có nên hiện "Báo cáo không dùng". Đổi sang Tổng hợp bán hàng `/app/bao-cao/3-2-7`.
 - Chi phí NVL (`src/modules/home/ChiPhiNvl.tsx`): tên cửa hàng ở bảng tổng là nút màu liên kết (`ds-link-so nvl-ten-cn`, dòng Cộng giữ chữ thường) cho biết bấm được; bấm lan lên dòng mở chi tiết như cũ. CSS mục T491 cuối `app.css`.
 - Chi tiết cửa hàng ở Chi phí NVL: bảng phiếu nhập mua và bảng phiếu tiêu hao (xuất huỷ, điều chỉnh) dùng `ganMoPhieu`, số phiếu bấm mở chứng từ.
+- Gói Free ẩn báo cáo Công nợ khách hàng 3.2.9 (`src/modules/ban-hang/index.ts`, giới hạn gói S, PL, PR), PhuongXT chốt 20/10/2026.
+- Báo cáo bấm sang báo cáo khác (vd Xuất nhập tồn → Thẻ kho, Tổng hợp nhập kho → Chi tiết nhập kho) có thêm nút "‹ <báo cáo vừa xem>" sau nút "Tất cả báo cáo" (`src/modules/bao-cao/ThanhChon.tsx`). Nút quay lại theo lịch sử nên giữ bộ lọc; mở phiếu rồi quay lại vẫn còn nút; đổi báo cáo bằng ô chọn thì không hiện.
 
 ## Đã kiểm
 
-- Trên trình duyệt (gói Free): Sổ quỹ tiền mặt 275 số có liên kết, bấm mở phiếu thu; Chi phí hoạt động bấm lý do, bấm số UNC2610-095 mở phiếu chi ngân hàng; KQKD bấm Doanh thu mở Tổng hợp bán hàng. Chi phí NVL: tên cửa hàng màu xanh, bấm mở chi tiết; phiếu tiêu hao 4/4 có liên kết; cửa hàng đặt tạm cách "phiếu nhập mua" bấm MH2610-0022 mở phiếu mua hàng (đã trả phiên về như cũ).
+- Trên trình duyệt (gói Free): Sổ quỹ tiền mặt 275 số có liên kết, bấm mở phiếu thu; Chi phí hoạt động bấm lý do, bấm số UNC2610-095 mở phiếu chi ngân hàng; KQKD bấm Doanh thu mở Tổng hợp bán hàng. Chi phí NVL: tên cửa hàng màu xanh, bấm mở chi tiết; phiếu tiêu hao 4/4 có liên kết; cửa hàng đặt tạm cách "phiếu nhập mua" bấm MH2610-0022 mở phiếu mua hàng (đã trả phiên về như cũ). Gói Free không còn Công nợ khách hàng ở Tất cả báo cáo, mở thẳng đường dẫn thì về Xuất bán POS; gói Standard vẫn có. Xuất nhập tồn → Thẻ kho có nút về Xuất nhập tồn, bấm về đúng báo cáo.
 - `python tools/xuat_bao_cao_he_thong.py` không chạy được trên máy này: thiếu `Dự kiến tính năng IACC Cloud.xlsx` (file của máy Trum), nên chưa làm mới `docs/IACC-Cloud-Chi-Tiet-He-Thong.xlsx`.
 - `npm run typecheck`: không lỗi. `npm run build`: xong, không lỗi. `python tools/kiem_tra.py --nhanh`: "Không có lỗi."
 - Chưa kiểm gói Standard, Plus (sổ quỹ dùng chung `SoQuy.tsx` nên cũng có liên kết).
