@@ -39,8 +39,8 @@ export const quyTrinh: QuyTrinhDef = {
       moTa: 'Khai báo các khoản mua từ trước còn phân bổ.',
       ghiChu: 'Công cụ dụng cụ hoặc tiền nhà, phí dịch vụ trả trước khi dùng phần mềm.',
       nut: [
-        // Mở thẳng form ghi tăng đầu kỳ (T514)
-        { ten: 'Thẻ CPPB dư đầu kỳ', icon: 'clock', di: 'ccdc/8-1-1?moi=dau', moTa: 'Khoản chi từ trước khi dùng phần mềm' },
+        // Mở thẳng form ghi tăng đầu kỳ (T514); ô mở form tạo mới mang dấu +, ô mở danh sách mang dấu > (T515)
+        { ten: 'Thẻ CPPB dư đầu kỳ', icon: 'clock', di: 'ccdc/8-1-1?moi=dau', taoMoi: 'ccdc/8-1-1?moi=dau', moTa: 'Khoản chi từ trước khi dùng phần mềm' },
       ],
     },
     {
@@ -56,7 +56,7 @@ export const quyTrinh: QuyTrinhDef = {
       nhom: [{
         ten: 'Chưa chi tiền cần ghi nhận chi phí trả trước',
         moTa: 'Các khoản chi phí phân bổ thanh toán sau',
-        nut: [{ ten: 'Thẻ chi phí phân bổ', icon: 'phanbo', di: 'ccdc/8-1-1?moi=the', nho: true }],
+        nut: [{ ten: 'Thẻ chi phí phân bổ', icon: 'phanbo', di: 'ccdc/8-1-1?moi=the', taoMoi: 'ccdc/8-1-1?moi=the', nho: true }],
       }],
     },
     {
