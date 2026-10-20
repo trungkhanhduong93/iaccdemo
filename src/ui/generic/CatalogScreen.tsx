@@ -6,6 +6,7 @@ import { tenMan } from '../../app/registry'
 import { cuaHangHienTai, dsKyNam, kyMacDinh, ngayDauNam, truocDauNam, useSession } from '../../app/session'
 import { CUA_HANG } from '../../data/mock'
 import { Icon } from '../Icon'
+import { IconFigmaPlus } from '../IconFigma'
 import { CanhBaoGon, DaiCanhBao, NutCachLam } from '../DaiCanhBao'
 import { Table } from '../Table'
 import { ChamTrangThai } from '../ChamTrangThai'
@@ -345,9 +346,17 @@ export function CatalogScreen({ sc }: ScreenProps) {
                       <Icon n={n.icon} className="ic sm" />{n.nhan}
                     </button>
                   ))}
-                  <NutThemMoiSplit nhan={nutThem[0].nut} toMoi={`${viTri.pathname}?moi=${nutThem[0].k}`}
-                    so={nutThem[0].k === HANG_LOAT && canhBao?.so ? canhBao.so : undefined}
-                    loai={nutThem.length > 1 ? nutThem.map(b => ({ k: b.k, ten: b.k === HANG_LOAT && canhBao?.so ? `${b.ten} (${canhBao.so})` : b.ten, icon: b.icon })) : undefined} />
+                  {/* Màn có thêm hàng loạt (thẻ chi phí): các kiểu thêm thành nút riêng đứng cạnh nhau như Thu tiền, Chi tiền ở Thu chi;
+                      Ghi tăng bổ sung không lên nút, vào từ dải cảnh báo (T512) */}
+                  {cfg.hangLoat ? nutThem.filter((b, i) => i === 0 || b.k !== HANG_LOAT).map((b, i) => (
+                    <Link key={b.k} className={`ds-btn-chinh ${i === 0 ? 'ds-btn-thu' : 'ds-btn-outline'}`} to={`${viTri.pathname}?moi=${b.k}`}>
+                      {i === 0 ? <IconFigmaPlus /> : <Icon n={b.icon ?? 'plus'} className="ic sm" />}
+                      <span>{i === 0 ? b.nut : b.ten}</span>
+                    </Link>
+                  )) : (
+                    <NutThemMoiSplit nhan={nutThem[0].nut} toMoi={`${viTri.pathname}?moi=${nutThem[0].k}`}
+                      loai={nutThem.length > 1 ? nutThem.map(b => ({ k: b.k, ten: b.ten, icon: b.icon })) : undefined} />
+                  )}
                 </div>
               )}
             </div>
