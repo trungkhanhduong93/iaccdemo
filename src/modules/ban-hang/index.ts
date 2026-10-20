@@ -15,7 +15,8 @@ import { colsCongNo, rowsCongNo } from '../bao-cao/cong-no'
 const baoCaoMoi = (slug: string, ten: string, report: Omit<ReportCfg, 'kieu'>, goi?: ScreenDef['goi']): ScreenDef =>
   ({ slug, ten, nhom: 'Sổ sách, báo cáo', kind: 'report', ...(goi ? { goi } : {}), report: { kieu: 'bangke', theoCn: true, theoGtgt: true, ...report } })
 const BAO_CAO_MOI = [baoCaoMoi('3-2-6', 'Bán hàng theo ngày', banHangTheoNgay, ['S', 'PL', 'PR']), baoCaoMoi('3-2-7', 'Tổng hợp bán hàng', tongHopBanHang), baoCaoMoi('3-2-8', 'Bảng kê chi tiết bán hàng', chiTietBanHang),
-  baoCaoMoi('3-2-9', 'Công nợ khách hàng', { cols: colsCongNo('kh'), rows: (t, cn) => rowsCongNo('kh', t, cn) })]   // theo mẫu iFaster, bấm tên mở lịch sử công nợ (T185)
+  // theo mẫu iFaster, bấm tên mở lịch sử công nợ (T185); gói Free ẩn, PhuongXT chốt 20/10/2026 (T491)
+  baoCaoMoi('3-2-9', 'Công nợ khách hàng', { cols: colsCongNo('kh'), rows: (t, cn) => rowsCongNo('kh', t, cn) }, ['S', 'PL', 'PR'])]
 
 /** Nhãn ngắn trên thanh tab */
 const NGAN: Record<string, string> = { '3.1.1': 'Xuất bán POS', '3.1.7': 'Bán hàng', '3.1.2': 'Hoá đơn bán hàng', '3.1.3': 'Bán nội bộ', '3.1.4': 'Hàng bán trả lại', '3.1.5': 'Hoá đơn điện tử', '3.1.6': 'Điều chỉnh, thay thế' }
