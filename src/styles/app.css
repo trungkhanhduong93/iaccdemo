@@ -35004,7 +35004,7 @@ a.tx-item:hover {
 /* ── Lưới chi tiết phiếu nằm gọn trong khung, thẳng lề tab Chi tiết (T505), viền đủ 4 cạnh, bo góc (T513) ── */
 /* Viền đặt ở vùng cuộn .ct-than vì bảng bên trong đã bỏ viền; tiêu đề cột dính vẫn nằm trong khung */
 .ct-than-card > .ct-than {
-  margin: 0 12px 12px;
+  margin: 12px;
   border: 1px solid var(--line);
   border-radius: 10px;
   flex: 0 1 auto;   /* khung ôm số dòng, phần trống bên dưới là nền thẻ (T516) */
@@ -36644,4 +36644,20 @@ a.tx-item:hover {
   background: #fff;
   color: var(--ink);
   border-color: var(--line);
+}
+
+/* ── Khoảng hở lưới dưới hàng tab, thẻ chi phí phân bổ nét như phiếu (T523) ── */
+.fsf .pn-trong .pn-duoi > .pn-khoi-than {
+  padding-top: 12px;
+}
+.fsf .pn-hop.pn-trong {
+  animation: none;
+  will-change: auto;
+}
+.fsf .pn-trong .f label {
+  color: var(--muted);
+}
+.fsf .pn-trong .inp,
+.fsf .pn-trong .sel.inp {
+  font-size: 14px;
 }
