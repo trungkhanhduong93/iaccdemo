@@ -33595,6 +33595,97 @@ a.tx-item:hover {
   margin-bottom: 10px;
 }
 
+
+/* Danh sách nhóm theo mẫu IVT (Cấp 1 - T500) */
+.m-bc-ds-nhom-ivt {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.m-bc-nhom-the-ivt {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.05s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.m-bc-nhom-the-ivt:active {
+  background: #f8fafc;
+  transform: scale(0.99);
+}
+
+.m-bc-nhom-the-ic-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: #e0f2fe;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+
+.m-bc-nhom-the-ic-img {
+  width: 24px;
+  height: 24px;
+  display: block;
+}
+
+.m-bc-nhom-the-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.m-bc-nhom-the-ten {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.25;
+}
+
+.m-bc-nhom-the-mota {
+  font-size: 12.5px;
+  color: #64748b;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.m-bc-nhom-the-chev {
+  color: #94a3b8;
+  flex: none;
+}
+
+.m-bc-hdr-back {
+  background: none;
+  border: none;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0 0 8px 0;
+}
+
+.m-bc-hdr-back:active {
+  opacity: 0.8;
+}
+
 /* ── A. Sổ quỹ tiền mặt, Sổ ngân hàng điện thoại ── */
 .m-so-bc-figma {
   min-height: 100%;
@@ -33666,8 +33757,8 @@ a.tx-item:hover {
 }
 
 .m-sq-btn-ic.active {
-  color: var(--blue);
-  background: #e6eff7;
+  color: #d97706;
+  background: #fef3c7;
 }
 
 .m-sq-tim-hang {
@@ -33676,82 +33767,93 @@ a.tx-item:hover {
   border-bottom: 1px solid var(--line);
 }
 
-.m-sq-chip-hang {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
-  overflow-x: auto;
-  background: #ffffff;
-  border-bottom: 1px solid var(--line);
-  scrollbar-width: none;
+/* Hàng chip theo Figma T500 */
+.m-t500-chip-hang {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 12px 16px !important;
+  overflow-x: auto !important;
+  background: #ffffff !important;
+  border-bottom: 1px solid var(--line) !important;
+  scrollbar-width: none !important;
+  -webkit-overflow-scrolling: touch !important;
 }
 
-.m-sq-chip-hang::-webkit-scrollbar {
-  display: none;
+.m-t500-chip-hang::-webkit-scrollbar {
+  display: none !important;
 }
 
-.m-sq-chip-filter {
-  background: #ffffff;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  height: 34px;
-  padding: 0 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  cursor: pointer;
-  flex: none;
-  color: var(--ink);
+.m-t500-chip-filter {
+  background: #ffffff !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 8px !important;
+  height: 34px !important;
+  padding: 0 10px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  position: relative !important;
+  cursor: pointer !important;
+  flex: none !important;
+  color: var(--ink) !important;
 }
 
-.m-sq-filter-badge {
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  background: var(--blue);
-  color: #ffffff;
-  font-size: 10px;
-  font-weight: 700;
-  width: 16px;
-  height: 16px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  line-height: 1;
+.m-t500-filter-badge {
+  position: absolute !important;
+  top: -4px !important;
+  right: -4px !important;
+  background: var(--blue) !important;
+  color: #ffffff !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  width: 16px !important;
+  height: 16px !important;
+  border-radius: 8px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+  z-index: 2 !important;
 }
 
-.m-sq-chip {
-  background: #ffffff;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  height: 34px;
-  padding: 0 12px;
-  font-size: 12.5px;
-  font-weight: 500;
-  color: var(--ink);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  white-space: nowrap;
-  cursor: pointer;
-  flex: none;
+.m-t500-chip {
+  background: #ffffff !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 8px !important;
+  height: 34px !important;
+  padding: 0 12px !important;
+  font-size: 12.5px !important;
+  font-weight: 500 !important;
+  color: var(--ink) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  white-space: nowrap !important;
+  cursor: pointer !important;
+  flex: none !important;
 }
 
-.m-sq-chip-ky {
-  background: #e6eff7;
-  border-color: #93b8dc;
-  color: var(--blue);
-  font-weight: 600;
+.m-t500-chip-ky {
+  background: #e6eff7 !important;
+  border-color: #93b8dc !important;
+  color: var(--blue) !important;
+  font-weight: 600 !important;
 }
 
-.m-sq-grid-cards {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin: 12px 16px 14px;
+/* Thân trang Sổ quỹ / Sổ ngân hàng: lề 16px chuẩn xuyên suốt */
+.m-t500-so-dong {
+  padding: 0 16px 24px !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.m-t500-grid-cards {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 10px !important;
+  margin: 12px 0 14px 0 !important;
+  padding: 0 !important;
 }
 
 .m-sq-card {
@@ -33814,135 +33916,163 @@ a.tx-item:hover {
   border: 1px solid #f5c2c0;
 }
 
-.m-sq-sec-title {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--ink);
-  margin: 6px 16px 10px;
+.m-t500-sec-title {
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  color: var(--ink) !important;
+  margin: 6px 0 10px 0 !important;
+  padding: 0 !important;
+  text-align: left !important;
 }
 
-.m-sq-nhom-ngay-wrap {
-  margin: 0 16px 14px;
+.m-t500-nhom-ngay-wrap {
+  margin: 0 0 14px 0 !important;
+  padding: 0 !important;
 }
 
-.m-sq-dong-ngay {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 6px;
-  font-size: 12.5px;
+.m-t500-dong-ngay {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: baseline !important;
+  margin-bottom: 8px !important;
+  font-size: 12.5px !important;
+  padding: 0 !important;
 }
 
-.m-sq-ngay-chu {
-  font-weight: 700;
-  color: var(--ink);
+.m-t500-ngay-chu {
+  font-weight: 700 !important;
+  color: var(--ink) !important;
+  font-size: 13px !important;
 }
 
-.m-sq-ngay-ton {
-  color: var(--muted);
-  font-size: 12px;
+.m-t500-ngay-ton {
+  color: var(--muted) !important;
+  font-size: 12px !important;
 }
 
-.m-sq-dau-so {
-  font-weight: 600;
-  color: var(--ink);
+.m-t500-dau-so {
+  font-weight: 700 !important;
+  color: var(--ink) !important;
 }
 
-.m-sq-the-trang {
-  background: #ffffff;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 4px 14px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+.m-t500-the-trang {
+  background: #ffffff !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 12px !important;
+  padding: 2px 16px !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03) !important;
+  margin: 0 !important;
 }
 
-.m-sq-row-item {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--line);
-  text-decoration: none;
-  color: inherit;
+/* Từng dòng phát sinh: trái là diễn giải đậm 1 dòng cắt '…', dưới là số CT xanh · cửa hàng; phải là số tiền cùng hàng */
+.m-t500-sq-row-item {
+  display: block !important;
+  padding: 11px 0 !important;
+  border-bottom: 1px solid var(--line) !important;
+  border-top: none !important;
+  text-decoration: none !important;
+  color: inherit !important;
 }
 
-.m-sq-row-item:last-of-type {
-  border-bottom: 1px solid var(--line);
+.m-t500-sq-row-item:last-child {
+  border-bottom: none !important;
 }
 
-.m-sq-row-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 10px;
+.m-t500-sq-row-content {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-between !important;
+  align-items: flex-start !important;
+  gap: 12px !important;
+  width: 100% !important;
 }
 
-.m-sq-row-bot {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  color: var(--muted);
+.m-t500-sq-row-trai {
+  flex: 1 !important;
+  min-width: 0 !important;
+  text-align: left !important;
 }
 
-.m-sq-row-dg {
-  font-size: 13.5px;
-  font-weight: 700;
-  color: var(--ink);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 220px;
+.m-t500-sq-row-dg {
+  font-size: 13.5px !important;
+  font-weight: 700 !important;
+  color: var(--ink) !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  line-height: 1.35 !important;
+  text-align: left !important;
 }
 
-.m-sq-tien-thu {
-  font-size: 13.5px;
-  font-weight: 700;
-  color: var(--green);
-  text-align: right;
-  flex: none;
+.m-t500-sq-row-phu {
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  font-size: 12px !important;
+  color: var(--muted) !important;
+  margin-top: 3px !important;
+  text-align: left !important;
+  line-height: 1.2 !important;
 }
 
-.m-sq-tien-chi {
-  font-size: 13.5px;
-  font-weight: 700;
-  color: var(--red);
-  text-align: right;
-  flex: none;
+.m-t500-sq-row-so-ct {
+  color: var(--blue) !important;
+  font-weight: 600 !important;
 }
 
-.m-sq-row-so-ct {
-  color: var(--blue);
-  font-weight: 600;
+.m-t500-sq-row-cn {
+  color: var(--muted) !important;
 }
 
-.m-sq-row-cn {
-  color: var(--muted);
+.m-t500-sq-row-phai {
+  flex: none !important;
+  text-align: right !important;
+  line-height: 1.35 !important;
 }
 
-.m-sq-cuoi-ngay {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 0;
-  font-size: 13px;
+.m-t500-sq-tien-thu {
+  font-size: 13.5px !important;
+  font-weight: 700 !important;
+  color: var(--green) !important;
+  white-space: nowrap !important;
+  text-align: right !important;
+  display: block !important;
 }
 
-.m-sq-cuoi-nhan {
-  font-weight: 500;
-  color: var(--muted);
+.m-t500-sq-tien-chi {
+  font-size: 13.5px !important;
+  font-weight: 700 !important;
+  color: var(--red) !important;
+  white-space: nowrap !important;
+  text-align: right !important;
+  display: block !important;
 }
 
-.m-sq-cuoi-so {
-  font-weight: 700;
-  color: var(--ink);
+.m-t500-cuoi-ngay {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding: 11px 0 10px !important;
+  font-size: 13px !important;
+  border-top: none !important;
 }
 
-.m-sq-keo-tiep {
-  text-align: center;
-  color: var(--muted);
-  font-size: 12.5px;
-  padding: 16px 0 32px;
+.m-t500-cuoi-nhan {
+  font-weight: 500 !important;
+  color: var(--muted) !important;
+}
+
+.m-t500-cuoi-so {
+  font-weight: 700 !important;
+  color: var(--ink) !important;
+  font-size: 13.5px !important;
+}
+
+.m-t500-keo-tiep {
+  text-align: center !important;
+  color: var(--muted) !important;
+  font-size: 12.5px !important;
+  padding: 16px 0 32px !important;
 }
 
 /* ── dt-trang-chu theo Figma (T498) ── */

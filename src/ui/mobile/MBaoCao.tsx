@@ -5,7 +5,7 @@ import { GOI, anNgoaiGoi } from '../../app/plan'
 import { hienMan, moDuoc, tenMan } from '../../app/registry'
 import { useSession } from '../../app/session'
 import { layNhomBaoCao } from '../../modules/bao-cao/TrungTam'
-import { kyHieuBC } from '../../modules/bao-cao/danh-sach'
+import { kyHieuBC, tenBC } from '../../modules/bao-cao/danh-sach'
 import { fold } from '../format'
 import { Icon } from '../Icon'
 import { MTrong } from './MTrong'
@@ -21,6 +21,8 @@ import icDanhMuc from '../../assets/figma/gradient/danh-muc.svg'
 
 function layIconNhom(key: string): string {
   switch (key) {
+    case 'so-sach':
+      return icBaoCao
     case 'tien':
       return icThuTien
     case 'ban-hang':
@@ -89,6 +91,33 @@ export const MBaoCao: FC<ScreenProps> = ({ sc, mod }) => {
 
   const nhomTatCa = useMemo(() => layNhomBaoCao(s), [s])
 
+  // Xác định nhóm hiện tại nếu mở thẳng nhóm hoặc ?nhom=so-sach
+  const keyNhom = useMemo(() => {
+    if (sc.slug.startsWith('nhom-')) return sc.slug.slice(5)
+    if (sc.kind === 'baocao') return mod.key
+    if (sc.slug === 'tat-ca' && searchParams.get('nhom') === 'so-sach') return 'so-sach'
+    return null
+  }, [sc.slug, sc.kind, mod.key, searchParams])
+
+  const nhomDangXem = useMemo(() => {
+    if (!keyNhom) return null
+    return nhomTatCa.find(g => g.mod.key === keyNhom) ?? null
+  }, [keyNhom, nhomTatCa])
+
+  // Danh sách báo cáo trong nhóm đang xem
+  const dsBcTrongNhom = useMemo(() => {
+    if (!nhomDangXem) return []
+    return nhomDangXem.screens.filter(x => hienMan(x, s.goi, s.cheDo, s) && (!anNgoaiGoi(s.goi) || moDuoc(x, s.goi)))
+  }, [nhomDangXem, s])
+
+  const chonNhom = (key: string) => {
+    if (key === 'so-sach') {
+      nav('/app/bao-cao/tat-ca?nhom=so-sach')
+    } else {
+      nav(`/app/bao-cao/nhom-${key}`)
+    }
+  }
+
   // Lấy toàn bộ màn báo cáo hợp lệ trong gói để tra cứu
   const tatCaBcHien = useMemo(() => {
     const map = new Map<string, ScreenDef>()
@@ -150,8 +179,9 @@ export const MBaoCao: FC<ScreenProps> = ({ sc, mod }) => {
     return tatCaBcHien.filter(x => {
       const ma = x.code ?? ''
       const kyHieu = kyHieuBC(x.code, s.cheDo, s) ?? ''
-      const ten = tenMan(x)
-      const full = `${ten} ${ma} ${kyHieu}`
+      const ten = tenBC(x.code, s.cheDo, s) ?? tenMan(x)
+      const tenGoc = tenMan(x)
+      const full = `${ten} ${tenGoc} ${ma} ${kyHieu}`
       return fold(full).includes(qFold)
     })
   }, [q, tatCaBcHien, s])
@@ -196,41 +226,61 @@ export const MBaoCao: FC<ScreenProps> = ({ sc, mod }) => {
       {/* Header gradient xanh theo Figma T500 */}
       <header className="m-bc-hdr-gradient">
         <div className="m-bc-hdr-top">
+          {nhomDangXem && (
+            <button
+              type="button"
+              className="m-bc-hdr-back"
+              onClick={() => {
+                if (window.history.state && window.history.state.idx > 0) {
+                  nav(-1)
+                } else {
+                  nav('/app/bao-cao/tat-ca', { replace: true })
+                }
+              }}
+            >
+              <Icon n="chevl" className="ic sm" />
+              <span>Tất cả nhóm</span>
+            </button>
+          )}
           <div className="m-bc-hdr-tieu-de-hang">
-            <h1 className="m-bc-hdr-tieu-de">Báo cáo</h1>
+            <h1 className="m-bc-hdr-tieu-de">{nhomDangXem ? nhomDangXem.mod.ten : 'Báo cáo'}</h1>
             <span className="m-bc-hdr-chip-goi">
               {s.goi === 'F' ? 'FREE' : GOI[s.goi]?.ten?.toUpperCase() ?? 'FREE'}
             </span>
           </div>
           <div className="m-bc-hdr-phu">
-            {tongSoBc} báo cáo · {tongSoNhom} nhóm
+            {nhomDangXem
+              ? `${dsBcTrongNhom.length} báo cáo`
+              : `${tongSoBc} báo cáo · ${tongSoNhom} nhóm`}
           </div>
         </div>
 
-        {/* Ô tìm kiếm trong header */}
-        <div className="m-bc-hdr-tim-wrap">
-          <div className="m-bc-hdr-tim">
-            <Icon n="search" className="m-bc-hdr-tim-ic ic sm" />
-            <input
-              type="text"
-              className="m-bc-hdr-tim-inp"
-              placeholder="Tìm báo cáo theo tên hoặc mã…"
-              value={q}
-              onChange={e => setQ(e.target.value)}
-              aria-label="Tìm kiếm báo cáo"
-            />
-            {q && (
-              <button
-                type="button"
-                className="m-bc-hdr-tim-x"
-                onClick={() => setQ('')}
-                aria-label="Xoá tìm kiếm"
-              >
-                <Icon n="x" className="ic sm" />
-              </button>
-            )}
+        {/* Ô tìm kiếm ở cấp 1 */}
+        {!nhomDangXem && (
+          <div className="m-bc-hdr-tim-wrap">
+            <div className="m-bc-hdr-tim">
+              <Icon n="search" className="m-bc-hdr-tim-ic ic sm" />
+              <input
+                type="text"
+                className="m-bc-hdr-tim-inp"
+                placeholder="Tìm báo cáo theo tên hoặc mã…"
+                value={q}
+                onChange={e => setQ(e.target.value)}
+                aria-label="Tìm kiếm báo cáo"
+              />
+              {q && (
+                <button
+                  type="button"
+                  className="m-bc-hdr-tim-x"
+                  onClick={() => setQ('')}
+                  aria-label="Xoá tìm kiếm"
+                >
+                  <Icon n="x" className="ic sm" />
+                </button>
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </header>
 
       {/* Thân danh sách */}
@@ -252,7 +302,7 @@ export const MBaoCao: FC<ScreenProps> = ({ sc, mod }) => {
                 <div className="m-bc-nhom-ds">
                   {dsTimKiem.map(item => {
                     const ma = kyHieuBC(item.code, s.cheDo, s) ?? item.code
-                    const ten = tenMan(item)
+                    const ten = tenBC(item.code, s.cheDo, s) ?? tenMan(item)
                     const daGhimItem = ghim.includes(item.slug)
                     return (
                       <div
@@ -269,7 +319,62 @@ export const MBaoCao: FC<ScreenProps> = ({ sc, mod }) => {
                       >
                         <div className="m-bc-row-ten">{ten}</div>
                         <div className="m-bc-row-phai">
-                          {daGhimItem && <Icon n="star" className="m-bc-row-star ic xs" />}
+                          {daGhimItem && <Icon n="star-fill" className="m-bc-row-star ic xs" />}
+                          {ma && <span className="m-bc-row-ma">{ma}</span>}
+                          <Icon n="chevr" className="m-bc-row-chev ic sm" />
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+        ) : nhomDangXem ? (
+          /* Đang xem một nhóm cụ thể (?nhom=so-sach hoặc nhom-<key>) */
+          <div className="m-bc-ds-nhom-figma">
+            {dsBcTrongNhom.length === 0 ? (
+              <MTrong
+                kieu="chung"
+                tieuDe="Chưa có báo cáo"
+                moTa="Nhóm này chưa có báo cáo áp dụng"
+              />
+            ) : (
+              <div className="m-bc-nhom-card">
+                <div className="m-bc-nhom-card-hdr">
+                  <div className="m-bc-nhom-ic-box">
+                    <img src={layIconNhom(nhomDangXem.mod.key)} alt="" className="m-bc-nhom-ic-img" />
+                  </div>
+                  <div className="m-bc-nhom-hdr-info">
+                    <div className="m-bc-nhom-hdr-line1">
+                      <h2 className="m-bc-nhom-ten">{nhomDangXem.mod.ten}</h2>
+                      <span className="m-bc-nhom-badge">{dsBcTrongNhom.length}</span>
+                    </div>
+                    <div className="m-bc-nhom-mota">{nhomDangXem.mod.mota ?? `${dsBcTrongNhom.length} báo cáo`}</div>
+                  </div>
+                </div>
+
+                <div className="m-bc-nhom-ds">
+                  {dsBcTrongNhom.map(item => {
+                    const ma = kyHieuBC(item.code, s.cheDo, s) ?? item.code
+                    const ten = tenBC(item.code, s.cheDo, s) ?? tenMan(item)
+                    const daGhimItem = ghim.includes(item.slug)
+                    return (
+                      <div
+                        key={item.slug}
+                        className="m-bc-row"
+                        onClick={() => moBaoCao(item)}
+                        onContextMenu={e => {
+                          e.preventDefault()
+                          toggleGhim(item.slug)
+                        }}
+                        onTouchStart={() => handleTouchStart(item.slug)}
+                        onTouchEnd={handleTouchEnd}
+                        onTouchMove={handleTouchEnd}
+                      >
+                        <div className="m-bc-row-ten">{ten}</div>
+                        <div className="m-bc-row-phai">
+                          {daGhimItem && <Icon n="star-fill" className="m-bc-row-star ic xs" />}
                           {ma && <span className="m-bc-row-ma">{ma}</span>}
                           <Icon n="chevr" className="m-bc-row-chev ic sm" />
                         </div>
@@ -294,7 +399,7 @@ export const MBaoCao: FC<ScreenProps> = ({ sc, mod }) => {
                       className="m-bc-quick-chip"
                       onClick={() => moBaoCao(item)}
                     >
-                      {tenMan(item)}
+                      {tenBC(item.code, s.cheDo, s) ?? tenMan(item)}
                     </button>
                   ))}
                 </div>
@@ -317,8 +422,8 @@ export const MBaoCao: FC<ScreenProps> = ({ sc, mod }) => {
                         className="m-bc-quick-chip m-bc-quick-chip-ghim"
                         onClick={() => moBaoCao(item)}
                       >
-                        <Icon n="star" className="ic xs m-bc-chip-star" />
-                        <span>{tenMan(item)}</span>
+                        <Icon n="star-fill" className="ic xs m-bc-chip-star" />
+                        <span>{tenBC(item.code, s.cheDo, s) ?? tenMan(item)}</span>
                       </button>
                     ))}
                   </div>
@@ -326,56 +431,25 @@ export const MBaoCao: FC<ScreenProps> = ({ sc, mod }) => {
               </div>
             </div>
 
-            {/* Các nhóm báo cáo */}
-            <div className="m-bc-ds-nhom-figma">
+            {/* Danh sách nhóm theo mẫu IVT: mỗi nhóm 1 thẻ trắng bo 16, không liệt kê báo cáo con */}
+            <div className="m-bc-ds-nhom-ivt">
               {nhomHienThi.map(g => {
                 const iconSvg = layIconNhom(g.mod.key)
                 const moTa = g.mod.mota ?? `${g.screens.length} báo cáo`
                 return (
-                  <div key={g.mod.key} className="m-bc-nhom-card">
-                    {/* Header của thẻ nhóm */}
-                    <div className="m-bc-nhom-card-hdr">
-                      <div className="m-bc-nhom-ic-box">
-                        <img src={iconSvg} alt="" className="m-bc-nhom-ic-img" />
-                      </div>
-                      <div className="m-bc-nhom-hdr-info">
-                        <div className="m-bc-nhom-hdr-line1">
-                          <h2 className="m-bc-nhom-ten">{g.mod.ten}</h2>
-                          <span className="m-bc-nhom-badge">{g.screens.length}</span>
-                        </div>
-                        <div className="m-bc-nhom-mota">{moTa}</div>
-                      </div>
+                  <div
+                    key={g.mod.key}
+                    className="m-bc-nhom-the-ivt"
+                    onClick={() => chonNhom(g.mod.key)}
+                  >
+                    <div className="m-bc-nhom-the-ic-box">
+                      <img src={iconSvg} alt="" className="m-bc-nhom-the-ic-img" />
                     </div>
-
-                    {/* Danh sách báo cáo trong nhóm */}
-                    <div className="m-bc-nhom-ds">
-                      {g.screens.map(item => {
-                        const ma = kyHieuBC(item.code, s.cheDo, s) ?? item.code
-                        const ten = tenMan(item)
-                        const daGhimItem = ghim.includes(item.slug)
-                        return (
-                          <div
-                            key={item.slug}
-                            className="m-bc-row"
-                            onClick={() => moBaoCao(item)}
-                            onContextMenu={e => {
-                              e.preventDefault()
-                              toggleGhim(item.slug)
-                            }}
-                            onTouchStart={() => handleTouchStart(item.slug)}
-                            onTouchEnd={handleTouchEnd}
-                            onTouchMove={handleTouchEnd}
-                          >
-                            <div className="m-bc-row-ten">{ten}</div>
-                            <div className="m-bc-row-phai">
-                              {daGhimItem && <Icon n="star" className="m-bc-row-star ic xs" />}
-                              {ma && <span className="m-bc-row-ma">{ma}</span>}
-                              <Icon n="chevr" className="m-bc-row-chev ic sm" />
-                            </div>
-                          </div>
-                        )
-                      })}
+                    <div className="m-bc-nhom-the-info">
+                      <div className="m-bc-nhom-the-ten">{g.mod.ten}</div>
+                      <div className="m-bc-nhom-the-mota">{moTa}</div>
                     </div>
+                    <Icon n="chevr" className="ic sm m-bc-nhom-the-chev" />
                   </div>
                 )
               })}
