@@ -833,4 +833,5 @@ Trum chốt 21/10/2026 (T535), chọn Mẫu A trong 3 mẫu thiết kế trên a
 - Ô chọn nhiều ở hàng lọc rộng cố định 220px, không giãn theo tên dài hay số mục chọn. Chọn 1 hiện tên cắt chữ, rê chuột hiện đủ tên và mã. Chọn nhiều hiện chip tên đầu (tối đa 118px) và chip +N. Có nút × xoá nhanh.
 - Bấm vào ô mở hộp hai ngăn Chưa chọn | Đã chọn rộng 600px, mỗi ngăn có ô tìm riêng, hai ngăn cao bằng nhau. Mỗi mục hai dòng: tên, dưới là "Mã: X".
 - Bộ lọc nâng cao rộng 760px, lưới 3 cột hiện mọi ô lọc. Mỗi ô có nút ghim đưa ra hàng lọc, tối đa 4 ô. Bỏ khối "Cấu hình tham số lọc", kéo thả đổi thứ tự ngay trên lưới. Chân có Đặt lại, số ô đang lọc, Đóng, Áp dụng.
+- Hàng lọc: nút phễu ngoài cùng bên trái, rồi các ô lọc, nút Lọc ngay sau ô lọc cuối, cả cụm căn lề trái.
 - Chỉ áp cho ô lọc danh sách (chế độ `chip` của `ChonHaiCot`). Form khác dùng `ChonHaiCot` giữ giao diện cũ.
