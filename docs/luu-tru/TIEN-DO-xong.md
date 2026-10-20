@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T515 | Gói Free, Quy trình chi phí phân bổ: bỏ nút Tất cả báo cáo ở giai đoạn 3 | dinhlanphuongipacc | 20/10/2026 | [2026-10-20-dinhlanphuongipacc-bo-nut-bao-cao-quy-trinh](../nhat-ky/2026-10-20-dinhlanphuongipacc-bo-nut-bao-cao-quy-trinh.md) |
 | T514 | Gói Free, Quy trình chi phí phân bổ: Thẻ CPPB dư đầu kỳ mở thẳng form ghi tăng đầu kỳ; Chi tiền mặt, Chi ngân hàng nhỏ chung 1 hàng; thêm nhóm Chưa chi tiền cần ghi nhận chi phí trả trước có nút Thẻ chi phí phân bổ mở form Ghi tăng; giai đoạn 3 nút Quản lý thẻ chi phí phân bổ | dinhlanphuongipacc | 20/10/2026 | [2026-10-20-dinhlanphuongipacc-quy-trinh-phan-bo-free](../nhat-ky/2026-10-20-dinhlanphuongipacc-quy-trinh-phan-bo-free.md) |
 | T512 | Danh sách thẻ chi phí phân bổ: bỏ nút xổ, tách 2 nút Ghi tăng, Ghi tăng đầu kỳ đứng cạnh nhau theo kiểu nút Thu tiền; Ghi tăng bổ sung chỉ vào từ dải cảnh báo | dinhlanphuongipacc | 20/10/2026 | [2026-10-20-dinhlanphuongipacc-tach-nut-ghi-tang](../nhat-ky/2026-10-20-dinhlanphuongipacc-tach-nut-ghi-tang.md) |
 | T513 | Web, form phiếu: lưới chi tiết có khung viền đủ 4 cạnh, bo góc; chân phiếu thêm mới, sửa, màn chọn cửa hàng nền trắng như lúc xem | Trum | 20/10/2026 | [2026-10-20-trum-khung-luoi-chan-phieu](../nhat-ky/2026-10-20-trum-khung-luoi-chan-phieu.md) |

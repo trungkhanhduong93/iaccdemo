@@ -4,6 +4,8 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 20/10/2026
 
+- T515: Gói Free, Quy trình chi phí phân bổ bỏ nút Tất cả báo cáo ở giai đoạn Theo dõi thẻ chi phí.
+
 - T514: Gói Free, Quy trình chi phí phân bổ: bấm Thẻ CPPB dư đầu kỳ mở thẳng form ghi tăng đầu kỳ. Chi tiền mặt, Chi ngân hàng gọn trên 1 hàng. Thêm mục Chưa chi tiền cần ghi nhận chi phí trả trước với nút Thẻ chi phí phân bổ để tạo thẻ cho khoản thanh toán sau. Nút giai đoạn 3 đổi thành Quản lý thẻ chi phí phân bổ.
 
 - T512: Danh sách thẻ chi phí phân bổ có 2 nút riêng Ghi tăng, Ghi tăng đầu kỳ đứng cạnh nhau như nút Thu tiền, Chi tiền ở Thu chi. Ghi tăng bổ sung mở từ dải cảnh báo khi còn khoản chi chưa tạo thẻ.

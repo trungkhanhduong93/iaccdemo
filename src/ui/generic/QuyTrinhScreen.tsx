@@ -76,7 +76,7 @@ export function QuyTrinhScreen({ mod }: ScreenProps) {
               <button className="btn sm" onClick={() => set({ goi: can })}>Xem thử gói {GOI[can].ten}</button>
             </Note>
           )}
-          {buocKy ? <SoDoKyFree buoc={buocKy} modKey={mod.key} goi={s.goi} hienLinkBaoCao={!qt.khongBaoCao && Boolean(qt.baoCao && qt.baoCao.length > 0)} />
+          {buocKy ? <SoDoKyFree buoc={buocKy} modKey={mod.key} goi={s.goi} hienLinkBaoCao={!qt.khongBaoCao && !qt.khongLinkBaoCaoKy && Boolean(qt.baoCao && qt.baoCao.length > 0)} />
             : qt.hoiTu ? <SoDoHoiTu lan={qt.hoiTu.lan} ra={qt.hoiTu.ra} goi={s.goi} modKey={mod.key} danhSo={qt.danhSo} hienLinkBaoCao={!qt.khongBaoCao && Boolean(qt.baoCao && qt.baoCao.length > 0)} />
             : luong ? <SoDoLuong cot={luong} goi={s.goi} /> : <SoDo qt={qt} goi={s.goi} />}
         </section>
