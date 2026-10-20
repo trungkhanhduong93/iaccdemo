@@ -56,7 +56,7 @@ export const quyTrinh: QuyTrinhDef = {
       nhom: [{
         ten: 'Chưa chi tiền cần ghi nhận chi phí trả trước',
         moTa: 'Các khoản chi phí phân bổ thanh toán sau',
-        nut: [{ ten: 'Thẻ chi phí phân bổ', icon: 'phanbo', di: 'ccdc/8-1-1?moi=the', moTa: 'Ghi nhận khoản chưa thanh toán' }],
+        nut: [{ ten: 'Thẻ chi phí phân bổ', icon: 'phanbo', di: 'ccdc/8-1-1?moi=the', nho: true }],
       }],
     },
     {

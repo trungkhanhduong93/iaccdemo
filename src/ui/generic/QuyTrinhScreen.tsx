@@ -567,7 +567,11 @@ function SoDoKyFree({ buoc, modKey, goi, hienLinkBaoCao }: { buoc: BuocKyQT[]; m
                   <div className="qt-ky-ten">{g.ten}</div>
                   {g.moTa && <div className="qt-ky-mo">{g.moTa}</div>}
                   <div className="qt-ky-ds-o">
-                    {g.nut.map(n => <ONutKy key={`${n.di}-${n.ten}`} n={n} goi={goi} />)}
+                    {gomHangNho(g.nut).map((h, hIdx) => Array.isArray(h) ? (
+                      <div key={`nho-${hIdx}`} className="qt-ky-hang-nho">
+                        {h.map(n => <ONutKy key={`${n.di}-${n.ten}`} n={n} goi={goi} />)}
+                      </div>
+                    ) : <ONutKy key={`${h.di}-${h.ten}`} n={h} goi={goi} />)}
                   </div>
                 </div>
               ))}
