@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T523 | Web, màn chi tiết phiếu (thu chi, mua hàng, bán hàng, kiểm kê...): lưới dính sát đường kẻ dưới hàng tab Chi tiết/Lịch sử, cần khoảng hở; thẻ chi phí phân bổ chữ vẫn mờ hơn phiếu thu chi, mua hàng | Trum | Đang làm | Chỉ web. Sửa `app.css` (mục cuối T523), có thể `CatalogScreen.tsx`, `ccdc/the-phan-bo.tsx` |
 | T519 | Điện thoại, trang chủ gói Free: chip Năm, Tháng mở bảng trượt như chip CN; Quỹ tiền về biểu đồ tròn kiểu cũ (nhãn kéo ra quanh vòng, nút Tất cả quỹ mở bảng nhỏ); nút Tạo phiếu mua hàng, Thanh toán NCC, Kiểm kê ngay chữ xanh, icon như web | Trum | Đang làm | Chỉ điện thoại. Sửa `MTrangChuFree.tsx`, `MKhoFree.tsx`, phần `VongQuy` trong `BaBaiToanFree.tsx`, `app.css` (mục cuối T519) |
 | T520 | Điện thoại: icon khối bỏ chi tiết cam, đổi sang xanh đậm nhạt như icon nhóm màn Báo cáo; hộp Lãi lỗ theo cửa hàng (web và điện thoại) cột 3 cửa hàng thẳng hàng | Trum | Đang làm | Chỉ CSS, `app.css` (mục cuối T520). Không sửa `icon-dac.ts` |
 | T521 | Điện thoại, danh sách Thu chi và Báo cáo: chỉ nút phễu mở bộ lọc, chip bên phải xám chỉ để xem; bộ lọc thêm Chi nhánh, Trạng thái; báo cáo khác thêm nút phễu; kính lúp báo cáo bỏ nền vàng | Trum | Đang làm | Chỉ điện thoại. Sửa `MDtThuChiDs.tsx`, `MSoBaoCao.tsx`, `MLoc.tsx` (dùng chung `MChungTu.tsx`), `app.css` (mục cuối T521) |
