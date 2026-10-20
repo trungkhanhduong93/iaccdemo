@@ -398,7 +398,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
       ...(dsHangLoc.length ? [{ k: 'hang', ten: 'Hàng hoá', o: chonO('hang', 'Hàng hoá', dsHangLoc) }] : []),
     ] : []),
   ]
-  const [cauHinhLoc, datCauHinhLoc] = useCauHinhLoc(path, oLoc.map(o => o.k), ['thoiGian', 'tim', ...(coLyDo ? ['lyDo'] : []), 'doiTuong', ...(cfg.kiemKe || cfg.dieuChinh ? ['kho', 'hang', 'nhomHang'] : [])])
+  const [cauHinhLoc, datCauHinhLoc] = useCauHinhLoc(path, oLoc.map(o => o.k), ['thoiGian', 'tim'])   // T504: mặc định chỉ Thời gian, Tìm kiếm ra ngoài như thanh Figma
 
   // Lọc theo các ô đã áp dụng, cửa hàng trên thanh trên, hàng lọc từng cột; chip trạng thái lọc sau cùng để đếm số trên chip
   const ap = loc0.ap
@@ -750,30 +750,35 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
               onXoaHet={loc0.xoaNhap}
               chiNutPheu
               soDem={soDieuKienLoc}
-            />
-
-            <div className="ds-tim-figma">
-              <IconFigmaSearch size={16} />
-              <input
-                value={nhap.tim}
-                placeholder="Số, tên, diễn giải"
-                title="Tìm theo số chứng từ, đối tượng, diễn giải"
-                aria-label="Tìm kiếm"
-                onChange={e => dat('tim', e.target.value)}
-                onKeyDown={e => {
-                  if (e.key === 'Enter') apLoc()
-                }}
-              />
-            </div>
-
-            <ChonKhoangNgay
-              value={nhap.thoiGian}
-              onChange={k => {
-                dat('thoiGian', k)
-                loc0.datVaAp('thoiGian', k)
-                setTrang(1)
+              ngoaiRieng={{
+                tim: (
+                  <div key="tim" className="ds-tim-figma">
+                    <IconFigmaSearch size={16} />
+                    <input
+                      value={nhap.tim}
+                      placeholder="Số, tên, diễn giải"
+                      title="Tìm theo số chứng từ, đối tượng, diễn giải"
+                      aria-label="Tìm kiếm"
+                      onChange={e => dat('tim', e.target.value)}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter') apLoc()
+                      }}
+                    />
+                  </div>
+                ),
+                thoiGian: (
+                  <ChonKhoangNgay
+                    key="thoiGian"
+                    value={nhap.thoiGian}
+                    onChange={k => {
+                      dat('thoiGian', k)
+                      loc0.datVaAp('thoiGian', k)
+                      setTrang(1)
+                    }}
+                    kieu="chip"
+                  />
+                ),
               }}
-              kieu="chip"
             />
 
             {dsChipLoc.map(c => (

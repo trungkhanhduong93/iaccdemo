@@ -35015,3 +35015,8 @@ a.tx-item:hover {
 .bbt-bang-kqkd .bbt-kqkd-row .r b { grid-column: 2; text-align: right; white-space: nowrap; }
 .bbt-bang-kqkd .bbt-kqkd-row .bbt-kqkd-pct { grid-column: 3; }
 .bbt-bang-kqkd .bbt-kqkd-row > .ic { grid-column: 4; }
+
+/* ── Danh sách chứng từ: ô lọc bật ra ngoài thanh Figma, nhãn nằm trong ô như IVT (T504) ── */
+.ds-toolbar-figma .ds-o { display: flex; align-items: center; gap: 6px; width: auto; min-width: 200px; height: 36px; padding-left: 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--white); box-sizing: border-box; }
+.ds-toolbar-figma .ds-o-nhan { position: static; padding: 0; background: none; color: var(--muted); font-size: 12.5px; }
+.ds-toolbar-figma .ds-o .kn-nut, .ds-toolbar-figma .ds-o .ds-o-sel, .ds-toolbar-figma .ds-o .ds-o-inp { flex: 1; min-width: 0; height: 34px; border: 0; background: none; }
