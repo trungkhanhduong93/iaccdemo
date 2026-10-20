@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState, type FC } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import type { Col, ReportCfg, Row, ScreenProps } from '../../modules/types'
 import { renderReport, gopSo, RptTable } from '../generic/ReportScreen'
 import { useTrangThaiLoc } from '../bao-cao/tuyChinhBC'
@@ -18,6 +18,34 @@ import { laSoTT152 } from './MSoTT152'
 import { cotMobile, useBangMauA } from './bangMauA'
 import { tinhPhanTrang, ThanhPhanTrangM } from './phanTrangM'
 import { dinhDangKyMobile, useKhoangNgayMobile } from './kyBaoCaoMobile'
+import { MBaoCaoLoc } from './MBaoCaoLoc'
+
+/** Định dạng ngày có thứ tiếng Việt: "01/09/2026" -> "Thứ Ba, 01/09/2026" (T500) */
+function dinhDangThuNgay(dStr: string): string {
+  if (!dStr) return 'Chưa rõ ngày'
+  const parts = dStr.includes('/') ? dStr.split('/') : (dStr.includes('-') ? dStr.split('-').reverse() : [])
+  if (parts.length === 3) {
+    const d = Number(parts[0])
+    const m = Number(parts[1]) - 1
+    const y = Number(parts[2])
+    const dt = new Date(y, m, d)
+    if (!isNaN(dt.getTime())) {
+      const thu = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'][dt.getDay()]
+      return `${thu}, ${dStr}`
+    }
+  }
+  return dStr
+}
+
+/** Chuyển YYYY-MM-DD sang DD/MM/YYYY */
+function dinhDangNgay(dStr?: string, fallback = ''): string {
+  if (!dStr) return fallback
+  const parts = dStr.split('-')
+  if (parts.length === 3) {
+    return `${parts[2].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[0]}`
+  }
+  return dStr
+}
 
 /** Dò đường dẫn mở chứng từ gốc nếu có (T201, T223) */
 function layDuongDan(so: unknown): string | undefined {
@@ -35,6 +63,36 @@ function layDuongDan(so: unknown): string | undefined {
 export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
   const { s, set } = useSession()
   const path = useLocation().pathname
+  const nav = useNavigate()
+  const [hienTim, setHienTim] = useState(false)
+  const [moLoc, setMoLoc] = useState(false)
+  const [daGhim, setDaGhim] = useState(() => {
+    try {
+      const g = JSON.parse(localStorage.getItem('bc-ghim') || '[]')
+      return Array.isArray(g) && g.includes(sc.slug)
+    } catch {
+      return false
+    }
+  })
+
+  const toggleGhim = () => {
+    try {
+      const raw = localStorage.getItem('bc-ghim')
+      const g: string[] = raw ? JSON.parse(raw) : []
+      const exists = g.includes(sc.slug)
+      const moi = exists ? g.filter(x => x !== sc.slug) : [...g, sc.slug]
+      localStorage.setItem('bc-ghim', JSON.stringify(moi))
+      setDaGhim(!exists)
+    } catch {}
+  }
+
+  const quayLai = () => {
+    if (window.history.state && window.history.state.idx > 0) {
+      nav(-1)
+    } else {
+      nav('/app/bao-cao/tat-ca', { replace: true })
+    }
+  }
 
   // Sổ xem dạng dòng: Sổ quỹ 2.2.1, Sổ ngân hàng 2.2.3, Sổ công nợ 2.2.5 (T223)
   // Các màn khác áp dụng 3 khuôn mới chung theo BANG_KHUON_DONG (T241)
@@ -72,7 +130,18 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
   const thang = Number(kyDaXem)
   const cn = cfg.theoCn ? cuaHangHienTai(s) : undefined
   const chonQuy = loc.locQuy?.[0]
+  const chonTk = (loc as any).locTk?.[0] || (loc as any).tk?.[0]
   const knMobile = useKhoangNgayMobile(path, kyDaXem)
+  const ngayDauKy = dinhDangNgay(knMobile.tu, '01/09/2026')
+  const ngayCuoiKy = dinhDangNgay(knMobile.den, '30/09/2026')
+  const soLuongLoc = useMemo(() => {
+    let c = 0
+    if (loc.locQuy?.length) c++
+    if ((loc as any).locTk?.length || (loc as any).tk?.length) c++
+    if (s.cuaHang && s.cuaHang !== 'all') c++
+    if (loc.ky?.[0] && loc.ky[0] !== '9') c++
+    return c
+  }, [loc, s.cuaHang])
 
   const [q, setQ] = useState('')
   const [trangBang, setTrangBang] = useState(1)
@@ -373,81 +442,193 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
   }
 
   return (
-    <div className={`m-so-bc ${xoayNgang ? 'xoay-ngang' : ''}`}>
-      {/* Hàng chip lọc: chip kỳ, chip cửa hàng và các điều kiện lọc riêng (T343) */}
-      <div className="m-sbc-loc-hang">
-        <span className="m-sbc-chip m-sbc-chip-tinh">
-          <span className="m-sbc-chip-nhan">Thời gian: {tenKy}</span>
-        </span>
-
-        {cfg.theoCn && (
-          <span className="m-sbc-chip m-sbc-chip-tinh">
-            <span className="m-sbc-chip-nhan">Kho/CN: {tenCn}</span>
-          </span>
-        )}
-
-        {chipDieuKienKhac.map(c => (
-          <span key={c.k} className="m-sbc-chip m-sbc-chip-tinh">
-            <span className="m-sbc-chip-nhan">
-              {c.nhan}: {c.giaTri}
-            </span>
-          </span>
-        ))}
-      </div>
-
-      {/* Ô tìm kiếm dòng & nút Excel, Xoay (Điểm 18) */}
-      <div className="m-sbc-tim-hang">
-        <div className="m-ds-tim">
-          <Icon n="search" className="m-ds-tim-ic ic sm" />
-          <input
-            type="text"
-            className="m-ds-tim-inp"
-            placeholder={kieuXem === 'bang' ? 'Nhập từ khoá' : 'Nhập mã, tên'}
-            value={q}
-            onChange={e => setQ(e.target.value)}
-            aria-label="Tìm kiếm trong bảng"
-          />
-          {q && (
+    <div className={`m-so-bc ${isSoTien ? 'm-so-bc-figma' : ''} ${xoayNgang ? 'xoay-ngang' : ''}`}>
+      {/* Header riêng theo Figma T500 cho Sổ quỹ tiền mặt và Sổ ngân hàng */}
+      {isSoTien && (
+        <header className="m-sq-header">
+          <button
+            type="button"
+            className="m-sq-back"
+            onClick={quayLai}
+            aria-label="Quay lại"
+          >
+            <Icon n="chevl" className="ic" />
+          </button>
+          <div className="m-sq-tieu-de-wrap">
+            <h1 className="m-sq-tieu-de">{isSoQuy ? 'Sổ quỹ tiền mặt' : 'Sổ ngân hàng'}</h1>
+            <div className="m-sq-phu">Báo cáo · Thu chi · {isSoQuy ? '2.2.1' : '2.2.3'}</div>
+          </div>
+          <div className="m-sq-tac-vu">
             <button
               type="button"
-              className="m-ds-tim-x"
-              onClick={() => setQ('')}
-              aria-label="Xoá tìm kiếm"
+              className={`m-sq-btn-ic${hienTim ? ' active' : ''}`}
+              onClick={() => setHienTim(v => !v)}
+              aria-label="Tìm kiếm"
             >
-              <Icon n="x" className="ic sm" />
-            </button>
-          )}
-        </div>
-        {kieuXem === 'bang' && (
-          <div className="m-sbc-tac-vu">
-            <button
-              type="button"
-              className="m-sbc-btn-icon m-sbc-btn-excel"
-              onClick={xuatExcel}
-              title="Tải file Excel"
-              aria-label="Tải file Excel"
-            >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <rect x="2" y="2" width="20" height="20" rx="3.5" fill="#107C41" />
-                <path d="M7.5 7.5L16.5 16.5M16.5 7.5L7.5 16.5" stroke="white" strokeWidth="2.2" strokeLinecap="round" />
-              </svg>
+              <Icon n="search" className="ic sm" />
             </button>
             <button
               type="button"
-              className="m-sbc-btn-icon m-sbc-btn-xoay"
-              onClick={toggleXoay}
-              title={xoayNgang ? 'Xem dọc' : 'Xoay ngang'}
-              aria-label="Xoay màn hình"
+              className={`m-sq-btn-ic${daGhim ? ' active' : ''}`}
+              onClick={toggleGhim}
+              aria-label="Ghim báo cáo"
             >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="5.5" y="4" width="13" height="16" rx="2" transform="rotate(-15 12 12)" />
-                <path d="M8 2.5C10 1.5 13 1.5 15.5 2.5" />
-                <path d="M15 1.5L16.5 2.5L15 4" />
-              </svg>
+              <Icon n={daGhim ? 'star-fill' : 'star'} className="ic sm" />
             </button>
           </div>
-        )}
-      </div>
+        </header>
+      )}
+
+      {/* Ô tìm kiếm khi bấm icon tìm kiếm ở header */}
+      {isSoTien && hienTim && (
+        <div className="m-sq-tim-hang">
+          <div className="m-ds-tim">
+            <Icon n="search" className="m-ds-tim-ic ic sm" />
+            <input
+              type="text"
+              className="m-ds-tim-inp"
+              placeholder="Nhập diễn giải, số chứng từ…"
+              value={q}
+              onChange={e => setQ(e.target.value)}
+              aria-label="Tìm kiếm phát sinh"
+              autoFocus
+            />
+            {q && (
+              <button
+                type="button"
+                className="m-ds-tim-x"
+                onClick={() => setQ('')}
+                aria-label="Xoá tìm kiếm"
+              >
+                <Icon n="x" className="ic sm" />
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Hàng chip cuộn ngang: Sổ quỹ / Sổ ngân hàng theo Figma T500, các sổ khác giữ cũ */}
+      {isSoTien ? (
+        <div className="m-t500-chip-hang">
+          {/* Nút bộ lọc: CHỈ ICON phễu + huy hiệu số đếm, KHÔNG chữ "Bộ lọc" (Trum chốt) */}
+          <button
+            type="button"
+            className="m-t500-chip-filter"
+            onClick={() => setMoLoc(true)}
+            aria-label="Bộ lọc"
+          >
+            <Icon n="filter" className="ic sm" />
+            {soLuongLoc > 0 && <span className="m-t500-filter-badge">{soLuongLoc}</span>}
+          </button>
+
+          {/* Chip kỳ: Tháng 9/2026 ˅ nền xanh nhạt, viền xanh */}
+          <button
+            type="button"
+            className="m-t500-chip m-t500-chip-ky"
+            onClick={() => setMoLoc(true)}
+          >
+            <span>{tenKy}</span>
+            <Icon n="chevd" className="ic xs" />
+          </button>
+
+          {/* Chip Quỹ hoặc TK */}
+          <button
+            type="button"
+            className="m-t500-chip"
+            onClick={() => setMoLoc(true)}
+          >
+            <span>{isSoQuy ? `Quỹ: ${chonQuy ?? 'Tất cả'}` : `TK: ${chonTk ?? 'Tất cả'}`}</span>
+            <Icon n="chevd" className="ic xs" />
+          </button>
+
+          {/* Chip CN */}
+          <button
+            type="button"
+            className="m-t500-chip"
+            onClick={() => setMoLoc(true)}
+          >
+            <span>CN: {tenCn}</span>
+            <Icon n="chevd" className="ic xs" />
+          </button>
+        </div>
+      ) : (
+        /* Hàng chip lọc cũ cho các báo cáo khác */
+        <div className="m-sbc-loc-hang">
+          <span className="m-sbc-chip m-sbc-chip-tinh">
+            <span className="m-sbc-chip-nhan">Thời gian: {tenKy}</span>
+          </span>
+
+          {cfg.theoCn && (
+            <span className="m-sbc-chip m-sbc-chip-tinh">
+              <span className="m-sbc-chip-nhan">Kho/CN: {tenCn}</span>
+            </span>
+          )}
+
+          {chipDieuKienKhac.map(c => (
+            <span key={c.k} className="m-sbc-chip m-sbc-chip-tinh">
+              <span className="m-sbc-chip-nhan">
+                {c.nhan}: {c.giaTri}
+              </span>
+            </span>
+          ))}
+        </div>
+      )}
+
+      {/* Ô tìm kiếm dòng & nút Excel, Xoay cho báo cáo bảng hoặc sổ khác */}
+      {!isSoTien && (
+        <div className="m-sbc-tim-hang">
+          <div className="m-ds-tim">
+            <Icon n="search" className="m-ds-tim-ic ic sm" />
+            <input
+              type="text"
+              className="m-ds-tim-inp"
+              placeholder={kieuXem === 'bang' ? 'Nhập từ khoá' : 'Nhập mã, tên'}
+              value={q}
+              onChange={e => setQ(e.target.value)}
+              aria-label="Tìm kiếm trong bảng"
+            />
+            {q && (
+              <button
+                type="button"
+                className="m-ds-tim-x"
+                onClick={() => setQ('')}
+                aria-label="Xoá tìm kiếm"
+              >
+                <Icon n="x" className="ic sm" />
+              </button>
+            )}
+          </div>
+          {kieuXem === 'bang' && (
+            <div className="m-sbc-tac-vu">
+              <button
+                type="button"
+                className="m-sbc-btn-icon m-sbc-btn-excel"
+                onClick={xuatExcel}
+                title="Tải file Excel"
+                aria-label="Tải file Excel"
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <rect x="2" y="2" width="20" height="20" rx="3.5" fill="#107C41" />
+                  <path d="M7.5 7.5L16.5 16.5M16.5 7.5L7.5 16.5" stroke="white" strokeWidth="2.2" strokeLinecap="round" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                className="m-sbc-btn-icon m-sbc-btn-xoay"
+                onClick={toggleXoay}
+                title={xoayNgang ? 'Xem dọc' : 'Xoay ngang'}
+                aria-label="Xoay màn hình"
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="5.5" y="4" width="13" height="16" rx="2" transform="rotate(-15 12 12)" />
+                  <path d="M8 2.5C10 1.5 13 1.5 15.5 2.5" />
+                  <path d="M15 1.5L16.5 2.5L15 4" />
+                </svg>
+              </button>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Nội dung báo cáo: Dạng dòng hoặc Bảng cuộn ngang */}
       {kieuXem === 'dong' && isSoApDung ? (
@@ -463,131 +644,165 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
             />
           </div>
         ) : (
-          <div className="m-so-dong">
-            {/* Thẻ tổng ở đầu: 4 ô cho Sổ quỹ / Sổ ngân hàng (T433), 3 ô cho sổ khác */}
-          {isSoTien ? (
-            <div className="m-so-dong-tong m-t433-tong-4o">
-              <div className="m-so-dong-tong-o">
-                <span className="m-so-dong-tong-nhan">Tồn đầu</span>
-                <b className="m-so-dong-tong-so m-so-dong-num">{rutGonSo(soDau)}</b>
-              </div>
-              <div className="m-so-dong-tong-o">
-                <span className="m-so-dong-tong-nhan">Thu</span>
-                <b className="m-so-dong-tong-so m-so-dong-duong m-so-dong-num">{rutGonSo(tongThu)}</b>
-              </div>
-              <div className="m-so-dong-tong-o">
-                <span className="m-so-dong-tong-nhan">Chi</span>
-                <b className="m-so-dong-tong-so m-so-dong-am m-so-dong-num">{rutGonSo(tongChi)}</b>
-              </div>
-              <div className="m-so-dong-tong-o">
-                <span className="m-so-dong-tong-nhan">Tồn cuối</span>
-                <b className="m-so-dong-tong-so m-so-dong-num">{rutGonSo(soCuoi)}</b>
-              </div>
-            </div>
-          ) : (
-            <div className="m-so-dong-tong">
-              <div className="m-so-dong-tong-o">
-                <span className="m-so-dong-tong-nhan">{nhanDau}</span>
-                <b className="m-so-dong-tong-so m-so-dong-num">{rutGonSo(soDau)}</b>
-              </div>
-              <div className="m-so-dong-tong-o">
-                <span className="m-so-dong-tong-nhan">{nhanGiua}</span>
-                <b className="m-so-dong-tong-so m-so-dong-num">
-                  <span className="m-so-dong-duong">{rutGonSo(tongThu)}</span>{' '}
-                  <span className="m-so-dong-am">{rutGonSo(tongChi)}</span>
-                </b>
-              </div>
-              <div className="m-so-dong-tong-o">
-                <span className="m-so-dong-tong-nhan">{nhanCuoi}</span>
-                <b className="m-so-dong-tong-so m-so-dong-num">{rutGonSo(soCuoi)}</b>
-              </div>
-            </div>
-          )}
-
-          {/* Danh sách nhóm theo ngày */}
-          {dsNhomNgay.length === 0 ? (
-            <div className="m-so-dong-trong">
-              {q.trim() ? 'Không tìm thấy dòng phát sinh phù hợp' : 'Không có phát sinh trong kỳ'}
-            </div>
-          ) : (
-            dsNhomNgay.map(nhom => (
-              <div key={nhom.ngay}>
-                {isSoTien ? (
-                  <div className="m-so-dong-ngay m-t433-nhom-dau">
-                    <span className="m-so-dong-ngay-chu">{nhom.ngay}</span>
-                    <span className="m-so-dong-ngay-ton m-so-dong-num">
-                      Tồn đầu ngày <span className="m-t433-dau-so">{money(nhom.tonDauNgay)}</span>
-                    </span>
-                  </div>
-                ) : (
-                  <div className="m-so-dong-ngay">
-                    <span className="m-so-dong-ngay-chu">{nhom.ngay}</span>
-                    <span className="m-so-dong-ngay-ton m-so-dong-num">
-                      {isSoCongNo ? 'Dư ' : 'Tồn '}{money(nhom.tonCuoiNgay)}
-                    </span>
-                  </div>
-                )}
-                <div className="m-so-dong-the">
-                  {nhom.ds.map((r, i) => {
-                    const dg = String(r.dg || r.dienGiai || r.ten || 'Chứng từ')
-                    const soCt = String(r.thu || r.chi || r.so || r.soCt || r.soHieu || '')
-                    const tenCn = r.cn ? String(r.cn) : ''
-                    const tkStr = r.tk ? (String(r.tk).startsWith('TK') ? String(r.tk) : `TK ${r.tk}`) : ''
-                    const phu = [
-                      soCt,
-                      xemTatCaCn && tenCn ? tenCn : null,
-                      tkStr || null,
-                    ].filter(Boolean).join(' · ')
-
-                    const tienThu = Number(r.no ?? (r.thu ? r.no : r.ps) ?? 0)
-                    const tienChi = Number(r.co ?? (r.chi ? r.co : r.tra || r.tt) ?? 0)
-                    const to = layDuongDan(soCt)
-
-                    const noiDungItem = (
-                      <>
-                        <div className="m-so-dong-trai">
-                          <div className="m-so-dong-dg">{dg}</div>
-                          {phu && <div className="m-so-dong-phu">{phu}</div>}
-                        </div>
-                        {tienThu > 0 && (
-                          <span className="m-so-dong-tien m-so-dong-duong m-so-dong-num">
-                            {money(tienThu)}
-                          </span>
-                        )}
-                        {tienChi > 0 && (
-                          <span className="m-so-dong-tien m-so-dong-am m-so-dong-num">
-                            {money(tienChi)}
-                          </span>
-                        )}
-                      </>
-                    )
-
-                    return to ? (
-                      <Link
-                        key={i}
-                        to={to}
-                        className="m-so-dong-item m-so-dong-item-bam"
-                        title="Mở chứng từ gốc"
-                      >
-                        {noiDungItem}
-                      </Link>
-                    ) : (
-                      <div key={i} className="m-so-dong-item">
-                        {noiDungItem}
-                      </div>
-                    )
-                  })}
-                  {isSoTien && (
-                    <div className="m-t433-cuoi-ngay">
-                      <span className="m-t433-cuoi-nhan">Tồn cuối ngày</span>
-                      <b className="m-t433-cuoi-so m-so-dong-num">{money(nhom.tonCuoiNgay)}</b>
-                    </div>
-                  )}
+          <div className={isSoTien ? 'm-t500-so-dong' : 'm-so-dong'}>
+            {/* Lưới 2x2 thẻ cho Sổ quỹ / Sổ ngân hàng theo Figma T500, 3 ô cho sổ khác */}
+            {isSoTien ? (
+              <div className="m-t500-grid-cards">
+                <div className="m-sq-card m-sq-card-dau">
+                  <div className="m-sq-card-label">Tồn đầu kỳ</div>
+                  <div className="m-sq-card-val m-so-dong-num">{money(soDau)}</div>
+                  <div className="m-sq-card-sub">{ngayDauKy}</div>
+                </div>
+                <div className="m-sq-card m-sq-card-cuoi">
+                  <div className="m-sq-card-label">Tồn cuối kỳ</div>
+                  <div className="m-sq-card-val m-sq-val-blue m-so-dong-num">{money(soCuoi)}</div>
+                  <div className="m-sq-card-sub">{ngayCuoiKy}</div>
+                </div>
+                <div className="m-sq-card m-sq-card-thu">
+                  <div className="m-sq-card-label">Tổng thu</div>
+                  <div className="m-sq-card-val m-sq-val-green m-so-dong-num">+{money(tongThu)}</div>
+                  <div className="m-sq-card-sub">Phát sinh trong kỳ</div>
+                </div>
+                <div className="m-sq-card m-sq-card-chi">
+                  <div className="m-sq-card-label">Tổng chi</div>
+                  <div className="m-sq-card-val m-sq-val-red m-so-dong-num">−{money(tongChi)}</div>
+                  <div className="m-sq-card-sub">Phát sinh trong kỳ</div>
                 </div>
               </div>
-            ))
-          )}
-        </div>
+            ) : (
+              <div className="m-so-dong-tong">
+                <div className="m-so-dong-tong-o">
+                  <span className="m-so-dong-tong-nhan">{nhanDau}</span>
+                  <b className="m-so-dong-tong-so m-so-dong-num">{rutGonSo(soDau)}</b>
+                </div>
+                <div className="m-so-dong-tong-o">
+                  <span className="m-so-dong-tong-nhan">{nhanGiua}</span>
+                  <b className="m-so-dong-tong-so m-so-dong-num">
+                    <span className="m-so-dong-duong">{rutGonSo(tongThu)}</span>{' '}
+                    <span className="m-so-dong-am">{rutGonSo(tongChi)}</span>
+                  </b>
+                </div>
+                <div className="m-so-dong-tong-o">
+                  <span className="m-so-dong-tong-nhan">{nhanCuoi}</span>
+                  <b className="m-so-dong-tong-so m-so-dong-num">{rutGonSo(soCuoi)}</b>
+                </div>
+              </div>
+            )}
+
+            {isSoTien && <div className="m-t500-sec-title">Chi tiết phát sinh</div>}
+
+            {/* Danh sách nhóm theo ngày */}
+            {dsNhomNgay.length === 0 ? (
+              <div className="m-so-dong-trong">
+                {q.trim() ? 'Không tìm thấy dòng phát sinh phù hợp' : 'Không có phát sinh trong kỳ'}
+              </div>
+            ) : (
+              dsNhomNgay.map(nhom => (
+                <div key={nhom.ngay} className={isSoTien ? 'm-t500-nhom-ngay-wrap' : undefined}>
+                  {isSoTien ? (
+                    <div className="m-t500-dong-ngay">
+                      <span className="m-t500-ngay-chu">{dinhDangThuNgay(nhom.ngay)}</span>
+                      <span className="m-t500-ngay-ton m-so-dong-num">
+                        Tồn đầu ngày <span className="m-t500-dau-so">{money(nhom.tonDauNgay)}</span>
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="m-so-dong-ngay">
+                      <span className="m-so-dong-ngay-chu">{nhom.ngay}</span>
+                      <span className="m-so-dong-ngay-ton m-so-dong-num">
+                        {isSoCongNo ? 'Dư ' : 'Tồn '}{money(nhom.tonCuoiNgay)}
+                      </span>
+                    </div>
+                  )}
+
+                  <div className={isSoTien ? 'm-t500-the-trang' : 'm-so-dong-the'}>
+                    {nhom.ds.map((r, i) => {
+                      const dg = String(r.dg || r.dienGiai || r.ten || 'Chứng từ')
+                      const soCt = String(r.thu || r.chi || r.so || r.soCt || r.soHieu || '')
+                      const tenCnRow = r.cn ? String(r.cn) : ''
+                      const tkStr = r.tk ? (String(r.tk).startsWith('TK') ? String(r.tk) : `TK ${r.tk}`) : ''
+                      const phu = [
+                        soCt,
+                        xemTatCaCn && tenCnRow ? tenCnRow : null,
+                        tkStr || null,
+                      ].filter(Boolean).join(' · ')
+
+                      const tienThu = Number(r.no ?? (r.thu ? r.no : r.ps) ?? 0)
+                      const tienChi = Number(r.co ?? (r.chi ? r.co : r.tra || r.tt) ?? 0)
+                      const to = layDuongDan(soCt)
+
+                      const noiDungItem = isSoTien ? (
+                        <div className="m-t500-sq-row-content">
+                          <div className="m-t500-sq-row-trai">
+                            <div className="m-t500-sq-row-dg" title={dg}>{dg}</div>
+                            <div className="m-t500-sq-row-phu">
+                              <span className="m-t500-sq-row-so-ct">{soCt}</span>
+                              {tenCnRow && <span className="m-t500-sq-row-cn"> · {tenCnRow}</span>}
+                            </div>
+                          </div>
+                          <div className="m-t500-sq-row-phai">
+                            {tienThu > 0 && (
+                              <span className="m-t500-sq-tien-thu m-so-dong-num">
+                                +{money(tienThu)}
+                              </span>
+                            )}
+                            {tienChi > 0 && (
+                              <span className="m-t500-sq-tien-chi m-so-dong-num">
+                                −{money(tienChi)}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="m-so-dong-trai">
+                            <div className="m-so-dong-dg">{dg}</div>
+                            {phu && <div className="m-so-dong-phu">{phu}</div>}
+                          </div>
+                          {tienThu > 0 && (
+                            <span className="m-so-dong-tien m-so-dong-duong m-so-dong-num">
+                              {money(tienThu)}
+                            </span>
+                          )}
+                          {tienChi > 0 && (
+                            <span className="m-so-dong-tien m-so-dong-am m-so-dong-num">
+                              {money(tienChi)}
+                            </span>
+                          )}
+                        </>
+                      )
+
+                      return to ? (
+                        <Link
+                          key={i}
+                          to={to}
+                          className={isSoTien ? 'm-t500-sq-row-item' : 'm-so-dong-item m-so-dong-item-bam'}
+                          title="Mở chứng từ gốc"
+                        >
+                          {noiDungItem}
+                        </Link>
+                      ) : (
+                        <div key={i} className={isSoTien ? 'm-t500-sq-row-item' : 'm-so-dong-item'}>
+                          {noiDungItem}
+                        </div>
+                      )
+                    })}
+
+                    {isSoTien && (
+                      <div className="m-t500-cuoi-ngay">
+                        <span className="m-t500-cuoi-nhan">Tồn cuối ngày</span>
+                        <b className="m-t500-cuoi-so m-so-dong-num">{money(nhom.tonCuoiNgay)}</b>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))
+            )}
+
+            {isSoTien && (
+              <div className="m-t500-keo-tiep">Kéo xuống để xem các ngày tiếp theo</div>
+            )}
+          </div>
         )
       ) : (
         /* Khung bảng cuộn ngang, trang không cuộn ngang (T273) */
@@ -611,6 +826,16 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
             />
           )}
         </div>
+      )}
+
+      {/* Modal bộ lọc báo cáo */}
+      {moLoc && (
+        <MBaoCaoLoc
+          mo={moLoc}
+          onDong={() => setMoLoc(false)}
+          path={path}
+          sc={sc}
+        />
       )}
     </div>
   )

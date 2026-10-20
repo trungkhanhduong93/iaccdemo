@@ -183,6 +183,7 @@ export function MobileShell() {
     loc.pathname === '/app/' ||
     loc.pathname === '/app/trang-chu/tong-quan' ||
     loc.pathname === '/app/trang-chu/ban-lam-viec'
+  const laNghiepVuGoc = loc.pathname === '/app/nghiep-vu' && !loc.search.includes('m=')
   const tieuDe = layTieuDe(loc.pathname, loc.search, s)
   const capHai =
     laXemPhieu(loc.pathname) ||
@@ -210,7 +211,7 @@ export function MobileShell() {
 
   return (
     <div className={`m-app${capHai ? ' m-cap-2' : ''}`}>
-      {!laTrangChu && !loc.pathname.startsWith('/app/tien/2-1-1') && (
+      {!laTrangChu && !laNghiepVuGoc && !loc.pathname.startsWith('/app/tien/2-1-1') && (
         <header className="m-thanh-tren">
           <div className="m-thanh-tren-trai">
             {!laGoc && (

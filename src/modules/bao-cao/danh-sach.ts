@@ -171,6 +171,10 @@ export const AN_NHOM_BC: Partial<Record<Goi, string[]>> = { F: ['thue'] }
 export const DAU_NHOM_BC: Record<string, string[]> = { kho: ['5.2.3'] }
 /** Báo cáo chỉ mở từ báo cáo khác, không hiện ở danh sách báo cáo, menu, tìm kiếm: Chi tiết mua hàng 4.2.1 mở khi bấm nhà cung cấp ở Tổng hợp mua hàng, PhuongXT 13/10/2026 (T200) */
 export const CHI_MO_TU_BC = ['4.2.1']
+/** Báo cáo chỉ mở từ báo cáo khác theo gói: gói Free ẩn Thẻ kho 5.2.1 khỏi danh sách, vẫn bấm hàng ở Xuất nhập tồn mở được, PhuongXT 20/10/2026 (T506) */
+export const CHI_MO_TU_BC_GOI: Partial<Record<Goi, string[]>> = { F: ['5.2.1'] }
+/** Báo cáo ẩn hẳn theo gói: gói Free ẩn Tổng hợp xuất kho 5.2.11, Chi tiết xuất kho 5.2.12, PhuongXT 20/10/2026 (T506) */
+export const AN_BC_GOI: Partial<Record<Goi, string[]>> = { F: ['5.2.11', '5.2.12'] }
 const GIU_TT58 = ['2.2.5', '2.2.7', '3.2.5', '5.2.8', '6.2.4', '6.2.5', '7.2.1', '10.2.2', '10.2.3', '10.4.1', '10.4.2']
 /** Hộ kinh doanh TT152 (T179): S1a, S2a, S2b-HKD (3.2.5), S2c (10.4.1), S2d (5.2.8), S2e (2.2.7); doanh nghiệp gói Free cũng chạy TT152 nhưng không có các sổ này */
 const GIU_TT152_HKD = ['2.2.7', '3.2.5', '5.2.8', '10.4.1']

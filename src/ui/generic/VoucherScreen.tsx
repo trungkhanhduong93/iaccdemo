@@ -398,7 +398,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
       ...(dsHangLoc.length ? [{ k: 'hang', ten: 'Hàng hoá', o: chonO('hang', 'Hàng hoá', dsHangLoc) }] : []),
     ] : []),
   ]
-  const [cauHinhLoc, datCauHinhLoc] = useCauHinhLoc(path, oLoc.map(o => o.k), ['thoiGian', 'tim', ...(coLyDo ? ['lyDo'] : []), 'doiTuong', ...(cfg.kiemKe || cfg.dieuChinh ? ['kho', 'hang', 'nhomHang'] : [])])
+  const [cauHinhLoc, datCauHinhLoc] = useCauHinhLoc(path, oLoc.map(o => o.k), ['thoiGian', 'tim'])   // T504: mặc định chỉ Thời gian, Tìm kiếm ra ngoài như thanh Figma
 
   // Lọc theo các ô đã áp dụng, cửa hàng trên thanh trên, hàng lọc từng cột; chip trạng thái lọc sau cùng để đếm số trên chip
   const ap = loc0.ap
@@ -750,30 +750,35 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
               onXoaHet={loc0.xoaNhap}
               chiNutPheu
               soDem={soDieuKienLoc}
-            />
-
-            <div className="ds-tim-figma">
-              <IconFigmaSearch size={16} />
-              <input
-                value={nhap.tim}
-                placeholder="Số, tên, diễn giải"
-                title="Tìm theo số chứng từ, đối tượng, diễn giải"
-                aria-label="Tìm kiếm"
-                onChange={e => dat('tim', e.target.value)}
-                onKeyDown={e => {
-                  if (e.key === 'Enter') apLoc()
-                }}
-              />
-            </div>
-
-            <ChonKhoangNgay
-              value={nhap.thoiGian}
-              onChange={k => {
-                dat('thoiGian', k)
-                loc0.datVaAp('thoiGian', k)
-                setTrang(1)
+              ngoaiRieng={{
+                tim: (
+                  <div key="tim" className="ds-tim-figma">
+                    <IconFigmaSearch size={16} />
+                    <input
+                      value={nhap.tim}
+                      placeholder="Số, tên, diễn giải"
+                      title="Tìm theo số chứng từ, đối tượng, diễn giải"
+                      aria-label="Tìm kiếm"
+                      onChange={e => dat('tim', e.target.value)}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter') apLoc()
+                      }}
+                    />
+                  </div>
+                ),
+                thoiGian: (
+                  <ChonKhoangNgay
+                    key="thoiGian"
+                    value={nhap.thoiGian}
+                    onChange={k => {
+                      dat('thoiGian', k)
+                      loc0.datVaAp('thoiGian', k)
+                      setTrang(1)
+                    }}
+                    kieu="chip"
+                  />
+                ),
               }}
-              kieu="chip"
             />
 
             {dsChipLoc.map(c => (
@@ -846,7 +851,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
                     title={l.ten}
                   >
                     {l.k === 'thu' ? <IconFigmaPlus /> : l.k === 'chi' ? <IconFigmaMinus /> : <Icon n={l.icon ?? 'plus'} className="ic sm" />}
-                    <span>{l.k === 'thu' ? '+ Thu tiền' : l.k === 'chi' ? '− Chi tiền' : (l.nut ?? l.ten)}</span>
+                    <span>{l.k === 'thu' ? 'Thu tiền' : l.k === 'chi' ? 'Chi tiền' : (l.nut ?? l.ten).replace(/^[+\-−]\s*/, '')}</span>
                   </Link>
                 )) : nhomChon && loaiNhom?.[0] ? (
                   <Link
@@ -854,12 +859,13 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
                     to={`${path}/moi?loai=${loaiNhom[0].k}`}
                   >
                     <IconFigmaPlus />
-                    <span>{`Thêm ${loaiNhom[0].ten.toLowerCase()}`}</span>
+                    <span>{`Thêm ${loaiNhom[0].ten.toLowerCase()}`.replace(/^[+\-−]\s*/, '')}</span>
                   </Link>
                 ) : (
                   <NutThemMoiSplit
                     toMoi={cfg.loai ? `${path}/moi?loai=${cfg.loai[0].k}` : `${path}/moi`}
                     loai={cfg.loai}
+                    nhan={cfg.them ? cfg.them.replace(/^[+\-−]\s*/, '') : undefined}
                     taiNguon={cfg.nguon && cfg.nguon !== 'tay' && cfg.nguon !== 'excel' ? {
                       ten: NGUON[cfg.nguon][1],
                       onTai: () => toast(`Đã tải 14 chứng từ mới từ ${NGUON[cfg.nguon!][1]}`),

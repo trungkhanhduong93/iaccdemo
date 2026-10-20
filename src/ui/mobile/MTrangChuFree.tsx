@@ -14,6 +14,7 @@ import { Select } from '../Dropdown'
 import { datLocDaXem } from '../bao-cao/tuyChinhBC'
 import { MKhoFree } from './MKhoFree'
 import { HopLaiLo13, HopThuChi13, laiLo13Thang, thuChi13Thang, VongQuy } from '../../modules/home/BaBaiToanFree'
+import { FigmaGradientIcon } from '../FigmaIcon'
 import { ModalQuy } from '../../modules/home/quyThuChi'
 import { useThaoTacNhanh, TOI_DA_THAO_TAC, type ThaoTacMuc } from '../../app/thaoTacNhanh'
 import { MTimKiem } from './MTimKiem'
@@ -100,6 +101,7 @@ export function MTrangChuFree(_props?: Partial<ScreenProps>) {
 
   // Modals
   const [moTimKiem, setMoTimKiem] = useState(false)
+  const [moDropdownXemSo, setMoDropdownXemSo] = useState(false)
   const [moChonCn, setMoChonCn] = useState(false)
   const [moBieuDo, setMoBieuDo] = useState(false)
   const [moThuChi13, setMoThuChi13] = useState(false)
@@ -254,25 +256,39 @@ export function MTrangChuFree(_props?: Partial<ScreenProps>) {
   }, [quy])
   const thuChi13 = useMemo(() => thuChi13Thang(selCns), [selCns])
 
+  const layIconThaoTac = (item: ThaoTacMuc) => {
+    const k = item.icon || item.id || ''
+    if (k.includes('thu') || item.ten.includes('Thu')) return <FigmaGradientIcon name="thu-tien" size={24} />
+    if (k.includes('chi') || item.ten.includes('Chi')) return <FigmaGradientIcon name="chi-tien" size={24} />
+    if (k.includes('mua') || item.ten.includes('mua') || item.to.includes('mua-hang')) return <FigmaGradientIcon name="mua-hang" size={24} />
+    if (k.includes('kho') || item.ten.includes('Kiểm kê') || item.to.includes('kho')) return <FigmaGradientIcon name="nhap-kho" size={24} />
+    if (k.includes('bao-cao') || k.includes('so-quy') || item.ten.includes('Sổ quỹ')) return <FigmaGradientIcon name="bao-cao" size={24} />
+    return <FigmaGradientIcon name="bao-cao" size={24} />
+  }
+
+
   return (
     <div className="m-trang-chu m-tcf-trang" onClickCapture={moTuTrangChu}>
-      {/* 1. Phần đầu: tên đơn vị, nhãn gói, chọn cửa hàng */}
-      <section className="m-tc-dau">
-        <div className="m-tc-dau-trai">
-          <div className="m-tc-logo-hop">
-            <span className="m-tc-goi-badge">FREE</span>
-            <div className="m-tc-logo-av">{dv.viettat}</div>
+      {/* 1. Header gradient theo Figma MB01 (T498) */}
+      <section className="m-tc-figma-header">
+        <div className="m-tc-figma-hoa-tiet-1" />
+        <div className="m-tc-figma-hoa-tiet-2" />
+
+        <div className="m-tc-figma-dau">
+          <div className="m-tc-figma-dau-trai">
+            <div className="m-tc-figma-avatar-wrap">
+              <span className="m-tc-figma-badge-free">FREE</span>
+              <div className="m-tc-figma-avatar">{dv.viettat}</div>
+            </div>
+            <div className="m-tc-figma-don-vi">
+              <h2 className="m-tc-figma-dv-ten">{dv.ten}</h2>
+              <div className="m-tc-figma-dv-vaitro">{ROLE[s.role]}</div>
+            </div>
           </div>
-          <div className="m-tc-don-vi">
-            <h2 className="m-tc-dv-ten">{dv.ten}</h2>
-            <div className="m-tc-dv-vai-tro">{ROLE[s.role]}</div>
-          </div>
-        </div>
-        <div className="m-tc-dau-phai">
-          <div className="m-tc-cum-phai">
+          <div className="m-tc-figma-dau-phai">
             <button
               type="button"
-              className="m-tc-nut-tron"
+              className="m-tc-figma-nut-tron"
               onClick={() => setMoTimKiem(true)}
               title="Tìm kiếm"
               aria-label="Tìm kiếm màn hình"
@@ -281,65 +297,98 @@ export function MTrangChuFree(_props?: Partial<ScreenProps>) {
             </button>
             <button
               type="button"
-              className="m-tc-nut-tron"
+              className="m-tc-figma-nut-tron"
               title="Thông báo"
             >
               <Icon n="bell" className="ic sm" />
+              <span className="m-tc-figma-cham-tb" />
             </button>
+          </div>
+        </div>
+
+        {/* 3 chips bộ lọc: Cửa hàng, Năm, Tháng */}
+        <div className="m-tc-figma-bo-loc">
+          <button
+            type="button"
+            className="m-tc-figma-chip"
+            onClick={() => setMoChonCn(true)}
+            title="Chọn cửa hàng hiển thị"
+          >
+            <span>CN: {nhanCn}</span>
+            <Icon n="chevd" className="ic sm" />
+          </button>
+
+          <div className="m-tc-figma-chip" title="Chọn năm">
+            <span>Năm {namF}</span>
+            <Icon n="chevd" className="ic sm" />
+            <select
+              aria-label="Chọn năm"
+              value={String(namF)}
+              onChange={e => setNamF(Number(e.target.value))}
+              className="m-tc-chip-select-an"
+            >
+              <option value="2026">Năm 2026</option>
+            </select>
+          </div>
+
+          <div className="m-tc-figma-chip" title="Chọn tháng">
+            <span>Tháng {thangF}</span>
+            <Icon n="chevd" className="ic sm" />
+            <select
+              aria-label="Chọn tháng"
+              value={String(thangF)}
+              onChange={e => setThangF(Number(e.target.value))}
+              className="m-tc-chip-select-an"
+            >
+              {[10, 9, 8, 7].map(t => (
+                <option key={t} value={t}>
+                  Tháng {t}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
       </section>
 
-      {/* Hàng chọn cửa hàng */}
-      <div className="m-tcf-hang-cn">
-        <button
-          type="button"
-          className="m-tc-chip-cn m-tc-chip-kho"
-          onClick={() => setMoChonCn(true)}
-          title="Chọn cửa hàng hiển thị"
-        >
-          <span className="m-tc-chip-cn-nhan m-tc-chip-kho-nhan">CN: {nhanCn}</span>
-          <Icon n="chevd" className="ic sm" />
-        </button>
-      </div>
-
-      <div className="m-tcf-than">
-        {/* 2. Thanh thao tác nhanh đang có, giữ trên cùng */}
+      <div className="m-tcf-than" style={{ padding: '14px 16px 84px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+        {/* 2. Thao tác nhanh (5 ô icon gradient vuông bo 10px) */}
         {thaoTacNhanhDs.length > 0 && (
-          <div className="m-tc-the-ivt">
-            <div className="m-tc-the-head">
-              <div className="m-tc-the-tieu-hop">
-                <h3 className="m-tc-the-tieu">Thao tác nhanh</h3>
-                <span className="m-tc-the-info" title="Các thao tác nhanh thường dùng">
+          <div className="m-tcf-figma-card">
+            <div className="m-tcf-figma-card-head">
+              <div className="m-tcf-figma-head-trai">
+                <h3 className="m-tcf-figma-card-tieu">Thao tác nhanh</h3>
+                <span className="m-tcf-figma-card-info" title="Các thao tác nhanh thường dùng">
                   <Icon n="info" className="ic sm" />
                 </span>
               </div>
               <button
                 type="button"
-                className="m-tc-the-link"
+                className="m-tcf-figma-link-bc"
+                style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
                 onClick={() => setMoTuyChinhThaoTac(true)}
               >
                 Tuỳ chỉnh
               </button>
             </div>
-            <div className="m-tc-nhanh-5">
-              {thaoTacNhanhDs.map(item => (
+
+            <div className="m-tcf-nhanh-grid">
+              {thaoTacNhanhDs.slice(0, 5).map(item => (
                 <Link
                   key={item.id}
                   to={item.to}
-                  className="m-tc-nhanh-o5"
+                  className="m-tcf-nhanh-muc"
                 >
-                  <div className="m-tc-nhanh-ic-tron">
-                    <ONen n={item.icon} kieu="nhat" co="sm" />
+                  <div className="m-tcf-nhanh-o-ic">
+                    {layIconThaoTac(item)}
                   </div>
-                  <span className="m-tc-nhanh-ten5">{item.ten}</span>
+                  <span className="m-tcf-nhanh-chu">{item.ten}</span>
                 </Link>
               ))}
             </div>
           </div>
         )}
 
-        {/* Nhắc khoá sổ tháng chưa khoá (T341) */}
+        {/* Nhắc khoá sổ tháng chưa khoá */}
         {(KHOA_SO_DEN.nam < KY_MO.nam ||
           (KHOA_SO_DEN.nam === KY_MO.nam && KHOA_SO_DEN.thang < KY_MO.thang - 1)) && (
           <div className="m-tcf-nhac-khoa-wrap">
@@ -359,242 +408,244 @@ export function MTrangChuFree(_props?: Partial<ScreenProps>) {
           </div>
         )}
 
-        {/* 3. Chọn tháng như web (tháng 7 đến 10) */}
-        <div className="m-tcf-chon-thang">
-          <Select
-            className="sel-mini m-tcf-sel-nam"
-            value={String(namF)}
-            aria-label="Năm"
-            onChange={e => setNamF(Number(e.target.value))}
-          >
-            <option value="2026">Năm 2026</option>
-          </Select>
-          <Select
-            className="sel-mini m-tcf-sel-thang"
-            value={String(thangF)}
-            aria-label="Tháng"
-            onChange={e => setThangF(Number(e.target.value))}
-          >
-            {[10, 9, 8, 7].map(t => (
-              <option key={t} value={t}>
-                Tháng {t}
-              </option>
-            ))}
-          </Select>
-        </div>
-
-        {/* 4. Khối Kết quả kinh doanh */}
-        <div className="m-tc-the-ivt m-free-the">
-          <div className="m-tc-the-head m-tcf-head-1hang">
-            <div className="m-tc-the-tieu-hop">
-              <h2 className="m-tc-the-tieu">
-                <Icon n="chart" className="ic sm" /> Kết quả kinh doanh
-              </h2>
+        {/* 3. Thẻ Kết quả kinh doanh theo Figma */}
+        <div className="m-tcf-figma-card">
+          <div className="m-tcf-figma-card-head">
+            <div className="m-tcf-figma-head-trai">
+              <FigmaGradientIcon name="bao-cao" size={22} />
+              <h2 className="m-tcf-figma-card-tieu">Kết quả kinh doanh</h2>
             </div>
-            <div className="m-tcf-links">
-              <Link
-                to="/app/bao-cao/10-2-3"
-                className="m-tcf-link"
-                aria-label="Xem báo cáo kết quả kinh doanh"
-                onClick={() => datLocDaXem('/app/bao-cao/10-2-3', {}, String(thangF))}
-              >
-                Xem BC ›
-              </Link>
-            </div>
+            <Link
+              to="/app/bao-cao/10-2-3"
+              className="m-tcf-figma-link-bc"
+              aria-label="Xem báo cáo kết quả kinh doanh"
+              onClick={() => datLocDaXem('/app/bao-cao/10-2-3', {}, String(thangF))}
+            >
+              Xem BC ›
+            </Link>
           </div>
-          <div className="bbt-e-mota m-tcf-kqkd-phu">Doanh thu trừ các khoản chi phí trong tháng</div>
-          <div className="m-tcf-kqkd-ln">
-            <span className="m-tcf-kqkd-ln-t">
+          <div className="m-tcf-figma-card-mota">Doanh thu trừ các khoản chi phí trong tháng</div>
+
+          <div className="m-tcf-hero-box">
+            <div className="m-tcf-hero-lbl">
               Lợi nhuận {thangF === 10 ? 'tháng này' : `tháng ${thangF}`}
-            </span>
-            <span
-              className={`m-tcf-kqkd-ln-so ${loiNhuan >= 0 ? 'lai' : 'lo'}`}
+            </div>
+            <div
+              className="m-tcf-hero-so"
               style={{ color: loiNhuan >= 0 ? 'var(--green, #138a52)' : 'var(--red, #c2362b)' }}
             >
               {loiNhuan < 0 ? `Lỗ ${moneyD(Math.abs(loiNhuan))}` : moneyD(loiNhuan)}
-            </span>
+            </div>
+            <div className="m-tcf-hero-sub">Biên lợi nhuận {pct(bien)}</div>
           </div>
-          <div className="m-tcf-kqkd-bien">Biên lợi nhuận {pct(bien)}</div>
 
-          <div className="m-tcf-kqkd-ds">
-            <div className="m-tcf-kqkd-dong m-tcf-kqkd-dt">
-              <span className="m-tcf-kqkd-ten">Doanh thu</span>
-              <span className="m-tcf-kqkd-tien">{moneyD(d.dtThuan)}</span>
-              <span className="m-tcf-kqkd-mui-trong" />
-              <span className="m-tcf-kqkd-mt">Tiền bán hàng trong tháng</span>
+          <div className="m-tcf-kqkd-bang">
+            {/* Dòng Doanh thu: Trum chốt số tiền màu --blue */}
+            <div className="m-tcf-kqkd-hang">
+              <div className="m-tcf-kqkd-cot-trai">
+                <div className="m-tcf-kqkd-ten-hang">Doanh thu</div>
+              </div>
+              <div className="m-tcf-kqkd-cot-phai">
+                <span className="m-tcf-kqkd-so-tien dt-blue">{moneyD(d.dtThuan)}</span>
+              </div>
             </div>
 
+            {/* Chi phí nguyên vật liệu: Trum chốt % màu --orange */}
             <Link
               to={`/app/trang-chu/chi-phi-nvl?thang=${thangF}`}
-              className="m-tcf-kqkd-dong m-tcf-kqkd-link"
+              className="m-tcf-kqkd-hang m-tcf-kqkd-hang-link"
               title="Xem chi phí nguyên vật liệu"
             >
-              <span className="m-tcf-kqkd-ten">Chi phí nguyên vật liệu</span>
-              <span className="m-tcf-kqkd-tien">{moneyD(nvl.tien)}</span>
-              <Icon n="chevr" className="ic sm m-tcf-kqkd-mui" />
-              <span className="m-tcf-kqkd-mt">{moTaCach(nvl.ds)}</span>
-              <span className="m-tcf-kqkd-pt">
-                <span className="m-tcf-kqkd-pill">{pct(d.dtThuan > 0 ? nvl.tien / d.dtThuan : 0)}</span>
-              </span>
+              <div className="m-tcf-kqkd-cot-trai">
+                <div className="m-tcf-kqkd-ten-hang">Chi phí nguyên vật liệu</div>
+                <div className="m-tcf-kqkd-sub-hang">Theo giá thành iPOS Inventory</div>
+              </div>
+              <div className="m-tcf-kqkd-cot-phai">
+                <div className="m-tcf-kqkd-tien-pt">
+                  <div className="m-tcf-kqkd-so-tien">{moneyD(nvl.tien)}</div>
+                  <div className="m-tcf-kqkd-pt-cam">{pct(d.dtThuan > 0 ? nvl.tien / d.dtThuan : 0)}</div>
+                </div>
+                <Icon n="chevr" className="ic sm m-tcf-mui-xam" />
+              </div>
             </Link>
 
+            {/* Chi phí hoạt động: Trum chốt % màu --orange */}
             <Link
               to={`/app/trang-chu/chi-phi-thang?thang=${thangF}`}
-              className="m-tcf-kqkd-dong m-tcf-kqkd-link"
+              className="m-tcf-kqkd-hang m-tcf-kqkd-hang-link"
               title="Xem chi phí hoạt động"
             >
-              <span className="m-tcf-kqkd-ten">Chi phí hoạt động</span>
-              <span className="m-tcf-kqkd-tien">{moneyD(cpThang)}</span>
-              <Icon n="chevr" className="ic sm m-tcf-kqkd-mui" />
-              <span className="m-tcf-kqkd-mt">
-                {chiLon
-                  ? `Lương, mặt bằng, điện nước… Lớn nhất: ${chiLon.ly} ${short(chiLon.v)}`
-                  : 'Lương, mặt bằng, điện nước, chi khác'}
-              </span>
-              <span className="m-tcf-kqkd-pt">
-                <span className="m-tcf-kqkd-pill">{pct(d.dtThuan > 0 ? cpThang / d.dtThuan : 0)}</span>
-              </span>
+              <div className="m-tcf-kqkd-cot-trai">
+                <div className="m-tcf-kqkd-ten-hang">Chi phí hoạt động</div>
+                <div className="m-tcf-kqkd-sub-hang">
+                  {chiLon
+                    ? `Lớn nhất: ${chiLon.ly} ${short(chiLon.v)}`
+                    : 'Lương, mặt bằng, điện nước…'}
+                </div>
+              </div>
+              <div className="m-tcf-kqkd-cot-phai">
+                <div className="m-tcf-kqkd-tien-pt">
+                  <div className="m-tcf-kqkd-so-tien">{moneyD(cpThang)}</div>
+                  <div className="m-tcf-kqkd-pt-cam">{pct(d.dtThuan > 0 ? cpThang / d.dtThuan : 0)}</div>
+                </div>
+                <Icon n="chevr" className="ic sm m-tcf-mui-xam" />
+              </div>
             </Link>
 
+            {/* Chi phí phân bổ nhiều tháng: Trum chốt % màu --orange */}
             <Link
               to="/app/ccdc/8-1-1"
-              className="m-tcf-kqkd-dong m-tcf-kqkd-link"
+              className="m-tcf-kqkd-hang m-tcf-kqkd-hang-link"
               title="Xem chi phí phân bổ, khấu hao"
             >
-              <span className="m-tcf-kqkd-ten">Chi phí phân bổ nhiều tháng</span>
-              <span className="m-tcf-kqkd-tien">{moneyD(d.cpPhanBo)}</span>
-              <Icon n="chevr" className="ic sm m-tcf-kqkd-mui" />
-              <span className="m-tcf-kqkd-mt">Công cụ, tài sản mua một lần, ghi nhận dần theo tháng</span>
-              <span className="m-tcf-kqkd-pt">
-                <span className="m-tcf-kqkd-pill">{pct(d.dtThuan > 0 ? d.cpPhanBo / d.dtThuan : 0)}</span>
-              </span>
+              <div className="m-tcf-kqkd-cot-trai">
+                <div className="m-tcf-kqkd-ten-hang">Chi phí phân bổ nhiều tháng</div>
+                <div className="m-tcf-kqkd-sub-hang">Chi phí phân bổ nhiều tháng</div>
+              </div>
+              <div className="m-tcf-kqkd-cot-phai">
+                <div className="m-tcf-kqkd-tien-pt">
+                  <div className="m-tcf-kqkd-so-tien">{moneyD(d.cpPhanBo)}</div>
+                  <div className="m-tcf-kqkd-pt-cam">{pct(d.dtThuan > 0 ? d.cpPhanBo / d.dtThuan : 0)}</div>
+                </div>
+                <Icon n="chevr" className="ic sm m-tcf-mui-xam" />
+              </div>
             </Link>
 
-            <div className={`m-tcf-kqkd-dong m-tcf-kqkd-ln2 ${loiNhuan >= 0 ? 'lai' : 'lo'}`}>
-              <span className="m-tcf-kqkd-ten">Lợi nhuận</span>
-              <span className="m-tcf-kqkd-tien">
-                {loiNhuan < 0 ? `Lỗ ${moneyD(Math.abs(loiNhuan))}` : moneyD(loiNhuan)}
-              </span>
-              <span className="m-tcf-kqkd-mui-trong" />
-              <span className="m-tcf-kqkd-mt" />
-              <span className="m-tcf-kqkd-pt">
-                <span className="m-tcf-kqkd-pill">{pct(bien)}</span>
-              </span>
+            {/* Lợi nhuận: nền xanh lá nhạt --greent, chữ xanh đậm */}
+            <div className="m-tcf-kqkd-hang m-tcf-kqkd-hang-ln">
+              <div className="m-tcf-kqkd-cot-trai">
+                <div className="m-tcf-kqkd-ten-hang">Lợi nhuận</div>
+              </div>
+              <div className="m-tcf-kqkd-cot-phai">
+                <div className="m-tcf-kqkd-tien-pt">
+                  <div className="m-tcf-kqkd-so-tien">
+                    {loiNhuan < 0 ? `Lỗ ${moneyD(Math.abs(loiNhuan))}` : moneyD(loiNhuan)}
+                  </div>
+                  <div className="m-tcf-kqkd-pt-xanh">{pct(bien)}</div>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="bbt-chan" style={{ marginTop: 10 }}>
-            <button type="button" className="bbt-nut" onClick={() => setMoBieuDo(true)}>
-              Xem hiệu quả kinh doanh 13 tháng
-              <Icon n="chevr" className="ic sm" />
-            </button>
-          </div>
+          <button
+            type="button"
+            className="m-tcf-nut-vien"
+            style={{ marginTop: 14 }}
+            onClick={() => setMoBieuDo(true)}
+          >
+            <Icon n="chart" className="ic sm" />
+            <span>Xem hiệu quả kinh doanh 13 tháng</span>
+            <Icon n="chevr" className="ic sm m-tcf-mui-xam" />
+          </button>
         </div>
 
-        {/* 5. Khối Quỹ tiền */}
-        <div className="m-tc-the-ivt m-free-the">
-          <div className="m-tc-the-head">
-            <div className="m-tc-the-tieu-hop">
-              <h2 className="m-tc-the-tieu">
-                <Icon n="wallet" className="ic sm" /> Quỹ tiền
-              </h2>
+        {/* 4. Thẻ Quỹ tiền theo Figma */}
+        <div className="m-tcf-figma-card">
+          <div className="m-tcf-figma-card-head">
+            <div className="m-tcf-figma-head-trai">
+              <FigmaGradientIcon name="thu-tien" size={22} />
+              <h2 className="m-tcf-figma-card-tieu">Quỹ tiền</h2>
             </div>
-            <div className="m-tcf-links">
-              <Link
-                to="/app/bao-cao/2-2-1"
-                className="m-tcf-link"
-                title="Xem Sổ quỹ tiền mặt"
-                onClick={() => datLocDaXem('/app/bao-cao/2-2-1', {}, String(thangF))}
+            <div className="m-tcf-xem-so-hop">
+              <button
+                type="button"
+                className="m-tcf-btn-xem-so"
+                onClick={() => setMoDropdownXemSo(!moDropdownXemSo)}
               >
-                Sổ quỹ tiền mặt ›
-              </Link>
-              <Link
-                to="/app/bao-cao/2-2-3"
-                className="m-tcf-link"
-                title="Xem Sổ tiền gửi ngân hàng"
-                onClick={() => datLocDaXem('/app/bao-cao/2-2-3', {}, String(thangF))}
-              >
-                Sổ ngân hàng ›
-              </Link>
+                <span>Xem sổ</span>
+                <Icon n="chevd" className={`ic sm ${moDropdownXemSo ? 'xoay' : ''}`} />
+              </button>
+              {moDropdownXemSo && (
+                <div className="m-tcf-menu-xem-so">
+                  <Link
+                    to="/app/bao-cao/2-2-1"
+                    className="m-tcf-menu-item"
+                    onClick={() => {
+                      setMoDropdownXemSo(false)
+                      datLocDaXem('/app/bao-cao/2-2-1', {}, String(thangF))
+                    }}
+                  >
+                    Sổ quỹ tiền mặt
+                  </Link>
+                  <Link
+                    to="/app/bao-cao/2-2-3"
+                    className="m-tcf-menu-item"
+                    onClick={() => {
+                      setMoDropdownXemSo(false)
+                      datLocDaXem('/app/bao-cao/2-2-3', {}, String(thangF))
+                    }}
+                  >
+                    Sổ ngân hàng
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
-          <div className="bbt-e-mota">Tiền mặt tại cửa hàng và tiền gửi ngân hàng</div>
-          <div className="m-free-ton-quy-hang">
-            <div className="m-free-hoi">
+          <div className="m-tcf-figma-card-mota">Tiền mặt tại cửa hàng và tiền gửi ngân hàng</div>
+
+          <div className="m-tcf-hero-box">
+            <div className="m-tcf-hero-lbl">
               {thangF === 10 ? 'Tồn quỹ hiện tại' : `Tồn quỹ cuối tháng ${thangF}/2026`}
             </div>
-            <button
-              type="button"
-              className="m-tc-so-lon m-free-tra m-btn-so-lon m-free-ton-quy-lon"
-              style={{ color: 'var(--blue, #0560a6)' }}
+            <div
+              style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer', marginTop: 4 }}
               onClick={() => setModalQuy('tat-ca')}
               title="Xem biểu đồ thu chi tất cả quỹ"
             >
-              {moneyD(tongQuy.cuoi)} ›
-            </button>
-          </div>
-          <div className="m-free-phu">
-            {thangF === 10 ? 'Tháng này thu' : `Tháng ${thangF} thu`} <span style={{ color: 'var(--green, #138a52)' }}>{short(tongQuy.thu)}</span> · chi{' '}
-            <span style={{ color: 'var(--red, #c2362b)' }}>{short(tongQuy.chi)}</span>
+              <span className="m-tcf-hero-so" style={{ color: 'var(--blue, #0560a6)', marginTop: 0 }}>
+                {moneyD(tongQuy.cuoi)}
+              </span>
+              <Icon n="chevr" className="ic sm m-tcf-mui-blue" />
+            </div>
+            <div className="m-tcf-hero-sub">
+              {thangF === 10 ? 'Tháng này thu' : `Tháng ${thangF} thu`}{' '}
+              <span style={{ color: 'var(--green, #138a52)' }}>{short(tongQuy.thu)}</span> · chi{' '}
+              <span style={{ color: 'var(--red, #c2362b)' }}>{short(tongQuy.chi)}</span>
+            </div>
           </div>
 
           {quy.length > 0 ? (
-            <>
-              <VongQuy ds={quy} tong={tongQuy.cuoi} onChon={setModalQuy} />
-            </>
+            <VongQuy ds={quy} tong={tongQuy.cuoi} onChon={setModalQuy} kieu="figma-mobile" />
           ) : (
-            <div className="bbt-quy-trong">
+            <div className="bbt-quy-trong" style={{ padding: 20, textAlign: 'center' }}>
               <Icon n="wallet" className="ic" />
               <b>Chưa có quỹ tiền nào</b>
-              <span>
-                Tạo quỹ tiền mặt hoặc tài khoản ngân hàng để lập phiếu thu, phiếu chi và theo dõi tồn
-                quỹ.
-              </span>
-              <Link to="/app/danh-muc/1-12?moi=1&goiY=thuchi" className="btn pri">
-                <Icon n="plus" className="ic sm" />Tạo quỹ
-              </Link>
             </div>
           )}
 
-          {/* Quỹ tiền: Tất cả quỹ trên Xem dòng tiền, cao bằng Tạo quỹ (T423) */}
-          <div className="bbt-chan m-tcf-quy-chan" style={{ marginTop: 10 }}>
-            {quy.length > 0 && (
-              <Link
-                to="/app/danh-muc/1-12?moi=1&goiY=thuchi"
-                className="btn sm m-tcf-btn-tao-quy"
-                title="Tạo quỹ tiền mặt hoặc tài khoản ngân hàng"
-              >
-                <Icon n="plus" className="ic sm" />Tạo quỹ
-              </Link>
-            )}
-            <div className="m-tcf-quy-phai">
-              {quy.length > 0 && (
-                <button
-                  type="button"
-                  className="m-tcf-quy-link"
-                  onClick={() => {
-                    const btn = document.querySelector<HTMLButtonElement>('.m-tcf-trang .bbt-vq-chan button')
-                    if (btn) btn.click()
-                    else setModalQuy('tat-ca')
-                  }}
-                  title="Xem danh sách tất cả quỹ"
-                >
-                  Tất cả quỹ ({quy.length}) ›
-                </button>
-              )}
-              <button
-                type="button"
-                className="m-tcf-quy-link"
-                onClick={() => setMoThuChi13(true)}
-                title="Xem dòng tiền 13 tháng"
-              >
-                Xem dòng tiền 13 tháng ›
-              </button>
-            </div>
+          <div className="m-tcf-hang-2nut">
+            <Link
+              to="/app/danh-muc/1-12?moi=1&goiY=thuchi"
+              className="m-tcf-nut-vien chu-xanh"
+              title="Tạo quỹ tiền mặt hoặc tài khoản ngân hàng"
+            >
+              <Icon n="plus" className="ic sm" />
+              <span>Tạo quỹ</span>
+            </Link>
+            <button
+              type="button"
+              className="m-tcf-nut-vien"
+              onClick={() => setModalQuy('tat-ca')}
+              title="Xem danh sách tất cả quỹ"
+            >
+              <span>Tất cả quỹ ({quy.length}) ›</span>
+            </button>
           </div>
+
+          <button
+            type="button"
+            className="m-tcf-nut-vien"
+            style={{ marginTop: 8 }}
+            onClick={() => setMoThuChi13(true)}
+            title="Xem dòng tiền 13 tháng"
+          >
+            <Icon n="chart" className="ic sm" />
+            <span>Xem dòng tiền 13 tháng</span>
+            <Icon n="chevr" className="ic sm m-tcf-mui-xam" />
+          </button>
         </div>
 
-        {/* 6. Khối Mua hàng & công nợ NCC, Hao hụt kiểm kê */}
+        {/* 5. Khối Mua hàng & công nợ NCC, Hao hụt kiểm kê */}
         <MKhoFree selCns={selCns} thang={thangF} />
       </div>
 

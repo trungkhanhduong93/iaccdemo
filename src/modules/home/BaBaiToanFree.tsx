@@ -157,6 +157,46 @@ function TomTatThuChi13({ ds }: { ds: ReturnType<typeof thuChi13Thang> }) {
   )
 }
 
+/** Trang chủ hiện tối đa 4 cửa hàng ở Tiến độ kiểm kê, còn lại xem trong hộp (T339) */
+const KK_TOI_DA = 4
+type KkCn = ReturnType<typeof soLieuKiemKe>['theoCn'][number]
+
+/** Một dòng tiến độ kiểm kê của cửa hàng; du = thêm cột số mặt hàng đã kiểm, số lệch (hộp xem tất cả) */
+function DongKkCn({ x, du }: { x: KkCn; du?: boolean }) {
+  return (
+    <div className="bbt-kho2-cn">
+      <span className="bbt-kho2-ten">{x.cn.replace(/^Phố Mây /, '')}</span>
+      <span className="bbt-kho2-thanh"><i style={{ width: `${x.tong ? Math.min(100, (x.soKiem / x.tong) * 100) : 0}%` }} /></span>
+      {du && <span className="bbt-kho2-so">{x.soKiem}/{x.tong}</span>}
+      {du && <span className={x.lech ? 'bbt-kho-thieu' : 'bbt-kho2-so'}>{x.lech || '—'}</span>}
+      {x.daKiem
+        ? <span className="bbt-kho2-ngay" title={`Lần kiểm kê cuối ngày ${x.ngayCuoi}${x.lech ? `, lệch ${x.lech} mặt hàng` : ', khớp sổ sách'}`}>{x.ngayCuoi.slice(0, 5)}</span>
+        : <span className="bbt-kho-thieu">chưa kiểm</span>}
+    </div>
+  )
+}
+
+/** Hộp đủ danh sách tiến độ kiểm kê theo cửa hàng, mở từ dòng Xem tất cả (T339) */
+function HopTienDoKk({ ds, onDong }: { ds: KkCn[]; onDong: () => void }) {
+  useDongEsc(onDong)
+  return createPortal(
+    <div className="overlay ds-hop-nen" onMouseDown={e => { if (e.target === e.currentTarget) onDong() }}>
+      <div className="ds-hop hop-kk-cn" role="dialog" aria-modal="true" aria-label="Tiến độ kiểm kê theo cửa hàng">
+        <div className="ds-hop-dau">
+          <Icon n="khohang" className="ic sm" /><b>Tiến độ kiểm kê theo cửa hàng</b>
+          <span className="grow" />
+          <button type="button" className="pheu-dong" title="Đóng" aria-label="Đóng" onClick={onDong}><Icon n="x" className="ic sm" /></button>
+        </div>
+        <div className="bbt-kho2-tien-do hop-kk-cn-than">
+          <div className="bbt-kho2-cn bbt-kho2-dau"><span>Cửa hàng</span><span>Tiến độ</span><span>Đã kiểm</span><span>Mặt hàng lệch</span><span>Kiểm kê lần cuối</span></div>
+          {ds.map(x => <DongKkCn key={x.cn} x={x} du />)}
+        </div>
+      </div>
+    </div>,
+    document.body,
+  )
+}
+
 /** Hộp biểu đồ thu chi 13 tháng, mở từ nút ở khối Quỹ tiền, bố cục như hộp lãi lỗ 13 tháng (T303) */
 export function HopThuChi13({ ds, onDong }: { ds: ReturnType<typeof thuChi13Thang>; onDong: () => void }) {
   useDongEsc(onDong)
@@ -339,7 +379,7 @@ export function VongQuy({
   tong: number
   onChon: (quy: string) => void
   cuoi?: ReactNode
-  kieu?: 'desktop' | 'mobile'
+  kieu?: 'desktop' | 'mobile' | 'figma-mobile'
 }) {
   const [tro, setTro] = useState<string | null>(null)
   const [moDs, setMoDs] = useState(false)
@@ -372,14 +412,15 @@ export function VongQuy({
     .sort((a, b) => b.cuoi - a.cuoi)
 
   const laDesktop = kieu === 'desktop'
-  const mauQuy = laDesktop ? MAU_QUY_FIGMA : MAU_QUY_T402
-  const mauConLai = laDesktop ? MAU_CON_LAI_FIGMA : MAU_CON_LAI
+  const laFigma = laDesktop || kieu === 'figma-mobile'
+  const mauQuy = laFigma ? MAU_QUY_FIGMA : MAU_QUY_T402
+  const mauConLai = laFigma ? MAU_CON_LAI_FIGMA : MAU_CON_LAI
 
   // Quy tắc gộp lát "Còn lại":
   // - Desktop (Figma T495): Quỹ thứ 5 trở đi gộp thành Còn lại
   // - Mobile (T402, T303): Quỹ có tỷ trọng dưới 5% gộp thành lát "Còn lại" khi có từ 6 quỹ trở lên
   const dsGop = (() => {
-    if (laDesktop) {
+    if (laFigma) {
       if (xep.length > 5) {
         const top4 = xep.slice(0, 4)
         const rest = xep.slice(4)
@@ -494,6 +535,88 @@ export function VongQuy({
       </div>
     </>
   )
+
+  if (kieu === 'figma-mobile') {
+    const W = 116
+    const H = 116
+    const cx = 58
+    const cy = 58
+    const R = 52
+    const day = 15
+    const rIn = R - day
+
+    return (
+      <div className="m-figma-co-cau-quy">
+        <div className="m-figma-vq-svg-wrap">
+          <svg
+            viewBox={`0 0 ${W} ${H}`}
+            width={W}
+            height={H}
+            role="img"
+            aria-label="Cơ cấu quỹ tiền"
+          >
+            <circle cx={cx} cy={cy} r={(R + rIn) / 2} fill="none" stroke="var(--line-2, #eeeeee)" strokeWidth={day} />
+            {dsLats.map(r => {
+              const sliceAngle = r.endAngle - r.startAngle
+              const gap = dsLats.length > 1 ? 0.04 : 0
+              const a1 = r.startAngle + gap / 2
+              const a2 = r.endAngle - gap / 2
+              const actA1 = a2 > a1 ? a1 : r.startAngle
+              const actA2 = a2 > a1 ? a2 : r.endAngle
+
+              const x1Out = cx + R * Math.cos(actA1)
+              const y1Out = cy + R * Math.sin(actA1)
+              const x2Out = cx + R * Math.cos(actA2)
+              const y2Out = cy + R * Math.sin(actA2)
+              const x1In = cx + rIn * Math.cos(actA1)
+              const y1In = cy + rIn * Math.sin(actA1)
+              const x2In = cx + rIn * Math.cos(actA2)
+              const y2In = cy + rIn * Math.sin(actA2)
+              const large = sliceAngle > Math.PI ? 1 : 0
+
+              const pathD = `M ${x1In} ${y1In} L ${x1Out} ${y1Out} A ${R} ${R} 0 ${large} 1 ${x2Out} ${y2Out} L ${x2In} ${y2In} A ${rIn} ${rIn} 0 ${large} 0 ${x1In} ${y1In} Z`
+
+              return (
+                <path
+                  key={r.quy}
+                  d={pathD}
+                  fill={r.mau}
+                  onClick={() => chon(r.quy)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <title>{`${r.ten}: ${moneyD(r.cuoi)} (${pct(r.tyLe)})`}</title>
+                </path>
+              )
+            })}
+            <g onClick={() => setMoDs(true)} style={{ cursor: 'pointer' }}>
+              <text x={cx} y={cy - 5} textAnchor="middle" style={{ fontSize: 10, fill: 'var(--muted, #6b7280)' }}>
+                Tổng tồn quỹ
+              </text>
+              <text x={cx} y={cy + 13} textAnchor="middle" style={{ fontSize: 13.5, fontWeight: 700, fill: 'var(--ink, #1f2225)' }}>
+                {short(tong)}
+              </text>
+            </g>
+          </svg>
+        </div>
+        <div className="m-figma-vq-chuthich">
+          {dsLats.map(r => (
+            <div
+              key={r.quy}
+              className="m-figma-vq-row"
+              onClick={() => chon(r.quy)}
+            >
+              <div className="m-figma-vq-trai">
+                <span className="m-figma-vq-dot" style={{ background: r.mau }} />
+                <span className="m-figma-vq-ten">{r.ten}</span>
+              </div>
+              <span className="m-figma-vq-pt">{pct(r.tyLe)}</span>
+            </div>
+          ))}
+        </div>
+        {popupDanhSach}
+      </div>
+    )
+  }
 
   if (laDesktop) {
     // Đường kính 120, cx=60, cy=60, R=54, rIn=36 theo Figma
@@ -865,6 +988,10 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
   const mua = useMemo(() => soLieuMua(thangXem, tenCn, dHien.dtThuan), [thangXem, tenCn, dHien.dtThuan])
   const no = useMemo(() => soLieuCongNo(thangXem, motCnKho), [thangXem, motCnKho])
   const kk = useMemo(() => soLieuKiemKe(thangXem, tenCn), [thangXem, tenCn])
+  // T339: cửa hàng cần chú ý lên đầu: chưa kiểm, lệch nhiều, tiến độ thấp
+  const kkCn = useMemo(() => [...kk.theoCn].sort((a, b) =>
+    Number(a.daKiem) - Number(b.daKiem) || b.lech - a.lech || a.soKiem / (a.tong || 1) - b.soKiem / (b.tong || 1)), [kk])
+  const [moHopKk, setMoHopKk] = useState(false)
 
 
   return (
@@ -1005,7 +1132,7 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
               <div className="bbt-13t-trong-ten"><b>Hiệu quả kinh doanh 13 tháng</b><small>Doanh thu, chi phí, lợi nhuận từng tháng và so với cùng kỳ năm trước</small></div>
               <span className="bbt-13t-chu"><i className="dt" />Doanh thu<i className="cp" />Chi phí<i className="ln duong" />Lợi nhuận</span>
             </div>
-            <KhungVua cao={210} toiThieu={120} ve={(r, h) => <LaiLoChart data={laiLo13} h={h} rong={r} duoi0={duoi0} />} />
+            <KhungVua cao={260} toiThieu={220} ve={(r, h) => <LaiLoChart data={laiLo13} h={h} rong={r} duoi0={duoi0} />} />
           </div>
         </section>
 
@@ -1092,7 +1219,7 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
               <div className="bbt-13t-trong-ten"><b>Dòng tiền 13 tháng</b><small>Tiền thu vào, chi ra mỗi tháng và số dư quỹ cuối tháng</small></div>
               <span className="bbt-13t-chu"><i className="thu2" />Thu<i className="chi2" />Chi<i className="thuan duong" /><span title="Thu trừ chi trong tháng">Dòng tiền thuần</span><i className="ton duong" />Tồn quỹ</span>
             </div>
-            <KhungVua cao={210} toiThieu={120} ve={(r, h) => <LaiLoChart data={thuChi13} h={h} rong={r} duoi0={duoi0} ten={['Thu', 'Chi']} mau={['var(--bd-thu, #0f8f84)', 'var(--bd-chi, #c2362b)']} duong={{ ten: 'Dòng tiền thuần', mau: 'var(--bd-thuan, #e29a2e)' }} duong2={{ ten: 'Tồn quỹ', mau: 'var(--bd-ton, #0560a6)' }} />} />
+            <KhungVua cao={260} toiThieu={220} ve={(r, h) => <LaiLoChart data={thuChi13} h={h} rong={r} duoi0={duoi0} ten={['Thu', 'Chi']} mau={['var(--bd-thu, #0f8f84)', 'var(--bd-chi, #c2362b)']} duong={{ ten: 'Dòng tiền thuần', mau: 'var(--bd-thuan, #e29a2e)' }} duong2={{ ten: 'Tồn quỹ', mau: 'var(--bd-ton, #0560a6)' }} />} />
           </div>
         </section>
 
@@ -1152,8 +1279,8 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
             </div>
           </div>
           <div className="bbt-kho-chan">
-            <Link to="/app/mua-hang/4-1-1/moi" className="btn sm"><Icon n="plus" className="ic sm" />Tạo phiếu mua hàng</Link>
-            <Link to="/app/tien/2-1-1/moi?loai=chi&ly=CHI02" className="btn sm"><Icon n="plus" className="ic sm" />Thanh toán nhà cung cấp</Link>
+            <Link to="/app/mua-hang/4-1-1/moi" className="btn sm"><Icon n="plus" className="ic sm" kieu="net" />Tạo phiếu mua hàng</Link>
+            <Link to="/app/tien/2-1-1/moi?loai=chi&ly=CHI02" className="btn sm"><Icon n="card" className="ic sm" kieu="net" />Thanh toán nhà cung cấp</Link>
           </div>
         </section>
 
@@ -1172,16 +1299,16 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
           <div className="bbt-kho-nhom">Tiến độ kiểm kê theo cửa hàng</div>
           <div className="bbt-kho2-tien-do">
             <div className="bbt-kho2-cn bbt-kho2-dau"><span /><span /><span>Kiểm kê lần cuối</span></div>
-            {kk.theoCn.map(x => (
-              <div className="bbt-kho2-cn" key={x.cn}>
-                <span className="bbt-kho2-ten">{x.cn.replace(/^Phố Mây /, '')}</span>
-                <span className="bbt-kho2-thanh"><i style={{ width: `${x.tong ? Math.min(100, (x.soKiem / x.tong) * 100) : 0}%` }} /></span>
-                {x.daKiem
-                  ? <span className="bbt-kho2-ngay" title={`Lần kiểm kê cuối ngày ${x.ngayCuoi}${x.lech ? `, lệch ${x.lech} mặt hàng` : ', khớp sổ sách'}`}>{x.ngayCuoi.slice(0, 5)}</span>
-                  : <span className="bbt-kho-thieu">chưa kiểm</span>}
+            {kkCn.slice(0, KK_TOI_DA).map(x => <DongKkCn key={x.cn} x={x} />)}
+            {kkCn.length > KK_TOI_DA && (
+              <div className="bbt-kho2-cn bbt-kho2-tom">
+                <span>Đã kiểm {kkCn.filter(x => x.daKiem).length}/{kkCn.length} cửa hàng</span>
+                <span />
+                <button type="button" className="bbt-kho-mo" onClick={() => setMoHopKk(true)}>Xem tất cả ›</button>
               </div>
-            ))}
+            )}
           </div>
+          {moHopKk && <HopTienDoKk ds={kkCn} onDong={() => setMoHopKk(false)} />}
           {/* T331: khoảng trống co giãn đẩy vùng xếp hạng xuống đáy, hai khối thẳng hàng */}
           <div className="bbt-kho2-gian" />
           <div className="bbt-kho2-ds">
@@ -1205,7 +1332,7 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
             </div>
           </div>
           <div className="bbt-kho-chan">
-            <Link to="/app/kho/5-1-10/moi" className="btn sm"><Icon n="plus" className="ic sm" />Kiểm kê ngay</Link>
+            <Link to="/app/kho/5-1-10/moi" className="btn sm"><Icon n="clipboard" className="ic sm" kieu="net" />Kiểm kê ngay</Link>
           </div>
         </section>
       </div>

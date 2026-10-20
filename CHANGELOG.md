@@ -4,6 +4,21 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 20/10/2026
 
+- T506, T509: Gói Free ẩn báo cáo Thẻ kho (bấm hàng ở Xuất nhập tồn vẫn mở được), Tổng hợp xuất kho, Chi tiết xuất kho. Quy trình kho gói Free bỏ bước Theo dõi nhập xuất. Thẻ Mặt hàng giá vốn cao ở trang chủ Free dẫn sang Xuất nhập tồn.
+
+- T508: Bộ lọc báo cáo trên máy tính bỏ ô Tìm trong báo cáo và bộ lọc Đơn vị tính; mở báo cáo mặc định ẩn dòng không phát sinh.
+
+- T507: Màn Gói thuê bao ghi đủ chế độ kế toán của từng gói: Standard TT58 và TT152, Plus và Pro TT133 và TT99.
+- T504: Danh sách chứng từ, bộ lọc nâng cao có lại mục Cấu hình tham số lọc. Bật ô nào thì ô đó hiện trên thanh công cụ, tối đa 4 ô, kéo để đổi thứ tự. Thời gian, Tìm kiếm cũng tắt được.
+
+- T503: Trang chủ gói Free trên máy tính: bảng Kết quả kinh doanh thẳng cột số tiền, % và mũi tên ở mọi dòng. Vòng tròn Quỹ tiền to hơn, 2 biểu đồ cột 13 tháng cao hơn. Ba dòng chi phí nền trắng, các dòng có đường kẻ ngăn, góc nền không còn khuyết.
+
+- T339: Trang chủ gói Free trên máy tính, Tiến độ kiểm kê theo cửa hàng xếp cửa hàng chưa kiểm, lệch nhiều lên đầu. Có hơn 4 cửa hàng thì chỉ hiện 4, thêm dòng Đã kiểm x/y cửa hàng và nút Xem tất cả mở hộp đủ danh sách.
+
+- T502: Gói Free, Báo cáo kiểm kê trên máy tính và điện thoại bỏ các cột Tồn đầu, Nhập trong kỳ, Xuất trong kỳ, Tồn cuối hệ thống, Tồn cuối thực tế, chỉ còn số lượng Thừa, Thiếu.
+
+- T501: Gói Free, Danh mục đối tượng lại có loại Khách hàng: danh sách hiện các khách hàng có sẵn, thêm mới ở danh mục hoặc ở nút thêm đối tượng trong chứng từ chọn được loại Khách hàng.
+
 - T494: Mọi báo cáo trên máy tính, cuộn bảng dài thì dòng tổng cộng cuối bảng (Cộng phát sinh, Tồn cuối kỳ...) luôn hiện ở đáy, dòng Tồn đầu kỳ, Số dư đầu kỳ luôn hiện ngay dưới tiêu đề cột.
 
 - T492: Phiếu mua hàng, góc phải thanh tab có ô Thuế GTGT và Chiết khấu. Chọn thuế suất thì áp cho mọi dòng, dòng thêm sau tự lấy mức đó (vẫn chọn lại được trên dòng). Chiết khấu chọn theo % (tối đa 100%) thì áp cho mọi dòng, chọn theo số tiền thì tự chia cho các dòng theo thành tiền.

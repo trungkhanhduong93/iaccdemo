@@ -185,7 +185,7 @@ function CongTac({ on, khoa, onDoi, nhan }: { on: boolean; khoa?: boolean; onDoi
 
 // ── Ô lọc ngoài, nút phễu mở Bộ lọc nâng cao, nút Lọc ──
 
-export function BoLoc({ ds, cauHinh, datCauHinh, dangLoc, khacNhap, onLoc, onXoaHet, anNangCao = false, nhanXoa, truocNutLoc, chiNutPheu = false, soDem }: {
+export function BoLoc({ ds, cauHinh, datCauHinh, dangLoc, khacNhap, onLoc, onXoaHet, anNangCao = false, nhanXoa, truocNutLoc, chiNutPheu = false, soDem, ngoaiRieng }: {
   ds: OLocDef[]; cauHinh: CauHinhLoc; datCauHinh: (c: CauHinhLoc) => void
   dangLoc: boolean; khacNhap: boolean; onLoc: () => void; onXoaHet: () => void
   anNangCao?: boolean
@@ -193,6 +193,8 @@ export function BoLoc({ ds, cauHinh, datCauHinh, dangLoc, khacNhap, onLoc, onXoa
   truocNutLoc?: ReactNode
   chiNutPheu?: boolean
   soDem?: number
+  /** Bản riêng cho ô hiện ngoài theo khoá, phải có key */
+  ngoaiRieng?: Record<string, ReactNode>
 }) {
   const { toast } = useSession()
   const [mo, setMo] = useState(false)
@@ -210,13 +212,12 @@ export function BoLoc({ ds, cauHinh, datCauHinh, dangLoc, khacNhap, onLoc, onXoa
     else datCauHinh({ ...cauHinh, ngoai: cauHinh.thuTu.filter(x => x === k || ngoai.includes(x)) })
   }
 
-  const luoiDs = chiNutPheu
-    ? cauHinh.thuTu.filter(k => k !== 'thoiGian' && k !== 'tim' && theoK.has(k))
-    : trong
+  // T504: kiểu Figma xếp ô ngoài sau nút phễu; ô có bản riêng (tìm, ngày kiểu Figma) thì dùng bản đó
+  const oNgoai = ngoai.map(k => ngoaiRieng?.[k] ?? <ONhanVien key={k} nhan={theoK.get(k)!.ten} className={`ds-o-${k}`}>{theoK.get(k)!.o}</ONhanVien>)
 
   return (
     <>
-      {!chiNutPheu && ngoai.map(k => <ONhanVien key={k} nhan={theoK.get(k)!.ten} className={`ds-o-${k}`}>{theoK.get(k)!.o}</ONhanVien>)}
+      {!chiNutPheu && oNgoai}
       {!anNangCao && (
         chiNutPheu ? (
           <button ref={nut} type="button" className={`ds-btn-pheu-figma${mo || dangLoc ? ' on' : ''}`} title="Bộ lọc" aria-label="Bộ lọc"
@@ -233,6 +234,7 @@ export function BoLoc({ ds, cauHinh, datCauHinh, dangLoc, khacNhap, onLoc, onXoa
           </button>
         )
       )}
+      {chiNutPheu && oNgoai}
       {!chiNutPheu && truocNutLoc}
       {!chiNutPheu && (
         <button type="button" className="btn pri ds-nut-loc" title={khacNhap ? 'Có điều kiện mới chưa lọc' : undefined} onClick={onLoc}>
@@ -249,36 +251,34 @@ export function BoLoc({ ds, cauHinh, datCauHinh, dangLoc, khacNhap, onLoc, onXoa
             <button type="button" className="ds-link" onClick={onXoaHet}>{nhanXoa ?? 'Xoá tất cả'}</button>
             <button type="button" className="pheu-dong" title="Đóng" aria-label="Đóng" onClick={dong}><Icon n="x" className="ic sm" /></button>
           </div>
-          {luoiDs.length > 0 && (
+          {trong.length > 0 && (
             <div className="ds-nc-luoi">
-              {luoiDs.map(k => <ONhanVien key={k} nhan={theoK.get(k)!.ten} className={`ds-o-${k}`}>{theoK.get(k)!.o}</ONhanVien>)}
+              {trong.map(k => <ONhanVien key={k} nhan={theoK.get(k)!.ten} className={`ds-o-${k}`}>{theoK.get(k)!.o}</ONhanVien>)}
             </div>
           )}
-          {!chiNutPheu && (
-            <div className="ds-nc-ch">
-              <button type="button" className="ds-nc-ch-dau" aria-expanded={moCauHinh} onClick={() => setMoCauHinh(x => !x)}>
-                <b>Cấu hình tham số lọc</b>
-                <span className="ds-chip-so">{ngoai.length}</span>
-                <small>tối đa chọn {TOI_DA_NGOAI} ô lọc để đưa ra bên ngoài</small>
-                <span className="grow" />
-                <Icon n="chevd" className={`ic sm ds-mui${moCauHinh ? ' len' : ''}`} />
-              </button>
-              {moCauHinh && (
-                <>
-                  <div className="ds-goi-y">Bật để hiện ngoài, kéo để đổi thứ tự</div>
-                  <div className="ds-ds-keo">
-                    {cauHinh.thuTu.filter(k => theoK.has(k)).map(k => (
-                      <div key={k} className={`ds-dong-keo${keo.keo === k ? ' dang-keo' : ''}${keo.dich === k ? ' dich' : ''}`} {...keo.props(k)}>
-                        <TayKeo />
-                        <span className="grow">{theoK.get(k)!.ten}</span>
-                        <CongTac on={ngoai.includes(k)} nhan={`Hiện ô ${theoK.get(k)!.ten} ở ngoài`} onDoi={() => doiBat(k)} />
-                      </div>
-                    ))}
-                  </div>
-                </>
-              )}
-            </div>
-          )}
+          <div className="ds-nc-ch">
+            <button type="button" className="ds-nc-ch-dau" aria-expanded={moCauHinh} onClick={() => setMoCauHinh(x => !x)}>
+              <b>Cấu hình tham số lọc</b>
+              <span className="ds-chip-so">{ngoai.length}</span>
+              <small>tối đa chọn {TOI_DA_NGOAI} ô lọc để đưa ra bên ngoài</small>
+              <span className="grow" />
+              <Icon n="chevd" className={`ic sm ds-mui${moCauHinh ? ' len' : ''}`} />
+            </button>
+            {moCauHinh && (
+              <>
+                <div className="ds-goi-y">Bật để hiện ngoài, kéo để đổi thứ tự</div>
+                <div className="ds-ds-keo">
+                  {cauHinh.thuTu.filter(k => theoK.has(k)).map(k => (
+                    <div key={k} className={`ds-dong-keo${keo.keo === k ? ' dang-keo' : ''}${keo.dich === k ? ' dich' : ''}`} {...keo.props(k)}>
+                      <TayKeo />
+                      <span className="grow">{theoK.get(k)!.ten}</span>
+                      <CongTac on={ngoai.includes(k)} nhan={`Hiện ô ${theoK.get(k)!.ten} ở ngoài`} onDoi={() => doiBat(k)} />
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
           <div className="ds-chan">
             <button type="button" className="btn" onClick={dong}>Đóng</button>
             <button type="button" className="btn pri" onClick={() => { onLoc(); dong() }}>Lọc</button>

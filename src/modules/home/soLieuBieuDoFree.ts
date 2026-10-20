@@ -247,8 +247,8 @@ export function layTop5GiaVon(
     tong: tongGv,
     nhanTong: 'Chi phí nguyên vật liệu',
     items,
-    link: '/app/bao-cao/5-2-11',
-    nhanLink: 'Xem tổng hợp xuất kho',
+    link: '/app/bao-cao/5-2-3',
+    nhanLink: 'Xem xuất nhập tồn',   // gói Free ẩn Tổng hợp xuất kho (T506)
   }
 }
 

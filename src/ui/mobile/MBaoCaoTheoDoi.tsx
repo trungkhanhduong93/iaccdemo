@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { useSession } from '../../app/session'
 import { anNgoaiGoi } from '../../app/plan'
 import { moDuoc, timMan } from '../../app/registry'
+import { AN_BC_GOI } from '../../modules/bao-cao/danh-sach'
 import { Icon } from '../Icon'
 
 export interface MucTheoDoi {
@@ -89,8 +90,9 @@ export const MBaoCaoTheoDoi: FC<MBaoCaoTheoDoiProps> = ({
   if (!mo) return null
   const dsRaw = MUC_THEO_DOI[modKey] ?? []
   const ds = dsRaw.filter(item => {
-    if (!anNgoaiGoi(s.goi)) return true
     const [, mKey, slug] = item.path.split('/').filter(Boolean)
+    if (AN_BC_GOI[s.goi]?.includes(slug.replace(/-/g, '.'))) return false   // báo cáo ẩn hẳn ở gói (T506)
+    if (!anNgoaiGoi(s.goi)) return true
     const { sc } = timMan(mKey, slug)
     return sc ? moDuoc(sc, s.goi) : true
   })

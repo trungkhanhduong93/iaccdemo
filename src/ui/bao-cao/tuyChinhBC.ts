@@ -73,10 +73,10 @@ const khoPath = new Map<string, TrangThaiLoc>()
 function layTrangThai(path: string): TrangThaiLoc {
   let s = khoPath.get(path)
   if (!s) {
-    const defaultBan: BanLoc = { loc: {}, anKhongPS: false, ky: '9' }
+    const defaultBan: BanLoc = { loc: {}, anKhongPS: true, ky: '9' }   // mặc định ẩn dòng không phát sinh (T508)
     s = {
       loc: {},
-      anKhongPS: false,
+      anKhongPS: true,
       ky: '9',
       daXem: { ...defaultBan },
       nhap: { ...defaultBan },
@@ -163,7 +163,7 @@ export function datTuyChon(path: string, k: string, ds: string[]) {
 
 export function xoaLoc(path: string) {
   const s = layTrangThai(path)
-  const nhapMoi: BanLoc = { ...s.nhap, loc: {}, anKhongPS: false }
+  const nhapMoi: BanLoc = { ...s.nhap, loc: {}, anKhongPS: true }
   const thayDoi = coThayDoiLoc(nhapMoi, s.daXem)
   khoPath.set(path, { ...s, nhap: nhapMoi, coThayDoi: thayDoi })
   phatSong()
@@ -191,8 +191,8 @@ export function xemBaoCao(path: string) {
 /** Mở báo cáo khác với sẵn bộ lọc, kỳ (bấm dòng ở báo cáo tổng hợp xem sổ chi tiết, T185): đặt cả bản đang nhập và bản đã xem */
 export function datLocDaXem(path: string, loc: Record<string, string[]>, ky: string) {
   const s = layTrangThai(path)
-  const ban: BanLoc = { loc: { ...loc }, anKhongPS: false, ky }
-  khoPath.set(path, { ...s, nhap: { ...ban }, daXem: { ...ban }, loc: ban.loc, anKhongPS: false, ky, coThayDoi: false, kyDatSan: true })
+  const ban: BanLoc = { loc: { ...loc }, anKhongPS: true, ky }
+  khoPath.set(path, { ...s, nhap: { ...ban }, daXem: { ...ban }, loc: ban.loc, anKhongPS: true, ky, coThayDoi: false, kyDatSan: true })
   phatSong()
 }
 

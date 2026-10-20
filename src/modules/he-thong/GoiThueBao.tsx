@@ -6,7 +6,7 @@ import type { ScreenProps } from '../types'
 import { useSession, donViHienTai, cheDoHienTai } from '../../app/session'
 import { GOIS, GOI, FEATURES, type Goi, demTheoGoi, MODS, GIA_GOI_NAM, GIA_GOI_THANG, DIEM_NOI_BAT } from '../../app/plan'
 import { MODULES, duongDan } from '../../app/registry'
-import { cheDoCuaGoi } from '../../app/che-do'
+import { cheDoCuaGoi, CHE_DO, CHE_DO_HOP_LE } from '../../app/che-do'
 import { PageHead, Pk } from '../../ui/Page'
 import { Icon } from '../../ui/Icon'
 import { GoiLogo, GoiIconSvg } from '../../ui/GoiLogo'
@@ -241,7 +241,9 @@ export function GoiThueBao({ sc }: ScreenProps) {
 
                 <div className="gtb-spec-row" style={{ marginTop: 8 }}>
                   <span className="gtb-spec-label">Chế độ kế toán</span>
-                  <span className="gtb-spec-val"><b>{cd.soHieu}</b></span>
+                  <span className="gtb-spec-val" style={{ textAlign: 'right' }}>
+                    {CHE_DO_HOP_LE[g].map(m => <b key={m} style={{ display: 'block' }}>{CHE_DO[m].soHieu}</b>)}
+                  </span>
                 </div>
 
                 <div className="gtb-spec-row">
