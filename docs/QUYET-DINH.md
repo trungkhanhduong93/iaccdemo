@@ -825,3 +825,5 @@ Trum chốt 20/10/2026 (T493). Phiên của PhuongXT đã có bản đồ repo m
 
 - Luật nằm ở mục "Tiết kiệm token" trong `AGENTS.md`: mỗi việc một phiên, kiểm bằng `kiem_tra.py` thay vì chụp hình, gom góp ý rồi kiểm một lần, dò code qua subagent, quá 60 lần gọi thì chia phiên.
 - Skill bản đồ repo (bản 4) chép mục này vào file luật của repo khác, mẫu ở `tools/skill-ban-do-repo/scripts/muc-tiet-kiem-token.md`.
+
+## QD76. Bộ lọc nâng cao và ô chọn nhiều trong hàng lọc (đang soạn)
