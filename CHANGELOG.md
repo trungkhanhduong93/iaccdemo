@@ -4,6 +4,11 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 20/10/2026
 
+- T506, T509: Gói Free ẩn báo cáo Thẻ kho (bấm hàng ở Xuất nhập tồn vẫn mở được), Tổng hợp xuất kho, Chi tiết xuất kho. Quy trình kho gói Free bỏ bước Theo dõi nhập xuất. Thẻ Mặt hàng giá vốn cao ở trang chủ Free dẫn sang Xuất nhập tồn.
+
+- T508: Bộ lọc báo cáo trên máy tính bỏ ô Tìm trong báo cáo và bộ lọc Đơn vị tính; mở báo cáo mặc định ẩn dòng không phát sinh.
+
+- T507: Màn Gói thuê bao ghi đủ chế độ kế toán của từng gói: Standard TT58 và TT152, Plus và Pro TT133 và TT99.
 - T504: Danh sách chứng từ, bộ lọc nâng cao có lại mục Cấu hình tham số lọc. Bật ô nào thì ô đó hiện trên thanh công cụ, tối đa 4 ô, kéo để đổi thứ tự. Thời gian, Tìm kiếm cũng tắt được.
 
 - T503: Trang chủ gói Free trên máy tính: bảng Kết quả kinh doanh thẳng cột số tiền, % và mũi tên ở mọi dòng. Vòng tròn Quỹ tiền to hơn, 2 biểu đồ cột 13 tháng cao hơn. Ba dòng chi phí nền trắng, các dòng có đường kẻ ngăn, góc nền không còn khuyết.

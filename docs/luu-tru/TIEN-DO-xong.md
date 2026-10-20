@@ -4,6 +4,10 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T509 | Quy trình kho gói Free bỏ bước Theo dõi nhập xuất (Tổng hợp, Chi tiết nhập, xuất kho) | PhuongXT | 20/10/2026 | [2026-10-20-phuongxt-an-bao-cao-kho-loc-bao-cao](../nhat-ky/2026-10-20-phuongxt-an-bao-cao-kho-loc-bao-cao.md) |
+| T508 | Bộ lọc màn xem báo cáo bỏ ô Tìm trong báo cáo, bỏ lọc Đơn vị tính; Ẩn dòng không phát sinh mặc định bật | PhuongXT | 20/10/2026 | [2026-10-20-phuongxt-an-bao-cao-kho-loc-bao-cao](../nhat-ky/2026-10-20-phuongxt-an-bao-cao-kho-loc-bao-cao.md) |
+| T507 | Màn Gói thuê bao: dòng Chế độ kế toán mỗi gói hiện đủ thông tư được chọn (Standard thêm TT152, Plus và Pro cả TT133, TT99) | PhuongXT | 20/10/2026 | [2026-10-20-phuongxt-an-bao-cao-kho-loc-bao-cao](../nhat-ky/2026-10-20-phuongxt-an-bao-cao-kho-loc-bao-cao.md) |
+| T506 | Gói Free ẩn Thẻ kho khỏi danh sách báo cáo (vẫn mở từ Xuất nhập tồn), ẩn Tổng hợp xuất kho, Chi tiết xuất kho | PhuongXT | 20/10/2026 | [2026-10-20-phuongxt-an-bao-cao-kho-loc-bao-cao](../nhat-ky/2026-10-20-phuongxt-an-bao-cao-kho-loc-bao-cao.md) |
 | T504 | Danh sách chứng từ (sửa tiếp T496): bộ lọc nâng cao có lại mục Cấu hình tham số lọc như IVT. Thời gian, Tìm kiếm nằm trong danh sách bật/tắt, mặc định bật, tối đa 4 ô ra ngoài. Ô tìm, ô ngày giữ kiểu Figma; Đối tượng, Nguồn, Lý do, Loại phiếu bật ra ngoài thì xếp sau nút phễu theo thứ tự đã kéo | Trum | 20/10/2026 | 2026-10-20-trum-cau-hinh-loc-chung-tu.md |
 | T503 | Trang chủ Free máy tính: vòng tròn Quỹ tiền to hơn, 2 biểu đồ cột 13 tháng cao hơn; bảng Kết quả kinh doanh thẳng cột (số tiền, %, mũi tên cùng cột mọi dòng, Doanh thu xanh dương, % chi phí cam) | Trum | 20/10/2026 | 2026-10-20-trum-kqkd-thang-cot-quy-tien.md |
 | T339 | Trang chủ Free máy tính, Tiến độ kiểm kê theo cửa hàng: hiện tối đa 4 cửa hàng cần chú ý (chưa kiểm, lệch nhiều trước), dòng Đã kiểm x/y cửa hàng, dòng Xem tất cả mở hộp danh sách đủ | Trum | 20/10/2026 | 2026-10-20-trum-tien-do-kiem-ke-nhieu-cua-hang.md |
