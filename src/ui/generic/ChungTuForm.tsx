@@ -544,7 +544,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
   // Đang xem tất cả cửa hàng thì phải chọn một cửa hàng trước khi lập chứng từ mới
   if (canChonCn) {
     return (
-      <FormToanMan icon={mod.icon} onClose={dongForm} title={tenPhieu} footClass="fsf-f-xem"
+      <FormToanMan icon={mod.icon} iconNet onClose={dongForm} title={tenPhieu} footClass="fsf-f-xem"
         foot={<button type="button" className="xp-btn-outline" onClick={dongForm}>Huỷ</button>}>
         <section className="card chon-cn">
           <b>Chọn cửa hàng lập chứng từ</b>
@@ -658,6 +658,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
   return (
     <FormToanMan
       icon={mod.icon}
+      iconNet
       iconNode={iconDau}
       footClass="fsf-f-xem"   // thêm mới, sửa cũng chân trắng như lúc xem (T513)
       tinh={Boolean((loc.state as { chuyenPhieu?: boolean } | null)?.chuyenPhieu)}

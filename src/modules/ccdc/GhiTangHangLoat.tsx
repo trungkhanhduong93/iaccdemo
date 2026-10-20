@@ -133,7 +133,7 @@ export function GhiTangHangLoat({ rows: daCo, onDong }: { soDong: number; rows: 
   }
 
   return (
-    <FormToanMan icon="phanbo" title="Ghi tăng thẻ chi phí phân bổ" onClose={onDong}
+    <FormToanMan icon="phanbo" iconNet title="Ghi tăng thẻ chi phí phân bổ" onClose={onDong}
       meta={<span className="muted">Danh sách lấy từ các phiếu chi có lý do "Chi phí chờ phân bổ" chưa tạo thẻ.</span>}
       foot={(
         <>

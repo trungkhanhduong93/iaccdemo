@@ -644,7 +644,7 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
   }])
   const [cTt, tTt] = kieu === 'khong' ? ['ok', 'Đã đồng bộ'] : TT_CT[row.tt] ?? ['warn', 'Chưa ghi sổ']
   return (
-    <FormToanMan icon={mod.icon} onClose={dong0} title="Xuất bán POS"
+    <FormToanMan icon={mod.icon} iconNet onClose={dong0} title="Xuất bán POS"
       // Phần tổng thành dải cố định ở đáy form, cuộn bảng vẫn thấy (T104); khoản bằng 0 hiện mờ cho gọn
       // các khoản theo món đã lên bảng chi tiết; dải đáy còn khoản của cả đơn và Tổng tiền (T106)
       day={<DaiTong tong={tong} muc={[]} tren={[...(tyLe ? [['Giảm thuế GTGT', -giamThue] as [string, number]] : []), ['Phiếu giảm giá', phieuGiam ? -phieuGiam : 0]]} />}   // Phiếu giảm giá thành hàng ngay trên Tổng tiền

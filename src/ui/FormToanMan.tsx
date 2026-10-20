@@ -12,8 +12,9 @@ export function useDong(ve: string) {
 }
 
 /** trai: nút đứng trước tiêu đề (vd lịch sử); phai: nút đứng trước tổng tiền (vd phím tắt); tinh: bỏ hiệu ứng mở khi chuyển Trước/Sau */
-export function FormToanMan({ icon, iconNode, title, meta, loai, giua, day, tong, trai, phai, tinh, onClose, foot, footClass, children }: {
+export function FormToanMan({ icon, iconNode, iconNet, title, meta, loai, giua, day, tong, trai, phai, tinh, onClose, foot, footClass, children }: {
   icon?: string; iconNode?: ReactNode; title: ReactNode; meta?: ReactNode; loai?: ReactNode; tong?: number; trai?: ReactNode; phai?: ReactNode; tinh?: boolean
+  iconNet?: boolean  // icon nét mảnh như phiếu thu chi, dùng cho form phiếu chứng từ (T517)
   giua?: ReactNode   // trạng thái phiếu ở chính giữa đầu form (T49)
   day?: ReactNode    // dải cố định ngay trên thanh nút, vd Tổng tiền (T49)
   footClass?: string
@@ -31,7 +32,7 @@ export function FormToanMan({ icon, iconNode, title, meta, loai, giua, day, tong
         {iconNode ? (
           iconNode
         ) : (
-          <span className="fsf-ic">{icon && <Icon n={icon} />}</span>
+          <span className="fsf-ic">{icon && <Icon n={icon} kieu={iconNet ? 'net' : undefined} />}</span>
         )}
         {trai}
         <div style={{ minWidth: 0 }}>
