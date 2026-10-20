@@ -92,3 +92,9 @@ Lỗi đã từng làm mất thời gian, kèm cách tránh. Đọc trước khi
 - Nguyên nhân: Python không thấy file thì thoát mã 2. Mã 2 là mã hook dùng để chặn công cụ.
 - Cách tránh: lệnh hook gọi `python -c` dùng `runpy`, lấy đường dẫn từ `CLAUDE_PROJECT_DIR`, file không có thì thoát 0. Mẫu ở `.claude/settings.json`.
 - Test hook bằng JSON sinh từ Python. `printf` của Git Bash nuốt một dấu `\` trong đường dẫn Windows, JSON hỏng, hook thoát 0 nên tưởng hook sai.
+
+## Chạy script Playwright từ Git Bash với tham số URL bị đổi thành đường dẫn Windows (T516)
+
+- Hiện tượng: chạy script Playwright từ Git Bash với tham số dạng `/app/kho/5-1-1` thì trang bật về `#/dang-nhap` mà không báo lỗi.
+- Nguyên nhân: MSYS tự đổi tham số dạng `/app/...` thành đường dẫn Windows (như `C:/Program Files/Git/app/...`), app không nhận ra đường dẫn nên chuyển hướng về trang đăng nhập.
+- Cách tránh: đặt `MSYS_NO_PATHCONV=1` trước lệnh khi chạy từ Git Bash, hoặc chạy script từ PowerShell.

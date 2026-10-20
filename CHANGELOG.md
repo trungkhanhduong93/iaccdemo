@@ -4,6 +4,12 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 20/10/2026
 
+- T518: Form toàn màn hình lúc xem đổi các ô nhập sang nền trắng chữ đậm thay vì nền xám; lúc sửa giữ nền xám. Thẻ chi phí phân bổ đổi chân form sang nền trắng và dùng icon nét mảnh.
+
+- T517: Biểu tượng góc trái form phiếu chứng từ (ChungTuForm, Xuất bán POS, Ghi tăng hàng loạt) đổi sang bộ icon nét mảnh như phiếu thu chi.
+
+- T516: Lưới chi tiết mọi phiếu toàn màn hình ôm theo số dòng, kẻ dọc mờ đồng bộ ở tiêu đề, thân và dòng tổng; tiêu đề cột số căn phải; nền tiêu đề xám nhạt; chữ và đường kẻ đậm rõ hơn.
+
 - T515: Gói Free, Quy trình chi phí phân bổ bỏ nút Tất cả báo cáo ở giai đoạn Theo dõi thẻ chi phí; nút Thẻ chi phí phân bổ ở mục Chưa chi tiền gọn bằng nút Chi tiền mặt; ô mở form tạo mới mang dấu +, ô mở danh sách mang dấu >.
 
 - T514: Gói Free, Quy trình chi phí phân bổ: bấm Thẻ CPPB dư đầu kỳ mở thẳng form ghi tăng đầu kỳ. Chi tiền mặt, Chi ngân hàng gọn trên 1 hàng. Thêm mục Chưa chi tiền cần ghi nhận chi phí trả trước với nút Thẻ chi phí phân bổ để tạo thẻ cho khoản thanh toán sau. Nút giai đoạn 3 đổi thành Quản lý thẻ chi phí phân bổ.
