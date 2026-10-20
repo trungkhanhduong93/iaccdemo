@@ -4,6 +4,12 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 20/10/2026
 
+- T339: Trang chủ gói Free trên máy tính, Tiến độ kiểm kê theo cửa hàng xếp cửa hàng chưa kiểm, lệch nhiều lên đầu. Có hơn 4 cửa hàng thì chỉ hiện 4, thêm dòng Đã kiểm x/y cửa hàng và nút Xem tất cả mở hộp đủ danh sách.
+
+- T502: Gói Free, Báo cáo kiểm kê trên máy tính và điện thoại bỏ các cột Tồn đầu, Nhập trong kỳ, Xuất trong kỳ, Tồn cuối hệ thống, Tồn cuối thực tế, chỉ còn số lượng Thừa, Thiếu.
+
+- T501: Gói Free, Danh mục đối tượng lại có loại Khách hàng: danh sách hiện các khách hàng có sẵn, thêm mới ở danh mục hoặc ở nút thêm đối tượng trong chứng từ chọn được loại Khách hàng.
+
 - T494: Mọi báo cáo trên máy tính, cuộn bảng dài thì dòng tổng cộng cuối bảng (Cộng phát sinh, Tồn cuối kỳ...) luôn hiện ở đáy, dòng Tồn đầu kỳ, Số dư đầu kỳ luôn hiện ngay dưới tiêu đề cột.
 
 - T492: Phiếu mua hàng, góc phải thanh tab có ô Thuế GTGT và Chiết khấu. Chọn thuế suất thì áp cho mọi dòng, dòng thêm sau tự lấy mức đó (vẫn chọn lại được trên dòng). Chiết khấu chọn theo % (tối đa 100%) thì áp cho mọi dòng, chọn theo số tiền thì tự chia cho các dòng theo thành tiền.

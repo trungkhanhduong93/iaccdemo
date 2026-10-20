@@ -196,9 +196,7 @@ const danhMuc: ModuleDef = {
     '1.4': { catalog: { them: 'Thêm quy đổi', cols: [{ k: 'tu', t: 'Từ ĐVT', c: true }, { k: 'den', t: 'Đến ĐVT', c: true }, { k: 'tl', t: 'Tỷ lệ', num: true },
       { k: 'dienGiai', t: 'Diễn giải' }, { k: 'hangAd', t: 'Hàng hoá áp dụng', r: (r: Row) => r.hangAd || 'Tất cả hàng hoá' }],
       rows: () => QUY_DOI_DVT } },
-    '1.5': { catalog: { them: 'Thêm đối tượng', nhomLoc: 'loai', nhanLoc: 'Loại',
-      locGoi: (goi, r) => goi !== 'F' || r.loai !== 'Khách hàng',   // gói Free chỉ Nhà cung cấp, Nhân viên (T470)
-      chucNang: r => {
+    '1.5': { catalog: { them: 'Thêm đối tượng', nhomLoc: 'loai', nhanLoc: 'Loại',      chucNang: r => {
         if (r.loai === 'Khách hàng') return [{ nhan: 'Lập hoá đơn', di: 'ban-hang/3-1-2/moi' }, { nhan: 'Thu tiền', di: 'tien/2-1-1/moi?loai=thu' }, { nhan: 'Xem công nợ', di: 'tien/2-2-5' }]
         if (r.loai === 'Nhà cung cấp') return [{ nhan: 'Lập phiếu mua', di: 'mua-hang/4-1-1/moi' }, { nhan: 'Trả tiền', di: 'tien/2-1-1/moi?loai=chi' }, { nhan: 'Xem công nợ', di: 'mua-hang/4-2-2' }]
         if (r.loai === 'Nhân viên') return [{ nhan: 'Chi tạm ứng', di: 'tien/2-1-1/moi?loai=chi' }]
