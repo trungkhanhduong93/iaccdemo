@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T494 | Mọi báo cáo (màn xem bảng dữ liệu trên web): dòng tổng cộng cuối bảng ghim đáy khung, không mất khi cuộn | PhuongXT | Đang làm | `src/ui/bao-cao/ToGiay.tsx`, cuối `app.css` |
 | T484 | Dữ liệu giả sổ quỹ, lịch sử thu chi: khoản chi mang dấu cộng như khoản thu (vd "Chi mua nguyên vật liệu +21.975.000") vì `soChiTiet` trong `src/ui/generic/gen.ts` chọn diễn giải ngẫu nhiên không theo loại thu chi | | Chờ | Phát hiện khi làm T480 |
 | T451 | Điện thoại, phiếu bán hàng ngoài Xuất bán POS (Hàng bán trả lại, hoá đơn bán hàng...) màn xem, lập phiếu: GTGT theo % doanh thu thì dòng hàng bỏ Thuế x%, VAT, hiện Giảm thuế GTGT như máy tính (T450) | | Chờ | `MXemPhieu.tsx`, `MLapPhieu.tsx`, làm sau khi T449 (Trum) push. Dùng `gtgtTyLe` (`session.tsx`), `giamGtgtCua` (`VoucherScreen.tsx`), `giamThueHkd` (`ban-hang/giam-thue.ts`) |
 | T439 | Phiếu chi đã có thẻ chi phí phân bổ: không cho sửa, báo xoá thẻ trước; xoá thẻ (và xoá phiếu kéo theo thẻ) chỉ khi kỳ khoá sổ trước tháng bắt đầu phân bổ đầu tiên của thẻ | dinhlanphuongipacc | Dở dang | Web xong. Phần điện thoại PhuongXT làm ở T475 (19/10/2026, chặn sửa phiếu có thẻ, xoá phiếu, thẻ kiểm khoá sổ). Còn lại của T439 xem nhật ký. Xem [2026-10-19-dinhlanphuongipacc-lich-phan-bo-khoa-so-the](nhat-ky/2026-10-19-dinhlanphuongipacc-lich-phan-bo-khoa-so-the.md) |
