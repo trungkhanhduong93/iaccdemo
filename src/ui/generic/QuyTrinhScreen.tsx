@@ -36,7 +36,8 @@ export function QuyTrinhScreen({ mod }: ScreenProps) {
   // Gói Free có sơ đồ bước theo kỳ (mẫu C, T366): ưu tiên trên hoiTuFree, luongFree
   const buocKy = s.goi === 'F' && goc0.buocKyFree ? goc0.buocKyFree.map(b => ({
     ...b,
-    nut: b.nut.filter(hien)
+    nut: b.nut.filter(hien),
+    nhom: b.nhom?.map(g => ({ ...g, nut: g.nut.filter(hien) })).filter(g => g.nut.length > 0),
   })).filter(b => b.nut.length > 0) : null
   const qt: QuyTrinhDef = {
     ...goc,
@@ -47,7 +48,7 @@ export function QuyTrinhScreen({ mod }: ScreenProps) {
     },
   }
   const nut = [
-    ...(buocKy ? buocKy.flatMap(b => b.nut) : luong ? luong.flatMap(c => c.nut) : qt.buoc.flatMap(b => [b.chinh, ...(b.tren ?? []), ...(b.duoi ?? [])])),
+    ...(buocKy ? buocKy.flatMap(b => [...b.nut, ...(b.nhom ?? []).flatMap(g => g.nut)]) : luong ? luong.flatMap(c => c.nut) : qt.buoc.flatMap(b => [b.chinh, ...(b.tren ?? []), ...(b.duoi ?? [])])),
     ...(!buocKy && qt.hoiTu ? [...qt.hoiTu.lan, qt.hoiTu.ra].flatMap(l => l.nut) : []),
   ]
   const mo = nut.filter(n => moNut(n, s.goi).ok).length
@@ -547,8 +548,12 @@ function SoDoKyFree({ buoc, modKey, goi, hienLinkBaoCao }: { buoc: BuocKyQT[]; m
                 </div>
               </div>
               <div className={`qt-ky-ds-o ${b.rong ? 'luoi-hai-cot' : ''}`}>
-                {b.nut.map((n, nIdx) => (
-                  <ONutKy key={`${n.di || ''}-${n.ten}-${nIdx}`} n={n} goi={goi} />
+                {gomHangNho(b.nut).map((h, hIdx) => Array.isArray(h) ? (
+                  <div key={`nho-${hIdx}`} className="qt-ky-hang-nho">
+                    {h.map(n => <ONutKy key={`${n.di}-${n.ten}`} n={n} goi={goi} />)}
+                  </div>
+                ) : (
+                  <ONutKy key={`${h.di || ''}-${h.ten}-${hIdx}`} n={h} goi={goi} />
                 ))}
                 {laCuoi && hienLinkBaoCao && !b.nut.some(n => n.di.includes('bao-cao')) && (
                   <Link to={`/app/${modKey}/bao-cao`} className="qt-n qt-ky-all-bc">
@@ -557,6 +562,15 @@ function SoDoKyFree({ buoc, modKey, goi, hienLinkBaoCao }: { buoc: BuocKyQT[]; m
                   </Link>
                 )}
               </div>
+              {b.nhom?.map(g => (
+                <div key={g.ten} className="qt-ky-nhom">
+                  <div className="qt-ky-ten">{g.ten}</div>
+                  {g.moTa && <div className="qt-ky-mo">{g.moTa}</div>}
+                  <div className="qt-ky-ds-o">
+                    {g.nut.map(n => <ONutKy key={`${n.di}-${n.ten}`} n={n} goi={goi} />)}
+                  </div>
+                </div>
+              ))}
               {b.ghiChu && <div className="qt-ky-ghi-chu">{b.ghiChu}</div>}
             </div>
           )
@@ -564,6 +578,17 @@ function SoDoKyFree({ buoc, modKey, goi, hienLinkBaoCao }: { buoc: BuocKyQT[]; m
       </div>
     </div>
   )
+}
+
+/** Gom các ô nho liền nhau thành một hàng (T514) */
+function gomHangNho(ds: NutKyQT[]): (NutKyQT | NutKyQT[])[] {
+  const kq: (NutKyQT | NutKyQT[])[] = []
+  for (const n of ds) {
+    const cuoi = kq[kq.length - 1]
+    if (n.nho && Array.isArray(cuoi)) cuoi.push(n)
+    else kq.push(n.nho ? [n] : n)
+  }
+  return kq
 }
 
 function ONutKy({ n, goi }: { n: NutKyQT; goi: Goi }) {

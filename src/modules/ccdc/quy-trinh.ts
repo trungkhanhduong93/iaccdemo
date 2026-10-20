@@ -39,7 +39,8 @@ export const quyTrinh: QuyTrinhDef = {
       moTa: 'Khai báo các khoản mua từ trước còn phân bổ.',
       ghiChu: 'Công cụ dụng cụ hoặc tiền nhà, phí dịch vụ trả trước khi dùng phần mềm.',
       nut: [
-        { ten: 'Thẻ CPPB dư đầu kỳ', icon: 'clock', di: 'ccdc/8-1-1', moTa: 'Khoản chi từ trước khi dùng phần mềm' },
+        // Mở thẳng form ghi tăng đầu kỳ (T514)
+        { ten: 'Thẻ CPPB dư đầu kỳ', icon: 'clock', di: 'ccdc/8-1-1?moi=dau', moTa: 'Khoản chi từ trước khi dùng phần mềm' },
       ],
     },
     {
@@ -47,16 +48,23 @@ export const quyTrinh: QuyTrinhDef = {
       moTa: 'Lập phiếu chi cho các khoản dùng nhiều tháng.',
       ghiChu: 'Tiền thuê mặt bằng, mua sắm công cụ dụng cụ trả một lần dùng dài hạn.',
       nut: [
-        { ten: 'Chi tiền mặt', icon: 'cashout', di: `tien/2-1-1/moi?loai=chi&ly=${MA_LY_CHO_PHAN_BO}`, taoMoi: `tien/2-1-1/moi?loai=chi&ly=${MA_LY_CHO_PHAN_BO}`, moTa: 'Chi tiền mặt khoản trả trước' },
-        { ten: 'Chi ngân hàng', icon: 'bank', di: `tien/2-1-1/moi?loai=unc&ly=${MA_LY_CHO_PHAN_BO}`, taoMoi: `tien/2-1-1/moi?loai=unc&ly=${MA_LY_CHO_PHAN_BO}`, moTa: 'Chuyển khoản khoản trả trước' },
+        // Hai ô nhỏ chung 1 hàng (T514)
+        { ten: 'Chi tiền mặt', icon: 'cashout', di: `tien/2-1-1/moi?loai=chi&ly=${MA_LY_CHO_PHAN_BO}`, taoMoi: `tien/2-1-1/moi?loai=chi&ly=${MA_LY_CHO_PHAN_BO}`, nho: true },
+        { ten: 'Chi ngân hàng', icon: 'bank', di: `tien/2-1-1/moi?loai=unc&ly=${MA_LY_CHO_PHAN_BO}`, taoMoi: `tien/2-1-1/moi?loai=unc&ly=${MA_LY_CHO_PHAN_BO}`, nho: true },
       ],
+      // Khoản chưa chi tiền: tạo thẻ thẳng, không qua phiếu chi (T514)
+      nhom: [{
+        ten: 'Chưa chi tiền cần ghi nhận chi phí trả trước',
+        moTa: 'Các khoản chi phí phân bổ thanh toán sau',
+        nut: [{ ten: 'Thẻ chi phí phân bổ', icon: 'phanbo', di: 'ccdc/8-1-1?moi=the', moTa: 'Ghi nhận khoản chưa thanh toán' }],
+      }],
     },
     {
       ten: 'Theo dõi thẻ chi phí',
       moTa: 'Ghi nhận và chia đều chi phí vào từng tháng.',
       ghiChu: 'Mỗi khoản chi trả trước tạo một thẻ để hệ thống tự chia theo số kỳ.',
       nut: [
-        { ten: 'Thẻ chi phí phân bổ', icon: 'phanbo', di: 'ccdc/8-1-1', moTa: 'Chia đều chi phí vào từng tháng' },
+        { ten: 'Quản lý thẻ chi phí phân bổ', icon: 'phanbo', di: 'ccdc/8-1-1', moTa: 'Danh sách thẻ, lịch phân bổ' },   // T514
       ],
     },
     {

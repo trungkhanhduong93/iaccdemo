@@ -36536,3 +36536,53 @@ a.tx-item:hover {
   gap: 6px;
   cursor: pointer;
 }
+
+/* ── Quy trình gói Free: ô nhỏ chung 1 hàng, nhóm ô phụ có tiêu đề (T514) ── */
+.qt-ky-hang-nho {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.qt-ky-hang-nho .qt-ky-o {
+  min-height: 40px;
+  padding: 4px 8px;
+  gap: 6px;
+  font-size: 13px;
+}
+.qt-ky-hang-nho .qt-ky-o-wrap:has(.qt-ky-plus) .qt-ky-o {
+  padding-right: 34px;
+}
+.qt-ky-hang-nho .qt-ky-o-t {
+  gap: 6px;
+}
+.qt-ky-hang-nho .qt-ky-ic-wrap {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+}
+.qt-ky-hang-nho .qt-ky-ic-wrap .ic {
+  width: 18px;
+  height: 18px;
+}
+.qt-ky-hang-nho .qt-ky-o-ten {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.qt-ky-hang-nho .qt-ky-plus {
+  right: 6px;
+  width: 24px;
+  height: 24px;
+}
+.qt-ky-nhom {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 14px;
+}
+.qt-ky-nhom .qt-ky-ten {
+  font-size: 14px;
+}
+.qt-ky-nhom .qt-ky-ds-o {
+  margin-top: 8px;
+}

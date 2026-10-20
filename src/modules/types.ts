@@ -164,10 +164,12 @@ export interface LanQT {
 }
 
 /** Một ô của sơ đồ bước theo kỳ (mẫu C, T366): chieu là chấm màu tiền vào, tiền ra, nội bộ; taoMoi là đường dẫn nút + lập nhanh */
-export interface NutKyQT extends NutQT { chieu?: 'vao' | 'ra' | 'noi'; taoMoi?: string; moTa?: string; rong?: boolean }
+export interface NutKyQT extends NutQT { chieu?: 'vao' | 'ra' | 'noi'; taoMoi?: string; moTa?: string; rong?: boolean; nho?: boolean }   // nho: ô nhỏ không mô tả, các ô nho liền nhau chung 1 hàng (T514)
 
 /** Một bước của sơ đồ bước theo kỳ: tên bước, câu giải thích bằng lời thường cho người không rành kế toán, các ô, ghi chú cuối bước (T366) */
-export interface BuocKyQT { ten: string; moTa: string; nut: NutKyQT[]; ghiChu?: string; rong?: boolean }
+export interface BuocKyQT { ten: string; moTa: string; nut: NutKyQT[]; ghiChu?: string; rong?: boolean; nhom?: NhomKyQT[] }
+/** Nhóm ô phụ dưới các ô chính của một bước, có tiêu đề, tiêu đề phụ riêng (T514) */
+export interface NhomKyQT { ten: string; moTa?: string; nut: NutKyQT[] }
 
 /** Một cột của sơ đồ luồng: các ô xếp dọc; noi là chữ trên mũi tên đi vào cột, ô có noi riêng thì dùng chữ của ô (T123) */
 export interface CotQT { nut: NutQT[]; noi?: string }
