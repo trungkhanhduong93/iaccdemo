@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T526 | Điện thoại, lập phiếu chứng từ theo logic web: ở Tất cả chi nhánh bấm thêm mới thì trượt bảng chọn chi nhánh và nhớ cho phiếu sau; ô chọn quỹ lọc đúng loại tiền và chi nhánh; ô nhập nền trắng, ô chỉ đọc nền xám; phiếu mới để trống, lưu trong phiên, F5 về dữ liệu demo; chip loại thu chi có màu; bản Free phiếu thu chi chỉ Diễn giải và Thành tiền | Trum | Đang làm | Chỉ điện thoại. Giao Anti. Không sửa `MXemPhieu.tsx` (T436 giữ), `Shell.tsx` (T138) |
 | T500 | Giao diện điện thoại theo Figma: danh sách Báo cáo (Truy cập nhanh gần đây, đã ghim, nhóm báo cáo); Sổ quỹ tiền mặt, Sổ ngân hàng (chip lọc, nút lọc chỉ icon, 4 thẻ tổng, chi tiết theo ngày), không làm thanh In, Xuất báo cáo ở đáy | Trum | Đang làm | Chỉ điện thoại |
 | T498 | Giao diện điện thoại theo Figma: Trang chủ (Doanh thu xanh dương, % chi phí cam, thanh tab giữ nguyên), Nghiệp vụ, Thu chi (danh sách, xem, tạo, sửa phiếu, sheet thao tác, sheet chọn đối tượng, bộ lọc) | Trum | Đang làm | Chỉ điện thoại. Sửa phần điện thoại của `MXemPhieu.tsx` (T436 làm phần web, đồng bộ sau) |
 | T499 | Màn Báo cáo trên web: nút xuất báo cáo đổi icon Excel sang icon tải xuống | Trum | Đang làm | Chỉ đổi icon |

@@ -24,6 +24,7 @@ import { coLocKhacMacDinh, MAC_DINH_LOC_MOBILE, MLoc, tinhKhoangNgay, type GtLoc
 import { MXemPhieu } from './MXemPhieu'
 import { MBaoCaoTheoDoi } from './MBaoCaoTheoDoi'
 import { CUA_HANG } from '../../data/mock'
+import { ChonCuaHangTruoc, layChiNhanhNho, luuChiNhanhNho } from '../ChonCuaHangTruoc'
 
 // Tách lớp ngoài để danh sách luôn gọi đủ hook, không trả sớm theo id
 export const MChungTu: FC<ScreenProps> = ({ sc, mod }) => {
@@ -242,6 +243,24 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
     return { tongThu: thu, tongChi: chi, chenhLech: thu - chi }
   }, [list, dsChieu])
 
+  const [moChonCnTruoc, setMoChonCnTruoc] = useState(false)
+  const [dichDenThem, setDichDenThem] = useState<string | null>(null)
+
+  const thucHienThem = (dich: string) => {
+    if (s.cuaHang === 'all') {
+      const cnNho = layChiNhanhNho()
+      if (cnNho && CUA_HANG.some(c => c.id === cnNho)) {
+        set({ cuaHang: cnNho })
+        nav(dich)
+      } else {
+        setDichDenThem(dich)
+        setMoChonCnTruoc(true)
+      }
+      return
+    }
+    nav(dich)
+  }
+
   // Thêm mới (T299: gói Free ở tab Chuyển quỹ mở thẳng, tab Tiền mặt/Ngân hàng mở 2 loại; T353 điểm 13b: Điều chỉnh kho trên điện thoại chỉ xem)
   const khongThem = Boolean(cfg.khongThem || cfg.dieuChinh)
   const handleThem = khongThem
@@ -249,7 +268,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
     : () => {
         if (mod.key === 'tien' && s.goi === 'F') {
           if (loaiChon === 'cq') {
-            nav(`${path}/moi?loai=cq`)
+            thucHienThem(`${path}/moi?loai=cq`)
           } else {
             setMoChonLoai(true)
           }
@@ -258,7 +277,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
         if (cfg.loai && cfg.loai.length > 0) {
           setMoChonLoai(true)
         } else {
-          nav(`${path}/moi`)
+          thucHienThem(`${path}/moi`)
         }
       }
 
@@ -698,7 +717,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
           onDong={() => setMoChonLoai(false)}
           tieuDe="Chọn loại phiếu"
           ds={dsLoaiThemMoi.map(l => ({ k: l.k, ten: l.ten }))}
-          onChon={k => nav(`${path}/moi?loai=${k}`)}
+          onChon={k => thucHienThem(`${path}/moi?loai=${k}`)}
         />
       )}
 
@@ -707,6 +726,24 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
         mo={moTheoDoi}
         onDong={() => setMoTheoDoi(false)}
         modKey={mod.key}
+      />
+
+      <ChonCuaHangTruoc
+        mo={moChonCnTruoc}
+        laMobile={true}
+        onDong={() => {
+          setMoChonCnTruoc(false)
+          setDichDenThem(null)
+        }}
+        onChon={idCuaHang => {
+          luuChiNhanhNho(idCuaHang)
+          set({ cuaHang: idCuaHang })
+          setMoChonCnTruoc(false)
+          if (dichDenThem) {
+            nav(dichDenThem)
+            setDichDenThem(null)
+          }
+        }}
       />
     </>
   )

@@ -41,6 +41,26 @@ export function laDuongDanTaoPhieu(pathname: string, search = ''): boolean {
   return PHAN_HE_CHUNG_TU.includes(modKey)
 }
 
+const KEY_CN_NHO = 'iacc_cn_nho_lap_phieu'
+
+/** Lấy chi nhánh đã nhớ trong phiên khi lập phiếu từ Tất cả chi nhánh (T526) */
+export function layChiNhanhNho(): string | null {
+  try {
+    return sessionStorage.getItem(KEY_CN_NHO)
+  } catch {
+    return null
+  }
+}
+
+/** Ghi nhớ chi nhánh đã chọn trong phiên (T526) */
+export function luuChiNhanhNho(idCuaHang: string): void {
+  try {
+    sessionStorage.setItem(KEY_CN_NHO, idCuaHang)
+  } catch {
+    // bỏ qua
+  }
+}
+
 export interface ChonCuaHangTruocProps {
   mo: boolean
   laMobile?: boolean

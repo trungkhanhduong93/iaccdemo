@@ -11,7 +11,7 @@ import { tabDangChon, ThanhDuoi } from './ThanhDuoi'
 import { MBaoCaoLoc } from './MBaoCaoLoc'
 import { kyHieuBC } from '../../modules/bao-cao/danh-sach'
 import type { Session } from '../../app/session'
-import { ChonCuaHangTruoc, laDuongDanTaoPhieu } from '../ChonCuaHangTruoc'
+import { ChonCuaHangTruoc, laDuongDanTaoPhieu, layChiNhanhNho, luuChiNhanhNho } from '../ChonCuaHangTruoc'
 
 function manGocCuaTab(pathname: string): string {
   const tab = tabDangChon(pathname)
@@ -128,6 +128,16 @@ export function MobileShell() {
   const dangTaoPhieuTrenUrl = laDuongDanTaoPhieu(loc.pathname, loc.search) && s.cuaHang === 'all'
   const moChonCuaHang = Boolean(dichDen) || dangTaoPhieuTrenUrl
 
+  // T526: Nếu vào URL tạo phiếu khi ở Tất cả cửa hàng và đã có chi nhánh nhớ trong phiên
+  useEffect(() => {
+    if (dangTaoPhieuTrenUrl) {
+      const cnNho = layChiNhanhNho()
+      if (cnNho && CUA_HANG.some(c => c.id === cnNho)) {
+        set({ cuaHang: cnNho })
+      }
+    }
+  }, [dangTaoPhieuTrenUrl, set])
+
   useEffect(() => {
     if (s.cuaHang !== 'all') return
     const handleClick = (e: MouseEvent) => {
@@ -140,14 +150,21 @@ export function MobileShell() {
       if (laDuongDanTaoPhieu(p, q ? `?${q}` : '')) {
         e.preventDefault()
         e.stopPropagation()
-        setDichDen(pathWithSearch)
+        const cnNho = layChiNhanhNho()
+        if (cnNho && CUA_HANG.some(c => c.id === cnNho)) {
+          set({ cuaHang: cnNho })
+          nav(pathWithSearch)
+        } else {
+          setDichDen(pathWithSearch)
+        }
       }
     }
     document.addEventListener('click', handleClick, true)
     return () => document.removeEventListener('click', handleClick, true)
-  }, [s.cuaHang])
+  }, [s.cuaHang, nav, set])
 
   const handleChonCuaHang = (idCuaHang: string) => {
+    luuChiNhanhNho(idCuaHang)
     set({ cuaHang: idCuaHang })
     if (dichDen) {
       const target = dichDen

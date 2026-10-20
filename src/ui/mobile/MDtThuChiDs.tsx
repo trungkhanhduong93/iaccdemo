@@ -17,6 +17,7 @@ import { coLocKhacMacDinh, MAC_DINH_LOC_MOBILE, MLoc, tinhKhoangNgay, type GtLoc
 import { MBaoCaoTheoDoi } from './MBaoCaoTheoDoi'
 import { Icon } from '../Icon'
 import { CUA_HANG } from '../../data/mock'
+import { ChonCuaHangTruoc, layChiNhanhNho, luuChiNhanhNho } from '../ChonCuaHangTruoc'
 
 const CAC_THU = ['Chủ nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy']
 
@@ -53,6 +54,8 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
 
   const [sp, setSearchParams] = useSearchParams()
   const [chipTT, setChipTT] = useState(() => sp.get('tt') ?? 'all')
+  const [moChonCnTruoc, setMoChonCnTruoc] = useState(false)
+  const [dichDenMoi, setDichDenMoi] = useState<string | null>(null)
   const [loaiChon, setLoaiChon] = useState<string>('')
   const [timMo, setTimMo] = useState(false)
   const [tuKhoa, setTuKhoa] = useState('')
@@ -489,10 +492,37 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
         ds={dsLoaiThem}
         onChon={k => {
           setMoChonLoaiThem(false)
+          const target = `${path}/moi?loai=${k}`
           if (s.cuaHang === 'all') {
-            set({ cuaHang: CUA_HANG[0].id })
+            const cnNho = layChiNhanhNho()
+            if (cnNho && CUA_HANG.some(c => c.id === cnNho)) {
+              set({ cuaHang: cnNho })
+              nav(target)
+            } else {
+              setDichDenMoi(target)
+              setMoChonCnTruoc(true)
+            }
+            return
           }
-          nav(`${path}/moi?loai=${k}`)
+          nav(target)
+        }}
+      />
+
+      <ChonCuaHangTruoc
+        mo={moChonCnTruoc}
+        laMobile={true}
+        onDong={() => {
+          setMoChonCnTruoc(false)
+          setDichDenMoi(null)
+        }}
+        onChon={idCuaHang => {
+          luuChiNhanhNho(idCuaHang)
+          set({ cuaHang: idCuaHang })
+          setMoChonCnTruoc(false)
+          if (dichDenMoi) {
+            nav(dichDenMoi)
+            setDichDenMoi(null)
+          }
         }}
       />
 
