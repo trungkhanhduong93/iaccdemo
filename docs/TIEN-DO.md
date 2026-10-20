@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T501 | Gói Free, Danh mục đối tượng mở lại loại Khách hàng (bỏ T470): tạo được ở danh mục và ở nút thêm mới trong chứng từ | PhuongXT | Đang làm | `danh-muc/index.ts`, `danh-muc/truong-dm.ts` |
 | T500 | Giao diện điện thoại theo Figma: danh sách Báo cáo (Truy cập nhanh gần đây, đã ghim, nhóm báo cáo); Sổ quỹ tiền mặt, Sổ ngân hàng (chip lọc, nút lọc chỉ icon, 4 thẻ tổng, chi tiết theo ngày), không làm thanh In, Xuất báo cáo ở đáy | Trum | Đang làm | Chỉ điện thoại |
 | T498 | Giao diện điện thoại theo Figma: Trang chủ (Doanh thu xanh dương, % chi phí cam, thanh tab giữ nguyên), Nghiệp vụ, Thu chi (danh sách, xem, tạo, sửa phiếu, sheet thao tác, sheet chọn đối tượng, bộ lọc) | Trum | Đang làm | Chỉ điện thoại. Sửa phần điện thoại của `MXemPhieu.tsx` (T436 làm phần web, đồng bộ sau) |
 | T499 | Màn Báo cáo trên web: nút xuất báo cáo đổi icon Excel sang icon tải xuống | Trum | Đang làm | Chỉ đổi icon |

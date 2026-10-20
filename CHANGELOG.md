@@ -4,6 +4,8 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 20/10/2026
 
+- T501: Gói Free, Danh mục đối tượng lại có loại Khách hàng: danh sách hiện các khách hàng có sẵn, thêm mới ở danh mục hoặc ở nút thêm đối tượng trong chứng từ chọn được loại Khách hàng.
+
 - T494: Mọi báo cáo trên máy tính, cuộn bảng dài thì dòng tổng cộng cuối bảng (Cộng phát sinh, Tồn cuối kỳ...) luôn hiện ở đáy, dòng Tồn đầu kỳ, Số dư đầu kỳ luôn hiện ngay dưới tiêu đề cột.
 
 - T492: Phiếu mua hàng, góc phải thanh tab có ô Thuế GTGT và Chiết khấu. Chọn thuế suất thì áp cho mọi dòng, dòng thêm sau tự lấy mức đó (vẫn chọn lại được trên dòng). Chiết khấu chọn theo % (tối đa 100%) thì áp cho mọi dòng, chọn theo số tiền thì tự chia cho các dòng theo thành tiền.

@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T501 | Gói Free, Danh mục đối tượng mở lại loại Khách hàng (bỏ T470): tạo được ở danh mục và ở nút thêm mới trong chứng từ | PhuongXT | 20/10/2026 | [2026-10-20-phuongxt-mo-lai-khach-hang-free](../nhat-ky/2026-10-20-phuongxt-mo-lai-khach-hang-free.md) |
 | T494 | Mọi báo cáo (màn xem bảng dữ liệu trên web): dòng tổng cộng cuối bảng ghim đáy khung, dòng tồn, số dư đầu kỳ ghim dưới tiêu đề cột, không mất khi cuộn | PhuongXT | 20/10/2026 | [2026-10-20-phuongxt-ghim-dong-tong-bao-cao](../nhat-ky/2026-10-20-phuongxt-ghim-dong-tong-bao-cao.md) |
 | T492 | Phiếu mua hàng: góc phải thanh tab có ô Thuế GTGT (áp mọi dòng, dòng thêm sau lấy mặc định) và Chiết khấu chọn % (tối đa 100, áp mọi dòng) hoặc số tiền (chia theo thành tiền); `ApDauBang.tsx` | PhuongXT | 20/10/2026 | [2026-10-20-phuongxt-thue-ck-dau-bang-mua](../nhat-ky/2026-10-20-phuongxt-thue-ck-dau-bang-mua.md) |
 | T493 | Luật tiết kiệm token cho mọi agent: mục mới trong `AGENTS.md`, thêm vào skill bản đồ repo để repo khác cũng có | Trum | Xong | Mục mới trong `AGENTS.md` (QD75), skill bản đồ lên bản 4 có mẫu `muc-tiet-kiem-token.md` |
