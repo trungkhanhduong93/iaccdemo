@@ -4,6 +4,8 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 20/10/2026
 
+- T510, T511: Mọi màn danh sách web (chứng từ, danh mục, báo cáo, Danh mục cửa hàng) dùng chung một hàng lọc: nút phễu có số ô đang lọc, các ô lọc ngoài, nút Lọc. Đổi điều kiện thì nút Lọc hiện chấm cam, bấm Lọc mới tải lại. Ô Thời gian mở bảng chọn 2 tháng. Ô chọn nhiều hiện tên đầu và "+N". Nút Thêm mới màu xanh, có nhiều loại thì thả menu chọn. Tải từ HĐĐT, FABi, iPOS Inventory thành nút vuông Đồng bộ. Excel, Tuỳ chỉnh cột xuống hàng 2 bên phải.
+
 - T519: Điện thoại, trang chủ gói Free: chip Năm, Tháng mở bảng chọn trượt từ dưới lên như chip cửa hàng. Khối Quỹ tiền có vòng tròn ở giữa, mỗi quỹ có nhãn tên và % kéo ra quanh vòng. Nút Tất cả quỹ mở bảng nhỏ ghi số tồn từng quỹ. Nút Tạo phiếu mua hàng, Thanh toán nhà cung cấp, Kiểm kê ngay đổi chữ xanh, icon như bản web.
 
 - T520: Điện thoại: icon khối bỏ chi tiết màu cam, đổi sang xanh đậm, xanh nhạt như icon màn Báo cáo. Hộp Lãi lỗ theo cửa hàng: cột 3 cửa hàng thẳng hàng.
