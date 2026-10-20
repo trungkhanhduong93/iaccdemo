@@ -1235,8 +1235,8 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
             </div>
           </div>
           <div className="bbt-kho-chan">
-            <Link to="/app/mua-hang/4-1-1/moi" className="btn sm"><Icon n="plus" className="ic sm" />Tạo phiếu mua hàng</Link>
-            <Link to="/app/tien/2-1-1/moi?loai=chi&ly=CHI02" className="btn sm"><Icon n="plus" className="ic sm" />Thanh toán nhà cung cấp</Link>
+            <Link to="/app/mua-hang/4-1-1/moi" className="btn sm"><Icon n="plus" className="ic sm" kieu="net" />Tạo phiếu mua hàng</Link>
+            <Link to="/app/tien/2-1-1/moi?loai=chi&ly=CHI02" className="btn sm"><Icon n="card" className="ic sm" kieu="net" />Thanh toán nhà cung cấp</Link>
           </div>
         </section>
 
@@ -1288,7 +1288,7 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
             </div>
           </div>
           <div className="bbt-kho-chan">
-            <Link to="/app/kho/5-1-10/moi" className="btn sm"><Icon n="plus" className="ic sm" />Kiểm kê ngay</Link>
+            <Link to="/app/kho/5-1-10/moi" className="btn sm"><Icon n="clipboard" className="ic sm" kieu="net" />Kiểm kê ngay</Link>
           </div>
         </section>
       </div>

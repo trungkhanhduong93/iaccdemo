@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { FigmaTabIcon } from '../FigmaIcon'
+import { Icon } from '../Icon'
 
 export function tabDangChon(pathname: string): 'trang-chu' | 'nghiep-vu' | 'bao-cao' | 'khac' {
   if (pathname === '/app' || pathname === '/app/' || pathname.startsWith('/app/trang-chu')) {
@@ -96,7 +96,7 @@ export function ThanhDuoi() {
         return (
           <Link key={t.key} to={t.to} className={`m-tab${on ? ' on' : ''}`}>
             <span className="m-tab-ic">
-              <FigmaTabIcon name={t.key} active={on} className="ic lg" />
+              <Icon n={t.icon} className="ic lg" kieu={on ? 'khoi' : 'net'} />
             </span>
             <span className="m-tab-nhan">{t.nhan}</span>
           </Link>
