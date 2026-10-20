@@ -24,6 +24,7 @@ export function NutExcel({
   title = 'Excel: nhập, xuất danh sách',
   align = 'end',
   width = 190,
+  label,
   children,
 }: {
   onNhap?: () => void
@@ -31,10 +32,11 @@ export function NutExcel({
   title?: string
   align?: 'start' | 'end'
   width?: number
+  label?: ReactNode
   children?: (dong: () => void) => ReactNode
 }) {
   return (
-    <Dropdown btnClass="nut-vuong ds-nut-excel" align={align} width={width} title={title} label={<LogoExcel />}>
+    <Dropdown btnClass="nut-vuong ds-nut-excel" align={align} width={width} title={title} label={label ?? <LogoExcel />}>
       {dong => (children ? children(dong) : <>
         <MenuHead>Excel</MenuHead>
         {onNhap && <MenuItem icon="upload" onClick={() => { onNhap(); dong() }}>Nhập Excel</MenuItem>}

@@ -6,6 +6,7 @@ import type { Col, Row } from '../modules/types'
 import { useSession } from '../app/session'
 import { MenuHead, MenuItem, MenuSep, Popover } from './Dropdown'
 import { Icon } from './Icon'
+import { IconFigmaFunnel, IconFigmaChevD, IconFigmaLayers, IconFigmaSliders, IconFigmaAlert, IconFigmaPrinter, IconFigmaDownload, IconFigmaTrash, IconFigmaCheck, IconFigmaX } from './IconFigma'
 import { fold } from './format'
 import { daKhoaSo } from '../data/mock'
 import { ttThamChieu } from './generic/daXoa'
@@ -103,8 +104,12 @@ export function useLocNhap<T extends object>(macDinh: () => T) {
   const [ap, setAp] = useState<T>(macDinh)
   const [nhap, setNhap] = useState<T>(macDinh)
   const dat = <K extends keyof T>(k: K, v: T[K]) => setNhap(x => ({ ...x, [k]: v }))
+  const datVaAp = <K extends keyof T>(k: K, v: T[K]) => {
+    setNhap(x => ({ ...x, [k]: v }))
+    setAp(x => ({ ...x, [k]: v }))
+  }
   return {
-    ap, nhap, dat,
+    ap, nhap, dat, datVaAp,
     /** Áp dụng giá trị nháp */
     loc: () => setAp(nhap),
     /** Đưa nháp về mặc định, chưa áp dụng */
@@ -180,12 +185,14 @@ function CongTac({ on, khoa, onDoi, nhan }: { on: boolean; khoa?: boolean; onDoi
 
 // ── Ô lọc ngoài, nút phễu mở Bộ lọc nâng cao, nút Lọc ──
 
-export function BoLoc({ ds, cauHinh, datCauHinh, dangLoc, khacNhap, onLoc, onXoaHet, anNangCao = false, nhanXoa, truocNutLoc }: {
+export function BoLoc({ ds, cauHinh, datCauHinh, dangLoc, khacNhap, onLoc, onXoaHet, anNangCao = false, nhanXoa, truocNutLoc, chiNutPheu = false, soDem }: {
   ds: OLocDef[]; cauHinh: CauHinhLoc; datCauHinh: (c: CauHinhLoc) => void
   dangLoc: boolean; khacNhap: boolean; onLoc: () => void; onXoaHet: () => void
   anNangCao?: boolean
   nhanXoa?: string
   truocNutLoc?: ReactNode
+  chiNutPheu?: boolean
+  soDem?: number
 }) {
   const { toast } = useSession()
   const [mo, setMo] = useState(false)
@@ -203,20 +210,35 @@ export function BoLoc({ ds, cauHinh, datCauHinh, dangLoc, khacNhap, onLoc, onXoa
     else datCauHinh({ ...cauHinh, ngoai: cauHinh.thuTu.filter(x => x === k || ngoai.includes(x)) })
   }
 
+  const luoiDs = chiNutPheu
+    ? cauHinh.thuTu.filter(k => k !== 'thoiGian' && k !== 'tim' && theoK.has(k))
+    : trong
+
   return (
     <>
-      {ngoai.map(k => <ONhanVien key={k} nhan={theoK.get(k)!.ten} className={`ds-o-${k}`}>{theoK.get(k)!.o}</ONhanVien>)}
+      {!chiNutPheu && ngoai.map(k => <ONhanVien key={k} nhan={theoK.get(k)!.ten} className={`ds-o-${k}`}>{theoK.get(k)!.o}</ONhanVien>)}
       {!anNangCao && (
-        <button ref={nut} type="button" className={`nut-vuong ds-nut-pheu${mo || dangLoc ? ' on' : ''}`} title="Bộ lọc nâng cao" aria-label="Bộ lọc nâng cao"
-          aria-expanded={mo} onClick={() => setMo(o => !o)}>
-          <Icon n="filter" className="ic sm" />
-          {dangLoc && <span className="nut-vuong-dot" />}
+        chiNutPheu ? (
+          <button ref={nut} type="button" className={`ds-btn-pheu-figma${mo || dangLoc ? ' on' : ''}`} title="Bộ lọc" aria-label="Bộ lọc"
+            aria-expanded={mo} onClick={() => setMo(o => !o)}>
+            <IconFigmaFunnel />
+            {(soDem ?? (dangLoc ? 1 : 0)) > 0 && <span className="ds-badge-so">{soDem ?? 1}</span>}
+            <IconFigmaChevD />
+          </button>
+        ) : (
+          <button ref={nut} type="button" className={`nut-vuong ds-nut-pheu${mo || dangLoc ? ' on' : ''}`} title="Bộ lọc nâng cao" aria-label="Bộ lọc nâng cao"
+            aria-expanded={mo} onClick={() => setMo(o => !o)}>
+            <Icon n="filter" className="ic sm" />
+            {dangLoc && <span className="nut-vuong-dot" />}
+          </button>
+        )
+      )}
+      {!chiNutPheu && truocNutLoc}
+      {!chiNutPheu && (
+        <button type="button" className="btn pri ds-nut-loc" title={khacNhap ? 'Có điều kiện mới chưa lọc' : undefined} onClick={onLoc}>
+          Lọc{khacNhap && <span className="ds-cham-nhap" />}
         </button>
       )}
-      {truocNutLoc}
-      <button type="button" className="btn pri ds-nut-loc" title={khacNhap ? 'Có điều kiện mới chưa lọc' : undefined} onClick={onLoc}>
-        Lọc{khacNhap && <span className="ds-cham-nhap" />}
-      </button>
 
       {!anNangCao && (
         <Popover anchor={nut} open={mo} onClose={dong} align="start" width={720} role="dialog" className="ds-nc-pop">
@@ -227,34 +249,36 @@ export function BoLoc({ ds, cauHinh, datCauHinh, dangLoc, khacNhap, onLoc, onXoa
             <button type="button" className="ds-link" onClick={onXoaHet}>{nhanXoa ?? 'Xoá tất cả'}</button>
             <button type="button" className="pheu-dong" title="Đóng" aria-label="Đóng" onClick={dong}><Icon n="x" className="ic sm" /></button>
           </div>
-          {trong.length > 0 && (
+          {luoiDs.length > 0 && (
             <div className="ds-nc-luoi">
-              {trong.map(k => <ONhanVien key={k} nhan={theoK.get(k)!.ten} className={`ds-o-${k}`}>{theoK.get(k)!.o}</ONhanVien>)}
+              {luoiDs.map(k => <ONhanVien key={k} nhan={theoK.get(k)!.ten} className={`ds-o-${k}`}>{theoK.get(k)!.o}</ONhanVien>)}
             </div>
           )}
-          <div className="ds-nc-ch">
-            <button type="button" className="ds-nc-ch-dau" aria-expanded={moCauHinh} onClick={() => setMoCauHinh(x => !x)}>
-              <b>Cấu hình tham số lọc</b>
-              <span className="ds-chip-so">{ngoai.length}</span>
-              <small>tối đa chọn {TOI_DA_NGOAI} ô lọc để đưa ra bên ngoài</small>
-              <span className="grow" />
-              <Icon n="chevd" className={`ic sm ds-mui${moCauHinh ? ' len' : ''}`} />
-            </button>
-            {moCauHinh && (
-              <>
-                <div className="ds-goi-y">Bật để hiện ngoài, kéo để đổi thứ tự</div>
-                <div className="ds-ds-keo">
-                  {cauHinh.thuTu.filter(k => theoK.has(k)).map(k => (
-                    <div key={k} className={`ds-dong-keo${keo.keo === k ? ' dang-keo' : ''}${keo.dich === k ? ' dich' : ''}`} {...keo.props(k)}>
-                      <TayKeo />
-                      <span className="grow">{theoK.get(k)!.ten}</span>
-                      <CongTac on={ngoai.includes(k)} nhan={`Hiện ô ${theoK.get(k)!.ten} ở ngoài`} onDoi={() => doiBat(k)} />
-                    </div>
-                  ))}
-                </div>
-              </>
-            )}
-          </div>
+          {!chiNutPheu && (
+            <div className="ds-nc-ch">
+              <button type="button" className="ds-nc-ch-dau" aria-expanded={moCauHinh} onClick={() => setMoCauHinh(x => !x)}>
+                <b>Cấu hình tham số lọc</b>
+                <span className="ds-chip-so">{ngoai.length}</span>
+                <small>tối đa chọn {TOI_DA_NGOAI} ô lọc để đưa ra bên ngoài</small>
+                <span className="grow" />
+                <Icon n="chevd" className={`ic sm ds-mui${moCauHinh ? ' len' : ''}`} />
+              </button>
+              {moCauHinh && (
+                <>
+                  <div className="ds-goi-y">Bật để hiện ngoài, kéo để đổi thứ tự</div>
+                  <div className="ds-ds-keo">
+                    {cauHinh.thuTu.filter(k => theoK.has(k)).map(k => (
+                      <div key={k} className={`ds-dong-keo${keo.keo === k ? ' dang-keo' : ''}${keo.dich === k ? ' dich' : ''}`} {...keo.props(k)}>
+                        <TayKeo />
+                        <span className="grow">{theoK.get(k)!.ten}</span>
+                        <CongTac on={ngoai.includes(k)} nhan={`Hiện ô ${theoK.get(k)!.ten} ở ngoài`} onDoi={() => doiBat(k)} />
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+          )}
           <div className="ds-chan">
             <button type="button" className="btn" onClick={dong}>Đóng</button>
             <button type="button" className="btn pri" onClick={() => { onLoc(); dong() }}>Lọc</button>
@@ -396,12 +420,13 @@ export function useCotDs(path: string, cols: Col[], coDinh: Set<string>) {
 const tenCot = (c: Col) => c.t || 'Ô chọn'
 
 /** Nút thanh trượt mở hộp Tuỳ chỉnh cột hiển thị. cols: mọi cột theo thứ tự đang dùng, kể cả cột đang ẩn */
-export function NutTuyChinhCot({ cols, an, coDinh, macDinh, dongBang = {}, gom, onLuu, onDoRongTuDong }: {
+export function NutTuyChinhCot({ cols, an, coDinh, macDinh, dongBang = {}, gom, onLuu, onDoRongTuDong, icon }: {
   cols: Col[]; an: Set<string>; coDinh: Set<string>; macDinh: string[]
   dongBang?: Record<string, 'trai' | 'phai'>
   gom?: { duoc: Set<string>; ds: string[]; dat: (ds: string[]) => void }
   onLuu: (thuTu: string[], an: string[], dongBang: Record<string, 'trai' | 'phai'>, veMacDinh: boolean) => void
   onDoRongTuDong?: () => void
+  icon?: ReactNode
 }) {
   const [mo, setMo] = useState(false)
   const dangGom = Boolean(gom && gom.ds.length > 0)
@@ -411,7 +436,7 @@ export function NutTuyChinhCot({ cols, an, coDinh, macDinh, dongBang = {}, gom, 
   return (
     <>
       <button type="button" className={`nut-vuong ds-nut-cot${mo || dangGom ? ' on' : ''}`} title={title} aria-label={title} onClick={() => setMo(true)}>
-        <Icon n="chinh" className="ic sm" />
+        {icon ?? <Icon n="chinh" className="ic sm" />}
       </button>
       {mo && (
         <HopCot
@@ -704,56 +729,66 @@ export function NutHangLoat({
         aria-expanded={mo}
         onClick={() => setMo(o => !o)}
       >
-        <Icon n="layers" className="ic sm" />
+        <IconFigmaLayers />
         {so > 0 && <span className="ds-nut-badge">{so}</span>}
       </button>
-      <Popover anchor={nut} open={mo && so > 0} onClose={() => setMo(false)} align="end" width={240}>
-        <MenuHead>Hàng loạt ({so} đã chọn)</MenuHead>
+      <Popover anchor={nut} open={mo && so > 0} onClose={() => setMo(false)} align="end" width={260} className="menu-hang-loat-pop">
+        <div className="hl-tieu-de">HÀNG LOẠT ({so} ĐÃ CHỌN)</div>
+        {nLoi > 0 && (
+          <button type="button" className="hl-muc" onClick={() => lam(`Xem lỗi ${nLoi} phiếu`)}>
+            <div className="hl-o-ic"><IconFigmaAlert /></div>
+            <span className="hl-txt">Xem lỗi {nLoi} phiếu</span>
+          </button>
+        )}
         {ghi && nNhap > 0 && (
-          <MenuItem icon="check" onClick={() => lam(`Đã ghi sổ ${nNhap} phiếu`)}>
-            Ghi sổ {nNhap} phiếu chưa ghi
-          </MenuItem>
+          <button type="button" className="hl-muc" onClick={() => lam(`Đã ghi sổ ${nNhap} phiếu`)}>
+            <div className="hl-o-ic"><IconFigmaCheck stroke="#1F2225" /></div>
+            <span className="hl-txt">Ghi sổ {nNhap} phiếu chưa ghi</span>
+          </button>
         )}
         {ghi && nGhi > 0 && (
-          <MenuItem icon="back" onClick={() => lam(`Đã bỏ ghi sổ ${nGhi} phiếu`)}>
-            Bỏ ghi sổ {nGhi} phiếu đã ghi
-          </MenuItem>
+          <button type="button" className="hl-muc" onClick={() => lam(`Đã bỏ ghi sổ ${nGhi} phiếu`)}>
+            <div className="hl-o-ic"><Icon n="back" className="ic sm" /></div>
+            <span className="hl-txt">Bỏ ghi sổ {nGhi} phiếu đã ghi</span>
+          </button>
         )}
-        {nLoi > 0 && (
-          <MenuItem icon="alert" onClick={() => lam(`Xem lỗi ${nLoi} phiếu`)}>
-            Xem lỗi {nLoi} phiếu
-          </MenuItem>
-        )}
-        <MenuItem icon="printer" onClick={() => { if (onIn) { setMo(false); onIn() } else lam(`In ${so} phiếu`) }}>
-          In {so} phiếu
-        </MenuItem>
-        <MenuItem icon="download" onClick={() => lam(`Đã xuất ${so} phiếu ra Excel`)}>
-          Xuất Excel {so} phiếu
-        </MenuItem>
+        <button type="button" className="hl-muc" onClick={() => { if (onIn) { setMo(false); onIn() } else lam(`In ${so} phiếu`) }}>
+          <div className="hl-o-ic"><IconFigmaPrinter /></div>
+          <span className="hl-txt">In {so} phiếu</span>
+        </button>
+        <button type="button" className="hl-muc" onClick={() => lam(`Đã xuất ${so} phiếu ra Excel`)}>
+          <div className="hl-o-ic"><IconFigmaDownload /></div>
+          <span className="hl-txt">Xuất Excel {so} phiếu</span>
+        </button>
         {!khongXoa && nXoa > 0 && (
-          <MenuItem icon="trash" danger onClick={() => { setMo(false); setHoiXoa(true) }}>
-            {tenXoa}
-          </MenuItem>
+          <button type="button" className="hl-muc hl-xoa" onClick={() => { setMo(false); setHoiXoa(true) }}>
+            <div className="hl-o-ic"><IconFigmaTrash stroke="#C2362B" /></div>
+            <span className="hl-txt">{tenXoa}</span>
+          </button>
         )}
         {!khongXoa && nXoa === 0 && nKhoaRieng > 0 && (
-          <MenuItem icon="trash" lock onClick={() => lam(`Phiếu ${khoaXoa!.ly} không xoá được`)}>
-            Không xoá: phiếu {khoaXoa!.ly}
-          </MenuItem>
+          <button type="button" className="hl-muc" onClick={() => lam(`Phiếu ${khoaXoa!.ly} không xoá được`)}>
+            <div className="hl-o-ic"><IconFigmaTrash /></div>
+            <span className="hl-txt">Không xoá: phiếu {khoaXoa!.ly}</span>
+          </button>
         )}
         {!khongXoa && nXoa === 0 && nKhoaRieng === 0 && nKhoa === 0 && nThamChieu > 0 && (
-          <MenuItem icon="trash" lock onClick={() => lam('Phiếu có phiếu thu, chi tham chiếu: xoá phiếu thu, chi trước')}>
-            Không xoá: còn phiếu thu, chi tham chiếu
-          </MenuItem>
+          <button type="button" className="hl-muc" onClick={() => lam('Phiếu có phiếu thu, chi tham chiếu: xoá phiếu thu, chi trước')}>
+            <div className="hl-o-ic"><IconFigmaTrash /></div>
+            <span className="hl-txt">Không xoá: còn phiếu thu, chi tham chiếu</span>
+          </button>
         )}
         {!khongXoa && nXoa === 0 && nKhoaRieng === 0 && nKhoa > 0 && (
-          <MenuItem icon="trash" lock onClick={() => lam(`Phiếu thuộc kỳ đã khoá sổ, không xoá được`)}>
-            Không xoá: kỳ đã khoá sổ
-          </MenuItem>
+          <button type="button" className="hl-muc" onClick={() => lam(`Phiếu thuộc kỳ đã khoá sổ, không xoá được`)}>
+            <div className="hl-o-ic"><IconFigmaTrash /></div>
+            <span className="hl-txt">Không xoá: kỳ đã khoá sổ</span>
+          </button>
         )}
-        <MenuSep />
-        <MenuItem icon="x" onClick={() => { setMo(false); onBoChon() }}>
-          Bỏ chọn
-        </MenuItem>
+        <div className="hl-ke-ngang" />
+        <button type="button" className="hl-muc" onClick={() => { setMo(false); onBoChon() }}>
+          <div className="hl-o-ic"><IconFigmaX /></div>
+          <span className="hl-txt">Bỏ chọn</span>
+        </button>
       </Popover>
       {hoiXoa && (
         <HopXacNhan
