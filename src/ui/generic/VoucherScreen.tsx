@@ -8,14 +8,15 @@ import { cuaHangHienTai, donViHienTai, gtgtTyLe, loaiHinhDv, useSession } from '
 import { giamThueHkd } from '../../modules/ban-hang/giam-thue'
 import { kieuGhiSo } from '../../app/plan'
 import { Icon } from '../Icon'
-import { IconFigmaFunnel, IconFigmaChevD, IconFigmaSearch, IconFigmaPlus, IconFigmaMinus, IconFigmaSheet, IconFigmaSliders, IconFigmaXChip } from '../IconFigma'
+import { IconFigmaSearch, IconFigmaSheet, IconFigmaSliders } from '../IconFigma'
 import { PageHead } from '../Page'
-import { Select } from '../Dropdown'
+import { ChonHaiCot, type MucHaiCot } from '../ChonHaiCot'
+import { OChonMot, type MucChonMot } from '../OChonMot'
 import { St, Table } from '../Table'
 import { PhanTrang } from '../PhanTrang'
 import { buildGroupedData } from '../virtual'
 import { ChonKhoangNgay, docNgay, khoangThang, thangNay, trongKhoang, type KhoangNgay } from '../ChonNgay'
-import { NutExcel, NutThemMoiSplit } from '../CongCuDs'
+import { NutDongBo, NutExcel, NutThemMoiSplit } from '../CongCuDs'
 import { fold, money, pad, rng } from '../format'
 import { heSoZoom } from '../zoom'
 import { dangLoc, dsGiaTri, khopLoc, type GiaTriLoc, type KieuLoc } from '../LocCot'
@@ -202,8 +203,9 @@ const COT_CHON = new Set(['tenLoai', 'nguon', 'ttTien', 'ttHd', 'kho', 'lyDo'])
 export { ChungTuForm, VoucherDetail, HachToan, LichSu }
 
 /** Giá trị các ô lọc ngoài và trong Bộ lọc nâng cao. Chuỗi rỗng là tất cả */
-export interface GtLoc { thoiGian: KhoangNgay; tim: string; doiTuong: string; nguon: string; loai: string; lyDo: string; ttTien: string; ttHd: string; kho: string; hang: string; nhomHang: string }
-export const locMacDinh = (): GtLoc => ({ thoiGian: thangNay(), tim: '', doiTuong: '', nguon: '', loai: '', lyDo: '', ttTien: '', ttHd: '', kho: '', hang: '', nhomHang: '' })
+// Ô chọn nhiều (nguồn, loại, lý do, kho, hàng, nhóm hàng) giữ mảng, mảng rỗng là không lọc; đối tượng, trạng thái chọn 1 (T510)
+export interface GtLoc { thoiGian: KhoangNgay; tim: string; doiTuong: string; nguon: string[]; loai: string[]; lyDo: string[]; ttTien: string; ttHd: string; kho: string[]; hang: string[]; nhomHang: string[] }
+export const locMacDinh = (): GtLoc => ({ thoiGian: thangNay(), tim: '', doiTuong: '', nguon: [], loai: [], lyDo: [], ttTien: '', ttHd: '', kho: [], hang: [], nhomHang: [] })
 
 const MAC_DINH: VoucherCfg ={ prefix: 'CT', doiTuong: 'none', dienGiai: ['Chứng từ'], tien: [1_000_000, 20_000_000] }
 
@@ -273,7 +275,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
     }
     const lyDoUrl = thamSo.get('lyDo')
     if (lyDoUrl) {
-      md.lyDo = lyDoUrl
+      md.lyDo = [lyDoUrl]
     }
     return md
   }, [thamSo])
@@ -360,17 +362,17 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
   const dsKhoLoc = useMemo(() => [...new Set(rows.flatMap(r => (r._khoDs as string[] | undefined) ?? []))].sort(), [rows])
   const dsHangLoc = useMemo(() => {
     const ten = new Map([...HANG, ...NVL].map(h => [h.ma, h.ten]))
-    return [...new Set(rows.flatMap(r => (r._maHang as string[] | undefined) ?? []))].sort().map((m): [string, string] => [m, `${m} - ${ten.get(m) ?? m}`])
+    return [...new Set(rows.flatMap(r => (r._maHang as string[] | undefined) ?? []))].sort().map((m): MucHaiCot => ({ v: m, t: ten.get(m) ?? m, ma: m }))
   }, [rows])
   // Nhóm hàng hoá theo danh mục hàng hoá, nguyên vật liệu, chỉ các nhóm có trên phiếu (T387)
   const nhomCuaMa = useMemo(() => new Map<string, string>([...HANG, ...NVL].map(h => [h.ma, h.nhom])), [])
-  const dsNhomHangLoc = useMemo(() => [...new Set(dsHangLoc.map(([m]) => nhomCuaMa.get(m)).filter((x): x is string => Boolean(x)))].sort(), [dsHangLoc, nhomCuaMa])
+  const dsNhomHangLoc = useMemo(() => [...new Set(dsHangLoc.map(h => nhomCuaMa.get(h.v)).filter((x): x is string => Boolean(x)))].sort(), [dsHangLoc, nhomCuaMa])
   const apLoc = () => { loc0.loc(); setTrang(1) }
-  const chonO = (k: keyof GtLoc, ten: string, ds: [string, string][]) => (
-    <Select className="ds-o-sel" value={nhap[k] as string} aria-label={ten} onChange={e => dat(k, e.target.value)}>
-      <option value="">Tất cả</option>
-      {ds.map(([v, t]) => <option key={v} value={v}>{t}</option>)}
-    </Select>
+  const chonO = (k: 'nguon' | 'loai' | 'lyDo' | 'kho' | 'hang' | 'nhomHang', ten: string, ds: MucHaiCot[]) => (
+    <ChonHaiCot chip ds={ds} value={nhap[k]} onChange={v => dat(k, v)} nhan={ten} goiY={`Chọn ${ten.toLowerCase()}`} btnClass="ds-o-sel" />
+  )
+  const chonMot = (k: 'doiTuong' | 'ttTien' | 'ttHd', ten: string, ds: MucChonMot[]) => (
+    <OChonMot ds={ds} value={nhap[k]} onChange={v => dat(k, v)} nhan={ten} goiY={`Chọn ${ten.toLowerCase()}`} />
   )
   // Lọc Lý do nghiệp vụ ở danh sách Thu, chi tiền (T283): lựa chọn lấy từ lý do của chính các phiếu; chuyển quỹ không có lý do
   const dsLyDo = useMemo(() => mod.key === 'tien' ? [...new Set(rows.map(r => String(r.lyDo ?? '')).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'vi')) : [], [rows, mod.key])
@@ -381,21 +383,21 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
       k: 'tim', ten: 'Tìm kiếm', o: <input className="ds-o-inp" value={nhap.tim} placeholder="Số, tên, diễn giải" title="Tìm theo số chứng từ, đối tượng, diễn giải" aria-label="Tìm kiếm"
         onChange={e => dat('tim', e.target.value)} onKeyDown={e => { if (e.key === 'Enter') apLoc() }} />,
     },
-    ...(cfg.doiTuong !== 'none' && dsDoiTuong.length ? [{ k: 'doiTuong', ten: cfg.nhan ?? 'Đối tượng', o: chonO('doiTuong', cfg.nhan ?? 'Đối tượng', dsDoiTuong.map(v => [v, v])) }] : []),
-    { k: 'nguon', ten: 'Nguồn', o: chonO('nguon', 'Nguồn', dsNguon.map(v => [v, (NGUON[v] ?? NGUON.tay)[1]])) },
+    ...(cfg.doiTuong !== 'none' && dsDoiTuong.length ? [{ k: 'doiTuong', ten: cfg.nhan ?? 'Đối tượng', coGiaTri: Boolean(nhap.doiTuong), o: chonMot('doiTuong', cfg.nhan ?? 'Đối tượng', dsDoiTuong.map(v => ({ v, t: v }))) }] : []),
+    { k: 'nguon', ten: 'Nguồn', coGiaTri: nhap.nguon.length > 0, o: chonO('nguon', 'Nguồn', dsNguon.map(v => ({ v, t: (NGUON[v] ?? NGUON.tay)[1] }))) },
     // Kiểm kê, điều chỉnh kho lọc theo kho của phiếu (T130)
-    ...((cfg.kiemKe || cfg.dieuChinh) && dsKhoLoc.length ? [{ k: 'kho', ten: 'Kho', o: chonO('kho', 'Kho', dsKhoLoc.map(v => [v, v])) }] : []),
+    ...((cfg.kiemKe || cfg.dieuChinh) && dsKhoLoc.length ? [{ k: 'kho', ten: 'Kho', coGiaTri: nhap.kho.length > 0, o: chonO('kho', 'Kho', dsKhoLoc.map(v => ({ v }))) }] : []),
     // Kiểm kê, điều chỉnh kho lọc theo hàng hoá, nhóm hàng hoá trên dòng phiếu (T387)
-    ...((cfg.kiemKe || cfg.dieuChinh) && dsHangLoc.length ? [{ k: 'hang', ten: 'Hàng hoá', o: chonO('hang', 'Hàng hoá', dsHangLoc) }] : []),
-    ...((cfg.kiemKe || cfg.dieuChinh) && dsNhomHangLoc.length ? [{ k: 'nhomHang', ten: 'Nhóm hàng hoá', o: chonO('nhomHang', 'Nhóm hàng hoá', dsNhomHangLoc.map(v => [v, v])) }] : []),
-    ...(coLyDo ? [{ k: 'lyDo', ten: 'Lý do nghiệp vụ', o: chonO('lyDo', 'Lý do nghiệp vụ', dsLyDo.map(v => [v, v])) }] : []),
-    ...(cfg.loai && !cfg.dieuChinh ? [{ k: 'loai', ten: 'Loại phiếu', o: chonO('loai', 'Loại phiếu', (loaiNhom ?? cfg.loai).map(v => [v.k, v.ten])) }] : []),
+    ...((cfg.kiemKe || cfg.dieuChinh) && dsHangLoc.length ? [{ k: 'hang', ten: 'Hàng hoá', coGiaTri: nhap.hang.length > 0, o: chonO('hang', 'Hàng hoá', dsHangLoc) }] : []),
+    ...((cfg.kiemKe || cfg.dieuChinh) && dsNhomHangLoc.length ? [{ k: 'nhomHang', ten: 'Nhóm hàng hoá', coGiaTri: nhap.nhomHang.length > 0, o: chonO('nhomHang', 'Nhóm hàng hoá', dsNhomHangLoc.map(v => ({ v }))) }] : []),
+    ...(coLyDo ? [{ k: 'lyDo', ten: 'Lý do nghiệp vụ', coGiaTri: nhap.lyDo.length > 0, o: chonO('lyDo', 'Lý do nghiệp vụ', dsLyDo.map(v => ({ v }))) }] : []),
+    ...(cfg.loai && !cfg.dieuChinh ? [{ k: 'loai', ten: 'Loại phiếu', coGiaTri: nhap.loai.length > 0, o: chonO('loai', 'Loại phiếu', (loaiNhom ?? cfg.loai).map(v => ({ v: v.k, t: v.ten }))) }] : []),
     ...(muaBan ? [
-      { k: 'ttTien', ten: nhom === 'mua' ? 'TT thanh toán' : 'TT thu tiền', o: chonO('ttTien', 'Trạng thái thanh toán', Object.entries(TT_TIEN[nhom as 'mua' | 'ban']).map(([v, x]) => [v, x[1]])) },
+      { k: 'ttTien', ten: nhom === 'mua' ? 'TT thanh toán' : 'TT thu tiền', coGiaTri: Boolean(nhap.ttTien), o: chonMot('ttTien', 'Trạng thái thanh toán', Object.entries(TT_TIEN[nhom as 'mua' | 'ban']).map(([v, x]) => ({ v, t: x[1] }))) },
       // danh sách mua bỏ trạng thái nhận hoá đơn, bán giữ xuất hoá đơn (T162)
-      ...(nhom === 'ban' ? [{ k: 'ttHd', ten: 'Xuất hoá đơn', o: chonO('ttHd', 'Trạng thái hoá đơn', Object.entries(TT_HD.ban).map(([v, x]) => [v, x[1]])) }] : []),
-      ...(dsKhoLoc.length ? [{ k: 'kho', ten: 'Kho', o: chonO('kho', 'Kho', dsKhoLoc.map(v => [v, v])) }] : []),
-      ...(dsHangLoc.length ? [{ k: 'hang', ten: 'Hàng hoá', o: chonO('hang', 'Hàng hoá', dsHangLoc) }] : []),
+      ...(nhom === 'ban' ? [{ k: 'ttHd', ten: 'Xuất hoá đơn', coGiaTri: Boolean(nhap.ttHd), o: chonMot('ttHd', 'Trạng thái hoá đơn', Object.entries(TT_HD.ban).map(([v, x]) => ({ v, t: x[1] }))) }] : []),
+      ...(dsKhoLoc.length ? [{ k: 'kho', ten: 'Kho', coGiaTri: nhap.kho.length > 0, o: chonO('kho', 'Kho', dsKhoLoc.map(v => ({ v }))) }] : []),
+      ...(dsHangLoc.length ? [{ k: 'hang', ten: 'Hàng hoá', coGiaTri: nhap.hang.length > 0, o: chonO('hang', 'Hàng hoá', dsHangLoc) }] : []),
     ] : []),
   ]
   const [cauHinhLoc, datCauHinhLoc] = useCauHinhLoc(path, oLoc.map(o => o.k), ['thoiGian', 'tim'])   // T504: mặc định chỉ Thời gian, Tìm kiếm ra ngoài như thanh Figma
@@ -407,17 +409,19 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
     if (cnChon && r.cn !== cnChon.ten) return false
     if (ap.tim.trim() && !fold(`${r.so} ${r.doiTuong ?? ''} ${r.dienGiai ?? ''} ${r._tenHangDu ?? ''}`).includes(fold(ap.tim.trim()))) return false
     if (ap.doiTuong && r.doiTuong !== ap.doiTuong) return false
-    if (ap.nguon && String(r.nguon ?? 'tay') !== ap.nguon) return false
-    if (ap.loai && r.loai !== ap.loai && (!nhomChon || nhomChon.loai.includes(ap.loai))) return false   // loại đã lọc không thuộc tab đang mở thì bỏ qua (T386)
-    if (ap.lyDo && r.lyDo !== ap.lyDo) return false
+    if (ap.nguon.length && !ap.nguon.includes(String(r.nguon ?? 'tay'))) return false
+    // loại đã lọc không thuộc tab đang mở thì bỏ qua (T386)
+    const loaiLoc = nhomChon ? ap.loai.filter(l => nhomChon.loai.includes(l)) : ap.loai
+    if (loaiLoc.length && !loaiLoc.includes(String(r.loai))) return false
+    if (ap.lyDo.length && !ap.lyDo.includes(String(r.lyDo ?? ''))) return false
     if (muaBan && (ap.ttTien || ap.ttHd)) {
       const nv = ttNghiepVu(r)
       if (ap.ttTien && ttTienTheoTra(r) !== ap.ttTien) return false
       if (ap.ttHd && nv.ttHd !== ap.ttHd) return false
     }
-    if (ap.kho && !((r._khoDs as string[] | undefined) ?? []).includes(ap.kho)) return false
-    if (ap.hang && !((r._maHang as string[] | undefined) ?? []).includes(ap.hang)) return false
-    if (ap.nhomHang && !((r._maHang as string[] | undefined) ?? []).some(m => nhomCuaMa.get(m) === ap.nhomHang)) return false   // T387
+    if (ap.kho.length && !((r._khoDs as string[] | undefined) ?? []).some(k => ap.kho.includes(k))) return false
+    if (ap.hang.length && !((r._maHang as string[] | undefined) ?? []).some(m => ap.hang.includes(m))) return false
+    if (ap.nhomHang.length && !((r._maHang as string[] | undefined) ?? []).some(m => ap.nhomHang.includes(nhomCuaMa.get(m) ?? ''))) return false   // T387
     for (const [k, g] of Object.entries(locCot)) {
       if (dangLoc(g) && !khopLoc(kieuCot(k), g, chuCot(k, r), typeof r[k] === 'number' ? r[k] : undefined, k === 'ngay' ? docNgay(String(r.ngay).split(' ')[0]) : undefined)) return false
     }
@@ -567,142 +571,6 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
 
   const activeRow = list.find(r => r.id === activeId) ?? list[0]
 
-  // Chip điều kiện lọc trên thanh công cụ theo Figma T496
-  const dsChipLoc = useMemo(() => {
-    const res: { k: string; nhan: string; tri: string; onXoa: () => void }[] = []
-    if (ap.lyDo) {
-      res.push({
-        k: 'lyDo',
-        nhan: 'Lý do: ',
-        tri: ap.lyDo,
-        onXoa: () => {
-          loc0.datVaAp('lyDo', '')
-          setTrang(1)
-        },
-      })
-    }
-    if (ap.doiTuong) {
-      res.push({
-        k: 'doiTuong',
-        nhan: `${cfg.nhan ?? 'Đối tượng'}: `,
-        tri: ap.doiTuong,
-        onXoa: () => {
-          loc0.datVaAp('doiTuong', '')
-          setTrang(1)
-        },
-      })
-    }
-    if (ap.nguon) {
-      res.push({
-        k: 'nguon',
-        nhan: 'Nguồn: ',
-        tri: (NGUON[ap.nguon] ?? NGUON.tay)[1],
-        onXoa: () => {
-          loc0.datVaAp('nguon', '')
-          setTrang(1)
-        },
-      })
-    }
-    if (ap.kho) {
-      res.push({
-        k: 'kho',
-        nhan: 'Kho: ',
-        tri: ap.kho,
-        onXoa: () => {
-          loc0.datVaAp('kho', '')
-          setTrang(1)
-        },
-      })
-    }
-    if (ap.hang) {
-      res.push({
-        k: 'hang',
-        nhan: 'Hàng: ',
-        tri: ap.hang,
-        onXoa: () => {
-          loc0.datVaAp('hang', '')
-          setTrang(1)
-        },
-      })
-    }
-    if (ap.nhomHang) {
-      res.push({
-        k: 'nhomHang',
-        nhan: 'Nhóm: ',
-        tri: ap.nhomHang,
-        onXoa: () => {
-          loc0.datVaAp('nhomHang', '')
-          setTrang(1)
-        },
-      })
-    }
-    if (ap.loai) {
-      const ten = (loaiNhom ?? cfg.loai)?.find(l => l.k === ap.loai)?.ten ?? ap.loai
-      res.push({
-        k: 'loai',
-        nhan: 'Loại: ',
-        tri: ten,
-        onXoa: () => {
-          loc0.datVaAp('loai', '')
-          setTrang(1)
-        },
-      })
-    }
-    if (ap.ttTien) {
-      const ten = TT_TIEN[nhom as 'mua' | 'ban']?.[ap.ttTien as keyof typeof TT_TIEN.mua]?.[1] ?? ap.ttTien
-      res.push({
-        k: 'ttTien',
-        nhan: 'Thanh toán: ',
-        tri: ten,
-        onXoa: () => {
-          loc0.datVaAp('ttTien', '')
-          setTrang(1)
-        },
-      })
-    }
-    if (ap.ttHd) {
-      const ten = TT_HD.ban?.[ap.ttHd as keyof typeof TT_HD.ban]?.[1] ?? ap.ttHd
-      res.push({
-        k: 'ttHd',
-        nhan: 'Hoá đơn: ',
-        tri: ten,
-        onXoa: () => {
-          loc0.datVaAp('ttHd', '')
-          setTrang(1)
-        },
-      })
-    }
-    for (const [k, g] of Object.entries(locCot)) {
-      if (dangLoc(g)) {
-        const tenC = tenCotMap[k] ?? k
-        const val = g.v ? g.v : (g.ds ? g.ds.join(', ') : 'đã lọc')
-        res.push({
-          k: `cot-${k}`,
-          nhan: `${tenC}: `,
-          tri: val,
-          onXoa: () => {
-            setLocCot(prev => {
-              const n = { ...prev }
-              delete n[k]
-              return n
-            })
-            setTrang(1)
-          },
-        })
-      }
-    }
-    return res
-  }, [ap, locCot, cfg, loaiNhom, nhom, tenCotMap, loc0])
-
-  const soDieuKienLoc = dsChipLoc.length + (ap.tim.trim() ? 1 : 0)
-  const coDieuKienLoc = soDieuKienLoc > 0
-
-  const xoaHetBoLoc = () => {
-    loc0.xoaHet()
-    setLocCot({})
-    setTrang(1)
-  }
-
   const displayRows = useMemo(() => {
     if (nhomCols.length === 0) return pagedRows
     return buildGroupedData(list, nhomCols, cotCong, tenCotMap, expandMap)
@@ -749,7 +617,6 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
               onLoc={apLoc}
               onXoaHet={loc0.xoaNhap}
               chiNutPheu
-              soDem={soDieuKienLoc}
               ngoaiRieng={{
                 tim: (
                   <div key="tim" className="ds-tim-figma">
@@ -766,119 +633,28 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
                     />
                   </div>
                 ),
-                thoiGian: (
-                  <ChonKhoangNgay
-                    key="thoiGian"
-                    value={nhap.thoiGian}
-                    onChange={k => {
-                      dat('thoiGian', k)
-                      loc0.datVaAp('thoiGian', k)
-                      setTrang(1)
-                    }}
-                    kieu="chip"
-                  />
-                ),
               }}
             />
 
-            {dsChipLoc.map(c => (
-              <div key={c.k} className="ds-chip-loc-figma" title={`${c.nhan}${c.tri}`}>
-                <span className="ds-chip-loc-nhan">{c.nhan}</span>
-                <span className="ds-chip-loc-tri">{c.tri}</span>
-                <button
-                  type="button"
-                  className="ds-chip-loc-x"
-                  title={`Bỏ lọc ${c.nhan}`}
-                  aria-label={`Bỏ lọc ${c.nhan}`}
-                  onClick={c.onXoa}
-                >
-                  <IconFigmaXChip />
-                </button>
-              </div>
-            ))}
-
-            {coDieuKienLoc && (
-              <button
-                type="button"
-                className="ds-link-xoa-loc"
-                onClick={xoaHetBoLoc}
-              >
-                Xoá lọc
-              </button>
-            )}
-
             <div className="ds-toolbar-phai">
-              <NutExcel
-                label={<IconFigmaSheet />}
-                onNhap={() => toast('Nhập chứng từ từ file Excel')}
-                onXuat={() => toast(`Đã xuất ${list.length} chứng từ ra Excel`)}
-              />
-              <NutTuyChinhCot
-                icon={<IconFigmaSliders />}
-                cols={cot.colsDu}
-                an={cot.an}
-                coDinh={COT_CO_DINH}
-                macDinh={cot.macDinh}
-                dongBang={cot.dongBang}
-                gom={{ duoc: dsCotGomNhom, ds: nhomCols, dat: setNhomCols }}
-                onLuu={cot.luu}
-                onDoRongTuDong={cot.datDoRongTuDong}
-              />
-              <NutHangLoat
-                selectedRows={selectedRows}
-                ghi={ghi}
-                onBoChon={() => setSelectedIds(new Set())}
-                onXoa={ids => {
-                  xoaPhieu(`${mod.key}/${sc.slug}`, ids.map(id => ({ id, so: String(rows.find(r => String(r.id) === id)?.so ?? '') })), s.ten)
-                  xoaTheCuaPhieu(ids.map(id => rows.find(r => String(r.id) === id)), s.ten)
-                  if (cfg.kiemKe) xoaPhieu(MAN_DC, ids.flatMap(id => dsDcCon(rows.find(r => String(r.id) === id)).map(c => ({ id: c.id, so: c.so }))), s.ten)
-                }}
-                open={moHangLoat}
-                onOpenChange={setMoHangLoat}
-                onIn={() => setPhieuIn(selectedRows.map(phieuCua))}
-                khongXoa={cfg.dieuChinh}
-                khoaXoa={mod.key === 'tien' ? { la: r => r.nguon === 'FABi' || Boolean(lyDoKhongXoaTheCuaPhieu(r)), ly: 'đồng bộ từ FABi hoặc có thẻ chi phí thuộc kỳ đã khoá sổ' } : undefined}
-              />
-
-              <div className="ds-vach-doc" />
-
-              {!cfg.khongThem && (
-                nhomChon && loaiNhom && loaiNhom.length > 1 ? loaiNhom.map(l => (
-                  <Link
-                    key={l.k}
-                    className={`ds-btn-chinh ${l.k === 'thu' ? 'ds-btn-thu' : l.k === 'chi' ? 'ds-btn-chi' : 'ds-btn-outline'}`}
-                    to={`${path}/moi?loai=${l.k}`}
-                    title={l.ten}
-                  >
-                    {l.k === 'thu' ? <IconFigmaPlus /> : l.k === 'chi' ? <IconFigmaMinus /> : <Icon n={l.icon ?? 'plus'} className="ic sm" />}
-                    <span>{l.k === 'thu' ? 'Thu tiền' : l.k === 'chi' ? 'Chi tiền' : (l.nut ?? l.ten).replace(/^[+\-−]\s*/, '')}</span>
-                  </Link>
-                )) : nhomChon && loaiNhom?.[0] ? (
-                  <Link
-                    className="ds-btn-chinh ds-btn-outline"
-                    to={`${path}/moi?loai=${loaiNhom[0].k}`}
-                  >
-                    <IconFigmaPlus />
-                    <span>{`Thêm ${loaiNhom[0].ten.toLowerCase()}`.replace(/^[+\-−]\s*/, '')}</span>
-                  </Link>
-                ) : (
+              {cfg.nguon && cfg.nguon !== 'tay' && cfg.nguon !== 'excel' && !cfg.kiemKe && (
+                <NutDongBo ten={NGUON[cfg.nguon][1]} onDongBo={() => toast(`Đã đồng bộ 14 chứng từ mới từ ${NGUON[cfg.nguon!][1]}`)} />
+              )}
+              {!cfg.khongThem && (() => {
+                const dsLoai = nhomChon ? loaiNhom : cfg.loai
+                return (
                   <NutThemMoiSplit
-                    toMoi={cfg.loai ? `${path}/moi?loai=${cfg.loai[0].k}` : `${path}/moi`}
-                    loai={cfg.loai}
-                    nhan={cfg.them ? cfg.them.replace(/^[+\-−]\s*/, '') : undefined}
-                    taiNguon={cfg.nguon && cfg.nguon !== 'tay' && cfg.nguon !== 'excel' ? {
-                      ten: NGUON[cfg.nguon][1],
-                      onTai: () => toast(`Đã tải 14 chứng từ mới từ ${NGUON[cfg.nguon!][1]}`),
-                    } : undefined}
+                    toMoi={dsLoai?.[0] ? `${path}/moi?loai=${dsLoai[0].k}` : `${path}/moi`}
+                    loai={dsLoai}
+                    tenLoai={nhomChon?.k === 'tm' ? { thu: 'Thu tiền', chi: 'Chi tiền' } : undefined}
                   />
                 )
-              )}
+              })()}
             </div>
           </div>
 
           {/* Hàng trạng thái (Đã ghi sổ, Chưa ghi sổ...) giữ nguyên như iaccdemo */}
-          {((ghi && !cfg.dieuChinh) || cfg.kiemKe || (cfg.dieuChinh && cfg.loai)) && (
-            <div className="ds-hang-trang-thai">
+          <div className="ds-hang-trang-thai">
               {cfg.kiemKe && (
                 <div className="seg dc-tabs" role="tablist" aria-label="Kiểm kê, điều chỉnh kho">
                   <button type="button" role="tab" aria-selected className="on">Kiểm kê</button>
@@ -901,8 +677,41 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
               {ghi && !cfg.dieuChinh && (
                 <ChipTrangThai ds={chips} chon={chipTT} onChon={k => { setChipTT(k); setTrang(1) }} />
               )}
+              {/* Excel, Tuỳ chỉnh cột, Thao tác hàng loạt nằm dưới nút Thêm mới (T510) */}
+              <div className="ds-toolbar-phai ds-cong-cu-h2">
+                <NutExcel
+                  label={<IconFigmaSheet />}
+                  onNhap={() => toast('Nhập chứng từ từ file Excel')}
+                  onXuat={() => toast(`Đã xuất ${list.length} chứng từ ra Excel`)}
+                />
+                <NutTuyChinhCot
+                  icon={<IconFigmaSliders />}
+                  cols={cot.colsDu}
+                  an={cot.an}
+                  coDinh={COT_CO_DINH}
+                  macDinh={cot.macDinh}
+                  dongBang={cot.dongBang}
+                  gom={{ duoc: dsCotGomNhom, ds: nhomCols, dat: setNhomCols }}
+                  onLuu={cot.luu}
+                  onDoRongTuDong={cot.datDoRongTuDong}
+                />
+                <NutHangLoat
+                  selectedRows={selectedRows}
+                  ghi={ghi}
+                  onBoChon={() => setSelectedIds(new Set())}
+                  onXoa={ids => {
+                    xoaPhieu(`${mod.key}/${sc.slug}`, ids.map(id => ({ id, so: String(rows.find(r => String(r.id) === id)?.so ?? '') })), s.ten)
+                    xoaTheCuaPhieu(ids.map(id => rows.find(r => String(r.id) === id)), s.ten)
+                    if (cfg.kiemKe) xoaPhieu(MAN_DC, ids.flatMap(id => dsDcCon(rows.find(r => String(r.id) === id)).map(c => ({ id: c.id, so: c.so }))), s.ten)
+                  }}
+                  open={moHangLoat}
+                  onOpenChange={setMoHangLoat}
+                  onIn={() => setPhieuIn(selectedRows.map(phieuCua))}
+                  khongXoa={cfg.dieuChinh}
+                  khoaXoa={mod.key === 'tien' ? { la: r => r.nguon === 'FABi' || Boolean(lyDoKhongXoaTheCuaPhieu(r)), ly: 'đồng bộ từ FABi hoặc có thẻ chi phí thuộc kỳ đã khoá sổ' } : undefined}
+                />
+              </div>
             </div>
-          )}
 
           {/* Bảng danh sách chứng từ */}
           {list.length ? (

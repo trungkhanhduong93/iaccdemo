@@ -6,7 +6,7 @@ import type { Col, Row } from '../modules/types'
 import { useSession } from '../app/session'
 import { MenuHead, MenuItem, MenuSep, Popover } from './Dropdown'
 import { Icon } from './Icon'
-import { IconFigmaFunnel, IconFigmaChevD, IconFigmaLayers, IconFigmaSliders, IconFigmaAlert, IconFigmaPrinter, IconFigmaDownload, IconFigmaTrash, IconFigmaCheck, IconFigmaX } from './IconFigma'
+import { IconFigmaFunnel, IconFigmaLayers, IconFigmaSliders, IconFigmaAlert, IconFigmaPrinter, IconFigmaDownload, IconFigmaTrash, IconFigmaCheck, IconFigmaX } from './IconFigma'
 import { fold } from './format'
 import { daKhoaSo } from '../data/mock'
 import { ttThamChieu } from './generic/daXoa'
@@ -126,7 +126,7 @@ export function useLocNhap<T extends object>(macDinh: () => T) {
 /** thuTu: thứ tự mọi ô; ngoai: các ô hiện trên thanh ngoài */
 export interface CauHinhLoc { thuTu: string[]; ngoai: string[] }
 /** Một ô lọc: o là control đã gắn giá trị nháp */
-export interface OLocDef { k: string; ten: string; o: ReactNode }
+export interface OLocDef { k: string; ten: string; o: ReactNode; coGiaTri?: boolean }   // coGiaTri: ô đang có điều kiện, phễu đếm ô trong Bộ lọc nâng cao (T510)
 
 export function useCauHinhLoc(path: string, ds: string[], macDinhNgoai: string[]) {
   const khoa = `iacc-loc-ngoai:${path}`
@@ -204,6 +204,8 @@ export function BoLoc({ ds, cauHinh, datCauHinh, dangLoc, khacNhap, onLoc, onXoa
   const theoK = new Map(ds.map(o => [o.k, o]))
   const ngoai = cauHinh.ngoai.filter(k => theoK.has(k))
   const trong = cauHinh.thuTu.filter(k => !ngoai.includes(k) && theoK.has(k))
+  // Phễu đếm ô trong Bộ lọc nâng cao đang có điều kiện; màn chưa khai coGiaTri thì dùng số đếm truyền vào (T510)
+  const soTrong = ds.some(o => o.coGiaTri !== undefined) ? trong.filter(k => theoK.get(k)!.coGiaTri).length : (soDem ?? (dangLoc ? 1 : 0))
   const keo = useKeoTha(cauHinh.thuTu, thuTu => datCauHinh({ thuTu, ngoai: thuTu.filter(k => ngoai.includes(k)) }))
 
   const doiBat = (k: string) => {
@@ -223,8 +225,7 @@ export function BoLoc({ ds, cauHinh, datCauHinh, dangLoc, khacNhap, onLoc, onXoa
           <button ref={nut} type="button" className={`ds-btn-pheu-figma${mo || dangLoc ? ' on' : ''}`} title="Bộ lọc" aria-label="Bộ lọc"
             aria-expanded={mo} onClick={() => setMo(o => !o)}>
             <IconFigmaFunnel />
-            {(soDem ?? (dangLoc ? 1 : 0)) > 0 && <span className="ds-badge-so">{soDem ?? 1}</span>}
-            <IconFigmaChevD />
+            {soTrong > 0 && <span className="ds-badge-so">{soTrong}</span>}
           </button>
         ) : (
           <button ref={nut} type="button" className={`nut-vuong ds-nut-pheu${mo || dangLoc ? ' on' : ''}`} title="Bộ lọc nâng cao" aria-label="Bộ lọc nâng cao"
@@ -235,12 +236,10 @@ export function BoLoc({ ds, cauHinh, datCauHinh, dangLoc, khacNhap, onLoc, onXoa
         )
       )}
       {chiNutPheu && oNgoai}
-      {!chiNutPheu && truocNutLoc}
-      {!chiNutPheu && (
-        <button type="button" className="btn pri ds-nut-loc" title={khacNhap ? 'Có điều kiện mới chưa lọc' : undefined} onClick={onLoc}>
-          Lọc{khacNhap && <span className="ds-cham-nhap" />}
-        </button>
-      )}
+      {truocNutLoc}
+      <button type="button" className="btn pri ds-nut-loc" title={khacNhap ? 'Có điều kiện mới, bấm Lọc để tải lại' : undefined} onClick={onLoc}>
+        Lọc{khacNhap && <span className="ds-cham-nhap" />}
+      </button>
 
       {!anNangCao && (
         <Popover anchor={nut} open={mo} onClose={dong} align="start" width={720} role="dialog" className="ds-nc-pop">
@@ -281,7 +280,7 @@ export function BoLoc({ ds, cauHinh, datCauHinh, dangLoc, khacNhap, onLoc, onXoa
           </div>
           <div className="ds-chan">
             <button type="button" className="btn" onClick={dong}>Đóng</button>
-            <button type="button" className="btn pri" onClick={() => { onLoc(); dong() }}>Lọc</button>
+            <button type="button" className="btn pri" onClick={() => { onLoc(); dong() }}>Áp dụng</button>
           </div>
         </Popover>
       )}

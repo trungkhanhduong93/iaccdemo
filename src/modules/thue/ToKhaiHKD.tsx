@@ -121,7 +121,7 @@ export function ToKhaiHKD({ sc, mod }: ScreenProps) {
                 onLoc={loc0.loc} onXoaHet={loc0.xoaNhap} />
             </div>
             <div className="ds-thanh-h1-phai">
-              <button type="button" className="btn pri" onClick={() => setLap(true)}><Icon n="plus" className="ic sm" />Lập tờ khai</button>
+              <button type="button" className="btn pri" onClick={() => setLap(true)}><Icon n="plus" className="ic sm" />Thêm mới</button>
             </div>
           </div>
         </div>

@@ -36836,3 +36836,67 @@ body:has(.m-app) .m-thanh-duoi .m-tab.on .m-tab-ic .ic .l2 {
 }
 
 
+
+/* ── Hàng lọc chung, nút Lọc, Bộ lọc nâng cao (T510) ── */
+/* Popup: đầu và chân đứng yên, phần giữa cuộn, chân Đóng / Áp dụng luôn hiện */
+.ds-nc-pop { display: flex; flex-direction: column; }
+.ds-nc-pop > .ds-nc-dau, .ds-nc-pop > .ds-nc-luoi, .ds-nc-pop > .ds-chan { flex: none; }
+.ds-nc-pop > .ds-nc-ch { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+/* Nút Lọc: chấm cam nháy khi điều kiện đổi mà chưa bấm Lọc */
+.ds-nut-loc .ds-cham-nhap { top: -4px; right: -4px; width: 10px; height: 10px; background: var(--orange, #f59e0b); border: 2px solid var(--white); animation: ds-cham-nhay 1.2s ease-in-out infinite; }
+@keyframes ds-cham-nhay { 50% { opacity: .35; } }
+/* Phễu chỉ icon, huy hiệu đếm ô trong Bộ lọc nâng cao */
+.ds-toolbar-figma .ds-btn-pheu-figma { width: 36px; padding: 0; justify-content: center; }
+/* Ô chọn nhiều, chọn 1 trong thanh lọc: chip tên đầu + chip +N, nút X xoá nhanh */
+.chc-chip { display: inline-block; max-width: 96px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: middle; padding: 1px 6px; margin-right: 4px; border: 1px solid var(--line); border-radius: 4px; background: var(--soft); color: var(--ink); font-size: 12px; line-height: 18px; }
+.chc-chip-so { max-width: none; }
+.chc-xoa { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; flex: none; padding: 0; border: 0; border-radius: 50%; background: var(--line); color: var(--body); cursor: pointer; }
+.chc-xoa:hover { background: var(--line-2); color: var(--ink); }
+.ds-o .chc-o { flex-wrap: nowrap; }
+.ds-toolbar-figma .ds-o .chc-o { flex: 1; min-width: 0; min-height: 34px; height: 34px; border: 0; box-shadow: none; background: none; }
+.ds-nc-luoi .ds-o .chc-o { min-height: 36px; }
+.ocm-pop { padding: 6px; }
+.ocm-tim { display: flex; align-items: center; gap: 6px; margin: 0 0 6px; padding: 0 8px; height: 34px; border: 1px solid var(--line); border-radius: 6px; color: var(--muted); }
+.ocm-tim input { flex: 1; min-width: 0; border: 0; outline: none; background: none; font: inherit; }
+.ocm-ds { max-height: 300px; overflow-y: auto; }
+.ocm-muc { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; width: 100%; padding: 8px 10px; border: 0; border-radius: 6px; background: none; text-align: left; cursor: pointer; }
+.ocm-muc b { color: var(--ink); font-size: 13.5px; font-weight: 600; }
+.ocm-muc small { color: var(--muted); font-size: 12px; }
+.ocm-muc:hover { background: var(--soft); }
+.ocm-muc.on { background: var(--tint); }
+.ocm-trong { padding: 12px; color: var(--muted); font-size: 13px; text-align: center; }
+/* Hàng 2: Excel, Tuỳ chỉnh cột, Thao tác hàng loạt nằm phải, dưới nút Thêm mới */
+.ds-hang-trang-thai .ds-cong-cu-h2 { margin-left: auto; }
+/* ── Nút Thêm mới, Đồng bộ (T510) ── */
+.ds-toolbar-phai .ds-split-them .btn.pri.ds-them-mot,
+.ds-split-them .ds-them-mot {
+  background: var(--pri, #0560a6);
+  color: #fff;
+  border: 0;
+  border-radius: 6px;
+  padding: 0 0 0 12px;
+  gap: 6px;
+  display: inline-flex;
+  align-items: center;
+}
+.ds-toolbar-phai .ds-split-them .btn.pri.ds-them-mot:hover,
+.ds-split-them .ds-them-mot:hover {
+  background: var(--pri-hover, #044e88);
+  color: #fff;
+}
+.ds-split-them .ds-them-mot .ds-them-phai {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  margin-left: 4px;
+  padding: 0 8px;
+  min-width: 28px;
+  border-left: 1px solid rgba(255, 255, 255, .3);
+  background: transparent;
+  color: #fff;
+  border-radius: 0;
+}
+.ds-split-them .ds-them-mot:hover .ds-them-phai { background: transparent; }
+.voucher-top .ds-split-them .ds-them-mot { height: 34px; }
+.ds-nut-dong-bo { height: 32px; width: 32px; }

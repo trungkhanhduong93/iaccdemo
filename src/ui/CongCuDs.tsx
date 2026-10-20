@@ -51,90 +51,68 @@ export function NutXuatExcel({ onXuat }: { onXuat: () => void }) {
   return <button type="button" className="nut-vuong ds-nut-excel" title="Xuất Excel" aria-label="Xuất Excel" onClick={onXuat}><LogoExcel /></button>
 }
 
-/** Nút xổ liền cạnh "Thêm mới" (split button "Thêm mới | ⌄"):
- * nửa trái mở form thêm mới; nửa phải mở menu gom Thêm theo loại và Tải từ nguồn (T43) */
+/** Nút "Thêm mới" (T510): 1 lựa chọn → 1 nút xanh đi thẳng tới form; từ 2 loại → nút xanh kèm mũi tên dính liền,
+ * bấm chỗ nào cũng thả cùng 1 menu chọn loại. `nhan`, `taiNguon` còn trong kiểu cho nơi gọi cũ, không hiển thị nữa */
 export function NutThemMoiSplit({
   toMoi,
   loai,
-  taiNguon,
-  nhan = 'Thêm mới',
+  tenLoai,
+  thamSo = 'loai',
   so,
 }: {
-  nhan?: string                    // chữ trên nút, vd Ghi tăng ở danh sách thẻ chi phí
+  nhan?: string
   so?: number                      // số đếm nhỏ cạnh chữ, vd số khoản chờ phân bổ chưa tạo thẻ (T287)
   toMoi: string
   loai?: { k: string; ten: string; prefix?: string; icon?: string }[]
+  tenLoai?: Record<string, string> // đổi chữ trong menu theo mã loại, vd { thu: 'Thu tiền' }
+  thamSo?: string                  // tên tham số loại trên đường dẫn, danh mục dùng 'moi'
   taiNguon?: { ten: string; onTai: () => void }
 }) {
-  const coMenu = (loai && loai.length > 0) || Boolean(taiNguon)
+  const noiDung = (
+    <>
+      <Icon n="plus" className="ic sm" />
+      <span>Thêm mới</span>
+      {so ? <span className="ds-nut-so" title={`${so} khoản cần xử lý`}>{so}</span> : null}
+    </>
+  )
 
-  if (!coMenu) {
-    return (
-      <Link className="btn pri ds-nut-them" to={toMoi}>
-        <Icon n="plus" className="ic sm" />
-        <span>{nhan}</span>
-        {so ? <span className="ds-nut-so" title={`${so} khoản cần xử lý`}>{so}</span> : null}
-      </Link>
-    )
+  if (!loai || loai.length < 2) {
+    return <Link className="btn pri ds-nut-them" to={toMoi}>{noiDung}</Link>
   }
 
+  const basePath = toMoi.split('?')[0]
   return (
     <div className="ds-split-them">
-      <Link className="btn pri ds-them-trai" to={toMoi}>
-        <Icon n="plus" className="ic sm" />
-        <span>{nhan}</span>
-        {so ? <span className="ds-nut-so" title={`${so} khoản cần xử lý`}>{so}</span> : null}
-      </Link>
       <Dropdown
-        btnClass="btn pri ds-them-phai"
+        btnClass="btn pri ds-them-trai ds-them-mot"
         align="end"
         width={240}
-        title="Thêm và nguồn dữ liệu"
-        label={<Icon n="chevd" className="ic sm" />}
+        title="Chọn loại để thêm mới"
+        label={<>{noiDung}<span className="ds-them-phai"><Icon n="chevd" className="ic sm" /></span></>}
       >
         {dong => (
           <>
-            {/* 1. Nhóm Thêm theo loại (chỉ màn có loai) */}
-            {loai && loai.length > 0 && (
-              <>
-                <MenuHead>Thêm theo loại</MenuHead>
-                {loai.map(v => {
-                  const basePath = toMoi.split('?')[0]
-                  return (
-                    <MenuItem
-                      key={v.k}
-                      to={`${basePath}?loai=${v.k}`}
-                      icon={v.icon ?? 'doc'}
-                      desc={v.prefix ? `Số ${v.prefix}…` : undefined}
-                      onClick={dong}
-                    >
-                      {v.ten}
-                    </MenuItem>
-                  )
-                })}
-              </>
-            )}
-
-            {loai && loai.length > 0 && taiNguon && <MenuSep />}
-
-            {/* 2. Nhóm Tải từ nguồn */}
-            {taiNguon && (
-              <>
-                <MenuHead>Nguồn dữ liệu</MenuHead>
-                <MenuItem
-                  icon="refresh"
-                  onClick={() => {
-                    taiNguon.onTai()
-                    dong()
-                  }}
-                >
-                  Tải từ {taiNguon.ten}
-                </MenuItem>
-              </>
-            )}
+            <MenuHead>Thêm theo loại</MenuHead>
+            {loai.map(v => (
+              <MenuItem
+                key={v.k}
+                to={`${basePath}?${thamSo}=${v.k}`}
+                icon={v.icon ?? 'doc'}
+                desc={v.prefix ? `Số ${v.prefix}…` : undefined}
+                onClick={dong}
+              >
+                {tenLoai?.[v.k] ?? v.ten}
+              </MenuItem>
+            ))}
           </>
         )}
       </Dropdown>
     </div>
   )
+}
+
+/** Nút vuông chỉ icon đồng bộ, cạnh Excel và Tuỳ chỉnh cột (T510) */
+export function NutDongBo({ ten, onDongBo }: { ten: string; onDongBo: () => void }) {
+  const t = `Đồng bộ từ ${ten}`
+  return <button type="button" className="nut-vuong ds-nut-dong-bo" title={t} aria-label={t} onClick={onDongBo}><Icon n="refresh" className="ic sm" /></button>
 }
