@@ -39874,3 +39874,101 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
 .m-t603-dc .m-pb-muc-ten, .m-t603-dc .m-pb-muc-tong { font-weight: 400; }
 .m-pb-dong.m-t603-ghi-chu { flex-direction: column; align-items: flex-start; gap: 4px; margin-top: 8px; padding: 10px 0 6px; }
 .m-pb-dong.m-t603-ghi-chu .g { text-align: left; font-weight: 400; }
+
+/* ── Hộp Tuỳ chỉnh báo cáo rõ nét, menu pill (T595) ── */
+.pn-hai-cot .pn-muc-doc {
+  gap: 6px;
+  padding: 14px 12px;
+}
+
+.pn-hai-cot .pn-muc {
+  border-radius: 999px;
+  color: var(--ink);
+  font-weight: 500;
+  transition: background-color .15s, color .15s;
+}
+
+.pn-hai-cot .pn-muc .ic {
+  width: 20px;
+  height: 20px;
+  color: var(--body);
+  transition: color .15s;
+}
+
+.pn-hai-cot .pn-muc:hover:not(.on) {
+  background: var(--soft);
+  color: var(--ink);
+}
+
+.pn-hai-cot .pn-muc:hover:not(.on) .ic {
+  color: var(--ink);
+}
+
+.pn-hai-cot .pn-muc.on {
+  background: var(--blue) !important;
+  color: #fff !important;
+  font-weight: 600;
+  box-shadow: none !important;
+  border-radius: 999px !important;
+}
+
+.pn-hai-cot .pn-muc.on .ic {
+  color: #fff !important;
+}
+
+@media (max-width: 900px) {
+  .pn-hai-cot .pn-muc-doc {
+    gap: 8px;
+    padding: 10px 12px;
+  }
+  .pn-hai-cot .pn-muc {
+    flex: none;
+    white-space: nowrap;
+  }
+}
+
+/* Tăng độ rõ các phần tử trong panel Tuỳ chỉnh báo cáo */
+.pn-hai-cot .tc-muc-tieu-de {
+  color: var(--body);
+  font-weight: 700;
+}
+
+.pn-hai-cot .tc-cot-dem {
+  color: var(--body);
+}
+
+.pn-hai-cot .tc-dem {
+  color: var(--body);
+  font-weight: 600;
+  background: var(--soft);
+}
+
+.pn-hai-cot .tc-ten {
+  color: var(--ink);
+}
+
+.pn-hai-cot .tc-cb:not(.on) {
+  border-color: var(--faint);
+}
+
+.pn-hai-cot .tc-nhom {
+  border: 1px solid #cbd5e1;
+}
+
+.pn-hai-cot .tc-nhom-dau {
+  border-bottom: 1px solid var(--line);
+}
+
+.pn-hai-cot .tc-dot {
+  border-color: var(--faint);
+}
+
+.pn-hai-cot .tc-cot-ten {
+  color: var(--body);
+  font-weight: 600;
+}
+
+.pn-hai-cot .tc-so {
+  color: var(--ink);
+  font-weight: 700;
+}
