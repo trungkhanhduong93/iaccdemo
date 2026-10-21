@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T592 | Phiếu mua hàng web: ô Thuế GTGT trên thanh tab nới rộng để hiện đủ chữ "Nhiều mức" (phương án A, artifact https://claude.ai/artifact/HGMHPUkFkf7Hzuw6kpPzcr) | dinhlanphuongipacc | Đang làm | Sửa `app.css` (mục T492, lớp `.ct-ap-ts`) |
 | T583 | Điện thoại, Chi phí phân bổ dùng khung danh sách T582 | Trum | Chờ | Làm sau T436 (dinhlanphuongipacc giữ `MCcdc.tsx`) |
 | T577 | Web, danh sách chứng từ: thanh trên chọn Tất cả cửa hàng thì bộ lọc luôn có ô Cửa hàng ghi tên gốc, như báo cáo ở T576 | dinhlanphuongipacc | Chờ | Sửa `VoucherScreen.tsx`, Trum đang giữ ở T496, hỏi Trum trước |
 | T574 | Dữ liệu giả hoá đơn FABi lẻ (`dongMonDon` trong `ChungTuBanHang.tsx`): món cuối nhận phần dư nên số lượng × đơn giá khác thành tiền (vd 5 Ly × 39.000 = 182.000), lộ rõ ở chi tiết Xuất bán POS web và điện thoại | | Chờ | Thấy khi làm T573. `ChungTuBanHang.tsx` |
