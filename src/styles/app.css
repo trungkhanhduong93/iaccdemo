@@ -2260,15 +2260,6 @@ textarea.inp { height: auto; padding: 8px 11px; resize: vertical; }
     print-color-adjust: exact;
   }
 }
-.bc-cho-duyet {
-  display: inline-block;
-  margin-top: 4px;
-  padding: 1px 8px;
-  border-radius: 999px;
-  background: var(--soft);
-  color: var(--muted);
-  font-size: 10.5px;
-}
 .rpt .rpt-ky-hieu th {
   padding: 2px 6px;
   font-size: 11px;
@@ -2279,11 +2270,6 @@ textarea.inp { height: auto; padding: 8px 11px; resize: vertical; }
   margin-top: 14px;
   font-size: 12.5px;
   line-height: 1.6;
-}
-@media print {
-  .bc-cho-duyet {
-    visibility: hidden;
-  }
 }
 /* Mẫu in chứng từ: khung xem trước toàn màn hình, phiếu in chữ đen, kẻ khung màu in (T47 đợt 5) */
 .in-ct-nen {

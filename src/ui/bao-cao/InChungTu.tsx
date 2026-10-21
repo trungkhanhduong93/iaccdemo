@@ -338,7 +338,6 @@ export function HopInChungTu({ ds, onDong }: { ds: PhieuIn[]; onDong: () => void
           <span className="fsf-ic"><Icon n="printer" /></span>
           <h1>{tieuDe}</h1>
           <span className="chip">{kyHieu ? `Mẫu số ${kyHieu}` : 'Mẫu tự thiết kế'}</span>
-          {kyHieu && cd.choDuyet && <span className="chip warn">Ký hiệu chờ kế toán trưởng duyệt</span>}
           <span className="grow" />
           <button type="button" className="btn sm" onClick={() => { inNgay(); toast('Chọn máy in "Lưu dưới dạng PDF" để lưu file') }}>
             <Icon n="download" className="ic sm" />Xuất PDF

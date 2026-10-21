@@ -960,7 +960,6 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho, theoCn 
           <div className="bc-mau">
             <div className="bc-mau-so">Mẫu số {kyHieu}</div>
             <div className="bc-mau-cc">({canCu(cd)})</div>
-            {cd.choDuyet && <div className="bc-cho-duyet">Ký hiệu chờ kế toán trưởng duyệt</div>}
           </div>
         )}
       </div>

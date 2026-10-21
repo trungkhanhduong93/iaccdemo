@@ -107,7 +107,6 @@ body {
 .paper-h { display: flex; justify-content: space-between; gap: 20px; font-size: 12px; color: #334155; }
 .paper-h b { color: #0f172a; }
 .bc-mau { max-width: 48%; text-align: center; font-size: 12px; }
-.bc-cho-duyet { display: inline-block; margin-top: 4px; padding: 1px 8px; border-radius: 999px; background: #f1f5f9; color: #64748b; font-size: 10.5px; }
 h2 { text-align: center; font-size: 19px; font-weight: 800; color: #0f172a; margin: 22px 0 4px; text-transform: uppercase; letter-spacing: .2px; }
 .sub { text-align: center; color: #64748b; font-size: 12.5px; }
 .unit, .paper-dvt-bang { text-align: right; font-size: 12px; color: #64748b; font-style: italic; margin: 10px 0 6px; }
@@ -133,7 +132,7 @@ h2 { text-align: center; font-size: 19px; font-weight: 800; color: #0f172a; marg
   body { background: transparent; padding: 0; margin: 0; }
   .bc-trang { margin: 0 auto; box-shadow: none; break-after: page; page-break-after: always; }
   .bc-trang:last-child { break-after: auto; page-break-after: auto; }
-  .chip, .bc-cho-duyet { display: none; }
+  .chip { display: none; }
   * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }`
 
