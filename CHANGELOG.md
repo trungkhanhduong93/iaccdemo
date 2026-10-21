@@ -5,6 +5,10 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 ## 21/10/2026
 - T603: Điện thoại, chi tiết phiếu xuất, nhập điều chỉnh: nhãn nguồn chứng từ cạnh tên cửa hàng, bỏ Tổng thanh toán; có dòng Tham chiếu mở phiếu kiểm kê gốc; Ghi chú nằm riêng phía dưới; danh sách hàng chỉ hiện số lượng; menu ba chấm chỉ còn Xuất Excel.
 - T600: Điện thoại, phiếu mua hàng làm lại theo Figma. Màn xem có Tổng tiền màu theo tình trạng, khung Thanh toán với thanh tiến độ, 3 tab Phiếu nhập, Hạch toán, Lịch sử. Màn sửa, thêm mới có nhãn trên ô nhập, công tắc Nhận kèm hoá đơn, Giảm giá và Thuế GTGT áp chung. Có sheet chọn hàng hoá, chọn và thêm nhà cung cấp. Chọn Tiền mặt ngay hoặc Chuyển khoản ngay thì chuyển sang lập phiếu chi điền sẵn.
+- T599: Tờ báo cáo, mẫu in chứng từ bỏ dòng "Ký hiệu chờ kế toán trưởng duyệt".
+- T593: Xem trước in và bản in báo cáo: mã, tên hàng, số phiếu ở mọi cột là chữ đen thường, bấm không mở chi tiết. Màn báo cáo thường vẫn bấm được.
+- T595: Hộp Tuỳ chỉnh báo cáo rõ chữ hơn. Menu trái: mục đang chọn là nút bo tròn nền xanh chữ trắng, icon to hơn.
+- T594: Báo cáo đổi khổ Dọc, Ngang tự cân bề rộng cột và cỡ chữ. Số, ngày, mã, số phiếu luôn đủ ký tự trên một dòng, không đè cột bên, không tràn khỏi tờ. Tên dài xuống tối đa 2 dòng. Cỡ chữ chọn tay là mức tối đa, khổ chật thì tự giảm.
 - T598: Điện thoại, sửa phiếu thu chi giữ nguyên các dòng chi tiết đang có, không còn mất dòng. Dòng vừa thêm có nền xanh nhạt để phân biệt.
 - T596: Mẫu in và báo cáo ghi "Cửa hàng" thay cho "Bộ phận": dòng đầu trang phiếu nhập, xuất kho, Bảng kê mua hàng, Địa chỉ (cửa hàng) trên phiếu xuất kho, sổ theo dõi TSCĐ, CCDC tại nơi sử dụng.
 - T592: Web, phiếu mua hàng: ô Thuế GTGT trên thanh tab rộng hơn, hiện đủ chữ "Nhiều mức".
