@@ -20,13 +20,11 @@ export interface TuyChinhLuu {
 
 export interface BanLoc {
   loc: Record<string, string[]>
-  anKhongPS: boolean
   ky: string
 }
 
 export interface TrangThaiLoc {
   loc: Record<string, string[]>
-  anKhongPS: boolean
   ky: string
   daXem: BanLoc
   nhap: BanLoc
@@ -53,7 +51,6 @@ function soSanhLoc(a: Record<string, string[]>, b: Record<string, string[]>): bo
 
 export function coThayDoiLoc(nhap: BanLoc, daXem: BanLoc): boolean {
   if (nhap.ky !== daXem.ky) return true
-  if (nhap.anKhongPS !== daXem.anKhongPS) return true
   if (!soSanhLoc(nhap.loc, daXem.loc)) return true
   return false
 }
@@ -73,10 +70,9 @@ const khoPath = new Map<string, TrangThaiLoc>()
 function layTrangThai(path: string): TrangThaiLoc {
   let s = khoPath.get(path)
   if (!s) {
-    const defaultBan: BanLoc = { loc: {}, anKhongPS: true, ky: '9' }   // mặc định ẩn dòng không phát sinh (T508)
+    const defaultBan: BanLoc = { loc: {}, ky: '9' }
     s = {
       loc: {},
-      anKhongPS: true,
       ky: '9',
       daXem: { ...defaultBan },
       nhap: { ...defaultBan },
@@ -139,14 +135,6 @@ export function datLoc(path: string, k: string, vals: string[]) {
   phatSong()
 }
 
-export function datAnKhongPS(path: string, v: boolean) {
-  const s = layTrangThai(path)
-  const nhapMoi: BanLoc = { ...s.nhap, anKhongPS: v }
-  const thayDoi = coThayDoiLoc(nhapMoi, s.daXem)
-  khoPath.set(path, { ...s, nhap: nhapMoi, coThayDoi: thayDoi })
-  phatSong()
-}
-
 export function datCotNhuDangXem(path: string, v: boolean) {
   const s = layTrangThai(path)
   khoPath.set(path, { ...s, cotNhuDangXem: v })
@@ -163,7 +151,7 @@ export function datTuyChon(path: string, k: string, ds: string[]) {
 
 export function xoaLoc(path: string) {
   const s = layTrangThai(path)
-  const nhapMoi: BanLoc = { ...s.nhap, loc: {}, anKhongPS: true }
+  const nhapMoi: BanLoc = { ...s.nhap, loc: {} }
   const thayDoi = coThayDoiLoc(nhapMoi, s.daXem)
   khoPath.set(path, { ...s, nhap: nhapMoi, coThayDoi: thayDoi })
   phatSong()
@@ -173,14 +161,12 @@ export function xemBaoCao(path: string) {
   const s = layTrangThai(path)
   const daXemMoi: BanLoc = {
     loc: { ...s.nhap.loc },
-    anKhongPS: s.nhap.anKhongPS,
     ky: s.nhap.ky,
   }
   khoPath.set(path, {
     ...s,
     daXem: daXemMoi,
     loc: daXemMoi.loc,
-    anKhongPS: daXemMoi.anKhongPS,
     ky: daXemMoi.ky,
     coThayDoi: false,
   })
@@ -191,8 +177,8 @@ export function xemBaoCao(path: string) {
 /** Mở báo cáo khác với sẵn bộ lọc, kỳ (bấm dòng ở báo cáo tổng hợp xem sổ chi tiết, T185): đặt cả bản đang nhập và bản đã xem */
 export function datLocDaXem(path: string, loc: Record<string, string[]>, ky: string) {
   const s = layTrangThai(path)
-  const ban: BanLoc = { loc: { ...loc }, anKhongPS: true, ky }
-  khoPath.set(path, { ...s, nhap: { ...ban }, daXem: { ...ban }, loc: ban.loc, anKhongPS: true, ky, coThayDoi: false, kyDatSan: true })
+  const ban: BanLoc = { loc: { ...loc }, ky }
+  khoPath.set(path, { ...s, nhap: { ...ban }, daXem: { ...ban }, loc: ban.loc, ky, coThayDoi: false, kyDatSan: true })
   phatSong()
 }
 

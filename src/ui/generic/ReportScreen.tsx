@@ -17,7 +17,7 @@ import { BaoCaoDoRongCtx, Table, type DoRong } from '../Table'
 import { between, k, money, pad, pick, rng } from '../format'
 import { chungTu, soChiTiet } from './gen'
 import { ganMoPhieu } from './SoChungTu'
-import { Dropdown, MenuHead, MenuItem, MenuSep, Popover, Select } from '../Dropdown'
+import { Dropdown, MenuHead, MenuItem, MenuSep, Popover } from '../Dropdown'
 import { ChonKhoangNgay, dmy, khoangThang, type KhoangNgay } from '../ChonNgay'
 import { BoLoc, ONhanVien, useCauHinhLoc, useDongEsc, type OLocDef } from '../LocNangCao'
 import { IconFigmaDownload, IconFigmaPrinter, IconFigmaSliders } from '../IconFigma'
@@ -26,7 +26,7 @@ import { datNguonXuat, layNguonXuat, taoTenFile, xuatFile, type NguonXuat } from
 import { ChonHaiCot } from '../ChonHaiCot'
 import { OChonMot } from '../OChonMot'
 import {
-  useTrangThaiLoc, datLoc, datAnKhongPS, datCotNhuDangXem, datTuyChon, xoaLoc,
+  useTrangThaiLoc, datLoc, datCotNhuDangXem, datTuyChon, xoaLoc,
   datColsGoc, datDsKyMacDinh, datKyNhap, datKyMacDinh, xemBaoCao, useTuyChinhBC, bienDoiBang, luuTuyChinh,
   luuRongCotBC
 } from '../bao-cao/tuyChinhBC'
@@ -56,7 +56,7 @@ export const KY_CHON: [string, string][] = [['9', 'Tháng 9/2026'], ['10', 'Thá
 export const LOAI_TRU_TU_SINH = new Set(['10.2.2', '10.2.3', '10.2.4', '10.2.5', '10.3.1'])
 
 /** Bộ lọc của trang báo cáo đang xem (ReportPaper dựng, ReportToolbar vẽ trên thanh ngang, T179) */
-type BoLocTrang = { ds: BoLocMuc[]; anKhongPS: boolean }
+type BoLocTrang = { ds: BoLocMuc[] }
 const khoBoLoc = new Map<string, BoLocTrang>()
 const ngheBoLoc = new Set<() => void>()
 
@@ -178,7 +178,7 @@ export function ReportToolbar({ ky, setKy, children, moTa }: { ky: string; setKy
   }
 
   // Báo cáo tài chính, tờ khai chỉ có Khoảng ngày; 6.2.x có `cfg.loc` khai tay thì vẫn giữ ô lọc
-  const khongCoLocDong = Boolean((slug && LOAI_TRU_TU_SINH.has(slug)) || loaiBC === 'tokhai' || (slug && slug.startsWith('6.2.'))) && !boLoc?.ds.length && !boLoc?.anKhongPS
+  const khongCoLocDong = Boolean((slug && LOAI_TRU_TU_SINH.has(slug)) || loaiBC === 'tokhai' || (slug && slug.startsWith('6.2.'))) && !boLoc?.ds.length
 
   // Xây dựng các ô lọc theo kiểu danh sách chứng từ (T237)
   const oLoc: OLocDef[] = useMemo(() => {
@@ -227,25 +227,7 @@ export function ReportToolbar({ ky, setKy, children, moTa }: { ky: string; setKy
       }
     }
 
-    if (boLoc?.anKhongPS) {
-      res.push({
-        k: 'anKhongPS',
-        ten: 'Ẩn dòng không phát sinh',
-        coGiaTri: Boolean(tt.nhap.anKhongPS),
-        o: (
-          <Select
-            className="ds-o-sel"
-            value={tt.nhap.anKhongPS ? 'an' : ''}
-            aria-label="Ẩn dòng không phát sinh"
-            onChange={e => datAnKhongPS(path, e.target.value === 'an')}
-          >
-            <option value="">Tất cả</option>
-            <option value="an">Ẩn không phát sinh</option>
-          </Select>
-        ),
-      })
-    }
-
+    // Bỏ ô Ẩn dòng không phát sinh, báo cáo có `anKhongPS` luôn ẩn (T578)
     return res
   }, [khoang, khongCoLocDong, boLoc, tt.nhap, tt.tuyChon, path])
 
@@ -267,7 +249,7 @@ export function ReportToolbar({ ky, setKy, children, moTa }: { ky: string; setKy
     return { ...cauHinhLocLuu, ngoai: ['khoangNgay', K_CUA_HANG, ...ngoai].slice(0, 4) }
   }, [cauHinhLocLuu, dsKhoa])
 
-  const soLoc = (boLoc?.ds ?? []).filter(l => (tt.loc[l.k] ?? []).length > 0).length + (boLoc?.anKhongPS && tt.anKhongPS ? 1 : 0)
+  const soLoc = (boLoc?.ds ?? []).filter(l => (tt.loc[l.k] ?? []).length > 0).length
   const dangLoc = soLoc > 0 || Boolean(tim.trim())
   const khacKhoang = khoang.tu.getTime() !== khoangXem.tu.getTime() || khoang.den.getTime() !== khoangXem.den.getTime()
   const khacNhap = tt.coThayDoi || timNhap !== tim || khacKhoang
@@ -890,7 +872,7 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho, theoCn 
       const rowsCh = ganCuaHang(kh.rows, chonChLoc)
       const res = bienDoiBang(kh.cols, rowsCh, {
         loc: locHienCo,
-        anKhongPS: !!cfg?.anKhongPS && tt.anKhongPS,   // mặc định ẩn, chỉ áp cho báo cáo có tuỳ chọn này (T508)
+        anKhongPS: !!cfg?.anKhongPS,   // luôn ẩn dòng không phát sinh, chỉ áp cho báo cáo có cấu hình này (T508, T578)
         nhom: tc?.nhom,
         tongHop: tc?.xemNhom === 'tongHop',
         cot: tc?.cot,
@@ -904,7 +886,7 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho, theoCn 
         // Tắt "Cột như đang xem": xuất đủ cột (vẫn áp lọc và nhóm)
         const resDuCot = bienDoiBang(kh.cols, rowsCh, {
           loc: locHienCo,
-          anKhongPS: !!cfg?.anKhongPS && tt.anKhongPS,
+          anKhongPS: !!cfg?.anKhongPS,
           nhom: tc?.nhom,
           tongHop: tc?.xemNhom === 'tongHop',
           cot: undefined,
@@ -917,7 +899,7 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho, theoCn 
     })
 
     return { thanBienDoi: thanMoi, bangXuat: bx }
-  }, [children, locHienCo, chonChLoc, tt.anKhongPS, tt.cotNhuDangXem, tc?.nhom, tc?.xemNhom, tc?.cot, loai, cfg?.congCot, cfg?.khoa, kyHieuCot, slug])
+  }, [children, locHienCo, chonChLoc, tt.cotNhuDangXem, tc?.nhom, tc?.xemNhom, tc?.cot, loai, cfg?.congCot, cfg?.khoa, kyHieuCot, slug])
 
   // Dựng NguonXuat cho chức năng xuất file
   useEffect(() => {
@@ -955,7 +937,6 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho, theoCn 
   const dsDongLoc = [
     // Ô Cửa hàng đã ghi ở đầu tờ (dòng tên cửa hàng) nên không lặp lại trong dòng điều kiện lọc (T576)
     ...dsLocCot.filter(l => (tt.loc[l.k] ?? []).length > 0 && l.k !== K_CUA_HANG).map(l => ({ nhan: l.nhan, gt: tt.loc[l.k].join(', ') })),
-    ...(cfg?.anKhongPS && tt.anKhongPS ? [{ nhan: '', gt: 'Ẩn dòng không phát sinh' }] : []),
   ]
   const dongLoc = dsDongLoc.map(x => x.nhan ? `${x.nhan}: ${x.gt}` : x.gt).join('; ')
   // Phần đầu mới (T576): dưới tên báo cáo ghi lần lượt Thời gian, Cửa hàng (hoặc Địa điểm kinh doanh của hộ kinh doanh), rồi chi tiết khác,
@@ -1008,8 +989,8 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho, theoCn 
   )
   const cuoi = ky ? <KhoiCuoi loai={loai} cheDo={s.cheDo} nguoiDaiDien={dv.nguoiDaiDien} dsKy={dsKy} /> : undefined
   useLayoutEffect(() => {
-    datBoLoc(path, { ds: dsLocCot, anKhongPS: !!cfg?.anKhongPS })
-  }, [path, dsLocCot, cfg?.anKhongPS])
+    datBoLoc(path, { ds: dsLocCot })
+  }, [path, dsLocCot])
 
   // Đang chờ chọn điều kiện ở popup: chưa vẽ tờ báo cáo; bộ lọc vẫn dựng ở trên để popup có lựa chọn (T288)
   if (hoiLoc) return <div className="bc-xem bc-cho-loc"><Icon n="filter" className="ic" /><span>Chọn điều kiện lọc rồi bấm Xem báo cáo</span></div>
