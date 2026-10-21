@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 21/10/2026
+- T573: Điện thoại, chi tiết phiếu Xuất bán POS dạng biên lai, không còn tab: thẻ Thông tin đơn thêm cửa hàng, kênh bán hàng, PTTT; danh sách hàng hoá có ô tìm, VAT % chỉ hiện khi thuế khấu trừ; cuối phiếu đủ các khoản tiền hàng, giảm giá, phí dịch vụ, phí vận chuyển, doanh thu trước thuế, thuế, tổng tiền.
 - T562: Điện thoại, danh sách chứng từ mua hàng có lại nút Thêm mới, giống danh sách Thu chi.
 - T563: Điện thoại, nút quay lại lùi đúng 1 bước, hết cảnh qua lại giữa hai màn.
 - T564: Điện thoại, hàng tab Chứng từ mua hàng, Báo cáo theo dõi chữ cùng cỡ với Thu chi.

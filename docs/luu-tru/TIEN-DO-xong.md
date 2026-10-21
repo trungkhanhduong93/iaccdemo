@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T573 | Điện thoại, chi tiết phiếu Xuất bán POS vẽ lại theo mẫu B (biên lai): bỏ tab Thanh toán, Hạch toán; thẻ Thông tin đơn thêm cửa hàng, kênh, PTTT, trạng thái Đã đồng bộ gói Free; danh sách hàng hoá có ô tìm, VAT % chỉ hiện khi khấu trừ; các khoản (phí dịch vụ, phí vận chuyển tách dòng), tổng tiền cuối biên lai | PhuongXT | 21/10/2026 | `2026-10-21-phuongxt-chi-tiet-xuat-ban-pos-dien-thoai.md` |
 | T562 | Điện thoại, danh sách chứng từ mua hàng mất nút Thêm mới: hiện nút giống danh sách Thu chi | Trum | 21/10/2026 | `2026-10-21-trum-loi-dien-thoai-t562-t568.md` |
 | T563 | Điện thoại, nút quay lại vòng lặp A ↔ B: mọi màn lùi đúng 1 bước, hết lịch sử thì về màn cha bằng replace | Trum | 21/10/2026 | `2026-10-21-trum-loi-dien-thoai-t562-t568.md` |
 | T564 | Điện thoại, hàng tab Chứng từ mua hàng, Báo cáo theo dõi chữ nhỏ: cùng cỡ với tab danh sách Thu chi | Trum | 21/10/2026 | `2026-10-21-trum-loi-dien-thoai-t562-t568.md` |
