@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T598 | Điện thoại, sửa phiếu thu chi: giữ nguyên các dòng chi tiết đang có (phiếu mẫu chưa lưu dòng thì lấy đúng dòng như màn xem), không còn thay bằng 1 dòng trống. Dòng vừa bấm Thêm dòng có nền xanh nhạt | Trum | 21/10/2026 | [nhật ký](../nhat-ky/2026-10-21-trum-giu-dong-sua-thu-chi.md) |
 | T596 | Mẫu in, báo cáo: khái niệm "Bộ phận" đổi thành "Cửa hàng" (dòng đầu trang phiếu kho, ô thông tin Bảng kê mua hàng, Địa chỉ (cửa hàng) phiếu xuất kho, gợi ý người ký phiếu nhập kho, nút trong Thiết kế mẫu in, sổ 7.2.4) | dinhlanphuongipacc | 21/10/2026 | [nhật ký](../nhat-ky/2026-10-21-dinhlanphuongipacc-bo-phan-thanh-cua-hang.md) |
 | T592 | Phiếu mua hàng web: ô Thuế GTGT trên thanh tab nới từ 110px lên 128px, hiện đủ chữ "Nhiều mức" (phương án A trong artifact https://claude.ai/artifact/HGMHPUkFkf7Hzuw6kpPzcr) | dinhlanphuongipacc | 21/10/2026 | [nhật ký](../nhat-ky/2026-10-21-dinhlanphuongipacc-o-thue-gtgt-rong.md) |
 | T591 | Đồng nhất tên phiếu ngân hàng là Thu ngân hàng, Chi ngân hàng theo QD24: thao tác nhanh web và điện thoại (trước ghi Báo có, Uỷ nhiệm chi), menu Thu, chi tiền, tên loại phiếu xem trên điện thoại, nhãn Số chứng từ phiếu chi ngân hàng. Mẫu in giữ tên | dinhlanphuongipacc | 21/10/2026 | [nhật ký](../nhat-ky/2026-10-21-dinhlanphuongipacc-ten-phieu-ngan-hang.md) |

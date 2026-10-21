@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 21/10/2026
+- T598: Điện thoại, sửa phiếu thu chi giữ nguyên các dòng chi tiết đang có, không còn mất dòng. Dòng vừa thêm có nền xanh nhạt để phân biệt.
 - T596: Mẫu in và báo cáo ghi "Cửa hàng" thay cho "Bộ phận": dòng đầu trang phiếu nhập, xuất kho, Bảng kê mua hàng, Địa chỉ (cửa hàng) trên phiếu xuất kho, sổ theo dõi TSCĐ, CCDC tại nơi sử dụng.
 - T592: Web, phiếu mua hàng: ô Thuế GTGT trên thanh tab rộng hơn, hiện đủ chữ "Nhiều mức".
 - T591: Thao tác nhanh (điện thoại và web) và menu Thu, chi tiền ghi đồng nhất "Thu ngân hàng", "Chi ngân hàng" thay cho Báo có, Uỷ nhiệm chi, Thu/Chi tiền gửi ngân hàng.

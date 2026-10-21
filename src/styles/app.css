@@ -39045,3 +39045,9 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
 .m-tpb-gat { width: 40px; height: 22px; accent-color: #d0650a; }
 .m-tpb-do { color: #b42318; }
 .m-tpb-xong { flex: 1; }
+
+/* ── Form sửa phiếu thu chi điện thoại: dòng vừa thêm nền xanh nhạt (T598) ── */
+.m-tc-lap-card .m-tc-lap-dong-item.moi {
+  background: var(--tint);
+  border-color: #b9d3ea;
+}

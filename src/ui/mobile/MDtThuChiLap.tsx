@@ -36,6 +36,7 @@ interface DongChiTiet {
   cv?: string
   tkNo?: string
   tkCo?: string
+  moi?: boolean   // dòng vừa bấm Thêm dòng, nền xanh nhạt để phân biệt dòng đã có
 }
 
 interface DoiTuongDm {
@@ -85,7 +86,9 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
   const saoChep = !row ? (loc.state as { saoChep?: Row } | null)?.saoChep : undefined
   const goc = row ?? saoChep
   // Lý do, người giao dịch đoán như màn xem phiếu để sửa, sao chép không bị trống
-  const lyDoGoc = (r?: Row) => !r ? '' : String(r._lyDo ?? ((r._dong as DongChiTiet[] | undefined) ?? dongCua(theoLoai(cfg, String(r.loai ?? '')), `${sc.code ?? sc.slug}-${r.id}`))[0]?.ly ?? doanLyDoThuChi(String(r.loai ?? ''), String(r.dienGiai || '')) ?? '')
+  // Dòng chi tiết của phiếu như màn xem: phiếu mẫu chưa có _dong thì sinh theo số phiếu
+  const dongGoc = (r: Row) => (r._dong as DongChiTiet[] | undefined) ?? dongCua(theoLoai(cfg, String(r.loai ?? '')), `${sc.code ?? sc.slug}-${r.id}`) as DongChiTiet[]
+  const lyDoGoc = (r?: Row) => !r ? '' : String(r._lyDo ?? dongGoc(r)[0]?.ly ?? doanLyDoThuChi(String(r.loai ?? ''), String(r.dienGiai || '')) ?? '')
   const nguoiGoc = (r?: Row) => !r ? '' : String(r._nguoiGiao ?? r._nguoi ?? ttNghiepVu(r).nguoi ?? '')
   const loaiUrl = sp.get('loai') || 'chi'
   const [loai, setLoai] = useState<string>(() => goc?.loai ? String(goc.loai) : loaiUrl)
@@ -139,8 +142,9 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
 
   // Dòng chi tiết
   const [dsDong, setDsDong] = useState<DongChiTiet[]>(() => {
-    if (Array.isArray(goc?._dong) && goc._dong.length > 0) {
-      return (goc._dong as DongChiTiet[]).map(d => ({
+    const ds = goc ? dongGoc(goc) : []
+    if (ds.length > 0) {
+      return ds.map(d => ({
         ten: d.ten || '',
         sl: d.sl || 1,
         gia: d.gia || soTien,
@@ -190,8 +194,9 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
       setLyDo(lyDoGoc(row))
       if (row.thang) setThangChiPhi(`Tháng ${row.thang}/2026`)
       if (row._ghiChu || row.dienGiai) setGhiChu(String(row._ghiChu || row.dienGiai))
-      if (Array.isArray(row._dong) && row._dong.length > 0) {
-        setDsDong((row._dong as DongChiTiet[]).map(d => ({
+      const ds = dongGoc(row)
+      if (ds.length > 0) {
+        setDsDong(ds.map(d => ({
           ten: d.ten || 'Chi tiết',
           sl: d.sl || 1,
           gia: d.gia || t,
@@ -280,6 +285,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
         dt: doiTuong,
         tkNo: '242',
         tkCo: '1111',
+        moi: true,
       },
     ])
     setDaSua(true)
@@ -335,7 +341,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
       dienGiai: (dsDong[0]?.ten || ghiChu || (isChi ? 'Chi tiền' : 'Thu tiền')),
       tien: soTien,
       tong: soTien,
-      _dong: isCq ? undefined : dsDong.map(d => ({
+      _dong: isCq ? undefined : dsDong.map(({ moi, ...d }) => ({
         ...d,
         ten: d.ten || ghiChu || (isChi ? 'Chi tiền' : 'Thu tiền'),
         tien: d.tien,
@@ -758,7 +764,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
               {dsDong.map((d, idx) => {
                 const moRong = dongMoRong[idx] ?? false
                 return (
-                  <div key={idx} className="m-tc-lap-dong-item">
+                  <div key={idx} className={`m-tc-lap-dong-item${d.moi ? ' moi' : ''}`}>
                     <div className="m-tc-dong-item-dau">
                       <div className="m-tc-stt-tron">{idx + 1}</div>
                       <span className="ten">{d.ten?.trim() ? d.ten : 'Dòng mới'}</span>
