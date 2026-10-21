@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T579 | Điện thoại, bấm chip ngày ở Xuất bán POS (và bộ lọc danh sách, báo cáo) trên iPhone chỉ hiện một dải nền tối, không thấy hộp lịch: lớp phủ nằm trong hàng chip cuộn ngang bị Safari cắt theo hàng | PhuongXT | Đang làm | Sửa `MChonKhoangNgay.tsx` |
 | T578 | Web và điện thoại, báo cáo: bỏ ô lọc "Ẩn dòng không phát sinh" (thanh lọc, phễu, hộp điều kiện xem báo cáo), báo cáo luôn ẩn dòng không phát sinh | dinhlanphuongipacc | Đang làm | Sửa `ReportScreen.tsx`, `tuyChinhBC.ts`. Điện thoại không có ô này, `MSoBaoCao.tsx` đã luôn ẩn theo cấu hình |
 | T577 | Web, danh sách chứng từ: thanh trên chọn Tất cả cửa hàng thì bộ lọc luôn có ô Cửa hàng ghi tên gốc, như báo cáo ở T576 | dinhlanphuongipacc | Chờ | Sửa `VoucherScreen.tsx`, Trum đang giữ ở T496, hỏi Trum trước |
 | T574 | Dữ liệu giả hoá đơn FABi lẻ (`dongMonDon` trong `ChungTuBanHang.tsx`): món cuối nhận phần dư nên số lượng × đơn giá khác thành tiền (vd 5 Ly × 39.000 = 182.000), lộ rõ ở chi tiết Xuất bán POS web và điện thoại | | Chờ | Thấy khi làm T573. `ChungTuBanHang.tsx` |
