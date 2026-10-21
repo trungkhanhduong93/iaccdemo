@@ -4,6 +4,8 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T622 | Điện thoại, gói Free màn Bán hàng chỉ hiện tab Xuất bán POS như web, các phiếu ngoài gói ẩn | Trum | 22/10/2026 | [nhật ký](../nhat-ky/2026-10-22-trum-sheet-thu-chi-tab-free.md) |
+| T621 | Điện thoại, phiếu thu chi: sheet Chọn đối tượng, Chọn lý do, Chọn quỹ theo khuôn sheet Chọn nhà cung cấp, Chọn quỹ của phiếu mua (icon thêm, tải lại không chữ, sheet thêm chồng lên, quỹ có icon, số dư) | Trum | 22/10/2026 | [nhật ký](../nhat-ky/2026-10-22-trum-sheet-thu-chi-tab-free.md) |
 | T616 | Điện thoại, phiếu mua: Thanh toán ngay chỉ hiện quỹ tiền mặt của cửa hàng phiếu; lịch sử hết thừa lề trái phải như phiếu thu chi, rà lịch sử phiếu khác; ô chiết khấu áp chung rộng đủ 1.000.000; sheet Chọn nhà cung cấp còn 1 icon tải lại; sheet Thêm nhà cung cấp nút X như Thêm hàng hoá | Trum | 22/10/2026 | [nhật ký](../nhat-ky/2026-10-22-trum-kiem-ke-phieu-mua-dot-3.md) |
 | T615 | Điện thoại, Báo cáo kiểm kê bỏ đơn giá, tiền, hiện số lượng lệch và số mặt hàng lệch; Tổng hợp bán hàng khối tổng ghi Tổng doanh thu thuần, bỏ dòng SL, Doanh thu | Trum | 22/10/2026 | [nhật ký](../nhat-ky/2026-10-22-trum-kiem-ke-phieu-mua-dot-3.md) |
 | T620 | Web, chi tiết chứng từ Xuất bán POS: đơn khách lẻ hoặc không lấy hoá đơn vẫn hiện đủ nhãn khách hàng, hoá đơn, ô trống ghi `—` xám; nhãn tròn "Không lấy hoá đơn GTGT" ở tiêu đề HOÁ ĐƠN | dinhlanphuongipacc | 22/10/2026 | [nhật ký](../nhat-ky/2026-10-22-dinhlanphuongipacc-dau-phieu-pos-khach-le.md) |

@@ -3,6 +3,8 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 22/10/2026
+- T622: Điện thoại, gói Free: màn Bán hàng chỉ còn tab Xuất bán POS như web.
+- T621: Điện thoại, phiếu thu, phiếu chi: bảng Chọn đối tượng, Chọn lý do, Chọn quỹ giống bảng Chọn nhà cung cấp, Chọn quỹ của phiếu mua. Nút thêm, tải lại chỉ còn biểu tượng, bấm thêm mở bảng nhập chồng lên, quỹ có số dư.
 - T620: Chi tiết chứng từ Xuất bán POS: đơn khách lẻ hoặc không lấy hoá đơn vẫn hiện đủ nhãn Địa chỉ, Mã số thuế, Người mua hàng, Số hoá đơn, Ký hiệu, Ngày hoá đơn, Mã tra cứu; ô không có dữ liệu ghi `—`. Tiêu đề Hoá đơn có nhãn "Không lấy hoá đơn GTGT".
 - T616: Điện thoại, phiếu mua: Thanh toán ngay chỉ cho chọn quỹ tiền mặt của cửa hàng lập phiếu. Tab Lịch sử của các phiếu thẳng mép như phiếu thu chi. Ô chiết khấu áp chung rộng hơn, nhập 1.000.000 đủ chỗ. Sheet Chọn nhà cung cấp còn một icon tải lại, sheet Thêm nhà cung cấp có nút X để đóng.
 - T615: Điện thoại, Báo cáo kiểm kê không còn đơn giá và số tiền: thẻ hiện số lượng lệch, khối tổng đếm số mặt hàng lệch. Tổng hợp bán hàng ghi Tổng doanh thu thuần, bỏ dòng số lượng và doanh thu.
