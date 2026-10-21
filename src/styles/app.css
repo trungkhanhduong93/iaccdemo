@@ -31911,7 +31911,7 @@ a.tx-item:hover {
 .tabs > .ct-ap-dau { margin-left: auto; align-self: center; display: flex; align-items: center; gap: 20px; padding-right: 4px; }
 .ct-ap-o { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--body); white-space: nowrap; }
 .ct-ap-o > span { font-weight: 600; }
-.ct-ap-ts { width: 110px; }
+.ct-ap-ts { width: 128px; }
 .ct-ap-kieu { display: inline-flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
 .ct-ap-kieu > button { display: inline-flex; align-items: center; justify-content: center; height: 30px; width: 32px; padding: 0; border: 0; background: var(--white); color: var(--muted); font: inherit; font-size: 13px; cursor: pointer; }
 .ct-ap-kieu > button + button { border-left: 1px solid var(--line); }
