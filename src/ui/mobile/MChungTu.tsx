@@ -25,6 +25,7 @@ import { MDtThuChiLap } from './MDtThuChiLap'
 import { coLocKhacMacDinh, MAC_DINH_LOC_MOBILE, MLoc, tinhKhoangNgay, type GtLocMobile } from './MLoc'
 import { MXemPhieu } from './MXemPhieu'
 import { MBaoCaoTheoDoi } from './MBaoCaoTheoDoi'
+import { MAN_DC, MAN_KK } from '../../modules/kho/dieu-chinh'
 import { CUA_HANG } from '../../data/mock'
 import { ChonCuaHangTruoc, layChiNhanhNho, luuChiNhanhNho } from '../ChonCuaHangTruoc'
 
@@ -144,7 +145,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
   }, [sp])
 
   // Loại chứng từ (với màn nhiều loại)
-  const [loaiChon, setLoaiChon] = useState<string>(() => (cfg.dieuChinh ? (cfg.loai?.[0]?.k ?? '') : ''))
+  const [loaiChon, setLoaiChon] = useState<string>(() => (cfg.dieuChinh ? (sp.get('loai') ?? cfg.loai?.[0]?.k ?? '') : ''))
 
   // Chọn loại khi bấm thêm mới
   const [moChonLoai, setMoChonLoai] = useState(false)
@@ -341,6 +342,39 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
     }
 
     if (mod.key === 'kho') {
+      // T588: màn Kiểm kê và Xuất, Nhập điều chỉnh chung một hàng 4 tab; Điều chỉnh kho không còn mục riêng ở Nghiệp vụ
+      if (cfg.kiemKe || cfg.dieuChinh) {
+        const tabsKk = [
+          { k: 'kk', ten: 'Kiểm kê', on: Boolean(cfg.kiemKe), di: () => nav(`/app/${MAN_KK}`) },
+          { k: 'xdc', ten: 'Xuất điều chỉnh', on: Boolean(cfg.dieuChinh) && loaiChon === 'xdc', di: () => (cfg.dieuChinh ? setLoaiChon('xdc') : nav(`/app/${MAN_DC}?loai=xdc`)) },
+          { k: 'ndc', ten: 'Nhập điều chỉnh', on: Boolean(cfg.dieuChinh) && loaiChon === 'ndc', di: () => (cfg.dieuChinh ? setLoaiChon('ndc') : nav(`/app/${MAN_DC}?loai=ndc`)) },
+        ]
+        return (
+          <div className="m-tc-tabs" role="tablist">
+            {tabsKk.map(t => (
+              <button
+                key={t.k}
+                type="button"
+                role="tab"
+                aria-selected={t.on}
+                className={`m-tc-tab-btn${t.on ? ' on' : ''}`}
+                onClick={t.di}
+              >
+                {t.ten}
+              </button>
+            ))}
+            <button
+              type="button"
+              role="tab"
+              aria-selected={false}
+              className="m-tc-tab-btn"
+              onClick={() => setMoTheoDoi(true)}
+            >
+              Báo cáo
+            </button>
+          </div>
+        )
+      }
       if (anNgoaiGoi(s.goi)) {
         return (
           <div className="m-tc-tabs" role="tablist">

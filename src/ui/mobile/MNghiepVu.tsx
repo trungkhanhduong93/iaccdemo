@@ -63,6 +63,7 @@ export function MNghiepVu() {
         sc.kind !== 'baocao' &&
         sc.slug !== 'bao-cao' &&
         nhanTab(sc) !== 'Báo cáo' &&
+        !sc.voucher?.dieuChinh &&   // Xuất, Nhập điều chỉnh là tab trong màn Kiểm kê (T588)
         manMoTrenMobile(sc) &&
         (!anNgoaiGoi(s.goi) || moDuoc(sc, s.goi)) &&
         manMobile(sc, m) !== MChiMayTinh

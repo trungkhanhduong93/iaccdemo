@@ -38682,3 +38682,25 @@ body:has(.m-app) .m-thanh-duoi .m-tab.on .m-tab-ic .ic .l2 {
   overflow: hidden;
 }
 
+/* ── Điện thoại: form lập phiếu kiểm kê theo khung phiếu mua hàng (T588) ── */
+.m-kk588-o-kho { height: 40px; }
+.m-kk588-o-kho .m-t449-ten-ncc { font-size: 14px; }
+.m-kk588-so-ct { color: var(--faint); font-weight: 500; }
+.m-kk588-loc { display: flex; gap: 6px; overflow-x: auto; margin-bottom: 10px; }
+.m-kk588-loc button { flex: none; border: 1px solid var(--line); background: var(--white); border-radius: 16px; padding: 4px 11px; font-size: 13px; color: var(--body); font-family: inherit; }
+.m-kk588-loc button.on { background: var(--blue); border-color: var(--blue); color: var(--white); }
+.m-kk588-loc em { font-style: normal; opacity: .75; margin-left: 3px; }
+.m-kk588-am { color: var(--red); }
+.m-kk588-cl { display: inline-flex; align-items: center; gap: 8px; font-variant-numeric: tabular-nums; }
+.m-kk588-cl.thua { color: var(--green); }
+.m-kk588-cl.thieu { color: var(--red); }
+.m-kk588-cl.khop { color: var(--muted); }
+.m-kk588-nhan { font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 6px; }
+.m-kk588-nhan.thua { background: var(--green-t); color: var(--green); }
+.m-kk588-nhan.thieu { background: var(--red-t); color: var(--red); }
+.m-kk588-nhan.khop { background: var(--soft); color: var(--muted); }
+.m-kk588-xu-ly { color: var(--blue); }
+.m-kk588-trong { background: var(--white); border-radius: 12px; padding: 16px; text-align: center; color: var(--muted); font-size: 13px; margin-bottom: 10px; }
+.m-kk-form-man .m-t449-tim,
+.m-kk-form-man .m-kk588-loc,
+.m-kk-form-man .m-t449-hang-ds { flex: none; }

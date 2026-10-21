@@ -65,12 +65,15 @@ export const MLapPhieuKho: FC<MLapPhieuKhoProps> = ({ sc, mod, id }) => {
 // ── Thẻ mặt hàng phiếu kho điện thoại (T300) ──
 type DongM = Dong & { giaGoc?: number; dvtChinh?: string; strTonTt?: string; tonHtGoc?: number }
 
+/** Tồn thực tế mặc định bằng tồn hệ thống, tồn hệ thống âm thì 0 (T588) */
+const tonTtMacDinh = (tonHt: number) => Math.max(0, tonHt)
+
 const HANG_KK_MAC_DINH: DongM[] = [
-  { ma: 'NVL002', ten: 'Xương ống bò', dvt: 'kg', dvtChinh: 'kg', tonHt: 31, tonTt: undefined, sl: 31, gia: 65000, tien: 0, ts: 0, thue: 0 },
-  { ma: 'NVL008', ten: 'Cà phê hạt Robusta', dvt: 'kg', dvtChinh: 'kg', tonHt: 10, tonTt: undefined, sl: 10, gia: 210000, tien: 0, ts: 0, thue: 0 },
-  { ma: 'NVL005', ten: 'Gạo tấm thơm', dvt: 'kg', dvtChinh: 'kg', tonHt: 50, tonTt: undefined, sl: 50, gia: 19000, tien: 0, ts: 0, thue: 0 },
-  { ma: 'NVL004', ten: 'Sườn heo', dvt: 'kg', dvtChinh: 'kg', tonHt: 12, tonTt: undefined, sl: 12, gia: 145000, tien: 0, ts: 0, thue: 0 },
-  { ma: 'NVL012', ten: 'Dầu ăn', dvt: 'Lít', dvtChinh: 'Lít', tonHt: 20, tonTt: undefined, sl: 20, gia: 48000, tien: 0, ts: 0, thue: 0 },
+  { ma: 'NVL002', ten: 'Xương ống bò', dvt: 'kg', dvtChinh: 'kg', tonHt: 31, tonTt: 31, sl: 31, gia: 65000, tien: 0, ts: 0, thue: 0 },
+  { ma: 'NVL008', ten: 'Cà phê hạt Robusta', dvt: 'kg', dvtChinh: 'kg', tonHt: 10, tonTt: 10, sl: 10, gia: 210000, tien: 0, ts: 0, thue: 0 },
+  { ma: 'NVL005', ten: 'Gạo tấm thơm', dvt: 'kg', dvtChinh: 'kg', tonHt: 50, tonTt: 50, sl: 50, gia: 19000, tien: 0, ts: 0, thue: 0 },
+  { ma: 'NVL004', ten: 'Sườn heo', dvt: 'kg', dvtChinh: 'kg', tonHt: 12, tonTt: 12, sl: 12, gia: 145000, tien: 0, ts: 0, thue: 0 },
+  { ma: 'NVL012', ten: 'Dầu ăn', dvt: 'Lít', dvtChinh: 'Lít', tonHt: -3, tonTt: 0, sl: 0, gia: 48000, tien: 0, ts: 0, thue: 0 },
 ]
 
 interface TheHangKhoProps {
@@ -535,56 +538,30 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
     return dsDong.reduce((a, d) => a + (Number(d.tien) || 0), 0)
   }, [dsDong, laKk])
 
-  // Thừa, thiếu và tiến độ đếm cho kiểm kê
-  const { tongThua, tongThieu, soDaDem, dvtThua, dvtThieu } = useMemo(() => {
-    let thua = 0
-    let thieu = 0
-    let dem = 0
-    let lastDvtThua = ''
-    let lastDvtThieu = ''
-
-    for (const d of dsDong) {
-      const daDem = d.tonTt !== undefined && d.tonTt !== null && (d.tonTt as unknown) !== '' && !isNaN(Number(d.tonTt))
-      if (daDem) {
-        dem++
-        const tonHt = Number(d.tonHt ?? 0)
-        const tonTt = Number(d.tonTt)
-        const chenh = Math.round((tonTt - tonHt) * 100) / 100
-        if (chenh > 0) {
-          thua += chenh
-          lastDvtThua = d.dvt || 'kg'
-        } else if (chenh < 0) {
-          thieu += Math.abs(chenh)
-          lastDvtThieu = d.dvt || 'kg'
-        }
-      }
-    }
-
-    return {
-      tongThua: Math.round(thua * 100) / 100,
-      tongThieu: Math.round(thieu * 100) / 100,
-      soDaDem: dem,
-      dvtThua: lastDvtThua || 'kg',
-      dvtThieu: lastDvtThieu || 'kg',
-    }
-  }, [dsDong])
-
-  const tongThuaTxt = tongThua > 0 ? `+${soLuong(tongThua)} ${dvtThua}` : `0 ${dvtThua}`
-  const tongThieuTxt = tongThieu > 0 ? `-${soLuong(tongThieu)} ${dvtThieu}` : `0 ${dvtThieu}`
-
-  const dsChuaDem = useMemo(() => {
-    return dsDong.filter(d => d.tonTt === undefined || d.tonTt === null || (d.tonTt as unknown) === '' || isNaN(Number(d.tonTt)))
-  }, [dsDong])
-  const soChuaDem = dsChuaDem.length
-  const dsTenChuaDem = dsChuaDem.length > 0 ? dsChuaDem.map(d => d.ten).slice(0, 3).join(', ') : ''
+  // Chênh lệch kiểm kê từng dòng: ô bỏ trống tính theo tồn thực tế mặc định (T588)
+  const chenhKk = (d: DongM) => {
+    const tonHt = Number(d.tonHt ?? 0)
+    const daNhap = d.tonTt !== undefined && d.tonTt !== null && (d.tonTt as unknown) !== '' && !isNaN(Number(d.tonTt))
+    return Math.round(((daNhap ? Number(d.tonTt) : tonTtMacDinh(tonHt)) - tonHt) * 100) / 100   // làm tròn 2 số lẻ (T359)
+  }
+  const ttKk = (d: DongM): 'thua' | 'thieu' | 'khop' => {
+    const c = chenhKk(d)
+    return c > 0 ? 'thua' : c < 0 ? 'thieu' : 'khop'
+  }
+  const [locKk, setLocKk] = useState<'tat' | 'thua' | 'thieu' | 'khop'>('tat')
+  const demKk = useMemo(() => {
+    const dem = { tat: dsDong.length, thua: 0, thieu: 0, khop: 0 }
+    for (const d of dsDong) dem[ttKk(d)]++
+    return dem
+  }, [dsDong])   // eslint-disable-line react-hooks/exhaustive-deps
 
   const dsDongKkHienThi = useMemo(() => {
-    if (!timKiemKho.trim()) return dsDong.map((d, idx) => ({ d, originalIndex: idx }))
     const q = fold(timKiemKho.trim())
     return dsDong
       .map((d, idx) => ({ d, originalIndex: idx }))
-      .filter(({ d }) => fold(d.ten).includes(q) || (d.ma && fold(d.ma).includes(q)))
-  }, [dsDong, timKiemKho])
+      .filter(({ d }) => locKk === 'tat' || ttKk(d) === locKk)
+      .filter(({ d }) => !q || fold(d.ten).includes(q) || (d.ma && fold(d.ma).includes(q)))
+  }, [dsDong, timKiemKho, locKk])   // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleTonTtChange = (idx: number, val: string) => {
     const raw = goSoVN(val, true)
@@ -763,7 +740,7 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
             ts: 0,
             thue: 0,
             tonHt: 0,
-            tonTt: undefined,
+            tonTt: 0,
             kho,
             ghiChu: '',
           },
@@ -815,7 +792,7 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
               ts: 0,
               thue: 0,
               tonHt: 0,
-              tonTt: undefined,
+              tonTt: 0,
               kho,
               ghiChu: '',
             })
@@ -932,7 +909,7 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
       }
     }
 
-    // Chuẩn hoá dòng cho kiểm kê: hàng chưa đếm giữ nguyên tồn sổ (tonTt = tonHt), quy về ĐVT chính nếu đang chọn ĐVT quy đổi (T414)
+    // Chuẩn hoá dòng cho kiểm kê: ô tồn thực tế bỏ trống lấy mặc định (tồn hệ thống, âm thì 0, T588), quy về ĐVT chính nếu đang chọn ĐVT quy đổi (T414)
     const dsDongLuu = laKk
       ? dsDong.map(d => {
           const dvtChinh = d.dvtChinh || NVL.find(n => n.ma === d.ma || n.ten === d.ten)?.dvt || HANG.find(h => h.ma === d.ma || h.ten === d.ten)?.dvt || d.dvt || 'kg'
@@ -952,7 +929,7 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
             }
             tonTtLuu = Math.round(num * 10000) / 10000
           } else {
-            tonTtLuu = tonHtLuu
+            tonTtLuu = tonTtMacDinh(tonHtLuu)
           }
 
           return {
@@ -1396,61 +1373,66 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
 
         {/* Thân cuộn */}
         <div className="m-pb-noi-dung">
-          {/* Thẻ tổng quan */}
+          {/* Đầu phiếu theo khung phiếu mua hàng: loại phiếu, kho, cửa hàng (T588) */}
           <div className="m-pb-the m-pb-the-tong-quan">
             <div className="m-pb-hang-chip">
               <span className="m-pb-chip-loai">Kiểm kê định kỳ</span>
-              <span className={`m-pb-chip-tt ${soDaDem === dsDong.length && dsDong.length > 0 ? 'dang' : 'cho'}`}>
-                Đã đếm {soDaDem}/{dsDong.length}
-              </span>
+              <span className="m-pb-chip-tt cho">{dangSua ? 'Đang sửa' : 'Phiếu mới'}</span>
             </div>
-            <label className="f-nhan">Kho kiểm kê <i>*</i></label>
-            <span
-              className="f-o-lon f-chon-lon"
-              id="m-lp-o-kho"
-              onClick={() => (cuaHang ? setMoChonKho(true) : setMoChonCn(true))}
-            >
-              <span>{kho || 'Chọn kho'}</span>
-              <b>›</b>
-            </span>
-            {loiO.kho && <div className="m-lp-loi-o" style={{ color: 'var(--red)' }}>{loiO.kho}</div>}
-
-            <div className="m-pb-dong-cn" onClick={() => setMoLich(true)} style={{ cursor: 'pointer' }}>
+            <div>
+              <label className="m-t449-nhan-ncc">Kho kiểm kê <span className="sao">*</span></label>
+              <div
+                className="m-t449-o-ncc m-kk588-o-kho"
+                id="m-lp-o-kho"
+                onClick={() => (cuaHang ? setMoChonKho(true) : setMoChonCn(true))}
+              >
+                <span className="m-t449-ten-ncc">{kho || 'Chọn kho'}</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2" strokeLinecap="round">
+                  <path d="M9 18l6-6-6-6" />
+                </svg>
+              </div>
+            </div>
+            {loiO.kho && <div className="m-lp-loi-o">{loiO.kho}</div>}
+            <div className="m-pb-dong-cn" onClick={() => { if (!gocData?.cn) setMoChonCn(true) }}>
               <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="1.8" fill="none">
-                <circle cx="12" cy="12" r="9" />
-                <path d="M12 7v5l3 2" />
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                <polyline points="9 22 9 12 15 12 15 22" />
               </svg>
-              <span>Giờ kiểm tự lấy: {thoiGian}</span>
-            </div>
-
-            <div className="m-pb-luoi-stat">
-              <div className="m-pb-o-stat xanh">
-                <div className="m-pb-o-stat-nhan">Thừa</div>
-                <div className="m-pb-o-stat-so xanh">{tongThuaTxt}</div>
-              </div>
-              <div className="m-pb-o-stat do">
-                <div className="m-pb-o-stat-nhan">Thiếu</div>
-                <div className="m-pb-o-stat-so do">{tongThieuTxt}</div>
-              </div>
+              <span>{cuaHang || 'Chọn cửa hàng'}</span>
             </div>
           </div>
 
-          {/* Nhóm Thông tin kiểm kê */}
           <div className="m-pb-nhom">THÔNG TIN KIỂM KÊ</div>
           <div className="m-pb-the m-pb-the-gon">
+            <div className="m-pb-dong" id="m-lp-o-thoiGian" onClick={() => setMoLich(true)}>
+              <span className="n">Ngày kiểm kê <i className="f-sao">*</i></span>
+              <span className="f-gt f-chon">
+                {thoiGian}
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="3" y="5" width="18" height="16" rx="2" />
+                  <path d="M3 10h18M8 3v4M16 3v4" />
+                </svg>
+              </span>
+            </div>
             <div className="m-pb-dong">
               <span className="n">Người kiểm</span>
               <input
-                className="f-gt f-input"
+                className="f-gt f-input m-t449-input-phai"
+                aria-label="Người kiểm"
                 value={nguoiKiem}
                 onChange={e => setNguoiKiem(e.target.value)}
                 placeholder="Nhập người kiểm"
               />
             </div>
             <div className="m-pb-dong">
+              <span className="n">Số chứng từ</span>
+              <span className="f-gt m-kk588-so-ct">{dangSua ? String(row!.so) : soKeTiep(`${mod.key}/${sc.slug}`, `${cfgMan.prefix || 'KK'}2610-`)}</span>
+            </div>
+            <div className="m-pb-dong">
               <span className="n">Diễn giải</span>
               <input
-                className="f-gt f-input"
+                className="f-gt f-input m-t449-input-phai"
+                aria-label="Diễn giải"
                 value={ghiChu}
                 onChange={e => setGhiChu(e.target.value)}
                 placeholder="Nhập diễn giải"
@@ -1458,126 +1440,143 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
             </div>
           </div>
 
-          {/* Nhóm Đếm thực tế */}
-          <div className="m-pb-nhom">ĐẾM THỰC TẾ ({dsDong.length})</div>
-          <div className="f-tim">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <div className="m-pb-nhom">DANH SÁCH HÀNG KIỂM KÊ ({dsDong.length})</div>
+          <div className="m-t449-tim">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2" aria-hidden="true">
               <circle cx="11" cy="11" r="7" />
               <path d="M20 20l-4-4" />
             </svg>
             <input
               type="text"
-              placeholder="Tìm hàng trong kho…"
+              aria-label="Tìm hàng hoá"
+              placeholder="Nhập tên, mã hàng hoá"
               value={timKiemKho}
               onChange={e => setTimKiemKho(e.target.value)}
             />
-            {timKiemKho && (
-              <button type="button" className="f-tim-x" onClick={() => setTimKiemKho('')} aria-label="Xoá tìm kiếm">
-                ✕
+          </div>
+          <div className="m-kk588-loc">
+            {([['tat', 'Tất cả'], ['thua', 'Thừa'], ['thieu', 'Thiếu'], ['khop', 'Khớp']] as const).map(([k, ten]) => (
+              <button key={k} type="button" className={locKk === k ? 'on' : ''} onClick={() => setLocKk(k)}>
+                {ten}<em>{demKk[k]}</em>
               </button>
-            )}
+            ))}
           </div>
 
-          {dsDongKkHienThi.map(({ d, originalIndex }) => {
-            const tonHt = Number(d.tonHt ?? 0)
-            const chuaDem = d.tonTt === undefined || d.tonTt === null || (d.tonTt as unknown) === ''
-            let chipClass = 'khop'
-            let chipTxt = 'Chưa đếm'
-            let chenhClass = ''
-            let chenhTxt = '–'
+          <div id="m-lp-o-hang" className="m-t449-hang-ds">
+            {dsDongKkHienThi.map(({ d, originalIndex }) => {
+              const tonHt = Number(d.tonHt ?? 0)
+              const chenh = chenhKk(d)
+              const tt = ttKk(d)
+              const dvtChinh = d.dvtChinh || NVL.find(n => n.ma === d.ma || n.ten === d.ten)?.dvt || HANG.find(h => h.ma === d.ma || h.ten === d.ten)?.dvt || d.dvt || 'kg'
+              const coQd = s.goi !== 'F' && quyDoiTuDanhMuc(d.ten, dvtChinh).length > 0
+              const dvtHienThi = d.dvt || dvtChinh
+              const strVal = d.strTonTt !== undefined ? d.strTonTt : (d.tonTt === undefined || d.tonTt === null ? '' : String(d.tonTt))
+              const stt = originalIndex + 1
 
-            const dvtChinh = d.dvtChinh || NVL.find(n => n.ma === d.ma || n.ten === d.ten)?.dvt || HANG.find(h => h.ma === d.ma || h.ten === d.ten)?.dvt || d.dvt || 'kg'
-            const dsQd = quyDoiTuDanhMuc(d.ten, dvtChinh)
-            const coQd = s.goi !== 'F' && dsQd.length > 0
-            const dvtHienThi = d.dvt || dvtChinh
-
-            if (!chuaDem) {
-              const tonTt = Number(d.tonTt)
-              const chenh = Math.round((tonTt - tonHt) * 100) / 100
-              if (chenh < 0) {
-                chipClass = 'xuat'
-                chipTxt = `${chenh} ${dvtHienThi}`
-                chenhClass = 'do'
-                chenhTxt = `${chenh}`
-              } else if (chenh > 0) {
-                chipClass = 'nhap'
-                chipTxt = `+${chenh} ${dvtHienThi}`
-                chenhClass = 'xanh'
-                chenhTxt = `+${chenh}`
-              } else {
-                chipClass = 'khop'
-                chipTxt = 'Khớp'
-                chenhClass = ''
-                chenhTxt = '0'
-              }
-            }
-
-            const strVal = d.strTonTt !== undefined ? d.strTonTt : (chuaDem ? '' : String(d.tonTt))
-
-            return (
-              <div
-                key={d.ma || originalIndex}
-                className={`m-pb-the m-pb-muc-dong ${chuaDem ? 'f-chua-dem' : ''}`}
-              >
-                <div className="m-pb-muc-hang1">
-                  <span className="m-pb-muc-ten kk-ten">
-                    <b>{d.ten}</b>
-                    {d.ma && <small>{d.ma}</small>}
-                  </span>
-                  <span className={`chip-kk ${chipClass}`}>{chipTxt}</span>
-                </div>
-                <div className="m-kk-o3 kk4">
-                  <div className="m-kk-o3-item kk-o-dvt">
-                    <span className="m-kk-o3-nhan">ĐVT</span>
-                    {coQd ? (
+              return (
+                <div key={d.ma || originalIndex} className="m-t449-hang-the">
+                  <div className="m-t449-hang-dau">
+                    <div className="m-t449-hang-ten">
+                      {stt}. {d.ten}
+                      {d.ma && <span className="m-t449-hang-ma">-{d.ma}</span>}
+                    </div>
+                    <div className="m-t449-hang-actions">
                       <button
                         type="button"
-                        className="kk-dvt-btn chon"
-                        onClick={() => moChonDvt(originalIndex)}
+                        aria-label={`Xoá mặt hàng ${stt}`}
+                        className="m-t449-btn-xoa-hang"
+                        onClick={() => xoaDong(originalIndex)}
+                        title="Xoá mặt hàng"
                       >
-                        {dvtHienThi} ▾
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true">
+                          <line x1="18" y1="6" x2="6" y2="18" />
+                          <line x1="6" y1="6" x2="18" y2="18" />
+                        </svg>
                       </button>
-                    ) : (
-                      <span className="kk-dvt-btn">{dvtHienThi}</span>
+                    </div>
+                  </div>
+
+                  <div className="m-t449-hang-than">
+                    <div className="m-t449-sheet-dong">
+                      <span className="lbl">Tồn hệ thống:</span>
+                      <span className={`m-t449-val-bold ${tonHt < 0 ? 'm-kk588-am' : ''}`}>{soLuong(tonHt)} {dvtHienThi}</span>
+                    </div>
+                    <div className="m-t449-sheet-dong">
+                      <span className="lbl m-t449-lbl-100">Tồn thực tế:</span>
+                      <div className="m-t449-sheet-inp-wrap">
+                        <input
+                          type="text"
+                          inputMode="decimal"
+                          aria-label={`Tồn thực tế mặt hàng ${stt}`}
+                          value={strVal}
+                          placeholder={soLuong(tonTtMacDinh(tonHt))}
+                          onChange={e => handleTonTtChange(originalIndex, e.target.value)}
+                        />
+                        {coQd ? (
+                          <span className="m-t449-sheet-don-vi" onClick={() => moChonDvt(originalIndex)}>
+                            <span>{dvtHienThi}</span>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+                              <path d="M6 9l6 6 6-6" />
+                            </svg>
+                          </span>
+                        ) : (
+                          <span className="m-t449-sheet-don-vi">{dvtHienThi}</span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="m-t449-sheet-dong">
+                      <span className="lbl">Chênh lệch:</span>
+                      <span className={`m-t449-val-bold m-kk588-cl ${tt}`}>
+                        {chenh > 0 ? `+${soLuong(chenh)}` : soLuong(chenh)} {dvtHienThi}
+                        <span className={`m-kk588-nhan ${tt}`}>{tt === 'thua' ? 'Thừa' : tt === 'thieu' ? 'Thiếu' : 'Khớp'}</span>
+                      </span>
+                    </div>
+                    {tt !== 'khop' && (
+                      <div className="m-t449-sheet-dong">
+                        <span className="lbl">Xử lý:</span>
+                        <span className="m-t449-val-bold m-kk588-xu-ly">{tt === 'thieu' ? 'Xuất điều chỉnh' : 'Nhập điều chỉnh'}</span>
+                      </div>
                     )}
-                  </div>
-                  <div className="m-kk-o3-item">
-                    <span className="m-kk-o3-nhan">Tồn sổ</span>
-                    <span className="m-kk-o3-so">{soLuong(tonHt)}</span>
-                  </div>
-                  <div className="m-kk-o3-item">
-                    <span className="m-kk-o3-nhan">Thực tế *</span>
-                    <input
-                      className="f-o-dem"
-                      value={strVal}
-                      placeholder="Nhập"
-                      inputMode="decimal"
-                      onChange={e => handleTonTtChange(originalIndex, e.target.value)}
-                    />
-                  </div>
-                  <div className="m-kk-o3-item">
-                    <span className="m-kk-o3-nhan">Chênh lệch</span>
-                    <span className={`m-kk-o3-so ${chenhClass}`}>{chenhTxt}</span>
+                    <div className="m-t449-ghi-chu-wrap">
+                      <input
+                        type="text"
+                        aria-label={`Ghi chú mặt hàng ${stt}`}
+                        className="m-t449-ghi-chu-inp"
+                        placeholder="Nhập ghi chú nếu có"
+                        value={d.ghiChu ?? ''}
+                        onChange={e => doiDong(originalIndex, { ghiChu: e.target.value })}
+                      />
+                    </div>
                   </div>
                 </div>
+              )
+            })}
+            {dsDongKkHienThi.length === 0 && dsDong.length > 0 && (
+              <div className="m-kk588-trong">Không có mặt hàng nào ở mục này</div>
+            )}
+
+            <button type="button" className="m-t449-btn-them-hang" onClick={() => setMoChonHang(true)}>
+              + Thêm hàng kiểm kê
+            </button>
+            {loiO.hang && <div className="m-lp-loi-o">{loiO.hang}</div>}
+
+            <div className="m-t449-the-tong">
+              <div className="m-t449-tong-dong">
+                <span>Số mặt hàng chênh lệch:</span>
+                <span className="bold">{demKk.thua + demKk.thieu} mặt hàng</span>
               </div>
-            )
-          })}
-
-          <button
-            type="button"
-            className="f-them"
-            onClick={() => setMoChonHang(true)}
-          >
-            + Thêm hàng kiểm kê
-          </button>
-
-          <p className="f-goi-y">
-            Danh sách lấy sẵn hàng có tồn trong kho. Thêm hàng: chọn hàng chưa có trong danh sách (tồn sổ 0), nhập số đếm thực tế.
-            {soChuaDem > 0
-              ? ` Còn ${soChuaDem} mặt hàng chưa đếm${dsTenChuaDem ? ` (${dsTenChuaDem})` : ''}, lưu vẫn được, hàng chưa đếm giữ nguyên tồn sổ.`
-              : ' Đã đếm xong tất cả mặt hàng trong danh sách.'}
-          </p>
+              <div className="m-t449-gach" />
+              <div className="m-t449-tong-dong">
+                <span>Thừa:</span>
+                <span className="bold">{demKk.thua} mặt hàng</span>
+              </div>
+              <div className="m-t449-gach" />
+              <div className="m-t449-tong-dong">
+                <span>Thiếu:</span>
+                <span className="bold">{demKk.thieu} mặt hàng</span>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Chân ghim đáy */}
