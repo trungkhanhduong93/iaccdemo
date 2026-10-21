@@ -40680,3 +40680,8 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
 .m-nvl-gia-o { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; width: 120px; flex: none; }
 .m-nvl-gia-o .inp { height: 34px; }
 .m-nvl-gia-o small { color: var(--muted); font-size: 11px; }
+
+/* ── Tiến độ kiểm kê điện thoại theo web: tiêu đề cột Kiểm kê lần cuối, bỏ số đã kiểm (T612) ── */
+.m-tcf-tiendo-dau { justify-content: flex-end; padding: 0 0 2px; font-size: 11.5px; font-weight: 600; color: var(--muted); }
+.m-tcf-tiendo-dong .m-tcf-tiendo-ngay,
+.m-tcf-tiendo-dong .m-tcf-tiendo-lech { width: 64px; flex: none; text-align: right; }

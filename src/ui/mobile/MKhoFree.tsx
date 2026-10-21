@@ -198,6 +198,7 @@ export function MKhoFree({ selCns, thang }: { selCns: string[]; thang: number })
         {/* Tiến độ kiểm kê theo cửa hàng */}
         <div className="m-tcf-ds-tieu">TIẾN ĐỘ KIỂM KÊ THEO CỬA HÀNG</div>
         <div style={{ marginTop: 4 }}>
+          <div className="m-tcf-tiendo-dong m-tcf-tiendo-dau"><span>Kiểm kê lần cuối</span></div>
           {kk.theoCn.map(x => (
             <div className="m-tcf-tiendo-dong" key={x.cn}>
               <span className="m-tcf-tiendo-ten">{x.cn.replace(/^Phố Mây /, '')}</span>
@@ -207,7 +208,6 @@ export function MKhoFree({ selCns, thang }: { selCns: string[]; thang: number })
                   style={{ width: `${x.tong ? Math.min(100, (x.soKiem / x.tong) * 100) : 0}%` }}
                 />
               </div>
-              <span className="m-tcf-tiendo-so">{x.soKiem}/{x.tong}</span>
               {x.daKiem ? (
                 <span className="m-tcf-tiendo-ngay" title={`Lần kiểm kê cuối ngày ${x.ngayCuoi}${x.lech ? `, lệch ${x.lech} mặt hàng` : ', khớp sổ sách'}`}>
                   {x.ngayCuoi.slice(0, 5)}

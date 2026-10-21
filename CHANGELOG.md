@@ -2,6 +2,9 @@
 
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
+## 22/10/2026
+- T612: Điện thoại, bấm Thu tiền, Chi tiền ở thao tác nhanh trang chủ hiện menu nhỏ ngay dưới ô, có biểu tượng, chọn Thu tiền mặt hay Thu ngân hàng, giống nút Lập phiếu thu ở Tất cả quỹ. Tiến độ kiểm kê theo cửa hàng (gói Free) có tiêu đề cột Kiểm kê lần cuối và bỏ số mặt hàng đã kiểm, giống web.
+
 ## 21/10/2026
 - T611: Điện thoại: danh sách, báo cáo chỉ ghi ngày tháng, bỏ thứ. Thao tác nhanh Thu tiền, Chi tiền ở trang chủ hỏi chọn Tiền mặt hay Tiền gửi ngân hàng. Chi phí NVL ở trang chủ ghi đúng cách tính của từng cửa hàng; màn chi tiết đổi được cách tính ngay tại chỗ như web, cách Giá thành nhập tay có ô nhập giá thành từng món; bấm một cửa hàng thì bộ lọc cửa hàng và tiêu đề đổi theo cửa hàng đó. Tiến độ kiểm kê ở khối Hao hụt kiểm kê ghi ngày kiểm kê cuối thay cho số lệch. Đang xem Tất cả cửa hàng mà thêm mới chứng từ thì hiện bảng chọn cửa hàng trước, phiếu lập đúng cửa hàng vừa chọn, không còn tự vào một cửa hàng.
 - T605: Gói Free, thẻ chi phí phân bổ (web và điện thoại) chỉ còn loại Chi phí trả trước: ô Loại thẻ, Ghi tăng hàng loạt và danh sách thẻ ẩn Công cụ dụng cụ, Tài sản cố định.
