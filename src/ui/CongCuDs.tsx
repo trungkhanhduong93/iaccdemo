@@ -3,20 +3,10 @@ import { useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { Dropdown, MenuHead, MenuItem, MenuSep } from './Dropdown'
 import { Icon } from './Icon'
+import { IconFigmaSheet } from './IconFigma'
 import { useSession } from '../app/session'
 import { HopXacNhan } from './LocNangCao'
 
-/** Logo Excel màu xanh lá: tờ bảng tính phía sau, khối chữ X phía trước */
-export function LogoExcel() {
-  return (
-    <svg className="ic sm logo-excel" viewBox="0 0 24 24" aria-hidden>
-      <rect x="8" y="3" width="13" height="18" rx="1.6" fill="#fff" stroke="#1f7a46" strokeWidth="1.4" />
-      <path d="M14 7h5M14 10.5h5M14 14h5M14 17.5h5" stroke="#1f7a46" strokeWidth="1.2" />
-      <rect x="2.5" y="6" width="10.5" height="12" rx="1.6" fill="#1f7a46" />
-      <path d="M5.3 9l4.9 6M10.2 9l-4.9 6" stroke="#fff" strokeWidth="1.7" strokeLinecap="round" />
-    </svg>
-  )
-}
 
 export function NutExcel({
   onNhap,
@@ -36,7 +26,7 @@ export function NutExcel({
   children?: (dong: () => void) => ReactNode
 }) {
   return (
-    <Dropdown btnClass="nut-vuong ds-nut-excel" align={align} width={width} title={title} label={label ?? <LogoExcel />}>
+    <Dropdown btnClass="nut-vuong ds-nut-excel" align={align} width={width} title={title} label={label ?? <IconFigmaSheet />}>
       {dong => (children ? children(dong) : <>
         <MenuHead>Excel</MenuHead>
         {onNhap && <MenuItem icon="upload" onClick={() => { onNhap(); dong() }}>Nhập Excel</MenuItem>}
@@ -48,7 +38,13 @@ export function NutExcel({
 
 /** Nút chỉ xuất Excel, cùng biểu tượng với NutExcel; dùng ở màn chỉ xem, vd màn chi tiết mở từ trang chủ gói Free (T232) */
 export function NutXuatExcel({ onXuat }: { onXuat: () => void }) {
-  return <button type="button" className="nut-vuong ds-nut-excel" title="Xuất Excel" aria-label="Xuất Excel" onClick={onXuat}><LogoExcel /></button>
+  return <button type="button" className="nut-vuong ds-nut-excel" title="Xuất Excel" aria-label="Xuất Excel" onClick={onXuat}><IconFigmaSheet /></button>
+}
+
+/** Đổi icon dạng khối/đặc sang icon nét mảnh cùng kiểu trong menu Thêm theo loại (T542) */
+const ICON_NET_MENU: Record<string, string> = {
+  cashin: 'download',
+  cashout: 'upload',
 }
 
 /** Nút "Thêm mới" (T510): 1 lựa chọn → 1 nút xanh đi thẳng tới form; từ 2 loại → nút xanh kèm mũi tên dính liền,
@@ -98,7 +94,7 @@ export function NutThemMoiSplit({
               <MenuItem
                 key={v.k}
                 to={`${basePath}?${thamSo}=${v.k}`}
-                icon={v.icon ?? 'doc'}
+                icon={v.icon ? (ICON_NET_MENU[v.icon] ?? v.icon) : 'doc'}
                 desc={v.prefix ? `Số ${v.prefix}…` : undefined}
                 onClick={dong}
               >

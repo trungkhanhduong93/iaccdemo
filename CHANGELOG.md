@@ -5,6 +5,15 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 ## 21/10/2026
 - T539: Điện thoại, lập chứng từ: danh sách chọn hàng hoá, lý do có nút ⊕ thêm mới và ↻ tải lại thay nút xanh to. Phiếu thu, phiếu chi thêm được lý do ngay tại phiếu, lưu xong chọn luôn. Không còn tạo kho mới ở danh mục Kho và tại phiếu, không tạo quỹ tại phiếu. Phiếu thu, phiếu chi xếp lại ô: Ngày chứng từ, Số phiếu, Quỹ, Lý do, rồi Đối tượng, Địa chỉ, Người giao dịch, Ghi chú. Xem phiếu thu, phiếu chi: menu Thao tác chứng từ bỏ Bỏ ghi sổ và In phiếu; gói Free không còn tab Đính kèm; đầu màn chỉ ghi cửa hàng, bỏ ngày giờ; tab Chi tiết bỏ dòng Quỹ trùng khung quỹ; nhãn Chi phí nằm dưới tên lý do chi, chỉ hiện ở lý do chi phí; nhãn loại phiếu to hơn, nhãn Thủ công/FABi nhỏ cạnh tên cửa hàng, khoảng trống dưới thanh đầu gọn lại, dòng chứng từ liên quan ghi chung là Tham chiếu (cả phiếu kiểm kê), hỏi xoá phiếu là popup nhỏ trên nền phiếu, sửa phiếu không mất lý do, sao chép mang đủ nội dung phiếu gốc, xoá thẻ chi phí mở từ Tham chiếu có hỏi xác nhận, danh sách thu chi nút "Thêm mới" chỉ hiện loại phiếu của tab đang chọn, tab Chi tiết bỏ dòng Số phiếu.
 - T529: Điện thoại, báo cáo: bộ lọc lọc thật dữ liệu, số tổng và tồn tính lại theo điều kiện lọc. Mọi báo cáo có hàng tên và hàng lọc giống Sổ quỹ tiền mặt. Thẻ Tổng cộng danh sách thu chi nền trắng. Sổ quỹ bỏ đường kẻ thừa trên Tồn cuối ngày.
+- T541: Bộ lọc nâng cao: ô Thời gian hiện đủ chữ hai ngày, icon kéo và icon lịch không còn đè lên chữ.
+- T542: Menu nút Thêm mới ở Thu chi: Thu tiền, Chi tiền dùng icon nét mũi tên tải xuống, tải lên.
+- T543: Xuất bán POS: số chứng từ chữ xanh, bấm vào mở chi tiết phiếu.
+- T544: Nút Excel, Xuất Excel, Tuỳ chỉnh cột ở mọi màn dùng chung icon với Thu chi.
+- T545: Hộp Chọn cửa hàng trước khi lập chứng từ theo khung hộp thoại chung.
+- T546: Phiếu mua hàng, ô Chiết khấu: nút chọn kiểu ghi "%" và "đ"; đổi kiểu thì cụm Chiết khấu đứng yên.
+- T547: Chi tiết phiếu: ô ĐVT là ô chọn, chỉ có ĐVT chính và ĐVT quy đổi của mã hàng dòng đó. Dòng chưa chọn mã hàng thì khoá ô.
+- T548: Bảng chi tiết trong form phiếu: hàng tiêu đề và hàng Tổng cộng nền xám đậm hơn.
+- T549: Nút phễu ở màn danh mục: số đếm nằm ở góc nút; ô để giá trị mặc định (vd Trạng thái Đang hoạt động) không tính là đang lọc.
 - T535: Hàng lọc mọi danh sách web: phễu đầu, các ô lọc, nút Lọc cuối. Ô chọn nhiều giữ rộng 220px, chọn nhiều hiện chip tên đầu và +N. Hộp chọn hai ngăn Chưa chọn | Đã chọn có ô tìm riêng mỗi ngăn. Bộ lọc nâng cao xếp lưới 3 cột, ghim ô ra hàng lọc, kéo thả đổi thứ tự.
 - T528: Điện thoại, phiếu mua hàng: chọn hàng xong hiện ngay thẻ điền số lượng, đơn giá, giảm giá, VAT, tổng tiền, ghi chú, có nút nhân bản dòng. Ô % bỏ số 0 đứng đầu. Ô Số hoá đơn, Ký hiệu bỏ gạch dưới.
 - T536: Điện thoại, tab Lịch sử của màn xem phiếu thành dòng thời gian theo ngày: ai làm, lúc nào, trường nào đổi từ gì sang gì. Thẻ ở màn xem và lập phiếu thu chi cách mép 16px, bo 4 góc. Nút quay lại ở thẻ chi phí phân bổ đổi sang mũi tên ←.

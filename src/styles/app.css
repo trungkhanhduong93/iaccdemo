@@ -37768,3 +37768,60 @@ body:has(.m-app) .m-thanh-duoi .m-tab.on .m-tab-ic .ic .l2 {
   .ds-hop[role="alertdialog"] > .ds-hop-than { flex: none !important; padding: 0 16px 16px !important; }
   .ds-hop[role="alertdialog"] > .ds-chan { position: static !important; border-top: 0 !important; padding: 0 16px 16px !important; }
 }
+
+/* ── Bộ lọc nâng cao: ô Thời gian bị icon đè chữ (T541) ── */
+.ds-nc-keo-tay {
+  left: -18px;
+}
+.ds-nc-luoi .ds-o-thoiGian .kn-nut {
+  padding: 0 8px;
+  font-size: 12px;
+  gap: 4px;
+}
+.ds-nc-luoi .ds-o-thoiGian .kn-nut-txt {
+  font-size: 12px;
+  letter-spacing: -0.2px;
+}
+.ds-nc-luoi .ds-o-thoiGian .kn-nut-arr {
+  margin: 0 2px;
+}
+.ds-nc-luoi .ds-o-thoiGian .kn-nut-ic {
+  width: 14px;
+  height: 14px;
+}
+
+/* ── Phiếu mua hàng: ô Chiết khấu áp mọi dòng (T546) ── */
+.ct-ap-pt,
+.ct-ap-tien {
+  width: 130px !important;
+}
+.ct-ap-o > .ct-ap-dv {
+  width: 16px;
+  display: inline-block;
+  text-align: left;
+}
+
+/* ── Bảng chi tiết trong form phiếu: nền tiêu đề và hàng Tổng cộng đậm hơn (T548) ── */
+.fsf .tbl thead {
+  box-shadow: 0 -2px 0 #eef1f5;
+}
+.fsf .tbl thead tr:first-child th,
+.fsf .tbl thead tr:first-child th.dinh {
+  background: #eef1f5 !important;
+}
+.fsf .tbl tfoot tr.sum td,
+.fsf .tbl tr.sum td,
+.fsf .tbl tfoot tr.sum td.dinh,
+.fsf .tbl tr.sum td.dinh {
+  background: #eef1f5 !important;
+}
+
+/* ── Nút phễu Bộ lọc nâng cao ở màn danh mục (T549) ── */
+.ds-btn-pheu-figma {
+  position: relative;
+}
+.ds-btn-pheu-figma .ds-badge-so {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+}

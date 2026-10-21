@@ -453,7 +453,7 @@ export function NutTuyChinhCot({ cols, an, coDinh, macDinh, dongBang = {}, gom, 
   return (
     <>
       <button type="button" className={`nut-vuong ds-nut-cot${mo || dangGom ? ' on' : ''}`} title={title} aria-label={title} onClick={() => setMo(true)}>
-        {icon ?? <Icon n="chinh" className="ic sm" />}
+        {icon ?? <IconFigmaSliders />}
       </button>
       {mo && (
         <HopCot

@@ -308,7 +308,26 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
   const cols: Col[] = [
     { k: 'stt', t: 'STT', w: 46, c: true, dinh: 'trai' },
     { k: 'ngay', t: 'Ngày', w: 100, dinh: 'trai' },
-    { k: 'so', t: 'Số chứng từ', cls: 'code', w: 150, dinh: 'trai' },
+    {
+      k: 'so',
+      t: 'Số chứng từ',
+      cls: 'code',
+      w: 150,
+      dinh: 'trai',
+      r: r => (
+        <button
+          type="button"
+          className="ds-link-so"
+          title={String(r.so ?? '')}
+          onClick={e => {
+            e.stopPropagation()
+            nav(`${path}/${r.id}`)
+          }}
+        >
+          {r.so}
+        </button>
+      ),
+    },
     // T286: Diễn giải là tên món trong phiếu, diễn giải cũ đổi tên Ghi chú
     { k: 'tenHang', t: 'Diễn giải', w: 260, r: r => <span title={String(r._tenHangDu ?? '')}>{r.tenHang}</span> },
     { k: 'dienGiai', t: 'Ghi chú' },

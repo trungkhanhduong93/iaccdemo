@@ -348,7 +348,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
       ),
     }] : []),
     ...(coTrangThai ? [{
-      k: 'trangThai', ten: 'Trạng thái', coGiaTri: Boolean(locDm.nhap.trangThai),
+      k: 'trangThai', ten: 'Trạng thái', coGiaTri: locDm.nhap.trangThai !== 'hd',
       o: (
         <Select className="ds-o-sel" value={locDm.nhap.trangThai} aria-label="Trạng thái" onChange={e => locDm.dat('trangThai', e.target.value as 'hd' | 'ngung' | '')}
           ds={[{ v: 'hd', t: 'Đang hoạt động' }, { v: 'ngung', t: 'Không hoạt động' }, { v: '', t: 'Tất cả' }]} />

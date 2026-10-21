@@ -11,6 +11,7 @@ import { OLoc, dangLoc, dsGiaTri, khopLoc, type GiaTriLoc, type KieuLoc, type Lo
 import { OSoGo } from '../OSoGo'
 import { NHOM_HHDV, type Dong } from './gen'
 import { ThemHangLoat, type HangChon } from './ThemHangLoat'
+import { quyDoiTuDanhMuc } from '../../modules/danh-muc/QuyDoiDvt'
 
 export const DS_DOI_TUONG = Array.from(new Set([
   ...KHACH.map(x => x.ten),
@@ -476,13 +477,28 @@ export function BangSua({
                 )}
                 {dvtCot && (
                   <td>
-                    <input
-                      type="text"
-                      className="inp sm"
-                      value={d.dvt}
-                      placeholder="ĐVT"
-                      onChange={e => capNhat(i, { dvt: e.target.value })}
-                    />
+                    {!d.ma ? (
+                      <Select className="inp sm" disabled value="" ds={[{ v: '', t: '—' }]} aria-label="Đơn vị tính" />
+                    ) : (() => {
+                      const hangTim = danhMucHang.find(h => h.ma === d.ma) ?? hangThem.find(m => m.v === d.ma)
+                      const dvtChinh = (hangTim && 'dvt' in hangTim && hangTim.dvt) ? hangTim.dvt : (d.dvt || '')
+                      const tenHang = d.ten || (hangTim && 'ten' in hangTim ? hangTim.ten : '')
+                      const dsQd = quyDoiTuDanhMuc(tenHang, dvtChinh).map(q => q.dv)
+                      const setDvt = new Set<string>()
+                      if (dvtChinh) setDvt.add(dvtChinh)
+                      dsQd.forEach(dv => setDvt.add(dv))
+                      if (d.dvt) setDvt.add(d.dvt)
+                      const dsDvt = Array.from(setDvt).map(dv => ({ v: dv, t: dv }))
+                      return (
+                        <Select
+                          className="inp sm"
+                          value={d.dvt}
+                          onChange={e => capNhat(i, { dvt: e.target.value })}
+                          ds={dsDvt}
+                          aria-label="Đơn vị tính"
+                        />
+                      )
+                    })()}
                   </td>
                 )}
                 {loCot && (

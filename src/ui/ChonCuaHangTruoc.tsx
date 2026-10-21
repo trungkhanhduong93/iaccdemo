@@ -173,63 +173,62 @@ export const ChonCuaHangTruoc: FC<ChonCuaHangTruocProps> = ({ mo, laMobile = fal
   // Giao diện web: hộp thoại nhỏ giữa màn
   return createPortal(
     <div
-      className="overlay ccht-overlay"
+      className="overlay ds-hop-nen"
       role="dialog"
       aria-modal="true"
       aria-label="Chọn cửa hàng"
+      tabIndex={-1}
       onMouseDown={e => {
         if (e.target === e.currentTarget) onDong()
       }}
     >
-      <div className="ccht-hop chon-cn">
-        <div className="ccht-dau">
-          <div className="ccht-dau-chu">
-            <h3 className="ccht-tieu-de">Chọn cửa hàng</h3>
-            <p className="ccht-mo-ta">Chọn cửa hàng trước khi lập chứng từ mới</p>
-          </div>
-          <button type="button" className="ccht-nut-dong" onClick={onDong} title="Đóng (Esc)" aria-label="Đóng">
+      <div className="ds-hop ds-hop-nho chon-cn">
+        <div className="ds-hop-dau">
+          <b>Chọn cửa hàng</b>
+          <span className="grow" />
+          <button type="button" className="icon-btn sm" onClick={onDong} title="Đóng (Esc)" aria-label="Đóng">
             <Icon n="x" className="ic sm" />
           </button>
         </div>
-        {coTim && (
-          <div className="ccht-tim-wrap">
-            <Icon n="search" className="ic sm ccht-tim-ic" />
-            <input
-              ref={inputRef}
-              type="text"
-              className="ccht-tim-inp"
-              placeholder="Tìm cửa hàng…"
-              value={tuKhoa}
-              onChange={e => setTuKhoa(e.target.value)}
-            />
-            {tuKhoa && (
-              <button type="button" className="ccht-tim-x" onClick={() => setTuKhoa('')} aria-label="Xoá tìm kiếm">
-                <Icon n="x" className="ic sm" />
+        <div className="ds-hop-than">
+          <p className="muted" style={{ margin: '0 0 10px' }}>Chọn cửa hàng trước khi lập chứng từ mới</p>
+          {coTim && (
+            <div className="ds-tim-cot" style={{ margin: '0 0 10px' }}>
+              <Icon n="search" className="ic sm" />
+              <input
+                ref={inputRef}
+                type="text"
+                placeholder="Tìm cửa hàng…"
+                value={tuKhoa}
+                onChange={e => setTuKhoa(e.target.value)}
+              />
+              {tuKhoa && (
+                <button type="button" className="icon-btn sm" onClick={() => setTuKhoa('')} aria-label="Xoá tìm kiếm" style={{ border: 0, background: 'none', cursor: 'pointer', padding: 0 }}>
+                  <Icon n="x" className="ic sm" />
+                </button>
+              )}
+            </div>
+          )}
+          <div className="chon-cn-ds" style={{ maxHeight: 300, overflowY: 'auto' }}>
+            {dsLoc.map(c => (
+              <button
+                key={c.id}
+                type="button"
+                className="btn"
+                onClick={() => onChon(c.id)}
+              >
+                <Icon n="cuahang" className="ic sm" />
+                <span>{c.ten}</span>
               </button>
+            ))}
+            {dsLoc.length === 0 && (
+              <div className="muted" style={{ padding: '16px 0', textAlign: 'center' }}>Không tìm thấy cửa hàng</div>
             )}
           </div>
-        )}
-        <div className="ccht-ds chon-cn-ds">
-          {dsLoc.map(c => (
-            <button
-              key={c.id}
-              type="button"
-              className="btn ccht-muc"
-              onClick={() => onChon(c.id)}
-            >
-              <div className="ccht-muc-ic">
-                <Icon n="cuahang" className="ic sm" />
-              </div>
-              <span className="ccht-muc-ten">{c.ten}</span>
-              <Icon n="chevr" className="ic sm ccht-muc-mui-ten" />
-            </button>
-          ))}
-          {dsLoc.length === 0 && (
-            <div className="ccht-trong">Không tìm thấy cửa hàng</div>
-          )}
         </div>
-        <div className="ccht-chan">
-          <button type="button" className="btn ccht-btn-huy" onClick={onDong}>
+        <div className="ds-chan">
+          <span className="grow" />
+          <button type="button" className="btn" onClick={onDong}>
             Huỷ
           </button>
         </div>
