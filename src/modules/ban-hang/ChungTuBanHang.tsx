@@ -25,7 +25,6 @@ import {
 } from '../../ui/LocNangCao'
 import { HopInChungTu, type PhieuIn } from '../../ui/bao-cao/InChungTu'
 import { TT_CT, tomTatTenHang } from '../../ui/generic/gen'
-import { DaiTong } from '../../ui/generic/ChungTuForm'
 import { HopCotPhieu } from '../../ui/generic/BangSua'
 import { DS_PTTT } from '../danh-muc/data'
 import { giamThueHkd } from './giam-thue'
@@ -139,6 +138,22 @@ export function chiaTheo(tong: number, ty: number[], tron = 1000) {
     return v
   })
 }
+/** Khách lấy hoá đơn GTGT trên đơn POS (mẫu, T613) */
+const KHACH_VAT = [
+  { ten: 'HỘ KINH DOANH NGUYỄN THỊ MAI TRANG 83', diaChi: '16 Tuệ Tĩnh, Phường Hai Bà Trưng, Thành phố Hà Nội', mst: '001183043719', nguoiMua: 'Nguyễn Văn An' },
+  { ten: 'CÔNG TY TNHH THƯƠNG MẠI MINH PHÁT', diaChi: '25 Lý Thường Kiệt, Phường Cửa Nam, Thành phố Hà Nội', mst: '0108765432', nguoiMua: 'Trần Thu Hà' },
+  { ten: 'CÔNG TY CỔ PHẦN TRUYỀN THÔNG SAO VIỆT', diaChi: '88 Láng Hạ, Phường Láng, Thành phố Hà Nội', mst: '0105123987', nguoiMua: 'Lê Minh Quân' },
+]
+/** Thông tin đơn POS của một hoá đơn FABi (T613): số đơn trên bill theo thứ tự trong ngày; khoảng một phần ba đơn khách lấy hoá đơn GTGT */
+export function donPosCua(x: XPos) {
+  const r = rng(`hd-${x.seed}`)
+  const soDon = String(Number(x.seed.split('-').pop()) + 1).padStart(4, '0')
+  if (x.loai !== 'don' || r() > 0.35) return { soDon, khach: null, hoaDon: null }
+  const khach = KHACH_VAT[Math.floor(r() * KHACH_VAT.length)]
+  const nam = String(x.date.getFullYear()).slice(2)
+  const maTraCuu = `MANAGER_${1000000 + Math.floor(r() * 9000000)}${Array.from({ length: 10 }, () => KT_FABI[Math.floor(r() * KT_FABI.length)]).join('')}`
+  return { soDon, khach, hoaDon: { so: String(1 + Math.floor(r() * 9999)).padStart(8, '0'), kyHieu: `1C${nam}TPM`, ngay: dmy(x.date), maTraCuu } }
+}
 /** Tổng hợp theo kênh: tại quán, mang về chia phần thu tại quầy 70/30; app giao đồ ăn theo tiền app */
 export function theoKenh(x: NgayPOS): XPos[] {
   const tt = x.tm + x.ck + x.the + x.app || 1
@@ -182,7 +197,7 @@ export function ChungTuBanHang({ sc, mod }: ScreenProps) {
     .map((x, i) => ({
       id: String(i), so: soFabi(`fabi-${x.seed}`), ngay: `${dmy(x.date)} ${x.gio}`, thang: x.date.getMonth() + 1, cn: cnTen(x.cn), x, kenh: x.kenh,
       dienGiai: x.loai === 'don' ? `Hoá đơn FABi ${x.kenh.toLowerCase()} ${x.gio} ngày ${dmy(x.date).slice(0, 5)}` : `Doanh thu ${x.kenh.toLowerCase()} ${x.don} đơn POS ngày ${dmy(x.date).slice(0, 5)}`,
-      doiTuong: 'Khách lẻ POS',
+      doiTuong: donPosCua(x).khach?.ten ?? 'Khách lẻ POS',
       tenHang: tomTatTenHang(monCua(x).map(m => m.ten)), _tenHangDu: [...new Set(monCua(x).map(m => m.ten))].join(', '),   // cột Diễn giải là tên món trong phiếu (T286)
       // GTGT theo % doanh thu: không tiền thuế, tổng tiền = doanh thu − giảm thuế GTGT (T163)
       tien: x.dt, thue: tyLe ? 0 : x.vat, giamThue: tyLe ? giamThueHkd(x.dt) : 0, tong: tyLe ? x.dt - giamThueHkd(x.dt) : x.dt + x.vat, nguon: 'FABi', tt: i < 3 ? 'nhap' : 'ghi',
@@ -588,11 +603,23 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
   }
   const x = tyLe ? ttHkd(row.x) : row.x
   const kieu = kieuGhiSo(s.cheDo)
-  // phiếu giảm giá áp cho cả đơn nên ở dải đáy; chiết khấu đã thành cột trên dòng; dữ liệu mẫu bằng 0 (T106)
-  const phieuGiam = 0
-  // GTGT theo % doanh thu: tổng tiền = doanh thu − giảm thuế GTGT, không cộng tiền thuế (T163)
+  // Chân phiếu dạng phép tính (T613), cộng từ đúng các dòng Hàng bán nên khớp dòng Tổng cộng của lưới
+  const cong = (k: 'thanh' | 'giam' | 'ck' | 'phiDv' | 'phiVc' | 'dtTruocThue') => dongCuaPhieu(x).reduce((a, d) => a + d[k], 0)
+  const dtTinhThue = cong('dtTruocThue'), phiVc = cong('phiVc')
+  // GTGT theo % doanh thu: tổng thanh toán = doanh thu − giảm thuế GTGT, không cộng tiền thuế (T163); khấu trừ cộng thuế GTGT
   const giamThue = tyLe ? giamThueHkd(x.dt) : 0
-  const tong = tyLe ? x.dt - giamThue - phieuGiam : x.dt + x.vat - phieuGiam
+  const tong = tyLe ? dtTinhThue - giamThue : dtTinhThue + x.vat
+  const phepTinh: [string, string, number][] = [
+    ['', 'Tiền hàng', cong('thanh')], ['−', 'Giảm giá', cong('giam')], ['−', 'Chiết khấu', cong('ck')], ['+', 'Phí dịch vụ', cong('phiDv')],
+    ...(phiVc ? [['+', 'Phí vận chuyển', phiVc] as [string, string, number]] : []),
+  ]
+  const dp = donPosCua(x as XPos)
+  const [daChep, setDaChep] = useState(false)
+  const chepMa = (ma: string) => {
+    navigator.clipboard?.writeText(ma).then(() => toast('Đã chép mã tra cứu'), () => toast('Trình duyệt chặn sao chép, chọn mã rồi chép tay'))
+    setDaChep(true)
+    setTimeout(() => setDaChep(false), 1500)
+  }
   const pttt = PTTT.filter(([k]) => Number(x[k]) > 0).map(([, t]) => t).join(', ')
   const kenh = (x as XPos).kenh ?? (x.app > 0 ? 'Tại quán, Mang về, App giao đồ ăn' : 'Tại quán, Mang về')
   // In: bảng kê lấy đúng các món của chứng từ, không sinh dòng giả
@@ -600,16 +627,11 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
     sc, row, cfg: NGOAI_POS,
     dong: dongCuaPhieu(x).map(d => ({ stt: d.stt, ma: d.ma, ten: d.ten, dvt: d.dvt, sl: d.sl, gia: d.gia, tien: d.tien, thue: d.thue, ts: d.ts })),
   }])
-  const [cTt, tTt] = kieu === 'khong' ? ['ok', 'Đã đồng bộ'] : TT_CT[row.tt] ?? ['warn', 'Chưa ghi sổ']
+  // Phiếu đồng bộ xong từ FABi ghi "Đã đồng bộ" thay cho "Đã ghi sổ" (T613)
+  const [cTt, tTt] = kieu === 'khong' || row.tt === 'ghi' ? ['ok', 'Đã đồng bộ'] : TT_CT[row.tt] ?? ['warn', 'Chưa ghi sổ']
   return (
     <FormToanMan icon={mod.icon} iconNet onClose={dong0} title="Xuất bán POS"
-      footClass="fsf-f-xem"
-      // Chân phiếu lấy Mua hàng làm chuẩn (T558): các khoản bên trái, Tổng tiền bên phải
-      day={<DaiTong tong={tong} muc={[
-        ['Tiền hàng', x.dt],
-        ...(tyLe ? [['Giảm thuế GTGT', -giamThue] as [string, number]] : [['Tiền thuế GTGT', x.vat] as [string, number]]),
-        ['Phiếu giảm giá', phieuGiam ? -phieuGiam : 0],
-      ]} />}
+      footClass="fsf-f-xem fsf-f-pos"
       giua={<span className="fsf-tt xem">Chi tiết phiếu <b>{row.so}</b></span>}
       meta={<><St k={cTt}>{tTt}</St><span className="src">FABi</span><span className="chip info"><Icon n="cuahang" className="ic sm" />{row.cn}</span></>}
       // Tuỳ chỉnh giao diện: nút vuông nhỏ ở góc trên phải như form chứng từ khác (T297)
@@ -630,6 +652,27 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
             <span>In phiếu</span>
           </button>
         </div>
+        {/* Dải phép tính giữa nút In phiếu và Đóng; màn hẹp lên hàng riêng (T613) */}
+        <div className="pos-phep">
+          {phepTinh.map(([dau, nhan, so]) => (
+            <span key={nhan} className="pos-phep-cum">
+              {dau && <span className="pos-phep-dau">{dau}</span>}
+              <span className="pos-phep-o"><small>{nhan}</small><b>{money(so)}</b></span>
+            </span>
+          ))}
+          <span className="pos-phep-cum">
+            <span className="pos-phep-dau">=</span>
+            <span className="pos-phep-o nen"><small>Doanh thu tính thuế</small><b>{money(dtTinhThue)}</b></span>
+          </span>
+          <span className="pos-phep-cum">
+            <span className="pos-phep-dau">{tyLe ? '−' : '+'}</span>
+            <span className="pos-phep-o"><small>{tyLe ? 'Giảm trừ thuế' : 'Thuế GTGT'}</small><b>{money(tyLe ? giamThue : x.vat)}</b></span>
+          </span>
+          <span className="pos-phep-cum">
+            <span className="pos-phep-dau">=</span>
+            <span className="pos-phep-o tong"><small>Tổng thanh toán</small><b>{moneyD(tong)}</b></span>
+          </span>
+        </div>
         <div className="xp-footer-phai">
           <button type="button" className="xp-btn-outline" onClick={dong0}>
             Đóng (Esc)
@@ -638,19 +681,57 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
       </>}>
       <div className="stack ct-co-dinh" style={{ gap: 14 }}>
         <p className="pos-nhac"><Icon n="info" className="ic sm" />Chứng từ đồng bộ từ FABi: không sửa, trả hàng, xoá trên phiếu này. Sửa đơn trên FABi rồi đồng bộ lại.</p>
-        {/* Đầu phiếu chỉ xem nên dạng thông tin gọn: nhãn nhỏ, giá trị, 4 cột × 2 hàng, để bảng chi tiết rộng hơn (T106) */}
-        <section className="card pos-dau">
-          {/* Kho xuất đứng đầu như phiếu mua hàng: kho mặc định của cửa hàng bán (T248) */}
-          <div><small>Kho xuất</small><b>{CUA_HANG.find(c => c.ten === row.cn)?.kho[0] ?? ''}</b></div>
-          <div><small>Khách hàng</small><b>Khách lẻ POS</b></div>
-          {/* Hoá đơn có một cách thanh toán; chứng từ tổng hợp theo kênh gộp nhiều cách nên bỏ (T116) */}
-          {(x as XPos).loai === 'don' && <div><small>Phương thức thanh toán</small><b title={pttt}>{pttt}</b></div>}
-          <div><small>Ngày chứng từ</small><b>{dmy(x.date)}</b></div>
-          <div><small>{(x as XPos).loai === 'don' ? 'Số chứng từ (số hoá đơn FABi)' : 'Số chứng từ'}</small><b className="code">{row.so}</b></div>
-          <div><small>Kênh bán hàng</small><b title={kenh}>{kenh}</b></div>
-          <div><small>Thời gian xuất</small><b>{dmy(x.date)} {(x as XPos).gio ?? '23:30'}</b></div>
-          {/* Ghi chú một ô (không kéo 2 cột) để đầu phiếu giữ 2 hàng khi có thêm Kho xuất (T248) */}
-          <div><small>Ghi chú</small><b title={String(row.dienGiai)}>{row.dienGiai}</b></div>
+        {/* Đầu phiếu 3 cụm theo bảng B canvas (T613): Đơn hàng POS, Thông tin khách hàng, Hoá đơn; ghi chú dòng dưới cùng */}
+        <section className="card pos-dau3">
+          <div className="pd-cum">
+            <div className="pd-tieu">ĐƠN HÀNG POS</div>
+            <div className="pd-luoi">
+              <div><small>Mã đơn POS</small><b className="code">{row.so}</b></div>
+              <div><small>Số đơn POS</small><b className="code">{dp.soDon}</b></div>
+              <div><small>Cửa hàng</small><b title={String(row.cn)}>{row.cn}</b></div>
+              <div><small>Kênh bán hàng</small><b title={kenh}>{kenh}</b></div>
+              {/* Hoá đơn có một cách thanh toán; chứng từ tổng hợp theo kênh gộp nhiều cách nên bỏ (T116) */}
+              {(x as XPos).loai === 'don' && <div><small>Phương thức thanh toán</small><b title={pttt}>{pttt}</b></div>}
+              <div><small>Thời gian xuất</small><b>{dmy(x.date)} {(x as XPos).gio ?? '23:30'}</b></div>
+            </div>
+          </div>
+          <div className="pd-cum">
+            <div className="pd-tieu">THÔNG TIN KHÁCH HÀNG</div>
+            <div><small>Khách hàng</small><b className="pd-khach">{dp.khach?.ten ?? 'Khách lẻ POS'}</b></div>
+            {dp.khach && <>
+              <div><small>Địa chỉ</small><span>{dp.khach.diaChi}</span></div>
+              <div className="pd-luoi">
+                <div><small>Mã số thuế</small><b className="code">{dp.khach.mst}</b></div>
+                <div><small>Người mua hàng</small><b>{dp.khach.nguoiMua}</b></div>
+              </div>
+            </>}
+          </div>
+          <div className="pd-cum pd-hd">
+            <div className="pd-tieu">HOÁ ĐƠN</div>
+            {dp.hoaDon ? (
+              <div className="pd-luoi">
+                <div><small>Số hoá đơn</small><b className="code">{dp.hoaDon.so}</b></div>
+                <div><small>Ký hiệu</small><b className="code">{dp.hoaDon.kyHieu}</b></div>
+                <div><small>Ngày hoá đơn</small><b>{dp.hoaDon.ngay}</b></div>
+                <div><small>Ngày chứng từ</small><b>{dmy(x.date)}</b></div>
+                <div className="pd-c2"><small>Mã tra cứu</small>
+                  <span className="pd-ma">
+                    <b className="code">{dp.hoaDon.maTraCuu}</b>
+                    <button type="button" className={`pd-chep${daChep ? ' da' : ''}`} onClick={() => chepMa(dp.hoaDon!.maTraCuu)}
+                      title={daChep ? 'Đã chép mã tra cứu' : 'Sao chép mã tra cứu'} aria-label="Sao chép mã tra cứu">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2" /><path d="M5 15V5a1 1 0 0 1 1-1h10" /></svg>
+                    </button>
+                  </span>
+                </div>
+              </div>
+            ) : (
+              <div className="pd-luoi">
+                <div><small>Ngày chứng từ</small><b>{dmy(x.date)}</b></div>
+                <div className="pd-c2"><small className="pd-trong">Khách không lấy hoá đơn GTGT</small></div>
+              </div>
+            )}
+          </div>
+          <div className="pd-ghichu"><small>Ghi chú</small><span title={String(row.dienGiai)}>{row.dienGiai}</span></div>
         </section>
         <section className="card ct-than-card">
           <div className="tabs">
