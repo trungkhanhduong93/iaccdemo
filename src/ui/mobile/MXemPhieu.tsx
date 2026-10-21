@@ -426,18 +426,22 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
   }
 
   // Menu ba chấm
-  const dsMenu = [
-    ...(nhomMb === 'mua' ? [{ k: 'lichsu_tt', ten: 'Lịch sử thanh toán' }] : []),
-    ...(!laDc && nhomMb !== 'mua' ? [{ k: 'sua', ten: 'Sửa chứng từ' }] : []),
-    ...(!laDc ? [{ k: 'copy', ten: 'Sao chép chứng từ' }] : []),
-    ...(!laDc ? [{ k: 'xoa', ten: 'Xoá chứng từ' }] : []),
-  ]
+  const dsMenu = laDc
+    ? [{ k: 'excel', ten: 'Xuất Excel' }]   // phiếu điều chỉnh chỉ xuất Excel (T603)
+    : [
+        ...(nhomMb === 'mua' ? [{ k: 'lichsu_tt', ten: 'Lịch sử thanh toán' }] : []),
+        ...(nhomMb !== 'mua' ? [{ k: 'sua', ten: 'Sửa chứng từ' }] : []),
+        { k: 'copy', ten: 'Sao chép chứng từ' },
+        { k: 'xoa', ten: 'Xoá chứng từ' },
+      ]
 
   const handleMenuChon = (k: string) => {
     if (k === 'lichsu_tt') {
       setMoLichSuTt(true)
     } else if (k === 'sua') {
       moSua()
+    } else if (k === 'excel') {
+      toast('Đã xuất Excel')
     } else if (k === 'thanhtoan') {
       setMoThanhToan(true)
     } else if (k === 'copy') {
@@ -739,10 +743,12 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
               <polyline points="9 22 9 12 15 12 15 22" />
             </svg>
             <span>{cuaHangTen}</span>
+            {/* Phiếu điều chỉnh: nguồn chứng từ cạnh cửa hàng như xem thu chi (T603) */}
+            {laDc && <span className="m-tc-badge-nguon m-tc-xem-nguon">{NGUON[row.nguon]?.[1] ?? 'Thủ công'}</span>}
           </div>
 
           {/* Số tiền lớn */}
-          {laTien ? (
+          {laDc ? null : laTien ? (
             <div>
               <div className="m-pb-nhan-gt">{chieu === 'vao' ? 'Số tiền thu' : 'Số tiền chi'}</div>
               <div className={`m-pb-so-gt${chieu === 'ra' ? ' cam' : ''}`}>
@@ -788,7 +794,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
                 </div>
               </div>
             </div>
-          ) : (
+          ) : laDc ? null : (
             <div className="m-pb-luoi-stat">
               <div className="m-pb-o-stat da">
                 <div className="m-pb-o-stat-nhan">Cửa hàng</div>
@@ -1127,23 +1133,36 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
                       <span className="g">{kho}</span>
                     </div>
                   )}
-                  {(row.dienGiai || row._ghiChu) && (
+                  {/* Phiếu điều chỉnh: tham chiếu về phiếu kiểm kê gốc (T603) */}
+                  {laDc && row._thamChieu && (
                     <div className="m-pb-dong">
-                      <span className="n">Diễn giải</span>
+                      <span className="n">Tham chiếu</span>
+                      <Link to={String(row._thamChieuDi)} className="g link" style={{ color: 'var(--blue)', textDecoration: 'none' }}>
+                        {String(row._thamChieu)}
+                      </Link>
+                    </div>
+                  )}
+                  {(row.dienGiai || row._ghiChu) && (
+                    // Phiếu điều chỉnh: Ghi chú xuống dòng riêng, cách xa dòng trên (T603)
+                    <div className={`m-pb-dong${laDc ? ' m-t603-ghi-chu' : ''}`}>
+                      <span className="n">{laDc ? 'Ghi chú' : 'Diễn giải'}</span>
                       <span className="g">{String(row.dienGiai || row._ghiChu)}</span>
                     </div>
                   )}
                 </div>
                 <div className="m-pb-nhom">DANH SÁCH CHI TIẾT ({dsDong.length})</div>
                 {dsDong.map((d, idx) => (
-                  <div key={idx} className="m-pb-the m-pb-muc-dong">
+                  <div key={idx} className={`m-pb-the m-pb-muc-dong${laDc ? ' m-t603-dc' : ''}`}>
                     <div className="m-pb-muc-hang1">
                       <span className="m-pb-muc-ten">{d.ten || 'Mặt hàng'}</span>
-                      <b className="m-pb-muc-tong">{money(d.tien || 0)} đ</b>
+                      {/* Phiếu điều chỉnh chỉ có số lượng, không đơn giá, số tiền (T603) */}
+                      <b className="m-pb-muc-tong">{laDc ? `${soLuong(d.sl ?? 0)} ${d.dvt || ''}`.trim() : `${money(d.tien || 0)} đ`}</b>
                     </div>
-                    <div className="m-pb-muc-hang2">
-                      <span>{d.sl ?? 0} {d.dvt || ''} × {money(d.gia ?? 0)}</span>
-                    </div>
+                    {!laDc && (
+                      <div className="m-pb-muc-hang2">
+                        <span>{d.sl ?? 0} {d.dvt || ''} × {money(d.gia ?? 0)}</span>
+                      </div>
+                    )}
                   </div>
                 ))}
               </>
