@@ -40800,6 +40800,8 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
   background: var(--faint);
   margin: 8px auto 0;
   flex-shrink: 0;
+}
+
 
 /* ── Chi tiết Xuất bán POS theo bảng B canvas: đầu phiếu 3 cụm, chân phiếu dạng phép tính (T613) ── */
 .pos-dau3 { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(0, 1.55fr) minmax(0, 1.15fr); padding: 0; overflow: hidden; }
