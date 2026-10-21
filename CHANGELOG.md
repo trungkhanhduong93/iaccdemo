@@ -3,6 +3,9 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 21/10/2026
+- T551: Điện thoại, danh sách Thu chi: thẻ tổng ghi đủ Tổng thu, Tổng chi, bỏ số tổng gộp.
+- T553: Điện thoại, sổ S1a-HKD: phần báo cáo có thẻ tiêu đề kèm Tổng cộng, doanh thu theo ngày. Nút Xuất báo cáo ra Excel ở đáy màn.
+- T554: Điện thoại, danh sách chứng từ mua hàng: thẻ tổng, nhóm theo ngày kèm tổng ngày, mỗi dòng có số hàng hoá và nhà cung cấp.
 - T539: Điện thoại, lập chứng từ: danh sách chọn hàng hoá, lý do có nút ⊕ thêm mới và ↻ tải lại thay nút xanh to. Phiếu thu, phiếu chi thêm được lý do ngay tại phiếu, lưu xong chọn luôn. Không còn tạo kho mới ở danh mục Kho và tại phiếu, không tạo quỹ tại phiếu. Phiếu thu, phiếu chi xếp lại ô: Ngày chứng từ, Số phiếu, Quỹ, Lý do, rồi Đối tượng, Địa chỉ, Người giao dịch, Ghi chú. Xem phiếu thu, phiếu chi: menu Thao tác chứng từ bỏ Bỏ ghi sổ và In phiếu; gói Free không còn tab Đính kèm; đầu màn chỉ ghi cửa hàng, bỏ ngày giờ; tab Chi tiết bỏ dòng Quỹ trùng khung quỹ; nhãn Chi phí nằm dưới tên lý do chi, chỉ hiện ở lý do chi phí; nhãn loại phiếu to hơn, nhãn Thủ công/FABi nhỏ cạnh tên cửa hàng, khoảng trống dưới thanh đầu gọn lại, dòng chứng từ liên quan ghi chung là Tham chiếu (cả phiếu kiểm kê), hỏi xoá phiếu là popup nhỏ trên nền phiếu, sửa phiếu không mất lý do, sao chép mang đủ nội dung phiếu gốc, xoá thẻ chi phí mở từ Tham chiếu có hỏi xác nhận, danh sách thu chi nút "Thêm mới" chỉ hiện loại phiếu của tab đang chọn, tab Chi tiết bỏ dòng Số phiếu.
 - T529: Điện thoại, báo cáo: bộ lọc lọc thật dữ liệu, số tổng và tồn tính lại theo điều kiện lọc. Mọi báo cáo có hàng tên và hàng lọc giống Sổ quỹ tiền mặt. Thẻ Tổng cộng danh sách thu chi nền trắng. Sổ quỹ bỏ đường kẻ thừa trên Tồn cuối ngày.
 - T541: Bộ lọc nâng cao: ô Thời gian hiện đủ chữ hai ngày, icon kéo và icon lịch không còn đè lên chữ.
