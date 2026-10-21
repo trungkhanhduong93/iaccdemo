@@ -8,6 +8,10 @@ import { Icon } from '../Icon'
 import { RptTable } from '../generic/ReportScreen'
 import { useTrangThaiLoc } from '../bao-cao/tuyChinhBC'
 import { layKhuonDong, MBaoCaoDong, type LoaiKhuonDong } from './MBaoCaoDong'
+import { MBaoCaoDau } from './MBaoCaoDau'
+import { MBaoCaoLoc } from './MBaoCaoLoc'
+import { docNgay } from '../ChonNgay'
+import { dinhDangKyMobile, ngayCuoiThang, useKhoangNgayMobile } from './kyBaoCaoMobile'
 import { cotMobile, useBangMauA } from './bangMauA'
 import { tinhPhanTrang, ThanhPhanTrangM } from './phanTrangM'
 import { dongKqkd, truoc } from '../../modules/tong-hop/BaoCaoTaiChinh'
@@ -74,7 +78,14 @@ export const MToGiay: FC<ScreenProps> = ({ sc, mod }) => {
 
   const path = useLocation().pathname
   const { loc: locStore, daXem } = useTrangThaiLoc(path)
+  const [hienTim, setHienTim] = useState(false)
+  const [moLoc, setMoLoc] = useState(false)
   const cn = cuaHangHienTai(s)
+  const knMobile = useKhoangNgayMobile(path, daXem?.ky)
+  const tenKy = useMemo(() => {
+    return dinhDangKyMobile(knMobile.tu, knMobile.den, daXem?.ky || params.get('ky') || '9')
+  }, [knMobile, daXem, params])
+  const tenCn = cn ? (cn.ngan ?? cn.ten) : 'Tất cả'
   // Gói Free mỗi cửa hàng một kho: lọc Kho đi theo cửa hàng đang chọn (T412)
   const dsKhoCuaHang = useMemo(() => cn ? cn.kho : CUA_HANG.flatMap(c => c.kho), [cn])
 
@@ -87,20 +98,66 @@ export const MToGiay: FC<ScreenProps> = ({ sc, mod }) => {
     const locKho = locStore?.locKho ?? []
 
     if (is521) {
-      const khoStr = params.get('kho') || (locKho.length === 1 ? locKho[0] : (dsKhoCuaHang[0] || KHO[1]))
+      const locKhoList = (locStore?.locKho?.length ? locStore.locKho : (locStore?.kho?.length ? locStore.kho : []))
+      const khoStr = params.get('kho') || (locKhoList.length === 1 ? locKhoList[0] : (dsKhoCuaHang[0] || KHO[1]))
       const maStr = params.get('ma') || HANG_XNT[0].ma
       const the = theKho(kyNum, khoStr, maStr)
-      return { rowsDong: the.rows, colsDong: the.cols }
+
+      const tuDate = docNgay(knMobile.tu)
+      const denDate = docNgay(knMobile.den)
+      const tuTime = tuDate.getTime()
+      const denTime = denDate.getTime()
+
+      let tonDau = the.rows[0]?.ton ?? 0
+      const chiTiet = the.rows.filter(r => !r._b && !r._t)
+      for (const r of chiTiet) {
+        const d = docNgay(String(r.ngay).split(' ')[0])
+        if (!isNaN(d.getTime()) && d.getTime() < tuTime) {
+          tonDau += (Number(r.nhap) || 0) - (Number(r.xuat) || 0)
+        }
+      }
+
+      let runningTon = tonDau
+      let tongNhap = 0
+      let tongXuat = 0
+      const rowsTrongKy: Row[] = []
+      for (const r of chiTiet) {
+        const d = docNgay(String(r.ngay).split(' ')[0])
+        const t = d.getTime()
+        if (isNaN(t) || (t >= tuTime && t <= denTime)) {
+          const nh = Number(r.nhap) || 0
+          const xu = Number(r.xuat) || 0
+          tongNhap += nh
+          tongXuat += xu
+          runningTon += nh - xu
+          rowsTrongKy.push({ ...r, ton: runningTon })
+        }
+      }
+
+      const rowsLoc = [
+        { ...the.rows[0], ton: tonDau },
+        ...rowsTrongKy,
+        { dg: 'Cộng phát sinh', nhap: tongNhap, xuat: tongXuat, _t: 1 },
+        { dg: 'Tồn cuối kỳ', ton: runningTon, _t: 1, _z: 1 },
+      ]
+      return { rowsDong: rowsLoc, colsDong: the.cols }
     }
 
     if (is523) {
-      const dsKho = params.get('kho') ? [params.get('kho')!] : (locKho.length > 0 ? locKho : dsKhoCuaHang)
-      const rawXnt = xnt(kyNum, dsKho, dsKhoCuaHang)
+      const locKhoList = (locStore?.locKho?.length ? locStore.locKho : (locStore?.kho?.length ? locStore.kho : []))
+      const dsKho = params.get('kho') ? [params.get('kho')!] : (locKhoList.length > 0 ? locKhoList : dsKhoCuaHang)
+      let rawXnt = xnt(kyNum, dsKho, dsKhoCuaHang)
+      if (locStore?.hang?.length) {
+        rawXnt = rawXnt.filter(h => locStore.hang.includes(String(h.ten || h.ma)))
+      }
+      if (locStore?.nhomHang?.length) {
+        rawXnt = rawXnt.filter(h => locStore.nhomHang.includes(String((h as any).nhom || '')))
+      }
       const sumGt0 = rawXnt.reduce((a, x) => a + (Number(x.gt0) || 0), 0)
       const sumGtn = rawXnt.reduce((a, x) => a + (Number(x.gtn) || 0), 0)
       const sumGtx = rawXnt.reduce((a, x) => a + (Number(x.gtx) || 0), 0)
       const sumGt1 = rawXnt.reduce((a, x) => a + (Number(x.gt1) || 0), 0)
-      const khoGui = params.get('kho') || (locKho.length === 1 ? locKho[0] : (dsKhoCuaHang[0] || 'Kho bếp Lê Lợi'))
+      const khoGui = params.get('kho') || (locKhoList.length === 1 ? locKhoList[0] : (dsKhoCuaHang[0] || 'Kho bếp Lê Lợi'))
       const rows: Row[] = [
         ...rawXnt.map(x => ({ ...x, _kho: khoGui, _ky: kyStr })),
         { ten: 'Tổng cộng', gt0: sumGt0, gtn: sumGtn, gtx: sumGtx, gt1: sumGt1, _t: 1 },
@@ -129,7 +186,51 @@ export const MToGiay: FC<ScreenProps> = ({ sc, mod }) => {
     }
 
     return { rowsDong: [], colsDong: [] }
-  }, [isApDungDong, is521, is523, isDong1023, params, daXem, locStore, dsKhoCuaHang, s.cheDo, s.goi, s])
+  }, [isApDungDong, is521, is523, isDong1023, params, daXem, locStore, dsKhoCuaHang, s.cheDo, s.goi, s, knMobile])
+
+  const chipsKhac = useMemo(() => {
+    const res: { k?: string; nhan?: string; giaTri: string }[] = []
+    if (is523) {
+      const locKhoList = (locStore?.locKho?.length ? locStore.locKho : (locStore?.kho?.length ? locStore.kho : []))
+      res.push({
+        k: 'kho',
+        nhan: 'Kho',
+        giaTri: params.get('kho') || (locKhoList.length ? locKhoList.join(', ') : (cn ? (cn.ngan ?? cn.ten) : 'Tất cả')),
+      })
+    } else if (is521) {
+      const locKhoList = (locStore?.locKho?.length ? locStore.locKho : (locStore?.kho?.length ? locStore.kho : []))
+      res.push({
+        k: 'kho',
+        nhan: 'Kho',
+        giaTri: params.get('kho') || (locKhoList.length === 1 ? locKhoList[0] : (dsKhoCuaHang[0] || KHO[1])),
+      })
+    }
+    for (const [k, v] of Object.entries(locStore || {})) {
+      if (k === 'ky' || k === 'cuaHang' || k === 'kho' || k === 'locKho') continue
+      if (Array.isArray(v) && v.length > 0) {
+        res.push({ k, nhan: k, giaTri: v.join(', ') })
+      }
+    }
+    return res
+  }, [is523, is521, locStore, params, cn, dsKhoCuaHang])
+
+  const soLuongLoc = useMemo(() => {
+    let c = 0
+    if (s.cuaHang && s.cuaHang !== 'all') c++
+    const thangNum = Number(daXem?.ky || params.get('ky')) || 9
+    const tuMacDinh = `2026-${String(thangNum).padStart(2, '0')}-01`
+    const denMacDinh = `2026-${String(thangNum).padStart(2, '0')}-${String(ngayCuoiThang(2026, thangNum)).padStart(2, '0')}`
+    if (knMobile.tu !== tuMacDinh || knMobile.den !== denMacDinh) {
+      c++
+    } else if (daXem?.ky && daXem.ky !== '9') {
+      c++
+    }
+    for (const [k, v] of Object.entries(locStore || {})) {
+      if (k === 'ky' || k === 'cuaHang') continue
+      if (Array.isArray(v) && v.length > 0) c++
+    }
+    return c
+  }, [locStore, s.cuaHang, knMobile, daXem, params])
 
   useLayoutEffect(() => {
     if (phongTo) {
@@ -215,71 +316,39 @@ export const MToGiay: FC<ScreenProps> = ({ sc, mod }) => {
   // Màn hình 5.2.1, 5.2.3, 10.2.3: mặc định dạng dòng, có chip Bảng và nút "Xem mẫu in"
   if (isApDungDong && khuon) {
     return (
-      <div className="m-to-giay-wrap">
-        <div className="m-sbc-loc-hang">
-          {is523 && (
-            <>
-              <span className="m-sbc-chip m-sbc-chip-tinh">
-                <span className="m-sbc-chip-nhan">Thời gian: Tháng {params.get('ky') || daXem?.ky || '9'}/2026</span>
-              </span>
-              <span className="m-sbc-chip m-sbc-chip-tinh">
-                <span className="m-sbc-chip-nhan">Kho: {params.get('kho') || (locStore?.locKho?.length ? locStore.locKho.join(', ') : (cn ? cn.ngan ?? cn.ten : 'Tất cả'))}</span>
-              </span>
-            </>
-          )}
-          {is521 && (
-            <>
-              <span className="m-sbc-chip m-sbc-chip-tinh">
-                <span className="m-sbc-chip-nhan">Thời gian: Tháng {params.get('ky') || daXem?.ky || '9'}/2026</span>
-              </span>
-              <span className="m-sbc-chip m-sbc-chip-tinh">
-                <span className="m-sbc-chip-nhan">Kho: {params.get('kho') || (locStore?.locKho?.length === 1 ? locStore.locKho[0] : (dsKhoCuaHang[0] || KHO[1]))}</span>
-              </span>
-            </>
-          )}
-          <div className="m-so-dong-kieu-wrap">
-            <button
-              type="button"
-              className={`m-so-dong-chip ${kieuXem === 'dong' ? 'm-so-dong-chip-on' : ''}`}
-              onClick={() => setKieuXem('dong')}
-            >
-              Dạng dòng
-            </button>
-            <button
-              type="button"
-              className={`m-so-dong-chip ${kieuXem === 'bang' ? 'm-so-dong-chip-on' : ''}`}
-              onClick={() => setKieuXem('bang')}
-            >
-              Bảng
-            </button>
-          </div>
-        </div>
-
-        {kieuXem !== 'in' && (
-          <div className="m-sbc-tim-hang">
-            <div className="m-ds-tim">
-              <Icon n="search" className="m-ds-tim-ic ic sm" />
-              <input
-                type="text"
-                className="m-ds-tim-inp"
-                placeholder={kieuXem === 'bang' ? 'Nhập từ khoá' : 'Nhập mã, tên'}
-                value={q}
-                onChange={e => setQ(e.target.value)}
-                aria-label="Tìm kiếm trong bảng"
-              />
-              {q && (
-                <button
-                  type="button"
-                  className="m-ds-tim-x"
-                  onClick={() => setQ('')}
-                  aria-label="Xoá tìm kiếm"
-                >
-                  <Icon n="x" className="ic sm" />
-                </button>
-              )}
+      <div className="m-to-giay-wrap m-so-bc-figma">
+        <MBaoCaoDau
+          sc={sc}
+          mod={mod}
+          hienTim={hienTim}
+          onToggleTim={() => setHienTim(v => !v)}
+          q={q}
+          onDoiQ={setQ}
+          timPlaceholder={kieuXem === 'bang' ? 'Nhập từ khoá' : 'Nhập mã, tên'}
+          soLuongLoc={soLuongLoc}
+          onMoLoc={() => setMoLoc(true)}
+          tenKy={tenKy}
+          tenCn={tenCn}
+          chipsKhac={chipsKhac}
+          extraRight={
+            <div className="m-so-dong-kieu-wrap">
+              <button
+                type="button"
+                className={`m-so-dong-chip ${kieuXem === 'dong' ? 'm-so-dong-chip-on' : ''}`}
+                onClick={() => setKieuXem('dong')}
+              >
+                Dạng dòng
+              </button>
+              <button
+                type="button"
+                className={`m-so-dong-chip ${kieuXem === 'bang' ? 'm-so-dong-chip-on' : ''}`}
+                onClick={() => setKieuXem('bang')}
+              >
+                Bảng
+              </button>
             </div>
-          </div>
-        )}
+          }
+        />
 
         {kieuXem === 'in' ? (
           <div
@@ -340,37 +409,68 @@ export const MToGiay: FC<ScreenProps> = ({ sc, mod }) => {
             />
           </div>
         )}
+        {moLoc && (
+          <MBaoCaoLoc
+            mo={moLoc}
+            onDong={() => setMoLoc(false)}
+            path={path}
+            sc={sc}
+          />
+        )}
       </div>
     )
   }
 
   // Màn MToGiay khác giữ nguyên
   return (
-    <div
-      ref={khungRef}
-      className={`m-to-giay ${phongTo ? 'phong-to' : 'thu-nho'}`}
-      onClick={onChamGiay}
-      style={!phongTo && chieuCaoScale ? { height: chieuCaoScale } : undefined}
-    >
+    <div className="m-to-giay-wrap m-so-bc-figma">
+      <MBaoCaoDau
+        sc={sc}
+        mod={mod}
+        hienTim={hienTim}
+        onToggleTim={() => setHienTim(v => !v)}
+        q={q}
+        onDoiQ={setQ}
+        soLuongLoc={soLuongLoc}
+        onMoLoc={() => setMoLoc(true)}
+        tenKy={tenKy}
+        tenCn={tenCn}
+        chipsKhac={chipsKhac}
+      />
       <div
-        ref={noiDungRef}
-        className="m-to-giay-noi-dung"
-        style={
-          !phongTo
-            ? {
-                width: rongThuc,
-                minWidth: rongThuc,
-                transform: `scale(${heSo})`,
-                transformOrigin: 'top left',
-              }
-            : {
-                width: rongThuc,
-                minWidth: rongThuc,
-              }
-        }
+        ref={khungRef}
+        className={`m-to-giay ${phongTo ? 'phong-to' : 'thu-nho'}`}
+        onClick={onChamGiay}
+        style={!phongTo && chieuCaoScale ? { height: chieuCaoScale } : undefined}
       >
-        <Comp sc={sc} mod={mod} />
+        <div
+          ref={noiDungRef}
+          className="m-to-giay-noi-dung"
+          style={
+            !phongTo
+              ? {
+                  width: rongThuc,
+                  minWidth: rongThuc,
+                  transform: `scale(${heSo})`,
+                  transformOrigin: 'top left',
+                }
+              : {
+                  width: rongThuc,
+                  minWidth: rongThuc,
+                }
+          }
+        >
+          <Comp sc={sc} mod={mod} />
+        </div>
       </div>
+      {moLoc && (
+        <MBaoCaoLoc
+          mo={moLoc}
+          onDong={() => setMoLoc(false)}
+          path={path}
+          sc={sc}
+        />
+      )}
     </div>
   )
 }

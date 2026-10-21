@@ -2,7 +2,8 @@ import React, { useEffect, useMemo, useRef, useState, type FC } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import type { Col, ReportCfg, Row, ScreenProps } from '../../modules/types'
 import { renderReport, gopSo, RptTable } from '../generic/ReportScreen'
-import { useTrangThaiLoc } from '../bao-cao/tuyChinhBC'
+import { bienDoiBang, useTrangThaiLoc } from '../bao-cao/tuyChinhBC'
+import { docNgay, trongKhoang } from '../ChonNgay'
 import { cuaHangHienTai, useSession } from '../../app/session'
 import { kieuGhiSo } from '../../app/plan'
 import { CUA_HANG } from '../../data/mock'
@@ -17,7 +18,8 @@ import { layKhuonDong, MBaoCaoDong } from './MBaoCaoDong'
 import { laSoTT152 } from './MSoTT152'
 import { cotMobile, useBangMauA } from './bangMauA'
 import { tinhPhanTrang, ThanhPhanTrangM } from './phanTrangM'
-import { dinhDangKyMobile, useKhoangNgayMobile } from './kyBaoCaoMobile'
+import { dinhDangKyMobile, ngayCuoiThang, useKhoangNgayMobile } from './kyBaoCaoMobile'
+import { MBaoCaoDau } from './MBaoCaoDau'
 import { MBaoCaoLoc } from './MBaoCaoLoc'
 
 /** Định dạng ngày có thứ tiếng Việt: "01/09/2026" -> "Thứ Ba, 01/09/2026" (T500) */
@@ -60,7 +62,7 @@ function layDuongDan(so: unknown): string | undefined {
   return to
 }
 
-export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
+export const MSoBaoCao: FC<ScreenProps> = ({ sc, mod }) => {
   const { s, set } = useSession()
   const path = useLocation().pathname
   const nav = useNavigate()
@@ -136,12 +138,21 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
   const ngayCuoiKy = dinhDangNgay(knMobile.den, '30/09/2026')
   const soLuongLoc = useMemo(() => {
     let c = 0
-    if (loc.locQuy?.length) c++
-    if ((loc as any).locTk?.length || (loc as any).tk?.length) c++
     if (s.cuaHang && s.cuaHang !== 'all') c++
-    if (loc.ky?.[0] && loc.ky[0] !== '9') c++
+    const thangNum = Number(kyDaXem) || 9
+    const tuMacDinh = `2026-${String(thangNum).padStart(2, '0')}-01`
+    const denMacDinh = `2026-${String(thangNum).padStart(2, '0')}-${String(ngayCuoiThang(2026, thangNum)).padStart(2, '0')}`
+    if (knMobile.tu !== tuMacDinh || knMobile.den !== denMacDinh) {
+      c++
+    } else if (kyDaXem && kyDaXem !== '9') {
+      c++
+    }
+    for (const [k, v] of Object.entries(loc)) {
+      if (k === 'ky' || k === 'cuaHang') continue
+      if (Array.isArray(v) && v.length > 0) c++
+    }
     return c
-  }, [loc, s.cuaHang])
+  }, [loc, s.cuaHang, knMobile, kyDaXem])
 
   const [q, setQ] = useState('')
   const [trangBang, setTrangBang] = useState(1)
@@ -171,15 +182,51 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
     const g = dsCnSoQuy.length === 1
       ? soQuyCn(dsCnSoQuy[0].id, thang)
       : gopSo(dsCnSoQuy.map(c => ({ cn: c.ngan, ...soQuyCn(c.id, thang) })))
-    return {
-      ...g,
-      rows: g.rows.map(x => ({
-        ...x,
-        locQuy: chonQuy,
-        ...(x.tk ? { tk: dsTkTheoCheDo(String(x.tk), s.cheDo) } : {}),
-      })),
+
+    const tuDate = docNgay(knMobile.tu)
+    const denDate = docNgay(knMobile.den)
+    const tuTime = tuDate.getTime()
+    const denTime = denDate.getTime()
+
+    let tonDau = g.mo
+    for (const r of g.rows) {
+      const rDate = docNgay(String(r.ngay).split(' ')[0])
+      if (rDate.getTime() < tuTime) {
+        tonDau += (Number(r.no) || 0) - (Number(r.co) || 0)
+      }
     }
-  }, [isSoQuy, dsCnSoQuy, chonQuy, thang, s.cheDo])
+
+    let runningDu = tonDau
+    let tongThu = 0
+    let tongChi = 0
+    const rowsTrongKy: Row[] = []
+
+    for (const r of g.rows) {
+      const rDate = docNgay(String(r.ngay).split(' ')[0])
+      const t = rDate.getTime()
+      if (t >= tuTime && t <= denTime) {
+        const thu = Number(r.no) || 0
+        const chi = Number(r.co) || 0
+        tongThu += thu
+        tongChi += chi
+        runningDu += thu - chi
+        rowsTrongKy.push({
+          ...r,
+          locQuy: chonQuy,
+          du: runningDu,
+          ...(r.tk ? { tk: dsTkTheoCheDo(String(r.tk), s.cheDo) } : {}),
+        })
+      }
+    }
+
+    return {
+      mo: tonDau,
+      rows: rowsTrongKy,
+      tn: tongThu,
+      tc: tongChi,
+      cuoi: runningDu,
+    }
+  }, [isSoQuy, dsCnSoQuy, chonQuy, thang, s.cheDo, knMobile])
 
   const noco = kieuGhiSo(s.cheDo) === 'noco'
 
@@ -209,14 +256,71 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
   }, [isSoQuy, soQuyData, dsCnSoQuy.length, noco, cfg, sc.code, sc.slug, thang, s, cn?.id, loc])
 
   // Lấy danh sách hàng và cột gốc từ body
-  const { rawRows, rawCols } = useMemo(() => {
-    if (!React.isValidElement(body)) return { rawRows: [] as Row[], rawCols: [] as Col[] }
+  const { initialRows, rawCols } = useMemo(() => {
+    if (!React.isValidElement(body)) return { initialRows: [] as Row[], rawCols: [] as Col[] }
     const p = body.props as { rows?: Row[]; cols?: Col[] }
     return {
-      rawRows: Array.isArray(p?.rows) ? p.rows : [],
+      initialRows: Array.isArray(p?.rows) ? p.rows : [],
       rawCols: Array.isArray(p?.cols) ? p.cols : [],
     }
   }, [body])
+
+  const rawRows = useMemo(() => {
+    if (isSoQuy) return initialRows
+    if (isSoTienGui) {
+      const tuDate = docNgay(knMobile.tu)
+      const denDate = docNgay(knMobile.den)
+      const tuTime = tuDate.getTime()
+      const denTime = denDate.getTime()
+      const rDau = initialRows.find(r => r._b === 1)
+      const rCong = initialRows.find(r => r._t === 1 && String(r.dienGiai || r.dg || '').includes('Cộng'))
+      const rCuoi = initialRows.find(r => r._t === 1 && String(r.dienGiai || r.dg || '').includes('cuối'))
+      let tonDau = Number(rDau?.du ?? 0)
+      const chiTiet = initialRows.filter(r => !r._b && !r._t)
+      for (const r of chiTiet) {
+        const d = docNgay(String(r.ngay).split(' ')[0])
+        if (!isNaN(d.getTime()) && d.getTime() < tuTime) {
+          tonDau += (Number(r.no) || 0) - (Number(r.co) || 0)
+        }
+      }
+      let runningDu = tonDau
+      let tongThu = 0
+      let tongChi = 0
+      const rowsTrongKy: Row[] = []
+      for (const r of chiTiet) {
+        const d = docNgay(String(r.ngay).split(' ')[0])
+        const t = d.getTime()
+        if (isNaN(t) || (t >= tuTime && t <= denTime)) {
+          const thu = Number(r.no) || 0
+          const chi = Number(r.co) || 0
+          tongThu += thu
+          tongChi += chi
+          runningDu += thu - chi
+          rowsTrongKy.push({ ...r, du: runningDu })
+        }
+      }
+      return [
+        { ...(rDau ?? { dienGiai: 'Số dư đầu kỳ', _b: 1 }), du: tonDau },
+        ...rowsTrongKy,
+        { ...(rCong ?? { dienGiai: 'Cộng phát sinh', _t: 1 }), no: tongThu, co: tongChi },
+        { ...(rCuoi ?? { dienGiai: 'Số dư cuối kỳ', _t: 1 }), du: runningDu },
+      ]
+    }
+    const tuDate = docNgay(knMobile.tu)
+    const denDate = docNgay(knMobile.den)
+    const tuTime = tuDate.getTime()
+    const denTime = denDate.getTime()
+    const rowsTheoNgay = initialRows.filter(r => {
+      if (r._b || r._t) return true
+      if (!r.ngay) return true
+      const d = docNgay(String(r.ngay).split(' ')[0])
+      if (isNaN(d.getTime())) return true
+      return d.getTime() >= tuTime && d.getTime() <= denTime
+    })
+    const maCode = sc.code ?? (sc.slug?.includes('-') ? sc.slug.replace(/-/g, '.') : undefined)
+    const res = bienDoiBang(rawCols, rowsTheoNgay, { loc, anKhongPS: Boolean(maCode && CAU_HINH_BC[maCode]?.anKhongPS) }, { tinhLaiTong: true })
+    return res.rows
+  }, [isSoQuy, isSoTienGui, initialRows, rawCols, knMobile, loc])
 
   // Lọc dòng nếu có từ khóa tìm kiếm (chỉ làm trên tầng view, không đổi logic bản máy tính)
   const rowsLoc = useMemo(() => {
@@ -441,175 +545,32 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
     }
   }
 
+  const chipsHienThi = useMemo(() => {
+    if (isSoQuy) {
+      return [{ k: 'locQuy', nhan: 'Quỹ', giaTri: chonQuy ?? 'Tất cả' }]
+    }
+    if (isSoTienGui) {
+      return [{ k: 'locQuy', nhan: 'TK', giaTri: chonTk ?? chonQuy ?? 'Tất cả' }]
+    }
+    return chipDieuKienKhac
+  }, [isSoQuy, isSoTienGui, chonQuy, chonTk, chipDieuKienKhac])
+
   return (
-    <div className={`m-so-bc ${isSoTien ? 'm-so-bc-figma' : ''} ${xoayNgang ? 'xoay-ngang' : ''}`}>
-      {/* Đầu trang, ô tìm, hàng chip dính chung một khối, cuộn không lọt chip xuống dưới đầu trang */}
-      <div className={isSoTien ? 'm-t500-dau-dinh' : undefined}>
-      {/* Header riêng theo Figma T500 cho Sổ quỹ tiền mặt và Sổ ngân hàng */}
-      {isSoTien && (
-        <header className="m-sq-header">
-          <button
-            type="button"
-            className="m-sq-back"
-            onClick={quayLai}
-            aria-label="Quay lại"
-          >
-            <Icon n="chevl" className="ic" />
-          </button>
-          <div className="m-sq-tieu-de-wrap">
-            <h1 className="m-sq-tieu-de">{isSoQuy ? 'Sổ quỹ tiền mặt' : 'Sổ ngân hàng'}</h1>
-            <div className="m-sq-phu">Báo cáo · Thu chi · {isSoQuy ? '2.2.1' : '2.2.3'}</div>
-          </div>
-          <div className="m-sq-tac-vu">
-            <button
-              type="button"
-              className={`m-sq-btn-ic${hienTim ? ' on' : ''}`}
-              onClick={() => setHienTim(v => !v)}
-              aria-label="Tìm kiếm"
-            >
-              <Icon n="search" className="ic sm" />
-            </button>
-            <button
-              type="button"
-              className={`m-sq-btn-ic${daGhim ? ' active' : ''}`}
-              onClick={toggleGhim}
-              aria-label="Ghim báo cáo"
-            >
-              <Icon n={daGhim ? 'star-fill' : 'star'} className="ic sm" />
-            </button>
-          </div>
-        </header>
-      )}
-
-      {/* Ô tìm kiếm khi bấm icon tìm kiếm ở header */}
-      {isSoTien && hienTim && (
-        <div className="m-sq-tim-hang">
-          <div className="m-ds-tim">
-            <Icon n="search" className="m-ds-tim-ic ic sm" />
-            <input
-              type="text"
-              className="m-ds-tim-inp"
-              placeholder="Nhập diễn giải, số chứng từ…"
-              value={q}
-              onChange={e => setQ(e.target.value)}
-              aria-label="Tìm kiếm phát sinh"
-              autoFocus
-            />
-            {q && (
-              <button
-                type="button"
-                className="m-ds-tim-x"
-                onClick={() => setQ('')}
-                aria-label="Xoá tìm kiếm"
-              >
-                <Icon n="x" className="ic sm" />
-              </button>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Hàng chip cuộn ngang: Sổ quỹ / Sổ ngân hàng theo Figma T500, các sổ khác đồng bộ thiết kế (T521) */}
-      {isSoTien ? (
-        <div className="m-tc-loc-bar m-t500-chip-hang">
-          {/* Nút bộ lọc: icon phễu đồng bộ Thu chi (T521) */}
-          <button
-            type="button"
-            className={`m-tc-btn-loc-vuong m-ds-nut-loc-vuong m-ds-nut-loc${soLuongLoc > 0 ? ' co-loc' : ''}`}
-            onClick={() => setMoLoc(true)}
-            aria-label="Bộ lọc"
-          >
-            <Icon n="filter" className="ic sm" />
-            {soLuongLoc > 0 && <span className="m-tc-loc-cham" />}
-          </button>
-
-          <span className="m-chip-xem">{tenKy}</span>
-          <span className="m-chip-xem">{isSoQuy ? `Quỹ: ${chonQuy ?? 'Tất cả'}` : `TK: ${chonTk ?? 'Tất cả'}`}</span>
-          <span className="m-chip-xem">CN: {tenCn}</span>
-        </div>
-      ) : (
-        /* Hàng chip lọc cho các báo cáo khác (T521) */
-        <div className="m-tc-loc-bar m-sbc-loc-hang">
-          <button
-            type="button"
-            className={`m-tc-btn-loc-vuong m-ds-nut-loc-vuong m-ds-nut-loc${soLuongLoc > 0 ? ' co-loc' : ''}`}
-            onClick={() => setMoLoc(true)}
-            aria-label="Bộ lọc"
-          >
-            <Icon n="filter" className="ic sm" />
-            {soLuongLoc > 0 && <span className="m-tc-loc-cham" />}
-          </button>
-
-          <span className="m-chip-xem">Thời gian: {tenKy}</span>
-
-          {cfg.theoCn && (
-            <span className="m-chip-xem">Kho/CN: {tenCn}</span>
-          )}
-
-          {chipDieuKienKhac.map(c => (
-            <span key={c.k} className="m-chip-xem">
-              {c.nhan}: {c.giaTri}
-            </span>
-          ))}
-        </div>
-      )}
-      </div>
-
-      {/* Ô tìm kiếm dòng & nút Excel, Xoay cho báo cáo bảng hoặc sổ khác */}
-      {!isSoTien && (
-        <div className="m-sbc-tim-hang">
-          <div className="m-ds-tim">
-            <Icon n="search" className="m-ds-tim-ic ic sm" />
-            <input
-              type="text"
-              className="m-ds-tim-inp"
-              placeholder={kieuXem === 'bang' ? 'Nhập từ khoá' : 'Nhập mã, tên'}
-              value={q}
-              onChange={e => setQ(e.target.value)}
-              aria-label="Tìm kiếm trong bảng"
-            />
-            {q && (
-              <button
-                type="button"
-                className="m-ds-tim-x"
-                onClick={() => setQ('')}
-                aria-label="Xoá tìm kiếm"
-              >
-                <Icon n="x" className="ic sm" />
-              </button>
-            )}
-          </div>
-          {kieuXem === 'bang' && (
-            <div className="m-sbc-tac-vu">
-              <button
-                type="button"
-                className="m-sbc-btn-icon m-sbc-btn-excel"
-                onClick={xuatExcel}
-                title="Tải file Excel"
-                aria-label="Tải file Excel"
-              >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <rect x="2" y="2" width="20" height="20" rx="3.5" fill="#107C41" />
-                  <path d="M7.5 7.5L16.5 16.5M16.5 7.5L7.5 16.5" stroke="white" strokeWidth="2.2" strokeLinecap="round" />
-                </svg>
-              </button>
-              <button
-                type="button"
-                className="m-sbc-btn-icon m-sbc-btn-xoay"
-                onClick={toggleXoay}
-                title={xoayNgang ? 'Xem dọc' : 'Xoay ngang'}
-                aria-label="Xoay màn hình"
-              >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="5.5" y="4" width="13" height="16" rx="2" transform="rotate(-15 12 12)" />
-                  <path d="M8 2.5C10 1.5 13 1.5 15.5 2.5" />
-                  <path d="M15 1.5L16.5 2.5L15 4" />
-                </svg>
-              </button>
-            </div>
-          )}
-        </div>
-      )}
+    <div className={`m-so-bc m-so-bc-figma ${xoayNgang ? 'xoay-ngang' : ''}`}>
+      <MBaoCaoDau
+        sc={sc}
+        mod={mod}
+        hienTim={hienTim}
+        onToggleTim={() => setHienTim(v => !v)}
+        q={q}
+        onDoiQ={setQ}
+        timPlaceholder={kieuXem === 'bang' ? 'Nhập từ khoá' : (isSoTien ? 'Nhập diễn giải, số chứng từ…' : 'Nhập mã, tên')}
+        soLuongLoc={soLuongLoc}
+        onMoLoc={() => setMoLoc(true)}
+        tenKy={tenKy}
+        tenCn={tenCn}
+        chipsKhac={chipsHienThi}
+      />
 
       {/* Nội dung báo cáo: Dạng dòng hoặc Bảng cuộn ngang */}
       {kieuXem === 'dong' && isSoApDung ? (
@@ -753,17 +714,18 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
                         </>
                       )
 
+                      const isLast = i === nhom.ds.length - 1
                       return to ? (
                         <Link
                           key={i}
                           to={to}
-                          className={isSoTien ? 'm-t500-sq-row-item' : 'm-so-dong-item m-so-dong-item-bam'}
+                          className={isSoTien ? `m-t500-sq-row-item${isLast ? ' m-dong-cuoi-truoc-ton' : ''}` : 'm-so-dong-item m-so-dong-item-bam'}
                           title="Mở chứng từ gốc"
                         >
                           {noiDungItem}
                         </Link>
                       ) : (
-                        <div key={i} className={isSoTien ? 'm-t500-sq-row-item' : 'm-so-dong-item'}>
+                        <div key={i} className={isSoTien ? `m-t500-sq-row-item${isLast ? ' m-dong-cuoi-truoc-ton' : ''}` : 'm-so-dong-item'}>
                           {noiDungItem}
                         </div>
                       )
@@ -788,6 +750,33 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc }) => {
       ) : (
         /* Khung bảng cuộn ngang, trang không cuộn ngang (T273) */
         <div className="m-sbc-the-bang">
+          <div className="m-sbc-bang-tac-vu">
+            <button
+              type="button"
+              className="m-sbc-btn-icon m-sbc-btn-excel"
+              onClick={xuatExcel}
+              title="Tải file Excel"
+              aria-label="Tải file Excel"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <rect x="2" y="2" width="20" height="20" rx="3.5" fill="#107C41" />
+                <path d="M7.5 7.5L16.5 16.5M16.5 7.5L7.5 16.5" stroke="white" strokeWidth="2.2" strokeLinecap="round" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              className="m-sbc-btn-icon m-sbc-btn-xoay"
+              onClick={toggleXoay}
+              title={xoayNgang ? 'Xem dọc' : 'Xoay ngang'}
+              aria-label="Xoay màn hình"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="5.5" y="4" width="13" height="16" rx="2" transform="rotate(-15 12 12)" />
+                <path d="M8 2.5C10 1.5 13 1.5 15.5 2.5" />
+                <path d="M15 1.5L16.5 2.5L15 4" />
+              </svg>
+            </button>
+          </div>
           <div ref={bangWrapRef} className={`m-sbc-bang-wrap ${coCuonNgang || pt.canPhanTrang ? 'co-goi' : ''}`}>
             {noiDungBang}
           </div>

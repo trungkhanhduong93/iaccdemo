@@ -37722,3 +37722,28 @@ body:has(.m-app) .m-thanh-duoi .m-tab.on .m-tab-ic .ic .l2 {
 .m-t449-btn-nhan-ban:active {
   background: var(--tint, #e6eff7);
 }
+
+/* ── Điện thoại: bộ lọc áp dữ liệu, đầu báo cáo theo Sổ quỹ, thẻ Tổng cộng nền trắng, bỏ kẻ thừa trên tồn cuối ngày (T529) ── */
+.m-tc-card-tong-hop.m-ds-dong-tom-tat {
+  background: #ffffff !important;
+}
+
+.m-t500-sq-row-item:has(+ .m-t500-cuoi-ngay),
+.m-t500-sq-row-item.m-dong-cuoi-truoc-ton {
+  border-bottom: none !important;
+}
+
+.m-app:has(.m-so-bc) .m-thanh-tren,
+.m-app:has(.m-to-giay-wrap) .m-thanh-tren {
+  display: none !important;
+}
+
+.m-app:has(.m-so-bc) .m-than,
+.m-app:has(.m-to-giay-wrap) .m-than {
+  padding-top: 0 !important;
+}
+
+.m-to-giay-wrap {
+  min-height: 100%;
+  background: var(--bg);
+}

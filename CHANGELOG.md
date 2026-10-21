@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 21/10/2026
+- T529: Điện thoại, báo cáo: bộ lọc lọc thật dữ liệu, số tổng và tồn tính lại theo điều kiện lọc. Mọi báo cáo có hàng tên và hàng lọc giống Sổ quỹ tiền mặt. Thẻ Tổng cộng danh sách thu chi nền trắng. Sổ quỹ bỏ đường kẻ thừa trên Tồn cuối ngày.
 - T535: Hàng lọc mọi danh sách web: phễu đầu, các ô lọc, nút Lọc cuối. Ô chọn nhiều giữ rộng 220px, chọn nhiều hiện chip tên đầu và +N. Hộp chọn hai ngăn Chưa chọn | Đã chọn có ô tìm riêng mỗi ngăn. Bộ lọc nâng cao xếp lưới 3 cột, ghim ô ra hàng lọc, kéo thả đổi thứ tự.
 - T528: Điện thoại, phiếu mua hàng: chọn hàng xong hiện ngay thẻ điền số lượng, đơn giá, giảm giá, VAT, tổng tiền, ghi chú, có nút nhân bản dòng. Ô % bỏ số 0 đứng đầu. Ô Số hoá đơn, Ký hiệu bỏ gạch dưới.
 - T536: Điện thoại, tab Lịch sử của màn xem phiếu thành dòng thời gian theo ngày: ai làm, lúc nào, trường nào đổi từ gì sang gì. Thẻ ở màn xem và lập phiếu thu chi cách mép 16px, bo 4 góc. Nút quay lại ở thẻ chi phí phân bổ đổi sang mũi tên ←.

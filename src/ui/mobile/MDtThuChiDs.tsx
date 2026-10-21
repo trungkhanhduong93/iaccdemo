@@ -354,6 +354,15 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
           <span className="m-chip-xem">{chuoiKhoangNgay}</span>
           <span className="m-chip-xem">{nhanCn}</span>
           <span className="m-chip-xem">{nhanTrangThai}</span>
+          {locVal.doiTuong?.map(dt => (
+            <span key={dt} className="m-chip-xem">Đối tượng: {dt}</span>
+          ))}
+          {locVal.nguon?.map(ng => (
+            <span key={ng} className="m-chip-xem">Nguồn: {ng === 'tay' ? 'Thủ công' : ng}</span>
+          ))}
+          {locVal.lyDo?.map(ld => (
+            <span key={ld} className="m-chip-xem">Lý do: {ld}</span>
+          ))}
         </div>
 
         {/* Card Tổng hợp kỳ */}
