@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T618 | Web, chi tiết chứng từ: kéo mép phải tiêu đề cột để giãn độ rộng cột ở lưới xem và lưới sửa, như danh sách (QD25), lưu trên trình duyệt theo từng màn | dinhlanphuongipacc | Đang làm | Sửa `Table.tsx`, `ChungTuForm.tsx`, `BangSua.tsx`, `ChungTuBanHang.tsx` (bảng Hàng bán POS), có thể thêm mục cuối `app.css` |
 | T615 | Điện thoại, Báo cáo kiểm kê bỏ đơn giá, tiền, hiện số lượng lệch và số mặt hàng lệch; Tổng hợp bán hàng khối tổng ghi Tổng doanh thu thuần, bỏ dòng SL, Doanh thu | Trum | Đang làm | Sửa `MBaoCaoKiemKe.tsx`, `MTongHopBanHang.tsx`. Spec `backup/spec-T615-T616.md` |
 | T616 | Điện thoại, phiếu mua: Thanh toán ngay chỉ hiện quỹ tiền mặt của cửa hàng phiếu; lịch sử hết thừa lề trái phải như phiếu thu chi, rà lịch sử phiếu khác; ô chiết khấu áp chung rộng đủ 1.000.000; sheet Chọn nhà cung cấp còn 1 icon tải lại; sheet Thêm nhà cung cấp nút X như Thêm hàng hoá | Trum | Đang làm | Sửa `MThanhToanNgay.tsx`, `MLapPhieu.tsx` (khúc 1490-1525, 2150-2400, 2730-2860, 3050-3270), cuối `app.css` (mục T616). Không sửa `MXemPhieu.tsx` (T436) |
 | T593 | Xem trước in và bản in báo cáo: mã, tên hàng, số phiếu ở mọi cột thành chữ thường, không bấm được (mở rộng T556) | Trum | Đang làm | Sửa cuối `app.css` (mục T556). Spec `backup/spec-T593-T595.md` |
