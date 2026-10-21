@@ -51,33 +51,9 @@ export function MNghiepVu() {
 
   // Lấy các chức năng điện thoại của từng phân hệ theo kiểu danh sách gọn iOS (T353 điểm 13)
   const layCacChucNang = (m: ModuleDef): ChucNang[] => {
-    // 1. Phân hệ Thu chi: thêm Chuyển quỹ, mở thẳng /moi?loai=cq
+    // 1. Phân hệ Thu chi chỉ một mục Thu, chi tiền (T572): Chuyển quỹ đã là tab trong danh sách, số dư ban đầu khai ở Danh mục Quỹ tiền
     if (m.key === 'tien') {
-      const items: ChucNang[] = [
-        {
-          ten: 'Thu, chi tiền',
-          to: '/app/tien/2-1-1',
-          icon: 'wallet',
-          code: '2.1.1',
-          slug: '2-1-1',
-        },
-        {
-          ten: 'Chuyển quỹ',
-          to: '/app/tien/2-1-1/moi?loai=cq',
-          icon: 'swap',
-          slug: 'chuyen-quy',
-        },
-      ]
-      if (s.goi === 'F') {
-        items.push({
-          ten: 'Số dư ban đầu',
-          to: '/app/tien/so-du-ban-dau',
-          icon: 'db',
-          code: '10.1.3',
-          slug: 'so-du-ban-dau',
-        })
-      }
-      return items
+      return [{ ten: 'Thu, chi tiền', to: '/app/tien/2-1-1', icon: 'wallet', code: '2.1.1', slug: '2-1-1' }]
     }
 
     // 2. Các phân hệ khác: lấy màn điện thoại từ tabCua(m) (bỏ Báo cáo)

@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 21/10/2026
+- T572: Điện thoại, màn Nghiệp vụ: phân hệ Thu chi chỉ còn mục Thu, chi tiền. Chuyển quỹ mở ở tab Chuyển quỹ trong danh sách, số dư ban đầu khai ở Danh mục Quỹ tiền.
 - T576: Web, mọi sổ, báo cáo có phần đầu mới: tên báo cáo kèm sao ghim, dòng kỳ, cửa hàng, điều kiện lọc ngay dưới tên; nút Xuất, Tuỳ chỉnh, In cùng hàng tên; thanh lọc có ô Tìm và ô Cửa hàng (khi xem tất cả cửa hàng); bảng số liệu bỏ tiêu đề lặp; tờ in ghi Tên, Thời gian, Cửa hàng không lặp.
 - T573: Điện thoại, chi tiết phiếu Xuất bán POS dạng biên lai, không còn tab: thẻ Thông tin đơn thêm cửa hàng, kênh bán hàng, PTTT; danh sách hàng hoá có ô tìm, VAT % chỉ hiện khi thuế khấu trừ; cuối phiếu đủ các khoản tiền hàng, giảm giá, phí dịch vụ, phí vận chuyển, doanh thu trước thuế, thuế, tổng tiền.
 - T562: Điện thoại, danh sách chứng từ mua hàng có lại nút Thêm mới, giống danh sách Thu chi.
