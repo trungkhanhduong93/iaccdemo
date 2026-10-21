@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T573 | Điện thoại, chi tiết phiếu Xuất bán POS vẽ lại theo mẫu B (biên lai): bỏ tab Thanh toán, Hạch toán; thẻ Thông tin đơn thêm cửa hàng, kênh, PTTT; danh sách hàng hoá có ô tìm, VAT % chỉ hiện khi khấu trừ; các khoản (phí dịch vụ, phí vận chuyển tách dòng), tổng tiền cuối biên lai; nút In phiếu | PhuongXT | Đang làm | `MXuatBanPos.tsx`, cuối `app.css` (mục T573) |
 | T572 | Điện thoại, màn Nghiệp vụ phân hệ Thu chi bỏ hai mục Chuyển quỹ, Số dư ban đầu ở ngoài: Chuyển quỹ đã là tab trong Thu, chi tiền; số dư khai ở Danh mục Quỹ tiền | PhuongXT | Đang làm | `MNghiepVu.tsx` |
 | T552 | Điện thoại, màn Tạo chứng từ thành công: một thành phần dùng chung cho mọi phiếu, thẻ tóm tắt số phiếu, số tiền, đối tượng; nút Xem chi tiết, Lập phiếu mới, Đóng | Trum | Chờ | Làm sau T539 (PhuongXT giữ `MLapPhieu.tsx`, `MLapPhieuKho.tsx`, `MDtThuChiLap.tsx`). Tạo `MThanhCong.tsx`, cuối `app.css` (mục T552) |
 | T540 | Điện thoại, phiếu mua hàng: thẻ hàng `TheHangMua` dùng số thứ tự dòng làm `key`, xoá dòng phía trên thì thẻ dưới giữ nhầm chế độ giảm giá %/đ của dòng cũ | Trum | Chưa làm | Ghi lúc nghiệm thu T528. Sửa `MLapPhieu.tsx` |
