@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState, type FC } from 'react'
+import { quayLaiMobile } from './quayLai'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import type { Col, ReportCfg, Row, ScreenProps } from '../../modules/types'
 import { renderReport, gopSo, RptTable } from '../generic/ReportScreen'
@@ -11,7 +12,7 @@ import { soQuyCn } from '../../modules/tien/SoQuy'
 import { dsTkTheoCheDo } from '../../modules/tong-hop/so-cai'
 import { CAU_HINH_BC, kyHieuBC, tenBC, tenQuyTm } from '../../modules/bao-cao/danh-sach'
 import { layNguonXuat, xuatFile, type NguonXuat } from '../bao-cao/xuat'
-import { fold, money, rutGonSo } from '../format'
+import { fold, money, moneyD, rutGonSo } from '../format'
 import { Icon } from '../Icon'
 import { duongPhieu } from '../generic/SoChungTu'
 import { layKhuonDong, MBaoCaoDong } from './MBaoCaoDong'
@@ -35,16 +36,6 @@ function dinhDangThuNgay(dStr: string): string {
       const thu = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'][dt.getDay()]
       return `${thu}, ${dStr}`
     }
-  }
-  return dStr
-}
-
-/** Chuyển YYYY-MM-DD sang DD/MM/YYYY */
-function dinhDangNgay(dStr?: string, fallback = ''): string {
-  if (!dStr) return fallback
-  const parts = dStr.split('-')
-  if (parts.length === 3) {
-    return `${parts[2].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[0]}`
   }
   return dStr
 }
@@ -88,13 +79,7 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc, mod }) => {
     } catch {}
   }
 
-  const quayLai = () => {
-    if (window.history.state && window.history.state.idx > 0) {
-      nav(-1)
-    } else {
-      nav('/app/bao-cao/tat-ca', { replace: true })
-    }
-  }
+  const quayLai = () => quayLaiMobile(nav, '/app/bao-cao/tat-ca')
 
   // Sổ xem dạng dòng: Sổ quỹ 2.2.1, Sổ ngân hàng 2.2.3, Sổ công nợ 2.2.5 (T223)
   // Các màn khác áp dụng 3 khuôn mới chung theo BANG_KHUON_DONG (T241)
@@ -135,8 +120,6 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc, mod }) => {
   const chonQuy = loc.locQuy?.[0]
   const chonTk = (loc as any).locTk?.[0] || (loc as any).tk?.[0]
   const knMobile = useKhoangNgayMobile(path, kyDaXem)
-  const ngayDauKy = dinhDangNgay(knMobile.tu, '01/09/2026')
-  const ngayCuoiKy = dinhDangNgay(knMobile.den, '30/09/2026')
   const soLuongLoc = useMemo(() => {
     let c = 0
     if (s.cuaHang && s.cuaHang !== 'all') c++
@@ -590,26 +573,22 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc, mod }) => {
           <div className={isSoTien ? 'm-t500-so-dong' : 'm-so-dong'}>
             {/* Lưới 2x2 thẻ cho Sổ quỹ / Sổ ngân hàng theo Figma T500, 3 ô cho sổ khác */}
             {isSoTien ? (
-              <div className="m-t500-grid-cards">
-                <div className="m-sq-card m-sq-card-dau">
-                  <div className="m-sq-card-label">Tồn đầu kỳ</div>
-                  <div className="m-sq-card-val m-so-dong-num">{money(soDau)}</div>
-                  <div className="m-sq-card-sub">{ngayDauKy}</div>
+              <div className="mobile-stat-slider">
+                <div className="m-stat-pill">
+                  <span className="lbl">Tồn đầu kỳ</span>
+                  <b className="val">{moneyD(soDau)}</b>
                 </div>
-                <div className="m-sq-card m-sq-card-cuoi">
-                  <div className="m-sq-card-label">Tồn cuối kỳ</div>
-                  <div className="m-sq-card-val m-sq-val-blue m-so-dong-num">{money(soCuoi)}</div>
-                  <div className="m-sq-card-sub">{ngayCuoiKy}</div>
+                <div className="m-stat-pill">
+                  <span className="lbl">Tồn cuối kỳ</span>
+                  <b className="val" style={{ color: 'var(--blue)' }}>{moneyD(soCuoi)}</b>
                 </div>
-                <div className="m-sq-card m-sq-card-thu">
-                  <div className="m-sq-card-label">Tổng thu</div>
-                  <div className="m-sq-card-val m-sq-val-green m-so-dong-num">+{money(tongThu)}</div>
-                  <div className="m-sq-card-sub">Phát sinh trong kỳ</div>
+                <div className="m-stat-pill">
+                  <span className="lbl">Tổng thu</span>
+                  <b className="val" style={{ color: 'var(--green)' }}>+{moneyD(tongThu)}</b>
                 </div>
-                <div className="m-sq-card m-sq-card-chi">
-                  <div className="m-sq-card-label">Tổng chi</div>
-                  <div className="m-sq-card-val m-sq-val-red m-so-dong-num">−{money(tongChi)}</div>
-                  <div className="m-sq-card-sub">Phát sinh trong kỳ</div>
+                <div className="m-stat-pill">
+                  <span className="lbl">Tổng chi</span>
+                  <b className="val" style={{ color: 'var(--red)' }}>−{moneyD(tongChi)}</b>
                 </div>
               </div>
             ) : (

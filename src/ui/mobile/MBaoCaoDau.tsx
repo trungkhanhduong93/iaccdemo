@@ -1,8 +1,9 @@
 import { useState, type FC, type ReactNode } from 'react'
+import { quayLaiMobile } from './quayLai'
 import { useNavigate } from 'react-router-dom'
 import type { ModuleDef, ScreenDef } from '../../modules/types'
 import { useSession } from '../../app/session'
-import { tenBC } from '../../modules/bao-cao/danh-sach'
+import { tenBCNgan } from '../../modules/bao-cao/danh-sach'
 import { tenMan } from '../../app/registry'
 import { Icon } from '../Icon'
 
@@ -70,16 +71,12 @@ export const MBaoCaoDau: FC<MBaoCaoDauProps> = ({
       onBack()
       return
     }
-    if (window.history.state && window.history.state.idx > 0) {
-      nav(-1)
-    } else {
-      nav('/app/bao-cao/tat-ca', { replace: true })
-    }
+    quayLaiMobile(nav, '/app/bao-cao/tat-ca')
   }
 
   const isSoQuy = sc.code === '2.2.1' || sc.slug === '2-2-1'
   const isSoTienGui = sc.code === '2.2.3' || sc.slug === '2-2-3'
-  const tieuDe = isSoQuy ? 'Sổ quỹ tiền mặt' : isSoTienGui ? 'Sổ ngân hàng' : (tenBC(sc.code, s.cheDo, s) || tenMan(sc))
+  const tieuDe = isSoQuy ? 'Sổ quỹ tiền mặt' : isSoTienGui ? 'Sổ ngân hàng' : (tenBCNgan(sc.code, s.cheDo, s) || tenMan(sc))
   const maBc = sc.code ?? (sc.slug?.includes('-') ? sc.slug.replace(/-/g, '.') : sc.slug)
   const tenPhanHe = mod?.ngan || mod?.ten || 'Báo cáo'
 

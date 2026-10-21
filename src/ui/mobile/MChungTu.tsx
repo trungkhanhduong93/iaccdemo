@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, type FC, type ReactNode } from 'react'
+import { quayLaiMobile } from './quayLai'
 import { Navigate, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import type { Row, ScreenProps } from '../../modules/types'
 import { duongDan } from '../../app/registry'
@@ -308,14 +309,14 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
         { k: 'cq', ten: 'Chuyển quỹ' },
       ]
       return (
-        <div className="m-ds-hang-tabs" role="tablist">
+        <div className="m-tc-tabs" role="tablist">
           {tabsFree.map(t => (
             <button
               key={t.k}
               type="button"
               role="tab"
               aria-selected={loaiChon === t.k}
-              className={`m-tab-chu${loaiChon === t.k ? ' on' : ''}`}
+              className={`m-tc-tab-btn${loaiChon === t.k ? ' on' : ''}`}
               onClick={() => setLoaiChon(t.k)}
             >
               {t.ten}
@@ -325,7 +326,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
             type="button"
             role="tab"
             aria-selected={false}
-            className="m-tab-chu"
+            className="m-tc-tab-btn"
             onClick={() => setMoTheoDoi(true)}
           >
             Báo cáo theo dõi
@@ -337,12 +338,12 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
     if (mod.key === 'kho') {
       if (anNgoaiGoi(s.goi)) {
         return (
-          <div className="m-ds-hang-tabs" role="tablist">
+          <div className="m-tc-tabs" role="tablist">
             <button
               type="button"
               role="tab"
               aria-selected={true}
-              className="m-tab-chu on"
+              className="m-tc-tab-btn on"
             >
               {sc.ngan ?? sc.ten}
             </button>
@@ -350,7 +351,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
               type="button"
               role="tab"
               aria-selected={false}
-              className="m-tab-chu"
+              className="m-tc-tab-btn"
               onClick={() => setMoTheoDoi(true)}
             >
               Báo cáo theo dõi
@@ -362,12 +363,12 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
       const isXk = sc.code === '5.1.2-4' || sc.slug === '5-1-2-4'
       const isXh = sc.code === '5.1.2-3' || sc.slug === '5-1-2-3'
       return (
-        <div className="m-ds-hang-tabs" role="tablist">
+        <div className="m-tc-tabs" role="tablist">
           <button
             type="button"
             role="tab"
             aria-selected={isNk}
-            className={`m-tab-chu${isNk ? ' on' : ''}`}
+            className={`m-tc-tab-btn${isNk ? ' on' : ''}`}
             onClick={() => nav('/app/kho/5-1-1')}
           >
             Nhập khác
@@ -376,7 +377,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
             type="button"
             role="tab"
             aria-selected={isXk}
-            className={`m-tab-chu${isXk ? ' on' : ''}`}
+            className={`m-tc-tab-btn${isXk ? ' on' : ''}`}
             onClick={() => nav('/app/kho/5-1-2-4')}
           >
             Xuất khác
@@ -386,7 +387,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
               type="button"
               role="tab"
               aria-selected={true}
-              className="m-tab-chu on"
+              className="m-tc-tab-btn on"
             >
               Xuất huỷ
             </button>
@@ -395,7 +396,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
             type="button"
             role="tab"
             aria-selected={false}
-            className="m-tab-chu"
+            className="m-tc-tab-btn"
             onClick={() => setMoTheoDoi(true)}
           >
             Báo cáo theo dõi
@@ -408,12 +409,12 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
       const is812 = sc.code === '8.1.2' || sc.slug === '8-1-2'
       const is813 = sc.code === '8.1.3' || sc.slug === '8-1-3'
       return (
-        <div className="m-ds-hang-tabs" role="tablist">
+        <div className="m-tc-tabs" role="tablist">
           <button
             type="button"
             role="tab"
             aria-selected={false}
-            className="m-tab-chu"
+            className="m-tc-tab-btn"
             onClick={() => nav('/app/ccdc/8-1-1')}
           >
             Thẻ chi phí
@@ -422,7 +423,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
             type="button"
             role="tab"
             aria-selected={is812}
-            className={`m-tab-chu${is812 ? ' on' : ''}`}
+            className={`m-tc-tab-btn${is812 ? ' on' : ''}`}
             onClick={() => nav('/app/ccdc/8-1-2')}
           >
             Tăng, giảm CCDC
@@ -431,7 +432,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
             type="button"
             role="tab"
             aria-selected={is813}
-            className={`m-tab-chu${is813 ? ' on' : ''}`}
+            className={`m-tc-tab-btn${is813 ? ' on' : ''}`}
             onClick={() => nav('/app/ccdc/8-1-3')}
           >
             Kiểm kê CCDC
@@ -440,7 +441,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
             type="button"
             role="tab"
             aria-selected={false}
-            className="m-tab-chu"
+            className="m-tc-tab-btn"
             onClick={() => setMoTheoDoi(true)}
           >
             Báo cáo theo dõi
@@ -452,12 +453,12 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
     if (mod.key === 'mua-hang') {
       if (anNgoaiGoi(s.goi)) {
         return (
-          <div className="m-ds-hang-tabs" role="tablist">
+          <div className="m-tc-tabs" role="tablist">
             <button
               type="button"
               role="tab"
               aria-selected={true}
-              className="m-tab-chu on"
+              className="m-tc-tab-btn on"
             >
               Chứng từ mua hàng
             </button>
@@ -465,7 +466,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
               type="button"
               role="tab"
               aria-selected={false}
-              className="m-tab-chu"
+              className="m-tc-tab-btn"
               onClick={() => setMoTheoDoi(true)}
             >
               Báo cáo theo dõi
@@ -478,12 +479,12 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
       const is414 = sc.code === '4.1.4' || sc.slug === '4-1-4'
       const is415 = sc.code === '4.1.5' || sc.slug === '4-1-5'
       return (
-        <div className="m-ds-hang-tabs" role="tablist">
+        <div className="m-tc-tabs" role="tablist">
           <button
             type="button"
             role="tab"
             aria-selected={is411}
-            className={`m-tab-chu${is411 ? ' on' : ''}`}
+            className={`m-tc-tab-btn${is411 ? ' on' : ''}`}
             onClick={() => nav('/app/mua-hang/4-1-1')}
           >
             Chứng từ mua hàng
@@ -492,7 +493,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
             type="button"
             role="tab"
             aria-selected={is412}
-            className={`m-tab-chu${is412 ? ' on' : ''}`}
+            className={`m-tc-tab-btn${is412 ? ' on' : ''}`}
             onClick={() => nav('/app/mua-hang/4-1-2')}
           >
             Hoá đơn mua hàng
@@ -501,7 +502,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
             type="button"
             role="tab"
             aria-selected={is414}
-            className={`m-tab-chu${is414 ? ' on' : ''}`}
+            className={`m-tc-tab-btn${is414 ? ' on' : ''}`}
             onClick={() => nav('/app/mua-hang/4-1-4')}
           >
             Trả lại hàng mua
@@ -510,7 +511,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
             type="button"
             role="tab"
             aria-selected={is415}
-            className={`m-tab-chu${is415 ? ' on' : ''}`}
+            className={`m-tc-tab-btn${is415 ? ' on' : ''}`}
             onClick={() => nav('/app/mua-hang/4-1-5')}
           >
             Chi phí mua hàng
@@ -519,7 +520,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
             type="button"
             role="tab"
             aria-selected={false}
-            className="m-tab-chu"
+            className="m-tc-tab-btn"
             onClick={() => setMoTheoDoi(true)}
           >
             Báo cáo theo dõi
@@ -530,13 +531,13 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
 
     if (cfg.loai && cfg.loai.length > 0) {
       return (
-        <div className="m-ds-hang-tabs" role="tablist">
+        <div className="m-tc-tabs" role="tablist">
           {!cfg.dieuChinh && (
             <button
               type="button"
               role="tab"
               aria-selected={loaiChon === ''}
-              className={`m-tab-chu${loaiChon === '' ? ' on' : ''}`}
+              className={`m-tc-tab-btn${loaiChon === '' ? ' on' : ''}`}
               onClick={() => setLoaiChon('')}
             >
               Tất cả
@@ -548,7 +549,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
               type="button"
               role="tab"
               aria-selected={loaiChon === l.k}
-              className={`m-tab-chu${loaiChon === l.k ? ' on' : ''}`}
+              className={`m-tc-tab-btn${loaiChon === l.k ? ' on' : ''}`}
               onClick={() => setLoaiChon(l.k)}
             >
               {l.ten}
@@ -558,7 +559,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
             type="button"
             role="tab"
             aria-selected={false}
-            className="m-tab-chu"
+            className="m-tc-tab-btn"
             onClick={() => setMoTheoDoi(true)}
           >
             Báo cáo theo dõi
@@ -569,12 +570,12 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
 
     // Các phân hệ khác có 1 màn chính: hiện tab chính và tab Báo cáo theo dõi
     return (
-      <div className="m-ds-hang-tabs" role="tablist">
+      <div className="m-tc-tabs" role="tablist">
         <button
           type="button"
           role="tab"
           aria-selected={true}
-          className="m-tab-chu on"
+          className="m-tc-tab-btn on"
         >
           {sc.ngan ?? sc.ten}
         </button>
@@ -582,7 +583,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
           type="button"
           role="tab"
           aria-selected={false}
-          className="m-tab-chu"
+          className="m-tc-tab-btn"
           onClick={() => setMoTheoDoi(true)}
         >
           Báo cáo theo dõi
@@ -648,13 +649,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
   const chipHienTai = chips.find(c => c.k === chipTT)
   const nhanTrangThai = chipHienTai ? `Trạng thái: ${chipHienTai.ten}` : 'Trạng thái'
 
-  const quayLai = () => {
-    if (window.history.state && window.history.state.idx > 0) {
-      nav(-1)
-    } else {
-      nav('/app/nghiep-vu', { replace: true })
-    }
-  }
+  const quayLai = () => quayLaiMobile(nav, '/app/nghiep-vu')
 
   return (
     <>
@@ -835,14 +830,14 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
           {/* Nút thêm mới FAB */}
           <button
             type="button"
-            className="m-tc-fab-btn"
+            className="m-tc-fab m-nut-them-fab m-ds-fab"
             onClick={handleThem}
-            aria-label="Thêm mới chứng từ"
+            aria-label="Thêm mới"
           >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-              <line x1="12" y1="5" x2="12" y2="19" />
-              <line x1="5" y1="12" x2="19" y2="12" />
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round">
+              <path d="M12 5v14M5 12h14" />
             </svg>
+            <span>Thêm mới</span>
           </button>
         </div>
       ) : (

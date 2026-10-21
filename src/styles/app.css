@@ -38591,3 +38591,14 @@ body:has(.m-app) .m-thanh-duoi .m-tab.on .m-tab-ic .ic .l2 {
   background: var(--blue);
   color: var(--white);
 }
+
+/* ── Điện thoại: nút thêm, tab, quay lại, tên ngắn (T555, T562-T568) ── */
+.m-tc-tabs {
+  background: var(--white);
+}
+
+/* Việc T567: Báo cáo kết quả kinh doanh (10.2.3) bỏ nền xanh ở khối chỉ tiêu */
+.m-bcd-1023 .m-bcd-ct-ds,
+.m-bcd-1023 .m-bcd-ct-dong {
+  background: var(--white) !important;
+}

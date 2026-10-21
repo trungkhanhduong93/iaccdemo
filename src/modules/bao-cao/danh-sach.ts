@@ -203,4 +203,10 @@ export function tenBC(code: string | undefined, cheDo: CheDo, s?: PhienBC): stri
   return code ? CAU_HINH_BC[code]?.ten?.[cheDo] : undefined
 }
 
+/** Tên ngắn trên điện thoại (T566): S1a-HKD rút ngắn thành "Sổ doanh thu bán hàng" để vừa 1 dòng */
+export function tenBCNgan(code: string | undefined, cheDo: CheDo, s?: PhienBC): string | undefined {
+  if (code === '3.2.5' && cheDo === 'TT152' && cachHkd(s) === 'n1') return 'Sổ doanh thu bán hàng'
+  return tenBC(code, cheDo, s)
+}
+
 export const cauHinhBC = (code?: string) => code ? CAU_HINH_BC[code] : undefined

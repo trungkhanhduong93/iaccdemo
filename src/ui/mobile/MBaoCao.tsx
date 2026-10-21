@@ -1,11 +1,12 @@
 import { useMemo, useState, useEffect, useRef, type FC } from 'react'
+import { quayLaiMobile } from './quayLai'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import type { ScreenDef, ScreenProps } from '../../modules/types'
 import { GOI, anNgoaiGoi } from '../../app/plan'
 import { hienMan, moDuoc, tenMan } from '../../app/registry'
 import { useSession } from '../../app/session'
 import { layNhomBaoCao } from '../../modules/bao-cao/TrungTam'
-import { kyHieuBC, tenBC } from '../../modules/bao-cao/danh-sach'
+import { kyHieuBC, tenBCNgan } from '../../modules/bao-cao/danh-sach'
 import { fold } from '../format'
 import { Icon } from '../Icon'
 import { MTrong } from './MTrong'
@@ -179,7 +180,7 @@ export const MBaoCao: FC<ScreenProps> = ({ sc, mod }) => {
     return tatCaBcHien.filter(x => {
       const ma = x.code ?? ''
       const kyHieu = kyHieuBC(x.code, s.cheDo, s) ?? ''
-      const ten = tenBC(x.code, s.cheDo, s) ?? tenMan(x)
+      const ten = tenBCNgan(x.code, s.cheDo, s) ?? tenMan(x)
       const tenGoc = tenMan(x)
       const full = `${ten} ${tenGoc} ${ma} ${kyHieu}`
       return fold(full).includes(qFold)
@@ -230,13 +231,7 @@ export const MBaoCao: FC<ScreenProps> = ({ sc, mod }) => {
             <button
               type="button"
               className="m-bc-hdr-back"
-              onClick={() => {
-                if (window.history.state && window.history.state.idx > 0) {
-                  nav(-1)
-                } else {
-                  nav('/app/bao-cao/tat-ca', { replace: true })
-                }
-              }}
+              onClick={() => quayLaiMobile(nav, '/app/bao-cao/tat-ca')}
             >
               <Icon n="chevl" className="ic sm" />
               <span>Tất cả nhóm</span>
@@ -302,7 +297,7 @@ export const MBaoCao: FC<ScreenProps> = ({ sc, mod }) => {
                 <div className="m-bc-nhom-ds">
                   {dsTimKiem.map(item => {
                     const ma = kyHieuBC(item.code, s.cheDo, s) ?? item.code
-                    const ten = tenBC(item.code, s.cheDo, s) ?? tenMan(item)
+                    const ten = tenBCNgan(item.code, s.cheDo, s) ?? tenMan(item)
                     const daGhimItem = ghim.includes(item.slug)
                     return (
                       <div
@@ -357,7 +352,7 @@ export const MBaoCao: FC<ScreenProps> = ({ sc, mod }) => {
                 <div className="m-bc-nhom-ds">
                   {dsBcTrongNhom.map(item => {
                     const ma = kyHieuBC(item.code, s.cheDo, s) ?? item.code
-                    const ten = tenBC(item.code, s.cheDo, s) ?? tenMan(item)
+                    const ten = tenBCNgan(item.code, s.cheDo, s) ?? tenMan(item)
                     const daGhimItem = ghim.includes(item.slug)
                     return (
                       <div
@@ -399,7 +394,7 @@ export const MBaoCao: FC<ScreenProps> = ({ sc, mod }) => {
                       className="m-bc-quick-chip"
                       onClick={() => moBaoCao(item)}
                     >
-                      {tenBC(item.code, s.cheDo, s) ?? tenMan(item)}
+                      {tenBCNgan(item.code, s.cheDo, s) ?? tenMan(item)}
                     </button>
                   ))}
                 </div>
@@ -423,7 +418,7 @@ export const MBaoCao: FC<ScreenProps> = ({ sc, mod }) => {
                         onClick={() => moBaoCao(item)}
                       >
                         <Icon n="star-fill" className="ic xs m-bc-chip-star" />
-                        <span>{tenBC(item.code, s.cheDo, s) ?? tenMan(item)}</span>
+                        <span>{tenBCNgan(item.code, s.cheDo, s) ?? tenMan(item)}</span>
                       </button>
                     ))}
                   </div>

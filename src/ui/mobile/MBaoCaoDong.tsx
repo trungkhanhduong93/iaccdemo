@@ -730,7 +730,7 @@ const Khuon3ChiTieuPhanCap: FC<{ maBc?: string; rows: Row[]; q?: string }> = ({ 
   }, [dsHienThi, is1023])
 
   return (
-    <div className="m-bcd-khuon3">
+    <div className={`m-bcd-khuon3${is1023 ? " m-bcd-1023" : ""}`}>
       {/* Dòng tổng 3 ô đầu danh sách */}
       {cacOTong.some(o => o.tonTai) && (
         <div className="m-so-dong-tong">

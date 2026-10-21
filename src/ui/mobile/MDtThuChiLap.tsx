@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, type FC } from 'react'
+import { quayLaiMobile } from './quayLai'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import type { Row, ScreenProps } from '../../modules/types'
 import { duongDan } from '../../app/registry'
@@ -76,6 +77,9 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
   const manKey = `${mod.key}/${sc.slug}`
   const row = rowProp ?? (id && id !== 'moi' ? rows.find(r => String(r.id) === String(id)) : undefined)
   const dangSua = Boolean(id && id !== 'moi' && row)
+  const dongHoacHuy = () => {
+    quayLaiMobile(nav, dangSua ? `${path}/${id}` : path)
+  }
   // Sao chép từ màn xem (T539): phiếu mới mang nội dung phiếu gốc, trừ số phiếu, ngày, thẻ chi phí
   const loc = useLocation()
   const saoChep = !row ? (loc.state as { saoChep?: Row } | null)?.saoChep : undefined
@@ -93,7 +97,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
   const cnNhoId = layChiNhanhNho()
   const cnNhoTen = CUA_HANG.find(c => c.id === cnNhoId)?.ten
   const [cuaHang, setCuaHang] = useState<string>(() =>
-    goc?.cn ? String(goc.cn) : cuaHangHienTai(s)?.ten || cnNhoTen || CUA_HANG[0].ten
+    row?.cn ? String(row.cn) : (dangSua && goc?.cn ? String(goc.cn) : (cuaHangHienTai(s)?.ten || cnNhoTen || CUA_HANG[0].ten))
   )
   const [moChonCn, setMoChonCn] = useState(false)
 
@@ -255,7 +259,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
     setDaSua(true)
 
     // Đồng bộ vào dòng chi tiết đầu tiên
-    if (dsDong.length <= 1 || s.goi === 'F') {
+    if (dsDong.length <= 1) {
       setDsDong(ds => {
         const n = [...ds]
         if (n[0]) n[0] = { ...n[0], gia: num, tien: num }
@@ -328,16 +332,18 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
       _quy: quy,
       _lyDo: lyDo,
       _ghiChu: ghiChu,
-      dienGiai: (s.goi === 'F' ? ghiChu : dsDong[0]?.ten) || ghiChu || (isChi ? 'Chi tiền' : 'Thu tiền'),
+      dienGiai: (dsDong[0]?.ten || ghiChu || (isChi ? 'Chi tiền' : 'Thu tiền')),
       tien: soTien,
       tong: soTien,
-      _dong: dsDong.map(d => ({
+      _dong: isCq ? undefined : dsDong.map(d => ({
         ...d,
-        ten: (s.goi === 'F' ? ghiChu : d.ten) || ghiChu || d.ten,
-        tien: s.goi === 'F' ? soTien : d.tien,
-        gia: s.goi === 'F' ? soTien : d.gia,
-        tkNo: d.tkNo || (lyDo.includes('lương') ? '334' : '6422'),
-        tkCo: d.tkCo || '1111',
+        ten: d.ten || ghiChu || (isChi ? 'Chi tiền' : 'Thu tiền'),
+        tien: d.tien,
+        gia: d.gia ?? d.tien,
+        ...(s.goi !== 'F' ? {
+          tkNo: d.tkNo || (lyDo.includes('lương') ? '334' : '6422'),
+          tkCo: d.tkCo || '1111',
+        } : {}),
       })),
       _theCp: theCpDs,
       tt: row?.tt ?? (s.goi === 'F' ? 'ghi' : 'nhap'),
@@ -476,7 +482,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
         <button
           type="button"
           className="m-tc-btn-nav"
-          onClick={() => nav(path)}
+          onClick={dongHoacHuy}
           aria-label="Đóng"
         >
           <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -503,33 +509,23 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
         {/* 1. Card Số tiền (sửa trực tiếp) */}
         <section className="m-tc-card-so-tien">
           <div className="m-tc-hang-loai-ch">
-            <button
-              type="button"
+            <div
               className={`m-tc-pill-loai ${isChi ? 'chi' : isThu ? 'thu' : 'cq'}`}
-              onClick={() => setMoChonLoai(true)}
-              aria-label="Chọn loại phiếu"
+              aria-label="Loại phiếu"
             >
               <span>{tenLoaiHienTai}</span>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M6 9l6 6 6-6" />
-              </svg>
-            </button>
+            </div>
 
-            <button
-              type="button"
+            <div
               className="m-tc-dong-ch"
-              onClick={() => setMoChonCn(true)}
-              aria-label="Chọn chi nhánh"
+              aria-label="Chi nhánh"
             >
               <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
                 <polyline points="9 22 9 12 15 12 15 22" />
               </svg>
               <span>{cuaHang}</span>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M6 9l6 6 6-6" />
-              </svg>
-            </button>
+            </div>
           </div>
 
           <label className="m-tc-nhan-tien" htmlFor="tc-nhap-tien">
@@ -541,6 +537,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
               id="tc-nhap-tien"
               type="text"
               inputMode="numeric"
+              disabled={!isCq && dsDong.length >= 2}
               className={`m-tc-inp-tien m-lp-tien-inp ${isChi ? 'chi' : isThu ? 'thu' : 'cq'}`}
               value={strTien}
               onChange={e => handleSuaTien(e.target.value)}
@@ -553,7 +550,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
             {docSoTien(soTien)}
           </label>
 
-          {s.goi !== 'F' && (
+          {!isCq && (
             <div className="m-tc-goi-y-dong-bo">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0284c7" strokeWidth="2">
                 <circle cx="12" cy="12" r="10" />
@@ -738,7 +735,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
                 const val = e.target.value
                 setGhiChu(val)
                 setDaSua(true)
-                if (s.goi === 'F') {
+                if (dsDong.length <= 1) {
                   setDsDong(ds => {
                     const n = [...ds]
                     if (n[0]) n[0] = { ...n[0], ten: val }
@@ -751,8 +748,8 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
           </div>
         </section>
 
-        {/* 5. Group CHI TIẾT (chỉ hiện ở gói có phí, gói Free ẩn theo T526) */}
-        {s.goi !== 'F' && (
+        {/* 5. Group CHI TIẾT (hiện cho mọi gói, trừ chuyển quỹ T555) */}
+        {!isCq && (
           <>
             <div className="m-tc-nhom-chu">
               CHI TIẾT <span className="so-dong">{dsDong.length} dòng</span>
@@ -813,7 +810,8 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
                   <span className="m-tc-subtext">Đồng bộ với Số tiền chi ở đầu phiếu</span>
                 </div>
 
-                {/* Nút toggle mở rộng thông tin dòng */}
+                {/* Nút toggle mở rộng thông tin dòng (chỉ gói có phí QD18) */}
+                {s.goi !== 'F' && (
                 <div className="m-tc-lap-mo-rong">
                   <button
                     type="button"
@@ -852,6 +850,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
                     </div>
                   )}
                 </div>
+                )}
               </div>
             )
           })}
@@ -883,7 +882,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
         <button
           type="button"
           className="m-tc-btn-huy"
-          onClick={() => nav(path)}
+          onClick={dongHoacHuy}
         >
           Huỷ thay đổi
         </button>

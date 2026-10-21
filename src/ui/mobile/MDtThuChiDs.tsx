@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, type FC, type ReactNode } from 'react'
+import { quayLaiMobile } from './quayLai'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import type { Row, ScreenProps } from '../../modules/types'
 import { duongDan } from '../../app/registry'
@@ -265,13 +266,7 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
     nav(target)
   }
 
-  const quayLai = () => {
-    if (window.history.state && window.history.state.idx > 0) {
-      nav(-1)
-    } else {
-      nav('/app/nghiep-vu', { replace: true })
-    }
-  }
+  const quayLai = () => quayLaiMobile(nav, '/app/nghiep-vu')
 
   return (
     <div className="m-tc-man m-ds-khung">

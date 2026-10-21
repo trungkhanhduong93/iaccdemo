@@ -1,4 +1,5 @@
-import { useMemo, useState, type FC } from 'react'
+import { useEffect, useMemo, useState, type FC } from 'react'
+import { quayLaiMobile } from './quayLai'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import type { Row, ScreenProps } from '../../modules/types'
 import { cuaHangHienTai, useSession } from '../../app/session'
@@ -76,6 +77,15 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
   // ?mo=<số thẻ>: mở thẳng chi tiết thẻ, vd bấm Thẻ chi phí trên phiếu chi; quay lại thì về màn trước (T421)
   const [theXem, setTheXem] = useState<TheItem | null>(() => { const mo = sp.get('mo'); return mo ? [...theTaoPhien, ...THE_MAU_BASE].find(t => t.soThe === mo) ?? null : null })
   const [tuLink] = useState(() => Boolean(sp.get('mo')))
+  useEffect(() => {
+    const mo = sp.get('mo')
+    if (mo) {
+      const found = [...theTaoPhien, ...THE_MAU_BASE].find(t => t.soThe === mo) ?? null
+      setTheXem(found)
+    } else {
+      setTheXem(null)
+    }
+  }, [sp])
   const [tabThe, setTabThe] = useState<'chitiet' | 'lichpb' | 'lichsu'>('chitiet')
   const [theSuaId, setTheSuaId] = useState<string | null>(null)
   const [moMenuMore, setMoMenuMore] = useState(false)
@@ -293,7 +303,7 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
             <div
               key={`${r.soThe}_${i}`}
               className="m-the-ct"
-              onClick={() => { setTheXem(r); setTabThe('chitiet') }}
+              onClick={() => { nav(`?mo=${r.soThe}`); setTheXem(r); setTabThe('chitiet') }}
               role="button"
               tabIndex={0}
             >
@@ -695,7 +705,7 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
               <button
                 type="button"
                 className="m-pb-btn-back"
-                onClick={() => { setTheXem(null); if (tuLink) nav(-1) }}
+                onClick={() => { setTheXem(null); quayLaiMobile(nav, '/app/ccdc/8-1-1') }}
                 aria-label="Quay lại"
               >
                 <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none">
