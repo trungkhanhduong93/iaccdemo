@@ -13,6 +13,7 @@ export interface GtLocMobile {
   nguon: string[]
   kho: string[]
   lyDo?: string[]
+  loaiPhieu?: string[]   // mã loại phiếu, vd thu, chi, bc, unc, cq (T569)
   chiNhanh?: string
   trangThai?: string
 }
@@ -24,6 +25,7 @@ export const MAC_DINH_LOC_MOBILE: GtLocMobile = {
   nguon: [],
   kho: [],
   lyDo: [],
+  loaiPhieu: [],
   chiNhanh: 'all',
   trangThai: 'all',
 }
@@ -34,6 +36,7 @@ export function coLocKhacMacDinh(gt: GtLocMobile): boolean {
   if (gt.nguon && gt.nguon.length > 0) return true
   if (gt.kho && gt.kho.length > 0) return true
   if (gt.lyDo && gt.lyDo.length > 0) return true
+  if (gt.loaiPhieu && gt.loaiPhieu.length > 0) return true
   if (gt.chiNhanh && gt.chiNhanh !== 'all' && gt.chiNhanh !== '') return true
   if (gt.trangThai && gt.trangThai !== 'all' && gt.trangThai !== '') return true
   return false
@@ -76,6 +79,7 @@ export interface MLocProps {
   dsNguon?: { k: string; ten: string }[]
   dsKho?: string[]
   dsLyDo?: string[]
+  dsLoaiPhieu?: { k: string; ten: string }[]   // có thì hiện dòng Loại phiếu, chọn nhiều (T569)
   dsChiNhanh?: { k: string; ten: string }[]
   dsTrangThai?: { k: string; ten: string; dem?: number }[]
 }
@@ -98,11 +102,12 @@ export const MLoc: FC<MLocProps> = ({
   dsNguon,
   dsKho,
   dsLyDo,
+  dsLoaiPhieu,
   dsChiNhanh,
   dsTrangThai,
 }) => {
   const [draft, setDraft] = useState<GtLocMobile>(giaTri)
-  const [trangCon, setTrangCon] = useState<'thoiGian' | 'doiTuong' | 'nguon' | 'kho' | 'lyDo' | 'chiNhanh' | 'trangThai' | null>(null)
+  const [trangCon, setTrangCon] = useState<'thoiGian' | 'doiTuong' | 'nguon' | 'kho' | 'lyDo' | 'loaiPhieu' | 'chiNhanh' | 'trangThai' | null>(null)
   const [timKiem, setTimKiem] = useState('')
 
   useEffect(() => {
@@ -187,8 +192,21 @@ export const MLoc: FC<MLocProps> = ({
     return `${len} lý do`
   }
 
+  const moTaLoaiPhieu = () => {
+    const len = draft.loaiPhieu?.length ?? 0
+    if (len === 0) return 'Tất cả'
+    if (len === 1) return dsLoaiPhieu?.find(l => l.k === draft.loaiPhieu![0])?.ten ?? draft.loaiPhieu![0]
+    return `${len} loại phiếu`
+  }
+
+  // Tên hiện của mục chọn nhiều: nguồn, loại phiếu lưu mã, các trường khác lưu tên
+  const tenMuc = (truong: string, val: string) =>
+    truong === 'nguon' ? (nguons.find(n => n.k === val)?.ten ?? val)
+      : truong === 'loaiPhieu' ? (dsLoaiPhieu?.find(l => l.k === val)?.ten ?? val)
+      : val
+
   // Toggle chọn / bỏ chọn mục
-  const toggleChon = (truong: 'doiTuong' | 'nguon' | 'kho' | 'lyDo', val: string) => {
+  const toggleChon = (truong: 'doiTuong' | 'nguon' | 'kho' | 'lyDo' | 'loaiPhieu', val: string) => {
     setDraft(prev => {
       const cur = prev[truong] ?? []
       const next = cur.includes(val) ? cur.filter(x => x !== val) : [...cur, val]
@@ -196,11 +214,11 @@ export const MLoc: FC<MLocProps> = ({
     })
   }
 
-  const chonTatCa = (truong: 'doiTuong' | 'nguon' | 'kho' | 'lyDo', ds: string[]) => {
+  const chonTatCa = (truong: 'doiTuong' | 'nguon' | 'kho' | 'lyDo' | 'loaiPhieu', ds: string[]) => {
     setDraft(prev => ({ ...prev, [truong]: Array.from(new Set([...(prev[truong] ?? []), ...ds])) }))
   }
 
-  const boChonTatCa = (truong: 'doiTuong' | 'nguon' | 'kho' | 'lyDo', ds: string[]) => {
+  const boChonTatCa = (truong: 'doiTuong' | 'nguon' | 'kho' | 'lyDo' | 'loaiPhieu', ds: string[]) => {
     setDraft(prev => ({
       ...prev,
       [truong]: (prev[truong] ?? []).filter(x => !ds.includes(x)),
@@ -246,6 +264,17 @@ export const MLoc: FC<MLocProps> = ({
               <div className="m-loc-dong-trai">
                 <span className="m-loc-dong-nhan">Trạng thái</span>
                 <span className="m-loc-dong-tri">{moTaTrangThai()}</span>
+              </div>
+              <Icon n="chevr" className="ic sm m-loc-dong-ic" />
+            </div>
+          )}
+
+          {/* Dòng Loại phiếu (T569) */}
+          {dsLoaiPhieu && dsLoaiPhieu.length > 0 && (
+            <div className="m-loc-dong" onClick={() => setTrangCon('loaiPhieu')}>
+              <div className="m-loc-dong-trai">
+                <span className="m-loc-dong-nhan">Loại phiếu</span>
+                <span className="m-loc-dong-tri">{moTaLoaiPhieu()}</span>
               </div>
               <Icon n="chevr" className="ic sm m-loc-dong-ic" />
             </div>
@@ -336,7 +365,9 @@ export const MLoc: FC<MLocProps> = ({
                         ? 'Nguồn dữ liệu'
                         : trangCon === 'kho'
                           ? 'Kho'
-                          : 'Lý do nghiệp vụ'}
+                          : trangCon === 'loaiPhieu'
+                            ? 'Loại phiếu'
+                            : 'Lý do nghiệp vụ'}
             </h1>
             <div className="m-thanh-tren-phai" style={{ width: 36 }} />
           </div>
@@ -424,7 +455,9 @@ export const MLoc: FC<MLocProps> = ({
                           ? 'nguồn'
                           : trangCon === 'kho'
                             ? 'kho'
-                            : 'lý do'
+                            : trangCon === 'loaiPhieu'
+                              ? 'loại phiếu'
+                              : 'lý do'
                     }...`}
                     value={timKiem}
                     onChange={e => setTimKiem(e.target.value)}
@@ -451,11 +484,12 @@ export const MLoc: FC<MLocProps> = ({
                         ? nguons.map(n => n.k)
                         : trangCon === 'kho'
                           ? (dsKho ?? [])
-                          : (dsLyDo ?? [])
+                          : trangCon === 'loaiPhieu'
+                            ? (dsLoaiPhieu ?? []).map(l => l.k)
+                            : (dsLyDo ?? [])
                   ).filter(item => {
                     if (!timKiem.trim()) return true
-                    const ten = trangCon === 'nguon' ? (nguons.find(n => n.k === item)?.ten ?? item) : item
-                    return fold(ten).includes(fold(timKiem))
+                    return fold(tenMuc(trangCon, item)).includes(fold(timKiem))
                   })
 
                   return (
@@ -484,10 +518,7 @@ export const MLoc: FC<MLocProps> = ({
                         ) : (
                           dsHienTai.map(val => {
                             const chon = (draft[trangCon] ?? []).includes(val)
-                            const tenHienThi =
-                              trangCon === 'nguon'
-                                ? (nguons.find(n => n.k === val)?.ten ?? val)
-                                : val
+                            const tenHienThi = tenMuc(trangCon, val)
 
                             return (
                               <div

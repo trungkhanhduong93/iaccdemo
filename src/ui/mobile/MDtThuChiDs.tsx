@@ -21,6 +21,15 @@ import { ChonCuaHangTruoc, layChiNhanhNho, luuChiNhanhNho } from '../ChonCuaHang
 
 const CAC_THU = ['Chủ nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy']
 
+// Các loại phiếu thu chi: menu Thêm mới (T539), dòng Loại phiếu ở bộ lọc (T569)
+const LOAI_THU_CHI = [
+  { k: 'chi', ten: 'Chi tiền mặt' },
+  { k: 'thu', ten: 'Thu tiền mặt' },
+  { k: 'unc', ten: 'Chi ngân hàng' },
+  { k: 'bc', ten: 'Thu ngân hàng' },
+  { k: 'cq', ten: 'Chuyển quỹ' },
+]
+
 function dinhDangThuNgay(chuoiNgay: string): string {
   const d = docNgay(chuoiNgay)
   if (isNaN(d.getTime())) return chuoiNgay
@@ -122,6 +131,14 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
     [rows],
   )
 
+  // Loại phiếu của tab đang chọn, dùng cho Thêm mới (T539) và dòng Loại phiếu ở bộ lọc (T569); tab Tất cả có đủ
+  const dsLoaiTab = LOAI_THU_CHI.filter(l => loaiChon === 'tien-mat' ? l.k === 'chi' || l.k === 'thu'
+    : loaiChon === 'ngan-hang' ? l.k === 'unc' || l.k === 'bc'
+    : loaiChon === 'cq' ? l.k === 'cq'
+    : true)
+  // Đổi tab thì loại phiếu đã chọn mà tab không có bị bỏ qua, không lọc ra danh sách trống
+  const loaiPhieuLoc = (locVal.loaiPhieu ?? []).filter(k => dsLoaiTab.some(l => l.k === k))
+
   const kn = tinhKhoangNgay(locVal.thoiGian, locVal.khoangNgay)
   const truocTT = useMemo(() => {
     return rows.filter(r => {
@@ -142,6 +159,7 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
           return false
         }
       }
+      if (loaiPhieuLoc.length > 0 && !loaiPhieuLoc.includes(String(r.loai))) return false
 
       if (locVal.doiTuong && locVal.doiTuong.length > 0) {
         if (!locVal.doiTuong.includes(String(r.doiTuong ?? ''))) return false
@@ -229,16 +247,7 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
   ]
 
   // Thêm mới chỉ hiện loại phiếu của tab đang chọn; tab Tất cả hiện đủ (T539)
-  const dsLoaiThem = [
-    { k: 'chi', ten: 'Chi tiền mặt' },
-    { k: 'thu', ten: 'Thu tiền mặt' },
-    { k: 'unc', ten: 'Chi ngân hàng' },
-    { k: 'bc', ten: 'Thu ngân hàng' },
-    { k: 'cq', ten: 'Chuyển quỹ' },
-  ].filter(l => loaiChon === 'tien-mat' ? l.k === 'chi' || l.k === 'thu'
-    : loaiChon === 'ngan-hang' ? l.k === 'unc' || l.k === 'bc'
-    : loaiChon === 'cq' ? l.k === 'cq'
-    : true)
+  const dsLoaiThem = dsLoaiTab
 
   const moPhieuMoi = (k: string) => {
     const target = `${path}/moi?loai=${k}`
@@ -380,6 +389,9 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
           ))}
           {locVal.lyDo?.map(ld => (
             <span key={ld} className="m-chip-xem">Lý do: {ld}</span>
+          ))}
+          {loaiPhieuLoc.map(k => (
+            <span key={k} className="m-chip-xem">{LOAI_THU_CHI.find(l => l.k === k)?.ten}</span>
           ))}
         </div>
 
@@ -554,6 +566,7 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
         nhanDoiTuong="Đối tượng"
         dsNguon={dsNguon}
         dsLyDo={dsLyDo}
+        dsLoaiPhieu={dsLoaiTab}
         dsChiNhanh={dsChiNhanh}
         dsTrangThai={chips}
       />

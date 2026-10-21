@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T569 | Danh sách Thu chi điện thoại: bộ lọc thêm dòng Loại phiếu, chọn nhiều, theo tab đang chọn | PhuongXT | 21/10/2026 | `2026-10-21-phuongxt-loc-loai-phieu-thu-chi.md` |
 | T557 | Form chứng từ web: ô Hạn thanh toán (mua hàng, bán hàng) chọn bằng lịch; ô Ngày chứng từ mọi form đã có lịch | PhuongXT | 21/10/2026 | `2026-10-21-phuongxt-o-ngay-chon-lich.md` |
 | T556 | Web, xem trước khi in báo cáo: cột Số phiếu (cột mã `cls: 'code'`) chữ to, xanh, bấm được, đè cột bên. Sửa về chữ thường, đen, không bấm được trên tờ in | Trum | 21/10/2026 | `2026-10-21-trum-loi-web-t556-t560.md` |
 | T561 | Web, Bộ lọc nâng cao ở báo cáo: icon lệch (icon lịch ô Thời gian đè nút ghim); bỏ kéo thả đổi vị trí ô | Trum | 21/10/2026 | `2026-10-21-trum-loi-web-t556-t560.md` |
