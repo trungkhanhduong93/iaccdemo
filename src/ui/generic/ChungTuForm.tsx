@@ -766,6 +766,17 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
         ) : (
           <>
             <div className="xp-footer-trai">
+              {/* Chứng từ trước, sau ra ngoài menu Tiện ích thành nút biểu tượng (T584) */}
+              {(coTruoc || coSau) && (
+                <div className="xp-chuyen-phieu">
+                  <button type="button" className="xp-btn-outline xp-btn-ic" onClick={veTruoc} disabled={!coTruoc} title="Chứng từ trước" aria-label="Chứng từ trước">
+                    <Icon n="chevl" className="ic sm" />
+                  </button>
+                  <button type="button" className="xp-btn-outline xp-btn-ic" onClick={veSau} disabled={!coSau} title="Chứng từ sau" aria-label="Chứng từ sau">
+                    <Icon n="chevr" className="ic sm" />
+                  </button>
+                </div>
+              )}
               <Dropdown
                 btnClass="xp-btn-outline"
                 align="start"
@@ -781,16 +792,6 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
               >
                 {dong => (
                   <>
-                    {coTruoc && (
-                      <MenuItem icon="chevl" onClick={veTruoc}>
-                        Chứng từ trước
-                      </MenuItem>
-                    )}
-                    {coSau && (
-                      <MenuItem icon="chevr" onClick={veSau}>
-                        Chứng từ sau
-                      </MenuItem>
-                    )}
                     {!laDc && (
                       <MenuItem icon="copy" onClick={() => toast('Đã sao chép chứng từ')}>
                         Sao chép

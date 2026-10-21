@@ -38653,3 +38653,19 @@ body:has(.m-app) .m-thanh-duoi .m-tab.on .m-tab-ic .ic .l2 {
 .ct-nhan-tt.warn { color: var(--amber); background: var(--amber-t); }
 .ct-nhan-tt.info { color: var(--blue); background: var(--bluet); }
 .ct-nhan-tt.ok { color: var(--green); background: var(--green-t); }
+
+/* ── Chi tiết chứng từ web: nút Chứng từ trước, sau bên trái Tiện ích (T584) ── */
+.xp-chuyen-phieu {
+  display: inline-flex;
+  gap: 4px;
+}
+.xp-btn-outline.xp-btn-ic {
+  width: 36px;
+  padding: 0;
+  justify-content: center;
+}
+.xp-btn-outline.xp-btn-ic:disabled {
+  opacity: .4;
+  cursor: default;
+  background: #fff;
+}
