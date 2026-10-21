@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T587 | Báo cáo máy tính, hộp Tuỳ chỉnh báo cáo theo mẫu A (canvas https://claude.ai/artifact/6q5LaL5Zghrx149Z2nrbh3): tab Cột gom theo nhóm cột tiêu đề 2 tầng, tìm cột, đổi tên khi rê chuột; Gom nhóm tối đa 3 cấp, nút chọn cấp, Chi tiết/Tổng hợp; Người ký dạng dòng, xem trước chân trang; Trang cỡ chữ dạng dãy nút | Trum | Đang làm | Tạo `src/ui/bao-cao/DsCotNhom.tsx`; sửa `TuyChinhBC.tsx`, `tuyChinhBC.ts` (gom nhóm đệ quy 3 cấp), `thiet-ke/DsKy.tsx` (thêm prop, mẫu in giữ nguyên), cuối `app.css` (T587). Không sửa `DsCot.tsx` |
 | T586 | Dữ liệu giả: phiếu mua, bán mẫu đã thanh toán, thanh toán một phần (vd MH2610-0004) chưa có phiếu chi, thu đi kèm nên dòng Tham chiếu (T585) trống. Sinh phiếu chi, thu mẫu bên Thu chi 2.1.1 trỏ về phiếu gốc, phiếu gốc giữ `_ctTt` hoặc `_dsTt` | | Chờ | Sửa dữ liệu mẫu mua, bán và `modules/tien/data.ts` |
 | T581 | Điện thoại, danh sách Mua hàng: thẻ phiếu mỗi nhóm ngày thêm viền, bóng như thẻ Thu chi, hết chìm vào nền | Trum | Đang làm | Mục mới cuối `app.css` (T581) |
 | T582 | Điện thoại, khung danh sách chứng từ dùng chung theo Mua hàng (header Thu chi, hàng lọc, thẻ tổng, nhóm ngày): áp mọi màn chứng từ Bán hàng (gồm Xuất bán POS), mọi tab Kho; trường lọc từng màn như web | Trum | Đang làm | Tạo `MDsChungTuChuan.tsx`; sửa `MChungTu.tsx`, `MXuatBanPos.tsx`, cuối `app.css` (T582). Spec: `backup/spec-T581.md` |
