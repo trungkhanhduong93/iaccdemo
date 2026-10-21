@@ -12,10 +12,11 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
 | T621 | Điện thoại, phiếu thu chi: sheet Chọn đối tượng, Chọn lý do, Chọn quỹ theo khuôn sheet Chọn nhà cung cấp, Chọn quỹ của phiếu mua (icon thêm, tải lại không chữ, sheet thêm chồng lên, quỹ có icon, số dư) | Trum | Đang làm | Sửa `MDtThuChiLap.tsx`, cuối `app.css` (mục T621). Spec `backup/spec-T621.md` |
+| T622 | Điện thoại, gói Free màn Bán hàng chỉ hiện tab Xuất bán POS như web, các phiếu ngoài gói ẩn | Trum | Đang làm | Sửa `MDsChungTuChuan.tsx` (`HangTabsBanHang`) |
 | T593 | Xem trước in và bản in báo cáo: mã, tên hàng, số phiếu ở mọi cột thành chữ thường, không bấm được (mở rộng T556) | Trum | Đang làm | Sửa cuối `app.css` (mục T556). Spec `backup/spec-T593-T595.md` |
 | T594 | Báo cáo đổi khổ dọc, ngang tự cân bề rộng cột và cỡ chữ: số, ngày, mã luôn 1 dòng đủ ký tự, chữ dài xuống tối đa 2 dòng, không tràn ô, không tràn viền tờ; cỡ chữ chọn tay là trần | Trum | Đang làm | Sửa `ToGiay.tsx`, `chiaCot.ts`, `ReportScreen.tsx`, `tools/kiem_tra.py`. Ca kiểm 3.2.8, 5.2.3 |
 | T595 | Hộp Tuỳ chỉnh báo cáo: hết mờ, menu trái kiểu pill đặc xanh, icon menu 20px | Trum | Đang làm | Sửa `TuyChinhBC.tsx`, cuối `app.css` (mục T595) |
-| T583 | Điện thoại, Chi phí phân bổ dùng khung danh sách T582 | Trum | Chờ | Làm sau T436 (dinhlanphuongipacc giữ `MCcdc.tsx`) |
+| T583 | Điện thoại, Chi phí phân bổ dùng khung danh sách T582 | Trum | Đang làm | Sửa khúc danh sách `MCcdc.tsx` (116-333), cuối `app.css` (mục T583). Trum chốt làm song song T436 (dinhlanphuongipacc giữ `MCcdc.tsx` khúc ghi tăng), ai push sau gộp tay. Spec `backup/spec-T583.md` |
 | T577 | Web, danh sách chứng từ: thanh trên chọn Tất cả cửa hàng thì bộ lọc luôn có ô Cửa hàng ghi tên gốc, như báo cáo ở T576 | dinhlanphuongipacc | Chờ | Sửa `VoucherScreen.tsx`, Trum đang giữ ở T496, hỏi Trum trước |
 | T574 | Dữ liệu giả hoá đơn FABi lẻ (`dongMonDon` trong `ChungTuBanHang.tsx`): món cuối nhận phần dư nên số lượng × đơn giá khác thành tiền (vd 5 Ly × 39.000 = 182.000), lộ rõ ở chi tiết Xuất bán POS web và điện thoại | | Chờ | Thấy khi làm T573. `ChungTuBanHang.tsx` |
 | T575 | Điện thoại, chi tiết phiếu Xuất bán POS thêm nút In phiếu như web: app điện thoại chưa có hộp in chứng từ dùng chung | | Chờ | Tách từ T573. `MXuatBanPos.tsx` |
