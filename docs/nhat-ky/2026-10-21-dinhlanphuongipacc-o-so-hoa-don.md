@@ -10,6 +10,8 @@
 - `src/ui/generic/ChungTuForm.tsx`: ô Số hoá đơn, Ký hiệu ở cột thông tin hoá đơn và ở tab Hoá đơn dùng hai hàm trên; Số hoá đơn mở bàn phím số. Form này dùng chung nên phiếu bán hàng có hoá đơn cũng theo luật này.
 - `src/ui/mobile/MLapPhieu.tsx`: hai ô tương ứng trên điện thoại dùng cùng hai hàm.
 - `src/ui/ChonDanhMuc.tsx`: ô tìm của cột mã (`chiMa`, vd cột Mã hàng) tự viết hoa chữ gõ vào. Mã tạo mới trong hộp Thêm đã viết hoa từ trước.
+- Mở rộng cho mọi màn: `src/ui/generic/CatalogScreen.tsx` ô `ma` của form danh mục sinh tự động (mọi danh mục, web và điện thoại qua `MFormDm.tsx`) tự viết hoa; `src/modules/ccdc/the-phan-bo.tsx` cột Mã dòng mục chi phí, TSCĐ viết hoa; `src/ui/mobile/MDtThuChiLap.tsx` ô Khoản mục chi phí viết hoa.
+- Ô Mã số thuế, số tài khoản, ô tìm kiếm chung không đổi.
 
 ## Đã kiểm
 

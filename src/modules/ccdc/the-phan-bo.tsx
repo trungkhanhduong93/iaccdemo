@@ -331,7 +331,7 @@ export const THE_PHAN_BO: CauHinhDM = {
       // Dòng Cộng (không có _i) chỉ hiện chữ, không vẽ ô nhập
       const o = (k: keyof DongPb, ten: string, laSo = true, giuLich = false) => (r: Row) => r._i === undefined ? <b>{r[k]}</b> : xem ? chu(k, r) :
         <ONhap v={r[k]} so={laSo} ten={`${ten} dòng ${r._i + 1}`} onDoi={s => {
-          const p: Partial<DongPb> = { [k]: s }
+          const p: Partial<DongPb> = { [k]: k === 'ma' ? s.toUpperCase() : s }   // mã viết hoa (T597)
           // CCDC: số tiền = số lượng x đơn giá
           if (khoaTien && k === 'sl') p.dg = so(s) > 0 ? String(Math.round(so(r.gt) / so(s))) : ''
           else if (laCcdc(v) && (k === 'sl' || k === 'dg')) p.gt = String(Math.round(so(k === 'sl' ? s : r.sl) * so(k === 'dg' ? s : r.dg)))

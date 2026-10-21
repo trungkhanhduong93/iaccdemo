@@ -1069,7 +1069,8 @@ export function CatalogPanel({
                         value={formatGiaTri(tr, formVal[tr.k])}
                         onChange={e => {
                           if (isChiDoc) return
-                          doiO(tr.k, cauHinh?.soQuocTe && laSo(tr) ? nhapSoQT(e.target.value) : e.target.value)
+                          // Ô mã danh mục luôn viết hoa (T597)
+                          doiO(tr.k, cauHinh?.soQuocTe && laSo(tr) ? nhapSoQT(e.target.value) : tr.k === 'ma' ? e.target.value.toUpperCase() : e.target.value)
                           setErrors(err => ({ ...err, [tr.k]: '' }))
                         }}
                       />

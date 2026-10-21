@@ -3,7 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 21/10/2026
-- T597: Phiếu mua hàng (web và điện thoại): ô Số hoá đơn chỉ nhận chữ số, không dấu chấm, phẩy; ô Ký hiệu tự viết hoa, chỉ nhận chữ và số, tối đa 7 ký tự; gõ tìm ở cột Mã hàng tự viết hoa.
+- T597: Phiếu mua hàng (web và điện thoại): ô Số hoá đơn chỉ nhận chữ số, không dấu chấm, phẩy; ô Ký hiệu tự viết hoa, chỉ nhận chữ và số, tối đa 7 ký tự; gõ tìm ở cột Mã hàng tự viết hoa. Ô mã trên mọi form danh mục (web và điện thoại), cột Mã thẻ chi phí phân bổ, ô Khoản mục phiếu thu chi điện thoại cũng tự viết hoa.
 - T603: Điện thoại, chi tiết phiếu xuất, nhập điều chỉnh: nhãn nguồn chứng từ cạnh tên cửa hàng, bỏ Tổng thanh toán; có dòng Tham chiếu mở phiếu kiểm kê gốc; Ghi chú nằm riêng phía dưới; danh sách hàng chỉ hiện số lượng; menu ba chấm chỉ còn Xuất Excel.
 - T600: Điện thoại, phiếu mua hàng làm lại theo Figma. Màn xem có Tổng tiền màu theo tình trạng, khung Thanh toán với thanh tiến độ, 3 tab Phiếu nhập, Hạch toán, Lịch sử. Màn sửa, thêm mới có nhãn trên ô nhập, công tắc Nhận kèm hoá đơn, Giảm giá và Thuế GTGT áp chung. Có sheet chọn hàng hoá, chọn và thêm nhà cung cấp. Chọn Tiền mặt ngay hoặc Chuyển khoản ngay thì chuyển sang lập phiếu chi điền sẵn.
 - T599: Tờ báo cáo, mẫu in chứng từ bỏ dòng "Ký hiệu chờ kế toán trưởng duyệt".

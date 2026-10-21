@@ -915,7 +915,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
                                 type="text"
                                 className="m-tc-lap-inp"
                                 value={d.km || ''}
-                                onChange={e => handleSuaDong(idx, { km: e.target.value })}
+                                onChange={e => handleSuaDong(idx, { km: e.target.value.toUpperCase() })}
                                 placeholder="Mã khoản mục chi phí"
                               />
                             </div>
