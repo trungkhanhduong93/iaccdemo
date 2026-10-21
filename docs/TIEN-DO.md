@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T580 | Web, chi tiết phiếu mua hàng: thêm nhãn tình trạng thanh toán (Chưa thanh toán, Thanh toán 1 phần, Đã thanh toán) sát lề phải thanh Thanh toán, như chip trên App | dinhlanphuongipacc | Đang làm | Sửa `ChungTuForm.tsx`, thêm mục cuối `app.css` |
 | T577 | Web, danh sách chứng từ: thanh trên chọn Tất cả cửa hàng thì bộ lọc luôn có ô Cửa hàng ghi tên gốc, như báo cáo ở T576 | dinhlanphuongipacc | Chờ | Sửa `VoucherScreen.tsx`, Trum đang giữ ở T496, hỏi Trum trước |
 | T574 | Dữ liệu giả hoá đơn FABi lẻ (`dongMonDon` trong `ChungTuBanHang.tsx`): món cuối nhận phần dư nên số lượng × đơn giá khác thành tiền (vd 5 Ly × 39.000 = 182.000), lộ rõ ở chi tiết Xuất bán POS web và điện thoại | | Chờ | Thấy khi làm T573. `ChungTuBanHang.tsx` |
 | T575 | Điện thoại, chi tiết phiếu Xuất bán POS thêm nút In phiếu như web: app điện thoại chưa có hộp in chứng từ dùng chung | | Chờ | Tách từ T573. `MXuatBanPos.tsx` |

@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T580 | Web, chi tiết phiếu mua hàng: nhãn tình trạng thanh toán (Chưa thanh toán, Thanh toán một phần, Đã thanh toán) sát lề phải thanh Thanh toán, chữ 14px nền màu nhạt | dinhlanphuongipacc | 21/10/2026 | [nhật ký](../nhat-ky/2026-10-21-dinhlanphuongipacc-nhan-tinh-trang-thanh-toan.md) |
 | T579 | Điện thoại, bấm chip ngày ở Xuất bán POS (và bộ lọc danh sách, báo cáo) trên iPhone chỉ hiện một dải nền tối, không thấy hộp lịch: hộp lịch đưa ra ngoài hàng chip cuộn ngang bằng portal | PhuongXT | 21/10/2026 | `2026-10-21-phuongxt-hop-lich-iphone.md` |
 | T578 | Web, báo cáo: bỏ ô lọc "Ẩn dòng không phát sinh" ở thanh lọc, phễu, hộp điều kiện xem báo cáo; báo cáo có cấu hình `anKhongPS` luôn ẩn dòng không phát sinh, dòng điều kiện lọc không ghi chữ này nữa. Điện thoại không có ô này | dinhlanphuongipacc | 21/10/2026 | [nhật ký](../nhat-ky/2026-10-21-dinhlanphuongipacc-bo-o-an-khong-phat-sinh.md) |
 | T572 | Điện thoại, màn Nghiệp vụ phân hệ Thu chi bỏ hai mục Chuyển quỹ, Số dư ban đầu: Chuyển quỹ đã là tab trong Thu, chi tiền; số dư khai ở Danh mục Quỹ tiền | PhuongXT | 21/10/2026 | `2026-10-21-phuongxt-bo-chuyen-quy-nghiep-vu.md` |

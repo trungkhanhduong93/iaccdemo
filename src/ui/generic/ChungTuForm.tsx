@@ -11,7 +11,7 @@ import { tkTheoCheDo } from '../../modules/tong-hop/so-cai'
 import { CUA_HANG, KHACH, KHO, LY_CAN_DOI_TUONG, LY_CHI_PHI, LY_DO, NCC, NHAN_VIEN, TK_NGAN_HANG, daKhoaSo, khoaSoDenCua } from '../../data/mock'
 import { DS_PTTT } from '../../modules/danh-muc/data'
 import { HopXacNhan } from '../LocNangCao'
-import { bayGio, ctTtCon, dsDcCon, dsTtCon, ghiNhatKy, laDaXoa, soDaTra, soKeTiep, suaPhieu, themPhieu, ttThamChieu, useNhatKy, xoaPhieu, type CtTt, type PhieuTt } from './daXoa'
+import { bayGio, ctTtCon, dsDcCon, dsTtCon, ghiNhatKy, laDaXoa, soDaTra, soKeTiep, suaPhieu, themPhieu, ttThamChieu, ttTienTheoTra, useNhatKy, xoaPhieu, type CtTt, type PhieuTt } from './daXoa'
 import { Icon } from '../Icon'
 import { HopPhimTat, phimDong } from '../BangPhimTat'
 import { Card, Note } from '../Page'
@@ -23,7 +23,7 @@ import { heSoZoom } from '../zoom'
 import { St, Table } from '../Table'
 import { fold, money, moneyD } from '../format'
 import { NGUON, TT_CT, dongCua, tkTheoLyDo, ttNghiepVu, type Dong } from './gen'
-import { boO, nhomCua, theoLoai } from './nhom'
+import { boO, nhomCua, theoLoai, TT_TIEN } from './nhom'
 import { BangKiemKe, COT_KK } from './BangKiemKe'
 import { MAN_DC, phieuDieuChinh, type LoaiDc } from '../../modules/kho/dieu-chinh'
 import { BangSanXuat, OThamChieuSx, cotSx } from '../../modules/kho/BangSanXuat'
@@ -963,6 +963,9 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
               )}
 
               <span className="grow" />
+
+              {/* Nhãn tình trạng thanh toán sát lề phải, như chip trên App (T580) */}
+              {row && nhom === 'mua' && (() => { const [cls, nhan] = TT_TIEN.mua[ttTienTheoTra(row)]; return <span className={`ct-nhan-tt ${cls}`}>{nhan}</span> })()}
 
               {/* Ô tích kèm hoá đơn chỉ khi thêm mới, sửa; xem chi tiết thì bỏ, thông tin hoá đơn vẫn hiện ở đầu phiếu (T162) */}
               {dangSua && <label className="row" style={{ gap: 6, cursor: 'pointer', fontSize: 13 }}>

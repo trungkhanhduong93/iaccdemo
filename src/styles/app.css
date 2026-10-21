@@ -38647,3 +38647,9 @@ body:has(.m-app) .m-thanh-duoi .m-tab.on .m-tab-ic .ic .l2 {
 .bc-loc-khung .ds-toolbar-figma { border-bottom: 0; border-radius: 8px; min-height: 0; padding: 8px 12px; }
 .bc-loc-khung .ds-hang-trang-thai { border-top: 1px solid var(--line); }
 .main:has(.bc-dau-moi) .report > .bc-xem { border: 1px solid var(--line); border-radius: 8px; background: var(--white); box-shadow: 0 1px 3px rgba(14, 26, 43, 0.05); overflow: hidden; }
+
+/* ── Nhãn tình trạng thanh toán trên chi tiết phiếu mua (T580) ── */
+.ct-nhan-tt { display: inline-flex; align-items: center; font-size: 14px; font-weight: 600; padding: 4px 12px; border-radius: 6px; white-space: nowrap; }
+.ct-nhan-tt.warn { color: var(--amber); background: var(--amber-t); }
+.ct-nhan-tt.info { color: var(--blue); background: var(--bluet); }
+.ct-nhan-tt.ok { color: var(--green); background: var(--green-t); }

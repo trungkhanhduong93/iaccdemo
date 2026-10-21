@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 21/10/2026
+- T580: Web, chi tiết phiếu mua hàng có nhãn tình trạng thanh toán (Chưa thanh toán, Thanh toán một phần, Đã thanh toán) ở góc phải thanh Thanh toán.
 - T579: Điện thoại, bấm chọn khoảng ngày ở Xuất bán POS, bộ lọc danh sách, bộ lọc báo cáo trên iPhone hiện đủ hộp lịch giữa màn, hết cảnh chỉ thấy một dải nền tối.
 - T578: Web, báo cáo bỏ ô lọc "Ẩn dòng không phát sinh". Báo cáo luôn ẩn dòng không phát sinh, phễu lọc không còn đếm ô này.
 - T572: Điện thoại, màn Nghiệp vụ: phân hệ Thu chi chỉ còn mục Thu, chi tiền. Chuyển quỹ mở ở tab Chuyển quỹ trong danh sách, số dư ban đầu khai ở Danh mục Quỹ tiền.
