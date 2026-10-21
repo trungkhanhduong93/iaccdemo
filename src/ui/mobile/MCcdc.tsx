@@ -383,7 +383,9 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
                 onClick={() => { setMoGhiTang(false); setTheSuaId(null); setDaChonNgayPb(false); if (tuPhieu?._goc && !theSuaId) nav(tuPhieu._goc, { replace: true }) }}
                 aria-label="Quay lại"
               >
-                <Icon n="back" className="ic" />
+                <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none">
+                  <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
               </button>
               <h1 className="m-pb-tieu-de">{theSuaId ? `Sửa thẻ ${theSuaId}` : 'Ghi tăng thẻ chi phí'}</h1>
               <span className="m-pb-thanh-dau-phai" />
@@ -683,7 +685,9 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
                 onClick={() => { setTheXem(null); if (tuLink) nav(-1) }}
                 aria-label="Quay lại"
               >
-                <Icon n="back" className="ic" />
+                <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none">
+                  <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
               </button>
               <h1 className="m-pb-tieu-de">{theXem.soThe}</h1>
               <span className="m-pb-thanh-dau-phai" />

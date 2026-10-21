@@ -15,7 +15,8 @@ import { DCN } from '../../modules/kho/dieu-chuyen'
 import { MAN_DC } from '../../modules/kho/dieu-chinh'
 import { CUA_HANG, KHOAN_MUC, TK_NGAN_HANG, daKhoaSo } from '../../data/mock'
 import { ctTtCon, dsDcCon, dsTtCon, ghiNhatKy, soDaTra, soKeTiep, suaPhieu, themPhieu, ttThamChieu, xoaPhieu } from '../generic/daXoa'
-import { LichSu, MAN_THU_CHI, TEN_CT_TT, TIEN_TO_CT_TT, lyDoKhongXoaTheCuaPhieu, theCuaPhieu, xoaTheCuaPhieu } from '../generic/ChungTuForm'
+import { MAN_THU_CHI, TEN_CT_TT, TIEN_TO_CT_TT, lyDoKhongXoaTheCuaPhieu, theCuaPhieu, xoaTheCuaPhieu } from '../generic/ChungTuForm'
+import { MLichSu } from './MLichSu'
 import { loaiXuLy } from '../generic/BangKiemKe'
 import { HopXacNhan } from '../LocNangCao'
 import { LichDon } from '../ChonNgay'
@@ -1107,12 +1108,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
 
         {/* Tab Lịch sử */}
         {tab === 'lichsu' && (
-          <>
-            <div className="m-pb-nhom">NHẬT KÝ THAO TÁC</div>
-            <div className="m-pb-the m-pb-the-gon" style={{ padding: '8px 14px' }}>
-              <LichSu goi={s.goi} moi={false} man={`${mod.key}/${sc.slug}`} id={String(row.id)} />
-            </div>
-          </>
+          <MLichSu goi={s.goi} man={`${mod.key}/${sc.slug}`} id={String(row.id)} />
         )}
       </div>
 

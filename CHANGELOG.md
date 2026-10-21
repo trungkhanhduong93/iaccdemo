@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 21/10/2026
+- T536: Điện thoại, tab Lịch sử của màn xem phiếu thành dòng thời gian theo ngày: ai làm, lúc nào, trường nào đổi từ gì sang gì. Thẻ ở màn xem và lập phiếu thu chi cách mép 16px, bo 4 góc. Nút quay lại ở thẻ chi phí phân bổ đổi sang mũi tên ←.
 - T538: Điện thoại, trang chủ: ô chọn cửa hàng ghi "CH:" thay "CN:".
 - T538: Điện thoại, lập phiếu thu, phiếu chi: bấm chỗ nào trên dải số tiền cũng nhập được. Danh sách chọn đối tượng lấy từ danh mục, mỗi dòng ghi mã và loại; nút ⊕ mở form thêm đối tượng, lưu xong chọn luôn; mở danh sách không còn bị phóng to trên iPhone. Ô Địa chỉ bỏ nhãn Tự điền. Tháng ghi nhận chi phí chỉ hiện ở phiếu chi có lý do chi phí. Diễn giải đổi thành Ghi chú.
 - T537: Phiếu mua hàng: ô Chiết khấu đứng trước ô Thuế GTGT trên thanh tab.

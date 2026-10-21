@@ -36806,30 +36806,6 @@ body:has(.m-app) .m-thanh-duoi .m-tab.on .m-tab-ic .ic .l2 {
   height: calc(68px + env(safe-area-inset-bottom, 0px));
 }
 
-.m-tc-xem-the-tom-tat,
-.m-tc-card-thong-tin,
-.m-tc-card-chi-tiet,
-.m-xp-the-ht,
-.m-tc-card-so-tien,
-.m-tc-lap-card {
-  margin-left: 0 !important;
-  margin-right: 0 !important;
-  border-radius: 0 !important;
-  border-left: 0 !important;
-  border-right: 0 !important;
-  padding-left: 16px !important;
-  padding-right: 16px !important;
-  box-sizing: border-box !important;
-}
-
-.m-tc-nhom-chu {
-  margin-left: 0 !important;
-  margin-right: 0 !important;
-  padding-left: 16px !important;
-  padding-right: 16px !important;
-  box-sizing: border-box !important;
-}
-
 .m-tc-segmented {
   margin-left: 16px !important;
   margin-right: 16px !important;
@@ -36994,3 +36970,206 @@ body:has(.m-app) .m-thanh-duoi .m-tab.on .m-tab-ic .ic .l2 {
 .m-tc-dt-btn-ic:active { background: var(--tint, #e6eff7); }
 .m-tc-dt-dang-tai { padding: 24px 0; text-align: center; font-size: 13px; color: var(--muted, #6b7280); }
 .m-tc-dt-ma { font-weight: 600; color: var(--blue, #0560a6); font-variant-numeric: tabular-nums; }
+
+/* ── Khung bo góc màn xem, lập phiếu thu chi điện thoại (T536) ── */
+.m-tc-xem-the-tom-tat,
+.m-tc-card-thong-tin,
+.m-tc-card-chi-tiet,
+.m-xp-the-ht,
+.m-tc-card-so-tien,
+.m-tc-lap-card {
+  margin-left: 16px;
+  margin-right: 16px;
+  border-radius: 16px;
+  border: 1px solid #eef1f5;
+  box-sizing: border-box;
+}
+
+.m-tc-nhom-chu {
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+/* ── Tab Lịch sử điện thoại dạng dòng thời gian (T536) ── */
+.m-ls-khung {
+  margin-left: 16px;
+  margin-right: 16px;
+  padding: 4px 0 24px;
+}
+
+.m-ls-the {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #eef1f5;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-sizing: border-box;
+}
+
+.m-ls-trong {
+  padding: 24px 16px;
+  text-align: center;
+  color: var(--muted, #6b7280);
+  font-size: 13.5px;
+}
+
+.m-ls-tom-tat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #eef1f5;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: var(--ink, #1f2225);
+  font-weight: 500;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.m-ls-nhan-ngay {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted, #6b7280);
+  text-transform: uppercase;
+  margin: 16px 4px 10px;
+}
+
+.m-ls-ds-hang {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.m-ls-hang {
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+  position: relative;
+}
+
+.m-ls-cot-trai {
+  width: 32px;
+  flex-shrink: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.m-ls-vong-tron {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+.m-ls-vong-tron.tao {
+  background: #fff5ea;
+  color: #d0650a;
+}
+
+.m-ls-vong-tron.sua {
+  background: #e6eff7;
+  color: var(--blue, #0560a6);
+}
+
+.m-ls-vong-tron.ghi_so {
+  background: #e3f4ea;
+  color: #138a52;
+}
+
+.m-ls-vong-tron.xoa {
+  background: var(--red-t, #fee2e2);
+  color: var(--red, #dc2626);
+}
+
+.m-ls-vach {
+  position: absolute;
+  top: 32px;
+  bottom: -12px;
+  width: 2px;
+  background: #e5e7eb;
+  left: 15px;
+}
+
+.m-ls-hang .m-ls-the {
+  flex: 1 1 auto;
+  padding: 12px 14px;
+  min-width: 0;
+}
+
+.m-ls-hang-dau {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+
+.m-ls-ten-viec {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink, #1f2225);
+}
+
+.m-ls-gio {
+  font-size: 12px;
+  color: var(--muted, #6b7280);
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
+.m-ls-nguoi {
+  font-size: 12.5px;
+  color: var(--muted, #6b7280);
+  margin-bottom: 2px;
+}
+
+.m-ls-ghi-chu {
+  font-size: 13px;
+  color: var(--ink, #1f2225);
+  margin-top: 4px;
+}
+
+.m-ls-ds-doi {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.m-ls-hop-doi {
+  background: #f4f7fa;
+  border-radius: 8px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.m-ls-ten-truong {
+  font-size: 12px;
+  color: var(--muted, #6b7280);
+}
+
+.m-ls-gia-tri {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.m-ls-cu {
+  color: var(--muted, #6b7280);
+  text-decoration: line-through;
+}
+
+.m-ls-moi {
+  font-weight: 600;
+  color: var(--ink, #1f2225);
+}

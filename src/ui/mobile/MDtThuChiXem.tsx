@@ -4,7 +4,8 @@ import type { Row, ScreenProps } from '../../modules/types'
 import { duongDan } from '../../app/registry'
 import { useSession } from '../../app/session'
 import { money } from '../format'
-import { LichSu, theCuaPhieu } from '../generic/ChungTuForm'
+import { theCuaPhieu } from '../generic/ChungTuForm'
+import { MLichSu } from './MLichSu'
 import { useDongChungTu } from '../generic/VoucherScreen'
 import { HopXacNhan } from '../LocNangCao'
 import type { Dong } from '../generic/gen'
@@ -343,17 +344,7 @@ export const MDtThuChiXem: FC<MDtThuChiXemProps> = ({
 
         {/* 5. Tab Lịch sử */}
         {tab === 'lichsu' && (
-          <div className="m-tc-tab-lich-su">
-            <div className="m-tc-nhom-chu">NHẬT KÝ THAO TÁC</div>
-            <div className="m-tc-card-thong-tin" style={{ padding: '12px 14px' }}>
-              <LichSu
-                goi={s.goi}
-                moi={false}
-                man={`${mod.key}/${sc.slug}`}
-                id={String(row.id)}
-              />
-            </div>
-          </div>
+          <MLichSu goi={s.goi} man={`${mod.key}/${sc.slug}`} id={String(row.id)} />
         )}
       </main>
 
