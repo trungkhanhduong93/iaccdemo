@@ -133,6 +133,8 @@ h2 { text-align: center; font-size: 19px; font-weight: 800; color: #0f172a; marg
   .bc-trang { margin: 0 auto; box-shadow: none; break-after: page; page-break-after: always; }
   .bc-trang:last-child { break-after: auto; page-break-after: auto; }
   .chip { display: none; }
+  .rpt td a, .rpt td button, .rpt td .ds-link-so, .rpt td .nxt-link-hang { font-size: inherit !important; font-family: inherit !important; font-weight: inherit !important; color: inherit !important; text-decoration: none !important; cursor: default !important; pointer-events: none !important; }
+  .rpt tr.drill { cursor: default !important; pointer-events: none !important; }
   * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }`
 

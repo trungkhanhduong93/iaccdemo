@@ -38199,7 +38199,7 @@ body:has(.m-app) .m-thanh-duoi .m-tab.on .m-tab-ic .ic .l2 {
 }
 
 
-/* ── Tờ in: ô mã, số phiếu chữ thường (T556) ── */
+/* ── Tờ in: chữ thường, không liên kết (T556, T593) ── */
 .bc-trang .rpt td.code,
 .bc-trang-do .rpt td.code,
 .bc-in-goc .rpt td.code {
@@ -38217,12 +38217,18 @@ body:has(.m-app) .m-thanh-duoi .m-tab.on .m-tab-ic .ic .l2 {
 .bc-trang .rpt td.code a,
 .bc-trang .rpt td.code button,
 .bc-trang .rpt td.code .ds-link-so,
-.bc-trang-do .rpt td.code a,
-.bc-trang-do .rpt td.code button,
-.bc-trang-do .rpt td.code .ds-link-so,
-.bc-in-goc .rpt td.code a,
-.bc-in-goc .rpt td.code button,
-.bc-in-goc .rpt td.code .ds-link-so {
+.bc-trang-do .rpt td a,
+.bc-trang-do .rpt td button,
+.bc-trang-do .rpt td .ds-link-so,
+.bc-trang-do .rpt td .nxt-link-hang,
+.bc-in-goc .rpt td a,
+.bc-in-goc .rpt td button,
+.bc-in-goc .rpt td .ds-link-so,
+.bc-in-goc .rpt td .nxt-link-hang,
+.bc-xem-truoc .rpt td a,
+.bc-xem-truoc .rpt td button,
+.bc-xem-truoc .rpt td .ds-link-so,
+.bc-xem-truoc .rpt td .nxt-link-hang {
   font-size: inherit !important;
   font-family: inherit !important;
   font-weight: inherit !important;
@@ -38233,16 +38239,31 @@ body:has(.m-app) .m-thanh-duoi .m-tab.on .m-tab-ic .ic .l2 {
   display: inline;
 }
 
+.bc-xem-truoc .rpt tr.drill,
+.bc-in-goc .rpt tr.drill {
+  cursor: default !important;
+  pointer-events: none !important;
+}
+.bc-xem-truoc .rpt tr.drill:hover td,
+.bc-in-goc .rpt tr.drill:hover td {
+  background: inherit !important;
+}
+
 @media print {
   .rpt td.code,
-  .rpt td.code a,
-  .rpt td.code button,
-  .rpt td.code .ds-link-so {
+  .rpt td a,
+  .rpt td button,
+  .rpt td .ds-link-so,
+  .rpt td .nxt-link-hang {
     font-size: inherit !important;
     font-family: inherit !important;
     font-weight: inherit !important;
     color: inherit !important;
     text-decoration: none !important;
+    cursor: default !important;
+    pointer-events: none !important;
+  }
+  .rpt tr.drill {
     cursor: default !important;
     pointer-events: none !important;
   }
