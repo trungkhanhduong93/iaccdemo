@@ -40693,3 +40693,92 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
 .m-bkm-card-tong.xanh {
   color: var(--green, #107c41) !important;
 }
+
+/* ── Phiếu mua điện thoại khớp canvas đợt 2 (T609) ── */
+.m-pb-noi-dung .m-t601-tabs {
+  margin: 0 0 10px;
+}
+
+.m-t609-btn-thue-chung {
+  width: auto !important;
+  min-width: 96px;
+  height: 34px !important;
+  padding: 0 8px 0 10px !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--ink);
+  font-family: inherit;
+}
+
+.m-pb-noi-dung .m-t601-hang-card {
+  margin: 0 0 16px;
+}
+
+.m-t601-btn-them-dong {
+  border: 1.5px dashed var(--blue) !important;
+  margin: 2px 0;
+}
+
+.m-t601-thanh-cong-cu {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.m-t601-thanh-cong-cu .m-t601-btn-ib {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.m-t609-sub-overlay {
+  z-index: 320 !important;
+}
+
+.m-t609-sub-sheet {
+  height: calc(85dvh - 60px) !important;
+  max-height: calc(85dvh - 60px) !important;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.m-t609-wrap-sheet-con .m-tam-overlay {
+  z-index: 320 !important;
+}
+
+.m-t609-wrap-sheet-con .m-tam-hop {
+  height: calc(85dvh - 60px) !important;
+  max-height: calc(85dvh - 60px) !important;
+}
+
+/* BAY.md:110: Ô input trong sheet cỡ chữ >= 16px để Safari iOS không tự phóng to */
+.m-t609-sub-sheet input,
+.m-t609-sub-sheet textarea,
+.m-t609-wrap-sheet-con input {
+  font-size: 16px !important;
+}
+
+/* ── Phiếu mua điện thoại: Thanh toán ngay và bảng chọn quỹ (T610) ── */
+.m-t610-sheet-con {
+  height: calc(85dvh - 60px) !important;
+  max-height: calc(85dvh - 60px) !important;
+}
+
+.m-t610-sheet-con::before {
+  content: "";
+  display: block;
+  width: 40px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--faint);
+  margin: 8px auto 0;
+  flex-shrink: 0;
+}

@@ -3,6 +3,8 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 22/10/2026
+- T610: Điện thoại, màn xem phiếu mua: nút Thanh toán mở sheet Thanh toán ngay và sheet Chọn quỹ như màn sửa. Lập phiếu chi xong mở luôn phiếu chi vừa lập.
+- T609: Điện thoại, phiếu mua màn sửa và thêm mới: thanh tab Phiếu nhập, Lịch sử nằm dưới khung Thanh toán; ô Thuế GTGT áp chung chọn bằng sheet; sheet chọn nhóm hàng, thêm nhà cung cấp thấp hơn sheet phía sau.
 - T612: Điện thoại, bấm Thu tiền, Chi tiền ở thao tác nhanh trang chủ hiện menu nhỏ ngay dưới ô, có biểu tượng, chọn Thu tiền mặt hay Thu ngân hàng, giống nút Lập phiếu thu ở Tất cả quỹ. Tiến độ kiểm kê theo cửa hàng (gói Free) có tiêu đề cột Kiểm kê lần cuối và bỏ số mặt hàng đã kiểm, giống web.
 - T608: Điện thoại gói Free, phiếu thu, phiếu chi: dưới Số tiền là ô Diễn giải, bỏ khung gợi ý, ô Ghi chú và mục Chi tiết. Lưu phiếu thì số tiền và diễn giải thành dòng chi tiết, diễn giải là ghi chú phiếu. Phiếu cũ từ 2 dòng vẫn hiện Chi tiết, không thêm dòng được.
 - T606: Điện thoại, Tổng hợp bán hàng và Báo cáo kiểm kê trình bày như Bảng kê mua hàng: thẻ gom theo nhóm hàng, theo kho, khối tổng ghim đáy màn hình, bỏ dạng bảng.

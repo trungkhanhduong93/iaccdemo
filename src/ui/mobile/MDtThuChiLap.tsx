@@ -445,8 +445,9 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
         ghiNhatKy(dienSan.manMua, dienSan.idMua, dienSan.soMua ?? '', s.ten, `Thanh toán ngay ${money(soTien)} bằng ${soCt}`)
       }
       toast(`Đã lưu phiếu ${soCt}`)
+      // Thanh toán ngay từ phiếu mua (T610): lưu xong mở phiếu chi vừa lập, nút quay lại về phiếu mua
       if (dienSan.veGoc) {
-        nav(dienSan.veGoc, { replace: true })
+        nav(`${path}/${targetId}`, { replace: true })
         return
       }
       setPhieuVuaLuu({ id: targetId, so: soCt })
