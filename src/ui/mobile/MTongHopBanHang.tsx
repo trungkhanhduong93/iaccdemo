@@ -72,16 +72,6 @@ export const MTongHopBanHang: FC<MTongHopBanHangProps> = ({ rows, q }) => {
   }, [dsHangChuan])
 
   // Tổng ghim đáy màn hình khớp dòng Cộng trên web
-  const tongSl = useMemo(() => {
-    if (rTong?.sl !== undefined) return Number(rTong.sl)
-    return dsHangChuan.reduce((s, x) => s + x.sl, 0)
-  }, [rTong, dsHangChuan])
-
-  const tongDt = useMemo(() => {
-    if (rTong?.thanh !== undefined) return Number(rTong.thanh)
-    return dsHangChuan.reduce((s, x) => s + x.thanh, 0)
-  }, [rTong, dsHangChuan])
-
   const tongTien = useMemo(() => {
     if (rTong?.tong !== undefined) return Number(rTong.tong)
     return dsHangChuan.reduce((s, x) => s + x.tong, 0)
@@ -226,8 +216,7 @@ export const MTongHopBanHang: FC<MTongHopBanHangProps> = ({ rows, q }) => {
       {/* Tổng ghim đáy màn */}
       <div className="m-bkm-chan">
         <div className="m-bkm-chan-trai">
-          <div className="m-bkm-chan-nhan">Tổng cộng bán hàng</div>
-          <div className="m-bkm-chan-phu">SL {soLuong(tongSl)} · Doanh thu {money(tongDt)}</div>
+          <div className="m-bkm-chan-nhan">Tổng doanh thu thuần</div>
         </div>
         <div className="m-bkm-chan-phai">
           <span className="m-bkm-chan-tien num">{money(tongTien)} đ</span>

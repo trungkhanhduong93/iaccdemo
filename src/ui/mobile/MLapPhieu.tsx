@@ -1494,20 +1494,29 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
   }, [dsDong, timHangTrongPhieu])
 
   // Danh sách quỹ trong bảng chọn quỹ thanh toán
+  const quyTmCh = useMemo(() => {
+    const tim = CUA_HANG.find(c => c.ten === cuaHang || c.ngan === cuaHang || c.id === cuaHang)
+      ?? CUA_HANG.find(c => cuaHang.includes(c.ngan))
+    return tim ? `Quỹ tiền mặt ${tim.ngan}` : quyTm
+  }, [cuaHang, quyTm])
+
   const dsQuyMau = useMemo(() => [
-    { k: 'Quỹ tiền mặt Nguyễn Trãi', ten: 'Quỹ tiền mặt Nguyễn Trãi', loai: 'tm' as const, soDu: 12450000 },
-    { k: 'Quỹ tiền mặt Lê Lợi', ten: 'Quỹ tiền mặt Lê Lợi', loai: 'tm' as const, soDu: 8200000 },
-    { k: 'Quỹ tiền mặt văn phòng', ten: 'Quỹ tiền mặt văn phòng', loai: 'tm' as const, soDu: 3100000 },
+    ...CUA_HANG.map(c => ({
+      k: `Quỹ tiền mặt ${c.ngan}`,
+      ten: `Quỹ tiền mặt ${c.ngan}`,
+      loai: 'tm' as const,
+      soDu: soDuQuy(`Quỹ tiền mặt ${c.ngan}`),
+    })),
     { k: 'Vietcombank 0071 0012 34567', ten: 'Vietcombank 0071 0012 34567', loai: 'nh' as const, soDu: 144800000 },
     { k: 'Techcombank 1903 4455 6677 88', ten: 'Techcombank 1903 4455 6677 88', loai: 'nh' as const, soDu: 319850000 },
     { k: 'VPBank, chi nhánh Quận 1', ten: 'VPBank, chi nhánh Quận 1', loai: 'nh', soDu: 3320000 },
-  ], [quyTm])
+  ], [])
 
   const dsQuyTmLoc = useMemo(() => {
-    return dsQuyMau
-      .filter(q => q.loai === 'tm')
-      .filter(q => !timQuy.trim() || fold(q.ten).includes(fold(timQuy.trim())))
-  }, [dsQuyMau, timQuy])
+    const list = dsQuyMau.filter(q => q.loai === 'tm' && q.ten === quyTmCh)
+    const ds = list.length > 0 ? list : [{ k: quyTmCh, ten: quyTmCh, loai: 'tm' as const, soDu: soDuQuy(quyTmCh) }]
+    return ds.filter(q => !timQuy.trim() || fold(q.ten).includes(fold(timQuy.trim())))
+  }, [dsQuyMau, quyTmCh, timQuy])
 
   const dsQuyNhLoc = useMemo(() => {
     return dsQuyMau
@@ -2164,7 +2173,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                       <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)' }}>Chiết khấu</div>
                       <div style={{ fontSize: 12, color: 'var(--muted)' }}>Áp cho tất cả dòng hàng</div>
                     </div>
-                    <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                    <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexShrink: 0 }}>
                       <span className="m-t601-toggle-don-vi">
                         <button
                           type="button"
@@ -2192,7 +2201,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                         inputMode={giamGiaChungKieu === '%' ? 'decimal' : 'numeric'}
                         placeholder="0"
                         className="m-t600-inp"
-                        style={{ width: 76, height: 34, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}
+                        style={{ width: 120, height: 34, textAlign: 'right', fontVariantNumeric: 'tabular-nums', padding: '0 8px' }}
                         value={giamGiaChungVal}
                         onChange={e => {
                           const val = giamGiaChungKieu === '%' ? chuanHoaPhanTram(e.target.value) : goSoVN(e.target.value, false)
@@ -2756,7 +2765,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
               </button>
               <button
                 type="button"
-                className="m-t601-btn-ib m-t601-btn-ib-reload"
+                className="m-t601-btn-ib"
                 aria-label="Tải lại danh sách"
                 onClick={() => {
                   setDangTaiNcc(true)
@@ -2831,16 +2840,8 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
         <div className="m-tam-overlay m-t609-sub-overlay" onClick={() => setMoThemNcc(false)}>
           <div className="m-tam-hop m-t609-sub-sheet" onClick={e => e.stopPropagation()}>
             <div className="m-tam-dau">
-              <button
-                type="button"
-                className="m-t601-btn-ib"
-                onClick={() => setMoThemNcc(false)}
-                aria-label="Về danh sách nhà cung cấp"
-              >
-                ‹
-              </button>
-              <h2 className="m-tam-tieu" style={{ flex: 1 }}>Thêm nhà cung cấp</h2>
-              <button type="button" style={{ display: 'none' }} onClick={() => { setMoThemNcc(false); setMoChonDt(false) }}>
+              <h2 className="m-tam-tieu">Thêm nhà cung cấp</h2>
+              <button type="button" className="m-tam-dong-btn" onClick={() => setMoThemNcc(false)} aria-label="Đóng">
                 <Icon n="x" className="ic sm" kieu="net" />
               </button>
             </div>
@@ -3070,7 +3071,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                   className={`m-t600-nut-doi-item ${htSheet === 'tienmat' ? 'on' : ''}`}
                   onClick={() => {
                     setHtSheet('tienmat')
-                    setQuySheet(quyTm)
+                    setQuySheet(quyTmCh)
                   }}
                 >
                   Tiền mặt

@@ -33,9 +33,12 @@ export const soDuQuy = (tenQuy: string): number => {
 }
 
 export const DS_QUY_MAU: QuyMau[] = [
-  { k: 'Quỹ tiền mặt Nguyễn Trãi', ten: 'Quỹ tiền mặt Nguyễn Trãi', loai: 'tm', soDu: 12450000 },
-  { k: 'Quỹ tiền mặt Lê Lợi', ten: 'Quỹ tiền mặt Lê Lợi', loai: 'tm', soDu: 8200000 },
-  { k: 'Quỹ tiền mặt văn phòng', ten: 'Quỹ tiền mặt văn phòng', loai: 'tm', soDu: 3100000 },
+  ...CUA_HANG.map(c => ({
+    k: `Quỹ tiền mặt ${c.ngan}`,
+    ten: `Quỹ tiền mặt ${c.ngan}`,
+    loai: 'tm' as const,
+    soDu: soDuQuy(`Quỹ tiền mặt ${c.ngan}`),
+  })),
   { k: 'Vietcombank 0071 0012 34567', ten: 'Vietcombank 0071 0012 34567', loai: 'nh', soDu: 144800000 },
   { k: 'Techcombank 1903 4455 6677 88', ten: 'Techcombank 1903 4455 6677 88', loai: 'nh', soDu: 319850000 },
   { k: 'VPBank, chi nhánh Quận 1', ten: 'VPBank, chi nhánh Quận 1', loai: 'nh', soDu: 3320000 },
@@ -79,12 +82,13 @@ export const MThanhToanNgay: FC<MThanhToanNgayProps> = ({
   const tienNo = conNo ?? conLai ?? 0
 
   const cnNgan = useMemo(() => {
-    return CUA_HANG.find(c => c.ten === chHienThi)?.ngan ?? 'Nguyễn Trãi'
+    return CUA_HANG.find(c => c.ten === chHienThi || c.ngan === chHienThi || c.id === chHienThi)?.ngan
+      ?? CUA_HANG.find(c => chHienThi.includes(c.ngan))?.ngan
+      ?? 'Nguyễn Trãi'
   }, [chHienThi])
 
   const quyTmMacDinh = useMemo(() => {
-    const tim = DS_QUY_MAU.find(q => q.loai === 'tm' && q.ten.includes(cnNgan))
-    return tim?.ten ?? `Quỹ tiền mặt ${cnNgan}`
+    return `Quỹ tiền mặt ${cnNgan}`
   }, [cnNgan])
 
   const quyNhMacDinh = useMemo(() => {
@@ -115,10 +119,10 @@ export const MThanhToanNgay: FC<MThanhToanNgayProps> = ({
   }, [mo, soCtHienThi, tienNo, quyTmMacDinh, ngayMacDinh])
 
   const dsQuyTmLoc = useMemo(() => {
-    return DS_QUY_MAU
-      .filter(q => q.loai === 'tm')
-      .filter(q => !timQuy.trim() || fold(q.ten).includes(fold(timQuy.trim())))
-  }, [timQuy])
+    const list = DS_QUY_MAU.filter(q => q.loai === 'tm' && q.ten === quyTmMacDinh)
+    const ds = list.length > 0 ? list : [{ k: quyTmMacDinh, ten: quyTmMacDinh, loai: 'tm' as const, soDu: soDuQuy(quyTmMacDinh) }]
+    return ds.filter(q => !timQuy.trim() || fold(q.ten).includes(fold(timQuy.trim())))
+  }, [quyTmMacDinh, timQuy])
 
   const dsQuyNhLoc = useMemo(() => {
     return DS_QUY_MAU

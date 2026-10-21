@@ -1,9 +1,7 @@
 // Báo cáo kiểm kê điện thoại theo mẫu D (T606)
 import { useEffect, useMemo, useState, type FC } from 'react'
 import type { Row } from '../../modules/types'
-import { money, soLuong } from '../format'
-import { HANG, NVL } from '../../data/mock'
-
+import { soLuong } from '../format'
 export interface MBaoCaoKiemKeProps {
   rows: Row[]
   q?: string
@@ -14,12 +12,8 @@ interface HangKiemKeItem {
   ten: string
   dvt: string
   kho: string
-  gia: number
   thua: number
   thieu: number
-  giaTriThua: number
-  giaTriThieu: number
-  giaTriChenh: number
   ton0?: number
   nhap?: number
   xuat?: number
@@ -31,16 +25,7 @@ interface NhomKhoKiemKe {
   tenKho: string
   tongThua: number
   tongThieu: number
-  tongGiaTriChenh: number
   items: HangKiemKeItem[]
-}
-
-function layDonGiaHang(ma: string): number {
-  const h = HANG.find(x => x.ma === ma)
-  if (h && typeof h.gia === 'number') return h.gia
-  const n = NVL.find(x => x.ma === ma)
-  if (n && typeof n.gia === 'number') return n.gia
-  return 0
 }
 
 export const MBaoCaoKiemKe: FC<MBaoCaoKiemKeProps> = ({ rows, q }) => {
@@ -55,24 +40,16 @@ export const MBaoCaoKiemKe: FC<MBaoCaoKiemKeProps> = ({ rows, q }) => {
         const ten = String(r.ten || '')
         const dvt = String(r.dvt || '')
         const kho = String(r.kho || 'Kho chung')
-        const gia = layDonGiaHang(ma)
         const thua = Number(r.thua) || 0
         const thieu = Number(r.thieu) || 0
-        const giaTriThua = thua * gia
-        const giaTriThieu = thieu * gia
-        const giaTriChenh = (thua - thieu) * gia
 
         return {
           ma,
           ten,
           dvt,
           kho,
-          gia,
           thua,
           thieu,
-          giaTriThua,
-          giaTriThieu,
-          giaTriChenh,
           ton0: r.ton0 !== undefined ? Number(r.ton0) : undefined,
           nhap: r.nhap !== undefined ? Number(r.nhap) : undefined,
           xuat: r.xuat !== undefined ? Number(r.xuat) : undefined,
@@ -95,17 +72,27 @@ export const MBaoCaoKiemKe: FC<MBaoCaoKiemKeProps> = ({ rows, q }) => {
       tenKho,
       tongThua: items.reduce((s, x) => s + x.thua, 0),
       tongThieu: items.reduce((s, x) => s + x.thieu, 0),
-      tongGiaTriChenh: items.reduce((s, x) => s + x.giaTriChenh, 0),
       items,
     }))
   }, [dsHangChuan])
 
-  // Tổng toàn bộ các kho
-  const tongThua = useMemo(() => dsHangChuan.reduce((s, x) => s + x.thua, 0), [dsHangChuan])
-  const tongThieu = useMemo(() => dsHangChuan.reduce((s, x) => s + x.thieu, 0), [dsHangChuan])
-  const tongGiaTriThua = useMemo(() => dsHangChuan.reduce((s, x) => s + x.giaTriThua, 0), [dsHangChuan])
-  const tongGiaTriThieu = useMemo(() => dsHangChuan.reduce((s, x) => s + x.giaTriThieu, 0), [dsHangChuan])
-  const tongGiaTriChenh = useMemo(() => Math.abs(tongGiaTriThua - tongGiaTriThieu), [tongGiaTriThua, tongGiaTriThieu])
+  // Thống kê số mặt hàng theo trạng thái
+  const { soHangThua, soHangThieu, soHangKhop, soMatHangLech } = useMemo(() => {
+    let thua = 0
+    let thieu = 0
+    let khop = 0
+    for (const x of dsHangChuan) {
+      if (x.thua > 0) thua++
+      else if (x.thieu > 0) thieu++
+      else khop++
+    }
+    return {
+      soHangThua: thua,
+      soHangThieu: thieu,
+      soHangKhop: khop,
+      soMatHangLech: thua + thieu,
+    }
+  }, [dsHangChuan])
 
   // Đặt tiêu đề thanh trên thành Báo cáo kiểm kê
   useEffect(() => {
@@ -155,12 +142,12 @@ export const MBaoCaoKiemKe: FC<MBaoCaoKiemKeProps> = ({ rows, q }) => {
                     className="m-bkm-card"
                     onClick={() => toggleItem(khoaItem, laMacDinhBung)}
                   >
-                    {/* Hàng 1: Mã hàng bên trái, Giá trị thừa/thiếu + Mũi tên bên phải */}
+                    {/* Hàng 1: Mã hàng bên trái, Số lượng lệch + Mũi tên bên phải */}
                     <div className="m-bkm-card-h1">
                       <span className="m-bkm-so-phieu">{it.ma}</span>
                       <div className="m-bkm-card-h1-phai">
                         <span className={`m-bkm-card-tong num ${it.thieu > 0 ? 'do' : it.thua > 0 ? 'xanh' : ''}`}>
-                          {it.thua > 0 ? `+${money(it.giaTriThua)}` : it.thieu > 0 ? `−${money(it.giaTriThieu)}` : '0 đ'}
+                          {it.thua > 0 ? `+${soLuong(it.thua)}${it.dvt ? ` ${it.dvt}` : ''}` : it.thieu > 0 ? `−${soLuong(it.thieu)}${it.dvt ? ` ${it.dvt}` : ''}` : 'Khớp'}
                         </span>
                         <span className="m-bkm-card-chev">
                           {isBung ? (
@@ -189,7 +176,6 @@ export const MBaoCaoKiemKe: FC<MBaoCaoKiemKeProps> = ({ rows, q }) => {
                                 <span className="m-bkm-hang-ten">Số lượng thừa</span>
                                 <span className="m-bkm-hang-tien num" style={{ color: 'var(--green, #107c41)' }}>+{soLuong(it.thua)} {it.dvt}</span>
                               </div>
-                              <div className="m-bkm-hang-sub">Giá trị thừa: {money(it.giaTriThua)} đ ({soLuong(it.thua)} × {money(it.gia)})</div>
                             </div>
                           )}
 
@@ -199,7 +185,6 @@ export const MBaoCaoKiemKe: FC<MBaoCaoKiemKeProps> = ({ rows, q }) => {
                                 <span className="m-bkm-hang-ten">Số lượng thiếu</span>
                                 <span className="m-bkm-hang-tien num" style={{ color: 'var(--orange, #ea580c)' }}>−{soLuong(it.thieu)} {it.dvt}</span>
                               </div>
-                              <div className="m-bkm-hang-sub">Giá trị thiếu: {money(it.giaTriThieu)} đ ({soLuong(it.thieu)} × {money(it.gia)})</div>
                             </div>
                           )}
 
@@ -230,7 +215,6 @@ export const MBaoCaoKiemKe: FC<MBaoCaoKiemKeProps> = ({ rows, q }) => {
                         <div className="m-bkm-ct-chan">
                           <div className="m-bkm-ct-chan-trai">
                             <span>ĐVT <b className="num">{it.dvt}</b></span>
-                            <span>Đơn giá <b className="num">{money(it.gia)}</b></span>
                           </div>
                           <div className="m-bkm-ct-chan-phai">
                             <span className={`m-bkm-tt-badge ${it.thieu > 0 ? 'no' : 'da'}`}>
@@ -252,11 +236,11 @@ export const MBaoCaoKiemKe: FC<MBaoCaoKiemKeProps> = ({ rows, q }) => {
       <div className="m-bkm-chan">
         <div className="m-bkm-chan-trai">
           <div className="m-bkm-chan-nhan">Tổng chênh lệch kiểm kê</div>
-          <div className="m-bkm-chan-phu">Thừa <b className="num">{soLuong(tongThua)}</b> · Thiếu <b className="num">{soLuong(tongThieu)}</b></div>
+          <div className="m-bkm-chan-phu">Thừa <b className="num">{soHangThua}</b> · Thiếu <b className="num">{soHangThieu}</b> · Khớp <b className="num">{soHangKhop}</b></div>
         </div>
         <div className="m-bkm-chan-phai">
           <span className="m-bkm-chan-tien num">
-            {money(tongGiaTriChenh)} đ
+            {soMatHangLech} mặt hàng lệch
           </span>
         </div>
       </div>

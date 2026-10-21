@@ -3,6 +3,8 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 22/10/2026
+- T616: Điện thoại, phiếu mua: Thanh toán ngay chỉ cho chọn quỹ tiền mặt của cửa hàng lập phiếu. Tab Lịch sử của các phiếu thẳng mép như phiếu thu chi. Ô chiết khấu áp chung rộng hơn, nhập 1.000.000 đủ chỗ. Sheet Chọn nhà cung cấp còn một icon tải lại, sheet Thêm nhà cung cấp có nút X để đóng.
+- T615: Điện thoại, Báo cáo kiểm kê không còn đơn giá và số tiền: thẻ hiện số lượng lệch, khối tổng đếm số mặt hàng lệch. Tổng hợp bán hàng ghi Tổng doanh thu thuần, bỏ dòng số lượng và doanh thu.
 - T618: Chi tiết chứng từ (thu chi, mua hàng, bán hàng, kho, kiểm kê, Xuất bán POS, tab Hạch toán): kéo mép phải tiêu đề cột để giãn độ rộng cột như ở danh sách, cả khi xem và khi sửa. Độ rộng nhớ trên trình duyệt theo từng màn.
 - T617: Gói Free, tháng chọn ở trang chủ thành tháng làm việc: mở báo cáo, danh sách chứng từ, Thẻ chi phí phân bổ đều lọc sẵn đúng tháng đó. Báo cáo Kết quả kinh doanh gói Free chỉ còn một cột số liệu tháng đang xem.
 - T614: Điện thoại, phiếu mua hàng thêm mới mặc định không tích Nhận kèm hoá đơn. Phiếu mua gọi là Chiết khấu như web thay cho Giảm giá: dòng Chiết khấu của từng mặt hàng (nhập theo % hoặc theo đ), ô Chiết khấu áp cho tất cả dòng, dòng tổng và màn xem phiếu ghi Tiền chiết khấu.

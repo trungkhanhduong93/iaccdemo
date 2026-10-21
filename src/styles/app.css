@@ -40520,16 +40520,6 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
 }
 
 
-.m-t601-btn-ib-reload {
-  font-size: 0 !important;
-}
-.m-t601-btn-ib-reload::after {
-  content: "";
-  display: block;
-  width: 20px;
-  height: 20px;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%230560a6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 12a8 8 0 1 1-2.34-5.66'/%3E%3Cpath d='M20 4v5h-5'/%3E%3C/svg%3E") no-repeat center;
-}
 
 .m-t600-hang-ncc > div:first-child {
   background: var(--tint) !important;
@@ -40840,4 +40830,23 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
 .fsf-f-pos .pos-phep-o.tong b { font-size: 18px; font-weight: 700; color: var(--blue); }
 @media (max-width: 1199px) {
   .fsf-f-pos .pos-phep { order: -1; flex-basis: 100%; }
+}
+
+/* ── Ô chiết khấu áp chung & nút sheet NCC (T616 gói D) ── */
+.m-t601-hang-ap-row {
+  padding: 10px 12px;
+  gap: 8px;
+}
+.m-t601-hang-ap-row > div:first-child {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+.m-t601-hang-ap-row > div:last-child {
+  flex-shrink: 0;
+}
+
+/* ── Lịch sử trong màn xem, sửa phiếu bỏ lề thừa, thẳng mép như phiếu thu chi (T616) ── */
+.m-pb-noi-dung .m-ls-khung {
+  margin-left: 0;
+  margin-right: 0;
 }
