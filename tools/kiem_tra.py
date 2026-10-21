@@ -4916,6 +4916,114 @@ def kiem_tra_t274_dien_thoai():
     return loi
 
 
+
+
+def kiem_tra_t594_to_giay():
+    """Kiểm tra T594: Báo cáo tự cân cột và cỡ chữ theo khổ dọc, ngang.
+    Mở 3.2.8 và 5.2.3 ở hai khổ, báo lỗi khi ô nào trong .bc-ds-trang .rpt có
+    scrollWidth > clientWidth + 1 hoặc bảng rộng hơn tờ (BAY.md:22).
+    """
+    loi = []
+    print('Kiểm tra T594: Báo cáo 3.2.8 và 5.2.3 tự cân cột và cỡ chữ theo khổ:')
+    with sync_playwright() as p:
+        b = p.chromium.launch(channel='chrome')
+        pg = b.new_page(viewport={'width': 1440, 'height': 900})
+        con = []
+        pg.on('console', lambda m: con.append(m.text) if m.type == 'error' else None)
+        pg.on('pageerror', lambda e: con.append(str(e)))
+
+        def vao_bc(path, goi='PR'):
+            pg.goto(URL + '#/dang-nhap')
+            pg.wait_for_selector('.auth-box')
+            pg.evaluate(f"localStorage.setItem('iacc-cloud-session', JSON.stringify({phien(goi)}))")
+            pg.goto(f"{URL}?goi={goi}&p={abs(hash(path))}#{path}")
+            pg.wait_for_selector('.report, .page', timeout=8000)
+            pg.wait_for_timeout(300)
+
+        def mo_in():
+            btn = pg.locator('.bc-nut-in, button:has-text("In")').first
+            if btn.count() == 0:
+                return False
+            btn.click()
+            pg.wait_for_selector('.bc-xem-truoc, .bc-ds-trang', timeout=5000)
+            pg.wait_for_timeout(300)
+            return True
+
+        def chon_kho(ten):
+            btn = pg.locator(f'.bc-seg-kho button:has-text("{ten}")')
+            if btn.count() > 0:
+                btn.click()
+                pg.wait_for_timeout(300)
+
+        def kiem_tra_trang(nhan, kiem_tra_o_tran=True):
+            js_code = """([kiemTraO]) => {
+                const dsTrang = document.querySelector('.bc-ds-trang');
+                if (!dsTrang) return { loi: ['Không tìm thấy .bc-ds-trang'] };
+                const trang = dsTrang.querySelector('.bc-trang.paper');
+                const bang = dsTrang.querySelector('.rpt');
+                if (!trang || !bang) return { loi: ['Không tìm thấy .bc-trang.paper hoặc .rpt trong .bc-ds-trang'] };
+
+                const cacLoi = [];
+                const trangW = trang.clientWidth;
+                const bangW = bang.offsetWidth;
+                if (bangW > trangW + 2) {
+                    cacLoi.push(`Bảng rộng hơn tờ: bảng ${bangW}px > tờ ${trangW}px`);
+                }
+
+                if (kiemTraO) {
+                    const cells = Array.from(dsTrang.querySelectorAll('.rpt th, .rpt td'));
+                    for (const c of cells) {
+                        if (c.scrollWidth > c.clientWidth + 1) {
+                            const txt = c.innerText.trim().slice(0, 30);
+                            cacLoi.push(`Ô tràn: "${txt}" (${c.className}, sw=${c.scrollWidth} > cw=${c.clientWidth})`);
+                            if (cacLoi.length >= 3) break;
+                        }
+                    }
+                }
+                return { loi: cacLoi };
+            }"""
+            res = pg.evaluate(js_code, [kiem_tra_o_tran])
+            for l in res.get('loi', []):
+                loi.append(f'[{nhan}] {l}')
+
+        # 1. Báo cáo 3.2.8: Bảng kê chi tiết bán hàng
+        vao_bc('/app/ban-hang/3-2-8')
+        # Kiểm màn báo cáo thường ở 3.2.8 (ngoài xem trước)
+        tran_thuong = pg.evaluate("""() => {
+            const b = document.querySelector('.bc-ban-du-lieu');
+            if (!b) return [];
+            return Array.from(b.querySelectorAll('th, td')).filter(c => c.scrollWidth > c.clientWidth + 1).map(c => c.innerText.trim().slice(0, 20));
+        }""")
+        if tran_thuong:
+            loi.append(f'3.2.8 màn thường: có {len(tran_thuong)} ô tràn ({tran_thuong[:2]})')
+
+        if mo_in():
+            chon_kho('Ngang')
+            kiem_tra_trang('3.2.8 Khổ ngang', kiem_tra_o_tran=True)
+            chon_kho('Dọc')
+            kiem_tra_trang('3.2.8 Khổ dọc', kiem_tra_o_tran=True)
+            pg.keyboard.press('Escape')
+            pg.wait_for_timeout(200)
+        else:
+            loi.append('3.2.8: không mở được xem trước in')
+
+        # 2. Báo cáo 5.2.3: Báo cáo xuất nhập tồn
+        vao_bc('/app/kho/5-2-3')
+        if mo_in():
+            chon_kho('Ngang')
+            kiem_tra_trang('5.2.3 Khổ ngang', kiem_tra_o_tran=True)
+            chon_kho('Dọc')
+            kiem_tra_trang('5.2.3 Khổ dọc', kiem_tra_o_tran=True)
+            pg.keyboard.press('Escape')
+            pg.wait_for_timeout(200)
+        else:
+            loi.append('5.2.3: không mở được xem trước in')
+
+        if con:
+            loi.append(f'T594: lỗi console {con[:2]}')
+        b.close()
+    return loi
+
 def main():
     if DIEN_THOAI:
         kiem_tra_cac_khung_dt()
@@ -5068,6 +5176,7 @@ def main():
     loi += kiem_tra_t238_may_tinh()
     loi += kiem_tra_dot_22_a()
     loi += kiem_tra_t274_web()
+    loi += kiem_tra_t594_to_giay()
     if loi:
         print(f'{len(loi)} LỖI:')
         for x in loi:

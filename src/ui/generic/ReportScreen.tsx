@@ -1250,7 +1250,14 @@ function kyHieuCac(cols: Col[], kieu: KyHieuCot): string[] {
 }
 
 /** Bảng in kiểu báo cáo: dòng _b in đậm, _t dòng tổng */
-export function RptTable({ cols, rows, onRow, kyHieuCot, colWidths }: { cols: Col[]; rows: Row[]; onRow?: (r: Row) => void; kyHieuCot?: KyHieuCot; colWidths?: number[] }) {
+export function RptTable({ cols, rows, onRow, kyHieuCot, colWidths, toGiay }: {
+  cols: Col[]
+  rows: Row[]
+  onRow?: (r: Row) => void
+  kyHieuCot?: KyHieuCot
+  colWidths?: number[]
+  toGiay?: boolean
+}) {
   const coNhom = cols.some(c => c.nhom)
 
   const hangNhom1 = useMemo(() => {
@@ -1345,16 +1352,89 @@ export function RptTable({ cols, rows, onRow, kyHieuCot, colWidths }: { cols: Co
         )}
       </thead>
       <tbody>
-        {rows.map((x, i) => (
-          <tr key={i} className={`${x._t ? 't' : x._b ? 'b' : ''} ${x._nhom ? 'nhom' : ''} ${onRow && x._drill ? 'drill' : ''}`} onClick={onRow && x._drill ? () => onRow(x) : undefined}>
-            {cols.map(c => {
-              const v = c.r ? c.r(x) : x[c.k]
-              return <td key={c.k} className={[c.num ? 'num' : c.c ? 'c' : '', c.cls ?? '', c.k === cols[1]?.k && x._i ? `i${x._i}` : ''].join(' ')}>
-                {typeof v === 'number' && !c.r ? (v === 0 && !x._z ? '' : money(v)) : v}
+        {rows.map((x, i) => {
+          const trCls = `${x._t ? 't' : x._b ? 'b' : ''} ${x._nhom ? 'nhom' : ''} ${onRow && x._drill ? 'drill' : ''}`.trim()
+
+          // Khi không có prop toGiay: giữ nguyên cách render ban đầu (không colSpan, không rpt-txt-2dong)
+          if (!toGiay) {
+            return (
+              <tr key={i} className={trCls} onClick={onRow && x._drill ? () => onRow(x) : undefined}>
+                {cols.map(c => {
+                  const v = c.r ? c.r(x) : x[c.k]
+                  return (
+                    <td key={c.k} className={[c.num ? 'num' : c.c ? 'c' : '', c.cls ?? '', c.k === cols[1]?.k && x._i ? `i${x._i}` : ''].join(' ')}>
+                      {typeof v === 'number' && !c.r ? (v === 0 && !x._z ? '' : money(v)) : v}
+                    </td>
+                  )
+                })}
+              </tr>
+            )
+          }
+
+          const laDongDacBiet = Boolean(x._nhom || x._t || x._b)
+
+          if (!laDongDacBiet) {
+            return (
+              <tr key={i} className={trCls} onClick={onRow && x._drill ? () => onRow(x) : undefined}>
+                {cols.map(c => {
+                  const v = c.r ? c.r(x) : x[c.k]
+                  const laNgay = c.k === 'ngay' || c.k.includes('ngay')
+                  const laCotChu = !c.num && !c.c && c.cls !== 'code' && !laNgay
+                  const tdCls = [c.num ? 'num' : c.c ? 'c' : '', laNgay ? 'ngay' : '', c.cls ?? '', c.k === cols[1]?.k && x._i ? `i${x._i}` : ''].filter(Boolean).join(' ')
+                  const content = typeof v === 'number' && !c.r ? (v === 0 && !x._z ? '' : money(v)) : v
+                  return (
+                    <td key={c.k} className={tdCls}>
+                      {laCotChu && typeof content === 'string' ? (
+                        <div className="rpt-txt-2dong" title={content}>{content}</div>
+                      ) : content}
+                    </td>
+                  )
+                })}
+              </tr>
+            )
+          }
+
+          // Dòng đặc biệt (_nhom, _t, _b): gộp ô trống cho nhãn nhóm, cộng nhóm, tổng cộng (T594)
+          const cells: ReactNode[] = []
+          let cIdx = 0
+          while (cIdx < cols.length) {
+            const c = cols[cIdx]
+            const v = c.r ? c.r(x) : x[c.k]
+            const laNgay = c.k === 'ngay' || c.k.includes('ngay')
+            const laChu = typeof v === 'string' && v.trim().length > 0 && !c.num
+
+            let span = 1
+            if (laChu) {
+              let k = cIdx + 1
+              while (k < cols.length) {
+                const colK = cols[k]
+                const nextVal = colK.r ? colK.r(x) : x[colK.k]
+                const isEmpty = nextVal === undefined || nextVal === null || nextVal === ''
+                if (!isEmpty) break
+                // Tiêu đề nhóm _b gộp hết các ô trống tới cuối; dòng cộng _t chỉ gộp ô chữ (!num)
+                if (!x._b && cols[k].num) break
+                span++
+                k++
+              }
+            }
+
+            const tdCls = [c.num ? 'num' : c.c ? 'c' : '', laNgay ? 'ngay' : '', c.cls ?? '', c.k === cols[1]?.k && x._i ? `i${x._i}` : ''].filter(Boolean).join(' ')
+            const content = typeof v === 'number' && !c.r ? (v === 0 && !x._z ? '' : money(v)) : v
+
+            cells.push(
+              <td key={c.k} colSpan={span > 1 ? span : undefined} className={tdCls}>
+                {content}
               </td>
-            })}
-          </tr>
-        ))}
+            )
+            cIdx += span
+          }
+
+          return (
+            <tr key={i} className={trCls} onClick={onRow && x._drill ? () => onRow(x) : undefined}>
+              {cells}
+            </tr>
+          )
+        })}
       </tbody>
     </table>
   )

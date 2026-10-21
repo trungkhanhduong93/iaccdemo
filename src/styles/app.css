@@ -38211,7 +38211,7 @@ body:has(.m-app) .m-thanh-duoi .m-tab.on .m-tab-ic .ic .l2 {
   cursor: default;
   pointer-events: none;
   overflow: hidden;
-  text-overflow: ellipsis;
+  text-overflow: clip;
 }
 
 .bc-trang .rpt td.code a,
@@ -39971,4 +39971,80 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
 .pn-hai-cot .tc-so {
   color: var(--ink);
   font-weight: 700;
+}
+
+
+/* ── Tờ báo cáo tự cân cột và cỡ chữ theo khổ dọc, ngang (T594) ── */
+.bc-trang .rpt td.ngay,
+.bc-trang-do .rpt td.ngay,
+.bc-xem-truoc .rpt td.ngay,
+.bc-in-goc .rpt td.ngay {
+  white-space: nowrap !important;
+  text-align: center;
+}
+
+.bc-trang .rpt td.num,
+.bc-trang-do .rpt td.num,
+.bc-xem-truoc .rpt td.num,
+.bc-in-goc .rpt td.num,
+.bc-trang .rpt td.code,
+.bc-trang-do .rpt td.code,
+.bc-xem-truoc .rpt td.code,
+.bc-in-goc .rpt td.code {
+  white-space: nowrap !important;
+  overflow: hidden;
+  text-overflow: clip;
+}
+
+.bc-trang .rpt-txt-2dong,
+.bc-trang-do .rpt-txt-2dong,
+.bc-xem-truoc .rpt-txt-2dong,
+.bc-in-goc .rpt-txt-2dong {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-word;
+  line-height: 1.35;
+}
+
+.bc-trang .rpt th,
+.bc-trang .rpt td,
+.bc-trang-do .rpt th,
+.bc-trang-do .rpt td,
+.bc-xem-truoc .rpt th,
+.bc-xem-truoc .rpt td,
+.bc-in-goc .rpt th,
+.bc-in-goc .rpt td {
+  padding: var(--bc-pad-o, 6px 8px);
+}
+
+.bc-trang .rpt,
+.bc-trang-do .rpt,
+.bc-xem-truoc .rpt,
+.bc-in-goc .rpt {
+  letter-spacing: -0.4px;
+}
+
+.bc-trang .rpt th,
+.bc-trang-do .rpt th,
+.bc-xem-truoc .rpt th,
+.bc-in-goc .rpt th {
+  letter-spacing: -0.4px;
+}
+
+@media print {
+  .bc-in-goc .rpt td.ngay,
+  .bc-trang .rpt td.ngay {
+    white-space: nowrap !important;
+    text-align: center;
+  }
+  .bc-in-goc .rpt td.num,
+  .bc-trang .rpt td.num,
+  .bc-in-goc .rpt td.code,
+  .bc-trang .rpt td.code {
+    white-space: nowrap !important;
+    overflow: hidden;
+    text-overflow: clip;
+  }
 }

@@ -1,17 +1,27 @@
-// Chia độ rộng cột và cỡ chữ theo khổ A4 dọc, A4 ngang (T72)
+// Chia độ rộng cột và cỡ chữ theo khổ A4 dọc, A4 ngang (T72, T594)
 import type { Col, Row } from '../../modules/types'
+import { money } from '../format'
 import type { Kho } from './ToGiay'
 
 export function coChuTheoKho(colsCount: number, kho: Kho): number {
-  if (kho === 'doc') return 10.5
+  if (kho === 'doc') {
+    if (colsCount <= 6) return 10.5
+    if (colsCount <= 8) return 10
+    if (colsCount <= 11) return 9
+    return 8.5
+  }
   if (colsCount <= 9) return 10.5
   if (colsCount <= 12) return 10
-  return 9.5
+  if (colsCount <= 16) return 9.5
+  return 8.5
 }
 
 export function paddingTheoMatDo(colsCount: number, kho: Kho): string {
-  const nhieuCot = kho === 'doc' ? colsCount >= 8 : colsCount >= 10
-  return nhieuCot ? '3px 5px' : '6px 8px'
+  if (colsCount >= 16 && kho === 'doc') return '1px 1.5px'
+  if (colsCount >= 14 && kho === 'doc') return '1px 2px'
+  if (colsCount >= 14 || (kho === 'doc' && colsCount >= 9)) return '2px 4px'
+  if (colsCount >= 8 || (kho === 'doc' && colsCount >= 7)) return '3px 5px'
+  return '6px 8px'
 }
 
 export type LoaiCot = 'stt' | 'ngay' | 'ma_ct_tk' | 'soluong_dongia' | 'tien' | 'chudai' | 'tyle'
@@ -95,137 +105,214 @@ export function tuDaiNhatTrongTieuDe(t: string): number {
   return max
 }
 
-export function chiaCot(cols: Col[], kho: Kho = 'doc', rows?: Row[]): number[] {
+export interface DoDaiCot {
+  lenTieuDe: number
+  lenData: number
+  coDam: boolean
+  loai: LoaiCot
+  avgLen: number
+}
+
+/** Quét độ dài tối đa và trung bình của từng cột MỘT lần, độc lập với cỡ chữ (T594, BAY.md:46) */
+export function trichDoDaiCot(cols: Col[], rows?: Row[]): DoDaiCot[] {
   if (!cols || cols.length === 0) return []
-  if (cols.length === 1) return [100]
-
-  const n = cols.length
-  const tongPxVungIn = kho === 'doc' ? 700 : 1028
-  const coChu = coChuTheoKho(n, kho)
-  const nhieuCot = kho === 'doc' ? n >= 8 : n >= 10
-  const padH = (nhieuCot ? 5 : 8) * 2
-
-  // Độ rộng tối thiểu ước theo từ dài nhất trong tiêu đề và kiểu cột
-  const minPcts: number[] = cols.map(c => {
+  return cols.map(c => {
     const loai = phanLoaiCot(c)
-    const lenTu = tuDaiNhatTrongTieuDe(c.t)
-    // Chữ in hoa đậm (font-weight: 800, text-transform: uppercase).
-    // Các từ tiếng Việt in hoa đậm (vd NHÁNH 5 chữ ở font 10.5px đo ~39.6px).
-    // Ước ~0.95 cỡ chữ mỗi ký tự + padding ngang + viền/dung sai
-    const pxTu = lenTu * coChu * 0.95 + padH + 6
-    let minPx = pxTu
-    if (loai === 'tyle') {
-      // Đủ chỗ cho số dạng 12,5% (5 ký tự số + padding) và tiêu đề ngắt dòng theo từ
-      const pxSo = 5 * coChu * 0.75 + padH + 6
-      minPx = Math.max(minPx, pxSo, kho === 'doc' ? 56 : 64)
-    }
-    return (minPx / tongPxVungIn) * 100
-  })
+    const lenTieuDe = tuDaiNhatTrongTieuDe(c.t)
+    let lenData = 0
+    let coDam = false
+    let avgLen = 0
 
-  // 1. Phân loại và gán trọng số cơ bản
-  const loais = cols.map(phanLoaiCot)
-  const weights: number[] = loais.map((l, i) => {
-    const base = trongSoMacDinh(l, kho)
-    const c = cols[i]
-    let w = base
-    if (c.w && c.w > 0) {
-      const wPct = (c.w / tongPxVungIn) * 100
-      if (wPct > base) {
-        w = Math.min(base * 2, wPct)
+    if (c.num) {
+      if (rows && rows.length > 0) {
+        for (const r of rows) {
+          const v = r[c.k]
+          if (typeof v === 'number' && !isNaN(v) && v !== 0) {
+            const s = money(v)
+            if (s.length > lenData) lenData = s.length
+            if (r._t || r._b) coDam = true
+          }
+        }
       }
-    }
-    return Math.max(w, minPcts[i])
-  })
-
-  // 2. Chia phần còn lại cho cột chữ dài theo độ dài trung bình thực tế
-  const idxChuDai = loais.map((l, i) => l === 'chudai' ? i : -1).filter(i => i >= 0)
-  const idxKhac = loais.map((l, i) => l !== 'chudai' ? i : -1).filter(i => i >= 0)
-
-  if (idxChuDai.length > 0) {
-    const tongKhac = idxKhac.reduce((sum, i) => sum + weights[i], 0)
-    const minChuDai = kho === 'doc' ? Math.max(20, idxChuDai.length * 12) : Math.max(18, idxChuDai.length * 10)
-    let rem = 100 - tongKhac
-
-    if (rem < minChuDai) {
-      const heSoCo = (100 - minChuDai) / (tongKhac || 1)
-      for (const i of idxKhac) {
-        weights[i] = Math.max(minPcts[i], weights[i] * heSoCo)
+    } else if (loai === 'ngay' || c.k === 'ngay' || c.k.includes('ngay')) {
+      lenData = 10
+    } else if (c.cls === 'code' || loai === 'ma_ct_tk') {
+      if (rows && rows.length > 0) {
+        for (const r of rows) {
+          if (r._t || r._nhom || r._b) continue
+          const s = String(r[c.k] ?? '').trim()
+          if (s.length > lenData) lenData = s.length
+        }
       }
-      const tongKhacSauCo = idxKhac.reduce((sum, i) => sum + weights[i], 0)
-      rem = Math.max(idxChuDai.length * 8, 100 - tongKhacSauCo)
-    }
-
-    const avgLens = idxChuDai.map(i => {
-      const c = cols[i]
+      if (lenData === 0) lenData = 8
+    } else if (loai === 'stt') {
+      lenData = 3
+    } else if (loai === 'tyle') {
+      lenData = 5
+    } else {
       let lenSum = 0
       let count = 0
       if (rows && rows.length > 0) {
         for (const r of rows) {
-          if (r._b || r._t || r._nhom) continue
-          const v = r[c.k]
-          if (v !== null && v !== undefined) {
-            const s = String(v).trim()
-            if (s.length > 0) {
-              lenSum += s.length
-              count++
-            }
+          if (r._t || r._nhom || r._b) continue
+          const s = String(r[c.k] ?? '').trim()
+          const words = s.split(/\s+/)
+          for (const w of words) {
+            if (w.length > lenData) lenData = w.length
+          }
+          if (s.length > 0) {
+            lenSum += s.length
+            count++
           }
         }
       }
-      return count > 0 ? (lenSum / count) : Math.max(12, c.t.length)
-    })
-
-    const tongLen = avgLens.reduce((a, b) => a + b, 0) || 1
-    idxChuDai.forEach((colIdx, k) => {
-      weights[colIdx] = Math.max(minPcts[colIdx], rem * (avgLens[k] / tongLen))
-    })
-  } else {
-    const total = weights.reduce((a, b) => a + b, 0) || 1
-    for (let i = 0; i < n; i++) {
-      weights[i] = (weights[i] / total) * 100
+      if (lenData === 0) lenData = 4
+      avgLen = count > 0 ? (lenSum / count) : Math.max(12, c.t.length)
     }
+
+    return { lenTieuDe, lenData, coDam, loai, avgLen }
+  })
+}
+
+/** Tính bề rộng tối thiểu (px) của một cột theo độ dài chuỗi đã trích trước (chỉ phép nhân, không quét rows) */
+export function tinhMinPxTuDoDai(item: DoDaiCot, fs: number, padH: number, dungSai: number): number {
+  const pxHeader = item.lenTieuDe * fs * 0.64 + padH + dungSai
+  let pxData = 0
+
+  if (item.loai === 'tien') {
+    if (item.lenData === 0) {
+      pxData = pxHeader
+    } else {
+      const charW = item.coDam ? fs * 0.57 : fs * 0.50
+      pxData = item.lenData * charW + padH + dungSai
+    }
+  } else if (item.loai === 'soluong_dongia') {
+    const charW = item.coDam ? fs * 0.54 : fs * 0.48
+    const minNum = item.lenData > 4 ? 31 : 20
+    pxData = Math.max(pxHeader, item.lenData * charW + padH + dungSai, minNum)
+  } else if (item.loai === 'ngay') {
+    pxData = 10 * fs * 0.56 + padH + dungSai
+  } else if (item.loai === 'ma_ct_tk') {
+    pxData = Math.max(pxHeader, item.lenData * fs * 0.69 + padH + dungSai)
+  } else if (item.loai === 'stt') {
+    pxData = 3 * fs * 0.50 + padH + dungSai
+  } else if (item.loai === 'tyle') {
+    pxData = 5 * fs * 0.52 + padH + dungSai
+  } else {
+    pxData = item.lenData * fs * 0.54 + padH + dungSai
   }
 
-  // 2.5 Đảm bảo tuyệt đối mọi cột đều >= minPcts[i]
-  for (let i = 0; i < n; i++) {
-    weights[i] = Math.max(weights[i], minPcts[i])
+  const minSan = item.loai === 'stt' ? 20 : (padH + 10)
+  return Math.max(pxHeader, pxData, minSan)
+}
+
+export function tinhMinPxCot(c: Col, kho: Kho, fs: number, padH: number, dungSai: number, rows?: Row[]): number {
+  const d = trichDoDaiCot([c], rows)[0]
+  return tinhMinPxTuDoDai(d, fs, padH, dungSai)
+}
+
+export function tinhCoChu(cols: Col[], kho: Kho = 'doc', rows?: Row[], coChuChonTay?: number, colLengths?: DoDaiCot[], vungInPx?: number): number {
+  if (!cols || cols.length === 0) return 10.5
+  const n = cols.length
+  const tongPxVungIn = vungInPx ?? (kho === 'doc' ? (n >= 14 ? 726 : 700) : 1028)
+  const tran = coChuChonTay ?? coChuTheoKho(n, kho)
+
+  const lengths = colLengths ?? trichDoDaiCot(cols, rows)
+  const padStr = paddingTheoMatDo(n, kho)
+  const m = padStr.match(/\d+px\s+([\d.]+)px/)
+  const padH = m ? Number(m[1]) * 2 : 12
+  const dungSai = (n >= 16 && kho === 'doc') ? 0.5 : 1.5
+
+  // Thử từ tran giảm dần mỗi bước 0.5px tới 8.0px (vòng lặp chỉ làm phép nhân, không quét rows)
+  let fs = tran
+  while (fs > 8.0) {
+    let sumMin = 0
+    for (const item of lengths) {
+      sumMin += tinhMinPxTuDoDai(item, fs, padH, dungSai)
+    }
+
+    if (sumMin <= tongPxVungIn) {
+      return fs
+    }
+    fs = Math.round((fs - 0.5) * 10) / 10
   }
 
-  // 3. Chuẩn hoá tổng về đúng 100.0% mà KHÔNG BAO GIỜ làm tụt dưới minPcts
+  return 8.0
+}
+
+export function chiaCot(cols: Col[], kho: Kho = 'doc', rows?: Row[], coChuTuyChinh?: number, colLengths?: DoDaiCot[], vungInPx?: number): number[] {
+  if (!cols || cols.length === 0) return []
+  if (cols.length === 1) return [100]
+
+  const n = cols.length
+  const tongPxVungIn = vungInPx ?? (kho === 'doc' ? (n >= 14 ? 726 : 700) : 1028)
+  const lengths = colLengths ?? trichDoDaiCot(cols, rows)
+  const coChu = coChuTuyChinh ?? tinhCoChu(cols, kho, rows, undefined, lengths, tongPxVungIn)
+  const padStr = paddingTheoMatDo(n, kho)
+  const m = padStr.match(/\d+px\s+([\d.]+)px/)
+  const padH = m ? Number(m[1]) * 2 : 12
+  const dungSai = (n >= 16 && kho === 'doc') ? 0.5 : 1.5
+
+  // Sàn tối thiểu của từng cột để số, ngày, mã không bị tràn
+  const minPcts: number[] = lengths.map(item => {
+    const minPx = tinhMinPxTuDoDai(item, coChu, padH, dungSai)
+    return (minPx / tongPxVungIn) * 100
+  })
+
+  const loais = lengths.map(l => l.loai)
+  const weights = [...minPcts]
   const sumMin = minPcts.reduce((a, b) => a + b, 0)
+
   if (sumMin <= 100) {
-    // Có đủ chỗ cho minPcts: phần dôi dư (100 - sumMin) chia theo tỷ lệ phần vượt trội (weights[i] - minPcts[i])
-    const extras = weights.map((w, i) => Math.max(0, w - minPcts[i]))
-    const sumExtras = extras.reduce((a, b) => a + b, 0)
     const rem = 100 - sumMin
-    if (sumExtras > 0.001) {
+    // Tính phần mong muốn thêm của từng cột theo trọng số cơ bản
+    const desired = cols.map((c, i) => {
+      const base = trongSoMacDinh(loais[i], kho)
+      let w = base
+      if (c.w && c.w > 0) {
+        const wPct = (c.w / tongPxVungIn) * 100
+        if (wPct > base) w = Math.min(base * 2, wPct)
+      }
+      return Math.max(0, w - minPcts[i])
+    })
+    const sumDesired = desired.reduce((a, b) => a + b, 0)
+    if (sumDesired > 0.001) {
       for (let i = 0; i < n; i++) {
-        weights[i] = minPcts[i] + rem * (extras[i] / sumExtras)
+        weights[i] += rem * (desired[i] / sumDesired)
       }
     } else {
-      const targetIndices = idxChuDai.length > 0 ? idxChuDai : Array.from({ length: n }, (_, i) => i)
-      for (const i of targetIndices) {
-        weights[i] += rem / targetIndices.length
+      const idxChuDai = loais.map((l, i) => l === 'chudai' ? i : -1).filter(i => i >= 0)
+      if (idxChuDai.length > 0) {
+        const avgLens = idxChuDai.map(i => lengths[i].avgLen || Math.max(12, cols[i].t.length))
+        const tongLen = avgLens.reduce((a, b) => a + b, 0) || 1
+        idxChuDai.forEach((colIdx, k) => {
+          weights[colIdx] += rem * (avgLens[k] / tongLen)
+        })
+      } else {
+        for (let i = 0; i < n; i++) {
+          weights[i] += rem / n
+        }
       }
     }
   } else {
+    // Trường hợp ép cỡ chữ tay quá lớn: co theo tỷ lệ minPcts
     for (let i = 0; i < n; i++) {
       weights[i] = (minPcts[i] / sumMin) * 100
     }
   }
 
-  // 4. Làm tròn 1 chữ số thập phân và đảm bảo tổng chính xác 100.0%
+  // Làm tròn 1 chữ số thập phân, đảm bảo tổng chính xác 100.0% và không làm cột nào tụt dưới minPcts
   const res = weights.map(w => Math.round(w * 10) / 10)
   const curSum = res.reduce((a, b) => a + b, 0)
   const diff = Math.round((100 - curSum) * 10) / 10
 
   if (diff !== 0) {
     let targetIdx = 0
-    let maxVal = -1
+    let maxExtra = -999
     for (let i = 0; i < res.length; i++) {
-      if (diff < 0 && res[i] + diff < minPcts[i] - 0.05) continue
-      if (res[i] > maxVal) {
-        maxVal = res[i]
+      const extra = res[i] - minPcts[i]
+      if (extra > maxExtra) {
+        maxExtra = extra
         targetIdx = i
       }
     }

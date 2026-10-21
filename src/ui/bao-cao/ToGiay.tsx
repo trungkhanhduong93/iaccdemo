@@ -13,7 +13,7 @@ import { Icon } from '../Icon'
 import { fold } from '../format'
 import { heSoZoom } from '../zoom'
 import { PhanTrang } from '../PhanTrang'
-import { chiaCot, coChuTheoKho, paddingTheoMatDo } from './chiaCot'
+import { chiaCot, paddingTheoMatDo, tinhCoChu, trichDoDaiCot, type DoDaiCot } from './chiaCot'
 import { useTrangThaiLoc } from './tuyChinhBC'
 
 export type Kho = 'doc' | 'ngang'
@@ -360,12 +360,44 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
   const coKhungDo = !xemTrang || dangIn || canHtml
   const hienPhanTrang = !!xemTrang && cheXem === 'to-in' && dongXem > 50   // thanh phân trang đã có số dòng, bỏ chữ "N dòng"
   const maxCols = Math.max(1, ...khoi.map(k => k.loai === 'bang' ? k.cols.length : 0))
-  const coChuTinh = coChu ?? coChuTheoKho(maxCols, kho)
-  const padO = paddingTheoMatDo(maxCols, kho)
   const kt = giay ? { w: giay.rong, h: giay.cao } : KHO[kho]
-  const le = giay ? { tren: giay.le[0], phai: giay.le[1], duoi: giay.le[2], trai: giay.le[3] } : LE
+  const le = giay
+    ? { tren: giay.le[0], phai: giay.le[1], duoi: giay.le[2], trai: giay.le[3] }
+    : (kho === 'doc' && maxCols >= 14 ? { trai: 10, phai: 8, tren: 10, duoi: 14 } : LE)
   const wPx = kt.w * PX, hPx = kt.h * PX
+  const vungInPx = Math.round((kt.w - le.trai - le.phai) * PX)
   const buoc = hPx + CACH
+
+  const bangDauCot = bangDau?.cols ?? []
+  // Trích độ dài chuỗi tối đa từng cột một lần (T594, BAY.md:46)
+  const colLengthsMap = useMemo(() => {
+    const m = new Map<number, DoDaiCot[]>()
+    khoi.forEach((kh, i) => {
+      if (kh.loai === 'bang') {
+        m.set(i, trichDoDaiCot(kh.cols, kh.rows))
+      }
+    })
+    return m
+  }, [khoi])
+
+  const bangDauIndex = khoi.findIndex(k => k === bangDau)
+  const bangDauLengths = bangDauIndex >= 0 ? colLengthsMap.get(bangDauIndex) : undefined
+  const coChuTinh = useMemo(() => {
+    return tinhCoChu(bangDauCot, kho, bangDau?.rows, coChu, bangDauLengths, vungInPx)
+  }, [bangDauCot, kho, bangDau?.rows, coChu, bangDauLengths, vungInPx])
+
+  const padO = paddingTheoMatDo(maxCols, kho)
+
+  // Tính colWidths mỗi bảng một lần bằng useMemo (T594, BAY.md:46)
+  const colWidthsMap = useMemo(() => {
+    const m = new Map<number, number[]>()
+    khoi.forEach((kh, i) => {
+      if (kh.loai === 'bang') {
+        m.set(i, chiaCot(kh.cols, kho, kh.rows, coChuTinh, colLengthsMap.get(i), vungInPx))
+      }
+    })
+    return m
+  }, [khoi, kho, coChuTinh, colLengthsMap, vungInPx])
 
   // Đổi báo cáo: lấy khổ đã chọn của báo cáo đó
   useEffect(() => { setKho(docKho(khoaKho) ?? khoMacDinh) }, [khoaKho])
@@ -481,14 +513,14 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
     ] : kh.rows.slice(m.tu, m.den)
     return (
       <div key={`b${m.i}-${m.tu}`} className={`bc-khoi bc-bang-${m.i}`}>
-        <RptTable cols={kh.cols} rows={rows} onRow={kh.onRow} kyHieuCot={kyHieuCot} colWidths={chiaCot(kh.cols, kho, kh.rows)} />
+        <RptTable toGiay cols={kh.cols} rows={rows} onRow={kh.onRow} kyHieuCot={kyHieuCot} colWidths={colWidthsMap.get(m.i) ?? []} />
       </div>
     )
   }
   const veTrang = (i: number, choGiu: boolean) => choGiu
     ? <div key={i} className="bc-trang bc-cho" style={kieuTrang} />
     : (
-      <div key={i} className="bc-trang paper" style={kieuTrang}>
+      <div key={i} className="bc-trang paper" style={{ ...kieuTrang, '--bc-co-chu': `${coChuTinh}px`, '--bc-pad-o': padO } as CSSProperties}>
         {trangDs[i]?.map(veMuc)}
         {!anSoTrang && <div className="bc-so-trang">Trang {i + 1}/{N}</div>}
       </div>
@@ -497,13 +529,11 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
   // Cột bảng trên trang thật giữ đúng bề rộng theo chiaCot để dòng xuống hàng y như lúc đo
   const css = khoi.map((kh, i) => {
     if (kh.loai !== 'bang') return ''
-    const pt = chiaCot(kh.cols, kho, kh.rows)
+    const pt = colWidthsMap.get(i) ?? []
     const coNhom = kh.cols.some(c => c.nhom)
     return `.${pv} .bc-bang-${i} .rpt{table-layout:fixed;width:100%}`
-      + pt.map((w, c) => coNhom
-        ? `.${pv} .bc-bang-${i} .rpt td:nth-child(${c + 1}){width:${w}%!important;box-sizing:border-box}`
-        : `.${pv} .bc-bang-${i} .rpt th:nth-child(${c + 1}),.${pv} .bc-bang-${i} .rpt td:nth-child(${c + 1}){width:${w}%!important;box-sizing:border-box}`
-      ).join('')
+      + pt.map((w, c) => `.${pv} .bc-bang-${i} .rpt col:nth-child(${c + 1}){width:${w}%!important}`).join('')
+      + (!coNhom ? pt.map((w, c) => `.${pv} .bc-bang-${i} .rpt thead>tr:first-child>th:nth-child(${c + 1}){width:${w}%!important}`).join('') : '')
   }).join('')
 
   const toMotTrang = (
@@ -511,7 +541,7 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
       {coThayDoi && <div className="bc-nhac-cap-nhat">Bấm Lọc để cập nhật</div>}
       <div className="bc-khoi">{dau}</div>
       {khoi.map((kh, i) => kh.loai === 'bang'
-        ? <div key={i} className={`bc-khoi bc-bang-${i}`}><RptTable cols={kh.cols} rows={chiaXem && kh === bangDau ? dongTrangXem(kh.rows, trangXemHt, coTrangXem) : kh.rows} onRow={kh.onRow} kyHieuCot={kyHieuCot} colWidths={chiaCot(kh.cols, kho, kh.rows)} /></div>
+        ? <div key={i} className={`bc-khoi bc-bang-${i}`}><RptTable toGiay cols={kh.cols} rows={chiaXem && kh === bangDau ? dongTrangXem(kh.rows, trangXemHt, coTrangXem) : kh.rows} onRow={kh.onRow} kyHieuCot={kyHieuCot} colWidths={colWidthsMap.get(i) ?? []} /></div>
         : kh.loai === 'nguyen' ? <div key={i} className="bc-khoi">{kh.el}</div> : null)}
       {cuoi && <div className="bc-khoi">{cuoi}</div>}
     </div>
@@ -632,7 +662,7 @@ export function ToGiay({ dau, than, cuoi, khoMacDinh, kyHieuCot, congChuyen, gia
             {khoi.map((kh, i) => (
               <div key={i} className={`bc-khoi bc-bang-${i}`} data-do={i}>
                 {kh.loai === 'bang'
-                  ? <RptTable cols={kh.cols} rows={cotCong(kh, congChuyen).length ? [...kh.rows, dongCong(kh, cotCong(kh, congChuyen), kh.rows.length, CONG_SAU)] : kh.rows} kyHieuCot={kyHieuCot} colWidths={chiaCot(kh.cols, kho, kh.rows)} />
+                  ? <RptTable toGiay cols={kh.cols} rows={cotCong(kh, congChuyen).length ? [...kh.rows, dongCong(kh, cotCong(kh, congChuyen), kh.rows.length, CONG_SAU)] : kh.rows} kyHieuCot={kyHieuCot} colWidths={colWidthsMap.get(i) ?? []} />
                   : kh.loai === 'nguyen' ? kh.el : null}
               </div>
             ))}
