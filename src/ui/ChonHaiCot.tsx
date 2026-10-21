@@ -204,7 +204,7 @@ export function ChonHaiCot({
         <input
           type="text"
           className="chc-tim-inp"
-          placeholder="Tìm kiếm..."
+          placeholder={chip ? 'Tìm mã, tên, MST' : 'Tìm kiếm...'}
           value={timTrai}
           onChange={e => setTimTrai(e.target.value)}
         />
@@ -223,7 +223,7 @@ export function ChonHaiCot({
           readOnly
           tabIndex={-1}
         />
-        <span>Chọn tất cả</span>
+        <span>Chọn tất cả{chip ? ` ${chuaChonLoc.length}` : ''}</span>
       </div>
       <div className="chc-ds">
         {chuaChonLoc.map(x => (
@@ -259,14 +259,23 @@ export function ChonHaiCot({
   const cotPhai = (
     <div className="chc-cot chc-cot-phai">
       <div className="chc-cot-dau">
-        <span className="chc-cot-tieu-de">Đã chọn</span>
+        <span className="chc-cot-tieu-de">{chip ? `Đã chọn (${giaTriHopLe.length})` : 'Đã chọn'}</span>
+        {chip && (
+          <button
+            type="button"
+            className="chc-bo-tat-ca"
+            onClick={() => onChange([])}
+          >
+            Bỏ chọn tất cả
+          </button>
+        )}
       </div>
       <div className="chc-tim-khung">
         <Icon n="search" className="ic sm chc-tim-ic" />
         <input
           type="text"
           className="chc-tim-inp"
-          placeholder="Tìm kiếm..."
+          placeholder={chip ? 'Tìm trong đã chọn' : 'Tìm kiếm...'}
           value={timPhai}
           onChange={e => setTimPhai(e.target.value)}
         />
@@ -310,7 +319,7 @@ export function ChonHaiCot({
         aria-expanded={mo}
         aria-haspopup="dialog"
         aria-label={nhan}
-        className={`inp chc-o ${btnClass} ${className}${mo ? ' open' : ''}${disabled ? ' disabled' : ''}`}
+        className={`inp chc-o ${btnClass} ${className}${chip ? ' chc-chip-mode' : ''}${mo ? ' open' : ''}${disabled ? ' disabled' : ''}`}
         onClick={() => { if (!disabled) setMo(o => !o) }}
         onKeyDown={e => {
           if (!disabled && (e.key === 'Enter' || e.key === 'ArrowDown' || e.key === ' ')) {
@@ -319,25 +328,61 @@ export function ChonHaiCot({
           }
         }}
       >
-        <span className="chc-gia-tri-wrap" title={daChon.map(x => x.t).join(', ')}>
-          {chip && daChon.length > 0 ? (
-            <>
-              <span className="chc-chip">{daChon[0].t}</span>
-              {daChon.length > 1 && <span className="chc-chip chc-chip-so">+{daChon.length - 1}</span>}
-            </>
-          ) : chuHienThi ? (
-            <span className="chc-gia-tri">{chuHienThi}</span>
-          ) : (
-            <span className="chc-goi-y">{goiY}</span>
-          )}
-        </span>
-        {chip && daChon.length > 0 && !disabled && (
-          <button type="button" className="chc-xoa" title={`Bỏ lọc ${nhan}`} aria-label={`Bỏ lọc ${nhan}`}
-            onClick={e => { e.stopPropagation(); onChange([]) }}>
-            <Icon n="x" className="ic xs" />
-          </button>
+        {chip ? (
+          <>
+            <span
+              className="chc-gia-tri-wrap"
+              title={
+                daChon.length === 1
+                  ? (daChon[0].ma ? `${daChon[0].t} · Mã: ${daChon[0].ma}` : daChon[0].t)
+                  : daChon.length > 1
+                  ? daChon.map(x => x.t).join(', ')
+                  : undefined
+              }
+            >
+              {daChon.length === 0 ? (
+                <span className="chc-goi-y">{goiY || 'Tất cả'}</span>
+              ) : daChon.length === 1 ? (
+                <span className="chc-mot-ten">
+                  {daChon[0].t}
+                </span>
+              ) : (
+                <>
+                  <span className="chc-chip chc-chip-ten" title={daChon[0].t}>
+                    {daChon[0].t}
+                  </span>
+                  <span className="chc-chip chc-chip-so">+{daChon.length - 1}</span>
+                </>
+              )}
+            </span>
+            {daChon.length > 0 && !disabled && (
+              <button
+                type="button"
+                className="chc-xoa"
+                title={`Bỏ lọc ${nhan}`}
+                aria-label={`Bỏ lọc ${nhan}`}
+                onClick={e => {
+                  e.stopPropagation()
+                  onChange([])
+                }}
+              >
+                <Icon n="x" className="ic xs" />
+              </button>
+            )}
+            {daChon.length === 0 && <Icon n="chevd" className="ic sm chc-mui-ten" />}
+          </>
+        ) : (
+          <>
+            <span className="chc-gia-tri-wrap" title={daChon.map(x => x.t).join(', ')}>
+              {chuHienThi ? (
+                <span className="chc-gia-tri">{chuHienThi}</span>
+              ) : (
+                <span className="chc-goi-y">{goiY}</span>
+              )}
+            </span>
+            <Icon n="chevd" className="ic sm chc-mui-ten" />
+          </>
         )}
-        <Icon n="chevd" className="ic sm chc-mui-ten" />
       </div>
 
       {/* Web: hộp hai cột Popover */}
@@ -346,9 +391,9 @@ export function ChonHaiCot({
           anchor={nutRef}
           open={mo}
           onClose={() => setMo(false)}
-          width={580}
+          width={chip ? 600 : 580}
           role="dialog"
-          className="pop-chc"
+          className={chip ? 'pop-chc chc-pop-loc' : 'pop-chc'}
         >
           <div className="chc-than-hai-cot">
             {cotTrai}

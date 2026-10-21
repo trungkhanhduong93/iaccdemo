@@ -183,6 +183,14 @@ function CongTac({ on, khoa, onDoi, nhan }: { on: boolean; khoa?: boolean; onDoi
   )
 }
 
+function IconGhim({ className = '' }: { className?: string }) {
+  return (
+    <svg className={`ic sm ${className}`.trim()} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M9 4h6l-1 6 3 3H7l3-3zM12 13v7" />
+    </svg>
+  )
+}
+
 // ── Ô lọc ngoài, nút phễu mở Bộ lọc nâng cao, nút Lọc ──
 
 export function BoLoc({ ds, cauHinh, datCauHinh, dangLoc, khacNhap, onLoc, onXoaHet, anNangCao = false, nhanXoa, truocNutLoc, chiNutPheu = false, soDem, ngoaiRieng }: {
@@ -198,7 +206,6 @@ export function BoLoc({ ds, cauHinh, datCauHinh, dangLoc, khacNhap, onLoc, onXoa
 }) {
   const { toast } = useSession()
   const [mo, setMo] = useState(false)
-  const [moCauHinh, setMoCauHinh] = useState(true)
   const nut = useRef<HTMLButtonElement>(null)
   const dong = useCallback(() => setMo(false), [])
   const theoK = new Map(ds.map(o => [o.k, o]))
@@ -216,10 +223,10 @@ export function BoLoc({ ds, cauHinh, datCauHinh, dangLoc, khacNhap, onLoc, onXoa
 
   // T504: kiểu Figma xếp ô ngoài sau nút phễu; ô có bản riêng (tìm, ngày kiểu Figma) thì dùng bản đó
   const oNgoai = ngoai.map(k => ngoaiRieng?.[k] ?? <ONhanVien key={k} nhan={theoK.get(k)!.ten} className={`ds-o-${k}`}>{theoK.get(k)!.o}</ONhanVien>)
+  const soDangLoc = ds.filter(o => o.coGiaTri).length
 
   return (
     <>
-      {!chiNutPheu && oNgoai}
       {!anNangCao && (
         chiNutPheu ? (
           <button ref={nut} type="button" className={`ds-btn-pheu-figma${mo || dangLoc ? ' on' : ''}`} title="Bộ lọc" aria-label="Bộ lọc"
@@ -235,50 +242,61 @@ export function BoLoc({ ds, cauHinh, datCauHinh, dangLoc, khacNhap, onLoc, onXoa
           </button>
         )
       )}
-      {chiNutPheu && oNgoai}
+      {oNgoai}
       {truocNutLoc}
       <button type="button" className="btn pri ds-nut-loc" title={khacNhap ? 'Có điều kiện mới, bấm Lọc để tải lại' : undefined} onClick={onLoc}>
         Lọc{khacNhap && <span className="ds-cham-nhap" />}
       </button>
 
       {!anNangCao && (
-        <Popover anchor={nut} open={mo} onClose={dong} align="start" width={720} role="dialog" className="ds-nc-pop">
+        <Popover anchor={nut} open={mo} onClose={dong} align="start" width={760} role="dialog" className="ds-nc-pop">
           <div className="ds-nc-dau">
-            <Icon n="filter" className="ic sm" />
             <b>Bộ lọc nâng cao</b>
+            <span className="ds-nc-phu">Bấm ghim để đưa ô ra hàng lọc, tối đa {TOI_DA_NGOAI} ô</span>
             <span className="grow" />
-            <button type="button" className="ds-link" onClick={onXoaHet}>{nhanXoa ?? 'Xoá tất cả'}</button>
-            <button type="button" className="pheu-dong" title="Đóng" aria-label="Đóng" onClick={dong}><Icon n="x" className="ic sm" /></button>
-          </div>
-          {trong.length > 0 && (
-            <div className="ds-nc-luoi">
-              {trong.map(k => <ONhanVien key={k} nhan={theoK.get(k)!.ten} className={`ds-o-${k}`}>{theoK.get(k)!.o}</ONhanVien>)}
-            </div>
-          )}
-          <div className="ds-nc-ch">
-            <button type="button" className="ds-nc-ch-dau" aria-expanded={moCauHinh} onClick={() => setMoCauHinh(x => !x)}>
-              <b>Cấu hình tham số lọc</b>
-              <span className="ds-chip-so">{ngoai.length}</span>
-              <small>tối đa chọn {TOI_DA_NGOAI} ô lọc để đưa ra bên ngoài</small>
-              <span className="grow" />
-              <Icon n="chevd" className={`ic sm ds-mui${moCauHinh ? ' len' : ''}`} />
+            <button type="button" className="pheu-dong" title="Đóng" aria-label="Đóng" onClick={dong}>
+              <Icon n="x" className="ic sm" />
             </button>
-            {moCauHinh && (
-              <>
-                <div className="ds-goi-y">Bật để hiện ngoài, kéo để đổi thứ tự</div>
-                <div className="ds-ds-keo">
-                  {cauHinh.thuTu.filter(k => theoK.has(k)).map(k => (
-                    <div key={k} className={`ds-dong-keo${keo.keo === k ? ' dang-keo' : ''}${keo.dich === k ? ' dich' : ''}`} {...keo.props(k)}>
-                      <TayKeo />
-                      <span className="grow">{theoK.get(k)!.ten}</span>
-                      <CongTac on={ngoai.includes(k)} nhan={`Hiện ô ${theoK.get(k)!.ten} ở ngoài`} onDoi={() => doiBat(k)} />
-                    </div>
-                  ))}
+          </div>
+          <div className="ds-nc-luoi">
+            {cauHinh.thuTu.filter(k => theoK.has(k)).map(k => {
+              const def = theoK.get(k)!
+              const daGhim = ngoai.includes(k)
+              return (
+                <div
+                  key={k}
+                  className={`ds-nc-o${keo.keo === k ? ' dang-keo' : ''}${keo.dich === k ? ' dich' : ''}`}
+                  {...keo.props(k)}
+                >
+                  <span className="ds-nc-keo-tay" title="Kéo để đổi thứ tự">
+                    <TayKeo />
+                  </span>
+                  <div className="ds-nc-o-ctrl">
+                    <ONhanVien nhan={def.ten} className={`ds-o-${k}`}>
+                      {def.o}
+                    </ONhanVien>
+                  </div>
+                  <button
+                    type="button"
+                    className={`ds-nut-ghim${daGhim ? ' ghim' : ''}`}
+                    aria-pressed={daGhim}
+                    aria-label={daGhim ? `Bỏ ghim ${def.ten}` : `Ghim ${def.ten} ra hàng lọc`}
+                    title={daGhim ? `Bỏ ghim ${def.ten}` : `Ghim ${def.ten} ra hàng lọc`}
+                    onClick={() => doiBat(k)}
+                  >
+                    <IconGhim />
+                  </button>
                 </div>
-              </>
-            )}
+              )
+            })}
           </div>
           <div className="ds-chan">
+            <button type="button" className="ds-link ds-nut-dat-lai" onClick={onXoaHet}>
+              <Icon n="refresh" className="ic sm" />
+              <span>{nhanXoa ?? 'Đặt lại'}</span>
+            </button>
+            {soDangLoc > 0 && <span className="ds-so-dang-loc">{soDangLoc} ô đang lọc</span>}
+            <span className="grow" />
             <button type="button" className="btn" onClick={dong}>Đóng</button>
             <button type="button" className="btn pri" onClick={() => { onLoc(); dong() }}>Áp dụng</button>
           </div>

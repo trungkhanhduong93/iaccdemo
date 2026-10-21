@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T535 | Bộ lọc nâng cao và ô chọn nhiều mã theo mẫu Trum chọn: ô lọc giữ nguyên rộng dù tên dài hay chọn nhiều. Theo Mẫu A (QD76): ô lọc 220px, hộp hai ngăn 600px chỉ ở chế độ `chip`, Bộ lọc nâng cao 760px lưới 3 cột có ghim, kéo thả trên lưới | Trum | 21/10/2026 | 2026-10-21-trum-bo-loc-mau-a.md |
 | T536 | Điện thoại: tab Lịch sử của màn xem phiếu thành dòng thời gian theo ngày (Mẫu A); nút quay lại thẻ chi phí phân bổ dùng mũi tên ←; khung màn xem, lập phiếu thu chi cách mép 16px, bo 4 góc | Trum | 21/10/2026 | 2026-10-21-trum-lich-su-dong-thoi-gian.md |
 | T538 | Điện thoại: trang chủ chip chọn cửa hàng ghi CH thay CN; lập phiếu thu chi bấm cả dải số tiền để nhập; sheet chọn đối tượng lấy từ danh mục Đối tượng (mã · loại), hàng biểu tượng Thêm mới, Tải lại thay nút dưới, nút Thêm mở form thêm đối tượng, ô tìm 16px để iPhone không phóng to; bỏ nhãn Tự điền ở Địa chỉ; Tháng ghi nhận chi phí chỉ hiện ở phiếu chi có lý do chi phí; Diễn giải đổi thành Ghi chú | PhuongXT | 21/10/2026 | [2026-10-21-phuongxt-thu-chi-dien-thoai](../nhat-ky/2026-10-21-phuongxt-thu-chi-dien-thoai.md) |
 | T537 | Phiếu mua hàng: ô Chiết khấu đứng trước ô Thuế GTGT trên thanh tab (`ApDauBang.tsx`). Commit gốc ghi nhầm mã T512 (trùng việc của dinhlanphuongipacc), đổi thành T537 trước khi push | PhuongXT | 21/10/2026 | |
