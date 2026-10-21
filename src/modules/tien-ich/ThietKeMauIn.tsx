@@ -494,7 +494,7 @@ export function ThietKeMauIn({ sc }: ScreenProps) {
                   <input type="checkbox" className="bat-tat" checked={!!mau.quyenSo} onChange={e => { const v = e.target.checked; doiMau(m => ({ ...m, quyenSo: v })) }} />In dòng quyển số
                 </label>
                 <label className="tkmi-check">
-                  <input type="checkbox" className="bat-tat" checked={!!mau.boPhan} onChange={e => { const v = e.target.checked; doiMau(m => ({ ...m, boPhan: v || undefined })) }} />In dòng bộ phận dưới tên đơn vị
+                  <input type="checkbox" className="bat-tat" checked={!!mau.boPhan} onChange={e => { const v = e.target.checked; doiMau(m => ({ ...m, boPhan: v || undefined })) }} />In dòng cửa hàng dưới tên đơn vị
                 </label>
               </div>
             </NhomTt>

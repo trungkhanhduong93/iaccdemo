@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 21/10/2026
+- T596: Mẫu in và báo cáo ghi "Cửa hàng" thay cho "Bộ phận": dòng đầu trang phiếu nhập, xuất kho, Bảng kê mua hàng, Địa chỉ (cửa hàng) trên phiếu xuất kho, sổ theo dõi TSCĐ, CCDC tại nơi sử dụng.
 - T592: Web, phiếu mua hàng: ô Thuế GTGT trên thanh tab rộng hơn, hiện đủ chữ "Nhiều mức".
 - T591: Thao tác nhanh (điện thoại và web) và menu Thu, chi tiền ghi đồng nhất "Thu ngân hàng", "Chi ngân hàng" thay cho Báo có, Uỷ nhiệm chi, Thu/Chi tiền gửi ngân hàng.
 - T590: Điện thoại, thẻ chi phí phân bổ làm lại: khối đầu thẻ có Ngày ghi tăng, bỏ khu vực Thông tin thẻ; Mục phân bổ thành danh sách các mục như dòng hàng phiếu mua, trường theo loại (CCDC có số lượng, đơn giá; TSCĐ có số hiệu, mô tả; thẻ dư đầu kỳ có giá trị, số tháng đã phân bổ) và nhãn Ngừng phân bổ. Tab Lịch phân bổ lọc theo mục, gom theo năm, kỳ Đã / Chờ / Ngừng phân bổ. Tab Lịch sử cùng khuôn phiếu thu chi. Sửa thẻ: sửa từng mục, gõ lại tiền từng kỳ, lưu mà tổng lệch thì hỏi điều chỉnh về kỳ cuối. Web gói Free, Standard: kỳ sau tháng hiện tại ghi Chờ phân bổ.

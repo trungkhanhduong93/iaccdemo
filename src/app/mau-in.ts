@@ -31,7 +31,7 @@ export interface MauIn {
   coNoCo?: boolean                               // in Nợ/Có ở góc phải khi chế độ dùng tài khoản
   quyenSo?: boolean
   quyenSoTheoCheDo?: Partial<Record<CheDo, boolean>>     // hiện quyển số theo chế độ
-  boPhan?: boolean                               // đầu trang thêm dòng Bộ phận (phiếu kho)
+  boPhan?: boolean                               // đầu trang thêm dòng Cửa hàng (phiếu kho)
 }
 
 /** Áp cấu hình theo chế độ kế toán vào mẫu in: khối chữ ký, trường thông tin, cột bảng, ghi chú, quyển số.
@@ -284,7 +284,7 @@ export const MAU_IN: MauIn[] = [
       { chucDanh: 'Người lập phiếu', goiY: '(Ký, họ tên)' },
       { chucDanh: 'Người giao hàng', goiY: '(Ký, họ tên)' },
       { chucDanh: 'Thủ kho', goiY: '(Ký, họ tên)' },
-      { chucDanh: 'Kế toán trưởng', goiY: '(hoặc bộ phận có nhu cầu nhập) (Ký, họ tên)' },
+      { chucDanh: 'Kế toán trưởng', goiY: '(hoặc cửa hàng có nhu cầu nhập) (Ký, họ tên)' },
     ],
     kyTheoCheDo: {
       TT58: [
@@ -310,7 +310,7 @@ export const MAU_IN: MauIn[] = [
     soCotThongTin: 1,
     thongTin: [
       { k: 'nguoi', nhan: 'Họ và tên người nhận hàng', batBuoc: true },
-      { k: 'diaChi', nhan: 'Địa chỉ (bộ phận)' },
+      { k: 'diaChi', nhan: 'Địa chỉ (cửa hàng)' },
       { k: 'lyDo', nhan: 'Lý do xuất kho', batBuoc: true },
       { k: 'kho', nhan: 'Xuất tại kho', batBuoc: true },
       { k: 'diaDiem', nhan: 'Địa điểm' },
@@ -318,7 +318,7 @@ export const MAU_IN: MauIn[] = [
     thongTinTheoCheDo: {
       TT58: [
         { k: 'nguoi', nhan: 'Họ và tên người nhận hàng', batBuoc: true },
-        { k: 'diaChi', nhan: 'Địa chỉ (bộ phận)' },
+        { k: 'diaChi', nhan: 'Địa chỉ (cửa hàng)' },
         { k: 'lyDo', nhan: 'Lý do xuất kho', batBuoc: true },
         { k: 'kho', nhan: 'Xuất tại kho', batBuoc: true },
         { k: 'diaDiem', nhan: 'Địa điểm' },
@@ -385,7 +385,7 @@ export const MAU_IN: MauIn[] = [
     soCotThongTin: 1,
     thongTin: [
       { k: 'nguoi', nhan: 'Họ và tên người mua', batBuoc: true },
-      { k: 'boPhan', nhan: 'Bộ phận (phòng, ban)' },
+      { k: 'boPhan', nhan: 'Cửa hàng' },
     ],
     bang: {
       cot: [

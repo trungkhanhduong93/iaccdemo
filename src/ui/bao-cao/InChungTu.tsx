@@ -51,7 +51,7 @@ export function veMauIn(mauGoc: MauIn, du: DuLieuIn, cd: CheDoDef, dv: DonViIn, 
       <div className="in-ct-dv-ten">{dv.ten}</div>
       <div>Địa chỉ: {dv.diaChi}</div>
       <div>Mã số thuế: {dv.mst}</div>
-      {mau.boPhan && <div>Bộ phận: {du.tt.boPhan || CHAM}</div>}
+      {mau.boPhan && <div>Cửa hàng: {du.tt.boPhan || CHAM}</div>}
     </div>
   )
   const mauSo = kyHieu ? (

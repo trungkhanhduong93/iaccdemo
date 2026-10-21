@@ -189,7 +189,7 @@ export function duLieuIn(
     tkNhan: '19034567890123',
     nhNhan: 'Techcombank - CN Sài Gòn',
     nganHang: 'Vietcombank - CN TP.HCM (0071001234567)',
-    boPhan: String(row.cn ?? 'Bộ phận kinh doanh'),
+    boPhan: String(row.cn ?? 'Cửa hàng 1'),
     cn: String(row.cn ?? 'Cửa hàng 1'),
     ngayBan: ngay,
     nguon: String(row.nguon ?? 'FABi POS'),

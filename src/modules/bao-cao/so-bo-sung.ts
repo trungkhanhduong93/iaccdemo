@@ -400,7 +400,7 @@ function rows724(): Row[] {
   const rows: Row[] = []
   let tongCong = 0
   for (const cn of CUA_HANG) {
-    rows.push({ ten: `Bộ phận sử dụng: ${cn.ten}`, _b: 1 })
+    rows.push({ ten: `Cửa hàng sử dụng: ${cn.ten}`, _b: 1 })
     const pb = PHAN_BO_TS[cn.id] ?? { tscd: [], ccdc: [] }
     for (const ma of pb.tscd) {
       const ts = DS_TSCD.find(t => t[0] === ma)
