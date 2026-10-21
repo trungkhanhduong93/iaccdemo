@@ -405,7 +405,7 @@ export function bienDoiBang(
     return res
   }
 
-  // 4a. Gom nhóm dạng tổng hợp (T289): mỗi nhóm một dòng, chỉ còn cột gom nhóm và cột số đã cộng; cấp 2 thụt dưới cấp 1; dòng Tổng cộng cuối bảng
+  // 4a. Gom nhóm dạng tổng hợp (T289): mỗi nhóm một dòng, chỉ còn cột gom nhóm và cột số đã cộng; cấp 2, 3 thụt dưới cấp trên; dòng Tổng cộng cuối bảng
   if (nhom.length > 0 && tc.tongHop) {
     const cotNhom = nhom.map(k => cols.find(c => c.k === k)).filter((c): c is Col => !!c).map(c => ({ ...c, num: false, w: c.w && c.w > 180 ? c.w : 180 }))
     const cotSo = colsMoi.filter(c => c.num && !nhom.includes(c.k) && c.k !== 'gia' && !c.t.includes('Đơn giá'))
@@ -415,66 +415,80 @@ export function bienDoiBang(
       return m
     }
     const tongSo = (ds: Row[]) => Object.fromEntries(cotSo.map(c => [c.k, ds.reduce((a, r) => a + soO(r[c.k]), 0)]))
-    const [k1, k2] = nhom
+    const nhomCap = nhom.slice(0, 3)
     // Gom một cấp: giữ thêm cột chữ có cùng giá trị trong mọi nhóm (vd gom theo Mã hàng thì giữ Tên hàng, ĐVT) (T304)
-    const nhom1 = nhomTheo(conLai, k1)
-    const cotKem = k2 ? [] : colsMoi.filter(c => !c.num && !c.chiManHinh && c.k !== k1 && [...nhom1.values()].every(ds => ds.every(r => String(r[c.k] ?? '') === String(ds[0][c.k] ?? ''))))
+    const nhom1 = nhomTheo(conLai, nhomCap[0])
+    const cotKem = nhomCap.length > 1 ? [] : colsMoi.filter(c => !c.num && !c.chiManHinh && c.k !== nhomCap[0] && [...nhom1.values()].every(ds => ds.every(r => String(r[c.k] ?? '') === String(ds[0][c.k] ?? ''))))
     const dong: Row[] = []
-    for (const [v1, ds1] of nhom1) {
-      dong.push({ [k1]: v1 || '(Trống)', ...Object.fromEntries(cotKem.map(c => [c.k, ds1[0][c.k]])), ...tongSo(ds1), ...(k2 ? { _b: 1 } : {}) })
-      if (k2) for (const [v2, ds2] of nhomTheo(ds1, k2)) dong.push({ [k2]: v2 || '(Trống)', ...tongSo(ds2), _i: 1 })
+    const deQuyTongHop = (ds: Row[], cap: number) => {
+      const k = nhomCap[cap]
+      const coCapDuoi = cap < nhomCap.length - 1
+      for (const [val, subDs] of nhomTheo(ds, k)) {
+        dong.push({
+          [k]: val || '(Trống)',
+          ...(cap === 0 && cotKem.length > 0 ? Object.fromEntries(cotKem.map(c => [c.k, subDs[0][c.k]])) : {}),
+          ...tongSo(subDs),
+          ...(coCapDuoi ? { _b: 1 } : {}),
+          ...(cap > 0 ? { _i: cap } : {}),
+        })
+        if (coCapDuoi) {
+          deQuyTongHop(subDs, cap + 1)
+        }
+      }
     }
-    dong.push({ [cotNhom[0]?.k ?? k1]: 'Tổng cộng', ...tongSo(conLai), _t: 1 })
+    deQuyTongHop(conLai, 0)
+    dong.push({ [cotNhom[0]?.k ?? nhomCap[0]]: 'Tổng cộng', ...tongSo(conLai), _t: 1 })
     return { cols: [...cotNhom, ...cotKem, ...cotSo], rows: dong }
   }
 
   // 4. Gom nhóm
   let rowsMoi: Row[] = []
   if (nhom.length > 0) {
-    const k1 = nhom[0]
-    const k2 = nhom.length > 1 ? nhom[1] : null
-
-    // Gom ổn định cấp 1 theo thứ tự xuất hiện
-    const nhom1Map = new Map<string, Row[]>()
-    for (const r of conLai) {
-      const v1 = String(r[k1] ?? '')
-      let list = nhom1Map.get(v1)
-      if (!list) {
-        list = []
-        nhom1Map.set(v1, list)
+    const nhomCap = nhom.slice(0, 3)
+    const nhomTheo = (ds: Row[], k: string) => {
+      const m = new Map<string, Row[]>()
+      for (const r of ds) {
+        const v = String(r[k] ?? '')
+        let list = m.get(v)
+        if (!list) {
+          list = []
+          m.set(v, list)
+        }
+        list.push(r)
       }
-      list.push(r)
+      return m
     }
 
-    for (const [val1, ds1] of nhom1Map) {
-      // Tiêu đề nhóm 1
-      rowsMoi.push({ [colChu]: `${tenCot(k1)}: ${val1}`, _b: 1, _nhom: true })
+    const deQuyChiTiet = (ds: Row[], cap: number) => {
+      const k = nhomCap[cap]
+      const coCapDuoi = cap < nhomCap.length - 1
+      for (const [val, subDs] of nhomTheo(ds, k)) {
+        // Tiêu đề nhóm
+        rowsMoi.push({
+          [colChu]: `${tenCot(k)}: ${val}`,
+          _b: 1,
+          ...(cap > 0 ? { _i: cap } : {}),
+          _nhom: true,
+        })
 
-      if (k2) {
-        // Gom ổn định cấp 2
-        const nhom2Map = new Map<string, Row[]>()
-        for (const r of ds1) {
-          const v2 = String(r[k2] ?? '')
-          let list = nhom2Map.get(v2)
-          if (!list) {
-            list = []
-            nhom2Map.set(v2, list)
-          }
-          list.push(r)
+        if (coCapDuoi) {
+          deQuyChiTiet(subDs, cap + 1)
+        } else {
+          rowsMoi.push(...subDs)
         }
 
-        for (const [val2, ds2] of nhom2Map) {
-          rowsMoi.push({ [colChu]: `${tenCot(k2)}: ${val2}`, _b: 1, _i: 1, _nhom: true })
-          rowsMoi.push(...ds2)
-          rowsMoi.push({ [colChu]: `Cộng ${val2}`, ...tongNumNhom(ds2), _t: 1, _i: 1, _nhom: true })
-        }
-      } else {
-        rowsMoi.push(...ds1)
+        // Cộng nhóm
+        rowsMoi.push({
+          [colChu]: `Cộng ${val}`,
+          ...tongNumNhom(subDs),
+          _t: 1,
+          ...(cap > 0 ? { _i: cap } : {}),
+          _nhom: true,
+        })
       }
-
-      // Cộng nhóm 1
-      rowsMoi.push({ [colChu]: `Cộng ${val1}`, ...tongNumNhom(ds1), _t: 1, _nhom: true })
     }
+
+    deQuyChiTiet(conLai, 0)
   } else {
     rowsMoi = conLai
   }

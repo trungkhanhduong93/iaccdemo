@@ -1,14 +1,14 @@
-// Khung tuỳ chỉnh báo cáo (kế hoạch mục 10, T47, T70): ẩn hiện cột, đổi thứ tự cột, đổi tên cột, độ rộng cột, gom nhóm 2 cấp, người ký, cỡ chữ bảng.
+// Khung tuỳ chỉnh báo cáo (kế hoạch mục 10, T47, T70): ẩn hiện cột, đổi thứ tự cột, đổi tên cột, độ rộng cột, gom nhóm 3 cấp, người ký, cỡ chữ bảng.
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { Col } from '../../modules/types'
-import { cauHinhBC } from '../../modules/bao-cao/danh-sach'
+import { cauHinhBC, tenBC } from '../../modules/bao-cao/danh-sach'
 import { layNguoiKy, luuNguoiKy } from './khoMauIn'
 import { docTuyChinh, luuTuyChinh, xoaTuyChinh, type TuyChinhLuu } from './tuyChinhBC'
-import { DsCot, type MucDs } from '../thiet-ke/DsCot'
+import { type MucDs } from '../thiet-ke/DsCot'
+import { DsCotNhom } from './DsCotNhom'
 import { DsKy } from '../thiet-ke/DsKy'
 import { HopXacNhan } from '../LocNangCao'
-import { Select } from '../Dropdown'
 import { Icon } from '../Icon'
 import type { OKy } from '../generic/ReportScreen'
 
@@ -33,6 +33,7 @@ export function TuyChinhBC({
   const [hoiChuan, setHoiChuan] = useState(false)
   const cfg = cauHinhBC(slug)
   const khoa = !!cfg?.khoa
+  const tenBaoCao = slug ? tenBC(slug, 'TT152') : undefined
 
   // Đọc cấu hình lưu của báo cáo này
   const [tc, setTc] = useState<TuyChinhLuu>(() => (slug ? docTuyChinh(donVi, slug) ?? {} : {}))
@@ -155,11 +156,13 @@ export function TuyChinhBC({
   const nhomDangChon = tc.nhom ?? []
   const k1 = nhomDangChon[0] ?? ''
   const k2 = nhomDangChon[1] ?? ''
+  const k3 = nhomDangChon[2] ?? ''
+  const xemNhom = tc.xemNhom ?? 'chiTiet'
 
   const tenCotNhom = (k: string) => colsGoc.find(c => c.k === k)?.t ?? k
 
-  const doiNhom = (c1: string, c2: string) => {
-    const ds = [c1, c2].filter(Boolean)
+  const doiNhom = (c1: string, c2: string, c3: string) => {
+    const ds = [c1, c2, c3].filter(Boolean)
     capNhat({ nhom: ds.length > 0 ? ds : undefined })
   }
 
@@ -221,6 +224,7 @@ export function TuyChinhBC({
         <div className="pn-dau">
           <div>
             <h3>Tuỳ chỉnh báo cáo</h3>
+            {tenBaoCao && <div className="tc-sub-tieu-de">{tenBaoCao}</div>}
           </div>
           <button type="button" className="icon-btn" onClick={onHuy} aria-label="Đóng">
             <Icon n="x" kieu="net" />
@@ -242,10 +246,10 @@ export function TuyChinhBC({
             khoa ? (
               <div className="pn-khoa"><Icon n="lock" className="ic" kieu="net" /><div><b>Mẫu theo thông tư</b><span>Mẫu pháp định giữ nguyên bố cục, chỉ sửa được người ký và cỡ chữ.</span></div></div>
             ) : (
-              <DsCot
+              <DsCotNhom
                 items={dsCotItem}
+                colsGoc={colsGoc}
                 onChange={onDoiCot}
-                suaTen
               />
             )
           )}
@@ -255,31 +259,124 @@ export function TuyChinhBC({
               <p className="bc-tc-thong-bao">Báo cáo này không hỗ trợ gom nhóm</p>
             ) : (
               <div className="bc-tc-nhom-khung">
-                <div className="pn-luoi">
-                  <div className="f">
-                    <label>Gom nhóm cấp 1</label>
-                    <Select className="inp" value={k1} onChange={e => doiNhom(e.target.value, k2)}>
-                      <option value="">(Không gom nhóm)</option>
-                      {nhomDuoc.map(k => <option key={k} value={k}>{tenCotNhom(k)}</option>)}
-                    </Select>
-                  </div>
+                <div className="tc-nhom-mo-ta">Chọn tối đa 3 cấp. Mỗi nhóm có dòng cộng riêng.</div>
 
-                  {k1 && (
-                    <div className="f">
-                      <label>Gom nhóm cấp 2</label>
-                      <Select className="inp" value={k2} onChange={e => doiNhom(k1, e.target.value)}>
-                        <option value="">(Không chọn cấp 2)</option>
-                        {nhomDuoc.filter(k => k !== k1).map(k => <option key={k} value={k}>{tenCotNhom(k)}</option>)}
-                      </Select>
-                    </div>
-                  )}
+                <div className="tc-cap">
+                  <span className="tc-cap-ten">Cấp 1</span>
+                  <div className="tc-cap-ds">
+                    <button
+                      type="button"
+                      className={`tc-lc${!k1 ? ' on' : ''}`}
+                      onClick={() => doiNhom('', '', '')}
+                      aria-pressed={!k1}
+                    >
+                      <span className="tc-dot" />
+                      Không gom
+                    </button>
+                    {nhomDuoc.map(k => (
+                      <button
+                        key={k}
+                        type="button"
+                        className={`tc-lc${k1 === k ? ' on' : ''}`}
+                        onClick={() => {
+                          const moiK2 = k2 === k ? '' : k2
+                          const moiK3 = k3 === k || !moiK2 ? '' : k3
+                          doiNhom(k, moiK2, moiK3)
+                        }}
+                        aria-pressed={k1 === k}
+                      >
+                        <span className="tc-dot" />
+                        {tenCotNhom(k)}
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
-                {(k1 || k2) && (
-                  <div>
-                    <button type="button" className="btn sm" onClick={() => doiNhom('', '')}>
-                      Bỏ gom nhóm
-                    </button>
+                {k1 && (
+                  <div className="tc-cap">
+                    <span className="tc-cap-ten">Cấp 2</span>
+                    <div className="tc-cap-ds">
+                      <button
+                        type="button"
+                        className={`tc-lc${!k2 ? ' on' : ''}`}
+                        onClick={() => doiNhom(k1, '', '')}
+                        aria-pressed={!k2}
+                      >
+                        <span className="tc-dot" />
+                        Không chọn
+                      </button>
+                      {nhomDuoc.filter(k => k !== k1).map(k => (
+                        <button
+                          key={k}
+                          type="button"
+                          className={`tc-lc${k2 === k ? ' on' : ''}`}
+                          onClick={() => {
+                            const moiK3 = k3 === k ? '' : k3
+                            doiNhom(k1, k, moiK3)
+                          }}
+                          aria-pressed={k2 === k}
+                        >
+                          <span className="tc-dot" />
+                          {tenCotNhom(k)}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {k2 && (
+                  <div className="tc-cap">
+                    <span className="tc-cap-ten">Cấp 3</span>
+                    <div className="tc-cap-ds">
+                      <button
+                        type="button"
+                        className={`tc-lc${!k3 ? ' on' : ''}`}
+                        onClick={() => doiNhom(k1, k2, '')}
+                        aria-pressed={!k3}
+                      >
+                        <span className="tc-dot" />
+                        Không chọn
+                      </button>
+                      {nhomDuoc.filter(k => k !== k1 && k !== k2).map(k => (
+                        <button
+                          key={k}
+                          type="button"
+                          className={`tc-lc${k3 === k ? ' on' : ''}`}
+                          onClick={() => doiNhom(k1, k2, k)}
+                          aria-pressed={k3 === k}
+                        >
+                          <span className="tc-dot" />
+                          {tenCotNhom(k)}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {nhomDangChon.length > 0 && (
+                  <div className="tc-cap" style={{ alignItems: 'center' }}>
+                    <span className="tc-cap-ten" style={{ paddingTop: 0 }}>Kiểu xem</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+                      <div className="tc-seg" role="group" aria-label="Kiểu xem">
+                        <button
+                          type="button"
+                          className={xemNhom === 'chiTiet' ? 'on' : ''}
+                          onClick={() => capNhat({ xemNhom: 'chiTiet' })}
+                        >
+                          Chi tiết
+                        </button>
+                        <button
+                          type="button"
+                          className={xemNhom === 'tongHop' ? 'on' : ''}
+                          onClick={() => capNhat({ xemNhom: 'tongHop' })}
+                        >
+                          Tổng hợp
+                        </button>
+                      </div>
+                      <span style={{ fontSize: 12.5, color: 'var(--muted)' }}>
+                        {xemNhom === 'tongHop' ? 'Mỗi nhóm một dòng, ẩn từng mặt hàng.' : 'Hiện từng mặt hàng dưới dòng nhóm.'}
+                      </span>
+                    </div>
                   </div>
                 )}
               </div>
@@ -288,38 +385,64 @@ export function TuyChinhBC({
 
           {tab === 'ky' && (
             <div className="bc-tc-ky-khung">
-              <label className="row pn-tich">
-                <input
-                  type="checkbox"
-                  className="bat-tat"
-                  checked={chiRieng}
-                  onChange={e => doiChiRieng(e.target.checked)}
-                />
-                Chỉ báo cáo này
-              </label>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 14 }}>
+                <div className="tc-seg" role="group" aria-label="Phạm vi áp dụng" style={{ alignSelf: 'flex-start' }}>
+                  <button
+                    type="button"
+                    className={!chiRieng ? 'on' : ''}
+                    onClick={() => doiChiRieng(false)}
+                  >
+                    Dùng chung mọi báo cáo
+                  </button>
+                  <button
+                    type="button"
+                    className={chiRieng ? 'on' : ''}
+                    onClick={() => doiChiRieng(true)}
+                  >
+                    Riêng báo cáo này
+                  </button>
+                </div>
+                <span style={{ fontSize: 12.5, color: 'var(--muted)' }}>
+                  {chiRieng
+                    ? 'Chỉ báo cáo này dùng danh sách này. Báo cáo khác giữ người ký chung.'
+                    : 'Sửa họ tên ở đây thì mọi báo cáo của hộ kinh doanh đổi theo.'}
+                </span>
+              </div>
               <DsKy
                 ds={dsKyDangCo}
                 onChange={onDoiKy}
                 hoTenDonVi={nguoiKyDonVi}
+                kieu="dong"
               />
             </div>
           )}
 
           {tab === 'trang' && (
             <div className="bc-tc-trang-khung">
-              <div className="pn-luoi">
-                <div className="f">
-                  <label>Cỡ chữ bảng</label>
-                  <Select
-                    className="inp"
-                    value={String(coChu)}
-                    onChange={e => capNhat({ coChu: Number(e.target.value) })}
-                  >
-                    {CO_CHU.map(c => <option key={c} value={String(c)}>{c} px</option>)}
-                  </Select>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
+                  <h3 style={{ margin: 0, fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>Cỡ chữ bảng</h3>
+                  <span style={{ fontSize: 12.5, color: 'var(--muted)' }}>Mặc định 12 px</span>
+                </div>
+                <div className="tc-seg" role="group" aria-label="Cỡ chữ bảng" style={{ alignSelf: 'flex-start' }}>
+                  {CO_CHU.map(c => {
+                    const nhan = String(c).replace('.', ',')
+                    const on = coChu === c
+                    return (
+                      <button
+                        key={c}
+                        type="button"
+                        className={on ? 'on' : ''}
+                        onClick={() => capNhat({ coChu: c })}
+                        aria-pressed={on}
+                      >
+                        {nhan}
+                      </button>
+                    )
+                  })}
                 </div>
               </div>
-              <p className="muted pn-chu-nho">Đổi khổ giấy Dọc / Ngang tại thanh công cụ dưới trang.</p>
+              <p className="muted pn-chu-nho" style={{ marginTop: 16 }}>Đổi khổ giấy Dọc / Ngang tại thanh công cụ dưới trang.</p>
             </div>
           )}
         </div>
