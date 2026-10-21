@@ -11,6 +11,12 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T562 | Điện thoại, danh sách chứng từ mua hàng mất nút Thêm mới: hiện nút giống danh sách Thu chi | Trum | Đang làm | Spec `backup/spec-T562.md` (gom T562-T567, bản clone `Web-dt`). Sửa `MChungTu.tsx`, cuối `app.css` (mục T562-T567) |
+| T563 | Điện thoại, nút quay lại vòng lặp A ↔ B: mọi màn lùi đúng 1 bước, hết lịch sử thì về màn cha bằng replace | Trum | Đang làm | Sửa hàm quay lại trong `src/ui/mobile` (`MChungTu.tsx`, `MDtThuChiDs.tsx`, `MBaoCaoDau.tsx`, `MBaoCao.tsx`, `MCcdc.tsx`...). Không đụng `MXemPhieu.tsx` (T436) |
+| T564 | Điện thoại, hàng tab Chứng từ mua hàng, Báo cáo theo dõi chữ nhỏ: cùng cỡ với tab danh sách Thu chi | Trum | Đang làm | Sửa `MChungTu.tsx`, cuối `app.css` |
+| T565 | Điện thoại, phiếu thu chi lập mới và sửa: khoá ô Cửa hàng, ô Loại thu chi | Trum | Đang làm | Sửa `MDtThuChiLap.tsx` |
+| T566 | Điện thoại, tên S1a dài làm chật thanh đầu và dòng danh sách báo cáo: dùng tên ngắn, thẻ tiêu đề giữ tên đủ | Trum | Đang làm | Sửa `danh-sach.ts` (thêm tên ngắn), `MBaoCaoDau.tsx`, `MBaoCao.tsx` |
+| T567 | Điện thoại, báo cáo kết quả kinh doanh 10.2.3: khối chỉ tiêu bỏ nền xanh, nền trắng | Trum | Đang làm | Sửa `MBaoCaoDong.tsx` hoặc cuối `app.css` |
 | T557 | Web, form thêm, sửa chứng từ: ô ngày chọn được bằng lịch. Rà 31 form, ô Ngày chứng từ đều đã có lịch (`ONgay`); còn ô Hạn thanh toán ở mua hàng, bán hàng là ô chữ | PhuongXT | Đang làm | `ChungTuForm.tsx` (ô Hạn thanh toán) |
 | T552 | Điện thoại, màn Tạo chứng từ thành công: một thành phần dùng chung cho mọi phiếu, thẻ tóm tắt số phiếu, số tiền, đối tượng; nút Xem chi tiết, Lập phiếu mới, Đóng | Trum | Chờ | Làm sau T539 (PhuongXT giữ `MLapPhieu.tsx`, `MLapPhieuKho.tsx`, `MDtThuChiLap.tsx`). Tạo `MThanhCong.tsx`, cuối `app.css` (mục T552) |
 | T555 | Điện thoại, phiếu thu chi lập mới và sửa: mọi gói có dòng chi tiết (Diễn giải, Số tiền), Số tiền đầu phiếu là tổng các dòng, từ 2 dòng khoá ô đầu; chuyển quỹ giữ một số tiền | Trum | Chờ | Làm sau T539 (PhuongXT giữ `MDtThuChiLap.tsx`). Bỏ ẩn phần CHI TIẾT gói Free của T526. Sửa `MDtThuChiLap.tsx`, cuối `app.css` (mục T555) |
