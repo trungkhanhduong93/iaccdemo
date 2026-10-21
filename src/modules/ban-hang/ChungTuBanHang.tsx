@@ -16,7 +16,7 @@ import { dmy, fold, money, moneyD, rng } from '../../ui/format'
 import { Select } from '../../ui/Dropdown'
 import { PhanTrang } from '../../ui/PhanTrang'
 import { useDaXoa } from '../../ui/generic/daXoa'
-import { ChonKhoangNgay, docNgay, thangNay, trongKhoang, type KhoangNgay } from '../../ui/ChonNgay'
+import { ChonKhoangNgay, docNgay, thangMacDinh, trongKhoang, type KhoangNgay } from '../../ui/ChonNgay'
 import { NutExcel } from '../../ui/CongCuDs'
 import { IconFigmaSearch } from '../../ui/IconFigma'
 import { dangLoc, dsGiaTri, khopLoc, type GiaTriLoc, type KieuLoc, type LocCot } from '../../ui/LocCot'
@@ -216,7 +216,7 @@ const COT_CHON = new Set(['cn', 'nguon', 'kenh'])
 
 /** Giá trị các ô lọc ngoài và trong Bộ lọc nâng cao. Chuỗi rỗng là tất cả */
 interface GtLoc { thoiGian: KhoangNgay; tim: string; cn: string; nguon: string; kh: string; kenh: string; pttt: string; hang: string; tonKho: string }
-const locMacDinh = (): GtLoc => ({ thoiGian: thangNay(), tim: '', cn: '', nguon: '', kh: '', kenh: '', pttt: '', hang: '', tonKho: '' })
+const locMacDinh = (): GtLoc => ({ thoiGian: thangMacDinh(), tim: '', cn: '', nguon: '', kh: '', kenh: '', pttt: '', hang: '', tonKho: '' })
 /** Món của chứng từ để lọc theo hàng hoá, theo dõi tồn kho; nhớ lại để không tính lại mỗi lần lọc */
 const MON_CUA = new WeakMap<object, { ma: string; ten: string; tonKho: boolean }[]>()
 function monCua(x: NgayPOS) {

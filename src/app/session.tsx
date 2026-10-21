@@ -5,6 +5,7 @@ import { CHE_DO, CHE_DO_HOP_LE, CHE_DO_MAC_DINH, chuanHoaCheDo, type CheDo } fro
 import { CUA_HANG, DON_VI, HOM_NAY, type DonVi, type Role } from '../data/mock'
 import { dmy } from '../ui/format'
 import type { LichCachNvl } from '../modules/home/chi-phi-nvl'
+import { thangLamViec } from './thangLamViec'
 
 export type PpGtgt = 'tyLe' | 'khauTru'
 export type PpTndn = 'tyLe' | 'thuNhap'
@@ -169,9 +170,11 @@ export function dsKyNam(s: Session): { nhan: string; so: number }[] {
     return { nhan: `Tháng ${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`, so: d.getFullYear() * 100 + d.getMonth() + 1 }
   })
 }
-/** Kỳ mặc định: tháng hiện tại nếu nằm trong năm tài chính, không thì kỳ cuối năm */
+/** Kỳ mặc định: tháng làm việc chọn ở trang chủ gói Free (T617), không có thì tháng hiện tại nếu nằm trong năm tài chính, không thì kỳ cuối năm */
 export function kyMacDinh(s: Session): number {
   const d = new Date(), ds = dsKyNam(s), nay = d.getFullYear() * 100 + d.getMonth() + 1
+  const lv = s.goi === 'F' ? thangLamViec() : null
+  if (lv && ds.some(k => k.so === 2026 * 100 + lv)) return 2026 * 100 + lv
   return ds.some(k => k.so === nay) ? nay : ds[ds.length - 1].so
 }
 const soNgay = (d: string) => { const m = d.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/); return m ? +m[3] * 10000 + +m[2] * 100 + +m[1] : NaN }

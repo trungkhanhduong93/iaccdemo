@@ -1,6 +1,7 @@
 // Thành phần chọn khoảng ngày theo iFaster (Lượt 1/2)
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { HOM_NAY } from '../data/mock'
+import { thangLamViec } from '../app/thangLamViec'
 import { Popover } from './Dropdown'
 import { Icon } from './Icon'
 import { IconFigmaCalendar } from './IconFigma'
@@ -39,6 +40,12 @@ export function khoangThang(thang: number, nam: number): KhoangNgay {
 /** Tháng chứa HOM_NAY trong mock.ts (01/10/2026 .. 31/10/2026) */
 export function thangNay(): KhoangNgay {
   return khoangThang(HOM_NAY.getMonth() + 1, HOM_NAY.getFullYear())
+}
+
+/** Khoảng ngày mặc định của danh sách: tháng làm việc chọn ở trang chủ gói Free (T617), không có thì tháng này */
+export function thangMacDinh(): KhoangNgay {
+  const lv = thangLamViec()
+  return lv ? khoangThang(lv, 2026) : thangNay()
 }
 
 function cungNgay(a: Date, b: Date): boolean {

@@ -15,7 +15,7 @@ import { OChonMot, type MucChonMot } from '../OChonMot'
 import { St, Table } from '../Table'
 import { PhanTrang } from '../PhanTrang'
 import { buildGroupedData } from '../virtual'
-import { ChonKhoangNgay, docNgay, khoangThang, thangNay, trongKhoang, type KhoangNgay } from '../ChonNgay'
+import { ChonKhoangNgay, docNgay, khoangThang, thangMacDinh, trongKhoang, type KhoangNgay } from '../ChonNgay'
 import { NutDongBo, NutExcel, NutThemMoiSplit } from '../CongCuDs'
 import { fold, money, pad, rng } from '../format'
 import { heSoZoom } from '../zoom'
@@ -205,7 +205,7 @@ export { ChungTuForm, VoucherDetail, HachToan, LichSu }
 /** Giá trị các ô lọc ngoài và trong Bộ lọc nâng cao. Chuỗi rỗng là tất cả */
 // Ô chọn nhiều (nguồn, loại, lý do, kho, hàng, nhóm hàng) giữ mảng, mảng rỗng là không lọc; đối tượng, trạng thái chọn 1 (T510)
 export interface GtLoc { thoiGian: KhoangNgay; tim: string; doiTuong: string; nguon: string[]; loai: string[]; lyDo: string[]; ttTien: string; ttHd: string; kho: string[]; hang: string[]; nhomHang: string[] }
-export const locMacDinh = (): GtLoc => ({ thoiGian: thangNay(), tim: '', doiTuong: '', nguon: [], loai: [], lyDo: [], ttTien: '', ttHd: '', kho: [], hang: [], nhomHang: [] })
+export const locMacDinh = (): GtLoc => ({ thoiGian: thangMacDinh(), tim: '', doiTuong: '', nguon: [], loai: [], lyDo: [], ttTien: '', ttHd: '', kho: [], hang: [], nhomHang: [] })
 
 const MAC_DINH: VoucherCfg ={ prefix: 'CT', doiTuong: 'none', dienGiai: ['Chứng từ'], tien: [1_000_000, 20_000_000] }
 

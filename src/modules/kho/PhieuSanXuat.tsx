@@ -11,7 +11,7 @@ import { IconFigmaSearch } from '../../ui/IconFigma'
 import { Select } from '../../ui/Dropdown'
 import { Table } from '../../ui/Table'
 import { PhanTrang } from '../../ui/PhanTrang'
-import { ChonKhoangNgay, docNgay, thangNay, trongKhoang, type KhoangNgay } from '../../ui/ChonNgay'
+import { ChonKhoangNgay, docNgay, thangMacDinh, trongKhoang, type KhoangNgay } from '../../ui/ChonNgay'
 import { NutExcel, NutThemMoiSplit } from '../../ui/CongCuDs'
 import { fold, money } from '../../ui/format'
 import { dangLoc, dsGiaTri, khopLoc, type GiaTriLoc, type KieuLoc } from '../../ui/LocCot'
@@ -87,7 +87,7 @@ export interface KieuDs {
 }
 
 interface GtLoc { thoiGian: KhoangNgay; tim: string; kho: string }
-const locMacDinh = (): GtLoc => ({ thoiGian: thangNay(), tim: '', kho: '' })
+const locMacDinh = (): GtLoc => ({ thoiGian: thangMacDinh(), tim: '', kho: '' })
 const COT_CO_DINH = new Set(['stt', 'so'])
 const MAU_TT: Record<string, [string, string]> = { cho: ['Chờ nhập', 'var(--amber)'], da: ['Đã nhập', 'var(--green)'], huy: ['Đã huỷ', 'var(--red)'] }
 

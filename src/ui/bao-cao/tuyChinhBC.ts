@@ -2,6 +2,7 @@
 import { useSyncExternalStore } from 'react'
 import type { Col, Row } from '../../modules/types'
 import type { OKy } from '../generic/ReportScreen'
+import { thangLamViec } from '../../app/thangLamViec'
 
 export interface TuyChinhCot {
   k: string
@@ -99,7 +100,10 @@ export function datDsKyMacDinh(path: string, ds: OKy[]) {
   phatSong()
 }
 
-export function datKyMacDinh(path: string, ky: string) {
+export function datKyMacDinh(path: string, kyTrang: string) {
+  // Gói Free: tháng làm việc chọn ở trang chủ thay kỳ mặc định của trang, chỉ các tháng có trong ô chọn kỳ 8, 9, 10 (T617)
+  const lv = thangLamViec()
+  const ky = lv && lv >= 8 && lv <= 10 ? String(lv) : kyTrang
   const s = layTrangThai(path)
   if (s.daXem.ky === ky && s.nhap.ky === ky) return
   if (s.kyDatSan) return

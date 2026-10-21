@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T617 | Gói Free: tháng chọn ở trang chủ thành tháng làm việc, báo cáo, danh sách, Chi phí phân bổ mở ra lọc đúng tháng đó; báo cáo Kết quả kinh doanh gói Free chỉ một cột tháng đang xem | dinhlanphuongipacc | 22/10/2026 | [nhật ký](../nhat-ky/2026-10-22-dinhlanphuongipacc-thang-lam-viec-free.md) |
 | T614 | Điện thoại, phiếu mua: thêm mới mặc định không tích Nhận kèm hoá đơn (phiếu có số hoá đơn vẫn bật); đổi chữ Giảm giá thành Chiết khấu như web ở thẻ mặt hàng, ô áp chung, dòng tổng (`MLapPhieu.tsx`) và màn xem phiếu (`MXemPhieu.tsx`). Phiếu bán, phiếu khác giữ Giảm giá | PhuongXT | 22/10/2026 | [nhật ký](../nhat-ky/2026-10-22-phuongxt-mua-hang-chiet-khau-app.md) |
 | T610 | Điện thoại, màn xem phiếu mua: Thanh toán mở sheet Thanh toán ngay, sheet Chọn quỹ, màn Lập phiếu chi tiền mặt như canvas T600; lưu phiếu chi xong mở phiếu chi vừa lập | Trum | 22/10/2026 | [2026-10-22-trum-phieu-mua-canvas-dot-2](../nhat-ky/2026-10-22-trum-phieu-mua-canvas-dot-2.md) |
 | T609 | Điện thoại, phiếu mua màn sửa, thêm mới khớp canvas T600: thanh tab xuống dưới khung Thanh toán; ô Thuế GTGT áp chung mở sheet chọn; bỏ dư lề khối hàng hoá; viền trên nút Thêm dòng; nút +, tải lại sheet chọn NCC cùng hàng; sheet con (nhóm hàng, thêm NCC, chọn quỹ) thấp hơn sheet mẹ, lộ tiêu đề | Trum | 22/10/2026 | [2026-10-22-trum-phieu-mua-canvas-dot-2](../nhat-ky/2026-10-22-trum-phieu-mua-canvas-dot-2.md) |

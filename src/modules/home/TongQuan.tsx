@@ -30,6 +30,7 @@ import {
   tinhToanTongQuan,
 } from './chiSo'
 import { BaBaiToanFree } from './BaBaiToanFree'
+import { datThangLamViec, thangLamViec } from '../../app/thangLamViec'
 
 export function TongQuan({ sc }: ScreenProps) {
   const { s } = useSession()
@@ -38,7 +39,9 @@ export function TongQuan({ sc }: ScreenProps) {
   const [ky, setKy] = useState<KyBaoCao>('thang-nay')
   // Gói Free chọn năm rồi tháng (T230); dữ liệu có từ tháng 7/2026, đơn vị bắt đầu dùng từ 01/07/2026
   const [namF, setNamF] = useState(2026)
-  const [thangF, setThangF] = useState(10)
+  // Tháng chọn thành tháng làm việc cho báo cáo, danh sách mở sau đó (T617)
+  const [thangF, setThangFGoc] = useState(() => thangLamViec() ?? 10)
+  const setThangF = (t: number) => { setThangFGoc(t); datThangLamViec(t) }
   const [soSanh] = useState<SoSanhKieu>('ky-truoc')
   const [selCns, setSelCns] = useState<string[]>(CUA_HANG.map(c => c.id))
   const [moCnPop, setMoCnPop] = useState(false)
