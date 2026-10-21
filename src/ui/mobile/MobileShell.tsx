@@ -126,7 +126,7 @@ export function MobileShell() {
     }
   }, [loc.pathname, loc.search])
 
-  const dangTaoPhieuTrenUrl = laDuongDanTaoPhieu(loc.pathname, loc.search) && s.cuaHang === 'all'
+  const dangTaoPhieuTrenUrl = laDuongDanTaoPhieu(loc.pathname, loc.search) && (!s.cuaHang || s.cuaHang === 'all')
   const moChonCuaHang = Boolean(dichDen) || dangTaoPhieuTrenUrl
 
   // T526: Nếu vào URL tạo phiếu khi ở Tất cả cửa hàng và đã có chi nhánh nhớ trong phiên
@@ -140,9 +140,10 @@ export function MobileShell() {
   }, [dangTaoPhieuTrenUrl, set])
 
   useEffect(() => {
-    if (s.cuaHang !== 'all') return
+    if (s.cuaHang && s.cuaHang !== 'all') return
     const handleClick = (e: MouseEvent) => {
       const target = (e.target as HTMLElement)?.closest?.('a')
+      if (target?.hasAttribute('data-tu-mo')) return   // liên kết tự xử lý (thu chi nhanh hỏi quỹ trước), chặn ở bước mở URL tạo phiếu (T611)
       if (!target) return
       const href = target.getAttribute('href')
       if (!href) return
@@ -295,7 +296,8 @@ export function MobileShell() {
       )}
 
       <main className="m-than">
-        <Outlet />
+        {/* Đang ở Tất cả cửa hàng mà mở URL tạo phiếu: chờ chọn cửa hàng rồi mới dựng form, để form lấy đúng cửa hàng vừa chọn (T611) */}
+        {!dangTaoPhieuTrenUrl && <Outlet />}
       </main>
 
       {!capHai && <ThanhDuoi />}

@@ -20,7 +20,6 @@ import { Icon } from '../Icon'
 import { CUA_HANG } from '../../data/mock'
 import { ChonCuaHangTruoc, layChiNhanhNho, luuChiNhanhNho } from '../ChonCuaHangTruoc'
 
-const CAC_THU = ['Chủ nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy']
 
 // Các loại phiếu thu chi: menu Thêm mới (T539), dòng Loại phiếu ở bộ lọc (T569)
 const LOAI_THU_CHI = [
@@ -34,11 +33,10 @@ const LOAI_THU_CHI = [
 function dinhDangThuNgay(chuoiNgay: string): string {
   const d = docNgay(chuoiNgay)
   if (isNaN(d.getTime())) return chuoiNgay
-  const thu = CAC_THU[d.getDay()]
   const ngay = String(d.getDate()).padStart(2, '0')
   const thang = String(d.getMonth() + 1).padStart(2, '0')
   const nam = d.getFullYear()
-  return `${thu}, ${ngay}/${thang}/${nam}`
+  return `${ngay}/${thang}/${nam}`
 }
 
 export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
@@ -252,7 +250,7 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
 
   const moPhieuMoi = (k: string) => {
     const target = `${path}/moi?loai=${k}`
-    if (s.cuaHang === 'all') {
+    if (!s.cuaHang || s.cuaHang === 'all') {
       const cnNho = layChiNhanhNho()
       if (cnNho && CUA_HANG.some(c => c.id === cnNho)) {
         set({ cuaHang: cnNho })

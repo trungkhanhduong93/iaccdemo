@@ -209,8 +209,8 @@ export function MKhoFree({ selCns, thang }: { selCns: string[]; thang: number })
               </div>
               <span className="m-tcf-tiendo-so">{x.soKiem}/{x.tong}</span>
               {x.daKiem ? (
-                <span className={x.lech ? 'm-tcf-tiendo-lech' : 'm-tcf-tiendo-khop'}>
-                  {x.lech ? `lệch ${x.lech}` : 'khớp'}
+                <span className="m-tcf-tiendo-ngay" title={`Lần kiểm kê cuối ngày ${x.ngayCuoi}${x.lech ? `, lệch ${x.lech} mặt hàng` : ', khớp sổ sách'}`}>
+                  {x.ngayCuoi.slice(0, 5)}
                 </span>
               ) : (
                 <span className="m-tcf-tiendo-lech">chưa kiểm</span>

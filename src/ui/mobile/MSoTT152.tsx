@@ -314,8 +314,7 @@ function dinhDangThuNgay(dStr?: string): string {
     const y = Number(parts[2])
     const dt = new Date(y, m, d)
     if (!isNaN(dt.getTime())) {
-      const thu = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'][dt.getDay()]
-      return `${thu}, ${dStr}`
+      return dStr
     }
   }
   return dStr

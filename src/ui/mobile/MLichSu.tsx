@@ -68,14 +68,10 @@ function tachDoi(viec: string): { tenViec: string; doi?: TruongDoi[] } {
   return { tenViec: 'Sửa chứng từ', doi }
 }
 
-const THU_LABELS = ['CHỦ NHẬT', 'THỨ HAI', 'THỨ BA', 'THỨ TƯ', 'THỨ NĂM', 'THỨ SÁU', 'THỨ BẢY']
-
 function dinhDangNgay(ngayStr: string): string {
   const [d, m, y] = ngayStr.split('/').map(Number)
   if (!d || !m || !y) return ngayStr
-  const dt = new Date(y, m - 1, d)
-  const thu = THU_LABELS[dt.getDay()] ?? ''
-  return `${thu}, ${ngayStr}`
+  return ngayStr
 }
 
 export const MLichSu: FC<MLichSuProps> = ({ goi, man, id, mau }) => {

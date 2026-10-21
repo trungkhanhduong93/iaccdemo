@@ -8,7 +8,7 @@ import { Icon, ONen } from '../Icon'
 import { fold, moneyD, pct, short } from '../format'
 import { type KyBaoCao, tinhToanTongQuan } from '../../modules/home/chiSo'
 import { tonQuyTheoSo } from '../../modules/home/LichSuQuy'
-import { moTaCach, nvlKy } from '../../modules/home/chi-phi-nvl'
+import { moTaCachNgan, nvlKy } from '../../modules/home/chi-phi-nvl'
 import { useMoTuTrangChu } from '../../app/tuTrangChu'
 import { Select } from '../Dropdown'
 import { datLocDaXem } from '../bao-cao/tuyChinhBC'
@@ -19,6 +19,7 @@ import { ModalQuy } from '../../modules/home/quyThuChi'
 import { useThaoTacNhanh, TOI_DA_THAO_TAC, type ThaoTacMuc } from '../../app/thaoTacNhanh'
 import { MTimKiem } from './MTimKiem'
 import { MChon } from './MChon'
+import { useChonLoaiTien } from './MChonLoaiTien'
 import { MODULES, tenPhanHe } from '../../app/registry'
 import { anNgoaiGoi, minGoi } from '../../app/plan'
 import { Pk } from '../Page'
@@ -134,6 +135,7 @@ export function MTrangChuFree(_props?: Partial<ScreenProps>) {
     macDinhIds: thaoTacMacDinhIds,
   } = useThaoTacNhanh(s)
   const [moTuyChinhThaoTac, setMoTuyChinhThaoTac] = useState(false)
+  const chonLoaiTien = useChonLoaiTien()
   const [chonThaoTacIds, setChonThaoTacIds] = useState<string[]>([])
   const [timThaoTac, setTimThaoTac] = useState('')
 
@@ -384,6 +386,7 @@ export function MTrangChuFree(_props?: Partial<ScreenProps>) {
                 <Link
                   key={item.id}
                   to={item.to}
+                  {...chonLoaiTien.bam(item)}
                   className="m-tcf-nhanh-muc"
                 >
                   <div className="m-tcf-nhanh-o-ic">
@@ -467,7 +470,7 @@ export function MTrangChuFree(_props?: Partial<ScreenProps>) {
             >
               <div className="m-tcf-kqkd-cot-trai">
                 <div className="m-tcf-kqkd-ten-hang">Chi phí nguyên vật liệu</div>
-                <div className="m-tcf-kqkd-sub-hang">Theo giá thành iPOS Inventory</div>
+                <div className="m-tcf-kqkd-sub-hang">{moTaCachNgan(nvl.ds)}</div>
               </div>
               <div className="m-tcf-kqkd-cot-phai">
                 <div className="m-tcf-kqkd-tien-pt">
@@ -670,6 +673,8 @@ export function MTrangChuFree(_props?: Partial<ScreenProps>) {
         />
       )}
 
+      {chonLoaiTien.sheet}
+
       {moThuChi13 && (
         <HopThuChi13
           ds={thuChi13}
@@ -693,7 +698,7 @@ export function MTrangChuFree(_props?: Partial<ScreenProps>) {
         ds={dsChonCn}
         chon={s.cuaHang || 'all'}
         onChon={k => {
-          set({ cuaHang: k === 'all' ? undefined : k })
+          set({ cuaHang: k })   // Tất cả lưu 'all' như web để bước chọn cửa hàng trước khi lập phiếu bắt được (T611)
           setMoChonCn(false)
         }}
         onDong={() => setMoChonCn(false)}

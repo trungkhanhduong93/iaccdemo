@@ -23,7 +23,7 @@ import { dinhDangKyMobile, ngayCuoiThang, useKhoangNgayMobile } from './kyBaoCao
 import { MBaoCaoDau } from './MBaoCaoDau'
 import { MBaoCaoLoc } from './MBaoCaoLoc'
 
-/** Định dạng ngày có thứ tiếng Việt: "01/09/2026" -> "Thứ Ba, 01/09/2026" (T500) */
+/** Định dạng ngày có thứ tiếng Việt: bỏ thứ, chỉ để ngày tháng (T611) */
 function dinhDangThuNgay(dStr: string): string {
   if (!dStr) return 'Chưa rõ ngày'
   const parts = dStr.includes('/') ? dStr.split('/') : (dStr.includes('-') ? dStr.split('-').reverse() : [])
@@ -33,8 +33,7 @@ function dinhDangThuNgay(dStr: string): string {
     const y = Number(parts[2])
     const dt = new Date(y, m, d)
     if (!isNaN(dt.getTime())) {
-      const thu = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'][dt.getDay()]
-      return `${thu}, ${dStr}`
+      return dStr
     }
   }
   return dStr

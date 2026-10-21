@@ -27,6 +27,7 @@ import {
 } from '../Charts'
 import { MTimKiem } from './MTimKiem'
 import { MChon } from './MChon'
+import { useChonLoaiTien } from './MChonLoaiTien'
 import { MTrangChuFree } from './MTrangChuFree'
 
 function SoSanhDong({ tang, label }: { tang: number | null; label?: string }) {
@@ -125,6 +126,7 @@ function MTrangChuCoPhi() {
     macDinhIds: thaoTacMacDinhIds,
   } = useThaoTacNhanh(s)
   const [moTuyChinhThaoTac, setMoTuyChinhThaoTac] = useState(false)
+  const chonLoaiTien = useChonLoaiTien()
   const [chonThaoTacIds, setChonThaoTacIds] = useState<string[]>([])
   const [timThaoTac, setTimThaoTac] = useState('')
 
@@ -618,6 +620,7 @@ function MTrangChuCoPhi() {
                 <Link
                   key={item.id}
                   to={item.to}
+                  {...chonLoaiTien.bam(item)}
                   className={`m-tc-nhanh-o5${item.khoa ? ' khoa' : ''}`}
                 >
                   <div className="m-tc-nhanh-ic-tron">
@@ -1063,6 +1066,8 @@ function MTrangChuCoPhi() {
       <MTimKiem mo={moTimKiem} onDong={() => setMoTimKiem(false)} />
 
       {/* Sheet chọn cửa hàng */}
+      {chonLoaiTien.sheet}
+
       <MChon
         mo={moChonCn}
         onDong={() => setMoChonCn(false)}

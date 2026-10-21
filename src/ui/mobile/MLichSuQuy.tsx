@@ -8,7 +8,7 @@ import { Icon } from '../Icon'
 import { moneyD, pad } from '../format'
 import { phieuTheoSo } from '../generic/SoChungTu'
 import { tenQuyTm } from '../../modules/bao-cao/danh-sach'
-import { giaoDich, phanLoaiGiaoDich, tenNgay, type GiaoDich } from '../../modules/home/LichSuQuy'
+import { giaoDich, phanLoaiGiaoDich, type GiaoDich } from '../../modules/home/LichSuQuy'
 
 export function MLichSuQuy(_: ScreenProps) {
   const [tham] = useSearchParams()
@@ -120,7 +120,7 @@ export function MLichSuQuy(_: ScreenProps) {
             return (
               <div key={ngay} className="mobile-day-block">
                 <div className="mobile-day-title">
-                  <span>{tenNgay(ngay)}</span>
+                  <span>{ngay}</span>
                 </div>
 
                 <div className="m-lsq-du-dau-hang">

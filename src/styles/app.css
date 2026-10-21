@@ -40668,3 +40668,15 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
 .m-t600-hang-quy > span:last-child {
   display: none !important;
 }
+
+/* ── Chi phí NVL điện thoại: đổi cách tính trong màn, nhập giá thành từng món; tiến độ kiểm kê ghi ngày kiểm kê cuối (T611) ── */
+.m-tcf-tiendo-ngay { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.m-nvl-cach { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 0 4px; font-size: 13px; color: var(--body); }
+.m-nvl-cach-chu { flex: 1; min-width: 0; line-height: 1.45; }
+.m-nvl-cach-nut { flex: none; white-space: nowrap; }
+.m-nvl-ghi { margin: 0 4px; padding: 8px 10px; border-radius: 8px; background: var(--soft); color: var(--muted); font-size: 12.5px; }
+.m-nvl-ghi.canh-bao { background: var(--amber-t); color: var(--ink); }
+.m-free-cpt-dong.m-nvl-tay { align-items: center; }
+.m-nvl-gia-o { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; width: 120px; flex: none; }
+.m-nvl-gia-o .inp { height: 34px; }
+.m-nvl-gia-o small { color: var(--muted); font-size: 11px; }

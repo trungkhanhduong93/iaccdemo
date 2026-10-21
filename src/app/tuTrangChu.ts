@@ -13,7 +13,7 @@ export function useMoTuTrangChu() {
     if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return
     const a = (e.target as HTMLElement).closest('a')
     const href = a?.getAttribute('href')
-    if (!a || !href?.startsWith('#/') || a.target === '_blank') return
+    if (!a || !href?.startsWith('#/') || a.target === '_blank' || a.hasAttribute('data-tu-mo')) return   // data-tu-mo: liên kết tự xử lý bấm (T611)
     e.preventDefault()
     nav(href.slice(1), { state: { tuTrangChu: true } })
   }

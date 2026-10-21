@@ -4,16 +4,14 @@ import type { Row, ScreenProps } from '../../modules/types'
 import { docNgay } from '../ChonNgay'
 import { money } from '../format'
 
-const CAC_THU = ['Chủ nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy']
 
 export function dinhDangThuNgay(chuoiNgay: string): string {
   const d = docNgay(chuoiNgay)
   if (isNaN(d.getTime())) return chuoiNgay
-  const thu = CAC_THU[d.getDay()]
   const ngay = String(d.getDate()).padStart(2, '0')
   const thang = String(d.getMonth() + 1).padStart(2, '0')
   const nam = d.getFullYear()
-  return `${thu}, ${ngay}/${thang}/${nam}`
+  return `${ngay}/${thang}/${nam}`
 }
 
 export function HangTabsBanHang({

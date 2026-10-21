@@ -66,16 +66,14 @@ const ChungTuMoiForm: FC<{ sc: ScreenProps['sc']; mod: ScreenProps['mod']; id?: 
   return <ChungTuForm key={loc.key + loc.search} sc={sc} mod={mod} cfg={cfg} row={row} rows={rows} anIn />
 }
 
-const CAC_THU = ['Chủ nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy']
 
 function dinhDangThuNgay(chuoiNgay: string): string {
   const d = docNgay(chuoiNgay)
   if (isNaN(d.getTime())) return chuoiNgay
-  const thu = CAC_THU[d.getDay()]
   const ngay = String(d.getDate()).padStart(2, '0')
   const thang = String(d.getMonth() + 1).padStart(2, '0')
   const nam = d.getFullYear()
-  return `${thu}, ${ngay}/${thang}/${nam}`
+  return `${ngay}/${thang}/${nam}`
 }
 
 const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
@@ -250,7 +248,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
   const [dichDenThem, setDichDenThem] = useState<string | null>(null)
 
   const thucHienThem = (dich: string) => {
-    if (s.cuaHang === 'all') {
+    if (!s.cuaHang || s.cuaHang === 'all') {
       const cnNho = layChiNhanhNho()
       if (cnNho && CUA_HANG.some(c => c.id === cnNho)) {
         set({ cuaHang: cnNho })

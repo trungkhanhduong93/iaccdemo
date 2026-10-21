@@ -25,7 +25,6 @@ function layDuongDanPhieu(so: unknown): string | undefined {
   return to
 }
 
-const CAC_THU = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy']
 
 function dinhDangThuNgay(chuoiNgay: string): string {
   const parts = chuoiNgay.split('/')
@@ -35,10 +34,9 @@ function dinhDangThuNgay(chuoiNgay: string): string {
   const y = Number(parts[2])
   const dt = new Date(y, m, d)
   if (isNaN(dt.getTime())) return chuoiNgay
-  const thu = CAC_THU[dt.getDay()]
   const ngay = String(d).padStart(2, '0')
   const thang = String(m + 1).padStart(2, '0')
-  return `${thu}, ${ngay}/${thang}/${y}`
+  return `${ngay}/${thang}/${y}`
 }
 
 function parseNgayTs(chuoiNgay: string): number {
