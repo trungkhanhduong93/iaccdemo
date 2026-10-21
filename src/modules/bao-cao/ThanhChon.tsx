@@ -1,5 +1,5 @@
 // Thanh chọn đổi nhanh báo cáo cùng phân hệ khi đang xem báo cáo trong phân hệ Báo cáo
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import type { ModuleDef, ScreenDef } from '../types'
 import { MODULES, hienMan, maKhoa, moDuoc, tenMan } from '../../app/registry'
@@ -7,7 +7,8 @@ import { useSession } from '../../app/session'
 import { GOI, minGoi } from '../../app/plan'
 import { Icon } from '../../ui/Icon'
 import { Select } from '../../ui/Dropdown'
-import { kyHieuBC } from './danh-sach'
+import { kyHieuBC, laDauBcMoi } from './danh-sach'
+import { docGhim, luuGhim } from './TrungTam'
 import { baoCaoCuaPhanHe } from './cuaPhanHe'
 import { laTuTrangChu } from '../../app/tuTrangChu'
 
@@ -47,6 +48,53 @@ export function ThanhChonBaoCao({ sc, trongPhanHe }: { sc: ScreenDef; trongPhanH
     } catch {}
   }, [sc.slug])
 
+  // Phần đầu mới (T576): đường dẫn Báo cáo / nhóm, dòng dưới là tên báo cáo đổi nhanh kèm sao ghim như Tất cả báo cáo
+  const [ghim, setGhim] = useState(() => docGhim().includes(sc.slug))
+  useEffect(() => { setGhim(docGhim().includes(sc.slug)) }, [sc.slug])
+  const doiGhim = () => {
+    const ds = docGhim().filter(x => x !== sc.slug)
+    luuGhim(ghim ? ds : [sc.slug, ...ds])
+    setGhim(!ghim)
+  }
+  const oChon = (
+    <Select value={sc.slug} onChange={e => nav(`/app/${trongPhanHe ? trongPhanHe.key : 'bao-cao'}/${e.target.value}`, { state: { doiBc: true } })} aria-label="Đổi báo cáo">
+      {cungGoc.map(x => {
+        const ok = moDuoc(x, s.goi)
+        const code = maKhoa(x)
+        const kh = kyHieuBC(x.code, s.cheDo, s)   // ký hiệu mẫu viết liền sau tên báo cáo (T179)
+        return (
+          <option key={x.slug} value={x.slug}>
+            {tenMan(x)}{kh ? ` · ${kh}` : ''}{ok || !code ? '' : ` (gói ${GOI[minGoi(code)].ten})`}
+          </option>
+        )
+      })}
+    </Select>
+  )
+  if (laDauBcMoi(sc.slug)) {
+    const nhom = MODULES.find(m => m.key === (trongPhanHe?.key ?? sc.goc))
+    return (
+      <div className="bc-chon bc-dau-moi">
+        <div className="bc-dau-trai">
+          <div className="bc-duong">
+            {tuTrangChu && <><Link to="/app/trang-chu/tong-quan">Trang chủ</Link><span className="bc-duong-cach">/</span></>}
+            <Link className="bc-duong-ve" to={trongPhanHe ? `/app/${trongPhanHe.key}/bao-cao` : '/app/bao-cao/tat-ca'}><Icon n="chevl" className="ic sm" />Báo cáo</Link>
+            {nhom && <><span className="bc-duong-cach">/</span><span>{nhom.ngan ?? nhom.ten}</span></>}
+            {truoc && <><span className="bc-duong-cach">/</span><button type="button" onClick={() => nav(-1)} title={`Quay lại ${truoc.ten}`}>{truoc.ten}</button></>}
+          </div>
+          <div className="bc-ten-hang">
+            {oChon}
+            <button type="button" className={`bc-sao${ghim ? ' on' : ''}`} onClick={doiGhim} title={ghim ? 'Bỏ ghim báo cáo' : 'Ghim báo cáo'} aria-label={ghim ? 'Bỏ ghim báo cáo' : 'Ghim báo cáo'} aria-pressed={ghim}>
+              <Icon n={ghim ? 'star-fill' : 'star'} kieu="net" className="ic sm" />
+            </button>
+          </div>
+          {/* Thanh công cụ báo cáo (ReportToolbar) đưa dòng thông số lọc và nút Xuất, Tuỳ chỉnh, In vào hai chỗ này */}
+          <div className="bc-dau-mo-ta" />
+        </div>
+        <div className="bc-dau-nut" />
+      </div>
+    )
+  }
+
   return (
     <div className={`bc-chon${trongPhanHe ? ' bc-chon-phan-he' : ''}`}>
       {tuTrangChu && <Link className="btn sm ghost bc-ve-tc" to="/app/trang-chu/tong-quan"><Icon n="chevl" className="ic sm" />Trang chủ</Link>}
@@ -54,18 +102,7 @@ export function ThanhChonBaoCao({ sc, trongPhanHe }: { sc: ScreenDef; trongPhanH
         ? <Link className="btn sm ghost" to={`/app/${trongPhanHe.key}/bao-cao`}><Icon n="chevl" className="ic sm" />Báo cáo {trongPhanHe.ngan ?? trongPhanHe.ten}</Link>
         : <Link className="btn sm ghost" to="/app/bao-cao/tat-ca"><Icon n="chevl" className="ic sm" />Tất cả báo cáo</Link>}
       {truoc && <button type="button" className="btn sm ghost bc-ve-truoc" onClick={() => nav(-1)} title={`Quay lại ${truoc.ten}`}><Icon n="chevl" className="ic sm" />{truoc.ten}</button>}
-      <Select value={sc.slug} onChange={e => nav(`/app/${trongPhanHe ? trongPhanHe.key : 'bao-cao'}/${e.target.value}`, { state: { doiBc: true } })} aria-label="Đổi báo cáo">
-        {cungGoc.map(x => {
-          const ok = moDuoc(x, s.goi)
-          const code = maKhoa(x)
-          const kh = kyHieuBC(x.code, s.cheDo, s)   // ký hiệu mẫu viết liền sau tên báo cáo (T179)
-          return (
-            <option key={x.slug} value={x.slug}>
-              {tenMan(x)}{kh ? ` · ${kh}` : ''}{ok || !code ? '' : ` (gói ${GOI[minGoi(code)].ten})`}
-            </option>
-          )
-        })}
-      </Select>
+      {oChon}
     </div>
   )
 }

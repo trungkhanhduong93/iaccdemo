@@ -14,6 +14,7 @@ export interface LocBC {
   k: string; nhan: string; kieu: 'chon' | 'chonNhieu'
   ds?: (cnId?: string) => string[]   // danh sách chọn cố định theo cửa hàng trên thanh trên, không lấy từ dòng bảng (T54)
   cheDo?: CheDo[]                    // chỉ hiện ở các chế độ này; thiếu là mọi chế độ (T179)
+  tatCaCh?: boolean                  // chỉ hiện khi thanh trên chọn Tất cả cửa hàng, vd ô Cửa hàng (T576)
 }
 
 /** Bộ lọc Quỹ tiền của sổ thu chi; cửa hàng theo thanh trên. Số liệu sổ tính lại theo lựa chọn để tồn đầu, tồn cuối đúng (T54) */
@@ -63,7 +64,10 @@ const ALL: CheDo[] = ['TT152', 'TT58', 'TT133', 'TT99']
 
 export const CAU_HINH_BC: Record<string, CauHinhBC> = {
   '2.2.1': { loai: 'so', kho: 'doc', kyHieu: { TT133: 'S04a-DNN', TT99: 'S07-DN' }, congCot: ['no', 'co'],
-    loc: [{ k: 'locQuy', nhan: 'Quỹ tiền', kieu: 'chon', ds: id => cnCua(id).map(c => tenQuyTm(c.ngan)) }] },
+    // Xem tất cả cửa hàng thì có ô Cửa hàng ghi đủ tên gốc, thay ô tự sinh từ cột Cửa hàng (tên ngắn, mất khi chọn 1 quỹ) (T576)
+    loc: [{ k: 'cuaHang', nhan: 'Cửa hàng', kieu: 'chonNhieu', ds: () => CUA_HANG.map(c => c.ten), tatCaCh: true },
+      { k: 'locQuy', nhan: 'Quỹ tiền', kieu: 'chon', ds: id => cnCua(id).map(c => tenQuyTm(c.ngan)) }],
+    boTuSinh: ['Cửa hàng'] },
   '2.2.2': { loai: 'so', kho: 'ngang', anTam: ALL, kyHieu: { TT133: 'S19-DNN', TT99: 'S38-DN' }, ten: { TT133: 'Sổ chi tiết các tài khoản', TT99: 'Sổ chi tiết các tài khoản' }, congCot: ['no', 'co'] },
   '2.2.3': { loai: 'so', kho: 'doc', kyHieu: { TT133: 'S05-DNN', TT99: 'S08-DN' }, ten: { TT133: 'Sổ tiền gửi ngân hàng', TT99: 'Sổ tiền gửi ngân hàng' }, congCot: ['no', 'co'],
     loc: [{ k: 'locQuy', nhan: 'Quỹ tiền', kieu: 'chon', ds: () => TK_NGAN_HANG.map(tenTkNh) }] },
@@ -156,7 +160,17 @@ export const CAU_HINH_BC: Record<string, CauHinhBC> = {
   }),
 }
 
-/** Báo cáo còn giữ (T171, PhuongXT chốt 13/10/2026): mọi gói chỉ còn Sổ quỹ tiền mặt, Sổ ngân hàng;
+/** Phần đầu báo cáo mới (T576, thử ở Sổ quỹ rồi áp mọi sổ, báo cáo): đường dẫn Báo cáo / nhóm, tên báo cáo kèm sao ghim,
+ *  dòng thông số lọc, nút Xuất, Tuỳ chỉnh, In cùng hàng tên; thanh lọc khung riêng có ô Tìm, ô Cửa hàng khi xem tất cả cửa hàng.
+ *  Báo cáo nào cần giữ đầu cũ thì thêm mã vào DAU_BC_CU */
+const DAU_BC_CU = new Set<string>()
+export const laDauBcMoi = (slug?: string) => Boolean(slug && !DAU_BC_CU.has(slug.replace(/-/g, '.')))
+/** Khoá ô lọc Cửa hàng chung (T576): ghi tên gốc cửa hàng, chỉ có khi thanh trên xem tất cả cửa hàng */
+export const K_CUA_HANG = 'cuaHang'
+/** Cửa hàng chọn ở ô lọc Cửa hàng; chọn đủ mọi cửa hàng thì như xem tất cả (trả rỗng), không cộng từng cửa hàng */
+export const chonCuaHang = (loc: Record<string, string[]>) => { const v = loc[K_CUA_HANG] ?? []; return v.length >= CUA_HANG.length ? [] : v }
+
+/** Báo cáo còn giữ (T171,PhuongXT chốt 13/10/2026): mọi gói chỉ còn Sổ quỹ tiền mặt, Sổ ngân hàng;
  *  chế độ TT58 thêm bộ sổ S1 đến S4d-DNSN và báo cáo tài chính B01, B02-DNSN. Báo cáo khác ẩn ở mọi gói, cấu hình vẫn giữ để mở lại */
 const GIU_MOI_CHE_DO = ['2.2.1', '2.2.3']
 /** Báo cáo lấy theo danh sách iFaster, mở mọi gói, mọi chế độ, PhuongXT chốt 13/10/2026 (T185): quỹ tiền,

@@ -38621,3 +38621,29 @@ body:has(.m-app) .m-thanh-duoi .m-tab.on .m-tab-ic .ic .l2 {
 .m-pos-b-bien-lai .d.tong .num { color: var(--blue); font-weight: 700; }
 /* dòng chi tiết món (mã · SL × đơn giá, giảm) kéo hết chiều ngang, căn phải dưới thành tiền */
 .m-pos-ct-mon-the .m-pos-mon-ct-b, .m-pos-ct-mon-the .m-pos-mon-ct2-b { grid-column: 1 / -1; text-align: right; }
+
+/* ── Phần đầu báo cáo mới: đường dẫn, tên kèm sao ghim, dòng thông số lọc, nút cùng hàng tên, thanh lọc khung riêng (T576) ── */
+.main:has(.bc-chon) > .bc-chon.bc-dau-moi { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; padding: 10px 16px 0; }
+.bc-dau-trai { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-width: 0; }
+.bc-duong { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
+.bc-duong a, .bc-duong button { display: inline-flex; align-items: center; gap: 2px; padding: 0; border: 0; background: none; color: var(--blue-d); font: inherit; cursor: pointer; text-decoration: none; }
+.bc-duong a:hover, .bc-duong button:hover { text-decoration: underline; }
+.bc-duong-cach { color: var(--faint); }
+.bc-ten-hang { display: flex; align-items: center; gap: 4px; min-width: 0; max-width: 100%; }
+.bc-dau-moi .sel { height: 32px; margin-left: -8px; padding: 0 8px; font-size: 20px; font-weight: 800; color: var(--ink); }
+.bc-sao { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; padding: 0; border: 0; border-radius: var(--r-sm); background: none; color: var(--faint); cursor: pointer; }
+.bc-sao:hover { background: var(--soft); color: var(--muted); }
+.bc-sao.on { color: var(--orange); }
+.bc-dau-mo-ta { max-width: 100%; font-size: 13px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bc-dau-mo-ta:empty { display: none; }
+/* Xuất báo cáo (chỉ biểu tượng), Tuỳ chỉnh, In: ngang hàng dòng thông số, cạnh phải */
+.bc-dau-nut { flex: none; display: flex; align-items: center; gap: 8px; padding-bottom: 2px; }
+.bc-dau-nut .btn svg { flex: none; }
+.bc-dau-nut .bc-nut-xuat { width: 32px; padding: 0; justify-content: center; }
+.main:has(.bc-dau-moi) > .page { padding-top: 8px; }
+.main:has(.bc-dau-moi) .report { border: 0; background: transparent; box-shadow: none; gap: 8px; }
+/* Thanh lọc khung riêng cao vừa như thanh lọc báo cáo cũ */
+.bc-loc-khung.thanh-loc { flex: none; padding: 0; border: 1px solid var(--line); border-radius: 8px; background: var(--white); overflow: visible; }
+.bc-loc-khung .ds-toolbar-figma { border-bottom: 0; border-radius: 8px; min-height: 0; padding: 8px 12px; }
+.bc-loc-khung .ds-hang-trang-thai { border-top: 1px solid var(--line); }
+.main:has(.bc-dau-moi) .report > .bc-xem { border: 1px solid var(--line); border-radius: 8px; background: var(--white); box-shadow: 0 1px 3px rgba(14, 26, 43, 0.05); overflow: hidden; }

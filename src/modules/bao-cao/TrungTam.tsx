@@ -57,7 +57,7 @@ export function layNhomBaoCao(s: Session): NhomBaoCaoItem[] {
   return [{ mod: modSoTT, screens: soTT }, ...nhomGoc]
 }
 
-function docGhim(): string[] {
+export function docGhim(): string[] {
   try {
     const raw = localStorage.getItem('bc-ghim')
     if (!raw) return []
@@ -68,7 +68,7 @@ function docGhim(): string[] {
   }
 }
 
-function luuGhim(slugs: string[]) {
+export function luuGhim(slugs: string[]) {
   try {
     localStorage.setItem('bc-ghim', JSON.stringify(slugs))
   } catch {}

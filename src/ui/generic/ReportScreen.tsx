@@ -7,7 +7,7 @@ import { tenMan } from '../../app/registry'
 import { kieuGhiSo } from '../../app/plan'
 import { cuaHangHienTai, donViHienTai, dsCuaHang, useSession, cheDoHienTai, gtgtTyLe } from '../../app/session'
 import { canCu, type CheDo } from '../../app/che-do'
-import { cachHkd, cauHinhBC, kyHieuBC, laHkd, tenBC, tenTkNh, type LoaiBC } from '../../modules/bao-cao/danh-sach'
+import { K_CUA_HANG, cachHkd, chonCuaHang, cauHinhBC, kyHieuBC, laDauBcMoi, laHkd, tenBC, tenTkNh, type LoaiBC } from '../../modules/bao-cao/danh-sach'
 import * as HKD from '../../modules/bao-cao/tt152'
 import { dsTkTheoCheDo } from '../../modules/tong-hop/so-cai'
 import { CUA_HANG, HANG, HOM_NAY, KHACH, NCC, NVL, TK_NGAN_HANG } from '../../data/mock'
@@ -19,7 +19,8 @@ import { chungTu, soChiTiet } from './gen'
 import { ganMoPhieu } from './SoChungTu'
 import { Dropdown, MenuHead, MenuItem, MenuSep, Popover, Select } from '../Dropdown'
 import { ChonKhoangNgay, dmy, khoangThang, type KhoangNgay } from '../ChonNgay'
-import { BoLoc, useCauHinhLoc, useDongEsc, type OLocDef } from '../LocNangCao'
+import { BoLoc, ONhanVien, useCauHinhLoc, useDongEsc, type OLocDef } from '../LocNangCao'
+import { IconFigmaDownload, IconFigmaPrinter, IconFigmaSliders } from '../IconFigma'
 import { SoTrangCtx, ToGiay, NgatTrang, tachKhoi, type Kho } from '../bao-cao/ToGiay'
 import { datNguonXuat, layNguonXuat, taoTenFile, xuatFile, type NguonXuat } from '../bao-cao/xuat'
 import { ChonHaiCot } from '../ChonHaiCot'
@@ -93,9 +94,12 @@ function useBoLoc(path: string) {
   )
 }
 
-export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: string) => void; children?: ReactNode }) {
+/** moTa: dòng thông số lọc dưới tên báo cáo ở phần đầu mới (T576), vd "Quỹ tiền mặt · Tất cả cửa hàng · Tháng 9/2026" */
+export function ReportToolbar({ ky, setKy, children, moTa }: { ky: string; setKy: (v: string) => void; children?: ReactNode; moTa?: ReactNode }) {
   // Số liệu báo cáo mẫu tính theo tháng, nên lấy tháng của ngày bắt đầu làm kỳ.
   const [khoang, setKhoang] = useState(() => khoangThang(Number(ky), 2026))
+  // Khoảng ngày lúc bấm Lọc gần nhất: kho lọc chỉ nhớ tháng, đổi ngày trong cùng tháng vẫn phải báo chấm cam ở nút Lọc (T576)
+  const [khoangXem, setKhoangXem] = useState(khoang)
   const [moTuyChinh, setMoTuyChinh] = useState(false)
   const { s, toast } = useSession()
   const viTri = useLocation()
@@ -116,6 +120,12 @@ export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: 
     return () => datHoiLoc(path, false)
   }, [viTri.key])   // eslint-disable-line react-hooks/exhaustive-deps
   const loaiBC = cfgBC?.loai ?? 'baocao'
+  const dauMoi = laDauBcMoi(slug)
+  // Chỗ chừa sẵn ở phần đầu (ThanhChonBaoCao) cho dòng thông số lọc và nút Xuất, Tuỳ chỉnh, In (T576)
+  const [choDau, setChoDau] = useState<{ moTa?: Element | null; nut?: Element | null }>({})
+  useLayoutEffect(() => {
+    if (dauMoi) setChoDau({ moTa: document.querySelector('.bc-dau-moi .bc-dau-mo-ta'), nut: document.querySelector('.bc-dau-moi .bc-dau-nut') })
+  }, [dauMoi, path])
   const tt = useTrangThaiLoc(path)
   const boLoc = useBoLoc(path)
   const tim = useTim(path)
@@ -146,6 +156,7 @@ export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: 
     const thang = Number(tt.daXem.ky || ky)
     if (thang && khoang.tu.getMonth() + 1 !== thang) {
       setKhoang(khoangThang(thang, 2026))
+      setKhoangXem(khoangThang(thang, 2026))
     }
   }, [tt.daXem.ky, ky])
 
@@ -156,6 +167,7 @@ export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: 
 
   const apDungXem = () => {
     datTim(path, timNhap)
+    setKhoangXem(khoang)
     xemBaoCao(path)
     setKy(tt.nhap.ky)
   }
@@ -178,7 +190,7 @@ export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: 
       },
     ]
 
-    // Bỏ ô Tìm trong báo cáo (T508)
+    // Bỏ ô Tìm trong báo cáo (T508); phần đầu mới có ô Tìm riêng trên thanh ngang, không vào phễu, hộp hỏi lọc (T576)
     if (khongCoLocDong) return res
 
     for (const l of boLoc?.ds ?? []) {
@@ -235,20 +247,30 @@ export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: 
     }
 
     return res
-  }, [khoang, timNhap, khongCoLocDong, boLoc, tt.nhap, tt.tuyChon, path])
+  }, [khoang, khongCoLocDong, boLoc, tt.nhap, tt.tuyChon, path])
 
-  const oDauTienKhaiTay = cfgBC?.loc?.find(l => !l.cheDo || l.cheDo.includes(s.cheDo))
+  const oDauTienKhaiTay = cfgBC?.loc?.find(l => !l.tatCaCh && l.k !== K_CUA_HANG && (!l.cheDo || l.cheDo.includes(s.cheDo)))
   const macDinhNgoai = useMemo(() => {
     if (khongCoLocDong) return ['khoangNgay']
-    return ['khoangNgay', ...(oDauTienKhaiTay ? [oDauTienKhaiTay.k] : [])]
-  }, [khongCoLocDong, oDauTienKhaiTay])
+    // Ô Cửa hàng (xem tất cả cửa hàng) luôn ra ngoài thanh (T576)
+    const oCh = boLoc?.ds.some(l => l.k === K_CUA_HANG) ? K_CUA_HANG : undefined
+    return ['khoangNgay', ...(oCh ? [oCh] : []), ...(oDauTienKhaiTay ? [oDauTienKhaiTay.k] : [])]
+  }, [khongCoLocDong, oDauTienKhaiTay, cfgBC])
 
   const dsKhoa = useMemo(() => oLoc.map(o => o.k), [oLoc])
-  const [cauHinhLoc, datCauHinhLoc] = useCauHinhLoc(path, dsKhoa, macDinhNgoai)
+  const [cauHinhLocLuu, datCauHinhLoc] = useCauHinhLoc(path, dsKhoa, macDinhNgoai)
+  // Ô Cửa hàng (xem tất cả cửa hàng) luôn nằm ngoài thanh, ngay sau Thời gian: ô này chỉ có sau khi tờ báo cáo dựng xong,
+  // cấu hình ô ngoài đã chốt từ lần vẽ đầu nên phải chèn thêm (T576)
+  const cauHinhLoc = useMemo(() => {
+    if (!dsKhoa.includes(K_CUA_HANG) || cauHinhLocLuu.ngoai.includes(K_CUA_HANG)) return cauHinhLocLuu
+    const ngoai = cauHinhLocLuu.ngoai.filter(k => k !== 'khoangNgay')
+    return { ...cauHinhLocLuu, ngoai: ['khoangNgay', K_CUA_HANG, ...ngoai].slice(0, 4) }
+  }, [cauHinhLocLuu, dsKhoa])
 
   const soLoc = (boLoc?.ds ?? []).filter(l => (tt.loc[l.k] ?? []).length > 0).length + (boLoc?.anKhongPS && tt.anKhongPS ? 1 : 0)
   const dangLoc = soLoc > 0 || Boolean(tim.trim())
-  const khacNhap = tt.coThayDoi || timNhap !== tim
+  const khacKhoang = khoang.tu.getTime() !== khoangXem.tu.getTime() || khoang.den.getTime() !== khoangXem.den.getTime()
+  const khacNhap = tt.coThayDoi || timNhap !== tim || khacKhoang
 
   const xuat = async (dinhDang: 'xlsx' | 'csv' | 'html' | 'xml') => {
     const n = layNguonXuat()
@@ -281,75 +303,116 @@ export function ReportToolbar({ ky, setKy, children }: { ky: string; setKy: (v: 
     toast('Chọn máy in "Lưu dưới dạng PDF" để lưu file')
   }
 
-  // Thanh lọc báo cáo kiểu danh sách chứng từ (T237, T511: hàng 1 BoLoc chiNutPheu, hàng 2 Tuỳ chỉnh, xuất Excel phải)
-  const thanh = (
-    <div className="thanh-loc bc-thanh-cong-cu" style={{ padding: 0, border: 0, background: 'transparent' }}>
-      <div className="ds-toolbar-figma">
-        <BoLoc
-          ds={oLoc}
-          cauHinh={cauHinhLoc}
-          datCauHinh={datCauHinhLoc}
-          dangLoc={dangLoc}
-          khacNhap={khacNhap}
-          onLoc={apDungXem}
-          onXoaHet={xoaNhap}
-          anNangCao={khongCoLocDong}
-          nhanXoa="Xoá lọc"
-          chiNutPheu
-          truocNutLoc={children}
-        />
-      </div>
-      <div className="ds-hang-trang-thai">
-        {coNhom && (
-          <div className="seg bc-xem-nhom" role="tablist" aria-label="Kiểu xem nhóm">
-            {([['tongHop', 'Tổng hợp'], ['chiTiet', 'Chi tiết']] as const).map(([k, ten]) => (
-              <button key={k} type="button" role="tab" aria-selected={xemNhom === k} className={xemNhom === k ? 'on' : ''}
-                title={k === 'tongHop' ? 'Mỗi nhóm một dòng, cộng các cột số' : 'Đủ dòng chi tiết trong từng nhóm'} onClick={() => doiXemNhom(k)}>{ten}</button>
-            ))}
-          </div>
-        )}
-        <div className="ds-toolbar-phai ds-cong-cu-h2">
-          <Dropdown
-            btnClass="nut-vuong ds-nut-excel"
-            align="end"
-            width={180}
-            title="Xuất báo cáo"
-            label={<Icon n="download" className="ic sm" />}
-          >
-            {dong => (
-              <>
-                <MenuHead>Tuỳ chọn cột</MenuHead>
-                <MenuItem on={tt.cotNhuDangXem} onClick={() => datCotNhuDangXem(path, !tt.cotNhuDangXem)}>
-                  Cột như đang xem
-                </MenuItem>
-                <MenuSep />
-                <MenuHead>Xuất báo cáo</MenuHead>
-                <MenuItem icon="tep-bang" onClick={() => { dong(); xuat('xlsx') }}>Excel (.xlsx)</MenuItem>
-                <MenuItem icon="tep-chu" onClick={() => { dong(); xuat('csv') }}>CSV (.csv)</MenuItem>
-                <MenuItem icon="in-gon" onClick={() => { dong(); inPdf() }}>PDF (hộp in)</MenuItem>
-                <MenuItem icon="tep-ma" onClick={() => { dong(); xuat('html') }}>HTML (.html)</MenuItem>
-                <MenuItem icon="tep-ma" onClick={() => { dong(); xuat('xml') }}>XML (.xml)</MenuItem>
-              </>
-            )}
+  const nutTuyChinh = (
+    <button type="button" className="btn sm" title="Tuỳ chỉnh" onClick={() => setMoTuyChinh(true)}>
+      <Icon n="cog" kieu="net" className="ic sm" />
+      <span className="rpt-btn-txt">Tuỳ chỉnh</span>
+    </button>
+  )
+  const nutIn = (
+    <button type="button" className="btn sm" title="Xem trước khi in" onClick={xemTruocIn}>
+      <Icon n="in-gon" className="ic sm" />
+      In
+    </button>
+  )
+  const menuXuat = (dong: () => void) => (
+    <>
+      <MenuHead>Tuỳ chọn cột</MenuHead>
+      <MenuItem on={tt.cotNhuDangXem} onClick={() => datCotNhuDangXem(path, !tt.cotNhuDangXem)}>
+        Cột như đang xem
+      </MenuItem>
+      <MenuSep />
+      <MenuHead>Xuất báo cáo</MenuHead>
+      <MenuItem icon="tep-bang" onClick={() => { dong(); xuat('xlsx') }}>Excel (.xlsx)</MenuItem>
+      <MenuItem icon="tep-chu" onClick={() => { dong(); xuat('csv') }}>CSV (.csv)</MenuItem>
+      <MenuItem icon="in-gon" onClick={() => { dong(); inPdf() }}>PDF (hộp in)</MenuItem>
+      <MenuItem icon="tep-ma" onClick={() => { dong(); xuat('html') }}>HTML (.html)</MenuItem>
+      <MenuItem icon="tep-ma" onClick={() => { dong(); xuat('xml') }}>XML (.xml)</MenuItem>
+    </>
+  )
+  const segNhom = (
+    <div className="seg bc-xem-nhom" role="tablist" aria-label="Kiểu xem nhóm">
+      {([['tongHop', 'Tổng hợp'], ['chiTiet', 'Chi tiết']] as const).map(([k, ten]) => (
+        <button key={k} type="button" role="tab" aria-selected={xemNhom === k} className={xemNhom === k ? 'on' : ''}
+          title={k === 'tongHop' ? 'Mỗi nhóm một dòng, cộng các cột số' : 'Đủ dòng chi tiết trong từng nhóm'} onClick={() => doiXemNhom(k)}>{ten}</button>
+      ))}
+    </div>
+  )
+  // Ô Tìm chỉ cần khi đang xem báo cáo: nằm cuối thanh ngang, trước nút Lọc (T576)
+  const oTim = (
+    <ONhanVien nhan="Tìm" className="ds-o-tim">
+      <input
+        className="ds-o-inp"
+        value={timNhap}
+        placeholder="Tìm trong báo cáo"
+        aria-label="Tìm trong báo cáo"
+        onChange={e => setTimNhap(e.target.value)}
+        onKeyDown={e => { if (e.key === 'Enter') apDungXem() }}
+      />
+    </ONhanVien>
+  )
+  const boLocEl = (
+    <BoLoc
+      ds={oLoc}
+      cauHinh={cauHinhLoc}
+      datCauHinh={datCauHinhLoc}
+      dangLoc={dangLoc}
+      khacNhap={khacNhap}
+      onLoc={apDungXem}
+      onXoaHet={xoaNhap}
+      anNangCao={khongCoLocDong}
+      nhanXoa="Xoá lọc"
+      chiNutPheu
+      truocNutLoc={dauMoi ? <>{children}{oTim}</> : children}
+    />
+  )
+
+  // Dòng thông số mặc định dưới tên báo cáo (T576), cùng thứ tự đầu tờ in: kỳ, cửa hàng (ô Cửa hàng hoặc thanh trên), điều kiện lọc đã áp.
+  // Màn tự ghi được câu gọn hơn thì truyền moTa, vd Sổ quỹ ghi tên quỹ
+  const cnHt = cuaHangHienTai(s)
+  const chonCh = cnHt ? [] : chonCuaHang(tt.loc)
+  const moTaMacDinh = [
+    kyTen(tt.daXem.ky || ky),
+    cnHt ? `Cửa hàng ${cnHt.ten}` : chonCh.length ? `Cửa hàng ${chonCh.join(', ')}` : 'Tất cả cửa hàng',
+    ...(boLoc?.ds ?? []).filter(l => l.k !== K_CUA_HANG && (tt.loc[l.k] ?? []).length > 0).map(l => `${l.nhan}: ${tt.loc[l.k].join(', ')}`),
+  ].join(' · ')
+
+  // Phần đầu mới (T576): dòng thông số lọc và nút Tuỳ chỉnh, In, Xuất báo cáo nằm ngay dưới tên báo cáo;
+  // thanh lọc thành khung riêng; số dòng, phân trang ở thanh dưới bảng
+  const thanhMoi = (
+    <>
+      {choDau.moTa && createPortal(moTa ?? moTaMacDinh, choDau.moTa)}
+      {choDau.nut && createPortal(
+        <>
+          <Dropdown btnClass="btn sm bc-nut-xuat" align="end" width={180} title="Xuất báo cáo" label={<IconFigmaDownload />}>
+            {menuXuat}
           </Dropdown>
-          <button
-            type="button"
-            className="btn sm"
-            title="Tuỳ chỉnh"
-            onClick={() => setMoTuyChinh(true)}
-          >
-            <Icon n="cog" kieu="net" className="ic sm" />
-            <span className="rpt-btn-txt">Tuỳ chỉnh</span>
-          </button>
-          <button
-            type="button"
-            className="btn sm"
-            title="Xem trước khi in"
-            onClick={xemTruocIn}
-          >
-            <Icon n="in-gon" className="ic sm" />
-            In
-          </button>
+          <button type="button" className="btn sm" title="Tuỳ chỉnh" onClick={() => setMoTuyChinh(true)}><IconFigmaSliders />Tuỳ chỉnh</button>
+          <button type="button" className="btn sm" title="Xem trước khi in" onClick={xemTruocIn}><IconFigmaPrinter />In</button>
+        </>,
+        choDau.nut,
+      )}
+      <div className="thanh-loc bc-thanh-cong-cu bc-loc-khung">
+        <div className="ds-toolbar-figma">
+          {boLocEl}
+        </div>
+        {coNhom && <div className="ds-hang-trang-thai">{segNhom}</div>}
+      </div>
+    </>
+  )
+
+  // Thanh lọc báo cáo kiểu danh sách chứng từ (T237, T511: hàng 1 BoLoc chiNutPheu, hàng 2 Tuỳ chỉnh, xuất Excel phải)
+  const thanh = dauMoi ? thanhMoi : (
+    <div className="thanh-loc bc-thanh-cong-cu" style={{ padding: 0, border: 0, background: 'transparent' }}>
+      <div className="ds-toolbar-figma">{boLocEl}</div>
+      <div className="ds-hang-trang-thai">
+        {coNhom && segNhom}
+        <div className="ds-toolbar-phai ds-cong-cu-h2">
+          <Dropdown btnClass="nut-vuong ds-nut-excel" align="end" width={180} title="Xuất báo cáo" label={<Icon n="download" className="ic sm" />}>
+            {menuXuat}
+          </Dropdown>
+          {nutTuyChinh}
+          {nutIn}
         </div>
       </div>
     </div>
@@ -635,7 +698,8 @@ export function tachSub(sub: string): { subLines: string[]; periodText?: string 
 
 /** Trang báo cáo theo mẫu: đầu trang đơn vị, mẫu số, tiêu đề, kỳ, ô ký. Vẽ trên tờ A4 tự chia trang (ToGiay).
  *  Mẫu số, tên in, khổ, ô ký lấy theo mã báo cáo trên đường dẫn và chế độ kế toán (modules/bao-cao/danh-sach.ts); mau chỉ dùng cho màn chưa có cấu hình */
-export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { title: string; sub: string; mau?: string; children: ReactNode; ky?: boolean; kho?: Kho }) {
+/** theoCn: số liệu tính theo cửa hàng (tự lọc theo ô Cửa hàng), có ô Cửa hàng kể cả khi bảng không có cột cửa hàng (T576) */
+export function ReportPaper({ title, sub, mau, children, ky = true, kho, theoCn }: { title: string; sub: string; mau?: string; children: ReactNode; ky?: boolean; kho?: Kho; theoCn?: boolean }) {
   const { s } = useSession()
   const dv = donViHienTai(s)
   const cd = cheDoHienTai(s)
@@ -689,6 +753,7 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
     },
   }), [doRongGt, slug, s.donVi, children])
 
+  const dauMoi = laDauBcMoi(slug)
   const khongTuSinh = (slug && LOAI_TRU_TU_SINH.has(slug)) || loai === 'tokhai' || (slug && slug.startsWith('6.2.'))
 
   // Danh sách bộ lọc cho cột lọc bên trái: bộ lọc khai tay trong cfg.loc đứng trước, sau đó tự sinh theo danh mục
@@ -699,6 +764,7 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
     // 1. Khai tay trong cfg.loc
     for (const l of cfg?.loc ?? []) {
       if (l.cheDo && !l.cheDo.includes(s.cheDo)) continue   // bộ lọc chỉ có ở một số chế độ, vd Kênh bán của sổ doanh thu TT152 (T179)
+      if (l.tatCaCh && cuaHangHienTai(s)) continue   // ô Cửa hàng chỉ khi thanh trên xem tất cả cửa hàng (T576)
       res.push({
         k: l.k,
         nhan: l.nhan,
@@ -706,6 +772,14 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
         ds: l.ds ? l.ds(cuaHangHienTai(s)?.id) : undefined,
       })
       daCo.add(l.k)
+    }
+
+    // 1b. Xem tất cả cửa hàng: ô Cửa hàng ghi tên gốc cho báo cáo tính theo cửa hàng hoặc bảng có cột Cửa hàng,
+    // thay ô tự sinh từ cột (tên ngắn) (T576)
+    const coCotCn = tachKhoi(children).some(kh => kh.loai === 'bang' && kh.rows.some(r => r.cn !== undefined && r.cn !== ''))
+    if (dauMoi && !cuaHangHienTai(s) && !daCo.has(K_CUA_HANG) && (theoCn || coCotCn)) {
+      res.push({ k: K_CUA_HANG, nhan: 'Cửa hàng', kieu: 'chonNhieu', ds: CUA_HANG.map(c => c.ten) })
+      daCo.add(K_CUA_HANG)
     }
 
     // 2. Tự sinh theo các cột của khối bảng: chỉ tự sinh cho các cột thuộc danh mục
@@ -746,7 +820,7 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
       }
     }
     return res
-  }, [cfg?.loc, cfg?.boTuSinh, khongTuSinh, children, s])
+  }, [cfg?.loc, cfg?.boTuSinh, khongTuSinh, children, s, dauMoi, theoCn])
 
   const dsKy = useMemo(() => {
     if (!ky) return []
@@ -793,6 +867,15 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
     }
   }, [children, path, cfg, ky, loai, s.cheDo, dv.nguoiDaiDien, dsLocCot])
 
+  // Chỉ áp điều kiện của ô lọc đang có: ô tự sinh biến mất (vd chọn 1 quỹ thì bảng còn 1 cửa hàng) thì điều kiện cũ không lọc ngầm hết dòng (T576)
+  const locHienCo = useMemo(() => {
+    const k = new Set(dsLocCot.map(l => l.k))
+    if (!chonCuaHang(tt.loc).length) k.delete(K_CUA_HANG)   // chọn đủ mọi cửa hàng thì như xem tất cả
+    return Object.fromEntries(Object.entries(tt.loc).filter(([x]) => k.has(x)))
+  }, [tt.loc, dsLocCot])
+
+  const chonChLoc = useMemo(() => chonCuaHang(locHienCo), [locHienCo])   // ô Cửa hàng khi thanh trên xem tất cả cửa hàng (T576)
+
   // Biến đổi các khối bảng cho thân tờ giấy và nguồn xuất
   const { thanBienDoi, bangXuat } = useMemo(() => {
     const khoi = tachKhoi(children)
@@ -804,8 +887,9 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
       if (kh.loai === 'ngat') return <NgatTrang key={i} />
       if (kh.loai === 'nguyen') return kh.el
       // Bảng đang xem: áp lọc, nhóm, cột
-      const res = bienDoiBang(kh.cols, kh.rows, {
-        loc: tt.loc,
+      const rowsCh = ganCuaHang(kh.rows, chonChLoc)
+      const res = bienDoiBang(kh.cols, rowsCh, {
+        loc: locHienCo,
         anKhongPS: !!cfg?.anKhongPS && tt.anKhongPS,   // mặc định ẩn, chỉ áp cho báo cáo có tuỳ chọn này (T508)
         nhom: tc?.nhom,
         tongHop: tc?.xemNhom === 'tongHop',
@@ -818,8 +902,8 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
         bx.push({ cols: res.cols.filter(c => !c.chiManHinh), rows: res.rows, kyHieuCot })
       } else {
         // Tắt "Cột như đang xem": xuất đủ cột (vẫn áp lọc và nhóm)
-        const resDuCot = bienDoiBang(kh.cols, kh.rows, {
-          loc: tt.loc,
+        const resDuCot = bienDoiBang(kh.cols, rowsCh, {
+          loc: locHienCo,
           anKhongPS: !!cfg?.anKhongPS && tt.anKhongPS,
           nhom: tc?.nhom,
           tongHop: tc?.xemNhom === 'tongHop',
@@ -833,7 +917,7 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
     })
 
     return { thanBienDoi: thanMoi, bangXuat: bx }
-  }, [children, tt.loc, tt.anKhongPS, tt.cotNhuDangXem, tc?.nhom, tc?.xemNhom, tc?.cot, loai, cfg?.congCot, cfg?.khoa, kyHieuCot, slug])
+  }, [children, locHienCo, chonChLoc, tt.anKhongPS, tt.cotNhuDangXem, tc?.nhom, tc?.xemNhom, tc?.cot, loai, cfg?.congCot, cfg?.khoa, kyHieuCot, slug])
 
   // Dựng NguonXuat cho chức năng xuất file
   useEffect(() => {
@@ -868,10 +952,19 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
     </>
   )
   // Điều kiện lọc đang áp in trên tờ dưới dòng kỳ, để tờ in, file xuất biết sổ đang bị lọc (T179)
-  const dongLoc = [
-    ...dsLocCot.filter(l => (tt.loc[l.k] ?? []).length > 0).map(l => `${l.nhan}: ${tt.loc[l.k].join(', ')}`),
-    ...(cfg?.anKhongPS && tt.anKhongPS ? ['Ẩn dòng không phát sinh'] : []),
-  ].join('; ')
+  const dsDongLoc = [
+    // Ô Cửa hàng đã ghi ở đầu tờ (dòng tên cửa hàng) nên không lặp lại trong dòng điều kiện lọc (T576)
+    ...dsLocCot.filter(l => (tt.loc[l.k] ?? []).length > 0 && l.k !== K_CUA_HANG).map(l => ({ nhan: l.nhan, gt: tt.loc[l.k].join(', ') })),
+    ...(cfg?.anKhongPS && tt.anKhongPS ? [{ nhan: '', gt: 'Ẩn dòng không phát sinh' }] : []),
+  ]
+  const dongLoc = dsDongLoc.map(x => x.nhan ? `${x.nhan}: ${x.gt}` : x.gt).join('; ')
+  // Phần đầu mới (T576): dưới tên báo cáo ghi lần lượt Thời gian, Cửa hàng (hoặc Địa điểm kinh doanh của hộ kinh doanh), rồi chi tiết khác,
+  // mỗi thông tin một lần: bỏ dòng cửa hàng trong sub, điều kiện lọc đã có trong sub thì không ghi lại
+  const laDongCh = (l: string) => /^(cửa hàng|tất cả cửa hàng)/i.test(l)
+  const dongDiaDiem = subLines.find(l => /^địa điểm kinh doanh/i.test(l))
+  const dongCh = dongDiaDiem ?? `Cửa hàng: ${cn ? cn.ten : chonChLoc.length ? chonChLoc.join(', ') : 'Tất cả cửa hàng'}`
+  const dongKhac = subLines.filter(l => !laDongCh(l) && l !== dongDiaDiem)
+  const locKhac = dsDongLoc.filter(x => !dongKhac.some(l => l.toLowerCase().includes(x.gt.toLowerCase()))).map(x => x.nhan ? `${x.nhan}: ${x.gt}` : x.gt)
 
   const dau = (
     <>
@@ -879,7 +972,8 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
         <div className="paper-dv-trai">
           <div className="paper-ten-dv">{dv.ten}</div>
           <div className="paper-dc-mst">{dv.diaChi}{dv.mst ? ` — MST: ${dv.mst}` : ''}</div>
-          <div className="paper-dv-cs">Cửa hàng: {cn ? cn.ten : 'Tất cả cửa hàng'}</div>
+          {/* Phần đầu mới bỏ chữ "Cửa hàng:", chỉ ghi tên cửa hàng chọn ở thanh trên cùng, không theo ô lọc Cửa hàng (T576) */}
+          <div className="paper-dv-cs">{dauMoi ? '' : 'Cửa hàng: '}{cn ? cn.ten : 'Tất cả cửa hàng'}</div>
         </div>
         {kyHieu && (
           <div className="bc-mau">
@@ -891,11 +985,22 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
       </div>
       <div className="paper-tieu-de-khoi">
         <h2 className="paper-tieu-de">{tenBC(slug, s.cheDo, s) ?? title}</h2>
-        {subLines.map((line, i) => (
-          <div key={i} className="paper-dong-phu">{line}</div>
-        ))}
-        {periodText && <div className="paper-dong-ky">{periodText}</div>}
-        {dongLoc && <div className="paper-dong-phu paper-dong-loc">{dongLoc}</div>}
+        {dauMoi ? (
+          <>
+            {periodText && <div className="paper-dong-ky">{periodText}</div>}
+            <div className="paper-dong-phu">{dongCh}</div>
+            {dongKhac.map((line, i) => <div key={i} className="paper-dong-phu">{line}</div>)}
+            {locKhac.length > 0 && <div className="paper-dong-phu paper-dong-loc">{locKhac.join('; ')}</div>}
+          </>
+        ) : (
+          <>
+            {subLines.map((line, i) => (
+              <div key={i} className="paper-dong-phu">{line}</div>
+            ))}
+            {periodText && <div className="paper-dong-ky">{periodText}</div>}
+            {dongLoc && <div className="paper-dong-phu paper-dong-loc">{dongLoc}</div>}
+          </>
+        )}
       </div>
       {/* Đơn vị tính sát trên bảng, căn phải như sổ in (T179) */}
       <div className="paper-dvt paper-dvt-bang">Đơn vị tính: đồng</div>
@@ -912,7 +1017,8 @@ export function ReportPaper({ title, sub, mau, children, ky = true, kho }: { tit
   return (
     <BaoCaoDoRongCtx.Provider value={doRongBC}>
       <div className="bc-xem">
-        <ToGiay dau={dau} than={thanBienDoi} cuoi={cuoi} khoMacDinh={khoMacDinh} dieuKienLoc={dongLoc || undefined} dauBang={dauBang} tim={timBang}
+        {/* Phần đầu mới đã ghi tên, thông số lọc ở trên nên bảng dữ liệu bỏ tiêu đề, dòng điều kiện lọc, nhường chỗ cho số liệu (T576) */}
+        <ToGiay dau={dau} than={thanBienDoi} cuoi={cuoi} khoMacDinh={khoMacDinh} dieuKienLoc={dauMoi ? undefined : dongLoc || undefined} dauBang={dauMoi ? undefined : dauBang} tim={timBang}
           kyHieuCot={kyHieuCot} congChuyen={loai === 'so' ? cfg?.congCot : undefined}
           onKho={setKhoHienTai} layHtmlRef={layHtmlRef} coChu={tc?.coChu} xemTrang={cfg?.phanTrang} />
       </div>
@@ -992,17 +1098,56 @@ export function ReportScreen({ sc, mod }: ScreenProps) {
     ? `Địa điểm kinh doanh: ${diaDiem}${ma === '5.2.8' ? ` · Tên vật liệu, dụng cụ, sản phẩm, hàng hoá: ${matHangSo.ten}` : ''} · ${kyTen(kyDaXem)}`
     : (ma === '5.2.8' && s.cheDo === 'TT58')
     ? `${kyTen(kyDaXem)} · Tên vật liệu, dụng cụ, sản phẩm, hàng hoá: ${NVL[0].ten} · Kho: ${cn ? cn.ten : CUA_HANG[0].ten}`
-    : (cfg.theoCn ? `${kyTen(kyDaXem)} · ${cn ? 'Cửa hàng ' + cn.ngan : 'Tất cả cửa hàng'}${loc.locQuy?.[0] ? ' · ' + loc.locQuy[0] : ''}` : kyTen(kyDaXem))
+    : (cfg.theoCn ? `${kyTen(kyDaXem)} · ${cn ? 'Cửa hàng ' + cn.ten : chonCuaHang(loc).length ? 'Cửa hàng ' + chonCuaHang(loc).join(', ') : 'Tất cả cửa hàng'}${loc.locQuy?.[0] ? ' · ' + loc.locQuy[0] : ''}` : kyTen(kyDaXem))
   return (
     <div className="page page-report">
       <PageHead crumb={[mod.ten, sc.nhom ?? '']} title={ten} code={sc.code} />
       <section className="report">
         <ReportToolbar ky={ky} setKy={setKy} />
         {/* Sổ ngân hàng xem tất cả quỹ có thêm cột Quỹ tiền: mặc định khổ ngang (T54) */}
-        <ReportPaper title={ten} sub={sub} kho={cfg.theoTk && !loc.locQuy?.[0] ? 'ngang' : undefined}>{body}</ReportPaper>
+        <ReportPaper title={ten} sub={sub} kho={cfg.theoTk && !loc.locQuy?.[0] ? 'ngang' : undefined} theoCn={cfg.theoCn}>{body}</ReportPaper>
       </section>
     </div>
   )
+}
+
+/** Dòng mang tên gốc cửa hàng cho ô lọc Cửa hàng (T576): lấy từ cột cửa hàng (tên ngắn hoặc tên gốc); dòng không có cột này
+ *  là số liệu đã tính riêng theo cửa hàng được chọn (sổ một cửa hàng) nên giữ lại */
+function ganCuaHang(rows: Row[], chon: string[]): Row[] {
+  if (!chon.length) return rows
+  return rows.map(r => {
+    if (r[K_CUA_HANG] !== undefined) return r
+    const cn = String(r.cn ?? '').trim()
+    const ch = cn ? CUA_HANG.find(c => c.ngan === cn || c.ten === cn || c.id === cn) : undefined
+    return { ...r, [K_CUA_HANG]: ch ? ch.ten : cn || chon[0] }
+  })
+}
+
+/** Cộng bảng kê của nhiều cửa hàng (T576): dòng trùng các cột chữ (cùng mặt hàng, cùng đối tượng…) cộng các cột số;
+ *  dòng tổng cộng theo thứ tự. Một cửa hàng thì giữ nguyên */
+function gopTheoCuaHang(cols: Col[], phan: Row[][]): Row[] {
+  if (phan.length === 1) return phan[0]
+  const cotSo = cols.filter(c => c.num).map(c => c.k)
+  const cotChu = cols.filter(c => !c.num).map(c => c.k)
+  const cong = (a: Row, b: Row) => { for (const k of cotSo) if (typeof b[k] === 'number') a[k] = (typeof a[k] === 'number' ? a[k] : 0) + b[k] }
+  const theoKhoa = new Map<string, Row>()
+  const tong: Row[] = []
+  for (const rows of phan) {
+    let iTong = 0
+    for (const r of rows) {
+      if (r._t) {
+        if (tong[iTong]) cong(tong[iTong], r)
+        else tong[iTong] = { ...r }
+        iTong++
+        continue
+      }
+      const khoa = (r._b ? 'b|' : '') + cotChu.map(k => String(r[k] ?? '')).join('|')
+      const cu = theoKhoa.get(khoa)
+      if (cu) cong(cu, r)
+      else theoKhoa.set(khoa, { ...r })
+    }
+  }
+  return [...theoKhoa.values(), ...tong]
 }
 
 /** Gộp sổ của nhiều cửa hàng: xếp theo ngày, thêm cột cửa hàng, tính lại số dư luỹ kế */
@@ -1050,7 +1195,8 @@ export function renderReport(cfg: ReportCfg, seed: string, thang: number, cd: Ch
   // Sổ, báo cáo theo cửa hàng: mỗi cửa hàng một hạt giống riêng, xem tất cả thì cộng các cửa hàng.
   // Bộ lọc Quỹ tiền (T54) chọn lại phần được cộng, nên tồn đầu, tồn cuối đúng với lựa chọn
   const chonQuy = loc.locQuy?.[0]
-  const dsCn = cfg.theoCn ? CUA_HANG.filter(c => !cn || c.id === cn) : []
+  const chonCh = cn ? [] : chonCuaHang(loc)   // ô Cửa hàng khi xem tất cả cửa hàng, tính lại theo cửa hàng chọn (T576)
+  const dsCn = cfg.theoCn ? CUA_HANG.filter(c => (!cn || c.id === cn) && (!chonCh.length || chonCh.includes(c.ten))) : []
   const dsTk = cfg.theoTk ? TK_NGAN_HANG.filter(t => !chonQuy || tenTkNh(t) === chonQuy) : []
   // Dòng mang giá trị đang lọc để khung lọc chung (bienDoiBang) giữ lại
   const gan = (x: Row): Row => ({ ...x, locQuy: chonQuy })
@@ -1088,7 +1234,11 @@ export function renderReport(cfg: ReportCfg, seed: string, thang: number, cd: Ch
       const tyLe = Boolean(cfg.theoGtgt && session && gtgtTyLe(session))
       const cols = (cfg.theoGtgt ? cfg.cols.filter(c => tyLe ? c.k !== 'thue' && c.k !== 'vat' : c.k !== 'giamThue') : cfg.cols)
         .filter(c => !c.goi || !session || c.goi.includes(session.goi))   // cột theo gói (T502)
-      return <RptTable cols={cols} rows={ganLocNguon(cfg.rows(thang, CUA_HANG.find(c => c.id === cn)?.ten, loc, tyLe), loc)} />
+      // Ô Cửa hàng (xem tất cả cửa hàng): tính riêng từng cửa hàng chọn rồi cộng lại, để tổng hợp, số dư đúng theo lựa chọn (T576)
+      const rows = cfg.theoCn && chonCh.length
+        ? gopTheoCuaHang(cfg.cols, chonCh.map(ten => cfg.rows!(thang, ten, loc, tyLe)))
+        : cfg.rows(thang, CUA_HANG.find(c => c.id === cn)?.ten, loc, tyLe)
+      return <RptTable cols={cols} rows={ganLocNguon(rows, loc)} />
     }
     const rows = chungTu({ prefix: 'HD', doiTuong: 'ncc', dienGiai: ['Mua hàng'], tien: [2e6, 40e6], dong: 'nvl' }, seed).filter(x => x.thang === thang || thang === 8)
     return <RptTable cols={[{ k: 'stt', t: 'STT', c: true, w: 50 }, { k: 'so', t: 'Số hoá đơn', cls: 'code' }, { k: 'ngay', t: 'Ngày' }, { k: 'doiTuong', t: 'Tên người bán' },
