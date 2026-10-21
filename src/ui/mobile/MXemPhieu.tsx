@@ -548,7 +548,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
                   <span className="val num">{money(d.gia || 0)} đ</span>
                 </div>
                 <div className="m-t449-hang-dong">
-                  <span className="lbl">Giảm giá:</span>
+                  <span className="lbl">Tiền chiết khấu:</span>
                   <span className="val num">{money(d.ck || 0)} đ</span>
                 </div>
                 <div className="m-t449-hang-dong">
@@ -578,7 +578,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
             <span className="num">{money(tongTien)}</span>
           </div>
           <div className="m-t600-tong-dong">
-            <span>Tiền giảm giá</span>
+            <span>Tiền chiết khấu</span>
             <span className="num">{money(tongCk)}</span>
           </div>
           <div className="m-t600-tong-dong">

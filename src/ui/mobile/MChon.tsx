@@ -61,7 +61,7 @@ export const MChon: FC<MChonProps> = ({ mo, onDong, tieuDe, ds, chon, onChon, ap
 
   return (
     <div className="m-tam-overlay" onClick={onDong}>
-      <div className={`m-tam-hop ${apDung ? 'm-tam-hop-apdung' : ''}`} onClick={e => e.stopPropagation()}>
+      <div className={`m-tam-hop ${apDung ? 'm-tam-hop-apdung' : ''} ${tim ? 'm-tam-hop-tim' : ''}`} onClick={e => e.stopPropagation()}>
         {!apDung && <div className="m-tam-keo" />}
         <div className={`m-tam-dau ${apDung ? 'm-tam-dau-apdung' : ''}`}>
           <h2 className="m-tam-tieu">{tieuDe}</h2>
@@ -97,7 +97,7 @@ export const MChon: FC<MChonProps> = ({ mo, onDong, tieuDe, ds, chon, onChon, ap
           />
         )}
         <div className="m-tam-ds">
-          {dangTai ? <div className="m-tc-dt-dang-tai">Đang tải dữ liệu</div> : dsLoc.map(m => {
+          {dangTai ? <div className="m-tc-dt-dang-tai">Đang tải dữ liệu</div> : dsLoc.length === 0 ? <div className="m-tam-rong">Không tìm thấy kết quả phù hợp</div> : dsLoc.map(m => {
             const isChon = apDung ? m.k === tamChon : m.k === chon
             return (
               <div

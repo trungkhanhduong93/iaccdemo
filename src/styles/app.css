@@ -38409,6 +38409,25 @@ body:has(.m-app) .m-thanh-duoi .m-tab.on .m-tab-ic .ic .l2 {
   font-variant-numeric: tabular-nums;
 }
 
+/* ── Bảng chọn MChon có ô tìm giữ chiều cao, bàn phím không che kết quả lọc (T556) ── */
+.m-tam-hop.m-tam-hop-tim:not(.m-tam-hop-apdung) {
+  height: 80vh;
+  height: 80dvh;
+}
+
+.m-tam-hop-tim .m-tam-ds {
+  flex: 1;
+  min-height: 0;
+  max-height: none;
+}
+
+.m-tam-rong {
+  padding: 24px 16px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 14px;
+}
+
 /* ── Điện thoại: hộp lịch chọn khoảng ngày, kỳ chọn nhanh, cột số tuần (T571) ── */
 .m-kn-nut { gap: 6px; }
 

@@ -606,13 +606,13 @@ function TheHangMua({
           <span style={{ position: 'absolute', right: 10, fontSize: 12, fontWeight: 500, color: '#9ca3af', pointerEvents: 'none' }}>đ</span>
         </div>
 
-        {/* Hàng Giảm giá */}
-        <span className="m-t601-grid-lbl">Giảm giá</span>
+        {/* Hàng Chiết khấu */}
+        <span className="m-t601-grid-lbl">Chiết khấu</span>
         <div className="m-t601-box" style={{ position: 'relative', paddingRight: 34 }}>
           <input
             type="text"
             inputMode={kieuGiam === '%' ? 'decimal' : 'numeric'}
-            aria-label={`Giảm giá mặt hàng ${stt}`}
+            aria-label={`Chiết khấu mặt hàng ${stt}`}
             style={{ border: 0, outline: 0, width: '100%', font: 'inherit', color: 'inherit', background: 'transparent' }}
             value={focusGiam ? strGiam : (kieuGiam === '%' ? String(dong.ptCk ?? 0) : money(ck))}
             onFocus={() => {
@@ -635,7 +635,7 @@ function TheHangMua({
           <button
             type="button"
             className="m-t601-btn-kieu-giam"
-            aria-label="Đổi kiểu giảm giá"
+            aria-label="Đổi kiểu chiết khấu"
             onClick={() => {
               const moi = kieuGiam === '%' ? 'đ' : '%'
               onDoiDong({ kieuGiam: moi })
@@ -653,7 +653,7 @@ function TheHangMua({
               type="text"
               inputMode="numeric"
               autoFocus
-              aria-label={`Sửa tiền giảm giá mặt hàng ${stt}`}
+              aria-label={`Sửa tiền chiết khấu mặt hàng ${stt}`}
               style={{ border: 0, outline: 0, width: '100%', font: 'inherit', color: 'inherit', background: 'transparent', textAlign: 'right' }}
               value={strTienGiam}
               onChange={e => {
@@ -671,7 +671,7 @@ function TheHangMua({
             <button
               type="button"
               className="m-t601-pen"
-              aria-label={`Sửa tiền giảm giá mặt hàng ${stt}`}
+              aria-label={`Sửa tiền chiết khấu mặt hàng ${stt}`}
               onClick={() => {
                 setSuaGiamTien(true)
                 setStrTienGiam(money(ck))
@@ -947,8 +947,8 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
   const [moLichHd, setMoLichHd] = useState(false)
   const [nhanKemHd, setNhanKemHd] = useState(() => {
     if (gocData?._nhanKemHd !== undefined) return Boolean(gocData._nhanKemHd)
-    if (gocData?._soHd) return true
-    return true
+    if (gocData?._soHd || nvGoc?.soHd) return true
+    return false
   })
 
   // Địa chỉ, MST, Người giao dịch của phiếu mua
@@ -2158,10 +2158,10 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                 </div>
 
                 <div className="m-t601-hang-card">
-                  {/* Khối áp chung: Giảm giá */}
+                  {/* Khối áp chung: Chiết khấu */}
                   <div className="m-t601-hang-ap-row">
                     <div>
-                      <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)' }}>Giảm giá</div>
+                      <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)' }}>Chiết khấu</div>
                       <div style={{ fontSize: 12, color: 'var(--muted)' }}>Áp cho tất cả dòng hàng</div>
                     </div>
                     <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
@@ -2303,7 +2303,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                         <span>{money(tongTien)}</span>
                       </div>
                       <div className="m-t601-tong-dong">
-                        <span className="lb">Tiền giảm giá</span>
+                        <span className="lb">Tiền chiết khấu</span>
                         <span>{money(tongCk)}</span>
                       </div>
                       <div className="m-t601-tong-dong">

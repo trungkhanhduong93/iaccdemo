@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 22/10/2026
+- T614: Điện thoại, phiếu mua hàng thêm mới mặc định không tích Nhận kèm hoá đơn. Phiếu mua gọi là Chiết khấu như web thay cho Giảm giá: dòng Chiết khấu của từng mặt hàng (nhập theo % hoặc theo đ), ô Chiết khấu áp cho tất cả dòng, dòng tổng và màn xem phiếu ghi Tiền chiết khấu.
 - T610: Điện thoại, màn xem phiếu mua: nút Thanh toán mở sheet Thanh toán ngay và sheet Chọn quỹ như màn sửa. Lập phiếu chi xong mở luôn phiếu chi vừa lập.
 - T609: Điện thoại, phiếu mua màn sửa và thêm mới: thanh tab Phiếu nhập, Lịch sử nằm dưới khung Thanh toán; ô Thuế GTGT áp chung chọn bằng sheet; sheet chọn nhóm hàng, thêm nhà cung cấp thấp hơn sheet phía sau.
 - T612: Điện thoại, bấm Thu tiền, Chi tiền ở thao tác nhanh trang chủ hiện menu nhỏ ngay dưới ô, có biểu tượng, chọn Thu tiền mặt hay Thu ngân hàng, giống nút Lập phiếu thu ở Tất cả quỹ. Tiến độ kiểm kê theo cửa hàng (gói Free) có tiêu đề cột Kiểm kê lần cuối và bỏ số mặt hàng đã kiểm, giống web.
