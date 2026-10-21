@@ -96,7 +96,7 @@ export function boO(nhom: Nhom, cfg: VoucherCfg): BoO {
     case 'nhchi': return {
       a: [{ k: 'tknh', nhan: 'Tài khoản chi' }, { k: 'dt', nhan: 'Mã đối tượng' }, { k: 'tknhan', nhan: 'Tài khoản nhận' }, { k: 'ly', nhan: 'Lý do chi', ds: LY_CHI }],
       b: [{ k: 'tennh', nhan: 'Tên ngân hàng' }, { k: 'ten', nhan: 'Tên đối tượng' }, { k: 'nhnhan', nhan: 'Ngân hàng nhận' }, { k: 'dg', nhan: 'Nội dung thanh toán' }],
-      so: 'Số uỷ nhiệm chi', tk: tkNo, inMau: ['Uỷ nhiệm chi'],
+      so: 'Số chứng từ', tk: tkNo, inMau: ['Uỷ nhiệm chi'],
     }
     case 'nhap': return {
       a: [...dt, { k: 'nguoi', nhan: 'Người giao hàng' }, { k: 'nv', nhan: 'Nhân viên' }, kem],

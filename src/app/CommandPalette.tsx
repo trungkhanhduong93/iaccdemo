@@ -31,7 +31,7 @@ export function ghiGanDay(pathname: string) {
 
 /** Tên gọi quen của người dùng cho màn có tên khác, gõ tên quen vẫn ra màn */
 const TEN_QUEN: Record<string, string> = {
-  '2.1.1': 'phiếu thu phiếu chi uỷ nhiệm chi báo có chuyển quỹ',
+  '2.1.1': 'phiếu thu phiếu chi thu ngân hàng chi ngân hàng uỷ nhiệm chi báo có chuyển quỹ',
   '3.1.7': 'phiếu xuất bán hàng',
   '4.1.1': 'nhập mua hàng phiếu nhập mua',
   '4.1.4': 'xuất trả hàng mua',

@@ -69,7 +69,7 @@ export const MDtThuChiXem: FC<MDtThuChiXemProps> = ({
   const tenLoaiPhieu = row.tenLoai
     ? String(row.tenLoai)
     : isChi
-    ? (row.loai === 'unc' ? 'Uỷ nhiệm chi' : 'Chi tiền mặt')
+    ? (row.loai === 'unc' ? 'Chi ngân hàng' : 'Chi tiền mặt')
     : isThu
     ? (row.loai === 'bc' ? 'Thu ngân hàng' : 'Thu tiền mặt')
     : 'Chuyển quỹ'

@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 21/10/2026
+- T591: Thao tác nhanh (điện thoại và web) và menu Thu, chi tiền ghi đồng nhất "Thu ngân hàng", "Chi ngân hàng" thay cho Báo có, Uỷ nhiệm chi, Thu/Chi tiền gửi ngân hàng.
 - T590: Điện thoại, thẻ chi phí phân bổ làm lại: khối đầu thẻ có Ngày ghi tăng, bỏ khu vực Thông tin thẻ; Mục phân bổ thành danh sách các mục như dòng hàng phiếu mua, trường theo loại (CCDC có số lượng, đơn giá; TSCĐ có số hiệu, mô tả; thẻ dư đầu kỳ có giá trị, số tháng đã phân bổ) và nhãn Ngừng phân bổ. Tab Lịch phân bổ lọc theo mục, gom theo năm, kỳ Đã / Chờ / Ngừng phân bổ. Tab Lịch sử cùng khuôn phiếu thu chi. Sửa thẻ: sửa từng mục, gõ lại tiền từng kỳ, lưu mà tổng lệch thì hỏi điều chỉnh về kỳ cuối. Web gói Free, Standard: kỳ sau tháng hiện tại ghi Chờ phân bổ.
 - T587: Web, hộp Tuỳ chỉnh báo cáo làm lại. Tab Cột gom SL, Giá trị theo nhóm (Tồn đầu kỳ, Nhập, Xuất...), có ô tìm cột, tick cả nhóm. Gom nhóm được tối đa 3 cấp, chọn bằng nút, chuyển Chi tiết / Tổng hợp ngay trong hộp. Người ký sửa theo dòng, có xem trước chân trang khi in. Cỡ chữ chọn bằng dãy nút.
 - T588: Điện thoại, form Lập phiếu kiểm kê làm lại theo khung phiếu mua hàng: tồn thực tế tự điền bằng tồn hệ thống (âm thì 0), sửa được; mỗi mặt hàng hiện chênh lệch kèm nhãn Thừa, Thiếu và cách xử lý Nhập, Xuất điều chỉnh; cuối phiếu đếm số mặt hàng chênh lệch, thừa, thiếu. Màn Kiểm kê có 4 tab Kiểm kê, Xuất điều chỉnh, Nhập điều chỉnh, Báo cáo; Nghiệp vụ bỏ mục Điều chỉnh kho.

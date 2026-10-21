@@ -37,8 +37,8 @@ export const THAO_TAC_UNG_VIEN: ThaoTacUngVien[] = [
   { id: 'so-quy', ten: 'Sổ quỹ', icon: 'wallet', to: '/app/tien/2-2-1', modKey: 'tien', slug: '2-2-1' },
   { id: 'nhap-mua', ten: 'Nhập mua', icon: 'truck', to: '/app/mua-hang/4-1-1/moi', modKey: 'mua-hang', slug: '4-1-1' },
   { id: 'kiem-ke', ten: 'Kiểm kê', icon: 'clipboard', to: '/app/kho/5-1-10/moi', modKey: 'kho', slug: '5-1-10' },
-  { id: 'bao-co', ten: 'Báo có', icon: 'bank', to: '/app/tien/2-1-1/moi?loai=bc', modKey: 'tien', slug: '2-1-1' },
-  { id: 'unc', ten: 'Uỷ nhiệm chi', icon: 'bank', to: '/app/tien/2-1-1/moi?loai=unc', modKey: 'tien', slug: '2-1-1' },
+  { id: 'bao-co', ten: 'Thu ngân hàng', icon: 'bank', to: '/app/tien/2-1-1/moi?loai=bc', modKey: 'tien', slug: '2-1-1' },
+  { id: 'unc', ten: 'Chi ngân hàng', icon: 'bank', to: '/app/tien/2-1-1/moi?loai=unc', modKey: 'tien', slug: '2-1-1' },
   { id: 'so-ngan-hang', ten: 'Sổ ngân hàng', icon: 'book', to: '/app/tien/2-2-3', modKey: 'tien', slug: '2-2-3' },
   { id: 'chuyen-quy', ten: 'Chuyển quỹ', icon: 'swap', to: '/app/tien/2-1-1/moi?loai=cq', modKey: 'tien', slug: '2-1-1' },
 ]

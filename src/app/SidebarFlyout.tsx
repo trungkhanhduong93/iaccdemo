@@ -106,8 +106,8 @@ const FLYOUT_CONFIG: Record<string, FlyoutData> = {
       items: [
         { ten: 'Thu tiền mặt', di: '/app/tien/2-1-1/moi?loai=thu' },
         { ten: 'Chi tiền mặt', di: '/app/tien/2-1-1/moi?loai=chi' },
-        { ten: 'Thu tiền gửi ngân hàng', di: '/app/tien/2-1-1/moi?loai=bc' },
-        { ten: 'Chi tiền gửi ngân hàng (UNC)', di: '/app/tien/2-1-1/moi?loai=unc' },
+        { ten: 'Thu ngân hàng', di: '/app/tien/2-1-1/moi?loai=bc' },
+        { ten: 'Chi ngân hàng', di: '/app/tien/2-1-1/moi?loai=unc' },
         { ten: 'Chuyển quỹ nội bộ', di: '/app/tien/2-1-1/moi?loai=cq' },
         { ten: 'Thu, chi tiền tổng hợp', di: '/app/tien/2-1-1' },
         { ten: 'Đối chiếu công nợ', di: '/app/tien/2-1-2' },
