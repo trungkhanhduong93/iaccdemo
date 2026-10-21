@@ -731,7 +731,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
                       <span className="g link">
                         {(row._theCp as string[]).map(so => (
                           <Link key={so} to={`/app/ccdc/8-1-1?mo=${so}`} className="m-pb-dong g link" style={{ display: 'inline' }}>
-                            Thẻ chi phí {so}
+                            {so}
                           </Link>
                         ))}
                       </span>
@@ -864,7 +864,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
                   )}
                   {dsDc.length > 0 && (
                     <div className="m-pb-dong">
-                      <span className="n">Xử lý chênh lệch</span>
+                      <span className="n">Tham chiếu</span>
                       <span className="g link">
                         {dsDc.map(c => (
                           <Link key={c.id} to={`/app/${MAN_DC}/${c.id}`} style={{ color: 'var(--blue)', textDecoration: 'none', marginLeft: 4 }}>

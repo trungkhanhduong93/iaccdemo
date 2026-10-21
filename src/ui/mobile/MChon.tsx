@@ -21,9 +21,28 @@ export interface MChonProps {
   nhanThem?: string
 }
 
+/** Hàng biểu tượng Thêm mới, Tải lại của sheet chọn danh mục, như ô chọn danh mục trên web (T538, T539) */
+export const MThanhThem: FC<{ nhan: string, onThem: () => void, onTaiLai: () => void }> = ({ nhan, onThem, onTaiLai }) => (
+  <div className="m-tc-dt-thanh m-tam-thanh">
+    <button type="button" className="m-tc-dt-btn-ic" aria-label={nhan} title={nhan} onClick={onThem}>
+      <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="8" cy="8" r="6" />
+        <path d="M8 5.2v5.6M5.2 8h5.6" />
+      </svg>
+    </button>
+    <button type="button" className="m-tc-dt-btn-ic" aria-label="Tải lại danh sách" title="Tải lại danh sách" onClick={onTaiLai}>
+      <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M13.3 7.5A5.5 5.5 0 1 1 11.7 3.6L13.5 5.5" />
+        <path d="M13.5 2v3.5H10" />
+      </svg>
+    </button>
+  </div>
+)
+
 export const MChon: FC<MChonProps> = ({ mo, onDong, tieuDe, ds, chon, onChon, apDung, tim, onThem, nhanThem }) => {
   const [tamChon, setTamChon] = useState(chon ?? '')
   const [tuKhoa, setTuKhoa] = useState('')
+  const [dangTai, setDangTai] = useState(false)
 
   useEffect(() => {
     if (mo) {
@@ -68,19 +87,17 @@ export const MChon: FC<MChonProps> = ({ mo, onDong, tieuDe, ds, chon, onChon, ap
           </div>
         )}
         {onThem && (
-          <div className="m-tam-them-wrap">
-            <button
-              type="button"
-              className="btn pri m-tam-btn-them"
-              onClick={onThem}
-            >
-              <Icon n="plus" className="ic sm" />
-              <span>{nhanThem ?? `Thêm ${tieuDe.replace(/^Chọn\s+/i, '').toLowerCase()}`}</span>
-            </button>
-          </div>
+          <MThanhThem
+            nhan={nhanThem ?? `Thêm ${tieuDe.replace(/^Chọn\s+/i, '').toLowerCase()}`}
+            onThem={onThem}
+            onTaiLai={() => {
+              setDangTai(true)
+              setTimeout(() => setDangTai(false), 600)
+            }}
+          />
         )}
         <div className="m-tam-ds">
-          {dsLoc.map(m => {
+          {dangTai ? <div className="m-tc-dt-dang-tai">Đang tải dữ liệu</div> : dsLoc.map(m => {
             const isChon = apDung ? m.k === tamChon : m.k === chon
             return (
               <div

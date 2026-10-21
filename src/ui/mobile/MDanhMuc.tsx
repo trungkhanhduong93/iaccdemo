@@ -80,7 +80,9 @@ export const MDanhMuc: FC<ScreenProps> = ({ sc }) => {
     })
   }, [allGoc, ttGhiDe, chiPhiGhiDe, cols0])
 
-  const choThem = !laChiXem && !cfg.khongThem?.includes(s.goi)
+  // Điện thoại không tạo kho mới, kể cả ở danh mục và chứng từ; kho khai trên web (T539)
+  const laKho = sc.code === '1.8' || sc.slug === '1-8'
+  const choThem = !laChiXem && !laKho && !cfg.khongThem?.includes(s.goi)
 
   const nhoms = useMemo(() => {
     if (!cfg.nhomLoc) return []
@@ -201,12 +203,12 @@ export const MDanhMuc: FC<ScreenProps> = ({ sc }) => {
   const [quyVuaTao, setQuyVuaTao] = useState<Row | null>(null)
   useEffect(() => {
     if (thamSo.get('moi') === null) return
-    if (laChiXem) { setThamSo({}, { replace: true }); return }
+    if (laChiXem || laKho) { setThamSo({}, { replace: true }); return }
     setGoiYThuChi(thamSo.get('goiY') === 'thuchi')
     setEdit({})
     setDienSan(undefined)
     setThamSo({}, { replace: true })
-  }, [thamSo, laChiXem])   // eslint-disable-line react-hooks/exhaustive-deps
+  }, [thamSo, laChiXem, laKho])   // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleLuu = useCallback(
     (val: Record<string, any>, themTiep: boolean) => {

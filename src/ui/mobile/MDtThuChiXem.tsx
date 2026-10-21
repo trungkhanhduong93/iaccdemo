@@ -10,7 +10,7 @@ import { useDongChungTu } from '../generic/VoucherScreen'
 import { HopXacNhan } from '../LocNangCao'
 import type { Dong } from '../generic/gen'
 import { tinhButToan } from './butToan'
-import { CUA_HANG } from '../../data/mock'
+import { CUA_HANG, LY_CHI_PHI } from '../../data/mock'
 
 export interface MDtThuChiXemProps extends ScreenProps {
   row: Row
@@ -76,7 +76,6 @@ export const MDtThuChiXem: FC<MDtThuChiXemProps> = ({
 
   const soCt = String(row.so ?? '')
   const tongSoTien = Number(row.tong) || Number(row.tien) || 0
-  const ngayGio = `${row.ngay || '07/10/2026'} ${row.gio || '09:15'}`
   const laFabi = row.nguon === 'FABi' || soCt.startsWith('FB')
 
   const diaChiHienThi = String(
@@ -135,9 +134,6 @@ export const MDtThuChiXem: FC<MDtThuChiXemProps> = ({
             <span className={`m-tc-badge-loai m-ct-chip ${isChi ? 'chi' : isThu ? 'thu' : 'cq'}`}>
               {tenLoaiPhieu}
             </span>
-            <span className="m-tc-badge-nguon">
-              {laFabi ? 'FABi' : 'Thủ công'}
-            </span>
           </div>
 
           <div className="m-tc-xem-dong-cn">
@@ -145,7 +141,9 @@ export const MDtThuChiXem: FC<MDtThuChiXemProps> = ({
               <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
               <polyline points="9 22 9 12 15 12 15 22" />
             </svg>
-            <span>{ngayGio} · {cuaHangTen}</span>
+            <span>{cuaHangTen}</span>
+            {/* Nguồn chứng từ cùng dòng cửa hàng (T539) */}
+            <span className="m-tc-badge-nguon m-tc-xem-nguon">{laFabi ? 'FABi' : 'Thủ công'}</span>
           </div>
 
           <div className="m-tc-xem-nhan-tong">Tổng tiền</div>
@@ -207,20 +205,8 @@ export const MDtThuChiXem: FC<MDtThuChiXemProps> = ({
             </div>
             <div className="m-tc-card-thong-tin m-xp-the-dau">
               <div className="m-tc-dong-thong-tin">
-                <span className="nhan">Số phiếu {isChi ? 'chi' : isThu ? 'thu' : ''}</span>
-                <span className="tri">{soCt}</span>
-              </div>
-              <div className="m-tc-vach-ngang" />
-
-              <div className="m-tc-dong-thong-tin">
                 <span className="nhan">Ngày chứng từ *</span>
                 <span className="tri">{row.ngay || '07/10/2026'}</span>
-              </div>
-              <div className="m-tc-vach-ngang" />
-
-              <div className="m-tc-dong-thong-tin">
-                <span className="nhan">Quỹ</span>
-                <span className="tri">{triQuy}</span>
               </div>
               <div className="m-tc-vach-ngang" />
 
@@ -249,8 +235,8 @@ export const MDtThuChiXem: FC<MDtThuChiXemProps> = ({
                   <div className="m-tc-dong-thong-tin">
                     <span className="nhan">{isChi ? 'Lý do chi' : 'Lý do thu'}</span>
                     <span className="tri ly-do-wrap">
-                      <span className="m-tc-badge-nhom-cp">Chi phí</span>
                       <span>{triLyDo}</span>
+                      {isChi && LY_CHI_PHI.includes(triLyDo) && <span className="m-tc-badge-nhom-cp">Chi phí</span>}
                     </span>
                   </div>
                   <div className="m-tc-vach-ngang" />
@@ -278,7 +264,7 @@ export const MDtThuChiXem: FC<MDtThuChiXemProps> = ({
                 <>
                   <div className="m-tc-vach-ngang" />
                   <div className="m-tc-dong-thong-tin">
-                    <span className="nhan">Thẻ chi phí</span>
+                    <span className="nhan">Tham chiếu</span>
                     <span className="tri link">
                       {theCpDs.map(maThe => (
                         <Link
@@ -400,38 +386,6 @@ export const MDtThuChiXem: FC<MDtThuChiXemProps> = ({
                   <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
                 </svg>
                 <span>Sửa chứng từ</span>
-              </button>
-              <div className="m-tc-sheet-divider" />
-
-              <button
-                type="button"
-                className="m-tc-sheet-item"
-                onClick={() => {
-                  setMoSheetThaoTac(false)
-                  setHoiBoGhi(true)
-                }}
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M3 7v6h6M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13" />
-                </svg>
-                <span>{row.tt === 'ghi' ? 'Bỏ ghi sổ' : 'Ghi sổ'}</span>
-              </button>
-              <div className="m-tc-sheet-divider" />
-
-              <button
-                type="button"
-                className="m-tc-sheet-item"
-                onClick={() => {
-                  setMoSheetThaoTac(false)
-                  toast('Đang in phiếu chứng từ...')
-                }}
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="6 9 6 2 18 2 18 9" />
-                  <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
-                  <rect x="6" y="14" width="12" height="8" />
-                </svg>
-                <span>In phiếu</span>
               </button>
               <div className="m-tc-sheet-divider" />
 

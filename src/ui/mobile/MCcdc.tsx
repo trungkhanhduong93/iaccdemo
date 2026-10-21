@@ -13,6 +13,7 @@ import { MDanhSach } from './MDanhSach'
 import { MBaoCaoTheoDoi } from './MBaoCaoTheoDoi'
 import { MChon } from './MChon'
 import { LichDon } from '../ChonNgay'
+import { HopXacNhan } from '../LocNangCao'
 import {
   daPhanBoToiKy,
   LOAI_THE,
@@ -78,6 +79,7 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
   const [tabThe, setTabThe] = useState<'chitiet' | 'lichpb' | 'lichsu'>('chitiet')
   const [theSuaId, setTheSuaId] = useState<string | null>(null)
   const [moMenuMore, setMoMenuMore] = useState(false)
+  const [hoiXoaThe, setHoiXoaThe] = useState(false)
   const [moChonCn, setMoChonCn] = useState(false)
   const [moGhiTang, setMoGhiTang] = useState(() => Boolean(tuPhieu || sp.get('moi') === 'the'))
   const [cnGhiTang, setCnGhiTang] = useState<string>(() => tuPhieu?.cn || cnChon?.ten || 'Phố Mây Lê Lợi')
@@ -663,9 +665,15 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
 
         // Xoá thẻ như bản máy tính (T475, theo T439): kỳ khoá sổ chứa tháng bắt đầu phân bổ thì không xoá; xoá ghi dm/8-1-1 để phiếu chi gốc biết;
         // thẻ mở từ phiếu (state.veGoc) xoá xong về phiếu ở chế độ sửa
-        const handleXoaThe = () => {
+        // Bấm Xoá thẻ: hỏi xác nhận trước như xoá phiếu (T539)
+        const hoiXoa = () => {
           const ly = lyDoKhongXoaThe(theXem as unknown as Row)
-          if (ly) { toast(ly); setMoMenuMore(false); return }
+          setMoMenuMore(false)
+          if (ly) { toast(ly); return }
+          setHoiXoaThe(true)
+        }
+        const handleXoaThe = () => {
+          setHoiXoaThe(false)
           setTheList(prev => prev.filter(t => t.soThe !== theXem.soThe))
           xoaPhieu('dm/8-1-1', [{ id: theXem.soThe, so: theXem.soThe }], s.ten)
           toast(`Đã xoá thẻ ${theXem.soThe}`)
@@ -677,6 +685,11 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
 
         return (
           <div className="m-pb-man">
+            {hoiXoaThe && (
+              <HopXacNhan tieuDe={`Xoá thẻ ${theXem.soThe}?`} nut="Xoá thẻ" onDong={() => setHoiXoaThe(false)} onDongY={handleXoaThe}>
+                Thẻ đã xoá không lấy lại được.
+              </HopXacNhan>
+            )}
             {/* Thanh đầu: nút back, tiêu đề là số thẻ */}
             <header className="m-pb-thanh-dau">
               <button
@@ -919,7 +932,7 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
                         </span>
                         <span className="m-loc-muc-ten">Sao chép thẻ này</span>
                       </div>
-                      <div className="m-loc-muc-dong" onClick={handleXoaThe}>
+                      <div className="m-loc-muc-dong" onClick={hoiXoa}>
                         <span style={{ marginRight: 10, color: '#d0650a', display: 'inline-flex' }}>
                           <Icon n="trash" className="ic sm" />
                         </span>

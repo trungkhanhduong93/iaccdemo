@@ -230,13 +230,33 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
     { k: 'cq', ten: 'Chuyển quỹ' },
   ]
 
+  // Thêm mới chỉ hiện loại phiếu của tab đang chọn; tab Tất cả hiện đủ (T539)
   const dsLoaiThem = [
     { k: 'chi', ten: 'Chi tiền mặt' },
     { k: 'thu', ten: 'Thu tiền mặt' },
     { k: 'unc', ten: 'Chi ngân hàng' },
     { k: 'bc', ten: 'Thu ngân hàng' },
     { k: 'cq', ten: 'Chuyển quỹ' },
-  ]
+  ].filter(l => loaiChon === 'tien-mat' ? l.k === 'chi' || l.k === 'thu'
+    : loaiChon === 'ngan-hang' ? l.k === 'unc' || l.k === 'bc'
+    : loaiChon === 'cq' ? l.k === 'cq'
+    : true)
+
+  const moPhieuMoi = (k: string) => {
+    const target = `${path}/moi?loai=${k}`
+    if (s.cuaHang === 'all') {
+      const cnNho = layChiNhanhNho()
+      if (cnNho && CUA_HANG.some(c => c.id === cnNho)) {
+        set({ cuaHang: cnNho })
+        nav(target)
+      } else {
+        setDichDenMoi(target)
+        setMoChonCnTruoc(true)
+      }
+      return
+    }
+    nav(target)
+  }
 
   const quayLai = () => {
     if (window.history.state && window.history.state.idx > 0) {
@@ -480,17 +500,17 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
         )}
       </main>
 
-      {/* ── NÚT NỔI THÊM PHIẾU THU, CHI (FAB) ── */}
+      {/* ── NÚT NỔI THÊM MỚI (FAB) ── */}
       <button
         type="button"
         className="m-tc-fab m-nut-them-fab m-ds-fab"
-        onClick={() => setMoChonLoaiThem(true)}
-        aria-label="Thêm phiếu thu, chi"
+        onClick={() => dsLoaiThem.length === 1 ? moPhieuMoi(dsLoaiThem[0].k) : setMoChonLoaiThem(true)}
+        aria-label="Thêm mới"
       >
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round">
           <path d="M12 5v14M5 12h14" />
         </svg>
-        <span>Thêm phiếu thu, chi</span>
+        <span>Thêm mới</span>
       </button>
 
       {/* Tấm chọn loại phiếu khi bấm FAB */}
@@ -501,19 +521,7 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
         ds={dsLoaiThem}
         onChon={k => {
           setMoChonLoaiThem(false)
-          const target = `${path}/moi?loai=${k}`
-          if (s.cuaHang === 'all') {
-            const cnNho = layChiNhanhNho()
-            if (cnNho && CUA_HANG.some(c => c.id === cnNho)) {
-              set({ cuaHang: cnNho })
-              nav(target)
-            } else {
-              setDichDenMoi(target)
-              setMoChonCnTruoc(true)
-            }
-            return
-          }
-          nav(target)
+          moPhieuMoi(k)
         }}
       />
 

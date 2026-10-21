@@ -14,7 +14,7 @@ import { useDongChungTu } from '../generic/VoucherScreen'
 import { fold, money } from '../format'
 import { Icon } from '../Icon'
 import { LichDon } from '../ChonNgay'
-import { MChon } from './MChon'
+import { MChon, MThanhThem } from './MChon'
 import { MTrong } from './MTrong'
 import { MLapPhieuKho } from './MLapPhieuKho'
 import { MFormDm } from './MFormDm'
@@ -982,6 +982,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
 
   // Sheet chọn hàng hoá
   const [moChonHang, setMoChonHang] = useState(false)
+  const [dangTaiHang, setDangTaiHang] = useState(false)
   const [nhomHangChon, setNhomHangChon] = useState('Tất cả')
   const [timHang, setTimHang] = useState('')
   const [moChonNhomHang, setMoChonNhomHang] = useState(false)
@@ -2239,17 +2240,6 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
               )
             })}
 
-            <button
-              type="button"
-              className="f-them"
-              onClick={() => {
-                setMoBangChonQuy(false)
-                setMoThemDm('quy')
-              }}
-            >
-              + Tạo quỹ mới
-            </button>
-
             <div className="m-pb-day q-chan">
               <button
                 type="button"
@@ -2279,7 +2269,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
         }}
         onThem={() => {
           setMoChonLyDo(false)
-          setMoThemDm('lyDo')
+          setMoThemDm(nhom === 'thu' || nhom === 'nhthu' ? 'ly:thu' : 'ly:chi')
         }}
         nhanThem="Thêm lý do nghiệp vụ"
         apDung
@@ -2364,11 +2354,6 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
           setKho(v)
           if (loiO.kho) setLoiO(l => { const n = { ...l }; delete n.kho; return n })
         }}
-        onThem={() => {
-          setMoChonKho(false)
-          setMoThemDm('kho')
-        }}
-        nhanThem="Thêm kho"
         apDung
         tim
       />
@@ -2448,20 +2433,6 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
               </button>
             </div>
 
-            <div className="m-tam-them-wrap">
-              <button
-                type="button"
-                className="btn pri m-tam-btn-them"
-                onClick={() => {
-                  setMoChonHang(false)
-                  setMoThemDm('hang')
-                }}
-              >
-                <Icon n="plus" className="ic sm" />
-                <span>Thêm hàng hoá</span>
-              </button>
-            </div>
-
             <div className="m-lp-loc-hang">
               <button
                 type="button"
@@ -2496,8 +2467,20 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
               </button>
             </div>
 
+            <MThanhThem
+              nhan="Thêm hàng hoá"
+              onThem={() => {
+                setMoChonHang(false)
+                setMoThemDm('hang')
+              }}
+              onTaiLai={() => {
+                setDangTaiHang(true)
+                setTimeout(() => setDangTaiHang(false), 600)
+              }}
+            />
+
             <div className="m-lp-than m-lp-ds-hang" style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
-              {dsHangHienThi.map(h => {
+              {dangTaiHang ? <div className="m-tc-dt-dang-tai">Đang tải dữ liệu</div> : dsHangHienThi.map(h => {
                 const daChon = dsDong.some(d => d.ma === h.ma)
                 return (
                   <div

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type FC } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import type { Row, ScreenProps } from '../../modules/types'
 import { duongDan } from '../../app/registry'
 import { cuaHangHienTai, useSession } from '../../app/session'
@@ -9,8 +9,9 @@ import { CUA_HANG, HOM_NAY, KHACH, LY_CHI_PHI, LY_DO, NCC, NHAN_VIEN, TK_NGAN_HA
 import { layChiNhanhNho } from '../ChonCuaHangTruoc'
 import { soKeTiep, suaPhieu, themPhieu, ghiNhatKy } from '../generic/daXoa'
 import { MAN_THU_CHI, QUY_TIEN, TEN_CT_TT, TIEN_TO_CT_TT } from '../generic/ChungTuForm'
-import { tkTheoLyDo } from '../generic/gen'
+import { doanLyDoThuChi, dongCua, tkTheoLyDo, ttNghiepVu } from '../generic/gen'
 import { useDongChungTu } from '../generic/VoucherScreen'
+import { theoLoai } from '../generic/nhom'
 import { TAI_KHOAN } from '../../modules/danh-muc/data'
 import { MChon } from './MChon'
 import { MFormDm } from './MFormDm'
@@ -71,12 +72,19 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
   const path = duongDan(mod, sc)
   const [sp] = useSearchParams()
 
-  const { rows } = useDongChungTu(sc, mod)
+  const { rows, cfg } = useDongChungTu(sc, mod)
   const manKey = `${mod.key}/${sc.slug}`
   const row = rowProp ?? (id && id !== 'moi' ? rows.find(r => String(r.id) === String(id)) : undefined)
   const dangSua = Boolean(id && id !== 'moi' && row)
+  // Sao chép từ màn xem (T539): phiếu mới mang nội dung phiếu gốc, trừ số phiếu, ngày, thẻ chi phí
+  const loc = useLocation()
+  const saoChep = !row ? (loc.state as { saoChep?: Row } | null)?.saoChep : undefined
+  const goc = row ?? saoChep
+  // Lý do, người giao dịch đoán như màn xem phiếu để sửa, sao chép không bị trống
+  const lyDoGoc = (r?: Row) => !r ? '' : String(r._lyDo ?? ((r._dong as DongChiTiet[] | undefined) ?? dongCua(theoLoai(cfg, String(r.loai ?? '')), `${sc.code ?? sc.slug}-${r.id}`))[0]?.ly ?? doanLyDoThuChi(String(r.loai ?? ''), String(r.dienGiai || '')) ?? '')
+  const nguoiGoc = (r?: Row) => !r ? '' : String(r._nguoiGiao ?? r._nguoi ?? ttNghiepVu(r).nguoi ?? '')
   const loaiUrl = sp.get('loai') || 'chi'
-  const [loai, setLoai] = useState<string>(() => row?.loai ? String(row.loai) : loaiUrl)
+  const [loai, setLoai] = useState<string>(() => goc?.loai ? String(goc.loai) : loaiUrl)
 
   const isChi = loai === 'chi' || loai === 'unc'
   const isThu = loai === 'thu' || loai === 'bc'
@@ -85,18 +93,18 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
   const cnNhoId = layChiNhanhNho()
   const cnNhoTen = CUA_HANG.find(c => c.id === cnNhoId)?.ten
   const [cuaHang, setCuaHang] = useState<string>(() =>
-    row?.cn ? String(row.cn) : cuaHangHienTai(s)?.ten || cnNhoTen || CUA_HANG[0].ten
+    goc?.cn ? String(goc.cn) : cuaHangHienTai(s)?.ten || cnNhoTen || CUA_HANG[0].ten
   )
   const [moChonCn, setMoChonCn] = useState(false)
 
   const [soTien, setSoTien] = useState<number>(() => {
-    if (row) return Number(row.tong) || Number(row.tien) || 0
+    if (goc) return Number(goc.tong) || Number(goc.tien) || 0
     return 0
   })
   const [strTien, setStrTien] = useState<string>(() => (soTien > 0 ? money(soTien) : ''))
 
   const [quy, setQuy] = useState<string>(() => {
-    if (row?._quy) return String(row._quy)
+    if (goc?._quy) return String(goc._quy)
     if (loai === 'unc' || loai === 'bc') {
       return TK_NGAN_HANG[0] ? `${TK_NGAN_HANG[0].nh.split(',')[0]} ${TK_NGAN_HANG[0].so}` : ''
     }
@@ -116,19 +124,19 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
   })
 
   // T526: Lập phiếu mới để trống các trường, chỉ giữ mặc định bắt buộc
-  const [doiTuong, setDoiTuong] = useState<string>(() => row?.doiTuong ? String(row.doiTuong) : '')
-  const [diaChi, setDiaChi] = useState<string>(() => row?._diaChi || row?.diaChi ? String(row._diaChi || row?.diaChi) : '')
-  const [nguoiGiaoDich, setNguoiGiaoDich] = useState<string>(() => row?._nguoiGiao || row?._nguoi ? String(row._nguoiGiao || row?._nguoi) : '')
+  const [doiTuong, setDoiTuong] = useState<string>(() => goc?.doiTuong ? String(goc.doiTuong) : '')
+  const [diaChi, setDiaChi] = useState<string>(() => goc?._diaChi || goc?.diaChi ? String(goc._diaChi || goc?.diaChi) : '')
+  const [nguoiGiaoDich, setNguoiGiaoDich] = useState<string>(() => nguoiGoc(goc))
 
-  const [lyDo, setLyDo] = useState<string>(() => row?._lyDo ? String(row._lyDo) : '')
-  const [thangChiPhi, setThangChiPhi] = useState<string>(() => `Tháng ${row?.thang || 10}/2026`)
-  const [ghiChu, setGhiChu] = useState<string>(() => row?._ghiChu || row?.dienGiai ? String(row._ghiChu || row?.dienGiai) : '')
+  const [lyDo, setLyDo] = useState<string>(() => lyDoGoc(goc))
+  const [thangChiPhi, setThangChiPhi] = useState<string>(() => `Tháng ${goc?.thang || 10}/2026`)
+  const [ghiChu, setGhiChu] = useState<string>(() => goc?._ghiChu || goc?.dienGiai ? String(goc._ghiChu || goc?.dienGiai) : '')
   const theCpDs = Array.isArray(row?._theCp) ? (row?._theCp as string[]) : []
 
   // Dòng chi tiết
   const [dsDong, setDsDong] = useState<DongChiTiet[]>(() => {
-    if (Array.isArray(row?._dong) && row._dong.length > 0) {
-      return (row._dong as DongChiTiet[]).map(d => ({
+    if (Array.isArray(goc?._dong) && goc._dong.length > 0) {
+      return (goc._dong as DongChiTiet[]).map(d => ({
         ten: d.ten || '',
         sl: d.sl || 1,
         gia: d.gia || soTien,
@@ -173,9 +181,9 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
       if (row.ngay) setNgay(String(row.ngay))
       if (row.doiTuong) setDoiTuong(String(row.doiTuong))
       if (row._diaChi || row.diaChi) setDiaChi(String(row._diaChi || row.diaChi))
-      if (row._nguoiGiao || row._nguoi) setNguoiGiaoDich(String(row._nguoiGiao || row._nguoi))
+      setNguoiGiaoDich(nguoiGoc(row))
       if (row._quy) setQuy(String(row._quy))
-      if (row._lyDo) setLyDo(String(row._lyDo))
+      setLyDo(lyDoGoc(row))
       if (row.thang) setThangChiPhi(`Tháng ${row.thang}/2026`)
       if (row._ghiChu || row.dienGiai) setGhiChu(String(row._ghiChu || row.dienGiai))
       if (Array.isArray(row._dong) && row._dong.length > 0) {
@@ -184,7 +192,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
           sl: d.sl || 1,
           gia: d.gia || t,
           tien: d.tien || t,
-          ly: d.ly || String(row._lyDo || ''),
+          ly: d.ly || lyDoGoc(row),
           dt: d.dt || String(row.doiTuong || ''),
           km: d.km || '',
           cv: d.cv || '',
@@ -209,6 +217,8 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
   const [dangTaiDt, setDangTaiDt] = useState(false)
   const [moThemDt, setMoThemDt] = useState(false)
   const dtDaThem = useAddedCatalogRows('1.5')
+  const lyDaThem = useAddedCatalogRows('1.16')
+  const [moThemLy, setMoThemLy] = useState(false)
   const [tabLoaiDt, setTabLoaiDt] = useState<'all' | 'ncc' | 'nv' | 'kh'>('all')
 
   const dsDoiTuongLoc = useMemo(() => {
@@ -223,6 +233,19 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
     }
     return list
   }, [tabLoaiDt, timDt, dtDaThem])
+
+  const chonLyDo = (k: string) => {
+    setLyDo(k)
+    setDaSua(true)
+    const tk = tkTheoLyDo(isChi ? 'chi' : isThu ? 'thu' : 'cq', k)
+    if (tk.tkNo || tk.tkCo) {
+      setDsDong(prev => prev.map((d, i) => i === 0 ? {
+        ...d,
+        tkNo: tk.tkNo ?? d.tkNo,
+        tkCo: tk.tkCo ?? d.tkCo,
+      } : d))
+    }
+  }
 
   const handleSuaTien = (valStr: string) => {
     const formatted = goSoVN(valStr, false)
@@ -346,12 +369,12 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
   // Phiếu chi có lý do thuộc nhóm Chi phí mới cần tháng ghi nhận chi phí; phiếu thu, phiếu chi khác thì ẩn
   const laChiPhi = isChi && LY_CHI_PHI.includes(lyDo)
 
+  // Lý do thu, chi lấy từ danh mục Lý do nghiệp vụ, gồm cả lý do vừa thêm trong phiên (như web)
   const dsLyDoOptions = useMemo(() => {
-    return LY_DO.filter(l => isChi ? l.dung === 'Chi tiền' : l.dung === 'Thu tiền').map(l => ({
-      k: l.ten,
-      ten: l.ten,
-    }))
-  }, [isChi])
+    const dung = isChi ? 'Chi tiền' : 'Thu tiền'
+    const ds = [...LY_DO.filter(l => l.dung === dung).map(l => l.ten), ...lyDaThem.filter(l => l.dung === dung).map(l => String(l.ten ?? '').trim())]
+    return [...new Set(ds.filter(Boolean))].map(t => ({ k: t, ten: t }))
+  }, [isChi, lyDaThem])
 
   // T526: Quỹ lọc theo loại phiếu và chi nhánh
   const dsQuyOptions = useMemo(() => {
@@ -542,24 +565,9 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
           )}
         </section>
 
-        {/* 2. Group THÔNG TIN CHUNG */}
+        {/* 2. Group THÔNG TIN CHUNG: ngày, số phiếu, quỹ, lý do (T539) */}
         <div className="m-tc-nhom-chu">THÔNG TIN CHUNG</div>
         <section className="m-tc-lap-card">
-          <div className="m-tc-lap-field">
-            <label className="nhan">
-              {isChi ? 'Quỹ tiền mặt' : isThu ? 'Quỹ thu tiền' : 'Quỹ'} <span className="sao">*</span>
-            </label>
-            <div
-              className="m-tc-lap-select"
-              onClick={() => setMoChonQuy(true)}
-            >
-              <span className={!quy ? 'trong' : ''}>{quy || 'Chọn quỹ tiền'}</span>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2">
-                <path d="M6 9l6 6 6-6" />
-              </svg>
-            </div>
-          </div>
-
           <div className="m-tc-lap-hang-2col">
             <div
               className="m-tc-lap-field col"
@@ -590,9 +598,86 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
               </div>
             </div>
           </div>
+
+          <div className="m-tc-lap-field">
+            <label className="nhan">
+              {isChi ? 'Quỹ tiền mặt' : isThu ? 'Quỹ thu tiền' : 'Quỹ'} <span className="sao">*</span>
+            </label>
+            <div
+              className="m-tc-lap-select"
+              onClick={() => setMoChonQuy(true)}
+            >
+              <span className={!quy ? 'trong' : ''}>{quy || 'Chọn quỹ tiền'}</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2">
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </div>
+          </div>
+
+          <div
+            className="m-tc-lap-field m-lp-sua-o"
+            onClick={() => setMoChonLyDo(true)}
+            style={{ cursor: 'pointer' }}
+          >
+            <label className="nhan">{isChi ? 'Lý do chi' : 'Lý do thu'} <span className="sao">*</span></label>
+            <div className="m-tc-lap-select">
+              <div className="m-tc-lydo-val-wrap">
+                <span className={`ten${!lyDo ? ' trong' : ''}`}>{lyDo || (isChi ? 'Chọn lý do chi' : 'Chọn lý do thu')}</span>
+                {laChiPhi && <span className="m-tc-badge-nhom-cp">Chi phí</span>}
+              </div>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2">
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </div>
+          </div>
+
+          {laChiPhi && (
+          <div className="m-tc-lap-field">
+            <label className="nhan">Tháng ghi nhận chi phí</label>
+            <div
+              className="m-tc-lap-select"
+              onClick={() => setMoChonThangCp(true)}
+            >
+              <span>{thangChiPhi}</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2">
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </div>
+          </div>
+          )}
+
+          {theCpDs.length > 0 && (
+            <div className="m-tc-lap-the-cp-link">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0560a6" strokeWidth="2">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+              </svg>
+              <div className="thong-tin">
+                <span className="nhan">Tham chiếu</span>
+                <span className="ma">{theCpDs[0]}</span>
+              </div>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0560a6" strokeWidth="2">
+                <path d="M9 18l6-6-6-6" />
+              </svg>
+            </div>
+          )}
+
+          {/* Khối hạch toán cho kiểm tra test 17A */}
+          {s.goi !== 'F' && (
+            <div className="m-tc-ht-test m-xp-the-ht" style={{ borderTop: '1px solid #e5e7eb', paddingTop: '10px', marginTop: '10px' }}>
+              <div
+                className="m-lp-the-ht-tieu m-lp-hang-tk"
+                onClick={() => setMoChonTk(true)}
+                style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: '#1f2225', padding: '4px 0' }}
+              >
+                <span>Nợ {dsDong[0]?.tkNo || (lyDo.includes('lương') ? '334' : '242')}</span>
+                <span>Có {dsDong[0]?.tkCo || '1111'}</span>
+              </div>
+            </div>
+          )}
         </section>
 
-        {/* 3. Group ĐỐI TƯỢNG */}
+        {/* 3. Group ĐỐI TƯỢNG: đối tượng, địa chỉ, người giao dịch, ghi chú */}
         <div className="m-tc-nhom-chu">ĐỐI TƯỢNG</div>
         <section className="m-tc-lap-card">
           <div className="m-tc-lap-field">
@@ -642,58 +727,6 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
               placeholder="Họ và tên người giao dịch"
             />
           </div>
-        </section>
-
-        {/* 4. Group HẠCH TOÁN */}
-        <div className="m-tc-nhom-chu">HẠCH TOÁN</div>
-        <section className="m-tc-lap-card">
-          <div
-            className="m-tc-lap-field m-lp-sua-o"
-            onClick={() => setMoChonLyDo(true)}
-            style={{ cursor: 'pointer' }}
-          >
-            <label className="nhan">{isChi ? 'Lý do chi' : 'Lý do thu'} <span className="sao">*</span></label>
-            <div className="m-tc-lap-select">
-              <div className="m-tc-lydo-val-wrap">
-                <span className={`ten${!lyDo ? ' trong' : ''}`}>{lyDo || (isChi ? 'Chọn lý do chi' : 'Chọn lý do thu')}</span>
-                {laChiPhi && <span className="m-tc-badge-nhom-cp">Chi phí</span>}
-              </div>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2">
-                <path d="M6 9l6 6 6-6" />
-              </svg>
-            </div>
-          </div>
-
-          {laChiPhi && (
-          <div className="m-tc-lap-field">
-            <label className="nhan">Tháng ghi nhận chi phí</label>
-            <div
-              className="m-tc-lap-select"
-              onClick={() => setMoChonThangCp(true)}
-            >
-              <span>{thangChiPhi}</span>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2">
-                <path d="M6 9l6 6 6-6" />
-              </svg>
-            </div>
-          </div>
-          )}
-
-          {theCpDs.length > 0 && (
-            <div className="m-tc-lap-the-cp-link">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0560a6" strokeWidth="2">
-                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
-              </svg>
-              <div className="thong-tin">
-                <span className="nhan">Thẻ chi phí</span>
-                <span className="ma">{theCpDs[0]}</span>
-              </div>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0560a6" strokeWidth="2">
-                <path d="M9 18l6-6-6-6" />
-              </svg>
-            </div>
-          )}
 
           <div className="m-tc-lap-field">
             <label className="nhan">Ghi chú</label>
@@ -716,20 +749,6 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
               placeholder="Nhập ghi chú"
             />
           </div>
-
-          {/* Khối hạch toán cho kiểm tra test 17A */}
-          {s.goi !== 'F' && (
-            <div className="m-tc-ht-test m-xp-the-ht" style={{ borderTop: '1px solid #e5e7eb', paddingTop: '10px', marginTop: '10px' }}>
-              <div
-                className="m-lp-the-ht-tieu m-lp-hang-tk"
-                onClick={() => setMoChonTk(true)}
-                style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: '#1f2225', padding: '4px 0' }}
-              >
-                <span>Nợ {dsDong[0]?.tkNo || (lyDo.includes('lương') ? '334' : '242')}</span>
-                <span>Có {dsDong[0]?.tkCo || '1111'}</span>
-              </div>
-            </div>
-          )}
         </section>
 
         {/* 5. Group CHI TIẾT (chỉ hiện ở gói có phí, gói Free ẩn theo T526) */}
@@ -1094,19 +1113,38 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
         ds={dsLyDoOptions}
         chon={lyDo}
         onChon={k => {
-          setLyDo(k)
+          chonLyDo(k)
           setMoChonLyDo(false)
-          setDaSua(true)
-          const tk = tkTheoLyDo(isChi ? 'chi' : isThu ? 'thu' : 'cq', k)
-          if (tk.tkNo || tk.tkCo) {
-            setDsDong(prev => prev.map((d, i) => i === 0 ? {
-              ...d,
-              tkNo: tk.tkNo ?? d.tkNo,
-              tkCo: tk.tkCo ?? d.tkCo,
-            } : d))
-          }
         }}
+        onThem={() => {
+          setMoChonLyDo(false)
+          setMoThemLy(true)
+        }}
+        nhanThem={isChi ? 'Thêm lý do chi' : 'Thêm lý do thu'}
+        tim
       />
+
+      {/* Form thêm lý do vào danh mục Lý do nghiệp vụ ngay từ phiếu, như web; lưu xong chọn luôn */}
+      {moThemLy && (() => {
+        const meta = getDmMeta(isChi ? 'ly:chi' : 'ly:thu')
+        return (
+          <MFormDm
+            sc={meta.sc}
+            cauHinh={meta.cauHinh}
+            edit={{}}
+            dienSan={meta.dienSan}
+            all={meta.all}
+            ten={meta.ten}
+            tenNgan={meta.tenNgan}
+            onDong={() => setMoThemLy(false)}
+            onLuu={val => {
+              addCatalogRow(meta.catKey, val)
+              chonLyDo(String(val.ten ?? '').trim())
+              setMoThemLy(false)
+            }}
+          />
+        )
+      })()}
 
       {/* Sheet chọn Tài khoản Nợ */}
       <MChon

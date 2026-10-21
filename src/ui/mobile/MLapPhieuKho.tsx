@@ -8,7 +8,7 @@ import { CUA_HANG, HANG, KHO, NVL } from '../../data/mock'
 import { fold, money } from '../format'
 import { Icon } from '../Icon'
 import { LichDon } from '../ChonNgay'
-import { MChon } from './MChon'
+import { MChon, MThanhThem } from './MChon'
 import { MTrong } from './MTrong'
 import { bayGio, dsDcCon, ghiNhatKy, soKeTiep, suaPhieu, themPhieu, xoaPhieu, type CtTt } from '../generic/daXoa'
 import { useDongChungTu } from '../generic/VoucherScreen'
@@ -516,6 +516,7 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
 
   // Sheet chọn hàng
   const [moChonHang, setMoChonHang] = useState(false)
+  const [dangTaiHang, setDangTaiHang] = useState(false)
   const [nhomHangChon, setNhomHangChon] = useState('Tất cả')
   const [timHang, setTimHang] = useState('')
   const [moChonNhomHang, setMoChonNhomHang] = useState(false)
@@ -1127,11 +1128,6 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
             if (cn) setCuaHang(cn)
           }
         }}
-        onThem={() => {
-          setMoChonKho(false)
-          setMoThemDm('kho')
-        }}
-        nhanThem="Thêm kho"
         apDung
         tim
       />
@@ -1192,20 +1188,6 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
               </button>
             </div>
 
-            <div className="m-tam-them-wrap">
-              <button
-                type="button"
-                className="btn pri m-tam-btn-them"
-                onClick={() => {
-                  setMoChonHang(false)
-                  setMoThemDm('hang')
-                }}
-              >
-                <Icon n="plus" className="ic sm" />
-                <span>Thêm hàng hoá</span>
-              </button>
-            </div>
-
             <div className="m-lp-loc-hang">
               <button
                 type="button"
@@ -1240,8 +1222,20 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
               </button>
             </div>
 
+            <MThanhThem
+              nhan="Thêm hàng hoá"
+              onThem={() => {
+                setMoChonHang(false)
+                setMoThemDm('hang')
+              }}
+              onTaiLai={() => {
+                setDangTaiHang(true)
+                setTimeout(() => setDangTaiHang(false), 600)
+              }}
+            />
+
             <div className="m-lp-than m-lp-ds-hang" style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
-              {dsHangHienThi.map(h => {
+              {dangTaiHang ? <div className="m-tc-dt-dang-tai">Đang tải dữ liệu</div> : dsHangHienThi.map(h => {
                 const daChon = dsDong.some(d => d.ma === h.ma)
                 return (
                   <div

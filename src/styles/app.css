@@ -37747,3 +37747,24 @@ body:has(.m-app) .m-thanh-duoi .m-tab.on .m-tab-ic .ic .l2 {
   min-height: 100%;
   background: var(--bg);
 }
+
+/* ── Sheet chọn danh mục điện thoại: hàng biểu tượng Thêm mới, Tải lại thay nút to; ô tìm 16px (T539) ── */
+.m-tc-dt-thanh.m-tam-thanh { flex: none; margin: 0; padding: 4px 12px; border-bottom: 1px solid var(--line); background: var(--bg-card, #fff); }
+.m-tam-tim-inp, .m-lp-tim-hang-inp { font-size: 16px; }
+/* Xem phiếu chi điện thoại: nhãn Chi phí nằm dưới tên lý do (T539) */
+.m-tc-dong-thong-tin .tri.ly-do-wrap { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.m-tc-dong-thong-tin .tri.ly-do-wrap .m-tc-badge-nhom-cp { margin-right: 0; }
+/* Xem phiếu thu chi điện thoại: nhãn loại phiếu to hơn chút, nhãn nguồn chứng từ nhỏ cạnh tên cửa hàng (T539) */
+.m-app .m-tc-xem-badges .m-tc-badge-loai { font-size: 13px !important; height: auto !important; padding: 5px 12px !important; }
+.m-tc-xem-dong-cn .m-tc-xem-nguon { margin-left: 6px; font-size: 11px; padding: 1px 7px; }
+/* Xem phiếu thu chi điện thoại: khoảng xám dưới thanh đầu còn 8px (T539) */
+.m-tc-xem-man.m-xp { row-gap: 0 !important; }
+.m-tc-xem-content > .m-tc-xem-the-tom-tat:first-child { margin-top: 8px !important; }
+/* Điện thoại: hộp hỏi xác nhận (HopXacNhan, vd xoá phiếu) là popup nhỏ giữa màn, thấy nền phiếu phía sau, thay vì phủ kín màn (T539) */
+@media (max-width: 767px) {
+  .overlay.ds-hop-nen:has(> .ds-hop[role="alertdialog"]) { align-items: center !important; justify-content: center !important; padding: 24px !important; }
+  .ds-hop-nen > .ds-hop[role="alertdialog"] { width: 100% !important; max-width: 360px !important; height: auto !important; max-height: 80dvh !important; border-radius: 14px !important; }
+  .ds-hop[role="alertdialog"] > .ds-hop-dau { border-bottom: 0 !important; padding: 16px 16px 6px !important; }
+  .ds-hop[role="alertdialog"] > .ds-hop-than { flex: none !important; padding: 0 16px 16px !important; }
+  .ds-hop[role="alertdialog"] > .ds-chan { position: static !important; border-top: 0 !important; padding: 0 16px 16px !important; }
+}
