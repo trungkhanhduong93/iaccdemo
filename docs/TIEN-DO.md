@@ -12,15 +12,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
 | T572 | Điện thoại, màn Nghiệp vụ phân hệ Thu chi bỏ hai mục Chuyển quỹ, Số dư ban đầu ở ngoài: Chuyển quỹ đã là tab trong Thu, chi tiền; số dư khai ở Danh mục Quỹ tiền | PhuongXT | Đang làm | `MNghiepVu.tsx` |
-| T562 | Điện thoại, danh sách chứng từ mua hàng mất nút Thêm mới: hiện nút giống danh sách Thu chi | Trum | Đang làm | Spec `backup/spec-T562.md` (gom T562-T567, bản clone `Web-dt`). Sửa `MChungTu.tsx`, cuối `app.css` (mục T562-T567) |
-| T563 | Điện thoại, nút quay lại vòng lặp A ↔ B: mọi màn lùi đúng 1 bước, hết lịch sử thì về màn cha bằng replace | Trum | Đang làm | Sửa hàm quay lại trong `src/ui/mobile` (`MChungTu.tsx`, `MDtThuChiDs.tsx`, `MBaoCaoDau.tsx`, `MBaoCao.tsx`, `MCcdc.tsx`...). Không đụng `MXemPhieu.tsx` (T436) |
-| T564 | Điện thoại, hàng tab Chứng từ mua hàng, Báo cáo theo dõi chữ nhỏ: cùng cỡ với tab danh sách Thu chi | Trum | Đang làm | Sửa `MChungTu.tsx`, cuối `app.css` |
-| T565 | Điện thoại, phiếu thu chi lập mới và sửa: khoá ô Cửa hàng, ô Loại thu chi | Trum | Đang làm | Sửa `MDtThuChiLap.tsx` |
-| T566 | Điện thoại, tên S1a dài làm chật thanh đầu và dòng danh sách báo cáo: dùng tên ngắn, thẻ tiêu đề giữ tên đủ | Trum | Đang làm | Sửa `danh-sach.ts` (thêm tên ngắn), `MBaoCaoDau.tsx`, `MBaoCao.tsx` |
-| T567 | Điện thoại, báo cáo kết quả kinh doanh 10.2.3: khối chỉ tiêu bỏ nền xanh, nền trắng | Trum | Đang làm | Sửa `MBaoCaoDong.tsx` hoặc cuối `app.css` |
-| T568 | Điện thoại, Sổ quỹ, Sổ ngân hàng: 4 thẻ Tồn đầu, Tồn cuối, Tổng thu, Tổng chi gọn như Lịch sử thu chi (nền trắng, bỏ dòng phụ) | Trum | Đang làm | Gom đợt T562-T567. Sửa `MSoBaoCao.tsx`, cuối `app.css` |
 | T552 | Điện thoại, màn Tạo chứng từ thành công: một thành phần dùng chung cho mọi phiếu, thẻ tóm tắt số phiếu, số tiền, đối tượng; nút Xem chi tiết, Lập phiếu mới, Đóng | Trum | Chờ | Làm sau T539 (PhuongXT giữ `MLapPhieu.tsx`, `MLapPhieuKho.tsx`, `MDtThuChiLap.tsx`). Tạo `MThanhCong.tsx`, cuối `app.css` (mục T552) |
-| T555 | Điện thoại, phiếu thu chi lập mới và sửa: mọi gói có dòng chi tiết (Diễn giải, Số tiền), Số tiền đầu phiếu là tổng các dòng, từ 2 dòng khoá ô đầu; chuyển quỹ giữ một số tiền | Trum | Đang làm | Gộp vào đợt T562-T567, spec `backup/spec-T562.md` ở bản clone `Web-dt` (thay phần T555 của `backup/spec-T552-dot2.md`). Sửa `MDtThuChiLap.tsx`, cuối `app.css` |
 | T540 | Điện thoại, phiếu mua hàng: thẻ hàng `TheHangMua` dùng số thứ tự dòng làm `key`, xoá dòng phía trên thì thẻ dưới giữ nhầm chế độ giảm giá %/đ của dòng cũ | Trum | Chưa làm | Ghi lúc nghiệm thu T528. Sửa `MLapPhieu.tsx` |
 | T550 | Điện thoại, chi tiết phiếu: ô ĐVT chọn như T547 | Trum | Chờ | Làm sau T539 vì sửa `MLapPhieu.tsx`, `MLapPhieuKho.tsx` PhuongXT đang giữ |
 | T500 | Giao diện điện thoại theo Figma: danh sách Báo cáo (Truy cập nhanh gần đây, đã ghim, nhóm báo cáo); Sổ quỹ tiền mặt, Sổ ngân hàng (chip lọc, nút lọc chỉ icon, 4 thẻ tổng, chi tiết theo ngày), không làm thanh In, Xuất báo cáo ở đáy | Trum | Đang làm | Chỉ điện thoại |

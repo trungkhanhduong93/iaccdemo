@@ -4,6 +4,14 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T562 | Điện thoại, danh sách chứng từ mua hàng mất nút Thêm mới: hiện nút giống danh sách Thu chi | Trum | 21/10/2026 | `2026-10-21-trum-loi-dien-thoai-t562-t568.md` |
+| T563 | Điện thoại, nút quay lại vòng lặp A ↔ B: mọi màn lùi đúng 1 bước, hết lịch sử thì về màn cha bằng replace | Trum | 21/10/2026 | `2026-10-21-trum-loi-dien-thoai-t562-t568.md` |
+| T564 | Điện thoại, hàng tab Chứng từ mua hàng, Báo cáo theo dõi chữ nhỏ: cùng cỡ với tab danh sách Thu chi | Trum | 21/10/2026 | `2026-10-21-trum-loi-dien-thoai-t562-t568.md` |
+| T565 | Điện thoại, phiếu thu chi lập mới và sửa: khoá ô Cửa hàng, ô Loại thu chi | Trum | 21/10/2026 | `2026-10-21-trum-loi-dien-thoai-t562-t568.md` |
+| T555 | Điện thoại, phiếu thu chi lập mới và sửa: mọi gói có dòng chi tiết (Diễn giải, Số tiền), Số tiền đầu phiếu là tổng các dòng, từ 2 dòng khoá ô đầu; chuyển quỹ giữ một số tiền | Trum | 21/10/2026 | `2026-10-21-trum-loi-dien-thoai-t562-t568.md` |
+| T566 | Điện thoại, tên S1a dài làm chật thanh đầu và dòng danh sách báo cáo: dùng tên ngắn, thẻ tiêu đề giữ tên đủ | Trum | 21/10/2026 | `2026-10-21-trum-loi-dien-thoai-t562-t568.md` |
+| T567 | Điện thoại, báo cáo kết quả kinh doanh 10.2.3: khối chỉ tiêu bỏ nền xanh, nền trắng | Trum | 21/10/2026 | `2026-10-21-trum-loi-dien-thoai-t562-t568.md` |
+| T568 | Điện thoại, Sổ quỹ, Sổ ngân hàng: 4 thẻ Tồn đầu, Tồn cuối, Tổng thu, Tổng chi gọn như Lịch sử thu chi (nền trắng, bỏ dòng phụ) | Trum | 21/10/2026 | `2026-10-21-trum-loi-dien-thoai-t562-t568.md` |
 | T571 | Điện thoại, lọc khoảng ngày: hộp lịch dùng chung `MChonKhoangNgay` (kỳ nhanh Tháng trước, Tháng này, Tuần trước, Tuần này; cột số tuần; bấm hai ngày chọn khoảng) cho Xuất bán POS, bộ lọc danh sách `MLoc`, bộ lọc báo cáo `MBaoCaoLoc` | PhuongXT | 21/10/2026 | `2026-10-21-phuongxt-loc-pos-hop-lich.md` |
 | T570 | Điện thoại, Xuất bán POS: bộ lọc đủ trường như web (Tìm kiếm, Khách hàng, Kênh, Thanh toán, Hàng hoá, Tồn kho, Xoá lọc) | PhuongXT | 21/10/2026 | `2026-10-21-phuongxt-loc-pos-hop-lich.md` |
 | T569 | Danh sách Thu chi điện thoại: bộ lọc thêm dòng Loại phiếu, chọn nhiều, theo tab đang chọn | PhuongXT | 21/10/2026 | `2026-10-21-phuongxt-loc-loai-phieu-thu-chi.md` |

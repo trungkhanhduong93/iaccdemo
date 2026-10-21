@@ -3,6 +3,14 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 21/10/2026
+- T562: Điện thoại, danh sách chứng từ mua hàng có lại nút Thêm mới, giống danh sách Thu chi.
+- T563: Điện thoại, nút quay lại lùi đúng 1 bước, hết cảnh qua lại giữa hai màn.
+- T564: Điện thoại, hàng tab Chứng từ mua hàng, Báo cáo theo dõi chữ cùng cỡ với Thu chi.
+- T565: Điện thoại, phiếu thu chi lập mới và sửa không đổi được cửa hàng, loại phiếu.
+- T555: Điện thoại, phiếu thu chi mọi gói có dòng chi tiết và nút Thêm dòng. Từ 2 dòng, số tiền đầu phiếu là tổng các dòng.
+- T566: Điện thoại, sổ S1a hiện tên ngắn "Sổ doanh thu bán hàng" ở thanh đầu và danh sách báo cáo.
+- T567: Điện thoại, báo cáo kết quả kinh doanh nền trắng.
+- T568: Điện thoại, Sổ quỹ, Sổ ngân hàng: 4 thẻ tồn, thu, chi gọn như Lịch sử thu chi.
 - T571: Điện thoại, chọn khoảng ngày để lọc dùng hộp lịch mới ở Xuất bán POS, bộ lọc danh sách chứng từ, Thu chi và bộ lọc báo cáo: 4 kỳ nhanh Tháng trước, Tháng này, Tuần trước, Tuần này; cột số tuần; bấm ngày đầu rồi ngày cuối. Bộ lọc danh sách không còn mục "Tất cả" thời gian.
 - T570: Điện thoại, Xuất bán POS: thêm ô tìm theo số, ghi chú, tên món và các nút lọc Khách hàng, Thanh toán, Hàng hoá, Tồn kho như bản web; nút Xoá lọc bỏ hết điều kiện.
 - T569: Điện thoại, danh sách Thu chi: Bộ lọc có thêm dòng Loại phiếu (Thu, Chi tiền mặt, Thu, Chi ngân hàng, Chuyển quỹ), chọn được nhiều loại, chỉ hiện loại của tab đang chọn.
