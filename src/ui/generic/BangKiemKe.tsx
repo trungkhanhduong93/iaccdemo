@@ -6,6 +6,7 @@ import { ChonDanhMuc } from '../ChonDanhMuc'
 import { Icon } from '../Icon'
 import { money } from '../format'
 import { OLoc, dangLoc, dsGiaTri, khopLoc, type GiaTriLoc, type KieuLoc, type LocCot } from '../LocCot'
+import { ThKeo, type DoRong } from '../Table'
 import type { Dong } from './gen'
 import { ThemHangLoat } from './ThemHangLoat'
 
@@ -32,8 +33,9 @@ function OSl({ val, onChange }: { val: number; onChange: (v: number) => void }) 
   )
 }
 
-export function BangKiemKe({ dong, onChange, cheDo, an = [], khongTong = false, hienLoc = false }: {
+export function BangKiemKe({ dong, onChange, cheDo, an = [], khongTong = false, hienLoc = false, doRong }: {
   dong: Dong[]; onChange?: (ds: Dong[]) => void; cheDo: 'xem' | 'sua'; an?: string[]; khongTong?: boolean
+  doRong?: DoRong     // kéo mép phải tiêu đề để giãn cột (T618)
   hienLoc?: boolean   // hàng lọc như danh sách chứng từ, bấm phễu sau tab mới hiện (T383)
 }) {
   const hien = (k: string) => !an.includes(k)
@@ -73,14 +75,14 @@ export function BangKiemKe({ dong, onChange, cheDo, an = [], khongTong = false, 
           <thead>
             <tr>
               <th className="dim" style={{ width: 40 }}>#</th>
-              {hien('ma') && <th style={{ width: sua ? 150 : 100 }}>Mã hàng</th>}
-              <th style={{ minWidth: 180 }}>Tên hàng hoá</th>
-              {hien('dvt') && <th style={{ width: 70 }}>ĐVT</th>}
-              {hien('tonHt') && <th className="num" style={{ width: 120 }}>Tồn hệ thống</th>}
-              {hien('tonTt') && <th className="num" style={{ width: 120 }}>Tồn thực tế</th>}
-              {hien('chenh') && <th className="num" style={{ width: 110 }}>Chênh lệch</th>}
-              {hien('loaiXl') && <th style={{ width: 150 }}>Loại</th>}
-              {hien('ghiChu') && <th style={{ minWidth: 180 }}>Ghi chú</th>}
+              {hien('ma') && <ThKeo k="ma" w={sua ? 150 : 100} doRong={doRong}>Mã hàng</ThKeo>}
+              <ThKeo k="ten" minW={180} doRong={doRong}>Tên hàng hoá</ThKeo>
+              {hien('dvt') && <ThKeo k="dvt" w={70} doRong={doRong}>ĐVT</ThKeo>}
+              {hien('tonHt') && <ThKeo k="tonHt" className="num" w={120} doRong={doRong}>Tồn hệ thống</ThKeo>}
+              {hien('tonTt') && <ThKeo k="tonTt" className="num" w={120} doRong={doRong}>Tồn thực tế</ThKeo>}
+              {hien('chenh') && <ThKeo k="chenh" className="num" w={110} doRong={doRong}>Chênh lệch</ThKeo>}
+              {hien('loaiXl') && <ThKeo k="loaiXl" w={150} doRong={doRong}>Loại</ThKeo>}
+              {hien('ghiChu') && <ThKeo k="ghiChu" minW={180} doRong={doRong}>Ghi chú</ThKeo>}
               {sua && <th style={{ width: 44 }} />}
             </tr>
             {hienLoc && (

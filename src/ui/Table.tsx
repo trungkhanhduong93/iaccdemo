@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useRef, type CSSProperties, type PointerEvent as PE, type ReactNode } from 'react'
+import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type PointerEvent as PE, type ReactNode } from 'react'
 import type { Col, Row } from '../modules/types'
 import { money } from './format'
 import { OLoc, type LocCot } from './LocCot'
@@ -76,6 +76,49 @@ function keoRong(e: PE<HTMLSpanElement>, k: string, dat: DoRong['dat'], xong?: D
   el.addEventListener('pointermove', di)
   el.addEventListener('pointerup', tha)
   el.addEventListener('pointercancel', tha)
+}
+
+function docRong(kho: string): Record<string, number> {
+  try {
+    const v: unknown = JSON.parse(localStorage.getItem(kho) || '{}')
+    return typeof v === 'object' && v !== null && !Array.isArray(v) && Object.values(v).every(y => typeof y === 'number')
+      ? v as Record<string, number> : {}
+  } catch {
+    return {}
+  }
+}
+
+/** Độ rộng cột đã kéo ở lưới chi tiết chứng từ, nhớ trên trình duyệt theo khoá màn (T618).
+ *  Kéo thì đổi ngay trên bảng, thả chuột mới ghi vào localStorage */
+export function useDoRongCot(khoa: string): DoRong {
+  const kho = `iacc-cot-rong-ct:${khoa}`
+  const [gt, setGt] = useState(() => docRong(kho))
+  const [khoCu, setKhoCu] = useState(kho)
+  if (khoCu !== kho) { setKhoCu(kho); setGt(docRong(kho)) }   // đổi màn, đổi tab thì đọc độ rộng của khoá mới
+  return {
+    gt,
+    dat: (k, w) => setGt(x => (x[k] === w ? x : { ...x, [k]: w })),
+    xong: (k, w) => {
+      try { localStorage.setItem(kho, JSON.stringify({ ...docRong(kho), [k]: w })) } catch { /* không ghi được thì chỉ giữ trong phiên */ }
+    },
+  }
+}
+
+/** Ô tiêu đề của bảng tự vẽ (BangSua, BangKiemKe) có tay nắm kéo giãn như Table (T618).
+ *  w: độ rộng mặc định; cột đã kéo thì cố định đúng độ rộng đó, tối thiểu 60px */
+export function ThKeo({ k, w, minW, doRong, className, children }: {
+  k: string; w?: number | string; minW?: number; doRong?: DoRong; className?: string; children?: ReactNode
+}) {
+  const keo = doRong?.gt[k]
+  const style: CSSProperties = keo
+    ? { width: Math.max(60, keo), minWidth: Math.max(60, keo), maxWidth: Math.max(60, keo) }
+    : { ...(w !== undefined ? { width: w } : {}), ...(minW ? { minWidth: minW } : {}) }
+  return (
+    <th className={[className, keo ? 'da-keo' : ''].filter(Boolean).join(' ') || undefined} style={style} data-k={k}>
+      {children}
+      {doRong && <span className="ds-keo-rong" aria-hidden onPointerDown={e => keoRong(e, k, doRong.dat, doRong.xong)} />}
+    </th>
+  )
 }
 
 /** Tính độ rộng cột số đủ chứa trọn tiêu đề và giá trị lớn nhất, tối thiểu 120px (T42) */

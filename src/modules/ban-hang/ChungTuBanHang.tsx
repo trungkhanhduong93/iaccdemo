@@ -11,7 +11,7 @@ import { Icon } from '../../ui/Icon'
 import { NutPhimTat } from '../../ui/BangPhimTat'
 import { Card, Note, PageHead } from '../../ui/Page'
 import { FormToanMan, useDong } from '../../ui/FormToanMan'
-import { St, Table } from '../../ui/Table'
+import { BaoCaoDoRongCtx, St, Table, useDoRongCot } from '../../ui/Table'
 import { dmy, fold, money, moneyD, rng } from '../../ui/format'
 import { Select } from '../../ui/Dropdown'
 import { PhanTrang } from '../../ui/PhanTrang'
@@ -468,6 +468,7 @@ const AN_POS_MAC_DINH = ['giamThue', 'phiVc']
 function NoiDungTab({ x, tab, kieu, an: an0 = AN_POS_MAC_DINH, tyLe = false, hienLoc = false }: { x: (typeof DAILY)[number]; tab: string; kieu: ReturnType<typeof kieuGhiSo>; an?: string[]; tyLe?: boolean; hienLoc?: boolean }) {
   const an = anTheoLoai(an0, tyLe)
   const dong0 = dongCuaPhieu(x)
+  const doRong = useDoRongCot(`xuat-ban-pos:${tab}`)   // kéo giãn cột, nhớ riêng từng tab (T618)
   // GTGT theo % doanh thu: giảm thuế GTGT của phiếu chia cho các món theo doanh thu trước thuế (T163)
   const giam = tyLe ? chiaTheo(giamThueHkd(x.dt), dong0.map(d => d.dtTruocThue), 1) : []
   const dong = tyLe ? dong0.map((d, i) => ({ ...d, giamThue: giam[i] })) : dong0
@@ -517,7 +518,7 @@ function NoiDungTab({ x, tab, kieu, an: an0 = AN_POS_MAC_DINH, tyLe = false, hie
   const dongLoc = !hienLoc ? dong : dong.filter(r => colsCt.every(c => !dangLoc(gtLoc[c.k])
     || khopLoc(kieuCt(c), gtLoc[c.k], String(giaTri(r, c.k) ?? ''), typeof giaTri(r, c.k) === 'number' ? giaTri(r, c.k) as number : undefined)))
   return (
-    <>
+    <BaoCaoDoRongCtx.Provider value={doRong}>
       {tab === 'ct' && (
         <Table
           cols={colsCt}
@@ -576,7 +577,7 @@ function NoiDungTab({ x, tab, kieu, an: an0 = AN_POS_MAC_DINH, tyLe = false, hie
           sum={{ ca: 'Tổng: 2 ca', don: x.don }}
         />
       )}
-    </>
+    </BaoCaoDoRongCtx.Provider>
   )
 }
 

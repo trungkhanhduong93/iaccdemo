@@ -9,6 +9,7 @@ import { Icon } from '../Icon'
 import { money } from '../format'
 import { OLoc, dangLoc, dsGiaTri, khopLoc, type GiaTriLoc, type KieuLoc, type LocCot } from '../LocCot'
 import { OSoGo } from '../OSoGo'
+import { ThKeo, type DoRong } from '../Table'
 import { NHOM_HHDV, type Dong } from './gen'
 import { ThemHangLoat, type HangChon } from './ThemHangLoat'
 import { quyDoiTuDanhMuc } from '../../modules/danh-muc/QuyDoiDvt'
@@ -45,6 +46,7 @@ export interface BangSuaProps {
   chiXemDt?: boolean           // cột đối tượng chỉ xem, không cho chọn
   giamThue?: (tien: number) => number   // GTGT theo % doanh thu (T450): cột Giảm thuế GTGT tính từ tiền sau CK thay Thuế suất, Tiền thuế
   coThemHangLoat?: boolean     // nút Thêm hàng loạt chọn nhiều hàng một lần, phiếu mua hàng (T465)
+  doRong?: DoRong              // kéo mép phải tiêu đề để giãn cột, chung cho chế độ xem và sửa (T618)
 }
 
 /** Các cột ẩn hiện được của bảng chi tiết, theo loại phiếu (T49). Mỗi cột trên bảng là một mục, theo thứ tự trên bảng (T86) */
@@ -103,6 +105,7 @@ export function BangSua({
   themGon = false,
   giamThue,
   coThemHangLoat = false,
+  doRong,
 }: BangSuaProps) {
   const hang = cfg.dong === 'hang' || cfg.dong === 'nvl'
   const tienDong = cfg.dong === 'tien'
@@ -310,38 +313,38 @@ export function BangSua({
           <thead>
             <tr>
               <th className="dim" style={{ width: 40 }}>#</th>
-              {maCot && <th className="code" style={{ width: 90 }}>Mã hàng</th>}
-              <th>{hang ? 'Tên hàng hoá, dịch vụ' : 'Diễn giải'}</th>
-              {coKho && <th style={{ width: 140 }}>Kho</th>}
-              {dvtCot && <th style={{ width: 60 }}>ĐVT</th>}
-              {loCot && <th style={{ width: 100 }}>Số lô</th>}
-              {hsdCot && <th style={{ width: 105 }}>Hạn dùng</th>}
+              {maCot && <ThKeo k="ma" className="code" w={90} doRong={doRong}>Mã hàng</ThKeo>}
+              <ThKeo k="ten" doRong={doRong}>{hang ? 'Tên hàng hoá, dịch vụ' : 'Diễn giải'}</ThKeo>
+              {coKho && <ThKeo k="kho" w={140} doRong={doRong}>Kho</ThKeo>}
+              {dvtCot && <ThKeo k="dvt" w={60} doRong={doRong}>ĐVT</ThKeo>}
+              {loCot && <ThKeo k="lo" w={100} doRong={doRong}>Số lô</ThKeo>}
+              {hsdCot && <ThKeo k="hsd" w={105} doRong={doRong}>Hạn dùng</ThKeo>}
               {coTk && (
                 <>
-                  <th className="code" style={{ width: 80 }}>{nhanTk[0]}</th>
-                  <th className="code" style={{ width: 80 }}>{nhanTk[1]}</th>
+                  <ThKeo k="tkNo" className="code" w={80} doRong={doRong}>{nhanTk[0]}</ThKeo>
+                  <ThKeo k="tkCo" className="code" w={80} doRong={doRong}>{nhanTk[1]}</ThKeo>
                 </>
               )}
               {tienDong && (
                 <>
-                  {lyDong && <th style={{ width: 200 }}>{lyDo!.nhan}</th>}
-                  {dtDong && <th style={{ width: 180 }}>Đối tượng</th>}
-                  {kmDong && <th style={{ width: 160 }}>Khoản mục</th>}
-                  {cvDong && <th style={{ width: 160 }}>Công việc</th>}
+                  {lyDong && <ThKeo k="ly" w={200} doRong={doRong}>{lyDo!.nhan}</ThKeo>}
+                  {dtDong && <ThKeo k="dt" w={180} doRong={doRong}>Đối tượng</ThKeo>}
+                  {kmDong && <ThKeo k="km" w={160} doRong={doRong}>Khoản mục</ThKeo>}
+                  {cvDong && <ThKeo k="cv" w={160} doRong={doRong}>Công việc</ThKeo>}
                 </>
               )}
-              {slCot && <th className="num" style={{ width: 80 }}>Số lượng</th>}
-              {giaCot && <th className="num" style={{ width: 110 }}>Đơn giá</th>}
-              {tienCot && <th className="num" style={{ width: tienDong ? '25%' : 120 }}>Thành tiền</th>}
-              {ptCkCot && <th className="num" style={{ width: 65 }}>% CK</th>}
-              {ckCot && <th className="num" style={{ width: 100 }}>Tiền CK</th>}
-              {truocThueCot && <th className="num" style={{ width: 120 }}>Tiền trước thuế</th>}
-              {tsCot && <th className="num" style={{ width: 75 }}>Thuế suất</th>}
-              {thueCot && <th className="num" style={{ width: 110 }}>Tiền thuế</th>}
-              {giamCot && <th className="num" style={{ width: 130 }}>Giảm thuế GTGT</th>}
-              {nhomCot && <th style={{ width: 240 }}>Nhóm HHDV mua vào</th>}
-              {gtnkCot && <th className="num" style={{ width: 130 }}>Giá trị nhập kho</th>}
-              {tongTienCot && <th className="num" style={{ width: 120 }}>Tổng tiền</th>}
+              {slCot && <ThKeo k="sl" className="num" w={80} doRong={doRong}>Số lượng</ThKeo>}
+              {giaCot && <ThKeo k="gia" className="num" w={110} doRong={doRong}>Đơn giá</ThKeo>}
+              {tienCot && <ThKeo k="tien" className="num" w={tienDong ? '25%' : 120} doRong={doRong}>Thành tiền</ThKeo>}
+              {ptCkCot && <ThKeo k="ptCk" className="num" w={65} doRong={doRong}>% CK</ThKeo>}
+              {ckCot && <ThKeo k="ck" className="num" w={100} doRong={doRong}>Tiền CK</ThKeo>}
+              {truocThueCot && <ThKeo k="truocThue" className="num" w={120} doRong={doRong}>Tiền trước thuế</ThKeo>}
+              {tsCot && <ThKeo k="ts" className="num" w={75} doRong={doRong}>Thuế suất</ThKeo>}
+              {thueCot && <ThKeo k="thue" className="num" w={110} doRong={doRong}>Tiền thuế</ThKeo>}
+              {giamCot && <ThKeo k="giamThue" className="num" w={130} doRong={doRong}>Giảm thuế GTGT</ThKeo>}
+              {nhomCot && <ThKeo k="nhomHhdv" w={240} doRong={doRong}>Nhóm HHDV mua vào</ThKeo>}
+              {gtnkCot && <ThKeo k="gtnk" className="num" w={130} doRong={doRong}>Giá trị nhập kho</ThKeo>}
+              {tongTienCot && <ThKeo k="tongTien" className="num" w={120} doRong={doRong}>Tổng tiền</ThKeo>}
             </tr>
             {hangLoc(false)}
           </thead>
@@ -414,39 +417,39 @@ export function BangSua({
           <thead>
             <tr>
               <th className="dim" style={{ width: 36 }}>#</th>
-              {maCot && <th style={{ width: 120 }}>Mã hàng</th>}
-              <th style={{ minWidth: 180 }}>{hang ? 'Tên hàng hoá, dịch vụ' : 'Diễn giải'}</th>
-              {coKho && <th style={{ width: 140 }}>Kho</th>}
-              {dvtCot && <th style={{ width: 65 }}>ĐVT</th>}
-              {loCot && <th style={{ width: 100 }}>Số lô</th>}
-              {hsdCot && <th style={{ width: 105 }}>Hạn dùng</th>}
+              {maCot && <ThKeo k="ma" w={120} doRong={doRong}>Mã hàng</ThKeo>}
+              <ThKeo k="ten" minW={180} doRong={doRong}>{hang ? 'Tên hàng hoá, dịch vụ' : 'Diễn giải'}</ThKeo>
+              {coKho && <ThKeo k="kho" w={140} doRong={doRong}>Kho</ThKeo>}
+              {dvtCot && <ThKeo k="dvt" w={65} doRong={doRong}>ĐVT</ThKeo>}
+              {loCot && <ThKeo k="lo" w={100} doRong={doRong}>Số lô</ThKeo>}
+              {hsdCot && <ThKeo k="hsd" w={105} doRong={doRong}>Hạn dùng</ThKeo>}
               {coTk && (
                 <>
-                  <th style={{ width: 80 }}>{nhanTk[0]}</th>
-                  <th style={{ width: 80 }}>{nhanTk[1]}</th>
+                  <ThKeo k="tkNo" w={80} doRong={doRong}>{nhanTk[0]}</ThKeo>
+                  <ThKeo k="tkCo" w={80} doRong={doRong}>{nhanTk[1]}</ThKeo>
                 </>
               )}
               {tienDong && (
                 <>
-                  {lyDong && <th style={{ width: 200 }}>{lyDo!.nhan}</th>}
-                  {dtDong && <th style={{ width: 180 }}>Đối tượng</th>}
-                  {kmDong && <th style={{ width: 160 }}>Khoản mục</th>}
-                  {cvDong && <th style={{ width: 160 }}>Công việc</th>}
+                  {lyDong && <ThKeo k="ly" w={200} doRong={doRong}>{lyDo!.nhan}</ThKeo>}
+                  {dtDong && <ThKeo k="dt" w={180} doRong={doRong}>Đối tượng</ThKeo>}
+                  {kmDong && <ThKeo k="km" w={160} doRong={doRong}>Khoản mục</ThKeo>}
+                  {cvDong && <ThKeo k="cv" w={160} doRong={doRong}>Công việc</ThKeo>}
                 </>
               )}
-              {slCot && <th className="num" style={{ width: 85 }}>Số lượng</th>}
-              {giaCot && <th className="num" style={{ width: 110 }}>Đơn giá</th>}
+              {slCot && <ThKeo k="sl" className="num" w={85} doRong={doRong}>Số lượng</ThKeo>}
+              {giaCot && <ThKeo k="gia" className="num" w={110} doRong={doRong}>Đơn giá</ThKeo>}
               {/* T419: phiếu thu chi cột Thành tiền rộng 1/4 bảng */}
-              {tienCot && <th className="num" style={{ width: tienDong ? '25%' : 120 }}>Thành tiền</th>}
-              {ptCkCot && <th className="num" style={{ width: 65 }}>% CK</th>}
-              {ckCot && <th className="num" style={{ width: 100 }}>Tiền CK</th>}
-              {truocThueCot && <th className="num" style={{ width: 120 }}>Tiền trước thuế</th>}
-              {tsCot && <th className="num" style={{ width: 80 }}>Thuế suất</th>}
-              {thueCot && <th className="num" style={{ width: 110 }}>Tiền thuế</th>}
-              {giamCot && <th className="num" style={{ width: 130 }}>Giảm thuế GTGT</th>}
-              {nhomCot && <th style={{ width: 240 }}>Nhóm HHDV mua vào</th>}
-              {gtnkCot && <th className="num" style={{ width: 130 }}>Giá trị nhập kho</th>}
-              {tongTienCot && <th className="num" style={{ width: 120 }}>Tổng tiền</th>}
+              {tienCot && <ThKeo k="tien" className="num" w={tienDong ? '25%' : 120} doRong={doRong}>Thành tiền</ThKeo>}
+              {ptCkCot && <ThKeo k="ptCk" className="num" w={65} doRong={doRong}>% CK</ThKeo>}
+              {ckCot && <ThKeo k="ck" className="num" w={100} doRong={doRong}>Tiền CK</ThKeo>}
+              {truocThueCot && <ThKeo k="truocThue" className="num" w={120} doRong={doRong}>Tiền trước thuế</ThKeo>}
+              {tsCot && <ThKeo k="ts" className="num" w={80} doRong={doRong}>Thuế suất</ThKeo>}
+              {thueCot && <ThKeo k="thue" className="num" w={110} doRong={doRong}>Tiền thuế</ThKeo>}
+              {giamCot && <ThKeo k="giamThue" className="num" w={130} doRong={doRong}>Giảm thuế GTGT</ThKeo>}
+              {nhomCot && <ThKeo k="nhomHhdv" w={240} doRong={doRong}>Nhóm HHDV mua vào</ThKeo>}
+              {gtnkCot && <ThKeo k="gtnk" className="num" w={130} doRong={doRong}>Giá trị nhập kho</ThKeo>}
+              {tongTienCot && <ThKeo k="tongTien" className="num" w={120} doRong={doRong}>Tổng tiền</ThKeo>}
               <th style={{ width: 44 }} />
             </tr>
             {hangLoc(true)}

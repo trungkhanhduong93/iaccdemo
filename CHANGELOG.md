@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 22/10/2026
+- T618: Chi tiết chứng từ (thu chi, mua hàng, bán hàng, kho, kiểm kê, Xuất bán POS, tab Hạch toán): kéo mép phải tiêu đề cột để giãn độ rộng cột như ở danh sách, cả khi xem và khi sửa. Độ rộng nhớ trên trình duyệt theo từng màn.
 - T617: Gói Free, tháng chọn ở trang chủ thành tháng làm việc: mở báo cáo, danh sách chứng từ, Thẻ chi phí phân bổ đều lọc sẵn đúng tháng đó. Báo cáo Kết quả kinh doanh gói Free chỉ còn một cột số liệu tháng đang xem.
 - T614: Điện thoại, phiếu mua hàng thêm mới mặc định không tích Nhận kèm hoá đơn. Phiếu mua gọi là Chiết khấu như web thay cho Giảm giá: dòng Chiết khấu của từng mặt hàng (nhập theo % hoặc theo đ), ô Chiết khấu áp cho tất cả dòng, dòng tổng và màn xem phiếu ghi Tiền chiết khấu.
 - T610: Điện thoại, màn xem phiếu mua: nút Thanh toán mở sheet Thanh toán ngay và sheet Chọn quỹ như màn sửa. Lập phiếu chi xong mở luôn phiếu chi vừa lập.

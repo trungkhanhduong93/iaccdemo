@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T618 | Web, chi tiết chứng từ: kéo mép phải tiêu đề cột để giãn độ rộng cột ở lưới xem và lưới sửa, như danh sách (QD25), lưu trên trình duyệt theo từng màn | dinhlanphuongipacc | Đang làm | Sửa `Table.tsx`, `ChungTuForm.tsx`, `BangSua.tsx`, `ChungTuBanHang.tsx` (bảng Hàng bán POS), có thể thêm mục cuối `app.css` |
 | T615 | Điện thoại, Báo cáo kiểm kê bỏ đơn giá, tiền, hiện số lượng lệch và số mặt hàng lệch; Tổng hợp bán hàng khối tổng ghi Tổng doanh thu thuần, bỏ dòng SL, Doanh thu | Trum | Đang làm | Sửa `MBaoCaoKiemKe.tsx`, `MTongHopBanHang.tsx`. Spec `backup/spec-T615-T616.md` |
 | T616 | Điện thoại, phiếu mua: Thanh toán ngay chỉ hiện quỹ tiền mặt của cửa hàng phiếu; lịch sử hết thừa lề trái phải như phiếu thu chi, rà lịch sử phiếu khác; ô chiết khấu áp chung rộng đủ 1.000.000; sheet Chọn nhà cung cấp còn 1 icon tải lại; sheet Thêm nhà cung cấp nút X như Thêm hàng hoá | Trum | Đang làm | Sửa `MThanhToanNgay.tsx`, `MLapPhieu.tsx` (khúc 1490-1525, 2150-2400, 2730-2860, 3050-3270), cuối `app.css` (mục T616). Không sửa `MXemPhieu.tsx` (T436) |
 | T593 | Xem trước in và bản in báo cáo: mã, tên hàng, số phiếu ở mọi cột thành chữ thường, không bấm được (mở rộng T556) | Trum | Đang làm | Sửa cuối `app.css` (mục T556). Spec `backup/spec-T593-T595.md` |
@@ -69,6 +68,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | T242 | Điện thoại: màn Chi phí NVL (`trang-chu/chi-phi-nvl`, T232) chưa có bản điện thoại, cùng lỗi với T234 | | Chờ | Phát hiện khi làm T232 ngày 14/10/2026. Bản máy tính ở `src/modules/home/ChiPhiNvl.tsx`, số liệu ở `chi-phi-nvl.ts` |
 | T243 | `tools/kiem_tra.py` (bước T238) lưu ảnh chụp vào đường dẫn cố định `C:/Users/trung.duong/.gemini/...`, máy khác chạy `--nhanh` báo PermissionError, dừng giữa chừng. Đổi sang thư mục tạm hoặc bỏ chụp | | Chờ | Phát hiện khi PhuongXT kiểm T232 ngày 14/10/2026; đã kiểm bằng bản sao tạm đổi đường dẫn, không lỗi |
 | T249 | Báo cáo bán hàng (`src/modules/ban-hang/bao-cao.ts`, hàm `dongBan`) còn đọc chứng từ Xuất bán POS theo kênh (`theoKenh`), số chứng từ trên báo cáo khác số hoá đơn ở danh sách từ T247; đổi sang `theoDon` để bấm số mở đúng phiếu | | Chờ | Phát hiện khi làm T247 ngày 15/10/2026. Tổng doanh thu không đổi |
+| T619 | Web, phiếu sản xuất và điều chuyển kho (`BangSanXuat.tsx`, `BangDieuChuyen.tsx`, tiêu đề 2 tầng): kéo giãn độ rộng cột như chi tiết chứng từ khác (T618) |  | Chờ | Dùng `ThKeo`, `useDoRongCot` trong `Table.tsx` |
 
 ## Đã xong
 

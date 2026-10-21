@@ -20,7 +20,7 @@ import { Dropdown, MenuHead, MenuItem, Popover, Select } from '../Dropdown'
 import { LichDon, ONgay } from '../ChonNgay'
 import { ChonDanhMuc } from '../ChonDanhMuc'
 import { heSoZoom } from '../zoom'
-import { St, Table } from '../Table'
+import { BaoCaoDoRongCtx, St, Table, useDoRongCot } from '../Table'
 import { chuanKyHieuHd, chuanSoHd, fold, money, moneyD } from '../format'
 import { NGUON, TT_CT, dongCua, tkTheoLyDo, ttNghiepVu, type Dong } from './gen'
 import { boO, nhomCua, theoLoai, TT_TIEN } from './nhom'
@@ -90,6 +90,9 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
 
   const path = duongDan(mod, sc)
   const dongForm = useDong(path)
+  // Độ rộng cột đã kéo: lưới chi tiết nhớ theo màn, bảng ở tab khác nhớ riêng từng tab (T618)
+  const doRongCt = useDoRongCot(path)
+  const doRongTab = useDoRongCot(`${path}:${tab}`)
   // Phiếu đang thêm mới chưa lưu: Huỷ, nút X, Esc đều hỏi lại trước khi bỏ (T125)
   const dongMoi = () => (moi ? setHoiDong(true) : dongForm())
   const kieu = kieuGhiSo(s.cheDo)
@@ -1217,8 +1220,9 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
           </div>
 
           <div className="ct-than">
+          <BaoCaoDoRongCtx.Provider value={tab === 'ct' ? undefined : doRongTab}>
           {/* Tab 1: Chi tiết / Hàng tiền */}
-          {tab === 'ct' && laKk && <BangKiemKe dong={dsDong} onChange={setDsDong} cheDo={dangSua ? 'sua' : 'xem'} an={anCot} khongTong={!hienChan('dongTong')} hienLoc={moLoc} />}
+          {tab === 'ct' && laKk && <BangKiemKe dong={dsDong} onChange={setDsDong} cheDo={dangSua ? 'sua' : 'xem'} an={anCot} khongTong={!hienChan('dongTong')} hienLoc={moLoc} doRong={doRongCt} />}
           {tab === 'ct' && laSx && (
             <BangSanXuat loai={sx!} dong={dsDong as DongSx[]} onChange={setDsDong} cheDo={dangSua ? 'sua' : 'xem'} coTk={hienTk} an={anCot}
               khongTong={!hienChan('dongTong')} kho={kho} coThamChieu={Boolean(thamChieuSx.id)} />
@@ -1254,6 +1258,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
               chiXemLy={khoaLyDtFree}
               chiXemDt={khoaLyDtFree}
               hienLoc={moLoc}
+              doRong={doRongCt}
             />
           )}
 
@@ -1306,6 +1311,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
 
           {/* Tab 5: Lịch sử thao tác */}
           {tab === 'ls' && <LichSu goi={s.goi} moi={moi} man={`${mod.key}/${sc.slug}`} id={String(row?.id ?? '')} />}
+          </BaoCaoDoRongCtx.Provider>
           </div>
 
         </section>
