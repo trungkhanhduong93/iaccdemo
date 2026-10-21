@@ -115,10 +115,10 @@ export function KetQuaKinhDoanh(p: ScreenProps) {
         // Ghép cột kỳ trước theo khoá dòng (T318: dòng con mỗi kỳ có thể khác nhau); dòng con cả hai kỳ không phát sinh thì ẩn
         const khoa = (x: Row) => x._k ?? x.ct
         const cuTheo = new Map(cu.map(x => [khoa(x), x.v]))
-        // Gói Free chỉ một cột số liệu tháng đang xem, không kèm tháng trước (T617)
+        // Gói Free chỉ một cột số liệu kỳ đang xem, tên cột "Số tiền", không kèm tháng trước (T617)
         const motCot = s.goi === 'F' && s.cheDo === 'TT152'
         const rows = nay.map((x): Row => ({ ...x, cu: cuTheo.get(khoa(x)) })).filter(x => !x._con || x.v || (!motCot && x.cu))
-        const cols: Col[] = [{ k: 'ct', t: 'Chỉ tiêu', r: x => x._con ? <span className="kqkd-con">{x.ct}</span> : x.ct }, ...(ma ? [{ k: 'ma', t: 'Mã số', c: true, w: 70 } as Col] : []), { k: 'v', t: kyTen(ky).replace(' (đến 07/10)', ''), num: true }, ...(motCot ? [] : [{ k: 'cu', t: kyTen(truoc(ky)), num: true } as Col])]
+        const cols: Col[] = [{ k: 'ct', t: 'Chỉ tiêu', r: x => x._con ? <span className="kqkd-con">{x.ct}</span> : x.ct }, ...(ma ? [{ k: 'ma', t: 'Mã số', c: true, w: 70 } as Col] : []), { k: 'v', t: motCot ? 'Số tiền' : kyTen(ky).replace(' (đến 07/10)', ''), num: true }, ...(motCot ? [] : [{ k: 'cu', t: kyTen(truoc(ky)), num: true } as Col])]
         return (
           <ReportPaper title="Báo cáo kết quả hoạt động kinh doanh" sub={`${kyTen(ky)}${s.cheDo === 'TT152' ? ' · Bản đơn giản, chưa theo chế độ kế toán' : ''}`}>
             <RptTable cols={cols} rows={rows} onRow={x => nav(x._drill)} />
