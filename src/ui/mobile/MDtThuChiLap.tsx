@@ -15,7 +15,7 @@ import { useDongChungTu } from '../generic/VoucherScreen'
 import { theoLoai } from '../generic/nhom'
 import { TAI_KHOAN } from '../../modules/danh-muc/data'
 import { MChon } from './MChon'
-import { MThemNhanh } from './MThemNhanh'
+import { soDuQuy } from './MThanhToanNgay'
 import { Icon } from '../Icon'
 import { addCatalogRow, getAllCatalogRows, getDmMeta, sinhMaKeTiep, useAddedCatalogRows } from '../generic/danhMucStore'
 import { LichDon } from '../ChonNgay'
@@ -60,6 +60,14 @@ const DIA_CHI_DT: Record<string, string> = {
   SPF: 'Tầng 17 Saigon Centre, 67 Lê Lợi, Quận 1',
   NV002: 'Bộ phận Kế toán',
   NV004: 'Cửa hàng trưởng Lê Lợi',
+}
+
+const vietTatTenNcc = (ten: string) => {
+  const words = ten.replace(/^(Công ty|Cơ sở|Hợp tác xã|HTX|Đại lý|Doanh nghiệp)\s+(TNHH|CP|Cổ phần)?\s*/i, '').trim().split(/\s+/)
+  if (words.length >= 2) {
+    return (words[0][0] + words[1][0]).toUpperCase()
+  }
+  return ten.slice(0, 2).toUpperCase()
 }
 
 /** Danh sách chọn đối tượng đọc từ danh mục Đối tượng (1.5), gồm cả đối tượng vừa thêm trong phiên */
@@ -284,10 +292,24 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
   const [timDt, setTimDt] = useState('')
   const [dangTaiDt, setDangTaiDt] = useState(false)
   const [moThemDt, setMoThemDt] = useState(false)
+  const [formLoaiDt, setFormLoaiDt] = useState<string>('Nhà cung cấp')
+  const [formMaDt, setFormMaDt] = useState('')
+  const [formTenDt, setFormTenDt] = useState('')
+  const [formMstDt, setFormMstDt] = useState('')
+  const [formDiaChiDt, setFormDiaChiDt] = useState('')
+  const [formEmailDt, setFormEmailDt] = useState('')
+  const [formSdtDt, setFormSdtDt] = useState('')
+  const [loiDt, setLoiDt] = useState('')
   const dtDaThem = useAddedCatalogRows('1.5')
   const lyDaThem = useAddedCatalogRows('1.16')
   const [moThemLy, setMoThemLy] = useState(false)
+  const [formMaLy, setFormMaLy] = useState('')
+  const [formTenLy, setFormTenLy] = useState('')
+  const [formChiPhiLy, setFormChiPhiLy] = useState(false)
+  const [loiLy, setLoiLy] = useState('')
+  const [dangTaiLy, setDangTaiLy] = useState(false)
   const [tabLoaiDt, setTabLoaiDt] = useState<'all' | 'ncc' | 'nv' | 'kh'>('all')
+  const [timQuy, setTimQuy] = useState('')
 
   const dsDoiTuongLoc = useMemo(() => {
     let list = dsDoiTuongDm()
@@ -498,13 +520,20 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
     const listTm = ch ? [`Quỹ tiền mặt ${ch.ngan}`] : CUA_HANG.map(c => `Quỹ tiền mặt ${c.ngan}`)
     const listNh = TK_NGAN_HANG.map(t => `${t.nh.split(',')[0]} ${t.so}`)
     if (loai === 'thu' || loai === 'chi') {
-      return listTm.map(q => ({ k: q, ten: q }))
+      return listTm.map(q => ({ k: q, ten: q, loai: 'tm' as const }))
     }
     if (loai === 'bc' || loai === 'unc') {
-      return listNh.map(q => ({ k: q, ten: q }))
+      return listNh.map(q => ({ k: q, ten: q, loai: 'nh' as const }))
     }
-    return [...listTm, ...listNh].map(q => ({ k: q, ten: q }))
+    return [
+      ...listTm.map(q => ({ k: q, ten: q, loai: 'tm' as const })),
+      ...listNh.map(q => ({ k: q, ten: q, loai: 'nh' as const })),
+    ]
   }, [cuaHang, loai])
+  const dsQuyLoc = useMemo(() => {
+    const q = timQuy.trim().toLowerCase()
+    return q ? dsQuyOptions.filter(o => o.ten.toLowerCase().includes(q)) : dsQuyOptions
+  }, [dsQuyOptions, timQuy])
 
   const handleChonCn = (tenCn: string) => {
     setMoChonCn(false)
@@ -1051,7 +1080,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
         </button>
       </footer>
 
-      {/* ── SHEET CHỌN ĐỐI TƯỢNG: cùng bố cục sheet Chọn nhà cung cấp của phiếu mua (T604) ── */}
+      {/* ── SHEET CHỌN ĐỐI TƯỢNG: cùng bố cục sheet Chọn nhà cung cấp của phiếu mua (T604, T621) ── */}
       {moChonDt && (
         <div className="m-tam-overlay" onClick={() => setMoChonDt(false)}>
           <div className="m-tam-hop m-t600-sheet-85" onClick={e => e.stopPropagation()}>
@@ -1094,112 +1123,257 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
               </div>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 16px', background: '#f8fafc', borderBottom: '1px solid var(--border)' }}>
-              <div style={{ display: 'flex', gap: 8 }}>
-                <button
-                  type="button"
-                  className="btn sub sm"
-                  style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, borderRadius: 6, fontSize: 12, fontWeight: 600 }}
-                  onClick={() => {
-                    setMoChonDt(false)
-                    setMoThemDt(true)
-                  }}
-                >
-                  <span>⊕</span> Thêm mới
-                </button>
-                <button
-                  type="button"
-                  className="btn sub sm"
-                  style={{ height: 32, width: 32, padding: 0, borderRadius: 6 }}
-                  onClick={() => {
-                    setDangTaiDt(true)
-                    setTimeout(() => setDangTaiDt(false), 600)
-                  }}
-                  title="Tải lại"
-                >
-                  ↻
-                </button>
-              </div>
-              <div style={{ fontSize: 12, color: 'var(--muted)' }}>
+            <div className="m-t601-thanh-cong-cu">
+              <button
+                type="button"
+                className="m-t601-btn-ib"
+                aria-label="Thêm đối tượng mới"
+                onClick={() => {
+                  const loaiMacDinh = tabLoaiDt === 'ncc' ? 'Nhà cung cấp' : tabLoaiDt === 'nv' ? 'Nhân viên' : tabLoaiDt === 'kh' ? 'Khách hàng' : isChi ? 'Nhà cung cấp' : 'Khách hàng'
+                  setFormLoaiDt(loaiMacDinh)
+                  const allDt = getAllCatalogRows('1.5')
+                  setFormMaDt(sinhMaKeTiep('1.5', { loai: loaiMacDinh, ten: '' }, allDt))
+                  setFormTenDt(timDt.trim())
+                  setFormMstDt('')
+                  setFormDiaChiDt('')
+                  setFormEmailDt('')
+                  setFormSdtDt('')
+                  setLoiDt('')
+                  setMoThemDt(true)
+                }}
+              >
+                <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M12 8v8M8 12h8" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                className="m-t601-btn-ib"
+                aria-label="Tải lại danh sách"
+                onClick={() => {
+                  setDangTaiDt(true)
+                  setTimeout(() => setDangTaiDt(false), 300)
+                }}
+                title="Tải lại danh sách"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M20 12a8 8 0 1 1-2.34-5.66" />
+                  <path d="M20 4v5h-5" />
+                </svg>
+              </button>
+              <span style={{ marginLeft: 'auto', fontSize: 12, color: 'var(--muted)', display: 'inline-flex', alignItems: 'center' }}>
                 {dsDoiTuongLoc.length} đối tượng
-              </div>
+              </span>
             </div>
 
             <div className="m-t600-sheet-than" style={{ padding: '8px 16px' }}>
-              {dangTaiDt ? <div className="m-tc-dt-dang-tai">Đang tải dữ liệu</div> : dsDoiTuongLoc.map(d => {
-                const isChon = d.ten === doiTuong
-                const vietTat = d.ten.split(' ').map(w => w[0]).filter(Boolean).slice(0, 2).join('').toUpperCase()
-                return (
-                  <div
-                    key={d.ma}
-                    className={`m-t600-hang-ncc ${isChon ? 'on' : ''}`}
-                    onClick={() => {
-                      setDoiTuong(d.ten)
-                      if (d.diaChi) setDiaChi(d.diaChi)
-                      setMoChonDt(false)
-                      setDaSua(true)
-                    }}
-                  >
-                    <div style={{
-                      width: 36,
-                      height: 36,
-                      borderRadius: 6,
-                      background: 'var(--tint, #10b981)',
-                      color: '#fff',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontWeight: 700,
-                      fontSize: 13,
-                      flexShrink: 0
-                    }}>
-                      {vietTat}
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontWeight: 600, fontSize: 13, color: 'var(--fg)' }}>{d.ten}</div>
-                      <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>
-                        {d.ma} · {d.loai}{d.mst ? ` · MST ${d.mst}` : ''}
+              {dangTaiDt ? (
+                <div className="m-tc-dt-dang-tai">Đang tải dữ liệu</div>
+              ) : dsDoiTuongLoc.length === 0 ? (
+                <div style={{ padding: '24px 16px', textAlign: 'center', color: 'var(--muted)', fontSize: 14 }}>
+                  Không tìm thấy kết quả phù hợp
+                </div>
+              ) : (
+                dsDoiTuongLoc.map(d => {
+                  const isChon = d.ten === doiTuong
+                  const vietTat = vietTatTenNcc(d.ten)
+                  return (
+                    <div
+                      key={d.ma}
+                      className={`m-t600-hang-ncc ${isChon ? 'on' : ''}`}
+                      onClick={() => {
+                        setDoiTuong(d.ten)
+                        if (d.diaChi) setDiaChi(d.diaChi)
+                        setMoChonDt(false)
+                        setDaSua(true)
+                      }}
+                    >
+                      <div style={{
+                        width: 36,
+                        height: 36,
+                        borderRadius: 10,
+                        background: 'var(--tint)',
+                        color: '#fff',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontWeight: 700,
+                        fontSize: 13,
+                        flexShrink: 0
+                      }}>
+                        {vietTat}
                       </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontWeight: 600, fontSize: 13, color: 'var(--fg)' }}>{d.ten}</div>
+                        <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>
+                          {d.ma} · {d.loai}{d.mst ? ` · MST ${d.mst}` : ''}
+                        </div>
+                      </div>
+                      {isChon && <span style={{ color: 'var(--blue)' }}><Icon n="check" className="ic sm" kieu="net" /></span>}
                     </div>
-                    {isChon && <span style={{ color: 'var(--tint)' }}><Icon n="check" className="ic sm" kieu="net" /></span>}
-                  </div>
-                )
-              })}
+                  )
+                })
+              )}
             </div>
           </div>
         </div>
       )}
 
-      {/* cùng bố cục sheet Thêm nhà cung cấp của phiếu mua (T604) */}
+      {/* ── B4: SUB-SHEET THÊM ĐỐI TƯỢNG (chồng lên sheet Chọn đối tượng, thấp hơn 60px) ── */}
       {moThemDt && (
-        <MThemNhanh
-          tieuDe="Thêm đối tượng"
-          dau={{
-            ten: timDt.trim(),
-            loai: tabLoaiDt === 'ncc' ? 'Nhà cung cấp' : tabLoaiDt === 'nv' ? 'Nhân viên' : tabLoaiDt === 'kh' ? 'Khách hàng' : isChi ? 'Nhà cung cấp' : 'Khách hàng',
-          }}
-          truong={[
-            { k: 'loai', nhan: 'Loại đối tượng', kieu: 'chip', ds: ['Nhà cung cấp', 'Nhân viên', 'Khách hàng'], batBuoc: true },
-            { k: 'mst', nhan: 'Mã số thuế', goiY: 'Mã số thuế doanh nghiệp / hộ KD', hien: v => v.loai !== 'Nhân viên' },
-            { k: 'ma', nhan: 'Mã đối tượng', batBuoc: true, ngan: true, goiY: 'Tự sinh' },
-            { k: 'ten', nhan: 'Tên đối tượng', batBuoc: true, goiY: 'Tên công ty hoặc người nộp, người nhận' },
-            { k: 'diaChi', nhan: 'Địa chỉ', goiY: 'Số nhà, đường, phường, quận...' },
-            { k: 'email', nhan: 'Email', kieu: 'email', goiY: 'email@congty.com' },
-            { k: 'sdt', nhan: 'Số điện thoại', kieu: 'tel', goiY: '0901234567' },
-          ]}
-          chuThich="Mã đối tượng tự sinh, sửa được. Thông tin khác bổ sung ở Danh mục đối tượng."
-          onQuayLai={() => { setMoThemDt(false); setMoChonDt(true) }}
-          onDong={() => setMoThemDt(false)}
-          onLuu={val => {
-            const ten = String(val.ten ?? '').trim()
-            const ma = String(val.ma ?? '').trim() || sinhMaKeTiep('1.5', { ...val, ten }, getAllCatalogRows('1.5'))
-            addCatalogRow('1.5', { ...val, ma, ten, dongY: 1 })
-            setDoiTuong(ten)
-            setDiaChi(String(val.diaChi ?? '').trim())
-            setDaSua(true)
-            setMoThemDt(false)
-          }}
-        />
+        <div className="m-tam-overlay m-t609-sub-overlay" onClick={() => setMoThemDt(false)}>
+          <div className="m-tam-hop m-t609-sub-sheet" onClick={e => e.stopPropagation()}>
+            <div className="m-tam-dau">
+              <h2 className="m-tam-tieu">Thêm đối tượng</h2>
+              <button type="button" className="m-tam-dong-btn" onClick={() => setMoThemDt(false)} aria-label="Đóng">
+                <Icon n="x" className="ic sm" kieu="net" />
+              </button>
+            </div>
+
+            <div className="m-t600-sheet-than" style={{ padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div className="m-t600-o-nhap-f">
+                <label className="m-t600-lbl">Loại đối tượng <em>*</em></label>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                  {(['Nhà cung cấp', 'Nhân viên', 'Khách hàng'] as const).map(lx => (
+                    <button
+                      key={lx}
+                      type="button"
+                      className={`m-tc-dt-chip${formLoaiDt === lx ? ' on' : ''}`}
+                      onClick={() => {
+                        setFormLoaiDt(lx)
+                        const allDt = getAllCatalogRows('1.5')
+                        setFormMaDt(sinhMaKeTiep('1.5', { loai: lx, ten: formTenDt }, allDt))
+                      }}
+                    >
+                      {lx}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {formLoaiDt !== 'Nhân viên' && (
+                <div className="m-t600-o-nhap-f">
+                  <label className="m-t600-lbl">Mã số thuế</label>
+                  <input
+                    type="text"
+                    className="m-t600-inp"
+                    value={formMstDt}
+                    onChange={e => setFormMstDt(e.target.value)}
+                    placeholder="Mã số thuế doanh nghiệp / hộ KD"
+                  />
+                </div>
+              )}
+
+              <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr', gap: 10 }}>
+                <div className="m-t600-o-nhap-f">
+                  <label className="m-t600-lbl">Mã đối tượng <em>*</em></label>
+                  <input
+                    type="text"
+                    className="m-t600-inp"
+                    value={formMaDt}
+                    onChange={e => setFormMaDt(e.target.value)}
+                    placeholder="Tự sinh"
+                  />
+                </div>
+                <div className="m-t600-o-nhap-f">
+                  <label className="m-t600-lbl">Tên đối tượng <em>*</em></label>
+                  <input
+                    type="text"
+                    className="m-t600-inp"
+                    value={formTenDt}
+                    onChange={e => setFormTenDt(e.target.value)}
+                    placeholder="Tên công ty hoặc người nộp, người nhận"
+                  />
+                </div>
+              </div>
+
+              <div className="m-t600-o-nhap-f">
+                <label className="m-t600-lbl">Địa chỉ</label>
+                <input
+                  type="text"
+                  className="m-t600-inp"
+                  value={formDiaChiDt}
+                  onChange={e => setFormDiaChiDt(e.target.value)}
+                  placeholder="Số nhà, đường, phường, quận..."
+                />
+              </div>
+
+              <div className="m-t600-o-nhap-f">
+                <label className="m-t600-lbl">Email</label>
+                <input
+                  type="email"
+                  className="m-t600-inp"
+                  value={formEmailDt}
+                  onChange={e => setFormEmailDt(e.target.value)}
+                  placeholder="email@congty.com"
+                />
+              </div>
+
+              <div className="m-t600-o-nhap-f">
+                <label className="m-t600-lbl">Số điện thoại</label>
+                <input
+                  type="tel"
+                  className="m-t600-inp"
+                  value={formSdtDt}
+                  onChange={e => setFormSdtDt(e.target.value)}
+                  placeholder="0901234567"
+                />
+              </div>
+
+              <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 4 }}>
+                Mã đối tượng tự sinh, sửa được. Thông tin khác bổ sung ở Danh mục đối tượng.
+              </div>
+              {loiDt && <div className="m-t601-loi">{loiDt}</div>}
+            </div>
+
+            <div className="m-t600-sheet-day">
+              <button
+                type="button"
+                className="m-t601-btn-foot-huy"
+                onClick={() => setMoThemDt(false)}
+              >
+                Huỷ
+              </button>
+              <button
+                type="button"
+                className="m-t601-btn-foot-pri"
+                disabled={!formTenDt.trim()}
+                onClick={() => {
+                  const ten = formTenDt.trim()
+                  if (!ten) {
+                    setLoiDt('Vui lòng nhập tên đối tượng')
+                    return
+                  }
+                  const allDt = getAllCatalogRows('1.5')
+                  const ma = formMaDt.trim() || sinhMaKeTiep('1.5', { loai: formLoaiDt, ten }, allDt)
+                  const mst = formMstDt.trim()
+                  const dc = formDiaChiDt.trim()
+                  const email = formEmailDt.trim()
+                  const sdt = formSdtDt.trim()
+                  addCatalogRow('1.5', {
+                    ma,
+                    ten,
+                    loai: formLoaiDt,
+                    mst,
+                    diaChi: dc,
+                    email,
+                    sdt,
+                    dongY: 1,
+                  })
+                  setDoiTuong(ten)
+                  if (dc) setDiaChi(dc)
+                  setDaSua(true)
+                  setLoiDt('')
+                  setMoThemDt(false)
+                  setMoChonDt(false)
+                }}
+              >
+                Lưu và chọn
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Sheet chọn chi nhánh */}
@@ -1237,21 +1411,112 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
         }}
       />
 
-      {/* Sheet chọn Quỹ */}
-      <MChon
-        mo={moChonQuy}
-        onDong={() => setMoChonQuy(false)}
-        tieuDe="Chọn quỹ tiền"
-        ds={dsQuyOptions}
-        chon={quy}
-        onChon={k => {
-          setQuy(k)
-          setMoChonQuy(false)
-          setDaSua(true)
-        }}
-      />
+      {/* ── SHEET CHỌN QUỸ: theo khuôn MLapPhieu.tsx:3190-3250 (T621) ── */}
+      {moChonQuy && (
+        <div className="m-tam-overlay" onClick={() => setMoChonQuy(false)}>
+          <div className="m-tam-hop m-t600-sheet-70" onClick={e => e.stopPropagation()}>
+            <div className="m-tam-dau">
+              <div>
+                <h2 className="m-tam-tieu">
+                  {loai === 'thu' || loai === 'chi' ? 'Chọn quỹ tiền mặt' : loai === 'bc' || loai === 'unc' ? 'Chọn quỹ ngân hàng' : 'Chọn quỹ tiền'}
+                </h2>
+                <div style={{ fontSize: 13, color: 'var(--muted)', marginTop: 2 }}>
+                  Cửa hàng {cuaHang || 'Phố Mây Nguyễn Trãi'}{soTien > 0 ? <> · {isChi ? 'cần chi' : 'cần thu'} <b style={{ color: 'var(--ink)' }}>{money(soTien)} đ</b></> : null}
+                </div>
+              </div>
+              <button type="button" className="m-tam-dong-btn" onClick={() => setMoChonQuy(false)} aria-label="Đóng">
+                <Icon n="x" className="ic sm" kieu="net" />
+              </button>
+            </div>
 
-      {/* Sheet chọn Lý do thu/chi: cùng bố cục sheet Chọn nhà cung cấp của phiếu mua (T604) */}
+            <div className="m-t600-sheet-than" style={{ padding: '8px 16px' }}>
+              <div style={{ padding: '0 0 10px' }}>
+                <div className="m-t601-o-tim">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2" strokeLinecap="round">
+                    <circle cx="11" cy="11" r="7" />
+                    <path d="M20 20l-4-4" />
+                  </svg>
+                  <input
+                    type="text"
+                    placeholder="Tìm quỹ…"
+                    value={timQuy}
+                    onChange={e => setTimQuy(e.target.value)}
+                  />
+                  {timQuy && (
+                    <button type="button" className="m-lp-tim-hang-x" onClick={() => setTimQuy('')} style={{ border: 0, background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+                      <Icon n="x" className="ic sm" kieu="net" />
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {dsQuyLoc.length === 0 ? (
+                <div style={{ padding: '24px 16px', textAlign: 'center', color: 'var(--muted)', fontSize: 14 }}>
+                  Không tìm thấy quỹ phù hợp
+                </div>
+              ) : (
+                dsQuyLoc.map((q, idx) => {
+                  const sd = soDuQuy(q.ten)
+                  const khongDu = isChi && soTien > 0 && sd < soTien
+                  const isChon = quy === q.ten
+                  const hienNhom = idx === 0 || q.loai !== dsQuyLoc[idx - 1].loai
+                  return (
+                    <div key={q.ten}>
+                      {hienNhom && (
+                        <div className="m-t601-nhom-chu" style={{ margin: idx === 0 ? '0 -16px 8px' : '8px -16px', padding: '4px 16px 6px' }}>
+                          {q.loai === 'tm' ? 'TIỀN MẶT' : 'NGÂN HÀNG'}
+                        </div>
+                      )}
+                      <div
+                        className={`m-t600-hang-quy ${isChon ? 'on' : ''}`}
+                        onClick={() => {
+                          setQuy(q.ten)
+                          setMoChonQuy(false)
+                          setDaSua(true)
+                        }}
+                      >
+                        <span className={`m-t601-quy-ic ${q.loai}`}>
+                          {q.loai === 'tm' ? (
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#138a52" strokeWidth="1.8">
+                              <rect x="2" y="6" width="20" height="13" rx="2" />
+                              <circle cx="12" cy="12.5" r="2.5" />
+                            </svg>
+                          ) : (
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0560a6" strokeWidth="1.8">
+                              <path d="M3 10l9-6 9 6M5 10v8M19 10v8M9 10v8M15 10v8M3 20h18" />
+                            </svg>
+                          )}
+                        </span>
+                        <div style={{ minWidth: 0, flex: 1 }}>
+                          <div style={{ fontWeight: 600, fontSize: 15, color: 'var(--ink)' }}>{q.ten}</div>
+                          <div style={{ fontSize: 11, color: 'var(--muted)' }}>
+                            Số dư {money(sd)} đ
+                            {khongDu && <span style={{ color: 'var(--orange-d)', marginLeft: 6 }}> · không đủ chi {money(soTien)} đ</span>}
+                          </div>
+                        </div>
+                        {isChon && <span style={{ color: 'var(--blue)' }}><Icon n="check" className="ic sm" kieu="net" /></span>}
+                      </div>
+                    </div>
+                  )
+                })
+              )}
+            </div>
+
+            <div className="m-t600-sheet-day">
+              <button
+                type="button"
+                className="btn pri"
+                style={{ width: '100%', height: 48, borderRadius: 10, fontSize: 15, fontWeight: 600 }}
+                onClick={() => setMoChonQuy(false)}
+              >
+                Chọn quỹ này
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── SHEET CHỌN LÝ DO THU/CHI: cùng bố cục sheet Chọn nhà cung cấp của phiếu mua (T604, T621) ── */}
       {moChonLyDo && (
         <div className="m-tam-overlay" onClick={() => setMoChonLyDo(false)}>
           <div className="m-tam-hop m-t600-sheet-85" onClick={e => e.stopPropagation()}>
@@ -1280,101 +1545,182 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
               </div>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 16px', background: '#f8fafc', borderBottom: '1px solid var(--border)' }}>
-              <div style={{ display: 'flex', gap: 8 }}>
-                <button
-                  type="button"
-                  className="btn sub sm"
-                  style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, borderRadius: 6, fontSize: 12, fontWeight: 600 }}
-                  onClick={() => {
-                    setMoChonLyDo(false)
-                    setMoThemLy(true)
-                  }}
-                >
-                  <span>⊕</span> Thêm mới
-                </button>
-                <button
-                  type="button"
-                  className="btn sub sm"
-                  style={{ height: 32, width: 32, padding: 0, borderRadius: 6 }}
-                  onClick={() => {}}
-                  title="Tải lại"
-                >
-                  ↻
-                </button>
-              </div>
-              <div style={{ fontSize: 12, color: 'var(--muted)' }}>
+            <div className="m-t601-thanh-cong-cu">
+              <button
+                type="button"
+                className="m-t601-btn-ib"
+                aria-label={isChi ? 'Thêm lý do chi mới' : 'Thêm lý do thu mới'}
+                onClick={() => {
+                  const meta = getDmMeta(isChi ? 'ly:chi' : 'ly:thu')
+                  setFormMaLy(sinhMaKeTiep(meta.catKey, { ten: '' }, meta.all))
+                  setFormTenLy(timLy.trim())
+                  setFormChiPhiLy(false)
+                  setLoiLy('')
+                  setMoThemLy(true)
+                }}
+              >
+                <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M12 8v8M8 12h8" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                className="m-t601-btn-ib"
+                aria-label="Tải lại danh sách"
+                onClick={() => {
+                  setDangTaiLy(true)
+                  setTimeout(() => setDangTaiLy(false), 300)
+                }}
+                title="Tải lại danh sách"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M20 12a8 8 0 1 1-2.34-5.66" />
+                  <path d="M20 4v5h-5" />
+                </svg>
+              </button>
+              <span style={{ marginLeft: 'auto', fontSize: 12, color: 'var(--muted)', display: 'inline-flex', alignItems: 'center' }}>
                 {dsLyDoLoc.length} lý do
-              </div>
+              </span>
             </div>
 
             <div className="m-t600-sheet-than" style={{ padding: '8px 16px' }}>
-              {dsLyDoLoc.length === 0 ? <div style={{ padding: '24px 16px', textAlign: 'center', color: 'var(--muted)', fontSize: 14 }}>Không tìm thấy kết quả phù hợp</div> : dsLyDoLoc.map(l => {
-                const isChon = l.ten === lyDo
-                const vietTat = l.ten.split(' ').map(w => w[0]).filter(Boolean).slice(0, 2).join('').toUpperCase()
-                return (
-                  <div
-                    key={l.ten}
-                    className={`m-t600-hang-ncc ${isChon ? 'on' : ''}`}
-                    onClick={() => {
-                      chonLyDo(l.ten)
-                      setMoChonLyDo(false)
-                    }}
-                  >
-                    <div style={{
-                      width: 36,
-                      height: 36,
-                      borderRadius: 6,
-                      background: 'var(--tint, #10b981)',
-                      color: '#fff',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontWeight: 700,
-                      fontSize: 13,
-                      flexShrink: 0
-                    }}>
-                      {vietTat}
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontWeight: 600, fontSize: 13, color: 'var(--fg)' }}>{l.ten}</div>
-                      <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>
-                        {l.ma ? `${l.ma} · ` : ''}{isChi ? 'Chi tiền' : 'Thu tiền'}
+              {dangTaiLy ? (
+                <div className="m-tc-dt-dang-tai">Đang tải dữ liệu</div>
+              ) : dsLyDoLoc.length === 0 ? (
+                <div style={{ padding: '24px 16px', textAlign: 'center', color: 'var(--muted)', fontSize: 14 }}>
+                  Không tìm thấy kết quả phù hợp
+                </div>
+              ) : (
+                dsLyDoLoc.map(l => {
+                  const isChon = l.ten === lyDo
+                  const vietTat = vietTatTenNcc(l.ten)
+                  return (
+                    <div
+                      key={l.ten}
+                      className={`m-t600-hang-ncc ${isChon ? 'on' : ''}`}
+                      onClick={() => {
+                        chonLyDo(l.ten)
+                        setMoChonLyDo(false)
+                      }}
+                    >
+                      <div style={{
+                        width: 36,
+                        height: 36,
+                        borderRadius: 10,
+                        background: 'var(--tint)',
+                        color: '#fff',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontWeight: 700,
+                        fontSize: 13,
+                        flexShrink: 0
+                      }}>
+                        {vietTat}
                       </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontWeight: 600, fontSize: 13, color: 'var(--fg)' }}>{l.ten}</div>
+                        <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>
+                          {l.ma ? `${l.ma} · ` : ''}{isChi ? 'Chi tiền' : 'Thu tiền'}
+                        </div>
+                      </div>
+                      {isChon && <span style={{ color: 'var(--blue)' }}><Icon n="check" className="ic sm" kieu="net" /></span>}
                     </div>
-                    {isChon && <span style={{ color: 'var(--tint)' }}><Icon n="check" className="ic sm" kieu="net" /></span>}
-                  </div>
-                )
-              })}
+                  )
+                })
+              )}
             </div>
           </div>
         </div>
       )}
 
-      {/* Form thêm lý do vào danh mục Lý do nghiệp vụ ngay từ phiếu, như web; lưu xong chọn luôn */}
+      {/* ── B4: SUB-SHEET THÊM LÝ DO THU/CHI (chồng lên sheet Chọn lý do, thấp hơn 60px) ── */}
       {moThemLy && (() => {
         const meta = getDmMeta(isChi ? 'ly:chi' : 'ly:thu')
         return (
-          <MThemNhanh
-            tieuDe={isChi ? 'Thêm lý do chi' : 'Thêm lý do thu'}
-            dau={meta.dienSan}
-            truong={[
-              { k: 'ma', nhan: 'Mã lý do', batBuoc: true, ngan: true, goiY: 'Tự sinh' },
-              { k: 'ten', nhan: 'Lý do nghiệp vụ', batBuoc: true, goiY: isChi ? 'Vd: Chi tiền điện' : 'Vd: Thu tiền thanh lý' },
-              { k: 'chiPhi', nhan: 'Là chi phí', kieu: 'tich', hien: () => isChi },
-            ]}
-            chuThich="Mã lý do tự sinh, sửa được. Thông tin khác bổ sung ở Danh mục lý do nghiệp vụ."
-            onQuayLai={() => { setMoThemLy(false); setMoChonLyDo(true) }}
-            onDong={() => setMoThemLy(false)}
-            onLuu={val => {
-              const ten = String(val.ten ?? '').trim()
-              const ma = String(val.ma ?? '').trim() || sinhMaKeTiep(meta.catKey, { ...val, ten }, meta.all)
-              const dong = { ...val, ma, ten }
-              addCatalogRow(meta.catKey, { ...dong, ...meta.cauHinh?.doi?.('chiPhi', dong, meta.all) })
-              chonLyDo(ten)
-              setMoThemLy(false)
-            }}
-          />
+          <div className="m-tam-overlay m-t609-sub-overlay" onClick={() => setMoThemLy(false)}>
+            <div className="m-tam-hop m-t609-sub-sheet" onClick={e => e.stopPropagation()}>
+              <div className="m-tam-dau">
+                <h2 className="m-tam-tieu">{isChi ? 'Thêm lý do chi' : 'Thêm lý do thu'}</h2>
+                <button type="button" className="m-tam-dong-btn" onClick={() => setMoThemLy(false)} aria-label="Đóng">
+                  <Icon n="x" className="ic sm" kieu="net" />
+                </button>
+              </div>
+
+              <div className="m-t600-sheet-than" style={{ padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr', gap: 10 }}>
+                  <div className="m-t600-o-nhap-f">
+                    <label className="m-t600-lbl">Mã lý do <em>*</em></label>
+                    <input
+                      type="text"
+                      className="m-t600-inp"
+                      value={formMaLy}
+                      onChange={e => setFormMaLy(e.target.value)}
+                      placeholder="Tự sinh"
+                    />
+                  </div>
+                  <div className="m-t600-o-nhap-f">
+                    <label className="m-t600-lbl">Lý do nghiệp vụ <em>*</em></label>
+                    <input
+                      type="text"
+                      className="m-t600-inp"
+                      value={formTenLy}
+                      onChange={e => setFormTenLy(e.target.value)}
+                      placeholder={isChi ? 'Vd: Chi tiền điện' : 'Vd: Thu tiền thanh lý'}
+                    />
+                  </div>
+                </div>
+
+                {isChi && (
+                  <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 14 }}>
+                    <input
+                      type="checkbox"
+                      checked={formChiPhiLy}
+                      onChange={e => setFormChiPhiLy(e.target.checked)}
+                    />
+                    <span>Là chi phí</span>
+                  </label>
+                )}
+
+                <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 4 }}>
+                  Mã lý do tự sinh, sửa được. Thông tin khác bổ sung ở Danh mục lý do nghiệp vụ.
+                </div>
+                {loiLy && <div className="m-t601-loi">{loiLy}</div>}
+              </div>
+
+              <div className="m-t600-sheet-day">
+                <button
+                  type="button"
+                  className="m-t601-btn-foot-huy"
+                  onClick={() => setMoThemLy(false)}
+                >
+                  Huỷ
+                </button>
+                <button
+                  type="button"
+                  className="m-t601-btn-foot-pri"
+                  disabled={!formTenLy.trim()}
+                  onClick={() => {
+                    const ten = formTenLy.trim()
+                    if (!ten) {
+                      setLoiLy('Vui lòng nhập tên lý do')
+                      return
+                    }
+                    const ma = formMaLy.trim() || sinhMaKeTiep(meta.catKey, { ten }, meta.all)
+                    const dong: Record<string, unknown> = { ma, ten, chiPhi: formChiPhiLy ? 1 : 0 }
+                    addCatalogRow(meta.catKey, { ...dong, ...meta.cauHinh?.doi?.('chiPhi', dong, meta.all) })
+                    chonLyDo(ten)
+                    setLoiLy('')
+                    setMoThemLy(false)
+                    setMoChonLyDo(false)
+                  }}
+                >
+                  Lưu và chọn
+                </button>
+              </div>
+            </div>
+          </div>
         )
       })()}
 

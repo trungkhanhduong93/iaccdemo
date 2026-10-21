@@ -1,6 +1,8 @@
 import { useMemo, useState, type FC, type ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { Row, ScreenProps } from '../../modules/types'
+import { coTrongGoi } from '../../app/plan'
+import { useSession } from '../../app/session'
 import { docNgay } from '../ChonNgay'
 import { money } from '../format'
 
@@ -22,6 +24,7 @@ export function HangTabsBanHang({
   onMoTheoDoi?: () => void
 }) {
   const nav = useNavigate()
+  const { s } = useSession()
   const is311 = sc.code === '3.1.1' || sc.slug === '3-1-1'
   const is317 = sc.code === '3.1.7' || sc.slug === '3-1-7'
   const is312 = sc.code === '3.1.2' || sc.slug === '3-1-2'
@@ -32,51 +35,22 @@ export function HangTabsBanHang({
 
   return (
     <div className="m-tc-tabs" role="tablist">
-      <button
-        type="button"
-        role="tab"
-        aria-selected={is311}
-        className={`m-tc-tab-btn${is311 ? ' on' : ''}`}
-        onClick={() => nav('/app/ban-hang/3-1-1')}
-      >
-        Xuất bán POS
-      </button>
-      <button
-        type="button"
-        role="tab"
-        aria-selected={is317}
-        className={`m-tc-tab-btn${is317 ? ' on' : ''}`}
-        onClick={() => nav('/app/ban-hang/3-1-7')}
-      >
-        Bán hàng
-      </button>
-      <button
-        type="button"
-        role="tab"
-        aria-selected={is312}
-        className={`m-tc-tab-btn${is312 ? ' on' : ''}`}
-        onClick={() => nav('/app/ban-hang/3-1-2')}
-      >
-        Hoá đơn bán hàng
-      </button>
-      <button
-        type="button"
-        role="tab"
-        aria-selected={is313}
-        className={`m-tc-tab-btn${is313 ? ' on' : ''}`}
-        onClick={() => nav('/app/ban-hang/3-1-3')}
-      >
-        Bán nội bộ
-      </button>
-      <button
-        type="button"
-        role="tab"
-        aria-selected={is314}
-        className={`m-tc-tab-btn${is314 ? ' on' : ''}`}
-        onClick={() => nav('/app/ban-hang/3-1-4')}
-      >
-        Hàng bán trả lại
-      </button>
+      {/* Phiếu ngoài gói ẩn như web, gói Free chỉ còn Xuất bán POS (T622) */}
+      {([['3.1.1', is311, 'Xuất bán POS'], ['3.1.7', is317, 'Bán hàng'], ['3.1.2', is312, 'Hoá đơn bán hàng'],
+        ['3.1.3', is313, 'Bán nội bộ'], ['3.1.4', is314, 'Hàng bán trả lại']] as const)
+        .filter(([ma]) => coTrongGoi(ma, s.goi))
+        .map(([ma, on, nhan]) => (
+          <button
+            key={ma}
+            type="button"
+            role="tab"
+            aria-selected={on}
+            className={`m-tc-tab-btn${on ? ' on' : ''}`}
+            onClick={() => nav(`/app/ban-hang/${ma.replace(/\./g, '-')}`)}
+          >
+            {nhan}
+          </button>
+        ))}
       {is315 && (
         <button
           type="button"
