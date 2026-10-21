@@ -38669,3 +38669,7 @@ body:has(.m-app) .m-thanh-duoi .m-tab.on .m-tab-ic .ic .l2 {
   cursor: default;
   background: #fff;
 }
+
+/* ── Dòng Tham chiếu chung trên chi tiết chứng từ (T585) ── */
+.ct-ttc .ct-tham-chieu { display: grid; grid-template-columns: 112px minmax(0, 1fr); column-gap: 8px; align-items: center; }
+.ct-tham-chieu-ds { display: flex; flex-wrap: wrap; gap: 4px 16px; padding-left: 11px; }

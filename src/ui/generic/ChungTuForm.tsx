@@ -357,6 +357,16 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
   // Thanh toán sau (T91): phiếu chưa thanh toán hoặc thanh toán một phần lập thêm phiếu thu, chi theo quỹ chọn, lưu ở _dsTt
   const [hopTt, setHopTt] = useState(false)
   const dsTt = dsTtCon(row)
+  // Chứng từ liên quan cho dòng Tham chiếu (T585): phiếu thu, chi của phiếu mua, bán; thẻ chi phí; phiếu điều chỉnh của kiểm kê;
+  // phiếu nhập của phiếu xuất sản xuất, điều chuyển; phiếu gốc của phiếu sinh ra. Phiếu nhập sản xuất, điều chuyển đã có ô chọn tham chiếu
+  const dsThamChieu: { so: string; to: string; ten: string; state?: unknown }[] = !row ? [] : [
+    ...(ctTtCu ? [{ so: ctTtCu.so, to: `/app/tien/2-1-1/${ctTtCu.id}`, ten: TEN_CT_TT[ctTtCu.loai] ?? '' }] : []),
+    ...dsTt.map(c => ({ so: c.so, to: `/app/tien/2-1-1/${c.id}`, ten: `${TEN_CT_TT[c.loai] ?? ''} ${money(c.tien)}` })),
+    ...(oLy ? theCuaPhieu(row).map(so => ({ so, to: `/app/ccdc/8-1-1?mo=${so}`, ten: 'Thẻ chi phí phân bổ', state: { veGoc: `${path}/${row.id}` } })) : []),
+    ...(laKk ? dsDcCon(row).map(c => ({ so: c.so, to: `/app/${MAN_DC}/${c.id}`, ten: 'Phiếu điều chỉnh' })) : []),
+    ...(((laSx && !sxNhap) || dcn === 'xdc') && row._phieuNhap ? [(pn => ({ so: pn.so, to: `/app/${sx ? manDoi : DCN.ndc.man}/${pn.id}`, ten: 'Phiếu nhập' }))(row._phieuNhap as { id: string; so: string })] : []),
+    ...(row._thamChieu && row._thamChieuDi && !sxNhap && dcn !== 'ndc' ? [{ so: String(row._thamChieu), to: String(row._thamChieuDi), ten: 'Chứng từ gốc' }] : []),
+  ]
   const tongGoc = Number(row?.tong) || 0
   const daTra = row ? soDaTra(row) : 0
   const conLai = Math.max(0, tongGoc - daTra)
@@ -946,20 +956,11 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
               {bo.tt && row && hinhThucTt === 'congno' && (
                 <span className="row" style={{ gap: 8, fontSize: 12.5, alignItems: 'center', flexWrap: 'wrap' }}>
                   <span style={{ color: 'var(--muted)' }}>{chiTt ? 'Đã trả' : 'Đã thu'}: <b style={{ color: 'var(--ink)' }}>{money(daTra)}</b> / {money(tongGoc)}</span>
-                  {dsTt.map(c => <Link key={c.id} className="ds-link-so" to={`/app/tien/2-1-1/${c.id}`} title={`${TEN_CT_TT[c.loai]} ${money(c.tien)}`}>{c.so}</Link>)}
                   {coThanhToanSau && (
                     <button type="button" className="btn sm" onClick={() => setHopTt(true)}>
                       <Icon n="wallet" className="ic sm" />{tenThanhToan}
                     </button>
                   )}
-                </span>
-              )}
-
-              {/* Chứng từ thu, chi sinh từ phiếu mua, bán đã lưu (T85) */}
-              {loaiTt && ctTtCu && ctTtCu.loai === loaiTt && (
-                <span className="row" style={{ gap: 6, fontSize: 12.5, alignItems: 'center' }}>
-                  <span style={{ color: 'var(--muted)' }}>{TEN_CT_TT[loaiTt]}:</span>
-                  <Link className="ds-link-so" to={`/app/tien/2-1-1/${ctTtCu.id}`}>{ctTtCu.so}</Link>
                 </span>
               )}
 
@@ -1176,26 +1177,14 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
             </div>
             {keoGc && oGhiChu}
           </div>
-          {/* Chứng từ tham chiếu ở dòng dưới đầu phiếu; thêm loại tham chiếu mới thì nối vào đây.
-              Phiếu chi có dòng Chi phí chờ phân bổ đã tạo thẻ: Thẻ chi phí, số thẻ bấm mở thẻ (T168) */}
-          {/* T436: hiện cả thẻ mẫu trỏ về phiếu, không bắt buộc dòng lý do Chi phí chờ phân bổ */}
-          {oLy && theCuaPhieu(row).length > 0 && (
-            <div className="row ct-tham-chieu">
-              <span className="dim">Thẻ chi phí:</span>
-              {theCuaPhieu(row).map(so => <Link key={so} className="ds-link-so" to={`/app/ccdc/8-1-1?mo=${so}`} state={{ veGoc: `${path}/${row!.id}` }} title="Mở thẻ chi phí phân bổ">{so}</Link>)}
-            </div>
-          )}
-          {/* Tham chiếu kiểm kê và phiếu điều chỉnh (T126) */}
-          {laKk && dsDcCon(row).length > 0 && (
-            <div className="row ct-tham-chieu">
-              <span className="dim">Chứng từ xử lý chênh lệch:</span>
-              {dsDcCon(row).map(c => <Link key={c.id} className="ds-link-so" to={`/app/${MAN_DC}/${c.id}`}>{c.so}</Link>)}
-            </div>
-          )}
-          {laDc && row?._thamChieu && (
-            <div className="row ct-tham-chieu">
-              <span className="dim">Theo phiếu kiểm kê:</span>
-              <Link className="ds-link-so" to={`/app/kho/5-1-10/${String(row._kkId)}`}>{String(row._thamChieu)}</Link>
+          {/* Dòng Tham chiếu chung cuối phần thông tin chung, nhãn thẳng cột nhãn phía trên (T585).
+              Thêm loại tham chiếu mới thì nối vào dsThamChieu */}
+          {dsThamChieu.length > 0 && (
+            <div className="ct-tham-chieu">
+              <span className="dim">Tham chiếu</span>
+              <span className="ct-tham-chieu-ds">
+                {dsThamChieu.map(c => <Link key={c.so} className="ds-link-so" to={c.to} state={c.state} title={c.ten}>{c.so}</Link>)}
+              </span>
             </div>
           )}
         </section>

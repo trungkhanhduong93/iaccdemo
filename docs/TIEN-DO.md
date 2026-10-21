@@ -11,7 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T585 | Web, chi tiết mọi chứng từ: một dòng "Tham chiếu" cuối phần thông tin chung, nhãn thẳng cột nhãn phía trên, liệt kê số chứng từ liên quan (phiếu chi, thu của phiếu mua, bán; phiếu gốc của thu, chi; thẻ chi phí; kiểm kê, điều chỉnh; sản xuất, điều chuyển xuất nhập); phiếu mẫu đã thanh toán có số phiếu chi, thu tham chiếu | dinhlanphuongipacc | Đang làm | Sửa `ChungTuForm.tsx`, thêm mục cuối `app.css` |
+| T586 | Dữ liệu giả: phiếu mua, bán mẫu đã thanh toán, thanh toán một phần (vd MH2610-0004) chưa có phiếu chi, thu đi kèm nên dòng Tham chiếu (T585) trống. Sinh phiếu chi, thu mẫu bên Thu chi 2.1.1 trỏ về phiếu gốc, phiếu gốc giữ `_ctTt` hoặc `_dsTt` | | Chờ | Sửa dữ liệu mẫu mua, bán và `modules/tien/data.ts` |
 | T581 | Điện thoại, danh sách Mua hàng: thẻ phiếu mỗi nhóm ngày thêm viền, bóng như thẻ Thu chi, hết chìm vào nền | Trum | Đang làm | Mục mới cuối `app.css` (T581) |
 | T582 | Điện thoại, khung danh sách chứng từ dùng chung theo Mua hàng (header Thu chi, hàng lọc, thẻ tổng, nhóm ngày): áp mọi màn chứng từ Bán hàng (gồm Xuất bán POS), mọi tab Kho; trường lọc từng màn như web | Trum | Đang làm | Tạo `MDsChungTuChuan.tsx`; sửa `MChungTu.tsx`, `MXuatBanPos.tsx`, cuối `app.css` (T582). Spec: `backup/spec-T581.md` |
 | T583 | Điện thoại, Chi phí phân bổ dùng khung danh sách T582 | Trum | Chờ | Làm sau T436 (dinhlanphuongipacc giữ `MCcdc.tsx`) |

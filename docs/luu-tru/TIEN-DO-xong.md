@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T585 | Web, chi tiết chứng từ: một dòng "Tham chiếu" chung cuối phần thông tin chung, nhãn thẳng cột nhãn phía trên, liệt kê phiếu thu, chi của phiếu mua, bán; thẻ chi phí; phiếu điều chỉnh của kiểm kê; phiếu nhập của phiếu xuất sản xuất, điều chuyển; phiếu gốc của phiếu sinh ra | dinhlanphuongipacc | 21/10/2026 | [nhật ký](../nhat-ky/2026-10-21-dinhlanphuongipacc-dong-tham-chieu.md) |
 | T584 | Web, chi tiết chứng từ: Chứng từ trước, Chứng từ sau bỏ khỏi menu Tiện ích, thành 2 nút mũi tên bên trái nút Tiện ích | PhuongXT | 21/10/2026 | [nhật ký](../nhat-ky/2026-10-21-phuongxt-nut-chuyen-phieu.md) |
 | T580 | Web, chi tiết phiếu mua hàng: nhãn tình trạng thanh toán (Chưa thanh toán, Thanh toán một phần, Đã thanh toán) sát lề phải thanh Thanh toán, chữ 14px nền màu nhạt | dinhlanphuongipacc | 21/10/2026 | [nhật ký](../nhat-ky/2026-10-21-dinhlanphuongipacc-nhan-tinh-trang-thanh-toan.md) |
 | T579 | Điện thoại, bấm chip ngày ở Xuất bán POS (và bộ lọc danh sách, báo cáo) trên iPhone chỉ hiện một dải nền tối, không thấy hộp lịch: hộp lịch đưa ra ngoài hàng chip cuộn ngang bằng portal | PhuongXT | 21/10/2026 | `2026-10-21-phuongxt-hop-lich-iphone.md` |
