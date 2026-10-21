@@ -13,7 +13,7 @@ import { MLichSu } from './MLichSu'
 import { soLuong } from '../format'
 import { MAN_THU_CHI, QUY_TIEN, TEN_CT_TT, TIEN_TO_CT_TT } from '../generic/ChungTuForm'
 import { useDongChungTu } from '../generic/VoucherScreen'
-import { fold, money } from '../format'
+import { chuanKyHieuHd, chuanSoHd, fold, money } from '../format'
 import { Icon } from '../Icon'
 import { LichDon } from '../ChonNgay'
 import { MChon, MThanhThem } from './MChon'
@@ -2041,8 +2041,9 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                           aria-label="Số hoá đơn"
                           className="m-t600-inp"
                           placeholder="Nhập số hoá đơn"
+                          inputMode="numeric"
                           value={soHd}
-                          onChange={e => setSoHd(e.target.value)}
+                          onChange={e => setSoHd(chuanSoHd(e.target.value))}
                         />
                         {loiO.soHd && <div className="m-lp-loi-o">{loiO.soHd}</div>}
                       </div>
@@ -2054,8 +2055,9 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                           aria-label="Ký hiệu hoá đơn"
                           className="m-t600-inp"
                           placeholder="Ký hiệu mẫu (vd 1C26TBB)"
+                          maxLength={7}
                           value={kyHieuHd}
-                          onChange={e => setKyHieuHd(e.target.value)}
+                          onChange={e => setKyHieuHd(chuanKyHieuHd(e.target.value))}
                         />
                         {loiO.kyHieuHd && <div className="m-lp-loi-o">{loiO.kyHieuHd}</div>}
                       </div>

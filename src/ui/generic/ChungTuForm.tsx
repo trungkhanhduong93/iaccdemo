@@ -21,7 +21,7 @@ import { LichDon, ONgay } from '../ChonNgay'
 import { ChonDanhMuc } from '../ChonDanhMuc'
 import { heSoZoom } from '../zoom'
 import { St, Table } from '../Table'
-import { fold, money, moneyD } from '../format'
+import { chuanKyHieuHd, chuanSoHd, fold, money, moneyD } from '../format'
 import { NGUON, TT_CT, dongCua, tkTheoLyDo, ttNghiepVu, type Dong } from './gen'
 import { boO, nhomCua, theoLoai, TT_TIEN } from './nhom'
 import { BangKiemKe, COT_KK } from './BangKiemKe'
@@ -1129,11 +1129,11 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
                 {/* Số hoá đơn lên đầu; Mẫu số gộp vào Ký hiệu, vd 1C26TMM (ký tự đầu là mẫu số) (T463) */}
                 <div className="f">
                   <label>Số hoá đơn <em>*</em></label>
-                  <input className="inp code" value={soHd} onChange={e => setSoHd(e.target.value)} readOnly={!dangSua} />
+                  <input className="inp code" inputMode="numeric" value={soHd} onChange={e => setSoHd(chuanSoHd(e.target.value))} readOnly={!dangSua} />
                 </div>
                 <div className="f">
                   <label>Ký hiệu <em>*</em></label>
-                  <input className="inp code" value={kyHieuHd} onChange={e => setKyHieuHd(e.target.value)} readOnly={!dangSua} title="Gồm mẫu số và ký hiệu hoá đơn, vd 1C26TMM" />
+                  <input className="inp code" maxLength={7} value={kyHieuHd} onChange={e => setKyHieuHd(chuanKyHieuHd(e.target.value))} readOnly={!dangSua} title="Gồm mẫu số và ký hiệu hoá đơn, vd 1C26TMM" />
                 </div>
                 <div className="f">
                   <label>Ngày hoá đơn <em>*</em></label>
@@ -1263,11 +1263,11 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
               <div className="form-grid" style={{ maxWidth: 720 }}>
                 <div className="f">
                   <label>Số hoá đơn</label>
-                  <input className="inp code" value={soHd} onChange={e => setSoHd(e.target.value)} disabled={!dangSua} />
+                  <input className="inp code" inputMode="numeric" value={soHd} onChange={e => setSoHd(chuanSoHd(e.target.value))} disabled={!dangSua} />
                 </div>
                 <div className="f">
                   <label>Ký hiệu</label>
-                  <input className="inp code" value={kyHieuHd} onChange={e => setKyHieuHd(e.target.value)} disabled={!dangSua} title="Gồm mẫu số và ký hiệu hoá đơn, vd 1C26TMM" />
+                  <input className="inp code" maxLength={7} value={kyHieuHd} onChange={e => setKyHieuHd(chuanKyHieuHd(e.target.value))} disabled={!dangSua} title="Gồm mẫu số và ký hiệu hoá đơn, vd 1C26TMM" />
                 </div>
                 <div className="f">
                   <label>Ngày hoá đơn</label>

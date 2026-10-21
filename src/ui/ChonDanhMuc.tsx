@@ -114,7 +114,7 @@ export function ChonDanhMuc({ dm, nhan, value, onChange, ds, className = 'inp', 
           <>
             <div className="dm-tim">
               <Icon n="search" className="ic sm" />
-              <input ref={oTim} value={tim} placeholder={`Tìm ${nhan}`} onChange={e => setTim(e.target.value)}
+              <input ref={oTim} value={tim} placeholder={`Tìm ${nhan}`} onChange={e => setTim(chiMa ? e.target.value.toUpperCase() : e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); if (loc[0]) chon(loc[0].v); else if (tim.trim() && !khongThem) { setMo(false); setHop(true) } } }} />
             </div>
             <div className="dm-ds">

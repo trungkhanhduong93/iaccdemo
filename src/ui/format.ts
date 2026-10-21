@@ -144,3 +144,9 @@ export const soQT = (v: unknown) => {
   const [nguyen, thap] = s.split('.')
   return (nguyen ? Number(nguyen).toLocaleString('vi-VN') : '0') + (thap !== undefined ? `,${thap}` : '')
 }
+
+/** Số hoá đơn: chỉ chữ số liền nhau, không phân cách hàng nghìn, không thập phân (T597) */
+export const chuanSoHd = (v: string) => v.replace(/\D/g, '')
+
+/** Ký hiệu hoá đơn gồm mẫu số và ký hiệu, vd 1C26TMM: chữ in hoa hoặc số, đúng 7 ký tự (T597) */
+export const chuanKyHieuHd = (v: string) => v.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 7)
