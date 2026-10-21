@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T539 | Điện thoại, sheet chọn danh mục ở màn lập chứng từ: nút thêm mới thành hàng biểu tượng ⊕ ↻ như sheet đối tượng (T538); kho không cho thêm mới ở danh mục và chứng từ; lý do thu chi thêm mới được như web | PhuongXT | Đang làm | Sửa `MChon.tsx`, `MLapPhieu.tsx`, `MLapPhieuKho.tsx`, `MDtThuChiLap.tsx`, `MDanhMuc.tsx`, cuối `app.css` |
 | T536 | Điện thoại: tab Lịch sử của màn xem phiếu thành dòng thời gian theo ngày (Mẫu A); nút quay lại thẻ chi phí phân bổ dùng mũi tên ←; khung màn xem, lập phiếu thu chi cách mép 16px, bo 4 góc | Trum | Đang làm | Chỉ điện thoại. Giao Anti Windows ở bản clone `Web-t536`. Sửa `MCcdc.tsx`, `MDtThuChiXem.tsx`, `MXemPhieu.tsx` (tab Lịch sử, T436 cho sửa), `MLichSu.tsx` mới, `app.css` (khối T522, mục cuối T536). Chung `MDtThuChiXem.tsx`, `MXemPhieu.tsx` với T527: gộp khi T527 vào main |
 | T530 | Danh sách chứng từ web: bỏ khung xem chi tiết phiếu ở dưới bảng (dòng "Chi tiết …", nút Xem chi tiết, Thu gọn), xem phiếu bằng đúp chuột | Trum | Đang làm | Đợt 1, giao Anti Windows chung T533, T534. Sửa `CatalogScreen.tsx`, `ChungTuBanHang.tsx`, `app.css` (mục cuối T530) |
 | T532 | Icon nét Linear: báo cáo con trong danh sách Báo cáo (nhóm giữ icon khối), các mục trong menu nút Thêm mới | Trum | Đang làm | Đợt 1, giao Anti WSL. Sửa `bao-cao/TrungTam.tsx`, `CongCuDs.tsx`; không sửa `app.css` |
