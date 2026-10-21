@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T604 | Điện thoại, phiếu thu chi: bảng Chọn đối tượng, Chọn lý do làm theo bảng Chọn nhà cung cấp của phiếu mua; form Thêm đối tượng, Thêm lý do theo sheet Thêm nhà cung cấp (`MThemNhanh.tsx`). Phiếu kiểm kê: sheet chọn hàng theo sheet chọn hàng phiếu mua | PhuongXT | 21/10/2026 | [nhật ký](../nhat-ky/2026-10-21-phuongxt-form-them-thu-chi-kiem-ke.md) |
 | T605 | Thẻ chi phí phân bổ gói Free (web và điện thoại): ẩn loại Công cụ dụng cụ, Tài sản cố định ở ô Loại thẻ, Ghi tăng hàng loạt, danh sách thẻ; chỉ còn Chi phí trả trước. Trường chọn danh mục có thêm `dsGoi` | dinhlanphuongipacc | 21/10/2026 | [nhật ký](../nhat-ky/2026-10-21-dinhlanphuongipacc-the-pb-free-cptt.md) |
 | T601 | Điện thoại, phiếu mua hàng: so từng khung canvas T600 với code, làm nốt chỗ còn thiếu ở màn xem, màn sửa, thêm mới, luồng thanh toán ngay, nhà cung cấp, thêm dòng | Trum | 21/10/2026 | [2026-10-21-trum-hoan-thien-phieu-mua-canvas](../nhat-ky/2026-10-21-trum-hoan-thien-phieu-mua-canvas.md) |
 | T602 | Điện thoại, tab Nghiệp vụ: bỏ chip cam "Nợ 138,2 tr" ở dòng Mua hàng | Trum | 21/10/2026 | [2026-10-21-trum-hoan-thien-phieu-mua-canvas](../nhat-ky/2026-10-21-trum-hoan-thien-phieu-mua-canvas.md) |

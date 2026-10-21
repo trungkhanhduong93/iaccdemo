@@ -15,8 +15,9 @@ import { useDongChungTu } from '../generic/VoucherScreen'
 import { theoLoai } from '../generic/nhom'
 import { TAI_KHOAN } from '../../modules/danh-muc/data'
 import { MChon } from './MChon'
-import { MFormDm } from './MFormDm'
-import { addCatalogRow, getAllCatalogRows, getDmMeta, useAddedCatalogRows } from '../generic/danhMucStore'
+import { MThemNhanh } from './MThemNhanh'
+import { Icon } from '../Icon'
+import { addCatalogRow, getAllCatalogRows, getDmMeta, sinhMaKeTiep, useAddedCatalogRows } from '../generic/danhMucStore'
 import { LichDon } from '../ChonNgay'
 
 export interface MDtThuChiLapProps extends ScreenProps {
@@ -454,9 +455,15 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
   // Lý do thu, chi lấy từ danh mục Lý do nghiệp vụ, gồm cả lý do vừa thêm trong phiên (như web)
   const dsLyDoOptions = useMemo(() => {
     const dung = isChi ? 'Chi tiền' : 'Thu tiền'
-    const ds = [...LY_DO.filter(l => l.dung === dung).map(l => l.ten), ...lyDaThem.filter(l => l.dung === dung).map(l => String(l.ten ?? '').trim())]
-    return [...new Set(ds.filter(Boolean))].map(t => ({ k: t, ten: t }))
+    const ds = [...LY_DO.filter(l => l.dung === dung).map(l => ({ ma: String(l.ma ?? ''), ten: l.ten })), ...lyDaThem.filter(l => l.dung === dung).map(l => ({ ma: String(l.ma ?? ''), ten: String(l.ten ?? '').trim() }))]
+    const daCo = new Set<string>()
+    return ds.filter(l => l.ten && !daCo.has(l.ten) && daCo.add(l.ten)).map(l => ({ k: l.ten, ten: l.ten, ma: l.ma }))
   }, [isChi, lyDaThem])
+  const [timLy, setTimLy] = useState('')
+  const dsLyDoLoc = useMemo(() => {
+    const q = timLy.trim().toLowerCase()
+    return q ? dsLyDoOptions.filter(l => l.ten.toLowerCase().includes(q) || l.ma.toLowerCase().includes(q)) : dsLyDoOptions
+  }, [dsLyDoOptions, timLy])
 
   // T526: Quỹ lọc theo loại phiếu và chi nhánh
   const dsQuyOptions = useMemo(() => {
@@ -988,113 +995,88 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
         </button>
       </footer>
 
-      {/* ── SHEET CHỌN ĐỐI TƯỢNG THEO FIGMA MB05.1 ── */}
+      {/* ── SHEET CHỌN ĐỐI TƯỢNG: cùng bố cục sheet Chọn nhà cung cấp của phiếu mua (T604) ── */}
       {moChonDt && (
-        <div className="m-tc-sheet-overlay" onClick={() => setMoChonDt(false)}>
-          <div className="m-tc-sheet-tam m-tc-dt-sheet" onClick={e => e.stopPropagation()}>
-            <div className="m-tc-sheet-handle" />
-            <div className="m-tc-dt-dau">
-              <h2 className="m-tc-dt-tieu-de">Chọn đối tượng</h2>
-              <button
-                type="button"
-                className="m-tc-btn-dong-x"
-                onClick={() => setMoChonDt(false)}
-                aria-label="Đóng"
-              >
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M18 6L6 18M6 6l12 12" />
-                </svg>
+        <div className="m-tam-overlay" onClick={() => setMoChonDt(false)}>
+          <div className="m-tam-hop m-t600-sheet-85" onClick={e => e.stopPropagation()}>
+            <div className="m-tam-dau">
+              <h2 className="m-tam-tieu">Chọn đối tượng</h2>
+              <button type="button" className="m-tam-dong-btn" onClick={() => setMoChonDt(false)} aria-label="Đóng">
+                <Icon n="x" className="ic sm" kieu="net" />
               </button>
             </div>
 
-            {/* Ô tìm kiếm */}
-            <div className="m-tc-dt-tim-wrap">
-              <svg className="m-tc-dt-tim-ic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="11" cy="11" r="7" />
-                <path d="M21 21l-4.35-4.35" />
-              </svg>
-              <input
-                type="text"
-                autoFocus
-                className="m-tc-dt-tim-inp"
-                placeholder="Tìm tên, mã, số điện thoại…"
-                value={timDt}
-                onChange={e => setTimDt(e.target.value)}
-              />
+            <div style={{ padding: '8px 16px', borderBottom: '1px solid var(--border)' }}>
+              <div className="m-lp-tim-hang-wrap" style={{ width: '100%' }}>
+                <Icon n="search" className="ic sm m-lp-tim-ic" kieu="net" />
+                <input
+                  type="text"
+                  className="m-lp-tim-hang-inp"
+                  placeholder="Tìm tên, mã, MST, SĐT..."
+                  value={timDt}
+                  onChange={e => setTimDt(e.target.value)}
+                />
+                {timDt && (
+                  <button type="button" className="m-lp-tim-hang-x" onClick={() => setTimDt('')}>
+                    <Icon n="x" className="ic sm" kieu="net" />
+                  </button>
+                )}
+              </div>
+              {/* Lọc loại đối tượng: thu chi chọn được cả nhà cung cấp, nhân viên, khách hàng */}
+              <div style={{ display: 'flex', gap: 6, marginTop: 8, overflowX: 'auto', scrollbarWidth: 'none' }}>
+                {([['all', 'Tất cả'], ['ncc', 'Nhà cung cấp'], ['nv', 'Nhân viên'], ['kh', 'Khách hàng']] as const).map(([k, nhan]) => (
+                  <button
+                    key={k}
+                    type="button"
+                    className={`btn ${tabLoaiDt === k ? 'pri' : 'sub'} sm`}
+                    style={{ height: 28, borderRadius: 14, fontSize: 12, padding: '0 12px', whiteSpace: 'nowrap', flexShrink: 0 }}
+                    onClick={() => setTabLoaiDt(k)}
+                  >
+                    {nhan}
+                  </button>
+                ))}
+              </div>
             </div>
 
-            {/* Chip lọc loại đối tượng */}
-            <div className="m-tc-dt-chips">
-              <button
-                type="button"
-                className={`m-tc-dt-chip${tabLoaiDt === 'all' ? ' on' : ''}`}
-                onClick={() => setTabLoaiDt('all')}
-              >
-                Tất cả
-              </button>
-              <button
-                type="button"
-                className={`m-tc-dt-chip${tabLoaiDt === 'ncc' ? ' on' : ''}`}
-                onClick={() => setTabLoaiDt('ncc')}
-              >
-                Nhà cung cấp
-              </button>
-              <button
-                type="button"
-                className={`m-tc-dt-chip${tabLoaiDt === 'nv' ? ' on' : ''}`}
-                onClick={() => setTabLoaiDt('nv')}
-              >
-                Nhân viên
-              </button>
-              <button
-                type="button"
-                className={`m-tc-dt-chip${tabLoaiDt === 'kh' ? ' on' : ''}`}
-                onClick={() => setTabLoaiDt('kh')}
-              >
-                Khách hàng
-              </button>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 16px', background: '#f8fafc', borderBottom: '1px solid var(--border)' }}>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button
+                  type="button"
+                  className="btn sub sm"
+                  style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, borderRadius: 6, fontSize: 12, fontWeight: 600 }}
+                  onClick={() => {
+                    setMoChonDt(false)
+                    setMoThemDt(true)
+                  }}
+                >
+                  <span>⊕</span> Thêm mới
+                </button>
+                <button
+                  type="button"
+                  className="btn sub sm"
+                  style={{ height: 32, width: 32, padding: 0, borderRadius: 6 }}
+                  onClick={() => {
+                    setDangTaiDt(true)
+                    setTimeout(() => setDangTaiDt(false), 600)
+                  }}
+                  title="Tải lại"
+                >
+                  ↻
+                </button>
+              </div>
+              <div style={{ fontSize: 12, color: 'var(--muted)' }}>
+                {dsDoiTuongLoc.length} đối tượng
+              </div>
             </div>
 
-            {/* Thanh biểu tượng Thêm mới, Tải lại như ô chọn danh mục trên web */}
-            <div className="m-tc-dt-thanh">
-              <button
-                type="button"
-                className="m-tc-dt-btn-ic"
-                aria-label="Thêm đối tượng mới"
-                onClick={() => {
-                  setMoChonDt(false)
-                  setMoThemDt(true)
-                }}
-              >
-                <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="8" cy="8" r="6" />
-                  <path d="M8 5.2v5.6M5.2 8h5.6" />
-                </svg>
-              </button>
-              <button
-                type="button"
-                className="m-tc-dt-btn-ic"
-                aria-label="Tải lại danh sách"
-                onClick={() => {
-                  setDangTaiDt(true)
-                  setTimeout(() => setDangTaiDt(false), 600)
-                }}
-              >
-                <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M13.3 7.5A5.5 5.5 0 1 1 11.7 3.6L13.5 5.5" />
-                  <path d="M13.5 2v3.5H10" />
-                </svg>
-              </button>
-            </div>
-
-            {/* Danh sách đối tượng */}
-            <div className="m-tc-dt-ds">
+            <div className="m-t600-sheet-than" style={{ padding: '8px 16px' }}>
               {dangTaiDt ? <div className="m-tc-dt-dang-tai">Đang tải dữ liệu</div> : dsDoiTuongLoc.map(d => {
-                const isSelected = d.ten === doiTuong
+                const isChon = d.ten === doiTuong
+                const vietTat = d.ten.split(' ').map(w => w[0]).filter(Boolean).slice(0, 2).join('').toUpperCase()
                 return (
                   <div
                     key={d.ma}
-                    className="m-tc-dt-item"
+                    className={`m-t600-hang-ncc ${isChon ? 'on' : ''}`}
                     onClick={() => {
                       setDoiTuong(d.ten)
                       if (d.diaChi) setDiaChi(d.diaChi)
@@ -1102,15 +1084,28 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
                       setDaSua(true)
                     }}
                   >
-                    <div className="m-tc-dt-info">
-                      <span className="ten">{d.ten}</span>
-                      <span className="loai"><b className="m-tc-dt-ma">{d.ma}</b> · {d.loai}</span>
+                    <div style={{
+                      width: 36,
+                      height: 36,
+                      borderRadius: 6,
+                      background: 'var(--tint, #10b981)',
+                      color: '#fff',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontWeight: 700,
+                      fontSize: 13,
+                      flexShrink: 0
+                    }}>
+                      {vietTat}
                     </div>
-                    {isSelected && (
-                      <svg className="m-tc-dt-check" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0560a6" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="20 6 9 17 4 12" />
-                      </svg>
-                    )}
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontWeight: 600, fontSize: 13, color: 'var(--fg)' }}>{d.ten}</div>
+                      <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>
+                        {d.ma} · {d.loai}{d.mst ? ` · MST ${d.mst}` : ''}
+                      </div>
+                    </div>
+                    {isChon && <span style={{ color: 'var(--tint)' }}><Icon n="check" className="ic sm" kieu="net" /></span>}
                   </div>
                 )
               })}
@@ -1119,30 +1114,37 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
         </div>
       )}
 
-      {/* Form thêm đối tượng vào danh mục ngay từ phiếu; lưu xong chọn luôn đối tượng đó */}
-      {moThemDt && (() => {
-        const meta = getDmMeta('doiTuong', undefined, timDt.trim() || undefined)
-        return (
-          <MFormDm
-            sc={meta.sc}
-            cauHinh={meta.cauHinh}
-            edit={{}}
-            dienSan={meta.dienSan}
-            all={meta.all}
-            ten={meta.ten}
-            tenNgan={meta.tenNgan}
-            onDong={() => setMoThemDt(false)}
-            onLuu={val => {
-              addCatalogRow(meta.catKey, val)
-              const ma = String(val.ma ?? '')
-              setDoiTuong(String(val.ten ?? '').trim())
-              setDiaChi(val.diaChi ? String(val.diaChi) : DIA_CHI_DT[ma] ?? '')
-              setDaSua(true)
-              setMoThemDt(false)
-            }}
-          />
-        )
-      })()}
+      {/* cùng bố cục sheet Thêm nhà cung cấp của phiếu mua (T604) */}
+      {moThemDt && (
+        <MThemNhanh
+          tieuDe="Thêm đối tượng"
+          dau={{
+            ten: timDt.trim(),
+            loai: tabLoaiDt === 'ncc' ? 'Nhà cung cấp' : tabLoaiDt === 'nv' ? 'Nhân viên' : tabLoaiDt === 'kh' ? 'Khách hàng' : isChi ? 'Nhà cung cấp' : 'Khách hàng',
+          }}
+          truong={[
+            { k: 'loai', nhan: 'Loại đối tượng', kieu: 'chip', ds: ['Nhà cung cấp', 'Nhân viên', 'Khách hàng'], batBuoc: true },
+            { k: 'mst', nhan: 'Mã số thuế', goiY: 'Mã số thuế doanh nghiệp / hộ KD', hien: v => v.loai !== 'Nhân viên' },
+            { k: 'ma', nhan: 'Mã đối tượng', batBuoc: true, ngan: true, goiY: 'Tự sinh' },
+            { k: 'ten', nhan: 'Tên đối tượng', batBuoc: true, goiY: 'Tên công ty hoặc người nộp, người nhận' },
+            { k: 'diaChi', nhan: 'Địa chỉ', goiY: 'Số nhà, đường, phường, quận...' },
+            { k: 'email', nhan: 'Email', kieu: 'email', goiY: 'email@congty.com' },
+            { k: 'sdt', nhan: 'Số điện thoại', kieu: 'tel', goiY: '0901234567' },
+          ]}
+          chuThich="Mã đối tượng tự sinh, sửa được. Thông tin khác bổ sung ở Danh mục đối tượng."
+          onQuayLai={() => { setMoThemDt(false); setMoChonDt(true) }}
+          onDong={() => setMoThemDt(false)}
+          onLuu={val => {
+            const ten = String(val.ten ?? '').trim()
+            const ma = String(val.ma ?? '').trim() || sinhMaKeTiep('1.5', { ...val, ten }, getAllCatalogRows('1.5'))
+            addCatalogRow('1.5', { ...val, ma, ten, dongY: 1 })
+            setDoiTuong(ten)
+            setDiaChi(String(val.diaChi ?? '').trim())
+            setDaSua(true)
+            setMoThemDt(false)
+          }}
+        />
+      )}
 
       {/* Sheet chọn chi nhánh */}
       <MChon
@@ -1193,41 +1195,127 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
         }}
       />
 
-      {/* Sheet chọn Lý do thu/chi */}
-      <MChon
-        mo={moChonLyDo}
-        onDong={() => setMoChonLyDo(false)}
-        tieuDe={isChi ? 'Chọn lý do chi' : 'Chọn lý do thu'}
-        ds={dsLyDoOptions}
-        chon={lyDo}
-        onChon={k => {
-          chonLyDo(k)
-          setMoChonLyDo(false)
-        }}
-        onThem={() => {
-          setMoChonLyDo(false)
-          setMoThemLy(true)
-        }}
-        nhanThem={isChi ? 'Thêm lý do chi' : 'Thêm lý do thu'}
-        tim
-      />
+      {/* Sheet chọn Lý do thu/chi: cùng bố cục sheet Chọn nhà cung cấp của phiếu mua (T604) */}
+      {moChonLyDo && (
+        <div className="m-tam-overlay" onClick={() => setMoChonLyDo(false)}>
+          <div className="m-tam-hop m-t600-sheet-85" onClick={e => e.stopPropagation()}>
+            <div className="m-tam-dau">
+              <h2 className="m-tam-tieu">{isChi ? 'Chọn lý do chi' : 'Chọn lý do thu'}</h2>
+              <button type="button" className="m-tam-dong-btn" onClick={() => setMoChonLyDo(false)} aria-label="Đóng">
+                <Icon n="x" className="ic sm" kieu="net" />
+              </button>
+            </div>
+
+            <div style={{ padding: '8px 16px', borderBottom: '1px solid var(--border)' }}>
+              <div className="m-lp-tim-hang-wrap" style={{ width: '100%' }}>
+                <Icon n="search" className="ic sm m-lp-tim-ic" kieu="net" />
+                <input
+                  type="text"
+                  className="m-lp-tim-hang-inp"
+                  placeholder="Tìm tên, mã lý do..."
+                  value={timLy}
+                  onChange={e => setTimLy(e.target.value)}
+                />
+                {timLy && (
+                  <button type="button" className="m-lp-tim-hang-x" onClick={() => setTimLy('')}>
+                    <Icon n="x" className="ic sm" kieu="net" />
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 16px', background: '#f8fafc', borderBottom: '1px solid var(--border)' }}>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button
+                  type="button"
+                  className="btn sub sm"
+                  style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, borderRadius: 6, fontSize: 12, fontWeight: 600 }}
+                  onClick={() => {
+                    setMoChonLyDo(false)
+                    setMoThemLy(true)
+                  }}
+                >
+                  <span>⊕</span> Thêm mới
+                </button>
+                <button
+                  type="button"
+                  className="btn sub sm"
+                  style={{ height: 32, width: 32, padding: 0, borderRadius: 6 }}
+                  onClick={() => {}}
+                  title="Tải lại"
+                >
+                  ↻
+                </button>
+              </div>
+              <div style={{ fontSize: 12, color: 'var(--muted)' }}>
+                {dsLyDoLoc.length} lý do
+              </div>
+            </div>
+
+            <div className="m-t600-sheet-than" style={{ padding: '8px 16px' }}>
+              {dsLyDoLoc.length === 0 ? <div style={{ padding: '24px 16px', textAlign: 'center', color: 'var(--muted)', fontSize: 14 }}>Không tìm thấy kết quả phù hợp</div> : dsLyDoLoc.map(l => {
+                const isChon = l.ten === lyDo
+                const vietTat = l.ten.split(' ').map(w => w[0]).filter(Boolean).slice(0, 2).join('').toUpperCase()
+                return (
+                  <div
+                    key={l.ten}
+                    className={`m-t600-hang-ncc ${isChon ? 'on' : ''}`}
+                    onClick={() => {
+                      chonLyDo(l.ten)
+                      setMoChonLyDo(false)
+                    }}
+                  >
+                    <div style={{
+                      width: 36,
+                      height: 36,
+                      borderRadius: 6,
+                      background: 'var(--tint, #10b981)',
+                      color: '#fff',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontWeight: 700,
+                      fontSize: 13,
+                      flexShrink: 0
+                    }}>
+                      {vietTat}
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontWeight: 600, fontSize: 13, color: 'var(--fg)' }}>{l.ten}</div>
+                      <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>
+                        {l.ma ? `${l.ma} · ` : ''}{isChi ? 'Chi tiền' : 'Thu tiền'}
+                      </div>
+                    </div>
+                    {isChon && <span style={{ color: 'var(--tint)' }}><Icon n="check" className="ic sm" kieu="net" /></span>}
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Form thêm lý do vào danh mục Lý do nghiệp vụ ngay từ phiếu, như web; lưu xong chọn luôn */}
       {moThemLy && (() => {
         const meta = getDmMeta(isChi ? 'ly:chi' : 'ly:thu')
         return (
-          <MFormDm
-            sc={meta.sc}
-            cauHinh={meta.cauHinh}
-            edit={{}}
-            dienSan={meta.dienSan}
-            all={meta.all}
-            ten={meta.ten}
-            tenNgan={meta.tenNgan}
+          <MThemNhanh
+            tieuDe={isChi ? 'Thêm lý do chi' : 'Thêm lý do thu'}
+            dau={meta.dienSan}
+            truong={[
+              { k: 'ma', nhan: 'Mã lý do', batBuoc: true, ngan: true, goiY: 'Tự sinh' },
+              { k: 'ten', nhan: 'Lý do nghiệp vụ', batBuoc: true, goiY: isChi ? 'Vd: Chi tiền điện' : 'Vd: Thu tiền thanh lý' },
+              { k: 'chiPhi', nhan: 'Là chi phí', kieu: 'tich', hien: () => isChi },
+            ]}
+            chuThich="Mã lý do tự sinh, sửa được. Thông tin khác bổ sung ở Danh mục lý do nghiệp vụ."
+            onQuayLai={() => { setMoThemLy(false); setMoChonLyDo(true) }}
             onDong={() => setMoThemLy(false)}
             onLuu={val => {
-              addCatalogRow(meta.catKey, val)
-              chonLyDo(String(val.ten ?? '').trim())
+              const ten = String(val.ten ?? '').trim()
+              const ma = String(val.ma ?? '').trim() || sinhMaKeTiep(meta.catKey, { ...val, ten }, meta.all)
+              const dong = { ...val, ma, ten }
+              addCatalogRow(meta.catKey, { ...dong, ...meta.cauHinh?.doi?.('chiPhi', dong, meta.all) })
+              chonLyDo(ten)
               setMoThemLy(false)
             }}
           />

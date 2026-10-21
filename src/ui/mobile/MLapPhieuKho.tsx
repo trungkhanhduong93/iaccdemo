@@ -519,6 +519,7 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
 
   // Sheet chọn hàng
   const [moChonHang, setMoChonHang] = useState(false)
+  const [hangDaChonMoi, setHangDaChonMoi] = useState<Set<string>>(new Set())   // hàng tích tạm ở sheet chọn hàng kiểm kê, bấm Thêm mới vào phiếu (T604)
   const [dangTaiHang, setDangTaiHang] = useState(false)
   const [nhomHangChon, setNhomHangChon] = useState('Tất cả')
   const [timHang, setTimHang] = useState('')
@@ -1149,8 +1150,190 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
         />
       )}
 
+      {/* ── SHEET CHỌN HÀNG HOÁ PHIẾU KIỂM KÊ: cùng bố cục sheet chọn hàng của phiếu mua (T604) ── */}
+      {laKk && moChonHang && (() => {
+        const dong = () => { setHangDaChonMoi(new Set()); setMoChonHang(false) }
+        const tatCa = dsHangHienThi.length > 0 && dsHangHienThi.every(h => hangDaChonMoi.has(h.ma))
+        const motPhan = !tatCa && dsHangHienThi.some(h => hangDaChonMoi.has(h.ma))
+        return (
+          <div className="m-tam-overlay" onClick={dong}>
+            <div className="m-tam-hop m-t600-sheet-85" onClick={e => e.stopPropagation()}>
+              <div className="m-tam-dau">
+                <h2 className="m-tam-tieu">Chọn hàng hoá</h2>
+                <button type="button" className="m-tam-dong-btn" onClick={dong} aria-label="Đóng">
+                  <Icon n="x" className="ic sm" kieu="net" />
+                </button>
+              </div>
+
+              {/* Hàng 1: nhóm hàng + tìm kiếm */}
+              <div style={{ display: 'flex', gap: 8, padding: '8px 16px', borderBottom: '1px solid var(--border)' }}>
+                <button
+                  type="button"
+                  className="m-lp-btn-nhom"
+                  style={{ height: 36, minWidth: 110, fontSize: 12, padding: '0 8px' }}
+                  onClick={() => setMoChonNhomHang(true)}
+                >
+                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{nhomHangChon}</span>
+                  <Icon n="chevd" className="ic sm" kieu="net" />
+                </button>
+                <div className="m-lp-tim-hang-wrap" style={{ flex: 1 }}>
+                  <Icon n="search" className="ic sm m-lp-tim-ic" kieu="net" />
+                  <input
+                    type="text"
+                    className="m-lp-tim-hang-inp"
+                    placeholder="Tìm tên, mã hàng..."
+                    value={timHang}
+                    onChange={e => setTimHang(e.target.value)}
+                  />
+                  {timHang && (
+                    <button type="button" className="m-lp-tim-hang-x" onClick={() => setTimHang('')}>
+                      <Icon n="x" className="ic sm" kieu="net" />
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Hàng 2: thêm hàng mới, tải lại, chọn tất cả */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 16px', background: '#f8fafc', borderBottom: '1px solid var(--border)' }}>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button
+                    type="button"
+                    className="btn sub sm"
+                    style={{ display: 'flex', alignItems: 'center', gap: 4, height: 30, borderRadius: 6, fontSize: 12 }}
+                    onClick={() => {
+                      setMoChonHang(false)
+                      setMoThemDm('hang')
+                    }}
+                  >
+                    <span>⊕</span> Thêm hàng
+                  </button>
+                  <button
+                    type="button"
+                    className="btn sub sm"
+                    style={{ height: 30, width: 30, padding: 0, borderRadius: 6 }}
+                    onClick={() => {
+                      setDangTaiHang(true)
+                      setTimeout(() => setDangTaiHang(false), 500)
+                    }}
+                    title="Tải lại"
+                  >
+                    ↻
+                  </button>
+                </div>
+                <div
+                  style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontSize: 12, fontWeight: 500 }}
+                  onClick={() => setHangDaChonMoi(tatCa ? new Set() : new Set(dsHangHienThi.map(h => h.ma)))}
+                >
+                  <span>Chọn tất cả ({dsHangHienThi.length})</span>
+                  <div
+                    className={`m-lp-cb-hang ${tatCa ? 'on' : ''}`}
+                    style={{
+                      width: 18,
+                      height: 18,
+                      borderRadius: 4,
+                      border: '1.5px solid var(--tint, #10b981)',
+                      background: tatCa ? 'var(--tint, #10b981)' : motPhan ? 'var(--tint-light, #ecfdf5)' : '#fff',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: '#fff',
+                      fontSize: 11
+                    }}
+                  >
+                    {tatCa && <Icon n="check" className="ic sm" kieu="net" />}
+                    {motPhan && <span style={{ color: 'var(--tint)', fontWeight: 800 }}>-</span>}
+                  </div>
+                </div>
+              </div>
+
+              {/* Danh sách hàng */}
+              <div className="m-t600-sheet-than" style={{ padding: '8px 16px' }}>
+                {dangTaiHang ? (
+                  <div className="m-tc-dt-dang-tai">Đang tải dữ liệu...</div>
+                ) : dsHangHienThi.map(h => {
+                  const daChonMoi = hangDaChonMoi.has(h.ma)
+                  const daCoTrongPhieu = dsDong.some(d => d.ma === h.ma)
+                  return (
+                    <div
+                      key={h.ma}
+                      className={`m-the-trang m-lp-the-hang ${daChonMoi ? 'on' : ''}`}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 12,
+                        padding: '10px 8px',
+                        borderBottom: '1px solid var(--border)',
+                        cursor: 'pointer',
+                        background: daChonMoi ? 'var(--tint-light, #f0fdf4)' : 'transparent',
+                        borderRadius: 6
+                      }}
+                      onClick={() => setHangDaChonMoi(prev => {
+                        const next = new Set(prev)
+                        if (next.has(h.ma)) next.delete(h.ma)
+                        else next.add(h.ma)
+                        return next
+                      })}
+                    >
+                      <div
+                        className={`m-lp-cb-hang ${daChonMoi ? 'on' : ''}`}
+                        style={{
+                          width: 20,
+                          height: 20,
+                          borderRadius: 4,
+                          border: '1.5px solid var(--border-d, #94a3b8)',
+                          borderColor: daChonMoi ? 'var(--tint, #10b981)' : '#94a3b8',
+                          background: daChonMoi ? 'var(--tint, #10b981)' : '#fff',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: '#fff',
+                          flexShrink: 0
+                        }}
+                      >
+                        {daChonMoi && <Icon n="check" className="ic sm" kieu="net" />}
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontWeight: 600, fontSize: 13, color: 'var(--fg)' }}>{h.ten}</div>
+                        <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>
+                          Mã: {h.ma} · {h.dvt}
+                          {daCoTrongPhieu && (
+                            <span style={{ color: 'var(--amber, #f59e0b)', fontWeight: 500, marginLeft: 4 }}>
+                              · đã có trong phiếu
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+
+              {/* Chân ghim đáy */}
+              <div className="m-t600-sheet-day">
+                <div style={{ fontSize: 13, color: 'var(--muted)' }}>
+                  Đã chọn: <b>{hangDaChonMoi.size}</b>
+                </div>
+                <button
+                  type="button"
+                  className="btn pri"
+                  style={{ height: 44, borderRadius: 8, padding: '0 24px', fontWeight: 600 }}
+                  onClick={() => {
+                    for (const h of danhMucHang) {
+                      if (hangDaChonMoi.has(h.ma) && !dsDong.some(d => d.ma === h.ma)) toggleHang(h)
+                    }
+                    dong()
+                  }}
+                >
+                  {hangDaChonMoi.size > 0 ? `Thêm ${hangDaChonMoi.size} dòng` : 'Xong'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )
+      })()}
+
       {/* ── SHEET TẤM CHỌN HÀNG HOÁ ── */}
-      {moChonHang && (
+      {!laKk && moChonHang && (
         <div className="m-tam-overlay" onClick={() => setMoChonHang(false)}>
           <div className="m-tam-hop m-tam-hop-apdung m-lp-sheet-hang" onClick={e => e.stopPropagation()}>
             <div className="m-tam-dau m-tam-dau-apdung">
