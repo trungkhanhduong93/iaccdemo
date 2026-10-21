@@ -4,6 +4,11 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T556 | Web, xem trước khi in báo cáo: cột Số phiếu (cột mã `cls: 'code'`) chữ to, xanh, bấm được, đè cột bên. Sửa về chữ thường, đen, không bấm được trên tờ in | Trum | 21/10/2026 | `2026-10-21-trum-loi-web-t556-t560.md` |
+| T561 | Web, Bộ lọc nâng cao ở báo cáo: icon lệch (icon lịch ô Thời gian đè nút ghim); bỏ kéo thả đổi vị trí ô | Trum | 21/10/2026 | `2026-10-21-trum-loi-web-t556-t560.md` |
+| T558 | Web, chân phiếu Xuất bán POS và các phiếu chưa giống Mua hàng: lấy chân phiếu Mua hàng làm chuẩn | Trum | 21/10/2026 | `2026-10-21-trum-loi-web-t556-t560.md` |
+| T559 | Web, sidebar: chip `Ctrl K` ở nút tìm kiếm giãn rộng, lệch | Trum | 21/10/2026 | `2026-10-21-trum-loi-web-t556-t560.md` |
+| T560 | Web, trang chủ thẻ Quỹ tiền: ghi đủ số tiền, bỏ rút gọn "tr" (dòng thu chi tháng, số từng quỹ, số giữa vòng) | Trum | 21/10/2026 | `2026-10-21-trum-loi-web-t556-t560.md` |
 | T551 | Thẻ tổng Thu chi điện thoại: 2 ô Tổng thu, Tổng chi ghi đủ số, bỏ số tổng gộp (QD77) | Trum | 21/10/2026 | `2026-10-21-trum-loi-dien-thoai-t551-t555.md` |
 | T553 | Sổ S1a-HKD điện thoại: phần báo cáo theo mẫu QD77, thanh đáy nút Xuất báo cáo ra Excel | Trum | 21/10/2026 | `2026-10-21-trum-loi-dien-thoai-t551-t555.md` |
 | T554 | Danh sách chứng từ mua hàng 4.1.1 điện thoại theo mẫu QD77: thẻ tổng, nhóm theo ngày, hàng lọc như Thu chi | Trum | 21/10/2026 | `2026-10-21-trum-loi-dien-thoai-t551-t555.md` |

@@ -3,6 +3,11 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 21/10/2026
+- T556: Xem trước khi in báo cáo: cột Số phiếu chữ thường, màu đen như ô khác, không bấm được, không tràn sang cột bên.
+- T561: Bộ lọc nâng cao: icon lịch ô Thời gian không đè nút ghim; bỏ kéo thả đổi chỗ ô lọc. Tuỳ chỉnh cột vẫn kéo thả được.
+- T558: Xem phiếu Xuất bán POS: chân phiếu như Mua hàng, nút In phiếu bên trái, Đóng bên phải, dải tổng có Tiền hàng, Tiền thuế GTGT.
+- T559: Sidebar: chip Ctrl K ở nút tìm kiếm gọn, căn phải.
+- T560: Trang chủ web, thẻ Quỹ tiền ghi đủ số tiền, không rút gọn "tr".
 - T551: Điện thoại, danh sách Thu chi: thẻ tổng ghi đủ Tổng thu, Tổng chi, bỏ số tổng gộp.
 - T553: Điện thoại, sổ S1a-HKD: phần báo cáo có thẻ tiêu đề kèm Tổng cộng, doanh thu theo ngày. Nút Xuất báo cáo ra Excel ở đáy màn.
 - T554: Điện thoại, danh sách chứng từ mua hàng: thẻ tổng, nhóm theo ngày kèm tổng ngày, mỗi dòng có số hàng hoá và nhà cung cấp.

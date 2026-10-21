@@ -37611,27 +37611,6 @@ body:has(.m-app) .m-thanh-duoi .m-tab.on .m-tab-ic .ic .l2 {
   gap: 8px;
   min-width: 0;
 }
-.ds-nc-o.dang-keo {
-  opacity: 0.4;
-}
-.ds-nc-o.dich {
-  outline: 2px dashed var(--blue, #0560a6);
-  outline-offset: 2px;
-}
-
-.ds-nc-keo-tay {
-  display: none;
-  position: absolute;
-  left: -8px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--muted, #64748b);
-  cursor: grab;
-  z-index: 5;
-}
-.ds-nc-o:hover .ds-nc-keo-tay {
-  display: flex;
-}
 
 .ds-nc-o-ctrl {
   flex: 1;
@@ -37770,9 +37749,6 @@ body:has(.m-app) .m-thanh-duoi .m-tab.on .m-tab-ic .ic .l2 {
 }
 
 /* ── Bộ lọc nâng cao: ô Thời gian bị icon đè chữ (T541) ── */
-.ds-nc-keo-tay {
-  left: -18px;
-}
 .ds-nc-luoi .ds-o-thoiGian .kn-nut {
   padding: 0 8px;
   font-size: 12px;
@@ -38234,4 +38210,206 @@ body:has(.m-app) .m-thanh-duoi .m-tab.on .m-tab-ic .ic .l2 {
   color: var(--ink);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
+}
+
+
+/* ── Tờ in: ô mã, số phiếu chữ thường (T556) ── */
+.bc-trang .rpt td.code,
+.bc-trang-do .rpt td.code,
+.bc-in-goc .rpt td.code {
+  font-size: inherit;
+  font-family: inherit;
+  font-weight: inherit;
+  color: inherit;
+  text-decoration: none;
+  cursor: default;
+  pointer-events: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bc-trang .rpt td.code a,
+.bc-trang .rpt td.code button,
+.bc-trang .rpt td.code .ds-link-so,
+.bc-trang-do .rpt td.code a,
+.bc-trang-do .rpt td.code button,
+.bc-trang-do .rpt td.code .ds-link-so,
+.bc-in-goc .rpt td.code a,
+.bc-in-goc .rpt td.code button,
+.bc-in-goc .rpt td.code .ds-link-so {
+  font-size: inherit !important;
+  font-family: inherit !important;
+  font-weight: inherit !important;
+  color: inherit !important;
+  text-decoration: none !important;
+  cursor: default !important;
+  pointer-events: none !important;
+  display: inline;
+}
+
+@media print {
+  .rpt td.code,
+  .rpt td.code a,
+  .rpt td.code button,
+  .rpt td.code .ds-link-so {
+    font-size: inherit !important;
+    font-family: inherit !important;
+    font-weight: inherit !important;
+    color: inherit !important;
+    text-decoration: none !important;
+    cursor: default !important;
+    pointer-events: none !important;
+  }
+}
+
+/* ── Bộ lọc nâng cao: icon trong ô, bỏ kéo thả (T561) ── */
+.ds-nc-o-ctrl {
+  flex: 1;
+  min-width: 0;
+}
+
+.ds-nc-luoi .kn-nut {
+  width: 100%;
+  padding: 0 8px;
+  font-size: 12px;
+  gap: 4px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ds-nc-luoi .kn-nut .kn-nut-txt {
+  font-size: 11.5px;
+  letter-spacing: -0.3px;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ds-nc-luoi .kn-nut .kn-nut-arr {
+  margin: 0 2px;
+}
+
+.ds-nc-luoi .kn-nut .kn-nut-ic {
+  width: 14px;
+  height: 14px;
+  flex: none;
+  align-self: center;
+}
+
+.ds-nc-luoi .ds-o-sel {
+  width: 100%;
+  padding: 0 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  box-sizing: border-box;
+}
+
+.ds-nc-luoi .ds-o-sel .sel-v,
+.ds-nc-luoi .ds-o-sel .chc-gia-tri-wrap {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ds-nc-luoi .ds-o-sel .ic,
+.ds-nc-luoi .ds-o-sel .chc-mui-ten {
+  flex: none;
+  align-self: center;
+}
+
+.ds-nut-ghim {
+  flex: none;
+  align-self: center;
+}
+
+
+/* ── Chân phiếu theo Mua hàng (T558) ── */
+.fsf-f.fsf-f-xem .xp-footer-trai {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fsf-f.fsf-f-xem .xp-footer-phai {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+
+/* ── Chip Ctrl K nút tìm sidebar (T559) ── */
+.sidebar .sb-tim-btn {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.sidebar .sb-tim-btn > span:not(.kbd) {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sidebar .sb-tim-btn .kbd {
+  flex: none;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1;
+  padding: 3px 6px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #c2cde4;
+  margin-left: auto;
+  align-self: center;
+  box-sizing: border-box;
+}
+
+.shell.gon .sb-tim-btn .kbd {
+  display: none;
+}
+
+
+/* ── Thẻ Quỹ tiền ghi đủ số (T560) ── */
+.bbt-vq-hang {
+  gap: 16px;
+}
+
+.bbt-vq-hang .bbt-vq-c-val {
+  font-size: 9.5px;
+  font-weight: 700;
+}
+
+.bbt-vq-chuthich {
+  min-width: 170px;
+  flex: 1;
+}
+
+.bbt-vq-ct-row {
+  min-width: 0;
+}
+
+.bbt-vq-ct-name {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bbt-vq-ct-val {
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
 }

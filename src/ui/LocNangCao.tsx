@@ -213,7 +213,6 @@ export function BoLoc({ ds, cauHinh, datCauHinh, dangLoc, khacNhap, onLoc, onXoa
   const trong = cauHinh.thuTu.filter(k => !ngoai.includes(k) && theoK.has(k))
   // Phễu đếm ô trong Bộ lọc nâng cao đang có điều kiện; màn chưa khai coGiaTri thì dùng số đếm truyền vào (T510)
   const soTrong = ds.some(o => o.coGiaTri !== undefined) ? trong.filter(k => theoK.get(k)!.coGiaTri).length : (soDem ?? (dangLoc ? 1 : 0))
-  const keo = useKeoTha(cauHinh.thuTu, thuTu => datCauHinh({ thuTu, ngoai: thuTu.filter(k => ngoai.includes(k)) }))
 
   const doiBat = (k: string) => {
     if (ngoai.includes(k)) datCauHinh({ ...cauHinh, ngoai: ngoai.filter(x => x !== k) })
@@ -265,12 +264,8 @@ export function BoLoc({ ds, cauHinh, datCauHinh, dangLoc, khacNhap, onLoc, onXoa
               return (
                 <div
                   key={k}
-                  className={`ds-nc-o${keo.keo === k ? ' dang-keo' : ''}${keo.dich === k ? ' dich' : ''}`}
-                  {...keo.props(k)}
+                  className="ds-nc-o"
                 >
-                  <span className="ds-nc-keo-tay" title="Kéo để đổi thứ tự">
-                    <TayKeo />
-                  </span>
                   <div className="ds-nc-o-ctrl">
                     <ONhanVien nhan={def.ten} className={`ds-o-${k}`}>
                       {def.o}

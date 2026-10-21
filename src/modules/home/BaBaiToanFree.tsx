@@ -688,7 +688,7 @@ export function VongQuy({
                   {dangTro ? 'Tỷ trọng' : 'Tổng tồn quỹ'}
                 </text>
                 <text x={cx} y={cy + 13} textAnchor="middle" className="bbt-vq-c-val">
-                  {dangTro ? pct(dangTro.tyLe) : short(tong)}
+                  {dangTro ? pct(dangTro.tyLe) : kieu === 'desktop' ? moneyD(tong) : short(tong)}
                 </text>
               </g>
             </svg>
@@ -707,7 +707,7 @@ export function VongQuy({
               >
                 <span className="bbt-vq-ct-dot" style={{ background: r.mau }} />
                 <span className="bbt-vq-ct-name">{r.ten}</span>
-                <span className="bbt-vq-ct-val">{short(r.cuoi)}</span>
+                <span className="bbt-vq-ct-val">{kieu === 'desktop' ? moneyD(r.cuoi) : short(r.cuoi)}</span>
               </div>
             ))}
           </div>
@@ -1223,8 +1223,8 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
             </button>
             <div className="phu bbt-phu bbt-e-phu">
               {thangXem === 10 ? 'Tháng này thu' : `Tháng ${thangXem} thu`}{' '}
-              <span style={{ color: 'var(--green, #138a52)' }}>{short(tongQuy.thu)}</span> · chi{' '}
-              <span style={{ color: 'var(--red, #c2362b)' }}>{short(tongQuy.chi)}</span>
+              <span style={{ color: 'var(--green, #138a52)' }}>{moneyD(tongQuy.thu)}</span> · chi{' '}
+              <span style={{ color: 'var(--red, #c2362b)' }}>{moneyD(tongQuy.chi)}</span>
             </div>
           </div>
 

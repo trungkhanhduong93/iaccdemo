@@ -603,9 +603,13 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
   const [cTt, tTt] = kieu === 'khong' ? ['ok', 'Đã đồng bộ'] : TT_CT[row.tt] ?? ['warn', 'Chưa ghi sổ']
   return (
     <FormToanMan icon={mod.icon} iconNet onClose={dong0} title="Xuất bán POS"
-      // Phần tổng thành dải cố định ở đáy form, cuộn bảng vẫn thấy (T104); khoản bằng 0 hiện mờ cho gọn
-      // các khoản theo món đã lên bảng chi tiết; dải đáy còn khoản của cả đơn và Tổng tiền (T106)
-      day={<DaiTong tong={tong} muc={[]} tren={[...(tyLe ? [['Giảm thuế GTGT', -giamThue] as [string, number]] : []), ['Phiếu giảm giá', phieuGiam ? -phieuGiam : 0]]} />}   // Phiếu giảm giá thành hàng ngay trên Tổng tiền
+      footClass="fsf-f-xem"
+      // Chân phiếu lấy Mua hàng làm chuẩn (T558): các khoản bên trái, Tổng tiền bên phải
+      day={<DaiTong tong={tong} muc={[
+        ['Tiền hàng', x.dt],
+        ...(tyLe ? [['Giảm thuế GTGT', -giamThue] as [string, number]] : [['Tiền thuế GTGT', x.vat] as [string, number]]),
+        ['Phiếu giảm giá', phieuGiam ? -phieuGiam : 0],
+      ]} />}
       giua={<span className="fsf-tt xem">Chi tiết phiếu <b>{row.so}</b></span>}
       meta={<><St k={cTt}>{tTt}</St><span className="src">FABi</span><span className="chip info"><Icon n="cuahang" className="ic sm" />{row.cn}</span></>}
       // Tuỳ chỉnh giao diện: nút vuông nhỏ ở góc trên phải như form chứng từ khác (T297)
@@ -616,9 +620,21 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
         <NutPhimTat ds={[['Đóng form', 'Esc']]} />
       </>}
       foot={<>
-        <span className="grow" />
-        <button type="button" className="btn sm" onClick={moIn}><Icon n="printer" className="ic sm" />In</button>
-        <button type="button" className="btn sm" onClick={dong0}>Đóng (Esc)</button>
+        <div className="xp-footer-trai">
+          <button type="button" className="xp-btn-in" onClick={moIn}>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M4 12H2.66667C2.31304 12 1.97391 11.8595 1.72386 11.6095C1.47381 11.3594 1.33333 11.0203 1.33333 10.6667V7.33333C1.33333 6.97971 1.47381 6.64057 1.72386 6.39052C1.97391 6.14048 2.31304 6 2.66667 6H13.3333C13.687 6 14.0261 6.14048 14.2761 6.39052C14.5262 6.64057 14.6667 6.97971 14.6667 7.33333V10.6667C14.6667 11.0203 14.5262 11.3594 14.2761 11.6095C14.0261 11.8595 13.687 12 13.3333 12H12" />
+              <path d="M4 6V2C4 1.82319 4.07024 1.65362 4.19526 1.5286C4.32029 1.40357 4.48986 1.33333 4.66667 1.33333H11.3333C11.5101 1.33333 11.6797 1.40357 11.8047 1.5286C11.9298 1.65362 12 1.82319 12 2V6" />
+              <path d="M4.66667 9.33333H11.3333C11.7015 9.33333 12 9.63181 12 10V14C12 14.3682 11.7015 14.6667 11.3333 14.6667H4.66667C4.29848 14.6667 4 14.3682 4 14V10C4 9.63181 4.29848 9.33333 4.66667 9.33333Z" />
+            </svg>
+            <span>In phiếu</span>
+          </button>
+        </div>
+        <div className="xp-footer-phai">
+          <button type="button" className="xp-btn-outline" onClick={dong0}>
+            Đóng (Esc)
+          </button>
+        </div>
       </>}>
       <div className="stack ct-co-dinh" style={{ gap: 14 }}>
         <p className="pos-nhac"><Icon n="info" className="ic sm" />Chứng từ đồng bộ từ FABi: không sửa, trả hàng, xoá trên phiếu này. Sửa đơn trên FABi rồi đồng bộ lại.</p>
