@@ -38673,3 +38673,12 @@ body:has(.m-app) .m-thanh-duoi .m-tab.on .m-tab-ic .ic .l2 {
 /* ── Dòng Tham chiếu chung trên chi tiết chứng từ (T585) ── */
 .ct-ttc .ct-tham-chieu { display: grid; grid-template-columns: 112px minmax(0, 1fr); column-gap: 8px; align-items: center; }
 .ct-tham-chieu-ds { display: flex; flex-wrap: wrap; gap: 4px 16px; padding-left: 11px; }
+
+/* ── Viền thẻ danh sách chứng từ điện thoại (T581, T582) ── */
+.m-mh-the-trang {
+  border: 1px solid #f1f5f9;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  border-radius: 10px;
+  overflow: hidden;
+}
+

@@ -1,4 +1,5 @@
-import { useMemo, useState, type FC } from 'react'
+import { useMemo, useState, type FC, type ReactNode } from 'react'
+import { useNavigate } from 'react-router-dom'
 import type { Row, ScreenProps } from '../../modules/types'
 import { cuaHangHienTai, gtgtTyLe, useSession } from '../../app/session'
 import { kieuGhiSo } from '../../app/plan'
@@ -8,7 +9,6 @@ import { Icon } from '../Icon'
 import { dmy, fold, money } from '../format'
 import { MChon } from './MChon'
 import { MChonKhoangNgay } from './MChonKhoangNgay'
-import { MTrong } from './MTrong'
 import {
   PTTT,
   chiaTheo,
@@ -20,12 +20,16 @@ import {
   type XPos,
 } from '../../modules/ban-hang/ChungTuBanHang'
 import { useDaXoa } from '../generic/daXoa'
+import { MDsChungTuChuan, MDsDongPhieu, HangTabsBanHang } from './MDsChungTuChuan'
+import { quayLaiMobile } from './quayLai'
+import { MBaoCaoTheoDoi } from './MBaoCaoTheoDoi'
 
 type KhoaLoc = 'cn' | 'kh' | 'kenh' | 'pttt' | 'hang' | 'tonKho'
 const LOC_TRONG: Record<KhoaLoc, string> = { cn: '', kh: '', kenh: '', pttt: '', hang: '', tonKho: '' }
 
 export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
   const { s } = useSession()
+  const nav = useNavigate()
   const { ban, laDaXoa } = useDaXoa(`${mod.key}/${sc.slug}`)
   const tyLe = gtgtTyLe(s)   // GTGT theo % doanh thu: Giảm thuế GTGT thay VAT (T163, T450)
   const kieu = kieuGhiSo(s.cheDo)
@@ -37,7 +41,9 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
   // Ô lọc như danh sách Xuất bán POS trên web (T570); chuỗi rỗng là tất cả
   const [tim, setTim] = useState('')
   const [loc, setLoc] = useState<Record<KhoaLoc, string>>(LOC_TRONG)
+  const [moLoc, setMoLoc] = useState(false)
   const [moChon, setMoChon] = useState<KhoaLoc | null>(null)
+  const [moTheoDoi, setMoTheoDoi] = useState(false)
   // Tấm chi tiết đơn
   const [donDangXem, setDonDangXem] = useState<Row | null>(null)
   const [timHang, setTimHang] = useState('')   // ô tìm hàng hoá trong chi tiết đơn (T573)
@@ -111,9 +117,21 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
   const tenChip = (o: (typeof oLoc)[number]) => !loc[o.k] ? 'Tất cả' : o.k === 'hang' ? loc.hang : o.ds.find(d => d.k === loc[o.k])?.ten ?? 'Tất cả'
   const dangLoc = Boolean(tim.trim()) || Object.values(loc).some(Boolean)
 
-  // Tổng cộng
-  const tongSoDon = list.length
-  const tongTien = list.reduce((a, r) => a + Number(r.tong || 0), 0)
+  const pad = (n: number) => String(n).padStart(2, '0')
+  const chuoiKhoangNgay = `${pad(thoiGian.tu.getDate())}/${pad(thoiGian.tu.getMonth() + 1)} – ${pad(thoiGian.den.getDate())}/${pad(thoiGian.den.getMonth() + 1)}/${thoiGian.den.getFullYear()}`
+  const nhanCn = cnChon ? cnChon.ten : (loc.cn ? CUA_HANG.find(c => c.id === loc.cn)?.ten ?? 'Kho/CN: Tất cả' : 'Kho/CN: Tất cả')
+
+  const chipsLoc = useMemo(() => {
+    const arr: ReactNode[] = []
+    arr.push(<span key="kn" className="m-chip-xem">{chuoiKhoangNgay}</span>)
+    arr.push(<span key="cn" className="m-chip-xem">{cnChon ? nhanCn : `Kho/CN: ${loc.cn ? CUA_HANG.find(c => c.id === loc.cn)?.ten ?? 'Tất cả' : 'Tất cả'}`}</span>)
+    if (loc.kh) arr.push(<span key="kh" className="m-chip-xem">Khách: {loc.kh}</span>)
+    if (loc.kenh) arr.push(<span key="kenh" className="m-chip-xem">Kênh: {loc.kenh}</span>)
+    if (loc.pttt) arr.push(<span key="pttt" className="m-chip-xem">Thanh toán: {loc.pttt}</span>)
+    if (loc.hang) arr.push(<span key="hang" className="m-chip-xem">Hàng: {loc.hang}</span>)
+    if (loc.tonKho) arr.push(<span key="tonKho" className="m-chip-xem">{loc.tonKho === 'co' ? 'Có tồn kho' : 'Không tồn kho'}</span>)
+    return arr
+  }, [chuoiKhoangNgay, cnChon, nhanCn, loc])
 
   // Mở đơn xem chi tiết
   const xemDon = (r: Row) => {
@@ -137,11 +155,6 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
     return CUA_HANG.find(c => c.ten === donDangXem.cn)?.kho[0] ?? 'Kho mặc định'
   }, [donDangXem])
 
-  const ngayDate = useMemo(() => {
-    if (!donDangXem?.x) return new Date()
-    return donDangXem.x.date instanceof Date ? donDangXem.x.date : docNgay(donDangXem.ngay)
-  }, [donDangXem])
-
   const ptttTen = useMemo(() => {
     if (!donDangXem?.x) return ''
     const x = donDangXem.x
@@ -162,97 +175,104 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
   const dsMonLoc = qHang ? dsMon.filter(m => fold(`${m.ten} ${m.ma}`).includes(qHang)) : dsMon
 
   return (
-    <div className="m-pos-khung">
-      {/* Thanh đầu: Các chip lọc và nút đồng bộ */}
-      <div className="m-pos-dau">
-        <div className="m-ds-tim">
-          <Icon n="search" className="m-ds-tim-ic ic sm" />
-          <input
-            type="text"
-            className="m-ds-tim-inp"
-            placeholder="Số, diễn giải, tên hàng"
-            value={tim}
-            onChange={e => setTim(e.target.value)}
-            aria-label="Tìm kiếm"
-          />
-          {tim && (
-            <button type="button" className="m-ds-tim-x" onClick={() => setTim('')} aria-label="Xoá tìm kiếm">
-              <Icon n="x" className="ic sm" />
-            </button>
-          )}
-        </div>
+    <>
+      <MDsChungTuChuan
+        tieuDe="Bán hàng"
+        hangTabs={<HangTabsBanHang sc={sc} onMoTheoDoi={() => setMoTheoDoi(true)} />}
+        onQuayLai={() => quayLaiMobile(nav, '/app/nghiep-vu')}
+        tuKhoa={tim}
+        onTuKhoaChange={setTim}
+        timPlaceholder="Số, diễn giải, tên hàng..."
+        onMoLoc={() => setMoLoc(true)}
+        coLoc={dangLoc}
+        chipsLoc={chipsLoc}
+        chuoiKhoangNgay={chuoiKhoangNgay}
+        hienTien={true}
+        rows={list}
+        renderDong={(r, i) => {
+          const soHh = r.mon?.length ?? 0
+          return (
+            <MDsDongPhieu
+              key={r.id ?? i}
+              so={r.so}
+              soDongHang={soHh}
+              dongPhu={r.doiTuong || 'Khách lẻ POS'}
+              tien={Number(r.tong ?? 0)}
+              hienTien={true}
+              onClick={() => xemDon(r)}
+            />
+          )
+        }}
+        thongBaoTrong="Không có đơn xuất bán POS"
+      />
 
-        <div className="m-pos-chip-hang">
-          <MChonKhoangNgay value={thoiGian} onChange={setThoiGian} />
+      {/* Sheet bộ lọc nâng cao */}
+      {moLoc && (
+        <div className="m-loc-overlay" onClick={() => setMoLoc(false)}>
+          <div className="m-loc-tam" onClick={e => e.stopPropagation()}>
+            <div className="m-tam-keo" />
+            <div className="m-loc-dau">
+              <h2 className="m-loc-tieu-de">Bộ lọc</h2>
+              <button type="button" className="m-loc-btn-dong" onClick={() => setMoLoc(false)} aria-label="Đóng">
+                <Icon n="x" className="ic sm" />
+              </button>
+            </div>
 
-          {oLoc.map(o => (
-            <button
-              key={o.k}
-              type="button"
-              className={`m-pos-chip${loc[o.k] ? ' on' : ''}`}
-              onClick={() => setMoChon(o.k)}
-            >
-              <span>{o.nhan}: {tenChip(o)}</span>
-              <Icon n="chevd" className="ic sm" />
-            </button>
-          ))}
+            <div className="m-loc-than">
+              {/* Dòng Thời gian (T571) */}
+              <MChonKhoangNgay
+                value={thoiGian}
+                onChange={setThoiGian}
+                nut={moLich => (
+                  <div className="m-loc-dong" onClick={moLich}>
+                    <div className="m-loc-dong-trai">
+                      <span className="m-loc-dong-nhan">Thời gian</span>
+                      <span className="m-loc-dong-tri">{dmy(thoiGian.tu)} - {dmy(thoiGian.den)}</span>
+                    </div>
+                    <Icon n="chevr" className="ic sm m-loc-dong-ic" />
+                  </div>
+                )}
+              />
 
-          {dangLoc && (
-            <button type="button" className="m-pos-chip" onClick={() => { setTim(''); setLoc(LOC_TRONG) }}>
-              <Icon n="x" className="ic sm" />
-              <span>Xoá lọc</span>
-            </button>
-          )}
-        </div>
+              {/* Các ô lọc từ T570 */}
+              {oLoc.map(o => (
+                <div
+                  key={o.k}
+                  className="m-loc-dong"
+                  onClick={() => setMoChon(o.k)}
+                >
+                  <div className="m-loc-dong-trai">
+                    <span className="m-loc-dong-nhan">{o.nhan}</span>
+                    <span className="m-loc-dong-tri">{tenChip(o)}</span>
+                  </div>
+                  <Icon n="chevr" className="ic sm m-loc-dong-ic" />
+                </div>
+              ))}
+            </div>
 
-      </div>
-
-      {/* Danh sách đơn dạng thẻ */}
-      {list.length === 0 ? (
-        <MTrong kieu="tim" tieuDe="Không có đơn xuất bán POS" moTa="Thử đổi khoảng thời gian hoặc bỏ bớt điều kiện lọc" />
-      ) : (
-        <div className="m-pos-ds">
-          {list.map(r => {
-            const laChuaGhi = r.tt === 'nhap' && ghi
-            const ttNhan = laChuaGhi ? 'Chưa ghi sổ' : 'Đã ghi sổ'
-
-            return (
-              <div
-                key={r.id}
-                className="m-pos-the"
-                onClick={() => xemDon(r)}
-                role="button"
-                tabIndex={0}
+            <div className="m-loc-day">
+              <button
+                type="button"
+                className="m-loc-btn-reset"
+                onClick={() => {
+                  setTim('')
+                  setLoc(LOC_TRONG)
+                  setThoiGian(thangNay())
+                }}
               >
-                <div className="m-pos-the-dau">
-                  <span className="m-pos-so">#{r.so}</span>
-                  {ghi && (
-                    <span className={`m-pos-tt ${laChuaGhi ? 'chua-ghi' : 'da-ghi'}`}>
-                      {ttNhan}
-                    </span>
-                  )}
-                </div>
-
-                <div className="m-pos-the-than">
-                  <span className="m-pos-kenh">{r.kenh}</span>
-                  <span className="m-pos-cn">{r.cn}</span>
-                </div>
-
-                <div className="m-pos-the-chan">
-                  <span className="m-pos-ngay">{r.ngay}</span>
-                  <span className="m-pos-tien">{money(r.tong)} đ</span>
-                </div>
-              </div>
-            )
-          })}
+                Đặt lại
+              </button>
+              <button
+                type="button"
+                className="m-loc-btn-apply"
+                onClick={() => setMoLoc(false)}
+              >
+                Áp dụng
+              </button>
+            </div>
+          </div>
         </div>
       )}
-
-      {/* Dải tổng cuối danh sách */}
-      <div className="m-pos-tong-dai">
-        <span>Tổng: <b>{tongSoDon}</b> đơn</span>
-        <span>Doanh thu: <b>{money(tongTien)} đ</b></span>
-      </div>
 
       {/* Sheet chọn của ô lọc đang mở */}
       {oDangMo && (
@@ -359,6 +379,12 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
         </div>
       )}
 
-    </div>
+      {/* Báo cáo theo dõi */}
+      <MBaoCaoTheoDoi
+        mo={moTheoDoi}
+        onDong={() => setMoTheoDoi(false)}
+        modKey="ban-hang"
+      />
+    </>
   )
 }

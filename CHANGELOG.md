@@ -6,6 +6,8 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 - T586: Phiếu mua hàng, bán hàng mẫu đã thanh toán hoặc thanh toán một phần có phiếu chi, thu mẫu đi kèm bên Thu chi. Dòng Tham chiếu trên chi tiết phiếu hiện số phiếu, bấm mở được, hai chiều.
 - T585: Web, chi tiết chứng từ có một dòng "Tham chiếu" cuối phần thông tin chung, liệt kê các chứng từ liên quan (phiếu chi, thu; thẻ chi phí; phiếu điều chỉnh; phiếu nhập, xuất; phiếu gốc), bấm số để mở.
 - T584: Web, xem chi tiết chứng từ: Chứng từ trước, Chứng từ sau thành 2 nút mũi tên bên trái nút Tiện ích, không còn nằm trong menu Tiện ích.
+- T582: Điện thoại, mọi danh sách chứng từ Bán hàng (gồm Xuất bán POS) và mọi tab Kho cùng khung với Mua hàng: thanh tiêu đề, hàng tab, hàng lọc, thẻ tổng, sắp xếp, nhóm theo ngày. Danh sách kho không hiện tiền.
+- T581: Điện thoại, thẻ phiếu trong danh sách Mua hàng có viền mảnh, tách rõ khỏi nền.
 - T580: Web, chi tiết phiếu mua hàng có nhãn tình trạng thanh toán (Chưa thanh toán, Thanh toán một phần, Đã thanh toán) ở góc phải thanh Thanh toán.
 - T579: Điện thoại, bấm chọn khoảng ngày ở Xuất bán POS, bộ lọc danh sách, bộ lọc báo cáo trên iPhone hiện đủ hộp lịch giữa màn, hết cảnh chỉ thấy một dải nền tối.
 - T578: Web, báo cáo bỏ ô lọc "Ẩn dòng không phát sinh". Báo cáo luôn ẩn dòng không phát sinh, phễu lọc không còn đếm ô này.
