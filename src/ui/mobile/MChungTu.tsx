@@ -498,56 +498,6 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
           </div>
         )
       }
-      if (cfg.kiemKe || cfg.dieuChinh || sc.code === '5.1.10' || sc.slug === '5-1-10' || sc.slug === 'dieu-chinh') {
-        const isKk = sc.code === '5.1.10' || sc.slug === '5-1-10'
-        const isDc = sc.slug === 'dieu-chinh' || Boolean(cfg.dieuChinh)
-        return (
-          <div className="m-tc-tabs" role="tablist">
-            <button
-              type="button"
-              role="tab"
-              aria-selected={isKk}
-              className={`m-tc-tab-btn${isKk ? ' on' : ''}`}
-              onClick={() => nav('/app/kho/5-1-10')}
-            >
-              Kiểm kê
-            </button>
-            {isDc && cfg.loai && cfg.loai.length > 0 ? (
-              cfg.loai.map(l => (
-                <button
-                  key={l.k}
-                  type="button"
-                  role="tab"
-                  aria-selected={loaiChon === l.k}
-                  className={`m-tc-tab-btn${loaiChon === l.k ? ' on' : ''}`}
-                  onClick={() => setLoaiChon(l.k)}
-                >
-                  {l.ten}
-                </button>
-              ))
-            ) : (
-              <button
-                type="button"
-                role="tab"
-                aria-selected={isDc}
-                className={`m-tc-tab-btn${isDc ? ' on' : ''}`}
-                onClick={() => nav('/app/kho/dieu-chinh')}
-              >
-                Điều chỉnh kho
-              </button>
-            )}
-            <button
-              type="button"
-              role="tab"
-              aria-selected={false}
-              className="m-tc-tab-btn"
-              onClick={() => setMoTheoDoi(true)}
-            >
-              Báo cáo theo dõi
-            </button>
-          </div>
-        )
-      }
       const isNk = sc.code === '5.1.1' || sc.slug === '5-1-1'
       const isXk = sc.code === '5.1.2-4' || sc.slug === '5-1-2-4'
       const isXh = sc.code === '5.1.2-3' || sc.slug === '5-1-2-3'
