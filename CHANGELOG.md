@@ -3,6 +3,8 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 21/10/2026
+- T571: Điện thoại, chọn khoảng ngày để lọc dùng hộp lịch mới ở Xuất bán POS, bộ lọc danh sách chứng từ, Thu chi và bộ lọc báo cáo: 4 kỳ nhanh Tháng trước, Tháng này, Tuần trước, Tuần này; cột số tuần; bấm ngày đầu rồi ngày cuối. Bộ lọc danh sách không còn mục "Tất cả" thời gian.
+- T570: Điện thoại, Xuất bán POS: thêm ô tìm theo số, ghi chú, tên món và các nút lọc Khách hàng, Thanh toán, Hàng hoá, Tồn kho như bản web; nút Xoá lọc bỏ hết điều kiện.
 - T569: Điện thoại, danh sách Thu chi: Bộ lọc có thêm dòng Loại phiếu (Thu, Chi tiền mặt, Thu, Chi ngân hàng, Chuyển quỹ), chọn được nhiều loại, chỉ hiện loại của tab đang chọn.
 - T557: Phiếu mua hàng, bán hàng: ô Hạn thanh toán chọn ngày bằng lịch như ô Ngày chứng từ, vẫn gõ tay được.
 - T556: Xem trước khi in báo cáo: cột Số phiếu chữ thường, màu đen như ô khác, không bấm được, không tràn sang cột bên.

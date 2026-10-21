@@ -10,8 +10,9 @@ import {
   xemBaoCao,
   xoaLoc,
 } from '../bao-cao/tuyChinhBC'
-import { ChonKhoangNgay, type KhoangNgay } from '../ChonNgay'
+import { type KhoangNgay } from '../ChonNgay'
 import { Icon } from '../Icon'
+import { MChonKhoangNgay } from './MChonKhoangNgay'
 import {
   datKhoangNgayMobile,
   dinhDangKyMobile,
@@ -39,7 +40,6 @@ export const MBaoCaoLoc: FC<MBaoCaoLocProps> = ({ mo, onDong, path, sc }) => {
   const [timKiem, setTimKiem] = useState('')
 
   // Trạng thái tạm để Huỷ quay về giá trị trước khi mở bảng con (T343)
-  const [tamKy, setTamKy] = useState<{ tu: string; den: string }>({ tu: '', den: '' })
   const [tamCn, setTamCn] = useState<string>('all')
   const [tamLocRieng, setTamLocRieng] = useState<Record<string, string[]>>({})
 
@@ -78,19 +78,6 @@ export const MBaoCaoLoc: FC<MBaoCaoLocProps> = ({ mo, onDong, path, sc }) => {
     }
     return res
   }, [cfgBc, s])
-
-  const chonThangNay = () => {
-    setDraftTuNgay('2026-10-01')
-    setDraftDenNgay('2026-10-31')
-  }
-
-  const chonThangTruoc = () => {
-    setDraftTuNgay('2026-09-01')
-    setDraftDenNgay('2026-09-30')
-  }
-
-  const isThangNay = draftTuNgay === '2026-10-01' && (draftDenNgay === '2026-10-31' || draftDenNgay === '2026-10-07')
-  const isThangTruoc = draftTuNgay === '2026-09-01' && draftDenNgay === '2026-09-30'
 
   // Bảng lịch chạm Từ ngày rồi Đến ngày (T322); số liệu tính theo tháng của Từ ngày nên Đến ngày không vượt cuối tháng đó
   const khoangLich = useMemo<KhoangNgay>(() => {
@@ -162,20 +149,20 @@ export const MBaoCaoLoc: FC<MBaoCaoLocProps> = ({ mo, onDong, path, sc }) => {
 
         {/* Thân lọc */}
         <div className="m-loc-than">
-          {/* Dòng Kỳ báo cáo */}
-          <div
-            className="m-loc-dong"
-            onClick={() => {
-              setTamKy({ tu: draftTuNgay, den: draftDenNgay })
-              setTrangCon('ky')
-            }}
-          >
-            <div className="m-loc-dong-trai">
-              <span className="m-loc-dong-nhan">Kỳ báo cáo</span>
-              <span className="m-loc-dong-tri">{tenKy}</span>
-            </div>
-            <Icon n="chevr" className="ic sm m-loc-dong-ic" />
-          </div>
+          {/* Dòng Kỳ báo cáo: bấm mở hộp lịch chọn khoảng ngày dùng chung điện thoại (T571) */}
+          <MChonKhoangNgay
+            value={khoangLich}
+            onChange={handleChonKhoang}
+            nut={moLich => (
+              <div className="m-loc-dong" onClick={moLich}>
+                <div className="m-loc-dong-trai">
+                  <span className="m-loc-dong-nhan">Kỳ báo cáo</span>
+                  <span className="m-loc-dong-tri">{tenKy}</span>
+                </div>
+                <Icon n="chevr" className="ic sm m-loc-dong-ic" />
+              </div>
+            )}
+          />
 
           {/* Dòng Cửa hàng */}
           <div
@@ -228,10 +215,7 @@ export const MBaoCaoLoc: FC<MBaoCaoLocProps> = ({ mo, onDong, path, sc }) => {
           className="m-loc-con-overlay"
           onClick={e => {
             e.stopPropagation()
-            if (trangCon === 'ky') {
-              setDraftTuNgay(tamKy.tu)
-              setDraftDenNgay(tamKy.den)
-            } else if (trangCon === 'cn') {
+            if (trangCon === 'cn') {
               setDraftCn(tamCn)
             } else if (trangCon.startsWith('rieng-')) {
               setDraftLoc(tamLocRieng)
@@ -242,71 +226,6 @@ export const MBaoCaoLoc: FC<MBaoCaoLocProps> = ({ mo, onDong, path, sc }) => {
         />
       )}
 
-      {/* Trang con chọn kỳ (cao 50% màn hình, đè lên bảng chính) */}
-      {trangCon === 'ky' && (
-        <div className="m-loc-trang-con" onClick={e => e.stopPropagation()}>
-          <div className="m-loc-dau">
-            <h2 className="m-loc-tieu-de">Chọn kỳ báo cáo</h2>
-            <button
-              type="button"
-              className="m-loc-btn-dong"
-              onClick={() => {
-                setDraftTuNgay(tamKy.tu)
-                setDraftDenNgay(tamKy.den)
-                setTrangCon(null)
-              }}
-              aria-label="Đóng"
-            >
-              <Icon n="x" className="ic sm" />
-            </button>
-          </div>
-          <div className="m-loc-con-than">
-            <div className="m-loc-the-nhan">Chọn nhanh</div>
-            <div className="m-loc-ky-ds">
-              <button
-                type="button"
-                className={`m-loc-ky-btn ${isThangNay ? 'on' : ''}`}
-                onClick={chonThangNay}
-              >
-                Tháng này
-              </button>
-              <button
-                type="button"
-                className={`m-loc-ky-btn ${isThangTruoc ? 'on' : ''}`}
-                onClick={chonThangTruoc}
-              >
-                Tháng trước
-              </button>
-            </div>
-
-            <div className="m-loc-the-nhan m-loc-cach-tren">Khoảng ngày trong kỳ</div>
-            <div className="m-loc-kn-picker">
-              <ChonKhoangNgay value={khoangLich} onChange={handleChonKhoang} />
-            </div>
-          </div>
-
-          <div className="m-loc-day">
-            <button
-              type="button"
-              className="m-loc-btn-reset"
-              onClick={() => {
-                setDraftTuNgay(tamKy.tu)
-                setDraftDenNgay(tamKy.den)
-                setTrangCon(null)
-              }}
-            >
-              Huỷ
-            </button>
-            <button
-              type="button"
-              className="m-loc-btn-apply m-loc-con-btn-xong"
-              onClick={() => setTrangCon(null)}
-            >
-              Xong
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* Trang con chọn cửa hàng (cao 50% màn hình, đè lên bảng chính) */}
       {trangCon === 'cn' && (

@@ -2,23 +2,28 @@ import { useMemo, useState, type FC } from 'react'
 import type { Row, ScreenProps } from '../../modules/types'
 import { cuaHangHienTai, gtgtTyLe, useSession } from '../../app/session'
 import { kieuGhiSo } from '../../app/plan'
-import { CUA_HANG, DAILY, cnTen } from '../../data/mock'
-import { ChonKhoangNgay, docNgay, thangNay, trongKhoang, type KhoangNgay } from '../ChonNgay'
+import { CUA_HANG, DAILY, HANG, cnTen } from '../../data/mock'
+import { docNgay, thangNay, trongKhoang, type KhoangNgay } from '../ChonNgay'
 import { Icon } from '../Icon'
-import { dmy, money } from '../format'
+import { dmy, fold, money } from '../format'
 import { MChon } from './MChon'
+import { MChonKhoangNgay } from './MChonKhoangNgay'
 import { MTrong } from './MTrong'
 import {
   PTTT,
   chiaTheo,
   dongCuaPhieu,
   giamThueHkd,
+  ptttCua,
   soFabi,
   ttHkd,
   theoDon,
   type XPos,
 } from '../../modules/ban-hang/ChungTuBanHang'
 import { useDaXoa } from '../generic/daXoa'
+
+type KhoaLoc = 'cn' | 'kh' | 'kenh' | 'pttt' | 'hang' | 'tonKho'
+const LOC_TRONG: Record<KhoaLoc, string> = { cn: '', kh: '', kenh: '', pttt: '', hang: '', tonKho: '' }
 
 export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
   const { s } = useSession()
@@ -30,12 +35,10 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
 
   // Khoảng ngày lọc
   const [thoiGian, setThoiGian] = useState<KhoangNgay>(() => thangNay())
-  // Cửa hàng lọc
-  const [cn, setCn] = useState<string>('')
-  const [moChonCn, setMoChonCn] = useState(false)
-  // Kênh bán lọc
-  const [kenh, setKenh] = useState<string>('')
-  const [moChonKenh, setMoChonKenh] = useState(false)
+  // Ô lọc như danh sách Xuất bán POS trên web (T570); chuỗi rỗng là tất cả
+  const [tim, setTim] = useState('')
+  const [loc, setLoc] = useState<Record<KhoaLoc, string>>(LOC_TRONG)
+  const [moChon, setMoChon] = useState<KhoaLoc | null>(null)
   // Tấm chi tiết đơn
   const [donDangXem, setDonDangXem] = useState<Row | null>(null)
   const [tabCt, setTabCt] = useState<'hang' | 'tt' | 'ht'>('hang')
@@ -68,42 +71,47 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
         tt: i < 3 ? 'nhap' : 'ghi',
         ngayTao: `${dmy(x.date)} 23:30`,
         nguoiTao: 'Hệ thống',
+        mon: dongCuaPhieu(x).map(d => ({ ma: d.ma, ten: d.ten, tonKho: Boolean(d.tonKho) })),   // lọc theo hàng hoá, tồn kho, tìm theo tên món
       }))
   }, [tyLe])
 
   const rows = useMemo(() => tatCa.filter(r => !laDaXoa(r.id)), [tatCa, ban, laDaXoa])
 
-  // Lọc theo khoảng ngày, cửa hàng, kênh bán
+  // Lọc theo khoảng ngày, ô tìm, các ô chọn; cửa hàng chọn trên thanh trên thì bỏ ô Cửa hàng
   const list = useMemo(() => {
+    const q = fold(tim.trim())
     return rows.filter(r => {
       const d = r.x?.date instanceof Date ? r.x.date : docNgay(r.ngay)
       if (!trongKhoang(d, thoiGian)) return false
       if (cnChon && r.x?.cn !== cnChon.id) return false
-      if (cn && r.x?.cn !== cn) return false
-      if (kenh && r.kenh !== kenh) return false
+      if (loc.cn && r.x?.cn !== loc.cn) return false
+      if (loc.kh && r.doiTuong !== loc.kh) return false
+      if (loc.kenh && r.kenh !== loc.kenh) return false
+      if (loc.pttt && !ptttCua(r.x).includes(loc.pttt)) return false
+      if (loc.hang && !r.mon.some(m => m.ma === loc.hang)) return false
+      if (loc.tonKho && !r.mon.some(m => m.tonKho === (loc.tonKho === 'co'))) return false
+      if (q && !fold(`${r.so} ${r.dienGiai} ${r.mon.map(m => m.ten).join(' ')}`).includes(q)) return false
       return true
     })
-  }, [rows, thoiGian, cnChon, cn, kenh])
+  }, [rows, thoiGian, cnChon, loc, tim])
 
-  // Lựa chọn cửa hàng
-  const dsChonCn = useMemo(() => {
-    return [
-      { k: '', ten: 'Tất cả cửa hàng' },
-      ...CUA_HANG.map(c => ({ k: c.id, ten: c.ten })),
+  // Lựa chọn từng ô; khách hàng, kênh lấy từ chính các chứng từ như web (T116)
+  const tuDs = (ds: string[]) => [...new Set(ds.filter(Boolean))].map(v => ({ k: v, ten: v }))
+  const oLoc = useMemo(() => {
+    const o: { k: KhoaLoc; nhan: string; tieuDe: string; tatCa: string; ds: { k: string; ten: string }[]; tim?: boolean }[] = [
+      { k: 'kh', nhan: 'Khách hàng', tieuDe: 'Chọn khách hàng', tatCa: 'Tất cả khách hàng', ds: tuDs(rows.map(r => String(r.doiTuong ?? ''))) },
+      { k: 'kenh', nhan: 'Kênh', tieuDe: 'Chọn kênh bán hàng', tatCa: 'Tất cả kênh', ds: tuDs(rows.map(r => String(r.kenh ?? ''))) },
+      { k: 'pttt', nhan: 'Thanh toán', tieuDe: 'Chọn phương thức thanh toán', tatCa: 'Tất cả phương thức', ds: PTTT.map(([, t]) => ({ k: t, ten: t })) },
+      { k: 'hang', nhan: 'Hàng hoá', tieuDe: 'Chọn hàng hoá', tatCa: 'Tất cả hàng hoá', ds: HANG.map(h => ({ k: h.ma, ten: `${h.ma} - ${h.ten}` })), tim: true },
+      { k: 'tonKho', nhan: 'Tồn kho', tieuDe: 'Theo dõi tồn kho', tatCa: 'Tất cả', ds: [{ k: 'co', ten: 'Có theo dõi tồn kho' }, { k: 'khong', ten: 'Không theo dõi tồn kho' }] },
     ]
-  }, [])
-
-  // Lựa chọn kênh
-  const dsChonKenh = useMemo(() => {
-    const setK = [...new Set(rows.map(r => String(r.kenh ?? '')).filter(Boolean))]
-    return [
-      { k: '', ten: 'Tất cả kênh' },
-      ...setK.map(k => ({ k, ten: k })),
-    ]
-  }, [rows])
-
-  const tenCnHienThi = cn ? CUA_HANG.find(c => c.id === cn)?.ten ?? 'Tất cả' : 'Tất cả'
-  const tenKenhHienThi = kenh || 'Tất cả'
+    if (!cnChon) o.unshift({ k: 'cn', nhan: 'Kho/CN', tieuDe: 'Chọn cửa hàng', tatCa: 'Tất cả cửa hàng', ds: CUA_HANG.map(c => ({ k: c.id, ten: c.ten })) })
+    return o
+  }, [rows, cnChon])
+  const oDangMo = oLoc.find(o => o.k === moChon)
+  // Chip ghi ngắn: hàng hoá chỉ hiện mã
+  const tenChip = (o: (typeof oLoc)[number]) => !loc[o.k] ? 'Tất cả' : o.k === 'hang' ? loc.hang : o.ds.find(d => d.k === loc[o.k])?.ten ?? 'Tất cả'
+  const dangLoc = Boolean(tim.trim()) || Object.values(loc).some(Boolean)
 
   // Tổng cộng
   const tongSoDon = list.length
@@ -185,35 +193,51 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
     <div className="m-pos-khung">
       {/* Thanh đầu: Các chip lọc và nút đồng bộ */}
       <div className="m-pos-dau">
-        <div className="m-pos-chip-hang">
-          <ChonKhoangNgay value={thoiGian} onChange={setThoiGian} />
-
-          {!cnChon && (
-            <button
-              type="button"
-              className={`m-pos-chip${cn ? ' on' : ''}`}
-              onClick={() => setMoChonCn(true)}
-            >
-              <span>Kho/CN: {tenCnHienThi}</span>
-              <Icon n="chevd" className="ic sm" />
+        <div className="m-ds-tim">
+          <Icon n="search" className="m-ds-tim-ic ic sm" />
+          <input
+            type="text"
+            className="m-ds-tim-inp"
+            placeholder="Số, diễn giải, tên hàng"
+            value={tim}
+            onChange={e => setTim(e.target.value)}
+            aria-label="Tìm kiếm"
+          />
+          {tim && (
+            <button type="button" className="m-ds-tim-x" onClick={() => setTim('')} aria-label="Xoá tìm kiếm">
+              <Icon n="x" className="ic sm" />
             </button>
           )}
+        </div>
 
-          <button
-            type="button"
-            className={`m-pos-chip${kenh ? ' on' : ''}`}
-            onClick={() => setMoChonKenh(true)}
-          >
-            <span>Kênh: {tenKenhHienThi}</span>
-            <Icon n="chevd" className="ic sm" />
-          </button>
+        <div className="m-pos-chip-hang">
+          <MChonKhoangNgay value={thoiGian} onChange={setThoiGian} />
+
+          {oLoc.map(o => (
+            <button
+              key={o.k}
+              type="button"
+              className={`m-pos-chip${loc[o.k] ? ' on' : ''}`}
+              onClick={() => setMoChon(o.k)}
+            >
+              <span>{o.nhan}: {tenChip(o)}</span>
+              <Icon n="chevd" className="ic sm" />
+            </button>
+          ))}
+
+          {dangLoc && (
+            <button type="button" className="m-pos-chip" onClick={() => { setTim(''); setLoc(LOC_TRONG) }}>
+              <Icon n="x" className="ic sm" />
+              <span>Xoá lọc</span>
+            </button>
+          )}
         </div>
 
       </div>
 
       {/* Danh sách đơn dạng thẻ */}
       {list.length === 0 ? (
-        <MTrong kieu="tim" tieuDe="Không có đơn xuất bán POS" moTa="Thử đổi khoảng thời gian hoặc kênh bán khác" />
+        <MTrong kieu="tim" tieuDe="Không có đơn xuất bán POS" moTa="Thử đổi khoảng thời gian hoặc bỏ bớt điều kiện lọc" />
       ) : (
         <div className="m-pos-ds">
           {list.map(r => {
@@ -258,25 +282,18 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
         <span>Doanh thu: <b>{money(tongTien)} đ</b></span>
       </div>
 
-      {/* Sheet chọn cửa hàng */}
-      <MChon
-        mo={moChonCn}
-        onDong={() => setMoChonCn(false)}
-        tieuDe="Chọn cửa hàng"
-        ds={dsChonCn}
-        chon={cn}
-        onChon={setCn}
-      />
-
-      {/* Sheet chọn kênh */}
-      <MChon
-        mo={moChonKenh}
-        onDong={() => setMoChonKenh(false)}
-        tieuDe="Chọn kênh bán hàng"
-        ds={dsChonKenh}
-        chon={kenh}
-        onChon={setKenh}
-      />
+      {/* Sheet chọn của ô lọc đang mở */}
+      {oDangMo && (
+        <MChon
+          mo
+          onDong={() => setMoChon(null)}
+          tieuDe={oDangMo.tieuDe}
+          ds={[{ k: '', ten: oDangMo.tatCa }, ...oDangMo.ds]}
+          chon={loc[oDangMo.k]}
+          onChon={v => setLoc(l => ({ ...l, [oDangMo.k]: v }))}
+          tim={oDangMo.tim}
+        />
+      )}
 
       {/* Chi tiết đơn hàng (T425: theo khuôn thẻ phân bổ, thanh đầu sát mép trên full-width) */}
       {donDangXem && (

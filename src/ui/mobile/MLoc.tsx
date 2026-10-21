@@ -1,8 +1,9 @@
 import { useEffect, useState, type FC } from 'react'
 import { HOM_NAY } from '../../data/mock'
 import { dmy, fold } from '../format'
-import { ChonKhoangNgay, khoangThang, thangNay, type KhoangNgay } from '../ChonNgay'
+import { khoangThang, thangNay, type KhoangNgay } from '../ChonNgay'
 import { Icon } from '../Icon'
+import { MChonKhoangNgay } from './MChonKhoangNgay'
 
 export type KyThoiGian = 'hom-nay' | 'tuan-nay' | 'thang-nay' | 'thang-truoc' | 'tat-ca' | 'tuy-chon'
 
@@ -107,7 +108,7 @@ export const MLoc: FC<MLocProps> = ({
   dsTrangThai,
 }) => {
   const [draft, setDraft] = useState<GtLocMobile>(giaTri)
-  const [trangCon, setTrangCon] = useState<'thoiGian' | 'doiTuong' | 'nguon' | 'kho' | 'lyDo' | 'loaiPhieu' | 'chiNhanh' | 'trangThai' | null>(null)
+  const [trangCon, setTrangCon] = useState<'doiTuong' | 'nguon' | 'kho' | 'lyDo' | 'loaiPhieu' | 'chiNhanh' | 'trangThai' | null>(null)
   const [timKiem, setTimKiem] = useState('')
 
   useEffect(() => {
@@ -205,6 +206,15 @@ export const MLoc: FC<MLocProps> = ({
       : truong === 'loaiPhieu' ? (dsLoaiPhieu?.find(l => l.k === val)?.ten ?? val)
       : val
 
+  // Khoảng chọn trên lịch trùng kỳ có tên thì lưu theo kỳ, còn lại là Tuỳ chọn
+  const chonKhoang = (kn: KhoangNgay) => {
+    const ky = (['hom-nay', 'tuan-nay', 'thang-nay', 'thang-truoc'] as const).find(k => {
+      const x = tinhKhoangNgay(k)
+      return x && dmy(x.tu) === dmy(kn.tu) && dmy(x.den) === dmy(kn.den)
+    })
+    setDraft(prev => ({ ...prev, thoiGian: ky ?? 'tuy-chon', khoangNgay: ky ? null : kn }))
+  }
+
   // Toggle chọn / bỏ chọn mục
   const toggleChon = (truong: 'doiTuong' | 'nguon' | 'kho' | 'lyDo' | 'loaiPhieu', val: string) => {
     setDraft(prev => {
@@ -238,14 +248,20 @@ export const MLoc: FC<MLocProps> = ({
         </div>
 
         <div className="m-loc-than">
-          {/* Dòng Thời gian */}
-          <div className="m-loc-dong" onClick={() => setTrangCon('thoiGian')}>
-            <div className="m-loc-dong-trai">
-              <span className="m-loc-dong-nhan">Thời gian</span>
-              <span className="m-loc-dong-tri">{moTaThoiGian()}</span>
-            </div>
-            <Icon n="chevr" className="ic sm m-loc-dong-ic" />
-          </div>
+          {/* Dòng Thời gian: bấm mở hộp lịch chọn khoảng ngày dùng chung điện thoại (T571) */}
+          <MChonKhoangNgay
+            value={tinhKhoangNgay(draft.thoiGian, draft.khoangNgay) ?? thangNay()}
+            onChange={chonKhoang}
+            nut={moLich => (
+              <div className="m-loc-dong" onClick={moLich}>
+                <div className="m-loc-dong-trai">
+                  <span className="m-loc-dong-nhan">Thời gian</span>
+                  <span className="m-loc-dong-tri">{moTaThoiGian()}</span>
+                </div>
+                <Icon n="chevr" className="ic sm m-loc-dong-ic" />
+              </div>
+            )}
+          />
 
           {/* Dòng Chi nhánh (T521) */}
           {dsChiNhanh && dsChiNhanh.length > 0 && (
@@ -353,9 +369,7 @@ export const MLoc: FC<MLocProps> = ({
               </button>
             </div>
             <h1 className="m-thanh-tren-tieu-de">
-              {trangCon === 'thoiGian'
-                ? 'Thời gian'
-                : trangCon === 'chiNhanh'
+              {trangCon === 'chiNhanh'
                   ? 'Chi nhánh'
                   : trangCon === 'trangThai'
                     ? 'Trạng thái'
@@ -373,41 +387,7 @@ export const MLoc: FC<MLocProps> = ({
           </div>
 
           <div className="m-loc-con-than">
-            {trangCon === 'thoiGian' ? (
-              <div className="m-loc-ky-ds-doc">
-                {CAC_KY.map(ky => {
-                  const chon = draft.thoiGian === ky.k
-                  return (
-                    <div
-                      key={ky.k}
-                      className={`m-loc-muc-dong ${chon ? 'on' : ''}`}
-                      onClick={() => setDraft(prev => ({ ...prev, thoiGian: ky.k, khoangNgay: null }))}
-                    >
-                      <span className="m-loc-muc-ten">{ky.ten}</span>
-                      {chon && <Icon n="check" className="ic sm m-loc-muc-tick" />}
-                    </div>
-                  )
-                })}
-
-                <div className="m-loc-tuy-chon-kn">
-                  <div className="m-loc-muc-dong">
-                    <span className="m-loc-muc-ten">Tuỳ chọn khoảng ngày</span>
-                  </div>
-                  <div className="m-loc-kn-picker">
-                    <ChonKhoangNgay
-                      value={draft.khoangNgay ?? thangNay()}
-                      onChange={kn => {
-                        setDraft(prev => ({
-                          ...prev,
-                          thoiGian: 'tuy-chon',
-                          khoangNgay: kn,
-                        }))
-                      }}
-                    />
-                  </div>
-                </div>
-              </div>
-            ) : trangCon === 'chiNhanh' ? (
+            {trangCon === 'chiNhanh' ? (
               <div className="m-loc-ky-ds-doc">
                 {dsChiNhanh?.map(c => {
                   const chon = (draft.chiNhanh ?? 'all') === c.k || (!draft.chiNhanh && (c.k === 'all' || c.k === ''))
