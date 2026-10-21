@@ -40642,3 +40642,29 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
     text-overflow: clip;
   }
 }
+
+/* Radio ring cho dòng chọn quỹ */
+.m-t600-hang-quy {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  padding: 12px 16px !important;
+}
+.m-t600-hang-quy::after {
+  content: "";
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #c4c9d2;
+  box-sizing: border-box;
+  margin-left: auto;
+  flex-shrink: 0;
+  display: block;
+}
+.m-t600-hang-quy.on::after {
+  border-color: var(--blue);
+  background: radial-gradient(circle, var(--blue) 5px, transparent 6px);
+}
+.m-t600-hang-quy > span:last-child {
+  display: none !important;
+}
