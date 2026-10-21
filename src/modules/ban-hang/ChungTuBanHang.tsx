@@ -699,16 +699,15 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
           <div className="pd-cum">
             <div className="pd-tieu">THÔNG TIN KHÁCH HÀNG</div>
             <div><small>Khách hàng</small><b className="pd-khach">{dp.khach?.ten ?? 'Khách lẻ POS'}</b></div>
-            {dp.khach && <>
-              <div><small>Địa chỉ</small><span>{dp.khach.diaChi}</span></div>
-              <div className="pd-luoi">
-                <div><small>Mã số thuế</small><b className="code">{dp.khach.mst}</b></div>
-                <div><small>Người mua hàng</small><b>{dp.khach.nguoiMua}</b></div>
-              </div>
-            </>}
+            {/* Khách lẻ vẫn giữ đủ nhãn, ô thiếu ghi — (T620) */}
+            <div><small>Địa chỉ</small>{dp.khach ? <span>{dp.khach.diaChi}</span> : <b className="pd-trong-o">—</b>}</div>
+            <div className="pd-luoi">
+              <div><small>Mã số thuế</small>{dp.khach ? <b className="code">{dp.khach.mst}</b> : <b className="pd-trong-o">—</b>}</div>
+              <div><small>Người mua hàng</small>{dp.khach ? <b>{dp.khach.nguoiMua}</b> : <b className="pd-trong-o">—</b>}</div>
+            </div>
           </div>
           <div className="pd-cum pd-hd">
-            <div className="pd-tieu">HOÁ ĐƠN</div>
+            <div className="pd-tieu pd-tieu-nhan">HOÁ ĐƠN{!dp.hoaDon && <span className="pd-nhan-khong">Không lấy hoá đơn GTGT</span>}</div>
             {dp.hoaDon ? (
               <div className="pd-luoi">
                 <div><small>Số hoá đơn</small><b className="code">{dp.hoaDon.so}</b></div>
@@ -727,8 +726,11 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
               </div>
             ) : (
               <div className="pd-luoi">
+                <div><small>Số hoá đơn</small><b className="pd-trong-o">—</b></div>
+                <div><small>Ký hiệu</small><b className="pd-trong-o">—</b></div>
+                <div><small>Ngày hoá đơn</small><b className="pd-trong-o">—</b></div>
                 <div><small>Ngày chứng từ</small><b>{dmy(x.date)}</b></div>
-                <div className="pd-c2"><small className="pd-trong">Khách không lấy hoá đơn GTGT</small></div>
+                <div className="pd-c2"><small>Mã tra cứu</small><b className="pd-trong-o">—</b></div>
               </div>
             )}
           </div>
