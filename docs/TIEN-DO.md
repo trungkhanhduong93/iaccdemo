@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T591 | Đồng nhất tên phiếu ngân hàng là Thu ngân hàng, Chi ngân hàng (thao tác nhanh web và điện thoại đang ghi Báo có, Uỷ nhiệm chi; menu Thu, chi tiền ghi Thu/Chi tiền gửi ngân hàng) theo QD24 | dinhlanphuongipacc | Đang làm | Sửa `thaoTacNhanh.ts`, `SidebarFlyout.tsx`, `MDtThuChiXem.tsx`, `generic/nhom.ts`. Mẫu in Giấy báo có, Uỷ nhiệm chi giữ tên |
 | T583 | Điện thoại, Chi phí phân bổ dùng khung danh sách T582 | Trum | Chờ | Làm sau T436 (dinhlanphuongipacc giữ `MCcdc.tsx`) |
 | T577 | Web, danh sách chứng từ: thanh trên chọn Tất cả cửa hàng thì bộ lọc luôn có ô Cửa hàng ghi tên gốc, như báo cáo ở T576 | dinhlanphuongipacc | Chờ | Sửa `VoucherScreen.tsx`, Trum đang giữ ở T496, hỏi Trum trước |
 | T574 | Dữ liệu giả hoá đơn FABi lẻ (`dongMonDon` trong `ChungTuBanHang.tsx`): món cuối nhận phần dư nên số lượng × đơn giá khác thành tiền (vd 5 Ly × 39.000 = 182.000), lộ rõ ở chi tiết Xuất bán POS web và điện thoại | | Chờ | Thấy khi làm T573. `ChungTuBanHang.tsx` |
