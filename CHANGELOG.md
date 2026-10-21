@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 21/10/2026
+- T557: Phiếu mua hàng, bán hàng: ô Hạn thanh toán chọn ngày bằng lịch như ô Ngày chứng từ, vẫn gõ tay được.
 - T556: Xem trước khi in báo cáo: cột Số phiếu chữ thường, màu đen như ô khác, không bấm được, không tràn sang cột bên.
 - T561: Bộ lọc nâng cao: icon lịch ô Thời gian không đè nút ghim; bỏ kéo thả đổi chỗ ô lọc. Tuỳ chỉnh cột vẫn kéo thả được.
 - T558: Xem phiếu Xuất bán POS: chân phiếu như Mua hàng, nút In phiếu bên trái, Đóng bên phải, dải tổng có Tiền hàng, Tiền thuế GTGT.

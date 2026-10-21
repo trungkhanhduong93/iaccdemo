@@ -1105,12 +1105,9 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
                 {coHanTt && hinhThucTt === 'congno' && hienDau('hanTt') && (
                   <div className="f" style={{ flex: 1 }}>
                     <label>Hạn thanh toán</label>
+                    {/* Hạn thanh toán chọn bằng lịch như Ngày chứng từ (T557) */}
                     {dangSua ? (
-                      <input
-                        className="inp"
-                        value={hanTt}
-                        onChange={e => setHanTt(e.target.value)}
-                      />
+                      <ONgay value={hanTt} onChange={setHanTt} />
                     ) : (
                       <input className="inp" readOnly value={hanTt} />
                     )}
