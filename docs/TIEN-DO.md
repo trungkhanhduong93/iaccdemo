@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T557 | Web, form thêm, sửa chứng từ: ô ngày chọn được bằng lịch. Rà 31 form, ô Ngày chứng từ đều đã có lịch (`ONgay`); còn ô Hạn thanh toán ở mua hàng, bán hàng là ô chữ | PhuongXT | Đang làm | `ChungTuForm.tsx` (ô Hạn thanh toán) |
 | T556 | Web, xem trước khi in báo cáo: cột Số phiếu (cột mã `cls: 'code'`) chữ to, xanh, bấm được, đè cột bên. Sửa về chữ thường, đen, không bấm được trên tờ in | Trum | Chờ | Chờ Trum nói "giao anti". Plan `backup/plan-T556-T560.md`, spec `backup/spec-T556-T560-A.md`. Sửa `ToGiay.tsx`, cuối `app.css` (mục T556) |
 | T557 | Web, Bộ lọc nâng cao ở báo cáo: icon lệch (icon lịch ô Thời gian đè nút ghim); bỏ kéo thả đổi vị trí ô | Trum | Chờ | Cùng đợt T556. Giữ kéo thả ở Tuỳ chỉnh cột. Sửa `LocNangCao.tsx`, cuối `app.css` (mục T557) |
 | T558 | Web, chân phiếu Xuất bán POS và các phiếu chưa giống Mua hàng: lấy chân phiếu Mua hàng làm chuẩn | Trum | Chờ | Cùng đợt T556. Sửa `ChungTuBanHang.tsx`, phiếu khác worker dò ra, cuối `app.css` (mục T558). Không sửa `ChungTuForm.tsx` nếu không bắt buộc |
