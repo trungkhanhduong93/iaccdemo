@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T604 | Điện thoại: form thêm đối tượng, thêm lý do nghiệp vụ ở phiếu thu chi làm theo sheet Thêm nhà cung cấp của phiếu mua; sheet chọn hàng hoá ở phiếu kiểm kê làm theo sheet chọn hàng của phiếu mua | PhuongXT | Đang làm | Sửa `MDtThuChiLap.tsx` (T601 sửa phần điền sẵn, khác khúc), `MLapPhieuKho.tsx`, cuối `app.css` nếu cần |
 | T601 | Điện thoại, phiếu mua hàng: so từng khung canvas T600 với code, làm nốt chỗ còn thiếu ở màn xem, màn sửa, thêm mới, luồng thanh toán ngay, nhà cung cấp, thêm dòng | Trum | Đang làm | Sửa `MXemPhieu.tsx` (T436 đang giữ), `MLapPhieu.tsx` (T597 đang giữ, ai push sau gộp tay), `MDtThuChiLap.tsx` phần điền sẵn, cuối `app.css` (mục T601-A, B, C). Spec `backup/spec-T601.md` |
 | T602 | Điện thoại, tab Nghiệp vụ: bỏ chip cam "Nợ 138,2 tr" ở dòng Mua hàng | Trum | Đang làm | Sửa `MNghiepVu.tsx`, `app.css` (xoá `.m-t498-nv-badge-no`). Spec `backup/spec-T601.md` |
 | T599 | Bỏ dòng "Ký hiệu chờ kế toán trưởng duyệt" trên tờ báo cáo và mẫu in chứng từ; giữ chip ở Hệ thống tài khoản | Trum | Đang làm | Sửa `ReportScreen.tsx`, `InChungTu.tsx`, `xuat.ts`, `app.css`. Spec `backup/spec-T593-T595.md` |
