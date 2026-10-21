@@ -34891,18 +34891,6 @@ a.tx-item:hover {
   text-overflow: ellipsis;
 }
 
-/* Huy hiệu Nợ cam nhạt */
-.m-t498-nv-badge-no {
-  font-size: 12px;
-  font-weight: 600;
-  color: #ea580c;
-  background: #fef3e9;
-  padding: 3px 8px;
-  border-radius: 10px;
-  flex: none;
-  margin-right: 4px;
-}
-
 .m-t498-nv-khoa {
   margin-right: 4px;
   flex: none;
@@ -39850,10 +39838,21 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
   font-size: 12.5px;
 }
 .m-t600-tong-but-toan {
-  text-align: right;
-  font-size: 13px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
   color: var(--muted);
-  padding: 8px 12px;
+  background: var(--hdb-chan);
+  border-radius: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  font-variant-numeric: tabular-nums;
+  margin-top: 4px;
+}
+.m-t600-tong-but-toan b {
+  color: var(--ink);
+  font-weight: 700;
 }
 .m-t600-dai-dien-san {
   display: flex;
@@ -39969,6 +39968,601 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
 }
 
 .pn-hai-cot .tc-so {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+/* ── Phiếu mua điện thoại, thanh toán ngay, NCC (T601-B) ── */
+.m-t601-keo {
+  width: 40px;
+  height: 4px;
+  border-radius: 2px;
+  background: #d1d5db;
+  margin: 8px auto 0;
+  flex-shrink: 0;
+}
+.m-t601-req {
+  color: var(--red);
+  margin-left: 2px;
+}
+.m-t601-loi {
+  font-size: 12px;
+  color: var(--red);
+  line-height: 1.4;
+}
+.m-t601-btn-ib {
+  width: 36px;
+  height: 36px;
+  border: 0;
+  background: none;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+.m-t601-btn-ib:hover {
+  color: var(--blue);
+}
+.m-t601-ncc-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--tint);
+  color: var(--blue);
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.m-t601-ncc-item {
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: var(--white);
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+}
+.m-t601-ncc-item.on {
+  background: #f2f7fc;
+}
+.m-t601-quy-item {
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: var(--white);
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+}
+.m-t601-quy-item.on {
+  background: #f2f7fc;
+}
+.m-t601-quy-ic {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.m-t601-quy-ic.tm {
+  background: #e3f4ea;
+  color: #138a52;
+}
+.m-t601-quy-ic.nh {
+  background: var(--tint);
+  color: var(--blue);
+}
+.m-t601-ring {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  margin-left: auto;
+  border: 2px solid #c4c9d2;
+}
+.m-t601-ring.on {
+  border-color: var(--blue);
+}
+.m-t601-ring-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--blue);
+}
+.m-t601-nhom-chu {
+  padding: 4px 16px 6px;
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 600;
+  letter-spacing: .04em;
+  border-bottom: 1px solid var(--line);
+  text-transform: uppercase;
+}
+.m-t601-o-tim {
+  box-sizing: border-box;
+  height: 40px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  font-size: 14px;
+  color: var(--body);
+  background: var(--white);
+}
+.m-t601-o-tim:focus-within {
+  border-color: var(--blue);
+}
+.m-t601-o-tim input {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-size: 14px;
+  color: var(--ink);
+  background: transparent;
+}
+.m-t601-thanh-cong-cu {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 14px 6px 10px;
+  border-bottom: 1px solid var(--line);
+}
+.m-t601-btn-foot-huy {
+  flex: 1;
+  height: 48px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--white);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+.m-t601-btn-foot-pri {
+  flex: 2;
+  height: 48px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--blue);
+  color: var(--white);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+.m-t601-btn-foot-pri:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.m-t600-sheet-85::before,
+.m-t600-sheet-70::before {
+  content: "";
+  display: block;
+  width: 40px;
+  height: 4px;
+  border-radius: 2px;
+  background: #d1d5db;
+  margin: 8px auto 0;
+  flex-shrink: 0;
+}
+
+/* ── Phiếu mua điện thoại, màn sửa (T601-C) ── */
+.m-t601-tabs {
+  margin: 16px 16px 0;
+  background: var(--giay-ke, #e5e7eb);
+  border-radius: 10px;
+  padding: 3px;
+  display: grid;
+}
+.m-t601-tab-btn {
+  height: 38px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--muted, #6b7280);
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.m-t601-tab-btn.on {
+  background: var(--white);
+  color: var(--blue);
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+.m-t601-tt-tieu {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+.m-t601-radio-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 34px;
+  font-size: 14px;
+  cursor: pointer;
+  color: var(--ink);
+}
+.m-t601-radio-ring {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  border: 2px solid #9ca3af;
+  flex-shrink: 0;
+}
+.m-t601-radio-ring.on {
+  border-color: var(--blue);
+}
+.m-t601-radio-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--blue);
+}
+.m-t601-sw {
+  flex: none;
+  width: 46px;
+  height: 28px;
+  border-radius: 14px;
+  position: relative;
+  background: #d1d5db;
+  transition: background 0.2s;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+  outline: none;
+}
+.m-t601-sw.on {
+  background: var(--blue);
+}
+.m-t601-sw-dot {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--white);
+  transition: left 0.2s;
+}
+.m-t601-sw.on .m-t601-sw-dot {
+  left: 21px;
+}
+.m-t601-hang-card {
+  margin: 0 16px 16px;
+  background: var(--white);
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+.m-t601-hang-ap-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #eeeeee;
+  gap: 10px;
+}
+.m-t601-toggle-don-vi {
+  display: flex;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: 13px;
+  font-weight: 600;
+}
+.m-t601-toggle-don-vi button {
+  padding: 7px 10px;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+.m-t601-toggle-don-vi button.on {
+  background: var(--tint);
+  color: var(--blue);
+}
+.m-t601-hang-tim-wrap {
+  padding: 12px 16px;
+  border-bottom: 1px solid #eeeeee;
+}
+.m-t601-hang-tim-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 42px;
+  border-radius: 8px;
+  background: var(--tint);
+  padding: 0 12px;
+  font-size: 14px;
+  color: var(--muted);
+}
+.m-t601-hang-tim-box input {
+  border: none;
+  background: transparent;
+  outline: none;
+  width: 100%;
+  font-size: 14px;
+  color: var(--ink);
+}
+.m-t601-hang-row {
+  padding: 14px 16px;
+  border-bottom: 1px solid #eeeeee;
+  background: var(--white);
+}
+.m-t601-hang-row.moi {
+  background: #f7fafd;
+}
+.m-t601-hang-row-dau {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eeeeee;
+}
+.m-t601-btn-nhan-ban {
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--tint);
+  color: var(--blue);
+  padding: 0;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+.m-t601-btn-xoa {
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 8px;
+  background: #fcebea;
+  color: #c2362b;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+.m-t601-grid {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr) 112px;
+  column-gap: 8px;
+  row-gap: 8px;
+  align-items: center;
+  font-variant-numeric: tabular-nums;
+}
+.m-t601-grid-lbl {
+  font-size: 13px;
+  color: #6b7280;
+}
+.m-t601-grid-lbl.tg {
+  border-top: 1px solid #eeeeee;
+  padding-top: 8px;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  color: var(--ink);
+}
+.m-t601-box {
+  box-sizing: border-box;
+  height: 36px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--blue);
+  background: #fff;
+  min-width: 0;
+  width: 100%;
+}
+.m-t601-box.sel {
+  justify-content: space-between;
+  background: #f8fafc;
+  cursor: pointer;
+}
+.m-t601-box.ghi-chu {
+  grid-column: 1 / -1;
+  color: var(--ink);
+  font-weight: 400;
+  font-size: 13px;
+}
+.m-t601-box.focus-moi {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px var(--tint);
+}
+.m-t601-amt {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 2px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #363636;
+}
+.m-t601-amt.tg {
+  border-top: 1px solid #eeeeee;
+  padding-top: 8px;
+  align-self: stretch;
+  font-size: 16px;
+  font-weight: 700;
+  color: #1f2225;
+}
+.m-t601-pen {
+  width: 28px;
+  height: 28px;
+  border: 0;
+  background: none;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  flex: none;
+  cursor: pointer;
+  color: var(--blue);
+}
+.m-t601-btn-them-dong {
+  box-sizing: border-box;
+  width: 100%;
+  height: 40px;
+  border: 1px dashed var(--blue);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: var(--blue);
+  font-size: 14px;
+  font-weight: 600;
+  background: transparent;
+  cursor: pointer;
+}
+.m-t601-tong-khu {
+  background: #f8fafc;
+  padding: 14px 16px;
+  border-radius: 0 0 12px 12px;
+}
+.m-t601-tong-dong {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  padding: 3px 0;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.m-t601-tong-dong .lb {
+  color: #6b7280;
+}
+.m-t601-tong-dong.chinh {
+  font-size: 16px;
+  font-weight: 700;
+  padding-top: 8px;
+  border-top: 1px solid #eeeeee;
+  margin-top: 4px;
+}
+.m-t601-cb {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  box-sizing: border-box;
+  border-radius: 6px;
+  display: grid;
+  place-items: center;
+  border: 1.5px solid #c4c9d2;
+  background: #fff;
+  cursor: pointer;
+}
+.m-t601-cb.on {
+  background: var(--blue);
+  border: 0;
+}
+
+
+.m-t601-btn-ib-reload {
+  font-size: 0 !important;
+}
+.m-t601-btn-ib-reload::after {
+  content: "";
+  display: block;
+  width: 20px;
+  height: 20px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%230560a6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 12a8 8 0 1 1-2.34-5.66'/%3E%3Cpath d='M20 4v5h-5'/%3E%3C/svg%3E") no-repeat center;
+}
+
+.m-t600-hang-ncc > div:first-child {
+  background: var(--tint) !important;
+  color: var(--blue) !important;
+  border-radius: 10px !important;
+}
+
+/* ── Phiếu mua điện thoại, màn xem (T601-A) ── */
+.m-xp-mua .m-t449-hang-the {
+  background: var(--white);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 8px;
+  border: 1px solid var(--line);
+}
+.m-xp-mua .m-t449-hang-dau {
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+}
+.m-xp-mua .m-t449-hang-ten {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.m-xp-mua .m-t449-hang-ma {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--muted);
+  margin-left: 6px;
+}
+.m-xp-mua .m-t449-hang-than {
+  padding-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.m-xp-mua .m-t449-hang-dong {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 14px;
+  padding: 2px 0;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.m-xp-mua .m-t449-hang-dong .lbl {
+  color: var(--muted);
+}
+.m-xp-mua .m-t449-hang-dong .val {
+  color: var(--body);
+}
+.m-xp-mua .m-t449-hang-dong .val.bold {
   color: var(--ink);
   font-weight: 700;
 }

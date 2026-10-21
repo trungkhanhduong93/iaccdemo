@@ -111,7 +111,6 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
   const [tab, setTab] = useState<TabKey>('chitiet')
   const [moMenu, setMoMenu] = useState(false)
   const [moThanhToan, setMoThanhToan] = useState(() => sp.get('thanhtoan') === '1')
-  const [timHangHoa, setTimHangHoa] = useState('')
   const [hoiXoa, setHoiXoa] = useState(false)
   const [hoiKhongSua, setHoiKhongSua] = useState(false)   // phiếu chi còn thẻ chi phí (T475)
   const [hoiBoGhi, setHoiBoGhi] = useState(false)
@@ -192,12 +191,13 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
   const hanTt = (coHanTt && nhomMb) ? String(row._hanTt ?? nv?.hanTt ?? '') : ''
 
   // Kho
+  const khoMacDinh = nhomMb === 'mua' ? (CUA_HANG.find(c => c.ten === cuaHangTen)?.kho[0] ?? 'Kho hàng') : ''
   const kho = String(
     row._kho ??
       row.kho ??
       (row._khoDs as string[] | undefined)?.[0] ??
       dsDong.find(d => d.kho)?.kho ??
-      (nhomMb === 'mua' ? 'Kho hàng' : ''),
+      khoMacDinh,
   )
 
   const diaChiHienThi = String(row._diaChi ?? DIA_CHI_NCC[String(row.doiTuong ?? '')] ?? nv?.dc ?? '')
@@ -250,7 +250,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
       const no = dsButToan[i]
       const co = dsButToan[i + 1]
       if (no && co) {
-        const dg = no.so.startsWith('133') ? 'Thuế GTGT mua vào' : 'Tiền mua hàng'
+        const dg = no.so.startsWith('133') ? 'Thuế GTGT được khấu trừ' : 'Giá trị hàng nhập kho'
         caps.push({ no, co, dg, tien: no.tien })
       }
     }
@@ -346,7 +346,6 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
       ]
     }
     if (nhomMb === 'mua') {
-      const soBt = Math.round(dsButToan.length / 2)
       if (s.goi === 'F') {
         return [
           { k: 'chitiet' as TabKey, ten: 'Phiếu nhập' },
@@ -355,7 +354,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
       }
       return [
         { k: 'chitiet' as TabKey, ten: 'Phiếu nhập' },
-        { k: 'buttoan' as TabKey, ten: `Hạch toán (${soBt})` },
+        { k: 'buttoan' as TabKey, ten: 'Hạch toán' },
         { k: 'lichsu' as TabKey, ten: 'Lịch sử' },
       ]
     }
@@ -517,45 +516,26 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
     }
   }
 
-  const dsDongLocMua = useMemo(() => {
-    if (!timHangHoa.trim()) return dsDong
-    const q = timHangHoa.trim().toLowerCase()
-    return dsDong.filter(d => (d.ten || '').toLowerCase().includes(q) || (d.ma || '').toLowerCase().includes(q))
-  }, [dsDong, timHangHoa])
-
   const renderDsHangHoaMua = () => (
     <div>
       <div className="m-pb-nhom" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <span>HÀNG HOÁ, DỊCH VỤ</span>
         <span style={{ color: 'var(--muted)', fontWeight: 'normal', textTransform: 'none', fontSize: 13 }}>
-          {dsDongLocMua.length} dòng
+          {dsDong.length} dòng
         </span>
-      </div>
-      <div className="m-t449-tim">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2" aria-hidden="true">
-          <circle cx="11" cy="11" r="7" />
-          <path d="M20 20l-4-4" />
-        </svg>
-        <input
-          type="text"
-          aria-label="Tìm hàng hoá"
-          placeholder="Nhập tên, mã hàng hoá"
-          value={timHangHoa}
-          onChange={e => setTimHangHoa(e.target.value)}
-        />
       </div>
 
       <div className="m-t449-hang-ds">
-        {dsDongLocMua.map((d, idx) => {
+        {dsDong.map((d, idx) => {
           const tongDong = (Number(d.tien) || 0) - (Number(d.ck) || 0) + (Number(d.thue) || 0)
-          const vatNhan = d.ts === 0 ? 'KCT' : `${d.ts ?? 0}%`
+          const vatNhan = !d.ts || d.ts === 0 ? 'KCT' : `${d.ts}%`
 
           return (
             <div key={idx} className="m-t449-hang-the">
               <div className="m-t449-hang-dau">
                 <div className="m-t449-hang-ten">
                   {idx + 1}. {d.ten || 'Mặt hàng'}
-                  {d.ma ? <span className="m-t449-hang-ma" style={{ color: 'var(--muted)', fontWeight: 'normal', marginLeft: 6 }}>{d.ma}</span> : null}
+                  {d.ma ? <> <span className="m-t449-hang-ma" style={{ color: 'var(--muted)', fontWeight: 'normal' }}>{d.ma}</span></> : null}
                 </div>
               </div>
               <div className="m-t449-hang-than">
@@ -587,7 +567,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
         {/* A6: Khối Tổng cộng (N dòng) cuối danh sách hàng, cuộn theo nội dung, CHỈ 5 dòng */}
         <div className="m-t600-the-tong">
           <div className="m-t600-tong-tieu">
-            <span>Tổng cộng ({dsDongLocMua.length} dòng)</span>
+            <span>Tổng cộng ({dsDong.length} dòng)</span>
           </div>
           <div className="m-t600-tong-dong">
             <span>Số lượng</span>
@@ -595,15 +575,15 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
           </div>
           <div className="m-t600-tong-dong">
             <span>Thành tiền</span>
-            <span className="num">{money(tongTien)} đ</span>
+            <span className="num">{money(tongTien)}</span>
           </div>
           <div className="m-t600-tong-dong">
             <span>Tiền giảm giá</span>
-            <span className="num">{money(tongCk)} đ</span>
+            <span className="num">{money(tongCk)}</span>
           </div>
           <div className="m-t600-tong-dong">
             <span>Tiền thuế</span>
-            <span className="num">{money(tongThue)} đ</span>
+            <span className="num">{money(tongThue)}</span>
           </div>
           <div className="m-t600-tong-dong tong-chinh">
             <span>Tổng tiền</span>
@@ -712,7 +692,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
                 </div>
                 <div className="m-t600-tt-tien-do-hang">
                   <span>Đã trả</span>
-                  <b>{money(daTra)} / {money(tongGoc)} đ</b>
+                  <b>{money(daTra)} / {money(tongGoc)}</b>
                 </div>
                 <div className="m-t600-thanh-tien-do">
                   <div
@@ -986,7 +966,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
                   </div>
                   <div className="m-pb-dong">
                     <span className="n">Kho nhập <span className="m-t600-sao">*</span></span>
-                    <span className="g">{kho || 'Kho hàng'}</span>
+                    <span className="g">{kho}</span>
                   </div>
                   {(row.dienGiai || row._ghiChu) && (
                     <div className="m-pb-dong">
@@ -1002,10 +982,12 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
                           <Link
                             key={idx}
                             to={tc.url}
-                            style={{ color: 'var(--blue)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 2, fontWeight: 500 }}
+                            style={{ color: 'var(--blue)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4, fontWeight: 600 }}
                           >
                             <span>{tc.so}</span>
-                            <span style={{ fontSize: 13 }}>›</span>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true">
+                              <path d="M9 6l6 6-6 6" />
+                            </svg>
                           </Link>
                         ))}
                       </span>
@@ -1191,7 +1173,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
                   <div key={i} className="m-t600-bt-the">
                     <div className="m-t600-bt-hang-dau">
                       <span>{cap.dg}</span>
-                      <b className="num">{money(cap.tien)} đ</b>
+                      <b className="num">{money(cap.tien)}</b>
                     </div>
                     <div className="m-t600-bt-dong-tk">
                       <span className="m-t600-chip-no">Nợ</span>
@@ -1208,7 +1190,8 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
               )}
               {capButToan.length > 0 && (
                 <div className="m-t600-tong-but-toan">
-                  Tổng Nợ = Tổng Có <b className="num">{money(tongNoCo)} đ</b>
+                  <span>Tổng Nợ = Tổng Có</span>
+                  <b className="num">{money(tongNoCo)} đ</b>
                 </div>
               )}
             </div>

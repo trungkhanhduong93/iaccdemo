@@ -414,7 +414,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
 
       if (dienSan.manMua && dienSan.idMua) {
         const dsTtMoi = [...(dienSan.dsTtCu ?? []), { id: targetId, so: soCt, loai, tien: soTien, ngay, quy }]
-        suaPhieu(dienSan.manMua, dienSan.idMua, { _dsTt: dsTtMoi })
+        suaPhieu(dienSan.manMua, dienSan.idMua, { _dsTt: dsTtMoi, _httt: 'congno' })
         ghiNhatKy(dienSan.manMua, dienSan.idMua, dienSan.soMua ?? '', s.ten, `Thanh toán ngay ${money(soTien)} bằng ${soCt}`)
       }
       toast(`Đã lưu phiếu ${soCt}`)
@@ -585,7 +585,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
         {dienSan && (
           <div className="m-t600-dai-dien-san">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-            <span>Điền sẵn từ phiếu mua {dienSan.soMua ?? dienSan.thamChieuSo}. Kiểm lại rồi bấm Lưu phiếu.</span>
+            <span>Điền sẵn từ phiếu mua <b>{dienSan.soMua ?? dienSan.thamChieuSo}</b>. Kiểm lại rồi bấm Lưu phiếu.</span>
           </div>
         )}
         {/* 1. Card Số tiền (sửa trực tiếp) */}

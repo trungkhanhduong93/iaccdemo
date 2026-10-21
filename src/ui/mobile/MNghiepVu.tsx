@@ -187,9 +187,6 @@ export function MNghiepVu() {
                         <Icon n={cn.icon} kieu="khoi" className="ic" />
                       </div>
                       <span className="m-t498-nv-item-ten">{cn.ten}</span>
-                      {cn.ten === 'Mua hàng' && (
-                        <span className="m-t498-nv-badge-no">Nợ 138,2 tr</span>
-                      )}
                       {cn.khoa && cn.goiMin && (
                         <span className="m-t498-nv-khoa">
                           <Pk g={cn.goiMin} o />
