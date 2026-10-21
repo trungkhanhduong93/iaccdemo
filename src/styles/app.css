@@ -38786,3 +38786,201 @@ body:has(.m-app) .m-thanh-duoi .m-tab.on .m-tab-ic .ic .l2 {
 
 /* Thụt lề cấp 2 báo cáo */
 .rpt td.i2 { padding-left: 40px; }
+
+/* ── Phần Chi tiết form thu chi điện thoại theo Figma (T589) ── */
+.m-tc-nhom-chu .so-dong {
+  font-weight: 500;
+  text-transform: none;
+  color: var(--muted);
+  margin-left: 6px;
+}
+.m-tc-lap-card .m-tc-lap-dong-item {
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 12px;
+  margin-bottom: 12px;
+  background: #fafafa;
+}
+.m-tc-lap-dong-item .m-tc-dong-item-dau {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.m-tc-lap-dong-item .m-tc-stt-tron {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--soft);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.m-tc-lap-dong-item .m-tc-dong-item-dau .ten {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.m-tc-lap-dong-item .m-tc-btn-xoa-dong {
+  color: var(--red);
+  border: 0;
+  background: transparent;
+  padding: 4px;
+  margin-left: auto;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--r-sm);
+}
+.m-tc-lap-dong-item .m-tc-btn-xoa-dong:active {
+  background: var(--red-t);
+}
+.m-tc-lap-dong-item .m-tc-lap-field {
+  margin-bottom: 10px;
+}
+.m-tc-lap-dong-item .m-tc-lap-field:last-child {
+  margin-bottom: 0;
+}
+.m-tc-lap-dong-item .m-tc-lap-field .nhan {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--body);
+  margin-bottom: 5px;
+}
+.m-tc-lap-dong-item .m-tc-lap-inp {
+  height: 44px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--white);
+  padding: 0 12px;
+  font-size: 14px;
+  color: var(--ink);
+  box-sizing: border-box;
+  outline: none;
+  width: 100%;
+}
+.m-tc-lap-dong-item .m-tc-lap-inp:focus {
+  border-color: var(--blue);
+  background: var(--white);
+}
+.m-tc-lap-dong-item .m-tc-lap-inp-tien-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+.m-tc-lap-dong-item .m-tc-lap-inp-tien-wrap .m-tc-lap-inp {
+  text-align: left;
+  padding-right: 32px;
+  font-variant-numeric: tabular-nums;
+}
+.m-tc-lap-dong-item .m-tc-lap-inp-tien-wrap .don-vi {
+  position: absolute;
+  right: 12px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--muted);
+  pointer-events: none;
+}
+.m-tc-lap-dong-item .m-tc-subtext {
+  font-size: 11.5px;
+  color: var(--muted);
+  margin-top: 5px;
+  display: block;
+}
+.m-tc-lap-dong-item .m-tc-lap-mo-rong {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--line);
+}
+.m-tc-lap-dong-item .m-tc-btn-toggle-mo-rong {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  background: transparent;
+  font-size: 13px;
+  color: var(--blue);
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 0;
+}
+.m-tc-lap-dong-item .m-tc-lap-cac-truong-mo-rong {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.m-tc-btn-them-dong-dashed {
+  width: 100%;
+  height: 44px;
+  border: 1.5px dashed var(--blue);
+  border-radius: var(--r);
+  background: transparent;
+  color: var(--blue);
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  margin-top: 4px;
+  box-sizing: border-box;
+  transition: background-color .15s ease;
+}
+.m-tc-btn-them-dong-dashed:active {
+  background: var(--tint);
+}
+.m-tc-dong-tong-cong {
+  margin-top: 14px;
+  padding: 12px 14px;
+  background: var(--soft);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  box-sizing: border-box;
+}
+.m-tc-dong-tong-cong .m-tc-tong-trai {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.m-tc-dong-tong-cong .nhan {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.m-tc-dong-tong-cong .phu {
+  font-size: 11.5px;
+  color: var(--muted);
+}
+.m-tc-dong-tong-cong .so {
+  font-size: 16px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.m-tc-dong-tong-cong .so.chi {
+  color: var(--red);
+}
+.m-tc-dong-tong-cong .so.thu {
+  color: var(--green);
+}
+.m-tc-dong-tong-cong .so.cq {
+  color: var(--blue);
+}

@@ -5,6 +5,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 ## 21/10/2026
 - T587: Web, hộp Tuỳ chỉnh báo cáo làm lại. Tab Cột gom SL, Giá trị theo nhóm (Tồn đầu kỳ, Nhập, Xuất...), có ô tìm cột, tick cả nhóm. Gom nhóm được tối đa 3 cấp, chọn bằng nút, chuyển Chi tiết / Tổng hợp ngay trong hộp. Người ký sửa theo dòng, có xem trước chân trang khi in. Cỡ chữ chọn bằng dãy nút.
 - T588: Điện thoại, form Lập phiếu kiểm kê làm lại theo khung phiếu mua hàng: tồn thực tế tự điền bằng tồn hệ thống (âm thì 0), sửa được; mỗi mặt hàng hiện chênh lệch kèm nhãn Thừa, Thiếu và cách xử lý Nhập, Xuất điều chỉnh; cuối phiếu đếm số mặt hàng chênh lệch, thừa, thiếu. Màn Kiểm kê có 4 tab Kiểm kê, Xuất điều chỉnh, Nhập điều chỉnh, Báo cáo; Nghiệp vụ bỏ mục Điều chỉnh kho.
+- T589: Điện thoại, lập và sửa phiếu thu chi: mỗi dòng chi tiết lấy diễn giải làm tiêu đề, nút Thêm dòng viền nét đứt, dòng Tổng cộng chỉ hiện khi phiếu có từ 2 dòng.
 - T586: Phiếu mua hàng, bán hàng mẫu đã thanh toán hoặc thanh toán một phần có phiếu chi, thu mẫu đi kèm bên Thu chi. Dòng Tham chiếu trên chi tiết phiếu hiện số phiếu, bấm mở được, hai chiều.
 - T585: Web, chi tiết chứng từ có một dòng "Tham chiếu" cuối phần thông tin chung, liệt kê các chứng từ liên quan (phiếu chi, thu; thẻ chi phí; phiếu điều chỉnh; phiếu nhập, xuất; phiếu gốc), bấm số để mở.
 - T584: Web, xem chi tiết chứng từ: Chứng từ trước, Chứng từ sau thành 2 nút mũi tên bên trái nút Tiện ích, không còn nằm trong menu Tiện ích.
