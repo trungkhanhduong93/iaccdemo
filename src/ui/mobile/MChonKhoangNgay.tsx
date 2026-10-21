@@ -1,5 +1,6 @@
 // Điện thoại: chọn khoảng ngày trong hộp lịch giữa màn, có kỳ chọn nhanh, cột số tuần, chọn hai mốc trên lịch (T571)
 import { useState, type FC, type ReactNode } from 'react'
+import { createPortal } from 'react-dom'
 import { HOM_NAY } from '../../data/mock'
 import { dmy, khoangThang, type KhoangNgay } from '../ChonNgay'
 import { Icon } from '../Icon'
@@ -65,7 +66,8 @@ export const MChonKhoangNgay: FC<{ value: KhoangNgay; onChange: (k: KhoangNgay) 
         </button>
       )}
 
-      {mo && (
+      {/* portal ra body: nằm trong hàng chip cuộn ngang thì iOS cắt lớp fixed theo hàng, chỉ thấy dải nền tối */}
+      {mo && createPortal(
         <div className="m-kn-nen" onClick={() => setMo(false)}>
           <div className="m-kn-hop" role="dialog" aria-label="Chọn khoảng ngày" onClick={e => e.stopPropagation()}>
             <div className="m-kn-ky">
@@ -111,7 +113,8 @@ export const MChonKhoangNgay: FC<{ value: KhoangNgay; onChange: (k: KhoangNgay) 
               <button type="button" className="chinh" onClick={apDung}>Áp dụng</button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body,
       )}
     </>
   )
