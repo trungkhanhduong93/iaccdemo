@@ -308,9 +308,9 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
         { k: 'lichsu' as TabKey, ten: 'Lịch sử' },
       ]
     }
+    // Các phiếu kho khác (xuất kho, chuyển kho, điều chỉnh...): chỉ 2 tab Chi tiết, Lịch sử (T527)
     return [
       { k: 'chitiet' as TabKey, ten: 'Chi tiết' },
-      { k: 'hanghoa' as TabKey, ten: `Chi tiết (${dsDong.length})` },
       { k: 'lichsu' as TabKey, ten: 'Lịch sử' },
     ]
   }, [laTien, nhomMb, laKk, s.goi, dsButToan.length, dsDong.length, dsTt.length])
@@ -982,75 +982,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
           </>
         )}
 
-        {/* Tab Mặt hàng / Hàng hoá */}
-        {tab === 'hanghoa' && (
-          <>
-            <div className="m-pb-nhom">
-              {laKk ? `CHI TIẾT MẶT HÀNG (${dsDong.length})` : `DANH SÁCH MẶT HÀNG (${dsDong.length})`}
-            </div>
-            {laKk ? (
-              dsDong.map((d, idx) => {
-                const chenh = Math.round(((d.tonTt ?? 0) - (d.tonHt ?? 0)) * 100) / 100
-                const loaiKk = loaiXuLy(d) || (chenh > 0 ? 'Nhập điều chỉnh' : chenh < 0 ? 'Xuất điều chỉnh' : 'Khớp')
-                const chipKkClass = chenh > 0 ? 'nhap' : chenh < 0 ? 'xuat' : 'khop'
-                const dvtTxt = d.dvt || 'kg'
 
-                return (
-                  <div key={idx} className="m-pb-the m-pb-muc-dong">
-                    <div className="m-pb-muc-hang1">
-                      <span className="m-pb-muc-ten kk-ten">
-                        <b>{d.ten || 'Mặt hàng'}</b>
-                        {d.ma && <small>{d.ma}</small>}
-                      </span>
-                      <span className={`chip-kk ${chipKkClass}`}>{loaiKk}</span>
-                    </div>
-                    <div className="m-kk-o3 kk4">
-                      <div className="m-kk-o3-item kk-o-dvt">
-                        <span className="m-kk-o3-nhan">ĐVT</span>
-                        <span className="kk-dvt-btn">{dvtTxt}</span>
-                      </div>
-                      <div className="m-kk-o3-item">
-                        <span className="m-kk-o3-nhan">Tồn sổ</span>
-                        <span className="m-kk-o3-so">{soLuong(d.tonHt ?? 0)}</span>
-                      </div>
-                      <div className="m-kk-o3-item">
-                        <span className="m-kk-o3-nhan">Thực tế</span>
-                        <span className="m-kk-o3-so">{soLuong(d.tonTt ?? 0)}</span>
-                      </div>
-                      <div className="m-kk-o3-item">
-                        <span className="m-kk-o3-nhan">Chênh lệch</span>
-                        <span className={`m-kk-o3-so ${chenh > 0 ? 'xanh' : chenh < 0 ? 'do' : ''}`}>
-                          {chenh > 0 ? `+${soLuong(chenh)}` : soLuong(chenh)}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                )
-              })
-            ) : nhomMb === 'mua' ? (
-              renderDsHangHoaMua()
-            ) : (
-              <>
-                {dsDong.map((d, idx) => {
-                  const thueTxt = d.ts !== undefined ? ` · Thuế ${d.ts}%` : d.thue ? ` · VAT ${money(d.thue)} đ` : ''
-                  const giamTxt = d.ck ? `Giảm ${money(d.ck)} đ` : (d.thue && d.ts ? `VAT ${money(d.thue)} đ` : 'Giảm 0 đ')
-                  return (
-                    <div key={idx} className="m-pb-the m-pb-muc-dong">
-                      <div className="m-pb-muc-hang1">
-                        <span className="m-pb-muc-ten">{d.ten || 'Mặt hàng'}</span>
-                        <b className="m-pb-muc-tong">{money(d.tien || 0)} đ</b>
-                      </div>
-                      <div className="m-pb-muc-hang2">
-                        <span>{d.sl ?? 0} {d.dvt || ''} × {money(d.gia ?? 0)}{thueTxt}</span>
-                        <span>{giamTxt}</span>
-                      </div>
-                    </div>
-                  )
-                })}
-              </>
-            )}
-          </>
-        )}
 
         {/* Tab Bút toán / Hạch toán */}
         {tab === 'buttoan' && (

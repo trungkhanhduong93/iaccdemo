@@ -23,10 +23,13 @@ export function MLichSuQuy(_: ScreenProps) {
   const [loai, setLoai] = useState<'' | 'thu' | 'chi'>('')
   const dsLoc = (gd?.ds ?? []).filter(x => !loai || (loai === 'thu' ? x.thu > 0 : x.chi > 0))
 
-  // Mới nhất trên cùng, gom theo ngày
+  // Ngày mới nhất trên cùng, trong ngày theo giờ tăng dần (cũ trước, mới sau) (T527)
   const nhom = new Map<string, GiaoDich[]>()
   for (const x of [...dsLoc].reverse()) {
-    nhom.set(x.ngay, [...(nhom.get(x.ngay) ?? []), x])
+    if (!nhom.has(x.ngay)) nhom.set(x.ngay, [])
+  }
+  for (const x of dsLoc) {
+    nhom.get(x.ngay)?.push(x)
   }
   const tn = (gd?.ds ?? []).reduce((a, x) => a + x.thu, 0)
   const tc = (gd?.ds ?? []).reduce((a, x) => a + x.chi, 0)
@@ -118,7 +121,11 @@ export function MLichSuQuy(_: ScreenProps) {
               <div key={ngay} className="mobile-day-block">
                 <div className="mobile-day-title">
                   <span>{tenNgay(ngay)}</span>
-                  <span className="m-lsq-du-cuoi">Dư cuối ngày {moneyD(cuoiNgay)}</span>
+                </div>
+
+                <div className="m-lsq-du-dau-hang">
+                  <span className="m-lsq-du-dau-nhan">Dư đầu ngày</span>
+                  <span className="m-lsq-du-dau-so">{moneyD(dauNgay)}</span>
                 </div>
 
                 {ds.map((x, i) => {
@@ -174,8 +181,8 @@ export function MLichSuQuy(_: ScreenProps) {
                 })}
 
                 <div className="m-lsq-du-dau-hang">
-                  <span className="m-lsq-du-dau-nhan">Dư đầu ngày</span>
-                  <span className="m-lsq-du-dau-so">{moneyD(dauNgay)}</span>
+                  <span className="m-lsq-du-dau-nhan">Dư cuối ngày</span>
+                  <span className="m-lsq-du-cuoi">{moneyD(cuoiNgay)}</span>
                 </div>
               </div>
             )

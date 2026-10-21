@@ -58,6 +58,8 @@ export const MDtThuChiXem: FC<MDtThuChiXemProps> = ({
   const path = duongDan(mod, sc)
 
   const [tab, setTab] = useState<TabType>('chitiet')
+  // Gói Free chỉ có 2 tab Chi tiết và Lịch sử, nếu đang ở Đính kèm thì về Chi tiết (T527)
+  const tabHien = (s.goi === 'F' && tab === 'dinhkem') ? 'chitiet' : tab
   const [moSheetThaoTac, setMoSheetThaoTac] = useState(false)
 
   const isChi = row.loai === 'chi' || row.loai === 'unc'
@@ -167,26 +169,29 @@ export const MDtThuChiXem: FC<MDtThuChiXemProps> = ({
           <button
             type="button"
             role="tab"
-            aria-selected={tab === 'chitiet'}
-            className={`m-tc-seg-btn${tab === 'chitiet' ? ' on' : ''}`}
+            aria-selected={tabHien === 'chitiet'}
+            className={`m-tc-seg-btn${tabHien === 'chitiet' ? ' on' : ''}`}
             onClick={() => setTab('chitiet')}
           >
             Chi tiết
           </button>
+          {/* Gói Free không có tab Đính kèm (T527) */}
+          {s.goi !== 'F' && (
+            <button
+              type="button"
+              role="tab"
+              aria-selected={tabHien === 'dinhkem'}
+              className={`m-tc-seg-btn${tabHien === 'dinhkem' ? ' on' : ''}`}
+              onClick={() => setTab('dinhkem')}
+            >
+              Đính kèm
+            </button>
+          )}
           <button
             type="button"
             role="tab"
-            aria-selected={tab === 'dinhkem'}
-            className={`m-tc-seg-btn${tab === 'dinhkem' ? ' on' : ''}`}
-            onClick={() => setTab('dinhkem')}
-          >
-            Đính kèm
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={tab === 'lichsu'}
-            className={`m-tc-seg-btn${tab === 'lichsu' ? ' on' : ''}`}
+            aria-selected={tabHien === 'lichsu'}
+            className={`m-tc-seg-btn${tabHien === 'lichsu' ? ' on' : ''}`}
             onClick={() => setTab('lichsu')}
           >
             Lịch sử
@@ -194,7 +199,7 @@ export const MDtThuChiXem: FC<MDtThuChiXemProps> = ({
         </div>
 
         {/* 3. Nội dung tab Chi tiết */}
-        {tab === 'chitiet' && (
+        {tabHien === 'chitiet' && (
           <>
             {/* Nhóm Thông tin phiếu */}
             <div className="m-tc-nhom-chu">
@@ -332,8 +337,8 @@ export const MDtThuChiXem: FC<MDtThuChiXemProps> = ({
           </>
         )}
 
-        {/* 4. Tab Đính kèm */}
-        {tab === 'dinhkem' && (
+        {/* 4. Tab Đính kèm (chỉ gói Plus/Pro) (T527) */}
+        {s.goi !== 'F' && tabHien === 'dinhkem' && (
           <div className="m-tc-tab-trong">
             <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="1.5">
               <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
@@ -343,7 +348,7 @@ export const MDtThuChiXem: FC<MDtThuChiXemProps> = ({
         )}
 
         {/* 5. Tab Lịch sử */}
-        {tab === 'lichsu' && (
+        {tabHien === 'lichsu' && (
           <MLichSu goi={s.goi} man={`${mod.key}/${sc.slug}`} id={String(row.id)} />
         )}
       </main>
