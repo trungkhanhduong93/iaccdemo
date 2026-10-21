@@ -123,6 +123,16 @@ interface TheHangMoiProps {
   onSuaTong: (tong: number) => void
 }
 
+// ── T528: Chuẩn hoá chuỗi phần trăm (bỏ số 0 đứng đầu, giữ 0, 0., 0.5, ô trống) ──
+function chuanHoaPhanTram(val: string): string {
+  let s = val.replace(/[^\d.]/g, '')
+  const parts = s.split('.')
+  if (parts.length > 2) {
+    s = parts[0] + '.' + parts.slice(1).join('')
+  }
+  return s.replace(/^0+(?=\d)/, '')
+}
+
 const dongCongThuc = (d: DongM, kieu: '%' | 'đ') => {
   const sl = Number(d.sl) || 0
   const gia = Number(d.gia) || 0
@@ -278,7 +288,7 @@ const TheHangMoi: FC<TheHangMoiProps> = ({
               }}
               onChange={e => {
                 if (kieuGiam === '%') {
-                  const valStr = e.target.value.replace(/[^\d.]/g, '')
+                  const valStr = chuanHoaPhanTram(e.target.value)
                   setStrGiam(valStr)
                   onSuaGiamPt(Number(valStr) || 0)
                 } else {
@@ -321,442 +331,418 @@ const TheHangMoi: FC<TheHangMoiProps> = ({
   )
 }
 
-interface MSuaHangSheetProps {
-  mo: boolean
-  idx: number
+// ── Thẻ mặt hàng điền nhanh phiếu mua hàng (T528) ──
+interface TheHangMuaProps {
+  stt: number
   dong: DongM
-  onDong: () => void
-  onCapNhat: (patch: Partial<DongM>) => void
+  onDoiDong: (patch: Partial<DongM>) => void
+  onDoiDvt: (dvMoi: string) => void
+  onNhanBan: () => void
+  onXoa: () => void
 }
 
-function MSuaHangSheet({
-  mo,
-  idx,
+function TheHangMua({
+  stt,
   dong,
-  onDong,
-  onCapNhat,
-}: MSuaHangSheetProps) {
-  const [sl, setSl] = useState(dong?.sl ?? 1)
-  const [dvt, setDvt] = useState(dong?.dvt || 'Cái')
-  const [gia, setGia] = useState(dong?.gia ?? 0)
+  onDoiDong,
+  onDoiDvt,
+  onNhanBan,
+  onXoa,
+}: TheHangMuaProps) {
   const [kieuGiam, setKieuGiam] = useState<'%' | 'đ'>(dong?.ck && !dong?.ptCk ? 'đ' : '%')
-  const [ptCk, setPtCk] = useState(dong?.ptCk ?? 0)
-  const [ck, setCk] = useState(dong?.ck ?? 0)
-  const [ts, setTs] = useState(dong?.ts ?? 0)
-  const [thue, setThue] = useState(dong?.thue ?? 0)
-  const [tongNhap, setTongNhap] = useState<number | undefined>(dong?.tongNhap)
-  const [tuChia, setTuChia] = useState(Boolean(dong?.tuChia))
-  const [ghiChu, setGhiChu] = useState(dong?.ghiChu ?? '')
 
   // Chế độ sửa bút
   const [suaGiamTien, setSuaGiamTien] = useState(false)
   const [suaThueTien, setSuaThueTien] = useState(false)
   const [suaTongTien, setSuaTongTien] = useState(false)
 
-  // Input chuỗi để gõ tự nhiên
-  const [strSl, setStrSl] = useState(String(dong?.sl ?? 1))
-  const [strGia, setStrGia] = useState(money(dong?.gia ?? 0))
-  const [strGiam, setStrGiam] = useState(String(dong?.ptCk ?? 0))
-  const [strTienGiam, setStrTienGiam] = useState(money(dong?.ck ?? 0))
-  const [strTs, setStrTs] = useState(String(dong?.ts ?? 0))
-  const [strTienThue, setStrTienThue] = useState(money(dong?.thue ?? 0))
+  // Focus & local strings
+  const [focusSl, setFocusSl] = useState(false)
+  const [strSl, setStrSl] = useState('')
+  const [focusGia, setFocusGia] = useState(false)
+  const [strGia, setStrGia] = useState('')
+  const [focusGiam, setFocusGiam] = useState(false)
+  const [strGiam, setStrGiam] = useState('')
+  const [strTienGiam, setStrTienGiam] = useState('')
+  const [focusTs, setFocusTs] = useState(false)
+  const [strTs, setStrTs] = useState('')
+  const [strTienThue, setStrTienThue] = useState('')
   const [strTong, setStrTong] = useState('')
 
-  // ĐVT quy đổi
-  const dvtChinh = dong?.dvtChinh || HANG.find(h => h.ma === dong?.ma || h.ten === dong?.ten)?.dvt || NVL.find(n => n.ma === dong?.ma || n.ten === dong?.ten)?.dvt || dong?.dvt || 'Cái'
-  const dsQd = useMemo(() => quyDoiTuDanhMuc(dong?.ten || '', dvtChinh), [dong?.ten, dvtChinh])
-  const dsDvt = useMemo(() => [dvtChinh, ...dsQd.map(q => q.dv)].filter(Boolean), [dvtChinh, dsQd])
-
-  useEffect(() => {
-    if (dong && mo) {
-      setSl(dong.sl ?? 1)
-      setDvt(dong.dvt || 'Cái')
-      setGia(dong.gia ?? 0)
-      const kg = dong.ck && !dong.ptCk ? 'đ' : '%'
-      setKieuGiam(kg)
-      setPtCk(dong.ptCk ?? 0)
-      setCk(dong.ck ?? 0)
-      setTs(dong.ts ?? 0)
-      setThue(dong.thue ?? 0)
-      setTongNhap(dong.tongNhap)
-      setTuChia(Boolean(dong.tuChia))
-      setGhiChu(dong.ghiChu ?? '')
-
-      setSuaGiamTien(false)
-      setSuaThueTien(false)
-      setSuaTongTien(false)
-
-      setStrSl(String(dong.sl ?? 1))
-      setStrGia(money(dong.gia ?? 0))
-      setStrGiam(kg === '%' ? String(dong.ptCk ?? 0) : money(dong.ck ?? 0))
-      setStrTienGiam(money(dong.ck ?? 0))
-      setStrTs(String(dong.ts ?? 0))
-      setStrTienThue(money(dong.thue ?? 0))
-      const tongHienTai = dong.tongNhap !== undefined ? dong.tongNhap : (Math.round((dong.sl ?? 1) * (dong.gia ?? 0)) - (dong.ck ?? 0) + (dong.thue ?? 0))
-      setStrTong(money(tongHienTai))
-    }
-  }, [dong, mo])
-
-  if (!mo || !dong) return null
-
+  const sl = dong.sl ?? 1
+  const dvt = dong.dvt || 'Cái'
+  const gia = dong.gia ?? 0
+  const ptCk = dong.ptCk ?? 0
+  const ck = dong.ck ?? 0
+  const ts = dong.ts ?? 0
+  const thue = dong.thue ?? 0
+  const tuChia = Boolean(dong.tuChia)
+  const tongNhap = dong.tongNhap
   const tienHang = Math.round(sl * gia)
-  const tienGiamHienTai = ck
-  const tienThueHienTai = thue
-  const tongHienTai = tongNhap !== undefined ? tongNhap : (tienHang - tienGiamHienTai + tienThueHienTai)
+  const tongHienTai = tongNhap !== undefined ? tongNhap : (tienHang - ck + thue)
 
-  const handleDoiSl = (v: number) => {
-    setSl(v)
-    const newTien = Math.round(v * gia)
-    let newCk = ck
-    if (kieuGiam === '%') {
-      newCk = Math.round((newTien * ptCk) / 100)
-      setCk(newCk)
-      setStrTienGiam(money(newCk))
-    }
-    const newThue = Math.round(((newTien - newCk) * ts) / 100)
-    setThue(newThue)
-    setStrTienThue(money(newThue))
-    if (tuChia && tongNhap !== undefined) {
-      const g = v > 0 ? Math.round((tongNhap - newThue + newCk) / v) : 0
-      setGia(g)
-      setStrGia(money(g))
-    } else {
-      setStrTong(money(newTien - newCk + newThue))
-    }
-  }
-
-  const handleDoiGia = (g: number) => {
-    setGia(g)
-    setTuChia(false)
-    setTongNhap(undefined)
-    const newTien = Math.round(sl * g)
-    let newCk = ck
-    if (kieuGiam === '%') {
-      newCk = Math.round((newTien * ptCk) / 100)
-      setCk(newCk)
-      setStrTienGiam(money(newCk))
-    }
-    const newThue = Math.round(((newTien - newCk) * ts) / 100)
-    setThue(newThue)
-    setStrTienThue(money(newThue))
-    setStrTong(money(newTien - newCk + newThue))
-  }
-
-  const handleDoiGiamVal = (valStr: string) => {
-    if (kieuGiam === '%') {
-      const val = Number(valStr.replace(/[^\d.]/g, '')) || 0
-      setStrGiam(valStr)
-      setPtCk(val)
-      const c = Math.round((tienHang * val) / 100)
-      setCk(c)
-      setStrTienGiam(money(c))
-      const newThue = Math.round(((tienHang - c) * ts) / 100)
-      setThue(newThue)
-      setStrTienThue(money(newThue))
-      setStrTong(money(tienHang - c + newThue))
-    } else {
-      const formatted = goSoVN(valStr, false)
-      setStrGiam(formatted)
-      const c = docSoVN(formatted)
-      setCk(c)
-      setStrTienGiam(money(c))
-      const pt = tienHang > 0 ? Math.round((c / tienHang) * 10000) / 100 : 0
-      setPtCk(pt)
-      const newThue = Math.round(((tienHang - c) * ts) / 100)
-      setThue(newThue)
-      setStrTienThue(money(newThue))
-      setStrTong(money(tienHang - c + newThue))
-    }
-  }
-
-  const handleSuaTienGiamTrucTiep = (valStr: string) => {
-    const formatted = goSoVN(valStr, false)
-    setStrTienGiam(formatted)
-    const tienG = docSoVN(formatted)
-    setCk(tienG)
-    const pt = tienHang > 0 ? Math.round((tienG / tienHang) * 10000) / 100 : 0
-    setPtCk(pt)
-    if (kieuGiam === '%') setStrGiam(String(pt))
-    else setStrGiam(formatted)
-    const newThue = Math.round(((tienHang - tienG) * ts) / 100)
-    setThue(newThue)
-    setStrTienThue(money(newThue))
-    setStrTong(money(tienHang - tienG + newThue))
-  }
-
-  const handleDoiTsVal = (valStr: string) => {
-    const val = Number(valStr.replace(/[^\d.]/g, '')) || 0
-    setStrTs(valStr)
-    setTs(val)
-    const newThue = Math.round(((tienHang - ck) * val) / 100)
-    setThue(newThue)
-    setStrTienThue(money(newThue))
-    setStrTong(money(tienHang - ck + newThue))
-  }
-
-  const handleSuaThueTrucTiep = (valStr: string) => {
-    const formatted = goSoVN(valStr, false)
-    setStrTienThue(formatted)
-    const thueVal = docSoVN(formatted)
-    setThue(thueVal)
-    setStrTong(money(tienHang - ck + thueVal))
-  }
-
-  const handleSuaTongTrucTiep = (valStr: string) => {
-    const formatted = goSoVN(valStr, false)
-    setStrTong(formatted)
-    const tVal = docSoVN(formatted)
-    setTongNhap(tVal)
-    setTuChia(true)
-    const g = sl > 0 ? Math.round((tVal - thue + ck) / sl) : 0
-    setGia(g)
-    setStrGia(money(g))
-  }
+  // ĐVT quy đổi
+  const dvtChinh = dong.dvtChinh || HANG.find(h => h.ma === dong.ma || h.ten === dong.ten)?.dvt || NVL.find(n => n.ma === dong.ma || n.ten === dong.ten)?.dvt || dvt
+  const dsQd = useMemo(() => quyDoiTuDanhMuc(dong.ten || '', dvtChinh), [dong.ten, dvtChinh])
+  const dsDvt = useMemo(() => [dvtChinh, ...dsQd.map(q => q.dv)].filter(Boolean), [dvtChinh, dsQd])
 
   const handleChuyenDvt = () => {
     if (dsDvt.length <= 1) return
     const curIdx = dsDvt.indexOf(dvt)
     const nextIdx = (curIdx + 1) % dsDvt.length
-    setDvt(dsDvt[nextIdx])
+    onDoiDvt(dsDvt[nextIdx])
   }
 
-  const handleCapNhat = () => {
-    onCapNhat({
-      sl,
-      dvt,
-      gia,
-      tien: Math.round(sl * gia),
-      ptCk,
-      ck,
-      ts,
-      thue,
-      tongNhap,
-      tuChia,
-      ghiChu: ghiChu.trim() || undefined,
-    })
+  const handleDoiSl = (v: number) => {
+    const newTien = Math.round(v * gia)
+    let newCk = ck
+    if (kieuGiam === '%') {
+      newCk = Math.round((newTien * ptCk) / 100)
+    }
+    const newThue = Math.round(((newTien - newCk) * ts) / 100)
+    if (tuChia && tongNhap !== undefined) {
+      const g = v > 0 ? Math.round((tongNhap - newThue + newCk) / v) : 0
+      onDoiDong({ sl: v, gia: g, tien: Math.round(v * g), ck: newCk, thue: newThue, tongNhap, tuChia: true })
+    } else {
+      onDoiDong({ sl: v, tien: newTien, ck: newCk, thue: newThue })
+    }
+  }
+
+  const handleDoiGia = (g: number) => {
+    const newTien = Math.round(sl * g)
+    let newCk = ck
+    if (kieuGiam === '%') {
+      newCk = Math.round((newTien * ptCk) / 100)
+    }
+    const newThue = Math.round(((newTien - newCk) * ts) / 100)
+    onDoiDong({ gia: g, tuChia: false, tongNhap: undefined, tien: newTien, ck: newCk, thue: newThue })
+  }
+
+  const handleDoiGiamVal = (valStr: string) => {
+    if (kieuGiam === '%') {
+      const val = Number(valStr) || 0
+      const newCk = Math.round((tienHang * val) / 100)
+      const newThue = Math.round(((tienHang - newCk) * ts) / 100)
+      onDoiDong({ ptCk: val, ck: newCk, thue: newThue })
+    } else {
+      const c = docSoVN(valStr)
+      const pt = tienHang > 0 ? Math.round((c / tienHang) * 10000) / 100 : 0
+      const newThue = Math.round(((tienHang - c) * ts) / 100)
+      onDoiDong({ ptCk: pt, ck: c, thue: newThue })
+    }
+  }
+
+  const handleSuaTienGiamTrucTiep = (valStr: string) => {
+    const tienG = docSoVN(valStr)
+    const pt = tienHang > 0 ? Math.round((tienG / tienHang) * 10000) / 100 : 0
+    const newThue = Math.round(((tienHang - tienG) * ts) / 100)
+    onDoiDong({ ck: tienG, ptCk: pt, thue: newThue })
+  }
+
+  const handleDoiTsVal = (valStr: string) => {
+    const val = Number(valStr) || 0
+    const newThue = Math.round(((tienHang - ck) * val) / 100)
+    onDoiDong({ ts: val, thue: newThue })
+  }
+
+  const handleSuaThueTrucTiep = (valStr: string) => {
+    const thueVal = docSoVN(valStr)
+    onDoiDong({ thue: thueVal })
+  }
+
+  const handleSuaTongTrucTiep = (valStr: string) => {
+    const tVal = docSoVN(valStr)
+    const g = sl > 0 ? Math.round((tVal - thue + ck) / sl) : 0
+    onDoiDong({ tongNhap: tVal, tuChia: true, gia: g, tien: Math.round(sl * g) })
   }
 
   return (
-    <div className="m-t449-sheet-nen">
-      <div className="m-t449-sheet-mo" onClick={onDong} />
-      <div className="m-t449-sheet-hop" onClick={e => e.stopPropagation()}>
-        <div className="m-t449-sheet-keo" />
-
-        <div className="m-t449-sheet-dau">
-          <div className="m-t449-sheet-tieu-de">{idx + 1}. {dong.ten}</div>
-          <div className="m-t449-sheet-phu">Mã: {dong.ma || 'NVL001'}</div>
+    <div className="m-t449-hang-the">
+      <div className="m-t449-hang-dau">
+        <div className="m-t449-hang-ten">
+          {stt}. {dong.ten}
+          {dong.ma && <span className="m-t449-hang-ma">-{dong.ma}</span>}
         </div>
+        <div className="m-t449-hang-actions">
+          <button
+            type="button"
+            aria-label={`Nhân bản mặt hàng ${stt}`}
+            className="m-t449-btn-nhan-ban"
+            onClick={onNhanBan}
+            title="Nhân bản mặt hàng"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            aria-label={`Xoá mặt hàng ${stt}`}
+            className="m-t449-btn-xoa-hang"
+            onClick={onXoa}
+            title="Xoá mặt hàng"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+      </div>
 
-        <div className="m-t449-sheet-than">
-          {/* Số lượng */}
-          <div className="m-t449-sheet-dong">
-            <span className="lbl m-t449-lbl-100">Số lượng:</span>
-            <div className="m-t449-sheet-inp-wrap">
-              <input
-                type="text"
-                aria-label="Số lượng"
-                value={strSl}
-                onChange={e => {
-                  const s = goSoVN(e.target.value, true)
-                  setStrSl(s)
-                  handleDoiSl(docSoVN(s))
-                }}
-              />
-              <span className="m-t449-sheet-don-vi" onClick={handleChuyenDvt}>
-                <span>{dvt}</span>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
-                  <path d="M6 9l6 6 6-6" />
-                </svg>
-              </span>
-            </div>
-          </div>
-
-          {/* Đơn giá */}
-          <div className="m-t449-sheet-dong">
-            <span className="lbl m-t449-lbl-100">Đơn giá:</span>
-            <div className="m-t449-sheet-inp-wrap">
-              <input
-                type="text"
-                aria-label="Đơn giá"
-                value={strGia}
-                onChange={e => {
-                  const s = goSoVN(e.target.value, false)
-                  setStrGia(s)
-                  handleDoiGia(docSoVN(s))
-                }}
-              />
-              <span className="m-t449-sheet-don-vi vnd">đ</span>
-            </div>
-          </div>
-
-          {/* Giảm giá */}
-          <div className="m-t449-sheet-dong">
-            <span className="lbl m-t449-lbl-100">Giảm giá:</span>
-            <div className="m-t449-sheet-inp-wrap">
-              <input
-                type="text"
-                aria-label="Phần trăm giảm"
-                value={strGiam}
-                onChange={e => handleDoiGiamVal(e.target.value)}
-              />
-              <span
-                className="m-t449-sheet-don-vi"
-                onClick={() => {
-                  const moi = kieuGiam === '%' ? 'đ' : '%'
-                  setKieuGiam(moi)
-                  setStrGiam(moi === '%' ? String(ptCk) : money(ck))
-                }}
-              >
-                <span>{kieuGiam}</span>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
-                  <path d="M6 9l6 6 6-6" />
-                </svg>
-              </span>
-            </div>
-          </div>
-
-          {/* Tiền giảm giá */}
-          <div className="m-t449-sheet-dong">
-            <span className="lbl">Tiền giảm giá:</span>
-            <div className="m-t449-sheet-phai-hop">
-              {suaGiamTien ? (
-                <div className="m-t449-sheet-inp-wrap m-t449-inp-w140">
-                  <input
-                    type="text"
-                    autoFocus
-                    aria-label="Sửa tiền giảm giá"
-                    value={strTienGiam}
-                    onChange={e => handleSuaTienGiamTrucTiep(e.target.value)}
-                    onBlur={() => setSuaGiamTien(false)}
-                  />
-                  <span className="m-t449-sheet-don-vi vnd">đ</span>
-                </div>
-              ) : (
-                <>
-                  <span className="m-t449-val-bold">{money(ck)} đ</span>
-                  <button
-                    type="button"
-                    aria-label="Sửa tiền giảm giá"
-                    className="m-t449-sheet-but"
-                    onClick={() => {
-                      setSuaGiamTien(true)
-                      setStrTienGiam(String(ck))
-                    }}
-                  >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-                      <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
-                    </svg>
-                  </button>
-                </>
-              )}
-            </div>
-          </div>
-
-          {/* VAT */}
-          <div className="m-t449-sheet-dong">
-            <span className="lbl">VAT:</span>
-            <div className="m-t449-sheet-phai-hop">
-              <div className="m-t449-vat-hop">
-                <input
-                  type="text"
-                  aria-label="Thuế suất VAT"
-                  value={strTs}
-                  onChange={e => handleDoiTsVal(e.target.value)}
-                  className="m-t449-vat-inp"
-                />
-                <span className="m-t449-vat-phan-tram">%</span>
-              </div>
-              {suaThueTien ? (
-                <div className="m-t449-sheet-inp-wrap m-t449-inp-w120">
-                  <input
-                    type="text"
-                    autoFocus
-                    aria-label="Sửa tiền VAT"
-                    value={strTienThue}
-                    onChange={e => handleSuaThueTrucTiep(e.target.value)}
-                    onBlur={() => setSuaThueTien(false)}
-                  />
-                  <span className="m-t449-sheet-don-vi vnd">đ</span>
-                </div>
-              ) : (
-                <>
-                  <span className="m-t449-val-bold">{money(thue)} đ</span>
-                  <button
-                    type="button"
-                    aria-label="Sửa tiền VAT"
-                    className="m-t449-sheet-but"
-                    onClick={() => {
-                      setSuaThueTien(true)
-                      setStrTienThue(String(thue))
-                    }}
-                  >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-                      <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
-                    </svg>
-                  </button>
-                </>
-              )}
-            </div>
-          </div>
-
-          {/* Tổng tiền */}
-          <div className="m-t449-sheet-dong">
-            <span className="lbl val bold">Tổng tiền:</span>
-            <div className="m-t449-sheet-phai-hop">
-              {suaTongTien ? (
-                <div className="m-t449-sheet-inp-wrap m-t449-inp-w160">
-                  <input
-                    type="text"
-                    autoFocus
-                    aria-label="Sửa tổng tiền"
-                    value={strTong}
-                    onChange={e => handleSuaTongTrucTiep(e.target.value)}
-                    onBlur={() => setSuaTongTien(false)}
-                  />
-                  <span className="m-t449-sheet-don-vi vnd">đ</span>
-                </div>
-              ) : (
-                <>
-                  <span className="m-t449-val-tong">{money(tongHienTai)} đ</span>
-                  <button
-                    type="button"
-                    aria-label="Sửa tổng tiền"
-                    className="m-t449-sheet-but"
-                    onClick={() => {
-                      setSuaTongTien(true)
-                      setStrTong(String(tongHienTai))
-                    }}
-                  >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-                      <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
-                    </svg>
-                  </button>
-                </>
-              )}
-            </div>
-          </div>
-
-          {/* Ghi chú nếu có */}
-          <div className="m-t449-ghi-chu-wrap">
+      <div className="m-t449-hang-than">
+        {/* Số lượng */}
+        <div className="m-t449-sheet-dong">
+          <span className="lbl m-t449-lbl-100">Số lượng:</span>
+          <div className="m-t449-sheet-inp-wrap">
             <input
               type="text"
-              aria-label="Ghi chú mặt hàng"
-              className="m-t449-ghi-chu-inp"
-              placeholder="Nhập ghi chú nếu có"
-              value={ghiChu}
-              onChange={e => setGhiChu(e.target.value)}
+              inputMode="decimal"
+              aria-label={`Số lượng mặt hàng ${stt}`}
+              value={focusSl ? strSl : String(sl)}
+              onFocus={() => {
+                setFocusSl(true)
+                setStrSl(String(sl))
+              }}
+              onChange={e => {
+                const s = goSoVN(e.target.value, true)
+                setStrSl(s)
+                handleDoiSl(docSoVN(s))
+              }}
+              onBlur={() => setFocusSl(false)}
             />
+            <span className="m-t449-sheet-don-vi" onClick={handleChuyenDvt}>
+              <span>{dvt}</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </span>
           </div>
         </div>
 
-        {/* Chân bảng trượt */}
-        <div className="m-t449-sheet-chan">
-          <button type="button" className="m-t449-btn-huy" onClick={onDong}>
-            Huỷ
-          </button>
-          <button type="button" className="m-t449-btn-luu" onClick={handleCapNhat}>
-            Cập nhật
-          </button>
+        {/* Đơn giá */}
+        <div className="m-t449-sheet-dong">
+          <span className="lbl m-t449-lbl-100">Đơn giá:</span>
+          <div className="m-t449-sheet-inp-wrap">
+            <input
+              type="text"
+              inputMode="numeric"
+              aria-label={`Đơn giá mặt hàng ${stt}`}
+              value={focusGia ? strGia : money(gia)}
+              onFocus={() => {
+                setFocusGia(true)
+                setStrGia(money(gia))
+              }}
+              onChange={e => {
+                const s = goSoVN(e.target.value, false)
+                setStrGia(s)
+                handleDoiGia(docSoVN(s))
+              }}
+              onBlur={() => setFocusGia(false)}
+            />
+            <span className="m-t449-sheet-don-vi vnd">đ</span>
+          </div>
+        </div>
+
+        {/* Giảm giá */}
+        <div className="m-t449-sheet-dong">
+          <span className="lbl m-t449-lbl-100">Giảm giá:</span>
+          <div className="m-t449-sheet-inp-wrap">
+            <input
+              type="text"
+              inputMode={kieuGiam === '%' ? 'decimal' : 'numeric'}
+              aria-label={`Giảm giá mặt hàng ${stt}`}
+              value={focusGiam ? strGiam : (kieuGiam === '%' ? (dong.ptCk ?? 0) : money(ck))}
+              onFocus={() => {
+                setFocusGiam(true)
+                setStrGiam(kieuGiam === '%' ? String(dong.ptCk ?? 0) : money(ck))
+              }}
+              onChange={e => {
+                if (kieuGiam === '%') {
+                  const s = chuanHoaPhanTram(e.target.value)
+                  setStrGiam(s)
+                  handleDoiGiamVal(s)
+                } else {
+                  const s = goSoVN(e.target.value, false)
+                  setStrGiam(s)
+                  handleDoiGiamVal(s)
+                }
+              }}
+              onBlur={() => setFocusGiam(false)}
+            />
+            <span
+              className="m-t449-sheet-don-vi"
+              onClick={() => {
+                const moi = kieuGiam === '%' ? 'đ' : '%'
+                setKieuGiam(moi)
+                setFocusGiam(false)
+              }}
+            >
+              <span>{kieuGiam}</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </span>
+          </div>
+        </div>
+
+        {/* Tiền giảm giá */}
+        <div className="m-t449-sheet-dong">
+          <span className="lbl">Tiền giảm giá:</span>
+          <div className="m-t449-sheet-phai-hop">
+            {suaGiamTien ? (
+              <div className="m-t449-sheet-inp-wrap m-t449-inp-w140">
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  autoFocus
+                  aria-label={`Sửa tiền giảm giá mặt hàng ${stt}`}
+                  value={strTienGiam}
+                  onChange={e => {
+                    const s = goSoVN(e.target.value, false)
+                    setStrTienGiam(s)
+                    handleSuaTienGiamTrucTiep(s)
+                  }}
+                  onBlur={() => setSuaGiamTien(false)}
+                />
+                <span className="m-t449-sheet-don-vi vnd">đ</span>
+              </div>
+            ) : (
+              <>
+                <span className="m-t449-val-bold">{money(ck)} đ</span>
+                <button
+                  type="button"
+                  aria-label={`Sửa tiền giảm giá mặt hàng ${stt}`}
+                  className="m-t449-sheet-but"
+                  onClick={() => {
+                    setSuaGiamTien(true)
+                    setStrTienGiam(money(ck))
+                  }}
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                    <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                  </svg>
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* VAT */}
+        <div className="m-t449-sheet-dong">
+          <span className="lbl">VAT:</span>
+          <div className="m-t449-sheet-phai-hop">
+            <div className="m-t449-vat-hop">
+              <input
+                type="text"
+                inputMode="decimal"
+                aria-label={`Thuế suất VAT mặt hàng ${stt}`}
+                value={focusTs ? strTs : String(ts)}
+                onFocus={() => {
+                  setFocusTs(true)
+                  setStrTs(String(ts))
+                }}
+                onChange={e => {
+                  const s = chuanHoaPhanTram(e.target.value)
+                  setStrTs(s)
+                  handleDoiTsVal(s)
+                }}
+                onBlur={() => setFocusTs(false)}
+                className="m-t449-vat-inp"
+              />
+              <span className="m-t449-vat-phan-tram">%</span>
+            </div>
+            {suaThueTien ? (
+              <div className="m-t449-sheet-inp-wrap m-t449-inp-w120">
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  autoFocus
+                  aria-label={`Sửa tiền VAT mặt hàng ${stt}`}
+                  value={strTienThue}
+                  onChange={e => {
+                    const s = goSoVN(e.target.value, false)
+                    setStrTienThue(s)
+                    handleSuaThueTrucTiep(s)
+                  }}
+                  onBlur={() => setSuaThueTien(false)}
+                />
+                <span className="m-t449-sheet-don-vi vnd">đ</span>
+              </div>
+            ) : (
+              <>
+                <span className="m-t449-val-bold">{money(thue)} đ</span>
+                <button
+                  type="button"
+                  aria-label={`Sửa tiền VAT mặt hàng ${stt}`}
+                  className="m-t449-sheet-but"
+                  onClick={() => {
+                    setSuaThueTien(true)
+                    setStrTienThue(money(thue))
+                  }}
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                    <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                  </svg>
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Tổng tiền */}
+        <div className="m-t449-sheet-dong">
+          <span className="lbl val bold">Tổng tiền:</span>
+          <div className="m-t449-sheet-phai-hop">
+            {suaTongTien ? (
+              <div className="m-t449-sheet-inp-wrap m-t449-inp-w160">
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  autoFocus
+                  aria-label={`Sửa tổng tiền mặt hàng ${stt}`}
+                  value={strTong}
+                  onChange={e => {
+                    const s = goSoVN(e.target.value, false)
+                    setStrTong(s)
+                    handleSuaTongTrucTiep(s)
+                  }}
+                  onBlur={() => setSuaTongTien(false)}
+                />
+                <span className="m-t449-sheet-don-vi vnd">đ</span>
+              </div>
+            ) : (
+              <>
+                <span className="m-t449-val-tong">{money(tongHienTai)} đ</span>
+                <button
+                  type="button"
+                  aria-label={`Sửa tổng tiền mặt hàng ${stt}`}
+                  className="m-t449-sheet-but"
+                  onClick={() => {
+                    setSuaTongTien(true)
+                    setStrTong(money(tongHienTai))
+                  }}
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                    <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                  </svg>
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Ghi chú nếu có */}
+        <div className="m-t449-ghi-chu-wrap">
+          <input
+            type="text"
+            aria-label={`Ghi chú mặt hàng ${stt}`}
+            className="m-t449-ghi-chu-inp"
+            placeholder="Nhập ghi chú nếu có"
+            value={dong.ghiChu ?? ''}
+            onChange={e => onDoiDong({ ghiChu: e.target.value })}
+          />
         </div>
       </div>
     </div>
@@ -1004,7 +990,6 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
   const [moChonVatIdx, setMoChonVatIdx] = useState<number | null>(null)
 
   // Sheet sửa mặt hàng phiếu mua (T449)
-  const [dongDangSuaIdx, setDongDangSuaIdx] = useState<number | null>(null)
 
   // Báo lỗi theo ô
   const [loiO, setLoiO] = useState<Record<string, string>>({})
@@ -1086,6 +1071,16 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
         else if (v > idx) next.add(v - 1)
       }
       return next
+    })
+  }
+
+  const nhanBanDong = (idx: number) => {
+    setDsDong(ds => {
+      if (!ds[idx]) return ds
+      const banSao = { ...ds[idx] }
+      const moi = [...ds]
+      moi.splice(idx + 1, 0, banSao)
+      return moi
     })
   }
 
@@ -1979,63 +1974,17 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
             </div>
 
             <div id="m-lp-o-hang" className="m-t449-hang-ds">
-              {dsDongHienThiTrongPhieu.map(({ d, originalIdx }, index) => {
-                const lineTotal = d.tongNhap !== undefined ? d.tongNhap : (d.tien ?? (d.sl * d.gia)) - (d.ck ?? 0) + (d.thue ?? 0)
-                return (
-                  <div key={originalIdx} className="m-t449-hang-the">
-                    <div className="m-t449-hang-dau">
-                      <div className="m-t449-hang-ten">
-                        {index + 1}. {d.ten}
-                        {d.ma && <span className="m-t449-hang-ma">-{d.ma}</span>}
-                      </div>
-                      <div className="m-t449-hang-actions">
-                        <button
-                          type="button"
-                          aria-label={`Sửa mặt hàng ${index + 1}`}
-                          className="m-t449-btn-sua-hang"
-                          onClick={() => setDongDangSuaIdx(originalIdx)}
-                        >
-                          Sửa
-                        </button>
-                        <button
-                          type="button"
-                          aria-label={`Xoá mặt hàng ${index + 1}`}
-                          className="m-t449-btn-xoa-hang"
-                          onClick={() => xoaDong(originalIdx)}
-                          title="Xoá mặt hàng"
-                        >
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <polyline points="3,6 5,6 21,6" />
-                            <path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6m3,0V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2v2" />
-                          </svg>
-                        </button>
-                      </div>
-                    </div>
-                    <div className="m-t449-hang-than">
-                      <div className="m-t449-hang-dong">
-                        <span className="lbl">Số lượng:</span>
-                        <span className="val bold">{d.sl} {d.dvt || 'Cái'}</span>
-                      </div>
-                      <div className="m-t449-hang-dong">
-                        <span className="lbl">Đơn giá:</span>
-                        <span className="val">{money(d.gia)} đ</span>
-                      </div>
-                      <div className="m-t449-hang-dong">
-                        <span className="lbl">Giảm giá ({d.ptCk ?? 0}%):</span>
-                        <span className="val">{money(d.ck ?? 0)} đ</span>
-                      </div>
-                      <div className="m-t449-hang-dong">
-                        <span className="lbl">VAT ({d.ts ?? 0}%):</span>
-                        <span className="val">{money(d.thue ?? 0)} đ</span>
-                      </div>
-                      <div className="m-t449-hang-dong">
-                        <span className="lbl">Tổng tiền:</span>
-                        <span className="val bold">{money(lineTotal)} đ</span>
-                      </div>
-                    </div>
-                  </div>
-                )
-              })}
+              {dsDongHienThiTrongPhieu.map(({ d, originalIdx }, index) => (
+                <TheHangMua
+                  key={originalIdx}
+                  stt={index + 1}
+                  dong={d}
+                  onDoiDong={patch => doiDong(originalIdx, patch)}
+                  onDoiDvt={dvMoi => doiDvt(originalIdx, dvMoi)}
+                  onNhanBan={() => nhanBanDong(originalIdx)}
+                  onXoa={() => xoaDong(originalIdx)}
+                />
+              ))}
 
               <button
                 type="button"
@@ -2739,19 +2688,6 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
         )
       })()}
 
-      {/* ── BẢNG TRƯỢT SỬA MẶT HÀNG PHIẾU MUA (T449) ── */}
-      {dongDangSuaIdx !== null && dsDong[dongDangSuaIdx] && (
-        <MSuaHangSheet
-          mo={dongDangSuaIdx !== null}
-          idx={dongDangSuaIdx}
-          dong={dsDong[dongDangSuaIdx]}
-          onDong={() => setDongDangSuaIdx(null)}
-          onCapNhat={(patch) => {
-            doiDong(dongDangSuaIdx, patch)
-            setDongDangSuaIdx(null)
-          }}
-        />
-      )}
     </div>
   )
 }
