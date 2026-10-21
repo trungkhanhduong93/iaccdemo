@@ -39051,3 +39051,813 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
   background: var(--tint);
   border-color: #b9d3ea;
 }
+
+
+/* ── Phiếu mua hàng điện thoại theo Figma (T600) ── */
+.m-t600-the-dau {
+  background: var(--white);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.m-t600-chip-hang {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.m-t600-chip-tt {
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+.m-t600-chip-tt.chua { background: var(--orange-t); color: var(--orange-d); }
+.m-t600-chip-tt.mot { background: var(--amber-t); color: var(--amber); }
+.m-t600-chip-tt.da { background: var(--tint); color: var(--blue); }
+.m-t600-chip-nguon {
+  font-size: 11.5px;
+  font-weight: 500;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: var(--giay-ke);
+  color: var(--muted);
+}
+.m-t600-ncc-ten {
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.3;
+}
+.m-t600-cua-hang-dong {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13.5px;
+  color: var(--muted);
+  cursor: pointer;
+}
+.m-t600-tong-tien-nhan {
+  font-size: 13px;
+  color: var(--muted);
+}
+.m-t600-tong-tien-so {
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+.m-t600-tong-tien-so.cam { color: var(--orange-d); }
+.m-t600-tong-tien-so.xanh { color: var(--blue); }
+
+/* Khung thanh toán */
+.m-t600-khung-tt {
+  background: var(--hdb-chan);
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border: 1px solid var(--line);
+}
+.m-t600-tt-radios {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.m-t600-radio-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--body);
+}
+.m-t600-radio-item input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--blue);
+}
+.m-t600-tt-tien-do-khu {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.m-t600-tt-tien-do-hang {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 500;
+}
+.m-t600-thanh-tien-do {
+  height: 6px;
+  background: var(--line);
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}
+.m-t600-tien-do-fill {
+  height: 100%;
+  background: var(--blue);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+.m-t600-han-tt-dong {
+  font-size: 12px;
+  color: var(--amber);
+  font-weight: 500;
+}
+
+/* Tabs */
+.m-t600-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--line);
+  background: var(--white);
+  margin-bottom: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.m-t600-tab-btn {
+  flex: 1;
+  padding: 12px 8px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+}
+.m-t600-tab-btn.on {
+  color: var(--blue);
+  font-weight: 600;
+  border-bottom-color: var(--blue);
+}
+
+/* Khối nhập kiểu nhãn TRÊN ô nhập */
+.m-t600-nhom-tieu {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 14px 4px 6px;
+}
+.m-t600-card-nhap {
+  background: var(--white);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+.m-t600-o-nhap-f {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.m-t600-lbl {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+}
+.m-t600-sao,
+.m-t600-lbl em {
+  color: var(--red);
+  font-style: normal;
+  margin-left: 2px;
+}
+.m-t600-inp {
+  height: 44px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  padding: 0 12px;
+  font-size: 14px;
+  color: var(--ink);
+  background: var(--white);
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+.m-t600-inp:focus {
+  border-color: var(--blue);
+}
+.m-t600-inp.disabled, .m-t600-inp:disabled {
+  background: var(--giay-ke);
+  color: var(--muted);
+  cursor: not-allowed;
+}
+.m-t600-textarea {
+  min-height: 56px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  padding: 8px 12px;
+  font-size: 14px;
+  color: var(--ink);
+  background: var(--white);
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+  font-family: inherit;
+}
+.m-t600-o-chon {
+  height: 44px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--white);
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--ink);
+  box-sizing: border-box;
+}
+.m-t600-o-chon.disabled {
+  background: var(--giay-ke);
+  color: var(--muted);
+  cursor: not-allowed;
+}
+
+/* Switch nhận kèm hoá đơn */
+.m-t600-cong-tac-hang {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+}
+.m-t600-cong-tac-trai {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.m-t600-cong-tac-ten {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.m-t600-cong-tac-phu {
+  font-size: 12px;
+  color: var(--muted);
+}
+.m-t600-switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+}
+.m-t600-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.m-t600-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: var(--line);
+  transition: 0.2s;
+  border-radius: 24px;
+}
+.m-t600-slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: var(--white);
+  transition: 0.2s;
+  border-radius: 50%;
+}
+.m-t600-switch input:checked + .m-t600-slider {
+  background-color: var(--blue);
+}
+.m-t600-switch input:checked + .m-t600-slider:before {
+  transform: translateX(20px);
+}
+
+/* Áp chung giảm giá, thuế */
+.m-t600-ap-chung-khu {
+  background: var(--white);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+.m-t600-ap-chung-dong {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.m-t600-ap-chung-trai {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+.m-t600-ap-chung-lbl {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.m-t600-ap-chung-phu {
+  font-size: 11.5px;
+  color: var(--muted);
+}
+.m-t600-ap-chung-phu.cam {
+  color: var(--amber);
+}
+.m-t600-ap-chung-phai {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Thẻ hàng TheHangMua 3 cột */
+.m-t600-hang-the {
+  background: var(--white);
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.m-t600-hang-dau {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.m-t600-hang-ten-wrap {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.m-t600-hang-ma {
+  font-size: 12.5px;
+  color: var(--muted);
+  font-weight: normal;
+}
+.m-t600-chip-moi {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--tint);
+  color: var(--blue);
+}
+.m-t600-hang-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.m-t600-btn-nhan-ban {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: var(--tint);
+  color: var(--blue);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.m-t600-btn-xoa {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: var(--red-t);
+  color: var(--red);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.m-t600-gach {
+  height: 1px;
+  background: var(--line);
+  margin: 2px 0;
+}
+.m-t600-hang-grid {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr) 112px;
+  gap: 8px;
+  align-items: center;
+}
+.m-t600-hang-nhan {
+  font-size: 13px;
+  color: var(--muted);
+}
+.m-t600-hang-nhan.bold {
+  font-weight: 600;
+  color: var(--ink);
+}
+.m-t600-inp-hang {
+  height: 36px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  padding: 0 10px;
+  font-size: 13.5px;
+  color: var(--ink);
+  background: var(--white);
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  font-variant-numeric: tabular-nums;
+}
+.m-t600-inp-hang:focus {
+  border-color: var(--blue);
+}
+.m-t600-btn-dvt {
+  height: 36px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: var(--hdb-chan);
+  padding: 0 8px;
+  font-size: 13px;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+.m-t600-gia-col {
+  grid-column: 2 / span 2;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.m-t600-gia-col .m-t600-inp-hang {
+  padding-right: 28px;
+}
+.m-t600-suffix {
+  position: absolute;
+  right: 10px;
+  font-size: 12.5px;
+  color: var(--muted);
+  pointer-events: none;
+}
+.m-t600-inp-toggle {
+  display: flex;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  height: 36px;
+  overflow: hidden;
+  background: var(--white);
+}
+.m-t600-inp-toggle input {
+  border: none;
+  padding: 0 6px 0 10px;
+  font-size: 13.5px;
+  width: 100%;
+  outline: none;
+  font-variant-numeric: tabular-nums;
+}
+.m-t600-btn-kieu {
+  border: none;
+  border-left: 1px solid var(--line);
+  background: var(--hdb-chan);
+  padding: 0 8px;
+  font-size: 12px;
+  color: var(--body);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.m-t600-val-pen {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  height: 36px;
+}
+.m-t600-val-pen.tong {
+  grid-column: 2 / span 2;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.m-t600-btn-pen {
+  border: none;
+  background: transparent;
+  color: var(--blue);
+  cursor: pointer;
+  padding: 2px 4px;
+  font-size: 13px;
+}
+.m-t600-inp-pen-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 36px;
+}
+.m-t600-inp-pen-wrap input {
+  padding-right: 24px;
+}
+.m-t600-inp-pen-wrap.tong {
+  grid-column: 2 / span 2;
+}
+.m-t600-ghi-chu-row {
+  grid-column: 1 / -1;
+}
+
+/* Nút thêm dòng */
+.m-t600-btn-them-dong {
+  width: 100%;
+  height: 40px;
+  border-radius: 8px;
+  border: 1px dashed var(--blue);
+  background: var(--white);
+  color: var(--blue);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 6px 0 12px;
+}
+
+/* Khối tổng cộng cuối danh sách */
+.m-t600-the-tong {
+  background: var(--hdb-chan);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px solid var(--line);
+}
+.m-t600-tong-tieu {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 2px;
+}
+.m-t600-tong-dong {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.m-t600-tong-dong.tong-chinh {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-top: 2px;
+}
+
+/* Chân ghim đáy */
+.m-t600-chan-day {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--white);
+  border-top: 1px solid var(--line);
+  padding: 10px 16px;
+  display: flex;
+  gap: 12px;
+  z-index: 99;
+}
+.m-t600-btn-huy {
+  flex: 1;
+  height: 44px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--white);
+  color: var(--body);
+  font-size: 14.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.m-t600-btn-luu {
+  flex: 1.5;
+  height: 44px;
+  border-radius: 8px;
+  border: none;
+  background: var(--blue);
+  color: var(--white);
+  font-size: 14.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Sheet styles */
+.m-t600-sheet-85 {
+  height: 85dvh !important;
+  max-height: 85dvh !important;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.m-t600-sheet-70 {
+  height: 70dvh !important;
+  max-height: 70dvh !important;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.m-t600-sheet-than {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+}
+.m-t600-sheet-day {
+  margin-top: auto;
+  flex: none;
+  padding: 12px 16px;
+  border-top: 1px solid var(--line);
+  background: var(--white);
+  display: flex;
+  gap: 10px;
+}
+
+/* Hàng chọn nhà cung cấp và quỹ trong sheet */
+.m-t600-hang-ncc {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+  border-radius: 6px;
+}
+.m-t600-hang-ncc.on {
+  background: var(--tint);
+}
+.m-t600-hang-quy {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 10px;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+  border-radius: 6px;
+}
+.m-t600-hang-quy.on {
+  background: var(--tint);
+}
+
+/* Nút đôi tiền mặt / chuyển khoản */
+.m-t600-nut-doi {
+  display: flex;
+  background: var(--giay-ke);
+  border-radius: 8px;
+  padding: 3px;
+}
+.m-t600-nut-doi-item {
+  flex: 1;
+  height: 36px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--muted);
+  cursor: pointer;
+}
+.m-t600-nut-doi-item.on {
+  background: var(--white);
+  color: var(--blue);
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+/* Ô quỹ trong HopThanhToan */
+.m-t600-o-quy-tt {
+  height: 52px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  cursor: pointer;
+  background: var(--white);
+  box-sizing: border-box;
+}
+.m-t600-quy-ic {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: var(--hdb-chan);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--blue);
+  flex-shrink: 0;
+}
+.m-t600-quy-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  text-align: left;
+}
+.m-t600-quy-info b {
+  font-size: 13.5px;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.m-t600-quy-info small {
+  font-size: 11.5px;
+  color: var(--muted);
+}
+
+/* Bút toán tab */
+.m-t600-bt-the {
+  background: var(--white);
+  border-radius: 10px;
+  padding: 12px 14px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.m-t600-bt-hang-dau {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+}
+.m-t600-chip-no {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--tint);
+  color: var(--blue);
+  margin-right: 6px;
+}
+.m-t600-chip-co {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--orange-t);
+  color: var(--orange-d);
+  margin-right: 6px;
+}
+.m-t600-bt-dong-tk {
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  color: var(--body);
+  gap: 4px;
+}
+.m-t600-ten-tk {
+  color: var(--muted);
+  font-size: 12.5px;
+}
+.m-t600-tong-but-toan {
+  text-align: right;
+  font-size: 13px;
+  color: var(--muted);
+  padding: 8px 12px;
+}
+.m-t600-dai-dien-san {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--tint);
+  color: var(--blue);
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid var(--line);
+}

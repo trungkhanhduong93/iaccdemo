@@ -34,6 +34,22 @@ export interface MXemPhieuProps extends ScreenProps {
 // Dòng thu chi lưu mã khoản mục, bản máy tính hiện tên
 const tenKm = (ma: string) => KHOAN_MUC.find(x => x.ma === ma)?.ten ?? ma
 
+const DIA_CHI_NCC: Record<string, string> = {
+  'Công ty TNHH Thực phẩm Tươi An Phú': '12 Nguyễn Thị Định, An Phú, TP. Thủ Đức',
+  'Công ty CP Rau sạch Đà Lạt Farm': 'Lô B3, KCN Đức Trọng, Lâm Đồng',
+  'Công ty TNHH Bao bì & In ấn Sài Gòn': '45 Đường số 7, KCN Tân Bình, Tân Phú',
+  'Công ty CP Sữa Quốc Tế (IDP)': '217 Nguyễn Văn Thủ, Đa Kao, Quận 1',
+  'Công ty TNHH Rượu & Nước giải khát Tân Hiệp Phát': '219 Đại lộ Bình Dương, Thuận An, Bình Dương',
+}
+
+const NGUOI_GD_NCC: Record<string, string> = {
+  'Công ty TNHH Thực phẩm Tươi An Phú': 'Trần Văn Bình',
+  'Công ty CP Rau sạch Đà Lạt Farm': 'Nguyễn Thị Hoa',
+  'Công ty TNHH Bao bì & In ấn Sài Gòn': 'Lê Hoàng Nam',
+  'Công ty CP Sữa Quốc Tế (IDP)': 'Phạm Minh Tuấn',
+  'Công ty TNHH Rượu & Nước giải khát Tân Hiệp Phát': 'Đặng Quốc Huy',
+}
+
 // Tính số ngày còn lại của hạn thanh toán
 function tinhSoNgayCon(hanTtStr?: string): string {
   if (!hanTtStr) return ''
@@ -100,6 +116,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
   const [hoiKhongSua, setHoiKhongSua] = useState(false)   // phiếu chi còn thẻ chi phí (T475)
   const [hoiBoGhi, setHoiBoGhi] = useState(false)
   const [phieuChiVuaLap, setPhieuChiVuaLap] = useState<{ so: string; id: string } | null>(null)
+  const [moLichSuTt, setMoLichSuTt] = useState(false)
 
   const loai = cfgMan.loai?.find(x => x.k === row.loai) ?? cfgMan.loai?.[0]
   const cfg = theoLoai(cfgMan, loai?.k)
@@ -180,8 +197,14 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
       row.kho ??
       (row._khoDs as string[] | undefined)?.[0] ??
       dsDong.find(d => d.kho)?.kho ??
-      '',
+      (nhomMb === 'mua' ? 'Kho hàng' : ''),
   )
+
+  const diaChiHienThi = String(row._diaChi ?? DIA_CHI_NCC[String(row.doiTuong ?? '')] ?? nv?.dc ?? '')
+  const mstHienThi = String(row._mst ?? nv?.mst ?? '')
+  const nguoiGiaoDichHienThi = String(row._nguoiGiao ?? row._nguoi ?? NGUOI_GD_NCC[String(row.doiTuong ?? '')] ?? nv?.nguoi ?? '')
+  const nhanKemHd = row._nhanKemHd !== undefined ? Boolean(row._nhanKemHd) : Boolean(row._soHd || nv?.soHd)
+  const tongSl = useMemo(() => dsDong.reduce((a, d) => a + (Number(d.sl) || 0), 0), [dsDong])
 
   // Tính tổng
   const tongTien = dsDong.reduce((a, d) => a + (Number(d.tien) || 0), 0)
@@ -220,6 +243,42 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
       hinhThucTt,
     )
   }, [cfg, dsDong, tongTien, tongCk, tongThue, row, nv, s.cheDo, nhom, s.goi])
+
+  const capButToan = useMemo(() => {
+    const caps: { no: { so: string; ten: string }; co: { so: string; ten: string }; dg: string; tien: number }[] = []
+    for (let i = 0; i < dsButToan.length; i += 2) {
+      const no = dsButToan[i]
+      const co = dsButToan[i + 1]
+      if (no && co) {
+        const dg = no.so.startsWith('133') ? 'Thuế GTGT mua vào' : 'Tiền mua hàng'
+        caps.push({ no, co, dg, tien: no.tien })
+      }
+    }
+    return caps
+  }, [dsButToan])
+  const tongNoCo = useMemo(() => capButToan.reduce((a, c) => a + c.tien, 0), [capButToan])
+
+  const danhSachThamChieu = useMemo(() => {
+    const ds: { so: string; url: string }[] = []
+    if (dsTt && dsTt.length > 0) {
+      for (const tt of dsTt) {
+        ds.push({ so: tt.so, url: `/app/tien/2-1-1/${tt.id}` })
+      }
+    }
+    if (row._phieuTra) {
+      const tra = row._phieuTra as { id: string; so: string }
+      ds.push({ so: tra.so, url: `/app/mua-hang/4-3-1/${tra.id}` })
+    }
+    if (Array.isArray(row._theCp)) {
+      for (const cp of row._theCp as string[]) {
+        ds.push({ so: cp, url: `/app/ccdc/8-1-1?mo=${cp}` })
+      }
+    }
+    if (row._thamChieu && !ds.some(x => x.so === row._thamChieu)) {
+      ds.push({ so: String(row._thamChieu), url: String(row._thamChieuDi || path) })
+    }
+    return ds
+  }, [dsTt, row, path])
 
   // Lập thanh toán từ sheet
   function lapThanhToan(ht: 'tienmat' | 'chuyenkhoan', quyTt: string, ngay: string, tien: number, dg: string) {
@@ -290,14 +349,12 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
       const soBt = Math.round(dsButToan.length / 2)
       if (s.goi === 'F') {
         return [
-          { k: 'chitiet' as TabKey, ten: 'Chi tiết' },
-          { k: 'thanhtoan' as TabKey, ten: dsTt.length ? `Thanh toán (${dsTt.length})` : 'Thanh toán' },
+          { k: 'chitiet' as TabKey, ten: 'Phiếu nhập' },
           { k: 'lichsu' as TabKey, ten: 'Lịch sử' },
         ]
       }
       return [
-        { k: 'chitiet' as TabKey, ten: 'Chi tiết' },
-        { k: 'thanhtoan' as TabKey, ten: dsTt.length ? `Thanh toán (${dsTt.length})` : 'Thanh toán' },
+        { k: 'chitiet' as TabKey, ten: 'Phiếu nhập' },
         { k: 'buttoan' as TabKey, ten: `Hạch toán (${soBt})` },
         { k: 'lichsu' as TabKey, ten: 'Lịch sử' },
       ]
@@ -370,13 +427,16 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
 
   // Menu ba chấm
   const dsMenu = [
+    ...(nhomMb === 'mua' ? [{ k: 'lichsu_tt', ten: 'Lịch sử thanh toán' }] : []),
     ...(!laDc && nhomMb !== 'mua' ? [{ k: 'sua', ten: 'Sửa chứng từ' }] : []),
     ...(!laDc ? [{ k: 'copy', ten: 'Sao chép chứng từ' }] : []),
     ...(!laDc ? [{ k: 'xoa', ten: 'Xoá chứng từ' }] : []),
   ]
 
   const handleMenuChon = (k: string) => {
-    if (k === 'sua') {
+    if (k === 'lichsu_tt') {
+      setMoLichSuTt(true)
+    } else if (k === 'sua') {
       moSua()
     } else if (k === 'thanhtoan') {
       setMoThanhToan(true)
@@ -439,11 +499,11 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
   let chipTt: { kieu: string; ten: string } | null = null
   if (nhomMb === 'mua') {
     if (daTra >= tongGoc && tongGoc > 0) {
-      chipTt = { kieu: 'dang', ten: 'Đã thanh toán' }
+      chipTt = { kieu: 'da', ten: 'Đã thanh toán' }
     } else if (daTra > 0 && conLai > 0) {
-      chipTt = { kieu: 'cho', ten: 'Thanh toán 1 phần' }
+      chipTt = { kieu: 'mot-phan', ten: 'Thanh toán một phần' }
     } else {
-      chipTt = { kieu: 'cho', ten: 'Chưa thanh toán' }
+      chipTt = { kieu: 'chua', ten: 'Chưa thanh toán' }
     }
   } else if (s.goi !== 'F') {
     if (row.tt === 'ghi') {
@@ -461,7 +521,12 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
 
   const renderDsHangHoaMua = () => (
     <div>
-      <div className="m-pb-nhom">DANH SÁCH HÀNG HOÁ</div>
+      <div className="m-pb-nhom" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span>HÀNG HOÁ, DỊCH VỤ</span>
+        <span style={{ color: 'var(--muted)', fontWeight: 'normal', textTransform: 'none', fontSize: 13 }}>
+          {dsDongLocMua.length} dòng
+        </span>
+      </div>
       <div className="m-t449-tim">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2" aria-hidden="true">
           <circle cx="11" cy="11" r="7" />
@@ -479,40 +544,68 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
       <div className="m-t449-hang-ds">
         {dsDongLocMua.map((d, idx) => {
           const tongDong = (Number(d.tien) || 0) - (Number(d.ck) || 0) + (Number(d.thue) || 0)
+          const vatNhan = d.ts === 0 ? 'KCT' : `${d.ts ?? 0}%`
+
           return (
             <div key={idx} className="m-t449-hang-the">
               <div className="m-t449-hang-dau">
                 <div className="m-t449-hang-ten">
                   {idx + 1}. {d.ten || 'Mặt hàng'}
-                  {d.ma ? <span className="m-t449-hang-ma">-{d.ma}</span> : null}
+                  {d.ma ? <span className="m-t449-hang-ma" style={{ color: 'var(--muted)', fontWeight: 'normal', marginLeft: 6 }}>{d.ma}</span> : null}
                 </div>
               </div>
               <div className="m-t449-hang-than">
                 <div className="m-t449-hang-dong">
                   <span className="lbl">Số lượng:</span>
-                  <span className="val bold">{d.sl ?? 1} {d.dvt || 'Cái'}</span>
+                  <span className="val bold num">{d.sl ?? 1} {d.dvt || 'Cái'}</span>
                 </div>
                 <div className="m-t449-hang-dong">
                   <span className="lbl">Đơn giá:</span>
-                  <span className="val">{money(d.gia || 0)} đ</span>
+                  <span className="val num">{money(d.gia || 0)} đ</span>
                 </div>
                 <div className="m-t449-hang-dong">
-                  <span className="lbl">Giảm giá ({d.ptCk ?? 0}%):</span>
-                  <span className="val">{money(d.ck || 0)} đ</span>
+                  <span className="lbl">Giảm giá:</span>
+                  <span className="val num">{money(d.ck || 0)} đ</span>
                 </div>
                 <div className="m-t449-hang-dong">
-                  <span className="lbl">VAT ({d.ts ?? 0}%):</span>
-                  <span className="val">{money(d.thue || 0)} đ</span>
+                  <span className="lbl">VAT ({vatNhan}):</span>
+                  <span className="val num">{money(d.thue || 0)} đ</span>
                 </div>
                 <div className="m-t449-hang-dong">
                   <span className="lbl">Tổng tiền:</span>
-                  <span className="val bold">{money(tongDong)} đ</span>
+                  <span className="val bold num">{money(tongDong)} đ</span>
                 </div>
               </div>
             </div>
           )
         })}
 
+        {/* A6: Khối Tổng cộng (N dòng) cuối danh sách hàng, cuộn theo nội dung, CHỈ 5 dòng */}
+        <div className="m-t600-the-tong">
+          <div className="m-t600-tong-tieu">
+            <span>Tổng cộng ({dsDongLocMua.length} dòng)</span>
+          </div>
+          <div className="m-t600-tong-dong">
+            <span>Số lượng</span>
+            <span className="bold num">{tongSl}</span>
+          </div>
+          <div className="m-t600-tong-dong">
+            <span>Thành tiền</span>
+            <span className="num">{money(tongTien)} đ</span>
+          </div>
+          <div className="m-t600-tong-dong">
+            <span>Tiền giảm giá</span>
+            <span className="num">{money(tongCk)} đ</span>
+          </div>
+          <div className="m-t600-tong-dong">
+            <span>Tiền thuế</span>
+            <span className="num">{money(tongThue)} đ</span>
+          </div>
+          <div className="m-t600-tong-dong tong-chinh">
+            <span>Tổng tiền</span>
+            <span className="bold num">{money(tongThanhToan)} đ</span>
+          </div>
+        </div>
       </div>
     </div>
   )
@@ -551,7 +644,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
             <path d="M19 12H5M12 19l-7-7 7-7" />
           </svg>
         </button>
-        <h2 className="m-pb-tieu-de">{soCt}</h2>
+        <h2 className="m-pb-tieu-de">{nhomMb === 'mua' ? `Phiếu mua hàng ${soCt}` : soCt}</h2>
         <span className="m-pb-thanh-dau-phai" />
       </header>
 
@@ -576,7 +669,62 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
           </div>
         )}
 
-        {/* 1. THẺ TỔNG QUAN */}
+        {/* 1. THẺ TỔNG QUAN (A2) */}
+        {nhomMb === 'mua' ? (
+          <div className="m-t600-the-dau">
+            <div className="m-t600-chip-hang">
+              <span className={`m-t600-chip-tt ${chipTt?.kieu || 'chua'}`}>
+                {chipTt?.ten || 'Chưa thanh toán'}
+              </span>
+              <span className="m-t600-chip-nguon">
+                {row.nguon === 'excel' ? 'Excel' : row.nguon === 'pos' ? 'POS' : 'Thủ công'}
+              </span>
+            </div>
+
+            <div className="m-t600-ncc-ten">{String(row.doiTuong || 'Nhà cung cấp')}</div>
+
+            <div className="m-t600-cua-hang-dong">
+              <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="1.8" fill="none">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                <polyline points="9 22 9 12 15 12 15 22" />
+              </svg>
+              <span>{cuaHangTen}</span>
+            </div>
+
+            <div>
+              <div className="m-t600-tong-tien-nhan">Tổng tiền</div>
+              <div className={`m-t600-tong-tien-so ${chipTt?.kieu === 'da' ? 'xanh' : 'cam'}`}>
+                {money(tongGoc)} đ
+              </div>
+            </div>
+
+            <div className="m-t600-khung-tt">
+              <div className="m-t600-tt-tien-do-khu">
+                <div className="m-t600-tt-tien-do-hang">
+                  <span>Thanh toán</span>
+                  <span className={`m-t600-chip-tt ${chipTt?.kieu || 'chua'}`}>
+                    {chipTt?.ten || 'Chưa thanh toán'}
+                  </span>
+                </div>
+                <div className="m-t600-tt-tien-do-hang">
+                  <span>Đã trả</span>
+                  <b>{money(daTra)} / {money(tongGoc)} đ</b>
+                </div>
+                <div className="m-t600-thanh-tien-do">
+                  <div
+                    className="m-t600-tien-do-fill"
+                    style={{ width: `${tongGoc > 0 ? Math.min(100, Math.round((daTra / tongGoc) * 100)) : 0}%` }}
+                  />
+                </div>
+                {s.goi !== 'F' && hanTt && (
+                  <div className="m-t600-han-tt-dong">
+                    Hạn {hanTt}{tinhSoNgayCon(hanTt) ? ` · ${tinhSoNgayCon(hanTt)}` : ''}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        ) : (
         <div className="m-pb-the m-pb-the-tong-quan">
           <div className="m-pb-hang-chip">
             <span className="m-pb-chip-loai">{tenLoai}</span>
@@ -601,11 +749,6 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
                 {money(tongTien || Number(row.tong) || 0)} đ
               </div>
             </div>
-          ) : nhomMb === 'mua' ? (
-            <div>
-              <div className="m-pb-nhan-gt">Tổng thanh toán</div>
-              <div className={`m-pb-so-gt${conLai > 0 ? ' cam' : ''}`}>{money(tongGoc)} đ</div>
-            </div>
           ) : laKk ? (
             <div>
               <div className="m-pb-nhan-gt">Tổng kiểm kê</div>
@@ -623,17 +766,6 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
             <div className="m-pb-o-stat da">
               <div className="m-pb-o-stat-nhan">{chieu === 'vao' ? 'Quỹ thu tiền' : 'Quỹ chi tiền'}</div>
               <div className="m-pb-o-stat-so da">{triQuy}</div>
-            </div>
-          ) : nhomMb === 'mua' ? (
-            <div className="m-t449-luoi-stat">
-              <div className="m-t449-stat-da">
-                <div className="m-t449-stat-nhan">Đã trả</div>
-                <div className="m-t449-stat-so da">{money(daTra)} đ</div>
-              </div>
-              <div className="m-t449-stat-con">
-                <div className="m-t449-stat-nhan">Còn phải trả</div>
-                <div className="m-t449-stat-so con">{money(conLai)} đ</div>
-              </div>
             </div>
           ) : laKk ? (
             <div className="m-pb-luoi-stat m-t468-luoi-kk">
@@ -669,6 +801,8 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
             </div>
           )}
         </div>
+
+        )}
 
         {/* 2. TABS SEGMENTED */}
         <div className="m-pb-tabs" role="tablist">
@@ -790,52 +924,87 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
               </>
             ) : nhomMb === 'mua' ? (
               <>
-                <div className="m-pb-nhom">THÔNG TIN HOÁ ĐƠN & MUA HÀNG</div>
+                {/* A4: KHỐI 1 - NHÀ CUNG CẤP */}
+                <div className="m-pb-nhom">NHÀ CUNG CẤP</div>
                 <div className="m-pb-the m-pb-the-gon">
                   <div className="m-pb-dong">
-                    <span className="n">Thời gian lập</span>
-                    <span className="g">{[row.ngay, row.gio].filter(Boolean).join(' ')}</span>
+                    <span className="n">Nhà cung cấp <span className="m-t600-sao">*</span></span>
+                    <span className="g bold">{String(row.doiTuong || '')}</span>
                   </div>
-                  {soHd && (
+                  {diaChiHienThi && (
                     <div className="m-pb-dong">
-                      <span className="n">Số hoá đơn</span>
-                      <span className="g">{soHd}{kyHieuHd ? ` (${kyHieuHd})` : ''}</span>
+                      <span className="n">Địa chỉ</span>
+                      <span className="g">{diaChiHienThi}</span>
                     </div>
                   )}
-                  {ngayHd && (
-                    <div className="m-pb-dong">
-                      <span className="n">Ngày hoá đơn</span>
-                      <span className="g">{ngayHd}</span>
-                    </div>
-                  )}
-                  <div className="m-pb-dong">
-                    <span className="n">Kho nhận hàng</span>
-                    <span className="g">{kho || 'Kho trung tâm'}</span>
-                  </div>
-                  {mst && (
+                  {mstHienThi && (
                     <div className="m-pb-dong">
                       <span className="n">Mã số thuế</span>
-                      <span className="g">{mst}</span>
+                      <span className="g">{mstHienThi}</span>
                     </div>
                   )}
-                  {hanTt && (
+                  {nguoiGiaoDichHienThi && (
                     <div className="m-pb-dong">
-                      <span className="n">Hạn thanh toán</span>
-                      <span className="g cam">
-                        {hanTt}{tinhSoNgayCon(hanTt) ? ` · ${tinhSoNgayCon(hanTt)}` : ''}
-                      </span>
+                      <span className="n">Người giao dịch</span>
+                      <span className="g">{nguoiGiaoDichHienThi}</span>
                     </div>
                   )}
+                </div>
+
+                {/* A4: KHỐI 2 - HOÁ ĐƠN & NHẬP KHO */}
+                <div className="m-pb-nhom">HOÁ ĐƠN & NHẬP KHO</div>
+                <div className="m-pb-the m-pb-the-gon">
+                  {nhanKemHd && (
+                    <>
+                      <div className="m-pb-dong">
+                        <span className="n">Số hoá đơn <span className="m-t600-sao">*</span></span>
+                        <span className="g">{soHd}</span>
+                      </div>
+                      <div className="m-pb-dong">
+                        <span className="n">Ký hiệu <span className="m-t600-sao">*</span></span>
+                        <span className="g">{kyHieuHd}</span>
+                      </div>
+                      <div className="m-pb-dong">
+                        <span className="n">Ngày hoá đơn <span className="m-t600-sao">*</span></span>
+                        <span className="g">{ngayHd}</span>
+                      </div>
+                    </>
+                  )}
+                  <div className="m-pb-dong">
+                    <span className="n">Ngày chứng từ <span className="m-t600-sao">*</span></span>
+                    <span className="g">{row.ngay}</span>
+                  </div>
+                  <div className="m-pb-dong">
+                    <span className="n">Số phiếu nhập</span>
+                    <span className="g">{soCt}</span>
+                  </div>
+                  <div className="m-pb-dong">
+                    <span className="n">Kho nhập <span className="m-t600-sao">*</span></span>
+                    <span className="g">{kho || 'Kho hàng'}</span>
+                  </div>
                   {(row.dienGiai || row._ghiChu) && (
                     <div className="m-pb-dong">
-                      <span className="n">Diễn giải</span>
+                      <span className="n">Ghi chú</span>
                       <span className="g">{String(row.dienGiai || row._ghiChu)}</span>
                     </div>
                   )}
-                  <div className="m-pb-dong">
-                    <span className="n">Nguồn chứng từ</span>
-                    <span className="g">{NGUON[row.nguon]?.[1] ?? 'Thủ công'}</span>
-                  </div>
+                  {danhSachThamChieu.length > 0 && (
+                    <div className="m-pb-dong">
+                      <span className="n">Tham chiếu</span>
+                      <span className="g link" style={{ display: 'flex', flexWrap: 'wrap', gap: 6, justifyContent: 'flex-end' }}>
+                        {danhSachThamChieu.map((tc, idx) => (
+                          <Link
+                            key={idx}
+                            to={tc.url}
+                            style={{ color: 'var(--blue)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 2, fontWeight: 500 }}
+                          >
+                            <span>{tc.so}</span>
+                            <span style={{ fontSize: 13 }}>›</span>
+                          </Link>
+                        ))}
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 {renderDsHangHoaMua()}
@@ -986,25 +1155,65 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
 
         {/* Tab Bút toán / Hạch toán */}
         {tab === 'buttoan' && (
-          <>
-            <div className="m-pb-nhom">HẠCH TOÁN</div>
-            <div className="m-pb-the m-pb-the-gon">
-              {dsButToan.length === 0 ? (
-                <div className="m-pb-dong" style={{ justifyContent: 'center', color: 'var(--muted)' }}>
+          nhomMb === 'mua' ? (
+            <div style={{ padding: '0 4px' }}>
+              <div className="m-t600-nhom-tieu" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span>BÚT TOÁN</span>
+                <span style={{ color: 'var(--muted)', fontWeight: 'normal', textTransform: 'none', fontSize: 13 }}>
+                  {capButToan.length} cặp · tự sinh khi lưu
+                </span>
+              </div>
+              {capButToan.length === 0 ? (
+                <div className="m-card" style={{ padding: 16, textAlign: 'center', color: 'var(--muted)', background: '#fff', borderRadius: 10, marginTop: 8 }}>
                   Không có bút toán hạch toán
                 </div>
               ) : (
-                dsButToan.map((bt, idx) => (
-                  <div key={idx} className="m-ht-dong">
-                    <span className="m-ht-tk">
-                      {bt.kieu === 'no' ? 'Nợ' : 'Có'} {bt.so} <i className="m-ht-ten">{bt.ten}</i>
-                    </span>
-                    <span className="m-ht-so">{money(bt.tien)} đ</span>
+                capButToan.map((cap, i) => (
+                  <div key={i} className="m-t600-bt-the">
+                    <div className="m-t600-bt-hang-dau">
+                      <span>{cap.dg}</span>
+                      <b className="num">{money(cap.tien)} đ</b>
+                    </div>
+                    <div className="m-t600-bt-dong-tk">
+                      <span className="m-t600-chip-no">Nợ</span>
+                      <b>{cap.no.so}</b>
+                      <span className="m-t600-ten-tk">{cap.no.ten}</span>
+                    </div>
+                    <div className="m-t600-bt-dong-tk">
+                      <span className="m-t600-chip-co">Có</span>
+                      <b>{cap.co.so}</b>
+                      <span className="m-t600-ten-tk">{cap.co.ten}</span>
+                    </div>
                   </div>
                 ))
               )}
+              {capButToan.length > 0 && (
+                <div className="m-t600-tong-but-toan">
+                  Tổng Nợ = Tổng Có <b className="num">{money(tongNoCo)} đ</b>
+                </div>
+              )}
             </div>
-          </>
+          ) : (
+            <>
+              <div className="m-pb-nhom">HẠCH TOÁN</div>
+              <div className="m-pb-the m-pb-the-gon">
+                {dsButToan.length === 0 ? (
+                  <div className="m-pb-dong" style={{ justifyContent: 'center', color: 'var(--muted)' }}>
+                    Không có bút toán hạch toán
+                  </div>
+                ) : (
+                  dsButToan.map((bt, idx) => (
+                    <div key={idx} className="m-ht-dong">
+                      <span className="m-ht-tk">
+                        {bt.kieu === 'no' ? 'Nợ' : 'Có'} {bt.so} <i className="m-ht-ten">{bt.ten}</i>
+                      </span>
+                      <span className="m-ht-so">{money(bt.tien)} đ</span>
+                    </div>
+                  ))
+                )}
+              </div>
+            </>
+          )
         )}
 
         {/* Tab Thanh toán */}
@@ -1044,25 +1253,8 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
         )}
       </div>
 
-      {/* ── CHÂN GHIM ĐÁY (T481: gộp khối tổng và hàng nút trong một khung chân trắng duy nhất) ── */}
-      <div className={`m-pb-day${nhomMb === 'mua' && tab === 'chitiet' ? ' m-t481-chan-co-tong' : ''}`}>
-        {nhomMb === 'mua' && tab === 'chitiet' && (
-          <div className="m-t481-tong">
-            <div className="m-t481-tong-dong">
-              <span>Thành tiền mặt hàng:</span>
-              <span className="bold">{money(tongTien)} đ</span>
-            </div>
-            <div className="m-t481-tong-dong">
-              <span>Tổng tiền giảm giá:</span>
-              <span className="bold">{money(tongCk)} đ</span>
-            </div>
-            <div className="m-t481-tong-dong">
-              <span>Tổng tiền thuế:</span>
-              <span className="bold">{money(tongThue)} đ</span>
-            </div>
-          </div>
-        )}
-
+      {/* ── CHÂN GHIM ĐÁY (A7) ── */}
+      <div className="m-pb-day">
         <div className="m-pb-day-nut">
           <button
             type="button"
@@ -1079,6 +1271,12 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
 
           {nutPhu && (
             <button type="button" className="m-pb-btn-phu" onClick={nutPhu.action}>
+              {nhomMb === 'mua' && nutPhu.nhan === 'Sửa phiếu' && (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: 6 }}>
+                  <path d="M12 20h9" />
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                </svg>
+              )}
               {nutPhu.nhan}
             </button>
           )}
@@ -1089,6 +1287,12 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
               className={`m-pb-btn-sua${nutChinh.laThanhToan ? ' tt-nut' : ''}`}
               onClick={nutChinh.action}
             >
+              {nhomMb === 'mua' && nutChinh.nhan === 'Sửa phiếu' && (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: 6 }}>
+                  <path d="M12 20h9" />
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                </svg>
+              )}
               {nutChinh.laThanhToan && (
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <rect x="2" y="6" width="20" height="13" rx="2" />
@@ -1145,6 +1349,61 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
           Phiếu đã xoá không lấy lại được.
           {laKk && dsDc.length > 0 && <> Phiếu điều chỉnh {dsDc.map(c => c.so).join(', ')} cũng bị xoá theo.</>}
         </HopXacNhan>
+      )}
+
+      {/* ── SHEET LỊCH SỬ THANH TOÁN (A3) ── */}
+      {moLichSuTt && (
+        <div className="m-tam-overlay" onClick={() => setMoLichSuTt(false)}>
+          <div className="m-tam-hop m-t600-sheet-85" onClick={e => e.stopPropagation()}>
+            <div className="m-tam-dau">
+              <h2 className="m-tam-tieu">Lịch sử thanh toán</h2>
+              <button type="button" className="m-tam-dong-btn" onClick={() => setMoLichSuTt(false)}>
+                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="m-t600-sheet-than" style={{ padding: '8px 16px' }}>
+              {dsTt.length === 0 ? (
+                <div className="m-pb-the m-pb-the-gon" style={{ marginTop: 12 }}>
+                  <div className="m-pb-dong" style={{ justifyContent: 'center', color: 'var(--muted)', minHeight: 60 }}>
+                    Chưa có phiếu thanh toán nào
+                  </div>
+                </div>
+              ) : (
+                dsTt.map(c => (
+                  <div key={c.id} className="m-pb-the m-pb-muc-dong">
+                    <div className="m-pb-muc-hang1">
+                      <span className="m-pb-muc-ten">
+                        <Link to={`/app/tien/2-1-1/${c.id}`} style={{ color: 'var(--blue)', textDecoration: 'none', fontWeight: 600 }}>
+                          {c.so} ›
+                        </Link>
+                      </span>
+                      <b className="m-pb-muc-tong">{money(c.tien)} đ</b>
+                    </div>
+                    <div className="m-pb-muc-hang2">
+                      <span>{(c as { ngay?: string }).ngay || row.ngay} · {(c as { quy?: string }).quy || 'Quỹ tiền mặt'}</span>
+                      <span>{conLai === 0 ? 'Trả hết' : 'Trả một phần'}</span>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            <div className="m-t600-sheet-day">
+              <button
+                type="button"
+                className="btn pri"
+                style={{ width: '100%', height: 44, borderRadius: 8 }}
+                onClick={() => setMoLichSuTt(false)}
+              >
+                Đóng
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Sheet thanh toán phiếu mua */}

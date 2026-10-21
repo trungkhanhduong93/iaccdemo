@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 21/10/2026
+- T600: Điện thoại, phiếu mua hàng làm lại theo Figma. Màn xem có Tổng tiền màu theo tình trạng, khung Thanh toán với thanh tiến độ, 3 tab Phiếu nhập, Hạch toán, Lịch sử. Màn sửa, thêm mới có nhãn trên ô nhập, công tắc Nhận kèm hoá đơn, Giảm giá và Thuế GTGT áp chung. Có sheet chọn hàng hoá, chọn và thêm nhà cung cấp. Chọn Tiền mặt ngay hoặc Chuyển khoản ngay thì chuyển sang lập phiếu chi điền sẵn.
 - T598: Điện thoại, sửa phiếu thu chi giữ nguyên các dòng chi tiết đang có, không còn mất dòng. Dòng vừa thêm có nền xanh nhạt để phân biệt.
 - T596: Mẫu in và báo cáo ghi "Cửa hàng" thay cho "Bộ phận": dòng đầu trang phiếu nhập, xuất kho, Bảng kê mua hàng, Địa chỉ (cửa hàng) trên phiếu xuất kho, sổ theo dõi TSCĐ, CCDC tại nơi sử dụng.
 - T592: Web, phiếu mua hàng: ô Thuế GTGT trên thanh tab rộng hơn, hiện đủ chữ "Nhiều mức".

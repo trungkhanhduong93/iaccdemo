@@ -78,20 +78,44 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
   const manKey = `${mod.key}/${sc.slug}`
   const row = rowProp ?? (id && id !== 'moi' ? rows.find(r => String(r.id) === String(id)) : undefined)
   const dangSua = Boolean(id && id !== 'moi' && row)
-  const dongHoacHuy = () => {
-    quayLaiMobile(nav, dangSua ? `${path}/${id}` : path)
-  }
   // Sao chép từ màn xem (T539): phiếu mới mang nội dung phiếu gốc, trừ số phiếu, ngày, thẻ chi phí
   const loc = useLocation()
   const saoChep = !row ? (loc.state as { saoChep?: Row } | null)?.saoChep : undefined
+  const dienSan = !row ? (loc.state as {
+    dienSan?: {
+      loai: string
+      quy: string
+      ngay: string
+      soTien: number
+      doiTuong: string
+      diaChi?: string
+      nguoiGiaoDich?: string
+      lyDo?: string
+      dienGiai?: string
+      thamChieuSo?: string
+      thamChieuDi?: string
+      veGoc?: string
+      manMua?: string
+      idMua?: string
+      soMua?: string
+      dsTtCu?: { id: string; so: string; loai: string; tien: number; ngay?: string; quy?: string }[]
+    }
+  } | null)?.dienSan : undefined
   const goc = row ?? saoChep
+  const dongHoacHuy = () => {
+    if (dienSan?.veGoc) {
+      nav(dienSan.veGoc, { replace: true })
+      return
+    }
+    quayLaiMobile(nav, dangSua ? `${path}/${id}` : path)
+  }
   // Lý do, người giao dịch đoán như màn xem phiếu để sửa, sao chép không bị trống
   // Dòng chi tiết của phiếu như màn xem: phiếu mẫu chưa có _dong thì sinh theo số phiếu
   const dongGoc = (r: Row) => (r._dong as DongChiTiet[] | undefined) ?? dongCua(theoLoai(cfg, String(r.loai ?? '')), `${sc.code ?? sc.slug}-${r.id}`) as DongChiTiet[]
   const lyDoGoc = (r?: Row) => !r ? '' : String(r._lyDo ?? dongGoc(r)[0]?.ly ?? doanLyDoThuChi(String(r.loai ?? ''), String(r.dienGiai || '')) ?? '')
   const nguoiGoc = (r?: Row) => !r ? '' : String(r._nguoiGiao ?? r._nguoi ?? ttNghiepVu(r).nguoi ?? '')
   const loaiUrl = sp.get('loai') || 'chi'
-  const [loai, setLoai] = useState<string>(() => goc?.loai ? String(goc.loai) : loaiUrl)
+  const [loai, setLoai] = useState<string>(() => dienSan?.loai ?? (goc?.loai ? String(goc.loai) : loaiUrl))
 
   const isChi = loai === 'chi' || loai === 'unc'
   const isThu = loai === 'thu' || loai === 'bc'
@@ -105,12 +129,14 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
   const [moChonCn, setMoChonCn] = useState(false)
 
   const [soTien, setSoTien] = useState<number>(() => {
+    if (dienSan?.soTien) return Number(dienSan.soTien)
     if (goc) return Number(goc.tong) || Number(goc.tien) || 0
     return 0
   })
-  const [strTien, setStrTien] = useState<string>(() => (soTien > 0 ? money(soTien) : ''))
+  const [strTien, setStrTien] = useState<string>(() => (soTien > 0 ? money(soTien) : (dienSan?.soTien ? money(dienSan.soTien) : '')))
 
   const [quy, setQuy] = useState<string>(() => {
+    if (dienSan?.quy) return dienSan.quy
     if (goc?._quy) return String(goc._quy)
     if (loai === 'unc' || loai === 'bc') {
       return TK_NGAN_HANG[0] ? `${TK_NGAN_HANG[0].nh.split(',')[0]} ${TK_NGAN_HANG[0].so}` : ''
@@ -123,7 +149,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
   })
 
   const ngayHomNay = `${String(HOM_NAY.getDate()).padStart(2, '0')}/${String(HOM_NAY.getMonth() + 1).padStart(2, '0')}/${HOM_NAY.getFullYear()}`
-  const [ngay, setNgay] = useState<string>(() => row?.ngay ? String(row.ngay) : ngayHomNay)
+  const [ngay, setNgay] = useState<string>(() => dienSan?.ngay ?? (row?.ngay ? String(row.ngay) : ngayHomNay))
   const [soCt, setSoCt] = useState<string>(() => {
     if (row?.so) return String(row.so)
     const pfx = isChi ? (loai === 'unc' ? 'UNC' : 'PC') : isThu ? (loai === 'bc' ? 'BC' : 'PT') : 'CQ'
@@ -131,17 +157,38 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
   })
 
   // T526: Lập phiếu mới để trống các trường, chỉ giữ mặc định bắt buộc
-  const [doiTuong, setDoiTuong] = useState<string>(() => goc?.doiTuong ? String(goc.doiTuong) : '')
-  const [diaChi, setDiaChi] = useState<string>(() => goc?._diaChi || goc?.diaChi ? String(goc._diaChi || goc?.diaChi) : '')
-  const [nguoiGiaoDich, setNguoiGiaoDich] = useState<string>(() => nguoiGoc(goc))
+  const [doiTuong, setDoiTuong] = useState<string>(() => dienSan?.doiTuong ?? (goc?.doiTuong ? String(goc.doiTuong) : ''))
+  const [diaChi, setDiaChi] = useState<string>(() => dienSan?.diaChi ?? (goc?._diaChi || goc?.diaChi ? String(goc._diaChi || goc?.diaChi) : ''))
+  const [nguoiGiaoDich, setNguoiGiaoDich] = useState<string>(() => dienSan?.nguoiGiaoDich ?? nguoiGoc(goc))
 
-  const [lyDo, setLyDo] = useState<string>(() => lyDoGoc(goc))
+  const [lyDo, setLyDo] = useState<string>(() => {
+    if (dienSan?.lyDo) return dienSan.lyDo
+    return lyDoGoc(goc)
+  })
   const [thangChiPhi, setThangChiPhi] = useState<string>(() => `Tháng ${goc?.thang || 10}/2026`)
-  const [ghiChu, setGhiChu] = useState<string>(() => goc?._ghiChu || goc?.dienGiai ? String(goc._ghiChu || goc?.dienGiai) : '')
+  const [ghiChu, setGhiChu] = useState<string>(() => dienSan?.dienGiai ?? (goc?._ghiChu || goc?.dienGiai ? String(goc._ghiChu || goc?.dienGiai) : ''))
   const theCpDs = Array.isArray(row?._theCp) ? (row?._theCp as string[]) : []
 
   // Dòng chi tiết
   const [dsDong, setDsDong] = useState<DongChiTiet[]>(() => {
+    if (dienSan) {
+      const tien = dienSan.soTien || 0
+      const dg = dienSan.dienGiai || 'Chi tiền mua hàng'
+      const ly = dienSan.lyDo || 'Thanh Toán Công Nợ Nhà Cung Cấp'
+      const isUnc = dienSan.loai === 'unc'
+      return [{
+        ten: dg,
+        sl: 1,
+        gia: tien,
+        tien,
+        ly,
+        dt: dienSan.doiTuong || '',
+        km: '',
+        cv: '',
+        tkNo: '331',
+        tkCo: isUnc ? '1121' : '1111',
+      }]
+    }
     const ds = goc ? dongGoc(goc) : []
     if (ds.length > 0) {
       return ds.map(d => ({
@@ -356,6 +403,29 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
       nguon: row?.nguon ?? 'tay',
     }
     const targetId = dangSua && row ? String(row.id) : `phieu-${Date.now()}`
+    if (dienSan) {
+      const duLieuMoi: Partial<Row> = {
+        ...duLieuPhieu,
+        _thamChieu: dienSan.soMua ?? dienSan.thamChieuSo,
+        _thamChieuDi: dienSan.thamChieuDi,
+      }
+      themPhieu(manKey, { id: targetId, ...duLieuMoi }, s.ten)
+      ghiNhatKy(manKey, targetId, soCt, s.ten, `Lập mới chứng từ ${soCt}`)
+
+      if (dienSan.manMua && dienSan.idMua) {
+        const dsTtMoi = [...(dienSan.dsTtCu ?? []), { id: targetId, so: soCt, loai, tien: soTien, ngay, quy }]
+        suaPhieu(dienSan.manMua, dienSan.idMua, { _dsTt: dsTtMoi })
+        ghiNhatKy(dienSan.manMua, dienSan.idMua, dienSan.soMua ?? '', s.ten, `Thanh toán ngay ${money(soTien)} bằng ${soCt}`)
+      }
+      toast(`Đã lưu phiếu ${soCt}`)
+      if (dienSan.veGoc) {
+        nav(dienSan.veGoc, { replace: true })
+        return
+      }
+      setPhieuVuaLuu({ id: targetId, so: soCt })
+      setDaLuu(true)
+      return
+    }
     if (dangSua && row) {
       suaPhieu(manKey, targetId, duLieuPhieu)
       ghiNhatKy(manKey, targetId, soCt, s.ten, `Sửa chứng từ ${soCt}`)
@@ -512,6 +582,12 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
 
       {/* ── CONTENT THÂN CUỘN ── */}
       <main className="m-tc-lap-content">
+        {dienSan && (
+          <div className="m-t600-dai-dien-san">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            <span>Điền sẵn từ phiếu mua {dienSan.soMua ?? dienSan.thamChieuSo}. Kiểm lại rồi bấm Lưu phiếu.</span>
+          </div>
+        )}
         {/* 1. Card Số tiền (sửa trực tiếp) */}
         <section className="m-tc-card-so-tien">
           <div className="m-tc-hang-loai-ch">

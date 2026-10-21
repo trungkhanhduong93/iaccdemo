@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T600 | Điện thoại, phiếu mua hàng theo Figma: màn xem, sửa, thêm mới (thẻ đầu, khung Thanh toán, tab Phiếu nhập/Hạch toán/Lịch sử, thẻ hàng, sheet chọn hàng, chọn và thêm NCC, thanh toán ngay chuyển sang lập phiếu chi) | Trum | Đang làm | Sửa `MXemPhieu.tsx` (dinhlanphuongipacc đồng ý, T436), `MLapPhieu.tsx` (đụng cùng T597, ai push sau tự gộp, không đổi ràng buộc ô hoá đơn của T597), `MDtThuChiLap.tsx` (chỉ phần nhận dữ liệu điền sẵn), cuối `app.css` (mục T600). Spec `backup/spec-T600.md`, mẫu https://claude.ai/artifact/XLaJAN9wvVjrbdPa2GW2Py |
 | T599 | Bỏ dòng "Ký hiệu chờ kế toán trưởng duyệt" trên tờ báo cáo và mẫu in chứng từ; giữ chip ở Hệ thống tài khoản | Trum | Đang làm | Sửa `ReportScreen.tsx`, `InChungTu.tsx`, `xuat.ts`, `app.css`. Spec `backup/spec-T593-T595.md` |
 | T597 | Phiếu mua hàng web và điện thoại: Số hoá đơn chỉ nhập chữ số liền nhau (không phân cách, không thập phân); Ký hiệu hoá đơn chữ in hoa hoặc số, 7 ký tự; các cột mã viết hoa | dinhlanphuongipacc | Đang làm | Sửa `ChungTuForm.tsx` (2 ô hoá đơn), `MLapPhieu.tsx`, `format.ts` |
 | T593 | Xem trước in và bản in báo cáo: mã, tên hàng, số phiếu ở mọi cột thành chữ thường, không bấm được (mở rộng T556) | Trum | Đang làm | Sửa cuối `app.css` (mục T556). Spec `backup/spec-T593-T595.md` |
