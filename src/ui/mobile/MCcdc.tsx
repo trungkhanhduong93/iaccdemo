@@ -8,11 +8,12 @@ import { anNgoaiGoi } from '../../app/plan'
 import { CUA_HANG } from '../../data/mock'
 import { money, fold } from '../format'
 import { Icon } from '../Icon'
-import { laDaXoa, suaPhieu, xoaPhieu } from '../generic/daXoa'
+import { ghiNhatKy, laDaXoa, suaPhieu, xoaPhieu } from '../generic/daXoa'
 import { lyDoKhongXoaThe } from '../../modules/ccdc/the-phan-bo'
 import { MDanhSach } from './MDanhSach'
 import { MBaoCaoTheoDoi } from './MBaoCaoTheoDoi'
 import { MChon } from './MChon'
+import { MTheNoiDung, MTheSua, type TheMobile } from './MThePhanBo'
 import { LichDon } from '../ChonNgay'
 import { HopXacNhan } from '../LocNangCao'
 import {
@@ -23,9 +24,9 @@ import {
 } from '../../modules/ccdc/the-phan-bo'
 
 // Dữ liệu thẻ mẫu ccdc
-const THE_MAU_BASE = [
+const THE_MAU_BASE: TheMobile[] = [
   { soThe: 'TPB2601-0001', loai: 'Công cụ dụng cụ', ngay: '05/01/2026', ten: 'Bộ nồi inox 50 lít', cn: 'Phố Mây Lê Lợi', gt: 24_600_000, ky: 12, soCt: 'PC2610-0250', ngayCt: '03/10/2026', ghiChuCt: 'Chi mua rau, củ tại chợ', _goc: '/app/tien/2-1-1/chi-3', dong: [{ ma: 'CCDC0001', ten: 'Bộ nồi inox 50 lít', gt: 24_600_000, ky: 12, sl: 1, dg: 24_600_000, ngayPb: '05/01/2026' }] },
-  { soThe: 'TPB2606-0002', loai: 'Công cụ dụng cụ', ngay: '20/06/2026', ten: 'Bàn ghế gỗ khu ngoài trời', cn: 'Phố Mây Thảo Điền', gt: 86_400_000, ky: 24, soCt: 'PC2609-0240', ngayCt: '29/09/2026', ghiChuCt: 'Chi mua rau, củ tại chợ', _goc: '/app/tien/2-1-1/chi-6', dong: [{ ma: 'CCDC0002', ten: 'Bàn ghế gỗ khu ngoài trời', gt: 86_400_000, ky: 24, sl: 1, dg: 86_400_000, ngayPb: '20/06/2026' }] },
+  { soThe: 'TPB2606-0002', loai: 'Công cụ dụng cụ', ngay: '20/06/2026', ten: 'Bàn ghế gỗ khu ngoài trời', cn: 'Phố Mây Thảo Điền', gt: 86_400_000, ky: 24, soCt: 'PC2609-0240', ngayCt: '29/09/2026', ghiChuCt: 'Chi mua rau, củ tại chợ', _goc: '/app/tien/2-1-1/chi-6', dong: [{ ma: 'CCDC0002', ten: 'Bàn ghế gỗ khu ngoài trời', dvt: 'Bộ', gt: 86_400_000, ky: 24, sl: 1, dg: 86_400_000, ngayPb: '20/06/2026', ngung: true, ngayNgung: '31/08/2026' }] },
   { soThe: 'TPB2608-0003', loai: 'Công cụ dụng cụ', ngay: '01/08/2026', ten: 'Máy POS cầm tay và Máy xay', cn: 'Phố Mây Nguyễn Tri Phương', gt: 50_700_000, ky: 18, soCt: 'UNC2610-0256', ngayCt: '05/10/2026', ghiChuCt: 'Trả tiền nhà cung cấp thịt bò', _goc: '/app/tien/2-1-1/unc-1', dong: [{ ma: 'CCDC0003', ten: 'Máy POS cầm tay', gt: 31_800_000, ky: 18, sl: 1, dg: 31_800_000, ngayPb: '01/08/2026' }, { ma: 'CCDC0004', ten: 'Máy xay sinh tố công nghiệp', gt: 18_900_000, ky: 12, sl: 1, dg: 18_900_000, ngayPb: '01/08/2026' }] },
   { soThe: 'TPB2607-0004', loai: 'Chi phí trả trước', ngay: '01/07/2026', ten: 'Tiền thuê mặt bằng trả trước 6 tháng', cn: 'Phố Mây Lê Lợi', gt: 594_000_000, ky: 6, soCt: 'UNC2609-0236', ngayCt: '25/09/2026', ghiChuCt: 'Trả tiền thuê mặt bằng tháng 10', _goc: '/app/tien/2-1-1/unc-8', dong: [{ ma: 'TT001', ten: 'Tiền thuê mặt bằng trả trước 6 tháng', gt: 594_000_000, ky: 6, sl: 1, dg: 594_000_000, ngayPb: '01/07/2026' }] },
   { soThe: 'TPB2601-0005', loai: 'Chi phí trả trước', ngay: '01/01/2026', ten: 'Phí bản quyền phần mềm năm 2026', cn: 'Phố Mây Thảo Điền', gt: 18_000_000, ky: 12, soCt: 'UNC2609-0237', ngayCt: '26/09/2026', ghiChuCt: 'Trả tiền nhà cung cấp thịt bò', _goc: '/app/tien/2-1-1/unc-7', dong: [{ ma: 'TT002', ten: 'Phí bản quyền phần mềm năm 2026', gt: 18_000_000, ky: 12, sl: 1, dg: 18_000_000, ngayPb: '01/01/2026' }] },
@@ -33,11 +34,12 @@ const THE_MAU_BASE = [
   { soThe: 'TPB2611-0007', loai: 'Công cụ dụng cụ', ngay: '05/11/2026', ten: 'Dao thớt bếp trọn bộ', cn: 'Phố Mây Lê Lợi', gt: 9_600_000, ky: 12, soCt: 'PC2610-0259', ngayCt: '07/10/2026', ghiChuCt: 'Chi tiền điện tháng 9', _goc: '/app/tien/2-1-1/chi-0', dong: [{ ma: 'CCDC0005', ten: 'Dao thớt bếp trọn bộ', gt: 9_600_000, ky: 12, sl: 1, dg: 9_600_000, ngayPb: '05/11/2026' }] },
   { soThe: 'TPB2609-0008', loai: 'Chi phí trả trước', ngay: '01/09/2026', ten: 'Tiền thuê kho lạnh 6 tháng', cn: 'Phố Mây Thảo Điền', gt: 92_400_000, ky: 12, soCt: 'UNC2610-0252', ngayCt: '03/10/2026', ghiChuCt: 'Trả tiền thuê mặt bằng tháng 10', _goc: '/app/tien/2-1-1/unc-2', dong: [{ ma: 'CPTT.0001', ten: 'Tiền thuê kho lạnh 6 tháng', gt: 54_000_000, ky: 6, sl: 1, dg: 54_000_000, ngayPb: '01/09/2026' }] },
   { soThe: 'TPB2609-0009', loai: 'Công cụ dụng cụ', ngay: '15/09/2026', ten: 'Ly thuỷ tinh 300ml và tủ mát', cn: 'Phố Mây Nguyễn Tri Phương', gt: 40_500_000, ky: 12, soCt: 'PC2609-0243', ngayCt: '30/09/2026', ghiChuCt: 'Chi tiền gas tháng 10', _goc: '/app/tien/2-1-1/chi-5', dong: [{ ma: 'CCDC0006', ten: 'Ly thuỷ tinh 300ml', gt: 7_200_000, ky: 12, sl: 240, dg: 30_000, ngayPb: '15/09/2026' }, { ma: 'CCDC0007', ten: 'Tủ mát 2 cánh', gt: 28_500_000, ky: 24, sl: 1, dg: 28_500_000, ngayPb: '15/09/2026' }] },
-  { soThe: 'TPB2610-0010', loai: 'Tài sản cố định', ngay: '01/10/2026', ten: 'Máy rửa chén công nghiệp', cn: 'Phố Mây Lê Lợi', gt: 310_000_000, ky: 60, soCt: 'UNC2609-0244', ngayCt: '28/09/2026', ghiChuCt: 'Nộp thuế GTGT tháng 9', _goc: '/app/tien/2-1-1/unc-5', dong: [{ ma: 'TSCD.0001', ten: 'Máy rửa chén công nghiệp', gt: 186_000_000, ky: 60, sl: 1, dg: 186_000_000, ngayPb: '01/10/2026' }, { ma: 'TSCD.0002', ten: 'Hệ thống hút khói bếp', gt: 124_000_000, ky: 60, sl: 1, dg: 124_000_000, ngayPb: '01/10/2026' }] },
+  { soThe: 'TPB2610-0010', loai: 'Tài sản cố định', ngay: '01/10/2026', ten: 'Máy rửa chén công nghiệp', cn: 'Phố Mây Lê Lợi', gt: 310_000_000, ky: 60, soCt: 'UNC2609-0244', ngayCt: '28/09/2026', ghiChuCt: 'Nộp thuế GTGT tháng 9', _goc: '/app/tien/2-1-1/unc-5', dong: [{ ma: 'TSCD.0001', ten: 'Máy rửa chén công nghiệp', soHieu: 'MRC-HB-2026-01', moTa: 'Hobart AM15, công suất 1.000 đĩa/giờ, điện 3 pha, kèm bàn inox vào ra', gt: 186_000_000, ky: 60, sl: 1, dg: 186_000_000, ngayPb: '01/10/2026' }, { ma: 'TSCD.0002', ten: 'Hệ thống hút khói bếp', soHieu: 'HK-LL-02', moTa: 'Chụp hút inox 4 m, quạt ly tâm 7,5 kW, đường ống ra mái', gt: 124_000_000, ky: 60, sl: 1, dg: 124_000_000, ngayPb: '01/10/2026' }] },
+  { soThe: 'TPB2601-0012', loai: 'Công cụ dụng cụ', _kieu: 'dau', ngay: '01/01/2026', ten: 'Bộ nồi inox và bếp á (dư đầu kỳ)', cn: 'Phố Mây Lê Lợi', gt: 39_000_000, ky: 24, dong: [{ ma: 'CCDC0008', ten: 'Bộ nồi inox 50 lít', dvt: 'Bộ', sl: 2, dg: 12_300_000, gt: 24_600_000, da: 8_200_000, ky: 24, kyDa: 8, ngayPb: '01/01/2026' }, { ma: 'CCDC0009', ten: 'Bếp á đôi công nghiệp', dvt: 'Cái', sl: 1, dg: 14_400_000, gt: 14_400_000, da: 7_200_000, ky: 24, kyDa: 12, ngayPb: '01/01/2026', ngung: true, ngayNgung: '30/09/2026' }] },
   { soThe: 'TPB2610-0011', loai: 'Chi phí trả trước', ngay: '07/10/2026', ten: 'Tiền nhà 6 tháng', cn: 'Phố Mây Lê Lợi', gt: 72_000_000, ky: 6, soCt: 'PC2610-0261', ngayCt: '07/10/2026', ghiChuCt: 'Tiền nhà 6 tháng', _goc: '/app/tien/2-1-1/chi-cpb', dong: [{ ma: 'CPTT.0004', ten: 'Tiền nhà 6 tháng', gt: 72_000_000, ky: 6, sl: 1, dg: 72_000_000, ngayPb: '07/10/2026' }] },
 ]
 
-type TheItem = (typeof THE_MAU_BASE)[0] & {
+type TheItem = TheMobile & {
   da?: number
   con?: number
   het?: boolean
@@ -86,7 +88,6 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
       setTheXem(null)
     }
   }, [sp])
-  const [tabThe, setTabThe] = useState<'chitiet' | 'lichpb' | 'lichsu'>('chitiet')
   const [theSuaId, setTheSuaId] = useState<string | null>(null)
   const [moMenuMore, setMoMenuMore] = useState(false)
   const [hoiXoaThe, setHoiXoaThe] = useState(false)
@@ -298,12 +299,12 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
         onThem={handleBatDauThem}
         nhanThem="+ Ghi tăng"
         the={(r, i) => {
-          const soKy = r.dong?.[0]?.ky ?? r.ky ?? 12
+          const soKy = Number(r.dong?.[0]?.ky ?? r.ky ?? 12)
           return (
             <div
               key={`${r.soThe}_${i}`}
               className="m-the-ct"
-              onClick={() => { nav(`?mo=${r.soThe}`); setTheXem(r); setTabThe('chitiet') }}
+              onClick={() => { nav(`?mo=${r.soThe}`); setTheXem(r) }}
               role="button"
               tabIndex={0}
             >
@@ -379,8 +380,30 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
         </div>
       )}
 
-      {/* ── MÀN GHI TĂNG / SỬA THẺ THEO MẪU MÀN XEM (T415) ── */}
-      {moGhiTang && (() => {
+      {/* ── MÀN SỬA THẺ (T590): sửa từng mục, sửa số tiền từng kỳ, không thêm, không xoá mục ── */}
+      {moGhiTang && theSuaId && (() => {
+        const goc = theList.find(t => t.soThe === theSuaId)
+        if (!goc) return null
+        return (
+          <MTheSua
+            t={goc}
+            goi={s.goi}
+            baoLoi={toast}
+            onHuy={() => { setMoGhiTang(false); setTheSuaId(null); setTheXem(goc) }}
+            onLuu={(moi, nhatKy) => {
+              setTheList(prev => prev.map(t => t.soThe === moi.soThe ? { ...t, ...moi } : t))
+              ghiNhatKy('dm/8-1-1', moi.soThe, moi.soThe, s.ten, nhatKy)
+              toast(`Đã lưu thẻ ${moi.soThe}`)
+              setMoGhiTang(false)
+              setTheSuaId(null)
+              setTheXem({ ...goc, ...moi })
+            }}
+          />
+        )
+      })()}
+
+      {/* ── MÀN GHI TĂNG THẺ THEO MẪU MÀN XEM (T415) ── */}
+      {moGhiTang && !theSuaId && (() => {
         const theSuaCard = theSuaId ? theList.find(t => t.soThe === theSuaId) : null
         const soCtHien = theSuaCard?.soCt || tuPhieu?.soCt
         const ngayCtHien = theSuaCard?.ngayCt || tuPhieu?.ngayCt || ftNgay
@@ -619,36 +642,8 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
 
       {/* ── MÀN CHI TIẾT THẺ PHÂN BỔ MẪU A (T365) ── */}
       {theXem && (() => {
-        const tongKy = theXem.ky || theXem.dong?.[0]?.ky || 12
-        const gtTong = theXem.gt || 0
-        const daTong = theXem.da !== undefined ? theXem.da : 0
-        const conTong = theXem.con !== undefined ? theXem.con : Math.max(0, gtTong - daTong)
-        const moiKy = tongKy > 0 ? Math.round(gtTong / tongKy) : 0
-        const daKy = moiKy > 0 ? Math.min(tongKy, Math.round(daTong / moiKy)) : 0
-        const phanTram = gtTong > 0 ? Math.min(100, Math.round((daTong / gtTong) * 100)) : 0
-        const laHet = conTong <= 0 || theXem.het || theXem.ttNhan === 'Hết phân bổ'
-        const ngayBdThe = theXem.ngayPb || theXem.dong?.[0]?.ngayPb || theXem.ngay || '01/01/2026'
-
-        const mMatch = ngayBdThe.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/)
-        const dsKy = mMatch && tongKy > 0 ? Array.from({ length: tongKy }, (_, i) => {
-          const cuoi = new Date(+mMatch[3], +mMatch[2] - 1 + i + 1, 0)
-          const dStr = `${String(cuoi.getDate()).padStart(2, '0')}/${String(cuoi.getMonth() + 1).padStart(2, '0')}/${cuoi.getFullYear()}`
-          const kySo = cuoi.getFullYear() * 100 + (cuoi.getMonth() + 1)
-          const tien = i < tongKy - 1 ? moiKy : gtTong - moiKy * (tongKy - 1)
-          const daPb = kySo <= 202610
-          return { kyIdx: i + 1, ngay: dStr, tien, daPb }
-        }) : []
-
         const handleBatDauSua = () => {
           setTheSuaId(theXem.soThe)
-          setFtLoai(theXem.loai)
-          setFtTen(theXem.ten)
-          setFtGt(String(theXem.gt))
-          setFtKy(String(tongKy))
-          setFtNgay(theXem.ngay)
-          setFtNgayPb(ngayBdThe)
-          setDaChonNgayPb(true)
-          setCnGhiTang(theXem.cn)
           setTheXem(null)
           setMoGhiTang(true)
         }
@@ -716,189 +711,7 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
               <span className="m-pb-thanh-dau-phai" />
             </header>
 
-            <div className="m-pb-noi-dung">
-              {/* Thẻ tổng quan */}
-              <div className="m-pb-the m-pb-the-tong-quan">
-                <div className="m-pb-hang-chip">
-                  <span className="m-pb-chip-loai">{theXem.loai}</span>
-                  <span className={`m-pb-chip-tt ${laHet ? 'het' : 'dang'}`}>
-                    {laHet ? 'Hết phân bổ' : 'Đang phân bổ'}
-                  </span>
-                </div>
-                <div className="m-pb-ten-the">{theXem.ten}</div>
-                <div className="m-pb-dong-cn">
-                  <Icon n="cuahang" className="ic sm" />
-                  <span>{theXem.cn}</span>
-                </div>
-                <div>
-                  <div className="m-pb-nhan-gt">Giá trị thẻ</div>
-                  <div className="m-pb-so-gt">{money(gtTong)} đ</div>
-                </div>
-                <div>
-                  <div className="m-pb-thanh-tien-do-khung">
-                    <div className="m-pb-thanh-tien-do-ruot" style={{ width: `${phanTram}%` }} />
-                  </div>
-                  <div className="m-pb-tien-do-chu">
-                    <span>Đã phân bổ {daKy}/{tongKy} kỳ</span>
-                    <span>{phanTram}%</span>
-                  </div>
-                </div>
-                <div className="m-pb-luoi-stat">
-                  <div className="m-pb-o-stat da">
-                    <div className="m-pb-o-stat-nhan">Đã phân bổ</div>
-                    <div className="m-pb-o-stat-so da">{money(daTong)} đ</div>
-                  </div>
-                  <div className="m-pb-o-stat con">
-                    <div className="m-pb-o-stat-nhan">Còn lại</div>
-                    <div className="m-pb-o-stat-so con">{money(conTong)} đ</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Tab 3 nút dạng segmented */}
-              <div className="m-pb-tabs" role="tablist">
-                <button
-                  type="button"
-                  role="tab"
-                  aria-selected={tabThe === 'chitiet'}
-                  className={`m-pb-tab-btn${tabThe === 'chitiet' ? ' on' : ''}`}
-                  onClick={() => setTabThe('chitiet')}
-                >
-                  Chi tiết
-                </button>
-                <button
-                  type="button"
-                  role="tab"
-                  aria-selected={tabThe === 'lichpb'}
-                  className={`m-pb-tab-btn${tabThe === 'lichpb' ? ' on' : ''}`}
-                  onClick={() => setTabThe('lichpb')}
-                >
-                  Lịch phân bổ
-                </button>
-                <button
-                  type="button"
-                  role="tab"
-                  aria-selected={tabThe === 'lichsu'}
-                  className={`m-pb-tab-btn${tabThe === 'lichsu' ? ' on' : ''}`}
-                  onClick={() => setTabThe('lichsu')}
-                >
-                  Lịch sử
-                </button>
-              </div>
-
-              {/* Tab 1: Chi tiết */}
-              {tabThe === 'chitiet' && (
-                <>
-                  <div className="m-pb-nhom">THÔNG TIN THẺ</div>
-                  <div className="m-pb-the m-pb-the-gon">
-                    <div className="m-pb-dong">
-                      <span className="n">Ngày ghi tăng</span>
-                      <span className="g">{theXem.ngay}</span>
-                    </div>
-                    <div className="m-pb-dong">
-                      <span className="n">Bắt đầu phân bổ</span>
-                      <span className="g">{ngayBdThe}</span>
-                    </div>
-                    <div className="m-pb-dong">
-                      <span className="n">Số tháng phân bổ</span>
-                      <span className="g">{tongKy} tháng</span>
-                    </div>
-                    <div className="m-pb-dong">
-                      <span className="n">Phân bổ mỗi kỳ</span>
-                      <span className="g">{money(moiKy)} đ</span>
-                    </div>
-                  </div>
-
-                  <div className="m-pb-nhom">MỤC PHÂN BỔ ({theXem.dong?.length || 1})</div>
-                  {(theXem.dong && theXem.dong.length > 0 ? theXem.dong : [{ ma: theXem.soThe, ten: theXem.ten, gt: theXem.gt, sl: 1, dg: theXem.gt, dvt: 'Bộ' }]).map((d: DongPb, idx: number) => (
-                    <div key={idx} className="m-pb-the m-pb-muc-dong">
-                      <div className="m-pb-muc-hang1">
-                        <span className="m-pb-muc-ten">
-                          {d.ma && <span className="m-pb-muc-ma">{d.ma}</span>}
-                          {d.ten || theXem.ten}
-                        </span>
-                      </div>
-                      <div className="m-pb-muc-hang2">
-                        <span>{Number(d.sl) || 1} {d.dvt || 'Bộ'} × {money(Number(d.dg) || Number(d.gt) || 0)}</span>
-                        <b className="m-pb-muc-tong">{money(Number(d.gt) || 0)} đ</b>
-                      </div>
-                    </div>
-                  ))}
-
-                  <div className="m-pb-nhom">THÔNG TIN MUA</div>
-                  <div className="m-pb-the m-pb-the-gon">
-                    <div className="m-pb-dong">
-                      <span className="n">Số chứng từ</span>
-                      {theXem._goc ? (
-                        <Link to={theXem._goc} className="m-pb-link-so">
-                          {theXem.soCt}
-                        </Link>
-                      ) : (
-                        <span className="g">{theXem.soCt || '—'}</span>
-                      )}
-                    </div>
-                    <div className="m-pb-dong">
-                      <span className="n">Ngày chứng từ</span>
-                      <span className="g">{theXem.ngayCt || theXem.ngay}</span>
-                    </div>
-                    <div className="m-pb-dong">
-                      <span className="n">Ghi chú</span>
-                      <span className="g" style={{ fontWeight: 500 }}>
-                        {theXem.ghiChuCt || theXem.ten}
-                      </span>
-                    </div>
-                  </div>
-                </>
-              )}
-
-              {/* Tab 2: Lịch phân bổ */}
-              {tabThe === 'lichpb' && (
-                <>
-                  <div className="m-pb-nhom">CÁC KỲ PHÂN BỔ ({dsKy.length})</div>
-                  <div className="m-pb-the m-pb-the-gon">
-                    {dsKy.map(k => (
-                      <div key={k.kyIdx} className="m-pb-ky-dong">
-                        <div>
-                          <div className="m-pb-ky-ten">Kỳ {k.kyIdx}</div>
-                          <div className="m-pb-ky-ngay">{k.ngay}</div>
-                        </div>
-                        <div className="m-pb-ky-phai">
-                          <div className="m-pb-ky-tien">{money(k.tien)} đ</div>
-                          <span className={`m-pb-ky-tag ${k.daPb ? 'da' : 'chua'}`}>
-                            {k.daPb ? 'Đã phân bổ' : 'Chưa phân bổ'}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </>
-              )}
-
-              {/* Tab 3: Lịch sử */}
-              {tabThe === 'lichsu' && (
-                <>
-                  <div className="m-pb-nhom">NHẬT KÝ THAO TÁC</div>
-                  <div className="m-pb-the m-pb-the-gon">
-                    <div className="m-pb-ls-dong">
-                      <div className="m-pb-ls-tren">{theXem.ngay} 08:30 · Trần Thu Hà</div>
-                      <div className="m-pb-ls-viec">Ghi tăng thẻ chi phí</div>
-                    </div>
-                    {daKy > 0 && (
-                      <div className="m-pb-ls-dong">
-                        <div className="m-pb-ls-tren">30/09/2026 17:00 · Hệ thống</div>
-                        <div className="m-pb-ls-viec">Phân bổ chi phí tự động kỳ 09/2026</div>
-                      </div>
-                    )}
-                    {theXem.soCt && (
-                      <div className="m-pb-ls-dong">
-                        <div className="m-pb-ls-tren">{theXem.ngayCt || theXem.ngay} 10:15 · Trần Thu Hà</div>
-                        <div className="m-pb-ls-viec">Tạo từ chứng từ {theXem.soCt}</div>
-                      </div>
-                    )}
-                  </div>
-                </>
-              )}
-            </div>
+            <MTheNoiDung key={theXem.soThe} t={theXem} goi={s.goi} />
 
             {/* Thanh dưới: nút "..." và nút cam "Sửa thẻ" */}
             <div className="m-pb-day">

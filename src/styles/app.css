@@ -38984,3 +38984,64 @@ body:has(.m-app) .m-thanh-duoi .m-tab.on .m-tab-ic .ic .l2 {
 .m-tc-dong-tong-cong .so.cq {
   color: var(--blue);
 }
+/* ── Thẻ chi phí phân bổ điện thoại: màn xem, Lịch phân bổ, Lịch sử, màn sửa thẻ (T590) ── */
+.m-tpb-hang-chip { gap: 6px; flex-wrap: wrap; }
+.m-tpb-chips { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.m-pb-chip-tt.ngung { color: #b42318; background: #fdecea; }
+.m-tpb-chip { font-size: 12px; font-weight: 600; border-radius: 6px; padding: 3px 8px; white-space: nowrap; }
+.m-tpb-chip.nho { font-size: 11px; font-weight: 500; padding: 2px 6px; margin-left: 6px; }
+.m-tpb-chips .m-tpb-chip.nho { margin-left: 0; }
+.m-tpb-chip.ngung { color: #b42318; background: #fdecea; }
+.m-tpb-chip.da { color: #138a52; background: #e3f4ea; }
+.m-tpb-chip.chua { color: #6b7280; background: #f3f4f6; }
+.m-tpb-chip.cho { color: #d0650a; background: #fff5ea; }
+.m-tpb-ngay-gt { display: flex; justify-content: space-between; font-size: 14px; padding-top: 10px; border-top: 1px solid #eeeeee; }
+.m-tpb-ngay-gt span { color: var(--muted, #6b7280); }
+.m-tpb-mo-ta { font-size: 13px; color: var(--muted, #6b7280); line-height: 1.45; padding-top: 8px; }
+.m-tpb-tach { border-top: 1px dashed #e5e7eb; margin: 2px 0; }
+.m-t449-hang-dong.ngung .val { color: #b42318; font-weight: 600; }
+.m-tpb-loc { display: flex; gap: 6px; overflow-x: auto; margin-top: 14px; padding-bottom: 2px; scrollbar-width: none; }
+.m-tpb-loc button { flex-shrink: 0; border: 1px solid #e5e7eb; background: #fff; color: var(--ink, #1f2225); border-radius: 999px; padding: 6px 12px; font: inherit; font-size: 12.5px; white-space: nowrap; cursor: pointer; }
+.m-tpb-loc button[aria-pressed="true"] { background: #e6eff7; border-color: #0560a6; color: #0560a6; font-weight: 600; }
+.m-tpb-tom { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 10px; padding: 12px; }
+.m-tpb-tom .n { font-size: 11.5px; color: var(--muted, #6b7280); }
+.m-tpb-tom .s { font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; margin-top: 2px; }
+.m-tpb-tom .s.xanh { color: #138a52; }
+.m-tpb-tom .s.cam { color: #d0650a; }
+.m-tpb-tom .s.do { color: #b42318; }
+.m-tpb-nhom-nam { display: flex; justify-content: space-between; align-items: center; }
+.m-tpb-nhom-nam span:last-child { letter-spacing: 0; text-transform: none; font-variant-numeric: tabular-nums; }
+.m-tpb-ky-nay { background: #e6eff7; margin: 0 -14px; padding-left: 14px; padding-right: 14px; }
+.m-tpb-ky-bam { cursor: pointer; }
+.m-tpb-ky-so { font-size: 11.5px; font-weight: 500; color: var(--muted, #6b7280); margin-left: 4px; }
+.m-tpb-ky-ghi { font-size: 12px; }
+.m-tpb-ky-ghi.cam, .m-tpb-cam { color: #d0650a; }
+.m-tpb-ky-ghi.xanh { color: #0560a6; }
+.m-tpb-mo { color: var(--muted, #6b7280); }
+.m-tpb-chia { background: #f4f7fa; border-radius: 10px; padding: 6px 10px; margin: 0 0 8px; font-size: 12.5px; }
+.m-tpb-chia > div { display: flex; justify-content: space-between; gap: 10px; padding: 3px 0; }
+.m-tpb-chia > div span:last-child { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.m-tpb-ls .m-ls-khung { margin: 12px 0 0; }
+.m-tpb-tieu-de { flex: 1; min-width: 0; text-align: center; font-size: 12px; color: var(--muted, #6b7280); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.m-tpb-o { display: inline-flex; align-items: center; gap: 6px; min-width: 0; }
+.m-tpb-inp { font: inherit; font-size: 14px; color: var(--ink, #1f2225); background: #f4f7fa; border: 1px solid transparent; border-radius: 8px; padding: 7px 10px; min-width: 0; width: 150px; text-align: right; box-sizing: border-box; }
+.m-tpb-inp.ngan { width: 72px; }
+.m-tpb-inp:focus { border-color: #0560a6; background: #fff; outline: none; }
+.m-tpb-inp:disabled { color: var(--muted, #6b7280); background: transparent; }
+.m-tpb-inp.da-sua { border-color: #d0650a; }
+textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
+.m-tpb-dv { font-size: 13px; color: var(--muted, #6b7280); }
+.m-tpb-khoa { color: var(--muted, #6b7280); }
+.m-tpb-lk { border: 0; background: transparent; color: #0560a6; font: inherit; font-size: 13px; font-weight: 600; letter-spacing: 0; text-transform: none; cursor: pointer; padding: 4px 0; }
+.m-tpb-lk:disabled { color: var(--muted, #6b7280); cursor: default; }
+.m-tpb-goi-y { font-size: 12.5px; color: var(--muted, #6b7280); margin: 10px 2px; line-height: 1.5; }
+.m-tpb-goi-y.cam { color: #d0650a; margin-top: 0; }
+.m-tpb-mo-lich { display: flex; justify-content: space-between; gap: 8px; width: 100%; margin-top: 10px; border: 1px dashed #e5e7eb; background: #f4f7fa; border-radius: 10px; padding: 9px 10px; font: inherit; font-size: 12.5px; color: var(--muted, #6b7280); text-align: left; cursor: pointer; }
+.m-tpb-mo-lich span:last-child { color: #0560a6; font-weight: 600; white-space: nowrap; }
+.m-tpb-canh { margin-top: 8px; font-size: 12.5px; color: #b42318; background: #fdecea; border-radius: 8px; padding: 6px 10px; }
+.m-tpb-sheet { max-height: 62vh; overflow-y: auto; }
+.m-tpb-cot { display: flex; flex-direction: column; gap: 6px; padding: 8px 0; border-top: 1px solid #eeeeee; font-size: 14px; }
+.m-tpb-cot .n { color: var(--muted, #6b7280); }
+.m-tpb-gat { width: 40px; height: 22px; accent-color: #d0650a; }
+.m-tpb-do { color: #b42318; }
+.m-tpb-xong { flex: 1; }

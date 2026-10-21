@@ -6,17 +6,19 @@ export interface MLichSuProps {
   goi: Goi
   man: string
   id: string
+  /** Thao tác mẫu riêng của màn (vd thẻ chi phí phân bổ, T590); không truyền thì dùng mẫu phiếu thu chi */
+  mau?: DongLichSu[]
 }
 
 type LoaiThaoTac = 'tao' | 'ghi_so' | 'xoa' | 'sua'
 
-interface TruongDoi {
+export interface TruongDoi {
   ten: string
   cu?: string
   moi?: string
 }
 
-interface DongLichSu {
+export interface DongLichSu {
   luc: string
   ai: string
   tenViec: string
@@ -33,6 +35,16 @@ function phanLoai(viec: string): LoaiThaoTac {
 }
 
 function tachDoi(viec: string): { tenViec: string; doi?: TruongDoi[] } {
+  // Sửa thẻ chi phí (T590): "Sửa thẻ: Trường: cũ → mới; Trường khác: cũ → mới"
+  if (viec.startsWith('Sửa thẻ: ')) {
+    const doi = viec.slice('Sửa thẻ: '.length).split('; ').filter(Boolean).map(muc => {
+      const i = muc.indexOf(': ')
+      if (i < 0) return { ten: muc }
+      const [cu, moi] = muc.slice(i + 2).split(' → ')
+      return { ten: muc.slice(0, i), cu, moi }
+    })
+    return { tenViec: 'Sửa thẻ', doi }
+  }
   if (!viec.startsWith('Sửa chứng từ: ')) {
     return { tenViec: viec }
   }
@@ -66,10 +78,10 @@ function dinhDangNgay(ngayStr: string): string {
   return `${thu}, ${ngayStr}`
 }
 
-export const MLichSu: FC<MLichSuProps> = ({ goi, man, id }) => {
+export const MLichSu: FC<MLichSuProps> = ({ goi, man, id, mau }) => {
   const phien = useNhatKy(man, id)
 
-  const dsMau: DongLichSu[] = id.startsWith('moi-')
+  const dsMau: DongLichSu[] = mau ? mau : id.startsWith('moi-')
     ? []
     : [
         {
