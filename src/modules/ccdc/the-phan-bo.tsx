@@ -20,6 +20,9 @@ export const LOAI_THE: Record<string, { tienTo: string; muc: string }> = {
   'Tài sản cố định': { tienTo: 'TSCD', muc: 'TSCĐ' },
 }
 
+/** Gói Free chỉ có thẻ Chi phí trả trước, ẩn Công cụ dụng cụ, Tài sản cố định (T605) */
+export const loaiTheTheoGoi = (goi?: Goi) => goi === 'F' ? ['Chi phí trả trước'] : Object.keys(LOAI_THE)
+
 type V = Record<string, any>
 /** Một dòng chi tiết phân bổ của thẻ */
 export interface DongPb {
@@ -307,7 +310,7 @@ export const THE_PHAN_BO: CauHinhDM = {
     truong: [
       // Loại thẻ, Ngày ghi tăng, Số thẻ; thẻ thường ghi tăng từ ngày đầu năm, thẻ dư đầu kỳ trước ngày đầu năm.
       // Ngày bắt đầu phân bổ, ngừng phân bổ nhập theo từng dòng ở tab Chi tiết phân bổ (T159)
-      { k: 'loai', nhan: 'Loại thẻ', kieu: 'chon', batBuoc: true, ds: Object.keys(LOAI_THE) },
+      { k: 'loai', nhan: 'Loại thẻ', kieu: 'chon', batBuoc: true, ds: Object.keys(LOAI_THE), dsGoi: { F: loaiTheTheoGoi('F') } },
       // Sửa thẻ ghi tăng có sẵn: ngày ghi tăng chỉ đọc (theo chứng từ gốc) (T165)
       { k: 'ngay', nhan: 'Ngày ghi tăng', kieu: 'ngay', batBuoc: true, dauNam: v => laDau(v) ? 'truoc' : 'tu', chiDoc: v => !laDau(v) && Boolean(v._sua) },
       { k: 'soThe', nhan: 'Số thẻ', kieu: 'chu', batBuoc: true, chiDoc: true },

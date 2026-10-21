@@ -777,7 +777,7 @@ export function CatalogPanel({
     let ds: { v: string; t: string }[] = []
     // ô Nhóm lấy nhóm có trong dữ liệu trước, để dòng đang sửa luôn có nhóm của nó trong danh sách (T87)
     if (tr.k === 'nhom' && nhomLoc === 'nhom' && nhoms.length > 0) ds = nhoms.map(d => ({ v: d, t: d }))
-    else if (tr.ds && tr.ds.length > 0) ds = tr.ds.map(d => ({ v: d, t: tr.nhanDs ? tr.nhanDs(d) : d }))
+    else if ((tr.dsGoi?.[s.goi] ?? tr.ds)?.length) ds = (tr.dsGoi?.[s.goi] ?? tr.ds ?? []).map(d => ({ v: d, t: tr.nhanDs ? tr.nhanDs(d) : d }))
     else if (tr.k.toLowerCase().startsWith('tk')) ds = dsTkChon
     else if (tr.k === 'dvt') ds = TEN_DVT.map(d => ({ v: d, t: d }))
     const kq = [dau, ...ds]

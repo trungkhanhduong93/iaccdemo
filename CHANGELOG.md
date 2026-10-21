@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 21/10/2026
+- T605: Gói Free, thẻ chi phí phân bổ (web và điện thoại) chỉ còn loại Chi phí trả trước: ô Loại thẻ, Ghi tăng hàng loạt và danh sách thẻ ẩn Công cụ dụng cụ, Tài sản cố định.
 - T602: Điện thoại, tab Nghiệp vụ: dòng Mua hàng bỏ chip cam "Nợ 138,2 tr".
 - T601: Điện thoại, phiếu mua hàng khớp đủ mẫu đã chốt. Màn xem: tab ghi "Hạch toán", thẻ bút toán ghi "Giá trị hàng nhập kho", "Thuế GTGT được khấu trừ"; bỏ ô tìm hàng; kho nhập lấy đúng kho của cửa hàng. Màn sửa, thêm mới, hộp thanh toán ngay, chọn và thêm nhà cung cấp, chọn hàng: chỉnh lại bố cục, chữ, khoảng cách cho khớp mẫu.
 - T597: Phiếu mua hàng (web và điện thoại): ô Số hoá đơn chỉ nhận chữ số, không dấu chấm, phẩy; ô Ký hiệu tự viết hoa, chỉ nhận chữ và số, tối đa 7 ký tự; gõ tìm ở cột Mã hàng tự viết hoa. Ô mã trên mọi form danh mục (web và điện thoại), cột Mã thẻ chi phí phân bổ, ô Khoản mục phiếu thu chi điện thoại cũng tự viết hoa.

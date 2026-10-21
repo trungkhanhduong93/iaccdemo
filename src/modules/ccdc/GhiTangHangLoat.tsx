@@ -9,7 +9,7 @@ import { Table } from '../../ui/Table'
 import { Select } from '../../ui/Dropdown'
 import { docSoQT, money, short, soQT } from '../../ui/format'
 import { suaPhieu, useDaXoa } from '../../ui/generic/daXoa'
-import { LOAI_THE, ONhap, soTheKeTiep } from './the-phan-bo'
+import { ONhap, loaiTheTheoGoi, soTheKeTiep } from './the-phan-bo'
 import { ChonDanhMuc } from '../../ui/ChonDanhMuc'
 import { CCDC_HANG, MA_LY_CHO_PHAN_BO } from '../../data/mock'
 
@@ -91,7 +91,7 @@ export function useCanhBaoCho(ky: number) {
 }
 
 export function GhiTangHangLoat({ rows: daCo, onDong }: { soDong: number; rows: Row[]; onDong: () => void }) {
-  const { toast } = useSession()
+  const { s, toast } = useSession()
   const dongCho = useDongCho()
   const goc = useMemo((): DongCho[] => dongCho.map(d => ({ ...d, chon: true, loai: 'Chi phí trả trước', ngayPb: d.ngayCt, ky: '' })), [])
   const [ds, setDs] = useState(goc)
@@ -157,7 +157,7 @@ export function GhiTangHangLoat({ rows: daCo, onDong }: { soDong: number; rows: 
                 : <Select className="inp" value={r.loai} aria-label={`Loại thẻ ${r.ten}`}
                   // Chuyển sang CCDC: số lượng mặc định 1
                   onChange={e => sua(r.key, { loai: e.target.value, ...(e.target.value === CCDC && !r.sl ? { sl: '1' } : {}) })}
-                  ds={Object.keys(LOAI_THE).map(l => ({ v: l, t: l }))} /> },
+                  ds={loaiTheTheoGoi(s.goi).map(l => ({ v: l, t: l }))} /> },
               // Có dòng loại CCDC thì thêm cột như khi ghi tăng thẻ: Mã, Tên, ĐVT, Số lượng, Đơn giá; dòng loại khác để trống
               ...(coCcdc ? [
                 { k: 'ma', t: 'Mã CCDC', w: 110, r: (r: Row) => r.key === undefined || r.loai !== CCDC ? null

@@ -3,7 +3,7 @@ import type { ModuleDef } from '../types'
 import { tuExcel } from '../types'
 import { quyTrinh } from './quy-trinh'
 import { GhiTangHangLoat, useCanhBaoCho } from './GhiTangHangLoat'
-import { THE_PHAN_BO, bangPhanBo, boKichHoatPhanBo, daPhanBoKy, daPhanBoToiKy, kichHoatPhanBo, useKyNayTheoGoi, veChiTietThe } from './the-phan-bo'
+import { THE_PHAN_BO, bangPhanBo, loaiTheTheoGoi, boKichHoatPhanBo, daPhanBoKy, daPhanBoToiKy, kichHoatPhanBo, useKyNayTheoGoi, veChiTietThe } from './the-phan-bo'
 import { CCDC_HANG, CUA_HANG, daKhoaSo } from '../../data/mock'
 
 /** Chứng từ gốc của thẻ mẫu theo thứ tự thẻ: phiếu chi, uỷ nhiệm chi mẫu có sẵn ở Thu, chi tiền (T159) */
@@ -105,6 +105,7 @@ const ccdc: ModuleDef = {
       // Mặc định ẩn thẻ hết phân bổ: chỉ hiện thẻ còn phân bổ ở kỳ này hoặc còn giá trị sau kỳ này
       tich: { nhan: 'Ẩn thẻ hết phân bổ', macDinh: true, loc: r => r.kyNay > 0 || r.con > 0 },
       // Chỉ thẻ ghi tăng tới ngày cuối kỳ số liệu; đã phân bổ tính tới hết kỳ đó
+      locGoi: (goi, r) => loaiTheTheoGoi(goi).includes(String(r.loai)),   // gói Free chỉ thấy thẻ Chi phí trả trước (T605)
       rows: (_cd, ky) => THE_MAU.filter(t => thangCua(t.ngay) <= ky).map(t => {
         // Mỗi thẻ một hàng: mã, tên dòng đầu; giá trị cộng các dòng
         const gt = t.dong.reduce((s, d) => s + d.gt, 0), da = daPhanBoToiKy(t, ky)

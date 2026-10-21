@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T605 | Thẻ chi phí phân bổ gói Free (web và điện thoại): ẩn loại Công cụ dụng cụ, Tài sản cố định ở ô Loại thẻ, Ghi tăng hàng loạt, danh sách thẻ; chỉ còn Chi phí trả trước. Trường chọn danh mục có thêm `dsGoi` | dinhlanphuongipacc | 21/10/2026 | [nhật ký](../nhat-ky/2026-10-21-dinhlanphuongipacc-the-pb-free-cptt.md) |
 | T601 | Điện thoại, phiếu mua hàng: so từng khung canvas T600 với code, làm nốt chỗ còn thiếu ở màn xem, màn sửa, thêm mới, luồng thanh toán ngay, nhà cung cấp, thêm dòng | Trum | 21/10/2026 | [2026-10-21-trum-hoan-thien-phieu-mua-canvas](../nhat-ky/2026-10-21-trum-hoan-thien-phieu-mua-canvas.md) |
 | T602 | Điện thoại, tab Nghiệp vụ: bỏ chip cam "Nợ 138,2 tr" ở dòng Mua hàng | Trum | 21/10/2026 | [2026-10-21-trum-hoan-thien-phieu-mua-canvas](../nhat-ky/2026-10-21-trum-hoan-thien-phieu-mua-canvas.md) |
 | T597 | Phiếu mua hàng web và điện thoại: Số hoá đơn chỉ nhận chữ số liền nhau; Ký hiệu hoá đơn chữ in hoa hoặc số, tối đa 7 ký tự; ô tìm cột Mã hàng tự viết hoa. Mở rộng: ô mã ở mọi form danh mục, cột Mã thẻ chi phí phân bổ, ô Khoản mục phiếu thu chi điện thoại đều viết hoa | dinhlanphuongipacc | 21/10/2026 | [nhật ký](../nhat-ky/2026-10-21-dinhlanphuongipacc-o-so-hoa-don.md) |

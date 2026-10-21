@@ -18,7 +18,7 @@ import { LichDon } from '../ChonNgay'
 import { HopXacNhan } from '../LocNangCao'
 import {
   daPhanBoToiKy,
-  LOAI_THE,
+  loaiTheTheoGoi,
   soTheKeTiep,
   type DongPb,
 } from '../../modules/ccdc/the-phan-bo'
@@ -116,6 +116,7 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
   const list = useMemo(() => {
     return theList
       .filter(t => !cnChon || t.cn === cnChon.ten)
+      .filter(t => loaiTheTheoGoi(s.goi).includes(t.loai))   // gói Free chỉ thấy thẻ Chi phí trả trước (T605)
       .map(t => {
         const da = daPhanBoToiKy(t, kyHienTai)
         const con = Math.max(0, t.gt - da)
@@ -129,7 +130,7 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
           ttCls,
         }
       })
-  }, [theList, cnChon, kyHienTai])
+  }, [theList, cnChon, kyHienTai, s.goi])
 
   const listLoc = useMemo(() => {
     if (chipTT === 'dang') return list.filter(r => (r.con ?? 0) > 0)
@@ -590,7 +591,7 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
                 mo={moChonLoai}
                 onDong={() => setMoChonLoai(false)}
                 tieuDe="Loại thẻ"
-                ds={Object.keys(LOAI_THE).map(k => ({ k, ten: k }))}
+                ds={loaiTheTheoGoi(s.goi).map(k => ({ k, ten: k }))}
                 chon={ftLoai}
                 onChon={k => { setFtLoai(k); setMoChonLoai(false) }}
               />

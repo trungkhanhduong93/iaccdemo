@@ -74,6 +74,7 @@ export interface TruongDM {
   batBuoc?: boolean
   caHang?: boolean
   ds?: string[]
+  dsGoi?: Partial<Record<Goi, string[]>>       // danh sách chọn riêng theo gói, thay cho ds (T605)
   cot?: string
   hien?: (v: Record<string, any>) => boolean   // chỉ hiện ô khi điều kiện đúng theo giá trị form
   goi?: Goi[]                                  // chỉ hiện ô ở các gói này (T144)
