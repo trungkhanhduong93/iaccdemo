@@ -85,6 +85,7 @@ export function NutThemMoiSplit({
     <div className="ds-split-them">
       <Dropdown
         btnClass="btn pri ds-them-trai ds-them-mot"
+        popClass="ds-them-pop"
         align="end"
         width={240}
         title="Chọn loại để thêm mới"

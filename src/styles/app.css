@@ -37173,3 +37173,78 @@ body:has(.m-app) .m-thanh-duoi .m-tab.on .m-tab-ic .ic .l2 {
   font-weight: 600;
   color: var(--ink, #1f2225);
 }
+/* ── Bỏ khung chi tiết, Chi phí phân bổ, icon khối web, icon lịch (T530, T533, T534) ── */
+
+/* 1. T533: Icon khối web xanh đậm nhạt như điện thoại */
+:root {
+  --ic-than: #1673BD;
+  --ic-nhan: #7FBCEE;
+}
+
+:root[data-ic] .ic.ic-2m,
+:root[data-ic] .o-nen .ic {
+  color: #1673BD;
+  stroke: #1673BD;
+}
+
+:root[data-ic] .ic.ic-2m path,
+:root[data-ic] .ic.ic-2m circle,
+:root[data-ic] .ic.ic-2m rect,
+:root[data-ic] .ic.ic-2m ellipse,
+:root[data-ic] .ic.ic-2m polygon,
+:root[data-ic] .ic.ic-2m polyline,
+:root[data-ic] .ic.ic-2m line,
+:root[data-ic] .o-nen .ic path,
+:root[data-ic] .o-nen .ic circle,
+:root[data-ic] .o-nen .ic rect,
+:root[data-ic] .o-nen .ic ellipse {
+  fill: url(#ic-g-xanh);
+  stroke: none;
+}
+
+.ic.ic-2m .l2,
+.o-nen .ic .l2 {
+  color: #7FBCEE;
+  stroke: #7FBCEE;
+  fill: none;
+}
+
+:root[data-ic] .ic.ic-2m .l2,
+:root[data-ic] .ic.ic-2m .l2 path,
+:root[data-ic] .ic.ic-2m path.l2,
+:root[data-ic] .ic.ic-2m .l2 circle,
+:root[data-ic] .ic.ic-2m circle.l2,
+:root[data-ic] .ic.ic-2m .l2 rect,
+:root[data-ic] .ic.ic-2m rect.l2,
+:root[data-ic] .ic.ic-2m .l2 polygon,
+:root[data-ic] .ic.ic-2m .l2 polyline,
+:root[data-ic] .ic.ic-2m .l2 line,
+:root[data-ic] .ic.ic-2m .l2 *,
+:root[data-ic] .o-nen .ic .l2,
+:root[data-ic] .o-nen .ic .l2 path,
+:root[data-ic] .o-nen .ic path.l2,
+:root[data-ic] .o-nen .ic .l2 circle,
+:root[data-ic] .o-nen .ic circle.l2,
+:root[data-ic] .o-nen .ic .l2 rect,
+:root[data-ic] .o-nen .ic rect.l2,
+:root[data-ic] .o-nen .ic .l2 * {
+  fill: url(#ic-g-xanh-nhat) !important;
+  stroke: none !important;
+}
+
+/* 2. T534: Ô chọn khoảng ngày trong hàng lọc (ChonKhoangNgay) */
+.kn-nut {
+  gap: 9px;
+}
+.ds-toolbar-figma .ds-o .kn-nut {
+  padding-left: 2px;
+  padding-right: 11px;
+}
+
+/* 3. T532: menu nút Thêm mới bỏ ô nền xám quanh icon nét, nhìn khỏi giống icon khối */
+.ds-them-pop .mi-ic,
+.ds-them-pop .mi:hover .mi-ic {
+  background: none;
+  box-shadow: none;
+}
+

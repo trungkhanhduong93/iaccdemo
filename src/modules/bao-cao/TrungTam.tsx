@@ -246,7 +246,7 @@ export function TrungTamBaoCao({ sc, mod }: ScreenProps) {
                       className="bc-quick-item bc-quick-pinned"
                       title={ten}
                     >
-                      <ONen n={icon} kieu="nhat" co="sm" />
+                      <Icon n={icon} kieu="net" className="ic sm" />
                       <span className="bc-quick-name">{ten}</span>
                       {metaText && <span className="bc-quick-ma">{metaText}</span>}
                       <button
@@ -276,7 +276,7 @@ export function TrungTamBaoCao({ sc, mod }: ScreenProps) {
                       className="bc-quick-item"
                       title={ten}
                     >
-                      <ONen n={icon} kieu="nhat" co="sm" />
+                      <Icon n={icon} kieu="net" className="ic sm" />
                       <span className="bc-quick-name">{ten}</span>
                       {metaText && <span className="bc-quick-ma">{metaText}</span>}
                     </Link>
@@ -315,7 +315,7 @@ export function TrungTamBaoCao({ sc, mod }: ScreenProps) {
                         className={`rpt-row rpt-card${ok ? '' : ' lock'}`}
                         title={ten}
                       >
-                        <ONen n={icon} kieu="nhat" co="sm" />
+                        <Icon n={icon} kieu="net" className="ic sm" />
                         <span className="rpt-name">{ten}</span>
                         {metaText && <span className="rpt-meta">{metaText}</span>}
                         {!ok && ma && <Pk g={minGoi(ma)} o />}

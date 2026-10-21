@@ -256,7 +256,6 @@ export function CatalogScreen({ sc }: ScreenProps) {
   const [trang, setTrang] = useState(1)
   const [coTrang, setCoTrang] = useState(dsct ? 20 : 50)   // danh mục thường mặc định 50 dòng/trang (T153)
   const [chon, setChon] = useState<Row | null>(null)
-  const [moCt, setMoCt] = useState(false)
   const trangHt = Math.min(trang, Math.max(1, Math.ceil(rowsHien.length / coTrang)))
   const rowsTrang = useMemo(() => rowsHien.slice((trangHt - 1) * coTrang, trangHt * coTrang), [rowsHien, trangHt, coTrang])
   // Đổi danh mục, tìm, lọc thì về trang 1 (T153)
@@ -383,7 +382,7 @@ export function CatalogScreen({ sc }: ScreenProps) {
     <div className={dsct ? 'page page-voucher' : 'page page-voucher page-dm'}>
       <h1 className="sr-only" style={{ position: 'absolute', width: 1, height: 1, padding: 0, margin: -1, overflow: 'hidden', clip: 'rect(0, 0, 0, 0)', whiteSpace: 'nowrap', border: 0 }}>{ten}</h1>
       {cfg.note && <div style={{ marginBottom: 12 }}>{cfg.note(s.goi)}</div>}
-      <div className={dsct ? `voucher-split${moCt ? '' : ' gon-ct'}` : 'dm-khung'}>
+      <div className={dsct ? 'voucher-split' : 'dm-khung'}>
       <section className={dsct ? 'card voucher-top' : 'card dm-bang'}>
         {/* Danh sách kiểu chứng từ: thanh công cụ như danh sách thu chi (T511: 1 hàng lọc như VoucherScreen; Tuỳ chỉnh cột, Excel xuống hàng 2 phải) */}
         {dsct ? (
@@ -566,36 +565,9 @@ export function CatalogScreen({ sc }: ScreenProps) {
           : <PhanTrang tong={rowsHien.length} trang={trangHt} coTrang={coTrang} dsCoTrang={CO_TRANG_DM}
               onTrang={setTrang} onCoTrang={ct => { setCoTrang(ct); setTrang(1) }} />
         )}
+        <div className="ct-panel" style={{ display: 'none' }} aria-hidden="true" />
       </section>
 
-      {/* Khung dưới: chi tiết dòng đang chọn, thu gọn / mở rộng như danh sách chứng từ */}
-      {dsct && (
-        <section className={`card ct-panel voucher-bottom${moCt ? '' : ' gon'}`}>
-          {dangChon ? (
-            <>
-              <div className="voucher-bottom-h" onClick={moCt ? undefined : () => setMoCt(true)} style={moCt ? undefined : { cursor: 'pointer' }}>
-                <div className="row" style={{ gap: 8, minWidth: 0, flex: '1 1 auto' }}>
-                  <Icon n="doc" className="ic sm" />
-                  <b style={{ whiteSpace: 'nowrap' }}>Chi tiết {dsct.so(dangChon)}</b>
-                  <span className="dim" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{dsct.moTa(dangChon)}</span>
-                </div>
-                {moCt && (
-                  <button type="button" className="btn sm" style={{ flex: 'none' }} onClick={() => moSua(dangChon)} title="Mở form toàn màn hình (hoặc đúp chuột vào dòng)">
-                    <Icon n="eye" className="ic sm" />Xem chi tiết
-                  </button>
-                )}
-                <button type="button" className="btn sm ghost" style={{ flex: 'none', marginLeft: 4 }}
-                  onClick={e => { e.stopPropagation(); setMoCt(!moCt) }}>
-                  <Icon n={moCt ? 'chevd' : 'chevu'} className="ic sm" />{moCt ? 'Thu gọn' : 'Mở chi tiết'}
-                </button>
-              </div>
-              {moCt && <div className="voucher-bottom-b">{dsct.chiTiet(dangChon)}</div>}
-            </>
-          ) : (
-            <div className="empty"><b>Chọn một dòng ở bảng trên để xem chi tiết</b></div>
-          )}
-        </section>
-      )}
       </div>
 
       {edit && (

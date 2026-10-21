@@ -628,7 +628,7 @@ export function ChonKhoangNgay({ value, onChange, align = 'start', kieu = 'nut' 
           className={`kn-nut${open ? ' open' : ''}`}
           onClick={() => setOpen(o => !o)}
         >
-          <span className="kn-nut-txt">{dmy(value.tu)} <span className="kn-nut-arr">→</span> {dmy(value.den)}</span>
+          <span className="kn-nut-txt">{dmy(value.tu)} <span className="kn-nut-arr">–</span> {dmy(value.den)}</span>
           <Icon n="calendar" className="ic sm kn-nut-ic" />
         </button>
       )}
