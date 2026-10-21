@@ -40,7 +40,7 @@ const gtThe = (t: TheMobile) => t.dong.reduce((s, d) => s + so(d.gt), 0)
 function trangThaiKy(t: TheMobile, ky: number, ngung: boolean, goi: Goi): [string, string] {
   if (ngung) return ['ngung', 'Ngừng phân bổ']
   if (canKichHoat(goi)) return daPhanBoKy(t.soThe, ky) ? ['da', 'Đã phân bổ'] : ['cho', 'Chờ phân bổ']
-  return ky <= kyNay() ? ['da', 'Đã phân bổ'] : ['chua', 'Chưa phân bổ']
+  return ky <= kyNay() ? ['da', 'Đã phân bổ'] : ['cho', 'Chờ phân bổ']
 }
 
 interface KyGop { ky: number; ngay: string; tien: number; ngung: boolean; don: boolean; sua: boolean; phan: { di: number; tien: number; ngung: boolean }[] }

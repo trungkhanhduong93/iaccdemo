@@ -61,7 +61,7 @@ function lichPhanBo(tong: number, ky: number, ngayBd: string): { ngay: string; t
   })
 }
 
-/** Tháng hiện tại theo ngày máy, dạng yyyymm: kỳ tới tháng này là Đã phân bổ, kỳ sau là Chưa phân bổ (T590) */
+/** Tháng hiện tại theo ngày máy, dạng yyyymm: kỳ tới tháng này là Đã phân bổ, kỳ sau là Chờ phân bổ (T590) */
 export const kyNay = () => { const n = new Date(); return n.getFullYear() * 100 + n.getMonth() + 1 }
 
 /** Số tự tính của một dòng: cần phân bổ = số tiền (thẻ dư đầu kỳ trừ phần đã phân bổ), số tháng còn, số tiền mỗi kỳ */
@@ -440,13 +440,13 @@ export const THE_PHAN_BO: CauHinhDM = {
             : <ONhap v={r.nhap ?? r.tien} so ten={`Số tiền phân bổ ${r.ten} kỳ ${r._j + 1}`} onDoi={s =>
               doi('dong', dong.map((d, j) => j === r._i ? { ...d, _pbSua: { ...d._pbSua, [r._j]: s } } : d))} /> },
           // Kỳ trước tháng ngừng nhận phần còn lại, chỉ xem (T296)
-          // Trạng thái (T438): kỳ ngừng là Ngừng phân bổ. Gói Free, Standard: kỳ tới hết tháng hiện tại là Đã phân bổ, kỳ sau là Chưa phân bổ (T590);
+          // Trạng thái (T438): kỳ ngừng là Ngừng phân bổ. Gói Free, Standard: kỳ tới hết tháng hiện tại là Đã phân bổ, kỳ sau là Chờ phân bổ (T590);
           // gói Plus, Pro: kỳ đã bấm Phân bổ ở danh sách thẻ là Đã phân bổ, chưa bấm là Chờ phân bổ
           { k: 'tt', t: 'Trạng thái', w: 160, r: r => {
             if (r._cong) return null
             if (r.ngung) return <St k="dim">Ngừng phân bổ</St>
             const t = thangK(r as { ngay: string })
-            if (!kh) return t <= kyNay() ? <St k="ok">Đã phân bổ</St> : <St k="info">Chưa phân bổ</St>
+            if (!kh) return t <= kyNay() ? <St k="ok">Đã phân bổ</St> : <St k="warn">Chờ phân bổ</St>
             return daPhanBoKy(v.soThe, t) ? <St k="ok">Đã phân bổ</St> : <St k="warn">Chờ phân bổ</St>
           } },
         ],

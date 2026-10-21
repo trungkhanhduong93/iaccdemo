@@ -11,12 +11,12 @@
   - Màn xem: khối đầu thêm Ngày ghi tăng dưới ô Đã phân bổ, Còn lại. Bỏ khu vực Thông tin thẻ. Nhãn thẻ: mọi mục ngừng thì Ngừng phân bổ; có mục ngừng, có mục chạy thì thêm nhãn phụ "Ngừng x/y mục". Thẻ dư đầu kỳ có nhãn Đầu kỳ.
   - Mục phân bổ: danh sách dòng theo khuôn dòng hàng phiếu mua (`m-t449-hang-*`). CCDC có Số lượng, Đơn giá; TSCĐ có Số hiệu, Mô tả chi tiết, không có Số lượng; chi phí trả trước không có Số lượng. Thẻ dư đầu kỳ thêm Giá trị đã phân bổ, Giá trị cần phân bổ, Số tháng đã phân bổ, Số tháng còn lại. Dòng ngừng có nhãn Ngừng phân bổ và Ngày ngừng phân bổ.
   - Tab Lịch phân bổ: lọc theo mục, ô tóm tắt (Đã phân bổ x/y kỳ, Kỳ tới, Còn phải phân bổ), gom theo năm, kỳ tháng hiện tại nổi bật, bấm kỳ ở Tất cả mục xem chia theo mục.
-  - Trạng thái kỳ: Free, Standard tới hết tháng hiện tại là Đã phân bổ, sau đó là Chưa phân bổ; Plus, Pro theo nút Phân bổ trên web (Đã / Chờ phân bổ); kỳ từ tháng ngừng là Ngừng phân bổ.
+  - Trạng thái kỳ: Free, Standard tới hết tháng hiện tại là Đã phân bổ, sau đó là Chờ phân bổ; Plus, Pro theo nút Phân bổ trên web (Đã / Chờ phân bổ); kỳ từ tháng ngừng là Ngừng phân bổ.
   - Tab Lịch sử dùng `MLichSu` như phiếu thu chi, thao tác mẫu của thẻ: Ghi tăng thẻ (Nhập thẻ dư đầu kỳ), Phân bổ kỳ, Sửa thẻ.
   - Màn sửa thẻ: Tên thẻ, Ngày ghi tăng; mỗi mục chỉ có nút Sửa (không thêm, không xoá mục, muốn bỏ thì xoá cả thẻ, vẫn kiểm khoá sổ như cũ). Tấm sửa mục có đủ trường theo loại, công tắc Ngừng phân bổ và ngày ngừng. Nút Sửa số tiền từng kỳ mở màn gõ lại tiền từng kỳ, có Cần phân bổ, Tổng các kỳ, Chênh lệch, Chia đều lại. Lưu mà tổng lệch thì hỏi "Tổng giá trị phân bổ các kỳ của ... đang không khớp. Bạn có muốn điều chỉnh về kỳ phân bổ cuối cùng không?", Điều chỉnh dồn chênh lệch vào kỳ cuối còn phân bổ.
 - `src/ui/mobile/MCcdc.tsx`: màn xem dùng `MTheNoiDung`, nút Sửa thẻ mở `MTheSua`; form cũ (T415) chỉ còn cho ghi tăng thẻ mới. Lưu thẻ ghi nhật ký `dm/8-1-1`. Dữ liệu mẫu thêm thẻ dư đầu kỳ TPB2601-0012 có một mục ngừng, thẻ TPB2606-0002 ngừng, TSCĐ TPB2610-0010 có Số hiệu, Mô tả.
 - `src/ui/mobile/MLichSu.tsx`: thêm prop `mau` (thao tác mẫu riêng của màn), tách nhật ký "Sửa thẻ: Trường: cũ → mới; ...".
-- `src/modules/ccdc/the-phan-bo.tsx`: xuất `tinhDong`, `lichDong`, thêm `kyNay`. Web gói Free, Standard, cột Trạng thái tab Đã phân bổ: kỳ sau tháng hiện tại là Chưa phân bổ (trước luôn Đã phân bổ).
+- `src/modules/ccdc/the-phan-bo.tsx`: xuất `tinhDong`, `lichDong`, thêm `kyNay`. Web gói Free, Standard, cột Trạng thái tab Đã phân bổ: kỳ sau tháng hiện tại là Chờ phân bổ (trước luôn Đã phân bổ).
 - Cuối `src/styles/app.css`: mục T590.
 
 ## Đã kiểm
@@ -35,5 +35,5 @@
 
 ## Bẫy, quyết định mới
 
-- Không ghi QD. Các điểm đã chốt nằm ở artifact và nhật ký này: app không thêm, không xoá mục; trạng thái kỳ Đã / Chưa phân bổ theo tháng hiện tại dùng chung web và app (gói Free, Standard).
+- Không ghi QD. Các điểm đã chốt nằm ở artifact và nhật ký này: app không thêm, không xoá mục; trạng thái kỳ Đã / Chờ phân bổ theo tháng hiện tại dùng chung web và app (gói Free, Standard).
 - Chưa làm mới `docs/IACC-Cloud-Chi-Tiet-He-Thong.xlsx`: `tools/xuat_bao_cao_he_thong.py` cần thư mục `Present/tools` cạnh repo, máy này không có.
