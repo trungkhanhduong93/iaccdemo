@@ -89,11 +89,14 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc, mod }) => {
   const isSoTien = isSoQuy || isSoTienGui
   const maBcStr = String(sc.code ?? sc.slug ?? '').replace(/-/g, '.')
   const la427 = maBcStr === '4.2.7'
+  const la327 = maBcStr === '3.2.7'
+  const la5215 = maBcStr === '5.2.15'
+  const laMauD = la427 || la327 || la5215
   const laTT152Hook = s.cheDo === 'TT152' && laSoTT152(maBcStr)
   const isS1a = (s.cheDo === 'TT152' && kyHieuBC(sc.code, s.cheDo, s) === 'S1a-HKD') || maBcStr.includes('s1a')
 
   const khuon = layKhuonDong(sc)
-  const isSoApDung = isSoCu || Boolean(khuon) || la427 || laTT152Hook
+  const isSoApDung = isSoCu || Boolean(khuon) || laMauD || laTT152Hook
 
   // Điểm 18: Các báo cáo ưu tiên dạng BẢNG trên điện thoại:
   // (a) Báo cáo thuộc nhóm kinh doanh: 3.2.1, 3.2.2, 3.2.3, 3.2.4, 3.2.5
@@ -102,8 +105,8 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc, mod }) => {
   const kyHieuStr = kyHieuBC(sc.code, s.cheDo, s) ?? ''
   const isHkdMau = !laTT152Hook && s.cheDo === 'TT152' && kyHieuStr.endsWith('-HKD')
   const isBcKd = !laTT152Hook && (maBcStr.startsWith('3.2.1') || maBcStr.startsWith('3.2.2') || maBcStr.startsWith('3.2.3') || maBcStr.startsWith('3.2.4') || maBcStr.startsWith('3.2.5'))
-  const isNhieuCotSo = maBcStr === '3.2.7' || maBcStr === '4.2.2'
-  const isUuTienBang = !la427 && !laTT152Hook && (isHkdMau || isBcKd || isNhieuCotSo)
+  const isNhieuCotSo = maBcStr === '4.2.2'
+  const isUuTienBang = !laMauD && !laTT152Hook && (isHkdMau || isBcKd || isNhieuCotSo)
 
   const [kieuXemState, setKieuXemState] = useState<'dong' | 'bang' | null>(null)
   const kieuXem = kieuXemState ?? (isUuTienBang ? 'bang' : (isSoApDung ? 'dong' : 'bang'))
@@ -557,7 +560,7 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc, mod }) => {
 
       {/* Nội dung báo cáo: Dạng dòng hoặc Bảng cuộn ngang */}
       {kieuXem === 'dong' && isSoApDung ? (
-        !isSoCu && (khuon || la427 || laTT152Hook) ? (
+        !isSoCu && (khuon || laMauD || laTT152Hook) ? (
           <div className="m-so-dong">
             <MBaoCaoDong
               maBc={sc.code ?? sc.slug}

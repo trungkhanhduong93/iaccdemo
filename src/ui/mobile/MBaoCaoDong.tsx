@@ -9,6 +9,8 @@ import { money, rutGonSo } from '../format'
 import { duongPhieu } from '../generic/SoChungTu'
 import { useSession } from '../../app/session'
 import { MBangKeMua } from './MBangKeMua'
+import { MTongHopBanHang } from './MTongHopBanHang'
+import { MBaoCaoKiemKe } from './MBaoCaoKiemKe'
 import { MSoTT152, laSoTT152 } from './MSoTT152'
 
 export type LoaiKhuonDong = 'chi-tiet-ngay' | 'tong-hop-doi-tuong' | 'chi-tieu-phan-cap'
@@ -30,7 +32,7 @@ export const BANG_KHUON_DONG: Record<string, LoaiKhuonDong> = {
 
   // Khuôn 2: Tổng hợp theo đối tượng (9 màn)
   '2.2.8': 'tong-hop-doi-tuong',
-  '3.2.7': 'tong-hop-doi-tuong',
+  // '3.2.7' theo mẫu D (T606)
   '3.2.9': 'tong-hop-doi-tuong',
   '4.2.2': 'tong-hop-doi-tuong',
   '4.2.3': 'tong-hop-doi-tuong',
@@ -924,9 +926,19 @@ export const MBaoCaoDong: FC<Props> = ({ maBc, khuon, cols, rows, q = '', xemTat
   const { s } = useSession()
   const maNorm = (maBc || '').replace(/-/g, '.')
   const la427 = maNorm === '4.2.7' || maNorm.endsWith('.4.2.7') || maNorm.endsWith('/4.2.7')
+  const la327 = maNorm === '3.2.7' || maNorm.endsWith('.3.2.7') || maNorm.endsWith('/3.2.7')
+  const la5215 = maNorm === '5.2.15' || maNorm.endsWith('.5.2.15') || maNorm.endsWith('/5.2.15')
 
   if (la427) {
     return <MBangKeMua rows={rows} q={q} />
+  }
+
+  if (la327) {
+    return <MTongHopBanHang rows={rows} q={q} />
+  }
+
+  if (la5215) {
+    return <MBaoCaoKiemKe rows={rows} q={q} />
   }
 
   if (s.cheDo === 'TT152' && laSoTT152(maBc)) {

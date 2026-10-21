@@ -121,6 +121,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
   const isChi = loai === 'chi' || loai === 'unc'
   const isThu = loai === 'thu' || loai === 'bc'
   const isCq = loai === 'cq'
+  const isFreeThuChi = s.goi === 'F' && !isCq
 
   const cnNhoId = layChiNhanhNho()
   const cnNhoTen = CUA_HANG.find(c => c.id === cnNhoId)?.ten
@@ -167,7 +168,13 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
     return lyDoGoc(goc)
   })
   const [thangChiPhi, setThangChiPhi] = useState<string>(() => `Tháng ${goc?.thang || 10}/2026`)
-  const [ghiChu, setGhiChu] = useState<string>(() => dienSan?.dienGiai ?? (goc?._ghiChu || goc?.dienGiai ? String(goc._ghiChu || goc?.dienGiai) : ''))
+  const [ghiChu, setGhiChu] = useState<string>(() => {
+    if (dienSan?.dienGiai) return dienSan.dienGiai
+    if (goc?._ghiChu) return String(goc._ghiChu)
+    if (goc?.dienGiai) return String(goc.dienGiai)
+    const ds = goc ? dongGoc(goc) : []
+    return ds[0]?.ten ? String(ds[0].ten) : ''
+  })
   const theCpDs = Array.isArray(row?._theCp) ? (row?._theCp as string[]) : []
 
   // Dòng chi tiết
@@ -241,8 +248,12 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
       if (row._quy) setQuy(String(row._quy))
       setLyDo(lyDoGoc(row))
       if (row.thang) setThangChiPhi(`Tháng ${row.thang}/2026`)
-      if (row._ghiChu || row.dienGiai) setGhiChu(String(row._ghiChu || row.dienGiai))
       const ds = dongGoc(row)
+      if (row._ghiChu || row.dienGiai) {
+        setGhiChu(String(row._ghiChu || row.dienGiai))
+      } else if (ds[0]?.ten) {
+        setGhiChu(String(ds[0].ten))
+      }
       if (ds.length > 0) {
         setDsDong(ds.map(d => ({
           ten: d.ten || 'Chi tiết',
@@ -386,19 +397,34 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
       _quy: quy,
       _lyDo: lyDo,
       _ghiChu: ghiChu,
-      dienGiai: (dsDong[0]?.ten || ghiChu || (isChi ? 'Chi tiền' : 'Thu tiền')),
+      dienGiai: isFreeThuChi && dsDong.length <= 1
+        ? (ghiChu.trim() || (isChi ? 'Chi tiền' : 'Thu tiền'))
+        : (dsDong[0]?.ten || ghiChu || (isChi ? 'Chi tiền' : 'Thu tiền')),
       tien: soTien,
       tong: soTien,
-      _dong: isCq ? undefined : dsDong.map(({ moi, ...d }) => ({
-        ...d,
-        ten: d.ten || ghiChu || (isChi ? 'Chi tiền' : 'Thu tiền'),
-        tien: d.tien,
-        gia: d.gia ?? d.tien,
-        ...(s.goi !== 'F' ? {
-          tkNo: d.tkNo || (lyDo.includes('lương') ? '334' : '6422'),
-          tkCo: d.tkCo || '1111',
-        } : {}),
-      })),
+      _dong: isCq
+        ? undefined
+        : (isFreeThuChi && dsDong.length <= 1)
+          ? [{
+              ten: ghiChu.trim() || (isChi ? 'Chi tiền' : 'Thu tiền'),
+              sl: 1,
+              gia: soTien,
+              tien: soTien,
+              ly: lyDo,
+              dt: doiTuong,
+              km: dsDong[0]?.km || '',
+              cv: dsDong[0]?.cv || '',
+            }]
+          : dsDong.map(({ moi, ...d }) => ({
+              ...d,
+              ten: d.ten || ghiChu || (isChi ? 'Chi tiền' : 'Thu tiền'),
+              tien: d.tien,
+              gia: d.gia ?? d.tien,
+              ...(s.goi !== 'F' ? {
+                tkNo: d.tkNo || (lyDo.includes('lương') ? '334' : '6422'),
+                tkCo: d.tkCo || '1111',
+              } : {}),
+            })),
       _theCp: theCpDs,
       tt: row?.tt ?? (s.goi === 'F' ? 'ghi' : 'nhap'),
       nguon: row?.nguon ?? 'tay',
@@ -639,15 +665,40 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
             {docSoTien(soTien)}
           </label>
 
-          {!isCq && (
-            <div className="m-tc-goi-y-dong-bo">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0284c7" strokeWidth="2">
-                <circle cx="12" cy="12" r="10" />
-                <line x1="12" y1="16" x2="12" y2="12" />
-                <line x1="12" y1="8" x2="12.01" y2="8" />
-              </svg>
-              <span>Phiếu 1 dòng: sửa số tiền ngay tại đây, dòng chi tiết tự cập nhật. Từ 2 dòng trở lên, số tiền = tổng các dòng ở mục Chi tiết.</span>
+          {isFreeThuChi ? (
+            <div className="m-tc-lap-field">
+              <label className="nhan" htmlFor="tc-nhap-dien-giai">Diễn giải</label>
+              <input
+                id="tc-nhap-dien-giai"
+                type="text"
+                className="m-tc-lap-inp"
+                value={ghiChu}
+                onChange={e => {
+                  const val = e.target.value
+                  setGhiChu(val)
+                  setDaSua(true)
+                  if (dsDong.length <= 1) {
+                    setDsDong(ds => {
+                      const n = [...ds]
+                      if (n[0]) n[0] = { ...n[0], ten: val }
+                      return n
+                    })
+                  }
+                }}
+                placeholder="Nhập diễn giải"
+              />
             </div>
+          ) : (
+            !isCq && (
+              <div className="m-tc-goi-y-dong-bo">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0284c7" strokeWidth="2">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="16" x2="12" y2="12" />
+                  <line x1="12" y1="8" x2="12.01" y2="8" />
+                </svg>
+                <span>Phiếu 1 dòng: sửa số tiền ngay tại đây, dòng chi tiết tự cập nhật. Từ 2 dòng trở lên, số tiền = tổng các dòng ở mục Chi tiết.</span>
+              </div>
+            )
           )}
         </section>
 
@@ -814,31 +865,33 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
             />
           </div>
 
-          <div className="m-tc-lap-field">
-            <label className="nhan">Ghi chú</label>
-            <textarea
-              className="m-tc-lap-textarea"
-              rows={2}
-              value={ghiChu}
-              onChange={e => {
-                const val = e.target.value
-                setGhiChu(val)
-                setDaSua(true)
-                if (dsDong.length <= 1) {
-                  setDsDong(ds => {
-                    const n = [...ds]
-                    if (n[0]) n[0] = { ...n[0], ten: val }
-                    return n
-                  })
-                }
-              }}
-              placeholder="Nhập ghi chú"
-            />
-          </div>
+          {!isFreeThuChi && (
+            <div className="m-tc-lap-field">
+              <label className="nhan">Ghi chú</label>
+              <textarea
+                className="m-tc-lap-textarea"
+                rows={2}
+                value={ghiChu}
+                onChange={e => {
+                  const val = e.target.value
+                  setGhiChu(val)
+                  setDaSua(true)
+                  if (dsDong.length <= 1) {
+                    setDsDong(ds => {
+                      const n = [...ds]
+                      if (n[0]) n[0] = { ...n[0], ten: val }
+                      return n
+                    })
+                  }
+                }}
+                placeholder="Nhập ghi chú"
+              />
+            </div>
+          )}
         </section>
 
-        {/* 5. Group CHI TIẾT (hiện cho mọi gói, trừ chuyển quỹ T555) */}
-        {!isCq && (
+        {/* 5. Group CHI TIẾT (hiện cho mọi gói, trừ chuyển quỹ T555; gói F chỉ hiện khi >= 2 dòng T608) */}
+        {!isCq && (!isFreeThuChi || dsDong.length >= 2) && (
           <>
             <div className="m-tc-nhom-chu">
               CHI TIẾT <span className="so-dong">{dsDong.length} dòng</span>
@@ -945,16 +998,18 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
               })}
 
               {/* Nút Thêm dòng viền nét đứt */}
-              <button
-                type="button"
-                className="m-tc-btn-them-dong-dashed"
-                onClick={handleThemDong}
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <path d="M12 5v14M5 12h14" />
-                </svg>
-                <span>Thêm dòng</span>
-              </button>
+              {!isFreeThuChi && (
+                <button
+                  type="button"
+                  className="m-tc-btn-them-dong-dashed"
+                  onClick={handleThemDong}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <path d="M12 5v14M5 12h14" />
+                  </svg>
+                  <span>Thêm dòng</span>
+                </button>
+              )}
 
               {/* Dòng tổng cộng (chỉ hiện khi từ 2 dòng trở lên) */}
               {dsDong.length >= 2 && (

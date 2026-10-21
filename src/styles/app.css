@@ -40685,3 +40685,11 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
 .m-tcf-tiendo-dau { justify-content: flex-end; padding: 0 0 2px; font-size: 11.5px; font-weight: 600; color: var(--muted); }
 .m-tcf-tiendo-dong .m-tcf-tiendo-ngay,
 .m-tcf-tiendo-dong .m-tcf-tiendo-lech { width: 64px; flex: none; text-align: right; }
+/* ── Báo cáo điện thoại theo mẫu D: tổng hợp bán hàng, kiểm kê (T606) ── */
+.m-bkm-card-tong.do {
+  color: var(--orange, #ea580c) !important;
+}
+
+.m-bkm-card-tong.xanh {
+  color: var(--green, #107c41) !important;
+}
