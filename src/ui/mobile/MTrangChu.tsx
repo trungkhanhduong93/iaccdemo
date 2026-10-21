@@ -586,7 +586,7 @@ function MTrangChuCoPhi() {
             onClick={() => setMoChonCn(true)}
             title="Chọn cửa hàng hiển thị"
           >
-            <span className="m-tc-chip-cn-nhan m-tc-chip-kho-nhan">CN: {nhanCn}</span>
+            <span className="m-tc-chip-cn-nhan m-tc-chip-kho-nhan">CH: {nhanCn}</span>
             <Icon n="chevd" className="ic sm" />
           </button>
         </div>

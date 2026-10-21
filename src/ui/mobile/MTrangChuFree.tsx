@@ -332,7 +332,7 @@ export function MTrangChuFree(_props?: Partial<ScreenProps>) {
             onClick={() => setMoChonCn(true)}
             title="Chọn cửa hàng hiển thị"
           >
-            <span>CN: {nhanCn}</span>
+            <span>CH: {nhanCn}</span>
             <Icon n="chevd" className="ic sm" />
           </button>
 

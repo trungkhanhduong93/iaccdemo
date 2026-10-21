@@ -36980,3 +36980,17 @@ body:has(.m-app) .m-thanh-duoi .m-tab.on .m-tab-ic .ic .l2 {
   color: var(--faint, #9ca3af) !important;
   font-weight: 400 !important;
 }
+
+/* ── Lập phiếu thu chi điện thoại: bấm cả dải số tiền để nhập ── */
+.m-tc-o-so-tien-wrap { cursor: text; }
+.m-tc-o-so-tien-wrap .m-tc-don-vi { flex: none; }
+.m-tc-o-so-tien-wrap .m-tc-inp-tien { min-width: 0; }
+.m-tc-doc-tien { display: block; cursor: text; }
+
+/* ── Sheet chọn đối tượng điện thoại: thanh biểu tượng Thêm mới, Tải lại như web; ô tìm 16px để iPhone không phóng to ── */
+.m-tc-dt-tim-inp { font-size: 16px; }
+.m-tc-dt-thanh { display: flex; align-items: center; gap: 4px; margin-bottom: 8px; }
+.m-tc-dt-btn-ic { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border: 0; border-radius: 8px; background: transparent; color: var(--blue, #0560a6); cursor: pointer; }
+.m-tc-dt-btn-ic:active { background: var(--tint, #e6eff7); }
+.m-tc-dt-dang-tai { padding: 24px 0; text-align: center; font-size: 13px; color: var(--muted, #6b7280); }
+.m-tc-dt-ma { font-weight: 600; color: var(--blue, #0560a6); font-variant-numeric: tabular-nums; }

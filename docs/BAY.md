@@ -105,3 +105,8 @@ Lỗi đã từng làm mất thời gian, kèm cách tránh. Đọc trước khi
 - Nguyên nhân: phần tử có `will-change: transform` hoặc animation transform khiến trình duyệt tách riêng một lớp hiển thị. Tỉ lệ `zoom` lẻ làm mép chữ bị nhoè, độ nét giảm từ 14.82 xuống 11.64.
 - Cách tránh: form tĩnh bỏ `will-change`, chuyển về `will-change: auto` và tắt animation; chỉ bật `will-change` khi đang chạy hiệu ứng.
 
+## iPhone tự phóng to trang khi bấm vào ô nhập chữ nhỏ (T538)
+
+- Hiện tượng: trên iPhone, mở sheet chọn đối tượng ở phiếu thu chi thì cả trang phóng to, lệch sang trái, phải tự thu nhỏ lại.
+- Nguyên nhân: Safari iOS tự phóng to khi con trỏ vào ô `input`, `textarea` có cỡ chữ dưới 16px. Ô tìm kiếm có `autoFocus` nên vừa mở sheet đã phóng to.
+- Cách tránh: ô nhập trên điện thoại để `font-size` từ 16px trở lên. Chrome máy tính giả lập điện thoại không thấy lỗi này.

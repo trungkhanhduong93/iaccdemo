@@ -5,7 +5,7 @@ import { duongDan } from '../../app/registry'
 import { cuaHangHienTai, useSession } from '../../app/session'
 import { docSoTien, money } from '../format'
 import { goSoVN, docSoVN } from '../OSoGo'
-import { CUA_HANG, HOM_NAY, KHACH, LY_DO, NCC, NHAN_VIEN, TK_NGAN_HANG } from '../../data/mock'
+import { CUA_HANG, HOM_NAY, KHACH, LY_CHI_PHI, LY_DO, NCC, NHAN_VIEN, TK_NGAN_HANG } from '../../data/mock'
 import { layChiNhanhNho } from '../ChonCuaHangTruoc'
 import { soKeTiep, suaPhieu, themPhieu, ghiNhatKy } from '../generic/daXoa'
 import { MAN_THU_CHI, QUY_TIEN, TEN_CT_TT, TIEN_TO_CT_TT } from '../generic/ChungTuForm'
@@ -13,6 +13,8 @@ import { tkTheoLyDo } from '../generic/gen'
 import { useDongChungTu } from '../generic/VoucherScreen'
 import { TAI_KHOAN } from '../../modules/danh-muc/data'
 import { MChon } from './MChon'
+import { MFormDm } from './MFormDm'
+import { addCatalogRow, getAllCatalogRows, getDmMeta, useAddedCatalogRows } from '../generic/danhMucStore'
 import { LichDon } from '../ChonNgay'
 
 export interface MDtThuChiLapProps extends ScreenProps {
@@ -34,30 +36,34 @@ interface DongChiTiet {
   tkCo?: string
 }
 
-interface DoiTuongMau {
+interface DoiTuongDm {
   ma: string
   ten: string
-  loai: 'Cá nhân' | 'Nhà cung cấp' | 'Nhân viên' | 'Khách hàng'
-  avatar: string
+  loai: string
+  mst: string
   diaChi?: string
-  bg: string
-  color: string
 }
 
-const DS_DOI_TUONG_FIGMA: DoiTuongMau[] = [
-  { ma: 'DT01', ten: 'Bà Nguyễn Thị Hạnh', loai: 'Cá nhân', avatar: 'NH', diaChi: '128 Hai Bà Trưng, Đa Kao, Quận 1, TP.HCM', bg: '#f3e8ff', color: '#7e22ce' },
-  { ma: 'DT02', ten: 'Ông Trần Văn Lộc', loai: 'Cá nhân', avatar: 'TL', diaChi: '45 Lê Duẩn, Bến Nghé, Quận 1, TP.HCM', bg: '#e0e7ff', color: '#4338ca' },
-  { ma: 'NCC005', ten: 'Hợp tác xã Rau sạch Củ Chi', loai: 'Nhà cung cấp', avatar: 'RS', diaChi: 'Ấp Chợ Cũ, An Nhơn Tây, Củ Chi, TP.HCM', bg: '#dcfce7', color: '#15803d' },
-  { ma: 'NCC006', ten: 'Công ty TNHH Thiết bị bếp Gia Phát', loai: 'Nhà cung cấp', avatar: 'GP', diaChi: '228 Cộng Hoà, Phường 12, Tân Bình, TP.HCM', bg: '#dbeafe', color: '#1d4ed8' },
-  { ma: 'NCC007', ten: 'Công ty Điện lực Sài Gòn', loai: 'Nhà cung cấp', avatar: 'ĐL', diaChi: '72 Hai Bà Trưng, Bến Nghé, Quận 1, TP.HCM', bg: '#ccfbf1', color: '#0f766e' },
-  { ma: 'NCC001', ten: 'Công ty TNHH Thực phẩm Tươi An Phú', loai: 'Nhà cung cấp', avatar: 'AP', diaChi: '12 Nguyễn Thị Định, An Phú, TP. Thủ Đức', bg: '#ffedd5', color: '#c2410c' },
-  { ma: 'NCC003', ten: 'Công ty CP Cà phê Cao Nguyên Xanh', loai: 'Nhà cung cấp', avatar: 'CN', diaChi: '158 Đinh Tiên Hoàng, Đa Kao, Quận 1, TP.HCM', bg: '#fef3c7', color: '#b45309' },
-  { ma: 'KH001', ten: 'Công ty TNHH Sự kiện Ánh Dương', loai: 'Khách hàng', avatar: 'AD', diaChi: '88 Nguyễn Huệ, Bến Nghé, Quận 1, TP.HCM', bg: '#e0f2fe', color: '#0369a1' },
-  { ma: 'KH002', ten: 'Khách lẻ POS', loai: 'Khách hàng', avatar: 'KL', diaChi: 'Bán lẻ tại quầy', bg: '#f1f5f9', color: '#475569' },
-  { ma: 'KH003', ten: 'ShopeeFood', loai: 'Khách hàng', avatar: 'SF', diaChi: 'Tầng 17 Saigon Centre, 67 Lê Lợi, Quận 1', bg: '#ffe4e6', color: '#e11d48' },
-  { ma: 'NV002', ten: 'Trần Thu Hà', loai: 'Nhân viên', avatar: 'TH', diaChi: 'Bộ phận Kế toán', bg: '#fae8ff', color: '#a21caf' },
-  { ma: 'NV004', ten: 'Phạm Ngọc Lan', loai: 'Nhân viên', avatar: 'NL', diaChi: 'Cửa hàng trưởng Lê Lợi', bg: '#f0fdf4', color: '#166534' },
-]
+/** Địa chỉ mẫu theo mã đối tượng để ô Địa chỉ tự điền; danh mục giả chưa có cột địa chỉ */
+const DIA_CHI_DT: Record<string, string> = {
+  NCC001: '12 Nguyễn Thị Định, An Phú, TP. Thủ Đức',
+  NCC003: '158 Đinh Tiên Hoàng, Đa Kao, Quận 1, TP.HCM',
+  NCC005: 'Ấp Chợ Cũ, An Nhơn Tây, Củ Chi, TP.HCM',
+  NCC006: '228 Cộng Hoà, Phường 12, Tân Bình, TP.HCM',
+  NCC007: '72 Hai Bà Trưng, Bến Nghé, Quận 1, TP.HCM',
+  KL: 'Bán lẻ tại quầy',
+  KH004: '88 Nguyễn Huệ, Bến Nghé, Quận 1, TP.HCM',
+  SPF: 'Tầng 17 Saigon Centre, 67 Lê Lợi, Quận 1',
+  NV002: 'Bộ phận Kế toán',
+  NV004: 'Cửa hàng trưởng Lê Lợi',
+}
+
+/** Danh sách chọn đối tượng đọc từ danh mục Đối tượng (1.5), gồm cả đối tượng vừa thêm trong phiên */
+const dsDoiTuongDm = (): DoiTuongDm[] => getAllCatalogRows('1.5').map(d => {
+  const ma = String(d.ma ?? '')
+  const loai = String(d.loai ?? '')
+  return { ma, ten: String(d.ten ?? ''), loai, mst: String(d.mst ?? ''), diaChi: d.diaChi ? String(d.diaChi) : DIA_CHI_DT[ma] }
+})
 
 export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp }) => {
   const { s, toast } = useSession()
@@ -200,41 +206,23 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
 
   // Sheet Đối tượng state
   const [timDt, setTimDt] = useState('')
+  const [dangTaiDt, setDangTaiDt] = useState(false)
+  const [moThemDt, setMoThemDt] = useState(false)
+  const dtDaThem = useAddedCatalogRows('1.5')
   const [tabLoaiDt, setTabLoaiDt] = useState<'all' | 'ncc' | 'nv' | 'kh'>('all')
 
-  const doiTuongObj = useMemo(() => {
-    if (!doiTuong) {
-      return {
-        ma: '',
-        ten: '',
-        loai: 'Cá nhân' as const,
-        avatar: '',
-        bg: '#f3f4f6',
-        color: '#9ca3af',
-      }
-    }
-    return DS_DOI_TUONG_FIGMA.find(d => d.ten === doiTuong) || {
-      ma: 'DT',
-      ten: doiTuong,
-      loai: 'Cá nhân' as const,
-      avatar: doiTuong.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase(),
-      bg: '#e0e7ff',
-      color: '#4338ca',
-    }
-  }, [doiTuong])
-
   const dsDoiTuongLoc = useMemo(() => {
-    let list = DS_DOI_TUONG_FIGMA
+    let list = dsDoiTuongDm()
     if (tabLoaiDt === 'ncc') list = list.filter(d => d.loai === 'Nhà cung cấp')
     else if (tabLoaiDt === 'nv') list = list.filter(d => d.loai === 'Nhân viên')
-    else if (tabLoaiDt === 'kh') list = list.filter(d => d.loai === 'Khách hàng' || d.loai === 'Cá nhân')
+    else if (tabLoaiDt === 'kh') list = list.filter(d => d.loai === 'Khách hàng')
 
     if (timDt.trim()) {
       const q = timDt.trim().toLowerCase()
-      list = list.filter(d => d.ten.toLowerCase().includes(q) || d.ma.toLowerCase().includes(q) || (d.diaChi && d.diaChi.toLowerCase().includes(q)))
+      list = list.filter(d => d.ten.toLowerCase().includes(q) || d.ma.toLowerCase().includes(q) || d.mst.replace(/\s/g, '').includes(q.replace(/\s/g, '')) || (d.diaChi && d.diaChi.toLowerCase().includes(q)))
     }
     return list
-  }, [tabLoaiDt, timDt])
+  }, [tabLoaiDt, timDt, dtDaThem])
 
   const handleSuaTien = (valStr: string) => {
     const formatted = goSoVN(valStr, false)
@@ -354,6 +342,9 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
     { k: 'bc', ten: 'Thu ngân hàng' },
     { k: 'cq', ten: 'Chuyển quỹ' },
   ]
+
+  // Phiếu chi có lý do thuộc nhóm Chi phí mới cần tháng ghi nhận chi phí; phiếu thu, phiếu chi khác thì ẩn
+  const laChiPhi = isChi && LY_CHI_PHI.includes(lyDo)
 
   const dsLyDoOptions = useMemo(() => {
     return LY_DO.filter(l => isChi ? l.dung === 'Chi tiền' : l.dung === 'Thu tiền').map(l => ({
@@ -522,7 +513,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
             {isChi ? 'Số tiền chi' : isThu ? 'Số tiền thu' : 'Số tiền'} <span className="sao">*</span>
           </label>
 
-          <div className="m-tc-o-so-tien-wrap">
+          <label className="m-tc-o-so-tien-wrap" htmlFor="tc-nhap-tien">
             <input
               id="tc-nhap-tien"
               type="text"
@@ -533,11 +524,11 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
               placeholder="0"
             />
             <span className={`m-tc-don-vi ${isChi ? 'chi' : isThu ? 'thu' : 'cq'}`}>đ</span>
-          </div>
+          </label>
 
-          <div className="m-tc-doc-tien">
+          <label className="m-tc-doc-tien" htmlFor="tc-nhap-tien">
             {docSoTien(soTien)}
-          </div>
+          </label>
 
           {s.goi !== 'F' && (
             <div className="m-tc-goi-y-dong-bo">
@@ -610,18 +601,12 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
               className="m-tc-lap-dt-box"
               onClick={() => setMoChonDt(true)}
             >
-              {doiTuong ? (
-                <div className="m-tc-lap-avatar" style={{ background: doiTuongObj.bg, color: doiTuongObj.color }}>
-                  {doiTuongObj.avatar}
-                </div>
-              ) : (
-                <div className="m-tc-lap-avatar" style={{ background: '#f3f4f6', color: '#9ca3af' }}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                    <circle cx="12" cy="7" r="4" />
-                  </svg>
-                </div>
-              )}
+              <div className="m-tc-lap-avatar" style={{ background: '#f3f4f6', color: '#9ca3af' }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+              </div>
               <span className={`ten${!doiTuong ? ' trong' : ''}`}>{doiTuong || 'Chọn đối tượng'}</span>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2">
                 <path d="M6 9l6 6 6-6" />
@@ -630,15 +615,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
           </div>
 
           <div className="m-tc-lap-field">
-            <div className="nhan-wrap">
-              <label className="nhan">Địa chỉ</label>
-              <span className="m-tc-tag-tu-dien">
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 2l2.4 7.4H22l-6 4.6 2.3 7.2L12 16.8 5.7 21.2 8 14 2 9.4h7.6z" />
-                </svg>
-                <span>Tự điền</span>
-              </span>
-            </div>
+            <label className="nhan">Địa chỉ</label>
             <textarea
               className="m-tc-lap-textarea"
               rows={2}
@@ -649,7 +626,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
               }}
               placeholder="Nhập địa chỉ"
             />
-            <span className="m-tc-subtext">Lấy từ hồ sơ đối tượng, vẫn sửa được nếu cần</span>
+            <span className="m-tc-subtext">Lấy từ danh mục đối tượng, vẫn sửa được nếu cần</span>
           </div>
 
           <div className="m-tc-lap-field">
@@ -679,7 +656,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
             <div className="m-tc-lap-select">
               <div className="m-tc-lydo-val-wrap">
                 <span className={`ten${!lyDo ? ' trong' : ''}`}>{lyDo || (isChi ? 'Chọn lý do chi' : 'Chọn lý do thu')}</span>
-                {lyDo && <span className="m-tc-badge-nhom-cp">Chi phí</span>}
+                {laChiPhi && <span className="m-tc-badge-nhom-cp">Chi phí</span>}
               </div>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2">
                 <path d="M6 9l6 6 6-6" />
@@ -687,6 +664,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
             </div>
           </div>
 
+          {laChiPhi && (
           <div className="m-tc-lap-field">
             <label className="nhan">Tháng ghi nhận chi phí</label>
             <div
@@ -698,8 +676,8 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
                 <path d="M6 9l6 6 6-6" />
               </svg>
             </div>
-            <span className="m-tc-subtext">Hiện khi lý do chi thuộc nhóm Chi phí</span>
           </div>
+          )}
 
           {theCpDs.length > 0 && (
             <div className="m-tc-lap-the-cp-link">
@@ -718,7 +696,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
           )}
 
           <div className="m-tc-lap-field">
-            <label className="nhan">{s.goi === 'F' ? 'Diễn giải' : 'Ghi chú'}</label>
+            <label className="nhan">Ghi chú</label>
             <textarea
               className="m-tc-lap-textarea"
               rows={2}
@@ -735,7 +713,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
                   })
                 }
               }}
-              placeholder={s.goi === 'F' ? 'Nhập diễn giải phiếu' : 'Nhập ghi chú hoặc diễn giải chi tiết'}
+              placeholder="Nhập ghi chú"
             />
           </div>
 
@@ -784,13 +762,13 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
                 </div>
 
                 <div className="m-tc-lap-field">
-                  <label className="nhan">Diễn giải</label>
+                  <label className="nhan">Ghi chú</label>
                   <input
                     type="text"
                     className="m-tc-lap-inp"
                     value={d.ten}
                     onChange={e => handleSuaDong(idx, { ten: e.target.value })}
-                    placeholder="Diễn giải dòng"
+                    placeholder="Ghi chú dòng"
                   />
                 </div>
 
@@ -970,12 +948,41 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
               </button>
             </div>
 
-            {/* Nhóm GẦN ĐÂY */}
-            <div className="m-tc-dt-nhom">GẦN ĐÂY</div>
+            {/* Thanh biểu tượng Thêm mới, Tải lại như ô chọn danh mục trên web */}
+            <div className="m-tc-dt-thanh">
+              <button
+                type="button"
+                className="m-tc-dt-btn-ic"
+                aria-label="Thêm đối tượng mới"
+                onClick={() => {
+                  setMoChonDt(false)
+                  setMoThemDt(true)
+                }}
+              >
+                <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="8" cy="8" r="6" />
+                  <path d="M8 5.2v5.6M5.2 8h5.6" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                className="m-tc-dt-btn-ic"
+                aria-label="Tải lại danh sách"
+                onClick={() => {
+                  setDangTaiDt(true)
+                  setTimeout(() => setDangTaiDt(false), 600)
+                }}
+              >
+                <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M13.3 7.5A5.5 5.5 0 1 1 11.7 3.6L13.5 5.5" />
+                  <path d="M13.5 2v3.5H10" />
+                </svg>
+              </button>
+            </div>
 
             {/* Danh sách đối tượng */}
             <div className="m-tc-dt-ds">
-              {dsDoiTuongLoc.map(d => {
+              {dangTaiDt ? <div className="m-tc-dt-dang-tai">Đang tải dữ liệu</div> : dsDoiTuongLoc.map(d => {
                 const isSelected = d.ten === doiTuong
                 return (
                   <div
@@ -988,12 +995,9 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
                       setDaSua(true)
                     }}
                   >
-                    <div className="m-tc-dt-avatar" style={{ background: d.bg, color: d.color }}>
-                      {d.avatar}
-                    </div>
                     <div className="m-tc-dt-info">
                       <span className="ten">{d.ten}</span>
-                      <span className="loai">{d.loai}</span>
+                      <span className="loai"><b className="m-tc-dt-ma">{d.ma}</b> · {d.loai}</span>
                     </div>
                     {isSelected && (
                       <svg className="m-tc-dt-check" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0560a6" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -1004,24 +1008,34 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
                 )
               })}
             </div>
-
-            {/* Nút Thêm đối tượng mới */}
-            <button
-              type="button"
-              className="m-tc-dt-btn-them-moi"
-              onClick={() => {
-                toast('Mở form tạo đối tượng mới')
-                setMoChonDt(false)
-              }}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="M12 5v14M5 12h14" />
-              </svg>
-              <span>Thêm đối tượng mới</span>
-            </button>
           </div>
         </div>
       )}
+
+      {/* Form thêm đối tượng vào danh mục ngay từ phiếu; lưu xong chọn luôn đối tượng đó */}
+      {moThemDt && (() => {
+        const meta = getDmMeta('doiTuong', undefined, timDt.trim() || undefined)
+        return (
+          <MFormDm
+            sc={meta.sc}
+            cauHinh={meta.cauHinh}
+            edit={{}}
+            dienSan={meta.dienSan}
+            all={meta.all}
+            ten={meta.ten}
+            tenNgan={meta.tenNgan}
+            onDong={() => setMoThemDt(false)}
+            onLuu={val => {
+              addCatalogRow(meta.catKey, val)
+              const ma = String(val.ma ?? '')
+              setDoiTuong(String(val.ten ?? '').trim())
+              setDiaChi(val.diaChi ? String(val.diaChi) : DIA_CHI_DT[ma] ?? '')
+              setDaSua(true)
+              setMoThemDt(false)
+            }}
+          />
+        )
+      })()}
 
       {/* Sheet chọn chi nhánh */}
       <MChon
