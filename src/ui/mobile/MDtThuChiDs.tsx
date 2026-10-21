@@ -5,7 +5,7 @@ import { duongDan } from '../../app/registry'
 import { cuaHangHienTai, useSession } from '../../app/session'
 import { kieuGhiSo } from '../../app/plan'
 import { docNgay, trongKhoang } from '../ChonNgay'
-import { money, rutGonSo } from '../format'
+import { money } from '../format'
 import { dsChipTT, khopChipTT } from '../LocNangCao'
 import { chieuTien } from './chieuTien'
 import { TT_CT } from '../generic/gen'
@@ -179,17 +179,15 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
   }, [listSauLocTT, tuKhoa])
 
   const dsChieu = useMemo(() => list.map(r => chieuTien(mod.key, cfg, r)), [list, mod.key, cfg])
-  const { tongThu, tongChi, tongTien } = useMemo(() => {
+  const { tongThu, tongChi } = useMemo(() => {
     let thu = 0
     let chi = 0
-    let tt = 0
     list.forEach((r, idx) => {
       const tien = Number(r.tong) || Number(r.tien) || 0
-      tt += tien
       if (dsChieu[idx] === 'vao') thu += tien
       else if (dsChieu[idx] === 'ra') chi += tien
     })
-    return { tongThu: thu, tongChi: chi, tongTien: tt }
+    return { tongThu: thu, tongChi: chi }
   }, [list, dsChieu])
 
   // Nhóm theo ngày
@@ -387,16 +385,19 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
 
         {/* Card Tổng hợp kỳ */}
         <div className="m-tc-card-tong-hop m-ds-dong-tom-tat">
-          <div className="m-tc-th-trai">
+          <div className="m-tc-th-hang-tren">
             <span className="m-tc-th-dem">{list.length} chứng từ</span>
             <span className="m-tc-th-ngay">{chuoiKhoangNgay}</span>
-            <div style={{ fontSize: '11px', color: '#6b7280', marginTop: 2 }}>
-              Thu: <b style={{ color: '#138a52' }}>+{rutGonSo(tongThu)}</b> · Chi: <b style={{ color: '#c2362b' }}>-{rutGonSo(tongChi)}</b>
-            </div>
           </div>
-          <div className="m-tc-th-phai">
-            <span className="m-tc-th-nhan">Tổng cộng</span>
-            <span className="m-tc-th-so">{money(tongTien)} đ</span>
+          <div className="m-tc-th-hang-duoi">
+            <div className="m-tc-th-o-thu">
+              <span className="m-tc-th-o-nhan">Tổng thu</span>
+              <span className="m-tc-th-o-so">+{money(tongThu)} đ</span>
+            </div>
+            <div className="m-tc-th-o-chi">
+              <span className="m-tc-th-o-nhan">Tổng chi</span>
+              <span className="m-tc-th-o-so">-{money(tongChi)} đ</span>
+            </div>
           </div>
         </div>
 

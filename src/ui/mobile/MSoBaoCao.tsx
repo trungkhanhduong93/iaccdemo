@@ -106,6 +106,7 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc, mod }) => {
   const maBcStr = String(sc.code ?? sc.slug ?? '').replace(/-/g, '.')
   const la427 = maBcStr === '4.2.7'
   const laTT152Hook = s.cheDo === 'TT152' && laSoTT152(maBcStr)
+  const isS1a = (s.cheDo === 'TT152' && kyHieuBC(sc.code, s.cheDo, s) === 'S1a-HKD') || maBcStr.includes('s1a')
 
   const khuon = layKhuonDong(sc)
   const isSoApDung = isSoCu || Boolean(khuon) || la427 || laTT152Hook
@@ -751,18 +752,20 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc, mod }) => {
         /* Khung bảng cuộn ngang, trang không cuộn ngang (T273) */
         <div className="m-sbc-the-bang">
           <div className="m-sbc-bang-tac-vu">
-            <button
-              type="button"
-              className="m-sbc-btn-icon m-sbc-btn-excel"
-              onClick={xuatExcel}
-              title="Tải file Excel"
-              aria-label="Tải file Excel"
-            >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <rect x="2" y="2" width="20" height="20" rx="3.5" fill="#107C41" />
-                <path d="M7.5 7.5L16.5 16.5M16.5 7.5L7.5 16.5" stroke="white" strokeWidth="2.2" strokeLinecap="round" />
-              </svg>
-            </button>
+            {!isS1a && (
+              <button
+                type="button"
+                className="m-sbc-btn-icon m-sbc-btn-excel"
+                onClick={xuatExcel}
+                title="Tải file Excel"
+                aria-label="Tải file Excel"
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <rect x="2" y="2" width="20" height="20" rx="3.5" fill="#107C41" />
+                  <path d="M7.5 7.5L16.5 16.5M16.5 7.5L7.5 16.5" stroke="white" strokeWidth="2.2" strokeLinecap="round" />
+                </svg>
+              </button>
+            )}
             <button
               type="button"
               className="m-sbc-btn-icon m-sbc-btn-xoay"
@@ -795,6 +798,22 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc, mod }) => {
               onDoiTrang={doiTrangBang}
             />
           )}
+        </div>
+      )}
+
+      {/* Nút xuất báo cáo dính đáy cho S1a (T553) */}
+      {isS1a && (
+        <div className="m-s1a-thanh-day">
+          <button
+            type="button"
+            className="m-s1a-btn-xuat"
+            onClick={xuatExcel}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M12 4v11M7 10l5 5 5-5M5 20h14" />
+            </svg>
+            Xuất báo cáo
+          </button>
         </div>
       )}
 

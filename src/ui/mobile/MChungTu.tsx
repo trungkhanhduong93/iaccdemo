@@ -596,9 +596,257 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
     ? `${pad(kn.tu.getDate())}/${pad(kn.tu.getMonth() + 1)}/${kn.tu.getFullYear()} - ${pad(kn.den.getDate())}/${pad(kn.den.getMonth() + 1)}/${kn.den.getFullYear()}`
     : '16/09/2026 - 15/11/2026'
 
+  const isMan411 = mod.key === 'mua-hang' && (sc.code === '4.1.1' || sc.slug === '4-1-1')
+  const [timMo411, setTimMo411] = useState(false)
+  const [tuKhoa411, setTuKhoa411] = useState('')
+  const [sortMoiNhat411, setSortMoiNhat411] = useState(true)
+
+  const list411 = useMemo(() => {
+    let res = list
+    if (tuKhoa411.trim()) {
+      const q = tuKhoa411.trim().toLowerCase()
+      res = res.filter(r => {
+        const text = `${r.so} ${r.doiTuong ?? ''} ${r.dienGiai ?? ''} ${r.cn ?? ''}`.toLowerCase()
+        return text.includes(q)
+      })
+    }
+    return res
+  }, [list, tuKhoa411])
+
+  const tongTien411 = useMemo(() => list411.reduce((a, r) => a + (Number(r.tong) || Number(r.tien) || 0), 0), [list411])
+
+  const nhomTheoNgay411 = useMemo(() => {
+    const map = new Map<string, Row[]>()
+    for (const r of list411) {
+      const ngayRaw = String(r.ngay ?? '').split(' ')[0]
+      const cur = map.get(ngayRaw) ?? []
+      cur.push(r)
+      map.set(ngayRaw, cur)
+    }
+    const arr = Array.from(map.entries()).map(([ngayRaw, ds]) => {
+      const tongNgay = ds.reduce((sum, r) => sum + (Number(r.tong) || Number(r.tien) || 0), 0)
+      return {
+        ngayRaw,
+        tieuDeNgay: dinhDangThuNgay(ngayRaw),
+        tongNgay,
+        ds,
+      }
+    })
+    arr.sort((a, b) => {
+      const da = docNgay(a.ngayRaw).getTime()
+      const db = docNgay(b.ngayRaw).getTime()
+      return sortMoiNhat411 ? db - da : da - db
+    })
+    return arr
+  }, [list411, sortMoiNhat411])
+
+  const chuoiKhoangNgay411 = kn
+    ? `${pad(kn.tu.getDate())}/${pad(kn.tu.getMonth() + 1)} – ${pad(kn.den.getDate())}/${pad(kn.den.getMonth() + 1)}/${kn.den.getFullYear()}`
+    : ''
+
+  const nhanCn = cnChon ? cnChon.ten : 'CN: Tất cả'
+  const chipHienTai = chips.find(c => c.k === chipTT)
+  const nhanTrangThai = chipHienTai ? `Trạng thái: ${chipHienTai.ten}` : 'Trạng thái'
+
+  const quayLai = () => {
+    if (window.history.state && window.history.state.idx > 0) {
+      nav(-1)
+    } else {
+      nav('/app/nghiep-vu', { replace: true })
+    }
+  }
+
   return (
     <>
-      <MDanhSach
+      {isMan411 ? (
+        <div className="m-tc-man m-ds-khung">
+          {/* Header */}
+          <header className="m-tc-header">
+            <div className="m-tc-nav">
+              <button
+                type="button"
+                className="m-tc-btn-nav"
+                onClick={quayLai}
+                aria-label="Quay lại"
+              >
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M15 18l-6-6 6-6" />
+                </svg>
+              </button>
+              <h1 className="m-tc-tieu-de">Mua hàng</h1>
+              <button
+                type="button"
+                className={`m-tc-btn-nav${timMo411 ? ' on' : ''}`}
+                onClick={() => {
+                  setTimMo411(v => !v)
+                  if (timMo411) setTuKhoa411('')
+                }}
+                aria-label="Tìm kiếm"
+              >
+                <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="11" cy="11" r="7" />
+                  <path d="M20 20l-3.5-3.5" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Ô tìm kiếm khi mở */}
+            {timMo411 && (
+              <div className="m-tc-tim-wrap">
+                <svg className="m-tc-tim-ic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="11" cy="11" r="7" />
+                  <path d="M21 21l-4.35-4.35" />
+                </svg>
+                <input
+                  type="text"
+                  autoFocus
+                  className="m-tc-tim-inp m-ds-tim-inp"
+                  placeholder="Tìm mã chứng từ, đối tượng, diễn giải..."
+                  value={tuKhoa411}
+                  onChange={e => setTuKhoa411(e.target.value)}
+                  aria-label="Tìm kiếm chứng từ"
+                />
+                {tuKhoa411 && (
+                  <button
+                    type="button"
+                    className="m-tc-tim-x"
+                    onClick={() => setTuKhoa411('')}
+                    aria-label="Xoá tìm kiếm"
+                  >
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2">
+                      <path d="M18 6L6 18M6 6l12 12" />
+                    </svg>
+                  </button>
+                )}
+              </div>
+            )}
+
+            {hangTabs}
+          </header>
+
+          <main className="m-tc-content">
+            {/* Hàng bộ lọc */}
+            <div className="m-tc-loc-bar">
+              <button
+                type="button"
+                className={`m-tc-btn-loc-vuong m-ds-nut-loc-vuong m-ds-nut-loc${coLocKhacMacDinh(locVal) ? ' co-loc' : ''}`}
+                onClick={() => setLocMo(true)}
+                aria-label="Bộ lọc nâng cao"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+                </svg>
+                {coLocKhacMacDinh(locVal) && <span className="m-tc-loc-cham" />}
+              </button>
+
+              {chuoiKhoangNgay411 && <span className="m-chip-xem">{chuoiKhoangNgay411}</span>}
+              <span className="m-chip-xem">{nhanCn}</span>
+              <span className="m-chip-xem">{nhanTrangThai}</span>
+              {locVal.doiTuong?.map(dt => (
+                <span key={dt} className="m-chip-xem">Đối tượng: {dt}</span>
+              ))}
+              {locVal.kho?.map(kh => (
+                <span key={kh} className="m-chip-xem">Kho: {kh}</span>
+              ))}
+            </div>
+
+            {/* Thẻ tổng */}
+            <div className="m-mh-card-tong">
+              <div className="m-mh-th-trai">
+                <span className="m-mh-th-dem">{list411.length} chứng từ</span>
+                {chuoiKhoangNgay411 && <span className="m-mh-th-ngay">{chuoiKhoangNgay411}</span>}
+              </div>
+              <div className="m-mh-th-phai">
+                <span className="m-mh-th-nhan">Tổng cộng</span>
+                <span className="m-mh-th-so">{money(tongTien411)} đ</span>
+              </div>
+            </div>
+
+            {/* Hàng Sắp xếp */}
+            <div className="m-mh-hang-sx">
+              <span className="m-mh-sx-tieu-de">Danh sách chứng từ</span>
+              <button
+                type="button"
+                className="m-mh-sx-btn"
+                onClick={() => setSortMoiNhat411(v => !v)}
+                aria-label="Sắp xếp chứng từ"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M4 6h16M4 12h10M4 18h5" />
+                </svg>
+                <span>{sortMoiNhat411 ? 'Mới nhất' : 'Cũ nhất'}</span>
+              </button>
+            </div>
+
+            {/* Danh sách nhóm theo ngày */}
+            {list411.length === 0 ? (
+              <div className="m-trong m-mh-trong m-tc-trong">
+                <p>Không có chứng từ nào phù hợp</p>
+              </div>
+            ) : (
+              <div className="m-mh-ds-nhom">
+                {nhomTheoNgay411.map(nhom => (
+                  <div key={nhom.ngayRaw} className="m-mh-nhom-item">
+                    <div className="m-mh-nhom-header">
+                      <span className="m-mh-nhom-ngay">{nhom.tieuDeNgay}</span>
+                      <span className="m-mh-nhom-tong">{money(nhom.tongNgay)} đ</span>
+                    </div>
+                    <div className="m-mh-the-trang">
+                      {nhom.ds.map((r, i) => {
+                        const cfgLoai = theoLoai(cfg, r.loai)
+                        const laHang = cfgLoai.dong === 'hang' || cfgLoai.dong === 'nvl'
+                        let soDongHang = 0
+                        if (laHang) {
+                          if (Array.isArray(r._dong)) {
+                            soDongHang = r._dong.length
+                          } else {
+                            const idSeed = `${sc.code ?? sc.slug}-${r.id}`
+                            soDongHang = dongCua(cfgLoai, idSeed).length
+                          }
+                        }
+                        const ncc = r.doiTuong || r.ncc || r.dienGiai || '—'
+                        const tien = Number(r.tong ?? r.tien ?? 0)
+
+                        return (
+                          <button
+                            type="button"
+                            key={String(r.id ?? r.so ?? i)}
+                            className="m-mh-dong-phieu m-the-ct m-ds-ngay-dong"
+                            onClick={() => nav(`${path}/${r.id}`)}
+                          >
+                            <div className="m-mh-dong-trai">
+                              <div className="m-mh-dong-hang1">
+                                <span className="m-mh-dong-so">{r.so}</span>
+                                {soDongHang > 0 && <span className="m-mh-dong-hh">{soDongHang} hàng hoá</span>}
+                              </div>
+                              <span className="m-mh-dong-ncc" title={ncc}>{ncc}</span>
+                            </div>
+                            <span className="m-mh-dong-tien">{money(tien)} đ</span>
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </main>
+
+          {/* Nút thêm mới FAB */}
+          <button
+            type="button"
+            className="m-tc-fab-btn"
+            onClick={handleThem}
+            aria-label="Thêm mới chứng từ"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+          </button>
+        </div>
+      ) : (
+        <MDanhSach
         rows={list}
         timTheo={(r, q) => {
           const text = `${r.so} ${r.doiTuong ?? ''} ${r.dienGiai ?? ''} ${r.cn ?? ''}`.toLowerCase()
@@ -674,6 +922,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
           )
         }}
       />
+      )}
 
       {/* Màn lọc toàn màn (T521) */}
       <MLoc

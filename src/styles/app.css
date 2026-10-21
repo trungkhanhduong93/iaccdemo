@@ -37824,4 +37824,413 @@ body:has(.m-app) .m-thanh-duoi .m-tab.on .m-tab-ic .ic .l2 {
   position: absolute;
   top: -6px;
   right: -6px;
+
+/* ── Điện thoại: Thẻ tổng danh sách Thu chi (T551) ── */
+.m-tc-card-tong-hop,
+.m-tc-card-tong-hop.m-ds-dong-tom-tat {
+  display: block !important;
+  background: #ffffff !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 12px !important;
+  padding: 14px 16px !important;
+  margin: 12px 16px 0 !important;
+  box-shadow: none !important;
+}
+.m-tc-th-hang-tren {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+.m-tc-th-dem {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.m-tc-th-ngay {
+  font-size: 12px;
+  color: var(--muted);
+}
+.m-tc-th-hang-duoi {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.m-tc-th-o-thu,
+.m-tc-th-o-chi {
+  border-radius: 8px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.m-tc-th-o-thu {
+  background: var(--green-t);
+}
+.m-tc-th-o-chi {
+  background: var(--red-t);
+}
+.m-tc-th-o-nhan {
+  font-size: 12px;
+  color: var(--ink);
+}
+.m-tc-th-o-so {
+  font-size: 16px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.m-tc-th-o-thu .m-tc-th-o-so {
+  color: var(--green);
+}
+.m-tc-th-o-chi .m-tc-th-o-so {
+  color: var(--red);
+}
+
+/* ── Điện thoại: Báo cáo sổ S1a-HKD (T553) ── */
+.m-app.m-cap-2:has(.m-so-s1a) .m-than {
+  overflow-y: auto !important;
+  padding-bottom: 80px !important;
+}
+
+.m-so-tt152.m-so-s1a {
+  flex: none !important;
+  height: auto !important;
+  min-height: auto !important;
+}
+
+.m-s1a-wrap {
+  padding: 16px 16px 100px;
+}
+
+.m-s1a-the-dau {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 18px 16px 16px;
+  text-align: center;
+}
+
+.m-s1a-tieu-de {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  text-transform: uppercase;
+  line-height: 1.4;
+}
+
+.m-s1a-dia-diem {
+  margin: 6px 0 14px;
+  font-size: 12.5px;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.m-s1a-hop-tong {
+  background: var(--tint);
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.m-s1a-tong-nhan-dau {
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.m-s1a-tong-so-dau {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--blue);
+  font-variant-numeric: tabular-nums;
+}
+
+.m-s1a-sec-tieu-de {
+  margin: 22px 2px 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.m-s1a-the-ds {
+  background: #ffffff;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.m-s1a-ds-noi-dung {
+  padding: 0 16px;
+}
+
+.m-s1a-dong-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.m-s1a-dong-item:last-child {
+  border-bottom: none;
+}
+
+.m-s1a-dong-trai {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.m-s1a-dong-dg {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.m-s1a-dong-ngay {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.m-s1a-dong-tien {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.m-s1a-dong-tong-cuoi {
+  display: flex;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: #f8fafc;
+}
+
+.m-s1a-tong-cuoi-nhan {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.m-s1a-tong-cuoi-so {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.m-s1a-thanh-day {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #ffffff;
+  border-top: 1px solid var(--line);
+  padding: 12px 16px 20px;
+  display: flex;
+  gap: 10px;
+  z-index: 100;
+}
+
+.m-s1a-btn-xuat {
+  flex: 1;
+  height: 48px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--blue);
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+}
+.m-s1a-btn-xuat:active {
+  opacity: 0.9;
+}
+
+/* ── Điện thoại: Danh sách chứng từ mua hàng (T554) ── */
+.m-mh-card-tong {
+  margin: 12px 16px 0;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.m-mh-th-trai {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.m-mh-th-dem {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.m-mh-th-ngay {
+  font-size: 12px;
+  color: var(--muted);
+}
+.m-mh-th-phai {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+.m-mh-th-nhan {
+  font-size: 12px;
+  color: var(--muted);
+}
+.m-mh-th-so {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--blue);
+  font-variant-numeric: tabular-nums;
+}
+
+.m-mh-hang-sx {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px 2px;
+}
+.m-mh-sx-tieu-de {
+  font-size: 13px;
+  font-weight: 600;
+  color: #4b5563;
+}
+.m-mh-sx-btn {
+  height: 32px;
+  padding: 0 4px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.m-mh-ds-nhom {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-bottom: 80px;
+}
+.m-mh-nhom-item {
+  display: flex;
+  flex-direction: column;
+}
+.m-mh-nhom-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 16px 8px;
+}
+.m-mh-nhom-ngay {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.m-mh-nhom-tong {
+  font-size: 13px;
+  font-weight: 600;
+  color: #4b5563;
+  font-variant-numeric: tabular-nums;
+}
+
+.m-mh-the-trang {
+  margin: 0 16px;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 0 14px;
+}
+.m-mh-dong-phieu,
+.m-mh-the-trang .m-mh-dong-phieu.m-the-ct,
+.m-mh-the-trang .m-mh-dong-phieu.m-ds-ngay-dong {
+  width: 100% !important;
+  border: none !important;
+  border-bottom: 1px solid #eeeeee !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  font-family: inherit !important;
+  font-size: inherit !important;
+  color: inherit !important;
+  text-align: left !important;
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: 12px !important;
+  padding: 12px 0 !important;
+  margin: 0 !important;
+  cursor: pointer !important;
+  box-sizing: border-box !important;
+}
+.m-mh-dong-phieu:last-child,
+.m-mh-the-trang .m-mh-dong-phieu.m-the-ct:last-child,
+.m-mh-the-trang .m-mh-dong-phieu.m-ds-ngay-dong:last-child {
+  border-bottom: none !important;
+}
+.m-mh-dong-phieu:active,
+.m-mh-the-trang .m-mh-dong-phieu.m-the-ct:active,
+.m-mh-the-trang .m-mh-dong-phieu.m-ds-ngay-dong:active {
+  background: #f8fafc !important;
+}
+.m-mh-trong,
+.m-trong.m-mh-trong {
+  padding: 32px 16px !important;
+  text-align: center !important;
+  color: var(--muted) !important;
+  font-size: 13px !important;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+.m-mh-dong-trai {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.m-mh-dong-hang1 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.m-mh-dong-so {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.m-mh-dong-hh {
+  font-size: 11px;
+  color: #4b5563;
+  background: #f1f3f5;
+  border-radius: 6px;
+  padding: 1px 6px;
+}
+.m-mh-dong-ncc {
+  font-size: 12.5px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.m-mh-dong-tien {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }

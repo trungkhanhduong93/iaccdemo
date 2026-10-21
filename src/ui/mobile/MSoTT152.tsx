@@ -3,6 +3,7 @@
 import React, { useMemo, type FC } from 'react'
 import { Link } from 'react-router-dom'
 import type { Row } from '../../modules/types'
+import { donViHienTai, useSession } from '../../app/session'
 import { money, rutGonSo } from '../format'
 import { duongPhieu, phieuTheoSo } from '../generic/SoChungTu'
 
@@ -304,8 +305,27 @@ function BangS2e({ rows, qStr }: { rows: Row[]; qStr: string }) {
 
 const laDongTongCong = (dg?: unknown) => typeof dg === 'string' && /^tổng cộng[:\s]*$/i.test(dg.trim())
 
+function dinhDangThuNgay(dStr?: string): string {
+  if (!dStr) return ''
+  const parts = dStr.includes('/') ? dStr.split('/') : (dStr.includes('-') ? dStr.split('-').reverse() : [])
+  if (parts.length === 3) {
+    const d = Number(parts[0])
+    const m = Number(parts[1]) - 1
+    const y = Number(parts[2])
+    const dt = new Date(y, m, d)
+    if (!isNaN(dt.getTime())) {
+      const thu = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'][dt.getDay()]
+      return `${thu}, ${dStr}`
+    }
+  }
+  return dStr
+}
+
 // ── SỔ DOANH THU & CHI PHÍ: S1a, S2a, S2b, S2c ──
 function BangDoanhThu({ loaiSo, rows, qStr }: { loaiSo: LoaiSoTT152; rows: Row[]; qStr: string }) {
+  const { s } = useSession()
+  const tenDiaDiem = donViHienTai(s)?.ten?.trim() || ''
+
   // Lọc dòng theo q
   const rowsLoc = useMemo(() => {
     if (!qStr) return rows
@@ -347,8 +367,71 @@ function BangDoanhThu({ loaiSo, rows, qStr }: { loaiSo: LoaiSoTT152; rows: Row[]
     }
   }, [rowsLoc])
 
+  const chuoiThangNam = useMemo(() => {
+    for (const r of rowsLoc) {
+      if (r.ngay) {
+        const parts = String(r.ngay).split('/')
+        if (parts.length >= 3) {
+          const m = parseInt(parts[1], 10)
+          const y = parts[2]
+          if (!isNaN(m) && y) {
+            return `Tháng ${m} năm ${y}`
+          }
+        }
+      }
+    }
+    return ''
+  }, [rowsLoc])
+
+  const dongDiaDiem = useMemo(() => {
+    const phan: string[] = []
+    if (tenDiaDiem) phan.push(`Địa điểm kinh doanh: ${tenDiaDiem}`)
+    if (chuoiThangNam) phan.push(chuoiThangNam)
+    return phan.join(' · ')
+  }, [tenDiaDiem, chuoiThangNam])
+
+  const dongNgayS1a = useMemo(() => {
+    return rowsLoc.filter(r => !r._t && !laDongTongCong(r.dienGiai))
+  }, [rowsLoc])
+
+  if (loaiSo === 's1a') {
+    return (
+      <div className="m-so-tt152 m-so-s1a">
+        <div className="m-s1a-wrap">
+          <div className="m-s1a-the-dau">
+            <h2 className="m-s1a-tieu-de">Sổ chi tiết doanh thu bán hàng hoá, dịch vụ</h2>
+            {dongDiaDiem && <p className="m-s1a-dia-diem">{dongDiaDiem}</p>}
+            <div className="m-s1a-hop-tong">
+              <div className="m-s1a-tong-nhan-dau">Tổng cộng</div>
+              <div className="m-s1a-tong-so-dau">{money(tongTien)} đ</div>
+            </div>
+          </div>
+
+          <h3 className="m-s1a-sec-tieu-de">Doanh thu theo ngày</h3>
+          <div className="m-s1a-the-ds">
+            <div className="m-s1a-ds-noi-dung">
+              {dongNgayS1a.map((d, i) => (
+                <div key={i} className="m-s1a-dong-item">
+                  <div className="m-s1a-dong-trai">
+                    <span className="m-s1a-dong-dg">{d.dienGiai || (d.ngay ? `Doanh thu bán hàng ngày ${ngayNgan(d.ngay)}` : '')}</span>
+                    <span className="m-s1a-dong-ngay">{dinhDangThuNgay(d.ngay)}</span>
+                  </div>
+                  <span className="m-s1a-dong-tien">{money(d.tien)}</span>
+                </div>
+              ))}
+            </div>
+            <div className="m-s1a-dong-tong-cuoi">
+              <span className="m-s1a-tong-cuoi-nhan">Tổng cộng</span>
+              <span className="m-s1a-tong-cuoi-so">{money(tongTien)}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div className={`m-so-tt152 ${loaiSo === 's1a' ? 'm-so-s1a' : ''}`}>
+    <div className="m-so-tt152">
       <div className="tom">
         <div>
           <small>{loaiSo === 's2c' ? 'Tổng doanh thu' : 'Tổng doanh thu'}</small>
