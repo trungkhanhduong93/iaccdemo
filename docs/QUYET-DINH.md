@@ -835,3 +835,13 @@ Trum chốt 21/10/2026 (T535), chọn Mẫu A trong 3 mẫu thiết kế trên a
 - Bộ lọc nâng cao rộng 760px, lưới 3 cột hiện mọi ô lọc. Mỗi ô có nút ghim đưa ra hàng lọc, tối đa 4 ô. Bỏ khối "Cấu hình tham số lọc", kéo thả đổi thứ tự ngay trên lưới. Chân có Đặt lại, số ô đang lọc, Đóng, Áp dụng.
 - Hàng lọc: nút phễu ngoài cùng bên trái, rồi các ô lọc, nút Lọc ngay sau ô lọc cuối, cả cụm căn lề trái.
 - Chỉ áp cho ô lọc danh sách (chế độ `chip` của `ChonHaiCot`). Form khác dùng `ChonHaiCot` giữ giao diện cũ.
+
+## QD77. Điện thoại: thẻ tổng danh sách, màn tạo chứng từ thành công, sổ S1a
+
+Trum chốt 21/10/2026 (T551–T555), mẫu trên artifact https://claude.ai/artifact/SfcVrqZv9iukRWQeovc2Dh.
+
+- Danh sách Thu chi không hiện số tổng gộp thu, chi, chuyển quỹ. Thẻ tổng có 2 ô Tổng thu, Tổng chi, ghi đủ số, không viết tắt "tr".
+- Danh sách chứng từ mua hàng có thẻ tổng: số chứng từ, khoảng ngày, Tổng cộng. Hàng lọc dùng chung kiểu của danh sách Thu chi.
+- Màn Tạo chứng từ thành công là một thành phần chung cho mọi phiếu. Màn có thẻ tóm tắt: số phiếu, số tiền hoặc số mặt hàng, 3 dòng thông tin. Màn có 3 nút: Xem chi tiết, Lập phiếu mới, Đóng.
+- Sổ S1a-HKD giữ đầu màn, hàng lọc như Sổ quỹ. Phần báo cáo có thẻ tiêu đề kèm Tổng cộng, doanh thu theo ngày, dòng Tổng cộng. Thanh đáy có nút "Xuất báo cáo" ra file Excel.
+- Phiếu thu chi điện thoại có dòng chi tiết ở mọi gói, kể cả Free. Mỗi dòng gói Free có Diễn giải và Số tiền. Số tiền đầu phiếu là tổng các dòng. Từ 2 dòng trở lên thì ô này khoá. Phiếu chuyển quỹ giữ một số tiền.
