@@ -38619,3 +38619,5 @@ body:has(.m-app) .m-thanh-duoi .m-tab.on .m-tab-ic .ic .l2 {
 .m-pos-b-bien-lai .d .am { color: var(--red); }
 .m-pos-b-bien-lai .d.tong { margin-top: 6px; padding-top: 10px; border-top: 1px dashed var(--line); font-size: 15px; font-weight: 700; color: var(--ink); }
 .m-pos-b-bien-lai .d.tong .num { color: var(--blue); font-weight: 700; }
+/* dòng chi tiết món (mã · SL × đơn giá, giảm) kéo hết chiều ngang, căn phải dưới thành tiền */
+.m-pos-ct-mon-the .m-pos-mon-ct-b, .m-pos-ct-mon-the .m-pos-mon-ct2-b { grid-column: 1 / -1; text-align: right; }

@@ -326,7 +326,7 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
                     <b>{m.ten}</b>
                     <span className="m-pos-mon-tien-b num">{money(m.tien)}</span>
                     <span className="m-pos-mon-ct-b num">{ct}</span>
-                    <span className="m-pos-mon-ct2-b num">{m.giam > 0 ? `giảm -${money(m.giam)}` : ''}</span>
+                    {m.giam > 0 && <span className="m-pos-mon-ct2-b num">giảm -{money(m.giam)}</span>}
                   </div>
                 )
               })}
