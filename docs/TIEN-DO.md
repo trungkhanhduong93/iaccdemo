@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T572 | Điện thoại, màn Nghiệp vụ phân hệ Thu chi bỏ hai mục Chuyển quỹ, Số dư ban đầu ở ngoài: Chuyển quỹ đã là tab trong Thu, chi tiền; số dư khai ở Danh mục Quỹ tiền | PhuongXT | Đang làm | `MNghiepVu.tsx` |
 | T562 | Điện thoại, danh sách chứng từ mua hàng mất nút Thêm mới: hiện nút giống danh sách Thu chi | Trum | Đang làm | Spec `backup/spec-T562.md` (gom T562-T567, bản clone `Web-dt`). Sửa `MChungTu.tsx`, cuối `app.css` (mục T562-T567) |
 | T563 | Điện thoại, nút quay lại vòng lặp A ↔ B: mọi màn lùi đúng 1 bước, hết lịch sử thì về màn cha bằng replace | Trum | Đang làm | Sửa hàm quay lại trong `src/ui/mobile` (`MChungTu.tsx`, `MDtThuChiDs.tsx`, `MBaoCaoDau.tsx`, `MBaoCao.tsx`, `MCcdc.tsx`...). Không đụng `MXemPhieu.tsx` (T436) |
 | T564 | Điện thoại, hàng tab Chứng từ mua hàng, Báo cáo theo dõi chữ nhỏ: cùng cỡ với tab danh sách Thu chi | Trum | Đang làm | Sửa `MChungTu.tsx`, cuối `app.css` |
