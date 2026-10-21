@@ -11,6 +11,9 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T606 | Điện thoại, Tổng hợp bán hàng (3.2.7) và Báo cáo kiểm kê (5.2.15) theo form Bảng kê mua hàng mẫu D: thanh trên, lọc kỳ, màu chữ khoảng cách, gom nhóm (nhóm hàng; kho), khối tổng ghim đáy theo dòng Cộng web, chỉ dạng thẻ | Trum | Đang làm | Sửa `MSoBaoCao.tsx`, `MBaoCaoDong.tsx`, `MBangKeMua.tsx` (chỉ tách phần dùng chung), cuối `app.css` (mục T606). Spec `backup/spec-T606.md` |
+| T607 | Điện thoại, rà mọi báo cáo gói Free còn lệch form mẫu D, lập danh sách để Trum chọn đợt sau | Trum | Đang làm | Chỉ đọc, ra `backup/T607-ra-soat.md`. Làm sau T606, chung spec `backup/spec-T606.md` |
+| T608 | Điện thoại gói Free, phiếu thu chi: bỏ khung gợi ý dưới Số tiền, thay bằng ô Diễn giải; ẩn ô Ghi chú và mục Chi tiết; lưu thì Số tiền, Diễn giải thành dòng chi tiết 1 và ghi chú phiếu; phiếu từ 2 dòng hiện Chi tiết, không nút Thêm dòng | Trum | Đang làm | Sửa `MDtThuChiLap.tsx` song song T604 (PhuongXT), khác khúc, ai push sau gộp tay; cuối `app.css` (mục T608) nếu cần. Spec `backup/spec-T608.md` |
 | T593 | Xem trước in và bản in báo cáo: mã, tên hàng, số phiếu ở mọi cột thành chữ thường, không bấm được (mở rộng T556) | Trum | Đang làm | Sửa cuối `app.css` (mục T556). Spec `backup/spec-T593-T595.md` |
 | T594 | Báo cáo đổi khổ dọc, ngang tự cân bề rộng cột và cỡ chữ: số, ngày, mã luôn 1 dòng đủ ký tự, chữ dài xuống tối đa 2 dòng, không tràn ô, không tràn viền tờ; cỡ chữ chọn tay là trần | Trum | Đang làm | Sửa `ToGiay.tsx`, `chiaCot.ts`, `ReportScreen.tsx`, `tools/kiem_tra.py`. Ca kiểm 3.2.8, 5.2.3 |
 | T595 | Hộp Tuỳ chỉnh báo cáo: hết mờ, menu trái kiểu pill đặc xanh, icon menu 20px | Trum | Đang làm | Sửa `TuyChinhBC.tsx`, cuối `app.css` (mục T595) |
