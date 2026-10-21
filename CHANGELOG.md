@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 21/10/2026
+- T586: Phiếu mua hàng, bán hàng mẫu đã thanh toán hoặc thanh toán một phần có phiếu chi, thu mẫu đi kèm bên Thu chi. Dòng Tham chiếu trên chi tiết phiếu hiện số phiếu, bấm mở được, hai chiều.
 - T585: Web, chi tiết chứng từ có một dòng "Tham chiếu" cuối phần thông tin chung, liệt kê các chứng từ liên quan (phiếu chi, thu; thẻ chi phí; phiếu điều chỉnh; phiếu nhập, xuất; phiếu gốc), bấm số để mở.
 - T584: Web, xem chi tiết chứng từ: Chứng từ trước, Chứng từ sau thành 2 nút mũi tên bên trái nút Tiện ích, không còn nằm trong menu Tiện ích.
 - T580: Web, chi tiết phiếu mua hàng có nhãn tình trạng thanh toán (Chưa thanh toán, Thanh toán một phần, Đã thanh toán) ở góc phải thanh Thanh toán.

@@ -3,6 +3,7 @@ import type { ModuleDef, ReportCfg, ScreenDef } from '../types'
 import { tuExcel } from '../types'
 import { quyTrinh } from './quy-trinh'
 import { ChungTuBanHang, NGOAI_POS } from './ChungTuBanHang'
+import { phieuGocCoTt } from '../tien/tt-mau'
 import { DoiSoat } from '../tien-ich/DoiSoat'
 import { baoCaoBanHang, baoCaoDoanhThu } from './data'
 import { SO_BO_SUNG } from '../bao-cao/so-bo-sung'
@@ -29,7 +30,7 @@ const banHang: ModuleDef = {
     // Xuất bán POS: chứng từ chỉ đổ về từ phần mềm bán hàng, không lập tay (T52)
     '3.1.1': { kind: 'custom', comp: ChungTuBanHang, ten: 'Xuất bán POS' },
     // Bán hàng lập tay ngoài POS: tiệc, khách công ty; từ gói Plus (T52)
-    '3.1.7': { voucher: NGOAI_POS },
+    '3.1.7': { voucher: { ...NGOAI_POS, rowsMau: () => phieuGocCoTt('3.1.7') } },   // phiếu mẫu đã thu có phiếu thu tham chiếu (T586)
     '3.1.2': { voucher: { prefix: 'HDB', doiTuong: 'kh', nhan: 'Khách hàng', them: 'Thêm hoá đơn bán hàng', dong: 'hang', tien: [0, 0], nguon: 'HĐ', soTT58: 'Sổ doanh thu bán hàng hoá, dịch vụ',
       dienGiai: ['Bán tiệc cho khách công ty', 'Bán suất ăn hội nghị', 'Bán set quà Trung thu'], noCo: [['131', '5111', 'Doanh thu'], ['131', '33311', 'Thuế GTGT đầu ra'], ['632', '152', 'Giá vốn']] } },
     '3.1.3': { voucher: { prefix: 'BNB', doiTuong: 'cn', nhan: 'Cửa hàng nhận', them: 'Thêm phiếu bán nội bộ', dong: 'nvl', tien: [0, 0], thue: 0,

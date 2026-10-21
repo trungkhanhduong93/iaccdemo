@@ -2,6 +2,7 @@
 import type { ModuleDef } from '../types'
 import { tuExcel } from '../types'
 import { quyTrinh } from './quy-trinh'
+import { phieuGocCoTt } from '../tien/tt-mau'
 import { colsCongNo, rowsCongNoNhom } from '../bao-cao/cong-no'
 import { PHIEU_MUA, bangKeMuaTheoHang, chiTietMua, chiTietNhap, muaHangTheoNgay, tongHopMua, tongHopNhap } from './bao-cao'
 
@@ -15,7 +16,7 @@ const muaHang: ModuleDef = {
   mota: 'Phiếu mua hàng, hoá đơn đầu vào, công nợ phải trả',
   quyTrinh,
   screens: tuExcel(3, {
-    '4.1.1': { voucher: PHIEU_MUA },
+    '4.1.1': { voucher: { ...PHIEU_MUA, rowsMau: () => phieuGocCoTt('4.1.1') } },   // phiếu mẫu đã trả có phiếu chi tham chiếu (T586)
     '4.1.2': { voucher: { prefix: 'HDM', doiTuong: 'ncc', nhan: 'Nhà cung cấp', them: 'Thêm hoá đơn mua hàng', dong: 'nvl', tien: [0, 0], nguon: 'HĐ', dienGiai: MUA,
       noCo: [['152', '331', 'Giá trị hàng mua'], ['1331', '331', 'Thuế GTGT được khấu trừ']] } },
     '4.1.3': { voucher: { prefix: 'MSC', doiTuong: 'ncc', nhan: 'Nhà cung cấp', them: 'Thêm phiếu mua qua sơ chế', dong: 'nvl', tien: [0, 0], nguon: 'excel',
