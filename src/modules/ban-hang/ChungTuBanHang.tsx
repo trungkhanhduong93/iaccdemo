@@ -707,7 +707,7 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
             </div>
           </div>
           <div className="pd-cum pd-hd">
-            <div className="pd-tieu pd-tieu-nhan">HOÁ ĐƠN{!dp.hoaDon && <span className="pd-nhan-khong">Không lấy hoá đơn GTGT</span>}</div>
+            <div className="pd-tieu pd-tieu-nhan">HOÁ ĐƠN{!dp.hoaDon && <span className="pd-nhan-khong">Không có thông tin HĐĐT</span>}</div>
             {dp.hoaDon ? (
               <div className="pd-luoi">
                 <div><small>Số hoá đơn</small><b className="code">{dp.hoaDon.so}</b></div>

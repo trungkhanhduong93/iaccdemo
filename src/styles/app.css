@@ -40796,7 +40796,7 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
 /* ── Chi tiết Xuất bán POS theo bảng B canvas: đầu phiếu 3 cụm, chân phiếu dạng phép tính (T613) ── */
 .pos-dau3 { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(0, 1.55fr) minmax(0, 1.15fr); padding: 0; overflow: hidden; }
 .pos-dau3 .pd-cum { display: flex; flex-direction: column; gap: 10px; padding: 14px 18px; min-width: 0; border-right: 1px solid var(--fr-t); }
-.pos-dau3 .pd-cum.pd-hd { background: var(--hdb-chan); border-right: 0; }
+.pos-dau3 .pd-cum.pd-hd { border-right: 0; }
 .pos-dau3 .pd-tieu { font-size: 11.5px; font-weight: 700; color: var(--blue); letter-spacing: .02em; }
 .pos-dau3 .pd-luoi { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 16px; }
 .pos-dau3 .pd-cum div:not(.pd-luoi):not(.pd-tieu) { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
