@@ -1,4 +1,5 @@
 # Tiến độ iaccdemo
+| T623 | Điện thoại, phân hệ Kê khai thuế có giao diện app theo iFaster: gói Free danh sách tờ khai hộ kinh doanh, lập tờ khai; gói Standard tờ khai GTGT, kê khai mua vào, bán ra | PhuongXT | Đang làm | Thêm file mới trong `src/ui/mobile/`, sửa `manMobile.ts`, cuối `app.css` mục T623 |
 
 Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người làm". Người làm tự đổi cột "Trạng thái".
 
