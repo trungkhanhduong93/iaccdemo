@@ -11,6 +11,13 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T633 | Điện thoại, phiếu chi lý do Chi phí chờ phân bổ: lưu xong bật bảng báo tạo thẻ Chi phí phân bổ như web | Trum | Đang làm | Sửa `MDtThuChiLap.tsx` (theo mẫu `MLapPhieu.tsx` 1830, 3714). Spec `backup/spec-T633.md` |
+| T634 | Điện thoại, Thao tác nhanh trang chủ Thu tiền, Chi tiền: menu nổi T611 đổi thành sheet đáy chọn tiền mặt hay ngân hàng, mọi gói | Trum | Đang làm | Sửa `MChonLoaiTien.tsx` |
+| T635 | Mua hàng, Báo cáo theo dõi: Sổ chi tiết mua hàng (4.2.1) đổi thành Bảng kê chi tiết mua hàng (4.2.7), web và điện thoại | Trum | Đang làm | Sửa `MBaoCaoTheoDoi.tsx`, `mua-hang/quy-trinh.ts` |
+| T636 | Điện thoại, trang chủ Free: thanh "Tháng … chưa khoá sổ" rộng bằng các thẻ | Trum | Đang làm | Sửa cuối `app.css` (mục T636) |
+| T639 | Điện thoại, lập phiếu mua mới: bỏ ô "Phiếu nhập", bỏ khối chiết khấu và thuế GTGT áp chung ở đầu danh sách hàng | Trum | Đang làm | Sửa `MLapPhieu.tsx` |
+| T637 | Web, chi tiết Xuất bán POS: đầu phiếu nhãn trái ô phải như phiếu mua, bỏ nút Đóng (Esc) | Trum | Chờ | Chờ Trum chọn phương án trong artifact mẫu. Sửa `ChungTuBanHang.tsx`, cuối `app.css` (mục T637) |
+| T638 | Điện thoại, Lịch sử thu chi, Sổ quỹ tiền mặt, Sổ ngân hàng: giảm màu theo một concept chung cho các màn tiền | Trum | Chờ | Chờ Trum duyệt artifact mẫu. Sửa `MLichSuQuy.tsx`, `MSoBaoCao.tsx`, cuối `app.css` (mục T638) |
 | T632 | Thông tin đơn vị gói Free (web, điện thoại): chọn loại hình Doanh nghiệp thì chế độ kế toán thành TT58, không sửa được; Báo cáo theo dõi hiện sổ S1-DNSN | PhuongXT | Đang làm | Sửa `HeThong.tsx`, `MHeThong.tsx`, `che-do.ts`, `session.tsx`, `danh-sach.ts` |
 | T593 | Xem trước in và bản in báo cáo: mã, tên hàng, số phiếu ở mọi cột thành chữ thường, không bấm được (mở rộng T556) | Trum | Đang làm | Sửa cuối `app.css` (mục T556). Spec `backup/spec-T593-T595.md` |
 | T594 | Báo cáo đổi khổ dọc, ngang tự cân bề rộng cột và cỡ chữ: số, ngày, mã luôn 1 dòng đủ ký tự, chữ dài xuống tối đa 2 dòng, không tràn ô, không tràn viền tờ; cỡ chữ chọn tay là trần | Trum | Đang làm | Sửa `ToGiay.tsx`, `chiaCot.ts`, `ReportScreen.tsx`, `tools/kiem_tra.py`. Ca kiểm 3.2.8, 5.2.3 |
@@ -18,7 +25,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 | T577 | Web, danh sách chứng từ: thanh trên chọn Tất cả cửa hàng thì bộ lọc luôn có ô Cửa hàng ghi tên gốc, như báo cáo ở T576 | dinhlanphuongipacc | Chờ | Sửa `VoucherScreen.tsx`, Trum đang giữ ở T496, hỏi Trum trước |
 | T574 | Dữ liệu giả hoá đơn FABi lẻ (`dongMonDon` trong `ChungTuBanHang.tsx`): món cuối nhận phần dư nên số lượng × đơn giá khác thành tiền (vd 5 Ly × 39.000 = 182.000), lộ rõ ở chi tiết Xuất bán POS web và điện thoại | | Chờ | Thấy khi làm T573. `ChungTuBanHang.tsx` |
 | T575 | Điện thoại, chi tiết phiếu Xuất bán POS thêm nút In phiếu như web: app điện thoại chưa có hộp in chứng từ dùng chung | | Chờ | Tách từ T573. `MXuatBanPos.tsx` |
-| T552 | Điện thoại, màn Tạo chứng từ thành công: một thành phần dùng chung cho mọi phiếu, thẻ tóm tắt số phiếu, số tiền, đối tượng; nút Xem chi tiết, Lập phiếu mới, Đóng | Trum | Chờ | Làm sau T539 (PhuongXT giữ `MLapPhieu.tsx`, `MLapPhieuKho.tsx`, `MDtThuChiLap.tsx`). Tạo `MThanhCong.tsx`, cuối `app.css` (mục T552). T629 đã tạo `MThanhCong.tsx`, gắn phiếu mua; còn gắn phiếu khác |
+| T552 | Điện thoại, màn Tạo chứng từ thành công: một thành phần dùng chung cho mọi phiếu, thẻ tóm tắt số phiếu, số tiền, đối tượng; nút Xem chi tiết, Lập phiếu mới, Đóng | Trum | Chờ | Làm sau T539 (PhuongXT giữ `MLapPhieu.tsx`, `MLapPhieuKho.tsx`, `MDtThuChiLap.tsx`). Tạo `MThanhCong.tsx`, cuối `app.css` (mục T552). T629 đã tạo `MThanhCong.tsx`, gắn phiếu mua; còn gắn phiếu khác. Đợt T633: thêm màn xoá thành công, gắn mọi phiếu gói Free, chờ Trum duyệt mẫu (spec `backup/spec-T633.md`) |
 | T540 | Điện thoại, phiếu mua hàng: thẻ hàng `TheHangMua` dùng số thứ tự dòng làm `key`, xoá dòng phía trên thì thẻ dưới giữ nhầm chế độ giảm giá %/đ của dòng cũ | Trum | Chưa làm | Ghi lúc nghiệm thu T528. Sửa `MLapPhieu.tsx` |
 | T550 | Điện thoại, chi tiết phiếu: ô ĐVT chọn như T547 | Trum | Chờ | Làm sau T539 vì sửa `MLapPhieu.tsx`, `MLapPhieuKho.tsx` PhuongXT đang giữ |
 | T500 | Giao diện điện thoại theo Figma: danh sách Báo cáo (Truy cập nhanh gần đây, đã ghim, nhóm báo cáo); Sổ quỹ tiền mặt, Sổ ngân hàng (chip lọc, nút lọc chỉ icon, 4 thẻ tổng, chi tiết theo ngày), không làm thanh In, Xuất báo cáo ở đáy | Trum | Đang làm | Chỉ điện thoại |
