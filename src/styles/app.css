@@ -41128,3 +41128,8 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
   color: var(--muted);
   cursor: not-allowed;
 }
+
+/* ── Lập phiếu thu chi điện thoại: ô Quỹ cách hàng Ngày chứng từ, Số phiếu (T631) ── */
+.m-tc-lap-hang-2col {
+  margin-bottom: 12px;
+}

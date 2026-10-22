@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 22/10/2026
+- T631: Điện thoại, lập phiếu thu chi: ô Quỹ không còn dính sát hàng Ngày chứng từ, Số phiếu.
 - T628: Điện thoại, danh sách Xuất bán POS và báo cáo Bảng kê chi tiết bán hàng không còn chia nhóm theo ngày. Mỗi thẻ là một dòng hàng: tên hàng, mã khách hàng, số phiếu, ngày, số lượng, thành tiền.
 - T629: Điện thoại, phiếu mua chọn Tiền mặt ngay hoặc Chuyển khoản ngay thì ô Quỹ hiện ngay trong phiếu, tự điền quỹ của cửa hàng. Lưu phiếu thì tự lập phiếu chi trả hết, hai phiếu tham chiếu nhau. Bảng Lưu phiếu thành công có nút Xem chi tiết, Lập phiếu mới, Đóng.
 - T630: Điện thoại, Thanh toán ngay phiếu mua tự điền đủ số còn nợ. Gói Free không sửa được số tiền, gói khác sửa được để trả một phần.
