@@ -49,7 +49,6 @@ const THEO_ROADMAP: Record<string, Goi[]> = {
   // Bộ báo cáo hộ kinh doanh theo iFaster, Trum chốt 10/10/2026 (T97)
   '3.2.5': ['F', 'S', 'PL', 'PR'],
   '2.2.5': ['F', 'S', 'PL', 'PR'],
-  '5.2.2': ['F', 'S', 'PL', 'PR'],
   '5.2.1': ['F', 'S', 'PL', 'PR'],   // Thẻ kho mở cho gói Free để bấm hàng hoá ở Xuất nhập tồn mở thẻ kho, PhuongXT chốt 14/10/2026 (T211)
   '10.1.3': ['S', 'PL', 'PR'],   // Số dư ban đầu mở cho Standard: tiền, công nợ, tồn kho, PhuongXT chốt 11/10/2026 (T141)
 }
@@ -90,6 +89,7 @@ const CHEN_SAU: Record<string, string[]> = {
 /** Màn bỏ hẳn ở mọi gói dù có trong Excel. Trum cập nhật Excel bỏ mã rồi thì xoá dòng ở đây */
 const DA_BO = new Set([
   '3.2.1', '3.2.3',   // Báo cáo bán hàng, Báo cáo doanh thu: bỏ ở mọi gói, dùng Sổ doanh thu bán hàng 3.2.5, PhuongXT chốt 10/10/2026 (T99)
+  '5.2.2',            // Tổng hợp nhập xuất tồn tạm bỏ, trùng Báo cáo xuất nhập tồn 5.2.3, Trum chốt 22/10/2026 (T624)
   '11.1', '11.2',     // Tiện ích Đồng bộ bán hàng, Xuất kho theo định lượng: bỏ ở mọi gói, PhuongXT chốt 10/10/2026 (T100)
 ])
 

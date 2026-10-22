@@ -11,6 +11,8 @@ import { useSession } from '../../app/session'
 import { MBangKeMua } from './MBangKeMua'
 import { MTongHopBanHang } from './MTongHopBanHang'
 import { MBaoCaoKiemKe } from './MBaoCaoKiemKe'
+import { MBaoCaoChiTietMauD } from './MBaoCaoChiTietMauD'
+import { MBaoCaoTongHopMauD } from './MBaoCaoTongHopMauD'
 import { MSoTT152, laSoTT152 } from './MSoTT152'
 
 export type LoaiKhuonDong = 'chi-tiet-ngay' | 'tong-hop-doi-tuong' | 'chi-tieu-phan-cap'
@@ -939,6 +941,23 @@ export const MBaoCaoDong: FC<Props> = ({ maBc, khuon, cols, rows, q = '', xemTat
 
   if (la5215) {
     return <MBaoCaoKiemKe rows={rows} q={q} />
+  }
+
+  const laChiTietMauD =
+    maNorm === '3.2.8' || maNorm.endsWith('.3.2.8') || maNorm.endsWith('/3.2.8') ||
+    maNorm === '5.2.10' || maNorm.endsWith('.5.2.10') || maNorm.endsWith('/5.2.10')
+
+  const laTongHopMauD =
+    maNorm === '4.2.3' || maNorm.endsWith('.4.2.3') || maNorm.endsWith('/4.2.3') ||
+    maNorm === '5.2.9' || maNorm.endsWith('.5.2.9') || maNorm.endsWith('/5.2.9') ||
+    maNorm === '5.2.3' || maNorm.endsWith('.5.2.3') || maNorm.endsWith('/5.2.3')
+
+  if (laChiTietMauD) {
+    return <MBaoCaoChiTietMauD maBc={maBc} rows={rows} q={q} />
+  }
+
+  if (laTongHopMauD) {
+    return <MBaoCaoTongHopMauD maBc={maBc} rows={rows} q={q} />
   }
 
   if (s.cheDo === 'TT152' && laSoTT152(maBc)) {

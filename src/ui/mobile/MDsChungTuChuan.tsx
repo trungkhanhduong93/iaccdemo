@@ -149,6 +149,9 @@ export interface MDsChungTuChuanProps {
   sortMoiNhat?: boolean
   onToggleSort?: () => void
 
+  // Nhóm theo ngày (mặc định true, tắt nhóm ngày nếu false) (T625)
+  nhomTheoNgay?: boolean
+
   // FAB thêm mới
   onThem?: () => void
   nhanThem?: string
@@ -174,6 +177,7 @@ export const MDsChungTuChuan: FC<MDsChungTuChuanProps> = ({
   renderDong,
   sortMoiNhat: sortMoiNhatProp,
   onToggleSort,
+  nhomTheoNgay: coNhomTheoNgay = true,
   onThem,
   nhanThem = 'Thêm mới',
   thongBaoTrong = 'Không có chứng từ nào phù hợp',
@@ -218,7 +222,21 @@ export const MDsChungTuChuan: FC<MDsChungTuChuanProps> = ({
     [listSauTim],
   )
 
+  const listKhongNhom = useMemo(() => {
+    if (coNhomTheoNgay) return []
+    const arr = [...listSauTim]
+    arr.sort((a, b) => {
+      const da = docNgay(String(a.ngay ?? '').split(' ')[0]).getTime()
+      const db = docNgay(String(b.ngay ?? '').split(' ')[0]).getTime()
+      const timeA = isNaN(da) ? 0 : da
+      const timeB = isNaN(db) ? 0 : db
+      return sortMoiNhat ? timeB - timeA : timeA - timeB
+    })
+    return arr
+  }, [listSauTim, sortMoiNhat, coNhomTheoNgay])
+
   const nhomTheoNgay = useMemo(() => {
+    if (!coNhomTheoNgay) return []
     const map = new Map<string, Row[]>()
     for (const r of listSauTim) {
       const ngayRaw = String(r.ngay ?? '').split(' ')[0]
@@ -241,7 +259,7 @@ export const MDsChungTuChuan: FC<MDsChungTuChuanProps> = ({
       return sortMoiNhat ? db - da : da - db
     })
     return arr
-  }, [listSauTim, sortMoiNhat])
+  }, [listSauTim, sortMoiNhat, coNhomTheoNgay])
 
   return (
     <div className="m-tc-man m-ds-khung">
@@ -372,7 +390,7 @@ export const MDsChungTuChuan: FC<MDsChungTuChuanProps> = ({
           <div className="m-trong m-mh-trong m-tc-trong">
             <p>{thongBaoTrong}</p>
           </div>
-        ) : (
+        ) : coNhomTheoNgay ? (
           <div className="m-mh-ds-nhom">
             {nhomTheoNgay.map(nhom => (
               <div key={nhom.ngayRaw} className="m-mh-nhom-item">
@@ -385,6 +403,12 @@ export const MDsChungTuChuan: FC<MDsChungTuChuanProps> = ({
                 </div>
               </div>
             ))}
+          </div>
+        ) : (
+          <div className="m-mh-ds-nhom">
+            <div className="m-mh-the-trang">
+              {listKhongNhom.map((r, i) => renderDong(r, i))}
+            </div>
           </div>
         )}
       </main>

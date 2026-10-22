@@ -355,6 +355,7 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
         chipsLoc={chipsLoc}
         chuoiKhoangNgay={chuoiKhoangNgay}
         hienTien={true}
+        nhomTheoNgay={false}
         rows={listLoc as unknown as Row[]}
         renderDong={(r, i) => {
           const item = r as unknown as TheItem
@@ -366,22 +367,22 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
             <button
               key={`${item.soThe}_${i}`}
               type="button"
-              className="m-mh-dong-phieu m-the-ct m-ds-ngay-dong"
+              className="m-mh-dong-phieu m-the-ct m-ds-ngay-dong m-the-cp-dong"
               onClick={() => {
                 nav(`?mo=${item.soThe}`)
                 setTheXem(item)
               }}
             >
               <div className="m-mh-dong-trai">
-                <div className="m-mh-dong-hang1">
-                  <span className="m-mh-dong-so">{item.soThe}</span>
-                  <span className={`m-the-ct-tag ${item.ttCls}`}>{item.ttNhan}</span>
-                </div>
+                <span className="m-mh-dong-so">{item.soThe}</span>
                 <span className="m-mh-dong-ncc" title={dongPhu}>
                   {dongPhu}
                 </span>
               </div>
-              <span className="m-mh-dong-tien">{money(item.gt)} đ</span>
+              <div className="m-the-cp-phai">
+                <span className={`m-the-ct-tag ${item.ttCls}`}>{item.ttNhan}</span>
+                <span className="m-mh-dong-tien">{money(item.gt)} đ</span>
+              </div>
             </button>
           )
         }}

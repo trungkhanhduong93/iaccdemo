@@ -846,4 +846,11 @@ Trum chốt 21/10/2026 (T551–T555), mẫu trên artifact https://claude.ai/art
 - Sổ S1a-HKD giữ đầu màn, hàng lọc như Sổ quỹ. Phần báo cáo có thẻ tiêu đề kèm Tổng cộng, doanh thu theo ngày, dòng Tổng cộng. Thanh đáy có nút "Xuất báo cáo" ra file Excel.
 - Phiếu thu chi điện thoại có dòng chi tiết ở mọi gói, kể cả Free. Mỗi dòng gói Free có Diễn giải và Số tiền. Số tiền đầu phiếu là tổng các dòng. Từ 2 dòng trở lên thì ô này khoá. Phiếu chuyển quỹ giữ một số tiền.
 
-## QD78. Xuất nhập tồn gói Free chỉ số lượng, bỏ Tổng hợp nhập xuất tồn 5.2.2 (đang soạn)
+## QD78. Xuất nhập tồn gói Free chỉ số lượng, bỏ Tổng hợp nhập xuất tồn 5.2.2
+
+Trum chốt 22/10/2026 (T624).
+
+- Báo cáo xuất nhập tồn 5.2.3 gói Free chỉ hiện số lượng, ở web, bản in và điện thoại. Không cột tiền, không dòng Tổng cộng. Cộng số lượng nhiều mặt hàng khác đơn vị tính không có nghĩa.
+- Gói S, PL, PR hiện cả số lượng và tiền. Điện thoại: mỗi nhóm Đầu kỳ, Nhập, Xuất, Cuối kỳ có số lượng ở trên, tiền ở dưới.
+- Tạm bỏ Tổng hợp nhập xuất tồn 5.2.2 vì trùng 5.2.3. Gỡ khỏi sidebar, quy trình, danh sách báo cáo; giữ code.
+- Báo cáo điện thoại Bảng kê chi tiết bán hàng, Công nợ nhà cung cấp, Tổng hợp nhập kho, Chi tiết nhập kho, Báo cáo xuất nhập tồn theo mẫu D của Bảng kê chi tiết mua hàng.

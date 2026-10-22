@@ -97,7 +97,10 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc, mod }) => {
   const la427 = maBcStr === '4.2.7'
   const la327 = maBcStr === '3.2.7'
   const la5215 = maBcStr === '5.2.15'
-  const laMauD = la427 || la327 || la5215
+  const laMauDMoi = maBcStr === '3.2.8' || maBcStr === '5.2.10' || maBcStr === '4.2.3' || maBcStr === '5.2.9' || maBcStr === '5.2.3'
+  const laMauD = la427 || la327 || la5215 || laMauDMoi
+  const is523 = maBcStr === '5.2.3'
+  const isFree = s.goi === 'F'
   const laTT152Hook = s.cheDo === 'TT152' && laSoTT152(maBcStr)
   const isS1a = (s.cheDo === 'TT152' && kyHieuBC(sc.code, s.cheDo, s) === 'S1a-HKD') || maBcStr.includes('s1a')
 
@@ -343,12 +346,21 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc, mod }) => {
   const noiDungBang = useMemo(() => {
     if (!React.isValidElement(body)) return body
     const p = body.props as { rows?: Row[]; cols?: Col[] }
-    const colsGoc = p?.cols || rawCols
+    let colsGoc = p?.cols || rawCols
+    let rowsHienThi = pt.rowsHienThi
+    if (is523 && isFree) {
+      colsGoc = colsGoc.filter(c => !['gt0', 'gtn', 'gtx', 'gt1'].includes(c.k))
+      rowsHienThi = rowsHienThi.map(r => {
+        if (!r._t) return r
+        const { gt0, gtn, gtx, gt1, ...rest } = r as Record<string, any>
+        return rest as Row
+      })
+    }
     return React.cloneElement(body as React.ReactElement<{ rows?: Row[]; cols?: Col[] }>, {
-      rows: pt.rowsHienThi,
+      rows: rowsHienThi,
       cols: cotMobile(colsGoc),
     })
-  }, [body, pt.rowsHienThi, rawCols])
+  }, [body, pt.rowsHienThi, rawCols, is523, isFree])
 
   const coCuonNgang = useBangMauA(bangWrapRef, [noiDungBang, kieuXem, daTai])
 

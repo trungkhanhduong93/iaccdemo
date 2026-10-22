@@ -80,7 +80,7 @@ export const quyTrinh: QuyTrinhDef = {
       ],
     },
   ],
-  baoCao: ['5-2-3', '5-2-4', '5-2-1', '5-2-2', '5-2-5'],
+  baoCao: ['5-2-3', '5-2-4', '5-2-1', '5-2-5'],
   danhMuc: ['danh-muc/1-8', 'danh-muc/1-2', 'danh-muc/1-3', 'danh-muc/1-4', 'kho/5-1-5', 'kho/9-1-3'],
   tienIch: ['tien-ich/11-3', 'tien-ich/11-15'],   // bỏ 11.2 (T100)
 }
