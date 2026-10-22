@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 22/10/2026
+- T641: Web, chi tiết phiếu Xuất bán POS: Số đơn POS và Thời gian xuất, Kênh bán hàng và Thanh toán, Số hoá đơn và Ký hiệu nằm chung một hàng. Bỏ ô Ngày chứng từ. Ghi chú chuyển vào nhóm Hoá đơn, dưới Mã tra cứu.
 - T640: Web, chi tiết phiếu Xuất bán POS bỏ tab Ghi sổ, chỉ còn tab Hàng bán.
 - T632: Gói Free, Thông tin đơn vị (web, điện thoại) chọn loại hình Doanh nghiệp thì Thông tư áp dụng là TT58, không sửa được; phương pháp thuế GTGT, TNDN cố định theo % doanh thu. Báo cáo theo dõi ở Kê khai thuế hiện Sổ doanh thu bán hàng hoá, dịch vụ (S1-DNSN). Báo cáo kết quả kinh doanh giữ bản đơn giản ở nhóm Kế toán tổng hợp, không theo mẫu B02-DNSN.
 - T633: Điện thoại, lập phiếu chi với lý do Chi phí chờ phân bổ: lưu xong hiện bảng nhắc tạo thẻ, bấm Tiếp tục mở màn Tạo thẻ chi phí phân bổ đã điền sẵn tên, số tiền, ngày, chứng từ gốc. Web đã có từ trước.

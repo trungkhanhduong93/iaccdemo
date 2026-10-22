@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T641 | Web, chi tiết Xuất bán POS: đầu phiếu gom ô ngắn 2 ô một hàng, bỏ Ngày chứng từ, Ghi chú dời dưới Mã tra cứu | Trum | 22/10/2026 | [nhật ký](../nhat-ky/2026-10-22-trum-pos-bo-tab-ghi-so.md) |
 | T640 | Web, chi tiết Xuất bán POS: bỏ tab Ghi sổ, chế độ nợ có giữ tab Hạch toán | Trum | 22/10/2026 | [nhật ký](../nhat-ky/2026-10-22-trum-pos-bo-tab-ghi-so.md) |
 | T632 | Thông tin đơn vị gói Free (web, điện thoại): Doanh nghiệp dùng TT58, không sửa được, thuế theo % doanh thu; Báo cáo theo dõi chỉ hiện S1-DNSN | PhuongXT | 22/10/2026 | [nhật ký](../nhat-ky/2026-10-22-phuongxt-free-doanh-nghiep-tt58.md) |
 | T639 | Điện thoại, lập phiếu mua mới: bỏ ô "Phiếu nhập", bỏ khối chiết khấu và thuế GTGT áp chung ở đầu danh sách hàng | Trum | 22/10/2026 | [nhật ký](../nhat-ky/2026-10-22-trum-dot-t633-gop-y-dien-thoai.md) |

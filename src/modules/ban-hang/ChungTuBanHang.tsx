@@ -677,7 +677,8 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
       </>}>
       <div className="stack ct-co-dinh" style={{ gap: 14 }}>
         <p className="pos-nhac"><Icon n="info" className="ic sm" />Chứng từ đồng bộ từ FABi: không sửa, trả hàng, xoá trên phiếu này. Sửa đơn trên FABi rồi đồng bộ lại.</p>
-        {/* Đầu phiếu 3 nhóm kiểu nhãn trái ô phải (T637): Đơn hàng POS, Thông tin khách hàng, Hoá đơn; Ghi chú dưới cùng */}
+        {/* Đầu phiếu 3 nhóm kiểu nhãn trái ô phải (T637): Đơn hàng POS, Thông tin khách hàng, Hoá đơn.
+            T641: ô ngắn gom 2 ô một hàng (.xp637-cap), bỏ Ngày chứng từ (trùng Thời gian xuất), Ghi chú dời vào nhóm Hoá đơn */}
         <section className="xp637-dau">
           <div className="xp637-nhom xp637-nhom-pos">
             <div className="xp637-tieu">ĐƠN HÀNG POS</div>
@@ -686,28 +687,32 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
                 <span className="xp637-nhan">Mã đơn POS</span>
                 <div className="xp637-tri">{row.so ? <span className="xp637-code">{row.so}</span> : <span className="xp637-trong">—</span>}</div>
               </div>
-              <div className="xp637-o">
-                <span className="xp637-nhan">Số đơn POS</span>
-                <div className="xp637-tri">{dp.soDon ? <span className="xp637-code">{dp.soDon}</span> : <span className="xp637-trong">—</span>}</div>
+              <div className="xp637-cap">
+                <div className="xp637-o">
+                  <span className="xp637-nhan">Số đơn POS</span>
+                  <div className="xp637-tri">{dp.soDon ? <span className="xp637-code">{dp.soDon}</span> : <span className="xp637-trong">—</span>}</div>
+                </div>
+                <div className="xp637-o xp637-o-phu xp637-o-rong">
+                  <span className="xp637-nhan">Thời gian xuất</span>
+                  <div className="xp637-tri"><span>{dmy(x.date)} {(x as XPos).gio ?? '23:30'}</span></div>
+                </div>
               </div>
               <div className="xp637-o">
                 <span className="xp637-nhan">Cửa hàng</span>
                 <div className="xp637-tri">{row.cn ? <span title={String(row.cn)}>{row.cn}</span> : <span className="xp637-trong">—</span>}</div>
               </div>
-              <div className="xp637-o">
-                <span className="xp637-nhan">Kênh bán hàng</span>
-                <div className="xp637-tri">{kenh ? <span title={kenh}>{kenh}</span> : <span className="xp637-trong">—</span>}</div>
-              </div>
-              {/* Hoá đơn có một cách thanh toán; chứng từ tổng hợp theo kênh gộp nhiều cách nên bỏ (T116) */}
-              {(x as XPos).loai === 'don' && (
+              <div className="xp637-cap">
                 <div className="xp637-o">
-                  <span className="xp637-nhan">Phương thức thanh toán</span>
-                  <div className="xp637-tri">{pttt ? <span title={pttt}>{pttt}</span> : <span className="xp637-trong">—</span>}</div>
+                  <span className="xp637-nhan">Kênh bán hàng</span>
+                  <div className="xp637-tri">{kenh ? <span title={kenh}>{kenh}</span> : <span className="xp637-trong">—</span>}</div>
                 </div>
-              )}
-              <div className="xp637-o">
-                <span className="xp637-nhan">Thời gian xuất</span>
-                <div className="xp637-tri"><span>{dmy(x.date)} {(x as XPos).gio ?? '23:30'}</span></div>
+                {/* Hoá đơn có một cách thanh toán; chứng từ tổng hợp theo kênh gộp nhiều cách nên bỏ (T116) */}
+                {(x as XPos).loai === 'don' && (
+                  <div className="xp637-o xp637-o-phu">
+                    <span className="xp637-nhan" title="Phương thức thanh toán">Thanh toán</span>
+                    <div className="xp637-tri">{pttt ? <span title={pttt}>{pttt}</span> : <span className="xp637-trong">—</span>}</div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -740,21 +745,19 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
               {!dp.hoaDon && <span className="xp637-nhan-khong">Không có thông tin HĐĐT</span>}
             </div>
             <div className="xp637-ds">
-              <div className="xp637-o">
-                <span className="xp637-nhan">Số hoá đơn</span>
-                <div className="xp637-tri">{dp.hoaDon?.so ? <span className="xp637-code">{dp.hoaDon.so}</span> : <span className="xp637-trong">—</span>}</div>
-              </div>
-              <div className="xp637-o">
-                <span className="xp637-nhan">Ký hiệu</span>
-                <div className="xp637-tri">{dp.hoaDon?.kyHieu ? <span className="xp637-code">{dp.hoaDon.kyHieu}</span> : <span className="xp637-trong">—</span>}</div>
+              <div className="xp637-cap">
+                <div className="xp637-o xp637-o-rong">
+                  <span className="xp637-nhan">Số hoá đơn</span>
+                  <div className="xp637-tri">{dp.hoaDon?.so ? <span className="xp637-code">{dp.hoaDon.so}</span> : <span className="xp637-trong">—</span>}</div>
+                </div>
+                <div className="xp637-o xp637-o-phu">
+                  <span className="xp637-nhan">Ký hiệu</span>
+                  <div className="xp637-tri">{dp.hoaDon?.kyHieu ? <span className="xp637-code">{dp.hoaDon.kyHieu}</span> : <span className="xp637-trong">—</span>}</div>
+                </div>
               </div>
               <div className="xp637-o">
                 <span className="xp637-nhan">Ngày hoá đơn</span>
                 <div className="xp637-tri">{dp.hoaDon?.ngay ? <span>{dp.hoaDon.ngay}</span> : <span className="xp637-trong">—</span>}</div>
-              </div>
-              <div className="xp637-o">
-                <span className="xp637-nhan">Ngày chứng từ</span>
-                <div className="xp637-tri">{x.date ? <span>{dmy(x.date)}</span> : <span className="xp637-trong">—</span>}</div>
               </div>
               <div className="xp637-o">
                 <span className="xp637-nhan">Mã tra cứu</span>
@@ -770,12 +773,11 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
                   <div className="xp637-tri"><span className="xp637-trong">—</span></div>
                 )}
               </div>
+              <div className="xp637-o">
+                <span className="xp637-nhan">Ghi chú</span>
+                <div className="xp637-tri">{row.dienGiai ? <span title={String(row.dienGiai)}>{row.dienGiai}</span> : <span className="xp637-trong">—</span>}</div>
+              </div>
             </div>
-          </div>
-
-          <div className="xp637-ghichu">
-            <span className="xp637-nhan">Ghi chú</span>
-            <div className="xp637-tri">{row.dienGiai ? <span title={String(row.dienGiai)}>{row.dienGiai}</span> : <span className="xp637-trong">—</span>}</div>
           </div>
         </section>
         <section className="card ct-than-card">
