@@ -10,7 +10,7 @@
 - `src/app/session.tsx`: thêm `chuanHoaFree`, chạy khi đọc phiên và mỗi lần `set`. Gói Free: hộ kinh doanh TT152; doanh nghiệp TT58, thuế GTGT, TNDN theo tỷ lệ % doanh thu (trường hợp 1). Phiên cũ đang Free doanh nghiệp TT152 tự chuyển sang TT58.
 - `src/modules/he-thong/HeThong.tsx`, `src/ui/mobile/MHeThong.tsx`: Thông tin đơn vị gói Free chọn Doanh nghiệp thì Thông tư áp dụng hiện TT58, khoá; hai ô phương pháp thuế khoá ở "% doanh thu"; web hiện dòng "Trường hợp 1: S1-DNSN". Bỏ dòng "Quản lý lãi lỗ, không theo thông tư".
 - `src/modules/bao-cao/danh-sach.ts`, `src/app/registry.ts`: thêm `anSoTT58GoiFree`, gói Free TT58 ẩn các sổ TT58 khác (S4c, S3b, S2b-DNSN...), chỉ giữ 3.2.5 S1-DNSN; báo cáo theo iFaster vẫn mở. Báo cáo theo dõi ở Kê khai thuế điện thoại chỉ còn S1-DNSN.
-- `danh-sach.ts`, `registry.ts`: doanh nghiệp gói Free ẩn Báo cáo kết quả kinh doanh 10.2.3 (B02-DNSN) khỏi danh sách báo cáo, PhuongXT góp ý sau. Trang chủ Free vẫn mở thẳng được bản lãi lỗ đơn giản, tiêu đề không ghi ký hiệu B02-DNSN.
+- `danh-sach.ts` (`kyHieuBC`): gói Free bỏ ký hiệu B02-DNSN của Báo cáo kết quả kinh doanh 10.2.3, theo góp ý của PhuongXT. Báo cáo rời nhóm Sổ sách kế toán theo TT58, về nhóm Kế toán tổng hợp như trước.
 - `src/modules/tong-hop/BaoCaoTaiChinh.tsx`: Báo cáo kết quả kinh doanh gói Free giữ bản đơn giản một cột như cũ, không chuyển sang B02-DNSN.
 - `src/modules/onboarding/OnboardFabi.tsx`: màn khởi tạo FABi, doanh nghiệp chọn gói Free thì chế độ TT58, mô tả gói đổi theo.
 

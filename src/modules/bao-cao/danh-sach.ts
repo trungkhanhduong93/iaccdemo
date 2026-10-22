@@ -196,9 +196,9 @@ export const giuBC = (code: string | undefined, cheDo: CheDo, hkd = false) =>
   !!code && (GIU_MOI_CHE_DO.includes(code) || MO_IFASTER.includes(code) || (cheDo === 'TT58' && GIU_TT58.includes(code)) || (cheDo === 'TT152' && hkd && GIU_TT152_HKD.includes(code)))
 
 /** Doanh nghiệp gói Free (TT58 trường hợp 1) chỉ có sổ doanh thu S1-DNSN; các sổ khác của bộ TT58 ẩn (T632).
- *  Báo cáo kết quả kinh doanh 10.2.3 (B02-DNSN) ẩn khỏi danh sách báo cáo, Trang chủ Free vẫn mở thẳng bản lãi lỗ đơn giản */
-export const anSoTT58GoiFree = (code: string | undefined, goi: string, moThang = false) =>
-  goi === 'F' && !!code && GIU_TT58.includes(code) && code !== '3.2.5' && (code !== '10.2.3' || !moThang)
+ *  Báo cáo kết quả kinh doanh 10.2.3 vẫn mở, bản lãi lỗ đơn giản không ký hiệu mẫu nên nằm ở nhóm Tổng hợp, không vào nhóm sổ TT58 */
+export const anSoTT58GoiFree = (code: string | undefined, goi: string) =>
+  goi === 'F' && !!code && GIU_TT58.includes(code) && !MO_IFASTER.includes(code) && code !== '3.2.5'
 
 /** Ký hiệu mẫu theo chế độ; Sổ doanh thu 3.2.5 đổi mẫu theo trường hợp thuế: TT58 S1, S2a, S3a-DNSN; hộ kinh doanh TT152 S1a, S2a, S2b-HKD (T179) */
 export function kyHieuBC(code: string | undefined, cheDo: CheDo, s?: PhienBC): string | undefined {

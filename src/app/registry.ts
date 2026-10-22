@@ -156,7 +156,7 @@ export const hienMan = (sc: ScreenDef, goi: Goi, cheDo?: CheDo, session?: Pick<S
     if (AN_BC_GOI[goi]?.includes(ma)) return false   // báo cáo ẩn hẳn ở gói (T506)
     if (!apDung(sc, cd, session)) return false
     if (cd === 'TT152' && anSoHkdGoiFree(maBC(sc), goi, session as PhienBC)) return false
-    if (cd === 'TT58' && anSoTT58GoiFree(maBC(sc), goi, moThang)) return false
+    if (cd === 'TT58' && anSoTT58GoiFree(maBC(sc), goi)) return false
     return moDuoc(sc, goi) || !anNgoaiGoi(goi)
   }
   return moDuoc(sc, goi) || (!anNgoaiGoi(goi) && !khongApDung(sc, goi))
