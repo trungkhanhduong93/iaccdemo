@@ -845,3 +845,5 @@ Trum chốt 21/10/2026 (T551–T555), mẫu trên artifact https://claude.ai/art
 - Màn Tạo chứng từ thành công là một thành phần chung cho mọi phiếu. Màn có thẻ tóm tắt: số phiếu, số tiền hoặc số mặt hàng, 3 dòng thông tin. Màn có 3 nút: Xem chi tiết, Lập phiếu mới, Đóng.
 - Sổ S1a-HKD giữ đầu màn, hàng lọc như Sổ quỹ. Phần báo cáo có thẻ tiêu đề kèm Tổng cộng, doanh thu theo ngày, dòng Tổng cộng. Thanh đáy có nút "Xuất báo cáo" ra file Excel.
 - Phiếu thu chi điện thoại có dòng chi tiết ở mọi gói, kể cả Free. Mỗi dòng gói Free có Diễn giải và Số tiền. Số tiền đầu phiếu là tổng các dòng. Từ 2 dòng trở lên thì ô này khoá. Phiếu chuyển quỹ giữ một số tiền.
+
+## QD78. Xuất nhập tồn gói Free chỉ số lượng, bỏ Tổng hợp nhập xuất tồn 5.2.2 (đang soạn)
