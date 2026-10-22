@@ -780,7 +780,8 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
         </section>
         <section className="card ct-than-card">
           <div className="tabs">
-            {[['ct', 'Hàng bán'], ['ht', kieu === 'noco' ? 'Hạch toán' : 'Ghi sổ']].filter(([k]) => k !== 'ht' || kieu !== 'khong').map(([k, l]) => <button key={k} type="button" className={tab === k ? 'on' : ''} onClick={() => setTab(k)}>{l}</button>)}
+            {/* Bỏ tab Ghi sổ, chỉ chế độ nợ có còn tab Hạch toán (T640) */}
+            {[['ct', 'Hàng bán'], ...(kieu === 'noco' ? [['ht', 'Hạch toán']] : [])].map(([k, l]) => <button key={k} type="button" className={tab === k ? 'on' : ''} onClick={() => setTab(k)}>{l}</button>)}
             {/* Phễu lọc ngay sau tab cuối như phiếu chung (T383) */}
             <button type="button" className={`ct-nut-loc${moLoc ? ' on' : ''}`} aria-pressed={moLoc} title={moLoc ? 'Ẩn bộ lọc hàng bán' : 'Lọc hàng bán'} aria-label="Lọc hàng bán"
               onClick={() => { if (!moLoc) setTab('ct'); setMoLoc(v => !v) }}><Icon n="filter" className="ic sm" /></button>
