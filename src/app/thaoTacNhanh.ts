@@ -41,9 +41,11 @@ export const THAO_TAC_UNG_VIEN: ThaoTacUngVien[] = [
   { id: 'unc', ten: 'Chi ngân hàng', icon: 'bank', to: '/app/tien/2-1-1/moi?loai=unc', modKey: 'tien', slug: '2-1-1' },
   { id: 'so-ngan-hang', ten: 'Sổ ngân hàng', icon: 'book', to: '/app/tien/2-2-3', modKey: 'tien', slug: '2-2-3' },
   { id: 'chuyen-quy', ten: 'Chuyển quỹ', icon: 'swap', to: '/app/tien/2-1-1/moi?loai=cq', modKey: 'tien', slug: '2-1-1' },
+  { id: 'ke-khai-thue', ten: 'Kê khai thuế', icon: 'percent', to: '/app/thue/to-khai', modKey: 'thue', slug: 'to-khai' },
 ]
 
-export const MAC_DINH_FREE = ['thu', 'chi', 'nhap-mua', 'kiem-ke', 'so-quy']
+// Gói Free thay Sổ quỹ bằng Kê khai thuế (T627)
+export const MAC_DINH_FREE = ['thu', 'chi', 'nhap-mua', 'kiem-ke', 'ke-khai-thue']
 export const MAC_DINH_KHAC = ['thu', 'chi', 'nhap-kho', 'xuat-kho', 'so-quy']
 export const STORAGE_KEY = 'iacc-thao-tac-nhanh'
 export const SU_KIEN_THAY_DOI = 'iacc-thao-tac-nhanh-doi'
@@ -106,6 +108,8 @@ export function layTatCaThaoTac(s: Pick<Session, 'goi'> & Partial<Session>): Tha
   for (const uv of THAO_TAC_UNG_VIEN) {
     const mod = MODULES.find(m => m.key === uv.modKey)
     const { sc } = timMan(uv.modKey, uv.slug)
+    // Màn không có ở gói này (vd Kê khai thuế hộ kinh doanh ở gói Plus) thì bỏ, T627
+    if (sc && !hienMan(sc, s.goi, s.cheDo, s as Pick<Session, 'ppGtgt' | 'ppTndn'> | undefined)) continue
     const khoa = sc ? !moDuoc(sc, s.goi) : false
     const ma = sc ? maKhoa(sc) : undefined
     const tenMod = mod ? tenPhanHe(mod, s.goi).ngan : uv.modKey

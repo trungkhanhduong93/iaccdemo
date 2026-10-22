@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T627 | Trang chủ điện thoại gói Free, Thao tác nhanh mặc định thay Sổ quỹ bằng Kê khai thuế | PhuongXT | Đang làm | Sửa `src/app/thaoTacNhanh.ts`, `MTrangChuFree.tsx` (icon thao tác nhanh) |
 | T624 | Điện thoại, báo cáo Bảng kê chi tiết bán hàng, Công nợ nhà cung cấp, Tổng hợp nhập kho, Chi tiết nhập kho, Báo cáo xuất nhập tồn theo mẫu D của Bảng kê chi tiết mua hàng; Xuất nhập tồn gói Free chỉ số lượng (web, điện thoại), gói khác số lượng trên, tiền dưới; tạm bỏ 5.2.2 Tổng hợp nhập xuất tồn | Trum | Đang làm | Sửa `MBaoCaoDong.tsx`, `MSoBaoCao.tsx`, `XuatNhapTon.tsx`, `SidebarFlyout.tsx` (2 dòng 5.2.2), `plan.ts`, cuối `app.css` (mục T624). Spec `backup/spec-T624-T625.md` |
 | T625 | Điện thoại, danh sách Chi phí phân bổ bỏ nhóm theo ngày; thẻ trái số thẻ trên, diễn giải dưới (dài thì ba chấm), phải badge trên, tiền dưới | Trum | Đang làm | Sửa `MCcdc.tsx` (khúc danh sách), `MDsChungTuChuan.tsx` (prop tắt nhóm ngày), cuối `app.css` (mục T625). T436 cùng sửa `MCcdc.tsx` khúc ghi tăng |
 | T593 | Xem trước in và bản in báo cáo: mã, tên hàng, số phiếu ở mọi cột thành chữ thường, không bấm được (mở rộng T556) | Trum | Đang làm | Sửa cuối `app.css` (mục T556). Spec `backup/spec-T593-T595.md` |

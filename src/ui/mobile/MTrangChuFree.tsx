@@ -278,6 +278,7 @@ export function MTrangChuFree(_props?: Partial<ScreenProps>) {
 
   const layIconThaoTac = (item: ThaoTacMuc) => {
     const k = item.icon || item.id || ''
+    if (k === 'percent') return <FigmaGradientIcon name="ke-khai-thue" size={24} />
     if (k.includes('thu') || item.ten.includes('Thu')) return <FigmaGradientIcon name="thu-tien" size={24} />
     if (k.includes('chi') || item.ten.includes('Chi')) return <FigmaGradientIcon name="chi-tien" size={24} />
     if (k.includes('mua') || item.ten.includes('mua') || item.to.includes('mua-hang')) return <FigmaGradientIcon name="mua-hang" size={24} />

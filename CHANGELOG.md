@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 22/10/2026
+- T627: Trang chủ gói Free (web, điện thoại), Thao tác nhanh mặc định thay ô Sổ quỹ bằng Kê khai thuế. Máy đã lưu Tuỳ chỉnh thì bấm khôi phục mặc định để thấy.
 - T626: Điện thoại, mở một báo cáo thì bảng Bộ lọc báo cáo bật lên ngay; bấm Áp dụng mới hiện số liệu. Đóng bộ lọc khi chưa Áp dụng thì màn báo cáo hiện lời nhắc và nút Chọn điều kiện lọc.
 - T623: Điện thoại, phân hệ Kê khai thuế (gói Free, Standard) có giao diện app: thẻ tờ khai cần nộp, danh sách tờ khai theo năm, tìm kiếm, bộ lọc Năm, Loại tờ khai, Trạng thái, nút nổi Lập tờ khai, kê khai 4 bước toàn màn hình; tab Báo cáo theo dõi hiện các sổ TT152 áp dụng với đơn vị. Gói Standard dùng chung màn tờ khai hộ kinh doanh như gói Free, cả trên web. Đổi tên: "Thu, chi tiền" thành "Thu chi", "Danh sách thẻ chi phí" thành "Chi phí chờ phân bổ", "Danh sách tờ khai" thành "Kê khai thuế".
 - T583: Điện thoại, Chi phí phân bổ: danh sách thẻ giống màn Mua hàng. Hàng lọc có phễu, khoảng ngày, cửa hàng. Thẻ tổng cộng, thẻ nhóm theo ngày ghi tăng. Mỗi dòng ghi số thẻ, nhãn trạng thái, tên khoản, số tiền. Lọc trạng thái nằm trong phễu, nút nổi Ghi tăng.
