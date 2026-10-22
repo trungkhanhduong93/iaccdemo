@@ -861,4 +861,4 @@ PhuongXT chốt 22/10/2026 (T632). Thay điểm "Free chỉ TT152" của QD31 v�
 
 - Gói Free, loại hình Doanh nghiệp: chế độ kế toán TT58, không sửa được. Hộ kinh doanh gói Free giữ TT152.
 - Thuế GTGT, TNDN cố định theo tỷ lệ % doanh thu (trường hợp 1 của TT58). Bộ sổ chỉ có Sổ doanh thu bán hàng hoá, dịch vụ S1-DNSN, hiện ở Báo cáo theo dõi.
-- Báo cáo kết quả kinh doanh gói Free giữ bản đơn giản một cột, không theo B02-DNSN.
+- Báo cáo kết quả kinh doanh (B02-DNSN) ẩn khỏi danh sách báo cáo của doanh nghiệp gói Free. Nút xem kết quả kinh doanh ở Trang chủ Free vẫn mở bản đơn giản một cột, không ghi ký hiệu mẫu.
