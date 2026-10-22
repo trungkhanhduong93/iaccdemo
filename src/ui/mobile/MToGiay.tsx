@@ -9,7 +9,7 @@ import { RptTable } from '../generic/ReportScreen'
 import { useTrangThaiLoc } from '../bao-cao/tuyChinhBC'
 import { layKhuonDong, MBaoCaoDong, type LoaiKhuonDong } from './MBaoCaoDong'
 import { MBaoCaoDau } from './MBaoCaoDau'
-import { MBaoCaoLoc } from './MBaoCaoLoc'
+import { MBaoCaoLoc, MChuaTaiBaoCao } from './MBaoCaoLoc'
 import { docNgay } from '../ChonNgay'
 import { dinhDangKyMobile, ngayCuoiThang, useKhoangNgayMobile } from './kyBaoCaoMobile'
 import { cotMobile, useBangMauA } from './bangMauA'
@@ -79,7 +79,13 @@ export const MToGiay: FC<ScreenProps> = ({ sc, mod }) => {
   const path = useLocation().pathname
   const { loc: locStore, daXem } = useTrangThaiLoc(path)
   const [hienTim, setHienTim] = useState(false)
-  const [moLoc, setMoLoc] = useState(false)
+  // Mở báo cáo thì bật bộ lọc trước, bấm Áp dụng mới tải số liệu (T626)
+  const [moLoc, setMoLoc] = useState(true)
+  const [daTai, setDaTai] = useState(false)
+  useEffect(() => {
+    setMoLoc(true)
+    setDaTai(false)
+  }, [path])
   const cn = cuaHangHienTai(s)
   const knMobile = useKhoangNgayMobile(path, daXem?.ky)
   const tenKy = useMemo(() => {
@@ -268,7 +274,7 @@ export const MToGiay: FC<ScreenProps> = ({ sc, mod }) => {
       clearTimeout(timer)
       window.removeEventListener('resize', tinhToan)
     }
-  }, [phongTo, sc.slug, kieuXem])
+  }, [phongTo, sc.slug, kieuXem, daTai])
 
   const colsBang = useMemo(() => {
     const raw: Col[] = is523 ? COLS_523 : isDong1023 ? COLS_1023 : (colsDong.length ? colsDong : COLS_523)
@@ -296,7 +302,7 @@ export const MToGiay: FC<ScreenProps> = ({ sc, mod }) => {
     }
   }
 
-  const coCuonNgang = useBangMauA(bangWrapRef, [kieuXem, pt.rowsHienThi])
+  const coCuonNgang = useBangMauA(bangWrapRef, [kieuXem, pt.rowsHienThi, daTai])
 
   if (!Comp) return null
 
@@ -350,7 +356,9 @@ export const MToGiay: FC<ScreenProps> = ({ sc, mod }) => {
           }
         />
 
-        {kieuXem === 'in' ? (
+        {!daTai ? (
+          <MChuaTaiBaoCao onMoLoc={() => setMoLoc(true)} />
+        ) : kieuXem === 'in' ? (
           <div
             ref={khungRef}
             className={`m-to-giay ${phongTo ? 'phong-to' : 'thu-nho'}`}
@@ -413,6 +421,7 @@ export const MToGiay: FC<ScreenProps> = ({ sc, mod }) => {
           <MBaoCaoLoc
             mo={moLoc}
             onDong={() => setMoLoc(false)}
+            onApDung={() => setDaTai(true)}
             path={path}
             sc={sc}
           />
@@ -437,6 +446,9 @@ export const MToGiay: FC<ScreenProps> = ({ sc, mod }) => {
         tenCn={tenCn}
         chipsKhac={chipsKhac}
       />
+      {!daTai ? (
+        <MChuaTaiBaoCao onMoLoc={() => setMoLoc(true)} />
+      ) : (
       <div
         ref={khungRef}
         className={`m-to-giay ${phongTo ? 'phong-to' : 'thu-nho'}`}
@@ -463,10 +475,12 @@ export const MToGiay: FC<ScreenProps> = ({ sc, mod }) => {
           <Comp sc={sc} mod={mod} />
         </div>
       </div>
+      )}
       {moLoc && (
         <MBaoCaoLoc
           mo={moLoc}
           onDong={() => setMoLoc(false)}
+          onApDung={() => setDaTai(true)}
           path={path}
           sc={sc}
         />

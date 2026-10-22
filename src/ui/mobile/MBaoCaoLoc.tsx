@@ -25,9 +25,22 @@ export interface MBaoCaoLocProps {
   onDong: () => void
   path: string
   sc?: ScreenDef
+  /** Gọi khi bấm Áp dụng, để màn báo cáo bắt đầu tải số liệu (T626) */
+  onApDung?: () => void
 }
 
-export const MBaoCaoLoc: FC<MBaoCaoLocProps> = ({ mo, onDong, path, sc }) => {
+/** Khung thay số liệu khi chưa bấm Áp dụng bộ lọc (T626) */
+export const MChuaTaiBaoCao: FC<{ onMoLoc: () => void }> = ({ onMoLoc }) => (
+  <div className="m-bc-chua-tai">
+    <Icon n="filter" className="ic m-bc-chua-tai-ic" />
+    <p>Chọn điều kiện lọc rồi bấm Áp dụng để xem báo cáo</p>
+    <button type="button" className="m-bc-chua-tai-btn" onClick={onMoLoc}>
+      Chọn điều kiện lọc
+    </button>
+  </div>
+)
+
+export const MBaoCaoLoc: FC<MBaoCaoLocProps> = ({ mo, onDong, path, sc, onApDung }) => {
   const { s, set } = useSession()
   const { loc, daXem } = useTrangThaiLoc(path)
 
@@ -120,6 +133,7 @@ export const MBaoCaoLoc: FC<MBaoCaoLocProps> = ({ mo, onDong, path, sc }) => {
       }
     })
     xemBaoCao(path)
+    onApDung?.()
     onDong()
   }
 

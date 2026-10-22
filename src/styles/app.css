@@ -40956,3 +40956,11 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
   .m-tk-buoc-ten small { font-size: 12px; font-weight: 500; color: var(--muted); }
   .m-tk-man-than { flex: 1; overflow-y: auto; padding: 12px var(--m-le-man) 16px; display: flex; flex-direction: column; gap: 12px; }
 }
+
+/* ── Điện thoại: mở báo cáo bật bộ lọc trước, Áp dụng mới tải số liệu (T626) ── */
+@media (max-width: 767px) {
+  .m-bc-chua-tai { display: flex; flex-direction: column; align-items: center; gap: 12px; margin: 48px var(--m-le-man, 16px) 0; padding: 28px 20px; background: #fff; border-radius: 12px; text-align: center; color: var(--muted); font-size: 14px; }
+  .m-bc-chua-tai p { margin: 0; }
+  .m-bc-chua-tai-ic { width: 32px; height: 32px; color: var(--blue); }
+  .m-bc-chua-tai-btn { height: 40px; padding: 0 20px; border: none; border-radius: 8px; background: var(--blue); color: #fff; font: inherit; font-weight: 600; cursor: pointer; }
+}

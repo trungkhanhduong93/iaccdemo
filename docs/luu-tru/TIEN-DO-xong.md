@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T626 | Điện thoại, mở báo cáo thì bật ngay bộ lọc; bấm Áp dụng mới tải số liệu báo cáo | PhuongXT | 22/10/2026 | [nhật ký](../nhat-ky/2026-10-22-phuongxt-bao-cao-loc-truoc.md) |
 | T623 | Điện thoại, phân hệ Kê khai thuế theo app iFaster: gói Free, Standard danh sách tờ khai hộ kinh doanh (khung như Thu chi, tab Kê khai thuế, Báo cáo theo dõi theo cấu hình TT152, bộ lọc phễu), lập tờ khai, kê khai 4 bước; tờ khai GTGT 6.2.3 chờ mở; đổi tên Thu chi, Chi phí chờ phân bổ, Kê khai thuế | PhuongXT | 22/10/2026 | [nhật ký](../nhat-ky/2026-10-22-phuongxt-ke-khai-thue-dien-thoai.md) |
 | T583 | Điện thoại, Chi phí phân bổ dùng khung danh sách T582 như màn Mua hàng: hàng lọc phễu, ngày, cửa hàng, thẻ tổng, nhóm ngày, dòng số thẻ, trạng thái, tên, tiền | Trum | 22/10/2026 | [nhật ký](../nhat-ky/2026-10-22-trum-chi-phi-phan-bo-khung-ds.md) |
 | T622 | Điện thoại, gói Free màn Bán hàng chỉ hiện tab Xuất bán POS như web, các phiếu ngoài gói ẩn | Trum | 22/10/2026 | [nhật ký](../nhat-ky/2026-10-22-trum-sheet-thu-chi-tab-free.md) |

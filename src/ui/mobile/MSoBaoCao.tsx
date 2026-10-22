@@ -21,7 +21,7 @@ import { cotMobile, useBangMauA } from './bangMauA'
 import { tinhPhanTrang, ThanhPhanTrangM } from './phanTrangM'
 import { dinhDangKyMobile, ngayCuoiThang, useKhoangNgayMobile } from './kyBaoCaoMobile'
 import { MBaoCaoDau } from './MBaoCaoDau'
-import { MBaoCaoLoc } from './MBaoCaoLoc'
+import { MBaoCaoLoc, MChuaTaiBaoCao } from './MBaoCaoLoc'
 
 /** Định dạng ngày có thứ tiếng Việt: bỏ thứ, chỉ để ngày tháng (T611) */
 function dinhDangThuNgay(dStr: string): string {
@@ -57,7 +57,13 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc, mod }) => {
   const path = useLocation().pathname
   const nav = useNavigate()
   const [hienTim, setHienTim] = useState(false)
-  const [moLoc, setMoLoc] = useState(false)
+  // Mở báo cáo thì bật bộ lọc trước, bấm Áp dụng mới tải số liệu (T626)
+  const [moLoc, setMoLoc] = useState(true)
+  const [daTai, setDaTai] = useState(false)
+  useEffect(() => {
+    setMoLoc(true)
+    setDaTai(false)
+  }, [path])
   const [daGhim, setDaGhim] = useState(() => {
     try {
       const g = JSON.parse(localStorage.getItem('bc-ghim') || '[]')
@@ -344,7 +350,7 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc, mod }) => {
     })
   }, [body, pt.rowsHienThi, rawCols])
 
-  const coCuonNgang = useBangMauA(bangWrapRef, [noiDungBang, kieuXem])
+  const coCuonNgang = useBangMauA(bangWrapRef, [noiDungBang, kieuXem, daTai])
 
   // Số liệu thẻ tổng 3 ô: lấy đúng từ dòng đầu kỳ, cộng phát sinh, cuối kỳ của bảng
   const { soDau, tongThu, tongChi, soCuoi } = useMemo(() => {
@@ -559,7 +565,9 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc, mod }) => {
       />
 
       {/* Nội dung báo cáo: Dạng dòng hoặc Bảng cuộn ngang */}
-      {kieuXem === 'dong' && isSoApDung ? (
+      {!daTai ? (
+        <MChuaTaiBaoCao onMoLoc={() => setMoLoc(true)} />
+      ) : kieuXem === 'dong' && isSoApDung ? (
         !isSoCu && (khuon || laMauD || laTT152Hook) ? (
           <div className="m-so-dong">
             <MBaoCaoDong
@@ -783,7 +791,7 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc, mod }) => {
       )}
 
       {/* Nút xuất báo cáo dính đáy cho S1a (T553) */}
-      {isS1a && (
+      {isS1a && daTai && (
         <div className="m-s1a-thanh-day">
           <button
             type="button"
@@ -803,6 +811,7 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc, mod }) => {
         <MBaoCaoLoc
           mo={moLoc}
           onDong={() => setMoLoc(false)}
+          onApDung={() => setDaTai(true)}
           path={path}
           sc={sc}
         />
