@@ -598,19 +598,19 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc, mod }) => {
               <div className="mobile-stat-slider">
                 <div className="m-stat-pill">
                   <span className="lbl">Tồn đầu kỳ</span>
-                  <b className="val">{moneyD(soDau)}</b>
+                  <b className="val m-t638-den">{moneyD(soDau)}</b>
                 </div>
                 <div className="m-stat-pill">
                   <span className="lbl">Tồn cuối kỳ</span>
-                  <b className="val" style={{ color: 'var(--blue)' }}>{moneyD(soCuoi)}</b>
+                  <b className="val m-t638-den">{moneyD(soCuoi)}</b>
                 </div>
                 <div className="m-stat-pill">
                   <span className="lbl">Tổng thu</span>
-                  <b className="val" style={{ color: 'var(--green)' }}>+{moneyD(tongThu)}</b>
+                  <b className="val m-t638-thu">+{moneyD(tongThu)}</b>
                 </div>
                 <div className="m-stat-pill">
                   <span className="lbl">Tổng chi</span>
-                  <b className="val" style={{ color: 'var(--red)' }}>−{moneyD(tongChi)}</b>
+                  <b className="val m-t638-chi">−{moneyD(tongChi)}</b>
                 </div>
               </div>
             ) : (

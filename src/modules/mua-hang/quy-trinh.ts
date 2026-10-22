@@ -80,7 +80,7 @@ export const quyTrinh: QuyTrinhDef = {
       ],
     },
   ],
-  baoCao: ['4-2-2', '4-2-1', '4-2-4', '4-2-5', '4-2-3', 'tien/2-2-5', 'thue/6-2-1', 'kho/5-2-2'],
+  baoCao: ['4-2-2', '4-2-7', '4-2-4', '4-2-5', '4-2-3', 'tien/2-2-5', 'thue/6-2-1', 'kho/5-2-2'],
   danhMuc: ['danh-muc/1-5', 'danh-muc/1-2', 'danh-muc/1-14'],
   tienIch: ['tien-ich/11-4', 'tien-ich/11-10'],   // bỏ tải từ iPOS Inventory (T64)
 }

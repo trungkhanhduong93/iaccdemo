@@ -5,6 +5,13 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
 | T632 | Thông tin đơn vị gói Free (web, điện thoại): Doanh nghiệp dùng TT58, không sửa được, thuế theo % doanh thu; Báo cáo theo dõi chỉ hiện S1-DNSN | PhuongXT | 22/10/2026 | [nhật ký](../nhat-ky/2026-10-22-phuongxt-free-doanh-nghiep-tt58.md) |
+| T639 | Điện thoại, lập phiếu mua mới: bỏ ô "Phiếu nhập", bỏ khối chiết khấu và thuế GTGT áp chung ở đầu danh sách hàng | Trum | 22/10/2026 | [nhật ký](../nhat-ky/2026-10-22-trum-dot-t633-gop-y-dien-thoai.md) |
+| T638 | Điện thoại, Lịch sử thu chi, Sổ quỹ tiền mặt, Sổ ngân hàng: giảm màu theo một concept chung cho các màn tiền | Trum | 22/10/2026 | [nhật ký](../nhat-ky/2026-10-22-trum-dot-t633-gop-y-dien-thoai.md) |
+| T637 | Web, chi tiết Xuất bán POS: đầu phiếu nhãn trái ô phải như phiếu mua, bỏ nút Đóng (Esc) | Trum | 22/10/2026 | [nhật ký](../nhat-ky/2026-10-22-trum-dot-t633-gop-y-dien-thoai.md) |
+| T636 | Điện thoại, trang chủ Free: thanh "Tháng … chưa khoá sổ" rộng bằng các thẻ | Trum | 22/10/2026 | [nhật ký](../nhat-ky/2026-10-22-trum-dot-t633-gop-y-dien-thoai.md) |
+| T635 | Mua hàng, Báo cáo theo dõi: Sổ chi tiết mua hàng (4.2.1) đổi thành Bảng kê chi tiết mua hàng (4.2.7), web và điện thoại | Trum | 22/10/2026 | [nhật ký](../nhat-ky/2026-10-22-trum-dot-t633-gop-y-dien-thoai.md) |
+| T634 | Điện thoại, Thao tác nhanh trang chủ Thu tiền, Chi tiền: menu nổi T611 đổi thành sheet đáy chọn tiền mặt hay ngân hàng, mọi gói | Trum | 22/10/2026 | [nhật ký](../nhat-ky/2026-10-22-trum-dot-t633-gop-y-dien-thoai.md) |
+| T633 | Điện thoại, phiếu chi lý do Chi phí chờ phân bổ: lưu xong bật bảng báo tạo thẻ Chi phí phân bổ như web | Trum | 22/10/2026 | [nhật ký](../nhat-ky/2026-10-22-trum-dot-t633-gop-y-dien-thoai.md) |
 | T631 | Điện thoại, lập phiếu thu chi: ô Quỹ cách hàng Ngày chứng từ, Số phiếu 12px như các ô khác | dinhlanphuongipacc | 22/10/2026 | [nhật ký](../nhat-ky/2026-10-22-dinhlanphuongipacc-khoang-cach-o-quy.md) |
 | T630 | Điện thoại, Thanh toán ngay phiếu mua tự điền đủ số còn nợ, gói Free khoá ô số tiền; màn sửa phiếu mua dùng chung `MThanhToanNgay` | Trum | 22/10/2026 | [nhật ký](../nhat-ky/2026-10-22-trum-pos-phieu-mua-quy-thanh-toan.md) |
 | T629 | Điện thoại, phiếu mua chọn quỹ ngay trong phiếu theo loại và cửa hàng; lưu tự sinh phiếu chi tham chiếu hai chiều; bảng Lưu phiếu thành công | Trum | 22/10/2026 | [nhật ký](../nhat-ky/2026-10-22-trum-pos-phieu-mua-quy-thanh-toan.md) |

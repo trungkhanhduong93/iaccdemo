@@ -41133,3 +41133,267 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
 .m-tc-lap-hang-2col {
   margin-bottom: 12px;
 }
+
+/* ── Thao tác nhanh: sheet đáy chọn loại tiền (T634) ── */
+.m-tam-hop.m-t634-sheet {
+  animation: mTcSheetUp 0.22s ease-out;
+}
+.m-t634-ds {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 16px 20px;
+  gap: 10px;
+}
+.m-t634-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--line, #e5e7eb);
+  background: var(--white, #ffffff);
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  transition: background-color 0.15s ease;
+  font-family: inherit;
+}
+.m-t634-item:active {
+  background: var(--bg-sub, #f1f5f9);
+}
+.m-t634-ic-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--bg-sub, #f1f5f9);
+  color: var(--ink, #1f2225);
+  flex-shrink: 0;
+}
+.m-t634-ten {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink, #1f2225);
+}
+
+/* ── Trang chủ Free điện thoại: thanh chưa khoá sổ rộng bằng thẻ (T636) ── */
+.m-tcf-nhac-khoa-wrap {
+  margin: 0 !important;
+}
+
+/* ── Giảm màu Lịch sử thu chi, Sổ quỹ, Sổ ngân hàng (T638) ── */
+.m-free-lsq .mobile-stat-slider .m-stat-pill,
+.m-so-bc-figma .mobile-stat-slider .m-stat-pill {
+  background: #ffffff !important;
+  border: 1px solid var(--line, #e5e7eb) !important;
+}
+.m-t638-den {
+  color: var(--ink, #1f2225) !important;
+}
+.m-t638-thu {
+  color: var(--green) !important;
+}
+.m-t638-chi {
+  color: var(--red) !important;
+}
+.m-free-lsq .mobile-tx-row .meta .t {
+  color: var(--ink, #1f2225) !important;
+}
+.m-free-lsq .mobile-tx-row .meta .d {
+  color: var(--muted, #6b7280) !important;
+}
+.m-free-lsq .mobile-tx-row .amt.in,
+.m-free-lsq .mobile-tx-row .m-t638-thu {
+  color: var(--green) !important;
+}
+.m-free-lsq .mobile-tx-row .amt.out,
+.m-free-lsq .mobile-tx-row .m-t638-chi {
+  color: var(--red) !important;
+}
+.m-free-lsq .mobile-tx-row .bal {
+  color: var(--muted, #6b7280) !important;
+}
+.m-free-lsq .m-lsq-du-dau-hang .m-lsq-du-dau-nhan {
+  color: var(--muted, #6b7280) !important;
+}
+.m-free-lsq .m-lsq-du-dau-hang .m-lsq-du-dau-so,
+.m-free-lsq .m-lsq-du-dau-hang .m-lsq-du-cuoi {
+  color: var(--ink, #1f2225) !important;
+}
+.m-free-lsq-chuyen-quy {
+  color: var(--ink, #1f2225) !important;
+}
+.m-so-bc-figma .m-t500-sq-row-so-ct {
+  color: var(--muted, #6b7280) !important;
+  font-weight: 500 !important;
+}
+.m-free-lsq .mobile-tx-row .amt.m-t638-den {
+  color: var(--ink) !important;
+}
+
+/* ── Màn hình lưu và xoá thành công dùng chung (T552) ── */
+.m-tc552-vong-xoa {
+  background: var(--white) !important;
+  border: 2.5px solid var(--blue) !important;
+  box-shadow: 0 4px 16px rgba(5, 96, 166, 0.15) !important;
+  color: var(--blue) !important;
+}
+
+.m-tc552-ic-xoa {
+  color: var(--blue) !important;
+}
+
+.m-tc552-gt-tt.gach-ngang {
+  text-decoration: line-through !important;
+  color: var(--muted) !important;
+  font-weight: 500 !important;
+}
+
+/* ── Chi tiết Xuất bán POS: đầu phiếu nhãn trái ô phải, bỏ nút Đóng (T637) ── */
+.xp637-dau {
+  background: var(--white);
+  border: 1px solid var(--fr-t);
+  border-radius: var(--r);
+  box-shadow: var(--sh);
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.35fr) minmax(0, 1.25fr);
+  padding: 0;
+  overflow: hidden;
+}
+.xp637-nhom {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 18px;
+  min-width: 0;
+  border-right: 1px solid var(--fr-t);
+}
+.xp637-nhom-pos .xp637-nhan {
+  width: 140px;
+}
+.xp637-nhom-khach .xp637-nhan {
+  width: 105px;
+}
+.xp637-nhom-hd {
+  border-right: 0;
+}
+.xp637-nhom-hd .xp637-nhan {
+  width: 95px;
+}
+.xp637-tieu {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--blue);
+  letter-spacing: .02em;
+}
+.xp637-nhan-khong {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--muted);
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 1px 8px;
+  white-space: nowrap;
+}
+.xp637-ds {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.xp637-o {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.xp637-nhan {
+  font-size: 11.5px;
+  color: var(--muted);
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.xp637-tri {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 30px;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 12.5px;
+  color: var(--ink);
+}
+.xp637-tri > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.xp637-code {
+  font-family: inherit;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.xp637-trong {
+  color: var(--muted);
+  font-weight: 500;
+}
+.xp637-tri-ma {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+.xp637-chep {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--blue);
+  cursor: pointer;
+}
+.xp637-chep:hover {
+  background: var(--tint);
+}
+.xp637-da-chep {
+  color: var(--green);
+}
+.xp637-ghichu {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-top: 1px solid var(--fr-t);
+  min-width: 0;
+}
+.xp637-ghichu .xp637-nhan {
+  width: 140px;
+}
+@media (max-width: 900px) {
+  .xp637-dau {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .xp637-nhom {
+    border-right: 0;
+    border-bottom: 1px solid var(--fr-t);
+  }
+}

@@ -147,13 +147,6 @@ const nhanVat = (ts: number | undefined) => {
 }
 
 // ── Thẻ mặt hàng phiếu điện thoại (T300, T414) ──
-const DS_THUE_CHUNG = [
-  { k: '', ten: 'Chọn thuế' },
-  { k: '0', ten: '0% (KCT)' },
-  { k: '5', ten: '5%' },
-  { k: '8', ten: '8%' },
-  { k: '10', ten: '10%' },
-]
 
 type DongM = Dong & {
   giaGoc?: number
@@ -990,11 +983,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
   // Sheet Thanh toán ngay dùng chung MThanhToanNgay (T610, T630)
   const [moThanhToan, setMoThanhToan] = useState(() => sp.get('thanhtoan') === '1')
 
-  // Áp chung giảm giá, thuế cho mọi dòng
-  const [giamGiaChungKieu, setGiamGiaChungKieu] = useState<'%' | 'đ'>('%')
-  const [giamGiaChungVal, setGiamGiaChungVal] = useState('')
-  const [thueChungVal, setThueChungVal] = useState<string>('')
-  const [moChonThueChung, setMoChonThueChung] = useState(false)
+
 
   // Sheet chọn / thêm NCC
   const [moThemNcc, setMoThemNcc] = useState(false)
@@ -1147,8 +1136,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
     )
   }, [timNcc])
 
-  const thueSuatSet = useMemo(() => new Set(dsDong.map(d => Number(d.ts) || 0)), [dsDong])
-  const thueSuatKhacNhau = dsDong.length > 1 && thueSuatSet.size > 1
+
 
   const dsQuyPhieuMua = (ht: 'tienmat' | 'chuyenkhoan', ch: string): string[] => {
     if (ht === 'tienmat') {
@@ -1930,39 +1918,19 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
       )
     }
 
+    const dsTomTatChung: DongTomTat[] = [
+      { nhan: 'Số phiếu', giaTri: <b>{soPhieuMoi}</b> },
+      { nhan: 'Số tiền', giaTri: `${money(tongTienDaLuu || tongThanhToan)} đ`, noiBat: true },
+      ...(doiTuongDaLuu || doiTuong ? [{ nhan: nhom === 'ban' ? 'Khách hàng' : 'Đối tượng', giaTri: doiTuongDaLuu || doiTuong }] : []),
+    ]
     return (
-      <div className="m-pb-man">
-        <div className="m-lp-buoc m-lp-buoc-thanh-cong">
-          <div className="m-lp-dau-thanh-cong">
-            <button type="button" className="m-lp-btn-home" onClick={() => nav(path, { replace: true })} aria-label="Về trang danh sách">
-              <Icon n="home" className="ic sm" kieu="net" />
-            </button>
-          </div>
-
-          <div className="m-lp-thanh-cong-than">
-            <div className="m-lp-thanh-cong-vong">
-              <Icon n="check" className="ic lg m-lp-thanh-cong-tich" kieu="net" />
-            </div>
-            <h2 className="m-lp-thanh-cong-tieu">Tạo chứng từ thành công</h2>
-            <p className="m-lp-thanh-cong-mota">
-              Bạn vừa tạo thành công phiếu {tenLoai} <b>{soPhieuMoi}</b>.
-            </p>
-
-            <div className="m-lp-thanh-cong-nut-hang">
-              <button type="button" className="m-pb-btn-phu" onClick={() => nav(path, { replace: true })}>
-                Đóng
-              </button>
-              <button
-                type="button"
-                className="m-pb-btn-sua"
-                onClick={() => nav(`${path}/${idPhieuMoi}`, { replace: true })}
-              >
-                Xem phiếu
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <MThanhCong
+        tieuDe="Lưu phiếu thành công"
+        dsTomTat={dsTomTatChung}
+        xemUrl={`${path}/${idPhieuMoi}`}
+        onLapMoi={handleLapMoi}
+        onDong={() => nav(path, { replace: true })}
+      />
     )
   }
 
@@ -2122,30 +2090,30 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                   </div>
                 </div>
 
-            {/* ── TABS CHO PHIẾU MUA HÀNG (T600 B3, T609-1, T609-2) ── */}
-            <div
-              className="m-t601-tabs"
-              style={{
-                gridTemplateColumns: `repeat(${1 + (s.goi !== 'F' ? 1 : 0) + (dangSua ? 1 : 0)}, minmax(0, 1fr))`,
-              }}
-            >
-              <button
-                type="button"
-                className={`m-t601-tab-btn ${tabMua === 'phieu' ? 'on' : ''}`}
-                onClick={() => setTabMua('phieu')}
+            {/* ── TABS CHO PHIẾU MUA HÀNG (T600 B3, T609-1, T609-2; T639: chỉ hiện khi sửa) ── */}
+            {dangSua && (
+              <div
+                className="m-t601-tabs"
+                style={{
+                  gridTemplateColumns: `repeat(${1 + (s.goi !== 'F' ? 1 : 0) + 1}, minmax(0, 1fr))`,
+                }}
               >
-                Phiếu nhập
-              </button>
-              {s.goi !== 'F' && (
                 <button
                   type="button"
-                  className={`m-t601-tab-btn ${tabMua === 'buttoan' ? 'on' : ''}`}
-                  onClick={() => setTabMua('buttoan')}
+                  className={`m-t601-tab-btn ${tabMua === 'phieu' ? 'on' : ''}`}
+                  onClick={() => setTabMua('phieu')}
                 >
-                  Hạch toán
+                  Phiếu nhập
                 </button>
-              )}
-              {dangSua && (
+                {s.goi !== 'F' && (
+                  <button
+                    type="button"
+                    className={`m-t601-tab-btn ${tabMua === 'buttoan' ? 'on' : ''}`}
+                    onClick={() => setTabMua('buttoan')}
+                  >
+                    Hạch toán
+                  </button>
+                )}
                 <button
                   type="button"
                   className={`m-t601-tab-btn ${tabMua === 'lichsu' ? 'on' : ''}`}
@@ -2153,8 +2121,8 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                 >
                   Lịch sử
                 </button>
-              )}
-            </div>
+              </div>
+            )}
 
             {tabMua === 'phieu' && (
               <>
@@ -2320,92 +2288,6 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                 </div>
 
                 <div className="m-t601-hang-card">
-                  {/* Khối áp chung: Chiết khấu */}
-                  <div className="m-t601-hang-ap-row">
-                    <div>
-                      <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)' }}>Chiết khấu</div>
-                      <div style={{ fontSize: 12, color: 'var(--muted)' }}>Áp cho tất cả dòng hàng</div>
-                    </div>
-                    <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexShrink: 0 }}>
-                      <span className="m-t601-toggle-don-vi">
-                        <button
-                          type="button"
-                          className={giamGiaChungKieu === '%' ? 'on' : ''}
-                          onClick={() => {
-                            setGiamGiaChungKieu('%')
-                            setGiamGiaChungVal('')
-                          }}
-                        >
-                          %
-                        </button>
-                        <button
-                          type="button"
-                          className={giamGiaChungKieu === 'đ' ? 'on' : ''}
-                          onClick={() => {
-                            setGiamGiaChungKieu('đ')
-                            setGiamGiaChungVal('')
-                          }}
-                        >
-                          đ
-                        </button>
-                      </span>
-                      <input
-                        type="text"
-                        inputMode={giamGiaChungKieu === '%' ? 'decimal' : 'numeric'}
-                        placeholder="0"
-                        className="m-t600-inp"
-                        style={{ width: 120, height: 34, textAlign: 'right', fontVariantNumeric: 'tabular-nums', padding: '0 8px' }}
-                        value={giamGiaChungVal}
-                        onChange={e => {
-                          const val = giamGiaChungKieu === '%' ? chuanHoaPhanTram(e.target.value) : goSoVN(e.target.value, false)
-                          setGiamGiaChungVal(val)
-                          if (giamGiaChungKieu === '%') {
-                            const pt = Number(val) || 0
-                            setDsDong(ds => ds.map(d => {
-                              const tien = d.tien || 0
-                              const ck = Math.round(tien * pt / 100)
-                              const thue = Math.round((tien - ck) * (d.ts || 0) / 100)
-                              return { ...d, ptCk: pt, ck, thue }
-                            }))
-                          } else {
-                            const c = docSoVN(val)
-                            setDsDong(ds => ds.map(d => {
-                              const tien = d.tien || 0
-                              const pt = tien > 0 ? Math.round((c / tien) * 10000) / 100 : 0
-                              const thue = Math.round((tien - c) * (d.ts || 0) / 100)
-                              return { ...d, ptCk: pt, ck: c, thue }
-                            }))
-                          }
-                        }}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Khối áp chung: Thuế GTGT */}
-                  <div className="m-t601-hang-ap-row">
-                    <div>
-                      <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)' }}>Thuế GTGT</div>
-                      {thueSuatKhacNhau && (
-                        <div style={{ fontSize: 12, color: '#a86a0c' }}>Đang dùng thuế suất riêng từng dòng</div>
-                      )}
-                    </div>
-                    <button
-                      type="button"
-                      className="m-t600-inp m-t609-btn-thue-chung"
-                      onClick={() => setMoChonThueChung(true)}
-                      aria-label="Chọn thuế GTGT áp chung"
-                    >
-                      <span>
-                        {thueChungVal === ''
-                          ? 'Chọn thuế'
-                          : (DS_THUE_CHUNG.find(x => x.k === thueChungVal)?.ten ?? `${thueChungVal}%`)}
-                      </span>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" strokeWidth="2" aria-hidden="true">
-                        <path d="M6 9l6 6 6-6" />
-                      </svg>
-                    </button>
-                  </div>
-
                   {/* Tìm hàng hoá */}
                   <div className="m-t601-hang-tim-wrap">
                     <label className="m-t601-hang-tim-box">
@@ -3658,26 +3540,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
         />
       </div>
 
-      {/* ── SHEET CHỌN THUẾ GTGT ÁP CHUNG (T609-3) ── */}
-      <MChon
-        mo={moChonThueChung}
-        onDong={() => setMoChonThueChung(false)}
-        tieuDe="Thuế GTGT"
-        ds={DS_THUE_CHUNG}
-        chon={thueChungVal}
-        onChon={v => {
-          setThueChungVal(v)
-          if (v !== '') {
-            const tsNum = Number(v) || 0
-            setDsDong(ds => ds.map(d => {
-              const tien = d.tien || 0
-              const ck = d.ck || 0
-              const thue = Math.round((tien - ck) * tsNum / 100)
-              return { ...d, ts: tsNum, thue }
-            }))
-          }
-        }}
-      />
+
 
       {/* ── LỊCH ĐƠN NGÀY CHỨNG TỪ ── */}
       {moLich && (

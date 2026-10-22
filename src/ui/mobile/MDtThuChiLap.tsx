@@ -6,7 +6,7 @@ import { duongDan } from '../../app/registry'
 import { cuaHangHienTai, useSession } from '../../app/session'
 import { docSoTien, money } from '../format'
 import { goSoVN, docSoVN } from '../OSoGo'
-import { CUA_HANG, HOM_NAY, KHACH, LY_CHI_PHI, LY_DO, NCC, NHAN_VIEN, TK_NGAN_HANG } from '../../data/mock'
+import { CUA_HANG, HOM_NAY, KHACH, LY_CHI_PHI, LY_DO, NCC, NHAN_VIEN, TK_NGAN_HANG, MA_LY_CHO_PHAN_BO } from '../../data/mock'
 import { layChiNhanhNho } from '../ChonCuaHangTruoc'
 import { soKeTiep, suaPhieu, themPhieu, ghiNhatKy } from '../generic/daXoa'
 import { MAN_THU_CHI, QUY_TIEN, TEN_CT_TT, TIEN_TO_CT_TT } from '../generic/ChungTuForm'
@@ -17,6 +17,7 @@ import { TAI_KHOAN } from '../../modules/danh-muc/data'
 import { MChon } from './MChon'
 import { soDuQuy } from './MThanhToanNgay'
 import { Icon } from '../Icon'
+import { MThanhCong, type DongTomTat } from './MThanhCong'
 import { addCatalogRow, getAllCatalogRows, getDmMeta, sinhMaKeTiep, useAddedCatalogRows } from '../generic/danhMucStore'
 import { LichDon } from '../ChonNgay'
 
@@ -238,6 +239,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
   const [daSua, setDaSua] = useState(false)
   const [daLuu, setDaLuu] = useState(false)
   const [phieuVuaLuu, setPhieuVuaLuu] = useState<{ id: string; so: string } | null>(null)
+  const [hoiThe, setHoiThe] = useState<{ soCt: string; idMoi: string } | null>(null)
 
   useEffect(() => {
     if (row) {
@@ -476,17 +478,55 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
       setDaLuu(true)
       return
     }
+    // Phiếu chi lý do Chi phí chờ phân bổ: báo rồi mở tạo thẻ chi phí phân bổ, như MLapPhieu (T419, T633)
+    const laLyChoPb = isChi && [lyDo, dsDong[0]?.ly].some(l => l === 'Chi phí chờ phân bổ' || l === MA_LY_CHO_PHAN_BO)
     if (dangSua && row) {
       suaPhieu(manKey, targetId, duLieuPhieu)
       ghiNhatKy(manKey, targetId, soCt, s.ten, `Sửa chứng từ ${soCt}`)
       toast(`Đã lưu thay đổi ${soCt}`)
+      if (laLyChoPb) {
+        setHoiThe({ soCt, idMoi: targetId })
+        return
+      }
       nav(`${path}/${targetId}`, { replace: true })
     } else {
       themPhieu(manKey, { id: targetId, ...duLieuPhieu }, s.ten)
       ghiNhatKy(manKey, targetId, soCt, s.ten, `Lập mới chứng từ ${soCt}`)
       toast(`Đã lưu phiếu ${soCt}`)
+      if (laLyChoPb) {
+        setHoiThe({ soCt, idMoi: targetId })
+        return
+      }
       setPhieuVuaLuu({ id: targetId, so: soCt })
       setDaLuu(true)
+    }
+  }
+
+  const handleLapMoi = () => {
+    setDaLuu(false)
+    setPhieuVuaLuu(null)
+    setSoTien(0)
+    setStrTien('')
+    setDoiTuong('')
+    setDiaChi('')
+    setNguoiGiaoDich('')
+    setGhiChu('')
+    setDsDong([{
+      ten: '',
+      sl: 1,
+      gia: 0,
+      tien: 0,
+      ly: lyDo,
+      dt: '',
+      km: '',
+      cv: '',
+      tkNo: isChi ? '242' : '1111',
+      tkCo: isChi ? '1111' : '131',
+    }])
+    const pfx = isChi ? (loai === 'unc' ? 'UNC' : 'PC') : isThu ? (loai === 'bc' ? 'BC' : 'PT') : 'CQ'
+    setSoCt(soKeTiep(manKey, `${pfx}2610-`))
+    if (dangSua) {
+      nav(`${path}/moi?loai=${loai}`, { replace: true })
     }
   }
 
@@ -564,53 +604,23 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
   const tenLoaiHienTai = dsLoaiOptions.find(o => o.k === loai)?.ten || 'Chi tiền mặt'
 
   if (daLuu && phieuVuaLuu) {
+    const dsTomTatThuChi: DongTomTat[] = [
+      { nhan: 'Số phiếu', giaTri: <b>{phieuVuaLuu.so}</b> },
+      { nhan: 'Số tiền', giaTri: `${money(soTien)} đ`, noiBat: true },
+      { nhan: isChi ? 'Người nhận' : isThu ? 'Người nộp' : 'Đối tượng', giaTri: doiTuong || 'Chưa chọn' },
+      {
+        nhan: isChi || isThu ? (loai === 'unc' || loai === 'bc' ? 'Tài khoản' : 'Quỹ tiền') : 'Quỹ',
+        giaTri: quy || (isChi || isThu ? (loai === 'unc' || loai === 'bc' ? 'Tài khoản ngân hàng' : 'Quỹ tiền mặt') : 'Quỹ'),
+      },
+    ]
     return (
-      <div className="m-pb-man m-lp">
-        <div className="m-lp-buoc m-lp-buoc-thanh-cong">
-          <div className="m-lp-dau-thanh-cong">
-            <button
-              type="button"
-              className="m-lp-btn-home"
-              onClick={() => nav(path, { replace: true })}
-              aria-label="Về trang danh sách"
-            >
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-                <polyline points="9 22 9 12 15 12 15 22" />
-              </svg>
-            </button>
-          </div>
-
-          <div className="m-lp-thanh-cong-than">
-            <div className="m-lp-thanh-cong-vong">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#138a52" strokeWidth="2.5">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-            </div>
-            <h2 className="m-lp-thanh-cong-tieu">Tạo chứng từ thành công</h2>
-            <p className="m-lp-thanh-cong-mota">
-              Bạn vừa tạo thành công phiếu {tenLoaiHienTai} <b>{phieuVuaLuu.so}</b>.
-            </p>
-
-            <div className="m-lp-thanh-cong-nut-hang">
-              <button
-                type="button"
-                className="m-pb-btn-phu"
-                onClick={() => nav(path, { replace: true })}
-              >
-                Đóng
-              </button>
-              <button
-                type="button"
-                className="m-pb-btn-sua m-lp-btn-xem-vua-lap"
-                onClick={() => nav(`${path}/${phieuVuaLuu.id}`, { replace: true })}
-              >
-                Xem phiếu
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <MThanhCong
+        tieuDe="Lưu phiếu thành công"
+        dsTomTat={dsTomTatThuChi}
+        xemUrl={`${path}/${phieuVuaLuu.id}`}
+        onLapMoi={handleLapMoi}
+        onDong={() => nav(path, { replace: true })}
+      />
     )
   }
 
@@ -1752,6 +1762,53 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
           setDaSua(true)
         }}
       />
+
+      {/* ── HỘP THÔNG BÁO TẠO THẺ CHI PHÍ PHÂN BỔ (T419, T633) ── */}
+      {hoiThe && (
+        <div className="m-tam-overlay" style={{ zIndex: 1200 }}>
+          <div className="m-tam-hop m-lp-hop-hoi-the">
+            <div className="m-tam-dau">
+              <h3 className="m-tam-tieu" style={{ fontSize: 16 }}>Tạo thẻ chi phí phân bổ</h3>
+            </div>
+            <div className="m-lp-hop-nd" style={{ padding: '14px 16px', fontSize: 14, color: 'var(--ink)' }}>
+              <b>{hoiThe.soCt}</b> có khoản Chi phí chờ phân bổ. Phần mềm mở màn Tạo thẻ chi phí phân bổ, điền sẵn tên, số tiền, ngày, chứng từ gốc từ phiếu. Bạn vẫn sửa lại được.
+            </div>
+            <div className="m-tam-day" style={{ padding: '10px 16px' }}>
+              <button
+                type="button"
+                className="m-tam-btn-apdung"
+                onClick={() => {
+                  const h = hoiThe
+                  setHoiThe(null)
+                  nav('/app/ccdc/8-1-1?moi=the', {
+                    state: {
+                      tuPhieu: {
+                        cn: cuaHang,
+                        gt: soTien,
+                        tien: soTien,
+                        ngay: ngay,
+                        ngayCt: ngay,
+                        ngayPb: ngay,
+                        ten: ghiChu || dsDong[0]?.ten || 'Chi phí chờ phân bổ',
+                        ghiChuCt: ghiChu,
+                        soCt: h.soCt,
+                        idMoi: h.idMoi,
+                        _goc: `${path}/${h.idMoi}`,
+                        dong: [{
+                          ten: ghiChu || dsDong[0]?.ten || 'Chi phí chờ phân bổ',
+                          gt: soTien,
+                        }],
+                      },
+                    },
+                  })
+                }}
+              >
+                Tiếp tục
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Sheet chọn Ngày */}
       {moLich && (

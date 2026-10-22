@@ -8,7 +8,7 @@ import { Icon } from '../Icon'
 import { moneyD, pad } from '../format'
 import { phieuTheoSo } from '../generic/SoChungTu'
 import { tenQuyTm } from '../../modules/bao-cao/danh-sach'
-import { giaoDich, phanLoaiGiaoDich, type GiaoDich } from '../../modules/home/LichSuQuy'
+import { giaoDich, type GiaoDich } from '../../modules/home/LichSuQuy'
 
 export function MLichSuQuy(_: ScreenProps) {
   const [tham] = useSearchParams()
@@ -60,19 +60,19 @@ export function MLichSuQuy(_: ScreenProps) {
         <div className="mobile-stat-slider">
           <div className="m-stat-pill">
             <span className="lbl">Tồn đầu kỳ</span>
-            <b className="val">{moneyD(gd?.mo ?? 0)}</b>
+            <b className="val m-t638-den">{moneyD(gd?.mo ?? 0)}</b>
           </div>
           <div className="m-stat-pill">
             <span className="lbl">Tồn cuối kỳ</span>
-            <b className="val" style={{ color: 'var(--blue)' }}>{moneyD(gd?.cuoi ?? 0)}</b>
+            <b className="val m-t638-den">{moneyD(gd?.cuoi ?? 0)}</b>
           </div>
           <div className="m-stat-pill">
-            <span className="lbl">Thu vào (+)</span>
-            <b className="val" style={{ color: 'var(--green)' }}>+{moneyD(tn)}</b>
+            <span className="lbl">Tổng thu</span>
+            <b className="val m-t638-thu">+{moneyD(tn)}</b>
           </div>
           <div className="m-stat-pill">
-            <span className="lbl">Chi ra (-)</span>
-            <b className="val" style={{ color: 'var(--red)' }}>-{moneyD(tc)}</b>
+            <span className="lbl">Tổng chi</span>
+            <b className="val m-t638-chi">-{moneyD(tc)}</b>
           </div>
         </div>
 
@@ -132,7 +132,8 @@ export function MLichSuQuy(_: ScreenProps) {
                   const p = phieuTheoSo(x.so)
                   const laThu = x.thu > 0
                   const isFabi = /bán hàng/i.test(x.dg)
-                  const loaiInfo = phanLoaiGiaoDich(x.dg)
+                  // Chuyển tiền giữa các quỹ giữ chữ đen, không tô màu thu chi (T638)
+                  const laChuyen = /nộp tiền|rút tiền|chuyển quỹ|chuyển tiền/i.test(x.dg)
                   const soDu = isTatCa ? (x.duGop ?? x.du) : x.du
                   const phuDs = [
                     p?.so ?? x.so,
@@ -145,16 +146,13 @@ export function MLichSuQuy(_: ScreenProps) {
                   const noiDung = (
                     <>
                       <div className="l">
-                        <div className={`ic ${loaiInfo.cls} m-free-lsq-ic ${laThu ? 'vao' : 'ra'}`}>
-                          <Icon n={loaiInfo.icon} className="ic sm" />
-                        </div>
                         <div className="meta">
                           <span className="t">{x.dg}</span>
                           <span className="d">{phuDs}</span>
                         </div>
                       </div>
                       <div className="r">
-                        <div className={`amt ${laThu ? 'in' : 'out'}`} style={{ color: laThu ? 'var(--green)' : 'var(--red)' }}>
+                        <div className={`amt ${laThu ? 'in' : 'out'} ${laChuyen ? 'm-t638-den' : laThu ? 'm-t638-thu' : 'm-t638-chi'}`}>
                           {laThu ? `+${moneyD(x.thu)}` : `-${moneyD(x.chi)}`}
                         </div>
                         <div className="bal">Dư {moneyD(soDu)}</div>

@@ -4,6 +4,14 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 
 ## 22/10/2026
 - T632: Gói Free, Thông tin đơn vị (web, điện thoại) chọn loại hình Doanh nghiệp thì Thông tư áp dụng là TT58, không sửa được; phương pháp thuế GTGT, TNDN cố định theo % doanh thu. Báo cáo theo dõi ở Kê khai thuế hiện Sổ doanh thu bán hàng hoá, dịch vụ (S1-DNSN). Báo cáo kết quả kinh doanh giữ bản đơn giản ở nhóm Kế toán tổng hợp, không theo mẫu B02-DNSN.
+- T633: Điện thoại, lập phiếu chi với lý do Chi phí chờ phân bổ: lưu xong hiện bảng nhắc tạo thẻ, bấm Tiếp tục mở màn Tạo thẻ chi phí phân bổ đã điền sẵn tên, số tiền, ngày, chứng từ gốc. Web đã có từ trước.
+- T634: Điện thoại, bấm Thu tiền hoặc Chi tiền ở Thao tác nhanh trang chủ thì sheet trượt lên từ đáy để chọn tiền mặt hay ngân hàng.
+- T635: Mua hàng, mục Báo cáo theo dõi (web, điện thoại) đổi Sổ chi tiết mua hàng thành Bảng kê chi tiết mua hàng.
+- T636: Điện thoại, trang chủ gói Free: thanh nhắc tháng chưa khoá sổ rộng bằng các thẻ khác.
+- T637: Web, chi tiết phiếu Xuất bán POS: mỗi ô có nhãn bên trái, giá trị bên phải trên cùng một hàng, giữ 3 nhóm Đơn hàng POS, Thông tin khách hàng, Hoá đơn. Bỏ nút Đóng ở chân phiếu, bấm Esc hoặc nút X để đóng.
+- T638: Điện thoại, Lịch sử thu chi, Sổ quỹ tiền mặt, Sổ tiền gửi ngân hàng bớt màu. Tồn đầu, tồn cuối chữ đen, tiền thu xanh lá, tiền chi đỏ, chuyển quỹ chữ đen. Dòng giao dịch không còn biểu tượng bên trái.
+- T639: Điện thoại, lập phiếu mua mới không còn ô Phiếu nhập và khối điền chung chiết khấu, thuế GTGT ở đầu danh sách hàng. Chiết khấu, thuế nhập theo từng dòng hàng.
+- T552: Điện thoại, lưu phiếu thu chi tiền mặt, ngân hàng, kiểm kê, phiếu kho xong thì hiện bảng Lưu phiếu thành công giống phiếu mua: số phiếu, số tiền, đối tượng, nút Xem chi tiết, Lập phiếu mới, Đóng.
 - T631: Điện thoại, lập phiếu thu chi: ô Quỹ không còn dính sát hàng Ngày chứng từ, Số phiếu.
 - T628: Điện thoại, danh sách Xuất bán POS và báo cáo Bảng kê chi tiết bán hàng không còn chia nhóm theo ngày. Mỗi thẻ là một dòng hàng: tên hàng, mã khách hàng, số phiếu, ngày, số lượng, thành tiền.
 - T629: Điện thoại, phiếu mua chọn Tiền mặt ngay hoặc Chuyển khoản ngay thì ô Quỹ hiện ngay trong phiếu, tự điền quỹ của cửa hàng. Lưu phiếu thì tự lập phiếu chi trả hết, hai phiếu tham chiếu nhau. Bảng Lưu phiếu thành công có nút Xem chi tiết, Lập phiếu mới, Đóng.

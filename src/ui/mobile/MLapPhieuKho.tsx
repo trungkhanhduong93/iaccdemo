@@ -24,6 +24,7 @@ import type { Dong } from '../generic/gen'
 import { quyDoiTuDanhMuc } from '../../modules/danh-muc/QuyDoiDvt'
 import { goSoVN, docSoVN } from '../OSoGo'
 import { MFormDm } from './MFormDm'
+import { MThanhCong, type DongTomTat } from './MThanhCong'
 import { addCatalogRow, getDmMeta, useAddedCatalogRows } from '../generic/danhMucStore'
 
 export interface MLapPhieuKhoProps extends ScreenProps {
@@ -1047,41 +1048,36 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
     }
   }
 
-  // ── MÀN HÌNH THÀNH CÔNG ──
+  // ── MÀN HÌNH THÀNH CÔNG (T552, T629) ──
   if (daLuu) {
+    const dsTomTatKho: DongTomTat[] = laKk
+      ? [
+          { nhan: 'Số phiếu', giaTri: <b>{soPhieuMoi}</b> },
+          { nhan: 'Kho kiểm kê', giaTri: kho || cuaHang || 'Chưa chọn' },
+          { nhan: 'Số mặt hàng', giaTri: `${dsDong.length} mặt hàng` },
+          { nhan: 'Kết quả', giaTri: `${demKk.thua} thừa · ${demKk.thieu} thiếu · ${demKk.khop} khớp` },
+        ]
+      : [
+          { nhan: 'Số phiếu', giaTri: <b>{soPhieuMoi}</b> },
+          { nhan: 'Số tiền', giaTri: `${money(tongTien)} đ`, noiBat: true },
+          { nhan: 'Kho', giaTri: kho || 'Chưa chọn' },
+          { nhan: 'Chi nhánh', giaTri: cuaHang || 'Chưa chọn' },
+        ]
     return (
-      <div className="m-lp">
-        <div className="m-lp-buoc m-lp-buoc-thanh-cong">
-          <div className="m-lp-dau-thanh-cong">
-            <button type="button" className="m-lp-btn-home" onClick={() => nav(path, { replace: true })} aria-label="Về trang danh sách">
-              <Icon n="home" className="ic sm" kieu="net" />
-            </button>
-          </div>
-
-          <div className="m-lp-thanh-cong-than">
-            <div className="m-lp-thanh-cong-vong">
-              <Icon n="check" className="ic lg m-lp-thanh-cong-tich" kieu="net" />
-            </div>
-            <h2 className="m-lp-thanh-cong-tieu">Tạo chứng từ thành công</h2>
-            <p className="m-lp-thanh-cong-mota">
-              Bạn vừa tạo thành công phiếu {tenLoai} <b>{soPhieuMoi}</b>. Bấm Xem phiếu để kiểm tra chi tiết hoặc bấm Đóng để quay lại danh sách phiếu.
-            </p>
-
-            <div className="m-lp-thanh-cong-nut-hang">
-              <button type="button" className="m-lp-btn-dong" onClick={() => nav(path, { replace: true })}>
-                Đóng
-              </button>
-              <button
-                type="button"
-                className="m-lp-btn-xem"
-                onClick={() => nav(`${path}/${idPhieuMoi}`, { replace: true })}
-              >
-                Xem phiếu
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <MThanhCong
+        tieuDe="Lưu phiếu thành công"
+        dsTomTat={dsTomTatKho}
+        xemUrl={`${path}/${idPhieuMoi}`}
+        onLapMoi={() => {
+          setDaLuu(false)
+          setSoPhieuMoi('')
+          setIdPhieuMoi('')
+          if (dangSua) {
+            nav(`${path}/moi`, { replace: true })
+          }
+        }}
+        onDong={() => nav(path, { replace: true })}
+      />
     )
   }
 

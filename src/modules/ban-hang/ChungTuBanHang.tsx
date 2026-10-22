@@ -653,7 +653,7 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
             <span>In phiếu</span>
           </button>
         </div>
-        {/* Dải phép tính giữa nút In phiếu và Đóng; màn hẹp lên hàng riêng (T613) */}
+        {/* Dải phép tính giữa nút In phiếu và dải phải (T613, T637: bỏ nút Đóng) */}
         <div className="pos-phep">
           {phepTinh.map(([dau, nhan, so]) => (
             <span key={nhan} className="pos-phep-cum">
@@ -674,67 +674,109 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
             <span className="pos-phep-o tong"><small>Tổng thanh toán</small><b>{moneyD(tong)}</b></span>
           </span>
         </div>
-        <div className="xp-footer-phai">
-          <button type="button" className="xp-btn-outline" onClick={dong0}>
-            Đóng (Esc)
-          </button>
-        </div>
       </>}>
       <div className="stack ct-co-dinh" style={{ gap: 14 }}>
         <p className="pos-nhac"><Icon n="info" className="ic sm" />Chứng từ đồng bộ từ FABi: không sửa, trả hàng, xoá trên phiếu này. Sửa đơn trên FABi rồi đồng bộ lại.</p>
-        {/* Đầu phiếu 3 cụm theo bảng B canvas (T613): Đơn hàng POS, Thông tin khách hàng, Hoá đơn; ghi chú dòng dưới cùng */}
-        <section className="card pos-dau3">
-          <div className="pd-cum">
-            <div className="pd-tieu">ĐƠN HÀNG POS</div>
-            <div className="pd-luoi">
-              <div><small>Mã đơn POS</small><b className="code">{row.so}</b></div>
-              <div><small>Số đơn POS</small><b className="code">{dp.soDon}</b></div>
-              <div><small>Cửa hàng</small><b title={String(row.cn)}>{row.cn}</b></div>
-              <div><small>Kênh bán hàng</small><b title={kenh}>{kenh}</b></div>
+        {/* Đầu phiếu 3 nhóm kiểu nhãn trái ô phải (T637): Đơn hàng POS, Thông tin khách hàng, Hoá đơn; Ghi chú dưới cùng */}
+        <section className="xp637-dau">
+          <div className="xp637-nhom xp637-nhom-pos">
+            <div className="xp637-tieu">ĐƠN HÀNG POS</div>
+            <div className="xp637-ds">
+              <div className="xp637-o">
+                <span className="xp637-nhan">Mã đơn POS</span>
+                <div className="xp637-tri">{row.so ? <span className="xp637-code">{row.so}</span> : <span className="xp637-trong">—</span>}</div>
+              </div>
+              <div className="xp637-o">
+                <span className="xp637-nhan">Số đơn POS</span>
+                <div className="xp637-tri">{dp.soDon ? <span className="xp637-code">{dp.soDon}</span> : <span className="xp637-trong">—</span>}</div>
+              </div>
+              <div className="xp637-o">
+                <span className="xp637-nhan">Cửa hàng</span>
+                <div className="xp637-tri">{row.cn ? <span title={String(row.cn)}>{row.cn}</span> : <span className="xp637-trong">—</span>}</div>
+              </div>
+              <div className="xp637-o">
+                <span className="xp637-nhan">Kênh bán hàng</span>
+                <div className="xp637-tri">{kenh ? <span title={kenh}>{kenh}</span> : <span className="xp637-trong">—</span>}</div>
+              </div>
               {/* Hoá đơn có một cách thanh toán; chứng từ tổng hợp theo kênh gộp nhiều cách nên bỏ (T116) */}
-              {(x as XPos).loai === 'don' && <div><small>Phương thức thanh toán</small><b title={pttt}>{pttt}</b></div>}
-              <div><small>Thời gian xuất</small><b>{dmy(x.date)} {(x as XPos).gio ?? '23:30'}</b></div>
+              {(x as XPos).loai === 'don' && (
+                <div className="xp637-o">
+                  <span className="xp637-nhan">Phương thức thanh toán</span>
+                  <div className="xp637-tri">{pttt ? <span title={pttt}>{pttt}</span> : <span className="xp637-trong">—</span>}</div>
+                </div>
+              )}
+              <div className="xp637-o">
+                <span className="xp637-nhan">Thời gian xuất</span>
+                <div className="xp637-tri"><span>{dmy(x.date)} {(x as XPos).gio ?? '23:30'}</span></div>
+              </div>
             </div>
           </div>
-          <div className="pd-cum">
-            <div className="pd-tieu">THÔNG TIN KHÁCH HÀNG</div>
-            <div><small>Khách hàng</small><b className="pd-khach">{dp.khach?.ten ?? 'Khách lẻ POS'}</b></div>
-            {/* Khách lẻ vẫn giữ đủ nhãn, ô thiếu ghi — (T620) */}
-            <div><small>Địa chỉ</small>{dp.khach ? <span>{dp.khach.diaChi}</span> : <b className="pd-trong-o">—</b>}</div>
-            <div className="pd-luoi">
-              <div><small>Mã số thuế</small>{dp.khach ? <b className="code">{dp.khach.mst}</b> : <b className="pd-trong-o">—</b>}</div>
-              <div><small>Người mua hàng</small>{dp.khach ? <b>{dp.khach.nguoiMua}</b> : <b className="pd-trong-o">—</b>}</div>
+
+          <div className="xp637-nhom xp637-nhom-khach">
+            <div className="xp637-tieu">THÔNG TIN KHÁCH HÀNG</div>
+            <div className="xp637-ds">
+              <div className="xp637-o">
+                <span className="xp637-nhan">Khách hàng</span>
+                <div className="xp637-tri"><span title={dp.khach?.ten ?? 'Khách lẻ POS'}>{dp.khach?.ten ?? 'Khách lẻ POS'}</span></div>
+              </div>
+              <div className="xp637-o">
+                <span className="xp637-nhan">Địa chỉ</span>
+                <div className="xp637-tri">{dp.khach?.diaChi ? <span title={dp.khach.diaChi}>{dp.khach.diaChi}</span> : <span className="xp637-trong">—</span>}</div>
+              </div>
+              <div className="xp637-o">
+                <span className="xp637-nhan">Mã số thuế</span>
+                <div className="xp637-tri">{dp.khach?.mst ? <span className="xp637-code">{dp.khach.mst}</span> : <span className="xp637-trong">—</span>}</div>
+              </div>
+              <div className="xp637-o">
+                <span className="xp637-nhan">Người mua hàng</span>
+                <div className="xp637-tri">{dp.khach?.nguoiMua ? <span title={dp.khach.nguoiMua}>{dp.khach.nguoiMua}</span> : <span className="xp637-trong">—</span>}</div>
+              </div>
             </div>
           </div>
-          <div className="pd-cum pd-hd">
-            <div className="pd-tieu pd-tieu-nhan">HOÁ ĐƠN{!dp.hoaDon && <span className="pd-nhan-khong">Không có thông tin HĐĐT</span>}</div>
-            {dp.hoaDon ? (
-              <div className="pd-luoi">
-                <div><small>Số hoá đơn</small><b className="code">{dp.hoaDon.so}</b></div>
-                <div><small>Ký hiệu</small><b className="code">{dp.hoaDon.kyHieu}</b></div>
-                <div><small>Ngày hoá đơn</small><b>{dp.hoaDon.ngay}</b></div>
-                <div><small>Ngày chứng từ</small><b>{dmy(x.date)}</b></div>
-                <div className="pd-c2"><small>Mã tra cứu</small>
-                  <span className="pd-ma">
-                    <b className="code">{dp.hoaDon.maTraCuu}</b>
-                    <button type="button" className={`pd-chep${daChep ? ' da' : ''}`} onClick={() => chepMa(dp.hoaDon!.maTraCuu)}
+
+          <div className="xp637-nhom xp637-nhom-hd">
+            <div className="xp637-tieu">
+              <span>HOÁ ĐƠN</span>
+              {!dp.hoaDon && <span className="xp637-nhan-khong">Không có thông tin HĐĐT</span>}
+            </div>
+            <div className="xp637-ds">
+              <div className="xp637-o">
+                <span className="xp637-nhan">Số hoá đơn</span>
+                <div className="xp637-tri">{dp.hoaDon?.so ? <span className="xp637-code">{dp.hoaDon.so}</span> : <span className="xp637-trong">—</span>}</div>
+              </div>
+              <div className="xp637-o">
+                <span className="xp637-nhan">Ký hiệu</span>
+                <div className="xp637-tri">{dp.hoaDon?.kyHieu ? <span className="xp637-code">{dp.hoaDon.kyHieu}</span> : <span className="xp637-trong">—</span>}</div>
+              </div>
+              <div className="xp637-o">
+                <span className="xp637-nhan">Ngày hoá đơn</span>
+                <div className="xp637-tri">{dp.hoaDon?.ngay ? <span>{dp.hoaDon.ngay}</span> : <span className="xp637-trong">—</span>}</div>
+              </div>
+              <div className="xp637-o">
+                <span className="xp637-nhan">Ngày chứng từ</span>
+                <div className="xp637-tri">{x.date ? <span>{dmy(x.date)}</span> : <span className="xp637-trong">—</span>}</div>
+              </div>
+              <div className="xp637-o">
+                <span className="xp637-nhan">Mã tra cứu</span>
+                {dp.hoaDon?.maTraCuu ? (
+                  <div className="xp637-tri xp637-tri-ma">
+                    <span className="xp637-code" title={dp.hoaDon.maTraCuu}>{dp.hoaDon.maTraCuu}</span>
+                    <button type="button" className={`xp637-chep${daChep ? ' xp637-da-chep' : ''}`} onClick={() => chepMa(dp.hoaDon!.maTraCuu)}
                       title={daChep ? 'Đã chép mã tra cứu' : 'Sao chép mã tra cứu'} aria-label="Sao chép mã tra cứu">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2" /><path d="M5 15V5a1 1 0 0 1 1-1h10" /></svg>
                     </button>
-                  </span>
-                </div>
+                  </div>
+                ) : (
+                  <div className="xp637-tri"><span className="xp637-trong">—</span></div>
+                )}
               </div>
-            ) : (
-              <div className="pd-luoi">
-                <div><small>Số hoá đơn</small><b className="pd-trong-o">—</b></div>
-                <div><small>Ký hiệu</small><b className="pd-trong-o">—</b></div>
-                <div><small>Ngày hoá đơn</small><b className="pd-trong-o">—</b></div>
-                <div><small>Ngày chứng từ</small><b>{dmy(x.date)}</b></div>
-                <div className="pd-c2"><small>Mã tra cứu</small><b className="pd-trong-o">—</b></div>
-              </div>
-            )}
+            </div>
           </div>
-          <div className="pd-ghichu"><small>Ghi chú</small><span title={String(row.dienGiai)}>{row.dienGiai}</span></div>
+
+          <div className="xp637-ghichu">
+            <span className="xp637-nhan">Ghi chú</span>
+            <div className="xp637-tri">{row.dienGiai ? <span title={String(row.dienGiai)}>{row.dienGiai}</span> : <span className="xp637-trong">—</span>}</div>
+          </div>
         </section>
         <section className="card ct-than-card">
           <div className="tabs">

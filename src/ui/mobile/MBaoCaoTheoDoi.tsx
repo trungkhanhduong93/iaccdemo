@@ -36,7 +36,7 @@ export const MUC_THEO_DOI: Record<string, MucTheoDoi[]> = {
   'mua-hang': [
     { ten: 'Nhà cung cấp', path: '/app/danh-muc/1-5', loai: 'dm' },
     { ten: 'Hàng hoá, dịch vụ', path: '/app/danh-muc/1-2', loai: 'dm' },
-    { ten: 'Sổ chi tiết mua hàng', path: '/app/mua-hang/4-2-1', loai: 'bc' },
+    { ten: 'Bảng kê chi tiết mua hàng', path: '/app/mua-hang/4-2-7', loai: 'bc' },
     { ten: 'Công nợ phải trả', path: '/app/mua-hang/4-2-3', loai: 'bc' },
   ],
   'ban-hang': [
