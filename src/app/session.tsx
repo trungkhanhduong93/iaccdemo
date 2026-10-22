@@ -1,7 +1,7 @@
 // Phiên làm việc: người dùng, vai trò, đơn vị kế toán, gói. Lưu ở localStorage để F5 không mất.
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import type { Goi } from './plan'
-import { CHE_DO, CHE_DO_HOP_LE, CHE_DO_MAC_DINH, chuanHoaCheDo, type CheDo } from './che-do'
+import { CHE_DO, CHE_DO_DN_FREE, CHE_DO_HOP_LE, CHE_DO_MAC_DINH, chuanHoaCheDo, type CheDo } from './che-do'
 import { CUA_HANG, DON_VI, HOM_NAY, type DonVi, type Role } from '../data/mock'
 import { dmy } from '../ui/format'
 import type { LichCachNvl } from '../modules/home/chi-phi-nvl'
@@ -96,8 +96,15 @@ function doc(): Session {
     } else if (res.ppTndn !== 'tyLe' && res.ppTndn !== 'thuNhap') {
       res.ppTndn = 'thuNhap'
     }
-    return res
+    return chuanHoaFree(res)
   } catch { return MAC_DINH }
+}
+
+/** Gói Free theo loại hình (T632): hộ kinh doanh TT152; doanh nghiệp TT58, thuế GTGT, TNDN theo tỷ lệ % doanh thu (trường hợp 1, sổ S1-DNSN) */
+function chuanHoaFree(n: Session): Session {
+  if (n.goi !== 'F') return n
+  if (loaiHinhDv(n, donViHienTai(n)) === 'hkd') return n.cheDo === 'TT152' ? n : { ...n, cheDo: 'TT152' }
+  return { ...n, cheDo: CHE_DO_DN_FREE, ppGtgt: 'tyLe', ppTndn: 'tyLe' }
 }
 
 const Ctx = createContext<{ s: Session; set: (p: Partial<Session>) => void; toast: (m: string) => void } | null>(null)
@@ -110,7 +117,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   // Đổi gói mà không chỉ định chế độ: hộ kinh doanh lấy TT152 nếu gói cho phép, còn lại lấy mặc định của gói (T179)
   const cheDoKhiDoiGoi = (n: Session, g: Goi): CheDo =>
     loaiHinhDv(n, donViHienTai(n)) === 'hkd' && CHE_DO_HOP_LE[g].includes('TT152') ? 'TT152' : CHE_DO_MAC_DINH[g]
-  const set = (p: Partial<Session>) => setS(x => { const n = { ...x, ...p }; if (p.goi && !p.cheDo) n.cheDo = cheDoKhiDoiGoi(n, p.goi); n.cheDo = chuanHoaCheDo(n.goi, n.cheDo); return n })
+  const set = (p: Partial<Session>) => setS(x => { const n = { ...x, ...p }; if (p.goi && !p.cheDo) n.cheDo = cheDoKhiDoiGoi(n, p.goi); n.cheDo = chuanHoaCheDo(n.goi, n.cheDo); return chuanHoaFree(n) })
   return (
     <Ctx.Provider value={{ s, set, toast: setMsg }}>
       {children}

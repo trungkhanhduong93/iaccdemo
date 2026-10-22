@@ -854,3 +854,11 @@ Trum chốt 22/10/2026 (T624).
 - Gói S, PL, PR hiện cả số lượng và tiền. Điện thoại: mỗi nhóm Đầu kỳ, Nhập, Xuất, Cuối kỳ có số lượng ở trên, tiền ở dưới.
 - Tạm bỏ Tổng hợp nhập xuất tồn 5.2.2 vì trùng 5.2.3. Gỡ khỏi sidebar, quy trình, danh sách báo cáo; giữ code.
 - Báo cáo điện thoại Bảng kê chi tiết bán hàng, Công nợ nhà cung cấp, Tổng hợp nhập kho, Chi tiết nhập kho, Báo cáo xuất nhập tồn theo mẫu D của Bảng kê chi tiết mua hàng.
+
+## QD79. Doanh nghiệp gói Free dùng TT58, chỉ sổ S1-DNSN
+
+PhuongXT chốt 22/10/2026 (T632). Thay điểm "Free chỉ TT152" của QD31 và ý "doanh nghiệp gói Free quản lý lãi lỗ, không theo thông tư" ở T138.
+
+- Gói Free, loại hình Doanh nghiệp: chế độ kế toán TT58, không sửa được. Hộ kinh doanh gói Free giữ TT152.
+- Thuế GTGT, TNDN cố định theo tỷ lệ % doanh thu (trường hợp 1 của TT58). Bộ sổ chỉ có Sổ doanh thu bán hàng hoá, dịch vụ S1-DNSN, hiện ở Báo cáo theo dõi.
+- Báo cáo kết quả kinh doanh gói Free giữ bản đơn giản một cột, không theo B02-DNSN.

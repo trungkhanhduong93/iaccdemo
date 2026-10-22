@@ -195,6 +195,10 @@ const GIU_TT152_HKD = ['2.2.7', '3.2.5', '5.2.8', '10.4.1']
 export const giuBC = (code: string | undefined, cheDo: CheDo, hkd = false) =>
   !!code && (GIU_MOI_CHE_DO.includes(code) || MO_IFASTER.includes(code) || (cheDo === 'TT58' && GIU_TT58.includes(code)) || (cheDo === 'TT152' && hkd && GIU_TT152_HKD.includes(code)))
 
+/** Doanh nghiệp gói Free (TT58 trường hợp 1) chỉ có sổ doanh thu S1-DNSN; các sổ khác của bộ TT58 ẩn, báo cáo theo iFaster vẫn mở (T632) */
+export const anSoTT58GoiFree = (code: string | undefined, goi: string) =>
+  goi === 'F' && !!code && GIU_TT58.includes(code) && !MO_IFASTER.includes(code) && code !== '3.2.5'
+
 /** Ký hiệu mẫu theo chế độ; Sổ doanh thu 3.2.5 đổi mẫu theo trường hợp thuế: TT58 S1, S2a, S3a-DNSN; hộ kinh doanh TT152 S1a, S2a, S2b-HKD (T179) */
 export function kyHieuBC(code: string | undefined, cheDo: CheDo, s?: PhienBC): string | undefined {
   if (code === '3.2.5' && cheDo === 'TT58') {

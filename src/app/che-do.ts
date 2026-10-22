@@ -32,9 +32,12 @@ export const CHE_DO_MAC_DINH: Record<Goi, CheDo> = { F: 'TT152', S: 'TT58', PL: 
 /** Cặp gói và chế độ cho phép chọn (Trum chốt 09/10/2026). Standard thêm TT152 cho hộ kinh doanh tính thuế theo lợi nhuận (PhuongXT chốt 11/10/2026, T138) */
 export const CHE_DO_HOP_LE: Record<Goi, CheDo[]> = { F: ['TT152'], S: ['TT58', 'TT152'], PL: ['TT133', 'TT99'], PR: ['TT99', 'TT133'] }
 
+/** Doanh nghiệp gói Free dùng TT58, không chọn được; sổ theo trường hợp 1 (thuế GTGT, TNDN theo tỷ lệ % doanh thu), chỉ S1-DNSN (T632) */
+export const CHE_DO_DN_FREE: CheDo = 'TT58'
+
 /** Chế độ hợp lệ với gói thì giữ, không thì về mặc định của gói */
 export function chuanHoaCheDo(goi: Goi, cd: unknown): CheDo {
-  return CHE_DO_HOP_LE[goi].includes(cd as CheDo) ? cd as CheDo : CHE_DO_MAC_DINH[goi]
+  return CHE_DO_HOP_LE[goi].includes(cd as CheDo) || (goi === 'F' && cd === CHE_DO_DN_FREE) ? cd as CheDo : CHE_DO_MAC_DINH[goi]
 }
 /** Chế độ mặc định của một gói, dùng khi chỉ biết gói (bảng so sánh gói, danh sách đơn vị) */
 export const cheDoCuaGoi = (g: Goi) => CHE_DO[CHE_DO_MAC_DINH[g]]

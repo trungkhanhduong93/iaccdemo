@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T632 | Thông tin đơn vị gói Free (web, điện thoại): Doanh nghiệp dùng TT58, không sửa được, thuế theo % doanh thu; Báo cáo theo dõi chỉ hiện S1-DNSN | PhuongXT | 22/10/2026 | [nhật ký](../nhat-ky/2026-10-22-phuongxt-free-doanh-nghiep-tt58.md) |
 | T631 | Điện thoại, lập phiếu thu chi: ô Quỹ cách hàng Ngày chứng từ, Số phiếu 12px như các ô khác | dinhlanphuongipacc | 22/10/2026 | [nhật ký](../nhat-ky/2026-10-22-dinhlanphuongipacc-khoang-cach-o-quy.md) |
 | T630 | Điện thoại, Thanh toán ngay phiếu mua tự điền đủ số còn nợ, gói Free khoá ô số tiền; màn sửa phiếu mua dùng chung `MThanhToanNgay` | Trum | 22/10/2026 | [nhật ký](../nhat-ky/2026-10-22-trum-pos-phieu-mua-quy-thanh-toan.md) |
 | T629 | Điện thoại, phiếu mua chọn quỹ ngay trong phiếu theo loại và cửa hàng; lưu tự sinh phiếu chi tham chiếu hai chiều; bảng Lưu phiếu thành công | Trum | 22/10/2026 | [nhật ký](../nhat-ky/2026-10-22-trum-pos-phieu-mua-quy-thanh-toan.md) |
