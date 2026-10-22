@@ -4,7 +4,36 @@ import type { Row, ScreenProps } from '../../modules/types'
 import { coTrongGoi } from '../../app/plan'
 import { useSession } from '../../app/session'
 import { docNgay } from '../ChonNgay'
-import { money } from '../format'
+import { money, soLuong } from '../format'
+import { KHACH } from '../../data/mock'
+
+/** Lấy mã khách hàng, nếu là khách lẻ không mã thì ghi 'Khách lẻ' (T628) */
+export function layMaKh(doiTuong?: unknown, kh?: unknown): string {
+  const dt = String(kh || doiTuong || '').trim()
+  if (!dt || dt === 'KL' || dt.toLowerCase().includes('khách lẻ') || dt.toLowerCase().includes('khach le')) {
+    return 'Khách lẻ'
+  }
+  const timKh = KHACH.find(k => k.ma === dt || k.ten === dt)
+  if (timKh) {
+    return timKh.ma === 'KL' ? 'Khách lẻ' : timKh.ma
+  }
+  if (!dt.includes(' ') && dt.length <= 15) {
+    return dt
+  }
+  return 'Khách lẻ'
+}
+
+function parseDateTimeTs(s?: unknown): number {
+  if (!s || typeof s !== 'string') return 0
+  const parts = s.trim().split(' ')
+  const d = docNgay(parts[0]).getTime()
+  if (isNaN(d)) return 0
+  if (parts.length > 1 && parts[1].includes(':')) {
+    const [hh, mm] = parts[1].split(':').map(Number)
+    return d + (hh || 0) * 3600000 + (mm || 0) * 60000
+  }
+  return d
+}
 
 
 export function dinhDangThuNgay(chuoiNgay: string): string {
@@ -93,6 +122,9 @@ export interface MDsDongPhieuProps {
   tien?: number
   hienTien?: boolean
   onClick: () => void
+  tieuDe?: string
+  soLuong?: number
+  dvt?: string
 }
 
 export function MDsDongPhieu({
@@ -102,7 +134,11 @@ export function MDsDongPhieu({
   tien = 0,
   hienTien = true,
   onClick,
+  tieuDe,
+  soLuong: slProp,
+  dvt,
 }: MDsDongPhieuProps) {
+  const coSl = slProp !== undefined
   return (
     <button
       type="button"
@@ -111,12 +147,19 @@ export function MDsDongPhieu({
     >
       <div className="m-mh-dong-trai">
         <div className="m-mh-dong-hang1">
-          <span className="m-mh-dong-so">{so}</span>
+          <span className="m-mh-dong-so">{tieuDe ?? so}</span>
           {soDongHang > 0 && <span className="m-mh-dong-hh">{soDongHang} hàng hoá</span>}
         </div>
         {dongPhu && <span className="m-mh-dong-ncc" title={dongPhu}>{dongPhu}</span>}
       </div>
-      {hienTien && <span className="m-mh-dong-tien">{money(Math.abs(tien))} đ</span>}
+      {coSl ? (
+        <div className="m-the-hang-phai">
+          <span className="m-the-hang-sl num">{soLuong(slProp)}{dvt ? ` ${dvt}` : ''}</span>
+          {hienTien && <span className="m-mh-dong-tien">{money(Math.abs(tien))} đ</span>}
+        </div>
+      ) : (
+        hienTien && <span className="m-mh-dong-tien">{money(Math.abs(tien))} đ</span>
+      )}
     </button>
   )
 }
@@ -226,10 +269,8 @@ export const MDsChungTuChuan: FC<MDsChungTuChuanProps> = ({
     if (coNhomTheoNgay) return []
     const arr = [...listSauTim]
     arr.sort((a, b) => {
-      const da = docNgay(String(a.ngay ?? '').split(' ')[0]).getTime()
-      const db = docNgay(String(b.ngay ?? '').split(' ')[0]).getTime()
-      const timeA = isNaN(da) ? 0 : da
-      const timeB = isNaN(db) ? 0 : db
+      const timeA = parseDateTimeTs(a.ngay)
+      const timeB = parseDateTimeTs(b.ngay)
       return sortMoiNhat ? timeB - timeA : timeA - timeB
     })
     return arr

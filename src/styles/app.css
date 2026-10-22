@@ -41010,3 +41010,121 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
   flex-shrink: 0;
   text-align: right;
 }
+
+/* ── Xuất bán POS và 3.2.8 mỗi thẻ một dòng hàng (T628) ── */
+.m-the-hang-phai {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 2px;
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.m-the-hang-sl {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--ink, #1f2225);
+  white-space: nowrap;
+}
+
+.m-the-hang-tien {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--ink, #1f2225);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.m-the-hang-card {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  text-decoration: none !important;
+  color: inherit !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  margin-bottom: 8px !important;
+}
+
+.m-the-hang-card:active {
+  background: var(--giay-ke) !important;
+}
+
+/* ── Bảng lưu thành công và chọn quỹ phiếu mua (T629) ── */
+.m-tc552-the-tom-tat {
+  width: 100%;
+  max-width: 340px;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-sizing: border-box;
+  text-align: left;
+  margin-top: 4px;
+}
+
+.m-tc552-dong-tt {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13.5px;
+}
+
+.m-tc552-nhan-tt {
+  color: var(--muted);
+  flex-shrink: 0;
+}
+
+.m-tc552-gt-tt {
+  color: var(--ink);
+  font-weight: 600;
+  text-align: right;
+  word-break: break-word;
+}
+
+.m-tc552-gt-tt.noi-bat {
+  color: var(--blue);
+  font-size: 15px;
+}
+
+.m-tc552-nut-hang {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  max-width: 340px;
+  margin-top: 12px;
+}
+
+.m-tc552-btn-chinh {
+  height: 46px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.m-tc552-btn-phu,
+.m-tc552-btn-dong {
+  height: 44px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  background: var(--hover);
+  color: var(--ink);
+  border: 1px solid var(--line);
+}
+
+/* ── Thanh toán ngay phiếu mua (T630) ── */
+.m-t600-inp[readonly] {
+  background: var(--giay-ke);
+  color: var(--muted);
+  cursor: not-allowed;
+}

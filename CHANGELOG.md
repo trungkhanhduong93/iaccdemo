@@ -3,6 +3,9 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 22/10/2026
+- T628: Điện thoại, danh sách Xuất bán POS và báo cáo Bảng kê chi tiết bán hàng không còn chia nhóm theo ngày. Mỗi thẻ là một dòng hàng: tên hàng, mã khách hàng, số phiếu, ngày, số lượng, thành tiền.
+- T629: Điện thoại, phiếu mua chọn Tiền mặt ngay hoặc Chuyển khoản ngay thì ô Quỹ hiện ngay trong phiếu, tự điền quỹ của cửa hàng. Lưu phiếu thì tự lập phiếu chi trả hết, hai phiếu tham chiếu nhau. Bảng Lưu phiếu thành công có nút Xem chi tiết, Lập phiếu mới, Đóng.
+- T630: Điện thoại, Thanh toán ngay phiếu mua tự điền đủ số còn nợ. Gói Free không sửa được số tiền, gói khác sửa được để trả một phần.
 - T627: Trang chủ gói Free (web, điện thoại), Thao tác nhanh mặc định thay ô Sổ quỹ bằng Kê khai thuế. Máy đã lưu Tuỳ chỉnh thì bấm khôi phục mặc định để thấy.
 - T626: Điện thoại, mở một báo cáo thì bảng Bộ lọc báo cáo bật lên ngay; bấm Áp dụng mới hiện số liệu. Đóng bộ lọc khi chưa Áp dụng thì màn báo cáo hiện lời nhắc và nút Chọn điều kiện lọc.
 - T623: Điện thoại, phân hệ Kê khai thuế (gói Free, Standard) có giao diện app: thẻ tờ khai cần nộp, danh sách tờ khai theo năm, tìm kiếm, bộ lọc Năm, Loại tờ khai, Trạng thái, nút nổi Lập tờ khai, kê khai 4 bước toàn màn hình; tab Báo cáo theo dõi hiện các sổ TT152 áp dụng với đơn vị. Gói Standard dùng chung màn tờ khai hộ kinh doanh như gói Free, cả trên web. Đổi tên: "Thu, chi tiền" thành "Thu chi", "Danh sách thẻ chi phí" thành "Chi phí chờ phân bổ", "Danh sách tờ khai" thành "Kê khai thuế".

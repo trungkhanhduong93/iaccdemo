@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, type FC } from 'react'
 import { fold, money } from '../format'
 import { Icon } from '../Icon'
 import { CUA_HANG } from '../../data/mock'
+import { useSession } from '../../app/session'
 
 export interface QuyMau {
   k: string
@@ -77,6 +78,8 @@ export const MThanhToanNgay: FC<MThanhToanNgayProps> = ({
   ngayMacDinh,
   onLapPhieuChi,
 }) => {
+  const { s } = useSession()
+  const isFree = s.goi === 'F' // QD22, QD27, T630: gói Free khoá ô số tiền
   const soCtHienThi = soPhieu || soCt || ''
   const chHienThi = cuaHang || cuaHangTen || 'Phố Mây Nguyễn Trãi'
   const tienNo = conNo ?? conLai ?? 0
@@ -133,12 +136,13 @@ export const MThanhToanNgay: FC<MThanhToanNgayProps> = ({
   if (!mo) return null
 
   const handleLap = () => {
-    if (tienSheet <= 0 || tienSheet > tienNo || !quySheet) return
+    const soTienThuc = isFree ? tienNo : tienSheet
+    if (soTienThuc <= 0 || soTienThuc > tienNo || !quySheet) return
     onLapPhieuChi({
       hinhThuc: htSheet,
       quy: quySheet,
       ngay: ngaySheet,
-      soTien: tienSheet,
+      soTien: soTienThuc,
       dienGiai: dgSheet,
     })
   }
@@ -224,9 +228,18 @@ export const MThanhToanNgay: FC<MThanhToanNgayProps> = ({
                 <input
                   type="text"
                   className="m-t600-inp"
-                  style={{ textAlign: 'right', fontWeight: 600, color: 'var(--blue)', fontVariantNumeric: 'tabular-nums', fontSize: 16 }}
-                  value={money(tienSheet)}
-                  onChange={e => setTienSheet(Number(e.target.value.replace(/\D/g, '')) || 0)}
+                  readOnly={isFree}
+                  style={{
+                    textAlign: 'right',
+                    fontWeight: 600,
+                    color: isFree ? 'var(--muted)' : 'var(--blue)',
+                    background: isFree ? 'var(--giay-ke)' : undefined,
+                    cursor: isFree ? 'not-allowed' : undefined,
+                    fontVariantNumeric: 'tabular-nums',
+                    fontSize: 16,
+                  }}
+                  value={money(isFree ? tienNo : tienSheet)}
+                  onChange={isFree ? undefined : e => setTienSheet(Number(e.target.value.replace(/\D/g, '')) || 0)}
                 />
               </div>
             </div>
@@ -263,7 +276,7 @@ export const MThanhToanNgay: FC<MThanhToanNgayProps> = ({
             <button
               type="button"
               className="m-t601-btn-foot-pri"
-              disabled={tienSheet <= 0 || tienSheet > tienNo || !quySheet}
+              disabled={(isFree ? tienNo : tienSheet) <= 0 || (isFree ? tienNo : tienSheet) > tienNo || !quySheet}
               onClick={handleLap}
             >
               {htSheet === 'tienmat' ? 'Lập phiếu chi tiền mặt' : 'Lập uỷ nhiệm chi'}
@@ -280,7 +293,7 @@ export const MThanhToanNgay: FC<MThanhToanNgayProps> = ({
               <div>
                 <h2 className="m-tam-tieu">{htSheet === 'tienmat' ? 'Chọn quỹ tiền mặt' : 'Chọn quỹ ngân hàng'}</h2>
                 <div style={{ fontSize: 13, color: 'var(--muted)', marginTop: 2 }}>
-                  Cửa hàng {chHienThi} · cần trả <b style={{ color: 'var(--ink)' }}>{money(tienSheet)} đ</b>
+                  Cửa hàng {chHienThi} · cần trả <b style={{ color: 'var(--ink)' }}>{money(isFree ? tienNo : tienSheet)} đ</b>
                 </div>
               </div>
               <button type="button" className="m-tam-dong-btn" onClick={() => setMoBangChonQuy(false)} aria-label="Đóng">

@@ -20,7 +20,7 @@ import {
   type XPos,
 } from '../../modules/ban-hang/ChungTuBanHang'
 import { useDaXoa } from '../generic/daXoa'
-import { MDsChungTuChuan, MDsDongPhieu, HangTabsBanHang } from './MDsChungTuChuan'
+import { MDsChungTuChuan, MDsDongPhieu, HangTabsBanHang, layMaKh } from './MDsChungTuChuan'
 import { quayLaiMobile } from './quayLai'
 import { MBaoCaoTheoDoi } from './MBaoCaoTheoDoi'
 
@@ -174,6 +174,34 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
   const qHang = fold(timHang.trim())
   const dsMonLoc = qHang ? dsMon.filter(m => fold(`${m.ten} ${m.ma}`).includes(qHang)) : dsMon
 
+  // T628: Tách mỗi phiếu thành các dòng hàng, mỗi thẻ là một dòng hàng
+  const listDong = useMemo(() => {
+    return list.flatMap(r => {
+      const dsDong = r.x ? dongCuaPhieu(r.x as XPos) : []
+      const dongLoc1 = loc.hang ? dsDong.filter(d => d.ma === loc.hang) : dsDong
+      const dongLoc = loc.tonKho ? dongLoc1.filter(d => Boolean(d.tonKho) === (loc.tonKho === 'co')) : dongLoc1
+      const ngayStr = dmy(r.x?.date instanceof Date ? r.x.date : docNgay(r.ngay))
+      const maKh = layMaKh(r.doiTuong)
+      return dongLoc.map((d, dIdx) => ({
+        id: `${r.id}_${dIdx}`,
+        phieu: r,
+        so: r.so,
+        ngay: r.ngay,
+        tenHang: d.ten,
+        maHang: d.ma,
+        dvt: d.dvt,
+        sl: d.sl,
+        tien: d.tien ?? d.thanh ?? (d.sl * d.gia),
+        tong: d.tien ?? d.thanh ?? (d.sl * d.gia),
+        maKh,
+        dienGiai: r.dienGiai,
+        cn: r.cn,
+        doiTuong: maKh,
+        dongPhu: `${maKh} · ${r.so} · ${ngayStr}`,
+      }))
+    })
+  }, [list, loc.hang, loc.tonKho])
+
   return (
     <>
       <MDsChungTuChuan
@@ -188,18 +216,20 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
         chipsLoc={chipsLoc}
         chuoiKhoangNgay={chuoiKhoangNgay}
         hienTien={true}
-        rows={list}
+        rows={listDong}
+        nhomTheoNgay={false}
         renderDong={(r, i) => {
-          const soHh = r.mon?.length ?? 0
           return (
             <MDsDongPhieu
               key={r.id ?? i}
               so={r.so}
-              soDongHang={soHh}
-              dongPhu={r.doiTuong || 'Khách lẻ POS'}
-              tien={Number(r.tong ?? 0)}
+              tieuDe={r.tenHang}
+              soLuong={r.sl}
+              dvt={r.dvt}
+              dongPhu={r.dongPhu}
+              tien={Number(r.tien ?? 0)}
               hienTien={true}
-              onClick={() => xemDon(r)}
+              onClick={() => xemDon(r.phieu ?? r)}
             />
           )
         }}

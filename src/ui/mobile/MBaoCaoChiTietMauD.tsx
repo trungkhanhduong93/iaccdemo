@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import type { Row } from '../../modules/types'
 import { money, rutGonSo, soLuong } from '../format'
 import { duongPhieu } from '../generic/SoChungTu'
+import { layMaKh } from './MDsChungTuChuan'
 
 export interface MBaoCaoChiTietMauDProps {
   maBc: string
@@ -50,6 +51,7 @@ interface DongHangChuan {
   so: string
   ngay: string
   doiTuong: string
+  maKh?: string
   ma: string
   ten: string
   dvt: string
@@ -116,6 +118,7 @@ export const MBaoCaoChiTietMauD: FC<MBaoCaoChiTietMauDProps> = ({ maBc, rows, q 
         const doiTuong = is328
           ? String(r.kh || (r.kenh ? `Khách lẻ POS · ${r.kenh}` : 'Khách lẻ POS'))
           : String(r.doiTuong || (r.loai ? `${r.loai}${r.kho ? ` - ${r.kho}` : ''}` : 'Nhập kho'))
+        const maKh = layMaKh(r.doiTuong, r.kh)
         const ma = String(r.ma || '')
         const ten = String(r.ten || r.tenHang || '')
         const dvt = String(r.dvt || '')
@@ -131,6 +134,7 @@ export const MBaoCaoChiTietMauD: FC<MBaoCaoChiTietMauDProps> = ({ maBc, rows, q 
           so,
           ngay,
           doiTuong,
+          maKh,
           ma,
           ten,
           dvt,
@@ -207,6 +211,18 @@ export const MBaoCaoChiTietMauD: FC<MBaoCaoChiTietMauDProps> = ({ maBc, rows, q 
   const doanhThu328 = useMemo(() => dsPhieuGroup.reduce((s, x) => s + x.tongTien, 0), [dsPhieuGroup])
   const tbDon328 = soDon328 > 0 ? Math.round(doanhThu328 / soDon328) : 0
 
+  // Danh sách dòng phẳng cho 3.2.8: mới nhất ở trên (T628)
+  const dsDong328 = useMemo(() => {
+    if (!is328) return []
+    const arr = [...dsDongChuan]
+    arr.sort((a, b) => {
+      const ta = parseNgayTs(a.ngay)
+      const tb = parseNgayTs(b.ngay)
+      return tb - ta
+    })
+    return arr
+  }, [dsDongChuan, is328])
+
   // Tổng ghim đáy màn
   const tongTienTatCa = useMemo(() => dsPhieuGroup.reduce((s, x) => s + x.tongTien, 0), [dsPhieuGroup])
 
@@ -241,7 +257,40 @@ export const MBaoCaoChiTietMauD: FC<MBaoCaoChiTietMauDProps> = ({ maBc, rows, q 
         </div>
       )}
 
-      {dsNhomNgay.length === 0 ? (
+      {is328 ? (
+        dsDong328.length === 0 ? (
+          <div className="m-so-dong-trong">
+            {q.trim() ? 'Không tìm thấy dòng phù hợp' : 'Không có phát sinh trong kỳ'}
+          </div>
+        ) : (
+          <div className="m-bkm-ds-phieu">
+            {dsDong328.map((d, idx) => {
+              const linkTo = layDuongDanPhieu(d.so, d.di) || '/app/ban-hang/3-1-1'
+              const dongPhu = `${d.maKh || 'Khách lẻ'} · ${d.so} · ${d.ngay}`
+              return (
+                <Link
+                  key={`${d.so}_${d.ma || idx}_${idx}`}
+                  to={linkTo}
+                  className="m-bkm-card m-bcd-item m-the-hang-card"
+                >
+                  <div className="m-mh-dong-trai">
+                    <div className="m-mh-dong-hang1">
+                      <span className="m-mh-dong-so">{d.ten}</span>
+                    </div>
+                    <span className="m-mh-dong-ncc" title={dongPhu}>
+                      {dongPhu}
+                    </span>
+                  </div>
+                  <div className="m-the-hang-phai">
+                    <span className="m-the-hang-sl num">{soLuong(d.sl)}{d.dvt ? ` ${d.dvt}` : ''}</span>
+                    <span className="m-the-hang-tien num">{money(d.thanhTien)} đ</span>
+                  </div>
+                </Link>
+              )
+            })}
+          </div>
+        )
+      ) : dsNhomNgay.length === 0 ? (
         <div className="m-so-dong-trong">
           {q.trim() ? 'Không tìm thấy dòng phù hợp' : 'Không có phát sinh trong kỳ'}
         </div>
