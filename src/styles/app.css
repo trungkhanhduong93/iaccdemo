@@ -40963,6 +40963,7 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
   .m-bc-chua-tai p { margin: 0; }
   .m-bc-chua-tai-ic { width: 32px; height: 32px; color: var(--blue); }
   .m-bc-chua-tai-btn { height: 40px; padding: 0 20px; border: none; border-radius: 8px; background: var(--blue); color: #fff; font: inherit; font-weight: 600; cursor: pointer; }
+}
 
 /* ── Báo cáo điện thoại theo mẫu D, Xuất nhập tồn 2 dòng (T624) ── */
 .m-xnt-2dong-phai {
