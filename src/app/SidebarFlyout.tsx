@@ -30,7 +30,7 @@ const FLYOUT_CONFIG: Record<string, FlyoutData> = {
       items: [
         { ten: 'Bán hàng', di: '/app/ban-hang/3-1-1' },
         { ten: 'Mua hàng', di: '/app/mua-hang/4-1-1' },
-        { ten: 'Thu, chi tiền', di: '/app/tien/2-1-1' },
+        { ten: 'Thu chi', di: '/app/tien/2-1-1' },
         { ten: 'Nhập, xuất kho', di: '/app/kho/5-1-1' },
         { ten: 'Kê khai thuế', di: '/app/thue/6-1-1' },
       ],

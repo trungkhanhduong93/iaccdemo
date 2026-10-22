@@ -341,7 +341,7 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
   return (
     <>
       <MDsChungTuChuan
-        tieuDe="Danh sách thẻ chi phí"
+        tieuDe="Chi phí chờ phân bổ"
         hangTabs={hangTabs}
         onQuayLai={() => quayLaiMobile(nav, '/app/nghiep-vu')}
         timTheo={(r, q) => {

@@ -67,7 +67,7 @@ const thangCua = (d: string) => { const [, m, y] = d.split('/').map(Number); ret
 const kyTruoc = (ky: number) => ky % 100 === 1 ? ky - 89 : ky - 1
 
 /** Nhãn ngắn trên thanh tab */
-const NGAN: Record<string, string> = { '8.1.1': 'Danh sách thẻ chi phí', '8.1.2': 'Tăng, giảm CCDC', '8.1.3': 'Kiểm kê CCDC' }
+const NGAN: Record<string, string> = { '8.1.1': 'Chi phí chờ phân bổ', '8.1.2': 'Tăng, giảm CCDC', '8.1.3': 'Kiểm kê CCDC' }
 
 const ccdc: ModuleDef = {
   key: 'ccdc', ten: 'Chi phí phân bổ', ngan: 'Chi phí phân bổ', icon: 'phanbo', mod: 7,

@@ -58,7 +58,7 @@ function layTieuDe(pathname: string, search = '', s?: Session): string {
   const slug = parts[2]
   if (!modKey) return 'Trang chủ'
   if (modKey === 'kho' && (slug === '5-1-1' || slug === '5-1-2-4')) return 'Nhập xuất khác'
-  if (modKey === 'ccdc' && slug === '8-1-1') return 'Danh sách thẻ chi phí'
+  if (modKey === 'ccdc' && slug === '8-1-1') return 'Chi phí chờ phân bổ'
   if (modKey === 'kho' && slug === 'dieu-chinh' && parts.length === 3) return 'Kiểm kê'   // tab Xuất, Nhập điều chỉnh của màn Kiểm kê (T588)
   const { mod, sc } = timMan(modKey, slug)
   if (sc) {

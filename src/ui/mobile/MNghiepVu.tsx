@@ -53,7 +53,7 @@ export function MNghiepVu() {
   const layCacChucNang = (m: ModuleDef): ChucNang[] => {
     // 1. Phân hệ Thu chi chỉ một mục Thu, chi tiền (T572): Chuyển quỹ đã là tab trong danh sách, số dư ban đầu khai ở Danh mục Quỹ tiền
     if (m.key === 'tien') {
-      return [{ ten: 'Thu, chi tiền', to: '/app/tien/2-1-1', icon: 'wallet', code: '2.1.1', slug: '2-1-1' }]
+      return [{ ten: 'Thu chi', to: '/app/tien/2-1-1', icon: 'wallet', code: '2.1.1', slug: '2-1-1' }]
     }
 
     // 2. Các phân hệ khác: lấy màn điện thoại từ tabCua(m) (bỏ Báo cáo)

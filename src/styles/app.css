@@ -40862,3 +40862,97 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
   border-radius: 6px !important;
   line-height: 1.3 !important;
 }
+/* ── Điện thoại: Kê khai thuế theo app iFaster (T623) ── */
+@media (max-width: 767px) {
+  .m-tk-noi { background: linear-gradient(135deg, var(--blue), var(--blue-d)); color: #fff; border-radius: var(--m-the-r, 16px); padding: 14px; display: flex; flex-direction: column; gap: 4px; }
+  .m-tk-noi-dau { display: flex; align-items: center; justify-content: space-between; font-size: 13px; opacity: .92; }
+  .m-tk-noi-ky { font-size: 18px; font-weight: 700; }
+  .m-tk-noi-ma { font-size: 12.5px; opacity: .85; }
+  .m-tk-noi-so { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+  .m-tk-noi-so.ba { grid-template-columns: repeat(3, 1fr); }
+  .m-tk-noi-so > div { background: rgba(255, 255, 255, .14); border-radius: 10px; padding: 8px 10px; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .m-tk-noi-so span { font-size: 11.5px; opacity: .88; }
+  .m-tk-noi-so b { font-size: 14.5px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+  .m-tk-noi-nut { margin-top: 10px; height: 40px; background: #fff; color: var(--blue); border: 0; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 4px; }
+
+
+  /* Khung danh sách như Thu chi: thẻ cần nộp cùng lề thẻ tổng, dòng tờ khai cùng lề dòng chứng từ */
+  .m-tk.m-tc-man .m-tk-noi { margin: 0 16px 12px; }
+  .m-tk-dong { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 14px; border: 0; border-top: 1px solid var(--line-2); background: none; text-align: left; width: 100%; }
+  .m-tk-dong:first-child { border-top: 0; }
+  .m-bctd-trong { margin: 16px; font-size: 13.5px; color: var(--muted); text-align: center; }
+  .m-tk-dong-trai { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .m-tk-dong-trai b { font-size: 14px; color: var(--ink); }
+  .m-tk-dong-trai small { font-size: 12px; color: var(--muted); }
+  .m-tk-dong-phai { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex: none; }
+  .m-tk-dong-phai b { font-size: 13.5px; color: var(--ink); font-variant-numeric: tabular-nums; }
+
+  .m-tk-hang { display: flex; justify-content: space-between; gap: 12px; font-size: 13.5px; padding: 2px 0; }
+  .m-tk-hang span { color: var(--muted); }
+  .m-tk-hang b { color: var(--ink); font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+  .m-tk-hang.tong { border-top: 1px dashed var(--line); padding-top: 8px; }
+  .m-tk-hang.tong span, .m-tk-hang.tong b { color: var(--blue); font-weight: 700; }
+
+  .m-tk-diem { display: flex; flex-direction: column; gap: 2px; padding-top: 10px; border-top: 1px solid var(--line-2); font-size: 12.5px; color: var(--body); }
+  .m-tk-diem b { font-size: 13.5px; color: var(--ink); }
+  .m-tk-diem small { font-size: 12px; color: var(--muted); }
+  .m-tk-diem-dau { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+
+  .m-tk-o-so { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .m-tk-o-so > div { background: var(--white); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px; }
+  .m-tk-o-so > div.nhan { background: var(--tint); border-color: transparent; }
+  .m-tk-o-so span { font-size: 12px; color: var(--muted); }
+  .m-tk-o-so b { font-size: 15px; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .m-tk-o-so .nhan b { color: var(--blue); }
+
+  .m-tk-giay { background: var(--white); border: 1px solid var(--line); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 6px; box-shadow: var(--sh-giay); }
+  .m-tk-giay-dau { display: flex; flex-direction: column; align-items: center; font-size: 11.5px; color: var(--giay-phu); }
+  .m-tk-giay-dau b { color: var(--giay-den); }
+  .m-tk-giay h2 { font-size: 14px; text-align: center; margin: 8px 0 0; color: var(--giay-den); line-height: 1.35; }
+  .m-tk-giay-ky { text-align: center; font-size: 12px; color: var(--giay-xam); margin: 0 0 6px; }
+  .m-tk-giay-nhom { font-size: 12.5px; font-weight: 600; color: var(--ink); padding: 8px 0 2px; border-top: 1px solid var(--giay-chan); margin-top: 4px; }
+
+  .m-tk-ct { display: flex; flex-direction: column; gap: 4px; padding: 9px 0; border-top: 1px solid var(--line-2); font-size: 13px; }
+  .m-tk-ct-ten { color: var(--body); line-height: 1.4; }
+  .m-tk-ct-ten i { font-style: normal; font-weight: 600; color: var(--muted); margin-right: 6px; }
+  .m-tk-ct.nhom .m-tk-ct-ten { font-weight: 700; color: var(--ink); }
+  .m-tk-ct.con { padding-left: 14px; }
+  .m-tk-ct-so { display: flex; justify-content: flex-end; gap: 16px; flex-wrap: wrap; }
+  .m-tk-ct-so > span { display: flex; flex-direction: column; align-items: flex-end; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .m-tk-ct-so small { font-size: 11px; font-weight: 400; color: var(--muted); }
+  .m-tk-ct.tong .m-tk-ct-ten, .m-tk-ct.tong .m-tk-ct-so > span { color: var(--blue); font-weight: 700; }
+
+  .m-tk-day { gap: 10px; }
+  .m-tk-day .btn { flex: 1; min-height: 44px; border-radius: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 6px; }
+
+  /* Tấm Lập tờ khai từ đáy */
+  .m-tk-nen { position: fixed; inset: 0; background: rgba(0, 0, 0, .35); z-index: 200; display: flex; align-items: flex-end; }
+  .m-tk-tam { width: 100%; max-height: 85vh; background: var(--white); border-radius: 16px 16px 0 0; display: flex; flex-direction: column; animation: m-truot-len .2s ease-out; }
+  .m-tk-tam-dau { display: flex; align-items: center; justify-content: space-between; padding: 4px 16px 10px; font-size: 16px; color: var(--ink); }
+  .m-tk-tam-than { flex: 1; overflow-y: auto; padding: 0 16px 12px; display: flex; flex-direction: column; gap: 14px; }
+  .m-tk-o { display: flex; flex-direction: column; gap: 6px; }
+  .m-tk-o > span { font-size: 12.5px; font-weight: 600; color: var(--muted); }
+  .m-tk-khoa { height: 42px; display: flex; align-items: center; padding: 0 12px; border-radius: 10px; background: var(--soft); color: var(--body); font-size: 14px; }
+  .m-tk-ten { margin: 0; font-size: 13.5px; color: var(--ink); line-height: 1.45; }
+  .m-tk-tach { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; padding: 3px; border-radius: 10px; background: var(--soft); }
+  .m-tk-tach button { height: 38px; border: 0; border-radius: 8px; background: none; font-size: 13.5px; color: var(--body); }
+  .m-tk-tach button.on { background: var(--white); color: var(--blue); font-weight: 600; box-shadow: 0 1px 3px rgba(0, 0, 0, .1); }
+  .m-tk-x { width: 36px; height: 36px; border: 0; background: none; color: var(--ink); display: flex; align-items: center; justify-content: center; border-radius: 50%; flex: none; }
+  .m-tk-chan { flex: none; display: flex; gap: 10px; padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid var(--line); background: var(--white); }
+  .m-tk-chan .btn { flex: 1; min-height: 44px; border-radius: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 6px; }
+
+  /* Màn kê khai 4 bước toàn màn hình */
+  .m-tk-man { position: fixed; inset: 0; z-index: 180; background: var(--bg); display: flex; flex-direction: column; }
+  .m-tk-man-dau { flex: none; display: flex; align-items: center; gap: 6px; padding: calc(6px + env(safe-area-inset-top, 0px)) 12px 6px 4px; background: var(--white); border-bottom: 1px solid var(--line); }
+  .m-tk-man-ten { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .m-tk-man-ten b { font-size: 16px; color: var(--ink); }
+  .m-tk-man-ten small { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .m-tk-buoc { flex: none; background: var(--white); padding: 10px 16px 12px; display: flex; flex-direction: column; gap: 8px; border-bottom: 1px solid var(--line); }
+  .m-tk-vach { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .m-tk-vach button { height: 6px; padding: 0; border: 0; border-radius: 3px; background: var(--line); }
+  .m-tk-vach button.xong { background: var(--blue); opacity: .45; }
+  .m-tk-vach button.on { background: var(--blue); opacity: 1; }
+  .m-tk-buoc-ten { display: flex; flex-direction: column; font-size: 15px; font-weight: 700; color: var(--ink); }
+  .m-tk-buoc-ten small { font-size: 12px; font-weight: 500; color: var(--muted); }
+  .m-tk-man-than { flex: 1; overflow-y: auto; padding: 12px var(--m-le-man) 16px; display: flex; flex-direction: column; gap: 12px; }
+}

@@ -16,21 +16,21 @@ import { Select } from '../../ui/Dropdown'
 import { BoLoc, useCauHinhLoc, useDongEsc, useLocNhap, type OLocDef } from '../../ui/LocNangCao'
 import { fold, money } from '../../ui/format'
 
-type TrangThai = 'Chưa nộp' | 'Đã nộp' | 'Bị từ chối' | 'Đã huỷ'
-interface ToKhai { id: string; ma: string; nam: number; dau: boolean; lan: number; tt: TrangThai }   // dau: 6 tháng đầu năm; lan: 0 lần đầu, n bổ sung lần n
+export type TrangThai = 'Chưa nộp' | 'Đã nộp' | 'Bị từ chối' | 'Đã huỷ'
+export interface ToKhai { id: string; ma: string; nam: number; dau: boolean; lan: number; tt: TrangThai }   // dau: 6 tháng đầu năm; lan: 0 lần đầu, n bổ sung lần n
 
-const TEN_TO_KHAI = 'Tờ khai thuế đối với hộ kinh doanh, cá nhân kinh doanh doanh thu dưới 1 tỷ (TT89/2026)'
-const NHOM_DT = 'Nhóm 1 (Dưới 1 tỷ đồng/năm)'
+export const TEN_TO_KHAI = 'Tờ khai thuế đối với hộ kinh doanh, cá nhân kinh doanh doanh thu dưới 1 tỷ (TT89/2026)'
+export const NHOM_DT = 'Nhóm 1 (Dưới 1 tỷ đồng/năm)'
 const GIAM_TRU_NAM = 1_000_000_000
-const NGANH = NGANH_NGHE_CON.find(x => x.ten === 'Dịch vụ ăn uống') ?? NGANH_NGHE_CON[0]
-const TT_CLS: Record<TrangThai, string> = { 'Chưa nộp': 'warn', 'Đã nộp': 'ok', 'Bị từ chối': 'err', 'Đã huỷ': '' }
+export const NGANH = NGANH_NGHE_CON.find(x => x.ten === 'Dịch vụ ăn uống') ?? NGANH_NGHE_CON[0]
+export const TT_CLS: Record<TrangThai, string> = { 'Chưa nộp': 'warn', 'Đã nộp': 'ok', 'Bị từ chối': 'err', 'Đã huỷ': '' }
 
-const tenKy = (t: Pick<ToKhai, 'dau' | 'nam'>) => `6 tháng ${t.dau ? 'đầu' : 'cuối'} năm ${t.nam}`
-const tenLoai = (lan: number) => lan ? `Bổ sung (lần ${lan})` : 'Lần đầu'
+export const tenKy = (t: Pick<ToKhai, 'dau' | 'nam'>) => `6 tháng ${t.dau ? 'đầu' : 'cuối'} năm ${t.nam}`
+export const tenLoai = (lan: number) => lan ? `Bổ sung (lần ${lan})` : 'Lần đầu'
 
 // Danh sách giữ trong phiên chạy, lập thêm thì vẫn còn khi chuyển màn
 let soCuoi = 8
-const DS: ToKhai[] = [
+export const DS: ToKhai[] = [
   { id: '8', ma: 'TK000008/7/2026', nam: 2026, dau: false, lan: 0, tt: 'Chưa nộp' },
   { id: '7', ma: 'TK000007/1/2026', nam: 2026, dau: true, lan: 2, tt: 'Đã nộp' },
   { id: '6', ma: 'TK000006/1/2026', nam: 2026, dau: true, lan: 1, tt: 'Bị từ chối' },
@@ -40,6 +40,15 @@ const DS: ToKhai[] = [
   { id: '2', ma: 'TK000002/1/2025', nam: 2025, dau: true, lan: 0, tt: 'Đã nộp' },
   { id: '1', ma: 'TK000001/7/2024', nam: 2024, dau: false, lan: 0, tt: 'Đã nộp' },
 ]
+
+/** Lập tờ khai mới đầu danh sách; kỳ đã có tờ khai chưa huỷ thì thành bổ sung lần kế. Web và điện thoại dùng chung (T623) */
+export function lapToKhai(dau: boolean, nam: number): ToKhai {
+  const cu = DS.filter(x => x.nam === nam && x.dau === dau && x.tt !== 'Đã huỷ')
+  soCuoi += 1
+  const tk: ToKhai = { id: String(soCuoi), ma: `TK${String(soCuoi).padStart(6, '0')}/${dau ? 1 : 7}/${nam}`, nam, dau, lan: cu.length ? Math.max(...cu.map(x => x.lan)) + 1 : 0, tt: 'Chưa nộp' }
+  DS.unshift(tk)
+  return tk
+}
 
 // Doanh thu tháng: dữ liệu mẫu có từ 01/07/2026; tháng trước đó lấy trung bình tháng 7–9/2026 nhân hệ số mùa vụ, như biểu đồ lãi lỗ 13 tháng (T255)
 const HE_SO = [1.16, 0.74, 0.86, 0.93, 0.97, 1.01, 1, 1, 1, 0.9, 0.94, 1.08]
@@ -52,7 +61,7 @@ function doanhThuThang(t: number, nam: number) {
 const thangKy = (dau: boolean) => (dau ? [1, 2, 3, 4, 5, 6] : [7, 8, 9, 10, 11, 12])
 
 /** Số liệu Bước 2: doanh thu kỳ, mức giảm trừ trước khi tính TNCN, thuế GTGT, TNCN */
-function soLieu(tk: Pick<ToKhai, 'dau' | 'nam'>) {
+export function soLieu(tk: Pick<ToKhai, 'dau' | 'nam'>) {
   const dt = thangKy(tk.dau).reduce((a, t) => a + doanhThuThang(t, tk.nam), 0)
   const luyKe = tk.dau ? 0 : thangKy(true).reduce((a, t) => a + doanhThuThang(t, tk.nam), 0)
   const giam = Math.min(dt, Math.max(0, GIAM_TRU_NAM - luyKe))
@@ -64,7 +73,7 @@ function soLieu(tk: Pick<ToKhai, 'dau' | 'nam'>) {
 // Bộ lọc như danh sách chứng từ các phân hệ (T389): Năm, Tìm kiếm, Loại tờ khai, Trạng thái; bấm Lọc mới áp dụng
 interface GtLoc { nam: string; tim: string; loai: string; tt: string }
 const locMacDinh = (): GtLoc => ({ nam: '2026', tim: '', loai: '', tt: '' })
-const DS_TT: TrangThai[] = ['Chưa nộp', 'Đã nộp', 'Bị từ chối', 'Đã huỷ']
+export const DS_TT: TrangThai[] = ['Chưa nộp', 'Đã nộp', 'Bị từ chối', 'Đã huỷ']
 
 export function ToKhaiHKD({ sc, mod }: ScreenProps) {
   const { toast } = useSession()
@@ -102,10 +111,7 @@ export function ToKhaiHKD({ sc, mod }: ScreenProps) {
     { k: 'tt', t: 'Trạng thái', w: 130, r: r => <span className={`chip ${TT_CLS[r.tt as TrangThai]}`}>{r.tt}</span> },
   ]
   const lapMoi = (dau: boolean, n: number) => {
-    const cu = DS.filter(x => x.nam === n && x.dau === dau && x.tt !== 'Đã huỷ')
-    soCuoi += 1
-    const tk: ToKhai = { id: String(soCuoi), ma: `TK${String(soCuoi).padStart(6, '0')}/${dau ? 1 : 7}/${n}`, nam: n, dau, lan: cu.length ? Math.max(...cu.map(x => x.lan)) + 1 : 0, tt: 'Chưa nộp' }
-    DS.unshift(tk)
+    const tk = lapToKhai(dau, n)
     setLap(false)
     setBuocDau(0)
     setMo(tk)
@@ -113,7 +119,7 @@ export function ToKhaiHKD({ sc, mod }: ScreenProps) {
   }
   return (
     <div className="page page-voucher">
-      <h1 className="sr-only">Danh sách tờ khai</h1>
+      <h1 className="sr-only">Kê khai thuế</h1>
       <section className="card voucher-top">
         <div className="ds-toolbar-figma">
           <BoLoc
@@ -186,10 +192,10 @@ function HopLapToKhai({ onDong, onLap }: { onDong: () => void; onLap: (dau: bool
   )
 }
 
-const BUOC = [{ ten: 'Thông tin hộ kinh doanh' }, { ten: 'Kê khai doanh thu tính thuế' }, { ten: 'Khai phụ lục' }, { ten: 'Xem và nộp tờ khai' }]
+export const BUOC = [{ ten: 'Thông tin hộ kinh doanh' }, { ten: 'Kê khai doanh thu tính thuế' }, { ten: 'Khai phụ lục' }, { ten: 'Xem và nộp tờ khai' }]
 
 // Địa bàn, cơ quan thuế của từng điểm bán (mẫu)
-const DIA_BAN = [
+export const DIA_BAN = [
   { db: '26734 - Phường Sài Gòn - TP. Hồ Chí Minh', cq: '79101 - Thuế cơ sở 1 TP. Hồ Chí Minh', dc: '86 Lê Lợi, phường Sài Gòn, TP. Hồ Chí Minh' },
   { db: '27301 - Phường Chợ Quán - TP. Hồ Chí Minh', cq: '79105 - Thuế cơ sở 5 TP. Hồ Chí Minh', dc: '215 Nguyễn Trãi, phường Chợ Quán, TP. Hồ Chí Minh' },
   { db: '26794 - Phường An Khánh - TP. Hồ Chí Minh', cq: '79102 - Thuế cơ sở 2 TP. Hồ Chí Minh', dc: '12 Quốc Hương, phường An Khánh, TP. Hồ Chí Minh' },

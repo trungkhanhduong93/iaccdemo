@@ -281,7 +281,7 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
               <path d="M15 18l-6-6 6-6" />
             </svg>
           </button>
-          <h1 className="m-tc-tieu-de">Thu, chi tiền</h1>
+          <h1 className="m-tc-tieu-de">Thu chi</h1>
           <button
             type="button"
             className={`m-tc-btn-nav${timMo ? ' on' : ''}`}

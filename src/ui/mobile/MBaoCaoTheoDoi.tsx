@@ -78,6 +78,7 @@ export interface MBaoCaoTheoDoiProps {
   onDong: () => void
   modKey: string
   tieuDe?: string
+  ds?: MucTheoDoi[]   // danh sách đã lọc sẵn theo cấu hình báo cáo, thay MUC_THEO_DOI của phân hệ (T623)
 }
 
 export const MBaoCaoTheoDoi: FC<MBaoCaoTheoDoiProps> = ({
@@ -85,11 +86,12 @@ export const MBaoCaoTheoDoi: FC<MBaoCaoTheoDoiProps> = ({
   onDong,
   modKey,
   tieuDe = 'Báo cáo theo dõi & Danh mục',
+  ds: dsRieng,
 }) => {
   const { s } = useSession()
   if (!mo) return null
   const dsRaw = MUC_THEO_DOI[modKey] ?? []
-  const ds = dsRaw.filter(item => {
+  const ds = dsRieng ?? dsRaw.filter(item => {
     const [, mKey, slug] = item.path.split('/').filter(Boolean)
     if (AN_BC_GOI[s.goi]?.includes(slug.replace(/-/g, '.'))) return false   // báo cáo ẩn hẳn ở gói (T506)
     if (!anNgoaiGoi(s.goi)) return true
@@ -110,6 +112,7 @@ export const MBaoCaoTheoDoi: FC<MBaoCaoTheoDoiProps> = ({
         </div>
 
         <div className="m-loc-than" style={{ maxHeight: '65vh', overflowY: 'auto' }}>
+          {ds.length === 0 && <p className="m-bctd-trong">Chưa có báo cáo áp dụng với gói, chế độ kế toán hiện tại</p>}
           {dsBc.length > 0 && (
             <div className="m-bctd-nhom">
               <div className="m-bctd-nhom-ten">Báo cáo theo dõi</div>

@@ -21,7 +21,7 @@ const PHIEU_CHO_PB = {
 }
 
 /** Nhãn ngắn trên thanh tab; 2.1.1 chia 3 tab theo nhomLoai nên nhãn chỉ dùng ở chỗ khác (T386) */
-const NGAN: Record<string, string> = { '2.1.1': 'Thu, chi tiền', '2.1.2': 'Đối chiếu công nợ', '2.1.3': 'Phân bổ chi phí chuỗi' }
+const NGAN: Record<string, string> = { '2.1.1': 'Thu chi', '2.1.2': 'Đối chiếu công nợ', '2.1.3': 'Phân bổ chi phí chuỗi' }
 
 const tien: ModuleDef = {
   key: 'tien', ten: 'Thu chi', ngan: 'Thu chi', icon: 'wallet', mod: 1,

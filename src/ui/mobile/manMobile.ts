@@ -28,6 +28,8 @@ import { MLichSuQuy } from './MLichSuQuy'
 import { MCcdc } from './MCcdc'
 import { MKhoaSo } from './MKhoaSo'
 import { MChiPhiNvl } from './MChiPhiNvl'
+import { MToKhaiHKD } from './MToKhaiHKD'
+import { MToKhaiGTGT } from './MToKhaiGTGT'
 
 // Bảng riêng theo mod.key + '/' + sc.slug
 const BANG_RIENG: Record<string, ComponentType<ScreenProps>> = {
@@ -114,6 +116,12 @@ export function manMobile(sc: ScreenDef, mod: ModuleDef): ComponentType<ScreenPr
   // T353: Khoá sổ kỳ kế toán trên điện thoại
   if (sc.code === '10.1.6' || sc.slug === '10-1-6') {
     return MKhoaSo
+  }
+
+  // T623: Kê khai thuế, gói Free danh sách tờ khai hộ kinh doanh, gói Standard trở lên tờ khai GTGT 6.2.3
+  if (mod.key === 'thue') {
+    if (sc.slug === 'to-khai') return MToKhaiHKD
+    if (sc.code === '6.2.3' || sc.slug === '6-2-3') return MToKhaiGTGT
   }
 
   // T190: Màn tác vụ kind: 'tool', Kiểm tra cuối kỳ 10.1.4
