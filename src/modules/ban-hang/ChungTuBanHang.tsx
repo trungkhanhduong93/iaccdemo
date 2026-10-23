@@ -244,7 +244,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
   const [trang, setTrang] = useState(1)
   const [coTrang, setCoTrang] = useState(20)
   const kieu = kieuGhiSo(s.cheDo)
-  const ghi = kieu === 'noco'   // chỉ gói Nợ/Có (Plus, Pro) có ghi sổ; gói Free, Standard đồng bộ là xong
+  const ghi = kieu === 'noco'   // chỉ gói Nợ/Có (Plus, Pro) có ghi sổ; gói Standard đồng bộ là xong
   // Cửa hàng chọn trên thanh trên (QD17): lọc theo cửa hàng đó, bỏ cột và ô lọc cửa hàng
   const cnChon = cuaHangHienTai(s)
 
