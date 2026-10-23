@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 23/10/2026
+- T642: Bỏ gói Free, còn 3 gói. Gói Standard mới miễn phí, có tính năng của gói Free cũ. Gói Plus có tính năng của Standard cũ. Plus và Pro cũ gộp thành Pro. Màn Gói thuê bao còn 3 thẻ, bảng so sánh 3 cột. Trình duyệt đang chọn gói cũ tự chuyển sang gói mới tương ứng.
 - T644: Điện thoại, màn Thêm thẻ chi phí dư đầu kỳ dùng chung bố cục với Thêm thẻ chi phí. Thẻ đầu kỳ có thêm Giá trị đã phân bổ, Giá trị còn cần phân bổ, Số tháng đã phân bổ, Số tháng còn phân bổ và nhóm Thông tin mua nhập tay. Ô nhập ở cả hai màn có viền.
 - T643: Điện thoại, danh sách Thẻ chi phí phân bổ: nút Ghi tăng đổi tên Thêm mới. Gói Free bấm thì chọn Thẻ chi phí hoặc Thẻ chi phí dư đầu kỳ, gói khác mở thẳng màn Thẻ chi phí dư đầu kỳ.
 

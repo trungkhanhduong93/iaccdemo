@@ -863,4 +863,15 @@ PhuongXT chốt 22/10/2026 (T632). Thay điểm "Free chỉ TT152" của QD31 v�
 - Thuế GTGT, TNDN cố định theo tỷ lệ % doanh thu (trường hợp 1 của TT58). Bộ sổ chỉ có Sổ doanh thu bán hàng hoá, dịch vụ S1-DNSN, hiện ở Báo cáo theo dõi.
 - Báo cáo kết quả kinh doanh gói Free giữ bản đơn giản một cột, không ký hiệu B02-DNSN, nằm ở nhóm Kế toán tổng hợp, không vào nhóm Sổ sách kế toán theo TT58.
 
-## QD80. Bỏ gói Free, còn 3 gói Standard, Plus, Pro (đang soạn)
+## QD80. Bỏ gói Free, còn 3 gói Standard, Plus, Pro (23/10/2026)
+
+Thay phần gói và mã gói của QD27, phần 4 logo của QD44.
+
+- Gói mới: Standard (mã S) mang tính năng Free cũ, Plus (PL) mang tính năng Standard cũ, Pro (PR) mang tính năng Pro cũ. Plus cũ gộp vào Pro.
+- Giá theo tính năng: Standard 0 đ, Plus lấy giá Standard cũ, Pro giữ giá. Logo, màu theo tên: Standard khiên xanh ngọc (`st`), Plus ngôi sao (`md`), Pro vương miện (`ad`). Bỏ logo Free.
+- Gói mặc định khi mới vào: Standard.
+- `features.json` vẫn ghi mã Excel F, S, M, A. `doiGoiTuExcel` đổi F thành S, S thành PL, M và A thành PR. Sửa Excel xong thì bỏ bước đổi này.
+- Phiên lưu trên trình duyệt có `goiBan: 2`. Phiên chưa có trường này là mã cũ, tự đổi theo bảng trên một lần.
+- Tên hàm, file, lớp CSS có chữ Free đổi sang Standard. Tiêu đề mục CSS cũ, comment cũ giữ nguyên.
+
+Lý do: Trum giao việc T642 ngày 23/10/2026, chốt các mặc định cùng ngày.
