@@ -2,6 +2,9 @@
 
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
+## 23/10/2026
+- T643: Điện thoại, danh sách Thẻ chi phí phân bổ: nút Ghi tăng đổi tên Thêm mới. Gói Free bấm thì chọn Thẻ chi phí hoặc Thẻ chi phí dư đầu kỳ, gói khác mở thẳng màn Thẻ chi phí dư đầu kỳ.
+
 ## 22/10/2026
 - T641: Web, chi tiết phiếu Xuất bán POS: Số đơn POS và Thời gian xuất, Kênh bán hàng và Thanh toán, Số hoá đơn và Ký hiệu nằm chung một hàng. Bỏ ô Ngày chứng từ. Ghi chú chuyển vào nhóm Hoá đơn, dưới Mã tra cứu.
 - T640: Web, chi tiết phiếu Xuất bán POS bỏ tab Ghi sổ, chỉ còn tab Hàng bán.

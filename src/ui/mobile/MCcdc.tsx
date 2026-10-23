@@ -95,6 +95,9 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
   const [moMenuMore, setMoMenuMore] = useState(false)
   const [hoiXoaThe, setHoiXoaThe] = useState(false)
   const [moChonCn, setMoChonCn] = useState(false)
+  const [moChonLoaiThe, setMoChonLoaiThe] = useState(false)
+  const [themDau, setThemDau] = useState(false)
+  const [theDauMoi, setTheDauMoi] = useState<TheMobile | null>(null)
   const [moGhiTang, setMoGhiTang] = useState(() => Boolean(tuPhieu || sp.get('moi') === 'the'))
   const [cnGhiTang, setCnGhiTang] = useState<string>(() => tuPhieu?.cn || cnChon?.ten || 'Phố Mây Lê Lợi')
   const [moTheoDoi, setMoTheoDoi] = useState(false)
@@ -248,7 +251,32 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
     </div>
   ) : undefined
 
+  // T643: nút Thêm mới; gói Free chọn Thẻ chi phí hoặc Thẻ chi phí dư đầu kỳ, gói khác mở thẳng thẻ dư đầu kỳ
+  const handleThemMoi = () => {
+    if (s.goi === 'F') setMoChonLoaiThe(true)
+    else batDauThemDau()
+  }
+
+  const moTheDau = (cn: string) => {
+    const ngay = '01/10/2026'
+    setTheDauMoi({
+      soThe: soTheKeTiep(theList.map(t => t.soThe), 'dau', ngay),
+      loai: loaiTheTheoGoi(s.goi)[0], ngay, ten: '', cn, gt: 0, _kieu: 'dau',
+      dong: [{ ten: '', gt: '', da: '', ky: '', kyDa: '', sl: 1, ngayPb: ngay }],
+    })
+  }
+
+  const batDauThemDau = () => {
+    if (!cnChon) {
+      setThemDau(true)
+      setMoChonCn(true)
+    } else {
+      moTheDau(cnChon.ten)
+    }
+  }
+
   const handleBatDauThem = () => {
+    setThemDau(false)
     setTheSuaId(null)
     setFtLoai('Chi phí trả trước')
     setFtTen('')
@@ -266,8 +294,12 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
   }
 
   const handleChonCnDeThem = (ten: string) => {
-    setCnGhiTang(ten)
     setMoChonCn(false)
+    if (themDau) {
+      moTheDau(ten)
+      return
+    }
+    setCnGhiTang(ten)
     setMoGhiTang(true)
   }
 
@@ -386,8 +418,8 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
             </button>
           )
         }}
-        onThem={handleBatDauThem}
-        nhanThem="Ghi tăng"
+        onThem={handleThemMoi}
+        nhanThem="Thêm mới"
         thongBaoTrong="Không có thẻ chi phí nào phù hợp"
       />
 
@@ -449,6 +481,39 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Tấm chọn loại thẻ khi Thêm mới, như Thu chi (T643) */}
+      <MChon
+        mo={moChonLoaiThe}
+        onDong={() => setMoChonLoaiThe(false)}
+        tieuDe="Chọn loại thẻ"
+        ds={[{ k: 'the', ten: 'Thẻ chi phí' }, { k: 'dau', ten: 'Thẻ chi phí dư đầu kỳ' }]}
+        onChon={k => {
+          setMoChonLoaiThe(false)
+          if (k === 'dau') batDauThemDau()
+          else handleBatDauThem()
+        }}
+      />
+
+      {/* ── MÀN THÊM THẺ CHI PHÍ DƯ ĐẦU KỲ (T643): dùng màn sửa thẻ ở chế độ thêm mới ── */}
+      {theDauMoi && (
+        <MTheSua
+          moi
+          t={theDauMoi}
+          goi={s.goi}
+          baoLoi={toast}
+          onHuy={() => setTheDauMoi(null)}
+          onLuu={(moi, nhatKy) => {
+            const ky = Math.max(...moi.dong.map(d => Number(d.ky) || 0))
+            const theMoi: TheItem = { ...moi, ky, ngayPb: moi.dong[0]?.ngayPb }
+            setTheList(prev => [theMoi, ...prev])
+            theTaoPhien.unshift(theMoi)
+            ghiNhatKy('dm/8-1-1', moi.soThe, moi.soThe, s.ten, nhatKy)
+            toast(`Đã thêm thẻ ${moi.soThe}`)
+            setTheDauMoi(null)
+          }}
+        />
       )}
 
       {/* ── MÀN SỬA THẺ (T590): sửa từng mục, sửa số tiền từng kỳ, không thêm, không xoá mục ── */}

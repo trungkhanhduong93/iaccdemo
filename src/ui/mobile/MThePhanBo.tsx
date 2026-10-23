@@ -4,12 +4,13 @@
 import { useState, type FC, type KeyboardEvent } from 'react'
 import { Link } from 'react-router-dom'
 import type { Goi } from '../../app/plan'
-import { canKichHoat, daPhanBoKy, daPhanBoToiKy, kyNay, lichDong, tinhDong, type DongPb } from '../../modules/ccdc/the-phan-bo'
+import { canKichHoat, daPhanBoKy, daPhanBoToiKy, kyNay, lichDong, loaiTheTheoGoi, tinhDong, type DongPb } from '../../modules/ccdc/the-phan-bo'
 import { docSoQT, money } from '../format'
 import { Icon } from '../Icon'
 import { LichDon } from '../ChonNgay'
 import { HopXacNhan } from '../LocNangCao'
 import { MLichSu, type DongLichSu } from './MLichSu'
+import { MChon } from './MChon'
 
 export type TheMobile = {
   soThe: string
@@ -275,12 +276,15 @@ function ngayNgungMd(bd: string, goi: Goi): string {
 }
 
 /** Màn sửa thẻ: thông tin chung, danh sách mục (chỉ Sửa), sửa số tiền từng kỳ; lưu mà tổng các kỳ lệch thì hỏi dồn về kỳ cuối */
-export const MTheSua: FC<{ t: TheMobile; goi: Goi; onHuy: () => void; onLuu: (moi: TheMobile, nhatKy: string) => void; baoLoi: (s: string) => void }> = ({ t, goi, onHuy, onLuu, baoLoi }) => {
+/** Màn sửa thẻ; moi = thêm thẻ chi phí dư đầu kỳ mới (T643): đổi tiêu đề, cho chọn loại thẻ */
+export const MTheSua: FC<{ t: TheMobile; goi: Goi; moi?: boolean; onHuy: () => void; onLuu: (moi: TheMobile, nhatKy: string) => void; baoLoi: (s: string) => void }> = ({ t, goi, moi, onHuy, onLuu, baoLoi }) => {
   const [dr, setDr] = useState<TheMobile>(() => JSON.parse(JSON.stringify(t)))
   const [sheet, setSheet] = useState<number | null>(null)
   const [kyDong, setKyDong] = useState<number | null>(null)
   const [hoi, setHoi] = useState<number | null>(null)
   const [lich, setLich] = useState<null | { k: 'ngay' } | { k: 'ngayPb' | 'ngayNgung'; i: number }>(null)
+  const [moLoai, setMoLoai] = useState(false)
+  const dsLoai = loaiTheTheoGoi(goi)
   const kieu = kieuDong(dr.loai), dau = laDau(dr)
 
   const suaDong = (i: number, moi: Partial<DongPb>, giuKy = false) => setDr(x => ({
@@ -303,7 +307,7 @@ export const MTheSua: FC<{ t: TheMobile; goi: Goi; onHuy: () => void; onLuu: (mo
     if (ng >= 0) return baoLoi(`Mục ${ng + 1}: ngày ngừng phân bổ phải sau hoặc bằng ngày bắt đầu phân bổ`)
     const lech = x.dong.findIndex(d => Math.round(lechDong(x, d)) !== 0)
     if (lech >= 0) { setDr(x); setHoi(lech); return }
-    onLuu({ ...x, gt: gtThe(x) }, moTaDoi(t, x))
+    onLuu({ ...x, gt: gtThe(x) }, moi ? 'Nhập thẻ dư đầu kỳ' : moTaDoi(t, x))
   }
   // Điều chỉnh: dồn chênh lệch vào kỳ cuối còn phân bổ (không phải kỳ ngừng, không phải kỳ nhận phần còn lại)
   const dieuChinh = () => {
@@ -374,13 +378,15 @@ export const MTheSua: FC<{ t: TheMobile; goi: Goi; onHuy: () => void; onLuu: (mo
         <button type="button" className="m-pb-btn-back" onClick={onHuy} aria-label="Quay lại">
           <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><path d="M19 12H5M12 19l-7-7 7-7" /></svg>
         </button>
-        <h1 className="m-pb-tieu-de">Sửa thẻ {dr.soThe}</h1>
+        <h1 className="m-pb-tieu-de">{moi ? 'Thẻ chi phí dư đầu kỳ' : `Sửa thẻ ${dr.soThe}`}</h1>
         <span className="m-pb-thanh-dau-phai" />
       </header>
       <div className="m-pb-noi-dung">
         <div className="m-pb-the m-pb-the-gon">
           <div className="m-pb-dong"><span className="n">Cửa hàng</span><span className="g">{dr.cn}</span></div>
-          <div className="m-pb-dong"><span className="n">Loại thẻ</span><span className="m-tpb-khoa">{dr.loai}{dau ? ' · Đầu kỳ' : ''}</span></div>
+          {moi && dsLoai.length > 1
+            ? <div className="m-pb-dong m-gt-bam" role="button" tabIndex={0} onClick={() => setMoLoai(true)}><span className="n">Loại thẻ</span><span className="g">{dr.loai} ›</span></div>
+            : <div className="m-pb-dong"><span className="n">Loại thẻ</span><span className="m-tpb-khoa">{dr.loai}{dau ? ' · Đầu kỳ' : ''}</span></div>}
           <label className="m-pb-dong" htmlFor="tpb-ten"><span className="n">Tên thẻ <b className="m-gt-sao">*</b></span><ONhap id="tpb-ten" nhan="Tên thẻ" v={dr.ten} onDoi={s => setDr(x => ({ ...x, ten: s }))} /></label>
           <div className="m-pb-dong m-gt-bam" role="button" tabIndex={0} onClick={() => setLich({ k: 'ngay' })}><span className="n">Ngày ghi tăng</span><span className="g">{dr.ngay} ›</span></div>
           <div className="m-pb-dong"><span className="n">Giá trị thẻ</span><span className="g">{money(gtThe(dr))} đ</span></div>
@@ -473,6 +479,9 @@ export const MTheSua: FC<{ t: TheMobile; goi: Goi; onHuy: () => void; onLuu: (mo
           </div>
         </div>
       )}
+
+      <MChon mo={moLoai} onDong={() => setMoLoai(false)} tieuDe="Chọn loại thẻ" ds={dsLoai.map(k => ({ k, ten: k }))} chon={dr.loai}
+        onChon={k => { setDr(x => ({ ...x, loai: k })); setMoLoai(false) }} />
 
       {lich && (
         <LichDon

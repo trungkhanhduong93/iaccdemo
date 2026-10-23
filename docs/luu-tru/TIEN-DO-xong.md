@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T643 | Điện thoại, danh sách Thẻ chi phí phân bổ: nút Ghi tăng đổi tên Thêm mới; gói Free bấm hiện bảng trượt Chọn loại thẻ như Thu chi (Thẻ chi phí, Thẻ chi phí dư đầu kỳ), gói khác mở thẳng form Thẻ chi phí dư đầu kỳ | dinhlanphuongipacc | Xong | Đã làm điện thoại; bản máy tính chờ ảnh yêu cầu, làm việc mới. Xem [nhật ký](../nhat-ky/2026-10-23-dinhlanphuongipacc-them-moi-the-dien-thoai.md). Sửa `MCcdc.tsx` (khúc nút Ghi tăng), Trum đang giữ file này ở T642, T552: ai push sau gộp tay. T642 đổi gói Free thành Standard (mã S), sau T642 điều kiện gói theo mã mới. Bản máy tính làm sau |
 | T641 | Web, chi tiết Xuất bán POS: đầu phiếu gom ô ngắn 2 ô một hàng, bỏ Ngày chứng từ, Ghi chú dời dưới Mã tra cứu | Trum | 22/10/2026 | [nhật ký](../nhat-ky/2026-10-22-trum-pos-bo-tab-ghi-so.md) |
 | T640 | Web, chi tiết Xuất bán POS: bỏ tab Ghi sổ, chế độ nợ có giữ tab Hạch toán | Trum | 22/10/2026 | [nhật ký](../nhat-ky/2026-10-22-trum-pos-bo-tab-ghi-so.md) |
 | T632 | Thông tin đơn vị gói Free (web, điện thoại): Doanh nghiệp dùng TT58, không sửa được, thuế theo % doanh thu; Báo cáo theo dõi chỉ hiện S1-DNSN | PhuongXT | 22/10/2026 | [nhật ký](../nhat-ky/2026-10-22-phuongxt-free-doanh-nghiep-tt58.md) |
