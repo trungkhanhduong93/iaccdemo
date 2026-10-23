@@ -46,15 +46,15 @@ export function MLichSuQuy(_: ScreenProps) {
   }
 
   return (
-    <div className="m-free-lsq">
+    <div className="m-standard-lsq">
       {/* 1. Tiêu đề quỹ & 4 ô màu lưới 2x2 nền thẻ trắng nhẹ theo mẫu Phương án A (T395) */}
-      <div className="m-free-lsq-the-hop">
-        <div className="m-free-lsq-quy-dau">
-          <div className="m-free-lsq-quy">
+      <div className="m-standard-lsq-the-hop">
+        <div className="m-standard-lsq-quy-dau">
+          <div className="m-standard-lsq-quy">
             <Icon n={tienMat ? 'wallet' : 'bank'} className="ic sm" />
             <span>{tenHien}</span>
           </div>
-          <small className="m-free-lsq-thang">Tháng {pad(thang)}/2026</small>
+          <small className="m-standard-lsq-thang">Tháng {pad(thang)}/2026</small>
         </div>
 
         <div className="mobile-stat-slider">
@@ -77,29 +77,29 @@ export function MLichSuQuy(_: ScreenProps) {
         </div>
 
         {isTatCa && (
-          <div className="m-free-lsq-chuyen-quy">Gồm tiền chuyển giữa các quỹ</div>
+          <div className="m-standard-lsq-chuyen-quy">Gồm tiền chuyển giữa các quỹ</div>
         )}
       </div>
 
       {/* 2. Bộ lọc thu chi hiện có (giữ nguyên theo Trum chốt) */}
-      <div className="m-free-lsq-loc">
+      <div className="m-standard-lsq-loc">
         <button
           type="button"
-          className={`m-free-lsq-chip ${loai === '' ? 'on' : ''}`}
+          className={`m-standard-lsq-chip ${loai === '' ? 'on' : ''}`}
           onClick={() => setLoai('')}
         >
           Tất cả thu, chi
         </button>
         <button
           type="button"
-          className={`m-free-lsq-chip ${loai === 'thu' ? 'on' : ''}`}
+          className={`m-standard-lsq-chip ${loai === 'thu' ? 'on' : ''}`}
           onClick={() => setLoai('thu')}
         >
           Khoản thu
         </button>
         <button
           type="button"
-          className={`m-free-lsq-chip ${loai === 'chi' ? 'on' : ''}`}
+          className={`m-standard-lsq-chip ${loai === 'chi' ? 'on' : ''}`}
           onClick={() => setLoai('chi')}
         >
           Khoản chi
@@ -107,7 +107,7 @@ export function MLichSuQuy(_: ScreenProps) {
       </div>
 
       {!gd || nhom.size === 0 ? (
-        <div className="m-free-trong">
+        <div className="m-standard-trong">
           {loai ? `Quỹ không có khoản ${loai} nào trong tháng ${thang}/2026.` : `Quỹ chưa có giao dịch trong tháng ${thang}/2026.`}
         </div>
       ) : (
@@ -166,13 +166,13 @@ export function MLichSuQuy(_: ScreenProps) {
                       href={`#${p.to}`}
                       target="_blank"
                       rel="noopener"
-                      className="mobile-tx-row m-free-lsq-dong"
+                      className="mobile-tx-row m-standard-lsq-dong"
                       title="Mở chứng từ gốc ở tab mới"
                     >
                       {noiDung}
                     </a>
                   ) : (
-                    <div key={i} className="mobile-tx-row m-free-lsq-dong">
+                    <div key={i} className="mobile-tx-row m-standard-lsq-dong">
                       {noiDung}
                     </div>
                   )
@@ -189,17 +189,17 @@ export function MLichSuQuy(_: ScreenProps) {
       )}
 
       {/* 3. Hai nút Thu tiền, Chi tiền ghim đáy (T292) */}
-      <div className="m-free-day-nut mobile-bottom-bar">
+      <div className="m-standard-day-nut mobile-bottom-bar">
         <Link
           to={`/app/tien/2-1-1/moi?loai=${tienMat ? 'thu' : 'bc'}`}
-          className="m-free-nut-phu btn-sec"
+          className="m-standard-nut-phu btn-sec"
         >
           <Icon n="plus" className="ic sm" />
           <span>Thu tiền</span>
         </Link>
         <Link
           to={`/app/tien/2-1-1/moi?loai=${tienMat ? 'chi' : 'unc'}`}
-          className="m-free-nut-chinh btn-pri"
+          className="m-standard-nut-chinh btn-pri"
         >
           <Icon n="plus" className="ic sm" />
           <span>Chi tiền</span>

@@ -52,20 +52,20 @@ export function XuatNhapTon({ sc, mod }: ScreenProps) {
     ? <Link className="nxt-link-hang ds-link-so" style={{ fontSize: 'inherit' }} title="Xem thẻ kho" to={`/app/bao-cao/5-2-1?ma=${ma}&kho=${encodeURIComponent(khoMoThe)}&ky=${ky}`}>{chu}</Link>
     : chu
 
-  const isFree = s.goi === 'S'
+  const isStandard = s.goi === 'S'
 
   const cols: Col[] = [
     { k: 'ma', t: 'Mã', cls: 'code', w: 90, r: x => x._t ? '' : moThe(String(x.ma), String(x.ma)) },
     { k: 'ten', t: 'Tên nguyên vật liệu, hàng hoá', r: x => x._t ? String(x.ten) : moThe(String(x.ma), String(x.ten)) },
     { k: 'dvt', t: 'ĐVT', c: true, w: 60 },
     { k: 'sl0', t: 'SL', num: true, nhom: 'Đầu kỳ' },
-    ...(isFree ? [] : [{ k: 'gt0', t: 'Giá trị', num: true, nhom: 'Đầu kỳ' } as Col]),
+    ...(isStandard ? [] : [{ k: 'gt0', t: 'Giá trị', num: true, nhom: 'Đầu kỳ' } as Col]),
     { k: 'sln', t: 'SL', num: true, nhom: 'Nhập trong kỳ' },
-    ...(isFree ? [] : [{ k: 'gtn', t: 'Giá trị', num: true, nhom: 'Nhập trong kỳ' } as Col]),
+    ...(isStandard ? [] : [{ k: 'gtn', t: 'Giá trị', num: true, nhom: 'Nhập trong kỳ' } as Col]),
     { k: 'slx', t: 'SL', num: true, nhom: 'Xuất trong kỳ' },
-    ...(isFree ? [] : [{ k: 'gtx', t: 'Giá trị', num: true, nhom: 'Xuất trong kỳ' } as Col]),
+    ...(isStandard ? [] : [{ k: 'gtx', t: 'Giá trị', num: true, nhom: 'Xuất trong kỳ' } as Col]),
     { k: 'sl1', t: 'SL', num: true, nhom: 'Cuối kỳ' },
-    ...(isFree ? [] : [{ k: 'gt1', t: 'Giá trị', num: true, nhom: 'Cuối kỳ' } as Col]),
+    ...(isStandard ? [] : [{ k: 'gt1', t: 'Giá trị', num: true, nhom: 'Cuối kỳ' } as Col]),
   ]
 
   return (
@@ -75,7 +75,7 @@ export function XuatNhapTon({ sc, mod }: ScreenProps) {
         <ReportToolbar ky={ky} setKy={setKy} />
         <ReportPaper title="Báo cáo xuất nhập tồn" sub={`${tenKho} · Tháng ${ky}/2026`}>
           {/* Bảng dữ liệu RptTable (tiêu đề 2 tầng theo nhom) để màn chính hiện dạng bảng như các báo cáo khác, không phải tờ in (T308) */}
-          <RptTable cols={cols} rows={isFree ? (rows as Row[]) : [...rows as Row[], { ten: 'Tổng cộng', gt0: sum('gt0'), gtn: sum('gtn'), gtx: sum('gtx'), gt1: sum('gt1'), _t: 1 }]} />
+          <RptTable cols={cols} rows={isStandard ? (rows as Row[]) : [...rows as Row[], { ten: 'Tổng cộng', gt0: sum('gt0'), gtn: sum('gtn'), gtx: sum('gtx'), gt1: sum('gt1'), _t: 1 }]} />
         </ReportPaper>
       </section>
     </div>

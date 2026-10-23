@@ -34,7 +34,7 @@ export const quyTrinh: QuyTrinhDef = {
     ] },
   },
   // Gói Free (T262): bảng kê theo hàng hoá, tồn kho, nhập kho, công nợ nhà cung cấp
-  raFree: { ten: 'Sổ sách, báo cáo', nut: [
+  raStandard: { ten: 'Sổ sách, báo cáo', nut: [
     { ten: 'Bảng kê chi tiết mua hàng', icon: 'doc', di: 'mua-hang/4-2-7' },
     { ten: 'Báo cáo xuất nhập tồn', icon: 'box', di: 'kho/5-2-3' },
     { ten: 'Tổng hợp nhập kho', icon: 'filein', di: 'kho/5-2-9' },
@@ -42,7 +42,7 @@ export const quyTrinh: QuyTrinhDef = {
     { ten: 'Công nợ nhà cung cấp', icon: 'users', di: 'mua-hang/4-2-3' },
   ] },
   // Gói Free dùng sơ đồ bước theo kỳ (mẫu C, T367): nhận hàng -> trả tiền NCC -> công nợ -> báo cáo kho
-  buocKyFree: [
+  buocKyStandard: [
     {
       ten: 'Nhập hàng',
       moTa: 'Nhận nguyên liệu, thực phẩm từ nhà cung cấp về quán.',

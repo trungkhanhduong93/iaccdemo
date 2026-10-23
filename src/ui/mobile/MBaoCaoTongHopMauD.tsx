@@ -62,7 +62,7 @@ export const MBaoCaoTongHopMauD: FC<MBaoCaoTongHopMauDProps> = ({ maBc, rows, q 
   const is423 = maNorm === '4.2.3'
   const is529 = maNorm === '5.2.9'
   const is523 = maNorm === '5.2.3'
-  const isFree = s.goi === 'S'
+  const isStandard = s.goi === 'S'
 
   // Đặt tiêu đề thanh trên
   useEffect(() => {
@@ -128,7 +128,7 @@ export const MBaoCaoTongHopMauD: FC<MBaoCaoTongHopMauDProps> = ({ maBc, rows, q 
         let tongTien = 0
         if (is423) tongTien = cuoi
         else if (is529) tongTien = tienNhap
-        else if (is523) tongTien = isFree ? sl1 : gt1
+        else if (is523) tongTien = isStandard ? sl1 : gt1
 
         return {
           ma,
@@ -161,7 +161,7 @@ export const MBaoCaoTongHopMauD: FC<MBaoCaoTongHopMauDProps> = ({ maBc, rows, q 
           kho,
         }
       })
-  }, [rows, q, is423, is529, is523, isFree])
+  }, [rows, q, is423, is529, is523, isStandard])
 
   // Gom theo nhóm
   const dsNhom = useMemo<NhomItem[]>(() => {
@@ -182,8 +182,8 @@ export const MBaoCaoTongHopMauD: FC<MBaoCaoTongHopMauDProps> = ({ maBc, rows, q 
         tongTien = items.reduce((s, x) => s + x.tienNhap, 0)
         tongSl = items.reduce((s, x) => s + x.slNhap, 0)
       } else if (is523) {
-        tongTien = isFree ? 0 : items.reduce((s, x) => s + x.gt1, 0)
-        tongSl = isFree ? 0 : items.reduce((s, x) => s + x.sl1, 0)
+        tongTien = isStandard ? 0 : items.reduce((s, x) => s + x.gt1, 0)
+        tongSl = isStandard ? 0 : items.reduce((s, x) => s + x.sl1, 0)
       }
 
       return {
@@ -193,15 +193,15 @@ export const MBaoCaoTongHopMauD: FC<MBaoCaoTongHopMauDProps> = ({ maBc, rows, q 
         items,
       }
     })
-  }, [dsChuan, is423, is529, is523, isFree])
+  }, [dsChuan, is423, is529, is523, isStandard])
 
   // Tổng ghim đáy màn hình
   const tongTienTatCa = useMemo(() => {
     if (is423) return dsChuan.reduce((s, x) => s + x.cuoi, 0)
     if (is529) return dsChuan.reduce((s, x) => s + x.tienNhap, 0)
-    if (is523) return isFree ? 0 : dsChuan.reduce((s, x) => s + x.gt1, 0)
+    if (is523) return isStandard ? 0 : dsChuan.reduce((s, x) => s + x.gt1, 0)
     return 0
-  }, [dsChuan, is423, is529, is523, isFree])
+  }, [dsChuan, is423, is529, is523, isStandard])
 
   const toggleItem = (ma: string, macDinhMo: boolean) => {
     setItemMo(prev => {
@@ -224,7 +224,7 @@ export const MBaoCaoTongHopMauD: FC<MBaoCaoTongHopMauDProps> = ({ maBc, rows, q 
               <span className="m-bkm-ngay-ten">{nhom.tenNhom}</span>
               <span className="m-bkm-ngay-phai">
                 {nhom.items.length} {is423 ? 'nhà cung cấp' : 'mặt hàng'}
-                {(!is523 || !isFree) && (
+                {(!is523 || !isStandard) && (
                   <>
                     {' · '}
                     <b className="m-bkm-ngay-tong num">{money(nhom.tongTien)}</b>
@@ -269,7 +269,7 @@ export const MBaoCaoTongHopMauD: FC<MBaoCaoTongHopMauDProps> = ({ maBc, rows, q 
                       )}
                       <div className="m-bkm-card-h1-phai">
                         <span className="m-bkm-card-tong num">
-                          {is523 && isFree ? `${soLuong(it.sl1)} ${it.dvt}` : money(it.tongTien)}
+                          {is523 && isStandard ? `${soLuong(it.sl1)} ${it.dvt}` : money(it.tongTien)}
                         </span>
                         <span className="m-bkm-card-chev">
                           {isBung ? (
@@ -407,7 +407,7 @@ export const MBaoCaoTongHopMauD: FC<MBaoCaoTongHopMauDProps> = ({ maBc, rows, q 
                         {/* 3. Màn 5.2.3: Báo cáo xuất nhập tồn */}
                         {is523 && (
                           <div className="m-bkm-ds-hang">
-                            {isFree ? (
+                            {isStandard ? (
                               /* Gói Free: chỉ số lượng, không cột, không dòng, không số tiền nào */
                               <>
                                 <div className="m-bkm-hang-item">
@@ -506,7 +506,7 @@ export const MBaoCaoTongHopMauD: FC<MBaoCaoTongHopMauDProps> = ({ maBc, rows, q 
       )}
 
       {/* Tổng ghim đáy màn */}
-      {!(is523 && isFree) && (
+      {!(is523 && isStandard) && (
         <div className="m-bkm-chan">
           <div className="m-bkm-chan-trai">
             <div className="m-bkm-chan-nhan">

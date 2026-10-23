@@ -130,7 +130,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
   const isChi = loai === 'chi' || loai === 'unc'
   const isThu = loai === 'thu' || loai === 'bc'
   const isCq = loai === 'cq'
-  const isFreeThuChi = s.goi === 'S' && !isCq
+  const isStandardThuChi = s.goi === 'S' && !isCq
 
   const cnNhoId = layChiNhanhNho()
   const cnNhoTen = CUA_HANG.find(c => c.id === cnNhoId)?.ten
@@ -421,14 +421,14 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
       _quy: quy,
       _lyDo: lyDo,
       _ghiChu: ghiChu,
-      dienGiai: isFreeThuChi && dsDong.length <= 1
+      dienGiai: isStandardThuChi && dsDong.length <= 1
         ? (ghiChu.trim() || (isChi ? 'Chi tiền' : 'Thu tiền'))
         : (dsDong[0]?.ten || ghiChu || (isChi ? 'Chi tiền' : 'Thu tiền')),
       tien: soTien,
       tong: soTien,
       _dong: isCq
         ? undefined
-        : (isFreeThuChi && dsDong.length <= 1)
+        : (isStandardThuChi && dsDong.length <= 1)
           ? [{
               ten: ghiChu.trim() || (isChi ? 'Chi tiền' : 'Thu tiền'),
               sl: 1,
@@ -705,7 +705,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
             {docSoTien(soTien)}
           </label>
 
-          {isFreeThuChi ? (
+          {isStandardThuChi ? (
             <div className="m-tc-lap-field">
               <label className="nhan" htmlFor="tc-nhap-dien-giai">Diễn giải</label>
               <input
@@ -905,7 +905,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
             />
           </div>
 
-          {!isFreeThuChi && (
+          {!isStandardThuChi && (
             <div className="m-tc-lap-field">
               <label className="nhan">Ghi chú</label>
               <textarea
@@ -931,7 +931,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
         </section>
 
         {/* 5. Group CHI TIẾT (hiện cho mọi gói, trừ chuyển quỹ T555; gói F chỉ hiện khi >= 2 dòng T608) */}
-        {!isCq && (!isFreeThuChi || dsDong.length >= 2) && (
+        {!isCq && (!isStandardThuChi || dsDong.length >= 2) && (
           <>
             <div className="m-tc-nhom-chu">
               CHI TIẾT <span className="so-dong">{dsDong.length} dòng</span>
@@ -1038,7 +1038,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
               })}
 
               {/* Nút Thêm dòng viền nét đứt */}
-              {!isFreeThuChi && (
+              {!isStandardThuChi && (
                 <button
                   type="button"
                   className="m-tc-btn-them-dong-dashed"

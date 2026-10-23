@@ -57,16 +57,16 @@ export function MChiPhiNvl(_: ScreenProps) {
   const khoa = daKhoaThang(thang)
 
   return (
-    <div className="m-free-cpt">
+    <div className="m-standard-cpt">
       {/* Thẻ tổng ở đầu */}
-      <div className="m-free-cpt-tong-the">
-        <div className="m-free-cpt-tong-nhan">
+      <div className="m-standard-cpt-tong-the">
+        <div className="m-standard-cpt-tong-nhan">
           Tổng chi phí NVL tháng {thang}/2026{cn ? ` · ${cn.ten}` : ''}
-          <small className="m-free-cpt-tong-phu">
+          <small className="m-standard-cpt-tong-phu">
             {moTaCach(tong.ds)} · {pct(dt ? tong.tien / dt : 0)} doanh thu
           </small>
         </div>
-        <div className="m-free-cpt-tong-so">{moneyD(tong.tien)}</div>
+        <div className="m-standard-cpt-tong-so">{moneyD(tong.tien)}</div>
         {cn && x?.cach === 'ivt' && (
           <div style={{ marginTop: 6, fontSize: 12, color: 'var(--muted)' }}>
             = Giá thành món <b>{moneyD(x.gtMon ?? 0)}</b> + Tiêu hao <b>{moneyD(x.tieuHao ?? 0)}</b>
@@ -76,28 +76,28 @@ export function MChiPhiNvl(_: ScreenProps) {
 
       {/* Khi chưa chọn cửa hàng: danh sách cửa hàng */}
       {!cn && (
-        <div className="m-free-cpt-ds">
+        <div className="m-standard-cpt-ds">
           {tong.ds.map(d => (
             <div
               key={d.cn}
-              className="m-free-cpt-dong"
+              className="m-standard-cpt-dong"
               onClick={() => set({ cuaHang: d.cn })}
               role="button"
               tabIndex={0}
               style={{ cursor: 'pointer' }}
             >
-              <div className="m-free-cpt-ic">
+              <div className="m-standard-cpt-ic">
                 <Icon n="khohang" className="ic sm" />
               </div>
-              <div className="m-free-cpt-info">
-                <div className="m-free-cpt-ten">{d.ten}</div>
-                <div className="m-free-cpt-phu">{CACH_NVL[d.cach].ten}</div>
+              <div className="m-standard-cpt-info">
+                <div className="m-standard-cpt-ten">{d.ten}</div>
+                <div className="m-standard-cpt-phu">{CACH_NVL[d.cach].ten}</div>
               </div>
-              <div className="m-free-cpt-so">
-                <div className="m-free-cpt-tien">{moneyD(d.tien)}</div>
-                <div className="m-free-cpt-phantram">{pct(d.dt ? d.tien / d.dt : 0)} DT</div>
+              <div className="m-standard-cpt-so">
+                <div className="m-standard-cpt-tien">{moneyD(d.tien)}</div>
+                <div className="m-standard-cpt-phantram">{pct(d.dt ? d.tien / d.dt : 0)} DT</div>
               </div>
-              <Icon n="chevr" className="ic sm m-free-cpt-mui" />
+              <Icon n="chevr" className="ic sm m-standard-cpt-mui" />
             </div>
           ))}
         </div>
@@ -136,25 +136,25 @@ export function MChiPhiNvl(_: ScreenProps) {
             const dsPhieu = phieuMuaKy(cn.id, thang)
             return (
               <>
-                <div className="m-free-cpt-ds">
+                <div className="m-standard-cpt-ds">
                   {dsPhieu.map(r => (
-                    <div key={r.so} className="m-free-cpt-dong">
-                      <div className="m-free-cpt-ic">
+                    <div key={r.so} className="m-standard-cpt-dong">
+                      <div className="m-standard-cpt-ic">
                         <Icon n="truck" className="ic sm" />
                       </div>
-                      <div className="m-free-cpt-info">
-                        <div className="m-free-cpt-ten">{r.so}</div>
-                        <div className="m-free-cpt-phu">{r.ngay} · {r.doiTuong}</div>
+                      <div className="m-standard-cpt-info">
+                        <div className="m-standard-cpt-ten">{r.so}</div>
+                        <div className="m-standard-cpt-phu">{r.ngay} · {r.doiTuong}</div>
                       </div>
-                      <div className="m-free-cpt-so">
-                        <div className="m-free-cpt-tien">{moneyD(Number(r.tong))}</div>
-                        <div className="m-free-cpt-phantram">{moneyD(Number(r.tien))} tiền hàng</div>
+                      <div className="m-standard-cpt-so">
+                        <div className="m-standard-cpt-tien">{moneyD(Number(r.tong))}</div>
+                        <div className="m-standard-cpt-phantram">{moneyD(Number(r.tien))} tiền hàng</div>
                       </div>
                     </div>
                   ))}
                 </div>
-                <div className="m-free-day-nut">
-                  <Link to="/app/mua-hang/4-1-1" className="m-free-nut-chinh">
+                <div className="m-standard-day-nut">
+                  <Link to="/app/mua-hang/4-1-1" className="m-standard-nut-chinh">
                     <Icon n="truck" className="ic sm" />
                     <span>Xem danh sách phiếu mua hàng</span>
                   </Link>
@@ -188,19 +188,19 @@ export function MChiPhiNvl(_: ScreenProps) {
                 </div>
 
                 {tab === 'mon' && (
-                  <div className="m-free-cpt-ds">
+                  <div className="m-standard-cpt-ds">
                     {mon.map(m => {
                       const donGia = gt.get(m.ma) ?? 0
                       return (
-                        <div key={m.ma} className="m-free-cpt-dong">
-                          <div className="m-free-cpt-info">
-                            <div className="m-free-cpt-ten">{m.ten}</div>
-                            <div className="m-free-cpt-phu">
+                        <div key={m.ma} className="m-standard-cpt-dong">
+                          <div className="m-standard-cpt-info">
+                            <div className="m-standard-cpt-ten">{m.ten}</div>
+                            <div className="m-standard-cpt-phu">
                               {m.sl} {m.dvt} × {money(donGia)}
                             </div>
                           </div>
-                          <div className="m-free-cpt-so">
-                            <div className="m-free-cpt-tien">{moneyD(m.sl * donGia)}</div>
+                          <div className="m-standard-cpt-so">
+                            <div className="m-standard-cpt-tien">{moneyD(m.sl * donGia)}</div>
                           </div>
                         </div>
                       )
@@ -223,17 +223,17 @@ export function MChiPhiNvl(_: ScreenProps) {
                         </button>
                       ))}
                     </div>
-                    <div className="m-free-cpt-ds">
+                    <div className="m-standard-cpt-ds">
                       {dsTh.map(r => (
-                        <div key={r.so} className="m-free-cpt-dong">
-                          <div className="m-free-cpt-info">
-                            <div className="m-free-cpt-ten">{r.so}</div>
-                            <div className="m-free-cpt-phu">
+                        <div key={r.so} className="m-standard-cpt-dong">
+                          <div className="m-standard-cpt-info">
+                            <div className="m-standard-cpt-ten">{r.so}</div>
+                            <div className="m-standard-cpt-phu">
                               {r.ngay} · {r.tenLoai}{r.dienGiai ? ` · ${r.dienGiai}` : ''}
                             </div>
                           </div>
-                          <div className="m-free-cpt-so">
-                            <div className="m-free-cpt-tien">{moneyD(r.gt)}</div>
+                          <div className="m-standard-cpt-so">
+                            <div className="m-standard-cpt-tien">{moneyD(r.gt)}</div>
                           </div>
                         </div>
                       ))}
@@ -250,20 +250,20 @@ export function MChiPhiNvl(_: ScreenProps) {
               {x.thieuGia > 0 && !khoa && (
                 <div className="m-nvl-ghi canh-bao">Còn {x.thieuGia} món chưa có giá thành, đang tính bằng 0. Nhập giá thành vào ô tô vàng.</div>
               )}
-              <div className="m-free-cpt-ds">
+              <div className="m-standard-cpt-ds">
                 {mon.map(m => {
                   const g = giaThanhTayCua(s, cn.id, thang, m.ma)
                   return (
-                    <div key={m.ma} className="m-free-cpt-dong m-nvl-tay">
-                      <div className="m-free-cpt-info">
-                        <div className="m-free-cpt-ten">{m.ten}</div>
-                        <div className="m-free-cpt-phu">
+                    <div key={m.ma} className="m-standard-cpt-dong m-nvl-tay">
+                      <div className="m-standard-cpt-info">
+                        <div className="m-standard-cpt-ten">{m.ten}</div>
+                        <div className="m-standard-cpt-phu">
                           {m.sl} {m.dvt} · {moneyD(g !== undefined ? m.sl * g : 0)}
                         </div>
                       </div>
                       {khoa ? (
-                        <div className="m-free-cpt-so">
-                          <div className="m-free-cpt-tien">{money(g ?? 0)}</div>
+                        <div className="m-standard-cpt-so">
+                          <div className="m-standard-cpt-tien">{money(g ?? 0)}</div>
                         </div>
                       ) : (
                         <label className="m-nvl-gia-o">

@@ -33,7 +33,7 @@ const COLS_523: Col[] = [
   { k: 'gt1', t: 'Giá trị', num: true, nhom: 'Cuối kỳ' },
 ]
 
-const COLS_523_FREE: Col[] = [
+const COLS_523_STANDARD: Col[] = [
   { k: 'ma', t: 'Mã', cls: 'code' },
   { k: 'ten', t: 'Tên nguyên vật liệu, hàng hoá' },
   { k: 'dvt', t: 'ĐVT', c: true },
@@ -174,8 +174,8 @@ export const MToGiay: FC<ScreenProps> = ({ sc, mod }) => {
       const sumGtx = rawXnt.reduce((a, x) => a + (Number(x.gtx) || 0), 0)
       const sumGt1 = rawXnt.reduce((a, x) => a + (Number(x.gt1) || 0), 0)
       const khoGui = params.get('kho') || (locKhoList.length === 1 ? locKhoList[0] : (dsKhoCuaHang[0] || 'Kho bếp Lê Lợi'))
-      const isFree = s.goi === 'S'
-      const rows: Row[] = isFree
+      const isStandard = s.goi === 'S'
+      const rows: Row[] = isStandard
         ? rawXnt.map(x => ({
             ...x,
             gt0: undefined, gtn: undefined, gtx: undefined, gt1: undefined,
@@ -186,7 +186,7 @@ export const MToGiay: FC<ScreenProps> = ({ sc, mod }) => {
             ...rawXnt.map(x => ({ ...x, _kho: khoGui, _ky: kyStr })),
             { ten: 'Tổng cộng', gt0: sumGt0, gtn: sumGtn, gtx: sumGtx, gt1: sumGt1, _t: 1 },
           ]
-      return { rowsDong: rows, colsDong: isFree ? COLS_523_FREE : COLS_523 }
+      return { rowsDong: rows, colsDong: isStandard ? COLS_523_STANDARD : COLS_523 }
     }
 
     if (isDong1023) {
@@ -295,9 +295,9 @@ export const MToGiay: FC<ScreenProps> = ({ sc, mod }) => {
   }, [phongTo, sc.slug, kieuXem, daTai])
 
   const colsBang = useMemo(() => {
-    const isFree = s.goi === 'S'
+    const isStandard = s.goi === 'S'
     const raw: Col[] = is523
-      ? (isFree ? COLS_523_FREE : COLS_523)
+      ? (isStandard ? COLS_523_STANDARD : COLS_523)
       : isDong1023
       ? COLS_1023
       : (colsDong.length ? colsDong : COLS_523)

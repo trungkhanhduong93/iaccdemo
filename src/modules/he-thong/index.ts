@@ -2,7 +2,7 @@
 import type { ModuleDef } from '../types'
 import { CauHinh, GoiThueBao, NguoiDung, PhanQuyen, ThongTinDonVi } from './HeThong'
 import { NhatKyThaoTac } from '../tien-ich/TienIch'
-import { KhoaSoFree } from '../tong-hop/KhoaSoFree'
+import { KhoaSoStandard } from '../tong-hop/KhoaSoStandard'
 
 const heThong: ModuleDef = {
   key: 'he-thong', ten: 'Hệ thống', ngan: 'Hệ thống', icon: 'cog',
@@ -15,7 +15,7 @@ const heThong: ModuleDef = {
     { slug: 'thong-tin', ten: 'Thông tin đơn vị', nhom: 'Cài đặt', kind: 'custom', comp: ThongTinDonVi },
     { slug: 'cau-hinh', ten: 'Cấu hình kế toán', nhom: 'Cài đặt', kind: 'custom', comp: CauHinh },
     // Gói Free: Khoá sổ là tab riêng trong Hệ thống, gói khác dùng Khoá sổ 10.1.6 ở Tổng hợp (T315)
-    { slug: 'khoa-so', ten: 'Khoá sổ', nhom: 'Cài đặt', goi: ['S'], kind: 'custom', comp: KhoaSoFree },
+    { slug: 'khoa-so', ten: 'Khoá sổ', nhom: 'Cài đặt', goi: ['S'], kind: 'custom', comp: KhoaSoStandard },
     // Gói thuê bao xuống tab cuối (T472)
     { slug: 'goi-thue-bao', ten: 'Gói thuê bao', nhom: 'Thuê bao', kind: 'custom', comp: GoiThueBao },
   ],

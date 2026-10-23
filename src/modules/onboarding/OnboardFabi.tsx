@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import { SO_NGAY_DUNG_THU, batDauDungThu, dungThuDv, useSession, type Session } from '../../app/session'
 import { CUA_HANG_FABI, cuaHangChuaDung, type CuaHangFabi } from './cua-hang-fabi'
 import { DIEM_NOI_BAT, FEATURES, GIA_GOI_NAM, GIA_GOI_THANG, GOI, GOIS, MODS, demTheoGoi, type Goi } from '../../app/plan'
-import { CHE_DO, CHE_DO_DN_FREE, CHE_DO_HOP_LE, CHE_DO_MAC_DINH, type CheDo } from '../../app/che-do'
+import { CHE_DO, CHE_DO_DN_STANDARD, CHE_DO_HOP_LE, CHE_DO_MAC_DINH, type CheDo } from '../../app/che-do'
 import { CUA_HANG, DAILY, HOM_NAY, type DonVi } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
 import { Note, Pk } from '../../ui/Page'
@@ -44,7 +44,7 @@ export const PP_HKD: Record<PpHkd, string> = { doanhThu: 'Theo tỷ lệ % trên
  *  Doanh nghiệp chọn đủ 4 gói: Free theo TT58 trường hợp 1, chỉ sổ doanh thu S1-DNSN (T632);
  *  Standard theo TT58; Plus, Pro chọn TT133 hoặc TT99. PhuongXT chốt 11/10/2026 (T138) */
 const goiGoiY = (loai: LoaiHinh, pp: PpHkd): Goi => loai === 'hkd' ? (pp === 'doanhThu' ? 'S' : 'PL') : CUA_HANG.length > 1 ? 'PR' : 'PL'
-const cheDoMoi = (loai: LoaiHinh, g: Goi): CheDo => loai === 'hkd' ? 'TT152' : g === 'S' ? CHE_DO_DN_FREE : CHE_DO_MAC_DINH[g]
+const cheDoMoi = (loai: LoaiHinh, g: Goi): CheDo => loai === 'hkd' ? 'TT152' : g === 'S' ? CHE_DO_DN_STANDARD : CHE_DO_MAC_DINH[g]
 const tenCheDo = (loai: LoaiHinh, cd: CheDo) => loai === 'dn' && cd === 'TT152' ? 'Quản lý lãi lỗ, không theo thông tư' : CHE_DO[cd].ten
 const nganCheDo = (loai: LoaiHinh, cd: CheDo) => loai === 'dn' && cd === 'TT152' ? 'Lãi lỗ' : CHE_DO[cd].ngan
 const MO_TA_GOI: Record<LoaiHinh, Partial<Record<Goi, string>>> = {

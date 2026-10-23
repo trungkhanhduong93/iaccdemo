@@ -425,7 +425,7 @@ export const MThongTinDonVi: FC<ScreenProps> = () => {
   const dnCoDinh = s.goi === 'PR'
   const ppCoDinh = NHOM_HKD[f.nhom - 1]?.pp ?? null
   const tndnCoDinh = f.loai === 'dn' && dnCoDinh
-  const dnFree = s.goi === 'S'   // doanh nghiệp gói Standard: TT58 trường hợp 1, thuế theo tỷ lệ % doanh thu, không chọn (T632)
+  const dnStandard = s.goi === 'S'   // doanh nghiệp gói Standard: TT58 trường hợp 1, thuế theo tỷ lệ % doanh thu, không chọn (T632)
   const bat = (ds: string[], k: string) => (ds.includes(k) ? ds.filter(x => x !== k) : [...ds, k])
   const mstGoc = Boolean(dsDonVi({ dvMoi: s.dvMoi }).find(d => d.id === s.donVi)?.mst)
 
@@ -434,7 +434,7 @@ export const MThongTinDonVi: FC<ScreenProps> = () => {
       ? CHE_DO_HOP_LE[s.goi].includes('TT152')
         ? 'TT152'
         : s.cheDo
-      : s.goi === 'PL' || dnFree
+      : s.goi === 'PL' || dnStandard
       ? 'TT58'
       : s.cheDo
 
@@ -450,8 +450,8 @@ export const MThongTinDonVi: FC<ScreenProps> = () => {
     const { ten, mst, diaChi, loai, nhom, ppHkd, cnChinh, kenhOnline, kenhSan } = f
     set({
       cheDo: cheDoTheoLoai(loai),
-      ppGtgt: loai === 'hkd' || dnFree ? 'tyLe' : dnCoDinh ? 'khauTru' : f.ppGtgt,
-      ppTndn: tndnCoDinh ? 'thuNhap' : dnFree ? 'tyLe' : f.ppTndn,
+      ppGtgt: loai === 'hkd' || dnStandard ? 'tyLe' : dnCoDinh ? 'khauTru' : f.ppGtgt,
+      ppTndn: tndnCoDinh ? 'thuNhap' : dnStandard ? 'tyLe' : f.ppTndn,
       ngayDauNam: { ...s.ngayDauNam, [s.donVi]: dauNam },
       namTaiChinh: { ...s.namTaiChinh, [s.donVi]: nam },
       ttDv: {
@@ -473,7 +473,7 @@ export const MThongTinDonVi: FC<ScreenProps> = () => {
   }
 
   const { loai } = f
-  const cdDn: CheDo[] = s.goi === 'PL' || dnFree ? ['TT58'] : CHE_DO_HOP_LE[s.goi]
+  const cdDn: CheDo[] = s.goi === 'PL' || dnStandard ? ['TT58'] : CHE_DO_HOP_LE[s.goi]
 
   return (
     <div className="m-ht-khung">
@@ -635,11 +635,11 @@ export const MThongTinDonVi: FC<ScreenProps> = () => {
                 <label className="m-form-nhan">Phương pháp thuế GTGT</label>
                 <Select
                   className="inp"
-                  value={dnCoDinh ? 'khauTru' : dnFree ? 'tyLe' : f.ppGtgt}
-                  disabled={dnCoDinh || dnFree}
+                  value={dnCoDinh ? 'khauTru' : dnStandard ? 'tyLe' : f.ppGtgt}
+                  disabled={dnCoDinh || dnStandard}
                   aria-label="Phương pháp thuế GTGT"
                   onChange={e => sua({ ppGtgt: e.target.value as PpGtgt })}
-                  ds={(dnCoDinh ? (['khauTru'] as const) : dnFree ? (['tyLe'] as const) : (['tyLe', 'khauTru'] as const)).map(
+                  ds={(dnCoDinh ? (['khauTru'] as const) : dnStandard ? (['tyLe'] as const) : (['tyLe', 'khauTru'] as const)).map(
                     v => ({ v, t: PP_GTGT[v] }),
                   )}
                 />
@@ -648,13 +648,13 @@ export const MThongTinDonVi: FC<ScreenProps> = () => {
                 <label className="m-form-nhan">Phương pháp thuế TNDN</label>
                 <Select
                   className="inp"
-                  value={tndnCoDinh ? 'thuNhap' : dnFree ? 'tyLe' : f.ppTndn}
-                  disabled={tndnCoDinh || dnFree}
+                  value={tndnCoDinh ? 'thuNhap' : dnStandard ? 'tyLe' : f.ppTndn}
+                  disabled={tndnCoDinh || dnStandard}
                   aria-label="Phương pháp thuế TNDN"
                   onChange={e => sua({ ppTndn: e.target.value as PpTndn })}
                   ds={[
                     ...(tndnCoDinh ? [] : [{ v: 'tyLe', t: PP_THU_NHAP.doanhThu }]),
-                    ...(dnFree ? [] : [{ v: 'thuNhap', t: PP_THU_NHAP.loiNhuan }]),
+                    ...(dnStandard ? [] : [{ v: 'thuNhap', t: PP_THU_NHAP.loiNhuan }]),
                   ]}
                 />
               </div>

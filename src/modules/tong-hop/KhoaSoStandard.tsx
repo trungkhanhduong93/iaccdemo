@@ -18,7 +18,7 @@ import { ChipTrangThai, type Chip } from '../../ui/LocNangCao'
 import { dangLoc, dsGiaTri, khopLoc, type GiaTriLoc, type KieuLoc } from '../../ui/LocCot'
 import { docNgay } from '../../ui/ChonNgay'
 import { moneyD } from '../../ui/format'
-import { soLieuKiemKe } from '../home/khoFree'
+import { soLieuKiemKe } from '../home/khoStandard'
 import { tonQuyTheoSo } from '../home/LichSuQuy'
 import { useChoGhiTang } from '../ccdc/GhiTangHangLoat'
 import { tinhToanTongQuan } from '../home/chiSo'
@@ -63,7 +63,7 @@ function lanKhoa(c: CuaHang, k: KyKhoa) {
 
 type Hop = { loai: 'khoa' | 'mo'; id: string; ky: KyKhoa } | { loai: 'den' } | { loai: 'moDen' } | { loai: 'lichSu' }
 
-export function KhoaSoFree({ sc, mod }: ScreenProps) {
+export function KhoaSoStandard({ sc, mod }: ScreenProps) {
   const { s } = useSession()
   const [, veLai] = useState(0)
   const [nam, setNam] = useState(KY_MO.nam)

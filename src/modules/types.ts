@@ -178,14 +178,14 @@ export interface QuyTrinhDef {
   ten: string                            // tiêu đề sơ đồ
   buoc: BuocQT[]                         // trái sang phải
   hoiTu?: { lan: LanQT[]; ra: LanQT }    // sơ đồ hội tụ thay trục ngang: các làn nghiệp vụ song song cùng đổ về khối kết quả bên phải
-  hoiTuFree?: { lan: LanQT[]; ra: LanQT } // gói Free dùng sơ đồ hội tụ riêng thay sơ đồ chung (T98)
-  moTaFree?: string                      // dòng mô tả dưới tiêu đề sơ đồ ở gói Free (T123)
-  tenFree?: string                       // tiêu đề sơ đồ riêng ở gói Free, vd Quy trình lập tờ khai thuế (T261)
-  anDuoiFree?: boolean                   // gói Free ẩn hàng dưới (Danh mục liên quan), vd Kê khai thuế (T261)
-  baoCaoFree?: string[]                  // gói Free dùng danh sách báo cáo riêng ở khung Báo cáo, vd sổ TT152 của Kê khai thuế (T261)
-  raFree?: LanQT                         // gói Free thay khối báo cáo của sơ đồ hội tụ, các làn giữ nguyên (T262)
-  buocKyFree?: BuocKyQT[]                // gói Free dùng sơ đồ bước theo kỳ (mẫu C), ưu tiên trên hoiTuFree, luongFree (T366)
-  luongFree?: CotQT[]                     // gói Free dùng sơ đồ luồng theo cột thay sơ đồ chung: ô cột trước nối tới mọi ô cột sau, gộp và tách nhánh (T123)
+  hoiTuStandard?: { lan: LanQT[]; ra: LanQT } // gói Free dùng sơ đồ hội tụ riêng thay sơ đồ chung (T98)
+  moTaStandard?: string                      // dòng mô tả dưới tiêu đề sơ đồ ở gói Free (T123)
+  tenStandard?: string                       // tiêu đề sơ đồ riêng ở gói Free, vd Quy trình lập tờ khai thuế (T261)
+  anDuoiStandard?: boolean                   // gói Free ẩn hàng dưới (Danh mục liên quan), vd Kê khai thuế (T261)
+  baoCaoStandard?: string[]                  // gói Free dùng danh sách báo cáo riêng ở khung Báo cáo, vd sổ TT152 của Kê khai thuế (T261)
+  raStandard?: LanQT                         // gói Free thay khối báo cáo của sơ đồ hội tụ, các làn giữ nguyên (T262)
+  buocKyStandard?: BuocKyQT[]                // gói Free dùng sơ đồ bước theo kỳ (mẫu C), ưu tiên trên hoiTuStandard, luongStandard (T366)
+  luongStandard?: CotQT[]                     // gói Free dùng sơ đồ luồng theo cột thay sơ đồ chung: ô cột trước nối tới mọi ô cột sau, gộp và tách nhánh (T123)
   danhSo?: boolean                       // đánh số bước, kiểu màn Giá thành của AMIS
   baoCao?: string[]                      // khung Báo cáo bên phải: slug trong phân hệ hoặc 'phân hệ/slug'
   khongLinkBaoCaoKy?: boolean            // sơ đồ bước theo kỳ gói Free không hiện nút Tất cả báo cáo ở bước cuối (T515)

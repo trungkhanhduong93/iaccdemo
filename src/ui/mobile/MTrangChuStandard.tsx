@@ -12,8 +12,8 @@ import { moTaCachNgan, nvlKy } from '../../modules/home/chi-phi-nvl'
 import { useMoTuTrangChu } from '../../app/tuTrangChu'
 import { Select } from '../Dropdown'
 import { datLocDaXem } from '../bao-cao/tuyChinhBC'
-import { MKhoFree } from './MKhoFree'
-import { HopLaiLo13, HopThuChi13, laiLo13Thang, thuChi13Thang, VongQuy } from '../../modules/home/BaBaiToanFree'
+import { MKhoStandard } from './MKhoStandard'
+import { HopLaiLo13, HopThuChi13, laiLo13Thang, thuChi13Thang, VongQuy } from '../../modules/home/BaBaiToanStandard'
 import { FigmaGradientIcon } from '../FigmaIcon'
 import { ModalQuy } from '../../modules/home/quyThuChi'
 import { useThaoTacNhanh, TOI_DA_THAO_TAC, type ThaoTacMuc } from '../../app/thaoTacNhanh'
@@ -24,10 +24,10 @@ import { MODULES, tenPhanHe } from '../../app/registry'
 import { anNgoaiGoi, minGoi } from '../../app/plan'
 import { Pk } from '../Page'
 import { DS_QUY_TIEN_112 } from '../../modules/danh-muc/data'
-import { layLaiLoCuaHang } from '../../modules/home/soLieuBieuDoFree'
+import { layLaiLoCuaHang } from '../../modules/home/soLieuBieuDoStandard'
 import { chiPhiThangTuPhieu, usePhieuChiPhi } from '../../modules/home/chiPhiPhieu'
 
-/** 5 quỹ mẫu chỉ có số dư, đồng bộ với BaBaiToanFree (T303) */
+/** 5 quỹ mẫu chỉ có số dư, đồng bộ với BaBaiToanStandard (T303) */
 const QUY_MAU_THEM = [
   { quy: 'Quỹ tiền mặt Hai Bà Trưng', tienMat: true, cuoi: 8_400_000 },
   { quy: 'Quỹ tiền mặt Phú Nhuận', tienMat: true, cuoi: 16_250_000 },
@@ -36,7 +36,7 @@ const QUY_MAU_THEM = [
   { quy: 'VPBank, chi nhánh Thủ Đức', tienMat: false, cuoi: 33_600_000 },
 ].map(q => ({ ...q, mo: q.cuoi, thu: 0, chi: 0 }))
 
-export function MTrangChuFree(_props?: Partial<ScreenProps>) {
+export function MTrangChuStandard(_props?: Partial<ScreenProps>) {
   const { s, set, toast } = useSession()
   const dv = donViHienTai(s)
   const moTuTrangChu = useMoTuTrangChu()
@@ -298,7 +298,7 @@ export function MTrangChuFree(_props?: Partial<ScreenProps>) {
         <div className="m-tc-figma-dau">
           <div className="m-tc-figma-dau-trai">
             <div className="m-tc-figma-avatar-wrap">
-              <span className="m-tc-figma-badge-free">FREE</span>
+              <span className="m-tc-figma-badge-standard">STANDARD</span>
               <div className="m-tc-figma-avatar">{dv.viettat}</div>
             </div>
             <div className="m-tc-figma-don-vi">
@@ -660,7 +660,7 @@ export function MTrangChuFree(_props?: Partial<ScreenProps>) {
         </div>
 
         {/* 5. Khối Mua hàng & công nợ NCC, Hao hụt kiểm kê */}
-        <MKhoFree selCns={selCns} thang={thangF} />
+        <MKhoStandard selCns={selCns} thang={thangF} />
       </div>
 
       {/* Popups & Modals */}

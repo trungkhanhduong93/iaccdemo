@@ -38,14 +38,14 @@ export const quyTrinh: QuyTrinhDef = {
     ] },
   },
   // Gói Free (T262): sổ quỹ, sổ ngân hàng và Công nợ nhà cung cấp
-  raFree: { ten: 'Sổ sách, báo cáo', nut: [
+  raStandard: { ten: 'Sổ sách, báo cáo', nut: [
     { ten: 'Sổ quỹ tiền mặt', icon: 'wallet', di: 'tien/2-2-1' },
     { ten: 'Sổ ngân hàng', icon: 'bank', di: 'tien/2-2-3' },
     { ten: 'Công nợ nhà cung cấp', icon: 'users', di: 'mua-hang/4-2-3' },
   ] },
   // Gói Free mẫu C bước theo kỳ (T366)
-  moTaFree: 'Đi từ trái sang phải theo một kỳ kế toán: khai số đầu, ghi phiếu hằng ngày, đối chiếu sổ, xem báo cáo.',
-  buocKyFree: [
+  moTaStandard: 'Đi từ trái sang phải theo một kỳ kế toán: khai số đầu, ghi phiếu hằng ngày, đối chiếu sổ, xem báo cáo.',
+  buocKyStandard: [
     {
       ten: 'Khởi tạo',
       moTa: 'Làm một lần khi bắt đầu dùng phần mềm.',

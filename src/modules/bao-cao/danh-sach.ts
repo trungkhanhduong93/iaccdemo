@@ -197,7 +197,7 @@ export const giuBC = (code: string | undefined, cheDo: CheDo, hkd = false) =>
 
 /** Doanh nghiệp gói Free (TT58 trường hợp 1) chỉ có sổ doanh thu S1-DNSN; các sổ khác của bộ TT58 ẩn (T632).
  *  Báo cáo kết quả kinh doanh 10.2.3 vẫn mở, bản lãi lỗ đơn giản không ký hiệu mẫu nên nằm ở nhóm Tổng hợp, không vào nhóm sổ TT58 */
-export const anSoTT58GoiFree = (code: string | undefined, goi: string) =>
+export const anSoTT58GoiStandard = (code: string | undefined, goi: string) =>
   goi === 'S' && !!code && GIU_TT58.includes(code) && !MO_IFASTER.includes(code) && code !== '3.2.5'
 
 /** Ký hiệu mẫu theo chế độ; Sổ doanh thu 3.2.5 đổi mẫu theo trường hợp thuế: TT58 S1, S2a, S3a-DNSN; hộ kinh doanh TT152 S1a, S2a, S2b-HKD (T179) */
@@ -215,7 +215,7 @@ export function kyHieuBC(code: string | undefined, cheDo: CheDo, s?: PhienBC): s
 }
 
 /** S2b-HKD (hộ kinh doanh tính thuế theo lợi nhuận) chỉ có ở gói Standard như RoadMap; gói Free không hiện Sổ doanh thu 3.2.5 (T179) */
-export const anSoHkdGoiFree = (code: string | undefined, goi: string, s?: PhienBC) => code === '3.2.5' && goi === 'S' && cachHkd(s) === 'loiNhuan'
+export const anSoHkdGoiStandard = (code: string | undefined, goi: string, s?: PhienBC) => code === '3.2.5' && goi === 'S' && cachHkd(s) === 'loiNhuan'
 
 /** Tên in trên tờ theo chế độ; S1a-HKD (hộ kinh doanh nhóm 1) in Sổ chi tiết doanh thu như iFaster (T179) */
 export function tenBC(code: string | undefined, cheDo: CheDo, s?: PhienBC): string | undefined {

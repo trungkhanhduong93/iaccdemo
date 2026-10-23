@@ -453,7 +453,7 @@ def main():
         ('Hệ thống', 'HT-03', 'Người dùng', 'nguoi-dung', 'Custom (Quản trị)', 'Tab Quản trị', 'Quản lý tài khoản kế toán, chủ quán, thu ngân, phân quyền'),
         ('Hệ thống', 'HT-04', 'Vai trò và phân quyền', 'phan-quyen', 'Custom (Quản trị)', 'Tab Quản trị', 'Phân quyền chi tiết xem/thêm/sửa/xoá/duyệt theo vai trò'),
         ('Hệ thống', 'HT-05', 'Nhật ký thao tác', 'nhat-ky', 'Custom (Quản trị)', 'Tab Quản trị', 'Ghi log chi tiết ai thêm, sửa, xoá chứng từ lúc nào (từ gói S)'),
-        ('Hệ thống', 'HT-06', 'Gói thuê bao', 'goi-thue-bao', 'Custom (Thuê bao)', 'Tab Thuê bao', 'Hiển thị gói Free, Standard, Plus, Pro và nâng cấp gói'),
+        ('Hệ thống', 'HT-06', 'Gói thuê bao', 'goi-thue-bao', 'Custom (Thuê bao)', 'Tab Thuê bao', 'Hiển thị gói Standard, Plus, Pro và nâng cấp gói'),
         ('Trang chủ', 'TC-01', 'Tổng quan (Dashboard)', 'tong-quan', 'Custom (Trang chủ)', 'Tab chính', 'Chủ DN xem doanh thu, dòng tiền, chi phí, lợi nhuận, biểu đồ'),
         ('Trang chủ', 'TC-02', 'Bàn làm việc', 'ban-lam-viec', 'Custom (Trang chủ)', 'Tab chính', 'Kế toán xem chứng từ chờ duyệt, nhắc việc cuối kỳ, cảnh báo lỗi'),
     ]

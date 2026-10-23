@@ -396,12 +396,12 @@ export function ThongTinDonVi({ sc }: ScreenProps) {
   const dnCoDinh = s.goi === 'PR'   // doanh nghiệp gói Pro: GTGT khấu trừ, TNDN theo lợi nhuận, không chọn
   const ppCoDinh = NHOM_HKD[f.nhom - 1]?.pp ?? null
   const tndnCoDinh = f.loai === 'dn' && dnCoDinh   // doanh nghiệp gói Standard chọn TNDN kể cả khi GTGT khấu trừ (T174)
-  const dnFree = s.goi === 'S'   // doanh nghiệp gói Standard: TT58 trường hợp 1, thuế GTGT, TNDN theo tỷ lệ % doanh thu, không chọn (T632)
+  const dnStandard = s.goi === 'S'   // doanh nghiệp gói Standard: TT58 trường hợp 1, thuế GTGT, TNDN theo tỷ lệ % doanh thu, không chọn (T632)
   const bat = (ds: string[], k: string) => ds.includes(k) ? ds.filter(x => x !== k) : [...ds, k]
   const mstGoc = Boolean(dsDonVi({ dvMoi: s.dvMoi }).find(d => d.id === s.donVi)?.mst)   // MST đã khai lúc khởi tạo thì không sửa; chưa khai thì nhập ở đây
   // Chế độ kế toán đổi theo loại hình khi lưu (T179): hộ kinh doanh dùng TT152, doanh nghiệp gói Free, Standard dùng TT58 (T632); gói Plus, Pro giữ chế độ đang chọn
   const cheDoTheoLoai = (l: LoaiHinh): CheDo =>
-    l === 'hkd' ? (CHE_DO_HOP_LE[s.goi].includes('TT152') ? 'TT152' : s.cheDo) : s.goi === 'PL' || dnFree ? 'TT58' : s.cheDo
+    l === 'hkd' ? (CHE_DO_HOP_LE[s.goi].includes('TT152') ? 'TT152' : s.cheDo) : s.goi === 'PL' || dnStandard ? 'TT58' : s.cheDo
   const luuDv = () => {
     if (!/^\d{2}\/\d{2}\/\d{4}$/.test(dauNam)) { toast('Ngày đầu năm cần nhập dạng dd/mm/yyyy'); return }
     if (!f.ten.trim()) { toast('Tên đơn vị không được để trống'); return }
@@ -409,7 +409,7 @@ export function ThongTinDonVi({ sc }: ScreenProps) {
     set({
       cheDo: cheDoTheoLoai(loai),
       // Doanh nghiệp chọn thuế GTGT, TNDN (gói Plus, Pro cố định khấu trừ, theo lợi nhuận); hộ kinh doanh luôn GTGT trực tiếp trên doanh thu
-      ppGtgt: loai === 'hkd' || dnFree ? 'tyLe' : dnCoDinh ? 'khauTru' : f.ppGtgt, ppTndn: tndnCoDinh ? 'thuNhap' : dnFree ? 'tyLe' : f.ppTndn,
+      ppGtgt: loai === 'hkd' || dnStandard ? 'tyLe' : dnCoDinh ? 'khauTru' : f.ppGtgt, ppTndn: tndnCoDinh ? 'thuNhap' : dnStandard ? 'tyLe' : f.ppTndn,
       ngayDauNam: { ...s.ngayDauNam, [s.donVi]: dauNam }, namTaiChinh: { ...s.namTaiChinh, [s.donVi]: nam },
       ttDv: { ...s.ttDv, [s.donVi]: { ten, mst, diaChi, loai, nhom, ppHkd: ppCoDinh ?? ppHkd, cnChinh, kenhOnline, kenhSan: kenhSan.filter(k => kenhOnline.includes(k)) } },
     })
@@ -417,7 +417,7 @@ export function ThongTinDonVi({ sc }: ScreenProps) {
   }
   const { loai } = f
   // Doanh nghiệp gói Free, Standard chỉ dùng TT58, không đổi; TT152 của gói Free, Standard chỉ dành cho hộ kinh doanh (T174, T632)
-  const cdDn: CheDo[] = s.goi === 'PL' || dnFree ? ['TT58'] : CHE_DO_HOP_LE[s.goi]
+  const cdDn: CheDo[] = s.goi === 'PL' || dnStandard ? ['TT58'] : CHE_DO_HOP_LE[s.goi]
   const [choDoi, setChoDoi] = useState<CheDo | null>(null)   // đổi chế độ kế toán, hỏi lại trước khi đổi
   const doiLoai = loai !== loaiHinhDv(s, dv)
   return (
@@ -472,15 +472,15 @@ export function ThongTinDonVi({ sc }: ScreenProps) {
             {/* Doanh nghiệp: chọn thuế GTGT trực tiếp hoặc khấu trừ; thuế TNDN theo doanh thu hoặc theo lợi nhuận tính thuế */}
             {loai === 'dn' && <>
               <div className="f c2"><label>Phương pháp thuế GTGT</label>
-                <Select className="inp" value={dnCoDinh ? 'khauTru' : dnFree ? 'tyLe' : f.ppGtgt} disabled={dnCoDinh || dnFree} aria-label="Phương pháp thuế GTGT" onChange={e => sua({ ppGtgt: e.target.value as PpGtgt })}
-                  ds={(dnCoDinh ? (['khauTru'] as const) : dnFree ? (['tyLe'] as const) : (['tyLe', 'khauTru'] as const)).map(v => ({ v, t: PP_GTGT[v] }))} /></div>
+                <Select className="inp" value={dnCoDinh ? 'khauTru' : dnStandard ? 'tyLe' : f.ppGtgt} disabled={dnCoDinh || dnStandard} aria-label="Phương pháp thuế GTGT" onChange={e => sua({ ppGtgt: e.target.value as PpGtgt })}
+                  ds={(dnCoDinh ? (['khauTru'] as const) : dnStandard ? (['tyLe'] as const) : (['tyLe', 'khauTru'] as const)).map(v => ({ v, t: PP_GTGT[v] }))} /></div>
               <div className="f c2"><label>Phương pháp thuế TNDN</label>
-                <Select className="inp" value={tndnCoDinh ? 'thuNhap' : dnFree ? 'tyLe' : f.ppTndn} disabled={tndnCoDinh || dnFree} aria-label="Phương pháp thuế TNDN" onChange={e => sua({ ppTndn: e.target.value as PpTndn })}
-                  ds={[...(tndnCoDinh ? [] : [{ v: 'tyLe', t: PP_THU_NHAP.doanhThu }]), ...(dnFree ? [] : [{ v: 'thuNhap', t: PP_THU_NHAP.loiNhuan }])]} /></div>
+                <Select className="inp" value={tndnCoDinh ? 'thuNhap' : dnStandard ? 'tyLe' : f.ppTndn} disabled={tndnCoDinh || dnStandard} aria-label="Phương pháp thuế TNDN" onChange={e => sua({ ppTndn: e.target.value as PpTndn })}
+                  ds={[...(tndnCoDinh ? [] : [{ v: 'tyLe', t: PP_THU_NHAP.doanhThu }]), ...(dnStandard ? [] : [{ v: 'thuNhap', t: PP_THU_NHAP.loiNhuan }])]} /></div>
               {/* Bộ sổ TT58 theo cách tính thuế, ngay dưới hai ô phương pháp thuế (T174) */}
               {cheDoTheoLoai(loai) === 'TT58' && (
                 <div className="f c4">
-                  <small className="muted">{moTaBoSoTT58(dnFree ? 1 : thTT58(f.ppGtgt, tndnCoDinh ? 'thuNhap' : f.ppTndn))}</small>
+                  <small className="muted">{moTaBoSoTT58(dnStandard ? 1 : thTT58(f.ppGtgt, tndnCoDinh ? 'thuNhap' : f.ppTndn))}</small>
                 </div>
               )}
             </>}

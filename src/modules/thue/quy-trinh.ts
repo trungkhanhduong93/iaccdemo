@@ -16,11 +16,11 @@ export const quyTrinh: QuyTrinhDef = {
   ],
   // Gói Free: sơ đồ ngang 4 bước của hộp tờ khai (ToKhaiHKD.tsx) như iFaster, ô mở tờ khai chưa nộp mới nhất đúng bước đó;
   // khung Báo cáo là sổ sách TT152 của hộ kinh doanh, chỉ hiện sổ đơn vị mở được (T261)
-  tenFree: 'Quy trình lập tờ khai thuế',
-  moTaFree: 'Tờ khai lấy doanh thu từ FABi, tính GTGT, TNCN theo tỷ lệ của ngành nghề.',
-  anDuoiFree: true,   // bỏ Danh mục liên quan, PhuongXT chốt 15/10/2026
-  // Gói Free (T369): sơ đồ bước theo kỳ (mẫu C), ưu tiên trên hoiTuFree
-  buocKyFree: [
+  tenStandard: 'Quy trình lập tờ khai thuế',
+  moTaStandard: 'Tờ khai lấy doanh thu từ FABi, tính GTGT, TNCN theo tỷ lệ của ngành nghề.',
+  anDuoiStandard: true,   // bỏ Danh mục liên quan, PhuongXT chốt 15/10/2026
+  // Gói Free (T369): sơ đồ bước theo kỳ (mẫu C), ưu tiên trên hoiTuStandard
+  buocKyStandard: [
     {
       ten: 'Khởi tạo thông tin',
       moTa: 'Khai báo thông tin hộ kinh doanh, người đại diện và danh sách điểm bán hàng.',
@@ -75,7 +75,7 @@ export const quyTrinh: QuyTrinhDef = {
     },
   ],
   // Gói Free (T267): sơ đồ hội tụ như Thu chi, Mua hàng; các làn nghiệp vụ đổ về Sổ sách, báo cáo
-  hoiTuFree: {
+  hoiTuStandard: {
     lan: [
       { ten: 'Lập tờ khai', tone: 'ok', nut: [
         { ten: 'Thông tin hộ kinh doanh', icon: 'user', di: 'thue/to-khai?buoc=1' },

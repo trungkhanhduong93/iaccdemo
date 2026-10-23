@@ -22,8 +22,8 @@ export const quyTrinh: QuyTrinhDef = {
       duoi: [{ ten: 'Giá thành đơn giản', icon: 'flask', di: 'kho/5-1-8' }] },
   ],
   // Gói Free (T267): sơ đồ hội tụ như Thu chi, Mua hàng; các làn nghiệp vụ đổ về Sổ sách, báo cáo
-  moTaFree: 'Theo dõi nhập xuất tồn nguyên vật liệu, hàng hoá và kiểm kê thực tế theo kỳ.',
-  hoiTuFree: {
+  moTaStandard: 'Theo dõi nhập xuất tồn nguyên vật liệu, hàng hoá và kiểm kê thực tế theo kỳ.',
+  hoiTuStandard: {
     lan: [
       { ten: 'Nhập hàng', tone: 'ok', nut: [
         { ten: 'Mua hàng', icon: 'truck', di: 'mua-hang/4-1-1' },
@@ -47,8 +47,8 @@ export const quyTrinh: QuyTrinhDef = {
       { ten: 'Chi tiết nhập kho', icon: 'nhapkho', di: 'kho/5-2-10' },
     ] },
   },
-  // Gói Free (T368): sơ đồ bước theo kỳ (mẫu C), ưu tiên trên hoiTuFree
-  buocKyFree: [
+  // Gói Free (T368): sơ đồ bước theo kỳ (mẫu C), ưu tiên trên hoiTuStandard
+  buocKyStandard: [
     {
       ten: 'Nhập xuất hằng ngày',
       moTa: 'Ghi nhận hàng mua vào và hàng bán ra mỗi ngày.',

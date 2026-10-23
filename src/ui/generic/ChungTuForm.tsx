@@ -167,14 +167,14 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
   }, [loai?.k, row?.id])
   // Thu chi tiền mặt và ngân hàng (T346)
   const laThuChiTien = laTien && (loai?.k === 'thu' || loai?.k === 'chi' || loai?.k === 'bc' || loai?.k === 'unc')
-  const khoaLyDtFree = s.goi === 'S' && laThuChiTien
+  const khoaLyDtStandard = s.goi === 'S' && laThuChiTien
 
   // Gói Free phiếu thu, chi (T346): khi mở xem vẫn hiện đúng dữ liệu đã lưu; khi bấm Sửa hoặc thêm mới thì các dòng lấy theo giá trị phía trên; đổi ô phía trên thì các dòng đổi theo ngay
   useEffect(() => {
-    if (khoaLyDtFree && (dangSua || moi)) {
+    if (khoaLyDtStandard && (dangSua || moi)) {
       setDsDong(ds => ds.map(d => ({ ...d, ly: lyDo, dt: doiTuong })))
     }
-  }, [khoaLyDtFree, dangSua, moi, lyDo, doiTuong])
+  }, [khoaLyDtStandard, dangSua, moi, lyDo, doiTuong])
 
   // Phiếu thu, chi (T49): dòng chi tiết có cột lý do theo lý do đầu phiếu; gán thêm tài khoản theo lý do (T233)
   const coTkTheoLy = Boolean(oLy) && loai?.k !== 'cq'
@@ -215,7 +215,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
     setLyDo(v)
     setDienGiai(v)
     setGhiChu(v)
-    if (khoaLyDtFree) {
+    if (khoaLyDtStandard) {
       setDsDong(ds => ds.map(d => ({ ...d, ly: v })))
     }
   }
@@ -228,7 +228,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
     setDoiTuong(v)
     const dt = [...KHACH, ...NCC].find(x => x.ten === v)
     if (dt) setMst(dt.mst)
-    if (khoaLyDtFree) {
+    if (khoaLyDtStandard) {
       setDsDong(ds => ds.map(d => ({ ...d, dt: v })))
     }
   }
@@ -418,7 +418,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
     const ctTt = dongBoCtTt(moi ? idMoi : String(row?.id))
     const dsDc = laKk ? dongBoDc(moi ? idMoi : String(row?.id)) : undefined
     // Bản mẫu chưa có backend: phiếu mới lên đầu danh sách, phiếu sửa hiện nội dung mới, tới khi tải lại trang (T49)
-    const dongLuu = khoaLyDtFree
+    const dongLuu = khoaLyDtStandard
       ? dsDong.map(d => ({ ...d, ly: lyDo, dt: doiTuong }))
       : dsDong
     const noiDung = {
@@ -747,7 +747,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
             <button
               type="button"
               className="xp-btn-outline"
-              onClick={() => { if (moi) setHoiDong(true); else { setDangSua(false); if (khoaLyDtFree) setDsDong(dongGoc); } }}
+              onClick={() => { if (moi) setHoiDong(true); else { setDangSua(false); if (khoaLyDtStandard) setDsDong(dongGoc); } }}
             >
               Huỷ
             </button>
@@ -1253,10 +1253,10 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
               coKm={kieu !== 'khong'}
               lyDo={oLy ? { nhan: oLy.nhan, ds: oLy.ds!, macDinh: lyDo } : undefined}
               dtMacDinh={laTien ? doiTuong : ''}
-              an={[...anCot, ...anDc, ...(khoaLyDtFree ? ['ly', 'dt'] : [])]}   // gói Free phiếu thu, chi: lý do, đối tượng chỉ ở phần trên, bảng chi tiết bỏ hai cột này (T448)
+              an={[...anCot, ...anDc, ...(khoaLyDtStandard ? ['ly', 'dt'] : [])]}   // gói Free phiếu thu, chi: lý do, đối tượng chỉ ở phần trên, bảng chi tiết bỏ hai cột này (T448)
               khongTong={(laTien && chiTien) || !hienChan('dongTong')}
-              chiXemLy={khoaLyDtFree}
-              chiXemDt={khoaLyDtFree}
+              chiXemLy={khoaLyDtStandard}
+              chiXemDt={khoaLyDtStandard}
               hienLoc={moLoc}
               doRong={doRongCt}
             />

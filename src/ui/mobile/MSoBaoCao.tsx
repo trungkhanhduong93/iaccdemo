@@ -100,7 +100,7 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc, mod }) => {
   const laMauDMoi = maBcStr === '3.2.8' || maBcStr === '5.2.10' || maBcStr === '4.2.3' || maBcStr === '5.2.9' || maBcStr === '5.2.3'
   const laMauD = la427 || la327 || la5215 || laMauDMoi
   const is523 = maBcStr === '5.2.3'
-  const isFree = s.goi === 'S'
+  const isStandard = s.goi === 'S'
   const laTT152Hook = s.cheDo === 'TT152' && laSoTT152(maBcStr)
   const isS1a = (s.cheDo === 'TT152' && kyHieuBC(sc.code, s.cheDo, s) === 'S1a-HKD') || maBcStr.includes('s1a')
 
@@ -348,7 +348,7 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc, mod }) => {
     const p = body.props as { rows?: Row[]; cols?: Col[] }
     let colsGoc = p?.cols || rawCols
     let rowsHienThi = pt.rowsHienThi
-    if (is523 && isFree) {
+    if (is523 && isStandard) {
       colsGoc = colsGoc.filter(c => !['gt0', 'gtn', 'gtx', 'gt1'].includes(c.k))
       rowsHienThi = rowsHienThi.map(r => {
         if (!r._t) return r
@@ -360,7 +360,7 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc, mod }) => {
       rows: rowsHienThi,
       cols: cotMobile(colsGoc),
     })
-  }, [body, pt.rowsHienThi, rawCols, is523, isFree])
+  }, [body, pt.rowsHienThi, rawCols, is523, isStandard])
 
   const coCuonNgang = useBangMauA(bangWrapRef, [noiDungBang, kieuXem, daTai])
 

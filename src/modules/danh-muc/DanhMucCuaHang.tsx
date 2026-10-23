@@ -37,13 +37,13 @@ export function DanhMucCuaHang({ sc, mod }: ScreenProps) {
   // đơn vị mẫu có sẵn cửa hàng mẫu; đơn vị mới tạo từ FABi chỉ có cửa hàng đã lên sổ
   const coSan = DON_VI.some(d => d.id === s.donVi)
   // Gói Free: mỗi cửa hàng tự có một kho mặc định, lấy kho đầu tiên của cửa hàng trên iPOS Inventory (T143)
-  const free = s.goi === 'S' || s.goi === 'PL'   // gói Standard, Plus: dữ liệu mẫu một kho mỗi cửa hàng
+  const standard = s.goi === 'S' || s.goi === 'PL'   // gói Standard, Plus: dữ liệu mẫu một kho mỗi cửa hàng
   const khoCua = (id: string, ten: string) => CUA_HANG.find(c => c.id === id)?.kho ?? [`Kho ${ten.replace(/^Phố Mây /, '')}`]
-  const kho = (id: string, ten: string) => free ? khoCua(id, ten)[0] : khoCua(id, ten).join(', ')
+  const kho = (id: string, ten: string) => standard ? khoCua(id, ten)[0] : khoCua(id, ten).join(', ')
   const rows: Row[] = useMemo(() => [
     ...(coSan ? CUA_HANG.map(c => ({ id: c.id, ma: c.id.toUpperCase(), posId: c.posId, ten: c.ten, kv: 'TP.HCM', kho: kho(c.id, c.ten), nguon: 'FABi' })) : []),
     ...them.map((c, i) => ({ id: c.id, ma: c.id.toUpperCase(), posId: `2000${i + 1}`, ten: c.ten, kv: c.khuVuc, kho: kho(c.id, c.ten), nguon: 'FABi', moi: !c.banDau })),
-  ], [coSan, them, free])   // eslint-disable-line react-hooks/exhaustive-deps
+  ], [coSan, them, standard])   // eslint-disable-line react-hooks/exhaustive-deps
 
   const colsGoc: Col[] = useMemo(() => [
     { k: 'ma', t: 'Mã', cls: 'code', w: 100 },
@@ -54,7 +54,7 @@ export function DanhMucCuaHang({ sc, mod }: ScreenProps) {
     // Công ty của cửa hàng: tên, MST của đơn vị đang mở (T285)
     { k: 'cty', t: 'Công ty', w: 300, r: () => <span className="dmcn-cty"><span>{dv.ten}</span>{dv.mst && <small>MST {dv.mst}</small>}</span> },
     { k: 'kv', t: 'Khu vực', cls: 'dim' },
-    { k: 'kho', t: 'Kho', cls: 'dim', r: r => <>{r.kho}{free && <span className="chip" style={{ marginLeft: 8 }}>Mặc định</span>}</> },
+    { k: 'kho', t: 'Kho', cls: 'dim', r: r => <>{r.kho}{standard && <span className="chip" style={{ marginLeft: 8 }}>Mặc định</span>}</> },
     { k: 'nguon', t: 'Nguồn', cls: 'dim' },
     // Gói Free: mỗi cửa hàng chọn cách tính chi phí NVL (T232)
     ...(s.goi === 'S' ? [{ k: 'cachNvl', t: 'Cách tính chi phí NVL', w: 250, r: (r: Row) => (
@@ -72,7 +72,7 @@ export function DanhMucCuaHang({ sc, mod }: ScreenProps) {
         </span>
       )
     } },
-  ], [free, s, dv])   // eslint-disable-line react-hooks/exhaustive-deps
+  ], [standard, s, dv])   // eslint-disable-line react-hooks/exhaustive-deps
   // Phiếu thu, chi FABi của cửa hàng đang bật mà PTTT chưa map quỹ: chờ, không vào sổ (T264)
   const cho = phieuThuChiFabi(s).cho
 

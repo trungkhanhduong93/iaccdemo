@@ -18,7 +18,7 @@ import tienIch from '../modules/tien-ich'
 import heThong from '../modules/he-thong'
 import thaoTacNhanh from '../modules/thao-tac-nhanh'
 import { TrungTamBaoCao } from '../modules/bao-cao/TrungTam'
-import { AN_BC_GOI, AN_NHOM_BC, CAU_HINH_BC, CHI_MO_TU_BC, CHI_MO_TU_BC_GOI, MO_IFASTER, NHOM_CONG_NO, anSoHkdGoiFree, anSoTT58GoiFree, cachHkd, giuBC, laHkd, type PhienBC } from '../modules/bao-cao/danh-sach'
+import { AN_BC_GOI, AN_NHOM_BC, CAU_HINH_BC, CHI_MO_TU_BC, CHI_MO_TU_BC_GOI, MO_IFASTER, NHOM_CONG_NO, anSoHkdGoiStandard, anSoTT58GoiStandard, cachHkd, giuBC, laHkd, type PhienBC } from '../modules/bao-cao/danh-sach'
 import { thTT58 } from '../modules/bao-cao/tt58'
 import type { Session } from './session'
 
@@ -155,8 +155,8 @@ export const hienMan = (sc: ScreenDef, goi: Goi, cheDo?: CheDo, session?: Pick<S
     if (!moThang && (CHI_MO_TU_BC.includes(ma) || CHI_MO_TU_BC_GOI[goi]?.includes(ma))) return false
     if (AN_BC_GOI[goi]?.includes(ma)) return false   // báo cáo ẩn hẳn ở gói (T506)
     if (!apDung(sc, cd, session)) return false
-    if (cd === 'TT152' && anSoHkdGoiFree(maBC(sc), goi, session as PhienBC)) return false
-    if (cd === 'TT58' && anSoTT58GoiFree(maBC(sc), goi)) return false
+    if (cd === 'TT152' && anSoHkdGoiStandard(maBC(sc), goi, session as PhienBC)) return false
+    if (cd === 'TT58' && anSoTT58GoiStandard(maBC(sc), goi)) return false
     return moDuoc(sc, goi) || !anNgoaiGoi(goi)
   }
   return moDuoc(sc, goi) || (!anNgoaiGoi(goi) && !khongApDung(sc, goi))

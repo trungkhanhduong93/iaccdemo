@@ -11,7 +11,7 @@ import { FigmaGradientIcon } from '../../ui/FigmaIcon'
 import { Select } from '../../ui/Dropdown'
 import { moneyD, pad, pct, short } from '../../ui/format'
 import { tonQuyTheoSo } from './LichSuQuy'
-import { soLieuCongNo, soLieuKiemKe, soLieuMua, type CotThang } from './khoFree'
+import { soLieuCongNo, soLieuKiemKe, soLieuMua, type CotThang } from './khoStandard'
 import { datLocDaXem, docTuyChinh, luuTuyChinh } from '../../ui/bao-cao/tuyChinhBC'
 import { tinhToanTongQuan, type TongQuanSoLieu } from './chiSo'
 import { useSession, type Session } from '../../app/session'
@@ -20,8 +20,8 @@ import { moTaCachNgan, nvlKy } from './chi-phi-nvl'
 import { useMoTuTrangChu } from '../../app/tuTrangChu'
 import { useDongEsc } from '../../ui/LocNangCao'
 import { ModalQuy } from './quyThuChi'
-import { type LaiLoCnItem } from './soLieuBieuDoFree'
-import { BieuDoCuaHangModal } from './BieuDoFree'
+import { type LaiLoCnItem } from './soLieuBieuDoStandard'
+import { BieuDoCuaHangModal } from './BieuDoStandard'
 import { DS_QUY_TIEN_112 } from '../danh-muc/data'
 import { chiPhiThangTuPhieu, phieuChiPhi, usePhieuChiPhi, type PhieuChiPhi } from './chiPhiPhieu'
 
@@ -113,7 +113,7 @@ function KhungVua({ cao, ve, toiThieu }: { cao: number; ve: (rong: number, cao: 
 }
 
 /** Biểu đồ cột nhỏ 6 tháng hoặc theo cửa hàng ở ba khối kho (T304): cột cuối đậm hơn, cột số mẫu nhạt, rê chuột xem số.
- *  Tạm bỏ khỏi ba khối theo ý dinhlanphuongipacc, giữ lại để bật lại (số liệu `bieuDo` vẫn tính ở khoFree.ts) */
+ *  Tạm bỏ khỏi ba khối theo ý dinhlanphuongipacc, giữ lại để bật lại (số liệu `bieuDo` vẫn tính ở khoStandard.ts) */
 function CotNho({ ds, mau, cao = 96, dinhDang }: { ds: CotThang[]; mau: string; cao?: number; dinhDang: (v: number) => string }) {
   return <KhungVua cao={cao} ve={W => {
     const pt = 16, pb = 18, lon = Math.max(1, ...ds.map(x => x.v)), bw = W / (ds.length || 1)
@@ -918,7 +918,7 @@ export function VongQuy({
   )
 }
 
-const TT_NHANH_FREE = [
+const TT_NHANH_STANDARD = [
   { ten: 'Thu tiền', icon: 'cashin', to: '/app/tien/2-1-1/moi?loai=thu', goiY: 'Lập phiếu thu tiền' },
   { ten: 'Chi tiền', icon: 'cashout', to: '/app/tien/2-1-1/moi?loai=chi', goiY: 'Lập phiếu chi tiền' },
   { ten: 'Mua hàng', icon: 'truck', to: '/app/mua-hang/4-1-1/moi', goiY: 'Lập phiếu mua hàng' },
@@ -927,7 +927,7 @@ const TT_NHANH_FREE = [
 ]
 
 /** Trang chủ Free theo ba bài toán mẫu E (T272, T274): lọc cửa hàng; 6 thẻ biểu đồ bỏ ở T293; tab Cần theo dõi bỏ ở T309 */
-export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQuanSoLieu; thang: number; selCns: string[]; chonKy?: ReactNode }) {
+export function BaBaiToanStandard({ d, thang: thangXem, selCns, chonKy }: { d: TongQuanSoLieu; thang: number; selCns: string[]; chonKy?: ReactNode }) {
   const { s, set } = useSession()
   const moTuTrangChu = useMoTuTrangChu()
 
@@ -1039,7 +1039,7 @@ export function BaBaiToanFree({ d, thang: thangXem, selCns, chonKy }: { d: TongQ
         <nav className="bbt-tt-nhanh" aria-label="Thao tác nhanh">
           {/* Nhãn cùng tên, cùng biểu tượng với mục Thao tác nhanh ở thanh bên để khách nhận ra */}
           <span className="bbt-tt-nhanh-nhan"><Icon n="sparkle" className="ic sm" />Thao tác nhanh</span>
-          {TT_NHANH_FREE.map(m => {
+          {TT_NHANH_STANDARD.map(m => {
             const gradName = m.icon === 'cashin' ? 'thu-tien' : m.icon === 'cashout' ? 'chi-tien' : m.icon === 'truck' ? 'mua-hang' : m.icon === 'percent' ? 'ke-khai-thue' : 'nhap-kho'
             return (
               <Link key={m.ten} to={m.to} title={m.goiY} className="bbt-tt-nhanh-nut">

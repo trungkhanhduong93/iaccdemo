@@ -17,7 +17,7 @@ export const quyTrinh: QuyTrinhDef = {
     { chinh: { ten: 'Kiểm kê CCDC', icon: 'clipboard', di: 'ccdc/8-1-3/moi' } },
   ],
   // Gói Free (T267): sơ đồ hội tụ như Thu chi, Mua hàng; các làn nghiệp vụ đổ về Sổ sách, báo cáo
-  hoiTuFree: {
+  hoiTuStandard: {
     lan: [
       { ten: 'Chi tiền', tone: 'err', nut: [
         { ten: 'Chi tiền mặt', icon: 'cashout', di: `tien/2-1-1/moi?loai=chi&ly=${MA_LY_CHO_PHAN_BO}` },
@@ -32,8 +32,8 @@ export const quyTrinh: QuyTrinhDef = {
       { ten: 'Bảng chi tiết phân bổ chi phí', icon: 'calendar', di: 'ccdc/bang-phan-bo' },
     ] },
   },
-  // Gói Free (T368): sơ đồ bước theo kỳ (mẫu C), ưu tiên trên hoiTuFree
-  buocKyFree: [
+  // Gói Free (T368): sơ đồ bước theo kỳ (mẫu C), ưu tiên trên hoiTuStandard
+  buocKyStandard: [
     {
       ten: 'Khởi tạo đầu kỳ',
       moTa: 'Khai báo các khoản mua từ trước còn phân bổ.',

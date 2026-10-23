@@ -10,11 +10,11 @@ import { layNhomBaoCao } from './TrungTam'
 function diQuyTrinh(qt: QuyTrinhDef, goi: Goi): string[] {
   const lay = (ds?: { di?: string }[]) => (ds ?? []).map(n => n.di).filter((d): d is string => Boolean(d))
   const f = goi === 'S'
-  const khung = (f && qt.baoCaoFree ? qt.baoCaoFree : qt.baoCao) ?? []
-  if (f && qt.buocKyFree) return [...qt.buocKyFree.flatMap(b => lay(b.nut)), ...khung]
-  if (f && qt.luongFree) return [...qt.luongFree.flatMap(c => lay(c.nut)), ...khung]
-  const hoiTu = f && qt.hoiTuFree ? qt.hoiTuFree : qt.hoiTu
-  const ra = f && qt.raFree ? qt.raFree : hoiTu?.ra
+  const khung = (f && qt.baoCaoStandard ? qt.baoCaoStandard : qt.baoCao) ?? []
+  if (f && qt.buocKyStandard) return [...qt.buocKyStandard.flatMap(b => lay(b.nut)), ...khung]
+  if (f && qt.luongStandard) return [...qt.luongStandard.flatMap(c => lay(c.nut)), ...khung]
+  const hoiTu = f && qt.hoiTuStandard ? qt.hoiTuStandard : qt.hoiTu
+  const ra = f && qt.raStandard ? qt.raStandard : hoiTu?.ra
   return [
     ...qt.buoc.flatMap(b => lay([b.chinh, ...(b.tren ?? []), ...(b.duoi ?? [])] as NutQT[])),
     ...(hoiTu ? [...hoiTu.lan.flatMap(l => lay(l.nut)), ...lay(ra?.nut)] : []),

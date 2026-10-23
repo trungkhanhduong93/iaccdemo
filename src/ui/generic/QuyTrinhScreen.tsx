@@ -28,13 +28,13 @@ export function QuyTrinhScreen({ mod }: ScreenProps) {
   }
   const goc0 = mod.quyTrinh!
   // Gói Free có sơ đồ hội tụ riêng thì thay sơ đồ chung (T98)
-  const goc1: QuyTrinhDef = s.goi === 'S' && goc0.hoiTuFree ? { ...goc0, buoc: [], hoiTu: goc0.hoiTuFree } : goc0
+  const goc1: QuyTrinhDef = s.goi === 'S' && goc0.hoiTuStandard ? { ...goc0, buoc: [], hoiTu: goc0.hoiTuStandard } : goc0
   // Gói Free có khối báo cáo riêng thì thay khối báo cáo, giữ các làn (T262)
-  const goc: QuyTrinhDef = s.goi === 'S' && goc0.raFree && goc1.hoiTu ? { ...goc1, hoiTu: { ...goc1.hoiTu, ra: goc0.raFree } } : goc1
+  const goc: QuyTrinhDef = s.goi === 'S' && goc0.raStandard && goc1.hoiTu ? { ...goc1, hoiTu: { ...goc1.hoiTu, ra: goc0.raStandard } } : goc1
   // Gói Free có sơ đồ luồng theo cột thì thay sơ đồ chung (T123)
-  const luong = s.goi === 'S' && goc0.luongFree ? goc0.luongFree.map(c => ({ ...c, nut: c.nut.filter(hien) })).filter(c => c.nut.length) : null
-  // Gói Free có sơ đồ bước theo kỳ (mẫu C, T366): ưu tiên trên hoiTuFree, luongFree
-  const buocKy = s.goi === 'S' && goc0.buocKyFree ? goc0.buocKyFree.map(b => ({
+  const luong = s.goi === 'S' && goc0.luongStandard ? goc0.luongStandard.map(c => ({ ...c, nut: c.nut.filter(hien) })).filter(c => c.nut.length) : null
+  // Gói Free có sơ đồ bước theo kỳ (mẫu C, T366): ưu tiên trên hoiTuStandard, luongStandard
+  const buocKy = s.goi === 'S' && goc0.buocKyStandard ? goc0.buocKyStandard.map(b => ({
     ...b,
     nut: b.nut.filter(hien),
     nhom: b.nhom?.map(g => ({ ...g, nut: g.nut.filter(hien) })).filter(g => g.nut.length > 0),
@@ -64,26 +64,26 @@ export function QuyTrinhScreen({ mod }: ScreenProps) {
       <div className={`qt-top ${(qt.hoiTu || buocKy) ? 'mot-cot' : ''}`}>
         <section className="card qt-card">
           <div className="qt-h">
-            <h1>{s.goi === 'S' && goc0.tenFree ? goc0.tenFree : qt.ten}</h1>
+            <h1>{s.goi === 'S' && goc0.tenStandard ? goc0.tenStandard : qt.ten}</h1>
             <span className="sub">{coForm ? 'Bấm vào ô để mở chứng từ' : 'Bấm vào ô để mở màn hình'}</span>
             <span className="grow" />
             {!an && <span className="qt-dem">Gói {GOI[s.goi].ten} mở {mo}/{nut.length} nghiệp vụ</span>}
           </div>
-          {s.goi === 'S' && goc0.moTaFree && <p className="qt-mo-ta">{goc0.moTaFree}</p>}
+          {s.goi === 'S' && goc0.moTaStandard && <p className="qt-mo-ta">{goc0.moTaStandard}</p>}
           {khoa && can && (
             <Note kind="warn">
               <Pk g={can} o /> {mod.ten} có từ gói {GOI[can].ten}. Sơ đồ vẫn hiện để xem trước.{' '}
               <button className="btn sm" onClick={() => set({ goi: can })}>Xem thử gói {GOI[can].ten}</button>
             </Note>
           )}
-          {buocKy ? <SoDoKyFree buoc={buocKy} modKey={mod.key} goi={s.goi} hienLinkBaoCao={!qt.khongBaoCao && !qt.khongLinkBaoCaoKy && Boolean(qt.baoCao && qt.baoCao.length > 0)} />
+          {buocKy ? <SoDoKyStandard buoc={buocKy} modKey={mod.key} goi={s.goi} hienLinkBaoCao={!qt.khongBaoCao && !qt.khongLinkBaoCaoKy && Boolean(qt.baoCao && qt.baoCao.length > 0)} />
             : qt.hoiTu ? <SoDoHoiTu lan={qt.hoiTu.lan} ra={qt.hoiTu.ra} goi={s.goi} modKey={mod.key} danhSo={qt.danhSo} hienLinkBaoCao={!qt.khongBaoCao && Boolean(qt.baoCao && qt.baoCao.length > 0)} />
             : luong ? <SoDoLuong cot={luong} goi={s.goi} /> : <SoDo qt={qt} goi={s.goi} />}
         </section>
         {/* Sơ đồ hội tụ hoặc bước theo kỳ đã có khối sổ sách, báo cáo ở cuối nên bỏ khung Báo cáo bên phải để khỏi trùng */}
         {!(qt.hoiTu || buocKy) && <BenPhai qt={qt} modKey={mod.key} goi={s.goi} cheDo={s.cheDo} session={s} />}
       </div>
-      {!(s.goi === 'S' && goc0.anDuoiFree) && <HangDuoi qt={qt} modKey={mod.key} goi={s.goi} cheDo={s.cheDo} session={s} />}
+      {!(s.goi === 'S' && goc0.anDuoiStandard) && <HangDuoi qt={qt} modKey={mod.key} goi={s.goi} cheDo={s.cheDo} session={s} />}
     </div>
   )
 }
@@ -368,7 +368,7 @@ function NutNgang({ n, goi, dong }: { n: NutQT; goi: Goi; dong?: boolean }) {
 function BenPhai({ qt, modKey, goi, cheDo, session }: { qt: QuyTrinhDef; modKey: string; goi: Goi; cheDo?: CheDo; session?: Pick<Session, 'ppGtgt' | 'ppTndn'> }) {
   // Chỉ lấy báo cáo còn hiện; báo cáo khai sẵn bị bỏ hết thì lấy báo cáo còn hiện của phân hệ (T171)
   const hien = (di: string) => { const d = dich(di, modKey); return Boolean(d.sc && hienMan(d.sc, goi, cheDo, session)) }
-  const khai = ((goi === 'S' && qt.baoCaoFree) || qt.baoCao || []).filter(hien)
+  const khai = ((goi === 'S' && qt.baoCaoStandard) || qt.baoCao || []).filter(hien)
   const cuaPh = (MODULES.find(m => m.key === modKey)?.screens ?? []).filter(laBaoCao).map(x => x.slug).filter(hien)
   const dsBc = khai.length ? khai : cuaPh
   if (!dsBc.length) {
@@ -527,7 +527,7 @@ function HangDuoi({ qt, modKey, goi, cheDo, session }: { qt: QuyTrinhDef; modKey
 }
 
 /** Sơ đồ quy trình bước theo kỳ (mẫu C gói Free, T366): 3-5 bước theo trục ngang, ô icon to, nút + lập nhanh */
-function SoDoKyFree({ buoc, modKey, goi, hienLinkBaoCao }: { buoc: BuocKyQT[]; modKey: string; goi: Goi; hienLinkBaoCao?: boolean }) {
+function SoDoKyStandard({ buoc, modKey, goi, hienLinkBaoCao }: { buoc: BuocKyQT[]; modKey: string; goi: Goi; hienLinkBaoCao?: boolean }) {
   const luoiCols = buoc.map(b => (b.rong ? '1.5fr' : '1fr')).join(' ')
 
   return (

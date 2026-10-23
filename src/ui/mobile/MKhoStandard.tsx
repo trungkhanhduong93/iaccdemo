@@ -4,13 +4,13 @@ import { Link } from 'react-router-dom'
 import { useSession } from '../../app/session'
 import { CUA_HANG } from '../../data/mock'
 import { tinhToanTongQuan } from '../../modules/home/chiSo'
-import { soLieuCongNo, soLieuKiemKe, soLieuMua } from '../../modules/home/khoFree'
+import { soLieuCongNo, soLieuKiemKe, soLieuMua } from '../../modules/home/khoStandard'
 import { datLocDaXem, docTuyChinh, luuTuyChinh } from '../bao-cao/tuyChinhBC'
 import { moneyD, pct, short } from '../format'
 import { Icon } from '../Icon'
 import { FigmaGradientIcon } from '../FigmaIcon'
 
-export function MKhoFree({ selCns, thang }: { selCns: string[]; thang: number }) {
+export function MKhoStandard({ selCns, thang }: { selCns: string[]; thang: number }) {
   const { s } = useSession()
 
   const cns = useMemo(() => (selCns && selCns.length > 0 ? selCns : CUA_HANG.map(c => c.id)), [selCns])

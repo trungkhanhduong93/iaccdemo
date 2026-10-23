@@ -2,13 +2,13 @@
 // Giữ trong sessionStorage, đóng tab là về tháng hiện tại. Gói khác không dùng.
 const KEY = 'iacc-thang-lam-viec'
 
-const laGoiFree = () => {
+const laGoiStandard = () => {
   try { return JSON.parse(localStorage.getItem('iacc-cloud-session') ?? '{}').goi === 'S' } catch { return false }
 }
 
 /** Tháng làm việc năm 2026 đã chọn ở trang chủ Free; chưa chọn hoặc không phải gói Free thì null */
 export function thangLamViec(): number | null {
-  if (!laGoiFree()) return null
+  if (!laGoiStandard()) return null
   try {
     const t = Number(sessionStorage.getItem(KEY))
     return t >= 1 && t <= 12 ? t : null

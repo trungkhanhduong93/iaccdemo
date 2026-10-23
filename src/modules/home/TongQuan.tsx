@@ -29,7 +29,7 @@ import {
   resetBlocks,
   tinhToanTongQuan,
 } from './chiSo'
-import { BaBaiToanFree } from './BaBaiToanFree'
+import { BaBaiToanStandard } from './BaBaiToanStandard'
 import { datThangLamViec, thangLamViec } from '../../app/thangLamViec'
 
 export function TongQuan({ sc }: ScreenProps) {
@@ -61,12 +61,12 @@ export function TongQuan({ sc }: ScreenProps) {
   }, [moCnPop])
 
   // 2. Tính toán số liệu tổng quan
-  const isFree = s.goi === 'S'
+  const isStandard = s.goi === 'S'
   // Gói Free không có ô chọn cửa hàng riêng của trang, xem theo cửa hàng trên thanh trên (T230)
   const cnTren = cuaHangHienTai(s)
-  const cnsXem = isFree ? (cnTren ? [cnTren.id] : CUA_HANG.map(c => c.id)) : selCns
-  const kyXem: KyBaoCao = isFree ? (thangF === 10 ? 'thang-nay' : 'thang-truoc') : ky
-  const d = tinhToanTongQuan(kyXem, cnsXem, s.cheDo, isFree ? thangF : undefined)
+  const cnsXem = isStandard ? (cnTren ? [cnTren.id] : CUA_HANG.map(c => c.id)) : selCns
+  const kyXem: KyBaoCao = isStandard ? (thangF === 10 ? 'thang-nay' : 'thang-truoc') : ky
+  const d = tinhToanTongQuan(kyXem, cnsXem, s.cheDo, isStandard ? thangF : undefined)
   const canhBao = coTrongGoi('11.6', s.goi)
 
   // Kiểm tra liên kết báo cáo theo gói và chế độ hiện tại (QD45)
@@ -237,7 +237,7 @@ export function TongQuan({ sc }: ScreenProps) {
               title="Chỉ số sức khoẻ tài chính"
               sub="8 chỉ số đo lường hiệu quả vận hành và an toàn tài chính F&B"
             >
-              {isFree ? (
+              {isStandard ? (
                 <div className="empty" style={{ padding: 24 }}>
                   <div><Pk g="PL" o /></div>
                   <b style={{ marginTop: 8 }}>Chỉ số sức khoẻ tài chính F&B có từ gói Plus</b>
@@ -328,9 +328,9 @@ export function TongQuan({ sc }: ScreenProps) {
             <Card
               title="Dòng tiền kỳ"
               sub={d.ghiChuDongTien ?? "Số dư đầu kỳ, dòng tiền thu, chi và tiền cuối kỳ khớp sổ cái"}
-              act={!isFree && linkDTien ? <Link className="btn sm ghost" to={linkDTien}>Báo cáo dòng tiền</Link> : undefined}
+              act={!isStandard && linkDTien ? <Link className="btn sm ghost" to={linkDTien}>Báo cáo dòng tiền</Link> : undefined}
             >
-              {isFree ? (
+              {isStandard ? (
                 <div className="empty" style={{ padding: 24 }}>
                   <div><Pk g="PR" o /></div>
                   <b style={{ marginTop: 8 }}>Báo cáo lưu chuyển tiền tệ có ở gói Pro</b>
@@ -371,7 +371,7 @@ export function TongQuan({ sc }: ScreenProps) {
               title="Hiệu quả theo cửa hàng"
               sub={`Doanh thu và biên lãi gộp từng điểm bán · ${d.kyLabel}`}
             >
-              {isFree ? (
+              {isStandard ? (
                 <div className="empty" style={{ padding: 24 }}>
                   <div><Pk g="PL" o /></div>
                   <b style={{ marginTop: 8 }}>Quản lý đa cửa hàng có ở gói Plus</b>
@@ -403,9 +403,9 @@ export function TongQuan({ sc }: ScreenProps) {
             <Card
               title="Cơ cấu chi phí"
               sub={d.isLocCn ? 'Chi phí phân bổ theo doanh thu' : `Chi phí hoạt động · ${d.kyLabel}`}
-              act={!isFree && linkCP ? <Link className="btn sm ghost" to={linkCP}>Sổ chi phí</Link> : undefined}
+              act={!isStandard && linkCP ? <Link className="btn sm ghost" to={linkCP}>Sổ chi phí</Link> : undefined}
             >
-              {isFree ? (
+              {isStandard ? (
                 <div className="empty" style={{ padding: 24 }}>
                   <div><Pk g="PL" o /></div>
                   <b style={{ marginTop: 8 }}>Phân tích chi phí có ở gói Plus</b>
@@ -455,7 +455,7 @@ export function TongQuan({ sc }: ScreenProps) {
         return (
           <div key="ban-chay" className="tq-col-4">
             <Card title="Món bán chạy" sub={d.kyLabel}>
-              {isFree ? (
+              {isStandard ? (
                 <div className="empty" style={{ padding: 24 }}>
                   <div><Pk g="PL" o /></div>
                   <b style={{ marginTop: 8 }}>Phân tích món bán chạy có ở gói Plus</b>
@@ -484,7 +484,7 @@ export function TongQuan({ sc }: ScreenProps) {
   }
 
   // Gói Free: chọn năm rồi tháng (T230)
-  const chonThangFree = (
+  const chonThangStandard = (
     <div className="bbt-chon">
       <Select className="sel-mini" style={{ height: 34, minWidth: 124 }} value={String(namF)} aria-label="Năm"
         onChange={e => setNamF(Number(e.target.value))}>
@@ -514,11 +514,11 @@ export function TongQuan({ sc }: ScreenProps) {
   return (
     <div className="page">
       {/* Gói Free bỏ tiêu đề, ô chọn kỳ nằm trên khối ba bài toán (T230) */}
-      {!isFree && (
+      {!isStandard && (
       <PageHead
         title="Tổng quan"
         code={sc.code}
-        meta={isFree ? undefined : (
+        meta={isStandard ? undefined : (
           <div className="row" style={{ gap: 8 }}>
             <span className="chip">Cập nhật 14:20 từ FABi</span>
             {d.ghiChuCn && (
@@ -534,7 +534,7 @@ export function TongQuan({ sc }: ScreenProps) {
           {chonKy}
 
           {/* 2. So với; 3. Lọc cửa hàng: gói Free bỏ, xem theo cửa hàng trên thanh trên (T230) */}
-          {!isFree && (
+          {!isStandard && (
           <div className="tq-so-sanh">
             <span className="tq-ss-label">So với:</span>
             <span className="tq-ss-pill">Kỳ trước</span>
@@ -542,7 +542,7 @@ export function TongQuan({ sc }: ScreenProps) {
           </div>
           )}
 
-          {!isFree && (
+          {!isStandard && (
           <div className="tq-cn-wrap" ref={cnPopRef}>
             <button
               type="button"
@@ -581,7 +581,7 @@ export function TongQuan({ sc }: ScreenProps) {
           )}
 
           {/* 4. Nút Tuỳ chỉnh; gói Free chỉ có ba bài toán nên không có (T230) */}
-          {!isFree && (
+          {!isStandard && (
             <button
               type="button"
               className="btn sm ghost"
@@ -598,9 +598,9 @@ export function TongQuan({ sc }: ScreenProps) {
 
       {/* Lưới các khối Tổng quan */}
       <div className="tq-grid-12">
-        {isFree ? (
+        {isStandard ? (
           // Gói Free chỉ hiện ba bài toán lãi lỗ, thu chi, kho; các khối khác tạm ẩn, PhuongXT chốt 14/10/2026 (T230)
-          <div className="tq-col-12"><BaBaiToanFree d={d} thang={thangF} selCns={cnsXem} chonKy={chonThangFree} /></div>
+          <div className="tq-col-12"><BaBaiToanStandard d={d} thang={thangF} selCns={cnsXem} chonKy={chonThangStandard} /></div>
         ) : blocks.map(renderBlock)}
       </div>
 

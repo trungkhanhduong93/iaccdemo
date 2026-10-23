@@ -16206,14 +16206,14 @@ a.lsq-dong:hover { background: var(--tint); }
 
 @media (max-width: 767px) {
   /* Chip chọn tháng trên trang chủ Free */
-  .m-free-chip-thang {
+  .m-standard-chip-thang {
     background: var(--white);
     border: 1px solid var(--line);
     color: var(--ink);
   }
 
   /* Khối giới thiệu 3 bài toán ở đầu */
-  .m-free-dau {
+  .m-standard-dau {
     background: var(--white);
     border: 1px solid var(--line-2);
     border-radius: 12px;
@@ -16224,24 +16224,24 @@ a.lsq-dong:hover { background: var(--tint); }
     color: var(--ink);
   }
 
-  .m-free-dau b {
+  .m-standard-dau b {
     color: var(--blue);
   }
 
   /* Thẻ bài toán Free */
-  .m-free-the {
+  .m-standard-the {
     display: flex;
     flex-direction: column;
   }
 
   /* Câu hỏi và số lớn của từng bài toán */
-  .m-free-hoi {
+  .m-standard-hoi {
     font-size: 13.5px;
     color: var(--muted);
     margin-top: 4px;
   }
 
-  .m-free-tra {
+  .m-standard-tra {
     display: flex;
     align-items: baseline;
     gap: 6px;
@@ -16251,28 +16251,28 @@ a.lsq-dong:hover { background: var(--tint); }
     color: var(--ink);
   }
 
-  .m-free-tra.lai {
+  .m-standard-tra.lai {
     color: var(--green);
   }
 
-  .m-free-tra.lo {
+  .m-standard-tra.lo {
     color: var(--red);
   }
 
-  .m-free-so-phu {
+  .m-standard-so-phu {
     font-size: 13px;
     font-weight: 500;
     color: var(--muted);
   }
 
-  .m-free-phu {
+  .m-standard-phu {
     font-size: 12.5px;
     color: var(--muted);
     margin-top: 2px;
   }
 
   /* Danh sách thẻ dòng chi tiết bên trong từng bài toán */
-  .m-free-ds-tll {
+  .m-standard-ds-tll {
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -16281,7 +16281,7 @@ a.lsq-dong:hover { background: var(--tint); }
     border-top: 1px solid var(--line-2);
   }
 
-  .m-free-tll-the {
+  .m-standard-tll-the {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -16295,38 +16295,38 @@ a.lsq-dong:hover { background: var(--tint); }
     box-sizing: border-box;
   }
 
-  .m-free-tll-the.link {
+  .m-standard-tll-the.link {
     cursor: pointer;
   }
 
-  .m-free-tll-the.link:active {
+  .m-standard-tll-the.link:active {
     opacity: 0.85;
   }
 
-  .m-free-tll-the.dt {
+  .m-standard-tll-the.dt {
     background: var(--white);
     border-left: 3px solid var(--blue);
   }
 
-  .m-free-tll-the.lai {
+  .m-standard-tll-the.lai {
     background: var(--white);
     border-left: 3px solid var(--green);
   }
 
-  .m-free-tll-the.lo {
+  .m-standard-tll-the.lo {
     background: var(--white);
     border-left: 3px solid var(--red);
   }
 
-  .m-free-tll-the.lai .m-free-tll-phai b {
+  .m-standard-tll-the.lai .m-standard-tll-phai b {
     color: var(--green);
   }
 
-  .m-free-tll-the.lo .m-free-tll-phai b {
+  .m-standard-tll-the.lo .m-standard-tll-phai b {
     color: var(--red);
   }
 
-  .m-free-tll-trai {
+  .m-standard-tll-trai {
     display: flex;
     flex-direction: column;
     gap: 2px;
@@ -16334,7 +16334,7 @@ a.lsq-dong:hover { background: var(--tint); }
     min-width: 0;
   }
 
-  .m-free-tll-trai b {
+  .m-standard-tll-trai b {
     font-size: 13.5px;
     color: var(--ink);
     white-space: nowrap;
@@ -16342,13 +16342,13 @@ a.lsq-dong:hover { background: var(--tint); }
     text-overflow: ellipsis;
   }
 
-  .m-free-tll-trai span {
+  .m-standard-tll-trai span {
     font-size: 12px;
     color: var(--muted);
     line-height: 1.3;
   }
 
-  .m-free-tll-phai {
+  .m-standard-tll-phai {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
@@ -16357,33 +16357,33 @@ a.lsq-dong:hover { background: var(--tint); }
     flex-shrink: 0;
   }
 
-  .m-free-tll-phai b {
+  .m-standard-tll-phai b {
     font-size: 13.5px;
     font-family: inherit;
     font-variant-numeric: tabular-nums;
     color: var(--ink);
   }
 
-  .m-free-tll-phai span {
+  .m-standard-tll-phai span {
     font-size: 11.5px;
     color: var(--muted);
   }
 
-  .m-free-mui {
+  .m-standard-mui {
     margin-left: 8px;
     color: var(--muted);
     flex-shrink: 0;
   }
 
   /* ── Màn Chi phí trong tháng (MChiPhiThang) ── */
-  .m-free-cpt {
+  .m-standard-cpt {
     padding: 12px 16px 180px 16px;
     display: flex;
     flex-direction: column;
     gap: 12px;
   }
 
-  .m-free-cpt-tong-the {
+  .m-standard-cpt-tong-the {
     background: var(--white);
     border: 1px solid var(--line-2);
     border-radius: 12px;
@@ -16391,12 +16391,12 @@ a.lsq-dong:hover { background: var(--tint); }
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
   }
 
-  .m-free-cpt-tong-nhan {
+  .m-standard-cpt-tong-nhan {
     font-size: 13px;
     color: var(--muted);
   }
 
-  .m-free-cpt-tong-so {
+  .m-standard-cpt-tong-so {
     font-size: 24px;
     font-weight: 700;
     color: var(--blue);
@@ -16404,13 +16404,13 @@ a.lsq-dong:hover { background: var(--tint); }
     font-variant-numeric: tabular-nums;
   }
 
-  .m-free-cpt-ds {
+  .m-standard-cpt-ds {
     display: flex;
     flex-direction: column;
     gap: 8px;
   }
 
-  .m-free-cpt-dong {
+  .m-standard-cpt-dong {
     display: flex;
     align-items: center;
     padding: 12px 14px;
@@ -16424,11 +16424,11 @@ a.lsq-dong:hover { background: var(--tint); }
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
   }
 
-  .m-free-cpt-dong:active {
+  .m-standard-cpt-dong:active {
     opacity: 0.85;
   }
 
-  .m-free-cpt-ic {
+  .m-standard-cpt-ic {
     width: 36px;
     height: 36px;
     border-radius: 50%;
@@ -16441,7 +16441,7 @@ a.lsq-dong:hover { background: var(--tint); }
     flex-shrink: 0;
   }
 
-  .m-free-cpt-info {
+  .m-standard-cpt-info {
     flex: 1;
     min-width: 0;
     display: flex;
@@ -16449,13 +16449,13 @@ a.lsq-dong:hover { background: var(--tint); }
     gap: 2px;
   }
 
-  .m-free-cpt-ten {
+  .m-standard-cpt-ten {
     font-size: 14px;
     font-weight: 600;
     color: var(--ink);
   }
 
-  .m-free-cpt-phu {
+  .m-standard-cpt-phu {
     font-size: 12px;
     color: var(--muted);
     white-space: nowrap;
@@ -16463,7 +16463,7 @@ a.lsq-dong:hover { background: var(--tint); }
     text-overflow: ellipsis;
   }
 
-  .m-free-cpt-so {
+  .m-standard-cpt-so {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
@@ -16472,33 +16472,33 @@ a.lsq-dong:hover { background: var(--tint); }
     flex-shrink: 0;
   }
 
-  .m-free-cpt-tien {
+  .m-standard-cpt-tien {
     font-size: 14px;
     font-weight: 600;
     color: var(--ink);
     font-variant-numeric: tabular-nums;
   }
 
-  .m-free-cpt-phantram {
+  .m-standard-cpt-phantram {
     font-size: 11.5px;
     color: var(--muted);
   }
 
-  .m-free-cpt-mui {
+  .m-standard-cpt-mui {
     margin-left: 8px;
     color: var(--muted);
     flex-shrink: 0;
   }
 
   /* ── Màn Lịch sử thu chi (MLichSuQuy) ── */
-  .m-free-lsq {
+  .m-standard-lsq {
     padding: 12px 16px 180px 16px;
     display: flex;
     flex-direction: column;
     gap: 12px;
   }
 
-  .m-free-lsq-the {
+  .m-standard-lsq-the {
     background: var(--white);
     border: 1px solid var(--line-2);
     border-radius: 12px;
@@ -16506,7 +16506,7 @@ a.lsq-dong:hover { background: var(--tint); }
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
   }
 
-  .m-free-lsq-quy {
+  .m-standard-lsq-quy {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -16515,17 +16515,17 @@ a.lsq-dong:hover { background: var(--tint); }
     color: var(--ink);
   }
 
-  .m-free-lsq-du {
+  .m-standard-lsq-du {
     margin-top: 10px;
   }
 
-  .m-free-lsq-du small {
+  .m-standard-lsq-du small {
     display: block;
     font-size: 12px;
     color: var(--muted);
   }
 
-  .m-free-lsq-du b {
+  .m-standard-lsq-du b {
     display: block;
     font-size: 24px;
     font-weight: 700;
@@ -16534,7 +16534,7 @@ a.lsq-dong:hover { background: var(--tint); }
     margin-top: 2px;
   }
 
-  .m-free-lsq-tom {
+  .m-standard-lsq-tom {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -16546,43 +16546,43 @@ a.lsq-dong:hover { background: var(--tint); }
     gap: 4px;
   }
 
-  .m-free-lsq-tom span {
+  .m-standard-lsq-tom span {
     white-space: nowrap;
   }
 
-  .m-free-lsq-tom b {
+  .m-standard-lsq-tom b {
     color: var(--ink);
     font-variant-numeric: tabular-nums;
   }
 
-  .m-free-lsq-tom .m-tien-vao b {
+  .m-standard-lsq-tom .m-tien-vao b {
     color: var(--green);
   }
 
-  .m-free-lsq-tom .m-tien-ra b {
+  .m-standard-lsq-tom .m-tien-ra b {
     color: var(--red);
   }
 
-  .m-free-lsq-ds {
+  .m-standard-lsq-ds {
     display: flex;
     flex-direction: column;
     gap: 12px;
   }
 
-  .m-free-lsq-ngay-nhom {
+  .m-standard-lsq-ngay-nhom {
     display: flex;
     flex-direction: column;
     gap: 6px;
   }
 
-  .m-free-lsq-ngay {
+  .m-standard-lsq-ngay {
     font-size: 12.5px;
     font-weight: 600;
     color: var(--muted);
     padding: 0 4px;
   }
 
-  .m-free-lsq-khoi {
+  .m-standard-lsq-khoi {
     background: var(--white);
     border: 1px solid var(--line-2);
     border-radius: 12px;
@@ -16590,7 +16590,7 @@ a.lsq-dong:hover { background: var(--tint); }
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
   }
 
-  .m-free-lsq-dong {
+  .m-standard-lsq-dong {
     display: flex;
     align-items: center;
     padding: 12px 14px;
@@ -16601,15 +16601,15 @@ a.lsq-dong:hover { background: var(--tint); }
     box-sizing: border-box;
   }
 
-  .m-free-lsq-dong:last-child {
+  .m-standard-lsq-dong:last-child {
     border-bottom: none;
   }
 
-  .m-free-lsq-dong.link:active {
+  .m-standard-lsq-dong.link:active {
     background: var(--bg);
   }
 
-  .m-free-lsq-ic {
+  .m-standard-lsq-ic {
     width: 34px;
     height: 34px;
     border-radius: 50%;
@@ -16620,17 +16620,17 @@ a.lsq-dong:hover { background: var(--tint); }
     flex-shrink: 0;
   }
 
-  .m-free-lsq-ic.vao {
+  .m-standard-lsq-ic.vao {
     background: var(--green-t, rgba(19, 138, 82, 0.1));
     color: var(--green);
   }
 
-  .m-free-lsq-ic.ra {
+  .m-standard-lsq-ic.ra {
     background: var(--red-t, rgba(194, 54, 43, 0.1));
     color: var(--red);
   }
 
-  .m-free-lsq-chu {
+  .m-standard-lsq-chu {
     flex: 1;
     min-width: 0;
     display: flex;
@@ -16638,7 +16638,7 @@ a.lsq-dong:hover { background: var(--tint); }
     gap: 2px;
   }
 
-  .m-free-lsq-dg {
+  .m-standard-lsq-dg {
     font-size: 13.5px;
     font-weight: 500;
     color: var(--ink);
@@ -16647,12 +16647,12 @@ a.lsq-dong:hover { background: var(--tint); }
     text-overflow: ellipsis;
   }
 
-  .m-free-lsq-soct {
+  .m-standard-lsq-soct {
     font-size: 11.5px;
     color: var(--muted);
   }
 
-  .m-free-lsq-so {
+  .m-standard-lsq-so {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
@@ -16661,26 +16661,26 @@ a.lsq-dong:hover { background: var(--tint); }
     flex-shrink: 0;
   }
 
-  .m-free-lsq-tien {
+  .m-standard-lsq-tien {
     font-size: 13.5px;
     font-weight: 600;
     font-variant-numeric: tabular-nums;
   }
 
-  .m-free-lsq-sodu {
+  .m-standard-lsq-sodu {
     font-size: 11px;
     color: var(--muted);
     font-variant-numeric: tabular-nums;
   }
 
-  .m-free-lsq-mui {
+  .m-standard-lsq-mui {
     margin-left: 8px;
     color: var(--muted);
     flex-shrink: 0;
   }
 
   /* ── Nút dính đáy màn hình kiểu app ── */
-  .m-free-day-nut {
+  .m-standard-day-nut {
     position: fixed;
     bottom: calc(var(--m-thanh-duoi, 56px) + 22px + env(safe-area-inset-bottom, 0px));
     left: 0;
@@ -16694,8 +16694,8 @@ a.lsq-dong:hover { background: var(--tint); }
     box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
   }
 
-  .m-free-nut-chinh,
-  .m-free-nut-phu {
+  .m-standard-nut-chinh,
+  .m-standard-nut-phu {
     flex: 1;
     display: flex;
     align-items: center;
@@ -16710,27 +16710,27 @@ a.lsq-dong:hover { background: var(--tint); }
     cursor: pointer;
   }
 
-  .m-free-nut-chinh {
+  .m-standard-nut-chinh {
     background: var(--blue);
     color: #fff;
     border: none;
   }
 
-  .m-free-nut-chinh:active {
+  .m-standard-nut-chinh:active {
     opacity: 0.9;
   }
 
-  .m-free-nut-phu {
+  .m-standard-nut-phu {
     background: var(--bg);
     color: var(--ink);
     border: 1px solid var(--line);
   }
 
-  .m-free-nut-phu:active {
+  .m-standard-nut-phu:active {
     background: var(--line-2);
   }
 
-  .m-free-trong {
+  .m-standard-trong {
     text-align: center;
     padding: 32px 16px;
     color: var(--muted);
@@ -16738,14 +16738,14 @@ a.lsq-dong:hover { background: var(--tint); }
   }
 
   /* Gợi ý bấm quỹ ở Quản lý thu chi (T245) */
-  .m-free-goiy {
+  .m-standard-goiy {
     font-size: 12px;
     color: var(--muted);
     margin-top: 6px;
   }
 
   /* Dòng giải thích dưới Tổng chi phí trong tháng */
-  .m-free-cpt-tong-phu {
+  .m-standard-cpt-tong-phu {
     display: block;
     font-size: 11.5px;
     color: var(--muted);
@@ -16754,7 +16754,7 @@ a.lsq-dong:hover { background: var(--tint); }
   }
 
   /* Hàng chip lọc thu chi (T246) */
-  .m-free-lsq-loc {
+  .m-standard-lsq-loc {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -16764,11 +16764,11 @@ a.lsq-dong:hover { background: var(--tint); }
     padding: 2px 0;
   }
 
-  .m-free-lsq-loc::-webkit-scrollbar {
+  .m-standard-lsq-loc::-webkit-scrollbar {
     display: none;
   }
 
-  .m-free-lsq-chip {
+  .m-standard-lsq-chip {
     padding: 6px 14px;
     border-radius: 20px;
     font-size: 13px;
@@ -16785,7 +16785,7 @@ a.lsq-dong:hover { background: var(--tint); }
     box-sizing: border-box;
   }
 
-  .m-free-lsq-chip.on {
+  .m-standard-lsq-chip.on {
     background: var(--tint);
     border-color: var(--blue);
     color: var(--blue);
@@ -17232,7 +17232,7 @@ button.bbt-nut { background: none; border: 0; padding-left: 0; padding-right: 0;
   max-width: 100%;
   box-sizing: border-box;
 }
-.m-tc-thanh-dieu-huong--free {
+.m-tc-thanh-dieu-huong--standard {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -17242,24 +17242,24 @@ button.bbt-nut { background: none; border: 0; padding-left: 0; padding-right: 0;
   width: 100%;
   box-sizing: border-box;
 }
-.m-tc-thanh-dieu-huong--free .m-tc-chip-cn {
+.m-tc-thanh-dieu-huong--standard .m-tc-chip-cn {
   flex: 1;
   min-width: 0;
   max-width: 160px;
   justify-content: space-between;
 }
-.m-free-ky-wrap {
+.m-standard-ky-wrap {
   display: flex;
   align-items: center;
   gap: 6px;
   flex-shrink: 0;
 }
-.m-free-sel-nam {
+.m-standard-sel-nam {
   height: 32px;
   width: 112px;
   min-width: 0;
 }
-.m-free-sel-thang {
+.m-standard-sel-thang {
   height: 32px;
   width: 96px;
   min-width: 0;
@@ -18841,71 +18841,71 @@ button.bbt-nut { background: none; border: 0; padding-left: 0; padding-right: 0;
 }
 
 /* Lịch sử thu chi trên điện thoại (T272) */
-.m-free-lsq-the-hop {
+.m-standard-lsq-the-hop {
   background: #fff;
   border: 1px solid var(--line, #e5e7eb);
   border-radius: 12px;
   padding: 14px;
   margin-bottom: 12px;
 }
-.m-free-lsq-quy-dau {
+.m-standard-lsq-quy-dau {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
 }
-.m-free-lsq-thang {
+.m-standard-lsq-thang {
   font-size: 12px;
   color: var(--muted, #6b7280);
 }
-.m-free-lsq-luoi-2x2 {
+.m-standard-lsq-luoi-2x2 {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
 }
-.m-free-lsq-o-st {
+.m-standard-lsq-o-st {
   border-radius: 10px;
   padding: 10px 12px;
   display: flex;
   flex-direction: column;
   gap: 2px;
 }
-.m-free-lsq-o-st span {
+.m-standard-lsq-o-st span {
   font-size: 12px;
   font-weight: 600;
 }
-.m-free-lsq-o-st b {
+.m-standard-lsq-o-st b {
   font-size: 16px;
   font-weight: 800;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
-.m-free-lsq-o-st.st-dau {
+.m-standard-lsq-o-st.st-dau {
   background: #fff;
   border: 1px solid var(--line, #e5e7eb);
   color: var(--ink, #1f2225);
 }
-.m-free-lsq-o-st.st-dau span {
+.m-standard-lsq-o-st.st-dau span {
   color: var(--muted, #6b7280);
 }
-.m-free-lsq-o-st.st-thu {
+.m-standard-lsq-o-st.st-thu {
   background: var(--green-t, #e3f4ea);
   color: var(--green, #138a52);
 }
-.m-free-lsq-o-st.st-chi {
+.m-standard-lsq-o-st.st-chi {
   background: var(--red-t, #fcebea);
   color: var(--red, #c2362b);
 }
-.m-free-lsq-o-st.st-cuoi {
+.m-standard-lsq-o-st.st-cuoi {
   background: var(--blue, #0560a6);
   color: #fff;
 }
-.m-free-lsq-chuyen-quy {
+.m-standard-lsq-chuyen-quy {
   font-size: 12px;
   color: var(--muted, #6b7280);
   margin-top: 8px;
 }
-.m-free-lsq-ngay-dau {
+.m-standard-lsq-ngay-dau {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -18915,7 +18915,7 @@ button.bbt-nut { background: none; border: 0; padding-left: 0; padding-right: 0;
   font-weight: 700;
   border-bottom: 1px solid var(--line-2, #eeeeee);
 }
-.m-free-lsq-ngay-tong {
+.m-standard-lsq-ngay-tong {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -18925,13 +18925,13 @@ button.bbt-nut { background: none; border: 0; padding-left: 0; padding-right: 0;
   color: var(--muted, #6b7280);
   font-weight: 600;
 }
-.m-free-lsq-phu-dong {
+.m-standard-lsq-phu-dong {
   display: flex;
   align-items: center;
   gap: 8px;
   margin-top: 2px;
 }
-.m-free-lsq-so-link {
+.m-standard-lsq-so-link {
   display: inline-flex;
   align-items: center;
   gap: 3px;
@@ -18940,7 +18940,7 @@ button.bbt-nut { background: none; border: 0; padding-left: 0; padding-right: 0;
   color: var(--blue, #0560a6);
   text-decoration: none;
 }
-.m-free-lsq-ten-quy {
+.m-standard-lsq-ten-quy {
   font-size: 12px;
   color: var(--blue, #0560a6);
   font-weight: 500;
@@ -18948,7 +18948,7 @@ button.bbt-nut { background: none; border: 0; padding-left: 0; padding-right: 0;
 }
 
 /* ── Trang chủ sửa vòng 2, sheet quỹ, sidebar Thao tác nhanh nổi (T273) ── */
-button.m-free-ton-quy-lon {
+button.m-standard-ton-quy-lon {
   color: var(--blue, #0560a6) !important;
   font-size: 26px;
   font-weight: 800;
@@ -20172,20 +20172,20 @@ label:has(> input.bat-tat), label:has(input.bat-tat) { display: inline-flex; ali
 }
 
 /* Mobile Free layout điều chỉnh */
-.m-free-hang-loc {
+.m-standard-hang-loc {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
   width: 100%;
 }
-.m-free-bieu-do-ds {
+.m-standard-bieu-do-ds {
   display: flex;
   flex-direction: column;
   gap: 12px;
   margin-top: 12px;
 }
-.m-tc-thanh-dieu-huong--free-t274 {
+.m-tc-thanh-dieu-huong--standard-t274 {
   display: flex !important;
   flex-direction: column !important;
   gap: 8px !important;
@@ -20194,7 +20194,7 @@ label:has(> input.bat-tat), label:has(input.bat-tat) { display: inline-flex; ali
   width: 100% !important;
   box-sizing: border-box !important;
 }
-.m-free-hang-duoi {
+.m-standard-hang-duoi {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -20202,7 +20202,7 @@ label:has(> input.bat-tat), label:has(input.bat-tat) { display: inline-flex; ali
   width: 100%;
   box-sizing: border-box;
 }
-.m-free-hang-duoi .m-tc-chip-cn {
+.m-standard-hang-duoi .m-tc-chip-cn {
   flex: 1;
   min-width: 0;
   max-width: 180px;
@@ -20978,8 +20978,8 @@ input.bat-tat:disabled { opacity: .5; cursor: not-allowed; }
 .bbt-e-luoi-2 .bbt-vq-ten > span, .bbt-e-luoi-2 .bbt-vq-ten > b { font-size: 14px; }
 
 /* ── Thanh nút Lập phiếu sát đáy ở màn cấp hai điện thoại, không có thanh dưới (T292) ── */
-.m-cap-2 .m-free-day-nut { bottom: 0; padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px)); }
-.m-cap-2 .m-than:has(.m-free-day-nut) { padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px)); }
+.m-cap-2 .m-standard-day-nut { bottom: 0; padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px)); }
+.m-cap-2 .m-than:has(.m-standard-day-nut) { padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px)); }
 
 /* ── Điện thoại: phiếu nhập liệu một màn (T282) ── */
 .m-lp-mot-man {
@@ -21595,7 +21595,7 @@ input.bat-tat:disabled { opacity: .5; cursor: not-allowed; }
 .bbt-e-luoi-2 .bbt-gon .bbt-vq-ct button { padding: 2px 8px; }
 .bbt-e-luoi-2 .bbt-gon .bbt-vq-ten { gap: 0; }
 /* Tiêu đề ba khối Quản lý lãi lỗ, Quỹ tiền, Quản lý kho in hoa, không đánh số; web và điện thoại */
-.bbt-e-ten, .m-free-the .m-tc-the-tieu { text-transform: uppercase; letter-spacing: .03em; }
+.bbt-e-ten, .m-standard-the .m-tc-the-tieu { text-transform: uppercase; letter-spacing: .03em; }
 
 /* ── Trang chủ Free: Quản lý kho chia 3 khối Mua hàng, Công nợ phải trả NCC, Hao hụt kiểm kê (T304) ── */
 .bbt-kho-luoi { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
@@ -23014,7 +23014,7 @@ button[class*="btn-"] .ic .l2 {
 .m-tcf-link:active {
   opacity: 0.75;
 }
-.m-free-the .m-tc-the-head {
+.m-standard-the .m-tc-the-head {
   flex-wrap: wrap;
   row-gap: 4px;
 }
@@ -24731,7 +24731,7 @@ button[class*="btn-"] .ic .l2 {
 }
 .m-tck-link-duoi { align-self: start; justify-self: start; margin-top: 4px; }
 /* Khối Kết quả kinh doanh: nút Xem BC gọn, cùng hàng tên khối (T360) */
-.m-free-the .m-tc-the-head.m-tcf-head-1hang { flex-wrap: nowrap; }
+.m-standard-the .m-tc-the-head.m-tcf-head-1hang { flex-wrap: nowrap; }
 
 /* ── Điện thoại: nút nổi hạ xuống khi thanh tab ẩn (T362) ── */
 .m-nut-them-fab {
@@ -30384,7 +30384,7 @@ a.tx-item:hover {
 }
 
 /* ── Quỹ tiền trang chủ Free: số tồn quỹ cùng hàng nhãn (T435) ── */
-.m-free-ton-quy-hang {
+.m-standard-ton-quy-hang {
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
@@ -30393,7 +30393,7 @@ a.tx-item:hover {
   margin-bottom: 2px !important;
 }
 
-.m-free-ton-quy-hang .m-free-hoi {
+.m-standard-ton-quy-hang .m-standard-hoi {
   margin-top: 0 !important;
   flex: 1 1 auto !important;
   min-width: 0 !important;
@@ -30402,7 +30402,7 @@ a.tx-item:hover {
   line-height: 1.3 !important;
 }
 
-.m-free-ton-quy-hang button.m-free-ton-quy-lon {
+.m-standard-ton-quy-hang button.m-standard-ton-quy-lon {
   margin-top: 0 !important;
   flex: none !important;
   white-space: nowrap !important;
@@ -31878,17 +31878,17 @@ a.tx-item:hover {
 .cpt-phieu .tbl td.num, .cpt-phieu .tbl th.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
 .cpt-phieu .tbl tfoot td { padding: 9px 12px; font-weight: 700; color: var(--ink); border-top: 1px solid var(--line); }
 .cpt-trong { padding: 16px 4px; }
-.m-free-cpt-nhom { display: flex; flex-direction: column; }
-.m-free-cpt-nhom > .m-free-cpt-dong { width: 100%; font: inherit; text-align: left; }
-.m-free-cpt-nhom.mo > .m-free-cpt-dong { border-color: var(--blue); border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
-.m-free-cpt-phieu { border: 1px solid var(--blue); border-top: 0; border-radius: 0 0 12px 12px; background: var(--white); padding: 2px 14px; }
-.m-free-cpt-phieu-dong { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line-2); }
-.m-free-cpt-phieu-dong:last-child { border-bottom: 0; }
-.m-free-cpt-phieu-trai { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; font-size: 12.5px; color: var(--muted); }
-.m-free-cpt-phieu-trai b { font-size: 13px; color: var(--blue-d); }
-.m-free-cpt-phieu-tien { font-size: 13.5px; color: var(--ink); white-space: nowrap; font-variant-numeric: tabular-nums; }
-.m-free-cpt-phieu-dong.tong { align-items: center; font-size: 13px; color: var(--ink); }
-.m-free-cpt-phieu-dong.tong span { flex: 1; font-weight: 600; }
+.m-standard-cpt-nhom { display: flex; flex-direction: column; }
+.m-standard-cpt-nhom > .m-standard-cpt-dong { width: 100%; font: inherit; text-align: left; }
+.m-standard-cpt-nhom.mo > .m-standard-cpt-dong { border-color: var(--blue); border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+.m-standard-cpt-phieu { border: 1px solid var(--blue); border-top: 0; border-radius: 0 0 12px 12px; background: var(--white); padding: 2px 14px; }
+.m-standard-cpt-phieu-dong { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line-2); }
+.m-standard-cpt-phieu-dong:last-child { border-bottom: 0; }
+.m-standard-cpt-phieu-trai { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; font-size: 12.5px; color: var(--muted); }
+.m-standard-cpt-phieu-trai b { font-size: 13px; color: var(--blue-d); }
+.m-standard-cpt-phieu-tien { font-size: 13.5px; color: var(--ink); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.m-standard-cpt-phieu-dong.tong { align-items: center; font-size: 13px; color: var(--ink); }
+.m-standard-cpt-phieu-dong.tong span { flex: 1; font-weight: 600; }
 
 /* ── Chi phí NVL: tên cửa hàng màu liên kết, cỡ chữ theo bảng (T491) ── */
 .nvl-ten-cn { font-size: inherit; margin-right: 8px; }
@@ -34162,7 +34162,7 @@ a.tx-item:hover {
   justify-content: center;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
 }
-.m-tc-figma-badge-free {
+.m-tc-figma-badge-standard {
   position: absolute;
   top: -7px;
   left: -4px;
@@ -40685,7 +40685,7 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
 .m-nvl-cach-nut { flex: none; white-space: nowrap; }
 .m-nvl-ghi { margin: 0 4px; padding: 8px 10px; border-radius: 8px; background: var(--soft); color: var(--muted); font-size: 12.5px; }
 .m-nvl-ghi.canh-bao { background: var(--amber-t); color: var(--ink); }
-.m-free-cpt-dong.m-nvl-tay { align-items: center; }
+.m-standard-cpt-dong.m-nvl-tay { align-items: center; }
 .m-nvl-gia-o { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; width: 120px; flex: none; }
 .m-nvl-gia-o .inp { height: 34px; }
 .m-nvl-gia-o small { color: var(--muted); font-size: 11px; }
@@ -41184,7 +41184,7 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
 }
 
 /* ── Giảm màu Lịch sử thu chi, Sổ quỹ, Sổ ngân hàng (T638) ── */
-.m-free-lsq .mobile-stat-slider .m-stat-pill,
+.m-standard-lsq .mobile-stat-slider .m-stat-pill,
 .m-so-bc-figma .mobile-stat-slider .m-stat-pill {
   background: #ffffff !important;
   border: 1px solid var(--line, #e5e7eb) !important;
@@ -41198,38 +41198,38 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
 .m-t638-chi {
   color: var(--red) !important;
 }
-.m-free-lsq .mobile-tx-row .meta .t {
+.m-standard-lsq .mobile-tx-row .meta .t {
   color: var(--ink, #1f2225) !important;
 }
-.m-free-lsq .mobile-tx-row .meta .d {
+.m-standard-lsq .mobile-tx-row .meta .d {
   color: var(--muted, #6b7280) !important;
 }
-.m-free-lsq .mobile-tx-row .amt.in,
-.m-free-lsq .mobile-tx-row .m-t638-thu {
+.m-standard-lsq .mobile-tx-row .amt.in,
+.m-standard-lsq .mobile-tx-row .m-t638-thu {
   color: var(--green) !important;
 }
-.m-free-lsq .mobile-tx-row .amt.out,
-.m-free-lsq .mobile-tx-row .m-t638-chi {
+.m-standard-lsq .mobile-tx-row .amt.out,
+.m-standard-lsq .mobile-tx-row .m-t638-chi {
   color: var(--red) !important;
 }
-.m-free-lsq .mobile-tx-row .bal {
+.m-standard-lsq .mobile-tx-row .bal {
   color: var(--muted, #6b7280) !important;
 }
-.m-free-lsq .m-lsq-du-dau-hang .m-lsq-du-dau-nhan {
+.m-standard-lsq .m-lsq-du-dau-hang .m-lsq-du-dau-nhan {
   color: var(--muted, #6b7280) !important;
 }
-.m-free-lsq .m-lsq-du-dau-hang .m-lsq-du-dau-so,
-.m-free-lsq .m-lsq-du-dau-hang .m-lsq-du-cuoi {
+.m-standard-lsq .m-lsq-du-dau-hang .m-lsq-du-dau-so,
+.m-standard-lsq .m-lsq-du-dau-hang .m-lsq-du-cuoi {
   color: var(--ink, #1f2225) !important;
 }
-.m-free-lsq-chuyen-quy {
+.m-standard-lsq-chuyen-quy {
   color: var(--ink, #1f2225) !important;
 }
 .m-so-bc-figma .m-t500-sq-row-so-ct {
   color: var(--muted, #6b7280) !important;
   font-weight: 500 !important;
 }
-.m-free-lsq .mobile-tx-row .amt.m-t638-den {
+.m-standard-lsq .mobile-tx-row .amt.m-t638-den {
   color: var(--ink) !important;
 }
 

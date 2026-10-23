@@ -1,7 +1,7 @@
 // Phiên làm việc: người dùng, vai trò, đơn vị kế toán, gói. Lưu ở localStorage để F5 không mất.
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import type { Goi } from './plan'
-import { CHE_DO, CHE_DO_DN_FREE, CHE_DO_HOP_LE, CHE_DO_MAC_DINH, chuanHoaCheDo, type CheDo } from './che-do'
+import { CHE_DO, CHE_DO_DN_STANDARD, CHE_DO_HOP_LE, CHE_DO_MAC_DINH, chuanHoaCheDo, type CheDo } from './che-do'
 import { CUA_HANG, DON_VI, HOM_NAY, type DonVi, type Role } from '../data/mock'
 import { dmy } from '../ui/format'
 import type { LichCachNvl } from '../modules/home/chi-phi-nvl'
@@ -77,7 +77,7 @@ function doc(): Session {
     const goiParam = params?.get('goi')
     const raw = localStorage.getItem(KEY)
     const parsed = raw ? JSON.parse(raw) : {}
-    const res: Session = { ...MAC_DINH, ...parsed, goiBan: raw ? parsed.goiBan : 2 }   // phiên cũ chưa có goiBan thì chuanHoaFree đổi mã (T642)
+    const res: Session = { ...MAC_DINH, ...parsed, goiBan: raw ? parsed.goiBan : 2 }   // phiên cũ chưa có goiBan thì chuanHoaStandard đổi mã (T642)
     if (parsed.goi) {
       res.goi = parsed.goi
     }
@@ -85,7 +85,7 @@ function doc(): Session {
       res.goi = chuanHoaGoi(goiParam)
       res.goiBan = 2
     }
-    const n = chuanHoaFree(res)
+    const n = chuanHoaStandard(res)
     n.cheDo = chuanHoaCheDo(n.goi, params?.get('cheDo') ?? parsed.cheDo)
     const ppGtgtParam = params?.get('ppGtgt')
     if (ppGtgtParam === 'tyLe' || ppGtgtParam === 'khauTru') {
@@ -104,7 +104,7 @@ function doc(): Session {
 }
 
 /** Gói Standard mới (Free cũ) theo loại hình (T632): hộ kinh doanh TT152; doanh nghiệp TT58, thuế GTGT, TNDN theo tỷ lệ % doanh thu (trường hợp 1, sổ S1-DNSN) */
-function chuanHoaFree(n: Session): Session {
+function chuanHoaStandard(n: Session): Session {
   let goi = n.goi
   let goiBan = n.goiBan
   if (goiBan !== 2) {
@@ -119,7 +119,7 @@ function chuanHoaFree(n: Session): Session {
   const s: Session = { ...n, goi, goiBan }
   if (s.goi !== 'S') return s
   if (loaiHinhDv(s, donViHienTai(s)) === 'hkd') return s.cheDo === 'TT152' ? s : { ...s, cheDo: 'TT152' }
-  return { ...s, cheDo: CHE_DO_DN_FREE, ppGtgt: 'tyLe', ppTndn: 'tyLe' }
+  return { ...s, cheDo: CHE_DO_DN_STANDARD, ppGtgt: 'tyLe', ppTndn: 'tyLe' }
 }
 
 const Ctx = createContext<{ s: Session; set: (p: Partial<Session>) => void; toast: (m: string) => void } | null>(null)
@@ -132,7 +132,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   // Đổi gói mà không chỉ định chế độ: hộ kinh doanh lấy TT152 nếu gói cho phép, còn lại lấy mặc định của gói (T179)
   const cheDoKhiDoiGoi = (n: Session, g: Goi): CheDo =>
     loaiHinhDv(n, donViHienTai(n)) === 'hkd' && CHE_DO_HOP_LE[g].includes('TT152') ? 'TT152' : CHE_DO_MAC_DINH[g]
-  const set = (p: Partial<Session>) => setS(x => { const n = { ...x, ...p, goiBan: 2 }; if (p.goi && !p.cheDo) n.cheDo = cheDoKhiDoiGoi(n, p.goi); n.cheDo = chuanHoaCheDo(n.goi, n.cheDo); return chuanHoaFree(n) })
+  const set = (p: Partial<Session>) => setS(x => { const n = { ...x, ...p, goiBan: 2 }; if (p.goi && !p.cheDo) n.cheDo = cheDoKhiDoiGoi(n, p.goi); n.cheDo = chuanHoaCheDo(n.goi, n.cheDo); return chuanHoaStandard(n) })
   return (
     <Ctx.Provider value={{ s, set, toast: setMsg }}>
       {children}

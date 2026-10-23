@@ -7,7 +7,7 @@ import type {
   ItemTop5,
   LaiLoCnItem,
   TheTop5Data,
-} from './soLieuBieuDoFree'
+} from './soLieuBieuDoStandard'
 
 /** Màu sắc chủ đạo theo loại thẻ */
 const MAU_THE = {

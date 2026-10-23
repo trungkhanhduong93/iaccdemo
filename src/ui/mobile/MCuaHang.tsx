@@ -22,11 +22,11 @@ export const MCuaHang: FC<ScreenProps> = () => {
 
   const them = s.cnThem?.[s.donVi] ?? []
   const coSan = DON_VI.some(d => d.id === s.donVi)
-  const free = s.goi === 'S' || s.goi === 'PL'
+  const standard = s.goi === 'S' || s.goi === 'PL'
 
   const khoCua = (id: string, ten: string) =>
     CUA_HANG.find(c => c.id === id)?.kho ?? [`Kho ${ten.replace(/^Phố Mây /, '')}`]
-  const kho = (id: string, ten: string) => (free ? khoCua(id, ten)[0] : khoCua(id, ten).join(', '))
+  const kho = (id: string, ten: string) => (standard ? khoCua(id, ten)[0] : khoCua(id, ten).join(', '))
 
   const rows: Row[] = useMemo(() => [
     ...(coSan
@@ -51,7 +51,7 @@ export const MCuaHang: FC<ScreenProps> = () => {
       nguon: 'FABi',
       moi: !c.banDau,
     })),
-  ], [coSan, them, free]) // eslint-disable-line react-hooks/exhaustive-deps
+  ], [coSan, them, standard]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const lenSo = (ds: CnThem[], khaiSoDu: boolean, caiDat: Partial<Session>) => {
     set({ cnThem: { ...s.cnThem, [s.donVi]: [...them, ...ds] }, ...caiDat })   // cấu hình đồng bộ thu chi, cách tính NVL chọn lúc thêm (T264)
@@ -162,7 +162,7 @@ export const MCuaHang: FC<ScreenProps> = () => {
                   <span className="m-xp-nhan">Kho:</span>
                   <span className="m-xp-tri dam">
                     {xem.kho}
-                    {free && <span className="chip" style={{ marginLeft: 8 }}>Mặc định</span>}
+                    {standard && <span className="chip" style={{ marginLeft: 8 }}>Mặc định</span>}
                   </span>
                 </div>
                 <div className="m-xp-dong-tt">

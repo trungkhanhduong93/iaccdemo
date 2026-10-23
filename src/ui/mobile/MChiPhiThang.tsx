@@ -24,57 +24,57 @@ export function MChiPhiThang(_: ScreenProps) {
   const nav = useNavigate()
 
   return (
-    <div className="m-free-cpt">
-      <div className="m-free-cpt-tong-the">
-        <div className="m-free-cpt-tong-nhan">
+    <div className="m-standard-cpt">
+      <div className="m-standard-cpt-tong-the">
+        <div className="m-standard-cpt-tong-nhan">
           Tổng chi phí trong tháng {thang}/2026{cn ? ` · ${cn.ten}` : ''}
-          <small className="m-free-cpt-tong-phu">Cộng các phiếu chi tiền mặt, ngân hàng có lý do nghiệp vụ là chi phí</small>
+          <small className="m-standard-cpt-tong-phu">Cộng các phiếu chi tiền mặt, ngân hàng có lý do nghiệp vụ là chi phí</small>
         </div>
-        <div className="m-free-cpt-tong-so">{moneyD(cpThang)}</div>
+        <div className="m-standard-cpt-tong-so">{moneyD(cpThang)}</div>
       </div>
 
-      <div className="m-free-cpt-ds">
+      <div className="m-standard-cpt-ds">
         {ds.map(x => {
           const dangMo = mo === x.ly
           return (
-            <div key={x.ly} className={`m-free-cpt-nhom${dangMo ? ' mo' : ''}`}>
-              <button type="button" className="m-free-cpt-dong" aria-expanded={dangMo} onClick={() => setMo(dangMo ? null : x.ly)}>
-                <div className="m-free-cpt-ic">
+            <div key={x.ly} className={`m-standard-cpt-nhom${dangMo ? ' mo' : ''}`}>
+              <button type="button" className="m-standard-cpt-dong" aria-expanded={dangMo} onClick={() => setMo(dangMo ? null : x.ly)}>
+                <div className="m-standard-cpt-ic">
                   <Icon n={x.icon} className="ic sm" />
                 </div>
-                <div className="m-free-cpt-info">
-                  <div className="m-free-cpt-ten">{x.ly}</div>
-                  <div className="m-free-cpt-phu">{x.phu}</div>
+                <div className="m-standard-cpt-info">
+                  <div className="m-standard-cpt-ten">{x.ly}</div>
+                  <div className="m-standard-cpt-phu">{x.phu}</div>
                 </div>
-                <div className="m-free-cpt-so">
-                  <div className="m-free-cpt-tien">{moneyD(x.v)}</div>
-                  <div className="m-free-cpt-phantram">{pct(cpThang ? x.v / cpThang : 0)} chi phí</div>
+                <div className="m-standard-cpt-so">
+                  <div className="m-standard-cpt-tien">{moneyD(x.v)}</div>
+                  <div className="m-standard-cpt-phantram">{pct(cpThang ? x.v / cpThang : 0)} chi phí</div>
                 </div>
-                <Icon n={dangMo ? 'chevd' : 'chevr'} className="ic sm m-free-cpt-mui" />
+                <Icon n={dangMo ? 'chevd' : 'chevr'} className="ic sm m-standard-cpt-mui" />
               </button>
               {dangMo && (
-                <div className="m-free-cpt-phieu">
+                <div className="m-standard-cpt-phieu">
                   {x.phieu.map(p => (
-                    <div key={p.id} className="m-free-cpt-phieu-dong">
-                      <div className="m-free-cpt-phieu-trai">
+                    <div key={p.id} className="m-standard-cpt-phieu-dong">
+                      <div className="m-standard-cpt-phieu-trai">
                         <b>{p.so}</b>
                         <span>{p.ngay} · {p.nhom === 'nh' ? 'Ngân hàng' : 'Tiền mặt'}{cn ? '' : ` · ${p.cn}`}</span>
                         <span>{p.dienGiai}</span>
                       </div>
-                      <b className="m-free-cpt-phieu-tien">{moneyD(p.tien)}</b>
+                      <b className="m-standard-cpt-phieu-tien">{moneyD(p.tien)}</b>
                     </div>
                   ))}
-                  <div className="m-free-cpt-phieu-dong tong"><span>Cộng {x.so} phiếu</span><b className="m-free-cpt-phieu-tien">{moneyD(x.v)}</b></div>
+                  <div className="m-standard-cpt-phieu-dong tong"><span>Cộng {x.so} phiếu</span><b className="m-standard-cpt-phieu-tien">{moneyD(x.v)}</b></div>
                 </div>
               )}
             </div>
           )
         })}
-        {!ds.length && <p className="m-free-cpt-phu">Tháng {thang}/2026 chưa có phiếu chi nào có lý do là chi phí.</p>}
+        {!ds.length && <p className="m-standard-cpt-phu">Tháng {thang}/2026 chưa có phiếu chi nào có lý do là chi phí.</p>}
       </div>
 
-      <div className="m-free-day-nut">
-        <button type="button" className="m-free-nut-chinh" onClick={() => setChonLoai(true)}>
+      <div className="m-standard-day-nut">
+        <button type="button" className="m-standard-nut-chinh" onClick={() => setChonLoai(true)}>
           <Icon n="plus" className="ic sm" />
           <span>Lập phiếu chi</span>
         </button>

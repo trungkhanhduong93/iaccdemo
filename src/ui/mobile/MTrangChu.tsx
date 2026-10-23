@@ -28,7 +28,7 @@ import {
 import { MTimKiem } from './MTimKiem'
 import { MChon } from './MChon'
 import { useChonLoaiTien } from './MChonLoaiTien'
-import { MTrangChuFree } from './MTrangChuFree'
+import { MTrangChuStandard } from './MTrangChuStandard'
 
 function SoSanhDong({ tang, label }: { tang: number | null; label?: string }) {
   if (tang === null) {
@@ -47,7 +47,7 @@ function SoSanhDong({ tang, label }: { tang: number | null; label?: string }) {
 export function MTrangChu(_props?: Partial<ScreenProps>) {
   const { s } = useSession()
   // Tách component để hook của từng nhánh không đổi số lượng khi đổi gói
-  return s.goi === 'S' ? <MTrangChuFree {..._props} /> : <MTrangChuCoPhi />
+  return s.goi === 'S' ? <MTrangChuStandard {..._props} /> : <MTrangChuCoPhi />
 }
 
 function MTrangChuCoPhi() {

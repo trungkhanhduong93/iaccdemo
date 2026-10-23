@@ -238,7 +238,7 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
   const chipHienTai = chips.find(c => c.k === chipTT)
   const nhanTrangThai = chipHienTai ? `Trạng thái: ${chipHienTai.ten}` : 'Trạng thái: Tất cả'
 
-  const tabsFree = [
+  const tabsStandard = [
     { k: '', ten: 'Tất cả' },
     { k: 'tien-mat', ten: 'Tiền mặt' },
     { k: 'ngan-hang', ten: 'Ngân hàng' },
@@ -331,7 +331,7 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
 
         {/* ── TABS CUỘN NGANG THEO FIGMA MB03 ── */}
         <div className="m-tc-tabs" role="tablist">
-          {tabsFree.map(t => (
+          {tabsStandard.map(t => (
             <button
               key={t.k}
               type="button"

@@ -1236,7 +1236,7 @@ def kiem_tra_dot_9():
             if pg.locator('a[href*="ban-hang/3-1-7"], .m-nv-dong:has-text("3.1.7")').count() > 0:
                 loi.append('Tab Nghiệp vụ: màn 3.1.7 (chỉ PL/PR) vẫn xuất hiện dù quy định chỉ hiện F/S')
             else:
-                print('  - Bước 3: Tab Nghiệp vụ ẩn đúng các màn ngoài gói Free/Standard')
+                print('  - Bước 3: Tab Nghiệp vụ ẩn đúng các màn ngoài gói Standard/Plus')
         else:
             loi.append('Tab Nghiệp vụ: không tìm thấy phân hệ Bán hàng')
 
@@ -1917,17 +1917,17 @@ def kiem_tra_dot_12_a():
 
         # ── 5. Số dư ban đầu Thu chi (tien/so-du-ban-dau, gói F) ──
         pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('S'))})")
-        pg.goto(URL + '?goi=S&p=sodufree#/app/tien/so-du-ban-dau')
+        pg.goto(URL + '?goi=S&p=sodustandard#/app/tien/so-du-ban-dau')
         pg.wait_for_selector('.m-app')
         pg.wait_for_timeout(350)
         if pg.locator('.m-chi-mt').count() > 0:
-            loi.append('Số dư ban đầu gói Free: vẫn ra MChiMayTinh')
-        # T245: gói Free khai số dư ở Danh mục Quỹ tiền (1-12), đường dẫn cũ chuyển sang danh mục
+            loi.append('Số dư ban đầu gói Standard: vẫn ra MChiMayTinh')
+        # T245: gói Standard khai số dư ở Danh mục Quỹ tiền (1-12), đường dẫn cũ chuyển sang danh mục
         the_f = pg.locator('.m-sdb-the, .m-the-dm')
         if the_f.count() == 0:
-            loi.append('Số dư ban đầu gói Free: không thấy thẻ số dư .m-sdb-the hoặc .m-the-dm')
-        kiem_man('Số dư ban đầu gói Free')
-        pg.screenshot(path=str(SHOTS / 'm-12-05-so-du-free.png'))
+            loi.append('Số dư ban đầu gói Standard: không thấy thẻ số dư .m-sdb-the hoặc .m-the-dm')
+        kiem_man('Số dư ban đầu gói Standard')
+        pg.screenshot(path=str(SHOTS / 'm-12-05-so-du-standard.png'))
 
         b.close()
     return loi
@@ -3522,7 +3522,7 @@ def kiem_tra_dot_18_a():
         else:
             loi.append('18A: không tìm thấy nút chip chọn cửa hàng .m-tc-chip-cn')
 
-        # ── 3. Gói Free: không có thẻ "Thác nước lợi nhuận" ──
+        # ── 3. Gói Standard: không có thẻ "Thác nước lợi nhuận" ──
         pg.goto(URL + '#/dang-nhap')
         pg.wait_for_selector('.auth-box')
         pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('S'))})")
@@ -3532,10 +3532,10 @@ def kiem_tra_dot_18_a():
 
         the_thac_f = pg.locator(".m-tc-the-ivt:has(.m-tc-the-tieu:text-is('Thác nước lợi nhuận'))")
         if the_thac_f.count() > 0:
-            loi.append('18A: gói Free vẫn có thẻ "Thác nước lợi nhuận"')
+            loi.append('18A: gói Standard vẫn có thẻ "Thác nước lợi nhuận"')
 
         if con:
-            loi.append(f'18A: lỗi console gói Free {con[:2]}')
+            loi.append(f'18A: lỗi console gói Standard {con[:2]}')
             con.clear()
 
         # ── 4. Ở 1440x900 gói PR: màn #/app/trang-chu/tong-quan bản web có 6 thẻ biểu đồ ──
@@ -3626,11 +3626,11 @@ def kiem_tra_dot_18_b():
         pg.goto(f'{URL}?goi=S#/app/nghiep-vu')
         pg.wait_for_selector('.m-nv-luoi', timeout=8000)
         pg.wait_for_timeout(350)
-        kiem_man('Phân hệ Tiền gói Free')
+        kiem_man('Phân hệ Tiền gói Standard')
 
         o_tien_f = pg.locator('.m-nv-o[href*="tien"]')
         if o_tien_f.count() == 0:
-            loi.append('18B: gói Free không tìm thấy ô phân hệ Tiền')
+            loi.append('18B: gói Standard không tìm thấy ô phân hệ Tiền')
         else:
             o_tien_f.first.click()
             pg.wait_for_selector('.m-ds-khung, .m-the-ct', timeout=8000)
@@ -3638,7 +3638,7 @@ def kiem_tra_dot_18_b():
             cur_url_f = pg.evaluate('location.hash')
             if 'tien/2-1-1' not in cur_url_f and '/app/tien' not in cur_url_f:
                 loi.append(f'18B: gói F bấm ô Tiền không mở danh sách chứng từ (URL: {cur_url_f})')
-            pg.screenshot(path=str(SHOTS / 'm-18-qt-free.png'))
+            pg.screenshot(path=str(SHOTS / 'm-18-qt-standard.png'))
 
         # ── 4. Phân hệ Bán hàng, Kho gói PR: mở quy trình cũ tự chuyển hướng sang danh sách chứng từ ──
         for ph, path_ds in [('ban-hang', 'ban-hang/3-1-2'), ('kho', 'kho/5-1-1')]:
@@ -3665,9 +3665,9 @@ def kiem_tra_dot_18_b():
 
 
 def kiem_tra_dot_19_b():
-    """Kiểm tra T240: Trang chủ điện thoại gói Free giống web; hai màn mới."""
+    """Kiểm tra T240: Trang chủ điện thoại gói Standard giống web; hai màn mới."""
     loi = []
-    print('Kiểm tra đợt 19B (Anti B): Trang chủ Free & 2 màn mới trên điện thoại (T240):')
+    print('Kiểm tra đợt 19B (Anti B): Trang chủ Standard & 2 màn mới trên điện thoại (T240):')
     SHOTS.mkdir(parents=True, exist_ok=True)
 
     with sync_playwright() as p:
@@ -3697,13 +3697,13 @@ def kiem_tra_dot_19_b():
         loc_lai_lo_web = pg_web.locator('.bbt-cot:has-text("Kết quả kinh doanh") .bbt-tra')
         lai_lo_web = loc_lai_lo_web.inner_text().strip() if loc_lai_lo_web.count() > 0 else ''
         if not lai_lo_web:
-            loi.append('19B: không tìm thấy số lãi lỗ trên bản web 1440x900 gói Free')
+            loi.append('19B: không tìm thấy số lãi lỗ trên bản web 1440x900 gói Standard')
 
         # Lấy thu chi ở bài toán 2 trên web
         loc_tc_web = pg_web.locator('.bbt-cot:has-text("Quỹ tiền") .bbt-phu')
         tc_web = loc_tc_web.inner_text().strip() if loc_tc_web.count() > 0 else ''
         if not tc_web:
-            loi.append('19B: không tìm thấy thu chi trên bản web 1440x900 gói Free')
+            loi.append('19B: không tìm thấy thu chi trên bản web 1440x900 gói Standard')
 
         co_bd_tc_web = pg_web.locator('.bbt-cot:has-text("Quỹ tiền") :has-text("Dòng tiền 13 tháng")').count() > 0   # T303
 
@@ -3738,7 +3738,7 @@ def kiem_tra_dot_19_b():
 
         pg_web.close()
 
-        # ── 2. Kiểm tra trên điện thoại 390x844 gói Free ──
+        # ── 2. Kiểm tra trên điện thoại 390x844 gói Standard ──
         pg = b.new_page(
             viewport={'width': 390, 'height': 844},
             is_mobile=True,
@@ -3760,17 +3760,17 @@ def kiem_tra_dot_19_b():
         pg.goto(f'{URL}?goi=S&p=1902#/app')
         pg.wait_for_selector('.m-trang-chu', timeout=8000)
         pg.wait_for_timeout(300)
-        kiem_man('Trang chủ Free điện thoại')
+        kiem_man('Trang chủ Standard điện thoại')
 
         # Tiêu đề ba bài toán giống bản web
         for bai in ['Quản lý lãi lỗ', 'Quỹ tiền', 'Quản lý kho']:
             if pg.locator(f':has-text("{bai}")').count() == 0:
-                loi.append(f'19B: trang chủ Free điện thoại thiếu tiêu đề bài toán: {bai}')
+                loi.append(f'19B: trang chủ Standard điện thoại thiếu tiêu đề bài toán: {bai}')
 
         # Số lãi lỗ tháng trên điện thoại bằng số trên web
-        loc_lai_lo_dt = pg.locator('.m-free-the:has-text("Quản lý lãi lỗ") .m-free-tra')
+        loc_lai_lo_dt = pg.locator('.m-standard-the:has-text("Quản lý lãi lỗ") .m-standard-tra')
         if loc_lai_lo_dt.count() == 0:
-            loi.append('19B: không tìm thấy số lãi lỗ trên trang chủ Free điện thoại')
+            loi.append('19B: không tìm thấy số lãi lỗ trên trang chủ Standard điện thoại')
         else:
             txt_lai_lo_dt = loc_lai_lo_dt.inner_text().strip()
             if lai_lo_web and lai_lo_web not in txt_lai_lo_dt:
@@ -3779,9 +3779,9 @@ def kiem_tra_dot_19_b():
                 )
 
         # Số tổng thu, tổng chi trên điện thoại bằng số trên web
-        loc_tc_dt = pg.locator('.m-free-the:has-text("Quỹ tiền") .m-free-phu')
+        loc_tc_dt = pg.locator('.m-standard-the:has-text("Quỹ tiền") .m-standard-phu')
         if loc_tc_dt.count() == 0:
-            loi.append('19B: không tìm thấy thu chi trên trang chủ Free điện thoại')
+            loi.append('19B: không tìm thấy thu chi trên trang chủ Standard điện thoại')
         else:
             txt_tc_dt = loc_tc_dt.inner_text().strip()
             if tc_web and tc_web != txt_tc_dt:
@@ -3791,17 +3791,17 @@ def kiem_tra_dot_19_b():
 
         # Gói F có nút Biểu đồ thu chi ở trang chủ điện thoại (nếu web có) (T273)
         if co_bd_tc_web:
-            loc_bd_tc = pg.locator('.m-free-the:has-text("Quỹ tiền") :has-text("Xem dòng tiền 13 tháng")')
+            loc_bd_tc = pg.locator('.m-standard-the:has-text("Quỹ tiền") :has-text("Xem dòng tiền 13 tháng")')
             if loc_bd_tc.count() == 0:
-                loi.append('19B: trang chủ Free điện thoại thiếu nút Xem dòng tiền 13 tháng ở Quỹ tiền')
+                loi.append('19B: trang chủ Standard điện thoại thiếu nút Xem dòng tiền 13 tháng ở Quỹ tiền')
 
-        # Chụp ảnh trang chủ Free
-        pg.screenshot(path=str(SHOTS / 'm-19-free-trang-chu.png'))
+        # Chụp ảnh trang chủ Standard
+        pg.screenshot(path=str(SHOTS / 'm-19-standard-trang-chu.png'))
 
         # ── 3. Bấm lối Chi phí trong tháng ──
         link_cpt = pg.locator('a[href*="trang-chu/chi-phi-thang"]').first
         if link_cpt.count() == 0:
-            loi.append('19B: không tìm thấy lối bấm Chi phí trong tháng trên trang chủ Free')
+            loi.append('19B: không tìm thấy lối bấm Chi phí trong tháng trên trang chủ Standard')
         else:
             link_cpt.click()
             pg.wait_for_timeout(350)
@@ -3810,7 +3810,7 @@ def kiem_tra_dot_19_b():
                 loi.append(f'19B: bấm Chi phí trong tháng URL không đúng ({cur_url})')
             if pg.locator('.m-chi-may-tinh').count() > 0:
                 loi.append('19B: màn Chi phí trong tháng bị rơi về MChiMayTinh')
-            if pg.locator('.m-free-cpt-dong').count() == 0:
+            if pg.locator('.m-standard-cpt-dong').count() == 0:
                 loi.append('19B: màn Chi phí trong tháng không có dòng dữ liệu')
             kiem_man('Màn Chi phí trong tháng')
             pg.screenshot(path=str(SHOTS / 'm-19-chi-phi-thang.png'))
@@ -3854,21 +3854,21 @@ def kiem_tra_dot_19_b():
                     loi.append(f'19B: bấm quỹ URL không đổi sang trang-chu/lich-su-quy ({cur_url})')
                 if pg.locator('.m-chi-may-tinh').count() > 0:
                     loi.append('19B: màn Lịch sử thu chi bị rơi về MChiMayTinh')
-                if pg.locator('.m-free-lsq-dong, .m-free-lsq-the, .m-free-lsq-the-hop').count() == 0:
+                if pg.locator('.m-standard-lsq-dong, .m-standard-lsq-the, .m-standard-lsq-the-hop').count() == 0:
                     loi.append('19B: màn Lịch sử thu chi không có dòng hoặc thẻ dữ liệu')
 
                 # Kiểm tra bộ lọc thu chi dạng chip (T246)
-                loc_chip = pg.locator('.m-free-lsq-chip')
+                loc_chip = pg.locator('.m-standard-lsq-chip')
                 if loc_chip.count() < 3:
                     loi.append('19B: màn Lịch sử thu chi thiếu bộ lọc thu chi dạng chip')
                 else:
-                    chip_thu = pg.locator('.m-free-lsq-chip:has-text("Khoản thu")')
+                    chip_thu = pg.locator('.m-standard-lsq-chip:has-text("Khoản thu")')
                     if chip_thu.count() > 0:
                         chip_thu.click()
                         pg.wait_for_timeout(150)
-                        if pg.locator('.m-free-lsq-ic.ra').count() > 0:
+                        if pg.locator('.m-standard-lsq-ic.ra').count() > 0:
                             loi.append('19B: lọc Khoản thu vẫn hiện giao dịch chi')
-                    chip_all = pg.locator('.m-free-lsq-chip:has-text("Tất cả")')
+                    chip_all = pg.locator('.m-standard-lsq-chip:has-text("Tất cả")')
                     if chip_all.count() > 0:
                         chip_all.click()
                         pg.wait_for_timeout(150)
@@ -4335,7 +4335,7 @@ def kiem_tra_dot_22_b():
     print('Kiểm tra đợt 22B (T267): Sơ đồ quy trình điện thoại cho kho, ccdc, thue (390x844):')
     SHOTS.mkdir(parents=True, exist_ok=True)
 
-    # Thuế gói Free chỉ có Danh sách tờ khai, chưa có trên điện thoại: bỏ sơ đồ thì tab Nghiệp vụ ẩn phân hệ này (T281)
+    # Thuế gói Standard chỉ có Danh sách tờ khai, chưa có trên điện thoại: bỏ sơ đồ thì tab Nghiệp vụ ẩn phân hệ này (T281)
     mods = [('kho', 'Kiểm kê'), ('ccdc', 'Chi phí phân bổ')]
 
     with sync_playwright() as p:
@@ -4650,9 +4650,9 @@ def kiem_tra_t238_may_tinh():
 
 
 def kiem_tra_dot_22_a():
-    """Kiểm tra T267 (Anti A): Sơ đồ hội tụ gói Free cho Kiểm kê (kho), Chi phí phân bổ (ccdc), Kê khai thuế (thue)."""
+    """Kiểm tra T267 (Anti A): Sơ đồ hội tụ gói Standard cho Kiểm kê (kho), Chi phí phân bổ (ccdc), Kê khai thuế (thue)."""
     loi = []
-    print('Kiểm tra đợt 22A (T267): Sơ đồ hội tụ gói Free cho kho, ccdc, thue (1440x900):')
+    print('Kiểm tra đợt 22A (T267): Sơ đồ hội tụ gói Standard cho kho, ccdc, thue (1440x900):')
     SHOTS.mkdir(parents=True, exist_ok=True)
 
     cac_man = [
@@ -4750,9 +4750,9 @@ def kiem_tra_dot_22_a():
 
 
 def kiem_tra_t274_web():
-    """Kiểm tra T274: Trang chủ Free (T309 bỏ tab Cần theo dõi ở web), bộ lọc cửa hàng, biểu đồ."""
+    """Kiểm tra T274: Trang chủ Standard (T309 bỏ tab Cần theo dõi ở web), bộ lọc cửa hàng, biểu đồ."""
     loi = []
-    print('Kiểm tra T274 web (1440x900): Trang chủ Free 2 tab, biểu đồ, lọc cửa hàng, modal lãi lỗ:')
+    print('Kiểm tra T274 web (1440x900): Trang chủ Standard 2 tab, biểu đồ, lọc cửa hàng, modal lãi lỗ:')
     with sync_playwright() as p:
         b = p.chromium.launch(channel='chrome')
         pg = b.new_page(viewport={'width': 1440, 'height': 900})
@@ -4760,7 +4760,7 @@ def kiem_tra_t274_web():
         pg.on('console', lambda m: con.append(m.text) if m.type == 'error' else None)
         pg.on('pageerror', lambda e: con.append(str(e)))
 
-        # 1. Đăng nhập gói Free
+        # 1. Đăng nhập gói Standard
         pg.goto(URL + '#/dang-nhap')
         pg.wait_for_selector('.auth-box')
         pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('S'))})")
@@ -4768,9 +4768,9 @@ def kiem_tra_t274_web():
         pg.wait_for_selector('.bbt', timeout=8000)
         pg.wait_for_timeout(300)
 
-        # 2. T309: trang chủ Free bản web bỏ tab Cần theo dõi, chỉ còn Tổng quan
+        # 2. T309: trang chủ Standard bản web bỏ tab Cần theo dõi, chỉ còn Tổng quan
         if pg.locator('.bbt-tab-btn:has-text("Cần theo dõi")').count() > 0:
-            loi.append('T309 web: trang chủ Free vẫn còn tab Cần theo dõi')
+            loi.append('T309 web: trang chủ Standard vẫn còn tab Cần theo dõi')
 
         # 3. T293: tab Tổng quan bỏ 6 thẻ biểu đồ; hàng trên 2 cột lãi lỗ, thu chi; Quản lý kho kéo hết hàng dưới
         if pg.locator('.bbt-the-bd').count() > 0:
@@ -4825,9 +4825,9 @@ def kiem_tra_t274_web():
 
 
 def kiem_tra_t274_dien_thoai():
-    """Kiểm tra T274: Trang chủ điện thoại gói Free 2 tab, 6 biểu đồ, 5 thẻ cảnh báo."""
+    """Kiểm tra T274: Trang chủ điện thoại gói Standard 2 tab, 6 biểu đồ, 5 thẻ cảnh báo."""
     loi = []
-    print('Kiểm tra T274 điện thoại (390x844): Trang chủ Free 2 tab, 6 biểu đồ, 5 cảnh báo, modal:')
+    print('Kiểm tra T274 điện thoại (390x844): Trang chủ Standard 2 tab, 6 biểu đồ, 5 cảnh báo, modal:')
     with sync_playwright() as p:
         b = p.chromium.launch(channel='chrome')
         pg = b.new_page(
@@ -5080,7 +5080,7 @@ def main():
                         nut += hrefs('a.qt-n')
                         if goi == 'S' and pg.locator('.qt-n.lock, .qt-bc a.lock, .qt-foot a.lock').count():
                             loi.append(f'[S] {qt[0]}: còn hiện mục ngoài gói có khoá')
-                # Gói Free ẩn hẳn tính năng ngoài gói (QD22): không còn mục mờ có khoá trên sidebar, tab, sơ đồ
+                # Gói Standard ẩn hẳn tính năng ngoài gói (QD22): không còn mục mờ có khoá trên sidebar, tab, sơ đồ
                 if goi == 'S' and pg.locator('.sb-nav a.lock, .mtabs-in a.lock, .pop-khac a.lock, .qt-n.lock, .qt-bc a.lock, .qt-foot a.lock').count():
                     loi.append(f'[S] {r}: còn hiện mục ngoài gói có khoá')
                 for t in tabs:
@@ -5158,11 +5158,11 @@ def main():
                    ('06-chung-tu-ban-hang', '/app/ban-hang/3-1-1', 'PR'), ('07-phieu-ban-hang', '/app/ban-hang/3-1-1/0', 'PR'),
                    ('08-doi-soat', '/app/tien-ich/11-7', 'PR'), ('09-kqkd', '/app/tong-hop/10-2-3', 'PR'), ('10-cdkt', '/app/tong-hop/10-2-2', 'PR'),
                    ('11-to-khai', '/app/thue/6-2-3', 'PR'), ('12-goi-thue-bao', '/app/he-thong/goi-thue-bao', 'PR'),
-                   ('13-khoa-free', '/app/tscd/7-1-1', 'S'), ('14-to-khai-starter', '/app/thue/6-2-3', 'PL'), ('15-so-quy', '/app/tien/2-2-1', 'PR'),
+                   ('13-khoa-standard', '/app/tscd/7-1-1', 'S'), ('14-to-khai-starter', '/app/thue/6-2-3', 'PL'), ('15-so-quy', '/app/tien/2-2-1', 'PR'),
                    ('16-quy-trinh-tien', '/app/tien/quy-trinh', 'PR'), ('17-quy-trinh-kho', '/app/kho/quy-trinh', 'PR'),
                    ('18-phieu-thu-toan-man', '/app/tien/2-1-1/moi?loai=thu', 'PR'), ('19-bao-cao-tong-hop', '/app/tong-hop/bao-cao', 'PR'),
                    ('20-quy-trinh-gia-thanh', '/app/gia-thanh/quy-trinh', 'PR'), ('21-quy-trinh-tscd-medium', '/app/tscd/quy-trinh', 'PR'),
-                   ('22-quy-trinh-ban-hang-free', '/app/ban-hang/quy-trinh', 'S'), ('23-sidebar-thu-gon', '/app/mua-hang/quy-trinh', 'PR'),
+                   ('22-quy-trinh-ban-hang-standard', '/app/ban-hang/quy-trinh', 'S'), ('23-sidebar-thu-gon', '/app/mua-hang/quy-trinh', 'PR'),
                    ('24-danh-sach-mua-hang', '/app/mua-hang/4-1-1', 'PR'), ('25-form-mua-hang', '/app/mua-hang/4-1-1/moi', 'PR')]
             for ten, path, goi in anh:
                 vao(path, goi, thu_gon=ten == '23-sidebar-thu-gon')

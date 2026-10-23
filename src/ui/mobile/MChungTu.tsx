@@ -302,7 +302,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
   const hangTabs = useMemo(() => {
     // T299: Phân hệ Thu chi gói Free đúng 5 tab: Tất cả, Tiền mặt, Ngân hàng, Chuyển quỹ, Báo cáo theo dõi
     if (mod.key === 'tien' && s.goi === 'S') {
-      const tabsFree = [
+      const tabsStandard = [
         { k: '', ten: 'Tất cả' },
         { k: 'tien-mat', ten: 'Tiền mặt' },
         { k: 'ngan-hang', ten: 'Ngân hàng' },
@@ -310,7 +310,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
       ]
       return (
         <div className="m-tc-tabs" role="tablist">
-          {tabsFree.map(t => (
+          {tabsStandard.map(t => (
             <button
               key={t.k}
               type="button"

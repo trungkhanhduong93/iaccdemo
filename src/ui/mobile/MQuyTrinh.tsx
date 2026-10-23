@@ -29,18 +29,18 @@ export function layDsBuoc(mod: ModuleDef, s: Session): BuocMobile[] {
 
   // Gói Free có sơ đồ hội tụ riêng thì thay sơ đồ chung (T98)
   const goc1: QuyTrinhDef =
-    s.goi === 'S' && goc0.hoiTuFree
-      ? { ...goc0, buoc: [], hoiTu: goc0.hoiTuFree }
+    s.goi === 'S' && goc0.hoiTuStandard
+      ? { ...goc0, buoc: [], hoiTu: goc0.hoiTuStandard }
       : goc0
 
   // Gói Free có khối báo cáo riêng thì thay khối báo cáo, giữ các làn (T262)
   const goc: QuyTrinhDef =
-    s.goi === 'S' && goc0.raFree && goc1.hoiTu
-      ? { ...goc1, hoiTu: { ...goc1.hoiTu, ra: goc0.raFree } }
+    s.goi === 'S' && goc0.raStandard && goc1.hoiTu
+      ? { ...goc1, hoiTu: { ...goc1.hoiTu, ra: goc0.raStandard } }
       : goc1
 
   // Gói Free có sơ đồ luồng theo cột thì thay sơ đồ chung (T123)
-  const luong = s.goi === 'S' && goc.luongFree ? goc.luongFree : null
+  const luong = s.goi === 'S' && goc.luongStandard ? goc.luongStandard : null
 
   const locNutCuaBuoc = (nutList: NutQT[]): NutMobile[] => {
     const ketQua: NutMobile[] = []
@@ -130,7 +130,7 @@ export function layDsBuoc(mod: ModuleDef, s: Session): BuocMobile[] {
       })
     }
   } else if (luong) {
-    // 2. Sơ đồ luồng cột (luongFree)
+    // 2. Sơ đồ luồng cột (luongStandard)
     luong.forEach((c, idx) => {
       const nutLoc = locNutCuaBuoc(c.nut)
       if (nutLoc.length > 0) {

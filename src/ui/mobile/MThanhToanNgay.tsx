@@ -79,7 +79,7 @@ export const MThanhToanNgay: FC<MThanhToanNgayProps> = ({
   onLapPhieuChi,
 }) => {
   const { s } = useSession()
-  const isFree = s.goi === 'S' // QD22, QD27, T630: gói Standard khoá ô số tiền
+  const isStandard = s.goi === 'S' // QD22, QD27, T630: gói Standard khoá ô số tiền
   const soCtHienThi = soPhieu || soCt || ''
   const chHienThi = cuaHang || cuaHangTen || 'Phố Mây Nguyễn Trãi'
   const tienNo = conNo ?? conLai ?? 0
@@ -136,7 +136,7 @@ export const MThanhToanNgay: FC<MThanhToanNgayProps> = ({
   if (!mo) return null
 
   const handleLap = () => {
-    const soTienThuc = isFree ? tienNo : tienSheet
+    const soTienThuc = isStandard ? tienNo : tienSheet
     if (soTienThuc <= 0 || soTienThuc > tienNo || !quySheet) return
     onLapPhieuChi({
       hinhThuc: htSheet,
@@ -228,18 +228,18 @@ export const MThanhToanNgay: FC<MThanhToanNgayProps> = ({
                 <input
                   type="text"
                   className="m-t600-inp"
-                  readOnly={isFree}
+                  readOnly={isStandard}
                   style={{
                     textAlign: 'right',
                     fontWeight: 600,
-                    color: isFree ? 'var(--muted)' : 'var(--blue)',
-                    background: isFree ? 'var(--giay-ke)' : undefined,
-                    cursor: isFree ? 'not-allowed' : undefined,
+                    color: isStandard ? 'var(--muted)' : 'var(--blue)',
+                    background: isStandard ? 'var(--giay-ke)' : undefined,
+                    cursor: isStandard ? 'not-allowed' : undefined,
                     fontVariantNumeric: 'tabular-nums',
                     fontSize: 16,
                   }}
-                  value={money(isFree ? tienNo : tienSheet)}
-                  onChange={isFree ? undefined : e => setTienSheet(Number(e.target.value.replace(/\D/g, '')) || 0)}
+                  value={money(isStandard ? tienNo : tienSheet)}
+                  onChange={isStandard ? undefined : e => setTienSheet(Number(e.target.value.replace(/\D/g, '')) || 0)}
                 />
               </div>
             </div>
@@ -276,7 +276,7 @@ export const MThanhToanNgay: FC<MThanhToanNgayProps> = ({
             <button
               type="button"
               className="m-t601-btn-foot-pri"
-              disabled={(isFree ? tienNo : tienSheet) <= 0 || (isFree ? tienNo : tienSheet) > tienNo || !quySheet}
+              disabled={(isStandard ? tienNo : tienSheet) <= 0 || (isStandard ? tienNo : tienSheet) > tienNo || !quySheet}
               onClick={handleLap}
             >
               {htSheet === 'tienmat' ? 'Lập phiếu chi tiền mặt' : 'Lập uỷ nhiệm chi'}
@@ -293,7 +293,7 @@ export const MThanhToanNgay: FC<MThanhToanNgayProps> = ({
               <div>
                 <h2 className="m-tam-tieu">{htSheet === 'tienmat' ? 'Chọn quỹ tiền mặt' : 'Chọn quỹ ngân hàng'}</h2>
                 <div style={{ fontSize: 13, color: 'var(--muted)', marginTop: 2 }}>
-                  Cửa hàng {chHienThi} · cần trả <b style={{ color: 'var(--ink)' }}>{money(isFree ? tienNo : tienSheet)} đ</b>
+                  Cửa hàng {chHienThi} · cần trả <b style={{ color: 'var(--ink)' }}>{money(isStandard ? tienNo : tienSheet)} đ</b>
                 </div>
               </div>
               <button type="button" className="m-tam-dong-btn" onClick={() => setMoBangChonQuy(false)} aria-label="Đóng">
