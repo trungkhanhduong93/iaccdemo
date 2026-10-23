@@ -4,6 +4,7 @@ import { dmy, fold } from '../format'
 import { khoangThang, thangNay, type KhoangNgay } from '../ChonNgay'
 import { Icon } from '../Icon'
 import { MChonKhoangNgay } from './MChonKhoangNgay'
+import { MChon } from './MChon'
 
 export type KyThoiGian = 'hom-nay' | 'tuan-nay' | 'thang-nay' | 'thang-truoc' | 'tat-ca' | 'tuy-chon'
 
@@ -17,6 +18,8 @@ export interface GtLocMobile {
   loaiPhieu?: string[]   // mã loại phiếu, vd thu, chi, bc, unc, cq (T569)
   chiNhanh?: string
   trangThai?: string
+  ky?: number            // kỳ yyyymm, chỉ màn có kyThang (T645)
+  anHet?: boolean        // Ẩn thẻ hết phân bổ, chỉ màn có kyThang (T645)
 }
 
 export const MAC_DINH_LOC_MOBILE: GtLocMobile = {
@@ -83,6 +86,8 @@ export interface MLocProps {
   dsLoaiPhieu?: { k: string; ten: string }[]   // có thì hiện dòng Loại phiếu, chọn nhiều (T569)
   dsChiNhanh?: { k: string; ten: string }[]
   dsTrangThai?: { k: string; ten: string; dem?: number }[]
+  // Có thì dòng Thời gian thành Kỳ số liệu chọn tháng, thêm công tắc Ẩn thẻ hết phân bổ (T645)
+  kyThang?: { ds: { nhan: string; so: number }[]; macDinh: number }
 }
 
 const CAC_KY: { k: KyThoiGian; ten: string }[] = [
@@ -106,8 +111,10 @@ export const MLoc: FC<MLocProps> = ({
   dsLoaiPhieu,
   dsChiNhanh,
   dsTrangThai,
+  kyThang,
 }) => {
   const [draft, setDraft] = useState<GtLocMobile>(giaTri)
+  const [moChonKy, setMoChonKy] = useState(false)
   const [trangCon, setTrangCon] = useState<'doiTuong' | 'nguon' | 'kho' | 'lyDo' | 'loaiPhieu' | 'chiNhanh' | 'trangThai' | null>(null)
   const [timKiem, setTimKiem] = useState('')
 
@@ -116,6 +123,7 @@ export const MLoc: FC<MLocProps> = ({
       setDraft(giaTri)
       setTrangCon(null)
       setTimKiem('')
+      setMoChonKy(false)
     }
   }, [mo, giaTri])
 
@@ -130,7 +138,7 @@ export const MLoc: FC<MLocProps> = ({
   ]
 
   const handleReset = () => {
-    setDraft({ ...MAC_DINH_LOC_MOBILE })
+    setDraft(kyThang ? { ...MAC_DINH_LOC_MOBILE, ky: kyThang.macDinh, anHet: true } : { ...MAC_DINH_LOC_MOBILE })
   }
 
   const handleApply = () => {
@@ -248,20 +256,31 @@ export const MLoc: FC<MLocProps> = ({
         </div>
 
         <div className="m-loc-than">
-          {/* Dòng Thời gian: bấm mở hộp lịch chọn khoảng ngày dùng chung điện thoại (T571) */}
-          <MChonKhoangNgay
-            value={tinhKhoangNgay(draft.thoiGian, draft.khoangNgay) ?? thangNay()}
-            onChange={chonKhoang}
-            nut={moLich => (
-              <div className="m-loc-dong" onClick={moLich}>
-                <div className="m-loc-dong-trai">
-                  <span className="m-loc-dong-nhan">Thời gian</span>
-                  <span className="m-loc-dong-tri">{moTaThoiGian()}</span>
-                </div>
-                <Icon n="chevr" className="ic sm m-loc-dong-ic" />
+          {kyThang ? (
+            /* Dòng Kỳ số liệu: bấm mở tấm chọn tháng của năm tài chính (T645) */
+            <div className="m-loc-dong" onClick={() => setMoChonKy(true)}>
+              <div className="m-loc-dong-trai">
+                <span className="m-loc-dong-nhan">Kỳ số liệu</span>
+                <span className="m-loc-dong-tri">{kyThang.ds.find(k => k.so === draft.ky)?.nhan ?? 'Chọn tháng'}</span>
               </div>
-            )}
-          />
+              <Icon n="chevr" className="ic sm m-loc-dong-ic" />
+            </div>
+          ) : (
+            // Dòng Thời gian: bấm mở hộp lịch chọn khoảng ngày dùng chung điện thoại (T571)
+            <MChonKhoangNgay
+              value={tinhKhoangNgay(draft.thoiGian, draft.khoangNgay) ?? thangNay()}
+              onChange={chonKhoang}
+              nut={moLich => (
+                <div className="m-loc-dong" onClick={moLich}>
+                  <div className="m-loc-dong-trai">
+                    <span className="m-loc-dong-nhan">Thời gian</span>
+                    <span className="m-loc-dong-tri">{moTaThoiGian()}</span>
+                  </div>
+                  <Icon n="chevr" className="ic sm m-loc-dong-ic" />
+                </div>
+              )}
+            />
+          )}
 
           {/* Dòng Chi nhánh (T521) */}
           {dsChiNhanh && dsChiNhanh.length > 0 && (
@@ -337,6 +356,22 @@ export const MLoc: FC<MLocProps> = ({
               <Icon n="chevr" className="ic sm m-loc-dong-ic" />
             </div>
           )}
+
+          {/* Công tắc Ẩn thẻ hết phân bổ, như web (T645) */}
+          {kyThang && (
+            <div className="m-loc-dong m-loc-cong-tac" onClick={() => setDraft(prev => ({ ...prev, anHet: !prev.anHet }))}>
+              <span className="m-loc-dong-tri">Ẩn thẻ hết phân bổ</span>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={Boolean(draft.anHet)}
+                aria-label="Ẩn thẻ hết phân bổ"
+                className={`ds-ct${draft.anHet ? ' on' : ''}`}
+              >
+                <i />
+              </button>
+            </div>
+          )}
         </div>
 
         <div className="m-loc-day">
@@ -348,6 +383,19 @@ export const MLoc: FC<MLocProps> = ({
           </button>
         </div>
       </div>
+
+      {kyThang && (
+        <div onClick={e => e.stopPropagation()}>
+          <MChon
+            mo={moChonKy}
+            onDong={() => setMoChonKy(false)}
+            tieuDe="Chọn kỳ số liệu"
+            ds={[...kyThang.ds].reverse().map(k => ({ k: String(k.so), ten: k.nhan, moTa: k.so === kyThang.macDinh ? 'Tháng hiện tại' : undefined }))}
+            chon={String(draft.ky ?? kyThang.macDinh)}
+            onChon={k => setDraft(prev => ({ ...prev, ky: Number(k) }))}
+          />
+        </div>
+      )}
 
       {/* ── TRANG DANH MỤC CON TRƯỢT VÀO ── */}
       {trangCon && (

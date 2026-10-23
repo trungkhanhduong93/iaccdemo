@@ -183,6 +183,9 @@ export interface MDsChungTuChuanProps {
   // Thẻ tổng & khoảng ngày
   chuoiKhoangNgay?: string
   hienTien?: boolean
+  nhanDem?: string                          // đơn vị đếm, mặc định chứng từ (T645)
+  nhanTong?: string                         // nhãn số tổng, mặc định Tổng cộng (T645)
+  theTongThem?: (rows: Row[]) => ReactNode  // hàng thêm dưới thẻ tổng, tính trên danh sách sau tìm (T645)
 
   // Dữ liệu dòng
   rows: Row[]
@@ -216,6 +219,9 @@ export const MDsChungTuChuan: FC<MDsChungTuChuanProps> = ({
   chipsLoc = [],
   chuoiKhoangNgay,
   hienTien = true,
+  nhanDem = 'chứng từ',
+  nhanTong = 'Tổng cộng',
+  theTongThem,
   rows,
   renderDong,
   sortMoiNhat: sortMoiNhatProp,
@@ -397,22 +403,23 @@ export const MDsChungTuChuan: FC<MDsChungTuChuanProps> = ({
         </div>
 
         {/* Thẻ tổng */}
-        <div className="m-mh-card-tong">
+        <div className={`m-mh-card-tong${theTongThem ? ' m-mh-card-tong-them' : ''}`}>
           <div className="m-mh-th-trai">
-            <span className="m-mh-th-dem">{listSauTim.length} chứng từ</span>
+            <span className="m-mh-th-dem">{listSauTim.length} {nhanDem}</span>
             {chuoiKhoangNgay && <span className="m-mh-th-ngay">{chuoiKhoangNgay}</span>}
           </div>
           {hienTien && (
             <div className="m-mh-th-phai">
-              <span className="m-mh-th-nhan">Tổng cộng</span>
+              <span className="m-mh-th-nhan">{nhanTong}</span>
               <span className="m-mh-th-so">{money(tongTien)} đ</span>
             </div>
           )}
+          {theTongThem?.(listSauTim)}
         </div>
 
         {/* Hàng Sắp xếp */}
         <div className="m-mh-hang-sx">
-          <span className="m-mh-sx-tieu-de">Danh sách chứng từ</span>
+          <span className="m-mh-sx-tieu-de">Danh sách {nhanDem}</span>
           <button
             type="button"
             className="m-mh-sx-btn"

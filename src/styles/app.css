@@ -41446,3 +41446,65 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
 .m-pb-man .m-gt-ghi-chu + .m-pb-dong {
   border-top: 1px solid #eeeeee;
 }
+
+/* ── Danh sách thẻ chi phí điện thoại theo kỳ số liệu (T645) ── */
+/* Thẻ tổng: 2 hàng Phân bổ tháng này, Giá trị còn lại dưới số tổng, nhãn trái số phải */
+.m-mh-card-tong.m-mh-card-tong-them {
+  flex-wrap: wrap;
+  row-gap: 10px;
+}
+.m-cp645-tong {
+  flex-basis: 100%;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 4px 12px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--line);
+  font-size: 13px;
+  color: var(--muted);
+}
+.m-cp645-tong b {
+  text-align: right;
+  font-size: 14px;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+/* Từng thẻ: dòng ngày dưới tên, khối số trải hết bề ngang ở dưới */
+.m-mh-the-trang .m-mh-dong-phieu.m-cp645-dong {
+  flex-wrap: wrap !important;
+  row-gap: 6px !important;
+}
+.m-cp645-dong .m-mh-dong-trai {
+  flex: 1;
+  min-width: 0;
+}
+.m-cp645-ngay {
+  display: block;
+  font-size: 11.5px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.m-cp645-so {
+  flex-basis: 100%;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2px 12px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: var(--orange-t);
+  font-size: 12.5px;
+  color: var(--muted);
+}
+.m-cp645-so b {
+  text-align: right;
+  font-weight: 600;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+/* Bộ lọc: dòng công tắc Ẩn thẻ hết phân bổ */
+.m-loc-dong.m-loc-cong-tac .m-loc-dong-tri {
+  font-weight: 600;
+}

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState, type FC, type ReactNode } from 'react'
 import { quayLaiMobile } from './quayLai'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import type { Row, ScreenProps } from '../../modules/types'
-import { cuaHangHienTai, ngayDauNam, truocDauNam, useSession } from '../../app/session'
+import { cuaHangHienTai, dsKyNam, kyMacDinh, ngayDauNam, truocDauNam, useSession } from '../../app/session'
 import { hienMan, laBaoCao } from '../../app/registry'
 import { anNgoaiGoi } from '../../app/plan'
 import { CUA_HANG } from '../../data/mock'
@@ -11,11 +11,11 @@ import { Icon } from '../Icon'
 import { ghiNhatKy, laDaXoa, suaPhieu, xoaPhieu } from '../generic/daXoa'
 import { lyDoKhongXoaThe } from '../../modules/ccdc/the-phan-bo'
 import { MDsChungTuChuan } from './MDsChungTuChuan'
-import { MLoc, type GtLocMobile, MAC_DINH_LOC_MOBILE, tinhKhoangNgay } from './MLoc'
+import { MLoc, type GtLocMobile, MAC_DINH_LOC_MOBILE } from './MLoc'
 import { MBaoCaoTheoDoi } from './MBaoCaoTheoDoi'
 import { MChon } from './MChon'
 import { MTheNoiDung, MTheSua, type TheMobile } from './MThePhanBo'
-import { LichDon, docNgay, trongKhoang } from '../ChonNgay'
+import { LichDon } from '../ChonNgay'
 import { HopXacNhan } from '../LocNangCao'
 import {
   daPhanBoToiKy,
@@ -43,6 +43,7 @@ const THE_MAU_BASE: TheMobile[] = [
 type TheItem = TheMobile & {
   da?: number
   con?: number
+  kyNay?: number
   het?: boolean
   ngayPb?: string
   ttCls?: string
@@ -53,6 +54,11 @@ type TheItem = TheMobile & {
 
 /** Thẻ tạo trong phiên, giữ lại khi rời màn rồi quay lại (vd mở từ link Thẻ chi phí trên phiếu chi) (T421) */
 const theTaoPhien: TheItem[] = []
+
+// Kỳ yyyymm của ngày dd/mm/yyyy, kỳ liền trước (T645)
+const thangCua = (ngay: string) => { const m = ngay.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/); return m ? +m[3] * 100 + +m[2] : 0 }
+const kyTruoc = (ky: number) => ky % 100 === 1 ? ky - 89 : ky - 1
+const tenThang = (ky: number) => `${String(ky % 100).padStart(2, '0')}/${Math.floor(ky / 100)}`
 
 export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
   const { s, set, toast } = useSession()
@@ -121,7 +127,9 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
   const [ftGhiChuCt, setFtGhiChuCt] = useState('')
   const [moLichCt, setMoLichCt] = useState(false)
 
-  const kyHienTai = 202610
+  // Kỳ số liệu: 12 tháng của năm tài chính, mặc định tháng hiện tại (T645)
+  const dsKy = useMemo(() => dsKyNam(s), [s])
+  const kyMacDinhNay = kyMacDinh(s)
 
   const [chipTT, setChipTT] = useState('all')
   const [locMo, setLocMo] = useState(false)
@@ -130,7 +138,11 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
     thoiGian: 'tat-ca',
     chiNhanh: s.cuaHang || 'all',
     trangThai: 'all',
+    ky: kyMacDinhNay,
+    anHet: true,
   }))
+  const kyHienTai = locVal.ky ?? kyMacDinhNay
+  const anHet = locVal.anHet ?? true
 
   const dsChiNhanh = useMemo(
     () => [{ k: 'all', ten: 'Tất cả chi nhánh' }, ...CUA_HANG.map(c => ({ k: c.id, ten: c.ten }))],
@@ -160,27 +172,21 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
     if (val.trangThai !== undefined) setChipTT(val.trangThai || 'all')
   }
 
-  const kn = tinhKhoangNgay(locVal.thoiGian, locVal.khoangNgay)
-  const pad = (n: number) => String(n).padStart(2, '0')
-  const chuoiKhoangNgay = kn
-    ? `${pad(kn.tu.getDate())}/${pad(kn.tu.getMonth() + 1)} – ${pad(kn.den.getDate())}/${pad(kn.den.getMonth() + 1)}/${kn.den.getFullYear()}`
-    : 'Tất cả'
+  const coLoc = kyHienTai !== kyMacDinhNay || !anHet || Boolean(locVal.trangThai && locVal.trangThai !== 'all')
+  const laThangNay = kyHienTai === kyMacDinhNay
 
-  const coLoc = locVal.thoiGian !== 'tat-ca' || Boolean(locVal.trangThai && locVal.trangThai !== 'all')
-
-  // Danh sách đã tính đã phân bổ và còn lại
+  // Danh sách theo kỳ số liệu: ẩn thẻ ghi tăng sau kỳ; đã phân bổ, còn lại tính tới hết kỳ (T645)
   const list = useMemo(() => {
     return theList
       .filter(t => !cnChon || t.cn === cnChon.ten)
       .filter(t => loaiTheTheoGoi(s.goi).includes(t.loai))   // gói Free chỉ thấy thẻ Chi phí trả trước (T605)
-      .filter(t => {
-        if (!kn) return true
-        const d = docNgay(String(t.ngay).split(' ')[0])
-        return trongKhoang(d, kn)
-      })
+      .filter(t => thangCua(String(t.ngay)) <= kyHienTai)
       .map(t => {
         const da = daPhanBoToiKy(t, kyHienTai)
+        const kyNay = da - daPhanBoToiKy(t, kyTruoc(kyHienTai))
         const con = Math.max(0, t.gt - da)
+        // Ngày bắt đầu phân bổ sớm nhất của các dòng
+        const ngayPb = (t.dong ?? []).map(d => String(d.ngayPb ?? t.ngay)).sort((a, b) => thangCua(a) * 100 + +a.slice(0, 2) - (thangCua(b) * 100 + +b.slice(0, 2)))[0] ?? String(t.ngay)
         const ttNhan = con <= 0 ? 'Đã phân bổ xong' : 'Đang phân bổ'
         const ttCls = con <= 0 ? 'dim' : 'ok'
         return {
@@ -188,12 +194,16 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
           tien: t.gt,
           tong: t.gt,
           da,
+          kyNay,
           con,
+          ngayPb,
           ttNhan,
           ttCls,
         }
       })
-  }, [theList, cnChon, kyHienTai, s.goi, kn])
+      // Ẩn thẻ hết phân bổ như web: giữ thẻ còn phân bổ ở kỳ này hoặc còn giá trị sau kỳ này
+      .filter(t => !anHet || t.kyNay > 0 || t.con > 0)
+  }, [theList, cnChon, kyHienTai, s.goi, anHet])
 
   const listLoc = useMemo(() => {
     if (chipTT === 'dang') return list.filter(r => (r.con ?? 0) > 0)
@@ -207,13 +217,13 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
 
   const chipsLoc = useMemo(() => {
     const arr: ReactNode[] = []
-    arr.push(<span key="kn" className="m-chip-xem">{chuoiKhoangNgay}</span>)
+    arr.push(<span key="ky" className="m-chip-xem">Tháng {tenThang(kyHienTai)}</span>)
     arr.push(<span key="cn" className="m-chip-xem">{nhanCn}</span>)
     if (chipTT && chipTT !== 'all') {
       arr.push(<span key="tt" className="m-chip-xem">{nhanTrangThai}</span>)
     }
     return arr
-  }, [chuoiKhoangNgay, nhanCn, chipTT, nhanTrangThai])
+  }, [kyHienTai, nhanCn, chipTT, nhanTrangThai])
 
   // Tabs ngang trên đầu danh sách (T363: ẩn tab ngoài gói theo hienMan / moDuoc / anNgoaiGoi; còn <= 1 tab thì ẩn luôn hàng tab)
   const tabs = useMemo(() => {
@@ -435,21 +445,33 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
         onMoLoc={() => setLocMo(true)}
         coLoc={coLoc}
         chipsLoc={chipsLoc}
-        chuoiKhoangNgay={chuoiKhoangNgay}
+        chuoiKhoangNgay={`Kỳ tháng ${tenThang(kyHienTai)}`}
         hienTien={true}
+        nhanDem="thẻ"
+        nhanTong="Tổng giá trị"
+        theTongThem={rows => {
+          const ds = rows as unknown as TheItem[]
+          return (
+            <div className="m-cp645-tong">
+              <span>{laThangNay ? 'Phân bổ tháng này' : `Phân bổ tháng ${tenThang(kyHienTai)}`}</span>
+              <b>{money(ds.reduce((a, t) => a + (t.kyNay ?? 0), 0))} đ</b>
+              <span>Giá trị còn lại</span>
+              <b>{money(ds.reduce((a, t) => a + (t.con ?? 0), 0))} đ</b>
+            </div>
+          )
+        }}
         nhomTheoNgay={false}
         rows={listLoc as unknown as Row[]}
         renderDong={(r, i) => {
           const item = r as unknown as TheItem
           const soKy = Number(item.dong?.[0]?.ky ?? item.ky ?? 12)
-          const conStr = item.con !== undefined ? money(item.con) : '0'
-          const dongPhu = `${item.ten} · ${soKy} tháng · Còn ${conStr}`
+          const dongPhu = `${item.ten} · ${soKy} tháng`
 
           return (
             <button
               key={`${item.soThe}_${i}`}
               type="button"
-              className="m-mh-dong-phieu m-the-ct m-ds-ngay-dong m-the-cp-dong"
+              className="m-mh-dong-phieu m-the-ct m-ds-ngay-dong m-the-cp-dong m-cp645-dong"
               onClick={() => {
                 nav(`?mo=${item.soThe}`)
                 setTheXem(item)
@@ -460,10 +482,17 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
                 <span className="m-mh-dong-ncc" title={dongPhu}>
                   {dongPhu}
                 </span>
+                <span className="m-cp645-ngay">Ghi tăng {String(item.ngay).split(' ')[0]} · PB từ {item.ngayPb}</span>
               </div>
               <div className="m-the-cp-phai">
                 <span className={`m-the-ct-tag ${item.ttCls}`}>{item.ttNhan}</span>
                 <span className="m-mh-dong-tien">{money(item.gt)} đ</span>
+              </div>
+              <div className="m-cp645-so">
+                <span>{laThangNay ? 'Phân bổ tháng này' : `Phân bổ tháng ${tenThang(kyHienTai)}`}</span>
+                <b>{money(item.kyNay ?? 0)}</b>
+                <span>Còn lại</span>
+                <b>{money(item.con ?? 0)}</b>
               </div>
             </button>
           )
@@ -481,6 +510,7 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
         onApDung={handleApDungLoc}
         dsChiNhanh={dsChiNhanh}
         dsTrangThai={dsTrangThai}
+        kyThang={{ ds: dsKy, macDinh: kyMacDinhNay }}
       />
 
       {/* ── TẤM CHỌN CỬA HÀNG KÉO LÊN TỪ DƯỚI (Item 5 spec) ── */}
