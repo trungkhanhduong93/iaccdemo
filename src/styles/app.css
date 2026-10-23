@@ -41406,3 +41406,43 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
 .xp637-nhom .xp637-o-phu .xp637-nhan {
   width: auto;
 }
+
+/* ── Form thẻ chi phí điện thoại: ô nhập có viền, thẻ dư đầu kỳ dùng chung form (T644) ── */
+/* Ô nhập cùng rộng để thẳng hàng; viền nằm ở khung, ô input bên trong giữ trong suốt */
+.m-pb-man .m-pb-dong .m-gt-tri.m-gt-o-nhap {
+  flex: none;
+  width: 140px;
+  box-sizing: border-box;
+  padding: 4px 8px;
+  border: 1px solid var(--line, #e5e7eb);
+  border-radius: 8px;
+  background: var(--white, #fff);
+}
+.m-pb-man .m-pb-dong .m-gt-tri.m-gt-o-nhap:focus-within {
+  border-color: rgba(5, 96, 166, 0.45);
+  box-shadow: 0 0 0 3px rgba(5, 96, 166, 0.08);
+}
+.m-pb-man .m-pb-dong .m-gt-o-nhap .m-gt-inp {
+  flex: 1;
+  min-width: 0;
+  padding: 0 !important;
+}
+.m-pb-man .m-pb-dong .m-gt-o-nhap .m-gt-inp:focus {
+  background: transparent !important;
+}
+/* Nhãn dài thì xuống dòng, không đẩy ô nhập */
+.m-pb-man .m-pb-dong:has(.m-gt-o-nhap) .m-gt-nhan {
+  flex: 1;
+  min-width: 0;
+  flex-shrink: 1;
+}
+/* Ghi chú dưới Ngày ghi tăng của thẻ dư đầu kỳ */
+.m-pb-man .m-gt-ghi-chu {
+  margin-top: -4px;
+  padding: 0 0 8px 24px;
+  font-size: 12px;
+  color: var(--muted, #6b7280);
+}
+.m-pb-man .m-gt-ghi-chu + .m-pb-dong {
+  border-top: 1px solid #eeeeee;
+}

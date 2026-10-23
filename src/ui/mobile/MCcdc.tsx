@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState, type FC, type ReactNode } from 'react'
 import { quayLaiMobile } from './quayLai'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import type { Row, ScreenProps } from '../../modules/types'
-import { cuaHangHienTai, useSession } from '../../app/session'
+import { cuaHangHienTai, ngayDauNam, truocDauNam, useSession } from '../../app/session'
 import { hienMan, laBaoCao } from '../../app/registry'
 import { anNgoaiGoi } from '../../app/plan'
 import { CUA_HANG } from '../../data/mock'
@@ -97,7 +97,6 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
   const [moChonCn, setMoChonCn] = useState(false)
   const [moChonLoaiThe, setMoChonLoaiThe] = useState(false)
   const [themDau, setThemDau] = useState(false)
-  const [theDauMoi, setTheDauMoi] = useState<TheMobile | null>(null)
   const [moGhiTang, setMoGhiTang] = useState(() => Boolean(tuPhieu || sp.get('moi') === 'the'))
   const [cnGhiTang, setCnGhiTang] = useState<string>(() => tuPhieu?.cn || cnChon?.ten || 'Phố Mây Lê Lợi')
   const [moTheoDoi, setMoTheoDoi] = useState(false)
@@ -113,6 +112,14 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
   const [daChonNgayPb, setDaChonNgayPb] = useState(() => Boolean(tuPhieu?.ngayPb))
   const [moLichGt, setMoLichGt] = useState(false)
   const [moLichPb, setMoLichPb] = useState(false)
+  // Thẻ dư đầu kỳ dùng chung form, thêm giá trị và số tháng đã phân bổ (T644)
+  const [ftDau, setFtDau] = useState(false)
+  const [ftDa, setFtDa] = useState('')
+  const [ftKyDa, setFtKyDa] = useState('')
+  const [ftSoCt, setFtSoCt] = useState('')
+  const [ftNgayCt, setFtNgayCt] = useState('')
+  const [ftGhiChuCt, setFtGhiChuCt] = useState('')
+  const [moLichCt, setMoLichCt] = useState(false)
 
   const kyHienTai = 202610
 
@@ -258,12 +265,25 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
   }
 
   const moTheDau = (cn: string) => {
-    const ngay = '01/10/2026'
-    setTheDauMoi({
-      soThe: soTheKeTiep(theList.map(t => t.soThe), 'dau', ngay),
-      loai: loaiTheTheoGoi(s.goi)[0], ngay, ten: '', cn, gt: 0, _kieu: 'dau',
-      dong: [{ ten: '', gt: '', da: '', ky: '', kyDa: '', sl: 1, ngayPb: ngay }],
-    })
+    const [dd, mm, yy] = ngayDauNam(s).split('/').map(Number)
+    const truoc = new Date(yy, mm - 1, dd - 1)
+    const ngay = `${String(truoc.getDate()).padStart(2, '0')}/${String(truoc.getMonth() + 1).padStart(2, '0')}/${truoc.getFullYear()}`
+    setTheSuaId(null)
+    setFtDau(true)
+    setFtLoai(loaiTheTheoGoi(s.goi)[0])
+    setFtTen('')
+    setFtGt('')
+    setFtDa('')
+    setFtKy('')
+    setFtKyDa('')
+    setFtSoCt('')
+    setFtNgayCt('')
+    setFtGhiChuCt('')
+    setFtNgay(ngay)
+    setFtNgayPb(ngayDauNam(s))
+    setDaChonNgayPb(true)
+    setCnGhiTang(cn)
+    setMoGhiTang(true)
   }
 
   const batDauThemDau = () => {
@@ -277,6 +297,7 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
 
   const handleBatDauThem = () => {
     setThemDau(false)
+    setFtDau(false)
     setTheSuaId(null)
     setFtLoai('Chi phí trả trước')
     setFtTen('')
@@ -305,7 +326,10 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
 
   const valGt = Number(ftGt) || 0
   const valKy = Number(ftKy) || 12
-  const moiThang = valKy > 0 ? Math.round(valGt / valKy) : 0
+  const valDa = ftDau ? Math.min(Number(ftDa) || 0, valGt) : 0
+  const valKyDa = ftDau ? Math.min(Number(ftKyDa) || 0, valKy) : 0
+  const canPb = valGt - valDa, kyConPb = valKy - valKyDa
+  const moiThang = kyConPb > 0 ? Math.round(canPb / kyConPb) : 0
 
   const handleLuuGhiTang = () => {
     if (!ftTen.trim()) {
@@ -318,6 +342,32 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
     }
     if (valKy <= 0) {
       toast('Số tháng phân bổ phải lớn hơn 0')
+      return
+    }
+    if (ftDau) {
+      if (!truocDauNam(s, ftNgay)) {
+        toast(`Ngày ghi tăng phải trước ngày bắt đầu năm tài chính ${ngayDauNam(s)}`)
+        return
+      }
+      if (kyConPb <= 0) {
+        toast('Số tháng đã phân bổ phải nhỏ hơn số tháng phân bổ')
+        return
+      }
+      const soTheDau = soTheKeTiep(theList.map(t => t.soThe), 'dau', ftNgay)
+      const theDau: TheItem = {
+        soThe: soTheDau, loai: ftLoai, ngay: ftNgay, ngayPb: ftNgayPb, ten: ftTen.trim(), cn: cnGhiTang || 'Phố Mây Lê Lợi',
+        gt: valGt, ky: valKy, _kieu: 'dau',
+        ...(ftSoCt.trim() ? { soCt: ftSoCt.trim() } : {}), ...(ftNgayCt ? { ngayCt: ftNgayCt } : {}), ...(ftGhiChuCt.trim() ? { ghiChuCt: ftGhiChuCt.trim() } : {}),
+        dong: [{ ten: ftTen.trim(), gt: valGt, da: valDa, ky: valKy, kyDa: valKyDa, sl: 1, dg: valGt, ngayPb: ftNgayPb }],
+      }
+      setTheList(prev => [theDau, ...prev])
+      theTaoPhien.unshift(theDau)
+      ghiNhatKy('dm/8-1-1', soTheDau, soTheDau, s.ten, 'Nhập thẻ dư đầu kỳ')
+      toast(`Đã thêm thẻ ${soTheDau}`)
+      setMoGhiTang(false)
+      setFtDau(false)
+      setFtTen('')
+      setDaChonNgayPb(false)
       return
     }
     if (theSuaId) {
@@ -496,26 +546,6 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
         }}
       />
 
-      {/* ── MÀN THÊM THẺ CHI PHÍ DƯ ĐẦU KỲ (T643): dùng màn sửa thẻ ở chế độ thêm mới ── */}
-      {theDauMoi && (
-        <MTheSua
-          moi
-          t={theDauMoi}
-          goi={s.goi}
-          baoLoi={toast}
-          onHuy={() => setTheDauMoi(null)}
-          onLuu={(moi, nhatKy) => {
-            const ky = Math.max(...moi.dong.map(d => Number(d.ky) || 0))
-            const theMoi: TheItem = { ...moi, ky, ngayPb: moi.dong[0]?.ngayPb }
-            setTheList(prev => [theMoi, ...prev])
-            theTaoPhien.unshift(theMoi)
-            ghiNhatKy('dm/8-1-1', moi.soThe, moi.soThe, s.ten, nhatKy)
-            toast(`Đã thêm thẻ ${moi.soThe}`)
-            setTheDauMoi(null)
-          }}
-        />
-      )}
-
       {/* ── MÀN SỬA THẺ (T590): sửa từng mục, sửa số tiền từng kỳ, không thêm, không xoá mục ── */}
       {moGhiTang && theSuaId && (() => {
         const goc = theList.find(t => t.soThe === theSuaId)
@@ -558,7 +588,7 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
                   <path d="M19 12H5M12 19l-7-7 7-7" />
                 </svg>
               </button>
-              <h1 className="m-pb-tieu-de">{theSuaId ? `Sửa thẻ ${theSuaId}` : 'Ghi tăng thẻ chi phí'}</h1>
+              <h1 className="m-pb-tieu-de">{theSuaId ? `Sửa thẻ ${theSuaId}` : ftDau ? 'Thêm thẻ chi phí dư đầu kỳ' : 'Thêm thẻ chi phí'}</h1>
               <span className="m-pb-thanh-dau-phai" />
             </header>
 
@@ -612,11 +642,12 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
                     <Icon n="wallet" className="ic sm m-lp-dong-ic" kieu="net" />
                     Số tiền <b className="m-gt-sao">*</b>
                   </span>
-                  <div className="m-gt-tri">
+                  <div className="m-gt-tri m-gt-o-nhap">
                     <input
                       type="text"
                       className="m-gt-inp num"
                       placeholder="0"
+                      aria-label="Số tiền"
                       value={ftGt ? money(Number(ftGt) || 0) : ''}
                       onChange={e => setFtGt(e.target.value.replace(/\D/g, ''))}
                     />
@@ -644,6 +675,7 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
                     <Icon n="chevr" className="ic sm" kieu="net" />
                   </span>
                 </div>
+                {ftDau && <div className="m-gt-ghi-chu">Ngày ghi tăng phải trước ngày bắt đầu năm tài chính ban đầu.</div>}
 
                 {/* Bắt đầu phân bổ */}
                 <div
@@ -654,7 +686,7 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
                 >
                   <span className="m-gt-nhan">
                     <Icon n="calendar" className="ic sm m-lp-dong-ic" kieu="net" />
-                    Bắt đầu phân bổ
+                    Ngày bắt đầu phân bổ
                   </span>
                   <span className="m-gt-tri">
                     <span>{ftNgayPb}</span>
@@ -662,24 +694,83 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
                   </span>
                 </div>
 
+                {/* Thẻ dư đầu kỳ: giá trị đã phân bổ, còn cần phân bổ, thứ tự như cột trên web (T644) */}
+                {ftDau && (
+                  <>
+                    <div className="m-pb-dong">
+                      <span className="m-gt-nhan">
+                        <Icon n="wallet" className="ic sm m-lp-dong-ic" kieu="net" />
+                        Giá trị đã phân bổ
+                      </span>
+                      <div className="m-gt-tri m-gt-o-nhap">
+                        <input
+                          type="text"
+                          className="m-gt-inp num"
+                          placeholder="0"
+                          aria-label="Giá trị đã phân bổ"
+                          value={ftDa ? money(Number(ftDa) || 0) : ''}
+                          onChange={e => { const v = Number(e.target.value.replace(/\D/g, '')) || 0; setFtDa(v ? String(valGt > 0 ? Math.min(v, valGt) : v) : '') }}
+                        />
+                        <span className="m-gt-donvi">đ</span>
+                      </div>
+                    </div>
+                    <div className="m-pb-dong">
+                      <span className="m-gt-nhan">
+                        <Icon n="phanbo" className="ic sm m-lp-dong-ic" kieu="net" />
+                        Giá trị còn cần phân bổ
+                      </span>
+                      <span className="m-gt-tri m-gt-tinh">{money(canPb)} đ</span>
+                    </div>
+                  </>
+                )}
+
                 {/* Số tháng phân bổ */}
                 <div className="m-pb-dong">
                   <span className="m-gt-nhan">
                     <Icon n="clock" className="ic sm m-lp-dong-ic" kieu="net" />
                     Số tháng phân bổ <b className="m-gt-sao">*</b>
                   </span>
-                  <div className="m-gt-tri">
+                  <div className="m-gt-tri m-gt-o-nhap">
                     <input
                       type="text"
                       className="m-gt-inp num"
                       placeholder="12"
+                      aria-label="Số tháng phân bổ"
                       value={ftKy}
                       onChange={e => setFtKy(e.target.value.replace(/\D/g, ''))}
-                      style={{ maxWidth: 60 }}
                     />
                     <span className="m-gt-donvi">tháng</span>
                   </div>
                 </div>
+
+                {ftDau && (
+                  <>
+                    <div className="m-pb-dong">
+                      <span className="m-gt-nhan">
+                        <Icon n="clock" className="ic sm m-lp-dong-ic" kieu="net" />
+                        Số tháng đã phân bổ
+                      </span>
+                      <div className="m-gt-tri m-gt-o-nhap">
+                        <input
+                          type="text"
+                          className="m-gt-inp num"
+                          placeholder="0"
+                          aria-label="Số tháng đã phân bổ"
+                          value={ftKyDa}
+                          onChange={e => { const v = Number(e.target.value.replace(/\D/g, '')) || 0; setFtKyDa(v ? String(valKy > 0 ? Math.min(v, valKy) : v) : '') }}
+                        />
+                        <span className="m-gt-donvi">tháng</span>
+                      </div>
+                    </div>
+                    <div className="m-pb-dong">
+                      <span className="m-gt-nhan">
+                        <Icon n="clock" className="ic sm m-lp-dong-ic" kieu="net" />
+                        Số tháng còn phân bổ
+                      </span>
+                      <span className="m-gt-tri m-gt-tinh">{kyConPb} tháng</span>
+                    </div>
+                  </>
+                )}
 
                 {/* Mỗi tháng phân bổ (tính sẵn) */}
                 <div className="m-pb-dong">
@@ -693,8 +784,36 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
                 </div>
               </div>
 
+              {/* Thẻ dư đầu kỳ không có phiếu gốc: nhập tay thông tin mua, không bắt buộc (T644) */}
+              {ftDau && (
+                <>
+                  <div className="m-pb-nhom">THÔNG TIN MUA</div>
+                  <div className="m-pb-the m-pb-the-gon">
+                    <div className="m-pb-dong">
+                      <span className="m-gt-nhan">Số chứng từ</span>
+                      <div className="m-gt-tri m-gt-o-nhap">
+                        <input type="text" className="m-gt-inp" placeholder="Vd: PC2512-0010" aria-label="Số chứng từ"
+                          value={ftSoCt} onChange={e => setFtSoCt(e.target.value.toUpperCase())} />
+                      </div>
+                    </div>
+                    <div className="m-pb-dong m-gt-bam" onClick={() => setMoLichCt(true)} role="button" tabIndex={0}>
+                      <span className="m-gt-nhan">Ngày chứng từ</span>
+                      <span className="m-gt-tri">
+                        <span>{ftNgayCt || 'Chọn ngày'}</span>
+                        <Icon n="chevr" className="ic sm" kieu="net" />
+                      </span>
+                    </div>
+                    <div className="m-pb-dong m-gt-dong-ten">
+                      <span className="m-gt-nhan">Ghi chú</span>
+                      <input type="text" className="m-gt-inp-ten" placeholder="Vd: Mua tủ mát năm 2025" aria-label="Ghi chú"
+                        value={ftGhiChuCt} onChange={e => setFtGhiChuCt(e.target.value)} />
+                    </div>
+                  </div>
+                </>
+              )}
+
               {/* Thẻ 3: THÔNG TIN MUA (nếu có chứng từ gốc) */}
-              {soCtHien && (
+              {!ftDau && soCtHien && (
                 <>
                   <div className="m-pb-nhom">THÔNG TIN MUA</div>
                   <div className="m-pb-the m-pb-the-gon">
@@ -753,6 +872,10 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
                   }}
                   onDong={() => setMoLichGt(false)}
                 />
+              )}
+
+              {moLichCt && (
+                <LichDon value={ftNgayCt || ftNgay} onChange={setFtNgayCt} onDong={() => setMoLichCt(false)} />
               )}
             </div>
 
