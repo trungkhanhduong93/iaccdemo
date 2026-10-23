@@ -308,12 +308,13 @@ export const THE_PHAN_BO: CauHinhDM = {
     ten: 'Thông tin chung',
     anDau: true,   // bỏ thanh tiêu đề, nhường chỗ cho lưới chi tiết (T165)
     truong: [
-      // Loại thẻ, Ngày ghi tăng, Số thẻ; thẻ thường ghi tăng từ ngày đầu năm, thẻ dư đầu kỳ trước ngày đầu năm.
+      // Loại thẻ, Ngày ghi tăng; thẻ thường ghi tăng từ ngày đầu năm, thẻ dư đầu kỳ trước ngày đầu năm.
       // Ngày bắt đầu phân bổ, ngừng phân bổ nhập theo từng dòng ở tab Chi tiết phân bổ (T159)
       { k: 'loai', nhan: 'Loại thẻ', kieu: 'chon', batBuoc: true, ds: Object.keys(LOAI_THE), dsGoi: { S: loaiTheTheoGoi('S') } },
       // Sửa thẻ ghi tăng có sẵn: ngày ghi tăng chỉ đọc (theo chứng từ gốc) (T165)
       { k: 'ngay', nhan: 'Ngày ghi tăng', kieu: 'ngay', batBuoc: true, dauNam: v => laDau(v) ? 'truoc' : 'tu', chiDoc: v => !laDau(v) && Boolean(v._sua) },
-      { k: 'soThe', nhan: 'Số thẻ', kieu: 'chu', batBuoc: true, chiDoc: true },
+      // Số thẻ tự sinh, chỉ hiện ở tiêu đề giữa form, không lặp ô riêng (T647)
+      { k: 'soThe', nhan: 'Số thẻ', kieu: 'chu', batBuoc: true, chiDoc: true, hien: () => false },
     ],
   }, {
     ten: 'Chi tiết phân bổ',

@@ -1147,7 +1147,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
               </div>
             )}
 
-            {/* Cột 3: Ngày chứng từ, số chứng từ. Cửa hàng hiện trên đầu form. Ghi chú kéo dài thì cột này chiếm cả hàng Ghi chú (T78) */}
+            {/* Cột 3: Ngày chứng từ; số chứng từ chỉ hiện ở tiêu đề giữa, không lặp ô riêng (T647). Cửa hàng hiện trên đầu form. Ghi chú kéo dài thì cột này chiếm cả hàng Ghi chú (T78) */}
             <div className="stack" style={{ gap: 10, gridRow: keoGc ? 'span 2' : undefined }}>
               <div className="f">
                 <label>{laSx ? (sxNhap ? 'Thời gian nhập' : 'Thời gian xuất') : laDcn ? 'Thời gian' : 'Ngày chứng từ'} <em>*</em></label>
@@ -1161,10 +1161,6 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
                 ) : (
                   <input className="inp" readOnly value={ngayCt} />
                 )}
-              </div>
-              <div className="f">
-                <label>{laSx || laDcn ? 'Mã phiếu' : bo.so ?? 'Số chứng từ'}</label>
-                <input className="inp code" readOnly value={soCt} />
               </div>
               {/* T419: chỉ hiện khi phiếu có lý do được tích Là chi phí */}
               {coThangLl && dsDong.some(d => LY_CHI_PHI.includes(d.ly ?? lyDo)) && (

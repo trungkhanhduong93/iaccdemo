@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 23/10/2026
+- T647: Web, chi tiết chứng từ (thu chi, mua hàng, kiểm kê, xuất, nhập điều chỉnh, bán hàng, kho) bỏ ô Số phiếu ở cột bên phải. Số phiếu chỉ hiện ở tiêu đề giữa sau khi lưu. Thẻ chi phí phân bổ bỏ ô Số thẻ, số thẻ hiện ở tiêu đề.
 - T649: Điện thoại, gói Plus hộ kinh doanh xem, lập phiếu không còn tab Hạch toán, Bút toán rỗng. Link cũ có `?goi=M` mở gói Pro.
 - T648: Gói Plus doanh nghiệp có lại bước ghi sổ: chi tiết phiếu có Chưa ghi sổ, Đã ghi sổ, tab Ghi sổ, nút Ghi sổ, Bỏ ghi sổ. Gói Standard và Plus hộ kinh doanh lưu phiếu là xong. Gói Standard doanh nghiệp bỏ cột Khoản mục, Công việc trên phiếu; điện thoại xem Báo cáo kết quả kinh doanh bản lãi lỗ đơn giản như web.
 - T646: Gói Standard không còn bước ghi sổ. Chi tiết phiếu (web, điện thoại) bỏ nhãn Chưa ghi sổ, Đã ghi sổ, tab Ghi sổ, nút Ghi sổ và Bỏ ghi sổ; lưu phiếu là xong, xoá phiếu không phải bỏ ghi sổ trước. Danh sách chứng từ, Xuất bán POS (web, điện thoại) bỏ trạng thái ghi sổ, phiếu đồng bộ hiện Đã đồng bộ.
