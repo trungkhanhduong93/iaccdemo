@@ -3,7 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import type { Row, ScreenProps } from '../../modules/types'
 import { duongDan, tenMan } from '../../app/registry'
 import { useSession } from '../../app/session'
-import { kieuGhiSo, type Goi } from '../../app/plan'
+import { type Goi, kieuGhiSoDv } from '../../app/plan'
 import { money, soLuong } from '../format'
 import { NGUON, TT_CT, dongCua, doanLyDoThuChi, ttNghiepVu, type Dong } from '../generic/gen'
 import { boO, nhomCua, theoLoai } from '../generic/nhom'
@@ -136,8 +136,8 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
   const coTtXn = laSx || dcn === 'xdc' || dcn === 'ndc'
   const laTien = mod.key === 'tien'
   const nhomMb = mod.key === 'mua-hang' ? 'mua' : mod.key === 'ban-hang' ? 'ban' : null
-  const kieu = kieuGhiSo(s.cheDo)
-  const ghi = kieuGhiSo(s.goi) !== 'khong' && s.goi !== 'S'
+  const kieu = kieuGhiSoDv(s)
+  const ghi = kieu !== 'khong'
 
   // Nghiệp vụ (đối tượng, địa chỉ, mst, hoá đơn, hạn tt)
   const nv = useMemo(() => (row ? ttNghiepVu(row) : null), [row])
@@ -375,7 +375,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
   const moSua = () => { if (theCuaPhieu(row).length) setHoiKhongSua(true); else nav(`${path}/${row.id}?sua=1`) }
 
   // Nút hành động chính và phụ ở chân màn hình
-  const coNutGhiSo = kieu === 'noco' && !laDc   // chỉ gói Nợ/Có (Plus, Pro) có ghi sổ
+  const coNutGhiSo = kieu !== 'khong' && !laDc   // gói Standard, Plus hộ kinh doanh không ghi sổ (QD81)
   const coTheSua = !laDc && (!coNutGhiSo || row.tt !== 'ghi')
   let nutPhu: { nhan: string; action: () => void } | null = null
   let nutChinh: { nhan: string; laThanhToan?: boolean; action: () => void } | null = null

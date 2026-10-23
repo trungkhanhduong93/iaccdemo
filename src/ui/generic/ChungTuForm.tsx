@@ -5,7 +5,7 @@ import type { Row, ScreenProps, VoucherCfg } from '../../modules/types'
 import { duongDan, tenMan } from '../../app/registry'
 import { cuaHangHienTai, useSession, cheDoHienTai, ngayDauNam, truocDauNam, donViHienTai, loaiHinhDv, gtgtTyLe } from '../../app/session'
 import { giamThueHkd } from '../../modules/ban-hang/giam-thue'
-import { kieuGhiSo, type Goi } from '../../app/plan'
+import { kieuGhiSo, type Goi, kieuGhiSoDv } from '../../app/plan'
 import { CHE_DO, type CheDo } from '../../app/che-do'
 import { tkTheoCheDo } from '../../modules/tong-hop/so-cai'
 import { CUA_HANG, KHACH, KHO, LY_CAN_DOI_TUONG, LY_CHI_PHI, LY_DO, NCC, NHAN_VIEN, TK_NGAN_HANG, daKhoaSo, khoaSoDenCua } from '../../data/mock'
@@ -95,8 +95,9 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
   const doRongTab = useDoRongCot(`${path}:${tab}`)
   // Phiếu đang thêm mới chưa lưu: Huỷ, nút X, Esc đều hỏi lại trước khi bỏ (T125)
   const dongMoi = () => (moi ? setHoiDong(true) : dongForm())
-  const kieu = kieuGhiSo(s.cheDo)
-  // Chỉ gói dùng Nợ/Có (Plus, Pro) có ghi sổ; gói Standard (TT152, TT58) lưu là xong, không có Chưa ghi sổ, tab, nút Ghi sổ
+  const kieu = kieuGhiSoDv(s)
+  // Gói Standard, Plus hộ kinh doanh lưu là xong, không có Chưa ghi sổ, tab, nút Ghi sổ; Plus doanh nghiệp ghi sổ TT58, Pro hạch toán Nợ/Có (QD81)
+  const coGhiSo = kieu !== 'khong'
   const coTkGoi = kieu === 'noco'
 
   // Trạng thái thanh toán cho mua/bán
@@ -330,7 +331,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
     }
     const so = soKeTiep(MAN_THU_CHI, `${TIEN_TO_CT_TT[loaiTt]}2610-`)
     const id = `moi-${Date.now()}-tt`
-    themPhieu(MAN_THU_CHI, { id, so, cn: cuaHang, nguon: 'tay', tt: coTkGoi ? 'nhap' : 'ghi', loai: loaiTt, tenLoai: TEN_CT_TT[loaiTt], ...nd }, s.ten)
+    themPhieu(MAN_THU_CHI, { id, so, cn: cuaHang, nguon: 'tay', tt: coGhiSo ? 'nhap' : 'ghi', loai: loaiTt, tenLoai: TEN_CT_TT[loaiTt], ...nd }, s.ten)
     ghiNhatKy(MAN_THU_CHI, id, so, s.ten, `Thêm mới chứng từ, sinh từ ${soCt}`)
     return { id, so, loai: loaiTt }
   }
@@ -382,7 +383,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
     const so = soKeTiep(MAN_THU_CHI, `${TIEN_TO_CT_TT[loai]}2610-`)
     const id = `moi-${Date.now()}-tt`
     themPhieu(MAN_THU_CHI, {
-      id, so, cn: cuaHang, nguon: 'tay', tt: coTkGoi ? 'nhap' : 'ghi', loai, tenLoai: TEN_CT_TT[loai],
+      id, so, cn: cuaHang, nguon: 'tay', tt: coGhiSo ? 'nhap' : 'ghi', loai, tenLoai: TEN_CT_TT[loai],
       ngay, thang: Number(ngay.split('/')[1]) || 10, doiTuong, dienGiai: dg, tien, thue: 0, tong: tien,
       _quy: quyTt, _lyDo: lyTt, _ghiChu: dg, _thamChieu: soCt, _thamChieuDi: `${path}/${row.id}`,
       _dong: [{ ma: '', ten: dg, dvt: '', sl: 1, gia: tien, tien, ts: 0, thue: 0, ly: lyTt, dt: doiTuong, km: '', cv: '' }],
@@ -447,7 +448,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
     const man = `${mod.key}/${sc.slug}`
     if (moi) {
       themPhieu(man, {
-        id: idMoi, so: soCt, cn: cuaHang, nguon: 'tay', tt: coTkGoi ? 'nhap' : 'ghi',
+        id: idMoi, so: soCt, cn: cuaHang, nguon: 'tay', tt: coGhiSo ? 'nhap' : 'ghi',
         loai: loai?.k, tenLoai: loai?.ten, ...noiDung,
       }, s.ten)
       ghiNhatKy(man, idMoi, soCt, s.ten, 'Thêm mới chứng từ')
@@ -497,7 +498,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
   function thuXoa() {
     if (!row || khoaSua) return
     if (daKhoaSo(row.ngay, row.cn)) toast(`${row.so} thuộc kỳ đã khoá sổ, không xoá được`)
-    else if (coTkGoi && row.tt !== 'nhap') toast(`${row.so} đã ghi sổ, bỏ ghi sổ rồi mới xoá`)
+    else if (coGhiSo && row.tt !== 'nhap') toast(`${row.so} đã ghi sổ, bỏ ghi sổ rồi mới xoá`)
     else if (lyDoKhongXoaTheCuaPhieu(row)) toast(lyDoKhongXoaTheCuaPhieu(row)!)   // thẻ chi phí của phiếu thuộc kỳ đã khoá sổ (T439)
     else if (ttThamChieu(row)) toast(`${row.so} có phiếu ${ttThamChieu(row)!.so} tham chiếu, xoá ${ttThamChieu(row)!.so} trước`)   // T85, T91
     else if (((laSx && !sxNhap) || dcn === 'xdc') && row._phieuNhap) toast(`${row.so} đã có phiếu nhập ${(row._phieuNhap as { so: string }).so}, xoá phiếu nhập trước`)   // T152
@@ -579,9 +580,9 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
     ['ct', bo.tabDau ?? 'Chi tiết'],
     // Mua hàng: thông tin hoá đơn nằm ở đầu phiếu khi tích Nhận kèm hoá đơn, không có tab Hoá đơn (T62)
     ...(bo.hd && nhom !== 'mua' && nhom !== 'ban' ? [['hd', 'Hoá đơn'] as [string, string]] : []),   // mua, bán: hoá đơn ở đầu phiếu khi tích kèm hoá đơn (T83)
-    // Phiếu thu chi bỏ tab hạch toán (T49); gói Standard không ghi sổ nên không có tab Ghi sổ (T62, T646)
-    ...(laTien || laKk || dcn === 'ck' || !coTkGoi ? [] :   // phiếu kiểm kê, chuyển kho không có tab Hạch toán (T124, T155)
-      [['ht', 'Hạch toán'] as [string, string]]),
+    // Phiếu thu chi bỏ tab hạch toán (T49); gói Standard không ghi sổ nên không có tab Ghi sổ (T62, T646, T648)
+    ...(laTien || laKk || dcn === 'ck' || !coGhiSo ? [] :   // phiếu kiểm kê, chuyển kho không có tab Hạch toán (T124, T155)
+      [['ht', kieu === 'noco' ? 'Hạch toán' : 'Ghi sổ'] as [string, string]]),
     ...(s.goi === 'S' ? [] : [['dk', 'Đính kèm'] as [string, string]]),   // gói Standard không có đính kèm (T52)
     ['ls', 'Lịch sử'],
   ]
@@ -724,7 +725,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
         row ? (
           <>
             {/* Gói Standard lưu là duyệt luôn, không có trạng thái ghi sổ (QD32) */}
-            {coTkGoi && (() => {
+            {coGhiSo && (() => {
               const [c, tx] = TT_CT[row.tt] ?? ['warn', 'Chưa ghi sổ']
               return <St k={c}>{tx}</St>
             })()}
@@ -832,7 +833,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
                   </>
                 )}
               </Dropdown>
-              {coTkGoi && row && (
+              {coGhiSo && row && (
                 <button
                   type="button"
                   className="xp-btn-outline"
@@ -1569,7 +1570,7 @@ export function HachToan({
 }) {
   const { s } = useSession()
   const cd = cheDoHienTai(s)
-  const kieu = kieuGhiSo(cd.ma)
+  const kieu = kieuGhiSoDv(s)
   if (kieu === 'khong') {
     return (
       <Note kind="gray" icon="info">
@@ -1632,7 +1633,7 @@ export function LichSu({ goi, moi, man, id }: { goi: Goi; moi: boolean; man: str
         ...phien,
         // Phiếu thêm trong phiên chỉ có nhật ký thật; phiếu có sẵn kèm lịch sử mẫu
         ...(id.startsWith('moi-') ? [] : [
-        { luc: '07/10/2026 10:05', ai: 'Lê Quốc Bảo', viec: kieuGhiSo(goi) !== 'noco' ? 'Lưu chứng từ' : 'Ghi sổ' },
+        { luc: '07/10/2026 10:05', ai: 'Lê Quốc Bảo', viec: kieuGhiSo(goi) === 'khong' ? 'Lưu chứng từ' : 'Ghi sổ' },
         { luc: '07/10/2026 09:58', ai: 'Lê Quốc Bảo', viec: 'Sửa diễn giải' },
         { luc: '06/10/2026 23:30', ai: 'Đồng bộ tự động', viec: 'Tạo chứng từ từ dữ liệu đồng bộ' },
         ]),

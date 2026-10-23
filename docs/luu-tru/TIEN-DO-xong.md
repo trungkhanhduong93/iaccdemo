@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T648 | Ghi sổ theo gói mới: Standard không ghi sổ (kể cả doanh nghiệp TT58), Plus doanh nghiệp ghi sổ TT58, Plus hộ kinh doanh không ghi sổ, Pro hạch toán Nợ/Có; sửa lại T646 đang chỉ giữ ghi sổ cho gói Nợ/Có. Gói Standard bỏ cột Khoản mục, Công việc; báo cáo kết quả kinh doanh điện thoại ra bản đơn giản như web | Trum | 23/10/2026 | `2026-10-23-trum-ghi-so-theo-goi.md` |
 | T646 | Gói Standard không có ghi sổ: phiếu web bỏ nhãn Chưa ghi sổ, tab và nút Ghi sổ; danh sách chứng từ web, Xuất bán POS web, các màn điện thoại (xem phiếu, lập phiếu, danh sách, Xuất bán POS, lịch sử) bỏ trạng thái và nút ghi sổ. Chỉ gói dùng Nợ/Có còn ghi sổ | PhuongXT | 23/10/2026 | `2026-10-23-phuongxt-standard-bo-ghi-so.md` |
 | T645 | Điện thoại, danh sách thẻ chi phí: bộ lọc Kỳ số liệu chọn tháng (mặc định tháng hiện tại, năm tài chính hiện tại), công tắc Ẩn thẻ hết phân bổ như web; thẻ tổng và từng thẻ thêm Phân bổ tháng này, Giá trị còn lại; từng thẻ thêm Ngày ghi tăng, ngày bắt đầu phân bổ | dinhlanphuongipacc | 23/10/2026 | [nhật ký](../nhat-ky/2026-10-23-dinhlanphuongipacc-ky-so-lieu-the-chi-phi-code.md) |
 | T642 | Bỏ gói Free, còn 3 gói: Free thành Standard (S), Standard thành Plus (PL), Plus và Pro gộp thành Pro (PR); đổi mã, chữ giao diện, tên hàm, file, lớp CSS | Trum | 23/10/2026 | `2026-10-23-trum-bo-goi-free.md` |

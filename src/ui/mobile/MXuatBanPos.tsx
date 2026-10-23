@@ -2,7 +2,7 @@ import { useMemo, useState, type FC, type ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { Row, ScreenProps } from '../../modules/types'
 import { cuaHangHienTai, gtgtTyLe, useSession } from '../../app/session'
-import { kieuGhiSo } from '../../app/plan'
+import { kieuGhiSoDv } from '../../app/plan'
 import { CUA_HANG, DAILY, HANG, cnTen } from '../../data/mock'
 import { docNgay, thangNay, trongKhoang, type KhoangNgay } from '../ChonNgay'
 import { Icon } from '../Icon'
@@ -32,8 +32,8 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
   const nav = useNavigate()
   const { ban, laDaXoa } = useDaXoa(`${mod.key}/${sc.slug}`)
   const tyLe = gtgtTyLe(s)   // GTGT theo % doanh thu: Giảm thuế GTGT thay VAT (T163, T450)
-  const kieu = kieuGhiSo(s.cheDo)
-  const ghi = kieu === 'noco'   // chỉ gói Nợ/Có (Plus, Pro) có ghi sổ; gói Standard đồng bộ là xong
+  const kieu = kieuGhiSoDv(s)
+  const ghi = kieu !== 'khong'   // gói Standard, Plus hộ kinh doanh đồng bộ là xong, không ghi sổ (QD81)
   const cnChon = cuaHangHienTai(s)
 
   // Khoảng ngày lọc

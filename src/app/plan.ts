@@ -213,3 +213,9 @@ export function kieuGhiSo(x: Goi | CheDo): 'khong' | 'so' | 'noco' {
   return CHE_DO[CHE_DO_MAC_DINH[x as Goi]].kieuGhiSo
 }
 
+/** Kiểu ghi sổ của đơn vị đang làm việc (QD81): gói Standard không ghi sổ, kể cả doanh nghiệp chạy TT58;
+ *  gói khác theo chế độ kế toán: Plus doanh nghiệp TT58 ghi thẳng vào sổ, Plus hộ kinh doanh TT152 không ghi sổ, Pro Nợ/Có */
+export function kieuGhiSoDv(s: { goi: Goi; cheDo: CheDo }): ReturnType<typeof kieuGhiSo> {
+  return s.goi === 'S' ? 'khong' : kieuGhiSo(s.cheDo)
+}
+

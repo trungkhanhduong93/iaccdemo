@@ -876,4 +876,14 @@ Thay phần gói và mã gói của QD27, phần 4 logo của QD44.
 
 Lý do: Trum giao việc T642 ngày 23/10/2026, chốt các mặc định cùng ngày.
 
-## QD81. Gói nào có ghi sổ (đang soạn)
+## QD81. Gói nào có ghi sổ (23/10/2026)
+
+Thay phần "chỉ gói Nợ/Có có ghi sổ" của T646.
+
+- Standard: không ghi sổ, kể cả doanh nghiệp chạy TT58 (QD79). Lưu phiếu là xong, không có trạng thái, tab, nút Ghi sổ, không có cột Khoản mục, Công việc.
+- Plus doanh nghiệp (TT58): có ghi sổ. Phiếu có trạng thái Chưa ghi sổ, Đã ghi sổ, nút Ghi sổ, tab Ghi sổ ghi thẳng vào sổ, không dùng tài khoản.
+- Plus hộ kinh doanh (TT152): không ghi sổ, như Standard.
+- Pro (TT99, TT133): có ghi sổ, tab Hạch toán Nợ/Có.
+- Code hỏi "có ghi sổ không" bằng `kieuGhiSoDv(s)` trong `src/app/plan.ts`, không gọi thẳng `kieuGhiSo(s.cheDo)`: chế độ TT58 không đủ để biết đơn vị ở gói Standard hay Plus.
+
+Lý do: Trum chốt ngày 23/10/2026 (T648), sau khi T646 bỏ luôn ghi sổ của gói Plus.

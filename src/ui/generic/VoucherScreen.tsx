@@ -6,7 +6,7 @@ import type { Col, ModuleDef, Row, ScreenDef, ScreenProps, VoucherCfg } from '..
 import { duongDan, nhomDangMo, tenMan } from '../../app/registry'
 import { cuaHangHienTai, donViHienTai, gtgtTyLe, loaiHinhDv, useSession } from '../../app/session'
 import { giamThueHkd } from '../../modules/ban-hang/giam-thue'
-import { kieuGhiSo } from '../../app/plan'
+import { kieuGhiSoDv } from '../../app/plan'
 import { Icon } from '../Icon'
 import { IconFigmaSearch, IconFigmaSheet, IconFigmaSliders } from '../IconFigma'
 import { PageHead } from '../Page'
@@ -291,7 +291,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
   const [phieuIn, setPhieuIn] = useState<PhieuIn[] | null>(null)
   const [activeId, setActiveId] = useState<string>(rowsGoc[0]?.id ?? '')
 
-  const ghi = kieuGhiSo(s.cheDo) === 'noco'   // chỉ gói Nợ/Có (Plus, Pro) có ghi sổ
+  const ghi = kieuGhiSoDv(s) !== 'khong'   // gói Standard, Plus hộ kinh doanh không ghi sổ (QD81)
   const cnChon = cuaHangHienTai(s)
   const nhom = nhomCua(mod.key, cfg)
   const bo = boO(nhom, cfg)

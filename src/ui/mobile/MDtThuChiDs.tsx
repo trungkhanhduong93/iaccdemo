@@ -4,7 +4,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import type { Row, ScreenProps } from '../../modules/types'
 import { duongDan } from '../../app/registry'
 import { cuaHangHienTai, useSession } from '../../app/session'
-import { kieuGhiSo } from '../../app/plan'
+import { kieuGhiSoDv } from '../../app/plan'
 import { docNgay, trongKhoang } from '../ChonNgay'
 import { money } from '../format'
 import { dsChipTT, khopChipTT } from '../LocNangCao'
@@ -57,7 +57,7 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
     })
   }, [rowsGoc, mod.key, cfg])
 
-  const ghi = kieuGhiSo(s.cheDo) === 'noco'   // chỉ gói Nợ/Có (Plus, Pro) có ghi sổ
+  const ghi = kieuGhiSoDv(s) !== 'khong'   // gói Standard, Plus hộ kinh doanh không ghi sổ (QD81)
   const cnChon = cuaHangHienTai(s)
 
   const [sp, setSearchParams] = useSearchParams()

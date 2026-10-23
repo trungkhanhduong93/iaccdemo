@@ -4,7 +4,7 @@ import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import type { Col, Row, ScreenProps, VoucherCfg } from '../types'
 import { duongDan, tenMan } from '../../app/registry'
 import { cuaHangHienTai, gtgtTyLe, useSession } from '../../app/session'
-import { kieuGhiSo } from '../../app/plan'
+import { kieuGhiSo, kieuGhiSoDv } from '../../app/plan'
 import { CHE_DO } from '../../app/che-do'
 import { CUA_HANG, DAILY, HANG, cnTen, soBH } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
@@ -243,8 +243,8 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
   const [locCot, setLocCot] = useState<Record<string, GiaTriLoc>>({})
   const [trang, setTrang] = useState(1)
   const [coTrang, setCoTrang] = useState(20)
-  const kieu = kieuGhiSo(s.cheDo)
-  const ghi = kieu === 'noco'   // chỉ gói Nợ/Có (Plus, Pro) có ghi sổ; gói Standard đồng bộ là xong
+  const kieu = kieuGhiSoDv(s)
+  const ghi = kieu !== 'khong'   // gói Standard, Plus hộ kinh doanh đồng bộ là xong, không ghi sổ (QD81)
   // Cửa hàng chọn trên thanh trên (QD17): lọc theo cửa hàng đó, bỏ cột và ô lọc cửa hàng
   const cnChon = cuaHangHienTai(s)
 
@@ -603,7 +603,7 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
     try { localStorage.setItem(khoaCot, JSON.stringify(an)) } catch { /* trình duyệt chặn lưu thì chỉ giữ trong phiên */ }
   }
   const x = tyLe ? ttHkd(row.x) : row.x
-  const kieu = kieuGhiSo(s.cheDo)
+  const kieu = kieuGhiSoDv(s)
   // Chân phiếu dạng phép tính (T613), cộng từ đúng các dòng Hàng bán nên khớp dòng Tổng cộng của lưới
   const cong = (k: 'thanh' | 'giam' | 'ck' | 'phiDv' | 'phiVc' | 'dtTruocThue') => dongCuaPhieu(x).reduce((a, d) => a + d[k], 0)
   const dtTinhThue = cong('dtTruocThue'), phiVc = cong('phiVc')
@@ -629,7 +629,7 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
     dong: dongCuaPhieu(x).map(d => ({ stt: d.stt, ma: d.ma, ten: d.ten, dvt: d.dvt, sl: d.sl, gia: d.gia, tien: d.tien, thue: d.thue, ts: d.ts })),
   }])
   // Phiếu đồng bộ xong từ FABi ghi "Đã đồng bộ" thay cho "Đã ghi sổ" (T613)
-  const [cTt, tTt] = kieu !== 'noco' || row.tt === 'ghi' ? ['ok', 'Đã đồng bộ'] : TT_CT[row.tt] ?? ['warn', 'Chưa ghi sổ']
+  const [cTt, tTt] = kieu === 'khong' || row.tt === 'ghi' ? ['ok', 'Đã đồng bộ'] : TT_CT[row.tt] ?? ['warn', 'Chưa ghi sổ']
   return (
     <FormToanMan icon={mod.icon} iconNet onClose={dong0} title="Xuất bán POS"
       footClass="fsf-f-xem fsf-f-pos"

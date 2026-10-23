@@ -83,9 +83,9 @@ export const MLichSu: FC<MLichSuProps> = ({ goi, man, id, mau }) => {
         {
           luc: '07/10/2026 10:05',
           ai: 'Lê Quốc Bảo',
-          tenViec: kieuGhiSo(goi) !== 'noco' ? 'Lưu chứng từ' : 'Ghi sổ',
+          tenViec: kieuGhiSo(goi) === 'khong' ? 'Lưu chứng từ' : 'Ghi sổ',
           loai: 'ghi_so',
-          ghiChu: kieuGhiSo(goi) !== 'noco' ? 'Vào sổ quỹ.' : 'Vào sổ quỹ và sổ cái.',
+          ghiChu: kieuGhiSo(goi) === 'khong' ? 'Vào sổ quỹ.' : 'Vào sổ quỹ và sổ cái.',
         },
         {
           luc: '07/10/2026 09:58',

@@ -4,7 +4,7 @@ import type { Row, ScreenProps } from '../../modules/types'
 import { dongCua, tkTheoLyDo, ttNghiepVu, type Dong } from '../generic/gen'
 import { duongDan, tenMan } from '../../app/registry'
 import { cuaHangHienTai, ngayDauNam, truocDauNam, useSession } from '../../app/session'
-import { anNgoaiGoi, kieuGhiSo, type Goi } from '../../app/plan'
+import { anNgoaiGoi, type Goi, kieuGhiSoDv } from '../../app/plan'
 import { CUA_HANG, HANG, KHACH, KHO, LY_CAN_DOI_TUONG, LY_DO, NCC, NHAN_VIEN, NVL, MA_LY_CHO_PHAN_BO, TK_NGAN_HANG } from '../../data/mock'
 import { boO, nhomCua, theoLoai } from '../generic/nhom'
 import { DS_DOI_TUONG } from '../generic/BangSua'
@@ -1675,8 +1675,8 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
       return
     }
 
-    const kieu = kieuGhiSo(s.cheDo)
-    const ttLuu = kieu === 'noco' ? 'nhap' : 'ghi'
+    const kieu = kieuGhiSoDv(s)
+    const ttLuu = kieu === 'khong' ? 'ghi' : 'nhap'
 
     const man = `${mod.key}/${sc.slug}`
     const idLuu = dangSua ? String(row!.id) : `moi-${Date.now()}`

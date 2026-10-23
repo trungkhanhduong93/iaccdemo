@@ -4,7 +4,7 @@ import { Navigate, useLocation, useNavigate, useParams, useSearchParams } from '
 import type { Row, ScreenProps } from '../../modules/types'
 import { duongDan } from '../../app/registry'
 import { cuaHangHienTai, useSession } from '../../app/session'
-import { anNgoaiGoi, kieuGhiSo } from '../../app/plan'
+import { anNgoaiGoi, kieuGhiSoDv } from '../../app/plan'
 import { docNgay, khoangThang, trongKhoang } from '../ChonNgay'
 import { money, rutGonSo } from '../format'
 import { dsChipTT, khopChipTT } from '../LocNangCao'
@@ -94,7 +94,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
     })
   }, [rowsGocChung, mod.key, cfg])
 
-  const ghi = kieuGhiSo(s.cheDo) === 'noco'   // chỉ gói Nợ/Có (Plus, Pro) có ghi sổ
+  const ghi = kieuGhiSoDv(s) !== 'khong'   // gói Standard, Plus hộ kinh doanh không ghi sổ (QD81)
   const cnChon = cuaHangHienTai(s)
 
   // Chip trạng thái

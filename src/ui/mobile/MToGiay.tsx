@@ -190,7 +190,7 @@ export const MToGiay: FC<ScreenProps> = ({ sc, mod }) => {
     }
 
     if (isDong1023) {
-      if (s.cheDo === 'TT58') {
+      if (s.cheDo === 'TT58' && s.goi !== 'S') {   // gói Standard xem bản lãi lỗ đơn giản như web (T632, T648)
         const rows = dongB02(kyNum).map((r: DongB02) => ({
           ...r,
           v: r.nay,
