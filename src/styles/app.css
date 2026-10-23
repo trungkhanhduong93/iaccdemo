@@ -41505,3 +41505,44 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
 .m-loc-dong.m-loc-cong-tac .m-loc-dong-tri {
   font-weight: 600;
 }
+
+/* ── Điện thoại: chi tiết Xuất bán POS theo mẫu A, 3 thẻ như web, dòng hàng có STT và chi tiết thụt vào (T651) ── */
+.m-xb651-nhac { display: flex; gap: 8px; align-items: flex-start; margin: 0; padding: 9px 11px; border-radius: 10px; background: var(--tint); color: var(--body); font-size: 12.5px; line-height: 1.45; }
+.m-xb651-nhac .ic { flex: none; margin-top: 1px; color: var(--blue); }
+.m-xb651-the { background: var(--white); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 12px; }
+.m-xb651-dau { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.m-xb651-dau h3 { margin: 0; font-size: 14px; font-weight: 600; color: var(--ink); }
+.m-xb651-chips { display: inline-flex; gap: 6px; }
+.m-xb651-chip { display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 5.3px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+.m-xb651-chip.xanh { background: var(--green-t); color: var(--green); }
+.m-xb651-chip.vang { background: var(--amber-t); color: var(--amber); }
+.m-xb651-chip.cam { background: var(--orange-t); color: #a34f08; }
+.m-xb651-chip.xam { background: var(--soft); color: var(--muted); }
+.m-xb651-luoi { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 14px; }
+.m-xb651-o { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.m-xb651-o.full { grid-column: 1 / -1; }
+.m-xb651-o small { font-size: 11.5px; color: var(--muted); line-height: 1.3; }
+.m-xb651-o b { font-size: 13px; font-weight: 500; color: var(--ink); line-height: 1.4; overflow-wrap: anywhere; }
+.m-xb651-o b.trong { color: var(--muted); font-weight: 400; }
+.m-xb651-o-chep { flex-direction: row; align-items: center; gap: 8px; }
+.m-xb651-o-chep > div { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.m-xb651-chep { flex: none; display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 1px solid var(--line); border-radius: 10px; background: var(--white); color: var(--blue); cursor: pointer; }
+.m-xb651-chep.da-chep { color: var(--green); border-color: var(--green); }
+.m-xb651-hang { padding: 2px 14px; gap: 0; }
+.m-xb651-mon { display: flex; flex-direction: column; gap: 5px; padding: 11px 0; border-bottom: 1px solid var(--line-2); }
+.m-xb651-mon:last-child { border-bottom: 0; }
+.m-xb651-mon-dau { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+.m-xb651-stt { flex: none; width: 18px; font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.m-xb651-mon-dau b { min-width: 0; font-size: 13.5px; font-weight: 600; color: var(--ink); }
+.m-xb651-ma { flex: none; font-size: 11px; color: var(--body); background: var(--soft); border-radius: 4px; padding: 1px 5px; }
+.m-xb651-tong { flex: none; margin-left: auto; font-size: 13.5px; font-weight: 600; color: var(--ink); white-space: nowrap; }
+.m-xb651-mon-ct { display: flex; flex-direction: column; gap: 1px; padding-left: 40px; font-size: 12px; line-height: 1.5; color: var(--muted); }
+.m-xb651-mon-ct > div { display: flex; justify-content: space-between; gap: 10px; }
+.m-xb651-mon-ct > div > span:last-child { white-space: nowrap; }
+.m-xb651-tong-khung { background: #e8ebef; border-radius: 14px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; font-size: 13px; }
+.m-xb651-tong-khung > div { display: flex; justify-content: space-between; gap: 10px; color: var(--ink); }
+.m-xb651-tong-khung > div > span:first-child { color: var(--body); }
+.m-xb651-tong-khung .dam, .m-xb651-tong-khung .dam > span:first-child { font-weight: 600; color: var(--ink); }
+.m-xb651-tong-khung .tong { align-items: baseline; margin-top: 2px; padding-top: 10px; border-top: 1px dashed #c5ccd6; font-weight: 700; }
+.m-xb651-tong-khung .tong > span:first-child { color: var(--ink); }
+.m-xb651-tong-khung .tong > span:last-child { font-size: 18px; color: var(--blue); }

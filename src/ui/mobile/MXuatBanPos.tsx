@@ -6,13 +6,14 @@ import { kieuGhiSoDv } from '../../app/plan'
 import { CUA_HANG, DAILY, HANG, cnTen } from '../../data/mock'
 import { docNgay, thangNay, trongKhoang, type KhoangNgay } from '../ChonNgay'
 import { Icon } from '../Icon'
-import { dmy, fold, money } from '../format'
+import { dmy, fold, money, moneyD, soLuong } from '../format'
 import { MChon } from './MChon'
 import { MChonKhoangNgay } from './MChonKhoangNgay'
 import {
   PTTT,
   chiaTheo,
   dongCuaPhieu,
+  donPosCua,
   giamThueHkd,
   ptttCua,
   soFabi,
@@ -28,7 +29,7 @@ type KhoaLoc = 'cn' | 'kh' | 'kenh' | 'pttt' | 'hang' | 'tonKho'
 const LOC_TRONG: Record<KhoaLoc, string> = { cn: '', kh: '', kenh: '', pttt: '', hang: '', tonKho: '' }
 
 export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
-  const { s } = useSession()
+  const { s, toast } = useSession()
   const nav = useNavigate()
   const { ban, laDaXoa } = useDaXoa(`${mod.key}/${sc.slug}`)
   const tyLe = gtgtTyLe(s)   // GTGT theo % doanh thu: Giảm thuế GTGT thay VAT (T163, T450)
@@ -47,6 +48,7 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
   // Tấm chi tiết đơn
   const [donDangXem, setDonDangXem] = useState<Row | null>(null)
   const [timHang, setTimHang] = useState('')   // ô tìm hàng hoá trong chi tiết đơn (T573)
+  const [daChep, setDaChep] = useState(false)   // nút chép mã tra cứu vừa bấm (T651)
 
   // Danh sách chứng từ theo cách đồng bộ FABi
   const tatCa = useMemo(() => {
@@ -166,10 +168,18 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
   const khoan = useMemo(() => {
     const cong = (k: 'sl' | 'thanh' | 'giam' | 'ck' | 'phiDv' | 'phiVc' | 'dtTruocThue' | 'thue') => dsMon.reduce((a, m) => a + (Number(m[k]) || 0), 0)
     return {
-      sl: cong('sl'), tienHang: cong('thanh'), giam: cong('giam') + cong('ck'), phiDv: cong('phiDv'), phiVc: cong('phiVc'),
+      sl: cong('sl'), tienHang: cong('thanh'), giam: cong('giam'), ck: cong('ck'), phiDv: cong('phiDv'), phiVc: cong('phiVc'),
       dtTruocThue: cong('dtTruocThue'), thue: cong('thue'), giamThue: Number(donDangXem?.giamThue || 0),
     }
   }, [dsMon, donDangXem])
+
+  // Đơn hàng POS, khách lấy hoá đơn GTGT, hoá đơn điện tử: cùng nguồn với chi tiết web (T651)
+  const dp = useMemo(() => (donDangXem?.x ? donPosCua(donDangXem.x as XPos) : null), [donDangXem])
+  const chepMa = (ma: string) => {
+    navigator.clipboard?.writeText(ma).then(() => toast('Đã chép mã tra cứu'), () => toast('Trình duyệt chặn sao chép, chọn mã rồi chép tay'))
+    setDaChep(true)
+    setTimeout(() => setDaChep(false), 1500)
+  }
 
   const qHang = fold(timHang.trim())
   const dsMonLoc = qHang ? dsMon.filter(m => fold(`${m.ten} ${m.ma}`).includes(qHang)) : dsMon
@@ -317,7 +327,9 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
         />
       )}
 
-      {/* Chi tiết đơn hàng (T425: theo khuôn thẻ phân bổ, thanh đầu sát mép trên full-width) */}
+      {/* Chi tiết đơn hàng (T425: theo khuôn thẻ phân bổ, thanh đầu sát mép trên full-width).
+          T651 theo mẫu A Trum chốt: 3 thẻ Đơn hàng POS, Khách hàng, Hoá đơn như 3 nhóm của web; dòng hàng có STT, mã cạnh tên,
+          3 dòng chi tiết thụt vào, tiền cùng cột tổng dòng; khung tổng nền xám; chỉ một nút Đóng */}
       {donDangXem && (
         <div className="m-pb-man m-pos-ct-man">
           <header className="m-pb-thanh-dau m-pos-ct-dau">
@@ -336,67 +348,121 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
             <span className="m-pos-ct-x-placeholder" />
           </header>
 
-          {/* Mẫu B (T573): không tab; thông tin đơn, danh sách hàng hoá, các khoản kiểu biên lai */}
           <div className="m-pb-noi-dung m-pos-ct-than">
-            <div className="m-pos-ct-the">
-              <div className="m-pos-ct-nhom-t m-pos-b-nhom">
-                <span>Thông tin đơn</span>
-                <span className="m-pos-b-chip">
-                  {ghi
-                    ? <span className={`m-pos-tt ${donDangXem.tt === 'nhap' ? 'chua-ghi' : 'da-ghi'}`}>{donDangXem.tt === 'nhap' ? 'Chưa ghi sổ' : 'Đã ghi sổ'}</span>
-                    : <span className="m-pos-tt da-ghi">Đã đồng bộ</span>}
-                  <span className="m-pos-b-nguon">FABi</span>
+            <p className="m-xb651-nhac">
+              <Icon n="info" className="ic sm" />
+              <span>Đồng bộ từ FABi: không sửa, trả hàng, xoá trên phiếu này. Sửa đơn trên FABi rồi đồng bộ lại.</span>
+            </p>
+
+            <section className="m-xb651-the">
+              <div className="m-xb651-dau">
+                <h3>Đơn hàng POS</h3>
+                <span className="m-xb651-chips">
+                  {/* Như web (T613): phiếu đã ghi hoặc gói không ghi sổ là "Đã đồng bộ" */}
+                  {!ghi || donDangXem.tt !== 'nhap'
+                    ? <span className="m-xb651-chip xanh">Đã đồng bộ</span>
+                    : <span className="m-xb651-chip vang">Chưa ghi sổ</span>}
+                  <span className="m-xb651-chip cam">FABi</span>
                 </span>
               </div>
-              <div className="m-pos-ct-ttin">
-                <div><small>Kho xuất</small><b>{tenKhoDon}</b></div>
-                <div><small>Khách hàng</small><b>{donDangXem.doiTuong || 'Khách lẻ POS'}</b></div>
-                <div><small>PTTT</small><b>{ptttTen}</b></div>
-                <div><small>Thời gian xuất</small><b>{donDangXem.ngay}</b></div>
-                <div><small>Cửa hàng</small><b>{donDangXem.cn}</b></div>
-                <div><small>Kênh bán hàng</small><b>{donDangXem.kenh}</b></div>
-                {donDangXem.dienGiai && (
-                  <div className="full"><small>Ghi chú</small><b>{donDangXem.dienGiai}</b></div>
-                )}
+              <div className="m-xb651-luoi">
+                <O nhan="Số đơn POS" ma>{dp?.soDon}</O>
+                <O nhan="Thời gian xuất">{donDangXem.ngay}</O>
+                <O nhan="Cửa hàng">{donDangXem.cn}</O>
+                <O nhan="Kho xuất">{tenKhoDon}</O>
+                <O nhan="Kênh bán hàng">{donDangXem.kenh}</O>
+                <O nhan="Thanh toán">{ptttTen}</O>
               </div>
-            </div>
+            </section>
+
+            <section className="m-xb651-the">
+              <div className="m-xb651-dau"><h3>Khách hàng</h3></div>
+              <div className="m-xb651-luoi">
+                <O nhan="Tên khách hàng" full>{dp?.khach?.ten ?? 'Khách lẻ POS'}</O>
+                <O nhan="Mã số thuế" ma>{dp?.khach?.mst}</O>
+                <O nhan="Người mua hàng">{dp?.khach?.nguoiMua}</O>
+                <O nhan="Địa chỉ" full>{dp?.khach?.diaChi}</O>
+              </div>
+            </section>
+
+            <section className="m-xb651-the">
+              <div className="m-xb651-dau">
+                <h3>Hoá đơn</h3>
+                {!dp?.hoaDon && <span className="m-xb651-chip xam">Không có thông tin HĐĐT</span>}
+              </div>
+              <div className="m-xb651-luoi">
+                {dp?.hoaDon && (
+                  <>
+                    <O nhan="Số hoá đơn" ma>{dp.hoaDon.so}</O>
+                    <O nhan="Ký hiệu" ma>{dp.hoaDon.kyHieu}</O>
+                    <O nhan="Ngày hoá đơn">{dp.hoaDon.ngay}</O>
+                    <O nhan="Mã đơn POS" ma>{donDangXem.so}</O>
+                    <div className="m-xb651-o full m-xb651-o-chep">
+                      <div>
+                        <small>Mã tra cứu</small>
+                        <b className="code">{dp.hoaDon.maTraCuu}</b>
+                      </div>
+                      <button type="button" className={`m-xb651-chep${daChep ? ' da-chep' : ''}`} onClick={() => chepMa(dp.hoaDon!.maTraCuu)}
+                        aria-label={daChep ? 'Đã chép mã tra cứu' : 'Sao chép mã tra cứu'}>
+                        {daChep
+                          ? <Icon n="check" className="ic sm" />
+                          : <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2" /><path d="M5 15V5a1 1 0 0 1 1-1h10" /></svg>}
+                      </button>
+                    </div>
+                  </>
+                )}
+                <O nhan="Ghi chú" full>{donDangXem.dienGiai}</O>
+              </div>
+            </section>
 
             <div className="m-pos-b-tieu-de">DANH SÁCH HÀNG HOÁ ({dsMon.length})</div>
             <label className="m-pos-b-tim">
               <Icon n="search" className="ic sm" />
               <input type="text" value={timHang} onChange={e => setTimHang(e.target.value)} placeholder="Nhập tên, mã hàng hoá" aria-label="Tìm hàng hoá" />
             </label>
-            <div className="m-pos-ct-the m-pos-ct-mon-the">
+            <section className="m-xb651-the m-xb651-hang">
               {dsMonLoc.length === 0 && <div className="m-pos-b-trong">Không có hàng hoá khớp</div>}
               {dsMonLoc.map((m, idx) => {
-                // VAT % chỉ hiện khi khấu trừ; theo % doanh thu không hiện thuế, giảm thuế trên dòng (T573)
-                const ct = [`${m.ma} · ${m.sl} ${m.dvt} × ${money(m.gia)}`, !tyLe && m.ts ? `VAT ${m.ts}%` : '', m.tonKho ? 'tồn kho' : ''].filter(Boolean).join(' · ')
+                // Tổng dòng = doanh thu trước thuế + thuế; GTGT theo % doanh thu thì trừ giảm thuế, không có VAT (T163, T450)
+                const giamThue = Number(m.giamThue) || 0
+                const tong = m.dtTruocThue + (tyLe ? -giamThue : m.thue)
                 return (
-                  <div key={idx} className="m-pos-mon-dong-b">
-                    <b>{m.ten}</b>
-                    <span className="m-pos-mon-tien-b num">{money(m.tien)}</span>
-                    <span className="m-pos-mon-ct-b num">{ct}</span>
-                    {m.giam > 0 && <span className="m-pos-mon-ct2-b num">giảm -{money(m.giam)}</span>}
+                  <div key={m.ma + idx} className="m-xb651-mon">
+                    <div className="m-xb651-mon-dau">
+                      <span className="m-xb651-stt">{m.stt ?? idx + 1}.</span>
+                      <b>{m.ten}</b>
+                      <span className="m-xb651-ma code">{m.ma}</span>
+                      <span className="m-xb651-tong num">{moneyD(tong)}</span>
+                    </div>
+                    <div className="m-xb651-mon-ct num">
+                      <div><span>{soLuong(m.sl)} {m.dvt} × {money(m.gia)}</span><span>{moneyD(m.thanh)}</span></div>
+                      <div><span>Giảm giá</span><span>{moneyD(m.giam)}</span></div>
+                      {m.ck > 0 && <div><span>Chiết khấu</span><span>{moneyD(m.ck)}</span></div>}
+                      {m.phiDv > 0 && <div><span>Phí dịch vụ</span><span>{moneyD(m.phiDv)}</span></div>}
+                      {tyLe
+                        ? <div><span>Giảm thuế GTGT</span><span>{moneyD(giamThue)}</span></div>
+                        : <div><span>VAT {m.ts}% - Thuế</span><span>{moneyD(m.thue)}</span></div>}
+                    </div>
                   </div>
                 )
               })}
-            </div>
+            </section>
 
-            <div className="m-pos-ct-the m-pos-b-bien-lai">
-              <div className="d"><span>Tiền hàng ({dsMon.length} món, SL {khoan.sl})</span><span className="num">{money(khoan.tienHang)}</span></div>
-              <div className="d"><span>Giảm giá, chiết khấu</span><span className={`num${khoan.giam > 0 ? ' am' : ''}`}>{khoan.giam > 0 ? `(${money(khoan.giam)})` : 0}</span></div>
-              <div className="d"><span>Phí dịch vụ</span><span className="num">{money(khoan.phiDv)}</span></div>
-              <div className="d"><span>Phí vận chuyển</span><span className="num">{money(khoan.phiVc)}</span></div>
-              <div className="d"><span>Doanh thu trước thuế</span><span className="num">{money(khoan.dtTruocThue)}</span></div>
+            <section className="m-xb651-tong-khung num">
+              <div><span>Tiền hàng ({dsMon.length} món, SL {soLuong(khoan.sl)})</span><span>{money(khoan.tienHang)}</span></div>
+              <div><span>Giảm giá</span><span>{money(khoan.giam)}</span></div>
+              <div><span>Chiết khấu</span><span>{money(khoan.ck)}</span></div>
+              <div><span>Phí dịch vụ</span><span>{money(khoan.phiDv)}</span></div>
+              {khoan.phiVc > 0 && <div><span>Phí vận chuyển</span><span>{money(khoan.phiVc)}</span></div>}
+              <div className="dam"><span>Doanh thu tính thuế</span><span>{money(khoan.dtTruocThue)}</span></div>
               {tyLe
-                ? <div className="d"><span>Giảm thuế GTGT</span><span className={`num${khoan.giamThue > 0 ? ' am' : ''}`}>{khoan.giamThue > 0 ? `(${money(khoan.giamThue)})` : 0}</span></div>
-                : <div className="d"><span>Tiền thuế GTGT</span><span className="num">{money(khoan.thue)}</span></div>}
-              <div className="d"><span>Phiếu giảm giá</span><span className="num">0</span></div>
-              <div className="d tong"><span>Tổng tiền</span><span className="num">{money(donDangXem.tong)} đ</span></div>
-            </div>
+                ? <div><span>Giảm thuế GTGT</span><span>{money(khoan.giamThue)}</span></div>
+                : <div><span>Thuế GTGT</span><span>{money(khoan.thue)}</span></div>}
+              <div className="tong"><span>Tổng thanh toán</span><span>{moneyD(Number(donDangXem.tong))}</span></div>
+            </section>
           </div>
 
-          {/* Chân: chỉ một nút "Đóng" rộng hết. KHÔNG có nút Xem hạch toán */}
+          {/* Chân: chỉ một nút "Đóng" rộng hết. KHÔNG có nút In phiếu, Xem hạch toán (T573, T651) */}
           <div className="m-pos-ct-chan">
             <button
               type="button"
@@ -416,5 +482,16 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
         modKey="ban-hang"
       />
     </>
+  )
+}
+
+/** Một ô nhãn trên, giá trị dưới trong thẻ chi tiết Xuất bán POS (T651); trống thì ghi — như web */
+function O({ nhan, children, full, ma }: { nhan: string; children?: ReactNode; full?: boolean; ma?: boolean }) {
+  const trong = children === undefined || children === null || children === ''
+  return (
+    <div className={`m-xb651-o${full ? ' full' : ''}`}>
+      <small>{nhan}</small>
+      {trong ? <b className="trong">—</b> : <b className={ma ? 'code' : undefined}>{children}</b>}
+    </div>
   )
 }
