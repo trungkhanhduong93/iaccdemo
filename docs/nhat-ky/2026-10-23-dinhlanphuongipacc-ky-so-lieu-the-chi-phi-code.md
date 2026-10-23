@@ -11,6 +11,7 @@
 - `src/ui/mobile/MDsChungTuChuan.tsx`: thêm prop `nhanDem` (mặc định "chứng từ"), `nhanTong` (mặc định "Tổng cộng"), `theTongThem` (hàng thêm trong thẻ tổng). Chữ "Danh sách chứng từ" lấy theo `nhanDem`. Màn khác không đổi.
 - `src/ui/mobile/MCcdc.tsx`: bỏ `kyHienTai = 202610` để cứng, kỳ lấy từ bộ lọc, mặc định `kyMacDinh(s)`, danh sách tháng `dsKyNam(s)`. Ẩn thẻ ghi tăng sau kỳ. Mỗi thẻ tính `kyNay` (phân bổ trong kỳ, như web `ccdc/index.ts`), `con`, `ngayPb` (ngày bắt đầu phân bổ sớm nhất). Công tắc bật thì giữ thẻ `kyNay > 0 || con > 0`. Chip `Tháng mm/yyyy`. Thẻ tổng: "N thẻ", "Kỳ tháng mm/yyyy", Tổng giá trị, Phân bổ tháng này (tháng khác thì "Phân bổ tháng mm/yyyy"), Giá trị còn lại. Từng thẻ: bỏ "Còn ..." ở dòng tên, thêm dòng `Ghi tăng ... · PB từ ...`, khối Phân bổ tháng này, Còn lại ở dưới.
 - `src/styles/app.css`: mục cuối file `/* ── Danh sách thẻ chi phí điện thoại theo kỳ số liệu (T645) ── */`.
+- Theo yêu cầu sau khi push: bỏ nền cam ở khối Phân bổ tháng này, Còn lại của từng thẻ (`.m-cp645-so`).
 
 ## Đã kiểm
 
