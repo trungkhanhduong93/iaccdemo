@@ -52,7 +52,7 @@ export const SU_KIEN_THAY_DOI = 'iacc-thao-tac-nhanh-doi'
 export const TOI_DA_THAO_TAC = 8
 
 export function layMacDinhIds(goi?: string): string[] {
-  return goi === 'F' ? [...MAC_DINH_FREE] : [...MAC_DINH_KHAC]
+  return goi === 'S' ? [...MAC_DINH_FREE] : [...MAC_DINH_KHAC]
 }
 
 export function docThaoTacIds(goi?: string): string[] {
@@ -99,7 +99,7 @@ function layGoc() {
 }
 
 export function layTatCaThaoTac(s: Pick<Session, 'goi'> & Partial<Session>): ThaoTacMuc[] {
-  const isFree = s.goi === 'F'
+  const isFree = s.goi === 'S'
   const kq: ThaoTacMuc[] = []
   const daCoDuongDan = new Set<string>()
   const GOC = layGoc()
@@ -198,7 +198,7 @@ export function layTatCaThaoTac(s: Pick<Session, 'goi'> & Partial<Session>): Tha
 }
 
 export function useThaoTacNhanh(s: Pick<Session, 'goi'> & Partial<Session>) {
-  const isFree = s.goi === 'F'
+  const isFree = s.goi === 'S'
   const [ids, setIds] = useState<string[]>(() => docThaoTacIds(s.goi))
 
   useEffect(() => {

@@ -110,7 +110,7 @@ export function ScreenRoute() {
 export function HomeRedirect() {
   const { s } = useSession()
   // Gói Free không có Bàn làm việc nên mọi vai trò vào Tổng quan (T230)
-  return <Navigate to={s.role === 'owner' || s.goi === 'F' ? '/app/trang-chu/tong-quan' : '/app/trang-chu/ban-lam-viec'} replace />
+  return <Navigate to={s.role === 'owner' || s.goi === 'S' ? '/app/trang-chu/tong-quan' : '/app/trang-chu/ban-lam-viec'} replace />
 }
 
 /** Trang nâng cấp khi bấm vào tính năng ngoài gói */
@@ -148,7 +148,7 @@ export function Locked({ code, ten, crumb, quayLai }: { code: string; ten: strin
             })}
           </div>
         </div>
-        <p style={{ fontSize: 12, marginTop: 18 }}>Bảng so sánh đủ 4 gói ở <Link to="/app/he-thong/goi-thue-bao">Hệ thống, Gói thuê bao</Link>. <Pk g={s.goi} /></p>
+        <p style={{ fontSize: 12, marginTop: 18 }}>Bảng so sánh đủ 3 gói ở <Link to="/app/he-thong/goi-thue-bao">Hệ thống, Gói thuê bao</Link>. <Pk g={s.goi} /></p>
       </div>
     </div>
   )

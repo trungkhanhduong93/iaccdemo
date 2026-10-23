@@ -93,7 +93,7 @@ export const THES: { k: TabKey; ten: string; icon: string }[] = [
 
 /** Loại số dư khai được: gói Free chỉ tiền; chế độ Nợ/Có thêm số dư tài khoản */
 export function loaiTheo(goi: string, noCo: boolean): TabKey[] {
-  if (goi === 'F') return ['tien']
+  if (goi === 'S') return ['tien']
   return noCo ? ['tk', 'tien', 'kh', 'ncc', 'kho'] : ['tien', 'kh', 'ncc', 'kho']
 }
 

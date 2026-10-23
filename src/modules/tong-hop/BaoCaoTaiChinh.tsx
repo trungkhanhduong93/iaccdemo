@@ -48,7 +48,7 @@ export function dongKqkd(cd: CheDo, thang: number, goi?: Goi, s?: Session) {
   const q = kqkd(thang, 2026)
   // Gói Free (T220): Giá vốn ghi Chi phí NVL; chi phí phân bổ hàng tháng (phân bổ CCDC, khấu hao) tách khỏi chi phí trong tháng;
   // bỏ thu nhập, chi phí khác khỏi bảng và lợi nhuận, nên lợi nhuận lệch Tổng quan đúng bằng khoản khác (PhuongXT chốt 14/10/2026)
-  if (goi === 'F') {   // doanh nghiệp gói Free chạy TT58 cũng dùng bản này (T632)
+  if (goi === 'S') {   // doanh nghiệp gói Standard chạy TT58 cũng dùng bản này (T632)
     const pb = q.cp.ccdc + q.cp.khauHao
     const cpThang = q.cpQlkd + q.cpTc - q.dtTc - pb
     // T318: dạng chi tiết, mỗi kênh bán, lý do chi, loại phân bổ một dòng con; dòng con không phát sinh ẩn ở KetQuaKinhDoanh
@@ -93,10 +93,10 @@ export function KetQuaKinhDoanh(p: ScreenProps) {
   const nav = useNavigate()
   return (
     // Gói Free không hiện dòng ghi chú trên báo cáo (T318, PhuongXT chốt 17/10/2026)
-    <Khung {...p} note={s.goi === 'F' ? undefined
+    <Khung {...p} note={s.goi === 'S' ? undefined
       : <Note icon="info">Bấm dòng doanh thu hoặc giá vốn để xem số chi tiết. Số khớp Tổng quan, báo cáo doanh thu, bảng cân đối số phát sinh.</Note>}>
       {ky => {
-        if (s.cheDo === 'TT58' && s.goi !== 'F') {
+        if (s.cheDo === 'TT58' && s.goi !== 'S') {
           const rows = dongB02(Number(ky))
           const cols: Col[] = [
             { k: 'ct', t: 'Chỉ tiêu', kyHieu: 'A' },
@@ -116,11 +116,11 @@ export function KetQuaKinhDoanh(p: ScreenProps) {
         const khoa = (x: Row) => x._k ?? x.ct
         const cuTheo = new Map(cu.map(x => [khoa(x), x.v]))
         // Gói Free chỉ một cột số liệu kỳ đang xem, tên cột "Số tiền", không kèm tháng trước (T617)
-        const motCot = s.goi === 'F'
+        const motCot = s.goi === 'S'
         const rows = nay.map((x): Row => ({ ...x, cu: cuTheo.get(khoa(x)) })).filter(x => !x._con || x.v || (!motCot && x.cu))
         const cols: Col[] = [{ k: 'ct', t: 'Chỉ tiêu', r: x => x._con ? <span className="kqkd-con">{x.ct}</span> : x.ct }, ...(ma ? [{ k: 'ma', t: 'Mã số', c: true, w: 70 } as Col] : []), { k: 'v', t: motCot ? 'Số tiền' : kyTen(ky).replace(' (đến 07/10)', ''), num: true }, ...(motCot ? [] : [{ k: 'cu', t: kyTen(truoc(ky)), num: true } as Col])]
         return (
-          <ReportPaper title="Báo cáo kết quả hoạt động kinh doanh" sub={`${kyTen(ky)}${s.cheDo === 'TT152' || s.goi === 'F' ? ' · Bản đơn giản, chưa theo chế độ kế toán' : ''}`}>
+          <ReportPaper title="Báo cáo kết quả hoạt động kinh doanh" sub={`${kyTen(ky)}${s.cheDo === 'TT152' || s.goi === 'S' ? ' · Bản đơn giản, chưa theo chế độ kế toán' : ''}`}>
             <RptTable cols={cols} rows={rows} onRow={x => nav(x._drill)} />
           </ReportPaper>
         )

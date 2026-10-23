@@ -26,6 +26,7 @@ export interface Session {
   role: Role
   donVi: string          // id đơn vị kế toán
   goi: Goi               // gói của đơn vị; thanh "Xem thử" đổi được để xem khoá theo gói
+  goiBan?: number        // phiên bản mã gói (T642): 2 = bộ 3 gói S/PL/PR mới
   cheDo: CheDo           // chế độ kế toán của đơn vị, chọn ở Cấu hình hệ thống; đổi gói thì về chế độ mặc định của gói
   cuaHang: string       // cửa hàng đang làm việc chọn trên thanh trên; 'all' là xem gộp mọi cửa hàng
   khoiTao: boolean       // đã chạy xong khởi tạo
@@ -45,13 +46,12 @@ export interface Session {
   mapPttt?: Record<string, Record<string, string>>   // map PTTT FABi về quỹ theo đơn vị; khoá 'mã cửa hàng|mã PTTT', giá trị mã quỹ (T264)
 }
 
-/** Đổi mã gói cũ ('M', 'A') sang mã chuẩn ('PL', 'PR'), nhận cả mã cũ và mới */
+/** Đổi mã gói cũ ('M', 'A') sang mã chuẩn ('PL', 'PR'), nhận các mã mới ('S', 'PL', 'PR') */
 export function chuanHoaGoi(g: unknown): Goi {
-  if (g === 'M' || g === 'PL') return 'PL'
-  if (g === 'A' || g === 'PR') return 'PR'
+  if (g === 'PR' || g === 'A') return 'PR'
+  if (g === 'PL' || g === 'M') return 'PL'
   if (g === 'S') return 'S'
-  if (g === 'F') return 'F'
-  return 'PL'
+  return 'S'
 }
 
 const MAC_DINH: Session = {
@@ -60,13 +60,14 @@ const MAC_DINH: Session = {
   email: 'thuha@phomay.vn',
   role: 'ktt',
   donVi: 'pm',
-  goi: 'PL',
-  cheDo: 'TT133',
+  goi: 'S',
+  cheDo: 'TT58',
   cuaHang: 'all',
   khoiTao: true,
   thuGon: false,
   ppGtgt: 'tyLe',
-  ppTndn: 'thuNhap',
+  ppTndn: 'tyLe',
+  goiBan: 2,
 }
 const KEY = 'iacc-cloud-session'
 
@@ -76,35 +77,49 @@ function doc(): Session {
     const goiParam = params?.get('goi')
     const raw = localStorage.getItem(KEY)
     const parsed = raw ? JSON.parse(raw) : {}
-    const res: Session = { ...MAC_DINH, ...parsed }
+    const res: Session = { ...MAC_DINH, ...parsed, goiBan: raw ? parsed.goiBan : 2 }   // phiên cũ chưa có goiBan thì chuanHoaFree đổi mã (T642)
     if (parsed.goi) {
-      res.goi = chuanHoaGoi(parsed.goi)
+      res.goi = parsed.goi
     }
     if (goiParam) {
       res.goi = chuanHoaGoi(goiParam)
+      res.goiBan = 2
     }
-    res.cheDo = chuanHoaCheDo(res.goi, params?.get('cheDo') ?? parsed.cheDo)
+    const n = chuanHoaFree(res)
+    n.cheDo = chuanHoaCheDo(n.goi, params?.get('cheDo') ?? parsed.cheDo)
     const ppGtgtParam = params?.get('ppGtgt')
     if (ppGtgtParam === 'tyLe' || ppGtgtParam === 'khauTru') {
-      res.ppGtgt = ppGtgtParam
-    } else if (res.ppGtgt !== 'tyLe' && res.ppGtgt !== 'khauTru') {
-      res.ppGtgt = 'tyLe'
+      n.ppGtgt = ppGtgtParam
+    } else if (n.ppGtgt !== 'tyLe' && n.ppGtgt !== 'khauTru') {
+      n.ppGtgt = 'tyLe'
     }
     const ppTndnParam = params?.get('ppTndn')
     if (ppTndnParam === 'tyLe' || ppTndnParam === 'thuNhap') {
-      res.ppTndn = ppTndnParam
-    } else if (res.ppTndn !== 'tyLe' && res.ppTndn !== 'thuNhap') {
-      res.ppTndn = 'thuNhap'
+      n.ppTndn = ppTndnParam
+    } else if (n.ppTndn !== 'tyLe' && n.ppTndn !== 'thuNhap') {
+      n.ppTndn = 'thuNhap'
     }
-    return chuanHoaFree(res)
+    return n
   } catch { return MAC_DINH }
 }
 
-/** Gói Free theo loại hình (T632): hộ kinh doanh TT152; doanh nghiệp TT58, thuế GTGT, TNDN theo tỷ lệ % doanh thu (trường hợp 1, sổ S1-DNSN) */
+/** Gói Standard mới (Free cũ) theo loại hình (T632): hộ kinh doanh TT152; doanh nghiệp TT58, thuế GTGT, TNDN theo tỷ lệ % doanh thu (trường hợp 1, sổ S1-DNSN) */
 function chuanHoaFree(n: Session): Session {
-  if (n.goi !== 'F') return n
-  if (loaiHinhDv(n, donViHienTai(n)) === 'hkd') return n.cheDo === 'TT152' ? n : { ...n, cheDo: 'TT152' }
-  return { ...n, cheDo: CHE_DO_DN_FREE, ppGtgt: 'tyLe', ppTndn: 'tyLe' }
+  let goi = n.goi
+  let goiBan = n.goiBan
+  if (goiBan !== 2) {
+    const g = goi as unknown as string
+    if (g === 'F') goi = 'S'
+    else if (g === 'S') goi = 'PL'
+    else if (g === 'PL') goi = 'PR'
+    else if (g === 'PR' || g === 'M' || g === 'A') goi = 'PR'
+    else goi = 'S'
+    goiBan = 2
+  }
+  const s: Session = { ...n, goi, goiBan }
+  if (s.goi !== 'S') return s
+  if (loaiHinhDv(s, donViHienTai(s)) === 'hkd') return s.cheDo === 'TT152' ? s : { ...s, cheDo: 'TT152' }
+  return { ...s, cheDo: CHE_DO_DN_FREE, ppGtgt: 'tyLe', ppTndn: 'tyLe' }
 }
 
 const Ctx = createContext<{ s: Session; set: (p: Partial<Session>) => void; toast: (m: string) => void } | null>(null)
@@ -117,7 +132,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   // Đổi gói mà không chỉ định chế độ: hộ kinh doanh lấy TT152 nếu gói cho phép, còn lại lấy mặc định của gói (T179)
   const cheDoKhiDoiGoi = (n: Session, g: Goi): CheDo =>
     loaiHinhDv(n, donViHienTai(n)) === 'hkd' && CHE_DO_HOP_LE[g].includes('TT152') ? 'TT152' : CHE_DO_MAC_DINH[g]
-  const set = (p: Partial<Session>) => setS(x => { const n = { ...x, ...p }; if (p.goi && !p.cheDo) n.cheDo = cheDoKhiDoiGoi(n, p.goi); n.cheDo = chuanHoaCheDo(n.goi, n.cheDo); return chuanHoaFree(n) })
+  const set = (p: Partial<Session>) => setS(x => { const n = { ...x, ...p, goiBan: 2 }; if (p.goi && !p.cheDo) n.cheDo = cheDoKhiDoiGoi(n, p.goi); n.cheDo = chuanHoaCheDo(n.goi, n.cheDo); return chuanHoaFree(n) })
   return (
     <Ctx.Provider value={{ s, set, toast: setMsg }}>
       {children}
@@ -180,7 +195,7 @@ export function dsKyNam(s: Session): { nhan: string; so: number }[] {
 /** Kỳ mặc định: tháng làm việc chọn ở trang chủ gói Free (T617), không có thì tháng hiện tại nếu nằm trong năm tài chính, không thì kỳ cuối năm */
 export function kyMacDinh(s: Session): number {
   const d = new Date(), ds = dsKyNam(s), nay = d.getFullYear() * 100 + d.getMonth() + 1
-  const lv = s.goi === 'F' ? thangLamViec() : null
+  const lv = s.goi === 'S' ? thangLamViec() : null
   if (lv && ds.some(k => k.so === 2026 * 100 + lv)) return 2026 * 100 + lv
   return ds.some(k => k.so === nay) ? nay : ds[ds.length - 1].so
 }

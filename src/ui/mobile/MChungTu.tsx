@@ -94,7 +94,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
     })
   }, [rowsGocChung, mod.key, cfg])
 
-  const ghi = kieuGhiSo(s.goi) !== 'khong' && s.goi !== 'F'
+  const ghi = kieuGhiSo(s.goi) !== 'khong' && s.goi !== 'S'
   const cnChon = cuaHangHienTai(s)
 
   // Chip trạng thái
@@ -179,7 +179,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
       if (cnChon && r.cn !== cnChon.ten) return false
       // 3. Loại chứng từ (tab con) (T299: Thu chi gói Free gộp Tiền mặt và Ngân hàng)
       if (loaiChon) {
-        if (mod.key === 'tien' && s.goi === 'F') {
+        if (mod.key === 'tien' && s.goi === 'S') {
           if (loaiChon === 'tien-mat') {
             if (r.loai !== 'thu' && r.loai !== 'chi') return false
           } else if (loaiChon === 'ngan-hang') {
@@ -267,7 +267,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
   const handleThem = khongThem
     ? undefined
     : () => {
-        if (mod.key === 'tien' && s.goi === 'F') {
+        if (mod.key === 'tien' && s.goi === 'S') {
           if (loaiChon === 'cq') {
             thucHienThem(`${path}/moi?loai=cq`)
           } else {
@@ -285,7 +285,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
   // Danh sách loại phiếu khi thêm mới (T299: gói Free lọc theo tab Tiền mặt / Ngân hàng)
   const dsLoaiThemMoi = useMemo(() => {
     if (!cfg.loai) return []
-    if (mod.key === 'tien' && s.goi === 'F') {
+    if (mod.key === 'tien' && s.goi === 'S') {
       if (loaiChon === 'tien-mat') {
         return cfg.loai.filter(l => l.k === 'thu' || l.k === 'chi')
       }
@@ -301,7 +301,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
   // Hàng tabs ngang: các loại phiếu / màn chứng từ trong phân hệ + tab Báo cáo theo dõi
   const hangTabs = useMemo(() => {
     // T299: Phân hệ Thu chi gói Free đúng 5 tab: Tất cả, Tiền mặt, Ngân hàng, Chuyển quỹ, Báo cáo theo dõi
-    if (mod.key === 'tien' && s.goi === 'F') {
+    if (mod.key === 'tien' && s.goi === 'S') {
       const tabsFree = [
         { k: '', ten: 'Tất cả' },
         { k: 'tien-mat', ten: 'Tiền mặt' },

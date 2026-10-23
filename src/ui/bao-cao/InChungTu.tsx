@@ -442,7 +442,7 @@ function SuaGon({ mau, hoTenDonVi, onLuu, onHuy }: { mau: MauIn; hoTenDonVi: Rec
     <div className="tkmi-gon">
       <div className="tkmi-gon-dau">
         <b>Sửa mẫu {mau.ten}</b>
-        <span className="tkmi-goi-y">Gói đang dùng sửa được khổ giấy, cỡ chữ và người ký. Sửa đủ ở tiện ích Thiết kế mẫu in của gói Plus, Pro.</span>
+        <span className="tkmi-goi-y">Gói đang dùng sửa được khổ giấy, cỡ chữ và người ký. Sửa đủ ở tiện ích Thiết kế mẫu in của gói Pro.</span>
       </div>
       <CaiTrang gon trang={nhap.trang} onChange={trang => setNhap(m => doiTrangMau(m, trang))} />
       <div className="tkmi-gon-nhom">Người ký</div>

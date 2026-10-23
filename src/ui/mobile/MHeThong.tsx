@@ -422,10 +422,10 @@ export const MThongTinDonVi: FC<ScreenProps> = () => {
   }))
 
   const sua = (p: Partial<typeof f>) => setF(x => ({ ...x, ...p }))
-  const dnCoDinh = s.goi === 'PL' || s.goi === 'PR'
+  const dnCoDinh = s.goi === 'PR'
   const ppCoDinh = NHOM_HKD[f.nhom - 1]?.pp ?? null
   const tndnCoDinh = f.loai === 'dn' && dnCoDinh
-  const dnFree = s.goi === 'F'   // doanh nghiệp gói Free: TT58 trường hợp 1, thuế theo tỷ lệ % doanh thu, không chọn (T632)
+  const dnFree = s.goi === 'S'   // doanh nghiệp gói Standard: TT58 trường hợp 1, thuế theo tỷ lệ % doanh thu, không chọn (T632)
   const bat = (ds: string[], k: string) => (ds.includes(k) ? ds.filter(x => x !== k) : [...ds, k])
   const mstGoc = Boolean(dsDonVi({ dvMoi: s.dvMoi }).find(d => d.id === s.donVi)?.mst)
 
@@ -434,7 +434,7 @@ export const MThongTinDonVi: FC<ScreenProps> = () => {
       ? CHE_DO_HOP_LE[s.goi].includes('TT152')
         ? 'TT152'
         : s.cheDo
-      : s.goi === 'S' || dnFree
+      : s.goi === 'PL' || dnFree
       ? 'TT58'
       : s.cheDo
 
@@ -473,7 +473,7 @@ export const MThongTinDonVi: FC<ScreenProps> = () => {
   }
 
   const { loai } = f
-  const cdDn: CheDo[] = s.goi === 'S' || dnFree ? ['TT58'] : CHE_DO_HOP_LE[s.goi]
+  const cdDn: CheDo[] = s.goi === 'PL' || dnFree ? ['TT58'] : CHE_DO_HOP_LE[s.goi]
 
   return (
     <div className="m-ht-khung">
@@ -691,7 +691,7 @@ export const MThongTinDonVi: FC<ScreenProps> = () => {
             <Select className="inp">
               <option>Bình quân gia quyền cuối kỳ</option>
               {/* gói Free chỉ bình quân cuối kỳ (T268) */}
-              {s.goi !== 'F' && <><option>Bình quân tức thời</option><option>Nhập trước xuất trước</option></>}
+              {s.goi !== 'S' && <><option>Bình quân tức thời</option><option>Nhập trước xuất trước</option></>}
             </Select>
           </div>
         </div>
@@ -769,7 +769,7 @@ export const MCauHinh: FC<ScreenProps> = () => {
             const kho = CUA_HANG.find(x => x.id === c.id)?.kho ?? [
               `Kho ${c.ten.replace(/^Phố Mây /, '')}`,
             ]
-            const khoHien = s.goi === 'F' || s.goi === 'S' ? kho[0] : `${kho.length} kho`
+            const khoHien = s.goi === 'S' || s.goi === 'PL' ? kho[0] : `${kho.length} kho`
             return (
               <div key={c.id} className="m-ch-mau-so">
                 <div>

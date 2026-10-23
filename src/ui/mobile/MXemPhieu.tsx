@@ -137,7 +137,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
   const laTien = mod.key === 'tien'
   const nhomMb = mod.key === 'mua-hang' ? 'mua' : mod.key === 'ban-hang' ? 'ban' : null
   const kieu = kieuGhiSo(s.cheDo)
-  const ghi = kieuGhiSo(s.goi) !== 'khong' && s.goi !== 'F'
+  const ghi = kieuGhiSo(s.goi) !== 'khong' && s.goi !== 'S'
 
   // Nghiệp vụ (đối tượng, địa chỉ, mst, hoá đơn, hạn tt)
   const nv = useMemo(() => (row ? ttNghiepVu(row) : null), [row])
@@ -188,7 +188,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
   // Mã số thuế và Hạn thanh toán
   const coMst = nhom !== 'cq' && !(laTien && laThuChi211) && Boolean(row.doiTuong)
   const mst = coMst ? String(row._mst ?? nv?.mst ?? '') : ''
-  const coHanTt = Boolean(bo.tt) && s.goi !== 'F' && s.goi !== 'S'
+  const coHanTt = Boolean(bo.tt) && s.goi === 'PR'
   const hanTt = (coHanTt && nhomMb) ? String(row._hanTt ?? nv?.hanTt ?? '') : ''
 
   // Kho
@@ -229,7 +229,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
 
   // Bút toán hạch toán
   const dsButToan = useMemo(() => {
-    if (s.goi === 'F') return []
+    if (s.goi === 'S') return []
     const hinhThucTt = (row._httt as 'congno' | 'tienmat' | 'chuyenkhoan' | undefined) ?? (nv?.ttTien === 'da' ? 'tienmat' : 'congno')
     return tinhButToan(
       cfg,
@@ -333,7 +333,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
   // Danh sách các tab hiển thị theo từng phân hệ
   const dsTab = useMemo(() => {
     if (laTien) {
-      if (s.goi === 'F') {
+      if (s.goi === 'S') {
         return [
           { k: 'chitiet' as TabKey, ten: 'Chi tiết' },
           { k: 'lichsu' as TabKey, ten: 'Lịch sử' },
@@ -346,7 +346,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
       ]
     }
     if (nhomMb === 'mua') {
-      if (s.goi === 'F') {
+      if (s.goi === 'S') {
         return [
           { k: 'chitiet' as TabKey, ten: 'Phiếu nhập' },
           { k: 'lichsu' as TabKey, ten: 'Lịch sử' },
@@ -375,8 +375,8 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
   const moSua = () => { if (theCuaPhieu(row).length) setHoiKhongSua(true); else nav(`${path}/${row.id}?sua=1`) }
 
   // Nút hành động chính và phụ ở chân màn hình
-  const coNutGhiSo = kieu !== 'khong' && s.goi !== 'F' && !laDc
-  const coTheSua = !laDc && (s.goi === 'F' || !coNutGhiSo || row.tt !== 'ghi')
+  const coNutGhiSo = kieu !== 'khong' && s.goi !== 'S' && !laDc
+  const coTheSua = !laDc && (s.goi === 'S' || !coNutGhiSo || row.tt !== 'ghi')
   let nutPhu: { nhan: string; action: () => void } | null = null
   let nutChinh: { nhan: string; laThanhToan?: boolean; action: () => void } | null = null
 
@@ -400,7 +400,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
       }
       nutPhu = null
     }
-  } else if (s.goi === 'F') {
+  } else if (s.goi === 'S') {
     nutChinh = {
       nhan: 'Sửa phiếu',
       action: moSua,
@@ -508,7 +508,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
     } else {
       chipTt = { kieu: 'chua', ten: 'Chưa thanh toán' }
     }
-  } else if (s.goi !== 'F') {
+  } else if (s.goi !== 'S') {
     if (row.tt === 'ghi') {
       chipTt = { kieu: 'dang', ten: 'Đã ghi sổ' }
     } else {
@@ -700,7 +700,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
                     style={{ width: `${tongGoc > 0 ? Math.min(100, Math.round((daTra / tongGoc) * 100)) : 0}%` }}
                   />
                 </div>
-                {s.goi !== 'F' && hanTt && (
+                {s.goi !== 'S' && hanTt && (
                   <div className="m-t600-han-tt-dong">
                     Hạn {hanTt}{tinhSoNgayCon(hanTt) ? ` · ${tinhSoNgayCon(hanTt)}` : ''}
                   </div>
@@ -864,7 +864,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
                 </div>
 
                 {/* Hạch toán mở sẵn ở tab chi tiết nếu có */}
-                {s.goi !== 'F' && dsButToan.length > 0 && (
+                {s.goi !== 'S' && dsButToan.length > 0 && (
                   <>
                     <div className="m-pb-nhom">HẠCH TOÁN</div>
                     <div className="m-pb-the m-pb-the-gon">

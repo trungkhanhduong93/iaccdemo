@@ -27,7 +27,7 @@ const thue: ModuleDef = {
   quyTrinh,
   screens: [
     // Gói Free kê khai thuế hộ kinh doanh theo iFaster: danh sách tờ khai, lập tờ khai 4 bước (T261); gói Standard dùng chung, PhuongXT chốt 22/10/2026 (T623)
-    { slug: 'to-khai', ten: 'Kê khai thuế', ngan: 'Kê khai thuế', nhom: 'Kê khai', kind: 'custom', comp: ToKhaiHKD, goi: ['F', 'S'], tab: true },
+    { slug: 'to-khai', ten: 'Kê khai thuế', ngan: 'Kê khai thuế', nhom: 'Kê khai', kind: 'custom', comp: ToKhaiHKD, goi: ['S', 'PL'], tab: true },
     ...tuExcel(5, {
     '6.1.1': { voucher: { prefix: 'KKV', doiTuong: 'ncc', nhan: 'Người bán', them: 'Thêm dòng kê khai', dong: 'tien', tien: [1_500_000, 42_000_000], thue: 8, nguon: 'HĐ',
       dienGiai: ['Hoá đơn mua nguyên vật liệu', 'Hoá đơn tiền điện', 'Hoá đơn thuê mặt bằng'], noCo: [['1331', '331', 'Thuế GTGT được khấu trừ']] } },

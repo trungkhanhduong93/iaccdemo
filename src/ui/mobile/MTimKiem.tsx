@@ -58,7 +58,7 @@ export const MTimKiem: FC<MTimKiemProps> = ({ mo, onDong }) => {
       const screens = tabCua(mod).filter(
         sc =>
           hienMan(sc, s.goi, s.cheDo, s) &&
-          (anNgoaiGoi(s.goi) ? moDuoc(sc, s.goi) : (moDuoc(sc, 'F') || moDuoc(sc, 'S'))) &&
+          (anNgoaiGoi(s.goi) ? moDuoc(sc, s.goi) : (moDuoc(sc, 'S') || moDuoc(sc, 'PL'))) &&
           sc.kind !== 'quytrinh' &&
           !sc.slug.startsWith('nhom-'),
       )
@@ -102,7 +102,7 @@ export const MTimKiem: FC<MTimKiemProps> = ({ mo, onDong }) => {
       const dmScreens = tabCua(modDm).filter(
         sc =>
           hienMan(sc, s.goi, s.cheDo, s) &&
-          (anNgoaiGoi(s.goi) ? moDuoc(sc, s.goi) : (moDuoc(sc, 'F') || moDuoc(sc, 'S'))) &&
+          (anNgoaiGoi(s.goi) ? moDuoc(sc, s.goi) : (moDuoc(sc, 'S') || moDuoc(sc, 'PL'))) &&
           sc.kind !== 'quytrinh',
       )
       for (const sc of dmScreens) {

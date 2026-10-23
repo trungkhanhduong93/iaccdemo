@@ -240,7 +240,7 @@ export const MBaoCao: FC<ScreenProps> = ({ sc, mod }) => {
           <div className="m-bc-hdr-tieu-de-hang">
             <h1 className="m-bc-hdr-tieu-de">{nhomDangXem ? nhomDangXem.mod.ten : 'Báo cáo'}</h1>
             <span className="m-bc-hdr-chip-goi">
-              {s.goi === 'F' ? 'FREE' : GOI[s.goi]?.ten?.toUpperCase() ?? 'FREE'}
+              {s.goi === 'S' ? 'STANDARD' : GOI[s.goi]?.ten?.toUpperCase() ?? 'STANDARD'}
             </span>
           </div>
           <div className="m-bc-hdr-phu">

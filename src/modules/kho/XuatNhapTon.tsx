@@ -52,7 +52,7 @@ export function XuatNhapTon({ sc, mod }: ScreenProps) {
     ? <Link className="nxt-link-hang ds-link-so" style={{ fontSize: 'inherit' }} title="Xem thẻ kho" to={`/app/bao-cao/5-2-1?ma=${ma}&kho=${encodeURIComponent(khoMoThe)}&ky=${ky}`}>{chu}</Link>
     : chu
 
-  const isFree = s.goi === 'F'
+  const isFree = s.goi === 'S'
 
   const cols: Col[] = [
     { k: 'ma', t: 'Mã', cls: 'code', w: 90, r: x => x._t ? '' : moThe(String(x.ma), String(x.ma)) },

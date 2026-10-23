@@ -100,7 +100,7 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc, mod }) => {
   const laMauDMoi = maBcStr === '3.2.8' || maBcStr === '5.2.10' || maBcStr === '4.2.3' || maBcStr === '5.2.9' || maBcStr === '5.2.3'
   const laMauD = la427 || la327 || la5215 || laMauDMoi
   const is523 = maBcStr === '5.2.3'
-  const isFree = s.goi === 'F'
+  const isFree = s.goi === 'S'
   const laTT152Hook = s.cheDo === 'TT152' && laSoTT152(maBcStr)
   const isS1a = (s.cheDo === 'TT152' && kyHieuBC(sc.code, s.cheDo, s) === 'S1a-HKD') || maBcStr.includes('s1a')
 

@@ -62,7 +62,7 @@ export const MBaoCaoTongHopMauD: FC<MBaoCaoTongHopMauDProps> = ({ maBc, rows, q 
   const is423 = maNorm === '4.2.3'
   const is529 = maNorm === '5.2.9'
   const is523 = maNorm === '5.2.3'
-  const isFree = s.goi === 'F'
+  const isFree = s.goi === 'S'
 
   // Đặt tiêu đề thanh trên
   useEffect(() => {

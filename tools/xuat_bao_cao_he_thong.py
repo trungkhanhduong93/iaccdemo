@@ -162,10 +162,9 @@ def main():
     tasks = load_all_tasks()
 
     # Thống kê tính năng
-    cnt_f = sum('F' in f['goi'] for f in feats)
-    cnt_s = sum('S' in f['goi'] for f in feats)
-    cnt_pl = sum('PL' in f['goi'] for f in feats)
-    cnt_pr = sum('PR' in f['goi'] for f in feats)
+    cnt_s = sum('F' in f['goi'] for f in feats)
+    cnt_pl = sum('S' in f['goi'] for f in feats)
+    cnt_pr = sum(('PL' in f['goi'] or 'PR' in f['goi']) for f in feats)
     cnt_gd1 = sum(f['gd'] == 1 for f in feats)
     cnt_gd2 = sum(f['gd'] == 2 for f in feats)
     cnt_gd3 = sum(f['gd'] == 3 for f in feats)
@@ -190,10 +189,9 @@ def main():
     data_qm = [
         ('Tổng số phân hệ nghiệp vụ', '13 phân hệ', 'Gồm Trang chủ, 11 phân hệ kế toán và Hệ thống'),
         ('Tổng số tính năng trong Roadmap', f'{len(feats)} tính năng', 'Bao gồm 120 dòng Roadmap gốc + các nhánh mở rộng KHO_IVT & Extra'),
-        ('Phân bổ gói: Free', f'{cnt_f} tính năng', 'Siêu tinh gọn, hộ kinh doanh & DN siêu nhỏ, không tài khoản'),
-        ('Phân bổ gói: Standard', f'{cnt_s} tính năng', 'Doanh nghiệp siêu nhỏ theo Thông tư 58/2026/TT-BTC'),
-        ('Phân bổ gói: Plus', f'{cnt_pl} tính năng', 'Doanh nghiệp vừa và nhỏ theo Thông tư 133/2016/TT-BTC'),
-        ('Phân bổ gói: Pro', f'{cnt_pr} tính năng', 'Chuỗi F&B lớn theo Thông tư 99/TT200, đa kho đa chi nhánh'),
+        ('Phân bổ gói: Standard', f'{cnt_s} tính năng', 'Siêu tinh gọn, hộ kinh doanh & DN siêu nhỏ, không tài khoản'),
+        ('Phân bổ gói: Plus', f'{cnt_pl} tính năng', 'Doanh nghiệp siêu nhỏ theo Thông tư 58/2026/TT-BTC'),
+        ('Phân bổ gói: Pro', f'{cnt_pr} tính năng', 'Doanh nghiệp vừa và lớn theo Thông tư 133/2016 và TT99/2025, đa kho đa chi nhánh'),
         ('Tiến độ phát hành: Giai đoạn 1 (GĐ1)', f'{cnt_gd1} tính năng', 'Core kế toán căn bản & thu chi, mua bán, kho đơn giản (Q4/2026)'),
         ('Tiến độ phát hành: Giai đoạn 2 (GĐ2)', f'{cnt_gd2} tính năng', 'Thuế GTGT, TSCĐ, CCDC, đồng bộ tự động, giá thành F&B'),
         ('Tiến độ phát hành: Giai đoạn 3 (GĐ3)', f'{cnt_gd3} tính năng', 'Đa chi nhánh, hoá đơn điện tử, phân bổ chuỗi, BCTC hợp nhất'),
@@ -215,16 +213,15 @@ def main():
             c2.fill = PatternFill(start_color=FILL_GREEN, end_color=FILL_GREEN, fill_type='solid')
             c2.font = Font(name=FONT_NAME, size=10, bold=True, color=TEXT_GREEN)
 
-    # Khối 2: Định nghĩa 4 gói
+    # Khối 2: Định nghĩa 3 gói
     r_start = len(data_qm) + 8
-    ws1.cell(row=r_start, column=1, value='2. BẢNG ĐỊNH NGHĨA 4 GÓI DỊCH VỤ IACC CLOUD').font = font_section
+    ws1.cell(row=r_start, column=1, value='2. BẢNG ĐỊNH NGHĨA 3 GÓI DỊCH VỤ IACC CLOUD').font = font_section
     headers_goi = ['Gói phần mềm', 'Mã', 'Khách hàng mục tiêu', 'Chế độ kế toán áp dụng', 'Quy mô chi nhánh / Kho', 'Hệ thống tài khoản']
     apply_header(ws1, r_start + 1, headers_goi, fill_hex=BLUE_SUB)
     data_goi = [
-        ('Gói Free', 'F', 'Hộ kinh doanh, quán cà phê/nhà hàng độc lập cần theo dõi dòng tiền & doanh thu', 'Không áp dụng chế độ kế toán bắt buộc; hỗ trợ 17 báo cáo theo chế độ HKD', 'Mỗi chi nhánh một kho độc lập', 'Không sử dụng tài khoản kế toán'),
-        ('Gói Standard', 'S', 'Doanh nghiệp siêu nhỏ (≤ 10 lao động, doanh thu ≤ 10 tỷ hoặc vốn ≤ 3 tỷ)', 'Thông tư 58/2026/TT-BTC (có 4 trường hợp kê khai thuế)', 'Quản lý kho căn bản', 'Không sử dụng tài khoản kế toán; quản lý theo 8 mẫu sổ chính + 4 mẫu sổ bổ sung'),
-        ('Gói Plus', 'PL', 'Doanh nghiệp vừa và nhỏ (SME), doanh nghiệp F&B có bộ phận kế toán riêng', 'Thông tư 133/2016/TT-BTC', 'Đa chi nhánh, kho tổng & kho điểm bán', 'Hệ thống tài khoản kế toán doanh nghiệp vừa và nhỏ đầy đủ (TK cấp 1, cấp 2)'),
-        ('Gói Pro', 'PR', 'Doanh nghiệp quy mô lớn, chuỗi F&B nhiều thương hiệu, nhiều pháp nhân', 'Thông tư 99/TT200/2014/TT-BTC', 'Đa chi nhánh, tách nhiều kho tại 1 điểm bán (kho bếp, kho bar, kho đồ khô)', 'Hệ thống tài khoản kế toán doanh nghiệp đầy đủ; hỗ trợ phân bổ chi phí chuỗi, AI'),
+        ('Gói Standard', 'S', 'Hộ kinh doanh, quán cà phê/nhà hàng độc lập cần theo dõi dòng tiền & doanh thu', 'Không áp dụng chế độ kế toán bắt buộc; hỗ trợ 17 báo cáo theo chế độ HKD & TT58 trường hợp 1', 'Mỗi chi nhánh một kho độc lập', 'Không sử dụng tài khoản kế toán'),
+        ('Gói Plus', 'PL', 'Doanh nghiệp siêu nhỏ (≤ 10 lao động, doanh thu ≤ 10 tỷ hoặc vốn ≤ 3 tỷ)', 'Thông tư 58/2026/TT-BTC (có 4 trường hợp kê khai thuế)', 'Quản lý kho căn bản', 'Không sử dụng tài khoản kế toán; quản lý theo 8 mẫu sổ chính + 4 mẫu sổ bổ sung'),
+        ('Gói Pro', 'PR', 'Doanh nghiệp quy mô lớn, chuỗi F&B nhiều thương hiệu, nhiều pháp nhân', 'Thông tư 133/2016/TT-BTC và Thông tư 99/2025/TT-BTC', 'Đa chi nhánh, tách nhiều kho tại 1 điểm bán (kho bếp, kho bar, kho đồ khô)', 'Hệ thống tài khoản kế toán doanh nghiệp đầy đủ; hỗ trợ phân bổ chi phí chuỗi, AI'),
     ]
     for idx, row in enumerate(data_goi, r_start + 2):
         for col_idx, val in enumerate(row, 1):
@@ -260,7 +257,7 @@ def main():
     ws2 = wb.create_sheet(title='Ma trận tính năng')
     headers_feats = [
         'STT', 'Mã tính năng', 'Tên tính năng', 'Phân hệ', 'Nhóm chức năng',
-        'Gói Free', 'Gói Standard', 'Gói Plus', 'Gói Pro',
+        'Gói Standard', 'Gói Plus', 'Gói Pro',
         'Giai đoạn', 'Kế thừa IVT', 'Trạng thái Web Demo', 'Ghi chú điều chỉnh / Nghiệp vụ'
     ]
     apply_header(ws2, 1, headers_feats, fill_hex=NAVY_HEADER)
@@ -307,8 +304,7 @@ def main():
             grp_name,
             'X' if 'F' in c_goi else '',
             'X' if 'S' in c_goi else '',
-            'X' if 'PL' in c_goi else '',
-            'X' if 'PR' in c_goi else '',
+            'X' if ('PL' in c_goi or 'PR' in c_goi) else '',
             f'GĐ{c_gd}',
             c_ivt,
             trang_thai,
@@ -324,9 +320,9 @@ def main():
             c.border = thin_border
             if row_fill:
                 c.fill = row_fill
-            if col_idx in (1, 2, 6, 7, 8, 9, 10, 11, 12):
+            if col_idx in (1, 2, 6, 7, 8, 9, 10, 11):
                 c.alignment = Alignment(horizontal='center', vertical='center')
-            if col_idx in (6, 7, 8, 9) and val == 'X':
+            if col_idx in (6, 7, 8) and val == 'X':
                 c.font = font_bold
                 c.fill = PatternFill(start_color=FILL_GREEN, end_color=FILL_GREEN, fill_type='solid')
             if col_idx == 12 and val == 'Đã có giao diện':

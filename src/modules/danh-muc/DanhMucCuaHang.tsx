@@ -37,7 +37,7 @@ export function DanhMucCuaHang({ sc, mod }: ScreenProps) {
   // đơn vị mẫu có sẵn cửa hàng mẫu; đơn vị mới tạo từ FABi chỉ có cửa hàng đã lên sổ
   const coSan = DON_VI.some(d => d.id === s.donVi)
   // Gói Free: mỗi cửa hàng tự có một kho mặc định, lấy kho đầu tiên của cửa hàng trên iPOS Inventory (T143)
-  const free = s.goi === 'F' || s.goi === 'S'   // gói Free, Standard: dữ liệu mẫu một kho mỗi cửa hàng
+  const free = s.goi === 'S' || s.goi === 'PL'   // gói Standard, Plus: dữ liệu mẫu một kho mỗi cửa hàng
   const khoCua = (id: string, ten: string) => CUA_HANG.find(c => c.id === id)?.kho ?? [`Kho ${ten.replace(/^Phố Mây /, '')}`]
   const kho = (id: string, ten: string) => free ? khoCua(id, ten)[0] : khoCua(id, ten).join(', ')
   const rows: Row[] = useMemo(() => [
@@ -57,7 +57,7 @@ export function DanhMucCuaHang({ sc, mod }: ScreenProps) {
     { k: 'kho', t: 'Kho', cls: 'dim', r: r => <>{r.kho}{free && <span className="chip" style={{ marginLeft: 8 }}>Mặc định</span>}</> },
     { k: 'nguon', t: 'Nguồn', cls: 'dim' },
     // Gói Free: mỗi cửa hàng chọn cách tính chi phí NVL (T232)
-    ...(s.goi === 'F' ? [{ k: 'cachNvl', t: 'Cách tính chi phí NVL', w: 250, r: (r: Row) => (
+    ...(s.goi === 'S' ? [{ k: 'cachNvl', t: 'Cách tính chi phí NVL', w: 250, r: (r: Row) => (
       <Select className="inp dmcn-nvl" value={cachNvlHienTai(s, String(r.id))} ds={DS_CACH_NVL} aria-label={`Cách tính chi phí NVL ${r.ten}`}
         onChange={e => { const cach = e.target.value as CachNvl; if (cach !== cachNvlHienTai(s, String(r.id))) setDoiNvl({ cn: String(r.id), ten: String(r.ten), cach }) }} />
     ) }] : []),
@@ -137,7 +137,7 @@ export function DanhMucCuaHang({ sc, mod }: ScreenProps) {
     set({ cnThem: { ...s.cnThem, [s.donVi]: [...them, ...ds] }, ...caiDat })   // cấu hình đồng bộ thu chi, cách tính NVL chọn lúc thêm (T264)
     setMo(false)
     toast(`Đã lên sổ ${ds.length} cửa hàng từ FABi`)
-    if (khaiSoDu) nav(s.goi === 'F' ? '/app/danh-muc/1-12' : `/app/tong-hop/10-1-3?cnMoi=${ds.map(c => c.id).join(',')}`)   // gói Free khai số dư ở Danh mục Quỹ tiền (T245)
+    if (khaiSoDu) nav(s.goi === 'S' ? '/app/danh-muc/1-12' : `/app/tong-hop/10-1-3?cnMoi=${ds.map(c => c.id).join(',')}`)   // gói Standard khai số dư ở Danh mục Quỹ tiền (T245)
   }
 
   return (
@@ -182,7 +182,7 @@ export function DanhMucCuaHang({ sc, mod }: ScreenProps) {
             onLuu={cot.luu} onDoRongTuDong={cot.datDoRongTuDong} />
         </div>
       </div>
-      {s.goi === 'F' && <Note icon="info">Gói Free: mỗi cửa hàng tự có một kho mặc định theo iPOS Inventory, không cần khai báo kho.
+      {s.goi === 'S' && <Note icon="info">Gói Standard: mỗi cửa hàng tự có một kho mặc định theo iPOS Inventory, không cần khai báo kho.
         Cột Cách tính chi phí NVL quyết định số Chi phí NVL trên trang chủ và Báo cáo kết quả kinh doanh của cửa hàng.</Note>}
       {cho.length > 0 && <Note kind="warn" icon="alert">{cho.length} phiếu thu, chi từ FABi đang chờ vì phương thức thanh toán chưa map quỹ
         ({[...new Set(cho.map(x => `${x.pttt} · ${x.cn}`))].join('; ')}). <Link to="/app/danh-muc/1-12">Map ở Danh mục Quỹ tiền</Link></Note>}
@@ -226,7 +226,7 @@ function HopChiTietCn({ r, onDong, onDoiNvl }: { r: Row; onDong: () => void; onD
     ['Khu vực', r.kv],
     ['Kho', r.kho],
     ['Nguồn', r.nguon],
-    ...(s.goi === 'F' ? [['Cách tính chi phí NVL', (
+    ...(s.goi === 'S' ? [['Cách tính chi phí NVL', (
       <Select className="inp dmcn-nvl" value={cachHt} ds={DS_CACH_NVL} aria-label={`Cách tính chi phí NVL ${r.ten}`}
         onChange={e => { const cach = e.target.value as CachNvl; if (cach !== cachHt) onDoiNvl(id, String(r.ten), cach) }} />
     )]] as [string, React.ReactNode][] : []),
@@ -266,7 +266,7 @@ export function HopThemCuaHang({ onDong, onLenSo }: { onDong: () => void; onLenS
   const caiDat = () => chon.reduce<Partial<Session>>((p, id) => {
     const ch = chCua(id)
     const p2 = { ...p, ...datDongBoThuChi({ ...s, ...p }, id, ch.dongBo) }
-    return s.goi === 'F' ? { ...p2, ...datCachNvl({ ...s, ...p2 }, id, ch.cach) } : p2
+    return s.goi === 'S' ? { ...p2, ...datCachNvl({ ...s, ...p2 }, id, ch.cach) } : p2
   }, {})
   const tuNgay = ngayDauNam(s)   // cửa hàng mới lên sổ từ ngày bắt đầu năm tài chính của đơn vị
   const [khaiSoDu, setKhaiSoDu] = useState(true)
@@ -283,13 +283,13 @@ export function HopThemCuaHang({ onDong, onLenSo }: { onDong: () => void; onLenS
             {chon.length > 0 && (
               <div className="dmcn-ch">
                 <div className="dmcn-ch-dau">Cấu hình cửa hàng lên sổ</div>
-                <div className={`dmcn-ch-dong dmcn-ch-tieu${s.goi === 'F' ? ' co-nvl' : ''}`}><span>Cửa hàng</span>{s.goi === 'F' && <span>Cách tính chi phí NVL</span>}<span>Đồng bộ thu chi FABi</span></div>
+                <div className={`dmcn-ch-dong dmcn-ch-tieu${s.goi === 'S' ? ' co-nvl' : ''}`}><span>Cửa hàng</span>{s.goi === 'S' && <span>Cách tính chi phí NVL</span>}<span>Đồng bộ thu chi FABi</span></div>
                 {ds.filter(c => chon.includes(c.id)).map(c => {
                   const ch = chCua(c.id)
                   return (
-                    <div key={c.id} className={`dmcn-ch-dong${s.goi === 'F' ? ' co-nvl' : ''}`}>
+                    <div key={c.id} className={`dmcn-ch-dong${s.goi === 'S' ? ' co-nvl' : ''}`}>
                       <span className="dmcn-ch-ten">{c.ten}</span>
-                      {s.goi === 'F' && <Select className="inp dmcn-nvl" value={ch.cach} ds={DS_CACH_NVL} aria-label={`Cách tính chi phí NVL ${c.ten}`} onChange={e => doiCh(c.id, { cach: e.target.value as CachNvl })} />}
+                      {s.goi === 'S' && <Select className="inp dmcn-nvl" value={ch.cach} ds={DS_CACH_NVL} aria-label={`Cách tính chi phí NVL ${c.ten}`} onChange={e => doiCh(c.id, { cach: e.target.value as CachNvl })} />}
                       <span className="dmcn-db">
                         <button type="button" role="switch" aria-checked={ch.dongBo} aria-label={`Tự động đồng bộ thu chi FABi ${c.ten}`} className={`ds-ct${ch.dongBo ? ' on' : ''}`}
                           onClick={() => doiCh(c.id, { dongBo: !ch.dongBo })}><i /></button>

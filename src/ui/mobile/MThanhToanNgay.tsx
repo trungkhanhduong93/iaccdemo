@@ -79,7 +79,7 @@ export const MThanhToanNgay: FC<MThanhToanNgayProps> = ({
   onLapPhieuChi,
 }) => {
   const { s } = useSession()
-  const isFree = s.goi === 'F' // QD22, QD27, T630: gói Free khoá ô số tiền
+  const isFree = s.goi === 'S' // QD22, QD27, T630: gói Standard khoá ô số tiền
   const soCtHienThi = soPhieu || soCt || ''
   const chHienThi = cuaHang || cuaHangTen || 'Phố Mây Nguyễn Trãi'
   const tienNo = conNo ?? conLai ?? 0

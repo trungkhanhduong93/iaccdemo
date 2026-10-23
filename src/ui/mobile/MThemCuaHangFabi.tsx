@@ -38,7 +38,7 @@ export const MThemCuaHangFabi: FC<MThemCuaHangFabiProps> = ({ onDong, onLenSo })
     chon.reduce<Partial<Session>>((p, id) => {
       const ch = chCua(id)
       const p2 = { ...p, ...datDongBoThuChi({ ...s, ...p }, id, ch.dongBo) }
-      return s.goi === 'F' ? { ...p2, ...datCachNvl({ ...s, ...p2 }, id, ch.cach) } : p2
+      return s.goi === 'S' ? { ...p2, ...datCachNvl({ ...s, ...p2 }, id, ch.cach) } : p2
     }, {})
 
   const tuNgay = ngayDauNam(s)
@@ -87,7 +87,7 @@ export const MThemCuaHangFabi: FC<MThemCuaHangFabiProps> = ({ onDong, onLenSo })
 
                     {isChon && (
                       <div className="m-ch-cau-hinh">
-                        {s.goi === 'F' && (
+                        {s.goi === 'S' && (
                           <div className="m-ch-dong-opt">
                             <span className="m-ch-opt-nhan">Cách tính chi phí NVL:</span>
                             <Select

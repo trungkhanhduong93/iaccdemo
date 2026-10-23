@@ -22,7 +22,7 @@ export const MCuaHang: FC<ScreenProps> = () => {
 
   const them = s.cnThem?.[s.donVi] ?? []
   const coSan = DON_VI.some(d => d.id === s.donVi)
-  const free = s.goi === 'F' || s.goi === 'S'
+  const free = s.goi === 'S' || s.goi === 'PL'
 
   const khoCua = (id: string, ten: string) =>
     CUA_HANG.find(c => c.id === id)?.kho ?? [`Kho ${ten.replace(/^Phố Mây /, '')}`]
@@ -58,7 +58,7 @@ export const MCuaHang: FC<ScreenProps> = () => {
     setMoThem(false)
     toast(`Đã lên sổ ${ds.length} cửa hàng từ FABi`)
     if (khaiSoDu) {
-      nav(s.goi === 'F' ? '/app/danh-muc/1-12' : `/app/tong-hop/10-1-3?cnMoi=${ds.map(c => c.id).join(',')}`)   // gói Free: Danh mục Quỹ tiền (T245)
+      nav(s.goi === 'S' ? '/app/danh-muc/1-12' : `/app/tong-hop/10-1-3?cnMoi=${ds.map(c => c.id).join(',')}`)   // gói Standard: Danh mục Quỹ tiền (T245)
     }
   }
 
@@ -169,7 +169,7 @@ export const MCuaHang: FC<ScreenProps> = () => {
                   <span className="m-xp-nhan">Nguồn:</span>
                   <span className="m-xp-tri">{xem.nguon}</span>
                 </div>
-                {s.goi === 'F' && (
+                {s.goi === 'S' && (
                   <div className="m-xp-dong-tt m-cn-dong-nvl">
                     <span className="m-xp-nhan">Cách tính chi phí NVL:</span>
                     <span className="m-xp-tri">

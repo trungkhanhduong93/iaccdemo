@@ -159,7 +159,7 @@ export function GoiThueBao({ sc }: ScreenProps) {
       </div>
 
       {/* ── 3. Dải 4 Thẻ Gói Thuê Bao (Pricing Cards) ── */}
-      <div className="grid g4 gtb-cards">
+      <div className="grid g3 gtb-cards">
         {GOIS.map(g => {
           const n = demTheoGoi(g)
           const dang = g === s.goi
@@ -249,7 +249,7 @@ export function GoiThueBao({ sc }: ScreenProps) {
                 <div className="gtb-spec-row">
                   <span className="gtb-spec-label">Quy mô điểm bán</span>
                   <span className="gtb-spec-val">
-                    {g === 'S' ? '1 điểm' : g === 'PL' ? '1–10 điểm' : 'Không giới hạn'}
+                    {g === 'PL' ? '1 điểm' : 'Không giới hạn'}
                   </span>
                 </div>
               </div>
@@ -334,7 +334,7 @@ export function GoiThueBao({ sc }: ScreenProps) {
             <tbody>
               {danhSachLoc.length === 0 ? (
                 <tr>
-                  <td colSpan={5} style={{ textAlign: 'center', padding: '36px 16px', color: 'var(--muted)' }}>
+                  <td colSpan={4} style={{ textAlign: 'center', padding: '36px 16px', color: 'var(--muted)' }}>
                     Không tìm thấy tính năng nào phù hợp với từ khóa &ldquo;{tim}&rdquo;.
                   </td>
                 </tr>
@@ -440,9 +440,9 @@ export function GoiThueBao({ sc }: ScreenProps) {
             </p>
           </div>
           <div className="gtb-faq-item">
-            <b>3. Gói Free có bị giới hạn thời gian hay số lượng chứng từ không?</b>
+            <b>3. Gói Standard có bị giới hạn thời gian hay số lượng chứng từ không?</b>
             <p>
-              Gói Free mở vĩnh viễn cho hộ kinh doanh, không giới hạn cửa hàng, mỗi cửa hàng một kho.
+              Gói Standard mở vĩnh viễn cho hộ kinh doanh, không giới hạn cửa hàng, mỗi cửa hàng một kho.
               Gói đáp ứng đủ 17 báo cáo theo Thông tư 152/2025/TT-BTC.
             </p>
           </div>

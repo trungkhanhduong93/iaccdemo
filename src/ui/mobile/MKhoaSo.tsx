@@ -23,7 +23,7 @@ import { tinhToanTongQuan } from '../../modules/home/chiSo'
 export const MKhoaSo: FC<ScreenProps> = () => {
   const { s, set, toast } = useSession()
   const dv = donViHienTai(s)
-  const laFree = s.goi === 'F'
+  const laFree = s.goi === 'S'
 
   // Lắng nghe sự kiện khoá sổ để vẽ lại ngay
   const [, veLai] = useState(0)
@@ -121,8 +121,8 @@ export const MKhoaSo: FC<ScreenProps> = () => {
     ['done', 'Đối soát doanh thu với sổ', 'Khớp 100%', true],
     ['now', 'Tính giá vốn cuối kỳ', 'Chưa chạy bản chính thức', true],
     ['', 'Phân bổ CCDC, chi phí trả trước', '6 khoản phân bổ', true],
-    ['', 'Kiểm tra cuối kỳ', coKiem ? '1 lỗi, 1 cảnh báo' : 'Có từ gói Plus', coKiem],
-    ['', 'Kết chuyển lãi lỗ', coKc ? 'Kết chuyển 632, 642, 511 sang 911' : 'Có từ gói Plus', coKc],
+    ['', 'Kiểm tra cuối kỳ', coKiem ? '1 lỗi, 1 cảnh báo' : 'Có từ gói Pro', coKiem],
+    ['', 'Kết chuyển lãi lỗ', coKc ? 'Kết chuyển 632, 642, 511 sang 911' : 'Có từ gói Pro', coKc],
   ]
 
   const dsBuocPro = anNgoaiGoi(s.goi) ? buocPro.filter(b => b[3]) : buocPro

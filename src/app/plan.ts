@@ -2,8 +2,8 @@
 // features.json sinh từ Excel bằng tools/xuat_tinh_nang.py — đừng sửa tay.
 import data from './features.json'
 
-export type Goi = 'F' | 'S' | 'PL' | 'PR'
-export const GOIS: Goi[] = ['F', 'S', 'PL', 'PR']
+export type Goi = 'S' | 'PL' | 'PR'
+export const GOIS: Goi[] = ['S', 'PL', 'PR']
 
 export interface Feature {
   c: string      // mã STT trong Excel, vd 3.1.1
@@ -25,10 +25,9 @@ export const MODS: string[] = data.mods
 export function doiGoiTuExcel(gStr: string): Goi[] {
   const ds: Goi[] = []
   for (const ch of gStr) {
-    if (ch === 'F') ds.push('F')
-    else if (ch === 'S') ds.push('S')
-    else if (ch === 'M') ds.push('PL')
-    else if (ch === 'A') ds.push('PR')
+    if (ch === 'F' && !ds.includes('S')) ds.push('S')
+    else if (ch === 'S' && !ds.includes('PL')) ds.push('PL')
+    else if ((ch === 'M' || ch === 'A') && !ds.includes('PR')) ds.push('PR')
   }
   return ds
 }
@@ -36,43 +35,43 @@ export function doiGoiTuExcel(gStr: string): Goi[] {
 /** Bổ sung theo sheet Roadmap khi Excel chưa sinh lại features.json: mã tính năng -> các gói có tính năng.
  *  Trum gộp vào Excel và chạy lại tools/xuat_tinh_nang.py rồi thì xoá dòng tương ứng (việc T26). */
 const THEO_ROADMAP: Record<string, Goi[]> = {
-  '1.12': ['F', 'S', 'PL', 'PR'],    // Danh mục quỹ tiền mở cho gói Free, theo Roadmap 08/10/2026
-  '2.2.3': ['F', 'S', 'PL', 'PR'],   // Sổ ngân hàng mở cho gói Free, PhuongXT chốt 08/10/2026
-  '7.2.1': ['S', 'PL', 'PR'],             // Mở báo cáo TSCĐ cho Standard (S4b-DNSN, TT58) và Plus
-  '7.2.2': ['PL', 'PR'],             // Mở báo cáo TSCĐ cho Plus, Trum chốt 09/10/2026 (T47 câu 11)
+  '1.12': ['S', 'PL', 'PR'],    // Danh mục quỹ tiền mở cho gói Standard, theo Roadmap 08/10/2026
+  '2.2.3': ['S', 'PL', 'PR'],   // Sổ ngân hàng mở cho gói Standard, PhuongXT chốt 08/10/2026
+  '7.2.1': ['PL', 'PR'],             // Mở báo cáo TSCĐ cho Plus (S4b-DNSN, TT58) và Pro
+  '7.2.2': ['PR'],             // Mở báo cáo TSCĐ cho Pro, Trum chốt 09/10/2026 (T47 câu 11)
   // Gói Free: Bán hàng chỉ có Xuất bán POS 3.1.1; ẩn Tổng hợp (giữ Báo cáo kết quả kinh doanh 10.2.3, xem ở phân hệ Báo cáo);
   // Kho chỉ còn Kiểm kê 5.1.10 và Báo cáo xuất nhập tồn 5.2.3; mở Mua hàng. PhuongXT chốt 09/10/2026 (T52)
-  '5.2.4': ['S', 'PL', 'PR'],
-  '4.1.1': ['F', 'S', 'PL', 'PR'],
-  '4.2.1': ['F', 'S', 'PL', 'PR'],    // Chi tiết mua hàng mở cho gói Free, PhuongXT chốt (T63)
-  '4.2.2': ['S', 'PL', 'PR'],    // Tổng hợp mua hàng mở cho gói Free (T63); gói Free ẩn tạm, PhuongXT chốt 15/10/2026 (T251)
+  '5.2.4': ['PL', 'PR'],
+  '4.1.1': ['S', 'PL', 'PR'],
+  '4.2.1': ['S', 'PL', 'PR'],    // Chi tiết mua hàng mở cho gói Standard, PhuongXT chốt (T63)
+  '4.2.2': ['PL', 'PR'],    // Tổng hợp mua hàng mở cho gói Standard (T63); gói Standard ẩn tạm, PhuongXT chốt 15/10/2026 (T251)
   // Bộ báo cáo hộ kinh doanh theo iFaster, Trum chốt 10/10/2026 (T97)
-  '3.2.5': ['F', 'S', 'PL', 'PR'],
-  '2.2.5': ['F', 'S', 'PL', 'PR'],
-  '5.2.1': ['F', 'S', 'PL', 'PR'],   // Thẻ kho mở cho gói Free để bấm hàng hoá ở Xuất nhập tồn mở thẻ kho, PhuongXT chốt 14/10/2026 (T211)
-  '10.1.3': ['S', 'PL', 'PR'],   // Số dư ban đầu mở cho Standard: tiền, công nợ, tồn kho, PhuongXT chốt 11/10/2026 (T141)
+  '3.2.5': ['S', 'PL', 'PR'],
+  '2.2.5': ['S', 'PL', 'PR'],
+  '5.2.1': ['S', 'PL', 'PR'],   // Thẻ kho mở cho gói Standard để bấm hàng hoá ở Xuất nhập tồn mở thẻ kho, PhuongXT chốt 14/10/2026 (T211)
+  '10.1.3': ['PL', 'PR'],   // Số dư ban đầu mở cho Plus: tiền, công nợ, tồn kho, PhuongXT chốt 11/10/2026 (T141)
 }
 
 /** Màn bổ sung theo thông tư chưa có trong Excel (T47, kế hoạch mục 7.3). Trum cập nhật Excel và chạy lại tools/xuat_tinh_nang.py có đủ mã thì xoá dòng tương ứng ở đây */
 const BO_SUNG: (Omit<Feature, 'g'> & { g: Goi[] })[] = [
-  { c: '2.2.6', m: 1, n: 'Sổ chi tiết tiền vay', grp: 'Sổ sách, báo cáo', g: ['PL', 'PR'], gd: 2, ivt: 0 },
-  { c: '2.2.7', m: 1, n: 'Sổ chi tiết tiền', grp: 'Sổ sách, báo cáo', g: ['S', 'PL', 'PR'], gd: 2, ivt: 0 },
-  { c: '2.2.8', m: 1, n: 'Tổng hợp quỹ tiền', grp: 'Sổ sách, báo cáo', g: ['S', 'PL', 'PR'], gd: 2, ivt: 0 },   // gói Free ẩn tạm (T251)
-  { c: '2.2.9', m: 1, n: 'Báo cáo dòng tiền', grp: 'Sổ sách, báo cáo', g: ['S', 'PL', 'PR'], gd: 2, ivt: 0 },   // gói Free ẩn tạm (T251)
-  { c: '3.2.5', m: 2, n: 'Sổ doanh thu bán hàng', grp: 'Sổ sách, báo cáo', g: ['F', 'S', 'PL', 'PR'], gd: 2, ivt: 0 },
-  { c: '3.1.7', m: 2, n: 'Bán hàng', grp: 'Chứng từ', g: ['PL', 'PR'], gd: 2, ivt: 0 },   // bán hàng lập tay ngoài POS, từ gói Plus, PhuongXT thêm (T52)
-  { c: '4.2.3', m: 3, n: 'Sổ công nợ nhà cung cấp', grp: 'Sổ sách, báo cáo', g: ['F', 'S', 'PL', 'PR'], gd: 2, ivt: 0 },   // PhuongXT thêm cho gói Free (T52)
-  { c: '4.2.4', m: 3, n: 'Tổng hợp nhập', grp: 'Sổ sách, báo cáo', g: ['F', 'S', 'PL', 'PR'], gd: 2, ivt: 0 },   // PhuongXT thêm (T63)
-  { c: '4.2.5', m: 3, n: 'Chi tiết nhập', grp: 'Sổ sách, báo cáo', g: ['F', 'S', 'PL', 'PR'], gd: 2, ivt: 0 },   // PhuongXT thêm (T63)
-  { c: '4.2.6', m: 3, n: 'Mua hàng theo ngày', grp: 'Sổ sách, báo cáo', g: ['S', 'PL', 'PR'], gd: 2, ivt: 0 },   // gói Free ẩn tạm (T251)
-  { c: '5.2.8', m: 4, n: 'Sổ chi tiết vật liệu, dụng cụ, hàng hoá', grp: 'Sổ sách, báo cáo', g: ['S', 'PL', 'PR'], gd: 2, ivt: 0 },   // gói Free bỏ (T52)
-  { c: '6.2.4', m: 5, n: 'Sổ theo dõi nghĩa vụ thuế GTGT', grp: 'Báo cáo', g: ['S', 'PL', 'PR'], gd: 2, ivt: 0 },
-  { c: '6.2.5', m: 5, n: 'Sổ theo dõi nghĩa vụ thuế khác', grp: 'Báo cáo', g: ['F', 'S', 'PL', 'PR'], gd: 2, ivt: 0 },
-  { c: '7.2.3', m: 6, n: 'Thẻ tài sản cố định', grp: 'Sổ sách, báo cáo', g: ['PL', 'PR'], gd: 2, ivt: 0 },
-  { c: '7.2.4', m: 6, n: 'Sổ theo dõi TSCĐ, CCDC tại nơi sử dụng', grp: 'Sổ sách, báo cáo', g: ['PL', 'PR'], gd: 2, ivt: 0 },
-  { c: '10.4.1', m: 9, n: 'Sổ chi tiết doanh thu, chi phí', grp: 'Sổ sách, báo cáo', g: ['S', 'PL', 'PR'], gd: 2, ivt: 0 },
-  { c: '10.4.2', m: 9, n: 'Sổ theo dõi vốn chủ sở hữu', grp: 'Sổ sách, báo cáo', g: ['S', 'PL', 'PR'], gd: 2, ivt: 0 },
-  { c: '10.4.3', m: 9, n: 'Sổ chi phí', grp: 'Sổ sách, báo cáo', g: ['S', 'PL', 'PR'], gd: 2, ivt: 0 },   // gói Free ẩn tạm (T251)
+  { c: '2.2.6', m: 1, n: 'Sổ chi tiết tiền vay', grp: 'Sổ sách, báo cáo', g: ['PR'], gd: 2, ivt: 0 },
+  { c: '2.2.7', m: 1, n: 'Sổ chi tiết tiền', grp: 'Sổ sách, báo cáo', g: ['PL', 'PR'], gd: 2, ivt: 0 },
+  { c: '2.2.8', m: 1, n: 'Tổng hợp quỹ tiền', grp: 'Sổ sách, báo cáo', g: ['PL', 'PR'], gd: 2, ivt: 0 },   // gói Standard ẩn tạm (T251)
+  { c: '2.2.9', m: 1, n: 'Báo cáo dòng tiền', grp: 'Sổ sách, báo cáo', g: ['PL', 'PR'], gd: 2, ivt: 0 },   // gói Standard ẩn tạm (T251)
+  { c: '3.2.5', m: 2, n: 'Sổ doanh thu bán hàng', grp: 'Sổ sách, báo cáo', g: ['S', 'PL', 'PR'], gd: 2, ivt: 0 },
+  { c: '3.1.7', m: 2, n: 'Bán hàng', grp: 'Chứng từ', g: ['PR'], gd: 2, ivt: 0 },   // bán hàng lập tay ngoài POS, từ gói Pro, PhuongXT thêm (T52)
+  { c: '4.2.3', m: 3, n: 'Sổ công nợ nhà cung cấp', grp: 'Sổ sách, báo cáo', g: ['S', 'PL', 'PR'], gd: 2, ivt: 0 },   // PhuongXT thêm cho gói Standard (T52)
+  { c: '4.2.4', m: 3, n: 'Tổng hợp nhập', grp: 'Sổ sách, báo cáo', g: ['S', 'PL', 'PR'], gd: 2, ivt: 0 },   // PhuongXT thêm (T63)
+  { c: '4.2.5', m: 3, n: 'Chi tiết nhập', grp: 'Sổ sách, báo cáo', g: ['S', 'PL', 'PR'], gd: 2, ivt: 0 },   // PhuongXT thêm (T63)
+  { c: '4.2.6', m: 3, n: 'Mua hàng theo ngày', grp: 'Sổ sách, báo cáo', g: ['PL', 'PR'], gd: 2, ivt: 0 },   // gói Standard ẩn tạm (T251)
+  { c: '5.2.8', m: 4, n: 'Sổ chi tiết vật liệu, dụng cụ, hàng hoá', grp: 'Sổ sách, báo cáo', g: ['PL', 'PR'], gd: 2, ivt: 0 },   // gói Standard bỏ (T52)
+  { c: '6.2.4', m: 5, n: 'Sổ theo dõi nghĩa vụ thuế GTGT', grp: 'Báo cáo', g: ['PL', 'PR'], gd: 2, ivt: 0 },
+  { c: '6.2.5', m: 5, n: 'Sổ theo dõi nghĩa vụ thuế khác', grp: 'Báo cáo', g: ['S', 'PL', 'PR'], gd: 2, ivt: 0 },
+  { c: '7.2.3', m: 6, n: 'Thẻ tài sản cố định', grp: 'Sổ sách, báo cáo', g: ['PR'], gd: 2, ivt: 0 },
+  { c: '7.2.4', m: 6, n: 'Sổ theo dõi TSCĐ, CCDC tại nơi sử dụng', grp: 'Sổ sách, báo cáo', g: ['PR'], gd: 2, ivt: 0 },
+  { c: '10.4.1', m: 9, n: 'Sổ chi tiết doanh thu, chi phí', grp: 'Sổ sách, báo cáo', g: ['PL', 'PR'], gd: 2, ivt: 0 },
+  { c: '10.4.2', m: 9, n: 'Sổ theo dõi vốn chủ sở hữu', grp: 'Sổ sách, báo cáo', g: ['PL', 'PR'], gd: 2, ivt: 0 },
+  { c: '10.4.3', m: 9, n: 'Sổ chi phí', grp: 'Sổ sách, báo cáo', g: ['PL', 'PR'], gd: 2, ivt: 0 },   // gói Standard ẩn tạm (T251)
 ]
 
 const CHEN_SAU: Record<string, string[]> = {
@@ -130,30 +129,27 @@ export const FEATURE: Record<string, Feature> = Object.fromEntries(FEATURES.map(
 import { CHE_DO, CHE_DO_MAC_DINH, type CheDo } from './che-do'
 
 export const GOI: Record<Goi, { ten: string; cls: string; mota: string }> = {
-  F: { ten: 'Free', cls: 'fr', mota: 'Hộ kinh doanh, cửa hàng nhỏ, không giới hạn cửa hàng, mỗi cửa hàng một kho' },
-  S: { ten: 'Standard', cls: 'st', mota: 'DN siêu nhỏ, 1 điểm bán, không dùng tài khoản' },
-  PL: { ten: 'Plus', cls: 'md', mota: 'DN nhỏ và vừa, 1–10 điểm bán, Nợ/Có' },
+  S: { ten: 'Standard', cls: 'st', mota: 'Hộ kinh doanh, cửa hàng nhỏ, không giới hạn cửa hàng, mỗi cửa hàng một kho' },
+  PL: { ten: 'Plus', cls: 'md', mota: 'DN siêu nhỏ, 1 điểm bán, không dùng tài khoản' },
   PR: { ten: 'Pro', cls: 'ad', mota: 'DN vừa và lớn, trên 10 điểm bán' },
 }
 
 /** Bảng giá gói: thanh toán theo năm và theo tháng. Dùng ở màn Gói thuê bao và popup khởi tạo từ FABi (T138) */
 export const GIA_GOI_NAM: Record<Goi, { gia: string; chuKy: string; ghiChu: string }> = {
-  F: { gia: '0 đ', chuKy: '/ trọn đời', ghiChu: 'Miễn phí vĩnh viễn' },
-  S: { gia: '199.000 đ', chuKy: '/ tháng', ghiChu: 'Thanh toán theo năm (2.388.000 đ/năm)' },
-  PL: { gia: '399.000 đ', chuKy: '/ tháng', ghiChu: 'Thanh toán theo năm (4.788.000 đ/năm)' },
+  S: { gia: '0 đ', chuKy: '/ trọn đời', ghiChu: 'Miễn phí vĩnh viễn' },
+  PL: { gia: '199.000 đ', chuKy: '/ tháng', ghiChu: 'Thanh toán theo năm (2.388.000 đ/năm)' },
   PR: { gia: '699.000 đ', chuKy: '/ tháng', ghiChu: 'Thanh toán theo năm (8.388.000 đ/năm)' },
 }
 
 export const GIA_GOI_THANG: Record<Goi, { gia: string; chuKy: string; ghiChu: string }> = {
-  F: { gia: '0 đ', chuKy: '/ trọn đời', ghiChu: 'Miễn phí vĩnh viễn' },
-  S: { gia: '249.000 đ', chuKy: '/ tháng', ghiChu: 'Thanh toán linh hoạt từng tháng' },
-  PL: { gia: '499.000 đ', chuKy: '/ tháng', ghiChu: 'Thanh toán linh hoạt từng tháng' },
+  S: { gia: '0 đ', chuKy: '/ trọn đời', ghiChu: 'Miễn phí vĩnh viễn' },
+  PL: { gia: '249.000 đ', chuKy: '/ tháng', ghiChu: 'Thanh toán linh hoạt từng tháng' },
   PR: { gia: '850.000 đ', chuKy: '/ tháng', ghiChu: 'Thanh toán linh hoạt từng tháng' },
 }
 
 /** Điểm nổi bật theo từng gói cho F&B */
 export const DIEM_NOI_BAT: Record<Goi, { tieuDe: string; ds: string[] }> = {
-  F: {
+  S: {
     tieuDe: 'Hộ kinh doanh & Quán ăn nhỏ',
     ds: [
       '17 sổ sách & báo cáo hộ kinh doanh theo TT152/2025',
@@ -163,24 +159,14 @@ export const DIEM_NOI_BAT: Record<Goi, { tieuDe: string; ds: string[] }> = {
       'Miễn phí 100% trọn đời, không giới hạn cửa hàng',
     ],
   },
-  S: {
+  PL: {
     tieuDe: 'Doanh nghiệp siêu nhỏ 1 điểm bán',
     ds: [
-      'Bao gồm toàn bộ tính năng của gói Free',
+      'Bao gồm toàn bộ tính năng của gói Standard',
       'Bộ 11 sổ sách & BCTC tinh gọn theo TT58/2026',
       'Tự động tính thuế GTGT và TNDN theo 4 phương pháp',
       'Quản lý mua hàng, công nợ nhà cung cấp và nhập kho',
       'Theo dõi nghĩa vụ thuế GTGT và thuế khác đầy đủ',
-    ],
-  },
-  PL: {
-    tieuDe: 'Doanh nghiệp & Chuỗi 1–10 điểm bán',
-    ds: [
-      'Bao gồm toàn bộ tính năng của gói Standard',
-      'Hạch toán kép Nợ/Có đầy đủ theo TT133/2016',
-      'Quản lý chuỗi đa cửa hàng từ 1 đến 10 điểm bán',
-      'Khấu hao TSCĐ, phân bổ CCDC và thẻ chi phí chuyên sâu',
-      'Đầy đủ bộ Báo cáo tài chính, Lưu chuyển tiền tệ, CĐPS',
     ],
   },
   PR: {
@@ -198,7 +184,7 @@ export const DIEM_NOI_BAT: Record<Goi, { tieuDe: string; ds: string[] }> = {
 /** Gói thấp nhất có tính năng. */
 export function minGoi(code: string): Goi {
   const f = FEATURE[code]
-  return (f ? (GOIS.find(g => f.g.includes(g)) ?? 'PR') : 'F') as Goi
+  return (f ? (GOIS.find(g => f.g.includes(g)) ?? 'PR') : 'S') as Goi
 }
 
 /** Tính năng có trong gói không. Mã không có trong Excel (màn hệ thống) thì luôn dùng được. */
@@ -219,7 +205,7 @@ export function demTheoGoi(goi: Goi, mod?: number) {
 }
 
 /** Gói Free ẩn hẳn tính năng ngoài gói thay vì hiện mờ có khoá (QD22). Gói khác vẫn hiện khoá để mời nâng cấp. */
-export const anNgoaiGoi = (goi: Goi) => goi === 'F'
+export const anNgoaiGoi = (goi: Goi) => goi === 'S'
 
 /** Kiểu ghi sổ theo gói hoặc chế độ kế toán. */
 export function kieuGhiSo(x: Goi | CheDo): 'khong' | 'so' | 'noco' {

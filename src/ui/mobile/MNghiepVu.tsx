@@ -27,7 +27,7 @@ export function MNghiepVu() {
 
   // Chỉ hiện màn mà gói Free hoặc Standard mở được trên điện thoại, áp cho mọi gói (Trum chốt 13/10/2026, T194; gói Free ẩn màn ngoài gói, T299)
   const manMoTrenMobile = (sc: ScreenDef) =>
-    hienMan(sc, s.goi, s.cheDo, s) && (anNgoaiGoi(s.goi) ? moDuoc(sc, s.goi) : (moDuoc(sc, 'F') || moDuoc(sc, 'S')))
+    hienMan(sc, s.goi, s.cheDo, s) && (anNgoaiGoi(s.goi) ? moDuoc(sc, s.goi) : (moDuoc(sc, 'S') || moDuoc(sc, 'PL')))
 
   const dsPhanHe = MODULES.filter(
     m =>
@@ -134,7 +134,7 @@ export function MNghiepVu() {
           <div className="m-bc-hdr-tieu-de-hang">
             <h1 className="m-bc-hdr-tieu-de">Nghiệp vụ</h1>
             <span className="m-bc-hdr-chip-goi">
-              {s.goi === 'F' ? 'FREE' : GOI[s.goi]?.ten?.toUpperCase() ?? 'FREE'}
+              {s.goi === 'S' ? 'STANDARD' : GOI[s.goi]?.ten?.toUpperCase() ?? 'STANDARD'}
             </span>
           </div>
           <div className="m-bc-hdr-phu">

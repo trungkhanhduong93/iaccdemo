@@ -393,15 +393,15 @@ export function ThongTinDonVi({ sc }: ScreenProps) {
     cnChinh: tt.cnChinh || dsCn[0]?.id || '', kenhOnline: tt.kenhOnline ?? KENH_ONLINE, kenhSan: tt.kenhSan ?? KENH_SAN,
   }))
   const sua = (p: Partial<typeof f>) => setF(x => ({ ...x, ...p }))
-  const dnCoDinh = s.goi === 'PL' || s.goi === 'PR'   // doanh nghiệp gói Plus, Pro: GTGT khấu trừ, TNDN theo lợi nhuận, không chọn
+  const dnCoDinh = s.goi === 'PR'   // doanh nghiệp gói Pro: GTGT khấu trừ, TNDN theo lợi nhuận, không chọn
   const ppCoDinh = NHOM_HKD[f.nhom - 1]?.pp ?? null
   const tndnCoDinh = f.loai === 'dn' && dnCoDinh   // doanh nghiệp gói Standard chọn TNDN kể cả khi GTGT khấu trừ (T174)
-  const dnFree = s.goi === 'F'   // doanh nghiệp gói Free: TT58 trường hợp 1, thuế GTGT, TNDN theo tỷ lệ % doanh thu, không chọn (T632)
+  const dnFree = s.goi === 'S'   // doanh nghiệp gói Standard: TT58 trường hợp 1, thuế GTGT, TNDN theo tỷ lệ % doanh thu, không chọn (T632)
   const bat = (ds: string[], k: string) => ds.includes(k) ? ds.filter(x => x !== k) : [...ds, k]
   const mstGoc = Boolean(dsDonVi({ dvMoi: s.dvMoi }).find(d => d.id === s.donVi)?.mst)   // MST đã khai lúc khởi tạo thì không sửa; chưa khai thì nhập ở đây
   // Chế độ kế toán đổi theo loại hình khi lưu (T179): hộ kinh doanh dùng TT152, doanh nghiệp gói Free, Standard dùng TT58 (T632); gói Plus, Pro giữ chế độ đang chọn
   const cheDoTheoLoai = (l: LoaiHinh): CheDo =>
-    l === 'hkd' ? (CHE_DO_HOP_LE[s.goi].includes('TT152') ? 'TT152' : s.cheDo) : s.goi === 'S' || dnFree ? 'TT58' : s.cheDo
+    l === 'hkd' ? (CHE_DO_HOP_LE[s.goi].includes('TT152') ? 'TT152' : s.cheDo) : s.goi === 'PL' || dnFree ? 'TT58' : s.cheDo
   const luuDv = () => {
     if (!/^\d{2}\/\d{2}\/\d{4}$/.test(dauNam)) { toast('Ngày đầu năm cần nhập dạng dd/mm/yyyy'); return }
     if (!f.ten.trim()) { toast('Tên đơn vị không được để trống'); return }
@@ -417,7 +417,7 @@ export function ThongTinDonVi({ sc }: ScreenProps) {
   }
   const { loai } = f
   // Doanh nghiệp gói Free, Standard chỉ dùng TT58, không đổi; TT152 của gói Free, Standard chỉ dành cho hộ kinh doanh (T174, T632)
-  const cdDn: CheDo[] = s.goi === 'S' || dnFree ? ['TT58'] : CHE_DO_HOP_LE[s.goi]
+  const cdDn: CheDo[] = s.goi === 'PL' || dnFree ? ['TT58'] : CHE_DO_HOP_LE[s.goi]
   const [choDoi, setChoDoi] = useState<CheDo | null>(null)   // đổi chế độ kế toán, hỏi lại trước khi đổi
   const doiLoai = loai !== loaiHinhDv(s, dv)
   return (
@@ -501,7 +501,7 @@ export function ThongTinDonVi({ sc }: ScreenProps) {
               <Select className="inp" value={String(nam)} aria-label="Năm làm việc hiện tại" onChange={e => doiNam(Number(e.target.value))}
                 ds={[-2, -1, 0, 1].map(d => String(new Date().getFullYear() + d)).map(n => ({ v: n, t: n }))} />
             </div>
-            <div className="f c2"><label>Phương pháp tính giá xuất kho</label><Select className="inp"><option>Bình quân gia quyền cuối kỳ</option>{s.goi !== 'F' && <><option>Bình quân tức thời</option><option>Nhập trước xuất trước</option></>}</Select></div>   {/* gói Free chỉ bình quân cuối kỳ (T268) */}
+            <div className="f c2"><label>Phương pháp tính giá xuất kho</label><Select className="inp"><option>Bình quân gia quyền cuối kỳ</option>{s.goi !== 'S' && <><option>Bình quân tức thời</option><option>Nhập trước xuất trước</option></>}</Select></div>   {/* gói Standard chỉ bình quân cuối kỳ (T268) */}
           </div>
         </Card>
       </div>

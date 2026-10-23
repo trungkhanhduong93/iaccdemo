@@ -28,19 +28,6 @@ export function GoiIconSvg({ g, size = 36, glow = false }: { g: Goi; size?: numb
     >
       <defs>
         {/* Gradient nền và viền từng gói */}
-        {g === 'F' && (
-          <>
-            <linearGradient id={`${gid}-bg`} x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#475569" />
-              <stop offset="55%" stopColor="#64748b" />
-              <stop offset="100%" stopColor="#94a3b8" />
-            </linearGradient>
-            <linearGradient id={`${gid}-st`} x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#ffffff" stopOpacity="0.5" />
-              <stop offset="100%" stopColor="#ffffff" stopOpacity="0.1" />
-            </linearGradient>
-          </>
-        )}
         {g === 'S' && (
           <>
             <linearGradient id={`${gid}-bg`} x1="0%" y1="0%" x2="100%" y2="100%">
@@ -99,30 +86,6 @@ export function GoiIconSvg({ g, size = 36, glow = false }: { g: Goi; size?: numb
       />
 
       {/* Biểu tượng đặc trưng theo từng gói */}
-      {g === 'F' && (
-        <g filter={`url(#${gid}-sh)`}>
-          {/* Mầm vươn lên / Cánh lá thanh khiết — tượng trưng cho khởi đầu tinh gọn, 0 đ */}
-          <path
-            d={
-              "M24 13 C18 16 15 22.5 16.5 28.5 " +
-              "C17.8 33 21.5 35.5 24 35.5 " +
-              "C24 29 24 21 24 13 Z"
-            }
-            fill="#ffffff"
-            fillOpacity="0.96"
-          />
-          <path
-            d={
-              "M24 20 C29 20 33 23 33 27.5 " +
-              "C33 31.5 29.5 34.5 24.8 35.5 " +
-              "C24.8 30 24.5 24 24 20 Z"
-            }
-            fill="#ffffff"
-            fillOpacity="0.75"
-          />
-          <circle cx="24" cy="34.5" r="1.5" fill="#ffffff" />
-        </g>
-      )}
 
       {g === 'S' && (
         <g filter={`url(#${gid}-sh)`}>

@@ -196,7 +196,7 @@ function Sidebar({ mod, onSearch }: { mod: ModuleDef; onSearch: () => void }) {
   return (
     <nav ref={sbRef} className="sidebar" aria-label="Phân hệ">
       {/* Bấm logo về trang chủ; bấm nhãn gói mới mở Gói thuê bao (T309) */}
-      <Link to={s.role === 'owner' || s.goi === 'F' ? '/app/trang-chu/tong-quan' : '/app/trang-chu/ban-lam-viec'} className="sb-brand" title="Về trang chủ">
+      <Link to={s.role === 'owner' || s.goi === 'S' ? '/app/trang-chu/tong-quan' : '/app/trang-chu/ban-lam-viec'} className="sb-brand" title="Về trang chủ">
         <span className="sb-brand-wrap">
           <FigmaLogoAccounting />
           <span className={`pk-ivt ${s.goi === 'PR' ? 'pro' : GOI[s.goi].cls}`} role="link" tabIndex={0} title={`Đang dùng gói ${GOI[s.goi].ten}. Bấm để xem gói thuê bao`}

@@ -81,14 +81,14 @@ const ccdc: ModuleDef = {
       useCanhBao: useCanhBaoCho,
       // Gói Plus, Pro: nút Phân bổ kích hoạt bút toán phân bổ đã hạch toán sẵn của kỳ đang xem; Phân bổ trong kỳ chỉ có khi đã kích hoạt (T438)
       useHauXuLy: useKyNayTheoGoi,
-      nutKichHoat: [{ nhan: 'Phân bổ', icon: 'phanbo', goi: ['PL', 'PR'], lam: (rows, ky) => {
+      nutKichHoat: [{ nhan: 'Phân bổ', icon: 'phanbo', goi: ['PR'], lam: (rows, ky) => {
         if (kyKhoa(ky)) return `Tháng ${ky % 100}/${Math.floor(ky / 100)} thuộc kỳ đã khoá sổ, không phân bổ được`
         const co = rows.filter(r => Number(r._kyNayGoc ?? r.kyNay) > 0)
         const moi = kichHoatPhanBo(co.map(r => String(r.soThe)), ky)
         return !co.length ? `Không có khoản phân bổ nào trong ${tenKy(ky)}` : moi ? `Đã phân bổ ${tenKy(ky)}: ${moi} thẻ` : `Các khoản phân bổ ${tenKy(ky)} đã phân bổ trước đó`
       } }, {
         // Xoá phân bổ kỳ đang xem: trạng thái kỳ đó trong Lịch phân bổ về Chờ phân bổ; kỳ đã khoá sổ thì không xoá (T438)
-        nhan: 'Xoá phân bổ', icon: 'trash', goi: ['PL', 'PR'],
+        nhan: 'Xoá phân bổ', icon: 'trash', goi: ['PR'],
         hoi: (rows, ky) => {
           const da = rows.filter(r => daPhanBoKy(r.soThe, ky)).length
           return da && !kyKhoa(ky) ? `Xoá phân bổ ${tenKy(ky)} của ${da} thẻ? Các khoản phân bổ tháng này trong Lịch phân bổ về trạng thái Chờ phân bổ.` : null

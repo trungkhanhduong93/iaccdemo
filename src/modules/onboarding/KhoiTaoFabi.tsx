@@ -22,10 +22,10 @@ export function KhoiTaoFabi() {
   const tenNguoi = s.ten.split(' ').slice(-2).join(' ')
   const vaoApp = () => {
     // đơn vị mới từ FABi, không đụng 3 đơn vị mẫu: tên theo FABi, chưa có mã số thuế, địa chỉ (FABi không có)
-    const dvMoi: DonVi = { id: 'fabi', ten: TEN_FABI, viettat: 'PM', mst: '', goi: 'F', diaChi: '', diem: chon.length, nguoiDaiDien: '' }
+    const dvMoi: DonVi = { id: 'fabi', ten: TEN_FABI, viettat: 'PM', mst: '', goi: 'S', diaChi: '', diem: chon.length, nguoiDaiDien: '' }
     // cửa hàng của đơn vị mới là các cửa hàng chọn dùng thử; khởi tạo xong popup ghi lại theo bước Cửa hàng
     const cnThem = CUA_HANG.filter(c => chon.includes(c.id)).map(c => ({ id: c.id, ten: c.ten, khuVuc: 'TP.HCM', tuNgay: '', banDau: true }))
-    set({ loggedIn: true, goi: 'F', cheDo: 'TT152', donVi: dvMoi.id, dvMoi, khoiTao: true, cuaHang: 'all', cnThem: { ...s.cnThem, [dvMoi.id]: cnThem }, dungThu: { ...s.dungThu, [dvMoi.id]: batDauDungThu() } })   // dùng thử 30 ngày tính từ hôm nay (T158)
+    set({ loggedIn: true, goi: 'S', cheDo: 'TT152', donVi: dvMoi.id, dvMoi, khoiTao: true, cuaHang: 'all', cnThem: { ...s.cnThem, [dvMoi.id]: cnThem }, dungThu: { ...s.dungThu, [dvMoi.id]: batDauDungThu() } })   // dùng thử 30 ngày tính từ hôm nay (T158)
     nav('/app')
   }
   // cửa hàng chọn dùng thử điền sẵn vào bước Cửa hàng của popup

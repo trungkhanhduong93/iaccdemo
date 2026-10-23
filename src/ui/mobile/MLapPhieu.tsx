@@ -1116,7 +1116,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
 
   // Cập nhật số tiền trả khi tổng thanh toán đổi
   useEffect(() => {
-    if (s.goi === 'F') {
+    if (s.goi === 'S') {
       setSoTienTra(tongThanhToan)
     } else if (!soTienTra || soTienTra > tongThanhToan) {
       setSoTienTra(tongThanhToan)
@@ -1751,7 +1751,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
           tien: tongThanhToan,
           ly: lyDoChi,
           dt: doiTuong,
-          ...(s.goi !== 'F' ? {
+          ...(s.goi !== 'S' ? {
             tkNo: '331',
             tkCo: hinhThucTt === 'tienmat' ? '1111' : '1121',
           } : {}),
@@ -2067,7 +2067,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                           style={{ width: `${tongThanhToan > 0 ? Math.min(100, Math.round((daTra / tongThanhToan) * 100)) : 0}%` }}
                         />
                       </div>
-                      {s.goi !== 'F' && hanTt && (
+                      {s.goi !== 'S' && hanTt && (
                         <div className="m-t600-han-tt-dong" style={{ marginTop: 6 }}>
                           Hạn {hanTt}{tinhSoNgayCon(hanTt) ? ` · ${tinhSoNgayCon(hanTt)}` : ''}
                         </div>
@@ -2095,7 +2095,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
               <div
                 className="m-t601-tabs"
                 style={{
-                  gridTemplateColumns: `repeat(${1 + (s.goi !== 'F' ? 1 : 0) + 1}, minmax(0, 1fr))`,
+                  gridTemplateColumns: `repeat(${1 + (s.goi !== 'S' ? 1 : 0) + 1}, minmax(0, 1fr))`,
                 }}
               >
                 <button
@@ -2105,7 +2105,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                 >
                   Phiếu nhập
                 </button>
-                {s.goi !== 'F' && (
+                {s.goi !== 'S' && (
                   <button
                     type="button"
                     className={`m-t601-tab-btn ${tabMua === 'buttoan' ? 'on' : ''}`}
@@ -2505,7 +2505,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
         )}
 
         {/* ════ KHỐI HẠCH TOÁN (GÓI KHÁC FREE) ════ */}
-        {s.goi !== 'F' && nhom !== 'mua' && dsButToan.length > 0 && (
+        {s.goi !== 'S' && nhom !== 'mua' && dsButToan.length > 0 && (
           <div className="m-lp-khoi-ht" style={{ marginTop: 8 }}>
             <div
               className="m-pb-the m-lp-the-ht-tieu"

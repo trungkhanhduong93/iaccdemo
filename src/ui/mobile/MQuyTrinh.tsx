@@ -29,18 +29,18 @@ export function layDsBuoc(mod: ModuleDef, s: Session): BuocMobile[] {
 
   // Gói Free có sơ đồ hội tụ riêng thì thay sơ đồ chung (T98)
   const goc1: QuyTrinhDef =
-    s.goi === 'F' && goc0.hoiTuFree
+    s.goi === 'S' && goc0.hoiTuFree
       ? { ...goc0, buoc: [], hoiTu: goc0.hoiTuFree }
       : goc0
 
   // Gói Free có khối báo cáo riêng thì thay khối báo cáo, giữ các làn (T262)
   const goc: QuyTrinhDef =
-    s.goi === 'F' && goc0.raFree && goc1.hoiTu
+    s.goi === 'S' && goc0.raFree && goc1.hoiTu
       ? { ...goc1, hoiTu: { ...goc1.hoiTu, ra: goc0.raFree } }
       : goc1
 
   // Gói Free có sơ đồ luồng theo cột thì thay sơ đồ chung (T123)
-  const luong = s.goi === 'F' && goc.luongFree ? goc.luongFree : null
+  const luong = s.goi === 'S' && goc.luongFree ? goc.luongFree : null
 
   const locNutCuaBuoc = (nutList: NutQT[]): NutMobile[] => {
     const ketQua: NutMobile[] = []
@@ -67,7 +67,7 @@ export function layDsBuoc(mod: ModuleDef, s: Session): BuocMobile[] {
         if (!moDuoc(d.sc, s.goi)) continue
 
         // 2. Màn không qua luật T194 (T299: gói Free ẩn màn ngoài gói)
-        if (anNgoaiGoi(s.goi) ? !moDuoc(d.sc, s.goi) : !(moDuoc(d.sc, 'F') || moDuoc(d.sc, 'S'))) continue
+        if (anNgoaiGoi(s.goi) ? !moDuoc(d.sc, s.goi) : !(moDuoc(d.sc, 'S') || moDuoc(d.sc, 'PL'))) continue
 
         // 3. !hienMan(sc, s.goi, s.cheDo, s)
         if (!hienMan(d.sc, s.goi, s.cheDo, s)) continue

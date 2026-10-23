@@ -27,7 +27,7 @@ NHANH = '--nhanh' in sys.argv
 DIEN_THOAI = '--dien-thoai' in sys.argv
 # Bề rộng iPhone 13 trở lên: 13 mini, 13/14, 16 Pro Max (pt); ảnh chụp chỉ lấy khung 390
 KHUNG_DT = [(375, 812), (390, 844), (440, 956)]
-GOIS = ['PL'] if NHANH else ['F', 'S', 'PL', 'PR']
+GOIS = ['PR'] if NHANH else ['S', 'PL', 'PR']
 
 
 def phien(goi, role='ktt', thu_gon=False):
@@ -65,14 +65,14 @@ def kiem_tra_dien_thoai(rong=390, cao=844):
         pg.on('console', lambda m: con.append(m.text) if m.type == 'error' else None)
         pg.on('pageerror', lambda e: con.append(str(e)))
 
-        def vao(path, goi='PL'):
+        def vao(path, goi='PR'):
             pg.goto(URL + '#/dang-nhap')
             pg.wait_for_selector('.auth-box')
             pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien(goi))})")
             pg.goto(f'{URL}?goi={goi}&p={abs(hash(path))}#{path}')
             pg.wait_for_timeout(200)
 
-        vao('/app', 'PL')
+        vao('/app', 'PR')
 
         for path in dia_chi:
             dem += 1
@@ -167,7 +167,7 @@ def kiem_tra_nghiep_vu_4_goi():
         pg.on('console', lambda m: con.append(m.text) if m.type == 'error' else None)
         pg.on('pageerror', lambda e: con.append(str(e)))
 
-        for goi in ['F', 'S', 'PL', 'PR']:
+        for goi in ['S', 'PL', 'PR']:
             pg.goto(URL + '#/dang-nhap')
             pg.wait_for_selector('.auth-box')
             pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien(goi))})")
@@ -295,12 +295,12 @@ def kiem_tra_man_dot_3():
 
         pg.goto(URL + '#/dang-nhap')
         pg.wait_for_selector('.auth-box')
-        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PL'))})")
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PR'))})")
 
         mans = tim_cac_man_dot_3()
         print('Kiểm tra các màn danh sách & danh mục đợt 3 (390px, gói PL):')
         for ten, path in mans:
-            pg.goto(f'{URL}?goi=PL&p={abs(hash(path))}#{path}')
+            pg.goto(f'{URL}?goi=PR&p={abs(hash(path))}#{path}')
             pg.wait_for_timeout(250)
             if con:
                 loi.append(f'{path}: lỗi console khi mở {con[:2]}')
@@ -385,7 +385,7 @@ def kiem_tra_xem_phieu_dot_4():
 
         pg_dt.goto(URL + '#/dang-nhap')
         pg_dt.wait_for_selector('.auth-box')
-        pg_dt.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PL'))})")
+        pg_dt.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PR'))})")
 
         b_mt = p.chromium.launch(channel='chrome')
         pg_mt = b_mt.new_page(viewport={'width': 1440, 'height': 900})
@@ -395,11 +395,11 @@ def kiem_tra_xem_phieu_dot_4():
 
         pg_mt.goto(URL + '#/dang-nhap')
         pg_mt.wait_for_selector('.auth-box')
-        pg_mt.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PL'))})")
+        pg_mt.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PR'))})")
 
         for ten_loai, slug in danh_sach:
             path_ds = f'/app/{slug}'
-            pg_dt.goto(f'{URL}?goi=PL&p={abs(hash(path_ds))}#{path_ds}')
+            pg_dt.goto(f'{URL}?goi=PR&p={abs(hash(path_ds))}#{path_ds}')
             pg_dt.wait_for_timeout(300)
 
             thes = pg_dt.locator('.m-the-ct, .m-ds-ngay-dong')
@@ -430,7 +430,7 @@ def kiem_tra_xem_phieu_dot_4():
 
             url_phieu = pg_dt.evaluate("window.location.hash").lstrip('#')
 
-            pg_mt.goto(f'{URL}?goi=PL&p={abs(hash(url_phieu))}#{url_phieu}')
+            pg_mt.goto(f'{URL}?goi=PR&p={abs(hash(url_phieu))}#{url_phieu}')
             pg_mt.wait_for_timeout(300)
 
             if con_mt:
@@ -491,11 +491,11 @@ def kiem_tra_lap_phieu_dot_5():
 
         pg.goto(URL + '#/dang-nhap')
         pg.wait_for_selector('.auth-box')
-        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PL'))})")
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PR'))})")
 
         for ten_phieu, slug, la_tien in ds_phieu:
             path_ds = f'/app/{slug}'
-            pg.goto(f'{URL}?goi=PL&p={abs(hash(path_ds))}#{path_ds}')
+            pg.goto(f'{URL}?goi=PR&p={abs(hash(path_ds))}#{path_ds}')
             pg.wait_for_timeout(800)
 
             nut_them = pg.locator('.m-nut-them-fab')
@@ -599,7 +599,7 @@ def kiem_tra_lap_phieu_dot_5():
             if so_tien == 0:
                 loi.append(f'{ten_phieu} ({so_phieu}): tổng tiền bằng 0 đ')
 
-            pg.goto(f'{URL}?goi=PL&p={abs(hash(path_ds))}#{path_ds}')
+            pg.goto(f'{URL}?goi=PR&p={abs(hash(path_ds))}#{path_ds}')
             pg.wait_for_timeout(300)
 
             so_the_dau = pg.locator('.m-the-ct .m-the-ct-so, .m-ds-ngay-dong .m-ds-ngay-so').first.inner_text().strip() if pg.locator('.m-the-ct, .m-ds-ngay-dong').count() > 0 else ''
@@ -630,7 +630,7 @@ def kiem_tra_lap_phieu_dot_5():
                     chip.first.inner_text().strip() if chip.count() else '')
         for ten_phieu, slug in [('Phiếu thu chi', 'tien/2-1-1'), ('Nhập kho', 'kho/5-1-1')]:
             path_ds = f'/app/{slug}'
-            pg.goto(f'{URL}?goi=PL&sua=1#{path_ds}')
+            pg.goto(f'{URL}?goi=PR&sua=1#{path_ds}')
             pg.wait_for_timeout(800)
             pg.locator('.m-the-ct, .m-ds-ngay-dong').first.click()
             pg.wait_for_timeout(600)
@@ -671,7 +671,7 @@ def kiem_tra_form_dm_dot_6():
 
         pg.goto(URL + '#/dang-nhap')
         pg.wait_for_selector('.auth-box')
-        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PL'))})")
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PR'))})")
 
         def kiem_nut_luu(mo_ta):
             tran = pg.evaluate("document.documentElement.scrollWidth > 390")
@@ -698,7 +698,7 @@ def kiem_tra_form_dm_dot_6():
 
         # 1. Hàng hoá danh-muc/1-2: bấm thêm, gõ mã, tên, chọn đơn vị tính, bấm Lưu. Phải thấy toast "Đã lưu" và modal đóng.
         path_hh = '/app/danh-muc/1-2'
-        pg.goto(f'{URL}?goi=PL&p={abs(hash(path_hh))}#{path_hh}')
+        pg.goto(f'{URL}?goi=PR&p={abs(hash(path_hh))}#{path_hh}')
         pg.wait_for_timeout(800)
         nut_them = pg.locator('.m-nut-them-fab')
         if nut_them.count() == 0:
@@ -735,7 +735,7 @@ def kiem_tra_form_dm_dot_6():
 
         # 2. Kho danh-muc/1-8: bấm thẻ đầu, form mở đúng tên dòng, sửa 1 ô chữ, Lưu
         path_kho = '/app/danh-muc/1-8'
-        pg.goto(f'{URL}?goi=PL&p={abs(hash(path_kho))}#{path_kho}')
+        pg.goto(f'{URL}?goi=PR&p={abs(hash(path_kho))}#{path_kho}')
         pg.wait_for_timeout(800)
         the_kho = pg.locator('.m-the-dm').first
         ten_kho_cu = pg.locator('.m-the-dm-ten').first.inner_text().strip() if pg.locator('.m-the-dm-ten').count() > 0 else ''
@@ -761,7 +761,7 @@ def kiem_tra_form_dm_dot_6():
 
         # 3. Đối tượng danh-muc/1-5 (một dòng nhà cung cấp): bấm thẻ đầu ncc, form mở đúng tên dòng, sửa 1 ô chữ, Lưu
         path_dt = '/app/danh-muc/1-5'
-        pg.goto(f'{URL}?goi=PL&p={abs(hash(path_dt))}#{path_dt}')
+        pg.goto(f'{URL}?goi=PR&p={abs(hash(path_dt))}#{path_dt}')
         pg.wait_for_timeout(800)
         chip_ncc = pg.locator('.m-chip:has-text("Nhà cung cấp")')
         if chip_ncc.count() > 0:
@@ -792,7 +792,7 @@ def kiem_tra_form_dm_dot_6():
 
         # 4. Phương thức thanh toán: bấm thẻ đầu, form mở đúng tên dòng, sửa 1 ô chữ, Lưu
         path_pttt = '/app/danh-muc/phuong-thuc-thanh-toan'
-        pg.goto(f'{URL}?goi=PL&p={abs(hash(path_pttt))}#{path_pttt}')
+        pg.goto(f'{URL}?goi=PR&p={abs(hash(path_pttt))}#{path_pttt}')
         pg.wait_for_timeout(800)
         the_pttt = pg.locator('.m-the-dm').first
         ten_pttt_cu = pg.locator('.m-the-dm-ten').first.inner_text().strip() if pg.locator('.m-the-dm-ten').count() > 0 else ''
@@ -838,7 +838,7 @@ def kiem_tra_bao_cao_dot_7():
         pg.on('console', lambda m: con.append(m.text) if m.type == 'error' else None)
         pg.on('pageerror', lambda e: con.append(str(e)))
 
-        def vao(path, goi='PL', che_do=None):
+        def vao(path, goi='PR', che_do=None):
             pg.goto(URL + '#/dang-nhap')
             pg.wait_for_selector('.auth-box')
             s = json.loads(phien(goi))
@@ -851,7 +851,7 @@ def kiem_tra_bao_cao_dot_7():
 
         SHOTS.mkdir(exist_ok=True)
         # 1. Mở tab Báo cáo, thấy ít nhất 2 thẻ nhóm
-        vao('/app/bao-cao/tat-ca', 'PL')
+        vao('/app/bao-cao/tat-ca', 'PR')
         pg.screenshot(path=str(SHOTS / 'm-07-bao-cao.png'))
         the_nhom = pg.locator('.m-bc-the-nhom')
         if the_nhom.count() < 2:
@@ -1120,7 +1120,7 @@ def kiem_tra_popup_khoi_tao_dot_8():
         pg.on('pageerror', lambda e: con.append(str(e)))
         pg.goto(URL + '#/dang-nhap')
         pg.wait_for_selector('.auth-box')
-        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PL'))})")
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PR'))})")
         pg.goto(URL + '?popup=1#/chon-don-vi')
         pg.get_by_text('Thêm đơn vị kế toán').click()
         pg.wait_for_selector('.ktf-pop')
@@ -1161,8 +1161,8 @@ def kiem_tra_dot_9():
         # Đăng nhập gói PL
         pg.goto(URL + '#/dang-nhap')
         pg.wait_for_selector('.auth-box')
-        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PL'))})")
-        pg.goto(URL + '?goi=PL#/app/trang-chu/tong-quan')
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PR'))})")
+        pg.goto(URL + '?goi=PR#/app/trang-chu/tong-quan')
         pg.wait_for_selector('.m-app')
         pg.wait_for_timeout(300)
 
@@ -1192,7 +1192,7 @@ def kiem_tra_dot_9():
                     print('  - Bước 1: Trang chủ 2 tab và Cần theo dõi thành công')
 
         # ── Bước 2: Bấm kính lúp, gõ "phieu chi" -> kết quả "Phiếu chi", URL chứa tien/2-1-1 ──
-        pg.goto(URL + '?goi=PL#/app/trang-chu/tong-quan')
+        pg.goto(URL + '?goi=PR#/app/trang-chu/tong-quan')
         pg.wait_for_selector('.m-app')
         pg.wait_for_timeout(200)
 
@@ -1223,7 +1223,7 @@ def kiem_tra_dot_9():
                     print('  - Bước 2: Tìm kiếm "phieu chi" trỏ đúng tien/2-1-1')
 
         # ── Bước 3: Tab Nghiệp vụ ở gói PL: không có màn chỉ mở cho Plus, Pro (vd ban-hang/3-1-7) ──
-        pg.goto(URL + '?goi=PL#/app/nghiep-vu')
+        pg.goto(URL + '?goi=PR#/app/nghiep-vu')
         pg.wait_for_selector('.m-nghiep-vu')
         pg.wait_for_timeout(200)
         kiem_man('Tab Nghiệp vụ gói PL')
@@ -1241,7 +1241,7 @@ def kiem_tra_dot_9():
             loi.append('Tab Nghiệp vụ: không tìm thấy phân hệ Bán hàng')
 
         # ── Bước 4: Tab Khác có ít nhất 5 thẻ nhóm ──
-        pg.goto(URL + '?goi=PL#/app/khac')
+        pg.goto(URL + '?goi=PR#/app/khac')
         pg.wait_for_selector('.m-khac')
         pg.wait_for_timeout(200)
         kiem_man('Tab Khác')
@@ -1254,7 +1254,7 @@ def kiem_tra_dot_9():
             print(f'  - Bước 4: Tab Khác có {the_nhom.count()} thẻ nhóm riêng biệt')
 
         # ── Bước 5: Danh sách Phiếu chi -> bộ lọc -> chọn Đối tượng -> Xong -> Áp dụng ──
-        pg.goto(URL + '?goi=PL#/app/tien/2-1-1')
+        pg.goto(URL + '?goi=PR#/app/tien/2-1-1')
         pg.wait_for_selector('.m-ds-khung')
         pg.wait_for_timeout(300)
 
@@ -1310,7 +1310,7 @@ def kiem_tra_dot_9():
                                     print(f'  - Bước 5: Lọc đối tượng thành công ({so_dong_goc} -> {so_dong_sau} dòng)')
 
         # ── Bước 6: Lập phiếu chi, chạm ô Ngày chứng từ. Tấm lịch hiện ra, nút Xong dính đáy, chọn ngày 1 đổi giá trị ──
-        pg.goto(URL + '?goi=PL#/app/tien/2-1-1')
+        pg.goto(URL + '?goi=PR#/app/tien/2-1-1')
         pg.wait_for_selector('.m-nut-them-fab')
         pg.locator('.m-nut-them-fab').first.click()
         pg.wait_for_timeout(200)
@@ -1378,8 +1378,8 @@ def kiem_tra_dot_10():
         # Đăng nhập gói PL
         pg.goto(URL + '#/dang-nhap')
         pg.wait_for_selector('.auth-box')
-        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PL'))})")
-        pg.goto(URL + '?goi=PL#/app/trang-chu/tong-quan')
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PR'))})")
+        pg.goto(URL + '?goi=PR#/app/trang-chu/tong-quan')
         pg.wait_for_selector('.m-app')
         pg.wait_for_timeout(300)
 
@@ -1411,7 +1411,7 @@ def kiem_tra_dot_10():
         pg.screenshot(path=str(SHOTS / 'm-10-02-trang-chu-cuoi.png'))
 
         # ── Bước 2: Mở #/app/bao-cao/2-2-1: có bảng trong khung MSoBaoCao, không có .m-to-giay. Gõ ô lọc dòng thì số dòng giảm ──
-        pg.goto(URL + '?goi=PL&p=soquy#/app/bao-cao/2-2-1')
+        pg.goto(URL + '?goi=PR&p=soquy#/app/bao-cao/2-2-1')
         pg.wait_for_selector('.m-app')
         pg.wait_for_timeout(350)
 
@@ -1451,7 +1451,7 @@ def kiem_tra_dot_10():
         pg.screenshot(path=str(SHOTS / 'm-10-03-so-quy-bang.png'))
 
         # ── Bước 3: Sổ ngân hàng: cuộn ngang khung 300px, ô đầu tiên trôi khỏi mép trái. Cuộn dọc thì tiêu đề trôi lên ──
-        pg.goto(URL + '?goi=PL&p=songanhang#/app/bao-cao/2-2-3')
+        pg.goto(URL + '?goi=PR&p=songanhang#/app/bao-cao/2-2-3')
         pg.wait_for_selector('.m-so-bc')
         chon_kieu_bang()
         pg.wait_for_selector('.m-so-bc table.rpt')
@@ -1518,10 +1518,10 @@ def kiem_tra_dot_11_a():
         # Đăng nhập gói PL
         pg.goto(URL + '#/dang-nhap')
         pg.wait_for_selector('.auth-box')
-        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PL'))})")
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PR'))})")
 
         # ── 1. Người dùng (#/app/he-thong/nguoi-dung) ──
-        pg.goto(URL + '?goi=PL&p=nguoidung#/app/he-thong/nguoi-dung')
+        pg.goto(URL + '?goi=PR&p=nguoidung#/app/he-thong/nguoi-dung')
         pg.wait_for_selector('.m-app')
         pg.wait_for_timeout(300)
         if pg.locator('.m-chi-mt').count() > 0:
@@ -1553,7 +1553,7 @@ def kiem_tra_dot_11_a():
                 pg.wait_for_timeout(200)
 
         # ── 2. Vai trò và phân quyền (#/app/he-thong/phan-quyen) ──
-        pg.goto(URL + '?goi=PL&p=phanquyen#/app/he-thong/phan-quyen')
+        pg.goto(URL + '?goi=PR&p=phanquyen#/app/he-thong/phan-quyen')
         pg.wait_for_selector('.m-app')
         pg.wait_for_timeout(300)
         if pg.locator('.m-chi-mt').count() > 0:
@@ -1566,7 +1566,7 @@ def kiem_tra_dot_11_a():
         pg.screenshot(path=str(SHOTS / 'm-11-02-phan-quyen.png'))
 
         # ── 3. Nhật ký thao tác (#/app/he-thong/nhat-ky) ──
-        pg.goto(URL + '?goi=PL&p=nhatky#/app/he-thong/nhat-ky')
+        pg.goto(URL + '?goi=PR&p=nhatky#/app/he-thong/nhat-ky')
         pg.wait_for_selector('.m-app')
         pg.wait_for_timeout(300)
         if pg.locator('.m-chi-mt').count() > 0:
@@ -1577,7 +1577,7 @@ def kiem_tra_dot_11_a():
         pg.screenshot(path=str(SHOTS / 'm-11-03-nhat-ky.png'))
 
         # ── 4. Gói thuê bao (#/app/he-thong/goi-thue-bao) ──
-        pg.goto(URL + '?goi=PL&p=goithuebao#/app/he-thong/goi-thue-bao')
+        pg.goto(URL + '?goi=PR&p=goithuebao#/app/he-thong/goi-thue-bao')
         pg.wait_for_selector('.m-app')
         pg.wait_for_timeout(300)
         if pg.locator('.m-chi-mt').count() > 0:
@@ -1590,7 +1590,7 @@ def kiem_tra_dot_11_a():
         pg.screenshot(path=str(SHOTS / 'm-11-04-goi-thue-bao.png'))
 
         # ── 5. Thông tin đơn vị (#/app/he-thong/thong-tin) ──
-        pg.goto(URL + '?goi=PL&p=thongtin#/app/he-thong/thong-tin')
+        pg.goto(URL + '?goi=PR&p=thongtin#/app/he-thong/thong-tin')
         pg.wait_for_selector('.m-app')
         pg.wait_for_timeout(300)
         if pg.locator('.m-chi-mt').count() > 0:
@@ -1611,7 +1611,7 @@ def kiem_tra_dot_11_a():
         pg.screenshot(path=str(SHOTS / 'm-11-05-thong-tin-don-vi.png'))
 
         # ── 6. Cấu hình kế toán (#/app/he-thong/cau-hinh) ──
-        pg.goto(URL + '?goi=PL&p=cauhinh#/app/he-thong/cau-hinh')
+        pg.goto(URL + '?goi=PR&p=cauhinh#/app/he-thong/cau-hinh')
         pg.wait_for_selector('.m-app')
         pg.wait_for_timeout(300)
         if pg.locator('.m-chi-mt').count() > 0:
@@ -1622,7 +1622,7 @@ def kiem_tra_dot_11_a():
         pg.screenshot(path=str(SHOTS / 'm-11-06-cau-hinh.png'))
 
         # ── 7. Danh mục tài khoản 1.1 (#/app/danh-muc/1-1) ──
-        pg.goto(URL + '?goi=PL&p=taikhoan#/app/danh-muc/1-1')
+        pg.goto(URL + '?goi=PR&p=taikhoan#/app/danh-muc/1-1')
         pg.wait_for_selector('.m-app')
         pg.wait_for_timeout(300)
         if pg.locator('.m-chi-mt').count() > 0:
@@ -1644,7 +1644,7 @@ def kiem_tra_dot_11_a():
         pg.screenshot(path=str(SHOTS / 'm-11-07-tai-khoan.png'))
 
         # ── 8. Danh mục cửa hàng (#/app/danh-muc/cua-hang) ──
-        pg.goto(URL + '?goi=PL&p=cuahang#/app/danh-muc/cua-hang')
+        pg.goto(URL + '?goi=PR&p=cuahang#/app/danh-muc/cua-hang')
         pg.wait_for_selector('.m-app')
         pg.wait_for_timeout(300)
         if pg.locator('.m-chi-mt').count() > 0:
@@ -1678,12 +1678,12 @@ def kiem_tra_dot_11_b():
         # Đăng nhập gói PL
         pg.goto(URL + '#/dang-nhap')
         pg.wait_for_selector('.auth-box')
-        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PL'))})")
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PR'))})")
 
         # ── Bước 1: Mở 3 màn tác vụ: 5.1.7, 10.1.5, 7.1.3 (gói PL). Có nút "Thực hiện" trong khung nhìn. Bấm nút thì có toast hoặc kết quả, không lỗi ──
         ds_tac_vu = [
-            ('kho/5-1-7', 'Tính giá vốn (5.1.7)', 'PL'),
-            ('tong-hop/10-1-5', 'Kết chuyển lãi lỗ (10.1.5)', 'PL'),
+            ('kho/5-1-7', 'Tính giá vốn (5.1.7)', 'PR'),
+            ('tong-hop/10-1-5', 'Kết chuyển lãi lỗ (10.1.5)', 'PR'),
             ('tscd/7-1-3', 'Tính khấu hao TSCĐ (7.1.3)', 'PR'),  # TSCĐ chỉ có ở gói Pro
         ]
         for idx, (path, ten, goi) in enumerate(ds_tac_vu):
@@ -1710,7 +1710,7 @@ def kiem_tra_dot_11_b():
 
         # ── Bước 2: Mở 10.1.4 và 10.1.6: không ra thẻ "chưa có trên điện thoại" ──
         for idx, (path, ten, ma) in enumerate([('tong-hop/10-1-4', 'Kiểm tra cuối kỳ', '10.1.4'), ('tong-hop/10-1-6', 'Khoá sổ', '10.1.6')]):
-            pg.goto(f'{URL}?goi=PL#/app/{path}')
+            pg.goto(f'{URL}?goi=PR#/app/{path}')
             pg.wait_for_selector('.m-app')
             pg.wait_for_timeout(300)
             kiem_man(ten)
@@ -1729,7 +1729,7 @@ def kiem_tra_dot_11_b():
             pg.screenshot(path=str(SHOTS / f'm-11b-0{idx+4}-{path.replace("/", "-")}.png'))
 
         # ── Bước 3: Bấm phân hệ Thu chi và Kho từ tab Nghiệp vụ: vào thẳng danh sách chứng từ; mở đường dẫn quy-trinh cũ cũng tự chuyển sang danh sách ──
-        pg.goto(f'{URL}?goi=PL#/app/nghiep-vu')
+        pg.goto(f'{URL}?goi=PR#/app/nghiep-vu')
         pg.wait_for_selector('.m-nghiep-vu')
         pg.wait_for_timeout(300)
 
@@ -1746,7 +1746,7 @@ def kiem_tra_dot_11_b():
             kiem_man('Danh sách Thu chi từ Nghiệp vụ')
 
         for idx, (path, ten, dich_url) in enumerate([('tien/quy-trinh', 'Thu chi', 'tien/2-1-1'), ('kho/quy-trinh', 'Kho', 'kho/5-1-2')]):
-            pg.goto(f'{URL}?goi=PL#/app/{path}')
+            pg.goto(f'{URL}?goi=PR#/app/{path}')
             pg.wait_for_selector('.m-app')
             pg.wait_for_timeout(300)
             kiem_man(ten)
@@ -1775,7 +1775,7 @@ def kiem_tra_dot_11_b():
         ]
         dem_ok = 0
         for p_url in dia_chi_kiem:
-            pg.goto(f'{URL}?goi=PL#/app/{p_url}')
+            pg.goto(f'{URL}?goi=PR#/app/{p_url}')
             pg.wait_for_timeout(150)
             if pg.locator('.m-chi-may-tinh').count() > 0 or pg.locator('text=Màn này chưa có trên điện thoại').count() > 0:
                 loi.append(f'{p_url}: vẫn hiện thẻ MChiMayTinh')
@@ -1808,10 +1808,10 @@ def kiem_tra_dot_12_a():
         # Đăng nhập gói PL
         pg.goto(URL + '#/dang-nhap')
         pg.wait_for_selector('.auth-box')
-        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PL'))})")
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PR'))})")
 
         # ── 1. Xuất bán POS (ban-hang/3-1-1) ──
-        pg.goto(URL + '?goi=PL&p=pos#/app/ban-hang/3-1-1')
+        pg.goto(URL + '?goi=PR&p=pos#/app/ban-hang/3-1-1')
         pg.wait_for_selector('.m-app')
         pg.wait_for_timeout(350)
         if pg.locator('.m-chi-mt').count() > 0:
@@ -1860,8 +1860,8 @@ def kiem_tra_dot_12_a():
         pg.screenshot(path=str(SHOTS / 'm-12-02-cong-thuc-so-che.png'))
 
         # ── 3. Công thức chế biến 9.1.3 (gói PL) ──
-        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PL'))})")
-        pg.goto(URL + '?goi=PL&p=ctcb#/app/kho/9-1-3')
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PR'))})")
+        pg.goto(URL + '?goi=PR&p=ctcb#/app/kho/9-1-3')
         pg.wait_for_selector('.m-app')
         pg.wait_for_timeout(350)
         if pg.locator('.m-chi-mt').count() > 0:
@@ -1885,7 +1885,7 @@ def kiem_tra_dot_12_a():
         pg.screenshot(path=str(SHOTS / 'm-12-03-cong-thuc-che-bien.png'))
 
         # ── 4. Số dư ban đầu Tổng hợp (tong-hop/10-1-3, gói PL) ──
-        pg.goto(URL + '?goi=PL&p=sodu1013#/app/tong-hop/10-1-3')
+        pg.goto(URL + '?goi=PR&p=sodu1013#/app/tong-hop/10-1-3')
         pg.wait_for_selector('.m-app')
         pg.wait_for_timeout(350)
         if pg.locator('.m-chi-mt').count() > 0:
@@ -1916,8 +1916,8 @@ def kiem_tra_dot_12_a():
         pg.screenshot(path=str(SHOTS / 'm-12-04-so-du-ban-dau.png'))
 
         # ── 5. Số dư ban đầu Thu chi (tien/so-du-ban-dau, gói F) ──
-        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('F'))})")
-        pg.goto(URL + '?goi=F&p=sodufree#/app/tien/so-du-ban-dau')
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('S'))})")
+        pg.goto(URL + '?goi=S&p=sodufree#/app/tien/so-du-ban-dau')
         pg.wait_for_selector('.m-app')
         pg.wait_for_timeout(350)
         if pg.locator('.m-chi-mt').count() > 0:
@@ -1954,7 +1954,7 @@ def kiem_tra_dot_12_b():
         # Đăng nhập
         pg.goto(URL + '#/dang-nhap')
         pg.wait_for_selector('.auth-box')
-        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PL'))})")
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PR'))})")
 
         ds_loai = [
             {
@@ -2164,24 +2164,24 @@ def kiem_tra_dot_13_b():
         # Đăng nhập với gói Plus
         pg.goto(URL + '#/dang-nhap')
         pg.wait_for_selector('.auth-box')
-        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PL'))})")
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PR'))})")
 
         # ── 1. Trang chủ không có thanh trên chung, màn khác vẫn có ──
-        pg.goto(URL + '?goi=PL&p=tc13b#/app/trang-chu/tong-quan')
+        pg.goto(URL + '?goi=PR&p=tc13b#/app/trang-chu/tong-quan')
         pg.wait_for_selector('.m-app')
         pg.wait_for_timeout(350)
         kiem_man('Trang chủ')
         if pg.locator('.m-thanh-tren').count() > 0 and pg.locator('.m-thanh-tren').is_visible():
             loi.append('Trang chủ: thanh trên chung .m-thanh-tren vẫn hiển thị')
 
-        pg.goto(URL + '?goi=PL&p=nv13b#/app/nghiep-vu')
+        pg.goto(URL + '?goi=PR&p=nv13b#/app/nghiep-vu')
         pg.wait_for_timeout(350)
         kiem_man('Nghiệp vụ')
         if pg.locator('.m-thanh-tren').count() == 0 or not pg.locator('.m-thanh-tren').is_visible():
             loi.append('Nghiệp vụ: thiếu thanh trên chung .m-thanh-tren')
 
         # ── 2. Chip CN ở trang chủ: chọn cửa hàng thứ hai thì nhãn chip đổi và Doanh thu thuần đổi ──
-        pg.goto(URL + '?goi=PL&p=tc_cn13b#/app/trang-chu/tong-quan')
+        pg.goto(URL + '?goi=PR&p=tc_cn13b#/app/trang-chu/tong-quan')
         pg.wait_for_selector('.m-app')
         pg.wait_for_timeout(350)
         chip_cn = pg.locator('.m-tc-chip-cn, .m-tc-chip-kho')
@@ -2238,7 +2238,7 @@ def kiem_tra_dot_13_b():
             ('Phiếu chi', 'tien/2-1-1', '.m-ds-hang-tabs, .m-ds-chips'),
             ('Xuất bán POS', 'ban-hang/3-1-1', '.m-pos-chip-hang'),
         ]:
-            pg.goto(f'{URL}?goi=PL&p=chip_{ten_man}#/app/{path_man}')
+            pg.goto(f'{URL}?goi=PR&p=chip_{ten_man}#/app/{path_man}')
             pg.wait_for_selector('.m-app')
             pg.wait_for_timeout(350)
             hang = pg.locator(sel_hang)
@@ -2271,7 +2271,7 @@ def kiem_tra_dot_13_b():
             kiem_man(ten_man)
 
         # ── 5. Cấu hình kế toán: nút Lưu có bottom <= innerHeight và không có phần tử nội dung nào hiện phía dưới nút trong khung nhìn ngoài thanh dưới ──
-        pg.goto(f'{URL}?goi=PL&p=cauhinh13b#/app/he-thong/cau-hinh')
+        pg.goto(f'{URL}?goi=PR&p=cauhinh13b#/app/he-thong/cau-hinh')
         pg.wait_for_selector('.m-app')
         pg.wait_for_timeout(350)
         nut_luu = pg.locator('button:has-text("Lưu cấu hình")')
@@ -2340,8 +2340,8 @@ def kiem_tra_dot_13_a():
         pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PR'))})")
 
         # ── 1. Hoá đơn đầu vào 11.4 (gói PL) ──
-        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PL'))})")
-        pg.goto(URL + '?goi=PL#/app/tien-ich/11-4')
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PR'))})")
+        pg.goto(URL + '?goi=PR#/app/tien-ich/11-4')
         pg.reload()
         pg.wait_for_selector('.m-app')
         pg.wait_for_timeout(350)
@@ -2411,7 +2411,7 @@ def kiem_tra_dot_13_a():
         pg.screenshot(path=str(SHOTS / 'm-13-02-duyet-chung-tu.png'))
 
         # ── 3. Cảnh báo số liệu cuối kỳ 11.6 (gói PL) ──
-        pg.goto(URL + '?goi=PL#/app/tien-ich/11-6')
+        pg.goto(URL + '?goi=PR#/app/tien-ich/11-6')
         pg.reload()
         pg.wait_for_selector('.m-app')
         pg.wait_for_timeout(350)
@@ -3525,8 +3525,8 @@ def kiem_tra_dot_18_a():
         # ── 3. Gói Free: không có thẻ "Thác nước lợi nhuận" ──
         pg.goto(URL + '#/dang-nhap')
         pg.wait_for_selector('.auth-box')
-        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('F'))})")
-        pg.goto(URL + '?goi=F#/app')
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('S'))})")
+        pg.goto(URL + '?goi=S#/app')
         pg.wait_for_selector('.m-tc-the-ivt', timeout=8000)
         pg.wait_for_timeout(400)
 
@@ -3621,9 +3621,9 @@ def kiem_tra_dot_18_b():
         # ── 3. Gói F: bấm ô Tiền cũng vào thẳng danh sách chứng từ ──
         pg.goto(URL + '#/dang-nhap')
         pg.wait_for_selector('.auth-box')
-        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('F'))})")
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('S'))})")
 
-        pg.goto(f'{URL}?goi=F#/app/nghiep-vu')
+        pg.goto(f'{URL}?goi=S#/app/nghiep-vu')
         pg.wait_for_selector('.m-nv-luoi', timeout=8000)
         pg.wait_for_timeout(350)
         kiem_man('Phân hệ Tiền gói Free')
@@ -3688,8 +3688,8 @@ def kiem_tra_dot_19_b():
 
         pg_web.goto(URL + '#/dang-nhap')
         pg_web.wait_for_selector('.auth-box')
-        pg_web.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('F'))})")
-        pg_web.goto(f'{URL}?goi=F&p=1901#/app/trang-chu/tong-quan')
+        pg_web.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('S'))})")
+        pg_web.goto(f'{URL}?goi=S&p=1901#/app/trang-chu/tong-quan')
         pg_web.wait_for_selector('.bbt', timeout=8000)
         pg_web.wait_for_timeout(300)
 
@@ -3723,7 +3723,7 @@ def kiem_tra_dot_19_b():
                 loi.append('19B: Esc không đóng được modal quỹ trên web')
 
         # Kiểm tra trang lịch sử quy=tat-ca tháng 10, số dư ở dòng tổng ngày mới nhất bằng số Tồn cuối kỳ (T272)
-        pg_web.goto(f'{URL}?goi=F&p=1903#/app/trang-chu/lich-su-quy?quy=tat-ca&thang=10')
+        pg_web.goto(f'{URL}?goi=S&p=1903#/app/trang-chu/lich-su-quy?quy=tat-ca&thang=10')
         # T303: danh sách kiểu app ngân hàng, dòng mới nhất ghi "Số dư ..." là tổng các quỹ sau giao dịch
         pg_web.wait_for_selector('.lsq-ds', timeout=8000)
         pg_web.wait_for_timeout(300)
@@ -3756,8 +3756,8 @@ def kiem_tra_dot_19_b():
 
         pg.goto(URL + '#/dang-nhap')
         pg.wait_for_selector('.auth-box')
-        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('F'))})")
-        pg.goto(f'{URL}?goi=F&p=1902#/app')
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('S'))})")
+        pg.goto(f'{URL}?goi=S&p=1902#/app')
         pg.wait_for_selector('.m-trang-chu', timeout=8000)
         pg.wait_for_timeout(300)
         kiem_man('Trang chủ Free điện thoại')
@@ -3816,7 +3816,7 @@ def kiem_tra_dot_19_b():
             pg.screenshot(path=str(SHOTS / 'm-19-chi-phi-thang.png'))
 
         # ── 4. Kiểm tra Lịch sử thu chi ──
-        pg.goto(f'{URL}?goi=F&p=1903#/app')
+        pg.goto(f'{URL}?goi=S&p=1903#/app')
         pg.wait_for_selector('.m-trang-chu', timeout=8000)
         pg.wait_for_timeout(250)
 
@@ -3927,7 +3927,7 @@ DS_MAN_20_B = [
 
     # Khuôn 3: Chỉ tiêu phân cấp (2 màn)
     ('2.2.9', 'tien/2-2-9', 'Báo cáo dòng tiền', 'chi-tieu-phan-cap', 'PR'),
-    ('10.2.3', 'tong-hop/10-2-3', 'Báo cáo kết quả kinh doanh', 'chi-tieu-phan-cap', 'F'),
+    ('10.2.3', 'tong-hop/10-2-3', 'Báo cáo kết quả kinh doanh', 'chi-tieu-phan-cap', 'S'),
 ]
 
 # Các màn cần chụp ảnh màn hình
@@ -4347,11 +4347,11 @@ def kiem_tra_dot_22_b():
 
         pg.goto(URL + '#/dang-nhap')
         pg.wait_for_selector('.auth-box')
-        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('F'))})")
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('S'))})")
 
         for mod, ten_ph in mods:
             path_qt = f'/app/{mod}/quy-trinh'
-            pg.goto(f"{URL}?goi=F&p=m22-{mod}#{path_qt}")
+            pg.goto(f"{URL}?goi=S&p=m22-{mod}#{path_qt}")
             pg.wait_for_selector('.m-app', timeout=8000)
             pg.wait_for_timeout(350)
 
@@ -4566,11 +4566,11 @@ def kiem_tra_t238_may_tinh():
 
         pg.goto(URL + '#/dang-nhap')
         pg.wait_for_selector('.auth-box')
-        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PL'))})")
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('PR'))})")
         pg.evaluate("localStorage.removeItem('bc-dong-trang')")
 
         # 1. Mở báo cáo Chi tiết bán hàng (3-2-8) ở chế độ Bảng dữ liệu
-        pg.goto(URL + '?goi=PL&p=ctbh#/app/ban-hang/3-2-8')
+        pg.goto(URL + '?goi=PR&p=ctbh#/app/ban-hang/3-2-8')
         pg.wait_for_selector('.bc-ban-du-lieu table.tbl')
         pg.wait_for_timeout(300)
 
@@ -4687,17 +4687,17 @@ def kiem_tra_dot_22_a():
 
         pg.goto(URL + '#/dang-nhap')
         pg.wait_for_selector('.auth-box')
-        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('F'))})")
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('S'))})")
 
         # Chụp ảnh tien gói F để so sánh (spec item 5)
-        pg.goto(f"{URL}?goi=F&p=tien-so-sanh#/app/tien/quy-trinh")
+        pg.goto(f"{URL}?goi=S&p=tien-so-sanh#/app/tien/quy-trinh")
         pg.wait_for_selector('.qt-ht, .qt-ky')
         pg.wait_for_timeout(300)
         pg.screenshot(path=str(SHOTS / 'qt-22-tien.png'))
 
         for mod, ten_ph, ds_o in cac_man:
             path_qt = f'/app/{mod}/quy-trinh'
-            pg.goto(f"{URL}?goi=F&p={mod}-qt22#{path_qt}")
+            pg.goto(f"{URL}?goi=S&p={mod}-qt22#{path_qt}")
             pg.wait_for_selector('.qt-card', timeout=8000)
             pg.wait_for_timeout(350)
 
@@ -4763,8 +4763,8 @@ def kiem_tra_t274_web():
         # 1. Đăng nhập gói Free
         pg.goto(URL + '#/dang-nhap')
         pg.wait_for_selector('.auth-box')
-        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('F'))})")
-        pg.goto(f"{URL}?goi=F&p=t274web#/app/trang-chu/tong-quan")
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('S'))})")
+        pg.goto(f"{URL}?goi=S&p=t274web#/app/trang-chu/tong-quan")
         pg.wait_for_selector('.bbt', timeout=8000)
         pg.wait_for_timeout(300)
 
@@ -4841,8 +4841,8 @@ def kiem_tra_t274_dien_thoai():
 
         pg.goto(URL + '#/dang-nhap')
         pg.wait_for_selector('.auth-box')
-        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('F'))})")
-        pg.goto(f"{URL}?goi=F&p=t274dt#/app")
+        pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('S'))})")
+        pg.goto(f"{URL}?goi=S&p=t274dt#/app")
         pg.wait_for_selector('.m-trang-chu', timeout=8000)
         pg.wait_for_timeout(300)
 
@@ -5078,11 +5078,11 @@ def main():
                         pg.goto(URL + qt[0])
                         pg.wait_for_timeout(80)
                         nut += hrefs('a.qt-n')
-                        if goi == 'F' and pg.locator('.qt-n.lock, .qt-bc a.lock, .qt-foot a.lock').count():
-                            loi.append(f'[F] {qt[0]}: còn hiện mục ngoài gói có khoá')
+                        if goi == 'S' and pg.locator('.qt-n.lock, .qt-bc a.lock, .qt-foot a.lock').count():
+                            loi.append(f'[S] {qt[0]}: còn hiện mục ngoài gói có khoá')
                 # Gói Free ẩn hẳn tính năng ngoài gói (QD22): không còn mục mờ có khoá trên sidebar, tab, sơ đồ
-                if goi == 'F' and pg.locator('.sb-nav a.lock, .mtabs-in a.lock, .pop-khac a.lock, .qt-n.lock, .qt-bc a.lock, .qt-foot a.lock').count():
-                    loi.append(f'[F] {r}: còn hiện mục ngoài gói có khoá')
+                if goi == 'S' and pg.locator('.sb-nav a.lock, .mtabs-in a.lock, .pop-khac a.lock, .qt-n.lock, .qt-bc a.lock, .qt-foot a.lock').count():
+                    loi.append(f'[S] {r}: còn hiện mục ngoài gói có khoá')
                 for t in tabs:
                     if t.endswith('/bao-cao'):
                         pg.goto(URL + t)
@@ -5092,13 +5092,13 @@ def main():
             nut = [h for h in dict.fromkeys(nut) if h not in links]
             print(f'gói {goi}: {len(links)} màn, {len(nut)} ô quy trình mở form hoặc màn phân hệ khác')
             # T171 bỏ mọi báo cáo trừ sổ quỹ, sổ ngân hàng, bộ sổ TT58: gói Plus còn khoảng 117 màn
-            if len(links) < (30 if goi == 'F' else 110):
+            if len(links) < (30 if goi == 'S' else 110):
                 loi.append(f'[{goi}] thanh tab và tab Báo cáo chỉ có {len(links)} màn, thiếu so với số tính năng còn dùng cộng Quy trình, Báo cáo')
             for h in links:
                 pg.goto(URL + h)
                 kiem(f'[{goi}] {h}')
                 # mở dòng đầu của bảng chứng từ: kiểm khung chi tiết .ct-panel rồi đúp chuột mở form toàn màn hình
-                if goi == 'PL' and pg.locator('.voucher-top table.tbl tr.click').count() and '/app/' in h:
+                if goi == 'PR' and pg.locator('.voucher-top table.tbl tr.click').count() and '/app/' in h:
                     pg.locator('.main table.tbl tr.click').first.click()
                     if not pg.locator('.ct-panel').count():
                         loi.append(f'[{goi}] {h}: bấm dòng không hiện khung chi tiết .ct-panel')
@@ -5113,7 +5113,7 @@ def main():
                     loi.append(f'[{goi}] ô {h}: không mở form chứng từ toàn màn hình')
 
         # Bấm ô Thu tiền mặt trên Quy trình: form phiếu thu mở toàn màn hình, Esc đóng về đúng Quy trình
-        vao('/app/tien/quy-trinh', 'PL')
+        vao('/app/tien/quy-trinh', 'PR')
         pg.locator('.qt-n', has_text='Thu tiền mặt').first.click()
         pg.wait_for_timeout(150)
         if not pg.locator('.fsf h1', has_text='Thu tiền mặt').count():
@@ -5124,7 +5124,7 @@ def main():
             loi.append(f'Form phiếu thu: Esc không quay về Quy trình, đang ở {pg.url}')
 
         # Báo cáo tài chính phải cân ở mọi kỳ, mọi gói có báo cáo
-        for goi in ['PL', 'PR', 'S']:
+        for goi in ['S', 'PL', 'PR']:
             for path in ['/app/tong-hop/10-2-2', '/app/tong-hop/10-2-1', '/app/tong-hop/10-2-4']:
                 vao(path, goi)
                 # chờ trang hiện hẳn (trang khoá theo gói hoặc nút chọn kỳ) rồi mới xét; chờ cố định 0,2 giây thì máy chậm sẽ bấm hụt (T65)
@@ -5144,7 +5144,7 @@ def main():
 
         # Màn ngoài app
         for path in ['/dang-nhap', '/quen-mat-khau', '/chon-don-vi', '/khoi-tao']:
-            vao(path, 'PL')
+            vao(path, 'PR')
             if not pg.locator('h2').count():
                 loi.append(f'{path}: trắng trang')
             if con:
@@ -5153,17 +5153,17 @@ def main():
 
         if not NHANH:
             SHOTS.mkdir(exist_ok=True)
-            anh = [('01-dang-nhap', '/dang-nhap', 'PL'), ('02-chon-don-vi', '/chon-don-vi', 'PL'), ('03-khoi-tao', '/khoi-tao', 'PL'),
-                   ('04-tong-quan', '/app/trang-chu/tong-quan', 'PL'), ('05-ban-lam-viec', '/app/trang-chu/ban-lam-viec', 'PL'),
-                   ('06-chung-tu-ban-hang', '/app/ban-hang/3-1-1', 'PL'), ('07-phieu-ban-hang', '/app/ban-hang/3-1-1/0', 'PL'),
-                   ('08-doi-soat', '/app/tien-ich/11-7', 'PL'), ('09-kqkd', '/app/tong-hop/10-2-3', 'PL'), ('10-cdkt', '/app/tong-hop/10-2-2', 'PL'),
-                   ('11-to-khai', '/app/thue/6-2-3', 'PL'), ('12-goi-thue-bao', '/app/he-thong/goi-thue-bao', 'PL'),
-                   ('13-khoa-free', '/app/tscd/7-1-1', 'F'), ('14-to-khai-starter', '/app/thue/6-2-3', 'S'), ('15-so-quy', '/app/tien/2-2-1', 'PL'),
-                   ('16-quy-trinh-tien', '/app/tien/quy-trinh', 'PL'), ('17-quy-trinh-kho', '/app/kho/quy-trinh', 'PL'),
-                   ('18-phieu-thu-toan-man', '/app/tien/2-1-1/moi?loai=thu', 'PL'), ('19-bao-cao-tong-hop', '/app/tong-hop/bao-cao', 'PL'),
-                   ('20-quy-trinh-gia-thanh', '/app/gia-thanh/quy-trinh', 'PR'), ('21-quy-trinh-tscd-medium', '/app/tscd/quy-trinh', 'PL'),
-                   ('22-quy-trinh-ban-hang-free', '/app/ban-hang/quy-trinh', 'F'), ('23-sidebar-thu-gon', '/app/mua-hang/quy-trinh', 'PL'),
-                   ('24-danh-sach-mua-hang', '/app/mua-hang/4-1-1', 'PL'), ('25-form-mua-hang', '/app/mua-hang/4-1-1/moi', 'PL')]
+            anh = [('01-dang-nhap', '/dang-nhap', 'PR'), ('02-chon-don-vi', '/chon-don-vi', 'PR'), ('03-khoi-tao', '/khoi-tao', 'PR'),
+                   ('04-tong-quan', '/app/trang-chu/tong-quan', 'PR'), ('05-ban-lam-viec', '/app/trang-chu/ban-lam-viec', 'PR'),
+                   ('06-chung-tu-ban-hang', '/app/ban-hang/3-1-1', 'PR'), ('07-phieu-ban-hang', '/app/ban-hang/3-1-1/0', 'PR'),
+                   ('08-doi-soat', '/app/tien-ich/11-7', 'PR'), ('09-kqkd', '/app/tong-hop/10-2-3', 'PR'), ('10-cdkt', '/app/tong-hop/10-2-2', 'PR'),
+                   ('11-to-khai', '/app/thue/6-2-3', 'PR'), ('12-goi-thue-bao', '/app/he-thong/goi-thue-bao', 'PR'),
+                   ('13-khoa-free', '/app/tscd/7-1-1', 'S'), ('14-to-khai-starter', '/app/thue/6-2-3', 'PL'), ('15-so-quy', '/app/tien/2-2-1', 'PR'),
+                   ('16-quy-trinh-tien', '/app/tien/quy-trinh', 'PR'), ('17-quy-trinh-kho', '/app/kho/quy-trinh', 'PR'),
+                   ('18-phieu-thu-toan-man', '/app/tien/2-1-1/moi?loai=thu', 'PR'), ('19-bao-cao-tong-hop', '/app/tong-hop/bao-cao', 'PR'),
+                   ('20-quy-trinh-gia-thanh', '/app/gia-thanh/quy-trinh', 'PR'), ('21-quy-trinh-tscd-medium', '/app/tscd/quy-trinh', 'PR'),
+                   ('22-quy-trinh-ban-hang-free', '/app/ban-hang/quy-trinh', 'S'), ('23-sidebar-thu-gon', '/app/mua-hang/quy-trinh', 'PR'),
+                   ('24-danh-sach-mua-hang', '/app/mua-hang/4-1-1', 'PR'), ('25-form-mua-hang', '/app/mua-hang/4-1-1/moi', 'PR')]
             for ten, path, goi in anh:
                 vao(path, goi, thu_gon=ten == '23-sidebar-thu-gon')
                 pg.wait_for_timeout(250)

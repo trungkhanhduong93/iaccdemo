@@ -61,7 +61,7 @@ export function TongQuan({ sc }: ScreenProps) {
   }, [moCnPop])
 
   // 2. Tính toán số liệu tổng quan
-  const isFree = s.goi === 'F'
+  const isFree = s.goi === 'S'
   // Gói Free không có ô chọn cửa hàng riêng của trang, xem theo cửa hàng trên thanh trên (T230)
   const cnTren = cuaHangHienTai(s)
   const cnsXem = isFree ? (cnTren ? [cnTren.id] : CUA_HANG.map(c => c.id)) : selCns
@@ -239,8 +239,8 @@ export function TongQuan({ sc }: ScreenProps) {
             >
               {isFree ? (
                 <div className="empty" style={{ padding: 24 }}>
-                  <div><Pk g="S" o /></div>
-                  <b style={{ marginTop: 8 }}>Chỉ số sức khoẻ tài chính F&B có từ gói Standard</b>
+                  <div><Pk g="PL" o /></div>
+                  <b style={{ marginTop: 8 }}>Chỉ số sức khoẻ tài chính F&B có từ gói Plus</b>
                   <span style={{ maxWidth: 460 }}>
                     Theo dõi tự động Prime cost, Food cost, Chi phí mặt bằng, Điểm hoà vốn, Chu kỳ tiền mặt và Hệ số thanh toán.
                   </span>
@@ -332,8 +332,8 @@ export function TongQuan({ sc }: ScreenProps) {
             >
               {isFree ? (
                 <div className="empty" style={{ padding: 24 }}>
-                  <div><Pk g="PL" o /></div>
-                  <b style={{ marginTop: 8 }}>Báo cáo lưu chuyển tiền tệ có ở gói Plus</b>
+                  <div><Pk g="PR" o /></div>
+                  <b style={{ marginTop: 8 }}>Báo cáo lưu chuyển tiền tệ có ở gói Pro</b>
                 </div>
               ) : (
                 <>
@@ -373,8 +373,8 @@ export function TongQuan({ sc }: ScreenProps) {
             >
               {isFree ? (
                 <div className="empty" style={{ padding: 24 }}>
-                  <div><Pk g="S" o /></div>
-                  <b style={{ marginTop: 8 }}>Quản lý đa cửa hàng có ở gói Standard</b>
+                  <div><Pk g="PL" o /></div>
+                  <b style={{ marginTop: 8 }}>Quản lý đa cửa hàng có ở gói Plus</b>
                 </div>
               ) : (
                 <>
@@ -407,8 +407,8 @@ export function TongQuan({ sc }: ScreenProps) {
             >
               {isFree ? (
                 <div className="empty" style={{ padding: 24 }}>
-                  <div><Pk g="S" o /></div>
-                  <b style={{ marginTop: 8 }}>Phân tích chi phí có ở gói Standard</b>
+                  <div><Pk g="PL" o /></div>
+                  <b style={{ marginTop: 8 }}>Phân tích chi phí có ở gói Plus</b>
                 </div>
               ) : (
                 <CostStructureChart parts={d.coCauCp} />
@@ -440,7 +440,7 @@ export function TongQuan({ sc }: ScreenProps) {
               <Card title="Cảnh báo rủi ro">
                 <div className="empty" style={{ padding: 20 }}>
                   <div><Pk g={minGoi('11.6')} o /></div>
-                  <b style={{ marginTop: 8 }}>Cảnh báo số liệu có ở gói Plus</b>
+                  <b style={{ marginTop: 8 }}>Cảnh báo số liệu có ở gói Pro</b>
                   <span style={{ fontSize: 12.5, color: 'var(--muted)', marginTop: 4 }}>
                     Công nợ quá hạn, tồn kho âm, hoá đơn bị huỷ, lệch hoá đơn.
                   </span>
@@ -457,8 +457,8 @@ export function TongQuan({ sc }: ScreenProps) {
             <Card title="Món bán chạy" sub={d.kyLabel}>
               {isFree ? (
                 <div className="empty" style={{ padding: 24 }}>
-                  <div><Pk g="S" o /></div>
-                  <b style={{ marginTop: 8 }}>Phân tích món bán chạy có ở gói Standard</b>
+                  <div><Pk g="PL" o /></div>
+                  <b style={{ marginTop: 8 }}>Phân tích món bán chạy có ở gói Plus</b>
                 </div>
               ) : (
                 <HBars

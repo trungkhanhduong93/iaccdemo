@@ -47,7 +47,7 @@ function SoSanhDong({ tang, label }: { tang: number | null; label?: string }) {
 export function MTrangChu(_props?: Partial<ScreenProps>) {
   const { s } = useSession()
   // Tách component để hook của từng nhánh không đổi số lượng khi đổi gói
-  return s.goi === 'F' ? <MTrangChuFree {..._props} /> : <MTrangChuCoPhi />
+  return s.goi === 'S' ? <MTrangChuFree {..._props} /> : <MTrangChuCoPhi />
 }
 
 function MTrangChuCoPhi() {
@@ -99,7 +99,7 @@ function MTrangChuCoPhi() {
   }, [dsCn])
 
   // Nhãn gói thuê bao (PRO, PLUS, STD, FREE)
-  const nhanGoi = s.goi === 'PR' ? 'PRO' : s.goi === 'PL' ? 'PLUS' : s.goi === 'S' ? 'STD' : 'FREE'
+  const nhanGoi = s.goi === 'PR' ? 'PRO' : s.goi === 'PL' ? 'PLUS' : 'STD'
 
   const selCns = useMemo(() => {
     if (!s.cuaHang || s.cuaHang === 'all') {

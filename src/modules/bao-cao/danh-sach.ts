@@ -180,15 +180,15 @@ export const MO_IFASTER = ['2.2.8', '2.2.9', '4.2.3', '3.2.9', '4.2.7', '10.2.3'
 /** Nhóm báo cáo Công nợ riêng, đứng sau nhóm Mua hàng: công nợ nhà cung cấp, khách hàng rời nhóm phân hệ, PhuongXT chốt 14/10/2026 (T217) */
 export const NHOM_CONG_NO = { key: 'cong-no', ten: 'Công nợ', ngan: 'Công nợ', icon: 'users', mota: 'Công nợ nhà cung cấp, công nợ khách hàng', sau: 'mua-hang', ma: ['4.2.3', '3.2.9'] }
 /** Nhóm báo cáo (khoá phân hệ) ẩn hẳn theo gói ở màn Báo cáo và tab Báo cáo của phân hệ: gói Free ẩn Kê khai thuế (T218); nhóm Bán hàng mở lại 19/10/2026 (T452) */
-export const AN_NHOM_BC: Partial<Record<Goi, string[]>> = { F: ['thue'] }
+export const AN_NHOM_BC: Partial<Record<Goi, string[]>> = { S: ['thue'] }
 /** Báo cáo đứng đầu nhóm phân hệ ở màn Báo cáo, theo thứ tự khai; báo cáo khác giữ thứ tự màn: Kho đưa Xuất nhập tồn lên trước Thẻ kho, PhuongXT chốt 14/10/2026 (T219) */
 export const DAU_NHOM_BC: Record<string, string[]> = { kho: ['5.2.3'] }
 /** Báo cáo chỉ mở từ báo cáo khác, không hiện ở danh sách báo cáo, menu, tìm kiếm: Chi tiết mua hàng 4.2.1 mở khi bấm nhà cung cấp ở Tổng hợp mua hàng, PhuongXT 13/10/2026 (T200) */
 export const CHI_MO_TU_BC = ['4.2.1']
 /** Báo cáo chỉ mở từ báo cáo khác theo gói: gói Free ẩn Thẻ kho 5.2.1 khỏi danh sách, vẫn bấm hàng ở Xuất nhập tồn mở được, PhuongXT 20/10/2026 (T506) */
-export const CHI_MO_TU_BC_GOI: Partial<Record<Goi, string[]>> = { F: ['5.2.1'] }
+export const CHI_MO_TU_BC_GOI: Partial<Record<Goi, string[]>> = { S: ['5.2.1'] }
 /** Báo cáo ẩn hẳn theo gói: gói Free ẩn Tổng hợp xuất kho 5.2.11, Chi tiết xuất kho 5.2.12, PhuongXT 20/10/2026 (T506) */
-export const AN_BC_GOI: Partial<Record<Goi, string[]>> = { F: ['5.2.11', '5.2.12'] }
+export const AN_BC_GOI: Partial<Record<Goi, string[]>> = { S: ['5.2.11', '5.2.12'] }
 const GIU_TT58 = ['2.2.5', '2.2.7', '3.2.5', '5.2.8', '6.2.4', '6.2.5', '7.2.1', '10.2.2', '10.2.3', '10.4.1', '10.4.2']
 /** Hộ kinh doanh TT152 (T179): S1a, S2a, S2b-HKD (3.2.5), S2c (10.4.1), S2d (5.2.8), S2e (2.2.7); doanh nghiệp gói Free cũng chạy TT152 nhưng không có các sổ này */
 const GIU_TT152_HKD = ['2.2.7', '3.2.5', '5.2.8', '10.4.1']
@@ -198,7 +198,7 @@ export const giuBC = (code: string | undefined, cheDo: CheDo, hkd = false) =>
 /** Doanh nghiệp gói Free (TT58 trường hợp 1) chỉ có sổ doanh thu S1-DNSN; các sổ khác của bộ TT58 ẩn (T632).
  *  Báo cáo kết quả kinh doanh 10.2.3 vẫn mở, bản lãi lỗ đơn giản không ký hiệu mẫu nên nằm ở nhóm Tổng hợp, không vào nhóm sổ TT58 */
 export const anSoTT58GoiFree = (code: string | undefined, goi: string) =>
-  goi === 'F' && !!code && GIU_TT58.includes(code) && !MO_IFASTER.includes(code) && code !== '3.2.5'
+  goi === 'S' && !!code && GIU_TT58.includes(code) && !MO_IFASTER.includes(code) && code !== '3.2.5'
 
 /** Ký hiệu mẫu theo chế độ; Sổ doanh thu 3.2.5 đổi mẫu theo trường hợp thuế: TT58 S1, S2a, S3a-DNSN; hộ kinh doanh TT152 S1a, S2a, S2b-HKD (T179) */
 export function kyHieuBC(code: string | undefined, cheDo: CheDo, s?: PhienBC): string | undefined {
@@ -206,7 +206,7 @@ export function kyHieuBC(code: string | undefined, cheDo: CheDo, s?: PhienBC): s
     const th = thTT58(s?.ppGtgt, s?.ppTndn)
     return th === 1 ? 'S1-DNSN' : th === 2 ? 'S2a-DNSN' : 'S3a-DNSN'
   }
-  if (code === '10.2.3' && s?.goi === 'F') return undefined   // gói Free xem bản lãi lỗ đơn giản, không theo B02-DNSN (T632)
+  if (code === '10.2.3' && s?.goi === 'S') return undefined   // gói Free xem bản lãi lỗ đơn giản, không theo B02-DNSN (T632)
   if (code === '3.2.5' && cheDo === 'TT152') {
     const c = cachHkd(s)
     return c === 'n1' ? 'S1a-HKD' : c === 'doanhThu' ? 'S2a-HKD' : 'S2b-HKD'
@@ -215,7 +215,7 @@ export function kyHieuBC(code: string | undefined, cheDo: CheDo, s?: PhienBC): s
 }
 
 /** S2b-HKD (hộ kinh doanh tính thuế theo lợi nhuận) chỉ có ở gói Standard như RoadMap; gói Free không hiện Sổ doanh thu 3.2.5 (T179) */
-export const anSoHkdGoiFree = (code: string | undefined, goi: string, s?: PhienBC) => code === '3.2.5' && goi === 'F' && cachHkd(s) === 'loiNhuan'
+export const anSoHkdGoiFree = (code: string | undefined, goi: string, s?: PhienBC) => code === '3.2.5' && goi === 'S' && cachHkd(s) === 'loiNhuan'
 
 /** Tên in trên tờ theo chế độ; S1a-HKD (hộ kinh doanh nhóm 1) in Sổ chi tiết doanh thu như iFaster (T179) */
 export function tenBC(code: string | undefined, cheDo: CheDo, s?: PhienBC): string | undefined {

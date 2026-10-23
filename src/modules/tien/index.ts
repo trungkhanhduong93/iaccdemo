@@ -63,6 +63,6 @@ const tien: ModuleDef = {
     '2.2.9': { report: SO_BO_SUNG['2.2.9'] },
   }, NGAN),
   // Gói Free khai số dư quỹ ngay ở Danh mục Quỹ tiền (T245): đường dẫn cũ (sơ đồ quy trình, thêm cửa hàng) chuyển sang danh mục, không còn tab riêng
-  { slug: 'so-du-ban-dau', ten: 'Số dư ban đầu', icon: 'db', kind: 'custom', comp: () => createElement(Navigate, { to: '/app/danh-muc/1-12', replace: true }), goi: ['F'], tabCha: '2-1-1' }],
+  { slug: 'so-du-ban-dau', ten: 'Số dư ban đầu', icon: 'db', kind: 'custom', comp: () => createElement(Navigate, { to: '/app/danh-muc/1-12', replace: true }), goi: ['S'], tabCha: '2-1-1' }],
 }
 export default tien

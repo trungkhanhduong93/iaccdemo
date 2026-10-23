@@ -43,13 +43,13 @@ export const PP_HKD: Record<PpHkd, string> = { doanhThu: 'Theo tỷ lệ % trên
 /** Hộ kinh doanh luôn theo TT152: tính thuế theo doanh thu gợi ý Free, theo lợi nhuận gợi ý Standard.
  *  Doanh nghiệp chọn đủ 4 gói: Free theo TT58 trường hợp 1, chỉ sổ doanh thu S1-DNSN (T632);
  *  Standard theo TT58; Plus, Pro chọn TT133 hoặc TT99. PhuongXT chốt 11/10/2026 (T138) */
-const goiGoiY = (loai: LoaiHinh, pp: PpHkd): Goi => loai === 'hkd' ? (pp === 'doanhThu' ? 'F' : 'S') : CUA_HANG.length > 1 ? 'PL' : 'S'
-const cheDoMoi = (loai: LoaiHinh, g: Goi): CheDo => loai === 'hkd' ? 'TT152' : g === 'F' ? CHE_DO_DN_FREE : CHE_DO_MAC_DINH[g]
+const goiGoiY = (loai: LoaiHinh, pp: PpHkd): Goi => loai === 'hkd' ? (pp === 'doanhThu' ? 'S' : 'PL') : CUA_HANG.length > 1 ? 'PR' : 'PL'
+const cheDoMoi = (loai: LoaiHinh, g: Goi): CheDo => loai === 'hkd' ? 'TT152' : g === 'S' ? CHE_DO_DN_FREE : CHE_DO_MAC_DINH[g]
 const tenCheDo = (loai: LoaiHinh, cd: CheDo) => loai === 'dn' && cd === 'TT152' ? 'Quản lý lãi lỗ, không theo thông tư' : CHE_DO[cd].ten
 const nganCheDo = (loai: LoaiHinh, cd: CheDo) => loai === 'dn' && cd === 'TT152' ? 'Lãi lỗ' : CHE_DO[cd].ngan
 const MO_TA_GOI: Record<LoaiHinh, Partial<Record<Goi, string>>> = {
-  hkd: { F: 'Quản lý đơn giản: thu chi, bán hàng, kho. Hợp với tính thuế theo doanh thu', S: 'Theo dõi đủ chi phí để tính thuế theo lợi nhuận' },
-  dn: { F: 'Doanh nghiệp siêu nhỏ theo TT58, chỉ sổ doanh thu S1-DNSN', S: 'Doanh nghiệp siêu nhỏ theo TT58, ghi sổ không dùng tài khoản', PL: 'Hạch toán Nợ/Có theo TT133 hoặc TT99', PR: 'Như Plus, đủ tính năng cho chuỗi lớn' },
+  hkd: { S: 'Quản lý đơn giản: thu chi, bán hàng, kho. Hợp với tính thuế theo doanh thu', PL: 'Theo dõi đủ chi phí để tính thuế theo lợi nhuận' },
+  dn: { S: 'Doanh nghiệp siêu nhỏ theo TT58, chỉ sổ doanh thu S1-DNSN', PL: 'Doanh nghiệp siêu nhỏ theo TT58, ghi sổ không dùng tài khoản', PR: 'Hạch toán Nợ/Có theo TT133 hoặc TT99, đủ tính năng cho chuỗi lớn' },
 }
 
 /** Danh sách cửa hàng FABi lên sổ, dùng được cho chuỗi vài chục cửa hàng: gom theo khu vực khi có từ 2 khu vực (tích cả nhóm, thu gọn nhóm),
@@ -208,8 +208,8 @@ export function useThemDonVi() {
   const { s, set } = useSession()
   const nav = useNavigate()
   return () => {
-    const dvMoi: DonVi = { id: 'moi', ten: 'Đơn vị mới', viettat: 'DV', mst: '', goi: 'F', diaChi: '', diem: 0, nguoiDaiDien: '' }
-    set({ goi: 'F', cheDo: 'TT152', donVi: dvMoi.id, dvMoi, khoiTao: true, cuaHang: 'all', dungThu: { ...s.dungThu, [dvMoi.id]: batDauDungThu() } })
+    const dvMoi: DonVi = { id: 'moi', ten: 'Đơn vị mới', viettat: 'DV', mst: '', goi: 'S', diaChi: '', diem: 0, nguoiDaiDien: '' }
+    set({ goi: 'S', cheDo: 'TT152', donVi: dvMoi.id, dvMoi, khoiTao: true, cuaHang: 'all', dungThu: { ...s.dungThu, [dvMoi.id]: batDauDungThu() } })
     const moi = dsCuaHang('them', s).map(c => c.id)
     moKhoiTao({ ...MAC_DINH, kieu: 'them', b: 0, mo: true, tenDv: '', chon: moi })
     nav('/app')
@@ -254,7 +254,7 @@ export function OnboardFabi() {
     return () => clearTimeout(t)
   }, [n.b, tai])
 
-  const goiChon = n.loai === 'hkd' ? (['F', 'S'] as Goi[]) : GOIS
+  const goiChon = n.loai === 'hkd' ? (['S', 'PL'] as Goi[]) : GOIS
   const goiY = goiGoiY(n.loai, n.ppHkd)
   const nhomGoiY = nhomTheoDt(DT_FABI)
   const cuaHang = dsCuaHang(n.kieu, s)
@@ -336,7 +336,7 @@ export function OnboardFabi() {
                                 <div className="grid g2">
                                   {(['doanhThu', 'loiNhuan'] as const).map(pp => (
                                     <button key={pp} className={`opt ${n.ppHkd === pp ? 'on' : ''}`} onClick={() => doiLoai({ ppHkd: pp })}>
-                                      <span className="radio" /><span><b>{PP_HKD[pp]}</b><small>{pp === 'doanhThu' ? 'Không cần theo dõi chi phí. Gợi ý gói Free' : 'Phải có chứng từ chi phí hợp lý. Gợi ý gói Standard'}</small></span>
+                                      <span className="radio" /><span><b>{PP_HKD[pp]}</b><small>{pp === 'doanhThu' ? 'Không cần theo dõi chi phí. Gợi ý gói Standard' : 'Phải có chứng từ chi phí hợp lý. Gợi ý gói Plus'}</small></span>
                                     </button>
                                   ))}
                                 </div>
@@ -345,7 +345,7 @@ export function OnboardFabi() {
                             <Note icon="sparkle">Doanh thu 12 tháng trên FABi khoảng {so(DT_FABI / 1e9)} tỷ đồng, thuộc nhóm {nhomGoiY}.</Note>
                           </>
                         )}
-                        <h3 className="ktf-h3">{n.loai === 'hkd' ? 'Gói cho hộ kinh doanh' : 'Doanh nghiệp chọn được cả 4 gói'}</h3>
+                        <h3 className="ktf-h3">{n.loai === 'hkd' ? 'Gói cho hộ kinh doanh' : 'Doanh nghiệp chọn được cả 3 gói'}</h3>
                         <div className="ktf-goi-xem">
                           {goiChon.map(g => (
                             <button key={g} className={n.goi === g ? 'on' : ''} onClick={() => chonGoi(g)}>
@@ -356,7 +356,7 @@ export function OnboardFabi() {
                             </button>
                           ))}
                         </div>
-                        {n.loai === 'dn' && (n.goi === 'PL' || n.goi === 'PR') && (
+                        {n.loai === 'dn' && n.goi === 'PR' && (
                           <div className="f" style={{ marginTop: 14, maxWidth: 420 }}>
                             <label>Chế độ kế toán</label>
                             <Select className="inp" value={n.cheDo} onChange={e => sua({ cheDo: e.target.value as CheDo })}>
@@ -429,7 +429,7 @@ export function OnboardFabi() {
                     <div className="ktf-gia">
                       <small className="ktf-gia-thu">Miễn phí {SO_NGAY_DUNG_THU} ngày dùng thử, sau đó</small>
                       <b>{GIA_GOI_NAM[n.goi].gia}</b><span>{GIA_GOI_NAM[n.goi].chuKy}</span>
-                      <small>{n.goi === 'F' ? GIA_GOI_NAM.F.ghiChu : `${GIA_GOI_NAM[n.goi].ghiChu}. Trả từng tháng ${GIA_GOI_THANG[n.goi].gia}`}</small>
+                      <small>{n.goi === 'S' ? GIA_GOI_NAM.S.ghiChu : `${GIA_GOI_NAM[n.goi].ghiChu}. Trả từng tháng ${GIA_GOI_THANG[n.goi].gia}`}</small>
                     </div>
                     <ul>
                       <li><Icon n="book" className="ic sm" /><span>{tenCheDo(n.loai, n.cheDo)}</span></li>

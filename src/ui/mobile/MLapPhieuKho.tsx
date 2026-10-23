@@ -1647,7 +1647,7 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
               const chenh = chenhKk(d)
               const tt = ttKk(d)
               const dvtChinh = d.dvtChinh || NVL.find(n => n.ma === d.ma || n.ten === d.ten)?.dvt || HANG.find(h => h.ma === d.ma || h.ten === d.ten)?.dvt || d.dvt || 'kg'
-              const coQd = s.goi !== 'F' && quyDoiTuDanhMuc(d.ten, dvtChinh).length > 0
+              const coQd = s.goi !== 'S' && quyDoiTuDanhMuc(d.ten, dvtChinh).length > 0
               const dvtHienThi = d.dvt || dvtChinh
               const strVal = d.strTonTt !== undefined ? d.strTonTt : (d.tonTt === undefined || d.tonTt === null ? '' : String(d.tonTt))
               const stt = originalIndex + 1

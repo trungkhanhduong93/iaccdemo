@@ -59,7 +59,7 @@ export const MDtThuChiXem: FC<MDtThuChiXemProps> = ({
 
   const [tab, setTab] = useState<TabType>('chitiet')
   // Gói Free chỉ có 2 tab Chi tiết và Lịch sử, nếu đang ở Đính kèm thì về Chi tiết (T527)
-  const tabHien = (s.goi === 'F' && tab === 'dinhkem') ? 'chitiet' : tab
+  const tabHien = (s.goi === 'S' && tab === 'dinhkem') ? 'chitiet' : tab
   const [moSheetThaoTac, setMoSheetThaoTac] = useState(false)
 
   const isChi = row.loai === 'chi' || row.loai === 'unc'
@@ -91,7 +91,7 @@ export const MDtThuChiXem: FC<MDtThuChiXemProps> = ({
   // Bút toán cho gói Plus, Pro
   const { cfg } = useDongChungTu(sc, mod)
   const dsButToan = useMemo(() => {
-    if (s.goi === 'F') return []
+    if (s.goi === 'S') return []
     return tinhButToan(
       cfg,
       dsDong,
@@ -174,7 +174,7 @@ export const MDtThuChiXem: FC<MDtThuChiXemProps> = ({
             Chi tiết
           </button>
           {/* Gói Free không có tab Đính kèm (T527) */}
-          {s.goi !== 'F' && (
+          {s.goi !== 'S' && (
             <button
               type="button"
               role="tab"
@@ -305,7 +305,7 @@ export const MDtThuChiXem: FC<MDtThuChiXemProps> = ({
             </div>
 
             {/* Bút toán hạch toán nếu gói Plus/Pro (phục vụ test 15A/16A/17A) */}
-            {s.goi !== 'F' && dsButToan.length > 0 && (
+            {s.goi !== 'S' && dsButToan.length > 0 && (
               <div className="m-xp-the-ht" style={{ margin: '0 16px 16px' }}>
                 <div className="m-tc-nhom-chu" style={{ margin: '8px 0 4px' }}>HẠCH TOÁN</div>
                 <div className="m-tc-card-thong-tin" style={{ padding: '8px 12px' }}>
@@ -324,7 +324,7 @@ export const MDtThuChiXem: FC<MDtThuChiXemProps> = ({
         )}
 
         {/* 4. Tab Đính kèm (chỉ gói Plus/Pro) (T527) */}
-        {s.goi !== 'F' && tabHien === 'dinhkem' && (
+        {s.goi !== 'S' && tabHien === 'dinhkem' && (
           <div className="m-tc-tab-trong">
             <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="1.5">
               <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />

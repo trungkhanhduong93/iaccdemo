@@ -270,7 +270,7 @@ function moTaDoi(cu: TheMobile, moi: TheMobile): string {
 /** Ngày ngừng mặc định khi bật: hôm nay (Free, Standard: cuối tháng này), không sớm hơn ngày bắt đầu phân bổ — như web */
 function ngayNgungMd(bd: string, goi: Goi): string {
   const n = new Date(), p = (x: number) => String(x).padStart(2, '0')
-  const s = goi === 'F' || goi === 'S' ? `${p(new Date(n.getFullYear(), n.getMonth() + 1, 0).getDate())}/${p(n.getMonth() + 1)}/${n.getFullYear()}` : `${p(n.getDate())}/${p(n.getMonth() + 1)}/${n.getFullYear()}`
+  const s = goi === 'S' || goi === 'PL' ? `${p(new Date(n.getFullYear(), n.getMonth() + 1, 0).getDate())}/${p(n.getMonth() + 1)}/${n.getFullYear()}` : `${p(n.getDate())}/${p(n.getMonth() + 1)}/${n.getFullYear()}`
   return ngaySo(s) < ngaySo(bd) ? bd : s
 }
 

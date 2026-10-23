@@ -17,8 +17,8 @@ export function KhoiTao() {
   const { set } = useSession()
   const nav = useNavigate()
   const [b, setB] = useState(0)
-  const [goi, setGoi] = useState<Goi>('PL')
-  const [cheDo, setCheDo] = useState<CheDo>(CHE_DO_MAC_DINH['PL'])
+  const [goi, setGoi] = useState<Goi>('S')
+  const [cheDo, setCheDo] = useState<CheDo>(CHE_DO_MAC_DINH['S'])
   const [mst, setMst] = useState('')
   const [traCuu, setTraCuu] = useState(false)
   const [dongBo, setDongBo] = useState('tu')
@@ -114,7 +114,7 @@ export function KhoiTao() {
           {b === 3 && (
             <>
               <h2 style={{ color: 'var(--ink)', fontSize: 20 }}>Số dư đầu kỳ</h2>
-              <p className="muted" style={{ margin: '4px 0 18px' }}>Số dư ngày 01/10/2026: {goi === 'F' || goi === 'S' ? 'tiền mặt, tiền gửi, công nợ, tồn kho' : 'số dư tài khoản, công nợ, tồn kho'}.</p>
+              <p className="muted" style={{ margin: '4px 0 18px' }}>Số dư ngày 01/10/2026: {goi === 'S' || goi === 'PL' ? 'tiền mặt, tiền gửi, công nợ, tồn kho' : 'số dư tài khoản, công nợ, tồn kho'}.</p>
               <div className="grid g3">
                 {[['excel', 'upload', 'Nhập từ Excel', 'Tải mẫu, điền rồi tải lên'], ['tay', 'edit', 'Nhập tay', 'Gõ từng dòng trên màn hình'], ['sau', 'clock', 'Để sau', 'Nhập ở Kế toán tổng hợp']].map(([k, ic, t, s]) => (
                   <button key={k} className={`opt ${soDu === k ? 'on' : ''}`} onClick={() => setSoDu(k)}><Icon n={ic} /><span><b>{t}</b><small>{s}</small></span></button>

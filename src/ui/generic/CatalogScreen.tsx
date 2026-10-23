@@ -685,7 +685,7 @@ export function CatalogPanel({
       }
     }
     // Gói Free (T380): theo dõi kho cố định theo Loại hàng (Thành phẩm = TẮT, loại khác = BẬT)
-    if (s.goi === 'F' && (scSlug === '1-2' || scSlug === '1.2' || cauHinh?.khoi?.some(kh => kh.truong?.some(tr => tr.k === 'tonKho' && tr.cot === 'IS_INVENTORY')))) {
+    if (s.goi === 'S' && (scSlug === '1-2' || scSlug === '1.2' || cauHinh?.khoi?.some(kh => kh.truong?.some(tr => tr.k === 'tonKho' && tr.cot === 'IS_INVENTORY')))) {
       v.tonKho = v.loai === 'Thành phẩm' ? 0 : 1
     }
     return v
@@ -804,7 +804,7 @@ export function CatalogPanel({
   // Gõ một ô: ghi giá trị rồi cho cấu hình tự tính các ô phụ thuộc
   const doiO = (k: string, val: unknown) => {
     let m = { ...formVal, [k]: val }
-    if (s.goi === 'F' && (scSlug === '1-2' || scSlug === '1.2' || cauHinh?.khoi?.some(kh => kh.truong?.some(tr => tr.k === 'tonKho' && tr.cot === 'IS_INVENTORY')))) {
+    if (s.goi === 'S' && (scSlug === '1-2' || scSlug === '1.2' || cauHinh?.khoi?.some(kh => kh.truong?.some(tr => tr.k === 'tonKho' && tr.cot === 'IS_INVENTORY')))) {
       if (k === 'loai') {
         m.tonKho = val === 'Thành phẩm' ? 0 : 1
       }
@@ -823,7 +823,7 @@ export function CatalogPanel({
   }
 
   const handleLuu = (themTiep: boolean) => {
-    if (s.goi === 'F' && (scSlug === '1-2' || scSlug === '1.2' || cauHinh?.khoi?.some(kh => kh.truong?.some(tr => tr.k === 'tonKho' && tr.cot === 'IS_INVENTORY')))) {
+    if (s.goi === 'S' && (scSlug === '1-2' || scSlug === '1.2' || cauHinh?.khoi?.some(kh => kh.truong?.some(tr => tr.k === 'tonKho' && tr.cot === 'IS_INVENTORY')))) {
       formVal.tonKho = formVal.loai === 'Thành phẩm' ? 0 : 1
     }
     const errs: Record<string, string> = {}

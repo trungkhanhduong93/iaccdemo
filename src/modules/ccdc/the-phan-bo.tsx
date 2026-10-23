@@ -21,7 +21,7 @@ export const LOAI_THE: Record<string, { tienTo: string; muc: string }> = {
 }
 
 /** Gói Free chỉ có thẻ Chi phí trả trước, ẩn Công cụ dụng cụ, Tài sản cố định (T605) */
-export const loaiTheTheoGoi = (goi?: Goi) => goi === 'F' ? ['Chi phí trả trước'] : Object.keys(LOAI_THE)
+export const loaiTheTheoGoi = (goi?: Goi) => goi === 'S' ? ['Chi phí trả trước'] : Object.keys(LOAI_THE)
 
 type V = Record<string, any>
 /** Một dòng chi tiết phân bổ của thẻ */
@@ -45,7 +45,7 @@ const homNay = () => { const d = new Date(); return `${pad(d.getDate())}/${pad(d
 const ngaySo = (d: string) => { const m = d.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/); return m ? +m[3] * 10000 + +m[2] * 100 + +m[1] : NaN }
 /** Ngày cuối tháng của năm, tháng; gói Free, Standard nhập ngừng phân bổ theo tháng */
 const cuoiThang = (y: number, m: number) => `${pad(new Date(y, m, 0).getDate())}/${pad(m)}/${y}`
-const theoThang = (goi: Goi) => goi === 'F' || goi === 'S'
+const theoThang = (goi: Goi) => goi === 'S' || goi === 'PL'
 /** Khống chế ngay khi chọn ngày (T296): ngày đủ dd/mm/yyyy mà sớm hơn mốc thì trả về mốc; gõ dở thì giữ nguyên */
 const khongTruoc = (s: string, moc: string) => ngaySo(s) < ngaySo(moc) ? moc : s
 /** Ngày cuối tháng của một ngày dd/mm/yyyy (mốc cho tháng ngừng phân bổ) */
@@ -108,7 +108,7 @@ const daKichHoat = new Set<string>()
 let banPb = 0
 const ngePb = new Set<() => void>()
 /** Gói có bước kích hoạt phân bổ (Plus, Pro) */
-export const canKichHoat = (goi: Goi) => goi === 'PL' || goi === 'PR'
+export const canKichHoat = (goi: Goi) => goi === 'PR'
 /** Kỳ yyyymm của thẻ đã kích hoạt phân bổ */
 export const daPhanBoKy = (soThe: unknown, ky: number) => daKichHoat.has(`${soThe}|${ky}`)
 /** Kích hoạt phân bổ kỳ yyyymm cho các thẻ; trả số thẻ mới kích hoạt */
@@ -301,7 +301,7 @@ export const THE_PHAN_BO: CauHinhDM = {
   bien: [
     // Gói Free: nút Ghi tăng mở form tạo thẻ mới (T421); gói trên: Ghi tăng mở danh sách khoản chờ ghi tăng (T436).
     // Thẻ từ phiếu chi chờ phân bổ vẫn tự mở khi lưu phiếu ở mọi gói (T419)
-    { k: 'the', ten: 'thẻ chi phí phân bổ', nut: 'Ghi tăng', icon: 'grid', goi: ['F'] },
+    { k: 'the', ten: 'thẻ chi phí phân bổ', nut: 'Ghi tăng', icon: 'grid', goi: ['S'] },
     { k: 'dau', ten: 'thẻ chi phí phân bổ dư đầu kỳ', nut: 'Ghi tăng dư đầu kỳ', icon: 'clock', menu: 'Ghi tăng đầu kỳ' },
   ],
   khoi: [{
@@ -310,7 +310,7 @@ export const THE_PHAN_BO: CauHinhDM = {
     truong: [
       // Loại thẻ, Ngày ghi tăng, Số thẻ; thẻ thường ghi tăng từ ngày đầu năm, thẻ dư đầu kỳ trước ngày đầu năm.
       // Ngày bắt đầu phân bổ, ngừng phân bổ nhập theo từng dòng ở tab Chi tiết phân bổ (T159)
-      { k: 'loai', nhan: 'Loại thẻ', kieu: 'chon', batBuoc: true, ds: Object.keys(LOAI_THE), dsGoi: { F: loaiTheTheoGoi('F') } },
+      { k: 'loai', nhan: 'Loại thẻ', kieu: 'chon', batBuoc: true, ds: Object.keys(LOAI_THE), dsGoi: { S: loaiTheTheoGoi('S') } },
       // Sửa thẻ ghi tăng có sẵn: ngày ghi tăng chỉ đọc (theo chứng từ gốc) (T165)
       { k: 'ngay', nhan: 'Ngày ghi tăng', kieu: 'ngay', batBuoc: true, dauNam: v => laDau(v) ? 'truoc' : 'tu', chiDoc: v => !laDau(v) && Boolean(v._sua) },
       { k: 'soThe', nhan: 'Số thẻ', kieu: 'chu', batBuoc: true, chiDoc: true },

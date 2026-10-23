@@ -85,7 +85,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
   const coTtXn = laSx || dcn === 'xdc' || dcn === 'ndc'   // có trạng thái Chờ nhập, Đã nhập, Đã huỷ
   const gonDau = laKk || laDc || laSx || laDcn    // đầu phiếu gọn: Kho, Nhân viên thực hiện; Ghi chú
   // Phiếu điều chỉnh (T131): không có thuế; gói Free không hiện giá trị (đơn giá, thành tiền, tổng tiền)
-  const anDc = laDc ? ['ts', 'thue', ...(s.goi === 'F' ? ['gia', 'tien'] : [])] : []
+  const anDc = laDc ? ['ts', 'thue', ...(s.goi === 'S' ? ['gia', 'tien'] : [])] : []
   const nv = useMemo(() => (row ? ttNghiepVu(row) : null), [row])
 
   const path = duongDan(mod, sc)
@@ -167,7 +167,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
   }, [loai?.k, row?.id])
   // Thu chi tiền mặt và ngân hàng (T346)
   const laThuChiTien = laTien && (loai?.k === 'thu' || loai?.k === 'chi' || loai?.k === 'bc' || loai?.k === 'unc')
-  const khoaLyDtFree = s.goi === 'F' && laThuChiTien
+  const khoaLyDtFree = s.goi === 'S' && laThuChiTien
 
   // Gói Free phiếu thu, chi (T346): khi mở xem vẫn hiện đúng dữ liệu đã lưu; khi bấm Sửa hoặc thêm mới thì các dòng lấy theo giá trị phía trên; đổi ô phía trên thì các dòng đổi theo ngay
   useEffect(() => {
@@ -268,7 +268,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
   }
   const truocThue = nhom === 'mua' && Boolean(bo.tongNhap)   // phiếu mua: các số tiền ở dòng, khối tổng chỉ Tổng tiền (T84)
   const coHdDau = (nhom === 'mua' || nhom === 'ban') && Boolean(bo.hd) && nhanKemHd
-  const coThangLl = laTien && s.goi === 'F' && nhom !== 'cq'   // chuyển quỹ không ảnh hưởng lãi lỗ
+  const coThangLl = laTien && s.goi === 'S' && nhom !== 'cq'   // chuyển quỹ không ảnh hưởng lãi lỗ
   const dsThangLl = useMemo(() => thangLaiLo(ngayCt, cuaHang), [ngayCt, cuaHang])
   const [thangLl, setThangLl] = useState(dsThangLl[0])
   useEffect(() => { setThangLl(dsThangLl[0]) }, [dsThangLl])
@@ -581,7 +581,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
     // Phiếu thu chi bỏ tab hạch toán (T49); gói Free không ghi sổ nên không có tab Ghi sổ (T62)
     ...(laTien || laKk || dcn === 'ck' || kieu === 'khong' ? [] :   // phiếu kiểm kê, chuyển kho không có tab Hạch toán (T124, T155)
       [['ht', kieu === 'noco' ? 'Hạch toán' : 'Ghi sổ'] as [string, string]]),
-    ...(s.goi === 'F' ? [] : [['dk', 'Đính kèm'] as [string, string]]),   // gói Free không có đính kèm (T52)
+    ...(s.goi === 'S' ? [] : [['dk', 'Đính kèm'] as [string, string]]),   // gói Standard không có đính kèm (T52)
     ['ls', 'Lịch sử'],
   ]
 
@@ -589,7 +589,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
   const hienDau = (k: string) => !anCot.includes(`dau:${k}`)
   // Phiếu thu, chi tiền (2.1.1) không có ô Mã số thuế; chuyển quỹ cũng không (T168)
   const coMst = nhom !== 'cq' && !(laTien && sc.code === '2.1.1')
-  const coHanTt = Boolean(bo.tt) && s.goi !== 'F' && s.goi !== 'S'   // gói Free, Standard ẩn hạn thanh toán (T180)
+  const coHanTt = Boolean(bo.tt) && s.goi === 'PR'   // gói Standard, Plus ẩn hạn thanh toán (T180)
   const hienChan = (k: string) => !anCot.includes(`chan:${k}`)
   const muaBan = nhom === 'mua' || nhom === 'ban'
   const nhanNguoi = nhom === 'cq' ? 'Người thực hiện' : laTien || muaBan ? 'Người giao dịch' : 'Người giao / nhận'   // mua, bán ghi Người giao dịch (T90)
@@ -677,7 +677,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
       footClass="fsf-f-xem"   // thêm mới, sửa cũng chân trắng như lúc xem (T513)
       tinh={Boolean((loc.state as { chuyenPhieu?: boolean } | null)?.chuyenPhieu)}
       onClose={dongMoi}
-      day={laKk || dcn === 'ck' || (laDc && s.goi === 'F') || !hienChan('tongTien') ? undefined
+      day={laKk || dcn === 'ck' || (laDc && s.goi === 'S') || !hienChan('tongTien') ? undefined
         : laTien && chiTien ? <TongDay tong={tongThanhToan} soDong={dsDong.length} />
           // Phần tổng thành dải cố định ở đáy form, cuộn bảng vẫn thấy (T105); phiếu mua chỉ Tổng tiền vì số khác đã có trên dòng (T84)
           : <DaiTong tong={tongThanhToan} muc={chiTien || truocThue || laDc || laSx || laDcn ? [] : [
@@ -766,7 +766,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
             )}
             {/* Nút Tuỳ chỉnh giao diện ở góc trên phải đầu form (T297); hộp vẫn mở cả khi thêm mới, sửa (T161) */}
             {hopCot && (
-              <HopCotPhieu dsDau={dsDau} dsChan={dsChan} ds={laKk ? COT_KK : laSx ? cotSx(sx!) : laDcn ? cotDcn(dcn!) : cotTuyChon(cfg, { coNhomHhdv: nhom === 'mua' && nhanKemHd && (s.goi === 'PL' || s.goi === 'PR'), coKho: Boolean(bo.kho) && !khoDau && !laDc, coLo: nhom === 'mua' && s.goi === 'PR', coCk: Boolean(bo.ck), coKm: kieu !== 'khong', coLy: Boolean(oLy), coNhapKho: truocThue, coGiamThue: giamGtgt }).filter(([k]) => !anDc.includes(k))}
+              <HopCotPhieu dsDau={dsDau} dsChan={dsChan} ds={laKk ? COT_KK : laSx ? cotSx(sx!) : laDcn ? cotDcn(dcn!) : cotTuyChon(cfg, { coNhomHhdv: nhom === 'mua' && nhanKemHd && s.goi === 'PR', coKho: Boolean(bo.kho) && !khoDau && !laDc, coLo: nhom === 'mua' && s.goi === 'PR', coCk: Boolean(bo.ck), coKm: kieu !== 'khong', coLy: Boolean(oLy), coNhapKho: truocThue, coGiamThue: giamGtgt }).filter(([k]) => !anDc.includes(k))}
                 an={anCot} onDoi={doiAnCot} onDong={() => setHopCot(false)} />
             )}
             <button type="button" className="xp-btn-outline" onClick={() => luu(false)}>
@@ -867,7 +867,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
               )}
             </div>
             {hopCot && (
-              <HopCotPhieu dsDau={dsDau} dsChan={dsChan} ds={laKk ? COT_KK : laSx ? cotSx(sx!) : laDcn ? cotDcn(dcn!) : cotTuyChon(cfg, { coNhomHhdv: nhom === 'mua' && nhanKemHd && (s.goi === 'PL' || s.goi === 'PR'), coKho: Boolean(bo.kho) && !khoDau && !laDc, coLo: nhom === 'mua' && s.goi === 'PR', coCk: Boolean(bo.ck), coKm: kieu !== 'khong', coLy: Boolean(oLy), coNhapKho: truocThue, coGiamThue: giamGtgt }).filter(([k]) => !anDc.includes(k))}
+              <HopCotPhieu dsDau={dsDau} dsChan={dsChan} ds={laKk ? COT_KK : laSx ? cotSx(sx!) : laDcn ? cotDcn(dcn!) : cotTuyChon(cfg, { coNhomHhdv: nhom === 'mua' && nhanKemHd && s.goi === 'PR', coKho: Boolean(bo.kho) && !khoDau && !laDc, coLo: nhom === 'mua' && s.goi === 'PR', coCk: Boolean(bo.ck), coKm: kieu !== 'khong', coLy: Boolean(oLy), coNhapKho: truocThue, coGiamThue: giamGtgt }).filter(([k]) => !anDc.includes(k))}
                 an={anCot} onDoi={doiAnCot} onDong={() => setHopCot(false)} />
             )}
             {hopTt && row && (
@@ -1247,7 +1247,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
               coThemHangLoat={nhom === 'mua'}   // Thêm hàng loạt ở phiếu mua hàng (T465)
               gtnkCoThue={hkd}
               giamThue={giamGtgt ? giamThueHkd : undefined}
-              coNhomHhdv={nhom === 'mua' && nhanKemHd && (s.goi === 'PL' || s.goi === 'PR')}   // T162
+              coNhomHhdv={nhom === 'mua' && nhanKemHd && s.goi === 'PR'}   // T162
               coCk={Boolean(bo.ck)}
               coLo={nhom === 'mua' && s.goi === 'PR'}   // số lô, hạn dùng chỉ có ở gói Pro (T68)
               coKm={kieu !== 'khong'}
@@ -1572,7 +1572,7 @@ export function HachToan({
   if (kieu === 'khong') {
     return (
       <Note kind="gray" icon="info">
-        Gói Free chưa áp chế độ kế toán nên phiếu không sinh bút toán. Số tiền vẫn vào sổ quỹ và sổ công nợ.{' '}
+        Gói Standard chưa áp chế độ kế toán nên phiếu không sinh bút toán. Số tiền vẫn vào sổ quỹ và sổ công nợ.{' '}
         <Link to="/app/he-thong/goi-thue-bao">So sánh gói</Link>
       </Note>
     )
@@ -1586,7 +1586,7 @@ export function HachToan({
     ]
     return (
       <div className="stack" style={{ gap: 10 }}>
-        <Note icon="book">Gói Standard theo {CHE_DO.TT58.soHieu}: không dùng tài khoản Nợ/Có. Phiếu ghi thẳng vào sổ.</Note>
+        <Note icon="book">Gói Plus theo {CHE_DO.TT58.soHieu}: không dùng tài khoản Nợ/Có. Phiếu ghi thẳng vào sổ.</Note>
         <Table
           cols={[{ k: 'so', t: 'Ghi vào sổ' }, { k: 'cot', t: 'Cột' }, { k: 'tien', t: 'Số tiền', num: true }]}
           rows={rowsTT58}

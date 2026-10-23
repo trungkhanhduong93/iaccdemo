@@ -9,7 +9,7 @@ import { layNhomBaoCao } from './TrungTam'
 /** Đích các ô của sơ đồ Quy trình đang hiện ở gói (cùng cách chọn sơ đồ của QuyTrinhScreen) và khung Báo cáo bên phải */
 function diQuyTrinh(qt: QuyTrinhDef, goi: Goi): string[] {
   const lay = (ds?: { di?: string }[]) => (ds ?? []).map(n => n.di).filter((d): d is string => Boolean(d))
-  const f = goi === 'F'
+  const f = goi === 'S'
   const khung = (f && qt.baoCaoFree ? qt.baoCaoFree : qt.baoCao) ?? []
   if (f && qt.buocKyFree) return [...qt.buocKyFree.flatMap(b => lay(b.nut)), ...khung]
   if (f && qt.luongFree) return [...qt.luongFree.flatMap(c => lay(c.nut)), ...khung]

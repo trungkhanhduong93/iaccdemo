@@ -130,7 +130,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
   const isChi = loai === 'chi' || loai === 'unc'
   const isThu = loai === 'thu' || loai === 'bc'
   const isCq = loai === 'cq'
-  const isFreeThuChi = s.goi === 'F' && !isCq
+  const isFreeThuChi = s.goi === 'S' && !isCq
 
   const cnNhoId = layChiNhanhNho()
   const cnNhoTen = CUA_HANG.find(c => c.id === cnNhoId)?.ten
@@ -444,13 +444,13 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
               ten: d.ten || ghiChu || (isChi ? 'Chi tiền' : 'Thu tiền'),
               tien: d.tien,
               gia: d.gia ?? d.tien,
-              ...(s.goi !== 'F' ? {
+              ...(s.goi !== 'S' ? {
                 tkNo: d.tkNo || (lyDo.includes('lương') ? '334' : '6422'),
                 tkCo: d.tkCo || '1111',
               } : {}),
             })),
       _theCp: theCpDs,
-      tt: row?.tt ?? (s.goi === 'F' ? 'ghi' : 'nhap'),
+      tt: row?.tt ?? (s.goi === 'S' ? 'ghi' : 'nhap'),
       nguon: row?.nguon ?? 'tay',
     }
     const targetId = dangSua && row ? String(row.id) : `phieu-${Date.now()}`
@@ -840,7 +840,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
           )}
 
           {/* Khối hạch toán cho kiểm tra test 17A */}
-          {s.goi !== 'F' && (
+          {s.goi !== 'S' && (
             <div className="m-tc-ht-test m-xp-the-ht" style={{ borderTop: '1px solid #e5e7eb', paddingTop: '10px', marginTop: '10px' }}>
               <div
                 className="m-lp-the-ht-tieu m-lp-hang-tk"
@@ -993,7 +993,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
                     </div>
 
                     {/* Nút toggle mở rộng thông tin dòng (chỉ gói có phí QD18) */}
-                    {s.goi !== 'F' && (
+                    {s.goi !== 'S' && (
                       <div className="m-tc-lap-mo-rong">
                         <button
                           type="button"

@@ -174,7 +174,7 @@ export const MToGiay: FC<ScreenProps> = ({ sc, mod }) => {
       const sumGtx = rawXnt.reduce((a, x) => a + (Number(x.gtx) || 0), 0)
       const sumGt1 = rawXnt.reduce((a, x) => a + (Number(x.gt1) || 0), 0)
       const khoGui = params.get('kho') || (locKhoList.length === 1 ? locKhoList[0] : (dsKhoCuaHang[0] || 'Kho bếp Lê Lợi'))
-      const isFree = s.goi === 'F'
+      const isFree = s.goi === 'S'
       const rows: Row[] = isFree
         ? rawXnt.map(x => ({
             ...x,
@@ -295,7 +295,7 @@ export const MToGiay: FC<ScreenProps> = ({ sc, mod }) => {
   }, [phongTo, sc.slug, kieuXem, daTai])
 
   const colsBang = useMemo(() => {
-    const isFree = s.goi === 'F'
+    const isFree = s.goi === 'S'
     const raw: Col[] = is523
       ? (isFree ? COLS_523_FREE : COLS_523)
       : isDong1023

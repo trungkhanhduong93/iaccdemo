@@ -3,7 +3,7 @@
 const KEY = 'iacc-thang-lam-viec'
 
 const laGoiFree = () => {
-  try { return JSON.parse(localStorage.getItem('iacc-cloud-session') ?? '{}').goi === 'F' } catch { return false }
+  try { return JSON.parse(localStorage.getItem('iacc-cloud-session') ?? '{}').goi === 'S' } catch { return false }
 }
 
 /** Tháng làm việc năm 2026 đã chọn ở trang chủ Free; chưa chọn hoặc không phải gói Free thì null */
