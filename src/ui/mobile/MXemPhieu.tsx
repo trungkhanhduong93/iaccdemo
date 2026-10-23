@@ -333,7 +333,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
   // Danh sách các tab hiển thị theo từng phân hệ
   const dsTab = useMemo(() => {
     if (laTien) {
-      if (s.goi === 'S') {
+      if (kieu === 'khong') {   // gói Standard, Plus hộ kinh doanh không có tab bút toán (QD81)
         return [
           { k: 'chitiet' as TabKey, ten: 'Chi tiết' },
           { k: 'lichsu' as TabKey, ten: 'Lịch sử' },
@@ -346,7 +346,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
       ]
     }
     if (nhomMb === 'mua') {
-      if (s.goi === 'S') {
+      if (kieu === 'khong') {   // gói Standard, Plus hộ kinh doanh không có tab bút toán (QD81)
         return [
           { k: 'chitiet' as TabKey, ten: 'Phiếu nhập' },
           { k: 'lichsu' as TabKey, ten: 'Lịch sử' },
@@ -369,7 +369,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
       { k: 'chitiet' as TabKey, ten: 'Chi tiết' },
       { k: 'lichsu' as TabKey, ten: 'Lịch sử' },
     ]
-  }, [laTien, nhomMb, laKk, s.goi, dsButToan.length, dsDong.length, dsTt.length])
+  }, [laTien, nhomMb, laKk, kieu, dsButToan.length, dsDong.length, dsTt.length])
 
   // Sửa phiếu: phiếu chi đã có thẻ chi phí phân bổ thì không sửa, báo xoá thẻ trước như bản máy tính (T475, theo T439)
   const moSua = () => { if (theCuaPhieu(row).length) setHoiKhongSua(true); else nav(`${path}/${row.id}?sua=1`) }

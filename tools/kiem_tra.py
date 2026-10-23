@@ -31,7 +31,7 @@ GOIS = ['PR'] if NHANH else ['S', 'PL', 'PR']
 
 
 def phien(goi, role='ktt', thu_gon=False):
-    return json.dumps(dict(loggedIn=True, ten='Trần Thu Hà', email='thuha@phomay.vn', role=role, donVi='pm', goi=goi, khoiTao=True, thuGon=thu_gon))
+    return json.dumps(dict(loggedIn=True, ten='Trần Thu Hà', email='thuha@phomay.vn', role=role, donVi='pm', goi=goi, goiBan=2, khoiTao=True, thuGon=thu_gon))
 
 
 def lay_keys_phan_he():

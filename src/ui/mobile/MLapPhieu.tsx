@@ -1009,7 +1009,8 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
   const [timQuy, setTimQuy] = useState('')
   const [quyTam, setQuyTam] = useState(quy)
 
-  // Khối Hạch toán thu gọn mặc định
+  // Khối Hạch toán thu gọn mặc định; gói Standard, Plus hộ kinh doanh không có khối, tab Hạch toán (QD81)
+  const coHachToan = kieuGhiSoDv(s) !== 'khong'
   const [moHt, setMoHt] = useState(false)
   const [chonTk, setChonTk] = useState<{ dong: number; kieu: 'no' | 'co' } | null>(null)
 
@@ -2095,7 +2096,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
               <div
                 className="m-t601-tabs"
                 style={{
-                  gridTemplateColumns: `repeat(${1 + (s.goi !== 'S' ? 1 : 0) + 1}, minmax(0, 1fr))`,
+                  gridTemplateColumns: `repeat(${1 + (coHachToan ? 1 : 0) + 1}, minmax(0, 1fr))`,
                 }}
               >
                 <button
@@ -2105,7 +2106,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                 >
                   Phiếu nhập
                 </button>
-                {s.goi !== 'S' && (
+                {coHachToan && (
                   <button
                     type="button"
                     className={`m-t601-tab-btn ${tabMua === 'buttoan' ? 'on' : ''}`}
@@ -2505,7 +2506,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
         )}
 
         {/* ════ KHỐI HẠCH TOÁN (GÓI KHÁC FREE) ════ */}
-        {s.goi !== 'S' && nhom !== 'mua' && dsButToan.length > 0 && (
+        {coHachToan && nhom !== 'mua' && dsButToan.length > 0 && (
           <div className="m-lp-khoi-ht" style={{ marginTop: 8 }}>
             <div
               className="m-pb-the m-lp-the-ht-tieu"

@@ -46,10 +46,10 @@ export interface Session {
   mapPttt?: Record<string, Record<string, string>>   // map PTTT FABi về quỹ theo đơn vị; khoá 'mã cửa hàng|mã PTTT', giá trị mã quỹ (T264)
 }
 
-/** Đổi mã gói cũ ('M', 'A') sang mã chuẩn ('PL', 'PR'), nhận các mã mới ('S', 'PL', 'PR') */
+/** Mã gói từ link ?goi=: nhận mã mới ('S', 'PL', 'PR'); mã Excel cũ 'M', 'A' (Plus, Pro cũ) đều thành Pro (QD80, T649) */
 export function chuanHoaGoi(g: unknown): Goi {
-  if (g === 'PR' || g === 'A') return 'PR'
-  if (g === 'PL' || g === 'M') return 'PL'
+  if (g === 'PR' || g === 'A' || g === 'M') return 'PR'
+  if (g === 'PL') return 'PL'
   if (g === 'S') return 'S'
   return 'S'
 }

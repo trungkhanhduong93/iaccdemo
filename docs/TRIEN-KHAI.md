@@ -119,7 +119,7 @@ Deploy tay xong phải push đúng code đó lên `main`. Nếu không, lần pu
 
 Hai script đọc file nằm ngoài repo, người khác chạy sẽ báo lỗi. Cần đổi tính năng hay logo thì nhắn Trum.
 
-- `tools/xuat_tinh_nang.py` sinh `src/app/features.json` từ Excel tính năng. Script đọc qua `D:\IACC-CLOUD\Present\tools\build_present.py` để dùng chung các chỉnh gói (GOI_FIX, EXTRA, KHO_IVT, KHONG_IVT). Ra đúng 120 tính năng: Free 16, Starter 56, Medium 96, Advance 120.
+- `tools/xuat_tinh_nang.py` sinh `src/app/features.json` từ Excel tính năng. Script đọc qua `D:\IACC-CLOUD\Present\tools\build_present.py` để dùng chung các chỉnh gói (GOI_FIX, EXTRA, KHO_IVT, KHONG_IVT). Ra đúng 120 tính năng: Free 16, Starter 56, Medium 96, Advance 120. Excel vẫn ghi 4 mã F, S, M, A, app đổi sang 3 gói Standard, Plus, Pro ở `doiGoiTuExcel` (QD80). Khi Excel đổi sang mã gói mới thì sửa trong cùng một lần: sinh lại `features.json`, bỏ bước đổi mã trong `doiGoiTuExcel` (`src/app/plan.ts`), sửa cách đếm gói trong `tools/xuat_bao_cao_he_thong.py` (dòng 165–167, 305–307) và `build_present.py`. Lệch một chỗ thì mọi tính năng lệch một bậc gói.
 - `tools/xuat_logo.py` sinh `src/assets/iacc-logo.webp` và `public/favicon.png` từ `D:\icon present\logo (2).png`, dùng lại hàm `iacc_logo()` của bộ trình chiếu. Hàm này tô trắng vòng giữa, vì ảnh gốc để trong suốt, đặt trên nền navy sẽ thành vòng tối. Component `ui/Logo.tsx` dùng logo ở thanh phân hệ, đăng nhập, chọn đơn vị, khởi tạo.
 
 Bố cục cũ (thanh biểu tượng + menu dọc) còn ở `backup/src-truoc-amis-0710/` trên máy Trum, script kiểm cũ ở `backup/kiem_tra-truoc-amis.py`. Thư mục backup không lên GitHub. Lịch sử Git bắt đầu từ bố cục AMIS.

@@ -190,7 +190,7 @@ export const CHI_MO_TU_BC_GOI: Partial<Record<Goi, string[]>> = { S: ['5.2.1'] }
 /** Báo cáo ẩn hẳn theo gói: gói Free ẩn Tổng hợp xuất kho 5.2.11, Chi tiết xuất kho 5.2.12, PhuongXT 20/10/2026 (T506) */
 export const AN_BC_GOI: Partial<Record<Goi, string[]>> = { S: ['5.2.11', '5.2.12'] }
 const GIU_TT58 = ['2.2.5', '2.2.7', '3.2.5', '5.2.8', '6.2.4', '6.2.5', '7.2.1', '10.2.2', '10.2.3', '10.4.1', '10.4.2']
-/** Hộ kinh doanh TT152 (T179): S1a, S2a, S2b-HKD (3.2.5), S2c (10.4.1), S2d (5.2.8), S2e (2.2.7); doanh nghiệp gói Free cũng chạy TT152 nhưng không có các sổ này */
+/** Hộ kinh doanh TT152 (T179): S1a, S2a, S2b-HKD (3.2.5), S2c (10.4.1), S2d (5.2.8), S2e (2.2.7); doanh nghiệp gói Standard chạy TT58 nên không có các sổ này (T632) */
 const GIU_TT152_HKD = ['2.2.7', '3.2.5', '5.2.8', '10.4.1']
 export const giuBC = (code: string | undefined, cheDo: CheDo, hkd = false) =>
   !!code && (GIU_MOI_CHE_DO.includes(code) || MO_IFASTER.includes(code) || (cheDo === 'TT58' && GIU_TT58.includes(code)) || (cheDo === 'TT152' && hkd && GIU_TT152_HKD.includes(code)))
