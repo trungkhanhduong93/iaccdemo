@@ -875,3 +875,5 @@ Thay phần gói và mã gói của QD27, phần 4 logo của QD44.
 - Tên hàm, file, lớp CSS có chữ Free đổi sang Standard. Tiêu đề mục CSS cũ, comment cũ giữ nguyên.
 
 Lý do: Trum giao việc T642 ngày 23/10/2026, chốt các mặc định cùng ngày.
+
+## QD81. Gói nào có ghi sổ (đang soạn)
