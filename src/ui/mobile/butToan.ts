@@ -36,7 +36,7 @@ export function tinhButToan(
   const kieu = kieuGhiSo(cheDo)
   const laKk = Boolean(cfg.kiemKe)
   const dcn = cfg.dieuChuyen
-  const coButToan = kieu !== 'khong' && !laKk && dcn !== 'ck'
+  const coButToan = kieu === 'noco' && !laKk && dcn !== 'ck'
   if (!coButToan) return []
 
   const btDong = dsDong.filter(d => Boolean(d.tkNo && d.tkCo))

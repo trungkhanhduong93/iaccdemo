@@ -57,7 +57,7 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
     })
   }, [rowsGoc, mod.key, cfg])
 
-  const ghi = kieuGhiSo(s.goi) !== 'khong' && s.goi !== 'S'
+  const ghi = kieuGhiSo(s.cheDo) === 'noco'   // chỉ gói Nợ/Có (Plus, Pro) có ghi sổ
   const cnChon = cuaHangHienTai(s)
 
   const [sp, setSearchParams] = useSearchParams()

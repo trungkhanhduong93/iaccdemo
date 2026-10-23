@@ -33,7 +33,7 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
   const { ban, laDaXoa } = useDaXoa(`${mod.key}/${sc.slug}`)
   const tyLe = gtgtTyLe(s)   // GTGT theo % doanh thu: Giảm thuế GTGT thay VAT (T163, T450)
   const kieu = kieuGhiSo(s.cheDo)
-  const ghi = kieu !== 'khong' && s.goi !== 'S'
+  const ghi = kieu === 'noco'   // chỉ gói Nợ/Có (Plus, Pro) có ghi sổ; gói Standard đồng bộ là xong
   const cnChon = cuaHangHienTai(s)
 
   // Khoảng ngày lọc

@@ -375,8 +375,8 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
   const moSua = () => { if (theCuaPhieu(row).length) setHoiKhongSua(true); else nav(`${path}/${row.id}?sua=1`) }
 
   // Nút hành động chính và phụ ở chân màn hình
-  const coNutGhiSo = kieu !== 'khong' && s.goi !== 'S' && !laDc
-  const coTheSua = !laDc && (s.goi === 'S' || !coNutGhiSo || row.tt !== 'ghi')
+  const coNutGhiSo = kieu === 'noco' && !laDc   // chỉ gói Nợ/Có (Plus, Pro) có ghi sổ
+  const coTheSua = !laDc && (!coNutGhiSo || row.tt !== 'ghi')
   let nutPhu: { nhan: string; action: () => void } | null = null
   let nutChinh: { nhan: string; laThanhToan?: boolean; action: () => void } | null = null
 
@@ -449,7 +449,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
     } else if (k === 'xoa') {
       if (daKhoaSo(String(row.ngay), row.cn)) {
         toast(`${row.so} thuộc kỳ đã khoá sổ, không xoá được`)
-      } else if (kieu !== 'khong' && row.tt !== 'nhap') {
+      } else if (coNutGhiSo && row.tt !== 'nhap') {
         toast(`${row.so} đã ghi sổ, bỏ ghi sổ rồi mới xoá`)
       } else if (lyDoKhongXoaTheCuaPhieu(row)) {
         toast(lyDoKhongXoaTheCuaPhieu(row)!)   // thẻ chi phí của phiếu thuộc kỳ đã khoá sổ (T475, theo T439)
@@ -508,7 +508,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
     } else {
       chipTt = { kieu: 'chua', ten: 'Chưa thanh toán' }
     }
-  } else if (s.goi !== 'S') {
+  } else if (coNutGhiSo) {
     if (row.tt === 'ghi') {
       chipTt = { kieu: 'dang', ten: 'Đã ghi sổ' }
     } else {

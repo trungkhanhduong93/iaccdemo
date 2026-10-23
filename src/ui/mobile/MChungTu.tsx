@@ -94,7 +94,7 @@ const DsChungTu: FC<ScreenProps> = ({ sc, mod }) => {
     })
   }, [rowsGocChung, mod.key, cfg])
 
-  const ghi = kieuGhiSo(s.goi) !== 'khong' && s.goi !== 'S'
+  const ghi = kieuGhiSo(s.cheDo) === 'noco'   // chỉ gói Nợ/Có (Plus, Pro) có ghi sổ
   const cnChon = cuaHangHienTai(s)
 
   // Chip trạng thái

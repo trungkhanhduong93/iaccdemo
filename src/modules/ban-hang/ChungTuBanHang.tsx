@@ -244,7 +244,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
   const [trang, setTrang] = useState(1)
   const [coTrang, setCoTrang] = useState(20)
   const kieu = kieuGhiSo(s.cheDo)
-  const ghi = kieu !== 'khong'
+  const ghi = kieu === 'noco'   // chỉ gói Nợ/Có (Plus, Pro) có ghi sổ; gói Free, Standard đồng bộ là xong
   // Cửa hàng chọn trên thanh trên (QD17): lọc theo cửa hàng đó, bỏ cột và ô lọc cửa hàng
   const cnChon = cuaHangHienTai(s)
 
@@ -629,7 +629,7 @@ function ChiTiet({ sc, mod, row }: ScreenProps & { row: Row }) {
     dong: dongCuaPhieu(x).map(d => ({ stt: d.stt, ma: d.ma, ten: d.ten, dvt: d.dvt, sl: d.sl, gia: d.gia, tien: d.tien, thue: d.thue, ts: d.ts })),
   }])
   // Phiếu đồng bộ xong từ FABi ghi "Đã đồng bộ" thay cho "Đã ghi sổ" (T613)
-  const [cTt, tTt] = kieu === 'khong' || row.tt === 'ghi' ? ['ok', 'Đã đồng bộ'] : TT_CT[row.tt] ?? ['warn', 'Chưa ghi sổ']
+  const [cTt, tTt] = kieu !== 'noco' || row.tt === 'ghi' ? ['ok', 'Đã đồng bộ'] : TT_CT[row.tt] ?? ['warn', 'Chưa ghi sổ']
   return (
     <FormToanMan icon={mod.icon} iconNet onClose={dong0} title="Xuất bán POS"
       footClass="fsf-f-xem fsf-f-pos"

@@ -1675,8 +1675,8 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
       return
     }
 
-    const kieu = kieuGhiSo(s.goi)
-    const ttLuu = kieu === 'khong' ? 'ghi' : 'nhap'
+    const kieu = kieuGhiSo(s.cheDo)
+    const ttLuu = kieu === 'noco' ? 'nhap' : 'ghi'
 
     const man = `${mod.key}/${sc.slug}`
     const idLuu = dangSua ? String(row!.id) : `moi-${Date.now()}`
