@@ -258,9 +258,9 @@ export const MCcdc: FC<ScreenProps> = ({ sc, mod }) => {
     </div>
   ) : undefined
 
-  // T643: nút Thêm mới; gói Free chọn Thẻ chi phí hoặc Thẻ chi phí dư đầu kỳ, gói khác mở thẳng thẻ dư đầu kỳ
+  // T643: nút Thêm mới; gói Standard chọn Thẻ chi phí hoặc Thẻ chi phí dư đầu kỳ, gói khác mở thẳng thẻ dư đầu kỳ
   const handleThemMoi = () => {
-    if (s.goi === 'F') setMoChonLoaiThe(true)
+    if (s.goi === 'S') setMoChonLoaiThe(true)
     else batDauThemDau()
   }
 
