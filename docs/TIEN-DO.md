@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T651 | Điện thoại, chi tiết phiếu Xuất bán POS đủ thông tin như web theo mẫu A Trum chốt: thẻ Đơn hàng POS (thêm Số đơn POS), Khách hàng (tên, MST, người mua, địa chỉ), Hoá đơn (số, ký hiệu, ngày, mã tra cứu có nút chép); dòng hàng có STT, mã cạnh tên, 3 dòng chi tiết thụt vào (SL × đơn giá, giảm giá, VAT - thuế); khung tổng nền xám; chip FABi cam, trạng thái "Đã đồng bộ" như web; chỉ một nút Đóng | Trum | Đang làm | Sửa `MXuatBanPos.tsx`, cuối `app.css` (mục T651). Mẫu ở artifact "Mẫu app Xuất bán POS", khung A. Bỏ nút In phiếu theo mẫu nên T575 xem lại |
 | T650 | Điện thoại, màn lập và sửa phiếu thu chi vẽ lại theo kiểu "Tạo mới nhập mua hàng": tên ô bên trái, giá trị bên phải, nhóm Đối tượng, Chi tiết trong thẻ, một nút Lưu | PhuongXT | Đang làm | Sửa `MDtThuChiLap.tsx`, cuối `app.css` (mục T650). Mẫu ở artifact "Phiếu thu chi điện thoại", kiểu 2 |
 | T593 | Xem trước in và bản in báo cáo: mã, tên hàng, số phiếu ở mọi cột thành chữ thường, không bấm được (mở rộng T556) | Trum | Đang làm | Sửa cuối `app.css` (mục T556). Spec `backup/spec-T593-T595.md` |
 | T594 | Báo cáo đổi khổ dọc, ngang tự cân bề rộng cột và cỡ chữ: số, ngày, mã luôn 1 dòng đủ ký tự, chữ dài xuống tối đa 2 dòng, không tràn ô, không tràn viền tờ; cỡ chữ chọn tay là trần | Trum | Đang làm | Sửa `ToGiay.tsx`, `chiaCot.ts`, `ReportScreen.tsx`, `tools/kiem_tra.py`. Ca kiểm 3.2.8, 5.2.3 |
