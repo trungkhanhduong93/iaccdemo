@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T661 | Điện thoại, chi tiết phiếu mua hàng đã trả, bấm Sửa phiếu: hộp "Không sửa được" lặp mã phiếu chi (vd "PC2610-0261, PC2610-0261") | PhuongXT | 24/10/2026 | `2026-10-24-phuongxt-ma-phieu-chi-lap.md` |
 | T660 | Điện thoại, chi tiết phiếu kiểm kê: Xoá, Sao chép, Sửa nằm ở thanh dưới, bỏ nút ba chấm; phiếu điều chỉnh bỏ nút Sửa; mọi màn chi tiết bỏ Xuất Excel | PhuongXT | 24/10/2026 | `2026-10-24-phuongxt-kiem-ke-nut-duoi.md` |
 | T659 | Điện thoại, Lập phiếu kiểm kê: bảng Chọn kho kiểm kê không bung cả màn, thành bảng thấp, chạm là chọn như Chọn kho nhận phiếu mua | PhuongXT | 24/10/2026 | `2026-10-24-phuongxt-chon-kho-kiem-ke.md` |
 | T658 | Điện thoại, phiếu mua đã thanh toán (một phần hoặc đủ): bấm Sửa phiếu báo không sửa được, mở phiếu chi để xoá trước; xoá phiếu chi kèm thì phiếu mua về chưa trả | PhuongXT | 24/10/2026 | `2026-10-24-phuongxt-chan-sua-phieu-mua-da-tra.md` |

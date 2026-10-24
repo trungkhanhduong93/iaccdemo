@@ -336,7 +336,10 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
 
   // Sửa phiếu: phiếu chi đã có thẻ chi phí phân bổ thì không sửa, báo xoá thẻ trước như bản máy tính (T475, theo T439)
   // Phiếu mua đã trả (một phần hoặc đủ) thì không sửa, báo xoá phiếu chi trước (T658)
-  const dsChiMua = nhomMb === 'mua' ? [...(ctTtCu ? [ctTtCu] : []), ...dsTt] : []
+  // ctTtCu có thể đã nằm trong dsTt: lọc trùng theo số phiếu để không lặp mã (T661)
+  const dsChiMua = nhomMb === 'mua'
+    ? [...(ctTtCu ? [ctTtCu] : []), ...dsTt].filter((c, i, ds) => ds.findIndex(x => x.so === c.so) === i)
+    : []
   const moSua = () => {
     if (theCuaPhieu(row).length) setHoiKhongSua(true)
     else if (nhomMb === 'mua' && daTra > 0) setHoiKhongSuaTt(true)
