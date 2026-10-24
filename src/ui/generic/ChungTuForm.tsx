@@ -55,7 +55,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
   // Phiếu thu, chi đồng bộ từ FABi chỉ xem: sửa, xoá ở FABi (T283)
   const tuFabi = mod.key === 'tien' && row?.nguon === 'FABi'
   const khoaKy = !moi && !!row && daKhoaSo(row.ngay, row.cn)   // phiếu thuộc tháng đã khoá sổ của cửa hàng (T19): chỉ xem, không sửa, không xoá (T315)
-  const [dangSua, setDangSua] = useState(moi || (sp.get('sua') === '1' && !tuFabi && !khoaKy))
+  const khoaDc = dsDcCon(row).length > 0   // phiếu kiểm kê đã sinh phiếu Xuất, Nhập điều chỉnh: không sửa, vẫn xoá được (T657)
+  const [dangSua, setDangSua] = useState(moi || (sp.get('sua') === '1' && !tuFabi && !khoaKy && !khoaDc))
   const [tab, setTab] = useState('ct')
   const [moLoc, setMoLoc] = useState(false)   // hàng lọc của bảng chi tiết, bấm nút Lọc mới hiện (T383)
   const [hienTk, setHienTk] = useState(false)
@@ -507,6 +508,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
 
   // Sửa phiếu: phiếu chi đã có thẻ chi phí phân bổ thì không sửa, báo xoá thẻ trước (T439)
   function batSua() {
+    if (khoaDc) return
     if (row && theCuaPhieu(row).length) setHoiKhongSua(true)
     else setDangSua(true)
   }
@@ -530,7 +532,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
         else luu(false)
       } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'e') {
         e.preventDefault()
-        if (!khoaSua) batSuaRef.current()   // phiếu điều chỉnh, phiếu FABi chỉ xem (T129, T283); phiếu có thẻ chi phí thì báo (T439)
+        if (!khoaSua && !khoaDc) batSuaRef.current()   // phiếu điều chỉnh, phiếu FABi chỉ xem (T129, T283); phiếu có thẻ chi phí thì báo (T439)
       } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'q') {
         // Huỷ thay đổi như nút Huỷ (T297)
         e.preventDefault()
@@ -854,7 +856,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
               )}
             </div>
             <div className="xp-footer-phai">
-              {!khoaSua && (
+              {!khoaSua && !khoaDc && (
                 <button
                   type="button"
                   className="xp-btn-sua"

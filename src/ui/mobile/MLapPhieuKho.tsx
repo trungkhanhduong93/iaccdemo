@@ -1556,7 +1556,14 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
           <div className="m-pb-the m-pb-the-tong-quan">
             <div className="m-pb-hang-chip">
               <span className="m-pb-chip-loai">Kiểm kê định kỳ</span>
-              <span className="m-pb-chip-tt cho">{dangSua ? 'Đang sửa' : 'Phiếu mới'}</span>
+              {/* Cửa hàng nằm cùng hàng chip, thay nhãn Phiếu mới (T657) */}
+              <div className="m-pb-dong-cn m-kk657-cn" onClick={() => { if (!gocData?.cn) setMoChonCn(true) }}>
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="1.8" fill="none">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                  <polyline points="9 22 9 12 15 12 15 22" />
+                </svg>
+                <span>{cuaHang || 'Chọn cửa hàng'}</span>
+              </div>
             </div>
             <div>
               <label className="m-t449-nhan-ncc">Kho kiểm kê <span className="sao">*</span></label>
@@ -1572,13 +1579,6 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
               </div>
             </div>
             {loiO.kho && <div className="m-lp-loi-o">{loiO.kho}</div>}
-            <div className="m-pb-dong-cn" onClick={() => { if (!gocData?.cn) setMoChonCn(true) }}>
-              <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="1.8" fill="none">
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-                <polyline points="9 22 9 12 15 12 15 22" />
-              </svg>
-              <span>{cuaHang || 'Chọn cửa hàng'}</span>
-            </div>
           </div>
 
           <div className="m-pb-nhom">THÔNG TIN KIỂM KÊ</div>
@@ -1604,17 +1604,13 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
               />
             </div>
             <div className="m-pb-dong">
-              <span className="n">Số chứng từ</span>
-              <span className="f-gt m-kk588-so-ct">{dangSua ? String(row!.so) : soKeTiep(`${mod.key}/${sc.slug}`, `${cfgMan.prefix || 'KK'}2610-`)}</span>
-            </div>
-            <div className="m-pb-dong">
-              <span className="n">Diễn giải</span>
+              <span className="n">Ghi chú</span>
               <input
                 className="f-gt f-input m-t449-input-phai"
-                aria-label="Diễn giải"
+                aria-label="Ghi chú"
                 value={ghiChu}
                 onChange={e => setGhiChu(e.target.value)}
-                placeholder="Nhập diễn giải"
+                placeholder="Nhập ghi chú"
               />
             </div>
           </div>

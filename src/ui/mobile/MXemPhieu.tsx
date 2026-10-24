@@ -338,7 +338,9 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
 
   // Nút hành động chính và phụ ở chân màn hình
   const coNutGhiSo = kieu !== 'khong' && !laDc   // gói Standard, Plus hộ kinh doanh không ghi sổ (QD81)
-  const coTheSua = !laDc && (!coNutGhiSo || row.tt !== 'ghi')
+  // Phiếu kiểm kê đã sinh phiếu Xuất, Nhập điều chỉnh thì không sửa nữa (T657)
+  const khoaKk = laKk && dsDc.length > 0
+  const coTheSua = !laDc && !khoaKk && (!coNutGhiSo || row.tt !== 'ghi')
   let nutPhu: { nhan: string; action: () => void } | null = null
   let nutChinh: { nhan: string; laThanhToan?: boolean; action: () => void } | null = null
 
@@ -363,7 +365,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
       nutPhu = null
     }
   } else if (s.goi === 'S') {
-    nutChinh = {
+    if (!khoaKk) nutChinh = {
       nhan: 'Sửa phiếu',
       action: moSua,
     }
@@ -379,7 +381,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
         action: () => toast('Đã ghi sổ'),
       }
     }
-  } else if (!laDc) {
+  } else if (!laDc && !khoaKk) {
     nutChinh = {
       nhan: 'Sửa phiếu',
       action: moSua,
@@ -390,7 +392,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
   const dsMenu = laDc
     ? [{ k: 'excel', ten: 'Xuất Excel' }]   // phiếu điều chỉnh chỉ xuất Excel (T603)
     : [
-        ...(nhomMb !== 'mua' ? [{ k: 'sua', ten: 'Sửa chứng từ' }] : []),
+        ...(nhomMb !== 'mua' && !khoaKk ? [{ k: 'sua', ten: 'Sửa chứng từ' }] : []),
         { k: 'copy', ten: 'Sao chép chứng từ' },
         { k: 'xoa', ten: 'Xoá chứng từ' },
       ]
