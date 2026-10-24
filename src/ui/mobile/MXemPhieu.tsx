@@ -372,7 +372,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
       nutPhu = null
     }
   } else if (s.goi === 'S') {
-    if (!laKk) nutChinh = {
+    if (!laKk && !laDc) nutChinh = {   // phiếu điều chỉnh không sửa (T660)
       nhan: 'Sửa phiếu',
       action: moSua,
     }
@@ -396,10 +396,11 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
   }
 
   // Menu ba chấm
+  // Điện thoại bỏ Xuất Excel; phiếu điều chỉnh không còn thao tác nào (T603, T660)
   const dsMenu = laDc
-    ? [{ k: 'excel', ten: 'Xuất Excel' }]   // phiếu điều chỉnh chỉ xuất Excel (T603)
+    ? []
     : [
-        // Phiếu kiểm kê: Sao chép, Sửa nằm ở thanh dưới, menu chỉ còn Xoá (T660)
+        // Phiếu kiểm kê: Xoá, Sao chép, Sửa nằm ở thanh dưới, không mở menu này (T660)
         ...(nhomMb !== 'mua' && !laKk ? [{ k: 'sua', ten: 'Sửa chứng từ' }] : []),
         ...(!laKk ? [{ k: 'copy', ten: 'Sao chép chứng từ' }] : []),
         { k: 'xoa', ten: 'Xoá chứng từ' },
@@ -410,8 +411,6 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
       setMoLichSuTt(true)
     } else if (k === 'sua') {
       moSua()
-    } else if (k === 'excel') {
-      toast('Đã xuất Excel')
     } else if (k === 'thanhtoan') {
       setMoThanhToan(true)
     } else if (k === 'copy') {
@@ -1202,23 +1201,31 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
         )}
       </div>
 
-      {/* ── CHÂN GHIM ĐÁY (A7) ── */}
+      {/* ── CHÂN GHIM ĐÁY (A7); phiếu điều chỉnh không có thao tác nên không có chân (T660) ── */}
+      {!laDc && (
       <div className="m-pb-day">
         <div className="m-pb-day-nut">
-          <button
-            type="button"
-            className="m-pb-btn-more"
-            onClick={() => setMoMenu(true)}
-            aria-label="Thao tác khác"
-          >
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-              <circle cx="5" cy="12" r="2" />
-              <circle cx="12" cy="12" r="2" />
-              <circle cx="19" cy="12" r="2" />
-            </svg>
-          </button>
+          {!laKk && dsMenu.length > 0 && (
+            <button
+              type="button"
+              className="m-pb-btn-more"
+              onClick={() => setMoMenu(true)}
+              aria-label="Thao tác khác"
+            >
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                <circle cx="5" cy="12" r="2" />
+                <circle cx="12" cy="12" r="2" />
+                <circle cx="19" cy="12" r="2" />
+              </svg>
+            </button>
+          )}
 
-          {/* Phiếu kiểm kê: Sao chép, Sửa ngay thanh dưới; đã sinh phiếu điều chỉnh thì không sửa (T657, T660) */}
+          {/* Phiếu kiểm kê: bỏ nút ba chấm, Xoá, Sao chép, Sửa ngay thanh dưới; đã sinh phiếu điều chỉnh thì không sửa (T657, T660) */}
+          {laKk && (
+            <button type="button" className="m-pb-btn-phu m-t660-nut m-t660-xoa" onClick={() => handleMenuChon('xoa')}>
+              Xoá
+            </button>
+          )}
           {laKk && (
             <button type="button" className="m-pb-btn-phu m-t660-nut" onClick={() => handleMenuChon('copy')}>
               Sao chép
@@ -1265,6 +1272,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
           )}
         </div>
       </div>
+      )}
 
       {/* Tấm trượt menu ba chấm */}
       <MChon

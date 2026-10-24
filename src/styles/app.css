@@ -41988,9 +41988,11 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
   min-width: 0;
   padding: 0 8px;
 }
+.m-pb-man .m-pb-day:has(.m-t660-nut) .m-pb-btn-phu,
 .m-pb-man .m-pb-day:has(.m-t660-nut) .m-pb-btn-sua {
   flex: 1 1 0;
   min-width: 0;
   padding: 0 8px;
   justify-content: center;
 }
+.m-pb-man .m-pb-day .m-t660-xoa { color: var(--red); }
