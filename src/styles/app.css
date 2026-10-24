@@ -41932,3 +41932,48 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
   }
   .m-t652 .m-tc-th-o-so { font-size: 14.5px; }
 }
+
+/* ── Thẻ hàng phiếu mua điện thoại hai cột, số tiền xuống dòng dưới ô (T656) ── */
+.m-t601-grid {
+  grid-template-columns: 104px minmax(0, 1fr);
+}
+.m-t601-grid > .m-t601-amt:not(.tg),
+.m-t601-grid > .m-t601-box.tien {
+  grid-column: 2;
+  margin-top: -4px;
+}
+.m-t601-grid-lbl.tg,
+.m-t601-amt.tg {
+  border-top-style: dashed;
+  border-top-color: #d1d5db;
+}
+.m-t601-dvt {
+  flex: none;
+  border: 0;
+  background: none;
+  padding: 0 0 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font: inherit;
+  color: var(--blue);
+  cursor: pointer;
+}/* Tạo mới phiếu mua: thẻ đầu gọn hơn, hai tích cùng hàng, tổng tiền ghim chân */
+.m-t655-the { padding: 12px 14px; gap: 8px; }
+.m-t655-ke { margin: 2px 0; }
+.m-t655-o { height: 38px; }
+.m-t655-ghi-chu { min-height: 38px; margin-top: 0; padding: 9px 12px; border-radius: 10px; }
+.m-t656-tich-hang { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.m-t656-tich-hang .m-t655-tich { min-height: 36px; font-size: 14px; gap: 8px; }
+.m-t656-chan { flex-wrap: wrap; row-gap: 8px; }
+.m-t656-tong {
+  flex: 0 0 100%;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  font-size: 14px;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.m-t656-tong small { font-size: 12px; color: var(--muted); }
+.m-t656-tong b { font-size: 17px; font-weight: 700; color: var(--blue); }

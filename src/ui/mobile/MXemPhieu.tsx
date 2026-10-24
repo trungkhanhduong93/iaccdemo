@@ -508,14 +508,19 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
                   <span className="lbl">Đơn giá:</span>
                   <span className="val num">{money(d.gia || 0)} đ</span>
                 </div>
-                <div className="m-t449-hang-dong">
-                  <span className="lbl">Tiền chiết khấu:</span>
-                  <span className="val num">{money(d.ck || 0)} đ</span>
-                </div>
-                <div className="m-t449-hang-dong">
-                  <span className="lbl">VAT ({vatNhan}):</span>
-                  <span className="val num">{money(d.thue || 0)} đ</span>
-                </div>
+                {/* Dòng không có số tiền thì ẩn */}
+                {Number(d.ck) > 0 && (
+                  <div className="m-t449-hang-dong">
+                    <span className="lbl">Tiền chiết khấu:</span>
+                    <span className="val num">{money(d.ck || 0)} đ</span>
+                  </div>
+                )}
+                {Number(d.thue) > 0 && (
+                  <div className="m-t449-hang-dong">
+                    <span className="lbl">VAT ({vatNhan}):</span>
+                    <span className="val num">{money(d.thue || 0)} đ</span>
+                  </div>
+                )}
                 <div className="m-t449-hang-dong">
                   <span className="lbl">Tổng tiền:</span>
                   <span className="val bold num">{money(tongDong)} đ</span>
@@ -534,14 +539,18 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
             <span>Thành tiền</span>
             <span className="num">{money(tongTien)}</span>
           </div>
-          <div className="m-t600-tong-dong">
-            <span>Tiền chiết khấu</span>
-            <span className="num">{money(tongCk)}</span>
-          </div>
-          <div className="m-t600-tong-dong">
-            <span>Tiền thuế</span>
-            <span className="num">{money(tongThue)}</span>
-          </div>
+          {tongCk > 0 && (
+            <div className="m-t600-tong-dong">
+              <span>Tiền chiết khấu</span>
+              <span className="num">{money(tongCk)}</span>
+            </div>
+          )}
+          {tongThue > 0 && (
+            <div className="m-t600-tong-dong">
+              <span>Tiền thuế</span>
+              <span className="num">{money(tongThue)}</span>
+            </div>
+          )}
           <div className="m-t600-tong-dong tong-chinh">
             <span>Tổng tiền</span>
             <span className="bold num">{money(tongThanhToan)} đ</span>

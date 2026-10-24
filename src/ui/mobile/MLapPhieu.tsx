@@ -553,30 +553,32 @@ function TheHangMua({
       <div className="m-t601-grid">
         {/* Hàng Số lượng */}
         <span className="m-t601-grid-lbl">Số lượng</span>
-        <input
-          type="text"
-          inputMode="decimal"
-          autoFocus={autoFocusSl}
-          aria-label={`Số lượng mặt hàng ${stt}`}
-          className={`m-t601-box ${dong.moi && autoFocusSl ? 'focus-moi' : ''}`}
-          value={focusSl ? strSl : String(sl)}
-          onFocus={() => {
-            setFocusSl(true)
-            setStrSl(String(sl))
-          }}
-          onChange={e => {
-            const s = goSoVN(e.target.value, true)
-            setStrSl(s)
-            handleDoiSl(docSoVN(s))
-          }}
-          onBlur={() => setFocusSl(false)}
-        />
-        <button type="button" className="m-t601-box sel" onClick={handleChuyenDvt} aria-label={`Đơn vị tính mặt hàng ${stt}`}>
-          <span>{dvt}</span>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0560a6" strokeWidth="2.5" aria-hidden="true">
-            <path d="M6 9l6 6 6-6" />
-          </svg>
-        </button>
+        <div className={`m-t601-box ${dong.moi && autoFocusSl ? 'focus-moi' : ''}`}>
+          <input
+            type="text"
+            inputMode="decimal"
+            autoFocus={autoFocusSl}
+            aria-label={`Số lượng mặt hàng ${stt}`}
+            style={{ border: 0, outline: 0, flex: 1, minWidth: 0, font: 'inherit', color: 'inherit', background: 'transparent' }}
+            value={focusSl ? strSl : String(sl)}
+            onFocus={() => {
+              setFocusSl(true)
+              setStrSl(String(sl))
+            }}
+            onChange={e => {
+              const s = goSoVN(e.target.value, true)
+              setStrSl(s)
+              handleDoiSl(docSoVN(s))
+            }}
+            onBlur={() => setFocusSl(false)}
+          />
+          <button type="button" className="m-t601-dvt" onClick={handleChuyenDvt} aria-label={`Đơn vị tính mặt hàng ${stt}`}>
+            <span>{dvt}</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+              <path d="M6 9l6 6 6-6" />
+            </svg>
+          </button>
+        </div>
 
         {/* Hàng Đơn giá */}
         <span className="m-t601-grid-lbl">Đơn giá</span>
@@ -643,7 +645,7 @@ function TheHangMua({
           </button>
         </div>
         {suaGiamTien ? (
-          <div className="m-t601-box" style={{ position: 'relative', paddingRight: 24 }}>
+          <div className="m-t601-box tien" style={{ position: 'relative', paddingRight: 24 }}>
             <input
               type="text"
               inputMode="numeric"
@@ -700,7 +702,7 @@ function TheHangMua({
           <span style={{ position: 'absolute', right: 8, fontSize: 12, color: '#9ca3af', pointerEvents: 'none' }}>%</span>
         </div>
         {suaThueTien ? (
-          <div className="m-t601-box" style={{ position: 'relative', paddingRight: 24 }}>
+          <div className="m-t601-box tien" style={{ position: 'relative', paddingRight: 24 }}>
             <input
               type="text"
               inputMode="numeric"
@@ -2325,20 +2327,37 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                     />
                     <div className="m-t655-ke" />
 
-                    <button
-                      type="button"
-                      role="checkbox"
-                      aria-checked={hinhThucTt !== 'congno'}
-                      className={`m-t655-tich ${hinhThucTt !== 'congno' ? 'on' : ''}`}
-                      onClick={() => doiHinhThucTtMua(hinhThucTt !== 'congno' ? 'congno' : 'tienmat')}
-                    >
-                      <span className="hop">
-                        {hinhThucTt !== 'congno' && (
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7" /></svg>
-                        )}
-                      </span>
-                      Đã thanh toán
-                    </button>
+                    {/* Hai tích cùng một hàng: Đã thanh toán, Nhận kèm hoá đơn (T656) */}
+                    <div className="m-t656-tich-hang">
+                      <button
+                        type="button"
+                        role="checkbox"
+                        aria-checked={hinhThucTt !== 'congno'}
+                        className={`m-t655-tich ${hinhThucTt !== 'congno' ? 'on' : ''}`}
+                        onClick={() => doiHinhThucTtMua(hinhThucTt !== 'congno' ? 'congno' : 'tienmat')}
+                      >
+                        <span className="hop">
+                          {hinhThucTt !== 'congno' && (
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7" /></svg>
+                          )}
+                        </span>
+                        Đã thanh toán
+                      </button>
+                      <button
+                        type="button"
+                        role="checkbox"
+                        aria-checked={nhanKemHd}
+                        className={`m-t655-tich ${nhanKemHd ? 'on' : ''}`}
+                        onClick={() => setNhanKemHd(v => !v)}
+                      >
+                        <span className="hop">
+                          {nhanKemHd && (
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7" /></svg>
+                          )}
+                        </span>
+                        Nhận kèm hoá đơn
+                      </button>
+                    </div>
 
                     {hinhThucTt !== 'congno' && (
                       <>
@@ -2353,11 +2372,53 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                         {loiO.quy && <div className="m-lp-loi-o m-t655-loi">{loiO.quy}</div>}
                       </>
                     )}
+                    {nhanKemHd && (
+                      <>
+                        <div className="m-t655-ke" />
+                        <div className="m-t655-hang">
+                          <span className="m-t655-nhan">Số hoá đơn <em>*</em></span>
+                          <input
+                            type="text"
+                            aria-label="Số hoá đơn"
+                            className="m-t655-o go"
+                            placeholder="Nhập số hoá đơn"
+                            inputMode="numeric"
+                            value={soHd}
+                            onChange={e => setSoHd(chuanSoHd(e.target.value))}
+                          />
+                        </div>
+                        {loiO.soHd && <div className="m-lp-loi-o m-t655-loi">{loiO.soHd}</div>}
+                        <div className="m-t655-hang">
+                          <span className="m-t655-nhan">Ký hiệu <em>*</em></span>
+                          <input
+                            type="text"
+                            aria-label="Ký hiệu hoá đơn"
+                            className="m-t655-o go"
+                            placeholder="Vd 1C26TBB"
+                            maxLength={7}
+                            value={kyHieuHd}
+                            onChange={e => setKyHieuHd(chuanKyHieuHd(e.target.value))}
+                          />
+                        </div>
+                        {loiO.kyHieuHd && <div className="m-lp-loi-o m-t655-loi">{loiO.kyHieuHd}</div>}
+                        <div className="m-t655-hang">
+                          <span className="m-t655-nhan">Ngày hoá đơn <em>*</em></span>
+                          <button type="button" className="m-t655-o" onClick={() => setMoLichHd(true)}>
+                            <span className="chu">{ngayHd || thoiGian.slice(0, 10)}</span>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                              <rect x="3" y="5" width="18" height="16" rx="2" />
+                              <path d="M3 10h18M8 3v4M16 3v4" />
+                            </svg>
+                          </button>
+                        </div>
+                        {loiO.ngayHd && <div className="m-lp-loi-o m-t655-loi">{loiO.ngayHd}</div>}
+                      </>
+                    )}
                   </div>
                 )}
 
                 {/* 4. HÀNG HOÁ, DỊCH VỤ */}
-                <div className="sec" style={{ padding: '20px 20px 8px', fontSize: 12, fontWeight: 600, letterSpacing: '.04em', color: '#6b7280', textTransform: 'uppercase', display: 'flex', justifyContent: 'space-between' }}>
+                <div className="sec" style={{ padding: '4px 20px 8px', fontSize: 12, fontWeight: 600, letterSpacing: '.04em', color: '#6b7280', textTransform: 'uppercase', display: 'flex', justifyContent: 'space-between' }}>
                   <span>Hàng hoá, dịch vụ</span>
                   <span style={{ textTransform: 'none', letterSpacing: 0, fontWeight: 400, color: '#9ca3af' }}>{dsDong.length} dòng</span>
                 </div>
@@ -2414,10 +2475,6 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                         Tổng cộng ({dsDong.length} dòng)
                       </div>
                       <div className="m-t601-tong-dong">
-                        <span className="lb">Số lượng</span>
-                        <span>{soLuong(tongSl)}</span>
-                      </div>
-                      <div className="m-t601-tong-dong">
                         <span className="lb">Thành tiền</span>
                         <span>{money(tongTien)}</span>
                       </div>
@@ -2429,76 +2486,9 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                         <span className="lb">Tiền thuế</span>
                         <span>{money(tongThue)}</span>
                       </div>
-                      <div className="m-t601-tong-dong chinh">
-                        <span>Tổng tiền</span>
-                        <span>{money(tongThanhToan)} đ</span>
-                      </div>
                     </div>
                   </div>
                 </div>
-                {/* Thông tin hoá đơn VAT khi tạo mới: công tắc nhận kèm hoá đơn (T655) */}
-                {!dangSua && (
-                  <div className="m-t655-the">
-                    <div className="m-t655-vat-dau">
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div className="m-t655-tieu">Thông tin hoá đơn VAT</div>
-                        <div className="m-t655-phu">Bật khi nhà cung cấp giao kèm hoá đơn</div>
-                      </div>
-                      <button
-                        type="button"
-                        role="switch"
-                        aria-checked={nhanKemHd}
-                        aria-label="Nhận kèm hoá đơn"
-                        className={`m-t601-sw ${nhanKemHd ? 'on' : ''}`}
-                        onClick={() => setNhanKemHd(v => !v)}
-                      >
-                        <span className="m-t601-sw-dot" />
-                      </button>
-                    </div>
-                    {nhanKemHd && (
-                      <>
-                        <div className="m-t655-ke" />
-                        <div className="m-t655-hang">
-                          <span className="m-t655-nhan">Số hoá đơn <em>*</em></span>
-                          <input
-                            type="text"
-                            aria-label="Số hoá đơn"
-                            className="m-t655-o go"
-                            placeholder="Nhập số hoá đơn"
-                            inputMode="numeric"
-                            value={soHd}
-                            onChange={e => setSoHd(chuanSoHd(e.target.value))}
-                          />
-                        </div>
-                        {loiO.soHd && <div className="m-lp-loi-o m-t655-loi">{loiO.soHd}</div>}
-                        <div className="m-t655-hang">
-                          <span className="m-t655-nhan">Ký hiệu <em>*</em></span>
-                          <input
-                            type="text"
-                            aria-label="Ký hiệu hoá đơn"
-                            className="m-t655-o go"
-                            placeholder="Vd 1C26TBB"
-                            maxLength={7}
-                            value={kyHieuHd}
-                            onChange={e => setKyHieuHd(chuanKyHieuHd(e.target.value))}
-                          />
-                        </div>
-                        {loiO.kyHieuHd && <div className="m-lp-loi-o m-t655-loi">{loiO.kyHieuHd}</div>}
-                        <div className="m-t655-hang">
-                          <span className="m-t655-nhan">Ngày hoá đơn <em>*</em></span>
-                          <button type="button" className="m-t655-o" onClick={() => setMoLichHd(true)}>
-                            <span className="chu">{ngayHd || thoiGian.slice(0, 10)}</span>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                              <rect x="3" y="5" width="18" height="16" rx="2" />
-                              <path d="M3 10h18M8 3v4M16 3v4" />
-                            </svg>
-                          </button>
-                        </div>
-                        {loiO.ngayHd && <div className="m-lp-loi-o m-t655-loi">{loiO.ngayHd}</div>}
-                      </>
-                    )}
-                  </div>
-                )}
               </>
             )}
 
@@ -2688,7 +2678,14 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
       </div>
 
       {/* ── CHÂN GHIM ĐÁY ── */}
-      <div className={nhom === 'mua' ? 'm-t600-chan-day' : 'm-pb-day'}>
+      <div className={nhom === 'mua' ? 'm-t600-chan-day m-t656-chan' : 'm-pb-day'}>
+        {/* Tổng tiền ghim ở chân khi tạo mới, sửa phiếu mua (T656) */}
+        {nhom === 'mua' && (
+          <div className="m-t656-tong">
+            <span>Tổng tiền <small>({dsDong.length} dòng)</small></span>
+            <b>{money(tongThanhToan)} đ</b>
+          </div>
+        )}
         <button
           type="button"
           className={nhom === 'mua' ? 'm-t600-btn-huy' : 'm-pb-btn-phu'}
@@ -3166,7 +3163,6 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
           setKho(v)
           if (loiO.kho) setLoiO(l => { const n = { ...l }; delete n.kho; return n })
         }}
-        apDung
         tim
       />
 
