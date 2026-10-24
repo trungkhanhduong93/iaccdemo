@@ -220,10 +220,9 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
         tkCo: d.tkCo || (isChi ? '1111' : '131'),
       }))
     }
-    // T650: phiếu mới có mục Chi tiết thì chưa có dòng nào, bấm Thêm dòng để nhập
-    if (!isCq) return []
+    // T650: phiếu mới luôn có sẵn 1 dòng chi tiết, diễn giải theo ghi chú
     return [{
-      ten: '',
+      ten: ghiChu,
       sl: 1,
       gia: soTien,
       tien: soTien,
@@ -507,8 +506,8 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
     setDiaChi('')
     setNguoiGiaoDich('')
     setGhiChu(lyDo)
-    setDsDong(!isCq ? [] : [{
-      ten: '',
+    setDsDong([{
+      ten: lyDo,
       sl: 1,
       gia: 0,
       tien: 0,

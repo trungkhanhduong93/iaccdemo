@@ -18,6 +18,7 @@
 - Thu gọn theo góp ý PhuongXT: dòng chi tiết bỏ nền xanh khi mới thêm, ô cao 38px, thẻ hẹp lề hơn, cột nhãn 112px, "Thêm thông tin dòng" thành một dòng chữ nhỏ. Phiếu tạo mới ghim Tổng cộng trên nút Lưu, phiếu sửa giữ Tổng cộng cuối thẻ Chi tiết. Đã thử kiểu số thứ tự cạnh ô số tiền, PhuongXT chọn giữ Dòng 1, Dòng 2.
 - Dòng vàng "Đang chỉnh sửa · 1 thay đổi chưa lưu" chỉ hiện khi sửa phiếu đã có; tạo mới không hiện.
 - Đầu dòng "Dòng n" kèm nút xoá chỉ hiện khi có từ 2 dòng chi tiết.
+- Phiếu mới (kể cả bấm Lập mới) có sẵn 1 dòng chi tiết, diễn giải theo ghi chú; bỏ cách để trống chờ bấm Thêm dòng.
 
 ## Đã kiểm
 
