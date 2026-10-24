@@ -653,8 +653,8 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
         <div className="m-tc-nav-khoang-trong" />
       </header>
 
-      {/* Dòng trạng thái chỉnh sửa */}
-      {daSua && (
+      {/* Dòng trạng thái chỉnh sửa: chỉ khi sửa phiếu đã có, tạo mới thì không hiện */}
+      {dangSua && daSua && (
         <div className="m-tc-trang-thai-sua">
           <span className="cham" />
           <span>Đang chỉnh sửa · 1 thay đổi chưa lưu</span>

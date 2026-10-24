@@ -16,6 +16,7 @@
 
 - Bổ sung theo góp ý PhuongXT: Ghi chú mặc định theo lý do (đổi lý do thì ghi chú đổi theo nếu chưa gõ khác). Diễn giải dòng mặc định theo ghi chú: dòng trống hoặc đang giống ghi chú thì đổi theo, dòng đã gõ riêng giữ nguyên, dòng thêm mới lấy ghi chú. Nhãn Người nộp đổi thành Người giao dịch, cả ở form lập và màn lưu thành công.
 - Thu gọn theo góp ý PhuongXT: dòng chi tiết bỏ nền xanh khi mới thêm, ô cao 38px, thẻ hẹp lề hơn, cột nhãn 112px, "Thêm thông tin dòng" thành một dòng chữ nhỏ. Phiếu tạo mới ghim Tổng cộng trên nút Lưu, phiếu sửa giữ Tổng cộng cuối thẻ Chi tiết. Đã thử kiểu số thứ tự cạnh ô số tiền, PhuongXT chọn giữ Dòng 1, Dòng 2.
+- Dòng vàng "Đang chỉnh sửa · 1 thay đổi chưa lưu" chỉ hiện khi sửa phiếu đã có; tạo mới không hiện.
 
 ## Đã kiểm
 
