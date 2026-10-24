@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState, type FC } from 'react'
 import { fold, money } from '../format'
 import { Icon } from '../Icon'
 import { CUA_HANG } from '../../data/mock'
-import { useSession } from '../../app/session'
+import { ghiNhatKy, soKeTiep, suaPhieu, themPhieu, type PhieuTt } from '../generic/daXoa'
+import { MAN_THU_CHI, TEN_CT_TT, TIEN_TO_CT_TT } from '../generic/ChungTuForm'
 
 export interface QuyMau {
   k: string
@@ -45,6 +46,70 @@ export const DS_QUY_MAU: QuyMau[] = [
   { k: 'VPBank, chi nhánh Quận 1', ten: 'VPBank, chi nhánh Quận 1', loai: 'nh', soDu: 3320000 },
 ]
 
+export interface ThongTinTt {
+  hinhThuc: 'tienmat' | 'chuyenkhoan'
+  quy: string
+  ngay: string
+  soTien: number
+  dienGiai: string
+}
+
+// Lập luôn phiếu chi tiền mặt hoặc uỷ nhiệm chi trả nhà cung cấp, ghi vào thanh toán của phiếu mua (T655)
+export function lapPhieuChiTraNcc(tt: ThongTinTt, mua: {
+  man: string
+  id: string
+  so: string
+  di: string
+  dsTtCu: PhieuTt[]
+  cn: unknown
+  doiTuong: string
+  diaChi: string
+  nguoiGiaoDich: string
+  goi: string
+  ai: string
+}): string {
+  const loai = tt.hinhThuc === 'tienmat' ? 'chi' : 'unc'
+  const lyDo = 'Thanh Toán Công Nợ Nhà Cung Cấp'
+  const so = soKeTiep(MAN_THU_CHI, `${TIEN_TO_CT_TT[loai]}2610-`)
+  const id = `phieu-${Date.now()}`
+  themPhieu(MAN_THU_CHI, {
+    id,
+    so,
+    loai,
+    tenLoai: TEN_CT_TT[loai],
+    ngay: tt.ngay,
+    thang: Number(tt.ngay.split('/')[1]) || 10,
+    cn: mua.cn,
+    doiTuong: mua.doiTuong,
+    _diaChi: mua.diaChi,
+    _nguoiGiao: mua.nguoiGiaoDich,
+    _quy: tt.quy,
+    _lyDo: lyDo,
+    _ghiChu: tt.dienGiai,
+    dienGiai: tt.dienGiai,
+    tien: tt.soTien,
+    tong: tt.soTien,
+    _dong: [{
+      ten: tt.dienGiai,
+      ly: lyDo,
+      tien: tt.soTien,
+      gia: tt.soTien,
+      ...(mua.goi !== 'S' ? { tkNo: '331', tkCo: loai === 'chi' ? '1111' : '1121' } : {}),
+    }],
+    tt: mua.goi === 'S' ? 'ghi' : 'nhap',
+    nguon: 'tay',
+    _thamChieu: mua.so,
+    _thamChieuDi: mua.di,
+  }, mua.ai)
+  ghiNhatKy(MAN_THU_CHI, id, so, mua.ai, `Lập mới chứng từ ${so}`)
+  suaPhieu(mua.man, mua.id, {
+    _dsTt: [...mua.dsTtCu, { id, so, loai, tien: tt.soTien, ngay: tt.ngay, quy: tt.quy }],
+    _httt: 'congno',
+  })
+  ghiNhatKy(mua.man, mua.id, mua.so, mua.ai, `Thanh toán ${money(tt.soTien)} bằng ${so}`)
+  return so
+}
+
 export interface MThanhToanNgayProps {
   mo: boolean
   onDong: () => void
@@ -56,13 +121,7 @@ export interface MThanhToanNgayProps {
   conNo?: number
   conLai?: number
   ngayMacDinh?: string
-  onLapPhieuChi: (thongTin: {
-    hinhThuc: 'tienmat' | 'chuyenkhoan'
-    quy: string
-    ngay: string
-    soTien: number
-    dienGiai: string
-  }) => void
+  onLapPhieuChi: (thongTin: ThongTinTt) => void
 }
 
 export const MThanhToanNgay: FC<MThanhToanNgayProps> = ({
@@ -78,8 +137,6 @@ export const MThanhToanNgay: FC<MThanhToanNgayProps> = ({
   ngayMacDinh,
   onLapPhieuChi,
 }) => {
-  const { s } = useSession()
-  const isStandard = s.goi === 'S' // QD22, QD27, T630: gói Standard khoá ô số tiền
   const soCtHienThi = soPhieu || soCt || ''
   const chHienThi = cuaHang || cuaHangTen || 'Phố Mây Nguyễn Trãi'
   const tienNo = conNo ?? conLai ?? 0
@@ -136,7 +193,8 @@ export const MThanhToanNgay: FC<MThanhToanNgayProps> = ({
   if (!mo) return null
 
   const handleLap = () => {
-    const soTienThuc = isStandard ? tienNo : tienSheet
+    // Mọi gói đều sửa được số tiền, không vượt số còn phải trả (T655, thay khoá gói Standard của T630)
+    const soTienThuc = tienSheet
     if (soTienThuc <= 0 || soTienThuc > tienNo || !quySheet) return
     onLapPhieuChi({
       hinhThuc: htSheet,
@@ -228,18 +286,17 @@ export const MThanhToanNgay: FC<MThanhToanNgayProps> = ({
                 <input
                   type="text"
                   className="m-t600-inp"
-                  readOnly={isStandard}
+                  inputMode="numeric"
+                  aria-label="Số tiền thanh toán"
                   style={{
                     textAlign: 'right',
                     fontWeight: 600,
-                    color: isStandard ? 'var(--muted)' : 'var(--blue)',
-                    background: isStandard ? 'var(--giay-ke)' : undefined,
-                    cursor: isStandard ? 'not-allowed' : undefined,
+                    color: 'var(--blue)',
                     fontVariantNumeric: 'tabular-nums',
                     fontSize: 16,
                   }}
-                  value={money(isStandard ? tienNo : tienSheet)}
-                  onChange={isStandard ? undefined : e => setTienSheet(Number(e.target.value.replace(/\D/g, '')) || 0)}
+                  value={money(tienSheet)}
+                  onChange={e => setTienSheet(Number(e.target.value.replace(/\D/g, '')) || 0)}
                 />
               </div>
             </div>
@@ -256,7 +313,7 @@ export const MThanhToanNgay: FC<MThanhToanNgayProps> = ({
             </div>
 
             <div style={{ fontSize: 12, color: 'var(--muted)', lineHeight: 1.5 }}>
-              Còn phải trả {money(tienNo)} đ. Trả một phần thì sửa Số tiền. Bấm Lập phiếu sẽ mở màn phiếu {htSheet === 'tienmat' ? 'chi tiền mặt' : 'chi ngân hàng'} bên Thu chi, điền sẵn các ô trên.
+              Còn phải trả {money(tienNo)} đ. Trả một phần thì sửa Số tiền. Bấm Lập phiếu là lập ngay phiếu {htSheet === 'tienmat' ? 'chi tiền mặt' : 'chi ngân hàng'} bên Thu chi, không phải điền lại.
             </div>
             {tienSheet <= 0 && <div style={{ fontSize: 12, color: 'var(--red)' }}>Số tiền phải lớn hơn 0</div>}
             {tienSheet > tienNo && (
@@ -276,7 +333,7 @@ export const MThanhToanNgay: FC<MThanhToanNgayProps> = ({
             <button
               type="button"
               className="m-t601-btn-foot-pri"
-              disabled={(isStandard ? tienNo : tienSheet) <= 0 || (isStandard ? tienNo : tienSheet) > tienNo || !quySheet}
+              disabled={tienSheet <= 0 || tienSheet > tienNo || !quySheet}
               onClick={handleLap}
             >
               {htSheet === 'tienmat' ? 'Lập phiếu chi tiền mặt' : 'Lập uỷ nhiệm chi'}
@@ -293,7 +350,7 @@ export const MThanhToanNgay: FC<MThanhToanNgayProps> = ({
               <div>
                 <h2 className="m-tam-tieu">{htSheet === 'tienmat' ? 'Chọn quỹ tiền mặt' : 'Chọn quỹ ngân hàng'}</h2>
                 <div style={{ fontSize: 13, color: 'var(--muted)', marginTop: 2 }}>
-                  Cửa hàng {chHienThi} · cần trả <b style={{ color: 'var(--ink)' }}>{money(isStandard ? tienNo : tienSheet)} đ</b>
+                  Cửa hàng {chHienThi} · cần trả <b style={{ color: 'var(--ink)' }}>{money(tienSheet)} đ</b>
                 </div>
               </div>
               <button type="button" className="m-tam-dong-btn" onClick={() => setMoBangChonQuy(false)} aria-label="Đóng">

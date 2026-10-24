@@ -26,7 +26,7 @@ import { MTrong } from './MTrong'
 import { chieuTien } from './chieuTien'
 import { tinhButToan } from './butToan'
 import { MDtThuChiXem } from './MDtThuChiXem'
-import { MThanhToanNgay } from './MThanhToanNgay'
+import { MThanhToanNgay, lapPhieuChiTraNcc, type ThongTinTt } from './MThanhToanNgay'
 
 export interface MXemPhieuProps extends ScreenProps {
   id?: string
@@ -34,22 +34,6 @@ export interface MXemPhieuProps extends ScreenProps {
 
 // Dòng thu chi lưu mã khoản mục, bản máy tính hiện tên
 const tenKm = (ma: string) => KHOAN_MUC.find(x => x.ma === ma)?.ten ?? ma
-
-const DIA_CHI_NCC: Record<string, string> = {
-  'Công ty TNHH Thực phẩm Tươi An Phú': '12 Nguyễn Thị Định, An Phú, TP. Thủ Đức',
-  'Công ty CP Rau sạch Đà Lạt Farm': 'Lô B3, KCN Đức Trọng, Lâm Đồng',
-  'Công ty TNHH Bao bì & In ấn Sài Gòn': '45 Đường số 7, KCN Tân Bình, Tân Phú',
-  'Công ty CP Sữa Quốc Tế (IDP)': '217 Nguyễn Văn Thủ, Đa Kao, Quận 1',
-  'Công ty TNHH Rượu & Nước giải khát Tân Hiệp Phát': '219 Đại lộ Bình Dương, Thuận An, Bình Dương',
-}
-
-const NGUOI_GD_NCC: Record<string, string> = {
-  'Công ty TNHH Thực phẩm Tươi An Phú': 'Trần Văn Bình',
-  'Công ty CP Rau sạch Đà Lạt Farm': 'Nguyễn Thị Hoa',
-  'Công ty TNHH Bao bì & In ấn Sài Gòn': 'Lê Hoàng Nam',
-  'Công ty CP Sữa Quốc Tế (IDP)': 'Phạm Minh Tuấn',
-  'Công ty TNHH Rượu & Nước giải khát Tân Hiệp Phát': 'Đặng Quốc Huy',
-}
 
 // Tính số ngày còn lại của hạn thanh toán
 function tinhSoNgayCon(hanTtStr?: string): string {
@@ -201,11 +185,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
       khoMacDinh,
   )
 
-  const diaChiHienThi = String(row._diaChi ?? DIA_CHI_NCC[String(row.doiTuong ?? '')] ?? nv?.dc ?? '')
-  const mstHienThi = String(row._mst ?? nv?.mst ?? '')
-  const nguoiGiaoDichHienThi = String(row._nguoiGiao ?? row._nguoi ?? NGUOI_GD_NCC[String(row.doiTuong ?? '')] ?? nv?.nguoi ?? '')
   const nhanKemHd = row._nhanKemHd !== undefined ? Boolean(row._nhanKemHd) : Boolean(row._soHd || nv?.soHd)
-  const tongSl = useMemo(() => dsDong.reduce((a, d) => a + (Number(d.sl) || 0), 0), [dsDong])
 
   // Tính tổng
   const tongTien = dsDong.reduce((a, d) => a + (Number(d.tien) || 0), 0)
@@ -281,41 +261,23 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
     return ds
   }, [dsTt, row, path])
 
-  // Lập thanh toán từ sheet sang màn lập phiếu chi điền sẵn (T610)
-  const handleLapPhieuChi = (tt: {
-    hinhThuc: 'tienmat' | 'chuyenkhoan'
-    quy: string
-    ngay: string
-    soTien: number
-    dienGiai: string
-  }) => {
+  // Thanh toán từ sheet: lập luôn phiếu chi hoặc uỷ nhiệm chi, không mở form điền lại (T655, thay T610)
+  const handleLapPhieuChi = (tt: ThongTinTt) => {
     setMoThanhToan(false)
-    const loaiMoi = tt.hinhThuc === 'tienmat' ? 'chi' : 'unc'
-    const diaChi = String(row.diaChi ?? row._diaChi ?? '')
-    const nguoiGiaoDich = String(row._nguoiGiao ?? row._nguoi ?? '')
-    const man = `${mod.key}/${sc.slug}`
-    nav(`/app/tien/2-1-1/moi?loai=${loaiMoi}`, {
-      state: {
-        dienSan: {
-          loai: loaiMoi,
-          quy: tt.quy,
-          ngay: tt.ngay,
-          soTien: tt.soTien,
-          doiTuong: String(row.doiTuong ?? ''),
-          diaChi,
-          nguoiGiaoDich,
-          lyDo: 'Thanh Toán Công Nợ Nhà Cung Cấp',
-          dienGiai: tt.dienGiai,
-          thamChieuSo: soCt,
-          thamChieuDi: `${path}/${row.id}`,
-          veGoc: `${path}/${row.id}`,
-          manMua: man,
-          idMua: String(row.id),
-          soMua: soCt,
-          dsTtCu: dsTt,
-        }
-      }
+    const soMoi = lapPhieuChiTraNcc(tt, {
+      man: `${mod.key}/${sc.slug}`,
+      id: String(row.id),
+      so: soCt,
+      di: `${path}/${row.id}`,
+      dsTtCu: dsTt,
+      cn: row.cn,
+      doiTuong: String(row.doiTuong ?? ''),
+      diaChi: String(row.diaChi ?? row._diaChi ?? ''),
+      nguoiGiaoDich: String(row._nguoiGiao ?? row._nguoi ?? ''),
+      goi: s.goi,
+      ai: s.ten,
     })
+    toast(`Đã lập ${soMoi}, trả ${money(tt.soTien)} đ`)
   }
 
   // Tên loại phiếu và số phiếu
@@ -348,12 +310,12 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
     if (nhomMb === 'mua') {
       if (kieu === 'khong') {   // gói Standard, Plus hộ kinh doanh không có tab bút toán (QD81)
         return [
-          { k: 'chitiet' as TabKey, ten: 'Phiếu nhập' },
+          { k: 'chitiet' as TabKey, ten: 'Chi tiết' },
           { k: 'lichsu' as TabKey, ten: 'Lịch sử' },
         ]
       }
       return [
-        { k: 'chitiet' as TabKey, ten: 'Phiếu nhập' },
+        { k: 'chitiet' as TabKey, ten: 'Chi tiết' },
         { k: 'buttoan' as TabKey, ten: 'Hạch toán' },
         { k: 'lichsu' as TabKey, ten: 'Lịch sử' },
       ]
@@ -428,7 +390,6 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
   const dsMenu = laDc
     ? [{ k: 'excel', ten: 'Xuất Excel' }]   // phiếu điều chỉnh chỉ xuất Excel (T603)
     : [
-        ...(nhomMb === 'mua' ? [{ k: 'lichsu_tt', ten: 'Lịch sử thanh toán' }] : []),
         ...(nhomMb !== 'mua' ? [{ k: 'sua', ten: 'Sửa chứng từ' }] : []),
         { k: 'copy', ten: 'Sao chép chứng từ' },
         { k: 'xoa', ten: 'Xoá chứng từ' },
@@ -570,10 +531,6 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
             <span>Tổng cộng ({dsDong.length} dòng)</span>
           </div>
           <div className="m-t600-tong-dong">
-            <span>Số lượng</span>
-            <span className="bold num">{tongSl}</span>
-          </div>
-          <div className="m-t600-tong-dong">
             <span>Thành tiền</span>
             <span className="num">{money(tongTien)}</span>
           </div>
@@ -655,24 +612,17 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
 
         {/* 1. THẺ TỔNG QUAN (A2) */}
         {nhomMb === 'mua' ? (
-          <div className="m-t600-the-dau">
-            <div className="m-t600-chip-hang">
-              <span className={`m-t600-chip-tt ${chipTt?.kieu || 'chua'}`}>
-                {chipTt?.ten || 'Chưa thanh toán'}
-              </span>
-              <span className="m-t600-chip-nguon">
-                {row.nguon === 'excel' ? 'Excel' : row.nguon === 'pos' ? 'POS' : 'Thủ công'}
-              </span>
-            </div>
-
-            <div className="m-t600-ncc-ten">{String(row.doiTuong || 'Nhà cung cấp')}</div>
-
-            <div className="m-t600-cua-hang-dong">
-              <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="1.8" fill="none">
+          <div className="m-t600-the-dau m-t655-dau">
+            {/* Hàng đầu như chi tiết thu chi: cửa hàng bên trái, nguồn bên phải; bỏ chip trạng thái và tên nhà cung cấp (T655) */}
+            <div className="m-tc-xem-dong-cn">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
                 <polyline points="9 22 9 12 15 12 15 22" />
               </svg>
               <span>{cuaHangTen}</span>
+              <span className="m-tc-badge-nguon m-tc-xem-nguon">
+                {row.nguon === 'excel' ? 'Excel' : row.nguon === 'pos' ? 'POS' : 'Thủ công'}
+              </span>
             </div>
 
             <div>
@@ -910,62 +860,19 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
               </>
             ) : nhomMb === 'mua' ? (
               <>
-                {/* A4: KHỐI 1 - NHÀ CUNG CẤP */}
-                <div className="m-pb-nhom">NHÀ CUNG CẤP</div>
-                <div className="m-pb-the m-pb-the-gon">
+                {/* Thông tin chung: gộp nhà cung cấp với ngày, kho, ghi chú; bỏ số phiếu nhập (T655) */}
+                <div className="m-pb-nhom">THÔNG TIN CHUNG</div>
+                <div className="m-pb-the m-pb-the-gon m-t655-gon">
                   <div className="m-pb-dong">
-                    <span className="n">Nhà cung cấp <span className="m-t600-sao">*</span></span>
+                    <span className="n">Nhà cung cấp</span>
                     <span className="g bold">{String(row.doiTuong || '')}</span>
                   </div>
-                  {diaChiHienThi && (
-                    <div className="m-pb-dong">
-                      <span className="n">Địa chỉ</span>
-                      <span className="g">{diaChiHienThi}</span>
-                    </div>
-                  )}
-                  {mstHienThi && (
-                    <div className="m-pb-dong">
-                      <span className="n">Mã số thuế</span>
-                      <span className="g">{mstHienThi}</span>
-                    </div>
-                  )}
-                  {nguoiGiaoDichHienThi && (
-                    <div className="m-pb-dong">
-                      <span className="n">Người giao dịch</span>
-                      <span className="g">{nguoiGiaoDichHienThi}</span>
-                    </div>
-                  )}
-                </div>
-
-                {/* A4: KHỐI 2 - HOÁ ĐƠN & NHẬP KHO */}
-                <div className="m-pb-nhom">HOÁ ĐƠN & NHẬP KHO</div>
-                <div className="m-pb-the m-pb-the-gon">
-                  {nhanKemHd && (
-                    <>
-                      <div className="m-pb-dong">
-                        <span className="n">Số hoá đơn <span className="m-t600-sao">*</span></span>
-                        <span className="g">{soHd}</span>
-                      </div>
-                      <div className="m-pb-dong">
-                        <span className="n">Ký hiệu <span className="m-t600-sao">*</span></span>
-                        <span className="g">{kyHieuHd}</span>
-                      </div>
-                      <div className="m-pb-dong">
-                        <span className="n">Ngày hoá đơn <span className="m-t600-sao">*</span></span>
-                        <span className="g">{ngayHd}</span>
-                      </div>
-                    </>
-                  )}
                   <div className="m-pb-dong">
-                    <span className="n">Ngày chứng từ <span className="m-t600-sao">*</span></span>
+                    <span className="n">Ngày chứng từ</span>
                     <span className="g">{row.ngay}</span>
                   </div>
                   <div className="m-pb-dong">
-                    <span className="n">Số phiếu nhập</span>
-                    <span className="g">{soCt}</span>
-                  </div>
-                  <div className="m-pb-dong">
-                    <span className="n">Kho nhập <span className="m-t600-sao">*</span></span>
+                    <span className="n">Kho nhập</span>
                     <span className="g">{kho}</span>
                   </div>
                   {(row.dienGiai || row._ghiChu) && (
@@ -994,6 +901,27 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
                     </div>
                   )}
                 </div>
+
+                {/* Thông tin hoá đơn tách riêng khi phiếu nhận kèm hoá đơn (T655) */}
+                {nhanKemHd && (
+                  <>
+                    <div className="m-pb-nhom">THÔNG TIN HOÁ ĐƠN</div>
+                    <div className="m-pb-the m-pb-the-gon m-t655-gon">
+                      <div className="m-pb-dong">
+                        <span className="n">Số hoá đơn</span>
+                        <span className="g">{soHd}</span>
+                      </div>
+                      <div className="m-pb-dong">
+                        <span className="n">Ký hiệu</span>
+                        <span className="g">{kyHieuHd}</span>
+                      </div>
+                      <div className="m-pb-dong">
+                        <span className="n">Ngày hoá đơn</span>
+                        <span className="g">{ngayHd}</span>
+                      </div>
+                    </div>
+                  </>
+                )}
 
                 {renderDsHangHoaMua()}
               </>

@@ -130,12 +130,7 @@ export const MDtThuChiXem: FC<MDtThuChiXemProps> = ({
       <main className="m-tc-xem-content">
         {/* 1. Card Tóm tắt phiếu theo Figma MB04 */}
         <section className="m-tc-xem-the-tom-tat">
-          <div className="m-tc-xem-badges">
-            <span className={`m-tc-badge-loai m-ct-chip ${isChi ? 'chi' : isThu ? 'thu' : 'cq'}`}>
-              {tenLoaiPhieu}
-            </span>
-          </div>
-
+          {/* Bỏ chip loại phiếu, tên loại đã có trên thanh đầu (T655) */}
           <div className="m-tc-xem-dong-cn">
             <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
               <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />

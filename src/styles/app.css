@@ -41788,3 +41788,112 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
 .m-t653-tien.thu { color: var(--green); }
 .m-t653-tien.chi { color: var(--red); }
 .m-t653-tien.cq { color: var(--ink); }
+
+/* ── Tạo mới phiếu mua hàng điện thoại: nhãn trái ô phải, tích Đã thanh toán (T655) ── */
+.m-t655-the {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.m-t655-chip-hang { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.m-t655-cua-hang {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 28px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  font-size: 12px;
+  color: var(--muted);
+  cursor: pointer;
+}
+.m-t655-ke { height: 1px; background: #eeeeee; margin: 4px 0; }
+.m-t655-hang { display: grid; grid-template-columns: 120px minmax(0, 1fr); align-items: center; gap: 10px; }
+.m-t655-nhan { font-size: 14px; color: var(--ink); line-height: 1.3; }
+.m-t655-nhan em { color: #c2362b; font-style: normal; }
+.m-t655-o {
+  box-sizing: border-box;
+  width: 100%;
+  height: 42px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 0 10px 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  background: #fff;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--blue);
+  text-align: right;
+  cursor: pointer;
+}
+.m-t655-o .chu { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.m-t655-o .goi { flex: 1; min-width: 0; color: var(--muted); }
+.m-t655-o svg { flex: none; }
+.m-t655-o.go { color: var(--ink); cursor: text; outline: none; }
+.m-t655-o.go::placeholder { color: var(--muted); }
+.m-t655-loi { text-align: right; margin-top: -4px; }
+.m-t655-ghi-chu {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 52px;
+  margin-top: 4px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 14px;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--ink);
+  resize: none;
+  outline: none;
+}
+.m-t655-tich {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  font-size: 15px;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+.m-t655-tich .hop {
+  box-sizing: border-box;
+  width: 22px;
+  height: 22px;
+  flex: none;
+  border: 1.5px solid #9ca3af;
+  border-radius: 6px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.m-t655-tich.on .hop { border-color: var(--blue); background: var(--blue); color: #fff; }
+.m-t655-so-du { font-size: 12px; color: var(--muted); text-align: right; margin-top: -4px; }
+.m-t655-vat-dau { display: flex; align-items: center; gap: 12px; }
+.m-t655-tieu { font-size: 15px; font-weight: 700; color: var(--ink); }
+.m-t655-phu { font-size: 12px; color: var(--muted); margin-top: 2px; }
+/* Chi tiết phiếu mua: khối Thông tin chung, Thông tin hoá đơn gọn hơn, nhãn không xuống dòng */
+.m-pb-the-gon.m-t655-gon { padding: 2px 14px; }
+.m-t655-gon .m-pb-dong { min-height: 34px; padding: 6px 0; font-size: 13.5px; align-items: flex-start; }
+.m-t655-gon .m-pb-dong .n { white-space: nowrap; flex: none; }
+/* Chi tiết phiếu mua: thẻ tổng tiền đầu màn gọn hơn */
+.m-t600-the-dau.m-t655-dau { padding: 12px 14px; gap: 6px; }
+.m-t655-dau .m-t600-tong-tien-so { font-size: 26px; }
+.m-t655-dau .m-t600-khung-tt { padding: 8px 10px; gap: 6px; margin-top: 2px; }
+.m-t655-dau .m-t600-tt-tien-do-khu { gap: 4px; }

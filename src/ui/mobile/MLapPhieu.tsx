@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type FC } from 'react'
+import { Fragment, useEffect, useMemo, useState, type FC } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import type { Row, ScreenProps } from '../../modules/types'
 import { dongCua, tkTheoLyDo, ttNghiepVu, type Dong } from '../generic/gen'
@@ -11,7 +11,7 @@ import { DS_DOI_TUONG } from '../generic/BangSua'
 import { ghiNhatKy, soKeTiep, suaPhieu, themPhieu, soDaTra, dsTtCon, ttTienTheoTra, type PhieuTt } from '../generic/daXoa'
 import { MLichSu } from './MLichSu'
 import { MThanhCong, type DongTomTat } from './MThanhCong'
-import { MThanhToanNgay } from './MThanhToanNgay'
+import { MThanhToanNgay, lapPhieuChiTraNcc, type ThongTinTt } from './MThanhToanNgay'
 import { soLuong } from '../format'
 import { MAN_THU_CHI, QUY_TIEN, TEN_CT_TT, TIEN_TO_CT_TT } from '../generic/ChungTuForm'
 import { useDongChungTu } from '../generic/VoucherScreen'
@@ -1203,47 +1203,30 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
   }
 
   // Lập thanh toán từ sheet MThanhToanNgay sang màn lập phiếu chi điền sẵn (T610, T630)
-  const handleLapPhieuChiTuMThanhToan = (tt: {
-    hinhThuc: 'tienmat' | 'chuyenkhoan'
-    quy: string
-    ngay: string
-    soTien: number
-    dienGiai: string
-  }) => {
+  // Thanh toán ở màn sửa: lưu thay đổi, lập luôn phiếu chi rồi về màn xem phiếu mua (T655, thay T610)
+  const handleLapPhieuChiTuMThanhToan = (tt: ThongTinTt) => {
     setMoThanhToan(false)
-    const loaiMoi = tt.hinhThuc === 'tienmat' ? 'chi' : 'unc'
+    if (!dangSua || !row) return
     const man = `${mod.key}/${sc.slug}`
-    const idLuu = dangSua && row ? String(row.id) : `moi-${Date.now()}`
-    const soCtLuu = dangSua && row ? String(row.so) : soCtDuKien
-
-    if (dangSua && row) {
-      const noiDungMua = dungNoiDungPhieuMua()
-      suaPhieu(man, idLuu, noiDungMua)
-      ghiNhatKy(man, idLuu, soCtLuu, s.ten, 'Sửa chứng từ')
-    }
-
-    nav(`/app/tien/2-1-1/moi?loai=${loaiMoi}`, {
-      state: {
-        dienSan: {
-          loai: loaiMoi,
-          quy: tt.quy,
-          ngay: tt.ngay,
-          soTien: tt.soTien,
-          doiTuong,
-          diaChi,
-          nguoiGiaoDich,
-          lyDo: 'Thanh Toán Công Nợ Nhà Cung Cấp',
-          dienGiai: tt.dienGiai,
-          thamChieuSo: soCtLuu,
-          thamChieuDi: `${path}/${idLuu}`,
-          veGoc: `${path}/${idLuu}`,
-          manMua: man,
-          idMua: idLuu,
-          soMua: soCtLuu,
-          dsTtCu: (gocData?._dsTt as PhieuTt[] | undefined) ?? [],
-        }
-      }
+    const idLuu = String(row.id)
+    const soCtLuu = String(row.so)
+    suaPhieu(man, idLuu, dungNoiDungPhieuMua())
+    ghiNhatKy(man, idLuu, soCtLuu, s.ten, 'Sửa chứng từ')
+    const soMoi = lapPhieuChiTraNcc(tt, {
+      man,
+      id: idLuu,
+      so: soCtLuu,
+      di: `${path}/${idLuu}`,
+      dsTtCu: (gocData?._dsTt as PhieuTt[] | undefined) ?? [],
+      cn: cuaHang,
+      doiTuong,
+      diaChi,
+      nguoiGiaoDich,
+      goi: s.goi,
+      ai: s.ten,
     })
+    toast(`Đã lập ${soMoi}, trả ${money(tt.soTien)} đ`)
+    nav(`${path}/${idLuu}`, { replace: true })
   }
 
   // Bút toán hạch toán
@@ -1965,7 +1948,8 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
         {/* ════ PHIẾU MUA HÀNG (T600 / T601) ════ */}
         {nhom === 'mua' ? (
           <>
-            {/* 1. Thẻ đầu tổng quan */}
+            {/* 1. Thẻ đầu tổng quan (màn sửa; tạo mới dùng thẻ T655 trong tab Phiếu nhập) */}
+            {dangSua && (
             <div className="m-t600-the-dau">
                   {/* Hàng chip */}
                   <div className="m-t600-chip-hang">
@@ -2090,6 +2074,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                     )}
                   </div>
                 </div>
+            )}
 
             {/* ── TABS CHO PHIẾU MUA HÀNG (T600 B3, T609-1, T609-2; T639: chỉ hiện khi sửa) ── */}
             {dangSua && (
@@ -2127,6 +2112,8 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
 
             {tabMua === 'phieu' && (
               <>
+                {dangSua ? (
+                <>
                 {/* 2. Khối NHÀ CUNG CẤP */}
                 <div className="m-t600-nhom-tieu">NHÀ CUNG CẤP</div>
                 <div className="m-t600-card-nhap">
@@ -2281,6 +2268,93 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                     />
                   </div>
                 </div>
+                </>
+                ) : (
+                  /* Thẻ đầu tạo mới phiếu mua: nhãn trái, ô chọn phải, tích Đã thanh toán (T655) */
+                  <div className="m-t655-the">
+                    <div className="m-t655-chip-hang">
+                      <span className={`m-t600-chip-tt ${hinhThucTt !== 'congno' ? 'da' : 'chua'}`}>
+                        {hinhThucTt !== 'congno' ? 'Đã thanh toán' : 'Chưa thanh toán'}
+                      </span>
+                      <span className="m-t600-chip-nguon">
+                        {gocData?.nguon === 'excel' || gocData?.nguon === 'HĐ' ? 'Excel' : 'Thủ công'}
+                      </span>
+                      <button type="button" className="m-t655-cua-hang" onClick={() => setMoChonCn(true)}>
+                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" strokeWidth="1.8" fill="none" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                          <polyline points="9 22 9 12 15 12 15 22" />
+                        </svg>
+                        <span>{cuaHang || 'Chọn cửa hàng'}</span>
+                      </button>
+                    </div>
+                    <div className="m-t655-ke" />
+
+                    <div className="m-t655-hang">
+                      <span className="m-t655-nhan">Nhà cung cấp <em>*</em></span>
+                      <button type="button" className="m-t655-o" id="m-lp-o-doiTuong" onClick={() => setMoChonDt(true)}>
+                        <span className={doiTuong ? 'chu' : 'goi'}>{doiTuong || 'Chọn nhà cung cấp'}</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+                      </button>
+                    </div>
+                    {loiO.doiTuong && <div className="m-lp-loi-o m-t655-loi">{loiO.doiTuong}</div>}
+
+                    <div className="m-t655-hang">
+                      <span className="m-t655-nhan">Kho nhập <em>*</em></span>
+                      <button type="button" className="m-t655-o" id="m-lp-o-kho" onClick={() => setMoChonKho(true)}>
+                        <span className={kho ? 'chu' : 'goi'}>{kho || 'Chọn kho nhận'}</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+                      </button>
+                    </div>
+                    {loiO.kho && <div className="m-lp-loi-o m-t655-loi">{loiO.kho}</div>}
+
+                    <div className="m-t655-hang">
+                      <span className="m-t655-nhan">Ngày chứng từ <em>*</em></span>
+                      <button type="button" className="m-t655-o" id="m-lp-o-thoiGian" onClick={() => setMoLich(true)}>
+                        <span className="chu">{thoiGian.slice(0, 10)}</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+                      </button>
+                    </div>
+
+                    <textarea
+                      className="m-t655-ghi-chu"
+                      aria-label="Ghi chú"
+                      rows={1}
+                      placeholder="Ghi chú"
+                      value={ghiChu}
+                      onChange={e => setGhiChu(e.target.value)}
+                    />
+                    <div className="m-t655-ke" />
+
+                    <button
+                      type="button"
+                      role="checkbox"
+                      aria-checked={hinhThucTt !== 'congno'}
+                      className={`m-t655-tich ${hinhThucTt !== 'congno' ? 'on' : ''}`}
+                      onClick={() => doiHinhThucTtMua(hinhThucTt !== 'congno' ? 'congno' : 'tienmat')}
+                    >
+                      <span className="hop">
+                        {hinhThucTt !== 'congno' && (
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7" /></svg>
+                        )}
+                      </span>
+                      Đã thanh toán
+                    </button>
+
+                    {hinhThucTt !== 'congno' && (
+                      <>
+                        <div className="m-t655-hang">
+                          <span className="m-t655-nhan">Quỹ thanh toán <em>*</em></span>
+                          <button type="button" className="m-t655-o" id="m-lp-o-quy" onClick={() => setMoBangChonQuy(true)}>
+                            <span className={quy ? 'chu' : 'goi'}>{quy || 'Chọn quỹ'}</span>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+                          </button>
+                        </div>
+                        {quy && <div className="m-t655-so-du">Số dư {money(soDuQuy(quy))} đ</div>}
+                        {loiO.quy && <div className="m-lp-loi-o m-t655-loi">{loiO.quy}</div>}
+                      </>
+                    )}
+                  </div>
+                )}
 
                 {/* 4. HÀNG HOÁ, DỊCH VỤ */}
                 <div className="sec" style={{ padding: '20px 20px 8px', fontSize: 12, fontWeight: 600, letterSpacing: '.04em', color: '#6b7280', textTransform: 'uppercase', display: 'flex', justifyContent: 'space-between' }}>
@@ -2362,6 +2436,69 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                     </div>
                   </div>
                 </div>
+                {/* Thông tin hoá đơn VAT khi tạo mới: công tắc nhận kèm hoá đơn (T655) */}
+                {!dangSua && (
+                  <div className="m-t655-the">
+                    <div className="m-t655-vat-dau">
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div className="m-t655-tieu">Thông tin hoá đơn VAT</div>
+                        <div className="m-t655-phu">Bật khi nhà cung cấp giao kèm hoá đơn</div>
+                      </div>
+                      <button
+                        type="button"
+                        role="switch"
+                        aria-checked={nhanKemHd}
+                        aria-label="Nhận kèm hoá đơn"
+                        className={`m-t601-sw ${nhanKemHd ? 'on' : ''}`}
+                        onClick={() => setNhanKemHd(v => !v)}
+                      >
+                        <span className="m-t601-sw-dot" />
+                      </button>
+                    </div>
+                    {nhanKemHd && (
+                      <>
+                        <div className="m-t655-ke" />
+                        <div className="m-t655-hang">
+                          <span className="m-t655-nhan">Số hoá đơn <em>*</em></span>
+                          <input
+                            type="text"
+                            aria-label="Số hoá đơn"
+                            className="m-t655-o go"
+                            placeholder="Nhập số hoá đơn"
+                            inputMode="numeric"
+                            value={soHd}
+                            onChange={e => setSoHd(chuanSoHd(e.target.value))}
+                          />
+                        </div>
+                        {loiO.soHd && <div className="m-lp-loi-o m-t655-loi">{loiO.soHd}</div>}
+                        <div className="m-t655-hang">
+                          <span className="m-t655-nhan">Ký hiệu <em>*</em></span>
+                          <input
+                            type="text"
+                            aria-label="Ký hiệu hoá đơn"
+                            className="m-t655-o go"
+                            placeholder="Vd 1C26TBB"
+                            maxLength={7}
+                            value={kyHieuHd}
+                            onChange={e => setKyHieuHd(chuanKyHieuHd(e.target.value))}
+                          />
+                        </div>
+                        {loiO.kyHieuHd && <div className="m-lp-loi-o m-t655-loi">{loiO.kyHieuHd}</div>}
+                        <div className="m-t655-hang">
+                          <span className="m-t655-nhan">Ngày hoá đơn <em>*</em></span>
+                          <button type="button" className="m-t655-o" onClick={() => setMoLichHd(true)}>
+                            <span className="chu">{ngayHd || thoiGian.slice(0, 10)}</span>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                              <rect x="3" y="5" width="18" height="16" rx="2" />
+                              <path d="M3 10h18M8 3v4M16 3v4" />
+                            </svg>
+                          </button>
+                        </div>
+                        {loiO.ngayHd && <div className="m-lp-loi-o m-t655-loi">{loiO.ngayHd}</div>}
+                      </>
+                    )}
+                  </div>
+                )}
               </>
             )}
 
@@ -3111,7 +3248,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
           <div className="m-tam-hop m-t600-sheet-70" onClick={e => e.stopPropagation()}>
             <div className="m-tam-dau">
               <div>
-                <h2 className="m-tam-tieu">{hinhThucTt === 'tienmat' ? 'Chọn quỹ tiền mặt' : 'Chọn quỹ ngân hàng'}</h2>
+                <h2 className="m-tam-tieu">Chọn quỹ thanh toán</h2>
                 <div style={{ fontSize: 13, color: 'var(--muted)', marginTop: 2 }}>
                   Cửa hàng {cuaHang || 'Phố Mây Nguyễn Trãi'} · cần trả <b style={{ color: 'var(--ink)' }}>{money(tongThanhToan)} đ</b>
                 </div>
@@ -3136,10 +3273,13 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                   />
                 </div>
               </div>
+              {/* Tích Đã thanh toán: hiện cả quỹ tiền mặt và ngân hàng, chọn quỹ nào thì đổi hình thức theo quỹ đó (T655) */}
+              {([['TIỀN MẶT', dsQuyTmLoc], ['NGÂN HÀNG', dsQuyNhLoc]] as const).map(([nhanNhom, dsNhom]) => dsNhom.length > 0 && (
+              <Fragment key={nhanNhom}>
               <div className="m-t601-nhom-chu" style={{ margin: '0 -16px 8px', padding: '4px 16px 6px' }}>
-                {hinhThucTt === 'tienmat' ? 'TIỀN MẶT' : 'NGÂN HÀNG'}
+                {nhanNhom}
               </div>
-              {(hinhThucTt === 'tienmat' ? dsQuyTmLoc : dsQuyNhLoc).map(q => {
+              {dsNhom.map(q => {
                 const sd = soDuQuy(q.ten)
                 const khongDu = sd < tongThanhToan
                 const isChon = quy === q.ten
@@ -3149,6 +3289,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                     className={`m-t600-hang-quy ${isChon ? 'on' : ''}`}
                     onClick={() => {
                       setQuy(q.ten)
+                      setHinhThucTt(q.loai === 'tm' ? 'tienmat' : 'chuyenkhoan')
                       setMoBangChonQuy(false)
                       if (loiO.quy) {
                         setLoiO(l => { const n = { ...l }; delete n.quy; return n })
@@ -3178,6 +3319,8 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                   </div>
                 )
               })}
+              </Fragment>
+              ))}
             </div>
 
             <div className="m-t600-sheet-day">
