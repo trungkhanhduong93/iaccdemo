@@ -41897,3 +41897,38 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
 .m-t655-dau .m-t600-tong-tien-so { font-size: 26px; }
 .m-t655-dau .m-t600-khung-tt { padding: 8px 10px; gap: 6px; margin-top: 2px; }
 .m-t655-dau .m-t600-tt-tien-do-khu { gap: 4px; }
+
+/* ── Danh sách chứng từ điện thoại hết gãy dòng, cỡ chữ mức 2 (T654) ── */
+/* Cỡ chữ mọi danh sách kiểu T653: số phiếu, tên món 13px; số tiền 13.5px; dòng phụ 12px; nhãn 10.5px; đầu thẻ ngày 12.5px */
+.m-mh-dong-so { font-size: 13px; }
+.m-mh-dong-hh { font-size: 10.5px; }
+.m-mh-dong-ncc { font-size: 12px; }
+.m-mh-dong-tien,
+.m-the-hang-tien { font-size: 13.5px; }
+.m-the-hang-sl { font-size: 12px; }
+.m-mh-nhom-ngay,
+.m-mh-nhom-tong,
+.m-t653-ngay-dem { font-size: 12.5px; }
+/* Số phiếu, tên món, chữ trong nhãn không gãy dòng; thiếu chỗ thì số phiếu hiện "…" (dòng dưới đã có "…" từ T554) */
+.m-mh-dong-hang1 { min-width: 0; }
+.m-mh-dong-so {
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.m-mh-dong-hh,
+.m-mh-dong-hang1 .m-the-ct-tag {
+  flex: none;
+  white-space: nowrap;
+}
+/* Ô Tổng thu, Tổng chi của Thu chi: số tiền một dòng; màn dưới 390px hạ cỡ chữ và lề trong ô để chữ "đ" không rớt */
+.m-t652 .m-tc-th-o-so { white-space: nowrap; }
+@media (max-width: 389px) {
+  .m-t652 .m-tc-th-o-thu,
+  .m-t652 .m-tc-th-o-chi {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+  .m-t652 .m-tc-th-o-so { font-size: 14.5px; }
+}

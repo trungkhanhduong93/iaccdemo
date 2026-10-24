@@ -909,4 +909,13 @@ Trum chốt 24/10/2026 (T653), bản vẽ Đợt 2 trên artifact https://claude
 - Dòng thu chi theo kiểu mua hàng: số phiếu kèm nhãn xám Tiền mặt, Ngân hàng, Chuyển quỹ, FABi; dòng dưới là đối tượng; số tiền màu theo T638. Mục này thay phần dòng chứng từ ở QD82.
 - Xuất bán POS gom theo ngày, dưới mỗi ngày là từng dòng món. Dòng phụ ghi khách và số hoá đơn, bỏ ngày.
 
-## QD84. Danh sách chứng từ điện thoại hết gãy dòng, cỡ chữ mức 2 (đang soạn)
+## QD84. Danh sách chứng từ điện thoại hết gãy dòng, cỡ chữ mức 2
+
+Trum chốt 24/10/2026 (T654), mức 2 trong bản vẽ Đợt 3 trên artifact https://claude.ai/artifact/5qmgxtmQshquFoxZdqiet1.
+
+- Bề ngang chuẩn để kiểm là 360px, hẹp nhất hay gặp trên Android. Kiểm thêm 375px, 390px.
+- Áp cho mọi danh sách kiểu QD83: Thu chi, Mua hàng, Xuất bán POS, Kiểm kê, Nhập kho, Xuất kho.
+- Cỡ chữ: số phiếu hoặc tên món 13px, số tiền 13.5px, dòng phụ và số lượng 12px, nhãn 10.5px, đầu thẻ ngày 12.5px. Mục này thay phần cỡ chữ ở QD83.
+- Dòng thu chi: dòng trên chỉ còn số phiếu, cộng nhãn FABi nếu có. Quỹ xuống dòng dưới thành chữ thường, vd "Tiền mặt · Bà Nguyễn Thị Hạnh". Mục này thay phần dòng thu chi ở QD83.
+- Số phiếu, tên món và chữ trong nhãn không gãy dòng. Dòng dưới dài thì hiện "…".
+- Ô Tổng thu, Tổng chi của Thu chi: số tiền nằm một dòng, chữ "đ" không rớt xuống. Màn hẹp hơn 390px thì số tiền 14.5px, lề trong ô 8px.

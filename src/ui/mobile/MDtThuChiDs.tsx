@@ -453,8 +453,9 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
                   // Chỉ số tiền có màu: thu xanh lá, chi đỏ, chuyển quỹ đen như Lịch sử thu chi (T638)
                   const clsTien = isChi ? 'chi' : isThu ? 'thu' : 'cq'
                   const laFabi = r.nguon === 'FABi' || String(r.so ?? '').startsWith('FB')
-                  // Dòng trên: số phiếu kèm nhãn quỹ, FABi; dòng dưới: đối tượng (T653)
+                  // Dòng trên: số phiếu, nhãn FABi; dòng dưới: quỹ · đối tượng, để 360px không gãy dòng (T654)
                   const quy = QUY_THEO_LOAI[String(r.loai)] ?? ''
+                  const doiTuong = r.doiTuong || r.dienGiai || r.lyDo || '—'
 
                   return (
                     <button
@@ -466,10 +467,9 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
                       <div className="m-mh-dong-trai">
                         <div className="m-mh-dong-hang1">
                           <span className="m-mh-dong-so m-ds-ngay-so">{r.so}</span>
-                          {quy && <span className="m-mh-dong-hh">{quy}</span>}
                           {laFabi && <span className="m-mh-dong-hh">FABi</span>}
                         </div>
-                        <span className="m-mh-dong-ncc">{r.doiTuong || r.dienGiai || r.lyDo || '—'}</span>
+                        <span className="m-mh-dong-ncc">{quy ? `${quy} · ${doiTuong}` : doiTuong}</span>
                       </div>
                       <span className={`m-mh-dong-tien m-t653-tien ${clsTien}`}>{tienStr}</span>
                     </button>
