@@ -887,3 +887,5 @@ Thay phần "chỉ gói Nợ/Có có ghi sổ" của T646.
 - Code hỏi "có ghi sổ không" bằng `kieuGhiSoDv(s)` trong `src/app/plan.ts`, không gọi thẳng `kieuGhiSo(s.cheDo)`: chế độ TT58 không đủ để biết đơn vị ở gói Standard hay Plus.
 
 Lý do: Trum chốt ngày 23/10/2026 (T648), sau khi T646 bỏ luôn ghi sổ của gói Plus.
+
+## QD82. Danh sách Thu chi điện thoại gọn theo Lịch sử thu chi (đang soạn)
