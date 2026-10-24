@@ -1102,7 +1102,7 @@ const ThanLapPhieuKho: FC<ThanLapPhieuKhoProps> = ({ sc, mod, id, row }) => {
             if (cn) setCuaHang(cn)
           }
         }}
-        apDung
+        apDung={!laKk}   // kiểm kê: bảng thấp, chạm là chọn như Chọn kho nhận phiếu mua (T659)
         tim
       />
 
