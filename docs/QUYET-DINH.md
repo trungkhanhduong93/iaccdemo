@@ -908,3 +908,5 @@ Trum chốt 24/10/2026 (T653), bản vẽ Đợt 2 trên artifact https://claude
 - Thẻ tổng không ghi khoảng ngày vì hàng lọc đã có.
 - Dòng thu chi theo kiểu mua hàng: số phiếu kèm nhãn xám Tiền mặt, Ngân hàng, Chuyển quỹ, FABi; dòng dưới là đối tượng; số tiền màu theo T638. Mục này thay phần dòng chứng từ ở QD82.
 - Xuất bán POS gom theo ngày, dưới mỗi ngày là từng dòng món. Dòng phụ ghi khách và số hoá đơn, bỏ ngày.
+
+## QD84. Danh sách chứng từ điện thoại hết gãy dòng, cỡ chữ mức 2 (đang soạn)
