@@ -41977,3 +41977,4 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
 }
 .m-t656-tong small { font-size: 12px; color: var(--muted); }
 .m-t656-tong b { font-size: 17px; font-weight: 700; color: var(--blue); }
+.m-t655-tich:disabled { cursor: default; opacity: .75; }

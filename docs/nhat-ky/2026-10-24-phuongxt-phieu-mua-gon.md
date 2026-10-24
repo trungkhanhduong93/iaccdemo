@@ -12,6 +12,8 @@
 - `MLapPhieu.tsx`: tạo mới gộp tích Nhận kèm hoá đơn cùng hàng Đã thanh toán, ô hoá đơn hiện ngay dưới; bỏ thẻ Thông tin hoá đơn VAT phía dưới.
 - `MLapPhieu.tsx`: Tổng tiền ghim ở chân trên nút Huỷ, Lưu khi tạo mới và sửa; khối Tổng cộng bỏ dòng Số lượng, Tổng tiền.
 - `app.css`: mục T656 cuối file, thẻ đầu gọn hơn.
+- `MLapPhieu.tsx`: màn sửa dùng chung thẻ đầu với tạo mới; bỏ thẻ tổng tiền to, radio thanh toán, tab Phiếu nhập/Hạch toán/Lịch sử, khối NCC và hoá đơn kiểu cũ. Tích Đã thanh toán ở màn sửa mở sheet Thanh toán, trả đủ rồi thì tích sẵn, khoá.
+- `MThanhToanNgay.tsx`: bỏ hai nút Tiền mặt, Chuyển khoản; bảng chọn quỹ một danh sách hai nhóm, chọn quỹ nào thì lập phiếu chi hoặc uỷ nhiệm chi theo quỹ đó.
 
 ## Đã kiểm
 

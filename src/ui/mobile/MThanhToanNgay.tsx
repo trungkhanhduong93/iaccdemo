@@ -151,11 +151,6 @@ export const MThanhToanNgay: FC<MThanhToanNgayProps> = ({
     return `Quỹ tiền mặt ${cnNgan}`
   }, [cnNgan])
 
-  const quyNhMacDinh = useMemo(() => {
-    const tim = DS_QUY_MAU.find(q => q.loai === 'nh')
-    return tim?.ten ?? 'Vietcombank 0071 0012 34567'
-  }, [])
-
   const [htSheet, setHtSheet] = useState<'tienmat' | 'chuyenkhoan'>('tienmat')
   const [quySheet, setQuySheet] = useState(quyTmMacDinh)
   const [quyTam, setQuyTam] = useState(quyTmMacDinh)
@@ -223,33 +218,8 @@ export const MThanhToanNgay: FC<MThanhToanNgayProps> = ({
           </div>
 
           <div className="m-t600-sheet-than" style={{ padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <div className="m-t600-nut-doi">
-              <button
-                type="button"
-                className={`m-t600-nut-doi-item ${htSheet === 'tienmat' ? 'on' : ''}`}
-                onClick={() => {
-                  setHtSheet('tienmat')
-                  setQuySheet(quyTmMacDinh)
-                  setQuyTam(quyTmMacDinh)
-                }}
-              >
-                Tiền mặt
-              </button>
-              <button
-                type="button"
-                className={`m-t600-nut-doi-item ${htSheet === 'chuyenkhoan' ? 'on' : ''}`}
-                onClick={() => {
-                  setHtSheet('chuyenkhoan')
-                  setQuySheet(quyNhMacDinh)
-                  setQuyTam(quyNhMacDinh)
-                }}
-              >
-                Chuyển khoản
-              </button>
-            </div>
-
             <div className="m-t600-o-nhap-f">
-              <label className="m-t600-lbl">{htSheet === 'tienmat' ? 'Quỹ tiền mặt' : 'Quỹ ngân hàng'} <em>*</em></label>
+              <label className="m-t600-lbl">Quỹ thanh toán <em>*</em></label>
               <button
                 type="button"
                 className="m-t600-o-quy-tt"
@@ -348,7 +318,7 @@ export const MThanhToanNgay: FC<MThanhToanNgayProps> = ({
           <div className="m-tam-hop m-t600-sheet-70 m-t610-sheet-con" onClick={e => e.stopPropagation()}>
             <div className="m-tam-dau">
               <div>
-                <h2 className="m-tam-tieu">{htSheet === 'tienmat' ? 'Chọn quỹ tiền mặt' : 'Chọn quỹ ngân hàng'}</h2>
+                <h2 className="m-tam-tieu">Chọn quỹ thanh toán</h2>
                 <div style={{ fontSize: 13, color: 'var(--muted)', marginTop: 2 }}>
                   Cửa hàng {chHienThi} · cần trả <b style={{ color: 'var(--ink)' }}>{money(tienSheet)} đ</b>
                 </div>
@@ -374,56 +344,61 @@ export const MThanhToanNgay: FC<MThanhToanNgayProps> = ({
                   />
                 </div>
               </div>
-              <div
-                className="m-t601-nhom-chu"
-                style={{
-                  margin: '0 -16px 8px',
-                  padding: '4px 16px 6px',
-                  fontSize: 12,
-                  fontWeight: 600,
-                  color: 'var(--muted)',
-                  letterSpacing: '.04em',
-                  borderBottom: '1px solid var(--line-2)',
-                }}
-              >
-                {htSheet === 'tienmat' ? 'TIỀN MẶT' : 'NGÂN HÀNG'}
-              </div>
-              {(htSheet === 'tienmat' ? dsQuyTmLoc : dsQuyNhLoc).map(q => {
-                const sd = soDuQuy(q.ten)
-                const khongDu = sd < tienSheet
-                const isChon = (quyTam || quySheet) === q.ten
-                return (
+              {/* Một bảng gồm cả quỹ tiền mặt và ngân hàng, không chia tab (T656) */}
+              {[{ tieu: 'TIỀN MẶT', ds: dsQuyTmLoc }, { tieu: 'NGÂN HÀNG', ds: dsQuyNhLoc }].filter(nhom => nhom.ds.length > 0).map(nhom => (
+                <div key={nhom.tieu}>
                   <div
-                    key={q.ten}
-                    className={`m-t600-hang-quy ${isChon ? 'on' : ''}`}
-                    onClick={() => setQuyTam(q.ten)}
+                    className="m-t601-nhom-chu"
+                    style={{
+                      margin: '0 -16px 8px',
+                      padding: '4px 16px 6px',
+                      fontSize: 12,
+                      fontWeight: 600,
+                      color: 'var(--muted)',
+                      letterSpacing: '.04em',
+                      borderBottom: '1px solid var(--line-2)',
+                    }}
                   >
-                    <span className={`m-t601-quy-ic ${q.loai}`}>
-                      {q.loai === 'tm' ? (
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#138a52" strokeWidth="1.8">
-                          <rect x="2" y="6" width="20" height="13" rx="2" />
-                          <circle cx="12" cy="12.5" r="2.5" />
-                        </svg>
-                      ) : (
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0560a6" strokeWidth="1.8">
-                          <path d="M3 10l9-6 9 6M5 10v8M19 10v8M9 10v8M15 10v8M3 20h18" />
-                        </svg>
-                      )}
-                    </span>
-                    <div style={{ minWidth: 0, flex: 1 }}>
-                      <div style={{ fontWeight: 600, fontSize: 15, color: 'var(--ink)' }}>{q.ten}</div>
-                      <div style={{ fontSize: 12, color: 'var(--muted)' }}>
-                        Số dư {money(sd)} đ
-                        {khongDu && (
-                          <span style={{ color: 'var(--orange-d)', marginLeft: 6 }}>
-                            · không đủ trả {money(tienSheet)} đ
-                          </span>
-                        )}
-                      </div>
-                    </div>
+                    {nhom.tieu}
                   </div>
-                )
-              })}
+                  {nhom.ds.map(q => {
+                    const sd = soDuQuy(q.ten)
+                    const khongDu = sd < tienSheet
+                    const isChon = (quyTam || quySheet) === q.ten
+                    return (
+                      <div
+                        key={q.ten}
+                        className={`m-t600-hang-quy ${isChon ? 'on' : ''}`}
+                        onClick={() => setQuyTam(q.ten)}
+                      >
+                        <span className={`m-t601-quy-ic ${q.loai}`}>
+                          {q.loai === 'tm' ? (
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#138a52" strokeWidth="1.8">
+                              <rect x="2" y="6" width="20" height="13" rx="2" />
+                              <circle cx="12" cy="12.5" r="2.5" />
+                            </svg>
+                          ) : (
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0560a6" strokeWidth="1.8">
+                              <path d="M3 10l9-6 9 6M5 10v8M19 10v8M9 10v8M15 10v8M3 20h18" />
+                            </svg>
+                          )}
+                        </span>
+                        <div style={{ minWidth: 0, flex: 1 }}>
+                          <div style={{ fontWeight: 600, fontSize: 15, color: 'var(--ink)' }}>{q.ten}</div>
+                          <div style={{ fontSize: 12, color: 'var(--muted)' }}>
+                            Số dư {money(sd)} đ
+                            {khongDu && (
+                              <span style={{ color: 'var(--orange-d)', marginLeft: 6 }}>
+                                · không đủ trả {money(tienSheet)} đ
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              ))}
             </div>
 
             <div className="m-t600-sheet-day">
@@ -432,7 +407,10 @@ export const MThanhToanNgay: FC<MThanhToanNgayProps> = ({
                 className="btn pri"
                 style={{ width: '100%', height: 48, borderRadius: 10, fontSize: 15, fontWeight: 600 }}
                 onClick={() => {
-                  if (quyTam) setQuySheet(quyTam)
+                  if (quyTam) {
+                    setQuySheet(quyTam)
+                    setHtSheet(DS_QUY_MAU.some(q => q.loai === 'nh' && q.ten === quyTam) ? 'chuyenkhoan' : 'tienmat')
+                  }
                   setMoBangChonQuy(false)
                 }}
               >

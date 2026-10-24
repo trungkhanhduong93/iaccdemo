@@ -1263,6 +1263,8 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
   const tongNoCo = useMemo(() => capButToan.reduce((a, c) => a + c.tien, 0), [capButToan])
   const tongSl = useMemo(() => dsDong.reduce((a, d) => a + (Number(d.sl) || 0), 0), [dsDong])
   const conLaiTt = Math.max(0, tongThanhToan - daTra)
+  // Tích Đã thanh toán: màn sửa theo số đã trả, tạo mới theo hình thức chọn (T656)
+  const daTichTt = dangSua ? ttMua === 'da' : hinhThucTt !== 'congno'
 
   // Đổi đơn vị tính quy đổi
   const [dvtSheet, setDvtSheet] = useState<{ idx: number; ten: string; ds: { k: string; ten: string }[] } | null>(null)
@@ -1950,334 +1952,20 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
         {/* ════ PHIẾU MUA HÀNG (T600 / T601) ════ */}
         {nhom === 'mua' ? (
           <>
-            {/* 1. Thẻ đầu tổng quan (màn sửa; tạo mới dùng thẻ T655 trong tab Phiếu nhập) */}
-            {dangSua && (
-            <div className="m-t600-the-dau">
-                  {/* Hàng chip */}
-                  <div className="m-t600-chip-hang">
-                    <span className={`m-t600-chip-tt ${dangSua ? (ttMua === 'da' ? 'da' : ttMua === 'mot' ? 'mot' : 'chua') : (hinhThucTt !== 'congno' ? 'da' : 'chua')}`}>
-                      {dangSua ? (ttMua === 'da' ? 'Đã thanh toán' : ttMua === 'mot' ? 'Thanh toán một phần' : 'Chưa thanh toán') : (hinhThucTt !== 'congno' ? 'Đã thanh toán' : 'Chưa thanh toán')}
-                    </span>
-                    <span className="m-t600-chip-nguon">
-                      {gocData?.nguon === 'excel' || gocData?.nguon === 'HĐ' ? 'Excel' : 'Thủ công'}
-                    </span>
-                  </div>
-
-                  {/* Tên NCC */}
-                  <div className="m-t600-ncc-ten">
-                    {doiTuong || 'Chưa chọn nhà cung cấp'}
-                  </div>
-
-                  {/* Dòng cửa hàng */}
-                  <div className="m-t600-cua-hang-dong" onClick={() => setMoChonCn(true)}>
-                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="1.8" fill="none">
-                      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-                      <polyline points="9 22 9 12 15 12 15 22" />
-                    </svg>
-                    <span>{cuaHang || 'Chọn cửa hàng'}</span>
-                  </div>
-
-                  {/* Nhãn Tổng tiền + Số tiền 30px */}
-                  <div>
-                    <div className="m-t600-tong-tien-nhan">Tổng tiền</div>
-                    <div className={`m-t600-tong-tien-so ${(dangSua ? ttMua === 'da' : hinhThucTt !== 'congno') ? 'xanh' : 'cam'}`}>
-                      {money(tongThanhToan)} đ
-                    </div>
-                  </div>
-
-                  {/* Khung xám Thanh toán (T600, T629, T630) */}
-                  <div className="m-t600-khung-tt">
-                    <div className="m-t601-tt-tieu">Thanh toán</div>
-                    <div className="m-t600-tt-radios">
-                      <label className="m-t601-radio-item" onClick={() => doiHinhThucTtMua('congno')}>
-                        <span className={`m-t601-radio-ring ${hinhThucTt === 'congno' ? 'on' : ''}`}>
-                          {hinhThucTt === 'congno' && <span className="m-t601-radio-dot" />}
-                        </span>
-                        <span>Chưa thanh toán</span>
-                      </label>
-                      <label className="m-t601-radio-item" onClick={() => doiHinhThucTtMua('tienmat')}>
-                        <span className={`m-t601-radio-ring ${hinhThucTt === 'tienmat' ? 'on' : ''}`}>
-                          {hinhThucTt === 'tienmat' && <span className="m-t601-radio-dot" />}
-                        </span>
-                        <span>Tiền mặt ngay</span>
-                      </label>
-                      <label className="m-t601-radio-item" onClick={() => doiHinhThucTtMua('chuyenkhoan')}>
-                        <span className={`m-t601-radio-ring ${hinhThucTt === 'chuyenkhoan' ? 'on' : ''}`}>
-                          {hinhThucTt === 'chuyenkhoan' && <span className="m-t601-radio-dot" />}
-                        </span>
-                        <span>Chuyển khoản ngay</span>
-                      </label>
-                    </div>
-
-                    {/* Dòng ô Quỹ tiền cho phiếu mua khi thanh toán ngay (T629) */}
-                    {!dangSua && hinhThucTt !== 'congno' && (
-                      <div className="m-t600-o-nhap-f" style={{ marginTop: 10 }}>
-                        <label className="m-t600-lbl">
-                          {hinhThucTt === 'tienmat' ? 'Quỹ tiền mặt' : 'Quỹ ngân hàng'} <em>*</em>
-                        </label>
-                        <div
-                          className="m-t600-o-chon"
-                          id="m-lp-o-quy"
-                          onClick={() => setMoBangChonQuy(true)}
-                          style={{ cursor: 'pointer', background: '#fff' }}
-                        >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, minWidth: 0 }}>
-                            <div className={`m-t600-quy-ic ${hinhThucTt === 'tienmat' ? 'tm' : 'nh'}`} style={{ width: 26, height: 26, borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                              <Icon n={hinhThucTt === 'tienmat' ? 'dollar' : 'bank'} className="ic sm" kieu="net" />
-                            </div>
-                            <div style={{ minWidth: 0, flex: 1 }}>
-                              <div style={{ fontWeight: 600, fontSize: 13.5, color: quy ? 'var(--ink)' : 'var(--muted)' }}>
-                                {quy || (hinhThucTt === 'tienmat' ? 'Chọn quỹ tiền mặt' : 'Chọn quỹ ngân hàng')}
-                              </div>
-                              {quy && (
-                                <div style={{ fontSize: 11, color: 'var(--muted)' }}>
-                                  Số dư {money(soDuQuy(quy))} đ
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                          <span style={{ color: 'var(--muted)', fontSize: 13 }}>▾</span>
-                        </div>
-                        {loiO.quy && <div className="m-lp-loi-o" style={{ marginTop: 4 }}>{loiO.quy}</div>}
-                      </div>
-                    )}
-
-                    {/* Dòng Đã trả và thanh tiến độ */}
-                    <div className="m-t600-tt-tien-do-khu" style={{ marginTop: 8 }}>
-                      <div className="m-t600-tt-tien-do-hang">
-                        <span style={{ color: 'var(--muted)' }}>Đã trả</span>
-                        <b style={{ color: 'var(--ink)' }}>{money(daTra)} / {money(tongThanhToan)} đ</b>
-                      </div>
-                      <div className="m-t600-thanh-tien-do" style={{ marginTop: 6 }}>
-                        <div
-                          className="m-t600-tien-do-fill"
-                          style={{ width: `${tongThanhToan > 0 ? Math.min(100, Math.round((daTra / tongThanhToan) * 100)) : 0}%` }}
-                        />
-                      </div>
-                      {s.goi !== 'S' && hanTt && (
-                        <div className="m-t600-han-tt-dong" style={{ marginTop: 6 }}>
-                          Hạn {hanTt}{tinhSoNgayCon(hanTt) ? ` · ${tinhSoNgayCon(hanTt)}` : ''}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Màn sửa: nút Thanh toán ngay dùng chung MThanhToanNgay (T630) */}
-                    {dangSua && conLaiTt > 0 && (
-                      <div style={{ marginTop: 10 }}>
-                        <button
-                          type="button"
-                          className="btn pri"
-                          style={{ width: '100%', height: 38, borderRadius: 8, fontSize: 13.5, fontWeight: 600 }}
-                          onClick={() => setMoThanhToan(true)}
-                        >
-                          Thanh toán ngay ({money(conLaiTt)} đ)
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-            )}
-
-            {/* ── TABS CHO PHIẾU MUA HÀNG (T600 B3, T609-1, T609-2; T639: chỉ hiện khi sửa) ── */}
-            {dangSua && (
-              <div
-                className="m-t601-tabs"
-                style={{
-                  gridTemplateColumns: `repeat(${1 + (coHachToan ? 1 : 0) + 1}, minmax(0, 1fr))`,
-                }}
-              >
-                <button
-                  type="button"
-                  className={`m-t601-tab-btn ${tabMua === 'phieu' ? 'on' : ''}`}
-                  onClick={() => setTabMua('phieu')}
-                >
-                  Phiếu nhập
-                </button>
-                {coHachToan && (
-                  <button
-                    type="button"
-                    className={`m-t601-tab-btn ${tabMua === 'buttoan' ? 'on' : ''}`}
-                    onClick={() => setTabMua('buttoan')}
-                  >
-                    Hạch toán
-                  </button>
-                )}
-                <button
-                  type="button"
-                  className={`m-t601-tab-btn ${tabMua === 'lichsu' ? 'on' : ''}`}
-                  onClick={() => setTabMua('lichsu')}
-                >
-                  Lịch sử
-                </button>
-              </div>
-            )}
-
             {tabMua === 'phieu' && (
               <>
-                {dangSua ? (
-                <>
-                {/* 2. Khối NHÀ CUNG CẤP */}
-                <div className="m-t600-nhom-tieu">NHÀ CUNG CẤP</div>
-                <div className="m-t600-card-nhap">
-                  <div className="m-t600-o-nhap-f">
-                    <label className="m-t600-lbl">Nhà cung cấp <em>*</em></label>
-                    <div
-                      className="m-t600-o-chon"
-                      id="m-lp-o-doiTuong"
-                      onClick={() => setMoChonDt(true)}
-                    >
-                      <span>{doiTuong || 'Chọn nhà cung cấp'}</span>
-                      <span style={{ color: 'var(--muted)', fontSize: 13 }}>▾</span>
-                    </div>
-                    {loiO.doiTuong && <div className="m-lp-loi-o">{loiO.doiTuong}</div>}
-                  </div>
-
-                  <div className="m-t600-o-nhap-f">
-                    <label className="m-t600-lbl">Địa chỉ</label>
-                    <textarea
-                      className="m-t600-textarea"
-                      placeholder="Địa chỉ nhà cung cấp"
-                      value={diaChi}
-                      onChange={e => setDiaChi(e.target.value)}
-                    />
-                  </div>
-
-                  <div className="m-t600-o-nhap-f">
-                    <label className="m-t600-lbl">Mã số thuế</label>
-                    <input
-                      type="text"
-                      className="m-t600-inp"
-                      placeholder="Mã số thuế"
-                      value={mst}
-                      onChange={e => setMst(e.target.value)}
-                    />
-                  </div>
-
-                  <div className="m-t600-o-nhap-f">
-                    <label className="m-t600-lbl">Người giao dịch</label>
-                    <input
-                      type="text"
-                      className="m-t600-inp"
-                      placeholder="Họ và tên người giao dịch"
-                      value={nguoiGiaoDich}
-                      onChange={e => setNguoiGiaoDich(e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                {/* 3. Khối HOÁ ĐƠN & NHẬP KHO */}
-                <div className="m-t600-nhom-tieu">HOÁ ĐƠN & NHẬP KHO</div>
-                <div className="m-t600-card-nhap">
-                  <div className="m-t600-cong-tac-hang">
-                    <div className="m-t600-cong-tac-trai">
-                      <span className="m-t600-cong-tac-ten">Nhận kèm hoá đơn</span>
-                      <span className="m-t600-cong-tac-phu">Bật khi NCC giao hàng kèm hoá đơn GTGT</span>
-                    </div>
-                    <button
-                      type="button"
-                      role="switch"
-                      aria-checked={nhanKemHd}
-                      className={`m-t601-sw ${nhanKemHd ? 'on' : ''}`}
-                      onClick={() => setNhanKemHd(v => !v)}
-                    >
-                      <span className="m-t601-sw-dot" />
-                    </button>
-                  </div>
-
-                  {nhanKemHd && (
-                    <>
-                      <div className="m-t600-o-nhap-f">
-                        <label className="m-t600-lbl">Số hoá đơn <em>*</em></label>
-                        <input
-                          type="text"
-                          aria-label="Số hoá đơn"
-                          className="m-t600-inp"
-                          placeholder="Nhập số hoá đơn"
-                          inputMode="numeric"
-                          value={soHd}
-                          onChange={e => setSoHd(chuanSoHd(e.target.value))}
-                        />
-                        {loiO.soHd && <div className="m-lp-loi-o">{loiO.soHd}</div>}
-                      </div>
-
-                      <div className="m-t600-o-nhap-f">
-                        <label className="m-t600-lbl">Ký hiệu <em>*</em></label>
-                        <input
-                          type="text"
-                          aria-label="Ký hiệu hoá đơn"
-                          className="m-t600-inp"
-                          placeholder="Ký hiệu mẫu (vd 1C26TBB)"
-                          maxLength={7}
-                          value={kyHieuHd}
-                          onChange={e => setKyHieuHd(chuanKyHieuHd(e.target.value))}
-                        />
-                        {loiO.kyHieuHd && <div className="m-lp-loi-o">{loiO.kyHieuHd}</div>}
-                      </div>
-
-                      <div className="m-t600-o-nhap-f">
-                        <label className="m-t600-lbl">Ngày hoá đơn <em>*</em></label>
-                        <div className="m-t600-o-chon" onClick={() => setMoLichHd(true)}>
-                          <span>{ngayHd || thoiGian.slice(0, 10)}</span>
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <rect x="3" y="5" width="18" height="16" rx="2" />
-                            <path d="M3 10h18M8 3v4M16 3v4" />
-                          </svg>
-                        </div>
-                        {loiO.ngayHd && <div className="m-lp-loi-o">{loiO.ngayHd}</div>}
-                      </div>
-                    </>
-                  )}
-
-                  <div className="m-t600-o-nhap-f">
-                    <label className="m-t600-lbl">Ngày chứng từ <em>*</em></label>
-                    <div className="m-t600-o-chon" id="m-lp-o-thoiGian" onClick={() => setMoLich(true)}>
-                      <span>{thoiGian.slice(0, 10)}</span>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <rect x="3" y="5" width="18" height="16" rx="2" />
-                        <path d="M3 10h18M8 3v4M16 3v4" />
-                      </svg>
-                    </div>
-                  </div>
-
-                  <div className="m-t600-o-nhap-f">
-                    <label className="m-t600-lbl">Số phiếu nhập</label>
-                    <div className="m-t600-o-chon disabled" style={{ background: '#f5f5f5', cursor: 'not-allowed' }}>
-                      <span>{gocData?.so ?? soCtDuKien}</span>
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" aria-hidden="true">
-                        <rect x="5" y="11" width="14" height="10" rx="2" />
-                        <path d="M8 11V7a4 4 0 0 1 8 0v4" />
-                      </svg>
-                    </div>
-                  </div>
-
-                  <div className="m-t600-o-nhap-f">
-                    <label className="m-t600-lbl">Kho nhập <em>*</em></label>
-                    <div className="m-t600-o-chon" id="m-lp-o-kho" onClick={() => setMoChonKho(true)}>
-                      <span>{kho || 'Chọn kho nhận'}</span>
-                      <span style={{ color: 'var(--muted)', fontSize: 13 }}>▾</span>
-                    </div>
-                    {loiO.kho && <div className="m-lp-loi-o">{loiO.kho}</div>}
-                  </div>
-
-                  <div className="m-t600-o-nhap-f">
-                    <label className="m-t600-lbl">Ghi chú</label>
-                    <input
-                      type="text"
-                      className="m-t600-inp"
-                      placeholder="Ghi chú chứng từ"
-                      value={ghiChu}
-                      onChange={e => setGhiChu(e.target.value)}
-                    />
-                  </div>
-                </div>
-                </>
-                ) : (
-                  /* Thẻ đầu tạo mới phiếu mua: nhãn trái, ô chọn phải, tích Đã thanh toán (T655) */
+                  {/* Thẻ đầu phiếu mua dùng chung tạo mới và sửa: nhãn trái, ô chọn phải (T655, T656) */}
                   <div className="m-t655-the">
                     <div className="m-t655-chip-hang">
-                      <span className={`m-t600-chip-tt ${hinhThucTt !== 'congno' ? 'da' : 'chua'}`}>
-                        {hinhThucTt !== 'congno' ? 'Đã thanh toán' : 'Chưa thanh toán'}
-                      </span>
+                      {dangSua ? (
+                        <span className={`m-t600-chip-tt ${ttMua === 'da' ? 'da' : ttMua === 'mot' ? 'mot' : 'chua'}`}>
+                          {ttMua === 'da' ? 'Đã thanh toán' : ttMua === 'mot' ? 'Thanh toán một phần' : 'Chưa thanh toán'}
+                        </span>
+                      ) : (
+                        <span className={`m-t600-chip-tt ${hinhThucTt !== 'congno' ? 'da' : 'chua'}`}>
+                          {hinhThucTt !== 'congno' ? 'Đã thanh toán' : 'Chưa thanh toán'}
+                        </span>
+                      )}
                       <span className="m-t600-chip-nguon">
                         {gocData?.nguon === 'excel' || gocData?.nguon === 'HĐ' ? 'Excel' : 'Thủ công'}
                       </span>
@@ -2329,15 +2017,23 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
 
                     {/* Hai tích cùng một hàng: Đã thanh toán, Nhận kèm hoá đơn (T656) */}
                     <div className="m-t656-tich-hang">
+                      {/* Màn sửa: tích mở sheet Thanh toán (chọn quỹ, số tiền, lập phiếu chi); trả đủ rồi thì tích sẵn, khoá (T656) */}
                       <button
                         type="button"
                         role="checkbox"
-                        aria-checked={hinhThucTt !== 'congno'}
-                        className={`m-t655-tich ${hinhThucTt !== 'congno' ? 'on' : ''}`}
-                        onClick={() => doiHinhThucTtMua(hinhThucTt !== 'congno' ? 'congno' : 'tienmat')}
+                        aria-checked={daTichTt}
+                        disabled={dangSua && ttMua === 'da'}
+                        className={`m-t655-tich ${daTichTt ? 'on' : ''}`}
+                        onClick={() => {
+                          if (dangSua) {
+                            if (conLaiTt > 0) setMoThanhToan(true)
+                            return
+                          }
+                          doiHinhThucTtMua(hinhThucTt !== 'congno' ? 'congno' : 'tienmat')
+                        }}
                       >
                         <span className="hop">
-                          {hinhThucTt !== 'congno' && (
+                          {daTichTt && (
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7" /></svg>
                           )}
                         </span>
@@ -2359,7 +2055,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                       </button>
                     </div>
 
-                    {hinhThucTt !== 'congno' && (
+                    {!dangSua && hinhThucTt !== 'congno' && (
                       <>
                         <div className="m-t655-hang">
                           <span className="m-t655-nhan">Quỹ thanh toán <em>*</em></span>
@@ -2415,7 +2111,6 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                       </>
                     )}
                   </div>
-                )}
 
                 {/* 4. HÀNG HOÁ, DỊCH VỤ */}
                 <div className="sec" style={{ padding: '4px 20px 8px', fontSize: 12, fontWeight: 600, letterSpacing: '.04em', color: '#6b7280', textTransform: 'uppercase', display: 'flex', justifyContent: 'space-between' }}>
