@@ -871,9 +871,10 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
               const moRong = dongMoRong[idx] ?? false
               return (
                 <div key={idx} className="m-tc-lap-dong-item">
-                  <div className="m-tc-dong-item-dau">
-                    <span className="ten">Dòng {idx + 1}</span>
-                    {dsDong.length > 1 && (
+                  {/* Chỉ một dòng thì không hiện đầu dòng "Dòng 1"; từ 2 dòng mới hiện kèm nút xoá */}
+                  {dsDong.length > 1 && (
+                    <div className="m-tc-dong-item-dau">
+                      <span className="ten">Dòng {idx + 1}</span>
                       <button
                         type="button"
                         className="m-tc-btn-xoa-dong"
@@ -885,8 +886,8 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
                           <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
                         </svg>
                       </button>
-                    )}
-                  </div>
+                    </div>
+                  )}
 
                   <div className="m-tc-lap-field m-t650-hang">
                     <label className="nhan">Diễn giải</label>
