@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T655 | Điện thoại, phiếu mua hàng theo bản nháp: tạo mới nhãn trái ô phải, tích Đã thanh toán chọn quỹ; chi tiết gộp Thông tin chung, hoá đơn tách thẻ, thẻ đầu gọn; Thanh toán sửa số tiền mọi gói, lập phiếu chi ngay không mở form; chi tiết thu chi bỏ chip loại phiếu | PhuongXT | 24/10/2026 | `2026-10-24-phuongxt-phieu-mua-dien-thoai.md` |
 | T653 | Điện thoại, danh sách Thu chi, Mua hàng, Xuất bán POS, Kiểm kê một kiểu (QD83): cỡ chữ mua hàng, ngày nằm trong thẻ, thẻ tổng bỏ khoảng ngày; thu chi dòng số phiếu kèm nhãn quỹ; Xuất bán POS gom theo ngày | Trum | 24/10/2026 | `2026-10-24-trum-ds-chung-tu-mot-kieu.md` |
 | T652 | Điện thoại, danh sách Thu chi gọn theo Lịch sử thu chi (mẫu A, QD82): thẻ tổng bỏ khoảng ngày, hai ô tổng nền trắng; mỗi ngày một thẻ trắng, dòng chứng từ có diễn giải, số phiếu, đối tượng, quỹ, bỏ vòng tròn mũi tên | Trum | 24/10/2026 | `2026-10-24-trum-ds-thu-chi-gon.md` |
 | T650 | Điện thoại, màn lập và sửa phiếu thu chi vẽ lại theo kiểu "Tạo mới nhập mua hàng": tên ô bên trái, giá trị bên phải, thẻ Đối tượng, Chi tiết trống kèm Thêm dòng, một nút Lưu; gói Standard dùng chung form | PhuongXT | 24/10/2026 | `2026-10-24-phuongxt-form-thu-chi-dien-thoai.md` |

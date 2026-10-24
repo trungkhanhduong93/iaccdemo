@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 24/10/2026
+- T655: Điện thoại, tạo mới phiếu mua hàng: tên ô bên trái, giá trị bên phải; cửa hàng hiện cạnh chip Thủ công; ô tích Đã thanh toán, tích thì chọn quỹ (tiền mặt hoặc ngân hàng); Thông tin hoá đơn VAT bật bằng công tắc. Chi tiết phiếu mua: thẻ đầu gọn, tab Chi tiết gồm Thông tin chung, Thông tin hoá đơn, Hàng hoá; bỏ số phiếu nhập, địa chỉ, mã số thuế, người giao dịch, tổng số lượng, Lịch sử thanh toán. Bấm Thanh toán sửa được số tiền ở mọi gói, Lập phiếu chi là có phiếu ngay. Chi tiết phiếu thu chi bỏ chip loại phiếu.
 - T653: Điện thoại, danh sách Thu chi, Mua hàng, Xuất bán POS, Kiểm kê, Nhập kho, Xuất kho cùng một kiểu: mỗi ngày một thẻ trắng, đầu thẻ ghi ngày và tổng tiền hoặc số chứng từ; thẻ tổng không còn khoảng ngày. Thu chi dòng số phiếu kèm nhãn Tiền mặt, Ngân hàng, Chuyển quỹ, FABi, cỡ chữ bằng mua hàng. Xuất bán POS gom món theo ngày.
 - T652: Điện thoại, danh sách Thu chi gọn như Lịch sử thu chi: thẻ tổng bỏ khoảng ngày, hai ô Tổng thu, Tổng chi nền trắng. Mỗi ngày một thẻ trắng, mỗi chứng từ ghi diễn giải và số tiền, dòng dưới là số phiếu, đối tượng, quỹ. Bỏ vòng tròn mũi tên màu.
 - T650: Điện thoại, phiếu thu chi: Ghi chú tự lấy theo lý do thu, chi; Diễn giải từng dòng (cả dòng thêm mới) tự lấy theo ghi chú, đều sửa được. Phiếu thu đổi nhãn Người nộp thành Người giao dịch.
