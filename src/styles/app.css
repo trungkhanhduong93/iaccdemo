@@ -41546,3 +41546,201 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
 .m-xb651-tong-khung .tong { align-items: baseline; margin-top: 2px; padding-top: 10px; border-top: 1px dashed #c5ccd6; font-weight: 700; }
 .m-xb651-tong-khung .tong > span:first-child { color: var(--ink); }
 .m-xb651-tong-khung .tong > span:last-child { font-size: 18px; color: var(--blue); }
+
+/* ── Lập, sửa phiếu thu chi điện thoại kiểu nhập mua hàng: tên ô trái, giá trị phải, một nút Lưu (T650) ── */
+.m-tc-lap-man.m-t650 { background: var(--bg); }
+.m-t650 .m-tc-lap-header { height: 60px; border-bottom: 0; }
+.m-t650 .m-tc-lap-tieu-de-khu .dong1 { font-size: 17px; font-weight: 600; }
+.m-t650 .m-tc-lap-tieu-de-khu .dong2 { font-size: 12px; }
+.m-t650 .m-tc-lap-content { padding-top: 14px; }
+.m-tc-lap-man.m-t650 .m-tc-lap-card.m-t650-the {
+  margin: 0 14px 14px;
+  padding: 16px;
+  border: 0;
+  border-radius: 16px;
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.m-t650-dau-the { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.m-t650-ch { margin-left: auto; display: inline-flex; align-items: center; gap: 5px; font-size: 12px; color: var(--muted); }
+.m-t650-ke { height: 1px; background: var(--line-2); margin: 2px 0; }
+.m-t650-tieu {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+.m-t650-tieu small { font-size: 13px; font-weight: 500; color: var(--muted); text-transform: none; }
+/* Một hàng: tên ô 132px bên trái, ô nhập bên phải */
+.m-tc-lap-man.m-t650 .m-tc-lap-field.m-t650-hang {
+  display: grid;
+  grid-template-columns: 132px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+}
+.m-tc-lap-man.m-t650 .m-tc-lap-field.m-t650-hang .nhan {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--ink);
+  line-height: 1.3;
+}
+.m-t650-nhan-cot { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; }
+.m-tc-lap-man.m-t650 .m-t650-hang .m-tc-lap-select,
+.m-tc-lap-man.m-t650 .m-t650-hang .m-tc-lap-dt-box,
+.m-tc-lap-man.m-t650 .m-t650-hang .m-tc-lap-inp {
+  height: 42px;
+  min-height: 42px;
+  padding: 0 10px 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  font-size: 14px;
+  text-align: right;
+  box-sizing: border-box;
+  width: 100%;
+}
+.m-tc-lap-man.m-t650 .m-t650-hang .m-tc-lap-select,
+.m-tc-lap-man.m-t650 .m-t650-hang .m-tc-lap-dt-box { color: var(--blue); }
+.m-tc-lap-man.m-t650 .m-t650-hang .m-tc-lap-select > span,
+.m-tc-lap-man.m-t650 .m-t650-hang .m-tc-lap-dt-box > span {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: inherit;
+  font-weight: 400;
+}
+.m-tc-lap-man.m-t650 .m-t650-hang .m-tc-lap-select > span.trong,
+.m-tc-lap-man.m-t650 .m-t650-hang .m-tc-lap-dt-box > span.trong { color: var(--muted); }
+.m-tc-lap-man.m-t650 .m-t650-hang svg { flex: none; }
+.m-tc-lap-man.m-t650 .m-t650-hang .m-tc-lap-inp { color: var(--ink); }
+.m-tc-lap-man.m-t650 .m-t650-hang .m-tc-lap-inp::placeholder { color: var(--muted); }
+.m-tc-lap-man.m-t650 .m-t650-hang .m-tc-lap-inp:focus { border-color: var(--blue); }
+.m-tc-lap-man.m-t650 .m-t650-hang .m-tc-lap-inp-tien-wrap { position: relative; display: block; }
+.m-tc-lap-man.m-t650 .m-t650-hang .m-tc-lap-inp-tien-wrap .m-tc-lap-inp { padding-right: 28px; font-variant-numeric: tabular-nums; }
+.m-tc-lap-man.m-t650 .m-t650-hang .m-tc-lap-inp-tien-wrap .don-vi {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-size: 14px;
+}
+/* Ô số tiền mang .m-lp-tien-inp cho kiem_tra.py; luật cũ của lớp này dùng !important nên phải đè lại */
+.m-tc-lap-man.m-t650 .m-t650-hang .m-tc-lap-inp.m-lp-tien-inp {
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  color: var(--ink) !important;
+  border: 1px solid var(--line) !important;
+  background: var(--white) !important;
+  padding: 0 28px 0 12px !important;
+  line-height: normal !important;
+}
+.m-tc-lap-man.m-t650 .m-t650-hang .m-tc-lap-inp.m-lp-tien-inp:focus { border-color: var(--blue) !important; }
+.m-tc-lap-man.m-t650 .m-t650-hang .m-tc-lap-inp.m-t650-tien { font-weight: 600 !important; }
+.m-tc-lap-man.m-t650 .m-t650-hang .m-tc-lap-inp.m-t650-tien.chi { color: var(--red) !important; }
+.m-tc-lap-man.m-t650 .m-t650-hang .m-tc-lap-inp.m-t650-tien.thu { color: var(--green) !important; }
+.m-t650-doc-tien { margin: -4px 0 0 142px; font-size: 12px; color: var(--muted); font-style: italic; text-align: right; }
+.m-tc-lap-man.m-t650 .m-tc-lap-textarea.m-t650-ghi-chu {
+  margin-top: 4px;
+  min-height: 52px;
+  padding: 14px;
+  border-radius: 12px;
+  background: var(--white);
+  font-size: 14px;
+  line-height: 1.4;
+}
+.m-tc-lap-man.m-t650 .m-tc-lap-textarea.m-t650-ghi-chu:focus { border-color: var(--blue); }
+/* Dòng chi tiết: nhãn Dòng n, nút xoá đỏ, ngăn bằng đường kẻ mảnh */
+.m-tc-lap-man.m-t650 .m-t650-the .m-tc-lap-dong-item {
+  margin: 0;
+  padding: 0 0 12px;
+  border: 0;
+  border-bottom: 1px solid var(--line-2);
+  border-radius: 0;
+  background: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.m-tc-lap-man.m-t650 .m-t650-the .m-tc-lap-dong-item.moi { background: var(--tint); margin: 0 -8px; padding: 8px 8px 12px; border-radius: 10px; }
+.m-tc-lap-man.m-t650 .m-tc-lap-dong-item .m-tc-dong-item-dau { display: flex; align-items: center; justify-content: space-between; min-height: 32px; margin: 0; }
+.m-tc-lap-man.m-t650 .m-tc-lap-dong-item .m-tc-dong-item-dau .ten { font-size: 13px; font-weight: 600; color: var(--muted); }
+.m-tc-lap-man.m-t650 .m-tc-lap-dong-item .m-tc-btn-xoa-dong { width: 36px; height: 32px; margin-right: -8px; color: var(--red); background: none; }
+.m-tc-lap-man.m-t650 .m-tc-lap-dong-item .m-tc-lap-cac-truong-mo-rong { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+/* Chi tiết chưa có dòng: hình minh hoạ, câu nhắc, nút Thêm dòng ngay dưới */
+.m-t650-trong { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 12px 0 0; font-size: 15px; color: var(--body); }
+.m-t650-trong + .m-t650-them-dong { margin-top: -6px; }
+.m-t650-them-dong {
+  align-self: center;
+  height: 44px;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--blue);
+  font-size: 15px;
+}
+.m-tc-lap-man.m-t650 .m-t650-the .m-tc-dong-tong-cong {
+  margin: 0;
+  padding: 12px 0 0;
+  border: 0;
+  border-top: 1px solid var(--line-2);
+  background: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.m-tc-lap-man.m-t650 .m-tc-dong-tong-cong .nhan { font-size: 14px; color: var(--ink); }
+.m-tc-lap-man.m-t650 .m-tc-dong-tong-cong .so { font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.m-tc-lap-man.m-t650 .m-tc-dong-tong-cong .so.chi { color: var(--red); }
+.m-tc-lap-man.m-t650 .m-tc-dong-tong-cong .so.thu { color: var(--green); }
+/* Khối Nợ, Có: một ô viền như các ô khác, bỏ khung lồng */
+.m-tc-lap-man.m-t650 .m-t650-the .m-tc-ht-test {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+}
+.m-tc-lap-man.m-t650 .m-t650-the .m-tc-ht-test .m-lp-hang-tk {
+  height: 42px;
+  box-sizing: border-box;
+  align-items: center;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--white);
+  font-size: 14px;
+  color: var(--ink);
+  display: flex;
+  justify-content: space-between;
+}
+/* Chân: một nút Lưu rộng hết màn */
+.m-tc-lap-man.m-t650 .m-tc-lap-footer { padding: 12px 14px 20px; display: block; }
+.m-tc-lap-man.m-t650 .m-tc-lap-footer .m-tc-btn-luu {
+  width: 100%;
+  height: 52px;
+  border-radius: 14px;
+  background: var(--blue);
+  color: #fff;
+  font-size: 17px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.m-tc-lap-man.m-t650 .m-tc-lap-footer .m-tc-btn-luu:active { background: var(--blue-d); }

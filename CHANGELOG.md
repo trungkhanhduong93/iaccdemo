@@ -2,6 +2,9 @@
 
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
+## 24/10/2026
+- T650: Điện thoại, màn tạo mới, sửa phiếu thu chi theo bố cục mới: tên ô bên trái, giá trị bên phải, thẻ Đối tượng, thẻ Chi tiết, một nút Lưu. Phiếu mới chưa có dòng chi tiết, bấm Thêm dòng để nhập số tiền. Bỏ khung số tiền ở đầu màn, ô Số phiếu, ô Địa chỉ. Gói Standard dùng chung form, nhập được nhiều dòng.
+
 ## 23/10/2026
 - T651: Điện thoại, chi tiết phiếu Xuất bán POS có đủ thông tin như web: thẻ Đơn hàng POS (thêm Số đơn POS), Khách hàng (tên công ty, mã số thuế, người mua, địa chỉ khi khách lấy hoá đơn), Hoá đơn (số, ký hiệu, ngày, mã tra cứu có nút chép; khách không lấy hoá đơn ghi "Không có thông tin HĐĐT"). Hàng hoá có số thứ tự, mã cạnh tên, tổng dòng bên phải, bên dưới là số lượng × đơn giá, giảm giá, thuế. Khung tổng nền xám tách Giảm giá và Chiết khấu, bỏ dòng Phiếu giảm giá. Trạng thái ghi "Đã đồng bộ" như web.
 - T647: Web, chi tiết chứng từ (thu chi, mua hàng, kiểm kê, xuất, nhập điều chỉnh, bán hàng, kho) bỏ ô Số phiếu ở cột bên phải. Số phiếu chỉ hiện ở tiêu đề giữa sau khi lưu. Thẻ chi phí phân bổ bỏ ô Số thẻ, số thẻ hiện ở tiêu đề.

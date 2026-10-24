@@ -130,7 +130,6 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
   const isChi = loai === 'chi' || loai === 'unc'
   const isThu = loai === 'thu' || loai === 'bc'
   const isCq = loai === 'cq'
-  const isStandardThuChi = s.goi === 'S' && !isCq
 
   const cnNhoId = layChiNhanhNho()
   const cnNhoTen = CUA_HANG.find(c => c.id === cnNhoId)?.ten
@@ -221,6 +220,8 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
         tkCo: d.tkCo || (isChi ? '1111' : '131'),
       }))
     }
+    // T650: phiếu mới có mục Chi tiết thì chưa có dòng nào, bấm Thêm dòng để nhập
+    if (!isCq) return []
     return [{
       ten: '',
       sl: 1,
@@ -360,7 +361,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
     setDsDong(prev => [
       ...prev,
       {
-        ten: `Dòng chi tiết ${prev.length + 1}`,
+        ten: prev.length === 0 ? '' : `Dòng chi tiết ${prev.length + 1}`,
         sl: 1,
         gia: 0,
         tien: 0,
@@ -421,25 +422,12 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
       _quy: quy,
       _lyDo: lyDo,
       _ghiChu: ghiChu,
-      dienGiai: isStandardThuChi && dsDong.length <= 1
-        ? (ghiChu.trim() || (isChi ? 'Chi tiền' : 'Thu tiền'))
-        : (dsDong[0]?.ten || ghiChu || (isChi ? 'Chi tiền' : 'Thu tiền')),
+      dienGiai: dsDong[0]?.ten || ghiChu || (isChi ? 'Chi tiền' : 'Thu tiền'),
       tien: soTien,
       tong: soTien,
       _dong: isCq
         ? undefined
-        : (isStandardThuChi && dsDong.length <= 1)
-          ? [{
-              ten: ghiChu.trim() || (isChi ? 'Chi tiền' : 'Thu tiền'),
-              sl: 1,
-              gia: soTien,
-              tien: soTien,
-              ly: lyDo,
-              dt: doiTuong,
-              km: dsDong[0]?.km || '',
-              cv: dsDong[0]?.cv || '',
-            }]
-          : dsDong.map(({ moi, ...d }) => ({
+        : dsDong.map(({ moi, ...d }) => ({
               ...d,
               ten: d.ten || ghiChu || (isChi ? 'Chi tiền' : 'Thu tiền'),
               tien: d.tien,
@@ -511,7 +499,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
     setDiaChi('')
     setNguoiGiaoDich('')
     setGhiChu('')
-    setDsDong([{
+    setDsDong(!isCq ? [] : [{
       ten: '',
       sl: 1,
       gia: 0,
@@ -603,6 +591,9 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
 
   const tenLoaiHienTai = dsLoaiOptions.find(o => o.k === loai)?.ten || 'Chi tiền mặt'
 
+  // T650: ô Số tiền ở thẻ đầu chỉ cho chuyển quỹ (không có mục Chi tiết); mọi gói khác nhập ở Chi tiết
+  const coTienDau = isCq
+
   if (daLuu && phieuVuaLuu) {
     const dsTomTatThuChi: DongTomTat[] = [
       { nhan: 'Số phiếu', giaTri: <b>{phieuVuaLuu.so}</b> },
@@ -625,21 +616,21 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
   }
 
   return (
-    <div className="m-tc-lap-man m-lp">
-      {/* ── HEADER NAVIGATION THEO FIGMA MB05 ── */}
+    <div className="m-tc-lap-man m-lp m-t650">
+      {/* ── ĐẦU MÀN KIỂU NHẬP MUA HÀNG (T650): mũi tên quay lại, tiêu đề giữa, số phiếu dưới ── */}
       <header className="m-tc-lap-header">
         <button
           type="button"
           className="m-tc-btn-nav"
           onClick={dongHoacHuy}
-          aria-label="Đóng"
+          aria-label="Quay lại"
         >
-          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M18 6L6 18M6 6l12 12" />
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M20 12H5M11 6l-6 6 6 6" />
           </svg>
         </button>
         <div className="m-tc-lap-tieu-de-khu">
-          <span className="dong1">{dangSua ? `Sửa ${isChi ? 'phiếu chi' : isThu ? 'phiếu thu' : 'phiếu'}` : `Lập ${isChi ? 'phiếu chi' : isThu ? 'phiếu thu' : 'phiếu'}`}</span>
+          <span className="dong1">{dangSua ? `Sửa ${isChi ? 'phiếu chi' : isThu ? 'phiếu thu' : 'phiếu'}` : `Tạo mới ${isChi ? 'phiếu chi' : isThu ? 'phiếu thu' : 'phiếu'}`}</span>
           {dangSua && <span className="dong2">{soCt}</span>}
         </div>
         <div className="m-tc-nav-khoang-trong" />
@@ -658,165 +649,107 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
         {dienSan && (
           <div className="m-t600-dai-dien-san">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-            <span>Điền sẵn từ phiếu mua <b>{dienSan.soMua ?? dienSan.thamChieuSo}</b>. Kiểm lại rồi bấm Lưu phiếu.</span>
+            <span>Điền sẵn từ phiếu mua <b>{dienSan.soMua ?? dienSan.thamChieuSo}</b>. Kiểm lại rồi bấm Lưu.</span>
           </div>
         )}
-        {/* 1. Card Số tiền (sửa trực tiếp) */}
-        <section className="m-tc-card-so-tien">
-          <div className="m-tc-hang-loai-ch">
-            <div
-              className={`m-tc-pill-loai ${isChi ? 'chi' : isThu ? 'thu' : 'cq'}`}
-              aria-label="Loại phiếu"
-            >
-              <span>{tenLoaiHienTai}</span>
-            </div>
 
-            <div
-              className="m-tc-dong-ch"
-              aria-label="Chi nhánh"
-            >
+        {/* 1. Thẻ thông tin chung: loại phiếu, cửa hàng, quỹ, lý do, ngày, ghi chú (T650) */}
+        <section className="m-tc-lap-card m-t650-the">
+          <div className="m-t650-dau-the">
+            <span className={`m-tc-pill-loai ${isChi ? 'chi' : isThu ? 'thu' : 'cq'}`} aria-label="Loại phiếu">
+              <span>{tenLoaiHienTai}</span>
+            </span>
+            <span className="m-tc-badge-nguon">{String(goc?.nguon ?? '') === 'FABi' || soCt.startsWith('FB') ? 'FABi' : 'Thủ công'}</span>
+            <span className="m-t650-ch" aria-label="Cửa hàng">
               <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
                 <polyline points="9 22 9 12 15 12 15 22" />
               </svg>
               <span>{cuaHang}</span>
-            </div>
+            </span>
           </div>
+          <div className="m-t650-ke" />
 
-          <label className="m-tc-nhan-tien" htmlFor="tc-nhap-tien">
-            {isChi ? 'Số tiền chi' : isThu ? 'Số tiền thu' : 'Số tiền'} <span className="sao">*</span>
-          </label>
-
-          <label className="m-tc-o-so-tien-wrap" htmlFor="tc-nhap-tien">
-            <input
-              id="tc-nhap-tien"
-              type="text"
-              inputMode="numeric"
-              disabled={!isCq && dsDong.length >= 2}
-              className={`m-tc-inp-tien m-lp-tien-inp ${isChi ? 'chi' : isThu ? 'thu' : 'cq'}`}
-              value={strTien}
-              onChange={e => handleSuaTien(e.target.value)}
-              placeholder="0"
-            />
-            <span className={`m-tc-don-vi ${isChi ? 'chi' : isThu ? 'thu' : 'cq'}`}>đ</span>
-          </label>
-
-          <label className="m-tc-doc-tien" htmlFor="tc-nhap-tien">
-            {docSoTien(soTien)}
-          </label>
-
-          {isStandardThuChi ? (
-            <div className="m-tc-lap-field">
-              <label className="nhan" htmlFor="tc-nhap-dien-giai">Diễn giải</label>
-              <input
-                id="tc-nhap-dien-giai"
-                type="text"
-                className="m-tc-lap-inp"
-                value={ghiChu}
-                onChange={e => {
-                  const val = e.target.value
-                  setGhiChu(val)
-                  setDaSua(true)
-                  if (dsDong.length <= 1) {
-                    setDsDong(ds => {
-                      const n = [...ds]
-                      if (n[0]) n[0] = { ...n[0], ten: val }
-                      return n
-                    })
-                  }
-                }}
-                placeholder="Nhập diễn giải"
-              />
-            </div>
-          ) : (
-            !isCq && (
-              <div className="m-tc-goi-y-dong-bo">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0284c7" strokeWidth="2">
-                  <circle cx="12" cy="12" r="10" />
-                  <line x1="12" y1="16" x2="12" y2="12" />
-                  <line x1="12" y1="8" x2="12.01" y2="8" />
-                </svg>
-                <span>Phiếu 1 dòng: sửa số tiền ngay tại đây, dòng chi tiết tự cập nhật. Từ 2 dòng trở lên, số tiền = tổng các dòng ở mục Chi tiết.</span>
+          {/* Số tiền nhập ở đây khi không có mục Chi tiết: chuyển quỹ, gói Standard 1 dòng */}
+          {coTienDau && (
+            <>
+              <div className="m-tc-lap-field m-t650-hang">
+                <label className="nhan" htmlFor="tc-nhap-tien">
+                  {isChi ? 'Số tiền chi' : isThu ? 'Số tiền thu' : 'Số tiền'} <span className="sao">*</span>
+                </label>
+                <label className="m-tc-lap-inp-tien-wrap" htmlFor="tc-nhap-tien">
+                  <input
+                    id="tc-nhap-tien"
+                    type="text"
+                    inputMode="numeric"
+                    className={`m-tc-lap-inp m-lp-tien-inp m-t650-tien ${isChi ? 'chi' : isThu ? 'thu' : 'cq'}`}
+                    value={strTien}
+                    onChange={e => handleSuaTien(e.target.value)}
+                    placeholder="0"
+                  />
+                  <span className="don-vi">đ</span>
+                </label>
               </div>
-            )
+              {soTien > 0 && <div className="m-t650-doc-tien">{docSoTien(soTien)}</div>}
+            </>
           )}
-        </section>
 
-        {/* 2. Group THÔNG TIN CHUNG: ngày, số phiếu, quỹ, lý do (T539) */}
-        <div className="m-tc-nhom-chu">THÔNG TIN CHUNG</div>
-        <section className="m-tc-lap-card">
-          <div className="m-tc-lap-hang-2col">
-            <div
-              className="m-tc-lap-field col"
-              id="m-lp-o-thoiGian"
-              onClick={() => setMoLich(true)}
-              style={{ cursor: 'pointer' }}
-            >
-              <label className="nhan">Ngày chứng từ <span className="sao">*</span></label>
-              <div className="m-tc-lap-select">
-                <span className="m-lp-dong-tri">{ngay}</span>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="1.8">
-                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                  <line x1="16" y1="2" x2="16" y2="6" />
-                  <line x1="8" y1="2" x2="8" y2="6" />
-                  <line x1="3" y1="10" x2="21" y2="10" />
-                </svg>
-              </div>
-            </div>
-
-            <div className="m-tc-lap-field col">
-              <label className="nhan">Số phiếu {isChi ? 'chi' : isThu ? 'thu' : ''}</label>
-              <div className="m-tc-lap-inp-khoa">
-                <span>{soCt}</span>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="1.8">
-                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                </svg>
-              </div>
-            </div>
-          </div>
-
-          <div className="m-tc-lap-field">
+          <div className="m-tc-lap-field m-t650-hang">
             <label className="nhan">
-              {isChi ? 'Quỹ tiền mặt' : isThu ? 'Quỹ thu tiền' : 'Quỹ'} <span className="sao">*</span>
+              {isCq ? 'Quỹ' : 'Quỹ tiền mặt'} <span className="sao">*</span>
             </label>
             <div
               className="m-tc-lap-select"
               onClick={() => setMoChonQuy(true)}
             >
               <span className={!quy ? 'trong' : ''}>{quy || 'Chọn quỹ tiền'}</span>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M6 9l6 6 6-6" />
               </svg>
             </div>
           </div>
 
           <div
-            className="m-tc-lap-field m-lp-sua-o"
+            className="m-tc-lap-field m-t650-hang m-lp-sua-o"
             onClick={() => setMoChonLyDo(true)}
             style={{ cursor: 'pointer' }}
           >
-            <label className="nhan">{isChi ? 'Lý do chi' : 'Lý do thu'} <span className="sao">*</span></label>
+            <div className="m-t650-nhan-cot">
+              <label className="nhan">{isChi ? 'Lý do chi' : 'Lý do thu'} <span className="sao">*</span></label>
+              {laChiPhi && <span className="m-tc-badge-nhom-cp">Chi phí</span>}
+            </div>
             <div className="m-tc-lap-select">
-              <div className="m-tc-lydo-val-wrap">
-                <span className={`ten${!lyDo ? ' trong' : ''}`}>{lyDo || (isChi ? 'Chọn lý do chi' : 'Chọn lý do thu')}</span>
-                {laChiPhi && <span className="m-tc-badge-nhom-cp">Chi phí</span>}
-              </div>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2">
+              <span className={`ten${!lyDo ? ' trong' : ''}`}>{lyDo || 'Chọn lý do'}</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </div>
+          </div>
+
+          <div
+            className="m-tc-lap-field m-t650-hang"
+            id="m-lp-o-thoiGian"
+            onClick={() => setMoLich(true)}
+            style={{ cursor: 'pointer' }}
+          >
+            <label className="nhan">Ngày chứng từ <span className="sao">*</span></label>
+            <div className="m-tc-lap-select">
+              <span className="m-lp-dong-tri">{ngay}</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M6 9l6 6 6-6" />
               </svg>
             </div>
           </div>
 
           {laChiPhi && (
-          <div className="m-tc-lap-field">
+          <div className="m-tc-lap-field m-t650-hang">
             <label className="nhan">Tháng ghi nhận chi phí</label>
             <div
               className="m-tc-lap-select"
               onClick={() => setMoChonThangCp(true)}
             >
               <span>{thangChiPhi}</span>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M6 9l6 6 6-6" />
               </svg>
             </div>
@@ -841,59 +774,60 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
 
           {/* Khối hạch toán cho kiểm tra test 17A */}
           {s.goi !== 'S' && (
-            <div className="m-tc-ht-test m-xp-the-ht" style={{ borderTop: '1px solid #e5e7eb', paddingTop: '10px', marginTop: '10px' }}>
+            <div className="m-tc-ht-test m-xp-the-ht">
               <div
                 className="m-lp-the-ht-tieu m-lp-hang-tk"
                 onClick={() => setMoChonTk(true)}
-                style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: '#1f2225', padding: '4px 0' }}
+                style={{ cursor: 'pointer' }}
               >
                 <span>Nợ {dsDong[0]?.tkNo || (lyDo.includes('lương') ? '334' : '242')}</span>
                 <span>Có {dsDong[0]?.tkCo || '1111'}</span>
               </div>
             </div>
           )}
+
+          {/* Ghi chú rộng hết thẻ */}
+          <textarea
+            className="m-tc-lap-textarea m-t650-ghi-chu"
+            aria-label="Ghi chú"
+            rows={1}
+            value={ghiChu}
+            onChange={e => {
+              const val = e.target.value
+              setGhiChu(val)
+              setDaSua(true)
+              if (dsDong.length <= 1) {
+                setDsDong(ds => {
+                  const n = [...ds]
+                  if (n[0]) n[0] = { ...n[0], ten: val }
+                  return n
+                })
+              }
+            }}
+            placeholder="Ghi chú"
+          />
         </section>
 
-        {/* 3. Group ĐỐI TƯỢNG: đối tượng, địa chỉ, người giao dịch, ghi chú */}
-        <div className="m-tc-nhom-chu">ĐỐI TƯỢNG</div>
-        <section className="m-tc-lap-card">
-          <div className="m-tc-lap-field">
+        {/* 2. Thẻ ĐỐI TƯỢNG: đối tượng, địa chỉ, người giao dịch */}
+        <section className="m-tc-lap-card m-t650-the">
+          <div className="m-t650-tieu">Đối tượng</div>
+          <div className="m-tc-lap-field m-t650-hang">
             <label className="nhan">Đối tượng</label>
             <div
               className="m-tc-lap-dt-box"
               onClick={() => setMoChonDt(true)}
             >
-              <div className="m-tc-lap-avatar" style={{ background: '#f3f4f6', color: '#9ca3af' }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                  <circle cx="12" cy="7" r="4" />
-                </svg>
-              </div>
               <span className={`ten${!doiTuong ? ' trong' : ''}`}>{doiTuong || 'Chọn đối tượng'}</span>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M6 9l6 6 6-6" />
               </svg>
             </div>
           </div>
 
-          <div className="m-tc-lap-field">
-            <label className="nhan">Địa chỉ</label>
-            <textarea
-              className="m-tc-lap-textarea"
-              rows={2}
-              value={diaChi}
-              onChange={e => {
-                setDiaChi(e.target.value)
-                setDaSua(true)
-              }}
-              placeholder="Nhập địa chỉ"
-            />
-            <span className="m-tc-subtext">Lấy từ danh mục đối tượng, vẫn sửa được nếu cần</span>
-          </div>
-
-          <div className="m-tc-lap-field">
-            <label className="nhan">Người giao dịch</label>
+          <div className="m-tc-lap-field m-t650-hang">
+            <label className="nhan" htmlFor="tc-nguoi-gd">{isThu ? 'Người nộp' : 'Người giao dịch'}</label>
             <input
+              id="tc-nguoi-gd"
               type="text"
               className="m-tc-lap-inp"
               value={nguoiGiaoDich}
@@ -901,192 +835,154 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
                 setNguoiGiaoDich(e.target.value)
                 setDaSua(true)
               }}
-              placeholder="Họ và tên người giao dịch"
+              placeholder="Nhập tên"
             />
           </div>
-
-          {!isStandardThuChi && (
-            <div className="m-tc-lap-field">
-              <label className="nhan">Ghi chú</label>
-              <textarea
-                className="m-tc-lap-textarea"
-                rows={2}
-                value={ghiChu}
-                onChange={e => {
-                  const val = e.target.value
-                  setGhiChu(val)
-                  setDaSua(true)
-                  if (dsDong.length <= 1) {
-                    setDsDong(ds => {
-                      const n = [...ds]
-                      if (n[0]) n[0] = { ...n[0], ten: val }
-                      return n
-                    })
-                  }
-                }}
-                placeholder="Nhập ghi chú"
-              />
-            </div>
-          )}
         </section>
 
-        {/* 5. Group CHI TIẾT (hiện cho mọi gói, trừ chuyển quỹ T555; gói F chỉ hiện khi >= 2 dòng T608) */}
-        {!isCq && (!isStandardThuChi || dsDong.length >= 2) && (
-          <>
-            <div className="m-tc-nhom-chu">
-              CHI TIẾT <span className="so-dong">{dsDong.length} dòng</span>
+        {/* 3. Thẻ CHI TIẾT (mọi gói, trừ chuyển quỹ T555) */}
+        {!coTienDau && (
+          <section className="m-tc-lap-card m-t650-the">
+            <div className="m-t650-tieu">
+              Chi tiết {dsDong.length > 0 && <small>{dsDong.length} dòng</small>}
             </div>
-            <section className="m-tc-lap-card">
-              {dsDong.map((d, idx) => {
-                const moRong = dongMoRong[idx] ?? false
-                return (
-                  <div key={idx} className={`m-tc-lap-dong-item${d.moi ? ' moi' : ''}`}>
-                    <div className="m-tc-dong-item-dau">
-                      <div className="m-tc-stt-tron">{idx + 1}</div>
-                      <span className="ten">{d.ten?.trim() ? d.ten : 'Dòng mới'}</span>
-                      {dsDong.length > 1 && (
-                        <button
-                          type="button"
-                          className="m-tc-btn-xoa-dong"
-                          onClick={() => handleXoaDong(idx)}
-                          aria-label="Xoá dòng"
-                        >
-                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <polyline points="3 6 5 6 21 6" />
-                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                          </svg>
-                        </button>
-                      )}
-                    </div>
-
-                    <div className="m-tc-lap-field">
-                      <label className="nhan">Diễn giải</label>
-                      <input
-                        type="text"
-                        className="m-tc-lap-inp"
-                        value={d.ten}
-                        onChange={e => handleSuaDong(idx, { ten: e.target.value })}
-                        placeholder="Nhập diễn giải"
-                      />
-                    </div>
-
-                    <div className="m-tc-lap-field">
-                      <label className="nhan">Thành tiền</label>
-                      <div className="m-tc-lap-inp-tien-wrap">
-                        <input
-                          type="text"
-                          inputMode="numeric"
-                          className="m-tc-lap-inp"
-                          value={money(d.tien)}
-                          onChange={e => {
-                            const num = docSoVN(goSoVN(e.target.value, false))
-                            handleSuaDong(idx, { tien: num, gia: num })
-                          }}
-                        />
-                        <span className="don-vi">đ</span>
-                      </div>
-                      {dsDong.length === 1 && (
-                        <span className="m-tc-subtext">
-                          Đồng bộ với Số tiền {isThu ? 'thu' : 'chi'} ở đầu phiếu
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Nút toggle mở rộng thông tin dòng (chỉ gói có phí QD18) */}
-                    {s.goi !== 'S' && (
-                      <div className="m-tc-lap-mo-rong">
-                        <button
-                          type="button"
-                          className="m-tc-btn-toggle-mo-rong"
-                          onClick={() => setDongMoRong(m => ({ ...m, [idx]: !moRong }))}
-                        >
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ transform: moRong ? 'rotate(180deg)' : 'none', transition: 'transform .15s' }}>
-                            <path d="M6 9l6 6 6-6" />
-                          </svg>
-                          <span>Thêm thông tin dòng</span>
-                        </button>
-                        <span className="m-tc-subtext">Lý do chi, Đối tượng, Khoản mục, Công việc</span>
-
-                        {moRong && (
-                          <div className="m-tc-lap-cac-truong-mo-rong">
-                            <div className="m-tc-lap-field">
-                              <label className="nhan">Khoản mục</label>
-                              <input
-                                type="text"
-                                className="m-tc-lap-inp"
-                                value={d.km || ''}
-                                onChange={e => handleSuaDong(idx, { km: e.target.value.toUpperCase() })}
-                                placeholder="Mã khoản mục chi phí"
-                              />
-                            </div>
-                            <div className="m-tc-lap-field">
-                              <label className="nhan">Công việc</label>
-                              <input
-                                type="text"
-                                className="m-tc-lap-inp"
-                                value={d.cv || ''}
-                                onChange={e => handleSuaDong(idx, { cv: e.target.value })}
-                                placeholder="Công việc hoặc sự kiện"
-                              />
-                            </div>
-                          </div>
-                        )}
-                      </div>
+            {dsDong.length === 0 && (
+              <div className="m-t650-trong">
+                <svg width="96" height="80" viewBox="0 0 96 80" fill="none" aria-hidden="true">
+                  <ellipse cx="48" cy="72" rx="32" ry="5" fill="#f1f5f9" />
+                  <rect x="24" y="14" width="48" height="56" rx="6" fill="#f1f5f9" stroke="#cbd5e1" strokeWidth="1.5" />
+                  <path d="M34 30h28M34 40h28M34 50h18" stroke="#cbd5e1" strokeWidth="2" strokeLinecap="round" />
+                  <circle cx="70" cy="56" r="11" fill="#fff" stroke="#cbd5e1" strokeWidth="1.5" />
+                  <path d="M70 51v10M65 56h10" stroke="#94a3b8" strokeWidth="1.8" strokeLinecap="round" />
+                </svg>
+                <span>Chưa có dòng chi tiết nào</span>
+              </div>
+            )}
+            {dsDong.map((d, idx) => {
+              const moRong = dongMoRong[idx] ?? false
+              return (
+                <div key={idx} className={`m-tc-lap-dong-item${d.moi ? ' moi' : ''}`}>
+                  <div className="m-tc-dong-item-dau">
+                    <span className="ten">Dòng {idx + 1}</span>
+                    {dsDong.length > 1 && (
+                      <button
+                        type="button"
+                        className="m-tc-btn-xoa-dong"
+                        onClick={() => handleXoaDong(idx)}
+                        aria-label={`Xoá dòng ${idx + 1}`}
+                      >
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="3 6 5 6 21 6" />
+                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                        </svg>
+                      </button>
                     )}
                   </div>
-                )
-              })}
 
-              {/* Nút Thêm dòng viền nét đứt */}
-              {!isStandardThuChi && (
-                <button
-                  type="button"
-                  className="m-tc-btn-them-dong-dashed"
-                  onClick={handleThemDong}
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                    <path d="M12 5v14M5 12h14" />
-                  </svg>
-                  <span>Thêm dòng</span>
-                </button>
-              )}
-
-              {/* Dòng tổng cộng (chỉ hiện khi từ 2 dòng trở lên) */}
-              {dsDong.length >= 2 && (
-                <div className="m-tc-dong-tong-cong">
-                  <div className="m-tc-tong-trai">
-                    <span className="nhan">Tổng cộng</span>
-                    <span className="phu">{dsDong.length} dòng</span>
+                  <div className="m-tc-lap-field m-t650-hang">
+                    <label className="nhan">Diễn giải</label>
+                    <input
+                      type="text"
+                      className="m-tc-lap-inp"
+                      value={d.ten}
+                      onChange={e => handleSuaDong(idx, { ten: e.target.value })}
+                      placeholder="Nhập diễn giải"
+                    />
                   </div>
-                  <span className={`so ${isChi ? 'chi' : isThu ? 'thu' : 'cq'}`}>
-                    {money(soTien)} đ
-                  </span>
+
+                  <div className="m-tc-lap-field m-t650-hang">
+                    <label className="nhan">Thành tiền</label>
+                    <div className="m-tc-lap-inp-tien-wrap">
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        className={`m-tc-lap-inp${idx === 0 ? ' m-lp-tien-inp' : ''}`}
+                        value={money(d.tien)}
+                        onChange={e => {
+                          const num = docSoVN(goSoVN(e.target.value, false))
+                          handleSuaDong(idx, { tien: num, gia: num })
+                        }}
+                        placeholder="0"
+                      />
+                      <span className="don-vi">đ</span>
+                    </div>
+                  </div>
+
+                  {/* Nút toggle mở rộng thông tin dòng (chỉ gói có phí QD18) */}
+                  {s.goi !== 'S' && (
+                    <div className="m-tc-lap-mo-rong">
+                      <button
+                        type="button"
+                        className="m-tc-btn-toggle-mo-rong"
+                        onClick={() => setDongMoRong(m => ({ ...m, [idx]: !moRong }))}
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ transform: moRong ? 'rotate(180deg)' : 'none', transition: 'transform .15s' }}>
+                          <path d="M6 9l6 6 6-6" />
+                        </svg>
+                        <span>Thêm thông tin dòng</span>
+                      </button>
+                      <span className="m-tc-subtext">Lý do chi, Đối tượng, Khoản mục, Công việc</span>
+
+                      {moRong && (
+                        <div className="m-tc-lap-cac-truong-mo-rong">
+                          <div className="m-tc-lap-field m-t650-hang">
+                            <label className="nhan">Khoản mục</label>
+                            <input
+                              type="text"
+                              className="m-tc-lap-inp"
+                              value={d.km || ''}
+                              onChange={e => handleSuaDong(idx, { km: e.target.value.toUpperCase() })}
+                              placeholder="Mã khoản mục chi phí"
+                            />
+                          </div>
+                          <div className="m-tc-lap-field m-t650-hang">
+                            <label className="nhan">Công việc</label>
+                            <input
+                              type="text"
+                              className="m-tc-lap-inp"
+                              value={d.cv || ''}
+                              onChange={e => handleSuaDong(idx, { cv: e.target.value })}
+                              placeholder="Công việc hoặc sự kiện"
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
-              )}
-            </section>
-          </>
+              )
+            })}
+
+            <button
+              type="button"
+              className="m-t650-them-dong"
+              onClick={handleThemDong}
+            >
+              <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="10" fill="currentColor" />
+                <path d="M12 7.5v9M7.5 12h9" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+              <span>Thêm dòng</span>
+            </button>
+
+            <div className="m-tc-dong-tong-cong">
+              <span className="nhan">Tổng cộng</span>
+              <span className={`so ${isChi ? 'chi' : isThu ? 'thu' : 'cq'}`}>
+                {money(soTien)} đ
+              </span>
+            </div>
+          </section>
         )}
       </main>
 
-      {/* ── FOOTER CỐ ĐỊNH ĐÁY ── */}
+      {/* ── CHÂN: một nút Lưu rộng hết màn (T650); huỷ bằng mũi tên quay lại ── */}
       <footer className="m-tc-lap-footer m-lp-day">
-        <button
-          type="button"
-          className="m-tc-btn-huy"
-          onClick={dongHoacHuy}
-        >
-          Huỷ thay đổi
-        </button>
-
         <button
           type="button"
           className="m-tc-btn-luu m-lp-nut-chinh m-lp-nut-luu"
           onClick={handleLuu}
         >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="20 6 9 17 4 12" />
-          </svg>
-          <span>Lưu phiếu</span>
+          Lưu
         </button>
       </footer>
 

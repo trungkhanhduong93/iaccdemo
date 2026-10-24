@@ -523,6 +523,10 @@ def kiem_tra_lap_phieu_dot_5():
                 loi.append(f'{ten_phieu} ({path_ds}): tràn ngang')
 
             if la_tien:
+                # T650: phiếu thu chi mới chưa có dòng chi tiết, bấm Thêm dòng để có ô số tiền
+                if pg.locator('.m-lp-tien-inp').count() == 0 and pg.locator('.m-t650-them-dong').count() > 0:
+                    pg.locator('.m-t650-them-dong').first.click()
+                    pg.wait_for_timeout(150)
                 inp_tien = pg.locator('.m-lp-tien-inp')
                 if inp_tien.count() == 0:
                     loi.append(f'{ten_phieu} ({path_ds}): thiếu ô nhập số tiền .m-lp-tien-inp')
@@ -1074,6 +1078,9 @@ def kiem_tra_dang_nhap_dot_8():
                             loi.append('Phiếu chi: không mở form lập phiếu .m-lp')
                         else:
                             # Màn hình một màn: điền số tiền, kiểm không tràn ngang, lưu
+                            if pg.locator('.m-lp-tien-inp').count() == 0 and pg.locator('.m-t650-them-dong').count() > 0:
+                                pg.locator('.m-t650-them-dong').first.click()
+                                pg.wait_for_timeout(150)
                             inp_tien = pg.locator('.m-lp-tien-inp')
                             if inp_tien.count() == 0:
                                 loi.append('Phiếu chi: thiếu ô nhập số tiền .m-lp-tien-inp')
@@ -3249,7 +3256,10 @@ def kiem_tra_dot_17_a():
             pg.locator('.m-tam-dong').first.click()
             pg.wait_for_timeout(300)
 
-        # Điền số tiền
+        # Điền số tiền (T650: phiếu mới chưa có dòng thì bấm Thêm dòng trước)
+        if pg.locator('.m-lp-tien-inp').count() == 0 and pg.locator('.m-t650-them-dong').count() > 0:
+            pg.locator('.m-t650-them-dong').first.click()
+            pg.wait_for_timeout(150)
         inps_tien = pg.locator('.m-lp-tien-inp, .m-lp-sua-inp.num')
         if inps_tien.count() > 0:
             inps_tien.first.fill('600.000')
