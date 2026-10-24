@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 24/10/2026
+- T660: Điện thoại, chi tiết phiếu kiểm kê: nút Sao chép, Sửa nằm ngay thanh dưới cùng, nút ba chấm chỉ còn Xoá. Phiếu đã sinh phiếu điều chỉnh thì không có nút Sửa.
 - T659: Điện thoại, Lập phiếu kiểm kê: bấm chọn kho mở bảng trượt từ dưới lên, chạm là chọn, không còn bung cả màn hình và nút Áp dụng.
 - T658: Điện thoại, phiếu mua đã thanh toán (một phần hoặc đủ) không sửa được: bấm Sửa phiếu hiện hộp báo kèm số phiếu chi, nút Mở phiếu chi để xoá phiếu chi trước. Xoá phiếu chi trả ngay thì phiếu mua về Chưa thanh toán.
 - T657: Điện thoại, Lập phiếu kiểm kê: cửa hàng nằm cùng hàng với nhãn Kiểm kê định kỳ, bỏ nhãn Phiếu mới, bỏ dòng Số chứng từ, Diễn giải đổi thành Ghi chú. Điện thoại và web: phiếu kiểm kê đã sinh phiếu Xuất, Nhập điều chỉnh thì không sửa được nữa (vẫn xoá được).

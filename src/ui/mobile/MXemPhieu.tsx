@@ -372,7 +372,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
       nutPhu = null
     }
   } else if (s.goi === 'S') {
-    if (!khoaKk) nutChinh = {
+    if (!laKk) nutChinh = {
       nhan: 'Sửa phiếu',
       action: moSua,
     }
@@ -388,7 +388,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
         action: () => toast('Đã ghi sổ'),
       }
     }
-  } else if (!laDc && !khoaKk) {
+  } else if (!laDc && !laKk) {
     nutChinh = {
       nhan: 'Sửa phiếu',
       action: moSua,
@@ -399,8 +399,9 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
   const dsMenu = laDc
     ? [{ k: 'excel', ten: 'Xuất Excel' }]   // phiếu điều chỉnh chỉ xuất Excel (T603)
     : [
-        ...(nhomMb !== 'mua' && !khoaKk ? [{ k: 'sua', ten: 'Sửa chứng từ' }] : []),
-        { k: 'copy', ten: 'Sao chép chứng từ' },
+        // Phiếu kiểm kê: Sao chép, Sửa nằm ở thanh dưới, menu chỉ còn Xoá (T660)
+        ...(nhomMb !== 'mua' && !laKk ? [{ k: 'sua', ten: 'Sửa chứng từ' }] : []),
+        ...(!laKk ? [{ k: 'copy', ten: 'Sao chép chứng từ' }] : []),
         { k: 'xoa', ten: 'Xoá chứng từ' },
       ]
 
@@ -1216,6 +1217,18 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
               <circle cx="19" cy="12" r="2" />
             </svg>
           </button>
+
+          {/* Phiếu kiểm kê: Sao chép, Sửa ngay thanh dưới; đã sinh phiếu điều chỉnh thì không sửa (T657, T660) */}
+          {laKk && (
+            <button type="button" className="m-pb-btn-phu m-t660-nut" onClick={() => handleMenuChon('copy')}>
+              Sao chép
+            </button>
+          )}
+          {laKk && !khoaKk && (
+            <button type="button" className={nutChinh ? 'm-pb-btn-phu m-t660-nut' : 'm-pb-btn-sua'} onClick={moSua}>
+              Sửa
+            </button>
+          )}
 
           {nutPhu && (
             <button type="button" className="m-pb-btn-phu" onClick={nutPhu.action}>

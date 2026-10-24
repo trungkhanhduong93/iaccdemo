@@ -41981,3 +41981,16 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
 /* ── Điện thoại: lập phiếu kiểm kê, cửa hàng cùng hàng chip (T657) ── */
 .m-kk657-cn { min-width: 0; cursor: pointer; }
 .m-kk657-cn span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ── Chi tiết phiếu kiểm kê điện thoại: Sao chép, Sửa ở thanh dưới, chia đều bề ngang (T660) ── */
+.m-pb-man .m-pb-day .m-pb-btn-phu.m-t660-nut {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 0 8px;
+}
+.m-pb-man .m-pb-day:has(.m-t660-nut) .m-pb-btn-sua {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 0 8px;
+  justify-content: center;
+}
