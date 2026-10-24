@@ -181,7 +181,7 @@ export interface MDsChungTuChuanProps {
   chipsLoc?: ReactNode[]
 
   // Thẻ tổng & khoảng ngày
-  chuoiKhoangNgay?: string
+  chuoiKhoangNgay?: string                 // không còn hiện ở thẻ tổng, hàng lọc đã ghi (T653)
   hienTien?: boolean
   nhanDem?: string                          // đơn vị đếm, mặc định chứng từ (T645)
   nhanTong?: string                         // nhãn số tổng, mặc định Tổng cộng (T645)
@@ -217,7 +217,6 @@ export const MDsChungTuChuan: FC<MDsChungTuChuanProps> = ({
   onMoLoc,
   coLoc = false,
   chipsLoc = [],
-  chuoiKhoangNgay,
   hienTien = true,
   nhanDem = 'chứng từ',
   nhanTong = 'Tổng cộng',
@@ -406,7 +405,6 @@ export const MDsChungTuChuan: FC<MDsChungTuChuanProps> = ({
         <div className={`m-mh-card-tong${theTongThem ? ' m-mh-card-tong-them' : ''}`}>
           <div className="m-mh-th-trai">
             <span className="m-mh-th-dem">{listSauTim.length} {nhanDem}</span>
-            {chuoiKhoangNgay && <span className="m-mh-th-ngay">{chuoiKhoangNgay}</span>}
           </div>
           {hienTien && (
             <div className="m-mh-th-phai">
@@ -439,12 +437,15 @@ export const MDsChungTuChuan: FC<MDsChungTuChuanProps> = ({
             <p>{thongBaoTrong}</p>
           </div>
         ) : coNhomTheoNgay ? (
-          <div className="m-mh-ds-nhom">
+          <div className="m-mh-ds-nhom m-t653-ds">
             {nhomTheoNgay.map(nhom => (
-              <div key={nhom.ngayRaw} className="m-mh-nhom-item">
-                <div className="m-mh-nhom-header">
+              // Ngày nằm trong thẻ: đầu thẻ nền xám ghi ngày, tổng tiền hoặc số chứng từ (T653)
+              <div key={nhom.ngayRaw} className="m-mh-nhom-item m-t653-ngay">
+                <div className="m-mh-nhom-header m-t653-ngay-dau">
                   <span className="m-mh-nhom-ngay">{nhom.tieuDeNgay}</span>
-                  {hienTien && <span className="m-mh-nhom-tong">{money(nhom.tongNgay)} đ</span>}
+                  {hienTien
+                    ? <span className="m-mh-nhom-tong">{money(nhom.tongNgay)} đ</span>
+                    : <span className="m-t653-ngay-dem">{nhom.ds.length} {nhanDem}</span>}
                 </div>
                 <div className="m-mh-the-trang">
                   {nhom.ds.map((r, i) => renderDong(r, i))}

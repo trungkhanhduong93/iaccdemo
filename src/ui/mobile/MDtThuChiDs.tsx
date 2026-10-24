@@ -30,7 +30,7 @@ const LOAI_THU_CHI = [
   { k: 'cq', ten: 'Chuyển quỹ' },
 ]
 
-// Quỹ của từng loại phiếu, hiện bên phải dòng dưới mỗi chứng từ (T652)
+// Quỹ của từng loại phiếu, hiện thành nhãn cạnh số phiếu (T653)
 const QUY_THEO_LOAI: Record<string, string> = { thu: 'Tiền mặt', chi: 'Tiền mặt', bc: 'Ngân hàng', unc: 'Ngân hàng', cq: 'Chuyển quỹ' }
 
 function dinhDangThuNgay(chuoiNgay: string): string {
@@ -430,14 +430,16 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
             <p>Không có chứng từ nào phù hợp</p>
           </div>
         ) : (
-          <div className="m-t652-ds">
+          <div className="m-mh-ds-nhom m-t653-ds">
             {nhomTheoNgay.map(nhom => (
-              <section key={nhom.ngayRaw} className="m-t652-ngay">
-                <div className="m-t652-ngay-dau">
-                  <span>{nhom.tieuDeNgay}</span>
-                  <span className="m-t652-ngay-dem">{nhom.ds.length} chứng từ</span>
+              // Thẻ ngày và dòng chứng từ dùng chung kiểu danh sách mua hàng (T653)
+              <div key={nhom.ngayRaw} className="m-mh-nhom-item m-t653-ngay">
+                <div className="m-mh-nhom-header m-t653-ngay-dau">
+                  <span className="m-mh-nhom-ngay">{nhom.tieuDeNgay}</span>
+                  <span className="m-t653-ngay-dem">{nhom.ds.length} chứng từ</span>
                 </div>
 
+                <div className="m-mh-the-trang">
                 {nhom.ds.map((r, idx) => {
                   const isChi = r.loai === 'chi' || r.loai === 'unc'
                   const isThu = r.loai === 'thu' || r.loai === 'bc'
@@ -451,29 +453,30 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
                   // Chỉ số tiền có màu: thu xanh lá, chi đỏ, chuyển quỹ đen như Lịch sử thu chi (T638)
                   const clsTien = isChi ? 'chi' : isThu ? 'thu' : 'cq'
                   const laFabi = r.nguon === 'FABi' || String(r.so ?? '').startsWith('FB')
-                  // Dòng dưới: số phiếu · đối tượng · FABi, bên phải là quỹ (T652)
-                  const phu = [r.doiTuong, laFabi ? 'FABi' : ''].filter(Boolean).join(' · ')
+                  // Dòng trên: số phiếu kèm nhãn quỹ, FABi; dòng dưới: đối tượng (T653)
                   const quy = QUY_THEO_LOAI[String(r.loai)] ?? ''
 
                   return (
-                    <div
+                    <button
                       key={`${String(r.id)}_${idx}`}
-                      className="m-t652-dong m-ds-ngay-dong"
+                      type="button"
+                      className="m-mh-dong-phieu m-the-ct m-ds-ngay-dong"
                       onClick={() => nav(`${path}/${r.id}`)}
-                      role="button"
-                      tabIndex={0}
                     >
-                      <span className="m-t652-dg">{r.dienGiai || r.lyDo || r.doiTuong || '—'}</span>
-                      <span className={`m-t652-tien ${clsTien}`}>{tienStr}</span>
-                      <span className="m-t652-phu">
-                        <span className="m-ds-ngay-so">{r.so}</span>
-                        {phu && ` · ${phu}`}
-                      </span>
-                      <span className="m-t652-quy">{quy}</span>
-                    </div>
+                      <div className="m-mh-dong-trai">
+                        <div className="m-mh-dong-hang1">
+                          <span className="m-mh-dong-so m-ds-ngay-so">{r.so}</span>
+                          {quy && <span className="m-mh-dong-hh">{quy}</span>}
+                          {laFabi && <span className="m-mh-dong-hh">FABi</span>}
+                        </div>
+                        <span className="m-mh-dong-ncc">{r.doiTuong || r.dienGiai || r.lyDo || '—'}</span>
+                      </div>
+                      <span className={`m-mh-dong-tien m-t653-tien ${clsTien}`}>{tienStr}</span>
+                    </button>
                   )
                 })}
-              </section>
+                </div>
+              </div>
             ))}
           </div>
         )}

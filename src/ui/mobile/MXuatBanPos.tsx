@@ -190,7 +190,6 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
       const dsDong = r.x ? dongCuaPhieu(r.x as XPos) : []
       const dongLoc1 = loc.hang ? dsDong.filter(d => d.ma === loc.hang) : dsDong
       const dongLoc = loc.tonKho ? dongLoc1.filter(d => Boolean(d.tonKho) === (loc.tonKho === 'co')) : dongLoc1
-      const ngayStr = dmy(r.x?.date instanceof Date ? r.x.date : docNgay(r.ngay))
       const maKh = layMaKh(r.doiTuong)
       return dongLoc.map((d, dIdx) => ({
         id: `${r.id}_${dIdx}`,
@@ -207,7 +206,7 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
         dienGiai: r.dienGiai,
         cn: r.cn,
         doiTuong: maKh,
-        dongPhu: `${maKh} · ${r.so} · ${ngayStr}`,
+        dongPhu: `${maKh} · ${r.so}`,   // ngày đã ở đầu thẻ ngày (T653)
       }))
     })
   }, [list, loc.hang, loc.tonKho])
@@ -227,7 +226,6 @@ export const MXuatBanPos: FC<ScreenProps> = ({ sc, mod }) => {
         chuoiKhoangNgay={chuoiKhoangNgay}
         hienTien={true}
         rows={listDong}
-        nhomTheoNgay={false}
         renderDong={(r, i) => {
           return (
             <MDsDongPhieu

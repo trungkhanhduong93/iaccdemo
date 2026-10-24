@@ -41752,8 +41752,7 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
 .m-tc-lap-man.m-t650 .m-tc-lap-footer .m-tc-btn-luu:active { background: var(--blue-d); }
 
 /* ── Danh sách Thu chi điện thoại gọn theo Lịch sử thu chi, mẫu A (T652) ── */
-/* Thẻ tổng: hai ô nền trắng có viền, chỉ số tiền có màu */
-.m-t652 .m-tc-th-dem { font-size: 16px; }
+/* Thẻ tổng: hai ô nền trắng có viền, chỉ số tiền có màu; cỡ chữ theo thẻ tổng mua hàng (T653) */
 .m-t652 .m-tc-th-hang-duoi { margin-top: 10px; }
 .m-t652 .m-tc-th-o-thu,
 .m-t652 .m-tc-th-o-chi {
@@ -41761,49 +41760,31 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
   border: 1px solid var(--line);
   border-radius: 10px;
 }
-.m-t652 .m-tc-th-o-nhan { font-size: 13px; color: var(--muted); }
-.m-t652 .m-tc-th-o-so { font-size: 16px; }
-/* Hàng tiêu đề danh sách: chữ thường, cùng cỡ với đầu thẻ ngày */
-.m-t652 .m-tc-hang-sap-xep { padding: 12px 16px 6px; }
-.m-t652 .m-tc-sx-tieu-de { font-size: 14px; color: var(--ink); text-transform: none; }
+.m-t652 .m-tc-th-o-nhan { color: var(--muted); }
+/* Hàng tiêu đề danh sách như mua hàng: chữ thường (T653) */
+.m-t652 .m-tc-hang-sap-xep { padding: 14px 16px 2px; }
+.m-t652 .m-tc-sx-tieu-de { font-size: 13px; color: #4b5563; text-transform: none; }
 .m-t652 .m-tc-sx-btn { font-size: 13px; color: var(--ink); }
-/* Mỗi ngày một thẻ trắng có viền, đầu thẻ nền xám ghi ngày và số chứng từ */
-.m-t652-ds { padding: 0 16px 12px; }
-.m-t652-ngay {
+
+/* ── Danh sách chứng từ điện thoại một kiểu: ngày nằm trong thẻ, cỡ chữ mua hàng (T653) ── */
+/* Mỗi ngày một thẻ trắng có viền, đầu thẻ nền xám ghi ngày và tổng tiền hoặc số chứng từ */
+.m-t653-ds { gap: 10px; padding-top: 4px; }
+.m-t653-ngay {
+  margin: 0 16px;
   background: var(--white);
   border: 1px solid var(--line);
   border-radius: 12px;
   overflow: hidden;
-  margin-bottom: 12px;
 }
-.m-t652-ngay-dau {
-  display: flex;
-  justify-content: space-between;
+.m-t653-ngay .m-t653-ngay-dau {
   align-items: center;
-  padding: 9px 14px;
+  padding: 8px 14px;
   background: var(--soft);
   border-bottom: 1px solid var(--line);
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--ink);
 }
-.m-t652-ngay-dem { font-size: 13px; font-weight: 400; color: #4b5563; }
-/* Dòng chứng từ: diễn giải, số tiền; dưới là số phiếu, đối tượng, quỹ. Không còn vòng tròn mũi tên */
-.m-t652 .m-t652-dong.m-ds-ngay-dong {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  column-gap: 12px;
-  row-gap: 3px;
-  min-height: 0;
-  padding: 10px 14px;
-  border-top: 1px solid var(--line-2);
-}
-.m-t652 .m-t652-ngay-dau + .m-t652-dong.m-ds-ngay-dong { border-top: 0; }
-.m-t652-dg { font-size: 15px; font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.m-t652-tien { font-size: 15px; font-weight: 700; white-space: nowrap; text-align: right; font-variant-numeric: tabular-nums; }
-.m-t652-tien.thu { color: var(--green); }
-.m-t652-tien.chi { color: var(--red); }
-.m-t652-tien.cq { color: var(--ink); }
-.m-t652-phu { font-size: 13px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.m-t652 .m-t652-phu .m-ds-ngay-so { color: inherit; }
-.m-t652-quy { font-size: 13px; color: var(--muted); white-space: nowrap; text-align: right; }
+.m-t653-ngay .m-mh-the-trang { margin: 0; border-radius: 0; }
+.m-t653-ngay-dem { font-size: 13px; color: #4b5563; }
+/* Thu chi: số tiền thu xanh lá, chi đỏ, chuyển quỹ đen (T638) */
+.m-t653-tien.thu { color: var(--green); }
+.m-t653-tien.chi { color: var(--red); }
+.m-t653-tien.cq { color: var(--ink); }

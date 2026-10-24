@@ -898,4 +898,13 @@ Trum chốt 24/10/2026 (T652), mẫu A trên artifact https://claude.ai/artifact
 - Mỗi chứng từ 2 dòng. Dòng trên: diễn giải, số tiền. Dòng dưới: số phiếu · đối tượng · FABi, bên phải là quỹ (Tiền mặt, Ngân hàng, Chuyển quỹ).
 - Bỏ vòng tròn mũi tên màu ở đầu dòng. Màu số tiền theo T638: thu xanh lá, chi đỏ, chuyển quỹ đen.
 
-## QD83. Danh sách chứng từ điện thoại một kiểu: cỡ chữ mua hàng, ngày nằm trong thẻ (đang soạn)
+## QD83. Danh sách chứng từ điện thoại một kiểu: cỡ chữ mua hàng, ngày nằm trong thẻ
+
+Trum chốt 24/10/2026 (T653), bản vẽ Đợt 2 trên artifact https://claude.ai/artifact/5qmgxtmQshquFoxZdqiet1.
+
+- Áp cho danh sách Thu chi và mọi màn dùng `MDsChungTuChuan`: Mua hàng, Xuất bán POS, Kiểm kê, Nhập kho, Xuất kho. Thẻ chi phí không nhóm theo ngày (T625) nên chỉ đổi thẻ tổng.
+- Cỡ chữ theo danh sách mua hàng: số phiếu hoặc tên món 14px, dòng phụ 12.5px, số tiền 14.5px, ngày 13px.
+- Mỗi ngày là một thẻ trắng có viền. Đầu thẻ nền xám ghi ngày, bên phải là tổng tiền ngày, màn không có tiền thì ghi số chứng từ.
+- Thẻ tổng không ghi khoảng ngày vì hàng lọc đã có.
+- Dòng thu chi theo kiểu mua hàng: số phiếu kèm nhãn xám Tiền mặt, Ngân hàng, Chuyển quỹ, FABi; dòng dưới là đối tượng; số tiền màu theo T638. Mục này thay phần dòng chứng từ ở QD82.
+- Xuất bán POS gom theo ngày, dưới mỗi ngày là từng dòng món. Dòng phụ ghi khách và số hoá đơn, bỏ ngày.
