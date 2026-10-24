@@ -98,6 +98,7 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
   const [moThanhToan, setMoThanhToan] = useState(() => sp.get('thanhtoan') === '1')
   const [hoiXoa, setHoiXoa] = useState(false)
   const [hoiKhongSua, setHoiKhongSua] = useState(false)   // phiếu chi còn thẻ chi phí (T475)
+  const [hoiKhongSuaTt, setHoiKhongSuaTt] = useState(false)   // phiếu mua đã thanh toán (T658)
   const [hoiBoGhi, setHoiBoGhi] = useState(false)
   const [phieuChiVuaLap, setPhieuChiVuaLap] = useState<{ so: string; id: string } | null>(null)
   const [moLichSuTt, setMoLichSuTt] = useState(false)
@@ -334,7 +335,13 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
   }, [laTien, nhomMb, laKk, kieu, dsButToan.length, dsDong.length, dsTt.length])
 
   // Sửa phiếu: phiếu chi đã có thẻ chi phí phân bổ thì không sửa, báo xoá thẻ trước như bản máy tính (T475, theo T439)
-  const moSua = () => { if (theCuaPhieu(row).length) setHoiKhongSua(true); else nav(`${path}/${row.id}?sua=1`) }
+  // Phiếu mua đã trả (một phần hoặc đủ) thì không sửa, báo xoá phiếu chi trước (T658)
+  const dsChiMua = nhomMb === 'mua' ? [...(ctTtCu ? [ctTtCu] : []), ...dsTt] : []
+  const moSua = () => {
+    if (theCuaPhieu(row).length) setHoiKhongSua(true)
+    else if (nhomMb === 'mua' && daTra > 0) setHoiKhongSuaTt(true)
+    else nav(`${path}/${row.id}?sua=1`)
+  }
 
   // Nút hành động chính và phụ ở chân màn hình
   const coNutGhiSo = kieu !== 'khong' && !laDc   // gói Standard, Plus hộ kinh doanh không ghi sổ (QD81)
@@ -1276,6 +1283,17 @@ const ThanPhieu: FC<ScreenProps & { row: Row }> = ({ sc, mod, row }) => {
           onDong={() => setHoiKhongSua(false)}
           onDongY={() => { setHoiKhongSua(false); nav(`/app/ccdc/8-1-1?mo=${theCuaPhieu(row)[0]}`, { state: { veGoc: `${path}/${row.id}` } }) }}>
           Phiếu đã có thẻ chi phí phân bổ {theCuaPhieu(row).join(', ')}. Xoá thẻ trước rồi mới sửa được phiếu. Thẻ chỉ xoá được khi kỳ khoá sổ còn trước tháng bắt đầu phân bổ của thẻ.
+        </HopXacNhan>
+      )}
+
+      {/* Phiếu mua đã thanh toán: không sửa, mở phiếu chi để xoá trước (T658) */}
+      {hoiKhongSuaTt && (
+        <HopXacNhan tieuDe={`Không sửa được ${soCt}`} nut={dsChiMua.length ? 'Mở phiếu chi' : 'Đã hiểu'} nutHuy={dsChiMua.length ? 'Đóng' : null} nutDo={false}
+          onDong={() => setHoiKhongSuaTt(false)}
+          onDongY={() => { setHoiKhongSuaTt(false); if (dsChiMua.length) nav(`/app/tien/2-1-1/${dsChiMua[0].id}`) }}>
+          {dsChiMua.length
+            ? `Phiếu đã thanh toán bằng ${dsChiMua.map(c => c.so).join(', ')}. Xoá phiếu chi trước rồi mới sửa được phiếu.`
+            : 'Phiếu đã thanh toán. Xoá phiếu chi của phiếu này trước rồi mới sửa được phiếu.'}
         </HopXacNhan>
       )}
 

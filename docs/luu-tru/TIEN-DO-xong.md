@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T658 | Điện thoại, phiếu mua đã thanh toán (một phần hoặc đủ): bấm Sửa phiếu báo không sửa được, mở phiếu chi để xoá trước; xoá phiếu chi kèm thì phiếu mua về chưa trả | PhuongXT | 24/10/2026 | `2026-10-24-phuongxt-chan-sua-phieu-mua-da-tra.md` |
 | T657 | Điện thoại, Lập phiếu kiểm kê: cửa hàng lên hàng chip thay nhãn Phiếu mới, bỏ dòng Số chứng từ, đổi Diễn giải thành Ghi chú; phiếu đã sinh phiếu điều chỉnh thì không cho sửa (cả web) | PhuongXT | 24/10/2026 | `2026-10-24-phuongxt-kiem-ke-gon.md` |
 | T656 | Điện thoại, phiếu mua hàng: sheet Chọn kho nhận cùng kiểu Chọn nhà cung cấp; thẻ hàng hai cột, số tiền chiết khấu, VAT dưới ô; chi tiết ẩn dòng chiết khấu, VAT bằng 0; tạo mới gộp tích Nhận kèm hoá đơn cạnh Đã thanh toán, thẻ đầu gọn, Tổng tiền ghim chân | PhuongXT | 24/10/2026 | `2026-10-24-phuongxt-phieu-mua-gon.md` |
 | T654 | Điện thoại, danh sách chứng từ hết gãy dòng ở 360px (QD84): Thu chi dòng trên chỉ còn số phiếu và nhãn FABi, quỹ xuống dòng dưới; hạ cỡ chữ mọi danh sách kiểu T653 theo mức 2; số phiếu, tên món, nhãn không gãy dòng; ô Tổng thu, Tổng chi không rớt chữ "đ" | Trum | 24/10/2026 | `2026-10-24-trum-ds-het-gay-dong.md` |

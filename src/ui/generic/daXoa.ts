@@ -61,7 +61,8 @@ export function soDaTra(r: Row): number {
   const tong = Number(r.tong) || 0
   const httt = r._httt as string | undefined
   const t = ttNghiepVu(r).ttTien
-  const goc = httt ? (httt === 'congno' ? 0 : tong) : t === 'da' ? tong : t === 'mot' ? Math.round(tong * 0.4 / 1000) * 1000 : 0
+  // Trả ngay mà phiếu chi, thu kèm đã xoá thì coi như chưa trả (T658)
+  const goc = httt ? (httt === 'congno' || (r._ctTt && !ctTtCon(r)) ? 0 : tong) : t === 'da' ? tong : t === 'mot' ? Math.round(tong * 0.4 / 1000) * 1000 : 0
   return Math.min(tong, goc + dsTtCon(r).reduce((a, c) => a + c.tien, 0))
 }
 export function ttTienTheoTra(r: Row): 'chua' | 'mot' | 'da' {
