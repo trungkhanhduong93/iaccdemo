@@ -897,3 +897,5 @@ Trum chốt 24/10/2026 (T652), mẫu A trên artifact https://claude.ai/artifact
 - Mỗi ngày là một thẻ trắng có viền, đầu thẻ nền xám ghi ngày và số chứng từ.
 - Mỗi chứng từ 2 dòng. Dòng trên: diễn giải, số tiền. Dòng dưới: số phiếu · đối tượng · FABi, bên phải là quỹ (Tiền mặt, Ngân hàng, Chuyển quỹ).
 - Bỏ vòng tròn mũi tên màu ở đầu dòng. Màu số tiền theo T638: thu xanh lá, chi đỏ, chuyển quỹ đen.
+
+## QD83. Danh sách chứng từ điện thoại một kiểu: cỡ chữ mua hàng, ngày nằm trong thẻ (đang soạn)
