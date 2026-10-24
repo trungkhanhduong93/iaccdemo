@@ -30,6 +30,9 @@ const LOAI_THU_CHI = [
   { k: 'cq', ten: 'Chuyển quỹ' },
 ]
 
+// Quỹ của từng loại phiếu, hiện bên phải dòng dưới mỗi chứng từ (T652)
+const QUY_THEO_LOAI: Record<string, string> = { thu: 'Tiền mặt', chi: 'Tiền mặt', bc: 'Ngân hàng', unc: 'Ngân hàng', cq: 'Chuyển quỹ' }
+
 function dinhDangThuNgay(chuoiNgay: string): string {
   const d = docNgay(chuoiNgay)
   if (isNaN(d.getTime())) return chuoiNgay
@@ -267,7 +270,7 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
   const quayLai = () => quayLaiMobile(nav, '/app/nghiep-vu')
 
   return (
-    <div className="m-tc-man m-ds-khung">
+    <div className="m-tc-man m-ds-khung m-t652">
       {/* ── HEADER NAVIGATION THEO FIGMA MB03 ── */}
       <header className="m-tc-header">
         <div className="m-tc-nav">
@@ -392,7 +395,6 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
         <div className="m-tc-card-tong-hop m-ds-dong-tom-tat">
           <div className="m-tc-th-hang-tren">
             <span className="m-tc-th-dem">{list.length} chứng từ</span>
-            <span className="m-tc-th-ngay">{chuoiKhoangNgay}</span>
           </div>
           <div className="m-tc-th-hang-duoi">
             <div className="m-tc-th-o-thu">
@@ -428,78 +430,49 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
             <p>Không có chứng từ nào phù hợp</p>
           </div>
         ) : (
-          <div className="m-tc-danh-sach">
+          <div className="m-t652-ds">
             {nhomTheoNgay.map(nhom => (
-              <section key={nhom.ngayRaw} className="m-tc-nhom-ngay">
-                <div className="m-tc-ngay-header">
-                  <span className="m-tc-ngay-chu">{nhom.tieuDeNgay}</span>
-                  <span className="m-tc-ngay-so">{nhom.ds.length} chứng từ</span>
+              <section key={nhom.ngayRaw} className="m-t652-ngay">
+                <div className="m-t652-ngay-dau">
+                  <span>{nhom.tieuDeNgay}</span>
+                  <span className="m-t652-ngay-dem">{nhom.ds.length} chứng từ</span>
                 </div>
 
-                <div className="m-tc-card-ngay">
-                  {nhom.ds.map((r, idx) => {
-                    const isChi = r.loai === 'chi' || r.loai === 'unc'
-                    const isThu = r.loai === 'thu' || r.loai === 'bc'
-                    const isCq = r.loai === 'cq'
-                    const tienNum = Math.abs(Number(r.tong) || Number(r.tien) || 0)
-                    const tienStr = isChi
-                      ? `−${money(tienNum)} đ`
-                      : isThu
-                      ? `+${money(tienNum)} đ`
-                      : `${money(tienNum)} đ`
+                {nhom.ds.map((r, idx) => {
+                  const isChi = r.loai === 'chi' || r.loai === 'unc'
+                  const isThu = r.loai === 'thu' || r.loai === 'bc'
+                  const tienNum = Math.abs(Number(r.tong) || Number(r.tien) || 0)
+                  const tienStr = isChi
+                    ? `−${money(tienNum)} đ`
+                    : isThu
+                    ? `+${money(tienNum)} đ`
+                    : `${money(tienNum)} đ`
 
-                    const clsIcon = isChi ? 'chi' : isThu ? 'thu' : 'cq'
-                    const clsTien = isChi ? 'chi' : isThu ? 'thu' : 'cq'
-                    const laFabi = r.nguon === 'FABi' || String(r.so ?? '').startsWith('FB')
+                  // Chỉ số tiền có màu: thu xanh lá, chi đỏ, chuyển quỹ đen như Lịch sử thu chi (T638)
+                  const clsTien = isChi ? 'chi' : isThu ? 'thu' : 'cq'
+                  const laFabi = r.nguon === 'FABi' || String(r.so ?? '').startsWith('FB')
+                  // Dòng dưới: số phiếu · đối tượng · FABi, bên phải là quỹ (T652)
+                  const phu = [r.doiTuong, laFabi ? 'FABi' : ''].filter(Boolean).join(' · ')
+                  const quy = QUY_THEO_LOAI[String(r.loai)] ?? ''
 
-                    return (
-                      <div key={`${String(r.id)}_${idx}`}>
-                        <div
-                          className="t498-ct-item m-tc-item m-the-ct m-ds-ngay-dong"
-                          onClick={() => nav(`${path}/${r.id}`)}
-                          role="button"
-                          tabIndex={0}
-                        >
-                          {/* Icon tròn mũi tên */}
-                          <div className={`t498-ic-tron m-tc-ic-tron ${clsIcon}`}>
-                            {isChi ? (
-                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M7 17L17 7M7 7h10v10" />
-                              </svg>
-                            ) : isThu ? (
-                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M17 7L7 17M17 17H7V7" />
-                              </svg>
-                            ) : (
-                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M8 7h12m0 0l-4-4m4 4l-4 4M16 17H4m0 0l4 4m-4-4l4-4" />
-                              </svg>
-                            )}
-                          </div>
-
-                          {/* Thông tin chứng từ */}
-                          <div className="t498-item-giua m-tc-item-giua">
-                            <div className="t498-item-hang1 m-tc-item-hang1">
-                              <span className="t498-item-so m-tc-item-so m-the-ct-so m-ds-ngay-so">{r.so}</span>
-                              {laFabi && <span className="t498-badge-fabi m-tc-badge-fabi">FABi</span>}
-                            </div>
-                            <div className="t498-item-hang2 m-tc-item-hang2">
-                              <span className="t498-item-dt m-tc-item-dt">
-                                {r.doiTuong || r.dienGiai || r.lyDo || '—'}
-                              </span>
-                            </div>
-                          </div>
-
-                          {/* Số tiền */}
-                          <div className={`t498-item-tien m-tc-item-tien ${clsTien}`}>
-                            {tienStr}
-                          </div>
-                        </div>
-                        {idx < nhom.ds.length - 1 && <div className="t498-item-vach m-tc-item-vach" />}
-                      </div>
-                    )
-                  })}
-                </div>
+                  return (
+                    <div
+                      key={`${String(r.id)}_${idx}`}
+                      className="m-t652-dong m-ds-ngay-dong"
+                      onClick={() => nav(`${path}/${r.id}`)}
+                      role="button"
+                      tabIndex={0}
+                    >
+                      <span className="m-t652-dg">{r.dienGiai || r.lyDo || r.doiTuong || '—'}</span>
+                      <span className={`m-t652-tien ${clsTien}`}>{tienStr}</span>
+                      <span className="m-t652-phu">
+                        <span className="m-ds-ngay-so">{r.so}</span>
+                        {phu && ` · ${phu}`}
+                      </span>
+                      <span className="m-t652-quy">{quy}</span>
+                    </div>
+                  )
+                })}
               </section>
             ))}
           </div>

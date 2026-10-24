@@ -888,4 +888,12 @@ Thay phần "chỉ gói Nợ/Có có ghi sổ" của T646.
 
 Lý do: Trum chốt ngày 23/10/2026 (T648), sau khi T646 bỏ luôn ghi sổ của gói Plus.
 
-## QD82. Danh sách Thu chi điện thoại gọn theo Lịch sử thu chi (đang soạn)
+## QD82. Danh sách Thu chi điện thoại gọn theo Lịch sử thu chi
+
+Trum chốt 24/10/2026 (T652), mẫu A trên artifact https://claude.ai/artifact/5qmgxtmQshquFoxZdqiet1.
+
+- Từ hàng bộ lọc trở lên giữ nguyên: thanh đầu, hàng tab gạch chân, nút phễu, chip xám chỉ xem.
+- Thẻ tổng chỉ ghi số chứng từ, không ghi khoảng ngày vì hàng lọc đã có. Hai ô Tổng thu, Tổng chi nền trắng có viền, chỉ số tiền có màu (vẫn theo QD77).
+- Mỗi ngày là một thẻ trắng có viền, đầu thẻ nền xám ghi ngày và số chứng từ.
+- Mỗi chứng từ 2 dòng. Dòng trên: diễn giải, số tiền. Dòng dưới: số phiếu · đối tượng · FABi, bên phải là quỹ (Tiền mặt, Ngân hàng, Chuyển quỹ).
+- Bỏ vòng tròn mũi tên màu ở đầu dòng. Màu số tiền theo T638: thu xanh lá, chi đỏ, chuyển quỹ đen.

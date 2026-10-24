@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T652 | Điện thoại, danh sách Thu chi gọn theo Lịch sử thu chi (mẫu A, QD82): thẻ tổng bỏ khoảng ngày, hai ô tổng nền trắng; mỗi ngày một thẻ trắng, dòng chứng từ có diễn giải, số phiếu, đối tượng, quỹ, bỏ vòng tròn mũi tên | Trum | 24/10/2026 | `2026-10-24-trum-ds-thu-chi-gon.md` |
 | T650 | Điện thoại, màn lập và sửa phiếu thu chi vẽ lại theo kiểu "Tạo mới nhập mua hàng": tên ô bên trái, giá trị bên phải, thẻ Đối tượng, Chi tiết trống kèm Thêm dòng, một nút Lưu; gói Standard dùng chung form | PhuongXT | 24/10/2026 | `2026-10-24-phuongxt-form-thu-chi-dien-thoai.md` |
 | T651 | Điện thoại, chi tiết phiếu Xuất bán POS đủ thông tin như web theo mẫu A Trum chốt: thẻ Đơn hàng POS (thêm Số đơn POS), Khách hàng (tên, MST, người mua, địa chỉ), Hoá đơn (số, ký hiệu, ngày, mã tra cứu có nút chép); dòng hàng có STT, mã cạnh tên, 3 dòng chi tiết thụt vào (SL × đơn giá, giảm giá, VAT - thuế); khung tổng nền xám; chip FABi cam, trạng thái "Đã đồng bộ" như web; chỉ một nút Đóng | Trum | 23/10/2026 | `2026-10-23-trum-chi-tiet-xuat-ban-pos-dien-thoai.md` |
 | T647 | Web, chi tiết chứng từ bỏ ô Số phiếu (Số phiếu nhập, xuất, thu, chi, Số chứng từ, Mã phiếu) vì tiêu đề giữa đã hiện số phiếu; thẻ chi phí phân bổ bỏ ô Số thẻ. Áp cho mọi màn dùng form chứng từ chung: thu chi, mua hàng, kiểm kê, xuất, nhập điều chỉnh, bán hàng, kho | PhuongXT | 23/10/2026 | `2026-10-23-phuongxt-bo-o-so-phieu.md` |

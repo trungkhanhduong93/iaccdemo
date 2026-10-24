@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 24/10/2026
+- T652: Điện thoại, danh sách Thu chi gọn như Lịch sử thu chi: thẻ tổng bỏ khoảng ngày, hai ô Tổng thu, Tổng chi nền trắng. Mỗi ngày một thẻ trắng, mỗi chứng từ ghi diễn giải và số tiền, dòng dưới là số phiếu, đối tượng, quỹ. Bỏ vòng tròn mũi tên màu.
 - T650: Điện thoại, phiếu thu chi: Ghi chú tự lấy theo lý do thu, chi; Diễn giải từng dòng (cả dòng thêm mới) tự lấy theo ghi chú, đều sửa được. Phiếu thu đổi nhãn Người nộp thành Người giao dịch.
 - T650: Điện thoại, phiếu thu chi: thẻ Chi tiết gọn hơn, dòng mới không tô nền, các ô thấp hơn. Tạo mới thì Tổng cộng ghim ngay trên nút Lưu, không còn dòng "Đang chỉnh sửa". Phiếu mới có sẵn 1 dòng chi tiết, không phải bấm Thêm dòng; chỉ một dòng thì không hiện chữ "Dòng 1".
 - T650: Điện thoại, màn tạo mới, sửa phiếu thu chi theo bố cục mới: tên ô bên trái, giá trị bên phải, thẻ Đối tượng, thẻ Chi tiết, một nút Lưu. Phiếu mới chưa có dòng chi tiết, bấm Thêm dòng để nhập số tiền. Bỏ khung số tiền ở đầu màn, ô Số phiếu, ô Địa chỉ. Gói Standard dùng chung form, nhập được nhiều dòng.
