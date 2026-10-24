@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 24/10/2026
+- T650: Điện thoại, phiếu thu chi: Ghi chú tự lấy theo lý do thu, chi; Diễn giải từng dòng (cả dòng thêm mới) tự lấy theo ghi chú, đều sửa được. Phiếu thu đổi nhãn Người nộp thành Người giao dịch.
 - T650: Điện thoại, màn tạo mới, sửa phiếu thu chi theo bố cục mới: tên ô bên trái, giá trị bên phải, thẻ Đối tượng, thẻ Chi tiết, một nút Lưu. Phiếu mới chưa có dòng chi tiết, bấm Thêm dòng để nhập số tiền. Bỏ khung số tiền ở đầu màn, ô Số phiếu, ô Địa chỉ. Gói Standard dùng chung form, nhập được nhiều dòng.
 
 ## 23/10/2026

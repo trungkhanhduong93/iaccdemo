@@ -327,7 +327,15 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
     return list
   }, [tabLoaiDt, timDt, dtDaThem])
 
+  // Ghi chú mặc định theo lý do, diễn giải dòng mặc định theo ghi chú; người dùng đã gõ khác thì giữ nguyên
+  const doiGhiChu = (moi: string) => {
+    const cu = ghiChu
+    setGhiChu(moi)
+    setDsDong(ds => ds.map(d => !d.ten || d.ten === cu ? { ...d, ten: moi } : d))
+  }
+
   const chonLyDo = (k: string) => {
+    if (!ghiChu || ghiChu === lyDo) doiGhiChu(k)
     setLyDo(k)
     setDaSua(true)
     const tk = tkTheoLyDo(isChi ? 'chi' : isThu ? 'thu' : 'cq', k)
@@ -361,7 +369,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
     setDsDong(prev => [
       ...prev,
       {
-        ten: prev.length === 0 ? '' : `Dòng chi tiết ${prev.length + 1}`,
+        ten: ghiChu,
         sl: 1,
         gia: 0,
         tien: 0,
@@ -498,7 +506,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
     setDoiTuong('')
     setDiaChi('')
     setNguoiGiaoDich('')
-    setGhiChu('')
+    setGhiChu(lyDo)
     setDsDong(!isCq ? [] : [{
       ten: '',
       sl: 1,
@@ -598,7 +606,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
     const dsTomTatThuChi: DongTomTat[] = [
       { nhan: 'Số phiếu', giaTri: <b>{phieuVuaLuu.so}</b> },
       { nhan: 'Số tiền', giaTri: `${money(soTien)} đ`, noiBat: true },
-      { nhan: isChi ? 'Người nhận' : isThu ? 'Người nộp' : 'Đối tượng', giaTri: doiTuong || 'Chưa chọn' },
+      { nhan: 'Người giao dịch', giaTri: nguoiGiaoDich || doiTuong || 'Chưa chọn' },
       {
         nhan: isChi || isThu ? (loai === 'unc' || loai === 'bc' ? 'Tài khoản' : 'Quỹ tiền') : 'Quỹ',
         giaTri: quy || (isChi || isThu ? (loai === 'unc' || loai === 'bc' ? 'Tài khoản ngân hàng' : 'Quỹ tiền mặt') : 'Quỹ'),
@@ -793,16 +801,8 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
             rows={1}
             value={ghiChu}
             onChange={e => {
-              const val = e.target.value
-              setGhiChu(val)
+              doiGhiChu(e.target.value)
               setDaSua(true)
-              if (dsDong.length <= 1) {
-                setDsDong(ds => {
-                  const n = [...ds]
-                  if (n[0]) n[0] = { ...n[0], ten: val }
-                  return n
-                })
-              }
             }}
             placeholder="Ghi chú"
           />
@@ -825,7 +825,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
           </div>
 
           <div className="m-tc-lap-field m-t650-hang">
-            <label className="nhan" htmlFor="tc-nguoi-gd">{isThu ? 'Người nộp' : 'Người giao dịch'}</label>
+            <label className="nhan" htmlFor="tc-nguoi-gd">Người giao dịch</label>
             <input
               id="tc-nguoi-gd"
               type="text"
