@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T658 | Điện thoại, phiếu mua hàng đã thanh toán (trả một phần hoặc trả đủ): bấm Sửa phiếu báo không sửa được, phải xoá phiếu chi trước | PhuongXT | Đang làm | Sửa `MXemPhieu.tsx` |
 | T593 | Xem trước in và bản in báo cáo: mã, tên hàng, số phiếu ở mọi cột thành chữ thường, không bấm được (mở rộng T556) | Trum | Đang làm | Sửa cuối `app.css` (mục T556). Spec `backup/spec-T593-T595.md` |
 | T594 | Báo cáo đổi khổ dọc, ngang tự cân bề rộng cột và cỡ chữ: số, ngày, mã luôn 1 dòng đủ ký tự, chữ dài xuống tối đa 2 dòng, không tràn ô, không tràn viền tờ; cỡ chữ chọn tay là trần | Trum | Đang làm | Sửa `ToGiay.tsx`, `chiaCot.ts`, `ReportScreen.tsx`, `tools/kiem_tra.py`. Ca kiểm 3.2.8, 5.2.3 |
 | T595 | Hộp Tuỳ chỉnh báo cáo: hết mờ, menu trái kiểu pill đặc xanh, icon menu 20px | Trum | Đang làm | Sửa `TuyChinhBC.tsx`, cuối `app.css` (mục T595) |
