@@ -602,6 +602,15 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
   // T650: ô Số tiền ở thẻ đầu chỉ cho chuyển quỹ (không có mục Chi tiết); mọi gói khác nhập ở Chi tiết
   const coTienDau = isCq
 
+  const dongTongCong = (
+    <div className="m-tc-dong-tong-cong">
+      <span className="nhan">Tổng cộng</span>
+      <span className={`so ${isChi ? 'chi' : isThu ? 'thu' : 'cq'}`}>
+        {money(soTien)} đ
+      </span>
+    </div>
+  )
+
   if (daLuu && phieuVuaLuu) {
     const dsTomTatThuChi: DongTomTat[] = [
       { nhan: 'Số phiếu', giaTri: <b>{phieuVuaLuu.so}</b> },
@@ -861,7 +870,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
             {dsDong.map((d, idx) => {
               const moRong = dongMoRong[idx] ?? false
               return (
-                <div key={idx} className={`m-tc-lap-dong-item${d.moi ? ' moi' : ''}`}>
+                <div key={idx} className="m-tc-lap-dong-item">
                   <div className="m-tc-dong-item-dau">
                     <span className="ten">Dòng {idx + 1}</span>
                     {dsDong.length > 1 && (
@@ -965,18 +974,14 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
               <span>Thêm dòng</span>
             </button>
 
-            <div className="m-tc-dong-tong-cong">
-              <span className="nhan">Tổng cộng</span>
-              <span className={`so ${isChi ? 'chi' : isThu ? 'thu' : 'cq'}`}>
-                {money(soTien)} đ
-              </span>
-            </div>
+            {dangSua && dongTongCong}
           </section>
         )}
       </main>
 
-      {/* ── CHÂN: một nút Lưu rộng hết màn (T650); huỷ bằng mũi tên quay lại ── */}
+      {/* ── CHÂN: một nút Lưu rộng hết màn (T650); huỷ bằng mũi tên quay lại. Tạo mới thì Tổng cộng ghim trên nút Lưu ── */}
       <footer className="m-tc-lap-footer m-lp-day">
+        {!dangSua && !coTienDau && dongTongCong}
         <button
           type="button"
           className="m-tc-btn-luu m-lp-nut-chinh m-lp-nut-luu"
