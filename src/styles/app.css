@@ -42039,3 +42039,12 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
 .ktf-tai-ds b { font-weight: 600; }
 .ktf-tai-ds small { font-size: 12px; }
 @keyframes ktf-quay { to { transform: rotate(360deg); } }
+
+/* ── Khởi tạo FABi: điện thoại ghim Quay lại, Dùng thử thành 2 ô dưới đáy (T668) ── */
+.ktf-gt-nut { display: contents; }
+@media (max-width: 767px) {
+  .ktf:has(.ktf-gt-nut) { padding-bottom: calc(84px + env(safe-area-inset-bottom)) !important; }
+  .ktf-gt-nut { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; padding: 10px var(--m-le-man) calc(10px + env(safe-area-inset-bottom)); background: #fff; border-top: 1px solid var(--line); box-shadow: 0 -4px 16px rgba(14, 26, 43, .08); }
+  .ktf-gt-nut .btn { min-width: 0; }
+  .ktf-gt-nut .ktf-gt-sau { display: none; }   /* Để sau đã có ở đầu màn */
+}

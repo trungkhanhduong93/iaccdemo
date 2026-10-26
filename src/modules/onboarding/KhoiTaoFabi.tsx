@@ -6,14 +6,18 @@ import { SO_NGAY_DUNG_THU, batDauDungThu, useSession } from '../../app/session'
 import { CUA_HANG, type DonVi } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
 import { Logo } from '../../ui/Logo'
+import { useLaMobile } from '../../ui/mobile/useLaMobile'
 import { DsCuaHang, KEY, MAC_DINH, SO_KENH, TEN_FABI, luuNhap, type Nhap } from './OnboardFabi'
 
 // Vị trí số 1–5 trên ảnh trang chủ (T664), tính theo % ảnh chụp 1440×900
 const VUNG: [number, number][] = [[12.5, 12], [51, 1], [17, 20], [59, 20], [12.5, 35]]
+// Điện thoại dùng ảnh app trang chủ gói Standard chụp 390×844 (T668)
+const VUNG_APP: [number, number][] = [[38, 86], [3, 6.5], [4.5, 44], [21, 23.5], [89, 23.5]]
 
 export function KhoiTaoFabi() {
   const { s, set } = useSession()
   const nav = useNavigate()
+  const laMobile = useLaMobile()
   // Bản mẫu: mỗi lần mở từ FABi coi như đơn vị mới chưa dùng kế toán, xoá tiến độ khởi tạo cũ, bắt đầu từ màn chào
   const [n, setN] = useState<Nhap>(() => {
     try { localStorage.removeItem(KEY) } catch { /* bỏ qua */ }
@@ -76,8 +80,8 @@ export function KhoiTaoFabi() {
             <p className="muted ktf-p">Số bán hàng từ FABi tự về sổ kế toán. Trang chủ gói Standard gồm các phần sau.</p>
             <div className="ktf-gt-luoi">
               <div className="ktf-anh">
-                <img src={`${import.meta.env.BASE_URL}trang-chu-standard.jpg`} alt="Trang chủ IACC gói Standard" />
-                {VUNG.map(([x, y], i) => <i key={i} className="ktf-so" style={{ left: `${x}%`, top: `${y}%` }}>{i + 1}</i>)}
+                <img src={`${import.meta.env.BASE_URL}${laMobile ? 'trang-chu-app.jpg' : 'trang-chu-standard.jpg'}`} alt="Trang chủ IACC gói Standard" />
+                {(laMobile ? VUNG_APP : VUNG).map(([x, y], i) => <i key={i} className="ktf-so" style={{ left: `${x}%`, top: `${y}%` }}>{i + 1}</i>)}
               </div>
               <ol className="ktf-gt-ds">
                 <li><b>Thanh phân hệ</b><span>Thu chi, bán hàng, mua hàng, kiểm kê, kê khai thuế, báo cáo. Mỗi phân hệ đều có sơ đồ quy trình để bấm vào đúng việc.</span></li>
@@ -94,9 +98,11 @@ export function KhoiTaoFabi() {
             <div className="ktf-gt-hoi">
               <span><b>Bạn có muốn dùng thử không?</b><small className="muted ktf-gt-chu">Dùng thử miễn phí {SO_NGAY_DUNG_THU} ngày với {chon.length} cửa hàng đã chọn; chọn gói ở bước khởi tạo tiếp theo. Thêm cửa hàng sau ở Danh mục cửa hàng.</small></span>
               <span className="grow" />
-              <button className="btn lg" onClick={() => sua({ b: -2 })}>Quay lại</button>
-              <button className="btn ghost lg" onClick={() => setVeFabi(true)}>Để sau</button>
-              <button className="btn pri lg" disabled={!chon.length} onClick={dungThu}>Dùng thử<Icon n="arrow" className="ic sm" /></button>
+              <div className="ktf-gt-nut">   {/* điện thoại: ghim đáy thành 2 ô (T668) */}
+                <button className="btn lg" onClick={() => sua({ b: -2 })}>Quay lại</button>
+                <button className="btn ghost lg ktf-gt-sau" onClick={() => setVeFabi(true)}>Để sau</button>
+                <button className="btn pri lg" disabled={!chon.length} onClick={dungThu}>Dùng thử<Icon n="arrow" className="ic sm" /></button>
+              </div>
             </div>
           </div>
         )}

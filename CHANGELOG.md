@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 26/10/2026
+- T668: Mở từ FABi trên điện thoại, màn Giao diện kế toán IACC: ảnh minh hoạ là trang chủ app, đánh số 1–5; nút Quay lại, Dùng thử luôn nằm sát đáy màn thành 2 ô.
 - T667: Khởi tạo dữ liệu từ FABi, màn Đang lấy dữ liệu: lấy cả phiếu thu, phiếu chi tiền từ FABi bên cạnh doanh thu; hiện danh sách việc (danh mục, doanh thu, thu chi tiền, ghi sổ) với dấu xong, đang chạy. Màn xong ghi số chứng từ và phiếu thu chi đã lấy.
 - T666: Khởi tạo dữ liệu từ FABi: nút Quay lại, Tiếp tục luôn nằm sát đáy popup, không phải cuộn mới thấy.
 - T665: Khởi tạo dữ liệu từ FABi, bước Đơn vị: hộ kinh doanh thấy ô CCCD/MST, không bắt buộc; doanh nghiệp phải nhập mã số thuế mới bấm Tiếp tục được.
