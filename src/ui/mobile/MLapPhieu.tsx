@@ -981,6 +981,8 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
     return 'congno'
   })
   const daTra = gocData ? soDaTra(gocData) : 0
+  // Màn sửa phiếu chưa trả đủ: tích Đã thanh toán, chọn quỹ, Lưu thì lập phiếu chi số còn nợ (T662)
+  const [traKhiSua, setTraKhiSua] = useState(false)
 
   // Sheet Thanh toán ngay dùng chung MThanhToanNgay (T610, T630)
   const [moThanhToan, setMoThanhToan] = useState(() => sp.get('thanhtoan') === '1')
@@ -1154,12 +1156,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
   // Đổi hình thức thanh toán trên phiếu mua (T629, T630)
   const doiHinhThucTtMua = (ht: 'congno' | 'tienmat' | 'chuyenkhoan') => {
     setHinhThucTt(ht)
-    if (dangSua) {
-      if (ht !== 'congno') {
-        setMoThanhToan(true)
-      }
-      return
-    }
+    if (dangSua) setTraKhiSua(ht !== 'congno')
     if (ht === 'congno') {
       setQuy('')
       return
@@ -1263,8 +1260,10 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
   const tongNoCo = useMemo(() => capButToan.reduce((a, c) => a + c.tien, 0), [capButToan])
   const tongSl = useMemo(() => dsDong.reduce((a, d) => a + (Number(d.sl) || 0), 0), [dsDong])
   const conLaiTt = Math.max(0, tongThanhToan - daTra)
-  // Tích Đã thanh toán: màn sửa theo số đã trả, tạo mới theo hình thức chọn (T656)
-  const daTichTt = dangSua ? ttMua === 'da' : hinhThucTt !== 'congno'
+  // Tích Đã thanh toán: màn sửa theo số đã trả hoặc vừa tích trả, tạo mới theo hình thức chọn (T656, T662)
+  const traNgay = dangSua ? traKhiSua : hinhThucTt !== 'congno'
+  const daTichTt = (dangSua && ttMua === 'da') || traNgay
+  const canTra = dangSua ? conLaiTt : tongThanhToan
 
   // Đổi đơn vị tính quy đổi
   const [dvtSheet, setDvtSheet] = useState<{ idx: number; ten: string; ds: { k: string; ten: string }[] } | null>(null)
@@ -1619,7 +1618,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
       if (!kho.trim()) {
         loiMoi.kho = 'Vui lòng chọn kho nhận'
       }
-      if (hinhThucTt !== 'congno' && !quy.trim()) {
+      if (traNgay && !quy.trim()) {
         loiMoi.quy = 'Vui lòng chọn quỹ'
       }
       if (nhanKemHd) {
@@ -1697,6 +1696,31 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
     if (dangSua) {
       suaPhieu(man, String(row!.id), noiDung)
       ghiNhatKy(man, String(row!.id), soCt, s.ten, 'Sửa chứng từ')
+      // Tích Đã thanh toán khi sửa: lập phiếu chi số còn nợ, về màn xem phiếu mua (T662)
+      if (nhom === 'mua' && traKhiSua && conLaiTt > 0) {
+        const soChi = lapPhieuChiTraNcc({
+          hinhThuc: hinhThucTt === 'chuyenkhoan' ? 'chuyenkhoan' : 'tienmat',
+          quy,
+          ngay: ngayChiTiet,
+          soTien: conLaiTt,
+          dienGiai: `Chi tiền mua hàng theo ${soCt}`,
+        }, {
+          man,
+          id: String(row!.id),
+          so: soCt,
+          di: `${path}/${row!.id}`,
+          dsTtCu: (gocData?._dsTt as PhieuTt[] | undefined) ?? [],
+          cn: cuaHang,
+          doiTuong,
+          diaChi,
+          nguoiGiaoDich,
+          goi: s.goi,
+          ai: s.ten,
+        })
+        toast(`Đã lưu ${soCt}, lập ${soChi} trả ${money(conLaiTt)} đ`)
+        nav(`${path}/${row!.id}`, { replace: true })
+        return
+      }
       toast(`Đã lưu thay đổi ${soCt}`)
       if (window.history.state && window.history.state.idx > 0) {
         nav(-1)
@@ -2017,20 +2041,14 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
 
                     {/* Hai tích cùng một hàng: Đã thanh toán, Nhận kèm hoá đơn (T656) */}
                     <div className="m-t656-tich-hang">
-                      {/* Màn sửa: tích mở sheet Thanh toán (chọn quỹ, số tiền, lập phiếu chi); trả đủ rồi thì tích sẵn, khoá (T656) */}
+                      {/* Màn sửa như tạo mới: tích hiện ô chọn quỹ, Lưu thì trả số còn nợ; trả đủ rồi thì tích sẵn, khoá (T656, T662) */}
                       <button
                         type="button"
                         role="checkbox"
                         aria-checked={daTichTt}
                         disabled={dangSua && ttMua === 'da'}
                         className={`m-t655-tich ${daTichTt ? 'on' : ''}`}
-                        onClick={() => {
-                          if (dangSua) {
-                            if (conLaiTt > 0) setMoThanhToan(true)
-                            return
-                          }
-                          doiHinhThucTtMua(hinhThucTt !== 'congno' ? 'congno' : 'tienmat')
-                        }}
+                        onClick={() => doiHinhThucTtMua(traNgay ? 'congno' : 'tienmat')}
                       >
                         <span className="hop">
                           {daTichTt && (
@@ -2055,7 +2073,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                       </button>
                     </div>
 
-                    {!dangSua && hinhThucTt !== 'congno' && (
+                    {traNgay && (
                       <>
                         <div className="m-t655-hang">
                           <span className="m-t655-nhan">Quỹ thanh toán <em>*</em></span>
@@ -2941,7 +2959,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
               <div>
                 <h2 className="m-tam-tieu">Chọn quỹ thanh toán</h2>
                 <div style={{ fontSize: 13, color: 'var(--muted)', marginTop: 2 }}>
-                  Cửa hàng {cuaHang || 'Phố Mây Nguyễn Trãi'} · cần trả <b style={{ color: 'var(--ink)' }}>{money(tongThanhToan)} đ</b>
+                  Cửa hàng {cuaHang || 'Phố Mây Nguyễn Trãi'} · cần trả <b style={{ color: 'var(--ink)' }}>{money(canTra)} đ</b>
                 </div>
               </div>
               <button type="button" className="m-tam-dong-btn" onClick={() => setMoBangChonQuy(false)} aria-label="Đóng">
@@ -2972,7 +2990,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
               </div>
               {dsNhom.map(q => {
                 const sd = soDuQuy(q.ten)
-                const khongDu = sd < tongThanhToan
+                const khongDu = sd < canTra
                 const isChon = quy === q.ten
                 return (
                   <div

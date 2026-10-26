@@ -2,6 +2,9 @@
 
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
+## 26/10/2026
+- T662: Điện thoại, sửa phiếu mua chưa thanh toán: tích Đã thanh toán hiện ô Quỹ thanh toán như khi tạo mới, không bật bảng Thanh toán. Bấm Lưu thì lập luôn phiếu chi số còn nợ, phiếu mua thành Đã thanh toán.
+
 ## 24/10/2026
 - T661: Điện thoại, phiếu mua đã thanh toán, bấm Sửa phiếu: hộp báo không còn ghi lặp số phiếu chi.
 - T660: Điện thoại, chi tiết phiếu kiểm kê bỏ nút ba chấm: Xoá, Sao chép, Sửa hiện thẳng ở thanh dưới. Phiếu Xuất, Nhập điều chỉnh không còn nút Sửa. Mọi màn chi tiết phiếu trên điện thoại bỏ Xuất Excel.
