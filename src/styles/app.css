@@ -41996,3 +41996,22 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
   justify-content: center;
 }
 .m-pb-man .m-pb-day .m-t660-xoa { color: var(--red); }
+
+/* ── Khởi tạo FABi chỉ mở bán gói Standard (T663) ── */
+.ktf-goi-sap { margin: 8px 2px 0; font-size: 12.5px; }
+.ktf-goi-sap a { color: var(--blue); font-weight: 600; }
+.ktf-goi-lop { margin-top: 10px; border: 1px solid var(--line); border-radius: 8px; padding: 4px 14px; }
+.ktf-goi-lop > div { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; }
+.ktf-goi-lop > div + div { border-top: 1px solid var(--line); }
+.ktf-goi-lop b { display: block; font-size: 13px; color: var(--ink); }
+.ktf-goi-lop small { font-size: 12.5px; }
+.ktf-goi-lop .ic { margin-top: 2px; flex: none; }
+.ktf-lop-co { color: var(--green); }
+.ktf-lop-chua { color: var(--amber); }
+.ktf-lop-note { margin: 0 0 10px; padding: 8px 10px; border-radius: 6px; background: var(--amber-t); color: var(--amber); font-size: 12.5px; }
+.gtb-card-ribbon.sap { background: var(--fr); }
+.gtb-sap { height: 38px; display: flex; align-items: center; justify-content: center; border-radius: 9px; border: 1px dashed var(--line); color: var(--muted); font-size: 13px; }
+.ktf-nhom { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.ktf-nhom .opt small { font-size: 12.5px; }
+.ktf-nhom .row b, .ktf-nhom-dt { white-space: nowrap; }
+@media (max-width: 760px) { .ktf-nhom { grid-template-columns: minmax(0, 1fr); } }

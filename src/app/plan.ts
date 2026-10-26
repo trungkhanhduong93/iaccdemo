@@ -4,6 +4,8 @@ import data from './features.json'
 
 export type Goi = 'S' | 'PL' | 'PR'
 export const GOIS: Goi[] = ['S', 'PL', 'PR']
+/** Gói đang mở bán: khởi tạo chỉ cho chọn các gói này, Gói thuê bao gắn nhãn Sắp ra mắt cho gói khác (T663). Mở bán thêm gói thì thêm vào đây */
+export const GOI_MO: Goi[] = ['S']
 
 export interface Feature {
   c: string      // mã STT trong Excel, vd 3.1.1
@@ -92,6 +94,12 @@ const DA_BO = new Set([
   '11.1', '11.2',     // Tiện ích Đồng bộ bán hàng, Xuất kho theo định lượng: bỏ ở mọi gói, PhuongXT chốt 10/10/2026 (T100)
 ])
 
+/** Đổi tên tính năng khi Excel chưa cập nhật. Trum sửa tên trong Excel rồi thì xoá dòng ở đây */
+const DOI_TEN: Record<string, string> = {
+  '5.1.10': 'Kiểm kê số lượng',                       // PhuongXT chốt 26/10/2026 (T663)
+  '8.1.1': 'Quản lý chi phí phân bổ nhiều kỳ',        // PhuongXT chốt 26/10/2026 (T663)
+}
+
 function gopFeatures(): Feature[] {
   const boSungChuaCo = BO_SUNG.filter(b => !data.feats.some(f => f.c === b.c))
   const chenMap = new Map<string, Feature[]>()
@@ -104,7 +112,7 @@ function gopFeatures(): Feature[] {
   for (const f of data.feats) {
     if (DA_BO.has(f.c)) continue
     const g = THEO_ROADMAP[f.c] ?? doiGoiTuExcel(f.g)
-    ds.push({ ...f, g })
+    ds.push({ ...f, g, n: DOI_TEN[f.c] ?? f.n })
     const them = chenMap.get(f.c)
     if (them) {
       for (const b of them) {
@@ -152,10 +160,13 @@ export const DIEM_NOI_BAT: Record<Goi, { tieuDe: string; ds: string[] }> = {
   S: {
     tieuDe: 'Hộ kinh doanh & Quán ăn nhỏ',
     ds: [
-      '17 sổ sách & báo cáo hộ kinh doanh theo TT152/2025',
-      'Tự động nhận đơn bán hàng trực tiếp từ POS FABi',
-      'Quản lý xuất bán POS và kiểm kê kho định kỳ',
-      'Theo dõi quỹ tiền mặt, doanh thu và chi phí hoạt động',
+      'Sổ sách & báo cáo HKD theo TT152/2025',   // khởi tạo thêm mẫu sổ theo nhóm, nhóm 3, 4 ẩn dòng này (T663)
+      'Sổ sách & báo cáo DNSN theo TT58 (S1-DNSN)',   // khởi tạo chỉ hiện với doanh nghiệp (T663)
+      'Quản lý lãi lỗ đơn giản (doanh thu tự động đồng bộ từ POS FABi)',
+      'Quản lý thu chi (tiện ích đồng bộ thu chi tự động từ POS FABi)',
+      'Quản lý mua hàng và công nợ nhà cung cấp',
+      'Quản lý hao hụt kiểm kê hàng bán thẳng',
+      'Kê khai thuế',   // khởi tạo ẩn dòng này khi loại hình, nhóm, cách tính thuế chưa kê khai được ở gói (T663)
       'Miễn phí 100% trọn đời, không giới hạn cửa hàng',
     ],
   },

@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T663 | Khởi tạo FABi chỉ mở bán gói Standard: bước chọn gói tách Quản lý và Kê khai thuế theo loại hình, nhóm, cách tính thuế; Gói thuê bao gắn Sắp ra mắt cho Plus, Pro | PhuongXT | 26/10/2026 | `2026-10-26-phuongxt-khoi-tao-chi-goi-standard.md` |
 | T662 | Điện thoại, sửa phiếu mua chưa trả: tích Đã thanh toán hiện ô chọn quỹ như tạo mới, Lưu thì lập phiếu chi số còn nợ, không mở sheet Thanh toán | PhuongXT | 26/10/2026 | `2026-10-26-phuongxt-sua-mua-chon-quy.md` |
 | T661 | Điện thoại, chi tiết phiếu mua hàng đã trả, bấm Sửa phiếu: hộp "Không sửa được" lặp mã phiếu chi (vd "PC2610-0261, PC2610-0261") | PhuongXT | 24/10/2026 | `2026-10-24-phuongxt-ma-phieu-chi-lap.md` |
 | T660 | Điện thoại, chi tiết phiếu kiểm kê: Xoá, Sao chép, Sửa nằm ở thanh dưới, bỏ nút ba chấm; phiếu điều chỉnh bỏ nút Sửa; mọi màn chi tiết bỏ Xuất Excel | PhuongXT | 24/10/2026 | `2026-10-24-phuongxt-kiem-ke-nut-duoi.md` |

@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import type { ScreenProps } from '../types'
 import { useSession, donViHienTai, cheDoHienTai } from '../../app/session'
-import { GOIS, GOI, FEATURES, type Goi, demTheoGoi, MODS, GIA_GOI_NAM, GIA_GOI_THANG, DIEM_NOI_BAT } from '../../app/plan'
+import { GOIS, GOI, GOI_MO, FEATURES, type Goi, demTheoGoi, MODS, GIA_GOI_NAM, GIA_GOI_THANG, DIEM_NOI_BAT } from '../../app/plan'
 import { MODULES, duongDan } from '../../app/registry'
 import { cheDoCuaGoi, CHE_DO, CHE_DO_HOP_LE } from '../../app/che-do'
 import { PageHead, Pk } from '../../ui/Page'
@@ -163,7 +163,8 @@ export function GoiThueBao({ sc }: ScreenProps) {
         {GOIS.map(g => {
           const n = demTheoGoi(g)
           const dang = g === s.goi
-          const laKhuyenDung = g === 'PL'
+          const sap = !dang && !GOI_MO.includes(g)   // gói chưa mở bán: nhãn Sắp ra mắt, không có nút chuyển gói (T663)
+          const laKhuyenDung = g === 'PL' && !sap
           const thongTinGia = bangGia[g]
           const highlights = DIEM_NOI_BAT[g]
           const cd = cheDoCuaGoi(g)
@@ -177,6 +178,10 @@ export function GoiThueBao({ sc }: ScreenProps) {
               {dang ? (
                 <div className="gtb-card-ribbon active">
                   <Icon n="check" className="ic sm" /> ĐANG SỬ DỤNG
+                </div>
+              ) : sap ? (
+                <div className="gtb-card-ribbon sap">
+                  <Icon n="clock" className="ic sm" /> SẮP RA MẮT
                 </div>
               ) : laKhuyenDung ? (
                 <div className="gtb-card-ribbon popular">
@@ -210,6 +215,8 @@ export function GoiThueBao({ sc }: ScreenProps) {
                   <button className="btn gtb-btn-curr" disabled>
                     <Icon n="check" className="ic sm" /> Gói bạn đang dùng
                   </button>
+                ) : sap ? (
+                  <div className="gtb-sap">Chưa mở bán</div>
                 ) : (
                   <button
                     className={`btn ${g === 'PL' || g === 'PR' ? 'acc' : 'pri'} gtb-btn-act`}

@@ -2,10 +2,10 @@
 // popup 4 bước (loại hình và gói, đơn vị, cửa hàng, đồng bộ bán hàng) mở đè lên. Đóng popup thì còn thẻ nhắc nổi ở góc dưới phải.
 // Tiến độ lưu ở localStorage để quay lại đúng bước.
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { SO_NGAY_DUNG_THU, batDauDungThu, dungThuDv, useSession, type Session } from '../../app/session'
 import { CUA_HANG_FABI, cuaHangChuaDung, type CuaHangFabi } from './cua-hang-fabi'
-import { DIEM_NOI_BAT, FEATURES, GIA_GOI_NAM, GIA_GOI_THANG, GOI, GOIS, MODS, demTheoGoi, type Goi } from '../../app/plan'
+import { DIEM_NOI_BAT, FEATURES, GIA_GOI_NAM, GIA_GOI_THANG, GOI, GOIS, GOI_MO, MODS, demTheoGoi, type Goi } from '../../app/plan'
 import { CHE_DO, CHE_DO_DN_STANDARD, CHE_DO_HOP_LE, CHE_DO_MAC_DINH, type CheDo } from '../../app/che-do'
 import { CUA_HANG, DAILY, HOM_NAY, type DonVi } from '../../data/mock'
 import { Icon } from '../../ui/Icon'
@@ -43,12 +43,27 @@ export const PP_HKD: Record<PpHkd, string> = { doanhThu: 'Theo tỷ lệ % trên
 /** Hộ kinh doanh luôn theo TT152: tính thuế theo doanh thu gợi ý Free, theo lợi nhuận gợi ý Standard.
  *  Doanh nghiệp chọn đủ 4 gói: Free theo TT58 trường hợp 1, chỉ sổ doanh thu S1-DNSN (T632);
  *  Standard theo TT58; Plus, Pro chọn TT133 hoặc TT99. PhuongXT chốt 11/10/2026 (T138) */
-const goiGoiY = (loai: LoaiHinh, pp: PpHkd): Goi => loai === 'hkd' ? (pp === 'doanhThu' ? 'S' : 'PL') : CUA_HANG.length > 1 ? 'PR' : 'PL'
+/** Doanh nghiệp cũng hỏi cách tính thuế (lưu chung trường ppHkd): GTGT, TNDN theo % doanh thu hay khấu trừ, lợi nhuận (T663) */
+export const PP_DN: Record<PpHkd, string> = { doanhThu: 'Theo tỷ lệ % trên doanh thu', loiNhuan: 'Theo khấu trừ (GTGT) và lợi nhuận (TNDN)' }
+
+/** Quản lý (lãi lỗ, thu chi, mua hàng, công nợ, kho) gói nào cũng đáp ứng mọi mô hình; kê khai thuế, sổ theo thông tư
+ *  chỉ đáp ứng các trường hợp khai ở đây. Gói chưa khai coi như đáp ứng mọi trường hợp. PhuongXT chốt 26/10/2026 (T663) */
+const KE_KHAI: Partial<Record<Goi, { loai: LoaiHinh; nhom?: number[]; pp: PpHkd }[]>> = {
+  S: [{ loai: 'hkd', nhom: [1, 2], pp: 'doanhThu' }, { loai: 'dn', pp: 'doanhThu' }],
+}
+const keKhaiDuoc = (g: Goi, loai: LoaiHinh, nhom: number, pp: PpHkd) =>
+  !KE_KHAI[g] || KE_KHAI[g].some(k => k.loai === loai && (!k.nhom || k.nhom.includes(nhom)) && k.pp === pp)
+/** Gói mở bán theo loại hình: hộ kinh doanh chỉ Standard, Plus */
+const goiCua = (loai: LoaiHinh) => (loai === 'hkd' ? (['S', 'PL'] as Goi[]) : GOIS).filter(g => GOI_MO.includes(g))
+/** Gợi ý gói nhỏ nhất kê khai được; không gói nào kê khai được thì gói lớn nhất đang mở */
+const goiGoiY = (loai: LoaiHinh, nhom: number, pp: PpHkd): Goi => {
+  const ds = goiCua(loai)
+  return ds.find(g => keKhaiDuoc(g, loai, nhom, pp)) ?? ds[ds.length - 1]
+}
 const cheDoMoi = (loai: LoaiHinh, g: Goi): CheDo => loai === 'hkd' ? 'TT152' : g === 'S' ? CHE_DO_DN_STANDARD : CHE_DO_MAC_DINH[g]
-const tenCheDo = (loai: LoaiHinh, cd: CheDo) => loai === 'dn' && cd === 'TT152' ? 'Quản lý lãi lỗ, không theo thông tư' : CHE_DO[cd].ten
 const nganCheDo = (loai: LoaiHinh, cd: CheDo) => loai === 'dn' && cd === 'TT152' ? 'Lãi lỗ' : CHE_DO[cd].ngan
 const MO_TA_GOI: Record<LoaiHinh, Partial<Record<Goi, string>>> = {
-  hkd: { S: 'Quản lý đơn giản: thu chi, bán hàng, kho. Hợp với tính thuế theo doanh thu', PL: 'Theo dõi đủ chi phí để tính thuế theo lợi nhuận' },
+  hkd: { S: 'Quản lý đơn giản: lãi lỗ, thu chi, mua hàng và công nợ, hao hụt hàng bán thẳng. Hợp với tính thuế theo doanh thu', PL: 'Theo dõi đủ chi phí để tính thuế theo lợi nhuận' },
   dn: { S: 'Doanh nghiệp siêu nhỏ theo TT58, chỉ sổ doanh thu S1-DNSN', PL: 'Doanh nghiệp siêu nhỏ theo TT58, ghi sổ không dùng tài khoản', PR: 'Hạch toán Nợ/Có theo TT133 hoặc TT99, đủ tính năng cho chuỗi lớn' },
 }
 
@@ -140,8 +155,17 @@ export function ChonKenh({ ds, chon, doi, trong }: { ds: string[]; chon: string[
 }
 
 /** Tính năng của gói, gom theo phân hệ. Tính năng gói liền trước chưa có thì đánh dấu Thêm */
-function TinhNangGoi({ g, truoc }: { g: Goi; truoc?: Goi }) {
-  const ds = FEATURES.filter(f => f.g.includes(g))
+/** Tính năng kê khai thuế thêm vào gói khi loại hình, nhóm, cách tính thuế kê khai được ở gói (T663) */
+const TN_KE_KHAI = ['6.2.3']
+/** Khởi tạo gọi phân hệ Thuế GTGT là Kê khai thuế (T663) */
+const TEN_MOD: Record<string, string> = { 'Thuế GTGT': 'Kê khai thuế' }
+
+const MOD_THUE = MODS.indexOf('Thuế GTGT')
+/** Tính năng gói hiện ở khởi tạo: kê khai được thì thêm TN_KE_KHAI, chưa kê khai được thì bỏ cả nhóm Kê khai thuế (T663) */
+const tnKhoiTao = (g: Goi, keKhai: boolean) => FEATURES.filter(f => keKhai ? f.g.includes(g) || TN_KE_KHAI.includes(f.c) : f.g.includes(g) && f.m !== MOD_THUE)
+
+function TinhNangGoi({ g, truoc, keKhai }: { g: Goi; truoc?: Goi; keKhai: boolean }) {
+  const ds = tnKhoiTao(g, keKhai)
   return (
     <div className="ktf-tn">
       <div className="row ktf-tn-dau"><b>Tính năng gói {GOI[g].ten}</b><span className="muted">{ds.length} tính năng{truoc ? `, đánh dấu là phần thêm so với gói ${GOI[truoc].ten}` : ''}</span></div>
@@ -151,7 +175,7 @@ function TinhNangGoi({ g, truoc }: { g: Goi; truoc?: Goi }) {
           if (!fs.length) return null
           return (
             <div key={m} className="ktf-tn-mod">
-              <b>{m} <span className="muted">{fs.length}</span></b>
+              <b>{TEN_MOD[m] ?? m} <span className="muted">{fs.length}</span></b>
               <ul>{fs.map(f => <li key={f.c} className={truoc && !f.g.includes(truoc) ? 'moi' : ''}>{f.n}</li>)}</ul>
             </div>
           )
@@ -182,7 +206,7 @@ export interface Nhap {
   dongBo: 'chiTiet' | 'kenh'
 }
 export const MAC_DINH: Nhap = {
-  kieu: 'fabi', b: -2, mo: false, loai: 'dn', nhom: nhomTheoDt(DT_FABI), ppHkd: 'loiNhuan', goi: goiGoiY('dn', 'loiNhuan'), cheDo: cheDoMoi('dn', goiGoiY('dn', 'loiNhuan')), traCuu: false, mst: '', tenDv: TEN_FABI, diaChi: '', ngayDauNam: '01/01/2026', chon: CUA_HANG.map(c => c.id),
+  kieu: 'fabi', b: -2, mo: false, loai: 'dn', nhom: nhomTheoDt(DT_FABI), ppHkd: 'loiNhuan', goi: goiGoiY('dn', nhomTheoDt(DT_FABI), 'loiNhuan'), cheDo: cheDoMoi('dn', goiGoiY('dn', nhomTheoDt(DT_FABI), 'loiNhuan')), traCuu: false, mst: '', tenDv: TEN_FABI, diaChi: '', ngayDauNam: '01/01/2026', chon: CUA_HANG.map(c => c.id),
   cnChinh: '', kenhOnline: KENH_ONLINE, kenhSan: KENH_SAN,
   dongBo: 'chiTiet',   // đồng bộ FABi chỉ kéo chi tiết theo hoá đơn (T247)
 }
@@ -190,13 +214,19 @@ export const MAC_DINH: Nhap = {
 export function docNhap(): Nhap {
   try {
     const raw = localStorage.getItem(KEY)
-    return raw ? { ...MAC_DINH, ...JSON.parse(raw) } : MAC_DINH
+    if (!raw) return MAC_DINH
+    const n: Nhap = { ...MAC_DINH, ...JSON.parse(raw) }
+    // bản nháp cũ đã chọn gói chưa mở bán thì về gợi ý mới (T663)
+    if (GOI_MO.includes(n.goi)) return n
+    const g = goiGoiY(n.loai, n.nhom, n.ppHkd)
+    return { ...n, goi: g, cheDo: cheDoMoi(n.loai, g) }
   } catch { return MAC_DINH }
 }
 export function luuNhap(n: Nhap) {
   try { localStorage.setItem(KEY, JSON.stringify(n)) } catch { /* trình duyệt chặn lưu thì thôi */ }
 }
 const SU_KIEN = 'iacc-mo-khoi-tao'
+const CHI_XEM_GOI = 'chi-xem'   // tham số đường dẫn: tab mở từ Xem so sánh gói, không hiện popup khởi tạo (T663)
 /** Lưu tiến độ rồi báo popup trong Shell đọc lại, để mở popup khi Shell đã mở sẵn (Thêm đơn vị kế toán) */
 function moKhoiTao(n: Nhap) {
   luuNhap(n)
@@ -245,6 +275,7 @@ export function OnboardFabi() {
   }, [])
   const sua = (p: Partial<Nhap>) => setN(x => ({ ...x, ...p }))
   const [tai, setTai] = useState(0)   // phần trăm lấy dữ liệu ở bước hoàn tất
+  const chiXemGoi = new URLSearchParams(useLocation().search).has(CHI_XEM_GOI)
 
   useEffect(() => { if (n.b >= 0) luuNhap(n) }, [n])
 
@@ -254,8 +285,11 @@ export function OnboardFabi() {
     return () => clearTimeout(t)
   }, [n.b, tai])
 
-  const goiChon = n.loai === 'hkd' ? (['S', 'PL'] as Goi[]) : GOIS
-  const goiY = goiGoiY(n.loai, n.ppHkd)
+  const goiChon = goiCua(n.loai)
+  const goiSap = GOIS.filter(g => !GOI_MO.includes(g))
+  const goiY = goiGoiY(n.loai, n.nhom, n.ppHkd)
+  const keKhai = keKhaiDuoc(n.goi, n.loai, n.nhom, n.ppHkd)
+  const thue = n.loai === 'hkd' ? (n.nhom === 1 ? 'doanh thu' : n.ppHkd === 'doanhThu' ? 'thuế TNCN theo % doanh thu' : 'thuế TNCN theo lợi nhuận') : (n.ppHkd === 'doanhThu' ? 'thuế GTGT, TNDN theo % doanh thu' : 'thuế GTGT khấu trừ, TNDN theo lợi nhuận')
   const nhomGoiY = nhomTheoDt(DT_FABI)
   const cuaHang = dsCuaHang(n.kieu, s)
   const anCh = n.kieu === 'them' ? CUA_HANG_FABI.length - cuaHang.length : 0   // cửa hàng FABi đã dùng kế toán ở đơn vị khác
@@ -263,10 +297,13 @@ export function OnboardFabi() {
   const soCt = demCt(n.chon, n.dongBo, +HOM_NAY - 29 * 86400000)   // ước một tháng, hiện ở bước đồng bộ
   const soCtDaTao = demCt(n.chon, n.dongBo, ngay(n.ngayDauNam))
   const dmGoi = FEATURES.filter(f => f.m === 0 && f.g.includes(n.goi))   // danh mục của gói, gợi ý khởi tạo ở màn hoàn tất
-  const dem = demTheoGoi(n.goi)
+  const dem = { ...demTheoGoi(n.goi), co: tnKhoiTao(n.goi, keKhai).length }
   // Điểm nổi bật của gói, bỏ dòng nói về thông tư khác chế độ đang chọn (vd hộ kinh doanh dùng Standard vẫn TT152)
   const ngan = nganCheDo(n.loai, n.cheDo)
-  const diemGoi = DIEM_NOI_BAT[n.goi].ds.filter(t => !/TT\d+/.test(t) || t.includes(ngan))
+  // Sổ sách hộ kinh doanh theo nhóm: nhóm 1 mẫu S1a, nhóm 2 mẫu S2a, nhóm 3, 4 chưa có nên ẩn dòng (T663)
+  const SO_HKD: Record<number, string> = { 1: 'S1a', 2: 'S2a' }
+  const diemGoi = DIEM_NOI_BAT[n.goi].ds.filter(t => (!/TT\d+/.test(t) || t.includes(ngan)) && (t !== 'Kê khai thuế' || keKhai))
+    .flatMap(t => n.loai !== 'hkd' || !t.includes('HKD theo TT152') ? [t] : SO_HKD[n.nhom] ? [`${t} (${SO_HKD[n.nhom]})`] : [])
 
   const bat = (ds: string[], k: string) => ds.includes(k) ? ds.filter(x => x !== k) : [...ds, k]
   const doiKenh = (k: string) => { const on = bat(n.kenhOnline, k); sua({ kenhOnline: on, kenhSan: n.kenhSan.filter(x => on.includes(x)) }) }
@@ -283,13 +320,16 @@ export function OnboardFabi() {
   /** Đổi loại hình, nhóm hay cách tính thuế thì gói, chế độ về gợi ý mới */
   const doiLoai = (p: Partial<Pick<Nhap, 'loai' | 'nhom' | 'ppHkd'>>) => {
     const x = { ...n, ...p }
-    const pp = x.loai === 'hkd' ? (NHOM_HKD[x.nhom - 1].pp ?? x.ppHkd) : x.ppHkd
-    const g = goiGoiY(x.loai, pp)
+    // nhóm 2 tự chọn thuế: vừa đổi sang nhóm 2 thì mặc định theo % doanh thu, gói Standard kê khai được (T663)
+    const pp = x.loai === 'hkd' ? (NHOM_HKD[x.nhom - 1].pp ?? (p.nhom ? 'doanhThu' : x.ppHkd)) : x.ppHkd
+    const g = goiGoiY(x.loai, x.nhom, pp)
     sua({ ...p, ppHkd: pp, goi: g, cheDo: cheDoMoi(x.loai, g) })
   }
   const chonGoi = (g: Goi) => sua({ goi: g, cheDo: cheDoMoi(n.loai, g) })
 
   if (n.b < 0) return null
+  // Xem so sánh gói mở Gói thuê bao ở tab trình duyệt mới, tab đó không hiện popup; tab cũ vẫn khởi tạo tiếp (T663)
+  if (chiXemGoi) return null
   // 3 bước khởi tạo bắt buộc: popup không đóng được, xong mới dùng phần mềm (T158)
   return (
     <div className="ktf-pop-nen">
@@ -324,7 +364,7 @@ export function OnboardFabi() {
                                 <button key={x.nhom} className={`opt ${n.nhom === x.nhom ? 'on' : ''}`} onClick={() => doiLoai({ nhom: x.nhom })}>
                                   <span className="radio" />
                                   <span className="grow">
-                                    <span className="row"><b>Nhóm {x.nhom}</b><span className="muted ktf-nhom-dt">{x.ten}</span><span className="grow" />{x.nhom === nhomGoiY && <span className="chip info">Theo doanh thu FABi</span>}</span>
+                                    <span className="row"><b>Nhóm {x.nhom}</b><span className="muted ktf-nhom-dt">{x.ten}</span></span>
                                     <small>{x.thue}</small>
                                   </span>
                                 </button>
@@ -336,7 +376,7 @@ export function OnboardFabi() {
                                 <div className="grid g2">
                                   {(['doanhThu', 'loiNhuan'] as const).map(pp => (
                                     <button key={pp} className={`opt ${n.ppHkd === pp ? 'on' : ''}`} onClick={() => doiLoai({ ppHkd: pp })}>
-                                      <span className="radio" /><span><b>{PP_HKD[pp]}</b><small>{pp === 'doanhThu' ? 'Không cần theo dõi chi phí. Gợi ý gói Standard' : 'Phải có chứng từ chi phí hợp lý. Gợi ý gói Plus'}</small></span>
+                                      <span className="radio" /><span><b>{PP_HKD[pp]}</b><small>{pp === 'doanhThu' ? 'Không cần theo dõi chi phí' : 'Phải có chứng từ chi phí hợp lý'}</small></span>
                                     </button>
                                   ))}
                                 </div>
@@ -345,17 +385,41 @@ export function OnboardFabi() {
                             <Note icon="sparkle">Doanh thu 12 tháng trên FABi khoảng {so(DT_FABI / 1e9)} tỷ đồng, thuộc nhóm {nhomGoiY}.</Note>
                           </>
                         )}
-                        <h3 className="ktf-h3">{n.loai === 'hkd' ? 'Gói cho hộ kinh doanh' : 'Doanh nghiệp chọn được cả 3 gói'}</h3>
+                        {n.loai === 'dn' && (
+                          <>
+                            <h3 className="ktf-h3">Cách tính thuế GTGT, TNDN</h3>
+                            <div className="grid g2">
+                              {(['doanhThu', 'loiNhuan'] as const).map(pp => (
+                                <button key={pp} className={`opt ${n.ppHkd === pp ? 'on' : ''}`} onClick={() => doiLoai({ ppHkd: pp })}>
+                                  <span className="radio" /><span><b>{PP_DN[pp]}</b><small>{pp === 'doanhThu' ? 'Doanh nghiệp siêu nhỏ, không theo dõi chi phí' : 'Phải có hoá đơn đầu vào, chứng từ chi phí'}</small></span>
+                                </button>
+                              ))}
+                            </div>
+                          </>
+                        )}
+                        <h3 className="ktf-h3">{goiChon.length === 1 ? 'Gói đang mở bán' : n.loai === 'hkd' ? 'Gói cho hộ kinh doanh' : `Doanh nghiệp chọn được cả ${goiChon.length} gói`}</h3>
                         <div className="ktf-goi-xem">
                           {goiChon.map(g => (
                             <button key={g} className={n.goi === g ? 'on' : ''} onClick={() => chonGoi(g)}>
                               <span className="radio" />
                               <Pk g={g} logo />
                               <span>{MO_TA_GOI[n.loai][g]}</span>
-                              <span className="ktf-goi-dem">{g === goiY && <span className="chip info">Gợi ý</span>}<b>{demTheoGoi(g).co}</b> tính năng</span>
+                              <span className="ktf-goi-dem">{g === goiY && goiChon.length > 1 && <span className="chip info">Gợi ý</span>}<b>{g === n.goi ? dem.co : demTheoGoi(g).co}</b> tính năng</span>
                             </button>
                           ))}
                         </div>
+                        <div className="ktf-goi-lop">
+                          <div><Icon n="check" className="ic sm ktf-lop-co" /><span><b>Quản lý kinh doanh</b><small className="muted">Lãi lỗ, thu chi, mua hàng, công nợ, hao hụt hàng bán thẳng. Đáp ứng mọi mô hình</small></span></div>
+                          <div><Icon n={keKhai ? 'check' : 'alert'} className={`ic sm ${keKhai ? 'ktf-lop-co' : 'ktf-lop-chua'}`} />
+                            <span><b>Kê khai {thue}</b><small className="muted">{keKhai ? `Tờ khai, sổ sách theo ${nganCheDo(n.loai, n.cheDo)}` : `Chưa có ở gói ${GOI[n.goi].ten}`}</small></span>
+                          </div>
+                          {!keKhai && <p className="ktf-lop-note">Bạn vẫn dùng đủ phần quản lý. Kê khai {thue} sẽ có ở gói cao hơn, sắp ra mắt.</p>}
+                        </div>
+                        {goiSap.length > 0 && (
+                          <p className="muted ktf-goi-sap">
+                            Gói {goiSap.map(g => GOI[g].ten).join(', ')} sắp ra mắt. <a href={`#/app/he-thong/goi-thue-bao?${CHI_XEM_GOI}`} target="_blank" rel="noreferrer">Xem so sánh gói</a>
+                          </p>
+                        )}
                         {n.loai === 'dn' && n.goi === 'PR' && (
                           <div className="f" style={{ marginTop: 14, maxWidth: 420 }}>
                             <label>Chế độ kế toán</label>
@@ -365,8 +429,8 @@ export function OnboardFabi() {
                           </div>
                         )}
                         <details className="ktf-tn-mo">
-                          <summary>Xem {demTheoGoi(n.goi).co} tính năng gói {GOI[n.goi].ten}</summary>
-                          <TinhNangGoi g={n.goi} truoc={goiChon[goiChon.indexOf(n.goi) - 1]} />
+                          <summary>Xem {dem.co} tính năng gói {GOI[n.goi].ten}</summary>
+                          <TinhNangGoi g={n.goi} truoc={goiChon[goiChon.indexOf(n.goi) - 1]} keKhai={keKhai} />
                         </details>
                       </>
                     )}
@@ -432,7 +496,6 @@ export function OnboardFabi() {
                       <small>{n.goi === 'S' ? GIA_GOI_NAM.S.ghiChu : `${GIA_GOI_NAM[n.goi].ghiChu}. Trả từng tháng ${GIA_GOI_THANG[n.goi].gia}`}</small>
                     </div>
                     <ul>
-                      <li><Icon n="book" className="ic sm" /><span>{tenCheDo(n.loai, n.cheDo)}</span></li>
                       {diemGoi.map(t => <li key={t}><Icon n="check" className="ic sm" /><span>{t}</span></li>)}
                     </ul>
                     <small className="muted">{n.loai === 'hkd' ? `Hộ kinh doanh nhóm ${n.nhom}` : 'Doanh nghiệp'} · {cnChon.length} cửa hàng · {dem.co}/{dem.tong} tính năng</small>
