@@ -42015,3 +42015,10 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
 .ktf-nhom .opt small { font-size: 12.5px; }
 .ktf-nhom .row b, .ktf-nhom-dt { white-space: nowrap; }
 @media (max-width: 760px) { .ktf-nhom { grid-template-columns: minmax(0, 1fr); } }
+
+/* ── Giao diện kế toán IACC dùng ảnh thật trang chủ gói Standard (T664) ── */
+.ktf-anh { position: relative; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--bg); line-height: 0; }
+.ktf-anh img { display: block; width: 100%; height: auto; }
+.ktf-anh .ktf-so { right: auto; transform: translate(-50%, 0); }
+.ktf-gt-luoi:has(.ktf-anh) { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); }
+@media (max-width: 900px) { .ktf-gt-luoi:has(.ktf-anh) { grid-template-columns: 1fr; } }
