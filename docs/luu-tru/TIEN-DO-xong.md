@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T667 | Popup khởi tạo FABi, màn Đang lấy dữ liệu: lấy cả thu chi tiền từ FABi, danh sách 4 việc kèm trạng thái; màn xong ghi số chứng từ bán hàng và phiếu thu chi đã lấy | PhuongXT | 26/10/2026 | `2026-10-26-phuongxt-gioi-thieu-anh-that.md` |
 | T666 | Popup khởi tạo FABi: hàng nút Quay lại, Tiếp tục ghim sát đáy popup ở mọi bước, không phải cuộn mới thấy | PhuongXT | 26/10/2026 | `2026-10-26-phuongxt-gioi-thieu-anh-that.md` |
 | T665 | Khởi tạo FABi, bước Đơn vị: hộ kinh doanh nhập CCCD/MST, không bắt buộc; doanh nghiệp bắt buộc mã số thuế mới bấm Tiếp tục được | PhuongXT | 26/10/2026 | `2026-10-26-phuongxt-gioi-thieu-anh-that.md` |
 | T664 | Màn Giao diện kế toán IACC khi mở từ FABi: ảnh thật trang chủ gói Standard gắn số 1–5, sửa chữ các mục, thêm mục Thuế và sổ sách | PhuongXT | 26/10/2026 | `2026-10-26-phuongxt-gioi-thieu-anh-that.md` |

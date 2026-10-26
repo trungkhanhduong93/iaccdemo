@@ -42026,3 +42026,16 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
 /* ── Popup khởi tạo FABi: hàng nút Quay lại, Tiếp tục ghim đáy, không phải cuộn (T666) ── */
 .ktf-pop-nut { position: sticky; bottom: -22px; z-index: 2; box-shadow: 0 -6px 12px -8px rgba(14, 26, 43, .18); justify-content: flex-end; gap: 8px; margin: 22px -26px -24px; padding: 14px 26px; background: #fff; border-top: 1px solid var(--line); border-radius: 0 0 12px 12px; }
 @media (max-width: 767px) { .ktf-pop .card > .row.ktf-pop-nut:last-child { bottom: calc(-16px - env(safe-area-inset-bottom, 0px)) !important; margin: 16px -14px -16px !important; padding: 12px 14px !important; width: auto !important; } }
+
+/* ── Lấy dữ liệu từ FABi: thêm đồng bộ thu chi tiền, danh sách việc kèm trạng thái (T667) ── */
+.ktf-tai-ds { list-style: none; margin: 6px 0 0; padding: 0; width: 100%; display: flex; flex-direction: column; gap: 10px; text-align: left; }
+.ktf-tai-ds li { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: var(--muted); }
+.ktf-tai-ds li > .ic, .ktf-tai-ds li > i { flex: none; width: 18px; height: 18px; margin-top: 1px; }
+.ktf-tai-ds li > i { box-sizing: border-box; border-radius: 50%; border: 2px solid var(--line); }
+.ktf-tai-ds li.dang > i { border-color: var(--line); border-top-color: var(--blue); animation: ktf-quay .8s linear infinite; }
+.ktf-tai-ds li.xong > .ic { color: var(--green); }
+.ktf-tai-ds li.xong b, .ktf-tai-ds li.dang b { color: var(--ink); }
+.ktf-tai-ds span { display: flex; flex-direction: column; gap: 1px; }
+.ktf-tai-ds b { font-weight: 600; }
+.ktf-tai-ds small { font-size: 12px; }
+@keyframes ktf-quay { to { transform: rotate(360deg); } }

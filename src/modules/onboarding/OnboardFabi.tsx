@@ -281,7 +281,7 @@ export function OnboardFabi() {
 
   useEffect(() => {
     if (n.b !== XONG || tai >= 100) return
-    const t = setTimeout(() => setTai(x => Math.min(100, x + 7)), 120)
+    const t = setTimeout(() => setTai(x => Math.min(100, x + 4)), 120)
     return () => clearTimeout(t)
   }, [n.b, tai])
 
@@ -296,6 +296,15 @@ export function OnboardFabi() {
   const cnChon = cuaHang.filter(c => n.chon.includes(c.id))
   const soCt = demCt(n.chon, n.dongBo, +HOM_NAY - 29 * 86400000)   // ước một tháng, hiện ở bước đồng bộ
   const soCtDaTao = demCt(n.chon, n.dongBo, ngay(n.ngayDauNam))
+  // phiếu thu, chi tiền lập trên FABi (T667): số mẫu, bình quân 3 phiếu một cửa hàng một ngày
+  const soTcDaTao = Math.max(0, Math.round((+HOM_NAY - ngay(n.ngayDauNam)) / 86400000) + 1) * cnChon.length * 3
+  // các việc lúc lấy dữ liệu, mỗi việc chạy tới mốc phần trăm của nó
+  const viecTai: [number, string, string][] = [
+    [25, 'Danh mục món, kênh bán', ''],
+    [55, 'Doanh thu bán hàng', `${so(soCtDaTao)} chứng từ Xuất bán POS`],
+    [80, 'Thu chi tiền', `${so(soTcDaTao)} phiếu thu, phiếu chi lập trên FABi`],
+    [100, 'Ghi sổ', 'Doanh thu, quỹ tiền, thuế đầu ra'],
+  ]
   const dmGoi = FEATURES.filter(f => f.m === 0 && f.g.includes(n.goi))   // danh mục của gói, gợi ý khởi tạo ở màn hoàn tất
   const dem = { ...demTheoGoi(n.goi), co: tnKhoiTao(n.goi, keKhai).length }
   // Điểm nổi bật của gói, bỏ dòng nói về thông tư khác chế độ đang chọn (vd hộ kinh doanh dùng Standard vẫn TT152)
@@ -509,13 +518,19 @@ export function OnboardFabi() {
                 {tai < 100
                   ? <>
                       <h1>Đang lấy dữ liệu từ FABi</h1>
-                      <p>Doanh thu từ {n.ngayDauNam} của {cnChon.length} cửa hàng.</p>
+                      <p>Doanh thu và thu chi tiền từ {n.ngayDauNam} của {cnChon.length} cửa hàng.</p>
                       <div className="ktf-tai"><i style={{ width: `${tai}%` }} /></div>
-                      <p className="muted" style={{ fontSize: 12.5 }}>{tai < 40 ? 'Lấy danh mục món, kênh bán' : tai < 80 ? `Tạo ${so(soCtDaTao)} chứng từ Xuất bán POS` : 'Ghi sổ doanh thu, thuế đầu ra'}</p>
+                      <ul className="ktf-tai-ds">
+                        {viecTai.map(([moc, t, m], i) => {
+                          const tt = tai >= moc ? 'xong' : tai >= (i ? viecTai[i - 1][0] : 0) ? 'dang' : 'cho'
+                          return <li key={t} className={tt}>{tt === 'xong' ? <Icon n="check" className="ic sm" /> : <i />}<span><b>{t}</b>{m && <small>{m}</small>}</span></li>
+                        })}
+                      </ul>
                     </>
                   : <>
                       <div className="ktf-chao-ic ok"><Icon n="check" className="ic lg" /></div>
                       <h1>Dữ liệu đã sẵn sàng</h1>
+                      <p className="muted">Đã lấy {so(soCtDaTao)} chứng từ Xuất bán POS và {so(soTcDaTao)} phiếu thu, phiếu chi từ FABi.</p>
                       <p>Việc nên làm tiếp: khởi tạo các loại danh mục</p>
                       <ul className="ktf-viec">
                         {dmGoi.slice(0, 6).map(f => <li key={f.c}><Icon n="folder" className="ic sm" />{f.n}</li>)}
