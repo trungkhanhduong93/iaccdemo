@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 26/10/2026
+- T665: Khởi tạo dữ liệu từ FABi, bước Đơn vị: hộ kinh doanh thấy ô CCCD/MST, không bắt buộc; doanh nghiệp phải nhập mã số thuế mới bấm Tiếp tục được.
 - T664: Mở từ FABi, màn Giao diện kế toán IACC dùng ảnh thật trang chủ gói Standard, đánh số 1–5 lên ảnh; thêm mục Thuế và sổ sách, sửa chữ mục Thanh phân hệ, Tổng quan, Chứng từ tự sinh.
 - T663: Khởi tạo dữ liệu từ FABi chỉ còn gói Standard, kèm dòng Gói Plus, Pro sắp ra mắt mở bảng so sánh ở tab mới. Dưới thẻ gói tách Quản lý kinh doanh và Kê khai thuế (tích xanh hoặc cảnh báo theo loại hình, nhóm, cách tính thuế); doanh nghiệp có thêm câu hỏi cách tính thuế. Màn Gói thuê bao: Plus, Pro gắn nhãn Sắp ra mắt, bỏ nút Nâng cấp.
 - T662: Điện thoại, sửa phiếu mua chưa thanh toán: tích Đã thanh toán hiện ô Quỹ thanh toán như khi tạo mới, không bật bảng Thanh toán. Bấm Lưu thì lập luôn phiếu chi số còn nợ, phiếu mua thành Đã thanh toán.

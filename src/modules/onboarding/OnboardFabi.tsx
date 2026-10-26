@@ -440,8 +440,8 @@ export function OnboardFabi() {
                         <h2 className="ktf-h">Thông tin đơn vị</h2>
                         <p className="muted ktf-p">Điền thông tin {n.loai === 'hkd' ? 'hộ kinh doanh' : 'công ty'} của bạn. Tên, địa chỉ tra cứu từ dữ liệu thuế.</p>
                         <div className="form-grid">
-                          <div className="f c2"><label>Mã số thuế <em>*</em></label>
-                            <div className="row"><input className="inp" value={n.mst} placeholder="Nhập mã số thuế" onChange={e => sua({ mst: e.target.value })} />
+                          <div className="f c2">{n.loai === 'hkd' ? <label>CCCD/MST</label> : <label>Mã số thuế <em>*</em></label>}
+                            <div className="row"><input className="inp" value={n.mst} placeholder={n.loai === 'hkd' ? 'Nhập CCCD hoặc mã số thuế' : 'Nhập mã số thuế'} onChange={e => sua({ mst: e.target.value })} />
                               <button className="btn" onClick={() => sua({ traCuu: true, mst: n.mst || '0319 990 088',   // kết quả tra cứu mẫu, khác 3 đơn vị mẫu
                                 tenDv: n.loai === 'hkd' ? 'Hộ kinh doanh Nhà hàng Phố Mây' : 'Công ty TNHH Nhà hàng Phố Mây', diaChi: '24 Nguyễn Huệ, phường Sài Gòn, TP.HCM' })}>Tra cứu</button></div>
                           </div>
@@ -451,7 +451,7 @@ export function OnboardFabi() {
                             </Select>
                           </div>
                           <div className="f c4"><label>{n.loai === 'hkd' ? 'Tên hộ kinh doanh' : 'Tên công ty'} <em>*</em></label><input className="inp" value={n.tenDv} onChange={e => sua({ tenDv: e.target.value })} /></div>
-                          <div className="f c4"><label>Địa chỉ</label><input className="inp" value={n.diaChi} placeholder="Tra cứu theo mã số thuế hoặc nhập" onChange={e => sua({ diaChi: e.target.value })} /></div>
+                          <div className="f c4"><label>Địa chỉ</label><input className="inp" value={n.diaChi} placeholder={n.loai === 'hkd' ? 'Tra cứu theo CCCD/MST hoặc nhập' : 'Tra cứu theo mã số thuế hoặc nhập'} onChange={e => sua({ diaChi: e.target.value })} /></div>
                         </div>
                       </>
                     )}
@@ -481,7 +481,7 @@ export function OnboardFabi() {
 
                     <div className="row" style={{ marginTop: 22, justifyContent: 'flex-end', gap: 8 }}>
                       {n.b > 0 && <button className="btn lg" onClick={() => sua({ b: n.b - 1 })}>Quay lại</button>}
-                      <button className="btn pri lg" disabled={n.b === 2 && (cnChon.length === 0 || (n.loai === 'hkd' && !n.cnChinh))} onClick={tiep}>
+                      <button className="btn pri lg" disabled={(n.b === 1 && n.loai === 'dn' && !n.mst.trim() /* doanh nghiệp bắt buộc mã số thuế, hộ kinh doanh không (T665) */) || (n.b === 2 && (cnChon.length === 0 || (n.loai === 'hkd' && !n.cnChinh)))} onClick={tiep}>
                         {n.b === XONG - 1 ? 'Hoàn tất' : 'Tiếp tục'}<Icon n="arrow" className="ic sm" />
                       </button>
                     </div>
