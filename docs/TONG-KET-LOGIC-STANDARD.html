@@ -95,7 +95,6 @@ footer { color: var(--muted); font-size: 13px; padding: 8px 4px }
   <a href="#bao-cao"><span>12</span>Báo cáo</a>
   <a href="#he-thong"><span>13</span>Hệ thống</a>
   <a href="#dien-thoai"><span>14</span>App điện thoại</a>
-  <a href="#can-soat"><span>15</span>Điểm cần soát</a>
 </nav>
 
 <main>
@@ -437,20 +436,6 @@ footer { color: var(--muted); font-size: 13px; padding: 8px 4px }
 <li>Chặn xoá khi tháng đã khoá sổ, phiếu có tham chiếu, thẻ phân bổ đã khoá.</li>
 </ul>
 <div class="note">Khác web: không Xuất Excel, không In phiếu.</div>
-</section>
-
-<section id="can-soat">
-<h2><span class="n">15</span>Điểm cần soát</h2>
-<p>Đã soát lại từng điểm trong code ngày 27/10/2026.</p>
-<div class="tbl"><table>
-<tr><th>Điểm</th><th>Kết quả soát</th><th>Kết luận</th></tr>
-<tr><td>Chuông thông báo</td><td>Nút chuông trên thanh trên mở Tiện ích › Cảnh báo số liệu cuối kỳ (11.6). Tính năng này không có ở gói S, nên bấm chuông ra trang khoá "Nâng cấp lên Plus".</td><td>Đã sửa (T669): gói S ẩn chuông</td></tr>
-<tr><td>Màn ngoài gói</td><td>Gói S ẩn tính năng ngoài gói khỏi menu, nhưng mở thẳng bằng đường dẫn (như nút chuông) vẫn ra trang khoá có nút "Nâng cấp lên Plus/Pro" và "Xem thử gói". Nút Nâng cấp dẫn tới Gói thuê bao, nơi Plus, Pro đang "Sắp ra mắt".</td><td>Đã sửa (T669): gói S về màn đầu phân hệ hoặc Trang chủ</td></tr>
-<tr><td>Tên đơn vị khi khởi tạo</td><td>Bước 2 popup khởi tạo: ô Tên có dấu * nhưng nút Tiếp tục chỉ chặn khi doanh nghiệp thiếu mã số thuế, không chặn khi tên trống.</td><td>Đã sửa (T669): tên trống thì khoá Tiếp tục</td></tr>
-<tr><td>Đổi gói ở Gói thuê bao</td><td>Hàm chuyển gói đặt chế độ mặc định của gói, nhưng phiên tự chỉnh lại theo loại hình khi về gói S (doanh nghiệp thành TT58). Plus, Pro chưa mở bán nên không chuyển sang được. Chỉ còn câu thông báo sau khi chuyển có thể ghi TT152 với doanh nghiệp.</td><td>Lỗi nhỏ, chỉ ở câu thông báo</td></tr>
-<tr><td>5 quỹ mẫu ở trang chủ</td><td>Khối Quỹ tiền cộng 5 quỹ chỉ có số dư, không có trong Danh mục Quỹ tiền, Lịch sử thu chi. Code ghi giữ theo yêu cầu của dinhlanphuongipacc (T303) để thấy cách hiện khi có nhiều quỹ.</td><td>Cố ý giữ, nhưng tổng tồn quỹ lệch sổ quỹ</td></tr>
-<tr><td>"1 điểm bán"</td><td>Mô tả gói Standard đã sửa thành "không giới hạn cửa hàng". Chữ "1 điểm bán" chỉ còn ở gói Plus, đúng ý.</td><td>Không còn lỗi, bỏ</td></tr>
-</table></div>
 </section>
 
 <footer>Nguồn: code bản mẫu iaccdemo trên nhánh main, ngày 27/10/2026. Bản Markdown cùng nội dung: docs/TONG-KET-LOGIC-STANDARD.md.</footer>
