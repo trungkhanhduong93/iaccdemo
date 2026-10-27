@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T670 | Bộ 161 test case mọi màn hình phân hệ gói Standard (`docs/TEST-CASE-STANDARD.xlsx`), có sheet Tổng hợp đếm kết quả theo phân hệ | PhuongXT | 27/10/2026 | `2026-10-27-phuongxt-test-case-standard.md` |
 | T669 | Tổng kết logic gói Standard (`docs/TONG-KET-LOGIC-STANDARD.md`); sửa 3 lỗi soát ra: ẩn chuông thông báo ở gói Standard, màn ngoài gói mở bằng đường dẫn về màn đầu phân hệ thay trang mời nâng cấp, khởi tạo FABi chặn Tiếp tục khi tên đơn vị trống | PhuongXT | 27/10/2026 | `2026-10-27-phuongxt-tong-ket-logic-standard.md` |
 | T668 | Màn Giao diện kế toán IACC (mở từ FABi) trên điện thoại: dùng ảnh trang chủ app gói Standard đánh số 1–5; Quay lại, Dùng thử ghim đáy thành 2 ô | PhuongXT | 26/10/2026 | `2026-10-26-phuongxt-gioi-thieu-anh-that.md` |
 | T667 | Popup khởi tạo FABi, màn Đang lấy dữ liệu: lấy cả thu chi tiền từ FABi, danh sách 4 việc kèm trạng thái; màn xong ghi số chứng từ bán hàng và phiếu thu chi đã lấy | PhuongXT | 26/10/2026 | `2026-10-26-phuongxt-gioi-thieu-anh-that.md` |
