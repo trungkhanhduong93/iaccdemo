@@ -3,8 +3,8 @@ import type { ComponentType } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { useSession, cheDoHienTai } from './session'
 import { cheDoCuaGoi } from './che-do'
-import { MODULES, duongDan, hienMan, laBaoCao, maKhoa, manDau, moDuoc, tenMan, timMan, vaoBaoCao } from './registry'
-import { FEATURE, FEATURES, GOI, GOIS, minGoi, type Goi } from './plan'
+import { MODULES, duongDan, hienMan, hienPhanHe, laBaoCao, maKhoa, manDau, moDuoc, tenMan, timMan, vaoBaoCao } from './registry'
+import { FEATURE, FEATURES, GOI, GOIS, anNgoaiGoi, minGoi, type Goi } from './plan'
 import type { ScreenProps } from '../modules/types'
 import { Icon } from '../ui/Icon'
 import { Empty, PageHead, Pk } from '../ui/Page'
@@ -84,6 +84,11 @@ export function ScreenRoute() {
         </div>
       </div>
     )
+  }
+  // Gói ẩn hẳn tính năng ngoài gói (Standard, QD22): mở bằng đường dẫn thì về màn đầu phân hệ, phân hệ ẩn thì về Trang chủ; không hiện trang mời nâng cấp (T669)
+  if (!moDuoc(sc, s.goi) && anNgoaiGoi(s.goi)) {
+    const dau = hienPhanHe(mod, s.goi) ? manDau(mod, s.goi) : undefined
+    return <Navigate to={dau ? duongDan(mod, dau) : '/app'} replace />
   }
   if (!moDuoc(sc, s.goi)) return <Locked code={maKhoa(sc)!} ten={tenMan(sc)} crumb={[mod.ten, sc.nhom ?? '']} quayLai={mod.key === 'bao-cao' ? '/app/bao-cao/tat-ca' : undefined} />
   const C = laMobile ? manMobile(sc, mod) : (sc.comp ?? GENERIC[sc.kind])

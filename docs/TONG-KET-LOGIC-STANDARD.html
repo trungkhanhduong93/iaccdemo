@@ -1,0 +1,460 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Logic gói Standard IACC Cloud</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Bố cục: mục lục dọc bên trái cố định, nội dung báo cáo một cột bên phải; điện thoại thì mục lục thành thanh cuộn ngang trên đầu */
+:root {
+  --bg: #f4f6f9; --paper: #ffffff; --fg: #1f2533; --muted: #5b6475; --line: #dfe4ec;
+  --navy: #2a3042; --blue: #0560a6; --blue-t: #e6eff7; --orange: #f28020; --orange-t: #fff5ea;
+  --ok: #1f7a4d; --ok-t: #e7f4ec; --warn: #a15c00; --warn-t: #fff3df;
+  --f-body: "Be Vietnam Pro", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #151922; --paper: #1c212c; --fg: #e4e8ef; --muted: #9aa3b4; --line: #2e3544;
+  --navy: #cdd5e4; --blue: #6cb2ec; --blue-t: #1d3043; --orange: #f5a057; --orange-t: #33261a;
+  --ok: #6fcf9a; --ok-t: #17301f; --warn: #f0b45c; --warn-t: #33281a; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #151922; --paper: #1c212c; --fg: #e4e8ef; --muted: #9aa3b4; --line: #2e3544;
+  --navy: #cdd5e4; --blue: #6cb2ec; --blue-t: #1d3043; --orange: #f5a057; --orange-t: #33261a;
+  --ok: #6fcf9a; --ok-t: #17301f; --warn: #f0b45c; --warn-t: #33281a; color-scheme: dark }
+
+* { box-sizing: border-box }
+html { scroll-behavior: smooth }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto } }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.65 var(--f-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.wrap { max-width: 1180px; margin: 0 auto; padding-block: 28px 64px; display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 32px; align-items: start }
+nav.toc { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 20px); max-height: calc(100vh - 40px); overflow-y: auto; font-size: 13.5px }
+nav.toc .lbl { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; margin: 0 0 8px 10px }
+nav.toc a { display: flex; gap: 8px; padding: 5px 10px; border-radius: 6px; color: var(--fg); text-decoration: none }
+nav.toc a span { color: var(--muted); font-family: var(--f-mono); font-size: 12px; min-width: 18px }
+nav.toc a:hover, nav.toc a:focus-visible { background: var(--blue-t); color: var(--blue); outline: none }
+main { min-width: 0 }
+header.hd { background: var(--paper); border: 1px solid var(--line); border-radius: 10px; padding: 26px 28px; margin-bottom: 20px }
+.eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--orange); font-weight: 600 }
+h1 { font-size: 28px; line-height: 1.25; margin: 6px 0 10px; color: var(--navy); text-wrap: balance }
+.meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px }
+.chip { font-size: 12.5px; padding: 3px 10px; border-radius: 999px; background: var(--blue-t); color: var(--blue); font-weight: 500 }
+.chip.o { background: var(--orange-t); color: var(--orange) }
+.lead { color: var(--muted); max-width: 70ch; margin: 0 }
+section { background: var(--paper); border: 1px solid var(--line); border-radius: 10px; padding: 22px 28px 24px; margin-bottom: 16px; scroll-margin-top: 16px }
+h2 { font-size: 20px; margin: 0 0 12px; color: var(--navy); display: flex; gap: 10px; align-items: baseline; text-wrap: balance }
+h2 .n { font-family: var(--f-mono); font-size: 14px; color: var(--orange); font-weight: 500 }
+h3 { font-size: 15.5px; margin: 20px 0 8px; color: var(--navy) }
+p { margin: 0 0 10px; max-width: 75ch }
+ul, ol { margin: 0 0 10px; padding-left: 22px; max-width: 78ch }
+li { margin: 3px 0 }
+li > ul { margin: 4px 0 }
+code, .ma { font-family: var(--f-mono); font-size: 12.5px; background: var(--blue-t); color: var(--blue); padding: 1px 6px; border-radius: 4px; white-space: nowrap }
+.tbl { overflow-x: auto; margin: 6px 0 14px; border: 1px solid var(--line); border-radius: 8px }
+table { border-collapse: collapse; width: 100%; font-size: 14px; font-variant-numeric: tabular-nums }
+th { text-align: left; background: var(--bg); color: var(--muted); font-weight: 600; font-size: 12.5px; letter-spacing: .02em; padding: 8px 12px; border-bottom: 1px solid var(--line) }
+td { padding: 8px 12px; border-bottom: 1px solid var(--line); vertical-align: top }
+tr:last-child td { border-bottom: 0 }
+td:first-child { font-weight: 500; min-width: 140px }
+.ct { background: var(--orange-t); border-radius: 8px; padding: 12px 16px; margin: 6px 0 14px; font-weight: 600; color: var(--fg) }
+.note { border-left: 3px solid var(--blue); background: var(--blue-t); padding: 10px 14px; border-radius: 0 8px 8px 0; margin: 6px 0 12px; font-size: 14px }
+.note.w { border-color: var(--warn); background: var(--warn-t) }
+.steps { counter-reset: b; list-style: none; padding: 0 }
+.steps > li { counter-increment: b; position: relative; padding-left: 34px; margin: 8px 0 }
+.steps > li::before { content: counter(b); position: absolute; left: 0; top: 1px; width: 24px; height: 24px; border-radius: 50%; background: var(--navy); color: var(--paper); font-size: 12.5px; font-weight: 600; display: grid; place-items: center }
+.bug li { margin: 6px 0 }
+footer { color: var(--muted); font-size: 13px; padding: 8px 4px }
+@media (max-width: 860px) {
+  .wrap { grid-template-columns: minmax(0, 1fr); gap: 14px; padding-block: 16px 48px }
+  nav.toc { position: static; max-height: none; display: flex; overflow-x: auto; gap: 4px; padding-bottom: 4px }
+  nav.toc .lbl { display: none }
+  nav.toc a { white-space: nowrap; background: var(--paper); border: 1px solid var(--line) }
+  header.hd, section { padding: 18px 16px }
+  h1 { font-size: 23px }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+<nav class="toc" aria-label="Mục lục">
+  <div class="lbl">Mục lục</div>
+  <a href="#nguyen-tac"><span>0</span>Nguyên tắc chung</a>
+  <a href="#khung"><span>1</span>Khung app</a>
+  <a href="#dang-nhap"><span>2</span>Đăng nhập</a>
+  <a href="#khoi-tao"><span>3</span>Khởi tạo từ FABi</a>
+  <a href="#trang-chu"><span>4</span>Trang chủ</a>
+  <a href="#danh-muc"><span>5</span>Danh mục</a>
+  <a href="#thu-chi"><span>6</span>Thu chi</a>
+  <a href="#ban-hang"><span>7</span>Bán hàng</a>
+  <a href="#mua-hang"><span>8</span>Mua hàng</a>
+  <a href="#kiem-ke"><span>9</span>Kiểm kê</a>
+  <a href="#phan-bo"><span>10</span>Chi phí phân bổ</a>
+  <a href="#thue"><span>11</span>Kê khai thuế</a>
+  <a href="#bao-cao"><span>12</span>Báo cáo</a>
+  <a href="#he-thong"><span>13</span>Hệ thống</a>
+  <a href="#dien-thoai"><span>14</span>App điện thoại</a>
+  <a href="#can-soat"><span>15</span>Điểm cần soát</a>
+</nav>
+
+<main>
+<header class="hd">
+  <div class="eyebrow">IACC Cloud · Bản mẫu giao diện</div>
+  <h1>Tổng kết logic màn hình, phân hệ gói Standard</h1>
+  <p class="lead">Mỗi màn ghi mục đích, số liệu lấy từ đâu, công thức, điều kiện bắt buộc, bấm vào sang đâu và chỗ khác gói khác. Rút từ code bản mẫu iaccdemo, dữ liệu giả, chưa có backend.</p>
+  <div class="meta"><span class="chip o">Gói Standard (mã S)</span><span class="chip">Cập nhật 27/10/2026</span><span class="chip">Web và app điện thoại</span></div>
+</header>
+
+<section id="nguyen-tac">
+<h2><span class="n">0</span>Nguyên tắc chung</h2>
+<div class="tbl"><table>
+<tr><th>Nguyên tắc</th><th>Nội dung</th></tr>
+<tr><td>Đối tượng</td><td>Hộ kinh doanh, quán F&amp;B nhỏ. Miễn phí trọn đời, không giới hạn cửa hàng, mỗi cửa hàng một kho.</td></tr>
+<tr><td>Gói đang bán</td><td>Chỉ Standard. Plus, Pro hiện nhãn "Sắp ra mắt".</td></tr>
+<tr><td>Ẩn ngoài gói</td><td>Tính năng ngoài gói ẩn hẳn, không hiện ổ khoá mời nâng cấp (QD22).</td></tr>
+<tr><td>Chế độ kế toán</td><td>Hộ kinh doanh chạy TT152. Doanh nghiệp chạy TT58 trường hợp 1 (GTGT, TNDN theo % doanh thu). Người dùng không tự chọn, chế độ đi theo loại hình.</td></tr>
+<tr><td>Không ghi sổ</td><td>Không Nợ/Có, không khoản mục, không công việc, không bút toán, không nút Ghi sổ. Kể cả doanh nghiệp TT58 (QD81).</td></tr>
+<tr><td>Thuế GTGT bán ra</td><td>Luôn theo % doanh thu. Chứng từ bán không có tiền thuế, thay bằng dòng Giảm thuế GTGT = doanh thu × tỷ lệ ngành × 20%.</td></tr>
+<tr><td>Cửa hàng</td><td>Danh sách, báo cáo lọc theo cửa hàng chọn trên thanh trên. Đang xem "Tất cả cửa hàng" thì bấm lập phiếu sẽ hiện hộp chọn cửa hàng trước.</td></tr>
+<tr><td>Kỳ làm việc</td><td>Tháng chọn ở trang chủ thành kỳ mặc định cho danh sách, báo cáo, Chi phí phân bổ, giữ tới khi đóng tab.</td></tr>
+<tr><td>Ngày chứng từ</td><td>Chứng từ mới không được trước ngày đầu năm tài chính của đơn vị.</td></tr>
+<tr><td>Khoá sổ</td><td>Chốt theo tháng, theo từng cửa hàng. Tháng đã khoá: phiếu chỉ xem, không sửa, không xoá.</td></tr>
+<tr><td>Đính kèm</td><td>Form chứng từ không có tab Đính kèm.</td></tr>
+</table></div>
+</section>
+
+<section id="khung">
+<h2><span class="n">1</span>Khung app</h2>
+<h3>Sidebar, phân hệ</h3>
+<ul>
+<li>Phân hệ hiện: Trang chủ, Thu chi, Bán hàng, Mua hàng, Kiểm kê (phân hệ Kho đổi tên), Chi phí phân bổ, Kê khai thuế, Báo cáo, Danh mục, Hệ thống.</li>
+<li>Ẩn hẳn: Tổng hợp, Tiện ích, TSCĐ, Giá thành.</li>
+<li>Một phân hệ chỉ hiện khi còn ít nhất một màn thường (không tính Quy trình, Báo cáo) mở được ở gói.</li>
+<li>Màn mở được khi màn khai gói S, hoặc mã tính năng có gói S, hoặc màn không gắn mã tính năng.</li>
+<li>Bấm logo luôn về Tổng quan. Ctrl+K mở ô tìm nhanh.</li>
+</ul>
+<h3>Thanh trên</h3>
+<ul>
+<li>Chọn đơn vị kế toán: đổi đơn vị thì đổi luôn gói và đặt cửa hàng về "Tất cả". Có "Thêm đơn vị kế toán".</li>
+<li>Chọn cửa hàng làm việc. "Tất cả cửa hàng" chỉ để xem gộp.</li>
+<li>Chip "Dùng thử · còn N ngày": 30 ngày từ ngày tạo đơn vị, còn từ 7 ngày trở xuống thì tô cảnh báo.</li>
+<li>Menu tài khoản ẩn Người dùng.</li>
+</ul>
+<h3>Tìm nhanh, Thao tác nhanh</h3>
+<ul>
+<li>Tìm nhanh chỉ ra màn đang hiện với gói, chế độ, cách tính thuế. Gõ không dấu được, tối đa 40 kết quả.</li>
+<li>Thao tác nhanh mặc định: Thu tiền, Chi tiền, Nhập mua, Kiểm kê, Kê khai thuế. Tuỳ chỉnh tối đa 8 ô, lưu trên máy.</li>
+</ul>
+<h3>Mở màn</h3>
+<ul>
+<li>Vào app: mọi vai trò về Tổng quan. Gói Standard không có Bàn làm việc.</li>
+<li>Màn không dành cho gói S (Người dùng, Bàn làm việc): chuyển về màn đầu phân hệ.</li>
+<li>Báo cáo không hợp chế độ, cách tính thuế: hiện "Báo cáo không dùng với thiết lập hiện tại".</li>
+</ul>
+</section>
+
+<section id="dang-nhap">
+<h2><span class="n">2</span>Đăng nhập, chọn đơn vị</h2>
+<ul>
+<li>Đăng nhập: email hoặc số điện thoại không rỗng, mật khẩu từ 6 ký tự. Vai trò lấy theo tài khoản.</li>
+<li>Chọn đơn vị: mỗi thẻ ghi mã số thuế, chế độ, số điểm bán, kỳ đang mở.</li>
+<li>Có lối "Thử mở từ FABi" sang màn khởi tạo.</li>
+</ul>
+</section>
+
+<section id="khoi-tao">
+<h2><span class="n">3</span>Khởi tạo từ FABi</h2>
+<h3>Màn mở từ FABi</h3>
+<ol class="steps">
+<li><b>Chào.</b> Số liệu lấy từ FABi: thương hiệu, cửa hàng, kênh, món.</li>
+<li><b>Giới thiệu giao diện.</b> Ảnh trang chủ đánh số 1–5.</li>
+<li><b>Chọn cửa hàng dùng thử.</b> Mặc định chọn hết, phải chọn ít nhất 1.</li>
+<li><b>Dùng thử.</b> Tạo đơn vị mới gói S, TT152, bắt đầu 30 ngày dùng thử, vào app. Popup khởi tạo hiện đè lên.</li>
+</ol>
+<h3>Popup khởi tạo 3 bước</h3>
+<p>Popup bắt buộc, không đóng được. Tiến độ lưu trên máy.</p>
+<p><b>Bước 1. Loại hình và gói.</b> Hộ kinh doanh chọn nhóm theo doanh thu năm; hệ thống gợi ý nhóm từ doanh thu FABi 12 tháng.</p>
+<div class="tbl"><table>
+<tr><th>Nhóm</th><th>Doanh thu năm</th><th>Thuế TNCN</th></tr>
+<tr><td>Nhóm 1</td><td>Dưới 1 tỷ</td><td>Không nộp GTGT, TNCN, chỉ khai doanh thu</td></tr>
+<tr><td>Nhóm 2</td><td>1 đến dưới 3 tỷ</td><td>Chọn theo % doanh thu hoặc theo lợi nhuận 15%</td></tr>
+<tr><td>Nhóm 3</td><td>3 đến dưới 50 tỷ</td><td>Lợi nhuận 17%</td></tr>
+<tr><td>Nhóm 4</td><td>Từ 50 tỷ</td><td>Lợi nhuận 20%</td></tr>
+</table></div>
+<ul>
+<li>Doanh nghiệp: gói S dùng TT58, GTGT, TNDN theo % doanh thu.</li>
+<li>Kê khai thuế có ở gói S khi: hộ kinh doanh nhóm 1, nhóm 2 tính theo doanh thu, hoặc doanh nghiệp tính theo doanh thu. Trường hợp khác hiện cảnh báo "chưa có ở gói Standard", phần quản lý vẫn dùng đủ.</li>
+</ul>
+<p><b>Bước 2. Thông tin đơn vị.</b></p>
+<ul>
+<li>Doanh nghiệp bắt buộc mã số thuế; hộ kinh doanh nhập CCCD/MST không bắt buộc. Nút Tra cứu điền sẵn tên, địa chỉ.</li>
+<li>Ngày đầu năm tài chính: 01/01, 01/04, 01/07 hoặc 01/10.</li>
+</ul>
+<p><b>Bước 3. Cửa hàng.</b></p>
+<ul>
+<li>Chọn ít nhất 1 cửa hàng lên sổ.</li>
+<li>Hộ kinh doanh bắt buộc chọn cửa hàng chính (địa điểm kinh doanh chính), chọn kênh online và sàn đã khấu trừ thuế (GrabFood, ShopeeFood, Be).</li>
+</ul>
+<p><b>Lấy dữ liệu FABi.</b> Hiện 4 việc kèm trạng thái: danh mục món và kênh; doanh thu (mỗi đơn một chứng từ Xuất bán POS từ ngày đầu năm); thu chi; ghi sổ. Bấm "Bắt đầu làm việc" thì lưu loại hình, nhóm, cách tính thuế, cửa hàng chính, kênh; đặt gói, chế độ, ngày đầu năm; chuyển sang Danh mục.</p>
+</section>
+
+<section id="trang-chu">
+<h2><span class="n">4</span>Trang chủ</h2>
+<p>Tổng quan gói S chỉ có một khối lớn. Chọn Năm, Tháng (dữ liệu mẫu tháng 7–10/2026). Cửa hàng theo thanh trên. Đổi tháng thì đổi luôn tháng làm việc.</p>
+<h3>Thanh đầu</h3>
+<ul>
+<li>Nhắc khoá sổ khi tháng trước chưa khoá, bấm sang Hệ thống › Khoá sổ.</li>
+<li>5 thao tác nhanh: Thu tiền, Chi tiền, Mua hàng, Kiểm kê, Kê khai thuế.</li>
+</ul>
+<h3>Kết quả kinh doanh</h3>
+<div class="ct">Lợi nhuận = Doanh thu thuần − Chi phí NVL − Chi phí hoạt động − Chi phí phân bổ, khấu hao. Biên lợi nhuận = Lợi nhuận / Doanh thu.</div>
+<div class="tbl"><table>
+<tr><th>Dòng</th><th>Cách tính</th><th>Bấm vào</th></tr>
+<tr><td>Doanh thu thuần</td><td>Từ chứng từ Xuất bán POS</td><td>Báo cáo kết quả kinh doanh</td></tr>
+<tr><td>Chi phí NVL</td><td>Mỗi cửa hàng theo cách tính riêng, chọn ở Danh mục cửa hàng</td><td>Màn Chi phí NVL</td></tr>
+<tr><td>Chi phí hoạt động</td><td>Cộng phiếu chi tiền mặt, chi ngân hàng có lý do là chi phí, theo tháng ghi nhận; trừ lý do "Chi phí chờ phân bổ"</td><td>Màn Chi phí hoạt động</td></tr>
+<tr><td>Chi phí phân bổ</td><td>Phần phân bổ trong tháng của thẻ chi phí trả trước</td><td>Chi phí phân bổ</td></tr>
+</table></div>
+<p>Ba cách tính chi phí NVL:</p>
+<div class="tbl"><table>
+<tr><th>Cách</th><th>Công thức</th></tr>
+<tr><td>Theo iPOS Inventory (mặc định)</td><td>Giá thành món × số món bán + NVL tiêu hao (xuất huỷ + xuất điều chỉnh − nhập điều chỉnh)</td></tr>
+<tr><td>Nhập tay</td><td>Số món bán × giá thành người dùng nhập; món chưa có giá tính 0</td></tr>
+<tr><td>Theo phiếu nhập</td><td>Tổng tiền phiếu mua hàng trong tháng, gồm thuế GTGT</td></tr>
+</table></div>
+<p>Đổi cách tính chỉ áp dụng từ tháng đầu tiên chưa khoá sổ; tháng đã khoá giữ cách cũ. Biểu đồ hiệu quả 13 tháng: tháng 7–10/2026 tính thật, các tháng trước là số mẫu theo hệ số mùa vụ.</p>
+<h3>Quỹ tiền</h3>
+<ul>
+<li>Tồn quỹ = tổng số dư cuối kỳ của quỹ tiền mặt các cửa hàng đang xem và mọi tài khoản ngân hàng, kèm thu, chi trong tháng.</li>
+<li>Vòng tròn cơ cấu quỹ (chỉ quỹ dương). Bấm một quỹ: Tồn đầu + Thu − Chi = Tồn cuối, số dư từng ngày, 3 giao dịch gần nhất, link Lịch sử thu chi.</li>
+<li>Chưa có quỹ: nút "Tạo quỹ". Menu "Xem sổ": Sổ quỹ tiền mặt, Sổ ngân hàng.</li>
+</ul>
+<h3>Mua hàng và công nợ nhà cung cấp</h3>
+<ul>
+<li>Giá trị mua tháng = tổng tiền phiếu mua (gồm thuế), số phiếu, top 3 mặt hàng.</li>
+<li>Công nợ: Nợ đầu + Mua nợ − Trả hàng − Thanh toán = Nợ cuối, khớp dòng tổng báo cáo Công nợ nhà cung cấp. Gói S không có hạn thanh toán.</li>
+<li>Nút Tạo phiếu mua hàng; Thanh toán nhà cung cấp (phiếu chi lý do Thanh toán công nợ nhà cung cấp).</li>
+</ul>
+<h3>Hao hụt kiểm kê</h3>
+<ul>
+<li>Chỉ theo số lượng, không tính tiền. Lệch = tồn thực tế − tồn hệ thống trên phiếu kiểm kê của tháng.</li>
+<li>Số mặt hàng thiếu, thừa; đã kiểm bao nhiêu mặt hàng; tiến độ từng cửa hàng (cửa hàng chưa kiểm lên đầu); top 3 thiếu, top 3 thừa.</li>
+<li>Nút Kiểm kê ngay; link Báo cáo kiểm kê.</li>
+</ul>
+<h3>Màn con mở từ trang chủ</h3>
+<div class="tbl"><table>
+<tr><th>Màn</th><th>Logic</th></tr>
+<tr><td>Chi phí hoạt động</td><td>Mỗi lý do chi phí một dòng: số phiếu, tiền mặt, ngân hàng, % trên tổng. Bấm dòng xổ danh sách phiếu, bấm số phiếu mở phiếu. Xuất Excel, Lập phiếu chi.</td></tr>
+<tr><td>Chi phí NVL</td><td>Xem tất cả cửa hàng: bảng cửa hàng, cách tính, doanh thu, NVL, tỷ lệ. Xem một cửa hàng theo cách tính: giá thành món và NVL tiêu hao; bảng phiếu mua; hoặc ô nhập giá thành từng món (nhập, xuất Excel). Tháng đã khoá sổ không sửa được.</td></tr>
+<tr><td>Lịch sử thu chi</td><td>Lọc theo quỹ, loại thu/chi. Tồn đầu, Thu, Chi, Tồn cuối; giao dịch gom theo ngày kèm số dư cuối ngày, nhãn nguồn FABi POS hoặc Thủ công. Bấm giao dịch mở chứng từ gốc.</td></tr>
+</table></div>
+</section>
+
+<section id="danh-muc">
+<h2><span class="n">5</span>Danh mục</h2>
+<div class="tbl"><table>
+<tr><th>Màn</th><th>Logic riêng gói Standard</th></tr>
+<tr><td>Cửa hàng</td><td>Mỗi cửa hàng một kho mặc định, không khai kho. Mỗi cửa hàng chọn Cách tính chi phí NVL và bật/tắt Đồng bộ thu chi FABi. Thêm cửa hàng từ cửa hàng FABi chưa dùng kế toán; tích "khai số dư ngay" thì sang Danh mục Quỹ tiền.</td></tr>
+<tr><td>Hàng hoá <span class="ma">1.2</span></td><td>Không có ĐVT phụ, mã vạch, giá mua, giá bán, kho mặc định, tồn tối thiểu/tối đa, nhà cung cấp, quy đổi ĐVT. Thương hiệu chỉ xem. "Theo dõi tồn kho" tự đặt theo loại hàng: Thành phẩm tắt, loại khác bật. Hàng mới mặc định ngành Dịch vụ ăn uống, tự điền tỷ lệ GTGT, TNCN.</td></tr>
+<tr><td>Nhóm hàng hoá</td><td>Thêm tay hoặc Đồng bộ FABi.</td></tr>
+<tr><td>Khách hàng, NCC, nhân viên <span class="ma">1.5</span></td><td>Không có số thẻ ngân hàng và các khối nâng cao.</td></tr>
+<tr><td>Kho <span class="ma">1.8</span></td><td>Chỉ xem, không thêm kho, không có Nhóm kho.</td></tr>
+<tr><td>Quỹ tiền <span class="ma">1.12</span></td><td>Có cột Số dư ban đầu (khai số dư quỹ ở đây). Mỗi quỹ gắn phương thức thanh toán của từng cửa hàng để nhận phiếu đồng bộ từ FABi.</td></tr>
+<tr><td>Lý do nghiệp vụ <span class="ma">1.16</span></td><td>Chỉ lý do Thu tiền, Chi tiền. Lý do được tích "là chi phí" vào Chi phí hoạt động.</td></tr>
+<tr><td>Nhóm lý do nghiệp vụ</td><td>6 nhóm chi phí theo sổ S2c-HKD, chỉ xem.</td></tr>
+<tr><td>Phương thức thanh toán</td><td>Lấy từ FABi: không thêm, sửa, xoá, không nhập/xuất Excel; chỉ có mã, tên.</td></tr>
+<tr><td>Ẩn ở gói S</td><td>Nhóm mục chi phí, Nhóm công việc, Nhóm kho, Tài khoản, Quy đổi đơn vị tính, Bút toán tự động.</td></tr>
+</table></div>
+</section>
+
+<section id="thu-chi">
+<h2><span class="n">6</span>Thu chi</h2>
+<h3>Phiếu thu, chi <span class="ma">2.1.1</span></h3>
+<ul>
+<li>3 tab: Tiền mặt (Thu PT, Chi PC), Ngân hàng (Thu BC, Chi UNC), Chuyển quỹ (CQ). Số phiếu dạng <code>PT2610-0001</code>.</li>
+<li>Quỹ: phiếu tiền mặt chỉ chọn quỹ tiền mặt của cửa hàng lập phiếu; phiếu ngân hàng chọn tài khoản ngân hàng.</li>
+<li>Lý do, Đối tượng chỉ chọn ở đầu phiếu; mọi dòng chi tiết lấy theo.</li>
+<li>Đối tượng bắt buộc khi lý do là thu nợ, đi vay, chi công nợ, cho vay.</li>
+<li>"Tháng ghi nhận chi phí" chỉ hiện khi lý do là chi phí: mặc định tháng của ngày phiếu, chọn được các tháng trước chưa khoá sổ. Chuyển quỹ không ảnh hưởng lãi lỗ.</li>
+<li>Lý do "Chi phí chờ phân bổ": lưu xong hỏi tạo thẻ chi phí phân bổ; phiếu đã có thẻ thì không sửa được.</li>
+<li>Danh sách gồm cả phiếu đồng bộ FABi, phiếu lương và thuê nhà hằng tháng, phiếu thanh toán sinh từ phiếu mua.</li>
+</ul>
+<h3>Đồng bộ thu chi từ FABi</h3>
+<ul>
+<li>Bật/tắt theo từng cửa hàng.</li>
+<li>Quỹ nhận phiếu theo cặp "cửa hàng + phương thức thanh toán" khai ở Danh mục Quỹ tiền. Mặc định: tiền mặt về quỹ tiền mặt cửa hàng; chuyển khoản, thẻ về ngân hàng; app giao đồ ăn chưa gắn.</li>
+<li>Phương thức chưa gắn quỹ thì phiếu chờ, chưa vào sổ.</li>
+</ul>
+<h3>Sổ, số dư</h3>
+<ul>
+<li>Sổ quỹ tiền mặt <span class="ma">2.2.1</span>, Sổ ngân hàng <span class="ma">2.2.3</span>.</li>
+<li>Số dư ban đầu khai ở Danh mục Quỹ tiền.</li>
+<li>Sơ đồ Quy trình: Khởi tạo (số dư) → Ghi nhận hằng ngày (5 loại phiếu) → Đối chiếu sổ → Công nợ, báo cáo.</li>
+</ul>
+</section>
+
+<section id="ban-hang">
+<h2><span class="n">7</span>Bán hàng</h2>
+<h3>Xuất bán POS <span class="ma">3.1.1</span></h3>
+<ul>
+<li>Chứng từ chỉ đổ về từ FABi: không lập tay, không sửa, trả hàng, huỷ.</li>
+<li>Đồng bộ chi tiết: mỗi hoá đơn FABi thành một chứng từ.</li>
+<li>Dòng món: thành tiền = số lượng × đơn giá, trừ giảm giá khuyến mãi; phần chênh dồn vào món cuối để tổng khớp doanh thu ngày.</li>
+<li>GTGT theo % doanh thu: bỏ cột thuế suất, tiền thuế, luôn có Giảm thuế GTGT. Tiền các phương thức thanh toán chia theo tổng = doanh thu − giảm thuế.</li>
+<li>Số liệu khớp với báo cáo kết quả kinh doanh và trang chủ.</li>
+</ul>
+<h3>Báo cáo</h3>
+<p>Tổng hợp bán hàng, Bảng kê chi tiết bán hàng, Sổ doanh thu bán hàng (mẫu theo chế độ, xem mục 12).</p>
+<div class="note">Không có ở gói S: Bán hàng ngoài POS, hoá đơn bán hàng, hàng bán trả lại, hoá đơn điện tử, Công nợ khách hàng.</div>
+</section>
+
+<section id="mua-hang">
+<h2><span class="n">8</span>Mua hàng</h2>
+<h3>Phiếu mua hàng <span class="ma">4.1.1</span></h3>
+<ul>
+<li>Nhà cung cấp, kho nhập (một kho ở đầu phiếu), ngày, dòng hàng. Số phiếu tiền tố MH.</li>
+<li>Tích "Đã thanh toán": chọn quỹ; lưu xong tự lập phiếu chi hoặc UNC lý do "Thanh toán công nợ nhà cung cấp", tham chiếu hai chiều.</li>
+<li>Phiếu còn nợ có nút Thanh toán: số tiền lớn hơn 0, không vượt số còn phải trả.</li>
+<li>Tích "Nhận kèm hoá đơn": bắt buộc số, ký hiệu, ngày hoá đơn.</li>
+<li>Hộ kinh doanh không khấu trừ thuế đầu vào: giá trị nhập kho = tiền trước thuế + thuế.</li>
+<li>Phiếu đã trả thì không sửa được.</li>
+</ul>
+<h3>Báo cáo</h3>
+<p>Tính từ chính phiếu mua nên khớp nhau.</p>
+<ul>
+<li>Bảng kê chi tiết mua hàng: mỗi mặt hàng của phiếu một dòng.</li>
+<li>Công nợ nhà cung cấp <span class="ma">4.2.3</span>: mỗi nhà cung cấp một dòng. Xem tất cả cửa hàng thì dưới mỗi nhà cung cấp là từng cửa hàng. Bấm tên mở Lịch sử công nợ. Nút Thanh toán ngay chọn tiền mặt hay ngân hàng.</li>
+</ul>
+<div class="ct">Nợ cuối kỳ (V) = Nợ đầu kỳ (I) + Tiền mua hàng (II) − Tiền trả hàng (III) − Tiền thanh toán (IV)</div>
+</section>
+
+<section id="kiem-ke">
+<h2><span class="n">9</span>Kiểm kê (phân hệ Kho)</h2>
+<h3>Phiếu kiểm kê <span class="ma">5.1.10</span></h3>
+<ul>
+<li>Chọn kho; bảng tồn hệ thống, tồn thực tế, chênh lệch theo số lượng, không có tiền.</li>
+<li>Ô tồn thực tế để trống thì lấy tồn hệ thống.</li>
+<li>Lưu xong tự sinh phiếu Xuất điều chỉnh (phần thiếu) và Nhập điều chỉnh (phần thừa). Số phiếu theo số kiểm kê: <code>KK2610-0256</code> → <code>XDC2610-0256</code>, <code>NDC2610-0256</code>.</li>
+<li>Phiếu đã sinh điều chỉnh thì không sửa; xoá kiểm kê thì xoá luôn phiếu điều chỉnh.</li>
+<li>Xuất, nhập điều chỉnh nằm trong tab Kiểm kê, chỉ xem, không hiện giá trị.</li>
+</ul>
+<h3>Xuất nhập tồn <span class="ma">5.2.3</span></h3>
+<ul>
+<li>Đầu kỳ, nhập, xuất, cuối kỳ chỉ theo số lượng, không có giá trị, không dòng tổng.</li>
+<li>Kho đi theo cửa hàng đang chọn.</li>
+<li>Bấm mã hoặc tên hàng mở Thẻ kho cùng hàng, kho, kỳ. Thẻ kho không hiện trong danh sách báo cáo.</li>
+</ul>
+<h3>Báo cáo khác</h3>
+<p>Tổng hợp nhập kho, Chi tiết nhập kho, Báo cáo kiểm kê <span class="ma">5.2.15</span>. Ẩn Tổng hợp xuất kho, Chi tiết xuất kho. Giá xuất kho chỉ có bình quân gia quyền cuối kỳ.</p>
+</section>
+
+<section id="phan-bo">
+<h2><span class="n">10</span>Chi phí phân bổ <span class="ma">8.1.1</span></h2>
+<ul>
+<li>Gói S chỉ có thẻ Chi phí trả trước (không có CCDC, TSCĐ).</li>
+<li>Hai kiểu thẻ: ghi tăng trong kỳ (<code>TPB2610-0001</code>) và dư đầu kỳ (<code>TPBDK…</code>).</li>
+<li>Thẻ tạo từ phiếu chi lý do "Chi phí chờ phân bổ" (Ghi tăng hàng loạt các phiếu đang chờ).</li>
+<li>Lịch phân bổ đều theo tháng, mỗi kỳ là ngày cuối tháng, kỳ cuối nhận phần lẻ. Ngừng phân bổ nhập theo tháng.</li>
+<li>Không có bước kích hoạt: kỳ tới tháng hiện tại tính là Đã phân bổ, kỳ sau là Chờ phân bổ.</li>
+<li>Thẻ chỉ xoá được khi kỳ khoá sổ còn trước tháng bắt đầu phân bổ.</li>
+</ul>
+</section>
+
+<section id="thue">
+<h2><span class="n">11</span>Kê khai thuế</h2>
+<p>Danh sách tờ khai (lọc năm, loại, trạng thái), hộp Lập tờ khai, tờ khai 4 bước theo iFaster:</p>
+<ol class="steps">
+<li>Thông tin hộ kinh doanh, điểm bán.</li>
+<li>Doanh thu kỳ, giảm trừ, thuế GTGT, TNCN.</li>
+<li>Bảng kê 01/BK-STK.</li>
+<li>Xem trước, tải XML, đánh dấu Đã nộp.</li>
+</ol>
+<ul>
+<li>Kỳ 6 tháng, nhóm doanh thu khoá theo thiết lập. Kỳ đã có tờ khai chưa huỷ thì lập thêm thành bổ sung lần kế.</li>
+<li>Nhóm báo cáo Thuế ẩn ở màn Báo cáo của gói S.</li>
+</ul>
+<div class="ct">GTGT = Doanh thu kỳ × tỷ lệ GTGT ngành<br>TNCN = (Doanh thu kỳ − Giảm trừ) × tỷ lệ TNCN ngành. Giảm trừ là phần còn lại của 1 tỷ/năm sau khi trừ doanh thu kỳ đầu năm.</div>
+</section>
+
+<section id="bao-cao">
+<h2><span class="n">12</span>Báo cáo</h2>
+<p>Màn Báo cáo gom báo cáo của mọi phân hệ. Mỗi báo cáo có bộ lọc (Khoảng ngày, Tìm, tối đa 4 ô đưa ra ngoài), in, xuất file, tuỳ chỉnh cột, gom nhóm. Số chứng từ trên báo cáo bấm được để mở phiếu.</p>
+<div class="tbl"><table>
+<tr><th>Nhóm</th><th>Báo cáo hiện ở gói S</th></tr>
+<tr><td>Thu chi</td><td>Sổ quỹ tiền mặt, Sổ ngân hàng</td></tr>
+<tr><td>Bán hàng</td><td>Tổng hợp bán hàng, Bảng kê chi tiết bán hàng</td></tr>
+<tr><td>Mua hàng, Công nợ</td><td>Bảng kê chi tiết mua hàng, Công nợ nhà cung cấp</td></tr>
+<tr><td>Kho</td><td>Xuất nhập tồn, Tổng hợp nhập kho, Chi tiết nhập kho, Báo cáo kiểm kê (Thẻ kho chỉ mở từ Xuất nhập tồn)</td></tr>
+<tr><td>Kết quả</td><td>Báo cáo kết quả kinh doanh, bản lãi lỗ đơn giản, không theo mẫu B02</td></tr>
+<tr><td>Sổ theo chế độ</td><td>Hộ kinh doanh TT152: Sổ doanh thu mẫu S1a-HKD (nhóm 1) hoặc S2a-HKD (tính theo doanh thu); tính theo lợi nhuận thì không có sổ này. Doanh nghiệp TT58: chỉ S1-DNSN.</td></tr>
+</table></div>
+<div class="note w">Danh sách này đọc từ cấu hình trong code, chưa mở từng màn để soát.</div>
+</section>
+
+<section id="he-thong">
+<h2><span class="n">13</span>Hệ thống</h2>
+<p>Màn có: Thông tin đơn vị, Cấu hình kế toán, Khoá sổ, Gói thuê bao. Ẩn: Người dùng, Vai trò và phân quyền.</p>
+<h3>Thông tin đơn vị</h3>
+<ul>
+<li>Tên bắt buộc. Mã số thuế khoá nếu đã khai khi khởi tạo. Số điểm bán = số cửa hàng.</li>
+<li>Hộ kinh doanh: TT152 cố định, chọn nhóm 1–4, GTGT trực tiếp, TNCN theo nhóm (nhóm 2 được chọn), cửa hàng chính, kênh online và sàn.</li>
+<li>Doanh nghiệp: TT58 cố định, GTGT và TNDN theo % doanh thu.</li>
+<li>Đổi loại hình thì cảnh báo đổi chế độ, sổ, báo cáo.</li>
+</ul>
+<h3>Cấu hình kế toán</h3>
+<p>Không dùng Nợ/Có. Có bảng mẫu đánh số chứng từ, bật/tắt đồng bộ thu chi FABi theo cửa hàng.</p>
+<h3>Khoá sổ</h3>
+<ul>
+<li>Bảng các tháng của một cửa hàng, lọc năm, trạng thái: Đã khoá, Chưa khoá, Đang mở, Chưa tới.</li>
+<li>Tháng chưa hết thì chưa khoá được. Khoá một tháng thì khoá luôn các tháng trước còn thiếu.</li>
+<li>Mở khoá chỉ ở tháng khoá gần nhất, bắt buộc ghi lý do.</li>
+<li>Trước khi khoá có các bước kiểm tra: kiểm kê, phân bổ, chi phí chờ ghi tăng, đối chiếu tồn quỹ, phiếu FABi chờ. Chưa xong vẫn khoá được, kèm cảnh báo.</li>
+<li>Có Khoá sổ hàng loạt, Mở khoá hàng loạt, Lịch sử khoá sổ.</li>
+</ul>
+<h3>Gói thuê bao</h3>
+<p>Thẻ gói đang dùng; 3 thẻ gói, Plus và Pro nhãn "Sắp ra mắt", không có nút chuyển; bảng so sánh theo phân hệ, hỏi đáp.</p>
+</section>
+
+<section id="dien-thoai">
+<h2><span class="n">14</span>App điện thoại</h2>
+<ul>
+<li>Bật khi màn rộng dưới 768px. Màn chưa có bản điện thoại hiện "Chỉ dùng trên máy tính".</li>
+<li>4 tab đáy: Trang chủ, Nghiệp vụ, Báo cáo, Khác. Thanh tab ẩn khi cuộn xuống và ở màn cấp 2.</li>
+<li>Trang chủ giống web: thao tác nhanh (Thu, Chi hỏi tiền mặt hay ngân hàng trước), nhắc khoá sổ, Kết quả kinh doanh, Quỹ tiền, Mua hàng và công nợ, Hao hụt kiểm kê.</li>
+<li>Nghiệp vụ: Thu chi, Kế toán bán hàng, Kế toán mua hàng, Kiểm kê, Chi phí phân bổ.</li>
+</ul>
+<h3>Lập phiếu</h3>
+<ul>
+<li>Thu chi trên một màn: quỹ, lý do, ngày bắt buộc; số tiền lớn hơn 0.</li>
+<li>Mua hàng như web, có Đã thanh toán, Nhận kèm hoá đơn.</li>
+<li>Kiểm kê: lưu xong mở thẳng phiếu.</li>
+<li>Phiếu khác lưu xong hiện màn Thành công: Xem chi tiết, Lập phiếu mới, Đóng.</li>
+</ul>
+<h3>Xem phiếu</h3>
+<ul>
+<li>Tab Chi tiết, Lịch sử, không có Hạch toán. Menu Sửa, Sao chép, Xoá.</li>
+<li>Chặn xoá khi tháng đã khoá sổ, phiếu có tham chiếu, thẻ phân bổ đã khoá.</li>
+</ul>
+<div class="note">Khác web: không Xuất Excel, không In phiếu.</div>
+</section>
+
+<section id="can-soat">
+<h2><span class="n">15</span>Điểm cần soát</h2>
+<p>Đã soát lại từng điểm trong code ngày 27/10/2026.</p>
+<div class="tbl"><table>
+<tr><th>Điểm</th><th>Kết quả soát</th><th>Kết luận</th></tr>
+<tr><td>Chuông thông báo</td><td>Nút chuông trên thanh trên mở Tiện ích › Cảnh báo số liệu cuối kỳ (11.6). Tính năng này không có ở gói S, nên bấm chuông ra trang khoá "Nâng cấp lên Plus".</td><td>Đã sửa (T669): gói S ẩn chuông</td></tr>
+<tr><td>Màn ngoài gói</td><td>Gói S ẩn tính năng ngoài gói khỏi menu, nhưng mở thẳng bằng đường dẫn (như nút chuông) vẫn ra trang khoá có nút "Nâng cấp lên Plus/Pro" và "Xem thử gói". Nút Nâng cấp dẫn tới Gói thuê bao, nơi Plus, Pro đang "Sắp ra mắt".</td><td>Đã sửa (T669): gói S về màn đầu phân hệ hoặc Trang chủ</td></tr>
+<tr><td>Tên đơn vị khi khởi tạo</td><td>Bước 2 popup khởi tạo: ô Tên có dấu * nhưng nút Tiếp tục chỉ chặn khi doanh nghiệp thiếu mã số thuế, không chặn khi tên trống.</td><td>Đã sửa (T669): tên trống thì khoá Tiếp tục</td></tr>
+<tr><td>Đổi gói ở Gói thuê bao</td><td>Hàm chuyển gói đặt chế độ mặc định của gói, nhưng phiên tự chỉnh lại theo loại hình khi về gói S (doanh nghiệp thành TT58). Plus, Pro chưa mở bán nên không chuyển sang được. Chỉ còn câu thông báo sau khi chuyển có thể ghi TT152 với doanh nghiệp.</td><td>Lỗi nhỏ, chỉ ở câu thông báo</td></tr>
+<tr><td>5 quỹ mẫu ở trang chủ</td><td>Khối Quỹ tiền cộng 5 quỹ chỉ có số dư, không có trong Danh mục Quỹ tiền, Lịch sử thu chi. Code ghi giữ theo yêu cầu của dinhlanphuongipacc (T303) để thấy cách hiện khi có nhiều quỹ.</td><td>Cố ý giữ, nhưng tổng tồn quỹ lệch sổ quỹ</td></tr>
+<tr><td>"1 điểm bán"</td><td>Mô tả gói Standard đã sửa thành "không giới hạn cửa hàng". Chữ "1 điểm bán" chỉ còn ở gói Plus, đúng ý.</td><td>Không còn lỗi, bỏ</td></tr>
+</table></div>
+</section>
+
+<footer>Nguồn: code bản mẫu iaccdemo trên nhánh main, ngày 27/10/2026. Bản Markdown cùng nội dung: docs/TONG-KET-LOGIC-STANDARD.md.</footer>
+</main>
+</div>
+</body>
+</html>

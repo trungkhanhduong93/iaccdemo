@@ -490,7 +490,7 @@ export function OnboardFabi() {
 
                     <div className="row ktf-pop-nut">
                       {n.b > 0 && <button className="btn lg" onClick={() => sua({ b: n.b - 1 })}>Quay lại</button>}
-                      <button className="btn pri lg" disabled={(n.b === 1 && n.loai === 'dn' && !n.mst.trim() /* doanh nghiệp bắt buộc mã số thuế, hộ kinh doanh không (T665) */) || (n.b === 2 && (cnChon.length === 0 || (n.loai === 'hkd' && !n.cnChinh)))} onClick={tiep}>
+                      <button className="btn pri lg" disabled={(n.b === 1 && ((n.loai === 'dn' && !n.mst.trim()) /* doanh nghiệp bắt buộc mã số thuế, hộ kinh doanh không (T665) */ || !n.tenDv.trim() /* tên bắt buộc (T669) */)) || (n.b === 2 && (cnChon.length === 0 || (n.loai === 'hkd' && !n.cnChinh)))} onClick={tiep}>
                         {n.b === XONG - 1 ? 'Hoàn tất' : 'Tiếp tục'}<Icon n="arrow" className="ic sm" />
                       </button>
                     </div>

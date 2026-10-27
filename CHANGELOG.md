@@ -2,6 +2,9 @@
 
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
+## 27/10/2026
+- T669: Gói Standard: bỏ nút chuông thông báo trên thanh trên (trước đó mở trang khoá Tiện ích). Mở màn ngoài gói bằng đường dẫn thì về màn đầu phân hệ hoặc Trang chủ, không còn trang mời Nâng cấp lên Plus/Pro. Khởi tạo dữ liệu từ FABi, bước Đơn vị: phải nhập tên mới bấm Tiếp tục được.
+
 ## 26/10/2026
 - T668: Mở từ FABi trên điện thoại, màn Giao diện kế toán IACC: ảnh minh hoạ là trang chủ app, đánh số 1–5; nút Quay lại, Dùng thử luôn nằm sát đáy màn thành 2 ô.
 - T667: Khởi tạo dữ liệu từ FABi, màn Đang lấy dữ liệu: lấy cả phiếu thu, phiếu chi tiền từ FABi bên cạnh doanh thu; hiện danh sách việc (danh mục, doanh thu, thu chi tiền, ghi sổ) với dấu xong, đang chạy. Màn xong ghi số chứng từ và phiếu thu chi đã lấy.

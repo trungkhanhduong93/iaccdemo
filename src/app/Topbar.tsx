@@ -3,7 +3,7 @@
 import { useNavigate } from 'react-router-dom'
 import { donViHienTai, dsCuaHang, dsDonVi, dungThuDv, loaiHinhDv, useSession, cheDoHienTai } from './session'
 import { cheDoCuaGoi } from './che-do'
-import { GOI, GOIS, demTheoGoi } from './plan'
+import { GOI, GOIS, coTrongGoi, demTheoGoi } from './plan'
 import { ROLE } from '../data/mock'
 import { Icon } from '../ui/Icon'
 import { FigmaStoreIcon } from '../ui/FigmaIcon'
@@ -90,7 +90,8 @@ export function Topbar({ onSearch }: { onSearch?: () => void }) {
         </>}
       </Dropdown>
 
-      <button className="icon-btn" title="Thông báo" onClick={() => nav('/app/tien-ich/11-6')}><Icon n="bell" /><span className="dot" /></button>
+      {/* Chuông mở Cảnh báo số liệu 11.6; gói không có tính năng này (Standard) thì ẩn chuông, không mở trang khoá (T669) */}
+      {coTrongGoi('11.6', s.goi) && <button className="icon-btn" title="Thông báo" onClick={() => nav('/app/tien-ich/11-6')}><Icon n="bell" /><span className="dot" /></button>}
       <Dropdown btnClass="avatar" align="end" width={290} title={s.ten} label={ten}>
         {dong => <>
           <div className="mi-user">
