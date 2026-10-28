@@ -5,6 +5,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
 | T672 | Chatbox Trợ lý IACC trên web, bản mẫu giao diện: nút nổi góc dưới phải, khung chat, kịch bản mẫu gõ câu mua hàng ra thẻ kết quả, nút Lập phiếu mua | Trum | 28/10/2026 | `2026-10-28-trum-chatbox-tro-ly.md` |
+| T671 | Kịch bản cho sale test gói Standard (`docs/KICH-BAN-SALE-STANDARD.xlsx`): 11 kịch bản theo tình huống khách, 68 bước có thao tác, câu nói khi demo, kết quả phải thấy; sheet Hỏi đáp khách 16 câu; sheet Tổng hợp đếm kết quả | PhuongXT | 28/10/2026 | `2026-10-28-phuongxt-kich-ban-sale.md` |
 | T670 | Bộ 273 test case mọi màn hình phân hệ gói Standard (`docs/TEST-CASE-STANDARD.xlsx`): sheet Web 152 ca, sheet App 121 ca, sheet Tổng hợp đếm kết quả theo phân hệ | PhuongXT | 27/10/2026 | `2026-10-27-phuongxt-test-case-standard.md` |
 | T669 | Tổng kết logic gói Standard (`docs/TONG-KET-LOGIC-STANDARD.md`); sửa 3 lỗi soát ra: ẩn chuông thông báo ở gói Standard, màn ngoài gói mở bằng đường dẫn về màn đầu phân hệ thay trang mời nâng cấp, khởi tạo FABi chặn Tiếp tục khi tên đơn vị trống | PhuongXT | 27/10/2026 | `2026-10-27-phuongxt-tong-ket-logic-standard.md` |
 | T668 | Màn Giao diện kế toán IACC (mở từ FABi) trên điện thoại: dùng ảnh trang chủ app gói Standard đánh số 1–5; Quay lại, Dùng thử ghim đáy thành 2 ô | PhuongXT | 26/10/2026 | `2026-10-26-phuongxt-gioi-thieu-anh-that.md` |
