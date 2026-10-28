@@ -7,11 +7,11 @@
 ## Đã làm
 
 - Thêm `docs/KICH-BAN-SALE-STANDARD.xlsx` để sale tự chạy thử gói Standard trước khi đi bán. PhuongXT chọn: chỉ gói Standard, viết theo tình huống khách, file Excel riêng.
-- Sheet Hướng dẫn: link bản phát hành, cách đăng nhập, dữ liệu giả tháng 7–10/2026, thứ tự làm, cách ghi kết quả, ô người test, ngày test.
-- Sheet Kịch bản: 11 kịch bản (KB01–KB11), 68 bước, khoảng 70 phút. Mỗi kịch bản ghi khách là ai, mục tiêu, chuẩn bị; mỗi bước có thao tác, câu nói khi demo, kết quả phải thấy, ô Kết quả (Đạt, Lỗi, Bỏ qua) và Ghi chú nền vàng.
+- Sheet Các yêu cầu test (thay sheet Hướng dẫn theo ý PhuongXT): 27 yêu cầu chia 6 nhóm: điều kiện test, đơn vị sau khởi tạo, chứng từ phải có, số liệu phải khớp, thao tác sai phải bị chặn, nộp lại sau test. Mỗi yêu cầu ghi đầu ra dữ liệu phải có, kiểm ở đâu, kịch bản nào, ô Đạt/Chưa đạt.
+- Sheet Kịch bản: 11 kịch bản (KB01–KB11), 69 bước, khoảng 70 phút. Mỗi kịch bản ghi khách là ai, mục tiêu, chuẩn bị; mỗi bước có thao tác, câu nói khi demo, kết quả phải thấy, ô Kết quả (Đạt, Lỗi, Bỏ qua) và Ghi chú nền vàng.
 - Kịch bản: khởi tạo từ FABi, lãi lỗ tháng, quỹ tiền, mua hàng và công nợ nhà cung cấp, kiểm kê, chi phí trả trước, kê khai thuế hộ kinh doanh, khoá sổ, điện thoại, báo cáo, gói thuê bao.
 - Sheet Hỏi đáp khách: 16 câu khách hay hỏi, câu trả lời, màn để chỉ. Câu chưa chốt ghi ở cột Hỏi Trum.
-- Sheet Tổng hợp đếm Đạt, Lỗi, Bỏ qua, Chưa test theo kịch bản bằng công thức.
+- Sheet Tổng hợp đếm Đạt, Lỗi, Bỏ qua, Chưa test theo kịch bản và số yêu cầu đạt bằng công thức.
 
 ## Đã kiểm
 
