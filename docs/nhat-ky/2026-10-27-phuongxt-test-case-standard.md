@@ -6,14 +6,16 @@
 
 ## Đã làm
 
-- Thêm `docs/TEST-CASE-STANDARD.xlsx`: 161 test case cho mọi màn hình phân hệ gói Standard, chia 14 nhóm (khung app, khởi tạo FABi, trang chủ, danh mục, thu chi, bán hàng, mua hàng, kiểm kê, chi phí phân bổ, kê khai thuế, báo cáo, hệ thống, doanh nghiệp TT58, app điện thoại).
-- Sheet Test case: mã ca, phân hệ, màn, đường dẫn, loại kiểm (Hiển thị, Chức năng, Ràng buộc, Tích hợp), mục đích, tiền điều kiện, các bước, kết quả mong đợi, ưu tiên; cột nền vàng để người test điền kết quả, trạng thái chọn từ danh sách.
-- Sheet Tổng hợp đếm số ca Đạt, Lỗi, Bỏ qua, Chưa test theo phân hệ bằng công thức.
+- Thêm `docs/TEST-CASE-STANDARD.xlsx` gồm 273 test case cho mọi màn hình phân hệ gói Standard. Sheet Web có 152 ca, sheet App (điện thoại) có 121 ca.
+- 28/10/2026: theo ý PhuongXT tách web và app thành 2 sheet. Phần app viết đủ từng màn trong `src/ui/mobile/`: tab đáy, trang chủ, tìm kiếm, từng nghiệp vụ, xem phiếu, tab Báo cáo, tab Khác.
+- Sheet Web, App: mã ca (W-…, A-…), phân hệ, màn, đường dẫn, loại kiểm (Hiển thị, Chức năng, Ràng buộc, Tích hợp), mục đích, tiền điều kiện, các bước, kết quả mong đợi, ưu tiên; cột nền vàng để người test điền kết quả, trạng thái chọn từ danh sách.
+- Sheet Tổng hợp có 2 bảng Web, App và dòng Cả hai, đếm số ca Đạt, Lỗi, Bỏ qua, Chưa test theo phân hệ bằng công thức.
 
 ## Đã kiểm
 
 - Danh sách màn lấy từ `hienMan(sc, 'S', ...)` trong `src/app/registry.ts`, chạy trên dev server, đủ 10 phân hệ hiện ở gói S.
-- Mở lại file bằng openpyxl: đủ 161 dòng, công thức sheet Tổng hợp đúng vùng. Chưa tính sẵn giá trị công thức (công cụ LibreOffice không chạy trên Windows); file đặt tự tính khi mở Excel.
+- Màn app lấy từ code `src/ui/mobile/` (đọc code, chưa mở app chạy thật để đối chiếu). Danh sách báo cáo trên app suy từ luật lọc, nên soát lại khi chạy ca A-BC-001.
+- Mở lại file bằng openpyxl: đủ 152 dòng Web, 121 dòng App, công thức sheet Tổng hợp đúng vùng. Chưa tính sẵn giá trị công thức (công cụ LibreOffice không chạy trên Windows); file đặt tự tính khi mở Excel.
 - Chưa chạy từng test case trên app.
 
 ## Dở dang, việc tiếp theo
