@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T672 | Chatbox Trợ lý IACC trên web, bản mẫu giao diện: nút nổi góc dưới phải, khung chat, chạy một kịch bản mẫu (gõ câu mua hàng, bot trích xuất ra thẻ kết quả, nút Lập phiếu). Không có AI thật | Trum | Đang làm | File mới `src/ui/TroLy.tsx`, gắn vào `Shell.tsx` (1 dòng), cuối `app.css` (mục T672). Đổi QD15 dòng "không đem sang trợ lý iOne", ghi QD85 |
 | T671 | Kịch bản cho sale test gói Standard trước khi bán: theo tình huống khách (chủ quán FABi, hộ kinh doanh, doanh nghiệp), mỗi bước có thao tác, câu nói khi demo, kết quả phải thấy, câu khách hay hỏi | PhuongXT | Đang làm | File mới `docs/KICH-BAN-SALE-STANDARD.xlsx`, viết theo `docs/TONG-KET-LOGIC-STANDARD.md`. Không sửa code |
 | T593 | Xem trước in và bản in báo cáo: mã, tên hàng, số phiếu ở mọi cột thành chữ thường, không bấm được (mở rộng T556) | Trum | Đang làm | Sửa cuối `app.css` (mục T556). Spec `backup/spec-T593-T595.md` |
 | T594 | Báo cáo đổi khổ dọc, ngang tự cân bề rộng cột và cỡ chữ: số, ngày, mã luôn 1 dòng đủ ký tự, chữ dài xuống tối đa 2 dòng, không tràn ô, không tràn viền tờ; cỡ chữ chọn tay là trần | Trum | Đang làm | Sửa `ToGiay.tsx`, `chiaCot.ts`, `ReportScreen.tsx`, `tools/kiem_tra.py`. Ca kiểm 3.2.8, 5.2.3 |

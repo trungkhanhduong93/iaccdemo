@@ -920,4 +920,11 @@ Trum chốt 24/10/2026 (T654), mức 2 trong bản vẽ Đợt 3 trên artifact 
 - Số phiếu, tên món và chữ trong nhãn không gãy dòng. Dòng dưới dài thì hiện "…".
 - Ô Tổng thu, Tổng chi của Thu chi: số tiền nằm một dòng, chữ "đ" không rớt xuống. Màn hẹp hơn 390px thì số tiền 14.5px, lề trong ô 8px.
 
-## QD85. Chatbox Trợ lý IACC bản mẫu (đang soạn)
+## QD85. Chatbox Trợ lý IACC bản mẫu (28/10/2026)
+
+Trum chốt cho thêm chatbox trợ lý trên web, học bố cục và luồng của trợ lý iOne trên IVT. Thay dòng "Không đem sang: trợ lý iOne" ở QD15.
+
+- Tên "Trợ lý IACC", không dùng chữ iOne. Màu, phông theo QD15.
+- Chỉ bản web: nút nổi góc dưới phải, mọi màn, cả 3 gói. Điện thoại để việc sau.
+- Bản mẫu không có AI thật. Bộ tách câu `tachDongHang` trong `src/ui/TroLy.tsx` đọc câu dạng "12 kg thịt bò giá 250k", trả thẻ kết quả kèm nút Lập phiếu mua. Chưa tự lưu phiếu.
+- Gọi tổng đài, gửi ảnh, đính kèm file chỉ là kịch bản mẫu.

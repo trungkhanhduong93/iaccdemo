@@ -2,6 +2,9 @@
 
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
+## 28/10/2026
+- T672: Web có nút trợ lý ✦ góc dưới phải. Bấm mở khung chat Trợ lý IACC bản mẫu: gõ hàng vừa mua, vd "12 kg thịt bò giá 250k", trợ lý trả bảng hàng, số lượng, đơn giá, thành tiền và nút Lập phiếu mua. Có 3 câu gợi ý bấm thử, nút gửi ảnh trả hoá đơn mẫu.
+
 ## 27/10/2026
 - T669: Gói Standard: bỏ nút chuông thông báo trên thanh trên (trước đó mở trang khoá Tiện ích). Mở màn ngoài gói bằng đường dẫn thì về màn đầu phân hệ hoặc Trang chủ, không còn trang mời Nâng cấp lên Plus/Pro. Khởi tạo dữ liệu từ FABi, bước Đơn vị: phải nhập tên mới bấm Tiếp tục được.
 
