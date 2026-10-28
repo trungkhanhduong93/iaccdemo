@@ -919,3 +919,5 @@ Trum chốt 24/10/2026 (T654), mức 2 trong bản vẽ Đợt 3 trên artifact 
 - Dòng thu chi: dòng trên chỉ còn số phiếu, cộng nhãn FABi nếu có. Quỹ xuống dòng dưới thành chữ thường, vd "Tiền mặt · Bà Nguyễn Thị Hạnh". Mục này thay phần dòng thu chi ở QD83.
 - Số phiếu, tên món và chữ trong nhãn không gãy dòng. Dòng dưới dài thì hiện "…".
 - Ô Tổng thu, Tổng chi của Thu chi: số tiền nằm một dòng, chữ "đ" không rớt xuống. Màn hẹp hơn 390px thì số tiền 14.5px, lề trong ô 8px.
+
+## QD85. Chatbox Trợ lý IACC bản mẫu (đang soạn)
