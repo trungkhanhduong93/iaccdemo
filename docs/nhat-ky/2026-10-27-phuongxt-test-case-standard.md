@@ -10,6 +10,7 @@
 - 28/10/2026: theo ý PhuongXT tách web và app thành 2 sheet. Phần app viết đủ từng màn trong `src/ui/mobile/`: tab đáy, trang chủ, tìm kiếm, từng nghiệp vụ, xem phiếu, tab Báo cáo, tab Khác.
 - Sheet Web, App: mã ca (W-…, A-…), phân hệ, màn, đường dẫn, loại kiểm (Hiển thị, Chức năng, Ràng buộc, Tích hợp), mục đích, tiền điều kiện, các bước, kết quả mong đợi, ưu tiên; cột nền vàng để người test điền kết quả, trạng thái chọn từ danh sách.
 - Sheet Tổng hợp có 2 bảng Web, App và dòng Cả hai, đếm số ca Đạt, Lỗi, Bỏ qua, Chưa test theo phân hệ bằng công thức.
+- Sheet Checklist: 273 ca gom theo phân hệ, ô ✓ và trạng thái tự lấy từ sheet Web, App theo mã ca (INDEX/MATCH), dòng tiêu đề phân hệ đếm số ca đạt.
 
 ## Đã kiểm
 
