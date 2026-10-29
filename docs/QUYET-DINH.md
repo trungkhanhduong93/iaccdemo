@@ -961,3 +961,19 @@ Trum chốt 29/10/2026 (T679) kiểu C trên bản bấm thử https://claude.ai
 - Bước kế, Bước trước, bấm bước trong khung đủ: giao diện tự tới chỗ của bước. Vào bước trong form thì tự mở form, ra bước ở màn danh sách thì tự đóng form, không hỏi. Nút tắt là bỏ qua: tắt hướng dẫn, đóng luôn form do dải mở. Trum chốt không hỏi vì đây là bản demo (T680).
 - Bước trong form được tính riêng nên một màn có thể quá 5 bước: Trum duyệt Thu chi 7 bước, Kiểm kê 5 bước (T676).
 - `tools/kiem_tra.py` kiểm số cam đúng bước ở 6 màn gói Standard mỗi lần chạy, cả `--nhanh` (T676).
+- Cách hiện đổi theo QD88 (T681): tour như Trang chủ thay cho dải bước.
+
+## QD88. Hướng dẫn nhanh kiểu tour như Trang chủ (29/10/2026)
+
+Trum chốt 29/10/2026 sau khi dùng thử T680. Thay cách hiện dải bước của QD87, nội dung 4 mục của QD86 và chữ trong `huong-dan.ts` giữ nguyên. Chưa làm, làm ở T681.
+
+- Bấm nút Hướng dẫn (bóng đèn, T680) thì chạy tour giống tour Trang chủ (T138): màn tối, khoanh sáng đúng chỗ, bong bóng nằm cạnh chỗ khoanh. Bỏ dải trên đầu màn, bỏ số cam trên các chỗ khác.
+- Lớp tối chặn bấm. Bấm vào vùng tối không làm gì, chỉ nút Bỏ qua mới tắt tour.
+- Bong bóng có chữ bước, Bước n/N, nút Bỏ qua, Quay lại, Tiếp. Bong bóng đầu nằm giữa màn: Màn này để làm gì, nút Bắt đầu. Bong bóng cuối: Lưu ý, Đi tiếp, nút Xong.
+- Bấm Tiếp thì máy tự làm thao tác của bước, giao diện hiện đủ từng bước, không nửa vời:
+  - bước Thêm mới: tự mở form phiếu;
+  - form hỏi cửa hàng: có bước riêng khoanh ô chọn cửa hàng, Tiếp thì tự chọn cửa hàng đầu tiên;
+  - bước Bấm Lưu: tự bấm Lưu, phiếu mẫu điền sẵn được lưu, form đóng, bước sau khoanh phiếu vừa lưu ở đầu danh sách;
+  - bước ở màn danh sách mà form đang mở thì tự đóng form, không hỏi.
+- Bỏ qua và Xong đều trả lại như ban đầu: đóng form, về đúng màn và tab lúc bấm nút Hướng dẫn, cửa hàng trên thanh trên trả về như cũ, xoá phiếu mẫu tour đã lưu.
+
