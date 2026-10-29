@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T679 | Hướng dẫn nhanh kiểu dải bước (QD87, Trum chốt kiểu C trên bản bấm thử): dải dưới thanh tab, số cam đánh lên nút thật, nút Bước trước, Bước kế, Xem đủ hướng dẫn mở khung nổi | Trum | Đang làm | Sửa `src/ui/HuongDanNhanh.tsx`, `src/modules/tien/huong-dan.ts`, `src/modules/danh-muc/huong-dan.ts` (đổi chữ két sang Quỹ tiền), mục T673, T674 và cuối `app.css` (mục T679). Không sửa `VoucherScreen.tsx`, `src/modules/home/HuongDan.tsx` |
 | T675 | Hướng dẫn nhanh (QD86) trên điện thoại: khung kéo từ dưới lên, cùng nội dung `huong-dan.ts` với web | | Chờ | Gắn ở `MobileShell`, tách phần nội dung trong `src/ui/HuongDanNhanh.tsx` ra dùng chung |
 | T676 | Hướng dẫn nhanh đợt 2 (QD86): nút Chỉ cho tôi khoanh từng nút cho 5 màn đợt 1, máy tự kiểm chỗ khoanh mỗi lần push | | Chờ | Làm sau T138 vì tách phần khoanh từ `src/modules/home/HuongDan.tsx`. Chỗ khoanh đánh dấu `data-hd`, thêm bước kiểm vào `tools/kiem_tra.py` |
 | T677 | Hướng dẫn nhanh đợt 3 (QD86): soạn riêng từng phân hệ gói Standard, rồi gói Plus, Pro; tìm hướng dẫn bằng Ctrl + K | | Chờ | Mỗi phân hệ một file `src/modules/<phân hệ>/huong-dan.ts`, chia việc theo phân hệ. Ctrl + K sửa `src/app/CommandPalette.tsx` |

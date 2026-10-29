@@ -941,3 +941,5 @@ Trum chốt 29/10/2026 (T673), bản bấm thử trên artifact https://claude.a
 - Nội dung viết trong code, mỗi phân hệ một file `src/modules/<phân hệ>/huong-dan.ts`, tra theo slug màn. Agent soạn, người duyệt chữ.
 - Chỉ bản web. Điện thoại chưa có nút, làm ở việc riêng.
 - Màn mà đầu báo cáo nằm thay thanh tab (phân hệ Báo cáo, báo cáo mở từ tab Báo cáo của phân hệ) đặt nút la bàn ở thanh chọn báo cáo, sau nút In; màn Tất cả báo cáo đặt sau ô Tìm báo cáo. Khung mở sát dưới thanh trên. Mỗi màn đúng một nút (T674).
+
+## QD87. Hướng dẫn nhanh kiểu dải bước (đang soạn)
