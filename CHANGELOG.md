@@ -2,6 +2,9 @@
 
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
+## 30/10/2026
+- T685: Web, các màn Hệ thống có Hướng dẫn nhanh riêng: Người dùng, Vai trò và phân quyền, Nhật ký thao tác, Thông tin đơn vị, Cấu hình kế toán, Khoá sổ, Gói thuê bao. Bấm Hướng dẫn thì tour khoanh đúng nút, ô, bảng trên màn.
+
 ## 29/10/2026
 - T138: Web, bước hướng dẫn Kết quả kinh doanh khoanh trọn cả biểu đồ 13 tháng, không còn bị đáy màn cắt. Điện thoại: màn giới thiệu khi mở từ FABi có nút Quay lại cạnh nút Tiếp từ trang 2; mọi khung khen "Tuyệt vời" viền xanh như khung khen ở màn tờ khai.
 - T682: Thu chi, phiếu mẫu "Tiền nhà 6 tháng" đổi số thành PC2610-0260. Lập phiếu chi tiền mặt mới không còn ra hai phiếu cùng số PC2610-0261 trong danh sách. Thẻ chi phí trả trước TPB2610-0011 trên web ghi chứng từ gốc theo số mới.

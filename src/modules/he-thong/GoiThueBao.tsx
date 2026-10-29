@@ -84,7 +84,7 @@ export function GoiThueBao({ sc }: ScreenProps) {
       </PageHead>
 
       {/* ── 1. Thẻ Hiện Trạng Bản Quyền Đơn Vị (Hero Status Card) ── */}
-      <section className="card gtb-hero">
+      <section className="card gtb-hero" data-hd="hienTai">
         <div className="gtb-hero-trai">
           <div className="gtb-hero-logo-box">
             <GoiLogo g={s.goi} size={52} glow />
@@ -118,6 +118,7 @@ export function GoiThueBao({ sc }: ScreenProps) {
           <div className="gtb-hero-actions">
             <button
               className="btn pri"
+              data-hd="giaHan"
               onClick={() => toast('Đã kích hoạt gia hạn trực tuyến thêm 12 tháng')}
             >
               Gia hạn thêm 1 năm
@@ -142,7 +143,7 @@ export function GoiThueBao({ sc }: ScreenProps) {
           </p>
         </div>
 
-        <div className="gtb-ky-switch">
+        <div className="gtb-ky-switch" data-hd="kyThanhToan">
           <button
             className={`gtb-ky-btn ${ky === 'nam' ? 'on' : ''}`}
             onClick={() => setKy('nam')}
@@ -159,7 +160,7 @@ export function GoiThueBao({ sc }: ScreenProps) {
       </div>
 
       {/* ── 3. Dải 4 Thẻ Gói Thuê Bao (Pricing Cards) ── */}
-      <div className="grid g3 gtb-cards">
+      <div className="grid g3 gtb-cards" data-hd="cacGoi">
         {GOIS.map(g => {
           const n = demTheoGoi(g)
           const dang = g === s.goi

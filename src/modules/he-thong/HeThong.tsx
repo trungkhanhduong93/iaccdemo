@@ -63,10 +63,10 @@ export function NguoiDung({ sc }: ScreenProps) {
 
   return (
     <div className="page">
-      <PageHead crumb={['Hệ thống']} title={sc.ten!} meta={<span className="chip">{NGUOI_DUNG.length}/10 người dùng của gói</span>}>
-        <button type="button" className="btn pri" onClick={() => setEditUser({})}><Icon n="mail" className="ic sm" />Mời người dùng</button>
+      <PageHead crumb={['Hệ thống']} title={sc.ten!} meta={<span className="chip" data-hd="tong">{NGUOI_DUNG.length}/10 người dùng của gói</span>}>
+        <button type="button" className="btn pri" data-hd="them" onClick={() => setEditUser({})}><Icon n="mail" className="ic sm" />Mời người dùng</button>
       </PageHead>
-      <section className="card">
+      <section className="card" data-hd="bang">
         <Table
           cols={[
             { k: 'ten', t: 'Họ tên', r: r => <span className="row"><span className="avatar" style={{ width: 28, height: 28, fontSize: 11 }}>{r.ten.split(' ').slice(-2).map((x: string) => x[0]).join('')}</span><b style={{ color: 'var(--ink)' }}>{r.ten}</b></span> },
@@ -244,16 +244,16 @@ export function PhanQuyen({ sc }: ScreenProps) {
   return (
     <div className="page">
       <PageHead crumb={['Hệ thống']} title={sc.ten!}>
-        <button className="btn"><Icon n="plus" className="ic sm" />Thêm mới</button>
-        <button className="btn pri" onClick={() => toast(`Đã lưu quyền của ${vt}`)}>Lưu</button>
+        <button className="btn" data-hd="them"><Icon n="plus" className="ic sm" />Thêm mới</button>
+        <button className="btn pri" data-hd="luuQuyen" onClick={() => toast(`Đã lưu quyền của ${vt}`)}>Lưu</button>
       </PageHead>
       <div className="grid" style={{ gridTemplateColumns: '240px minmax(0,1fr)', alignItems: 'start' }}>
         <Card title="Vai trò" pad={false}>
-          <div className="panel-list" style={{ padding: 8 }}>
+          <div className="panel-list" data-hd="vaiTro" style={{ padding: 8 }}>
             {VAI_TRO.map(v => <a key={v} className={v === vt ? 'on' : ''} onClick={() => setVt(v)} style={{ cursor: 'pointer' }}><span>{v}</span></a>)}
           </div>
         </Card>
-        <section className="card">
+        <section className="card" data-hd="bang">
           <div className="card-h"><h3>Quyền của {vt}</h3><span className="sub">Theo phân hệ · phạm vi dữ liệu đặt ở Người dùng</span></div>
           <table className="tbl matrix">
             <thead><tr><th>Phân hệ</th>{QUYEN.map(q => <th key={q} className="c">{q}</th>)}</tr></thead>
@@ -353,18 +353,20 @@ export function CauHinh({ sc }: ScreenProps) {
   const noco = kieuGhiSo(s.cheDo) === 'noco'
   return (
     <div className="page">
-      <PageHead crumb={['Hệ thống']} title={sc.ten!}><button className="btn pri" onClick={() => toast('Đã lưu cấu hình')}>Lưu</button></PageHead>
+      <PageHead crumb={['Hệ thống']} title={sc.ten!}><button className="btn pri" data-hd="luuCh" onClick={() => toast('Đã lưu cấu hình')}>Lưu</button></PageHead>
       <div className="grid g2" style={{ alignItems: 'start' }}>
         <Card title="Bộ định khoản tự động" act={noco ? <Link className="btn sm ghost" to="/app/danh-muc/1-15">Sửa bộ định khoản</Link> : undefined}>
-          {noco ? <Note icon="book">Thứ tự ưu tiên tài khoản: hàng hoá, rồi nhóm hàng, rồi mặc định của chế độ. Bộ mặc định ngành F&B đã nạp sẵn 7 bút toán.</Note>
-            : <Note kind="gray">Chế độ {cheDoHienTai(s).ngan} không dùng tài khoản Nợ/Có nên không có bộ định khoản.</Note>}
+          <div data-hd="dinhKhoan">{noco ? <Note icon="book">Thứ tự ưu tiên tài khoản: hàng hoá, rồi nhóm hàng, rồi mặc định của chế độ. Bộ mặc định ngành F&B đã nạp sẵn 7 bút toán.</Note>
+            : <Note kind="gray">Chế độ {cheDoHienTai(s).ngan} không dùng tài khoản Nợ/Có nên không có bộ định khoản.</Note>}</div>
         </Card>
         <Card title="Đánh số chứng từ">
+          <div data-hd="danhSo">
           <Table cols={[{ k: 'loai', t: 'Loại chứng từ' }, { k: 'mau', t: 'Mẫu số', cls: 'code' }, { k: 'vd', t: 'Ví dụ', cls: 'dim' }]} rows={[
             { loai: 'Phiếu thu', mau: 'PT{YY}{MM}-{0000}', vd: 'PT2610-0001' }, { loai: 'Phiếu chi', mau: 'PC{YY}{MM}-{0000}', vd: 'PC2610-0241' },
             { loai: 'Xuất bán POS', mau: 'Số hoá đơn FABi', vd: 'YHLTJTAKD76Z' }, { loai: 'Mua hàng', mau: 'MH{YY}{MM}-{0000}', vd: 'MH2610-0118' },
             // Thẻ chi phí phân bổ: tháng theo ngày ghi tăng; thẻ dư đầu kỳ ghi tăng trước ngày đầu năm (T284)
             { loai: 'Thẻ chi phí phân bổ', mau: 'TPB{YY}{MM}-{0000}', vd: 'TPB2610-0012' }, { loai: 'Thẻ chi phí phân bổ dư đầu kỳ', mau: 'TPBDK{YY}{MM}-{0000}', vd: 'TPBDK2512-0001' }]} />
+          </div>
         </Card>
       </div>
     </div>
@@ -422,10 +424,10 @@ export function ThongTinDonVi({ sc }: ScreenProps) {
   const doiLoai = loai !== loaiHinhDv(s, dv)
   return (
     <div className="page">
-      <PageHead crumb={['Hệ thống']} title={sc.ten!}><button className="btn pri" onClick={luuDv}>Lưu</button></PageHead>
+      <PageHead crumb={['Hệ thống']} title={sc.ten!}><button className="btn pri" data-hd="luuDv" onClick={luuDv}>Lưu</button></PageHead>
       <div className="stack">
         <Card title="Thông tin trên chứng từ, báo cáo">
-          <div className="form-grid">
+          <div className="form-grid" data-hd="chungTu">
             <div className="f c2"><label>Tên đơn vị</label><input className="inp" value={f.ten} onChange={e => sua({ ten: e.target.value })} /></div>
             <div className="f"><label>Mã số thuế</label>
               <input className="inp" readOnly={mstGoc} value={f.mst} placeholder="Chưa khai mã số thuế" onChange={e => sua({ mst: e.target.value })}
@@ -437,7 +439,7 @@ export function ThongTinDonVi({ sc }: ScreenProps) {
           </div>
         </Card>
         <Card title="Thông tin kê khai">
-          <div className="form-grid">
+          <div className="form-grid" data-hd="keKhai">
             <div className="f c2"><label>Loại hình</label>
               <Select className="inp" value={loai} aria-label="Loại hình" onChange={e => sua({ loai: e.target.value as LoaiHinh })}
                 ds={[{ v: 'hkd', t: 'Hộ kinh doanh' }, { v: 'dn', t: 'Doanh nghiệp' }]} /></div>
@@ -490,7 +492,7 @@ export function ThongTinDonVi({ sc }: ScreenProps) {
           </Note>}
         </Card>
         <Card title="Chế độ kế toán">
-          <div className="form-grid">
+          <div className="form-grid" data-hd="cheDo">
             <div className="f">
               <label>Ngày đầu năm</label>
               <ONgay value={dauNam} placeholder="dd/mm/yyyy" onChange={setDauNam}

@@ -93,20 +93,20 @@ export function KhoaSoStandard({ sc, mod }: ScreenProps) {
   return (
     <div className="page">
       <PageHead crumb={[mod.ten, sc.nhom ?? '']} title={tenMan(sc)} code={sc.code}>
-        <button className="btn" onClick={() => setHop({ loai: 'lichSu' })}><Icon n="clock" kieu="net" className="ic sm" />Lịch sử khoá sổ</button>
+        <button className="btn" data-hd="lichSu" onClick={() => setHop({ loai: 'lichSu' })}><Icon n="clock" kieu="net" className="ic sm" />Lịch sử khoá sổ</button>
         <button className="btn" onClick={() => setHop({ loai: 'moDen' })}><Icon n="lock" kieu="net" className="ic sm" />Mở khoá hàng loạt</button>
         {coKhoaDuoc && <button className="btn acc" onClick={() => setHop({ loai: 'den' })}><Icon n="lock" kieu="net" className="ic sm" />Khoá sổ hàng loạt</button>}
       </PageHead>
       <div className="stack">
         <Note kind="ok" icon="lock">Khoá sổ là chốt số liệu của tháng: phiếu trong tháng đã khoá chỉ xem được, không sửa, không xoá. Khoá một cửa hàng thì chọn cửa hàng đó; khoá, mở khoá nhiều cửa hàng cùng lúc thì dùng Khoá sổ hàng loạt, Mở khoá hàng loạt. Cần sửa thì bấm Mở khoá và ghi lý do.</Note>
         <Card pad={false}>
-          <div className="ks-thanh-loc">
+          <div className="ks-thanh-loc" data-hd="loc">
             <ChipTrangThai ds={chips} chon={loc} onChon={setLoc} />
             <span className="grow" />
             <Select aria-label="Năm" className="ks-nam" value={String(nam)} onChange={e => setNam(Number(e.target.value))} ds={[KY_MO.nam, KY_MO.nam - 1].map(n => ({ v: String(n), t: `Năm ${n}` }))} />
             <Select aria-label="Cửa hàng" className="ks-ch" value={c.id} onChange={e => setCh(e.target.value)} ds={CUA_HANG.map(x => ({ v: x.id, t: x.ten }))} />
           </div>
-          <table className="tbl ks-bang">
+          <table className="tbl ks-bang" data-hd="bang">
             <thead>
               <tr><th className="ks-cot-stt">#</th><th>Tháng</th><th>Trạng thái</th><th>Người khoá</th><th>Lúc khoá</th><th className="ks-cot-hd">Hành động</th></tr>
             </thead>

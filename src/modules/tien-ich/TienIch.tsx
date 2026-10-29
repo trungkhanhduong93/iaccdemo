@@ -222,8 +222,8 @@ export function NhatKyThaoTac({ sc, mod }: ScreenProps) {
   const rows = [...phien, ...Array.from({ length: 22 }, (_, i) => ({ luc: `${pad(7 - Math.floor(i / 5))}/10/2026 ${pad(16 - (i % 9))}:${pad(Math.floor(r() * 59))}`, ai: pick(r, ['Trần Thu Hà', 'Lê Quốc Bảo', 'Phạm Ngọc Lan']), viec: pick(r, viec), ip: `113.161.${Math.floor(r() * 200)}.${Math.floor(r() * 250)}` }))]
   return (
     <div className="page">
-      <PageHead crumb={[mod.ten, sc.nhom ?? '']} title={tenMan(sc)} code={sc.code} meta={<span className="chip">Nhật ký không sửa, không xoá được</span>} />
-      <section className="card">
+      <PageHead crumb={[mod.ten, sc.nhom ?? '']} title={tenMan(sc)} code={sc.code} meta={<span className="chip" data-hd="ghiChu">Nhật ký không sửa, không xoá được</span>} />
+      <section className="card" data-hd="bang">
         <Table cols={[{ k: 'luc', t: 'Thời điểm', w: 150 }, { k: 'ai', t: 'Người làm' }, { k: 'viec', t: 'Thao tác' }, { k: 'ip', t: 'Địa chỉ IP', cls: 'dim' }]} rows={rows} />
       </section>
     </div>
