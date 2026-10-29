@@ -11,6 +11,7 @@ import { kyHieuBC, laDauBcMoi } from './danh-sach'
 import { docGhim, luuGhim } from './TrungTam'
 import { baoCaoCuaPhanHe } from './cuaPhanHe'
 import { laTuTrangChu } from '../../app/tuTrangChu'
+import { NutHuongDan } from '../../ui/HuongDanNhanh'
 
 // Báo cáo vừa xem ngay trước (T491): bấm từ báo cáo tổng hợp sang báo cáo chi tiết thì có nút về đúng báo cáo đó.
 // Gắn theo khoá lịch sử của trang nên mở phiếu rồi quay lại vẫn còn nút; đổi báo cáo bằng ô chọn thì không tính
@@ -72,6 +73,7 @@ export function ThanhChonBaoCao({ sc, trongPhanHe }: { sc: ScreenDef; trongPhanH
   )
   if (laDauBcMoi(sc.slug)) {
     const nhom = MODULES.find(m => m.key === (trongPhanHe?.key ?? sc.goc))
+    const modHd = trongPhanHe ?? bcMod
     return (
       <div className="bc-chon bc-dau-moi">
         <div className="bc-dau-trai">
@@ -90,7 +92,11 @@ export function ThanhChonBaoCao({ sc, trongPhanHe }: { sc: ScreenDef; trongPhanH
           {/* Thanh công cụ báo cáo (ReportToolbar) đưa dòng thông số lọc và nút Xuất, Tuỳ chỉnh, In vào hai chỗ này */}
           <div className="bc-dau-mo-ta" />
         </div>
-        <div className="bc-dau-nut" />
+        {/* đầu mới nằm thay thanh tab nên nút la bàn Hướng dẫn nhanh đứng sau nút In (T674) */}
+        <div className="bc-dau-phai">
+          <div className="bc-dau-nut" />
+          {modHd && <NutHuongDan mod={modHd} ngoaiThanhTab />}
+        </div>
       </div>
     )
   }
@@ -103,6 +109,7 @@ export function ThanhChonBaoCao({ sc, trongPhanHe }: { sc: ScreenDef; trongPhanH
         : <Link className="btn sm ghost" to="/app/bao-cao/tat-ca"><Icon n="chevl" className="ic sm" />Tất cả báo cáo</Link>}
       {truoc && <button type="button" className="btn sm ghost bc-ve-truoc" onClick={() => nav(-1)} title={`Quay lại ${truoc.ten}`}><Icon n="chevl" className="ic sm" />{truoc.ten}</button>}
       {oChon}
+      {!trongPhanHe && bcMod && <NutHuongDan mod={bcMod} ngoaiThanhTab />}   {/* báo cáo trong phân hệ giữ thanh tab, nút nằm ở đó */}
     </div>
   )
 }

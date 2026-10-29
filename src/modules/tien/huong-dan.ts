@@ -1,4 +1,4 @@
-// Hướng dẫn nhanh các màn Thu chi (T673, QD86), soạn cho chủ quán gói Standard. Khung đọc ở src/ui/HuongDanNhanh.tsx
+// Hướng dẫn nhanh các màn Thu chi (T673, T674, QD86), soạn cho chủ quán gói Standard. Khung đọc ở src/ui/HuongDanNhanh.tsx
 import type { HuongDanMan } from '../../ui/HuongDanNhanh'
 
 export const huongDan: Record<string, HuongDanMan> = {
@@ -21,6 +21,28 @@ export const huongDan: Record<string, HuongDanMan> = {
       [{ k: 'loc', ten: 'Thời gian, tìm, Lọc', rong: 3 }, { k: 'them', ten: 'Thêm mới', kieu: 'nut' }],
       [{ k: 'bang', ten: 'Danh sách phiếu thu, chi', kieu: 'bang' }],
       [{ k: 'tong', ten: 'Tổng tiền, chuyển trang' }],
+    ],
+  },
+  // Sổ quỹ gói Standard mở trong phân hệ Thu chi, đầu báo cáo nằm thay thanh tab nên nút la bàn ở cạnh nút In (T674)
+  '2-2-1': {
+    goi: ['S'],
+    muc: 'Xem tiền mặt vào, ra từng ngày và số tiền còn trong két, để cuối ngày đếm két so lại.',
+    buoc: [
+      { chu: 'Chọn Thời gian. Muốn xem riêng một két thì chọn Quỹ tiền, rồi bấm Lọc.', o: 'loc' },
+      { chu: 'Đọc từ dòng Số tồn đầu kỳ, qua từng phiếu thu, chi, tới dòng Số tồn cuối kỳ. Cột Tồn là tiền còn lại sau mỗi phiếu.', o: 'to' },
+      { chu: 'Bấm số phiếu thu, phiếu chi để mở phiếu gốc.', o: 'to' },
+      { chu: 'Bấm In để in sổ, bấm nút tải xuống để lấy file về máy.', o: 'in' },
+      { chu: 'Tiền đếm trong két khác Số tồn cuối kỳ thì tìm khoản thu, chi chưa ghi rồi ghi thêm ở Thu chi.', di: 'tien/2-1-1?nhom=tm', nutDi: 'Mở Thu chi tiền mặt' },
+    ],
+    luuY: [
+      'Đối chiếu cuối ngày: chọn Thời gian là hôm nay, xem dòng Số tồn cuối kỳ.',
+      'Ô Cửa hàng chỉ có khi thanh trên đang xem Tất cả cửa hàng.',
+      'Nút phễu mở Bộ lọc nâng cao. Nút Tuỳ chỉnh chọn cột hiện trên sổ.',
+    ],
+    soDo: [
+      [{ k: 'ten', ten: 'Sổ quỹ tiền mặt, ngôi sao ghim', rong: 2 }, { k: 'in', ten: 'Tải xuống, Tuỳ chỉnh, In', kieu: 'nut' }],
+      [{ k: 'loc', ten: 'Thời gian, Cửa hàng, Quỹ tiền, Lọc' }],
+      [{ k: 'to', ten: 'Tồn đầu kỳ, từng phiếu thu, chi, cột Tồn, tồn cuối kỳ', kieu: 'bang' }],
     ],
   },
 }

@@ -10,6 +10,7 @@ import { Icon, ONen } from '../../ui/Icon'
 import { PageHead, Pk } from '../../ui/Page'
 import { fold } from '../../ui/format'
 import { ThanhLoc } from '../../ui/ThanhLoc'
+import { NutHuongDan } from '../../ui/HuongDanNhanh'
 import { AN_BC_GOI, AN_NHOM_BC, CHI_MO_TU_BC, CHI_MO_TU_BC_GOI, DAU_NHOM_BC, NHOM_CONG_NO, cauHinhBC, kyHieuBC } from './danh-sach'
 import { baoCaoCuaPhanHe } from './cuaPhanHe'
 
@@ -202,6 +203,7 @@ export function TrungTamBaoCao({ sc, mod }: ScreenProps) {
     <div className="page">
       <PageHead title={title} meta={meta}>
         <ThanhLoc tim={{ value: q, onChange: setQ, placeholder: 'Tìm báo cáo' }} />
+        {!trongPhanHe && <NutHuongDan mod={mod} ngoaiThanhTab />}   {/* phân hệ Báo cáo không có thanh tab (T674) */}
       </PageHead>
       <div className={`bc-tt${trongPhanHe ? ' bc-tt-phan-he' : ''}`}>
         {!trongPhanHe && <div className="bc-trai">

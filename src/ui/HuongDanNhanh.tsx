@@ -2,7 +2,8 @@
 // Khung có 4 mục: Màn này để làm gì, Làm nhanh (kèm sơ đồ khung màn đánh số khớp từng bước), Lưu ý, Đi tiếp (sơ đồ luồng lấy từ quy-trinh.ts).
 // Nội dung riêng của màn nằm ở src/modules/<phân hệ>/huong-dan.ts, tra theo slug màn; màn chưa có thì dùng bộ chung theo kiểu màn.
 // Lần đầu mở một màn: nút nhấp nháy, bấm mới mở khung. Đã bấm thì màn đó thôi nhấp nháy, nhớ theo người dùng và màn.
-import { useEffect, useState } from 'react'
+// Màn mà đầu báo cáo nằm thay thanh tab (phân hệ Báo cáo, báo cáo đầu mới T576) đặt nút ở thanh chọn báo cáo, Tất cả báo cáo (T674).
+import { useEffect, useState, useSyncExternalStore } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useSession, type Session } from '../app/session'
 import { MODULES, dich, hienMan, laBaoCao, moDuoc, nhanTab } from '../app/registry'
@@ -35,6 +36,18 @@ const O_THEM: OSoDo = { k: 'them', ten: 'Thêm mới', kieu: 'nut' }
 
 function boChung(sc: ScreenDef, mod: ModuleDef): HuongDanMan {
   const ten = nhanTab(sc)
+  // Tất cả báo cáo, nhóm báo cáo của phân hệ Báo cáo (TrungTamBaoCao): cột nhóm bên trái, danh sách bên phải (T674)
+  if (mod.key === 'bao-cao' && !sc.goc) return {
+    muc: sc.slug === 'tat-ca' ? 'Mọi sổ sách, báo cáo của đơn vị ở một chỗ, chia nhóm theo phân hệ.'
+      : `Sổ sách, báo cáo nhóm ${ten.replace(/^Nhóm báo cáo /, '')}. Bấm Tất cả ở cột trái để xem mọi nhóm.`,
+    buoc: [
+      { chu: 'Bấm một nhóm ở cột trái để chỉ xem báo cáo của nhóm đó.', o: 'nhom' },
+      { chu: 'Gõ tên, mã hoặc ký hiệu mẫu vào ô Tìm báo cáo.', o: 'tim' },
+      { chu: 'Bấm tên báo cáo để mở.', o: 'ds' },
+      { chu: 'Bấm ngôi sao để ghim báo cáo hay xem. Báo cáo đã ghim, báo cáo vừa mở hiện ở cột trái để mở lại nhanh.', o: 'ds' },
+    ],
+    soDo: [[{ k: 'ten', ten: 'Báo cáo', rong: 2 }, { k: 'tim', ten: 'Tìm báo cáo' }], [{ k: 'nhom', ten: 'Nhóm, Đã ghim, Gần đây' }, { k: 'ds', ten: 'Danh sách báo cáo theo nhóm', rong: 2, kieu: 'bang' }]],
+  }
   if (laBaoCao(sc)) return {
     muc: `Xem ${ten} theo kỳ, in hoặc xuất ra file.`,
     buoc: [
@@ -189,6 +202,12 @@ function SoDoMan({ soDo, buoc, sang, setSang }: { soDo: OSoDo[][]; buoc: BuocHD[
   )
 }
 
+// Nút ở thanh chọn báo cáo đang hiện thì nút cuối thanh tab (đã ẩn theo thanh tab) thôi gắn, mỗi màn đúng một nút (T674)
+let soNutNgoai = 0
+const ngheNut = new Set<() => void>()
+const baoNut = () => ngheNut.forEach(f => f())
+const ngheNutNgoai = (f: () => void) => { ngheNut.add(f); return () => { ngheNut.delete(f) } }
+
 const KHOA_XEM = 'iacc-hdn-da-xem'
 const docXem = (): string[] => { try { const v = JSON.parse(localStorage.getItem(KHOA_XEM) || '[]'); return Array.isArray(v) ? v : [] } catch { return [] } }
 function ghiXem(k: string) {
@@ -197,9 +216,16 @@ function ghiXem(k: string) {
   try { localStorage.setItem(KHOA_XEM, JSON.stringify([k, ...ds].slice(0, 500))) } catch { /* trình duyệt chặn lưu thì thôi */ }
 }
 
-/** Nút la bàn cuối thanh tab và khung hướng dẫn. Trang chủ đã có hướng dẫn từng bước riêng (T138) nên không gắn */
-export function NutHuongDan({ mod }: { mod: ModuleDef }) {
+/** Nút la bàn cuối thanh tab và khung hướng dẫn. Trang chủ đã có hướng dẫn từng bước riêng (T138) nên không gắn.
+ *  ngoaiThanhTab: nút đặt ở thanh chọn báo cáo, Tất cả báo cáo khi thanh tab ẩn; khung mở sát dưới thanh trên (T674) */
+export function NutHuongDan({ mod, ngoaiThanhTab }: { mod: ModuleDef; ngoaiThanhTab?: boolean }) {
   const { s } = useSession()
+  useEffect(() => {
+    if (!ngoaiThanhTab) return
+    soNutNgoai++; baoNut()
+    return () => { soNutNgoai--; baoNut() }
+  }, [ngoaiThanhTab])
+  const coNutNgoai = useSyncExternalStore(ngheNutNgoai, () => soNutNgoai > 0)
   const loc = useLocation()
   const nav = useNavigate()
   const [mo, setMo] = useState(false)
@@ -218,11 +244,12 @@ export function NutHuongDan({ mod }: { mod: ModuleDef }) {
     window.addEventListener('keydown', on)
     return () => window.removeEventListener('keydown', on)
   }, [mo])
-  if (mod.key === 'trang-chu' || !sc) return null
+  if (mod.key === 'trang-chu' || !sc || (!ngoaiThanhTab && coNutNgoai)) return null
 
   const rieng = NOI_DUNG[sc.goc ?? mod.key]?.[sc.slug]
   const hd = rieng && (!rieng.goi || rieng.goi.includes(s.goi)) ? rieng : boChung(sc, mod)
-  const qtMod = MODULES.find(m => m.key === (hd.quyTrinh?.mod ?? mod.key))
+  // báo cáo mở từ phân hệ Báo cáo (/app/bao-cao/<slug>) đi tiếp theo sơ đồ của phân hệ gốc
+  const qtMod = MODULES.find(m => m.key === (hd.quyTrinh?.mod ?? (mod.key === 'bao-cao' ? sc.goc : undefined) ?? mod.key))
   const khoa = [`${sc.goc ?? mod.key}/${sc.slug}`, ...(hd.quyTrinh?.khop ?? [])]
 
   return (

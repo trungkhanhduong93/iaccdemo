@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 29/10/2026
+- T674: Web, báo cáo mà phần đầu nằm thay thanh tab (phân hệ Báo cáo, Sổ quỹ tiền mặt, báo cáo mở từ tab Báo cáo của phân hệ) có nút la bàn Hướng dẫn nhanh cạnh nút In. Màn Tất cả báo cáo có nút cạnh ô Tìm báo cáo. Khung mở sát dưới thanh trên. Gói Standard có hướng dẫn riêng cho Sổ quỹ tiền mặt.
 - T678: Nút trợ lý ✦ góc dưới phải nhấn giữ rồi kéo được sang chỗ khác, để khỏi che ô tổng tiền cuối danh sách. Máy đang dùng nhớ vị trí mới. Bấm nút thì khung chat mở ngay cạnh nút.
 - T673: Web có nút la bàn cuối thanh tab ở mọi phân hệ (trừ Trang chủ). Bấm mở khung Hướng dẫn nhanh bên phải: màn này để làm gì, sơ đồ khung màn đánh số khớp từng bước, lưu ý, sơ đồ Đi tiếp theo Quy trình. Lần đầu mở một màn thì nút nhấp nháy. Gói Standard có hướng dẫn riêng cho Thu chi, Quỹ tiền, Kê khai thuế, Xuất bán POS, Kiểm kê; màn khác dùng hướng dẫn chung theo kiểu màn.
 - T138: Điện thoại, khi đang làm việc từ hướng dẫn (ghi chi, nhập số dư quỹ, kê khai) có dải mỏng "Hướng dẫn 2/3 · Tiếp tục" ngay dưới tiêu đề màn thay nút dài ở đáy. Trang chủ bỏ dòng nhắc "Chưa trừ tiền nhà, điện…" kèm nút Ghi khoản chi, web và điện thoại.

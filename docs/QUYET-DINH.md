@@ -939,4 +939,5 @@ Trum chốt 29/10/2026 (T673), bản bấm thử trên artifact https://claude.a
 - Lần đầu mở một màn: nút la bàn nhấp nháy, bấm mới mở khung. Đã bấm thì màn đó thôi nhấp nháy, nhớ theo người dùng và màn.
 - Soạn cho chủ quán gói Standard trước. Đợt 1: khung, 4 bộ chung theo kiểu màn (danh sách chứng từ, danh mục, báo cáo, chức năng), soạn riêng 5 màn Thu chi, Quỹ tiền, Kê khai thuế, Xuất bán POS (Bán hàng), Kiểm kê (Kho). Gói Standard không có màn Báo cáo bán hàng riêng, Kho chỉ có Kiểm kê, nên Clau đổi sang 2 màn này. Đợt 2: nút Chỉ cho tôi cho 5 màn đó, máy tự kiểm chỗ khoanh. Đợt 3: phủ từng phân hệ, tìm hướng dẫn bằng Ctrl + K.
 - Nội dung viết trong code, mỗi phân hệ một file `src/modules/<phân hệ>/huong-dan.ts`, tra theo slug màn. Agent soạn, người duyệt chữ.
-- Chỉ bản web. Điện thoại và màn báo cáo mà đầu báo cáo nằm thay thanh tab (phân hệ Báo cáo, Sổ quỹ gói Standard) chưa có nút, làm ở việc riêng.
+- Chỉ bản web. Điện thoại chưa có nút, làm ở việc riêng.
+- Màn mà đầu báo cáo nằm thay thanh tab (phân hệ Báo cáo, báo cáo mở từ tab Báo cáo của phân hệ) đặt nút la bàn ở thanh chọn báo cáo, sau nút In; màn Tất cả báo cáo đặt sau ô Tìm báo cáo. Khung mở sát dưới thanh trên. Mỗi màn đúng một nút (T674).

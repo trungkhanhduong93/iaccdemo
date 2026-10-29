@@ -42656,3 +42656,10 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
 .hdan-dai-tat { width: 32px; height: 100%; padding: 0; border: 0; background: none; color: var(--muted); display: grid; place-items: center; cursor: pointer; }
 /* viền ô số dư, chữ nhắc nằm trên tấm form điện thoại (lớp phủ z-index 501) (T138) */
 .hdan-vien, .hdan-vien-chu { z-index: 600; }
+/* ── Hướng dẫn nhanh ở màn mà đầu báo cáo nằm thay thanh tab: nút la bàn ở thanh chọn báo cáo, Tất cả báo cáo (T674) ── */
+.bc-dau-phai { flex: none; display: flex; align-items: flex-end; gap: 8px; }
+:not(.mtabs) > .mtabs-hdn { margin-left: 0; }
+.bc-dau-phai > .mtabs-hdn { align-self: auto; margin-bottom: 2px; }   /* ngang hàng nút In (.bc-dau-nut chừa đáy 2px) */
+.bc-chon:not(.bc-dau-moi) > .mtabs-hdn { margin-left: auto; }
+/* thanh tab ẩn nên khung nằm sát dưới thanh trên 56px; đầu báo cáo không cho xuống dòng nên khung đặt lại */
+:not(.mtabs) > .hdn-khung { top: 56px; white-space: normal; }
