@@ -200,12 +200,15 @@ export function HuongDan({ sang }: { sang?: string }) {
         else {
           // khối cao hơn nửa màn mà vẫn vừa màn (thẻ Kết quả kinh doanh, Quỹ tiền kèm biểu đồ): cuộn cho đáy khối sát đáy màn, thấy trọn khối (PhuongXT 29/10/2026);
           // cao quá màn: đầu khối nằm dưới thanh trên và thanh tab (dính trên cùng), không để tiêu đề bị che.
-          // Cuộn lại sau 400ms: biểu đồ vẽ xong làm khối dịch xuống
+          // Cuộn lại sau 400ms: biểu đồ vẽ xong làm khối dịch xuống.
+          // Web cuộn trong khung main, thanh trên và thanh tab nằm ngoài khung: đo theo khung main, chỉ chừa lề (khối KQKD kèm biểu đồ 13 tháng vừa khít, PhuongXT 29/10/2026)
           const cuon = () => {
-            const h = el.getBoundingClientRect().height, vh = window.innerHeight, e = el as HTMLElement
+            const h = el.getBoundingClientRect().height, e = el as HTMLElement
+            const khung = laMobile ? null : el.closest('main')?.getBoundingClientRect()
+            const vh = khung ? khung.height : window.innerHeight
             if (h <= vh * 0.5) { cuonToi(el, { block: 'center', inline: 'nearest' }); return }
-            const vua = h + 130 <= vh
-            if (vua) e.style.scrollMarginBottom = '12px'; else e.style.scrollMarginTop = '110px'
+            const vua = h + (khung ? 24 : 130) <= vh
+            if (vua) e.style.scrollMarginBottom = '12px'; else e.style.scrollMarginTop = khung ? '12px' : '110px'
             cuonToi(el, { block: vua ? 'end' : 'start', inline: 'nearest' })
           }
           cuon(); t = window.setTimeout(cuon, 400)
@@ -247,7 +250,7 @@ export function HuongDan({ sang }: { sang?: string }) {
       {b.chon && o
         ? <div className="hdan-lo" style={{ left: o.left - LE, top: o.top - LE, width: o.width + LE * 2, height: o.height + LE * 2 }} />
         : <div className="hdan-toi" />}
-      <div ref={refBong} className={`hdan-bong ${b.chon ? '' : 'giua'}`} style={viTri}>
+      <div ref={refBong} className={`hdan-bong ${b.chon ? '' : 'giua'}${khen ? ' hdan-khen' : ''}`} style={viTri}>
         {!b.chon && <div className="hdan-bong-ic"><Icon n="check" className="ic" /></div>}
         {khen
           ? <div className="hdan-khen-dau"><span className="hdan-khen-ic"><Icon n="star" className="ic" /></span><b>{b.tieuDe}</b></div>
@@ -415,7 +418,7 @@ export function GoiYKeKhai({ onLap, chon }: { onLap: () => void; chon?: string }
   return createPortal(
     <div className="hdan" role="dialog" aria-label="Hướng dẫn sử dụng">
       <div className="hdan-lo" style={{ left: o.left - LE, top: o.top - LE, width: o.width + LE * 2, height: o.height + LE * 2 }} />
-      <div ref={refBong} className="hdan-bong" style={viTriBong(o, caoBong)}>
+      <div ref={refBong} className="hdan-bong hdan-khen" style={viTriBong(o, caoBong)}>
         <div className="hdan-khen-dau"><span className="hdan-khen-ic"><Icon n="star" className="ic" /></span><b>Thông tin kê khai đã xong, giờ lập tờ khai</b></div>
         <p>Mỗi kỳ tờ khai có sẵn doanh thu tính thuế lấy từ FABi, phần giảm trừ, thuế GTGT, thuế TNCN phải nộp. Lập tờ khai để xem từng bước rồi nộp.</p>
         <div className="row hdan-nut">

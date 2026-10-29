@@ -42681,3 +42681,17 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
 .m-dv-bo-mst { min-width: 0; overflow: hidden; }
 .m-dv-bo-mst > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 .m-dv-bo-mst .dv-bo-mst { flex: none; }
+
+/* ── Khởi tạo FABi điện thoại: nút Quay lại cạnh Tiếp từ trang 2 trở đi (T138) ── */
+@media (max-width: 767px) {
+  .ktf-gt-nut:has(.ktf-lui) { grid-template-columns: auto 1fr; }
+  .ktf-gt-nut .ktf-lui { background: #fff; border: 1px solid var(--line); color: var(--ink); }
+}
+
+/* ── Điện thoại: mọi bong bóng khen "Tuyệt vời" viền xanh như bong bóng khen ở màn tờ khai (.hdan-khen-tk) (T138) ── */
+@media (max-width: 767px) {
+  .hdan-khen { border: 2px solid var(--blue); box-shadow: 0 18px 48px rgba(14, 26, 43, .38), 0 0 0 6px rgba(5, 96, 166, .14); background: linear-gradient(180deg, var(--tint) 0, #fff 64px); animation: hdan-khen-vao .35s ease-out both; }
+  .hdan-khen .hdan-khen-ic { background: var(--amber); color: #fff; }
+  .hdan-khen p { color: var(--ink); }
+  .hdan-khen b { color: var(--blue-d); }
+}
