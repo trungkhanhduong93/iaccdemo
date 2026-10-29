@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 30/10/2026
+- T686: Web, màn chưa bấm Hướng dẫn lần nào (vd Khoá sổ, Gói thuê bao) hết rung cả trang lúc nút Hướng dẫn nhấp nháy.
 - T685: Web, các màn Hệ thống có Hướng dẫn nhanh riêng: Người dùng, Vai trò và phân quyền, Nhật ký thao tác, Thông tin đơn vị, Cấu hình kế toán, Khoá sổ, Gói thuê bao. Bấm Hướng dẫn thì tour khoanh đúng nút, ô, bảng trên màn.
 
 ## 29/10/2026

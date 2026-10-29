@@ -116,3 +116,9 @@ Lỗi đã từng làm mất thời gian, kèm cách tránh. Đọc trước khi
 - Hiện tượng: `kiem_tra.py`, cả `--nhanh`, thỉnh thoảng báo `tràn ngang ở ['.main']` ở một màn báo cáo, mỗi lượt một màn khác. Chạy lại thì hết. Mở thẳng màn đó không thấy.
 - Nguyên nhân: màn báo cáo mới vẽ, thanh chọn báo cáo `.bc-chon` (`nowrap`) rộng hơn `.main` 3px trong 12–381ms rồi tự co lại. Đo 3 vòng cả 3 gói, 1002 lượt mở màn: 25 lần ở `.main`, luôn đúng 3px; 3 lần ở `.mtabs-in` (176px, dưới 20ms). Lúc đó `.main` đang `overflow: hidden` (`.main:has(.bc-chon)` trong `app.css`), người dùng không thấy thanh cuộn. Bộ kiểm cũ đo đúng một lần sau 60ms nên lúc trúng lúc trượt.
 - Cách tránh: hàm `kiem` trong `main()` thấy tràn thì đo lại mỗi 100ms, hết 1 giây còn tràn mới báo. Đừng nới ngưỡng 2px hay bỏ ô đo. Viết bộ kiểm tràn mới cho màn có bảng tự cân cột thì cũng đo lại như vậy, không đo một lần sau thời gian chờ cố định.
+
+## Trang rung khi nút Hướng dẫn nhấp nháy (T686)
+
+- Hiện tượng: mở màn có nút Hướng dẫn đang nhấp nháy (màn chưa bấm Hướng dẫn lần nào), cả trang rung theo nhịp 1,6 giây. Màn đã bấm Hướng dẫn thì không rung.
+- Nguyên nhân: vòng cam `::after` quanh nút dùng `transform: scale(1.25)`. Nút nằm cuối thanh tab, sát mép phải, nên vòng lố ra ngoài cửa sổ 1–6px. `scrollWidth` của trang đổi theo từng khung hình, thanh cuộn ngang hiện rồi mất liên tục.
+- Cách tránh: khung chứa phần tử có hiệu ứng phóng to sát mép cửa sổ phải cắt chiều ngang (`overflow-x: clip`, như `.mtabs`). Đừng dùng `overflow: hidden`, vì nó cắt cả vòng lan lên xuống. Bộ kiểm chỉ đo `.main`, không bắt được lỗi này: đo `document.scrollingElement.scrollWidth` mỗi khung hình trong 2 giây.

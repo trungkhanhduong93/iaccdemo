@@ -42695,3 +42695,7 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
   .hdan-khen p { color: var(--ink); }
   .hdan-khen b { color: var(--blue-d); }
 }
+
+/* ── Vòng nhấp nháy nút Hướng dẫn không làm rung trang (T686) ── */
+/* vòng cam scale(1.25) quanh nút cuối thanh tab lố mép phải cửa sổ: thanh cuộn ngang của trang hiện, mất theo nhịp 1,6 giây. Chỉ cắt chiều ngang, vòng vẫn lan lên xuống */
+.mtabs { overflow-x: clip; }
