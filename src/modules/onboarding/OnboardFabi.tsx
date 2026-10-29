@@ -219,6 +219,8 @@ export interface Nhap {
   kenhOnline: string[] // kênh bán online lấy từ FABi
   kenhSan: string[]    // kênh bán qua sàn đã khấu trừ thuế thay
   dongBo: 'chiTiet' | 'kenh'
+  /** Phiên và màn trước khi mở popup (Thêm đơn vị kế toán, màn mở từ FABi), Để sau thì trả về */
+  truoc?: { phien: Partial<Pick<Session, 'donVi' | 'goi' | 'cheDo' | 'cuaHang' | 'khoiTao' | 'dvMoi' | 'cnThem' | 'dungThu'>>; duong: string }
 }
 export const MAC_DINH: Nhap = {
   kieu: 'fabi', b: -1, mo: false, loai: 'dn', nhom: nhomTheoDt(DT_FABI), ppHkd: 'loiNhuan', goi: goiGoiY('dn', nhomTheoDt(DT_FABI), 'loiNhuan'), cheDo: cheDoMoi('dn', goiGoiY('dn', nhomTheoDt(DT_FABI), 'loiNhuan')), traCuu: false, mst: '', tenDv: TEN_FABI, diaChi: '', ngayDauNam: DAU_NAM, chon: CUA_HANG.map(c => c.id),
@@ -253,11 +255,13 @@ function moKhoiTao(n: Nhap) {
 export function useThemDonVi() {
   const { s, set } = useSession()
   const nav = useNavigate()
+  const loc = useLocation()
   return () => {
+    const truoc = { phien: { donVi: s.donVi, goi: s.goi, cheDo: s.cheDo, cuaHang: s.cuaHang, khoiTao: s.khoiTao, dvMoi: s.dvMoi, dungThu: s.dungThu }, duong: loc.pathname + loc.search }
     const dvMoi: DonVi = { id: 'moi', ten: 'Đơn vị mới', viettat: 'DV', mst: '', goi: 'S', diaChi: '', diem: 0, nguoiDaiDien: '' }
     set({ goi: 'S', cheDo: 'TT152', donVi: dvMoi.id, dvMoi, khoiTao: true, cuaHang: 'all', dungThu: { ...s.dungThu, [dvMoi.id]: batDauDungThu() } })
     const moi = dsCuaHang('them', s).map(c => c.id)
-    moKhoiTao({ ...MAC_DINH, kieu: 'them', b: 0, mo: true, tenDv: '', chon: moi })
+    moKhoiTao({ ...MAC_DINH, kieu: 'them', b: 0, mo: true, tenDv: '', chon: moi, truoc })
     nav('/app')
   }
 }
@@ -384,7 +388,14 @@ export function OnboardFabi() {
     if (n.thue) { xong(); return }   // kê khai thuế: một màn
     sua({ b: n.b + 1 }); if (n.b === XONG - 1) setTai(0)
   }
-  const deSau = () => { setN(MAC_DINH); try { localStorage.removeItem(KEY) } catch { /* bỏ qua */ }; nav('/app') }   // thoát hỏi kê khai thuế
+  // thoát hỏi kê khai thuế; popup kết nối (từ FABi, Thêm đơn vị kế toán) thì bỏ đơn vị mới, về phiên và màn trước khi mở (PhuongXT 29/10/2026)
+  const deSau = () => {
+    const t = !n.thue ? n.truoc : undefined
+    setN(MAC_DINH); try { localStorage.removeItem(KEY) } catch { /* bỏ qua */ }
+    // trường trống bị rơi khi lưu JSON nên xoá rõ trước, rồi trả lại giá trị cũ nếu có
+    if (t) set({ dvMoi: undefined, cnThem: undefined, dungThu: undefined, ...t.phien })
+    nav(t?.duong ?? '/app')
+  }
   /** Đổi loại hình, nhóm hay cách tính thuế thì gói, chế độ về gợi ý mới */
   const doiLoai = (p: Partial<Pick<Nhap, 'loai' | 'nhom' | 'ppHkd'>>) => {
     const x = { ...n, ...p }
@@ -407,7 +418,7 @@ export function OnboardFabi() {
           <span className="grow" />
           {dt && <span className="chip info ktf-dt"><Icon n="clock" className="ic sm" />Dùng thử {SO_NGAY_DUNG_THU} ngày · đến {dt.den}</span>}
           {n.b < XONG && !nhanh && <span className="muted ktf-luu">{n.thue ? 'Khai một lần để lập tờ khai thuế' : `Hoàn tất ${BUOC.length} bước để bắt đầu dùng phần mềm`}</span>}
-          {n.thue && <button className="btn ghost" onClick={deSau}>Để sau</button>}
+          {(n.thue || (n.truoc && n.b < XONG)) && <button className="btn ghost" onClick={deSau}>Để sau</button>}
         </div>
             {n.b < XONG && nhanh && (
               <div className="ktf-luoi">

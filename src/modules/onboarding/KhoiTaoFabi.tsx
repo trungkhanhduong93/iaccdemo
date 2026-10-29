@@ -44,7 +44,11 @@ export function KhoiTaoFabi() {
     nav('/app')
   }
   // cửa hàng chọn dùng thử điền sẵn vào bước Cửa hàng của popup
-  const dungThu = () => { luuNhap({ ...n, b: 0, mo: true, chon }); vaoApp() }
+  // truoc: popup bấm Để sau thì bỏ đơn vị mới, về màn này với phiên cũ (PhuongXT 29/10/2026); giữ đăng nhập vì mở từ FABi là đã đăng nhập
+  const dungThu = () => {
+    const truoc = { phien: { donVi: s.donVi, goi: s.goi, cheDo: s.cheDo, cuaHang: s.cuaHang, khoiTao: s.khoiTao, dvMoi: s.dvMoi, cnThem: s.cnThem, dungThu: s.dungThu }, duong: '/khoi-tao-fabi' }
+    luuNhap({ ...n, b: 0, mo: true, chon, truoc }); vaoApp()
+  }
   // Đường dẫn /khoi-tao-fabi?ket-noi vào thẳng phần mềm, bỏ qua màn giới thiệu (mở từ FABi khi đã xem). Nút Kết nối mở ngay trong tab này (PhuongXT 29/10/2026)
   const ketNoi = new URLSearchParams(useLocation().search).has(KET_NOI)
   useEffect(() => { if (ketNoi) dungThu() }, [ketNoi])   // eslint-disable-line react-hooks/exhaustive-deps
