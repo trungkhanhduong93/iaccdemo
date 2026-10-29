@@ -928,3 +928,14 @@ Trum chốt cho thêm chatbox trợ lý trên web, học bố cục và luồng 
 - Chỉ bản web: nút nổi góc dưới phải, mọi màn, cả 3 gói. Điện thoại để việc sau.
 - Bản mẫu không có AI thật. Bộ tách câu `tachDongHang` trong `src/ui/TroLy.tsx` đọc câu dạng "12 kg thịt bò giá 250k", trả thẻ kết quả kèm nút Lập phiếu mua. Chưa tự lưu phiếu.
 - Gọi tổng đài, gửi ảnh, đính kèm file chỉ là kịch bản mẫu.
+
+## QD86. Hướng dẫn nhanh từng màn (29/10/2026)
+
+Trum chốt 29/10/2026 (T673), bản bấm thử trên artifact https://claude.ai/artifact/LP2XYAL9y5KTswcVSAKDdS.
+
+- Hai lớp, làm 3 đợt. Lớp 1 là khung hướng dẫn có ở mọi màn: nút la bàn cuối thanh tab phân hệ, bấm thì khung trượt ra bên phải, không che màn. Lớp 2 là nút "Chỉ cho tôi" trong khung: khoanh từng nút như hướng dẫn Trang chủ (T138), chỉ làm cho màn quan trọng.
+- Khung mỗi màn có 4 mục: Màn này để làm gì (1 câu), Làm nhanh (3 đến 5 bước), Lưu ý (khác nhau theo gói, chế độ), Đi tiếp (lấy từ sơ đồ `quy-trinh.ts`, không soạn lại).
+- Chỉ dùng chữ và sơ đồ, chưa làm ảnh động, video. Trum dặn phải có sơ đồ để người mới dễ hình dung: sơ đồ khung màn đánh số khớp các bước Làm nhanh, sơ đồ luồng Đi tiếp. Sơ đồ vẽ bằng code, không dùng ảnh chụp.
+- Lần đầu mở một màn: nút la bàn nhấp nháy, bấm mới mở khung. Đã bấm thì màn đó thôi nhấp nháy, nhớ theo người dùng và màn.
+- Soạn cho chủ quán gói Standard trước. Đợt 1: khung, 4 bộ chung theo kiểu màn (danh sách chứng từ, danh mục, báo cáo, chức năng), soạn riêng 5 màn Thu chi, Quỹ tiền, Kê khai thuế, Báo cáo bán hàng, Kho. Đợt 2: nút Chỉ cho tôi cho 5 màn đó, máy tự kiểm chỗ khoanh. Đợt 3: phủ từng phân hệ, tìm hướng dẫn bằng Ctrl + K.
+- Nội dung viết trong code, mỗi phân hệ một file `src/modules/<phân hệ>/huong-dan.ts`. Agent soạn, người duyệt chữ.
