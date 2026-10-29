@@ -37,7 +37,7 @@ export function Topbar({ onSearch }: { onSearch?: () => void }) {
               onClick={() => { set({ donVi: d.id, goi: d.goi, cuaHang: 'all' }); dong(); nav('/app') }}>{d.ten}</MenuItem>
           ))}
           <MenuSep />
-          <MenuItem icon="plus" onClick={() => { dong(); themDv() }} desc="Khởi tạo 4 bước từ cửa hàng FABi chưa dùng kế toán">Thêm đơn vị kế toán</MenuItem>
+          <MenuItem icon="plus" onClick={() => { dong(); themDv() }} desc="Kết nối cửa hàng FABi chưa dùng kế toán">Thêm đơn vị kế toán</MenuItem>
           <MenuItem icon="swap" to="/chon-don-vi">Xem tất cả đơn vị</MenuItem>
         </>}
       </Dropdown>

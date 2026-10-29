@@ -1,6 +1,6 @@
 // Khởi tạo dữ liệu khi mở từ FABi (T138), phần popup: bấm Kết nối ở /khoi-tao-fabi thì vào phần mềm, popup 1 bước mở đè lên:
 // chọn cửa hàng, ngày bắt đầu làm việc, xem PTTT FABi về quỹ nào. Loại hình, gói, thông tin đơn vị (3 bước cũ) hỏi khi mở Kê khai thuế.
-// Thêm đơn vị kế toán vẫn đi đủ 3 bước. Tiến độ lưu ở localStorage để quay lại đúng bước.
+// Thêm đơn vị kế toán đi cùng popup 1 bước này, chỉ khác danh sách cửa hàng (PhuongXT 29/10/2026). Tiến độ lưu ở localStorage để quay lại đúng bước.
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { SO_NGAY_DUNG_THU, batDauDungThu, dungThuDv, useSession, type Session } from '../../app/session'
@@ -249,7 +249,7 @@ function moKhoiTao(n: Nhap) {
   window.dispatchEvent(new Event(SU_KIEN))
 }
 
-/** Thêm đơn vị kế toán: tạo đơn vị mới gói Free, chưa có MST, rồi mở popup khởi tạo 4 bước; bước Cửa hàng chỉ có cửa hàng FABi chưa dùng kế toán */
+/** Thêm đơn vị kế toán: tạo đơn vị mới gói Free, chưa có MST, rồi mở popup kết nối 1 bước như từ FABi; mục Cửa hàng chỉ có cửa hàng FABi chưa dùng kế toán */
 export function useThemDonVi() {
   const { s, set } = useSession()
   const nav = useNavigate()
@@ -321,18 +321,18 @@ export function OnboardFabi() {
   const keKhai = keKhaiDuoc(n.goi, n.loai, n.nhom, n.ppHkd)
   const thue = n.loai === 'hkd' ? (n.nhom === 1 ? 'doanh thu' : n.ppHkd === 'doanhThu' ? 'thuế TNCN theo % doanh thu' : 'thuế TNCN theo lợi nhuận') : (n.ppHkd === 'doanhThu' ? 'thuế GTGT, TNDN theo % doanh thu' : 'thuế GTGT khấu trừ, TNDN theo lợi nhuận')
   const nhomGoiY = nhomTheoDt(DT_FABI)
-  // nhanh: khởi tạo từ FABi 1 bước; thue: 3 bước cũ hỏi khi mở Kê khai thuế, hộ kinh doanh thêm bước cửa hàng chính, kênh bán
-  const nhanh = n.kieu === 'fabi' && !n.thue
+  // nhanh: khởi tạo 1 bước, từ FABi lẫn Thêm đơn vị kế toán; thue: 3 bước cũ hỏi khi mở Kê khai thuế, hộ kinh doanh thêm bước cửa hàng chính, kênh bán
+  const nhanh = !n.thue
   const buoc = n.thue && n.loai === 'dn' ? BUOC.slice(0, 2) : BUOC
   const cuaHang = n.thue ? (s.cnThem?.[s.donVi] ?? []).map(c => ({ id: c.id, ten: c.ten, khuVuc: c.khuVuc })) : dsCuaHang(n.kieu, s)
   const anCh = n.kieu === 'them' ? CUA_HANG_FABI.length - cuaHang.length : 0   // cửa hàng FABi đã dùng kế toán ở đơn vị khác
   const cnChon = cuaHang.filter(c => n.chon.includes(c.id))
   const soCt = demCt(n.chon, n.dongBo, +HOM_NAY - 29 * 86400000)   // ước một tháng, hiện ở bước đồng bộ
-  const tuNgay = n.kieu === 'fabi' ? n.ngayLam : n.ngayDauNam   // chứng từ FABi lấy từ ngày này
+  const tuNgay = nhanh ? n.ngayLam : n.ngayDauNam   // chứng từ FABi lấy từ ngày này
   const ngayLamHopLe = /^\d{2}\/\d{2}\/\d{4}$/.test(n.ngayLam) && ngay(n.ngayLam) >= ngay(DAU_NAM) && ngay(n.ngayLam) <= +HOM_NAY
-  const soCtDaTao = ngayLamHopLe || n.kieu !== 'fabi' ? demCt(n.chon, n.dongBo, ngay(tuNgay)) : 0
+  const soCtDaTao = ngayLamHopLe || !nhanh ? demCt(n.chon, n.dongBo, ngay(tuNgay)) : 0
   // phiếu thu, chi tiền lập trên FABi (T667): số mẫu, bình quân 3 phiếu một cửa hàng một ngày
-  const soTcDaTao = ngayLamHopLe || n.kieu !== 'fabi' ? Math.max(0, Math.round((+HOM_NAY - ngay(tuNgay)) / 86400000) + 1) * cnChon.length * 3 : 0
+  const soTcDaTao = ngayLamHopLe || !nhanh ? Math.max(0, Math.round((+HOM_NAY - ngay(tuNgay)) / 86400000) + 1) * cnChon.length * 3 : 0
   // các việc lúc lấy dữ liệu, mỗi việc chạy tới mốc phần trăm của nó
   const viecTai: [number, string, string][] = [
     [30, 'Danh mục món, kênh bán', ''],
@@ -353,8 +353,8 @@ export function OnboardFabi() {
   const xong = () => {
     if (nhanh) {
       // chưa chọn loại hình, gói: giữ gói, chế độ lúc bấm Kết nối; mở Kê khai thuế thì hỏi (choKeKhai)
-      // huongDan false: khởi tạo xong, chờ hiện hướng dẫn từng bước ở Trang chủ
-      set({ khoiTao: true, choKeKhai: { ...s.choKeKhai, [s.donVi]: true }, huongDan: { ...s.huongDan, [s.donVi]: false },
+      // huongDan false: khởi tạo xong, chờ hiện hướng dẫn từng bước ở Trang chủ; Thêm đơn vị kế toán là người đã dùng nên không hiện (PhuongXT 29/10/2026)
+      set({ khoiTao: true, choKeKhai: { ...s.choKeKhai, [s.donVi]: true }, huongDan: { ...s.huongDan, [s.donVi]: n.kieu === 'them' },
         ...(s.dvMoi && s.donVi === s.dvMoi.id ? { cnThem: { ...s.cnThem, [s.donVi]: cnChon.map(c => ({ id: c.id, ten: c.ten, khuVuc: c.khuVuc ?? '', tuNgay: n.ngayLam, banDau: true })) }, dvMoi: { ...s.dvMoi, diem: cnChon.length } } : {}),
         ngayDauNam: { ...s.ngayDauNam, [s.donVi]: DAU_NAM }, namTaiChinh: { ...s.namTaiChinh, [s.donVi]: HOM_NAY.getFullYear() } })
       try { localStorage.removeItem(KEY) } catch { /* bỏ qua */ }
@@ -413,7 +413,7 @@ export function OnboardFabi() {
               <div className="ktf-luoi">
                 <div className="card" style={{ padding: '24px 26px' }}>
                   <h3 className="ktf-h3 ktf-h3-dau">Cửa hàng</h3>
-                  <p className="muted ktf-p">Tích cửa hàng FABi lên sổ kế toán. Thêm cửa hàng sau ở Danh mục cửa hàng.</p>
+                  <p className="muted ktf-p">Tích cửa hàng FABi lên sổ kế toán. Thêm cửa hàng sau ở Danh mục cửa hàng.{anCh > 0 && ` Chỉ hiện cửa hàng chưa dùng kế toán, đã ẩn ${anCh} cửa hàng đang ở đơn vị khác.`}</p>
                   <DsCuaHang ds={cuaHang} chon={n.chon} chinh="" doi={chon => sua({ chon })} coChinh={false} />
                   {cnChon.length === 0 && <Note kind="warn" icon="alert">Chọn ít nhất một cửa hàng để tiếp tục.</Note>}
 
