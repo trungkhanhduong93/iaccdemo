@@ -14,6 +14,7 @@
 - Gói Standard ẩn chữ dùng thử ở mọi màn (`dungThuDv` trả null khi gói S).
 - Đổi chữ IACC, IACC Cloud thành iPOS Accounting trên giao diện (16 chỗ, 10 file, có `index.html`). Chú thích code, khoá lưu `iacc-…`, tài liệu, `tools/` giữ nguyên.
 - Thêm biểu tượng `la-ban` vào `src/ui/Icon.tsx`.
+- Điện thoại, màn mở từ FABi chia 3 trang có chấm chỉ trang, vuốt hoặc bấm Tiếp: tiêu đề và ảnh app (hiện trọn), 4 thẻ giá trị, cam kết và gợi ý gói kèm nút kết nối. Logo và Để sau một hàng. Popup khởi tạo, kê khai thuế: lựa chọn 1 cột, ô nhập rộng hết hàng.
 
 ## Đã kiểm
 

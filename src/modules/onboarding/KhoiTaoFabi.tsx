@@ -17,6 +17,7 @@ const GIA_TRI: [string, string, string][] = [
   // gói Standard kê khai được: hộ kinh doanh nhóm 1, 2 và doanh nghiệp tính thuế theo % doanh thu (KE_KHAI trong OnboardFabi, T663)
   ['percent', 'Kê khai thuế và sổ sách', 'Lập tờ khai thuế theo % doanh thu từ số bán FABi. Sổ sách đúng mẫu cho hộ kinh doanh (TT152) và doanh nghiệp siêu nhỏ (TT58).'],
 ]
+const CAM_KET = ['Không phát sinh chi phí', 'Không yêu cầu thẻ thanh toán', 'Dữ liệu an toàn tuyệt đối']
 const KET_NOI = 'ket-noi'   // tham số đường dẫn vào thẳng phần mềm
 
 export function KhoiTaoFabi() {
@@ -29,6 +30,10 @@ export function KhoiTaoFabi() {
     return MAC_DINH
   })
   const [veFabi, setVeFabi] = useState(false)   // bấm Để sau: quay lại FABi, tiến độ vẫn lưu
+  // Điện thoại chia 3 trang cho đỡ dài: tiêu đề, ảnh; thẻ giá trị; cam kết, gợi ý gói, nút kết nối. Vuốt hoặc bấm chấm để chuyển (PhuongXT 29/10/2026)
+  const [trang, setTrang] = useState(0)
+  const [vuotTu, setVuotTu] = useState<number | null>(null)
+  const xem = (t: number) => !laMobile || trang === t
   const chon = CUA_HANG.map(c => c.id)   // bỏ bước chọn cửa hàng dùng thử: kết nối mọi cửa hàng FABi, sửa ở bước Cửa hàng của popup
   const vaoApp = () => {
     // đơn vị mới từ FABi, không đụng 3 đơn vị mẫu: tên theo FABi, chưa có mã số thuế, địa chỉ (FABi không có)
@@ -67,8 +72,10 @@ export function KhoiTaoFabi() {
 
         {!veFabi && n.b === -1 && (
           // Nội dung theo khung PhuongXT gửi 28/10/2026: đọc lướt 10 giây là bấm kết nối
-          <div className="card ktf-gt ktf-b1">
-            <div className="ktf-b1-hero">
+          <div className="card ktf-gt ktf-b1"
+            onTouchStart={e => setVuotTu(e.touches[0].clientX)}
+            onTouchEnd={e => { if (vuotTu === null) return; const dx = e.changedTouches[0].clientX - vuotTu; if (Math.abs(dx) > 50) setTrang(t => Math.max(0, Math.min(2, t + (dx < 0 ? 1 : -1)))); setVuotTu(null) }}>
+            {xem(0) && <div className="ktf-b1-hero">
               <div className="ktf-b1-chu">
                 <span className="ktf-b1-huy"><Icon n="shield" className="ic sm" />Gói Standard: Miễn phí trọn đời cho khách hàng FABi POS</span>
                 <h1>Kế toán tự động dành riêng cho quán của bạn</h1>
@@ -77,8 +84,9 @@ export function KhoiTaoFabi() {
               <div className="ktf-anh ktf-b1-anh">
                 <img src={`${import.meta.env.BASE_URL}${laMobile ? 'trang-chu-app.jpg' : 'trang-chu-standard.jpg'}`} alt="Trang chủ iPOS Accounting gói Standard" />
               </div>
-            </div>
-            <div className="ktf-b1-the">
+            </div>}
+            {laMobile && trang === 1 && <h2 className="ktf-h ktf-b1-tieu">Phần mềm làm gì cho quán của bạn</h2>}
+            {xem(1) && <div className="ktf-b1-the">
               {GIA_TRI.map(([ic, t, m]) => (
                 <div key={t}>
                   <span className="ktf-chao-ic"><Icon n={ic} className="ic" /></span>
@@ -86,14 +94,27 @@ export function KhoiTaoFabi() {
                   <p>{m}</p>
                 </div>
               ))}
-            </div>
+            </div>}
+            {laMobile && trang === 2 && (
+              <div className="ktf-b1-cam">
+                <h2 className="ktf-h ktf-b1-tieu">Bắt đầu miễn phí</h2>
+                {CAM_KET.map(t => <div key={t}><Icon n="check" className="ic sm" />{t}</div>)}
+              </div>
+            )}
+            {laMobile && (
+              <div className="ktf-b1-cham" role="tablist" aria-label="Trang giới thiệu">
+                {[0, 1, 2].map(t => <button key={t} role="tab" aria-selected={trang === t} aria-label={`Trang ${t + 1}`} className={trang === t ? 'on' : ''} onClick={() => setTrang(t)} />)}
+              </div>
+            )}
             <div className="ktf-b1-cta">
               <div className="ktf-gt-nut">   {/* điện thoại: ghim đáy (T668) */}
-                <button className="btn pri lg" onClick={dungThu}>Bắt đầu kết nối dữ liệu (chỉ mất 30 giây)<Icon n="arrow" className="ic sm" /></button>
+                {laMobile && trang < 2
+                  ? <button className="btn pri lg" onClick={() => setTrang(trang + 1)}>Tiếp<Icon n="arrow" className="ic sm" /></button>
+                  : <button className="btn pri lg" onClick={dungThu}>Bắt đầu kết nối dữ liệu (chỉ mất 30 giây)<Icon n="arrow" className="ic sm" /></button>}
               </div>
-              <small className="muted">Không phát sinh chi phí · Không yêu cầu thẻ thanh toán · Dữ liệu an toàn tuyệt đối</small>
+              {!laMobile && <small className="muted">{CAM_KET.join(' · ')}</small>}
             </div>
-            <p className="ktf-b1-goi"><Icon n="sparkle" className="ic sm" />Hộ kinh doanh tính thuế TNCN theo lợi nhuận, doanh nghiệp siêu nhỏ tính GTGT theo khấu trừ, TNDN theo lợi nhuận: chọn gói Plus. Doanh nghiệp hạch toán theo TT133 hay TT99: chọn gói Pro. Nâng cấp bất kỳ lúc nào ngay trên phần mềm.</p>
+            {xem(2) && <p className="ktf-b1-goi"><Icon n="sparkle" className="ic sm" />Hộ kinh doanh tính thuế TNCN theo lợi nhuận, doanh nghiệp siêu nhỏ tính GTGT theo khấu trừ, TNDN theo lợi nhuận: chọn gói Plus. Doanh nghiệp hạch toán theo TT133 hay TT99: chọn gói Pro. Nâng cấp bất kỳ lúc nào ngay trên phần mềm.</p>}
           </div>
         )}
       </div>

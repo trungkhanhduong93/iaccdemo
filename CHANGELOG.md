@@ -6,6 +6,7 @@ Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, m�
 - T138: Mở từ FABi: màn giới thiệu mới (gói Standard miễn phí trọn đời, 4 thẻ giá trị, nút Bắt đầu kết nối dữ liệu). Popup kết nối còn 1 bước: chọn cửa hàng, ngày bắt đầu làm việc, xem tiền FABi về quỹ nào; lấy dữ liệu xong về thẳng Trang chủ. Loại hình, mã số thuế chỉ hỏi khi mở Kê khai thuế, gọn một màn.
 - T138: Trang chủ sau khi khởi tạo có hướng dẫn từng bước (Doanh thu, Quỹ tiền, Kê khai thuế) kèm nút làm ngay; nút la bàn để xem lại. Đơn vị mới thấy nhãn Lợi nhuận tạm tính, nút Ghi khoản chi, nhắc nhập số dư két.
 - T138: Gói Standard không còn chữ Dùng thử. Tên phần mềm trên giao diện đổi thành iPOS Accounting.
+- T138: Điện thoại, màn mở từ FABi chia 3 trang, vuốt hoặc bấm Tiếp. Popup Kết nối dữ liệu, Thông tin kê khai thuế: lựa chọn xếp 1 cột, ô mã số thuế rộng đủ.
 
 ## 28/10/2026
 - T672: Web có nút trợ lý ✦ góc dưới phải. Bấm mở khung chat Trợ lý IACC bản mẫu: gõ hàng vừa mua, vd "12 kg thịt bò giá 250k", trợ lý trả bảng hàng, số lượng, đơn giá, thành tiền và nút Lập phiếu mua. Có 3 câu gợi ý bấm thử, nút gửi ảnh trả hoá đơn mẫu.

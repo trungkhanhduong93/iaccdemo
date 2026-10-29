@@ -42483,6 +42483,17 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
   .ktf-b1-the { grid-template-columns: 1fr; }
 }
 @media (min-width: 901px) and (max-width: 1180px) { .ktf-b1-the { grid-template-columns: repeat(2, minmax(0, 1fr)); } }   /* màn vừa: 4 thẻ thành 2 hàng */
+/* điện thoại: logo và Để sau một hàng (ẩn nhãn Mở từ FABi); thẻ giá trị gọn: biểu tượng trái, chữ phải */
+@media (max-width: 767px) {
+  .ktf:has(.ktf-b1) .ktf-dau { flex-wrap: nowrap; }
+  .ktf:has(.ktf-b1) .ktf-dau .chip { display: none; }
+  .ktf-b1 { gap: 16px; }
+  .ktf-b1-the { gap: 8px; }
+  .ktf-b1-the > div { display: grid; grid-template-columns: 36px minmax(0, 1fr); column-gap: 12px; row-gap: 2px; padding: 12px; }
+  .ktf-b1-the .ktf-chao-ic { grid-row: span 2; width: 36px; height: 36px; border-radius: 10px; margin: 0; }
+  .ktf-b1-the b { font-size: 14px; }
+  .ktf-b1-the p { font-size: 12.5px; }
+}
 /* popup khởi tạo 1 bước: ngày bắt đầu làm việc, PTTT FABi về quỹ (T138) */
 .ktf-h3-dau { margin-top: 0; }
 .ktf-ngay { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
@@ -42533,3 +42544,24 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
 .ktf-luoi.ktf-mot { grid-template-columns: minmax(0, 1fr); max-width: 780px; margin: 0 auto; }
 .ktf-h.ktf-h-tiep { margin-top: 26px; padding-top: 20px; border-top: 1px solid var(--line); }
 .ktf-ds-ten { flex: 1; min-width: 0; color: var(--ink); }   /* dòng cửa hàng chỉ chọn cửa hàng chính, không ô tích (T138) */
+/* điện thoại: màn bước 1 chia 3 trang, chấm chỉ trang (T138) */
+.ktf-b1-cam { display: flex; flex-direction: column; gap: 10px; }
+.ktf-b1-cam > div { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 12px; background: var(--green-t); color: var(--ink); font-size: 14px; font-weight: 600; }
+.ktf-b1-cam > div .ic { color: var(--green); }
+@media (max-width: 767px) {
+  /* ảnh app hiện trọn, không cắt: cao theo phần còn trống của màn, rộng tự theo tỉ lệ */
+  .ktf-b1 .ktf-b1-anh { width: auto; max-height: none; justify-self: center; }
+  .ktf-b1 .ktf-b1-anh img { width: auto; height: clamp(220px, calc(100dvh - 450px), 460px); }
+  .ktf-b1-cham { order: 9; }   /* chấm chỉ trang luôn ở cuối */
+}
+.ktf-b1-cham { display: flex; justify-content: center; gap: 8px; }
+.ktf-b1-cham button { width: 8px; height: 8px; padding: 0; border: 0; border-radius: 999px; background: var(--line); cursor: pointer; transition: width .2s; }
+.ktf-b1-cham button.on { width: 22px; background: var(--blue); }
+.ktf-b1-tieu { margin: 0; font-size: 19px; }
+/* điện thoại, popup khởi tạo, kê khai thuế: lựa chọn 1 cột, ô nhập rộng hết hàng, ô mã số thuế giãn cạnh nút Tra cứu (T138) */
+@media (max-width: 767px) {
+  .ktf-pop .grid.g2 { grid-template-columns: minmax(0, 1fr); }
+  .ktf-pop .form-grid { grid-template-columns: minmax(0, 1fr); }
+  .ktf-pop .form-grid > .f { grid-column: 1 / -1; }
+  .ktf-pop .form-grid .row > .inp { flex: 1; min-width: 0; }
+}
