@@ -1,23 +1,22 @@
-// Hướng dẫn nhanh từng màn (T673, QD86): nút la bàn cuối thanh tab phân hệ, bấm thì khung trượt ra bên phải, không che màn.
-// Khung có 4 mục: Màn này để làm gì, Làm nhanh (kèm sơ đồ khung màn đánh số khớp từng bước), Lưu ý, Đi tiếp (sơ đồ luồng lấy từ quy-trinh.ts).
-// Nội dung riêng của màn nằm ở src/modules/<phân hệ>/huong-dan.ts, tra theo slug màn; màn chưa có thì dùng bộ chung theo kiểu màn.
-// Lần đầu mở một màn: nút nhấp nháy, bấm mới mở khung. Đã bấm thì màn đó thôi nhấp nháy, nhớ theo người dùng và màn.
+// Hướng dẫn nhanh từng màn (T673, QD86): nút Hướng dẫn cuối thanh tab phân hệ. Nội dung 4 mục: Màn này để làm gì, Làm nhanh, Lưu ý,
+// Đi tiếp (sơ đồ luồng lấy từ quy-trinh.ts). Nội dung riêng của màn nằm ở src/modules/<phân hệ>/huong-dan.ts, tra theo slug màn; màn chưa có thì dùng bộ chung theo kiểu màn.
+// Lần đầu mở một màn: nút nhấp nháy, bấm rồi thì màn đó thôi nhấp nháy, nhớ theo người dùng và màn.
 // Màn mà đầu báo cáo nằm thay thanh tab (phân hệ Báo cáo, báo cáo đầu mới T576) đặt nút ở thanh chọn báo cáo, Tất cả báo cáo (T674).
-// Kiểu dải bước (T679, QD87): bấm la bàn hiện dải dưới thanh tab, mỗi lần một bước, số cam đánh lên đúng nút thật của màn;
-// Xem đủ hướng dẫn mở khung nổi bên phải đủ 4 mục.
-// Form toàn màn mở thì dải, khung nổi lên form ngay dưới thanh đầu form; bước nằm trong form chỉ vào ô của form (T676).
-// Bước có khung cam thì làm tối xung quanh; Bước kế, Bước trước tự mở, đóng form theo bước; nút bóng đèn kèm chữ Hướng dẫn (T680).
-import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from 'react'
+// Kiểu tour như Trang chủ (T681, QD88, thay dải bước của QD87): lớp tối chặn bấm, khoanh sáng đúng chỗ thật của từng bước, bong bóng cạnh chỗ khoanh.
+// Bong bóng đầu giữa màn: Màn này để làm gì; bong bóng cuối: Lưu ý, Đi tiếp. Tiếp tự làm thao tác của bước: mở form, chọn cửa hàng, bấm Lưu.
+// Bỏ qua, Xong trả lại như lúc bấm nút: đóng form, về đúng màn, tab, cửa hàng như cũ, xoá phiếu mẫu tour đã lưu.
+import { useEffect, useRef, useState, useSyncExternalStore, type CSSProperties, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { useSession, type Session } from '../app/session'
+import { cuaHangHienTai, useSession, type Session } from '../app/session'
 import { MODULES, dich, hienMan, laBaoCao, moDuoc, nhanTab } from '../app/registry'
 import { anNgoaiGoi, type Goi } from '../app/plan'
 import type { ModuleDef, NutQT, QuyTrinhDef, ScreenDef } from '../modules/types'
 import { baoCaoCuaPhanHe } from '../modules/bao-cao/cuaPhanHe'
 import { Icon } from './Icon'
 import { heSoZoom } from './zoom'
-import { datDaiChay, dongFormTren, formTren, ngheForm, soLanLuu } from './huongDanForm'
+import { datTourChay, dongFormTren, formTren, ngheForm, phieuTour, soLanLuu } from './huongDanForm'
+import { boPhieuMoi } from './generic/daXoa'
 
 /** Một bước Làm nhanh. o: khoá ô trên sơ đồ khung màn mà bước chỉ tới, hoặc ô trong form phiếu (O_FORM); di: đường dẫn sau /app/ cho nút làm ngay, nutDi: chữ trên nút đó */
 export interface BuocHD { chu: string; o?: string; di?: string; nutDi?: string }
@@ -196,8 +195,9 @@ function DiTiep({ qtMod, khoa, s, gon }: { qtMod: ModuleDef; khoa: string[]; s: 
   )
 }
 
-/** Sơ đồ khung màn: các ô xếp theo hàng như màn thật, ô nào có bước Làm nhanh chỉ tới thì gắn số bước */
-function SoDoMan({ soDo, buoc, sang, setSang }: { soDo: OSoDo[][]; buoc: BuocHD[]; sang: string | null; setSang: (k: string | null) => void }) {
+/** Sơ đồ khung màn: các ô xếp theo hàng như màn thật, ô nào có bước Làm nhanh chỉ tới thì gắn số bước.
+ *  Bong bóng tour giữa màn hiện sơ đồ khi bước không tìm được chỗ thật, ô của bước đang xem sáng cam (T681) */
+function SoDoMan({ soDo, buoc, sang }: { soDo: OSoDo[][]; buoc: BuocHD[]; sang?: string }) {
   const so = (k: string) => buoc.flatMap((b, i) => b.o === k ? [i + 1] : [])
   return (
     <div className="hdn-sodo" aria-label="Sơ đồ khung màn">
@@ -206,8 +206,7 @@ function SoDoMan({ soDo, buoc, sang, setSang }: { soDo: OSoDo[][]; buoc: BuocHD[
           {hang.map(o => {
             const ds = so(o.k)
             return (
-              <div key={o.k} className={`hdn-o${o.kieu ? ' ' + o.kieu : ''}${sang === o.k ? ' sang' : ''}`} style={{ flexGrow: o.rong ?? 1 }}
-                onMouseEnter={() => ds.length && setSang(o.k)} onMouseLeave={() => setSang(null)}>
+              <div key={o.k} className={`hdn-o${o.kieu ? ' ' + o.kieu : ''}${sang === o.k ? ' sang' : ''}`} style={{ flexGrow: o.rong ?? 1 }}>
                 <span>{o.ten}</span>
                 {ds.length > 0 && <span className="hdn-o-so">{ds.map(n => <i key={n}>{n}</i>)}</span>}
               </div>
@@ -239,8 +238,6 @@ const KHUON: Record<string, string[]> = {
 // Ô trong form phiếu (T676): ChungTuForm gắn data-hd cho khối ô đầu form, bảng dòng chi tiết, nút Lưu
 const O_FORM = new Set(['ttc', 'chi-tiet', 'luu'])
 const laBuocForm = (x?: BuocHD) => !!x?.o && O_FORM.has(x.o)
-// thanh trên đang xem Tất cả cửa hàng thì form hỏi cửa hàng lập phiếu trước khi hiện ô nhập
-const KHUON_FORM: Record<string, string[]> = { ttc: ['.chon-cn'], 'chi-tiet': ['.chon-cn'] }
 const coKhung = (e: Element) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0 }
 
 /** Khung bao quanh nhiều phần tử, vd các ô lọc, các tab */
@@ -255,13 +252,7 @@ function hop(ds: Element[]): DOMRect | null {
 function timCho(k: string, form: HTMLElement | null): DOMRect | null {
   const rieng = [...(form ?? document).querySelectorAll(`[data-hd="${k}"]`)].find(coKhung)
   if (rieng) return rieng.getBoundingClientRect()
-  if (form) {
-    for (const q of KHUON_FORM[k] ?? []) {
-      const e = [...form.querySelectorAll(q)].find(coKhung)
-      if (e) return e.getBoundingClientRect()
-    }
-    return null
-  }
+  if (form) return null
   // các tab của phân hệ, không lấy phần trống cuối thanh tab
   if (k === 'tab') return hop([...document.querySelectorAll('.mtabs-in > a, .mtabs-in > .mtabs-more')])
   if (k === 'loc') {
@@ -276,45 +267,61 @@ function timCho(k: string, form: HTMLElement | null): DOMRect | null {
   return null
 }
 
-type Cho = { l: number; t: number; w: number; h: number; sat?: boolean }   // px CSS, đã chia zoom (docs/BAY.md); sat: sát mép trên vùng làm việc
+// ── Tour (T681, QD88): như tour Trang chủ (T138), lớp tối chặn bấm, khoanh sáng chỗ thật, bong bóng cạnh chỗ khoanh ──
+/** Một bong bóng của tour. dau: mở đầu giữa màn; cuoi: Lưu ý, Đi tiếp; buoc: bước Làm nhanh thứ n;
+ *  cn: form hỏi cửa hàng lập phiếu, đứng trước bước đầu trong form (n); vua: phiếu vừa lưu ở đầu danh sách, sau bước Lưu (n) */
+interface BuocTour { k: 'dau' | 'cuoi' | 'buoc' | 'cn' | 'vua'; n: number }
 
-/** Vị trí từng khoá ô trên màn, đo lại khi cuộn, đổi cỡ cửa sổ và đều 400ms (màn tải xong dữ liệu, mở rộng hàng).
- *  form: form toàn màn đang mở thì đo trong form, phần dưới dải */
-function useChoThat(khoa: string[], bat: boolean, form: HTMLElement | null): Record<string, Cho> {
-  const [cho, setCho] = useState<Record<string, Cho>>({})
-  const ds = khoa.join('|')
-  useEffect(() => {
-    if (!bat) { setCho({}); return }
-    let hen = 0
-    const do_ = () => {
-      hen = 0
-      const z = heSoZoom()
-      const main = (form ?? document.querySelector('.main'))?.getBoundingClientRect()
-      const tabs = form ? form.querySelector(':scope > .hdn-dai')?.getBoundingClientRect() : [...document.querySelectorAll('.mtabs')].find(coKhung)?.getBoundingClientRect()
-      const moi: Record<string, Cho> = {}
-      if (main) for (const k of khoa) {
-        const r = timCho(k, form)
-        if (!r) continue
-        // chỉ phần nằm trong vùng làm việc: thanh tab và màn chính; trong form là phần dưới dải
-        const tren = form ? tabs?.bottom ?? main.top : tabs?.top ?? main.top
-        const l = Math.max(r.left, main.left), t = Math.max(r.top, tren)
-        const p = Math.min(r.right, main.right), d = Math.min(r.bottom, main.bottom)
-        if (p - l < 4 || d - t < 4) continue
-        moi[k] = { l: Math.round(l / z), t: Math.round(t / z), w: Math.round((p - l) / z), h: Math.round((d - t) / z), sat: t - tren < 12 }
-      }
-      setCho(cu => JSON.stringify(cu) === JSON.stringify(moi) ? cu : moi)
-    }
-    const hoi = () => { if (!hen) hen = requestAnimationFrame(do_) }
-    do_()
-    const id = window.setInterval(hoi, 400)
-    window.addEventListener('scroll', hoi, true)
-    window.addEventListener('resize', hoi)
-    return () => {
-      window.clearInterval(id); cancelAnimationFrame(hen)
-      window.removeEventListener('scroll', hoi, true); window.removeEventListener('resize', hoi)
-    }
-  }, [ds, bat, form])   // eslint-disable-line react-hooks/exhaustive-deps
-  return cho
+/** hoiCn: thanh trên đang xem Tất cả cửa hàng nên form phiếu mới hỏi cửa hàng trước khi hiện ô nhập */
+function dsTour(hd: HuongDanMan, hoiCn: boolean): BuocTour[] {
+  const dau = hd.buoc.findIndex(laBuocForm)
+  return [
+    { k: 'dau', n: -1 },
+    ...hd.buoc.flatMap((x, n): BuocTour[] => [
+      ...(n === dau && hoiCn ? [{ k: 'cn' as const, n }] : []),
+      { k: 'buoc', n },
+      ...(x.o === 'luu' ? [{ k: 'vua' as const, n }] : []),
+    ]),
+    { k: 'cuoi', n: -1 },
+  ]
+}
+const trongForm = (hd: HuongDanMan, x?: BuocTour) => x?.k === 'cn' || (x?.k === 'buoc' && laBuocForm(hd.buoc[x.n]))
+
+const LE = 6        // khoảng hở quanh chỗ khoanh, như tour Trang chủ
+const RONG = 320    // bề rộng bong bóng
+const CHU_CN = 'Thanh trên đang xem Tất cả cửa hàng nên phiếu mới hỏi lập cho cửa hàng nào. Bấm tên một cửa hàng để chọn.'
+
+/** Chỗ khoanh của bước tour, px CSS đã chia zoom (docs/BAY.md). Khối dài hơn màn (bảng, tờ báo cáo) chỉ khoanh phần đang thấy.
+ *  so: số phiếu vừa lưu, khoanh dòng đầu tiên mang số đó trong bảng danh sách */
+function choTour(hd: HuongDanMan, x: BuocTour, form: HTMLElement | null, so?: string): DOMRect | null {
+  const o = x.k === 'buoc' ? hd.buoc[x.n].o : undefined
+  const el = x.k === 'cn' ? form?.querySelector('.chon-cn')
+    : x.k === 'vua' && so ? [...document.querySelectorAll('.main table.tbl tbody tr')].find(tr => coKhung(tr) && !!tr.textContent?.includes(so))
+    : undefined
+  const r = el && coKhung(el) ? el.getBoundingClientRect() : o ? timCho(o, form) : null
+  if (!r) return null
+  const l = Math.max(r.left, LE), t = Math.max(r.top, LE), p = Math.min(r.right, window.innerWidth - LE), d = Math.min(r.bottom, window.innerHeight - LE)
+  if (p - l < 4 || d - t < 4) return null
+  const z = heSoZoom()
+  return new DOMRect(l / z, t / z, (p - l) / z, (d - t) / z)
+}
+
+/** Bong bóng bên phải, trái, dưới, trên chỗ khoanh, chỗ nào đủ chỗ trước; khối cao gần hết màn thì đặt ở đáy màn (như tour Trang chủ) */
+function viTriBong(o: DOMRect, cao: number): CSSProperties {
+  const z = heSoZoom(), W = window.innerWidth / z, H = window.innerHeight / z
+  const doc = Math.max(12, Math.min(o.top, H - cao - 12)), ngang = Math.max(12, Math.min(o.left, W - RONG - 12))
+  if (o.right + LE + 14 + RONG < W) return { left: o.right + LE + 14, top: doc }
+  if (o.left - LE - 14 - RONG > 0) return { left: o.left - LE - 14 - RONG, top: doc }
+  if (o.bottom + LE + 12 + cao + 12 < H) return { top: o.bottom + LE + 12, left: ngang }
+  if (o.top - LE - 12 - cao - 12 > 0) return { top: o.top - LE - 12 - cao, left: ngang }
+  return { top: Math.max(12, H - cao - 12), left: Math.max(12, (W - RONG) / 2) }
+}
+
+/** Đo chiều cao bong bóng sau khi vẽ, để viTriBong đặt không tràn màn */
+function useCaoBong() {
+  const [cao, setCao] = useState(200)
+  const ref = (el: HTMLDivElement | null) => { if (el && Math.abs(el.offsetHeight - cao) > 2) setCao(el.offsetHeight) }
+  return [cao, ref] as const
 }
 
 // Nút ở thanh chọn báo cáo đang hiện thì nút cuối thanh tab (đã ẩn theo thanh tab) thôi gắn, mỗi màn đúng một nút (T674)
@@ -331,10 +338,10 @@ function ghiXem(k: string) {
   try { localStorage.setItem(KHOA_XEM, JSON.stringify([k, ...ds].slice(0, 500))) } catch { /* trình duyệt chặn lưu thì thôi */ }
 }
 
-/** Nút Hướng dẫn (bóng đèn, T680) cuối thanh tab, dải bước và khung hướng dẫn. Trang chủ đã có hướng dẫn từng bước riêng (T138) nên không gắn.
- *  ngoaiThanhTab: nút đặt ở thanh chọn báo cáo, Tất cả báo cáo khi thanh tab ẩn; dải, khung nằm sát dưới thanh trên (T674) */
+/** Nút Hướng dẫn (bóng đèn, T680) cuối thanh tab và tour của màn (T681, QD88). Trang chủ đã có hướng dẫn từng bước riêng (T138) nên không gắn.
+ *  ngoaiThanhTab: nút đặt ở thanh chọn báo cáo, Tất cả báo cáo khi thanh tab ẩn (T674) */
 export function NutHuongDan({ mod, ngoaiThanhTab }: { mod: ModuleDef; ngoaiThanhTab?: boolean }) {
-  const { s } = useSession()
+  const { s, set } = useSession()
   useEffect(() => {
     if (!ngoaiThanhTab) return
     soNutNgoai++; baoNut()
@@ -343,207 +350,192 @@ export function NutHuongDan({ mod, ngoaiThanhTab }: { mod: ModuleDef; ngoaiThanh
   const coNutNgoai = useSyncExternalStore(ngheNutNgoai, () => soNutNgoai > 0)
   const loc = useLocation()
   const nav = useNavigate()
-  const [dai, setDai] = useState(false)     // dải bước
-  const [mo, setMo] = useState(false)       // khung đủ, chỉ mở từ dải
-  const [buoc, setBuoc] = useState(0)
-  const [ro, setRo] = useState<number | null>(null)   // bước đang rê chuột trong khung
-  const [sang, setSang] = useState<string | null>(null)
-  const fsf = useSyncExternalStore(ngheForm, formTren)    // form toàn màn đang mở (T676)
-  const soLuu = useSyncExternalStore(ngheForm, soLanLuu)
+  // lúc bấm nút Hướng dẫn: đường dẫn (màn, tab đang xem), cửa hàng trên thanh trên, form phiếu mới có hỏi cửa hàng không. null: tour đang tắt
+  const [goc, setGoc] = useState<{ path: string; cuaHang: string; hoiCn: boolean } | null>(null)
+  const [i, setI] = useState(0)
+  const [o, setO] = useState<DOMRect | null>(null)   // chỗ khoanh của bước đang xem, null thì bong bóng nằm giữa màn
+  const [doi, setDoi] = useState(false)               // đang chờ chỗ khoanh hiện (form đang mở ra): chỉ phủ tối, chưa hiện bong bóng
+  const [caoBong, refBong] = useCaoBong()
+  const refTiep = useRef<HTMLButtonElement>(null)
+  const form = useSyncExternalStore(ngheForm, formTren)    // form toàn màn đang mở (T676)
   const slug = loc.pathname.split('/')[3]
   const sc = manDangMo(mod, slug, s)
   const rieng = sc && NOI_DUNG[sc.goc ?? mod.key]?.[sc.slug]
   const hd = sc && (rieng && (!rieng.goi || rieng.goi.includes(s.goi)) ? rieng : boChung(sc, mod))
-  const khoaO = [...new Set((hd?.buoc ?? []).flatMap(b => b.o ? [b.o] : []))]
-  const form = dai ? fsf : null   // dải nổi trên form này
-  const cho = useChoThat(khoaO, dai, form)
+  const chay = goc !== null
+  const ds = hd ? dsTour(hd, !!goc?.hoiCn) : []
+  const x = ds[i] as BuocTour | undefined
   const khoaXem = `${s.email}|${mod.key}/${slug ?? ''}`
   const [daXem, setDaXem] = useState(() => docXem().includes(khoaXem))
   useEffect(() => { setDaXem(docXem().includes(khoaXem)) }, [khoaXem])
-  useEffect(() => { setBuoc(0); setRo(null) }, [khoaXem])   // đổi màn thì về bước 1
-  useEffect(() => { if (!mo) { setRo(null); setSang(null) } }, [mo])   // khung đóng khi chuột còn trên một bước thì không có mouseleave
-  // dải đang mở mà chuyển màn: màn mới cũng tính là đã xem
-  useEffect(() => { if (dai && sc) { ghiXem(khoaXem); setDaXem(true) } }, [dai, khoaXem])   // eslint-disable-line react-hooks/exhaustive-deps
+  // tour đang chạy mà sang màn khác thì tắt, không quay về
+  useEffect(() => { if (goc) ketThuc(false) }, [khoaXem])   // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (!chay) return; datTourChay(true); return () => datTourChay(false) }, [chay])
+  // bám chỗ khoanh mỗi khung hình như tour Trang chủ: form mở ra, bảng tải xong, cuộn, đổi cỡ cửa sổ làm nó dịch chuyển.
+  // Bước có chỗ khoanh mà chưa thấy thì chỉ phủ tối, chờ tối đa 1,5 giây rồi mới đặt bong bóng giữa màn
   useEffect(() => {
-    if (!dai) return
-    // Esc đóng khung trước, rồi tới dải; trừ khi đang mở form toàn màn hay hộp thoại (phím Esc của chúng)
-    const on = (e: KeyboardEvent) => {
-      if (e.key !== 'Escape' || document.querySelector('.fsf, .overlay')) return
-      if (mo) setMo(false); else setDai(false)
+    if (!hd || !x) return
+    const coCho = x.k === 'cn' || x.k === 'vua' || (x.k === 'buoc' && !!hd.buoc[x.n].o)
+    const bd = Date.now()
+    let f = 0
+    const bam = () => {
+      const r = coCho ? choTour(hd, x, formTren(), phieuTour().at(-1)?.so) : null
+      setO(c => c && r && c.x === r.x && c.y === r.y && c.width === r.width && c.height === r.height ? c : r)
+      setDoi(coCho && !r && Date.now() - bd < 1500)
+      if (coCho) f = requestAnimationFrame(bam)
     }
-    window.addEventListener('keydown', on)
-    return () => window.removeEventListener('keydown', on)
-  }, [dai, mo])
-  useEffect(() => { if (!dai) return; datDaiChay(true); return () => datDaiChay(false) }, [dai])
-  // Form toàn màn mở, đóng khi dải đang chạy (T676): mở phiếu mới mà dải còn ở bước trước form thì sang bước đầu trong form;
-  // đóng form lúc đang ở bước trong form: đã lưu thì sang bước sau form, chưa lưu thì về bước mở form
-  const formCu = useRef<HTMLElement | null>(null)
-  const luuLucMo = useRef(0)
-  const moBoiDai = useRef(false)                     // dải vừa mở form: nút làm ngay, Bước kế vào bước trong form (T680)
-  const formDai = useRef<HTMLElement | null>(null)   // form do dải mở: tắt hướng dẫn thì đóng luôn
+    bam()   // đo ngay, không chờ khung hình đầu (tab chạy nền thì requestAnimationFrame đứng)
+    return () => cancelAnimationFrame(f)
+  }, [chay, i, khoaXem])   // eslint-disable-line react-hooks/exhaustive-deps
+  // Enter bấm nút chính của bong bóng: đưa con trỏ vào nút đó mỗi lần sang bước
+  useEffect(() => { if (chay && !doi) refTiep.current?.focus({ preventScroll: true }) }, [chay, i, doi])
   useEffect(() => {
-    const cu = formCu.current
-    formCu.current = form
-    if (cu === form) return
-    if (form && !cu) { formDai.current = moBoiDai.current ? form : null; moBoiDai.current = false }
-    if (!form) formDai.current = null
-    if (!hd) return
-    const dau = hd.buoc.findIndex(laBuocForm)
-    if (dau < 0) return
-    if (form) {
-      if (!cu) luuLucMo.current = soLuu
-      if (loc.pathname.split('/')[4] === 'moi' && buoc < dau) setBuoc(dau)
-    } else if (laBuocForm(hd.buoc[buoc])) {
-      const cuoi = hd.buoc.length - 1 - [...hd.buoc].reverse().findIndex(laBuocForm)
-      setBuoc(soLuu > luuLucMo.current ? Math.min(cuoi + 1, hd.buoc.length - 1) : Math.max(dau - 1, 0))
+    if (!chay) return
+    // lớp tối chặn bấm thì chặn luôn phím của màn bên dưới (Esc đóng form, Ctrl + S lưu phiếu), chỉ nút Bỏ qua mới tắt tour.
+    // Tab, Enter, phím cách trong bong bóng vẫn bấm được nút của bong bóng
+    const chan = (e: KeyboardEvent) => {
+      const trong = e.target instanceof Element && !!e.target.closest('.hdn-tour .hdan-bong')
+      if (!(e.key === 'Tab' || (trong && (e.key === 'Enter' || e.key === ' ')))) e.preventDefault()
+      e.stopPropagation()
     }
-  }, [form])   // eslint-disable-line react-hooks/exhaustive-deps
-  // Lưu và thêm: form mở lại phiếu trống, dải về bước đầu trong form
-  useEffect(() => {
-    if (!form || !hd || !laBuocForm(hd.buoc[buoc])) return
-    setBuoc(hd.buoc.findIndex(laBuocForm))
-  }, [soLuu])   // eslint-disable-line react-hooks/exhaustive-deps
-  // khung đủ trong form: từ dưới dải tới trên chân form, đo theo px của form nên không lệch theo zoom
-  const [viTri, setViTri] = useState<{ top: number; bottom: number } | null>(null)
-  useLayoutEffect(() => {
-    const d = form?.querySelector<HTMLElement>(':scope > .hdn-dai'), f = form?.querySelector<HTMLElement>(':scope > .fsf-f')
-    setViTri(form && mo && d ? { top: d.offsetTop + d.offsetHeight + 4, bottom: f ? form.clientHeight - f.offsetTop + 12 : 12 } : null)
-  }, [form, mo])
+    window.addEventListener('keydown', chan, true)
+    return () => window.removeEventListener('keydown', chan, true)
+  }, [chay])
+
+  /** Bỏ qua, Xong: trả lại như lúc bấm nút Hướng dẫn. Đóng form tour mở, xoá phiếu mẫu tour đã lưu, cửa hàng trên thanh trên như cũ.
+   *  veCu: về đúng màn, tab lúc bấm nút; bấm chỗ Đi tiếp, nút làm ngay thì sang màn đó, không về */
+  function ketThuc(veCu: boolean) {
+    if (!goc) return
+    if (formTren()) dongFormTren()
+    for (const p of phieuTour()) boPhieuMoi(p.man, p.id)
+    if (s.cuaHang !== goc.cuaHang) set({ cuaHang: goc.cuaHang })
+    setGoc(null)
+    if (veCu) nav(goc.path, { replace: true })
+  }
+  // form mở cho bước trong form: nút làm ngay của bước trước gần nhất (vd Ghi một khoản chi), không có thì Thêm mới của màn chứng từ
+  function diMoForm(n: number) {
+    if (!hd || !sc) return undefined
+    return hd.buoc.slice(0, n).reverse().find(y => y.di)?.di
+      ?? (sc.kind === 'voucher' && !sc.voucher?.khongThem ? `${loc.pathname.split('/')[2]}/${sc.slug}/moi` : undefined)
+  }
+  /** Sang bong bóng t, giao diện tự tới chỗ của bước (T680): bước trong form mà form chưa mở thì mở form; quay lại bước chọn cửa hàng
+   *  thì thanh trên về như cũ để form hỏi lại; bước ngoài form mà form đang mở thì đóng form không hỏi */
+  function toi(t: number) {
+    const y = ds[t]
+    if (!hd || !y) return
+    if (trongForm(hd, y)) {
+      if (y.k === 'cn' && goc && s.cuaHang !== goc.cuaHang) set({ cuaHang: goc.cuaHang })
+      const di = !formTren() && diMoForm(y.n)
+      if (di) nav(`/app/${di}`)
+    } else if (formTren()) dongFormTren()
+    setI(t)
+  }
+  /** Tiếp: máy tự làm thao tác của bước đang xem rồi mới sang bước sau. Chọn cửa hàng: bấm cửa hàng đầu tiên. Bước Lưu: bấm Lưu,
+   *  form tự đóng về danh sách (ChungTuForm), bước sau khoanh phiếu vừa lưu; lưu không được thì ở lại, form báo ô còn thiếu */
+  function tiep() {
+    if (!hd || !x) return
+    if (x.k === 'cn') form?.querySelector<HTMLElement>('.chon-cn-ds button')?.click()
+    const luu = x.k === 'buoc' && hd.buoc[x.n].o === 'luu' ? form?.querySelector<HTMLElement>('[data-hd="luu"]') : null
+    if (luu) {
+      const truoc = soLanLuu()
+      luu.click()
+      if (soLanLuu() > truoc) setI(i + 1)   // form tự đóng sau khi lưu, không đóng thêm lần nữa
+      return
+    }
+    toi(i + 1)
+  }
+
   if (mod.key === 'trang-chu' || !sc || !hd || (!ngoaiThanhTab && coNutNgoai)) return null
 
   // báo cáo mở từ phân hệ Báo cáo (/app/bao-cao/<slug>) đi tiếp theo sơ đồ của phân hệ gốc
   const qtMod = MODULES.find(m => m.key === (hd.quyTrinh?.mod ?? (mod.key === 'bao-cao' ? sc.goc : undefined) ?? mod.key))
   const khoa = [`${sc.goc ?? mod.key}/${sc.slug}`, ...(hd.quyTrinh?.khop ?? [])]
-  const soBuoc = hd.buoc.length
-  const i = Math.min(buoc, Math.max(soBuoc - 1, 0))
-  const b = hd.buoc[i] as BuocHD | undefined
-  const coCho = Object.keys(cho).length > 0   // màn có chỗ thật để đánh số; không có thì khung dùng sơ đồ vẽ
-  // tắt hướng dẫn (bỏ qua): đóng luôn form do dải mở, không hỏi (T680)
-  const tat = () => { if (form && form === formDai.current) dongFormTren(); setDai(false); setMo(false) }
-  const lam = (di: string) => { setMo(false); moBoiDai.current = true; nav(`/app/${di}`) }
-  // form mở cho bước trong form: nút làm ngay của bước trước gần nhất (vd Ghi một khoản chi), không có thì Thêm mới của màn chứng từ
-  const diMoForm = (n: number) => hd.buoc.slice(0, n).reverse().find(x => x.di)?.di
-    ?? (sc.kind === 'voucher' && !sc.voucher?.khongThem ? `${loc.pathname.split('/')[2]}/${sc.slug}/moi` : undefined)
-  // Bước kế, Bước trước, bấm bước trong khung: giao diện tự tới chỗ của bước (T680). Bước trong form mà form chưa mở thì mở form;
-  // bước ở màn danh sách mà form đang mở thì đóng form không hỏi
-  const diToi = (n: number) => {
-    setBuoc(n)
-    const x = hd.buoc[n]
-    if (laBuocForm(x) && !form) {
-      const di = diMoForm(n)
-      if (di) { moBoiDai.current = true; nav(`/app/${di}`) }
-    } else if (x?.o && !laBuocForm(x) && form) dongFormTren()
+  const tong = ds.length - 2   // số bước, không tính bong bóng mở đầu, kết
+  const b = x?.k === 'buoc' ? hd.buoc[x.n] : undefined
+  const soVua = phieuTour().at(-1)?.so
+  const batDau = () => {
+    ghiXem(khoaXem); setDaXem(true)
+    setGoc({ path: loc.pathname + loc.search, cuaHang: s.cuaHang, hoiCn: !cuaHangHienTai(s) })
+    setI(0); setO(null); setDoi(false)
   }
-  const nutLam = (x: BuocHD, cls: string) => x.di && <button type="button" className={`btn sm ${cls}`} onClick={() => lam(x.di!)}>{x.nutDi ?? 'Làm ngay'}<Icon n="arrow" className="ic sm" /></button>
-  // số cam: mỗi ô thật một vòng, ghi số các bước chỉ tới ô đó; bước đang xem (hoặc đang rê trong khung) có viền cam
-  // nhiều khoá cùng một chỗ (vd form hỏi cửa hàng trước khi hiện ô nhập) gom thành một vòng
-  const sangO = hd.buoc[ro ?? i]?.o
-  const nhomCho = new Map<string, { ks: string[]; c: Cho }>()
-  for (const [k, c] of Object.entries(cho)) {
-    const id = `${c.l},${c.t},${c.w},${c.h}`
-    const g = nhomCho.get(id)
-    if (g) g.ks.push(k); else nhomCho.set(id, { ks: [k], c })
-  }
-  // khung cam lố ra 3px; ô sát mép trên (hàng tab) thì vẽ vào trong theo chiều dọc để thanh trên không cắt mất cạnh trên (T680)
-  const khung = (c: Cho) => ({ left: c.l - 3, top: c.sat ? c.t + 3 : c.t - 3, width: c.w + 6, height: c.sat ? c.h - 6 : c.h + 6 })
-  let toi: ReturnType<typeof khung> | undefined   // chỗ bước đang xem: phần còn lại của màn tối đi
-  const cham = [...nhomCho.values()].map(({ ks, c }) => {
-    const so = hd.buoc.flatMap((x, n) => x.o && ks.includes(x.o) ? [n] : [])
-    const k = ks.join(' ')
-    const on = !!sangO && ks.includes(sangO)
-    if (on) toi = khung(c)
-    return (
-      <div key={k} data-k={k} className={`hdn-cham-o${on ? ' on' : ''}${c.sat ? ' sat' : ''}`} style={khung(c)}>
-        <span className="hdn-cham-so">{so.map(n => <i key={n} className={n === i ? 'on' : ''}>{n + 1}</i>)}</span>
-      </div>
-    )
-  })
+  // nút làm ngay của bước mà Tiếp không tự làm (vd Mở Thu chi tiền mặt): tắt tour rồi tới đó
+  const lam = (di: string) => { ketThuc(false); nav(`/app/${di}`) }
 
-  const chamEl = cham.length > 0 && <div className="hdn-cham" aria-hidden>{toi && <div className="hdn-toi" style={toi} />}{cham}</div>
-  const daiEl = (
-    <div className={`hdn-dai${ngoaiThanhTab ? ' ngoai' : ''}${s.thuGon ? ' gon' : ''}`} id="hdn-dai" role="region" aria-label={`Hướng dẫn nhanh: ${nhanTab(sc)}`} data-o={b?.o}>
-      <div className="hdn-dai-in">
-        <Icon n="bong-den" className="ic sm hdn-dai-ic" />
-        {b ? <>
-          <b className="hdn-dai-so">Bước {i + 1}/{soBuoc}</b>
-          <span className="hdn-dai-chu" title={b.chu} aria-live="polite">{b.chu}</span>
-          {nutLam(b, 'hdn-dai-lam')}
-          <span className="hdn-dai-nut">
-            <button type="button" className="btn sm ghost" disabled={i === 0} onClick={() => diToi(i - 1)}><Icon n="chevl" className="ic sm" />Bước trước</button>
-            {i < soBuoc - 1
-              ? <button type="button" className="btn sm pri" onClick={() => diToi(i + 1)}>Bước kế<Icon n="chevr" className="ic sm" /></button>
-              : <button type="button" className="btn sm pri" onClick={tat}>Xong</button>}
-          </span>
-        </> : <span className="hdn-dai-chu" title={hd.muc}>{hd.muc}</span>}
-        <span className="hdn-dai-phai">
-          <button type="button" className={`btn sm ghost hdn-dai-du${mo ? ' on' : ''}`} aria-expanded={mo} aria-controls="hdn-khung" onClick={() => setMo(!mo)}>Xem đủ hướng dẫn</button>
-          <button type="button" className="btn sm ghost hdn-dai-x" aria-label="Tắt hướng dẫn" title="Tắt hướng dẫn (Esc)" onClick={tat}><Icon n="x" className="ic sm" /></button>
-        </span>
-      </div>
+  const boQua = <button type="button" className="btn ghost sm" onClick={() => ketThuc(true)}>Bỏ qua</button>
+  let than: ReactNode = null
+  if (x?.k === 'dau') than = <>
+    <div className="hdan-bong-ic"><Icon n="bong-den" className="ic" /></div>
+    <small className="hdn-bong-nhan">Hướng dẫn nhanh</small>
+    <b>{nhanTab(sc)}</b>
+    <p>{hd.muc}</p>
+    <div className="row hdan-nut">{boQua}<button ref={refTiep} type="button" className="btn pri sm" onClick={() => toi(1)}>Bắt đầu</button></div>
+  </>
+  else if (x?.k === 'cuoi') than = <>
+    <div className="hdn-bong-dau"><span className="hdan-bong-ic"><Icon n="check" className="ic" /></span><b>Đã xem hết hướng dẫn</b></div>
+    {!!hd.luuY?.length && (
+      <section className="hdn-muc">
+        <h4>Lưu ý</h4>
+        <ul className="hdn-luu">{hd.luuY.map((y, n) => <li key={n}>{y}</li>)}</ul>
+      </section>
+    )}
+    {qtMod?.quyTrinh && sc.kind !== 'quytrinh' && (
+      <section className="hdn-muc">
+        <h4>Đi tiếp</h4>
+        <DiTiep qtMod={qtMod} khoa={khoa} s={s} gon />
+        <Link className="hdn-mo-qt" to={`/app/${qtMod.key}/quy-trinh`}><Icon n="flow" className="ic sm" />Mở sơ đồ Quy trình</Link>
+      </section>
+    )}
+    <p>Bấm nút Hướng dẫn để xem lại bất cứ lúc nào.</p>
+    <div className="row hdan-nut">
+      {tong > 0 && <button type="button" className="btn sm" onClick={() => toi(i - 1)}>Quay lại</button>}
+      <span className="grow" />
+      <button ref={refTiep} type="button" className="btn pri sm" onClick={() => ketThuc(true)}>Xong</button>
     </div>
-  )
-  const khungEl = mo && (
-    <aside className={`hdn-khung${ngoaiThanhTab ? ' ngoai' : ''}`} id="hdn-khung" aria-label={`Hướng dẫn nhanh: ${nhanTab(sc)}`} style={viTri ?? undefined}>
-      <header className="hdn-dau">
-        <span className="hdn-dau-ic"><Icon n="bong-den" className="ic" /></span>
-        <div className="hdn-dau-chu"><small>Hướng dẫn nhanh</small><b>{nhanTab(sc)}</b></div>
-        <button type="button" className="btn sm ghost hdn-dong" aria-label="Đóng hướng dẫn đủ" onClick={() => setMo(false)}><Icon n="x" className="ic sm" /></button>
-      </header>
-      <div className="hdn-than">
-        <section className="hdn-muc">
-          <h4>Màn này để làm gì</h4>
-          <p>{hd.muc}</p>
-        </section>
-        {soBuoc > 0 && (
-          <section className="hdn-muc">
-            <h4>Làm nhanh</h4>
-            {coCho
-              ? <span className="hdn-goi-y">Số cam trên màn chỉ đúng chỗ của từng bước. Bấm một bước để làm từ bước đó.</span>
-              : hd.soDo && <SoDoMan soDo={hd.soDo} buoc={hd.buoc} sang={sang} setSang={setSang} />}
-            <ol className="hdn-buoc">
-              {hd.buoc.map((x, n) => (
-                <li key={n} className={`${n === i ? 'on' : ''}${(coCho ? ro === n : x.o && sang === x.o) ? ' sang' : ''}`}
-                  onMouseEnter={() => { setRo(n); if (x.o) setSang(x.o) }} onMouseLeave={() => { setRo(null); setSang(null) }}>
-                  <button type="button" className="hdn-buoc-chon" onClick={() => { diToi(n); setMo(false) }} aria-label={`Làm từ bước ${n + 1}`}>
-                    <span className="hdn-buoc-so">{n + 1}</span>
-                    <p>{x.chu}</p>
-                  </button>
-                  {nutLam(x, 'hdn-lam')}
-                </li>
-              ))}
-            </ol>
-          </section>
-        )}
-        {!!hd.luuY?.length && (
-          <section className="hdn-muc">
-            <h4>Lưu ý</h4>
-            <ul className="hdn-luu">{hd.luuY.map((x, n) => <li key={n}>{x}</li>)}</ul>
-          </section>
-        )}
-        {qtMod?.quyTrinh && sc.kind !== 'quytrinh' && (
-          <section className="hdn-muc">
-            <h4>Đi tiếp</h4>
-            <DiTiep qtMod={qtMod} khoa={khoa} s={s} gon />
-            <Link className="hdn-mo-qt" to={`/app/${qtMod.key}/quy-trinh`}><Icon n="flow" className="ic sm" />Mở sơ đồ Quy trình</Link>
-          </section>
-        )}
-      </div>
-    </aside>
+  </>
+  else if (x) than = <>
+    <span className="hdn-bong-so">Bước {i}/{tong}</span>
+    <p className="hdn-bong-chu">{x.k === 'cn' ? CHU_CN
+      : x.k === 'vua' ? `Phiếu ${soVua ?? ''} vừa lưu nằm ở đầu danh sách. Đây là phiếu mẫu của hướng dẫn, tắt hướng dẫn thì phiếu tự xoá.`
+      : b?.chu}</p>
+    {!o && b?.o && hd.soDo && <SoDoMan soDo={hd.soDo} buoc={hd.buoc} sang={b.o} />}
+    {b?.di && !trongForm(hd, ds[i + 1]) && (
+      <button type="button" className="btn sm hdan-lam" onClick={() => lam(b.di!)}>{b.nutDi ?? 'Làm ngay'}<Icon n="arrow" className="ic sm" /></button>
+    )}
+    <div className="row hdan-nut">
+      <span className="grow" />
+      {boQua}
+      {i > 1 && <button type="button" className="btn sm" onClick={() => toi(i - 1)}>Quay lại</button>}
+      <button ref={refTiep} type="button" className="btn pri sm" onClick={tiep}>Tiếp</button>
+    </div>
+  </>
+
+  // tour nằm thẳng trong body như tour Trang chủ: trên sidebar, thanh trên, form toàn màn (.fsf z 45), hộp thoại (.overlay z 50).
+  // Lớp tối, khung khoanh phủ cả màn nên bấm vào vùng tối không làm gì
+  const tourEl = x && (
+    <div className="hdan hdn-tour" role="dialog" aria-modal="true" aria-label={`Hướng dẫn nhanh: ${nhanTab(sc)}`}>
+      {o ? <div className="hdan-lo" style={{ left: o.left - LE, top: o.top - LE, width: o.width + LE * 2, height: o.height + LE * 2 }} />
+        : <div className="hdan-toi" />}
+      {!doi && (
+        // bấm chỗ Đi tiếp, Mở sơ đồ Quy trình trong bong bóng cuối: tắt tour rồi sang màn đó
+        <div ref={refBong} className={`hdan-bong${o ? '' : ' giua'}${x.k === 'cuoi' ? ' cuoi' : ''}`} style={o ? viTriBong(o, caoBong) : undefined}
+          data-k={x.k === 'buoc' ? b?.o ?? '' : x.k} data-buoc={i} data-tong={tong} aria-live="polite"
+          onClickCapture={e => { if (e.target instanceof Element && e.target.closest('a')) ketThuc(false) }}>
+          {than}
+        </div>
+      )}
+    </div>
   )
 
   return (
     <>
-      <button type="button" className={`mtabs-hdn${daXem ? '' : ' nhay'}${dai ? ' on' : ''}`} title="Hướng dẫn nhanh" aria-label="Hướng dẫn nhanh"
-        aria-expanded={dai} aria-controls="hdn-dai" onClick={() => dai ? tat() : setDai(true)}>
+      <button type="button" className={`mtabs-hdn${daXem ? '' : ' nhay'}${chay ? ' on' : ''}`} title="Hướng dẫn nhanh" aria-label="Hướng dẫn nhanh"
+        aria-haspopup="dialog" onClick={batDau}>
         <Icon n="bong-den" className="ic sm" /><span>Hướng dẫn</span>
       </button>
-      {/* dải, số cam, khung nằm thẳng trong body để nổi trên sidebar, thanh trên, lớp tối phủ được cả màn (T680);
-          form toàn màn đang mở thì nằm trong form, dải ngay dưới thanh đầu form; hộp thoại .overlay vẫn nằm trên (T676) */}
-      {dai && createPortal(<>{daiEl}{chamEl}{khungEl}</>, form ?? document.body)}
+      {chay && tourEl && createPortal(tourEl, document.body)}
     </>
   )
 }
 
 /** ModuleTabs gắn nút ở mọi phân hệ trừ Trang chủ */
 export const coHuongDanNhanh = (mod: ModuleDef) => mod.key !== 'trang-chu'
-

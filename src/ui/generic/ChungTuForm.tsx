@@ -470,7 +470,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
       suaPhieu(manXuat, thamChieuSx.id, { ttSx: 'da', _phieuNhap: { id: moi ? idMoi : String(row?.id), so: soCt } })
     }
     toast(moi ? `Đã lưu ${soCt}` : `Đã lưu thay đổi ${soCt}`)
-    baoDaLuu()   // dải Hướng dẫn nhanh đang chạy thì sang bước sau form khi form đóng (T676)
+    if (moi) baoDaLuu({ man, id: idMoi, so: soCt })   // tour Hướng dẫn nhanh ghi lại phiếu mẫu để xoá khi tắt tour (T681)
     // Phiếu chi mới lý do Chi phí chờ phân bổ: báo rồi mở màn tạo thẻ chi phí phân bổ, điền sẵn từ phiếu (T419: thông báo, không hỏi)
     // Mỗi dòng phiếu có lý do Chi phí chờ phân bổ thành một dòng chi tiết của thẻ (tên = diễn giải, số tiền = thành tiền)
     // Sửa phiếu (vd đã xoá thẻ cũ để sửa, T439): phiếu chưa còn thẻ nào thì cũng báo tạo thẻ như phiếu mới
@@ -494,7 +494,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
       nav(`${path}/moi${loai ? `?loai=${loai.k}` : ''}`, { replace: true })
     } else if (moi) {
       // Lưu phiếu mới: ở lại form, xem chi tiết phiếu vừa lưu; bấm đóng mới về danh sách (T51)
-      // Đang chạy dải Hướng dẫn nhanh thì đóng form về danh sách để dải sang bước kế (T676)
+      // Đang chạy tour Hướng dẫn nhanh thì đóng form về danh sách để tour khoanh phiếu vừa lưu (T676, T681)
       if (huongDanDangChay()) dongForm()
       else nav(`${path}/${idMoi}`, { replace: true })
     } else {
@@ -688,7 +688,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
       footClass="fsf-f-xem"   // thêm mới, sửa cũng chân trắng như lúc xem (T513)
       tinh={Boolean((loc.state as { chuyenPhieu?: boolean } | null)?.chuyenPhieu)}
       onClose={dongMoi}
-      dongNgay={dongForm}   // dải Hướng dẫn nhanh đi ra bước ngoài form thì đóng không hỏi (T680)
+      dongNgay={dongForm}   // tour Hướng dẫn nhanh đi ra bước ngoài form hoặc tắt thì đóng không hỏi (T680, T681)
       day={laKk || dcn === 'ck' || (laDc && s.goi === 'S') || !hienChan('tongTien') ? undefined
         : laTien && chiTien ? <TongDay tong={tongThanhToan} soDong={dsDong.length} />
           // Phần tổng thành dải cố định ở đáy form, cuộn bảng vẫn thấy (T105); phiếu mua chỉ Tổng tiền vì số khác đã có trên dòng (T84)

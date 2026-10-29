@@ -20,7 +20,7 @@ export function FormToanMan({ icon, iconNode, iconNet, xem, title, meta, loai, g
   giua?: ReactNode   // trạng thái phiếu ở chính giữa đầu form (T49)
   day?: ReactNode    // dải cố định ngay trên thanh nút, vd Tổng tiền (T49)
   footClass?: string
-  dongNgay?: () => void  // đóng không hỏi lại, dùng khi dải Hướng dẫn nhanh đi ra bước ngoài form; không có thì dùng onClose (T680)
+  dongNgay?: () => void  // đóng không hỏi lại, dùng khi tour Hướng dẫn nhanh đi ra bước ngoài form hoặc tắt; không có thì dùng onClose (T680)
   onClose: () => void; foot: ReactNode; children: ReactNode
 }) {
   useEffect(() => {
@@ -28,7 +28,7 @@ export function FormToanMan({ icon, iconNode, iconNet, xem, title, meta, loai, g
     window.addEventListener('keydown', on)
     return () => window.removeEventListener('keydown', on)
   }, [onClose])
-  // dải bước Hướng dẫn nhanh đang mở thì nổi lên form, ngay dưới thanh đầu form (T676)
+  // báo form đang mở để tour Hướng dẫn nhanh khoanh ô trong form, đóng form không hỏi (T676, T681)
   const ref = useRef<HTMLDivElement>(null)
   const dong = useRef(onClose)
   dong.current = dongNgay ?? onClose

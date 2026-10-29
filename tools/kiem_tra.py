@@ -5034,17 +5034,21 @@ def kiem_tra_t594_to_giay():
         b.close()
     return loi
 
-def kiem_tra_t676_huong_dan():
-    """Kiểm tra T676, T680: dải bước Hướng dẫn nhanh (QD87) đánh số cam đúng chỗ ở 6 màn gói Standard, màn 1440, kể cả bước trong form phiếu.
-    Bấm nút Hướng dẫn, đi hết các bước bằng Bước kế. Bước có khoá o (data-o trên dải) phải có .hdn-cham-o mang số của bước đó,
-    có lớp tối .hdn-toi, khung cam không lố lên thanh trên. Bước kế vào bước trong form phải tự mở form, ra bước ngoài form tự đóng không hỏi.
-    Thu chi: nút Ghi một khoản chi mở form, dải nằm trong form dưới thanh đầu form, không che ô, nút Lưu; hộp thoại nằm trên dải;
-    khung đủ nằm giữa dải và chân form; bấm Lưu thì form đóng, dải sang bước kế; nút tắt đóng luôn form dải đã mở.
+def kiem_tra_t681_tour_huong_dan():
+    """Kiểm tra T681 (QD88): tour Hướng dẫn nhanh ở 6 màn gói Standard, màn 1440, kể cả bước trong form phiếu.
+    Bấm nút Hướng dẫn: bong bóng mở đầu giữa màn; bấm vào vùng tối không tắt tour. Bấm Bắt đầu rồi Tiếp qua hết các bước:
+    bước có khoá o thì tâm chỗ khoanh nằm trên đúng chỗ thật của khoá đó, bong bóng nằm trong màn. Thanh trên xem Tất cả cửa hàng
+    thì form có bước chọn cửa hàng, Tiếp tự chọn; bước Lưu thì Tiếp tự lưu, form đóng, bước sau khoanh dòng phiếu vừa lưu.
+    Xong ở bong bóng cuối, Bỏ qua giữa chừng trong form: đường dẫn về như lúc bấm nút, không còn form, cửa hàng như cũ,
+    số dòng danh sách như cũ, phiếu mẫu tour đã lưu bị xoá.
     """
     loi = []
-    print('Kiểm tra T676, T680: số cam Hướng dẫn nhanh ở 6 màn gói Standard, kể cả bước trong form phiếu:')
+    print('Kiểm tra T681: tour Hướng dẫn nhanh ở 6 màn gói Standard, kể cả bước trong form phiếu:')
     man = [('Thu chi', '/app/tien/2-1-1'), ('Quỹ tiền', '/app/danh-muc/1-12'), ('Kê khai thuế', '/app/thue/to-khai'),
            ('Xuất bán POS', '/app/ban-hang/3-1-1'), ('Kiểm kê', '/app/kho/5-1-10'), ('Sổ quỹ', '/app/tien/2-2-1')]
+    # chỗ thật của từng khoá o, độc lập với timCho trong HuongDanNhanh.tsx; khoá nào màn tự gắn data-hd="<khoá>" thì lấy chỗ đó
+    cho_that = {'tab': '.mtabs-in', 'them': '.ds-toolbar-phai', 'loc': '.ds-toolbar-figma', 'bang': '.tbl-wrap', 'tong': '.pt-bar, tfoot',
+                'nhom': '.ds-chips, .bc-trai', 'to': '.page-report .tbl-wrap, .page-report .report', 'in': '.bc-dau-nut', 'cn': '.chon-cn'}
     with sync_playwright() as p:
         b = p.chromium.launch(channel='chrome')
         pg = b.new_page(viewport={'width': 1440, 'height': 900})
@@ -5058,147 +5062,127 @@ def kiem_tra_t676_huong_dan():
             pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('S'))})")
             pg.goto(f'{URL}?goi=S&p={abs(hash(path))}#{path}')
             pg.wait_for_selector('.mtabs-hdn', timeout=8000)
+            pg.wait_for_timeout(300)
+            # lúc bấm nút: đường dẫn, cửa hàng trên thanh trên, số dòng danh sách
+            truoc = trang_thai()
             pg.locator('.mtabs-hdn:visible').first.click()
-            pg.wait_for_selector('.hdn-dai')
+            pg.wait_for_selector('.hdn-tour .hdan-bong', timeout=3000)
+            return truoc
 
-        def buoc():
-            # [số bước, tổng số bước, khoá o của bước đang xem]
-            return pg.evaluate("""() => { const d = document.querySelector('.hdn-dai'); const m = /Bước (\\d+)\\/(\\d+)/.exec(d?.querySelector('.hdn-dai-so')?.textContent || '')
-                return m ? [+m[1], +m[2], d.dataset.o || ''] : null }""")
+        def trang_thai():
+            return pg.evaluate("""() => ({ path: location.hash, cn: document.querySelector('.cn-t b')?.textContent?.trim() ?? '',
+                dong: document.querySelectorAll('.main table.tbl tbody tr').length, dau: document.querySelector('.main table.tbl tbody tr')?.textContent ?? '', form: !!document.querySelector('.fsf'), tour: !!document.querySelector('.hdn-tour') })""")
 
-        def co_so(k, n):
-            # số cam đo lại đều 400ms nên chờ tối đa 1 giây
-            for _ in range(10):
-                if pg.evaluate("""([k, n]) => [...document.querySelectorAll('.hdn-cham-o')].some(e => (e.dataset.k || '').split(' ').includes(k)
-                    && [...e.querySelectorAll('.hdn-cham-so i')].some(i => i.textContent === String(n)))""", [k, n]):
-                    return True
+        def bong():
+            # bong bóng đang hiện: [khoá (dau, cuoi, cn, vua hoặc khoá o), số bước, tổng số bước, nằm giữa màn]; bong bóng ẩn khi đang chờ chỗ khoanh
+            pg.wait_for_selector('.hdn-tour .hdan-bong', timeout=3000)
+            return pg.evaluate("""() => { const e = document.querySelector('.hdn-tour .hdan-bong')
+                return [e.dataset.k, +e.dataset.buoc, +e.dataset.tong, e.classList.contains('giua')] }""")
+
+        def kiem_cho(k, so):
+            # chỗ khoanh hiện trong 1,5 giây, tâm chỗ khoanh nằm trên chỗ thật của khoá; bong bóng nằm trong màn
+            for _ in range(15):
+                ra = pg.evaluate("""([k, sel, so]) => { const lo = document.querySelector('.hdn-tour .hdan-lo'); if (!lo) return 'không khoanh chỗ nào'
+                    const r = lo.getBoundingClientRect(), ds = document.elementsFromPoint(r.left + r.width / 2, r.top + r.height / 2)
+                    const dung = ds.some(e => e.closest(`[data-hd="${k}"]`) || (sel && e.closest(sel)) || (so && e.closest('tr')?.textContent?.includes(so)))
+                    if (!dung) return 'chỗ khoanh không nằm trên chỗ thật, tâm trúng ' + ds.slice(1, 4).map(e => e.tagName + '.' + e.className).join(' | ')
+                    const bb = document.querySelector('.hdn-tour .hdan-bong')?.getBoundingClientRect()
+                    return bb && (bb.left < 0 || bb.top < 0 || bb.right > innerWidth || bb.bottom > innerHeight) ? 'bong bóng tràn khỏi màn' : '' }""",
+                                 [k, cho_that.get(k, ''), so])
+                if not ra:
+                    return ''
                 pg.wait_for_timeout(100)
-            return False
+            return ra
 
-        def mo_form():
-            pg.locator('.hdn-dai-lam').click()
-            pg.wait_for_selector('.fsf', timeout=5000)
-            # thanh trên đang xem Tất cả cửa hàng thì form hỏi cửa hàng trước
-            if pg.locator('.fsf .chon-cn').count():
-                pg.locator('.fsf .chon-cn-ds button').first.click()
-                pg.wait_for_selector('.fsf [data-hd="ttc"]', timeout=3000)
+        def nut(chu):
+            pg.locator('.hdn-tour .hdan-bong .hdan-nut button', has_text=chu).click()
+            pg.wait_for_timeout(200)
 
-        def dong_form():
-            pg.keyboard.press('Escape')
-            nut = pg.locator('.overlay button', has_text='Xác nhận')
-            try:
-                nut.wait_for(timeout=1000)
-                nut.click()
-            except Exception:
-                pass
-            pg.wait_for_selector('.fsf', state='detached', timeout=3000)
+        def so_vua():
+            return pg.evaluate("() => /Phiếu (\\S+) vừa lưu/.exec(document.querySelector('.hdn-tour .hdn-bong-chu')?.textContent || '')?.[1] || ''")
 
-        def ke(nut='.btn.pri'):
-            pg.locator(f'.hdn-dai .hdn-dai-nut {nut}').click()
-            pg.wait_for_timeout(250)
-            # Bước kế vào bước trong form tự mở form; thanh trên đang xem Tất cả cửa hàng thì form hỏi cửa hàng trước
-            if pg.locator('.fsf .chon-cn').count():
-                pg.locator('.fsf .chon-cn-ds button').first.click()
-                pg.wait_for_selector('.fsf [data-hd="ttc"]', timeout=3000)
-
-        def vien():
-            # khung cam bước đang xem: có lớp tối, cạnh trên (viền 2px) không lố lên thanh trên
-            return pg.evaluate("""() => { const o = document.querySelector('.hdn-cham-o.on'); if (!o) return 'không có khung cam viền đậm'
-                if (!document.querySelector('.hdn-toi')) return 'không có lớp tối'
-                const tb = document.querySelector('.fsf') ? null : document.querySelector('.topbar')
-                return tb && o.getBoundingClientRect().top - 2 < tb.getBoundingClientRect().bottom - 1 ? 'khung cam lố lên thanh trên' : '' }""")
+        def tra_lai(ten, truoc):
+            pg.wait_for_timeout(500)
+            sau = trang_thai()
+            if sau['tour']:
+                loi.append(f'{ten}: tắt tour mà tour còn hiện')
+            # dòng đầu danh sách như cũ: phiếu mẫu tour đã lưu bị xoá (dữ liệu giả có phiếu trùng số nên không dò theo số phiếu)
+            for k, chu in [('path', 'đường dẫn'), ('cn', 'cửa hàng trên thanh trên'), ('dong', 'số dòng danh sách'), ('dau', 'dòng đầu danh sách'), ('form', 'form')]:
+                if sau[k] != truoc[k]:
+                    loi.append(f'{ten}: tắt tour mà {chu} không như lúc bấm nút Hướng dẫn ({truoc[k][:60] if k == "dau" else truoc[k]} → {sau[k][:60] if k == "dau" else sau[k]})')
 
         for ten, path in man:
             try:
-                vao(path)
-                bd = buoc()
-                if not bd:
-                    loi.append(f'{ten}: dải không hiện bước')
+                truoc = vao(path)
+                k, n, tong, giua = bong()
+                if k != 'dau' or not giua:
+                    loi.append(f'{ten}: bấm nút Hướng dẫn phải hiện bong bóng mở đầu giữa màn, đang {k}')
+                # bấm vào vùng tối (mép trái màn) không tắt tour
+                pg.mouse.click(6, 450)
+                pg.wait_for_timeout(200)
+                if not pg.locator('.hdn-tour').count():
+                    loi.append(f'{ten}: bấm vào vùng tối làm tắt tour')
                     continue
-                for n in range(1, bd[1] + 1):
-                    bd = buoc()
-                    if not bd or bd[0] != n:
-                        loi.append(f'{ten}: bấm Bước kế không tới bước {n}, dải đang {bd}')
+                nut('Bắt đầu')
+                da, so, lan = [], '', 0
+                while lan < 20:
+                    lan += 1
+                    k, n, tong, giua = bong()
+                    if k == 'cuoi':
                         break
-                    k = bd[2]
+                    da.append(k)
+                    if k == 'vua':
+                        so = so_vua()
+                        if not so:
+                            loi.append(f'{ten} bước {n}/{tong}: bong bóng phiếu vừa lưu không ghi số phiếu')
                     if k:
-                        if not co_so(k, n):
-                            loi.append(f'{ten} bước {n}: thiếu số cam ở khoá o "{k}"' + (', form đang mở' if pg.locator('.fsf').count() else ''))
-                        elif vien():
-                            loi.append(f'{ten} bước {n}: {vien()} ở khoá o "{k}"')
-                    if pg.locator('.overlay').count():
-                        loi.append(f'{ten} bước {n}: còn hộp thoại, Bước kế ra ngoài form phải đóng form không hỏi')
-                        break
-                    if n < bd[1]:
-                        ke()
-                if pg.locator('.fsf').count():
-                    dong_form()
+                        ra = kiem_cho(k, so if k == 'vua' else '')
+                        if ra:
+                            loi.append(f'{ten} bước {n}/{tong} khoá "{k}": {ra}' + (', form đang mở' if pg.locator('.fsf').count() else ''))
+                    if k == 'luu':
+                        nut('Tiếp')
+                        pg.wait_for_selector('.fsf', state='detached', timeout=3000)
+                        continue
+                    nut('Tiếp')
+                    if k == 'cn' and pg.locator('.fsf .chon-cn').count():
+                        loi.append(f'{ten} bước {n}/{tong}: Tiếp ở bước chọn cửa hàng không tự chọn cửa hàng')
+                if k != 'cuoi':
+                    loi.append(f'{ten}: Tiếp không tới bong bóng cuối, đã qua {da}')
+                if 'luu' in da and 'vua' not in da:
+                    loi.append(f'{ten}: sau bước Lưu không có bước khoanh phiếu vừa lưu')
+                if 'ttc' in da or 'chi-tiet' in da:
+                    if 'cn' not in da:
+                        loi.append(f'{ten}: thanh trên đang xem Tất cả cửa hàng mà tour không có bước chọn cửa hàng, đã qua {da}')
+                nut('Xong')
+                tra_lai(ten, truoc)
             except Exception as e:
-                loi.append(f'{ten}: kiểm dải bước lỗi {str(e).splitlines()[0]}')
+                loi.append(f'{ten}: kiểm tour lỗi {str(e).splitlines()[0]}')
             if con:
                 loi.append(f'{ten}: lỗi console {con[:2]}')
                 con.clear()
 
-        # Thu chi: Bước kế tới bước 2, bấm Ghi một khoản chi, rồi Lưu
+        # Thu chi: Quay lại từ bước đầu form về bước chọn cửa hàng thì form hỏi lại cửa hàng; Bỏ qua khi form đang mở trả lại như cũ
         try:
-            vao('/app/tien/2-1-1')
-            ke()
-            mo_form()
-            bd = buoc()
-            if not bd or bd[0] != 3:
-                loi.append(f'Thu chi: bấm Ghi một khoản chi thì dải phải sang bước 3, đang {bd}')
-            vt = pg.evaluate("""() => { const f = document.querySelector('.fsf'), d = f?.querySelector(':scope > .hdn-dai'); if (!d) return null
-                const r = e => e.getBoundingClientRect(), h = r(f.querySelector('.fsf-h')), dd = r(d), bd = r(f.querySelector('.fsf-b')), l = f.querySelector('[data-hd="luu"]')
-                const lr = l && r(l), tren = lr && document.elementFromPoint(lr.left + lr.width / 2, lr.top + lr.height / 2)
-                return { dinh: dd.top - h.bottom, than: bd.top - dd.bottom, luu: !!l && !!tren && l.contains(tren) } }""")
-            if not vt:
-                loi.append('Thu chi: form mở mà dải không nằm trong form')
-            else:
-                if abs(vt['dinh']) > 1 or vt['than'] < -1:
-                    loi.append(f'Thu chi: dải không nằm ngay dưới thanh đầu form hoặc che thân form ({vt})')
-                if not vt['luu']:
-                    loi.append('Thu chi: nút Lưu bị che hoặc thiếu data-hd="luu"')
-            if bd and bd[2] and not co_so(bd[2], bd[0]):
-                loi.append(f'Thu chi bước {bd[0]} trong form: thiếu số cam ở khoá o "{bd[2]}"')
-            # khung đủ trong form: từ dưới dải tới trên chân form
-            pg.locator('.hdn-dai-du').click()
-            kh = pg.evaluate("""() => { const f = document.querySelector('.fsf'), k = f?.querySelector(':scope > .hdn-khung'); if (!k) return null
-                const r = e => e.getBoundingClientRect(); return { tren: r(k).top - r(f.querySelector(':scope > .hdn-dai')).bottom, duoi: r(f.querySelector('.fsf-f')).top - r(k).bottom } }""")
-            if not kh or kh['tren'] < 0 or kh['duoi'] < 0:
-                loi.append(f'Thu chi: khung Xem đủ hướng dẫn không nằm giữa dải và chân form ({kh})')
-            pg.locator('.hdn-khung .hdn-dong').click()
-            # hộp thoại hỏi đóng phiếu nằm trên dải
-            pg.keyboard.press('Escape')
-            pg.wait_for_selector('.overlay', timeout=2000)
-            if not pg.evaluate("""() => { const r = document.querySelector('.fsf > .hdn-dai').getBoundingClientRect()
-                return !!document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2)?.closest('.overlay') }"""):
-                loi.append('Thu chi: hộp thoại .overlay nằm dưới dải')
-            pg.locator('.overlay button', has_text='Bỏ qua').click()
+            truoc = vao('/app/tien/2-1-1')
+            nut('Bắt đầu')
             for _ in range(10):
-                bd = buoc()
-                if not bd or bd[2] == 'luu' or bd[0] >= bd[1]:
+                k = bong()[0]
+                if k in ('ttc', 'chi-tiet', 'cuoi'):
                     break
-                ke()
-            if not bd or bd[2] != 'luu':
-                loi.append(f'Thu chi: không có bước chỉ vào nút Lưu, dải đang {bd}')
+                nut('Tiếp')
+            if k not in ('ttc', 'chi-tiet') or not pg.locator('.fsf').count():
+                loi.append(f'Thu chi: Tiếp không mở form tới bước trong form, đang {k}')
             else:
-                pg.locator('.fsf [data-hd="luu"]').click()
-                pg.wait_for_selector('.fsf', state='detached', timeout=3000)
-                sau = buoc()
-                if not sau or sau[0] != bd[0] + 1 or pg.locator('.fsf > .hdn-dai').count():
-                    loi.append(f'Thu chi: bấm Lưu thì form phải đóng, dải về danh sách ở bước {bd[0] + 1}, đang {sau}')
-                # Bước trước về bước trong form tự mở lại form; nút tắt đóng luôn form dải đã mở
-                ke('.btn.ghost')
-                if not pg.locator('.fsf > .hdn-dai').count():
-                    loi.append('Thu chi: Bước trước về bước trong form không tự mở form')
-                pg.locator('.hdn-dai-x').click()
-                pg.wait_for_timeout(300)
-                if pg.locator('.fsf, .hdn-dai, .overlay').count():
-                    loi.append('Thu chi: bấm tắt hướng dẫn thì phải đóng luôn form dải đã mở, không hỏi')
+                nut('Quay lại')
+                if bong()[0] != 'cn' or not pg.locator('.fsf .chon-cn').count():
+                    loi.append('Thu chi: Quay lại bước chọn cửa hàng thì form phải hỏi lại cửa hàng')
+                nut('Tiếp')
+                nut('Bỏ qua')
+                tra_lai('Thu chi Bỏ qua trong form', truoc)
         except Exception as e:
-            loi.append(f'Thu chi: kiểm dải trong form lỗi {str(e).splitlines()[0]}')
+            loi.append(f'Thu chi: kiểm Bỏ qua trong form lỗi {str(e).splitlines()[0]}')
         if con:
-            loi.append(f'Thu chi dải trong form: lỗi console {con[:2]}')
+            loi.append(f'Thu chi Bỏ qua trong form: lỗi console {con[:2]}')
         b.close()
     print(f'  {len(loi)} lỗi' if loi else '  đúng')
     return loi
@@ -5357,7 +5341,7 @@ def main():
     loi += kiem_tra_dot_22_a()
     loi += kiem_tra_t274_web()
     loi += kiem_tra_t594_to_giay()
-    loi += kiem_tra_t676_huong_dan()
+    loi += kiem_tra_t681_tour_huong_dan()
     if loi:
         print(f'{len(loi)} LỖI:')
         for x in loi:

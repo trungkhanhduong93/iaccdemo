@@ -42594,16 +42594,6 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
 .mtabs-hdn.nhay::after { content: ""; position: absolute; inset: -4px; border-radius: 11px; border: 2px solid var(--orange); animation: hdn-nhay 1.6s ease-out infinite; pointer-events: none; }
 @keyframes hdn-nhay { 0% { opacity: 1; transform: scale(.9); } 100% { opacity: 0; transform: scale(1.25); } }
 @media (prefers-reduced-motion: reduce) { .mtabs-hdn.nhay::after { animation: none; } }
-/* khung đủ nổi bên phải, dưới dải bước (56px thanh trên + 46px thanh tab + 52px dải, T679), dưới form toàn màn (.fsf z 45) */
-.hdn-khung { position: fixed; top: 158px; right: 12px; bottom: 12px; width: 380px; z-index: 40; background: #fff; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; box-shadow: 0 18px 50px rgba(14, 26, 43, .18), 0 2px 6px rgba(14, 26, 43, .08); display: flex; flex-direction: column; animation: hdn-vao .2s ease; }
-@keyframes hdn-vao { from { transform: translateX(24px); opacity: 0; } }
-@media (prefers-reduced-motion: reduce) { .hdn-khung { animation: none; } }
-.hdn-dau { display: flex; align-items: center; gap: 10px; padding: 12px 14px 12px 16px; border-bottom: 1px solid var(--line); }
-.hdn-dau-ic { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: var(--tint); color: var(--blue); flex: none; }
-.hdn-dau-chu { display: flex; flex-direction: column; min-width: 0; flex: 1; }
-.hdn-dau-chu small { font-size: 12px; color: var(--muted); }
-.hdn-dau-chu b { font-size: 15px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.hdn-than { flex: 1; overflow-y: auto; padding: 14px 16px 84px; display: flex; flex-direction: column; gap: 18px; }   /* chừa đáy cho nút Trợ lý IACC */
 .hdn-muc { display: flex; flex-direction: column; gap: 8px; }
 .hdn-muc h4 { margin: 0; font-size: 11.5px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
 .hdn-muc > p { margin: 0; color: var(--ink); font-size: 14px; line-height: 1.55; }
@@ -42617,13 +42607,7 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
 .hdn-o.sang { border: 1.5px solid var(--orange); background: var(--orange-t); color: var(--ink); }
 .hdn-o.nut.sang { background: var(--blue-d); color: #fff; box-shadow: 0 0 0 3px var(--orange-b); }
 .hdn-o-so { display: inline-flex; gap: 3px; flex: none; }
-.hdn-o-so i, .hdn-buoc-so { width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; background: var(--orange); color: #fff; font-size: 11px; font-weight: 700; font-style: normal; }
-.hdn-buoc { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
-.hdn-buoc li { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 6px 8px; margin: 0 -8px; border-radius: 8px; }
-.hdn-buoc li.sang { background: var(--orange-t); }
-.hdn-buoc-so { flex: none; width: 20px; height: 20px; margin-top: 1px; }
-.hdn-buoc p { margin: 0; color: var(--ink); font-size: 13.5px; line-height: 1.5; }
-.hdn-buoc .hdn-lam { margin-left: 30px; }
+.hdn-o-so i { width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; background: var(--orange); color: #fff; font-size: 11px; font-weight: 700; font-style: normal; }
 .hdn-luu { margin: 0; padding: 10px 12px 10px 28px; border-radius: 8px; background: var(--amber-t); color: var(--ink); font-size: 13px; line-height: 1.5; display: flex; flex-direction: column; gap: 4px; }
 /* Đi tiếp: các bước sơ đồ Quy trình xếp dọc, bước có màn đang mở sáng xanh */
 .hdn-luong { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
@@ -42660,61 +42644,24 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
 :not(.mtabs) > .mtabs-hdn { margin-left: 0; }
 .bc-dau-phai > .mtabs-hdn { align-self: auto; margin-bottom: 2px; }   /* ngang hàng nút In (.bc-dau-nut chừa đáy 2px) */
 .bc-chon:not(.bc-dau-moi) > .mtabs-hdn { margin-left: auto; }
-/* thanh tab ẩn nên khung nằm dưới dải sát thanh trên (56px + 52px dải, T679); đầu báo cáo không cho xuống dòng nên khung đặt lại */
-.hdn-khung.ngoai { top: 112px; }
 /* ── Hướng dẫn nhanh kiểu dải bước: dải dưới thanh tab, số cam trên nút thật, khung đủ nổi (T679, QD87) ── */
-/* màn chính chừa 52px ở đầu cho dải; thanh tab ẩn (báo cáo đầu mới, phân hệ Báo cáo) thì dải sát dưới thanh trên */
-:root:has(.hdn-dai) .shell > .main { margin-top: 52px; }
-.hdn-dai { position: fixed; z-index: 32; top: 102px; left: 232px; right: 0; height: 52px; padding: 6px 16px; background: var(--bg); color: var(--ink); font-size: 14px; font-weight: 400; line-height: 1.45; letter-spacing: normal; text-transform: none; white-space: normal; }
-.hdn-dai.gon { left: 64px; }
-.hdn-dai.ngoai { top: 56px; }
-.hdn-dai-in { height: 40px; display: flex; align-items: center; gap: 10px; padding: 0 5px 0 12px; border: 1px solid #c9dcee; border-radius: 10px; background: var(--tint); box-shadow: 0 1px 2px rgba(14, 26, 43, .05); }
-.hdn-dai-ic { flex: none; color: var(--blue); }
-.hdn-dai-so { flex: none; color: var(--blue); font-size: 13px; font-weight: 700; white-space: nowrap; }
-.hdn-dai-chu { flex: 1; min-width: 0; font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.hdn-dai-lam, .hdn-dai-nut, .hdn-dai-phai { flex: none; }
-.hdn-dai-nut, .hdn-dai-phai { display: flex; align-items: center; gap: 6px; }
-.hdn-dai-phai { margin-left: 2px; padding-left: 8px; border-left: 1px solid #c9dcee; }
-.hdn-dai .btn.sm { height: 30px; white-space: nowrap; }
-.hdn-dai .btn.ghost { color: var(--ink); }
-.hdn-dai .btn.ghost:hover:not(:disabled) { background: rgba(5, 96, 166, .08); }
-.hdn-dai .btn:disabled { opacity: .45; cursor: default; }
-.hdn-dai .btn.ghost.hdn-dai-du.on { background: var(--blue); color: #fff; }
-.hdn-dai-x { width: 30px; padding: 0; justify-content: center; }
-.hdn-dai .btn.ghost.hdn-dai-x { color: var(--muted); }
-/* số cam trên nút thật: lớp phủ không bắt chuột, trên sidebar (30), dưới dải, khung đủ, form toàn màn */
-.hdn-cham { position: fixed; inset: 0; z-index: 31; pointer-events: none; }
-.hdn-cham-o { position: absolute; border-radius: 9px; transition: box-shadow .2s ease; }
-.hdn-cham-o.on { box-shadow: 0 0 0 2px var(--orange), 0 0 0 6px rgba(242, 128, 32, .16); }
-.hdn-cham-so { position: absolute; top: -9px; left: -9px; display: flex; gap: 3px; }
-.hdn-cham-so i { min-width: 20px; height: 20px; padding: 0 5px; border-radius: 10px; display: grid; place-items: center; background: var(--orange); color: #fff; font: 700 11.5px/1 var(--fs); box-shadow: 0 0 0 2px #fff, 0 2px 6px rgba(14, 26, 43, .2); }
-.hdn-cham-o:not(.on) .hdn-cham-so i { background: var(--orange-d); opacity: .85; }
-/* ô sát mép trên (thanh tab): số nằm giữa cạnh trái để thanh trên không che */
-.hdn-cham-o.sat .hdn-cham-so { top: 50%; left: -5px; transform: translateY(-50%); }
-@media (prefers-reduced-motion: reduce) { .hdn-cham-o { transition: none; } }
-/* khung đủ: bấm một bước thì đóng khung, dải về đúng bước đó */
-.hdn-buoc-chon { display: flex; gap: 10px; width: 100%; padding: 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }
-.hdn-buoc li.on { background: var(--orange-t); }
-.hdn-buoc li.on .hdn-buoc-so { box-shadow: 0 0 0 3px var(--orange-b); }
-.hdn-goi-y { font-size: 12.5px; color: var(--muted); }
 /* Đi tiếp gọn: bước trước, đang ở, bước sau trên sơ đồ Quy trình */
 .hdn-gan { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px 12px; align-items: baseline; font-size: 12.5px; color: var(--muted); }
-/* ── Hướng dẫn nhanh: dải bước đi theo vào form phiếu toàn màn (T676, QD87) ── */
-/* dải nằm trong form ngay dưới thanh đầu form; thân form co lại nhường chỗ nên dải không che ô nào, không che nút Lưu */
-.fsf:has(> .hdn-dai) > .fsf-h { order: -2; }
-.fsf > .hdn-dai { position: relative; inset: auto; z-index: 40; order: -1; flex: none; padding: 6px 20px; }   /* z-index: trên lớp tối của số cam (T680) */
-/* khung đủ: từ dưới dải tới trên chân form, top, bottom do HuongDanNhanh đo theo px của form */
-.fsf > .hdn-khung { position: absolute; }
-/* số cam trong form: trên ô của form, dưới khung đủ (z-index 40) và hộp thoại .overlay (z-index 50) */
-.fsf > .hdn-cham { z-index: 39; }
 /* ── Hướng dẫn nhanh: làm tối quanh khung cam, nút bóng đèn kèm chữ Hướng dẫn (T680, QD87) ── */
-/* dải, số cam, khung nằm thẳng trong body nên lớp tối phủ được cả sidebar, thanh trên; lớp không bắt chuột, vẫn bấm được mọi chỗ */
-.hdn-toi { position: absolute; border-radius: 9px; box-shadow: 0 0 0 200vmax rgba(14, 26, 43, .42); transition: left .25s ease, top .25s ease, width .25s ease, height .25s ease; }
-@media (prefers-reduced-motion: reduce) { .hdn-toi { transition: none; } }
 /* nút Hướng dẫn cuối thanh tab, cạnh nút In ở đầu báo cáo: nền cam nhạt, rê chuột hoặc đang mở thì cam đặc */
 .mtabs-hdn { width: auto; padding: 0 12px 0 9px; border-radius: 16px; display: flex; align-items: center; gap: 6px; background: var(--orange-t); color: var(--orange-d); box-shadow: inset 0 0 0 1px var(--orange-b); font: 600 13px/1 var(--fs); white-space: nowrap; }
 .mtabs-hdn:hover, .mtabs-hdn.on { background: var(--orange); color: #fff; box-shadow: none; }
 .mtabs-hdn.nhay::after { border-radius: 20px; }
-/* bóng đèn ở đầu dải, đầu khung đủ cùng màu nút */
-.hdn-dai-ic { color: var(--orange-d); }
-.hdn-dau-ic { background: var(--orange-t); color: var(--orange-d); }
+/* ── Hướng dẫn nhanh kiểu tour như Trang chủ: lớp tối chặn bấm, khoanh sáng chỗ thật, bong bóng cạnh chỗ khoanh (T681, QD88) ── */
+/* dùng lại .hdan, .hdan-lo, .hdan-toi, .hdan-bong của tour Trang chủ (T138, z-index 120): nằm trên form toàn màn (.fsf z 45), hộp thoại (.overlay z 50) */
+.hdn-tour .hdan-bong-ic { background: var(--orange-t); color: var(--orange-d); }   /* bóng đèn cùng màu nút Hướng dẫn */
+.hdn-bong-nhan { font-size: 12px; color: var(--muted); }
+.hdn-bong-so { align-self: flex-start; font-size: 12px; font-weight: 700; color: var(--orange-d); }
+.hdn-tour .hdan-bong p.hdn-bong-chu { color: var(--ink); font-size: 14px; }
+/* bước không tìm được chỗ thật: bong bóng giữa màn kèm sơ đồ khung màn, ô của bước sáng cam */
+.hdn-tour .hdan-bong .hdn-sodo { align-self: stretch; margin-top: 4px; text-align: left; }
+/* bong bóng cuối: Lưu ý, Đi tiếp xếp dọc, chữ canh trái; Quay lại bên trái, Xong bên phải */
+.hdn-tour .hdan-bong.giua.cuoi { width: 440px; max-width: calc(100vw - 24px); text-align: left; align-items: stretch; gap: 14px; padding: 22px 24px 16px; }
+.hdn-bong-dau { display: flex; align-items: center; gap: 10px; }
+.hdn-bong-dau .hdan-bong-ic { width: 36px; height: 36px; border-radius: 10px; margin: 0; flex: none; background: var(--green-t); color: var(--green); }
+.hdn-tour .hdan-bong.cuoi .hdan-nut .grow { display: block; }

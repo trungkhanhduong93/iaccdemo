@@ -79,6 +79,22 @@ export function themPhieu(man: string, row: Row, ai?: string) {
   nghe.forEach(f => f())
 }
 
+/** Bỏ hẳn phiếu mới lưu như chưa từng lập: không vào Đã xoá, không để lại nhật ký, số phiếu kế tiếp lùi lại.
+ *  Dùng cho phiếu mẫu tour Hướng dẫn nhanh khi tắt tour (T681). Bỏ luôn phiếu thu, chi, phiếu điều chỉnh sinh kèm */
+export function boPhieuMoi(man: string, id: string) {
+  const r = (phieuMoi.get(man) ?? []).find(x => String(x.id) === id)
+  if (!r) return
+  const ds = [{ man, id },
+    ...(r._ctTt ? [{ man: 'tien/2-1-1', id: (r._ctTt as CtTt).id }] : []),
+    ...((r._dsDc as CtTt[] | undefined) ?? []).map(c => ({ man: 'kho/dieu-chinh', id: c.id }))]
+  for (const x of ds) {
+    phieuMoi.set(x.man, (phieuMoi.get(x.man) ?? []).filter(p => String(p.id) !== x.id))
+    for (let i = nhatKy.length - 1; i >= 0; i--) if (nhatKy[i].man === x.man && nhatKy[i].id === x.id) nhatKy.splice(i, 1)
+  }
+  banSo++
+  nghe.forEach(f => f())
+}
+
 /** Phiếu đã có sửa trên form rồi lưu: danh sách hiện nội dung mới */
 export function suaPhieu(man: string, id: string, moi: Partial<Row>) {
   daSua.set(`${man}|${id}`, { ...daSua.get(`${man}|${id}`), ...moi })

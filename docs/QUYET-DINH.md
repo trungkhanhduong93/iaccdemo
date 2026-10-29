@@ -961,11 +961,11 @@ Trum chốt 29/10/2026 (T679) kiểu C trên bản bấm thử https://claude.ai
 - Bước kế, Bước trước, bấm bước trong khung đủ: giao diện tự tới chỗ của bước. Vào bước trong form thì tự mở form, ra bước ở màn danh sách thì tự đóng form, không hỏi. Nút tắt là bỏ qua: tắt hướng dẫn, đóng luôn form do dải mở. Trum chốt không hỏi vì đây là bản demo (T680).
 - Bước trong form được tính riêng nên một màn có thể quá 5 bước: Trum duyệt Thu chi 7 bước, Kiểm kê 5 bước (T676).
 - `tools/kiem_tra.py` kiểm số cam đúng bước ở 6 màn gói Standard mỗi lần chạy, cả `--nhanh` (T676).
-- Cách hiện đổi theo QD88 (T681): tour như Trang chủ thay cho dải bước.
+- Cách hiện đổi theo QD88 (T681): tour như Trang chủ thay cho dải bước. Dải, số cam, khung Xem đủ hướng dẫn không còn dùng. Vẫn giữ nút Hướng dẫn bóng đèn, khoá ô `o`, `data-hd`, bước trong form, cách gọi Quỹ tiền.
 
 ## QD88. Hướng dẫn nhanh kiểu tour như Trang chủ (29/10/2026)
 
-Trum chốt 29/10/2026 sau khi dùng thử T680. Thay cách hiện dải bước của QD87, nội dung 4 mục của QD86 và chữ trong `huong-dan.ts` giữ nguyên. Chưa làm, làm ở T681.
+Trum chốt 29/10/2026 sau khi dùng thử T680. Thay cách hiện dải bước của QD87, nội dung 4 mục của QD86 và chữ trong `huong-dan.ts` giữ nguyên. Đã làm ở T681.
 
 - Bấm nút Hướng dẫn (bóng đèn, T680) thì chạy tour giống tour Trang chủ (T138): màn tối, khoanh sáng đúng chỗ, bong bóng nằm cạnh chỗ khoanh. Bỏ dải trên đầu màn, bỏ số cam trên các chỗ khác.
 - Lớp tối chặn bấm. Bấm vào vùng tối không làm gì, chỉ nút Bỏ qua mới tắt tour.
