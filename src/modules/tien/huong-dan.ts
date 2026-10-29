@@ -13,7 +13,7 @@ export const huongDan: Record<string, HuongDanMan> = {
       { chu: 'Bấm số chứng từ để xem, in, sửa phiếu.', o: 'bang' },
     ],
     luuY: [
-      'Rút tiền két gửi vào tài khoản thì lập phiếu ở tab Chuyển quỹ, không ghi một phiếu chi và một phiếu thu.',
+      'Rút tiền mặt từ Quỹ tiền gửi vào ngân hàng thì lập phiếu ở tab Chuyển quỹ. Không ghi một phiếu chi và một phiếu thu.',
       'Phiếu có số bắt đầu bằng FBTC là phiếu thu chi từ máy POS FABi tự về.',
     ],
     soDo: [
@@ -23,16 +23,16 @@ export const huongDan: Record<string, HuongDanMan> = {
       [{ k: 'tong', ten: 'Tổng tiền, chuyển trang' }],
     ],
   },
-  // Sổ quỹ gói Standard mở trong phân hệ Thu chi, đầu báo cáo nằm thay thanh tab nên nút la bàn ở cạnh nút In (T674)
+  // Sổ quỹ gói Standard mở trong phân hệ Thu chi, đầu báo cáo nằm thay thanh tab nên nút la bàn ở cạnh nút In (T674). Gọi là Quỹ tiền, không gọi là két (T679)
   '2-2-1': {
     goi: ['S'],
-    muc: 'Xem tiền mặt vào, ra từng ngày và số tiền còn trong két, để cuối ngày đếm két so lại.',
+    muc: 'Xem tiền mặt vào, ra từng ngày và số tiền còn lại trong Quỹ tiền, để cuối ngày đếm tiền thực tế so lại.',
     buoc: [
-      { chu: 'Chọn Thời gian. Muốn xem riêng một két thì chọn Quỹ tiền, rồi bấm Lọc.', o: 'loc' },
+      { chu: 'Chọn Thời gian và Quỹ tiền cần xem, rồi bấm Lọc.', o: 'loc' },
       { chu: 'Đọc từ dòng Số tồn đầu kỳ, qua từng phiếu thu, chi, tới dòng Số tồn cuối kỳ. Cột Tồn là tiền còn lại sau mỗi phiếu.', o: 'to' },
       { chu: 'Bấm số phiếu thu, phiếu chi để mở phiếu gốc.', o: 'to' },
       { chu: 'Bấm In để in sổ, bấm nút tải xuống để lấy file về máy.', o: 'in' },
-      { chu: 'Tiền đếm trong két khác Số tồn cuối kỳ thì tìm khoản thu, chi chưa ghi rồi ghi thêm ở Thu chi.', di: 'tien/2-1-1?nhom=tm', nutDi: 'Mở Thu chi tiền mặt' },
+      { chu: 'Tiền đếm thực tế trong Quỹ tiền khác Số tồn cuối kỳ thì tìm khoản thu, chi chưa ghi rồi ghi thêm ở Thu chi.', di: 'tien/2-1-1?nhom=tm', nutDi: 'Mở Thu chi tiền mặt' },
     ],
     luuY: [
       'Đối chiếu cuối ngày: chọn Thời gian là hôm nay, xem dòng Số tồn cuối kỳ.',

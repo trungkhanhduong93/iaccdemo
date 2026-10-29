@@ -4,9 +4,9 @@ import type { HuongDanMan } from '../../ui/HuongDanNhanh'
 export const huongDan: Record<string, HuongDanMan> = {
   '1-12': {
     goi: ['S'],
-    muc: 'Mỗi nơi giữ tiền là một quỹ: két tiền mặt của từng cửa hàng, từng tài khoản ngân hàng. Phiếu thu chi chọn quỹ ở đây.',
+    muc: 'Mỗi nơi giữ tiền là một Quỹ tiền: tiền mặt của từng cửa hàng, từng tài khoản ngân hàng. Phiếu thu chi chọn Quỹ tiền ở đây.',
     buoc: [
-      { chu: 'Bấm tên quỹ, nhập Số dư ban đầu là số tiền đang có lúc bắt đầu dùng phần mềm.', o: 'bang', di: 'danh-muc/1-12?mo=TM01', nutDi: 'Nhập số dư két' },
+      { chu: 'Bấm tên quỹ, nhập Số dư ban đầu là số tiền đang có lúc bắt đầu dùng phần mềm.', o: 'bang', di: 'danh-muc/1-12?mo=TM01', nutDi: 'Nhập số dư Quỹ tiền' },
       { chu: 'Cột PTTT từ FABi cho biết tiền mặt, chuyển khoản, QR bán trên FABi về quỹ nào.', o: 'bang' },
       { chu: 'Có thêm tài khoản ngân hàng thì bấm Thêm mới, chọn loại Ngân hàng, ghi số tài khoản.', o: 'them' },
       { chu: 'Bấm Đang hoạt động, Không hoạt động để xem quỹ đang dùng và quỹ đã ngừng.', o: 'nhom' },

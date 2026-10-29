@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T679 | Hướng dẫn nhanh kiểu dải bước (QD87): dải dưới thanh tab, số cam đánh lên nút thật, nút Bước trước, Bước kế, Xem đủ hướng dẫn mở khung nổi; đổi chữ két sang Quỹ tiền trong hướng dẫn | Trum | 29/10/2026 | `2026-10-29-trum-dai-buoc-huong-dan.md` |
 | T674 | Hướng dẫn nhanh (QD86) cho màn báo cáo mà đầu báo cáo nằm thay thanh tab: nút la bàn ở thanh chọn báo cáo sau nút In, ở Tất cả báo cáo sau ô Tìm; khung sát dưới thanh trên; hướng dẫn riêng Sổ quỹ tiền mặt gói Standard | Trum | 29/10/2026 | `2026-10-29-trum-huong-dan-bao-cao.md` |
 | T678 | Web, nút nổi Trợ lý IACC nhấn giữ kéo sang chỗ khác, nhớ vị trí ở máy đang dùng; khung chat mở cạnh nút, không tràn màn | Trum | 29/10/2026 | `2026-10-29-trum-keo-nut-tro-ly.md` |
 | T673 | Hướng dẫn nhanh từng màn đợt 1 (QD86): nút la bàn cuối thanh tab, khung bên phải có sơ đồ khung màn đánh số, các bước, lưu ý, sơ đồ Đi tiếp lấy từ Quy trình; bộ chung theo kiểu màn và 5 màn gói Standard | Trum | 29/10/2026 | `2026-10-29-trum-huong-dan-nhanh.md` |

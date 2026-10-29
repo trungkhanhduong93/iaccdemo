@@ -941,5 +941,17 @@ Trum chốt 29/10/2026 (T673), bản bấm thử trên artifact https://claude.a
 - Nội dung viết trong code, mỗi phân hệ một file `src/modules/<phân hệ>/huong-dan.ts`, tra theo slug màn. Agent soạn, người duyệt chữ.
 - Chỉ bản web. Điện thoại chưa có nút, làm ở việc riêng.
 - Màn mà đầu báo cáo nằm thay thanh tab (phân hệ Báo cáo, báo cáo mở từ tab Báo cáo của phân hệ) đặt nút la bàn ở thanh chọn báo cáo, sau nút In; màn Tất cả báo cáo đặt sau ô Tìm báo cáo. Khung mở sát dưới thanh trên. Mỗi màn đúng một nút (T674).
+- Cách hiện hướng dẫn đổi theo QD87 (T679): dải bước dưới thanh tab, số cam trên nút thật, khung đủ nổi bên phải. Nội dung 4 mục giữ như trên.
 
-## QD87. Hướng dẫn nhanh kiểu dải bước (đang soạn)
+## QD87. Hướng dẫn nhanh kiểu dải bước (29/10/2026)
+
+Trum chốt 29/10/2026 (T679) kiểu C trên bản bấm thử https://claude.ai/artifact/FuCMVCh9iofH7yD7VxGkeK, sau khi so 5 kiểu trên màn Sổ quỹ tiền mặt và Thu chi. Thay cách hiện khung của QD86, nội dung 4 mục giữ nguyên.
+
+- Bấm la bàn thì hiện dải bước ngay dưới thanh tab, thanh tab ẩn thì dưới thanh trên. Màn chính co lại nhường chỗ cho dải, không che nút nào.
+- Dải hiện một bước mỗi lần, nút Bước trước, Bước kế (bước cuối là Xong), Xem đủ hướng dẫn, nút tắt. Bước có việc làm ngay thì có thêm nút đó, vd Ghi một khoản chi.
+- Số cam đánh thẳng lên chỗ thật của màn, bước đang xem có viền cam. Người dùng không phải dò sơ đồ vẽ.
+- Xem đủ hướng dẫn mở khung nổi bên phải, dưới dải. Khung đè lên phần phải của màn tới khi đóng. Bấm một bước trong khung thì khung đóng, dải về đúng bước đó.
+- Mục Đi tiếp trong khung chỉ hiện bước trước, bước đang ở, bước sau trên sơ đồ Quy trình.
+- Chỗ thật tìm theo khuôn chung của màn danh sách chứng từ, danh mục, báo cáo, chức năng. Màn dựng riêng gắn `data-hd="<khoá ô>"`. Màn chưa tìm được chỗ nào thì dải vẫn chạy chữ, khung đủ dùng sơ đồ vẽ như QD86.
+- Nơi giữ tiền gọi là Quỹ tiền, không gọi là két.
+- Chưa làm: dải đi theo vào form phiếu cho bước nằm trong form, máy tự kiểm chỗ đánh số mỗi lần push (T676).

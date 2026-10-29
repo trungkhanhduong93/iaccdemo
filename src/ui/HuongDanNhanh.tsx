@@ -3,6 +3,8 @@
 // Nội dung riêng của màn nằm ở src/modules/<phân hệ>/huong-dan.ts, tra theo slug màn; màn chưa có thì dùng bộ chung theo kiểu màn.
 // Lần đầu mở một màn: nút nhấp nháy, bấm mới mở khung. Đã bấm thì màn đó thôi nhấp nháy, nhớ theo người dùng và màn.
 // Màn mà đầu báo cáo nằm thay thanh tab (phân hệ Báo cáo, báo cáo đầu mới T576) đặt nút ở thanh chọn báo cáo, Tất cả báo cáo (T674).
+// Kiểu dải bước (T679, QD87): bấm la bàn hiện dải dưới thanh tab, mỗi lần một bước, số cam đánh lên đúng nút thật của màn;
+// Xem đủ hướng dẫn mở khung nổi bên phải đủ 4 mục.
 import { useEffect, useState, useSyncExternalStore } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useSession, type Session } from '../app/session'
@@ -11,6 +13,7 @@ import { anNgoaiGoi, type Goi } from '../app/plan'
 import type { ModuleDef, NutQT, QuyTrinhDef, ScreenDef } from '../modules/types'
 import { baoCaoCuaPhanHe } from '../modules/bao-cao/cuaPhanHe'
 import { Icon } from './Icon'
+import { heSoZoom } from './zoom'
 
 /** Một bước Làm nhanh. o: khoá ô trên sơ đồ khung màn mà bước chỉ tới; di: đường dẫn sau /app/ cho nút làm ngay, nutDi: chữ trên nút đó */
 export interface BuocHD { chu: string; o?: string; di?: string; nutDi?: string }
@@ -140,7 +143,8 @@ const khopNut = (n: NutQT, khoa: string[]) => {
   return !!n.di && khoa.some(k => p === k || p.startsWith(k + '/'))
 }
 
-function DiTiep({ qtMod, khoa, s }: { qtMod: ModuleDef; khoa: string[]; s: Session }) {
+/** gon: chỉ bước trước, bước đang ở, bước sau trên sơ đồ (T679); màn không có trên sơ đồ thì hiện cả sơ đồ */
+function DiTiep({ qtMod, khoa, s, gon }: { qtMod: ModuleDef; khoa: string[]; s: Session; gon?: boolean }) {
   const ds = luongCua(qtMod.quyTrinh!, s)
   if (!ds.length) return null
   const chip = (n: NutQT, i: number) => {
@@ -159,6 +163,15 @@ function DiTiep({ qtMod, khoa, s }: { qtMod: ModuleDef; khoa: string[]; s: Sessi
       </div>
     </li>
   )
+  const iDang = ds.findIndex(b => b.nut.some(n => khopNut(n, khoa)))
+  if (gon && iDang >= 0) {
+    // làn của sơ đồ hội tụ chạy song song nên không có bước trước, bước sau là khối kết quả
+    const dang = ds[iDang]
+    const truoc = dang.song ? undefined : ds[iDang - 1]
+    const sauDo = dang.song ? ds.find(b => !b.song) : ds[iDang + 1]
+    const hang = (nhan: string, b?: BuocLuong) => b && <><span>{nhan}</span><div className="hdn-l-nut">{b.nut.map(chip)}</div></>
+    return <div className="hdn-gan">{hang('Trước đó', truoc)}{hang('Đang ở', dang)}{hang('Tiếp theo', sauDo)}</div>
+  }
   // sơ đồ hội tụ: các làn gom trong một khối, mũi tên đổ về khối kết quả
   const song = ds.filter(b => b.song), sau = ds.filter(b => !b.song)
   return (
@@ -202,6 +215,89 @@ function SoDoMan({ soDo, buoc, sang, setSang }: { soDo: OSoDo[][]; buoc: BuocHD[
   )
 }
 
+// ── Chỗ thật trên màn của từng ô sơ đồ (T679, QD87) ──
+// Màn tự khai data-hd="<khoá ô>" thì dùng chỗ đó; không có thì tìm theo khuôn chung của màn danh sách chứng từ, danh mục, báo cáo, chức năng
+const KHUON: Record<string, string[]> = {
+  them: ['.main .ds-toolbar-phai :is(.ds-split-them, .ds-nut-them, .btn.pri)'],
+  nhom: ['.main .ds-chips', '.main .bc-trai'],
+  bang: ['.main .page-voucher .tbl-wrap'],
+  tong: ['.main .page-voucher tfoot', '.main .pt-bar'],
+  chon: ['.main .bc-ten-hang'],
+  in: ['.main .bc-dau-nut'],
+  to: ['.main .page-report .tbl-wrap', '.main .page-report .report'],
+  tim: ['.main .ph-act .thanh-loc'],
+  ds: ['.main .bc-ds'],
+  mota: ['.main .grid.g-21 > .stack > .card:first-child'],
+  lich: ['.main .grid.g-21 > .stack > .card:nth-child(2)'],
+  caiDat: ['.main .grid.g-21 > .card'],
+}
+const coKhung = (e: Element) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0 }
+
+/** Khung bao quanh nhiều phần tử, vd các ô lọc, các tab */
+function hop(ds: Element[]): DOMRect | null {
+  const rs = ds.filter(coKhung).map(e => e.getBoundingClientRect())
+  if (!rs.length) return null
+  const l = Math.min(...rs.map(r => r.left)), t = Math.min(...rs.map(r => r.top))
+  return new DOMRect(l, t, Math.max(...rs.map(r => r.right)) - l, Math.max(...rs.map(r => r.bottom)) - t)
+}
+
+function timCho(k: string): DOMRect | null {
+  const rieng = [...document.querySelectorAll(`[data-hd="${k}"]`)].find(coKhung)
+  if (rieng) return rieng.getBoundingClientRect()
+  // các tab của phân hệ, không lấy phần trống cuối thanh tab
+  if (k === 'tab') return hop([...document.querySelectorAll('.mtabs-in > a, .mtabs-in > .mtabs-more')])
+  if (k === 'loc') {
+    // thanh lọc chung: các ô bên trái thanh công cụ, trừ cụm nút bên phải (Thêm mới, Excel)
+    const thanh = [...document.querySelectorAll('.main .ds-toolbar-figma')].find(coKhung)
+    return thanh ? hop([...thanh.children].filter(e => !e.classList.contains('ds-toolbar-phai'))) : null
+  }
+  for (const q of KHUON[k] ?? []) {
+    const e = [...document.querySelectorAll(q)].find(coKhung)
+    if (e) return e.getBoundingClientRect()
+  }
+  return null
+}
+
+type Cho = { l: number; t: number; w: number; h: number; sat?: boolean }   // px CSS, đã chia zoom (docs/BAY.md); sat: sát mép trên vùng làm việc
+
+/** Vị trí từng khoá ô trên màn, đo lại khi cuộn, đổi cỡ cửa sổ và đều 400ms (màn tải xong dữ liệu, mở rộng hàng) */
+function useChoThat(khoa: string[], bat: boolean): Record<string, Cho> {
+  const [cho, setCho] = useState<Record<string, Cho>>({})
+  const ds = khoa.join('|')
+  useEffect(() => {
+    if (!bat) { setCho({}); return }
+    let hen = 0
+    const do_ = () => {
+      hen = 0
+      const z = heSoZoom()
+      const main = document.querySelector('.main')?.getBoundingClientRect()
+      const tabs = [...document.querySelectorAll('.mtabs')].find(coKhung)?.getBoundingClientRect()
+      const moi: Record<string, Cho> = {}
+      if (main) for (const k of khoa) {
+        const r = timCho(k)
+        if (!r) continue
+        // chỉ phần nằm trong vùng làm việc: thanh tab và màn chính
+        const tren = tabs?.top ?? main.top
+        const l = Math.max(r.left, main.left), t = Math.max(r.top, tren)
+        const p = Math.min(r.right, main.right), d = Math.min(r.bottom, main.bottom)
+        if (p - l < 4 || d - t < 4) continue
+        moi[k] = { l: Math.round(l / z), t: Math.round(t / z), w: Math.round((p - l) / z), h: Math.round((d - t) / z), sat: t - tren < 12 }
+      }
+      setCho(cu => JSON.stringify(cu) === JSON.stringify(moi) ? cu : moi)
+    }
+    const hoi = () => { if (!hen) hen = requestAnimationFrame(do_) }
+    do_()
+    const id = window.setInterval(hoi, 400)
+    window.addEventListener('scroll', hoi, true)
+    window.addEventListener('resize', hoi)
+    return () => {
+      window.clearInterval(id); cancelAnimationFrame(hen)
+      window.removeEventListener('scroll', hoi, true); window.removeEventListener('resize', hoi)
+    }
+  }, [ds, bat])   // eslint-disable-line react-hooks/exhaustive-deps
+  return cho
+}
+
 // Nút ở thanh chọn báo cáo đang hiện thì nút cuối thanh tab (đã ẩn theo thanh tab) thôi gắn, mỗi màn đúng một nút (T674)
 let soNutNgoai = 0
 const ngheNut = new Set<() => void>()
@@ -216,8 +312,8 @@ function ghiXem(k: string) {
   try { localStorage.setItem(KHOA_XEM, JSON.stringify([k, ...ds].slice(0, 500))) } catch { /* trình duyệt chặn lưu thì thôi */ }
 }
 
-/** Nút la bàn cuối thanh tab và khung hướng dẫn. Trang chủ đã có hướng dẫn từng bước riêng (T138) nên không gắn.
- *  ngoaiThanhTab: nút đặt ở thanh chọn báo cáo, Tất cả báo cáo khi thanh tab ẩn; khung mở sát dưới thanh trên (T674) */
+/** Nút la bàn cuối thanh tab, dải bước và khung hướng dẫn. Trang chủ đã có hướng dẫn từng bước riêng (T138) nên không gắn.
+ *  ngoaiThanhTab: nút đặt ở thanh chọn báo cáo, Tất cả báo cáo khi thanh tab ẩn; dải, khung nằm sát dưới thanh trên (T674) */
 export function NutHuongDan({ mod, ngoaiThanhTab }: { mod: ModuleDef; ngoaiThanhTab?: boolean }) {
   const { s } = useSession()
   useEffect(() => {
@@ -228,60 +324,113 @@ export function NutHuongDan({ mod, ngoaiThanhTab }: { mod: ModuleDef; ngoaiThanh
   const coNutNgoai = useSyncExternalStore(ngheNutNgoai, () => soNutNgoai > 0)
   const loc = useLocation()
   const nav = useNavigate()
-  const [mo, setMo] = useState(false)
+  const [dai, setDai] = useState(false)     // dải bước
+  const [mo, setMo] = useState(false)       // khung đủ, chỉ mở từ dải
+  const [buoc, setBuoc] = useState(0)
+  const [ro, setRo] = useState<number | null>(null)   // bước đang rê chuột trong khung
   const [sang, setSang] = useState<string | null>(null)
   const slug = loc.pathname.split('/')[3]
   const sc = manDangMo(mod, slug, s)
+  const rieng = sc && NOI_DUNG[sc.goc ?? mod.key]?.[sc.slug]
+  const hd = sc && (rieng && (!rieng.goi || rieng.goi.includes(s.goi)) ? rieng : boChung(sc, mod))
+  const khoaO = [...new Set((hd?.buoc ?? []).flatMap(b => b.o ? [b.o] : []))]
+  const cho = useChoThat(khoaO, dai)
   const khoaXem = `${s.email}|${mod.key}/${slug ?? ''}`
   const [daXem, setDaXem] = useState(() => docXem().includes(khoaXem))
   useEffect(() => { setDaXem(docXem().includes(khoaXem)) }, [khoaXem])
-  // khung đang mở mà chuyển màn: màn mới cũng tính là đã xem
-  useEffect(() => { if (mo && sc) { ghiXem(khoaXem); setDaXem(true) } }, [mo, khoaXem])   // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { setBuoc(0); setRo(null) }, [khoaXem])   // đổi màn thì về bước 1
+  useEffect(() => { if (!mo) { setRo(null); setSang(null) } }, [mo])   // khung đóng khi chuột còn trên một bước thì không có mouseleave
+  // dải đang mở mà chuyển màn: màn mới cũng tính là đã xem
+  useEffect(() => { if (dai && sc) { ghiXem(khoaXem); setDaXem(true) } }, [dai, khoaXem])   // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
-    if (!mo) return
-    // Esc đóng khung, trừ khi đang mở form toàn màn hay hộp thoại (phím Esc của chúng)
-    const on = (e: KeyboardEvent) => { if (e.key === 'Escape' && !document.querySelector('.fsf, .overlay')) setMo(false) }
+    if (!dai) return
+    // Esc đóng khung trước, rồi tới dải; trừ khi đang mở form toàn màn hay hộp thoại (phím Esc của chúng)
+    const on = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape' || document.querySelector('.fsf, .overlay')) return
+      if (mo) setMo(false); else setDai(false)
+    }
     window.addEventListener('keydown', on)
     return () => window.removeEventListener('keydown', on)
-  }, [mo])
-  if (mod.key === 'trang-chu' || !sc || (!ngoaiThanhTab && coNutNgoai)) return null
+  }, [dai, mo])
+  if (mod.key === 'trang-chu' || !sc || !hd || (!ngoaiThanhTab && coNutNgoai)) return null
 
-  const rieng = NOI_DUNG[sc.goc ?? mod.key]?.[sc.slug]
-  const hd = rieng && (!rieng.goi || rieng.goi.includes(s.goi)) ? rieng : boChung(sc, mod)
   // báo cáo mở từ phân hệ Báo cáo (/app/bao-cao/<slug>) đi tiếp theo sơ đồ của phân hệ gốc
   const qtMod = MODULES.find(m => m.key === (hd.quyTrinh?.mod ?? (mod.key === 'bao-cao' ? sc.goc : undefined) ?? mod.key))
   const khoa = [`${sc.goc ?? mod.key}/${sc.slug}`, ...(hd.quyTrinh?.khop ?? [])]
+  const soBuoc = hd.buoc.length
+  const i = Math.min(buoc, Math.max(soBuoc - 1, 0))
+  const b = hd.buoc[i] as BuocHD | undefined
+  const coCho = Object.keys(cho).length > 0   // màn có chỗ thật để đánh số; không có thì khung dùng sơ đồ vẽ
+  const tat = () => { setDai(false); setMo(false) }
+  const lam = (di: string) => { setMo(false); nav(`/app/${di}`) }
+  const nutLam = (x: BuocHD, cls: string) => x.di && <button type="button" className={`btn sm ${cls}`} onClick={() => lam(x.di!)}>{x.nutDi ?? 'Làm ngay'}<Icon n="arrow" className="ic sm" /></button>
+  // số cam: mỗi ô thật một vòng, ghi số các bước chỉ tới ô đó; bước đang xem (hoặc đang rê trong khung) có viền cam
+  const sangO = hd.buoc[ro ?? i]?.o
+  const cham = Object.entries(cho).map(([k, c]) => {
+    const so = hd.buoc.flatMap((x, n) => x.o === k ? [n] : [])
+    return (
+      <div key={k} className={`hdn-cham-o${k === sangO ? ' on' : ''}${c.sat ? ' sat' : ''}`} style={{ left: c.l - 3, top: c.t - 3, width: c.w + 6, height: c.h + 6 }}>
+        <span className="hdn-cham-so">{so.map(n => <i key={n} className={n === i ? 'on' : ''}>{n + 1}</i>)}</span>
+      </div>
+    )
+  })
 
   return (
     <>
-      <button type="button" className={`mtabs-hdn${daXem ? '' : ' nhay'}${mo ? ' on' : ''}`} title="Hướng dẫn nhanh" aria-label="Hướng dẫn nhanh"
-        aria-expanded={mo} aria-controls="hdn-khung" onClick={() => setMo(!mo)}>
+      <button type="button" className={`mtabs-hdn${daXem ? '' : ' nhay'}${dai ? ' on' : ''}`} title="Hướng dẫn nhanh" aria-label="Hướng dẫn nhanh"
+        aria-expanded={dai} aria-controls="hdn-dai" onClick={() => dai ? tat() : setDai(true)}>
         <Icon n="la-ban" className="ic" />
       </button>
-      {mo && (
+      {dai && (
+        <div className="hdn-dai" id="hdn-dai" role="region" aria-label={`Hướng dẫn nhanh: ${nhanTab(sc)}`}>
+          <div className="hdn-dai-in">
+            <Icon n="la-ban" className="ic sm hdn-dai-ic" />
+            {b ? <>
+              <b className="hdn-dai-so">Bước {i + 1}/{soBuoc}</b>
+              <span className="hdn-dai-chu" title={b.chu} aria-live="polite">{b.chu}</span>
+              {nutLam(b, 'hdn-dai-lam')}
+              <span className="hdn-dai-nut">
+                <button type="button" className="btn sm ghost" disabled={i === 0} onClick={() => setBuoc(i - 1)}><Icon n="chevl" className="ic sm" />Bước trước</button>
+                {i < soBuoc - 1
+                  ? <button type="button" className="btn sm pri" onClick={() => setBuoc(i + 1)}>Bước kế<Icon n="chevr" className="ic sm" /></button>
+                  : <button type="button" className="btn sm pri" onClick={tat}>Xong</button>}
+              </span>
+            </> : <span className="hdn-dai-chu" title={hd.muc}>{hd.muc}</span>}
+            <span className="hdn-dai-phai">
+              <button type="button" className={`btn sm ghost hdn-dai-du${mo ? ' on' : ''}`} aria-expanded={mo} aria-controls="hdn-khung" onClick={() => setMo(!mo)}>Xem đủ hướng dẫn</button>
+              <button type="button" className="btn sm ghost hdn-dai-x" aria-label="Tắt hướng dẫn" title="Tắt hướng dẫn (Esc)" onClick={tat}><Icon n="x" className="ic sm" /></button>
+            </span>
+          </div>
+        </div>
+      )}
+      {dai && cham.length > 0 && <div className="hdn-cham" aria-hidden>{cham}</div>}
+      {dai && mo && (
         <aside className="hdn-khung" id="hdn-khung" aria-label={`Hướng dẫn nhanh: ${nhanTab(sc)}`}>
           <header className="hdn-dau">
             <span className="hdn-dau-ic"><Icon n="la-ban" className="ic" /></span>
             <div className="hdn-dau-chu"><small>Hướng dẫn nhanh</small><b>{nhanTab(sc)}</b></div>
-            <button type="button" className="btn sm ghost hdn-dong" aria-label="Đóng hướng dẫn" onClick={() => setMo(false)}><Icon n="x" className="ic sm" /></button>
+            <button type="button" className="btn sm ghost hdn-dong" aria-label="Đóng hướng dẫn đủ" onClick={() => setMo(false)}><Icon n="x" className="ic sm" /></button>
           </header>
           <div className="hdn-than">
             <section className="hdn-muc">
               <h4>Màn này để làm gì</h4>
               <p>{hd.muc}</p>
             </section>
-            {hd.buoc.length > 0 && (
+            {soBuoc > 0 && (
               <section className="hdn-muc">
                 <h4>Làm nhanh</h4>
-                {hd.soDo && <SoDoMan soDo={hd.soDo} buoc={hd.buoc} sang={sang} setSang={setSang} />}
+                {coCho
+                  ? <span className="hdn-goi-y">Số cam trên màn chỉ đúng chỗ của từng bước. Bấm một bước để làm từ bước đó.</span>
+                  : hd.soDo && <SoDoMan soDo={hd.soDo} buoc={hd.buoc} sang={sang} setSang={setSang} />}
                 <ol className="hdn-buoc">
-                  {hd.buoc.map((b, i) => (
-                    <li key={i} className={b.o && sang === b.o ? 'sang' : ''} onMouseEnter={() => b.o && setSang(b.o)} onMouseLeave={() => setSang(null)}>
-                      <span className="hdn-buoc-so">{i + 1}</span>
-                      <div>
-                        <p>{b.chu}</p>
-                        {b.di && <button type="button" className="btn sm hdn-lam" onClick={() => nav(`/app/${b.di}`)}>{b.nutDi ?? 'Làm ngay'}<Icon n="arrow" className="ic sm" /></button>}
-                      </div>
+                  {hd.buoc.map((x, n) => (
+                    <li key={n} className={`${n === i ? 'on' : ''}${(coCho ? ro === n : x.o && sang === x.o) ? ' sang' : ''}`}
+                      onMouseEnter={() => { setRo(n); if (x.o) setSang(x.o) }} onMouseLeave={() => { setRo(null); setSang(null) }}>
+                      <button type="button" className="hdn-buoc-chon" onClick={() => { setBuoc(n); setMo(false) }} aria-label={`Làm từ bước ${n + 1}`}>
+                        <span className="hdn-buoc-so">{n + 1}</span>
+                        <p>{x.chu}</p>
+                      </button>
+                      {nutLam(x, 'hdn-lam')}
                     </li>
                   ))}
                 </ol>
@@ -290,13 +439,13 @@ export function NutHuongDan({ mod, ngoaiThanhTab }: { mod: ModuleDef; ngoaiThanh
             {!!hd.luuY?.length && (
               <section className="hdn-muc">
                 <h4>Lưu ý</h4>
-                <ul className="hdn-luu">{hd.luuY.map((x, i) => <li key={i}>{x}</li>)}</ul>
+                <ul className="hdn-luu">{hd.luuY.map((x, n) => <li key={n}>{x}</li>)}</ul>
               </section>
             )}
             {qtMod?.quyTrinh && sc.kind !== 'quytrinh' && (
               <section className="hdn-muc">
                 <h4>Đi tiếp</h4>
-                <DiTiep qtMod={qtMod} khoa={khoa} s={s} />
+                <DiTiep qtMod={qtMod} khoa={khoa} s={s} gon />
                 <Link className="hdn-mo-qt" to={`/app/${qtMod.key}/quy-trinh`}><Icon n="flow" className="ic sm" />Mở sơ đồ Quy trình</Link>
               </section>
             )}
