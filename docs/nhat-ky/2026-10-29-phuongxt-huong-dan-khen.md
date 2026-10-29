@@ -18,6 +18,9 @@
 - Sửa theo ảnh iPhone của PhuongXT: bong bóng đo chiều cao thật (`useCaoBong`), cao màn lấy `visualViewport`, cao quá thì cuộn trong; cuộn tới chỗ khoanh qua `cuonToi` rồi trả trang về lề trái (`scrollIntoView` đẩy cả trang lệch ngang); điện thoại không tự đặt con trỏ vào ô số dư (bàn phím bật làm viền lệch lên ô trên); điện thoại ẩn nút Tiếp tục hướng dẫn khi đang làm việc của nút làm ngay.
 - Điện thoại: nút Tiếp tục hướng dẫn đổi thành dải mỏng 28px ngay dưới thanh tiêu đề màn (`DaiHuongDanDt`, PhuongXT chọn cách B sau khi xem bản vẽ 3 cách); thanh tiêu đề được chừa khoảng dưới để dải không đè nội dung; giữ thanh đã chọn, bám vị trí từng khung hình để không nháy. Web giữ nút dài ở đáy.
 - Bỏ dòng "Chưa trừ tiền nhà, điện, nguyên liệu bạn chưa ghi." kèm nút Ghi khoản chi ở Trang chủ web và điện thoại (`LoiNhuanTamTinh` trong `NhacDonViMoi.tsx`), giữ nhãn Tạm tính.
+- Sửa chữ theo file "Chỉnh text Onboarding.xlsx" của PhuongXT (web và điện thoại dùng chung): 4 thẻ và dòng nâng cấp ở màn mở từ FABi (`KhoiTaoFabi.tsx`), cột phải và nút popup kết nối (số đơn, số phiếu in đậm), màn chờ (`OnboardFabi.tsx`), câu chào, nút Khám phá ngay, 3 bước hướng dẫn, nút "+ Tạo phiếu chi" (`HuongDan.tsx`). Đơn vị chưa có MST: nhãn cam "Bổ sung MST" kèm Thông tư, loại hình ở thanh trên web (`Topbar.tsx`) và đầu Trang chủ điện thoại (`MTrangChuStandard.tsx`), bấm mở Thông tin đơn vị.
+- Popup Thông tin kê khai thuế bắt buộc CCCD/MST cả với hộ kinh doanh; luồng Thêm đơn vị kế toán giữ không bắt buộc (T665).
+- Bong bóng khen ở bước 4 tờ khai nổi bật hơn (viền xanh, bóng đậm, sao nền cam). Bước hướng dẫn web khối to vừa màn thì cuộn đáy khối sát đáy màn, cuộn lại sau 400ms khi biểu đồ vẽ xong, thấy trọn khối kèm biểu đồ.
 - CSS mục cuối `src/styles/app.css` (T138): bong bóng khen có biểu tượng sao, viền ô số dư, vị trí bong bóng khen trong hộp tờ khai.
 
 ## Đã kiểm
@@ -27,6 +30,7 @@
 - Điện thoại 375×812: nhập số dư quỹ mở form, viền ô, lưu về khen; danh sách tờ khai có số liệu, gợi ý, lập tờ khai tới bước 4 khen, Bắt đầu dùng về Trang chủ; khen chi khoanh dòng Chi phí hoạt động.
 - Sau khi sửa theo ảnh iPhone: thử lại cỡ 375×812 (bong bóng không tràn đáy, trang không lệch ngang, viền khớp ô số dư, không còn nút nổi). Chưa thử lại trên iPhone thật.
 - Dải hướng dẫn điện thoại: cỡ 375×812 đứng yên ở phiếu chi, danh sách và các bước kê khai, kể cả khi cuộn. Form quỹ, tấm Lập tờ khai chưa xem được (khung trình duyệt chạy nền, tấm không trượt lên). PhuongXT thử lại trên iPhone.
+- Chữ mới, nhãn Bổ sung MST: xem ở 1440 và 375×812 (tạm xoá MST trong phiên rồi trả lại). Khung khoanh bước 1 ở 1920×911 trọn cả biểu đồ.
 - Chưa xuất lại `docs/IACC-Cloud-Chi-Tiet-He-Thong.xlsx`: máy PhuongXT không có file nguồn Excel.
 
 ## Dở dang, việc tiếp theo

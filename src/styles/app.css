@@ -42665,3 +42665,19 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
 .hdn-bong-dau { display: flex; align-items: center; gap: 10px; }
 .hdn-bong-dau .hdan-bong-ic { width: 36px; height: 36px; border-radius: 10px; margin: 0; flex: none; background: var(--green-t); color: var(--green); }
 .hdn-tour .hdan-bong.cuoi .hdan-nut .grow { display: block; }
+/* bong bóng khen trong màn tờ khai không có màn tối phía sau nên dễ lẫn vào nền trắng: viền xanh, bóng đậm, dải màu đầu, hiện lên có chuyển động (T138) */
+.hdan-khen-tk { border: 2px solid var(--blue); box-shadow: 0 18px 48px rgba(14, 26, 43, .38), 0 0 0 6px rgba(5, 96, 166, .14); background: linear-gradient(180deg, var(--tint) 0, #fff 64px); animation: hdan-khen-vao .35s ease-out both; }
+.hdan-khen-tk .hdan-khen-ic { background: var(--amber); color: #fff; }
+@keyframes hdan-khen-vao { from { transform: translateY(16px) scale(.97); } to { transform: none; } }   /* không mờ dần: tab chạy nền dừng hiệu ứng thì bong bóng vẫn rõ */
+.hdan-khen-tk p { color: var(--ink); }
+.hdan-khen-tk b { color: var(--blue-d); }
+/* thanh trên web: đơn vị chưa có MST hiện nhãn cam Bổ sung MST, bấm mở Thông tin đơn vị (T138) */
+.dv-bo-mst { display: inline-flex; align-items: center; gap: 3px; padding: 0 7px; border-radius: 999px; background: var(--amber-t); color: var(--amber); font-weight: 600; cursor: pointer; }
+.dv-bo-mst:hover { background: var(--amber); color: #fff; }
+/* điện thoại, đầu Trang chủ: nhãn Bổ sung MST và tên thông tư một hàng, nhãn nhỏ gọn (T138) */
+.m-dv-bo-mst { display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+.m-dv-bo-mst .dv-bo-mst { font-size: 11px; line-height: 18px; padding: 0 6px; text-decoration: none; }
+.m-dv-bo-mst .dv-bo-mst .ic { width: 12px; height: 12px; }
+.m-dv-bo-mst { min-width: 0; overflow: hidden; }
+.m-dv-bo-mst > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.m-dv-bo-mst .dv-bo-mst { flex: none; }

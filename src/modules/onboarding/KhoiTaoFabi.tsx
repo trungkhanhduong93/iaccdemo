@@ -9,13 +9,13 @@ import { Logo } from '../../ui/Logo'
 import { useLaMobile } from '../../ui/mobile/useLaMobile'
 import { KEY, MAC_DINH, TEN_FABI, luuNhap, type Nhap } from './OnboardFabi'
 
-/** 4 việc chủ quán quan tâm mỗi ngày, gói Standard (T138) */
+/** 4 việc chủ quán quan tâm mỗi ngày, gói Standard (T138). Chữ theo file "Chỉnh text Onboarding.xlsx" PhuongXT gửi 29/10/2026 */
 const GIA_TRI: [string, string, string][] = [
-  ['pos', 'Đồng bộ theo thời gian thực từ máy POS', 'Mọi đơn hàng, doanh thu bán mang về hay tại bàn tự cập nhật vào sổ sách, không cần gõ lại.'],
-  ['wallet', 'Kiểm soát dòng tiền và quỹ tiền', 'Theo dõi tiền mặt thu vào két, tiền khách chuyển khoản QR, thẻ; ghi nhanh chi phí vận hành quán.'],
-  ['truck', 'Mua hàng, công nợ và hao hụt kiểm kê', 'Ghi hàng mua, theo dõi tiền còn nợ từng nhà cung cấp. Kiểm kê hàng bán thẳng, biết ngay món thiếu, thừa.'],
+  ['pos', 'Tự động đồng bộ từ phần mềm bán hàng FABi', 'Đồng bộ tức thì mọi giao dịch bán hàng từ máy POS lên sổ sách. Đảm bảo số liệu kinh doanh luôn chuẩn xác và khớp từng ca.'],
+  ['wallet', 'Kiểm soát dòng tiền và quỹ tiền', 'Theo dõi chuẩn xác tiền mặt khách hàng thanh toán và tiền khách quét mã QR, chuyển khoản. Nắm chắc dòng tiền thực tế mỗi ca.'],
+  ['truck', 'Quản lý mua hàng và nợ nhà cung cấp', 'Ghi nhanh hoá đơn nhập nguyên liệu, theo dõi tiền còn nợ nhà cung cấp. Chặn đứng thất thoát hàng bán thẳng.'],
   // gói Standard kê khai được: hộ kinh doanh nhóm 1, 2 và doanh nghiệp tính thuế theo % doanh thu (KE_KHAI trong OnboardFabi, T663)
-  ['percent', 'Kê khai thuế và sổ sách', 'Lập tờ khai thuế theo % doanh thu từ số bán FABi. Sổ sách đúng mẫu cho hộ kinh doanh (TT152) và doanh nghiệp siêu nhỏ (TT58).'],
+  ['percent', 'Kê khai thuế và sổ sách', 'Tự động tính thuế GTGT và TNCN, TNDN theo % doanh thu. Hỗ trợ lập tờ khai thuế và theo dõi sổ sách báo cáo theo quy định.'],
 ]
 const CAM_KET = ['Không phát sinh chi phí', 'Không yêu cầu thẻ thanh toán', 'Dữ liệu an toàn tuyệt đối']
 const KET_NOI = 'ket-noi'   // tham số đường dẫn vào thẳng phần mềm
@@ -118,7 +118,7 @@ export function KhoiTaoFabi() {
               </div>
               {!laMobile && <small className="muted">{CAM_KET.join(' · ')}</small>}
             </div>
-            {xem(2) && <p className="ktf-b1-goi"><Icon n="sparkle" className="ic sm" />Hộ kinh doanh tính thuế TNCN theo lợi nhuận, doanh nghiệp siêu nhỏ tính GTGT theo khấu trừ, TNDN theo lợi nhuận: chọn gói Plus. Doanh nghiệp hạch toán theo TT133 hay TT99: chọn gói Pro. Nâng cấp bất kỳ lúc nào ngay trên phần mềm.</p>}
+            {xem(2) && <p className="ktf-b1-goi"><Icon n="sparkle" className="ic sm" />Dễ dàng nâng cấp lên giải pháp kế toán chuyên nghiệp cho hộ kinh doanh (gói iPOS Accounting Plus) và doanh nghiệp (gói iPOS Accounting Pro), đáp ứng chuẩn mực quy định của Bộ Tài chính, bất kỳ lúc nào.</p>}
           </div>
         )}
       </div>

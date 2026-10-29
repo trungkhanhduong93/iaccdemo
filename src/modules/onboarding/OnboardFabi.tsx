@@ -448,16 +448,16 @@ export function OnboardFabi() {
                   <small className="muted ktf-pttt-chu">Đổi quỹ nhận cho từng phương thức thanh toán ở Danh mục › Quỹ tiền.</small>
 
                   <div className="row ktf-pop-nut">
-                    <button className="btn pri lg" disabled={cnChon.length === 0 || !ngayLamHopLe} onClick={tiep}>Kết nối và lấy dữ liệu<Icon n="arrow" className="ic sm" /></button>
+                    <button className="btn pri lg" disabled={cnChon.length === 0 || !ngayLamHopLe} onClick={tiep}>Đồng bộ dữ liệu ngay<Icon n="arrow" className="ic sm" /></button>
                   </div>
                 </div>
 
                 <aside className="card ktf-ben">
-                  <h3>Tự về sổ từ {ngayLamHopLe ? n.ngayLam : '…'}</h3>
+                  <h3>Dữ liệu sẽ tự động đồng bộ từ ngày {ngayLamHopLe ? n.ngayLam : '…'}</h3>
                   <ul>
-                    <li><Icon n="check" className="ic sm" /><span>Doanh thu bán hàng POS: {so(soCtDaTao)} chứng từ Xuất bán POS</span></li>
-                    <li><Icon n="check" className="ic sm" /><span>Phiếu thu, phiếu chi lập trên FABi: {so(soTcDaTao)} phiếu</span></li>
-                    <li><Icon n="check" className="ic sm" /><span>Tiền vào quỹ tiền mặt, quỹ ngân hàng chung theo phương thức thanh toán</span></li>
+                    <li><Icon n="check" className="ic sm" /><span><b>{so(soCtDaTao)} đơn bán hàng</b> từ máy POS sẽ tự động lên doanh thu</span></li>
+                    <li><Icon n="check" className="ic sm" /><span><b>{so(soTcDaTao)} phiếu thu, chi</b> lập tại cửa hàng sẽ tự cập nhật vào sổ quỹ</span></li>
+                    <li><Icon n="check" className="ic sm" /><span>Phân loại chuẩn xác tiền mặt và tiền chuyển khoản QR</span></li>
                   </ul>
                 </aside>
               </div>
@@ -565,7 +565,7 @@ export function OnboardFabi() {
                         <h2 className={`ktf-h${n.thue ? ' ktf-h-tiep' : ''}`}>Thông tin đơn vị</h2>
                         <p className="muted ktf-p">Điền thông tin {n.loai === 'hkd' ? 'hộ kinh doanh' : 'công ty'} của bạn. Tên, địa chỉ tra cứu từ dữ liệu thuế.</p>
                         <div className="form-grid">
-                          <div className="f c2">{n.loai === 'hkd' ? <label>CCCD/MST</label> : <label>Mã số thuế <em>*</em></label>}
+                          <div className="f c2">{n.loai === 'hkd' ? <label>CCCD/MST{n.thue && <> <em>*</em></>}</label> : <label>Mã số thuế <em>*</em></label>}
                             <div className="row"><input className="inp" value={n.mst} placeholder={n.loai === 'hkd' ? 'Nhập CCCD hoặc mã số thuế' : 'Nhập mã số thuế'} onChange={e => sua({ mst: e.target.value })} />
                               <button className="btn" onClick={() => sua({ traCuu: true, mst: n.mst || '0319 990 088',   // kết quả tra cứu mẫu, khác 3 đơn vị mẫu
                                 tenDv: n.loai === 'hkd' ? 'Hộ kinh doanh Nhà hàng Phố Mây' : 'Công ty TNHH Nhà hàng Phố Mây', diaChi: '24 Nguyễn Huệ, phường Sài Gòn, TP.HCM' })}>Tra cứu</button></div>
@@ -608,7 +608,7 @@ export function OnboardFabi() {
 
                     <div className="row ktf-pop-nut">
                       {n.b > 0 && !n.thue && <button className="btn lg" onClick={() => sua({ b: n.b - 1 })}>Quay lại</button>}
-                      <button className="btn pri lg" disabled={n.thue ? (n.loai === 'dn' && !n.mst.trim()) || !n.tenDv.trim() || (n.loai === 'hkd' && !n.cnChinh) : (n.b === 1 && ((n.loai === 'dn' && !n.mst.trim()) /* doanh nghiệp bắt buộc mã số thuế, hộ kinh doanh không (T665) */ || !n.tenDv.trim() /* tên bắt buộc (T669) */)) || (n.b === 2 && (cnChon.length === 0 || (n.loai === 'hkd' && !n.cnChinh)))} onClick={tiep}>
+                      <button className="btn pri lg" disabled={n.thue ? !n.mst.trim() /* kê khai thuế: hộ kinh doanh cũng bắt buộc CCCD/MST (PhuongXT 29/10/2026) */ || !n.tenDv.trim() || (n.loai === 'hkd' && !n.cnChinh) : (n.b === 1 && ((n.loai === 'dn' && !n.mst.trim()) /* doanh nghiệp bắt buộc mã số thuế, hộ kinh doanh không (T665) */ || !n.tenDv.trim() /* tên bắt buộc (T669) */)) || (n.b === 2 && (cnChon.length === 0 || (n.loai === 'hkd' && !n.cnChinh)))} onClick={tiep}>
                         {n.thue || n.b === buoc.length - 1 ? 'Hoàn tất' : 'Tiếp tục'}<Icon n="arrow" className="ic sm" />
                       </button>
                     </div>
@@ -635,7 +635,7 @@ export function OnboardFabi() {
               <div className="card ktf-chao">
                 {tai < 100 || nhanh   // từ FABi: 100% thì tự về Trang chủ
                   ? <>
-                      <h1>Đang lấy dữ liệu từ FABi</h1>
+                      <h1>Đang thiết lập sổ sách tự động từ dữ liệu POS…</h1>
                       <p>Doanh thu và thu chi tiền từ {tuNgay} của {cnChon.length} cửa hàng.</p>
                       <div className="ktf-tai"><i style={{ width: `${tai}%` }} /></div>
                       <ul className="ktf-tai-ds">

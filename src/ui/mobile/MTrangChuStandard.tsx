@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import type { ScreenProps } from '../../modules/types'
-import { donViHienTai, dsCuaHang, useSession } from '../../app/session'
+import { cheDoHienTai, donViHienTai, dsCuaHang, useSession } from '../../app/session'
 import { CUA_HANG, KHOA_SO_DEN, KY_MO, ROLE } from '../../data/mock'
 import { Icon, ONen } from '../Icon'
 import { fold, moneyD, pct, short } from '../format'
@@ -306,7 +306,10 @@ export function MTrangChuStandard(_props?: Partial<ScreenProps>) {
             </div>
             <div className="m-tc-figma-don-vi">
               <h2 className="m-tc-figma-dv-ten">{dv.ten}</h2>
-              <div className="m-tc-figma-dv-vaitro">{ROLE[s.role]}</div>
+              {/* chưa có MST: nhãn cam Bổ sung MST mở Thông tin đơn vị, kèm tên thông tư, như thanh trên web (file "Chỉnh text Onboarding.xlsx", 29/10/2026) */}
+              {dv.mst
+                ? <div className="m-tc-figma-dv-vaitro">{ROLE[s.role]}</div>
+                : <div className="m-tc-figma-dv-vaitro m-dv-bo-mst"><Link className="dv-bo-mst" to="/app/he-thong/thong-tin"><Icon n="info" className="ic sm" />Bổ sung MST</Link><span>{cheDoHienTai(s).ngan.replace(/^TT\s*/, 'Thông tư ')}</span></div>}
             </div>
           </div>
           <div className="m-tc-figma-dau-phai">

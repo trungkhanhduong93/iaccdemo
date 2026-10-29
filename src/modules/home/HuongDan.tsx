@@ -14,20 +14,21 @@ import { heSoZoom } from '../../ui/zoom'
  *  nut: nút làm ngay trong bong bóng, bấm thì tạm dừng hướng dẫn và mở màn đó; viec: màn đó lưu xong thì về Trang chủ khen (KHEN) rồi chạy tiếp;
  *  chonKhen: chỗ khoanh lúc khen, hẹp hơn chon (vd đúng dòng Chi phí hoạt động); không có thì khoanh như chon */
 type Viec = 'chi' | 'quy' | 'thue'
-interface Buoc { chon?: string; so?: number; lenDau?: boolean; tieuDe: string; noiDung: string; nut?: { ten: string; di: string }; viec?: Viec; chonKhen?: string }
+interface Buoc { chon?: string; so?: number; lenDau?: boolean; tieuDe: string; noiDung: string; nut?: { ten: string; di: string; icon?: string }; viec?: Viec; chonKhen?: string }
 
 /** Theo trải nghiệm chủ quán lần đầu (vai chị Linh, PhuongXT gửi 28/10/2026): 3 bước ngắn, mỗi bước chỉ một việc nên làm ngay.
  *  Doanh thu khớp máy POS nhưng lợi nhuận còn tạm tính vì chưa ghi chi phí; két có tiền lẻ đầu ca nên cần số dư ban đầu;
  *  Kê khai thuế lần đầu mới hỏi loại hình, mã số thuế, rồi lập tờ khai theo kỳ. */
 const KQKD: Omit<Buoc, 'chon' | 'so'> = {
-  tieuDe: 'Doanh thu tự về từ FABi',
-  noiDung: 'Doanh thu khớp báo cáo bán hàng trên máy POS. Lợi nhuận đang tạm tính, chưa trừ tiền nhà, điện, nguyên liệu bạn chưa ghi.',
-  nut: { ten: 'Ghi một khoản chi', di: '/app/tien/2-1-1/moi?loai=chi' },
+  // chữ các bước theo file "Chỉnh text Onboarding.xlsx" PhuongXT gửi 29/10/2026
+  tieuDe: 'Doanh thu bán hàng tự động',
+  noiDung: 'Doanh thu được đồng bộ từ POS. Để theo dõi lợi nhuận chính xác, bạn chỉ cần ghi nhận các khoản chi trong kỳ. Hãy thử thêm tiền thuê nhà hoặc chi phí mua hàng.',
+  nut: { ten: 'Tạo phiếu chi', di: '/app/tien/2-1-1/moi?loai=chi', icon: 'plus' },
   viec: 'chi',
 }
 const QUY: Omit<Buoc, 'chon' | 'so'> = {
   tieuDe: 'Quỹ tiền',
-  noiDung: 'Tiền mặt, chuyển khoản, QR tách riêng từng quỹ. Két có sẵn tiền lẻ đầu ca thì nhập số dư ban đầu để sổ khớp tiền thực tế.',
+  noiDung: 'Tiền mặt, chuyển khoản, QR tách riêng từng quỹ. Nhập số dư ban đầu để sổ khớp tiền thực tế.',
   // mở thẳng form quỹ tiền mặt cửa hàng đầu (Danh mục Quỹ tiền gói Standard có ô Số dư ban đầu)
   nut: { ten: 'Nhập số dư quỹ', di: '/app/danh-muc/1-12?mo=TM01' },
   viec: 'quy',
@@ -35,7 +36,7 @@ const QUY: Omit<Buoc, 'chon' | 'so'> = {
 const THUE: Omit<Buoc, 'chon' | 'so'> = {
   tieuDe: 'Kê khai thuế',
   // khớp màn Kê khai thuế gói Standard: lần đầu mở hỏi loại hình, mã số thuế (popup), sau đó là danh sách tờ khai theo kỳ, trạng thái nộp
-  noiDung: 'Lần đầu mở, bạn khai loại hình kinh doanh và mã số thuế. Sau đó lập tờ khai từng kỳ từ số bán FABi, theo dõi tờ khai đã nộp, chưa nộp.',
+  noiDung: 'Tự động tạm tính số thuế GTGT và TNCN theo doanh thu từ FABi. Chỉ cần cập nhật nhanh mã số thuế để lập và theo dõi tờ khai từng kỳ.',
   nut: { ten: 'Mở Kê khai thuế', di: '/app/thue/to-khai' },
   viec: 'thue',
 }
@@ -62,7 +63,7 @@ const KHEN: Record<Viec, (ten: string) => { tieuDe: string; noiDung: string }> =
 }
 
 const BUOC: Buoc[] = [
-  { tieuDe: 'Chào mừng bạn đến với iPOS Accounting', noiDung: 'Xem nhanh 3 chỗ quan trọng nhất, mất chừng 30 giây.' },
+  { tieuDe: 'Chào mừng bạn đến với iPOS Accounting', noiDung: 'Sổ sách của quán đã sẵn sàng! Cùng điểm nhanh 3 chỉ số quan trọng nhất để nắm trọn tình hình kinh doanh và dòng tiền.' },
   { chon: '.tq-col-12 .bbt-cot', ...KQKD, chonKhen: '.tq-col-12 .bbt-kqkd-row[title="Xem chi phí hoạt động"]' },
   { chon: '.tq-col-12 .bbt-cot', so: 1, ...QUY, chonKhen: '.tq-col-12 .bbt-o-ton-quy' },
   { chon: '.sb-nav a[href="#/app/thue/to-khai"]', ...THUE },
@@ -197,10 +198,17 @@ export function HuongDan({ sang }: { sang?: string }) {
         // cuộn 2 lần: lần cuộn trước còn chờ khung hình thì thanh dưới có thể ẩn lại sau lần đầu
         if (b.lenDau) { const len = () => document.querySelectorAll('.m-than, html').forEach(k => k.scrollTo({ top: 0 })); len(); t = window.setTimeout(len, 150) }
         else {
-          // khối cao hơn nửa màn: cuộn cho đầu khối nằm dưới thanh trên và thanh tab (dính trên cùng), không để tiêu đề bị che
-          const cao = el.getBoundingClientRect().height > window.innerHeight * 0.5
-          if (cao) (el as HTMLElement).style.scrollMarginTop = '110px'
-          cuonToi(el, { block: cao ? 'start' : 'center', inline: 'nearest' })
+          // khối cao hơn nửa màn mà vẫn vừa màn (thẻ Kết quả kinh doanh, Quỹ tiền kèm biểu đồ): cuộn cho đáy khối sát đáy màn, thấy trọn khối (PhuongXT 29/10/2026);
+          // cao quá màn: đầu khối nằm dưới thanh trên và thanh tab (dính trên cùng), không để tiêu đề bị che.
+          // Cuộn lại sau 400ms: biểu đồ vẽ xong làm khối dịch xuống
+          const cuon = () => {
+            const h = el.getBoundingClientRect().height, vh = window.innerHeight, e = el as HTMLElement
+            if (h <= vh * 0.5) { cuonToi(el, { block: 'center', inline: 'nearest' }); return }
+            const vua = h + 130 <= vh
+            if (vua) e.style.scrollMarginBottom = '12px'; else e.style.scrollMarginTop = '110px'
+            cuonToi(el, { block: vua ? 'end' : 'start', inline: 'nearest' })
+          }
+          cuon(); t = window.setTimeout(cuon, 400)
         }
         setO(doRect(b)); return
       }
@@ -229,8 +237,6 @@ export function HuongDan({ sang }: { sang?: string }) {
   const xong = () => { setMoLai(false); setNhacNut(false); setKhen(null); set({ huongDan: { ...s.huongDan, [s.donVi]: true } }) }
   const tiepSauKhen = () => { if (hetSauKhen) xong(); else setKhen(null) }
   if (!hien) return null
-  // đơn vị vừa kết nối từ FABi: câu chào nói thêm dữ liệu FABi đã về sổ
-  const loiChao = s.choKeKhai?.[s.donVi] ? `Doanh thu và thu chi từ FABi đã về sổ. ${b.noiDung}` : b.noiDung
   const cuoi = i === ds.length - 1
 
   const viTri = b.chon && o ? viTriBong(o, caoBong) : {}
@@ -246,9 +252,9 @@ export function HuongDan({ sang }: { sang?: string }) {
         {khen
           ? <div className="hdan-khen-dau"><span className="hdan-khen-ic"><Icon n="star" className="ic" /></span><b>{b.tieuDe}</b></div>
           : <b>{b.tieuDe}</b>}
-        <p>{i === 0 && !nhacNut && !khen ? loiChao : b.noiDung}</p>
+        <p>{b.noiDung}</p>
         {/* bấm làm ngay: tạm dừng, chờ màn đó lưu xong (viec) thì về đây khen; bước cuối cũng chờ, khen xong mới kết thúc */}
-        {!nhacNut && !khen && b.nut && <button className="btn sm hdan-lam" onClick={() => { luuTiep({ dv: s.donVi, b: i + 1, moLai, cho: b.viec }); nav(b.nut!.di) }}>{b.nut.ten}<Icon n="arrow" className="ic sm" /></button>}
+        {!nhacNut && !khen && b.nut && <button className="btn sm hdan-lam" onClick={() => { luuTiep({ dv: s.donVi, b: i + 1, moLai, cho: b.viec }); nav(b.nut!.di) }}>{b.nut.icon && <Icon n={b.nut.icon} className="ic sm" />}{b.nut.ten}{!b.nut.icon && <Icon n="arrow" className="ic sm" />}</button>}
         {nhacNut ? (
           <div className="row hdan-nut"><span className="grow" /><button className="btn pri sm" onClick={xong}>Đã hiểu</button></div>
         ) : ket ? (
@@ -261,7 +267,7 @@ export function HuongDan({ sang }: { sang?: string }) {
           <span className="grow" />
           {!cuoi && <button className="btn ghost sm" onClick={() => setNhacNut(true)}>Bỏ qua</button>}
           {i > 1 && <button className="btn sm" onClick={() => setI(i - 1)}>Quay lại</button>}
-          <button className="btn pri sm" onClick={cuoi ? xong : i === 0 && sang ? () => { luuTiep({ dv: s.donVi, b: 1, moLai }); nav(sang) } : () => setI(i + 1)}>{i === 0 ? 'Bắt đầu' : cuoi ? 'Bắt đầu dùng' : 'Tiếp'}</button>
+          <button className="btn pri sm" onClick={cuoi ? xong : i === 0 && sang ? () => { luuTiep({ dv: s.donVi, b: 1, moLai }); nav(sang) } : () => setI(i + 1)}>{i === 0 ? 'Khám phá ngay' : cuoi ? 'Bắt đầu dùng' : 'Tiếp'}</button>
         </div>
         )}
       </div>

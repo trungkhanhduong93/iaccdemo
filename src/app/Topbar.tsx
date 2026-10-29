@@ -26,7 +26,14 @@ export function Topbar({ onSearch }: { onSearch?: () => void }) {
     <header className="topbar">
       <Dropdown btnClass="dv-btn" title="Đổi đơn vị kế toán" width={410} label={<>
         <span className="dv-av">{dv.viettat}</span>
-        <span style={{ minWidth: 0 }}><small>{dv.mst ? `${loaiHinhDv(s, dv) === 'hkd' ? 'Hộ kinh doanh' : 'Công ty'} · MST ${dv.mst}` : 'Chưa khai mã số thuế'} · {cheDoHienTai(s).ngan}</small><b>{dv.ten}</b></span>
+        <span style={{ minWidth: 0 }}><small>{dv.mst
+          ? `${loaiHinhDv(s, dv) === 'hkd' ? 'Hộ kinh doanh' : 'Công ty'} · MST ${dv.mst} · ${cheDoHienTai(s).ngan}`
+          // chưa có MST: nhãn cam Bổ sung MST mở Thông tin đơn vị để khai, kèm tên thông tư, loại hình (file "Chỉnh text Onboarding.xlsx", 29/10/2026)
+          : <><span className="dv-bo-mst" role="link" tabIndex={0} title="Khai mã số thuế của đơn vị"
+              onClick={e => { e.stopPropagation(); nav('/app/he-thong/thong-tin') }}
+              onKeyDown={e => { if (e.key === 'Enter') { e.stopPropagation(); nav('/app/he-thong/thong-tin') } }}><Icon n="info" className="ic sm" />Bổ sung MST</span>
+            {` · ${cheDoHienTai(s).ngan.replace(/^TT\s*/, 'Thông tư ')} · ${loaiHinhDv(s, dv) === 'hkd' ? 'Hộ kinh doanh' : 'Công ty'}`}</>}
+        </small><b>{dv.ten}</b></span>
         <Icon n="chevd" className="ic sm" />
       </>}>
         {dong => <>
