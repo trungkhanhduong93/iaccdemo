@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T676 | Hướng dẫn nhanh đợt 2 (QD86, QD87): dải bước nổi trên form phiếu ngay dưới thanh đầu form, số cam chỉ vào khối ô đầu form, bảng chi tiết, nút Lưu; Lưu xong form đóng, dải sang bước kế; Xuất bán POS bước 3 chỉ vào ô Tổng cộng; `tools/kiem_tra.py` kiểm số cam 6 màn gói Standard | Trum | 29/10/2026 | `2026-10-29-trum-dai-buoc-vao-form.md` |
 | T679 | Hướng dẫn nhanh kiểu dải bước (QD87): dải dưới thanh tab, số cam đánh lên nút thật, nút Bước trước, Bước kế, Xem đủ hướng dẫn mở khung nổi; đổi chữ két sang Quỹ tiền trong hướng dẫn | Trum | 29/10/2026 | `2026-10-29-trum-dai-buoc-huong-dan.md` |
 | T674 | Hướng dẫn nhanh (QD86) cho màn báo cáo mà đầu báo cáo nằm thay thanh tab: nút la bàn ở thanh chọn báo cáo sau nút In, ở Tất cả báo cáo sau ô Tìm; khung sát dưới thanh trên; hướng dẫn riêng Sổ quỹ tiền mặt gói Standard | Trum | 29/10/2026 | `2026-10-29-trum-huong-dan-bao-cao.md` |
 | T678 | Web, nút nổi Trợ lý IACC nhấn giữ kéo sang chỗ khác, nhớ vị trí ở máy đang dùng; khung chat mở cạnh nút, không tràn màn | Trum | 29/10/2026 | `2026-10-29-trum-keo-nut-tro-ly.md` |

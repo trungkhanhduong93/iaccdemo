@@ -42,7 +42,7 @@ tools/
   xuat_logo.py             sinh logo và favicon, chỉ chạy được trên máy Trum
 ```
 
-Mỗi phân hệ: `index.ts` khai báo màn, nhãn tab ngắn (`NGAN`) và cấu hình từng màn; `quy-trinh.ts` khai sơ đồ Quy trình; `huong-dan.ts` khai Hướng dẫn nhanh từng màn theo slug (QD86, khung đọc ở `src/ui/HuongDanNhanh.tsx`, màn chưa khai thì dùng bộ chung theo kiểu màn; số cam của dải bước tìm chỗ theo khoá ô `o`, màn dựng riêng gắn `data-hd="<khoá ô>"` vào phần tử, QD87); màn làm riêng nằm trong file `.tsx` cùng thư mục; dữ liệu giả riêng nằm ở `data.ts`.
+Mỗi phân hệ: `index.ts` khai báo màn, nhãn tab ngắn (`NGAN`) và cấu hình từng màn; `quy-trinh.ts` khai sơ đồ Quy trình; `huong-dan.ts` khai Hướng dẫn nhanh từng màn theo slug (QD86, khung đọc ở `src/ui/HuongDanNhanh.tsx`, màn chưa khai thì dùng bộ chung theo kiểu màn; số cam của dải bước tìm chỗ theo khoá ô `o`, màn dựng riêng gắn `data-hd="<khoá ô>"` vào phần tử, QD87; bước trong form phiếu dùng khoá `ttc`, `chi-tiet`, `luu` mà `ChungTuForm.tsx` đã gắn, form toàn màn báo đang mở qua `src/ui/huongDanForm.ts` để dải nổi trên form, T676); màn làm riêng nằm trong file `.tsx` cùng thư mục; dữ liệu giả riêng nằm ở `data.ts`.
 
 Cả app có 14 phân hệ. Phân hệ Báo cáo (`src/modules/bao-cao/`) không có màn riêng của Excel: nó chứa Trung tâm báo cáo và bản sao mọi màn báo cáo của phân hệ khác (`goc` là phân hệ gốc). Có 120 tính năng Excel cộng 10 sổ bổ sung (`BO_SUNG`).
 

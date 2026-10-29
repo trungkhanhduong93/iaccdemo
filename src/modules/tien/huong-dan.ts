@@ -8,7 +8,10 @@ export const huongDan: Record<string, HuongDanMan> = {
     buoc: [
       { chu: 'Chọn tab theo nơi tiền đi qua: Tiền mặt, Ngân hàng, hoặc Chuyển quỹ khi đưa tiền từ quỹ này sang quỹ khác.', o: 'tab' },
       { chu: 'Bấm Thêm mới, chọn Phiếu thu hoặc Phiếu chi.', o: 'them', di: 'tien/2-1-1/moi?loai=chi', nutDi: 'Ghi một khoản chi' },
-      { chu: 'Chọn đối tượng, lý do, ghi diễn giải và số tiền, rồi bấm Lưu hoặc Ctrl + S.' },
+      // 3 bước trong form phiếu chỉ vào ô của form, dải nổi trên form (T676)
+      { chu: 'Chọn đối tượng, lý do ở phần đầu phiếu.', o: 'ttc' },
+      { chu: 'Ghi diễn giải, số tiền ở bảng Chi tiết.', o: 'chi-tiet' },
+      { chu: 'Bấm Lưu hoặc Ctrl + S. Phiếu lưu xong hiện ở đầu danh sách.', o: 'luu' },
       { chu: 'Tìm phiếu cũ: chọn thời gian, gõ số phiếu hoặc diễn giải, bấm Lọc.', o: 'loc' },
       { chu: 'Bấm số chứng từ để xem, in, sửa phiếu.', o: 'bang' },
     ],

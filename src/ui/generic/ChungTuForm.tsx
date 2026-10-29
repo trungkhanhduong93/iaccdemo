@@ -16,6 +16,7 @@ import { Icon } from '../Icon'
 import { HopPhimTat, phimDong } from '../BangPhimTat'
 import { Card, Note } from '../Page'
 import { FormToanMan, useDong } from '../FormToanMan'
+import { baoDaLuu, huongDanDangChay } from '../huongDanForm'
 import { Dropdown, MenuHead, MenuItem, Popover, Select } from '../Dropdown'
 import { LichDon, ONgay } from '../ChonNgay'
 import { ChonDanhMuc } from '../ChonDanhMuc'
@@ -469,6 +470,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
       suaPhieu(manXuat, thamChieuSx.id, { ttSx: 'da', _phieuNhap: { id: moi ? idMoi : String(row?.id), so: soCt } })
     }
     toast(moi ? `Đã lưu ${soCt}` : `Đã lưu thay đổi ${soCt}`)
+    baoDaLuu()   // dải Hướng dẫn nhanh đang chạy thì sang bước sau form khi form đóng (T676)
     // Phiếu chi mới lý do Chi phí chờ phân bổ: báo rồi mở màn tạo thẻ chi phí phân bổ, điền sẵn từ phiếu (T419: thông báo, không hỏi)
     // Mỗi dòng phiếu có lý do Chi phí chờ phân bổ thành một dòng chi tiết của thẻ (tên = diễn giải, số tiền = thành tiền)
     // Sửa phiếu (vd đã xoá thẻ cũ để sửa, T439): phiếu chưa còn thẻ nào thì cũng báo tạo thẻ như phiếu mới
@@ -492,7 +494,9 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
       nav(`${path}/moi${loai ? `?loai=${loai.k}` : ''}`, { replace: true })
     } else if (moi) {
       // Lưu phiếu mới: ở lại form, xem chi tiết phiếu vừa lưu; bấm đóng mới về danh sách (T51)
-      nav(`${path}/${idMoi}`, { replace: true })
+      // Đang chạy dải Hướng dẫn nhanh thì đóng form về danh sách để dải sang bước kế (T676)
+      if (huongDanDangChay()) dongForm()
+      else nav(`${path}/${idMoi}`, { replace: true })
     } else {
       setDangSua(false)
     }
@@ -776,7 +780,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
               <HopCotPhieu dsDau={dsDau} dsChan={dsChan} ds={laKk ? COT_KK : laSx ? cotSx(sx!) : laDcn ? cotDcn(dcn!) : cotTuyChon(cfg, { coNhomHhdv: nhom === 'mua' && nhanKemHd && s.goi === 'PR', coKho: Boolean(bo.kho) && !khoDau && !laDc, coLo: nhom === 'mua' && s.goi === 'PR', coCk: Boolean(bo.ck), coKm: kieu !== 'khong', coLy: Boolean(oLy), coNhapKho: truocThue, coGiamThue: giamGtgt }).filter(([k]) => !anDc.includes(k))}
                 an={anCot} onDoi={doiAnCot} onDong={() => setHopCot(false)} />
             )}
-            <button type="button" className="xp-btn-outline" onClick={() => luu(false)}>
+            <button type="button" className="xp-btn-outline" onClick={() => luu(false)} data-hd="luu">
               Lưu (Ctrl+S)
             </button>
             <button type="button" className="xp-btn-sua" onClick={() => luu(true)}>
@@ -994,7 +998,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
         )}
 
         {/* Khối thông tin chung 3 cột: Đối tượng / Thông tin phụ / Chứng từ; ct-ttc nhãn bên trái ô cho khối thấp xuống (T335) */}
-        <section className="card ct-ttc" style={{ padding: '8px 16px' }}>
+        <section className="card ct-ttc" style={{ padding: '8px 16px' }} data-hd="ttc">
           <div
             className="grid"
             style={{
@@ -1222,7 +1226,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
             )}
           </div>
 
-          <div className="ct-than">
+          <div className="ct-than" data-hd="chi-tiet">
           <BaoCaoDoRongCtx.Provider value={tab === 'ct' ? undefined : doRongTab}>
           {/* Tab 1: Chi tiết / Hàng tiền */}
           {tab === 'ct' && laKk && <BangKiemKe dong={dsDong} onChange={setDsDong} cheDo={dangSua ? 'sua' : 'xem'} an={anCot} khongTong={!hienChan('dongTong')} hienLoc={moLoc} doRong={doRongCt} />}

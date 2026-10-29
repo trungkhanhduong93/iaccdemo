@@ -1,8 +1,9 @@
 // Form chứng từ mở toàn màn hình như AMIS: che sidebar và thanh tab, chân form có Huỷ, Lưu, Lưu và thêm. Esc để đóng.
-import { useEffect, type ReactNode } from 'react'
+import { useEffect, useRef, type ReactNode } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Icon } from './Icon'
 import { moneyD } from './format'
+import { ganForm } from './huongDanForm'
 
 /** Đóng form: quay về màn trước trong app; mở thẳng bằng đường dẫn thì về danh sách */
 export function useDong(ve: string) {
@@ -26,9 +27,12 @@ export function FormToanMan({ icon, iconNode, iconNet, xem, title, meta, loai, g
     window.addEventListener('keydown', on)
     return () => window.removeEventListener('keydown', on)
   }, [onClose])
+  // dải bước Hướng dẫn nhanh đang mở thì nổi lên form, ngay dưới thanh đầu form (T676)
+  const ref = useRef<HTMLDivElement>(null)
+  useEffect(() => ganForm(ref.current!), [])
 
   return (
-    <div className={`fsf${tinh ? ' fsf-tinh' : ''}${xem ? ' fsf-xem' : ''}`} role="dialog" aria-modal="true">
+    <div ref={ref} className={`fsf${tinh ? ' fsf-tinh' : ''}${xem ? ' fsf-xem' : ''}`} role="dialog" aria-modal="true">
       <header className="fsf-h">
         {iconNode ? (
           iconNode

@@ -7,7 +7,9 @@ export const huongDan: Record<string, HuongDanMan> = {
     muc: 'Đếm hàng thực tế trong kho, so với số trên sổ để biết hàng thiếu, thừa.',
     buoc: [
       { chu: 'Bấm Thêm mới, chọn Kiểm kê.', o: 'them', di: 'kho/5-1-10/moi', nutDi: 'Lập phiếu kiểm kê' },
-      { chu: 'Nhập số lượng đếm được ở cột tồn thực tế. Cột chênh lệch tự tính.' },
+      // 2 bước trong form phiếu chỉ vào ô của form, dải nổi trên form (T676)
+      { chu: 'Nhập số lượng đếm được ở cột Tồn thực tế. Cột Chênh lệch tự tính.', o: 'chi-tiet' },
+      { chu: 'Bấm Lưu hoặc Ctrl + S.', o: 'luu' },
       { chu: 'Hàng thiếu, thừa ghi bằng phiếu Xuất điều chỉnh, Nhập điều chỉnh. Số phiếu hiện ở cột Tham chiếu.', o: 'bang' },
       { chu: 'Xem lại phiếu cũ: chọn thời gian, bấm Lọc, bấm số chứng từ.', o: 'loc' },
     ],

@@ -42699,3 +42699,11 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
 .hdn-goi-y { font-size: 12.5px; color: var(--muted); }
 /* Đi tiếp gọn: bước trước, đang ở, bước sau trên sơ đồ Quy trình */
 .hdn-gan { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px 12px; align-items: baseline; font-size: 12.5px; color: var(--muted); }
+/* ── Hướng dẫn nhanh: dải bước đi theo vào form phiếu toàn màn (T676, QD87) ── */
+/* dải nằm trong form ngay dưới thanh đầu form; thân form co lại nhường chỗ nên dải không che ô nào, không che nút Lưu */
+.fsf:has(> .hdn-dai) > .fsf-h { order: -2; }
+.fsf > .hdn-dai { position: static; order: -1; flex: none; padding: 6px 20px; }
+/* khung đủ: từ dưới dải tới trên chân form, top, bottom do HuongDanNhanh đo theo px của form */
+.fsf > .hdn-khung { position: absolute; }
+/* số cam trong form: trên ô của form, dưới khung đủ (z-index 40) và hộp thoại .overlay (z-index 50) */
+.fsf > .hdn-cham { z-index: 39; }

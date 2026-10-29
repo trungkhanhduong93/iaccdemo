@@ -954,4 +954,7 @@ Trum chốt 29/10/2026 (T679) kiểu C trên bản bấm thử https://claude.ai
 - Mục Đi tiếp trong khung chỉ hiện bước trước, bước đang ở, bước sau trên sơ đồ Quy trình.
 - Chỗ thật tìm theo khuôn chung của màn danh sách chứng từ, danh mục, báo cáo, chức năng. Màn dựng riêng gắn `data-hd="<khoá ô>"`. Màn chưa tìm được chỗ nào thì dải vẫn chạy chữ, khung đủ dùng sơ đồ vẽ như QD86.
 - Nơi giữ tiền gọi là Quỹ tiền, không gọi là két.
-- Chưa làm: dải đi theo vào form phiếu cho bước nằm trong form, máy tự kiểm chỗ đánh số mỗi lần push (T676).
+- Form toàn màn mở khi dải đang chạy thì dải nằm trong form, ngay dưới thanh đầu form; thân form co lại nên dải không che ô nào, không che nút Lưu. Hộp thoại vẫn nằm trên dải (T676).
+- Bước nằm trong form chỉ vào khối ô đầu form, bảng chi tiết hoặc nút Lưu. Bấm nút làm ngay hoặc Thêm mới thì dải sang bước đầu trong form. Lưu xong thì form đóng, dải về danh sách ở bước kế. Đóng form không lưu thì dải về bước mở form.
+- Bước trong form được tính riêng nên một màn có thể quá 5 bước: Trum duyệt Thu chi 7 bước, Kiểm kê 5 bước (T676).
+- `tools/kiem_tra.py` kiểm số cam đúng bước ở 6 màn gói Standard mỗi lần chạy, cả `--nhanh` (T676).
