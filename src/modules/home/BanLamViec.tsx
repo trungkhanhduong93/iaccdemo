@@ -9,6 +9,7 @@ import { Card, PageHead, Pk } from '../../ui/Page'
 import { Table } from '../../ui/Table'
 import { money } from '../../ui/format'
 import { cuaHangChuaDung } from '../onboarding/cua-hang-fabi'
+import { HuongDan } from './HuongDan'
 
 export function BanLamViec({ sc }: ScreenProps) {
   const { s } = useSession()
@@ -43,6 +44,7 @@ export function BanLamViec({ sc }: ScreenProps) {
 
   return (
     <div className="page">
+      <HuongDan sang="/app/trang-chu/tong-quan" />   {/* khởi tạo xong mà vào Bàn làm việc: chào rồi sang Tổng quan (T138) */}
       <PageHead title={`Bàn làm việc của ${ten}`} meta={<><span className="chip ok">Kỳ 10/2026 đang mở</span><span className="chip warn">Khoá sổ tháng {KY_KHOA_SO.thang}: còn 4 bước</span></>}>
         <Link className="btn" to="/app/tien/2-1-1/moi"><Icon n="plus" className="ic sm" />Phiếu thu, chi</Link>
         <Link className="btn" to="/app/mua-hang/4-1-1/moi"><Icon n="plus" className="ic sm" />Phiếu mua hàng</Link>

@@ -37,6 +37,8 @@ export interface Session {
   ppTndn: PpTndn         // phương pháp tính thuế TNDN (TT58): 'tyLe' hoặc 'thuNhap', mặc định 'thuNhap'
   dvMoi?: DonVi        // đơn vị mới tạo khi dùng thử từ FABi (T138): tên FABi, chưa có MST; 3 đơn vị mẫu giữ nguyên
   soDuQuy?: Record<string, Record<string, { no: number; co: number }>>   // số dư ban đầu từng quỹ theo đơn vị, lưu ở màn Số dư ban đầu (T160)
+  choKeKhai?: Record<string, boolean>   // đơn vị khởi tạo nhanh từ FABi, chưa chọn loại hình, gói, thông tin đơn vị; mở Kê khai thuế thì hỏi (T138)
+  huongDan?: Record<string, boolean>   // hướng dẫn từng bước ở Trang chủ theo đơn vị: false là vừa khởi tạo xong, chờ hiện; true là đã xem hoặc bỏ qua (T138)
   dungThu?: Record<string, string>   // ngày bắt đầu dùng thử (dd/mm/yyyy) của đơn vị mới tạo từ FABi, thêm đơn vị (T158)
   ttDv?: Record<string, TtDonVi>   // thông tin kê khai từng đơn vị (T145)
   cnThem?: Record<string, CnThem[]>   // cửa hàng lên sổ thêm từ cửa hàng FABi theo từng đơn vị (T142)
@@ -157,10 +159,11 @@ export const loaiHinhDv = (s: Pick<Session, 'ttDv'>, d: DonVi): 'hkd' | 'dn' => 
 /** Dùng thử: mọi gói được 30 ngày tính từ lúc tạo đơn vị (PhuongXT chốt 12/10/2026, T158) */
 export const SO_NGAY_DUNG_THU = 30
 export const batDauDungThu = () => dmy(HOM_NAY)
-/** Đơn vị đang dùng thử: còn bao nhiêu ngày, đến ngày nào; null là không dùng thử (3 đơn vị mẫu đã mua) */
-export function dungThuDv(s: Pick<Session, 'dungThu' | 'donVi'>): { con: number; den: string } | null {
+/** Đơn vị đang dùng thử: còn bao nhiêu ngày, đến ngày nào; null là không dùng thử (3 đơn vị mẫu đã mua).
+ *  Gói Standard miễn phí nên tạm không hiện dùng thử ở mọi màn (PhuongXT 28/10/2026, T138) */
+export function dungThuDv(s: Pick<Session, 'dungThu' | 'donVi' | 'goi'>): { con: number; den: string } | null {
   const tu = s.dungThu?.[s.donVi]
-  if (!tu) return null
+  if (!tu || s.goi === 'S') return null
   const [d, m, y] = tu.split('/').map(Number)
   const den = new Date(y, m - 1, d + SO_NGAY_DUNG_THU)
   const con = Math.max(0, Math.ceil((+den - +HOM_NAY) / 86400000))

@@ -30,6 +30,7 @@ import {
   tinhToanTongQuan,
 } from './chiSo'
 import { BaBaiToanStandard } from './BaBaiToanStandard'
+import { HuongDan, moLaiHuongDan } from './HuongDan'
 import { datThangLamViec, thangLamViec } from '../../app/thangLamViec'
 
 export function TongQuan({ sc }: ScreenProps) {
@@ -494,6 +495,9 @@ export function TongQuan({ sc }: ScreenProps) {
         onChange={e => setThangF(Number(e.target.value))}>
         {[10, 9, 8, 7].map(t => <option key={t} value={t}>Tháng {t}</option>)}
       </Select>
+      <button type="button" className="btn sm tq-xem-hd" title="Xem lại hướng dẫn" aria-label="Xem lại hướng dẫn" onClick={moLaiHuongDan}>
+        <Icon n="la-ban" className="ic sm" />
+      </button>
     </div>
   )
 
@@ -596,6 +600,7 @@ export function TongQuan({ sc }: ScreenProps) {
       </PageHead>
       )}
 
+      <HuongDan />
       {/* Lưới các khối Tổng quan */}
       <div className="tq-grid-12">
         {isStandard ? (

@@ -69,7 +69,7 @@ function layTieuDe(pathname: string, search = '', s?: Session): string {
     return nhanTab(sc)
   }
   if (mod) return mod.ten
-  return 'IACC Cloud'
+  return 'iPOS Accounting'
 }
 
 // Màn cấp 2 (xem, sửa phiếu, xem báo cáo) ẩn thanh tab, nút quay lại đủ để thoát (T223)

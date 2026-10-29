@@ -75,7 +75,7 @@ export const quyTrinh: QuyTrinhDef = {
       ['Cửa hàng, khách hàng', 'FABi'],
       ['Kho, nguyên vật liệu', 'iPOS Inventory'],
       ['Nhà cung cấp, công thức', 'iPOS Inventory'],
-      ['Tài khoản, bút toán', 'IACC Cloud'],
+      ['Tài khoản, bút toán', 'iPOS Accounting'],
     ],
   },
   tienIch: ['tien-ich/11-3'],

@@ -136,7 +136,7 @@ export function GoiThueBao({ sc }: ScreenProps) {
       {/* ── 2. Thanh Chuyển Đổi Kỳ Thanh Toán & Giới Thiệu ── */}
       <div className="gtb-chon-ky-wrap">
         <div className="gtb-chon-ky-head">
-          <h3 className="gtb-sec-title">Bảng giá và các gói phiên bản IACC Cloud</h3>
+          <h3 className="gtb-sec-title">Bảng giá và các gói phiên bản iPOS Accounting</h3>
           <p className="gtb-sec-sub">
             Chọn gói bản quyền phù hợp với mô hình kinh doanh F&B từ quán đơn lẻ tới chuỗi quy mô lớn
           </p>
@@ -284,7 +284,7 @@ export function GoiThueBao({ sc }: ScreenProps) {
           <div>
             <h3>So sánh chi tiết 120 tính năng theo phân hệ</h3>
             <span className="sub">
-              Dữ liệu chuẩn hóa từ Roadmap & Dự kiến tính năng IACC Cloud · Đang hiện {tongTinhNangLoc} tính năng
+              Dữ liệu chuẩn hóa từ Roadmap & Dự kiến tính năng iPOS Accounting · Đang hiện {tongTinhNangLoc} tính năng
             </span>
           </div>
 
@@ -429,7 +429,7 @@ export function GoiThueBao({ sc }: ScreenProps) {
       {/* ── 5. Khối Hỏi Đáp Thường Gặp Về Bản Quyền (FAQ) ── */}
       <section className="card gtb-faq-card" style={{ marginTop: 24, padding: 22 }}>
         <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--ink)', marginBottom: 14 }}>
-          Câu hỏi thường gặp về gói phần mềm & bản quyền IACC Cloud
+          Câu hỏi thường gặp về gói phần mềm & bản quyền iPOS Accounting
         </h3>
         <div className="grid g2" style={{ gap: 16 }}>
           <div className="gtb-faq-item">

@@ -77,7 +77,7 @@ export function nhapJson(donVi: string, cd: CheDo, json: string): number {
     throw new Error('File không phải JSON hợp lệ')
   }
   const goc = Array.isArray(v) ? v : laObj(v) && Array.isArray(v.mau) ? v.mau : null
-  if (!goc) throw new Error('File không phải mẫu in xuất từ IACC Cloud')
+  if (!goc) throw new Error('File không phải mẫu in xuất từ iPOS Accounting')
   const nhap = goc.filter(hopLe).map(m => ({ ...m, cheDo: cd }))
   if (!nhap.length) throw new Error('File không có mẫu in nào dùng được')
   const ds = docTat(donVi).filter(m => !nhap.some(x => x.id === m.id))

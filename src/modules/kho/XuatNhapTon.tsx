@@ -70,7 +70,7 @@ export function XuatNhapTon({ sc, mod }: ScreenProps) {
 
   return (
     <div className="page">
-      <PageHead crumb={[mod.ten, sc.nhom ?? '']} title={tenMan(sc)} code={sc.code} meta={<span className="chip">IACC Cloud tự tính từ phiếu kho đồng bộ</span>} />
+      <PageHead crumb={[mod.ten, sc.nhom ?? '']} title={tenMan(sc)} code={sc.code} meta={<span className="chip">iPOS Accounting tự tính từ phiếu kho đồng bộ</span>} />
       <section className="report">
         <ReportToolbar ky={ky} setKy={setKy} />
         <ReportPaper title="Báo cáo xuất nhập tồn" sub={`${tenKho} · Tháng ${ky}/2026`}>

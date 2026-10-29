@@ -19,7 +19,7 @@ const tienIch: ModuleDef = {
     '11.2': { tool: { nut: 'Chạy xuất kho ngày 07/10', mota: 'Món bán trên FABi tự sinh phiếu xuất kho nguyên vật liệu theo công thức chế biến, ngay khi đơn về. Món chưa có công thức được đưa vào danh sách chờ.',
       caiDat: [['Thời điểm xuất', 'Ngay khi đơn về'], ['Món chưa có công thức', 'Đưa vào danh sách chờ, không xuất']],
       nhatKy: [['07/10/2026 14:20', 'Xuất 1.894 món, 3 cửa hàng', 'Xong'], ['07/10/2026 14:05', '2 món chưa có công thức: Bún bò Huế, Mì Quảng', 'Cảnh báo']] } },
-    '11.3': { tool: { nut: 'Đồng bộ kho ngay', mota: 'Lấy phiếu nhập, xuất, điều chuyển, kiểm kê từ iPOS Inventory về IACC Cloud. Danh mục kho, nguyên vật liệu không phải nhập lại.',
+    '11.3': { tool: { nut: 'Đồng bộ kho ngay', mota: 'Lấy phiếu nhập, xuất, điều chuyển, kiểm kê từ iPOS Inventory về iPOS Accounting. Danh mục kho, nguyên vật liệu không phải nhập lại.',
       caiDat: [['Lịch', 'Mỗi giờ'], ['Kho áp dụng', '5 kho']] } },
     '11.4': { kind: 'custom', comp: HoaDonDauVao },
     '11.5': { kind: 'custom', comp: DuyetChungTu },

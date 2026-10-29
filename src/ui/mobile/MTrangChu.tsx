@@ -29,6 +29,7 @@ import { MTimKiem } from './MTimKiem'
 import { MChon } from './MChon'
 import { useChonLoaiTien } from './MChonLoaiTien'
 import { MTrangChuStandard } from './MTrangChuStandard'
+import { HuongDan } from '../../modules/home/HuongDan'
 
 function SoSanhDong({ tang, label }: { tang: number | null; label?: string }) {
   if (tang === null) {
@@ -520,6 +521,7 @@ function MTrangChuCoPhi() {
 
   return (
     <div className="m-trang-chu" onClickCapture={moTuTrangChu}>
+      <HuongDan />   {/* hướng dẫn từng bước sau khi khởi tạo đơn vị xong (T138) */}
       {/* Đầu trang IVT: nền vàng kem chuyển trắng, logo vuông đè nhãn gói, cụm tìm kiếm & chuông bo tròn */}
       <section className="m-tc-dau">
         <div className="m-tc-dau-trai">

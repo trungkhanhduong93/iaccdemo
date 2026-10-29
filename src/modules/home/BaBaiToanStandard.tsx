@@ -24,6 +24,7 @@ import { type LaiLoCnItem } from './soLieuBieuDoStandard'
 import { BieuDoCuaHangModal } from './BieuDoStandard'
 import { DS_QUY_TIEN_112 } from '../danh-muc/data'
 import { chiPhiThangTuPhieu, phieuChiPhi, usePhieuChiPhi, type PhieuChiPhi } from './chiPhiPhieu'
+import { ChipTamTinh, LoiNhuanTamTinh, NhacSoDuKet, laDonViMoi } from './NhacDonViMoi'
 
 // Hệ số mùa vụ quán ăn uống tháng 10/2025 đến 6/2026 so với trung bình tháng 7–9/2026: Tết (tháng 1) cao, sau Tết (tháng 2) thấp (T255)
 const MUA_VU: [number, number, number][] = [   // [tháng, năm, hệ số doanh thu]
@@ -1074,17 +1075,18 @@ export function BaBaiToanStandard({ d, thang: thangXem, selCns, chonKy }: { d: T
 
           <div className="bbt-o-loi-nhuan">
             <div className="hoi bbt-e-hoi">
-              Lợi nhuận {thangXem === 10 ? 'tháng này' : `tháng ${thangXem}`}
+              Lợi nhuận {thangXem === 10 ? 'tháng này' : `tháng ${thangXem}`}<ChipTamTinh />
             </div>
             <div
               className={`tra bbt-tra ${loiNhuan >= 0 ? 'lai' : 'lo'}`}
-              style={{ color: loiNhuan >= 0 ? 'var(--green, #138a52)' : 'var(--red, #c2362b)' }}
+              style={{ color: loiNhuan < 0 ? 'var(--red, #c2362b)' : laDonViMoi(s) ? 'var(--ink)' : 'var(--green, #138a52)' }}   // đơn vị mới: lợi nhuận tạm tính, không tô xanh như đã chốt lời (T138)
             >
               {loiNhuan < 0 ? `Lỗ ${moneyD(Math.abs(loiNhuan))}` : moneyD(loiNhuan)}
             </div>
             <div className="phu bbt-phu bbt-e-phu">
               Biên lợi nhuận {pct(bien)} <span className="bbt-e-giai">· {bien < 0 ? 'lỗ' : 'lãi'} {Math.abs(bien * 100).toLocaleString('vi-VN', { maximumFractionDigits: 1 })} đ trên mỗi 100 đ doanh thu</span>
             </div>
+            <LoiNhuanTamTinh />
           </div>
 
           <div className="bbt-bang-kqkd">
@@ -1226,6 +1228,7 @@ export function BaBaiToanStandard({ d, thang: thangXem, selCns, chonKy }: { d: T
               <span style={{ color: 'var(--green, #138a52)' }}>{moneyD(tongQuy.thu)}</span> · chi{' '}
               <span style={{ color: 'var(--red, #c2362b)' }}>{moneyD(tongQuy.chi)}</span>
             </div>
+            <NhacSoDuKet />
           </div>
 
           {quy.length > 0 ? (

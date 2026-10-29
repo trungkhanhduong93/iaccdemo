@@ -42040,11 +42040,11 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
 .ktf-tai-ds small { font-size: 12px; }
 @keyframes ktf-quay { to { transform: rotate(360deg); } }
 
-/* ── Khởi tạo FABi: điện thoại ghim Quay lại, Dùng thử thành 2 ô dưới đáy (T668) ── */
+/* ── Khởi tạo FABi: điện thoại ghim Dùng thử dưới đáy (T668; T138 bỏ màn chào nên bỏ Quay lại) ── */
 .ktf-gt-nut { display: contents; }
 @media (max-width: 767px) {
   .ktf:has(.ktf-gt-nut) { padding-bottom: calc(84px + env(safe-area-inset-bottom)) !important; }
-  .ktf-gt-nut { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; padding: 10px var(--m-le-man) calc(10px + env(safe-area-inset-bottom)); background: #fff; border-top: 1px solid var(--line); box-shadow: 0 -4px 16px rgba(14, 26, 43, .08); }
+  .ktf-gt-nut { display: grid; grid-template-columns: 1fr; gap: 10px; position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; padding: 10px var(--m-le-man) calc(10px + env(safe-area-inset-bottom)); background: #fff; border-top: 1px solid var(--line); box-shadow: 0 -4px 16px rgba(14, 26, 43, .08); }
   .ktf-gt-nut .btn { min-width: 0; }
   .ktf-gt-nut .ktf-gt-sau { display: none; }   /* Để sau đã có ở đầu màn */
 }
@@ -42455,3 +42455,81 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
   cursor: not-allowed;
   opacity: .7;
 }
+
+/* ── Khởi tạo FABi, bước 1: tiêu đề kèm ảnh, 4 thẻ giá trị gói Standard, một nút kết nối, dòng gợi ý gói cao hơn (T138) ── */
+.ktf:has(.ktf-b1) { padding-top: 20px; padding-bottom: 20px; }
+.ktf-b1 { max-width: 1060px; margin-top: 4px; padding: 28px 32px 22px; display: flex; flex-direction: column; gap: 22px; }
+.ktf-b1-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 32px; align-items: center; }
+.ktf-b1-chu { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
+.ktf-b1-huy { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; background: var(--green-t); color: var(--green); font-size: 13px; font-weight: 600; }
+.ktf-b1-chu h1 { margin: 0; color: var(--ink); font-size: 30px; line-height: 1.25; }
+.ktf-b1-chu p { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.55; }
+/* ảnh co theo chiều cao màn để cả trang vừa một màn hình */
+.ktf-b1-anh { width: min(100%, max(320px, calc((100dvh - 400px) * 1.6))); justify-self: end; }
+.ktf-b1-the { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.ktf-b1-the > div { display: flex; flex-direction: column; gap: 6px; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); }
+.ktf-b1-the .ktf-chao-ic { width: 40px; height: 40px; border-radius: 12px; margin-bottom: 2px; }
+.ktf-b1-the b { color: var(--ink); font-size: 14.5px; }
+.ktf-b1-the p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+.ktf-b1-cta { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.ktf-b1-cta small { font-size: 12.5px; }
+.ktf-b1-goi { margin: 0; padding-top: 14px; border-top: 1px solid var(--line); display: flex; gap: 8px; align-items: flex-start; color: var(--muted); font-size: 12.5px; line-height: 1.5; }
+.ktf-b1-goi .ic { color: var(--blue); flex: none; margin-top: 1px; }
+@media (max-width: 900px) {
+  .ktf-b1 { padding: 20px 16px; }
+  .ktf-b1-hero { grid-template-columns: 1fr; gap: 18px; }
+  .ktf-b1-anh { width: min(100%, 300px); max-height: 260px; justify-self: center; }   /* ảnh app khổ dọc: chỉ lấy phần trên, để nguyên thì đẩy thẻ giá trị xuống xa */
+  .ktf-b1-chu h1 { font-size: 24px; }
+  .ktf-b1-the { grid-template-columns: 1fr; }
+}
+@media (min-width: 901px) and (max-width: 1180px) { .ktf-b1-the { grid-template-columns: repeat(2, minmax(0, 1fr)); } }   /* màn vừa: 4 thẻ thành 2 hàng */
+/* popup khởi tạo 1 bước: ngày bắt đầu làm việc, PTTT FABi về quỹ (T138) */
+.ktf-h3-dau { margin-top: 0; }
+.ktf-ngay { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
+.ktf-ngay > :first-child { width: 180px; flex: none; }
+.ktf-ngay small { flex: 1; min-width: 220px; }
+.ktf-pttt { display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.ktf-pttt > div { display: grid; grid-template-columns: minmax(0, 1fr) 20px minmax(0, 1fr); align-items: center; gap: 10px; padding: 10px 14px; font-size: 13px; }
+.ktf-pttt > div + div { border-top: 1px solid var(--line); }
+.ktf-pttt > div > .ic { color: var(--muted); }
+.ktf-pttt > div > span:last-child { display: flex; flex-direction: column; }
+.ktf-pttt b { color: var(--ink); }
+.ktf-pttt small { font-size: 12px; }
+.ktf-pttt-chu { display: block; margin-top: 6px; font-size: 12px; }
+
+
+/* ── Hướng dẫn từng bước lần đầu vào Trang chủ, đơn vị mới kết nối từ FABi (T138) ── */
+.hdan { position: fixed; inset: 0; z-index: 120; }   /* trên thanh dưới điện thoại (100) */
+.hdan-toi { position: absolute; inset: 0; background: rgba(14, 26, 43, .55); }
+.hdan-lo { position: fixed; border-radius: 10px; box-shadow: 0 0 0 9999px rgba(14, 26, 43, .55), 0 0 0 2px #fff inset; pointer-events: none; }
+.hdan-bong { position: fixed; width: 320px; max-width: calc(100vw - 24px); background: #fff; border-radius: 12px; padding: 16px 18px 14px; box-shadow: 0 16px 40px rgba(14, 26, 43, .28); display: flex; flex-direction: column; gap: 6px; }
+.hdan-bong.giua { left: 50%; top: 50%; transform: translate(-50%, -50%); width: 400px; text-align: center; align-items: center; padding: 26px 26px 18px; }
+.hdan-bong-ic { width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center; background: var(--tint); color: var(--blue); margin-bottom: 4px; }
+.hdan-bong b { color: var(--ink); font-size: 15px; }
+.hdan-bong.giua b { font-size: 18px; }
+.hdan-bong p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+.hdan-nut { gap: 6px; margin-top: 8px; width: 100%; align-items: center; }
+.hdan-dem { font-size: 12px; }
+.hdan-bong.giua .hdan-nut { justify-content: center; } .hdan-bong.giua .hdan-nut .grow { display: none; }
+/* nút Xem lại hướng dẫn cạnh Năm, Tháng: ô vuông nền xanh nhạt, biểu tượng la bàn (T138) */
+.bbt-chon .tq-xem-hd { width: 34px; height: 34px; min-height: 34px; padding: 0; justify-content: center; background: var(--tint); color: var(--blue); border-color: transparent; font-weight: 600; }
+.bbt-chon .tq-xem-hd:hover { background: var(--blue); color: #fff; }
+/* điện thoại: nút tròn nền trắng, chữ xanh, nổi trên đầu Trang chủ màu xanh */
+.m-tc-figma-nut-tron.m-tc-xem-hd { background: #fff; color: var(--blue); box-shadow: 0 0 0 3px rgba(255, 255, 255, .35); }
+.hdan-lam { align-self: flex-start; margin-top: 4px; color: var(--blue); border-color: var(--blue); }   /* nút làm ngay trong bong bóng hướng dẫn (T138) */
+
+/* ── Trang chủ đơn vị mới khởi tạo: lợi nhuận tạm tính kèm nút ghi khoản chi, nhãn nhắc số dư két (T138) ── */
+.nhac-tt-chip { margin-left: 8px; font-size: 11.5px; padding: 1px 8px; vertical-align: middle; }
+.nhac-tt { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--line); font-size: 12.5px; color: var(--muted); }
+.nhac-tt > span { flex: 1; min-width: 160px; }
+.nhac-tt .btn { flex: none; }
+.nhac-sodu { display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; padding: 4px 10px; border-radius: 999px; background: var(--amber-t); color: var(--amber); font-size: 12px; font-weight: 600; text-decoration: none; }
+.nhac-sodu:hover { text-decoration: underline; }
+/* nút nổi Tiếp tục hướng dẫn khi hướng dẫn tạm dừng ở màn khác (T138) */
+.hdan-tiep { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); z-index: 90; display: flex; align-items: center; gap: 4px; padding: 6px; border-radius: 999px; background: #fff; box-shadow: 0 8px 24px rgba(14, 26, 43, .22); }
+.hdan-tiep .btn { border-radius: 999px; }
+@media (max-width: 767px) { .hdan-tiep { bottom: calc(96px + env(safe-area-inset-bottom)); } }   /* trên thanh dưới điện thoại */
+/* popup kê khai thuế một màn: bỏ cột Bạn sẽ có gì, khung giữa (T138) */
+.ktf-luoi.ktf-mot { grid-template-columns: minmax(0, 1fr); max-width: 780px; margin: 0 auto; }
+.ktf-h.ktf-h-tiep { margin-top: 26px; padding-top: 20px; border-top: 1px solid var(--line); }
+.ktf-ds-ten { flex: 1; min-width: 0; color: var(--ink); }   /* dòng cửa hàng chỉ chọn cửa hàng chính, không ô tích (T138) */

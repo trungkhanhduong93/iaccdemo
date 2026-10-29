@@ -24,6 +24,8 @@ import { MODULES, tenPhanHe } from '../../app/registry'
 import { anNgoaiGoi, minGoi } from '../../app/plan'
 import { Pk } from '../Page'
 import { DS_QUY_TIEN_112 } from '../../modules/danh-muc/data'
+import { HuongDan, moLaiHuongDan } from '../../modules/home/HuongDan'
+import { ChipTamTinh, LoiNhuanTamTinh, NhacSoDuKet, laDonViMoi } from '../../modules/home/NhacDonViMoi'
 import { layLaiLoCuaHang } from '../../modules/home/soLieuBieuDoStandard'
 import { chiPhiThangTuPhieu, usePhieuChiPhi } from '../../modules/home/chiPhiPhieu'
 
@@ -290,6 +292,7 @@ export function MTrangChuStandard(_props?: Partial<ScreenProps>) {
 
   return (
     <div className="m-trang-chu m-tcf-trang" onClickCapture={moTuTrangChu}>
+      <HuongDan />   {/* hướng dẫn từng bước lần đầu, đơn vị mới kết nối từ FABi (T138) */}
       {/* 1. Header gradient theo Figma MB01 (T498) */}
       <section className="m-tc-figma-header">
         <div className="m-tc-figma-hoa-tiet-1" />
@@ -307,6 +310,10 @@ export function MTrangChuStandard(_props?: Partial<ScreenProps>) {
             </div>
           </div>
           <div className="m-tc-figma-dau-phai">
+            {/* xem lại hướng dẫn từng bước (T138) */}
+            <button type="button" className="m-tc-figma-nut-tron m-tc-xem-hd" onClick={moLaiHuongDan} title="Xem lại hướng dẫn" aria-label="Xem lại hướng dẫn">
+              <Icon n="la-ban" className="ic sm" />
+            </button>
             <button
               type="button"
               className="m-tc-figma-nut-tron"
@@ -440,15 +447,16 @@ export function MTrangChuStandard(_props?: Partial<ScreenProps>) {
 
           <div className="m-tcf-hero-box">
             <div className="m-tcf-hero-lbl">
-              Lợi nhuận {thangF === 10 ? 'tháng này' : `tháng ${thangF}`}
+              Lợi nhuận {thangF === 10 ? 'tháng này' : `tháng ${thangF}`}<ChipTamTinh />
             </div>
             <div
               className="m-tcf-hero-so"
-              style={{ color: loiNhuan >= 0 ? 'var(--green, #138a52)' : 'var(--red, #c2362b)' }}
+              style={{ color: loiNhuan < 0 ? 'var(--red, #c2362b)' : laDonViMoi(s) ? 'var(--ink)' : 'var(--green, #138a52)' }}   // đơn vị mới: lợi nhuận tạm tính (T138)
             >
               {loiNhuan < 0 ? `Lỗ ${moneyD(Math.abs(loiNhuan))}` : moneyD(loiNhuan)}
             </div>
             <div className="m-tcf-hero-sub">Biên lợi nhuận {pct(bien)}</div>
+            <LoiNhuanTamTinh />
           </div>
 
           <div className="m-tcf-kqkd-bang">
@@ -616,6 +624,7 @@ export function MTrangChuStandard(_props?: Partial<ScreenProps>) {
               <span style={{ color: 'var(--green, #138a52)' }}>{short(tongQuy.thu)}</span> · chi{' '}
               <span style={{ color: 'var(--red, #c2362b)' }}>{short(tongQuy.chi)}</span>
             </div>
+            <NhacSoDuKet />
           </div>
 
           {quy.length > 0 ? (

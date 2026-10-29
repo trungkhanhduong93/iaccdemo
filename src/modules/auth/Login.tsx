@@ -36,7 +36,7 @@ export function Login() {
       <div className="auth-r">
         <form className="auth-box" onSubmit={e => { e.preventDefault(); vao() }}>
           <h2>Đăng nhập</h2>
-          <p>Dùng tài khoản IACC Cloud hoặc tài khoản iPOS đang dùng cho FABi.</p>
+          <p>Dùng tài khoản iPOS Accounting hoặc tài khoản iPOS đang dùng cho FABi.</p>
           <div className="stack" style={{ gap: 14 }}>
             <div className="f"><label>Email hoặc số điện thoại</label><input className="inp" value={email} onChange={e => { setEmail(e.target.value); setLoi('') }} placeholder="vd: ketoan@congty.vn" /></div>
             <div className="f">
