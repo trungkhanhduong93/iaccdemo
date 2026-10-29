@@ -11,7 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T674 | Hướng dẫn nhanh (QD86) cho màn báo cáo mà đầu báo cáo nằm thay thanh tab: phân hệ Báo cáo, Sổ quỹ tiền mặt gói Standard. Nút la bàn đặt ở thanh chọn báo cáo | | Chờ | Sửa `src/modules/bao-cao/ThanhChon.tsx` (hỏi Trum nếu T499 đang giữ), dùng `NutHuongDan` trong `src/ui/HuongDanNhanh.tsx` |
+| T674 | Hướng dẫn nhanh (QD86) cho màn báo cáo mà đầu báo cáo nằm thay thanh tab: phân hệ Báo cáo, Sổ quỹ tiền mặt gói Standard. Nút la bàn đặt ở thanh chọn báo cáo | Trum | Đang làm | Sửa `src/modules/bao-cao/ThanhChon.tsx`, `TrungTam.tsx`, `src/ui/HuongDanNhanh.tsx`, `src/modules/tien/huong-dan.ts`, cuối `app.css` (mục T674) |
 | T675 | Hướng dẫn nhanh (QD86) trên điện thoại: khung kéo từ dưới lên, cùng nội dung `huong-dan.ts` với web | | Chờ | Gắn ở `MobileShell`, tách phần nội dung trong `src/ui/HuongDanNhanh.tsx` ra dùng chung |
 | T676 | Hướng dẫn nhanh đợt 2 (QD86): nút Chỉ cho tôi khoanh từng nút cho 5 màn đợt 1, máy tự kiểm chỗ khoanh mỗi lần push | | Chờ | Làm sau T138 vì tách phần khoanh từ `src/modules/home/HuongDan.tsx`. Chỗ khoanh đánh dấu `data-hd`, thêm bước kiểm vào `tools/kiem_tra.py` |
 | T677 | Hướng dẫn nhanh đợt 3 (QD86): soạn riêng từng phân hệ gói Standard, rồi gói Plus, Pro; tìm hướng dẫn bằng Ctrl + K | | Chờ | Mỗi phân hệ một file `src/modules/<phân hệ>/huong-dan.ts`, chia việc theo phân hệ. Ctrl + K sửa `src/app/CommandPalette.tsx` |
