@@ -97,15 +97,33 @@ const doRect = (b: Buoc) => {
   return new DOMRect(r.left / z, r.top / z, r.width / z, r.height / z)
 }
 
-/** Bong bóng: phải, trái, dưới, trên chỗ khoanh, chỗ nào đủ chỗ trước; khối to chiếm gần hết màn thì đặt ở đáy màn */
-function viTriBong(o: DOMRect): React.CSSProperties {
-  const W = window.innerWidth / zoom(), H = window.innerHeight / zoom()
-  const doc = Math.max(12, Math.min(o.top, H - 220)), ngang = Math.max(12, Math.min(o.left, W - RONG - 12))
+/** Bong bóng: phải, trái, dưới, trên chỗ khoanh, chỗ nào đủ chỗ trước; khối to chiếm gần hết màn thì đặt ở đáy màn.
+ *  cao: chiều cao bong bóng đo thật (điện thoại chữ to, bong bóng cao hơn 200 thì tràn khỏi đáy màn).
+ *  Cao màn lấy visualViewport: Safari điện thoại có thanh địa chỉ, thanh công cụ che một phần innerHeight */
+function viTriBong(o: DOMRect, cao = 200): React.CSSProperties {
+  const z = zoom(), W = window.innerWidth / z, H = (window.visualViewport?.height ?? window.innerHeight) / z
+  const doc = Math.max(12, Math.min(o.top, H - cao - 12)), ngang = Math.max(12, Math.min(o.left, W - RONG - 12))
   if (o.right + LE + 14 + RONG < W) return { left: o.right + LE + 14, top: doc }
   if (o.left - LE - 14 - RONG > 0) return { left: o.left - LE - 14 - RONG, top: doc }
-  if (o.bottom + LE + 200 < H) return { top: o.bottom + LE + 12, left: ngang }
-  if (o.top - LE - 200 > 0) return { bottom: H - o.top + LE + 12, left: ngang }
-  return { bottom: 12, left: Math.max(12, (W - RONG) / 2) }   // khối cao gần hết màn: bong bóng ở đáy, chừa phần trên có con số
+  if (o.bottom + LE + 12 + cao + 12 < H) return { top: o.bottom + LE + 12, left: ngang }
+  if (o.top - LE - 12 - cao - 12 > 0) return { top: o.top - LE - 12 - cao, left: ngang }
+  return { top: Math.max(12, H - cao - 12), left: Math.max(12, (W - RONG) / 2) }   // khối cao gần hết màn: bong bóng ở đáy, chừa phần trên có con số
+}
+
+/** Đo chiều cao bong bóng sau khi vẽ, để viTriBong đặt không tràn màn */
+function useCaoBong() {
+  const [cao, setCao] = useState(200)
+  const ref = (el: HTMLDivElement | null) => { if (el && Math.abs(el.offsetHeight - cao) > 2) setCao(el.offsetHeight) }
+  return [cao, ref] as const
+}
+
+/** Cuộn tới chỗ khoanh: chỉ cuộn khung chứa nó (danh sách cuộn ngang, khung .m-than), không để cả trang lệch ngang.
+ *  scrollIntoView cuộn mọi khung cha kể cả html; trang điện thoại hơi rộng hơn màn thì bị đẩy sang trái, khung khoanh lệch */
+function cuonToi(el: Element, o: ScrollIntoViewOptions) {
+  el.scrollIntoView(o)
+  const goc = document.scrollingElement
+  if (goc && goc.scrollLeft) goc.scrollLeft = 0
+  document.querySelectorAll<HTMLElement>('.m-than, .m-tc-man, body').forEach(k => { if (k.scrollLeft) k.scrollLeft = 0 })
 }
 
 const SU_KIEN = 'iacc-xem-huong-dan'
@@ -151,6 +169,7 @@ export function HuongDan({ sang }: { sang?: string }) {
   const [ket, setKet] = useState(!tiep?.khen && hetSauKhen)
   const [i, setI] = useState(Math.min(tiep?.b ?? 0, ds.length - 1))
   const [o, setO] = useState<DOMRect | null>(null)
+  const [caoBong, refBong] = useCaoBong()
   const [moLai, setMoLai] = useState(tiep?.moLai ?? false)   // bấm nút Xem lại hướng dẫn
   const [nhacNut, setNhacNut] = useState(false)   // đã bấm Bỏ qua, đang chỉ vào nút Xem lại hướng dẫn
   const dangDung = !!sang && docTiep()?.dv === s.donVi
@@ -181,7 +200,7 @@ export function HuongDan({ sang }: { sang?: string }) {
           // khối cao hơn nửa màn: cuộn cho đầu khối nằm dưới thanh trên và thanh tab (dính trên cùng), không để tiêu đề bị che
           const cao = el.getBoundingClientRect().height > window.innerHeight * 0.5
           if (cao) (el as HTMLElement).style.scrollMarginTop = '110px'
-          el.scrollIntoView({ block: cao ? 'start' : 'center' })
+          cuonToi(el, { block: cao ? 'start' : 'center', inline: 'nearest' })
         }
         setO(doRect(b)); return
       }
@@ -214,7 +233,7 @@ export function HuongDan({ sang }: { sang?: string }) {
   const loiChao = s.choKeKhai?.[s.donVi] ? `Doanh thu và thu chi từ FABi đã về sổ. ${b.noiDung}` : b.noiDung
   const cuoi = i === ds.length - 1
 
-  const viTri = b.chon && o ? viTriBong(o) : {}
+  const viTri = b.chon && o ? viTriBong(o, caoBong) : {}
 
   // gắn vào body: khung trang chủ có transform nên position: fixed bên trong bị lệch
   return createPortal(
@@ -222,7 +241,7 @@ export function HuongDan({ sang }: { sang?: string }) {
       {b.chon && o
         ? <div className="hdan-lo" style={{ left: o.left - LE, top: o.top - LE, width: o.width + LE * 2, height: o.height + LE * 2 }} />
         : <div className="hdan-toi" />}
-      <div className={`hdan-bong ${b.chon ? '' : 'giua'}`} style={viTri}>
+      <div ref={refBong} className={`hdan-bong ${b.chon ? '' : 'giua'}`} style={viTri}>
         {!b.chon && <div className="hdan-bong-ic"><Icon n="check" className="ic" /></div>}
         {khen
           ? <div className="hdan-khen-dau"><span className="hdan-khen-ic"><Icon n="star" className="ic" /></span><b>{b.tieuDe}</b></div>
@@ -267,13 +286,16 @@ export function TiepHuongDan() {
   if (!t || t.dv !== s.donVi || pathname.startsWith(TRANG_HD) || navigator.webdriver) return null
   const tong = (laMobile ? BUOC_DT : BUOC).length - 1
   const thoi = () => { luuTiep(null); set({ huongDan: { ...s.huongDan, [s.donVi]: true } }) }
+  // điện thoại đang làm việc của nút làm ngay (ghi chi, nhập số dư, kê khai): không hiện nút nổi, nó đè lên form, tấm chọn đáy màn.
+  // Bấm Trang chủ ở thanh dưới thì hướng dẫn tự chạy tiếp
+  const anNut = laMobile && !!t.cho
   return createPortal(
     <>
     {t.cho === 'quy' && pathname.startsWith('/app/danh-muc/1-12') && <KhoanhSoDuQuy />}
-    <div className="hdan-tiep" role="status">
+    {!anNut && <div className="hdan-tiep" role="status">
       <button className="btn pri sm" onClick={() => nav(TRANG_HD)}>Tiếp tục hướng dẫn ({Math.min(t.b, tong)}/{tong})<Icon n="arrow" className="ic sm" /></button>
       <button className="btn ghost sm" title="Tắt hướng dẫn" aria-label="Tắt hướng dẫn" onClick={thoi}><Icon n="x" className="ic sm" /></button>
-    </div>
+    </div>}
     </>,
     document.body,
   )
@@ -287,6 +309,7 @@ export function GoiYKeKhai({ onLap, chon }: { onLap: () => void; chon?: string }
   const nav = useNavigate()
   const [an, setAn] = useState(false)
   const [o, setO] = useState<DOMRect | null>(null)
+  const [caoBong, refBong] = useCaoBong()
   const t = docTiep()
   const hien = !an && !!t && t.dv === s.donVi && t.cho === 'thue' && !s.choKeKhai?.[s.donVi] && !navigator.webdriver
   useEffect(() => {
@@ -295,7 +318,7 @@ export function GoiYKeKhai({ onLap, chon }: { onLap: () => void; chon?: string }
     const bam = () => {
       const el = chon ? document.querySelector(chon) : null
       if (el) {
-        if (!daCuon) { el.scrollIntoView({ block: 'center' }); daCuon = true }
+        if (!daCuon) { cuonToi(el, { block: 'start' }); daCuon = true }   // dòng lên đầu màn, chừa chỗ bên dưới cho bong bóng
         const r = el.getBoundingClientRect(), z = zoom()
         const m = new DOMRect(r.left / z, r.top / z, r.width / z, r.height / z)
         setO(o => o && o.left === m.left && o.top === m.top && o.width === m.width && o.height === m.height ? o : m)
@@ -308,7 +331,7 @@ export function GoiYKeKhai({ onLap, chon }: { onLap: () => void; chon?: string }
       const bang = dau?.closest('table')
       if (dau && cuoi && bang) {
         // màn hẹp bảng cuộn ngang: cuộn cho thấy cột Thuế TNCN, khung cắt theo phần bảng đang thấy
-        if (!daCuon) { cuoi.scrollIntoView({ block: 'nearest', inline: 'end' }); daCuon = true }
+        if (!daCuon) { cuonToi(cuoi, { block: 'nearest', inline: 'end' }); daCuon = true }
         const a = dau.getBoundingClientRect(), c = cuoi.getBoundingClientRect(), k = bang.parentElement!.getBoundingClientRect(), z = zoom()
         const trai = Math.max(a.left, k.left), phai = Math.min(c.right, k.right)
         const m = new DOMRect(trai / z, a.top / z, (phai - trai) / z, (bang.getBoundingClientRect().bottom - a.top) / z)
@@ -323,7 +346,7 @@ export function GoiYKeKhai({ onLap, chon }: { onLap: () => void; chon?: string }
   return createPortal(
     <div className="hdan" role="dialog" aria-label="Hướng dẫn sử dụng">
       <div className="hdan-lo" style={{ left: o.left - LE, top: o.top - LE, width: o.width + LE * 2, height: o.height + LE * 2 }} />
-      <div className="hdan-bong" style={viTriBong(o)}>
+      <div ref={refBong} className="hdan-bong" style={viTriBong(o, caoBong)}>
         <div className="hdan-khen-dau"><span className="hdan-khen-ic"><Icon n="star" className="ic" /></span><b>Thông tin kê khai đã xong, giờ lập tờ khai</b></div>
         <p>Mỗi kỳ tờ khai có sẵn doanh thu tính thuế lấy từ FABi, phần giảm trừ, thuế GTGT, thuế TNCN phải nộp. Lập tờ khai để xem từng bước rồi nộp.</p>
         <div className="row hdan-nut">
@@ -356,17 +379,23 @@ export function KhenToKhai({ ky }: { ky: string }) {
   )
 }
 
-/** Bấm Nhập số dư quỹ ở hướng dẫn, form quỹ mở ra: khoanh ô Số dư ban đầu, đặt con trỏ vào ô (PhuongXT 29/10/2026).
- *  Chỉ viền, không làm tối màn, không chặn bấm; bám theo ô mỗi khung hình vì form trượt vào từ bên phải */
+/** Bấm Nhập số dư quỹ ở hướng dẫn, form quỹ mở ra: khoanh ô Số dư ban đầu; máy tính đặt con trỏ vào ô (PhuongXT 29/10/2026).
+ *  Chỉ viền, không làm tối màn, không chặn bấm; bám theo ô mỗi khung hình vì form trượt vào từ bên phải.
+ *  Điện thoại không tự đặt con trỏ: bàn phím bật lên đẩy màn nhìn thấy lên, viền vẽ lệch sang ô phía trên (Safari iPhone) */
 function KhoanhSoDuQuy() {
   const [o, setO] = useState<DOMRect | null>(null)
   useEffect(() => {
     let f = 0, daFocus = false
+    const chuot = window.matchMedia('(pointer: fine)').matches
     const bam = () => {
       const nhan = [...document.querySelectorAll('label')].find(l => l.textContent?.trim().startsWith('Số dư ban đầu'))
       const r = nhan?.parentElement?.getBoundingClientRect()
       if (r && r.width) {
-        if (!daFocus) { const inp = nhan!.parentElement!.querySelector('input'); if (inp) { inp.focus(); inp.select(); daFocus = true } }
+        if (!daFocus) {
+          daFocus = true
+          const inp = nhan!.parentElement!.querySelector('input')
+          if (chuot) { inp?.focus(); inp?.select() } else cuonToi(nhan!.parentElement!, { block: 'center' })
+        }
         const z = zoom(), m = new DOMRect(r.left / z, r.top / z, r.width / z, r.height / z)
         setO(o => o && o.left === m.left && o.top === m.top && o.width === m.width && o.height === m.height ? o : m)
       } else setO(null)

@@ -15,6 +15,7 @@
 - Gọi `xongViecHuongDan` ở: `ChungTuForm.tsx` (phiếu chi mới), `MDtThuChiLap.tsx` (điện thoại), `CatalogScreen.tsx` (lưu quỹ 1.12 có số dư), `ToKhaiHKD.tsx`, `MToKhaiHKD.tsx` (Đã nộp CQT).
 - `src/modules/thue/ToKhaiHKD.tsx`: danh sách tờ khai thêm cột Doanh thu tính thuế, Giảm trừ, Thuế GTGT, Thuế TNCN (lấy `soLieu`).
 - Điện thoại làm như web: `MDanhMuc.tsx` đọc `?mo=`, gắn và lưu giá trị phiên (`cfg.phien.gan`, `cfg.phien.luu`) nên quỹ gói Standard lưu được số dư ban đầu, lưu số dư từ hướng dẫn thì về Trang chủ khen. `MToKhaiHKD.tsx`: mỗi dòng tờ khai thêm ô số liệu 4 mục, gợi ý lập tờ khai khoanh dòng đầu (`GoiYKeKhai` nhận `chon`), Lập tờ khai mở tấm chọn kỳ, bước 4 khen.
+- Sửa theo ảnh iPhone của PhuongXT: bong bóng đo chiều cao thật (`useCaoBong`), cao màn lấy `visualViewport`, cao quá thì cuộn trong; cuộn tới chỗ khoanh qua `cuonToi` rồi trả trang về lề trái (`scrollIntoView` đẩy cả trang lệch ngang); điện thoại không tự đặt con trỏ vào ô số dư (bàn phím bật làm viền lệch lên ô trên); điện thoại ẩn nút Tiếp tục hướng dẫn khi đang làm việc của nút làm ngay.
 - CSS mục cuối `src/styles/app.css` (T138): bong bóng khen có biểu tượng sao, viền ô số dư, vị trí bong bóng khen trong hộp tờ khai.
 
 ## Đã kiểm
@@ -22,6 +23,7 @@
 - `npm run typecheck`, `npm run build`: không lỗi. `python tools/kiem_tra.py --nhanh`: "Không có lỗi.". `kiem_van.py` HuongDan.tsx, ToKhaiHKD.tsx: 0 ĐỎ, 1 VÀNG (câu khen quỹ 26 chữ).
 - Thử trong khung trình duyệt của app, phiên tạm chuyển gói Standard: lưu phiếu chi về Trang chủ khen; Nhập số dư quỹ mở form, viền ô, lưu về khen; popup kê khai Hoàn tất hiện gợi ý; Lập tờ khai mở hộp chọn kỳ rồi 4 bước; bước 4 khen, Bắt đầu dùng về Trang chủ; Bỏ qua về Trang chủ khen; màn Bắt đầu dùng khi quay lại. Xong trả phiên về Phố Mây gói Plus.
 - Điện thoại 375×812: nhập số dư quỹ mở form, viền ô, lưu về khen; danh sách tờ khai có số liệu, gợi ý, lập tờ khai tới bước 4 khen, Bắt đầu dùng về Trang chủ; khen chi khoanh dòng Chi phí hoạt động.
+- Sau khi sửa theo ảnh iPhone: thử lại cỡ 375×812 (bong bóng không tràn đáy, trang không lệch ngang, viền khớp ô số dư, không còn nút nổi). Chưa thử lại trên iPhone thật.
 - Chưa xuất lại `docs/IACC-Cloud-Chi-Tiet-He-Thong.xlsx`: máy PhuongXT không có file nguồn Excel.
 
 ## Dở dang, việc tiếp theo
@@ -31,4 +33,4 @@
 
 ## Bẫy, quyết định mới
 
-- Không.
+- Không ghi `docs/BAY.md`. Lưu ý trong code `HuongDan.tsx`: `scrollIntoView` cuộn cả trang ngang trên điện thoại, focus ô nhập trên iPhone làm lệch lớp `position: fixed`.

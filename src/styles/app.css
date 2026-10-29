@@ -42579,4 +42579,6 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
 .m-tk .m-tk-dong:has(.m-tk-dong-so) { flex-wrap: wrap; }
 .m-tk-dong-so { flex-basis: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; padding: 8px 10px; border-radius: 8px; background: var(--bg-2, #f5f7fa); }
 .m-tk-dong-so > span { display: flex; flex-direction: column; font-size: 13px; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
-.m-tk-dong-so small { font-size: 11.5px; font-weight: 400; color: var(--muted); }
+.m-tk-dong-so small { font-size: 11.5px; font-weight: 400; color: var(--muted); }/* điện thoại: chữ nhắc dưới ô số dư xuống dòng trong màn; bong bóng không cao quá màn (T138) */
+@media (max-width: 767px) { .hdan-vien-chu { white-space: normal; left: 12px; } }
+.hdan-bong { max-height: calc(100dvh - 24px); overflow-y: auto; }
