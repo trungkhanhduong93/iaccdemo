@@ -20,6 +20,7 @@ import { Icon } from '../Icon'
 import { MThanhCong, type DongTomTat } from './MThanhCong'
 import { addCatalogRow, getAllCatalogRows, getDmMeta, sinhMaKeTiep, useAddedCatalogRows } from '../generic/danhMucStore'
 import { LichDon } from '../ChonNgay'
+import { xongViecHuongDan } from '../../modules/home/HuongDan'
 
 export interface MDtThuChiLapProps extends ScreenProps {
   id?: string
@@ -492,6 +493,8 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
         setHoiThe({ soCt, idMoi: targetId })
         return
       }
+      // Ghi khoản chi từ hướng dẫn Trang chủ (T138): lưu xong về Trang chủ, hướng dẫn khen rồi chạy tiếp
+      if (isChi && xongViecHuongDan('chi', `“${lyDo || 'Chi tiền'}” ${money(soTien)}`, s.donVi, nav)) return
       setPhieuVuaLuu({ id: targetId, so: soCt })
       setDaLuu(true)
     }

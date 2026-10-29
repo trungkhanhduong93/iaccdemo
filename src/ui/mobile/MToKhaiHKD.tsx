@@ -14,6 +14,7 @@ import {
   BUOC, DIA_BAN, DS, DS_TT, NGANH, NHOM_DT, TEN_TO_KHAI, lapToKhai, soLieu, tenKy, tenLoai,
   type ToKhai, type TrangThai,
 } from '../../modules/thue/ToKhaiHKD'
+import { KhenToKhai, xongViecHuongDan } from '../../modules/home/HuongDan'
 import { Icon } from '../Icon'
 import { fold, moneyD } from '../format'
 import { MChon } from './MChon'
@@ -263,6 +264,7 @@ function TamLapToKhai({ onDong, onLap }: { onDong: () => void; onLap: (dau: bool
 /** Màn kê khai 4 bước toàn màn hình: vạch tiến độ bấm được, nội dung bước dạng thẻ, Quay lại, Tiếp tục ở đáy */
 function ManKeKhai({ tk, buocDau, onDong, onDoi }: { tk: ToKhai; buocDau: number; onDong: () => void; onDoi: () => void }) {
   const { s, toast } = useSession()
+  const nav = useNavigate()
   const [buoc, setBuoc] = useState(buocDau)
   const [xong, setXong] = useState(tk.tt === 'Chưa nộp' ? buocDau + 1 : BUOC.length)
   const dv = DON_VI.find(x => x.id === s.donVi) ?? DON_VI[0]
@@ -361,13 +363,14 @@ function ManKeKhai({ tk, buocDau, onDong, onDoi }: { tk: ToKhai; buocDau: number
         <span className="m-tk-buoc-ten"><small>Bước {buoc + 1}/{BUOC.length}</small>{BUOC[buoc].ten}</span>
       </div>
       <div className="m-tk-man-than">{noiDung[buoc]}</div>
+      {buoc === BUOC.length - 1 && sua && <KhenToKhai ky={tenKy(tk)} />}   {/* hướng dẫn Trang chủ (T138) */}
       <div className="m-tk-chan">
         {buoc === 0 ? <button type="button" className="btn" onClick={onDong}>Huỷ</button>
           : <button type="button" className="btn" onClick={() => setBuoc(buoc - 1)}>Quay lại</button>}
         {buoc < BUOC.length - 1 && <button type="button" className="btn pri" onClick={() => den(buoc + 1)}>Tiếp tục</button>}
         {buoc === BUOC.length - 1 && <>
           <button type="button" className="btn" onClick={() => toast(`Đã tải xuống tờ khai ${tk.ma} dạng XML`)}><Icon n="download" className="ic sm" />XML</button>
-          {sua && <button type="button" className="btn pri" onClick={() => { tk.tt = 'Đã nộp'; onDoi(); toast(`Đã ghi nhận ${tk.ma} đã nộp cơ quan thuế`); onDong() }}>Đã nộp CQT</button>}
+          {sua && <button type="button" className="btn pri" onClick={() => { tk.tt = 'Đã nộp'; onDoi(); toast(`Đã ghi nhận ${tk.ma} đã nộp cơ quan thuế`); onDong(); xongViecHuongDan('thue', tenKy(tk), s.donVi, nav) }}>Đã nộp CQT</button>}
         </>}
       </div>
     </div>

@@ -3,7 +3,8 @@
 // TNCN tính trên phần doanh thu cộng dồn từ đầu năm vượt 1 tỷ, PhuongXT chốt 15/10/2026. Số liệu giả, mẫu chờ kế toán trưởng duyệt (T04).
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
-import { useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import { GoiYKeKhai, KhenToKhai, xongViecHuongDan } from '../home/HuongDan'
 import type { Col, Row, ScreenProps } from '../types'
 import { useSession } from '../../app/session'
 import { CUA_HANG, DON_VI, tongKy } from '../../data/mock'
@@ -102,12 +103,17 @@ export function ToKhaiHKD({ sc, mod }: ScreenProps) {
   const [cauHinhLoc, datCauHinhLoc] = useCauHinhLoc(`/app/${mod.key}/${sc.slug}`, oLoc.map(o => o.k), ['nam', 'tim', 'loai', 'tt'])
   const rows = DS.filter(x => (ap.nam === 'tat-ca' || String(x.nam) === ap.nam) && (!ap.tim.trim() || fold(`${x.ma} ${tenKy(x)} ${TEN_TO_KHAI}`).includes(fold(ap.tim.trim())))
     && (!ap.loai || tenLoai(x.lan) === ap.loai) && (!ap.tt || x.tt === ap.tt))
-    .map((x, i) => ({ ...x, stt: i + 1, ky: tenKy(x), loai: tenLoai(x.lan) }) as Row)
+    .map((x, i) => { const so = soLieu(x); return { ...x, stt: i + 1, ky: tenKy(x), loai: tenLoai(x.lan), dt: so.dt, giam: so.giam, gtgt: so.gtgt, tncn: so.tncn } as Row })
   const cols: Col[] = [
     { k: 'stt', t: '#', c: true, w: 50 },
     { k: 'ma', t: 'Mã tờ khai', cls: 'code', w: 170 },
     { k: 'ky', t: 'Kỳ kê khai', w: 200 },
     { k: 'loai', t: 'Loại tờ khai', w: 150 },
+    // số liệu Bước 2 của tờ khai (PhuongXT 29/10/2026); giảm trừ là phần doanh thu đến 1 tỷ/năm không tính TNCN
+    { k: 'dt', t: 'Doanh thu tính thuế', num: true, w: 160 },
+    { k: 'giam', t: 'Giảm trừ', num: true, w: 140 },
+    { k: 'gtgt', t: 'Thuế GTGT', num: true, w: 130 },
+    { k: 'tncn', t: 'Thuế TNCN', num: true, w: 130 },
     { k: 'tt', t: 'Trạng thái', w: 130, r: r => <span className={`chip ${TT_CLS[r.tt as TrangThai]}`}>{r.tt}</span> },
   ]
   const lapMoi = (dau: boolean, n: number) => {
@@ -158,6 +164,9 @@ export function ToKhaiHKD({ sc, mod }: ScreenProps) {
         </div>
         <Table cols={cols} rows={rows} onRow={r => { setBuocDau(0); setMo(DS.find(x => x.id === r.id) ?? null) }} sum={{ stt: '', ma: `Tổng: ${rows.length}` }} />
       </section>
+      {/* hướng dẫn Trang chủ (T138): khai xong thông tin kinh doanh thì khoanh cột doanh thu, tiền thuế; Lập tờ khai mở hộp chọn kỳ như nút Thêm mới,
+          lập xong vào các bước kê khai */}
+      <GoiYKeKhai onLap={() => setLap(true)} />
       {lap && <HopLapToKhai onDong={() => setLap(false)} onLap={lapMoi} />}
       {mo && <HopToKhai tk={mo} buocDau={buocDau} onDong={() => setMo(null)} onDoi={() => setLan(x => x + 1)} />}
     </div>
@@ -204,6 +213,7 @@ export const DIA_BAN = [
 /** Hộp tờ khai 4 bước như iFaster: cột bước bên trái, nội dung bước bên phải, Huỷ, Quay lại, Tiếp tục ở chân */
 function HopToKhai({ tk, buocDau = 0, onDong, onDoi }: { tk: ToKhai; buocDau?: number; onDong: () => void; onDoi: () => void }) {
   const { s, toast } = useSession()
+  const nav = useNavigate()
   useDongEsc(onDong)
   const [buoc, setBuoc] = useState(buocDau)
   const [xong, setXong] = useState(tk.tt === 'Chưa nộp' ? buocDau + 1 : 4)
@@ -295,6 +305,7 @@ function HopToKhai({ tk, buocDau = 0, onDong, onDoi }: { tk: ToKhai; buocDau?: n
             ))}
           </aside>
           <div className="tk-noi-dung">{noiDung[buoc]}</div>
+          {buoc === BUOC.length - 1 && sua && <KhenToKhai ky={tenKy(tk)} />}   {/* hướng dẫn Trang chủ (T138) */}
         </div>
         <div className="ds-chan">
           <button type="button" className="btn" onClick={onDong}>Huỷ</button>
@@ -303,7 +314,8 @@ function HopToKhai({ tk, buocDau = 0, onDong, onDoi }: { tk: ToKhai; buocDau?: n
           {buoc < BUOC.length - 1 && <button type="button" className="btn pri" onClick={() => den(buoc + 1)}>Tiếp tục</button>}
           {buoc === BUOC.length - 1 && <>
             <button type="button" className="btn" onClick={() => toast(`Đã tải xuống tờ khai ${tk.ma} dạng XML`)}><Icon n="download" className="ic sm" />Tải xuống XML</button>
-            {sua && <button type="button" className="btn pri" onClick={() => { tk.tt = 'Đã nộp'; onDoi(); toast(`Đã ghi nhận ${tk.ma} đã nộp cơ quan thuế`); onDong() }}>Đã nộp CQT</button>}
+            {/* nộp xong từ hướng dẫn Trang chủ (T138): về Trang chủ, hướng dẫn khen */}
+            {sua && <button type="button" className="btn pri" onClick={() => { tk.tt = 'Đã nộp'; onDoi(); toast(`Đã ghi nhận ${tk.ma} đã nộp cơ quan thuế`); onDong(); xongViecHuongDan('thue', tenKy(tk), s.donVi, nav) }}>Đã nộp CQT</button>}
           </>}
         </div>
       </div>

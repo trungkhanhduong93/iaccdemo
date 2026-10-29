@@ -10,7 +10,8 @@ import { CanhBaoGon, DaiCanhBao, NutCachLam } from '../DaiCanhBao'
 import { Table } from '../Table'
 import { ChamTrangThai } from '../ChamTrangThai'
 import { CO_TRANG_DM, PhanTrang } from '../PhanTrang'
-import { fold, nhapSoQT, soQT } from '../format'
+import { fold, money, nhapSoQT, soQT } from '../format'
+import { xongViecHuongDan } from '../../modules/home/HuongDan'
 import { Dropdown, MenuItem, Popover, Select } from '../Dropdown'
 import { LocO } from '../ThanhLoc'
 import { TRUONG_DM, type CauHinhDM, type KhoiDM, type TruongDM, type KieuTruong } from '../../modules/danh-muc/truong-dm'
@@ -600,6 +601,9 @@ export function CatalogScreen({ sc }: ScreenProps) {
             }
             if (val && cfg.phien) set(cfg.phien.luu(val, s))   // T245
             toast('Đã lưu')
+            // Nhập số dư két từ hướng dẫn Trang chủ (T138): lưu số dư quỹ xong về Trang chủ, hướng dẫn khen rồi chạy tiếp
+            const duQuy = Number(String(val?.soDu ?? '').replace(/[^\d-]/g, '')) || 0
+            if ((catKey === '1.12' || catKey === '1-12') && duQuy && xongViecHuongDan('quy', `${val?.ten ?? ''} ${money(duQuy)}`.trim(), s.donVi, nav)) { dongForm(); return }
             if (goiYThuChi && val && !edit.ma && !themTiep) { setQuyVuaTao(val); setGoiYThuChi(false) }
             // T419: thẻ tạo từ phiếu chi thì ghi số thẻ vào phiếu gốc, phiếu hiện dòng Thẻ chi phí liên quan (T168)
             if (veGoc && val?.soThe) {

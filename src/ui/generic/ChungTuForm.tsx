@@ -36,6 +36,7 @@ import { HopInChungTu, type PhieuIn } from '../bao-cao/InChungTu'
 import { createPortal } from 'react-dom'
 import { theMauTheoGoc, theMauTheoSo } from '../../modules/ccdc'
 import { lyDoKhongXoaThe } from '../../modules/ccdc/the-phan-bo'
+import { xongViecHuongDan } from '../../modules/home/HuongDan'
 
 export interface ChungTuFormProps extends ScreenProps {
   cfg: VoucherCfg
@@ -480,6 +481,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
       } })
       return
     }
+    // Ghi khoản chi từ hướng dẫn Trang chủ (T138): lưu xong về Trang chủ, hướng dẫn khen rồi chạy tiếp
+    if (moi && mod.key === 'tien' && loai?.k === 'chi' && xongViecHuongDan('chi', `“${lyDo || dienGiai || 'Chi tiền'}” ${money(tongThanhToan)}`, s.donVi, nav)) return
     if (moi && goiYVe && !moMoi) { setHoiVe({ moMoi, idMoi }); return }
     sauLuu(moMoi, idMoi)
   }

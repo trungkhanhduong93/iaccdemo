@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 29/10/2026
+- T138: Hướng dẫn Trang chủ: ghi khoản chi, nhập số dư quỹ (mở thẳng form quỹ tiền mặt, khoanh ô Số dư ban đầu), lập tờ khai xong thì về Trang chủ, khoanh đúng chỗ vừa đổi và báo "Tuyệt vời…". Khai xong thông tin kê khai thì danh sách tờ khai khoanh cột doanh thu, tiền thuế, mời lập tờ khai. Danh sách Kê khai thuế thêm cột Doanh thu tính thuế, Giảm trừ, Thuế GTGT, Thuế TNCN.
 - T138: Mở từ FABi: màn giới thiệu mới (gói Standard miễn phí trọn đời, 4 thẻ giá trị, nút Bắt đầu kết nối dữ liệu). Popup kết nối còn 1 bước: chọn cửa hàng, ngày bắt đầu làm việc, xem tiền FABi về quỹ nào; lấy dữ liệu xong về thẳng Trang chủ. Loại hình, mã số thuế chỉ hỏi khi mở Kê khai thuế, gọn một màn.
 - T138: Trang chủ sau khi khởi tạo có hướng dẫn từng bước (Doanh thu, Quỹ tiền, Kê khai thuế) kèm nút làm ngay; nút la bàn để xem lại. Đơn vị mới thấy nhãn Lợi nhuận tạm tính, nút Ghi khoản chi, nhắc nhập số dư két.
 - T138: Gói Standard không còn chữ Dùng thử. Tên phần mềm trên giao diện đổi thành iPOS Accounting.

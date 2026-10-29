@@ -42565,3 +42565,14 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
   .ktf-pop .form-grid > .f { grid-column: 1 / -1; }
   .ktf-pop .form-grid .row > .inp { flex: 1; min-width: 0; }
 }
+
+/* ── Hướng dẫn Trang chủ: bong bóng khen khi làm xong việc (lưu khoản chi, số dư quỹ, nộp tờ khai) (T138) ── */
+.hdan-khen-dau { display: flex; align-items: flex-start; gap: 10px; }
+.hdan-khen-ic { flex: none; width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: var(--amber-t); color: var(--amber); }
+.hdan-khen-dau b { padding-top: 2px; line-height: 1.4; }/* khoanh ô Số dư ban đầu ở form quỹ khi bấm Nhập số dư quỹ từ hướng dẫn: chỉ viền, không chặn bấm (T138) */
+.hdan-vien { position: fixed; z-index: 130; border: 2px solid var(--amber); border-radius: 10px; box-shadow: 0 0 0 4px var(--amber-t); pointer-events: none; animation: hdan-nhay 1.4s ease-in-out infinite; }
+@keyframes hdan-nhay { 50% { box-shadow: 0 0 0 8px var(--amber-t); } }
+.hdan-vien-chu { position: fixed; z-index: 130; white-space: nowrap; padding: 8px 12px; border-radius: 8px; background: var(--ink); color: #fff; font-size: 12.5px; line-height: 1.4; pointer-events: none; box-shadow: 0 8px 20px rgba(14, 26, 43, .22); }
+.hdan-vien-chu b { color: #fff; }/* bong bóng khen ở bước Xem và nộp tờ khai khi đi theo hướng dẫn: góc phải dưới, trên hộp tờ khai, chừa hàng nút chân hộp (T138) */
+.hdan-khen-tk { z-index: 140; right: 32px; bottom: 150px; }
+@media (max-width: 767px) { .hdan-khen-tk { left: 12px; right: 12px; width: auto; bottom: calc(84px + env(safe-area-inset-bottom)); } }
