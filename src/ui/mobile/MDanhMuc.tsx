@@ -9,13 +9,15 @@ import { LY_DO } from '../../data/mock'
 import { MDanhSach, type ChipItem } from './MDanhSach'
 import { MFormDm } from './MFormDm'
 import { Icon } from '../Icon'
-import { useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import { xongViecHuongDan } from '../../modules/home/HuongDan'
 import { GoiYLapPhieu } from '../generic/GoiYLapPhieu'
 import { MChon } from './MChon'
 import type { KieuMTrong } from './MTrong'
 
 export const MDanhMuc: FC<ScreenProps> = ({ sc }) => {
-  const { s, toast } = useSession()
+  const { s, set, toast } = useSession()
+  const nav = useNavigate()
   const cfg = sc.catalog ?? {
     cols: [
       { k: 'ma', t: 'Mã', cls: 'code' },
@@ -76,9 +78,10 @@ export const MDanhMuc: FC<ScreenProps> = ({ sc }) => {
       const _k = r._k ?? k
       const tt = ttGhiDe[_k] !== undefined ? ttGhiDe[_k] : r._tt
       const chiPhi = chiPhiGhiDe[_k] !== undefined ? chiPhiGhiDe[_k] : r.chiPhi
-      return { ...r, _k, _tt: tt, chiPhi }
+      // giá trị lưu trong phiên như web (vd quỹ: PTTT từ FABi, số dư ban đầu gói Standard, T138)
+      return { ...(cfg.phien ? cfg.phien.gan(r, s) : r), _k, _tt: tt, chiPhi }
     })
-  }, [allGoc, ttGhiDe, chiPhiGhiDe, cols0])
+  }, [allGoc, ttGhiDe, chiPhiGhiDe, cols0, cfg.phien, s])
 
   // Điện thoại không tạo kho mới, kể cả ở danh mục và chứng từ; kho khai trên web (T539)
   const laKho = sc.code === '1.8' || sc.slug === '1-8'
@@ -202,6 +205,14 @@ export const MDanhMuc: FC<ScreenProps> = ({ sc }) => {
   const [goiYThuChi, setGoiYThuChi] = useState(false)
   const [quyVuaTao, setQuyVuaTao] = useState<Row | null>(null)
   useEffect(() => {
+    // ?mo=<mã>: mở thẳng một dòng có sẵn như web, vd Nhập số dư quỹ từ hướng dẫn Trang chủ mở quỹ TM01 (T138)
+    const mo = thamSo.get('mo')
+    if (mo !== null) {
+      const r = all.find(x => String(x.ma ?? x[cols0[0]?.k ?? 'ma']) === mo)
+      if (r && !laChiXem) { setEdit(r); setDienSan(undefined) }
+      setThamSo({}, { replace: true })
+      return
+    }
     if (thamSo.get('moi') === null) return
     if (laChiXem || laKho) { setThamSo({}, { replace: true }); return }
     setGoiYThuChi(thamSo.get('goiY') === 'thuchi')
@@ -223,11 +234,15 @@ export const MDanhMuc: FC<ScreenProps> = ({ sc }) => {
           if (item) item.chiPhi = Boolean(val.chiPhi)
         }
       }
+      if (val && cfg.phien) set(cfg.phien.luu(val, s))   // lưu PTTT, số dư ban đầu quỹ vào phiên như web (T245, T138)
       toast('Đã lưu')
+      // Nhập số dư quỹ từ hướng dẫn Trang chủ (T138): lưu số dư xong về Trang chủ, hướng dẫn khen rồi chạy tiếp
+      const duQuy = Number(String(val?.soDu ?? '').replace(/[^\d-]/g, '')) || 0
+      if ((sc.code === '1.12' || sc.slug === '1-12') && duQuy && xongViecHuongDan('quy', `${val?.ten ?? ''} ${money(duQuy)}`.trim(), s.donVi, nav)) { setEdit(null); return }
       if (goiYThuChi && val && !edit?.ma && !themTiep) { setQuyVuaTao(val); setGoiYThuChi(false) }
       if (!themTiep) setEdit(null)
     },
-    [khoaDong, toast, goiYThuChi, edit],
+    [khoaDong, toast, goiYThuChi, edit, cfg.phien, s, set, sc, nav],
   )
 
   return (

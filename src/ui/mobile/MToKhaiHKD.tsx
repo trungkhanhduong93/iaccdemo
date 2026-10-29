@@ -14,7 +14,7 @@ import {
   BUOC, DIA_BAN, DS, DS_TT, NGANH, NHOM_DT, TEN_TO_KHAI, lapToKhai, soLieu, tenKy, tenLoai,
   type ToKhai, type TrangThai,
 } from '../../modules/thue/ToKhaiHKD'
-import { KhenToKhai, xongViecHuongDan } from '../../modules/home/HuongDan'
+import { GoiYKeKhai, KhenToKhai, xongViecHuongDan } from '../../modules/home/HuongDan'
 import { Icon } from '../Icon'
 import { fold, moneyD } from '../format'
 import { MChon } from './MChon'
@@ -164,18 +164,30 @@ export const MToKhaiHKD: FC<ScreenProps> = () => {
                   <span className="m-tc-ngay-so">{n.ds.length} tờ khai</span>
                 </div>
                 <div className="m-tc-card-ngay">
-                  {n.ds.map(x => (
-                    <button key={x.id} type="button" className="m-tk-dong" onClick={() => setMo({ tk: x, buoc: 0 })}>
-                      <span className="m-tk-dong-trai">
-                        <b>{tenKy(x)}</b>
-                        <small>{x.ma} · {tenLoai(x.lan)}</small>
-                      </span>
-                      <span className="m-tk-dong-phai">
-                        <span className={`m-tacvu-badge ${TT_BADGE[x.tt]}`}>{x.tt}</span>
-                        {x.tt !== 'Đã huỷ' && <b>{moneyD(soLieu(x).tong)}</b>}
-                      </span>
-                    </button>
-                  ))}
+                  {n.ds.map(x => {
+                    const so = soLieu(x)
+                    return (
+                      <button key={x.id} type="button" className="m-tk-dong" onClick={() => setMo({ tk: x, buoc: 0 })}>
+                        <span className="m-tk-dong-trai">
+                          <b>{tenKy(x)}</b>
+                          <small>{x.ma} · {tenLoai(x.lan)}</small>
+                        </span>
+                        <span className="m-tk-dong-phai">
+                          <span className={`m-tacvu-badge ${TT_BADGE[x.tt]}`}>{x.tt}</span>
+                          {x.tt !== 'Đã huỷ' && <b>{moneyD(so.tong)}</b>}
+                        </span>
+                        {/* số liệu từng kỳ như 4 cột danh sách web (T138) */}
+                        {x.tt !== 'Đã huỷ' && (
+                          <span className="m-tk-dong-so">
+                            <span><small>Doanh thu tính thuế</small>{moneyD(so.dt)}</span>
+                            <span><small>Giảm trừ</small>{moneyD(so.giam)}</span>
+                            <span><small>Thuế GTGT</small>{moneyD(so.gtgt)}</span>
+                            <span><small>Thuế TNCN</small>{moneyD(so.tncn)}</span>
+                          </span>
+                        )}
+                      </button>
+                    )
+                  })}
                 </div>
               </section>
             ))}
@@ -221,6 +233,8 @@ export const MToKhaiHKD: FC<ScreenProps> = () => {
       )}
 
       <MBaoCaoTheoDoi mo={moTheoDoi} onDong={() => setMoTheoDoi(false)} modKey="thue" tieuDe="Báo cáo theo dõi" ds={theoDoi} />
+      {/* hướng dẫn Trang chủ (T138): khai xong thông tin kinh doanh thì khoanh số liệu tờ khai đầu danh sách, Lập tờ khai mở tấm chọn kỳ */}
+      <GoiYKeKhai chon=".m-tk-dong:has(.m-tk-dong-so)" onLap={() => setLap(true)} />
       {lap && <TamLapToKhai onDong={() => setLap(false)} onLap={lapMoi} />}
       {mo && <ManKeKhai tk={mo.tk} buocDau={mo.buoc} onDong={() => setMo(null)} onDoi={() => veLai(x => x + 1)} />}
     </div>

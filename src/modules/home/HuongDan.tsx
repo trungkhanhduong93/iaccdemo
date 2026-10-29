@@ -281,8 +281,8 @@ export function TiepHuongDan() {
 
 /** Hướng dẫn chờ việc Kê khai thuế, đã khai xong thông tin kinh doanh (popup loại hình, mã số thuế): ở danh sách tờ khai khoanh các cột
  *  doanh thu, tiền thuế, bong bóng mời lập tờ khai (PhuongXT 29/10/2026). Lập tờ khai: mở các bước kê khai (onLap), nộp xong mới về Trang chủ;
- *  Bỏ qua: về Trang chủ khen, kết thúc hướng dẫn. Gắn ở ToKhaiHKD */
-export function GoiYKeKhai({ onLap }: { onLap: () => void }) {
+ *  Bỏ qua: về Trang chủ khen, kết thúc hướng dẫn. Gắn ở ToKhaiHKD; điện thoại (MToKhaiHKD) truyền chon: dòng tờ khai đầu có số liệu */
+export function GoiYKeKhai({ onLap, chon }: { onLap: () => void; chon?: string }) {
   const { s } = useSession()
   const nav = useNavigate()
   const [an, setAn] = useState(false)
@@ -293,6 +293,15 @@ export function GoiYKeKhai({ onLap }: { onLap: () => void }) {
     if (!hien) return
     let f = 0, daCuon = false
     const bam = () => {
+      const el = chon ? document.querySelector(chon) : null
+      if (el) {
+        if (!daCuon) { el.scrollIntoView({ block: 'center' }); daCuon = true }
+        const r = el.getBoundingClientRect(), z = zoom()
+        const m = new DOMRect(r.left / z, r.top / z, r.width / z, r.height / z)
+        setO(o => o && o.left === m.left && o.top === m.top && o.width === m.width && o.height === m.height ? o : m)
+        f = requestAnimationFrame(bam)
+        return
+      }
       // vùng từ cột Doanh thu tính thuế tới cột Thuế TNCN, từ dòng tiêu đề tới hết bảng
       const th = [...document.querySelectorAll('.page th')]
       const dau = th.find(x => x.textContent?.trim() === 'Doanh thu tính thuế'), cuoi = th.find(x => x.textContent?.trim() === 'Thuế TNCN')
