@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T673 | Hướng dẫn nhanh từng màn đợt 1 (QD86): nút la bàn cuối thanh tab, khung bên phải có sơ đồ khung màn đánh số, các bước, lưu ý, sơ đồ Đi tiếp lấy từ Quy trình; bộ chung theo kiểu màn và 5 màn gói Standard | Trum | 29/10/2026 | `2026-10-29-trum-huong-dan-nhanh.md` |
 | T672 | Chatbox Trợ lý IACC trên web, bản mẫu giao diện: nút nổi góc dưới phải, khung chat, kịch bản mẫu gõ câu mua hàng ra thẻ kết quả, nút Lập phiếu mua | Trum | 28/10/2026 | `2026-10-28-trum-chatbox-tro-ly.md` |
 | T671 | Kịch bản cho sale test gói Standard (`docs/KICH-BAN-SALE-STANDARD.xlsx`): sheet Các yêu cầu test 27 mục đầu ra dữ liệu sau test; 11 kịch bản theo tình huống khách, 69 bước có thao tác, câu nói khi demo, kết quả phải thấy; sheet Hỏi đáp khách 16 câu; sheet Tổng hợp đếm kết quả | PhuongXT | 28/10/2026 | `2026-10-28-phuongxt-kich-ban-sale.md` |
 | T670 | Bộ 273 test case mọi màn hình phân hệ gói Standard (`docs/TEST-CASE-STANDARD.xlsx`): sheet Web 152 ca, sheet App 121 ca, sheet Tổng hợp đếm kết quả theo phân hệ | PhuongXT | 27/10/2026 | `2026-10-27-phuongxt-test-case-standard.md` |

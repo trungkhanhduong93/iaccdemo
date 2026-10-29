@@ -11,6 +11,7 @@ import { Pk } from '../ui/Page'
 import { Dropdown, MenuItem } from '../ui/Dropdown'
 import { laTuTrangChu } from './tuTrangChu'
 import { baoCaoCuaPhanHe } from '../modules/bao-cao/cuaPhanHe'
+import { NutHuongDan, coHuongDanNhanh } from '../ui/HuongDanNhanh'
 
 const KHAC = 110  // chỗ cho nút "Khác" kèm số tab bên trong
 
@@ -84,7 +85,7 @@ export function ModuleTabs({ mod }: { mod: ModuleDef }) {
   }
 
   return (
-    <div className={`mtabs${ve ? ' co-ve' : ''}`} aria-label={`Màn hình ${mod.ten}`}>
+    <div className={`mtabs${ve ? ' co-ve' : ''}${coHuongDanNhanh(mod) ? ' co-hdn' : ''}`} aria-label={`Màn hình ${mod.ten}`}>
       {ve}
       <div className="mtabs-in" ref={wrap}>
         {hien.map(tab)}
@@ -103,6 +104,7 @@ export function ModuleTabs({ mod }: { mod: ModuleDef }) {
         )}
         {bc && tab(bc)}
       </div>
+      <NutHuongDan mod={mod} />   {/* nút la bàn Hướng dẫn nhanh cuối thanh tab (T673) */}
       <div className="mtabs-phai" id="mtabs-phai" />
       <div className="mtabs-meas" ref={meas} aria-hidden>
         {[...giua, ...(bc ? [bc] : [])].map(sc => {

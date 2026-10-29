@@ -11,7 +11,10 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T673 | Hướng dẫn nhanh từng màn đợt 1 (QD86): nút la bàn cuối thanh tab, khung trượt bên phải có sơ đồ và chữ, 4 bộ chung theo kiểu màn, soạn riêng 5 màn chủ quán gói Standard | Trum | Đang làm | Sửa `ModuleTabs.tsx`, tạo `src/ui/HuongDanNhanh.tsx`, `src/modules/<phân hệ>/huong-dan.ts`, cuối `app.css` (mục T673). Không đụng `HuongDan.tsx` (T138) |
+| T674 | Hướng dẫn nhanh (QD86) cho màn báo cáo mà đầu báo cáo nằm thay thanh tab: phân hệ Báo cáo, Sổ quỹ tiền mặt gói Standard. Nút la bàn đặt ở thanh chọn báo cáo | | Chờ | Sửa `src/modules/bao-cao/ThanhChon.tsx` (hỏi Trum nếu T499 đang giữ), dùng `NutHuongDan` trong `src/ui/HuongDanNhanh.tsx` |
+| T675 | Hướng dẫn nhanh (QD86) trên điện thoại: khung kéo từ dưới lên, cùng nội dung `huong-dan.ts` với web | | Chờ | Gắn ở `MobileShell`, tách phần nội dung trong `src/ui/HuongDanNhanh.tsx` ra dùng chung |
+| T676 | Hướng dẫn nhanh đợt 2 (QD86): nút Chỉ cho tôi khoanh từng nút cho 5 màn đợt 1, máy tự kiểm chỗ khoanh mỗi lần push | | Chờ | Làm sau T138 vì tách phần khoanh từ `src/modules/home/HuongDan.tsx`. Chỗ khoanh đánh dấu `data-hd`, thêm bước kiểm vào `tools/kiem_tra.py` |
+| T677 | Hướng dẫn nhanh đợt 3 (QD86): soạn riêng từng phân hệ gói Standard, rồi gói Plus, Pro; tìm hướng dẫn bằng Ctrl + K | | Chờ | Mỗi phân hệ một file `src/modules/<phân hệ>/huong-dan.ts`, chia việc theo phân hệ. Ctrl + K sửa `src/app/CommandPalette.tsx` |
 | T593 | Xem trước in và bản in báo cáo: mã, tên hàng, số phiếu ở mọi cột thành chữ thường, không bấm được (mở rộng T556) | Trum | Đang làm | Sửa cuối `app.css` (mục T556). Spec `backup/spec-T593-T595.md` |
 | T594 | Báo cáo đổi khổ dọc, ngang tự cân bề rộng cột và cỡ chữ: số, ngày, mã luôn 1 dòng đủ ký tự, chữ dài xuống tối đa 2 dòng, không tràn ô, không tràn viền tờ; cỡ chữ chọn tay là trần | Trum | Đang làm | Sửa `ToGiay.tsx`, `chiaCot.ts`, `ReportScreen.tsx`, `tools/kiem_tra.py`. Ca kiểm 3.2.8, 5.2.3 |
 | T595 | Hộp Tuỳ chỉnh báo cáo: hết mờ, menu trái kiểu pill đặc xanh, icon menu 20px | Trum | Đang làm | Sửa `TuyChinhBC.tsx`, cuối `app.css` (mục T595) |

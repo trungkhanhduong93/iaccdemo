@@ -937,5 +937,6 @@ Trum chốt 29/10/2026 (T673), bản bấm thử trên artifact https://claude.a
 - Khung mỗi màn có 4 mục: Màn này để làm gì (1 câu), Làm nhanh (3 đến 5 bước), Lưu ý (khác nhau theo gói, chế độ), Đi tiếp (lấy từ sơ đồ `quy-trinh.ts`, không soạn lại).
 - Chỉ dùng chữ và sơ đồ, chưa làm ảnh động, video. Trum dặn phải có sơ đồ để người mới dễ hình dung: sơ đồ khung màn đánh số khớp các bước Làm nhanh, sơ đồ luồng Đi tiếp. Sơ đồ vẽ bằng code, không dùng ảnh chụp.
 - Lần đầu mở một màn: nút la bàn nhấp nháy, bấm mới mở khung. Đã bấm thì màn đó thôi nhấp nháy, nhớ theo người dùng và màn.
-- Soạn cho chủ quán gói Standard trước. Đợt 1: khung, 4 bộ chung theo kiểu màn (danh sách chứng từ, danh mục, báo cáo, chức năng), soạn riêng 5 màn Thu chi, Quỹ tiền, Kê khai thuế, Báo cáo bán hàng, Kho. Đợt 2: nút Chỉ cho tôi cho 5 màn đó, máy tự kiểm chỗ khoanh. Đợt 3: phủ từng phân hệ, tìm hướng dẫn bằng Ctrl + K.
-- Nội dung viết trong code, mỗi phân hệ một file `src/modules/<phân hệ>/huong-dan.ts`. Agent soạn, người duyệt chữ.
+- Soạn cho chủ quán gói Standard trước. Đợt 1: khung, 4 bộ chung theo kiểu màn (danh sách chứng từ, danh mục, báo cáo, chức năng), soạn riêng 5 màn Thu chi, Quỹ tiền, Kê khai thuế, Xuất bán POS (Bán hàng), Kiểm kê (Kho). Gói Standard không có màn Báo cáo bán hàng riêng, Kho chỉ có Kiểm kê, nên Clau đổi sang 2 màn này. Đợt 2: nút Chỉ cho tôi cho 5 màn đó, máy tự kiểm chỗ khoanh. Đợt 3: phủ từng phân hệ, tìm hướng dẫn bằng Ctrl + K.
+- Nội dung viết trong code, mỗi phân hệ một file `src/modules/<phân hệ>/huong-dan.ts`, tra theo slug màn. Agent soạn, người duyệt chữ.
+- Chỉ bản web. Điện thoại và màn báo cáo mà đầu báo cáo nằm thay thanh tab (phân hệ Báo cáo, Sổ quỹ gói Standard) chưa có nút, làm ở việc riêng.

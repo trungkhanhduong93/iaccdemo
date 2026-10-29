@@ -42582,3 +42582,65 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
 .m-tk-dong-so small { font-size: 11.5px; font-weight: 400; color: var(--muted); }/* điện thoại: chữ nhắc dưới ô số dư xuống dòng trong màn; bong bóng không cao quá màn (T138) */
 @media (max-width: 767px) { .hdan-vien-chu { white-space: normal; left: 12px; } }
 .hdan-bong { max-height: calc(100dvh - 24px); overflow-y: auto; }
+/* ── Hướng dẫn nhanh từng màn: nút la bàn cuối thanh tab, khung trượt bên phải có sơ đồ khung màn và sơ đồ Đi tiếp (T673) ── */
+.mtabs.co-hdn { display: flex; align-items: stretch; }
+.mtabs.co-hdn .mtabs-in { flex: 1; }
+/* báo cáo mở trong phân hệ đặt lại display: block cho thanh tab (T384): giữ flex để nút la bàn nằm cùng hàng */
+.shell:has(.bc-tt-phan-he) .mtabs.co-hdn, .shell:has(.bc-chon-phan-he) .mtabs.co-hdn { display: flex; }
+.mtabs-hdn { flex: none; align-self: center; position: relative; width: 32px; height: 32px; margin-left: 8px; padding: 0; border: 0; border-radius: 8px; display: grid; place-items: center; background: var(--tint); color: var(--blue); cursor: pointer; }
+.mtabs-hdn:hover, .mtabs-hdn.on { background: var(--blue); color: #fff; }
+/* lần đầu mở màn: vòng cam lan ra quanh nút, bấm rồi thì thôi */
+.mtabs-hdn.nhay::after { content: ""; position: absolute; inset: -4px; border-radius: 11px; border: 2px solid var(--orange); animation: hdn-nhay 1.6s ease-out infinite; pointer-events: none; }
+@keyframes hdn-nhay { 0% { opacity: 1; transform: scale(.9); } 100% { opacity: 0; transform: scale(1.25); } }
+@media (prefers-reduced-motion: reduce) { .mtabs-hdn.nhay::after { animation: none; } }
+/* khung dưới thanh tab (56px thanh trên + 46px thanh tab), dưới form toàn màn (.fsf z 45); khung mở thì màn chính co lại, không che nút của màn */
+.shell:has(.hdn-khung) > .main { margin-right: 380px; }
+.hdn-khung { position: fixed; top: 102px; right: 0; bottom: 0; width: 380px; z-index: 40; background: #fff; border-left: 1px solid var(--line); box-shadow: -14px 0 32px rgba(14, 26, 43, .12); display: flex; flex-direction: column; animation: hdn-vao .2s ease; }
+@keyframes hdn-vao { from { transform: translateX(24px); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .hdn-khung { animation: none; } }
+.hdn-dau { display: flex; align-items: center; gap: 10px; padding: 12px 14px 12px 16px; border-bottom: 1px solid var(--line); }
+.hdn-dau-ic { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: var(--tint); color: var(--blue); flex: none; }
+.hdn-dau-chu { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.hdn-dau-chu small { font-size: 12px; color: var(--muted); }
+.hdn-dau-chu b { font-size: 15px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hdn-than { flex: 1; overflow-y: auto; padding: 14px 16px 84px; display: flex; flex-direction: column; gap: 18px; }   /* chừa đáy cho nút Trợ lý IACC */
+.hdn-muc { display: flex; flex-direction: column; gap: 8px; }
+.hdn-muc h4 { margin: 0; font-size: 11.5px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.hdn-muc > p { margin: 0; color: var(--ink); font-size: 14px; line-height: 1.55; }
+/* sơ đồ khung màn: ô xếp theo hàng như màn thật, số cam là số bước */
+.hdn-sodo { display: flex; flex-direction: column; gap: 5px; padding: 8px; border: 1px solid var(--line); border-radius: 10px; background: var(--hdb-bg); }
+.hdn-sodo-hang { display: flex; gap: 5px; }
+.hdn-o { position: relative; flex-basis: 0; min-width: 0; min-height: 30px; padding: 6px 8px; border: 1px dashed var(--giay-nhat); border-radius: 6px; background: #fff; color: var(--muted); font-size: 11.5px; line-height: 1.35; display: flex; align-items: center; justify-content: space-between; gap: 6px; transition: border-color .15s, background .15s; }
+.hdn-o.nut { flex: none !important; background: var(--blue); border: 1px solid var(--blue); color: #fff; font-weight: 600; white-space: nowrap; }
+.hdn-o.tab { background: transparent; border: 0; border-bottom: 2px solid var(--blue); border-radius: 0; color: var(--blue); font-weight: 600; }
+.hdn-o.bang { min-height: 74px; align-items: flex-start; background: repeating-linear-gradient(180deg, #fff 0 18px, var(--giay-ke) 18px 19px); }
+.hdn-o.sang { border: 1.5px solid var(--orange); background: var(--orange-t); color: var(--ink); }
+.hdn-o.nut.sang { background: var(--blue-d); color: #fff; box-shadow: 0 0 0 3px var(--orange-b); }
+.hdn-o-so { display: inline-flex; gap: 3px; flex: none; }
+.hdn-o-so i, .hdn-buoc-so { width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; background: var(--orange); color: #fff; font-size: 11px; font-weight: 700; font-style: normal; }
+.hdn-buoc { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.hdn-buoc li { display: flex; gap: 10px; padding: 6px 8px; margin: 0 -8px; border-radius: 8px; }
+.hdn-buoc li.sang { background: var(--orange-t); }
+.hdn-buoc-so { flex: none; width: 20px; height: 20px; margin-top: 1px; }
+.hdn-buoc p { margin: 0; color: var(--ink); font-size: 13.5px; line-height: 1.5; }
+.hdn-buoc .hdn-lam { margin-top: 6px; }
+.hdn-luu { margin: 0; padding: 10px 12px 10px 28px; border-radius: 8px; background: var(--amber-t); color: var(--ink); font-size: 13px; line-height: 1.5; display: flex; flex-direction: column; gap: 4px; }
+/* Đi tiếp: các bước sơ đồ Quy trình xếp dọc, bước có màn đang mở sáng xanh */
+.hdn-luong { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.hdn-l-buoc { position: relative; display: flex; gap: 10px; padding-bottom: 12px; }
+.hdn-l-buoc:not(:last-child)::before { content: ""; position: absolute; left: 5px; top: 14px; bottom: 0; width: 2px; background: var(--line); }
+.hdn-l-cham { flex: none; width: 12px; height: 12px; margin-top: 4px; border-radius: 50%; border: 2px solid var(--giay-nhat); background: #fff; position: relative; z-index: 1; }
+.hdn-l-buoc.on > .hdn-l-cham { border-color: var(--blue); background: var(--blue); box-shadow: 0 0 0 3px var(--tint); }
+.hdn-l-than { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.hdn-l-than > b { font-size: 13px; color: var(--ink); }
+.hdn-l-buoc.on > .hdn-l-than > b { color: var(--blue); }
+.hdn-l-nut { display: flex; flex-wrap: wrap; gap: 4px; }
+.hdn-chip { padding: 3px 9px; border-radius: 999px; border: 1px solid var(--line); background: #fff; color: var(--body); font-size: 12px; line-height: 1.4; }
+a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
+.hdn-chip.on { border-color: var(--blue); background: var(--tint); color: var(--blue); font-weight: 600; }
+.hdn-chip.tinh { background: var(--soft); }
+.hdn-l-lan { list-style: none; margin: 0; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; display: flex; flex-direction: column; gap: 8px; }
+.hdn-l-lan > li { display: flex; flex-direction: column; gap: 4px; }
+.hdn-l-lan > li > span { font-size: 12px; color: var(--muted); }
+.hdn-l-lan > li.on > span { color: var(--blue); font-weight: 600; }
+.hdn-mo-qt { display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; color: var(--blue); font-size: 13px; font-weight: 500; }
