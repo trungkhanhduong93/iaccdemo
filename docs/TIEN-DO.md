@@ -11,7 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T682 | Dữ liệu giả Thu chi: phiếu mẫu "Tiền nhà 6 tháng" (`chi-cpb` trong `src/modules/tien/index.ts`) mang số PC2610-0261, trùng số phiếu chi mới đầu tiên mà `soKeTiep` cấp, danh sách hiện hai phiếu cùng số | | Chờ | Ghi lúc làm T681. Đổi số phiếu mẫu hoặc cho `soKeTiep` bỏ qua số đã có |
+| T682 | Dữ liệu giả Thu chi: phiếu mẫu "Tiền nhà 6 tháng" (`chi-cpb` trong `src/modules/tien/index.ts`) mang số PC2610-0261, trùng số phiếu chi mới đầu tiên mà `soKeTiep` cấp, danh sách hiện hai phiếu cùng số | Trum | Đang làm | Ghi lúc làm T681. Đổi số phiếu mẫu sang PC2610-02xx chưa dùng. Sửa `tien/index.ts`, `ccdc/index.ts`, không sửa `soKeTiep`, `MCcdc.tsx` |
 | T675 | Hướng dẫn nhanh (QD86) trên điện thoại: khung kéo từ dưới lên, cùng nội dung `huong-dan.ts` với web | | Chờ | Gắn ở `MobileShell`, tách phần nội dung trong `src/ui/HuongDanNhanh.tsx` ra dùng chung |
 | T677 | Hướng dẫn nhanh đợt 3 (QD86): soạn riêng từng phân hệ gói Standard, rồi gói Plus, Pro; tìm hướng dẫn bằng Ctrl + K | | Chờ | Mỗi phân hệ một file `src/modules/<phân hệ>/huong-dan.ts`, chia việc theo phân hệ. Ctrl + K sửa `src/app/CommandPalette.tsx` |
 | T593 | Xem trước in và bản in báo cáo: mã, tên hàng, số phiếu ở mọi cột thành chữ thường, không bấm được (mở rộng T556) | Trum | Đang làm | Sửa cuối `app.css` (mục T556). Spec `backup/spec-T593-T595.md` |
