@@ -110,3 +110,9 @@ Lỗi đã từng làm mất thời gian, kèm cách tránh. Đọc trước khi
 - Hiện tượng: trên iPhone, mở sheet chọn đối tượng ở phiếu thu chi thì cả trang phóng to, lệch sang trái, phải tự thu nhỏ lại.
 - Nguyên nhân: Safari iOS tự phóng to khi con trỏ vào ô `input`, `textarea` có cỡ chữ dưới 16px. Ô tìm kiếm có `autoFocus` nên vừa mở sheet đã phóng to.
 - Cách tránh: ô nhập trên điện thoại để `font-size` từ 16px trở lên. Chrome máy tính giả lập điện thoại không thấy lỗi này.
+
+## `kiem_tra.py` thỉnh thoảng báo tràn ngang `.main` ở màn báo cáo (T684)
+
+- Hiện tượng: `kiem_tra.py`, cả `--nhanh`, thỉnh thoảng báo `tràn ngang ở ['.main']` ở một màn báo cáo, mỗi lượt một màn khác. Chạy lại thì hết. Mở thẳng màn đó không thấy.
+- Nguyên nhân: màn báo cáo mới vẽ, thanh chọn báo cáo `.bc-chon` (`nowrap`) rộng hơn `.main` 3px trong 12–381ms rồi tự co lại. Đo 3 vòng cả 3 gói, 1002 lượt mở màn: 25 lần ở `.main`, luôn đúng 3px; 3 lần ở `.mtabs-in` (176px, dưới 20ms). Lúc đó `.main` đang `overflow: hidden` (`.main:has(.bc-chon)` trong `app.css`), người dùng không thấy thanh cuộn. Bộ kiểm cũ đo đúng một lần sau 60ms nên lúc trúng lúc trượt.
+- Cách tránh: hàm `kiem` trong `main()` thấy tràn thì đo lại mỗi 100ms, hết 1 giây còn tràn mới báo. Đừng nới ngưỡng 2px hay bỏ ô đo. Viết bộ kiểm tràn mới cho màn có bảng tự cân cột thì cũng đo lại như vậy, không đo một lần sau thời gian chờ cố định.

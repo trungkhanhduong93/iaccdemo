@@ -5213,7 +5213,14 @@ def main():
             dem += 1
             pg.wait_for_timeout(60)
             ok = pg.locator('.main h1, .fsf h1').count() > 0
-            tran = pg.evaluate("""['.main', '.fsf-b', '.mtabs-in'].filter(q => { const e = document.querySelector(q); return e && e.scrollWidth > e.clientWidth + 2 })""")
+            do_tran = """['.main', '.fsf-b', '.mtabs-in'].filter(q => { const e = document.querySelector(q); return e && e.scrollWidth > e.clientWidth + 2 })"""
+            tran = pg.evaluate(do_tran)
+            # Màn báo cáo mới vẽ có thể lố 3px vài trăm ms rồi tự hết (T684, BAY.md): đo lại mỗi 100ms, hết 1 giây còn tràn mới báo
+            for _ in range(10):
+                if not tran:
+                    break
+                pg.wait_for_timeout(100)
+                tran = pg.evaluate(do_tran)
             if not ok:
                 loi.append(f'{nhan}: không có tiêu đề màn (trắng trang?)')
             if tran:

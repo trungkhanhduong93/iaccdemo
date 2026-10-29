@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T684 | `kiem_tra.py` thỉnh thoảng báo tràn ngang `.main` ở một màn báo cáo, mỗi lượt một màn khác, chạy lại thì hết: tái hiện, đo, sửa bộ kiểm hoặc code báo cáo | Trum | Đang làm | Sửa `tools/kiem_tra.py`, có thể sửa `src/ui/generic/ReportScreen.tsx` (file của T594, Trum giữ) |
 | T683 | Dữ liệu giả điện thoại, Công cụ dụng cụ: thẻ TPB2610-0011 "Tiền nhà 6 tháng" (`src/ui/mobile/MCcdc.tsx:40`) còn ghi chứng từ gốc PC2610-0261, đổi thành PC2610-0260 cho khớp phiếu mẫu Thu chi sau T682 | | Chờ | Ghi lúc làm T682. Làm sau T436 vì dinhlanphuongipacc đang giữ `MCcdc.tsx`. Chỉ đổi chuỗi `soCt` |
 | T675 | Hướng dẫn nhanh (QD86) trên điện thoại: khung kéo từ dưới lên, cùng nội dung `huong-dan.ts` với web | | Chờ | Gắn ở `MobileShell`, tách phần nội dung trong `src/ui/HuongDanNhanh.tsx` ra dùng chung |
 | T677 | Hướng dẫn nhanh đợt 3 (QD86): soạn riêng từng phân hệ gói Standard, rồi gói Plus, Pro; tìm hướng dẫn bằng Ctrl + K | | Chờ | Mỗi phân hệ một file `src/modules/<phân hệ>/huong-dan.ts`, chia việc theo phân hệ. Ctrl + K sửa `src/app/CommandPalette.tsx` |
