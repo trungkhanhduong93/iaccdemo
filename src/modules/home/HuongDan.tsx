@@ -7,6 +7,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { useSession } from '../../app/session'
 import { Icon } from '../../ui/Icon'
 import { useLaMobile } from '../../ui/mobile/useLaMobile'
+import { heSoZoom } from '../../ui/zoom'
 
 /** chon: chỗ khoanh (CSS selector), so: thứ tự khi nhiều chỗ cùng selector,
  *  lenDau: cuộn trang lên đầu thay vì cuộn tới chỗ khoanh (thanh dưới điện thoại tự ẩn khi đang cuộn xuống),
@@ -53,8 +54,8 @@ const NUT_XEM_LAI: Buoc = { chon: '[aria-label="Xem lại hướng dẫn"]', tie
 
 const LE = 6        // khoảng hở quanh chỗ khoanh
 const RONG = 320    // bề rộng bong bóng
-/** Trang có zoom ở thẻ html (vd 0.9): toạ độ đo được phải chia zoom mới đặt đúng bằng left, top */
-const zoom = () => parseFloat(getComputedStyle(document.documentElement).zoom) || 1
+/** Trang có zoom ở thẻ html (vd 0.9, xem docs/BAY.md): toạ độ đo được phải chia zoom mới đặt đúng bằng left, top */
+const zoom = heSoZoom
 const timEl = (b: Buoc) => b.chon ? document.querySelectorAll(b.chon)[b.so ?? 0] : undefined
 const doRect = (b: Buoc) => {
   const r = timEl(b)?.getBoundingClientRect()
