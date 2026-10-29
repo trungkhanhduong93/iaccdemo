@@ -13,7 +13,7 @@ const GOC_MAU = ([
   ['unc-7', 'UNC2609-0237', '26/09/2026', 'Trả tiền nhà cung cấp thịt bò'], ['chi-8', 'PC2609-0236', '26/09/2026', 'Chi tiền gas tháng 10'],
   ['chi-0', 'PC2610-0259', '07/10/2026', 'Chi tiền điện tháng 9'], ['unc-2', 'UNC2610-0252', '03/10/2026', 'Trả tiền thuê mặt bằng tháng 10'],
   ['chi-5', 'PC2609-0243', '30/09/2026', 'Chi tiền gas tháng 10'], ['unc-5', 'UNC2609-0244', '28/09/2026', 'Nộp thuế GTGT tháng 9'],
-  ['chi-cpb', 'PC2610-0261', '07/10/2026', 'Tiền nhà 6 tháng', 'Phố Mây Lê Lợi'],   // phiếu chi mẫu Chi phí chờ phân bổ ở tien/index.ts, thẻ theo cửa hàng của phiếu (T168)
+  ['chi-cpb', 'PC2610-0260', '07/10/2026', 'Tiền nhà 6 tháng', 'Phố Mây Lê Lợi'],   // phiếu chi mẫu Chi phí chờ phân bổ ở tien/index.ts, thẻ theo cửa hàng của phiếu (T168)
 ] as [string, string, string, string, string?][]).map(([id, soCt, ngayCt, ghiChuCt, cn]) => ({ _goc: `/app/tien/2-1-1/${id}`, soCt, ngayCt, ghiChuCt, ...(cn ? { cn } : {}) }))
 
 /** Thẻ chi phí phân bổ mẫu: [số thẻ, loại, ngày ghi tăng, các dòng [mã, tên, số tiền, số tháng, thêm?]]; thêm: số lượng (CCDC), số hiệu, mô tả (TSCĐ) */
@@ -33,7 +33,7 @@ const THE_MAU = ([
   ['TPB2610-0010', 'Tài sản cố định', '01/10/2026', [
     ['TSCD.0001', 'Máy rửa chén công nghiệp', 186_000_000, 60, { soHieu: 'MRC-2026-01', moTa: 'Máy rửa chén băng chuyền, 1.000 đĩa mỗi giờ, đặt tại bếp Lê Lợi' }],
     ['TSCD.0002', 'Hệ thống hút khói bếp', 124_000_000, 60, { soHieu: 'HK-LL-02', moTa: 'Chụp hút inox 6m, quạt ly tâm, ống dẫn ra mái' }]]],
-  ['TPB2610-0011', 'Chi phí trả trước', '07/10/2026', [['CPTT.0004', 'Tiền nhà 6 tháng', 72_000_000, 6]]],   // tạo từ phiếu chi PC2610-0261 (T168)
+  ['TPB2610-0011', 'Chi phí trả trước', '07/10/2026', [['CPTT.0004', 'Tiền nhà 6 tháng', 72_000_000, 6]]],   // tạo từ phiếu chi PC2610-0260 (T168)
   // Thẻ dư đầu kỳ (T284): ghi tăng 31/12/2025, trước ngày đầu năm; da, kyDa là phần đã phân bổ trước khi dùng phần mềm, phân bổ tiếp từ 01/01/2026.
   // Thông tin mua gõ tay (không có chứng từ gốc trong phần mềm)
   ['TPBDK2512-0001', 'Chi phí trả trước', '31/12/2025', [['CPTT.0005', 'Tiền thuê kho tổng 24 tháng', 120_000_000, 24, { da: 60_000_000, kyDa: 12 }]],

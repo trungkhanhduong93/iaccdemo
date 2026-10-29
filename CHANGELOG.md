@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 29/10/2026
+- T682: Thu chi, phiếu mẫu "Tiền nhà 6 tháng" đổi số thành PC2610-0260. Lập phiếu chi tiền mặt mới không còn ra hai phiếu cùng số PC2610-0261 trong danh sách. Thẻ chi phí trả trước TPB2610-0011 trên web ghi chứng từ gốc theo số mới.
 - T681: Web, Hướng dẫn nhanh chạy kiểu tour như Trang chủ: màn tối, khoanh sáng đúng chỗ, bong bóng nằm cạnh. Bấm Tiếp thì máy tự làm từng bước: mở form phiếu, chọn cửa hàng, bấm Lưu, khoanh phiếu vừa lưu ở đầu danh sách. Bấm vào vùng tối không tắt, chỉ nút Bỏ qua mới tắt. Bỏ qua hoặc Xong thì trả lại như lúc bấm: đóng form, về đúng màn, tab, cửa hàng cũ, xoá phiếu mẫu. Bỏ dải bước dưới thanh tab và số cam.
 - T680: Web, nút la bàn đổi thành nút bóng đèn có chữ Hướng dẫn, nền cam. Bước có khung cam thì phần còn lại của màn tối đi. Khung cam quanh hàng tab không còn bị cắt cạnh trên. Bước kế vào bước trong phiếu thì tự mở phiếu, ra ngoài thì tự đóng. Nút tắt đóng luôn phiếu hướng dẫn đã mở.
 - T676: Web, dải Hướng dẫn nhanh đi theo vào form phiếu: bấm Ghi một khoản chi hay Thêm mới thì dải nằm ngay dưới thanh đầu form, số cam chỉ vào phần đầu phiếu, bảng Chi tiết, nút Lưu. Lưu xong form đóng, dải sang bước kế. Thu chi, Kiểm kê có thêm bước trong form. Xuất bán POS: số cam bước Tổng cộng chỉ vào ô Tổng cộng dưới bảng.

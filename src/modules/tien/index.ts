@@ -13,7 +13,7 @@ import { Navigate } from 'react-router-dom'
 
 /** Phiếu chi mẫu lý do Chi phí chờ phân bổ, đã tạo thẻ chi phí phân bổ TPB2610-0011 (thẻ mẫu ở ccdc/index.ts trỏ về phiếu này) (T168) */
 const PHIEU_CHO_PB = {
-  id: 'chi-cpb', loai: 'chi', tenLoai: 'Chi tiền mặt', so: 'PC2610-0261', ngay: '07/10/2026', gio: '09:15', thang: 10,
+  id: 'chi-cpb', loai: 'chi', tenLoai: 'Chi tiền mặt', so: 'PC2610-0260', ngay: '07/10/2026', gio: '09:15', thang: 10,
   doiTuong: 'Bà Nguyễn Thị Hạnh', maDt: '', cn: 'Phố Mây Lê Lợi', dienGiai: 'Tiền nhà 6 tháng', tien: 72_000_000, thue: 0, tong: 72_000_000,
   nguon: 'tay', tt: 'ghi', _lyDo: 'Chi phí chờ phân bổ', _ghiChu: 'Tiền nhà 6 tháng',
   _dong: [{ ma: '', ten: 'Tiền nhà 6 tháng', dvt: '', sl: 1, gia: 72_000_000, tien: 72_000_000, ts: 0, thue: 0, ly: 'Chi phí chờ phân bổ', km: '', cv: '', tkNo: '242', tkCo: '1111' }],
