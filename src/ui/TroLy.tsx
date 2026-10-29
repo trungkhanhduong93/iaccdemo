@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type CSSProperties, type PointerEvent as SuKienTro } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { heSoZoom } from './zoom'
 
 export interface DongHang {
   tenHang: string
@@ -45,6 +46,34 @@ function taoTinChao(): TinNhan {
     thoiGian: Date.now(),
     laTinChao: true,
   }
+}
+
+/** Nút nổi kéo được (T678): nhấn giữ rồi kéo sang chỗ khác, nhớ vị trí ở máy này. Toạ độ là left, top theo px CSS;
+ *  trang có zoom ở thẻ html thì toạ độ chuột phải chia zoom (xem docs/BAY.md) */
+const KHOA_VI_TRI = 'iacc.troLy.viTri'
+const CO_NUT = 52, LE = 8
+interface ViTri { x: number; y: number }
+const manCss = () => { const z = heSoZoom(); return { W: window.innerWidth / z, H: window.innerHeight / z } }
+const kep = (p: ViTri): ViTri => {
+  const { W, H } = manCss()
+  return { x: Math.min(Math.max(LE, p.x), W - CO_NUT - LE), y: Math.min(Math.max(LE, p.y), H - CO_NUT - LE) }
+}
+function docViTri(): ViTri | null {
+  try {
+    const v = JSON.parse(localStorage.getItem(KHOA_VI_TRI) || 'null')
+    return v && typeof v.x === 'number' && typeof v.y === 'number' ? kep(v) : null
+  } catch { return null }
+}
+/** Khung chat mở cạnh nút đã kéo: nút nửa phải thì canh mép phải, nửa dưới thì mở lên trên, không tràn ra ngoài màn */
+function viTriKhung(v: ViTri, rong: number): CSSProperties {
+  const { W, H } = manCss()
+  const ngang: CSSProperties = v.x + CO_NUT / 2 > W / 2
+    ? { right: Math.max(LE, Math.min(W - v.x - CO_NUT, W - rong - LE)), left: 'auto' }
+    : { left: Math.max(LE, Math.min(v.x, W - rong - LE)), right: 'auto' }
+  const doc: CSSProperties = v.y + CO_NUT / 2 > H / 2
+    ? { bottom: H - v.y + LE, top: 'auto', maxHeight: v.y - LE * 2 }
+    : { top: v.y + CO_NUT + LE, bottom: 'auto', maxHeight: H - v.y - CO_NUT - LE * 2 }
+  return { ...ngang, ...doc }
 }
 
 function docLichSu(): TinNhan[] {
@@ -185,6 +214,45 @@ export function TroLy() {
   const dayChatRef = useRef<HTMLDivElement>(null)
   const oNhapRef = useRef<HTMLTextAreaElement>(null)
   const nav = useNavigate()
+
+  // kéo nút nổi (T678): di chuyển quá 5px mới tính là kéo, thả ra thì không mở khung
+  const [viTri, setViTri] = useState<ViTri | null>(docViTri)
+  const [dangKeo, setDangKeo] = useState(false)
+  const keoRef = useRef<{ x0: number; y0: number; trai: number; tren: number; keo: boolean; moi?: ViTri } | null>(null)
+  const vuaKeo = useRef(false)
+  const coViTri = viTri !== null
+  useEffect(() => {
+    if (!coViTri) return
+    const on = () => setViTri(v => v && kep(v))
+    window.addEventListener('resize', on)
+    return () => window.removeEventListener('resize', on)
+  }, [coViTri])
+  const batDauKeo = (e: SuKienTro<HTMLButtonElement>) => {
+    if (e.button !== 0) return
+    e.preventDefault()   // không bôi đen chữ trên trang khi kéo
+    const r = e.currentTarget.getBoundingClientRect(), z = heSoZoom()
+    keoRef.current = { x0: e.clientX, y0: e.clientY, trai: r.left / z, tren: r.top / z, keo: false }
+    e.currentTarget.setPointerCapture(e.pointerId)
+  }
+  const keoNut = (e: SuKienTro<HTMLButtonElement>) => {
+    const k = keoRef.current
+    if (!k) return
+    const dx = e.clientX - k.x0, dy = e.clientY - k.y0
+    if (!k.keo && Math.hypot(dx, dy) < 5) return
+    if (!k.keo) { k.keo = true; setDangKeo(true) }
+    const z = heSoZoom()
+    k.moi = kep({ x: k.trai + dx / z, y: k.tren + dy / z })
+    setViTri(k.moi)
+  }
+  const thaNut = () => {
+    const k = keoRef.current
+    keoRef.current = null
+    if (!k?.keo) return
+    setDangKeo(false)
+    vuaKeo.current = true   // lần click ngay sau khi thả không mở, không đóng khung
+    window.setTimeout(() => { vuaKeo.current = false }, 0)
+    if (k.moi) try { localStorage.setItem(KHOA_VI_TRI, JSON.stringify(k.moi)) } catch { /* trình duyệt chặn lưu thì thôi */ }
+  }
 
   useEffect(() => {
     dayChatRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -329,6 +397,7 @@ export function TroLy() {
         <aside
           aria-label="Trợ lý IACC"
           className={`tl-khung ${phongTo ? 'tl-phong-to' : ''}`}
+          style={viTri ? viTriKhung(viTri, phongTo ? 720 : 400) : undefined}
         >
           {/* Đầu khung */}
           <div className="tl-dau">
@@ -574,12 +643,17 @@ export function TroLy() {
         </aside>
       )}
 
-      {/* Nút nổi góc dưới phải */}
+      {/* Nút nổi góc dưới phải, nhấn giữ kéo được sang chỗ khác (T678) */}
       <button
         type="button"
-        className="tl-float-btn"
-        onClick={() => setMo(v => !v)}
-        title="Trợ lý IACC"
+        className={`tl-float-btn${dangKeo ? ' keo' : ''}`}
+        style={viTri ? { left: viTri.x, top: viTri.y, right: 'auto', bottom: 'auto' } : undefined}
+        onClick={() => { if (!vuaKeo.current) setMo(v => !v) }}
+        onPointerDown={batDauKeo}
+        onPointerMove={keoNut}
+        onPointerUp={thaNut}
+        onPointerCancel={thaNut}
+        title="Trợ lý IACC. Nhấn giữ rồi kéo để đổi chỗ"
         aria-label="Trợ lý IACC"
       >
         <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">

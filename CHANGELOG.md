@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 29/10/2026
+- T678: Nút trợ lý ✦ góc dưới phải nhấn giữ rồi kéo được sang chỗ khác, để khỏi che ô tổng tiền cuối danh sách. Máy đang dùng nhớ vị trí mới. Bấm nút thì khung chat mở ngay cạnh nút.
 - T673: Web có nút la bàn cuối thanh tab ở mọi phân hệ (trừ Trang chủ). Bấm mở khung Hướng dẫn nhanh bên phải: màn này để làm gì, sơ đồ khung màn đánh số khớp từng bước, lưu ý, sơ đồ Đi tiếp theo Quy trình. Lần đầu mở một màn thì nút nhấp nháy. Gói Standard có hướng dẫn riêng cho Thu chi, Quỹ tiền, Kê khai thuế, Xuất bán POS, Kiểm kê; màn khác dùng hướng dẫn chung theo kiểu màn.
 - T138: Hướng dẫn Trang chủ: ghi khoản chi, nhập số dư quỹ (mở thẳng form quỹ tiền mặt, khoanh ô Số dư ban đầu), lập tờ khai xong thì về Trang chủ, khoanh đúng chỗ vừa đổi và báo "Tuyệt vời…". Khai xong thông tin kê khai thì danh sách tờ khai khoanh cột doanh thu, tiền thuế, mời lập tờ khai. Danh sách Kê khai thuế thêm cột Doanh thu tính thuế, Giảm trừ, Thuế GTGT, Thuế TNCN. Điện thoại cũng vậy: mỗi tờ khai hiện 4 số liệu; danh mục Quỹ tiền gói Standard lưu được số dư ban đầu.
 - T138: Mở từ FABi: màn giới thiệu mới (gói Standard miễn phí trọn đời, 4 thẻ giá trị, nút Bắt đầu kết nối dữ liệu). Popup kết nối còn 1 bước: chọn cửa hàng, ngày bắt đầu làm việc, xem tiền FABi về quỹ nào; lấy dữ liệu xong về thẳng Trang chủ. Loại hình, mã số thuế chỉ hỏi khi mở Kê khai thuế, gọn một màn.
