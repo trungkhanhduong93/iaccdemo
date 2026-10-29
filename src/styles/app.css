@@ -42531,9 +42531,6 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
 
 /* ── Trang chủ đơn vị mới khởi tạo: lợi nhuận tạm tính kèm nút ghi khoản chi, nhãn nhắc số dư két (T138) ── */
 .nhac-tt-chip { margin-left: 8px; font-size: 11.5px; padding: 1px 8px; vertical-align: middle; }
-.nhac-tt { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--line); font-size: 12.5px; color: var(--muted); }
-.nhac-tt > span { flex: 1; min-width: 160px; }
-.nhac-tt .btn { flex: none; }
 .nhac-sodu { display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; padding: 4px 10px; border-radius: 999px; background: var(--amber-t); color: var(--amber); font-size: 12px; font-weight: 600; text-decoration: none; }
 .nhac-sodu:hover { text-decoration: underline; }
 /* nút nổi Tiếp tục hướng dẫn khi hướng dẫn tạm dừng ở màn khác (T138) */
@@ -42569,17 +42566,21 @@ textarea.m-tpb-inp { width: 100%; text-align: left; resize: vertical; }
 /* ── Hướng dẫn Trang chủ: bong bóng khen khi làm xong việc (lưu khoản chi, số dư quỹ, nộp tờ khai) (T138) ── */
 .hdan-khen-dau { display: flex; align-items: flex-start; gap: 10px; }
 .hdan-khen-ic { flex: none; width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: var(--amber-t); color: var(--amber); }
-.hdan-khen-dau b { padding-top: 2px; line-height: 1.4; }/* khoanh ô Số dư ban đầu ở form quỹ khi bấm Nhập số dư quỹ từ hướng dẫn: chỉ viền, không chặn bấm (T138) */
+.hdan-khen-dau b { padding-top: 2px; line-height: 1.4; }
+/* khoanh ô Số dư ban đầu ở form quỹ khi bấm Nhập số dư quỹ từ hướng dẫn: chỉ viền, không chặn bấm (T138) */
 .hdan-vien { position: fixed; z-index: 130; border: 2px solid var(--amber); border-radius: 10px; box-shadow: 0 0 0 4px var(--amber-t); pointer-events: none; animation: hdan-nhay 1.4s ease-in-out infinite; }
 @keyframes hdan-nhay { 50% { box-shadow: 0 0 0 8px var(--amber-t); } }
 .hdan-vien-chu { position: fixed; z-index: 130; white-space: nowrap; padding: 8px 12px; border-radius: 8px; background: var(--ink); color: #fff; font-size: 12.5px; line-height: 1.4; pointer-events: none; box-shadow: 0 8px 20px rgba(14, 26, 43, .22); }
-.hdan-vien-chu b { color: #fff; }/* bong bóng khen ở bước Xem và nộp tờ khai khi đi theo hướng dẫn: góc phải dưới, trên hộp tờ khai, chừa hàng nút chân hộp (T138) */
-.hdan-khen-tk { z-index: 140; right: 32px; bottom: 150px; }
-@media (max-width: 767px) { .hdan-khen-tk { left: 12px; right: 12px; width: auto; bottom: calc(84px + env(safe-area-inset-bottom)); } }/* điện thoại, danh sách tờ khai: số liệu từng kỳ dưới mỗi dòng như 4 cột web (T138) */
+.hdan-vien-chu b { color: #fff; }
+/* bong bóng khen ở bước Xem và nộp tờ khai khi đi theo hướng dẫn: góc phải dưới, trên hộp tờ khai, chừa hàng nút chân hộp (T138) */
+.hdan-khen-tk { z-index: 600; right: 32px; bottom: 150px; }
+@media (max-width: 767px) { .hdan-khen-tk { left: 12px; right: 12px; width: auto; bottom: calc(84px + env(safe-area-inset-bottom)); } }
+/* điện thoại, danh sách tờ khai: số liệu từng kỳ dưới mỗi dòng như 4 cột web (T138) */
 .m-tk .m-tk-dong:has(.m-tk-dong-so) { flex-wrap: wrap; }
 .m-tk-dong-so { flex-basis: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; padding: 8px 10px; border-radius: 8px; background: var(--bg-2, #f5f7fa); }
 .m-tk-dong-so > span { display: flex; flex-direction: column; font-size: 13px; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
-.m-tk-dong-so small { font-size: 11.5px; font-weight: 400; color: var(--muted); }/* điện thoại: chữ nhắc dưới ô số dư xuống dòng trong màn; bong bóng không cao quá màn (T138) */
+.m-tk-dong-so small { font-size: 11.5px; font-weight: 400; color: var(--muted); }
+/* điện thoại: chữ nhắc dưới ô số dư xuống dòng trong màn; bong bóng không cao quá màn (T138) */
 @media (max-width: 767px) { .hdan-vien-chu { white-space: normal; left: 12px; } }
 .hdan-bong { max-height: calc(100dvh - 24px); overflow-y: auto; }
 /* ── Hướng dẫn nhanh từng màn: nút la bàn cuối thanh tab, khung trượt bên phải có sơ đồ khung màn và sơ đồ Đi tiếp (T673) ── */
@@ -42647,3 +42648,11 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
 /* ── Nút nổi Trợ lý IACC: nhấn giữ kéo sang chỗ khác, vị trí và khung chat đặt bằng style trong TroLy.tsx (T678) ── */
 .tl-float-btn { touch-action: none; }
 .tl-float-btn.keo { cursor: grabbing; transition: none; transform: scale(1.08); box-shadow: 0 10px 28px rgba(5, 96, 166, .45), 0 2px 8px rgba(14, 26, 43, .16); }
+/* điện thoại: dải mỏng tiếp tục hướng dẫn ngay dưới thanh tiêu đề màn, thay nút dài ở đáy (T138) */
+.hdan-dai-dt { position: fixed; z-index: 600; display: flex; align-items: center; height: 28px; background: var(--tint); color: var(--blue); border-bottom: 1px solid var(--line); font-size: 12px; }
+.hdan-dai-tiep { flex: 1; min-width: 0; height: 100%; display: flex; align-items: center; gap: 6px; padding: 0 4px 0 12px; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.hdan-dai-tiep .grow { color: var(--ink); }
+.hdan-dai-tiep b { display: inline-flex; align-items: center; gap: 2px; font-weight: 600; }
+.hdan-dai-tat { width: 32px; height: 100%; padding: 0; border: 0; background: none; color: var(--muted); display: grid; place-items: center; cursor: pointer; }
+/* viền ô số dư, chữ nhắc nằm trên tấm form điện thoại (lớp phủ z-index 501) (T138) */
+.hdan-vien, .hdan-vien-chu { z-index: 600; }

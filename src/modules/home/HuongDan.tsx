@@ -286,13 +286,11 @@ export function TiepHuongDan() {
   if (!t || t.dv !== s.donVi || pathname.startsWith(TRANG_HD) || navigator.webdriver) return null
   const tong = (laMobile ? BUOC_DT : BUOC).length - 1
   const thoi = () => { luuTiep(null); set({ huongDan: { ...s.huongDan, [s.donVi]: true } }) }
-  // điện thoại đang làm việc của nút làm ngay (ghi chi, nhập số dư, kê khai): không hiện nút nổi, nó đè lên form, tấm chọn đáy màn.
-  // Bấm Trang chủ ở thanh dưới thì hướng dẫn tự chạy tiếp
-  const anNut = laMobile && !!t.cho
   return createPortal(
     <>
     {t.cho === 'quy' && pathname.startsWith('/app/danh-muc/1-12') && <KhoanhSoDuQuy />}
-    {!anNut && <div className="hdan-tiep" role="status">
+    {/* điện thoại: nút dài ở đáy đè lên form, nút Lưu, tấm chọn; thay bằng dải mỏng dưới thanh tiêu đề (PhuongXT 29/10/2026) */}
+    {laMobile ? <DaiHuongDanDt dem={`${Math.min(t.b, tong)}/${tong}`} onTiep={() => nav(TRANG_HD)} onTat={thoi} /> : <div className="hdan-tiep" role="status">
       <button className="btn pri sm" onClick={() => nav(TRANG_HD)}>Tiếp tục hướng dẫn ({Math.min(t.b, tong)}/{tong})<Icon n="arrow" className="ic sm" /></button>
       <button className="btn ghost sm" title="Tắt hướng dẫn" aria-label="Tắt hướng dẫn" onClick={thoi}><Icon n="x" className="ic sm" /></button>
     </div>}
@@ -301,6 +299,71 @@ export function TiepHuongDan() {
   )
 }
 
+/** Đầu màn đang thấy trên điện thoại: tìm chữ đậm cỡ lớn trên cùng không bị lớp phủ che (tấm, form trượt lên thì lấy tiêu đề tấm đó),
+ *  trả cả thanh đầu chứa nó (thanh tiêu đề màn, đầu tấm) để đặt dải hướng dẫn ngay bên dưới */
+function dauMan(): HTMLElement | null {
+  const H = window.innerHeight
+  let tot: { r: DOMRect; el: HTMLElement } | null = null
+  // tiêu đề màn, tấm điện thoại: thẻ h, dòng đầu đầu phiếu (.dong1), chữ đậm ở đầu màn, đầu tấm (vd .m-tk-man-dau b)
+  document.querySelectorAll<HTMLElement>('h1, h2, h3, .dong1, [class*="tieu-de"], [class*="-dau"] b').forEach(el => {
+    if (el.closest('.hdan, .hdan-dai-dt') || !el.textContent?.trim()) return
+    const cs = getComputedStyle(el)
+    if (parseFloat(cs.fontSize) < 15 || Number(cs.fontWeight) < 500) return
+    const range = document.createRange()
+    range.selectNodeContents(el)
+    const r = range.getBoundingClientRect()
+    if (!r.width || r.top < 0 || r.top > H * 0.7) return
+    // bỏ qua lớp của chính hướng dẫn (màn tối, viền, dải) khi xét bị che
+    const tren = document.elementsFromPoint(r.left + r.width / 2, r.top + r.height / 2).find(x => !x.closest('.hdan, .hdan-dai-dt, .hdan-vien, .hdan-vien-chu'))
+    if (!tren || !(el.contains(tren) || tren.contains(el))) return   // bị lớp phủ, tấm chọn che
+    if (!tot || r.top < tot.r.top) tot = { r, el }
+  })
+  if (!tot) return null
+  const { el } = tot as { r: DOMRect; el: HTMLElement }
+  return el.closest<HTMLElement>('header, [class*="-dau"], [class*="thanh-tren"]') ?? el.parentElement ?? el
+}
+
+/** Điện thoại: dải mỏng ngay dưới thanh tiêu đề màn (PhuongXT 29/10/2026, cách B): la bàn, số bước, Tiếp tục, nút tắt.
+ *  Nút dài ở đáy đè lên form, nút Lưu, tấm chọn nên bỏ. Tìm lại đầu màn mỗi nửa giây vì màn, tấm chọn đổi; không thấy thì nằm sát đỉnh */
+const CAO_DAI = 28   // cao dải hướng dẫn điện thoại, khớp .hdan-dai-dt
+function DaiHuongDanDt({ dem, onTiep, onTat }: { dem: string; onTiep: () => void; onTat: () => void }) {
+  const [vt, setVt] = useState<{ left: number; top: number; width: number } | null>(null)
+  useEffect(() => {
+    // thanh đầu được chừa thêm khoảng dưới bằng chiều cao dải, để dải không đè lên nội dung đầu màn.
+    // Giữ thanh đã chọn tới khi tìm được thanh khác hoặc nó rời màn: bỏ rồi gắn lại khoảng chừa làm cả màn giật lên xuống (nháy)
+    let chua: HTMLElement | null = null
+    const boChua = () => { if (chua) chua.style.marginBottom = ''; chua = null }
+    let truoc: HTMLElement | null = null   // thanh tìm được lần trước: phải thấy 2 lần liền mới đổi, tránh lật qua lại
+    const tim = () => {
+      const d = dauMan()
+      const conThay = !!chua && chua.isConnected && chua.getBoundingClientRect().width > 0
+      if (d && d !== chua && (d === truoc || !conThay)) { boChua(); d.style.marginBottom = `${CAO_DAI}px`; chua = d }
+      else if (!d && !conThay) boChua()
+      truoc = d
+    }
+    // bám vị trí thanh đầu từng khung hình (cuộn, tấm trượt lên), chỉ đo một thẻ nên nhẹ; tìm lại thanh đầu mỗi nửa giây
+    let f = 0
+    const bam = () => {
+      const z = zoom(), k = chua?.getBoundingClientRect()
+      const m = k && k.width ? { left: k.left / z, top: k.bottom / z, width: k.width / z } : { left: 0, top: 0, width: window.innerWidth / z }
+      setVt(o => o && Math.abs(o.left - m.left) < 1 && Math.abs(o.top - m.top) < 1 && Math.abs(o.width - m.width) < 1 ? o : m)
+      f = requestAnimationFrame(bam)
+    }
+    tim()
+    bam()
+    const t = window.setInterval(tim, 500)
+    return () => { clearInterval(t); cancelAnimationFrame(f); boChua() }
+  }, [])
+  if (!vt) return null
+  return (
+    <div className="hdan-dai-dt" style={vt} role="status">
+      <button type="button" className="hdan-dai-tiep" onClick={onTiep}>
+        <Icon n="la-ban" className="ic sm" /><span className="grow">Hướng dẫn {dem}</span><b>Tiếp tục<Icon n="chevr" className="ic sm" /></b>
+      </button>
+      <button type="button" className="hdan-dai-tat" aria-label="Tắt hướng dẫn" title="Tắt hướng dẫn" onClick={onTat}><Icon n="x" className="ic sm" /></button>
+    </div>
+  )
+}
 /** Hướng dẫn chờ việc Kê khai thuế, đã khai xong thông tin kinh doanh (popup loại hình, mã số thuế): ở danh sách tờ khai khoanh các cột
  *  doanh thu, tiền thuế, bong bóng mời lập tờ khai (PhuongXT 29/10/2026). Lập tờ khai: mở các bước kê khai (onLap), nộp xong mới về Trang chủ;
  *  Bỏ qua: về Trang chủ khen, kết thúc hướng dẫn. Gắn ở ToKhaiHKD; điện thoại (MToKhaiHKD) truyền chon: dòng tờ khai đầu có số liệu */

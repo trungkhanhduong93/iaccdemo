@@ -25,7 +25,7 @@ import { anNgoaiGoi, minGoi } from '../../app/plan'
 import { Pk } from '../Page'
 import { DS_QUY_TIEN_112 } from '../../modules/danh-muc/data'
 import { HuongDan, moLaiHuongDan } from '../../modules/home/HuongDan'
-import { ChipTamTinh, LoiNhuanTamTinh, NhacSoDuKet, laDonViMoi } from '../../modules/home/NhacDonViMoi'
+import { ChipTamTinh, NhacSoDuKet, laDonViMoi } from '../../modules/home/NhacDonViMoi'
 import { layLaiLoCuaHang } from '../../modules/home/soLieuBieuDoStandard'
 import { chiPhiThangTuPhieu, usePhieuChiPhi } from '../../modules/home/chiPhiPhieu'
 
@@ -456,7 +456,6 @@ export function MTrangChuStandard(_props?: Partial<ScreenProps>) {
               {loiNhuan < 0 ? `Lỗ ${moneyD(Math.abs(loiNhuan))}` : moneyD(loiNhuan)}
             </div>
             <div className="m-tcf-hero-sub">Biên lợi nhuận {pct(bien)}</div>
-            <LoiNhuanTamTinh />
           </div>
 
           <div className="m-tcf-kqkd-bang">
