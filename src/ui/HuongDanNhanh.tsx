@@ -6,6 +6,7 @@
 // Kiểu dải bước (T679, QD87): bấm la bàn hiện dải dưới thanh tab, mỗi lần một bước, số cam đánh lên đúng nút thật của màn;
 // Xem đủ hướng dẫn mở khung nổi bên phải đủ 4 mục.
 // Form toàn màn mở thì dải, khung nổi lên form ngay dưới thanh đầu form; bước nằm trong form chỉ vào ô của form (T676).
+// Bước có khung cam thì làm tối xung quanh; Bước kế, Bước trước tự mở, đóng form theo bước; nút bóng đèn kèm chữ Hướng dẫn (T680).
 import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { createPortal } from 'react-dom'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
@@ -16,7 +17,7 @@ import type { ModuleDef, NutQT, QuyTrinhDef, ScreenDef } from '../modules/types'
 import { baoCaoCuaPhanHe } from '../modules/bao-cao/cuaPhanHe'
 import { Icon } from './Icon'
 import { heSoZoom } from './zoom'
-import { datDaiChay, formTren, ngheForm, soLanLuu } from './huongDanForm'
+import { datDaiChay, dongFormTren, formTren, ngheForm, soLanLuu } from './huongDanForm'
 
 /** Một bước Làm nhanh. o: khoá ô trên sơ đồ khung màn mà bước chỉ tới, hoặc ô trong form phiếu (O_FORM); di: đường dẫn sau /app/ cho nút làm ngay, nutDi: chữ trên nút đó */
 export interface BuocHD { chu: string; o?: string; di?: string; nutDi?: string }
@@ -330,7 +331,7 @@ function ghiXem(k: string) {
   try { localStorage.setItem(KHOA_XEM, JSON.stringify([k, ...ds].slice(0, 500))) } catch { /* trình duyệt chặn lưu thì thôi */ }
 }
 
-/** Nút la bàn cuối thanh tab, dải bước và khung hướng dẫn. Trang chủ đã có hướng dẫn từng bước riêng (T138) nên không gắn.
+/** Nút Hướng dẫn (bóng đèn, T680) cuối thanh tab, dải bước và khung hướng dẫn. Trang chủ đã có hướng dẫn từng bước riêng (T138) nên không gắn.
  *  ngoaiThanhTab: nút đặt ở thanh chọn báo cáo, Tất cả báo cáo khi thanh tab ẩn; dải, khung nằm sát dưới thanh trên (T674) */
 export function NutHuongDan({ mod, ngoaiThanhTab }: { mod: ModuleDef; ngoaiThanhTab?: boolean }) {
   const { s } = useSession()
@@ -378,10 +379,15 @@ export function NutHuongDan({ mod, ngoaiThanhTab }: { mod: ModuleDef; ngoaiThanh
   // đóng form lúc đang ở bước trong form: đã lưu thì sang bước sau form, chưa lưu thì về bước mở form
   const formCu = useRef<HTMLElement | null>(null)
   const luuLucMo = useRef(0)
+  const moBoiDai = useRef(false)                     // dải vừa mở form: nút làm ngay, Bước kế vào bước trong form (T680)
+  const formDai = useRef<HTMLElement | null>(null)   // form do dải mở: tắt hướng dẫn thì đóng luôn
   useEffect(() => {
     const cu = formCu.current
     formCu.current = form
-    if (!hd || cu === form) return
+    if (cu === form) return
+    if (form && !cu) { formDai.current = moBoiDai.current ? form : null; moBoiDai.current = false }
+    if (!form) formDai.current = null
+    if (!hd) return
     const dau = hd.buoc.findIndex(laBuocForm)
     if (dau < 0) return
     if (form) {
@@ -411,11 +417,23 @@ export function NutHuongDan({ mod, ngoaiThanhTab }: { mod: ModuleDef; ngoaiThanh
   const soBuoc = hd.buoc.length
   const i = Math.min(buoc, Math.max(soBuoc - 1, 0))
   const b = hd.buoc[i] as BuocHD | undefined
-  // bước trong form mà form chưa mở: hiện nút làm ngay của bước mở form, vd Ghi một khoản chi (T676)
-  const bLam = b && !b.di && laBuocForm(b) && !form ? hd.buoc.slice(0, i).reverse().find(x => x.di) : b
   const coCho = Object.keys(cho).length > 0   // màn có chỗ thật để đánh số; không có thì khung dùng sơ đồ vẽ
-  const tat = () => { setDai(false); setMo(false) }
-  const lam = (di: string) => { setMo(false); nav(`/app/${di}`) }
+  // tắt hướng dẫn (bỏ qua): đóng luôn form do dải mở, không hỏi (T680)
+  const tat = () => { if (form && form === formDai.current) dongFormTren(); setDai(false); setMo(false) }
+  const lam = (di: string) => { setMo(false); moBoiDai.current = true; nav(`/app/${di}`) }
+  // form mở cho bước trong form: nút làm ngay của bước trước gần nhất (vd Ghi một khoản chi), không có thì Thêm mới của màn chứng từ
+  const diMoForm = (n: number) => hd.buoc.slice(0, n).reverse().find(x => x.di)?.di
+    ?? (sc.kind === 'voucher' && !sc.voucher?.khongThem ? `${loc.pathname.split('/')[2]}/${sc.slug}/moi` : undefined)
+  // Bước kế, Bước trước, bấm bước trong khung: giao diện tự tới chỗ của bước (T680). Bước trong form mà form chưa mở thì mở form;
+  // bước ở màn danh sách mà form đang mở thì đóng form không hỏi
+  const diToi = (n: number) => {
+    setBuoc(n)
+    const x = hd.buoc[n]
+    if (laBuocForm(x) && !form) {
+      const di = diMoForm(n)
+      if (di) { moBoiDai.current = true; nav(`/app/${di}`) }
+    } else if (x?.o && !laBuocForm(x) && form) dongFormTren()
+  }
   const nutLam = (x: BuocHD, cls: string) => x.di && <button type="button" className={`btn sm ${cls}`} onClick={() => lam(x.di!)}>{x.nutDi ?? 'Làm ngay'}<Icon n="arrow" className="ic sm" /></button>
   // số cam: mỗi ô thật một vòng, ghi số các bước chỉ tới ô đó; bước đang xem (hoặc đang rê trong khung) có viền cam
   // nhiều khoá cùng một chỗ (vd form hỏi cửa hàng trước khi hiện ô nhập) gom thành một vòng
@@ -426,29 +444,34 @@ export function NutHuongDan({ mod, ngoaiThanhTab }: { mod: ModuleDef; ngoaiThanh
     const g = nhomCho.get(id)
     if (g) g.ks.push(k); else nhomCho.set(id, { ks: [k], c })
   }
+  // khung cam lố ra 3px; ô sát mép trên (hàng tab) thì vẽ vào trong theo chiều dọc để thanh trên không cắt mất cạnh trên (T680)
+  const khung = (c: Cho) => ({ left: c.l - 3, top: c.sat ? c.t + 3 : c.t - 3, width: c.w + 6, height: c.sat ? c.h - 6 : c.h + 6 })
+  let toi: ReturnType<typeof khung> | undefined   // chỗ bước đang xem: phần còn lại của màn tối đi
   const cham = [...nhomCho.values()].map(({ ks, c }) => {
     const so = hd.buoc.flatMap((x, n) => x.o && ks.includes(x.o) ? [n] : [])
     const k = ks.join(' ')
+    const on = !!sangO && ks.includes(sangO)
+    if (on) toi = khung(c)
     return (
-      <div key={k} data-k={k} className={`hdn-cham-o${sangO && ks.includes(sangO) ? ' on' : ''}${c.sat ? ' sat' : ''}`} style={{ left: c.l - 3, top: c.t - 3, width: c.w + 6, height: c.h + 6 }}>
+      <div key={k} data-k={k} className={`hdn-cham-o${on ? ' on' : ''}${c.sat ? ' sat' : ''}`} style={khung(c)}>
         <span className="hdn-cham-so">{so.map(n => <i key={n} className={n === i ? 'on' : ''}>{n + 1}</i>)}</span>
       </div>
     )
   })
 
-  const chamEl = cham.length > 0 && <div className="hdn-cham" aria-hidden>{cham}</div>
+  const chamEl = cham.length > 0 && <div className="hdn-cham" aria-hidden>{toi && <div className="hdn-toi" style={toi} />}{cham}</div>
   const daiEl = (
-    <div className="hdn-dai" id="hdn-dai" role="region" aria-label={`Hướng dẫn nhanh: ${nhanTab(sc)}`} data-o={b?.o}>
+    <div className={`hdn-dai${ngoaiThanhTab ? ' ngoai' : ''}${s.thuGon ? ' gon' : ''}`} id="hdn-dai" role="region" aria-label={`Hướng dẫn nhanh: ${nhanTab(sc)}`} data-o={b?.o}>
       <div className="hdn-dai-in">
-        <Icon n="la-ban" className="ic sm hdn-dai-ic" />
+        <Icon n="bong-den" className="ic sm hdn-dai-ic" />
         {b ? <>
           <b className="hdn-dai-so">Bước {i + 1}/{soBuoc}</b>
           <span className="hdn-dai-chu" title={b.chu} aria-live="polite">{b.chu}</span>
-          {bLam && nutLam(bLam, 'hdn-dai-lam')}
+          {nutLam(b, 'hdn-dai-lam')}
           <span className="hdn-dai-nut">
-            <button type="button" className="btn sm ghost" disabled={i === 0} onClick={() => setBuoc(i - 1)}><Icon n="chevl" className="ic sm" />Bước trước</button>
+            <button type="button" className="btn sm ghost" disabled={i === 0} onClick={() => diToi(i - 1)}><Icon n="chevl" className="ic sm" />Bước trước</button>
             {i < soBuoc - 1
-              ? <button type="button" className="btn sm pri" onClick={() => setBuoc(i + 1)}>Bước kế<Icon n="chevr" className="ic sm" /></button>
+              ? <button type="button" className="btn sm pri" onClick={() => diToi(i + 1)}>Bước kế<Icon n="chevr" className="ic sm" /></button>
               : <button type="button" className="btn sm pri" onClick={tat}>Xong</button>}
           </span>
         </> : <span className="hdn-dai-chu" title={hd.muc}>{hd.muc}</span>}
@@ -460,9 +483,9 @@ export function NutHuongDan({ mod, ngoaiThanhTab }: { mod: ModuleDef; ngoaiThanh
     </div>
   )
   const khungEl = mo && (
-    <aside className="hdn-khung" id="hdn-khung" aria-label={`Hướng dẫn nhanh: ${nhanTab(sc)}`} style={viTri ?? undefined}>
+    <aside className={`hdn-khung${ngoaiThanhTab ? ' ngoai' : ''}`} id="hdn-khung" aria-label={`Hướng dẫn nhanh: ${nhanTab(sc)}`} style={viTri ?? undefined}>
       <header className="hdn-dau">
-        <span className="hdn-dau-ic"><Icon n="la-ban" className="ic" /></span>
+        <span className="hdn-dau-ic"><Icon n="bong-den" className="ic" /></span>
         <div className="hdn-dau-chu"><small>Hướng dẫn nhanh</small><b>{nhanTab(sc)}</b></div>
         <button type="button" className="btn sm ghost hdn-dong" aria-label="Đóng hướng dẫn đủ" onClick={() => setMo(false)}><Icon n="x" className="ic sm" /></button>
       </header>
@@ -481,7 +504,7 @@ export function NutHuongDan({ mod, ngoaiThanhTab }: { mod: ModuleDef; ngoaiThanh
               {hd.buoc.map((x, n) => (
                 <li key={n} className={`${n === i ? 'on' : ''}${(coCho ? ro === n : x.o && sang === x.o) ? ' sang' : ''}`}
                   onMouseEnter={() => { setRo(n); if (x.o) setSang(x.o) }} onMouseLeave={() => { setRo(null); setSang(null) }}>
-                  <button type="button" className="hdn-buoc-chon" onClick={() => { setBuoc(n); setMo(false) }} aria-label={`Làm từ bước ${n + 1}`}>
+                  <button type="button" className="hdn-buoc-chon" onClick={() => { diToi(n); setMo(false) }} aria-label={`Làm từ bước ${n + 1}`}>
                     <span className="hdn-buoc-so">{n + 1}</span>
                     <p>{x.chu}</p>
                   </button>
@@ -512,10 +535,11 @@ export function NutHuongDan({ mod, ngoaiThanhTab }: { mod: ModuleDef; ngoaiThanh
     <>
       <button type="button" className={`mtabs-hdn${daXem ? '' : ' nhay'}${dai ? ' on' : ''}`} title="Hướng dẫn nhanh" aria-label="Hướng dẫn nhanh"
         aria-expanded={dai} aria-controls="hdn-dai" onClick={() => dai ? tat() : setDai(true)}>
-        <Icon n="la-ban" className="ic" />
+        <Icon n="bong-den" className="ic sm" /><span>Hướng dẫn</span>
       </button>
-      {/* form toàn màn đang mở: dải, số cam, khung nằm trong form, dải ngay dưới thanh đầu form; hộp thoại .overlay vẫn nằm trên (T676) */}
-      {dai && (form ? createPortal(<>{daiEl}{chamEl}{khungEl}</>, form) : <>{daiEl}{chamEl}{khungEl}</>)}
+      {/* dải, số cam, khung nằm thẳng trong body để nổi trên sidebar, thanh trên, lớp tối phủ được cả màn (T680);
+          form toàn màn đang mở thì nằm trong form, dải ngay dưới thanh đầu form; hộp thoại .overlay vẫn nằm trên (T676) */}
+      {dai && createPortal(<>{daiEl}{chamEl}{khungEl}</>, form ?? document.body)}
     </>
   )
 }

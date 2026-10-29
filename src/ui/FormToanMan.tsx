@@ -13,13 +13,14 @@ export function useDong(ve: string) {
 }
 
 /** trai: nút đứng trước tiêu đề (vd lịch sử); phai: nút đứng trước tổng tiền (vd phím tắt); tinh: bỏ hiệu ứng mở khi chuyển Trước/Sau */
-export function FormToanMan({ icon, iconNode, iconNet, xem, title, meta, loai, giua, day, tong, trai, phai, tinh, onClose, foot, footClass, children }: {
+export function FormToanMan({ icon, iconNode, iconNet, xem, title, meta, loai, giua, day, tong, trai, phai, tinh, onClose, dongNgay, foot, footClass, children }: {
   icon?: string; iconNode?: ReactNode; title: ReactNode; meta?: ReactNode; loai?: ReactNode; tong?: number; trai?: ReactNode; phai?: ReactNode; tinh?: boolean
   iconNet?: boolean  // icon nét mảnh như phiếu thu chi, dùng cho form phiếu chứng từ (T517)
   xem?: boolean      // lúc chỉ xem thì ô nhập nền trắng, chữ đậm (T518)
   giua?: ReactNode   // trạng thái phiếu ở chính giữa đầu form (T49)
   day?: ReactNode    // dải cố định ngay trên thanh nút, vd Tổng tiền (T49)
   footClass?: string
+  dongNgay?: () => void  // đóng không hỏi lại, dùng khi dải Hướng dẫn nhanh đi ra bước ngoài form; không có thì dùng onClose (T680)
   onClose: () => void; foot: ReactNode; children: ReactNode
 }) {
   useEffect(() => {
@@ -29,7 +30,9 @@ export function FormToanMan({ icon, iconNode, iconNet, xem, title, meta, loai, g
   }, [onClose])
   // dải bước Hướng dẫn nhanh đang mở thì nổi lên form, ngay dưới thanh đầu form (T676)
   const ref = useRef<HTMLDivElement>(null)
-  useEffect(() => ganForm(ref.current!), [])
+  const dong = useRef(onClose)
+  dong.current = dongNgay ?? onClose
+  useEffect(() => ganForm(ref.current!, () => dong.current()), [])
 
   return (
     <div ref={ref} className={`fsf${tinh ? ' fsf-tinh' : ''}${xem ? ' fsf-xem' : ''}`} role="dialog" aria-modal="true">

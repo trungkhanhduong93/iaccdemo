@@ -5035,14 +5035,14 @@ def kiem_tra_t594_to_giay():
     return loi
 
 def kiem_tra_t676_huong_dan():
-    """Kiểm tra T676: dải bước Hướng dẫn nhanh (QD87) đánh số cam đúng chỗ ở 6 màn gói Standard, màn 1440, kể cả bước trong form phiếu.
-    Bấm la bàn, đi hết các bước bằng Bước kế. Bước có khoá o (data-o trên dải) phải có .hdn-cham-o mang số của bước đó.
-    Bước trong form mà form chưa mở thì bấm nút làm ngay trên dải; form đang mở mà bước ở màn danh sách thì đóng form.
+    """Kiểm tra T676, T680: dải bước Hướng dẫn nhanh (QD87) đánh số cam đúng chỗ ở 6 màn gói Standard, màn 1440, kể cả bước trong form phiếu.
+    Bấm nút Hướng dẫn, đi hết các bước bằng Bước kế. Bước có khoá o (data-o trên dải) phải có .hdn-cham-o mang số của bước đó,
+    có lớp tối .hdn-toi, khung cam không lố lên thanh trên. Bước kế vào bước trong form phải tự mở form, ra bước ngoài form tự đóng không hỏi.
     Thu chi: nút Ghi một khoản chi mở form, dải nằm trong form dưới thanh đầu form, không che ô, nút Lưu; hộp thoại nằm trên dải;
-    khung đủ nằm giữa dải và chân form; bấm Lưu thì form đóng, dải sang bước kế.
+    khung đủ nằm giữa dải và chân form; bấm Lưu thì form đóng, dải sang bước kế; nút tắt đóng luôn form dải đã mở.
     """
     loi = []
-    print('Kiểm tra T676: số cam Hướng dẫn nhanh ở 6 màn gói Standard, kể cả bước trong form phiếu:')
+    print('Kiểm tra T676, T680: số cam Hướng dẫn nhanh ở 6 màn gói Standard, kể cả bước trong form phiếu:')
     man = [('Thu chi', '/app/tien/2-1-1'), ('Quỹ tiền', '/app/danh-muc/1-12'), ('Kê khai thuế', '/app/thue/to-khai'),
            ('Xuất bán POS', '/app/ban-hang/3-1-1'), ('Kiểm kê', '/app/kho/5-1-10'), ('Sổ quỹ', '/app/tien/2-2-1')]
     with sync_playwright() as p:
@@ -5093,8 +5093,20 @@ def kiem_tra_t676_huong_dan():
                 pass
             pg.wait_for_selector('.fsf', state='detached', timeout=3000)
 
-        def ke():
-            pg.locator('.hdn-dai .hdn-dai-nut .btn.pri').click()
+        def ke(nut='.btn.pri'):
+            pg.locator(f'.hdn-dai .hdn-dai-nut {nut}').click()
+            pg.wait_for_timeout(250)
+            # Bước kế vào bước trong form tự mở form; thanh trên đang xem Tất cả cửa hàng thì form hỏi cửa hàng trước
+            if pg.locator('.fsf .chon-cn').count():
+                pg.locator('.fsf .chon-cn-ds button').first.click()
+                pg.wait_for_selector('.fsf [data-hd="ttc"]', timeout=3000)
+
+        def vien():
+            # khung cam bước đang xem: có lớp tối, cạnh trên (viền 2px) không lố lên thanh trên
+            return pg.evaluate("""() => { const o = document.querySelector('.hdn-cham-o.on'); if (!o) return 'không có khung cam viền đậm'
+                if (!document.querySelector('.hdn-toi')) return 'không có lớp tối'
+                const tb = document.querySelector('.fsf') ? null : document.querySelector('.topbar')
+                return tb && o.getBoundingClientRect().top - 2 < tb.getBoundingClientRect().bottom - 1 ? 'khung cam lố lên thanh trên' : '' }""")
 
         for ten, path in man:
             try:
@@ -5110,15 +5122,13 @@ def kiem_tra_t676_huong_dan():
                         break
                     k = bd[2]
                     if k:
-                        ok = co_so(k, n)
-                        if not ok and pg.locator('.fsf').count():
-                            dong_form()
-                            ok = co_so(k, n)
-                        elif not ok and pg.locator('.hdn-dai-lam').count():
-                            mo_form()
-                            ok = co_so(k, n)
-                        if not ok:
-                            loi.append(f'{ten} bước {n}: thiếu số cam ở khoá o "{k}"')
+                        if not co_so(k, n):
+                            loi.append(f'{ten} bước {n}: thiếu số cam ở khoá o "{k}"' + (', form đang mở' if pg.locator('.fsf').count() else ''))
+                        elif vien():
+                            loi.append(f'{ten} bước {n}: {vien()} ở khoá o "{k}"')
+                    if pg.locator('.overlay').count():
+                        loi.append(f'{ten} bước {n}: còn hộp thoại, Bước kế ra ngoài form phải đóng form không hỏi')
+                        break
                     if n < bd[1]:
                         ke()
                 if pg.locator('.fsf').count():
@@ -5177,6 +5187,14 @@ def kiem_tra_t676_huong_dan():
                 sau = buoc()
                 if not sau or sau[0] != bd[0] + 1 or pg.locator('.fsf > .hdn-dai').count():
                     loi.append(f'Thu chi: bấm Lưu thì form phải đóng, dải về danh sách ở bước {bd[0] + 1}, đang {sau}')
+                # Bước trước về bước trong form tự mở lại form; nút tắt đóng luôn form dải đã mở
+                ke('.btn.ghost')
+                if not pg.locator('.fsf > .hdn-dai').count():
+                    loi.append('Thu chi: Bước trước về bước trong form không tự mở form')
+                pg.locator('.hdn-dai-x').click()
+                pg.wait_for_timeout(300)
+                if pg.locator('.fsf, .hdn-dai, .overlay').count():
+                    loi.append('Thu chi: bấm tắt hướng dẫn thì phải đóng luôn form dải đã mở, không hỏi')
         except Exception as e:
             loi.append(f'Thu chi: kiểm dải trong form lỗi {str(e).splitlines()[0]}')
         if con:

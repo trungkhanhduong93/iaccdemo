@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 29/10/2026
+- T680: Web, nút la bàn đổi thành nút bóng đèn có chữ Hướng dẫn, nền cam. Bước có khung cam thì phần còn lại của màn tối đi. Khung cam quanh hàng tab không còn bị cắt cạnh trên. Bước kế vào bước trong phiếu thì tự mở phiếu, ra ngoài thì tự đóng. Nút tắt đóng luôn phiếu hướng dẫn đã mở.
 - T676: Web, dải Hướng dẫn nhanh đi theo vào form phiếu: bấm Ghi một khoản chi hay Thêm mới thì dải nằm ngay dưới thanh đầu form, số cam chỉ vào phần đầu phiếu, bảng Chi tiết, nút Lưu. Lưu xong form đóng, dải sang bước kế. Thu chi, Kiểm kê có thêm bước trong form. Xuất bán POS: số cam bước Tổng cộng chỉ vào ô Tổng cộng dưới bảng.
 - T679: Web, bấm nút la bàn thì hiện dải hướng dẫn mỏng dưới thanh tab, mỗi lần một bước, có nút Bước trước, Bước kế. Số cam đánh thẳng lên nút thật của màn, bước đang xem có viền cam. Nút Xem đủ hướng dẫn mở khung nổi bên phải. Hướng dẫn gọi nơi giữ tiền là Quỹ tiền.
 - T674: Web, báo cáo mà phần đầu nằm thay thanh tab (phân hệ Báo cáo, Sổ quỹ tiền mặt, báo cáo mở từ tab Báo cáo của phân hệ) có nút la bàn Hướng dẫn nhanh cạnh nút In. Màn Tất cả báo cáo có nút cạnh ô Tìm báo cáo. Khung mở sát dưới thanh trên. Gói Standard có hướng dẫn riêng cho Sổ quỹ tiền mặt.

@@ -42661,13 +42661,13 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
 .bc-dau-phai > .mtabs-hdn { align-self: auto; margin-bottom: 2px; }   /* ngang hàng nút In (.bc-dau-nut chừa đáy 2px) */
 .bc-chon:not(.bc-dau-moi) > .mtabs-hdn { margin-left: auto; }
 /* thanh tab ẩn nên khung nằm dưới dải sát thanh trên (56px + 52px dải, T679); đầu báo cáo không cho xuống dòng nên khung đặt lại */
-:not(.mtabs) > .hdn-khung { top: 112px; white-space: normal; }
+.hdn-khung.ngoai { top: 112px; }
 /* ── Hướng dẫn nhanh kiểu dải bước: dải dưới thanh tab, số cam trên nút thật, khung đủ nổi (T679, QD87) ── */
 /* màn chính chừa 52px ở đầu cho dải; thanh tab ẩn (báo cáo đầu mới, phân hệ Báo cáo) thì dải sát dưới thanh trên */
-.shell:has(.hdn-dai) > .main { margin-top: 52px; }
-.hdn-dai { position: fixed; z-index: 30; top: 102px; left: 232px; right: 0; height: 52px; padding: 6px 16px; background: var(--bg); color: var(--ink); font-size: 14px; font-weight: 400; line-height: 1.45; letter-spacing: normal; text-transform: none; white-space: normal; }
-.shell.gon .hdn-dai { left: 64px; }
-:not(.mtabs) > .hdn-dai { top: 56px; }
+:root:has(.hdn-dai) .shell > .main { margin-top: 52px; }
+.hdn-dai { position: fixed; z-index: 32; top: 102px; left: 232px; right: 0; height: 52px; padding: 6px 16px; background: var(--bg); color: var(--ink); font-size: 14px; font-weight: 400; line-height: 1.45; letter-spacing: normal; text-transform: none; white-space: normal; }
+.hdn-dai.gon { left: 64px; }
+.hdn-dai.ngoai { top: 56px; }
 .hdn-dai-in { height: 40px; display: flex; align-items: center; gap: 10px; padding: 0 5px 0 12px; border: 1px solid #c9dcee; border-radius: 10px; background: var(--tint); box-shadow: 0 1px 2px rgba(14, 26, 43, .05); }
 .hdn-dai-ic { flex: none; color: var(--blue); }
 .hdn-dai-so { flex: none; color: var(--blue); font-size: 13px; font-weight: 700; white-space: nowrap; }
@@ -42682,8 +42682,8 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
 .hdn-dai .btn.ghost.hdn-dai-du.on { background: var(--blue); color: #fff; }
 .hdn-dai-x { width: 30px; padding: 0; justify-content: center; }
 .hdn-dai .btn.ghost.hdn-dai-x { color: var(--muted); }
-/* số cam trên nút thật: lớp phủ không bắt chuột, dưới dải, khung đủ, form toàn màn */
-.hdn-cham { position: fixed; inset: 0; z-index: 29; pointer-events: none; }
+/* số cam trên nút thật: lớp phủ không bắt chuột, trên sidebar (30), dưới dải, khung đủ, form toàn màn */
+.hdn-cham { position: fixed; inset: 0; z-index: 31; pointer-events: none; }
 .hdn-cham-o { position: absolute; border-radius: 9px; transition: box-shadow .2s ease; }
 .hdn-cham-o.on { box-shadow: 0 0 0 2px var(--orange), 0 0 0 6px rgba(242, 128, 32, .16); }
 .hdn-cham-so { position: absolute; top: -9px; left: -9px; display: flex; gap: 3px; }
@@ -42702,8 +42702,19 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
 /* ── Hướng dẫn nhanh: dải bước đi theo vào form phiếu toàn màn (T676, QD87) ── */
 /* dải nằm trong form ngay dưới thanh đầu form; thân form co lại nhường chỗ nên dải không che ô nào, không che nút Lưu */
 .fsf:has(> .hdn-dai) > .fsf-h { order: -2; }
-.fsf > .hdn-dai { position: static; order: -1; flex: none; padding: 6px 20px; }
+.fsf > .hdn-dai { position: relative; inset: auto; z-index: 40; order: -1; flex: none; padding: 6px 20px; }   /* z-index: trên lớp tối của số cam (T680) */
 /* khung đủ: từ dưới dải tới trên chân form, top, bottom do HuongDanNhanh đo theo px của form */
 .fsf > .hdn-khung { position: absolute; }
 /* số cam trong form: trên ô của form, dưới khung đủ (z-index 40) và hộp thoại .overlay (z-index 50) */
 .fsf > .hdn-cham { z-index: 39; }
+/* ── Hướng dẫn nhanh: làm tối quanh khung cam, nút bóng đèn kèm chữ Hướng dẫn (T680, QD87) ── */
+/* dải, số cam, khung nằm thẳng trong body nên lớp tối phủ được cả sidebar, thanh trên; lớp không bắt chuột, vẫn bấm được mọi chỗ */
+.hdn-toi { position: absolute; border-radius: 9px; box-shadow: 0 0 0 200vmax rgba(14, 26, 43, .42); transition: left .25s ease, top .25s ease, width .25s ease, height .25s ease; }
+@media (prefers-reduced-motion: reduce) { .hdn-toi { transition: none; } }
+/* nút Hướng dẫn cuối thanh tab, cạnh nút In ở đầu báo cáo: nền cam nhạt, rê chuột hoặc đang mở thì cam đặc */
+.mtabs-hdn { width: auto; padding: 0 12px 0 9px; border-radius: 16px; display: flex; align-items: center; gap: 6px; background: var(--orange-t); color: var(--orange-d); box-shadow: inset 0 0 0 1px var(--orange-b); font: 600 13px/1 var(--fs); white-space: nowrap; }
+.mtabs-hdn:hover, .mtabs-hdn.on { background: var(--orange); color: #fff; box-shadow: none; }
+.mtabs-hdn.nhay::after { border-radius: 20px; }
+/* bóng đèn ở đầu dải, đầu khung đủ cùng màu nút */
+.hdn-dai-ic { color: var(--orange-d); }
+.hdn-dau-ic { background: var(--orange-t); color: var(--orange-d); }

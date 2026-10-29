@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T680 | Hướng dẫn nhanh (QD87) theo góp ý Trum sau T676: khung cam quanh hàng tab bị cắt cạnh trên; bước có khung cam thì làm tối xung quanh; Bước kế, Bước trước vào bước trong form thì tự mở form, ra bước ngoài form thì tự đóng không hỏi, nút tắt đóng luôn form dải đã mở; nút la bàn đổi sang bóng đèn kèm chữ Hướng dẫn, nền cam nhạt | Trum | Đang làm | Sửa `src/ui/HuongDanNhanh.tsx`, `src/ui/huongDanForm.ts`, `src/ui/FormToanMan.tsx`, `src/ui/generic/ChungTuForm.tsx` (chỉ thêm prop đóng không hỏi), `src/ui/Icon.tsx` (thêm icon, không đổi `la-ban` của T138), `tools/kiem_tra.py`, mục T679 và cuối `app.css` (mục T680) |
 | T675 | Hướng dẫn nhanh (QD86) trên điện thoại: khung kéo từ dưới lên, cùng nội dung `huong-dan.ts` với web | | Chờ | Gắn ở `MobileShell`, tách phần nội dung trong `src/ui/HuongDanNhanh.tsx` ra dùng chung |
 | T677 | Hướng dẫn nhanh đợt 3 (QD86): soạn riêng từng phân hệ gói Standard, rồi gói Plus, Pro; tìm hướng dẫn bằng Ctrl + K | | Chờ | Mỗi phân hệ một file `src/modules/<phân hệ>/huong-dan.ts`, chia việc theo phân hệ. Ctrl + K sửa `src/app/CommandPalette.tsx` |
 | T593 | Xem trước in và bản in báo cáo: mã, tên hàng, số phiếu ở mọi cột thành chữ thường, không bấm được (mở rộng T556) | Trum | Đang làm | Sửa cuối `app.css` (mục T556). Spec `backup/spec-T593-T595.md` |

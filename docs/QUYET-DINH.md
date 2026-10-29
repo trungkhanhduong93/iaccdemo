@@ -947,14 +947,17 @@ Trum chốt 29/10/2026 (T673), bản bấm thử trên artifact https://claude.a
 
 Trum chốt 29/10/2026 (T679) kiểu C trên bản bấm thử https://claude.ai/artifact/FuCMVCh9iofH7yD7VxGkeK, sau khi so 5 kiểu trên màn Sổ quỹ tiền mặt và Thu chi. Thay cách hiện khung của QD86, nội dung 4 mục giữ nguyên.
 
-- Bấm la bàn thì hiện dải bước ngay dưới thanh tab, thanh tab ẩn thì dưới thanh trên. Màn chính co lại nhường chỗ cho dải, không che nút nào.
+- Bấm nút Hướng dẫn thì hiện dải bước ngay dưới thanh tab, thanh tab ẩn thì dưới thanh trên. Màn chính co lại nhường chỗ cho dải, không che nút nào.
+- Nút Hướng dẫn: icon bóng đèn kèm chữ Hướng dẫn, nền cam nhạt, bấm thì cam đặc. Trum chọn thay nút la bàn vì la bàn chìm, khó hiểu (T680).
 - Dải hiện một bước mỗi lần, nút Bước trước, Bước kế (bước cuối là Xong), Xem đủ hướng dẫn, nút tắt. Bước có việc làm ngay thì có thêm nút đó, vd Ghi một khoản chi.
 - Số cam đánh thẳng lên chỗ thật của màn, bước đang xem có viền cam. Người dùng không phải dò sơ đồ vẽ.
+- Bước đang xem có viền cam thì phần còn lại của màn tối đi, kể cả sidebar, thanh trên. Dải, khung đủ vẫn sáng, vẫn bấm được mọi chỗ (T680).
 - Xem đủ hướng dẫn mở khung nổi bên phải, dưới dải. Khung đè lên phần phải của màn tới khi đóng. Bấm một bước trong khung thì khung đóng, dải về đúng bước đó.
 - Mục Đi tiếp trong khung chỉ hiện bước trước, bước đang ở, bước sau trên sơ đồ Quy trình.
 - Chỗ thật tìm theo khuôn chung của màn danh sách chứng từ, danh mục, báo cáo, chức năng. Màn dựng riêng gắn `data-hd="<khoá ô>"`. Màn chưa tìm được chỗ nào thì dải vẫn chạy chữ, khung đủ dùng sơ đồ vẽ như QD86.
 - Nơi giữ tiền gọi là Quỹ tiền, không gọi là két.
 - Form toàn màn mở khi dải đang chạy thì dải nằm trong form, ngay dưới thanh đầu form; thân form co lại nên dải không che ô nào, không che nút Lưu. Hộp thoại vẫn nằm trên dải (T676).
 - Bước nằm trong form chỉ vào khối ô đầu form, bảng chi tiết hoặc nút Lưu. Bấm nút làm ngay hoặc Thêm mới thì dải sang bước đầu trong form. Lưu xong thì form đóng, dải về danh sách ở bước kế. Đóng form không lưu thì dải về bước mở form.
+- Bước kế, Bước trước, bấm bước trong khung đủ: giao diện tự tới chỗ của bước. Vào bước trong form thì tự mở form, ra bước ở màn danh sách thì tự đóng form, không hỏi. Nút tắt là bỏ qua: tắt hướng dẫn, đóng luôn form do dải mở. Trum chốt không hỏi vì đây là bản demo (T680).
 - Bước trong form được tính riêng nên một màn có thể quá 5 bước: Trum duyệt Thu chi 7 bước, Kiểm kê 5 bước (T676).
 - `tools/kiem_tra.py` kiểm số cam đúng bước ở 6 màn gói Standard mỗi lần chạy, cả `--nhanh` (T676).
