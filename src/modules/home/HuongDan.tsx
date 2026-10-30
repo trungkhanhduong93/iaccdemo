@@ -322,9 +322,21 @@ export function TiepHuongDan() {
 
 /** Đầu màn đang thấy trên điện thoại: tìm chữ đậm cỡ lớn trên cùng không bị lớp phủ che (tấm, form trượt lên thì lấy tiêu đề tấm đó),
  *  trả cả thanh đầu chứa nó (thanh tiêu đề màn, đầu tấm) để đặt dải hướng dẫn ngay bên dưới */
+/** z-index lớn nhất trong các khung cha cố định (tấm, form trượt lên); màn thường là 0 */
+function lopCua(el: HTMLElement) {
+  let z = 0
+  for (let p: HTMLElement | null = el; p && p !== document.body; p = p.parentElement) {
+    const cs = getComputedStyle(p)
+    if (cs.position === 'fixed') z = Math.max(z, Number(cs.zIndex) || 1)
+  }
+  return z
+}
+
 function dauMan(): HTMLElement | null {
   const H = window.innerHeight
-  let tot: { r: DOMRect; el: HTMLElement } | null = null
+  // lớp cao hơn thắng trước, cùng lớp thì chữ nằm trên cùng thắng: form quỹ đang mở thì không lấy tiêu đề màn phía sau.
+  // Phép thử bị che (elementsFromPoint) trên Safari iPhone lúc được lúc không, dải nhảy qua lại giữa hai thanh (PhuongXT 30/10/2026)
+  let tot: { r: DOMRect; el: HTMLElement; lop: number } | null = null
   // tiêu đề màn, tấm điện thoại: thẻ h, dòng đầu đầu phiếu (.dong1), chữ đậm ở đầu màn, đầu tấm (vd .m-tk-man-dau b)
   document.querySelectorAll<HTMLElement>('h1, h2, h3, .dong1, [class*="tieu-de"], [class*="-dau"] b').forEach(el => {
     if (el.closest('.hdan, .hdan-dai-dt') || !el.textContent?.trim()) return
@@ -337,10 +349,11 @@ function dauMan(): HTMLElement | null {
     // bỏ qua lớp của chính hướng dẫn (màn tối, viền, dải) khi xét bị che
     const tren = document.elementsFromPoint(r.left + r.width / 2, r.top + r.height / 2).find(x => !x.closest('.hdan, .hdan-dai-dt, .hdan-vien, .hdan-vien-chu'))
     if (!tren || !(el.contains(tren) || tren.contains(el))) return   // bị lớp phủ, tấm chọn che
-    if (!tot || r.top < tot.r.top) tot = { r, el }
+    const lop = lopCua(el)
+    if (!tot || lop > tot.lop || (lop === tot.lop && r.top < tot.r.top)) tot = { r, el, lop }
   })
   if (!tot) return null
-  const { el } = tot as { r: DOMRect; el: HTMLElement }
+  const { el } = tot as { r: DOMRect; el: HTMLElement; lop: number }
   return el.closest<HTMLElement>('header, [class*="-dau"], [class*="thanh-tren"]') ?? el.parentElement ?? el
 }
 

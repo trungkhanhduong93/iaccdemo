@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 30/10/2026
+- T138: Điện thoại, đang theo hướng dẫn mà mở form quỹ thì dải Hướng dẫn nằm yên dưới đầu form, hết nhảy qua lại với tiêu đề màn phía sau.
 - T138: Điện thoại, bong bóng hướng dẫn Trang chủ viền xanh, chữ đậm, không còn chìm vào thẻ trắng phía sau; chỗ khoanh viền xanh; dải Tiếp tục hướng dẫn nền xanh. Bước cuối hướng dẫn có nút Bỏ qua. Đang theo hướng dẫn mà đóng form quỹ chưa lưu thì tự về Trang chủ sang bước sau; đóng hỏi kê khai, hộp lập tờ khai chưa nộp thì về chỉ vào nút Xem lại hướng dẫn.
 - T686: Web, màn chưa bấm Hướng dẫn lần nào (vd Khoá sổ, Gói thuê bao) hết rung cả trang lúc nút Hướng dẫn nhấp nháy.
 - T685: Web, các màn Hệ thống có Hướng dẫn nhanh riêng: Người dùng, Vai trò và phân quyền, Nhật ký thao tác, Thông tin đơn vị, Cấu hình kế toán, Khoá sổ, Gói thuê bao. Bấm Hướng dẫn thì tour khoanh đúng nút, ô, bảng trên màn.
