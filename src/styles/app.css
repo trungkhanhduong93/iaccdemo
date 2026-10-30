@@ -43699,12 +43699,15 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
   background: var(--blue-d);
 }
 
-/* ── Màn Thu chi: dải vàng phiếu thu, chi FABi chưa đồng bộ, hộp lý do (T691) ── */
-.dbtc-dai .grow { flex: 1; min-width: 0; }
-.dbtc-dai .btn { flex-shrink: 0; }
-.dbtc-dai.xong { border-color: var(--line); background: var(--soft); color: var(--body); }
-.dbtc-dai.xong > .ic { color: var(--green); }
-.dbtc-dai small { opacity: .8; }
+/* ── Thu chi: tiện ích đồng bộ thu chi FABi bên phải thanh tab, hộp lý do (T691) ── */
+.mtabs:has(> .dbtc-tab) { display: flex; align-items: stretch; }
+.mtabs:has(> .dbtc-tab) .mtabs-in { flex: 1; }
+.dbtc-tab { display: flex; align-items: center; gap: 8px; flex-shrink: 0; padding-left: 12px; white-space: nowrap; }
+.dbtc-cho { display: inline-flex; align-items: center; gap: 4px; height: 28px; padding: 0 10px; border: 1px solid var(--orange-b); border-radius: 14px; background: var(--amber-t); color: var(--amber); font-size: 12.5px; cursor: pointer; }
+.dbtc-cho:hover { border-color: var(--amber); }
+.dbtc-trang { display: inline-flex; align-items: center; gap: 4px; color: var(--amber); font-size: 12.5px; font-variant-numeric: tabular-nums; }
+.dbtc-trang.xong { color: var(--muted); }
+.dbtc-trang.xong .ic { color: var(--green); }
 .dbtc-hop { width: min(860px, calc(100vw - 32px)); }
 .dbtc-than { display: flex; flex-direction: column; gap: 18px; padding: 0 16px 16px; overflow: auto; }
 .dbtc-bang { width: 100%; border-collapse: collapse; font-size: 13px; }
@@ -43714,6 +43717,5 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
 .dbtc-ly { color: var(--amber); white-space: nowrap; }
 .dbtc-ly a { margin-left: 4px; font-size: 12px; }
 @media (max-width: 640px) {
-  .dbtc-dai { flex-wrap: wrap; }
   .dbtc-bang th:nth-child(4), .dbtc-bang td:nth-child(4) { display: none; }
 }

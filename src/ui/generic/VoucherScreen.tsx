@@ -33,7 +33,6 @@ import { BangKiemKe } from './BangKiemKe'
 import { BangSua } from './BangSua'
 import { ChungTuForm, HachToan, LichSu, VoucherDetail, lyDoKhongXoaTheCuaPhieu, lyMacDinh, xoaTheCuaPhieu } from './ChungTuForm'
 import { HopInChungTu, type PhieuIn } from '../bao-cao/InChungTu'
-import { DongBoThuChiFabi } from '../../modules/tien/DongBoThuChiFabi'
 
 /** Ngày tạo, người tạo (T132): phiếu lưu trong phiên có sẵn; phiếu mẫu đồng bộ từ phần mềm khác do Hệ thống tạo lúc đồng bộ,
  *  phiếu mẫu nhập tay do một nhân viên tạo, vài phút sau giờ chứng từ */
@@ -238,9 +237,7 @@ export function VoucherScreen({ sc, mod }: ScreenProps) {
 
   // Lọc mở từ đường dẫn (?lyDo=, ?thang=) đọc lúc dựng danh sách: đổi hai tham số này khi đang ở danh sách thì dựng lại để lọc đúng (T483)
   const q = new URLSearchParams(loc.search)
-  // Màn Thu chi: dải vàng báo phiếu thu, chi FABi chưa đồng bộ kèm lý do (T691)
-  return <VoucherList key={`${q.get('lyDo') ?? ''}|${q.get('thang') ?? ''}`} sc={sc} mod={mod} cfg={cfg} rows={rows}
-    extra={mod.key === 'tien' && sc.slug === '2-1-1' ? <DongBoThuChiFabi /> : undefined} />
+  return <VoucherList key={`${q.get('lyDo') ?? ''}|${q.get('thang') ?? ''}`} sc={sc} mod={mod} cfg={cfg} rows={rows} />
 }
 
 /** Lý do thu, chi của phiếu: phiếu đã lưu lý do thì lấy, chưa thì đoán theo diễn giải như form; chuyển quỹ không có (T96).

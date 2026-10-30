@@ -13,6 +13,8 @@
 - `src/ui/generic/VoucherScreen.tsx`: truyền `extra` cho màn 2-1-1 phân hệ tien (Trum giữ file ở T496, chỉ sửa chỗ gọi `VoucherList`).
 - Cuối `src/styles/app.css`: mục T691.
 
+- Góp ý sau push đầu: chuyển tiện ích từ dải dưới tab lên bên phải thanh tab phân hệ Thu chi (`src/app/ModuleTabs.tsx`), vì để dưới tab dễ hiểu là chỉ đồng bộ tiền mặt hoặc ngân hàng; bỏ `extra` ở `VoucherScreen.tsx`. Nhãn "N phiếu thu chi chưa đồng bộ", nút chỉ chữ "Đồng bộ".
+
 ## Đã kiểm
 
 - `npm run typecheck`, `npm run build`: không lỗi.

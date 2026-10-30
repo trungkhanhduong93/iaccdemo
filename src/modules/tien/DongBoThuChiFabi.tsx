@@ -1,7 +1,7 @@
-// Tiện ích đồng bộ thu chi FABi trên màn Thu chi (T691): dải vàng trên bảng báo còn bao nhiêu phiếu FABi chưa vào sổ,
-// bấm Xem lý do mở hộp liệt kê từng phiếu, cột Lý do kèm link xử lý. PhuongXT chốt 30/10/2026 hai lý do: PTTT chưa map quỹ, kỳ đã khoá sổ.
-// Nút Đồng bộ thu chi từ FABi mở hộp chọn kỳ, cửa hàng rồi lấy phiếu về, báo bao nhiêu phiếu vừa vào sổ, bao nhiêu còn chờ; hết phiếu chờ thì dải xám (PhuongXT 30/10/2026).
-// Đơn vị vừa Kết nối FABi mà phiếu còn đổ về thì dải báo đang đồng bộ x / y phiếu như Trang chủ (T687).
+// Tiện ích đồng bộ thu chi FABi (T691), nằm bên phải thanh tab phân hệ Thu chi để rõ là đồng bộ cả tiền mặt lẫn ngân hàng, không riêng tab nào (PhuongXT 30/10/2026).
+// Nhãn vàng báo còn bao nhiêu phiếu FABi chưa vào sổ, bấm mở hộp liệt kê từng phiếu, cột Lý do kèm link xử lý. PhuongXT chốt hai lý do: PTTT chưa map quỹ, kỳ đã khoá sổ.
+// Nút Đồng bộ mở hộp Đồng bộ thu chi từ FABi chọn kỳ, cửa hàng rồi lấy phiếu về, báo bao nhiêu phiếu vừa vào sổ, bao nhiêu còn chờ.
+// Đơn vị vừa Kết nối FABi mà phiếu còn đổ về thì báo đang đồng bộ x / y phiếu như Trang chủ (T687).
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
 import { Link } from 'react-router-dom'
@@ -10,13 +10,13 @@ import { Icon } from '../../ui/Icon'
 import { HopDongBo } from '../../ui/HopDongBo'
 import { dmy } from '../../ui/format'
 import { CUA_HANG } from '../../data/mock'
-import { DongDongBo, phanDaVe, useDongBoFabi } from '../home/NhacDonViMoi'
+import { phanDaVe, useDongBoFabi } from '../home/NhacDonViMoi'
 import { batDongBoThuChi, phieuThuChiFabi, type PhieuChoFabi } from './dong-bo-fabi'
 
 const tien = (n: number) => n.toLocaleString('vi-VN')
-/** Giờ đồng bộ theo ngày làm việc của bản mẫu (07/10/2026), giờ phút theo đồng hồ máy */
 /** Ngày dd/mm/yyyy của phiếu thành Date để so với kỳ chọn */
 const ngayCua = (n: string) => { const [d, m, y] = n.split('/').map(Number); return new Date(y, m - 1, d) }
+/** Giờ đồng bộ theo ngày làm việc của bản mẫu (07/10/2026), giờ phút theo đồng hồ máy */
 const gioNay = () => { const d = new Date(), p = (n: number) => String(n).padStart(2, '0'); return `${p(d.getHours())}:${p(d.getMinutes())} 07/10/2026` }
 
 export function DongBoThuChiFabi() {
@@ -29,8 +29,8 @@ export function DongBoThuChiFabi() {
   const [lan, setLan] = useState(() => ({ luc: gioNay(), cho: tong }))
   const [hop, setHop] = useState(false)
   const nutDongBo = (
-    <button type="button" className="btn sm" onClick={() => setHop(true)}>
-      <Icon n="refresh" className="ic sm" />Đồng bộ thu chi từ FABi
+    <button type="button" className="btn sm" title="Đồng bộ thu chi từ FABi" onClick={() => setHop(true)}>
+      <Icon n="refresh" className="ic sm" />Đồng bộ
     </button>
   )
   // Chọn sẵn cửa hàng đang bật tự động đồng bộ ở Danh mục Cửa hàng (T264)
@@ -56,36 +56,19 @@ export function DongBoThuChiFabi() {
     />
   )
 
-  if (db) {
-    return (
-      <div className="db-dai dbtc-dai" role="status">
-        <DongDongBo da={Math.round(db.tc * phanDaVe(db.t))} tong={db.tc} />
-      </div>
-    )
-  }
-  if (!tong) {
-    return (
-      <>
-        <div className="db-dai dbtc-dai xong" role="status">
-          <Icon n="check" className="ic sm" />
-          <span className="grow">Đã đồng bộ hết phiếu thu, chi từ FABi. Lần cuối {lan.luc}.</span>
-          {nutDongBo}
-        </div>
-        {hopDongBo}
-      </>
-    )
-  }
   return (
-    <>
-      <div className="db-dai dbtc-dai" role="status">
-        <Icon n="alert" className="ic sm" />
-        <span className="grow">Còn <b>{tong}</b> phiếu thu, chi từ FABi chưa đồng bộ. <small>Lần cuối {lan.luc}.</small></span>
-        <button type="button" className="btn sm" onClick={() => setMo(true)}>Xem lý do</button>
-        {nutDongBo}
-      </div>
+    <div className="dbtc-tab">
+      {db
+        ? <span className="dbtc-trang" role="status"><Icon n="refresh" className="ic sm db-quay" />Đang đồng bộ {Math.round(db.tc * phanDaVe(db.t))} / {db.tc} phiếu thu chi</span>
+        : tong
+          ? <button type="button" className="dbtc-cho" title={`Lần đồng bộ cuối ${lan.luc}. Bấm xem lý do từng phiếu`} onClick={() => setMo(true)}>
+              <Icon n="alert" className="ic sm" /><b>{tong}</b> phiếu thu chi chưa đồng bộ
+            </button>
+          : <span className="dbtc-trang xong" role="status" title={`Lần đồng bộ cuối ${lan.luc}`}><Icon n="check" className="ic sm" />Đã đồng bộ hết</span>}
+      {!db && nutDongBo}
       {hopDongBo}
       {mo && <HopPhieuCho cho={cho} khoa={khoa} goiS={s.goi === 'S'} nutDongBo={nutDongBo} onDong={() => setMo(false)} />}
-    </>
+    </div>
   )
 }
 
