@@ -977,3 +977,5 @@ Trum chốt 29/10/2026 sau khi dùng thử T680. Thay cách hiện dải bước
   - bước ở màn danh sách mà form đang mở thì tự đóng form, không hỏi.
 - Bỏ qua và Xong đều trả lại như ban đầu: đóng form, về đúng màn và tab lúc bấm nút Hướng dẫn, cửa hàng trên thanh trên trả về như cũ, xoá phiếu mẫu tour đã lưu.
 
+
+## QD89. Hướng dẫn nhanh điện thoại kiểu bong bóng nổi (đang soạn)
