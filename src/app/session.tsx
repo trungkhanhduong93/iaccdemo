@@ -172,6 +172,8 @@ export function dungThuDv(s: Pick<Session, 'dungThu' | 'donVi' | 'goi'>): { con:
 }
 export const donViHienTai = (s: Session) => dsDonVi(s).find(d => d.id === s.donVi) ?? DON_VI[0]
 export const cheDoHienTai = (s: Session) => CHE_DO[s.cheDo]
+/** Nhãn Bổ sung MST: gói có màn Kê khai thuế mở hộp Thông tin kê khai ở màn đó, gói khác mở Thông tin đơn vị */
+export const denBoMst = (goi: Goi) => goi === 'S' || goi === 'PL' ? '/app/thue/to-khai?thongtin=1' : '/app/he-thong/thong-tin'
 /** Thuế GTGT tính theo % doanh thu (T450): hộ kinh doanh luôn vậy; doanh nghiệp gói Plus, Pro cố định khấu trừ; còn lại theo Thông tin đơn vị.
  *  Chứng từ, báo cáo bán hàng: theo % doanh thu thì hiện Giảm thuế GTGT, ẩn Thuế suất, Tiền thuế; khấu trừ thì ngược lại */
 export const gtgtTyLe = (s: Session) => loaiHinhDv(s, donViHienTai(s)) === 'hkd' || (s.goi !== 'PL' && s.goi !== 'PR' && s.ppGtgt === 'tyLe')

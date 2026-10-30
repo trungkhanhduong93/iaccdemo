@@ -1,7 +1,7 @@
 // Thanh trên: đơn vị kế toán, cửa hàng làm việc, nút "Trải nghiệm gói" đổi gói, tài khoản. Vai trò lấy theo tài khoản đăng nhập.
 // Tìm nhanh nằm ở sidebar; kỳ chọn ở bộ lọc từng màn.
 import { useNavigate } from 'react-router-dom'
-import { donViHienTai, dsCuaHang, dsDonVi, dungThuDv, loaiHinhDv, useSession, cheDoHienTai } from './session'
+import { donViHienTai, dsCuaHang, dsDonVi, dungThuDv, loaiHinhDv, useSession, cheDoHienTai, denBoMst } from './session'
 import { cheDoCuaGoi } from './che-do'
 import { GOI, GOIS, coTrongGoi, demTheoGoi } from './plan'
 import { ROLE } from '../data/mock'
@@ -28,10 +28,10 @@ export function Topbar({ onSearch }: { onSearch?: () => void }) {
         <span className="dv-av">{dv.viettat}</span>
         <span style={{ minWidth: 0 }}><small>{dv.mst
           ? `${loaiHinhDv(s, dv) === 'hkd' ? 'Hộ kinh doanh' : 'Công ty'} · MST ${dv.mst} · ${cheDoHienTai(s).ngan}`
-          // chưa có MST: nhãn cam Bổ sung MST mở Thông tin đơn vị để khai, kèm tên thông tư, loại hình (file "Chỉnh text Onboarding.xlsx", 29/10/2026)
+          // chưa có MST: nhãn cam Bổ sung MST mở hộp Thông tin kê khai ở màn Kê khai thuế (gói có màn này), gói khác mở Thông tin đơn vị; kèm tên thông tư, loại hình (file "Chỉnh text Onboarding.xlsx", 29/10/2026)
           : <><span className="dv-bo-mst" role="link" tabIndex={0} title="Khai mã số thuế của đơn vị"
-              onClick={e => { e.stopPropagation(); nav('/app/he-thong/thong-tin') }}
-              onKeyDown={e => { if (e.key === 'Enter') { e.stopPropagation(); nav('/app/he-thong/thong-tin') } }}><Icon n="info" className="ic sm" />Bổ sung MST</span>
+              onClick={e => { e.stopPropagation(); nav(denBoMst(s.goi)) }}
+              onKeyDown={e => { if (e.key === 'Enter') { e.stopPropagation(); nav(denBoMst(s.goi)) } }}><Icon n="info" className="ic sm" />Bổ sung MST</span>
             {` · ${cheDoHienTai(s).ngan.replace(/^TT\s*/, 'Thông tư ')} · ${loaiHinhDv(s, dv) === 'hkd' ? 'Hộ kinh doanh' : 'Công ty'}`}</>}
         </small><b>{dv.ten}</b></span>
         <Icon n="chevd" className="ic sm" />

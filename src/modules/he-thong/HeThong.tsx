@@ -455,7 +455,7 @@ export function ThongTinDonVi({ sc }: ScreenProps) {
             {loai === 'hkd' && <>
               <div className="f c2"><label>Nhóm doanh thu</label>
                 <Select className="inp" value={String(f.nhom)} aria-label="Nhóm doanh thu" onChange={e => sua({ nhom: Number(e.target.value) })}
-                  ds={NHOM_HKD.map(x => ({ v: String(x.nhom), t: `Nhóm ${x.nhom} (${x.ten})` }))} /></div>
+                  ds={NHOM_HKD.filter(x => s.goi !== 'S' || x.nhom <= 2 || x.nhom === f.nhom).map(x => ({ v: String(x.nhom), t: `Nhóm ${x.nhom} (${x.ten})` }))} /></div>
               {/* Hộ kinh doanh: thuế GTGT chỉ trực tiếp trên doanh thu; thuế TNCN nhóm 1 theo doanh thu, nhóm 2 chọn, nhóm 3, 4 theo lợi nhuận */}
               <div className="f c2"><label>Phương pháp thuế GTGT</label>
                 <Select className="inp" value="tyLe" disabled aria-label="Phương pháp thuế GTGT" ds={[{ v: 'tyLe', t: PP_GTGT.tyLe }]} /></div>
@@ -503,7 +503,8 @@ export function ThongTinDonVi({ sc }: ScreenProps) {
               <Select className="inp" value={String(nam)} aria-label="Năm làm việc hiện tại" onChange={e => doiNam(Number(e.target.value))}
                 ds={[-2, -1, 0, 1].map(d => String(new Date().getFullYear() + d)).map(n => ({ v: n, t: n }))} />
             </div>
-            <div className="f c2"><label>Phương pháp tính giá xuất kho</label><Select className="inp"><option>Bình quân gia quyền cuối kỳ</option>{s.goi !== 'S' && <><option>Bình quân tức thời</option><option>Nhập trước xuất trước</option></>}</Select></div>   {/* gói Standard chỉ bình quân cuối kỳ (T268) */}
+            {/* Gói Standard ẩn ô này, mặc định bình quân cuối kỳ (T268) */}
+            {s.goi !== 'S' && <div className="f c2"><label>Phương pháp tính giá xuất kho</label><Select className="inp"><option>Bình quân gia quyền cuối kỳ</option><option>Bình quân tức thời</option><option>Nhập trước xuất trước</option></Select></div>}
           </div>
         </Card>
       </div>

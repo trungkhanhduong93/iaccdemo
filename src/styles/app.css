@@ -43719,3 +43719,7 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
 @media (max-width: 640px) {
   .dbtc-bang th:nth-child(4), .dbtc-bang td:nth-child(4) { display: none; }
 }
+
+/* ── Hộp Thông tin kê khai ở màn Kê khai thuế, mở từ nhãn Bổ sung MST ── */
+.tk-tt { width: min(900px, calc(100vw - 48px)); max-height: calc(100vh - 48px); }
+.tk-tt .ds-hop-dau { border-bottom: 1px solid var(--line-2); }

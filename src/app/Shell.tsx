@@ -214,7 +214,8 @@ function Sidebar({ mod, onSearch }: { mod: ModuleDef; onSearch: () => void }) {
         </button>
       </div>
       <div className="sb-nav">
-        {MODULES.filter(m => hienPhanHe(m, s.goi)).map(m => {
+        {/* Bỏ mục Thao tác nhanh khỏi thanh bên, trang chủ vẫn còn khối Thao tác nhanh */}
+        {MODULES.filter(m => m.key !== 'thao-tac-nhanh' && hienPhanHe(m, s.goi)).map(m => {
           const khoa = phanHeKhoa(m, s.goi)
           const isTtn = m.key === 'thao-tac-nhanh'
           return (

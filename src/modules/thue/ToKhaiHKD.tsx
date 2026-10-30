@@ -6,8 +6,8 @@ import { createPortal } from 'react-dom'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { boViecHuongDan, GoiYKeKhai, KhenToKhai, xongViecHuongDan } from '../home/HuongDan'
 import type { Col, Row, ScreenProps } from '../types'
-import { useSession } from '../../app/session'
-import { CUA_HANG, DON_VI, tongKy } from '../../data/mock'
+import { donViHienTai, dsDonVi, useSession } from '../../app/session'
+import { CUA_HANG, tongKy } from '../../data/mock'
 import { DS_QUY_TIEN_112 } from '../danh-muc/data'
 import { NGANH_NGHE_CON, NHOM_NGANH_NGHE } from '../danh-muc/nganh-nghe'
 import { Icon } from '../../ui/Icon'
@@ -89,7 +89,9 @@ export function ToKhaiHKD({ sc, mod }: ScreenProps) {
   const [lap, setLap] = useState(Boolean(thamSo.get('buoc')) && !dangLam)
   const [mo, setMo] = useState<ToKhai | null>(dangLam ?? null)
   const [buocDau, setBuocDau] = useState(dangLam ? buocMo : 0)
-  useEffect(() => { if (thamSo.get('buoc')) setThamSo({}, { replace: true }) }, [])   // eslint-disable-line react-hooks/exhaustive-deps
+  // ?thongtin=1 từ nhãn Bổ sung MST: mở hộp Thông tin kê khai, không vào bước lập tờ khai
+  const [ttMo, setTtMo] = useState(Boolean(thamSo.get('thongtin')))
+  useEffect(() => { if (thamSo.get('buoc') || thamSo.get('thongtin')) setThamSo({}, { replace: true }) }, [])   // eslint-disable-line react-hooks/exhaustive-deps
   const dsLoai = [...new Set(DS.map(x => tenLoai(x.lan)))].sort((a, b) => a.localeCompare(b, 'vi', { numeric: true }))
   const chon = (k: keyof GtLoc, ten: string, ds: { v: string; t: string }[], tatCa = true) => (
     <Select className="ds-o-sel" value={nhap[k]} aria-label={ten} onChange={e => dat(k, e.target.value)} ds={[...(tatCa ? [{ v: '', t: 'Tất cả' }] : []), ...ds]} />
@@ -157,6 +159,10 @@ export function ToKhaiHKD({ sc, mod }: ScreenProps) {
             }}
           />
           <div className="ds-toolbar-phai">
+            <button type="button" className="btn" onClick={() => setTtMo(true)} title="Mã số thuế, người nộp thuế, điểm bán dùng khi kê khai">
+              <Icon n="cog" className="ic sm" />
+              Thiết lập thông tin
+            </button>
             <button type="button" className="btn pri" onClick={() => setLap(true)}>
               <Icon n="plus" className="ic sm" />
               Thêm mới
@@ -169,6 +175,7 @@ export function ToKhaiHKD({ sc, mod }: ScreenProps) {
           lập xong vào các bước kê khai */}
       <GoiYKeKhai />
       {/* đang theo hướng dẫn Trang chủ mà đóng hộp chưa nộp: hướng dẫn chỉ vào nút Xem lại (boViecHuongDan) */}
+      {ttMo && <HopThongTin onDong={() => setTtMo(false)} />}
       {lap && <HopLapToKhai onDong={() => { setLap(false); boViecHuongDan('thue', s.donVi, nav) }} onLap={lapMoi} />}
       {mo && <HopToKhai tk={mo} buocDau={buocDau} onDong={() => { setMo(null); boViecHuongDan('thue', s.donVi, nav) }} onDoi={() => setLan(x => x + 1)} />}
     </div>
@@ -212,6 +219,62 @@ export const DIA_BAN = [
   { db: '26794 - Phường An Khánh - TP. Hồ Chí Minh', cq: '79102 - Thuế cơ sở 2 TP. Hồ Chí Minh', dc: '12 Quốc Hương, phường An Khánh, TP. Hồ Chí Minh' },
 ]
 
+// Điện thoại, email người nộp thuế: sửa ở hộp Thông tin kê khai, giữ trong phiên chạy
+const LIEN_HE = { sdt: '0903 118 226', email: 'ketoan@phomay.vn' }
+
+/** Hộp Thông tin kê khai: MST, người nộp thuế, điểm bán dùng chung cho mọi tờ khai. Lưu MST, tên vào Thông tin đơn vị */
+function HopThongTin({ onDong }: { onDong: () => void }) {
+  const { s, set, toast } = useSession()
+  useDongEsc(onDong)
+  const dv = donViHienTai(s)
+  const mstGoc = Boolean(dsDonVi({ dvMoi: s.dvMoi }).find(d => d.id === s.donVi)?.mst)   // MST khai lúc khởi tạo thì không sửa, như Thông tin đơn vị
+  const [f, setF] = useState({ mst: dv.mst, ten: dv.ten, nguoi: dv.nguoiDaiDien, ...LIEN_HE })
+  const sua = (p: Partial<typeof f>) => setF(x => ({ ...x, ...p }))
+  const o = (nhan: string, k: keyof typeof f, khoa = false, goiY = '') => (
+    <label className="tk-truong"><span>{nhan} <i>*</i></span>
+      <input className="inp" value={f[k]} readOnly={khoa} placeholder={goiY} aria-label={nhan} onChange={e => sua({ [k]: e.target.value })} /></label>
+  )
+  const luu = () => {
+    if (!f.mst.trim()) { toast('Nhập mã số thuế để kê khai'); return }
+    if (!f.ten.trim()) { toast('Tên hộ kinh doanh không được để trống'); return }
+    set({ ttDv: { ...s.ttDv, [s.donVi]: { ...s.ttDv?.[s.donVi], mst: f.mst.trim(), ten: f.ten.trim() } } })
+    LIEN_HE.sdt = f.sdt
+    LIEN_HE.email = f.email
+    toast('Đã lưu thông tin kê khai')
+    onDong()
+  }
+  return createPortal(
+    <div className="overlay ds-hop-nen" onMouseDown={e => { if (e.target === e.currentTarget) onDong() }}>
+      <div className="ds-hop tk-tt" role="dialog" aria-modal="true" aria-label="Thông tin kê khai">
+        <div className="ds-hop-dau">
+          <b>Thông tin kê khai</b><span className="grow" />
+          <button type="button" className="pheu-dong" title="Đóng" aria-label="Đóng" onClick={onDong}><Icon n="x" className="ic sm" /></button>
+        </div>
+        <div className="tk-noi-dung">
+          <div className="tk-luu-y"><Icon n="info" className="ic sm" />Vui lòng kiểm tra kỹ thông tin Mã số thuế để đảm bảo quyền lợi khi thực hiện nghĩa vụ thuế điện tử.</div>
+          <div className="tk-luoi">
+            {o('Mã số thuế', 'mst', mstGoc, 'Nhập mã số thuế')}
+            {o('Tên hộ kinh doanh', 'ten')}
+            {o('Tên người nộp thuế', 'nguoi')}
+            {o('Số điện thoại người nộp thuế', 'sdt')}
+            {o('Email người nộp thuế', 'email')}
+          </div>
+          <h4>Danh sách điểm bán hàng</h4>
+          <Table cols={[{ k: 'ma', t: 'Mã địa điểm kinh doanh', cls: 'code', w: 150 }, { k: 'ten', t: 'Tên điểm bán', w: 180 }, { k: 'pos', t: 'Mã POS', cls: 'code', w: 90 },
+            { k: 'db', t: 'Địa bàn hành chính', w: 260 }, { k: 'cq', t: 'Cơ quan thuế quản lý', w: 260 }, { k: 'dc', t: 'Địa chỉ', w: 320 }]}
+            rows={CUA_HANG.map((c, i) => ({ ma: `0000${i + 1}`, ten: c.ten, pos: c.posId, ...DIA_BAN[i % DIA_BAN.length] }))} />
+        </div>
+        <div className="ds-chan">
+          <span className="grow" />
+          <button type="button" className="btn" onClick={onDong}>Huỷ</button>
+          <button type="button" className="btn pri" onClick={luu}>Lưu</button>
+        </div>
+      </div>
+    </div>,
+    document.body,
+  )
+}
+
 /** Hộp tờ khai 4 bước như iFaster: cột bước bên trái, nội dung bước bên phải, Huỷ, Quay lại, Tiếp tục ở chân */
 function HopToKhai({ tk, buocDau = 0, onDong, onDoi }: { tk: ToKhai; buocDau?: number; onDong: () => void; onDoi: () => void }) {
   const { s, toast } = useSession()
@@ -219,7 +282,7 @@ function HopToKhai({ tk, buocDau = 0, onDong, onDoi }: { tk: ToKhai; buocDau?: n
   useDongEsc(onDong)
   const [buoc, setBuoc] = useState(buocDau)
   const [xong, setXong] = useState(tk.tt === 'Chưa nộp' ? buocDau + 1 : 4)
-  const dv = DON_VI.find(x => x.id === s.donVi) ?? DON_VI[0]
+  const dv = donViHienTai(s)
   const so = useMemo(() => soLieu(tk), [tk])
   const sua = tk.tt === 'Chưa nộp'
   const den = (b: number) => { setBuoc(b); setXong(x => Math.max(x, b + 1)) }
@@ -234,8 +297,8 @@ function HopToKhai({ tk, buocDau = 0, onDong, onDoi }: { tk: ToKhai; buocDau?: n
         {truong('Mã số thuế', dv.mst || 'Chưa khai')}
         {truong('Tên hộ kinh doanh', dv.ten)}
         {truong('Tên người nộp thuế', dv.nguoiDaiDien)}
-        {truong('Số điện thoại người nộp thuế', '0903 118 226')}
-        {truong('Email người nộp thuế', 'ketoan@phomay.vn')}
+        {truong('Số điện thoại người nộp thuế', LIEN_HE.sdt)}
+        {truong('Email người nộp thuế', LIEN_HE.email)}
       </div>
       <h4>Danh sách điểm bán hàng</h4>
       <Table cols={[{ k: 'ma', t: 'Mã địa điểm kinh doanh', cls: 'code', w: 150 }, { k: 'ten', t: 'Tên điểm bán', w: 180 }, { k: 'pos', t: 'Mã POS', cls: 'code', w: 90 },
