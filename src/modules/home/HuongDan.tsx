@@ -346,11 +346,15 @@ function dauMan(): HTMLElement | null {
     range.selectNodeContents(el)
     const r = range.getBoundingClientRect()
     if (!r.width || r.top < 0 || r.top > H * 0.7) return
-    // bỏ qua lớp của chính hướng dẫn (màn tối, viền, dải) khi xét bị che
-    const tren = document.elementsFromPoint(r.left + r.width / 2, r.top + r.height / 2).find(x => !x.closest('.hdan, .hdan-dai-dt, .hdan-vien, .hdan-vien-chu'))
-    if (!tren || !(el.contains(tren) || tren.contains(el))) return   // bị lớp phủ, tấm chọn che
     const lop = lopCua(el)
-    if (!tot || lop > tot.lop || (lop === tot.lop && r.top < tot.r.top)) tot = { r, el, lop }
+    if (tot && lop < tot.lop) return
+    // chữ ở màn thường (lớp 0) mới xét bị che; chữ trong tấm, form nổi thì lớp cao nhất thắng, không cần thử
+    // bỏ qua lớp của chính hướng dẫn (màn tối, viền, dải) khi xét bị che
+    if (!lop) {
+      const tren = document.elementsFromPoint(r.left + r.width / 2, r.top + r.height / 2).find(x => !x.closest('.hdan, .hdan-dai-dt, .hdan-vien, .hdan-vien-chu'))
+      if (!tren || !(el.contains(tren) || tren.contains(el))) return   // bị lớp phủ, tấm chọn che
+    }
+    if (!tot || lop > tot.lop || r.top < tot.r.top) tot = { r, el, lop }
   })
   if (!tot) return null
   const { el } = tot as { r: DOMRect; el: HTMLElement; lop: number }
@@ -370,8 +374,11 @@ function DaiHuongDanDt({ dem, onTiep, onTat }: { dem: string; onTiep: () => void
     let truoc: HTMLElement | null = null   // thanh tìm được lần trước: phải thấy 2 lần liền mới đổi, tránh lật qua lại
     const tim = () => {
       const d = dauMan()
-      const conThay = !!chua && chua.isConnected && chua.getBoundingClientRect().width > 0
-      if (d && d !== chua && (d === truoc || !conThay)) { boChua(); d.style.marginBottom = `${CAO_DAI}px`; chua = d }
+      const k = chua?.isConnected ? chua.getBoundingClientRect() : null
+      const conThay = !!k && k.width > 0 && k.bottom > 0 && k.top < window.innerHeight   // tấm trượt xuống khỏi màn mà chưa gỡ thì coi như hết
+      // thanh của tấm, form nổi còn hiện thì không tụt xuống thanh màn phía sau (iPhone nhảy qua lại, PhuongXT 30/10/2026)
+      const tut = conThay && lopCua(chua!) > (d ? lopCua(d) : 0)
+      if (d && d !== chua && !tut && (d === truoc || !conThay)) { boChua(); d.style.marginBottom = `${CAO_DAI}px`; chua = d }
       else if (!d && !conThay) boChua()
       truoc = d
     }
