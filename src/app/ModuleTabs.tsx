@@ -105,8 +105,8 @@ export function ModuleTabs({ mod }: { mod: ModuleDef }) {
         )}
         {bc && tab(bc)}
       </div>
-      <NutHuongDan mod={mod} />   {/* nút la bàn Hướng dẫn nhanh cuối thanh tab (T673) */}
       {mod.key === 'tien' && <DongBoThuChiFabi />}   {/* đồng bộ thu chi FABi cho cả phân hệ, không riêng tab nào (T691) */}
+      <NutHuongDan mod={mod} />   {/* nút la bàn Hướng dẫn nhanh cuối thanh tab (T673) */}
       <div className="mtabs-phai" id="mtabs-phai" />
       <div className="mtabs-meas" ref={meas} aria-hidden>
         {[...giua, ...(bc ? [bc] : [])].map(sc => {
