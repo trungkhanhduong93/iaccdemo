@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 30/10/2026
+- T138: Hộ kinh doanh khai mã số thuế ở Kê khai thuế: cửa hàng đầu tiên mặc định là trụ sở chính (địa điểm kinh doanh chính), bấm Chính ở dòng khác để chọn lại.
 - T138: Hướng dẫn Trang chủ, bước Kê khai thuế có nút "Cập nhật nhanh thông tin mã số thuế"; điền xong mã số thuế là về Trang chủ khen, không còn bong bóng mời lập tờ khai. Màn mở từ FABi: nút chỉ còn "Bắt đầu kết nối dữ liệu".
 - T138: Điện thoại, đang theo hướng dẫn mà mở form quỹ thì dải Hướng dẫn nằm yên dưới đầu form, hết nhảy qua lại với tiêu đề màn phía sau (sửa thêm cho iPhone).
 - T138: Điện thoại, bong bóng hướng dẫn Trang chủ viền xanh, chữ đậm, không còn chìm vào thẻ trắng phía sau; chỗ khoanh viền xanh; dải Tiếp tục hướng dẫn nền xanh. Bước cuối hướng dẫn có nút Bỏ qua. Đang theo hướng dẫn mà đóng form quỹ chưa lưu thì tự về Trang chủ sang bước sau; đóng hỏi kê khai, hộp lập tờ khai chưa nộp thì về chỉ vào nút Xem lại hướng dẫn.

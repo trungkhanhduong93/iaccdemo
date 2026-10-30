@@ -9,6 +9,7 @@
 - `src/modules/home/HuongDan.tsx`: nút bước 3/3 tour Trang chủ đổi từ "Mở Kê khai thuế" thành "Cập nhật nhanh thông tin mã số thuế".
 - `src/modules/home/HuongDan.tsx`: `GoiYKeKhai` bỏ bong bóng "Thông tin kê khai đã xong, giờ lập tờ khai". Khai xong loại hình, mã số thuế thì về Trang chủ khen "thông tin kê khai thuế đã sẵn sàng", kết thúc hướng dẫn. Bỏ props `onLap`, `chon` ở `ToKhaiHKD.tsx`, `MToKhaiHKD.tsx`.
 - `src/modules/onboarding/KhoiTaoFabi.tsx`: nút "Bắt đầu kết nối dữ liệu" bỏ chữ "(chỉ mất 30 giây)".
+- `src/modules/onboarding/OnboardFabi.tsx`: popup Kê khai thuế mở ra đặt sẵn `cnChinh` là cửa hàng đầu tiên đã kết nối, vẫn bấm Chính ở dòng khác để đổi.
 
 ## Đã kiểm
 

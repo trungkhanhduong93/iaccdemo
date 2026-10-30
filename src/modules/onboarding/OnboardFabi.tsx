@@ -304,7 +304,8 @@ export function OnboardFabi() {
     if (!s.choKeKhai?.[s.donVi] || !loc.pathname.startsWith('/app/thue') || n.b >= 0) return
     const cn = (s.cnThem?.[s.donVi] ?? []).map(c => c.id)
     // gói Standard chỉ kê khai được hộ kinh doanh nhóm 1, 2 và doanh nghiệp theo % doanh thu (KE_KHAI): mặc định theo % doanh thu
-    setN({ ...MAC_DINH, thue: true, b: 0, mo: true, nhom: 1, ppHkd: 'doanhThu', tenDv: s.dvMoi?.ten ?? TEN_FABI, chon: cn, ngayDauNam: s.ngayDauNam?.[s.donVi] ?? DAU_NAM })
+    // trụ sở chính mặc định là cửa hàng đầu tiên, bấm Chính ở dòng khác để đổi (PhuongXT 30/10/2026)
+    setN({ ...MAC_DINH, thue: true, b: 0, mo: true, nhom: 1, ppHkd: 'doanhThu', tenDv: s.dvMoi?.ten ?? TEN_FABI, chon: cn, cnChinh: cn[0] ?? '', ngayDauNam: s.ngayDauNam?.[s.donVi] ?? DAU_NAM })
   }, [loc.pathname, s.donVi])   // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
