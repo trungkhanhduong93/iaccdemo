@@ -1,9 +1,10 @@
 // Đồng bộ phiếu thu, chi lập trên máy POS FABi (T264), mọi gói.
 // Bật, tắt theo từng cửa hàng ở Hệ thống › Cấu hình kế toán. Mỗi phiếu FABi có cửa hàng và phương thức thanh toán (PTTT); quỹ nhận phiếu lấy theo
 // map 'cửa hàng|PTTT' → quỹ khai ở Danh mục Quỹ tiền (một PTTT của một cửa hàng chỉ thuộc một quỹ). PTTT chưa map thì phiếu chờ, không vào sổ.
+// Phiếu có ngày thuộc kỳ đã khoá sổ của cửa hàng cũng chờ, mở khoá sổ thì tự vào (T691).
 import type { Row } from '../types'
 import type { Session } from '../../app/session'
-import { CUA_HANG } from '../../data/mock'
+import { CUA_HANG, daKhoaSo } from '../../data/mock'
 import { DS_PTTT, DS_QUY_TIEN_112 } from '../danh-muc/data'
 
 type SDongBo = Pick<Session, 'donVi' | 'dongBoThuChi' | 'mapPttt'>
@@ -54,7 +55,15 @@ const MAU: [string, string, string, 'thu' | 'chi', string, string, number][] = [
   ['td', '03/10/2026', '20:45', 'thu', 'CK', 'Thu tiền bán vỏ chai, thùng giấy', 260_000],
   ['td', '06/10/2026', '10:25', 'chi', 'APP', 'Chi hoàn tiền đơn app giao lỗi', 95_000],
   ['q1', '06/10/2026', '22:10', 'chi', 'TM', 'Chi tạm ứng ca tối', 500_000],
+  // Máy POS mất mạng cuối tháng 8, đầu tháng 10 mới gửi lên: tháng 8 đã khoá sổ nên chờ (T691)
+  ['q5', '30/08/2026', '21:40', 'thu', 'TM', 'Thu tiền khách trả nợ bàn tiệc', 1_850_000],
+  ['q5', '31/08/2026', '16:05', 'chi', 'TM', 'Chi mua gas bình 45 kg', 1_320_000],
+  ['td', '31/08/2026', '22:30', 'chi', 'CK', 'Chi thưởng nóng nhân viên ca tối', 600_000],
+  ['q1', '05/10/2026', '18:50', 'thu', 'APP', 'Thu tiền đối soát app giao đồ ăn', 2_140_000],
 ]
+
+/** Phiếu FABi chưa vào sổ: lyDo 'map' là PTTT chưa map quỹ, 'khoa' là ngày thuộc kỳ đã khoá sổ (T691) */
+export interface PhieuChoFabi { cn: string; pttt: string; dienGiai: string; tien: number; ngay: string; gio: string; kieu: 'thu' | 'chi'; lyDo: 'map' | 'khoa' }
 
 /** Quỹ theo mã: quỹ mẫu ở Danh mục Quỹ tiền; quỹ thêm mới trong phiên chưa có ở danh sách mẫu thì coi là ngân hàng nếu mã bắt đầu NH */
 const quyTheoMa = (ma: string) => DS_QUY_TIEN_112.find(q => q.ma === ma) ?? { ma, ten: ma, loai: ma.startsWith('NH') ? 'Ngân hàng' : 'Tiền mặt' }
@@ -62,12 +71,15 @@ const quyTheoMa = (ma: string) => DS_QUY_TIEN_112.find(q => q.ma === ma) ?? { ma
 /** Phiếu FABi trong kỳ của các cửa hàng đang bật đồng bộ: đã map thì thành phiếu thu, chi của quỹ; chưa map thì vào danh sách chờ */
 export function phieuThuChiFabi(s: SDongBo) {
   const map = mapPtttCua(s)
-  const da: Row[] = [], cho: { cn: string; pttt: string; dienGiai: string; tien: number }[] = []
+  // cho: PTTT chưa map quỹ (Danh mục Cửa hàng chỉ báo nhóm này); khoa: thuộc kỳ đã khoá sổ (T691)
+  const da: Row[] = [], cho: PhieuChoFabi[] = [], khoa: PhieuChoFabi[] = []
   MAU.forEach(([cn, ngay, gio, kieu, pttt, dg, tien], i) => {
     if (!batDongBoThuChi(s, cn)) return
     const maQuy = map[khoaMap(cn, pttt)]
     const tenCn = CUA_HANG.find(c => c.id === cn)?.ten ?? cn
-    if (!maQuy) { cho.push({ cn: tenCn, pttt: DS_PTTT.find(x => x.ma === pttt)?.ten ?? pttt, dienGiai: dg, tien }); return }
+    const tenPt = DS_PTTT.find(x => x.ma === pttt)?.ten ?? pttt
+    if (daKhoaSo(ngay, cn)) { khoa.push({ cn: tenCn, pttt: tenPt, dienGiai: dg, tien, ngay, gio, kieu, lyDo: 'khoa' }); return }
+    if (!maQuy) { cho.push({ cn: tenCn, pttt: tenPt, dienGiai: dg, tien, ngay, gio, kieu, lyDo: 'map' }); return }
     const quy = quyTheoMa(maQuy)
     const nh = quy.loai === 'Ngân hàng'
     const loai = kieu === 'thu' ? (nh ? 'bc' : 'thu') : (nh ? 'unc' : 'chi')
@@ -82,5 +94,5 @@ export function phieuThuChiFabi(s: SDongBo) {
         tkNo: kieu === 'thu' ? tk : '6422', tkCo: kieu === 'thu' ? '711' : tk }],
     })
   })
-  return { da, cho }
+  return { da, cho, khoa }
 }
