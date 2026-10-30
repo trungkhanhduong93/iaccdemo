@@ -6,6 +6,7 @@ import { useSession } from '../../app/session'
 import { docNgay } from '../ChonNgay'
 import { money, soLuong } from '../format'
 import { KHACH } from '../../data/mock'
+import { MNutHuongDan } from './MHuongDanNhanh'
 
 /** Lấy mã khách hàng, nếu là khách lẻ không mã thì ghi 'Khách lẻ' (T628) */
 export function layMaKh(doiTuong?: unknown, kh?: unknown): string {
@@ -63,7 +64,7 @@ export function HangTabsBanHang({
   const is316 = sc.code === '3.1.6' || sc.slug === '3-1-6'
 
   return (
-    <div className="m-tc-tabs" role="tablist">
+    <div className="m-tc-tabs" role="tablist" data-hd="tab">
       {/* Phiếu ngoài gói ẩn như web, gói Free chỉ còn Xuất bán POS (T622) */}
       {([['3.1.1', is311, 'Xuất bán POS'], ['3.1.7', is317, 'Bán hàng'], ['3.1.2', is312, 'Hoá đơn bán hàng'],
         ['3.1.3', is313, 'Bán nội bộ'], ['3.1.4', is314, 'Hàng bán trả lại']] as const)
@@ -325,6 +326,7 @@ export const MDsChungTuChuan: FC<MDsChungTuChuanProps> = ({
             </button>
           )}
           <h1 className="m-tc-tieu-de">{tieuDe}</h1>
+          <MNutHuongDan />
           <button
             type="button"
             className={`m-tc-btn-nav${timMo ? ' on' : ''}`}
@@ -377,7 +379,7 @@ export const MDsChungTuChuan: FC<MDsChungTuChuanProps> = ({
 
       <main className="m-tc-content">
         {/* Hàng bộ lọc */}
-        <div className="m-tc-loc-bar">
+        <div className="m-tc-loc-bar" data-hd="loc">
           {onMoLoc && (
             <button
               type="button"
@@ -402,7 +404,7 @@ export const MDsChungTuChuan: FC<MDsChungTuChuanProps> = ({
         </div>
 
         {/* Thẻ tổng */}
-        <div className={`m-mh-card-tong${theTongThem ? ' m-mh-card-tong-them' : ''}`}>
+        <div className={`m-mh-card-tong${theTongThem ? ' m-mh-card-tong-them' : ''}`} data-hd="tong">
           <div className="m-mh-th-trai">
             <span className="m-mh-th-dem">{listSauTim.length} {nhanDem}</span>
           </div>
@@ -437,7 +439,7 @@ export const MDsChungTuChuan: FC<MDsChungTuChuanProps> = ({
             <p>{thongBaoTrong}</p>
           </div>
         ) : coNhomTheoNgay ? (
-          <div className="m-mh-ds-nhom m-t653-ds">
+          <div className="m-mh-ds-nhom m-t653-ds" data-hd="bang">
             {nhomTheoNgay.map(nhom => (
               // Ngày nằm trong thẻ: đầu thẻ nền xám ghi ngày, tổng tiền hoặc số chứng từ (T653)
               <div key={nhom.ngayRaw} className="m-mh-nhom-item m-t653-ngay">
@@ -454,7 +456,7 @@ export const MDsChungTuChuan: FC<MDsChungTuChuanProps> = ({
             ))}
           </div>
         ) : (
-          <div className="m-mh-ds-nhom">
+          <div className="m-mh-ds-nhom" data-hd="bang">
             <div className="m-mh-the-trang">
               {listKhongNhom.map((r, i) => renderDong(r, i))}
             </div>
@@ -466,7 +468,7 @@ export const MDsChungTuChuan: FC<MDsChungTuChuanProps> = ({
       {onThem && (
         <button
           type="button"
-          className="m-tc-fab m-nut-them-fab m-ds-fab"
+          className="m-tc-fab m-nut-them-fab m-ds-fab" data-hd="them"
           onClick={onThem}
           aria-label="Thêm mới"
         >

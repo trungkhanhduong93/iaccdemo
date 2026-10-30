@@ -7,13 +7,13 @@ export const huongDan: Record<string, HuongDanMan> = {
     muc: 'Ghi mọi khoản tiền vào, ra của quán. Phiếu thu chi ghi trên máy POS FABi tự về đây, bạn chỉ ghi thêm khoản còn thiếu.',
     buoc: [
       { chu: 'Chọn tab theo nơi tiền đi qua: Tiền mặt, Ngân hàng, hoặc Chuyển quỹ khi đưa tiền từ quỹ này sang quỹ khác.', o: 'tab' },
-      { chu: 'Bấm Thêm mới, chọn Phiếu thu hoặc Phiếu chi.', o: 'them', di: 'tien/2-1-1/moi?loai=chi', nutDi: 'Ghi một khoản chi' },
+      { chu: 'Bấm Thêm mới, chọn Phiếu thu hoặc Phiếu chi.', o: 'them', di: 'tien/2-1-1/moi?loai=chi', nutDi: 'Ghi một khoản chi', dt: 'Chạm nút + ở góc dưới, chọn Phiếu chi.' },
       // 3 bước trong form phiếu chỉ vào ô của form, dải nổi trên form (T676)
       { chu: 'Chọn đối tượng, lý do ở phần đầu phiếu.', o: 'ttc' },
-      { chu: 'Ghi diễn giải, số tiền ở bảng Chi tiết.', o: 'chi-tiet' },
-      { chu: 'Bấm Lưu hoặc Ctrl + S. Phiếu lưu xong hiện ở đầu danh sách.', o: 'luu' },
-      { chu: 'Tìm phiếu cũ: chọn thời gian, gõ số phiếu hoặc diễn giải, bấm Lọc.', o: 'loc' },
-      { chu: 'Bấm số chứng từ để xem, in, sửa phiếu.', o: 'bang' },
+      { chu: 'Ghi diễn giải, số tiền ở bảng Chi tiết.', o: 'chi-tiet', dt: 'Ghi diễn giải, số tiền ở phần Chi tiết.' },
+      { chu: 'Bấm Lưu hoặc Ctrl + S. Phiếu lưu xong hiện ở đầu danh sách.', o: 'luu', dt: 'Chạm Lưu ở đáy phiếu. Phiếu lưu xong hiện ở đầu danh sách.' },
+      { chu: 'Tìm phiếu cũ: chọn thời gian, gõ số phiếu hoặc diễn giải, bấm Lọc.', o: 'loc', dt: 'Tìm phiếu cũ: chọn thời gian, gõ số phiếu hoặc diễn giải vào ô tìm.' },
+      { chu: 'Bấm số chứng từ để xem, in, sửa phiếu.', o: 'bang', dt: 'Chạm vào phiếu để xem, in, sửa phiếu.' },
     ],
     luuY: [
       'Rút tiền mặt từ Quỹ tiền gửi vào ngân hàng thì lập phiếu ở tab Chuyển quỹ. Không ghi một phiếu chi và một phiếu thu.',
@@ -33,8 +33,8 @@ export const huongDan: Record<string, HuongDanMan> = {
     buoc: [
       { chu: 'Chọn Thời gian và Quỹ tiền cần xem, rồi bấm Lọc.', o: 'loc' },
       { chu: 'Đọc từ dòng Số tồn đầu kỳ, qua từng phiếu thu, chi, tới dòng Số tồn cuối kỳ. Cột Tồn là tiền còn lại sau mỗi phiếu.', o: 'to' },
-      { chu: 'Bấm số phiếu thu, phiếu chi để mở phiếu gốc.', o: 'to' },
-      { chu: 'Bấm In để in sổ, bấm nút tải xuống để lấy file về máy.', o: 'in' },
+      { chu: 'Bấm số phiếu thu, phiếu chi để mở phiếu gốc.', o: 'to', dt: 'Chạm dòng phiếu thu, phiếu chi để mở phiếu gốc.' },
+      { chu: 'Bấm In để in sổ, bấm nút tải xuống để lấy file về máy.', o: 'in', dt: 'Chạm biểu tượng Excel ở góc bảng để tải file về máy.' },
       { chu: 'Tiền đếm thực tế trong Quỹ tiền khác Số tồn cuối kỳ thì tìm khoản thu, chi chưa ghi rồi ghi thêm ở Thu chi.', di: 'tien/2-1-1?nhom=tm', nutDi: 'Mở Thu chi tiền mặt' },
     ],
     luuY: [

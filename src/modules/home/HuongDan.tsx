@@ -1,7 +1,8 @@
 // Hướng dẫn từng bước ở Trang chủ ngay sau khi khởi tạo đơn vị xong (T138): kết nối FABi hoặc Thêm đơn vị kế toán. Màn tối đi, khoanh sáng từng chỗ trên giao diện thật,
 // bong bóng bên cạnh giải thích và nút Tiếp. Xem hết hoặc Bỏ qua thì đơn vị đó không thấy lại. Bước nào không thấy chỗ khoanh thì bỏ qua.
 // Điện thoại dùng bộ bước riêng (BUOC_DT), gắn ở MTrangChuStandard, MTrangChu.
-import { useEffect, useLayoutEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useState, useSyncExternalStore } from 'react'
+import { huongDanDangChay, ngheForm } from '../../ui/huongDanForm'
 import { createPortal } from 'react-dom'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useSession } from '../../app/session'
@@ -299,12 +300,13 @@ export function TiepHuongDan() {
   const laMobile = useLaMobile()
   const { pathname } = useLocation()
   const [t, setT] = useState(docTiep)
+  const tourDangChay = useSyncExternalStore(ngheForm, huongDanDangChay)
   useEffect(() => {
     const doc = () => setT(docTiep())
     window.addEventListener(SU_KIEN_TIEP, doc)
     return () => window.removeEventListener(SU_KIEN_TIEP, doc)
   }, [])
-  if (!t || t.dv !== s.donVi || pathname.startsWith(TRANG_HD) || navigator.webdriver) return null
+  if (tourDangChay || !t || t.dv !== s.donVi || pathname.startsWith(TRANG_HD) || navigator.webdriver) return null
   const tong = (laMobile ? BUOC_DT : BUOC).length - 1
   const thoi = () => { luuTiep(null); set({ huongDan: { ...s.huongDan, [s.donVi]: true } }) }
   return createPortal(

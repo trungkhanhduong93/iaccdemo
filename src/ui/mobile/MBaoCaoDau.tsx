@@ -6,6 +6,7 @@ import { useSession } from '../../app/session'
 import { tenBCNgan } from '../../modules/bao-cao/danh-sach'
 import { tenMan } from '../../app/registry'
 import { Icon } from '../Icon'
+import { MNutHuongDan } from './MHuongDanNhanh'
 
 export interface MBaoCaoDauProps {
   sc: ScreenDef
@@ -96,6 +97,7 @@ export const MBaoCaoDau: FC<MBaoCaoDauProps> = ({
           <div className="m-sq-phu">Báo cáo · {tenPhanHe} · {maBc}</div>
         </div>
         <div className="m-sq-tac-vu">
+          {mod && <MNutHuongDan mod={mod} sc={sc.slug} />}
           <button
             type="button"
             className={`m-sq-btn-ic${hienTim ? ' on' : ''}`}
@@ -142,7 +144,7 @@ export const MBaoCaoDau: FC<MBaoCaoDauProps> = ({
         </div>
       )}
 
-      <div className="m-tc-loc-bar m-t500-chip-hang">
+      <div className="m-tc-loc-bar m-t500-chip-hang" data-hd="loc">
         <button
           type="button"
           className={`m-tc-btn-loc-vuong m-ds-nut-loc-vuong m-ds-nut-loc${soLuongLoc > 0 ? ' co-loc' : ''}`}

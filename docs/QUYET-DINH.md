@@ -978,4 +978,15 @@ Trum chốt 29/10/2026 sau khi dùng thử T680. Thay cách hiện dải bước
 - Bỏ qua và Xong đều trả lại như ban đầu: đóng form, về đúng màn và tab lúc bấm nút Hướng dẫn, cửa hàng trên thanh trên trả về như cũ, xoá phiếu mẫu tour đã lưu.
 
 
-## QD89. Hướng dẫn nhanh điện thoại kiểu bong bóng nổi (đang soạn)
+## QD89. Hướng dẫn nhanh điện thoại kiểu bong bóng nổi (30/10/2026)
+
+Trum chốt 30/10/2026 kiểu B trên bản bấm thử https://claude.ai/artifact/ACgSeA4b7QqFeLnTBXYZyz (T675), sau khi so với kiểu tấm bước neo ở đáy. Nội dung 4 mục của QD86 và cách chạy tour của QD88 giữ nguyên.
+
+- Nút vào là bóng đèn trên đầu màn. Màn chưa xem có chấm cam đứng yên, không nhấp nháy. Mỗi màn đúng một nút.
+- Tour như web: màn tối chặn bấm, khoanh sáng chỗ thật. Bong bóng rộng gần bằng màn, nằm dưới chỗ khoanh, không đủ chỗ thì nằm trên, có mũi nhọn chỉ vào.
+- Bong bóng chào và bong bóng cuối nằm giữa màn. Đi tiếp vẽ dọc 3 ô: bước trước, đang ở, bước sau. Bong bóng dài thì cuộn trong bong bóng.
+- Tự mở phiếu, tự lưu phiếu mẫu, Bỏ qua và Xong như QD88.
+- Bước mà điện thoại thao tác khác web thì ghi thêm trường `dt` trong `huong-dan.ts`. Bước không có `dt` dùng chữ web.
+- Chỗ khoanh gắn `data-hd` trên màn `M*.tsx`, cùng khoá ô với web. Màn chưa gắn thì bong bóng nằm giữa màn, chỉ hiện chữ.
+- Tour màn đang chạy thì ẩn dải Tiếp tục của tour Trang chủ (T138).
+- `tools/kiem_tra.py` kiểm tour 5 màn Standard ở khung 390x844 mỗi lần chạy, cả `--nhanh`.

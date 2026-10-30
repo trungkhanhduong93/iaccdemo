@@ -19,7 +19,7 @@ import { datTourChay, dongFormTren, formTren, ngheForm, phieuTour, soLanLuu } fr
 import { boPhieuMoi } from './generic/daXoa'
 
 /** Một bước Làm nhanh. o: khoá ô trên sơ đồ khung màn mà bước chỉ tới, hoặc ô trong form phiếu (O_FORM); di: đường dẫn sau /app/ cho nút làm ngay, nutDi: chữ trên nút đó */
-export interface BuocHD { chu: string; o?: string; di?: string; nutDi?: string }
+export interface BuocHD { chu: string; o?: string; di?: string; nutDi?: string; dt?: string }
 /** Ô trên sơ đồ khung màn. rong: hệ số giãn ngang; kieu nut là nút xanh, tab là hàng tab, bang là khối bảng cao */
 export interface OSoDo { k: string; ten: string; rong?: number; kieu?: 'nut' | 'tab' | 'bang' }
 export interface HuongDanMan {
@@ -116,14 +116,20 @@ function boChung(sc: ScreenDef, mod: ModuleDef): HuongDanMan {
 }
 
 /** Màn đang mở trong phân hệ, kể cả báo cáo phân hệ khác mở ngay trong phân hệ (T385) */
-function manDangMo(mod: ModuleDef, slug: string | undefined, s: Session) {
+export function manDangMo(mod: ModuleDef, slug: string | undefined, s: Session) {
   return mod.screens.find(x => x.slug === slug) ?? (slug ? baoCaoCuaPhanHe(mod, s).find(x => x.slug === slug) : undefined)
 }
 
-// ── Đi tiếp: các bước trên sơ đồ Quy trình theo đúng bản gói đang dùng thấy (như QuyTrinhScreen) ──
-interface BuocLuong { ten?: string; nut: NutQT[]; song?: boolean }   // song: làn của sơ đồ hội tụ, các làn cùng đổ về bước sau
+export function layHuongDan(mod: ModuleDef, sc: ScreenDef | undefined, s: Session): HuongDanMan | undefined {
+  if (!sc || mod.key === 'trang-chu') return undefined
+  const rieng = NOI_DUNG[sc.goc ?? mod.key]?.[sc.slug]
+  return rieng && (!rieng.goi || rieng.goi.includes(s.goi)) ? rieng : boChung(sc, mod)
+}
 
-function luongCua(qt: QuyTrinhDef, s: Session): BuocLuong[] {
+// ── Đi tiếp: các bước trên sơ đồ Quy trình theo đúng bản gói đang dùng thấy (như QuyTrinhScreen) ──
+export interface BuocLuong { ten?: string; nut: NutQT[]; song?: boolean }   // song: làn của sơ đồ hội tụ, các làn cùng đổ về bước sau
+
+export function luongCua(qt: QuyTrinhDef, s: Session): BuocLuong[] {
   const S = s.goi === 'S'
   const an = anNgoaiGoi(s.goi)
   const hien = (n: NutQT) => {
@@ -141,7 +147,7 @@ function luongCua(qt: QuyTrinhDef, s: Session): BuocLuong[] {
   return ds.map(b => ({ ...b, nut: b.nut.filter(hien).filter((n, i, a) => a.findIndex(x => x.ten === n.ten && x.di === n.di) === i) })).filter(b => b.nut.length > 0)
 }
 
-const khopNut = (n: NutQT, khoa: string[]) => {
+export const khopNut = (n: NutQT, khoa: string[]) => {
   const p = n.di.split('?')[0]
   return !!n.di && khoa.some(k => p === k || p.startsWith(k + '/'))
 }
@@ -237,7 +243,7 @@ const KHUON: Record<string, string[]> = {
 }
 // Ô trong form phiếu (T676): ChungTuForm gắn data-hd cho khối ô đầu form, bảng dòng chi tiết, nút Lưu
 const O_FORM = new Set(['ttc', 'chi-tiet', 'luu'])
-const laBuocForm = (x?: BuocHD) => !!x?.o && O_FORM.has(x.o)
+export const laBuocForm = (x?: BuocHD) => !!x?.o && O_FORM.has(x.o)
 const coKhung = (e: Element) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0 }
 
 /** Khung bao quanh nhiều phần tử, vd các ô lọc, các tab */
@@ -249,7 +255,7 @@ function hop(ds: Element[]): DOMRect | null {
 }
 
 /** form: form toàn màn đang mở, che màn danh sách nên chỉ tìm trong form */
-function timCho(k: string, form: HTMLElement | null): DOMRect | null {
+export function timCho(k: string, form: HTMLElement | null): DOMRect | null {
   const rieng = [...(form ?? document).querySelectorAll(`[data-hd="${k}"]`)].find(coKhung)
   if (rieng) return rieng.getBoundingClientRect()
   if (form) return null
@@ -270,10 +276,10 @@ function timCho(k: string, form: HTMLElement | null): DOMRect | null {
 // ── Tour (T681, QD88): như tour Trang chủ (T138), lớp tối chặn bấm, khoanh sáng chỗ thật, bong bóng cạnh chỗ khoanh ──
 /** Một bong bóng của tour. dau: mở đầu giữa màn; cuoi: Lưu ý, Đi tiếp; buoc: bước Làm nhanh thứ n;
  *  cn: form hỏi cửa hàng lập phiếu, đứng trước bước đầu trong form (n); vua: phiếu vừa lưu ở đầu danh sách, sau bước Lưu (n) */
-interface BuocTour { k: 'dau' | 'cuoi' | 'buoc' | 'cn' | 'vua'; n: number }
+export interface BuocTour { k: 'dau' | 'cuoi' | 'buoc' | 'cn' | 'vua'; n: number }
 
 /** hoiCn: thanh trên đang xem Tất cả cửa hàng nên form phiếu mới hỏi cửa hàng trước khi hiện ô nhập */
-function dsTour(hd: HuongDanMan, hoiCn: boolean): BuocTour[] {
+export function dsTour(hd: HuongDanMan, hoiCn: boolean): BuocTour[] {
   const dau = hd.buoc.findIndex(laBuocForm)
   return [
     { k: 'dau', n: -1 },
@@ -285,7 +291,7 @@ function dsTour(hd: HuongDanMan, hoiCn: boolean): BuocTour[] {
     { k: 'cuoi', n: -1 },
   ]
 }
-const trongForm = (hd: HuongDanMan, x?: BuocTour) => x?.k === 'cn' || (x?.k === 'buoc' && laBuocForm(hd.buoc[x.n]))
+export const trongForm = (hd: HuongDanMan, x?: BuocTour) => x?.k === 'cn' || (x?.k === 'buoc' && laBuocForm(hd.buoc[x.n]))
 
 const LE = 6        // khoảng hở quanh chỗ khoanh, như tour Trang chủ
 const RONG = 320    // bề rộng bong bóng
@@ -293,7 +299,7 @@ const CHU_CN = 'Thanh trên đang xem Tất cả cửa hàng nên phiếu mới 
 
 /** Chỗ khoanh của bước tour, px CSS đã chia zoom (docs/BAY.md). Khối dài hơn màn (bảng, tờ báo cáo) chỉ khoanh phần đang thấy.
  *  so: số phiếu vừa lưu, khoanh dòng đầu tiên mang số đó trong bảng danh sách */
-function choTour(hd: HuongDanMan, x: BuocTour, form: HTMLElement | null, so?: string): DOMRect | null {
+export function choTour(hd: HuongDanMan, x: BuocTour, form: HTMLElement | null, so?: string): DOMRect | null {
   const o = x.k === 'buoc' ? hd.buoc[x.n].o : undefined
   const el = x.k === 'cn' ? form?.querySelector('.chon-cn')
     : x.k === 'vua' && so ? [...document.querySelectorAll('.main table.tbl tbody tr')].find(tr => coKhung(tr) && !!tr.textContent?.includes(so))
@@ -330,9 +336,9 @@ const ngheNut = new Set<() => void>()
 const baoNut = () => ngheNut.forEach(f => f())
 const ngheNutNgoai = (f: () => void) => { ngheNut.add(f); return () => { ngheNut.delete(f) } }
 
-const KHOA_XEM = 'iacc-hdn-da-xem'
-const docXem = (): string[] => { try { const v = JSON.parse(localStorage.getItem(KHOA_XEM) || '[]'); return Array.isArray(v) ? v : [] } catch { return [] } }
-function ghiXem(k: string) {
+export const KHOA_XEM = 'iacc-hdn-da-xem'
+export const docXem = (): string[] => { try { const v = JSON.parse(localStorage.getItem(KHOA_XEM) || '[]'); return Array.isArray(v) ? v : [] } catch { return [] } }
+export function ghiXem(k: string) {
   const ds = docXem()
   if (ds.includes(k)) return
   try { localStorage.setItem(KHOA_XEM, JSON.stringify([k, ...ds].slice(0, 500))) } catch { /* trình duyệt chặn lưu thì thôi */ }

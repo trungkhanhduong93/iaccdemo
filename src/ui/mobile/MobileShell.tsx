@@ -9,6 +9,7 @@ import { Icon } from '../Icon'
 import { Dropdown, MenuHead, MenuItem, MenuSep } from '../Dropdown'
 import { tabDangChon, ThanhDuoi } from './ThanhDuoi'
 import { MBaoCaoLoc } from './MBaoCaoLoc'
+import { MNutHuongDan, MTourOverlay } from './MHuongDanNhanh'
 import { kyHieuBC } from '../../modules/bao-cao/danh-sach'
 import type { Session } from '../../app/session'
 import { ChonCuaHangTruoc, laDuongDanTaoPhieu, layChiNhanhNho, luuChiNhanhNho } from '../ChonCuaHangTruoc'
@@ -251,6 +252,7 @@ export function MobileShell() {
             {tieuDe}
           </h1>
           <div className="m-thanh-tren-phai" id="m-thanh-tren-phai-slot">
+            <MNutHuongDan />
             {laBaoCao(loc.pathname) ? (
               <button
                 type="button"
@@ -302,6 +304,7 @@ export function MobileShell() {
 
       {!capHai && <ThanhDuoi />}
       <OnboardFabi />
+      <MTourOverlay />
 
       {moLocBc && (
         <MBaoCaoLoc

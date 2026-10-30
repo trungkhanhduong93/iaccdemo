@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState, type FC } from 'react'
+import { useEffect, useMemo, useRef, useState, type FC } from 'react'
+import { baoDaLuu, ganForm, huongDanDangChay } from '../../ui/huongDanForm'
 import { quayLaiMobile } from './quayLai'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import type { Row, ScreenProps } from '../../modules/types'
@@ -84,6 +85,10 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
   const nav = useNavigate()
   const path = duongDan(mod, sc)
   const [sp] = useSearchParams()
+  const formRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (formRef.current) return ganForm(formRef.current, () => nav(path, { replace: true }))
+  }, [path, nav])
 
   const { rows, cfg } = useDongChungTu(sc, mod)
   const manKey = `${mod.key}/${sc.slug}`
@@ -408,12 +413,17 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
   }
 
   const handleLuu = () => {
-    if (soTien <= 0) {
+    const tour = huongDanDangChay()
+    const ch = CUA_HANG.find(c => c.ten === cuaHang || c.id === cuaHang) ?? CUA_HANG[0]
+    const tienLuu = tour && soTien <= 0 ? 500000 : soTien
+    const lyDoLuu = tour && !lyDo ? 'Tiền điện' : lyDo
+    const quyLuu = tour && !quy ? `Quỹ tiền mặt ${ch.ngan}` : quy
+    if (tienLuu <= 0) {
       toast('Vui lòng nhập số tiền lớn hơn 0')
       return
     }
     const thangNum = Number(ngay.split('/')[1]) || 10
-    if (!quy) {
+    if (!quyLuu) {
       toast('Vui lòng chọn quỹ tiền')
       return
     }
@@ -427,12 +437,12 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
       doiTuong,
       _diaChi: diaChi,
       _nguoiGiao: nguoiGiaoDich,
-      _quy: quy,
-      _lyDo: lyDo,
       _ghiChu: ghiChu,
       dienGiai: dsDong[0]?.ten || ghiChu || (isChi ? 'Chi tiền' : 'Thu tiền'),
-      tien: soTien,
-      tong: soTien,
+      tien: tienLuu,
+      tong: tienLuu,
+      _quy: quyLuu,
+      _lyDo: lyDoLuu,
       _dong: isCq
         ? undefined
         : dsDong.map(({ moi, ...d }) => ({
@@ -489,6 +499,11 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
       themPhieu(manKey, { id: targetId, ...duLieuPhieu }, s.ten)
       ghiNhatKy(manKey, targetId, soCt, s.ten, `Lập mới chứng từ ${soCt}`)
       toast(`Đã lưu phiếu ${soCt}`)
+      if (tour) {
+        baoDaLuu({ man: manKey, id: targetId, so: soCt })
+        nav(path, { replace: true })
+        return
+      }
       if (laLyChoPb) {
         setHoiThe({ soCt, idMoi: targetId })
         return
@@ -635,7 +650,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
   }
 
   return (
-    <div className="m-tc-lap-man m-lp m-t650">
+    <div ref={formRef} className="m-tc-lap-man m-lp m-t650">
       {/* ── ĐẦU MÀN KIỂU NHẬP MUA HÀNG (T650): mũi tên quay lại, tiêu đề giữa, số phiếu dưới ── */}
       <header className="m-tc-lap-header">
         <button
@@ -673,7 +688,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
         )}
 
         {/* 1. Thẻ thông tin chung: loại phiếu, cửa hàng, quỹ, lý do, ngày, ghi chú (T650) */}
-        <section className="m-tc-lap-card m-t650-the">
+        <section className="m-tc-lap-card m-t650-the" data-hd="ttc">
           <div className="m-t650-dau-the">
             <span className={`m-tc-pill-loai ${isChi ? 'chi' : isThu ? 'thu' : 'cq'}`} aria-label="Loại phiếu">
               <span>{tenLoaiHienTai}</span>
@@ -853,7 +868,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
 
         {/* 3. Thẻ CHI TIẾT (mọi gói, trừ chuyển quỹ T555) */}
         {!coTienDau && (
-          <section className="m-tc-lap-card m-t650-the">
+          <section className="m-tc-lap-card m-t650-the" data-hd="chi-tiet">
             <div className="m-t650-tieu">
               Chi tiết {dsDong.length > 0 && <small>{dsDong.length} dòng</small>}
             </div>
@@ -989,6 +1004,7 @@ export const MDtThuChiLap: FC<MDtThuChiLapProps> = ({ sc, mod, id, row: rowProp 
           type="button"
           className="m-tc-btn-luu m-lp-nut-chinh m-lp-nut-luu"
           onClick={handleLuu}
+          data-hd="luu"
         >
           Lưu
         </button>

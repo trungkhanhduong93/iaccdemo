@@ -581,7 +581,7 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc, mod }) => {
         <MChuaTaiBaoCao onMoLoc={() => setMoLoc(true)} />
       ) : kieuXem === 'dong' && isSoApDung ? (
         !isSoCu && (khuon || laMauD || laTT152Hook) ? (
-          <div className="m-so-dong">
+          <div className="m-so-dong" data-hd="to">
             <MBaoCaoDong
               maBc={sc.code ?? sc.slug}
               khuon={khuon ?? 'chi-tiet-ngay'}
@@ -592,7 +592,7 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc, mod }) => {
             />
           </div>
         ) : (
-          <div className={isSoTien ? 'm-t500-so-dong' : 'm-so-dong'}>
+          <div className={isSoTien ? 'm-t500-so-dong' : 'm-so-dong'} data-hd="to">
             {/* Lưới 2x2 thẻ cho Sổ quỹ / Sổ ngân hàng theo Figma T500, 3 ô cho sổ khác */}
             {isSoTien ? (
               <div className="mobile-stat-slider">
@@ -760,6 +760,7 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc, mod }) => {
                 onClick={xuatExcel}
                 title="Tải file Excel"
                 aria-label="Tải file Excel"
+                data-hd="in"
               >
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                   <rect x="2" y="2" width="20" height="20" rx="3.5" fill="#107C41" />
@@ -809,6 +810,7 @@ export const MSoBaoCao: FC<ScreenProps> = ({ sc, mod }) => {
             type="button"
             className="m-s1a-btn-xuat"
             onClick={xuatExcel}
+            data-hd="in"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M12 4v11M7 10l5 5 5-5M5 20h14" />

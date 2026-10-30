@@ -6,12 +6,12 @@ export const huongDan: Record<string, HuongDanMan> = {
     goi: ['S'],
     muc: 'Đếm hàng thực tế trong kho, so với số trên sổ để biết hàng thiếu, thừa.',
     buoc: [
-      { chu: 'Bấm Thêm mới, chọn Kiểm kê.', o: 'them', di: 'kho/5-1-10/moi', nutDi: 'Lập phiếu kiểm kê' },
+      { chu: 'Bấm Thêm mới, chọn Kiểm kê.', o: 'them', di: 'kho/5-1-10/moi', nutDi: 'Lập phiếu kiểm kê', dt: 'Chạm nút + ở góc dưới, chọn Kiểm kê.' },
       // 2 bước trong form phiếu chỉ vào ô của form, dải nổi trên form (T676)
       { chu: 'Nhập số lượng đếm được ở cột Tồn thực tế. Cột Chênh lệch tự tính.', o: 'chi-tiet' },
-      { chu: 'Bấm Lưu hoặc Ctrl + S.', o: 'luu' },
+      { chu: 'Bấm Lưu hoặc Ctrl + S.', o: 'luu', dt: 'Chạm Lưu ở đáy phiếu.' },
       { chu: 'Hàng thiếu, thừa ghi bằng phiếu Xuất điều chỉnh, Nhập điều chỉnh. Số phiếu hiện ở cột Tham chiếu.', o: 'bang' },
-      { chu: 'Xem lại phiếu cũ: chọn thời gian, bấm Lọc, bấm số chứng từ.', o: 'loc' },
+      { chu: 'Xem lại phiếu cũ: chọn thời gian, bấm Lọc, bấm số chứng từ.', o: 'loc', dt: 'Xem lại phiếu cũ: chọn thời gian ở hàng lọc, chạm vào phiếu.' },
     ],
     luuY: ['Thanh trên đang chọn cửa hàng nào thì phiếu kiểm kê lập cho kho của cửa hàng đó.'],
     soDo: [

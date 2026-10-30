@@ -19,6 +19,7 @@ import { Icon } from '../Icon'
 import { fold, moneyD } from '../format'
 import { MChon } from './MChon'
 import { MBaoCaoTheoDoi, type MucTheoDoi } from './MBaoCaoTheoDoi'
+import { MNutHuongDan } from './MHuongDanNhanh'
 import { quayLaiMobile } from './quayLai'
 
 const TT_BADGE: Record<TrangThai, string> = { 'Chưa nộp': 'warn', 'Đã nộp': 'ok', 'Bị từ chối': 'err', 'Đã huỷ': '' }
@@ -94,6 +95,7 @@ export const MToKhaiHKD: FC<ScreenProps> = () => {
             <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
           </button>
           <h1 className="m-tc-tieu-de">Kê khai thuế</h1>
+          <MNutHuongDan mod="thue" sc="to-khai" />
           <button type="button" className={`m-tc-btn-nav${timMo ? ' on' : ''}`} aria-label="Tìm kiếm"
             onClick={() => { setTimMo(v => !v); if (timMo) setTuKhoa('') }}>
             <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7" /><path d="M21 21l-4.35-4.35" /></svg>
@@ -118,7 +120,7 @@ export const MToKhaiHKD: FC<ScreenProps> = () => {
       </header>
 
       <main className="m-tc-content">
-        <div className="m-tc-loc-bar">
+        <div className="m-tc-loc-bar" data-hd="loc">
           <button type="button" className={`m-tc-btn-loc-vuong m-ds-nut-loc-vuong m-ds-nut-loc${coLoc ? ' co-loc' : ''}`} onClick={() => setMoLoc(true)} aria-label="Mở bộ lọc">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" /></svg>
             {coLoc && <span className="m-tc-loc-cham" />}
@@ -156,7 +158,7 @@ export const MToKhaiHKD: FC<ScreenProps> = () => {
         {ds.length === 0 ? (
           <div className="m-tc-trong"><p>Không có tờ khai nào phù hợp</p></div>
         ) : (
-          <div className="m-tc-danh-sach">
+          <div className="m-tc-danh-sach" data-hd="bang">
             {nhomNam.map(n => (
               <section key={n.nam} className="m-tc-nhom-ngay">
                 <div className="m-tc-ngay-header">
@@ -195,7 +197,7 @@ export const MToKhaiHKD: FC<ScreenProps> = () => {
         )}
       </main>
 
-      <button type="button" className="m-tc-fab m-nut-them-fab m-ds-fab" onClick={() => setLap(true)} aria-label="Lập tờ khai">
+      <button type="button" className="m-tc-fab m-nut-them-fab m-ds-fab" data-hd="them" onClick={() => setLap(true)} aria-label="Lập tờ khai">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
         <span>Lập tờ khai</span>
       </button>

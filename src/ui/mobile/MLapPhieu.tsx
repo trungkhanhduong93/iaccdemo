@@ -1,4 +1,5 @@
-import { Fragment, useEffect, useMemo, useState, type FC } from 'react'
+import { Fragment, useEffect, useMemo, useRef, useState, type FC } from 'react'
+import { baoDaLuu, ganForm, huongDanDangChay } from '../../ui/huongDanForm'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import type { Row, ScreenProps } from '../../modules/types'
 import { dongCua, tkTheoLyDo, ttNghiepVu, type Dong } from '../generic/gen'
@@ -797,6 +798,10 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
   const loc = useLocation()
   const [sp] = useSearchParams()
   const path = duongDan(mod, sc)
+  const formRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (formRef.current) return ganForm(formRef.current, () => nav(path, { replace: true }))
+  }, [path, nav])
 
   const cfgMan = sc.voucher ?? { prefix: 'CT', doiTuong: 'none', dienGiai: [tenMan(sc)], tien: [0, 0] }
   const saoChep = (loc.state as { saoChep?: Row } | null)?.saoChep
@@ -1170,24 +1175,24 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
   }
 
   // Dựng nội dung phiếu mua dùng chung cho Lưu phiếu (T600, T629)
-  const dungNoiDungPhieuMua = () => {
+  const dungNoiDungPhieuMua = (dongDs = dsDong, khoVal = kho, dtVal = doiTuong) => {
     const ngayChiTiet = thoiGian.split(' ')[0]
     return {
       ngay: ngayChiTiet,
       gio: thoiGian.split(' ')[1] || '10:00',
       thang: Number(ngayChiTiet.split('/')[1]) || 10,
-      doiTuong,
+      doiTuong: dtVal,
       dienGiai: ghiChu || cfg.dienGiai?.[0] || 'Chứng từ mua hàng',
       tien: tongTien - tongCk,
       thue: tongThue,
       tong: tongThanhToan,
-      _dong: dsDong,
+      _dong: dongDs,
       _ghiChu: ghiChu,
       _nguoiGiao: nguoiGiaoDich,
       _nguoi: nguoiGiaoDich,
       _diaChi: diaChi,
       _mst: mst,
-      _kho: kho,
+      _kho: khoVal,
       _nhanKemHd: nhanKemHd,
       _soHd: nhanKemHd ? soHd : '',
       _kyHieuHd: nhanKemHd ? kyHieuHd : '',
@@ -1588,6 +1593,24 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
 
   // Thực hiện lưu chứng từ
   const thucHienLuu = (moMoi = false) => {
+    const tour = huongDanDangChay()
+    const hangMau = HANG[0]
+    const dongMau: DongM = {
+      ma: hangMau.ma,
+      ten: hangMau.ten,
+      dvt: hangMau.dvt,
+      sl: 1,
+      gia: hangMau.gia,
+      tien: hangMau.gia,
+      ts: 8,
+      thue: 0,
+      tonHt: 1,
+      tonTt: 1,
+    }
+    const dsDongLuu = (tour && dsDong.length === 0) ? [dongMau] : dsDong
+    const khoLuu = (tour && !kho.trim()) ? (KHO[0] || 'Kho tổng') : kho
+    const doiTuongLuu = (tour && !doiTuong.trim() && cfg.doiTuong !== 'none') ? (NCC[0]?.ten || 'NCC001') : doiTuong
+
     const loiMoi: Record<string, string> = {}
 
     if (!cuaHang) {
@@ -1598,7 +1621,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
       if (!ghiChu.trim()) {
         loiMoi.dienGiai = 'Vui lòng nhập diễn giải'
       }
-      const tienHienTai = dsDong[0]?.tien ?? 0
+      const tienHienTai = dsDongLuu[0]?.tien ?? 0
       if (tienHienTai <= 0) {
         loiMoi.tien = 'Vui lòng nhập số tiền lớn hơn 0'
       }
@@ -1608,14 +1631,14 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
       if (laCq && (!denQuy.trim() || denQuy === quy)) {
         loiMoi.denQuy = 'Vui lòng chọn quỹ nhận khác quỹ xuất'
       }
-      if (!laCq && cfg.doiTuong !== 'none' && canDt && !doiTuong.trim()) {
+      if (!laCq && cfg.doiTuong !== 'none' && canDt && !doiTuongLuu.trim()) {
         loiMoi.doiTuong = `Vui lòng chọn ${nhanDoiTuong.toLowerCase()}`
       }
     } else if (nhom === 'mua') {
-      if (!doiTuong.trim()) {
+      if (!doiTuongLuu.trim()) {
         loiMoi.doiTuong = 'Vui lòng chọn nhà cung cấp'
       }
-      if (!kho.trim()) {
+      if (!khoLuu.trim()) {
         loiMoi.kho = 'Vui lòng chọn kho nhận'
       }
       if (traNgay && !quy.trim()) {
@@ -1626,17 +1649,17 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
         if (!kyHieuHd.trim()) loiMoi.kyHieuHd = 'Vui lòng nhập ký hiệu'
         if (!ngayHd.trim()) loiMoi.ngayHd = 'Vui lòng chọn ngày hoá đơn'
       }
-      if (dsDong.length === 0) {
+      if (dsDongLuu.length === 0) {
         loiMoi.hang = 'Vui lòng chọn ít nhất một mặt hàng'
       }
     } else {
-      if (bo.kho && !kho.trim()) {
+      if (bo.kho && !khoLuu.trim()) {
         loiMoi.kho = 'Vui lòng chọn kho'
       }
-      if (cfg.doiTuong !== 'none' && !doiTuong.trim()) {
+      if (cfg.doiTuong !== 'none' && !doiTuongLuu.trim()) {
         loiMoi.doiTuong = `Vui lòng chọn ${nhanDoiTuong.toLowerCase()}`
       }
-      if (dsDong.length === 0) {
+      if (dsDongLuu.length === 0) {
         loiMoi.hang = 'Vui lòng chọn ít nhất một mặt hàng'
       }
     }
@@ -1669,23 +1692,23 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
     const idLuu = dangSua ? String(row!.id) : `moi-${Date.now()}`
     const soCt = dangSua ? String(row!.so) : soKeTiep(man, `${cfg.prefix}2610-`)
 
-    const noiDung = nhom === 'mua' ? dungNoiDungPhieuMua() : {
+    const noiDung = nhom === 'mua' ? dungNoiDungPhieuMua(dsDongLuu, khoLuu, doiTuongLuu) : {
       ngay: ngayChiTiet,
       gio: thoiGian.split(' ')[1] || '10:00',
       thang: Number(ngayChiTiet.split('/')[1]) || 10,
-      doiTuong: laCq ? 'Chuyển quỹ nội bộ' : doiTuong,
+      doiTuong: laCq ? 'Chuyển quỹ nội bộ' : doiTuongLuu,
       dienGiai: ghiChu || cfg.dienGiai?.[0] || 'Chứng từ',
       tien: tongTien - tongCk,
       thue: tongThue,
       tong: tongThanhToan,
-      _dong: dsDong,
-      _lyDo: laTien ? (dsDong[0]?.ly || dsLyDo[0] || 'Chi tiền') : undefined,
+      _dong: dsDongLuu,
+      _lyDo: laTien ? (dsDongLuu[0]?.ly || dsLyDo[0] || 'Chi tiền') : undefined,
       _ghiChu: ghiChu,
       _nguoiGiao: nguoiNhanNop,
       _nguoi: nguoiNhanNop,
       _quy: quy,
       _denQuy: laCq ? denQuy : undefined,
-      _kho: kho,
+      _kho: khoLuu,
       _soHd: soHd,
       _kyHieuHd: kyHieuHd,
       _ngayHd: ngayHd,
@@ -1827,6 +1850,12 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
     ghiNhatKy(man, idLuu, soCt, s.ten, 'Thêm mới chứng từ')
     toast(`Đã lưu ${soCt}`)
 
+    if (tour) {
+      baoDaLuu({ man, id: idLuu, so: soCt })
+      nav(path, { replace: true })
+      return
+    }
+
     // Phiếu chi có lý do Chi phí chờ phân bổ: báo rồi mở tạo thẻ chi phí phân bổ (Mục 4 spec; T419: thông báo, không hỏi)
     const laLyChoPb = laTien && (
       (dsDong[0]?.ly === TEN_LY_CHO_PHAN_BO) ||
@@ -1959,7 +1988,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
   )
 
   return (
-    <div className="m-pb-man">
+    <div ref={formRef} className="m-pb-man">
       {/* ── THANH ĐẦU MÀN HÌNH ── */}
       <header className="m-pb-thanh-dau">
         <button type="button" className="m-pb-btn-back" onClick={handleQuayLai} aria-label="Quay lại">
@@ -2136,7 +2165,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                   <span style={{ textTransform: 'none', letterSpacing: 0, fontWeight: 400, color: '#9ca3af' }}>{dsDong.length} dòng</span>
                 </div>
 
-                <div className="m-t601-hang-card">
+                <div className="m-t601-hang-card" data-hd="chi-tiet">
                   {/* Tìm hàng hoá */}
                   <div className="m-t601-hang-tim-wrap">
                     <label className="m-t601-hang-tim-box">
@@ -2154,7 +2183,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
                     </label>
                   </div>
 
-                  <div id="m-lp-o-hang">
+                  <div id="m-lp-o-hang" data-hd="chi-tiet">
                     {dsDongHienThiTrongPhieu.map(({ d, originalIdx }, index) => (
                       <TheHangMua
                         key={d.id ?? originalIdx}
@@ -2315,7 +2344,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
             </div>
 
             <div className="m-pb-nhom">MẶT HÀNG ({dsDong.length})</div>
-            <div id="m-lp-o-hang">
+            <div id="m-lp-o-hang" data-hd="chi-tiet">
               {dsDong.map((d, i) => (
                 <TheHangMoi
                   key={i}
@@ -2410,6 +2439,7 @@ const ThanLapPhieu: FC<ThanLapPhieuProps> = ({ sc, mod, id, row }) => {
           type="button"
           className={nhom === 'mua' ? 'm-t600-btn-luu' : 'm-pb-btn-sua'}
           onClick={() => thucHienLuu(false)}
+          data-hd="luu"
         >
           {nhom === 'mua' ? 'Lưu phiếu' : (dangSua ? 'Lưu thay đổi' : 'Lưu phiếu')}
         </button>

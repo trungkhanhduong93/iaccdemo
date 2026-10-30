@@ -16,6 +16,7 @@ import { useDongChungTu } from '../generic/VoucherScreen'
 import { MChon } from './MChon'
 import { coLocKhacMacDinh, MAC_DINH_LOC_MOBILE, MLoc, tinhKhoangNgay, type GtLocMobile } from './MLoc'
 import { MBaoCaoTheoDoi } from './MBaoCaoTheoDoi'
+import { MNutHuongDan } from './MHuongDanNhanh'
 import { Icon } from '../Icon'
 import { CUA_HANG } from '../../data/mock'
 import { ChonCuaHangTruoc, layChiNhanhNho, luuChiNhanhNho } from '../ChonCuaHangTruoc'
@@ -285,6 +286,7 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
             </svg>
           </button>
           <h1 className="m-tc-tieu-de">Thu chi</h1>
+          <MNutHuongDan mod={mod.key} sc={sc.slug} />
           <button
             type="button"
             className={`m-tc-btn-nav${timMo ? ' on' : ''}`}
@@ -333,7 +335,7 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
         )}
 
         {/* ── TABS CUỘN NGANG THEO FIGMA MB03 ── */}
-        <div className="m-tc-tabs" role="tablist">
+        <div className="m-tc-tabs" role="tablist" data-hd="tab">
           {tabsStandard.map(t => (
             <button
               key={t.k}
@@ -361,7 +363,7 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
       {/* ── CONTENT THÂN CUỘN ── */}
       <main className="m-tc-content">
         {/* Hàng bộ lọc cuộn ngang */}
-        <div className="m-tc-loc-bar">
+        <div className="m-tc-loc-bar" data-hd="loc">
           <button
             type="button"
             className={`m-tc-btn-loc-vuong m-ds-nut-loc-vuong m-ds-nut-loc${coLocKhacMacDinh(locVal) ? ' co-loc' : ''}`}
@@ -430,7 +432,7 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
             <p>Không có chứng từ nào phù hợp</p>
           </div>
         ) : (
-          <div className="m-mh-ds-nhom m-t653-ds">
+          <div className="m-mh-ds-nhom m-t653-ds" data-hd="bang">
             {nhomTheoNgay.map(nhom => (
               // Thẻ ngày và dòng chứng từ dùng chung kiểu danh sách mua hàng (T653)
               <div key={nhom.ngayRaw} className="m-mh-nhom-item m-t653-ngay">
@@ -485,7 +487,7 @@ export const MDtThuChiDs: FC<ScreenProps> = ({ sc, mod }) => {
       {/* ── NÚT NỔI THÊM MỚI (FAB) ── */}
       <button
         type="button"
-        className="m-tc-fab m-nut-them-fab m-ds-fab"
+        className="m-tc-fab m-nut-them-fab m-ds-fab" data-hd="them"
         onClick={() => dsLoaiThem.length === 1 ? moPhieuMoi(dsLoaiThem[0].k) : setMoChonLoaiThem(true)}
         aria-label="Thêm mới"
       >

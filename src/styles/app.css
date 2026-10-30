@@ -42706,3 +42706,199 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
 /* ── Vòng nhấp nháy nút Hướng dẫn không làm rung trang (T686) ── */
 /* vòng cam scale(1.25) quanh nút cuối thanh tab lố mép phải cửa sổ: thanh cuộn ngang của trang hiện, mất theo nhịp 1,6 giây. Chỉ cắt chiều ngang, vòng vẫn lan lên xuống */
 .mtabs { overflow-x: clip; }
+
+/* ── Hướng dẫn nhanh điện thoại kiểu bong bóng (T675) ── */
+.m-bulb-hdn {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #ea580c;
+  cursor: pointer;
+  flex: none;
+  padding: 0;
+}
+.m-bulb-hdn:active {
+  background: rgba(0, 0, 0, 0.05);
+}
+.m-bulb-hdn.moi::after {
+  content: "";
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ea580c;
+  border: 1.5px solid #fff;
+  box-sizing: content-box;
+}
+
+/* Tour overlay for mobile */
+.hdn-dt-tour {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  pointer-events: auto;
+}
+.hdn-dt-tour .hdan-lo {
+  position: fixed;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.55);
+  border-radius: 8px;
+  pointer-events: none;
+  transition: all 0.25s ease;
+  z-index: 100000;
+}
+.hdn-dt-tour .hdan-toi {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 100000;
+}
+
+/* Mũi nhọn bong bóng */
+.hdn-dt-mui {
+  position: fixed;
+  width: 14px;
+  height: 14px;
+  background: #fff;
+  transform: rotate(45deg);
+  border-radius: 2px;
+  z-index: 100002;
+  pointer-events: none;
+}
+.hdn-dt-mui.tren {
+  box-shadow: -2px -2px 5px rgba(0, 0, 0, 0.04);
+}
+.hdn-dt-mui.duoi {
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.04);
+}
+
+/* Bong bóng điện thoại */
+.hdn-dt-bong {
+  position: fixed;
+  left: 12px !important;
+  right: 12px !important;
+  width: auto !important;
+  max-width: calc(100vw - 24px) !important;
+  background: #fff;
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.22);
+  z-index: 100001;
+  box-sizing: border-box;
+  animation: hdnBongHien 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hdn-dt-bong.giua {
+  top: 50% !important;
+  left: 12px !important;
+  right: 12px !important;
+  transform: translateY(-50%) !important;
+}
+.hdn-dt-bong .hdn-bong-so {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  color: #ea580c;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.hdn-dt-bong .hdn-bong-chu {
+  margin: 4px 0 12px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #1f2225;
+}
+.hdn-dt-bong .hdn-bong-phude {
+  font-size: 12px;
+  color: #6b7280;
+  margin: 6px 0 14px;
+  line-height: 1.4;
+}
+.hdn-dt-bong.cuoi {
+  max-height: 80vh;
+  overflow-y: auto;
+}
+.hdn-dt-bong .hdn-muc {
+  margin-top: 12px;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 10px;
+}
+.hdn-dt-bong .hdn-muc h4 {
+  margin: 0 0 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.hdn-dt-bong .hdn-luu {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 13px;
+  color: #374151;
+  line-height: 1.5;
+}
+.hdn-dt-bong .hdn-luu li {
+  margin-bottom: 4px;
+}
+
+/* Sơ đồ đi tiếp dọc trên mobile */
+.m-hdn-luong {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 6px;
+}
+.m-hdn-buoc {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  text-decoration: none;
+  color: #374151;
+  font-size: 13px;
+}
+.m-hdn-buoc.hien-tai {
+  border-color: #ea580c;
+  background: #fff7ed;
+  color: #9a3412;
+  font-weight: 600;
+}
+.m-hdn-buoc-ten {
+  display: flex;
+  flex-direction: column;
+}
+.m-hdn-buoc-ten small {
+  font-size: 11px;
+  color: #6b7280;
+}
+.m-hdn-buoc.hien-tai .m-hdn-buoc-ten small {
+  color: #c2410c;
+}
+.m-hdn-mui-doc {
+  display: flex;
+  justify-content: center;
+  color: #9ca3af;
+  font-size: 12px;
+}
+
+@keyframes hdnBongHien {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

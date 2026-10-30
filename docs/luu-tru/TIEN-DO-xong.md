@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T675 | Hướng dẫn nhanh điện thoại kiểu bong bóng nổi (QD89): nút bóng đèn chấm cam trên đầu màn, tour khoanh đủ từng bước ở Thu chi, Sổ quỹ tiền mặt, Kê khai thuế, Xuất bán POS, Kiểm kê | Trum | 30/10/2026 | `2026-10-30-trum-huong-dan-dien-thoai.md` |
 | T686 | Web, màn có nút Hướng dẫn đang nhấp nháy hết rung trang: thanh tab cắt chiều ngang, vòng cam không còn lố mép phải cửa sổ | Trum | 30/10/2026 | `2026-10-30-trum-rung-nut-huong-dan.md` |
 | T685 | Hướng dẫn nhanh (QD86, tour QD88) phân hệ Hệ thống cả 3 gói: Người dùng, Vai trò và phân quyền, Nhật ký thao tác, Thông tin đơn vị, Cấu hình kế toán, Khoá sổ, Gói thuê bao; các màn gắn `data-hd` cho tour khoanh đúng chỗ | Trum | 30/10/2026 | `2026-10-30-trum-huong-dan-he-thong.md` |
 | T684 | `kiem_tra.py` hết báo tràn ngang thất thường ở màn báo cáo: thanh chọn báo cáo lố 3px tới 381ms lúc mới vẽ, `.main` đang ẩn cuộn nên người dùng không thấy; bộ kiểm thấy tràn thì đo lại mỗi 100ms, quá 1 giây mới báo | Trum | 29/10/2026 | `2026-10-29-trum-kiem-tra-tran-bao-cao.md` |

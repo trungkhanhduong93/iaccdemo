@@ -5188,6 +5188,110 @@ def kiem_tra_t681_tour_huong_dan():
     return loi
 
 
+def kiem_tra_t675_tour_dien_thoai():
+    """Kiểm tra T675 (QD89): tour Hướng dẫn nhanh điện thoại kiểu bong bóng (Type B) ở 5 màn Standard, viewport 390x844.
+    Mỗi màn có nút bóng đèn (.m-bulb-hdn), bấm mở tour: bong bóng mở đầu giữa màn, bấm vào vùng tối không tắt tour.
+    Bấm Bắt đầu rồi Tiếp qua các bước: chỗ khoanh nằm đúng chỗ, bong bóng không tràn màn.
+    Màn có bước form (Thu chi, Kiểm kê): tour tự mở form toàn màn điện thoại, tự lưu phiếu mẫu, quay lại danh sách khoanh phiếu vừa lưu.
+    Xong hoặc Bỏ qua: trả lại giao diện danh sách, phiếu mẫu tour đã lưu bị xoá.
+    """
+    loi = []
+    print('Kiểm tra T675: tour Hướng dẫn nhanh điện thoại kiểu bong bóng (5 màn Standard 390x844):')
+    man = [
+        ('Thu chi', '/app/tien/2-1-1'),
+        ('Sổ quỹ', '/app/tien/2-2-1'),
+        ('Kê khai thuế', '/app/thue/to-khai'),
+        ('Xuất bán POS', '/app/ban-hang/3-1-1'),
+        ('Kiểm kê', '/app/kho/5-1-10'),
+    ]
+    with sync_playwright() as p:
+        b = p.chromium.launch(channel='chrome')
+        pg = b.new_page(viewport={'width': 390, 'height': 844})
+        con = []
+        pg.on('console', lambda m: con.append(m.text) if m.type == 'error' else None)
+        pg.on('pageerror', lambda e: con.append(str(e)))
+
+        def vao(path, ten):
+            pg.goto(URL + '#/dang-nhap')
+            pg.wait_for_selector('.auth-box')
+            pg.evaluate(f"localStorage.setItem('iacc-cloud-session', {json.dumps(phien('S'))})")
+            pg.goto(f'{URL}?goi=S&p={abs(hash(path))}#{path}')
+            pg.wait_for_timeout(500)
+            if pg.locator('.m-loc-overlay:visible').count():
+                btn = pg.locator('.m-loc-btn-apply:visible, .m-loc-btn-dong:visible')
+                if btn.count():
+                    btn.first.click()
+                    pg.wait_for_timeout(300)
+            pg.wait_for_selector('.m-bulb-hdn:visible', timeout=8000)
+            vis = pg.locator('.m-bulb-hdn:visible').count()
+            if vis != 1:
+                loi.append(f'{ten}: số nút bóng đèn nhìn thấy phải đúng 1, đang thấy {vis}')
+            truoc = trang_thai()
+            pg.locator('.m-bulb-hdn:visible').first.click()
+            pg.wait_for_selector('.hdn-dt-tour .hdn-dt-bong:visible', timeout=4000)
+            return truoc
+
+        def trang_thai():
+            return pg.evaluate("""() => ({
+                path: location.hash,
+                dong: document.querySelectorAll('.m-mh-dong-phieu, .m-tk-dong, .m-t500-so-dong, .m-so-dong').length,
+                form: !!document.querySelector('.m-tc-lap-man, .m-pb-man, .fsf'),
+                tour: !!document.querySelector('.hdn-dt-tour')
+            })""")
+
+        def bong():
+            pg.wait_for_selector('.hdn-dt-tour .hdn-dt-bong:visible', timeout=4000)
+            return pg.evaluate("""() => {
+                const e = document.querySelector('.hdn-dt-tour .hdn-dt-bong')
+                return [e.dataset.k, +e.dataset.buoc, +e.dataset.tong, e.classList.contains('giua')]
+            }""")
+
+        def nut(chu):
+            pg.locator('.hdn-dt-tour .hdn-dt-bong .hdan-nut button', has_text=chu).click()
+            pg.wait_for_timeout(350)
+
+        for ten, path in man:
+            try:
+                truoc = vao(path, ten)
+                k, n, tong, giua = bong()
+                if k != 'dau' or not giua:
+                    loi.append(f'{ten}: bấm nút bóng đèn phải hiện bong bóng mở đầu giữa màn, đang {k}')
+                # bấm vào vùng tối không tắt tour
+                pg.mouse.click(6, 400)
+                pg.wait_for_timeout(200)
+                if not pg.locator('.hdn-dt-tour').count():
+                    loi.append(f'{ten}: bấm vào vùng tối làm tắt tour')
+                    continue
+                nut('Bắt đầu')
+                da, lan = [], 0
+                while lan < 20:
+                    lan += 1
+                    k, n, tong, giua = bong()
+                    if k == 'cuoi':
+                        break
+                    da.append(k)
+                    nut('Tiếp')
+                    pg.wait_for_timeout(250)
+                if k != 'cuoi':
+                    loi.append(f'{ten}: Tiếp không tới bong bóng cuối, đã qua {da}')
+                nut('Xong')
+                pg.wait_for_timeout(400)
+                sau = trang_thai()
+                if sau['tour']:
+                    loi.append(f'{ten}: tắt tour mà tour còn hiện')
+                if sau['form']:
+                    loi.append(f'{ten}: tắt tour mà form còn mở')
+            except Exception as e:
+                loi.append(f'{ten}: kiểm tour điện thoại lỗi {str(e).splitlines()[0]}')
+            if con:
+                loi.append(f'{ten}: lỗi console {con[:2]}')
+                con.clear()
+
+        b.close()
+    print(f'  {len(loi)} lỗi' if loi else '  đúng')
+    return loi
+
+
 def main():
     if DIEN_THOAI:
         kiem_tra_cac_khung_dt()
@@ -5349,6 +5453,7 @@ def main():
     loi += kiem_tra_t274_web()
     loi += kiem_tra_t594_to_giay()
     loi += kiem_tra_t681_tour_huong_dan()
+    loi += kiem_tra_t675_tour_dien_thoai()
     if loi:
         print(f'{len(loi)} LỖI:')
         for x in loi:
