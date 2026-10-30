@@ -64,7 +64,7 @@ const KHEN: Record<Viec, (ten: string) => { tieuDe: string; noiDung: string }> =
 }
 
 const BUOC: Buoc[] = [
-  { tieuDe: 'Chào mừng bạn đến với iPOS Accounting', noiDung: 'Sổ sách của quán đã sẵn sàng! Cùng điểm nhanh 3 chỉ số quan trọng nhất để nắm trọn tình hình kinh doanh và dòng tiền.' },
+  { tieuDe: 'Chào mừng bạn đến với iPOS Accounting', noiDung: 'Sổ sách của quán đã sẵn sàng! Cùng điểm nhanh 3 thông tin quan trọng nhất để nắm trọn tình hình kinh doanh và dòng tiền.' },
   { chon: '.tq-col-12 .bbt-cot', ...KQKD, chonKhen: '.tq-col-12 .bbt-kqkd-row[title="Xem chi phí hoạt động"]' },
   { chon: '.tq-col-12 .bbt-cot', so: 1, ...QUY, chonKhen: '.tq-col-12 .bbt-o-ton-quy' },
   { chon: '.sb-nav a[href="#/app/thue/to-khai"]', ...THUE },
