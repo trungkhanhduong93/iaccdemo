@@ -42902,3 +42902,24 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
     transform: scale(1);
   }
 }
+
+/* ── Điện thoại, màn mở từ FABi gọn chữ: 2 trang, dòng giá trị một hàng, cam kết một hàng, popup Kết nối bỏ cột bên (T138) ── */
+@media (max-width: 767px) {
+  .ktf-b1-the > div { align-items: center; padding: 14px 12px; }
+  .ktf-b1-the .ktf-chao-ic { grid-row: auto; }
+  .ktf-b1-the b { font-size: 15px; }
+  .ktf-b1-cam { flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 6px 14px; }
+  .ktf-b1-cam > span { display: inline-flex; align-items: center; gap: 4px; color: var(--muted); font-size: 13px; font-weight: 600; }
+  .ktf-b1-cam > span .ic { color: var(--green); }
+  .ktf-dt-lay { display: flex; align-items: center; gap: 6px; margin: 12px 0 0; color: var(--ink); font-size: 13px; font-weight: 600; }
+  .ktf-dt-lay .ic { color: var(--green); }
+  /* popup Kết nối nằm gọn 1 trang: bớt khoảng cách, 2 dòng quỹ không xuống hàng (PhuongXT 30/10/2026) */
+  .ktf-pop .ktf-h3 { margin: 14px 0 8px; }
+  .ktf-pop .ktf-h3-dau { margin-top: 0; }
+  .ktf-pop .ktf-p { margin: 2px 0 8px; }
+  .ktf-pop .ktf-dt-lay { margin-top: 10px; }
+  .ktf-pop .ktf-ngay { margin-bottom: 0; gap: 6px; }
+  .ktf-pop .ktf-ngay small { min-width: 0; flex-basis: 100%; }
+  .ktf-pop .ktf-pttt > div { grid-template-columns: auto 14px auto; justify-content: start; gap: 6px; padding: 8px 10px; font-size: 12.5px; white-space: nowrap; }
+  .ktf-pop .ktf-pttt-chu { display: none; }   /* đổi quỹ nhận ở Danh mục › Quỹ tiền, điện thoại bỏ dòng này cho đủ 1 trang */
+}

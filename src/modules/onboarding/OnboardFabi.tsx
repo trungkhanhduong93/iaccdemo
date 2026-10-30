@@ -14,6 +14,7 @@ import { Dropdown, MenuItem, Select } from '../../ui/Dropdown'
 import { ChonHaiCot } from '../../ui/ChonHaiCot'
 import { ONgay } from '../../ui/ChonNgay'
 import { boViecHuongDan, TiepHuongDan } from '../home/HuongDan'
+import { useLaMobile } from '../../ui/mobile/useLaMobile'
 
 export const BUOC = ['Loại hình và gói', 'Đơn vị', 'Cửa hàng']   // bỏ Đồng bộ bán hàng; FABi luôn kéo chi tiết theo hoá đơn (T158, T247)
 const XONG = BUOC.length   // bước hoàn tất
@@ -288,6 +289,7 @@ export function OnboardFabi() {
   const nav = useNavigate()
   const [n, setN] = useState<Nhap>(docNhap)
   const dt = dungThuDv(s)
+  const laMobile = useLaMobile()   // điện thoại: popup Kết nối chữ gọn (PhuongXT 30/10/2026)
   useEffect(() => {
     const doc = () => setN(docNhap())
     window.addEventListener(SU_KIEN, doc)
@@ -426,42 +428,48 @@ export function OnboardFabi() {
               <div className="ktf-luoi">
                 <div className="card" style={{ padding: '24px 26px' }}>
                   <h3 className="ktf-h3 ktf-h3-dau">Cửa hàng</h3>
-                  <p className="muted ktf-p">Tích cửa hàng FABi lên sổ kế toán. Thêm cửa hàng sau ở Danh mục cửa hàng.{anCh > 0 && ` Chỉ hiện cửa hàng chưa dùng kế toán, đã ẩn ${anCh} cửa hàng đang ở đơn vị khác.`}</p>
+                  <p className="muted ktf-p">{laMobile ? 'Chọn cửa hàng lên sổ.' : 'Tích cửa hàng FABi lên sổ kế toán. Thêm cửa hàng sau ở Danh mục cửa hàng.'}{anCh > 0 && (laMobile ? ` Đã ẩn ${anCh} cửa hàng ở đơn vị khác.` : ` Chỉ hiện cửa hàng chưa dùng kế toán, đã ẩn ${anCh} cửa hàng đang ở đơn vị khác.`)}</p>
                   <DsCuaHang ds={cuaHang} chon={n.chon} chinh="" doi={chon => sua({ chon })} coChinh={false} />
                   {cnChon.length === 0 && <Note kind="warn" icon="alert">Chọn ít nhất một cửa hàng để tiếp tục.</Note>}
 
                   <h3 className="ktf-h3">Ngày bắt đầu làm việc</h3>
                   <div className="ktf-ngay">
                     <ONgay value={n.ngayLam} onChange={v => sua({ ngayLam: v })} ariaLabel="Ngày bắt đầu làm việc" />
-                    <small className="muted">Ngày bắt đầu nhập liệu trên iPOS Accounting. Từ ngày này, doanh thu bán hàng POS và phiếu thu, chi lập trên FABi tự về sổ.</small>
+                    <small className="muted">{laMobile ? 'Đơn POS, thu chi từ ngày này tự về sổ.' : 'Ngày bắt đầu nhập liệu trên iPOS Accounting. Từ ngày này, doanh thu bán hàng POS và phiếu thu, chi lập trên FABi tự về sổ.'}</small>
                   </div>
                   {!ngayLamHopLe && <Note kind="warn" icon="alert">Chọn ngày từ {DAU_NAM} đến hôm nay.</Note>}
 
                   <h3 className="ktf-h3">Tiền từ FABi về quỹ nào</h3>
-                  <div className="ktf-pttt">
-                    {PTTT_VE_QUY.map(([pt, quy]) => (
-                      <div key={pt}>
-                        <span>{pt}</span>
-                        <Icon n="arrow" className="ic sm" />
-                        <b>{quy}</b>
+                  {laMobile   // điện thoại: gộp 3 dòng PTTT thành 2, ví điện tử cùng quỹ ngân hàng với chuyển khoản
+                    ? <div className="ktf-pttt">
+                        <div><span>Tiền mặt</span><Icon n="arrow" className="ic sm" /><b>Quỹ tiền mặt</b></div>
+                        <div><span>Ngân hàng, ví điện tử</span><Icon n="arrow" className="ic sm" /><b>Quỹ ngân hàng chung</b></div>
                       </div>
-                    ))}
-                  </div>
-                  <small className="muted ktf-pttt-chu">Đổi quỹ nhận cho từng phương thức thanh toán ở Danh mục › Quỹ tiền.</small>
+                    : <div className="ktf-pttt">
+                        {PTTT_VE_QUY.map(([pt, quy]) => (
+                          <div key={pt}>
+                            <span>{pt}</span>
+                            <Icon n="arrow" className="ic sm" />
+                            <b>{quy}</b>
+                          </div>
+                        ))}
+                      </div>}
+                  <small className="muted ktf-pttt-chu">{laMobile ? 'Đổi ở Danh mục › Quỹ tiền.' : 'Đổi quỹ nhận cho từng phương thức thanh toán ở Danh mục › Quỹ tiền.'}</small>
 
+                  {laMobile && <p className="ktf-dt-lay"><Icon n="check" className="ic sm" />Sẽ lấy {so(soCtDaTao)} đơn bán, {so(soTcDaTao)} phiếu thu chi</p>}
                   <div className="row ktf-pop-nut">
                     <button className="btn pri lg" disabled={cnChon.length === 0 || !ngayLamHopLe} onClick={tiep}>Đồng bộ dữ liệu ngay<Icon n="arrow" className="ic sm" /></button>
                   </div>
                 </div>
 
-                <aside className="card ktf-ben">
+                {!laMobile && <aside className="card ktf-ben">
                   <h3>Dữ liệu sẽ tự động đồng bộ từ ngày {ngayLamHopLe ? n.ngayLam : '…'}</h3>
                   <ul>
                     <li><Icon n="check" className="ic sm" /><span><b>{so(soCtDaTao)} đơn bán hàng</b> từ máy POS sẽ tự động lên doanh thu</span></li>
                     <li><Icon n="check" className="ic sm" /><span><b>{so(soTcDaTao)} phiếu thu, chi</b> lập tại cửa hàng sẽ tự cập nhật vào sổ quỹ</span></li>
                     <li><Icon n="check" className="ic sm" /><span>Phân loại chuẩn xác tiền mặt và tiền chuyển khoản QR</span></li>
                   </ul>
-                </aside>
+                </aside>}
               </div>
             )}
             {n.b < XONG && !nhanh && (
@@ -651,11 +659,13 @@ export function OnboardFabi() {
                       <div className="ktf-chao-ic ok"><Icon n="check" className="ic lg" /></div>
                       <h1>Dữ liệu đã sẵn sàng</h1>
                       <p className="muted">Đã lấy {so(soCtDaTao)} chứng từ Xuất bán POS và {so(soTcDaTao)} phiếu thu, phiếu chi từ FABi.</p>
-                      <p>Việc nên làm tiếp: khởi tạo các loại danh mục</p>
-                      <ul className="ktf-viec">
-                        {dmGoi.slice(0, 6).map(f => <li key={f.c}><Icon n="folder" className="ic sm" />{f.n}</li>)}
-                        {dmGoi.length > 6 && <li className="muted">và {dmGoi.length - 6} danh mục khác</li>}
-                      </ul>
+                      {!laMobile && <>   {/* điện thoại: bỏ danh sách danh mục, chỉ còn tích, số chứng từ, nút */}
+                        <p>Việc nên làm tiếp: khởi tạo các loại danh mục</p>
+                        <ul className="ktf-viec">
+                          {dmGoi.slice(0, 6).map(f => <li key={f.c}><Icon n="folder" className="ic sm" />{f.n}</li>)}
+                          {dmGoi.length > 6 && <li className="muted">và {dmGoi.length - 6} danh mục khác</li>}
+                        </ul>
+                      </>}
                       <button className="btn acc lg" onClick={xong}>Bắt đầu làm việc<Icon n="arrow" className="ic sm" /></button>
                     </>}
               </div>

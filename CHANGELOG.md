@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 30/10/2026
+- T138: Điện thoại, màn giới thiệu khi mở từ FABi gọn chữ, còn 2 trang: trang 1 tiêu đề và ảnh app, trang 2 bốn dòng giá trị ngắn, cam kết miễn phí một hàng, nút Bắt đầu kết nối dữ liệu. Popup Kết nối dữ liệu FABi nằm gọn một màn: câu giải thích ngắn, tiền về quỹ còn 2 dòng (Tiền mặt; Ngân hàng, ví điện tử), một dòng số đơn bán, phiếu thu chi sẽ lấy thay khung bên. Màn Dữ liệu đã sẵn sàng bỏ danh sách danh mục.
 - T138: Hộ kinh doanh khai mã số thuế ở Kê khai thuế: cửa hàng đầu tiên mặc định là trụ sở chính (địa điểm kinh doanh chính), bấm Chính ở dòng khác để chọn lại.
 - T675: Điện thoại, màn có Hướng dẫn nhanh có nút bóng đèn trên đầu màn, màn chưa xem có chấm cam. Bấm thì chạy tour khoanh từng chỗ, bong bóng chỉ vào như bản web. Thu chi, Sổ quỹ tiền mặt, Kê khai thuế, Xuất bán POS, Kiểm kê khoanh đủ từng bước.
 - T138: Hướng dẫn Trang chủ, bước Kê khai thuế có nút "Cập nhật nhanh thông tin mã số thuế"; điền xong mã số thuế là về Trang chủ khen, không còn bong bóng mời lập tờ khai. Màn mở từ FABi: nút chỉ còn "Bắt đầu kết nối dữ liệu".
