@@ -43,9 +43,8 @@ export const huongDan: Record<string, HuongDanMan> = {
     buoc: [
       { chu: 'Theo dõi thời điểm phát sinh thao tác và tài khoản thực hiện.', o: 'bang' },
       { chu: 'Xem chi tiết hành động: thêm mới, sửa, xoá chứng từ, ghi sổ hoặc khoá sổ.', o: 'bang' },
-      { chu: 'Lọc theo thao tác, tài khoản, cửa hàng, kết quả. Bật Cần chú ý để xem riêng thao tác cần soát.', o: 'loc' },
-      { chu: 'Bấm một dòng để xem đủ: ai làm, làm ở đâu, chứng từ, nội dung thay đổi, lịch sử của phiếu.', o: 'chiTiet' },
-      { chu: 'Nhật ký tự ghi, không ai sửa hay xoá được.', o: 'ghiChu' },
+      { chu: 'Mặc định xem thao tác hôm nay. Đổi ngày, lọc theo thao tác, cửa hàng ở thanh lọc.', o: 'loc' },
+      { chu: 'Bấm một dòng để xem ai làm, trên chứng từ nào, đã làm gì. Nhật ký tự ghi, không ai sửa hay xoá được.', o: 'chiTiet' },
     ],
     luuY: [
       'Các thao tác trên chứng từ trong phiên làm việc hiện ngay ở đầu danh sách.',

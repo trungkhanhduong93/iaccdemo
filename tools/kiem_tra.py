@@ -1585,10 +1585,15 @@ def kiem_tra_dot_11_a():
             pg.wait_for_timeout(200)
             if pg.locator('.m-nk-ct').count() == 0:
                 loi.append('Nhật ký thao tác: bấm thẻ không mở trang chi tiết')
-            nut_ve = pg.locator('.m-nk-ct button[aria-label*="Quay lại"]')
-            if nut_ve.count() > 0:
-                nut_ve.first.click()
-                pg.wait_for_timeout(200)
+            else:
+                nut_dong = pg.locator('.m-nk-ct button:has-text("Đóng")')
+                if nut_dong.count() == 0:
+                    loi.append('Nhật ký thao tác: thiếu nút Đóng')
+                else:
+                    nut_dong.first.click()
+                    pg.wait_for_timeout(200)
+                    if pg.locator('.m-nk-ct').count() > 0:
+                        loi.append('Nhật ký thao tác: bấm nút Đóng nhưng bảng chi tiết không biến mất')
         kiem_man('Nhật ký thao tác')
         pg.screenshot(path=str(SHOTS / 'm-11-03-nhat-ky.png'))
 
@@ -1600,6 +1605,19 @@ def kiem_tra_dot_11_a():
             loi.append('Nhật ký thao tác (gói S): vẫn ra MChiMayTinh')
         if pg.locator('.m-nk-the').count() == 0:
             loi.append('Nhật ký thao tác (gói S): không thấy danh sách thẻ nhật ký')
+        else:
+            pg.locator('.m-nk-the').first.click()
+            pg.wait_for_timeout(200)
+            if pg.locator('.m-nk-ct').count() == 0:
+                loi.append('Nhật ký thao tác (gói S): bấm thẻ không mở trang chi tiết')
+            else:
+                txt = pg.locator('.m-nk-ct').text_content() or ''
+                if 'Trạng thái' in txt:
+                    loi.append('Nhật ký thao tác (gói S): trong chi tiết vẫn có chữ Trạng thái')
+                nut_dong = pg.locator('.m-nk-ct button:has-text("Đóng")')
+                if nut_dong.count() > 0:
+                    nut_dong.first.click()
+                    pg.wait_for_timeout(200)
         kiem_man('Nhật ký thao tác (gói S)')
 
         # ── 4. Gói thuê bao (#/app/he-thong/goi-thue-bao) ──

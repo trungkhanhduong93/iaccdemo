@@ -10,7 +10,7 @@ import { Card, Kpi, Note, PageHead } from '../../ui/Page'
 import { St, Table } from '../../ui/Table'
 import { between, dmy, fold, k, pad, pick, rng } from '../../ui/format'
 import { Select } from '../../ui/Dropdown'
-import { useNhatKyDayDu, THAO_TAC, canChuY } from '../he-thong/nhatKyMau'
+import { useNhatKyDayDu, THAO_TAC_GOI, HOM_NAY, laHomNay, dongTu, doiTuongTT, vietTat } from '../he-thong/nhatKyMau'
 import { HopDongBo } from '../../ui/HopDongBo'
 
 const dsKho = CUA_HANG.flatMap(c =>
@@ -216,67 +216,44 @@ export function CanhBao({ sc, mod }: ScreenProps) {
 
 export function NhatKyThaoTac({ sc, mod }: ScreenProps) {
   const { s } = useSession()
-  const dv = donViHienTai(s)
-  const tatCa = useNhatKyDayDu()
+  const tatCa = useNhatKyDayDu(s.goi)
 
   const [chonMa, setChonMa] = useState<string | null>(() => tatCa[0]?.ma ?? null)
   const [locThaoTac, setLocThaoTac] = useState('')
-  const [locTaiKhoan, setLocTaiKhoan] = useState('')
   const [locCuaHang, setLocCuaHang] = useState('')
-  const [locLoaiPhieu, setLocLoaiPhieu] = useState('')
-  const [locKetQua, setLocKetQua] = useState('')
-  const [chiChuY, setChiChuY] = useState(false)
   const [tim, setTim] = useState('')
 
-  const dsTaiKhoan = useMemo(() => Array.from(new Set(tatCa.map(d => d.ai).filter(Boolean))), [tatCa])
+  const dsThaoTac = THAO_TAC_GOI[s.goi] ?? THAO_TAC_GOI.S
   const dsCuaHang = useMemo(() => Array.from(new Set(tatCa.map(d => d.ch).filter(Boolean))), [tatCa])
-  const dsLoaiPhieu = useMemo(() => Array.from(new Set(tatCa.map(d => d.loai).filter(Boolean))), [tatCa])
-  const soChuY = useMemo(() => tatCa.filter(canChuY).length, [tatCa])
 
   const dsHienThi = useMemo(() => {
     const q = fold(tim.trim())
     return tatCa.filter(d => {
-      if (chiChuY && !canChuY(d)) return false
+      if (!laHomNay(d)) return false
       if (locThaoTac && d.tt !== locThaoTac) return false
-      if (locTaiKhoan && d.ai !== locTaiKhoan) return false
       if (locCuaHang && d.ch !== locCuaHang) return false
-      if (locLoaiPhieu && d.loai !== locLoaiPhieu) return false
-      if (locKetQua === 'tc' && d.kqLoi) return false
-      if (locKetQua === 'ktc' && !d.kqLoi) return false
       if (q) {
         const khop =
           fold(d.so).includes(q) ||
-          fold(d.dg).includes(q) ||
           fold(d.ai).includes(q) ||
           fold(d.tk).includes(q)
         if (!khop) return false
       }
       return true
     })
-  }, [tatCa, chiChuY, locThaoTac, locTaiKhoan, locCuaHang, locLoaiPhieu, locKetQua, tim])
-
-  const locDem = (locThaoTac ? 1 : 0) + (locTaiKhoan ? 1 : 0) + (locCuaHang ? 1 : 0) + (locLoaiPhieu ? 1 : 0) + (locKetQua ? 1 : 0) + (chiChuY ? 1 : 0) + (tim.trim() ? 1 : 0)
+  }, [tatCa, locThaoTac, locCuaHang, tim])
 
   const dongChon = useMemo(() => {
     if (chonMa === null) return null
     return dsHienThi.find(d => d.ma === chonMa) ?? dsHienThi[0] ?? null
   }, [dsHienThi, chonMa])
 
-  const tieuDe = dongChon
-    ? (dongChon.so
-        ? `${dongChon.tt} ${dongChon.loai.toLowerCase()} ${dongChon.so}`
-        : (dongChon.tt === 'Xem báo cáo' || dongChon.tt === 'Xuất Excel')
-          ? `${dongChon.tt}: ${dongChon.dg}`
-          : `${dongChon.tt}${dongChon.dg ? ': ' + dongChon.dg : ''}`)
-    : ''
-
   return (
     <div className="page">
       <PageHead
         crumb={[mod.ten, sc.nhom ?? '']}
-        title={tenMan(sc)}
+        title="Nhật ký thao tác"
         code={sc.code}
-        meta={<span className="chip" data-hd="ghiChu">Nhật ký không sửa, không xoá được. Lưu 10 năm theo chứng từ kế toán.</span>}
       />
 
       <div className="nk-than">
@@ -284,13 +261,12 @@ export function NhatKyThaoTac({ sc, mod }: ScreenProps) {
           <div className="ds-toolbar-figma" data-hd="loc">
             <button
               type="button"
-              className={`ds-btn-pheu-figma${locDem > 0 ? ' on' : ''}`}
-              aria-label={`Bộ lọc nâng cao${locDem > 0 ? `, đang lọc ${locDem} điều kiện` : ''}`}
+              className="ds-btn-pheu-figma"
+              aria-label="Bộ lọc"
             >
               <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M3 5h18l-7 8v6l-4-2v-4z" />
               </svg>
-              {locDem > 0 && <span className="ds-badge-so">{locDem}</span>}
             </button>
 
             <button type="button" className="ds-chip-ky-figma" aria-label="Kỳ kế toán">
@@ -298,7 +274,7 @@ export function NhatKyThaoTac({ sc, mod }: ScreenProps) {
                 <rect x="3" y="5" width="18" height="16" rx="2" />
                 <path d="M3 10h18M8 3v4M16 3v4" />
               </svg>
-              01/10/2026 – 07/10/2026
+              Hôm nay: {HOM_NAY}
             </button>
 
             <label className="ds-o">
@@ -310,23 +286,8 @@ export function NhatKyThaoTac({ sc, mod }: ScreenProps) {
                 onChange={e => setLocThaoTac(e.target.value)}
               >
                 <option value="">Tất cả</option>
-                {THAO_TAC.map(t => (
+                {dsThaoTac.map(t => (
                   <option key={t} value={t}>{t}</option>
-                ))}
-              </select>
-            </label>
-
-            <label className="ds-o">
-              <span className="ds-o-nhan">Tài khoản</span>
-              <select
-                className="ds-o-sel"
-                aria-label="Tài khoản"
-                value={locTaiKhoan}
-                onChange={e => setLocTaiKhoan(e.target.value)}
-              >
-                <option value="">Tất cả</option>
-                {dsTaiKhoan.map(tk => (
-                  <option key={tk} value={tk}>{tk}</option>
                 ))}
               </select>
             </label>
@@ -346,48 +307,6 @@ export function NhatKyThaoTac({ sc, mod }: ScreenProps) {
               </select>
             </label>
 
-            <label className="ds-o">
-              <span className="ds-o-nhan">Loại phiếu</span>
-              <select
-                className="ds-o-sel"
-                aria-label="Loại phiếu"
-                value={locLoaiPhieu}
-                onChange={e => setLocLoaiPhieu(e.target.value)}
-              >
-                <option value="">Tất cả</option>
-                {dsLoaiPhieu.map(lp => (
-                  <option key={lp} value={lp}>{lp}</option>
-                ))}
-              </select>
-            </label>
-
-            <label className="ds-o">
-              <span className="ds-o-nhan">Kết quả</span>
-              <select
-                className="ds-o-sel"
-                aria-label="Kết quả"
-                value={locKetQua}
-                onChange={e => setLocKetQua(e.target.value)}
-              >
-                <option value="">Tất cả</option>
-                <option value="tc">Thành công</option>
-                <option value="ktc">Không thành công</option>
-              </select>
-            </label>
-
-            <button
-              type="button"
-              className={`nk-btn-chuy${chiChuY ? ' bat' : ''}`}
-              onClick={() => setChiChuY(v => !v)}
-              aria-pressed={chiChuY}
-            >
-              <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 3 2 20h20z" />
-                <path d="M12 10v4M12 17h.01" />
-              </svg>
-              Cần chú ý ({soChuY})
-            </button>
-
             <div className="ds-toolbar-phai">
               <div className="ds-tim-figma">
                 <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--faint)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -397,7 +316,7 @@ export function NhatKyThaoTac({ sc, mod }: ScreenProps) {
                 <input
                   type="text"
                   aria-label="Tìm nhật ký"
-                  placeholder="Số chứng từ, diễn giải"
+                  placeholder="Tìm số chứng từ, tài khoản"
                   value={tim}
                   onChange={e => setTim(e.target.value)}
                 />
@@ -408,13 +327,6 @@ export function NhatKyThaoTac({ sc, mod }: ScreenProps) {
                   <path d="M9 4v16M15 4v16" />
                 </svg>
               </button>
-              <button type="button" className="ds-nut-vuong-36 ds-nut-excel" aria-label="Xuất Excel">
-                <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 3v12" />
-                  <path d="m7 10 5 5 5-5" />
-                  <path d="M5 21h14" />
-                </svg>
-              </button>
             </div>
           </div>
 
@@ -422,23 +334,20 @@ export function NhatKyThaoTac({ sc, mod }: ScreenProps) {
             <table className="tbl">
               <thead>
                 <tr>
-                  <th>Ngày thao tác</th>
-                  <th>Tài khoản</th>
-                  <th>Thao tác</th>
-                  <th>Cửa hàng</th>
-                  <th>Loại phiếu</th>
-                  <th>Số chứng từ</th>
-                  <th>Ngày chứng từ</th>
-                  <th style={{ textAlign: 'right' }}>Số tiền</th>
-                  <th>Diễn giải</th>
-                  <th>Kết quả</th>
-                  <th>Thiết bị</th>
+                  <th style={{ width: 164 }}>Ngày giờ thao tác</th>
+                  <th style={{ width: 150 }}>Tài khoản</th>
+                  <th style={{ width: 136 }}>Chức vụ</th>
+                  <th style={{ width: 110 }}>Thao tác</th>
+                  <th style={{ width: 160 }}>Tên chứng từ</th>
+                  <th style={{ width: 136 }}>Số chứng từ</th>
+                  <th style={{ width: 120 }}>Ngày chứng từ</th>
+                  <th style={{ width: 170 }}>Cửa hàng</th>
+                  <th style={{ width: 248, borderRight: 0 }}>Thiết bị</th>
                 </tr>
               </thead>
               <tbody>
                 {dsHienThi.map(d => {
                   const dangChon = d.ma === dongChon?.ma
-                  const coChuY = canChuY(d)
                   return (
                     <tr
                       key={d.ma}
@@ -446,31 +355,17 @@ export function NhatKyThaoTac({ sc, mod }: ScreenProps) {
                       onClick={() => setChonMa(d.ma)}
                       style={{ cursor: 'pointer' }}
                     >
-                      <td>{d.luc}</td>
+                      <td style={{ fontVariantNumeric: 'tabular-nums' }}>{d.luc}:{d.giay}</td>
                       <td>{d.ai}</td>
-                      <td style={{ fontWeight: 600 }}>
-                        <span className="nk-tt-cot">
-                          {d.tt}
-                          {coChuY && (
-                            <svg role="img" aria-label="Cần chú ý" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--orange-d)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flex: 'none' }}>
-                              <path d="M12 3 2 20h20z" />
-                              <path d="M12 10v4M12 17h.01" />
-                            </svg>
-                          )}
-                        </span>
-                      </td>
-                      <td>{d.ch}</td>
+                      <td>{d.vaiTro}</td>
+                      <td>{d.tt}</td>
                       <td>{d.loai}</td>
                       <td>
                         {d.so ? <span className="ds-link-so">{d.so}</span> : ''}
                       </td>
                       <td>{d.ngay}</td>
-                      <td style={{ textAlign: 'right' }}>{d.tien}</td>
-                      <td style={{ maxWidth: 260, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={d.dg}>{d.dg}</td>
-                      <td style={{ color: d.kqLoi ? 'var(--red)' : undefined }}>
-                        {d.kqLoi ? 'Không thành công' : 'Thành công'}
-                      </td>
-                      <td style={{ color: 'var(--muted)' }}>{d.tbNgan}</td>
+                      <td>{d.ch}</td>
+                      <td style={{ borderRight: 0 }}>{d.tb}</td>
                     </tr>
                   )
                 })}
@@ -484,37 +379,18 @@ export function NhatKyThaoTac({ sc, mod }: ScreenProps) {
         </section>
 
         {dongChon && (
-          <aside className="nk-pa" data-hd="chiTiet">
-            <div className="nk-pa-dau">
-              <div className="nk-pa-dau-chu">
-                <h2 className="nk-pa-tieu-de">{tieuDe}</h2>
-                <div className="nk-pa-phu">Mã nhật ký {dongChon.ma} · {dongChon.luc}:{dongChon.giay}</div>
+          <aside className="nk-pa" data-hd="chiTiet" aria-label="Chi tiết nhật ký">
+            <div className="nk-hd">
+              <span className="nk-av">{vietTat(dongChon.ai)}</span>
+              <div className="nk-hd-t">
+                <b>{dongChon.ai}</b> {dongTu(dongChon)} {doiTuongTT(dongChon) ? <b>{doiTuongTT(dongChon)}</b> : null}
               </div>
-              {dongChon.so && dongChon.tt !== 'Xoá' && (
-                <button
-                  type="button"
-                  className="btn pri"
-                  style={{ height: 36, padding: '0 14px', borderRadius: 8, fontSize: 13, fontWeight: 600, flex: 'none' }}
-                >
-                  Mở phiếu
-                </button>
-              )}
-              <button
-                type="button"
-                className="nk-nut-vuong"
-                aria-label="Đóng"
-                onClick={() => setChonMa(null)}
-              >
-                <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                  <path d="M6 6l12 12M18 6 6 18" />
-                </svg>
-              </button>
             </div>
 
             <div className="nk-pa-than">
               {dongChon.canhBao && (
-                <div className="nk-canh-bao">
-                  <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--orange-d)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flex: 'none', marginTop: 2 }}>
+                <div className="nk-cb">
+                  <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--orange-d)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M12 3 2 20h20z" />
                     <path d="M12 10v4M12 17h.01" />
                   </svg>
@@ -523,180 +399,90 @@ export function NhatKyThaoTac({ sc, mod }: ScreenProps) {
               )}
 
               <div className="nk-muc">
-                <h3 className="nk-muc-t">Ai làm, làm ở đâu</h3>
-                <div className="nk-luoi">
-                  <div className="nk-tt">
-                    <span className="nk-tt-n">Tài khoản</span>
-                    <span className="nk-tt-g">{dongChon.ai}</span>
-                    {dongChon.tk && <span className="nk-tt-p">{dongChon.tk}</span>}
-                  </div>
-                  {s.goi !== 'S' && (
-                    <div className="nk-tt">
-                      <span className="nk-tt-n">Vai trò lúc thao tác</span>
-                      <span className="nk-tt-g">{dongChon.vaiTro}</span>
-                    </div>
-                  )}
-                  <div className="nk-tt">
-                    <span className="nk-tt-n">Đơn vị</span>
-                    <span className="nk-tt-g">{dv?.ten ?? 'Công ty TNHH Phố Mây'}</span>
-                  </div>
-                  <div className="nk-tt">
-                    <span className="nk-tt-n">Cửa hàng</span>
-                    <span className="nk-tt-g">{dongChon.ch || 'Không gắn cửa hàng'}</span>
-                  </div>
-                  <div className="nk-tt">
-                    <span className="nk-tt-n">Thiết bị</span>
-                    <span className="nk-tt-g">{dongChon.tb}</span>
-                  </div>
-                  <div className="nk-tt">
-                    <span className="nk-tt-n">Phiên đăng nhập</span>
-                    <span className="nk-tt-g">{dongChon.phien}</span>
-                  </div>
-                  <div className="nk-tt">
-                    <span className="nk-tt-n">Màn hình</span>
-                    <span className="nk-tt-g">{dongChon.manHinh}</span>
-                  </div>
-                  <div className="nk-tt">
-                    <span className="nk-tt-n">Kết quả</span>
-                    <span className="nk-tt-g" style={{ color: dongChon.kqLoi ? 'var(--red)' : undefined }}>
-                      {dongChon.kqLoi ? `Không thành công, ${dongChon.kqLoi.toLowerCase()}` : 'Thành công'}
+                <h3 className="nk-mt">Thông tin chi tiết</h3>
+                <div className="nk-ds">
+                  <div className="nk-dsr">
+                    <span className="nk-dsn">Tài khoản</span>
+                    <span className="nk-dsg">
+                      {dongChon.ai} {dongChon.tk && <span style={{ color: 'var(--muted)' }}>({dongChon.tk})</span>}
                     </span>
+                  </div>
+                  <div className="nk-dsr">
+                    <span className="nk-dsn">Chức vụ</span>
+                    <span className="nk-dsg">{dongChon.vaiTro}</span>
+                  </div>
+                  <div className="nk-dsr">
+                    <span className="nk-dsn">Thao tác</span>
+                    <span className="nk-dsg">{dongChon.tt}</span>
+                  </div>
+                  <div className="nk-dsr">
+                    <span className="nk-dsn">Thời gian thao tác</span>
+                    <span className="nk-dsg">{dongChon.luc}:{dongChon.giay}</span>
+                  </div>
+                  <div className="nk-dsr">
+                    <span className="nk-dsn">Thiết bị</span>
+                    <span className="nk-dsg">{dongChon.tb}</span>
                   </div>
                 </div>
               </div>
 
               {dongChon.so && (
                 <div className="nk-muc">
-                  <h3 className="nk-muc-t">Chứng từ</h3>
-                  <div className="nk-luoi">
-                    {dongChon.loai && (
-                      <div className="nk-tt">
-                        <span className="nk-tt-n">Loại phiếu</span>
-                        <span className="nk-tt-g">{dongChon.loai}</span>
-                      </div>
-                    )}
-                    {dongChon.so && (
-                      <div className="nk-tt">
-                        <span className="nk-tt-n">Số chứng từ</span>
-                        <span className="ds-link-so">{dongChon.so}</span>
-                      </div>
-                    )}
-                    {dongChon.ngay && (
-                      <div className="nk-tt">
-                        <span className="nk-tt-n">Ngày chứng từ</span>
-                        <span className="nk-tt-g">{dongChon.ngay}</span>
-                      </div>
-                    )}
-                    {dongChon.ky && (
-                      <div className="nk-tt">
-                        <span className="nk-tt-n">Kỳ kế toán</span>
-                        <span className="nk-tt-g">{dongChon.ky}</span>
-                      </div>
-                    )}
-                    {dongChon.doiTuong && (
-                      <div className="nk-tt">
-                        <span className="nk-tt-n">Đối tượng</span>
-                        <span className="nk-tt-g">{dongChon.doiTuong}</span>
-                      </div>
-                    )}
-                    {dongChon.tien && (
-                      <div className="nk-tt">
-                        <span className="nk-tt-n">Số tiền</span>
-                        <span className="nk-tt-g" style={{ fontWeight: 600 }}>{dongChon.tien}</span>
-                      </div>
-                    )}
-                    {dongChon.trangThai && (
-                      <div className="nk-tt">
-                        <span className="nk-tt-n">Trạng thái</span>
-                        <span className="nk-tt-g">{dongChon.trangThai}</span>
-                      </div>
-                    )}
-                    {dongChon.nguon && (
-                      <div className="nk-tt">
-                        <span className="nk-tt-n">Nguồn</span>
-                        <span className="nk-tt-g">{dongChon.nguon}</span>
-                      </div>
-                    )}
-                  </div>
-                  {dongChon.dg && (
-                    <div className="nk-tt" style={{ marginTop: 10 }}>
-                      <span className="nk-tt-n">Diễn giải</span>
-                      <span className="nk-tt-g">{dongChon.dg}</span>
+                  <h3 className="nk-mt">Chứng từ</h3>
+                  <div className="nk-ds">
+                    <div className="nk-dsr">
+                      <span className="nk-dsn">Tên chứng từ</span>
+                      <span className="nk-dsg">{dongChon.loai}</span>
                     </div>
-                  )}
-                </div>
-              )}
-
-              {dongChon.thamSo && (
-                <div className="nk-muc">
-                  <h3 className="nk-muc-t">Báo cáo</h3>
-                  <div className="nk-luoi">
-                    {dongChon.dg && (
-                      <div className="nk-tt">
-                        <span className="nk-tt-n">Tên báo cáo</span>
-                        <span className="nk-tt-g">{dongChon.dg}</span>
+                    <div className="nk-dsr">
+                      <span className="nk-dsn">Số chứng từ</span>
+                      <span className="nk-dsg">
+                        <a href="#" className="ds-link-so" onClick={e => e.preventDefault()}>{dongChon.so}</a>
+                      </span>
+                    </div>
+                    <div className="nk-dsr">
+                      <span className="nk-dsn">Ngày chứng từ</span>
+                      <span className="nk-dsg">{dongChon.ngay}</span>
+                    </div>
+                    <div className="nk-dsr">
+                      <span className="nk-dsn">Cửa hàng</span>
+                      <span className="nk-dsg">{dongChon.ch || 'Không gắn cửa hàng'}</span>
+                    </div>
+                    {s.goi !== 'S' && (
+                      <div className="nk-dsr">
+                        <span className="nk-dsn">Trạng thái</span>
+                        <span className="nk-dsg">{dongChon.trangThai}</span>
                       </div>
                     )}
-                    <div className="nk-tt">
-                      <span className="nk-tt-n">Điều kiện lọc</span>
-                      <span className="nk-tt-g">{dongChon.thamSo}</span>
-                    </div>
                   </div>
                 </div>
               )}
 
-              {dongChon.lyDo && (
-                <div className="nk-muc">
-                  <h3 className="nk-muc-t">Lý do người làm nhập</h3>
-                  <div style={{ fontSize: '13.5px', color: 'var(--ink)' }}>{dongChon.lyDo}</div>
-                </div>
-              )}
-
-              {dongChon.doi && dongChon.doi.length > 0 && (
-                <div className="nk-muc">
-                  <h3 className="nk-muc-t">Nội dung thay đổi ({dongChon.doi.length})</h3>
-                  <div className="nk-doi-bang-wrap">
-                    <table className="nk-doi-bang">
-                      <thead>
-                        <tr>
-                          <th style={{ width: '34%' }}>Trường</th>
-                          <th style={{ width: '33%' }}>Trước</th>
-                          <th>Sau</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {dongChon.doi.map((d, i) => (
-                          <tr key={i}>
-                            <td className="nk-doi-truong">{d.truong}</td>
-                            <td className="nk-doi-cu">{d.cu}</td>
-                            <td className="nk-doi-moi">{d.moi}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+              <div className="nk-muc">
+                <h3 className="nk-mt">Lịch sử thao tác</h3>
+                <ol className="nk-nd">
+                  {(dongChon.noiDung || []).map((t, idx) => (
+                    <li key={idx}>{t}</li>
+                  ))}
+                </ol>
+                {dongChon.lyDo && (
+                  <div className="nk-ly">
+                    <span className="nk-nho">Lý do người làm nhập</span>
+                    <div>{dongChon.lyDo}</div>
                   </div>
-                </div>
-              )}
+                )}
+                <div className="nk-nho" style={{ margin: '16px 0 12px' }}>Mã nhật ký {dongChon.ma}</div>
+              </div>
+            </div>
 
-              {dongChon.lichSu && dongChon.lichSu.length > 0 && (
-                <div className="nk-muc" style={{ borderBottom: 0 }}>
-                  <h3 className="nk-muc-t">Lịch sử chứng từ {dongChon.so}</h3>
-                  <div className="nk-ls-ds">
-                    {dongChon.lichSu.map((h, i) => (
-                      <div key={i} className="nk-ls-dong">
-                        <div className="nk-ls-cot">
-                          <span className={`nk-ls-cham${h.dangXem ? ' on' : ''}`} />
-                          {i < dongChon.lichSu!.length - 1 && <span className="nk-ls-vach" />}
-                        </div>
-                        <div className="nk-ls-noi-dung">
-                          <div className={`nk-ls-viec${h.dangXem ? ' on' : ''}`}>{h.viec}</div>
-                          <div className="nk-ls-phu">{h.luc} · {h.ai}</div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+            <div className="nk-pa-day">
+              <button
+                type="button"
+                className="nk-btn-dong"
+                onClick={() => setChonMa(null)}
+              >
+                Đóng
+              </button>
             </div>
           </aside>
         )}

@@ -30,8 +30,16 @@ import {
   type LoaiHinh,
   type PpHkd,
 } from '../../modules/onboarding/OnboardFabi'
-import { useNhatKy } from '../generic/daXoa'
-import { canChuY, useNhatKyDayDu, type DongNK } from '../../modules/he-thong/nhatKyMau'
+
+import {
+  HOM_NAY,
+  doiTuongTT,
+  dongTu,
+  laHomNay,
+  useNhatKyDayDu,
+  vietTat,
+  type DongNK,
+} from '../../modules/he-thong/nhatKyMau'
 import { pad, pick, rng, fold } from '../format'
 import { Select } from '../Dropdown'
 import { Icon } from '../Icon'
@@ -252,482 +260,259 @@ export const MPhanQuyen: FC<ScreenProps> = () => {
   )
 }
 
-// ── 3. Màn Nhật ký thao tác (T689) ──
-const CHIPS_NHAT_KY = [
-  'Tất cả',
-  'Thêm mới',
-  'Sửa',
-  'Xoá',
-  'Ghi sổ',
-  'Bỏ ghi sổ',
-  'Đăng nhập',
-  'Xem báo cáo',
-]
-
-interface NhomNK {
-  ngay: string
-  tieuDe: string
-  ds: DongNK[]
-}
-
+// ── 3. Màn Nhật ký thao tác (T689, T693) ──
 export const MNhatKyThaoTac: FC<ScreenProps> = () => {
   const { s } = useSession()
-  const laGoiS = s.goi === 'S'
-  const dv = donViHienTai(s)
-
   const [q, setQ] = useState('')
-  const [chipChon, setChipChon] = useState('Tất cả')
-  const [chuY, setChuY] = useState(false)
   const [dongChon, setDongChon] = useState<DongNK | null>(null)
 
-  const tatCa = useNhatKyDayDu()
+  const tatCa = useNhatKyDayDu(s.goi)
 
   const rowsLoc = useMemo(() => {
-    return tatCa.filter(d => {
-      if (chuY && !canChuY(d)) return false
-      if (chipChon !== 'Tất cả' && d.tt !== chipChon) return false
-      if (q.trim()) {
-        const fq = fold(q.trim())
-        const tim = fold(`${d.so || ''} ${d.dg || ''} ${d.ai || ''} ${d.tk || ''}`)
-        if (!tim.includes(fq)) return false
-      }
-      return true
-    })
-  }, [tatCa, chuY, chipChon, q])
-
-  const nhomDs = useMemo(() => {
-    const map = new Map<string, DongNK[]>()
-    for (const d of rowsLoc) {
-      const ngay = d.luc.split(' ')[0] || d.luc
-      let arr = map.get(ngay)
-      if (!arr) {
-        arr = []
-        map.set(ngay, arr)
-      }
-      arr.push(d)
-    }
-    const res: NhomNK[] = []
-    map.forEach((ds, ngay) => {
-      const tieuDe = ngay === '07/10/2026' ? 'Hôm nay, 07/10/2026' : ngay
-      res.push({ ngay, tieuDe, ds })
-    })
-    return res
-  }, [rowsLoc])
-
-  // Chạm thẻ mở trang chi tiết
-  if (dongChon) {
-    const thoiGian = dongChon.giay ? `${dongChon.luc}:${dongChon.giay}` : dongChon.luc
-    const tieuDeThan = dongChon.so
-      ? `${dongChon.tt} ${dongChon.loai ? dongChon.loai.toLowerCase() + ' ' : ''}${dongChon.so}`
-      : `${dongChon.tt}: ${dongChon.dg}`
-
-    return (
-      <div className="m-nk-ct">
-        {/* Đầu trang: nút quay lại + tiêu đề */}
-        <div className="m-nk-ct-dau">
-          <button
-            type="button"
-            className="m-nk-ct-nut-ve"
-            aria-label="Quay lại danh sách"
-            onClick={() => setDongChon(null)}
-          >
-            <svg
-              aria-hidden="true"
-              width="22"
-              height="22"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="m15 18-6-6 6-6" />
-            </svg>
-          </button>
-          <h1 className="m-nk-ct-tieu-de-dau">Chi tiết nhật ký</h1>
-        </div>
-
-        {/* Thân chi tiết */}
-        <div className="m-nk-ct-than">
-          <div className="m-nk-ct-tieu-de-nhom">
-            <h2 className="m-nk-ct-ten">{tieuDeThan}</h2>
-            <div className="m-nk-ct-phu">
-              Mã nhật ký {dongChon.ma} · {thoiGian}
-            </div>
-          </div>
-
-          {dongChon.canhBao ? (
-            <div className="m-nk-ct-canh-bao">
-              <svg
-                aria-hidden="true"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="var(--orange-d)"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="m-nk-ic-chuy"
-              >
-                <path d="M12 3 2 20h20z" />
-                <path d="M12 10v4M12 17h.01" />
-              </svg>
-              <span>{dongChon.canhBao}</span>
-            </div>
-          ) : null}
-
-          {/* Thẻ: Ai làm, làm ở đâu */}
-          <section className="m-nk-ct-the">
-            <h3 className="m-nk-ct-muc-t">Ai làm, làm ở đâu</h3>
-            <div className="m-nk-ct-dong">
-              <span className="m-nk-ct-nhan">Tài khoản</span>
-              <span className="m-nk-ct-gia-tri">
-                {dongChon.ai}
-                {dongChon.tk ? (
-                  <>
-                    <br />
-                    <span className="m-nk-ct-tk-phu">{dongChon.tk}</span>
-                  </>
-                ) : null}
-              </span>
-            </div>
-            {!laGoiS && dongChon.vaiTro ? (
-              <div className="m-nk-ct-dong">
-                <span className="m-nk-ct-nhan">Vai trò</span>
-                <span className="m-nk-ct-gia-tri">{dongChon.vaiTro}</span>
-              </div>
-            ) : null}
-            <div className="m-nk-ct-dong">
-              <span className="m-nk-ct-nhan">Đơn vị</span>
-              <span className="m-nk-ct-gia-tri">{dv.ten || 'Công ty TNHH Phố Mây'}</span>
-            </div>
-            <div className="m-nk-ct-dong">
-              <span className="m-nk-ct-nhan">Cửa hàng</span>
-              <span className="m-nk-ct-gia-tri">{dongChon.ch || 'Không gắn cửa hàng'}</span>
-            </div>
-            {dongChon.tb ? (
-              <div className="m-nk-ct-dong">
-                <span className="m-nk-ct-nhan">Thiết bị</span>
-                <span className="m-nk-ct-gia-tri">{dongChon.tb}</span>
-              </div>
-            ) : null}
-            {dongChon.phien ? (
-              <div className="m-nk-ct-dong">
-                <span className="m-nk-ct-nhan">Phiên đăng nhập</span>
-                <span className="m-nk-ct-gia-tri">{dongChon.phien}</span>
-              </div>
-            ) : null}
-            {dongChon.manHinh ? (
-              <div className="m-nk-ct-dong">
-                <span className="m-nk-ct-nhan">Màn hình</span>
-                <span className="m-nk-ct-gia-tri">{dongChon.manHinh}</span>
-              </div>
-            ) : null}
-            <div className="m-nk-ct-dong">
-              <span className="m-nk-ct-nhan">Kết quả</span>
-              <span className={`m-nk-ct-gia-tri ${dongChon.kqLoi ? 'loi' : ''}`}>
-                {dongChon.kqLoi ? `Không thành công: ${dongChon.kqLoi}` : 'Thành công'}
-              </span>
-            </div>
-          </section>
-
-          {/* Thẻ: Chứng từ */}
-          {dongChon.so ? (
-            <section className="m-nk-ct-the">
-              <h3 className="m-nk-ct-muc-t">Chứng từ</h3>
-              {dongChon.loai ? (
-                <div className="m-nk-ct-dong">
-                  <span className="m-nk-ct-nhan">Loại phiếu</span>
-                  <span className="m-nk-ct-gia-tri">{dongChon.loai}</span>
-                </div>
-              ) : null}
-              <div className="m-nk-ct-dong">
-                <span className="m-nk-ct-nhan">Số chứng từ</span>
-                <span className="m-nk-ct-gia-tri m-nk-ct-so">{dongChon.so}</span>
-              </div>
-              {dongChon.ngay ? (
-                <div className="m-nk-ct-dong">
-                  <span className="m-nk-ct-nhan">Ngày chứng từ</span>
-                  <span className="m-nk-ct-gia-tri">{dongChon.ngay}</span>
-                </div>
-              ) : null}
-              {dongChon.ky ? (
-                <div className="m-nk-ct-dong">
-                  <span className="m-nk-ct-nhan">Kỳ kế toán</span>
-                  <span className="m-nk-ct-gia-tri">{dongChon.ky}</span>
-                </div>
-              ) : null}
-              {dongChon.doiTuong ? (
-                <div className="m-nk-ct-dong">
-                  <span className="m-nk-ct-nhan">Đối tượng</span>
-                  <span className="m-nk-ct-gia-tri">{dongChon.doiTuong}</span>
-                </div>
-              ) : null}
-              {dongChon.tien ? (
-                <div className="m-nk-ct-dong">
-                  <span className="m-nk-ct-nhan">Số tiền</span>
-                  <span className="m-nk-ct-gia-tri m-nk-ct-tien">{dongChon.tien}</span>
-                </div>
-              ) : null}
-              {dongChon.trangThai ? (
-                <div className="m-nk-ct-dong">
-                  <span className="m-nk-ct-nhan">Trạng thái</span>
-                  <span className="m-nk-ct-gia-tri">{dongChon.trangThai}</span>
-                </div>
-              ) : null}
-              {dongChon.nguon ? (
-                <div className="m-nk-ct-dong">
-                  <span className="m-nk-ct-nhan">Nguồn</span>
-                  <span className="m-nk-ct-gia-tri">{dongChon.nguon}</span>
-                </div>
-              ) : null}
-              {dongChon.dg ? (
-                <div className="m-nk-ct-dong">
-                  <span className="m-nk-ct-nhan">Diễn giải</span>
-                  <span className="m-nk-ct-gia-tri">{dongChon.dg}</span>
-                </div>
-              ) : null}
-            </section>
-          ) : null}
-
-          {/* Thẻ: Báo cáo */}
-          {dongChon.thamSo ? (
-            <section className="m-nk-ct-the">
-              <h3 className="m-nk-ct-muc-t">Báo cáo</h3>
-              <div className="m-nk-ct-van-ban">{dongChon.thamSo}</div>
-            </section>
-          ) : null}
-
-          {/* Thẻ: Lý do người làm nhập */}
-          {dongChon.lyDo ? (
-            <section className="m-nk-ct-the">
-              <h3 className="m-nk-ct-muc-t">Lý do người làm nhập</h3>
-              <div className="m-nk-ct-van-ban">{dongChon.lyDo}</div>
-            </section>
-          ) : null}
-
-          {/* Thẻ: Nội dung thay đổi */}
-          {dongChon.doi && dongChon.doi.length > 0 ? (
-            <section className="m-nk-ct-the">
-              <h3 className="m-nk-ct-muc-t">Nội dung thay đổi ({dongChon.doi.length})</h3>
-              {dongChon.doi.map((d, i) => (
-                <div key={i} className="m-nk-ct-doi-item">
-                  <span className="m-nk-ct-doi-truong">{d.truong}</span>
-                  <div className="m-nk-ct-doi-hang">
-                    <span className="m-nk-ct-doi-cu">{d.cu}</span>
-                    <svg
-                      aria-hidden="true"
-                      width="14"
-                      height="14"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="var(--muted)"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M5 12h14M13 6l6 6-6 6" />
-                    </svg>
-                    <span className="m-nk-ct-doi-moi">{d.moi}</span>
-                  </div>
-                </div>
-              ))}
-            </section>
-          ) : null}
-
-          {/* Thẻ: Lịch sử chứng từ */}
-          {dongChon.lichSu && dongChon.lichSu.length > 0 ? (
-            <section className="m-nk-ct-the">
-              <h3 className="m-nk-ct-muc-t">Lịch sử chứng từ {dongChon.so}</h3>
-              <div className="m-nk-ct-ls">
-                {dongChon.lichSu.map((h, i) => {
-                  const laCuoi = i === (dongChon.lichSu?.length ?? 0) - 1
-                  return (
-                    <div key={i} className="m-nk-ct-ls-item">
-                      <div className="m-nk-ct-ls-truc">
-                        <span className={`m-nk-ct-ls-cham ${h.dangXem ? 'dang-xem' : ''}`} />
-                        {!laCuoi ? <span className="m-nk-ct-ls-day" /> : null}
-                      </div>
-                      <div className="m-nk-ct-ls-nd">
-                        <div className={`m-nk-ct-ls-viec ${h.dangXem ? 'dang-xem' : ''}`}>{h.viec}</div>
-                        <div className="m-nk-ct-ls-phu">{h.luc} · {h.ai}</div>
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            </section>
-          ) : null}
-        </div>
-
-        {/* Đáy trang dính: Nút mở phiếu */}
-        {dongChon.so && dongChon.tt !== 'Xoá' ? (
-          <div className="m-nk-ct-chan">
-            <button type="button" className="m-nk-ct-nut-mo" onClick={() => {}}>
-              Mở phiếu {dongChon.so}
-            </button>
-          </div>
-        ) : null}
-      </div>
-    )
-  }
+    const ds = tatCa.filter(laHomNay)
+    if (!q.trim()) return ds
+    const fq = fold(q.trim())
+    return ds.filter(d => fold(`${d.so || ''} ${d.ai || ''} ${d.tk || ''}`).includes(fq))
+  }, [tatCa, q])
 
   return (
-    <div className="m-ht-khung">
-      {/* Ô tìm kiếm và dãy chip */}
-      <div className="m-ht-dau">
-        <div className="m-ht-hang-tim">
-          <div className="m-ht-tim" style={{ height: 44 }}>
-            <Icon n="search" className="m-ht-tim-ic ic sm" />
-            <input
-              type="text"
-              className="m-ht-tim-inp"
-              placeholder="Số chứng từ, diễn giải"
-              value={q}
-              onChange={e => setQ(e.target.value)}
-              aria-label="Tìm kiếm nhật ký"
-            />
-            {q ? (
-              <button
-                type="button"
-                className="m-ht-tim-x"
-                onClick={() => setQ('')}
-                aria-label="Xoá tìm kiếm"
-              >
-                <Icon n="x" className="ic sm" />
-              </button>
-            ) : null}
-          </div>
-        </div>
-
-        {/* Dãy chip trượt ngang */}
-        <div className="m-nk-chips">
-          <button
-            type="button"
-            className="m-nk-chip m-nk-chip-ky"
-            aria-label="Kỳ hiển thị: 01/10 đến 07/10"
+    <div className='m-nk-khung'>
+      {/* Ô tìm kiếm và nút phễu */}
+      <div className='m-nk-hang-tim'>
+        <label className='m-nk-o-tim'>
+          <svg
+            aria-hidden='true'
+            width='17'
+            height='17'
+            viewBox='0 0 24 24'
+            fill='none'
+            stroke='var(--faint)'
+            strokeWidth='2'
+            strokeLinecap='round'
           >
-            <Icon n="calendar" className="ic sm" />
-            <span>01/10 – 07/10</span>
-          </button>
-          <button
-            type="button"
-            className={`m-nk-chip m-nk-chip-chuy ${chuY ? 'on' : ''}`}
-            onClick={() => setChuY(prev => !prev)}
-            aria-pressed={chuY}
+            <circle cx='11' cy='11' r='7' />
+            <path d='m20 20-3.5-3.5' />
+          </svg>
+          <input
+            type='text'
+            className='m-nk-inp'
+            aria-label='Tìm nhật ký'
+            placeholder='Tìm số chứng từ, tài khoản'
+            value={q}
+            onChange={e => setQ(e.target.value)}
+          />
+        </label>
+        <button
+          type='button'
+          className='m-nk-btn-loc'
+          aria-label='Bộ lọc: ngày, thao tác, cửa hàng, tài khoản'
+        >
+          <svg
+            aria-hidden='true'
+            width='19'
+            height='19'
+            viewBox='0 0 24 24'
+            fill='none'
+            stroke='var(--ink)'
+            strokeWidth='2'
+            strokeLinecap='round'
+            strokeLinejoin='round'
           >
-            <svg
-              aria-hidden="true"
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M12 3 2 20h20z" />
-              <path d="M12 10v4M12 17h.01" />
-            </svg>
-            <span>Cần chú ý</span>
-          </button>
-          {CHIPS_NHAT_KY.map(t => (
-            <button
-              key={t}
-              type="button"
-              className={`m-nk-chip ${chipChon === t ? 'on' : ''}`}
-              onClick={() => setChipChon(t)}
-            >
-              {t}
-            </button>
-          ))}
-        </div>
+            <path d='M3 5h18l-7 8v6l-4-2v-4z' />
+          </svg>
+        </button>
       </div>
 
-      {/* Danh sách thẻ theo nhóm ngày */}
-      {nhomDs.length === 0 ? (
-        <div className="m-nk-trong">Không có thao tác nào khớp bộ lọc.</div>
-      ) : (
-        <div className="m-nk-ds">
-          {nhomDs.map(g => (
-            <div key={g.ngay} className="m-nk-nhom">
-              <div className="m-nk-nhom-ten">{g.tieuDe}</div>
-              <div className="m-nk-nhom-ds">
-                {g.ds.map(d => {
-                  const gio = d.luc.split(' ')[1] || ''
-                  const dong3 = d.so
-                    ? [d.ch, d.ngay ? `Ngày CT ${d.ngay}` : ''].filter(Boolean).join(' · ')
-                    : [d.dg, d.thamSo].filter(Boolean).join(', ')
-                  const cacPhan = [d.ai, laGoiS ? '' : d.vaiTro, d.tbNgan].filter(Boolean)
-                  const dongCuoi = cacPhan.join(' · ')
+      {/* Dòng chữ xám: Hôm nay, 07/10/2026 · N thao tác */}
+      <div className='m-nk-dong-dem'>
+        Hôm nay, {HOM_NAY} · {rowsLoc.length} thao tác
+      </div>
 
-                  return (
-                    <div
-                      key={d.ma}
-                      className="m-nk-the"
-                      onClick={() => setDongChon(d)}
-                      role="button"
-                      tabIndex={0}
-                    >
-                      {/* Dòng 1: Thao tác + tam giác cảnh báo + giờ */}
-                      <div className="m-nk-dong-1">
-                        <span className="m-nk-tt">{d.tt}</span>
-                        {canChuY(d) ? (
-                          <svg
-                            role="img"
-                            aria-label="Cần chú ý"
-                            width="14"
-                            height="14"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="var(--orange-d)"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="m-nk-ic-chuy"
-                          >
-                            <path d="M12 3 2 20h20z" />
-                            <path d="M12 10v4M12 17h.01" />
-                          </svg>
-                        ) : null}
-                        <span className="m-nk-gio">{gio}</span>
-                      </div>
+      {/* Danh sách thẻ */}
+      <div className='m-nk-ds'>
+        {rowsLoc.map(d => {
+          const gio = d.luc.slice(11) || d.luc.split(' ')[1] || ''
+          const laChon = dongChon?.ma === d.ma
+          return (
+            <button
+              key={d.ma}
+              type='button'
+              className={`m-nk-the ${laChon ? 'chon' : ''}`}
+              onClick={() => setDongChon(d)}
+            >
+              {/* Dòng 1: thao tác đậm, giờ xám bên phải */}
+              <div className='m-nk-the-d1'>
+                <span className='m-nk-the-tt'>{d.tt}</span>
+                <span className='m-nk-the-gio'>{gio}</span>
+              </div>
 
-                      {/* Dòng 2 (khi có so) */}
-                      {d.so ? (
-                        <div className="m-nk-dong-2">
-                          <span className="m-nk-loai-so">
-                            {d.loai ? <span className="m-nk-loai">{d.loai} </span> : null}
-                            <span className="m-nk-so">{d.so}</span>
-                          </span>
-                          {d.tien ? <span className="m-nk-tien">{d.tien}</span> : null}
-                        </div>
-                      ) : null}
+              {/* Dòng 2 (khi có so): tên chứng từ, số chứng từ xanh đậm, ngày chứng từ xám */}
+              {d.so ? (
+                <div className='m-nk-the-d2'>
+                  <span>{d.loai}</span>
+                  <span className='m-nk-the-so'>{d.so}</span>
+                  <span className='m-nk-the-ngay'>{d.ngay}</span>
+                </div>
+              ) : null}
 
-                      {/* Dòng 3 */}
-                      {dong3 ? <div className="m-nk-dong-3">{dong3}</div> : null}
+              {/* Dòng 3: <ai> · <vaiTro> xám */}
+              <div className='m-nk-the-p'>{d.ai} · {d.vaiTro}</div>
 
-                      {/* Dòng lỗi (khi có kqLoi) */}
-                      {d.kqLoi ? (
-                        <div className="m-nk-dong-loi">Không thành công: {d.kqLoi}</div>
-                      ) : null}
+              {/* Dòng 4: <cửa hàng hoặc 'Không gắn cửa hàng'> · <tb> xám */}
+              <div className='m-nk-the-p'>{d.ch || 'Không gắn cửa hàng'} · {d.tb}</div>
+            </button>
+          )
+        })}
+      </div>
 
-                      {/* Dòng cuối */}
-                      {dongCuoi ? <div className="m-nk-dong-cuoi">{dongCuoi}</div> : null}
-                    </div>
-                  )
-                })}
+      {/* Bảng trượt chi tiết từ dưới lên */}
+      {dongChon ? (
+        <>
+          <div
+            className='m-nk-nen-mo'
+            onClick={() => setDongChon(null)}
+          />
+          <div
+            className='m-nk-ct'
+            role='dialog'
+            aria-label='Chi tiết nhật ký'
+          >
+            {/* Thanh kéo xám */}
+            <div className='m-nk-keo'>
+              <span />
+            </div>
+
+            {/* Header: avatar tròn + câu mô tả */}
+            <div className='hd'>
+              <span className='av'>{vietTat(dongChon.ai)}</span>
+              <div className='hd-t'>
+                <b>{dongChon.ai}</b> {dongTu(dongChon)}{dongChon.so ? <> <b>{doiTuongTT(dongChon)}</b></> : null}
               </div>
             </div>
-          ))}
-        </div>
-      )}
+
+            {/* Thân cuộn */}
+            <div className='m-nk-ct-than'>
+              {/* Hộp cảnh báo khi có canhBao */}
+              {dongChon.canhBao ? (
+                <div className='cb'>
+                  <svg
+                    aria-hidden='true'
+                    width='16'
+                    height='16'
+                    viewBox='0 0 24 24'
+                    fill='none'
+                    stroke='var(--orange-d)'
+                    strokeWidth='2'
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    style={{ flex: 'none', marginTop: 2 }}
+                  >
+                    <path d='M12 3 2 20h20z' />
+                    <path d='M12 10v4M12 17h.01' />
+                  </svg>
+                  <span>{dongChon.canhBao}</span>
+                </div>
+              ) : null}
+
+              {/* Mục Thông tin chi tiết */}
+              <div className='muc'>
+                <h3 className='mt'>Thông tin chi tiết</h3>
+                <div className='ds'>
+                  <div className='dsr'>
+                    <span className='dsn'>Tài khoản</span>
+                    <span className='dsg'>
+                      {dongChon.ai}{dongChon.tk ? <> <span style={{ color: 'var(--muted)' }}>({dongChon.tk})</span></> : null}
+                    </span>
+                  </div>
+                  <div className='dsr'>
+                    <span className='dsn'>Chức vụ</span>
+                    <span className='dsg'>{dongChon.vaiTro || '—'}</span>
+                  </div>
+                  <div className='dsr'>
+                    <span className='dsn'>Thao tác</span>
+                    <span className='dsg'>{dongChon.tt}</span>
+                  </div>
+                  <div className='dsr'>
+                    <span className='dsn'>Thời gian thao tác</span>
+                    <span className='dsg'>{dongChon.luc}{dongChon.giay ? `:${dongChon.giay}` : ''}</span>
+                  </div>
+                  <div className='dsr'>
+                    <span className='dsn'>Thiết bị</span>
+                    <span className='dsg'>{dongChon.tb}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Mục Chứng từ (khi có so) */}
+              {dongChon.so ? (
+                <div className='muc'>
+                  <h3 className='mt'>Chứng từ</h3>
+                  <div className='ds'>
+                    <div className='dsr'>
+                      <span className='dsn'>Tên chứng từ</span>
+                      <span className='dsg'>{dongChon.loai}</span>
+                    </div>
+                    <div className='dsr'>
+                      <span className='dsn'>Số chứng từ</span>
+                      <span className='dsg'>
+                        <span className='so'>{dongChon.so}</span>
+                      </span>
+                    </div>
+                    <div className='dsr'>
+                      <span className='dsn'>Ngày chứng từ</span>
+                      <span className='dsg'>{dongChon.ngay}</span>
+                    </div>
+                    <div className='dsr'>
+                      <span className='dsn'>Cửa hàng</span>
+                      <span className='dsg'>{dongChon.ch || 'Không gắn cửa hàng'}</span>
+                    </div>
+                    {s.goi !== 'S' && dongChon.trangThai ? (
+                      <div className='dsr'>
+                        <span className='dsn'>Trạng thái</span>
+                        <span className='dsg'>{dongChon.trangThai}</span>
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+              ) : null}
+
+              {/* Mục Lịch sử thao tác */}
+              <div className='muc'>
+                <h3 className='mt'>Lịch sử thao tác</h3>
+                <ol className='nd'>
+                  {dongChon.noiDung && dongChon.noiDung.map((nd, idx) => (
+                    <li key={idx}>{nd}</li>
+                  ))}
+                </ol>
+                {dongChon.lyDo ? (
+                  <div className='ly'>
+                    <span className='nho'>Lý do người làm nhập</span>
+                    <div>{dongChon.lyDo}</div>
+                  </div>
+                ) : null}
+                <div className='nho' style={{ margin: '16px 0 12px' }}>
+                  Mã nhật ký {dongChon.ma}
+                </div>
+              </div>
+            </div>
+
+            {/* Đáy dính: CHỈ nút Đóng */}
+            <div className='m-nk-ct-chan'>
+              <button
+                type='button'
+                onClick={() => setDongChon(null)}
+                className='m-nk-ct-nut-dong'
+              >
+                Đóng
+              </button>
+            </div>
+          </div>
+        </>
+      ) : null}
     </div>
   )
 }
+
 
 
 // ── 4. Màn Thông tin đơn vị ──

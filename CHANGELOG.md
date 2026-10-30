@@ -2,6 +2,9 @@
 
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
+## 31/10/2026
+- T693: Nhật ký thao tác vẽ lại. Web: mở ra lọc sẵn hôm nay, bảng 9 cột (ngày giờ, tài khoản, chức vụ, thao tác, tên chứng từ, số chứng từ, ngày chứng từ, cửa hàng, thiết bị), cuộn ngang khi hẹp. Bấm dòng mở khung bên phải gồm Thông tin chi tiết, Chứng từ, Lịch sử thao tác ghi thành câu, chỉ có nút Đóng. Điện thoại: chạm thẻ mở bảng chi tiết trượt từ dưới lên. Mỗi gói chỉ hiện thao tác, chứng từ có trong gói đó: Standard không có ghi sổ, khoá sổ, duyệt.
+
 ## 30/10/2026
 - T692: Thanh bên bỏ mục Thao tác nhanh (trang chủ vẫn giữ khối Thao tác nhanh). Gói Standard, Thông tin đơn vị: ẩn ô Phương pháp tính giá xuất kho, Nhóm doanh thu chỉ còn Nhóm 1, Nhóm 2. Màn Kê khai thuế có nút Thiết lập thông tin mở hộp Thông tin kê khai: mã số thuế, tên hộ kinh doanh, người nộp thuế, điện thoại, email, danh sách điểm bán. Bấm nhãn Bổ sung MST (gói Free, Standard) mở thẳng hộp này, không vào lập tờ khai.
 - T691: Thu chi có tiện ích đồng bộ thu chi FABi bên phải thanh tab, dùng chung mọi tab. Nhãn vàng báo số phiếu thu chi chưa đồng bộ, bấm mở bảng từng phiếu với cột Lý do (chưa map quỹ, kỳ đã khoá sổ) và link xử lý. Nút Đồng bộ chọn kỳ, cửa hàng rồi báo số phiếu vào sổ, số còn chờ.
