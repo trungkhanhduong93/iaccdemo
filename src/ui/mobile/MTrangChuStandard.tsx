@@ -25,7 +25,7 @@ import { anNgoaiGoi, minGoi } from '../../app/plan'
 import { Pk } from '../Page'
 import { DS_QUY_TIEN_112 } from '../../modules/danh-muc/data'
 import { HuongDan, moLaiHuongDan } from '../../modules/home/HuongDan'
-import { ChipTamTinh, NhacSoDuKet, laDonViMoi } from '../../modules/home/NhacDonViMoi'
+import { ChipTamTinh, DongDongBo, NhacSoDuKet, laDonViMoi, phanDaVe, useDongBoFabi } from '../../modules/home/NhacDonViMoi'
 import { layLaiLoCuaHang } from '../../modules/home/soLieuBieuDoStandard'
 import { chiPhiThangTuPhieu, usePhieuChiPhi } from '../../modules/home/chiPhiPhieu'
 
@@ -253,14 +253,20 @@ export function MTrangChuStandard(_props?: Partial<ScreenProps>) {
 
   // 2. Số liệu tính toán
   const kyXem: KyBaoCao = thangF === 10 ? 'thang-nay' : 'thang-truoc'
-  const d = useMemo(() => tinhToanTongQuan(kyXem, selCns, s.cheDo, thangF), [kyXem, selCns, s.cheDo, thangF])
+  const d0 = useMemo(() => tinhToanTongQuan(kyXem, selCns, s.cheDo, thangF), [kyXem, selCns, s.cheDo, thangF])
+  // Chứng từ FABi còn đổ về sau Kết nối: doanh thu, chi phí, quỹ tăng dần như bản web (T687)
+  const db = useDongBoFabi()
+  const pDt = db ? phanDaVe(db.t) : 1
+  const ctDaVe = db ? Math.round(db.ct * pDt) : 0
+  const d = db ? { ...d0, dtThuan: Math.round(d0.dtThuan * pDt) } : d0
 
   // Lãi lỗ
-  const nvl = useMemo(() => nvlKy(s, selCns, thangF), [s, selCns, thangF])
+  const nvl0 = useMemo(() => nvlKy(s, selCns, thangF), [s, selCns, thangF])
+  const nvl = db ? { ...nvl0, tien: Math.round(nvl0.tien * pDt) } : nvl0
   // Chi phí hoạt động cộng từ phiếu chi có lý do là chi phí, như bản web (T483)
   const pcp = usePhieuChiPhi(s)
   const cpPhieu = useMemo(() => chiPhiThangTuPhieu(pcp, thangF, selCns), [pcp, thangF, selCns])
-  const cpThang = cpPhieu.tong
+  const cpThang = Math.round(cpPhieu.tong * pDt)
   const loiNhuan = d.dtThuan - nvl.tien - cpThang - d.cpPhanBo
   const bien = d.dtThuan > 0 ? loiNhuan / d.dtThuan : 0
   const chiLon = cpPhieu.ds[0]   // lý do chi phí lớn nhất trong tháng
@@ -268,7 +274,19 @@ export function MTrangChuStandard(_props?: Partial<ScreenProps>) {
   const laiLoCn = useMemo(() => layLaiLoCuaHang(thangF, selCns, s, pcp), [thangF, selCns, s, pcp])
 
   // Quỹ tiền
-  const quy = useMemo(() => [...tonQuyTheoSo(thangF, selCns), ...QUY_MAU_THEM], [thangF, selCns])
+  const quyDu = useMemo(() => [...tonQuyTheoSo(thangF, selCns), ...QUY_MAU_THEM], [thangF, selCns])
+  // Phiếu thu FABi chia cho các quỹ có thu theo số tiền thu, mỗi quỹ về hết ở một lúc khác nhau, như bản web (T687)
+  const quyDb = useMemo(() => {
+    if (!db) return undefined
+    const coThu = quyDu.filter(q => q.thu > 0)
+    const tongThu = coThu.reduce((a, q) => a + q.thu, 0) || 1
+    return Object.fromEntries(coThu.map((q, i) => {
+      const tong = Math.max(1, Math.round(db.tc * q.thu / tongThu))
+      return [q.quy, { p: phanDaVe(db.t, [1, 0.6, 0.85, 0.7, 0.5][i % 5]), tong }]
+    }))
+  }, [db, quyDu])
+  const quy = useMemo(() => quyDb ? quyDu.map(q => quyDb[q.quy] ? { ...q, thu: Math.round(q.thu * quyDb[q.quy].p), cuoi: Math.round(q.cuoi - q.thu * (1 - quyDb[q.quy].p)) } : q) : quyDu, [quyDu, quyDb])
+  const dongBoQuy = quyDb && Object.fromEntries(Object.entries(quyDb).map(([k, v]) => [k, { da: Math.round(v.tong * v.p), tong: v.tong }]))
   const tongQuy = useMemo(() => {
     return {
       cuoi: quy.reduce((a, r) => a + r.cuoi, 0),
@@ -463,7 +481,7 @@ export function MTrangChuStandard(_props?: Partial<ScreenProps>) {
 
           <div className="m-tcf-kqkd-bang">
             {/* Dòng Doanh thu: Trum chốt số tiền màu --blue */}
-            <div className="m-tcf-kqkd-hang">
+            <div className={`m-tcf-kqkd-hang${db ? ' co-db' : ''}`}>
               <div className="m-tcf-kqkd-cot-trai">
                 <div className="m-tcf-kqkd-ten-hang">Doanh thu</div>
               </div>
@@ -471,6 +489,7 @@ export function MTrangChuStandard(_props?: Partial<ScreenProps>) {
                 <span className="m-tcf-kqkd-so-tien dt-blue">{moneyD(d.dtThuan)}</span>
                 <Icon n="chevr" className="ic sm m-tcf-mui-an" />
               </div>
+              {db && <DongDongBo da={ctDaVe} tong={db.ct} />}
             </div>
 
             {/* Chi phí nguyên vật liệu: Trum chốt % màu --orange */}
@@ -626,6 +645,11 @@ export function MTrangChuStandard(_props?: Partial<ScreenProps>) {
               <span style={{ color: 'var(--green, #138a52)' }}>{short(tongQuy.thu)}</span> · chi{' '}
               <span style={{ color: 'var(--red, #c2362b)' }}>{short(tongQuy.chi)}</span>
             </div>
+            {dongBoQuy && (   // vòng quỹ điện thoại vẽ bằng SVG, không có dòng từng quỹ: báo gộp phiếu thu của mọi quỹ (T687)
+              <div className="m-tcf-db-quy">
+                <DongDongBo da={Object.values(dongBoQuy).reduce((a, x) => a + x.da, 0)} tong={Object.values(dongBoQuy).reduce((a, x) => a + x.tong, 0)} />
+              </div>
+            )}
             <NhacSoDuKet />
           </div>
 

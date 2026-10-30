@@ -120,7 +120,7 @@ export function KhoiTaoFabi() {
               </div>
               {!laMobile && <small className="muted">{CAM_KET.join(' · ')}</small>}
             </div>
-            {!laMobile && <p className="ktf-b1-goi"><Icon n="sparkle" className="ic sm" />Dễ dàng nâng cấp lên giải pháp kế toán chuyên nghiệp cho hộ kinh doanh (gói iPOS Accounting Plus) và doanh nghiệp (gói iPOS Accounting Pro), đáp ứng chuẩn mực quy định của Bộ Tài chính, bất kỳ lúc nào.</p>}
+            {(!laMobile || trang === 1) && <p className="ktf-b1-goi"><Icon n="sparkle" className="ic sm" />Dễ dàng nâng cấp lên giải pháp kế toán chuyên nghiệp cho hộ kinh doanh (gói iPOS Accounting Plus) và doanh nghiệp (gói iPOS Accounting Pro), đáp ứng chuẩn mực quy định của Bộ Tài chính, bất kỳ lúc nào.</p>}
           </div>
         )}
       </div>

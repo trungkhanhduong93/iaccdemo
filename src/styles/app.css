@@ -42920,7 +42920,8 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
   .ktf-pop .ktf-dt-lay { margin-top: 10px; }
   .ktf-pop .ktf-ngay { margin-bottom: 0; gap: 6px; }
   .ktf-pop .ktf-ngay small { min-width: 0; flex-basis: 100%; }
-  .ktf-pop .ktf-pttt > div { grid-template-columns: auto 14px auto; justify-content: start; gap: 6px; padding: 8px 10px; font-size: 12.5px; white-space: nowrap; }
+  .ktf-pop .ktf-pttt { display: grid; grid-template-columns: auto auto minmax(0, 1fr); column-gap: 8px; }   /* hai dòng chung cột: mũi tên, tên quỹ thẳng hàng; khoảng cách đặt ở khung cha để cột tính đủ chỗ */
+  .ktf-pop .ktf-pttt > div { grid-column: 1 / -1; grid-template-columns: subgrid; padding: 8px 10px; font-size: 12.5px; white-space: nowrap; }
   .ktf-pop .ktf-pttt-chu { display: none; }   /* đổi quỹ nhận ở Danh mục › Quỹ tiền, điện thoại bỏ dòng này cho đủ 1 trang */
 }
 
@@ -42941,3 +42942,7 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
 .bbt-13t-trong.db-mo > :not(.bbt-13t-trong-dau) { filter: blur(2px); opacity: .4; pointer-events: none; }
 .bbt-13t-trong.db-mo::after { content: attr(data-db); position: absolute; left: 50%; top: 55%; transform: translate(-50%, -50%); padding: 6px 12px; border: 1px solid var(--orange-b); border-radius: 8px; background: var(--white); color: var(--amber); font-size: 12.5px; font-weight: 600; white-space: nowrap; }
 .ktf-tai-ds .ktf-tai-tiep { color: var(--amber); }
+
+/* ── Điện thoại, trang chủ báo đang đồng bộ x / y chứng từ FABi ở Doanh thu (T687) ── */
+.m-tcf-kqkd-hang.co-db { flex-wrap: wrap; row-gap: 6px; box-shadow: inset 0 0 0 1.5px var(--orange-b); }
+.m-tcf-db-quy { margin-top: 8px; }

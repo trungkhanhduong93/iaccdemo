@@ -46,7 +46,7 @@ export function ChipTamTinh() {
   const { s } = useSession()
   const db = useDongBoFabi()
   if (!laDonViMoi(s) || !db) return null
-  return <span className="chip warn nhac-tt-chip">Đang đồng bộ, tạm tính</span>
+  return <span className="chip warn nhac-tt-chip">Đang tính toán</span>
 }
 
 export function NhacSoDuKet() {
