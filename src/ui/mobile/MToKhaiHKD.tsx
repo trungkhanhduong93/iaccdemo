@@ -14,7 +14,7 @@ import {
   BUOC, DIA_BAN, DS, DS_TT, NGANH, NHOM_DT, TEN_TO_KHAI, lapToKhai, soLieu, tenKy, tenLoai,
   type ToKhai, type TrangThai,
 } from '../../modules/thue/ToKhaiHKD'
-import { GoiYKeKhai, KhenToKhai, xongViecHuongDan } from '../../modules/home/HuongDan'
+import { boViecHuongDan, GoiYKeKhai, KhenToKhai, xongViecHuongDan } from '../../modules/home/HuongDan'
 import { Icon } from '../Icon'
 import { fold, moneyD } from '../format'
 import { MChon } from './MChon'
@@ -235,8 +235,9 @@ export const MToKhaiHKD: FC<ScreenProps> = () => {
       <MBaoCaoTheoDoi mo={moTheoDoi} onDong={() => setMoTheoDoi(false)} modKey="thue" tieuDe="Báo cáo theo dõi" ds={theoDoi} />
       {/* hướng dẫn Trang chủ (T138): khai xong thông tin kinh doanh thì khoanh số liệu tờ khai đầu danh sách, Lập tờ khai mở tấm chọn kỳ */}
       <GoiYKeKhai chon=".m-tk-dong:has(.m-tk-dong-so)" onLap={() => setLap(true)} />
-      {lap && <TamLapToKhai onDong={() => setLap(false)} onLap={lapMoi} />}
-      {mo && <ManKeKhai tk={mo.tk} buocDau={mo.buoc} onDong={() => setMo(null)} onDoi={() => veLai(x => x + 1)} />}
+      {/* đang theo hướng dẫn Trang chủ mà đóng chưa nộp: hướng dẫn chỉ vào nút Xem lại (boViecHuongDan) */}
+      {lap && <TamLapToKhai onDong={() => { setLap(false); boViecHuongDan('thue', s.donVi, nav) }} onLap={lapMoi} />}
+      {mo && <ManKeKhai tk={mo.tk} buocDau={mo.buoc} onDong={() => { setMo(null); boViecHuongDan('thue', s.donVi, nav) }} onDoi={() => veLai(x => x + 1)} />}
     </div>
   )
 }

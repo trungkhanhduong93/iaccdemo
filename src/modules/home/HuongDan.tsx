@@ -133,7 +133,7 @@ export function moLaiHuongDan() { window.dispatchEvent(new Event(SU_KIEN)) }
 
 /** Hướng dẫn đang tạm dừng, chờ chạy tiếp ở Tổng quan: bấm Bắt đầu ở Bàn làm việc, hoặc bấm nút làm ngay (Ghi một khoản chi…)
  *  rồi mở màn khác. Lưu ở sessionStorage để màn khác hiện nút Tiếp tục hướng dẫn (TiepHuongDan), tải lại trang vẫn còn */
-interface Tiep { dv: string; b: number; moLai: boolean; cho?: Viec; khen?: { viec: Viec; ten: string } }   // cho: đang chờ màn làm ngay lưu xong; khen: đã lưu, về Trang chủ khen trước
+interface Tiep { dv: string; b: number; moLai: boolean; cho?: Viec; khen?: { viec: Viec; ten: string }; bo?: boolean }   // cho: đang chờ màn làm ngay lưu xong; khen: đã lưu, về Trang chủ khen trước; bo: đóng màn đó chưa lưu
 const KHOA_TIEP = 'iacc-huong-dan-tiep'
 const SU_KIEN_TIEP = 'iacc-huong-dan-tiep'
 const docTiep = (): Tiep | null => { try { return JSON.parse(sessionStorage.getItem(KHOA_TIEP) || 'null') } catch { return null } }
@@ -153,6 +153,18 @@ export function xongViecHuongDan(viec: Viec, ten: string, dv: string, di: (to: s
   return true
 }
 
+/** Gọi khi đóng màn làm ngay mà chưa lưu (tắt form quỹ, thoát hỏi kê khai, đóng hộp tờ khai): về Trang chủ chạy bước sau,
+ *  việc đó là bước cuối thì chỉ vào nút Xem lại hướng dẫn (PhuongXT 30/10/2026). Xét sau một nhịp: Đã nộp CQT đóng hộp trước rồi mới
+ *  gọi xongViecHuongDan, lúc đó hướng dẫn đã sang khen, không còn chờ việc này */
+export function boViecHuongDan(viec: Viec, dv: string, di: (to: string) => void) {
+  window.setTimeout(() => {
+    const t = docTiep()
+    if (!t || t.dv !== dv || t.cho !== viec || navigator.webdriver) return
+    luuTiep({ dv: t.dv, b: t.b, moLai: t.moLai, bo: true })
+    di(TRANG_HD)
+  })
+}
+
 /** Hiện khi đơn vị đang chọn vừa khởi tạo xong, chưa xem hướng dẫn (huongDan[đơn vị] === false). sang: trang này không có các khối để khoanh (Bàn làm việc),
  *  chỉ hiện bước chào, bấm Bắt đầu thì chuyển sang trang đó */
 export function HuongDan({ sang }: { sang?: string }) {
@@ -167,12 +179,12 @@ export function HuongDan({ sang }: { sang?: string }) {
   const ds = laMobile ? BUOC_DT : BUOC
   const hetSauKhen = (tiep?.b ?? 0) >= ds.length   // việc vừa xong là bước cuối: khen xong thì kết thúc
   // đã qua bước Kê khai thuế (bấm Mở Kê khai thuế) mà chưa nộp tờ khai, quay lại Trang chủ: không lặp bước đó, hiện màn Bắt đầu dùng (KET)
-  const [ket, setKet] = useState(!tiep?.khen && hetSauKhen)
+  const [ket, setKet] = useState(!tiep?.khen && !tiep?.bo && hetSauKhen)
   const [i, setI] = useState(Math.min(tiep?.b ?? 0, ds.length - 1))
   const [o, setO] = useState<DOMRect | null>(null)
   const [caoBong, refBong] = useCaoBong()
   const [moLai, setMoLai] = useState(tiep?.moLai ?? false)   // bấm nút Xem lại hướng dẫn
-  const [nhacNut, setNhacNut] = useState(false)   // đã bấm Bỏ qua, đang chỉ vào nút Xem lại hướng dẫn
+  const [nhacNut, setNhacNut] = useState(!!tiep?.bo && hetSauKhen)   // đã bấm Bỏ qua (hoặc đóng màn bước cuối chưa lưu), đang chỉ vào nút Xem lại hướng dẫn
   const dangDung = !!sang && docTiep()?.dv === s.donVi
   useEffect(() => {
     const mo = () => { setI(0); setNhacNut(false); setKhen(null); setKet(false); setMoLai(true) }
@@ -268,7 +280,7 @@ export function HuongDan({ sang }: { sang?: string }) {
         <div className="row hdan-nut">
           {i > 0 && <span className="muted hdan-dem">{i}/{ds.length - 1}</span>}
           <span className="grow" />
-          {!cuoi && <button className="btn ghost sm" onClick={() => setNhacNut(true)}>Bỏ qua</button>}
+          <button className="btn ghost sm" onClick={() => setNhacNut(true)}>Bỏ qua</button>{/* cả bước cuối (PhuongXT 30/10/2026) */}
           {i > 1 && <button className="btn sm" onClick={() => setI(i - 1)}>Quay lại</button>}
           <button className="btn pri sm" onClick={cuoi ? xong : i === 0 && sang ? () => { luuTiep({ dv: s.donVi, b: 1, moLai }); nav(sang) } : () => setI(i + 1)}>{i === 0 ? 'Khám phá ngay' : cuoi ? 'Bắt đầu dùng' : 'Tiếp'}</button>
         </div>
@@ -297,7 +309,7 @@ export function TiepHuongDan() {
   const thoi = () => { luuTiep(null); set({ huongDan: { ...s.huongDan, [s.donVi]: true } }) }
   return createPortal(
     <>
-    {t.cho === 'quy' && pathname.startsWith('/app/danh-muc/1-12') && <KhoanhSoDuQuy />}
+    {t.cho === 'quy' && pathname.startsWith('/app/danh-muc/1-12') && <KhoanhSoDuQuy onDong={() => boViecHuongDan('quy', s.donVi, nav)} />}
     {/* điện thoại: nút dài ở đáy đè lên form, nút Lưu, tấm chọn; thay bằng dải mỏng dưới thanh tiêu đề (PhuongXT 29/10/2026) */}
     {laMobile ? <DaiHuongDanDt dem={`${Math.min(t.b, tong)}/${tong}`} onTiep={() => nav(TRANG_HD)} onTat={thoi} /> : <div className="hdan-tiep" role="status">
       <button className="btn pri sm" onClick={() => nav(TRANG_HD)}>Tiếp tục hướng dẫn ({Math.min(t.b, tong)}/{tong})<Icon n="arrow" className="ic sm" /></button>
@@ -454,10 +466,11 @@ export function KhenToKhai({ ky }: { ky: string }) {
 /** Bấm Nhập số dư quỹ ở hướng dẫn, form quỹ mở ra: khoanh ô Số dư ban đầu; máy tính đặt con trỏ vào ô (PhuongXT 29/10/2026).
  *  Chỉ viền, không làm tối màn, không chặn bấm; bám theo ô mỗi khung hình vì form trượt vào từ bên phải.
  *  Điện thoại không tự đặt con trỏ: bàn phím bật lên đẩy màn nhìn thấy lên, viền vẽ lệch sang ô phía trên (Safari iPhone) */
-function KhoanhSoDuQuy() {
+function KhoanhSoDuQuy({ onDong }: { onDong: () => void }) {
   const [o, setO] = useState<DOMRect | null>(null)
   useEffect(() => {
-    let f = 0, daFocus = false
+    // form đã mở rồi mất ô Số dư quá 400ms: đóng form chưa lưu (lưu có số dư thì xongViecHuongDan đã chuyển trang trước)
+    let f = 0, daFocus = false, mat = 0, daBao = false
     const chuot = window.matchMedia('(pointer: fine)').matches
     const bam = () => {
       const nhan = [...document.querySelectorAll('label')].find(l => l.textContent?.trim().startsWith('Số dư ban đầu'))
@@ -470,12 +483,17 @@ function KhoanhSoDuQuy() {
         }
         const z = zoom(), m = new DOMRect(r.left / z, r.top / z, r.width / z, r.height / z)
         setO(o => o && o.left === m.left && o.top === m.top && o.width === m.width && o.height === m.height ? o : m)
-      } else setO(null)
+        mat = 0
+      } else {
+        setO(null)
+        if (!mat) mat = Date.now()
+        if (daFocus && !daBao && Date.now() - mat > 400) { daBao = true; onDong() }
+      }
       f = requestAnimationFrame(bam)
     }
     bam()   // đo ngay, không chờ khung hình đầu (tab chạy nền thì requestAnimationFrame đứng)
     return () => cancelAnimationFrame(f)
-  }, [])
+  }, [])   // eslint-disable-line react-hooks/exhaustive-deps
   if (!o) return null
   return (
     <>

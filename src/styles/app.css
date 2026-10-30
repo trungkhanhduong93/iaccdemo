@@ -42688,12 +42688,19 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
   .ktf-gt-nut .ktf-lui { background: #fff; border: 1px solid var(--line); color: var(--ink); }
 }
 
-/* ── Điện thoại: mọi bong bóng khen "Tuyệt vời" viền xanh như bong bóng khen ở màn tờ khai (.hdan-khen-tk) (T138) ── */
+/* ── Điện thoại: mọi bong bóng hướng dẫn (tour Trang chủ, khen "Tuyệt vời", gợi ý kê khai, tour Hướng dẫn nhanh) viền xanh như bong bóng khen ở màn tờ khai (.hdan-khen-tk) (T138) ── */
+/* bong bóng trắng chữ xám hay đè lên khối trắng đang khoanh (thẻ Kết quả kinh doanh cao gần hết màn) nên chìm, PhuongXT 30/10/2026 */
 @media (max-width: 767px) {
-  .hdan-khen { border: 2px solid var(--blue); box-shadow: 0 18px 48px rgba(14, 26, 43, .38), 0 0 0 6px rgba(5, 96, 166, .14); background: linear-gradient(180deg, var(--tint) 0, #fff 64px); animation: hdan-khen-vao .35s ease-out both; }
+  .hdan-bong { border: 2px solid var(--blue); box-shadow: 0 18px 48px rgba(14, 26, 43, .38), 0 0 0 6px rgba(5, 96, 166, .14); background: linear-gradient(180deg, var(--tint) 0, #fff 64px); }
+  .hdan-bong p { color: var(--ink); }
+  .hdan-bong b { color: var(--blue-d); }
+  .hdan-khen { animation: hdan-khen-vao .35s ease-out both; }   /* không đặt cho .giua: transform của hiệu ứng làm lệch bong bóng giữa màn */
   .hdan-khen .hdan-khen-ic { background: var(--amber); color: #fff; }
-  .hdan-khen p { color: var(--ink); }
-  .hdan-khen b { color: var(--blue-d); }
+  .hdan-lo { box-shadow: 0 0 0 9999px rgba(14, 26, 43, .62), 0 0 0 3px var(--blue) inset; }   /* chỗ khoanh viền xanh, nền tối đậm hơn chút */
+  /* dải Tiếp tục hướng dẫn ở màn khác: nền xanh đặc, chữ trắng */
+  .hdan-dai-dt { background: var(--blue); color: #fff; border-bottom: 0; }
+  .hdan-dai-tiep .grow { color: #fff; }
+  .hdan-dai-tat { color: rgba(255, 255, 255, .8); }
 }
 
 /* ── Vòng nhấp nháy nút Hướng dẫn không làm rung trang (T686) ── */

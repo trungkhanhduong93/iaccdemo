@@ -13,7 +13,7 @@ import { Note, Pk } from '../../ui/Page'
 import { Dropdown, MenuItem, Select } from '../../ui/Dropdown'
 import { ChonHaiCot } from '../../ui/ChonHaiCot'
 import { ONgay } from '../../ui/ChonNgay'
-import { TiepHuongDan } from '../home/HuongDan'
+import { boViecHuongDan, TiepHuongDan } from '../home/HuongDan'
 
 export const BUOC = ['Loại hình và gói', 'Đơn vị', 'Cửa hàng']   // bỏ Đồng bộ bán hàng; FABi luôn kéo chi tiết theo hoá đơn (T158, T247)
 const XONG = BUOC.length   // bước hoàn tất
@@ -395,6 +395,7 @@ export function OnboardFabi() {
     // trường trống bị rơi khi lưu JSON nên xoá rõ trước, rồi trả lại giá trị cũ nếu có
     if (t) set({ dvMoi: undefined, cnThem: undefined, dungThu: undefined, ...t.phien })
     nav(t?.duong ?? '/app')
+    if (n.thue) boViecHuongDan('thue', s.donVi, nav)   // đang theo hướng dẫn Trang chủ: về chỉ vào nút Xem lại (PhuongXT 30/10/2026)
   }
   /** Đổi loại hình, nhóm hay cách tính thuế thì gói, chế độ về gợi ý mới */
   const doiLoai = (p: Partial<Pick<Nhap, 'loai' | 'nhom' | 'ppHkd'>>) => {

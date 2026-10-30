@@ -4,7 +4,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { GoiYKeKhai, KhenToKhai, xongViecHuongDan } from '../home/HuongDan'
+import { boViecHuongDan, GoiYKeKhai, KhenToKhai, xongViecHuongDan } from '../home/HuongDan'
 import type { Col, Row, ScreenProps } from '../types'
 import { useSession } from '../../app/session'
 import { CUA_HANG, DON_VI, tongKy } from '../../data/mock'
@@ -77,7 +77,8 @@ const locMacDinh = (): GtLoc => ({ nam: '2026', tim: '', loai: '', tt: '' })
 export const DS_TT: TrangThai[] = ['Chưa nộp', 'Đã nộp', 'Bị từ chối', 'Đã huỷ']
 
 export function ToKhaiHKD({ sc, mod }: ScreenProps) {
-  const { toast } = useSession()
+  const { s, toast } = useSession()
+  const nav = useNavigate()
   const [, setLan] = useState(0)   // vẽ lại sau khi đổi danh sách
   const loc0 = useLocNhap(locMacDinh)
   const { nhap, dat, ap } = loc0
@@ -167,8 +168,9 @@ export function ToKhaiHKD({ sc, mod }: ScreenProps) {
       {/* hướng dẫn Trang chủ (T138): khai xong thông tin kinh doanh thì khoanh cột doanh thu, tiền thuế; Lập tờ khai mở hộp chọn kỳ như nút Thêm mới,
           lập xong vào các bước kê khai */}
       <GoiYKeKhai onLap={() => setLap(true)} />
-      {lap && <HopLapToKhai onDong={() => setLap(false)} onLap={lapMoi} />}
-      {mo && <HopToKhai tk={mo} buocDau={buocDau} onDong={() => setMo(null)} onDoi={() => setLan(x => x + 1)} />}
+      {/* đang theo hướng dẫn Trang chủ mà đóng hộp chưa nộp: hướng dẫn chỉ vào nút Xem lại (boViecHuongDan) */}
+      {lap && <HopLapToKhai onDong={() => { setLap(false); boViecHuongDan('thue', s.donVi, nav) }} onLap={lapMoi} />}
+      {mo && <HopToKhai tk={mo} buocDau={buocDau} onDong={() => { setMo(null); boViecHuongDan('thue', s.donVi, nav) }} onDoi={() => setLan(x => x + 1)} />}
     </div>
   )
 }
