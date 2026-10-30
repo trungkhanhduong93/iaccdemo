@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T689 | Nhật ký thao tác mở cho gói Standard, vẽ lại cả web lẫn điện thoại: cột Ngày thao tác, Tài khoản, Thao tác (Thêm mới, Sửa, Xoá, Ghi sổ, Bỏ ghi sổ, Duyệt, Khoá sổ, Đăng nhập, Đăng xuất, Xem báo cáo, In, Xuất Excel), Cửa hàng, Loại phiếu, Số chứng từ, Ngày chứng từ, Diễn giải; bỏ IP; bấm dòng Sửa xem trường đổi cũ thành mới | Trum | 30/10/2026 | `2026-10-30-trum-nhat-ky-thao-tac.md` |
 | T687 | Trang chủ web gói Standard sau khi Kết nối FABi: dải vàng tổng chứng từ, dòng Doanh thu và từng quỹ báo đang đồng bộ x / y chứng từ, biểu đồ làm mờ tới khi xong | PhuongXT | 30/10/2026 | `2026-10-30-phuongxt-trang-chu-dang-dong-bo.md` |
 | T675 | Hướng dẫn nhanh điện thoại kiểu bong bóng nổi (QD89): nút bóng đèn chấm cam trên đầu màn, tour khoanh đủ từng bước ở Thu chi, Sổ quỹ tiền mặt, Kê khai thuế, Xuất bán POS, Kiểm kê | Trum | 30/10/2026 | `2026-10-30-trum-huong-dan-dien-thoai.md` |
 | T686 | Web, màn có nút Hướng dẫn đang nhấp nháy hết rung trang: thanh tab cắt chiều ngang, vòng cam không còn lố mép phải cửa sổ | Trum | 30/10/2026 | `2026-10-30-trum-rung-nut-huong-dan.md` |

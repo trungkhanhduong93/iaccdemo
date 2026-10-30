@@ -1580,8 +1580,27 @@ def kiem_tra_dot_11_a():
             loi.append('Nhật ký thao tác: vẫn ra MChiMayTinh')
         if pg.locator('.m-nk-the').count() == 0:
             loi.append('Nhật ký thao tác: không thấy danh sách thẻ nhật ký')
+        else:
+            pg.locator('.m-nk-the').first.click()
+            pg.wait_for_timeout(200)
+            if pg.locator('.m-nk-ct').count() == 0:
+                loi.append('Nhật ký thao tác: bấm thẻ không mở trang chi tiết')
+            nut_ve = pg.locator('.m-nk-ct button[aria-label*="Quay lại"]')
+            if nut_ve.count() > 0:
+                nut_ve.first.click()
+                pg.wait_for_timeout(200)
         kiem_man('Nhật ký thao tác')
         pg.screenshot(path=str(SHOTS / 'm-11-03-nhat-ky.png'))
+
+        # Gói S (Standard đã mở X2)
+        pg.goto(URL + '?goi=S&p=nhatky#/app/he-thong/nhat-ky')
+        pg.wait_for_selector('.m-app')
+        pg.wait_for_timeout(300)
+        if pg.locator('.m-chi-mt').count() > 0:
+            loi.append('Nhật ký thao tác (gói S): vẫn ra MChiMayTinh')
+        if pg.locator('.m-nk-the').count() == 0:
+            loi.append('Nhật ký thao tác (gói S): không thấy danh sách thẻ nhật ký')
+        kiem_man('Nhật ký thao tác (gói S)')
 
         # ── 4. Gói thuê bao (#/app/he-thong/goi-thue-bao) ──
         pg.goto(URL + '?goi=PR&p=goithuebao#/app/he-thong/goi-thue-bao')

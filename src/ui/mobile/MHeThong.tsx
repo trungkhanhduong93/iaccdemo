@@ -31,6 +31,7 @@ import {
   type PpHkd,
 } from '../../modules/onboarding/OnboardFabi'
 import { useNhatKy } from '../generic/daXoa'
+import { canChuY, useNhatKyDayDu, type DongNK } from '../../modules/he-thong/nhatKyMau'
 import { pad, pick, rng, fold } from '../format'
 import { Select } from '../Dropdown'
 import { Icon } from '../Icon'
@@ -251,78 +252,339 @@ export const MPhanQuyen: FC<ScreenProps> = () => {
   )
 }
 
-// ── 3. Màn Nhật ký thao tác ──
+// ── 3. Màn Nhật ký thao tác (T689) ──
 const CHIPS_NHAT_KY = [
-  { k: '', ten: 'Tất cả' },
-  { k: 'Sửa', ten: 'Sửa' },
-  { k: 'Xoá', ten: 'Xoá' },
-  { k: 'Ghi sổ', ten: 'Ghi sổ' },
-  { k: 'Khoá sổ', ten: 'Khoá sổ' },
-  { k: 'Đăng nhập', ten: 'Đăng nhập' },
-  { k: 'Xuất', ten: 'Xuất' },
-  { k: 'Duyệt', ten: 'Duyệt' },
+  'Tất cả',
+  'Thêm mới',
+  'Sửa',
+  'Xoá',
+  'Ghi sổ',
+  'Bỏ ghi sổ',
+  'Đăng nhập',
+  'Xem báo cáo',
 ]
 
+interface NhomNK {
+  ngay: string
+  tieuDe: string
+  ds: DongNK[]
+}
+
 export const MNhatKyThaoTac: FC<ScreenProps> = () => {
+  const { s } = useSession()
+  const laGoiS = s.goi === 'S'
+  const dv = donViHienTai(s)
+
   const [q, setQ] = useState('')
-  const [chipChon, setChipChon] = useState('')
+  const [chipChon, setChipChon] = useState('Tất cả')
+  const [chuY, setChuY] = useState(false)
+  const [dongChon, setDongChon] = useState<DongNK | null>(null)
 
-  const r = useMemo(() => rng('nhatky_mobile'), [])
-  const viecMau = useMemo(
-    () => [
-      'Sửa phiếu chi PC2610-0241',
-      'Ghi sổ 3 chứng từ bán hàng',
-      'Xoá phiếu nháp MH2610-0118',
-      'Khoá sổ kỳ 8/2026',
-      'Đổi tài khoản doanh thu nhóm Đồ uống',
-      'Đăng nhập',
-      'Xuất Excel sổ quỹ tiền mặt',
-      'Duyệt cấp 1 phiếu chi PC2610-0236',
-    ],
-    [],
-  )
-
-  const phienNhatKy = useNhatKy()
-  const rows = useMemo(() => {
-    const phien = phienNhatKy.map(x => ({
-      luc: x.luc,
-      ai: x.ai,
-      viec: x.viec.replace('chứng từ', `chứng từ ${x.so}`),
-      ip: '127.0.0.1',
-    }))
-    const mock = Array.from({ length: 22 }, (_, i) => ({
-      luc: `${pad(7 - Math.floor(i / 5))}/10/2026 ${pad(16 - (i % 9))}:${pad(Math.floor(r() * 59))}`,
-      ai: pick(r, ['Trần Thu Hà', 'Lê Quốc Bảo', 'Phạm Ngọc Lan']),
-      viec: pick(r, viecMau),
-      ip: `113.161.${Math.floor(r() * 200)}.${Math.floor(r() * 250)}`,
-    }))
-    return [...phien, ...mock]
-  }, [phienNhatKy, r, viecMau])
+  const tatCa = useNhatKyDayDu()
 
   const rowsLoc = useMemo(() => {
-    return rows.filter(item => {
-      if (chipChon && !item.viec.toLowerCase().includes(chipChon.toLowerCase())) {
-        return false
-      }
+    return tatCa.filter(d => {
+      if (chuY && !canChuY(d)) return false
+      if (chipChon !== 'Tất cả' && d.tt !== chipChon) return false
       if (q.trim()) {
         const fq = fold(q.trim())
-        return fold(`${item.viec} ${item.ai} ${item.luc} ${item.ip}`).includes(fq)
+        const tim = fold(`${d.so || ''} ${d.dg || ''} ${d.ai || ''} ${d.tk || ''}`)
+        if (!tim.includes(fq)) return false
       }
       return true
     })
-  }, [rows, chipChon, q])
+  }, [tatCa, chuY, chipChon, q])
+
+  const nhomDs = useMemo(() => {
+    const map = new Map<string, DongNK[]>()
+    for (const d of rowsLoc) {
+      const ngay = d.luc.split(' ')[0] || d.luc
+      let arr = map.get(ngay)
+      if (!arr) {
+        arr = []
+        map.set(ngay, arr)
+      }
+      arr.push(d)
+    }
+    const res: NhomNK[] = []
+    map.forEach((ds, ngay) => {
+      const tieuDe = ngay === '07/10/2026' ? 'Hôm nay, 07/10/2026' : ngay
+      res.push({ ngay, tieuDe, ds })
+    })
+    return res
+  }, [rowsLoc])
+
+  // Chạm thẻ mở trang chi tiết
+  if (dongChon) {
+    const thoiGian = dongChon.giay ? `${dongChon.luc}:${dongChon.giay}` : dongChon.luc
+    const tieuDeThan = dongChon.so
+      ? `${dongChon.tt} ${dongChon.loai ? dongChon.loai.toLowerCase() + ' ' : ''}${dongChon.so}`
+      : `${dongChon.tt}: ${dongChon.dg}`
+
+    return (
+      <div className="m-nk-ct">
+        {/* Đầu trang: nút quay lại + tiêu đề */}
+        <div className="m-nk-ct-dau">
+          <button
+            type="button"
+            className="m-nk-ct-nut-ve"
+            aria-label="Quay lại danh sách"
+            onClick={() => setDongChon(null)}
+          >
+            <svg
+              aria-hidden="true"
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="m15 18-6-6 6-6" />
+            </svg>
+          </button>
+          <h1 className="m-nk-ct-tieu-de-dau">Chi tiết nhật ký</h1>
+        </div>
+
+        {/* Thân chi tiết */}
+        <div className="m-nk-ct-than">
+          <div className="m-nk-ct-tieu-de-nhom">
+            <h2 className="m-nk-ct-ten">{tieuDeThan}</h2>
+            <div className="m-nk-ct-phu">
+              Mã nhật ký {dongChon.ma} · {thoiGian}
+            </div>
+          </div>
+
+          {dongChon.canhBao ? (
+            <div className="m-nk-ct-canh-bao">
+              <svg
+                aria-hidden="true"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="var(--orange-d)"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="m-nk-ic-chuy"
+              >
+                <path d="M12 3 2 20h20z" />
+                <path d="M12 10v4M12 17h.01" />
+              </svg>
+              <span>{dongChon.canhBao}</span>
+            </div>
+          ) : null}
+
+          {/* Thẻ: Ai làm, làm ở đâu */}
+          <section className="m-nk-ct-the">
+            <h3 className="m-nk-ct-muc-t">Ai làm, làm ở đâu</h3>
+            <div className="m-nk-ct-dong">
+              <span className="m-nk-ct-nhan">Tài khoản</span>
+              <span className="m-nk-ct-gia-tri">
+                {dongChon.ai}
+                {dongChon.tk ? (
+                  <>
+                    <br />
+                    <span className="m-nk-ct-tk-phu">{dongChon.tk}</span>
+                  </>
+                ) : null}
+              </span>
+            </div>
+            {!laGoiS && dongChon.vaiTro ? (
+              <div className="m-nk-ct-dong">
+                <span className="m-nk-ct-nhan">Vai trò</span>
+                <span className="m-nk-ct-gia-tri">{dongChon.vaiTro}</span>
+              </div>
+            ) : null}
+            <div className="m-nk-ct-dong">
+              <span className="m-nk-ct-nhan">Đơn vị</span>
+              <span className="m-nk-ct-gia-tri">{dv.ten || 'Công ty TNHH Phố Mây'}</span>
+            </div>
+            <div className="m-nk-ct-dong">
+              <span className="m-nk-ct-nhan">Cửa hàng</span>
+              <span className="m-nk-ct-gia-tri">{dongChon.ch || 'Không gắn cửa hàng'}</span>
+            </div>
+            {dongChon.tb ? (
+              <div className="m-nk-ct-dong">
+                <span className="m-nk-ct-nhan">Thiết bị</span>
+                <span className="m-nk-ct-gia-tri">{dongChon.tb}</span>
+              </div>
+            ) : null}
+            {dongChon.phien ? (
+              <div className="m-nk-ct-dong">
+                <span className="m-nk-ct-nhan">Phiên đăng nhập</span>
+                <span className="m-nk-ct-gia-tri">{dongChon.phien}</span>
+              </div>
+            ) : null}
+            {dongChon.manHinh ? (
+              <div className="m-nk-ct-dong">
+                <span className="m-nk-ct-nhan">Màn hình</span>
+                <span className="m-nk-ct-gia-tri">{dongChon.manHinh}</span>
+              </div>
+            ) : null}
+            <div className="m-nk-ct-dong">
+              <span className="m-nk-ct-nhan">Kết quả</span>
+              <span className={`m-nk-ct-gia-tri ${dongChon.kqLoi ? 'loi' : ''}`}>
+                {dongChon.kqLoi ? `Không thành công: ${dongChon.kqLoi}` : 'Thành công'}
+              </span>
+            </div>
+          </section>
+
+          {/* Thẻ: Chứng từ */}
+          {dongChon.so ? (
+            <section className="m-nk-ct-the">
+              <h3 className="m-nk-ct-muc-t">Chứng từ</h3>
+              {dongChon.loai ? (
+                <div className="m-nk-ct-dong">
+                  <span className="m-nk-ct-nhan">Loại phiếu</span>
+                  <span className="m-nk-ct-gia-tri">{dongChon.loai}</span>
+                </div>
+              ) : null}
+              <div className="m-nk-ct-dong">
+                <span className="m-nk-ct-nhan">Số chứng từ</span>
+                <span className="m-nk-ct-gia-tri m-nk-ct-so">{dongChon.so}</span>
+              </div>
+              {dongChon.ngay ? (
+                <div className="m-nk-ct-dong">
+                  <span className="m-nk-ct-nhan">Ngày chứng từ</span>
+                  <span className="m-nk-ct-gia-tri">{dongChon.ngay}</span>
+                </div>
+              ) : null}
+              {dongChon.ky ? (
+                <div className="m-nk-ct-dong">
+                  <span className="m-nk-ct-nhan">Kỳ kế toán</span>
+                  <span className="m-nk-ct-gia-tri">{dongChon.ky}</span>
+                </div>
+              ) : null}
+              {dongChon.doiTuong ? (
+                <div className="m-nk-ct-dong">
+                  <span className="m-nk-ct-nhan">Đối tượng</span>
+                  <span className="m-nk-ct-gia-tri">{dongChon.doiTuong}</span>
+                </div>
+              ) : null}
+              {dongChon.tien ? (
+                <div className="m-nk-ct-dong">
+                  <span className="m-nk-ct-nhan">Số tiền</span>
+                  <span className="m-nk-ct-gia-tri m-nk-ct-tien">{dongChon.tien}</span>
+                </div>
+              ) : null}
+              {dongChon.trangThai ? (
+                <div className="m-nk-ct-dong">
+                  <span className="m-nk-ct-nhan">Trạng thái</span>
+                  <span className="m-nk-ct-gia-tri">{dongChon.trangThai}</span>
+                </div>
+              ) : null}
+              {dongChon.nguon ? (
+                <div className="m-nk-ct-dong">
+                  <span className="m-nk-ct-nhan">Nguồn</span>
+                  <span className="m-nk-ct-gia-tri">{dongChon.nguon}</span>
+                </div>
+              ) : null}
+              {dongChon.dg ? (
+                <div className="m-nk-ct-dong">
+                  <span className="m-nk-ct-nhan">Diễn giải</span>
+                  <span className="m-nk-ct-gia-tri">{dongChon.dg}</span>
+                </div>
+              ) : null}
+            </section>
+          ) : null}
+
+          {/* Thẻ: Báo cáo */}
+          {dongChon.thamSo ? (
+            <section className="m-nk-ct-the">
+              <h3 className="m-nk-ct-muc-t">Báo cáo</h3>
+              <div className="m-nk-ct-van-ban">{dongChon.thamSo}</div>
+            </section>
+          ) : null}
+
+          {/* Thẻ: Lý do người làm nhập */}
+          {dongChon.lyDo ? (
+            <section className="m-nk-ct-the">
+              <h3 className="m-nk-ct-muc-t">Lý do người làm nhập</h3>
+              <div className="m-nk-ct-van-ban">{dongChon.lyDo}</div>
+            </section>
+          ) : null}
+
+          {/* Thẻ: Nội dung thay đổi */}
+          {dongChon.doi && dongChon.doi.length > 0 ? (
+            <section className="m-nk-ct-the">
+              <h3 className="m-nk-ct-muc-t">Nội dung thay đổi ({dongChon.doi.length})</h3>
+              {dongChon.doi.map((d, i) => (
+                <div key={i} className="m-nk-ct-doi-item">
+                  <span className="m-nk-ct-doi-truong">{d.truong}</span>
+                  <div className="m-nk-ct-doi-hang">
+                    <span className="m-nk-ct-doi-cu">{d.cu}</span>
+                    <svg
+                      aria-hidden="true"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="var(--muted)"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M5 12h14M13 6l6 6-6 6" />
+                    </svg>
+                    <span className="m-nk-ct-doi-moi">{d.moi}</span>
+                  </div>
+                </div>
+              ))}
+            </section>
+          ) : null}
+
+          {/* Thẻ: Lịch sử chứng từ */}
+          {dongChon.lichSu && dongChon.lichSu.length > 0 ? (
+            <section className="m-nk-ct-the">
+              <h3 className="m-nk-ct-muc-t">Lịch sử chứng từ {dongChon.so}</h3>
+              <div className="m-nk-ct-ls">
+                {dongChon.lichSu.map((h, i) => {
+                  const laCuoi = i === (dongChon.lichSu?.length ?? 0) - 1
+                  return (
+                    <div key={i} className="m-nk-ct-ls-item">
+                      <div className="m-nk-ct-ls-truc">
+                        <span className={`m-nk-ct-ls-cham ${h.dangXem ? 'dang-xem' : ''}`} />
+                        {!laCuoi ? <span className="m-nk-ct-ls-day" /> : null}
+                      </div>
+                      <div className="m-nk-ct-ls-nd">
+                        <div className={`m-nk-ct-ls-viec ${h.dangXem ? 'dang-xem' : ''}`}>{h.viec}</div>
+                        <div className="m-nk-ct-ls-phu">{h.luc} · {h.ai}</div>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </section>
+          ) : null}
+        </div>
+
+        {/* Đáy trang dính: Nút mở phiếu */}
+        {dongChon.so && dongChon.tt !== 'Xoá' ? (
+          <div className="m-nk-ct-chan">
+            <button type="button" className="m-nk-ct-nut-mo" onClick={() => {}}>
+              Mở phiếu {dongChon.so}
+            </button>
+          </div>
+        ) : null}
+      </div>
+    )
+  }
 
   return (
     <div className="m-ht-khung">
-      {/* Ô tìm kiếm */}
+      {/* Ô tìm kiếm và dãy chip */}
       <div className="m-ht-dau">
         <div className="m-ht-hang-tim">
-          <div className="m-ht-tim">
+          <div className="m-ht-tim" style={{ height: 44 }}>
             <Icon n="search" className="m-ht-tim-ic ic sm" />
             <input
               type="text"
               className="m-ht-tim-inp"
-              placeholder="Tìm theo thao tác, người làm, IP..."
+              placeholder="Số chứng từ, diễn giải"
               value={q}
               onChange={e => setQ(e.target.value)}
               aria-label="Tìm kiếm nhật ký"
@@ -340,42 +602,124 @@ export const MNhatKyThaoTac: FC<ScreenProps> = () => {
           </div>
         </div>
 
-        {/* Chips lọc */}
-        <div className="m-pq-vt-ds" style={{ padding: '4px 0 0' }}>
-          {CHIPS_NHAT_KY.map(c => (
-            <button
-              key={c.k}
-              type="button"
-              className={`m-pq-vt-btn ${c.k === chipChon ? 'on' : ''}`}
-              onClick={() => setChipChon(c.k)}
+        {/* Dãy chip trượt ngang */}
+        <div className="m-nk-chips">
+          <button
+            type="button"
+            className="m-nk-chip m-nk-chip-ky"
+            aria-label="Kỳ hiển thị: 01/10 đến 07/10"
+          >
+            <Icon n="calendar" className="ic sm" />
+            <span>01/10 – 07/10</span>
+          </button>
+          <button
+            type="button"
+            className={`m-nk-chip m-nk-chip-chuy ${chuY ? 'on' : ''}`}
+            onClick={() => setChuY(prev => !prev)}
+            aria-pressed={chuY}
+          >
+            <svg
+              aria-hidden="true"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             >
-              {c.ten}
+              <path d="M12 3 2 20h20z" />
+              <path d="M12 10v4M12 17h.01" />
+            </svg>
+            <span>Cần chú ý</span>
+          </button>
+          {CHIPS_NHAT_KY.map(t => (
+            <button
+              key={t}
+              type="button"
+              className={`m-nk-chip ${chipChon === t ? 'on' : ''}`}
+              onClick={() => setChipChon(t)}
+            >
+              {t}
             </button>
           ))}
         </div>
       </div>
 
-      <div className="m-ht-tom-tat">
-        <span>
-          Tổng <b>{rowsLoc.length}</b> bản ghi nhật ký
-        </span>
-      </div>
-
-      {rowsLoc.length === 0 ? (
-        <MTrong kieu="tim" tieuDe="Không có nhật ký phù hợp" moTa="Thử lọc theo từ khoá khác" />
+      {/* Danh sách thẻ theo nhóm ngày */}
+      {nhomDs.length === 0 ? (
+        <div className="m-nk-trong">Không có thao tác nào khớp bộ lọc.</div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          {rowsLoc.map((item, idx) => (
-            <div key={`${item.luc}_${idx}`} className="m-nk-the">
-              <div className="m-nk-trai">
-                <span className="m-nk-viec">{item.viec}</span>
-                <span className="m-nk-nguoi">
-                  <Icon n="user" className="ic sm" /> {item.ai}
-                </span>
-              </div>
-              <div className="m-nk-phai">
-                <span className="m-nk-luc">{item.luc}</span>
-                <span className="m-nk-ip">{item.ip}</span>
+        <div className="m-nk-ds">
+          {nhomDs.map(g => (
+            <div key={g.ngay} className="m-nk-nhom">
+              <div className="m-nk-nhom-ten">{g.tieuDe}</div>
+              <div className="m-nk-nhom-ds">
+                {g.ds.map(d => {
+                  const gio = d.luc.split(' ')[1] || ''
+                  const dong3 = d.so
+                    ? [d.ch, d.ngay ? `Ngày CT ${d.ngay}` : ''].filter(Boolean).join(' · ')
+                    : [d.dg, d.thamSo].filter(Boolean).join(', ')
+                  const cacPhan = [d.ai, laGoiS ? '' : d.vaiTro, d.tbNgan].filter(Boolean)
+                  const dongCuoi = cacPhan.join(' · ')
+
+                  return (
+                    <div
+                      key={d.ma}
+                      className="m-nk-the"
+                      onClick={() => setDongChon(d)}
+                      role="button"
+                      tabIndex={0}
+                    >
+                      {/* Dòng 1: Thao tác + tam giác cảnh báo + giờ */}
+                      <div className="m-nk-dong-1">
+                        <span className="m-nk-tt">{d.tt}</span>
+                        {canChuY(d) ? (
+                          <svg
+                            role="img"
+                            aria-label="Cần chú ý"
+                            width="14"
+                            height="14"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="var(--orange-d)"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="m-nk-ic-chuy"
+                          >
+                            <path d="M12 3 2 20h20z" />
+                            <path d="M12 10v4M12 17h.01" />
+                          </svg>
+                        ) : null}
+                        <span className="m-nk-gio">{gio}</span>
+                      </div>
+
+                      {/* Dòng 2 (khi có so) */}
+                      {d.so ? (
+                        <div className="m-nk-dong-2">
+                          <span className="m-nk-loai-so">
+                            {d.loai ? <span className="m-nk-loai">{d.loai} </span> : null}
+                            <span className="m-nk-so">{d.so}</span>
+                          </span>
+                          {d.tien ? <span className="m-nk-tien">{d.tien}</span> : null}
+                        </div>
+                      ) : null}
+
+                      {/* Dòng 3 */}
+                      {dong3 ? <div className="m-nk-dong-3">{dong3}</div> : null}
+
+                      {/* Dòng lỗi (khi có kqLoi) */}
+                      {d.kqLoi ? (
+                        <div className="m-nk-dong-loi">Không thành công: {d.kqLoi}</div>
+                      ) : null}
+
+                      {/* Dòng cuối */}
+                      {dongCuoi ? <div className="m-nk-dong-cuoi">{dongCuoi}</div> : null}
+                    </div>
+                  )
+                })}
               </div>
             </div>
           ))}
@@ -384,6 +728,7 @@ export const MNhatKyThaoTac: FC<ScreenProps> = () => {
     </div>
   )
 }
+
 
 // ── 4. Màn Thông tin đơn vị ──
 const PP_GTGT: Record<PpGtgt, string> = {
