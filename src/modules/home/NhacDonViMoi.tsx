@@ -41,11 +41,12 @@ export function DongDongBo({ da, tong }: { da: number; tong: number }) {
   )
 }
 
+/** Chip lợi nhuận chỉ hiện lúc chứng từ FABi còn đổ về; đồng bộ xong thì bỏ (PhuongXT 30/10/2026, T687) */
 export function ChipTamTinh() {
   const { s } = useSession()
   const db = useDongBoFabi()
-  if (!laDonViMoi(s)) return null
-  return <span className="chip warn nhac-tt-chip">{db ? 'Đang đồng bộ, tạm tính' : 'Tạm tính'}</span>
+  if (!laDonViMoi(s) || !db) return null
+  return <span className="chip warn nhac-tt-chip">Đang đồng bộ, tạm tính</span>
 }
 
 export function NhacSoDuKet() {

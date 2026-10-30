@@ -42940,3 +42940,4 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
 .bbt-13t-trong.db-mo { position: relative; }
 .bbt-13t-trong.db-mo > :not(.bbt-13t-trong-dau) { filter: blur(2px); opacity: .4; pointer-events: none; }
 .bbt-13t-trong.db-mo::after { content: attr(data-db); position: absolute; left: 50%; top: 55%; transform: translate(-50%, -50%); padding: 6px 12px; border: 1px solid var(--orange-b); border-radius: 8px; background: var(--white); color: var(--amber); font-size: 12.5px; font-weight: 600; white-space: nowrap; }
+.ktf-tai-ds .ktf-tai-tiep { color: var(--amber); }

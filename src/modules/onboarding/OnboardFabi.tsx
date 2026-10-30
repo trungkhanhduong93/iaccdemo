@@ -313,14 +313,16 @@ export function OnboardFabi() {
   }, [loc.pathname, s.donVi])   // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    if (n.b !== XONG || tai >= 100) return
+    // Kết nối từ FABi dừng ở mốc danh mục: chứng từ đổ về tiếp ở Trang chủ (T687)
+    if (n.b !== XONG || tai >= (n.thue ? 100 : MOC_DANH_MUC)) return
     const t = setTimeout(() => setTai(x => Math.min(100, x + 4)), 120)
     return () => clearTimeout(t)
   }, [n.b, tai])
-  // Kết nối từ FABi: lấy xong danh mục thì về thẳng Trang chủ, chứng từ đổ về tiếp ở đó (T138, T687)
+  // Kết nối từ FABi: lấy xong danh mục thì về thẳng Trang chủ, chứng từ đổ về tiếp ở đó (T138, T687).
+  // Dừng 1,5 giây cho thấy tích xanh danh mục, hai dòng chứng từ báo đổ về tiếp (PhuongXT 30/10/2026)
   useEffect(() => {
     if (!nhanh || n.b !== XONG || tai < MOC_DANH_MUC) return
-    const t = setTimeout(xong, 400)
+    const t = setTimeout(xong, 1500)
     return () => clearTimeout(t)
   }, [n.b, tai])   // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -653,8 +655,9 @@ export function OnboardFabi() {
                       <div className="ktf-tai"><i style={{ width: `${tai}%` }} /></div>
                       <ul className="ktf-tai-ds">
                         {viecTai.map(([moc, t, m], i) => {
-                          const tt = tai >= moc ? 'xong' : tai >= (i ? viecTai[i - 1][0] : 0) ? 'dang' : 'cho'
-                          return <li key={t} className={tt}>{tt === 'xong' ? <Icon n="check" className="ic sm" /> : <i />}<span><b>{t}</b>{m && <small>{m}</small>}</span></li>
+                          const tt = tai >= moc ? 'xong' : tai >= (i ? viecTai[i - 1][0] : 0) || (nhanh && tai >= MOC_DANH_MUC) ? 'dang' : 'cho'
+                          const tiep = nhanh && tai >= MOC_DANH_MUC && tt === 'dang'   // chứng từ đổ về tiếp ở Trang chủ (T687)
+                          return <li key={t} className={tt}>{tt === 'xong' ? <Icon n="check" className="ic sm" /> : <i />}<span><b>{t}</b>{m && <small>{m}</small>}{tiep && <small className="ktf-tai-tiep">Đổ về tiếp, xem tiến độ ở Trang chủ</small>}</span></li>
                         })}
                       </ul>
                     </>

@@ -3,7 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 30/10/2026
-- T687: Kết nối FABi lần đầu: lấy xong danh mục là vào Trang chủ, chứng từ đổ về tiếp. Trong lúc đổ về, Trang chủ có dải vàng báo tổng chứng từ đã về; dòng Doanh thu và từng quỹ báo "Đang đồng bộ x / y chứng từ", số tăng dần; vòng tồn quỹ và hai biểu đồ 13 tháng làm mờ tới khi xong.
+- T687: Kết nối FABi lần đầu: lấy xong danh mục là vào Trang chủ, chứng từ đổ về tiếp. Trong lúc đổ về, Trang chủ có dải vàng báo tổng chứng từ đã về; dòng Doanh thu và từng quỹ báo "Đang đồng bộ x / y chứng từ", số tăng dần; vòng tồn quỹ và hai biểu đồ 13 tháng làm mờ tới khi xong. Popup Kết nối hiện tích xanh danh mục, hai dòng chứng từ báo đổ về tiếp ở Trang chủ. Đồng bộ xong thì bỏ chữ Tạm tính cạnh lợi nhuận.
 - T138: Điện thoại, màn giới thiệu khi mở từ FABi gọn chữ, còn 2 trang: trang 1 tiêu đề và ảnh app, trang 2 bốn dòng giá trị ngắn, cam kết miễn phí một hàng, nút Bắt đầu kết nối dữ liệu. Popup Kết nối dữ liệu FABi nằm gọn một màn: câu giải thích ngắn, tiền về quỹ còn 2 dòng (Tiền mặt; Ngân hàng, ví điện tử), một dòng số đơn bán, phiếu thu chi sẽ lấy thay khung bên. Màn Dữ liệu đã sẵn sàng bỏ danh sách danh mục.
 - T138: Hộ kinh doanh khai mã số thuế ở Kê khai thuế: cửa hàng đầu tiên mặc định là trụ sở chính (địa điểm kinh doanh chính), bấm Chính ở dòng khác để chọn lại.
 - T675: Điện thoại, màn có Hướng dẫn nhanh có nút bóng đèn trên đầu màn, màn chưa xem có chấm cam. Bấm thì chạy tour khoanh từng chỗ, bong bóng chỉ vào như bản web. Thu chi, Sổ quỹ tiền mặt, Kê khai thuế, Xuất bán POS, Kiểm kê khoanh đủ từng bước.
