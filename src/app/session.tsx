@@ -38,6 +38,7 @@ export interface Session {
   dvMoi?: DonVi        // đơn vị mới tạo khi dùng thử từ FABi (T138): tên FABi, chưa có MST; 3 đơn vị mẫu giữ nguyên
   soDuQuy?: Record<string, Record<string, { no: number; co: number }>>   // số dư ban đầu từng quỹ theo đơn vị, lưu ở màn Số dư ban đầu (T160)
   choKeKhai?: Record<string, boolean>   // đơn vị khởi tạo nhanh từ FABi, chưa chọn loại hình, gói, thông tin đơn vị; mở Kê khai thuế thì hỏi (T138)
+  dongBoFabi?: Record<string, { bd: number; ct: number; tc: number }>   // chứng từ FABi còn đổ về sau khi Kết nối: lúc bắt đầu (ms), số chứng từ Xuất bán POS, số phiếu thu chi (T687)
   huongDan?: Record<string, boolean>   // hướng dẫn từng bước ở Trang chủ theo đơn vị: false là vừa khởi tạo xong, chờ hiện; true là đã xem hoặc bỏ qua (T138)
   dungThu?: Record<string, string>   // ngày bắt đầu dùng thử (dd/mm/yyyy) của đơn vị mới tạo từ FABi, thêm đơn vị (T158)
   ttDv?: Record<string, TtDonVi>   // thông tin kê khai từng đơn vị (T145)

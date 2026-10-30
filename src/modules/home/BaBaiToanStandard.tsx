@@ -24,7 +24,7 @@ import { type LaiLoCnItem } from './soLieuBieuDoStandard'
 import { BieuDoCuaHangModal } from './BieuDoStandard'
 import { DS_QUY_TIEN_112 } from '../danh-muc/data'
 import { chiPhiThangTuPhieu, phieuChiPhi, usePhieuChiPhi, type PhieuChiPhi } from './chiPhiPhieu'
-import { ChipTamTinh, NhacSoDuKet, laDonViMoi } from './NhacDonViMoi'
+import { ChipTamTinh, DongDongBo, NhacSoDuKet, laDonViMoi, phanDaVe, useDongBoFabi } from './NhacDonViMoi'
 
 // Hệ số mùa vụ quán ăn uống tháng 10/2025 đến 6/2026 so với trung bình tháng 7–9/2026: Tết (tháng 1) cao, sau Tết (tháng 2) thấp (T255)
 const MUA_VU: [number, number, number][] = [   // [tháng, năm, hệ số doanh thu]
@@ -367,6 +367,7 @@ export function VongQuy({
   kieu = 'mobile',
   moDs: moDsProp,
   onMoDsThayDoi,
+  dongBo,
 }: {
   ds: { quy: string; tienMat: boolean; cuoi: number }[]
   tong: number
@@ -375,6 +376,7 @@ export function VongQuy({
   kieu?: 'desktop' | 'mobile' | 'figma-mobile'
   moDs?: boolean
   onMoDsThayDoi?: (mo: boolean) => void
+  dongBo?: Record<string, { da: number; tong: number }>   // chứng từ FABi đang đổ về từng quỹ, theo tên quỹ (T687)
 }) {
   const [tro, setTro] = useState<string | null>(null)
   const [moDsNoi, setMoDsNoi] = useState(false)
@@ -631,7 +633,7 @@ export function VongQuy({
     return (
       <div className="bbt-cum-vong-quy">
         <div className="bbt-vq-hang">
-          <div className="bbt-vq-svg-wrap">
+          <div className={`bbt-vq-svg-wrap${dongBo ? ' db-mo' : ''}`}>
             <svg
               className="bbt-vq-svg-120"
               viewBox={`0 0 ${W} ${H}`}
@@ -697,20 +699,27 @@ export function VongQuy({
 
           {/* Chú thích bên phải */}
           <div className="bbt-vq-chuthich">
-            {dsLats.map(r => (
-              <div
-                key={r.quy}
-                className={`bbt-vq-ct-row${tro === r.quy ? ' on' : ''}`}
-                onMouseEnter={() => setTro(r.quy)}
-                onMouseLeave={() => setTro(null)}
-                onClick={() => chon(r.quy)}
-                title={`${r.ten}: ${moneyD(r.cuoi)}`}
-              >
-                <span className="bbt-vq-ct-dot" style={{ background: r.mau }} />
-                <span className="bbt-vq-ct-name">{r.ten}</span>
-                <span className="bbt-vq-ct-val">{kieu === 'desktop' ? moneyD(r.cuoi) : short(r.cuoi)}</span>
-              </div>
-            ))}
+            {dsLats.map(r => {
+              // dòng Còn lại cộng chứng từ của các quỹ gộp vào nó
+              const db = r.quy === 'tat-ca'
+                ? xep.slice(4).map(x => dongBo?.[x.quy]).reduce<{ da: number; tong: number } | undefined>((a, x) => x ? { da: (a?.da ?? 0) + x.da, tong: (a?.tong ?? 0) + x.tong } : a, undefined)
+                : dongBo?.[r.quy]
+              return (
+                <div
+                  key={r.quy}
+                  className={`bbt-vq-ct-row${tro === r.quy ? ' on' : ''}${db ? ' co-db' : ''}`}
+                  onMouseEnter={() => setTro(r.quy)}
+                  onMouseLeave={() => setTro(null)}
+                  onClick={() => chon(r.quy)}
+                  title={`${r.ten}: ${moneyD(r.cuoi)}`}
+                >
+                  <span className="bbt-vq-ct-dot" style={{ background: r.mau }} />
+                  <span className="bbt-vq-ct-name">{r.ten}</span>
+                  <span className="bbt-vq-ct-val">{kieu === 'desktop' ? moneyD(r.cuoi) : short(r.cuoi)}</span>
+                  {db && <DongDongBo da={db.da} tong={db.tong} />}
+                </div>
+              )
+            })}
           </div>
         </div>
 
@@ -954,12 +963,30 @@ export function BaBaiToanStandard({ d, thang: thangXem, selCns, chonKy }: { d: T
   const pcp = usePhieuChiPhi(s)
   const cpPhieu = chiPhiThangTuPhieu(pcp, thangXem, cnsHien)
   const cpThang = cpPhieu.tong
-  const loiNhuan = dHien.dtThuan - nvl.tien - cpThang - dHien.cpPhanBo
-  const bien = dHien.dtThuan > 0 ? loiNhuan / dHien.dtThuan : 0
+  // Kết nối FABi xong mà chứng từ còn đổ về: doanh thu, giá vốn theo món bán, chi phí từ phiếu chi FABi tăng dần theo số chứng từ đã về (T687)
+  const db = useDongBoFabi()
+  const pDt = db ? phanDaVe(db.t) : 1
+  const ctDaVe = db ? Math.round(db.ct * pDt) : 0
+  const nvlTien = Math.round(nvl.tien * pDt)
+  const cpHien = Math.round(cpThang * pDt)
+  const loiNhuan = Math.round(dHien.dtThuan * pDt) - nvlTien - cpHien - dHien.cpPhanBo
+  const bien = dHien.dtThuan * pDt > 0 ? loiNhuan / (dHien.dtThuan * pDt) : 0
   const laiLo13 = useMemo(() => laiLo13Thang(s, cnsHien, pcp), [s, cnsHien, pcp])
 
   // 2. Thu chi: số dư, thu, chi cộng từ Sổ quỹ tiền mặt, Sổ ngân hàng
-  const quy = useMemo(() => [...tonQuyTheoSo(thangXem, cnsHien), ...QUY_MAU_THEM], [thangXem, cnsHien])   // T303: thêm 5 quỹ mẫu
+  const quyDu = useMemo(() => [...tonQuyTheoSo(thangXem, cnsHien), ...QUY_MAU_THEM], [thangXem, cnsHien])   // T303: thêm 5 quỹ mẫu
+  // Phiếu thu FABi chia cho các quỹ có thu theo số tiền thu; mỗi quỹ về hết ở một lúc khác nhau (T687)
+  const quyDb = useMemo(() => {
+    if (!db) return undefined
+    const coThu = quyDu.filter(q => q.thu > 0)
+    const tongThu = coThu.reduce((a, q) => a + q.thu, 0) || 1
+    return Object.fromEntries(coThu.map((q, i) => {
+      const tong = Math.max(1, Math.round(db.tc * q.thu / tongThu))
+      return [q.quy, { p: phanDaVe(db.t, [1, 0.6, 0.85, 0.7, 0.5][i % 5]), tong }]
+    }))
+  }, [db, quyDu])
+  const quy = quyDb ? quyDu.map(q => quyDb[q.quy] ? { ...q, thu: Math.round(q.thu * quyDb[q.quy].p), cuoi: Math.round(q.cuoi - q.thu * (1 - quyDb[q.quy].p)) } : q) : quyDu
+  const dongBoQuy = quyDb && Object.fromEntries(Object.entries(quyDb).map(([k, v]) => [k, { da: Math.round(v.tong * v.p), tong: v.tong }]))
   const tongQuy = { cuoi: quy.reduce((a, r) => a + r.cuoi, 0), thu: quy.reduce((a, r) => a + r.thu, 0), chi: quy.reduce((a, r) => a + r.chi, 0) }
   const chiLon = cpPhieu.ds[0]   // lý do chi phí lớn nhất trong tháng
   const [moXemSo, setMoXemSo] = useState(false)
@@ -1053,6 +1080,12 @@ export function BaBaiToanStandard({ d, thang: thangXem, selCns, chonKy }: { d: T
       </div>
 
         <>
+          {db && (
+            <div className="db-dai" role="status">
+              <Icon n="refresh" className="ic sm db-quay" />
+              Đang đổ dữ liệu từ FABi: <b>{(ctDaVe + Object.values(dongBoQuy ?? {}).reduce((a, x) => a + x.da, 0)).toLocaleString('vi-VN')} / {(db.ct + Object.values(dongBoQuy ?? {}).reduce((a, x) => a + x.tong, 0)).toLocaleString('vi-VN')}</b> chứng từ. Số liệu doanh thu, thu tiền đang tăng dần, chưa phải số cuối.
+            </div>
+          )}
           <div className="bbt-e-luoi bbt-e-luoi-2">   {/* hàng trên 2 cột lãi lỗ, thu chi; Quản lý kho kéo hết hàng dưới (T293) */}
         {/* Cột 1: Quản lý lãi lỗ (Kết quả kinh doanh theo Figma T495) */}
         <section className="bbt-cot col bbt-gon">
@@ -1089,9 +1122,10 @@ export function BaBaiToanStandard({ d, thang: thangXem, selCns, chonKy }: { d: T
           </div>
 
           <div className="bbt-bang-kqkd">
-            <div className="t dt bbt-kqkd-row">
+            <div className={`t dt bbt-kqkd-row${db ? ' co-db' : ''}`}>
               <div className="l"><b>Doanh thu</b></div>
-              <div className="r"><b style={{ color: 'var(--blue, #0560a6)' }}>{moneyD(d.dtThuan)}</b></div>
+              <div className="r"><b style={{ color: 'var(--blue, #0560a6)' }}>{moneyD(Math.round(d.dtThuan * pDt))}</b></div>
+              {db && <DongDongBo da={ctDaVe} tong={db.ct} />}
             </div>
 
             <Link
@@ -1104,7 +1138,7 @@ export function BaBaiToanStandard({ d, thang: thangXem, selCns, chonKy }: { d: T
                 <span>{moTaCachNgan(nvl.ds)}</span>
               </div>
               <div className="r">
-                <b>{moneyD(nvl.tien)}</b>
+                <b>{moneyD(nvlTien)}</b>
                 <span className="bbt-kqkd-pct" style={{ color: 'var(--orange, #f28020)' }}>{pct(d.dtThuan > 0 ? nvl.tien / d.dtThuan : 0)}</span>
               </div>
               <Icon n="chevr" className="ic sm muted" />
@@ -1120,7 +1154,7 @@ export function BaBaiToanStandard({ d, thang: thangXem, selCns, chonKy }: { d: T
                 <span>{chiLon ? `Lớn nhất: ${chiLon.ly} ${short(chiLon.v)}` : 'Lương, mặt bằng, điện nước'}</span>
               </div>
               <div className="r">
-                <b>{moneyD(cpThang)}</b>
+                <b>{moneyD(cpHien)}</b>
                 <span className="bbt-kqkd-pct" style={{ color: 'var(--orange, #f28020)' }}>{pct(d.dtThuan > 0 ? cpThang / d.dtThuan : 0)}</span>
               </div>
               <Icon n="chevr" className="ic sm muted" />
@@ -1153,8 +1187,8 @@ export function BaBaiToanStandard({ d, thang: thangXem, selCns, chonKy }: { d: T
             </div>
           </div>
 
-          {/* Biểu đồ lãi lỗ 13 tháng giữ nguyên */}
-          <div className="bbt-13t-trong">
+          {/* Biểu đồ lãi lỗ 13 tháng giữ nguyên; chứng từ FABi còn đổ về thì làm mờ (T687) */}
+          <div className={`bbt-13t-trong${db ? ' db-mo' : ''}`} data-db="Hiện đủ khi đồng bộ xong">
             <div className="bbt-13t-trong-dau">
               <div className="bbt-13t-trong-ten"><b>Hiệu quả kinh doanh 13 tháng</b><small>Doanh thu, chi phí, lợi nhuận từng tháng và so với cùng kỳ năm trước</small></div>
               <span className="bbt-13t-chu"><i className="dt" />Doanh thu<i className="cp" />Chi phí<i className="ln duong" />Lợi nhuận</span>
@@ -1211,7 +1245,7 @@ export function BaBaiToanStandard({ d, thang: thangXem, selCns, chonKy }: { d: T
 
           <div className="bbt-o-ton-quy">
             <div className="hoi bbt-e-hoi">
-              {thangXem === 10 ? 'Tồn quỹ hiện tại' : `Tồn quỹ cuối tháng ${thangXem}/2026`}
+              {thangXem === 10 ? 'Tồn quỹ hiện tại' : `Tồn quỹ cuối tháng ${thangXem}/2026`}{db && <span className="chip warn nhac-tt-chip">Chưa đủ</span>}
             </div>
             <button
               type="button"
@@ -1231,7 +1265,7 @@ export function BaBaiToanStandard({ d, thang: thangXem, selCns, chonKy }: { d: T
           </div>
 
           {quy.length > 0 ? (
-            <VongQuy ds={quy} tong={tongQuy.cuoi} onChon={setModalQuy} kieu="desktop" />
+            <VongQuy ds={quy} tong={tongQuy.cuoi} onChon={setModalQuy} kieu="desktop" dongBo={dongBoQuy} />
           ) : (
             <div className="bbt-quy-trong">
               <Icon n="wallet" className="ic" />
@@ -1242,7 +1276,7 @@ export function BaBaiToanStandard({ d, thang: thangXem, selCns, chonKy }: { d: T
           )}
 
           {/* Biểu đồ dòng tiền 13 tháng giữ nguyên */}
-          <div className="bbt-13t-trong">
+          <div className={`bbt-13t-trong${db ? ' db-mo' : ''}`} data-db="Hiện đủ khi đồng bộ xong">
             <div className="bbt-13t-trong-dau">
               <div className="bbt-13t-trong-ten"><b>Dòng tiền 13 tháng</b><small>Tiền thu vào, chi ra mỗi tháng và số dư quỹ cuối tháng</small></div>
               <span className="bbt-13t-chu"><i className="thu2" />Thu<i className="chi2" />Chi<i className="thuan duong" /><span title="Thu trừ chi trong tháng">Dòng tiền thuần</span><i className="ton duong" />Tồn quỹ</span>

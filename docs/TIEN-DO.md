@@ -11,7 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T687 | Trang chủ sau khi Kết nối FABi lần đầu: dữ liệu còn đổ về thì dòng Doanh thu và từng quỹ trong khối Quỹ tiền báo đang đồng bộ x / y chứng từ, dải vàng báo tổng, biểu đồ làm mờ tới khi xong | PhuongXT | Đang làm | `BaBaiToanStandard.tsx`, `OnboardFabi.tsx`, `session.ts`, cuối `app.css` |
+| T688 | Điện thoại, Trang chủ gói Standard báo đang đồng bộ chứng từ FABi như web (T687): dòng Doanh thu, từng quỹ x / y chứng từ, biểu đồ làm mờ | | Chờ | Ghi lúc làm T687. Sửa `src/ui/mobile/MTrangChuStandard.tsx`, dùng `useDongBoFabi`, `DongDongBo` trong `NhacDonViMoi.tsx` |
 | T683 | Dữ liệu giả điện thoại, Công cụ dụng cụ: thẻ TPB2610-0011 "Tiền nhà 6 tháng" (`src/ui/mobile/MCcdc.tsx:40`) còn ghi chứng từ gốc PC2610-0261, đổi thành PC2610-0260 cho khớp phiếu mẫu Thu chi sau T682 | | Chờ | Ghi lúc làm T682. Làm sau T436 vì dinhlanphuongipacc đang giữ `MCcdc.tsx`. Chỉ đổi chuỗi `soCt` |
 | T677 | Hướng dẫn nhanh đợt 3 (QD86): soạn riêng từng phân hệ gói Standard, rồi gói Plus, Pro; tìm hướng dẫn bằng Ctrl + K | | Chờ | Mỗi phân hệ một file `src/modules/<phân hệ>/huong-dan.ts`, chia việc theo phân hệ. Ctrl + K sửa `src/app/CommandPalette.tsx` |
 | T593 | Xem trước in và bản in báo cáo: mã, tên hàng, số phiếu ở mọi cột thành chữ thường, không bấm được (mở rộng T556) | Trum | Đang làm | Sửa cuối `app.css` (mục T556). Spec `backup/spec-T593-T595.md` |

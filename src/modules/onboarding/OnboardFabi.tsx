@@ -280,6 +280,8 @@ function demCt(chon: string[], dongBo: Nhap['dongBo'], tu: number) {
 const ngay = (dmy: string) => { const [d, m, y] = dmy.split('/').map(Number); return +new Date(y, m - 1, d) }
 
 const so = (n: number) => n.toLocaleString('vi-VN')
+/** Phần trăm lấy dữ liệu xong danh mục; Kết nối từ FABi tới mốc này là vào Trang chủ (T687) */
+const MOC_DANH_MUC = 30
 /** Chữ viết tắt đơn vị: chữ đầu hai từ cuối tên, vd Công ty TNHH Nhà hàng Phố Mây thành PM */
 const vietTat = (ten: string) => ten.trim().split(/\s+/).filter(Boolean).slice(-2).map(w => w[0]).join('').toUpperCase()
 
@@ -315,9 +317,9 @@ export function OnboardFabi() {
     const t = setTimeout(() => setTai(x => Math.min(100, x + 4)), 120)
     return () => clearTimeout(t)
   }, [n.b, tai])
-  // Kết nối từ FABi: lấy dữ liệu xong thì về thẳng Trang chủ, không dừng ở màn Dữ liệu đã sẵn sàng (T138)
+  // Kết nối từ FABi: lấy xong danh mục thì về thẳng Trang chủ, chứng từ đổ về tiếp ở đó (T138, T687)
   useEffect(() => {
-    if (!nhanh || n.b !== XONG || tai < 100) return
+    if (!nhanh || n.b !== XONG || tai < MOC_DANH_MUC) return
     const t = setTimeout(xong, 400)
     return () => clearTimeout(t)
   }, [n.b, tai])   // eslint-disable-line react-hooks/exhaustive-deps
@@ -342,7 +344,7 @@ export function OnboardFabi() {
   const soTcDaTao = ngayLamHopLe || !nhanh ? Math.max(0, Math.round((+HOM_NAY - ngay(tuNgay)) / 86400000) + 1) * cnChon.length * 3 : 0
   // các việc lúc lấy dữ liệu, mỗi việc chạy tới mốc phần trăm của nó
   const viecTai: [number, string, string][] = [
-    [30, 'Danh mục món, kênh bán', ''],
+    [MOC_DANH_MUC, 'Danh mục món, kênh bán', ''],
     [65, 'Doanh thu bán hàng', `${so(soCtDaTao)} chứng từ Xuất bán POS`],
     [100, 'Thu chi tiền', `${so(soTcDaTao)} phiếu thu, phiếu chi lập trên FABi`],   // bỏ dòng Ghi sổ (PhuongXT 28/10/2026)
   ]
@@ -362,6 +364,7 @@ export function OnboardFabi() {
       // chưa chọn loại hình, gói: giữ gói, chế độ lúc bấm Kết nối; mở Kê khai thuế thì hỏi (choKeKhai)
       // huongDan false: khởi tạo xong, chờ hiện hướng dẫn từng bước ở Trang chủ; Thêm đơn vị kế toán là người đã dùng nên không hiện (PhuongXT 29/10/2026)
       set({ khoiTao: true, choKeKhai: { ...s.choKeKhai, [s.donVi]: true }, huongDan: { ...s.huongDan, [s.donVi]: n.kieu === 'them' },
+        dongBoFabi: { ...s.dongBoFabi, [s.donVi]: { bd: Date.now(), ct: soCtDaTao, tc: soTcDaTao } },   // chứng từ đổ về tiếp ở Trang chủ (T687)
         ...(s.dvMoi && s.donVi === s.dvMoi.id ? { cnThem: { ...s.cnThem, [s.donVi]: cnChon.map(c => ({ id: c.id, ten: c.ten, khuVuc: c.khuVuc ?? '', tuNgay: n.ngayLam, banDau: true })) }, dvMoi: { ...s.dvMoi, diem: cnChon.length } } : {}),
         ngayDauNam: { ...s.ngayDauNam, [s.donVi]: DAU_NAM }, namTaiChinh: { ...s.namTaiChinh, [s.donVi]: HOM_NAY.getFullYear() } })
       try { localStorage.removeItem(KEY) } catch { /* bỏ qua */ }
