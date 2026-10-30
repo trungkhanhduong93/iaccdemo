@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T694 | Nhật ký thao tác web: nút Lọc, mở màn chưa tải dữ liệu, không tự mở side panel, bảng giãn hết bề ngang khi màn rộng | Trum | 31/10/2026 | `2026-10-31-trum-nhat-ky-nut-loc.md` |
 | T693 | Nhật ký thao tác vẽ lại theo artifact bản 10: web bảng 9 cột lọc hôm nay, side panel phải 1 view (Thông tin chi tiết, Chứng từ, Lịch sử thao tác); điện thoại bảng trượt lên; chỉ hiện chứng từ có trong gói | Trum | 31/10/2026 | `2026-10-31-trum-nhat-ky-ve-lai.md` |
 | T692 | Gói Standard: thanh bên bỏ mục Thao tác nhanh; Thông tin đơn vị ẩn ô Phương pháp tính giá xuất kho, Nhóm doanh thu chỉ còn Nhóm 1, 2; màn Kê khai thuế có nút Thiết lập thông tin mở hộp Thông tin kê khai, nhãn Bổ sung MST mở thẳng hộp này | PhuongXT | 30/10/2026 | `2026-10-30-phuongxt-thong-tin-ke-khai.md` |
 | T691 | Thu chi: tiện ích đồng bộ thu chi FABi bên phải thanh tab phân hệ, báo số phiếu chưa đồng bộ, hộp Xem lý do (cột Lý do: chưa map quỹ, kỳ đã khoá sổ), nút Đồng bộ thu chi từ FABi chọn kỳ, cửa hàng | PhuongXT | 30/10/2026 | `2026-10-30-phuongxt-dong-bo-thu-chi-fabi.md` |

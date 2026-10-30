@@ -12,6 +12,7 @@ import { between, dmy, fold, k, pad, pick, rng } from '../../ui/format'
 import { Select } from '../../ui/Dropdown'
 import { useNhatKyDayDu, THAO_TAC_GOI, HOM_NAY, laHomNay, dongTu, doiTuongTT, vietTat } from '../he-thong/nhatKyMau'
 import { HopDongBo } from '../../ui/HopDongBo'
+import { useLocNhap } from '../../ui/LocNangCao'
 
 const dsKho = CUA_HANG.flatMap(c =>
   c.kho.map(ten => {
@@ -218,20 +219,26 @@ export function NhatKyThaoTac({ sc, mod }: ScreenProps) {
   const { s } = useSession()
   const tatCa = useNhatKyDayDu(s.goi)
 
-  const [chonMa, setChonMa] = useState<string | null>(() => tatCa[0]?.ma ?? null)
-  const [locThaoTac, setLocThaoTac] = useState('')
-  const [locCuaHang, setLocCuaHang] = useState('')
+  // Mở màn chưa tải dữ liệu, chọn điều kiện rồi bấm Lọc mới hiện (T694)
+  const [daLoc, setDaLoc] = useState(false)
+  const [chonMa, setChonMa] = useState<string | null>(null)
   const [tim, setTim] = useState('')
+
+  const loc = useLocNhap(() => ({
+    tt: '',
+    ch: '',
+  }))
 
   const dsThaoTac = THAO_TAC_GOI[s.goi] ?? THAO_TAC_GOI.S
   const dsCuaHang = useMemo(() => Array.from(new Set(tatCa.map(d => d.ch).filter(Boolean))), [tatCa])
 
   const dsHienThi = useMemo(() => {
+    if (!daLoc) return []
     const q = fold(tim.trim())
     return tatCa.filter(d => {
       if (!laHomNay(d)) return false
-      if (locThaoTac && d.tt !== locThaoTac) return false
-      if (locCuaHang && d.ch !== locCuaHang) return false
+      if (loc.ap.tt && d.tt !== loc.ap.tt) return false
+      if (loc.ap.ch && d.ch !== loc.ap.ch) return false
       if (q) {
         const khop =
           fold(d.so).includes(q) ||
@@ -241,12 +248,19 @@ export function NhatKyThaoTac({ sc, mod }: ScreenProps) {
       }
       return true
     })
-  }, [tatCa, locThaoTac, locCuaHang, tim])
+  }, [tatCa, daLoc, loc.ap, tim])
 
+  // Không tự chọn dòng đầu; bấm Lọc lại thì đóng panel
   const dongChon = useMemo(() => {
-    if (chonMa === null) return null
-    return dsHienThi.find(d => d.ma === chonMa) ?? dsHienThi[0] ?? null
+    if (!chonMa) return null
+    return dsHienThi.find(d => d.ma === chonMa) ?? null
   }, [dsHienThi, chonMa])
+
+  const onLoc = () => {
+    setDaLoc(true)
+    loc.loc()
+    setChonMa(null)
+  }
 
   return (
     <div className="page">
@@ -282,8 +296,8 @@ export function NhatKyThaoTac({ sc, mod }: ScreenProps) {
               <select
                 className="ds-o-sel"
                 aria-label="Thao tác"
-                value={locThaoTac}
-                onChange={e => setLocThaoTac(e.target.value)}
+                value={loc.nhap.tt}
+                onChange={e => loc.dat('tt', e.target.value)}
               >
                 <option value="">Tất cả</option>
                 {dsThaoTac.map(t => (
@@ -297,8 +311,8 @@ export function NhatKyThaoTac({ sc, mod }: ScreenProps) {
               <select
                 className="ds-o-sel"
                 aria-label="Cửa hàng"
-                value={locCuaHang}
-                onChange={e => setLocCuaHang(e.target.value)}
+                value={loc.nhap.ch}
+                onChange={e => loc.dat('ch', e.target.value)}
               >
                 <option value="">Tất cả</option>
                 {dsCuaHang.map(ch => (
@@ -306,6 +320,15 @@ export function NhatKyThaoTac({ sc, mod }: ScreenProps) {
                 ))}
               </select>
             </label>
+
+            <button
+              type="button"
+              className="btn pri ds-nut-loc"
+              title={loc.khacNhap ? 'Có điều kiện mới, bấm Lọc để tải lại' : undefined}
+              onClick={onLoc}
+            >
+              Lọc{loc.khacNhap && <span className="ds-cham-nhap" />}
+            </button>
 
             <div className="ds-toolbar-phai">
               <div className="ds-tim-figma">
@@ -346,36 +369,52 @@ export function NhatKyThaoTac({ sc, mod }: ScreenProps) {
                 </tr>
               </thead>
               <tbody>
-                {dsHienThi.map(d => {
-                  const dangChon = d.ma === dongChon?.ma
-                  return (
-                    <tr
-                      key={d.ma}
-                      className={dangChon ? 'dang-chon' : ''}
-                      onClick={() => setChonMa(d.ma)}
-                      style={{ cursor: 'pointer' }}
-                    >
-                      <td style={{ fontVariantNumeric: 'tabular-nums' }}>{d.luc}:{d.giay}</td>
-                      <td>{d.ai}</td>
-                      <td>{d.vaiTro}</td>
-                      <td>{d.tt}</td>
-                      <td>{d.loai}</td>
-                      <td>
-                        {d.so ? <span className="ds-link-so">{d.so}</span> : ''}
-                      </td>
-                      <td>{d.ngay}</td>
-                      <td>{d.ch}</td>
-                      <td style={{ borderRight: 0 }}>{d.tb}</td>
-                    </tr>
-                  )
-                })}
+                {!daLoc ? (
+                  <tr>
+                    <td colSpan={9} className="nk-trong">
+                      Chọn điều kiện rồi bấm Lọc để xem nhật ký.
+                    </td>
+                  </tr>
+                ) : dsHienThi.length === 0 ? (
+                  <tr>
+                    <td colSpan={9} className="nk-trong">
+                      Không có thao tác nào khớp điều kiện lọc.
+                    </td>
+                  </tr>
+                ) : (
+                  dsHienThi.map(d => {
+                    const dangChon = d.ma === dongChon?.ma
+                    return (
+                      <tr
+                        key={d.ma}
+                        className={dangChon ? 'dang-chon' : ''}
+                        onClick={() => setChonMa(d.ma)}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        <td style={{ fontVariantNumeric: 'tabular-nums' }}>{d.luc}:{d.giay}</td>
+                        <td>{d.ai}</td>
+                        <td>{d.vaiTro}</td>
+                        <td>{d.tt}</td>
+                        <td>{d.loai}</td>
+                        <td>
+                          {d.so ? <span className="ds-link-so">{d.so}</span> : ''}
+                        </td>
+                        <td>{d.ngay}</td>
+                        <td>{d.ch}</td>
+                        <td style={{ borderRight: 0 }}>{d.tb}</td>
+                      </tr>
+                    )
+                  })
+                )}
               </tbody>
             </table>
           </div>
 
-          <div className="nk-dem">
-            <span>Hiển thị {dsHienThi.length} dòng</span>
-          </div>
+          {daLoc && (
+            <div className="nk-dem">
+              <span>Hiển thị {dsHienThi.length} dòng</span>
+            </div>
+          )}
         </section>
 
         {dongChon && (

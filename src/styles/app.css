@@ -42965,7 +42965,7 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
   overflow-x: auto;
 }
 .nk-bang-cuon .tbl {
-  width: 1394px;
+  width: max(100%, 1394px);
   table-layout: fixed;
   border-collapse: separate;
   border-spacing: 0;
@@ -43193,6 +43193,17 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
 .nk-btn-dong:hover {
   border-color: var(--blue);
   color: var(--blue);
+}
+
+/* Chưa bấm Lọc, lọc không ra dòng (T694) */
+.nk-bang-cuon .tbl td.nk-trong {
+  height: 200px;
+  text-align: center;
+  color: var(--muted);
+  border-right: 0;
+}
+.nk-bang-cuon .tbl tbody tr:hover td.nk-trong {
+  background: none;
 }
 
 /* ── Nhật ký thao tác điện thoại: thẻ hôm nay, bảng chi tiết trượt lên (T693) ── */
