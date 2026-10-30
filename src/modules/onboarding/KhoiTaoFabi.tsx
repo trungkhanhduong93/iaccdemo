@@ -115,7 +115,7 @@ export function KhoiTaoFabi() {
                 {laMobile && trang > 0 && <button className="btn ktf-lui lg" aria-label="Quay lại trang trước" onClick={() => setTrang(trang - 1)}><Icon n="chevl" className="ic sm" />Quay lại</button>}
                 {laMobile && trang < 2
                   ? <button className="btn pri lg" onClick={() => setTrang(trang + 1)}>Tiếp<Icon n="arrow" className="ic sm" /></button>
-                  : <button className="btn pri lg" onClick={dungThu}>Bắt đầu kết nối dữ liệu (chỉ mất 30 giây)<Icon n="arrow" className="ic sm" /></button>}
+                  : <button className="btn pri lg" onClick={dungThu}>Bắt đầu kết nối dữ liệu<Icon n="arrow" className="ic sm" /></button>}
               </div>
               {!laMobile && <small className="muted">{CAM_KET.join(' · ')}</small>}
             </div>

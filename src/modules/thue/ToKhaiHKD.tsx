@@ -167,7 +167,7 @@ export function ToKhaiHKD({ sc, mod }: ScreenProps) {
       </section>
       {/* hướng dẫn Trang chủ (T138): khai xong thông tin kinh doanh thì khoanh cột doanh thu, tiền thuế; Lập tờ khai mở hộp chọn kỳ như nút Thêm mới,
           lập xong vào các bước kê khai */}
-      <GoiYKeKhai onLap={() => setLap(true)} />
+      <GoiYKeKhai />
       {/* đang theo hướng dẫn Trang chủ mà đóng hộp chưa nộp: hướng dẫn chỉ vào nút Xem lại (boViecHuongDan) */}
       {lap && <HopLapToKhai onDong={() => { setLap(false); boViecHuongDan('thue', s.donVi, nav) }} onLap={lapMoi} />}
       {mo && <HopToKhai tk={mo} buocDau={buocDau} onDong={() => { setMo(null); boViecHuongDan('thue', s.donVi, nav) }} onDoi={() => setLan(x => x + 1)} />}

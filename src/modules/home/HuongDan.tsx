@@ -37,7 +37,7 @@ const THUE: Omit<Buoc, 'chon' | 'so'> = {
   tieuDe: 'Kê khai thuế',
   // khớp màn Kê khai thuế gói Standard: lần đầu mở hỏi loại hình, mã số thuế (popup), sau đó là danh sách tờ khai theo kỳ, trạng thái nộp
   noiDung: 'Tự động tạm tính số thuế GTGT và TNCN theo doanh thu từ FABi. Chỉ cần cập nhật nhanh mã số thuế để lập và theo dõi tờ khai từng kỳ.',
-  nut: { ten: 'Mở Kê khai thuế', di: '/app/thue/to-khai' },
+  nut: { ten: 'Cập nhật nhanh thông tin mã số thuế', di: '/app/thue/to-khai' },
   viec: 'thue',
 }
 
@@ -52,7 +52,7 @@ const KHEN: Record<Viec, (ten: string) => { tieuDe: string; noiDung: string }> =
     tieuDe: 'Tuyệt vời, quỹ của bạn đã có số dư',
     noiDung: `Số dư ban đầu${ten ? ` ${ten}` : ''} đã vào tồn quỹ. Từ nay tiền bán hàng thu từ FABi và các khoản chi bạn ghi sẽ phát sinh trên quỹ này, tồn quỹ khớp tiền trong két.`,
   }),
-  // ten rỗng: khai xong thông tin kinh doanh rồi bấm Bỏ qua ở danh sách tờ khai (GoiYKeKhai), chưa lập tờ khai
+  // ten rỗng: khai xong thông tin kinh doanh, mã số thuế (GoiYKeKhai), chưa lập tờ khai
   thue: ten => ten ? {
     tieuDe: 'Tuyệt vời, bạn đã hoàn thành tờ khai thuế',
     noiDung: `Tờ khai ${ten} đã ghi nhận nộp cơ quan thuế. Kỳ sau mở Kê khai thuế ở đây, doanh thu từ FABi tự điền vào tờ khai mới.`,
@@ -178,7 +178,7 @@ export function HuongDan({ sang }: { sang?: string }) {
   const [khen, setKhen] = useState(tiep?.khen ?? null)
   const ds = laMobile ? BUOC_DT : BUOC
   const hetSauKhen = (tiep?.b ?? 0) >= ds.length   // việc vừa xong là bước cuối: khen xong thì kết thúc
-  // đã qua bước Kê khai thuế (bấm Mở Kê khai thuế) mà chưa nộp tờ khai, quay lại Trang chủ: không lặp bước đó, hiện màn Bắt đầu dùng (KET)
+  // đã qua bước Kê khai thuế (bấm Cập nhật nhanh thông tin mã số thuế) mà chưa nộp tờ khai, quay lại Trang chủ: không lặp bước đó, hiện màn Bắt đầu dùng (KET)
   const [ket, setKet] = useState(!tiep?.khen && !tiep?.bo && hetSauKhen)
   const [i, setI] = useState(Math.min(tiep?.b ?? 0, ds.length - 1))
   const [o, setO] = useState<DOMRect | null>(null)
@@ -405,63 +405,17 @@ function DaiHuongDanDt({ dem, onTiep, onTat }: { dem: string; onTiep: () => void
     </div>
   )
 }
-/** Hướng dẫn chờ việc Kê khai thuế, đã khai xong thông tin kinh doanh (popup loại hình, mã số thuế): ở danh sách tờ khai khoanh các cột
- *  doanh thu, tiền thuế, bong bóng mời lập tờ khai (PhuongXT 29/10/2026). Lập tờ khai: mở các bước kê khai (onLap), nộp xong mới về Trang chủ;
- *  Bỏ qua: về Trang chủ khen, kết thúc hướng dẫn. Gắn ở ToKhaiHKD; điện thoại (MToKhaiHKD) truyền chon: dòng tờ khai đầu có số liệu */
-export function GoiYKeKhai({ onLap, chon }: { onLap: () => void; chon?: string }) {
+/** Hướng dẫn chờ việc Kê khai thuế: khai xong thông tin kinh doanh (popup loại hình, mã số thuế) là xong việc, về Trang chủ khen,
+ *  không mời lập tờ khai (PhuongXT 30/10/2026). Gắn ở ToKhaiHKD và điện thoại (MToKhaiHKD) */
+export function GoiYKeKhai() {
   const { s } = useSession()
   const nav = useNavigate()
-  const [an, setAn] = useState(false)
-  const [o, setO] = useState<DOMRect | null>(null)
-  const [caoBong, refBong] = useCaoBong()
   const t = docTiep()
-  const hien = !an && !!t && t.dv === s.donVi && t.cho === 'thue' && !s.choKeKhai?.[s.donVi] && !navigator.webdriver
+  const hien = !!t && t.dv === s.donVi && t.cho === 'thue' && !s.choKeKhai?.[s.donVi] && !navigator.webdriver
   useEffect(() => {
-    if (!hien) return
-    let f = 0, daCuon = false
-    const bam = () => {
-      const el = chon ? document.querySelector(chon) : null
-      if (el) {
-        if (!daCuon) { cuonToi(el, { block: 'start' }); daCuon = true }   // dòng lên đầu màn, chừa chỗ bên dưới cho bong bóng
-        const r = el.getBoundingClientRect(), z = zoom()
-        const m = new DOMRect(r.left / z, r.top / z, r.width / z, r.height / z)
-        setO(o => o && o.left === m.left && o.top === m.top && o.width === m.width && o.height === m.height ? o : m)
-        f = requestAnimationFrame(bam)
-        return
-      }
-      // vùng từ cột Doanh thu tính thuế tới cột Thuế TNCN, từ dòng tiêu đề tới hết bảng
-      const th = [...document.querySelectorAll('.page th')]
-      const dau = th.find(x => x.textContent?.trim() === 'Doanh thu tính thuế'), cuoi = th.find(x => x.textContent?.trim() === 'Thuế TNCN')
-      const bang = dau?.closest('table')
-      if (dau && cuoi && bang) {
-        // màn hẹp bảng cuộn ngang: cuộn cho thấy cột Thuế TNCN, khung cắt theo phần bảng đang thấy
-        if (!daCuon) { cuonToi(cuoi, { block: 'nearest', inline: 'end' }); daCuon = true }
-        const a = dau.getBoundingClientRect(), c = cuoi.getBoundingClientRect(), k = bang.parentElement!.getBoundingClientRect(), z = zoom()
-        const trai = Math.max(a.left, k.left), phai = Math.min(c.right, k.right)
-        const m = new DOMRect(trai / z, a.top / z, (phai - trai) / z, (bang.getBoundingClientRect().bottom - a.top) / z)
-        setO(o => o && o.left === m.left && o.top === m.top && o.width === m.width && o.height === m.height ? o : m)
-      }
-      f = requestAnimationFrame(bam)
-    }
-    bam()   // đo ngay, không chờ khung hình đầu (tab chạy nền thì requestAnimationFrame đứng)
-    return () => cancelAnimationFrame(f)
+    if (hien) xongViecHuongDan('thue', '', s.donVi, nav)
   }, [hien])
-  if (!hien || !o) return null
-  return createPortal(
-    <div className="hdan" role="dialog" aria-label="Hướng dẫn sử dụng">
-      <div className="hdan-lo" style={{ left: o.left - LE, top: o.top - LE, width: o.width + LE * 2, height: o.height + LE * 2 }} />
-      <div ref={refBong} className="hdan-bong hdan-khen" style={viTriBong(o, caoBong)}>
-        <div className="hdan-khen-dau"><span className="hdan-khen-ic"><Icon n="star" className="ic" /></span><b>Thông tin kê khai đã xong, giờ lập tờ khai</b></div>
-        <p>Mỗi kỳ tờ khai có sẵn doanh thu tính thuế lấy từ FABi, phần giảm trừ, thuế GTGT, thuế TNCN phải nộp. Lập tờ khai để xem từng bước rồi nộp.</p>
-        <div className="row hdan-nut">
-          <span className="grow" />
-          <button className="btn ghost sm" onClick={() => { setAn(true); xongViecHuongDan('thue', '', s.donVi, nav) }}>Bỏ qua</button>
-          <button className="btn pri sm" onClick={() => { setAn(true); onLap() }}>Lập tờ khai thuế<Icon n="arrow" className="ic sm" /></button>
-        </div>
-      </div>
-    </div>,
-    document.body,
-  )
+  return null
 }
 
 /** Hướng dẫn chờ việc Kê khai thuế, lướt các bước tờ khai tới bước cuối (Xem và nộp tờ khai): khen ngay trong màn, Bắt đầu dùng thì kết thúc
