@@ -34,6 +34,7 @@ import { BangSua } from './BangSua'
 import { ChungTuForm, HachToan, LichSu, VoucherDetail, lyDoKhongXoaTheCuaPhieu, lyMacDinh, xoaTheCuaPhieu } from './ChungTuForm'
 import { HopInChungTu, type PhieuIn } from '../bao-cao/InChungTu'
 import { phieuThuChiFabi } from '../../modules/tien/dong-bo-fabi'
+import { DongBoThuChiFabi } from '../../modules/tien/DongBoThuChiFabi'
 
 /** Ngày tạo, người tạo (T132): phiếu lưu trong phiên có sẵn; phiếu mẫu đồng bộ từ phần mềm khác do Hệ thống tạo lúc đồng bộ,
  *  phiếu mẫu nhập tay do một nhân viên tạo, vài phút sau giờ chứng từ */
@@ -829,6 +830,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
                   </>
                 ) : (
                   <>
+                    {isTien && <DongBoThuChiFabi />}
                     <NutExcel
                       label={<IconFigmaSheet />}
                       onNhap={() => toast('Nhập chứng từ từ file Excel')}

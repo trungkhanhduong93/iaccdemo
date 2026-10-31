@@ -1,10 +1,11 @@
-// Tiện ích đồng bộ thu chi FABi (T691, T697), nằm bên phải thanh tab phân hệ Thu chi.
+// Tiện ích đồng bộ thu chi FABi (T691, T697), nằm ở thanh công cụ danh sách Thu chi cạnh nút Excel (T698).
 // Nút Đồng bộ mở hộp Đồng bộ thu chi từ FABi chọn kỳ, loại phiếu (phiếu thu, phiếu chi), cửa hàng rồi lấy phiếu về.
 // Đơn vị vừa Kết nối FABi mà phiếu còn đổ về thì báo đang đồng bộ x / y phiếu như Trang chủ (T687).
 import { useState } from 'react'
 import { useSession } from '../../app/session'
 import { Icon } from '../../ui/Icon'
 import { HopDongBo } from '../../ui/HopDongBo'
+import { NutDongBo } from '../../ui/CongCuDs'
 import { dmy } from '../../ui/format'
 import { CUA_HANG } from '../../data/mock'
 import { phanDaVe, useDongBoFabi } from '../home/NhacDonViMoi'
@@ -14,11 +15,8 @@ export function DongBoThuChiFabi() {
   const { s, toast } = useSession()
   const db = useDongBoFabi()
   const [hop, setHop] = useState(false)
-  const nutDongBo = (
-    <button type="button" className="btn sm" title="Đồng bộ thu chi từ FABi" onClick={() => setHop(true)}>
-      <Icon n="refresh" className="ic sm" />Đồng bộ
-    </button>
-  )
+  // Nút vuông cạnh nút Excel như Xuất bán POS (T698)
+  const nutDongBo = <NutDongBo ten="FABi" onDongBo={() => setHop(true)} />
   // Chọn sẵn cửa hàng đang bật tự động đồng bộ ở Danh mục Cửa hàng (T264)
   const hopDongBo = hop && (
     <HopDongBo
@@ -41,7 +39,7 @@ export function DongBoThuChiFabi() {
   )
 
   return (
-    <div className="dbtc-tab">
+    <>
       {db && (
         <span className="dbtc-trang" role="status">
           <Icon n="refresh" className="ic sm db-quay" />
@@ -50,6 +48,6 @@ export function DongBoThuChiFabi() {
       )}
       {!db && nutDongBo}
       {hopDongBo}
-    </div>
+    </>
   )
 }

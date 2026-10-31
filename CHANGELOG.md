@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 31/10/2026
+- T698: Thu chi, nút Đồng bộ thu chi FABi chuyển xuống thanh công cụ danh sách, thành nút vuông nằm cạnh nút Excel như Xuất bán POS.
 - T697: Thu chi có hàng chip Tất cả, Chưa ghi sổ, Đã ghi sổ, Chưa đồng bộ (gói Standard không có Chưa ghi sổ). Chip Chưa đồng bộ liệt kê phiếu FABi chưa vào sổ kèm nguyên nhân, link xử lý, nút Đồng bộ lại và Xuất Excel; bỏ nhãn vàng của T691. Xuất bán POS thêm chip Đã đồng bộ, Chưa đồng bộ, mỗi dòng một món (tên, mã món, ĐVT, số lượng bán). Hộp Đồng bộ thu chi chọn thêm phiếu thu hay phiếu chi. Điện thoại xem được hai trạng thái, không có nút đồng bộ.
 - T695: Nhật ký thao tác. Web: bấm vào ô ngày thao tác để chọn từ ngày đến ngày, mặc định hôm nay; nút phễu mở Bộ lọc nâng cao có thêm Tài khoản, Tên chứng từ, Ngày chứng từ. Điện thoại: mở màn chưa có thẻ, bấm phễu mở bảng lọc trượt lên đủ 6 điều kiện, bấm Lọc mới hiện thẻ. Sửa lỗi giao diện điện thoại của Nhật ký làm lệch kiểu chữ, khoảng cách ở một số màn khác.
 - T694: Nhật ký thao tác trên web có nút Lọc. Mở màn chưa hiện dữ liệu, chọn điều kiện rồi bấm Lọc mới ra bảng. Khung chi tiết bên phải chỉ mở khi bấm một dòng. Bảng giãn hết bề ngang trên màn rộng.

@@ -11,7 +11,6 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| T698 | Thu chi: nút Đồng bộ thu chi FABi dời từ thanh tab phân hệ xuống thanh công cụ danh sách, nút vuông cạnh nút Excel như Xuất bán POS | Trum | Đang làm | Sửa `DongBoThuChiFabi.tsx`, `ModuleTabs.tsx`, `VoucherScreen.tsx` |
 | T696 | `kiem_tra.py --dien-thoai` dừng ở đợt 5 (lập phiếu): chờ 30 giây không thấy `.m-xp-nut-menu` nên không chạy tới các đợt sau | | Chờ | Thấy lúc nghiệm thu T695. Nút có trong `src/ui/mobile/MDtThuChiXem.tsx:341`, xem `tools/kiem_tra.py:642`. Đợt 11A chạy riêng vẫn qua |
 | T690 | `kiem_tra.py` đợt 11A (điện thoại) báo "Gói thuê bao: thiếu 4 thẻ gói dịch vụ dọc": màn Gói thuê bao điện thoại hoặc bài kiểm lệch nhau | | Chờ | Thấy lúc nghiệm thu T689, `--nhanh` không chạy đợt 11A. Xem `tools/kiem_tra.py` mục 4 Gói thuê bao và `src/ui/mobile/MHeThong.tsx` |
 | T688 | Điện thoại, Trang chủ gói Standard báo đang đồng bộ chứng từ FABi như web (T687): dòng Doanh thu, từng quỹ x / y chứng từ, biểu đồ làm mờ | | Chờ | Ghi lúc làm T687. Sửa `src/ui/mobile/MTrangChuStandard.tsx`, dùng `useDongBoFabi`, `DongDongBo` trong `NhacDonViMoi.tsx` |
