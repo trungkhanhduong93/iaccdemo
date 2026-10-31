@@ -997,4 +997,5 @@ dinhlanphuongipacc chốt 31/10/2026 (T700).
 
 - Lý do chi tiền có hai tích: Là chi phí và Chi phí phân bổ nhiều kỳ. Chỉ chọn một trong hai, tích ô này thì bỏ tích ô kia, bỏ cả hai được. Lý do thêm mới mặc định không tích ô nào.
 - Phiếu chi có dòng lý do tích Chi phí phân bổ nhiều kỳ thì nhắc dưới ô lý do và lưu xong gợi ý tạo thẻ chi phí, thay cho so tên lý do Chi phí chờ phân bổ.
-- Lý do mẫu Chi phí chờ phân bổ (CHI35) tích Chi phí phân bổ nhiều kỳ, bỏ tích Là chi phí. Khoản trả trước vào chi phí dần qua thẻ, không cộng thẳng vào chi phí trong tháng.
+- Ghi tăng thẻ, Ghi tăng bổ sung, cảnh báo khoản chờ ghi tăng, Khoá sổ lấy mọi dòng phiếu chi có lý do tích Chi phí phân bổ nhiều kỳ.
+- Lý do mẫu Chi phí chờ phân bổ (CHI35) giữ lại vì chứng từ mẫu đang dùng, tích Chi phí phân bổ nhiều kỳ, bỏ tích Là chi phí. Khoản trả trước vào chi phí dần qua thẻ, không cộng thẳng vào chi phí trong tháng.

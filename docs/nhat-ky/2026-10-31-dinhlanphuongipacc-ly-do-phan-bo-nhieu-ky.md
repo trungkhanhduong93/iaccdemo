@@ -12,6 +12,8 @@
 - `src/modules/danh-muc/index.ts`: cột Chi phí phân bổ nhiều kỳ, `phien` giữ tích đã sửa (trước đây sửa Là chi phí ở lý do có sẵn không lưu lại).
 - `src/ui/generic/danhMucStore.ts`: `laLyPhanBo(ten, s)`; thêm lý do từ phiếu chi không còn tích sẵn Là chi phí.
 - `src/ui/generic/ChungTuForm.tsx`: nhắc và gợi ý tạo thẻ theo `laLyPhanBo`, chữ hộp báo đổi thành "khoản chi phí phân bổ nhiều kỳ".
+- `src/modules/ccdc/GhiTangHangLoat.tsx`: `useDongCho` lấy dòng phiếu chi có lý do tích Chi phí phân bổ nhiều kỳ thay cho so tên. Ghi tăng, Ghi tăng bổ sung, cảnh báo ở danh sách thẻ, mục Khoá sổ Standard đều dùng hàm này.
+- Giữ lý do CHI35 Chi phí chờ phân bổ vì phiếu mẫu, sơ đồ Chi phí phân bổ, điện thoại đang dùng; người dùng chốt để tạm, chạy theo tích mới.
 
 ## Đã kiểm
 
@@ -21,7 +23,9 @@
 ## Dở dang, việc tiếp theo
 
 - Điện thoại chờ Trum xong T552: `MDanhMuc.tsx` thêm tích Chi phí phân bổ nhiều kỳ (đang có ghi đè Là chi phí riêng, T353); `MLapPhieu.tsx` (`TEN_LY_CHO_PHAN_BO`), `MDtThuChiLap.tsx` (`laLyChoPb`) đổi sang `laLyPhanBo`.
-- Chỗ khác vẫn so tên Chi phí chờ phân bổ: `ccdc/GhiTangHangLoat.tsx`, `ccdc/index.ts` (Ghi tăng bổ sung), `tong-hop/KhoaSoStandard.tsx`, `home/chiPhiPhieu.ts`. Lý do khác tích phân bổ chưa vào danh sách khoản chờ ghi tăng; hỏi người dùng có làm tiếp không.
+- Báo cáo chi phí (`LY_CHI_PHI`, `home/chiPhiPhieu.ts`) vẫn đọc tích Là chi phí từ dữ liệu mẫu, chưa theo tích đã sửa trong phiên.
+- Commit chỉ nằm trên máy, chưa push: người dùng dặn khi nào bảo mới push.
+- `tools/xuat_bao_cao_he_thong.py` lỗi thiếu module `build_present`, chưa làm mới báo cáo Excel.
 
 ## Bẫy, quyết định mới
 

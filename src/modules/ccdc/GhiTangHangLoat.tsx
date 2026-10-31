@@ -12,8 +12,8 @@ import { suaPhieu, useDaXoa } from '../../ui/generic/daXoa'
 import { ONhap, loaiTheTheoGoi, soTheKeTiep } from './the-phan-bo'
 import { ChonDanhMuc } from '../../ui/ChonDanhMuc'
 import { CCDC_HANG, MA_LY_CHO_PHAN_BO } from '../../data/mock'
+import { laLyPhanBo } from '../../ui/generic/danhMucStore'
 
-const LY_CHO = 'Chi phí chờ phân bổ'
 const MAN_THU_CHI = 'tien/2-1-1'
 
 /** Dòng phiếu chi chờ phân bổ mẫu: [số chứng từ, ngày chứng từ, nội dung, số tiền] */
@@ -37,15 +37,16 @@ const CCDC = 'Công cụ dụng cụ'
 
 type DongGoc = Pick<DongCho, 'key' | 'soCt' | 'ngayCt' | 'ten' | 'gt' | '_goc'>
 
-/** Dòng chờ: mẫu cộng các phiếu chi lưu trong phiên có dòng lý do Chi phí chờ phân bổ, bỏ dòng đã tạo thẻ.
+/** Dòng chờ: mẫu cộng các phiếu chi lưu trong phiên có dòng lý do tích Chi phí phân bổ nhiều kỳ (T700), bỏ dòng đã tạo thẻ.
  *  Dùng chung cho form Ghi tăng và cảnh báo ở danh sách thẻ (T287); tính lại mỗi lần vẽ vì daTao đổi khi tạo thẻ */
 function useDongCho(): DongGoc[] {
+  const { s } = useSession()
   const { phieuMoi: moi, apSua } = useDaXoa(MAN_THU_CHI)
   // Phiếu đã có thẻ (tạo ngay khi lưu phiếu, T419) thì không còn là khoản chờ
   const phieuMoi = moi.map(apSua).filter(p => !(Array.isArray(p._theCp) && p._theCp.length))
   return [
     ...CHO_MAU.map(([soCt, ngayCt, ten, gt], i) => ({ key: `mau-${i}`, soCt, ngayCt, ten, gt })),
-    ...phieuMoi.flatMap(p => ((p._dong as Row[] | undefined) ?? []).map((d, i) => ({ d, i })).filter(({ d }) => d.ly === LY_CHO)
+    ...phieuMoi.flatMap(p => ((p._dong as Row[] | undefined) ?? []).map((d, i) => ({ d, i })).filter(({ d }) => laLyPhanBo(String(d.ly ?? p._lyDo ?? ''), s))
       .map(({ d, i }) => ({ key: `${p.id}-${i}`, soCt: String(p.so), ngayCt: String(p.ngay).split(' ')[0], ten: String(d.ten ?? ''), gt: Number(d.tien) || 0, _goc: `/app/${MAN_THU_CHI}/${p.id}` }))),
   ].filter(d => !daTao.has(d.key))
 }
