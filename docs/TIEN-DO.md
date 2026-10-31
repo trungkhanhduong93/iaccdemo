@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T695 | Nhật ký thao tác: phễu mở bộ lọc nâng cao (Tài khoản, Tên chứng từ, Ngày chứng từ), chip ngày thao tác chọn từ ngày đến ngày; điện thoại bấm phễu chọn điều kiện rồi Lọc mới tải | Trum | Đang làm | Sửa `src/modules/tien-ich/TienIch.tsx`, `src/ui/mobile/MHeThong.tsx`, `src/modules/he-thong/nhatKyMau.ts`, `src/styles/app.css`, `tools/kiem_tra.py` |
 | T690 | `kiem_tra.py` đợt 11A (điện thoại) báo "Gói thuê bao: thiếu 4 thẻ gói dịch vụ dọc": màn Gói thuê bao điện thoại hoặc bài kiểm lệch nhau | | Chờ | Thấy lúc nghiệm thu T689, `--nhanh` không chạy đợt 11A. Xem `tools/kiem_tra.py` mục 4 Gói thuê bao và `src/ui/mobile/MHeThong.tsx` |
 | T688 | Điện thoại, Trang chủ gói Standard báo đang đồng bộ chứng từ FABi như web (T687): dòng Doanh thu, từng quỹ x / y chứng từ, biểu đồ làm mờ | | Chờ | Ghi lúc làm T687. Sửa `src/ui/mobile/MTrangChuStandard.tsx`, dùng `useDongBoFabi`, `DongDongBo` trong `NhacDonViMoi.tsx` |
 | T683 | Dữ liệu giả điện thoại, Công cụ dụng cụ: thẻ TPB2610-0011 "Tiền nhà 6 tháng" (`src/ui/mobile/MCcdc.tsx:40`) còn ghi chứng từ gốc PC2610-0261, đổi thành PC2610-0260 cho khớp phiếu mẫu Thu chi sau T682 | | Chờ | Ghi lúc làm T682. Làm sau T436 vì dinhlanphuongipacc đang giữ `MCcdc.tsx`. Chỉ đổi chuỗi `soCt` |
