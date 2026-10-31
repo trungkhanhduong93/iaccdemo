@@ -18,8 +18,8 @@ import { heSoZoom } from './zoom'
 import { datTourChay, dongFormTren, formTren, ngheForm, phieuTour, soLanLuu } from './huongDanForm'
 import { boPhieuMoi } from './generic/daXoa'
 
-/** Một bước Làm nhanh. o: khoá ô trên sơ đồ khung màn mà bước chỉ tới, hoặc ô trong form phiếu (O_FORM); di: đường dẫn sau /app/ cho nút làm ngay, nutDi: chữ trên nút đó */
-export interface BuocHD { chu: string; o?: string; di?: string; nutDi?: string; dt?: string }
+/** Một bước Làm nhanh. o: khoá ô trên sơ đồ khung màn mà bước chỉ tới, hoặc ô trong form phiếu (O_FORM); di: đường dẫn sau /app/ cho nút làm ngay, nutDi: chữ trên nút đó; bam: bấm phần tử data-hd này khi vào bước mà chưa thấy chỗ khoanh o (T703); web: bước chỉ có trên máy tính, điện thoại bỏ qua (T703) */
+export interface BuocHD { chu: string; o?: string; di?: string; nutDi?: string; dt?: string; bam?: string; web?: boolean }
 /** Ô trên sơ đồ khung màn. rong: hệ số giãn ngang; kieu nut là nút xanh, tab là hàng tab, bang là khối bảng cao */
 export interface OSoDo { k: string; ten: string; rong?: number; kieu?: 'nut' | 'tab' | 'bang' }
 export interface HuongDanMan {
@@ -244,6 +244,12 @@ const KHUON: Record<string, string[]> = {
 // Ô trong form phiếu (T676): ChungTuForm gắn data-hd cho khối ô đầu form, bảng dòng chi tiết, nút Lưu
 const O_FORM = new Set(['ttc', 'chi-tiet', 'luu'])
 export const laBuocForm = (x?: BuocHD) => !!x?.o && O_FORM.has(x.o)
+export const laBuocHdb = (x?: BuocHD) => !!x?.o?.startsWith('hdb')
+export const trongHdb = (hd: HuongDanMan, x?: BuocTour) => x?.k === 'buoc' && laBuocHdb(hd.buoc[x.n])
+export function dongHdb() {
+  const nutDong = document.querySelector<HTMLElement>('[data-hd="hdbDong"]')
+  nutDong?.click()
+}
 const coKhung = (e: Element) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0 }
 
 /** Khung bao quanh nhiều phần tử, vd các ô lọc, các tab */
@@ -257,7 +263,7 @@ function hop(ds: Element[]): DOMRect | null {
 /** form: form toàn màn đang mở, che màn danh sách nên chỉ tìm trong form */
 export function timCho(k: string, form: HTMLElement | null): DOMRect | null {
   const rieng = [...(form ?? document).querySelectorAll(`[data-hd="${k}"]`)].find(coKhung)
-  if (rieng) return rieng.getBoundingClientRect()
+  if (rieng) { rieng.scrollIntoView?.({ block: 'nearest', inline: 'nearest' }); return rieng.getBoundingClientRect() }
   if (form) return null
   // các tab của phân hệ, không lấy phần trống cuối thanh tab
   if (k === 'tab') return hop([...document.querySelectorAll('.mtabs-in > a, .mtabs-in > .mtabs-more')])
@@ -363,6 +369,8 @@ export function NutHuongDan({ mod, ngoaiThanhTab }: { mod: ModuleDef; ngoaiThanh
   const [doi, setDoi] = useState(false)               // đang chờ chỗ khoanh hiện (form đang mở ra): chỉ phủ tối, chưa hiện bong bóng
   const [caoBong, refBong] = useCaoBong()
   const refTiep = useRef<HTMLButtonElement>(null)
+  const refChipGoc = useRef<string | null>(null)
+  const timChipDangChon = () => document.querySelector<HTMLElement>('[data-hd^="chip-"][aria-pressed="true"], [data-hd^="chip-"].on')?.getAttribute('data-hd') ?? null
   const form = useSyncExternalStore(ngheForm, formTren)    // form toàn màn đang mở (T676)
   const slug = loc.pathname.split('/')[3]
   const sc = manDangMo(mod, slug, s)
@@ -412,6 +420,14 @@ export function NutHuongDan({ mod, ngoaiThanhTab }: { mod: ModuleDef; ngoaiThanh
    *  veCu: về đúng màn, tab lúc bấm nút; bấm chỗ Đi tiếp, nút làm ngay thì sang màn đó, không về */
   function ketThuc(veCu: boolean) {
     if (!goc) return
+    dongHdb()
+    if (refChipGoc.current) {
+      const chipHienTai = timChipDangChon()
+      if (chipHienTai && chipHienTai !== refChipGoc.current) {
+        document.querySelector<HTMLElement>(`[data-hd="${refChipGoc.current}"]`)?.click()
+      }
+      refChipGoc.current = null
+    }
     if (formTren()) dongFormTren()
     for (const p of phieuTour()) boPhieuMoi(p.man, p.id)
     if (s.cuaHang !== goc.cuaHang) set({ cuaHang: goc.cuaHang })
@@ -434,6 +450,23 @@ export function NutHuongDan({ mod, ngoaiThanhTab }: { mod: ModuleDef; ngoaiThanh
       const di = !formTren() && diMoForm(y.n)
       if (di) nav(`/app/${di}`)
     } else if (formTren()) dongFormTren()
+    // Hộp đồng bộ (T703): bước ngoài hộp hoặc quay lại bước trước mà hộp đang mở thì đóng
+    if (!trongHdb(hd, y)) {
+      dongHdb()
+    }
+    // Bước có bam: khi vào bước mà chưa thấy chỗ khoanh o (hoặc chip chưa kích hoạt) thì bấm bam (T703)
+    if (y.k === 'buoc') {
+      const b = hd.buoc[y.n]
+      if (b?.bam) {
+        const canBam = b.bam.startsWith('chip-')
+          ? !document.querySelector(`[data-hd="${b.bam}"][aria-pressed="true"], [data-hd="${b.bam}"].on`)
+          : (!b.o || !timCho(b.o, formTren()))
+        if (canBam) {
+          const nutBam = document.querySelector<HTMLElement>(`[data-hd="${b.bam}"]`)
+          nutBam?.click()
+        }
+      }
+    }
     setI(t)
   }
   /** Tiếp: máy tự làm thao tác của bước đang xem rồi mới sang bước sau. Chọn cửa hàng: bấm cửa hàng đầu tiên. Bước Lưu: bấm Lưu,
@@ -448,6 +481,10 @@ export function NutHuongDan({ mod, ngoaiThanhTab }: { mod: ModuleDef; ngoaiThanh
       if (soLanLuu() > truoc) setI(i + 1)   // form tự đóng sau khi lưu, không đóng thêm lần nữa
       return
     }
+    const b = x.k === 'buoc' ? hd.buoc[x.n] : undefined
+    if (b?.o?.startsWith('chip-')) {
+      document.querySelector<HTMLElement>(`[data-hd="${b.o}"]`)?.click()
+    }
     toi(i + 1)
   }
 
@@ -461,6 +498,7 @@ export function NutHuongDan({ mod, ngoaiThanhTab }: { mod: ModuleDef; ngoaiThanh
   const soVua = phieuTour().at(-1)?.so
   const batDau = () => {
     ghiXem(khoaXem); setDaXem(true)
+    refChipGoc.current = timChipDangChon()
     setGoc({ path: loc.pathname + loc.search, cuaHang: s.cuaHang, hoiCn: !cuaHangHienTai(s) })
     setI(0); setO(null); setDoi(false)
   }

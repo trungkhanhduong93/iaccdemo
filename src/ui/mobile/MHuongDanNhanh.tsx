@@ -21,6 +21,13 @@ import {
   type HuongDanMan,
 } from '../HuongDanNhanh'
 
+// Bỏ các bước web khỏi tour và danh sách Làm nhanh của điện thoại (T703)
+function layHuongDanDt(mod: ModuleDef, sc: ScreenDef | undefined, s: Parameters<typeof layHuongDan>[2]): HuongDanMan | undefined {
+  const hd = layHuongDan(mod, sc, s)
+  if (!hd) return undefined
+  return { ...hd, buoc: hd.buoc.filter(b => !b.web) }
+}
+
 const CHU_CN = 'Thanh trên đang xem Tất cả cửa hàng nên phiếu mới hỏi lập cho cửa hàng nào. Bấm tên một cửa hàng để chọn.'
 const coKhung = (e: Element) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0 }
 
@@ -187,7 +194,7 @@ export const MNutHuongDan: FC<MNutHuongDanProps> = ({ mod: propMod, sc: propSc }
   const currentSc = typeof propSc === 'object' ? propSc : tm.sc
   const sc = currentSc ?? (mod ? manDangMo(mod, slug, s) : undefined)
 
-  const hd = mod && sc ? layHuongDan(mod, sc, s) : undefined
+  const hd = mod && sc ? layHuongDanDt(mod, sc, s) : undefined
   const khoaXem = `${s.email}|${sc?.goc ?? mod?.key}/${sc?.slug ?? slug ?? ''}`
   const [daXem, setDaXem] = useState(() => docXem().includes(khoaXem))
 
@@ -239,7 +246,7 @@ export const MTourOverlay: FC = () => {
   const goc = tour?.goc
   const i = tour?.i ?? 0
 
-  const hd = mod && sc ? layHuongDan(mod, sc, s) : undefined
+  const hd = mod && sc ? layHuongDanDt(mod, sc, s) : undefined
   const ds = hd ? dsTour(hd, !!goc?.hoiCn) : []
   const x = ds[i] as BuocTour | undefined
 

@@ -1000,4 +1000,12 @@ dinhlanphuongipacc chốt 31/10/2026 (T700).
 - Ghi tăng thẻ, Ghi tăng bổ sung, cảnh báo khoản chờ ghi tăng, Khoá sổ lấy mọi dòng phiếu chi có lý do tích Chi phí phân bổ nhiều kỳ.
 - Lý do mẫu Chi phí chờ phân bổ (CHI35) giữ lại vì chứng từ mẫu đang dùng, tích Chi phí phân bổ nhiều kỳ, bỏ tích Là chi phí. Khoản trả trước vào chi phí dần qua thẻ, không cộng thẳng vào chi phí trong tháng.
 
-## QD91. Tour màn có đồng bộ được dài hơn mức QD86 (đang soạn)
+## QD91. Tour màn có đồng bộ được dài hơn mức QD86
+
+Trum chốt 31/10/2026 (T703).
+
+- Màn có tiện ích đồng bộ FABi (Thu chi, Xuất bán POS) được dùng tour dài hơn mức 3 đến 5 bước của QD86. Tour Thu chi hiện 18 bước, Xuất bán POS 16 bước.
+- Tour tự bấm nút Đồng bộ để mở hộp, mỗi mục trong hộp một bong bóng. Tour không bấm nút Đồng bộ ngay.
+- Tour tự bấm chip Chưa đồng bộ. Cột cần giải thích riêng (mã FABi, Nguyên nhân, Xử lý) mỗi cột một bong bóng, các cột còn lại gộp một bong bóng khoanh cả bảng.
+- Bỏ qua hoặc Xong: tour đóng hộp, chip về như lúc bấm Hướng dẫn.
+- Điện thoại bỏ các bước này (bước có `web: true`), vì đồng bộ chỉ làm trên máy tính.

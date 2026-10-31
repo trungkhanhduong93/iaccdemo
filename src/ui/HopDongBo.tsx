@@ -191,6 +191,7 @@ export function HopDongBo({
             type="button"
             className="icon-btn hdb-dong"
             title="Đóng (Esc)"
+            data-hd="hdbDong"
             disabled={dangChay}
             onClick={dongAnToan}
           >
@@ -199,13 +200,13 @@ export function HopDongBo({
         </header>
 
         <div className="hdb-than">
-          <div className="hdb-muc hdb-ngay">
+          <div className="hdb-muc hdb-ngay" data-hd="hdbNgay">
             <div className="hdb-nhan">Khoảng thời gian</div>
             <ChonKhoangNgay value={khoangNgay} onChange={setKhoangNgay} />
           </div>
 
           {coLoaiPhieu && (
-            <div className="hdb-muc">
+            <div className="hdb-muc" data-hd="hdbLoai">
               <div className="hdb-nhan">Loại phiếu</div>
               <div className="hdb-chon-loai">
                 <label className={`hdb-the-loai${loaiThu ? ' on' : ''}`}>
@@ -236,7 +237,7 @@ export function HopDongBo({
             </div>
           )}
 
-          <div className="hdb-muc">
+          <div className="hdb-muc" data-hd="hdbDs">
 
             <div className="hdb-nhan">{nhanDs}</div>
             <div className="hdb-ds-khoi">
@@ -316,7 +317,7 @@ export function HopDongBo({
           </div>
 
           {coMon && (
-            <div className="hdb-muc">
+            <div className="hdb-muc" data-hd="hdbMon">
 
 
               <div className="hdb-nhan">Món bán</div>
@@ -437,7 +438,7 @@ export function HopDongBo({
         <footer className="hdb-chan">
           {tichPhu ? (
             <div className="hdb-chan-trai-ds">
-              <label className="hdb-chan-trai">
+              <label className="hdb-chan-trai" data-hd="hdbLamLai">
                 <input
                   type="checkbox"
                   className="bat-tat"
@@ -459,7 +460,7 @@ export function HopDongBo({
               </label>
             </div>
           ) : (
-            <label className="hdb-chan-trai">
+            <label className="hdb-chan-trai" data-hd="hdbLamLai">
               <input
                 type="checkbox"
                 className="bat-tat"
@@ -483,6 +484,7 @@ export function HopDongBo({
               type="button"
               className="btn pri"
               disabled={chon.length === 0 || dangChay || (coLoaiPhieu && !loaiThu && !loaiChi)}
+              data-hd="hdbNut"
               onClick={handleDongBo}
             >
               {dangChay && <Icon n="refresh" className="ic sm hdb-spin" />}

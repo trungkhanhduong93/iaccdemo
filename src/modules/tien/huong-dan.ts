@@ -14,9 +14,18 @@ export const huongDan: Record<string, HuongDanMan> = {
       { chu: 'Bấm Lưu hoặc Ctrl + S. Phiếu lưu xong hiện ở đầu danh sách.', o: 'luu', dt: 'Chạm Lưu ở đáy phiếu. Phiếu lưu xong hiện ở đầu danh sách.' },
       { chu: 'Tìm phiếu cũ: chọn thời gian, gõ số phiếu hoặc diễn giải, bấm Lọc.', o: 'loc', dt: 'Tìm phiếu cũ: chọn thời gian, gõ số phiếu hoặc diễn giải vào ô tìm.' },
       { chu: 'Bấm số chứng từ để xem, in, sửa phiếu.', o: 'bang', dt: 'Chạm vào phiếu để xem, in, sửa phiếu.' },
-      // Đồng bộ thu chi FABi và chip Chưa đồng bộ (T697, T699, T701); điện thoại chỉ xem
-      { chu: 'Muốn lấy ngay phiếu thu chi trên máy POS FABi thì bấm nút Đồng bộ cạnh nút Excel. Chọn kỳ, loại phiếu, cửa hàng rồi bấm Đồng bộ ngay.', o: 'dongBo', dt: 'Phiếu thu chi trên máy POS FABi tự về. Muốn lấy ngay thì bấm nút Đồng bộ ở danh sách Thu chi trên máy tính.' },
-      { chu: 'Bấm chip Chưa đồng bộ để xem phiếu FABi chưa vào sổ. Cột Nguyên nhân ghi lý do, bấm link ở cột Xử lý để sửa. Sửa xong thì tích phiếu, bấm Đồng bộ lại.', o: 'nhom', dt: 'Chạm chip Chưa đồng bộ để xem phiếu FABi chưa vào sổ và nguyên nhân. Sửa, đồng bộ lại làm trên máy tính.' },
+      // Đồng bộ thu chi FABi và chip Chưa đồng bộ (T697, T699, T701, T703); điện thoại chỉ xem
+      { chu: 'Phiếu thu chi trên máy POS FABi tự về. Muốn lấy ngay thì bấm nút Đồng bộ cạnh nút Excel.', o: 'dongBo', dt: 'Phiếu thu chi trên máy POS FABi tự về. Muốn lấy ngay thì bấm nút Đồng bộ ở danh sách Thu chi trên máy tính.' },
+      { chu: 'Chọn khoảng ngày của phiếu cần lấy về.', o: 'hdbNgay', bam: 'dongBo', web: true },
+      { chu: 'Tích loại phiếu cần lấy. Tab Tiền mặt có Thu tiền mặt, Chi tiền mặt; tab Ngân hàng có Thu ngân hàng, Chi ngân hàng.', o: 'hdbLoai', bam: 'dongBo', web: true },
+      { chu: 'Tích cửa hàng cần lấy phiếu. Gõ tên vào ô tìm hoặc bấm Chọn tất cả, Bỏ chọn để lọc nhanh.', o: 'hdbDs', bam: 'dongBo', web: true },
+      { chu: 'Tích Đồng bộ lại phiếu đã có để lấy lại phiếu đã vào sổ trong kỳ, không nhân đôi.', o: 'hdbLamLai', bam: 'dongBo', web: true },
+      { chu: 'Bấm Đồng bộ ngay để lấy phiếu. Phiếu lấy về có số bắt đầu bằng FBTC.', o: 'hdbNut', bam: 'dongBo', web: true },
+      { chu: 'Bấm chip Chưa đồng bộ để xem phiếu FABi chưa vào sổ.', o: 'chip-chua-db', dt: 'Chạm chip Chưa đồng bộ để xem phiếu FABi chưa vào sổ và nguyên nhân. Sửa, đồng bộ lại làm trên máy tính.' },
+      { chu: 'Bảng Chưa đồng bộ lấy nguyên thông tin từ phiếu FABi: ngày phiếu, cửa hàng, loại, PTTT, diễn giải, lý do, số tiền.', o: 'bang', bam: 'chip-chua-db', web: true },
+      { chu: 'Mã phiếu FABi là số phiếu trên máy POS. Dùng mã này để tra lại phiếu trên FABi.', o: 'cot-ma', bam: 'chip-chua-db', web: true },
+      { chu: 'Cột Nguyên nhân cho biết vì sao phiếu chưa vào sổ: PTTT chưa map quỹ, hoặc kỳ đã khoá sổ. Chữ nhỏ ghi chi tiết.', o: 'cot-nguyenNhan', bam: 'chip-chua-db', web: true },
+      { chu: 'Bấm link Map quỹ hoặc Mở khoá sổ ở cột Xử lý để sửa. Sửa xong thì tích phiếu, bấm Đồng bộ lại.', o: 'cot-xuLy', bam: 'chip-chua-db', web: true },
     ],
     luuY: [
       'Rút tiền mặt từ Quỹ tiền gửi vào ngân hàng thì lập phiếu ở tab Chuyển quỹ. Không ghi một phiếu chi và một phiếu thu.',
@@ -27,7 +36,7 @@ export const huongDan: Record<string, HuongDanMan> = {
     soDo: [
       [{ k: 'tab', ten: 'Tiền mặt · Ngân hàng · Chuyển quỹ', kieu: 'tab' }],
       [{ k: 'loc', ten: 'Thời gian, tìm, Lọc', rong: 3 }, { k: 'them', ten: 'Thêm mới', kieu: 'nut' }],
-      [{ k: 'nhom', ten: 'Tất cả · Đã ghi sổ · Chưa đồng bộ', rong: 3 }, { k: 'dongBo', ten: 'Đồng bộ, Excel', kieu: 'nut' }],
+      [{ k: 'chip-chua-db', ten: 'Tất cả · Đã ghi sổ · Chưa đồng bộ', rong: 3 }, { k: 'dongBo', ten: 'Đồng bộ, Excel', kieu: 'nut' }],
       [{ k: 'bang', ten: 'Danh sách phiếu thu, chi', kieu: 'bang' }],
       [{ k: 'tong', ten: 'Tổng tiền, chuyển trang' }],
     ],

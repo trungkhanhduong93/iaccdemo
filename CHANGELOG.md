@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 31/10/2026
+- T703: Hướng dẫn nhanh màn Thu chi và Xuất bán POS trên máy tính tự mở hộp Đồng bộ, chỉ từng mục trong hộp. Sau đó tự bấm chip Chưa đồng bộ, giải thích cột mã FABi, Nguyên nhân, Xử lý và các cột còn lại. Hết hướng dẫn thì hộp đóng, chip về như cũ.
 - T702: Thẻ chi phí phân bổ, form thêm mới không còn 2 cột Đã PB tới hiện tại, Còn lại hiện tại. Xem, sửa thẻ đã có vẫn hiện.
 - T701: Hướng dẫn nhanh màn Thu chi và Xuất bán POS (gói Standard) có thêm bước bấm nút Đồng bộ, xem chip Chưa đồng bộ (Xuất bán POS thêm chip Đã đồng bộ) và lưu ý các lý do chứng từ chưa đồng bộ.
 - T699: Thu chi, chip Chưa đồng bộ có thêm cột Lý do, cột Loại ghi Thu tiền mặt, Chi ngân hàng như danh sách thường. Tab Tiền mặt chỉ hiện phiếu tiền mặt, tab Ngân hàng hiện phiếu ngân hàng; hộp Đồng bộ cũng theo tab. Bảng đồng bộ của Thu chi, Xuất bán POS kéo giãn được cột, nút Excel giống danh sách thường, cột tiền nằm cuối và đứng yên khi cuộn ngang.

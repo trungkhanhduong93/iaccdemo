@@ -43699,3 +43699,8 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
 .tbl td.dinh-phai {
   background: var(--white);
 }
+
+/* ── Tour tự bấm Đồng bộ (T703) ── */
+.hdn-tour:not(.hdn-dt-tour) {
+  z-index: 600;
+}

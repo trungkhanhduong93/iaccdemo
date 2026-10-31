@@ -83,6 +83,7 @@ export function ChipTrangThai({ ds, chon, onChon }: { ds: Chip[]; chon: string; 
         <button
           key={c.k}
           type="button"
+          data-hd={`chip-${c.k}`}
           className={`ds-chip ds-chip-${c.k}${chon === c.k ? ' on' : ''}`}
           aria-pressed={chon === c.k}
           onClick={() => onChon(c.k)}

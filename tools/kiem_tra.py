@@ -5180,7 +5180,7 @@ def kiem_tra_t681_tour_huong_dan():
                     continue
                 nut('Bắt đầu')
                 da, so, lan = [], '', 0
-                while lan < 20:
+                while lan < 30:  # T703 (QD91): cho phép tour màn đồng bộ dài hơn (20 bước trước bong bóng cuối)
                     lan += 1
                     k, n, tong, giua = bong()
                     if k == 'cuoi':
