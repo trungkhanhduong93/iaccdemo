@@ -15,7 +15,7 @@ import {
 } from '../../app/session'
 import { CHE_DO, CHE_DO_HOP_LE, type CheDo } from '../../app/che-do'
 import { CUA_HANG, KHO, NGUOI_DUNG } from '../../data/mock'
-import { GOI, MODS, kieuGhiSo } from '../../app/plan'
+import { GOI, GOIS, MODS, kieuGhiSo } from '../../app/plan'
 import {
   CAU_HINH_NGUOI_DUNG,
   MAC_DINH,
@@ -47,6 +47,7 @@ import {
 import { dmy, pad, pick, rng, fold } from '../format'
 import { Select } from '../Dropdown'
 import { Icon } from '../Icon'
+import { Note } from '../Page'
 import { ChonKhoangNgay, ONgay, docNgay } from '../ChonNgay'
 import { MFormDm } from './MFormDm'
 import { MTrong } from './MTrong'
@@ -607,11 +608,12 @@ export const MThongTinDonVi: FC<ScreenProps> = () => {
   }
 
   const dsCn = dsCuaHang(s)
+  const chuaKhai = Boolean(s.choKeKhai?.[s.donVi])   // chưa khai Thông tin kê khai thuế: để trống loại hình, như bản máy tính
   const [f, setF] = useState(() => ({
     ten: dv.ten,
     mst: dv.mst,
     diaChi: dv.diaChi,
-    loai: loaiHinhDv(s, dv) as LoaiHinh,
+    loai: (chuaKhai ? '' : loaiHinhDv(s, dv)) as LoaiHinh | '',
     nhom: tt.nhom ?? 1,
     ppHkd: (tt.ppHkd ?? 'doanhThu') as PpHkd,
     ppGtgt: s.ppGtgt,
@@ -626,6 +628,10 @@ export const MThongTinDonVi: FC<ScreenProps> = () => {
   const ppCoDinh = NHOM_HKD[f.nhom - 1]?.pp ?? null
   const tndnCoDinh = f.loai === 'dn' && dnCoDinh
   const dnStandard = s.goi === 'S'   // doanh nghiệp gói Standard: TT58 trường hợp 1, thuế theo tỷ lệ % doanh thu, không chọn (T632)
+  // Gói Standard chọn được mọi cách tính thuế; ngoài phần kê khai được thì báo gói cao hơn, như bản máy tính
+  const ngoaiStd = s.goi !== 'S' ? [] : f.loai === 'hkd'
+    ? ((ppCoDinh ?? f.ppHkd) === 'loiNhuan' ? ['thuế TNCN theo lợi nhuận'] : [])
+    : f.loai === 'dn' ? [...(f.ppGtgt === 'khauTru' ? ['thuế GTGT khấu trừ'] : []), ...(f.ppTndn === 'thuNhap' ? ['thuế TNDN theo lợi nhuận'] : [])] : []
   const bat = (ds: string[], k: string) => (ds.includes(k) ? ds.filter(x => x !== k) : [...ds, k])
   const mstGoc = Boolean(dsDonVi({ dvMoi: s.dvMoi }).find(d => d.id === s.donVi)?.mst)
 
@@ -648,7 +654,13 @@ export const MThongTinDonVi: FC<ScreenProps> = () => {
       return
     }
     const { ten, mst, diaChi, loai, nhom, ppHkd, cnChinh, kenhOnline, kenhSan } = f
+    if (!loai) {
+      set({ ttDv: { ...s.ttDv, [s.donVi]: { ...s.ttDv?.[s.donVi], ten, mst, diaChi } }, ngayDauNam: { ...s.ngayDauNam, [s.donVi]: dauNam }, namTaiChinh: { ...s.namTaiChinh, [s.donVi]: nam } })
+      toast('Đã lưu thông tin đơn vị')
+      return
+    }
     set({
+      choKeKhai: { ...s.choKeKhai, [s.donVi]: false },
       cheDo: cheDoTheoLoai(loai),
       ppGtgt: loai === 'hkd' || dnStandard ? 'tyLe' : dnCoDinh ? 'khauTru' : f.ppGtgt,
       ppTndn: tndnCoDinh ? 'thuNhap' : dnStandard ? 'tyLe' : f.ppTndn,
@@ -734,6 +746,7 @@ export const MThongTinDonVi: FC<ScreenProps> = () => {
               aria-label="Loại hình"
               onChange={e => sua({ loai: e.target.value as LoaiHinh })}
               ds={[
+                ...(loai ? [] : [{ v: '', t: 'Chưa thiết lập' }]),
                 { v: 'hkd', t: 'Hộ kinh doanh' },
                 { v: 'dn', t: 'Doanh nghiệp' },
               ]}
@@ -741,7 +754,9 @@ export const MThongTinDonVi: FC<ScreenProps> = () => {
           </div>
           <div className="m-form-dong">
             <label className="m-form-nhan">Thông tư áp dụng</label>
-            {loai === 'hkd' ? (
+            {!loai ? (
+              <input className="inp" readOnly value="" placeholder="Chọn loại hình trước" />
+            ) : loai === 'hkd' ? (
               <input
                 className="inp"
                 readOnly
@@ -835,11 +850,11 @@ export const MThongTinDonVi: FC<ScreenProps> = () => {
                 <label className="m-form-nhan">Phương pháp thuế GTGT</label>
                 <Select
                   className="inp"
-                  value={dnCoDinh ? 'khauTru' : dnStandard ? 'tyLe' : f.ppGtgt}
-                  disabled={dnCoDinh || dnStandard}
+                  value={dnCoDinh ? 'khauTru' : f.ppGtgt}
+                  disabled={dnCoDinh}
                   aria-label="Phương pháp thuế GTGT"
                   onChange={e => sua({ ppGtgt: e.target.value as PpGtgt })}
-                  ds={(dnCoDinh ? (['khauTru'] as const) : dnStandard ? (['tyLe'] as const) : (['tyLe', 'khauTru'] as const)).map(
+                  ds={(dnCoDinh ? (['khauTru'] as const) : (['tyLe', 'khauTru'] as const)).map(
                     v => ({ v, t: PP_GTGT[v] }),
                   )}
                 />
@@ -848,19 +863,24 @@ export const MThongTinDonVi: FC<ScreenProps> = () => {
                 <label className="m-form-nhan">Phương pháp thuế TNDN</label>
                 <Select
                   className="inp"
-                  value={tndnCoDinh ? 'thuNhap' : dnStandard ? 'tyLe' : f.ppTndn}
-                  disabled={tndnCoDinh || dnStandard}
+                  value={tndnCoDinh ? 'thuNhap' : f.ppTndn}
+                  disabled={tndnCoDinh}
                   aria-label="Phương pháp thuế TNDN"
                   onChange={e => sua({ ppTndn: e.target.value as PpTndn })}
                   ds={[
                     ...(tndnCoDinh ? [] : [{ v: 'tyLe', t: PP_THU_NHAP.doanhThu }]),
-                    ...(dnStandard ? [] : [{ v: 'thuNhap', t: PP_THU_NHAP.loiNhuan }]),
+                    { v: 'thuNhap', t: PP_THU_NHAP.loiNhuan },
                   ]}
                 />
               </div>
             </>
           )}
         </div>
+        {ngoaiStd.length > 0 && (
+          <Note kind="warn" icon="alert">
+            Gói {GOI[s.goi].ten} chưa kê khai được {ngoaiStd.join(', ')}. Gói {GOIS.filter(g => g !== 'S').map(g => GOI[g].ten).join(', ')} mới đáp ứng, sắp ra mắt.
+          </Note>
+        )}
       </section>
 
       {/* Thẻ 3: Chế độ kế toán */}

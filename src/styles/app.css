@@ -43704,3 +43704,17 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
 .hdn-tour:not(.hdn-dt-tour) {
   z-index: 600;
 }
+
+/* ── Hộp Thông tin kê khai thuế gọn một trang (T704) ── */
+.ktf-gon { padding: 14px 20px 18px; }
+.ktf-gon .ktf-pop-dau { margin-bottom: 10px; }
+.ktf-gon .ktf-luoi.ktf-mot { max-width: 880px; }
+.ktf-gon .ktf-h { font-size: 17px; }
+.ktf-gon .ktf-p { margin: 2px 0 10px; font-size: 12.5px; }
+.ktf-gon .ktf-h3 { font-size: 13px; margin: 12px 0 6px; }
+.ktf-gon .ktf-h.ktf-h-tiep { margin-top: 14px; padding-top: 12px; }
+.ktf-gon .opt { padding: 8px 12px; }
+.ktf-gon .opt small { font-size: 12px; }
+.ktf-gon .ktf-nhom { gap: 6px; }
+.ktf-gon .form-grid { gap: 8px 14px; }
+.ktf-gon .ktf-pop-nut { bottom: -18px; margin: 14px -22px -18px; padding: 10px 22px; }

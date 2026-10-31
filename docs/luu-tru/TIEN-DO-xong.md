@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T704 | Thông tin kê khai thuế (hộp ở Kê khai thuế, Thông tin đơn vị web và điện thoại): hộ kinh doanh đủ nhóm 1 tới 4, doanh nghiệp chọn riêng thuế GTGT, TNDN đủ 4 trường hợp; ngoài phần gói Standard làm được thì báo gói Plus, Pro; hộp thu gọn; Thông tin đơn vị để trống khi chưa khai; nút Thiết lập thông tin mở Thông tin đơn vị | PhuongXT | 31/10/2026 | [nhật ký](../nhat-ky/2026-10-31-phuongxt-ke-khai-du-truong-hop.md) |
 | T703 | Hướng dẫn nhanh Thu chi, Xuất bán POS: tour tự bấm nút Đồng bộ, giải thích từng mục trong hộp; tự bấm chip Chưa đồng bộ, giải thích các cột | Trum | 31/10/2026 | [nhật ký](../nhat-ky/2026-10-31-trum-tour-tu-bam-dong-bo.md) |
 | T702 | Thẻ chi phí phân bổ: form thêm mới không hiện 2 cột Đã PB tới hiện tại, Còn lại hiện tại; xem, sửa thẻ vẫn hiện | dinhlanphuongipacc | 31/10/2026 | [nhật ký](../nhat-ky/2026-10-31-dinhlanphuongipacc-ly-do-phan-bo-nhieu-ky.md) |
 | T701 | Hướng dẫn nhanh Thu chi, Xuất bán POS (gói S) thêm bước nút Đồng bộ, chip Đã đồng bộ, Chưa đồng bộ, lưu ý lý do chưa đồng bộ; `NutDongBo` gắn `data-hd="dongBo"` | Trum | 31/10/2026 | `2026-10-31-trum-huong-dan-dong-bo.md` |

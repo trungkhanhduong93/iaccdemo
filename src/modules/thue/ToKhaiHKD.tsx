@@ -159,7 +159,7 @@ export function ToKhaiHKD({ sc, mod }: ScreenProps) {
             }}
           />
           <div className="ds-toolbar-phai">
-            <button type="button" className="btn" onClick={() => setTtMo(true)} title="Mã số thuế, người nộp thuế, điểm bán dùng khi kê khai">
+            <button type="button" className="btn" onClick={() => nav('/app/he-thong/thong-tin')} title="Sửa thông tin kê khai ở Hệ thống, Thông tin đơn vị">
               <Icon n="cog" className="ic sm" />
               Thiết lập thông tin
             </button>
