@@ -999,3 +999,5 @@ dinhlanphuongipacc chốt 31/10/2026 (T700).
 - Phiếu chi có dòng lý do tích Chi phí phân bổ nhiều kỳ thì nhắc dưới ô lý do và lưu xong gợi ý tạo thẻ chi phí, thay cho so tên lý do Chi phí chờ phân bổ.
 - Ghi tăng thẻ, Ghi tăng bổ sung, cảnh báo khoản chờ ghi tăng, Khoá sổ lấy mọi dòng phiếu chi có lý do tích Chi phí phân bổ nhiều kỳ.
 - Lý do mẫu Chi phí chờ phân bổ (CHI35) giữ lại vì chứng từ mẫu đang dùng, tích Chi phí phân bổ nhiều kỳ, bỏ tích Là chi phí. Khoản trả trước vào chi phí dần qua thẻ, không cộng thẳng vào chi phí trong tháng.
+
+## QD91. Tour màn có đồng bộ được dài hơn mức QD86 (đang soạn)
