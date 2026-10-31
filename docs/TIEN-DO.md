@@ -11,6 +11,7 @@ Bảng việc của nhóm. Trum giao việc bằng cách điền cột "Người
 
 | Mã | Việc | Người làm | Trạng thái | Ghi chú |
 |---|---|---|---|---|
+| T700 | Danh mục Lý do nghiệp vụ thêm tích Chi phí phân bổ nhiều kỳ (form chi tiết và cột danh sách), loại trừ với Là chi phí, mặc định không tích; phiếu chi gợi ý tạo thẻ chi phí khi lý do có tích này, thay cho lý do cố định Chi phí chờ phân bổ | dinhlanphuongipacc | Đang làm | Web trước. Sửa `truong-dm.ts`, `danh-muc/index.ts`, `mock.ts`, `session.tsx`, `ChungTuForm.tsx`. Điện thoại (`MLapPhieu.tsx`, `MDtThuChiLap.tsx`) chờ Trum xong T552 |
 | T699 | Đồng bộ FABi đợt 2: Thu chi Chưa đồng bộ thêm cột Lý do, Loại ghi như Đã ghi sổ, chia theo tab Tiền mặt / Ngân hàng (hộp Đồng bộ cũng vậy); bảng đồng bộ Thu chi, Xuất bán POS kéo giãn cột, nút Excel như danh sách thường, cột tiền đóng băng mép phải | Trum | Đang làm | Sửa `VoucherScreen.tsx`, `ChungTuBanHang.tsx`, `DongBoThuChiFabi.tsx`, `dong-bo-fabi.ts`, `HopDongBo.tsx`, có thể `Table.tsx` |
 | T696 | `kiem_tra.py --dien-thoai` dừng ở đợt 5 (lập phiếu): chờ 30 giây không thấy `.m-xp-nut-menu` nên không chạy tới các đợt sau | | Chờ | Thấy lúc nghiệm thu T695. Nút có trong `src/ui/mobile/MDtThuChiXem.tsx:341`, xem `tools/kiem_tra.py:642`. Đợt 11A chạy riêng vẫn qua |
 | T690 | `kiem_tra.py` đợt 11A (điện thoại) báo "Gói thuê bao: thiếu 4 thẻ gói dịch vụ dọc": màn Gói thuê bao điện thoại hoặc bài kiểm lệch nhau | | Chờ | Thấy lúc nghiệm thu T689, `--nhanh` không chạy đợt 11A. Xem `tools/kiem_tra.py` mục 4 Gói thuê bao và `src/ui/mobile/MHeThong.tsx` |

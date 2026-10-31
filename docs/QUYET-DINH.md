@@ -990,3 +990,5 @@ Trum chốt 30/10/2026 kiểu B trên bản bấm thử https://claude.ai/artifa
 - Chỗ khoanh gắn `data-hd` trên màn `M*.tsx`, cùng khoá ô với web. Màn chưa gắn thì bong bóng nằm giữa màn, chỉ hiện chữ.
 - Tour màn đang chạy thì ẩn dải Tiếp tục của tour Trang chủ (T138).
 - `tools/kiem_tra.py` kiểm tour 5 màn Standard ở khung 390x844 mỗi lần chạy, cả `--nhanh`.
+
+## QD90. Lý do nghiệp vụ: tích Chi phí phân bổ nhiều kỳ quyết định gợi ý tạo thẻ chi phí (đang soạn)
