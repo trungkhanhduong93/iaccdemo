@@ -14,11 +14,13 @@
 - `src/ui/generic/ChungTuForm.tsx`: nhắc và gợi ý tạo thẻ theo `laLyPhanBo`, chữ hộp báo đổi thành "khoản chi phí phân bổ nhiều kỳ".
 - `src/modules/ccdc/GhiTangHangLoat.tsx`: `useDongCho` lấy dòng phiếu chi có lý do tích Chi phí phân bổ nhiều kỳ thay cho so tên. Ghi tăng, Ghi tăng bổ sung, cảnh báo ở danh sách thẻ, mục Khoá sổ Standard đều dùng hàm này.
 - Giữ lý do CHI35 Chi phí chờ phân bổ vì phiếu mẫu, sơ đồ Chi phí phân bổ, điện thoại đang dùng; người dùng chốt để tạm, chạy theo tích mới.
+- T702, `src/modules/ccdc/the-phan-bo.tsx`: cột Đã PB tới hiện tại, Còn lại hiện tại chỉ có khi xem, sửa thẻ (`v._sua`), form thêm mới ẩn.
 
 ## Đã kiểm
 
 - `npm run typecheck`, `npm run build`: không lỗi. `python tools/kiem_tra.py --nhanh`: Không có lỗi. `kiem_van.py`: 0 ĐỎ.
 - Trình duyệt gói Plus: hai tích loại trừ nhau, bỏ cả hai được; lưu CHI26 tích phân bổ thì danh sách hiện đúng; phiếu chi mới lý do CHI26, CHI35 hiện nhắc tạo thẻ, CHI22 không.
+- T702 trên trình duyệt gói Standard: form Ghi tăng đầu kỳ không có 2 cột, xem thẻ TPB2610-0011 vẫn có.
 
 ## Dở dang, việc tiếp theo
 

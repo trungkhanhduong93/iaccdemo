@@ -375,9 +375,9 @@ export const THE_PHAN_BO: CauHinhDM = {
           ...(laDau(v) ? [{ k: 'kyDa', t: 'Số tháng đã PB', num: true, w: 92, wCung: true, r: o('kyDa', 'Số tháng đã phân bổ') }] : []),
           ...(laDau(v) ? [{ k: 'kyCon', t: 'Số tháng còn PB', num: true, w: 92, wCung: true, r: ro('kyCon') }, { k: 'can', t: 'Giá trị cần PB', num: true, w: 112, wCung: true, r: ro('can') }] : []),
           { k: 'tienKy', t: 'Số tiền PB hằng kỳ', num: true, w: 112, wCung: true, r: ro('tienKy') },
-          // Tới tháng hiện tại theo ngày máy: đã phân bổ, còn lại = số tiền trừ đã phân bổ (T437)
-          { k: 'daHt', t: 'Đã PB tới hiện tại', num: true, w: 120, wCung: true, r: ro('daHt') },
-          { k: 'conHt', t: 'Còn lại hiện tại', num: true, w: 120, wCung: true, r: ro('conHt') },
+          // Tới tháng hiện tại theo ngày máy: đã phân bổ, còn lại = số tiền trừ đã phân bổ (T437); thêm mới thẻ chưa có, chỉ hiện khi xem, sửa thẻ (T702)
+          ...(v._sua ? [{ k: 'daHt', t: 'Đã PB tới hiện tại', num: true, w: 120, wCung: true, r: ro('daHt') },
+            { k: 'conHt', t: 'Còn lại hiện tại', num: true, w: 120, wCung: true, r: ro('conHt') }] : []),
           // Tiêu đề cột viết tắt phân bổ thành PB cho lưới gọn (T287). Mỗi dòng một ngày bắt đầu phân bổ; đổi ngày thì lịch tính lại, bỏ số đã gõ lại ở các kỳ (T159)
           { k: 'ngayPb', t: 'Ngày bắt đầu PB', w: 132, wCung: true, r: (r: Row) => r._i === undefined ? null
             : xem ? ngayBd(v, r as DongPb) : <ONhap v={ngayBd(v, r as DongPb)} ten={`Ngày bắt đầu phân bổ dòng ${r._i + 1}`} onDoi={s => sua(r._i, { ngayPb: khongTruoc(s, String(v.ngay ?? '')) })} /> },

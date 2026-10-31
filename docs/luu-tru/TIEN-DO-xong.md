@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T702 | Thẻ chi phí phân bổ: form thêm mới không hiện 2 cột Đã PB tới hiện tại, Còn lại hiện tại; xem, sửa thẻ vẫn hiện | dinhlanphuongipacc | 31/10/2026 | [nhật ký](../nhat-ky/2026-10-31-dinhlanphuongipacc-ly-do-phan-bo-nhieu-ky.md) |
 | T701 | Hướng dẫn nhanh Thu chi, Xuất bán POS (gói S) thêm bước nút Đồng bộ, chip Đã đồng bộ, Chưa đồng bộ, lưu ý lý do chưa đồng bộ; `NutDongBo` gắn `data-hd="dongBo"` | Trum | 31/10/2026 | `2026-10-31-trum-huong-dan-dong-bo.md` |
 | T699 | Đồng bộ FABi đợt 2: Thu chi Chưa đồng bộ thêm cột Lý do, Loại ghi như danh sách thường, chia theo tab Tiền mặt / Ngân hàng (hộp Đồng bộ cũng vậy); bảng đồng bộ Thu chi, Xuất bán POS kéo giãn cột, nút Excel như danh sách thường, cột tiền ghim mép phải | Trum | 31/10/2026 | `2026-10-31-trum-dong-bo-fabi-dot-2.md` |
 | T698 | Thu chi: nút Đồng bộ thu chi FABi dời từ thanh tab phân hệ xuống thanh công cụ danh sách, nút vuông cạnh nút Excel như Xuất bán POS | Trum | 31/10/2026 | `2026-10-31-trum-nut-dong-bo-thu-chi.md` |
