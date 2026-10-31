@@ -111,5 +111,6 @@ export function NutThemMoiSplit({
 /** Nút vuông chỉ icon đồng bộ, cạnh Excel và Tuỳ chỉnh cột (T510) */
 export function NutDongBo({ ten, onDongBo }: { ten: string; onDongBo: () => void }) {
   const t = `Đồng bộ từ ${ten}`
-  return <button type="button" className="nut-vuong ds-nut-dong-bo" title={t} aria-label={t} onClick={onDongBo}><Icon n="refresh" className="ic sm" /></button>
+  // data-hd: chỗ khoanh bước Đồng bộ của Hướng dẫn nhanh (T701)
+  return <button type="button" className="nut-vuong ds-nut-dong-bo" data-hd="dongBo" title={t} aria-label={t} onClick={onDongBo}><Icon n="refresh" className="ic sm" /></button>
 }
