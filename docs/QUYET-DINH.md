@@ -991,4 +991,10 @@ Trum chốt 30/10/2026 kiểu B trên bản bấm thử https://claude.ai/artifa
 - Tour màn đang chạy thì ẩn dải Tiếp tục của tour Trang chủ (T138).
 - `tools/kiem_tra.py` kiểm tour 5 màn Standard ở khung 390x844 mỗi lần chạy, cả `--nhanh`.
 
-## QD90. Lý do nghiệp vụ: tích Chi phí phân bổ nhiều kỳ quyết định gợi ý tạo thẻ chi phí (đang soạn)
+## QD90. Lý do nghiệp vụ: tích Chi phí phân bổ nhiều kỳ quyết định gợi ý tạo thẻ chi phí (31/10/2026)
+
+dinhlanphuongipacc chốt 31/10/2026 (T700).
+
+- Lý do chi tiền có hai tích: Là chi phí và Chi phí phân bổ nhiều kỳ. Chỉ chọn một trong hai, tích ô này thì bỏ tích ô kia, bỏ cả hai được. Lý do thêm mới mặc định không tích ô nào.
+- Phiếu chi có dòng lý do tích Chi phí phân bổ nhiều kỳ thì nhắc dưới ô lý do và lưu xong gợi ý tạo thẻ chi phí, thay cho so tên lý do Chi phí chờ phân bổ.
+- Lý do mẫu Chi phí chờ phân bổ (CHI35) tích Chi phí phân bổ nhiều kỳ, bỏ tích Là chi phí. Khoản trả trước vào chi phí dần qua thẻ, không cộng thẳng vào chi phí trong tháng.

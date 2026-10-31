@@ -47,6 +47,7 @@ export interface Session {
   giaThanhTay?: Record<string, Record<string, number>>   // giá thành món nhập tay theo đơn vị; khoá cửa hàng-yyyymm-mã món (T232)
   dongBoThuChi?: Record<string, Record<string, boolean>>   // tự động đồng bộ phiếu thu, chi lập trên FABi theo đơn vị, từng cửa hàng (mã cửa hàng); chưa đặt là bật (T264)
   mapPttt?: Record<string, Record<string, string>>   // map PTTT FABi về quỹ theo đơn vị; khoá 'mã cửa hàng|mã PTTT', giá trị mã quỹ (T264)
+  lyDoGhiDe?: Record<string, Record<string, { chiPhi: number; phanBo: number; nhomCp: string }>>   // lý do nghiệp vụ có sẵn sửa tích Là chi phí, Chi phí phân bổ nhiều kỳ, nhóm lý do theo đơn vị; khoá mã lý do (T700)
 }
 
 /** Mã gói từ link ?goi=: nhận mã mới ('S', 'PL', 'PR'); mã Excel cũ 'M', 'A' (Plus, Pro cũ) đều thành Pro (QD80, T649) */

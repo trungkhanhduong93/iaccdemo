@@ -1,7 +1,8 @@
 // Kho lưu trữ danh mục dùng chung giữa CatalogScreen, ChonDanhMuc và mobile (T347)
 import { useSyncExternalStore } from 'react'
 import type { Row, ScreenDef } from '../../modules/types'
-import { CCDC_HANG, HANG, KHACH, KHO, LY_DO, NCC, NHAN_VIEN, NVL } from '../../data/mock'
+import { CCDC_HANG, HANG, KHACH, KHO, LY_DO, NCC, NHAN_VIEN, NVL, ganLyDo } from '../../data/mock'
+import type { Session } from '../../app/session'
 import { DON_VI_TINH, DS_CONG_VIEC_17, DS_MUC_CHI_PHI_16, DS_QUY_TIEN_112 } from '../../modules/danh-muc/data'
 import { TRUONG_DM, type CauHinhDM } from '../../modules/danh-muc/truong-dm'
 
@@ -77,6 +78,14 @@ export function getAllCatalogRows(dm: string): Row[] {
 export function useAddedCatalogRows(dm: string): Row[] {
   useSyncExternalStore(cb => { listeners.add(cb); return () => { listeners.delete(cb) } }, () => version)
   return daThemRows.get(chieuKhoa(dm)) ?? []
+}
+
+/** Lý do chi (theo tên) có tích Chi phí phân bổ nhiều kỳ, kể cả lý do thêm, sửa trong phiên: phiếu chi lý do này gợi ý tạo thẻ chi phí (T700) */
+export function laLyPhanBo(ten: string | undefined, s: Pick<Session, 'donVi' | 'lyDoGhiDe'>): boolean {
+  if (!ten) return false
+  const r = getAllCatalogRows('1.16').find(x => x.ten === ten && x.dung === 'Chi tiền')
+  const v = r ? ganLyDo(r, s).phanBo : undefined
+  return v === 1 || v === true || v === '1'
 }
 
 /** Thêm một dòng mới vào danh mục trong phiên */
@@ -205,7 +214,7 @@ export function getDmMeta(dm: string, nhan?: string, tenGoc?: string): DmMeta {
       : (dm.includes('nhập') || nhan?.includes('nhập')) ? 'Nhập kho'
       : (dm.includes('xuất') || nhan?.includes('xuất')) ? 'Xuất kho'
       : 'Chi tiền'
-    dienSan = { dung, ...(dung === 'Chi tiền' ? { chiPhi: 1 } : {}), ...dienSan }
+    dienSan = { dung, ...dienSan }   // mặc định không tích Là chi phí, Chi phí phân bổ nhiều kỳ (T700)
   } else if (normKey === '1.6') {
     ten = 'mục chi phí'
     tenNgan = 'mục chi phí'

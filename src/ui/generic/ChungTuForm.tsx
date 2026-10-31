@@ -9,6 +9,7 @@ import { kieuGhiSo, type Goi, kieuGhiSoDv } from '../../app/plan'
 import { CHE_DO, type CheDo } from '../../app/che-do'
 import { tkTheoCheDo } from '../../modules/tong-hop/so-cai'
 import { CUA_HANG, KHACH, KHO, LY_CAN_DOI_TUONG, LY_CHI_PHI, LY_DO, NCC, NHAN_VIEN, TK_NGAN_HANG, daKhoaSo, khoaSoDenCua } from '../../data/mock'
+import { laLyPhanBo } from './danhMucStore'
 import { DS_PTTT } from '../../modules/danh-muc/data'
 import { HopXacNhan } from '../LocNangCao'
 import { bayGio, ctTtCon, dsDcCon, dsTtCon, ghiNhatKy, laDaXoa, soDaTra, soKeTiep, suaPhieu, themPhieu, ttThamChieu, ttTienTheoTra, useNhatKy, xoaPhieu, type CtTt, type PhieuTt } from './daXoa'
@@ -474,7 +475,8 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
     // Phiếu chi mới lý do Chi phí chờ phân bổ: báo rồi mở màn tạo thẻ chi phí phân bổ, điền sẵn từ phiếu (T419: thông báo, không hỏi)
     // Mỗi dòng phiếu có lý do Chi phí chờ phân bổ thành một dòng chi tiết của thẻ (tên = diễn giải, số tiền = thành tiền)
     // Sửa phiếu (vd đã xoá thẻ cũ để sửa, T439): phiếu chưa còn thẻ nào thì cũng báo tạo thẻ như phiếu mới
-    const dongCho = oLy ? dsDong.filter(d => (d.ly ?? lyDo) === LY_CHO_PHAN_BO) : []
+    // Lý do được tích Chi phí phân bổ nhiều kỳ ở danh mục Lý do nghiệp vụ, không cố định một lý do (T700)
+    const dongCho = oLy ? dsDong.filter(d => laLyPhanBo(d.ly ?? lyDo, s)) : []
     const idPhieu = moi ? idMoi : String(row!.id)
     if (dongCho.length && (moi || !theCuaPhieu(row).length)) {
       setHoiThe({ moMoi, idMoi: idPhieu, tu: {
@@ -1059,7 +1061,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
                     {LY_CHI_PHI.includes(lyDo) && <span className="chip ok ly-cp" title="Lý do nghiệp vụ được tích Là chi phí: khoản chi tính vào Chi phí trong tháng">Chi phí</span>}
                   </div>
                   {/* T419: phiếu mới có khoản chờ phân bổ thì nhắc trước, lưu xong sẽ mở màn tạo thẻ */}
-                  {dangSua && (moi || !theCuaPhieu(row).length) && dsDong.some(d => (d.ly ?? lyDo) === LY_CHO_PHAN_BO) && (
+                  {dangSua && (moi || !theCuaPhieu(row).length) && dsDong.some(d => laLyPhanBo(d.ly ?? lyDo, s)) && (
                     <div className="ly-nhac-the"><Icon n="info" className="ic sm" />Lưu phiếu xong sẽ tạo Thẻ chi phí phân bổ</div>
                   )}
                 </div>
@@ -1336,7 +1338,7 @@ export function ChungTuForm({ sc, mod, cfg: cfgMan, row, rows, children, anIn }:
         <HopXacNhan tieuDe="Tạo thẻ chi phí phân bổ" nut="Tiếp tục" nutHuy={null} nutDo={false}
           onDong={() => { const h = hoiThe; setHoiThe(null); sauLuu(h.moMoi, h.idMoi) }}
           onDongY={() => { const h = hoiThe; setHoiThe(null); nav('/app/ccdc/8-1-1?moi=the', { state: { tuPhieu: h.tu } }) }}>
-          {soCt} có khoản Chi phí chờ phân bổ. Phần mềm mở màn Tạo thẻ chi phí phân bổ, điền sẵn tên, số tiền, ngày, chứng từ gốc từ phiếu. Bạn vẫn sửa lại được.
+          {soCt} có khoản chi phí phân bổ nhiều kỳ. Phần mềm mở màn Tạo thẻ chi phí phân bổ, điền sẵn tên, số tiền, ngày, chứng từ gốc từ phiếu. Bạn vẫn sửa lại được.
         </HopXacNhan>
       )}
       {hoiKhongSua && row && (

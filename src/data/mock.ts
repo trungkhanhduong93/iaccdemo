@@ -1,6 +1,7 @@
 // Dữ liệu giả dùng chung. Mọi màn đọc doanh thu từ DAILY để số khớp nhau giữa
 // Tổng quan, chứng từ bán hàng, sổ, báo cáo kết quả kinh doanh.
 import type { Goi } from '../app/plan'
+import type { Session } from '../app/session'
 import { k, rng, between, pad } from '../ui/format'
 
 export const HOM_NAY = new Date(2026, 9, 7)          // 07/10/2026
@@ -214,7 +215,7 @@ export const CONG_VIEC = [
 // Lý do nghiệp vụ thu, chi theo danh sách FABi PhuongXT gửi 15/10/2026 (T269): tên, thu hay chi như FABi; mã đánh lại THU01.., CHI01.. theo thứ tự,
 // lý do kho XK01.., NK01... Giữ thêm Chi phí chờ phân bổ (phiếu chi sinh thẻ chi phí phân bổ) và 3 lý do kho.
 // Lý do chi tính là chi phí (Sổ chi phí, Chi phí trong tháng) theo đề xuất PhuongXT duyệt; trả nợ, nhà cung cấp, tạm ứng, vay, nộp thuế, TSCĐ, đầu tư không tính
-const LY_LA_CHI_PHI = ['CHI01', 'CHI03', 'CHI04', 'CHI06', 'CHI07', 'CHI08', 'CHI09', 'CHI12', 'CHI13', 'CHI14', 'CHI15', 'CHI18', 'CHI19', 'CHI20', 'CHI21', 'CHI22', 'CHI24', 'CHI25', 'CHI26', 'CHI27', 'CHI29', 'CHI30', 'CHI31', 'CHI35']
+const LY_LA_CHI_PHI = ['CHI01', 'CHI03', 'CHI04', 'CHI06', 'CHI07', 'CHI08', 'CHI09', 'CHI12', 'CHI13', 'CHI14', 'CHI15', 'CHI18', 'CHI19', 'CHI20', 'CHI21', 'CHI22', 'CHI24', 'CHI25', 'CHI26', 'CHI27', 'CHI29', 'CHI30', 'CHI31']
 /** Nhóm lý do nghiệp vụ (T473): 6 nhóm chi phí hợp lý của Sổ S2c-HKD (TT152, mục a đến f), mã tự đặt NLD01 đến NLD06; dung: nhóm dành cho thu hay chi như Dùng cho của lý do, 6 nhóm này là chi; lý do là chi phí lưu tên nhóm */
 export const NHOM_LY_DO = [
   { ma: 'NLD01', dung: 'Chi tiền', ten: 'Chi phí nguyên liệu, vật liệu, nhiên liệu, năng lượng, hàng hoá sử dụng vào sản xuất, kinh doanh' },
@@ -286,11 +287,24 @@ export const LY_DO = [
   ['XK01', 'Xuất huỷ hàng hỏng', 'Xuất kho'],
   ['XK02', 'Xuất dùng nội bộ', 'Xuất kho'],
   ['NK01', 'Nhập hàng khách trả lại', 'Nhập kho'],
-].map(([ma, ten, dung]) => ({ ma, ten, dung, chiPhi: LY_LA_CHI_PHI.includes(ma), nhomCp: LY_LA_CHI_PHI.includes(ma) ? nhomLyTuDong(ten) : '' }))
+// phanBo: lý do Chi phí phân bổ nhiều kỳ, loại trừ với Là chi phí; phiếu chi lý do này gợi ý tạo thẻ chi phí (T700)
+].map(([ma, ten, dung]) => ({ ma, ten, dung, chiPhi: LY_LA_CHI_PHI.includes(ma), phanBo: ma === MA_LY_CHO_PHAN_BO, nhomCp: LY_LA_CHI_PHI.includes(ma) ? nhomLyTuDong(ten) : '' }))
 /** Tên lý do thu, chi bắt buộc chọn đối tượng: Thu nợ, Đi vay, Thanh toán công nợ nhà cung cấp, Cho vay; lý do khác để trống được (T330) */
 export const LY_CAN_DOI_TUONG = LY_DO.filter(x => ['THU02', 'THU10', 'CHI02', 'CHI34'].includes(x.ma)).map(x => x.ten)
 /** Tên lý do chi tiền được tích là chi phí: báo cáo chi phí (Sổ chi phí, Chi phí trong tháng) chỉ lấy các lý do này (T231) */
 export const LY_CHI_PHI = LY_DO.filter(x => x.dung === 'Chi tiền' && x.chiPhi).map(x => x.ten)
+/** Lý do nghiệp vụ kèm phần đã sửa trong phiên của đơn vị: Là chi phí, Chi phí phân bổ nhiều kỳ, nhóm lý do (T700) */
+export function ganLyDo<R extends { ma?: unknown }>(r: R, s: Pick<Session, 'donVi' | 'lyDoGhiDe'>): R {
+  const g = s.lyDoGhiDe?.[s.donVi]?.[String(r.ma)]
+  return g ? { ...r, ...g } : r
+}
+/** Lưu tích Là chi phí, Chi phí phân bổ nhiều kỳ, nhóm lý do khi sửa lý do có sẵn (T700) */
+export function luuLyDo(v: Record<string, unknown>, s: Session): Partial<Session> {
+  if (!v._sua || !v.ma) return {}
+  const tich = (x: unknown) => x === 1 || x === true || x === '1' ? 1 : 0
+  const cua = { ...s.lyDoGhiDe?.[s.donVi], [String(v.ma)]: { chiPhi: tich(v.chiPhi), phanBo: tich(v.phanBo), nhomCp: String(v.nhomCp ?? '') } }
+  return { lyDoGhiDe: { ...s.lyDoGhiDe, [s.donVi]: cua } }
+}
 
 // ── Doanh thu từng ngày, từng cửa hàng (đồng bộ từ FABi, gom theo ngày) ──
 export interface Ngay {

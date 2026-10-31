@@ -701,7 +701,7 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
 
   // 1.16 Lý do (chưa có bảng DM_ trong schema, chờ đối chiếu)
   '1.16': {
-    chiSua: ['chiPhi', 'nhomCp'],   // tạm thời lý do có sẵn không sửa, chỉ tích Là chi phí hay không (T334) và chọn lại nhóm lý do (T473)
+    chiSua: ['chiPhi', 'phanBo', 'nhomCp'],   // tạm thời lý do có sẵn không sửa, chỉ tích Là chi phí (T334), Chi phí phân bổ nhiều kỳ (T700) và chọn lại nhóm lý do (T473)
     khoi: [
       {
         ten: 'Thông tin chung',
@@ -713,6 +713,8 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
           { k: 'dung', nhan: 'Dùng cho nghiệp vụ', kieu: 'chon', ds: ['Thu tiền', 'Chi tiền', 'Nhập kho', 'Xuất kho'], batBuoc: true, goi: ['PL', 'PR'] },
           // Lý do chi tiền là chi phí thì báo cáo chi phí lấy lên (T231)
           { k: 'chiPhi', nhan: 'Là chi phí', kieu: 'tich', caHang: true, hien: v => v.dung === 'Chi tiền' },
+          // Chi phí phân bổ nhiều kỳ: phiếu chi lý do này gợi ý tạo thẻ chi phí; chỉ chọn một trong hai tích với Là chi phí, bỏ cả hai được (T700)
+          { k: 'phanBo', nhan: 'Chi phí phân bổ nhiều kỳ', kieu: 'tich', caHang: true, hien: v => v.dung === 'Chi tiền' },
           // Lý do là chi phí thuộc một nhóm lý do (T473): tích Là chi phí thì tự xếp theo tên lý do, chọn lại được nhóm dành cho chi
           { k: 'nhomCp', nhan: 'Nhóm lý do nghiệp vụ', kieu: 'chon', batBuoc: true, caHang: true, ds: NHOM_LY_DO.filter(n => n.dung === 'Chi tiền').map(n => n.ten), hien: v => v.dung === 'Chi tiền' && laTich(v.chiPhi),
             chuThich: 'Tự xếp theo tên lý do, chọn lại được' },
@@ -726,10 +728,14 @@ export const TRUONG_DM: Record<string, CauHinhDM> = {
       },
     ],
     // Tích Là chi phí, đổi tên, đổi Dùng cho: lý do chi phí chưa có nhóm thì tự xếp nhóm; bỏ tích thì bỏ nhóm (T473)
+    // Là chi phí và Chi phí phân bổ nhiều kỳ loại trừ nhau: tích ô này thì bỏ tích ô kia (T700)
     doi: (k, v) => {
+      if (k === 'phanBo') return laTich(v.phanBo) ? { chiPhi: 0, nhomCp: '' } : {}
       if (k !== 'chiPhi' && k !== 'ten' && k !== 'dung') return {}
-      if (v.dung !== 'Chi tiền' || !laTich(v.chiPhi)) return { nhomCp: '' }
-      return v.nhomCp ? {} : { nhomCp: nhomLyTuDong(String(v.ten ?? '')) }
+      const boPb = k === 'chiPhi' && laTich(v.chiPhi) ? { phanBo: 0 } : {}
+      if (v.dung !== 'Chi tiền') return { phanBo: 0, nhomCp: '' }
+      if (!laTich(v.chiPhi)) return { ...boPb, nhomCp: '' }
+      return v.nhomCp ? boPb : { ...boPb, nhomCp: nhomLyTuDong(String(v.ten ?? '')) }
     },
   },
 

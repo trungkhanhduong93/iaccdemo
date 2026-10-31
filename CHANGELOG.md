@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 31/10/2026
+- T700: Danh mục Lý do nghiệp vụ thêm tích Chi phí phân bổ nhiều kỳ ở form chi tiết và cột danh sách. Chỉ chọn một trong hai tích Là chi phí, Chi phí phân bổ nhiều kỳ, bỏ cả hai được, lý do mới mặc định không tích. Sửa tích ở lý do có sẵn thì danh sách giữ lại. Phiếu chi chọn lý do có tích Chi phí phân bổ nhiều kỳ thì gợi ý tạo thẻ chi phí. Lý do Chi phí chờ phân bổ chuyển sang tích này.
 - T698: Thu chi, nút Đồng bộ thu chi FABi chuyển xuống thanh công cụ danh sách, thành nút vuông nằm cạnh nút Excel như Xuất bán POS.
 - T697: Thu chi có hàng chip Tất cả, Chưa ghi sổ, Đã ghi sổ, Chưa đồng bộ (gói Standard không có Chưa ghi sổ). Chip Chưa đồng bộ liệt kê phiếu FABi chưa vào sổ kèm nguyên nhân, link xử lý, nút Đồng bộ lại và Xuất Excel; bỏ nhãn vàng của T691. Xuất bán POS thêm chip Đã đồng bộ, Chưa đồng bộ, mỗi dòng một món (tên, mã món, ĐVT, số lượng bán). Hộp Đồng bộ thu chi chọn thêm phiếu thu hay phiếu chi. Điện thoại xem được hai trạng thái, không có nút đồng bộ.
 - T695: Nhật ký thao tác. Web: bấm vào ô ngày thao tác để chọn từ ngày đến ngày, mặc định hôm nay; nút phễu mở Bộ lọc nâng cao có thêm Tài khoản, Tên chứng từ, Ngày chứng từ. Điện thoại: mở màn chưa có thẻ, bấm phễu mở bảng lọc trượt lên đủ 6 điều kiện, bấm Lọc mới hiện thẻ. Sửa lỗi giao diện điện thoại của Nhật ký làm lệch kiểu chữ, khoảng cách ở một số màn khác.

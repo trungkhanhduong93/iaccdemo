@@ -4,7 +4,7 @@ import type { Col, ModuleDef, Row, ScreenDef } from '../types'
 import { tuExcel } from '../types'
 // Tạm ẩn tab Quy trình của Danh mục, PhuongXT chốt 14/10/2026 (T225); mở lại thì khai lại quyTrinh từ './quy-trinh'
 import { kieuGhiSo } from '../../app/plan'
-import { CCDC_HANG, CUA_HANG, HANG, KHACH, KHO, LY_DO, NCC, NHAN_VIEN, NHOM_LY_DO, NVL } from '../../data/mock'
+import { CCDC_HANG, CUA_HANG, HANG, KHACH, KHO, LY_DO, NCC, NHAN_VIEN, NHOM_LY_DO, NVL, ganLyDo, luuLyDo } from '../../data/mock'
 import { DON_VI_TINH, tkCot, taiKhoan, NHOM_HANG, NHOM_DOI_TUONG, NHOM_MUC_CP, NHOM_CONG_VIEC, NHOM_KHO, DS_PTTT, QUY_DOI_DVT, DS_MUC_CHI_PHI_16, DS_CONG_VIEC_17, DS_QUY_TIEN_112, DS_HANG_HOA_12 } from './data'
 import { timNganhNghe } from './nganh-nghe'
 import { HeThongTaiKhoan } from './HeThongTaiKhoan'
@@ -303,9 +303,12 @@ const danhMuc: ModuleDef = {
       nhomLoc: 'dung', nhanLoc: 'Dùng cho', cols: [{ k: 'ma', t: 'Mã', cls: 'code' }, { k: 'ten', t: 'Lý do nghiệp vụ' }, { k: 'dung', t: 'Dùng cho' },
         // Là chi phí: chỉ lý do chi tiền có ô này (T231)
         { k: 'chiPhi', t: 'Là chi phí', c: true, w: 100, r: r => r.dung !== 'Chi tiền' ? '' : createElement('input', { type: 'checkbox', className: 'o-tich-xem', checked: Boolean(r.chiPhi), readOnly: true, tabIndex: -1, 'aria-label': 'Là chi phí' }) },
+        // Chi phí phân bổ nhiều kỳ: loại trừ với Là chi phí, phiếu chi lý do này gợi ý tạo thẻ chi phí (T700)
+        { k: 'phanBo', t: 'Chi phí phân bổ nhiều kỳ', c: true, w: 120, r: r => r.dung !== 'Chi tiền' ? '' : createElement('input', { type: 'checkbox', className: 'o-tich-xem', checked: Boolean(r.phanBo), readOnly: true, tabIndex: -1, 'aria-label': 'Chi phí phân bổ nhiều kỳ' }) },
         // Nhóm của lý do là chi phí (T473), tên nhóm dài nên cắt "..." trong ô, rê chuột xem đủ
         { k: 'nhomCp', t: 'Nhóm lý do', w: 320, r: r => !r.chiPhi || !r.nhomCp ? '' : createElement('span', { className: 'o-cat', title: String(r.nhomCp) }, String(r.nhomCp)) }],
-      rows: () => LY_DO } },
+      rows: () => LY_DO,
+      phien: { gan: ganLyDo, luu: luuLyDo } } },   // giữ tích Là chi phí, Chi phí phân bổ nhiều kỳ, nhóm lý do đã sửa (T700)
   }, NGAN).filter(sc => sc.code !== '1.13').map(sc => ({ ...sc, icon: BIEU_TUONG[sc.code ?? ''] ?? sc.icon })).flatMap(sc => {
     if (sc.code === '1.2') return [sc, nhomHangHoa]
     if (sc.code === '1.5') return [sc, nhomDoiTuong]
