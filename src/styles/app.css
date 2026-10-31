@@ -43324,8 +43324,7 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
 }
 
 .m-nk-the.chon,
-.m-app.m-cap-2 .m-nk-the.chon,
-.chon {
+.m-app.m-cap-2 .m-nk-the.chon {
   background: var(--tint) !important;
 }
 
@@ -43417,8 +43416,7 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
   background: #d1d5db;
 }
 
-.m-nk-ct .hd,
-.hd {
+.m-nk-ct .hd {
   flex: none;
   display: flex;
   gap: 12px;
@@ -43426,8 +43424,7 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
   padding: 20px 16px 18px;
 }
 
-.m-nk-ct .av,
-.av {
+.m-nk-ct .av {
   width: 44px;
   height: 44px;
   flex: none;
@@ -43441,8 +43438,7 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
   justify-content: center;
 }
 
-.m-nk-ct .hd-t,
-.hd-t {
+.m-nk-ct .hd-t {
   flex: 1;
   min-width: 0;
   font-size: 16px;
@@ -43450,8 +43446,7 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
   color: var(--body);
 }
 
-.m-nk-ct .hd-t b,
-.hd-t b {
+.m-nk-ct .hd-t b {
   font-weight: 600;
   color: var(--ink);
 }
@@ -43463,8 +43458,7 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
   -webkit-overflow-scrolling: touch;
 }
 
-.m-nk-ct .cb,
-.cb {
+.m-nk-ct .cb {
   margin: 0 16px 16px;
   padding: 10px 12px;
   border: 1px solid var(--orange-b);
@@ -43478,14 +43472,12 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
   box-sizing: border-box;
 }
 
-.m-nk-ct .muc,
-.muc {
+.m-nk-ct .muc {
   padding: 18px 16px 6px;
   border-top: 1px solid var(--line-2);
 }
 
-.m-nk-ct .mt,
-.mt {
+.m-nk-ct .mt {
   margin: 0 0 8px;
   display: flex;
   align-items: center;
@@ -43495,8 +43487,7 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
   color: var(--ink);
 }
 
-.m-nk-ct .mt::before,
-.mt::before {
+.m-nk-ct .mt::before {
   content: '';
   width: 3px;
   height: 16px;
@@ -43505,14 +43496,12 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
   flex: none;
 }
 
-.m-nk-ct .ds,
-.ds {
+.m-nk-ct .ds {
   display: flex;
   flex-direction: column;
 }
 
-.m-nk-ct .dsr,
-.dsr {
+.m-nk-ct .dsr {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -43521,39 +43510,33 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
   font-size: 13.5px;
 }
 
-.m-nk-ct .dsr:last-child,
-.dsr:last-child {
+.m-nk-ct .dsr:last-child {
   border-bottom: 0;
 }
 
-.m-nk-ct .dsr svg,
-.dsr svg {
+.m-nk-ct .dsr svg {
   flex: none;
 }
 
-.m-nk-ct .dsn,
-.dsn {
+.m-nk-ct .dsn {
   width: 140px;
   flex: none;
   color: var(--muted);
 }
 
-.m-nk-ct .dsg,
-.dsg {
+.m-nk-ct .dsg {
   flex: 1;
   min-width: 0;
   color: var(--ink);
 }
 
-.m-nk-ct .so,
-.so {
+.m-nk-ct .so {
   font-weight: 600;
   color: var(--blue);
   text-decoration: none;
 }
 
-.m-nk-ct .nd,
-.nd {
+.m-nk-ct .nd {
   margin: 0;
   padding: 0;
   list-style: none;
@@ -43563,8 +43546,7 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
   gap: 10px;
 }
 
-.m-nk-ct .nd li,
-.nd li {
+.m-nk-ct .nd li {
   counter-increment: b;
   display: flex;
   gap: 10px;
@@ -43573,8 +43555,7 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
   color: var(--ink);
 }
 
-.m-nk-ct .nd li::before,
-.nd li::before {
+.m-nk-ct .nd li::before {
   content: counter(b);
   width: 20px;
   height: 20px;
@@ -43590,8 +43571,7 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
   justify-content: center;
 }
 
-.m-nk-ct .ly,
-.ly {
+.m-nk-ct .ly {
   margin-top: 14px;
   padding: 10px 12px;
   border-radius: var(--r-sm);
@@ -43604,8 +43584,7 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
   color: var(--ink);
 }
 
-.m-nk-ct .nho,
-.nho {
+.m-nk-ct .nho {
   font-size: 12px;
   color: var(--muted);
 }
@@ -43663,3 +43642,27 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
 /* ── Hộp Thông tin kê khai ở màn Kê khai thuế, mở từ nhãn Bổ sung MST ── */
 .tk-tt { width: min(900px, calc(100vw - 48px)); max-height: calc(100vh - 48px); }
 .tk-tt .ds-hop-dau { border-bottom: 1px solid var(--line-2); }
+
+/* ── Nhật ký thao tác: ô ngày chứng từ từ–đến, bảng lọc điện thoại (T695) ── */
+.nk-o-khoang { display: flex; align-items: center; gap: 8px; }
+.ds-nc-o:has(.nk-o-khoang) { grid-column: span 2; }   /* hai ô ngày cần rộng gấp đôi */
+.nk-o-khoang > span { color: var(--muted); }
+.nk-o-khoang > * { flex: 1; min-width: 0; }
+.nk-o-khoang > span { flex: none; }
+.m-nk-btn-loc.on { border-color: var(--blue); color: var(--blue); background: var(--tint); }
+.m-nk-trong { padding: 32px 24px; text-align: center; font-size: 14px; color: var(--muted); }
+.m-nk-loc { position: fixed; left: 0; right: 0; bottom: 0; max-height: 90vh; display: flex; flex-direction: column; background: var(--white); border-radius: 16px 16px 0 0; box-shadow: 0 -8px 28px rgba(15, 23, 42, .16); z-index: 1001; box-sizing: border-box; }
+.m-nk-loc-dau { flex: none; padding: 12px 16px 8px; font-size: 16px; font-weight: 700; color: var(--ink); }
+.m-nk-loc-than { flex: 1; min-height: 0; overflow-y: auto; padding: 4px 16px 12px; display: flex; flex-direction: column; gap: 14px; }
+.m-nk-loc-o { display: flex; flex-direction: column; gap: 6px; }
+.m-nk-loc-nhan { font-size: 13px; font-weight: 600; color: var(--muted); }
+.m-nk-loc .sel.m-nk-loc-sel { width: 100%; min-height: 44px; padding: 0 12px; border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--white); }
+.m-nk-loc-khoang { display: flex; align-items: center; gap: 8px; }
+.m-nk-loc-khoang > * { flex: 1; min-width: 0; }
+.m-nk-loc-khoang > span { flex: none; color: var(--muted); }
+.m-nk-loc-khoang input { min-height: 44px; }
+.m-nk-loc .kn-nut { width: 100%; min-height: 44px; }
+.m-nk-loc-chan { flex: none; display: flex; gap: 10px; padding: 10px 16px 20px; border-top: 1px solid var(--line); }
+.m-nk-loc-chan > * { flex: 1; }
+.m-nk-loc-nut-loc { height: 46px; border: 0; border-radius: 10px; background: var(--blue); color: var(--white); font-size: 15px; font-weight: 600; cursor: pointer; }
+.m-nk-loc-nut-loc:active { opacity: .9; }

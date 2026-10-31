@@ -61,6 +61,15 @@ const MAU: DongNK[] = [
     tb: 'Web, Chrome trên Windows', noiDung: ['Đăng nhập thành công, mở phiên làm việc mới.'] },
   { ma: 'NK2610-004650', g: 'PL', luc: '06/10/2026 17:45', giay: '40', ai: 'Trần Thu Hà', tk: 'ha.tran', vaiTro: 'Kế toán trưởng', tt: 'Khoá sổ', ch: '', loai: '', so: '', ngay: '', trangThai: '',
     tb: 'Web, Chrome trên Windows', lyDo: 'Đã đối chiếu xong quỹ, ngân hàng, kho tháng 9.', noiDung: ['Khoá sổ kỳ 9/2026 cho tất cả cửa hàng.', 'Ngày khoá sổ đổi từ 31/08/2026 sang 30/09/2026.'] },
+  // Ngày cũ hơn để thử lọc từ ngày đến ngày (T695)
+  { ma: 'NK2610-004588', g: 'S', luc: '05/10/2026 17:12', giay: '26', ai: 'Nguyễn Minh Thư', tk: 'thu.nguyen', vaiTro: 'Thu ngân', tt: 'Thêm mới', ch: 'Phố Mây Lê Lợi', loai: 'Phiếu thu', so: 'PT2610-0231', ngay: '05/10/2026', trangThai: 'Chưa ghi sổ',
+    tb: 'Ứng dụng điện thoại, Android', noiDung: ['Lập phiếu thu tiền khách đặt cọc tiệc sinh nhật, số tiền 3.000.000.'] },
+  { ma: 'NK2610-004512', g: 'S', luc: '04/10/2026 10:26', giay: '51', ai: 'Phạm Ngọc Lan', tk: 'lan.pham', vaiTro: 'Thủ kho', tt: 'Sửa', ch: 'Phố Mây Thảo Điền', loai: 'Chứng từ mua hàng', so: 'MH2610-0112', ngay: '03/10/2026', trangThai: 'Chưa ghi sổ',
+    tb: 'Web, Edge trên Windows', noiDung: ['Sửa số lượng thịt bò từ 12 kg thành 15 kg.', 'Tổng tiền đổi từ 3.360.000 thành 4.200.000.'] },
+  { ma: 'NK2610-004430', g: 'S', luc: '02/10/2026 15:08', giay: '19', ai: 'Lê Quốc Bảo', tk: 'bao.le', vaiTro: 'Kế toán', tt: 'Xoá', ch: 'Phố Mây Nguyễn Trãi', loai: 'Phiếu chi', so: 'PC2610-0207', ngay: '02/10/2026', trangThai: 'Đã xoá',
+    tb: 'Web, Chrome trên Windows', lyDo: 'Lập nhầm cửa hàng, đã lập lại ở Phố Mây Lê Lợi.', noiDung: ['Xoá phiếu chi tiền điện tháng 9, số tiền 4.750.000.'] },
+  { ma: 'NK2610-004391', g: 'PL', luc: '01/10/2026 09:40', giay: '08', ai: 'Lê Quốc Bảo', tk: 'bao.le', vaiTro: 'Kế toán', tt: 'Ghi sổ', ch: 'Phố Mây Lê Lợi', loai: 'Chứng từ bán hàng', so: 'XB2609-0151', ngay: '30/09/2026', trangThai: 'Đã ghi sổ',
+    tb: 'Web, Chrome trên macOS', noiDung: ['Ghi sổ hoá đơn FABi ngày 30/09, số tiền 18.920.000.', 'Trạng thái đổi từ Chưa ghi sổ sang Đã ghi sổ.'] },
 ]
 
 /** Câu đầu khung chi tiết: "<ai> <dongTu> <doiTuong>", vd "Trần Thu Hà | đã sửa | phiếu chi PC2610-0241" */
@@ -68,8 +77,34 @@ export const dongTu = (d: DongNK) => d.kqLoi ? `${d.tt.toLowerCase()} không th�
 export const doiTuongTT = (d: DongNK) => d.so ? `${d.loai.toLowerCase()} ${d.so}` : ''
 /** Chữ viết tắt ô tròn: chữ đầu 2 từ cuối của tên, vd "Trần Thu Hà" → "TH" */
 export const vietTat = (ai: string) => ai.split(' ').slice(-2).map(w => w[0]).join('').toUpperCase()
-/** Dòng thuộc ngày hôm nay của dữ liệu mẫu; dòng sinh trong phiên luôn tính là hôm nay */
-export const laHomNay = (d: DongNK) => !!d.manPhieu || d.luc.startsWith(HOM_NAY)
+/** Ngày thao tác dạng dd/mm/yyyy; dòng sinh trong phiên tính là hôm nay */
+export const ngayTT = (d: DongNK) => d.manPhieu ? HOM_NAY : d.luc.slice(0, 10)
+
+/** Điều kiện lọc dùng chung web và điện thoại (T695): ngày dạng dd/mm/yyyy, rỗng là không lọc */
+export interface LocNK { tu: string; den: string; tt: string; ch: string; tk: string; loai: string; ctTu: string; ctDen: string }
+export const locNKMacDinh = (): LocNK => ({ tu: HOM_NAY, den: HOM_NAY, tt: '', ch: '', tk: '', loai: '', ctTu: '', ctDen: '' })
+
+const soNgay = (s: string) => s.slice(6, 10) + s.slice(3, 5) + s.slice(0, 2)   // dd/mm/yyyy → yyyymmdd để so
+const trongKhoang = (s: string, tu: string, den: string) =>
+  (!tu || soNgay(s) >= soNgay(tu)) && (!den || soNgay(s) <= soNgay(den))
+
+export function khopLocNK(d: DongNK, l: LocNK): boolean {
+  if (!trongKhoang(ngayTT(d), l.tu, l.den)) return false
+  if (l.tt && d.tt !== l.tt) return false
+  if (l.ch && d.ch !== l.ch) return false
+  if (l.tk && d.tk !== l.tk) return false
+  if (l.loai && d.loai !== l.loai) return false
+  // Đã chọn ngày chứng từ thì ẩn dòng không gắn chứng từ (đăng nhập, khoá sổ)
+  if ((l.ctTu || l.ctDen) && (!d.ngay || !trongKhoang(d.ngay, l.ctTu, l.ctDen))) return false
+  return true
+}
+
+/** Lựa chọn cho ô lọc lấy từ dữ liệu của gói: tài khoản [tk, tên], tên chứng từ, cửa hàng */
+export function luaChonNK(ds: DongNK[]) {
+  const tk = new Map(ds.filter(d => d.tk).map(d => [d.tk, d.ai]))
+  const duyNhat = (f: (d: DongNK) => string) => Array.from(new Set(ds.map(f).filter(Boolean)))
+  return { tk: Array.from(tk), loai: duyNhat(d => d.loai), ch: duyNhat(d => d.ch) }
+}
 
 /** Loại phiếu đoán theo tiền tố số chứng từ */
 const LOAI_THEO_SO: [string, string][] = [['UNC', 'Uỷ nhiệm chi'], ['PC', 'Phiếu chi'], ['PT', 'Phiếu thu'], ['MH', 'Chứng từ mua hàng'], ['XB', 'Chứng từ bán hàng'], ['BC', 'Báo có'], ['BN', 'Báo nợ']]

@@ -1578,6 +1578,19 @@ def kiem_tra_dot_11_a():
         pg.wait_for_timeout(300)
         if pg.locator('.m-chi-mt').count() > 0:
             loi.append('Nhật ký thao tác: vẫn ra MChiMayTinh')
+        # Mở màn chưa có thẻ, bấm phễu chọn điều kiện rồi bấm Lọc mới tải (T695)
+        if pg.locator('.m-nk-the').count() > 0:
+            loi.append('Nhật ký thao tác: chưa bấm Lọc mà đã hiện thẻ')
+        pg.locator('.m-nk-btn-loc').click()
+        pg.wait_for_timeout(200)
+        if pg.locator('.m-nk-loc').count() == 0:
+            loi.append('Nhật ký thao tác: bấm phễu không mở bảng lọc')
+        else:
+            for nhan in ('Ngày thao tác', 'Thao tác', 'Cửa hàng', 'Tài khoản', 'Tên chứng từ', 'Ngày chứng từ'):
+                if pg.locator('.m-nk-loc-nhan', has_text=nhan).count() == 0:
+                    loi.append(f'Nhật ký thao tác: bảng lọc thiếu ô {nhan}')
+            pg.locator('.m-nk-loc-nut-loc').click()
+            pg.wait_for_timeout(200)
         if pg.locator('.m-nk-the').count() == 0:
             loi.append('Nhật ký thao tác: không thấy danh sách thẻ nhật ký')
         else:
@@ -1603,6 +1616,11 @@ def kiem_tra_dot_11_a():
         pg.wait_for_timeout(300)
         if pg.locator('.m-chi-mt').count() > 0:
             loi.append('Nhật ký thao tác (gói S): vẫn ra MChiMayTinh')
+        pg.locator('.m-nk-btn-loc').click()
+        pg.wait_for_timeout(200)
+        if pg.locator('.m-nk-loc-nut-loc').count() > 0:
+            pg.locator('.m-nk-loc-nut-loc').click()
+            pg.wait_for_timeout(200)
         if pg.locator('.m-nk-the').count() == 0:
             loi.append('Nhật ký thao tác (gói S): không thấy danh sách thẻ nhật ký')
         else:

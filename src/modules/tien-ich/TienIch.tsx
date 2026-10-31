@@ -10,9 +10,10 @@ import { Card, Kpi, Note, PageHead } from '../../ui/Page'
 import { St, Table } from '../../ui/Table'
 import { between, dmy, fold, k, pad, pick, rng } from '../../ui/format'
 import { Select } from '../../ui/Dropdown'
-import { useNhatKyDayDu, THAO_TAC_GOI, HOM_NAY, laHomNay, dongTu, doiTuongTT, vietTat } from '../he-thong/nhatKyMau'
+import { useNhatKyDayDu, THAO_TAC_GOI, locNKMacDinh, khopLocNK, luaChonNK, dongTu, doiTuongTT, vietTat } from '../he-thong/nhatKyMau'
+import { ChonKhoangNgay, ONgay, docNgay } from '../../ui/ChonNgay'
 import { HopDongBo } from '../../ui/HopDongBo'
-import { useLocNhap } from '../../ui/LocNangCao'
+import { BoLoc, useCauHinhLoc, useLocNhap, type OLocDef } from '../../ui/LocNangCao'
 
 const dsKho = CUA_HANG.flatMap(c =>
   c.kho.map(ten => {
@@ -224,30 +225,16 @@ export function NhatKyThaoTac({ sc, mod }: ScreenProps) {
   const [chonMa, setChonMa] = useState<string | null>(null)
   const [tim, setTim] = useState('')
 
-  const loc = useLocNhap(() => ({
-    tt: '',
-    ch: '',
-  }))
+  const loc = useLocNhap(locNKMacDinh)
+  const { nhap, dat } = loc
 
   const dsThaoTac = THAO_TAC_GOI[s.goi] ?? THAO_TAC_GOI.S
-  const dsCuaHang = useMemo(() => Array.from(new Set(tatCa.map(d => d.ch).filter(Boolean))), [tatCa])
+  const luaChon = useMemo(() => luaChonNK(tatCa), [tatCa])
 
   const dsHienThi = useMemo(() => {
     if (!daLoc) return []
     const q = fold(tim.trim())
-    return tatCa.filter(d => {
-      if (!laHomNay(d)) return false
-      if (loc.ap.tt && d.tt !== loc.ap.tt) return false
-      if (loc.ap.ch && d.ch !== loc.ap.ch) return false
-      if (q) {
-        const khop =
-          fold(d.so).includes(q) ||
-          fold(d.ai).includes(q) ||
-          fold(d.tk).includes(q)
-        if (!khop) return false
-      }
-      return true
-    })
+    return tatCa.filter(d => khopLocNK(d, loc.ap) && (!q || [d.so, d.ai, d.tk].some(x => fold(x).includes(q))))
   }, [tatCa, daLoc, loc.ap, tim])
 
   // Không tự chọn dòng đầu; bấm Lọc lại thì đóng panel
@@ -262,6 +249,39 @@ export function NhatKyThaoTac({ sc, mod }: ScreenProps) {
     setChonMa(null)
   }
 
+  // Ô lọc: Ngày thao tác, Thao tác, Cửa hàng hiện ngoài; phễu mở thêm Tài khoản, Tên chứng từ, Ngày chứng từ (T695)
+  const oLoc: OLocDef[] = [
+    { k: 'ngayTT', ten: 'Ngày thao tác', o: <ChonKhoangNgay value={{ tu: docNgay(nhap.tu), den: docNgay(nhap.den) }} onChange={k => { dat('tu', dmy(k.tu)); dat('den', dmy(k.den)) }} /> },
+    { k: 'tt', ten: 'Thao tác', coGiaTri: Boolean(nhap.tt), o: (
+      <Select className="ds-o-sel" value={nhap.tt} aria-label="Thao tác" onChange={e => dat('tt', e.target.value)}>
+                <option value="">Tất cả</option>
+                {dsThaoTac.map(t => <option key={t} value={t}>{t}</option>)}
+              </Select>) },
+    { k: 'ch', ten: 'Cửa hàng', coGiaTri: Boolean(nhap.ch), o: (
+      <Select className="ds-o-sel" value={nhap.ch} aria-label="Cửa hàng" onChange={e => dat('ch', e.target.value)}>
+                <option value="">Tất cả</option>
+                {luaChon.ch.map(c => <option key={c} value={c}>{c}</option>)}
+              </Select>) },
+    { k: 'tk', ten: 'Tài khoản', coGiaTri: Boolean(nhap.tk), o: (
+      <Select className="ds-o-sel" value={nhap.tk} aria-label="Tài khoản" onChange={e => dat('tk', e.target.value)}>
+                <option value="">Tất cả</option>
+                {luaChon.tk.map(([tk, ai]) => <option key={tk} value={tk}>{ai} ({tk})</option>)}
+              </Select>) },
+    { k: 'loai', ten: 'Tên chứng từ', coGiaTri: Boolean(nhap.loai), o: (
+      <Select className="ds-o-sel" value={nhap.loai} aria-label="Tên chứng từ" onChange={e => dat('loai', e.target.value)}>
+                <option value="">Tất cả</option>
+                {luaChon.loai.map(l => <option key={l} value={l}>{l}</option>)}
+              </Select>) },
+    { k: 'ngayCT', ten: 'Ngày chứng từ', coGiaTri: Boolean(nhap.ctTu || nhap.ctDen), o: (
+      <div className="nk-o-khoang">
+        <ONgay value={nhap.ctTu} placeholder="Từ ngày" ariaLabel="Ngày chứng từ từ" onChange={v => dat('ctTu', v)} />
+        <span>–</span>
+        <ONgay value={nhap.ctDen} placeholder="Đến ngày" ariaLabel="Ngày chứng từ đến" onChange={v => dat('ctDen', v)} />
+      </div>
+    ) },
+  ]
+  const [cauHinhLoc, datCauHinhLoc] = useCauHinhLoc(`/${mod.key}/${sc.slug}`, oLoc.map(o => o.k), ['ngayTT', 'tt', 'ch'])
+
   return (
     <div className="page">
       <PageHead
@@ -273,62 +293,26 @@ export function NhatKyThaoTac({ sc, mod }: ScreenProps) {
       <div className="nk-than">
         <section className="nk-bang" data-hd="bang">
           <div className="ds-toolbar-figma" data-hd="loc">
-            <button
-              type="button"
-              className="ds-btn-pheu-figma"
-              aria-label="Bộ lọc"
-            >
-              <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M3 5h18l-7 8v6l-4-2v-4z" />
-              </svg>
-            </button>
-
-            <button type="button" className="ds-chip-ky-figma" aria-label="Kỳ kế toán">
-              <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="5" width="18" height="16" rx="2" />
-                <path d="M3 10h18M8 3v4M16 3v4" />
-              </svg>
-              Hôm nay: {HOM_NAY}
-            </button>
-
-            <label className="ds-o">
-              <span className="ds-o-nhan">Thao tác</span>
-              <select
-                className="ds-o-sel"
-                aria-label="Thao tác"
-                value={loc.nhap.tt}
-                onChange={e => loc.dat('tt', e.target.value)}
-              >
-                <option value="">Tất cả</option>
-                {dsThaoTac.map(t => (
-                  <option key={t} value={t}>{t}</option>
-                ))}
-              </select>
-            </label>
-
-            <label className="ds-o">
-              <span className="ds-o-nhan">Cửa hàng</span>
-              <select
-                className="ds-o-sel"
-                aria-label="Cửa hàng"
-                value={loc.nhap.ch}
-                onChange={e => loc.dat('ch', e.target.value)}
-              >
-                <option value="">Tất cả</option>
-                {dsCuaHang.map(ch => (
-                  <option key={ch} value={ch}>{ch}</option>
-                ))}
-              </select>
-            </label>
-
-            <button
-              type="button"
-              className="btn pri ds-nut-loc"
-              title={loc.khacNhap ? 'Có điều kiện mới, bấm Lọc để tải lại' : undefined}
-              onClick={onLoc}
-            >
-              Lọc{loc.khacNhap && <span className="ds-cham-nhap" />}
-            </button>
+            <BoLoc
+              ds={oLoc}
+              cauHinh={cauHinhLoc}
+              datCauHinh={datCauHinhLoc}
+              dangLoc={loc.dangLoc}
+              khacNhap={loc.khacNhap}
+              onLoc={onLoc}
+              onXoaHet={loc.xoaNhap}
+              chiNutPheu
+              ngoaiRieng={{
+                ngayTT: (
+                  <ChonKhoangNgay
+                    key="ngayTT"
+                    kieu="chip"
+                    value={{ tu: docNgay(nhap.tu), den: docNgay(nhap.den) }}
+                    onChange={k => { dat('tu', dmy(k.tu)); dat('den', dmy(k.den)) }}
+                  />
+                ),
+              }}
+            />
 
             <div className="ds-toolbar-phai">
               <div className="ds-tim-figma">

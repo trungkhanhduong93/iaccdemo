@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T695 | Nhật ký thao tác: phễu mở Bộ lọc nâng cao thêm Tài khoản, Tên chứng từ, Ngày chứng từ; chip Ngày thao tác chọn từ ngày đến ngày; điện thoại bấm phễu chọn điều kiện rồi bấm Lọc mới hiện thẻ; gỡ CSS điện thoại T693 lỡ áp lên cả app | Trum | 31/10/2026 | [2026-10-31-trum-nhat-ky-loc-nang-cao](../nhat-ky/2026-10-31-trum-nhat-ky-loc-nang-cao.md) |
 | T694 | Nhật ký thao tác web: nút Lọc, mở màn chưa tải dữ liệu, không tự mở side panel, bảng giãn hết bề ngang khi màn rộng | Trum | 31/10/2026 | `2026-10-31-trum-nhat-ky-nut-loc.md` |
 | T693 | Nhật ký thao tác vẽ lại theo artifact bản 10: web bảng 9 cột lọc hôm nay, side panel phải 1 view (Thông tin chi tiết, Chứng từ, Lịch sử thao tác); điện thoại bảng trượt lên; chỉ hiện chứng từ có trong gói | Trum | 31/10/2026 | `2026-10-31-trum-nhat-ky-ve-lai.md` |
 | T692 | Gói Standard: thanh bên bỏ mục Thao tác nhanh; Thông tin đơn vị ẩn ô Phương pháp tính giá xuất kho, Nhóm doanh thu chỉ còn Nhóm 1, 2; màn Kê khai thuế có nút Thiết lập thông tin mở hộp Thông tin kê khai, nhãn Bổ sung MST mở thẳng hộp này | PhuongXT | 30/10/2026 | `2026-10-30-phuongxt-thong-tin-ke-khai.md` |

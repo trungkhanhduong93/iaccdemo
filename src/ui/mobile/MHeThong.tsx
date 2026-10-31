@@ -33,17 +33,21 @@ import {
 
 import {
   HOM_NAY,
+  THAO_TAC_GOI,
   doiTuongTT,
   dongTu,
-  laHomNay,
+  khopLocNK,
+  locNKMacDinh,
+  luaChonNK,
   useNhatKyDayDu,
   vietTat,
   type DongNK,
+  type LocNK,
 } from '../../modules/he-thong/nhatKyMau'
-import { pad, pick, rng, fold } from '../format'
+import { dmy, pad, pick, rng, fold } from '../format'
 import { Select } from '../Dropdown'
 import { Icon } from '../Icon'
-import { ONgay } from '../ChonNgay'
+import { ChonKhoangNgay, ONgay, docNgay } from '../ChonNgay'
 import { MFormDm } from './MFormDm'
 import { MTrong } from './MTrong'
 
@@ -265,15 +269,33 @@ export const MNhatKyThaoTac: FC<ScreenProps> = () => {
   const { s } = useSession()
   const [q, setQ] = useState('')
   const [dongChon, setDongChon] = useState<DongNK | null>(null)
+  // Mở màn chưa có thẻ; bấm phễu chọn điều kiện rồi bấm Lọc mới tải (T695)
+  const [ap, setAp] = useState<LocNK | null>(null)
+  const [nhap, setNhap] = useState<LocNK>(locNKMacDinh)
+  const [moLoc, setMoLoc] = useState(false)
+  const dat = (k: keyof LocNK, v: string) => setNhap(x => ({ ...x, [k]: v }))
 
   const tatCa = useNhatKyDayDu(s.goi)
+  const dsThaoTac = THAO_TAC_GOI[s.goi] ?? THAO_TAC_GOI.S
+  const luaChon = useMemo(() => luaChonNK(tatCa), [tatCa])
 
   const rowsLoc = useMemo(() => {
-    const ds = tatCa.filter(laHomNay)
-    if (!q.trim()) return ds
+    if (!ap) return []
     const fq = fold(q.trim())
-    return ds.filter(d => fold(`${d.so || ''} ${d.ai || ''} ${d.tk || ''}`).includes(fq))
-  }, [tatCa, q])
+    return tatCa.filter(d => khopLocNK(d, ap) && (!fq || fold(`${d.so || ''} ${d.ai || ''} ${d.tk || ''}`).includes(fq)))
+  }, [tatCa, ap, q])
+
+  const nhanNgay = !ap ? '' : ap.tu === ap.den ? (ap.tu === HOM_NAY ? `Hôm nay, ${ap.tu}` : ap.tu) : `${ap.tu} – ${ap.den}`
+  const onLoc = () => { setAp(nhap); setMoLoc(false); setDongChon(null) }
+  const chonO = (k: 'tt' | 'ch' | 'tk' | 'loai', ten: string, ds: [string, string][]) => (
+    <label className='m-nk-loc-o'>
+      <span className='m-nk-loc-nhan'>{ten}</span>
+      <Select className='m-nk-loc-sel' value={nhap[k]} aria-label={ten} onChange={e => dat(k, e.target.value)}>
+        <option value=''>Tất cả</option>
+        {ds.map(([v, t]) => <option key={v} value={v}>{t}</option>)}
+      </Select>
+    </label>
+  )
 
   return (
     <div className='m-nk-khung'>
@@ -304,8 +326,9 @@ export const MNhatKyThaoTac: FC<ScreenProps> = () => {
         </label>
         <button
           type='button'
-          className='m-nk-btn-loc'
-          aria-label='Bộ lọc: ngày, thao tác, cửa hàng, tài khoản'
+          className={`m-nk-btn-loc${ap ? ' on' : ''}`}
+          aria-label='Bộ lọc nhật ký'
+          onClick={() => setMoLoc(true)}
         >
           <svg
             aria-hidden='true'
@@ -323,10 +346,15 @@ export const MNhatKyThaoTac: FC<ScreenProps> = () => {
         </button>
       </div>
 
-      {/* Dòng chữ xám: Hôm nay, 07/10/2026 · N thao tác */}
-      <div className='m-nk-dong-dem'>
-        Hôm nay, {HOM_NAY} · {rowsLoc.length} thao tác
-      </div>
+      {/* Dòng chữ xám: khoảng ngày đã lọc · N thao tác */}
+      {ap ? (
+        <div className='m-nk-dong-dem'>
+          {nhanNgay} · {rowsLoc.length} thao tác
+        </div>
+      ) : (
+        <div className='m-nk-trong'>Bấm phễu chọn điều kiện rồi bấm Lọc để xem nhật ký.</div>
+      )}
+      {ap && rowsLoc.length === 0 ? <div className='m-nk-trong'>Không có thao tác nào khớp điều kiện lọc.</div> : null}
 
       {/* Danh sách thẻ */}
       <div className='m-nk-ds'>
@@ -364,6 +392,48 @@ export const MNhatKyThaoTac: FC<ScreenProps> = () => {
           )
         })}
       </div>
+
+      {/* Bảng lọc trượt từ dưới lên (T695) */}
+      {moLoc ? (
+        <>
+          <div className='m-nk-nen-mo' onClick={() => setMoLoc(false)} />
+          <div className='m-nk-loc' role='dialog' aria-label='Bộ lọc nhật ký'>
+            <div className='m-nk-keo'>
+              <span />
+            </div>
+            <div className='m-nk-loc-dau'>Bộ lọc</div>
+            <div className='m-nk-loc-than'>
+              <div className='m-nk-loc-o'>
+                <span className='m-nk-loc-nhan'>Ngày thao tác</span>
+                <ChonKhoangNgay
+                  value={{ tu: docNgay(nhap.tu), den: docNgay(nhap.den) }}
+                  onChange={k => setNhap(x => ({ ...x, tu: dmy(k.tu), den: dmy(k.den) }))}
+                />
+              </div>
+              {chonO('tt', 'Thao tác', dsThaoTac.map(t => [t, t]))}
+              {chonO('ch', 'Cửa hàng', luaChon.ch.map(c => [c, c]))}
+              {chonO('tk', 'Tài khoản', luaChon.tk.map(([tk, ai]) => [tk, `${ai} (${tk})`]))}
+              {chonO('loai', 'Tên chứng từ', luaChon.loai.map(l => [l, l]))}
+              <div className='m-nk-loc-o'>
+                <span className='m-nk-loc-nhan'>Ngày chứng từ</span>
+                <div className='m-nk-loc-khoang'>
+                  <ONgay value={nhap.ctTu} placeholder='Từ ngày' ariaLabel='Ngày chứng từ từ' onChange={v => dat('ctTu', v)} />
+                  <span>–</span>
+                  <ONgay value={nhap.ctDen} placeholder='Đến ngày' ariaLabel='Ngày chứng từ đến' onChange={v => dat('ctDen', v)} />
+                </div>
+              </div>
+            </div>
+            <div className='m-nk-loc-chan'>
+              <button type='button' className='m-nk-ct-nut-dong' onClick={() => setNhap(locNKMacDinh())}>
+                Đặt lại
+              </button>
+              <button type='button' className='m-nk-loc-nut-loc' onClick={onLoc}>
+                Lọc
+              </button>
+            </div>
+          </div>
+        </>
+      ) : null}
 
       {/* Bảng trượt chi tiết từ dưới lên */}
       {dongChon ? (
