@@ -3,6 +3,7 @@
 Ghi thay đổi người dùng nhìn thấy trên https://iaccdemo.pages.dev, mới nhất ở trên. Mỗi dòng kèm mã việc nếu có.
 
 ## 31/10/2026
+- T699: Thu chi, chip Chưa đồng bộ có thêm cột Lý do, cột Loại ghi Thu tiền mặt, Chi ngân hàng như danh sách thường. Tab Tiền mặt chỉ hiện phiếu tiền mặt, tab Ngân hàng hiện phiếu ngân hàng; hộp Đồng bộ cũng theo tab. Bảng đồng bộ của Thu chi, Xuất bán POS kéo giãn được cột, nút Excel giống danh sách thường, cột tiền nằm cuối và đứng yên khi cuộn ngang.
 - T700: Danh mục Lý do nghiệp vụ thêm tích Chi phí phân bổ nhiều kỳ ở form chi tiết và cột danh sách. Chỉ chọn một trong hai tích Là chi phí, Chi phí phân bổ nhiều kỳ, bỏ cả hai được, lý do mới mặc định không tích. Sửa tích ở lý do có sẵn thì danh sách giữ lại. Phiếu chi chọn lý do có tích Chi phí phân bổ nhiều kỳ thì gợi ý tạo thẻ chi phí. Lý do Chi phí chờ phân bổ chuyển sang tích này.
 - T698: Thu chi, nút Đồng bộ thu chi FABi chuyển xuống thanh công cụ danh sách, thành nút vuông nằm cạnh nút Excel như Xuất bán POS.
 - T697: Thu chi có hàng chip Tất cả, Chưa ghi sổ, Đã ghi sổ, Chưa đồng bộ (gói Standard không có Chưa ghi sổ). Chip Chưa đồng bộ liệt kê phiếu FABi chưa vào sổ kèm nguyên nhân, link xử lý, nút Đồng bộ lại và Xuất Excel; bỏ nhãn vàng của T691. Xuất bán POS thêm chip Đã đồng bộ, Chưa đồng bộ, mỗi dòng một món (tên, mã món, ĐVT, số lượng bán). Hộp Đồng bộ thu chi chọn thêm phiếu thu hay phiếu chi. Điện thoại xem được hai trạng thái, không có nút đồng bộ.

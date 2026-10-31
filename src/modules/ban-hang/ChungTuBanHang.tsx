@@ -515,7 +515,6 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
     { k: 'dvt', t: 'ĐVT', w: 70 },
     { k: 'sl', t: 'Số lượng bán', num: true, w: 120, r: r => money(Number(r.sl)) },
     { k: 'pttt', t: 'PTTT', w: 120 },
-    { k: 'tong', t: 'Tổng tiền', num: true, w: 130, r: r => money(Number(r.tong)) },
     {
       k: 'nguyenNhan',
       t: 'Nguyên nhân',
@@ -548,6 +547,8 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
         return <Link to={to} className="ds-link-xl" onClick={e => e.stopPropagation()}>Mở khoá sổ</Link>
       },
     },
+    // T699: Cột Tổng tiền dời ra cuối bảng (sau Xử lý), đóng băng mép phải
+    { k: 'tong', t: 'Tổng tiền', num: true, w: 130, dinh: 'phai', r: r => money(Number(r.tong)) },
   ]
 
   const chips: Chip[] = [
@@ -591,6 +592,8 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
   ]
   // Thứ tự, ẩn hiện, độ rộng cột lưu theo màn (T41)
   const cot = useCotDs(path, cols, COT_CO_DINH)
+  const doRongDaDb = useDoRongCot('pos-ban-hang-da-db')       // T699: độ rộng kéo cột bảng Đã đồng bộ POS
+  const doRongChuaDb = useDoRongCot('pos-ban-hang-chua-db')   // T699: độ rộng kéo cột bảng Chưa đồng bộ POS
 
   return (
     <div className="page page-voucher">
@@ -651,15 +654,10 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
                   >
                     <Icon n="refresh" className="ic sm" />Đồng bộ lại{selectedLoiIds.size ? ` ${selectedLoiIds.size} dòng món` : ''}
                   </button>
-                  <button
-                    type="button"
-                    className="nut-vuong"
-                    title="Xuất Excel danh sách chứng từ chưa đồng bộ"
-                    aria-label="Xuất Excel"
-                    onClick={() => toast(`Đã xuất ${listPosLoi.length} dòng món chưa đồng bộ ra Excel, kèm cột Nguyên nhân`)}
-                  >
-                    <IconFigmaSheet />
-                  </button>
+                  <NutExcel
+                    onNhap={() => toast('Nhập chứng từ bán hàng từ file Excel')}
+                    onXuat={() => toast(`Đã xuất ${hienThiList.length} chứng từ ra Excel`)}
+                  />
                 </>
               ) : (
                 <>
@@ -690,7 +688,7 @@ function DanhSach({ sc, mod, rows }: ScreenProps & { rows: Row[] }) {
                 rows={pagedRows}
                 motDong
                 keDoc
-                doRong={chipTab !== 'all' ? undefined : cot.doRong}
+                doRong={chipTab === 'da-db' ? doRongDaDb : chipTab === 'chua-db' ? doRongChuaDb : cot.doRong}
                 loc={{ gt: locCot, dat: (k, g) => { setLocCot(x => ({ ...x, [k]: g })); setTrang(1) }, bo: new Set(['stt', 'chk', 'action', 'xuLy']),
                   kieu: c => kieuCot(c.k), layLuaChon }}
                 onRow={r => setActiveId(r.id)}

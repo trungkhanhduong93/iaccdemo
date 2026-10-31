@@ -43693,3 +43693,9 @@ a.hdn-chip:hover { border-color: var(--blue); color: var(--blue); }
 @media (max-width: 640px) {
   .hdb-chon-loai { grid-template-columns: 1fr; }
 }
+
+/* ── Đồng bộ FABi đợt 2: kéo giãn cột, ghim cột tiền (T699) ── */
+.tbl th.dinh-phai,
+.tbl td.dinh-phai {
+  background: var(--white);
+}

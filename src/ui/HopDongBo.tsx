@@ -30,6 +30,8 @@ export interface HopDongBoProps {
   coMon?: boolean
   dsMon?: string[]
   coLoaiPhieu?: boolean   // Thu chi: thêm mục chọn Loại phiếu (T697)
+  nhanLoaiThu?: string    // T699: nhãn tuỳ chọn theo tab tiền mặt hay ngân hàng
+  nhanLoaiChi?: string
   nhanLamLai: string
   nutChinh: string
   nutDangChay?: string
@@ -49,6 +51,8 @@ export function HopDongBo({
   coMon = false,
   dsMon = [],
   coLoaiPhieu = false,
+  nhanLoaiThu,
+  nhanLoaiChi,
   nhanLamLai,
   nutChinh,
   nutDangChay,
@@ -212,8 +216,8 @@ export function HopDongBo({
                     onChange={e => setLoaiThu(e.target.checked)}
                   />
                   <div className="hdb-the-loai-tt">
-                    <b>Phiếu thu</b>
-                    <small>Thu tiền mặt, thu ngân hàng</small>
+                    <b>{nhanLoaiThu ?? 'Phiếu thu'}</b>
+                    {!nhanLoaiThu && <small>Thu tiền mặt, thu ngân hàng</small>}
                   </div>
                 </label>
                 <label className={`hdb-the-loai${loaiChi ? ' on' : ''}`}>
@@ -224,8 +228,8 @@ export function HopDongBo({
                     onChange={e => setLoaiChi(e.target.checked)}
                   />
                   <div className="hdb-the-loai-tt">
-                    <b>Phiếu chi</b>
-                    <small>Chi tiền mặt, chi ngân hàng</small>
+                    <b>{nhanLoaiChi ?? 'Phiếu chi'}</b>
+                    {!nhanLoaiChi && <small>Chi tiền mặt, chi ngân hàng</small>}
                   </div>
                 </label>
               </div>

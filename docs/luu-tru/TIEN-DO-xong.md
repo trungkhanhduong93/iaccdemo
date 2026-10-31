@@ -4,6 +4,7 @@ Chuyển từ docs/TIEN-DO.md. Việc mới xong thêm lên đầu bảng.
 
 | Mã | Việc | Người làm | Xong ngày | Nhật ký |
 |---|---|---|---|---|
+| T699 | Đồng bộ FABi đợt 2: Thu chi Chưa đồng bộ thêm cột Lý do, Loại ghi như danh sách thường, chia theo tab Tiền mặt / Ngân hàng (hộp Đồng bộ cũng vậy); bảng đồng bộ Thu chi, Xuất bán POS kéo giãn cột, nút Excel như danh sách thường, cột tiền ghim mép phải | Trum | 31/10/2026 | `2026-10-31-trum-dong-bo-fabi-dot-2.md` |
 | T698 | Thu chi: nút Đồng bộ thu chi FABi dời từ thanh tab phân hệ xuống thanh công cụ danh sách, nút vuông cạnh nút Excel như Xuất bán POS | Trum | 31/10/2026 | `2026-10-31-trum-nut-dong-bo-thu-chi.md` |
 | T697 | Tiện ích đồng bộ FABi: Thu chi chip Tất cả, Chưa ghi sổ, Đã ghi sổ, Chưa đồng bộ (gói không ghi sổ ẩn Chưa ghi sổ); Xuất bán POS chip Đã đồng bộ, Chưa đồng bộ mỗi dòng một món; bảng Chưa đồng bộ có Nguyên nhân, Đồng bộ lại, Xuất Excel; hộp Đồng bộ thêm Loại phiếu; điện thoại chỉ xem | Trum | 31/10/2026 | `2026-10-31-trum-tien-ich-dong-bo-fabi.md` |
 | T695 | Nhật ký thao tác: phễu mở Bộ lọc nâng cao thêm Tài khoản, Tên chứng từ, Ngày chứng từ; chip Ngày thao tác chọn từ ngày đến ngày; điện thoại bấm phễu chọn điều kiện rồi bấm Lọc mới hiện thẻ; gỡ CSS điện thoại T693 lỡ áp lên cả app | Trum | 31/10/2026 | [2026-10-31-trum-nhat-ky-loc-nang-cao](../nhat-ky/2026-10-31-trum-nhat-ky-loc-nang-cao.md) |

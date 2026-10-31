@@ -12,7 +12,7 @@ import { IconFigmaSearch, IconFigmaSheet, IconFigmaSliders } from '../IconFigma'
 import { PageHead } from '../Page'
 import { ChonHaiCot, type MucHaiCot } from '../ChonHaiCot'
 import { OChonMot, type MucChonMot } from '../OChonMot'
-import { St, Table } from '../Table'
+import { St, Table, useDoRongCot } from '../Table'
 import { PhanTrang } from '../PhanTrang'
 import { buildGroupedData } from '../virtual'
 import { ChonKhoangNgay, docNgay, khoangThang, thangMacDinh, trongKhoang, type KhoangNgay } from '../ChonNgay'
@@ -435,7 +435,14 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
   const truocTT = cfg.dieuChinh ? truocLoai.filter(r => r.loai === tabLoai) : nhomChon ? truocLoai.filter(r => nhomChon.loai.includes(r.loai)) : truocLoai
   const isTien = mod.key === 'tien'
   const { cho: choFabi, khoa: khoaFabi } = useMemo(() => isTien ? phieuThuChiFabi(s) : { cho: [], khoa: [] }, [isTien, s])
-  const phieuChuaDb = useMemo(() => [...choFabi, ...khoaFabi], [choFabi, khoaFabi])
+  const phieuChuaDbTatCa = useMemo(() => [...choFabi, ...khoaFabi], [choFabi, khoaFabi])
+  // T699: tab Tiền mặt chỉ hiện phiếu chờ tiền mặt, tab Ngân hàng chỉ hiện phiếu chờ ngân hàng
+  const quyTab: 'tm' | 'nh' = nhomChon?.k === 'nh' ? 'nh' : 'tm'
+  const phieuChuaDb = useMemo(() => {
+    if (!isTien) return []
+    if (nhomChon?.k === 'cq') return []
+    return phieuChuaDbTatCa.filter(p => quyTab === 'nh' ? p.maPttt !== 'TM' : p.maPttt === 'TM')
+  }, [isTien, nhomChon?.k, quyTab, phieuChuaDbTatCa])
 
   const chipsGoc = dsChipTT(truocTT, ghi)
   const chips = useMemo(() => {
@@ -466,11 +473,14 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
       ngay: `${p.ngay} ${p.gio}`,
       cn: p.cn,
       kieu: p.kieu,
+      loai: p.loai,
+      tenLoai: p.tenLoai ?? (p.maPttt === 'TM' ? (p.kieu === 'thu' ? 'Thu tiền mặt' : 'Chi tiền mặt') : (p.kieu === 'thu' ? 'Thu ngân hàng' : 'Chi ngân hàng')),
       pttt: p.pttt,
       dienGiai: p.dienGiai,
+      lyDo: p.kieu === 'thu' ? 'Thu khác' : 'Chi phí khác',
       tien: p.tien,
       tong: p.tien,
-      lyDo: p.lyDo,
+      nguyenNhanLoi: p.lyDo,
       chiTiet: p.chiTiet,
       tt: 'chua-db',
     }))
@@ -481,8 +491,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
     return rowsChuaDb.filter(r => {
       for (const [k, g] of Object.entries(locCot)) {
         if (dangLoc(g)) {
-          const val = k === 'nguyenNhan' ? (r.lyDo === 'map' ? 'PTTT chưa map quỹ' : 'Kỳ đã khoá sổ')
-                    : k === 'kieu' ? (r.kieu === 'thu' ? 'Thu' : 'Chi')
+          const val = k === 'nguyenNhan' ? (r.nguyenNhanLoi === 'map' ? 'PTTT chưa map quỹ' : 'Kỳ đã khoá sổ')
                     : chuCot(k, r)
           const numVal = typeof r[k] === 'number' ? r[k] : undefined
           const dateVal = k === 'ngay' ? docNgay(String(r.ngay).split(' ')[0]) : undefined
@@ -620,6 +629,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
 
   // Thứ tự, ẩn hiện, độ rộng cột lưu theo màn (T41)
   const cot = useCotDs(path, cols, COT_CO_DINH)
+  const doRongChuaDb = useDoRongCot('fabi-tc-chua-db')   // T699: độ rộng kéo cột bảng Chưa đồng bộ Thu chi
 
   // Gom nhóm danh sách chứng từ theo cột (T50 học từ LedgerStudio)
   const [nhomCols, setNhomCols] = useState<string[]>([])
@@ -634,7 +644,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
     return Object.fromEntries(cot.colsDu.map(c => [c.k, c.t || c.k]))
   }, [cot.colsDu])
 
-  // Cột cho danh sách Chưa đồng bộ FABi (T697)
+  // Cột cho danh sách Chưa đồng bộ FABi (T697, T699)
   const colsChuaDb: Col[] = useMemo(() => [
     cotChon(listChuaDb, selectedIds, setSelectedIds),
     { k: 'ma', t: 'Mã phiếu FABi', cls: 'code', w: 140, dinh: 'trai' },
@@ -646,25 +656,16 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
       r: (r: Row) => <span className="ds-time" title={String(r.ngay)}>{r.ngay}</span>,
     },
     { k: 'cn', t: 'Cửa hàng', w: 150 },
-    {
-      k: 'kieu',
-      t: 'Loại',
-      w: 90,
-      r: (r: Row) => (
-        <span className={`chip ${r.kieu === 'thu' ? 'thu' : 'chi'}`}>
-          {r.kieu === 'thu' ? 'Thu' : 'Chi'}
-        </span>
-      ),
-    },
+    { k: 'tenLoai', t: 'Loại', w: 130 },
     { k: 'pttt', t: 'PTTT', w: 130 },
     { k: 'dienGiai', t: 'Diễn giải', w: 220 },
-    { k: 'tien', t: 'Số tiền', num: true, w: 120, r: (r: Row) => money(Number(r.tien)) },
+    { k: 'lyDo', t: 'Lý do', w: 170 },
     {
       k: 'nguyenNhan',
       t: 'Nguyên nhân',
       w: 260,
       r: (r: Row) => {
-        const tenLy = r.lyDo === 'map' ? 'PTTT chưa map quỹ' : 'Kỳ đã khoá sổ'
+        const tenLy = r.nguyenNhanLoi === 'map' ? 'PTTT chưa map quỹ' : 'Kỳ đã khoá sổ'
         const chiTiet = r.chiTiet ? `· ${r.chiTiet}` : ''
         return (
           <span className="ds-ly-wrap" title={r.chiTiet ? `${tenLy} · ${r.chiTiet}` : tenLy}>
@@ -678,7 +679,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
       t: 'Xử lý',
       w: 110,
       r: (r: Row) => {
-        if (r.lyDo === 'map') {
+        if (r.nguyenNhanLoi === 'map') {
           return (
             <Link to="/app/danh-muc/1-12" className="ds-link-xl" onClick={e => e.stopPropagation()}>
               Map quỹ
@@ -693,6 +694,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
         )
       },
     },
+    { k: 'tien', t: 'Số tiền', num: true, w: 120, dinh: 'phai', r: (r: Row) => money(Number(r.tien)) },
   ], [listChuaDb, selectedIds, s.goi])
 
   const activeRow = list.find(r => r.id === activeId) ?? list[0]
@@ -818,19 +820,15 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
                     >
                       <Icon n="refresh" className="ic sm" />Đồng bộ lại{selectedIds.size ? ` ${selectedIds.size} phiếu` : ''}
                     </button>
-                    <button
-                      type="button"
-                      className="nut-vuong"
-                      title="Xuất Excel danh sách chứng từ chưa đồng bộ"
-                      aria-label="Xuất Excel"
-                      onClick={() => toast(`Đã xuất ${list.length} phiếu chưa đồng bộ ra Excel`)}
-                    >
-                      <IconFigmaSheet />
-                    </button>
+                    <NutExcel
+                      label={<IconFigmaSheet />}
+                      onNhap={() => toast('Nhập chứng từ từ file Excel')}
+                      onXuat={() => toast(`Đã xuất ${list.length} chứng từ ra Excel`)}
+                    />
                   </>
                 ) : (
                   <>
-                    {isTien && <DongBoThuChiFabi />}
+                    {isTien && <DongBoThuChiFabi quy={quyTab} />}
                     <NutExcel
                       label={<IconFigmaSheet />}
                       onNhap={() => toast('Nhập chứng từ từ file Excel')}
@@ -875,7 +873,7 @@ export function VoucherList({ sc, mod, cfg, rows: rowsGoc, extra, title }: Scree
                 rows={laChuaDb ? pagedRows : displayRows}
                 motDong
                 keDoc
-                doRong={laChuaDb ? undefined : cot.doRong}
+                doRong={laChuaDb ? doRongChuaDb : cot.doRong}
                 onToggleGroup={handleToggleGroup}
                 loc={{ gt: locCot, dat: (k, g) => { setLocCot(x => ({ ...x, [k]: g })); setTrang(1) }, bo: new Set(['chk', 'stt', 'action', 'xuLy']),
                   kieu: c => kieuCot(c.k), layLuaChon }}
